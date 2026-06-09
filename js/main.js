@@ -1,4 +1,5 @@
 const siteUpdated = "2026.06.09";
+const pageParams = new URLSearchParams(window.location.search);
 
 const translations = {
   zh: {
@@ -33,6 +34,7 @@ const translations = {
     openOriginal: "打开原地址",
     videoPlaceholder: "这里预留 Bilibili / YouTube 嵌入播放器。",
     startButton: "开始 Start",
+    lastUpdatedLabel: "最近更新日期",
     all: "全部",
     nicknameLabel: "昵称",
     nicknameValue: "鲁肃",
@@ -85,6 +87,7 @@ const translations = {
     openOriginal: "Open Original",
     videoPlaceholder: "Bilibili / YouTube embed player is reserved here.",
     startButton: "Start",
+    lastUpdatedLabel: "Last updated",
     all: "All",
     nicknameLabel: "Nickname",
     nicknameValue: "LuSu",
@@ -137,6 +140,7 @@ const translations = {
     openOriginal: "元のページを開く",
     videoPlaceholder: "Bilibili / YouTube の埋め込みプレイヤー用スペースです。",
     startButton: "スタート",
+    lastUpdatedLabel: "最終更新日",
     all: "すべて",
     nicknameLabel: "ニックネーム",
     nicknameValue: "魯粛",
@@ -551,6 +555,9 @@ function localDateKey(date) {
 }
 
 function maybeShowWelcome() {
+  if (pageParams.get("welcome") === "0") {
+    return;
+  }
   const today = localDateKey(new Date());
   const key = `lusu-welcome-seen-${today}`;
   if (localStorage.getItem(key) === "1") {
@@ -620,8 +627,15 @@ window.addEventListener("hashchange", () => {
   navigate(window.location.hash.replace("#", ""));
 });
 
-setLanguage("zh");
+const requestedLang = pageParams.get("lang");
+const initialLang = ["zh", "en", "ja"].includes(requestedLang) ? requestedLang : "zh";
+
+setLanguage(initialLang);
 updateClock();
 setInterval(updateClock, 1000);
 navigate(window.location.hash.replace("#", "") || "home");
+const hoverRoute = pageParams.get("hover");
+if (hoverRoute) {
+  document.querySelector(`.desktop-icon[data-route="${hoverRoute}"]`)?.classList.add("is-hovered");
+}
 window.addEventListener("load", maybeShowWelcome);

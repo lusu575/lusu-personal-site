@@ -137,10 +137,14 @@ button:disabled {
 }
 
 .lang-button {
-  min-width: 54px;
-  padding: 7px 11px;
+  display: inline-grid;
+  place-items: center;
+  width: 64px;
+  height: 34px;
+  padding: 0;
   font-size: 14px;
   font-weight: 900;
+  line-height: 1;
 }
 
 .lang-button.active {
@@ -148,7 +152,6 @@ button:disabled {
   background: linear-gradient(180deg, #fff3a7, #ffbd38);
 }
 
-.online-label,
 .top-updated {
   font-size: 14px;
   font-weight: 900;
@@ -384,19 +387,21 @@ main {
   top: 144px;
   left: 46px;
   display: grid;
-  grid-template-columns: repeat(2, 112px);
-  grid-auto-rows: 146px;
-  gap: 18px 22px;
+  grid-template-columns: repeat(2, 132px);
+  grid-auto-rows: 154px;
+  gap: 16px 18px;
 }
 
 .desktop-icon {
-  display: grid;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-items: center;
-  align-content: start;
+  justify-content: flex-start;
   gap: 4px;
-  width: 112px;
-  min-height: 136px;
-  padding: 8px 4px;
+  width: 132px;
+  height: 150px;
+  padding: 8px 8px 10px;
   border: 2px solid transparent;
   border-radius: 7px;
   color: #fff;
@@ -406,7 +411,8 @@ main {
 }
 
 .desktop-icon:hover,
-.desktop-icon:focus-visible {
+.desktop-icon:focus-visible,
+.desktop-icon.is-hovered {
   outline: none;
   border-color: rgba(255, 255, 255, 0.75);
   background: rgba(25, 94, 185, 0.23);
@@ -414,16 +420,20 @@ main {
 }
 
 .icon-title {
+  display: block;
+  width: 100%;
   font-size: 19px;
   font-weight: 900;
   line-height: 1.15;
 }
 
 .icon-caption {
-  width: 112px;
+  display: block;
+  width: 100%;
   font-size: 12px;
   font-weight: 800;
   line-height: 1.25;
+  overflow-wrap: anywhere;
 }
 
 .pixel-icon {
@@ -1413,13 +1423,14 @@ main {
   .desktop-icons {
     top: 300px;
     left: 18px;
-    grid-template-columns: repeat(3, 104px);
-    grid-auto-rows: 128px;
+    grid-template-columns: repeat(3, 124px);
+    grid-auto-rows: 146px;
     gap: 10px;
   }
 
   .desktop-icon {
-    width: 104px;
+    width: 124px;
+    height: 142px;
   }
 
   .desktop-intro {
@@ -1437,17 +1448,42 @@ main {
     align-items: stretch;
     flex-direction: column;
     padding: 8px 12px;
+    overflow: hidden;
   }
 
   .topbar-actions {
     justify-content: center;
     flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
     min-width: 0;
+  }
+
+  .language-switcher {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .top-updated {
+    width: 100%;
+    font-size: 12px;
+    text-align: center;
+    white-space: normal;
   }
 
   .brand-button {
     justify-content: center;
     font-size: 16px;
+    width: 100%;
+  }
+
+  .brand-button span:last-child {
+    min-width: 0;
+    max-width: calc(100vw - 140px);
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .page {
@@ -1455,15 +1491,20 @@ main {
     padding: 12px;
   }
 
-  .page-home {
+  .page-home.active {
+    display: flex;
+    flex-direction: column;
     padding-bottom: 100px;
   }
 
   .desktop-intro {
+    order: 1;
+    width: min(100%, 620px);
     margin-top: 38px;
   }
 
   .desktop-icons {
+    order: 2;
     position: relative;
     top: auto;
     left: auto;
@@ -1476,7 +1517,8 @@ main {
 
   .desktop-icon {
     width: auto;
-    min-height: 116px;
+    height: auto;
+    min-height: 132px;
     padding: 10px;
     background: rgba(8, 80, 170, 0.15);
   }
@@ -1534,12 +1576,57 @@ main {
 }
 
 @media (max-width: 460px) {
+  .xp-topbar {
+    padding-inline: 8px;
+  }
+
+  .brand-button {
+    font-size: 15px;
+  }
+
+  .desktop-intro {
+    margin-top: 28px;
+  }
+
+  .desktop-intro h1 {
+    font-size: 34px;
+    line-height: 1.08;
+  }
+
+  .desktop-intro h1::after {
+    margin-left: 5px;
+    font-size: 0.45em;
+  }
+
+  .hero-en {
+    margin: 7px 0 9px;
+    font-size: 21px;
+  }
+
+  .hero-lead {
+    max-width: 100%;
+    padding-top: 10px;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .lang-button {
+    width: 62px;
+    height: 32px;
+  }
+
+  .top-updated {
+    font-size: 11px;
+  }
+
   .desktop-icons {
     grid-template-columns: 1fr;
+    width: 100%;
   }
 
   .desktop-icon {
-    grid-template-columns: 70px 1fr;
+    display: grid;
+    grid-template-columns: 82px 1fr;
     justify-items: start;
     align-items: center;
     text-align: left;
@@ -1556,6 +1643,60 @@ main {
 
   .taskbar-tabs {
     display: none;
+  }
+}
+
+@media (max-width: 620px) {
+  .brand-button {
+    font-size: 15px;
+  }
+
+  .desktop-intro {
+    margin-top: 28px;
+  }
+
+  .desktop-intro h1 {
+    font-size: 34px;
+    line-height: 1.08;
+  }
+
+  .desktop-intro h1::after {
+    margin-left: 5px;
+    font-size: 0.45em;
+  }
+
+  .hero-en {
+    margin: 7px 0 9px;
+    font-size: 21px;
+  }
+
+  .hero-lead {
+    max-width: 100%;
+    padding-top: 10px;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .desktop-icons {
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .desktop-icon {
+    display: grid;
+    grid-template-columns: 82px 1fr;
+    justify-items: start;
+    align-items: center;
+    text-align: left;
+  }
+
+  .pixel-icon {
+    grid-row: span 2;
+  }
+
+  .icon-title,
+  .icon-caption {
+    text-align: left;
   }
 }
 
