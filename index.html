@@ -5,13 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="鲁肃的个人站，一个 Windows XP 像素桌面风格的个人空间。">
   <title>鲁肃的个人站</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32.png">
+  <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <div class="site-shell">
     <header class="xp-topbar">
       <button class="brand-button" data-route="home" aria-label="返回桌面">
-        <span class="brand-orb">LS</span>
+        <img class="brand-orb" src="assets/images/lusu-tv-head-64.png" alt="" aria-hidden="true">
         <span data-i18n="siteName">鲁肃的个人站 · LuSu's Personal Site</span>
       </button>
       <div class="topbar-actions">
@@ -151,7 +153,7 @@
           </div>
           <div class="profile-card">
             <div class="profile-avatar">
-              <span class="pixel-face"></span>
+              <img class="profile-avatar-image" src="assets/images/lusu-about-avatar-256.png" alt="鲁肃头像">
             </div>
             <div class="profile-info">
               <dl>
@@ -168,7 +170,7 @@
     </main>
 
     <footer class="xp-taskbar">
-      <button class="start-button" data-route="home"><span class="windows-mark"></span><span data-i18n="startButton">开始 Start</span></button>
+      <button class="start-button" data-route="home"><img class="start-tv-mark" src="assets/images/start-tv-icon.png" alt="" aria-hidden="true"><span data-i18n="startButton">首页</span></button>
       <div class="taskbar-tabs">
         <button data-route="knowledge"><span class="mini-icon">📁</span><span data-i18n="navKnowledge">知识库</span></button>
         <button data-route="videos"><span class="mini-icon">▶</span><span data-i18n="navVideos">视频区</span></button>

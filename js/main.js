@@ -1,4 +1,4 @@
-const siteUpdated = "2026.06.09";
+const siteUpdated = "2026.06.10";
 const pageParams = new URLSearchParams(window.location.search);
 
 const translations = {
@@ -33,7 +33,7 @@ const translations = {
     externalButton: "外部链接",
     openOriginal: "打开原地址",
     videoPlaceholder: "这里预留 Bilibili / YouTube 嵌入播放器。",
-    startButton: "开始 Start",
+    startButton: "首页",
     lastUpdatedLabel: "最近更新日期",
     all: "全部",
     nicknameLabel: "昵称",
@@ -45,9 +45,9 @@ const translations = {
     statusLabel: "网站状态",
     statusValue: "持续建设中",
     aboutCopy: "你好，我是鲁肃。这里是我的个人站，用来记录 AI、游戏、工具、资源和一些杂谈。",
-    welcomeTitle: "欢迎来到我的空间",
-    welcomeHeading: "欢迎回来，朋友！",
-    welcomeCopy: "这里记录着我的学习、创作和生活点滴。希望你能在这里找到有用的内容和快乐！",
+    welcomeTitle: "欢迎来到鲁肃的像素桌面",
+    welcomeHeading: "新头像和移动端整理完成啦！",
+    welcomeCopy: "这次换上了新的电视机头像，公告、账号窗口、视频区、资源区和内置游戏也重新适配了手机端。",
     quickEntry: "快捷入口",
     goKnowledge: "进入知识库",
     goVideos: "看看视频",
@@ -86,7 +86,7 @@ const translations = {
     externalButton: "External Link",
     openOriginal: "Open Original",
     videoPlaceholder: "Bilibili / YouTube embed player is reserved here.",
-    startButton: "Start",
+    startButton: "Home",
     lastUpdatedLabel: "Last updated",
     all: "All",
     nicknameLabel: "Nickname",
@@ -98,9 +98,9 @@ const translations = {
     statusLabel: "Site Status",
     statusValue: "Under construction",
     aboutCopy: "Hi, I'm LuSu. This is my personal site for AI notes, games, tools, resources and random thoughts.",
-    welcomeTitle: "Welcome to my space",
-    welcomeHeading: "Welcome back, friend!",
-    welcomeCopy: "This space records my learning, creations, and everyday notes. I hope you find useful things and some joy here.",
+    welcomeTitle: "Welcome to LuSu's pixel desktop",
+    welcomeHeading: "New avatar and mobile layout are ready!",
+    welcomeCopy: "The site now uses the new TV-head avatar, with refreshed announcements, account popover, video/resources areas, and embedded games tuned for mobile.",
     quickEntry: "Quick Entry",
     goKnowledge: "Open Knowledge",
     goVideos: "Watch Videos",
@@ -139,7 +139,7 @@ const translations = {
     externalButton: "外部リンク",
     openOriginal: "元のページを開く",
     videoPlaceholder: "Bilibili / YouTube の埋め込みプレイヤー用スペースです。",
-    startButton: "スタート",
+    startButton: "ホーム",
     lastUpdatedLabel: "最終更新日",
     all: "すべて",
     nicknameLabel: "ニックネーム",
@@ -151,9 +151,9 @@ const translations = {
     statusLabel: "サイト状態",
     statusValue: "建設中",
     aboutCopy: "こんにちは、魯粛です。ここはAI、ゲーム、ツール、リソース、雑談を記録する個人サイトです。",
-    welcomeTitle: "私のスペースへようこそ",
-    welcomeHeading: "おかえり、友だち！",
-    welcomeCopy: "ここには学び、創作、日常のメモを記録しています。役に立つ内容と楽しいものが見つかりますように。",
+    welcomeTitle: "魯粛のピクセルデスクトップへようこそ",
+    welcomeHeading: "新しいアバターとスマホ表示を整えました！",
+    welcomeCopy: "新しいテレビ頭のアバターに差し替え、告知、アカウント画面、動画・リソース欄、内蔵ゲームをスマホ向けに調整しました。",
     quickEntry: "クイック入口",
     goKnowledge: "知識庫へ",
     goVideos: "動画を見る",
@@ -199,22 +199,22 @@ const labels = {
 const content = {
   updates: [
     {
-      icon: "⭐",
-      date: "2026.06.09",
-      title: { zh: "网站新版桌面上线啦！", en: "New desktop design is live!", ja: "新しいデスクトップ版を公開！" },
-      desc: { zh: "XP 像素风重新设计", en: "XP pixel style redesign", ja: "XPピクセル風に再設計" }
+      icon: "📺",
+      date: "2026.06.10",
+      title: { zh: "电视机头像与站点图标更新", en: "TV avatar and site icon updated", ja: "テレビ頭アバターとサイトアイコンを更新" },
+      desc: { zh: "首页品牌、关于我入口和头像已换新", en: "Brand icon, About entry, and profile avatar are refreshed", ja: "ブランド、プロフィール入口、头像を差し替えました" }
     },
     {
-      icon: "📁",
-      date: "2026.06.08",
-      title: { zh: "游戏区准备加入", en: "Games area is being prepared", ja: "ゲームエリア準備中" },
-      desc: { zh: "H5 小游戏与挂机游戏", en: "H5 and idle games", ja: "H5と放置ゲーム" }
+      icon: "📱",
+      date: "2026.06.10",
+      title: { zh: "手机端显示重新适配", en: "Mobile layout retuned", ja: "スマホ表示を再調整" },
+      desc: { zh: "顶部、登录窗口、公告窗口、视频区和资源区更省空间", en: "Top bar, login, announcements, videos, and resources now use space better", ja: "上部栏、ログイン、告知、動画、リソース欄を省スペース化" }
     },
     {
-      icon: "😵",
-      date: "2026.06.07",
-      title: { zh: "资源区建设中，持续更新...", en: "Resources are still being built...", ja: "リソースを制作中..." },
-      desc: { zh: "软件、素材和工具整理", en: "Software, assets and tools", ja: "ソフト、素材、ツール整理" }
+      icon: "🎮",
+      date: "2026.06.10",
+      title: { zh: "内置游戏窗口适配小屏幕", en: "Embedded games fit small screens better", ja: "内蔵ゲームを小画面向けに調整" },
+      desc: { zh: "游戏工具栏和 iframe 高度会跟随屏幕调整", en: "Game tools and iframe height now respond to the viewport", ja: "ゲームツールと iframe 高さが画面に合わせて変化します" }
     }
   ],
   knowledge: [

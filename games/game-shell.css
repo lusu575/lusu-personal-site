@@ -1,6 +1,6 @@
 :root {
-  --blue: #115bd6;
-  --blue-dark: #063292;
+  --blue: #1d6fe8;
+  --blue-dark: #12439f;
   --panel: #ffffff;
   --line: #9eb8df;
   --text: #152744;
@@ -17,7 +17,7 @@ body {
   color: var(--text);
   font-family: Tahoma, Verdana, "Microsoft YaHei", sans-serif;
   background:
-    linear-gradient(180deg, rgba(34, 143, 242, 0.92), rgba(88, 190, 80, 0.82)),
+    linear-gradient(180deg, rgba(44, 145, 244, 0.92), rgba(57, 184, 137, 0.78)),
     url("../assets/images/xp-wallpaper-generated.png") center / cover fixed;
 }
 
@@ -38,7 +38,7 @@ input {
   min-height: 54px;
   padding: 8px 16px;
   color: #fff;
-  background: linear-gradient(180deg, #257df4, #0636a0);
+  background: linear-gradient(180deg, #4aa4ff 0%, #1d6fe8 50%, #12439f 100%);
   border-bottom: 3px solid #043080;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
 }
@@ -220,7 +220,7 @@ input {
 .game-frame {
   display: block;
   width: 100%;
-  height: calc(100vh - 168px);
+  height: calc(100dvh - 168px);
   min-height: 620px;
   border: 0;
   background: #fff;
@@ -243,16 +243,44 @@ input {
 }
 
 @media (max-width: 860px) {
+  body {
+    background-attachment: scroll;
+  }
+
+  .game-topbar {
+    position: static;
+    gap: 8px;
+    padding: 7px 10px;
+  }
+
+  .game-topbar strong {
+    font-size: 15px;
+  }
+
   .game-tools {
     grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 8px;
   }
 
   .tool-row {
     justify-content: flex-start;
   }
 
+  .game-frame-card {
+    width: calc(100% - 12px);
+    margin: 6px auto;
+  }
+
+  .license-panel {
+    max-height: 72px;
+    overflow: auto;
+    font-size: 12px;
+  }
+
   .game-frame {
-    min-height: 560px;
+    height: calc(100dvh - 230px);
+    min-height: 420px;
   }
 }
 
@@ -266,8 +294,36 @@ input {
     width: 100%;
   }
 
+  .game-title h1 {
+    font-size: 17px;
+  }
+
+  .game-title p,
+  .status-text {
+    font-size: 11px;
+  }
+
+  .cloud-login,
+  .cloud-account {
+    padding: 7px;
+  }
+
   .tool-row {
     display: grid;
     grid-template-columns: 1fr;
+  }
+
+  .tool-button,
+  .file-button,
+  .play-button,
+  .back-link {
+    min-height: 32px;
+    padding: 6px 9px;
+    font-size: 12px;
+  }
+
+  .game-frame {
+    height: calc(100dvh - 270px);
+    min-height: 360px;
   }
 }
