@@ -1,6 +1,7 @@
 const SESSION_COOKIE = "lusu_session";
 const SESSION_DAYS = 30;
 const MAX_SAVE_BYTES = 1024 * 1024;
+const PASSWORD_HASH_ITERATIONS = 25000;
 
 export async function onRequest(context) {
   const { request, env } = context;
@@ -13,6 +14,9 @@ export async function onRequest(context) {
   }
 
   try {
+    if (request.method === "GET" && parts[0] === "health") {
+      return health(env);
+    }
     if (request.method === "POST" && parts[0] === "auth" && parts[1] === "register") {
       return register(request, env);
     }
@@ -36,8 +40,14 @@ export async function onRequest(context) {
 
     return json({ error: "Not found." }, 404);
   } catch (error) {
+    console.error("API error", error);
     return json({ error: error.message || "Unexpected server error." }, error.status || 500);
   }
+}
+
+async function health(env) {
+  const row = await env.DB.prepare("select count(*) as user_count from users").first();
+  return json({ ok: true, db: true, userCount: row.user_count });
 }
 
 async function register(request, env) {
@@ -217,7 +227,7 @@ function validateGameId(gameId) {
 
 async function hashPassword(password) {
   const salt = randomToken(16);
-  const iterations = 120000;
+  const iterations = PASSWORD_HASH_ITERATIONS;
   const key = await crypto.subtle.importKey("raw", textBytes(password), "PBKDF2", false, ["deriveBits"]);
   const bits = await crypto.subtle.deriveBits(
     { name: "PBKDF2", salt: base64urlToBytes(salt), iterations, hash: "SHA-256" },
