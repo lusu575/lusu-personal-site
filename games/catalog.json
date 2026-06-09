@@ -2,25 +2,6 @@
   "updated": "2026.06.09",
   "games": [
     {
-      "id": "trimps",
-      "title": "Trimps",
-      "titleZh": "Trimps",
-      "summary": "经典放置增量游戏，训练 Trimps、探索地图并推进世界。",
-      "cover": "../assets/images/icon-games.png",
-      "entry": "trimps/",
-      "sourceEntry": "source/index.html",
-      "language": "原版英文；游戏馆提供中文标题和说明",
-      "license": {
-        "name": "GNU GPL-2.0",
-        "file": "source/license.txt",
-        "url": "https://github.com/Trimps/Trimps.github.io"
-      },
-      "repo": "https://github.com/Trimps/Trimps.github.io",
-      "storage": {
-        "keys": ["trimpSave1", "playFabName", "playFabPass"]
-      }
-    },
-    {
       "id": "kittens-game",
       "title": "Kittens Game",
       "titleZh": "猫国建设者",
@@ -36,7 +17,11 @@
       },
       "repo": "https://github.com/nuclear-unicorn/kittensgame",
       "storage": {
-        "keys": ["com.nuclearunicorn.kittengame.savedata", "com.nuclearunicorn.kittengame.language"],
+        "keys": [
+          "com.nuclearunicorn.kittengame.savedata",
+          "com.nuclearunicorn.kittengame.language",
+          "com.nuclearunicorn.kittengame.ui"
+        ],
         "defaults": {
           "com.nuclearunicorn.kittengame.language": "zh"
         }
@@ -50,7 +35,7 @@
       "cover": "../assets/images/icon-blog.png",
       "entry": "a-dark-room/",
       "sourceEntry": "source/index.html",
-      "launchQuery": "lang=zh_cn",
+      "launchQuery": "lang=zh_cn&ignorebrowser=true",
       "language": "内置简体中文",
       "license": {
         "name": "Mozilla Public License 2.0",
@@ -59,7 +44,7 @@
       },
       "repo": "https://github.com/doublespeakgames/adarkroom",
       "storage": {
-        "keys": ["gameState"]
+        "keys": ["gameState", "lang"]
       }
     }
   ]

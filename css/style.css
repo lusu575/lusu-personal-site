@@ -926,10 +926,6 @@ main {
   background: linear-gradient(180deg, #e9f5ff, #c9e3ff);
 }
 
-.game-hall-card {
-  background: linear-gradient(180deg, #ffffff, #eaf6ff);
-}
-
 .loading-text {
   margin: 0;
   padding: 14px;

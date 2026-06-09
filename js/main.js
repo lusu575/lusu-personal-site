@@ -481,16 +481,7 @@ async function renderGames() {
   list.innerHTML = `<p class="loading-text">正在读取游戏配置...</p>`;
   try {
     const catalog = await loadGameCatalog();
-    list.innerHTML = `
-      <article class="game-card game-hall-card">
-        <div class="game-badge">HOME</div>
-        <div>
-          <h3>游戏馆首页</h3>
-          <p>游戏列表由配置文件自动读取，后续新增游戏无需修改核心代码。</p>
-        </div>
-        <a class="card-action" href="games/">进入游戏馆</a>
-      </article>
-      ${catalog.games.map((item) => `
+    list.innerHTML = catalog.games.map((item) => `
         <article class="game-card">
           <img class="game-cover" src="${item.cover.replace("../", "")}" alt="${item.titleZh} 封面" loading="lazy">
           <div>
@@ -504,8 +495,7 @@ async function renderGames() {
           </div>
           <a class="card-action" href="games/${item.entry}">开始</a>
         </article>
-      `).join("")}
-    `;
+      `).join("");
   } catch (error) {
     list.innerHTML = `<p class="loading-text">游戏配置读取失败：${error.message}</p>`;
   }

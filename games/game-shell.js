@@ -24,6 +24,24 @@
     return `${game.sourceEntry}${query}`;
   }
 
+  function flushGameSave() {
+    try {
+      const gameWindow = frame.contentWindow;
+      if (!gameWindow) {
+        return;
+      }
+      if (gameWindow.gamePage && typeof gameWindow.gamePage.save === "function") {
+        gameWindow.gamePage.save();
+      } else if (gameWindow.game && typeof gameWindow.game.save === "function") {
+        gameWindow.game.save();
+      } else if (gameWindow.Engine && typeof gameWindow.Engine.saveGame === "function") {
+        gameWindow.Engine.saveGame();
+      }
+    } catch (error) {
+      console.warn("Unable to flush game save", error);
+    }
+  }
+
   function applyStorageDefaults(game) {
     const defaults = game.storage?.defaults || {};
     Object.entries(defaults).forEach(([key, value]) => {
@@ -39,6 +57,7 @@
   }
 
   function exportSave(game) {
+    flushGameSave();
     const keys = getStorageKeys(game);
     const data = {};
     keys.forEach((key) => {
@@ -86,7 +105,7 @@
       throw new Error(`unknown game: ${slug}`);
     }
 
-    document.title = `${game.titleZh} · 游戏馆`;
+    document.title = `${game.titleZh} · 鲁肃的个人站`;
     title.textContent = game.titleZh;
     subtitle.textContent = `${game.title} · ${game.language}`;
     license.innerHTML = `
@@ -96,6 +115,15 @@
     `;
     applyStorageDefaults(game);
     frame.src = buildEntry(game);
+    frame.addEventListener("load", () => {
+      setStatus("游戏已加载，本地存档会保存在当前浏览器。");
+    });
+    window.addEventListener("beforeunload", flushGameSave);
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden") {
+        flushGameSave();
+      }
+    });
 
     document.getElementById("export-save").addEventListener("click", () => exportSave(game));
     importInput.addEventListener("change", async () => {
