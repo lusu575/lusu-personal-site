@@ -2,7 +2,7 @@
 const translations = {
   zh: {
     siteName: "鲁肃的个人站",
-    homeLead: "欢迎来到我的 XP 像素桌面，随便点开一个文件夹看看吧。",
+    homeLead: "欢迎来到我的小站，还在施工中，您可以四处浏览一下。",
     navKnowledge: "知识库",
     navVideos: "视频区",
     navResources: "资源区",
@@ -28,7 +28,7 @@ const translations = {
     nicknameLabel: "昵称",
     nicknameValue: "鲁肃",
     interestLabel: "兴趣",
-    interestValue: "AI / 游戏 / VRChat / 工具折腾",
+    interestValue: "AI / 游戏 / 工具折腾",
     contactLabel: "联系方式",
     contactValue: "暂留空",
     statusLabel: "网站状态",
@@ -63,7 +63,7 @@ const translations = {
     nicknameLabel: "Nickname",
     nicknameValue: "LuSu",
     interestLabel: "Interests",
-    interestValue: "AI / Games / VRChat / Tool experiments",
+    interestValue: "AI / Games / Tool experiments",
     contactLabel: "Contact",
     contactValue: "Blank for now",
     statusLabel: "Site Status",
@@ -98,7 +98,7 @@ const translations = {
     nicknameLabel: "ニックネーム",
     nicknameValue: "魯粛",
     interestLabel: "興味",
-    interestValue: "AI / ゲーム / VRChat / ツールいじり",
+    interestValue: "AI / ゲーム / ツールいじり",
     contactLabel: "連絡先",
     contactValue: "未設定",
     statusLabel: "サイト状態",
@@ -109,7 +109,7 @@ const translations = {
 
 const labels = {
   zh: {
-    knowledgeCategories: ["AI工具", "本地模型", "VRChat / Unity", "应用商店运营", "日语学习", "踩坑记录"],
+    knowledgeCategories: ["AI工具", "本地模型", "VRChat / Unity", "日语学习", "踩坑记录"],
     videoCategories: ["VRChat作品", "AI实验", "游戏录像", "收藏视频", "网站更新记录"],
     resourceCategories: ["软件工具", "配置文件", "素材包", "文档资料", "插件", "模型链接"],
     version: "版本",
@@ -119,7 +119,7 @@ const labels = {
     date: "日期"
   },
   en: {
-    knowledgeCategories: ["AI Tools", "Local Models", "VRChat / Unity", "App Store Ops", "Japanese Study", "Pitfall Notes"],
+    knowledgeCategories: ["AI Tools", "Local Models", "VRChat / Unity", "Japanese Study", "Pitfall Notes"],
     videoCategories: ["VRChat Works", "AI Experiments", "Game Records", "Saved Videos", "Site Updates"],
     resourceCategories: ["Software Tools", "Config Files", "Asset Packs", "Docs", "Plugins", "Model Links"],
     version: "Version",
@@ -129,7 +129,7 @@ const labels = {
     date: "Date"
   },
   ja: {
-    knowledgeCategories: ["AIツール", "ローカルモデル", "VRChat / Unity", "アプリストア運用", "日本語学習", "失敗メモ"],
+    knowledgeCategories: ["AIツール", "ローカルモデル", "VRChat / Unity", "日本語学習", "失敗メモ"],
     videoCategories: ["VRChat作品", "AI実験", "ゲーム録画", "お気に入り動画", "サイト更新記録"],
     resourceCategories: ["ソフトウェア", "設定ファイル", "素材パック", "資料", "プラグイン", "モデルリンク"],
     version: "バージョン",
@@ -177,17 +177,6 @@ const content = {
     },
     {
       category: 3,
-      tags: ["Store", "Ads"],
-      updated: "2026.06.07",
-      title: { zh: "应用商店广告收入探索", en: "App Store Ad Revenue Exploration", ja: "アプリストア広告収益の探索" },
-      desc: {
-        zh: "把广告、转化和资源投放的观察先记成轻量笔记。",
-        en: "Light notes on ads, conversion, and resource placement.",
-        ja: "広告、転換率、リソース配置についての軽い観察メモ。"
-      }
-    },
-    {
-      category: 4,
       tags: ["JP", "Phrase"],
       updated: "2026.06.06",
       title: { zh: "日语常用表达整理", en: "Common Japanese Expressions", ja: "日本語のよく使う表現整理" },
