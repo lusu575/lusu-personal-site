@@ -1313,6 +1313,64 @@ main {
   margin: 0 14px 14px;
 }
 
+.page-home {
+  background: url("../assets/images/xp-wallpaper-generated.png") center / cover no-repeat;
+}
+
+.sky-layer {
+  display: none;
+}
+
+.pixel-icon,
+.monitor-icon {
+  width: 82px;
+  height: 82px;
+  margin: 0;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background-color: transparent !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: contain !important;
+  image-rendering: auto;
+  filter: drop-shadow(4px 5px 0 rgba(0, 33, 110, 0.32));
+}
+
+.pixel-icon::before,
+.pixel-icon::after,
+.monitor-icon::before,
+.monitor-icon::after {
+  content: none !important;
+}
+
+.folder-icon {
+  background-image: url("../assets/images/icon-knowledge.png") !important;
+}
+
+.tv-icon {
+  background-image: url("../assets/images/icon-videos.png") !important;
+}
+
+.disk-icon {
+  background-image: url("../assets/images/icon-resources.png") !important;
+}
+
+.game-icon {
+  background-image: url("../assets/images/icon-games.png") !important;
+}
+
+.chat-icon {
+  background-image: url("../assets/images/icon-blog.png") !important;
+}
+
+.avatar-icon {
+  background-image: url("../assets/images/icon-about.png") !important;
+}
+
+.monitor-icon {
+  background-image: url("../assets/images/icon-monitor.png") !important;
+}
+
 @keyframes popIn {
   from {
     opacity: 0;
