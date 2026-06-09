@@ -329,18 +329,7 @@ const content = {
       desc: { zh: "保存常用参数和启动配置的示例文件。", en: "Sample file for common parameters and launch settings.", ja: "よく使うパラメータと起動設定のサンプル。" }
     }
   ],
-  games: [
-    {
-      status: "WIP",
-      title: { zh: "挂机小游戏入口", en: "Idle Game Portal", ja: "放置ゲーム入口" },
-      desc: { zh: "准备放一些轻量 H5 小游戏和摸鱼用的挂机玩法。", en: "A place for lightweight H5 games and idle experiments.", ja: "軽量H5ゲームと放置系の実験を置く予定。" }
-    },
-    {
-      status: "SOON",
-      title: { zh: "像素桌面小游戏", en: "Pixel Desktop Mini Game", ja: "ピクセルデスクトップミニゲーム" },
-      desc: { zh: "后续会把桌面主题做成可互动的小玩法。", en: "The desktop theme may become a small interactive game later.", ja: "デスクトップテーマを小さな遊びにする予定。" }
-    }
-  ],
+  games: [],
   blog: [
     {
       tags: ["网站", "日常", "记录"],
@@ -479,18 +468,47 @@ function renderResources() {
   `).join("");
 }
 
-function renderGames() {
+async function loadGameCatalog() {
+  const response = await fetch("games/catalog.json", { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+  return response.json();
+}
+
+async function renderGames() {
   const list = document.getElementById("game-list");
-  list.innerHTML = content.games.map((item) => `
-    <article class="game-card">
-      <div class="game-badge">${item.status}</div>
-      <div>
-        <h3>${localText(item.title)}</h3>
-        <p>${localText(item.desc)}</p>
-      </div>
-      <button class="card-action" disabled>${item.status}</button>
-    </article>
-  `).join("");
+  list.innerHTML = `<p class="loading-text">正在读取游戏配置...</p>`;
+  try {
+    const catalog = await loadGameCatalog();
+    list.innerHTML = `
+      <article class="game-card game-hall-card">
+        <div class="game-badge">HOME</div>
+        <div>
+          <h3>游戏馆首页</h3>
+          <p>游戏列表由配置文件自动读取，后续新增游戏无需修改核心代码。</p>
+        </div>
+        <a class="card-action" href="games/">进入游戏馆</a>
+      </article>
+      ${catalog.games.map((item) => `
+        <article class="game-card">
+          <img class="game-cover" src="${item.cover.replace("../", "")}" alt="${item.titleZh} 封面" loading="lazy">
+          <div>
+            <h3>${item.titleZh}</h3>
+            <p>${item.summary}</p>
+            <div class="meta-row">
+              <span class="tag">${item.title}</span>
+              <span class="tag">${item.license.name}</span>
+              <span>${item.language}</span>
+            </div>
+          </div>
+          <a class="card-action" href="games/${item.entry}">开始</a>
+        </article>
+      `).join("")}
+    `;
+  } catch (error) {
+    list.innerHTML = `<p class="loading-text">游戏配置读取失败：${error.message}</p>`;
+  }
 }
 
 function renderBlog() {
