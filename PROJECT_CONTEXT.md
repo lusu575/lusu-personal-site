@@ -98,6 +98,23 @@
         └── .gitkeep
 ```
 
+## 2026-06-09 游戏区改动注意事项
+
+今天对游戏区做了较大调整，后续维护时请特别注意以下几点：
+
+- 个人站内不再使用独立的“游戏馆首页”。`games/index.html` 和 `games/game-hall.js` 已删除。用户在个人站 `#games` 区域直接选择游戏，入口由 `js/main.js` 读取 `games/catalog.json` 自动生成。
+- `Trimps` 已按用户要求删除，包含 `games/trimps/` 源码目录和 `games/catalog.json` 中的配置项。当前只保留 `猫国建设者` 和 `小黑屋`。
+- 新增游戏时仍然不要改核心渲染逻辑。推荐做法是新增 `games/<game-id>/` 独立目录，并在 `games/catalog.json` 增加配置。主站游戏区会按配置自动显示。
+- 每个游戏页仍使用 `games/game-shell.js` 和 `games/game-shell.css` 作为外层壳，负责返回个人站游戏区、协议展示、存档导出和存档导入。
+- 猫国建设者卡在 4% 的关键原因是原项目的 `build.version.json` 被 `games/kittens-game/source/.gitignore` 忽略。该文件必须用 `git add -f games/kittens-game/source/build.version.json` 强制纳入版本控制，否则线上可能无法继续加载模块。
+- 猫国建设者默认语言依赖 `localStorage` 的 `com.nuclearunicorn.kittengame.language=zh`。这个默认值由 `games/catalog.json` 的 `storage.defaults` 设置，不要随意删除。
+- 小黑屋已把入口参数改为 `lang=zh_cn&ignorebrowser=true`，避免移动端/浏览器检测跳转导致无法进入游戏。
+- 小黑屋源码中的 jQuery 已改为本地 `lib/jquery.min.js`，不要恢复成 Google CDN。静态站点部署时外部 CDN 失败会让游戏看起来像“打不开”。
+- 游戏本身默认使用浏览器本地存储。外层 `games/game-shell.js` 增加了保存保险：在关闭页面、切出页面、下载存档前，会尝试调用游戏自己的保存函数，例如猫国的 `gamePage.save()` 或小黑屋的 `Engine.saveGame()`。
+- 当前导出/导入存档是 JSON 备份，按 `games/catalog.json` 中每个游戏的 `storage.keys` 收集 localStorage 键。新增游戏时必须补齐对应存档键，否则导出会显示找不到存档。
+- 本地验证游戏时不能只打开 `file://`。因为主站游戏列表依赖 `fetch("games/catalog.json")`，需要通过静态服务器访问，例如 `http://127.0.0.1:<port>/index.html#games`。
+- 今天验证过：猫国建设者可以进入简体中文界面；小黑屋可以进入简体中文界面；主站游戏区只显示两款游戏。提交为 `060fc23 Fix game launch and saves`，已推送到 GitHub `main`。
+
 ## 主要文件说明
 
 ### `index.html`
