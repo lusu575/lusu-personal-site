@@ -1,373 +1,250 @@
 # PROJECT_CONTEXT.md
 
-本文件用于帮助新的 AI / Codex 对话快速理解本项目。后续如果网站方向、内容、部署方式或注意事项变化，可以直接编辑这里。
+本文档用于帮助新的 AI / Codex 对话快速理解本项目。后续如果网站方向、功能、部署方式或注意事项变化，请同步更新这里。
 
 ## 项目基本信息
 
 - 项目名称：鲁肃的个人站
-- 英文名：LuSu's Personal Site
-- 日文名：魯粛の個人サイト
+- 英文名称：LuSu's Personal Site
 - GitHub 仓库：`lusu575/lusu-personal-site`
 - 本地目录：`F:\lusu575个人站`
-- 项目类型：静态 H5 网站原型
-- 当前版本目标：Windows XP + 卡通像素风个人主页
-- 当前实现方式：单页静态站，使用 HTML + CSS + JavaScript，无后端、无数据库
+- 当前主分支：`main`
+- 当前正式域名：`https://lusu575.com`
+- 当前备用 Pages 域名：`https://lusu-personal-site-9hd.pages.dev`
+- 当前技术栈：HTML + CSS + JavaScript + Cloudflare Pages Functions + Cloudflare D1
+- 当前风格目标：Windows XP + Pixel Art + Y2K + 可爱复古互联网桌面
 
-## 网站定位
+## 当前部署状态
 
-这是鲁肃的个人主页，同时作为知识库、视频展示、资源下载、杂谈博客和个人资料入口使用。
+当前正式部署链路是：
 
-核心风格关键词：
+```text
+GitHub main -> Cloudflare Pages Git 自动部署 -> lusu575.com
+```
 
-- Windows XP
-- Pixel Art
-- Y2K
-- Cartoon UI
-- MSN Messenger
-- QQ2005
-- 蓝天白云
-- XP 窗口
-- 像素图标
-- 复古按钮
-- 桌面文件夹
+Cloudflare Pages 项目状态：
 
-重要原则：不要把网站改成现代极简博客。这个项目的识别度来自 XP 桌面、可爱复古互联网、像素图标和老式窗口界面。
+- 项目名：`lusu-personal-site`
+- Git Provider：已连接 GitHub
+- 生产分支：`main`
+- 自定义域名：`lusu575.com`、`www.lusu575.com`
+- D1 数据库：`lusu_personal_site`
+- D1 绑定名：`DB`
+- D1 database_id：`55087326-4cf0-4002-8229-f202af774da4`
 
-## 当前页面结构
+重要说明：
 
-当前是一个单页应用式静态原型，`index.html` 中包含 6 个 section：
+- 网站代码仍以 GitHub `main` 为源头。
+- 修改 GitHub `main` 后，Cloudflare Pages 应自动同步并部署到 `lusu575.com`。
+- Vercel 不再是这个站点的正式部署入口。
+- Cloudflare Pages 连接 GitHub 后，不要在构建设置里填写 `npx wrangler deploy` 或 `npx wrangler pages deploy .` 作为部署命令。GitHub 自动部署应由 Cloudflare Pages 自己完成。
+- 如果 Cloudflare 后台要求构建设置，推荐保持静态站配置：框架预设 `None`，构建命令留空，构建输出目录 `/`，根目录 `/`。
+- `wrangler pages deploy .` 只用于本地手动应急部署，不是 GitHub 自动构建命令。
 
-1. 首页 Home
-2. 知识库 Knowledge Base
-3. 视频区 Videos
-4. 资源区 Resources
-5. 杂谈区 Blog / Talk
-6. 关于我 About
+## 当前已实现能力
 
-页面切换由 `js/main.js` 控制，不依赖路由框架。
-
-## 已实现功能
-
-- 首页 XP 桌面风格
-- XP 蓝色顶部栏
-- XP 任务栏
-- 五个桌面图标入口
-- 知识库 XP 文件夹窗口
-- 视频区卡片网格
-- 视频播放弹窗占位
-- 资源区下载中心卡片
-- 杂谈区 XP 记事本窗口
-- 关于我个人资料卡
+- 单页 XP 桌面风格个人站
+- 首页桌面图标入口
+- 顶部 XP 蓝色栏和底部任务栏
+- 知识库、视频区、资源区、游戏区、杂谈区、关于我
 - 中文 / English / 日本語 三语切换
-- 分类筛选
-- 手机端响应式布局
-- 云朵漂移、图标 hover、ONLINE 状态点闪烁等轻量动画
+- 游戏区接入两款开源 H5 游戏：
+  - `kittens-game`
+  - `a-dark-room`
+- 游戏页统一外壳：
+  - 返回个人站游戏区
+  - 协议与上游仓库展示
+  - 本地存档导出
+  - JSON 存档导入
+  - 登录后自动云端存档
+- 主站右上角账号入口：
+  - 注册
+  - 登录
+  - 退出
+  - 网站浏览不强制登录
+- Cloudflare Pages Functions 后端：
+  - `/api/health`
+  - `/api/auth/me`
+  - `/api/auth/register`
+  - `/api/auth/login`
+  - `/api/auth/logout`
+  - `/api/saves/:gameId`
+- Cloudflare D1 数据表：
+  - `users`
+  - `sessions`
+  - `game_saves`
 
-## 暂未实现
+## 账号与云存档设计
 
-- 后台管理
-- 登录
-- 评论
-- 数据库
-- 真实文章详情页
-- 真实资源上传
-- 真实视频 iframe 嵌入
-- 搜索功能
-- RSS
-- Markdown 内容系统
+账号系统只服务于游戏自动云存档，不影响普通网站浏览。
 
-后续可以逐步增强，但第一版应该继续保持静态、轻量、容易部署。
+前端入口：
 
-## 文件结构
+- 主站右上角 `#account-widget`
+- 登录 UI 由 `js/main.js` 渲染
+- 游戏页只显示云存档状态，不再作为主要登录入口
+
+后端位置：
+
+```text
+functions/api/[[route]].js
+```
+
+存档同步逻辑：
+
+- 游戏本体仍然使用浏览器 `localStorage`
+- `games/game-shell.js` 负责收集 `games/catalog.json` 里声明的 storage keys
+- 登录后进入游戏页，会读取云端存档
+- 如果云端存档比本地已知存档更新，会询问是否恢复云端
+- 本地有存档时会上传到 D1
+- 自动同步间隔：30 秒
+- 切出页面时会尝试 flush 游戏自己的保存函数并同步
+
+安全和限制：
+
+- 密码使用 PBKDF2-SHA256 哈希，边缘函数里使用较轻的迭代参数以避免 Cloudflare 免费环境 500。
+- 会话使用 HttpOnly cookie：`lusu_session`
+- 单个游戏存档最大约 1MB。
+- 如果后续要支持大量用户或更复杂账号能力，应迁移到更完整的 Auth 方案。
+
+## 游戏区维护注意点
+
+- 当前主站不再使用独立的游戏大厅页，游戏列表由 `js/main.js` 读取 `games/catalog.json` 生成。
+- 每个游戏保留独立目录：`games/<game-id>/`
+- 游戏页统一使用：
+  - `games/game-shell.js`
+  - `games/game-shell.css`
+- 新增游戏时必须在 `games/catalog.json` 补齐：
+  - `id`
+  - `entry`
+  - `sourceEntry`
+  - `license`
+  - `storage.keys`
+  - 必要时补 `storage.defaults`
+- 如果 `storage.keys` 不完整，导出和云存档会找不到对应游戏存档。
+- `kittens-game` 默认中文依赖：
+  - `com.nuclearunicorn.kittengame.language=zh`
+- `a-dark-room` 入口参数需要保留：
+  - `lang=zh_cn&ignorebrowser=true`
+- `a-dark-room` 的 jQuery 已改成本地 `lib/jquery.min.js`，不要恢复成外部 CDN。
+- 本地验证游戏区不要直接打开 `file://`，应通过静态服务器访问，因为主站会 `fetch("games/catalog.json")`。
+
+## 主要文件结构
 
 ```text
 /
 ├── index.html
 ├── PROJECT_CONTEXT.md
 ├── README.md
+├── package.json
+├── package-lock.json
+├── wrangler.jsonc
+├── .gitignore
+├── assets/
+├── cloudflare/
+│   ├── README.md
+│   └── schema.sql
 ├── css/
 │   └── style.css
-├── js/
-│   └── main.js
-└── assets/
-    ├── icons/
-    │   └── .gitkeep
-    ├── images/
-    │   └── .gitkeep
-    └── downloads/
-        └── .gitkeep
+├── functions/
+│   └── api/
+│       └── [[route]].js
+├── games/
+│   ├── catalog.json
+│   ├── game-shell.css
+│   ├── game-shell.js
+│   ├── kittens-game/
+│   └── a-dark-room/
+└── js/
+    └── main.js
 ```
 
-## 2026-06-09 游戏区改动注意事项
+## 本地开发与验证
 
-今天对游戏区做了较大调整，后续维护时请特别注意以下几点：
+安装依赖：
 
-- 个人站内不再使用独立的“游戏馆首页”。`games/index.html` 和 `games/game-hall.js` 已删除。用户在个人站 `#games` 区域直接选择游戏，入口由 `js/main.js` 读取 `games/catalog.json` 自动生成。
-- `Trimps` 已按用户要求删除，包含 `games/trimps/` 源码目录和 `games/catalog.json` 中的配置项。当前只保留 `猫国建设者` 和 `小黑屋`。
-- 新增游戏时仍然不要改核心渲染逻辑。推荐做法是新增 `games/<game-id>/` 独立目录，并在 `games/catalog.json` 增加配置。主站游戏区会按配置自动显示。
-- 每个游戏页仍使用 `games/game-shell.js` 和 `games/game-shell.css` 作为外层壳，负责返回个人站游戏区、协议展示、存档导出和存档导入。
-- 猫国建设者卡在 4% 的关键原因是原项目的 `build.version.json` 被 `games/kittens-game/source/.gitignore` 忽略。该文件必须用 `git add -f games/kittens-game/source/build.version.json` 强制纳入版本控制，否则线上可能无法继续加载模块。
-- 猫国建设者默认语言依赖 `localStorage` 的 `com.nuclearunicorn.kittengame.language=zh`。这个默认值由 `games/catalog.json` 的 `storage.defaults` 设置，不要随意删除。
-- 小黑屋已把入口参数改为 `lang=zh_cn&ignorebrowser=true`，避免移动端/浏览器检测跳转导致无法进入游戏。
-- 小黑屋源码中的 jQuery 已改为本地 `lib/jquery.min.js`，不要恢复成 Google CDN。静态站点部署时外部 CDN 失败会让游戏看起来像“打不开”。
-- 游戏本身默认使用浏览器本地存储。外层 `games/game-shell.js` 增加了保存保险：在关闭页面、切出页面、下载存档前，会尝试调用游戏自己的保存函数，例如猫国的 `gamePage.save()` 或小黑屋的 `Engine.saveGame()`。
-- 当前导出/导入存档是 JSON 备份，按 `games/catalog.json` 中每个游戏的 `storage.keys` 收集 localStorage 键。新增游戏时必须补齐对应存档键，否则导出会显示找不到存档。
-- 本地验证游戏时不能只打开 `file://`。因为主站游戏列表依赖 `fetch("games/catalog.json")`，需要通过静态服务器访问，例如 `http://127.0.0.1:<port>/index.html#games`。
-- 今天验证过：猫国建设者可以进入简体中文界面；小黑屋可以进入简体中文界面；主站游戏区只显示两款游戏。提交为 `060fc23 Fix game launch and saves`，已推送到 GitHub `main`。
-
-## 主要文件说明
-
-### `index.html`
-
-负责页面结构。当前所有页面都写在这一个文件中，通过 section 切换显示。
-
-不要轻易拆成多页面，除非用户明确要做正式站点结构或接入内容系统。
-
-### `css/style.css`
-
-负责全部视觉风格，包括：
-
-- XP 顶部栏
-- XP 窗口
-- 任务栏
-- 桌面背景
-- 草地
-- 云朵
-- 像素图标
-- 卡片
-- 弹窗
-- 手机端适配
-
-修改样式时要注意保持 XP / Y2K / 像素卡通风，不要改成普通 Tailwind 风或现代卡片博客。
-
-### `js/main.js`
-
-负责数据和交互，包括：
-
-- 三语字典
-- 示例文章数据
-- 示例视频数据
-- 示例资源数据
-- 杂谈数据
-- 页面切换
-- 语言切换
-- 分类筛选
-- 视频弹窗
-
-后续替换文章、视频、资源，优先修改 `content` 对象和 `translations` / `labels` 字典。
-
-## 内容替换指南
-
-### 替换知识库文章
-
-在 `js/main.js` 中修改：
-
-```js
-content.knowledge
+```powershell
+npm.cmd install
 ```
 
-每篇文章包含：
+本地初始化 D1：
 
-- `category`
-- `tags`
-- `updated`
-- `title.zh / title.en / title.ja`
-- `desc.zh / desc.en / desc.ja`
-
-### 替换视频
-
-在 `js/main.js` 中修改：
-
-```js
-content.videos
+```powershell
+npm.cmd run d1:migrate:local
 ```
 
-每个视频包含：
+本地启动 Cloudflare Pages：
 
-- `category`
-- `platform`
-- `color`
-- `url`
-- `title`
-- `desc`
-
-当前视频弹窗只是播放器占位。后续如果要嵌入 Bilibili / YouTube，需要增加 embed URL 字段和 iframe 渲染逻辑。
-
-### 替换资源
-
-在 `js/main.js` 中修改：
-
-```js
-content.resources
+```powershell
+npm.cmd run dev
 ```
 
-小文件可以放到：
+本地访问：
 
 ```text
-assets/downloads/
+http://127.0.0.1:8788/index.html
 ```
 
-大文件建议只放外部链接，例如：
+健康检查：
 
-- 网盘
-- Cloudflare R2
-- GitHub Release
-- B站评论区链接
-- 其他 CDN
+```text
+/api/health
+```
 
-### 替换图片和图标
+注意：
 
-当前第一版主要使用 CSS 绘制像素图标，没有依赖真实图片。
+- PowerShell 可能禁止 `npm.ps1` / `npx.ps1`，优先用 `npm.cmd`、`npx.cmd`。
+- 本机 Wrangler 登录临时配置目录可能是 `.wrangler-config/`，该目录已被 `.gitignore` 忽略，不得提交。
+- `.wrangler/`、`.wrangler-config/`、`node_modules/`、`.codex-remote-attachments/` 都是本地生成内容，不得提交。
 
-后续资源位置建议：
+## GitHub 与 Cloudflare 同步检查
 
-- 图标：`assets/icons/`
-- 背景图、头像、插图：`assets/images/`
-- 下载文件：`assets/downloads/`
+常用检查命令：
 
-## 多语言注意事项
+```powershell
+git status -sb
+git log --oneline --decorate -5
+$env:XDG_CONFIG_HOME='F:\lusu575个人站\.wrangler-config'; npx.cmd wrangler pages project list
+$env:XDG_CONFIG_HOME='F:\lusu575个人站\.wrangler-config'; npx.cmd wrangler pages deployment list --project-name lusu-personal-site
+```
 
-当前支持：
+期望状态：
 
-- `zh`：中文
-- `en`：English
-- `ja`：日本語
+- `git status -sb` 显示 `main...origin/main`，无未提交变更。
+- Cloudflare `lusu-personal-site` 显示 `Git Provider: Yes`。
+- Cloudflare 项目域名包含 `lusu575.com` 和 `www.lusu575.com`。
+- 最新 Cloudflare 部署来源应为 GitHub `main` 的最新提交。
 
-新增页面文案时，必须同步补齐三语字段，避免切换语言后出现中文残留或 undefined。
-
-每次新增功能、按钮、卡片、状态提示、导航文案或任何可见 UI 文案，都必须同时适配中文、英文和日文。不要只加中文文案，也不要让新文案绕过 `translations`、`labels` 或三语内容字段。
-
-涉及三语的主要位置：
-
-- `translations`
-- `labels`
-- `content.*.title`
-- `content.*.desc`
-
-## 视觉设计注意事项
+## 视觉设计原则
 
 必须保留：
 
-- Windows XP 窗口
+- Windows XP 桌面感
 - 蓝色标题栏
-- XP 任务栏
-- 桌面图标入口
-- 像素风图标
-- 卡通文件夹 / 软盘 / 电视 / 聊天气泡 / 头像
-- 老互联网按钮感
-- 状态栏
-- ONLINE 状态
-- 蓝天白云和草地
+- XP 风格按钮
+- 任务栏和状态栏
+- 像素图标
+- 蓝天白云、草地、老互联网氛围
+- 可爱、轻松、有一点 Y2K 的个人站气质
 
 避免：
 
-- 现代极简博客
-- 大面积纯白卡片
-- 过度扁平化
-- 复杂前端框架堆叠
-- 太商业化的 landing page
-- 与 XP 风格无关的大渐变光效
-- 让手机端变成难操作的小桌面
+- 现代极简博客风
+- 纯白卡片堆砌
+- 大面积商务 landing page
+- 过重的单色渐变背景
+- 让移动端横向溢出
 
-手机端要求：
+## 后续可扩展方向
 
-- 首页入口纵向排列
-- 保留 XP 风格边框和图标
-- 文字清晰
-- 不要互相遮挡
-- 不要横向溢出
+- 后台管理内容
+- 真正文章详情页
+- 资源上传与下载管理
+- 评论系统
+- 搜索功能
+- RSS
+- Markdown 内容系统
+- Cloudflare R2 文件存储
+- 更完善的账号资料页
 
-## 技术约束
-
-- 第一版保持静态网站
-- 不依赖后端
-- 不依赖数据库
-- 不依赖构建工具
-- 可以直接本地打开 `index.html`
-- 方便部署到 Vercel、Cloudflare Pages 或 GitHub Pages
-
-如果后续引入框架，需要先确认：
-
-- 是否真的需要 React / Vue / Astro / Next.js
-- 是否仍能保留 XP 桌面风格
-- 是否会影响“直接打开即可预览”的便利性
-
-## 部署建议
-
-当前项目可以直接部署为静态站。
-
-适合平台：
-
-- GitHub Pages
-- Cloudflare Pages
-- Vercel
-- Netlify
-
-如果使用 Cloudflare Pages / Vercel：
-
-- Build command 留空
-- Output directory 使用项目根目录
-
-## Git / GitHub 信息
-
-- 仓库名：`lusu-personal-site`
-- 远端地址：`https://github.com/lusu575/lusu-personal-site.git`
-- 当前主分支：`main`
-
-本地曾使用的 Git 程序路径：
-
-```text
-F:\AI\Apps\Hermes\Home\git\cmd\git.exe
-```
-
-当前工作区路径包含中文字符。如果工具遇到路径编码问题，应优先使用完整绝对路径和 `-LiteralPath`。
-
-## 已知环境注意事项
-
-- 系统 PATH 里可能没有 `git`，需要使用上面的 Git 完整路径。
-- 运行 Git 时可能遇到 `dubious ownership`，可临时使用：
-
-```powershell
-& 'F:\AI\Apps\Hermes\Home\git\cmd\git.exe' -c safe.directory='F:/lusu575个人站' status
-```
-
-- 推送 GitHub 可能需要用户完成 GitHub 登录授权。
-- 当前项目根目录可写，但 `.git` 操作有时需要提升权限。
-
-## 给后续 AI / Codex 的工作建议
-
-开始修改前请先阅读：
-
-1. `PROJECT_CONTEXT.md`
-2. `index.html`
-3. `css/style.css`
-4. `js/main.js`
-
-修改时请遵守：
-
-- 不要重构成复杂工程，除非用户明确要求。
-- 不要删除 XP / 像素 / 复古互联网风格。
-- 新增文案要补齐中文、英文、日文。
-- 每次新增功能、按钮或可见文案，都要同步适配 English 和 日本語。
-- 每次新增功能、页面、卡片、弹窗、导航或按钮，都要自动检查并适配手机端，不能只做桌面端。
-- 新增内容优先放进 `js/main.js` 的静态数据。
-- 新增图片、图标、下载资源时使用 `assets/` 下对应目录。
-- 修改后至少检查桌面端和手机端。
-- 若做 Git 操作，先确认当前状态，避免覆盖用户后续手动修改。
-
-## 后续可编辑备忘
-
-这里留给鲁肃后续自己补充：
-
-```text
-- 真实 B站主页：
-- 真实 YouTube 频道：
-- 头像图片路径：
-- 主要联系方式：
-- 常用资源下载地址：
-- Cloudflare Pages 项目名：
-- Vercel 项目名：
-- 自定义域名：
-- 以后想新增的页面：
-- 不希望 AI 改动的内容：
-```
+这些扩展都应优先保持现有 XP / Y2K / 像素桌面风格，不要把网站改成普通现代模板。
