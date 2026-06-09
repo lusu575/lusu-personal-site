@@ -1,16 +1,26 @@
-// 第一版使用静态示例数据，后续可以直接替换这里的标题、链接和简介。
+const siteUpdated = "2026.06.09";
+
 const translations = {
   zh: {
-    siteName: "鲁肃的个人站",
+    siteName: "鲁肃的个人站 · LuSu's Personal Site",
+    heroTitle: "鲁肃的个人站",
     homeLead: "欢迎来到我的小站，还在施工中，您可以四处浏览一下。",
     navKnowledge: "知识库",
     navVideos: "视频区",
     navResources: "资源区",
+    navGames: "游戏区",
     navBlog: "杂谈区",
     navAbout: "关于我",
+    capKnowledge: "笔记 · 教程 · 想法",
+    capVideos: "作品 · 翻译 · 收藏",
+    capResources: "软件 · 素材 · 工具",
+    capGames: "H5游戏 · 挂机游戏",
+    capBlog: "随想 · 日常 · 分享",
+    capAbout: "个人介绍 · 联系方式",
     knowledgeTitle: "知识库",
     videosTitle: "视频区",
     resourcesTitle: "资源区",
+    gamesTitle: "游戏区",
     blogTitle: "杂谈区",
     aboutTitle: "关于我",
     toolbarBack: "返回桌面",
@@ -23,7 +33,6 @@ const translations = {
     openOriginal: "打开原地址",
     videoPlaceholder: "这里预留 Bilibili / YouTube 嵌入播放器。",
     startButton: "开始 Start",
-    lastUpdated: "最后更新：2026.06.09",
     all: "全部",
     nicknameLabel: "昵称",
     nicknameValue: "鲁肃",
@@ -33,24 +42,42 @@ const translations = {
     contactValue: "暂留空",
     statusLabel: "网站状态",
     statusValue: "持续建设中",
-    aboutCopy: "你好，我是鲁肃。这里是我的个人站，用来记录 AI、游戏、VRChat、工具、资源和一些杂谈。"
+    aboutCopy: "你好，我是鲁肃。这里是我的个人站，用来记录 AI、游戏、工具、资源和一些杂谈。",
+    welcomeTitle: "欢迎来到我的空间",
+    welcomeHeading: "欢迎回来，朋友！",
+    welcomeCopy: "这里记录着我的学习、创作和生活点滴。希望你能在这里找到有用的内容和快乐！",
+    quickEntry: "快捷入口",
+    goKnowledge: "进入知识库",
+    goVideos: "看看视频",
+    goGames: "打开游戏区",
+    recentUpdates: "最近更新",
+    moreUpdates: "查看更多更新"
   },
   en: {
     siteName: "LuSu's Personal Site",
-    homeLead: "Welcome to my XP pixel desktop. Pick a folder and have a look around.",
-    navKnowledge: "Knowledge Base",
+    heroTitle: "LuSu's Personal Site",
+    homeLead: "Welcome to my little site. It is still under construction, but feel free to look around.",
+    navKnowledge: "Knowledge",
     navVideos: "Videos",
     navResources: "Resources",
-    navBlog: "Blog / Talk",
-    navAbout: "About Me",
-    knowledgeTitle: "Knowledge Base",
+    navGames: "Games",
+    navBlog: "Talk",
+    navAbout: "About",
+    capKnowledge: "Notes · Tutorials · Ideas",
+    capVideos: "Works · Translation · Saves",
+    capResources: "Software · Assets · Tools",
+    capGames: "H5 · Idle games",
+    capBlog: "Thoughts · Daily · Sharing",
+    capAbout: "Profile · Contact",
+    knowledgeTitle: "Knowledge",
     videosTitle: "Videos",
     resourcesTitle: "Resources",
-    blogTitle: "Blog / Talk",
-    aboutTitle: "About Me",
+    gamesTitle: "Games",
+    blogTitle: "Talk",
+    aboutTitle: "About",
     toolbarBack: "Back to Desktop",
     toolbarRefresh: "Refresh",
-    knowledgePath: "My Computer / LuSu / Knowledge Base",
+    knowledgePath: "My Computer / LuSu / Knowledge",
     readButton: "Read",
     playButton: "Play",
     downloadButton: "Download",
@@ -58,7 +85,6 @@ const translations = {
     openOriginal: "Open Original",
     videoPlaceholder: "Bilibili / YouTube embed player is reserved here.",
     startButton: "Start",
-    lastUpdated: "Last updated: 2026.06.09",
     all: "All",
     nicknameLabel: "Nickname",
     nicknameValue: "LuSu",
@@ -68,24 +94,42 @@ const translations = {
     contactValue: "Blank for now",
     statusLabel: "Site Status",
     statusValue: "Under construction",
-    aboutCopy: "Hi, I'm LuSu. This is my personal site for AI notes, games, VRChat projects, tools, resources and random thoughts."
+    aboutCopy: "Hi, I'm LuSu. This is my personal site for AI notes, games, tools, resources and random thoughts.",
+    welcomeTitle: "Welcome to my space",
+    welcomeHeading: "Welcome back, friend!",
+    welcomeCopy: "This space records my learning, creations, and everyday notes. I hope you find useful things and some joy here.",
+    quickEntry: "Quick Entry",
+    goKnowledge: "Open Knowledge",
+    goVideos: "Watch Videos",
+    goGames: "Open Games",
+    recentUpdates: "Recent Updates",
+    moreUpdates: "More updates"
   },
   ja: {
     siteName: "魯粛の個人サイト",
-    homeLead: "XP風ピクセルデスクトップへようこそ。フォルダーを開いて見てください。",
-    navKnowledge: "知識ベース",
-    navVideos: "動画エリア",
+    heroTitle: "魯粛の個人サイト",
+    homeLead: "私の小さなサイトへようこそ。まだ工事中ですが、自由に見て回ってください。",
+    navKnowledge: "知識庫",
+    navVideos: "動画",
     navResources: "リソース",
+    navGames: "ゲーム",
     navBlog: "雑談",
     navAbout: "プロフィール",
-    knowledgeTitle: "知識ベース",
-    videosTitle: "動画エリア",
+    capKnowledge: "メモ · チュートリアル · 考え",
+    capVideos: "作品 · 翻訳 · 保存",
+    capResources: "ソフト · 素材 · ツール",
+    capGames: "H5 · 放置ゲーム",
+    capBlog: "思いつき · 日常 · 共有",
+    capAbout: "紹介 · 連絡先",
+    knowledgeTitle: "知識庫",
+    videosTitle: "動画",
     resourcesTitle: "リソース",
+    gamesTitle: "ゲーム",
     blogTitle: "雑談",
     aboutTitle: "プロフィール",
     toolbarBack: "デスクトップへ戻る",
     toolbarRefresh: "更新",
-    knowledgePath: "マイコンピュータ / 魯粛 / 知識ベース",
+    knowledgePath: "マイコンピュータ / 魯粛 / 知識庫",
     readButton: "読む",
     playButton: "再生",
     downloadButton: "ダウンロード",
@@ -93,7 +137,6 @@ const translations = {
     openOriginal: "元のページを開く",
     videoPlaceholder: "Bilibili / YouTube の埋め込みプレイヤー用スペースです。",
     startButton: "スタート",
-    lastUpdated: "最終更新：2026.06.09",
     all: "すべて",
     nicknameLabel: "ニックネーム",
     nicknameValue: "魯粛",
@@ -103,7 +146,16 @@ const translations = {
     contactValue: "未設定",
     statusLabel: "サイト状態",
     statusValue: "建設中",
-    aboutCopy: "こんにちは、魯粛です。ここはAI、ゲーム、VRChat、ツール、リソース、雑談を記録する個人サイトです。"
+    aboutCopy: "こんにちは、魯粛です。ここはAI、ゲーム、ツール、リソース、雑談を記録する個人サイトです。",
+    welcomeTitle: "私のスペースへようこそ",
+    welcomeHeading: "おかえり、友だち！",
+    welcomeCopy: "ここには学び、創作、日常のメモを記録しています。役に立つ内容と楽しいものが見つかりますように。",
+    quickEntry: "クイック入口",
+    goKnowledge: "知識庫へ",
+    goVideos: "動画を見る",
+    goGames: "ゲームへ",
+    recentUpdates: "最近の更新",
+    moreUpdates: "もっと見る"
   }
 };
 
@@ -141,6 +193,26 @@ const labels = {
 };
 
 const content = {
+  updates: [
+    {
+      icon: "⭐",
+      date: "2026.06.09",
+      title: { zh: "网站新版桌面上线啦！", en: "New desktop design is live!", ja: "新しいデスクトップ版を公開！" },
+      desc: { zh: "XP 像素风重新设计", en: "XP pixel style redesign", ja: "XPピクセル風に再設計" }
+    },
+    {
+      icon: "📁",
+      date: "2026.06.08",
+      title: { zh: "游戏区准备加入", en: "Games area is being prepared", ja: "ゲームエリア準備中" },
+      desc: { zh: "H5 小游戏与挂机游戏", en: "H5 and idle games", ja: "H5と放置ゲーム" }
+    },
+    {
+      icon: "😵",
+      date: "2026.06.07",
+      title: { zh: "资源区建设中，持续更新...", en: "Resources are still being built...", ja: "リソースを制作中..." },
+      desc: { zh: "软件、素材和工具整理", en: "Software, assets and tools", ja: "ソフト、素材、ツール整理" }
+    }
+  ],
   knowledge: [
     {
       category: 0,
@@ -253,6 +325,18 @@ const content = {
       desc: { zh: "保存常用参数和启动配置的示例文件。", en: "Sample file for common parameters and launch settings.", ja: "よく使うパラメータと起動設定のサンプル。" }
     }
   ],
+  games: [
+    {
+      status: "WIP",
+      title: { zh: "挂机小游戏入口", en: "Idle Game Portal", ja: "放置ゲーム入口" },
+      desc: { zh: "准备放一些轻量 H5 小游戏和摸鱼用的挂机玩法。", en: "A place for lightweight H5 games and idle experiments.", ja: "軽量H5ゲームと放置系の実験を置く予定。" }
+    },
+    {
+      status: "SOON",
+      title: { zh: "像素桌面小游戏", en: "Pixel Desktop Mini Game", ja: "ピクセルデスクトップミニゲーム" },
+      desc: { zh: "后续会把桌面主题做成可互动的小玩法。", en: "The desktop theme may become a small interactive game later.", ja: "デスクトップテーマを小さな遊びにする予定。" }
+    }
+  ],
   blog: [
     {
       tags: ["网站", "日常", "记录"],
@@ -282,7 +366,7 @@ const activeFilters = {
   resources: "all"
 };
 
-const pageIds = ["home", "knowledge", "videos", "resources", "blog", "about"];
+const pageIds = ["home", "knowledge", "videos", "resources", "games", "blog", "about"];
 
 function t(key) {
   return translations[currentLang][key] || translations.zh[key] || key;
@@ -299,7 +383,7 @@ function localText(value) {
 function setLanguage(lang) {
   currentLang = lang;
   document.documentElement.lang = lang === "zh" ? "zh-CN" : lang;
-  document.title = t("siteName");
+  document.title = t("heroTitle");
 
   document.querySelectorAll("[data-i18n]").forEach((node) => {
     node.textContent = t(node.dataset.i18n);
@@ -309,7 +393,6 @@ function setLanguage(lang) {
     button.classList.toggle("active", button.dataset.lang === lang);
   });
 
-  document.getElementById("tray-lang").textContent = lang === "zh" ? "中文" : lang === "en" ? "EN" : "日本語";
   renderAll();
 }
 
@@ -322,13 +405,12 @@ function navigate(route) {
     button.classList.toggle("active", button.dataset.route === nextRoute);
   });
   window.location.hash = nextRoute === "home" ? "" : nextRoute;
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  window.scrollTo({ top: 0, behavior: "auto" });
 }
 
 function renderCategoryButtons(targetId, type, categories) {
   const target = document.getElementById(targetId);
-  const allLabel = t("all");
-  const buttons = [allLabel, ...categories].map((name, index) => {
+  const buttons = [t("all"), ...categories].map((name, index) => {
     const value = index === 0 ? "all" : String(index - 1);
     return `<button class="${activeFilters[type] === value ? "active " : ""}${type === "knowledge" ? "category-button" : ""}" data-filter-type="${type}" data-filter="${value}">${name}</button>`;
   });
@@ -358,7 +440,7 @@ function renderVideos() {
   const list = document.getElementById("video-list");
   const items = content.videos.filter((item) => activeFilters.videos === "all" || String(item.category) === activeFilters.videos);
 
-  list.innerHTML = items.map((item, index) => `
+  list.innerHTML = items.map((item) => `
     <article class="video-card">
       <div class="video-thumb" style="--thumb-bg: ${item.color}"></div>
       <div class="video-body">
@@ -393,6 +475,20 @@ function renderResources() {
   `).join("");
 }
 
+function renderGames() {
+  const list = document.getElementById("game-list");
+  list.innerHTML = content.games.map((item) => `
+    <article class="game-card">
+      <div class="game-badge">${item.status}</div>
+      <div>
+        <h3>${localText(item.title)}</h3>
+        <p>${localText(item.desc)}</p>
+      </div>
+      <button class="card-action" disabled>${item.status}</button>
+    </article>
+  `).join("");
+}
+
 function renderBlog() {
   const list = document.getElementById("blog-list");
   list.innerHTML = content.blog.map((item) => `
@@ -408,11 +504,27 @@ function renderBlog() {
   `).join("");
 }
 
+function renderUpdates() {
+  const list = document.getElementById("recent-updates");
+  list.innerHTML = content.updates.map((item) => `
+    <li>
+      <span class="update-icon">${item.icon}</span>
+      <span>
+        <strong>${localText(item.title)}</strong>
+        <small>${localText(item.desc)}<br>${item.date}</small>
+      </span>
+    </li>
+  `).join("");
+}
+
 function renderAll() {
+  document.getElementById("top-updated").textContent = siteUpdated;
   renderKnowledge();
   renderVideos();
   renderResources();
+  renderGames();
   renderBlog();
+  renderUpdates();
 }
 
 function openVideo(index) {
@@ -427,10 +539,45 @@ function closeVideo() {
   document.getElementById("video-modal").hidden = true;
 }
 
+function closeWelcome() {
+  document.getElementById("welcome-modal").hidden = true;
+}
+
+function localDateKey(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function maybeShowWelcome() {
+  const today = localDateKey(new Date());
+  const key = `lusu-welcome-seen-${today}`;
+  if (localStorage.getItem(key) === "1") {
+    return;
+  }
+  document.getElementById("welcome-modal").hidden = false;
+  localStorage.setItem(key, "1");
+}
+
+function updateClock() {
+  const formatter = new Intl.DateTimeFormat(undefined, {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false
+  });
+  document.getElementById("local-time").textContent = formatter.format(new Date()).replace(/\//g, ".");
+}
+
 document.addEventListener("click", (event) => {
   const routeButton = event.target.closest("[data-route]");
   if (routeButton) {
     navigate(routeButton.dataset.route);
+    closeWelcome();
     return;
   }
 
@@ -456,11 +603,16 @@ document.addEventListener("click", (event) => {
   if (event.target.closest("[data-close-modal]")) {
     closeVideo();
   }
+
+  if (event.target.closest("[data-close-welcome]")) {
+    closeWelcome();
+  }
 });
 
 window.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
     closeVideo();
+    closeWelcome();
   }
 });
 
@@ -469,4 +621,7 @@ window.addEventListener("hashchange", () => {
 });
 
 setLanguage("zh");
+updateClock();
+setInterval(updateClock, 1000);
 navigate(window.location.hash.replace("#", "") || "home");
+window.addEventListener("load", maybeShowWelcome);
