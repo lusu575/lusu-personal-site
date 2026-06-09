@@ -132,6 +132,96 @@ button:disabled {
   min-width: max-content;
 }
 
+.account-widget {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 34px;
+}
+
+.account-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 88px;
+  height: 34px;
+  padding: 0 10px;
+  border: 2px solid #0c45a8;
+  border-radius: 6px;
+  color: #082f78;
+  background: linear-gradient(180deg, #ffffff 0%, #dceeff 42%, #76b7ff 100%);
+  box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 rgba(0, 45, 120, 0.24), 1px 1px 0 rgba(0, 0, 0, 0.18);
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.account-button.signed-in {
+  min-width: 132px;
+  max-width: 220px;
+}
+
+.account-button span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 60;
+  width: min(320px, calc(100vw - 24px));
+  padding: 10px;
+  border: 3px solid var(--xp-border);
+  border-radius: 8px;
+  color: var(--xp-text);
+  background: #f7fbff;
+  box-shadow: var(--shadow-hard);
+}
+
+.account-popover[hidden] {
+  display: none;
+}
+
+.account-form,
+.account-signed-in {
+  display: grid;
+  gap: 8px;
+}
+
+.account-form strong,
+.account-signed-in strong {
+  color: var(--xp-blue-dark);
+  font-size: 14px;
+}
+
+.account-form input {
+  width: 100%;
+  min-height: 32px;
+  padding: 6px 8px;
+  border: 2px inset #d2e2ff;
+  border-radius: 4px;
+  color: var(--xp-text);
+  background: #fff;
+  caret-color: auto;
+}
+
+.account-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.account-note {
+  margin: 0;
+  color: var(--xp-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
 .language-switcher {
   gap: 8px;
 }
@@ -1477,6 +1567,22 @@ main {
     gap: 8px;
     width: 100%;
     min-width: 0;
+  }
+
+  .account-widget {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .account-button,
+  .account-button.signed-in {
+    width: min(280px, 100%);
+    max-width: 100%;
+  }
+
+  .account-popover {
+    right: 50%;
+    transform: translateX(50%);
   }
 
   .language-switcher {

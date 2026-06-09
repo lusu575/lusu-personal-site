@@ -358,6 +358,7 @@ const activeFilters = {
   videos: "all",
   resources: "all"
 };
+let authUser = null;
 
 const pageIds = ["home", "knowledge", "videos", "resources", "games", "blog", "about"];
 
@@ -588,7 +589,150 @@ function updateClock() {
   document.getElementById("local-time").textContent = formatter.format(new Date()).replace(/\//g, ".");
 }
 
+async function accountApi(path, options = {}) {
+  const response = await fetch(path, {
+    credentials: "include",
+    headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+    ...options
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(payload.error || `HTTP ${response.status}`);
+  }
+  return payload;
+}
+
+function renderAccountWidget(message = "") {
+  const widget = document.getElementById("account-widget");
+  if (!widget) {
+    return;
+  }
+
+  if (authUser) {
+    widget.innerHTML = `
+      <button class="account-button signed-in" type="button" data-account-toggle>
+        <span>账号：${escapeHtml(authUser.email)}</span>
+      </button>
+      <div class="account-popover" id="account-popover" hidden>
+        <div class="account-signed-in">
+          <strong>云存档账号</strong>
+          <p class="account-note">${escapeHtml(authUser.email)}</p>
+          <p class="account-note">网站可以正常浏览；进入游戏后会自动同步云端存档。</p>
+          ${message ? `<p class="account-note">${escapeHtml(message)}</p>` : ""}
+          <div class="account-actions">
+            <button class="account-button" type="button" data-account-logout>退出账号</button>
+          </div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  widget.innerHTML = `
+    <button class="account-button" type="button" data-account-toggle>
+      <span>登录</span>
+    </button>
+    <div class="account-popover" id="account-popover" hidden>
+      <form class="account-form" id="account-form">
+        <strong>云存档账号</strong>
+        <input name="email" type="email" autocomplete="email" placeholder="邮箱" required>
+        <input name="password" type="password" autocomplete="current-password" placeholder="密码至少 8 位" required>
+        <div class="account-actions">
+          <button class="account-button" type="submit" data-mode="login">登录</button>
+          <button class="account-button" type="submit" data-mode="register">注册</button>
+        </div>
+        <p class="account-note">${message ? escapeHtml(message) : "登录只用于游戏自动云存档，网站浏览不受影响。"}</p>
+      </form>
+    </div>
+  `;
+
+  document.getElementById("account-form")?.addEventListener("submit", submitAccountForm);
+}
+
+async function initAccountWidget() {
+  renderAccountWidget();
+  try {
+    const payload = await accountApi("/api/auth/me");
+    authUser = payload.user || null;
+    renderAccountWidget();
+  } catch {
+    renderAccountWidget("云存档接口暂时不可用。");
+  }
+}
+
+async function submitAccountForm(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const mode = event.submitter?.dataset.mode || "login";
+  try {
+    const payload = await accountApi(`/api/auth/${mode}`, {
+      method: "POST",
+      body: JSON.stringify({
+        email: form.email.value.trim(),
+        password: form.password.value
+      })
+    });
+    authUser = payload.user;
+    renderAccountWidget("已登录。");
+    openAccountPopover();
+  } catch (error) {
+    renderAccountWidget(error.message);
+    openAccountPopover();
+  }
+}
+
+async function logoutAccount() {
+  try {
+    await accountApi("/api/auth/logout", { method: "POST", body: "{}" });
+  } catch {
+    // Keep the UI responsive even if the network is gone.
+  }
+  authUser = null;
+  renderAccountWidget("已退出账号。");
+  openAccountPopover();
+}
+
+function openAccountPopover() {
+  const popover = document.getElementById("account-popover");
+  if (popover) {
+    popover.hidden = false;
+  }
+}
+
+function closeAccountPopover() {
+  const popover = document.getElementById("account-popover");
+  if (popover) {
+    popover.hidden = true;
+  }
+}
+
+function toggleAccountPopover() {
+  const popover = document.getElementById("account-popover");
+  if (popover) {
+    popover.hidden = !popover.hidden;
+  }
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 document.addEventListener("click", (event) => {
+  if (event.target.closest("[data-account-toggle]")) {
+    toggleAccountPopover();
+    return;
+  }
+
+  if (event.target.closest("[data-account-logout]")) {
+    logoutAccount();
+    return;
+  }
+
   const routeButton = event.target.closest("[data-route]");
   if (routeButton) {
     navigate(routeButton.dataset.route);
@@ -622,12 +766,17 @@ document.addEventListener("click", (event) => {
   if (event.target.closest("[data-close-welcome]")) {
     closeWelcome();
   }
+
+  if (!event.target.closest("#account-widget")) {
+    closeAccountPopover();
+  }
 });
 
 window.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
     closeVideo();
     closeWelcome();
+    closeAccountPopover();
   }
 });
 
@@ -639,6 +788,7 @@ const requestedLang = pageParams.get("lang");
 const initialLang = ["zh", "en", "ja"].includes(requestedLang) ? requestedLang : "zh";
 
 setLanguage(initialLang);
+initAccountWidget();
 updateClock();
 setInterval(updateClock, 1000);
 navigate(window.location.hash.replace("#", "") || "home");

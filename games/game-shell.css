@@ -113,7 +113,7 @@ input {
 
 .game-tools {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 360px) auto;
   gap: 12px;
   align-items: center;
   padding: 10px;
@@ -138,6 +138,63 @@ input {
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 8px;
+}
+
+.tool-button.subtle {
+  color: #31507f;
+  background: linear-gradient(180deg, #ffffff 0%, #eef5ff 48%, #c8dcf6 100%);
+}
+
+.cloud-panel {
+  min-width: 0;
+}
+
+.cloud-login,
+.cloud-account {
+  display: grid;
+  gap: 7px;
+  padding: 8px;
+  border: 2px solid #9bbcff;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #ffffff, #eaf3ff);
+  box-shadow: inset 1px 1px 0 #fff;
+}
+
+.cloud-login strong,
+.cloud-account strong {
+  color: var(--blue-dark);
+  font-size: 13px;
+}
+
+.cloud-login input {
+  width: 100%;
+  min-height: 30px;
+  padding: 5px 7px;
+  border: 2px inset #d2e2ff;
+  border-radius: 4px;
+  color: var(--text);
+  background: #fff;
+}
+
+.cloud-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.cloud-actions .tool-button {
+  min-height: 30px;
+  padding: 5px 9px;
+  font-size: 12px;
+}
+
+.cloud-login p,
+.cloud-account p,
+.cloud-account span {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
 }
 
 .file-button input {

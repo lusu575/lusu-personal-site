@@ -6,6 +6,13 @@
   const license = document.getElementById("game-license");
   const status = document.getElementById("game-status");
   const importInput = document.getElementById("save-import");
+  const cloudPanel = document.getElementById("cloud-panel");
+  const cloudMetaPrefix = "lusu.cloudSave.";
+
+  let authUser = null;
+  let currentGame = null;
+  let syncTimer = null;
+  let syncInFlight = false;
 
   function setStatus(text) {
     status.textContent = text;
@@ -51,19 +58,200 @@
     });
   }
 
+  function getConfiguredKeys(game) {
+    return game.storage?.keys || [];
+  }
+
   function getStorageKeys(game) {
-    const configured = game.storage?.keys || [];
-    return configured.filter((key) => localStorage.getItem(key) !== null);
+    return getConfiguredKeys(game).filter((key) => localStorage.getItem(key) !== null);
+  }
+
+  function collectSaveData(game) {
+    flushGameSave();
+    const data = {};
+    getStorageKeys(game).forEach((key) => {
+      data[key] = localStorage.getItem(key);
+    });
+    return data;
+  }
+
+  function hasLocalSave(game) {
+    return getStorageKeys(game).length > 0;
+  }
+
+  function applySaveData(game, data) {
+    if (!data || typeof data !== "object") {
+      return;
+    }
+    Object.entries(data).forEach(([key, value]) => {
+      if (getConfiguredKeys(game).includes(key) && typeof value === "string") {
+        localStorage.setItem(key, value);
+      }
+    });
+  }
+
+  function getCloudMetaKey(game) {
+    return `${cloudMetaPrefix}${game.id}.updatedAt`;
+  }
+
+  function getKnownCloudTime(game) {
+    return Date.parse(localStorage.getItem(getCloudMetaKey(game)) || "") || 0;
+  }
+
+  function rememberCloudTime(game, updatedAt) {
+    if (updatedAt) {
+      localStorage.setItem(getCloudMetaKey(game), updatedAt);
+    }
+  }
+
+  async function apiFetch(path, options = {}) {
+    const response = await fetch(path, {
+      credentials: "include",
+      headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+      ...options
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(payload.error || `HTTP ${response.status}`);
+    }
+    return payload;
+  }
+
+  async function loadAuthSession() {
+    try {
+      const payload = await apiFetch("/api/auth/me");
+      authUser = payload.user || null;
+    } catch {
+      authUser = null;
+    }
+    renderCloudPanel();
+  }
+
+  function renderCloudPanel(message = "") {
+    if (!cloudPanel) {
+      return;
+    }
+
+    if (authUser) {
+      cloudPanel.innerHTML = `
+        <div class="cloud-account">
+          <strong>云端存档</strong>
+          <span>${escapeHtml(authUser.email)}</span>
+          <div class="cloud-actions">
+            <button class="tool-button" id="sync-cloud-save" type="button">立即同步</button>
+            <button class="tool-button subtle" id="logout-account" type="button">退出</button>
+          </div>
+          ${message ? `<p>${escapeHtml(message)}</p>` : ""}
+        </div>
+      `;
+      document.getElementById("sync-cloud-save").addEventListener("click", () => syncToCloud(currentGame, true));
+      document.getElementById("logout-account").addEventListener("click", logout);
+      return;
+    }
+
+    cloudPanel.innerHTML = `
+      <div class="cloud-account">
+        <strong>云端存档</strong>
+        <span>未登录，当前使用本地存档。</span>
+        <p>${message ? escapeHtml(message) : "如需自动云存档，请回主界面右上角登录账号。"}</p>
+        <div class="cloud-actions">
+          <a class="tool-button" href="../../index.html#games">回主界面登录</a>
+        </div>
+      </div>
+    `;
+  }
+
+  async function logout() {
+    try {
+      await syncToCloud(currentGame, false);
+      await apiFetch("/api/auth/logout", { method: "POST", body: "{}" });
+    } catch (error) {
+      console.warn("Logout failed", error);
+    }
+    authUser = null;
+    stopAutoSync();
+    renderCloudPanel("已退出，当前仍会保留本地存档。");
+    setStatus("已退出账号，本地存档仍在当前浏览器。");
+  }
+
+  async function restoreOrUpload(game) {
+    if (!authUser || !game) {
+      return;
+    }
+
+    try {
+      const payload = await apiFetch(`/api/saves/${game.id}`);
+      const cloudSave = payload.save;
+      const cloudTime = Date.parse(payload.updatedAt || "") || 0;
+      const knownCloudTime = getKnownCloudTime(game);
+      const localExists = hasLocalSave(game);
+
+      if (cloudSave && (!localExists || cloudTime > knownCloudTime)) {
+        const shouldRestore = !localExists || window.confirm("检测到云端存档较新，要恢复云端存档吗？");
+        if (shouldRestore) {
+          applySaveData(game, cloudSave);
+          rememberCloudTime(game, payload.updatedAt);
+          setStatus("已恢复云端存档，正在加载游戏。");
+          return;
+        }
+      }
+
+      if (localExists) {
+        await syncToCloud(game, false);
+      } else {
+        setStatus("已登录云端存档，暂时没有可恢复的云端数据。");
+      }
+    } catch (error) {
+      setStatus(`云端存档暂不可用：${error.message}`);
+    }
+  }
+
+  async function syncToCloud(game, visible) {
+    if (!authUser || !game || syncInFlight) {
+      return;
+    }
+    const saveData = collectSaveData(game);
+    if (!Object.keys(saveData).length) {
+      if (visible) {
+        setStatus("还没有找到本地存档，先玩一会儿再同步。");
+      }
+      return;
+    }
+
+    syncInFlight = true;
+    try {
+      const payload = await apiFetch(`/api/saves/${game.id}`, {
+        method: "PUT",
+        body: JSON.stringify({ saveData })
+      });
+      rememberCloudTime(game, payload.updatedAt);
+      setStatus(`云端存档已同步：${new Date(payload.updatedAt).toLocaleTimeString()}`);
+      renderCloudPanel("云端同步正常。");
+    } catch (error) {
+      if (visible) {
+        setStatus(`云端同步失败：${error.message}`);
+        renderCloudPanel(error.message);
+      }
+    } finally {
+      syncInFlight = false;
+    }
+  }
+
+  function startAutoSync(game) {
+    stopAutoSync();
+    syncTimer = window.setInterval(() => syncToCloud(game, false), 30000);
+  }
+
+  function stopAutoSync() {
+    if (syncTimer) {
+      window.clearInterval(syncTimer);
+      syncTimer = null;
+    }
   }
 
   function exportSave(game) {
-    flushGameSave();
-    const keys = getStorageKeys(game);
-    const data = {};
-    keys.forEach((key) => {
-      data[key] = localStorage.getItem(key);
-    });
-
+    const data = collectSaveData(game);
+    const keys = Object.keys(data);
     const payload = {
       type: "lusu-game-save",
       version: 1,
@@ -89,13 +277,21 @@
     if (payload.type !== "lusu-game-save" || payload.gameId !== game.id || !payload.storage) {
       throw new Error("存档文件与当前游戏不匹配。");
     }
-    Object.entries(payload.storage).forEach(([key, value]) => {
-      if ((game.storage?.keys || []).includes(key)) {
-        localStorage.setItem(key, value);
-      }
-    });
+    applySaveData(game, payload.storage);
     setStatus("存档已导入，正在刷新游戏。");
+    if (authUser) {
+      await syncToCloud(game, false);
+    }
     frame.contentWindow.location.reload();
+  }
+
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
   }
 
   try {
@@ -104,6 +300,7 @@
     if (!game) {
       throw new Error(`unknown game: ${slug}`);
     }
+    currentGame = game;
 
     document.title = `${game.titleZh} · 鲁肃的个人站`;
     title.textContent = game.titleZh;
@@ -113,15 +310,23 @@
       <a href="${game.license.file}" target="_blank" rel="noreferrer">查看协议文件</a>
       <a href="${game.repo}" target="_blank" rel="noreferrer">上游仓库</a>
     `;
+
     applyStorageDefaults(game);
+    await loadAuthSession();
+    await restoreOrUpload(game);
+    if (authUser) {
+      startAutoSync(game);
+    }
+
     frame.src = buildEntry(game);
     frame.addEventListener("load", () => {
-      setStatus("游戏已加载，本地存档会保存在当前浏览器。");
+      setStatus(authUser ? "游戏已加载，云端存档会自动同步。" : "游戏已加载，本地存档会保存在当前浏览器。");
     });
     window.addEventListener("beforeunload", flushGameSave);
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "hidden") {
         flushGameSave();
+        syncToCloud(game, false);
       }
     });
 

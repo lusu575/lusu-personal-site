@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "dev": "wrangler pages dev . --d1 DB=lusu_personal_site",
+    "d1:create": "wrangler d1 create lusu_personal_site",
+    "d1:migrate:local": "wrangler d1 execute lusu_personal_site --local --file=cloudflare/schema.sql",
+    "d1:migrate:remote": "wrangler d1 execute lusu_personal_site --remote --file=cloudflare/schema.sql",
+    "deploy": "wrangler pages deploy ."
+  },
+  "devDependencies": {
+    "wrangler": "latest"
+  }
+}
