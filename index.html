@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="鲁肃的个人站，一个 Windows XP 卡通像素风个人主页原型。">
+  <title>鲁肃的个人站</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="site-shell">
+    <header class="xp-topbar">
+      <button class="brand-button" data-route="home" aria-label="返回首页">
+        <span class="brand-orb">LS</span>
+        <span data-i18n="siteName">鲁肃的个人站</span>
+      </button>
+      <nav class="language-switcher" aria-label="Language switcher">
+        <button class="lang-button active" data-lang="zh">中文</button>
+        <button class="lang-button" data-lang="en">EN</button>
+        <button class="lang-button" data-lang="ja">日本語</button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="page page-home active" id="home" aria-labelledby="home-title">
+        <div class="sky-layer">
+          <span class="cloud cloud-a"></span>
+          <span class="cloud cloud-b"></span>
+          <span class="cloud cloud-c"></span>
+        </div>
+        <div class="desktop-intro">
+          <h1 id="home-title" data-i18n="siteName">鲁肃的个人站</h1>
+          <p data-i18n="homeLead">欢迎来到我的 XP 像素桌面，随便点开一个文件夹看看吧。</p>
+        </div>
+        <div class="desktop-icons" aria-label="Main sections">
+          <button class="desktop-icon" data-route="knowledge">
+            <span class="pixel-icon folder-icon"></span>
+            <span data-i18n="navKnowledge">知识库</span>
+          </button>
+          <button class="desktop-icon" data-route="videos">
+            <span class="pixel-icon tv-icon"></span>
+            <span data-i18n="navVideos">视频区</span>
+          </button>
+          <button class="desktop-icon" data-route="resources">
+            <span class="pixel-icon disk-icon"></span>
+            <span data-i18n="navResources">资源区</span>
+          </button>
+          <button class="desktop-icon" data-route="blog">
+            <span class="pixel-icon chat-icon"></span>
+            <span data-i18n="navBlog">杂谈区</span>
+          </button>
+          <button class="desktop-icon" data-route="about">
+            <span class="pixel-icon avatar-icon"></span>
+            <span data-i18n="navAbout">关于我</span>
+          </button>
+        </div>
+        <div class="grass"></div>
+      </section>
+
+      <section class="page" id="knowledge" aria-labelledby="knowledge-title">
+        <div class="xp-window folder-window">
+          <div class="window-titlebar">
+            <span><span class="title-icon">📁</span><span id="knowledge-title" data-i18n="knowledgeTitle">知识库</span></span>
+            <div class="window-controls" aria-hidden="true"><span>_</span><span>□</span><span>×</span></div>
+          </div>
+          <div class="window-toolbar">
+            <button data-route="home" data-i18n="toolbarBack">返回桌面</button>
+            <button data-route="knowledge" data-i18n="toolbarRefresh">刷新</button>
+            <span data-i18n="knowledgePath">我的电脑 / 鲁肃 / 知识库</span>
+          </div>
+          <div class="folder-layout">
+            <aside class="category-panel" id="knowledge-categories"></aside>
+            <div class="content-list" id="knowledge-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="videos" aria-labelledby="videos-title">
+        <div class="xp-window">
+          <div class="window-titlebar">
+            <span><span class="title-icon">📺</span><span id="videos-title" data-i18n="videosTitle">视频区</span></span>
+            <div class="window-controls" aria-hidden="true"><span>_</span><span>□</span><span>×</span></div>
+          </div>
+          <div class="filter-row" id="video-categories"></div>
+          <div class="card-grid video-grid" id="video-list"></div>
+        </div>
+      </section>
+
+      <section class="page" id="resources" aria-labelledby="resources-title">
+        <div class="xp-window">
+          <div class="window-titlebar">
+            <span><span class="title-icon">💾</span><span id="resources-title" data-i18n="resourcesTitle">资源区</span></span>
+            <div class="window-controls" aria-hidden="true"><span>_</span><span>□</span><span>×</span></div>
+          </div>
+          <div class="filter-row" id="resource-categories"></div>
+          <div class="download-list" id="resource-list"></div>
+        </div>
+      </section>
+
+      <section class="page" id="blog" aria-labelledby="blog-title">
+        <div class="xp-window notepad-window">
+          <div class="window-titlebar">
+            <span><span class="title-icon">📝</span><span id="blog-title" data-i18n="blogTitle">杂谈区</span></span>
+            <div class="window-controls" aria-hidden="true"><span>_</span><span>□</span><span>×</span></div>
+          </div>
+          <div class="notepad-menu">File&nbsp;&nbsp;Edit&nbsp;&nbsp;View&nbsp;&nbsp;Help</div>
+          <div class="notepad-paper" id="blog-list"></div>
+        </div>
+      </section>
+
+      <section class="page" id="about" aria-labelledby="about-title">
+        <div class="xp-window about-window">
+          <div class="window-titlebar">
+            <span><span class="title-icon">🧑</span><span id="about-title" data-i18n="aboutTitle">关于我</span></span>
+            <div class="window-controls" aria-hidden="true"><span>_</span><span>□</span><span>×</span></div>
+          </div>
+          <div class="profile-card">
+            <div class="profile-avatar">
+              <span class="pixel-face"></span>
+            </div>
+            <div class="profile-info">
+              <dl>
+                <div><dt data-i18n="nicknameLabel">昵称</dt><dd data-i18n="nicknameValue">鲁肃</dd></div>
+                <div><dt data-i18n="interestLabel">兴趣</dt><dd data-i18n="interestValue">AI / 游戏 / VRChat / 工具折腾</dd></div>
+                <div><dt data-i18n="contactLabel">联系方式</dt><dd data-i18n="contactValue">暂留空</dd></div>
+                <div><dt data-i18n="statusLabel">网站状态</dt><dd data-i18n="statusValue">持续建设中</dd></div>
+              </dl>
+              <p class="about-copy" data-i18n="aboutCopy">你好，我是鲁肃。这里是我的个人站，用来记录 AI、游戏、VRChat、工具、资源和一些杂谈。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="xp-taskbar">
+      <button class="start-button" data-route="home"><span class="windows-mark"></span><span data-i18n="startButton">开始 Start</span></button>
+      <div class="taskbar-tabs">
+        <button data-route="knowledge" data-i18n="navKnowledge">知识库</button>
+        <button data-route="videos" data-i18n="navVideos">视频区</button>
+        <button data-route="resources" data-i18n="navResources">资源区</button>
+        <button data-route="blog" data-i18n="navBlog">杂谈区</button>
+        <button data-route="about" data-i18n="navAbout">关于我</button>
+      </div>
+      <div class="status-tray">
+        <span data-i18n="lastUpdated">最后更新：2026.06.09</span>
+        <span class="online-dot"></span>
+        <span>ONLINE</span>
+        <span id="tray-lang">中文</span>
+      </div>
+    </footer>
+  </div>
+
+  <div class="modal" id="video-modal" hidden>
+    <div class="modal-backdrop" data-close-modal></div>
+    <div class="xp-window modal-window" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="window-titlebar">
+        <span id="modal-title">Video Player</span>
+        <button class="close-button" data-close-modal aria-label="Close">×</button>
+      </div>
+      <div class="video-frame" id="video-frame">
+        <div class="video-placeholder">
+          <span>▶</span>
+          <p data-i18n="videoPlaceholder">这里预留 Bilibili / YouTube 嵌入播放器。</p>
+        </div>
+      </div>
+      <a class="xp-button" id="video-link" href="#" target="_blank" rel="noreferrer" data-i18n="openOriginal">打开原地址</a>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
