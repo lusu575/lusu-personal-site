@@ -471,8 +471,8 @@ main {
   top: 172px;
   left: 48px;
   display: grid;
-  grid-template-columns: repeat(2, 116px);
-  grid-auto-rows: 128px;
+  grid-template-columns: repeat(2, 124px);
+  grid-auto-rows: 124px;
   gap: 18px 22px;
 }
 
@@ -483,8 +483,8 @@ main {
   justify-items: center;
   justify-content: flex-start;
   gap: 4px;
-  width: 116px;
-  height: 124px;
+  width: 124px;
+  height: 120px;
   padding: 7px 7px 8px;
   border: 2px solid transparent;
   border-radius: 5px;
@@ -512,7 +512,7 @@ main {
 }
 
 .icon-caption {
-  display: block;
+  display: none;
   width: 100%;
   font-size: 11px;
   font-weight: 800;
@@ -1120,8 +1120,8 @@ main {
   grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 8px;
-  min-height: 44px;
-  padding: 4px 8px;
+  min-height: 40px;
+  padding: 3px 8px;
   color: #fff;
   border-top: 2px solid #62afff;
   background:
@@ -1134,8 +1134,8 @@ main {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  min-height: 34px;
-  padding: 6px 13px;
+  min-height: 30px;
+  padding: 5px 12px;
   border-color: #0a9b5a;
   border-radius: 8px;
   color: #fff;
@@ -1145,8 +1145,8 @@ main {
 }
 
 .start-windows-icon {
-  width: 20px;
-  height: 20px;
+  width: 14px;
+  height: 14px;
   flex: 0 0 auto;
   object-fit: contain;
   image-rendering: pixelated;
@@ -1179,8 +1179,8 @@ main {
   align-items: center;
   gap: 6px;
   min-width: max-content;
-  min-height: 34px;
-  padding: 6px 12px;
+  min-height: 30px;
+  padding: 5px 10px;
   color: #fff;
   border-color: #07358f;
   border-radius: 5px;
@@ -1472,7 +1472,7 @@ main {
 }
 
 .page-home {
-  background: url("../assets/images/homepage-pixel-coast.png") center / cover no-repeat;
+  background: url("../assets/images/homepage-pixel-coast.png?v=20260610-start-fix") center / cover no-repeat;
 }
 
 .sky-layer {
@@ -1481,8 +1481,8 @@ main {
 
 .pixel-icon,
 .monitor-icon {
-  width: 82px;
-  height: 82px;
+  width: 92px;
+  height: 92px;
   margin: 0;
   border: 0 !important;
   border-radius: 0 !important;
@@ -1571,14 +1571,14 @@ main {
   .desktop-icons {
     top: 300px;
     left: 18px;
-    grid-template-columns: repeat(3, 124px);
-    grid-auto-rows: 146px;
+    grid-template-columns: repeat(3, 132px);
+    grid-auto-rows: 132px;
     gap: 10px;
   }
 
   .desktop-icon {
-    width: 124px;
-    height: 142px;
+    width: 132px;
+    height: 128px;
   }
 
   .desktop-intro {
@@ -1704,12 +1704,13 @@ main {
   .desktop-icon {
     width: auto;
     height: auto;
-    min-height: 132px;
+    min-height: 112px;
     padding: 10px;
     background: rgba(8, 80, 170, 0.15);
   }
 
   .icon-caption {
+    display: none;
     width: auto;
   }
 
@@ -1775,13 +1776,13 @@ main {
 
   .start-button {
     justify-content: center;
-    min-height: 34px;
-    padding: 6px 12px;
+    min-height: 30px;
+    padding: 5px 10px;
   }
 
   .start-windows-icon {
-    width: 18px;
-    height: 18px;
+    width: 14px;
+    height: 14px;
   }
 
   .taskbar-tabs {
@@ -1912,14 +1913,14 @@ main {
 
   .desktop-icon {
     display: grid;
-    grid-template-columns: 82px 1fr;
+    grid-template-columns: 92px 1fr;
     justify-items: start;
     align-items: center;
     text-align: left;
   }
 
   .pixel-icon {
-    grid-row: span 2;
+    grid-row: auto;
   }
 
   .icon-title,
@@ -1970,14 +1971,14 @@ main {
 
   .desktop-icon {
     display: grid;
-    grid-template-columns: 82px 1fr;
+    grid-template-columns: 92px 1fr;
     justify-items: start;
     align-items: center;
     text-align: left;
   }
 
   .pixel-icon {
-    grid-row: span 2;
+    grid-row: auto;
   }
 
   .icon-title,
