@@ -2,6 +2,12 @@ const SESSION_COOKIE = "lusu_session";
 const SESSION_DAYS = 30;
 const MAX_SAVE_BYTES = 1024 * 1024;
 const PASSWORD_HASH_ITERATIONS = 25000;
+const MAX_CHAT_MESSAGE_CHARS = 300;
+const MAX_CHAT_NICKNAME_CHARS = 16;
+const CHAT_COOLDOWN_MS = 3000;
+const CHAT_IP_WINDOW_MS = 60000;
+const CHAT_IP_WINDOW_LIMIT = 20;
+let chatSchemaReady = false;
 
 export async function onRequest(context) {
   const { request, env } = context;
@@ -28,6 +34,14 @@ export async function onRequest(context) {
     }
     if (request.method === "GET" && parts[0] === "auth" && parts[1] === "me") {
       return me(request, env);
+    }
+    if (parts[0] === "chat" && parts[1] === "messages") {
+      if (request.method === "GET") {
+        return getChatMessages(request, env);
+      }
+      if (request.method === "POST") {
+        return postChatMessage(request, env);
+      }
     }
     if (parts[0] === "saves" && parts[1]) {
       if (request.method === "GET") {
@@ -141,6 +155,128 @@ async function putSave(request, env, gameId) {
   return json({ ok: true, updatedAt: now });
 }
 
+async function getChatMessages(request, env) {
+  await ensureChatSchema(env);
+  const url = new URL(request.url);
+  const limit = clampLimit(url.searchParams.get("limit"), 100);
+  const after = String(url.searchParams.get("after") || "").trim();
+
+  let rows;
+  if (after) {
+    const cursor = await env.DB.prepare(
+      "select created_at from anonymous_chat_messages where message_id = ?"
+    ).bind(after).first();
+
+    if (!cursor) {
+      rows = [];
+    } else {
+      rows = (await env.DB.prepare(`
+        select message_id, visitor_id, nickname, content, created_at
+        from anonymous_chat_messages
+        where hidden = 0
+          and (created_at > ? or (created_at = ? and message_id > ?))
+        order by created_at asc, message_id asc
+        limit ?
+      `).bind(cursor.created_at, cursor.created_at, after, limit).all()).results || [];
+    }
+  } else {
+    rows = (await env.DB.prepare(`
+      select message_id, visitor_id, nickname, content, created_at
+      from (
+        select message_id, visitor_id, nickname, content, created_at
+        from anonymous_chat_messages
+        where hidden = 0
+        order by created_at desc, message_id desc
+        limit ?
+      )
+      order by created_at asc, message_id asc
+    `).bind(limit).all()).results || [];
+  }
+
+  return json({ messages: rows });
+}
+
+async function postChatMessage(request, env) {
+  await ensureChatSchema(env);
+  const body = await readJson(request);
+  const visitorId = normalizeVisitorId(body.visitorId);
+  const nickname = normalizeChatNickname(body.nickname);
+  const content = normalizeChatContent(body.content);
+  const ipHash = await requestIpHash(request, env);
+  const now = new Date();
+  const nowText = now.toISOString();
+  const visitorSince = new Date(now.getTime() - CHAT_COOLDOWN_MS).toISOString();
+  const ipSince = new Date(now.getTime() - CHAT_IP_WINDOW_MS).toISOString();
+
+  const recentVisitor = await env.DB.prepare(`
+    select created_at
+    from anonymous_chat_messages
+    where visitor_id = ? and created_at > ?
+    order by created_at desc
+    limit 1
+  `).bind(visitorId, visitorSince).first();
+  if (recentVisitor) {
+    return json({ error: "发送太快啦，请等 3 秒。" }, 429);
+  }
+
+  const ipRow = await env.DB.prepare(`
+    select count(*) as count
+    from anonymous_chat_messages
+    where ip_hash = ? and created_at > ?
+  `).bind(ipHash, ipSince).first();
+  if (Number(ipRow?.count || 0) >= CHAT_IP_WINDOW_LIMIT) {
+    return json({ error: "当前网络发送过于频繁，请稍后再试。" }, 429);
+  }
+
+  const messageId = chatMessageId(now);
+  await env.DB.prepare(`
+    insert into anonymous_chat_messages (message_id, visitor_id, nickname, content, created_at, hidden, ip_hash)
+    values (?, ?, ?, ?, ?, 0, ?)
+  `).bind(messageId, visitorId, nickname, content, nowText, ipHash).run();
+
+  return json({
+    message: {
+      message_id: messageId,
+      visitor_id: visitorId,
+      nickname,
+      content,
+      created_at: nowText
+    }
+  }, 201);
+}
+
+async function ensureChatSchema(env) {
+  if (chatSchemaReady) {
+    return;
+  }
+  await env.DB.batch([
+    env.DB.prepare(`
+      create table if not exists anonymous_chat_messages (
+        message_id text primary key,
+        visitor_id text not null,
+        nickname text not null,
+        content text not null,
+        created_at text not null,
+        hidden integer not null default 0,
+        ip_hash text not null
+      )
+    `),
+    env.DB.prepare(`
+      create index if not exists anonymous_chat_messages_visible_idx
+        on anonymous_chat_messages(hidden, created_at, message_id)
+    `),
+    env.DB.prepare(`
+      create index if not exists anonymous_chat_messages_visitor_idx
+        on anonymous_chat_messages(visitor_id, created_at)
+    `),
+    env.DB.prepare(`
+      create index if not exists anonymous_chat_messages_ip_idx
+        on anonymous_chat_messages(ip_hash, created_at)
+    `)
+  ]);
+  chatSchemaReady = true;
+}
+
 async function createSessionResponse(env, request, userId, email, status = 200) {
   const token = randomToken();
   const tokenHash = await sha256Hex(token);
@@ -223,6 +359,55 @@ function validateGameId(gameId) {
   if (!/^[a-z0-9-]{1,80}$/.test(gameId)) {
     throw new HttpError("游戏编号不正确。", 400);
   }
+}
+
+function clampLimit(value, max) {
+  const limit = Number(value || max);
+  if (!Number.isFinite(limit) || limit < 1) {
+    return max;
+  }
+  return Math.min(Math.floor(limit), max);
+}
+
+function normalizeVisitorId(value) {
+  const visitorId = String(value || "").trim();
+  if (!/^[a-zA-Z0-9_.:-]{8,96}$/.test(visitorId)) {
+    throw new HttpError("访客编号不正确。", 400);
+  }
+  return visitorId;
+}
+
+function normalizeChatNickname(value) {
+  const nickname = String(value || "").trim();
+  const length = Array.from(nickname).length;
+  if (length < 2 || length > MAX_CHAT_NICKNAME_CHARS) {
+    throw new HttpError("昵称需要 2-16 个字符，不能是空白。", 400);
+  }
+  return nickname;
+}
+
+function normalizeChatContent(value) {
+  const content = String(value || "").trim();
+  const length = Array.from(content).length;
+  if (!content) {
+    throw new HttpError("空消息不可发送。", 400);
+  }
+  if (length > MAX_CHAT_MESSAGE_CHARS) {
+    throw new HttpError("单条消息最多 300 字。", 400);
+  }
+  return content;
+}
+
+function chatMessageId(date) {
+  return `${date.getTime().toString(36)}-${randomToken(9)}`;
+}
+
+async function requestIpHash(request, env) {
+  const ip = request.headers.get("CF-Connecting-IP")
+    || request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+    || "unknown";
+  const salt = env.CHAT_IP_HASH_SALT || "lusu-chat";
+  return sha256Hex(`${salt}:${ip}`);
 }
 
 async function hashPassword(password) {

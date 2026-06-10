@@ -25,3 +25,20 @@ create table if not exists game_saves (
 );
 
 create index if not exists game_saves_updated_at_idx on game_saves(updated_at);
+
+create table if not exists anonymous_chat_messages (
+  message_id text primary key,
+  visitor_id text not null,
+  nickname text not null,
+  content text not null,
+  created_at text not null,
+  hidden integer not null default 0,
+  ip_hash text not null
+);
+
+create index if not exists anonymous_chat_messages_visible_idx
+  on anonymous_chat_messages(hidden, created_at, message_id);
+create index if not exists anonymous_chat_messages_visitor_idx
+  on anonymous_chat_messages(visitor_id, created_at);
+create index if not exists anonymous_chat_messages_ip_idx
+  on anonymous_chat_messages(ip_hash, created_at);

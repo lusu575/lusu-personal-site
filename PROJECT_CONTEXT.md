@@ -2,6 +2,10 @@
 
 本文档用于帮助新的 AI / Codex 对话快速理解本项目。后续如果网站方向、功能、部署方式或注意事项变化，请同步更新这里。
 
+重要维护约定：
+
+- 每次修改项目后，必须同步更新 `CHANGELOG.md`，记录日期、功能/界面/后端/部署变化和必要注意事项。
+
 ## 项目基本信息
 
 - 项目名称：鲁肃的个人站
@@ -47,6 +51,12 @@ Cloudflare Pages 项目状态：
 - 首页桌面图标入口
 - 顶部 XP 蓝色栏和底部任务栏
 - 知识库、视频区、资源区、游戏区、杂谈区、关于我
+- XP 像素风匿名聊天室：
+  - 未登录访客可直接发言
+  - 随机昵称和 visitor_id 保存在 `localStorage`
+  - 支持修改昵称，历史消息保留原昵称
+  - 前端每 5 秒轮询新消息，页面恢复激活时立即刷新
+  - 聊天内容纯文本渲染，不使用 `innerHTML` 插入用户内容
 - 中文 / English / 日本語 三语切换
 - 游戏区接入两款开源 H5 游戏：
   - `kittens-game`
@@ -69,10 +79,12 @@ Cloudflare Pages 项目状态：
   - `/api/auth/login`
   - `/api/auth/logout`
   - `/api/saves/:gameId`
+  - `/api/chat/messages`
 - Cloudflare D1 数据表：
   - `users`
   - `sessions`
   - `game_saves`
+  - `anonymous_chat_messages`
 
 ## 账号与云存档设计
 
@@ -134,6 +146,7 @@ functions/api/[[route]].js
 ```text
 /
 ├── index.html
+├── CHANGELOG.md
 ├── PROJECT_CONTEXT.md
 ├── README.md
 ├── package.json
@@ -239,6 +252,7 @@ $env:XDG_CONFIG_HOME='F:\lusu575个人站\.wrangler-config'; npx.cmd wrangler pa
 
 ## 前端改动检查规则
 
+- 每次修改项目后，必须同步更新 `CHANGELOG.md`，不要只更新代码而漏掉变更记录。
 - 每次修改首页、窗口、任务栏、图标、卡片、弹窗、游戏外壳或任意前端样式时，都必须同步检查手机端适配，避免横向溢出、顶部常驻区域占屏、弹窗超出屏幕、游戏 iframe 尺寸过大等问题。
 - 每次新增或调整可见文案时，都必须同步维护中文 / English / 日本語 三种语言，不能只更新单一语言。
 - 每次调整图标、按钮、任务栏标签、桌面入口或标题栏时，都必须检查图标和文字的垂直/水平对齐、换行、截断和小屏幕显示效果。
@@ -248,6 +262,34 @@ $env:XDG_CONFIG_HOME='F:\lusu575个人站\.wrangler-config'; npx.cmd wrangler pa
 - 如果 `lusu575.com` 和 `www.lusu575.com` 出现视觉不一致，优先检查两个域名的 CSS/图片响应是否同版；涉及首页背景、任务栏、图标等强视觉资源时，建议同步更新 CSS 引用版本号（例如 `css/style.css?v=...`、图片 URL query）来强制刷新缓存。
 - 双域名缓存是独立的：即使两个域名调用同一个 GitHub 仓库和同一个 Cloudflare Pages 项目，`lusu575.com` 与 `www.lusu575.com` 的边缘缓存、浏览器缓存仍可能不同步。上线后要分别打开两个域名验证。
 - 当前首页主要视觉资源包括 `assets/images/homepage-pixel-coast.png`、`assets/images/lusu-tv-head-256.png`、`assets/images/lusu-about-avatar-256.png`、`assets/images/start-windows-pixel.png`。替换这些资源后要检查桌面端和手机端显示效果。
+- 聊天室图标资源为 `assets/images/icon-chatroom.png`。调整聊天室入口、窗口或消息 UI 后，需要检查中文 / English / 日本語、桌面端和手机端显示。
+
+## 匿名聊天室维护注意点
+
+- 前端入口：
+  - 桌面图标：`data-route="chatroom"`
+  - 页面：`#chatroom`
+  - 逻辑：`js/main.js`
+  - 样式：`css/style.css`
+- 后端接口：
+  - `GET /api/chat/messages?limit=100`
+  - `GET /api/chat/messages?after=<message_id>&limit=100`
+  - `POST /api/chat/messages`
+- D1 表：`anonymous_chat_messages`
+- 聊天室接口包含 D1 schema guard，会对聊天室表和索引执行 `create table/index if not exists`；远端上线前仍建议执行正式 D1 migration。
+- 保存字段：
+  - `message_id`
+  - `visitor_id`
+  - `nickname`
+  - `content`
+  - `created_at`
+  - `hidden`
+  - `ip_hash`
+- 当前第一版不做私聊、图片发送、表情包、WebSocket、在线状态、管理后台、多聊天室房间。
+- 聊天内容必须继续使用纯文本 DOM 渲染，例如 `textContent`。不要用 `innerHTML` 插入访客昵称或消息内容。
+- 前后端都需要保留校验：昵称 2-16 字符，消息 1-300 字符，空消息不可发送，visitor_id 至少 3 秒 1 条。
+- 接口单次最多返回 100 条消息。
+- 上线前需要执行 D1 migration，让远端数据库创建 `anonymous_chat_messages` 表。
 
 ## 后续可扩展方向
 

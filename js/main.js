@@ -11,6 +11,7 @@ const translations = {
     navResources: "资源区",
     navGames: "游戏区",
     navBlog: "杂谈区",
+    navChatroom: "匿名聊天室",
     navAbout: "关于我",
     capKnowledge: "笔记 · 教程 · 想法",
     capVideos: "作品 · 翻译 · 收藏",
@@ -23,6 +24,7 @@ const translations = {
     resourcesTitle: "资源区",
     gamesTitle: "游戏区",
     blogTitle: "杂谈区",
+    chatroomTitle: "XP 匿名聊天室 - LuSu's Chat Room",
     aboutTitle: "关于我",
     toolbarBack: "返回桌面",
     toolbarRefresh: "刷新",
@@ -53,7 +55,25 @@ const translations = {
     goVideos: "看看视频",
     goGames: "打开游戏区",
     recentUpdates: "最近更新",
-    moreUpdates: "查看更多更新"
+    moreUpdates: "查看更多更新",
+    chatNicknameLabel: "我的昵称：",
+    chatEditNickname: "修改昵称",
+    chatSyncStatus: "每 5 秒自动刷新",
+    chatInputLabel: "聊天内容",
+    chatPlaceholder: "说点什么吧...",
+    chatSend: "发送",
+    chatCooldownHint: "每 3 秒可发送一条消息哦~",
+    chatAutoscroll: "自动滚动",
+    chatWelcome: "欢迎来到鲁肃的匿名聊天室！请文明发言哦~",
+    chatLoading: "正在连接聊天室...",
+    chatLoadFailed: "聊天室读取失败，请稍后再试。",
+    chatEmptyMessage: "空消息不可发送。",
+    chatTooLong: "单条消息最多 300 字。",
+    chatCooldown: "发送太快啦，请等 3 秒。",
+    chatNicknamePrompt: "请输入 2-16 个字符的新昵称：",
+    chatNicknameInvalid: "昵称需要 2-16 个字符，不能是空白。",
+    chatNicknameSaved: "昵称已更新，后续发言会使用新昵称。",
+    chatSent: "已发送。"
   },
   en: {
     siteName: "LuSu's Personal Site",
@@ -64,6 +84,7 @@ const translations = {
     navResources: "Resources",
     navGames: "Games",
     navBlog: "Talk",
+    navChatroom: "Chat Room",
     navAbout: "About",
     capKnowledge: "Notes · Tutorials · Ideas",
     capVideos: "Works · Translation · Saves",
@@ -76,6 +97,7 @@ const translations = {
     resourcesTitle: "Resources",
     gamesTitle: "Games",
     blogTitle: "Talk",
+    chatroomTitle: "XP Anonymous Chat Room - LuSu's Chat Room",
     aboutTitle: "About",
     toolbarBack: "Back to Desktop",
     toolbarRefresh: "Refresh",
@@ -106,7 +128,25 @@ const translations = {
     goVideos: "Watch Videos",
     goGames: "Open Games",
     recentUpdates: "Recent Updates",
-    moreUpdates: "More updates"
+    moreUpdates: "More updates",
+    chatNicknameLabel: "My nickname:",
+    chatEditNickname: "Edit nickname",
+    chatSyncStatus: "Auto refresh every 5 seconds",
+    chatInputLabel: "Chat message",
+    chatPlaceholder: "Say something...",
+    chatSend: "Send",
+    chatCooldownHint: "One message every 3 seconds.",
+    chatAutoscroll: "Auto scroll",
+    chatWelcome: "Welcome to LuSu's anonymous chat room. Keep it friendly!",
+    chatLoading: "Connecting to chat room...",
+    chatLoadFailed: "Could not load chat. Please try again later.",
+    chatEmptyMessage: "Empty messages cannot be sent.",
+    chatTooLong: "Messages can be up to 300 characters.",
+    chatCooldown: "Too fast. Please wait 3 seconds.",
+    chatNicknamePrompt: "Enter a new nickname, 2-16 characters:",
+    chatNicknameInvalid: "Nickname must be 2-16 characters and cannot be blank.",
+    chatNicknameSaved: "Nickname updated. Future messages will use it.",
+    chatSent: "Sent."
   },
   ja: {
     siteName: "魯粛の個人サイト",
@@ -117,6 +157,7 @@ const translations = {
     navResources: "リソース",
     navGames: "ゲーム",
     navBlog: "雑談",
+    navChatroom: "匿名チャット",
     navAbout: "プロフィール",
     capKnowledge: "メモ · チュートリアル · 考え",
     capVideos: "作品 · 翻訳 · 保存",
@@ -129,6 +170,7 @@ const translations = {
     resourcesTitle: "リソース",
     gamesTitle: "ゲーム",
     blogTitle: "雑談",
+    chatroomTitle: "XP 匿名チャット - LuSu's Chat Room",
     aboutTitle: "プロフィール",
     toolbarBack: "デスクトップへ戻る",
     toolbarRefresh: "更新",
@@ -159,7 +201,25 @@ const translations = {
     goVideos: "動画を見る",
     goGames: "ゲームへ",
     recentUpdates: "最近の更新",
-    moreUpdates: "もっと見る"
+    moreUpdates: "もっと見る",
+    chatNicknameLabel: "ニックネーム：",
+    chatEditNickname: "変更",
+    chatSyncStatus: "5秒ごとに自動更新",
+    chatInputLabel: "チャット本文",
+    chatPlaceholder: "何か話してみよう...",
+    chatSend: "送信",
+    chatCooldownHint: "3秒に1通送れます。",
+    chatAutoscroll: "自動スクロール",
+    chatWelcome: "魯粛の匿名チャットへようこそ！やさしく話しましょう。",
+    chatLoading: "チャットに接続中...",
+    chatLoadFailed: "チャットを読み込めません。あとで試してください。",
+    chatEmptyMessage: "空のメッセージは送れません。",
+    chatTooLong: "1通は最大300文字です。",
+    chatCooldown: "送信が速すぎます。3秒待ってください。",
+    chatNicknamePrompt: "2-16文字の新しいニックネームを入力：",
+    chatNicknameInvalid: "ニックネームは2-16文字で、空白のみは使えません。",
+    chatNicknameSaved: "ニックネームを更新しました。次の発言から反映されます。",
+    chatSent: "送信しました。"
   }
 };
 
@@ -198,6 +258,12 @@ const labels = {
 
 const content = {
   updates: [
+    {
+      icon: "💬",
+      date: "2026.06.10",
+      title: { zh: "匿名聊天室 MVP 上线", en: "Anonymous chat MVP added", ja: "匿名チャットMVPを追加" },
+      desc: { zh: "访客可用随机昵称直接发言，消息保存到 Cloudflare D1", en: "Visitors can chat with random nicknames, backed by Cloudflare D1", ja: "ランダム名で発言でき、Cloudflare D1に保存されます" }
+    },
     {
       icon: "📺",
       date: "2026.06.10",
@@ -360,7 +426,24 @@ const activeFilters = {
 };
 let authUser = null;
 
-const pageIds = ["home", "knowledge", "videos", "resources", "games", "blog", "about"];
+const pageIds = ["home", "knowledge", "videos", "resources", "games", "blog", "chatroom", "about"];
+
+const chatStorageKeys = {
+  visitorId: "lusu-chat-visitor-id",
+  nickname: "lusu-chat-nickname",
+  lastSentAt: "lusu-chat-last-sent-at"
+};
+
+const chatState = {
+  initialized: false,
+  loading: false,
+  visitorId: "",
+  nickname: "",
+  lastMessageId: "",
+  seenMessageIds: new Set(),
+  pollTimer: null,
+  lastSentAt: Number(localStorage.getItem(chatStorageKeys.lastSentAt) || "0")
+};
 
 function t(key) {
   return translations[currentLang][key] || translations.zh[key] || key;
@@ -383,6 +466,10 @@ function setLanguage(lang) {
     node.textContent = t(node.dataset.i18n);
   });
 
+  document.querySelectorAll("[data-i18n-placeholder]").forEach((node) => {
+    node.setAttribute("placeholder", t(node.dataset.i18nPlaceholder));
+  });
+
   document.querySelectorAll(".lang-button").forEach((button) => {
     button.classList.toggle("active", button.dataset.lang === lang);
   });
@@ -398,6 +485,9 @@ function navigate(route) {
   document.querySelectorAll(".taskbar-tabs button").forEach((button) => {
     button.classList.toggle("active", button.dataset.route === nextRoute);
   });
+  if (nextRoute === "chatroom") {
+    initChatroom();
+  }
   window.location.hash = nextRoute === "home" ? "" : nextRoute;
   window.scrollTo({ top: 0, behavior: "auto" });
 }
@@ -713,6 +803,278 @@ function toggleAccountPopover() {
   }
 }
 
+function ensureChatIdentity() {
+  let visitorId = localStorage.getItem(chatStorageKeys.visitorId);
+  if (!visitorId) {
+    visitorId = crypto.randomUUID ? crypto.randomUUID() : `visitor-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    localStorage.setItem(chatStorageKeys.visitorId, visitorId);
+  }
+
+  let nickname = localStorage.getItem(chatStorageKeys.nickname);
+  if (!isValidChatNickname(nickname)) {
+    nickname = randomChatNickname();
+    localStorage.setItem(chatStorageKeys.nickname, nickname);
+  }
+
+  chatState.visitorId = visitorId;
+  chatState.nickname = nickname.trim();
+  updateChatNicknameDisplay();
+}
+
+function randomChatNickname() {
+  const names = [
+    "蓝屏小企鹅", "像素幽灵", "草地路人A", "CRT访客", "电视小粉", "泡泡旅人",
+    "BluePenguin", "PixelGhost", "CRTGuest", "GrassWalker",
+    "ピクセル幽霊", "CRT旅人", "草原の人"
+  ];
+  const suffixes = ["9527", "1024", "2333", "404", "88", "7"];
+  const name = names[Math.floor(Math.random() * names.length)];
+  return `${name}${suffixes[Math.floor(Math.random() * suffixes.length)]}`;
+}
+
+function isValidChatNickname(value) {
+  const text = String(value || "").trim();
+  const length = Array.from(text).length;
+  return length >= 2 && length <= 16;
+}
+
+function updateChatNicknameDisplay() {
+  const display = document.getElementById("chat-nickname-display");
+  if (display) {
+    display.textContent = chatState.nickname;
+  }
+}
+
+function setChatFeedback(message, isError = false) {
+  const feedback = document.getElementById("chat-feedback");
+  if (!feedback) {
+    return;
+  }
+  feedback.textContent = message;
+  feedback.classList.toggle("is-error", isError);
+}
+
+function updateChatCounter() {
+  const input = document.getElementById("chat-message-input");
+  const count = document.getElementById("chat-char-count");
+  if (input && count) {
+    count.textContent = String(Array.from(input.value).length);
+  }
+}
+
+async function initChatroom() {
+  ensureChatIdentity();
+  updateChatCounter();
+
+  if (!chatState.initialized) {
+    chatState.initialized = true;
+    resetChatLog(t("chatLoading"));
+    await refreshChatMessages({ initial: true });
+  } else {
+    refreshChatMessages();
+  }
+
+  startChatPolling();
+}
+
+function startChatPolling() {
+  if (chatState.pollTimer) {
+    return;
+  }
+  chatState.pollTimer = window.setInterval(() => {
+    if (!document.hidden && document.getElementById("chatroom")?.classList.contains("active")) {
+      refreshChatMessages();
+    }
+  }, 5000);
+}
+
+function resetChatLog(message) {
+  const list = document.getElementById("chat-message-list");
+  if (!list) {
+    return;
+  }
+  list.replaceChildren();
+  appendChatSystemMessage(message || t("chatWelcome"));
+  chatState.lastMessageId = "";
+  chatState.seenMessageIds.clear();
+}
+
+function appendChatSystemMessage(message) {
+  const list = document.getElementById("chat-message-list");
+  if (!list) {
+    return;
+  }
+  const row = document.createElement("div");
+  row.className = "chat-system-message";
+  row.textContent = `— ${message} —`;
+  list.appendChild(row);
+}
+
+async function refreshChatMessages(options = {}) {
+  if (chatState.loading) {
+    return;
+  }
+  chatState.loading = true;
+  try {
+    const params = new URLSearchParams({ limit: "100" });
+    if (!options.initial && chatState.lastMessageId) {
+      params.set("after", chatState.lastMessageId);
+    }
+    const payload = await chatApi(`/api/chat/messages?${params.toString()}`);
+    if (options.initial) {
+      resetChatLog(t("chatWelcome"));
+    }
+    appendChatMessages(payload.messages || []);
+  } catch {
+    if (options.initial) {
+      resetChatLog(t("chatLoadFailed"));
+    } else {
+      setChatFeedback(t("chatLoadFailed"), true);
+    }
+  } finally {
+    chatState.loading = false;
+  }
+}
+
+function appendChatMessages(messages) {
+  const list = document.getElementById("chat-message-list");
+  if (!list || !messages.length) {
+    return;
+  }
+
+  messages.forEach((message) => {
+    if (!message.message_id || chatState.seenMessageIds.has(message.message_id)) {
+      return;
+    }
+    chatState.seenMessageIds.add(message.message_id);
+    chatState.lastMessageId = message.message_id;
+    list.appendChild(createChatMessageNode(message));
+  });
+
+  const autoscroll = document.getElementById("chat-autoscroll");
+  if (!autoscroll || autoscroll.checked) {
+    list.scrollTop = list.scrollHeight;
+  }
+}
+
+function createChatMessageNode(message) {
+  const own = message.visitor_id === chatState.visitorId;
+  const item = document.createElement("article");
+  item.className = `chat-message${own ? " is-own" : ""}`;
+
+  const avatar = document.createElement("img");
+  avatar.className = "chat-message-avatar";
+  avatar.src = "assets/images/icon-chatroom.png";
+  avatar.alt = "";
+  avatar.setAttribute("aria-hidden", "true");
+
+  const body = document.createElement("div");
+  body.className = "chat-message-body";
+
+  const meta = document.createElement("div");
+  meta.className = "chat-message-meta";
+
+  const name = document.createElement("strong");
+  name.textContent = String(message.nickname || "");
+
+  const time = document.createElement("time");
+  time.dateTime = message.created_at || "";
+  time.textContent = formatChatTime(message.created_at);
+
+  meta.append(name, time);
+
+  const bubble = document.createElement("p");
+  bubble.className = "chat-bubble";
+  bubble.textContent = String(message.content || "");
+
+  body.append(meta, bubble);
+  item.append(avatar, body);
+  return item;
+}
+
+function formatChatTime(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+  return new Intl.DateTimeFormat(undefined, {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false
+  }).format(date);
+}
+
+async function submitChatMessage(event) {
+  event.preventDefault();
+  ensureChatIdentity();
+
+  const input = document.getElementById("chat-message-input");
+  const contentText = input.value.trim();
+  const contentLength = Array.from(contentText).length;
+  if (!contentText) {
+    setChatFeedback(t("chatEmptyMessage"), true);
+    return;
+  }
+  if (contentLength > 300) {
+    setChatFeedback(t("chatTooLong"), true);
+    return;
+  }
+  if (Date.now() - chatState.lastSentAt < 3000) {
+    setChatFeedback(t("chatCooldown"), true);
+    return;
+  }
+
+  try {
+    const payload = await chatApi("/api/chat/messages", {
+      method: "POST",
+      body: JSON.stringify({
+        visitorId: chatState.visitorId,
+        nickname: chatState.nickname,
+        content: contentText
+      })
+    });
+    chatState.lastSentAt = Date.now();
+    localStorage.setItem(chatStorageKeys.lastSentAt, String(chatState.lastSentAt));
+    input.value = "";
+    updateChatCounter();
+    setChatFeedback(t("chatSent"));
+    appendChatMessages(payload.message ? [payload.message] : []);
+    refreshChatMessages();
+  } catch (error) {
+    setChatFeedback(error.message || t("chatLoadFailed"), true);
+  }
+}
+
+function editChatNickname() {
+  ensureChatIdentity();
+  const next = window.prompt(t("chatNicknamePrompt"), chatState.nickname);
+  if (next === null) {
+    return;
+  }
+  const normalized = next.trim();
+  if (!isValidChatNickname(normalized)) {
+    setChatFeedback(t("chatNicknameInvalid"), true);
+    return;
+  }
+  chatState.nickname = normalized;
+  localStorage.setItem(chatStorageKeys.nickname, normalized);
+  updateChatNicknameDisplay();
+  setChatFeedback(t("chatNicknameSaved"));
+}
+
+async function chatApi(path, options = {}) {
+  const response = await fetch(path, {
+    headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+    ...options
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(payload.error || `HTTP ${response.status}`);
+  }
+  return payload;
+}
+
 function escapeHtml(value) {
   return String(value)
     .replace(/&/g, "&amp;")
@@ -782,6 +1144,16 @@ window.addEventListener("keydown", (event) => {
 
 window.addEventListener("hashchange", () => {
   navigate(window.location.hash.replace("#", ""));
+});
+
+document.getElementById("chat-form")?.addEventListener("submit", submitChatMessage);
+document.getElementById("chat-message-input")?.addEventListener("input", updateChatCounter);
+document.getElementById("chat-edit-nickname")?.addEventListener("click", editChatNickname);
+
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden && document.getElementById("chatroom")?.classList.contains("active")) {
+    refreshChatMessages();
+  }
 });
 
 const requestedLang = pageParams.get("lang");

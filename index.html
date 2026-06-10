@@ -7,7 +7,7 @@
   <title>鲁肃的个人站</title>
   <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32.png">
   <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/style.css?v=20260610-start-fix">
+  <link rel="stylesheet" href="css/style.css?v=20260610-chatroom-mvp">
 </head>
 <body>
   <div class="site-shell">
@@ -64,6 +64,10 @@
           <button class="desktop-icon" data-route="blog">
             <span class="pixel-icon chat-icon"></span>
             <span class="icon-title" data-i18n="navBlog">杂谈区</span>
+          </button>
+          <button class="desktop-icon" data-route="chatroom">
+            <span class="pixel-icon chatroom-icon"></span>
+            <span class="icon-title" data-i18n="navChatroom">匿名聊天室</span>
           </button>
           <button class="desktop-icon" data-route="about">
             <span class="pixel-icon avatar-icon"></span>
@@ -139,6 +143,44 @@
         </div>
       </section>
 
+      <section class="page" id="chatroom" aria-labelledby="chatroom-title">
+        <div class="xp-window chatroom-window">
+          <div class="window-titlebar">
+            <span><span class="title-icon chatroom-title-icon">💬</span><span id="chatroom-title" data-i18n="chatroomTitle">XP 匿名聊天室 - LuSu's Chat Room</span></span>
+            <button class="close-button" data-route="home" aria-label="关闭">×</button>
+          </div>
+          <div class="chatroom-header">
+            <img class="chatroom-avatar" src="assets/images/icon-chatroom.png" alt="" aria-hidden="true">
+            <div class="chatroom-nickname-row">
+              <span data-i18n="chatNicknameLabel">我的昵称：</span>
+              <strong id="chat-nickname-display"></strong>
+              <button class="xp-button chat-nickname-button" id="chat-edit-nickname" type="button" data-i18n="chatEditNickname">修改昵称</button>
+            </div>
+            <div class="chatroom-status">
+              <span data-i18n="chatSyncStatus">每 5 秒自动刷新</span>
+              <span class="online-dot"></span>
+            </div>
+          </div>
+          <div class="chatroom-log" id="chat-message-list" role="log" aria-live="polite" aria-relevant="additions"></div>
+          <form class="chatroom-compose" id="chat-form">
+            <label class="sr-only" for="chat-message-input" data-i18n="chatInputLabel">聊天内容</label>
+            <textarea id="chat-message-input" name="message" maxlength="300" rows="2" data-i18n-placeholder="chatPlaceholder" placeholder="说点什么吧..."></textarea>
+            <div class="chatroom-counter"><span id="chat-char-count">0</span>/300</div>
+            <button class="xp-button chat-send-button" type="submit">
+              <span data-i18n="chatSend">发送</span>
+              <span class="send-bubble-icon" aria-hidden="true"></span>
+            </button>
+          </form>
+          <div class="chatroom-footer">
+            <span id="chat-feedback" data-i18n="chatCooldownHint">每 3 秒可发送一条消息哦~</span>
+            <label class="chatroom-autoscroll">
+              <input id="chat-autoscroll" type="checkbox" checked>
+              <span data-i18n="chatAutoscroll">自动滚动</span>
+            </label>
+          </div>
+        </div>
+      </section>
+
       <section class="page" id="about" aria-labelledby="about-title">
         <div class="xp-window about-window">
           <div class="window-titlebar">
@@ -171,6 +213,7 @@
         <button data-route="resources"><span class="mini-icon">💾</span><span data-i18n="navResources">资源区</span></button>
         <button data-route="games"><span class="mini-icon">🎮</span><span data-i18n="navGames">游戏区</span></button>
         <button data-route="blog"><span class="mini-icon">💬</span><span data-i18n="navBlog">杂谈区</span></button>
+        <button data-route="chatroom"><span class="mini-icon">💬</span><span data-i18n="navChatroom">匿名聊天室</span></button>
         <button data-route="about"><span class="mini-icon">🙂</span><span data-i18n="navAbout">关于我</span></button>
       </div>
       <div class="status-tray">
