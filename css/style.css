@@ -1044,8 +1044,9 @@ main {
 
 .profile-card {
   display: grid;
-  grid-template-columns: 190px 1fr;
-  gap: 22px;
+  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+  align-items: start;
+  gap: 28px;
   padding: 24px;
   background:
     linear-gradient(90deg, rgba(255, 183, 213, 0.23), transparent 40%),
@@ -1055,14 +1056,15 @@ main {
 .profile-avatar {
   display: grid;
   place-items: center;
-  min-height: 180px;
+  min-height: 220px;
+  overflow: hidden;
   border: 3px solid #6fa1e8;
   border-radius: 8px;
   background: repeating-linear-gradient(45deg, #eaf3ff 0 10px, #fff 10px 20px);
 }
 
 .profile-avatar-image {
-  width: min(160px, 100%);
+  width: min(210px, 92%);
   aspect-ratio: 1;
   object-fit: contain;
   image-rendering: auto;
@@ -1080,12 +1082,14 @@ main {
   display: grid;
   gap: 8px;
   margin: 0 0 16px;
+  min-width: 0;
 }
 
 .profile-info dl div {
   display: grid;
-  grid-template-columns: 96px 1fr;
+  grid-template-columns: minmax(100px, max-content) minmax(0, 1fr);
   gap: 10px;
+  align-items: baseline;
 }
 
 .profile-info dt {
@@ -1095,6 +1099,8 @@ main {
 
 .profile-info dd {
   margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .about-copy {
@@ -1136,12 +1142,17 @@ main {
   text-shadow: 1px 1px 0 #075640;
 }
 
-.start-tv-mark {
-  width: 24px;
-  height: 24px;
-  object-fit: contain;
-  image-rendering: auto;
-  filter: drop-shadow(1px 1px 0 rgba(0, 55, 36, 0.45));
+.windows-mark {
+  position: relative;
+  width: 18px;
+  height: 16px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 2px;
+  background:
+    linear-gradient(90deg, #ff6a5f 0 48%, transparent 48% 52%, #40c977 52% 100%),
+    linear-gradient(180deg, transparent 0 48%, rgba(255,255,255,0.8) 48% 52%, #ffd84d 52% 100%);
+  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.35), 1px 1px 0 rgba(0, 55, 36, 0.45);
 }
 
 .taskbar-tabs {
@@ -1510,7 +1521,7 @@ main {
 }
 
 .avatar-icon {
-  background-image: url("../assets/images/lusu-about-avatar-256.png") !important;
+  background-image: url("../assets/images/lusu-tv-head-256.png") !important;
 }
 
 .monitor-icon {
