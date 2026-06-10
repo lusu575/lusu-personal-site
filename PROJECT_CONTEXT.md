@@ -262,7 +262,7 @@ $env:XDG_CONFIG_HOME='F:\lusu575个人站\.wrangler-config'; npx.cmd wrangler pa
 - 如果 `lusu575.com` 和 `www.lusu575.com` 出现视觉不一致，优先检查两个域名的 CSS/图片响应是否同版；涉及首页背景、任务栏、图标等强视觉资源时，建议同步更新 CSS 引用版本号（例如 `css/style.css?v=...`、图片 URL query）来强制刷新缓存。
 - 双域名缓存是独立的：即使两个域名调用同一个 GitHub 仓库和同一个 Cloudflare Pages 项目，`lusu575.com` 与 `www.lusu575.com` 的边缘缓存、浏览器缓存仍可能不同步。上线后要分别打开两个域名验证。
 - 当前首页主要视觉资源包括 `assets/images/homepage-pixel-coast.png`、`assets/images/lusu-tv-head-256.png`、`assets/images/lusu-about-avatar-256.png`、`assets/images/start-windows-pixel.png`。替换这些资源后要检查桌面端和手机端显示效果。
-- 聊天室图标资源为 `assets/images/icon-chatroom.png`。调整聊天室入口、窗口或消息 UI 后，需要检查中文 / English / 日本語、桌面端和手机端显示。
+- 聊天室图标资源为 `assets/images/icon-chatroom-clean.png`。调整聊天室入口、窗口或消息 UI 后，需要检查中文 / English / 日本語、桌面端和手机端显示。
 
 ## 匿名聊天室维护注意点
 

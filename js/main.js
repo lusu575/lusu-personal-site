@@ -964,7 +964,7 @@ function createChatMessageNode(message) {
 
   const avatar = document.createElement("img");
   avatar.className = "chat-message-avatar";
-  avatar.src = "assets/images/icon-chatroom.png";
+  avatar.src = "assets/images/icon-chatroom-clean.png";
   avatar.alt = "";
   avatar.setAttribute("aria-hidden", "true");
 
