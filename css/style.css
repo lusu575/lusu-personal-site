@@ -1144,17 +1144,13 @@ main {
   text-shadow: 1px 1px 0 #064e35;
 }
 
-.windows-mark {
-  position: relative;
-  width: 18px;
-  height: 16px;
+.start-windows-icon {
+  width: 20px;
+  height: 20px;
   flex: 0 0 auto;
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  border-radius: 2px;
-  background:
-    linear-gradient(90deg, #ff6a5f 0 48%, transparent 48% 52%, #40c977 52% 100%),
-    linear-gradient(180deg, transparent 0 48%, rgba(255,255,255,0.8) 48% 52%, #ffd84d 52% 100%);
-  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.35), 1px 1px 0 rgba(0, 55, 36, 0.45);
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(1px 1px 0 rgba(0, 45, 25, 0.45));
 }
 
 .taskbar-tabs {
@@ -1781,6 +1777,11 @@ main {
     justify-content: center;
     min-height: 34px;
     padding: 6px 12px;
+  }
+
+  .start-windows-icon {
+    width: 18px;
+    height: 18px;
   }
 
   .taskbar-tabs {

@@ -240,6 +240,10 @@ $env:XDG_CONFIG_HOME='F:\lusu575个人站\.wrangler-config'; npx.cmd wrangler pa
 - 每次修改首页、窗口、任务栏、图标、卡片、弹窗、游戏外壳或任意前端样式时，都必须同步检查手机端适配，避免横向溢出、顶部常驻区域占屏、弹窗超出屏幕、游戏 iframe 尺寸过大等问题。
 - 每次新增或调整可见文案时，都必须同步维护中文 / English / 日本語 三种语言，不能只更新单一语言。
 - 每次调整图标、按钮、任务栏标签、桌面入口或标题栏时，都必须检查图标和文字的垂直/水平对齐、换行、截断和小屏幕显示效果。
+- 如果用户明确要求“只更新美化 / 不要动功能”，只修改 HTML/CSS/图片资源等视觉层，避免改动 `js/main.js` 的路由、登录、渲染数据、游戏加载等功能逻辑。
+- 使用 imagegen / image2 生成项目资源时，生成文件必须复制到 `assets/images/` 等项目目录并由代码引用，不能只保留在 Codex 默认生成目录。
+- 线上视觉验证要同时检查部署和缓存：确认 `origin/main` 最新提交、线上 CSS 是否包含新资源名、线上图片是否 200；Cloudflare/浏览器缓存可能导致旧效果继续显示，必要时使用缓存破坏参数或 `_headers` 调整缓存策略。
+- 当前首页主要视觉资源包括 `assets/images/homepage-pixel-coast.png`、`assets/images/lusu-tv-head-256.png`、`assets/images/lusu-about-avatar-256.png`、`assets/images/start-windows-pixel.png`。替换这些资源后要检查桌面端和手机端显示效果。
 
 ## 后续可扩展方向
 
