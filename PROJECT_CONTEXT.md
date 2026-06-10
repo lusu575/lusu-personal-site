@@ -214,6 +214,8 @@ $env:XDG_CONFIG_HOME='F:\lusu575个人站\.wrangler-config'; npx.cmd wrangler pa
 - Cloudflare `lusu-personal-site` 显示 `Git Provider: Yes`。
 - Cloudflare 项目域名包含 `lusu575.com` 和 `www.lusu575.com`。
 - 最新 Cloudflare 部署来源应为 GitHub `main` 的最新提交。
+- `lusu575.com` 和 `www.lusu575.com` 应指向同一个 Cloudflare Pages 项目和同一个 GitHub `main` 构建产物；如果两边视觉不一致，通常不是代码来源不同，而是 Cloudflare CDN 或浏览器按 Host 分别缓存了旧的 CSS/图片。
+- 排查双域名视觉不一致时，需要分别检查 `https://lusu575.com/css/style.css`、`https://www.lusu575.com/css/style.css` 以及相关图片 URL 是否返回同一版内容；必要时给 CSS 和强视觉图片加 query 版本号来刷新缓存。
 
 ## 视觉设计原则
 
@@ -244,6 +246,7 @@ $env:XDG_CONFIG_HOME='F:\lusu575个人站\.wrangler-config'; npx.cmd wrangler pa
 - 使用 imagegen / image2 生成项目资源时，生成文件必须复制到 `assets/images/` 等项目目录并由代码引用，不能只保留在 Codex 默认生成目录。
 - 线上视觉验证要同时检查部署和缓存：确认 `origin/main` 最新提交、线上 CSS 是否包含新资源名、线上图片是否 200；Cloudflare/浏览器缓存可能导致旧效果继续显示，必要时使用缓存破坏参数或 `_headers` 调整缓存策略。
 - 如果 `lusu575.com` 和 `www.lusu575.com` 出现视觉不一致，优先检查两个域名的 CSS/图片响应是否同版；涉及首页背景、任务栏、图标等强视觉资源时，建议同步更新 CSS 引用版本号（例如 `css/style.css?v=...`、图片 URL query）来强制刷新缓存。
+- 双域名缓存是独立的：即使两个域名调用同一个 GitHub 仓库和同一个 Cloudflare Pages 项目，`lusu575.com` 与 `www.lusu575.com` 的边缘缓存、浏览器缓存仍可能不同步。上线后要分别打开两个域名验证。
 - 当前首页主要视觉资源包括 `assets/images/homepage-pixel-coast.png`、`assets/images/lusu-tv-head-256.png`、`assets/images/lusu-about-avatar-256.png`、`assets/images/start-windows-pixel.png`。替换这些资源后要检查桌面端和手机端显示效果。
 
 ## 后续可扩展方向
