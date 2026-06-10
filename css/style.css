@@ -1163,6 +1163,7 @@ main {
   grid-column: 1;
   grid-row: 1;
   align-items: end;
+  justify-items: end;
 }
 
 .chat-message-avatar {
@@ -1177,6 +1178,7 @@ main {
 .chat-message-body {
   display: grid;
   gap: 3px;
+  justify-items: start;
   min-width: 0;
 }
 
@@ -1199,6 +1201,8 @@ main {
 
 .chat-message.is-own .chat-message-meta {
   justify-content: flex-end;
+  justify-self: end;
+  text-align: right;
 }
 
 .chat-message.is-own .chat-message-meta strong {
@@ -1221,6 +1225,7 @@ main {
 }
 
 .chat-message.is-own .chat-bubble {
+  justify-self: end;
   border-color: #98ce8f;
   color: #173b1d;
   background: #dff8d5;
@@ -1802,31 +1807,37 @@ main {
 
 .folder-icon {
   background-image: url("../assets/images/icon-knowledge.png") !important;
+  background-size: 90px 90px !important;
 }
 
 .tv-icon {
   background-image: url("../assets/images/icon-videos.png") !important;
+  background-size: 90px 90px !important;
 }
 
 .disk-icon {
   background-image: url("../assets/images/icon-resources.png") !important;
+  background-size: 90px 90px !important;
 }
 
 .game-icon {
   background-image: url("../assets/images/icon-games.png") !important;
+  background-size: 102px 102px !important;
 }
 
 .chat-icon {
   background-image: url("../assets/images/icon-blog.png") !important;
+  background-size: 102px 102px !important;
 }
 
 .chatroom-icon {
   background-image: url("../assets/images/icon-chatroom-clean.png") !important;
-  background-size: 84px 84px !important;
+  background-size: 76px 76px !important;
 }
 
 .avatar-icon {
   background-image: url("../assets/images/lusu-tv-head-256.png") !important;
+  background-size: 90px 90px !important;
 }
 
 .monitor-icon {
