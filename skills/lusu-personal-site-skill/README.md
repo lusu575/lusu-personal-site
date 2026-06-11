@@ -28,6 +28,10 @@ skills/lusu-personal-site-skill/SKILL.md
 - 如果游戏不支持当前语言，默认启动英语版本。
 - `kittens-game` 语言设置使用 `com.nuclearunicorn.kittengame.language`；`a-dark-room` 简体中文语言参数为 `zh_cn`，并保留 `ignorebrowser=true`。
 - 本地验证游戏区应通过静态服务器访问，不要直接打开 `file://`。
+- 文章内容保存在 Cloudflare D1，代码保存在 GitHub；正式发布文章应同时写入 zh / en / ja 三种内容。
+- 文章系统第一阶段不做自动翻译，不新增翻译按钮、`translate` 或 `retranslate` 接口。
+- 文章 Markdown 渲染必须防 XSS，不能把未经处理的 Markdown 或 HTML 直接作为 `innerHTML` 插入页面。
+- 后台文章管理接口必须要求 `users.role = admin`，普通登录用户不能管理文章。
 - Cloudflare 部署检查命令和期望状态保留在 `SKILL.md`。
 - 线上验证要注意 Cloudflare 缓存和 `lusu575.com` / `www.lusu575.com` 双域名缓存差异。
 - 修改 `js/main.js`、`css/style.css` 或强视觉资源时，必须同步更新 `index.html` 中的资源 query 版本号，避免线上继续显示旧缓存。

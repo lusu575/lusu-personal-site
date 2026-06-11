@@ -10,6 +10,7 @@ const CHAT_IP_WINDOW_LIMIT = 20;
 const CHAT_NICKNAME_LOOKBACK_LIMIT = 1000;
 let coreSchemaReady = false;
 let chatSchemaReady = false;
+let articleSchemaReady = false;
 
 export async function onRequest(context) {
   const { request, env } = context;
@@ -49,6 +50,30 @@ export async function onRequest(context) {
     }
     if (request.method === "GET" && parts[0] === "chat" && parts[1] === "nickname") {
       return getChatNickname(env);
+    }
+    if (parts[0] === "articles") {
+      await ensureArticleSchema(env);
+      if (request.method === "GET" && !parts[1]) {
+        return getArticles(request, env);
+      }
+      if (request.method === "GET" && parts[1]) {
+        return getArticle(request, env, parts[1]);
+      }
+    }
+    if (parts[0] === "admin" && parts[1] === "articles") {
+      await ensureArticleSchema(env);
+      if (request.method === "GET" && !parts[2]) {
+        return getAdminArticles(request, env);
+      }
+      if (request.method === "POST" && !parts[2]) {
+        return createArticle(request, env);
+      }
+      if (request.method === "PUT" && parts[2]) {
+        return updateArticle(request, env, parts[2]);
+      }
+      if (request.method === "DELETE" && parts[2]) {
+        return deleteArticle(request, env, parts[2]);
+      }
     }
     if (parts[0] === "saves" && parts[1]) {
       if (request.method === "GET") {
@@ -99,12 +124,12 @@ async function login(request, env) {
   const password = String(body.password || "");
   validateEmail(email);
 
-  const user = await env.DB.prepare("select id, email, password_hash from users where email = ?").bind(email).first();
+  const user = await env.DB.prepare("select id, email, password_hash, role from users where email = ?").bind(email).first();
   if (!user || !(await verifyPassword(password, user.password_hash))) {
     return json({ error: "邮箱或密码不正确。" }, 401);
   }
 
-  return createSessionResponse(env, request, user.id, user.email);
+  return createSessionResponse(env, request, user.id, user.email, 200, user.role || "user");
 }
 
 async function logout(request, env) {
@@ -122,7 +147,7 @@ async function me(request, env) {
   if (!session) {
     return json({ user: null });
   }
-  return json({ user: { id: session.user.id, email: session.user.email } });
+  return json({ user: { id: session.user.id, email: session.user.email, role: session.user.role } });
 }
 
 async function getSave(request, env, gameId) {
@@ -269,6 +294,196 @@ async function getChatNickname(env) {
   return json({ nickname: randomAvailableChatNickname(used) });
 }
 
+async function getArticles(request, env) {
+  const url = new URL(request.url);
+  const lang = normalizeArticleLang(url.searchParams.get("lang"));
+  const limit = clampLimit(url.searchParams.get("limit"), 50);
+  const category = normalizeOptionalText(url.searchParams.get("category"), 80);
+  const where = ["articles.status = 'published'"];
+  const binds = [lang, limit];
+
+  if (category) {
+    where.push("articles.category = ?");
+    binds.splice(1, 0, category);
+  }
+
+  const rows = (await env.DB.prepare(`
+    select
+      articles.article_id,
+      articles.slug,
+      articles.category,
+      articles.tags,
+      articles.cover_image,
+      articles.status,
+      articles.is_pinned,
+      articles.view_count,
+      articles.created_at,
+      articles.updated_at,
+      articles.published_at,
+      requested.lang as requested_lang,
+      coalesce(requested.lang, zh.lang, fallback.lang) as lang,
+      coalesce(requested.title, zh.title, fallback.title) as title,
+      coalesce(requested.summary, zh.summary, fallback.summary) as summary
+    from articles
+    left join article_translations requested
+      on requested.article_id = articles.article_id and requested.lang = ?
+    left join article_translations zh
+      on zh.article_id = articles.article_id and zh.lang = 'zh'
+    left join article_translations fallback
+      on fallback.translation_id = (
+        select inner_translations.translation_id
+        from article_translations inner_translations
+        where inner_translations.article_id = articles.article_id
+        order by case inner_translations.lang when 'zh' then 0 when 'en' then 1 when 'ja' then 2 else 3 end
+        limit 1
+      )
+    where ${where.join(" and ")}
+      and coalesce(requested.title, zh.title, fallback.title) is not null
+    order by articles.is_pinned desc, coalesce(articles.published_at, articles.created_at) desc, articles.article_id desc
+    limit ?
+  `).bind(...binds).all()).results || [];
+
+  return json({ articles: rows.map(publicArticleRow), lang });
+}
+
+async function getArticle(request, env, slug) {
+  const url = new URL(request.url);
+  const lang = normalizeArticleLang(url.searchParams.get("lang"));
+  const normalizedSlug = normalizeSlug(slug);
+  const row = await env.DB.prepare(`
+    select
+      articles.article_id,
+      articles.slug,
+      articles.category,
+      articles.tags,
+      articles.cover_image,
+      articles.status,
+      articles.is_pinned,
+      articles.view_count,
+      articles.created_at,
+      articles.updated_at,
+      articles.published_at,
+      requested.lang as requested_lang,
+      coalesce(requested.lang, zh.lang, fallback.lang) as lang,
+      coalesce(requested.title, zh.title, fallback.title) as title,
+      coalesce(requested.summary, zh.summary, fallback.summary) as summary,
+      coalesce(requested.content_markdown, zh.content_markdown, fallback.content_markdown) as content_markdown
+    from articles
+    left join article_translations requested
+      on requested.article_id = articles.article_id and requested.lang = ?
+    left join article_translations zh
+      on zh.article_id = articles.article_id and zh.lang = 'zh'
+    left join article_translations fallback
+      on fallback.translation_id = (
+        select inner_translations.translation_id
+        from article_translations inner_translations
+        where inner_translations.article_id = articles.article_id
+        order by case inner_translations.lang when 'zh' then 0 when 'en' then 1 when 'ja' then 2 else 3 end
+        limit 1
+      )
+    where articles.slug = ? and articles.status = 'published'
+    limit 1
+  `).bind(lang, normalizedSlug).first();
+
+  if (!row || !row.title) {
+    return json({ error: "文章不存在。" }, 404);
+  }
+
+  await env.DB.prepare("update articles set view_count = view_count + 1 where article_id = ?")
+    .bind(row.article_id).run();
+
+  return json({ article: publicArticleRow(row, true), lang });
+}
+
+async function getAdminArticles(request, env) {
+  await requireAdmin(request, env);
+  const rows = (await env.DB.prepare(`
+    select articles.*, count(article_translations.translation_id) as translation_count
+    from articles
+    left join article_translations on article_translations.article_id = articles.article_id
+    group by articles.article_id
+    order by articles.updated_at desc, articles.article_id desc
+  `).all()).results || [];
+  return json({ articles: rows.map((row) => ({ ...row, tags: parseTags(row.tags) })) });
+}
+
+async function createArticle(request, env) {
+  await requireAdmin(request, env);
+  const body = await readJson(request);
+  const article = normalizeArticlePayload(body);
+  const now = nowIso();
+  const articleId = crypto.randomUUID();
+  const publishedAt = article.status === "published" ? (article.published_at || now) : article.published_at;
+
+  await env.DB.batch([
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?)
+    `).bind(
+      articleId, article.slug, article.category, JSON.stringify(article.tags), article.cover_image,
+      article.status, article.is_pinned, now, now, publishedAt
+    ),
+    ...articleTranslationsStatements(env, articleId, article.translations, now)
+  ]);
+
+  return json({ ok: true, articleId, slug: article.slug }, 201);
+}
+
+async function updateArticle(request, env, articleId) {
+  await requireAdmin(request, env);
+  const body = await readJson(request);
+  const article = normalizeArticlePayload(body, { partial: true });
+  const existing = await env.DB.prepare("select article_id, published_at from articles where article_id = ?")
+    .bind(articleId).first();
+  if (!existing) {
+    return json({ error: "文章不存在。" }, 404);
+  }
+
+  const now = nowIso();
+  const publishedAt = article.status === "published" && !existing.published_at
+    ? (article.published_at || now)
+    : (article.published_at === undefined ? existing.published_at : article.published_at);
+
+  await env.DB.batch([
+    env.DB.prepare(`
+      update articles
+      set slug = coalesce(?, slug),
+          category = coalesce(?, category),
+          tags = coalesce(?, tags),
+          cover_image = coalesce(?, cover_image),
+          status = coalesce(?, status),
+          is_pinned = coalesce(?, is_pinned),
+          updated_at = ?,
+          published_at = ?
+      where article_id = ?
+    `).bind(
+      article.slug ?? null,
+      article.category ?? null,
+      article.tags ? JSON.stringify(article.tags) : null,
+      article.cover_image ?? null,
+      article.status ?? null,
+      article.is_pinned ?? null,
+      now,
+      publishedAt,
+      articleId
+    ),
+    ...(article.translations ? articleTranslationsStatements(env, articleId, article.translations, now) : [])
+  ]);
+
+  return json({ ok: true, articleId });
+}
+
+async function deleteArticle(request, env, articleId) {
+  await requireAdmin(request, env);
+  const result = await env.DB.prepare("delete from articles where article_id = ?").bind(articleId).run();
+  if (!result.meta?.changes) {
+    return json({ error: "文章不存在。" }, 404);
+  }
+  return json({ ok: true });
+}
+
 async function recentChatNicknames(env) {
   const rows = (await env.DB.prepare(`
     select distinct nickname
@@ -340,6 +555,46 @@ async function ensureChatSchema(env) {
   chatSchemaReady = true;
 }
 
+async function ensureArticleSchema(env) {
+  if (articleSchemaReady) {
+    return;
+  }
+  await env.DB.batch([
+    env.DB.prepare(`
+      create table if not exists articles (
+        article_id text primary key,
+        slug text not null unique,
+        category text not null default 'note',
+        tags text not null default '[]',
+        cover_image text not null default '',
+        status text not null default 'draft',
+        is_pinned integer not null default 0,
+        view_count integer not null default 0,
+        created_at text not null,
+        updated_at text not null,
+        published_at text
+      )
+    `),
+    env.DB.prepare(`
+      create table if not exists article_translations (
+        translation_id text primary key,
+        article_id text not null references articles(article_id) on delete cascade,
+        lang text not null,
+        title text not null,
+        summary text not null default '',
+        content_markdown text not null default '',
+        created_at text not null,
+        updated_at text not null,
+        unique(article_id, lang)
+      )
+    `),
+    env.DB.prepare("create index if not exists articles_status_published_idx on articles(status, published_at, article_id)"),
+    env.DB.prepare("create index if not exists articles_category_idx on articles(category)"),
+    env.DB.prepare("create index if not exists article_translations_article_lang_idx on article_translations(article_id, lang)")
+  ]);
+  articleSchemaReady = true;
+}
+
 async function ensureCoreSchema(env) {
   if (coreSchemaReady) {
     return;
@@ -350,6 +605,7 @@ async function ensureCoreSchema(env) {
         id text primary key,
         email text not null unique,
         password_hash text not null,
+        role text not null default 'user',
         created_at text not null,
         updated_at text not null
       )
@@ -375,10 +631,18 @@ async function ensureCoreSchema(env) {
     `),
     env.DB.prepare("create index if not exists game_saves_updated_at_idx on game_saves(updated_at)")
   ]);
+  await ensureUserRoleColumn(env);
   coreSchemaReady = true;
 }
 
-async function createSessionResponse(env, request, userId, email, status = 200) {
+async function ensureUserRoleColumn(env) {
+  const columns = (await env.DB.prepare("pragma table_info(users)").all()).results || [];
+  if (!columns.some((column) => column.name === "role")) {
+    await env.DB.prepare("alter table users add column role text not null default 'user'").run();
+  }
+}
+
+async function createSessionResponse(env, request, userId, email, status = 200, role = "user") {
   const token = randomToken();
   const tokenHash = await sha256Hex(token);
   const now = new Date();
@@ -388,7 +652,7 @@ async function createSessionResponse(env, request, userId, email, status = 200) 
     "insert into sessions (token_hash, user_id, created_at, expires_at) values (?, ?, ?, ?)"
   ).bind(tokenHash, userId, now.toISOString(), expiresAt).run();
 
-  const response = json({ user: { id: userId, email } }, status);
+  const response = json({ user: { id: userId, email, role } }, status);
   response.headers.append("Set-Cookie", cookieValue(token, request, SESSION_DAYS * 24 * 60 * 60));
   return response;
 }
@@ -401,6 +665,14 @@ async function requireSession(request, env) {
   return session;
 }
 
+async function requireAdmin(request, env) {
+  const session = await requireSession(request, env);
+  if (session.user.role !== "admin") {
+    throw new HttpError("只有管理员可以管理文章。", 403);
+  }
+  return session;
+}
+
 async function getSession(request, env) {
   const token = readCookie(request, SESSION_COOKIE);
   if (!token) {
@@ -409,7 +681,7 @@ async function getSession(request, env) {
 
   const tokenHash = await sha256Hex(token);
   const row = await env.DB.prepare(`
-    select sessions.token_hash, users.id, users.email
+    select sessions.token_hash, users.id, users.email, users.role
     from sessions
     join users on users.id = sessions.user_id
     where sessions.token_hash = ? and sessions.expires_at > ?
@@ -419,7 +691,131 @@ async function getSession(request, env) {
     return null;
   }
 
-  return { tokenHash, user: { id: row.id, email: row.email } };
+  return { tokenHash, user: { id: row.id, email: row.email, role: row.role || "user" } };
+}
+
+function publicArticleRow(row, includeContent = false) {
+  const article = {
+    article_id: row.article_id,
+    slug: row.slug,
+    category: row.category,
+    tags: parseTags(row.tags),
+    cover_image: row.cover_image || "",
+    status: row.status,
+    is_pinned: Number(row.is_pinned || 0),
+    view_count: Number(row.view_count || 0),
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+    published_at: row.published_at,
+    lang: row.lang || "zh",
+    requested_lang: row.requested_lang || "",
+    title: row.title || "",
+    summary: row.summary || ""
+  };
+  if (includeContent) {
+    article.content_markdown = row.content_markdown || "";
+  }
+  return article;
+}
+
+function parseTags(value) {
+  try {
+    const tags = JSON.parse(value || "[]");
+    return Array.isArray(tags) ? tags.map((tag) => String(tag)).filter(Boolean) : [];
+  } catch {
+    return [];
+  }
+}
+
+function normalizeArticlePayload(body, options = {}) {
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    throw new HttpError("文章数据格式不正确。", 400);
+  }
+
+  const partial = Boolean(options.partial);
+  const article = {};
+  if (!partial || body.slug !== undefined) {
+    article.slug = normalizeSlug(body.slug);
+  }
+  if (!partial || body.category !== undefined) {
+    article.category = normalizeOptionalText(body.category, 80) || "note";
+  }
+  if (!partial || body.tags !== undefined) {
+    article.tags = normalizeTags(body.tags);
+  }
+  if (!partial || body.cover_image !== undefined) {
+    article.cover_image = normalizeOptionalText(body.cover_image, 500);
+  }
+  if (!partial || body.status !== undefined) {
+    article.status = normalizeArticleStatus(body.status);
+  }
+  if (!partial || body.is_pinned !== undefined) {
+    article.is_pinned = body.is_pinned ? 1 : 0;
+  }
+  if (body.published_at !== undefined) {
+    article.published_at = normalizeOptionalText(body.published_at, 40) || null;
+  }
+  if (!partial || body.translations !== undefined) {
+    article.translations = normalizeArticleTranslations(body.translations, partial);
+  }
+  return article;
+}
+
+function normalizeArticleTranslations(value, partial = false) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    if (partial) {
+      return undefined;
+    }
+    throw new HttpError("文章需要 translations。", 400);
+  }
+
+  const translations = {};
+  ["zh", "en", "ja"].forEach((lang) => {
+    if (value[lang] === undefined) {
+      return;
+    }
+    const item = value[lang];
+    if (!item || typeof item !== "object" || Array.isArray(item)) {
+      throw new HttpError(`${lang} 翻译内容格式不正确。`, 400);
+    }
+    const title = normalizeRequiredText(item.title, 180, `${lang} 标题不能为空。`);
+    translations[lang] = {
+      title,
+      summary: normalizeOptionalText(item.summary, 500),
+      content_markdown: normalizeOptionalText(item.content_markdown, 200000)
+    };
+  });
+
+  if (!Object.keys(translations).length && !partial) {
+    throw new HttpError("文章至少需要一种语言内容。", 400);
+  }
+  if (!partial && !["zh", "en", "ja"].every((lang) => translations[lang])) {
+    throw new HttpError("发布文章时需要同时提供 zh / en / ja 三种语言内容。", 400);
+  }
+  return translations;
+}
+
+function articleTranslationsStatements(env, articleId, translations, now) {
+  return Object.entries(translations).map(([lang, item]) => env.DB.prepare(`
+    insert into article_translations (
+      translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+    ) values (?, ?, ?, ?, ?, ?, ?, ?)
+    on conflict(article_id, lang)
+    do update set
+      title = excluded.title,
+      summary = excluded.summary,
+      content_markdown = excluded.content_markdown,
+      updated_at = excluded.updated_at
+  `).bind(
+    `${articleId}-${lang}`,
+    articleId,
+    lang,
+    item.title,
+    item.summary,
+    item.content_markdown,
+    now,
+    now
+  ));
 }
 
 async function readJson(request) {
@@ -460,6 +856,56 @@ function validateGameId(gameId) {
   if (!/^[a-z0-9-]{1,80}$/.test(gameId)) {
     throw new HttpError("游戏编号不正确。", 400);
   }
+}
+
+function normalizeArticleLang(value) {
+  return ["zh", "en", "ja"].includes(value) ? value : "zh";
+}
+
+function normalizeSlug(value) {
+  const slug = String(value || "").trim().toLowerCase();
+  if (!/^[a-z0-9][a-z0-9-]{0,119}$/.test(slug)) {
+    throw new HttpError("文章 slug 只能包含小写字母、数字和连字符，最多 120 个字符。", 400);
+  }
+  return slug;
+}
+
+function normalizeArticleStatus(value) {
+  const status = String(value || "draft").trim();
+  if (!["draft", "published", "archived"].includes(status)) {
+    throw new HttpError("文章状态只能是 draft / published / archived。", 400);
+  }
+  return status;
+}
+
+function normalizeRequiredText(value, maxLength, message) {
+  const text = String(value || "").trim();
+  if (!text) {
+    throw new HttpError(message, 400);
+  }
+  if (Array.from(text).length > maxLength) {
+    throw new HttpError(`文本最多 ${maxLength} 个字符。`, 400);
+  }
+  return text;
+}
+
+function normalizeOptionalText(value, maxLength) {
+  const text = String(value || "").trim();
+  if (Array.from(text).length > maxLength) {
+    throw new HttpError(`文本最多 ${maxLength} 个字符。`, 400);
+  }
+  return text;
+}
+
+function normalizeTags(value) {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value
+    .map((tag) => String(tag || "").trim())
+    .filter(Boolean)
+    .slice(0, 12)
+    .map((tag) => Array.from(tag).slice(0, 40).join(""));
 }
 
 function clampLimit(value, max) {

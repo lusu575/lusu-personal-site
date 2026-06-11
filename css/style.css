@@ -853,7 +853,8 @@ main {
 }
 
 #knowledge .category-panel,
-#knowledge .content-list {
+#knowledge .content-list,
+#knowledge .article-detail {
   min-height: 0;
   overflow: auto;
 }
@@ -905,6 +906,103 @@ main {
   margin: 0;
   color: var(--xp-muted);
   line-height: 1.6;
+}
+
+.article-detail {
+  grid-column: 2;
+  grid-row: 1;
+  padding: 16px;
+  background:
+    linear-gradient(90deg, rgba(52, 134, 255, 0.08) 0 1px, transparent 1px 100%),
+    repeating-linear-gradient(180deg, #fff 0 34px, #d6ecff 35px),
+    #fff;
+}
+
+.article-back-button {
+  margin-bottom: 12px;
+}
+
+.article-detail-head {
+  margin-bottom: 12px;
+  padding: 14px;
+  border: 2px solid #a9a58f;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: inset 1px 1px 0 #fff, 3px 3px 0 rgba(0, 60, 158, 0.15);
+}
+
+.article-detail-head h2 {
+  margin: 8px 0;
+  color: #073a91;
+  font-size: 24px;
+  line-height: 1.25;
+}
+
+.article-detail-head p {
+  margin: 0;
+  color: var(--xp-muted);
+  line-height: 1.7;
+}
+
+.markdown-body {
+  padding: 16px;
+  border: 2px solid #b7d0ff;
+  border-radius: 7px;
+  color: #1f2a3a;
+  background: rgba(255, 255, 255, 0.94);
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3 {
+  margin: 18px 0 8px;
+  color: #073a91;
+  line-height: 1.25;
+}
+
+.markdown-body h1:first-child,
+.markdown-body h2:first-child,
+.markdown-body h3:first-child {
+  margin-top: 0;
+}
+
+.markdown-body p,
+.markdown-body ul,
+.markdown-body ol,
+.markdown-body pre,
+.markdown-body blockquote {
+  margin: 0 0 12px;
+}
+
+.markdown-body code {
+  padding: 1px 5px;
+  border: 1px solid #b7d0ff;
+  border-radius: 4px;
+  color: #113d91;
+  background: #eef6ff;
+}
+
+.markdown-body pre {
+  max-width: 100%;
+  padding: 12px;
+  border: 1px solid #9bbcff;
+  border-radius: 6px;
+  background: #eef6ff;
+  overflow: auto;
+}
+
+.markdown-body pre code {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.markdown-body blockquote {
+  padding: 8px 12px;
+  border-left: 5px solid #2f77df;
+  background: #edf5ff;
 }
 
 .meta-row {
@@ -2096,6 +2194,11 @@ main {
     grid-template-columns: 1fr;
   }
 
+  .article-detail {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
   .category-panel {
     display: flex;
     gap: 8px;
@@ -2138,6 +2241,7 @@ main {
 
   .video-body,
   .article-card,
+  .article-detail,
   .resource-card,
   .blog-card,
   .game-card,

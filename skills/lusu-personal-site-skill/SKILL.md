@@ -89,6 +89,18 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 会话使用 HttpOnly cookie：`lusu_session`。
 - 单个游戏存档最大约 1MB。
 
+## 数据库化三语文章规则
+
+- 文章内容保存在 Cloudflare D1，网站代码仍保存在 GitHub。
+- 文章通用信息使用 `articles` 表，三语内容使用 `article_translations` 表。
+- 每篇正式发布文章应一次性提供 `zh`、`en`、`ja` 三种内容；第一阶段不做自动翻译。
+- 不要新增自动翻译 API、翻译按钮、`translate` 或 `retranslate` 管理接口。
+- 前台文章列表和详情必须按当前网站语言请求：`/api/articles?lang=zh|en|ja` 和 `/api/articles/:slug?lang=zh|en|ja`。
+- 文章读取 fallback 顺序为：当前语言 -> 中文 `zh` -> 任意已有语言。
+- 文章正文使用 Markdown 保存；前端渲染必须防 XSS，不能把未经处理的 Markdown 或 HTML 直接作为 `innerHTML` 插入页面。
+- 后台文章管理接口必须要求登录用户 `role = admin`；普通登录用户不能新建、编辑、删除或发布文章。
+- 修改文章系统 schema、接口、前台知识库渲染或发布流程时，必须同步更新 `PROJECT_CONTEXT.md` 和 `CHANGELOG.md`。
+
 ## Cloudflare 部署规则
 
 - 正式部署链路是 `GitHub main -> Cloudflare Pages Git 自动部署 -> lusu575.com`。

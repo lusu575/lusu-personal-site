@@ -28,6 +28,13 @@ const translations = {
     toolbarBack: "返回桌面",
     toolbarRefresh: "刷新",
     knowledgePath: "我的电脑 / 鲁肃 / 知识库",
+    articleLoading: "正在从数据库读取文章...",
+    articleLoadFailed: "文章读取失败，请稍后再试。",
+    articleEmpty: "数据库里暂时还没有已发布文章。",
+    articleBack: "返回文章列表",
+    articlePublished: "发布时间",
+    articleCategory: "分类",
+    articleFallback: "当前语言版本缺失，已显示备用语言版本。",
     readButton: "阅读",
     playButton: "播放",
     startGameButton: "开始",
@@ -112,6 +119,13 @@ const translations = {
     toolbarBack: "Back to Desktop",
     toolbarRefresh: "Refresh",
     knowledgePath: "My Computer / LuSu / Knowledge",
+    articleLoading: "Loading articles from the database...",
+    articleLoadFailed: "Could not load articles. Please try again later.",
+    articleEmpty: "No published articles are in the database yet.",
+    articleBack: "Back to article list",
+    articlePublished: "Published",
+    articleCategory: "Category",
+    articleFallback: "This language is missing, so a fallback language is shown.",
     readButton: "Read",
     playButton: "Play",
     startGameButton: "Start",
@@ -196,6 +210,13 @@ const translations = {
     toolbarBack: "デスクトップへ戻る",
     toolbarRefresh: "更新",
     knowledgePath: "マイコンピュータ / 魯粛 / 知識庫",
+    articleLoading: "データベースから記事を読み込み中...",
+    articleLoadFailed: "記事を読み込めません。あとで試してください。",
+    articleEmpty: "公開済みの記事はまだデータベースにありません。",
+    articleBack: "記事一覧へ戻る",
+    articlePublished: "公開日",
+    articleCategory: "分類",
+    articleFallback: "この言語版がないため、別の言語版を表示しています。",
     readButton: "読む",
     playButton: "再生",
     startGameButton: "開始",
@@ -290,6 +311,12 @@ const labels = {
 
 const content = {
   updates: [
+    {
+      icon: "📚",
+      date: "2026.06.11",
+      title: { zh: "数据库化三语文章系统", en: "Database-backed trilingual articles", ja: "DB対応三言語記事システム" },
+      desc: { zh: "知识库文章改为从 Cloudflare D1 读取，支持中英日内容和 Markdown 详情", en: "Knowledge articles now load from Cloudflare D1 with zh/en/ja content and Markdown detail pages", ja: "知識庫の記事を Cloudflare D1 から読み込み、三言語本文と Markdown 詳細に対応しました" }
+    },
     {
       icon: "🎮",
       date: "2026.06.11",
@@ -463,6 +490,14 @@ const activeFilters = {
   resources: "all"
 };
 let authUser = null;
+const articleState = {
+  loading: false,
+  requestId: 0,
+  articles: [],
+  currentSlug: "",
+  currentArticle: null,
+  error: ""
+};
 
 const pageIds = ["home", "knowledge", "videos", "resources", "games", "blog", "chatroom", "about"];
 
@@ -539,6 +574,7 @@ function setLanguage(lang) {
   });
 
   renderAll();
+  loadArticles();
   updateWelcomeGreeting();
 }
 
@@ -567,21 +603,256 @@ function renderCategoryButtons(targetId, type, categories) {
 }
 
 function renderKnowledge() {
-  renderCategoryButtons("knowledge-categories", "knowledge", label("knowledgeCategories"));
   const list = document.getElementById("knowledge-list");
-  const items = content.knowledge.filter((item) => activeFilters.knowledge === "all" || String(item.category) === activeFilters.knowledge);
+  const detail = document.getElementById("article-detail");
+  const categories = [...new Set(articleState.articles.map((item) => item.category).filter(Boolean))];
+  renderKnowledgeCategoryButtons(categories);
+
+  if (articleState.currentSlug) {
+    list.hidden = true;
+    detail.hidden = false;
+    loadArticleDetail(articleState.currentSlug);
+    return;
+  }
+
+  list.hidden = false;
+  detail.hidden = true;
+  if (articleState.loading) {
+    list.innerHTML = `<p class="loading-text">${t("articleLoading")}</p>`;
+    return;
+  }
+  if (articleState.error) {
+    list.innerHTML = `<p class="loading-text">${t("articleLoadFailed")}</p>`;
+    return;
+  }
+
+  const items = articleState.articles.filter((item) => activeFilters.knowledge === "all" || item.category === activeFilters.knowledge);
+  if (!items.length) {
+    list.innerHTML = `<p class="loading-text">${t("articleEmpty")}</p>`;
+    return;
+  }
 
   list.innerHTML = items.map((item) => `
     <article class="article-card">
-      <h3>${contentTitle(item.title)}</h3>
-      <p>${localText(item.desc)}</p>
+      <h3>${escapeHtml(item.title)}</h3>
+      <p>${escapeHtml(item.summary || "")}</p>
       <div class="meta-row">
-        ${item.tags.map((tag) => `<span class="tag">${tag}</span>`).join("")}
-        <span>${label("updated")}：${item.updated}</span>
+        <span>${t("articleCategory")}：${escapeHtml(item.category || "note")}</span>
+        ${item.tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}
+        <span>${t("articlePublished")}：${escapeHtml(formatArticleDate(item.published_at || item.created_at))}</span>
+        ${item.lang !== currentLang ? `<span class="tag">${t("articleFallback")}</span>` : ""}
       </div>
-      <button class="card-action">${t("readButton")}</button>
+      <button class="card-action" data-article-slug="${escapeHtml(item.slug)}">${t("readButton")}</button>
     </article>
   `).join("");
+}
+
+function renderKnowledgeCategoryButtons(categories) {
+  const target = document.getElementById("knowledge-categories");
+  const buttons = [t("all"), ...categories].map((name, index) => {
+    const value = index === 0 ? "all" : String(name);
+    return `<button class="${activeFilters.knowledge === value ? "active " : ""}category-button" data-filter-type="knowledge" data-filter="${escapeHtml(value)}">${escapeHtml(name)}</button>`;
+  });
+  target.innerHTML = buttons.join("");
+}
+
+async function loadArticles() {
+  const requestId = articleState.requestId + 1;
+  articleState.requestId = requestId;
+  articleState.loading = true;
+  articleState.error = "";
+  renderKnowledge();
+  try {
+    const payload = await articleApi(`/api/articles?lang=${encodeURIComponent(currentLang)}`);
+    if (requestId !== articleState.requestId) {
+      return;
+    }
+    articleState.articles = payload.articles || [];
+  } catch (error) {
+    if (requestId !== articleState.requestId) {
+      return;
+    }
+    articleState.articles = [];
+    articleState.error = error.message || "failed";
+    const list = document.getElementById("knowledge-list");
+    list.hidden = false;
+    document.getElementById("article-detail").hidden = true;
+    list.innerHTML = `<p class="loading-text">${t("articleLoadFailed")}</p>`;
+  } finally {
+    if (requestId === articleState.requestId) {
+      articleState.loading = false;
+      renderKnowledge();
+    }
+  }
+}
+
+async function loadArticleDetail(slug) {
+  const detail = document.getElementById("article-detail");
+  const title = document.getElementById("article-detail-title");
+  const summary = document.getElementById("article-detail-summary");
+  const meta = document.getElementById("article-detail-meta");
+  const body = document.getElementById("article-detail-body");
+
+  title.textContent = t("articleLoading");
+  summary.textContent = "";
+  meta.replaceChildren();
+  body.replaceChildren();
+
+  try {
+    const payload = await articleApi(`/api/articles/${encodeURIComponent(slug)}?lang=${encodeURIComponent(currentLang)}`);
+    if (articleState.currentSlug !== slug) {
+      return;
+    }
+    articleState.currentArticle = payload.article;
+    renderArticleDetail(payload.article);
+  } catch {
+    title.textContent = t("articleLoadFailed");
+  }
+}
+
+function renderArticleDetail(article) {
+  const title = document.getElementById("article-detail-title");
+  const summary = document.getElementById("article-detail-summary");
+  const meta = document.getElementById("article-detail-meta");
+  const body = document.getElementById("article-detail-body");
+
+  title.textContent = article.title || "";
+  summary.textContent = article.summary || "";
+  meta.replaceChildren();
+  [
+    `${t("articleCategory")}：${article.category || "note"}`,
+    `${t("articlePublished")}：${formatArticleDate(article.published_at || article.created_at)}`,
+    ...(article.tags || []).map((tag) => `#${tag}`),
+    article.lang !== currentLang ? t("articleFallback") : ""
+  ].filter(Boolean).forEach((text) => {
+    const item = document.createElement("span");
+    item.className = text.startsWith("#") || text === t("articleFallback") ? "tag" : "";
+    item.textContent = text;
+    meta.appendChild(item);
+  });
+  renderMarkdownSafe(body, article.content_markdown || "");
+}
+
+function showArticle(slug) {
+  articleState.currentSlug = slug;
+  articleState.currentArticle = null;
+  renderKnowledge();
+}
+
+function showArticleList() {
+  articleState.currentSlug = "";
+  articleState.currentArticle = null;
+  renderKnowledge();
+}
+
+async function articleApi(path) {
+  const response = await fetch(path, { headers: { "Accept": "application/json" } });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(payload.error || `HTTP ${response.status}`);
+  }
+  return payload;
+}
+
+function formatArticleDate(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+  return date.toISOString().slice(0, 10);
+}
+
+function renderMarkdownSafe(target, markdown) {
+  target.replaceChildren();
+  const lines = String(markdown || "").replace(/\r\n/g, "\n").split("\n");
+  let index = 0;
+  while (index < lines.length) {
+    const line = lines[index];
+    if (!line.trim()) {
+      index += 1;
+      continue;
+    }
+
+    if (/^```/.test(line.trim())) {
+      const codeLines = [];
+      index += 1;
+      while (index < lines.length && !/^```/.test(lines[index].trim())) {
+        codeLines.push(lines[index]);
+        index += 1;
+      }
+      index += 1;
+      const pre = document.createElement("pre");
+      const code = document.createElement("code");
+      code.textContent = codeLines.join("\n");
+      pre.appendChild(code);
+      target.appendChild(pre);
+      continue;
+    }
+
+    const heading = line.match(/^(#{1,3})\s+(.+)$/);
+    if (heading) {
+      const node = document.createElement(`h${heading[1].length}`);
+      appendInlineMarkdown(node, heading[2]);
+      target.appendChild(node);
+      index += 1;
+      continue;
+    }
+
+    if (/^>\s+/.test(line)) {
+      const quote = document.createElement("blockquote");
+      appendInlineMarkdown(quote, line.replace(/^>\s+/, ""));
+      target.appendChild(quote);
+      index += 1;
+      continue;
+    }
+
+    if (/^[-*]\s+/.test(line)) {
+      const list = document.createElement("ul");
+      while (index < lines.length && /^[-*]\s+/.test(lines[index])) {
+        const item = document.createElement("li");
+        appendInlineMarkdown(item, lines[index].replace(/^[-*]\s+/, ""));
+        list.appendChild(item);
+        index += 1;
+      }
+      target.appendChild(list);
+      continue;
+    }
+
+    const paragraphLines = [];
+    while (
+      index < lines.length
+      && lines[index].trim()
+      && !/^(#{1,3})\s+/.test(lines[index])
+      && !/^[-*]\s+/.test(lines[index])
+      && !/^>\s+/.test(lines[index])
+      && !/^```/.test(lines[index].trim())
+    ) {
+      paragraphLines.push(lines[index]);
+      index += 1;
+    }
+    const paragraph = document.createElement("p");
+    appendInlineMarkdown(paragraph, paragraphLines.join(" "));
+    target.appendChild(paragraph);
+  }
+}
+
+function appendInlineMarkdown(parent, text) {
+  const parts = String(text).split(/(`[^`]+`|\*\*[^*]+\*\*)/g).filter(Boolean);
+  parts.forEach((part) => {
+    if (part.startsWith("`") && part.endsWith("`")) {
+      const code = document.createElement("code");
+      code.textContent = part.slice(1, -1);
+      parent.appendChild(code);
+      return;
+    }
+    if (part.startsWith("**") && part.endsWith("**")) {
+      const strong = document.createElement("strong");
+      strong.textContent = part.slice(2, -2);
+      parent.appendChild(strong);
+      return;
+    }
+    parent.appendChild(document.createTextNode(part));
+  });
 }
 
 function renderVideos() {
@@ -1227,6 +1498,17 @@ document.addEventListener("click", (event) => {
   if (filterButton) {
     activeFilters[filterButton.dataset.filterType] = filterButton.dataset.filter;
     renderAll();
+    return;
+  }
+
+  const articleButton = event.target.closest("[data-article-slug]");
+  if (articleButton) {
+    showArticle(articleButton.dataset.articleSlug);
+    return;
+  }
+
+  if (event.target.closest("[data-article-back]")) {
+    showArticleList();
     return;
   }
 

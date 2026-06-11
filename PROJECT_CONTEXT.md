@@ -58,8 +58,61 @@ Cloudflare Pages 项目状态：
 - 中文 / English / 日本語 三语切换
 - 主站右上角账号入口
 - 游戏页统一外壳和云存档能力
+- 数据库化三语文章系统：文章内容保存在 Cloudflare D1，网站按当前语言读取 zh / en / ja 内容
 - Cloudflare Pages Functions 后端接口
-- Cloudflare D1 持久化账号、会话、游戏存档和聊天室消息
+- Cloudflare D1 持久化账号、会话、游戏存档、聊天室消息和文章内容
+
+## 数据库化三语文章系统
+
+文章系统第一阶段只做数据库化内容管理和前台读取，不做自动翻译、翻译按钮或 retranslate 接口。
+
+文章存储：
+
+- 文章代码和展示逻辑仍保存在 GitHub。
+- 文章内容保存在 Cloudflare D1。
+- 每篇文章用一条 `articles` 保存通用信息。
+- 每篇文章用 `article_translations` 保存三语内容：`zh`、`en`、`ja`。
+- 后台发布文章时要求一次性提供 zh / en / ja 三种内容。
+- 正文使用 Markdown 保存。
+
+前台读取规则：
+
+- 当前网站语言为中文时，请求 `lang=zh` 并显示中文内容。
+- 当前网站语言为 English 时，请求 `lang=en` 并显示英文内容。
+- 当前网站语言为 日本語 时，请求 `lang=ja` 并显示日文内容。
+- 如果当前语言版本不存在，fallback 到中文 `zh`。
+- 如果中文也不存在，fallback 到任意已有语言版本。
+- 知识库区域已改为从 `/api/articles` 读取文章列表，点击后从 `/api/articles/:slug` 读取详情。
+- 网站切换语言时，文章列表和当前文章详情会重新请求对应语言版本。
+
+公开接口：
+
+- `GET /api/articles?lang=zh`
+- `GET /api/articles?lang=en`
+- `GET /api/articles?lang=ja`
+- `GET /api/articles/:slug?lang=zh`
+- `GET /api/articles/:slug?lang=en`
+- `GET /api/articles/:slug?lang=ja`
+
+后台接口：
+
+- `GET /api/admin/articles`
+- `POST /api/admin/articles`
+- `PUT /api/admin/articles/:articleId`
+- `DELETE /api/admin/articles/:articleId`
+
+权限：
+
+- `users` 表新增 `role` 字段：`user` / `admin`。
+- Pages Functions 的 schema guard 会为旧 `users` 表自动补 `role` 列。
+- 只有 `role = admin` 的登录用户可以访问后台文章接口。
+- 普通登录用户只能继续使用游戏云存档等原有能力，不能管理文章。
+
+Markdown 安全：
+
+- 文章详情第一阶段只支持基础 Markdown。
+- 前端详情正文使用 DOM 节点和 `textContent` 构造，不直接把未处理 Markdown/HTML 插入页面。
+- 聊天室仍保持纯文本渲染规则不变。
 
 ## 账号与云存档
 
@@ -85,6 +138,8 @@ functions/api/[[route]].js
 - `/api/auth/login`
 - `/api/auth/logout`
 - `/api/saves/:gameId`
+- `/api/articles`
+- `/api/articles/:slug`
 
 存档同步逻辑：
 
@@ -179,6 +234,8 @@ D1 表：`anonymous_chat_messages`
 - `sessions`
 - `game_saves`
 - `anonymous_chat_messages`
+- `articles`
+- `article_translations`
 
 ## 主要文件结构
 
@@ -227,6 +284,19 @@ npm.cmd install
 
 ```powershell
 npm.cmd run d1:migrate:local
+```
+
+远端执行 D1 schema：
+
+```powershell
+npm.cmd run d1:migrate:remote
+```
+
+如果需要把当前账号设为管理员，先正常注册/登录账号，再在 D1 中将对应邮箱的用户角色更新为 `admin`：
+
+```powershell
+$env:XDG_CONFIG_HOME='F:\lusu575个人站\.wrangler-config'
+npx.cmd wrangler d1 execute lusu_personal_site --remote --command "update users set role = 'admin' where email = '你的邮箱'"
 ```
 
 本地启动 Cloudflare Pages：
