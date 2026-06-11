@@ -1,4 +1,4 @@
-const siteUpdated = "2026.06.10";
+const siteUpdated = "2026.06.11";
 const pageParams = new URLSearchParams(window.location.search);
 
 const translations = {
@@ -291,6 +291,12 @@ const labels = {
 
 const content = {
   updates: [
+    {
+      icon: "🎮",
+      date: "2026.06.11",
+      title: { zh: "游戏区卡片整理", en: "Games section cards refined", ja: "ゲーム欄カードを整理" },
+      desc: { zh: "删去临时说明和多余标签，游戏列表改为内容较多时内部滚动", en: "Temporary notes and extra tags were removed, with internal scrolling for longer game lists", ja: "一時説明と余分なタグを削除し、ゲーム一覧は多い時に内部スクロールします" }
+    },
     {
       icon: "💬",
       date: "2026.06.10",
