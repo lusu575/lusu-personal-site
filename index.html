@@ -7,7 +7,7 @@
   <title>鲁肃的个人站</title>
   <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32.png">
   <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/style.css?v=20260611-sync-layout-chat">
+  <link rel="stylesheet" href="css/style.css?v=20260611-knowledge-video-home-fix">
 </head>
 <body>
   <div class="site-shell">
@@ -88,11 +88,6 @@
             <span><span class="title-icon">★</span><span id="knowledge-title" data-i18n="knowledgeTitle">知识库</span></span>
             <button class="close-button" data-route="home" aria-label="关闭">×</button>
           </div>
-          <div class="window-toolbar">
-            <button data-route="home" data-i18n="toolbarBack">返回桌面</button>
-            <button data-route="knowledge" data-i18n="toolbarRefresh">刷新</button>
-            <span data-i18n="knowledgePath">我的电脑 / 鲁肃 / 知识库</span>
-          </div>
           <div class="folder-layout">
             <aside class="category-panel" id="knowledge-categories"></aside>
             <div class="content-list" id="knowledge-list"></div>
@@ -100,12 +95,14 @@
               <button class="xp-button article-back-button" type="button" data-article-back>
                 <span data-i18n="articleBack">返回文章列表</span>
               </button>
-              <div class="article-detail-head">
-                <div class="meta-row" id="article-detail-meta"></div>
-                <h2 id="article-detail-title"></h2>
-                <p id="article-detail-summary"></p>
+              <div class="article-detail-card">
+                <div class="article-detail-head">
+                  <div class="meta-row" id="article-detail-meta"></div>
+                  <h2 id="article-detail-title"></h2>
+                  <p id="article-detail-summary"></p>
+                </div>
+                <div class="markdown-body" id="article-detail-body"></div>
               </div>
-              <div class="markdown-body" id="article-detail-body"></div>
             </article>
           </div>
         </div>
@@ -287,6 +284,6 @@
     </div>
   </div>
 
-  <script src="js/main.js?v=20260611-sync-layout-chat"></script>
+  <script src="js/main.js?v=20260611-knowledge-video-home-fix"></script>
 </body>
 </html>

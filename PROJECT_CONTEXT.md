@@ -205,15 +205,18 @@ D1 表：`anonymous_chat_messages`
 
 ## 游戏区
 
-当前游戏区接入两款开源 H5 游戏：
+当前游戏区接入两类开源游戏：
 
 - `kittens-game`
 - `a-dark-room`
+- `life-restart`、`vue-xiuxiangame`、`cultivation-world-simulator`、`XianTu`、`react-xiuxian-game`、`Daoyou`、`2048`、`hextris`、`freeciv-web`、`OpenTTD` 等外部开源入口
 
 游戏列表：
 
 - 主站不再使用独立游戏大厅页。
 - `js/main.js` 读取 `games/catalog.json` 生成游戏列表。
+- 内置游戏使用本站 `games/<game-id>/` 和 `game-shell`；需要后端、构建或外部服务的开源项目先作为外部入口展示。
+- 多语言支持较完整的游戏优先排在列表顶部；每张卡片必须显示中文 / English / 日本語支持状态。
 
 游戏页统一使用：
 
@@ -271,6 +274,7 @@ D1 表：`anonymous_chat_messages`
 │   ├── game-shell.js
 │   ├── kittens-game/
 │   └── a-dark-room/
+│       （其他开源游戏可先作为 catalog 外部入口展示）
 ├── js/
 │   └── main.js
 └── skills/

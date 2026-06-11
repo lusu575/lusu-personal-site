@@ -94,6 +94,7 @@ button:disabled {
   display: inline-flex;
   align-items: center;
   min-width: 0;
+  max-width: min(360px, 36vw);
   gap: 10px;
   padding: 0;
   color: #fff;
@@ -103,6 +104,26 @@ button:disabled {
   font-size: 18px;
   font-weight: 900;
   text-shadow: 2px 2px 0 #093eaa;
+}
+
+.page-home,
+.brand-button,
+.xp-taskbar,
+.window-titlebar,
+.desktop-icon,
+.desktop-intro,
+.filter-row,
+.category-panel,
+.article-detail-head {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.brand-button span:last-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .brand-orb {
@@ -425,7 +446,7 @@ main {
 .desktop-intro {
   position: relative;
   z-index: 2;
-  width: min(600px, 52vw);
+  width: min(620px, 50vw);
   margin: 92px auto 0;
   text-align: center;
   color: #fff;
@@ -435,9 +456,10 @@ main {
 .desktop-intro h1 {
   position: relative;
   margin: 0;
-  font-size: clamp(42px, 5.5vw, 70px);
+  font-size: clamp(36px, 4.8vw, 62px);
   line-height: 1.05;
   font-weight: 900;
+  white-space: nowrap;
 }
 
 .desktop-intro h1::after {
@@ -452,8 +474,9 @@ main {
 
 .hero-en {
   margin: 10px 0 12px;
-  font-size: clamp(23px, 3.1vw, 38px);
+  font-size: clamp(20px, 2.5vw, 32px);
   font-weight: 900;
+  white-space: nowrap;
 }
 
 .hero-lead {
@@ -468,7 +491,7 @@ main {
 .desktop-icons {
   position: absolute;
   z-index: 3;
-  top: 172px;
+  top: 196px;
   left: 48px;
   display: grid;
   grid-template-columns: repeat(2, 124px);
@@ -482,14 +505,14 @@ main {
   align-items: center;
   justify-items: center;
   justify-content: flex-start;
-  gap: 4px;
+  gap: 2px;
   width: 124px;
-  height: 120px;
+  height: 124px;
   padding: 7px 7px 8px;
   border: 2px solid transparent;
   border-radius: 5px;
   color: #fff;
-  background: rgba(6, 101, 214, 0.1);
+  background: transparent;
   text-align: center;
   text-shadow: 2px 2px 0 #0a3f96, 0 2px 4px rgba(0, 45, 120, 0.48);
 }
@@ -498,17 +521,21 @@ main {
 .desktop-icon:focus-visible,
 .desktop-icon.is-hovered {
   outline: none;
-  border-color: rgba(180, 224, 255, 0.92);
-  background: rgba(20, 112, 226, 0.35);
+  border-color: transparent;
+  background: transparent;
   animation: iconHop 380ms ease;
 }
 
 .icon-title {
   display: block;
   width: 100%;
-  font-size: 17px;
+  min-height: 34px;
+  font-size: 14px;
   font-weight: 900;
-  line-height: 1.15;
+  line-height: 1.1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .icon-caption {
@@ -791,6 +818,15 @@ main {
   min-height: 500px;
 }
 
+.folder-layout.is-reading {
+  grid-template-columns: 1fr;
+}
+
+.folder-layout.is-reading .category-panel,
+.folder-layout.is-reading .content-list {
+  display: none;
+}
+
 .category-panel {
   padding: 13px;
   border-right: 2px solid #d3d0bd;
@@ -918,17 +954,26 @@ main {
     #fff;
 }
 
+.folder-layout.is-reading .article-detail {
+  grid-column: 1;
+}
+
 .article-back-button {
   margin-bottom: 12px;
 }
 
-.article-detail-head {
-  margin-bottom: 12px;
+.article-detail-card {
   padding: 14px;
   border: 2px solid #a9a58f;
   border-radius: 7px;
   background: rgba(255, 255, 255, 0.92);
   box-shadow: inset 1px 1px 0 #fff, 3px 3px 0 rgba(0, 60, 158, 0.15);
+}
+
+.article-detail-head {
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 2px dashed #b7d0ff;
 }
 
 .article-detail-head h2 {
@@ -945,11 +990,11 @@ main {
 }
 
 .markdown-body {
-  padding: 16px;
-  border: 2px solid #b7d0ff;
-  border-radius: 7px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
   color: #1f2a3a;
-  background: rgba(255, 255, 255, 0.94);
+  background: transparent;
   line-height: 1.75;
   overflow-wrap: anywhere;
 }
@@ -1053,15 +1098,16 @@ main {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
   align-content: start;
-  align-items: start;
-  grid-auto-rows: auto;
+  align-items: stretch;
+  grid-auto-rows: 1fr;
 }
 
 .video-card {
   display: grid;
-  grid-template-rows: auto auto;
-  align-self: start;
-  height: auto;
+  grid-template-rows: auto 1fr;
+  align-self: stretch;
+  height: 100%;
+  min-height: 318px;
   overflow: hidden;
 }
 
@@ -1103,10 +1149,15 @@ main {
 
 .video-body {
   display: grid;
-  grid-template-rows: 22px minmax(44px, auto) minmax(42px, auto) 34px;
+  grid-template-rows: 22px 46px 45px 36px;
   gap: 8px;
-  min-height: 164px;
+  min-height: 166px;
   padding: 13px 13px 16px;
+}
+
+.video-body h3,
+.video-body p {
+  min-width: 0;
 }
 
 .video-body p,
@@ -1134,6 +1185,11 @@ main {
   align-self: end;
   margin-top: 6px;
   line-height: 1;
+}
+
+.video-body .card-action {
+  width: 100%;
+  justify-self: stretch;
 }
 
 .platform {
@@ -1189,16 +1245,39 @@ main {
   display: grid;
   gap: 12px;
   max-height: min(520px, calc(100vh - 210px));
+  align-content: start;
   overflow-y: auto;
   overscroll-behavior: contain;
 }
 
 .game-card {
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: 72px minmax(0, 1fr) auto;
   align-items: center;
   margin: 0;
-  min-height: 96px;
+  min-height: 108px;
   padding: 12px;
+}
+
+.game-main {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.game-main h3,
+.game-main p {
+  min-width: 0;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+}
+
+.game-main h3 {
+  -webkit-line-clamp: 1;
+}
+
+.game-main p {
+  -webkit-line-clamp: 2;
 }
 
 .game-badge {
@@ -1914,6 +1993,9 @@ main {
   border: 2px solid #c4ccd7;
   border-radius: 6px;
   background: #fbfbfb;
+  align-self: start;
+  max-height: 100%;
+  overflow: hidden;
 }
 
 .recent-panel h3 {
@@ -1936,10 +2018,11 @@ main {
 
 .recent-panel ul {
   display: grid;
-  gap: 15px;
-  margin: 17px 0;
+  gap: 8px;
+  margin: 12px 0;
   padding: 0;
   list-style: none;
+  overflow: hidden;
 }
 
 .recent-panel li {
@@ -1957,7 +2040,9 @@ main {
   display: block;
   color: #33415c;
   line-height: 1.25;
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .recent-panel small {
@@ -1965,7 +2050,10 @@ main {
   margin-top: 4px;
   color: #66728b;
   line-height: 1.35;
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .more-button {
@@ -2130,7 +2218,7 @@ main {
 
 @media (max-width: 980px) {
   .desktop-icons {
-    top: 300px;
+    top: 324px;
     left: 18px;
     grid-template-columns: repeat(3, 132px);
     grid-auto-rows: 132px;
@@ -2267,7 +2355,7 @@ main {
     height: auto;
     min-height: 112px;
     padding: 10px;
-    background: rgba(8, 80, 170, 0.15);
+    background: transparent;
   }
 
   .icon-caption {
@@ -2302,6 +2390,7 @@ main {
 
   .card-grid {
     grid-template-columns: 1fr;
+    grid-auto-rows: auto;
   }
 
   .xp-window {
@@ -2340,9 +2429,22 @@ main {
     padding: 12px;
   }
 
+  .video-card {
+    min-height: 0;
+  }
+
   .resource-card,
   .game-card {
     grid-template-columns: 1fr;
+  }
+
+  .game-cover {
+    justify-self: start;
+  }
+
+  .game-card .card-action {
+    justify-self: stretch;
+    text-align: center;
   }
 
   .game-list {
@@ -2527,7 +2629,7 @@ main {
   }
 
   .desktop-intro h1 {
-    font-size: 34px;
+    font-size: 30px;
     line-height: 1.08;
   }
 
@@ -2538,7 +2640,7 @@ main {
 
   .hero-en {
     margin: 7px 0 9px;
-    font-size: 21px;
+    font-size: 18px;
   }
 
   .hero-lead {
@@ -2594,7 +2696,7 @@ main {
   }
 
   .desktop-intro h1 {
-    font-size: 34px;
+    font-size: 30px;
     line-height: 1.08;
   }
 
@@ -2605,7 +2707,7 @@ main {
 
   .hero-en {
     margin: 7px 0 9px;
-    font-size: 21px;
+    font-size: 18px;
   }
 
   .hero-lead {

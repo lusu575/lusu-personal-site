@@ -896,6 +896,60 @@ function articleSeedStatements(env) {
         published_at = excluded.published_at
     `),
     env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-11-game-library-time-layout',
+        '2026-06-11-game-library-time-layout',
+        'site-updates',
+        '["网站更新","游戏区","知识库"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-11T00:05:00.000Z',
+        '2026-06-11T00:05:00.000Z',
+        '2026-06-11T00:05:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-11-knowledge-video-home-fix',
+        '2026-06-11-knowledge-video-home-fix',
+        'site-updates',
+        '["网站更新","知识库","视频区","首页"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-11T00:06:00.000Z',
+        '2026-06-11T00:06:00.000Z',
+        '2026-06-11T00:06:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
       insert into article_translations (
         translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
       ) values
@@ -1063,6 +1117,141 @@ This update focuses on local/production consistency and several visible interact
 - 匿名チャットは after/message_id の差分取得を維持し、待機中やバックグラウンドでは更新頻度を下げるようにしました。',
           '2026-06-11T00:04:00.000Z',
           '2026-06-11T00:04:00.000Z'
+        ),
+        (
+          'seed-update-2026-06-11-game-library-time-layout-zh',
+          'seed-update-2026-06-11-game-library-time-layout',
+          'zh',
+          '游戏区扩展与发布时间精确到秒',
+          '新增多款开源游戏入口，修复首页最近更新过长、标题排版和知识库发布时间显示。',
+          '# 游戏区扩展与发布时间精确到秒
+
+本次更新继续整理首页、知识库和游戏区。
+
+## 更新内容
+
+- 知识库文章列表和详情页的发布时间显示到时分秒。
+- 首页欢迎弹窗最近更新限制条数和高度，并优先显示网站更新记录文章标题与简介。
+- 游戏区新增人生重启模拟器、多个修仙文字游戏、2048、Hextris、Freeciv-web 和 OpenTTD 等开源项目入口。
+- 人生重启模拟器、猫国建设者、小黑屋等多语言支持游戏优先排在顶部。
+- 游戏卡片补充中文 / English / 日本語支持状态，并支持跟随站点语言切换展示本站文案。
+- 首页主标题、英文标题和桌面图标文案缩短并优化小屏排版。',
+          '2026-06-11T00:05:00.000Z',
+          '2026-06-11T00:05:00.000Z'
+        ),
+        (
+          'seed-update-2026-06-11-game-library-time-layout-en',
+          'seed-update-2026-06-11-game-library-time-layout',
+          'en',
+          'Game library expansion and second-level article times',
+          'Added more open-source game entries and fixed recent updates, home title layout, and precise article publish times.',
+          '# Game library expansion and second-level article times
+
+This update continues cleanup across the home screen, knowledge base, and games section.
+
+## Changes
+
+- Knowledge-base article lists and detail pages now show publish time down to seconds.
+- The welcome popup recent updates list now limits count and height, while prioritizing Site Update Log article titles and summaries.
+- The games section adds Life Restart, several cultivation text games, 2048, Hextris, Freeciv-web, OpenTTD, and other open-source entries.
+- Multilingual games such as Life Restart, Kittens Game, and A Dark Room are placed at the top.
+- Game cards now show Chinese / English / Japanese support states and switch site-side copy with the current site language.
+- The home title, English subtitle, and desktop icon labels were shortened and tuned for small screens.',
+          '2026-06-11T00:05:00.000Z',
+          '2026-06-11T00:05:00.000Z'
+        ),
+        (
+          'seed-update-2026-06-11-game-library-time-layout-ja',
+          'seed-update-2026-06-11-game-library-time-layout',
+          'ja',
+          'ゲーム欄拡張と秒単位の公開時刻',
+          'オープンソースゲーム入口を追加し、最近の更新、ホーム見出し、記事公開時刻表示を修正しました。',
+          '# ゲーム欄拡張と秒単位の公開時刻
+
+今回の更新では、ホーム画面、知識庫、ゲーム欄を整理しました。
+
+## 更新内容
+
+- 知識庫の記事一覧と詳細ページで、公開時刻を秒まで表示します。
+- 歓迎ポップアップの最近の更新は件数と高さを制限し、サイト更新記録の記事タイトルと概要を優先表示します。
+- ゲーム欄に Life Restart、複数の修仙テキストゲーム、2048、Hextris、Freeciv-web、OpenTTD などの入口を追加しました。
+- Life Restart、子猫ゲーム、暗い部屋など多言語対応ゲームを上部に配置しました。
+- ゲームカードに中国語 / English / 日本語の対応状態を表示し、サイト言語に合わせて本站側の文面を切り替えます。
+- ホームの主見出し、英語サブタイトル、デスクトップアイコン文言を短くし、小画面表示を調整しました。',
+          '2026-06-11T00:05:00.000Z',
+          '2026-06-11T00:05:00.000Z'
+        ),
+        (
+          'seed-update-2026-06-11-knowledge-video-home-fix-zh',
+          'seed-update-2026-06-11-knowledge-video-home-fix',
+          'zh',
+          '首页、知识库与视频区排版修复',
+          '修复首页图标、知识库阅读页、视频卡片对齐、最近更新和聊天室时间显示。',
+          '# 首页、知识库与视频区排版修复
+
+本次更新集中处理几个直接影响浏览体验的显示问题。
+
+## 更新内容
+
+- 匿名聊天室当天消息只显示时间，非当天消息显示日期和时间。
+- 知识库去掉顶部返回桌面工具栏，为内容区域留出更多空间。
+- 知识库详情页隐藏左侧分类，只在文章列表页显示分类。
+- 文章标题、简介和正文合并在同一个阅读面板里。
+- 视频区卡片统一尺寸、标题槽位、简介槽位和按钮位置，避免同排错位或重叠。
+- 首页桌面图标去掉蓝色底框并整体下移，避免图标显示不全。
+- 首页文案和各板块标题禁止鼠标选中，减少误拖选带来的出戏感。
+- 三个建设中板块恢复清晰的“施工中 / Developing / 開発中”文案，并保持单行显示。
+- 首页弹窗最近更新固定显示最近 5 篇，自动由新文章顶掉旧文章，不再出现无限拉长或滚动条。',
+          '2026-06-11T00:06:00.000Z',
+          '2026-06-11T00:06:00.000Z'
+        ),
+        (
+          'seed-update-2026-06-11-knowledge-video-home-fix-en',
+          'seed-update-2026-06-11-knowledge-video-home-fix',
+          'en',
+          'Home, knowledge, and video layout fixes',
+          'Fixed home icons, article reading layout, aligned video cards, recent updates, and chat timestamps.',
+          '# Home, knowledge, and video layout fixes
+
+This update focuses on visible layout issues that affect everyday browsing.
+
+## Changes
+
+- Anonymous chat now shows time only for today, and date plus time for older messages.
+- Removed the knowledge-base top toolbar to give more room to content.
+- Article detail pages hide the left category list; categories only appear on the knowledge home view.
+- Article title, summary, and body now sit in one reading panel.
+- Video cards now use consistent sizes, title slots, summary slots, and button positions to avoid uneven rows or overlap.
+- Home desktop icons no longer use the blue background frame and are moved lower so they are fully visible.
+- Home copy and section title bars are no longer text-selectable, reducing accidental drag selection.
+- The three under-construction sections now use clear Developing copy and keep labels on one line.
+- The welcome popup recent updates area shows the latest 5 posts, with new posts automatically pushing older ones out.',
+          '2026-06-11T00:06:00.000Z',
+          '2026-06-11T00:06:00.000Z'
+        ),
+        (
+          'seed-update-2026-06-11-knowledge-video-home-fix-ja',
+          'seed-update-2026-06-11-knowledge-video-home-fix',
+          'ja',
+          'ホーム、知識庫、動画欄の表示修正',
+          'ホームアイコン、記事閲覧、動画カード整列、最近の更新、チャット時刻表示を修正しました。',
+          '# ホーム、知識庫、動画欄の表示修正
+
+今回の更新では、普段の閲覧に影響する表示問題をまとめて調整しました。
+
+## 更新内容
+
+- 匿名チャットは当日のメッセージを時刻のみ、前日以前のメッセージを日付と時刻で表示します。
+- 知識庫上部のツールバーを削除し、内容領域を広げました。
+- 記事詳細では左側カテゴリを隠し、カテゴリは知識庫トップだけに表示します。
+- 記事タイトル、概要、本文をひとつの閲覧パネルにまとめました。
+- 動画カードのサイズ、タイトル欄、概要欄、ボタン位置を統一し、行のずれや重なりを防ぎました。
+- ホームのデスクトップアイコンから青い背景枠を外し、全体を下げて欠けを防ぎました。
+- ホーム文言と各セクションのタイトルバーを選択不可にし、誤選択を減らしました。
+- 3つの未完成セクションは分かりやすい「開発中」表記に戻し、1行で表示します。
+- 歓迎ポップアップの最近の更新は最新5件だけを表示し、新しい記事が古い記事を自動的に押し出します。',
+          '2026-06-11T00:06:00.000Z',
+          '2026-06-11T00:06:00.000Z'
         )
       on conflict(article_id, lang) do update set
         title = excluded.title,

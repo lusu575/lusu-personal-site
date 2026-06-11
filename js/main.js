@@ -2,17 +2,17 @@ const pageParams = new URLSearchParams(window.location.search);
 
 const translations = {
   zh: {
-    siteName: "鲁肃的个人站 · LuSu's Personal Site",
+    siteName: "鲁肃个人站",
     heroTitle: "鲁肃的个人站",
-    homeLead: "欢迎来到我的小站，还在施工中，您可以四处浏览一下。",
+    homeLead: "施工中的 XP 像素小站，随便逛逛。",
     navKnowledge: "知识库",
     navVideos: "视频区",
-    navVideosBuilding: "视频区（建设中）",
+    navVideosBuilding: "视频区（施工中）",
     navResources: "资源区",
-    navResourcesBuilding: "资源区（建设中）",
+    navResourcesBuilding: "资源区（施工中）",
     navGames: "游戏区",
     navBlog: "杂谈区",
-    navBlogBuilding: "杂谈区（建设中）",
+    navBlogBuilding: "杂谈区（施工中）",
     navChatroom: "匿名聊天室",
     navAbout: "关于我",
     capKnowledge: "笔记 · 教程 · 想法",
@@ -45,10 +45,12 @@ const translations = {
     readButton: "阅读",
     playButton: "播放",
     startGameButton: "开始",
+    openGameButton: "打开",
     downloadButton: "下载",
     externalButton: "外部链接",
     openOriginal: "打开原地址",
     languageSupportLabel: "语言支持",
+    gameSourceLabel: "来源",
     gameConfigLoading: "正在读取游戏配置...",
     gameConfigFailed: "游戏配置读取失败",
     videoPlaceholder: "这里预留 Bilibili / YouTube 嵌入播放器。",
@@ -100,17 +102,17 @@ const translations = {
     welcomeDateLine: "今天是{year}年{month}月{day}日，很高兴见到你。"
   },
   en: {
-    siteName: "LuSu's Personal Site",
-    heroTitle: "LuSu's Personal Site",
-    homeLead: "Welcome to my little site. It is still under construction, but feel free to look around.",
+    siteName: "LuSu Site",
+    heroTitle: "LuSu Site",
+    homeLead: "A small XP pixel site under construction.",
     navKnowledge: "Knowledge",
     navVideos: "Videos",
-    navVideosBuilding: "Videos (Under construction)",
+    navVideosBuilding: "Videos Developing",
     navResources: "Resources",
-    navResourcesBuilding: "Resources (Under construction)",
+    navResourcesBuilding: "Files Developing",
     navGames: "Games",
     navBlog: "Talk",
-    navBlogBuilding: "Talk (Under construction)",
+    navBlogBuilding: "Talk Developing",
     navChatroom: "Chat Room",
     navAbout: "About",
     capKnowledge: "Notes · Tutorials · Ideas",
@@ -143,10 +145,12 @@ const translations = {
     readButton: "Read",
     playButton: "Play",
     startGameButton: "Start",
+    openGameButton: "Open",
     downloadButton: "Download",
     externalButton: "External Link",
     openOriginal: "Open Original",
     languageSupportLabel: "Language support",
+    gameSourceLabel: "Source",
     gameConfigLoading: "Loading game catalog...",
     gameConfigFailed: "Could not load game catalog",
     videoPlaceholder: "Bilibili / YouTube embed player is reserved here.",
@@ -198,17 +202,17 @@ const translations = {
     welcomeDateLine: "Today is {year}-{month}-{day}. It is good to see you."
   },
   ja: {
-    siteName: "魯粛の個人サイト",
-    heroTitle: "魯粛の個人サイト",
-    homeLead: "私の小さなサイトへようこそ。まだ工事中ですが、自由に見て回ってください。",
+    siteName: "魯粛サイト",
+    heroTitle: "魯粛サイト",
+    homeLead: "工事中の XP ピクセル小サイトです。",
     navKnowledge: "知識庫",
     navVideos: "動画",
-    navVideosBuilding: "動画（工事中）",
+    navVideosBuilding: "動画（開発中）",
     navResources: "リソース",
-    navResourcesBuilding: "リソース（工事中）",
+    navResourcesBuilding: "資料（開発中）",
     navGames: "ゲーム",
     navBlog: "雑談",
-    navBlogBuilding: "雑談（工事中）",
+    navBlogBuilding: "雑談（開発中）",
     navChatroom: "匿名チャット",
     navAbout: "プロフィール",
     capKnowledge: "メモ · チュートリアル · 考え",
@@ -241,10 +245,12 @@ const translations = {
     readButton: "読む",
     playButton: "再生",
     startGameButton: "開始",
+    openGameButton: "開く",
     downloadButton: "ダウンロード",
     externalButton: "外部リンク",
     openOriginal: "元のページを開く",
     languageSupportLabel: "言語対応",
+    gameSourceLabel: "出典",
     gameConfigLoading: "ゲーム設定を読み込み中...",
     gameConfigFailed: "ゲーム設定を読み込めません",
     videoPlaceholder: "Bilibili / YouTube の埋め込みプレイヤー用スペースです。",
@@ -332,6 +338,18 @@ const labels = {
 
 const content = {
   updates: [
+    {
+      icon: "🪟",
+      date: "2026.06.11",
+      title: { zh: "首页与知识库排版修复", en: "Home and knowledge layout fixes", ja: "ホームと知識庫の表示修正" },
+      desc: { zh: "优化桌面图标、知识库阅读页、视频卡片和聊天室时间显示", en: "Refined desktop icons, article reading, video cards, and chat timestamps", ja: "デスクトップアイコン、記事閲覧、動画カード、チャット時刻を調整しました" }
+    },
+    {
+      icon: "🎮",
+      date: "2026.06.11",
+      title: { zh: "游戏区扩展与发布时间精确到秒", en: "Game library and precise publish times", ja: "ゲーム欄拡張と秒単位の時刻" },
+      desc: { zh: "新增多款开源游戏入口，并让知识库发布时间显示到秒", en: "Added open-source game entries and second-level article publish times", ja: "ゲーム入口を追加し、記事公開時刻を秒まで表示します" }
+    },
     {
       icon: "📚",
       date: "2026.06.11",
@@ -580,7 +598,7 @@ function localText(value) {
   if (typeof value === "string") {
     return value;
   }
-  return value[currentLang] || value.zh || "";
+  return value?.[currentLang] || value?.zh || value?.en || value?.ja || "";
 }
 
 function contentTitle(value) {
@@ -588,6 +606,15 @@ function contentTitle(value) {
 }
 
 function buildGameUrl(item) {
+  if (item.playUrl) {
+    return item.playUrl;
+  }
+  if (item.externalUrl) {
+    return item.externalUrl;
+  }
+  if (item.repo && !item.entry) {
+    return item.repo;
+  }
   return `games/${item.entry}?lang=${encodeURIComponent(currentLang)}`;
 }
 
@@ -604,6 +631,12 @@ function renderLanguageSupportTags(item) {
       ${languageNames[lang]} ${supported[lang] ? "✓" : "×"}
     </span>
   `).join("");
+}
+
+function gameLinkAttributes(item) {
+  return item.external || item.playUrl || item.externalUrl || (!item.entry && item.repo)
+    ? ' target="_blank" rel="noreferrer"'
+    : "";
 }
 
 function setLanguage(lang, options = {}) {
@@ -658,10 +691,11 @@ function renderCategoryButtons(targetId, type, categories) {
 function renderKnowledge() {
   const list = document.getElementById("knowledge-list");
   const detail = document.getElementById("article-detail");
+  const layout = document.querySelector("#knowledge .folder-layout");
   const categories = sortArticleCategories([...new Set(articleState.articles.map((item) => item.category).filter(Boolean))]);
-  renderKnowledgeCategoryButtons(categories);
 
   if (articleState.currentSlug) {
+    layout?.classList.add("is-reading");
     list.hidden = true;
     detail.hidden = false;
     const detailKey = `${articleState.currentSlug}:${currentLang}`;
@@ -673,6 +707,8 @@ function renderKnowledge() {
     return;
   }
 
+  layout?.classList.remove("is-reading");
+  renderKnowledgeCategoryButtons(categories);
   list.hidden = false;
   detail.hidden = true;
   if (articleState.loading) {
@@ -855,11 +891,24 @@ async function articleApi(path) {
 }
 
 function formatArticleDate(value) {
-  const date = new Date(value);
+  const normalizedValue = String(value || "").trim().replace(/^(\d{4})\.(\d{2})\.(\d{2})$/, "$1-$2-$3T00:00:00");
+  const date = new Date(normalizedValue);
   if (Number.isNaN(date.getTime())) {
     return "";
   }
-  return date.toISOString().slice(0, 10);
+  const parts = new Intl.DateTimeFormat(undefined, {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false
+  }).formatToParts(date).reduce((result, part) => {
+    result[part.type] = part.value;
+    return result;
+  }, {});
+  return `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute}:${parts.second}`;
 }
 
 function renderMarkdownSafe(target, markdown) {
@@ -1024,16 +1073,17 @@ async function renderGames() {
     const catalog = await loadGameCatalog();
     list.innerHTML = catalog.games.map((item) => `
         <article class="game-card">
-          <img class="game-cover" src="${item.cover.replace("../", "")}" alt="${escapeHtml(localText(item.titles || item.titleZh))}" loading="lazy">
-          <div>
+          <img class="game-cover" src="${escapeHtml(String(item.cover || "assets/images/icon-games.png").replace("../", ""))}" alt="${escapeHtml(localText(item.titles || item.titleZh))}" loading="lazy">
+          <div class="game-main">
             <h3>${escapeHtml(localText(item.titles || item.titleZh))}</h3>
             <p>${escapeHtml(localText(item.summaries || item.summary))}</p>
             <div class="meta-row">
               <span class="language-support-label">${t("languageSupportLabel")}:</span>
               ${renderLanguageSupportTags(item)}
+              ${item.license?.name ? `<span class="tag">${escapeHtml(item.license.name)}</span>` : ""}
             </div>
           </div>
-          <a class="card-action" href="${buildGameUrl(item)}">${t("startGameButton")}</a>
+          <a class="card-action" href="${escapeHtml(buildGameUrl(item))}"${gameLinkAttributes(item)}>${item.external || item.playUrl || item.externalUrl ? t("openGameButton") : t("startGameButton")}</a>
         </article>
       `).join("");
   } catch (error) {
@@ -1058,18 +1108,20 @@ function renderBlog() {
 
 function renderUpdates() {
   const list = document.getElementById("recent-updates");
-  const updateArticles = siteUpdateArticles().slice(0, 5);
+  const updateArticles = siteUpdateArticles().length
+    ? siteUpdateArticles().slice(0, 5)
+    : content.updates.slice(0, 5);
   if (!updateArticles.length) {
     list.innerHTML = `<li><span class="update-icon">📚</span><span><strong>${t("articleLoading")}</strong><small>${t("articleEmpty")}</small></span></li>`;
     return;
   }
   list.innerHTML = updateArticles.map((item) => `
     <li>
-      <button class="recent-update-link" type="button" data-article-slug="${escapeHtml(item.slug)}">
+      <button class="recent-update-link" type="button"${item.slug ? ` data-article-slug="${escapeHtml(item.slug)}"` : ""}>
         <span class="update-icon">📚</span>
         <span>
-          <strong>${escapeHtml(truncateText(item.title, 34))}</strong>
-          <small>${escapeHtml(truncateText(item.summary || "", 58))}<br>${escapeHtml(formatArticleDate(item.published_at || item.created_at))}</small>
+          <strong>${escapeHtml(truncateText(localText(item.title), 28))}</strong>
+          <small>${escapeHtml(truncateText(item.summary || localText(item.desc) || "", 52))}<br>${escapeHtml(formatArticleDate(item.published_at || item.created_at || item.date))}</small>
         </span>
       </button>
     </li>
@@ -1540,7 +1592,12 @@ function formatChatTime(value) {
   if (Number.isNaN(date.getTime())) {
     return "";
   }
+  const now = new Date();
+  const sameDay = date.getFullYear() === now.getFullYear()
+    && date.getMonth() === now.getMonth()
+    && date.getDate() === now.getDate();
   return new Intl.DateTimeFormat(undefined, {
+    ...(sameDay ? {} : { year: "numeric", month: "2-digit", day: "2-digit" }),
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
