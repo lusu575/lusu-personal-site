@@ -1,0 +1,168 @@
+:root {
+  --ink: #1a2947;
+  --blue: #1d6fe8;
+  --yellow: #fff2a8;
+  --panel: #fffaf0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--ink);
+  font-family: Tahoma, Verdana, "Microsoft YaHei", sans-serif;
+  background:
+    radial-gradient(circle at 25% 20%, rgba(255, 242, 168, 0.8), transparent 28%),
+    linear-gradient(160deg, #d9f3ff 0%, #e9ffd6 52%, #ffdceb 100%);
+}
+
+.hex-game {
+  width: min(760px, calc(100vw - 20px));
+  margin: 0 auto;
+  padding: 14px 0 22px;
+}
+
+.top,
+.toolbar,
+.stage,
+.hint {
+  border: 3px solid #1850ad;
+  border-radius: 8px;
+  background: rgba(255, 250, 240, 0.95);
+  box-shadow: 4px 4px 0 rgba(0, 44, 130, 0.2);
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 14px;
+}
+
+.eyebrow,
+.score-box span,
+.hint {
+  color: #5a6d91;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.eyebrow,
+.hint {
+  margin: 0;
+}
+
+h1 {
+  margin: 2px 0 0;
+  color: #1542a0;
+  font-size: 40px;
+  line-height: 1;
+}
+
+.score-row {
+  display: flex;
+  gap: 8px;
+}
+
+.score-box {
+  min-width: 78px;
+  padding: 8px 10px;
+  text-align: center;
+  border: 2px solid #97acd9;
+  border-radius: 6px;
+  background: #e8f3ff;
+}
+
+.score-box strong {
+  display: block;
+  font-size: 24px;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 12px 0;
+  padding: 10px;
+}
+
+button {
+  min-height: 34px;
+  padding: 6px 12px;
+  border: 2px solid #0c45a8;
+  border-radius: 6px;
+  color: #082f78;
+  background: linear-gradient(180deg, #fff, #dceeff 42%, #76b7ff);
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: 8px;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  max-height: min(620px, 68vh);
+  aspect-ratio: 720 / 620;
+  border: 3px inset #6f89c7;
+  border-radius: 8px;
+  background: #f8fbff;
+}
+
+.overlay {
+  position: absolute;
+  inset: 16px;
+  display: grid;
+  place-content: center;
+  gap: 10px;
+  text-align: center;
+  border-radius: 8px;
+  background: rgba(255, 250, 240, 0.9);
+}
+
+.overlay strong {
+  color: #1542a0;
+  font-size: 30px;
+}
+
+.hint {
+  margin-top: 12px;
+  padding: 10px 12px;
+  text-align: center;
+}
+
+@media (max-width: 540px) {
+  .top {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .score-row {
+    width: 100%;
+  }
+
+  .score-box {
+    flex: 1;
+  }
+
+  .toolbar {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+  }
+
+  button {
+    padding: 6px;
+    font-size: 12px;
+  }
+}

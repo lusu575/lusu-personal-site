@@ -2,38 +2,6 @@
   "updated": "2026.06.11",
   "games": [
     {
-      "id": "life-restart",
-      "title": "Life Restart",
-      "titleZh": "人生重启模拟器",
-      "titles": {
-        "zh": "人生重启模拟器",
-        "en": "Life Restart",
-        "ja": "人生やり直し"
-      },
-      "summaries": {
-        "zh": "随机天赋、属性分配和人生事件驱动的文字模拟游戏，支持多语言界面。",
-        "en": "A text life simulator with random talents, stat allocation, and event-driven runs, with multilingual UI support.",
-        "ja": "ランダム才能、能力値配分、人生イベントで進む多言語対応のテキストシミュレーターです。"
-      },
-      "cover": "../assets/images/icon-games.png",
-      "playUrl": "https://liferestart.syaro.io/",
-      "external": true,
-      "language": "支持中文 / English / 日本語",
-      "languageSupport": {
-        "zh": true,
-        "en": true,
-        "ja": true
-      },
-      "license": {
-        "name": "MIT",
-        "url": "https://github.com/VickScarlet/lifeRestart"
-      },
-      "repo": "https://github.com/VickScarlet/lifeRestart",
-      "storage": {
-        "keys": []
-      }
-    },
-    {
       "id": "kittens-game",
       "title": "Kittens Game",
       "titleZh": "猫国建设者",
@@ -45,7 +13,7 @@
       "summaries": {
         "zh": "以猫咪文明为主题的长期资源管理与增量游戏，已接入本站语言启动和云存档。",
         "en": "A long-form resource management and incremental game about a kitten civilization, wired into site language launch and cloud saves.",
-        "ja": "子猫の文明を育てる長期型の資源管理・放置ゲームで、サイト言語起動とクラウド保存に対応済みです。"
+        "ja": "子猫の文明を育てる長期型の資源管理・放置ゲームです。サイト言語起動とクラウド保存に対応しています。"
       },
       "cover": "../assets/images/icon-knowledge.png",
       "entry": "kittens-game/",
@@ -90,7 +58,7 @@
       "summaries": {
         "zh": "极简文字冒险与资源管理游戏，已接入本站语言启动和云存档。",
         "en": "A minimalist text adventure and resource management game, wired into site language launch and cloud saves.",
-        "ja": "ミニマルなテキスト冒険・資源管理ゲームで、サイト言語起動とクラウド保存に対応済みです。"
+        "ja": "ミニマルなテキスト冒険・資源管理ゲームです。サイト言語起動とクラウド保存に対応しています。"
       },
       "cover": "../assets/images/icon-blog.png",
       "entry": "a-dark-room/",
@@ -118,166 +86,6 @@
       }
     },
     {
-      "id": "vue-xiuxiangame",
-      "title": "My Text Cultivation Depends on Grinding",
-      "titleZh": "我的文字修仙全靠刷",
-      "titles": {
-        "zh": "我的文字修仙全靠刷",
-        "en": "Text Cultivation Grinder",
-        "ja": "文字修仙グラインダー"
-      },
-      "summaries": {
-        "zh": "Vue + Element Plus + Pinia 构建的中文文字修仙游戏，适合作为修仙类开源项目入口。",
-        "en": "A Chinese text cultivation game built with Vue, Element Plus, and Pinia.",
-        "ja": "Vue、Element Plus、Pinia 製の中国語テキスト修仙ゲームです。"
-      },
-      "cover": "../assets/images/icon-games.png",
-      "playUrl": "https://xiuxian.wenzi.games/",
-      "external": true,
-      "language": "支持中文；English / 日本語暂无确认",
-      "languageSupport": {
-        "zh": true,
-        "en": false,
-        "ja": false
-      },
-      "license": {
-        "name": "CC BY-NC 4.0",
-        "url": "https://github.com/setube/vue-xiuxiangame"
-      },
-      "repo": "https://github.com/setube/vue-xiuxiangame",
-      "storage": {
-        "keys": []
-      }
-    },
-    {
-      "id": "cultivation-world-simulator",
-      "title": "Cultivation World Simulator",
-      "titleZh": "修仙世界模拟器",
-      "titles": {
-        "zh": "修仙世界模拟器",
-        "en": "Cultivation World Simulator",
-        "ja": "修仙世界シミュレーター"
-      },
-      "summaries": {
-        "zh": "基于 AI Agent 工作流的开放仙侠世界模拟器，偏实验型开源项目。",
-        "en": "An open-source Agentic Workflow simulator for a dynamic xianxia world.",
-        "ja": "Agentic Workflow を使った、動的な仙侠世界の実験的オープンソースシミュレーターです。"
-      },
-      "cover": "../assets/images/icon-knowledge.png",
-      "externalUrl": "https://github.com/4thfever/cultivation-world-simulator",
-      "external": true,
-      "language": "支持中文 / English；日本語暂无确认",
-      "languageSupport": {
-        "zh": true,
-        "en": true,
-        "ja": false
-      },
-      "license": {
-        "name": "Open source",
-        "url": "https://github.com/4thfever/cultivation-world-simulator"
-      },
-      "repo": "https://github.com/4thfever/cultivation-world-simulator",
-      "storage": {
-        "keys": []
-      }
-    },
-    {
-      "id": "xiantu",
-      "title": "Immortal Path",
-      "titleZh": "仙途",
-      "titles": {
-        "zh": "仙途",
-        "en": "Immortal Path",
-        "ja": "仙途"
-      },
-      "summaries": {
-        "zh": "Vue 3 + TypeScript + FastAPI 的 AI 驱动沉浸式修仙文字冒险，支持多种 AI 模型。",
-        "en": "An AI-driven cultivation text adventure built with Vue 3, TypeScript, and FastAPI, supporting multiple AI models.",
-        "ja": "Vue 3、TypeScript、FastAPI 製の AI 駆動型修仙テキストアドベンチャーです。"
-      },
-      "cover": "../assets/images/icon-knowledge.png",
-      "playUrl": "https://qianye60.github.io/XianTu/",
-      "external": true,
-      "language": "支持中文 / English；日本語暂无确认",
-      "languageSupport": {
-        "zh": true,
-        "en": true,
-        "ja": false
-      },
-      "license": {
-        "name": "View license",
-        "url": "https://github.com/qianye60/XianTu"
-      },
-      "repo": "https://github.com/qianye60/XianTu",
-      "storage": {
-        "keys": []
-      }
-    },
-    {
-      "id": "react-xiuxian-game",
-      "title": "React Xiuxian Game",
-      "titleZh": "React 修仙小游戏",
-      "titles": {
-        "zh": "React 修仙小游戏",
-        "en": "React Xiuxian Game",
-        "ja": "React 修仙ゲーム"
-      },
-      "summaries": {
-        "zh": "TypeScript 实现的文字修仙小游戏，适合作为轻量修仙项目参考。",
-        "en": "A TypeScript text cultivation mini-game and lightweight reference project.",
-        "ja": "TypeScript 製の軽量テキスト修仙ミニゲームです。"
-      },
-      "cover": "../assets/images/icon-games.png",
-      "externalUrl": "https://github.com/JeasonLoop/react-xiuxian-game",
-      "external": true,
-      "language": "支持中文；English / 日本語暂无确认",
-      "languageSupport": {
-        "zh": true,
-        "en": false,
-        "ja": false
-      },
-      "license": {
-        "name": "Open source",
-        "url": "https://github.com/JeasonLoop/react-xiuxian-game"
-      },
-      "repo": "https://github.com/JeasonLoop/react-xiuxian-game",
-      "storage": {
-        "keys": []
-      }
-    },
-    {
-      "id": "daoyou",
-      "title": "Daoyou",
-      "titleZh": "万界道友",
-      "titles": {
-        "zh": "万界道友",
-        "en": "Daoyou",
-        "ja": "万界道友"
-      },
-      "summaries": {
-        "zh": "AIGC 驱动、高自由度文字体验的修仙世界观开源游戏。",
-        "en": "An AIGC-driven open-source cultivation text game with high freedom.",
-        "ja": "AIGC 駆動で自由度の高い修仙世界観のテキストゲームです。"
-      },
-      "cover": "../assets/images/icon-games.png",
-      "externalUrl": "https://github.com/ChurchTao/Daoyou",
-      "external": true,
-      "language": "支持中文；English / 日本語暂无确认",
-      "languageSupport": {
-        "zh": true,
-        "en": false,
-        "ja": false
-      },
-      "license": {
-        "name": "Open source",
-        "url": "https://github.com/ChurchTao/Daoyou"
-      },
-      "repo": "https://github.com/ChurchTao/Daoyou",
-      "storage": {
-        "keys": []
-      }
-    },
-    {
       "id": "2048",
       "title": "2048",
       "titleZh": "2048",
@@ -287,26 +95,36 @@
         "ja": "2048"
       },
       "summaries": {
-        "zh": "经典滑块合成数字益智游戏，原项目提供在线试玩。",
-        "en": "The classic sliding-number puzzle game, with an official online play link.",
-        "ja": "数字タイルを合成する定番パズルゲームで、オンライン版があります。"
+        "zh": "经典滑块合成数字益智游戏，已本地部署到本站并接入本地导入导出与云存档。",
+        "en": "The classic sliding-number puzzle game, deployed locally with save import/export and cloud saves.",
+        "ja": "定番の数字スライドパズルです。本站に内蔵し、保存の入出力とクラウド保存に対応しました。"
       },
       "cover": "../assets/images/icon-resources.png",
-      "playUrl": "https://gabrielecirulli.github.io/2048/",
-      "external": true,
-      "language": "English；中文 / 日本語暂无确认",
+      "entry": "2048/",
+      "sourceEntry": "source/index.html",
+      "language": "支持中文 / English / 日本語",
       "languageSupport": {
-        "zh": false,
+        "zh": true,
         "en": true,
-        "ja": false
+        "ja": true
+      },
+      "languageMap": {
+        "zh": "zh",
+        "en": "en",
+        "ja": "ja"
       },
       "license": {
         "name": "MIT",
+        "file": "source/LICENSE.txt",
         "url": "https://github.com/gabrielecirulli/2048"
       },
       "repo": "https://github.com/gabrielecirulli/2048",
       "storage": {
-        "keys": []
+        "keys": [
+          "lusu.2048.save",
+          "lusu.2048.best",
+          "lusu.2048.lang"
+        ]
       }
     },
     {
@@ -319,90 +137,36 @@
         "ja": "Hextris"
       },
       "summaries": {
-        "zh": "受俄罗斯方块启发的快节奏 HTML5 六边形消除益智游戏。",
-        "en": "A fast-paced HTML5 puzzle game inspired by Tetris.",
-        "ja": "テトリスに着想を得た、テンポの速い HTML5 六角形パズルゲームです。"
+        "zh": "受 Hextris 启发的六边形颜色消除小游戏，已本地部署到本站并接入本地导入导出与云存档。",
+        "en": "A Hextris-inspired hex color puzzle, deployed locally with save import/export and cloud saves.",
+        "ja": "Hextris に着想を得た六角形カラーパズルです。本站に内蔵し、保存の入出力とクラウド保存に対応しました。"
       },
-      "cover": "../assets/images/icon-resources.png",
-      "playUrl": "https://hextris.io/",
-      "external": true,
-      "language": "English；中文 / 日本語暂无确认",
+      "cover": "../assets/images/icon-games.png",
+      "entry": "hextris/",
+      "sourceEntry": "source/index.html",
+      "language": "支持中文 / English / 日本語",
       "languageSupport": {
-        "zh": false,
+        "zh": true,
         "en": true,
-        "ja": false
+        "ja": true
+      },
+      "languageMap": {
+        "zh": "zh",
+        "en": "en",
+        "ja": "ja"
       },
       "license": {
         "name": "GPL-3.0-or-later",
+        "file": "source/LICENSE.txt",
         "url": "https://github.com/Hextris/hextris"
       },
       "repo": "https://github.com/Hextris/hextris",
       "storage": {
-        "keys": []
-      }
-    },
-    {
-      "id": "freeciv-web",
-      "title": "Freeciv-web",
-      "titleZh": "Freeciv-web",
-      "titles": {
-        "zh": "Freeciv-web",
-        "en": "Freeciv-web",
-        "ja": "Freeciv-web"
-      },
-      "summaries": {
-        "zh": "HTML5 / WebGL 回合制文明策略游戏，可单人对 AI 或多人在线游玩。",
-        "en": "An HTML5 and WebGL turn-based civilization strategy game for single-player AI or multiplayer.",
-        "ja": "HTML5 / WebGL のターン制文明ストラテジーで、AI 対戦やマルチプレイに対応します。"
-      },
-      "cover": "../assets/images/icon-resources.png",
-      "playUrl": "https://www.freecivweb.com/",
-      "external": true,
-      "language": "支持多语言；中文 / English / 日本語按服务端版本为准",
-      "languageSupport": {
-        "zh": true,
-        "en": true,
-        "ja": true
-      },
-      "license": {
-        "name": "AGPL / GPL",
-        "url": "https://github.com/freeciv/freeciv-web"
-      },
-      "repo": "https://github.com/freeciv/freeciv-web",
-      "storage": {
-        "keys": []
-      }
-    },
-    {
-      "id": "openttd",
-      "title": "OpenTTD",
-      "titleZh": "OpenTTD",
-      "titles": {
-        "zh": "OpenTTD",
-        "en": "OpenTTD",
-        "ja": "OpenTTD"
-      },
-      "summaries": {
-        "zh": "基于 Transport Tycoon Deluxe 的开源交通经营模拟游戏，官方项目提供多语言翻译。",
-        "en": "An open-source transport business simulation game based on Transport Tycoon Deluxe, with broad translation support.",
-        "ja": "Transport Tycoon Deluxe を基にした交通経営シミュレーションで、多言語翻訳に対応しています。"
-      },
-      "cover": "../assets/images/icon-resources.png",
-      "externalUrl": "https://github.com/OpenTTD/OpenTTD",
-      "external": true,
-      "language": "支持多语言；中文 / English / 日本語按客户端版本为准",
-      "languageSupport": {
-        "zh": true,
-        "en": true,
-        "ja": true
-      },
-      "license": {
-        "name": "GPL-2.0",
-        "url": "https://github.com/OpenTTD/OpenTTD"
-      },
-      "repo": "https://github.com/OpenTTD/OpenTTD",
-      "storage": {
-        "keys": []
+        "keys": [
+          "lusu.hextris.save",
+          "lusu.hextris.best",
+          "lusu.hextris.lang"
+        ]
       }
     }
   ]

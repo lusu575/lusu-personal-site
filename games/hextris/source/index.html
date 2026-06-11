@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hextris</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="hex-game">
+    <section class="top">
+      <div>
+        <p class="eyebrow" data-i18n="eyebrow">LuSu Games</p>
+        <h1>Hextris</h1>
+      </div>
+      <div class="score-row">
+        <div class="score-box"><span data-i18n="score">分数</span><strong id="score">0</strong></div>
+        <div class="score-box"><span data-i18n="best">最佳</span><strong id="best">0</strong></div>
+      </div>
+    </section>
+    <section class="toolbar">
+      <button id="rotate-left" type="button" data-i18n="left">左转</button>
+      <button id="new-game" type="button" data-i18n="newGame">新游戏</button>
+      <button id="rotate-right" type="button" data-i18n="right">右转</button>
+    </section>
+    <section class="stage">
+      <canvas id="canvas" width="720" height="620" aria-label="Hextris"></canvas>
+      <div class="overlay" id="overlay" hidden>
+        <strong data-i18n="over">游戏结束</strong>
+        <span data-i18n="overCopy">色块堆到中心了，重新开一局吧。</span>
+        <button id="restart" type="button" data-i18n="newGame">新游戏</button>
+      </div>
+    </section>
+    <p class="hint" data-i18n="hint">用方向键、A/D 或按钮旋转六边形。三个相邻同色会消除。</p>
+  </main>
+  <script src="game.js"></script>
+</body>
+</html>

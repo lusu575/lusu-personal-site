@@ -85,6 +85,8 @@ Cloudflare Pages 项目状态：
 - 如果中文也不存在，fallback 到任意已有语言版本。
 - 知识库区域已改为从 `/api/articles` 读取文章列表，点击后从 `/api/articles/:slug` 读取详情。
 - 网站切换语言时，文章列表和当前文章详情会重新请求对应语言版本。
+- 文章发布时间在前端按用户所在时区显示到秒，并附本机时区名；后端时间字段应保持 ISO/UTC 语义，避免被浏览器误读成本地时间。
+- 从文章详情关闭知识库后，再次打开知识库默认回到知识库首页，不保留上一次打开的文章详情。
 - 知识库固定使用 `site-updates` 作为“网站更新记录”分类，分类入口排在最后。
 - 每次代码合并、功能上线或可见更新，都要在 `site-updates` 分类发布一篇 zh / en / ja 三语真实文章，包含主标题、简介和正文。
 - 首页欢迎弹窗右侧“最近更新”自动读取 `site-updates` 分类文章；“查看更多更新”跳转到知识库并筛选该分类。
@@ -174,6 +176,7 @@ functions/api/[[route]].js
 - 前端首次进入加载最近消息，后续保持 `after/message_id` 增量拉取。
 - 有新消息时继续 5 秒刷新；无新消息时逐步降到 15 秒和 30 秒；窗口不在前台时降低轮询频率；用户发送消息后立即刷新一次。
 - 聊天内容必须纯文本渲染。
+- 聊天消息时间在前端按用户所在时区显示；当天消息显示本地时间和时区，旧消息显示本地日期、时间和时区。
 
 前端入口：
 
@@ -205,11 +208,14 @@ D1 表：`anonymous_chat_messages`
 
 ## 游戏区
 
-当前游戏区接入两类开源游戏：
+当前游戏区只保留能在本站直接打开、不跳转外站的本地游戏入口：
 
 - `kittens-game`
 - `a-dark-room`
-- `life-restart`、`vue-xiuxiangame`、`cultivation-world-simulator`、`XianTu`、`react-xiuxian-game`、`Daoyou`、`2048`、`hextris`、`freeciv-web`、`OpenTTD` 等外部开源入口
+- `2048`
+- `hextris`
+
+2026-06-11 已删除 `life-restart`、`vue-xiuxiangame`、`cultivation-world-simulator`、`XianTu`、`react-xiuxian-game`、`Daoyou`、`freeciv-web`、`OpenTTD` 等外部入口展示；这些项目需要构建链路、后端服务、外部服务器或原生客户端，不适合作为本站静态游戏直接部署。
 
 游戏列表：
 

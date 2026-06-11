@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hextris - 游戏舱</title>
+  <link rel="stylesheet" href="../game-shell.css">
+</head>
+<body class="game-shell">
+  <header class="game-topbar">
+    <a class="back-link" href="../../index.html#games">返回个人站游戏区</a>
+    <div>
+      <strong id="game-title">Hextris</strong>
+      <span id="game-subtitle">加载中...</span>
+    </div>
+  </header>
+  <main class="game-frame-card">
+    <div class="game-tools">
+      <div class="game-title">
+        <h1>本地存档工具</h1>
+        <p>游戏默认使用浏览器本地存储。你可以下载 JSON 备份，也可以导入备份。</p>
+      </div>
+      <div class="cloud-panel" id="cloud-panel"></div>
+      <div class="tool-row">
+        <button class="tool-button" id="export-save">下载存档</button>
+        <label class="file-button">导入存档<input id="save-import" type="file" accept="application/json"></label>
+        <span class="status-text" id="game-status">准备就绪</span>
+      </div>
+    </div>
+    <div class="license-panel" id="game-license"></div>
+    <iframe class="game-frame" id="game-frame" title="Hextris"></iframe>
+  </main>
+  <script>window.GAME_SLUG = "hextris";</script>
+  <script src="../game-shell.js"></script>
+</body>
+</html>

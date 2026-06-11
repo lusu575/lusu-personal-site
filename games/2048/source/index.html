@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2048</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="game">
+    <section class="hud">
+      <div>
+        <p class="eyebrow" data-i18n="eyebrow">LuSu Games</p>
+        <h1>2048</h1>
+      </div>
+      <div class="score-row">
+        <div class="score-box"><span data-i18n="score">分数</span><strong id="score">0</strong></div>
+        <div class="score-box"><span data-i18n="best">最佳</span><strong id="best">0</strong></div>
+      </div>
+    </section>
+    <section class="controls">
+      <button id="new-game" type="button" data-i18n="newGame">新游戏</button>
+      <p data-i18n="hint">使用方向键或滑动移动方块。</p>
+    </section>
+    <section class="board-wrap">
+      <div class="board" id="board" aria-label="2048 board"></div>
+      <div class="overlay" id="overlay" hidden>
+        <strong id="overlay-title"></strong>
+        <span id="overlay-copy"></span>
+        <button id="keep-playing" type="button" data-i18n="keepPlaying">继续玩</button>
+      </div>
+    </section>
+  </main>
+  <script src="game.js"></script>
+</body>
+</html>

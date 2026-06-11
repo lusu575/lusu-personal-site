@@ -7,12 +7,12 @@ const translations = {
     homeLead: "施工中的 XP 像素小站，随便逛逛。",
     navKnowledge: "知识库",
     navVideos: "视频区",
-    navVideosBuilding: "视频区（施工中）",
+    navVideosBuilding: "视频区（待定）",
     navResources: "资源区",
-    navResourcesBuilding: "资源区（施工中）",
+    navResourcesBuilding: "资源区（待定）",
     navGames: "游戏区",
     navBlog: "杂谈区",
-    navBlogBuilding: "杂谈区（施工中）",
+    navBlogBuilding: "杂谈区（待定）",
     navChatroom: "匿名聊天室",
     navAbout: "关于我",
     capKnowledge: "笔记 · 教程 · 想法",
@@ -107,12 +107,12 @@ const translations = {
     homeLead: "A small XP pixel site under construction.",
     navKnowledge: "Knowledge",
     navVideos: "Videos",
-    navVideosBuilding: "Videos Developing",
+    navVideosBuilding: "Videos TBD",
     navResources: "Resources",
-    navResourcesBuilding: "Files Developing",
+    navResourcesBuilding: "Files TBD",
     navGames: "Games",
     navBlog: "Talk",
-    navBlogBuilding: "Talk Developing",
+    navBlogBuilding: "Talk TBD",
     navChatroom: "Chat Room",
     navAbout: "About",
     capKnowledge: "Notes · Tutorials · Ideas",
@@ -207,12 +207,12 @@ const translations = {
     homeLead: "工事中の XP ピクセル小サイトです。",
     navKnowledge: "知識庫",
     navVideos: "動画",
-    navVideosBuilding: "動画（開発中）",
+    navVideosBuilding: "動画（未定）",
     navResources: "リソース",
-    navResourcesBuilding: "資料（開発中）",
+    navResourcesBuilding: "資料（未定）",
     navGames: "ゲーム",
     navBlog: "雑談",
-    navBlogBuilding: "雑談（開発中）",
+    navBlogBuilding: "雑談（未定）",
     navChatroom: "匿名チャット",
     navAbout: "プロフィール",
     capKnowledge: "メモ · チュートリアル · 考え",
@@ -338,6 +338,18 @@ const labels = {
 
 const content = {
   updates: [
+    {
+      icon: "🕒",
+      date: "2026.06.11",
+      title: { zh: "时间显示与窗口尺寸整理", en: "Time and window layout fixes", ja: "時刻表示とウィンドウ調整" },
+      desc: { zh: "文章和聊天室时间改为按用户时区显示，知识库关闭后回首页，关于我窗口收紧", en: "Article and chat times now use the visitor timezone; knowledge resets on close and About is compact", ja: "記事とチャット時刻を閲覧者の時区に合わせ、知識庫とプロフィール表示を調整しました" }
+    },
+    {
+      icon: "🎮",
+      date: "2026.06.11",
+      title: { zh: "游戏区改为本地直玩", en: "Games now play locally", ja: "ゲームをサイト内プレイに整理" },
+      desc: { zh: "保留猫国建设者、小黑屋、2048 和 Hextris，2048 与 Hextris 已接入本站存档和三语界面", en: "Kept Kittens Game, A Dark Room, 2048, and Hextris; 2048 and Hextris now use site saves and trilingual UI", ja: "Kittens Game、A Dark Room、2048、Hextris を残し、2048 と Hextris は保存連携と三言語UIに対応しました" }
+    },
     {
       icon: "🪟",
       date: "2026.06.11",
@@ -666,6 +678,12 @@ function setLanguage(lang, options = {}) {
 
 function navigate(route) {
   const nextRoute = pageIds.includes(route) ? route : "home";
+  if (nextRoute === "home" && articleState.currentSlug) {
+    articleState.currentSlug = "";
+    articleState.currentArticle = null;
+    articleState.detailLoadingKey = "";
+    renderKnowledge();
+  }
   document.querySelectorAll(".page").forEach((page) => {
     page.classList.toggle("active", page.id === nextRoute);
   });
@@ -890,12 +908,35 @@ async function articleApi(path) {
   return payload;
 }
 
-function formatArticleDate(value) {
-  const normalizedValue = String(value || "").trim().replace(/^(\d{4})\.(\d{2})\.(\d{2})$/, "$1-$2-$3T00:00:00");
+function normalizeDateInput(value) {
+  const raw = String(value || "").trim();
+  if (!raw) {
+    return "";
+  }
+  if (/^\d{4}\.\d{2}\.\d{2}$/.test(raw)) {
+    return raw.replace(/^(\d{4})\.(\d{2})\.(\d{2})$/, "$1-$2-$3T00:00:00");
+  }
+  if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}(:\d{2})?$/.test(raw)) {
+    return raw.replace(" ", "T") + (/[zZ]|[+-]\d{2}:?\d{2}$/.test(raw) ? "" : "Z");
+  }
+  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d{1,3})?)?$/.test(raw)) {
+    return `${raw}Z`;
+  }
+  return raw;
+}
+
+function localTimeZoneLabel() {
+  return Intl.DateTimeFormat().resolvedOptions().timeZone || "Local";
+}
+
+function formatZonedDateTime(value, options = {}) {
+  const normalizedValue = normalizeDateInput(value);
   const date = new Date(normalizedValue);
   if (Number.isNaN(date.getTime())) {
     return "";
   }
+  const includeDate = options.includeDate ?? true;
+  const includeTimeZone = options.includeTimeZone ?? false;
   const parts = new Intl.DateTimeFormat(undefined, {
     year: "numeric",
     month: "2-digit",
@@ -908,7 +949,13 @@ function formatArticleDate(value) {
     result[part.type] = part.value;
     return result;
   }, {});
-  return `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute}:${parts.second}`;
+  const dateText = includeDate ? `${parts.year}-${parts.month}-${parts.day} ` : "";
+  const zoneText = includeTimeZone ? ` ${localTimeZoneLabel()}` : "";
+  return `${dateText}${parts.hour}:${parts.minute}:${parts.second}${zoneText}`;
+}
+
+function formatArticleDate(value) {
+  return formatZonedDateTime(value, { includeDate: true, includeTimeZone: true });
 }
 
 function renderMarkdownSafe(target, markdown) {
@@ -1588,7 +1635,7 @@ function createChatMessageNode(message) {
 }
 
 function formatChatTime(value) {
-  const date = new Date(value);
+  const date = new Date(normalizeDateInput(value));
   if (Number.isNaN(date.getTime())) {
     return "";
   }
@@ -1596,13 +1643,7 @@ function formatChatTime(value) {
   const sameDay = date.getFullYear() === now.getFullYear()
     && date.getMonth() === now.getMonth()
     && date.getDate() === now.getDate();
-  return new Intl.DateTimeFormat(undefined, {
-    ...(sameDay ? {} : { year: "numeric", month: "2-digit", day: "2-digit" }),
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false
-  }).format(date);
+  return formatZonedDateTime(value, { includeDate: !sameDay, includeTimeZone: true });
 }
 
 async function submitChatMessage(event) {

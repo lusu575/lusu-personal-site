@@ -1,0 +1,3 @@
+2048 is listed in this site catalog with upstream attribution to gabrielecirulli/2048, licensed under the MIT License.
+
+This local page is a compact compatible implementation for LuSu's Personal Site, with trilingual interface text and site save integration.

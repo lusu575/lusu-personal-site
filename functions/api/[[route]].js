@@ -950,6 +950,33 @@ function articleSeedStatements(env) {
         published_at = excluded.published_at
     `),
     env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-11-time-window-library-fix',
+        '2026-06-11-time-window-library-fix',
+        'site-updates',
+        '["网站更新","时间显示","知识库","窗口"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-11T14:25:00.000Z',
+        '2026-06-11T14:25:00.000Z',
+        '2026-06-11T14:25:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
       insert into article_translations (
         translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
       ) values
@@ -1252,6 +1279,66 @@ This update focuses on visible layout issues that affect everyday browsing.
 - 歓迎ポップアップの最近の更新は最新5件だけを表示し、新しい記事が古い記事を自動的に押し出します。',
           '2026-06-11T00:06:00.000Z',
           '2026-06-11T00:06:00.000Z'
+        ),
+        (
+          'seed-update-2026-06-11-time-window-library-fix-zh',
+          'seed-update-2026-06-11-time-window-library-fix',
+          'zh',
+          '时间显示、知识库返回与窗口尺寸整理',
+          '按用户所在时区显示文章和聊天室时间，关闭知识库后回到首页，并收紧关于我窗口。',
+          '# 时间显示、知识库返回与窗口尺寸整理
+
+本次更新继续整理几个日常使用时容易出戏的小问题。
+
+## 更新内容
+
+- 知识库文章发布时间按用户所在时区显示，并显示到秒和时区名。
+- 匿名聊天室消息时间也按用户所在时区显示，今天只显示时间，旧消息显示日期、时间和时区。
+- 从文章详情关闭知识库后，再打开知识库会回到知识库首页。
+- 关于我页面改为更紧凑的窗口，其它普通板块统一为稍大的内容窗口，聊天室保持原本尺寸。
+- 首页中文三个待建设入口从“施工中”改为“待定”，并放宽图标文字区域，尽量显示完整。',
+          '2026-06-11T14:25:00.000Z',
+          '2026-06-11T14:25:00.000Z'
+        ),
+        (
+          'seed-update-2026-06-11-time-window-library-fix-en',
+          'seed-update-2026-06-11-time-window-library-fix',
+          'en',
+          'Time display, knowledge reset, and window sizing',
+          'Article and chat times now respect the visitor timezone, knowledge detail closes back to the home view, and About is more compact.',
+          '# Time display, knowledge reset, and window sizing
+
+This update polishes a few everyday browsing details.
+
+## Changes
+
+- Knowledge-base publish times now render in the visitor timezone, down to seconds, with the timezone label.
+- Anonymous chat message times also use the visitor timezone; today shows time only, older messages show date, time, and timezone.
+- Closing the knowledge base from an article detail resets it to the knowledge home view for the next open.
+- The About page is now a compact window, while other regular sections share a slightly larger content window; chat keeps its own size.
+- The three pending home entries now use TBD wording, with wider desktop icon labels so text can fit more naturally.',
+          '2026-06-11T14:25:00.000Z',
+          '2026-06-11T14:25:00.000Z'
+        ),
+        (
+          'seed-update-2026-06-11-time-window-library-fix-ja',
+          'seed-update-2026-06-11-time-window-library-fix',
+          'ja',
+          '時刻表示、知識庫の戻り先、ウィンドウサイズ調整',
+          '記事とチャットの時刻を閲覧者のタイムゾーンに合わせ、知識庫詳細から閉じた後は一覧に戻るようにしました。',
+          '# 時刻表示、知識庫の戻り先、ウィンドウサイズ調整
+
+今回の更新では、普段の閲覧で気になる細かな表示を整えました。
+
+## 更新内容
+
+- 知識庫の記事公開時刻を閲覧者のタイムゾーンで秒まで表示し、タイムゾーン名も表示します。
+- 匿名チャットの時刻も閲覧者のタイムゾーンに合わせ、当日は時刻のみ、古いメッセージは日付・時刻・タイムゾーンを表示します。
+- 記事詳細から知識庫を閉じた後、次に開くと知識庫トップに戻ります。
+- プロフィール画面をコンパクトにし、他の通常セクションは少し広い共通ウィンドウに整理しました。チャットは従来サイズのままです。
+- ホームの3つの未完成入口は「未定」表記にし、アイコン文字領域を広げて文言を表示しやすくしました。',
+          '2026-06-11T14:25:00.000Z',
+          '2026-06-11T14:25:00.000Z'
         )
       on conflict(article_id, lang) do update set
         title = excluded.title,

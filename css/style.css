@@ -494,9 +494,9 @@ main {
   top: 196px;
   left: 48px;
   display: grid;
-  grid-template-columns: repeat(2, 124px);
-  grid-auto-rows: 124px;
-  gap: 18px 22px;
+  grid-template-columns: repeat(2, 136px);
+  grid-auto-rows: 132px;
+  gap: 16px 20px;
 }
 
 .desktop-icon {
@@ -506,8 +506,8 @@ main {
   justify-items: center;
   justify-content: flex-start;
   gap: 2px;
-  width: 124px;
-  height: 124px;
+  width: 136px;
+  height: 132px;
   padding: 7px 7px 8px;
   border: 2px solid transparent;
   border-radius: 5px;
@@ -529,13 +529,13 @@ main {
 .icon-title {
   display: block;
   width: 100%;
-  min-height: 34px;
-  font-size: 14px;
+  min-height: 36px;
+  font-size: 13px;
   font-weight: 900;
-  line-height: 1.1;
+  line-height: 1.15;
   overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .icon-caption {
@@ -865,11 +865,19 @@ main {
 #knowledge .xp-window,
 #videos .xp-window,
 #resources .xp-window,
-#blog .xp-window,
+#blog .xp-window {
+  display: flex;
+  flex-direction: column;
+  width: min(1120px, calc(100% - 16px));
+  height: min(760px, calc(100vh - 150px));
+  max-height: calc(100vh - 150px);
+}
+
 #about .xp-window {
   display: flex;
   flex-direction: column;
-  height: min(720px, calc(100vh - 162px));
+  height: auto;
+  min-height: 0;
   max-height: calc(100vh - 162px);
 }
 
@@ -1680,15 +1688,15 @@ main {
 }
 
 .about-window {
-  width: min(860px, 100%);
+  width: min(760px, calc(100% - 24px));
 }
 
 .profile-card {
   display: grid;
-  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+  grid-template-columns: minmax(170px, 220px) minmax(0, 1fr);
   align-items: start;
-  gap: 28px;
-  padding: 24px;
+  gap: 22px;
+  padding: 18px;
   background:
     linear-gradient(90deg, rgba(255, 183, 213, 0.23), transparent 40%),
     #fff;
@@ -1697,7 +1705,7 @@ main {
 .profile-avatar {
   display: grid;
   place-items: center;
-  min-height: 220px;
+  min-height: 168px;
   overflow: hidden;
   border: 3px solid #6fa1e8;
   border-radius: 8px;
@@ -1705,7 +1713,7 @@ main {
 }
 
 .profile-avatar-image {
-  width: min(210px, 92%);
+  width: min(164px, 92%);
   aspect-ratio: 1;
   object-fit: contain;
   image-rendering: auto;
@@ -1721,8 +1729,8 @@ main {
 
 .profile-info dl {
   display: grid;
-  gap: 8px;
-  margin: 0 0 16px;
+  gap: 6px;
+  margin: 0 0 12px;
   min-width: 0;
 }
 
@@ -1746,7 +1754,7 @@ main {
 
 .about-copy {
   margin: 0;
-  padding: 14px;
+  padding: 12px;
   border: 2px dashed #8bb4ff;
   border-radius: 7px;
   background: #f7fbff;
@@ -2426,11 +2434,16 @@ main {
   #knowledge .xp-window,
   #videos .xp-window,
   #resources .xp-window,
-  #blog .xp-window,
-  #about .xp-window {
+  #blog .xp-window {
     height: calc(100dvh - 118px);
     max-height: calc(100dvh - 118px);
     overflow: hidden;
+  }
+
+  #about .xp-window {
+    height: auto;
+    max-height: calc(100dvh - 118px);
+    overflow: auto;
   }
 
   .video-thumb {
