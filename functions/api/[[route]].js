@@ -78,6 +78,10 @@ export async function onRequest(context) {
       }
     }
     if (parts[0] === "saves" && parts[1]) {
+      const saveAccessError = await validateSaveAccess(request, env, parts[1]);
+      if (saveAccessError) {
+        return saveAccessError;
+      }
       if (request.method === "GET") {
         return getSave(request, env, parts[1]);
       }
@@ -187,6 +191,20 @@ async function putSave(request, env, gameId) {
   `).bind(session.user.id, gameId, saveData, now).run();
 
   return json({ ok: true, updatedAt: now });
+}
+
+async function validateSaveAccess(request, env, gameId) {
+  if (!isValidGameId(gameId)) {
+    return json({ error: "游戏编号不正确。" }, 400);
+  }
+  if (!readCookie(request, SESSION_COOKIE)) {
+    return json({ error: "请先登录。" }, 401);
+  }
+  const session = await getSession(request, env);
+  if (!session) {
+    return json({ error: "请先登录。" }, 401);
+  }
+  return null;
 }
 
 async function getChatMessages(request, env) {
@@ -830,7 +848,8 @@ function articleSeedStatements(env) {
       ) values
         ('seed-xp-site-notes', 'xp-site-notes', 'site', '["个人站","记录"]', '', 'published', 1, 0, '2026-06-11T00:00:00.000Z', '2026-06-11T00:00:00.000Z', '2026-06-11T00:00:00.000Z'),
         ('seed-local-ai-workflow', 'local-ai-workflow', 'ai', '["AI","工具"]', '', 'published', 0, 0, '2026-06-11T00:01:00.000Z', '2026-06-11T00:01:00.000Z', '2026-06-11T00:01:00.000Z'),
-        ('seed-fallback-check', 'fallback-check', 'note', '["fallback","测试"]', '', 'published', 0, 0, '2026-06-11T00:02:00.000Z', '2026-06-11T00:02:00.000Z', '2026-06-11T00:02:00.000Z')
+        ('seed-fallback-check', 'fallback-check', 'note', '["fallback","测试"]', '', 'published', 0, 0, '2026-06-11T00:02:00.000Z', '2026-06-11T00:02:00.000Z', '2026-06-11T00:02:00.000Z'),
+        ('seed-update-2026-06-11-site-update-articles', '2026-06-11-site-update-articles', 'site-updates', '["网站更新","上线记录"]', '', 'published', 0, 0, '2026-06-11T00:03:00.000Z', '2026-06-11T00:03:00.000Z', '2026-06-11T00:03:00.000Z')
       on conflict(article_id) do update set
         slug = excluded.slug,
         category = excluded.category,
@@ -897,7 +916,43 @@ When Codex publishes posts later, it will write zh / en / ja versions together.'
 
 这篇文章故意只提供中文版本。
 
-当请求 lang=en 或 lang=ja 时，接口应该回退到中文内容。', '2026-06-11T00:02:00.000Z', '2026-06-11T00:02:00.000Z')
+当请求 lang=en 或 lang=ja 时，接口应该回退到中文内容。', '2026-06-11T00:02:00.000Z', '2026-06-11T00:02:00.000Z'),
+        ('seed-update-2026-06-11-site-update-articles-zh', 'seed-update-2026-06-11-site-update-articles', 'zh', '网站更新记录接入知识库', '网站更新记录成为知识库文章分类，首页欢迎弹窗会自动读取最近更新文章。', '# 网站更新记录接入知识库
+
+本次更新把网站更新记录接入数据库化三语文章系统。
+
+## 更新内容
+
+- 知识库新增网站更新记录分类，并排在分类列表最后
+- 首页欢迎弹窗右侧最近更新自动读取该分类文章
+- 查看更多更新会跳转到知识库的网站更新记录分类
+- 欢迎弹窗左侧改为站长施工公告
+- 视频区和资源区卡片滚动与按钮间距得到整理
+- 默认语言会优先跟随浏览器或系统语言，用户手动切换后会记住选择', '2026-06-11T00:03:00.000Z', '2026-06-11T00:03:00.000Z'),
+        ('seed-update-2026-06-11-site-update-articles-en', 'seed-update-2026-06-11-site-update-articles', 'en', 'Site Update Log joins the knowledge base', 'Site updates are now real knowledge-base articles, and the welcome popup reads the latest update posts automatically.', '# Site Update Log joins the knowledge base
+
+This update connects the site update log to the database-backed trilingual article system.
+
+## Changes
+
+- Added a Site Update Log category to the knowledge base and placed it last
+- The welcome popup now reads recent update articles from that category
+- More updates opens the Site Update Log category in the knowledge base
+- The left side of the welcome popup now shows an owner status notice
+- Video and resource cards now have better scrolling and button spacing
+- The default language follows the browser or system language, then remembers manual user choices', '2026-06-11T00:03:00.000Z', '2026-06-11T00:03:00.000Z'),
+        ('seed-update-2026-06-11-site-update-articles-ja', 'seed-update-2026-06-11-site-update-articles', 'ja', 'サイト更新記録を知識庫に接続', 'サイト更新記録を知識庫の記事分類にし、歓迎ポップアップが最新更新記事を自動で読み込みます。', '# サイト更新記録を知識庫に接続
+
+今回の更新で、サイト更新記録をデータベース対応の三言語記事システムに接続しました。
+
+## 更新内容
+
+- 知識庫にサイト更新記録カテゴリを追加し、分類一覧の最後に配置
+- 歓迎ポップアップ右側の最近の更新が、このカテゴリの記事を自動で読み込みます
+- もっと見るから知識庫のサイト更新記録カテゴリへ移動できます
+- 歓迎ポップアップ左側を管理人の工事中お知らせに変更
+- 動画とリソースのカード表示、スクロール、ボタン余白を整理
+- 初期言語はブラウザまたはシステム言語に合わせ、手動変更後はその選択を保存します', '2026-06-11T00:03:00.000Z', '2026-06-11T00:03:00.000Z')
       on conflict(article_id, lang) do update set
         title = excluded.title,
         summary = excluded.summary,
@@ -946,9 +1001,13 @@ function validatePassword(password) {
 }
 
 function validateGameId(gameId) {
-  if (!/^[a-z0-9-]{1,80}$/.test(gameId)) {
+  if (!isValidGameId(gameId)) {
     throw new HttpError("游戏编号不正确。", 400);
   }
+}
+
+function isValidGameId(gameId) {
+  return /^[a-z0-9-]{1,80}$/.test(gameId);
 }
 
 function normalizeArticleLang(value) {

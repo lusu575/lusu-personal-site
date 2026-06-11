@@ -28,6 +28,10 @@ const translations = {
     toolbarBack: "返回桌面",
     toolbarRefresh: "刷新",
     knowledgePath: "我的电脑 / 鲁肃 / 知识库",
+    siteUpdateCategory: "网站更新记录",
+    welcomeStatusTitle: "站长状态：正在施工中",
+    welcomeStatusCopy: "这个网站会持续加入文章、资源、小游戏和一些奇怪的小功能。",
+    welcomeRecommend: "目前推荐体验：匿名聊天室、游戏区、知识库。",
     articleLoading: "正在从数据库读取文章...",
     articleLoadFailed: "文章读取失败，请稍后再试。",
     articleEmpty: "数据库里暂时还没有已发布文章。",
@@ -119,6 +123,10 @@ const translations = {
     toolbarBack: "Back to Desktop",
     toolbarRefresh: "Refresh",
     knowledgePath: "My Computer / LuSu / Knowledge",
+    siteUpdateCategory: "Site Update Log",
+    welcomeStatusTitle: "Owner status: under construction",
+    welcomeStatusCopy: "This site will keep adding articles, resources, small games, and a few odd little features.",
+    welcomeRecommend: "Recommended now: anonymous chat room, games, and knowledge base.",
     articleLoading: "Loading articles from the database...",
     articleLoadFailed: "Could not load articles. Please try again later.",
     articleEmpty: "No published articles are in the database yet.",
@@ -210,6 +218,10 @@ const translations = {
     toolbarBack: "デスクトップへ戻る",
     toolbarRefresh: "更新",
     knowledgePath: "マイコンピュータ / 魯粛 / 知識庫",
+    siteUpdateCategory: "サイト更新記録",
+    welcomeStatusTitle: "管理人ステータス：工事中",
+    welcomeStatusCopy: "このサイトには記事、リソース、ミニゲーム、少し変な機能を少しずつ追加していきます。",
+    welcomeRecommend: "今のおすすめ：匿名チャット、ゲーム、知識庫。",
     articleLoading: "データベースから記事を読み込み中...",
     articleLoadFailed: "記事を読み込めません。あとで試してください。",
     articleEmpty: "公開済みの記事はまだデータベースにありません。",
@@ -499,6 +511,31 @@ const articleState = {
   error: ""
 };
 
+const languageStorageKey = "lusu-site-language";
+const siteUpdateCategory = "site-updates";
+const articleCategoryLabels = {
+  "site-updates": {
+    zh: "网站更新记录",
+    en: "Site Update Log",
+    ja: "サイト更新記録"
+  },
+  site: {
+    zh: "网站",
+    en: "Site",
+    ja: "サイト"
+  },
+  ai: {
+    zh: "AI",
+    en: "AI",
+    ja: "AI"
+  },
+  note: {
+    zh: "笔记",
+    en: "Notes",
+    ja: "メモ"
+  }
+};
+
 const pageIds = ["home", "knowledge", "videos", "resources", "games", "blog", "chatroom", "about"];
 
 const chatStorageKeys = {
@@ -556,8 +593,11 @@ function renderLanguageSupportTags(item) {
   `).join("");
 }
 
-function setLanguage(lang) {
+function setLanguage(lang, options = {}) {
   currentLang = lang;
+  if (options.persist) {
+    localStorage.setItem(languageStorageKey, lang);
+  }
   document.documentElement.lang = lang === "zh" ? "zh-CN" : lang;
   document.title = t("heroTitle");
 
@@ -605,7 +645,7 @@ function renderCategoryButtons(targetId, type, categories) {
 function renderKnowledge() {
   const list = document.getElementById("knowledge-list");
   const detail = document.getElementById("article-detail");
-  const categories = [...new Set(articleState.articles.map((item) => item.category).filter(Boolean))];
+  const categories = sortArticleCategories([...new Set(articleState.articles.map((item) => item.category).filter(Boolean))]);
   renderKnowledgeCategoryButtons(categories);
 
   if (articleState.currentSlug) {
@@ -637,7 +677,7 @@ function renderKnowledge() {
       <h3>${escapeHtml(item.title)}</h3>
       <p>${escapeHtml(item.summary || "")}</p>
       <div class="meta-row">
-        <span>${t("articleCategory")}：${escapeHtml(item.category || "note")}</span>
+        <span>${t("articleCategory")}：${escapeHtml(articleCategoryName(item.category || "note"))}</span>
         ${item.tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}
         <span>${t("articlePublished")}：${escapeHtml(formatArticleDate(item.published_at || item.created_at))}</span>
         ${item.lang !== currentLang ? `<span class="tag">${t("articleFallback")}</span>` : ""}
@@ -651,9 +691,24 @@ function renderKnowledgeCategoryButtons(categories) {
   const target = document.getElementById("knowledge-categories");
   const buttons = [t("all"), ...categories].map((name, index) => {
     const value = index === 0 ? "all" : String(name);
-    return `<button class="${activeFilters.knowledge === value ? "active " : ""}category-button" data-filter-type="knowledge" data-filter="${escapeHtml(value)}">${escapeHtml(name)}</button>`;
+    return `<button class="${activeFilters.knowledge === value ? "active " : ""}category-button" data-filter-type="knowledge" data-filter="${escapeHtml(value)}">${escapeHtml(articleCategoryName(value))}</button>`;
   });
   target.innerHTML = buttons.join("");
+}
+
+function sortArticleCategories(categories) {
+  return categories.sort((a, b) => {
+    if (a === siteUpdateCategory) return 1;
+    if (b === siteUpdateCategory) return -1;
+    return articleCategoryName(a).localeCompare(articleCategoryName(b));
+  });
+}
+
+function articleCategoryName(category) {
+  if (category === "all") {
+    return t("all");
+  }
+  return articleCategoryLabels[category]?.[currentLang] || category || "note";
 }
 
 async function loadArticles() {
@@ -668,6 +723,7 @@ async function loadArticles() {
       return;
     }
     articleState.articles = payload.articles || [];
+    renderUpdates();
   } catch (error) {
     if (requestId !== articleState.requestId) {
       return;
@@ -682,6 +738,8 @@ async function loadArticles() {
     if (requestId === articleState.requestId) {
       articleState.loading = false;
       renderKnowledge();
+      renderUpdates();
+      document.getElementById("top-updated").textContent = latestUpdateDate();
     }
   }
 }
@@ -720,7 +778,7 @@ function renderArticleDetail(article) {
   summary.textContent = article.summary || "";
   meta.replaceChildren();
   [
-    `${t("articleCategory")}：${article.category || "note"}`,
+    `${t("articleCategory")}：${articleCategoryName(article.category || "note")}`,
     `${t("articlePublished")}：${formatArticleDate(article.published_at || article.created_at)}`,
     ...(article.tags || []).map((tag) => `#${tag}`),
     article.lang !== currentLang ? t("articleFallback") : ""
@@ -730,18 +788,29 @@ function renderArticleDetail(article) {
     item.textContent = text;
     meta.appendChild(item);
   });
-  renderMarkdownSafe(body, article.content_markdown || "");
+  renderMarkdownSafe(body, stripRepeatedArticleHeading(article.content_markdown || "", article.title || ""));
 }
 
 function showArticle(slug) {
   articleState.currentSlug = slug;
   articleState.currentArticle = null;
+  navigate("knowledge");
+  closeWelcome();
   renderKnowledge();
 }
 
 function showArticleList() {
   articleState.currentSlug = "";
   articleState.currentArticle = null;
+  renderKnowledge();
+}
+
+function showArticleCategory(category) {
+  activeFilters.knowledge = category;
+  articleState.currentSlug = "";
+  articleState.currentArticle = null;
+  navigate("knowledge");
+  closeWelcome();
   renderKnowledge();
 }
 
@@ -834,6 +903,20 @@ function renderMarkdownSafe(target, markdown) {
     appendInlineMarkdown(paragraph, paragraphLines.join(" "));
     target.appendChild(paragraph);
   }
+}
+
+function stripRepeatedArticleHeading(markdown, title) {
+  const lines = String(markdown || "").replace(/\r\n/g, "\n").split("\n");
+  const firstContentIndex = lines.findIndex((line) => line.trim());
+  if (firstContentIndex < 0) {
+    return "";
+  }
+  const first = lines[firstContentIndex].trim();
+  if (first.replace(/^#\s+/, "") === String(title || "").trim()) {
+    lines.splice(firstContentIndex, 1);
+    return lines.join("\n").replace(/^\n+/, "");
+  }
+  return markdown;
 }
 
 function appendInlineMarkdown(parent, text) {
@@ -944,22 +1027,41 @@ function renderBlog() {
 
 function renderUpdates() {
   const list = document.getElementById("recent-updates");
-  list.innerHTML = content.updates.map((item) => `
+  const updateArticles = siteUpdateArticles().slice(0, 5);
+  if (!updateArticles.length) {
+    list.innerHTML = `<li><span class="update-icon">📚</span><span><strong>${t("articleLoading")}</strong><small>${t("articleEmpty")}</small></span></li>`;
+    return;
+  }
+  list.innerHTML = updateArticles.map((item) => `
     <li>
-      <span class="update-icon">${item.icon}</span>
-      <span>
-        <strong>${localText(item.title)}</strong>
-        <small>${localText(item.desc)}<br>${item.date}</small>
-      </span>
+      <button class="recent-update-link" type="button" data-article-slug="${escapeHtml(item.slug)}">
+        <span class="update-icon">📚</span>
+        <span>
+          <strong>${escapeHtml(truncateText(item.title, 34))}</strong>
+          <small>${escapeHtml(truncateText(item.summary || "", 58))}<br>${escapeHtml(formatArticleDate(item.published_at || item.created_at))}</small>
+        </span>
+      </button>
     </li>
   `).join("");
 }
 
 function latestUpdateDate() {
-  return content.updates.reduce((latest, item) => {
-    const date = String(item.date || "");
+  const dates = siteUpdateArticles().length ? siteUpdateArticles() : content.updates;
+  return dates.reduce((latest, item) => {
+    const date = String(item.published_at || item.created_at || item.date || "").slice(0, 10).replace(/-/g, ".");
     return date > latest ? date : latest;
   }, "");
+}
+
+function siteUpdateArticles() {
+  return articleState.articles
+    .filter((item) => item.category === siteUpdateCategory)
+    .sort((a, b) => String(b.published_at || b.created_at || "").localeCompare(String(a.published_at || a.created_at || "")));
+}
+
+function truncateText(value, maxLength) {
+  const chars = Array.from(String(value || ""));
+  return chars.length > maxLength ? `${chars.slice(0, maxLength - 3).join("")}...` : chars.join("");
 }
 
 function renderAll() {
@@ -1490,7 +1592,7 @@ document.addEventListener("click", (event) => {
 
   const langButton = event.target.closest("[data-lang]");
   if (langButton) {
-    setLanguage(langButton.dataset.lang);
+    setLanguage(langButton.dataset.lang, { persist: true });
     return;
   }
 
@@ -1504,6 +1606,12 @@ document.addEventListener("click", (event) => {
   const articleButton = event.target.closest("[data-article-slug]");
   if (articleButton) {
     showArticle(articleButton.dataset.articleSlug);
+    return;
+  }
+
+  const articleCategoryButton = event.target.closest("[data-article-category]");
+  if (articleCategoryButton) {
+    showArticleCategory(articleCategoryButton.dataset.articleCategory);
     return;
   }
 
@@ -1553,8 +1661,36 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
-const requestedLang = pageParams.get("lang");
-const initialLang = ["zh", "en", "ja"].includes(requestedLang) ? requestedLang : "zh";
+function browserPreferredLanguage() {
+  const candidates = [navigator.language, ...(navigator.languages || [])].filter(Boolean);
+  const matched = candidates.map((lang) => lang.toLowerCase()).find((lang) => (
+    lang.startsWith("zh") || lang.startsWith("en") || lang.startsWith("ja")
+  ));
+  if (!matched) {
+    return "zh";
+  }
+  if (matched.startsWith("en")) {
+    return "en";
+  }
+  if (matched.startsWith("ja")) {
+    return "ja";
+  }
+  return "zh";
+}
+
+function initialLanguage() {
+  const requestedLang = pageParams.get("lang");
+  if (["zh", "en", "ja"].includes(requestedLang)) {
+    return requestedLang;
+  }
+  const storedLang = localStorage.getItem(languageStorageKey);
+  if (["zh", "en", "ja"].includes(storedLang)) {
+    return storedLang;
+  }
+  return browserPreferredLanguage();
+}
+
+const initialLang = initialLanguage();
 
 setLanguage(initialLang);
 initAccountWidget();

@@ -1052,11 +1052,14 @@ main {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
+  align-content: start;
+  align-items: start;
 }
 
 .video-card {
   display: grid;
   grid-template-rows: auto 1fr;
+  align-self: start;
   overflow: hidden;
 }
 
@@ -1097,8 +1100,25 @@ main {
 
 .video-body {
   display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
   gap: 8px;
-  padding: 13px;
+  min-height: 192px;
+  padding: 13px 13px 16px;
+}
+
+.video-body p,
+.resource-main p {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.video-body .card-action,
+.resource-card .card-action {
+  justify-self: start;
+  align-self: end;
+  margin-top: 6px;
 }
 
 .platform {
@@ -1127,11 +1147,14 @@ main {
 .download-list {
   display: grid;
   gap: 13px;
+  align-content: start;
 }
 
 .resource-card {
   grid-template-columns: 1fr auto;
   align-items: center;
+  align-self: start;
+  min-height: 126px;
 }
 
 .resource-main {
@@ -1207,6 +1230,51 @@ main {
   background:
     repeating-linear-gradient(180deg, #fff 0 34px, #d6ecff 35px),
     #fff;
+}
+
+.welcome-status-copy {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.welcome-status-copy strong {
+  color: #073a91;
+  font-size: 17px;
+  line-height: 1.25;
+}
+
+.welcome-status-copy p {
+  margin: 0;
+  color: var(--xp-muted);
+  line-height: 1.55;
+}
+
+.recent-update-link {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 9px;
+  align-items: start;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  box-shadow: none;
+  text-align: left;
+}
+
+.recent-update-link strong,
+.recent-update-link small {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recent-update-link:hover strong {
+  color: #073a91;
+  text-decoration: underline;
 }
 
 .chatroom-window {
