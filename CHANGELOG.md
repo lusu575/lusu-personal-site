@@ -13,6 +13,7 @@
   - 知识库区域改为从 D1 读取文章列表和文章详情，网站切换语言时会重新请求对应语言版本。
   - 前端 Markdown 详情使用安全 DOM 构造和 `textContent` 渲染基础 Markdown，不直接把正文作为未处理 HTML 插入。
   - `cloudflare/schema.sql` 加入三篇测试文章，其中两篇包含完整 zh / en / ja，另一篇仅中文用于验证 fallback。
+  - Pages Functions 的文章 schema guard 也会补入同一批测试文章，避免远端 D1 尚未手动 migration 时线上文章列表为空。
   - 更新首页 JS 资源 query 版本号，避免浏览器继续加载旧知识库逻辑。
   - 将数据库化三语文章系统的长期维护规则同步补充到项目专用 Skill 和 README。
 - 永久化更新日期和缓存踩坑规则：
