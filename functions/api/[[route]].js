@@ -7,6 +7,8 @@ const MAX_CHAT_NICKNAME_CHARS = 16;
 const CHAT_COOLDOWN_MS = 3000;
 const CHAT_IP_WINDOW_MS = 60000;
 const CHAT_IP_WINDOW_LIMIT = 20;
+const CHAT_NICKNAME_LOOKBACK_LIMIT = 1000;
+let coreSchemaReady = false;
 let chatSchemaReady = false;
 
 export async function onRequest(context) {
@@ -20,6 +22,8 @@ export async function onRequest(context) {
   }
 
   try {
+    await ensureCoreSchema(env);
+
     if (request.method === "GET" && parts[0] === "health") {
       return health(env);
     }
@@ -42,6 +46,9 @@ export async function onRequest(context) {
       if (request.method === "POST") {
         return postChatMessage(request, env);
       }
+    }
+    if (request.method === "GET" && parts[0] === "chat" && parts[1] === "nickname") {
+      return getChatNickname(env);
     }
     if (parts[0] === "saves" && parts[1]) {
       if (request.method === "GET") {
@@ -228,6 +235,17 @@ async function postChatMessage(request, env) {
     return json({ error: "当前网络发送过于频繁，请稍后再试。" }, 429);
   }
 
+  const nicknameOwner = await env.DB.prepare(`
+    select visitor_id
+    from anonymous_chat_messages
+    where hidden = 0 and nickname = ? and visitor_id <> ?
+    order by created_at desc
+    limit 1
+  `).bind(nickname, visitorId).first();
+  if (nicknameOwner) {
+    return json({ error: "这个随机昵称已经被使用，请刷新聊天室获取新昵称。", code: "nickname_taken" }, 409);
+  }
+
   const messageId = chatMessageId(now);
   await env.DB.prepare(`
     insert into anonymous_chat_messages (message_id, visitor_id, nickname, content, created_at, hidden, ip_hash)
@@ -243,6 +261,51 @@ async function postChatMessage(request, env) {
       created_at: nowText
     }
   }, 201);
+}
+
+async function getChatNickname(env) {
+  await ensureChatSchema(env);
+  const used = await recentChatNicknames(env);
+  return json({ nickname: randomAvailableChatNickname(used) });
+}
+
+async function recentChatNicknames(env) {
+  const rows = (await env.DB.prepare(`
+    select distinct nickname
+    from (
+      select nickname
+      from anonymous_chat_messages
+      where hidden = 0
+      order by created_at desc, message_id desc
+      limit ?
+    )
+  `).bind(CHAT_NICKNAME_LOOKBACK_LIMIT).all()).results || [];
+  return new Set(rows.map((row) => String(row.nickname || "").trim()).filter(Boolean));
+}
+
+function randomAvailableChatNickname(used) {
+  const names = [
+    "蓝屏小企鹅", "像素幽灵", "草地路人A", "CRT访客", "电视小粉", "泡泡旅人",
+    "BluePenguin", "PixelGhost", "CRTGuest", "GrassWalker",
+    "ピクセル幽霊", "CRT旅人", "草原の人"
+  ];
+  const suffixes = ["9527", "1024", "2333", "404", "88", "7"];
+  const candidates = names.flatMap((name) => suffixes.map((suffix) => `${name}${suffix}`));
+  for (let index = candidates.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [candidates[index], candidates[swapIndex]] = [candidates[swapIndex], candidates[index]];
+  }
+  const available = candidates.find((candidate) => !used.has(candidate) && isValidChatNicknameLength(candidate));
+  if (available) {
+    return available;
+  }
+  for (let attempt = 0; attempt < 30; attempt += 1) {
+    const fallback = `访客${Math.floor(100000 + Math.random() * 900000)}`;
+    if (!used.has(fallback) && isValidChatNicknameLength(fallback)) {
+      return fallback;
+    }
+  }
+  return `访客${Date.now().toString(36).slice(-6)}`;
 }
 
 async function ensureChatSchema(env) {
@@ -275,6 +338,44 @@ async function ensureChatSchema(env) {
     `)
   ]);
   chatSchemaReady = true;
+}
+
+async function ensureCoreSchema(env) {
+  if (coreSchemaReady) {
+    return;
+  }
+  await env.DB.batch([
+    env.DB.prepare(`
+      create table if not exists users (
+        id text primary key,
+        email text not null unique,
+        password_hash text not null,
+        created_at text not null,
+        updated_at text not null
+      )
+    `),
+    env.DB.prepare(`
+      create table if not exists sessions (
+        token_hash text primary key,
+        user_id text not null references users(id) on delete cascade,
+        created_at text not null,
+        expires_at text not null
+      )
+    `),
+    env.DB.prepare("create index if not exists sessions_user_id_idx on sessions(user_id)"),
+    env.DB.prepare("create index if not exists sessions_expires_at_idx on sessions(expires_at)"),
+    env.DB.prepare(`
+      create table if not exists game_saves (
+        user_id text not null references users(id) on delete cascade,
+        game_id text not null,
+        save_data text not null,
+        updated_at text not null,
+        primary key (user_id, game_id)
+      )
+    `),
+    env.DB.prepare("create index if not exists game_saves_updated_at_idx on game_saves(updated_at)")
+  ]);
+  coreSchemaReady = true;
 }
 
 async function createSessionResponse(env, request, userId, email, status = 200) {
@@ -379,11 +480,15 @@ function normalizeVisitorId(value) {
 
 function normalizeChatNickname(value) {
   const nickname = String(value || "").trim();
-  const length = Array.from(nickname).length;
-  if (length < 2 || length > MAX_CHAT_NICKNAME_CHARS) {
+  if (!isValidChatNicknameLength(nickname)) {
     throw new HttpError("昵称需要 2-16 个字符，不能是空白。", 400);
   }
   return nickname;
+}
+
+function isValidChatNicknameLength(value) {
+  const length = Array.from(String(value || "").trim()).length;
+  return length >= 2 && length <= MAX_CHAT_NICKNAME_CHARS;
 }
 
 function normalizeChatContent(value) {

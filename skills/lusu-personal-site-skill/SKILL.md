@@ -1,0 +1,144 @@
+---
+name: 鲁肃个人网站专用Skill
+description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用于修改项目文档、前端界面、三语文案、聊天室、游戏区、账号云存档、Cloudflare Pages Functions、D1、部署说明或长期维护规则。使用本 Skill 保持 XP Pixel Art Y2K 风格、更新 CHANGELOG 和 PROJECT_CONTEXT，并遵守项目安全与部署约束。
+---
+
+# 鲁肃个人网站专用Skill
+
+## 使用时机
+
+维护 `F:\lusu575个人站` / `lusu575/lusu-personal-site` 时使用本 Skill，尤其是以下任务：
+
+- 修改网站代码、样式、文案、图片、游戏区、聊天室、账号、云存档或后端接口。
+- 修改 `PROJECT_CONTEXT.md`、`CHANGELOG.md`、README、部署说明或维护规则。
+- 新增游戏、页面、窗口、图标、弹窗、任务栏入口或长期注意事项。
+
+## 每次改动必须执行
+
+- 每次修改项目后，必须同步更新 `CHANGELOG.md`，记录日期、功能、界面、后端、部署、文档或规则变化。
+- 项目信息变化时，必须同步更新 `PROJECT_CONTEXT.md`，保持项目背景、技术栈、部署方式、主要功能、文件结构和本地开发方式准确。
+- 新增长期注意事项、维护规则、踩坑点或约束时，必须同步补充到本 Skill。
+- 本 Skill 规则变化时，必须同步更新 `skills/lusu-personal-site-skill/README.md`。
+- 用户明确要求“只改文档”时，只修改文档文件，不改网站代码、样式、功能或资源。
+- 用户明确要求“只美化 / 不动功能”时，只改视觉层文件，避免修改路由、登录、渲染数据、游戏加载、聊天室接口等功能逻辑。
+
+## 风格与文案规则
+
+- 保持 Windows XP + Pixel Art + Y2K + 可爱复古互联网桌面风格。
+- 必须保留桌面感、蓝色标题栏、XP 风格按钮、任务栏、状态栏、像素图标、蓝天白云、草地和老互联网氛围。
+- 避免现代极简博客风、商务 landing page、大面积纯白卡片堆砌、过重单色渐变背景。
+- 可见文案必须维护中文 / English / 日本語 三种语言，不能只改一种语言。
+- 调整图标、按钮、任务栏标签、桌面入口或标题栏时，必须检查图标和文字的对齐、换行、截断和小屏幕显示。
+
+## 前端和移动端检查
+
+改首页、窗口、任务栏、图标、卡片、弹窗、游戏外壳或任意前端样式时，必须检查手机端适配：
+
+- 避免横向溢出。
+- 避免顶部常驻区域占屏过多。
+- 避免弹窗超出屏幕。
+- 避免游戏 iframe 尺寸过大。
+- 确认桌面端和手机端文字不重叠、不被图标遮挡、不从按钮或卡片中溢出。
+
+## 匿名聊天室安全规则
+
+- 聊天室用户内容必须纯文本渲染。
+- 不得用 `innerHTML` 插入访客昵称或消息内容。
+- 昵称和消息应使用 `textContent` 或等价安全 DOM API。
+- 前后端都要保留校验：昵称 2-16 字符，消息 1-300 字符，空消息不可发送，visitor_id 至少 3 秒 1 条。
+- 接口单次最多返回 100 条消息。
+- 聊天室接口涉及 D1 表 `anonymous_chat_messages`，远端上线前仍建议执行正式 D1 migration。
+
+## 游戏区规则
+
+- 游戏列表由 `js/main.js` 读取 `games/catalog.json` 生成。
+- 每个游戏保留独立目录：`games/<game-id>/`。
+- 游戏页统一使用 `games/game-shell.js` 和 `games/game-shell.css`。
+- 新增游戏时必须在 `games/catalog.json` 补齐：
+  - `id`
+  - `entry`
+  - `sourceEntry`
+  - `license`
+  - `storage.keys`
+  - 必要时补 `storage.defaults`
+  - 中文 / English / 日本語 的支持情况
+- 如果 `storage.keys` 不完整，导出和云存档会找不到对应游戏存档。
+- 后续新增游戏时，必须在游戏标签或信息里标明中文、English、日本語是否支持。
+- 网站切换语言时，游戏区优先展示对应语言。
+- 如果游戏不支持当前语言，默认启动英语版本。
+- 本地验证游戏区不要直接打开 `file://`，应通过静态服务器访问，因为主站会 `fetch("games/catalog.json")`。
+- `a-dark-room` 的 jQuery 已改成本地 `lib/jquery.min.js`，不要恢复成外部 CDN。
+
+当前游戏特定注意点：
+
+- `kittens-game` 语言设置使用 `com.nuclearunicorn.kittengame.language`。
+- `a-dark-room` 语言参数使用 `lang`，简体中文对应 `zh_cn`。
+- `a-dark-room` 入口仍需要保留 `ignorebrowser=true`。
+
+## 账号与云存档规则
+
+- 账号系统只服务于游戏自动云存档，不影响普通网站浏览。
+- 游戏本体仍然使用浏览器 `localStorage`。
+- `games/game-shell.js` 负责收集 `games/catalog.json` 里声明的 storage keys。
+- 登录后进入游戏页，会读取云端存档。
+- 如果云端存档比本地已知存档更新，会询问是否恢复云端。
+- 本地有存档时会上传到 D1。
+- 自动同步间隔：30 秒。
+- 切出页面时会尝试 flush 游戏自己的保存函数并同步。
+- 密码使用 PBKDF2-SHA256 哈希。
+- 会话使用 HttpOnly cookie：`lusu_session`。
+- 单个游戏存档最大约 1MB。
+
+## Cloudflare 部署规则
+
+- 正式部署链路是 `GitHub main -> Cloudflare Pages Git 自动部署 -> lusu575.com`。
+- 网站代码以 GitHub `main` 为源头。
+- Vercel 不再是正式部署入口。
+- Cloudflare Pages Git 自动部署不是 Wrangler 手动部署。
+- 不要把 `npx wrangler deploy` 或 `npx wrangler pages deploy .` 写成 Git 自动部署命令。
+- 如果 Cloudflare 后台要求构建设置，推荐静态站配置：框架预设 `None`，构建命令留空，构建输出目录 `/`，根目录 `/`。
+- `wrangler pages deploy .` 只用于本地手动应急部署。
+
+常用检查命令：
+
+```powershell
+git status -sb
+git log --oneline --decorate -5
+$env:XDG_CONFIG_HOME='F:\lusu575个人站\.wrangler-config'; npx.cmd wrangler pages project list
+$env:XDG_CONFIG_HOME='F:\lusu575个人站\.wrangler-config'; npx.cmd wrangler pages deployment list --project-name lusu-personal-site
+```
+
+期望状态：
+
+- `git status -sb` 显示 `main...origin/main`，无未提交变更。
+- Cloudflare `lusu-personal-site` 显示 `Git Provider: Yes`。
+- Cloudflare 项目域名包含 `lusu575.com` 和 `www.lusu575.com`。
+- 最新 Cloudflare 部署来源应为 GitHub `main` 的最新提交。
+- `lusu575.com` 和 `www.lusu575.com` 应指向同一个 Cloudflare Pages 项目和同一个 GitHub `main` 构建产物。
+
+## 本地开发和验证注意事项
+
+- PowerShell 可能禁止 `npm.ps1` / `npx.ps1`，优先用 `npm.cmd`、`npx.cmd`。
+- 本机 Wrangler 登录临时配置目录可能是 `.wrangler-config/`，该目录已被 `.gitignore` 忽略，不得提交。
+- `.wrangler/`、`.wrangler-config/`、`node_modules/`、`.codex-remote-attachments/` 都是本地生成内容，不得提交。
+- 使用 imagegen / image2 生成项目资源时，生成文件必须复制到 `assets/images/` 等项目目录并由代码引用，不能只保留在 Codex 默认生成目录。
+
+## 线上缓存和双域名踩坑
+
+- 线上视觉验证要同时检查部署和缓存：确认 `origin/main` 最新提交、线上 CSS 是否包含新资源名、线上图片是否 200。
+- Cloudflare / 浏览器缓存可能导致旧效果继续显示，必要时使用缓存破坏参数或 `_headers` 调整缓存策略。
+- `lusu575.com` 和 `www.lusu575.com` 的边缘缓存、浏览器缓存可能不同步。
+- 如果两个域名视觉不一致，优先检查两个域名的 CSS / 图片响应是否同版。
+- 涉及首页背景、任务栏、图标等强视觉资源时，建议同步更新 CSS 引用版本号或图片 URL query。
+
+## 当前关键资源
+
+- 首页主要视觉资源：
+  - `assets/images/homepage-pixel-coast.png`
+  - `assets/images/lusu-tv-head-256.png`
+  - `assets/images/lusu-about-avatar-256.png`
+  - `assets/images/start-windows-pixel.png`
+- 聊天室图标资源：
+  - `assets/images/icon-chatroom-clean.png`
+
+替换这些资源后，要检查桌面端和手机端显示效果。

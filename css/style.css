@@ -826,6 +826,47 @@ main {
   padding: 16px;
 }
 
+#knowledge .xp-window,
+#videos .xp-window,
+#resources .xp-window,
+#games .xp-window,
+#blog .xp-window,
+#about .xp-window {
+  display: flex;
+  flex-direction: column;
+  height: min(720px, calc(100vh - 162px));
+  max-height: calc(100vh - 162px);
+}
+
+#knowledge .folder-layout,
+#videos .card-grid,
+#resources .download-list,
+#games .game-list,
+#blog .notepad-paper,
+#about .profile-card {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+#knowledge .folder-layout {
+  overflow: hidden;
+}
+
+#knowledge .category-panel,
+#knowledge .content-list {
+  min-height: 0;
+  overflow: auto;
+}
+
+#videos .filter-row,
+#resources .filter-row,
+#knowledge .window-toolbar,
+#blog .notepad-menu {
+  flex: 0 0 auto;
+}
+
 .article-card,
 .video-card,
 .resource-card,
@@ -887,6 +928,23 @@ main {
   color: #1748a7;
   background: #eaf3ff;
   font-weight: 800;
+}
+
+.language-support-label {
+  color: #555;
+  font-weight: 800;
+}
+
+.language-tag {
+  border-color: #76b884;
+  color: #155f25;
+  background: #e9f8ec;
+}
+
+.language-tag.unsupported {
+  border-color: #b8b8b8;
+  color: #777;
+  background: #f3f3f3;
 }
 
 .filter-row button.active {
@@ -2058,6 +2116,17 @@ main {
     margin-top: 10px;
     max-height: calc(100vh - 118px);
     overflow: auto;
+  }
+
+  #knowledge .xp-window,
+  #videos .xp-window,
+  #resources .xp-window,
+  #games .xp-window,
+  #blog .xp-window,
+  #about .xp-window {
+    height: calc(100dvh - 118px);
+    max-height: calc(100dvh - 118px);
+    overflow: hidden;
   }
 
   .video-thumb {

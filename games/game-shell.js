@@ -1,5 +1,7 @@
 (async function () {
   const slug = window.GAME_SLUG;
+  const shellParams = new URLSearchParams(window.location.search);
+  const requestedSiteLang = ["zh", "en", "ja"].includes(shellParams.get("lang")) ? shellParams.get("lang") : "zh";
   const frame = document.getElementById("game-frame");
   const title = document.getElementById("game-title");
   const subtitle = document.getElementById("game-subtitle");
@@ -8,11 +10,17 @@
   const importInput = document.getElementById("save-import");
   const cloudPanel = document.getElementById("cloud-panel");
   const cloudMetaPrefix = "lusu.cloudSave.";
+  const backToGamesUrl = `../../index.html?lang=${encodeURIComponent(requestedSiteLang)}#games`;
 
   let authUser = null;
   let currentGame = null;
   let syncTimer = null;
   let syncInFlight = false;
+
+  document.documentElement.lang = requestedSiteLang === "zh" ? "zh-CN" : requestedSiteLang;
+  document.querySelectorAll(".back-link, a[href='../../index.html#games']").forEach((link) => {
+    link.setAttribute("href", backToGamesUrl);
+  });
 
   function setStatus(text) {
     status.textContent = text;
@@ -26,9 +34,25 @@
     return response.json();
   }
 
+  function localText(value) {
+    if (typeof value === "string") {
+      return value;
+    }
+    return value?.[requestedSiteLang] || value?.zh || "";
+  }
+
+  function getGameLanguage(game) {
+    const support = game.languageSupport || {};
+    const languageMap = game.languageMap || {};
+    const siteLang = support[requestedSiteLang] ? requestedSiteLang : "zh";
+    return languageMap[siteLang] || siteLang;
+  }
+
   function buildEntry(game) {
-    const query = game.launchQuery ? `?${game.launchQuery}` : "";
-    return `${game.sourceEntry}${query}`;
+    const params = new URLSearchParams(game.launchQuery || "");
+    params.set("lang", getGameLanguage(game));
+    const query = params.toString();
+    return `${game.sourceEntry}${query ? `?${query}` : ""}`;
   }
 
   function flushGameSave() {
@@ -56,6 +80,16 @@
         localStorage.setItem(key, value);
       }
     });
+  }
+
+  function applyLanguagePreference(game) {
+    const gameLang = getGameLanguage(game);
+    if (game.id === "kittens-game") {
+      localStorage.setItem("com.nuclearunicorn.kittengame.language", gameLang);
+    }
+    if (game.id === "a-dark-room") {
+      localStorage.setItem("lang", gameLang);
+    }
   }
 
   function getConfiguredKeys(game) {
@@ -155,7 +189,7 @@
         <span>未登录，当前使用本地存档。</span>
         <p>${message ? escapeHtml(message) : "如需自动云存档，请回主界面右上角登录账号。"}</p>
         <div class="cloud-actions">
-          <a class="tool-button" href="../../index.html#games">回主界面登录</a>
+          <a class="tool-button" href="${backToGamesUrl}">回主界面登录</a>
         </div>
       </div>
     `;
@@ -302,8 +336,9 @@
     }
     currentGame = game;
 
-    document.title = `${game.titleZh} · 鲁肃的个人站`;
-    title.textContent = game.titleZh;
+    const displayTitle = localText(game.titles || game.titleZh);
+    document.title = `${displayTitle} · 鲁肃的个人站`;
+    title.textContent = displayTitle;
     subtitle.textContent = `${game.title} · ${game.language}`;
     license.innerHTML = `
       <span>开源协议：<strong>${game.license.name}</strong></span>
@@ -318,6 +353,7 @@
       startAutoSync(game);
     }
 
+    applyLanguagePreference(game);
     frame.src = buildEntry(game);
     frame.addEventListener("load", () => {
       setStatus(authUser ? "游戏已加载，云端存档会自动同步。" : "游戏已加载，本地存档会保存在当前浏览器。");

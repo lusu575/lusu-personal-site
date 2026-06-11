@@ -5,11 +5,30 @@
       "id": "kittens-game",
       "title": "Kittens Game",
       "titleZh": "猫国建设者",
-      "summary": "以猫咪文明为主题的长期资源管理与增量游戏，默认载入简体中文。",
+      "titles": {
+        "zh": "猫国建设者",
+        "en": "Kittens Game",
+        "ja": "子猫ゲーム"
+      },
+      "summaries": {
+        "zh": "以猫咪文明为主题的长期资源管理与增量游戏，会跟随网站语言载入。",
+        "en": "A long-form resource management and incremental game about a kitten civilization. It follows the site language.",
+        "ja": "子猫の文明を育てる長期型の資源管理・放置ゲームです。サイトの言語に合わせて読み込みます。"
+      },
       "cover": "../assets/images/icon-knowledge.png",
       "entry": "kittens-game/",
       "sourceEntry": "source/index.html",
-      "language": "内置简体中文",
+      "language": "支持中文 / English / 日本語",
+      "languageSupport": {
+        "zh": true,
+        "en": true,
+        "ja": true
+      },
+      "languageMap": {
+        "zh": "zh",
+        "en": "en",
+        "ja": "ja"
+      },
       "license": {
         "name": "WET PAWS LICENSE",
         "file": "source/license.txt",
@@ -31,12 +50,31 @@
       "id": "a-dark-room",
       "title": "A Dark Room",
       "titleZh": "小黑屋",
-      "summary": "极简文字冒险与资源管理游戏，默认进入简体中文。",
+      "titles": {
+        "zh": "小黑屋",
+        "en": "A Dark Room",
+        "ja": "暗い部屋"
+      },
+      "summaries": {
+        "zh": "极简文字冒险与资源管理游戏，会跟随网站语言载入。",
+        "en": "A minimalist text adventure and resource management game. It follows the site language.",
+        "ja": "ミニマルなテキスト冒険・資源管理ゲームです。サイトの言語に合わせて読み込みます。"
+      },
       "cover": "../assets/images/icon-blog.png",
       "entry": "a-dark-room/",
       "sourceEntry": "source/index.html",
-      "launchQuery": "lang=zh_cn&ignorebrowser=true",
-      "language": "内置简体中文",
+      "launchQuery": "ignorebrowser=true",
+      "language": "支持中文 / English / 日本語",
+      "languageSupport": {
+        "zh": true,
+        "en": true,
+        "ja": true
+      },
+      "languageMap": {
+        "zh": "zh_cn",
+        "en": "en",
+        "ja": "ja"
+      },
       "license": {
         "name": "Mozilla Public License 2.0",
         "file": "source/LICENSE.md",

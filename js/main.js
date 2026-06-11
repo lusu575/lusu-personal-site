@@ -31,9 +31,13 @@ const translations = {
     knowledgePath: "我的电脑 / 鲁肃 / 知识库",
     readButton: "阅读",
     playButton: "播放",
+    startGameButton: "开始",
     downloadButton: "下载",
     externalButton: "外部链接",
     openOriginal: "打开原地址",
+    languageSupportLabel: "语言支持",
+    gameConfigLoading: "正在读取游戏配置...",
+    gameConfigFailed: "游戏配置读取失败",
     videoPlaceholder: "这里预留 Bilibili / YouTube 嵌入播放器。",
     startButton: "首页",
     lastUpdatedLabel: "最近更新日期",
@@ -47,7 +51,7 @@ const translations = {
     statusLabel: "网站状态",
     statusValue: "持续建设中",
     aboutCopy: "你好，我是鲁肃。这里是我的个人站，用来记录 AI、游戏、工具、资源和一些杂谈。",
-    welcomeTitle: "欢迎来到鲁肃的像素桌面",
+    welcomeTitle: "欢迎",
     welcomeHeading: "新头像和移动端整理完成啦！",
     welcomeCopy: "这次换上了新的电视机头像，公告、账号窗口、视频区、资源区和内置游戏也重新适配了手机端。",
     quickEntry: "快捷入口",
@@ -70,10 +74,17 @@ const translations = {
     chatEmptyMessage: "空消息不可发送。",
     chatTooLong: "单条消息最多 300 字。",
     chatCooldown: "发送太快啦，请等 3 秒。",
+    chatNicknameTaken: "这个随机昵称已经被使用，正在为你换一个新昵称。",
     chatNicknamePrompt: "请输入 2-16 个字符的新昵称：",
     chatNicknameInvalid: "昵称需要 2-16 个字符，不能是空白。",
     chatNicknameSaved: "昵称已更新，后续发言会使用新昵称。",
-    chatSent: "已发送。"
+    chatSent: "已发送。",
+    placeholderMark: "（占位符）",
+    greetingMorning: "早上好",
+    greetingNoon: "中午好",
+    greetingAfternoon: "下午好",
+    greetingEvening: "晚上好",
+    welcomeDateLine: "今天是{year}年{month}月{day}日，很高兴见到你。"
   },
   en: {
     siteName: "LuSu's Personal Site",
@@ -104,9 +115,13 @@ const translations = {
     knowledgePath: "My Computer / LuSu / Knowledge",
     readButton: "Read",
     playButton: "Play",
+    startGameButton: "Start",
     downloadButton: "Download",
     externalButton: "External Link",
     openOriginal: "Open Original",
+    languageSupportLabel: "Language support",
+    gameConfigLoading: "Loading game catalog...",
+    gameConfigFailed: "Could not load game catalog",
     videoPlaceholder: "Bilibili / YouTube embed player is reserved here.",
     startButton: "Home",
     lastUpdatedLabel: "Last updated",
@@ -120,7 +135,7 @@ const translations = {
     statusLabel: "Site Status",
     statusValue: "Under construction",
     aboutCopy: "Hi, I'm LuSu. This is my personal site for AI notes, games, tools, resources and random thoughts.",
-    welcomeTitle: "Welcome to LuSu's pixel desktop",
+    welcomeTitle: "Welcome",
     welcomeHeading: "New avatar and mobile layout are ready!",
     welcomeCopy: "The site now uses the new TV-head avatar, with refreshed announcements, account popover, video/resources areas, and embedded games tuned for mobile.",
     quickEntry: "Quick Entry",
@@ -143,10 +158,17 @@ const translations = {
     chatEmptyMessage: "Empty messages cannot be sent.",
     chatTooLong: "Messages can be up to 300 characters.",
     chatCooldown: "Too fast. Please wait 3 seconds.",
+    chatNicknameTaken: "This random nickname is already in use. Getting a new one for you.",
     chatNicknamePrompt: "Enter a new nickname, 2-16 characters:",
     chatNicknameInvalid: "Nickname must be 2-16 characters and cannot be blank.",
     chatNicknameSaved: "Nickname updated. Future messages will use it.",
-    chatSent: "Sent."
+    chatSent: "Sent.",
+    placeholderMark: " (Placeholder)",
+    greetingMorning: "Good morning",
+    greetingNoon: "Good noon",
+    greetingAfternoon: "Good afternoon",
+    greetingEvening: "Good evening",
+    welcomeDateLine: "Today is {year}-{month}-{day}. It is good to see you."
   },
   ja: {
     siteName: "魯粛の個人サイト",
@@ -177,9 +199,13 @@ const translations = {
     knowledgePath: "マイコンピュータ / 魯粛 / 知識庫",
     readButton: "読む",
     playButton: "再生",
+    startGameButton: "開始",
     downloadButton: "ダウンロード",
     externalButton: "外部リンク",
     openOriginal: "元のページを開く",
+    languageSupportLabel: "言語対応",
+    gameConfigLoading: "ゲーム設定を読み込み中...",
+    gameConfigFailed: "ゲーム設定を読み込めません",
     videoPlaceholder: "Bilibili / YouTube の埋め込みプレイヤー用スペースです。",
     startButton: "ホーム",
     lastUpdatedLabel: "最終更新日",
@@ -193,7 +219,7 @@ const translations = {
     statusLabel: "サイト状態",
     statusValue: "建設中",
     aboutCopy: "こんにちは、魯粛です。ここはAI、ゲーム、ツール、リソース、雑談を記録する個人サイトです。",
-    welcomeTitle: "魯粛のピクセルデスクトップへようこそ",
+    welcomeTitle: "ようこそ",
     welcomeHeading: "新しいアバターとスマホ表示を整えました！",
     welcomeCopy: "新しいテレビ頭のアバターに差し替え、告知、アカウント画面、動画・リソース欄、内蔵ゲームをスマホ向けに調整しました。",
     quickEntry: "クイック入口",
@@ -216,10 +242,17 @@ const translations = {
     chatEmptyMessage: "空のメッセージは送れません。",
     chatTooLong: "1通は最大300文字です。",
     chatCooldown: "送信が速すぎます。3秒待ってください。",
+    chatNicknameTaken: "このランダム名はすでに使われています。新しい名前に変更します。",
     chatNicknamePrompt: "2-16文字の新しいニックネームを入力：",
     chatNicknameInvalid: "ニックネームは2-16文字で、空白のみは使えません。",
     chatNicknameSaved: "ニックネームを更新しました。次の発言から反映されます。",
-    chatSent: "送信しました。"
+    chatSent: "送信しました。",
+    placeholderMark: "（プレースホルダー）",
+    greetingMorning: "おはようございます",
+    greetingNoon: "こんにちは",
+    greetingAfternoon: "こんにちは",
+    greetingEvening: "こんばんは",
+    welcomeDateLine: "今日は{year}年{month}月{day}日です。お会いできてうれしいです。"
   }
 };
 
@@ -454,7 +487,33 @@ function label(key) {
 }
 
 function localText(value) {
+  if (typeof value === "string") {
+    return value;
+  }
   return value[currentLang] || value.zh || "";
+}
+
+function contentTitle(value) {
+  return `${localText(value)}${t("placeholderMark")}`;
+}
+
+function buildGameUrl(item) {
+  return `games/${item.entry}?lang=${encodeURIComponent(currentLang)}`;
+}
+
+function renderLanguageSupportTags(item) {
+  const supported = item.languageSupport || {};
+  const languageNames = {
+    zh: "中文",
+    en: "EN",
+    ja: "日本語"
+  };
+
+  return ["zh", "en", "ja"].map((lang) => `
+    <span class="tag language-tag${supported[lang] ? " supported" : " unsupported"}" title="${languageNames[lang]}${supported[lang] ? "" : " not supported"}">
+      ${languageNames[lang]} ${supported[lang] ? "✓" : "×"}
+    </span>
+  `).join("");
 }
 
 function setLanguage(lang) {
@@ -475,6 +534,7 @@ function setLanguage(lang) {
   });
 
   renderAll();
+  updateWelcomeGreeting();
 }
 
 function navigate(route) {
@@ -508,7 +568,7 @@ function renderKnowledge() {
 
   list.innerHTML = items.map((item) => `
     <article class="article-card">
-      <h3>${localText(item.title)}</h3>
+      <h3>${contentTitle(item.title)}</h3>
       <p>${localText(item.desc)}</p>
       <div class="meta-row">
         ${item.tags.map((tag) => `<span class="tag">${tag}</span>`).join("")}
@@ -529,7 +589,7 @@ function renderVideos() {
       <div class="video-thumb" style="--thumb-bg: ${item.color}"></div>
       <div class="video-body">
         <span class="platform ${item.platform.toLowerCase()}">${item.platform}</span>
-        <h3>${localText(item.title)}</h3>
+        <h3>${contentTitle(item.title)}</h3>
         <p>${localText(item.desc)}</p>
         <button class="card-action" data-video-index="${content.videos.indexOf(item)}">${t("playButton")}</button>
       </div>
@@ -545,7 +605,7 @@ function renderResources() {
   list.innerHTML = items.map((item) => `
     <article class="resource-card">
       <div class="resource-main">
-        <h3><span class="resource-icon">${item.icon}</span>${localText(item.title)}</h3>
+        <h3><span class="resource-icon">${item.icon}</span>${contentTitle(item.title)}</h3>
         <p>${localText(item.desc)}</p>
         <div class="meta-row">
           <span>${label("type")}：${label("resourceCategories")[item.category]}</span>
@@ -569,26 +629,27 @@ async function loadGameCatalog() {
 
 async function renderGames() {
   const list = document.getElementById("game-list");
-  list.innerHTML = `<p class="loading-text">正在读取游戏配置...</p>`;
+  list.innerHTML = `<p class="loading-text">${t("gameConfigLoading")}</p>`;
   try {
     const catalog = await loadGameCatalog();
     list.innerHTML = catalog.games.map((item) => `
         <article class="game-card">
-          <img class="game-cover" src="${item.cover.replace("../", "")}" alt="${item.titleZh} 封面" loading="lazy">
+          <img class="game-cover" src="${item.cover.replace("../", "")}" alt="${escapeHtml(localText(item.titles || item.titleZh))}" loading="lazy">
           <div>
-            <h3>${item.titleZh}</h3>
-            <p>${item.summary}</p>
+            <h3>${escapeHtml(localText(item.titles || item.titleZh))}</h3>
+            <p>${escapeHtml(localText(item.summaries || item.summary))}</p>
             <div class="meta-row">
-              <span class="tag">${item.title}</span>
-              <span class="tag">${item.license.name}</span>
-              <span>${item.language}</span>
+              <span class="tag">${escapeHtml(item.title)}</span>
+              <span class="tag">${escapeHtml(item.license.name)}</span>
+              <span class="language-support-label">${t("languageSupportLabel")}:</span>
+              ${renderLanguageSupportTags(item)}
             </div>
           </div>
-          <a class="card-action" href="games/${item.entry}">开始</a>
+          <a class="card-action" href="${buildGameUrl(item)}">${t("startGameButton")}</a>
         </article>
       `).join("");
   } catch (error) {
-    list.innerHTML = `<p class="loading-text">游戏配置读取失败：${error.message}</p>`;
+    list.innerHTML = `<p class="loading-text">${t("gameConfigFailed")}：${escapeHtml(error.message)}</p>`;
   }
 }
 
@@ -596,7 +657,7 @@ function renderBlog() {
   const list = document.getElementById("blog-list");
   list.innerHTML = content.blog.map((item) => `
     <article class="blog-card">
-      <h3>${localText(item.title)}</h3>
+      <h3>${contentTitle(item.title)}</h3>
       <p>${localText(item.desc)}</p>
       <div class="meta-row">
         <span>${label("date")}：${item.date}</span>
@@ -646,6 +707,27 @@ function closeWelcome() {
   document.getElementById("welcome-modal").hidden = true;
 }
 
+function updateWelcomeGreeting() {
+  const heading = document.querySelector("[data-i18n='welcomeHeading']");
+  if (!heading) {
+    return;
+  }
+  const now = new Date();
+  const hour = now.getHours();
+  const greetingKey = hour >= 5 && hour < 11
+    ? "greetingMorning"
+    : hour >= 11 && hour < 14
+      ? "greetingNoon"
+      : hour >= 14 && hour < 18
+        ? "greetingAfternoon"
+        : "greetingEvening";
+  const dateLine = t("welcomeDateLine")
+    .replace("{year}", String(now.getFullYear()))
+    .replace("{month}", String(now.getMonth() + 1))
+    .replace("{day}", String(now.getDate()));
+  heading.textContent = `${t(greetingKey)}，${dateLine}`;
+}
+
 function localDateKey(date) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -662,6 +744,7 @@ function maybeShowWelcome() {
   if (localStorage.getItem(key) === "1") {
     return;
   }
+  updateWelcomeGreeting();
   document.getElementById("welcome-modal").hidden = false;
   localStorage.setItem(key, "1");
 }
@@ -803,7 +886,7 @@ function toggleAccountPopover() {
   }
 }
 
-function ensureChatIdentity() {
+async function ensureChatIdentity() {
   let visitorId = localStorage.getItem(chatStorageKeys.visitorId);
   if (!visitorId) {
     visitorId = crypto.randomUUID ? crypto.randomUUID() : `visitor-${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -812,13 +895,25 @@ function ensureChatIdentity() {
 
   let nickname = localStorage.getItem(chatStorageKeys.nickname);
   if (!isValidChatNickname(nickname)) {
-    nickname = randomChatNickname();
+    nickname = await fetchAvailableChatNickname();
     localStorage.setItem(chatStorageKeys.nickname, nickname);
   }
 
   chatState.visitorId = visitorId;
   chatState.nickname = nickname.trim();
   updateChatNicknameDisplay();
+}
+
+async function fetchAvailableChatNickname() {
+  try {
+    const payload = await chatApi("/api/chat/nickname");
+    if (isValidChatNickname(payload.nickname)) {
+      return payload.nickname.trim();
+    }
+  } catch {
+    // Local fallback keeps the chat usable if the nickname endpoint is unavailable.
+  }
+  return randomChatNickname();
 }
 
 function randomChatNickname() {
@@ -863,7 +958,7 @@ function updateChatCounter() {
 }
 
 async function initChatroom() {
-  ensureChatIdentity();
+  await ensureChatIdentity();
   updateChatCounter();
 
   if (!chatState.initialized) {
@@ -1007,7 +1102,7 @@ function formatChatTime(value) {
 
 async function submitChatMessage(event) {
   event.preventDefault();
-  ensureChatIdentity();
+  await ensureChatIdentity();
 
   const input = document.getElementById("chat-message-input");
   const contentText = input.value.trim();
@@ -1042,12 +1137,20 @@ async function submitChatMessage(event) {
     appendChatMessages(payload.message ? [payload.message] : []);
     refreshChatMessages();
   } catch (error) {
+    if (error.code === "nickname_taken") {
+      setChatFeedback(t("chatNicknameTaken"), true);
+      const nickname = await fetchAvailableChatNickname();
+      chatState.nickname = nickname;
+      localStorage.setItem(chatStorageKeys.nickname, nickname);
+      updateChatNicknameDisplay();
+      return;
+    }
     setChatFeedback(error.message || t("chatLoadFailed"), true);
   }
 }
 
-function editChatNickname() {
-  ensureChatIdentity();
+async function editChatNickname() {
+  await ensureChatIdentity();
   const next = window.prompt(t("chatNicknamePrompt"), chatState.nickname);
   if (next === null) {
     return;
@@ -1070,7 +1173,9 @@ async function chatApi(path, options = {}) {
   });
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) {
-    throw new Error(payload.error || `HTTP ${response.status}`);
+    const error = new Error(payload.error || `HTTP ${response.status}`);
+    error.code = payload.code || "";
+    throw error;
   }
   return payload;
 }
