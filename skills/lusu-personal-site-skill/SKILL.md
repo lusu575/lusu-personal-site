@@ -129,7 +129,8 @@ $env:XDG_CONFIG_HOME='F:\lusu575个人站\.wrangler-config'; npx.cmd wrangler pa
 - Cloudflare / 浏览器缓存可能导致旧效果继续显示，必要时使用缓存破坏参数或 `_headers` 调整缓存策略。
 - `lusu575.com` 和 `www.lusu575.com` 的边缘缓存、浏览器缓存可能不同步。
 - 如果两个域名视觉不一致，优先检查两个域名的 CSS / 图片响应是否同版。
-- 涉及首页背景、任务栏、图标等强视觉资源时，建议同步更新 CSS 引用版本号或图片 URL query。
+- 涉及 `js/main.js`、`css/style.css`、首页背景、任务栏、图标等强视觉或交互资源时，必须同步更新 `index.html` 里的 CSS / JS query 版本号或图片 URL query，避免线上和用户浏览器继续加载旧缓存。
+- 右上角“最近更新日期”由 `js/main.js` 的 `content.updates` 最大日期自动生成；新增可见功能更新时要补一条 `content.updates`，不要重新增加写死日期常量。
 
 ## 当前关键资源
 

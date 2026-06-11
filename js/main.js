@@ -1,4 +1,3 @@
-const siteUpdated = "2026.06.11";
 const pageParams = new URLSearchParams(window.location.search);
 
 const translations = {
@@ -685,8 +684,15 @@ function renderUpdates() {
   `).join("");
 }
 
+function latestUpdateDate() {
+  return content.updates.reduce((latest, item) => {
+    const date = String(item.date || "");
+    return date > latest ? date : latest;
+  }, "");
+}
+
 function renderAll() {
-  document.getElementById("top-updated").textContent = siteUpdated;
+  document.getElementById("top-updated").textContent = latestUpdateDate();
   renderKnowledge();
   renderVideos();
   renderResources();

@@ -30,6 +30,8 @@ skills/lusu-personal-site-skill/SKILL.md
 - 本地验证游戏区应通过静态服务器访问，不要直接打开 `file://`。
 - Cloudflare 部署检查命令和期望状态保留在 `SKILL.md`。
 - 线上验证要注意 Cloudflare 缓存和 `lusu575.com` / `www.lusu575.com` 双域名缓存差异。
+- 修改 `js/main.js`、`css/style.css` 或强视觉资源时，必须同步更新 `index.html` 中的资源 query 版本号，避免线上继续显示旧缓存。
+- 右上角“最近更新日期”从 `content.updates` 的最大日期自动生成；新增可见更新时补 `content.updates`，不要恢复写死日期。
 
 ## 后续维护方式
 
