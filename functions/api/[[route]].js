@@ -897,7 +897,7 @@ When Codex publishes posts later, it will write zh / en / ja versions together.'
 
 这篇文章故意只提供中文版本。
 
-当请求 `lang=en` 或 `lang=ja` 时，接口应该回退到中文内容。', '2026-06-11T00:02:00.000Z', '2026-06-11T00:02:00.000Z')
+当请求 lang=en 或 lang=ja 时，接口应该回退到中文内容。', '2026-06-11T00:02:00.000Z', '2026-06-11T00:02:00.000Z')
       on conflict(article_id, lang) do update set
         title = excluded.title,
         summary = excluded.summary,
