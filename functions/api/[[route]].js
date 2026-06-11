@@ -53,6 +53,7 @@ export async function onRequest(context) {
     }
     if (parts[0] === "articles") {
       await ensureArticleSchema(env);
+      await seedArticleTestData(env);
       if (request.method === "GET" && !parts[1]) {
         return getArticles(request, env);
       }
@@ -62,6 +63,7 @@ export async function onRequest(context) {
     }
     if (parts[0] === "admin" && parts[1] === "articles") {
       await ensureArticleSchema(env);
+      await seedArticleTestData(env);
       if (request.method === "GET" && !parts[2]) {
         return getAdminArticles(request, env);
       }
@@ -903,6 +905,10 @@ When Codex publishes posts later, it will write zh / en / ja versions together.'
         updated_at = excluded.updated_at
     `)
   ];
+}
+
+async function seedArticleTestData(env) {
+  await env.DB.batch(articleSeedStatements(env));
 }
 
 async function readJson(request) {
