@@ -1102,11 +1102,21 @@ main {
   grid-auto-rows: 1fr;
 }
 
+.video-grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  align-content: flex-start;
+  gap: 16px;
+  grid-auto-rows: auto;
+}
+
 .video-card {
   display: grid;
   grid-template-rows: auto 1fr;
-  align-self: stretch;
-  height: 100%;
+  flex: 0 0 calc((100% - 32px) / 3);
+  align-self: start;
+  height: auto;
   min-height: 318px;
   overflow: hidden;
 }
@@ -1354,12 +1364,21 @@ main {
   gap: 9px;
   align-items: start;
   width: 100%;
+  min-width: 0;
   padding: 0;
   border: 0;
   color: inherit;
   background: transparent;
   box-shadow: none;
   text-align: left;
+}
+
+.recent-panel li > .recent-update-link {
+  grid-column: 1 / -1;
+}
+
+.recent-update-link > span:last-child {
+  min-width: 0;
 }
 
 .recent-update-link strong,
@@ -2170,7 +2189,7 @@ main {
 }
 
 .avatar-icon {
-  background-image: url("../assets/images/lusu-tv-head-256.png") !important;
+  background-image: url("../assets/images/lusu-tv-head-desktop-icon.png") !important;
   background-size: 90px 90px !important;
 }
 
@@ -2217,6 +2236,10 @@ main {
 }
 
 @media (max-width: 980px) {
+  .video-card {
+    flex-basis: calc((100% - 16px) / 2);
+  }
+
   .desktop-icons {
     top: 324px;
     left: 18px;
@@ -2430,6 +2453,7 @@ main {
   }
 
   .video-card {
+    flex-basis: 100%;
     min-height: 0;
   }
 
