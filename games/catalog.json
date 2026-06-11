@@ -11,9 +11,9 @@
         "ja": "子猫ゲーム"
       },
       "summaries": {
-        "zh": "以猫咪文明为主题的长期资源管理与增量游戏，会跟随网站语言载入。",
-        "en": "A long-form resource management and incremental game about a kitten civilization. It follows the site language.",
-        "ja": "子猫の文明を育てる長期型の資源管理・放置ゲームです。サイトの言語に合わせて読み込みます。"
+        "zh": "以猫咪文明为主题的长期资源管理与增量游戏。",
+        "en": "A long-form resource management and incremental game about a kitten civilization.",
+        "ja": "子猫の文明を育てる長期型の資源管理・放置ゲームです。"
       },
       "cover": "../assets/images/icon-knowledge.png",
       "entry": "kittens-game/",
@@ -56,9 +56,9 @@
         "ja": "暗い部屋"
       },
       "summaries": {
-        "zh": "极简文字冒险与资源管理游戏，会跟随网站语言载入。",
-        "en": "A minimalist text adventure and resource management game. It follows the site language.",
-        "ja": "ミニマルなテキスト冒険・資源管理ゲームです。サイトの言語に合わせて読み込みます。"
+        "zh": "极简文字冒险与资源管理游戏。",
+        "en": "A minimalist text adventure and resource management game.",
+        "ja": "ミニマルなテキスト冒険・資源管理ゲームです。"
       },
       "cover": "../assets/images/icon-blog.png",
       "entry": "a-dark-room/",

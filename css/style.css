@@ -829,7 +829,6 @@ main {
 #knowledge .xp-window,
 #videos .xp-window,
 #resources .xp-window,
-#games .xp-window,
 #blog .xp-window,
 #about .xp-window {
   display: flex;
@@ -841,7 +840,6 @@ main {
 #knowledge .folder-layout,
 #videos .card-grid,
 #resources .download-list,
-#games .game-list,
 #blog .notepad-paper,
 #about .profile-card {
   flex: 1 1 auto;
@@ -1049,13 +1047,18 @@ main {
 
 .game-list {
   display: grid;
-  gap: 14px;
+  gap: 12px;
+  max-height: min(520px, calc(100vh - 210px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .game-card {
   grid-template-columns: auto 1fr auto;
   align-items: center;
   margin: 0;
+  min-height: 96px;
+  padding: 12px;
 }
 
 .game-badge {
@@ -1071,10 +1074,10 @@ main {
 }
 
 .game-cover {
-  width: 76px;
-  height: 76px;
+  width: 64px;
+  height: 64px;
   object-fit: contain;
-  padding: 8px;
+  padding: 7px;
   border: 2px solid #9bbcff;
   border-radius: 8px;
   background: linear-gradient(180deg, #e9f5ff, #c9e3ff);
@@ -2121,7 +2124,6 @@ main {
   #knowledge .xp-window,
   #videos .xp-window,
   #resources .xp-window,
-  #games .xp-window,
   #blog .xp-window,
   #about .xp-window {
     height: calc(100dvh - 118px);
@@ -2150,6 +2152,10 @@ main {
   .resource-card,
   .game-card {
     grid-template-columns: 1fr;
+  }
+
+  .game-list {
+    max-height: calc(100dvh - 176px);
   }
 
   .chatroom-window {

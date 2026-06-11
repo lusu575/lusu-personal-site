@@ -639,8 +639,6 @@ async function renderGames() {
             <h3>${escapeHtml(localText(item.titles || item.titleZh))}</h3>
             <p>${escapeHtml(localText(item.summaries || item.summary))}</p>
             <div class="meta-row">
-              <span class="tag">${escapeHtml(item.title)}</span>
-              <span class="tag">${escapeHtml(item.license.name)}</span>
               <span class="language-support-label">${t("languageSupportLabel")}:</span>
               ${renderLanguageSupportTags(item)}
             </div>
