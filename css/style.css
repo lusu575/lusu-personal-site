@@ -1054,18 +1054,21 @@ main {
   gap: 16px;
   align-content: start;
   align-items: start;
+  grid-auto-rows: auto;
 }
 
 .video-card {
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto auto;
   align-self: start;
+  height: auto;
   overflow: hidden;
 }
 
 .video-thumb {
   position: relative;
-  min-height: 138px;
+  min-height: 0;
+  aspect-ratio: 16 / 9;
   border-bottom: 2px solid #9d9a86;
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.38), transparent 40%),
@@ -1100,9 +1103,9 @@ main {
 
 .video-body {
   display: grid;
-  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  grid-template-rows: 22px minmax(44px, auto) minmax(42px, auto) 34px;
   gap: 8px;
-  min-height: 192px;
+  min-height: 164px;
   padding: 13px 13px 16px;
 }
 
@@ -1114,15 +1117,29 @@ main {
   -webkit-line-clamp: 2;
 }
 
+.video-body h3,
+.resource-main h3 {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
 .video-body .card-action,
 .resource-card .card-action {
+  display: inline-grid;
+  place-items: center;
+  min-height: 34px;
   justify-self: start;
   align-self: end;
   margin-top: 6px;
+  line-height: 1;
 }
 
 .platform {
   width: fit-content;
+  height: 22px;
+  justify-self: start;
   padding: 3px 7px;
   border: 1px solid #707070;
   border-radius: 4px;
@@ -1148,12 +1165,14 @@ main {
   display: grid;
   gap: 13px;
   align-content: start;
+  grid-auto-rows: auto;
 }
 
 .resource-card {
-  grid-template-columns: 1fr auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   align-self: start;
+  height: auto;
   min-height: 126px;
 }
 

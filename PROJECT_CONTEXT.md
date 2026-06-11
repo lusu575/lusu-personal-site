@@ -48,6 +48,7 @@ Cloudflare Pages 项目状态：
 - Vercel 不再是这个站点的正式部署入口。
 - Cloudflare Pages 构建设置建议保持静态站配置：框架预设 `None`，构建命令留空，构建输出目录 `/`，根目录 `/`。
 - `wrangler pages deploy .` 只用于本地手动应急部署，不是 GitHub 自动部署链路。
+- 每次提交 main 后，必须核对 `origin/main` 最新 commit、Cloudflare Pages 最新成功生产部署 commit、线上 `index.html` 中 CSS/JS query 版本三者一致；如果线上页面与本地不一致，优先检查资源 query、Cloudflare/浏览器缓存和最新部署状态。
 
 ## 主要功能
 
@@ -87,6 +88,8 @@ Cloudflare Pages 项目状态：
 - 知识库固定使用 `site-updates` 作为“网站更新记录”分类，分类入口排在最后。
 - 每次代码合并、功能上线或可见更新，都要在 `site-updates` 分类发布一篇 zh / en / ja 三语真实文章，包含主标题、简介和正文。
 - 首页欢迎弹窗右侧“最近更新”自动读取 `site-updates` 分类文章；“查看更多更新”跳转到知识库并筛选该分类。
+- 2026-06-11 已清理三篇文章系统测试内容：`xp-site-notes`、`local-ai-workflow`、`fallback-check`；当前保留真实 `site-updates` 更新文章。
+- 文章详情前端使用 slug + 请求语言缓存和请求状态保护，避免语言切换或重渲染时重复拉取同一详情并卡在“读取中”。
 
 公开接口：
 
@@ -168,7 +171,8 @@ functions/api/[[route]].js
 - 未登录访客可直接发言。
 - 首次进入会按近期/已有聊天室昵称分配不重复随机昵称，随机昵称和 visitor_id 保存在 `localStorage`。
 - 支持修改昵称，历史消息保留原昵称。
-- 前端每 5 秒轮询新消息，页面恢复激活时立即刷新。
+- 前端首次进入加载最近消息，后续保持 `after/message_id` 增量拉取。
+- 有新消息时继续 5 秒刷新；无新消息时逐步降到 15 秒和 30 秒；窗口不在前台时降低轮询频率；用户发送消息后立即刷新一次。
 - 聊天内容必须纯文本渲染。
 
 前端入口：

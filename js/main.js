@@ -7,9 +7,12 @@ const translations = {
     homeLead: "欢迎来到我的小站，还在施工中，您可以四处浏览一下。",
     navKnowledge: "知识库",
     navVideos: "视频区",
+    navVideosBuilding: "视频区（建设中）",
     navResources: "资源区",
+    navResourcesBuilding: "资源区（建设中）",
     navGames: "游戏区",
     navBlog: "杂谈区",
+    navBlogBuilding: "杂谈区（建设中）",
     navChatroom: "匿名聊天室",
     navAbout: "关于我",
     capKnowledge: "笔记 · 教程 · 想法",
@@ -72,7 +75,7 @@ const translations = {
     moreUpdates: "查看更多更新",
     chatNicknameLabel: "我的昵称：",
     chatEditNickname: "修改昵称",
-    chatSyncStatus: "每 5 秒自动刷新",
+    chatSyncStatus: "自动增量刷新，空闲时会降低频率",
     chatInputLabel: "聊天内容",
     chatPlaceholder: "说点什么吧...",
     chatSend: "发送",
@@ -102,9 +105,12 @@ const translations = {
     homeLead: "Welcome to my little site. It is still under construction, but feel free to look around.",
     navKnowledge: "Knowledge",
     navVideos: "Videos",
+    navVideosBuilding: "Videos (Under construction)",
     navResources: "Resources",
+    navResourcesBuilding: "Resources (Under construction)",
     navGames: "Games",
     navBlog: "Talk",
+    navBlogBuilding: "Talk (Under construction)",
     navChatroom: "Chat Room",
     navAbout: "About",
     capKnowledge: "Notes · Tutorials · Ideas",
@@ -167,7 +173,7 @@ const translations = {
     moreUpdates: "More updates",
     chatNicknameLabel: "My nickname:",
     chatEditNickname: "Edit nickname",
-    chatSyncStatus: "Auto refresh every 5 seconds",
+    chatSyncStatus: "Incremental auto refresh, slower while idle",
     chatInputLabel: "Chat message",
     chatPlaceholder: "Say something...",
     chatSend: "Send",
@@ -197,9 +203,12 @@ const translations = {
     homeLead: "私の小さなサイトへようこそ。まだ工事中ですが、自由に見て回ってください。",
     navKnowledge: "知識庫",
     navVideos: "動画",
+    navVideosBuilding: "動画（工事中）",
     navResources: "リソース",
+    navResourcesBuilding: "リソース（工事中）",
     navGames: "ゲーム",
     navBlog: "雑談",
+    navBlogBuilding: "雑談（工事中）",
     navChatroom: "匿名チャット",
     navAbout: "プロフィール",
     capKnowledge: "メモ · チュートリアル · 考え",
@@ -262,7 +271,7 @@ const translations = {
     moreUpdates: "もっと見る",
     chatNicknameLabel: "ニックネーム：",
     chatEditNickname: "変更",
-    chatSyncStatus: "5秒ごとに自動更新",
+    chatSyncStatus: "差分自動更新、待機中は低頻度",
     chatInputLabel: "チャット本文",
     chatPlaceholder: "何か話してみよう...",
     chatSend: "送信",
@@ -505,6 +514,8 @@ let authUser = null;
 const articleState = {
   loading: false,
   requestId: 0,
+  detailRequestId: 0,
+  detailLoadingKey: "",
   articles: [],
   currentSlug: "",
   currentArticle: null,
@@ -547,6 +558,8 @@ const chatStorageKeys = {
 const chatState = {
   initialized: false,
   loading: false,
+  hasLoadedInitial: false,
+  idlePolls: 0,
   visitorId: "",
   nickname: "",
   lastMessageId: "",
@@ -651,7 +664,12 @@ function renderKnowledge() {
   if (articleState.currentSlug) {
     list.hidden = true;
     detail.hidden = false;
-    loadArticleDetail(articleState.currentSlug);
+    const detailKey = `${articleState.currentSlug}:${currentLang}`;
+    if (articleState.currentArticle && articleState.currentArticle.slug === articleState.currentSlug && articleState.currentArticle.requestedLang === currentLang) {
+      renderArticleDetail(articleState.currentArticle);
+    } else if (articleState.detailLoadingKey !== detailKey) {
+      loadArticleDetail(articleState.currentSlug);
+    }
     return;
   }
 
@@ -745,6 +763,10 @@ async function loadArticles() {
 }
 
 async function loadArticleDetail(slug) {
+  const requestId = articleState.detailRequestId + 1;
+  const detailKey = `${slug}:${currentLang}`;
+  articleState.detailRequestId = requestId;
+  articleState.detailLoadingKey = detailKey;
   const detail = document.getElementById("article-detail");
   const title = document.getElementById("article-detail-title");
   const summary = document.getElementById("article-detail-summary");
@@ -758,13 +780,19 @@ async function loadArticleDetail(slug) {
 
   try {
     const payload = await articleApi(`/api/articles/${encodeURIComponent(slug)}?lang=${encodeURIComponent(currentLang)}`);
-    if (articleState.currentSlug !== slug) {
+    if (articleState.currentSlug !== slug || requestId !== articleState.detailRequestId) {
       return;
     }
-    articleState.currentArticle = payload.article;
-    renderArticleDetail(payload.article);
+    articleState.currentArticle = { ...payload.article, requestedLang: currentLang };
+    renderArticleDetail(articleState.currentArticle);
   } catch {
-    title.textContent = t("articleLoadFailed");
+    if (requestId === articleState.detailRequestId) {
+      title.textContent = t("articleLoadFailed");
+    }
+  } finally {
+    if (requestId === articleState.detailRequestId) {
+      articleState.detailLoadingKey = "";
+    }
   }
 }
 
@@ -794,6 +822,7 @@ function renderArticleDetail(article) {
 function showArticle(slug) {
   articleState.currentSlug = slug;
   articleState.currentArticle = null;
+  articleState.detailLoadingKey = "";
   navigate("knowledge");
   closeWelcome();
   renderKnowledge();
@@ -802,6 +831,7 @@ function showArticle(slug) {
 function showArticleList() {
   articleState.currentSlug = "";
   articleState.currentArticle = null;
+  articleState.detailLoadingKey = "";
   renderKnowledge();
 }
 
@@ -809,6 +839,7 @@ function showArticleCategory(category) {
   activeFilters.knowledge = category;
   articleState.currentSlug = "";
   articleState.currentArticle = null;
+  articleState.detailLoadingKey = "";
   navigate("knowledge");
   closeWelcome();
   renderKnowledge();
@@ -1359,11 +1390,35 @@ function startChatPolling() {
   if (chatState.pollTimer) {
     return;
   }
-  chatState.pollTimer = window.setInterval(() => {
-    if (!document.hidden && document.getElementById("chatroom")?.classList.contains("active")) {
-      refreshChatMessages();
+  scheduleChatPolling(5000);
+}
+
+function scheduleChatPolling(delay) {
+  if (chatState.pollTimer) {
+    window.clearTimeout(chatState.pollTimer);
+  }
+  chatState.pollTimer = window.setTimeout(async () => {
+    chatState.pollTimer = null;
+    const chatVisible = !document.hidden && document.getElementById("chatroom")?.classList.contains("active");
+    if (!chatVisible) {
+      scheduleChatPolling(30000);
+      return;
     }
-  }, 5000);
+    const newCount = await refreshChatMessages();
+    scheduleChatPolling(nextChatPollDelay(newCount));
+  }, delay);
+}
+
+function nextChatPollDelay(newCount) {
+  if (newCount > 0) {
+    chatState.idlePolls = 0;
+    return 5000;
+  }
+  chatState.idlePolls += 1;
+  if (chatState.idlePolls >= 3) {
+    return 30000;
+  }
+  return 15000;
 }
 
 function resetChatLog(message) {
@@ -1374,6 +1429,8 @@ function resetChatLog(message) {
   list.replaceChildren();
   appendChatSystemMessage(message || t("chatWelcome"));
   chatState.lastMessageId = "";
+  chatState.hasLoadedInitial = false;
+  chatState.idlePolls = 0;
   chatState.seenMessageIds.clear();
 }
 
@@ -1390,19 +1447,23 @@ function appendChatSystemMessage(message) {
 
 async function refreshChatMessages(options = {}) {
   if (chatState.loading) {
-    return;
+    return 0;
   }
   chatState.loading = true;
+  let appendedCount = 0;
   try {
     const params = new URLSearchParams({ limit: "100" });
     if (!options.initial && chatState.lastMessageId) {
       params.set("after", chatState.lastMessageId);
+    } else if (!options.initial && chatState.hasLoadedInitial) {
+      params.set("after", "__no_messages_loaded__");
     }
     const payload = await chatApi(`/api/chat/messages?${params.toString()}`);
     if (options.initial) {
       resetChatLog(t("chatWelcome"));
     }
-    appendChatMessages(payload.messages || []);
+    appendedCount = appendChatMessages(payload.messages || []);
+    chatState.hasLoadedInitial = true;
   } catch {
     if (options.initial) {
       resetChatLog(t("chatLoadFailed"));
@@ -1412,14 +1473,16 @@ async function refreshChatMessages(options = {}) {
   } finally {
     chatState.loading = false;
   }
+  return appendedCount;
 }
 
 function appendChatMessages(messages) {
   const list = document.getElementById("chat-message-list");
   if (!list || !messages.length) {
-    return;
+    return 0;
   }
 
+  let appendedCount = 0;
   messages.forEach((message) => {
     if (!message.message_id || chatState.seenMessageIds.has(message.message_id)) {
       return;
@@ -1427,12 +1490,14 @@ function appendChatMessages(messages) {
     chatState.seenMessageIds.add(message.message_id);
     chatState.lastMessageId = message.message_id;
     list.appendChild(createChatMessageNode(message));
+    appendedCount += 1;
   });
 
   const autoscroll = document.getElementById("chat-autoscroll");
   if (!autoscroll || autoscroll.checked) {
     list.scrollTop = list.scrollHeight;
   }
+  return appendedCount;
 }
 
 function createChatMessageNode(message) {
@@ -1518,7 +1583,9 @@ async function submitChatMessage(event) {
     updateChatCounter();
     setChatFeedback(t("chatSent"));
     appendChatMessages(payload.message ? [payload.message] : []);
-    refreshChatMessages();
+    chatState.idlePolls = 0;
+    await refreshChatMessages({ immediate: true });
+    scheduleChatPolling(5000);
   } catch (error) {
     if (error.code === "nickname_taken") {
       setChatFeedback(t("chatNicknameTaken"), true);
@@ -1657,7 +1724,12 @@ document.getElementById("chat-edit-nickname")?.addEventListener("click", editCha
 
 document.addEventListener("visibilitychange", () => {
   if (!document.hidden && document.getElementById("chatroom")?.classList.contains("active")) {
-    refreshChatMessages();
+    chatState.idlePolls = 0;
+    refreshChatMessages().then((newCount) => {
+      scheduleChatPolling(nextChatPollDelay(newCount || 0));
+    });
+  } else if (chatState.pollTimer) {
+    scheduleChatPolling(30000);
   }
 });
 

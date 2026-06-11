@@ -842,6 +842,14 @@ function articleTranslationsStatements(env, articleId, translations, now) {
 function articleSeedStatements(env) {
   return [
     env.DB.prepare(`
+      delete from article_translations
+      where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')
+    `),
+    env.DB.prepare(`
+      delete from articles
+      where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')
+    `),
+    env.DB.prepare(`
       insert into articles (
         article_id, slug, category, tags, cover_image, status, is_pinned,
         view_count, created_at, updated_at, published_at
@@ -850,6 +858,33 @@ function articleSeedStatements(env) {
         ('seed-local-ai-workflow', 'local-ai-workflow', 'ai', '["AI","工具"]', '', 'published', 0, 0, '2026-06-11T00:01:00.000Z', '2026-06-11T00:01:00.000Z', '2026-06-11T00:01:00.000Z'),
         ('seed-fallback-check', 'fallback-check', 'note', '["fallback","测试"]', '', 'published', 0, 0, '2026-06-11T00:02:00.000Z', '2026-06-11T00:02:00.000Z', '2026-06-11T00:02:00.000Z'),
         ('seed-update-2026-06-11-site-update-articles', '2026-06-11-site-update-articles', 'site-updates', '["网站更新","上线记录"]', '', 'published', 0, 0, '2026-06-11T00:03:00.000Z', '2026-06-11T00:03:00.000Z', '2026-06-11T00:03:00.000Z')
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-11-sync-layout-chat',
+        '2026-06-11-sync-layout-chat',
+        'site-updates',
+        '["网站更新","修复记录"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-11T00:04:00.000Z',
+        '2026-06-11T00:04:00.000Z',
+        '2026-06-11T00:04:00.000Z'
+      )
       on conflict(article_id) do update set
         slug = excluded.slug,
         category = excluded.category,
@@ -958,6 +993,90 @@ This update connects the site update log to the database-backed trilingual artic
         summary = excluded.summary,
         content_markdown = excluded.content_markdown,
         updated_at = excluded.updated_at
+    `),
+    env.DB.prepare(`
+      insert into article_translations (
+        translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+      ) values
+        (
+          'seed-update-2026-06-11-sync-layout-chat-zh',
+          'seed-update-2026-06-11-sync-layout-chat',
+          'zh',
+          '同步部署与页面显示修复',
+          '修复线上线下版本核对、视频和资源卡片布局、小黑屋事件翻译、知识库读取与聊天室轮询。',
+          '# 同步部署与页面显示修复
+
+本次更新集中处理线上线下显示不一致和几个页面交互问题。
+
+## 更新内容
+
+- 更新 CSS / JS 资源版本号，减少浏览器继续使用旧资源导致的线上线下不同步。
+- 视频区和资源区卡片改为固定缩略图比例、固定按钮高度和一致的网格布局。
+- 删除知识库三篇测试文章，只保留真实的网站更新记录文章。
+- 知识库详情增加请求状态保护，避免频繁切换语言后一直停留在读取中。
+- 小黑屋补充 Penrose 事件缺失的中文和日文翻译。
+- 首页视频区、资源区、杂谈区桌面图标加上建设中标记。
+- 匿名聊天室改为 after/message_id 增量拉取，并根据空闲和后台状态自动降低轮询频率。',
+          '2026-06-11T00:04:00.000Z',
+          '2026-06-11T00:04:00.000Z'
+        ),
+        (
+          'seed-update-2026-06-11-sync-layout-chat-en',
+          'seed-update-2026-06-11-sync-layout-chat',
+          'en',
+          'Deployment sync and layout fixes',
+          'This update fixes deployment verification, video/resource card layout, A Dark Room event localization, article loading, and chat polling.',
+          '# Deployment sync and layout fixes
+
+This update focuses on local/production consistency and several visible interaction issues.
+
+## Changes
+
+- Bumped CSS / JS asset versions so browsers do not keep using stale production resources.
+- Video and resource cards now use fixed thumbnail ratios, stable button heights, and consistent grid behavior.
+- Removed the three test knowledge-base articles and kept real site update posts.
+- Added request-state guards to article detail loading so language switching cannot leave the page stuck.
+- Added missing Chinese and Japanese translations for the Penrose event in A Dark Room.
+- Marked the home desktop icons for Videos, Resources, and Talk as under construction.
+- Anonymous chat now keeps after/message_id incremental pulls and slows polling while idle or in the background.',
+          '2026-06-11T00:04:00.000Z',
+          '2026-06-11T00:04:00.000Z'
+        ),
+        (
+          'seed-update-2026-06-11-sync-layout-chat-ja',
+          'seed-update-2026-06-11-sync-layout-chat',
+          'ja',
+          'デプロイ同期と表示修正',
+          '本更新では、本番との同期確認、動画・リソースカード、小黑屋イベント翻訳、記事読み込み、チャット更新頻度を修正しました。',
+          '# デプロイ同期と表示修正
+
+今回の更新では、ローカルと本番の表示差分、そしていくつかの画面上の問題をまとめて直しました。
+
+## 更新内容
+
+- CSS / JS のバージョン番号を更新し、古い本番リソースが残り続ける問題を減らしました。
+- 動画とリソースのカードに固定サムネイル比率、安定したボタン高さ、統一したグリッドを適用しました。
+- 知識庫のテスト記事 3 件を削除し、実際のサイト更新記事だけを残しました。
+- 記事詳細にリクエスト状態の保護を追加し、言語切り替え後に読み込み中のまま残る問題を防ぎました。
+- 小黑屋の Penrose イベントに不足していた中国語と日本語の翻訳を追加しました。
+- ホームの動画、リソース、雑談アイコンに工事中の表示を追加しました。
+- 匿名チャットは after/message_id の差分取得を維持し、待機中やバックグラウンドでは更新頻度を下げるようにしました。',
+          '2026-06-11T00:04:00.000Z',
+          '2026-06-11T00:04:00.000Z'
+        )
+      on conflict(article_id, lang) do update set
+        title = excluded.title,
+        summary = excluded.summary,
+        content_markdown = excluded.content_markdown,
+        updated_at = excluded.updated_at
+    `),
+    env.DB.prepare(`
+      delete from article_translations
+      where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')
+    `),
+    env.DB.prepare(`
+      delete from articles
+      where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')
     `)
   ];
 }
