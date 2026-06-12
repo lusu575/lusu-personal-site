@@ -19,6 +19,9 @@ skills/lusu-personal-site-skill/SKILL.md
 - 保持 Windows XP + Pixel Art + Y2K + 可爱复古互联网桌面风格。
 - 可见文案必须维护中文 / English / 日本語。
 - 改首页、窗口、任务栏、图标、弹窗、游戏外壳等前端内容时，必须检查手机端适配。
+- 首页四时段壁纸基础图放在 `assets/images/wallpapers/`；时间段统一为 05:00-10:59 morning、11:00-16:59 day、17:00-19:59 dusk、20:00-04:59 night。
+- 首页保留 `wallpaper-root` / `wallpaper-stage` 舞台坐标结构和动画 layer DOM/class，但当前默认只显示静态底图；后续启用动画时，底图和动画层必须共享同一套 cover 裁切尺寸。
+- 后续首页动态壁纸动画只使用 CSS `transform` / `opacity`，必须支持减少动态、页面隐藏暂停和手机端降级。
 - 聊天室用户内容必须纯文本渲染，不能用 `innerHTML` 插入访客昵称或消息。
 - 聊天室前端应保持 `after/message_id` 增量拉取，空闲和后台时降频，发送后立即刷新；不要每次重复拉最近 100 条。
 - 用户要求只美化、不动功能时，只改视觉层，避免改功能逻辑。

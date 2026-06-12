@@ -96,8 +96,8 @@ const translations = {
     chatSent: "已发送。",
     placeholderMark: "（占位符）",
     greetingMorning: "早上好",
-    greetingNoon: "中午好",
-    greetingAfternoon: "下午好",
+    greetingNoon: "白天好",
+    greetingAfternoon: "傍晚好",
     greetingEvening: "晚上好",
     welcomeDateLine: "今天是{year}年{month}月{day}日，很高兴见到你。"
   },
@@ -196,9 +196,9 @@ const translations = {
     chatSent: "Sent.",
     placeholderMark: " (Placeholder)",
     greetingMorning: "Good morning",
-    greetingNoon: "Good noon",
-    greetingAfternoon: "Good afternoon",
-    greetingEvening: "Good evening",
+    greetingNoon: "Good day",
+    greetingAfternoon: "Good evening",
+    greetingEvening: "Good night",
     welcomeDateLine: "Today is {year}-{month}-{day}. It is good to see you."
   },
   ja: {
@@ -297,8 +297,8 @@ const translations = {
     placeholderMark: "（プレースホルダー）",
     greetingMorning: "おはようございます",
     greetingNoon: "こんにちは",
-    greetingAfternoon: "こんにちは",
-    greetingEvening: "こんばんは",
+    greetingAfternoon: "こんばんは",
+    greetingEvening: "夜ですね",
     welcomeDateLine: "今日は{year}年{month}月{day}日です。お会いできてうれしいです。"
   }
 };
@@ -341,8 +341,8 @@ const content = {
     {
       icon: "🌅",
       date: "2026.06.12",
-      title: { zh: "首页时间壁纸与游戏修复", en: "Time wallpapers and game fixes", ja: "時間帯壁紙とゲーム修正" },
-      desc: { zh: "首页按本地时间切换早上、白天、傍晚、晚上壁纸，2048 和 Hextris 会避开结束存档卡住", en: "Home wallpaper now follows local time, and 2048 plus Hextris avoid opening into ended saves", ja: "ホーム壁紙が時間帯で切り替わり、2048 と Hextris の終了済みセーブ復元を修正しました" }
+      title: { zh: "四时段静态像素壁纸接口", en: "Time-of-day wallpaper interface", ja: "時間帯別壁紙インターフェース" },
+      desc: { zh: "首页新增 image2 重绘的四时段静态壁纸，并保留后续动画图层接口", en: "The home screen now uses redrawn static wallpapers across four local-time periods, with animation layer hooks kept for later", ja: "ホームに再描画した4時間帯の静的壁紙を追加し、今後のアニメーション層の入口を残しました" }
     },
     {
       icon: "🕒",
@@ -1228,25 +1228,46 @@ function closeWelcome() {
 
 function currentTimeTheme(date = new Date()) {
   const minutes = date.getHours() * 60 + date.getMinutes();
-  if (minutes >= 6 * 60 && minutes < 10 * 60) {
+  if (minutes >= 5 * 60 && minutes < 11 * 60) {
     return "morning";
   }
-  if (minutes >= 10 * 60 && minutes < 16 * 60) {
+  if (minutes >= 11 * 60 && minutes < 17 * 60) {
     return "day";
   }
-  if (minutes >= 16 * 60 && minutes < 19 * 60 + 30) {
-    return "evening";
+  if (minutes >= 17 * 60 && minutes < 20 * 60) {
+    return "dusk";
   }
   return "night";
 }
 
+function layoutWallpaperStage() {
+  const root = document.getElementById("wallpaper-root");
+  const stage = document.getElementById("wallpaper-stage");
+  if (!root || !stage) {
+    return;
+  }
+  const rootWidth = root.clientWidth || window.innerWidth;
+  const rootHeight = root.clientHeight || window.innerHeight;
+  const wallpaperRatio = 836 / 470;
+  const rootRatio = rootWidth / Math.max(rootHeight, 1);
+  const stageWidth = rootRatio > wallpaperRatio ? rootWidth : rootHeight * wallpaperRatio;
+  const stageHeight = rootRatio > wallpaperRatio ? rootWidth / wallpaperRatio : rootHeight;
+  root.style.setProperty("--wallpaper-stage-width", `${Math.ceil(stageWidth)}px`);
+  root.style.setProperty("--wallpaper-stage-height", `${Math.ceil(stageHeight)}px`);
+}
+
 function updateHomeTimeTheme() {
   const home = document.getElementById("home");
+  const root = document.getElementById("wallpaper-root");
   if (!home) {
     return;
   }
   const theme = currentTimeTheme();
   home.dataset.timeTheme = theme;
+  if (root) {
+    root.dataset.time = theme;
+  }
+  layoutWallpaperStage();
 }
 
 function updateWelcomeGreeting() {
@@ -1260,7 +1281,7 @@ function updateWelcomeGreeting() {
     ? "greetingMorning"
     : theme === "day"
       ? "greetingNoon"
-      : theme === "evening"
+      : theme === "dusk"
         ? "greetingAfternoon"
         : "greetingEvening";
   const dateLine = t("welcomeDateLine")
@@ -1849,6 +1870,7 @@ window.addEventListener("hashchange", () => {
 document.getElementById("chat-form")?.addEventListener("submit", submitChatMessage);
 document.getElementById("chat-message-input")?.addEventListener("input", updateChatCounter);
 document.getElementById("chat-edit-nickname")?.addEventListener("click", editChatNickname);
+window.addEventListener("resize", layoutWallpaperStage);
 
 document.addEventListener("visibilitychange", () => {
   if (!document.hidden && document.getElementById("chatroom")?.classList.contains("active")) {

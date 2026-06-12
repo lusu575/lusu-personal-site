@@ -54,6 +54,7 @@ Cloudflare Pages 项目状态：
 
 - 单页 XP 桌面风格个人站
 - 首页桌面图标入口
+- 首页使用四时段静态像素壁纸：基础底图位于 `assets/images/wallpapers/`，按用户本地时间切换 morning / day / dusk / night。页面保留 `wallpaper-root` / `wallpaper-stage` 舞台坐标结构和云、树冠、电视雪花、小女孩、星星、水面光效等 layer DOM/class 作为后续动画接口，但当前所有动画层默认关闭，只显示静态底图。
 - 顶部 XP 蓝色栏和底部任务栏
 - 知识库、视频区、资源区、游戏区、杂谈区、匿名聊天室、关于我
 - 中文 / English / 日本語 三语切换
@@ -357,6 +358,7 @@ skills/lusu-personal-site-skill/README.md
 - XP / Pixel Art / Y2K 视觉风格约束
 - 中文 / English / 日本語 可见文案维护规则
 - 前端和手机端适配检查
+- 首页四时段静态像素壁纸和动画接口维护规则
 - 聊天室纯文本安全渲染规则
 - 只美化不动功能时的改动边界
 - Cloudflare Pages Git 自动部署注意事项

@@ -984,7 +984,7 @@ function articleSeedStatements(env) {
         'seed-update-2026-06-12-time-wallpaper-game-fix',
         '2026-06-12-time-wallpaper-game-fix',
         'site-updates',
-        '["网站更新","首页","游戏区","知识库"]',
+        '["网站更新","首页","动态壁纸","游戏区","知识库"]',
         '',
         'published',
         0,
@@ -1096,36 +1096,51 @@ This update connects the site update log to the database-backed trilingual artic
 - 歓迎ポップアップ左側を管理人の工事中お知らせに変更
 - 動画とリソースのカード表示、スクロール、ボタン余白を整理
 - 初期言語はブラウザまたはシステム言語に合わせ、手動変更後はその選択を保存します', '2026-06-11T00:03:00.000Z', '2026-06-11T00:03:00.000Z'),
-        ('seed-update-2026-06-12-time-wallpaper-game-fix-zh', 'seed-update-2026-06-12-time-wallpaper-game-fix', 'zh', '首页时间壁纸与游戏可玩性修复', '首页会按用户本地时间切换早上、白天、傍晚、晚上壁纸，并修复 2048 与 Hextris 旧结束存档卡住的问题。', '# 首页时间壁纸与游戏可玩性修复
+        ('seed-update-2026-06-12-time-wallpaper-game-fix-zh', 'seed-update-2026-06-12-time-wallpaper-game-fix', 'zh', '四时段静态像素壁纸接口与游戏修复', '首页新增 image2 重绘的四时段静态壁纸，并保留后续动画图层接口和小游戏存档修复。', '# 四时段静态像素壁纸接口与游戏修复
 
-本次更新让首页更像一个会随时间呼吸的小桌面，也修复了两个小游戏进入后被旧存档挡住的问题。
+本次更新把首页壁纸升级为更清晰、构图一致的四时段静态像素桌面，同时保留后续动画图层接口和小游戏旧存档修复。
 
 ## 更新内容
 
-- 首页新增早上、白天、傍晚、晚上四张像素壁纸。
-- 壁纸和欢迎弹窗问候语按用户本地时间切换：6:00-10:00 早上，10:00-16:00 白天，16:00-19:30 傍晚，19:30-次日 6:00 晚上。
+- 使用 image2 / imagegen 重新绘制统一构图母版，并裁切为 `assets/images/wallpapers/` 下的 morning、day、dusk、night 四张基础壁纸。
+- 壁纸和欢迎弹窗问候语按用户本地时间切换：05:00-10:59 早上，11:00-16:59 白天，17:00-19:59 傍晚，20:00-04:59 晚上。
+- 首页保留云、树冠、电视雪花屏、小女孩、星星和傍晚水面光效等 layer DOM/class，供后续新线程继续做动画。
+- 首页背景改为 `wallpaper-root` / `wallpaper-stage` 舞台坐标结构，底图和动画层共享同一套 cover 裁切尺寸，避免电视雪花等小图层错位。
+- 当前所有动画 layer 默认关闭，不显示电视雪花、云、树冠、星星或水面动效；页面只展示四时段静态底图。
+- 电视机小女孩预留结构和 CSS class，默认不启用。
+- 后续启用动画时，只使用 CSS transform / opacity，并继续支持减少动态、页面隐藏暂停和手机端降级。
 - 知识库文章发布日期继续显示本地时间到秒，但不再显示时区名称。
 - 2048 和 Hextris 恢复存档时，如果读到已结束或无法继续的局面，会自动开启新局。
 - 更新 CSS / JS 资源版本号，减少浏览器继续使用旧资源缓存的可能。', '2026-06-12T01:00:00.000Z', '2026-06-12T01:00:00.000Z'),
-        ('seed-update-2026-06-12-time-wallpaper-game-fix-en', 'seed-update-2026-06-12-time-wallpaper-game-fix', 'en', 'Time-based home wallpapers and game fixes', 'The home wallpaper now follows the visitor local time, and 2048 plus Hextris recover from ended saves by starting fresh.', '# Time-based home wallpapers and game fixes
+        ('seed-update-2026-06-12-time-wallpaper-game-fix-en', 'seed-update-2026-06-12-time-wallpaper-game-fix', 'en', 'Static time-of-day wallpaper interface and game fixes', 'The home screen now uses redrawn static wallpapers across four periods, with animation layer hooks kept for later.', '# Static time-of-day wallpaper interface and game fixes
 
-This update makes the home desktop change with the day and fixes two games that could open into an ended save.
+This update upgrades the home wallpaper into a sharper, consistent, four-period static pixel desktop while keeping animation layer hooks and the ended-save fix for two small games.
 
 ## Changes
 
-- Added morning, day, evening, and night pixel wallpapers for the home screen.
-- Wallpaper and welcome greeting now use the visitor local time: 6:00-10:00 morning, 10:00-16:00 day, 16:00-19:30 evening, and 19:30-6:00 night.
+- Redrew a consistent wallpaper master with image2 / imagegen and split it into morning, day, dusk, and night base wallpapers under `assets/images/wallpapers/`.
+- Wallpaper and welcome greeting now use visitor local time: 05:00-10:59 morning, 11:00-16:59 day, 17:00-19:59 dusk, and 20:00-04:59 night.
+- Kept layer DOM/classes for clouds, tree canopy, CRT snow, the TV girl, stars, and dusk water shimmer so animation can continue in a later thread.
+- The home background now uses a `wallpaper-root` / `wallpaper-stage` coordinate stage so the base image and animation layers share the same cover crop, preventing small layers such as TV snow from drifting out of place.
+- All animation layers are disabled by default now: no CRT snow, cloud, tree canopy, star, or water animation is shown. The page displays only the four static base wallpapers.
+- The TV girl structure and `wallpaper-tv-girl` CSS class are reserved, but not enabled by default.
+- Later animation work should use CSS transform / opacity only and keep reduced-motion, hidden-page pause, and mobile downgrade support.
 - Knowledge-base publish dates still show local time down to seconds, but no longer append the timezone name.
 - 2048 and Hextris now start a fresh run when a restored save is already ended or cannot continue.
 - Bumped CSS / JS asset versions to reduce stale browser cache issues.', '2026-06-12T01:00:00.000Z', '2026-06-12T01:00:00.000Z'),
-        ('seed-update-2026-06-12-time-wallpaper-game-fix-ja', 'seed-update-2026-06-12-time-wallpaper-game-fix', 'ja', '時間帯別ホーム壁紙とゲーム修正', 'ホーム壁紙が閲覧者のローカル時刻に合わせて切り替わり、2048 と Hextris は終了済みセーブから新規開始します。', '# 時間帯別ホーム壁紙とゲーム修正
+        ('seed-update-2026-06-12-time-wallpaper-game-fix-ja', 'seed-update-2026-06-12-time-wallpaper-game-fix', 'ja', '時間帯別の静的壁紙インターフェースとゲーム修正', 'ホームに再描画した4時間帯の静的壁紙を追加し、今後のアニメーション層の入口も残しました。', '# 時間帯別の静的壁紙インターフェースとゲーム修正
 
-今回の更新では、ホーム画面が時間帯に合わせて変わるようになり、終了済みセーブでゲームが止まる問題を修正しました。
+今回の更新では、ホーム壁紙をより鮮明で統一感のある4時間帯の静的ピクセルデスクトップにし、今後のアニメーション層の入口とゲームの終了済みセーブ修正も維持しました。
 
 ## 更新内容
 
-- ホームに朝、昼、夕方、夜のピクセル壁紙を追加しました。
-- 壁紙と歓迎ポップアップの挨拶は閲覧者のローカル時刻で切り替わります：6:00-10:00 朝、10:00-16:00 昼、16:00-19:30 夕方、19:30-翌6:00 夜。
+- image2 / imagegen で統一構図の壁紙母版を再描画し、`assets/images/wallpapers/` の morning、day、dusk、night に分割しました。
+- 壁紙と歓迎ポップアップの挨拶は閲覧者のローカル時刻で切り替わります：05:00-10:59 朝、11:00-16:59 昼、17:00-19:59 夕方、20:00-04:59 夜。
+- 雲、樹冠、テレビ砂嵐、テレビの女の子、星、夕方の水面反射用の layer DOM/class を残し、後続スレッドでアニメーションを続けられるようにしました。
+- ホーム背景は `wallpaper-root` / `wallpaper-stage` の座標ステージに変更し、底图とアニメーション層が同じ cover 裁切を共有するため、テレビ砂嵐などの小さな層がずれにくくなりました。
+- 現在はすべてのアニメーション layer を初期状態で無効にし、テレビ砂嵐、雲、樹冠、星、水面の動きは表示しません。ページは4時間帯の静的底图だけを表示します。
+- テレビの女の子用構造と `wallpaper-tv-girl` CSS class は予約済みですが、初期状態では有効化していません。
+- 後続でアニメーションを有効にする場合は CSS transform / opacity のみを使い、視差軽減、ページ非表示時の一時停止、スマホ軽量化も維持します。
 - 知識庫の記事公開日はローカル時刻を秒まで表示しますが、タイムゾーン名は表示しません。
 - 2048 と Hextris は、復元したセーブが終了済みまたは続行不能な場合、自動で新しいゲームを開始します。
 - CSS / JS のバージョンを更新し、古いキャッシュが残る可能性を減らしました。', '2026-06-12T01:00:00.000Z', '2026-06-12T01:00:00.000Z')

@@ -7,7 +7,7 @@
   <title>鲁肃的个人站</title>
   <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32.png?v=20260611-unified-tv-icon">
   <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png?v=20260611-unified-tv-icon">
-  <link rel="stylesheet" href="css/style.css?v=20260612-time-wallpaper-game-fix">
+  <link rel="stylesheet" href="css/style.css?v=20260612-static-wallpaper">
 </head>
 <body>
   <div class="site-shell">
@@ -29,19 +29,18 @@
 
     <main>
       <section class="page page-home active" id="home" aria-labelledby="home-title">
-        <div class="sky-layer" aria-hidden="true">
-          <span class="cloud cloud-a"></span>
-          <span class="cloud cloud-b"></span>
-          <span class="cloud cloud-c"></span>
-          <span class="bird bird-a"></span>
-          <span class="bird bird-b"></span>
-          <span class="hill hill-a"></span>
-          <span class="hill hill-b"></span>
-          <span class="path-ribbon"></span>
-          <span class="tree tree-a"></span>
-          <span class="tree tree-b"></span>
-          <span class="flowers flowers-a"></span>
-          <span class="flowers flowers-b"></span>
+        <div class="wallpaper-root" id="wallpaper-root" data-time="day" aria-hidden="true">
+          <div class="wallpaper-stage" id="wallpaper-stage">
+            <div class="wallpaper-base"></div>
+            <span class="wallpaper-cloud wallpaper-cloud-a"></span>
+            <span class="wallpaper-cloud wallpaper-cloud-b"></span>
+            <span class="wallpaper-tree-canopy"></span>
+            <span class="wallpaper-tv-static"></span>
+            <span class="wallpaper-tv-girl"></span>
+            <span class="wallpaper-stars wallpaper-stars-a"></span>
+            <span class="wallpaper-stars wallpaper-stars-b"></span>
+            <span class="wallpaper-water-shimmer"></span>
+          </div>
         </div>
 
         <div class="desktop-icons" aria-label="Main sections">
@@ -284,6 +283,6 @@
     </div>
   </div>
 
-  <script src="js/main.js?v=20260612-time-wallpaper-game-fix"></script>
+  <script src="js/main.js?v=20260612-static-wallpaper"></script>
 </body>
 </html>
