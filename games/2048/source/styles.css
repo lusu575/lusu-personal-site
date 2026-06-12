@@ -149,6 +149,10 @@ button {
   background: rgba(255, 248, 230, 0.9);
 }
 
+.overlay[hidden] {
+  display: none;
+}
+
 .overlay strong {
   color: #1542a0;
   font-size: 28px;

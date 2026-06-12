@@ -1005,6 +1005,33 @@ function articleSeedStatements(env) {
         published_at = excluded.published_at
     `),
     env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-12-game-overlay-hidden-fix',
+        '2026-06-12-game-overlay-hidden-fix',
+        'site-updates',
+        '["网站更新","游戏区","2048","Hextris"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-12T08:00:00.000Z',
+        '2026-06-12T08:00:00.000Z',
+        '2026-06-12T08:00:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
       insert into article_translations (
         translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
       ) values
@@ -1144,7 +1171,37 @@ This update upgrades the home wallpaper into a sharper, consistent, four-period 
 - 後続でアニメーションを有効にする場合は CSS transform / opacity のみを使い、視差軽減、ページ非表示時の一時停止、スマホ軽量化も維持します。
 - 知識庫の記事公開日はローカル時刻を秒まで表示しますが、タイムゾーン名は表示しません。
 - 2048 と Hextris は、復元したセーブが終了済みまたは続行不能な場合、自動で新しいゲームを開始します。
-- CSS / JS のバージョンを更新し、古いキャッシュが残る可能性を減らしました。', '2026-06-12T01:00:00.000Z', '2026-06-12T01:00:00.000Z')
+- CSS / JS のバージョンを更新し、古いキャッシュが残る可能性を減らしました。', '2026-06-12T01:00:00.000Z', '2026-06-12T01:00:00.000Z'),
+        ('seed-update-2026-06-12-game-overlay-hidden-fix-zh', 'seed-update-2026-06-12-game-overlay-hidden-fix', 'zh', '2048 与 Hextris 遮罩显示修复', '修复两个小游戏新局也显示继续玩或游戏结束遮罩的问题，并更新游戏样式缓存版本。', '# 2048 与 Hextris 遮罩显示修复
+
+本次更新修复 2048 和 Hextris 打开后被遮罩挡住、无法正常游玩的问题。
+
+## 更新内容
+
+- 为两个小游戏的遮罩增加 .overlay[hidden] 隐藏规则，避免游戏 CSS 的 display: grid 覆盖浏览器默认 hidden 行为。
+- 2048 新局会直接显示可操作棋盘，不再被空白继续玩按钮挡住。
+- Hextris 新局会直接显示可旋转的六边形场地，不再误显示游戏结束。
+- 为两个游戏的 styles.css 引用增加版本参数，减少线上继续加载旧样式缓存的可能。', '2026-06-12T08:00:00.000Z', '2026-06-12T08:00:00.000Z'),
+        ('seed-update-2026-06-12-game-overlay-hidden-fix-en', 'seed-update-2026-06-12-game-overlay-hidden-fix', 'en', '2048 and Hextris overlay display fix', 'Fixed the overlay that made the two small games appear stuck on Keep Playing or Game Over.', '# 2048 and Hextris overlay display fix
+
+This update fixes the overlay issue that blocked 2048 and Hextris immediately after opening a fresh game.
+
+## Changes
+
+- Added a .overlay[hidden] hiding rule to both games so their display: grid overlay style no longer overrides the browser hidden behavior.
+- 2048 now opens to a playable board instead of being covered by an empty Keep Playing button.
+- Hextris now opens to the rotating hex field instead of incorrectly showing Game Over.
+- Added a version query to both games styles.css references to reduce stale style cache issues online.', '2026-06-12T08:00:00.000Z', '2026-06-12T08:00:00.000Z'),
+        ('seed-update-2026-06-12-game-overlay-hidden-fix-ja', 'seed-update-2026-06-12-game-overlay-hidden-fix', 'ja', '2048 と Hextris のオーバーレイ表示修正', '2つのミニゲームが開始直後に続行またはゲーム終了の表示で塞がれる問題を修正しました。', '# 2048 と Hextris のオーバーレイ表示修正
+
+今回の更新では、2048 と Hextris を開いた直後にオーバーレイが表示され、正常に遊べない問題を修正しました。
+
+## 更新内容
+
+- 2つのゲームに .overlay[hidden] の非表示ルールを追加し、display: grid がブラウザ標準の hidden 動作を上書きしないようにしました。
+- 2048 は空の続行ボタンに覆われず、すぐに操作できる盤面を表示します。
+- Hextris はゲーム終了表示ではなく、回転できる六角形ステージを表示します。
+- 2つのゲームの styles.css 参照にバージョンパラメータを追加し、オンラインで古いスタイルが残る可能性を減らしました。', '2026-06-12T08:00:00.000Z', '2026-06-12T08:00:00.000Z')
       on conflict(article_id, lang) do update set
         title = excluded.title,
         summary = excluded.summary,
