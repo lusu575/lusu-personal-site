@@ -339,6 +339,12 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "🌄",
+      date: "2026.06.12",
+      title: { zh: "首页壁纸高清替换", en: "Sharper home wallpapers", ja: "ホーム壁紙を高解像度化" },
+      desc: { zh: "首页四时段壁纸改用 1672x941 原图，并调整裁切比例和缓存版本，减少全屏放大后的发糊", en: "The four home wallpapers now use the 1672x941 originals with an updated crop ratio and cache version to reduce fullscreen blur", ja: "ホームの4時間帯壁紙を1672x941の原寸画像に替え、裁切比率とキャッシュ版を更新して全画面時のぼやけを減らしました" }
+    },
+    {
       icon: "🎮",
       date: "2026.06.12",
       title: { zh: "人生重开模拟器本地接入", en: "Life Restart added locally", ja: "Life Restart をローカル追加" },
@@ -1266,7 +1272,7 @@ function layoutWallpaperStage() {
   }
   const rootWidth = root.clientWidth || window.innerWidth;
   const rootHeight = root.clientHeight || window.innerHeight;
-  const wallpaperRatio = 836 / 470;
+  const wallpaperRatio = 1672 / 941;
   const rootRatio = rootWidth / Math.max(rootHeight, 1);
   const stageWidth = rootRatio > wallpaperRatio ? rootWidth : rootHeight * wallpaperRatio;
   const stageHeight = rootRatio > wallpaperRatio ? rootWidth / wallpaperRatio : rootHeight;

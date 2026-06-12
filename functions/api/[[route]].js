@@ -1032,6 +1032,33 @@ function articleSeedStatements(env) {
         published_at = excluded.published_at
     `),
     env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-12-hd-home-wallpapers',
+        '2026-06-12-hd-home-wallpapers',
+        'site-updates',
+        '["网站更新","首页","像素壁纸"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-12T12:00:00.000Z',
+        '2026-06-12T12:00:00.000Z',
+        '2026-06-12T12:00:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
       insert into article_translations (
         translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
       ) values
@@ -1472,6 +1499,73 @@ This update polishes a few everyday browsing details.
 - ホームの3つの未完成入口は「未定」表記にし、アイコン文字領域を広げて文言を表示しやすくしました。',
           '2026-06-11T14:25:00.000Z',
           '2026-06-11T14:25:00.000Z'
+        )
+      on conflict(article_id, lang) do update set
+        title = excluded.title,
+        summary = excluded.summary,
+        content_markdown = excluded.content_markdown,
+        updated_at = excluded.updated_at
+    `),
+    env.DB.prepare(`
+      insert into article_translations (
+        translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+      ) values
+        (
+          'seed-update-2026-06-12-hd-home-wallpapers-zh',
+          'seed-update-2026-06-12-hd-home-wallpapers',
+          'zh',
+          '首页四时段壁纸高清替换',
+          '首页四张时段壁纸改用 1672x941 原图，并更新裁切比例、像素渲染和缓存版本。',
+          '# 首页四时段壁纸高清替换
+
+本次更新把首页实际加载的四张时段壁纸换成更高清的原图，减少全屏桌面背景被放大后的发糊。
+
+## 更新内容
+
+- morning、day、dusk、night 四张基础壁纸改用 1672x941 原图。
+- 首页壁纸舞台比例同步更新为新图比例，保持 cover 裁切和预留动画层坐标一致。
+- 壁纸底图启用像素图渲染，浏览器放大时保留更清楚的像素边缘。
+- 更新 CSS / JS 与壁纸 URL 缓存版本，减少线上继续加载旧半尺寸壁纸的可能。',
+          '2026-06-12T12:00:00.000Z',
+          '2026-06-12T12:00:00.000Z'
+        ),
+        (
+          'seed-update-2026-06-12-hd-home-wallpapers-en',
+          'seed-update-2026-06-12-hd-home-wallpapers',
+          'en',
+          'Sharper time-of-day home wallpapers',
+          'The four home wallpapers now use the 1672x941 originals with updated crop ratio, pixel rendering, and cache versions.',
+          '# Sharper time-of-day home wallpapers
+
+This update swaps the four home wallpapers used by the live page to higher-resolution originals, reducing blur when the desktop background fills the screen.
+
+## Changes
+
+- The morning, day, dusk, and night base wallpapers now use the 1672x941 originals.
+- The home wallpaper stage ratio now matches the new images, keeping cover cropping and reserved animation-layer coordinates aligned.
+- Pixel rendering is enabled on the wallpaper base so scaled backgrounds keep crisper pixel edges.
+- CSS / JS and wallpaper URL cache versions were bumped to reduce stale half-size wallpaper loads online.',
+          '2026-06-12T12:00:00.000Z',
+          '2026-06-12T12:00:00.000Z'
+        ),
+        (
+          'seed-update-2026-06-12-hd-home-wallpapers-ja',
+          'seed-update-2026-06-12-hd-home-wallpapers',
+          'ja',
+          'ホーム時間帯壁紙を高解像度化',
+          'ホームの4枚の時間帯壁紙を1672x941の原寸画像に替え、裁切比率、ピクセル表示、キャッシュ版を更新しました。',
+          '# ホーム時間帯壁紙を高解像度化
+
+今回の更新では、ホームで実際に読み込む4枚の時間帯壁紙を高解像度の原寸画像に差し替え、全画面表示時のぼやけを減らしました。
+
+## 更新内容
+
+- morning、day、dusk、night の基本壁紙を 1672x941 の原寸画像に変更しました。
+- ホーム壁紙ステージの比率を新しい画像に合わせ、cover 裁切と予約済みアニメーション層の座標をそろえました。
+- 壁紙の下地画像にピクセル向け表示を有効化し、拡大時もエッジがより鮮明に見えるようにしました。
+- CSS / JS と壁紙 URL のキャッシュ版を更新し、オンラインで旧い半サイズ壁紙が残る可能性を減らしました。',
+          '2026-06-12T12:00:00.000Z',
+          '2026-06-12T12:00:00.000Z'
         )
       on conflict(article_id, lang) do update set
         title = excluded.title,

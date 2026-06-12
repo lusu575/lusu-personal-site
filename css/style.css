@@ -2163,23 +2163,24 @@ main {
 .wallpaper-base {
   position: absolute;
   inset: 0;
-  background: url("../assets/images/wallpapers/day.png?v=20260612-clean-tv-wallpapers") center / 100% 100% no-repeat;
+  background: url("../assets/images/wallpapers/day.png?v=20260612-hd-wallpapers") center / 100% 100% no-repeat;
+  image-rendering: pixelated;
 }
 
 .wallpaper-root[data-time="morning"] .wallpaper-base {
-  background-image: url("../assets/images/wallpapers/morning.png?v=20260612-clean-tv-wallpapers");
+  background-image: url("../assets/images/wallpapers/morning.png?v=20260612-hd-wallpapers");
 }
 
 .wallpaper-root[data-time="day"] .wallpaper-base {
-  background-image: url("../assets/images/wallpapers/day.png?v=20260612-clean-tv-wallpapers");
+  background-image: url("../assets/images/wallpapers/day.png?v=20260612-hd-wallpapers");
 }
 
 .wallpaper-root[data-time="dusk"] .wallpaper-base {
-  background-image: url("../assets/images/wallpapers/dusk.png?v=20260612-clean-tv-wallpapers");
+  background-image: url("../assets/images/wallpapers/dusk.png?v=20260612-hd-wallpapers");
 }
 
 .wallpaper-root[data-time="night"] .wallpaper-base {
-  background-image: url("../assets/images/wallpapers/night.png?v=20260612-clean-tv-wallpapers");
+  background-image: url("../assets/images/wallpapers/night.png?v=20260612-hd-wallpapers");
 }
 
 .wallpaper-cloud,
