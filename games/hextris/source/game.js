@@ -94,6 +94,9 @@ function load() {
       rotation = Number(data.rotation || 0);
       score = Number(data.score || 0);
       running = data.running !== false;
+      if (!running || lanes.some((lane) => Array.isArray(lane) && lane.length > 8)) {
+        newGame();
+      }
       return;
     }
   } catch {}

@@ -2137,7 +2137,23 @@ main {
 }
 
 .page-home {
-  background: url("../assets/images/homepage-pixel-coast.png?v=20260610-start-fix") center / cover no-repeat;
+  background: url("../assets/images/homepage-day.png?v=20260612-time-wallpaper") center / cover no-repeat;
+}
+
+.page-home[data-time-theme="morning"] {
+  background-image: url("../assets/images/homepage-morning.png?v=20260612-time-wallpaper");
+}
+
+.page-home[data-time-theme="day"] {
+  background-image: url("../assets/images/homepage-day.png?v=20260612-time-wallpaper");
+}
+
+.page-home[data-time-theme="evening"] {
+  background-image: url("../assets/images/homepage-evening.png?v=20260612-time-wallpaper");
+}
+
+.page-home[data-time-theme="night"] {
+  background-image: url("../assets/images/homepage-night.png?v=20260612-time-wallpaper");
 }
 
 .sky-layer {

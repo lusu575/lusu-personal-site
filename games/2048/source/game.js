@@ -183,6 +183,9 @@ function load() {
       score = Number(data.score || 0);
       won = Boolean(data.won);
       over = Boolean(data.over);
+      if (over || !canMove()) {
+        newGame();
+      }
       return;
     }
   } catch {}

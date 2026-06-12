@@ -339,6 +339,12 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "🌅",
+      date: "2026.06.12",
+      title: { zh: "首页时间壁纸与游戏修复", en: "Time wallpapers and game fixes", ja: "時間帯壁紙とゲーム修正" },
+      desc: { zh: "首页按本地时间切换早上、白天、傍晚、晚上壁纸，2048 和 Hextris 会避开结束存档卡住", en: "Home wallpaper now follows local time, and 2048 plus Hextris avoid opening into ended saves", ja: "ホーム壁紙が時間帯で切り替わり、2048 と Hextris の終了済みセーブ復元を修正しました" }
+    },
+    {
       icon: "🕒",
       date: "2026.06.11",
       title: { zh: "时间显示与窗口尺寸整理", en: "Time and window layout fixes", ja: "時刻表示とウィンドウ調整" },
@@ -955,7 +961,7 @@ function formatZonedDateTime(value, options = {}) {
 }
 
 function formatArticleDate(value) {
-  return formatZonedDateTime(value, { includeDate: true, includeTimeZone: true });
+  return formatZonedDateTime(value, { includeDate: true, includeTimeZone: false });
 }
 
 function renderMarkdownSafe(target, markdown) {
@@ -1220,18 +1226,41 @@ function closeWelcome() {
   document.getElementById("welcome-modal").hidden = true;
 }
 
+function currentTimeTheme(date = new Date()) {
+  const minutes = date.getHours() * 60 + date.getMinutes();
+  if (minutes >= 6 * 60 && minutes < 10 * 60) {
+    return "morning";
+  }
+  if (minutes >= 10 * 60 && minutes < 16 * 60) {
+    return "day";
+  }
+  if (minutes >= 16 * 60 && minutes < 19 * 60 + 30) {
+    return "evening";
+  }
+  return "night";
+}
+
+function updateHomeTimeTheme() {
+  const home = document.getElementById("home");
+  if (!home) {
+    return;
+  }
+  const theme = currentTimeTheme();
+  home.dataset.timeTheme = theme;
+}
+
 function updateWelcomeGreeting() {
   const heading = document.querySelector("[data-i18n='welcomeHeading']");
   if (!heading) {
     return;
   }
   const now = new Date();
-  const hour = now.getHours();
-  const greetingKey = hour >= 5 && hour < 11
+  const theme = currentTimeTheme(now);
+  const greetingKey = theme === "morning"
     ? "greetingMorning"
-    : hour >= 11 && hour < 14
+    : theme === "day"
       ? "greetingNoon"
-      : hour >= 14 && hour < 18
+      : theme === "evening"
         ? "greetingAfternoon"
         : "greetingEvening";
   const dateLine = t("welcomeDateLine")
@@ -1273,6 +1302,7 @@ function updateClock() {
     hour12: false
   });
   document.getElementById("local-time").textContent = formatter.format(new Date()).replace(/\//g, ".");
+  updateHomeTimeTheme();
 }
 
 async function accountApi(path, options = {}) {

@@ -977,6 +977,33 @@ function articleSeedStatements(env) {
         published_at = excluded.published_at
     `),
     env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-12-time-wallpaper-game-fix',
+        '2026-06-12-time-wallpaper-game-fix',
+        'site-updates',
+        '["网站更新","首页","游戏区","知识库"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-12T01:00:00.000Z',
+        '2026-06-12T01:00:00.000Z',
+        '2026-06-12T01:00:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
       insert into article_translations (
         translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
       ) values
@@ -1068,7 +1095,40 @@ This update connects the site update log to the database-backed trilingual artic
 - もっと見るから知識庫のサイト更新記録カテゴリへ移動できます
 - 歓迎ポップアップ左側を管理人の工事中お知らせに変更
 - 動画とリソースのカード表示、スクロール、ボタン余白を整理
-- 初期言語はブラウザまたはシステム言語に合わせ、手動変更後はその選択を保存します', '2026-06-11T00:03:00.000Z', '2026-06-11T00:03:00.000Z')
+- 初期言語はブラウザまたはシステム言語に合わせ、手動変更後はその選択を保存します', '2026-06-11T00:03:00.000Z', '2026-06-11T00:03:00.000Z'),
+        ('seed-update-2026-06-12-time-wallpaper-game-fix-zh', 'seed-update-2026-06-12-time-wallpaper-game-fix', 'zh', '首页时间壁纸与游戏可玩性修复', '首页会按用户本地时间切换早上、白天、傍晚、晚上壁纸，并修复 2048 与 Hextris 旧结束存档卡住的问题。', '# 首页时间壁纸与游戏可玩性修复
+
+本次更新让首页更像一个会随时间呼吸的小桌面，也修复了两个小游戏进入后被旧存档挡住的问题。
+
+## 更新内容
+
+- 首页新增早上、白天、傍晚、晚上四张像素壁纸。
+- 壁纸和欢迎弹窗问候语按用户本地时间切换：6:00-10:00 早上，10:00-16:00 白天，16:00-19:30 傍晚，19:30-次日 6:00 晚上。
+- 知识库文章发布日期继续显示本地时间到秒，但不再显示时区名称。
+- 2048 和 Hextris 恢复存档时，如果读到已结束或无法继续的局面，会自动开启新局。
+- 更新 CSS / JS 资源版本号，减少浏览器继续使用旧资源缓存的可能。', '2026-06-12T01:00:00.000Z', '2026-06-12T01:00:00.000Z'),
+        ('seed-update-2026-06-12-time-wallpaper-game-fix-en', 'seed-update-2026-06-12-time-wallpaper-game-fix', 'en', 'Time-based home wallpapers and game fixes', 'The home wallpaper now follows the visitor local time, and 2048 plus Hextris recover from ended saves by starting fresh.', '# Time-based home wallpapers and game fixes
+
+This update makes the home desktop change with the day and fixes two games that could open into an ended save.
+
+## Changes
+
+- Added morning, day, evening, and night pixel wallpapers for the home screen.
+- Wallpaper and welcome greeting now use the visitor local time: 6:00-10:00 morning, 10:00-16:00 day, 16:00-19:30 evening, and 19:30-6:00 night.
+- Knowledge-base publish dates still show local time down to seconds, but no longer append the timezone name.
+- 2048 and Hextris now start a fresh run when a restored save is already ended or cannot continue.
+- Bumped CSS / JS asset versions to reduce stale browser cache issues.', '2026-06-12T01:00:00.000Z', '2026-06-12T01:00:00.000Z'),
+        ('seed-update-2026-06-12-time-wallpaper-game-fix-ja', 'seed-update-2026-06-12-time-wallpaper-game-fix', 'ja', '時間帯別ホーム壁紙とゲーム修正', 'ホーム壁紙が閲覧者のローカル時刻に合わせて切り替わり、2048 と Hextris は終了済みセーブから新規開始します。', '# 時間帯別ホーム壁紙とゲーム修正
+
+今回の更新では、ホーム画面が時間帯に合わせて変わるようになり、終了済みセーブでゲームが止まる問題を修正しました。
+
+## 更新内容
+
+- ホームに朝、昼、夕方、夜のピクセル壁紙を追加しました。
+- 壁紙と歓迎ポップアップの挨拶は閲覧者のローカル時刻で切り替わります：6:00-10:00 朝、10:00-16:00 昼、16:00-19:30 夕方、19:30-翌6:00 夜。
+- 知識庫の記事公開日はローカル時刻を秒まで表示しますが、タイムゾーン名は表示しません。
+- 2048 と Hextris は、復元したセーブが終了済みまたは続行不能な場合、自動で新しいゲームを開始します。
+- CSS / JS のバージョンを更新し、古いキャッシュが残る可能性を減らしました。', '2026-06-12T01:00:00.000Z', '2026-06-12T01:00:00.000Z')
       on conflict(article_id, lang) do update set
         title = excluded.title,
         summary = excluded.summary,
