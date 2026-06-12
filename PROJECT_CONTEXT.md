@@ -215,8 +215,16 @@ D1 表：`anonymous_chat_messages`
 - `a-dark-room`
 - `2048`
 - `hextris`
+- `life-restart`
 
-2026-06-11 已删除 `life-restart`、`vue-xiuxiangame`、`cultivation-world-simulator`、`XianTu`、`react-xiuxian-game`、`Daoyou`、`freeciv-web`、`OpenTTD` 等外部入口展示；这些项目需要构建链路、后端服务、外部服务器或原生客户端，不适合作为本站静态游戏直接部署。
+2026-06-11 已删除 `vue-xiuxiangame`、`cultivation-world-simulator`、`XianTu`、`react-xiuxian-game`、`Daoyou`、`freeciv-web`、`OpenTTD` 等外部入口展示；这些项目需要构建链路、后端服务、外部服务器或原生客户端，不适合作为本站静态游戏直接部署。
+
+2026-06-12 已将 `VickScarlet/lifeRestart` 以本地静态游戏形式接入 `games/life-restart/`：
+- 上游项目需要先构建，临时源码内使用 `npm.cmd install`、`npm.cmd run xlsx2json`、`npm.cmd run build`；上游推荐 pnpm，但本机无 pnpm 时 npm 可执行同名脚本。
+- 构建产物目录为上游 `template/public`，本站仅提交该目录复制后的 `games/life-restart/source/` 以及 `source/LICENSE.txt`。
+- 上游 Vite 配置 `base: './'`，可在 Cloudflare Pages 子目录 `/games/life-restart/source/` 下通过相对路径加载资源。
+- 语言支持：中文 `zh-cn`、English `en-us`；暂无日本語资源，站点日语界面进入时默认启动 English。
+- 本地存档键已记录到 `games/catalog.json`：`theme`、`times`、`extendTalent`、`ATLT`、`AEVT`、`ACHV`、`uniqueWaTaShi`。
 
 游戏列表：
 
@@ -279,9 +287,12 @@ D1 表：`anonymous_chat_messages`
 │   ├── catalog.json
 │   ├── game-shell.css
 │   ├── game-shell.js
+│   ├── 2048/
+│   ├── hextris/
 │   ├── kittens-game/
-│   └── a-dark-room/
-│       （其他开源游戏可先作为 catalog 外部入口展示）
+│   ├── a-dark-room/
+│   └── life-restart/
+│       （新增游戏必须优先本地静态部署，不要只做外部跳转入口）
 ├── js/
 │   └── main.js
 └── skills/

@@ -1,5 +1,5 @@
 {
-  "updated": "2026.06.11",
+  "updated": "2026.06.12",
   "games": [
     {
       "id": "kittens-game",
@@ -163,7 +163,53 @@
       "storage": {
         "scoreOnly": true,
         "keys": [
-          "lusu.hextris.best"
+        "lusu.hextris.best"
+      ]
+      }
+    },
+    {
+      "id": "life-restart",
+      "title": "Life Restart",
+      "titleZh": "人生重开模拟器",
+      "titles": {
+        "zh": "人生重开模拟器",
+        "en": "Life Restart",
+        "ja": "Life Restart"
+      },
+      "summaries": {
+        "zh": "开源人生模拟文字游戏，本地静态部署到本站，支持中文和 English，并接入本地导入导出与云存档。",
+        "en": "An open-source life simulation text game, deployed locally with Chinese and English UI plus save import/export and cloud saves.",
+        "ja": "オープンソースの人生シミュレーションゲームです。本站に内蔵し、中国語と英語UI、保存の入出力とクラウド保存に対応しています。"
+      },
+      "cover": "../assets/images/icon-games.png",
+      "entry": "life-restart/",
+      "sourceEntry": "source/index.html",
+      "language": "支持中文 / English；日本語暂不支持（默认 English）",
+      "languageSupport": {
+        "zh": true,
+        "en": true,
+        "ja": false
+      },
+      "languageMap": {
+        "zh": "zh-cn",
+        "en": "en-us",
+        "ja": "en-us"
+      },
+      "license": {
+        "name": "MIT",
+        "file": "source/LICENSE.txt",
+        "url": "https://github.com/VickScarlet/lifeRestart"
+      },
+      "repo": "https://github.com/VickScarlet/lifeRestart",
+      "storage": {
+        "keys": [
+          "theme",
+          "times",
+          "extendTalent",
+          "ATLT",
+          "AEVT",
+          "ACHV",
+          "uniqueWaTaShi"
         ]
       }
     }

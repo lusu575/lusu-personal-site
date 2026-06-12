@@ -44,7 +44,7 @@
   function getGameLanguage(game) {
     const support = game.languageSupport || {};
     const languageMap = game.languageMap || {};
-    const siteLang = support[requestedSiteLang] ? requestedSiteLang : "zh";
+    const siteLang = support[requestedSiteLang] ? requestedSiteLang : support.en ? "en" : "zh";
     return languageMap[siteLang] || siteLang;
   }
 

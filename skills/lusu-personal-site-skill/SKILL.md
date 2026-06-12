@@ -82,6 +82,11 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - `kittens-game` 语言设置使用 `com.nuclearunicorn.kittengame.language`。
 - `a-dark-room` 语言参数使用 `lang`，简体中文对应 `zh_cn`。
 - `a-dark-room` 入口仍需要保留 `ignorebrowser=true`。
+- `life-restart` 来源为 `VickScarlet/lifeRestart`，接入时只提交上游 `template/public` 构建产物复制后的 `games/life-restart/source/`，不要提交临时源码、`node_modules` 或上游工作目录。
+- `life-restart` 上游构建步骤为 `npm.cmd install`、`npm.cmd run xlsx2json`、`npm.cmd run build`（上游 README 使用 pnpm，本机没有 pnpm 时 npm 可执行同名脚本），产物目录为 `template/public`。
+- `life-restart` 上游 Vite 配置 `base: './'`，静态资源应保持相对路径，适合 Cloudflare Pages 子目录 `/games/life-restart/source/`。
+- `life-restart` 语言只支持中文 `zh-cn` 和 English `en-us`，暂无日本語；站点日语界面进入时应默认启动 English。
+- `life-restart` 已知本地存档键为 `theme`、`times`、`extendTalent`、`ATLT`、`AEVT`、`ACHV`、`uniqueWaTaShi`，新增或升级上游版本时必须重新检查 `localStorage` 用法并同步 `games/catalog.json`。
 
 ## 账号与云存档规则
 
