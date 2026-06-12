@@ -120,10 +120,9 @@
       },
       "repo": "https://github.com/gabrielecirulli/2048",
       "storage": {
+        "scoreOnly": true,
         "keys": [
-          "lusu.2048.save",
-          "lusu.2048.best",
-          "lusu.2048.lang"
+          "lusu.2048.best"
         ]
       }
     },
@@ -162,10 +161,9 @@
       },
       "repo": "https://github.com/Hextris/hextris",
       "storage": {
+        "scoreOnly": true,
         "keys": [
-          "lusu.hextris.save",
-          "lusu.hextris.best",
-          "lusu.hextris.lang"
+          "lusu.hextris.best"
         ]
       }
     }

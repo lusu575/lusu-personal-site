@@ -96,8 +96,19 @@
     return game.storage?.keys || [];
   }
 
+  function isScoreOnlyStorage(game) {
+    return game.storage?.scoreOnly === true;
+  }
+
+  function isMeaningfulStorageValue(game, value) {
+    if (!isScoreOnlyStorage(game)) {
+      return value !== null;
+    }
+    return Number(value || 0) > 0;
+  }
+
   function getStorageKeys(game) {
-    return getConfiguredKeys(game).filter((key) => localStorage.getItem(key) !== null);
+    return getConfiguredKeys(game).filter((key) => isMeaningfulStorageValue(game, localStorage.getItem(key)));
   }
 
   function collectSaveData(game) {
@@ -119,7 +130,14 @@
     }
     Object.entries(data).forEach(([key, value]) => {
       if (getConfiguredKeys(game).includes(key) && typeof value === "string") {
-        localStorage.setItem(key, value);
+        if (isScoreOnlyStorage(game)) {
+          const nextValue = Math.max(Number(localStorage.getItem(key) || 0), Number(value || 0));
+          if (nextValue > 0) {
+            localStorage.setItem(key, String(nextValue));
+          }
+        } else {
+          localStorage.setItem(key, value);
+        }
       }
     });
   }
@@ -219,6 +237,16 @@
       const cloudTime = Date.parse(payload.updatedAt || "") || 0;
       const knownCloudTime = getKnownCloudTime(game);
       const localExists = hasLocalSave(game);
+
+      if (cloudSave && isScoreOnlyStorage(game)) {
+        applySaveData(game, cloudSave);
+        rememberCloudTime(game, payload.updatedAt);
+        setStatus("已合并云端历史分数，游戏会从新对局开始。");
+        if (hasLocalSave(game)) {
+          await syncToCloud(game, false);
+        }
+        return;
+      }
 
       if (cloudSave && (!localExists || cloudTime > knownCloudTime)) {
         const shouldRestore = !localExists || window.confirm("检测到云端存档较新，要恢复云端存档吗？");

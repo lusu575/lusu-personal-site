@@ -4,7 +4,7 @@ const translations = {
   zh: {
     siteName: "鲁肃个人站",
     heroTitle: "鲁肃的个人站",
-    homeLead: "施工中的 XP 像素小站，随便逛逛。",
+    homeLead: "开发施工中",
     navKnowledge: "知识库",
     navVideos: "视频区",
     navVideosBuilding: "视频区（待定）",
@@ -552,6 +552,7 @@ const articleState = {
   requestId: 0,
   detailRequestId: 0,
   detailLoadingKey: "",
+  detailCache: new Map(),
   articles: [],
   currentSlug: "",
   currentArticle: null,
@@ -725,6 +726,9 @@ function renderKnowledge() {
     const detailKey = `${articleState.currentSlug}:${currentLang}`;
     if (articleState.currentArticle && articleState.currentArticle.slug === articleState.currentSlug && articleState.currentArticle.requestedLang === currentLang) {
       renderArticleDetail(articleState.currentArticle);
+    } else if (articleState.detailCache.has(detailKey)) {
+      articleState.currentArticle = articleState.detailCache.get(detailKey);
+      renderArticleDetail(articleState.currentArticle);
     } else if (articleState.detailLoadingKey !== detailKey) {
       loadArticleDetail(articleState.currentSlug);
     }
@@ -825,6 +829,13 @@ async function loadArticles() {
 async function loadArticleDetail(slug) {
   const requestId = articleState.detailRequestId + 1;
   const detailKey = `${slug}:${currentLang}`;
+  const cachedArticle = articleState.detailCache.get(detailKey);
+  if (cachedArticle) {
+    articleState.currentArticle = cachedArticle;
+    renderArticleDetail(cachedArticle);
+    return;
+  }
+
   articleState.detailRequestId = requestId;
   articleState.detailLoadingKey = detailKey;
   const detail = document.getElementById("article-detail");
@@ -844,6 +855,7 @@ async function loadArticleDetail(slug) {
       return;
     }
     articleState.currentArticle = { ...payload.article, requestedLang: currentLang };
+    articleState.detailCache.set(detailKey, articleState.currentArticle);
     renderArticleDetail(articleState.currentArticle);
   } catch {
     if (requestId === articleState.detailRequestId) {
@@ -1694,7 +1706,7 @@ function formatChatTime(value) {
   const sameDay = date.getFullYear() === now.getFullYear()
     && date.getMonth() === now.getMonth()
     && date.getDate() === now.getDate();
-  return formatZonedDateTime(value, { includeDate: !sameDay, includeTimeZone: true });
+  return formatZonedDateTime(value, { includeDate: !sameDay, includeTimeZone: false });
 }
 
 async function submitChatMessage(event) {
