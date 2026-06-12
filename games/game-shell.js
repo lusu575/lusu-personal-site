@@ -50,7 +50,7 @@
 
   function buildEntry(game) {
     const params = new URLSearchParams(game.launchQuery || "");
-    params.set("lang", getGameLanguage(game));
+    params.set(game.languageQueryParam || "lang", getGameLanguage(game));
     const query = params.toString();
     return `${game.sourceEntry}${query ? `?${query}` : ""}`;
   }

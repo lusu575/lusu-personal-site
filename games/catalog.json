@@ -184,6 +184,7 @@
       "cover": "../assets/images/icon-games.png",
       "entry": "life-restart/",
       "sourceEntry": "source/index.html",
+      "languageQueryParam": "language",
       "language": "支持中文 / English；日本語暂不支持（默认 English）",
       "languageSupport": {
         "zh": true,
