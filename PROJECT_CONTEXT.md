@@ -137,7 +137,7 @@ Markdown 安全：
 - 静态文件：`admin/index.html`、`admin/admin.css`、`admin/admin.js`
 - 访问拦截：`functions/admin/_middleware.js`
 - 权限：复用主站 `lusu_session` HttpOnly cookie 和 `users.role = admin`，非 admin 只能看到后台登录/拒绝页，不能读取后台静态资源或后台 API 数据。
-- 后台只使用中文文案；后台项目介绍和后台更新记录保存在后台页面内，不写入主站知识库 `site-updates`，也不对外公开。
+- 后台只使用中文文案；后台项目介绍和后台更新记录保存在后台页面内，其中后台更新记录是独立标签页，不写入主站知识库 `site-updates`，也不对外公开。
 
 后台能力：
 
@@ -146,7 +146,9 @@ Markdown 安全：
 - 地图界面：后台根据访问聚合数据绘制像素风地图点位。
 - 点击埋点：记录站内按钮、链接、桌面入口、筛选、文章和视频等点击目标，保存路径、route、目标文本、元素标识和屏幕尺寸，不记录输入框内容。
 - 知识库文章：后台可新建、编辑、发布、删除文章；保存和发布时要求 zh / en / ja 三语标题与正文齐全。
+- 视频管理：后台可维护 YouTube / Bilibili / b23.tv 视频和视频分类；服务端解析链接、生成规范化播放器地址，并在后台预览、保存或刷新时抓取标题、简介、作者、发布时间和封面。
 - 聊天室管理：后台可查看隐藏访客 ID、client id、IP hash/IP 前缀、来源地；可编辑、隐藏/恢复、删除消息，并按隐藏访客 ID 或 IP hash 禁言。
+- 后台更新记录：后台私有更新说明独立于“后台说明”，每次后台更新后同步维护页面内记录和 `admin/docs/ADMIN_CHANGELOG.md`。
 
 公开埋点接口：
 
@@ -492,8 +494,8 @@ admin/docs/ADMIN_CHANGELOG.md
   - `POST /api/admin/video-categories`
   - `PUT /api/admin/video-categories/:categoryId`
   - `DELETE /api/admin/video-categories/:categoryId`
-- 后台新增“视频管理”和“视频分类管理”模块，仍只允许 `users.role = admin` 访问。
+- 后台“视频管理”和“视频分类管理”模块仍只允许 `users.role = admin` 访问。
 - 后端只接受 YouTube / youtu.be / Bilibili / b23.tv 白名单链接，由服务端解析并生成规范化 `embed_url`；前端和后台预览不得直接 iframe 用户输入的任意 URL。
-- 视频元数据只在后台预览、保存或刷新时抓取，并缓存到 D1；公开视频访问不重新抓取。
+- 视频元数据只在后台预览、保存或刷新时抓取，并缓存到 D1；公开视频访问不重新抓取。后台应尽量自动补齐标题、简介、作者、发布时间和封面，Bilibili 抓取遇到 API 风控时使用页面备用解析。
 - 主站视频区从 `/api/videos` 读取列表和分类，使用安全 DOM/textContent 渲染，点击后在 XP 风格站内窗口加载 lazy iframe。
 - 视频区埋点复用 `js/telemetry.js`，覆盖分类筛选、视频点击、播放器打开和播放失败，不记录后台输入内容。

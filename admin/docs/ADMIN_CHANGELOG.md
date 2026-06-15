@@ -4,6 +4,14 @@
 
 ## 2026-06-15
 
+- 视频元数据和后台更新记录优化：
+  - 后台视频预览改为限制宽度的小播放器，避免 YouTube / Bilibili iframe 在编辑区占满整页。
+  - YouTube 元数据抓取在 oEmbed 基础上补充页面元信息解析，尽量自动填入简介和发布时间。
+  - Bilibili 元数据抓取增加浏览器化请求头、页面 `__INITIAL_STATE__` 备用解析和 b23 短链跟随兜底，降低 HTTP 412 或跳转异常导致的解析失败。
+  - 外部元数据简介改为安全截断，避免长简介导致整次抓取失败。
+  - 新增独立“后台更新记录”标签页，后台导航顺序调整为实时大屏、访问来源、点击埋点、知识库文章、视频管理、视频分类管理、聊天室管理、后台更新记录、后台说明。
+  - `admin/docs/ADMIN_SKILL.md` 新增硬性规则：每次后台更新后必须同步维护后台页面内 `adminUpdates` 和本文档。
+
 - 新增后台专用文档包：
   - 新增 `admin/docs/ADMIN_PROJECT_CONTEXT.md`，作为 `/admin/` 管理后台专用上下文。
   - 新增 `admin/docs/ADMIN_SKILL.md`，沉淀后台权限、隐私、视频、文章、聊天室和缓存维护规则。
@@ -33,4 +41,3 @@
   - 新增 `functions/admin/_middleware.js`，后台静态资源复用主站 `lusu_session` 并校验 `users.role = admin`。
   - 所有 `/api/admin/*` 接口继续使用服务端 admin 权限校验。
   - 聊天室后台支持消息编辑、隐藏/恢复、删除，并按隐藏 visitor id 或 IP hash 禁言。
-

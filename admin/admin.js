@@ -16,17 +16,23 @@ const state = {
 };
 
 const panelMeta = {
-  videos: ["视频管理", "输入 YouTube / Bilibili 链接，服务端识别并缓存标题、简介和封面。"],
-  videoCategories: ["视频分类管理", "维护视频区顶部标签，支持新增、编辑、停用、排序和安全删除。"],
   dashboard: ["实时监控大屏", "访问、点击、文章和聊天室状态集中查看。"],
-  articles: ["知识库文章", "一次编辑 zh / en / ja 三种版本，按当前选择语言显示编辑区。"],
   visits: ["访问来源", "按国家、省份、地区和 IP 前缀查看每日访问。"],
   clicks: ["点击埋点", "查看站内各位置点击、PV/UV 和最近事件。"],
+  articles: ["知识库文章", "一次编辑 zh / en / ja 三种版本，按当前选择语言显示编辑区。"],
+  videos: ["视频管理", "输入 YouTube / Bilibili 链接，服务端识别并缓存标题、简介、发布时间和封面。"],
+  videoCategories: ["视频分类管理", "维护视频区顶部标签，支持新增、编辑、停用、排序和安全删除。"],
   chat: ["聊天室管理", "编辑、隐藏、删除聊天记录，按隐藏用户 ID 或 IP 来源禁言。"],
-  docs: ["后台说明", "后台自己的项目介绍和私有更新记录，不混入主站知识库。"]
+  updates: ["后台更新记录", "后台自己的私有更新说明，每次后台更新后同步记录。"],
+  docs: ["后台说明", "后台项目说明，不混入主站知识库。"]
 };
 
 const adminUpdates = [
+  {
+    date: "2026-06-15",
+    title: "视频元数据和后台更新记录优化",
+    body: "压缩后台视频播放器预览尺寸，增强 YouTube / Bilibili 标题、简介、作者、发布时间和封面抓取；Bilibili 增加浏览器化请求头、页面备用解析和 b23 短链兜底；新增独立“后台更新记录”标签页并调整后台导航顺序。"
+  },
   {
     date: "2026-06-15",
     title: "后台视觉优化第一版",
@@ -923,7 +929,7 @@ async function disableBan(banId) {
   await loadBans();
 }
 
-function renderDocs() {
+function renderAdminUpdates() {
   $("#admin-updates").innerHTML = adminUpdates.map((item) => `
     <article class="event-item">
       <strong>${escapeHtml(item.date)} · ${escapeHtml(item.title)}</strong>
@@ -1017,7 +1023,7 @@ function bindEvents() {
 
 async function init() {
   bindEvents();
-  renderDocs();
+  renderAdminUpdates();
   resetArticleForm();
   resetVideoForm();
   resetVideoCategoryForm();

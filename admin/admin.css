@@ -587,13 +587,16 @@ tbody tr:hover td {
 }
 
 .admin-video-preview {
+  width: min(100%, 560px);
   aspect-ratio: 16 / 9;
-  min-height: 160px;
+  min-height: 0;
+  max-height: 320px;
   border: 3px solid #222;
   background:
     linear-gradient(135deg, rgba(36, 94, 220, 0.4), rgba(255, 183, 213, 0.35)),
     repeating-linear-gradient(0deg, #1c1c1c 0 8px, #252525 8px 16px);
   overflow: hidden;
+  place-self: start;
 }
 
 .admin-video-preview:empty {
@@ -850,6 +853,14 @@ textarea {
 .prose p {
   margin: 12px;
   line-height: 1.8;
+}
+
+.updates-panel {
+  max-width: 980px;
+}
+
+.updates-panel .admin-updates {
+  max-height: none;
 }
 
 code {

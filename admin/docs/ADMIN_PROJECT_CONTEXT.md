@@ -20,7 +20,7 @@
 - 后台和主站同属 `lusu575/lusu-personal-site` 仓库，同用 Cloudflare Pages Functions 和 D1。
 - 后台复用主站账号系统、`lusu_session` HttpOnly cookie、`users.role = admin` 权限。
 - 后台页面、样式、脚本和私有说明必须放在 `admin/` 或 `admin/docs/` 下，不混进主站首页窗口、主站 CSS 或主站三语文案体系。
-- 主站公开更新记录继续由知识库 `site-updates` 分类维护；后台私有更新记录使用 `admin/docs/ADMIN_CHANGELOG.md` 和后台页面内的 `adminUpdates`。
+- 主站公开更新记录继续由知识库 `site-updates` 分类维护；后台私有更新记录使用 `admin/docs/ADMIN_CHANGELOG.md` 和后台“后台更新记录”标签页内的 `adminUpdates`。
 - 主站总上下文仍是根目录 `PROJECT_CONTEXT.md`；后台细节优先看本文档。
 
 ## 权限模型
@@ -33,14 +33,15 @@
 
 ## 当前模块
 
-- 视频管理：维护 YouTube / Bilibili / b23.tv 视频，服务端识别链接、抓取元数据、生成规范化 `embed_url`，支持草稿、发布、隐藏、排序、置顶、删除和刷新元数据。
-- 视频分类管理：维护视频区分类标签，支持 slug、中文名、English、日本語、排序和启用状态；“全部”分类只由前台生成，不写入数据库。
 - 实时大屏：查看今日 PV、UV、周期 PV/UV、今日点击、在线访客、今日聊天数、每日趋势、小时趋势、热门页面和热门文章。
-- 知识库文章：新建、编辑、发布、删除文章；编辑界面按当前选择语言显示面板，但保存和发布要求 zh / en / ja 三语标题与正文齐全。
 - 访问来源：按国家、省份/地区、城市、IP 掩码前缀聚合访问来源。
 - 点击埋点：查看站内按钮、链接、桌面入口、筛选、文章、视频等点击目标和最近点击事件。
+- 知识库文章：新建、编辑、发布、删除文章；编辑界面按当前选择语言显示面板，但保存和发布要求 zh / en / ja 三语标题与正文齐全。
+- 视频管理：维护 YouTube / Bilibili / b23.tv 视频，服务端识别链接、抓取标题、简介、作者、发布时间、封面和规范化 `embed_url`，支持草稿、发布、隐藏、排序、置顶、删除和刷新元数据。后台编辑区只展示检查用小播放器，避免 iframe 预览占满页面。
+- 视频分类管理：维护视频区分类标签，支持 slug、中文名、English、日本語、排序和启用状态；“全部”分类只由前台生成，不写入数据库。
 - 聊天室管理：查看聊天记录，编辑、隐藏/恢复、删除消息，并按隐藏 visitor id 或 IP hash 禁言。
-- 后台说明：展示后台项目介绍和后台私有更新记录，不对外公开。
+- 后台更新记录：展示后台私有更新说明，每次后台更新后必须同步维护页面内 `adminUpdates` 和 `admin/docs/ADMIN_CHANGELOG.md`。
+- 后台说明：展示后台项目介绍，不对外公开。
 
 ## 后台接口
 
@@ -154,4 +155,3 @@ npm.cmd run build
 - PowerShell 优先使用 `npm.cmd` / `npx.cmd`。
 - `.wrangler/`、`.wrangler-config/`、`node_modules/`、`.codex-remote-attachments/` 是本地生成内容，不得提交。
 - 如果本地没有 admin 账号，需要先注册/登录主站账号，再在 D1 中把对应 `users.role` 更新为 `admin`。
-

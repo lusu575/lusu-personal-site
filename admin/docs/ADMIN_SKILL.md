@@ -20,6 +20,7 @@ description: 维护鲁肃个人站 `/admin/` 管理后台时使用。只适用�
 - 后台专用上下文写入 `admin/docs/ADMIN_PROJECT_CONTEXT.md`。
 - 后台专用规则和注意事项写入 `admin/docs/ADMIN_SKILL.md`。
 - 后台专用更新记录写入 `admin/docs/ADMIN_CHANGELOG.md`。
+- 每次后台功能、界面、接口、权限、视频管理、聊天室治理或后台文档更新后，必须同步维护后台页面内 `adminUpdates` 和 `admin/docs/ADMIN_CHANGELOG.md`；这是后台私有更新记录，不写入主站知识库 `site-updates`。
 - 根目录 `PROJECT_CONTEXT.md` 只保留全站总事实和后台索引，不复制后台细节。
 - 根目录 `CHANGELOG.md` 只记录项目级变更；后台私有细节优先写入 `admin/docs/ADMIN_CHANGELOG.md`。
 - 后台私有更新不得写入主站知识库 `site-updates`，也不得加入 `js/main.js` 的首页最近更新 fallback。
@@ -40,6 +41,7 @@ description: 维护鲁肃个人站 `/admin/` 管理后台时使用。只适用�
 - 后台不需要主站中文 / English / 日本語 三语切换。
 - 后台表格、表单、按钮、状态、空状态和错误提示必须清楚，不隐藏真实失败原因。
 - 移动端后台需要保持可读、可滚动、无横向溢出；侧边栏和编辑区不能卡死。
+- 后台导航默认从上到下为：实时大屏、访问来源、点击埋点、知识库文章、视频管理、视频分类管理、聊天室管理、后台更新记录、后台说明。
 
 ## 权限和安全
 
@@ -70,7 +72,9 @@ description: 维护鲁肃个人站 `/admin/` 管理后台时使用。只适用�
 - 后台视频链接只支持 YouTube、youtu.be、Bilibili、b23.tv 白名单来源。
 - 视频链接必须由服务端解析，并由服务端生成规范化 `embed_url`。
 - 前台和后台 iframe `src` 只能使用服务端规范化后的 `embed_url`，不得直接信任管理员输入 URL。
-- YouTube / Bilibili 元数据只在后台预览、保存或刷新时抓取，并缓存到 D1；公开视频访问不得每次重新抓取。
+- YouTube / Bilibili 元数据只在后台预览、保存或刷新时抓取，并缓存到 D1；公开视频访问不得每次重新抓取。元数据抓取应尽量补齐标题、简介、作者、发布时间和封面；抓取失败时要保留可读错误并允许管理员手动填写。
+- Bilibili 抓取遇到 API 风控或 HTTP 412 时，应优先保留服务端白名单解析和规范化 `embed_url`，并使用浏览器化请求头、页面 `__INITIAL_STATE__` 备用解析或 b23 跳转兜底，不得放宽为任意 iframe。
+- 后台视频预览只是编辑检查用，不应占满编辑区；播放器容器要限制宽度、高度并在小屏单列适配。
 - “全部”视频分类只由前台生成，不写入 `video_categories`。
 - 删除视频分类前要考虑已有视频关联，避免破坏公开视频筛选。
 
@@ -92,6 +96,6 @@ description: 维护鲁肃个人站 `/admin/` 管理后台时使用。只适用�
 
 - 后台功能或样式变更后运行 `npm.cmd run build`。
 - 文档变更后检查 `admin/docs/` 标题和首段是否明确写着“管理后台专用 / 不等同于主站文档”。
+- 每次后台更新后检查“后台更新记录”标签页的 `adminUpdates` 与 `admin/docs/ADMIN_CHANGELOG.md` 已同步记录本次变更。
 - 搜索确认后台私有更新没有写进 `site-updates` seed、`js/main.js` fallback 最近更新或公开知识库。
 - 检查根目录 `CHANGELOG.md` 只记录项目级摘要，后台细节写入 `admin/docs/ADMIN_CHANGELOG.md`。
-

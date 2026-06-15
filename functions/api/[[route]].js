@@ -11,6 +11,23 @@ const CHAT_NICKNAME_LOOKBACK_LIMIT = 1000;
 const VISITOR_COOKIE = "lusu_visitor";
 const VISITOR_DAYS = 365;
 const OWNER_ADMIN_EMAILS = new Set(["630739094@qq.com"]);
+const VIDEO_METADATA_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0 Safari/537.36";
+const YOUTUBE_METADATA_HEADERS = {
+  "User-Agent": VIDEO_METADATA_USER_AGENT,
+  Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.8,*/*;q=0.7",
+  "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8"
+};
+const BILIBILI_METADATA_HEADERS = {
+  "User-Agent": VIDEO_METADATA_USER_AGENT,
+  Accept: "application/json,text/plain,*/*",
+  "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+  Referer: "https://www.bilibili.com/",
+  Origin: "https://www.bilibili.com"
+};
+const BILIBILI_PAGE_HEADERS = {
+  ...BILIBILI_METADATA_HEADERS,
+  Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+};
 let coreSchemaReady = false;
 let chatSchemaReady = false;
 let articleSchemaReady = false;
@@ -1921,6 +1938,9 @@ async function parseVideoUrl(input) {
   if (!raw) {
     throw new HttpError("请输入视频链接。", 400);
   }
+  if (/^BV[a-zA-Z0-9]+$/.test(raw)) {
+    return parseVideoUrl(`https://www.bilibili.com/video/${raw}`);
+  }
   let url;
   try {
     url = new URL(raw);
@@ -1983,77 +2003,300 @@ function cleanYoutubeId(value) {
 
 async function youtubeMetadata(parsed) {
   const fallbackThumb = `https://i.ytimg.com/vi/${parsed.external_id}/hqdefault.jpg`;
-  try {
-    const info = await fetchJsonWithTimeout(
+  const [pageResult, oembedResult] = await Promise.allSettled([
+    youtubePageMetadata(parsed),
+    fetchJsonWithTimeout(
       `https://www.youtube.com/oembed?url=${encodeURIComponent(parsed.original_url)}&format=json`,
-      4500
-    );
+      4500,
+      YOUTUBE_METADATA_HEADERS
+    )
+  ]);
+  const pageMetadata = pageResult.status === "fulfilled" ? pageResult.value : {};
+  if (oembedResult.status === "fulfilled") {
+    const info = oembedResult.value;
     return {
       ...parsed,
-      title: normalizeOptionalText(info.title, 220),
-      description: "",
-      thumbnail_url: normalizeThumbnailUrl(info.thumbnail_url || fallbackThumb),
-      author_name: normalizeOptionalText(info.author_name, 160),
-      published_at: null,
+      title: metadataText(info.title || pageMetadata.title, 220),
+      description: metadataText(pageMetadata.description, 2000),
+      thumbnail_url: metadataThumbnailUrl(info.thumbnail_url || pageMetadata.thumbnail_url || fallbackThumb),
+      author_name: metadataText(info.author_name || pageMetadata.author_name, 160),
+      published_at: pageMetadata.published_at || null,
       metadata_error: ""
     };
-  } catch (error) {
-    return {
-      ...parsed,
-      title: "",
-      description: "",
-      thumbnail_url: fallbackThumb,
-      author_name: "",
-      published_at: null,
-      metadata_error: `YouTube 元数据抓取失败：${error.message || "请手动填写。"}`
-    };
   }
+  const hasPageMetadata = pageMetadata.title || pageMetadata.description || pageMetadata.published_at;
+  const error = oembedResult.reason || pageResult.reason || {};
+  return {
+    ...parsed,
+    title: metadataText(pageMetadata.title, 220),
+    description: metadataText(pageMetadata.description, 2000),
+    thumbnail_url: metadataThumbnailUrl(pageMetadata.thumbnail_url || fallbackThumb),
+    author_name: metadataText(pageMetadata.author_name, 160),
+    published_at: pageMetadata.published_at || null,
+    metadata_error: hasPageMetadata ? "" : `YouTube 元数据抓取失败：${error.message || "请手动填写。"}`
+  };
 }
 
 async function bilibiliMetadata(parsed) {
   try {
-    const info = await fetchJsonWithTimeout(
-      `https://api.bilibili.com/x/web-interface/view?bvid=${encodeURIComponent(parsed.external_id)}`,
-      5000,
-      { Referer: "https://www.bilibili.com/" }
-    );
-    if (Number(info.code || 0) !== 0 || !info.data) {
-      throw new Error(info.message || "Bilibili 返回空数据。");
+    const data = await bilibiliApiMetadata(parsed);
+    return bilibiliDataToMetadata(parsed, data);
+  } catch (apiError) {
+    try {
+      const data = await bilibiliPageMetadata(parsed);
+      const metadata = bilibiliDataToMetadata(parsed, data);
+      return {
+        ...metadata,
+        metadata_error: metadata.title || metadata.description || metadata.published_at
+          ? ""
+          : `Bilibili 元数据抓取失败：${apiError.message || "请手动填写。"}`
+      };
+    } catch (pageError) {
+      return {
+        ...parsed,
+        title: "",
+        description: "",
+        thumbnail_url: "",
+        author_name: "",
+        published_at: null,
+        metadata_error: `Bilibili 元数据抓取失败：${pageError.message || apiError.message || "请手动填写。"}`
+      };
     }
-    const data = info.data;
-    return {
-      ...parsed,
-      title: normalizeOptionalText(data.title, 220),
-      description: normalizeOptionalText(data.desc, 2000),
-      thumbnail_url: normalizeThumbnailUrl(String(data.pic || "").replace(/^http:\/\//, "https://")),
-      author_name: normalizeOptionalText(data.owner?.name, 160),
-      published_at: data.pubdate ? new Date(Number(data.pubdate) * 1000).toISOString() : null,
-      metadata_error: ""
-    };
-  } catch (error) {
-    return {
-      ...parsed,
-      title: "",
-      description: "",
-      thumbnail_url: "",
-      author_name: "",
-      published_at: null,
-      metadata_error: `Bilibili 元数据抓取失败：${error.message || "请手动填写。"}`
-    };
   }
 }
 
+async function youtubePageMetadata(parsed) {
+  const html = await fetchTextWithTimeout(
+    `https://www.youtube.com/watch?v=${encodeURIComponent(parsed.external_id)}`,
+    5000,
+    YOUTUBE_METADATA_HEADERS
+  );
+  const description = extractJsonString(html, "shortDescription")
+    || extractMetaContent(html, "name", "description")
+    || extractMetaContent(html, "property", "og:description");
+  const title = extractMetaContent(html, "property", "og:title")
+    || extractJsonString(html, "title")
+    || extractMetaContent(html, "name", "title");
+  const published = extractJsonString(html, "publishDate")
+    || extractJsonString(html, "uploadDate")
+    || extractMetaContent(html, "itemprop", "datePublished")
+    || extractMetaContent(html, "itemprop", "uploadDate");
+  return {
+    title: metadataText(title, 220),
+    description: metadataText(description, 2000),
+    thumbnail_url: metadataThumbnailUrl(extractMetaContent(html, "property", "og:image")),
+    author_name: metadataText(extractJsonString(html, "ownerChannelName") || extractJsonString(html, "author"), 160),
+    published_at: metadataDate(published)
+  };
+}
+
+async function bilibiliApiMetadata(parsed) {
+  const endpoint = `https://api.bilibili.com/x/web-interface/view?bvid=${encodeURIComponent(parsed.external_id)}`;
+  const info = await fetchJsonWithTimeout(endpoint, 5000, BILIBILI_METADATA_HEADERS);
+  if (Number(info.code || 0) !== 0 || !info.data) {
+    throw new Error(info.message || "Bilibili 返回空数据。");
+  }
+  return info.data;
+}
+
+async function bilibiliPageMetadata(parsed) {
+  const html = await fetchTextWithTimeout(
+    `https://www.bilibili.com/video/${encodeURIComponent(parsed.external_id)}/?p=${encodeURIComponent(parsed.page || 1)}`,
+    5000,
+    BILIBILI_PAGE_HEADERS
+  );
+  const state = extractBilibiliInitialState(html);
+  const data = state?.videoData || state?.videoInfo || state?.View || state?.viewInfo || null;
+  if (!data) {
+    throw new Error("Bilibili 页面未返回视频信息。");
+  }
+  return data;
+}
+
+function bilibiliDataToMetadata(parsed, data) {
+  const description = data.desc || descV2Text(data.desc_v2);
+  return {
+    ...parsed,
+    title: metadataText(data.title, 220),
+    description: metadataText(description, 2000),
+    thumbnail_url: metadataThumbnailUrl(data.pic),
+    author_name: metadataText(data.owner?.name || data.author || data.upData?.name, 160),
+    published_at: metadataUnixDate(data.pubdate || data.ctime),
+    metadata_error: ""
+  };
+}
+
+function descV2Text(value) {
+  if (!Array.isArray(value)) {
+    return "";
+  }
+  return value.map((item) => {
+    const raw = String(item?.raw_text || "").trim();
+    if (!raw) {
+      return "";
+    }
+    return Number(item?.type) === 2 ? `@${raw}` : raw;
+  }).filter(Boolean).join(" ");
+}
+
+function extractBilibiliInitialState(html) {
+  const source = String(html || "");
+  const match = source.match(/window\.__INITIAL_STATE__\s*=\s*({[\s\S]*?});\s*\(function/);
+  if (!match) {
+    return extractAssignedObject(source, "window.__INITIAL_STATE__");
+  }
+  try {
+    return JSON.parse(match[1]);
+  } catch {
+    return null;
+  }
+}
+
+function extractAssignedObject(source, marker) {
+  const index = source.indexOf(marker);
+  if (index < 0) {
+    return null;
+  }
+  const start = source.indexOf("{", index);
+  if (start < 0) {
+    return null;
+  }
+  let depth = 0;
+  let quote = "";
+  let escaped = false;
+  for (let i = start; i < source.length; i += 1) {
+    const char = source[i];
+    if (quote) {
+      if (escaped) {
+        escaped = false;
+      } else if (char === "\\") {
+        escaped = true;
+      } else if (char === quote) {
+        quote = "";
+      }
+      continue;
+    }
+    if (char === '"' || char === "'") {
+      quote = char;
+      continue;
+    }
+    if (char === "{") {
+      depth += 1;
+    } else if (char === "}") {
+      depth -= 1;
+      if (depth === 0) {
+        try {
+          return JSON.parse(source.slice(start, i + 1));
+        } catch {
+          return null;
+        }
+      }
+    }
+  }
+  return null;
+}
+
+function extractMetaContent(html, attrName, attrValue) {
+  const tagPattern = /<meta\s+[^>]*>/gi;
+  const tags = String(html || "").match(tagPattern) || [];
+  const target = attrValue.toLowerCase();
+  for (const tag of tags) {
+    const attr = extractHtmlAttribute(tag, attrName);
+    if (attr && attr.toLowerCase() === target) {
+      return decodeHtmlEntities(extractHtmlAttribute(tag, "content"));
+    }
+  }
+  return "";
+}
+
+function extractHtmlAttribute(tag, name) {
+  const pattern = new RegExp(`${name}\\s*=\\s*("([^"]*)"|'([^']*)'|([^\\s>]+))`, "i");
+  const match = String(tag || "").match(pattern);
+  return match ? (match[2] || match[3] || match[4] || "") : "";
+}
+
+function extractJsonString(html, key) {
+  const pattern = new RegExp(`"${escapeRegExp(key)}"\\s*:\\s*"((?:\\\\.|[^"\\\\])*)"`);
+  const match = String(html || "").match(pattern);
+  if (!match) {
+    return "";
+  }
+  try {
+    return JSON.parse(`"${match[1]}"`);
+  } catch {
+    return match[1].replace(/\\"/g, '"');
+  }
+}
+
+function metadataDate(value) {
+  const raw = metadataText(value, 80);
+  if (!raw) {
+    return null;
+  }
+  const date = new Date(raw);
+  return Number.isNaN(date.getTime()) ? null : date.toISOString();
+}
+
+function metadataUnixDate(value) {
+  const seconds = Number(value || 0);
+  if (!Number.isFinite(seconds) || seconds <= 0) {
+    return null;
+  }
+  const date = new Date(seconds * 1000);
+  return Number.isNaN(date.getTime()) ? null : date.toISOString();
+}
+
+function metadataText(value, maxLength) {
+  const text = decodeHtmlEntities(String(value || "")).replace(/\s+\n/g, "\n").replace(/[ \t]{2,}/g, " ").trim();
+  return Array.from(text).slice(0, maxLength).join("");
+}
+
+function metadataThumbnailUrl(value) {
+  try {
+    const raw = String(value || "").trim().replace(/^http:\/\//, "https://");
+    return normalizeThumbnailUrl(raw.startsWith("//") ? `https:${raw}` : raw);
+  } catch {
+    return "";
+  }
+}
+
+function decodeHtmlEntities(value) {
+  return String(value || "")
+    .replace(/&quot;/g, '"')
+    .replace(/&#34;/g, '"')
+    .replace(/&amp;/g, "&")
+    .replace(/&#38;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&#60;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&#62;/g, ">")
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'");
+}
+
+function escapeRegExp(value) {
+  return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 async function resolveShortVideoUrl(shortUrl) {
-  const response = await fetchWithTimeout(shortUrl, {
+  const manualResponse = await fetchWithTimeout(shortUrl, {
     method: "GET",
     redirect: "manual",
-    headers: { "User-Agent": "Mozilla/5.0 lusu575-video-preview" }
+    headers: BILIBILI_PAGE_HEADERS
   }, 4500);
-  const location = response.headers.get("location");
-  if (!location) {
-    throw new HttpError("b23.tv 短链接解析失败，请使用完整 Bilibili 链接或手动填写。", 400);
+  const location = manualResponse.headers.get("location");
+  if (location) {
+    return new URL(location, shortUrl).toString();
   }
-  return new URL(location, shortUrl).toString();
+  const followedResponse = await fetchWithTimeout(shortUrl, {
+    method: "GET",
+    redirect: "follow",
+    headers: BILIBILI_PAGE_HEADERS
+  }, 4500);
+  if (followedResponse.url && followedResponse.url !== shortUrl) {
+    return followedResponse.url;
+  }
+  throw new HttpError("b23.tv 短链接解析失败，请使用完整 Bilibili 链接或手动填写。", 400);
 }
 
 async function fetchJsonWithTimeout(url, timeoutMs, headers = {}) {
@@ -2062,6 +2305,14 @@ async function fetchJsonWithTimeout(url, timeoutMs, headers = {}) {
     throw new Error(`HTTP ${response.status}`);
   }
   return response.json();
+}
+
+async function fetchTextWithTimeout(url, timeoutMs, headers = {}) {
+  const response = await fetchWithTimeout(url, { headers }, timeoutMs);
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+  return response.text();
 }
 
 async function fetchWithTimeout(url, options = {}, timeoutMs = 5000) {

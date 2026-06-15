@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex,nofollow">
   <title>鲁肃个人站管理后台</title>
-  <link rel="stylesheet" href="/admin/admin.css?v=20260615-managed-videos">
+  <link rel="stylesheet" href="/admin/admin.css?v=20260615-admin-video-fix">
 </head>
 <body>
   <div class="admin-shell">
@@ -18,13 +18,14 @@
         </div>
       </div>
       <nav class="nav-list">
-        <button class="nav-button" type="button" data-panel="videos">视频管理</button>
-        <button class="nav-button" type="button" data-panel="videoCategories">视频分类管理</button>
         <button class="nav-button active" type="button" data-panel="dashboard">实时大屏</button>
-        <button class="nav-button" type="button" data-panel="articles">知识库文章</button>
         <button class="nav-button" type="button" data-panel="visits">访问来源</button>
         <button class="nav-button" type="button" data-panel="clicks">点击埋点</button>
+        <button class="nav-button" type="button" data-panel="articles">知识库文章</button>
+        <button class="nav-button" type="button" data-panel="videos">视频管理</button>
+        <button class="nav-button" type="button" data-panel="videoCategories">视频分类管理</button>
         <button class="nav-button" type="button" data-panel="chat">聊天室管理</button>
+        <button class="nav-button" type="button" data-panel="updates">后台更新记录</button>
         <button class="nav-button" type="button" data-panel="docs">后台说明</button>
       </nav>
       <div class="sidebar-note">
@@ -328,22 +329,23 @@
       </section>
 
       <section class="panel" id="docs-panel">
-        <div class="dashboard-grid two">
-          <section class="xp-panel prose">
-            <div class="panel-head"><h2>后台项目介绍</h2><span>独立于主站公开内容</span></div>
-            <p>这个后台只服务站长维护个人站，不对外展示，也不复用知识库的网站更新记录。</p>
-            <p>后台复用主站账号系统和 <code>users.role = admin</code> 权限，只允许管理员账号访问页面和 API。</p>
-            <p>后台包含三语文章编辑、访问 PV/UV、地理来源地图、点击埋点、聊天室编辑/删除/禁言和实时大屏。</p>
-          </section>
-          <section class="xp-panel">
-            <div class="panel-head"><h2>后台更新记录</h2><span>私有记录</span></div>
-            <div class="admin-updates" id="admin-updates"></div>
-          </section>
-        </div>
+        <section class="xp-panel prose">
+          <div class="panel-head"><h2>后台项目介绍</h2><span>独立于主站公开内容</span></div>
+          <p>这个后台只服务站长维护个人站，不对外展示，也不复用知识库的网站更新记录。</p>
+          <p>后台复用主站账号系统和 <code>users.role = admin</code> 权限，只允许管理员账号访问页面和 API。</p>
+          <p>后台包含实时大屏、访问来源、点击埋点、三语文章编辑、视频管理、视频分类管理、聊天室编辑/删除/禁言和后台私有更新记录。</p>
+        </section>
+      </section>
+
+      <section class="panel" id="updates-panel">
+        <section class="xp-panel updates-panel">
+          <div class="panel-head"><h2>后台更新记录</h2><span>每次后台更新后同步维护</span></div>
+          <div class="admin-updates" id="admin-updates"></div>
+        </section>
       </section>
     </main>
   </div>
 
-  <script src="/admin/admin.js?v=20260615-managed-videos"></script>
+  <script src="/admin/admin.js?v=20260615-admin-video-fix"></script>
 </body>
 </html>
