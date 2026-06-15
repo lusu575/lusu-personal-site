@@ -2377,6 +2377,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-15-cloud-speed-smoothness',
+        '2026-06-15-cloud-speed-smoothness',
+        'site-updates',
+        '["网站更新","首页","动态壁纸","性能"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-15T09:30:00.000Z',
+        '2026-06-15T09:30:00.000Z',
+        '2026-06-15T09:30:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -2447,6 +2474,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
                "content_markdown":  "# 4時間帯の雲レイヤーと保守記録を補完\n\n今回の更新では、ホームの雲アニメーションとプロジェクト保守記録を補い、公開される最近の更新と実際の公開内容をそろえました。\n\n## 更新内容\n\n- morning / day / dusk / night の4時間帯に、無雲ベース画像と独立した雲レイヤーを接続しました。\n- 雲は同じ主風向でゆっくり時間差移動し、低モーション設定、非表示時の一時停止、小画面での降級にも対応します。\n- ローカル確認では `?wallpaper=morning`、`?wallpaper=day`、`?wallpaper=dusk`、`?wallpaper=night` で時間帯を指定できます。\n- README、PROJECT_CONTEXT、CHANGELOG、プロジェクト専用 Skill の保守説明を同期しました。\n- この三言語 `site-updates` 記事とローカル fallback の最近更新を追加し、ホームの更新日が実際の更新記録から出るようにしました。"
            }
 }, "2026-06-15T05:00:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-15-cloud-speed-smoothness", {
+      zh: {
+        title: "云层漂移提速与流畅度优化",
+        summary: "首页四时段云层移动小幅加快，并优化合成层提示，减少卡顿和首帧跳动。",
+        content_markdown: "# 云层漂移提速与流畅度优化\n\n本次更新继续微调首页动态壁纸，让云层移动更容易被看见，同时保持慢速、像素风的桌面氛围。\n\n## 更新内容\n\n- 四个时间段的云层漂移周期小幅缩短，整体速度略微加快。\n- 云层元素增加初始 `translate3d`、`backface-visibility`、`contain` 和动画填充设置，帮助浏览器更稳定地走合成层。\n- 仍然只使用 CSS `transform` 和 `opacity`，保留减少动态、页面隐藏暂停和小屏静态降级。"
+      },
+      en: {
+        title: "Smoother Cloud Drift",
+        summary: "The home clouds now drift a little faster with compositor hints tuned for smoother frames.",
+        content_markdown: "# Smoother Cloud Drift\n\nThis update keeps tuning the home wallpaper animation so the clouds are easier to notice while preserving the slow XP pixel desktop mood.\n\n## Changes\n\n- Slightly shortened the drift cycle for all four time-of-day cloud sets.\n- Added initial `translate3d`, `backface-visibility`, `contain`, and animation fill settings to help browsers keep the clouds on stable compositor layers.\n- The animation still only uses CSS `transform` and `opacity`, with reduced-motion, pause-on-hidden, and small-screen static fallbacks preserved."
+      },
+      ja: {
+        title: "雲レイヤーの速度と滑らかさを調整",
+        summary: "ホームの4時間帯の雲移動を少し速め、合成レイヤー設定で初期フレームのずれを抑えました。",
+        content_markdown: "# 雲レイヤーの速度と滑らかさを調整\n\n今回の更新では、ホームの雲アニメーションを少しだけ見えやすくしながら、XP風の静かな雰囲気を保つように調整しました。\n\n## 更新内容\n\n- 4時間帯の雲レイヤーの移動周期を少し短くし、漂う速度をわずかに上げました。\n- 雲要素に初期 `translate3d`、`backface-visibility`、`contain`、アニメーションの fill 設定を追加し、合成レイヤーを安定させました。\n- CSS の `transform` と `opacity` だけで動かし、低モーション設定、ページ非表示時の一時停止、小画面での静的降級は維持しています。"
+      }
+    }, "2026-06-15T09:30:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')

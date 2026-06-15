@@ -9,6 +9,12 @@
   - 改善实时大屏、文章管理、访问来源、点击埋点和聊天室管理在桌面、平板、移动端的阅读布局，修正移动端侧边栏高度和编辑区滚动边界。
   - 后台私有更新记录新增“后台视觉优化第一版”，继续与主站知识库 `site-updates` 分开维护。
   - 新增轻量 `npm run build` 静态检查脚本，用于验证后台入口、资源引用、关键面板、JS 语法和 CSS 基础结构。
+- 首页动态云层速度与流畅度微调：
+  - 将 morning / day / dusk / night 四个时段的云层漂移周期整体小幅缩短，让云朵移动比上一版略快，但仍保持慢速像素桌面氛围。
+  - 为壁纸舞台和云层元素补充 `backface-visibility`、`contain`、初始 `translate3d` 和 `animation-fill-mode`，帮助浏览器更稳定地使用合成层，减少首帧跳动和动画卡顿。
+  - 保持首页动态壁纸只使用 CSS `transform` / `opacity`，并继续保留 `prefers-reduced-motion`、页面隐藏暂停和小屏静态降级。
+  - 新增 `seed-update-2026-06-15-cloud-speed-smoothness` 三语 `site-updates` 文章，并同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 与 `js/main.js` 的本地 fallback 最近更新。
+  - 更新 `index.html` 的 CSS / JS query 为 `20260615-cloud-speed-smoothness`，减少线上继续加载旧动画参数的可能。
 - 文章访问埋点与 PV/UV：
   - 新增 `article_view_events` 文章访问事件表，公开文章详情接口 `/api/articles/:slug` 每次成功读取文章时会按隐藏 `lusu_visitor` 记录文章 PV、UV、语言、访问来源和掩码 IP 信息。
   - 后台实时大屏新增“热门文章”表，按最近周期展示文章标题、slug、PV、UV 和最近访问时间。

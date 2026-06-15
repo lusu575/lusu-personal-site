@@ -1423,6 +1423,67 @@ on conflict(article_id, lang) do update set
   summary = excluded.summary,
   content_markdown = excluded.content_markdown,
   updated_at = excluded.updated_at;
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-15-cloud-speed-smoothness',
+  '2026-06-15-cloud-speed-smoothness',
+  'site-updates',
+  '["网站更新","首页","动态壁纸","性能"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-15T09:30:00.000Z',
+  '2026-06-15T09:30:00.000Z',
+  '2026-06-15T09:30:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-15-cloud-speed-smoothness-zh', 'seed-update-2026-06-15-cloud-speed-smoothness', 'zh', '云层漂移提速与流畅度优化', '首页四时段云层移动小幅加快，并优化合成层提示，减少卡顿和首帧跳动。', '# 云层漂移提速与流畅度优化
+
+本次更新继续微调首页动态壁纸，让云层移动更容易被看见，同时保持慢速、像素风的桌面氛围。
+
+## 更新内容
+
+- 四个时间段的云层漂移周期小幅缩短，整体速度略微加快。
+- 云层元素增加初始 `translate3d`、`backface-visibility`、`contain` 和动画填充设置，帮助浏览器更稳定地走合成层。
+- 仍然只使用 CSS `transform` 和 `opacity`，保留减少动态、页面隐藏暂停和小屏静态降级。', '2026-06-15T09:30:00.000Z', '2026-06-15T09:30:00.000Z'),
+  ('seed-update-2026-06-15-cloud-speed-smoothness-en', 'seed-update-2026-06-15-cloud-speed-smoothness', 'en', 'Smoother Cloud Drift', 'The home clouds now drift a little faster with compositor hints tuned for smoother frames.', '# Smoother Cloud Drift
+
+This update keeps tuning the home wallpaper animation so the clouds are easier to notice while preserving the slow XP pixel desktop mood.
+
+## Changes
+
+- Slightly shortened the drift cycle for all four time-of-day cloud sets.
+- Added initial `translate3d`, `backface-visibility`, `contain`, and animation fill settings to help browsers keep the clouds on stable compositor layers.
+- The animation still only uses CSS `transform` and `opacity`, with reduced-motion, pause-on-hidden, and small-screen static fallbacks preserved.', '2026-06-15T09:30:00.000Z', '2026-06-15T09:30:00.000Z'),
+  ('seed-update-2026-06-15-cloud-speed-smoothness-ja', 'seed-update-2026-06-15-cloud-speed-smoothness', 'ja', '雲レイヤーの速度と滑らかさを調整', 'ホームの4時間帯の雲移動を少し速め、合成レイヤー設定で初期フレームのずれを抑えました。', '# 雲レイヤーの速度と滑らかさを調整
+
+今回の更新では、ホームの雲アニメーションを少しだけ見えやすくしながら、XP風の静かな雰囲気を保つように調整しました。
+
+## 更新内容
+
+- 4時間帯の雲レイヤーの移動周期を少し短くし、漂う速度をわずかに上げました。
+- 雲要素に初期 `translate3d`、`backface-visibility`、`contain`、アニメーションの fill 設定を追加し、合成レイヤーを安定させました。
+- CSS の `transform` と `opacity` だけで動かし、低モーション設定、ページ非表示時の一時停止、小画面での静的降級は維持しています。', '2026-06-15T09:30:00.000Z', '2026-06-15T09:30:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
 delete from article_translations
 where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check');
 
