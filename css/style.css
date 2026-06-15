@@ -762,10 +762,55 @@ main {
   text-shadow: 2px 2px 0 #002d92;
 }
 
+.window-titlebar > span {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+}
+
 .title-icon {
   margin-right: 8px;
   color: #ffe25c;
   text-shadow: 1px 1px 0 #7c5a06;
+}
+
+.section-title-icon {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 34px 34px;
+  image-rendering: auto;
+  filter: drop-shadow(1px 1px 0 rgba(0, 0, 0, 0.28));
+  text-shadow: none;
+  transform: translateY(1px);
+}
+
+.title-icon-knowledge {
+  background-image: url("../assets/images/icon-window-knowledge-64.png");
+}
+
+.title-icon-videos {
+  background-image: url("../assets/images/icon-window-videos-64.png");
+}
+
+.title-icon-resources {
+  background-image: url("../assets/images/icon-window-resources-64.png");
+}
+
+.title-icon-games {
+  background-image: url("../assets/images/icon-window-games-64.png");
+}
+
+.title-icon-blog,
+.title-icon-chatroom {
+  background-image: url("../assets/images/icon-window-blog-64.png");
+}
+
+.title-icon-about {
+  background-image: url("../assets/images/icon-window-about-64.png");
 }
 
 .close-button {
@@ -1475,16 +1520,11 @@ main {
 }
 
 .chatroom-title-icon {
-  display: inline-grid;
-  place-items: center;
-  width: 25px;
-  height: 25px;
-  margin-right: 8px;
-  border-radius: 50%;
-  color: #0b4dbd;
-  background: #f5fbff;
-  text-shadow: none;
-  font-size: 14px;
+  width: 28px;
+  height: 28px;
+  flex-basis: 28px;
+  border-radius: 0;
+  background-color: transparent;
 }
 
 .chatroom-header {
@@ -1912,6 +1952,41 @@ main {
 .mini-icon,
 .tray-icon {
   filter: drop-shadow(1px 1px 0 rgba(0, 0, 0, 0.25));
+}
+
+.taskbar-icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  image-rendering: auto;
+}
+
+.taskbar-icon-knowledge {
+  background-image: url("../assets/images/icon-window-knowledge-64.png");
+}
+
+.taskbar-icon-videos {
+  background-image: url("../assets/images/icon-window-videos-64.png");
+}
+
+.taskbar-icon-resources {
+  background-image: url("../assets/images/icon-window-resources-64.png");
+}
+
+.taskbar-icon-games {
+  background-image: url("../assets/images/icon-window-games-64.png");
+}
+
+.taskbar-icon-blog {
+  background-image: url("../assets/images/icon-window-blog-64.png");
+}
+
+.taskbar-icon-about {
+  background-image: url("../assets/images/icon-window-about-64.png");
 }
 
 .chat-mini-icon {
