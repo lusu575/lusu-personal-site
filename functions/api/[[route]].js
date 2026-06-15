@@ -23,8 +23,7 @@ const BILIBILI_METADATA_HEADERS = {
   "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
   "Cache-Control": "no-cache",
   Pragma: "no-cache",
-  Referer: "https://www.bilibili.com/",
-  Origin: "https://www.bilibili.com"
+  Referer: "https://www.bilibili.com/"
 };
 const BILIBILI_PAGE_HEADERS = {
   ...BILIBILI_METADATA_HEADERS,
@@ -759,10 +758,23 @@ async function nextVideoSortOrder(env) {
   return Number(row?.max_sort || 0) + 10;
 }
 
+async function assertVideoNotDuplicate(env, video, excludeVideoId = "") {
+  const row = await env.DB.prepare(`
+    select video_id, title
+    from videos
+    where platform = ? and external_id = ? and video_id <> ?
+    limit 1
+  `).bind(video.platform, video.external_id, excludeVideoId || "").first();
+  if (row) {
+    throw new HttpError(`这个视频已经存在：${row.title || row.video_id}`, 409);
+  }
+}
+
 async function createVideo(request, env) {
   await requireAdmin(request, env);
   const body = await readJson(request);
   const video = await normalizeVideoPayload(body, env, { defaultSortOrder: await nextVideoSortOrder(env) });
+  await assertVideoNotDuplicate(env, video);
   const now = nowIso();
   const videoId = crypto.randomUUID();
   await env.DB.batch([
@@ -792,6 +804,7 @@ async function updateVideo(request, env, videoId) {
   }
   const body = await readJson(request);
   const video = await normalizeVideoPayload(body, env, { existing });
+  await assertVideoNotDuplicate(env, video, normalizedId);
   await env.DB.batch([
     env.DB.prepare(`
       update videos
@@ -1644,7 +1657,24 @@ async function ensureVideoSchema(env) {
         created_at text not null,
         primary key (video_id, category_id)
       )
-    `),
+    `)
+  ]);
+  await ensureTableColumns(env, "videos", [
+    ["metadata_error", "text not null default ''"]
+  ]);
+  await ensureTableColumns(env, "video_categories", [
+    ["name_en", "text not null default ''"],
+    ["name_ja", "text not null default ''"],
+    ["sort_order", "integer not null default 0"],
+    ["enabled", "integer not null default 1"],
+    ["created_at", "text not null default ''"],
+    ["updated_at", "text not null default ''"]
+  ]);
+  await ensureTableColumns(env, "video_category_relations", [
+    ["sort_order", "integer not null default 0"],
+    ["created_at", "text not null default ''"]
+  ]);
+  await env.DB.batch([
     env.DB.prepare("create index if not exists videos_public_idx on videos(status, pinned, sort_order, published_at)"),
     env.DB.prepare("create index if not exists videos_platform_external_idx on videos(platform, external_id)"),
     env.DB.prepare("create index if not exists video_categories_enabled_idx on video_categories(enabled, sort_order)"),
@@ -1657,16 +1687,8 @@ async function ensureVideoSchema(env) {
         ('video-cat-ai', 'ai-experiments', 'AI实验', 'AI Experiments', 'AI実験', 20, 1, '2026-06-15T00:00:00.000Z', '2026-06-15T00:00:00.000Z'),
         ('video-cat-games', 'game-records', '游戏录像', 'Game Records', 'ゲーム録画', 30, 1, '2026-06-15T00:00:00.000Z', '2026-06-15T00:00:00.000Z'),
         ('video-cat-favorites', 'favorites', '收藏视频', 'Saved Videos', 'お気に入り動画', 40, 1, '2026-06-15T00:00:00.000Z', '2026-06-15T00:00:00.000Z')
-      on conflict(category_id) do update set
-        slug = excluded.slug,
-        name_zh = excluded.name_zh,
-        name_en = excluded.name_en,
-        name_ja = excluded.name_ja,
-        updated_at = excluded.updated_at
+      on conflict(category_id) do nothing
     `)
-  ]);
-  await ensureTableColumns(env, "videos", [
-    ["metadata_error", "text not null default ''"]
   ]);
   videoSchemaReady = true;
 }
@@ -2032,7 +2054,9 @@ async function normalizeVideoPayload(body, env, options = {}) {
     throw new HttpError("Video payload is invalid.", 400);
   }
   const sourceUrl = normalizeOptionalText(body.original_url || body.url, 800) || options.existing?.original_url || "";
-  const parsed = sourceUrl ? await metadataForVideoUrl(sourceUrl) : {
+  const existingUrl = options.existing?.original_url || "";
+  const sourceChanged = Boolean(sourceUrl && sourceUrl !== existingUrl);
+  const parsed = sourceUrl && (!options.existing || sourceChanged) ? await metadataForVideoUrl(sourceUrl) : {
     platform: options.existing?.platform || "",
     original_url: options.existing?.original_url || "",
     external_id: options.existing?.external_id || "",
@@ -2042,7 +2066,7 @@ async function normalizeVideoPayload(body, env, options = {}) {
     thumbnail_url: "",
     author_name: "",
     published_at: "",
-    metadata_error: ""
+    metadata_error: options.existing?.metadata_error || ""
   };
   if (!parsed.platform || !parsed.embed_url) {
     throw new HttpError(parsed.metadata_error || "Please provide a supported YouTube or Bilibili URL.", 400);
@@ -2189,6 +2213,39 @@ function cleanYoutubeId(value) {
   return /^[a-zA-Z0-9_-]{6,20}$/.test(id) ? id : "";
 }
 
+function bilibiliVideoPageUrl(parsed, mobile = false) {
+  const host = mobile ? "https://m.bilibili.com" : "https://www.bilibili.com";
+  const url = new URL(`/video/${encodeURIComponent(parsed.external_id)}`, host);
+  if (parsed.page && Number(parsed.page) > 1) {
+    url.searchParams.set("p", String(parsed.page));
+  }
+  return url.toString();
+}
+
+function bilibiliRequestHeaders(parsed, type = "json") {
+  const base = type === "html" ? BILIBILI_PAGE_HEADERS : BILIBILI_METADATA_HEADERS;
+  const referer = bilibiliVideoPageUrl(parsed);
+  return {
+    ...base,
+    Referer: referer,
+    "Sec-Fetch-Dest": type === "html" ? "document" : "empty",
+    "Sec-Fetch-Mode": type === "html" ? "navigate" : "cors",
+    "Sec-Fetch-Site": type === "html" ? "same-origin" : "same-site",
+    ...(type === "html" ? { "Upgrade-Insecure-Requests": "1" } : {}),
+    Cookie: `CURRENT_FNVAL=4048; buvid3=${bilibiliSyntheticBuvid(parsed.external_id)}; b_nut=1781540000`
+  };
+}
+
+function bilibiliSyntheticBuvid(value) {
+  const source = String(value || "bilibili");
+  let hash = 0;
+  for (let index = 0; index < source.length; index += 1) {
+    hash = (hash * 31 + source.charCodeAt(index)) >>> 0;
+  }
+  const hex = hash.toString(16).padStart(8, "0").toUpperCase();
+  return `${hex}-${hex.slice(0, 4)}-${hex.slice(4, 8)}-${hex.slice(0, 4)}-${hex}${hex}`;
+}
+
 async function youtubeMetadata(parsed) {
   const fallbackThumb = `https://i.ytimg.com/vi/${parsed.external_id}/hqdefault.jpg`;
   const [pageResult, oembedResult] = await Promise.allSettled([
@@ -2279,26 +2336,63 @@ async function youtubePageMetadata(parsed) {
 }
 
 async function bilibiliApiMetadata(parsed) {
-  const endpoint = `https://api.bilibili.com/x/web-interface/view?bvid=${encodeURIComponent(parsed.external_id)}`;
-  const info = await fetchJsonWithTimeout(endpoint, 5000, BILIBILI_METADATA_HEADERS);
-  if (Number(info.code || 0) !== 0 || !info.data) {
-    throw new Error(info.message || "Bilibili 返回空数据。");
+  const endpoints = [
+    {
+      url: `https://api.bilibili.com/x/web-interface/view?bvid=${encodeURIComponent(parsed.external_id)}`,
+      pick: (info) => info.data
+    },
+    {
+      url: `https://api.bilibili.com/x/web-interface/view/detail?bvid=${encodeURIComponent(parsed.external_id)}`,
+      pick: (info) => info.data?.View || info.data?.view || info.data
+    }
+  ];
+  let lastError = null;
+  for (const endpoint of endpoints) {
+    try {
+      const info = await fetchJsonWithTimeout(endpoint.url, 6000, bilibiliRequestHeaders(parsed, "json"));
+      if (Number(info.code || 0) !== 0) {
+        throw new Error(info.message || "Bilibili 返回空数据。");
+      }
+      const data = endpoint.pick(info);
+      if (data) {
+        return data;
+      }
+      throw new Error("Bilibili 返回空数据。");
+    } catch (error) {
+      lastError = error;
+    }
   }
-  return info.data;
+  throw lastError || new Error("Bilibili 返回空数据。");
 }
 
 async function bilibiliPageMetadata(parsed) {
-  const html = await fetchTextWithTimeout(
-    `https://www.bilibili.com/video/${encodeURIComponent(parsed.external_id)}/?p=${encodeURIComponent(parsed.page || 1)}`,
-    5000,
-    BILIBILI_PAGE_HEADERS
-  );
-  const state = extractBilibiliInitialState(html);
-  const data = state?.videoData || state?.videoInfo || state?.View || state?.viewInfo || findBilibiliVideoData(state) || bilibiliHtmlMetadata(html);
-  if (!data) {
-    throw new Error("Bilibili 页面未返回视频信息。");
+  const urls = [
+    bilibiliVideoPageUrl(parsed),
+    `https://www.bilibili.com/video/${encodeURIComponent(parsed.external_id)}/`,
+    bilibiliVideoPageUrl(parsed, true),
+    `https://m.bilibili.com/video/${encodeURIComponent(parsed.external_id)}`
+  ];
+  let lastError = null;
+  for (const url of [...new Set(urls)]) {
+    try {
+      const html = await fetchTextWithTimeout(url, 6000, bilibiliRequestHeaders(parsed, "html"));
+      const state = extractBilibiliInitialState(html) || extractBilibiliNextData(html);
+      const data = state?.videoData
+        || state?.videoInfo
+        || state?.View
+        || state?.viewInfo
+        || state?.video
+        || findBilibiliVideoData(state)
+        || bilibiliHtmlMetadata(html);
+      if (data) {
+        return data;
+      }
+      throw new Error("Bilibili 页面未返回视频信息。");
+    } catch (error) {
+      lastError = error;
+    }
   }
-  return data;
+  throw lastError || new Error("Bilibili 页面未返回视频信息。");
 }
 
 function bilibiliDataToMetadata(parsed, data) {
@@ -2321,14 +2415,18 @@ function bilibiliHtmlMetadata(html) {
   const title = cleanBilibiliTitle(
     extractMetaContent(html, "property", "og:title")
       || extractMetaContent(html, "name", "title")
+      || extractMetaContent(html, "itemprop", "name")
       || extractJsonString(html, "title")
       || jsonLd.title
       || jsonLd.name
+      || extractHtmlTitle(html)
   );
   const description = extractMetaContent(html, "name", "description")
     || extractMetaContent(html, "property", "og:description")
+    || extractMetaContent(html, "itemprop", "description")
     || extractJsonString(html, "description")
     || extractJsonString(html, "desc")
+    || extractJsonString(html, "shortDescription")
     || jsonLd.description;
   const image = extractMetaContent(html, "property", "og:image")
     || extractMetaContent(html, "itemprop", "thumbnailUrl")
@@ -2339,6 +2437,8 @@ function bilibiliHtmlMetadata(html) {
   const author = extractMetaContent(html, "name", "author")
     || extractNestedJsonString(html, "owner", "name")
     || extractJsonString(html, "ownerName")
+    || extractJsonString(html, "author_name")
+    || extractJsonString(html, "author")
     || jsonLd.author;
   const published = extractMetaContent(html, "itemprop", "uploadDate")
     || extractJsonString(html, "uploadDate")
@@ -2432,6 +2532,19 @@ function extractBilibiliInitialState(html) {
   }
 }
 
+function extractBilibiliNextData(html) {
+  const source = String(html || "");
+  const match = source.match(/<script\s+[^>]*id=["']__NEXT_DATA__["'][^>]*>([\s\S]*?)<\/script>/i);
+  if (!match) {
+    return null;
+  }
+  try {
+    return JSON.parse(decodeHtmlEntities(match[1].trim()));
+  } catch {
+    return null;
+  }
+}
+
 function extractAssignedObject(source, marker) {
   const index = source.indexOf(marker);
   if (index < 0) {
@@ -2487,6 +2600,11 @@ function extractMetaContent(html, attrName, attrValue) {
     }
   }
   return "";
+}
+
+function extractHtmlTitle(html) {
+  const match = String(html || "").match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+  return match ? decodeHtmlEntities(match[1]).replace(/\s+/g, " ").trim() : "";
 }
 
 function extractHtmlAttribute(tag, name) {
@@ -3876,6 +3994,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-16-mobile-admin-video-fixes',
+        '2026-06-16-mobile-admin-video-fixes',
+        'site-updates',
+        '["网站更新","移动端","视频区","后台","Bilibili"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-16T02:20:00.000Z',
+        '2026-06-16T02:20:00.000Z',
+        '2026-06-16T02:20:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -4031,6 +4176,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# 動画管理の並び順と Bilibili 情報取得を修正\n\n今回の更新では、動画欄と管理画面の動画管理を続けて調整し、新しい動画を前に出しやすくし、Bilibili リンクの公開情報もできるだけ補えるようにしました。\n\n## 更新内容\n\n- Bilibili API が HTTP 412 を返した場合も、ページ meta、構造化データ、ページ状態からタイトル、概要、作者、公開時刻、サムネイルをできるだけ補完します。\n- 動画一覧は固定表示を最優先し、その下で並び順の数値が大きいものほど前に表示します。管理画面の新規動画は現在の最大値 +10 を初期値にします。\n- 動画分類も同じ並び順の意味にそろえ、新規分類も +10 で追加します。既定分類の seed は管理画面で変更した並び順と有効状態を上書きしません。\n- 公開側の動画カードは高さを統一し、サムネイル画像は余白なく枠いっぱいに表示します。サムネイルがない場合も同じサイズのピクセル風プレースホルダーを表示します。\n- 「元のページを開く」は実際の外部リンクとして維持し、ホームの動画アイコンから「未定」表記を外しました。"
       }
     }, "2026-06-15T16:20:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-16-mobile-admin-video-fixes", {
+      zh: {
+        title: "移动端与后台视频维护修复",
+        summary: "修复视频分类标签回退、B 站元数据抓取提示和主站视频/资源/登录弹窗的手机端适配。",
+        content_markdown: "# 移动端与后台视频维护修复\n\n本次更新继续打磨视频区和后台管理，让手机端浏览和后台维护更稳定。\n\n## 更新内容\n\n- 默认视频分类 seed 改为只插入缺失分类，不再覆盖后台已经改过的分类名称。\n- Bilibili 元数据抓取移除不必要的 Origin 请求头，增加详情接口、移动页和新版页面数据兜底；URL 没变时保存视频不再反复抓外部元数据。\n- 后台视频识别失败时会提示“播放器地址已生成，可手动补全标题、作者和封面”，并增加重复视频提示。\n- 视频列表、资源区、登录弹窗、登录成功提示和视频播放窗口补齐手机端换行、单列和防溢出规则。\n- 后台视频分类勾选区会标识停用分类，避免新视频继续误选停用标签。"
+      },
+      en: {
+        title: "Mobile and Admin Video Maintenance Fixes",
+        summary: "Fixed video category rollback, Bilibili metadata handling, and mobile layout for videos, resources, and login popovers.",
+        content_markdown: "# Mobile and Admin Video Maintenance Fixes\n\nThis update continues polishing the videos area and admin workflow so mobile browsing and video maintenance feel steadier.\n\n## Changes\n\n- Default video category seeds now only insert missing categories, so admin-edited category names are no longer overwritten.\n- Bilibili metadata fetching removes the unnecessary Origin header and adds detail API, mobile-page, and newer page-data fallbacks; unchanged video URLs no longer refetch metadata on every save.\n- Admin video recognition now explains when the player URL was generated but metadata needs manual title, author, or thumbnail entry, and duplicate videos are blocked with a clear message.\n- The videos list, resources area, login popover, signed-in account message, and video player window now have stronger mobile wrapping, single-column, and overflow protection.\n- Disabled video categories are marked in the admin checkbox list so new videos are less likely to reuse disabled tags."
+      },
+      ja: {
+        title: "モバイル表示と動画管理を修正",
+        summary: "動画カテゴリ名の戻り、Bilibili メタ情報取得、動画・リソース・ログイン周りのモバイル表示を調整しました。",
+        content_markdown: "# モバイル表示と動画管理を修正\n\n今回の更新では、動画欄と管理画面を続けて調整し、スマートフォンでの閲覧と動画メンテナンスを安定させました。\n\n## 更新内容\n\n- 既定の動画カテゴリ seed は不足分だけを追加するようにし、管理画面で変更したカテゴリ名を上書きしないようにしました。\n- Bilibili メタ情報取得では不要な Origin ヘッダーを外し、詳細 API、モバイルページ、新しいページデータの補完を追加しました。URL が変わらない保存では外部メタ情報を毎回取り直しません。\n- 管理画面では、プレイヤー URL は生成できたがタイトル・作者・サムネイルを手入力する必要がある場合を分かりやすく表示し、重複動画も明確に止めます。\n- 動画一覧、リソース欄、ログインポップオーバー、ログイン済み表示、動画再生ウィンドウにモバイル向けの折り返し、単列、防溢出ルールを追加しました。\n- 管理画面の動画カテゴリ選択では停止中カテゴリを表示し、新しい動画で誤って再利用しにくくしました。"
+      }
+    }, "2026-06-16T02:20:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')

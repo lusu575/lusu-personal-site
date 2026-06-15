@@ -829,6 +829,15 @@ textarea {
   gap: 6px;
 }
 
+.mini-check.is-disabled {
+  color: var(--muted);
+  opacity: 0.82;
+}
+
+.mini-check .status-badge {
+  margin-left: 2px;
+}
+
 .checkbox-line input,
 .mini-check input {
   width: auto;

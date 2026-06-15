@@ -232,10 +232,10 @@ $env:XDG_CONFIG_HOME='F:\lusu575个人站\.wrangler-config'; npx.cmd wrangler pa
 - 公开视频接口必须返回 `original_url` 供主站“打开原地址”使用；`embed_url` 只用于站内 iframe 播放，不要把 embed 地址当作原链接。
 - 主站视频窗口的站内“全屏”应保持为 XP 窗口最大化/还原，不要直接对 YouTube / Bilibili iframe 调用浏览器 Fullscreen API；播放器自己的全屏由 iframe 内部控件处理。
 - 跨域 iframe 内部按钮热区无法由父页面精确重写；遇到默认信息栏、底部空白误触或平台按钮误触时，优先用站内遮罩、透明点击防护区和收窄本站按钮热区兜底。
-- YouTube / Bilibili 元数据只在后台预览、保存或刷新元数据时抓取，并缓存到 D1；公开视频接口不得每次访问重新抓取。
-- Bilibili 元数据遇到 HTTP 412、页面状态变化或 API 风控时，必须保留白名单解析和服务端规范化 `embed_url`，并优先尝试页面 `__INITIAL_STATE__`、meta、结构化数据和更宽的页面状态兜底，不得放宽为任意 iframe。
+- YouTube / Bilibili 元数据只在后台预览、首次保存、URL 变化保存或刷新元数据时抓取，并缓存到 D1；已有视频 URL 未变化的普通保存不得重新抓取外部元数据，公开视频接口不得每次访问重新抓取。
+- Bilibili 元数据遇到 HTTP 412、页面状态变化或 API 风控时，必须保留白名单解析和服务端规范化 `embed_url`，并优先尝试详情接口、移动页、页面 `__INITIAL_STATE__` / `__NEXT_DATA__`、meta、结构化数据和更宽的页面状态兜底，不得放宽为任意 iframe。
 - 视频排序语义为置顶独立优先；未置顶视频按 `sort_order` 从大到小显示，新建视频默认取当前最大排序 +10。视频分类排序使用同样“数值越大越靠前”的语义，新建分类默认 +10。
-- 默认视频分类 seed 不要覆盖后台维护过的 `sort_order` 和 `enabled`，避免运行时 schema guard 把后台排序或停用状态还原。
+- 默认视频分类 seed 不要覆盖后台维护过的 `slug`、`name_zh`、`name_en`、`name_ja`、`sort_order` 和 `enabled`，避免运行时 schema guard 把后台分类名、排序或停用状态还原。
 - 抓取失败时后台应显示可读原因，并允许管理员手动填写标题、简介、作者和封面；前台遇到不可播放或受限视频时显示站内不可播放提示。
 - 主站视频卡片标题、简介、分类名必须使用 `textContent` 或安全 DOM API 渲染，不要把视频数据拼接成未转义 HTML。
 - 主站所有视频卡片必须保持统一尺寸；视频封面要铺满封面区域，封面失败时保留同尺寸像素风默认占位图；移动端视频区必须单列适配且不得横向溢出。

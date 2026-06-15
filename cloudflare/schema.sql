@@ -178,12 +178,7 @@ insert into video_categories (
   ('video-cat-ai', 'ai-experiments', 'AI实验', 'AI Experiments', 'AI実験', 20, 1, '2026-06-15T00:00:00.000Z', '2026-06-15T00:00:00.000Z'),
   ('video-cat-games', 'game-records', '游戏录像', 'Game Records', 'ゲーム録画', 30, 1, '2026-06-15T00:00:00.000Z', '2026-06-15T00:00:00.000Z'),
   ('video-cat-favorites', 'favorites', '收藏视频', 'Saved Videos', 'お気に入り動画', 40, 1, '2026-06-15T00:00:00.000Z', '2026-06-15T00:00:00.000Z')
-on conflict(category_id) do update set
-  slug = excluded.slug,
-  name_zh = excluded.name_zh,
-  name_en = excluded.name_en,
-  name_ja = excluded.name_ja,
-  updated_at = excluded.updated_at;
+on conflict(category_id) do nothing;
 
 create table if not exists site_visitors (
   visitor_id text primary key,
@@ -1771,6 +1766,32 @@ on conflict(article_id) do update set
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
 
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-16-mobile-admin-video-fixes',
+  '2026-06-16-mobile-admin-video-fixes',
+  'site-updates',
+  '["网站更新","移动端","视频区","后台","Bilibili"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-16T02:20:00.000Z',
+  '2026-06-16T02:20:00.000Z',
+  '2026-06-16T02:20:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
@@ -1910,6 +1931,48 @@ This update tightens the managed video workflow so newer videos can stay at the 
 - 動画分類も同じ並び順の意味にそろえ、新規分類も +10 で追加します。既定分類の seed は管理画面で変更した並び順と有効状態を上書きしません。
 - 公開側の動画カードは高さを統一し、サムネイル画像は余白なく枠いっぱいに表示します。サムネイルがない場合も同じサイズのピクセル風プレースホルダーを表示します。
 - 「元のページを開く」は実際の外部リンクとして維持し、ホームの動画アイコンから「未定」表記を外しました。', '2026-06-15T16:20:00.000Z', '2026-06-15T16:20:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-16-mobile-admin-video-fixes-zh', 'seed-update-2026-06-16-mobile-admin-video-fixes', 'zh', '移动端与后台视频维护修复', '修复视频分类标签回退、B 站元数据抓取提示和主站视频/资源/登录弹窗的手机端适配。', '# 移动端与后台视频维护修复
+
+本次更新继续打磨视频区和后台管理，让手机端浏览和后台维护更稳定。
+
+## 更新内容
+
+- 默认视频分类 seed 改为只插入缺失分类，不再覆盖后台已经改过的分类名称。
+- Bilibili 元数据抓取移除不必要的 Origin 请求头，增加详情接口、移动页和新版页面数据兜底；URL 没变时保存视频不再反复抓外部元数据。
+- 后台视频识别失败时会提示“播放器地址已生成，可手动补全标题、作者和封面”，并增加重复视频提示。
+- 视频列表、资源区、登录弹窗、登录成功提示和视频播放窗口补齐手机端换行、单列和防溢出规则。
+- 后台视频分类勾选区会标识停用分类，避免新视频继续误选停用标签。', '2026-06-16T02:20:00.000Z', '2026-06-16T02:20:00.000Z'),
+  ('seed-update-2026-06-16-mobile-admin-video-fixes-en', 'seed-update-2026-06-16-mobile-admin-video-fixes', 'en', 'Mobile and Admin Video Maintenance Fixes', 'Fixed video category rollback, Bilibili metadata handling, and mobile layout for videos, resources, and login popovers.', '# Mobile and Admin Video Maintenance Fixes
+
+This update continues polishing the videos area and admin workflow so mobile browsing and video maintenance feel steadier.
+
+## Changes
+
+- Default video category seeds now only insert missing categories, so admin-edited category names are no longer overwritten.
+- Bilibili metadata fetching removes the unnecessary Origin header and adds detail API, mobile-page, and newer page-data fallbacks; unchanged video URLs no longer refetch metadata on every save.
+- Admin video recognition now explains when the player URL was generated but metadata needs manual title, author, or thumbnail entry, and duplicate videos are blocked with a clear message.
+- The videos list, resources area, login popover, signed-in account message, and video player window now have stronger mobile wrapping, single-column, and overflow protection.
+- Disabled video categories are marked in the admin checkbox list so new videos are less likely to reuse disabled tags.', '2026-06-16T02:20:00.000Z', '2026-06-16T02:20:00.000Z'),
+  ('seed-update-2026-06-16-mobile-admin-video-fixes-ja', 'seed-update-2026-06-16-mobile-admin-video-fixes', 'ja', 'モバイル表示と動画管理を修正', '動画カテゴリ名の戻り、Bilibili メタ情報取得、動画・リソース・ログイン周りのモバイル表示を調整しました。', '# モバイル表示と動画管理を修正
+
+今回の更新では、動画欄と管理画面を続けて調整し、スマートフォンでの閲覧と動画メンテナンスを安定させました。
+
+## 更新内容
+
+- 既定の動画カテゴリ seed は不足分だけを追加するようにし、管理画面で変更したカテゴリ名を上書きしないようにしました。
+- Bilibili メタ情報取得では不要な Origin ヘッダーを外し、詳細 API、モバイルページ、新しいページデータの補完を追加しました。URL が変わらない保存では外部メタ情報を毎回取り直しません。
+- 管理画面では、プレイヤー URL は生成できたがタイトル・作者・サムネイルを手入力する必要がある場合を分かりやすく表示し、重複動画も明確に止めます。
+- 動画一覧、リソース欄、ログインポップオーバー、ログイン済み表示、動画再生ウィンドウにモバイル向けの折り返し、単列、防溢出ルールを追加しました。
+- 管理画面の動画カテゴリ選択では停止中カテゴリを表示し、新しい動画で誤って再利用しにくくしました。', '2026-06-16T02:20:00.000Z', '2026-06-16T02:20:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,

@@ -3269,12 +3269,12 @@ main {
 
   .topbar-actions {
     justify-content: flex-end;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     gap: 6px;
     width: auto;
     flex: 1 1 auto;
     min-width: 0;
-    overflow-x: auto;
+    overflow-x: visible;
   }
 
   .account-widget {
@@ -3299,9 +3299,19 @@ main {
     left: 10px;
     right: 10px;
     width: auto;
+    box-sizing: border-box;
     max-height: calc(100vh - 74px);
     overflow: auto;
     transform: none;
+  }
+
+  .account-actions .account-button {
+    flex: 1 1 118px;
+    max-width: none;
+  }
+
+  .account-note {
+    overflow-wrap: anywhere;
   }
 
   .language-switcher {
@@ -3416,6 +3426,29 @@ main {
     overflow: auto;
   }
 
+  .window-titlebar {
+    gap: 8px;
+    min-height: 36px;
+    padding: 5px 6px 5px 9px;
+    font-size: 15px;
+  }
+
+  .window-titlebar > span {
+    overflow: hidden;
+  }
+
+  .window-titlebar > span > span:last-child {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .window-controls {
+    gap: 5px;
+    margin-left: 4px;
+  }
+
   #knowledge .xp-window,
   #videos .xp-window,
   #resources .xp-window,
@@ -3423,6 +3456,22 @@ main {
     height: calc(100dvh - 118px);
     max-height: calc(100dvh - 118px);
     overflow: hidden;
+  }
+
+  #videos .filter-row,
+  #resources .filter-row {
+    flex-wrap: wrap;
+    gap: 7px;
+    padding: 8px 10px;
+    overflow-x: visible;
+  }
+
+  .window-toolbar button,
+  .filter-row button,
+  .card-action,
+  .xp-button {
+    max-width: 100%;
+    white-space: normal;
   }
 
   #about .xp-window {
@@ -3433,7 +3482,9 @@ main {
 
   .video-thumb {
     min-height: 0;
-    height: min(56vw, 240px);
+    height: auto;
+    max-height: 230px;
+    aspect-ratio: 16 / 9;
   }
 
   .video-body,
@@ -3450,10 +3501,37 @@ main {
     padding: 12px;
   }
 
+  .video-grid {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 12px;
+    align-content: start;
+    align-items: start;
+  }
+
   .video-card {
-    flex-basis: 100%;
-    height: 540px;
+    grid-template-rows: auto auto;
+    flex: 0 0 auto;
+    width: 100%;
+    height: auto;
     min-height: 0;
+  }
+
+  .video-body {
+    grid-template-rows: auto;
+    grid-auto-rows: auto;
+    gap: 7px;
+  }
+
+  .video-meta {
+    min-height: 0;
+  }
+
+  .video-body .card-action,
+  .resource-card .card-action {
+    width: 100%;
+    justify-self: stretch;
   }
 
   .resource-card,
@@ -3582,6 +3660,24 @@ main {
     overflow-x: hidden;
   }
 
+  #video-modal .modal-window {
+    width: calc(100vw - 20px);
+    min-width: 0;
+    min-height: 0;
+    max-height: calc(100dvh - 20px);
+    resize: none;
+  }
+
+  #video-modal.is-video-maximized {
+    padding: 6px;
+  }
+
+  #video-modal.is-video-maximized .modal-window {
+    width: calc(100vw - 12px);
+    height: calc(100dvh - 12px);
+    max-height: calc(100dvh - 12px);
+  }
+
   .welcome-content {
     gap: 12px;
     padding: 14px;
@@ -3624,11 +3720,29 @@ main {
   }
 
   .video-frame {
-    margin: 10px;
+    margin: 8px;
+  }
+
+  .video-embed-shell {
+    --video-top-hotzone: clamp(48px, 16%, 72px);
+    --video-bottom-hotzone: clamp(52px, 18%, 86px);
+    --video-center-half: clamp(44px, 16vw, 70px);
+    --video-left-hotzone: clamp(44px, 18vw, 88px);
+    --video-right-hotzone: clamp(64px, 24vw, 120px);
   }
 
   .modal-window .xp-button {
     margin: 0 10px 10px;
+  }
+
+  .video-modal-actions {
+    margin: 0 8px 8px;
+  }
+
+  .video-modal-actions .xp-button {
+    width: 100%;
+    justify-content: center;
+    margin: 0;
   }
 
   .status-tray {

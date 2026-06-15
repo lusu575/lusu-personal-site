@@ -33,6 +33,11 @@ const panelMeta = {
 
 const adminUpdates = [
   {
+    date: "2026-06-16",
+    title: "视频分类与 Bilibili 元数据维护修复",
+    body: "默认视频分类初始化改为只补缺失项，不再覆盖后台改过的分类名称；视频保存时如果链接没有变化，不再反复抓取外部元数据。Bilibili 抓取补强请求头、详情接口、移动页和页面数据兜底，抓取失败时会提示可手动补全；同时新增重复视频拦截和停用分类标识。"
+  },
+  {
     date: "2026-06-15",
     title: "账号管理和统计口径优化",
     body: "新增后台账号管理页，可查看邮箱、角色、密码加密状态、登录履历、活跃会话和近期站内活跃；密码只允许重置，不展示明文或哈希。统计埋点改为登录账号优先识别，同一登录账号的访问统一计为 1 个 UV，并补充自然语言说明。"
@@ -560,9 +565,10 @@ function renderVideoCategoryChecks() {
   }
   const selected = new Set(selectedVideo()?.category_ids || []);
   box.innerHTML = state.videoCategories.map((category) => `
-    <label class="mini-check">
-      <input type="checkbox" value="${escapeHtml(category.category_id)}" ${selected.has(category.category_id) ? "checked" : ""}>
+    <label class="mini-check ${category.enabled ? "" : "is-disabled"}">
+      <input type="checkbox" value="${escapeHtml(category.category_id)}" ${selected.has(category.category_id) ? "checked" : ""} ${!category.enabled && !selected.has(category.category_id) ? "disabled" : ""}>
       ${escapeHtml(category.name_zh || category.slug)}
+      ${category.enabled ? "" : statusBadge("停用", "hidden")}
     </label>
   `).join("") || `<span class="empty-inline">暂无分类</span>`;
 }
@@ -653,7 +659,9 @@ function applyPreviewToVideoForm(video) {
   form.elements.thumbnail_url.value = video.thumbnail_url || form.elements.thumbnail_url.value;
   form.elements.author_name.value = video.author_name || form.elements.author_name.value;
   form.elements.published_at.value = toLocalDateTimeInputValue(video.published_at) || form.elements.published_at.value;
-  $("#video-status").textContent = video.metadata_error || "识别完成";
+  $("#video-status").textContent = video.metadata_error
+    ? `已生成播放器地址；元数据受限，请手动补全：${video.metadata_error}`
+    : "识别完成";
   renderAdminVideoPreview(video.embed_url);
 }
 
