@@ -4,6 +4,12 @@
 
 ## 2026-06-15
 
+- 网站更新记录维护闭环补齐：
+  - 新增 `seed-update-2026-06-15-clouds-docs-maintenance` 三语 `site-updates` 文章，公开记录四时段动态云层和维护文档补齐，本篇文章会驱动首页最近更新和右上角最新日期。
+  - 同步更新 `functions/api/[[route]].js` 的文章 seed、`cloudflare/schema.sql` 的 D1 seed，以及 `js/main.js` 的本地 fallback 最近更新，避免 D1 不可用时回退到旧日期。
+  - 更新 `index.html` 主脚本 query 为 `20260615-site-updates-maintenance`，减少线上继续加载旧 fallback 最近更新的可能。
+  - 在项目上下文和专用 Skill 中补充：更新 `site-updates` seed 时必须同步 API seed、D1 schema 和本地 fallback 最近更新。
+
 - 后台文章保存 500 修复：
   - 修复 Pages Functions 路由分发未 `await` 异步处理函数的问题，避免后台文章保存、后台权限检查和表单校验错误绕过统一 `try/catch`，被 Cloudflare 直接返回 1101 / HTTP 500。
   - 后台接口现在会正常返回 JSON 格式的 401 / 403 / 400 / 500 错误，便于前端显示真实原因。

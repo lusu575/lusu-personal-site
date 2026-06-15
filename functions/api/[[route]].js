@@ -2250,7 +2250,8 @@ This update swaps the four home wallpapers used by the live page to higher-resol
       ) values
         ('seed-ai-agent-workflow-guide-2026-06-14', 'ai-agent-workflow-guide', 'ai', '["AI","Agent","Codex","经验"]', '', 'published', 1, 0, '2026-06-14T15:00:00.000Z', '2026-06-14T15:00:00.000Z', '2026-06-14T15:00:00.000Z'),
         ('seed-update-2026-06-14-ai-agent-article', '2026-06-14-ai-agent-article', 'site-updates', '["网站更新","AI","文章"]', '', 'published', 0, 0, '2026-06-14T15:01:00.000Z', '2026-06-14T15:01:00.000Z', '2026-06-14T15:01:00.000Z'),
-        ('seed-update-2026-06-14-article-reading-links', '2026-06-14-article-reading-links', 'site-updates', '["网站更新","知识库","文章"]', '', 'published', 0, 0, '2026-06-14T16:20:00.000Z', '2026-06-14T16:20:00.000Z', '2026-06-14T16:20:00.000Z')
+        ('seed-update-2026-06-14-article-reading-links', '2026-06-14-article-reading-links', 'site-updates', '["网站更新","知识库","文章"]', '', 'published', 0, 0, '2026-06-14T16:20:00.000Z', '2026-06-14T16:20:00.000Z', '2026-06-14T16:20:00.000Z'),
+        ('seed-update-2026-06-15-clouds-docs-maintenance', '2026-06-15-clouds-docs-maintenance', 'site-updates', '["网站更新","首页","动态壁纸","维护记录"]', '', 'published', 0, 0, '2026-06-15T05:00:00.000Z', '2026-06-15T05:00:00.000Z', '2026-06-15T05:00:00.000Z')
       on conflict(article_id) do update set
         slug = excluded.slug,
         category = excluded.category,
@@ -2314,6 +2315,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
                "content_markdown":  "# 知識庫記事の閲覧体験を改善\n\n今回の更新では、知識庫の長文記事を読みやすく、共有しやすくしました。\n\n## 更新内容\n\n- 公開記事詳細 URL が `/articles/<slug>` に対応し、ドメインから単独記事を直接共有できます。\n- 内部 `article_id` はデータベースと管理作業だけで使い、公開リンクや公開 API には出しません。\n- 長文記事ウィンドウがデスクトップのブラウザサイズに合わせて広がり、一度に読める本文量が増えました。\n- Markdown 表示に番号付きリスト、記事画像、青い `text` 説明枠を追加し、番号付き内容が一行に潰れる問題を防ぎました。\n- AI Agent 記事に Codex と GPT のチャット画面を追加し、長文だけにならないようにしました。\n- 今後の保守のため、プロジェクト文脈、専用 Skill、Cloudflare Pages のリライト規則、キャッシュ版も更新しました。"
            }
 }, "2026-06-14T16:20:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-15-clouds-docs-maintenance", {
+    "zh":  {
+               "title":  "四时段动态云层与维护记录补齐",
+               "summary":  "首页四时段动态云层上线记录、项目文档和更新时间维护闭环完成补齐。",
+               "content_markdown":  "# 四时段动态云层与维护记录补齐\n\n本次更新补齐首页动态云层和项目维护记录，让公开最近更新与实际上线内容保持一致。\n\n## 更新内容\n\n- 首页 morning / day / dusk / night 四个时段都接入无云底图和独立云层。\n- 云层按同一主风向慢速错相漂移，并保留减少动态、页面隐藏暂停和小屏降级。\n- 本地预览仍可用 `?wallpaper=morning`、`?wallpaper=day`、`?wallpaper=dusk`、`?wallpaper=night` 强制查看指定时段。\n- 补齐 README、PROJECT_CONTEXT、CHANGELOG 和项目专用 Skill 的维护说明。\n- 新增本篇 `site-updates` 三语更新文章，并同步本地 fallback 最近更新，确保首页最近更新日期来自真实更新记录。"
+           },
+    "en":  {
+               "title":  "Time-of-day Clouds and Maintenance Log",
+               "summary":  "The four home cloud layers, project docs, and site update timestamp flow are now recorded properly.",
+               "content_markdown":  "# Time-of-day Clouds and Maintenance Log\n\nThis update closes the public maintenance loop for the home cloud animation and project records, so the visible recent updates match what was actually shipped.\n\n## Changes\n\n- Morning, Day, Dusk, and Night now use cloudless base images with independent cloud layers.\n- Clouds drift slowly in one main wind direction with staggered timing, plus reduced-motion, pause-on-hidden, and small-screen fallbacks.\n- Local previews still support `?wallpaper=morning`, `?wallpaper=day`, `?wallpaper=dusk`, and `?wallpaper=night`.\n- README, PROJECT_CONTEXT, CHANGELOG, and the project Skill were brought back in sync.\n- This trilingual `site-updates` article and the local fallback recent-update list were added so the home update date comes from a real update record."
+           },
+    "ja":  {
+               "title":  "4時間帯の雲レイヤーと保守記録を補完",
+               "summary":  "ホームの4時間帯雲レイヤー、プロジェクト文書、更新日時の流れを公開更新記録に反映しました。",
+               "content_markdown":  "# 4時間帯の雲レイヤーと保守記録を補完\n\n今回の更新では、ホームの雲アニメーションとプロジェクト保守記録を補い、公開される最近の更新と実際の公開内容をそろえました。\n\n## 更新内容\n\n- morning / day / dusk / night の4時間帯に、無雲ベース画像と独立した雲レイヤーを接続しました。\n- 雲は同じ主風向でゆっくり時間差移動し、低モーション設定、非表示時の一時停止、小画面での降級にも対応します。\n- ローカル確認では `?wallpaper=morning`、`?wallpaper=day`、`?wallpaper=dusk`、`?wallpaper=night` で時間帯を指定できます。\n- README、PROJECT_CONTEXT、CHANGELOG、プロジェクト専用 Skill の保守説明を同期しました。\n- この三言語 `site-updates` 記事とローカル fallback の最近更新を追加し、ホームの更新日が実際の更新記録から出るようにしました。"
+           }
+}, "2026-06-15T05:00:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')

@@ -636,7 +636,8 @@ insert into articles (
 ) values
   ('seed-ai-agent-workflow-guide-2026-06-14', 'ai-agent-workflow-guide', 'ai', '["AI","Agent","Codex","经验"]', '', 'published', 1, 0, '2026-06-14T15:00:00.000Z', '2026-06-14T15:00:00.000Z', '2026-06-14T15:00:00.000Z'),
   ('seed-update-2026-06-14-ai-agent-article', '2026-06-14-ai-agent-article', 'site-updates', '["网站更新","AI","文章"]', '', 'published', 0, 0, '2026-06-14T15:01:00.000Z', '2026-06-14T15:01:00.000Z', '2026-06-14T15:01:00.000Z'),
-  ('seed-update-2026-06-14-article-reading-links', '2026-06-14-article-reading-links', 'site-updates', '["网站更新","知识库","文章"]', '', 'published', 0, 0, '2026-06-14T16:20:00.000Z', '2026-06-14T16:20:00.000Z', '2026-06-14T16:20:00.000Z')
+  ('seed-update-2026-06-14-article-reading-links', '2026-06-14-article-reading-links', 'site-updates', '["网站更新","知识库","文章"]', '', 'published', 0, 0, '2026-06-14T16:20:00.000Z', '2026-06-14T16:20:00.000Z', '2026-06-14T16:20:00.000Z'),
+  ('seed-update-2026-06-15-clouds-docs-maintenance', '2026-06-15-clouds-docs-maintenance', 'site-updates', '["网站更新","首页","动态壁纸","维护记录"]', '', 'published', 0, 0, '2026-06-15T05:00:00.000Z', '2026-06-15T05:00:00.000Z', '2026-06-15T05:00:00.000Z')
 on conflict(article_id) do update set
   slug = excluded.slug,
   category = excluded.category,
@@ -1358,7 +1359,40 @@ This update makes long knowledge-base articles easier to read and share.
 - 長文記事ウィンドウがデスクトップのブラウザサイズに合わせて広がり、一度に読める本文量が増えました。
 - Markdown 表示に番号付きリスト、記事画像、青い `text` 説明枠を追加し、番号付き内容が一行に潰れる問題を防ぎました。
 - AI Agent 記事に Codex と GPT のチャット画面を追加し、長文だけにならないようにしました。
-- 今後の保守のため、プロジェクト文脈、専用 Skill、Cloudflare Pages のリライト規則、キャッシュ版も更新しました。', '2026-06-14T16:20:00.000Z', '2026-06-14T16:20:00.000Z')
+- 今後の保守のため、プロジェクト文脈、専用 Skill、Cloudflare Pages のリライト規則、キャッシュ版も更新しました。', '2026-06-14T16:20:00.000Z', '2026-06-14T16:20:00.000Z'),
+  ('seed-update-2026-06-15-clouds-docs-maintenance-zh', 'seed-update-2026-06-15-clouds-docs-maintenance', 'zh', '四时段动态云层与维护记录补齐', '首页四时段动态云层上线记录、项目文档和更新时间维护闭环完成补齐。', '# 四时段动态云层与维护记录补齐
+
+本次更新补齐首页动态云层和项目维护记录，让公开最近更新与实际上线内容保持一致。
+
+## 更新内容
+
+- 首页 morning / day / dusk / night 四个时段都接入无云底图和独立云层。
+- 云层按同一主风向慢速错相漂移，并保留减少动态、页面隐藏暂停和小屏降级。
+- 本地预览仍可用 `?wallpaper=morning`、`?wallpaper=day`、`?wallpaper=dusk`、`?wallpaper=night` 强制查看指定时段。
+- 补齐 README、PROJECT_CONTEXT、CHANGELOG 和项目专用 Skill 的维护说明。
+- 新增本篇 `site-updates` 三语更新文章，并同步本地 fallback 最近更新，确保首页最近更新日期来自真实更新记录。', '2026-06-15T05:00:00.000Z', '2026-06-15T05:00:00.000Z'),
+  ('seed-update-2026-06-15-clouds-docs-maintenance-en', 'seed-update-2026-06-15-clouds-docs-maintenance', 'en', 'Time-of-day Clouds and Maintenance Log', 'The four home cloud layers, project docs, and site update timestamp flow are now recorded properly.', '# Time-of-day Clouds and Maintenance Log
+
+This update closes the public maintenance loop for the home cloud animation and project records, so the visible recent updates match what was actually shipped.
+
+## Changes
+
+- Morning, Day, Dusk, and Night now use cloudless base images with independent cloud layers.
+- Clouds drift slowly in one main wind direction with staggered timing, plus reduced-motion, pause-on-hidden, and small-screen fallbacks.
+- Local previews still support `?wallpaper=morning`, `?wallpaper=day`, `?wallpaper=dusk`, and `?wallpaper=night`.
+- README, PROJECT_CONTEXT, CHANGELOG, and the project Skill were brought back in sync.
+- This trilingual `site-updates` article and the local fallback recent-update list were added so the home update date comes from a real update record.', '2026-06-15T05:00:00.000Z', '2026-06-15T05:00:00.000Z'),
+  ('seed-update-2026-06-15-clouds-docs-maintenance-ja', 'seed-update-2026-06-15-clouds-docs-maintenance', 'ja', '4時間帯の雲レイヤーと保守記録を補完', 'ホームの4時間帯雲レイヤー、プロジェクト文書、更新日時の流れを公開更新記録に反映しました。', '# 4時間帯の雲レイヤーと保守記録を補完
+
+今回の更新では、ホームの雲アニメーションとプロジェクト保守記録を補い、公開される最近の更新と実際の公開内容をそろえました。
+
+## 更新内容
+
+- morning / day / dusk / night の4時間帯に、無雲ベース画像と独立した雲レイヤーを接続しました。
+- 雲は同じ主風向でゆっくり時間差移動し、低モーション設定、非表示時の一時停止、小画面での降級にも対応します。
+- ローカル確認では `?wallpaper=morning`、`?wallpaper=day`、`?wallpaper=dusk`、`?wallpaper=night` で時間帯を指定できます。
+- README、PROJECT_CONTEXT、CHANGELOG、プロジェクト専用 Skill の保守説明を同期しました。
+- この三言語 `site-updates` 記事とローカル fallback の最近更新を追加し、ホームの更新日が実際の更新記録から出るようにしました。', '2026-06-15T05:00:00.000Z', '2026-06-15T05:00:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,
