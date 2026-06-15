@@ -2285,10 +2285,6 @@ main {
   animation-fill-mode: both;
 }
 
-.wallpaper-root[data-preview-motion="true"] .wallpaper-cloud {
-  animation-duration: var(--cloud-preview-duration, 28s);
-}
-
 .wallpaper-root[data-paused="true"] .wallpaper-cloud {
   animation-play-state: paused;
 }
@@ -2324,8 +2320,7 @@ main {
   top: 9.564%;
   width: 15.684%;
   height: 8.510%;
-  --cloud-duration: 140s;
-  --cloud-preview-duration: 21s;
+  --cloud-duration: 21s;
   --cloud-delay: -24s;
   --cloud-from-x: -9%;
   --cloud-to-x: 11%;
@@ -2340,8 +2335,7 @@ main {
   top: 34.219%;
   width: 4.306%;
   height: 2.857%;
-  --cloud-duration: 96s;
-  --cloud-preview-duration: 15s;
+  --cloud-duration: 15s;
   --cloud-delay: -47s;
   --cloud-from-x: -18%;
   --cloud-to-x: 20%;
@@ -2356,8 +2350,7 @@ main {
   top: 10.414%;
   width: 14.167%;
   height: 8.123%;
-  --cloud-duration: 148s;
-  --cloud-preview-duration: 22s;
+  --cloud-duration: 22s;
   --cloud-delay: -63s;
   --cloud-from-x: -11%;
   --cloud-to-x: 9%;
@@ -2372,8 +2365,7 @@ main {
   top: 20.404%;
   width: 10.063%;
   height: 5.394%;
-  --cloud-duration: 116s;
-  --cloud-preview-duration: 18s;
+  --cloud-duration: 18s;
   --cloud-delay: -34s;
   --cloud-from-x: -16%;
   --cloud-to-x: 14%;
@@ -2388,8 +2380,7 @@ main {
   top: 47.609%;
   width: 9.464%;
   height: 5.377%;
-  --cloud-duration: 105s;
-  --cloud-preview-duration: 17s;
+  --cloud-duration: 17s;
   --cloud-delay: -58s;
   --cloud-from-x: -13%;
   --cloud-to-x: 17%;
@@ -2404,8 +2395,7 @@ main {
   top: 43.677%;
   width: 5.116%;
   height: 3.496%;
-  --cloud-duration: 88s;
-  --cloud-preview-duration: 14s;
+  --cloud-duration: 14s;
   --cloud-delay: -26s;
   --cloud-from-x: -22%;
   --cloud-to-x: 22%;
@@ -2420,8 +2410,7 @@ main {
   top: 41.764%;
   width: 5.510%;
   height: 4.096%;
-  --cloud-duration: 100s;
-  --cloud-preview-duration: 15s;
+  --cloud-duration: 15s;
   --cloud-delay: -41s;
   --cloud-from-x: -20%;
   --cloud-to-x: 18%;
@@ -2436,8 +2425,7 @@ main {
   top: 12.752%;
   width: 16.806%;
   height: 10.202%;
-  --cloud-duration: 127s;
-  --cloud-preview-duration: 19s;
+  --cloud-duration: 19s;
   --cloud-delay: -29s;
   --cloud-from-x: -10%;
   --cloud-to-x: 12%;
@@ -2452,8 +2440,7 @@ main {
   top: 24.654%;
   width: 10.407%;
   height: 6.588%;
-  --cloud-duration: 98s;
-  --cloud-preview-duration: 16s;
+  --cloud-duration: 16s;
   --cloud-delay: -53s;
   --cloud-from-x: -18%;
   --cloud-to-x: 16%;
@@ -2468,8 +2455,7 @@ main {
   top: 13.390%;
   width: 15.490%;
   height: 9.883%;
-  --cloud-duration: 134s;
-  --cloud-preview-duration: 20s;
+  --cloud-duration: 20s;
   --cloud-delay: -13s;
   --cloud-from-x: -12%;
   --cloud-to-x: 10%;
@@ -2484,8 +2470,7 @@ main {
   top: 44.952%;
   width: 5.861%;
   height: 4.995%;
-  --cloud-duration: 83s;
-  --cloud-preview-duration: 13s;
+  --cloud-duration: 13s;
   --cloud-delay: -19s;
   --cloud-from-x: -24%;
   --cloud-to-x: 25%;
@@ -2500,8 +2485,7 @@ main {
   top: 39.426%;
   width: 6.220%;
   height: 5.314%;
-  --cloud-duration: 88s;
-  --cloud-preview-duration: 14s;
+  --cloud-duration: 14s;
   --cloud-delay: -43s;
   --cloud-from-x: -22%;
   --cloud-to-x: 21%;
@@ -2516,8 +2500,7 @@ main {
   top: 9.564%;
   width: 15.632%;
   height: 8.697%;
-  --cloud-duration: 144s;
-  --cloud-preview-duration: 22s;
+  --cloud-duration: 22s;
   --cloud-delay: -31s;
   --cloud-from-x: -9%;
   --cloud-to-x: 11%;
@@ -2532,8 +2515,7 @@ main {
   top: 34.431%;
   width: 4.306%;
   height: 2.857%;
-  --cloud-duration: 98s;
-  --cloud-preview-duration: 15s;
+  --cloud-duration: 15s;
   --cloud-delay: -49s;
   --cloud-from-x: -18%;
   --cloud-to-x: 20%;
@@ -2548,8 +2530,7 @@ main {
   top: 10.414%;
   width: 14.167%;
   height: 8.302%;
-  --cloud-duration: 151s;
-  --cloud-preview-duration: 23s;
+  --cloud-duration: 23s;
   --cloud-delay: -68s;
   --cloud-from-x: -11%;
   --cloud-to-x: 9%;
@@ -2564,8 +2545,7 @@ main {
   top: 20.616%;
   width: 10.120%;
   height: 5.494%;
-  --cloud-duration: 120s;
-  --cloud-preview-duration: 18s;
+  --cloud-duration: 18s;
   --cloud-delay: -35s;
   --cloud-from-x: -16%;
   --cloud-to-x: 14%;
@@ -2580,8 +2560,7 @@ main {
   top: 47.928%;
   width: 9.464%;
   height: 5.084%;
-  --cloud-duration: 107s;
-  --cloud-preview-duration: 17s;
+  --cloud-duration: 17s;
   --cloud-delay: -60s;
   --cloud-from-x: -13%;
   --cloud-to-x: 17%;
@@ -2596,8 +2575,7 @@ main {
   top: 43.996%;
   width: 5.116%;
   height: 3.396%;
-  --cloud-duration: 90s;
-  --cloud-preview-duration: 14s;
+  --cloud-duration: 14s;
   --cloud-delay: -28s;
   --cloud-from-x: -22%;
   --cloud-to-x: 22%;
@@ -2612,8 +2590,7 @@ main {
   top: 41.977%;
   width: 5.566%;
   height: 4.096%;
-  --cloud-duration: 101s;
-  --cloud-preview-duration: 15s;
+  --cloud-duration: 15s;
   --cloud-delay: -43s;
   --cloud-from-x: -20%;
   --cloud-to-x: 18%;
@@ -2628,8 +2605,7 @@ main {
   top: 9.989%;
   width: 15.222%;
   height: 8.570%;
-  --cloud-duration: 157s;
-  --cloud-preview-duration: 23s;
+  --cloud-duration: 23s;
   --cloud-delay: -44s;
   --cloud-from-x: -10%;
   --cloud-to-x: 8%;
@@ -2644,8 +2620,7 @@ main {
   top: 21.254%;
   width: 10.794%;
   height: 5.294%;
-  --cloud-duration: 127s;
-  --cloud-preview-duration: 19s;
+  --cloud-duration: 19s;
   --cloud-delay: -66s;
   --cloud-from-x: -15%;
   --cloud-to-x: 13%;
@@ -2660,8 +2635,7 @@ main {
   top: 35.813%;
   width: 11.170%;
   height: 7.137%;
-  --cloud-duration: 122s;
-  --cloud-preview-duration: 18s;
+  --cloud-duration: 18s;
   --cloud-delay: -25s;
   --cloud-from-x: -12%;
   --cloud-to-x: 15%;
@@ -2676,8 +2650,7 @@ main {
   top: 33.156%;
   width: 4.421%;
   height: 2.652%;
-  --cloud-duration: 100s;
-  --cloud-preview-duration: 15s;
+  --cloud-duration: 15s;
   --cloud-delay: -52s;
   --cloud-from-x: -20%;
   --cloud-to-x: 19%;
@@ -2692,8 +2665,7 @@ main {
   top: 43.571%;
   width: 5.172%;
   height: 2.697%;
-  --cloud-duration: 94s;
-  --cloud-preview-duration: 14s;
+  --cloud-duration: 14s;
   --cloud-delay: -37s;
   --cloud-from-x: -21%;
   --cloud-to-x: 20%;
@@ -2708,8 +2680,7 @@ main {
   top: 42.827%;
   width: 5.004%;
   height: 3.496%;
-  --cloud-duration: 103s;
-  --cloud-preview-duration: 16s;
+  --cloud-duration: 16s;
   --cloud-delay: -18s;
   --cloud-from-x: -19%;
   --cloud-to-x: 18%;
@@ -2724,8 +2695,7 @@ main {
   top: 47.821%;
   width: 4.421%;
   height: 2.346%;
-  --cloud-duration: 109s;
-  --cloud-preview-duration: 17s;
+  --cloud-duration: 17s;
   --cloud-delay: -72s;
   --cloud-from-x: -16%;
   --cloud-to-x: 17%;
