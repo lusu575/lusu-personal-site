@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow">
+  <title>鲁肃个人站管理后台</title>
+  <link rel="stylesheet" href="/admin/admin.css?v=20260615-admin-console">
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="sidebar" aria-label="后台导航">
+      <div class="sidebar-brand">
+        <span class="brand-mark">LS</span>
+        <div>
+          <strong>管理后台</strong>
+          <small>鲁肃个人站</small>
+        </div>
+      </div>
+      <nav class="nav-list">
+        <button class="nav-button active" type="button" data-panel="dashboard">实时大屏</button>
+        <button class="nav-button" type="button" data-panel="articles">知识库文章</button>
+        <button class="nav-button" type="button" data-panel="visits">访问来源</button>
+        <button class="nav-button" type="button" data-panel="clicks">点击埋点</button>
+        <button class="nav-button" type="button" data-panel="chat">聊天室管理</button>
+        <button class="nav-button" type="button" data-panel="docs">后台说明</button>
+      </nav>
+      <div class="sidebar-note">
+        <span>仅站长可见</span>
+        <strong id="admin-email">读取中...</strong>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h1 id="panel-title">实时监控大屏</h1>
+          <p id="panel-subtitle">访问、点击、文章和聊天室状态集中查看。</p>
+        </div>
+        <div class="topbar-actions">
+          <span class="refresh-state" id="refresh-state">等待刷新</span>
+          <button class="xp-button" type="button" id="manual-refresh">刷新</button>
+          <button class="xp-button danger" type="button" id="logout-button">退出</button>
+        </div>
+      </header>
+
+      <section class="panel active" id="dashboard-panel">
+        <div class="kpi-grid" id="kpi-grid"></div>
+        <div class="dashboard-grid">
+          <section class="xp-panel map-panel">
+            <div class="panel-head">
+              <h2>访问地图</h2>
+              <span>按最近访问聚合</span>
+            </div>
+            <div class="pixel-map" id="visitor-map" aria-label="访问地图"></div>
+          </section>
+          <section class="xp-panel">
+            <div class="panel-head">
+              <h2>每日 PV / UV</h2>
+              <span id="daily-range">最近 14 天</span>
+            </div>
+            <div class="bar-chart" id="daily-chart"></div>
+          </section>
+          <section class="xp-panel">
+            <div class="panel-head">
+              <h2>今日小时走势</h2>
+              <span>UTC 聚合</span>
+            </div>
+            <div class="bar-chart compact" id="hourly-chart"></div>
+          </section>
+          <section class="xp-panel">
+            <div class="panel-head">
+              <h2>热门页面</h2>
+              <span>PV / UV</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>页面</th><th>PV</th><th>UV</th><th>最近访问</th></tr></thead>
+                <tbody id="top-pages"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="panel" id="articles-panel">
+        <div class="split-layout articles-layout">
+          <section class="xp-panel list-panel">
+            <div class="panel-head">
+              <h2>文章列表</h2>
+              <button class="xp-button" type="button" id="new-article">新建</button>
+            </div>
+            <div class="article-list" id="article-list"></div>
+          </section>
+          <section class="xp-panel editor-panel">
+            <div class="panel-head">
+              <h2 id="article-editor-title">新建文章</h2>
+              <span>保存时校验三语内容</span>
+            </div>
+            <form id="article-form" class="editor-form">
+              <div class="form-grid">
+                <label>Slug<input name="slug" required maxlength="120" placeholder="my-article-slug"></label>
+                <label>分类<input name="category" maxlength="80" value="note"></label>
+                <label>标签<input name="tags" placeholder="AI, 网站更新"></label>
+                <label>封面<input name="cover_image" placeholder="assets/images/articles/..."></label>
+                <label>状态
+                  <select name="status">
+                    <option value="draft">草稿</option>
+                    <option value="published">发布</option>
+                    <option value="archived">归档</option>
+                  </select>
+                </label>
+                <label>发布时间<input name="published_at" placeholder="留空则发布时自动写入当前时间"></label>
+                <label class="checkbox-line"><input name="is_pinned" type="checkbox"> 置顶</label>
+              </div>
+
+              <div class="lang-tabs" role="tablist" aria-label="文章语言">
+                <button class="lang-tab active" type="button" data-article-lang="zh">中文</button>
+                <button class="lang-tab" type="button" data-article-lang="en">English</button>
+                <button class="lang-tab" type="button" data-article-lang="ja">日本語</button>
+              </div>
+
+              <div class="language-editor active" data-lang-panel="zh">
+                <label>中文标题<input name="title_zh" maxlength="180" required></label>
+                <label>中文简介<textarea name="summary_zh" maxlength="500" rows="2"></textarea></label>
+                <label>中文正文 Markdown<textarea name="content_zh" rows="14" required></textarea></label>
+              </div>
+              <div class="language-editor" data-lang-panel="en">
+                <label>English 标题<input name="title_en" maxlength="180" required></label>
+                <label>English 简介<textarea name="summary_en" maxlength="500" rows="2"></textarea></label>
+                <label>English 正文 Markdown<textarea name="content_en" rows="14" required></textarea></label>
+              </div>
+              <div class="language-editor" data-lang-panel="ja">
+                <label>日本語标题<input name="title_ja" maxlength="180" required></label>
+                <label>日本語简介<textarea name="summary_ja" maxlength="500" rows="2"></textarea></label>
+                <label>日本語正文 Markdown<textarea name="content_ja" rows="14" required></textarea></label>
+              </div>
+
+              <div class="form-actions">
+                <button class="xp-button" type="submit">保存</button>
+                <button class="xp-button primary" type="button" id="publish-article">保存并发布</button>
+                <button class="xp-button danger" type="button" id="delete-article">删除</button>
+                <span class="form-status" id="article-status"></span>
+              </div>
+            </form>
+          </section>
+        </div>
+      </section>
+
+      <section class="panel" id="visits-panel">
+        <div class="dashboard-grid two">
+          <section class="xp-panel">
+            <div class="panel-head"><h2>国家来源</h2><span>PV / UV</span></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>国家</th><th>PV</th><th>UV</th><th>最近访问</th></tr></thead>
+                <tbody id="country-table"></tbody>
+              </table>
+            </div>
+          </section>
+          <section class="xp-panel">
+            <div class="panel-head"><h2>省份 / 地区 / IP 来源</h2><span>掩码 IP 前缀</span></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>位置</th><th>IP 前缀</th><th>PV</th><th>UV</th><th>最近访问</th></tr></thead>
+                <tbody id="region-table"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="panel" id="clicks-panel">
+        <div class="dashboard-grid two">
+          <section class="xp-panel">
+            <div class="panel-head"><h2>点击热点</h2><span>按目标聚合</span></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>目标</th><th>页面</th><th>点击</th><th>UV</th><th>最近</th></tr></thead>
+                <tbody id="top-clicks"></tbody>
+              </table>
+            </div>
+          </section>
+          <section class="xp-panel">
+            <div class="panel-head"><h2>最近点击</h2><span>实时事件</span></div>
+            <div class="event-list" id="recent-clicks"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="panel" id="chat-panel">
+        <div class="split-layout chat-layout">
+          <section class="xp-panel list-panel">
+            <div class="panel-head">
+              <h2>聊天记录</h2>
+              <label class="mini-check"><input id="include-hidden-chat" type="checkbox"> 显示隐藏</label>
+            </div>
+            <div class="chat-list" id="chat-list"></div>
+          </section>
+          <section class="xp-panel editor-panel">
+            <div class="panel-head">
+              <h2>记录编辑与禁言</h2>
+              <span id="chat-selected-id">未选择</span>
+            </div>
+            <form class="editor-form" id="chat-form-admin">
+              <label>昵称<input name="nickname" maxlength="16"></label>
+              <label>内容<textarea name="content" rows="6" maxlength="300"></textarea></label>
+              <label>禁言原因<input name="ban_reason" maxlength="200" placeholder="后台处理"></label>
+              <label>禁言时长（小时，0 为长期）<input name="ban_hours" type="number" min="0" max="8760" value="24"></label>
+              <div class="chat-meta" id="chat-meta"></div>
+              <div class="form-actions">
+                <button class="xp-button" type="submit">保存修改</button>
+                <button class="xp-button" type="button" id="toggle-chat-hidden">隐藏/恢复</button>
+                <button class="xp-button danger" type="button" id="delete-chat-message">删除</button>
+                <button class="xp-button warning" type="button" id="ban-chat-visitor">禁言用户ID</button>
+                <button class="xp-button warning" type="button" id="ban-chat-ip">禁言IP来源</button>
+              </div>
+            </form>
+            <div class="panel-head subhead">
+              <h2>禁言列表</h2>
+              <button class="xp-button" type="button" id="refresh-bans">刷新</button>
+            </div>
+            <div class="ban-list" id="ban-list"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="panel" id="docs-panel">
+        <div class="dashboard-grid two">
+          <section class="xp-panel prose">
+            <div class="panel-head"><h2>后台项目介绍</h2><span>独立于主站公开内容</span></div>
+            <p>这个后台只服务站长维护个人站，不对外展示，也不复用知识库的网站更新记录。</p>
+            <p>后台复用主站账号系统和 <code>users.role = admin</code> 权限，只允许管理员账号访问页面和 API。</p>
+            <p>后台包含三语文章编辑、访问 PV/UV、地理来源地图、点击埋点、聊天室编辑/删除/禁言和实时大屏。</p>
+          </section>
+          <section class="xp-panel">
+            <div class="panel-head"><h2>后台更新记录</h2><span>私有记录</span></div>
+            <div class="admin-updates" id="admin-updates"></div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/admin/admin.js?v=20260615-admin-console"></script>
+</body>
+</html>

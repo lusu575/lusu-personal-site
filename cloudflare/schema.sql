@@ -30,11 +30,14 @@ create index if not exists game_saves_updated_at_idx on game_saves(updated_at);
 create table if not exists anonymous_chat_messages (
   message_id text primary key,
   visitor_id text not null,
+  client_id text not null default '',
   nickname text not null,
   content text not null,
   created_at text not null,
+  edited_at text,
   hidden integer not null default 0,
-  ip_hash text not null
+  ip_hash text not null,
+  ip_prefix text not null default ''
 );
 
 create index if not exists anonymous_chat_messages_visible_idx
@@ -43,6 +46,23 @@ create index if not exists anonymous_chat_messages_visitor_idx
   on anonymous_chat_messages(visitor_id, created_at);
 create index if not exists anonymous_chat_messages_ip_idx
   on anonymous_chat_messages(ip_hash, created_at);
+create table if not exists chat_bans (
+  ban_id text primary key,
+  ban_type text not null,
+  visitor_id text not null default '',
+  ip_hash text not null default '',
+  ip_prefix text not null default '',
+  reason text not null default '',
+  active integer not null default 1,
+  created_by text not null,
+  created_at text not null,
+  expires_at text
+);
+
+create index if not exists chat_bans_active_visitor_idx
+  on chat_bans(active, visitor_id, expires_at);
+create index if not exists chat_bans_active_ip_idx
+  on chat_bans(active, ip_hash, expires_at);
 
 create table if not exists articles (
   article_id text primary key,
@@ -76,6 +96,89 @@ create index if not exists articles_category_idx
   on articles(category);
 create index if not exists article_translations_article_lang_idx
   on article_translations(article_id, lang);
+
+create table if not exists site_visitors (
+  visitor_id text primary key,
+  first_seen_at text not null,
+  last_seen_at text not null,
+  visit_count integer not null default 0,
+  ip_hash text not null default '',
+  ip_prefix text not null default '',
+  country text not null default '',
+  region text not null default '',
+  city text not null default '',
+  timezone text not null default '',
+  colo text not null default '',
+  latitude real,
+  longitude real,
+  user_agent text not null default '',
+  language text not null default ''
+);
+
+create index if not exists site_visitors_last_seen_idx
+  on site_visitors(last_seen_at);
+
+create table if not exists analytics_page_views (
+  event_id text primary key,
+  visitor_id text not null,
+  path text not null,
+  route text not null default '',
+  referrer text not null default '',
+  title text not null default '',
+  lang text not null default 'zh',
+  screen_width integer not null default 0,
+  screen_height integer not null default 0,
+  country text not null default '',
+  region text not null default '',
+  city text not null default '',
+  timezone text not null default '',
+  colo text not null default '',
+  latitude real,
+  longitude real,
+  ip_hash text not null default '',
+  ip_prefix text not null default '',
+  created_at text not null
+);
+
+create index if not exists analytics_page_views_created_idx
+  on analytics_page_views(created_at);
+create index if not exists analytics_page_views_visitor_idx
+  on analytics_page_views(visitor_id, created_at);
+create index if not exists analytics_page_views_geo_idx
+  on analytics_page_views(country, region, city, created_at);
+
+create table if not exists analytics_click_events (
+  event_id text primary key,
+  visitor_id text not null,
+  path text not null,
+  route text not null default '',
+  target_key text not null default '',
+  target_text text not null default '',
+  tag_name text not null default '',
+  element_id text not null default '',
+  element_classes text not null default '',
+  href text not null default '',
+  data_route text not null default '',
+  screen_width integer not null default 0,
+  screen_height integer not null default 0,
+  click_x integer not null default 0,
+  click_y integer not null default 0,
+  country text not null default '',
+  region text not null default '',
+  city text not null default '',
+  timezone text not null default '',
+  colo text not null default '',
+  ip_hash text not null default '',
+  ip_prefix text not null default '',
+  created_at text not null
+);
+
+create index if not exists analytics_click_events_created_idx
+  on analytics_click_events(created_at);
+create index if not exists analytics_click_events_target_idx
+  on analytics_click_events(target_key, created_at);
+create index if not exists analytics_click_events_visitor_idx
+  on analytics_click_events(visitor_id, created_at);
 
 insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,

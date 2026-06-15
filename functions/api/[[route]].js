@@ -8,10 +8,14 @@ const CHAT_COOLDOWN_MS = 3000;
 const CHAT_IP_WINDOW_MS = 60000;
 const CHAT_IP_WINDOW_LIMIT = 20;
 const CHAT_NICKNAME_LOOKBACK_LIMIT = 1000;
+const VISITOR_COOKIE = "lusu_visitor";
+const VISITOR_DAYS = 365;
+const OWNER_ADMIN_EMAILS = new Set(["630739094@qq.com"]);
 let coreSchemaReady = false;
 let chatSchemaReady = false;
 let articleSchemaReady = false;
 let articleSeedReady = false;
+let analyticsSchemaReady = false;
 
 export async function onRequest(context) {
   const { request, env } = context;
@@ -52,6 +56,18 @@ export async function onRequest(context) {
     if (request.method === "GET" && parts[0] === "chat" && parts[1] === "nickname") {
       return getChatNickname(env);
     }
+    if (parts[0] === "analytics") {
+      await ensureAnalyticsSchema(env);
+      if (request.method === "POST" && parts[1] === "identify") {
+        return identifyVisitor(request, env);
+      }
+      if (request.method === "POST" && parts[1] === "page-view") {
+        return recordPageView(request, env);
+      }
+      if (request.method === "POST" && parts[1] === "click") {
+        return recordClickEvent(request, env);
+      }
+    }
     if (parts[0] === "articles") {
       await ensureArticleSchema(env);
       await seedArticleTestData(env);
@@ -62,11 +78,45 @@ export async function onRequest(context) {
         return getArticle(request, env, parts[1]);
       }
     }
+    if (parts[0] === "admin" && request.method === "GET" && parts[1] === "me") {
+      return adminMe(request, env);
+    }
+    if (parts[0] === "admin" && parts[1] === "analytics") {
+      await ensureAnalyticsSchema(env);
+      await ensureChatSchema(env);
+      if (request.method === "GET" && parts[2] === "overview") {
+        return getAdminAnalyticsOverview(request, env);
+      }
+    }
+    if (parts[0] === "admin" && parts[1] === "chat") {
+      await ensureChatSchema(env);
+      if (request.method === "GET" && parts[2] === "messages") {
+        return getAdminChatMessages(request, env);
+      }
+      if (request.method === "PUT" && parts[2] === "messages" && parts[3]) {
+        return updateAdminChatMessage(request, env, parts[3]);
+      }
+      if (request.method === "DELETE" && parts[2] === "messages" && parts[3]) {
+        return deleteAdminChatMessage(request, env, parts[3]);
+      }
+      if (request.method === "GET" && parts[2] === "bans") {
+        return getAdminChatBans(request, env);
+      }
+      if (request.method === "POST" && parts[2] === "bans") {
+        return createAdminChatBan(request, env);
+      }
+      if (request.method === "DELETE" && parts[2] === "bans" && parts[3]) {
+        return disableAdminChatBan(request, env, parts[3]);
+      }
+    }
     if (parts[0] === "admin" && parts[1] === "articles") {
       await ensureArticleSchema(env);
       await seedArticleTestData(env);
       if (request.method === "GET" && !parts[2]) {
         return getAdminArticles(request, env);
+      }
+      if (request.method === "GET" && parts[2]) {
+        return getAdminArticle(request, env, parts[2]);
       }
       if (request.method === "POST" && !parts[2]) {
         return createArticle(request, env);
@@ -224,7 +274,7 @@ async function getChatMessages(request, env) {
       rows = [];
     } else {
       rows = (await env.DB.prepare(`
-        select message_id, visitor_id, nickname, content, created_at
+        select message_id, coalesce(nullif(client_id, ''), visitor_id) as visitor_id, nickname, content, created_at
         from anonymous_chat_messages
         where hidden = 0
           and (created_at > ? or (created_at = ? and message_id > ?))
@@ -236,7 +286,7 @@ async function getChatMessages(request, env) {
     rows = (await env.DB.prepare(`
       select message_id, visitor_id, nickname, content, created_at
       from (
-        select message_id, visitor_id, nickname, content, created_at
+        select message_id, coalesce(nullif(client_id, ''), visitor_id) as visitor_id, nickname, content, created_at
         from anonymous_chat_messages
         where hidden = 0
         order by created_at desc, message_id desc
@@ -251,15 +301,25 @@ async function getChatMessages(request, env) {
 
 async function postChatMessage(request, env) {
   await ensureChatSchema(env);
+  await ensureAnalyticsSchema(env);
   const body = await readJson(request);
-  const visitorId = normalizeVisitorId(body.visitorId);
+  const clientId = normalizeVisitorId(body.visitorId);
+  const identity = getOrCreateVisitorIdentity(request);
   const nickname = normalizeChatNickname(body.nickname);
   const content = normalizeChatContent(body.content);
-  const ipHash = await requestIpHash(request, env);
+  const ipInfo = await requestIpInfo(request, env, "chat");
+  const ipHash = ipInfo.ipHash;
   const now = new Date();
   const nowText = now.toISOString();
   const visitorSince = new Date(now.getTime() - CHAT_COOLDOWN_MS).toISOString();
   const ipSince = new Date(now.getTime() - CHAT_IP_WINDOW_MS).toISOString();
+
+  await ensureVisitorProfile(env, request, identity.visitorId, {}, false);
+  const ban = await activeChatBan(env, identity.visitorId, ipHash);
+  if (ban) {
+    const expires = ban.expires_at ? `，到 ${ban.expires_at} 结束` : "";
+    return withVisitorCookie(json({ error: `当前访客已被禁言${expires}。` }, 403), request, identity);
+  }
 
   const recentVisitor = await env.DB.prepare(`
     select created_at
@@ -267,9 +327,9 @@ async function postChatMessage(request, env) {
     where visitor_id = ? and created_at > ?
     order by created_at desc
     limit 1
-  `).bind(visitorId, visitorSince).first();
+  `).bind(identity.visitorId, visitorSince).first();
   if (recentVisitor) {
-    return json({ error: "发送太快啦，请等 3 秒。" }, 429);
+    return withVisitorCookie(json({ error: "发送太快啦，请等 3 秒。" }, 429), request, identity);
   }
 
   const ipRow = await env.DB.prepare(`
@@ -278,7 +338,7 @@ async function postChatMessage(request, env) {
     where ip_hash = ? and created_at > ?
   `).bind(ipHash, ipSince).first();
   if (Number(ipRow?.count || 0) >= CHAT_IP_WINDOW_LIMIT) {
-    return json({ error: "当前网络发送过于频繁，请稍后再试。" }, 429);
+    return withVisitorCookie(json({ error: "当前网络发送过于频繁，请稍后再试。" }, 429), request, identity);
   }
 
   const nicknameOwner = await env.DB.prepare(`
@@ -287,26 +347,26 @@ async function postChatMessage(request, env) {
     where hidden = 0 and nickname = ? and visitor_id <> ?
     order by created_at desc
     limit 1
-  `).bind(nickname, visitorId).first();
+  `).bind(nickname, identity.visitorId).first();
   if (nicknameOwner) {
-    return json({ error: "这个随机昵称已经被使用，请刷新聊天室获取新昵称。", code: "nickname_taken" }, 409);
+    return withVisitorCookie(json({ error: "这个随机昵称已经被使用，请刷新聊天室获取新昵称。", code: "nickname_taken" }, 409), request, identity);
   }
 
   const messageId = chatMessageId(now);
   await env.DB.prepare(`
-    insert into anonymous_chat_messages (message_id, visitor_id, nickname, content, created_at, hidden, ip_hash)
-    values (?, ?, ?, ?, ?, 0, ?)
-  `).bind(messageId, visitorId, nickname, content, nowText, ipHash).run();
+    insert into anonymous_chat_messages (message_id, visitor_id, client_id, nickname, content, created_at, hidden, ip_hash, ip_prefix)
+    values (?, ?, ?, ?, ?, ?, 0, ?, ?)
+  `).bind(messageId, identity.visitorId, clientId, nickname, content, nowText, ipHash, ipInfo.ipPrefix).run();
 
-  return json({
+  return withVisitorCookie(json({
     message: {
       message_id: messageId,
-      visitor_id: visitorId,
+      visitor_id: clientId,
       nickname,
       content,
       created_at: nowText
     }
-  }, 201);
+  }, 201), request, identity);
 }
 
 async function getChatNickname(env) {
@@ -505,6 +565,374 @@ async function deleteArticle(request, env, articleId) {
   return json({ ok: true });
 }
 
+async function getAdminArticle(request, env, articleId) {
+  await requireAdmin(request, env);
+  const normalizedId = normalizeRecordId(articleId, "文章编号不正确。");
+  const article = await env.DB.prepare("select * from articles where article_id = ?")
+    .bind(normalizedId).first();
+  if (!article) {
+    return json({ error: "文章不存在。" }, 404);
+  }
+  const translations = (await env.DB.prepare(`
+    select lang, title, summary, content_markdown, created_at, updated_at
+    from article_translations
+    where article_id = ?
+    order by case lang when 'zh' then 0 when 'en' then 1 when 'ja' then 2 else 3 end
+  `).bind(normalizedId).all()).results || [];
+  const translationMap = {};
+  translations.forEach((item) => {
+    translationMap[item.lang] = {
+      title: item.title || "",
+      summary: item.summary || "",
+      content_markdown: item.content_markdown || "",
+      created_at: item.created_at,
+      updated_at: item.updated_at
+    };
+  });
+  return json({ article: { ...article, tags: parseTags(article.tags), translations: translationMap } });
+}
+
+async function adminMe(request, env) {
+  const session = await requireAdmin(request, env);
+  return json({ user: session.user });
+}
+
+async function identifyVisitor(request, env) {
+  const body = await readOptionalJson(request);
+  const identity = getOrCreateVisitorIdentity(request);
+  await ensureVisitorProfile(env, request, identity.visitorId, body || {}, false);
+  return withVisitorCookie(json({ ok: true }), request, identity);
+}
+
+async function recordPageView(request, env) {
+  const body = await readOptionalJson(request);
+  const identity = getOrCreateVisitorIdentity(request);
+  const now = nowIso();
+  const geo = await requestIpInfo(request, env, "analytics");
+  await ensureVisitorProfile(env, request, identity.visitorId, body || {}, true);
+  await env.DB.prepare(`
+    insert into analytics_page_views (
+      event_id, visitor_id, path, route, referrer, title, lang,
+      screen_width, screen_height, country, region, city, timezone,
+      colo, latitude, longitude, ip_hash, ip_prefix, created_at
+    ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(
+    crypto.randomUUID(),
+    identity.visitorId,
+    normalizeAnalyticsPath(body?.path),
+    normalizeAnalyticsText(body?.route, 80),
+    normalizeAnalyticsText(body?.referrer, 500),
+    normalizeAnalyticsText(body?.title, 200),
+    normalizeArticleLang(body?.lang),
+    normalizeInteger(body?.screenWidth, 0, 20000),
+    normalizeInteger(body?.screenHeight, 0, 20000),
+    geo.country,
+    geo.region,
+    geo.city,
+    geo.timezone,
+    geo.colo,
+    geo.latitude,
+    geo.longitude,
+    geo.ipHash,
+    geo.ipPrefix,
+    now
+  ).run();
+  return withVisitorCookie(json({ ok: true }), request, identity);
+}
+
+async function recordClickEvent(request, env) {
+  const body = await readOptionalJson(request);
+  const identity = getOrCreateVisitorIdentity(request);
+  const now = nowIso();
+  const geo = await requestIpInfo(request, env, "analytics");
+  await ensureVisitorProfile(env, request, identity.visitorId, body || {}, false);
+  await env.DB.prepare(`
+    insert into analytics_click_events (
+      event_id, visitor_id, path, route, target_key, target_text, tag_name,
+      element_id, element_classes, href, data_route, screen_width, screen_height,
+      click_x, click_y, country, region, city, timezone, colo, ip_hash, ip_prefix, created_at
+    ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(
+    crypto.randomUUID(),
+    identity.visitorId,
+    normalizeAnalyticsPath(body?.path),
+    normalizeAnalyticsText(body?.route, 80),
+    normalizeAnalyticsText(body?.targetKey, 160),
+    normalizeAnalyticsText(body?.targetText, 160),
+    normalizeAnalyticsText(body?.tagName, 40).toUpperCase(),
+    normalizeAnalyticsText(body?.elementId, 120),
+    normalizeAnalyticsText(body?.elementClasses, 240),
+    normalizeAnalyticsText(body?.href, 500),
+    normalizeAnalyticsText(body?.dataRoute, 80),
+    normalizeInteger(body?.screenWidth, 0, 20000),
+    normalizeInteger(body?.screenHeight, 0, 20000),
+    normalizeInteger(body?.x, -100000, 100000),
+    normalizeInteger(body?.y, -100000, 100000),
+    geo.country,
+    geo.region,
+    geo.city,
+    geo.timezone,
+    geo.colo,
+    geo.ipHash,
+    geo.ipPrefix,
+    now
+  ).run();
+  return withVisitorCookie(json({ ok: true }), request, identity);
+}
+
+async function getAdminAnalyticsOverview(request, env) {
+  await requireAdmin(request, env);
+  const url = new URL(request.url);
+  const days = Math.min(Math.max(Number(url.searchParams.get("days") || 14), 1), 90);
+  const now = new Date();
+  const since = new Date(now.getTime() - (days - 1) * 24 * 60 * 60 * 1000);
+  since.setUTCHours(0, 0, 0, 0);
+  const sinceIso = since.toISOString();
+  const today = new Date(now);
+  today.setUTCHours(0, 0, 0, 0);
+  const todayIso = today.toISOString();
+  const onlineSince = new Date(now.getTime() - 5 * 60 * 1000).toISOString();
+
+  const [
+    todayPageViews,
+    todayVisitors,
+    totalPageViews,
+    totalVisitors,
+    todayClicks,
+    onlineVisitors,
+    todayMessages,
+    dailyRows,
+    hourlyRows,
+    countryRows,
+    regionRows,
+    topPages,
+    topClicks,
+    recentViews,
+    recentClicks
+  ] = await Promise.all([
+    env.DB.prepare("select count(*) as count from analytics_page_views where created_at >= ?").bind(todayIso).first(),
+    env.DB.prepare("select count(distinct visitor_id) as count from analytics_page_views where created_at >= ?").bind(todayIso).first(),
+    env.DB.prepare("select count(*) as count from analytics_page_views where created_at >= ?").bind(sinceIso).first(),
+    env.DB.prepare("select count(distinct visitor_id) as count from analytics_page_views where created_at >= ?").bind(sinceIso).first(),
+    env.DB.prepare("select count(*) as count from analytics_click_events where created_at >= ?").bind(todayIso).first(),
+    env.DB.prepare("select count(*) as count from site_visitors where last_seen_at >= ?").bind(onlineSince).first(),
+    env.DB.prepare("select count(*) as count from anonymous_chat_messages where created_at >= ?").bind(todayIso).first(),
+    env.DB.prepare(`
+      select substr(created_at, 1, 10) as day, count(*) as pv, count(distinct visitor_id) as uv
+      from analytics_page_views
+      where created_at >= ?
+      group by day
+      order by day asc
+    `).bind(sinceIso).all(),
+    env.DB.prepare(`
+      select substr(created_at, 1, 13) || ':00' as hour, count(*) as pv, count(distinct visitor_id) as uv
+      from analytics_page_views
+      where created_at >= ?
+      group by hour
+      order by hour asc
+    `).bind(todayIso).all(),
+    env.DB.prepare(`
+      select country, count(*) as pv, count(distinct visitor_id) as uv,
+             max(created_at) as last_seen_at, avg(latitude) as latitude, avg(longitude) as longitude
+      from analytics_page_views
+      where created_at >= ?
+      group by country
+      order by pv desc
+      limit 80
+    `).bind(sinceIso).all(),
+    env.DB.prepare(`
+      select country, region, city, ip_prefix, count(*) as pv, count(distinct visitor_id) as uv,
+             max(created_at) as last_seen_at, avg(latitude) as latitude, avg(longitude) as longitude
+      from analytics_page_views
+      where created_at >= ?
+      group by country, region, city, ip_prefix
+      order by pv desc, uv desc
+      limit 200
+    `).bind(sinceIso).all(),
+    env.DB.prepare(`
+      select path, route, count(*) as pv, count(distinct visitor_id) as uv, max(created_at) as last_seen_at
+      from analytics_page_views
+      where created_at >= ?
+      group by path, route
+      order by pv desc, uv desc
+      limit 30
+    `).bind(sinceIso).all(),
+    env.DB.prepare(`
+      select target_key, target_text, tag_name, data_route, path, count(*) as clicks, count(distinct visitor_id) as uv,
+             max(created_at) as last_seen_at
+      from analytics_click_events
+      where created_at >= ?
+      group by target_key, target_text, tag_name, data_route, path
+      order by clicks desc, uv desc
+      limit 40
+    `).bind(sinceIso).all(),
+    env.DB.prepare(`
+      select created_at, visitor_id, path, route, country, region, city, ip_prefix
+      from analytics_page_views
+      order by created_at desc
+      limit 30
+    `).all(),
+    env.DB.prepare(`
+      select created_at, visitor_id, path, target_text, target_key, tag_name, data_route, country, region, city
+      from analytics_click_events
+      order by created_at desc
+      limit 30
+    `).all()
+  ]);
+
+  return json({
+    generatedAt: now.toISOString(),
+    windowDays: days,
+    cards: {
+      todayPv: Number(todayPageViews?.count || 0),
+      todayUv: Number(todayVisitors?.count || 0),
+      totalPv: Number(totalPageViews?.count || 0),
+      totalUv: Number(totalVisitors?.count || 0),
+      todayClicks: Number(todayClicks?.count || 0),
+      onlineVisitors: Number(onlineVisitors?.count || 0),
+      todayMessages: Number(todayMessages?.count || 0)
+    },
+    daily: fillDailySeries((dailyRows.results || []), since, days),
+    hourly: hourlyRows.results || [],
+    countries: countryRows.results || [],
+    regions: regionRows.results || [],
+    topPages: topPages.results || [],
+    topClicks: topClicks.results || [],
+    recentViews: recentViews.results || [],
+    recentClicks: recentClicks.results || []
+  });
+}
+
+async function getAdminChatMessages(request, env) {
+  await requireAdmin(request, env);
+  await ensureAnalyticsSchema(env);
+  const url = new URL(request.url);
+  const limit = clampLimit(url.searchParams.get("limit"), 100);
+  const includeHidden = url.searchParams.get("includeHidden") === "1";
+  const where = includeHidden ? "" : "where anonymous_chat_messages.hidden = 0";
+  const rows = (await env.DB.prepare(`
+    select
+      anonymous_chat_messages.message_id,
+      anonymous_chat_messages.visitor_id,
+      anonymous_chat_messages.client_id,
+      anonymous_chat_messages.nickname,
+      anonymous_chat_messages.content,
+      anonymous_chat_messages.created_at,
+      anonymous_chat_messages.edited_at,
+      anonymous_chat_messages.hidden,
+      anonymous_chat_messages.ip_hash,
+      anonymous_chat_messages.ip_prefix,
+      site_visitors.country,
+      site_visitors.region,
+      site_visitors.city,
+      site_visitors.last_seen_at
+    from anonymous_chat_messages
+    left join site_visitors on site_visitors.visitor_id = anonymous_chat_messages.visitor_id
+    ${where}
+    order by anonymous_chat_messages.created_at desc, anonymous_chat_messages.message_id desc
+    limit ?
+  `).bind(limit).all()).results || [];
+  return json({ messages: rows });
+}
+
+async function updateAdminChatMessage(request, env, messageId) {
+  await requireAdmin(request, env);
+  const body = await readJson(request);
+  const normalizedId = normalizeRecordId(messageId, "消息编号不正确。");
+  const existing = await env.DB.prepare("select message_id from anonymous_chat_messages where message_id = ?")
+    .bind(normalizedId).first();
+  if (!existing) {
+    return json({ error: "消息不存在。" }, 404);
+  }
+  const nickname = body.nickname === undefined ? undefined : normalizeChatNickname(body.nickname);
+  const content = body.content === undefined ? undefined : normalizeChatContent(body.content);
+  const hidden = body.hidden === undefined ? undefined : (body.hidden ? 1 : 0);
+  await env.DB.prepare(`
+    update anonymous_chat_messages
+    set nickname = coalesce(?, nickname),
+        content = coalesce(?, content),
+        hidden = coalesce(?, hidden),
+        edited_at = ?
+    where message_id = ?
+  `).bind(nickname ?? null, content ?? null, hidden ?? null, nowIso(), normalizedId).run();
+  return json({ ok: true });
+}
+
+async function deleteAdminChatMessage(request, env, messageId) {
+  await requireAdmin(request, env);
+  const normalizedId = normalizeRecordId(messageId, "消息编号不正确。");
+  const result = await env.DB.prepare("delete from anonymous_chat_messages where message_id = ?")
+    .bind(normalizedId).run();
+  if (!result.meta?.changes) {
+    return json({ error: "消息不存在。" }, 404);
+  }
+  return json({ ok: true });
+}
+
+async function getAdminChatBans(request, env) {
+  await requireAdmin(request, env);
+  const rows = (await env.DB.prepare(`
+    select chat_bans.*, users.email as created_by_email
+    from chat_bans
+    left join users on users.id = chat_bans.created_by
+    order by chat_bans.created_at desc
+    limit 100
+  `).all()).results || [];
+  return json({ bans: rows });
+}
+
+async function createAdminChatBan(request, env) {
+  const session = await requireAdmin(request, env);
+  const body = await readJson(request);
+  const banType = String(body.type || body.ban_type || "").trim();
+  if (!["visitor", "ip_hash"].includes(banType)) {
+    return json({ error: "禁言类型只能是 visitor 或 ip_hash。" }, 400);
+  }
+  const visitorId = banType === "visitor" ? normalizeRecordId(body.visitorId || body.visitor_id, "访客 ID 不正确。") : "";
+  const ipHash = banType === "ip_hash" ? normalizeIpHash(body.ipHash || body.ip_hash) : "";
+  const ipPrefix = normalizeAnalyticsText(body.ipPrefix || body.ip_prefix, 80);
+  const reason = normalizeAnalyticsText(body.reason, 200) || "后台禁言";
+  const durationHours = Number(body.durationHours || body.duration_hours || 0);
+  const expiresAt = Number.isFinite(durationHours) && durationHours > 0
+    ? new Date(Date.now() + Math.min(durationHours, 24 * 365) * 60 * 60 * 1000).toISOString()
+    : null;
+
+  const banId = crypto.randomUUID();
+  await env.DB.prepare(`
+    insert into chat_bans (
+      ban_id, ban_type, visitor_id, ip_hash, ip_prefix, reason,
+      active, created_by, created_at, expires_at
+    ) values (?, ?, ?, ?, ?, ?, 1, ?, ?, ?)
+  `).bind(banId, banType, visitorId, ipHash, ipPrefix, reason, session.user.id, nowIso(), expiresAt).run();
+  return json({ ok: true, banId });
+}
+
+async function disableAdminChatBan(request, env, banId) {
+  await requireAdmin(request, env);
+  const normalizedId = normalizeRecordId(banId, "禁言编号不正确。");
+  const result = await env.DB.prepare("update chat_bans set active = 0 where ban_id = ?")
+    .bind(normalizedId).run();
+  if (!result.meta?.changes) {
+    return json({ error: "禁言记录不存在。" }, 404);
+  }
+  return json({ ok: true });
+}
+
+async function activeChatBan(env, visitorId, ipHash) {
+  return env.DB.prepare(`
+    select ban_id, ban_type, reason, expires_at
+    from chat_bans
+    where active = 1
+      and (expires_at is null or expires_at > ?)
+      and (
+        (visitor_id <> '' and visitor_id = ?)
+        or (ip_hash <> '' and ip_hash = ?)
+      )
+    order by created_at desc
+    limit 1
+  `).bind(nowIso(), visitorId, ipHash).first();
+}
+
 async function recentChatNicknames(env) {
   const rows = (await env.DB.prepare(`
     select distinct nickname
@@ -553,11 +981,28 @@ async function ensureChatSchema(env) {
       create table if not exists anonymous_chat_messages (
         message_id text primary key,
         visitor_id text not null,
+        client_id text not null default '',
         nickname text not null,
         content text not null,
         created_at text not null,
+        edited_at text,
         hidden integer not null default 0,
-        ip_hash text not null
+        ip_hash text not null,
+        ip_prefix text not null default ''
+      )
+    `),
+    env.DB.prepare(`
+      create table if not exists chat_bans (
+        ban_id text primary key,
+        ban_type text not null,
+        visitor_id text not null default '',
+        ip_hash text not null default '',
+        ip_prefix text not null default '',
+        reason text not null default '',
+        active integer not null default 1,
+        created_by text not null,
+        created_at text not null,
+        expires_at text
       )
     `),
     env.DB.prepare(`
@@ -571,8 +1016,16 @@ async function ensureChatSchema(env) {
     env.DB.prepare(`
       create index if not exists anonymous_chat_messages_ip_idx
         on anonymous_chat_messages(ip_hash, created_at)
-    `)
+    `),
+    env.DB.prepare("create index if not exists chat_bans_active_visitor_idx on chat_bans(active, visitor_id, expires_at)"),
+    env.DB.prepare("create index if not exists chat_bans_active_ip_idx on chat_bans(active, ip_hash, expires_at)")
   ]);
+  await ensureTableColumns(env, "anonymous_chat_messages", [
+    ["client_id", "text not null default ''"],
+    ["edited_at", "text"],
+    ["ip_prefix", "text not null default ''"]
+  ]);
+  await env.DB.prepare("create index if not exists anonymous_chat_messages_client_idx on anonymous_chat_messages(client_id, created_at)").run();
   chatSchemaReady = true;
 }
 
@@ -617,6 +1070,91 @@ async function ensureArticleSchema(env) {
   articleSchemaReady = true;
 }
 
+async function ensureAnalyticsSchema(env) {
+  if (analyticsSchemaReady) {
+    return;
+  }
+  await env.DB.batch([
+    env.DB.prepare(`
+      create table if not exists site_visitors (
+        visitor_id text primary key,
+        first_seen_at text not null,
+        last_seen_at text not null,
+        visit_count integer not null default 0,
+        ip_hash text not null default '',
+        ip_prefix text not null default '',
+        country text not null default '',
+        region text not null default '',
+        city text not null default '',
+        timezone text not null default '',
+        colo text not null default '',
+        latitude real,
+        longitude real,
+        user_agent text not null default '',
+        language text not null default ''
+      )
+    `),
+    env.DB.prepare(`
+      create table if not exists analytics_page_views (
+        event_id text primary key,
+        visitor_id text not null,
+        path text not null,
+        route text not null default '',
+        referrer text not null default '',
+        title text not null default '',
+        lang text not null default 'zh',
+        screen_width integer not null default 0,
+        screen_height integer not null default 0,
+        country text not null default '',
+        region text not null default '',
+        city text not null default '',
+        timezone text not null default '',
+        colo text not null default '',
+        latitude real,
+        longitude real,
+        ip_hash text not null default '',
+        ip_prefix text not null default '',
+        created_at text not null
+      )
+    `),
+    env.DB.prepare(`
+      create table if not exists analytics_click_events (
+        event_id text primary key,
+        visitor_id text not null,
+        path text not null,
+        route text not null default '',
+        target_key text not null default '',
+        target_text text not null default '',
+        tag_name text not null default '',
+        element_id text not null default '',
+        element_classes text not null default '',
+        href text not null default '',
+        data_route text not null default '',
+        screen_width integer not null default 0,
+        screen_height integer not null default 0,
+        click_x integer not null default 0,
+        click_y integer not null default 0,
+        country text not null default '',
+        region text not null default '',
+        city text not null default '',
+        timezone text not null default '',
+        colo text not null default '',
+        ip_hash text not null default '',
+        ip_prefix text not null default '',
+        created_at text not null
+      )
+    `),
+    env.DB.prepare("create index if not exists site_visitors_last_seen_idx on site_visitors(last_seen_at)"),
+    env.DB.prepare("create index if not exists analytics_page_views_created_idx on analytics_page_views(created_at)"),
+    env.DB.prepare("create index if not exists analytics_page_views_visitor_idx on analytics_page_views(visitor_id, created_at)"),
+    env.DB.prepare("create index if not exists analytics_page_views_geo_idx on analytics_page_views(country, region, city, created_at)"),
+    env.DB.prepare("create index if not exists analytics_click_events_created_idx on analytics_click_events(created_at)"),
+    env.DB.prepare("create index if not exists analytics_click_events_target_idx on analytics_click_events(target_key, created_at)"),
+    env.DB.prepare("create index if not exists analytics_click_events_visitor_idx on analytics_click_events(visitor_id, created_at)")
+  ]);
+  analyticsSchemaReady = true;
+}
+
 async function ensureCoreSchema(env) {
   if (coreSchemaReady) {
     return;
@@ -654,6 +1192,7 @@ async function ensureCoreSchema(env) {
     env.DB.prepare("create index if not exists game_saves_updated_at_idx on game_saves(updated_at)")
   ]);
   await ensureUserRoleColumn(env);
+  await ensureOwnerAdminRole(env);
   coreSchemaReady = true;
 }
 
@@ -661,6 +1200,23 @@ async function ensureUserRoleColumn(env) {
   const columns = (await env.DB.prepare("pragma table_info(users)").all()).results || [];
   if (!columns.some((column) => column.name === "role")) {
     await env.DB.prepare("alter table users add column role text not null default 'user'").run();
+  }
+}
+
+async function ensureOwnerAdminRole(env) {
+  for (const email of OWNER_ADMIN_EMAILS) {
+    await env.DB.prepare("update users set role = 'admin', updated_at = ? where email = ?")
+      .bind(nowIso(), email).run();
+  }
+}
+
+async function ensureTableColumns(env, tableName, columns) {
+  const existing = (await env.DB.prepare(`pragma table_info(${tableName})`).all()).results || [];
+  const existingNames = new Set(existing.map((column) => column.name));
+  for (const [name, definition] of columns) {
+    if (!existingNames.has(name)) {
+      await env.DB.prepare(`alter table ${tableName} add column ${name} ${definition}`).run();
+    }
   }
 }
 
@@ -690,7 +1246,7 @@ async function requireSession(request, env) {
 async function requireAdmin(request, env) {
   const session = await requireSession(request, env);
   if (session.user.role !== "admin") {
-    throw new HttpError("只有管理员可以管理文章。", 403);
+    throw new HttpError("只有管理员可以访问后台。", 403);
   }
   return session;
 }
@@ -713,7 +1269,9 @@ async function getSession(request, env) {
     return null;
   }
 
-  return { tokenHash, user: { id: row.id, email: row.email, role: row.role || "user" } };
+  const email = normalizeEmail(row.email);
+  const role = OWNER_ADMIN_EMAILS.has(email) ? "admin" : (row.role || "user");
+  return { tokenHash, user: { id: row.id, email: row.email, role } };
 }
 
 function publicArticleRow(row, includeContent = false) {
@@ -1771,6 +2329,85 @@ async function seedArticleTestData(env) {
   articleSeedReady = true;
 }
 
+async function ensureVisitorProfile(env, request, visitorId, body = {}, incrementVisit = false) {
+  const now = nowIso();
+  const geo = await requestIpInfo(request, env, "analytics");
+  const userAgent = normalizeAnalyticsText(request.headers.get("User-Agent"), 500);
+  const language = normalizeAnalyticsText(body.language || request.headers.get("Accept-Language"), 160);
+  await env.DB.prepare(`
+    insert into site_visitors (
+      visitor_id, first_seen_at, last_seen_at, visit_count, ip_hash, ip_prefix,
+      country, region, city, timezone, colo, latitude, longitude, user_agent, language
+    ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    on conflict(visitor_id)
+    do update set
+      last_seen_at = excluded.last_seen_at,
+      visit_count = site_visitors.visit_count + excluded.visit_count,
+      ip_hash = excluded.ip_hash,
+      ip_prefix = excluded.ip_prefix,
+      country = excluded.country,
+      region = excluded.region,
+      city = excluded.city,
+      timezone = excluded.timezone,
+      colo = excluded.colo,
+      latitude = excluded.latitude,
+      longitude = excluded.longitude,
+      user_agent = excluded.user_agent,
+      language = excluded.language
+  `).bind(
+    visitorId,
+    now,
+    now,
+    incrementVisit ? 1 : 0,
+    geo.ipHash,
+    geo.ipPrefix,
+    geo.country,
+    geo.region,
+    geo.city,
+    geo.timezone,
+    geo.colo,
+    geo.latitude,
+    geo.longitude,
+    userAgent,
+    language
+  ).run();
+}
+
+function getOrCreateVisitorIdentity(request) {
+  const existing = readCookie(request, VISITOR_COOKIE);
+  if (isValidHiddenVisitorId(existing)) {
+    return { visitorId: existing, isNew: false };
+  }
+  return { visitorId: `vis_${randomToken(18)}`, isNew: true };
+}
+
+function withVisitorCookie(response, request, identity) {
+  if (identity?.visitorId) {
+    response.headers.append("Set-Cookie", visitorCookieValue(identity.visitorId, request));
+  }
+  return response;
+}
+
+function visitorCookieValue(value, request) {
+  const secure = new URL(request.url).protocol === "https:" ? "; Secure" : "";
+  return `${VISITOR_COOKIE}=${encodeURIComponent(value)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${VISITOR_DAYS * 24 * 60 * 60}${secure}`;
+}
+
+function isValidHiddenVisitorId(value) {
+  return /^vis_[a-zA-Z0-9_-]{16,80}$/.test(String(value || ""));
+}
+
+async function readOptionalJson(request) {
+  if (!request.headers.get("Content-Type")?.includes("application/json")) {
+    return {};
+  }
+  try {
+    return await request.json();
+  } catch {
+    return {};
+  }
+}
+
 async function readJson(request) {
   try {
     return await request.json();
@@ -1854,6 +2491,43 @@ function normalizeOptionalText(value, maxLength) {
   return text;
 }
 
+function normalizeAnalyticsText(value, maxLength) {
+  const text = String(value || "").replace(/\s+/g, " ").trim();
+  return Array.from(text).slice(0, maxLength).join("");
+}
+
+function normalizeAnalyticsPath(value) {
+  const text = normalizeAnalyticsText(value, 500) || "/";
+  if (/^(https?:|data:|javascript:)/i.test(text)) {
+    return "/";
+  }
+  return text.startsWith("/") ? text : `/${text}`;
+}
+
+function normalizeInteger(value, min, max) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) {
+    return 0;
+  }
+  return Math.min(Math.max(Math.round(number), min), max);
+}
+
+function normalizeRecordId(value, message) {
+  const text = String(value || "").trim();
+  if (!/^[a-zA-Z0-9_.:-]{1,180}$/.test(text)) {
+    throw new HttpError(message, 400);
+  }
+  return text;
+}
+
+function normalizeIpHash(value) {
+  const text = String(value || "").trim().toLowerCase();
+  if (!/^[a-f0-9]{64}$/.test(text)) {
+    throw new HttpError("IP hash 不正确。", 400);
+  }
+  return text;
+}
+
 function normalizeTags(value) {
   if (!Array.isArray(value)) {
     return [];
@@ -1911,11 +2585,60 @@ function chatMessageId(date) {
 }
 
 async function requestIpHash(request, env) {
-  const ip = request.headers.get("CF-Connecting-IP")
+  return (await requestIpInfo(request, env, "chat")).ipHash;
+}
+
+async function requestIpInfo(request, env, purpose = "analytics") {
+  const ip = requestIp(request);
+  const salt = purpose === "chat"
+    ? (env.CHAT_IP_HASH_SALT || "lusu-chat")
+    : (env.ANALYTICS_IP_HASH_SALT || env.CHAT_IP_HASH_SALT || "lusu-analytics");
+  const cf = request.cf || {};
+  const latitude = Number(cf.latitude);
+  const longitude = Number(cf.longitude);
+  return {
+    ipHash: await sha256Hex(`${salt}:${ip}`),
+    ipPrefix: maskIp(ip),
+    country: normalizeAnalyticsText(cf.country || request.headers.get("CF-IPCountry"), 80),
+    region: normalizeAnalyticsText(cf.region || cf.regionCode, 120),
+    city: normalizeAnalyticsText(cf.city, 120),
+    timezone: normalizeAnalyticsText(cf.timezone, 120),
+    colo: normalizeAnalyticsText(cf.colo, 20),
+    latitude: Number.isFinite(latitude) ? latitude : null,
+    longitude: Number.isFinite(longitude) ? longitude : null
+  };
+}
+
+function requestIp(request) {
+  return request.headers.get("CF-Connecting-IP")
     || request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
     || "unknown";
-  const salt = env.CHAT_IP_HASH_SALT || "lusu-chat";
-  return sha256Hex(`${salt}:${ip}`);
+}
+
+function maskIp(ip) {
+  const value = String(ip || "");
+  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(value)) {
+    const parts = value.split(".");
+    return `${parts[0]}.${parts[1]}.${parts[2]}.0/24`;
+  }
+  if (value.includes(":")) {
+    return `${value.split(":").slice(0, 4).join(":")}::/64`;
+  }
+  return "";
+}
+
+function fillDailySeries(rows, since, days) {
+  const map = new Map(rows.map((row) => [row.day, row]));
+  return Array.from({ length: days }, (_, index) => {
+    const date = new Date(since.getTime() + index * 24 * 60 * 60 * 1000);
+    const day = date.toISOString().slice(0, 10);
+    const row = map.get(day);
+    return {
+      day,
+      pv: Number(row?.pv || 0),
+      uv: Number(row?.uv || 0)
+    };
+  });
 }
 
 async function hashPassword(password) {
