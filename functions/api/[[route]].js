@@ -21,6 +21,8 @@ const BILIBILI_METADATA_HEADERS = {
   "User-Agent": VIDEO_METADATA_USER_AGENT,
   Accept: "application/json,text/plain,*/*",
   "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+  "Cache-Control": "no-cache",
+  Pragma: "no-cache",
   Referer: "https://www.bilibili.com/",
   Origin: "https://www.bilibili.com"
 };
@@ -107,6 +109,18 @@ export async function onRequest(context) {
     }
     if (parts[0] === "admin" && request.method === "GET" && parts[1] === "me") {
       return await adminMe(request, env);
+    }
+    if (parts[0] === "admin" && parts[1] === "accounts") {
+      await ensureAnalyticsSchema(env);
+      if (request.method === "GET" && !parts[2]) {
+        return await getAdminAccounts(request, env);
+      }
+      if (request.method === "GET" && parts[2]) {
+        return await getAdminAccount(request, env, parts[2]);
+      }
+      if (request.method === "PUT" && parts[2]) {
+        return await updateAdminAccount(request, env, parts[2]);
+      }
     }
     if (parts[0] === "admin" && parts[1] === "analytics") {
       await ensureAnalyticsSchema(env);
@@ -237,6 +251,7 @@ async function register(request, env) {
     "insert into users (id, email, password_hash, created_at, updated_at) values (?, ?, ?, ?, ?)"
   ).bind(userId, email, passwordHash, now, now).run();
 
+  await recordUserLoginEvent(env, request, { id: userId, email, role: "user" }, "register");
   return createSessionResponse(env, request, userId, email, 201);
 }
 
@@ -251,6 +266,7 @@ async function login(request, env) {
     return json({ error: "邮箱或密码不正确。" }, 401);
   }
 
+  await recordUserLoginEvent(env, request, user, "login");
   return createSessionResponse(env, request, user.id, user.email, 200, user.role || "user");
 }
 
@@ -540,7 +556,7 @@ async function getArticle(request, env, slug) {
   row.view_count = Number(row.view_count || 0) + 1;
 
   const identity = await recordArticleView(request, env, row, row.lang || lang);
-  return withVisitorCookie(json({ article: publicArticleRow(row, true), lang }), request, identity);
+  return withVisitorCookie(json({ article: publicArticleRow(row, true), lang }), request, identity.cookieIdentity);
 }
 
 async function getAdminArticles(request, env) {
@@ -703,7 +719,7 @@ async function getVideos(request, env) {
     select *
     from videos
     where status = 'published'
-    order by pinned desc, sort_order asc, coalesce(published_at, created_at) desc, created_at desc
+    order by pinned desc, sort_order desc, coalesce(published_at, created_at) desc, created_at desc
     limit 80
   `).all()).results || [];
   const videoIds = rows.map((row) => row.video_id);
@@ -731,17 +747,22 @@ async function getAdminVideos(request, env) {
   const rows = (await env.DB.prepare(`
     select *
     from videos
-    order by pinned desc, sort_order asc, updated_at desc, created_at desc
+    order by pinned desc, sort_order desc, updated_at desc, created_at desc
     limit 200
   `).all()).results || [];
   const relations = await videoRelations(env, rows.map((row) => row.video_id));
   return json({ videos: rows.map((row) => adminVideoRow(row, relations.get(row.video_id) || [])) });
 }
 
+async function nextVideoSortOrder(env) {
+  const row = await env.DB.prepare("select coalesce(max(sort_order), 0) as max_sort from videos").first();
+  return Number(row?.max_sort || 0) + 10;
+}
+
 async function createVideo(request, env) {
   await requireAdmin(request, env);
   const body = await readJson(request);
-  const video = await normalizeVideoPayload(body, env);
+  const video = await normalizeVideoPayload(body, env, { defaultSortOrder: await nextVideoSortOrder(env) });
   const now = nowIso();
   const videoId = crypto.randomUUID();
   await env.DB.batch([
@@ -842,15 +863,20 @@ async function getAdminVideoCategories(request, env) {
     from video_categories
     left join video_category_relations on video_category_relations.category_id = video_categories.category_id
     group by video_categories.category_id
-    order by video_categories.sort_order asc, video_categories.created_at asc
+    order by video_categories.sort_order desc, video_categories.created_at desc
   `).all()).results || [];
   return json({ categories: rows.map((row) => ({ ...row, video_count: Number(row.video_count || 0) })) });
+}
+
+async function nextVideoCategorySortOrder(env) {
+  const row = await env.DB.prepare("select coalesce(max(sort_order), 0) as max_sort from video_categories").first();
+  return Number(row?.max_sort || 0) + 10;
 }
 
 async function createVideoCategory(request, env) {
   await requireAdmin(request, env);
   const body = await readJson(request);
-  const category = normalizeVideoCategoryPayload(body);
+  const category = normalizeVideoCategoryPayload(body, { defaultSortOrder: await nextVideoCategorySortOrder(env) });
   const now = nowIso();
   const categoryId = crypto.randomUUID();
   await env.DB.prepare(`
@@ -867,12 +893,12 @@ async function createVideoCategory(request, env) {
 async function updateVideoCategory(request, env, categoryId) {
   await requireAdmin(request, env);
   const normalizedId = normalizeRecordId(categoryId, "Category id is invalid.");
-  const existing = await env.DB.prepare("select category_id from video_categories where category_id = ?")
+  const existing = await env.DB.prepare("select category_id, sort_order from video_categories where category_id = ?")
     .bind(normalizedId).first();
   if (!existing) {
     return json({ error: "Category not found." }, 404);
   }
-  const category = normalizeVideoCategoryPayload(await readJson(request));
+  const category = normalizeVideoCategoryPayload(await readJson(request), { defaultSortOrder: existing.sort_order });
   await env.DB.prepare(`
     update video_categories
     set slug = ?, name_zh = ?, name_en = ?, name_ja = ?, sort_order = ?, enabled = ?, updated_at = ?
@@ -904,16 +930,158 @@ async function adminMe(request, env) {
   return json({ user: session.user });
 }
 
+async function getAdminAccounts(request, env) {
+  await requireAdmin(request, env);
+  const now = nowIso();
+  const rows = (await env.DB.prepare(`
+    select
+      users.id,
+      users.email,
+      users.password_hash,
+      users.role,
+      users.created_at,
+      users.updated_at,
+      (select count(*) from sessions where sessions.user_id = users.id and sessions.expires_at > ?) as active_sessions,
+      (select max(created_at) from sessions where sessions.user_id = users.id) as last_session_at,
+      (select max(created_at) from user_login_events where user_login_events.user_id = users.id) as last_login_at,
+      (select count(*) from user_login_events where user_login_events.user_id = users.id) as login_count,
+      (select count(*) from game_saves where game_saves.user_id = users.id) as save_slots
+    from users
+    order by case when users.role = 'admin' then 0 else 1 end, users.updated_at desc
+    limit 500
+  `).bind(now).all()).results || [];
+  return json({ accounts: rows.map(adminAccountRow) });
+}
+
+async function getAdminAccount(request, env, userId) {
+  await requireAdmin(request, env);
+  const normalizedId = normalizeRecordId(userId, "账号编号不正确。");
+  const account = await env.DB.prepare(`
+    select id, email, password_hash, role, created_at, updated_at
+    from users
+    where id = ?
+  `).bind(normalizedId).first();
+  if (!account) {
+    return json({ error: "账号不存在。" }, 404);
+  }
+
+  const accountVisitorId = await stableAccountVisitorId(account.id);
+  const now = nowIso();
+  const [loginHistory, sessions, activity] = await Promise.all([
+    env.DB.prepare(`
+      select event_type, created_at, ip_prefix, country, region, city, timezone, colo, user_agent, visitor_id
+      from user_login_events
+      where user_id = ?
+      order by created_at desc
+      limit 80
+    `).bind(account.id).all(),
+    env.DB.prepare(`
+      select created_at, expires_at,
+             case when expires_at > ? then 1 else 0 end as active
+      from sessions
+      where user_id = ?
+      order by created_at desc
+      limit 30
+    `).bind(now, account.id).all(),
+    env.DB.prepare(`
+      select * from (
+        select 'page_view' as type, created_at, path, route, title as detail,
+               country, region, city, ip_prefix
+        from analytics_page_views
+        where visitor_id = ?
+        union all
+        select 'click' as type, created_at, path, data_route as route,
+               coalesce(nullif(target_text, ''), nullif(target_key, ''), tag_name) as detail,
+               country, region, city, '' as ip_prefix
+        from analytics_click_events
+        where visitor_id = ?
+        union all
+        select 'article_view' as type, created_at, slug as path, lang as route, slug as detail,
+               country, region, city, ip_prefix
+        from article_view_events
+        where visitor_id = ?
+      )
+      order by created_at desc
+      limit 80
+    `).bind(accountVisitorId, accountVisitorId, accountVisitorId).all()
+  ]);
+
+  return json({
+    account: adminAccountRow(account),
+    loginHistory: (loginHistory.results || []).map(adminLoginEventRow),
+    sessions: (sessions.results || []).map((row) => ({
+      created_at: row.created_at,
+      expires_at: row.expires_at,
+      active: Boolean(row.active)
+    })),
+    activity: (activity.results || []).map(adminAccountActivityRow)
+  });
+}
+
+async function updateAdminAccount(request, env, userId) {
+  const adminSession = await requireAdmin(request, env);
+  const normalizedId = normalizeRecordId(userId, "账号编号不正确。");
+  const body = await readJson(request);
+  const existing = await env.DB.prepare("select id, email, role from users where id = ?")
+    .bind(normalizedId).first();
+  if (!existing) {
+    return json({ error: "账号不存在。" }, 404);
+  }
+
+  const nextEmail = body.email === undefined ? normalizeEmail(existing.email) : normalizeEmail(body.email);
+  validateEmail(nextEmail);
+  const nextRole = normalizeAccountRole(body.role === undefined ? existing.role : body.role);
+  const password = String(body.password || body.newPassword || "");
+  const passwordChanged = password.trim().length > 0;
+
+  if (OWNER_ADMIN_EMAILS.has(nextEmail) && nextRole !== "admin") {
+    throw new HttpError("站长账号必须保留管理员权限。", 400);
+  }
+  if (existing.id === adminSession.user.id && nextRole !== "admin") {
+    throw new HttpError("不能把当前登录账号降级，否则会立刻失去后台权限。", 400);
+  }
+  if (nextEmail !== normalizeEmail(existing.email)) {
+    const conflict = await env.DB.prepare("select id from users where email = ? and id <> ?")
+      .bind(nextEmail, existing.id).first();
+    if (conflict) {
+      throw new HttpError("这个邮箱已经被其他账号使用。", 409);
+    }
+  }
+  if (passwordChanged) {
+    validatePassword(password);
+  }
+
+  const fields = ["email = ?", "role = ?", "updated_at = ?"];
+  const binds = [nextEmail, nextRole, nowIso()];
+  if (passwordChanged) {
+    fields.splice(2, 0, "password_hash = ?");
+    binds.splice(2, 0, await hashPassword(password));
+  }
+  binds.push(existing.id);
+  await env.DB.prepare(`update users set ${fields.join(", ")} where id = ?`).bind(...binds).run();
+
+  if (passwordChanged) {
+    if (existing.id === adminSession.user.id) {
+      await env.DB.prepare("delete from sessions where user_id = ? and token_hash <> ?")
+        .bind(existing.id, adminSession.tokenHash).run();
+    } else {
+      await env.DB.prepare("delete from sessions where user_id = ?").bind(existing.id).run();
+    }
+  }
+
+  return await getAdminAccount(request, env, existing.id);
+}
+
 async function identifyVisitor(request, env) {
   const body = await readOptionalJson(request);
-  const identity = getOrCreateVisitorIdentity(request);
+  const identity = await analyticsIdentityForRequest(request, env);
   await ensureVisitorProfile(env, request, identity.visitorId, body || {}, false);
-  return withVisitorCookie(json({ ok: true }), request, identity);
+  return withVisitorCookie(json({ ok: true }), request, identity.cookieIdentity);
 }
 
 async function recordPageView(request, env) {
   const body = await readOptionalJson(request);
-  const identity = getOrCreateVisitorIdentity(request);
+  const identity = await analyticsIdentityForRequest(request, env);
   const now = nowIso();
   const geo = await requestIpInfo(request, env, "analytics");
   await ensureVisitorProfile(env, request, identity.visitorId, body || {}, true);
@@ -944,12 +1112,12 @@ async function recordPageView(request, env) {
     geo.ipPrefix,
     now
   ).run();
-  return withVisitorCookie(json({ ok: true }), request, identity);
+  return withVisitorCookie(json({ ok: true }), request, identity.cookieIdentity);
 }
 
 async function recordClickEvent(request, env) {
   const body = await readOptionalJson(request);
-  const identity = getOrCreateVisitorIdentity(request);
+  const identity = await analyticsIdentityForRequest(request, env);
   const now = nowIso();
   const geo = await requestIpInfo(request, env, "analytics");
   await ensureVisitorProfile(env, request, identity.visitorId, body || {}, false);
@@ -984,12 +1152,12 @@ async function recordClickEvent(request, env) {
     geo.ipPrefix,
     now
   ).run();
-  return withVisitorCookie(json({ ok: true }), request, identity);
+  return withVisitorCookie(json({ ok: true }), request, identity.cookieIdentity);
 }
 
 async function recordArticleView(request, env, article, lang) {
   await ensureAnalyticsSchema(env);
-  const identity = getOrCreateVisitorIdentity(request);
+  const identity = await analyticsIdentityForRequest(request, env);
   const now = nowIso();
   const geo = await requestIpInfo(request, env, "analytics");
   await ensureVisitorProfile(env, request, identity.visitorId, {
@@ -1494,8 +1662,6 @@ async function ensureVideoSchema(env) {
         name_zh = excluded.name_zh,
         name_en = excluded.name_en,
         name_ja = excluded.name_ja,
-        sort_order = excluded.sort_order,
-        enabled = excluded.enabled,
         updated_at = excluded.updated_at
     `)
   ]);
@@ -1635,8 +1801,29 @@ async function ensureCoreSchema(env) {
         expires_at text not null
       )
     `),
+    env.DB.prepare(`
+      create table if not exists user_login_events (
+        event_id text primary key,
+        user_id text not null references users(id) on delete cascade,
+        email text not null default '',
+        event_type text not null default 'login',
+        visitor_id text not null default '',
+        ip_hash text not null default '',
+        ip_prefix text not null default '',
+        country text not null default '',
+        region text not null default '',
+        city text not null default '',
+        timezone text not null default '',
+        colo text not null default '',
+        user_agent text not null default '',
+        created_at text not null
+      )
+    `),
     env.DB.prepare("create index if not exists sessions_user_id_idx on sessions(user_id)"),
     env.DB.prepare("create index if not exists sessions_expires_at_idx on sessions(expires_at)"),
+    env.DB.prepare("create index if not exists user_login_events_user_created_idx on user_login_events(user_id, created_at)"),
+    env.DB.prepare("create index if not exists user_login_events_created_idx on user_login_events(created_at)"),
+    env.DB.prepare("create index if not exists user_login_events_email_created_idx on user_login_events(email, created_at)"),
     env.DB.prepare(`
       create table if not exists game_saves (
         user_id text not null references users(id) on delete cascade,
@@ -1789,7 +1976,7 @@ async function publicVideoCategories(env, lang) {
     select category_id, slug, name_zh, name_en, name_ja, sort_order
     from video_categories
     where enabled = 1
-    order by sort_order asc, created_at asc
+    order by sort_order desc, created_at desc
   `).all()).results || [];
   return rows.map((row) => ({
     category_id: row.category_id,
@@ -1822,7 +2009,7 @@ async function videoRelations(env, videoIds) {
     from video_category_relations
     join video_categories on video_categories.category_id = video_category_relations.category_id
     where video_category_relations.video_id in (${placeholders})
-    order by video_category_relations.sort_order asc, video_categories.sort_order asc
+    order by video_category_relations.sort_order asc, video_categories.sort_order desc
   `).bind(...videoIds).all()).results || [];
   rows.forEach((row) => {
     const list = result.get(row.video_id) || [];
@@ -1875,14 +2062,14 @@ async function normalizeVideoPayload(body, env, options = {}) {
     author_name: normalizeOptionalText(body.author_name, 160) || parsed.author_name || "",
     published_at: normalizeOptionalDateTime(body.published_at) || parsed.published_at || null,
     status: normalizeVideoStatus(body.status),
-    sort_order: normalizeInteger(body.sort_order, -100000, 100000),
+    sort_order: normalizeSortOrder(body.sort_order, options.defaultSortOrder ?? options.existing?.sort_order ?? 0),
     pinned: body.pinned ? 1 : 0,
     metadata_error: normalizeOptionalText(body.metadata_error, 500) || parsed.metadata_error || "",
     category_ids: await normalizeVideoCategoryIds(env, body.category_ids || body.categories || [])
   };
 }
 
-function normalizeVideoCategoryPayload(body) {
+function normalizeVideoCategoryPayload(body, options = {}) {
   if (!body || typeof body !== "object" || Array.isArray(body)) {
     throw new HttpError("Category payload is invalid.", 400);
   }
@@ -1891,7 +2078,7 @@ function normalizeVideoCategoryPayload(body) {
     name_zh: normalizeRequiredText(body.name_zh || body.name, 80, "中文分类名不能为空。"),
     name_en: normalizeOptionalText(body.name_en, 80),
     name_ja: normalizeOptionalText(body.name_ja, 80),
-    sort_order: normalizeInteger(body.sort_order, -100000, 100000),
+    sort_order: normalizeSortOrder(body.sort_order, options.defaultSortOrder ?? 0),
     enabled: body.enabled === false || body.enabled === 0 ? 0 : 1
   };
 }
@@ -2048,7 +2235,7 @@ async function bilibiliMetadata(parsed) {
       const metadata = bilibiliDataToMetadata(parsed, data);
       return {
         ...metadata,
-        metadata_error: metadata.title || metadata.description || metadata.published_at
+        metadata_error: metadata.title || metadata.description || metadata.thumbnail_url || metadata.author_name || metadata.published_at
           ? ""
           : `Bilibili 元数据抓取失败：${apiError.message || "请手动填写。"}`
       };
@@ -2107,7 +2294,7 @@ async function bilibiliPageMetadata(parsed) {
     BILIBILI_PAGE_HEADERS
   );
   const state = extractBilibiliInitialState(html);
-  const data = state?.videoData || state?.videoInfo || state?.View || state?.viewInfo || null;
+  const data = state?.videoData || state?.videoInfo || state?.View || state?.viewInfo || findBilibiliVideoData(state) || bilibiliHtmlMetadata(html);
   if (!data) {
     throw new Error("Bilibili 页面未返回视频信息。");
   }
@@ -2115,16 +2302,108 @@ async function bilibiliPageMetadata(parsed) {
 }
 
 function bilibiliDataToMetadata(parsed, data) {
-  const description = data.desc || descV2Text(data.desc_v2);
+  const description = data.desc || descV2Text(data.desc_v2) || data.description || data.shortDescription;
+  const publishedAt = metadataUnixDate(data.pubdate || data.ctime || data.publish_time || data.pub_time)
+    || metadataDate(data.published_at || data.uploadDate || data.datePublished || data.createTime);
   return {
     ...parsed,
-    title: metadataText(data.title, 220),
+    title: metadataText(cleanBilibiliTitle(data.title || data.name), 220),
     description: metadataText(description, 2000),
-    thumbnail_url: metadataThumbnailUrl(data.pic),
-    author_name: metadataText(data.owner?.name || data.author || data.upData?.name, 160),
-    published_at: metadataUnixDate(data.pubdate || data.ctime),
+    thumbnail_url: metadataThumbnailUrl(data.pic || data.cover || data.thumbnail_url || data.thumbnailUrl || data.image),
+    author_name: metadataText(data.owner?.name || data.author?.name || data.author || data.upData?.name || data.ownerName, 160),
+    published_at: publishedAt,
     metadata_error: ""
   };
+}
+
+function bilibiliHtmlMetadata(html) {
+  const jsonLd = extractJsonLdVideoMetadata(html);
+  const title = cleanBilibiliTitle(
+    extractMetaContent(html, "property", "og:title")
+      || extractMetaContent(html, "name", "title")
+      || extractJsonString(html, "title")
+      || jsonLd.title
+      || jsonLd.name
+  );
+  const description = extractMetaContent(html, "name", "description")
+    || extractMetaContent(html, "property", "og:description")
+    || extractJsonString(html, "description")
+    || extractJsonString(html, "desc")
+    || jsonLd.description;
+  const image = extractMetaContent(html, "property", "og:image")
+    || extractMetaContent(html, "itemprop", "thumbnailUrl")
+    || extractJsonString(html, "thumbnailUrl")
+    || extractJsonString(html, "thumbnail_url")
+    || jsonLd.thumbnailUrl
+    || jsonLd.image;
+  const author = extractMetaContent(html, "name", "author")
+    || extractNestedJsonString(html, "owner", "name")
+    || extractJsonString(html, "ownerName")
+    || jsonLd.author;
+  const published = extractMetaContent(html, "itemprop", "uploadDate")
+    || extractJsonString(html, "uploadDate")
+    || extractJsonString(html, "datePublished")
+    || jsonLd.uploadDate
+    || jsonLd.datePublished;
+  const unixPublished = extractJsonNumber(html, "pubdate") || extractJsonNumber(html, "ctime");
+  if (!title && !description && !image && !author && !published && !unixPublished) {
+    return null;
+  }
+  return {
+    title,
+    desc: description,
+    pic: image,
+    author,
+    published_at: published || "",
+    pubdate: unixPublished
+  };
+}
+
+function cleanBilibiliTitle(value) {
+  return String(value || "")
+    .replace(/_哔哩哔哩_bilibili\s*$/i, "")
+    .replace(/\s*-\s*哔哩哔哩\s*$/i, "")
+    .trim();
+}
+
+function findBilibiliVideoData(value, depth = 0) {
+  if (!value || typeof value !== "object" || depth > 5) {
+    return null;
+  }
+  if (looksLikeBilibiliVideoData(value)) {
+    return value;
+  }
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      const found = findBilibiliVideoData(item, depth + 1);
+      if (found) {
+        return found;
+      }
+    }
+    return null;
+  }
+  for (const key of ["videoData", "videoInfo", "View", "viewInfo", "data", "result", "item"]) {
+    const found = findBilibiliVideoData(value[key], depth + 1);
+    if (found) {
+      return found;
+    }
+  }
+  for (const item of Object.values(value)) {
+    const found = findBilibiliVideoData(item, depth + 1);
+    if (found) {
+      return found;
+    }
+  }
+  return null;
+}
+
+function looksLikeBilibiliVideoData(value) {
+  return Boolean(
+    value
+      && typeof value === "object"
+      && value.title
+      && (value.bvid || value.aid || value.pic || value.cover || value.owner || value.pubdate || value.ctime || value.desc || value.desc_v2)
+  );
 }
 
 function descV2Text(value) {
@@ -2227,6 +2506,74 @@ function extractJsonString(html, key) {
   } catch {
     return match[1].replace(/\\"/g, '"');
   }
+}
+
+function extractJsonNumber(html, key) {
+  const pattern = new RegExp(`"${escapeRegExp(key)}"\\s*:\\s*(\\d{6,})`);
+  const match = String(html || "").match(pattern);
+  return match ? Number(match[1]) : 0;
+}
+
+function extractNestedJsonString(html, objectKey, key) {
+  const pattern = new RegExp(`"${escapeRegExp(objectKey)}"\\s*:\\s*\\{[^{}]*"${escapeRegExp(key)}"\\s*:\\s*"((?:\\\\.|[^"\\\\])*)"`);
+  const match = String(html || "").match(pattern);
+  if (!match) {
+    return "";
+  }
+  try {
+    return JSON.parse(`"${match[1]}"`);
+  } catch {
+    return match[1].replace(/\\"/g, '"');
+  }
+}
+
+function extractJsonLdVideoMetadata(html) {
+  const source = String(html || "");
+  const scriptPattern = /<script\s+[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+  let match;
+  while ((match = scriptPattern.exec(source))) {
+    try {
+      const parsed = JSON.parse(decodeHtmlEntities(match[1].trim()));
+      const video = findJsonLdVideoObject(parsed);
+      if (video) {
+        return {
+          title: video.title || "",
+          name: video.name || "",
+          description: video.description || "",
+          image: Array.isArray(video.image) ? video.image[0] : video.image,
+          thumbnailUrl: Array.isArray(video.thumbnailUrl) ? video.thumbnailUrl[0] : video.thumbnailUrl,
+          uploadDate: video.uploadDate || "",
+          datePublished: video.datePublished || "",
+          author: typeof video.author === "string"
+            ? video.author
+            : (Array.isArray(video.author) ? video.author[0]?.name : video.author?.name) || ""
+        };
+      }
+    } catch {
+      continue;
+    }
+  }
+  return {};
+}
+
+function findJsonLdVideoObject(value) {
+  if (!value || typeof value !== "object") {
+    return null;
+  }
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      const found = findJsonLdVideoObject(item);
+      if (found) {
+        return found;
+      }
+    }
+    return null;
+  }
+  const type = Array.isArray(value["@type"]) ? value["@type"] : [value["@type"]];
+  if (type.some((item) => String(item || "").toLowerCase() === "videoobject")) {
+    return value;
+  }
+  return findJsonLdVideoObject(value["@graph"]);
 }
 
 function metadataDate(value) {
@@ -3480,6 +3827,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         article_id, slug, category, tags, cover_image, status, is_pinned,
         view_count, created_at, updated_at, published_at
       ) values (
+        'seed-update-2026-06-15-video-management-sort-metadata',
+        '2026-06-15-video-management-sort-metadata',
+        'site-updates',
+        '["网站更新","视频区","后台","排序","Bilibili"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-15T16:20:00.000Z',
+        '2026-06-15T16:20:00.000Z',
+        '2026-06-15T16:20:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
         'seed-update-2026-06-15-video-player-window-controls',
         '2026-06-15-video-player-window-controls',
         'site-updates',
@@ -3640,6 +4014,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# 動画プレイヤーのウィンドウ操作修正\n\n今回の更新では、動画欄の XP 風プレイヤーウィンドウを調整し、サイト側のウィンドウ操作と YouTube / Bilibili のプレイヤー操作が混ざらないようにしました。\n\n## 更新内容\n\n- サイト内の「全画面」は、タイトルバー右上の XP 風の最大化/復元ボタンに変更しました。もう一度クリックするか Escape で元に戻せます。\n- iframe を優先してブラウザ全画面にしないようにし、YouTube / Bilibili の全画面はプレイヤー側に任せます。\n- 公開動画 API は実際の `original_url` を返し続け、「元のページを開く」が YouTube / Bilibili の元ページへ移動するようにしています。\n- iframe 上部と下部の情報バーは通常はサイト側のマスクで隠し、プレイヤー付近にマウスを置いた時だけ見えるようにしました。\n- 下部の空白部分には透明のクリック保護を置き、動画カードの再生ボタンもボタン本体だけが反応するようにして、プラットフォーム側ボタンの誤触を減らしました。"
       }
     }, "2026-06-15T15:30:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-15-video-management-sort-metadata", {
+      zh: {
+        title: "视频管理排序与 B 站信息修复",
+        summary: "修复 Bilibili 元数据兜底、视频排序、统一卡片尺寸和首页视频入口文案。",
+        content_markdown: "# 视频管理排序与 B 站信息修复\n\n本次更新继续修复视频区和后台视频管理，让新视频更容易排在前面，Bilibili 链接也能尽量补齐公开信息。\n\n## 更新内容\n\n- Bilibili 元数据抓取增加页面 meta、结构化数据和更多页面状态兜底，遇到接口 412 时也会尽量补齐标题、简介、作者、发布时间和封面。\n- 视频列表改为置顶优先，未置顶视频按排序值从大到小显示；后台新建视频默认使用当前最大排序 + 10。\n- 视频分类管理使用同样的排序语义，默认新建分类也会自动追加 +10，并避免默认分类 seed 覆盖后台维护过的排序和启用状态。\n- 主站视频卡片统一高度，封面按钮清除默认内边距并让图片完全铺满，缺少封面时显示同尺寸像素风占位卡。\n- 视频播放器的“打开原地址”保持真实外链，并兼容旧 fallback 数据；首页视频区入口去掉“待定”文案。"
+      },
+      en: {
+        title: "Video Sorting and Bilibili Metadata Fixes",
+        summary: "Improved Bilibili metadata fallback, video ordering, card sizing, and the home Videos label.",
+        content_markdown: "# Video Sorting and Bilibili Metadata Fixes\n\nThis update tightens the managed video workflow so newer videos can stay at the front and Bilibili links keep more of their public metadata.\n\n## Changes\n\n- Bilibili metadata now falls back to page meta tags, structured data, and broader page-state parsing when the API returns HTTP 412.\n- Video lists keep pinned items first, then sort unpinned videos by higher sort values first; new admin videos default to the current max sort + 10.\n- Video categories use the same sort meaning, new categories also default to +10, and default category seeds no longer overwrite admin-managed sort/enabled values.\n- Public video cards now share one stable height, thumbnails remove button padding and fully cover their frame, and missing thumbnails use a same-size pixel placeholder.\n- Open Original remains a real source link, including old fallback data, and the home Videos icon no longer says TBD."
+      },
+      ja: {
+        title: "動画管理の並び順と Bilibili 情報取得を修正",
+        summary: "Bilibili メタ情報の補完、動画の並び順、カードサイズ、ホームの動画ラベルを調整しました。",
+        content_markdown: "# 動画管理の並び順と Bilibili 情報取得を修正\n\n今回の更新では、動画欄と管理画面の動画管理を続けて調整し、新しい動画を前に出しやすくし、Bilibili リンクの公開情報もできるだけ補えるようにしました。\n\n## 更新内容\n\n- Bilibili API が HTTP 412 を返した場合も、ページ meta、構造化データ、ページ状態からタイトル、概要、作者、公開時刻、サムネイルをできるだけ補完します。\n- 動画一覧は固定表示を最優先し、その下で並び順の数値が大きいものほど前に表示します。管理画面の新規動画は現在の最大値 +10 を初期値にします。\n- 動画分類も同じ並び順の意味にそろえ、新規分類も +10 で追加します。既定分類の seed は管理画面で変更した並び順と有効状態を上書きしません。\n- 公開側の動画カードは高さを統一し、サムネイル画像は余白なく枠いっぱいに表示します。サムネイルがない場合も同じサイズのピクセル風プレースホルダーを表示します。\n- 「元のページを開く」は実際の外部リンクとして維持し、ホームの動画アイコンから「未定」表記を外しました。"
+      }
+    }, "2026-06-15T16:20:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')
@@ -3697,6 +4088,104 @@ async function ensureVisitorProfile(env, request, visitorId, body = {}, incremen
     userAgent,
     language
   ).run();
+}
+
+async function analyticsIdentityForRequest(request, env) {
+  const cookieIdentity = getOrCreateVisitorIdentity(request);
+  const session = await getSession(request, env);
+  if (!session?.user?.id) {
+    return { visitorId: cookieIdentity.visitorId, cookieIdentity, user: null };
+  }
+  return {
+    visitorId: await stableAccountVisitorId(session.user.id),
+    cookieIdentity,
+    user: session.user
+  };
+}
+
+async function stableAccountVisitorId(userId) {
+  const hash = await sha256Hex(`analytics-account:${userId}`);
+  return `acct_${hash.slice(0, 32)}`;
+}
+
+async function recordUserLoginEvent(env, request, user, eventType = "login") {
+  await ensureCoreSchema(env);
+  const now = nowIso();
+  const geo = await requestIpInfo(request, env, "analytics");
+  const cookieIdentity = getOrCreateVisitorIdentity(request);
+  await env.DB.prepare(`
+    insert into user_login_events (
+      event_id, user_id, email, event_type, visitor_id, ip_hash, ip_prefix,
+      country, region, city, timezone, colo, user_agent, created_at
+    ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(
+    crypto.randomUUID(),
+    user.id,
+    normalizeEmail(user.email),
+    normalizeAnalyticsText(eventType, 40) || "login",
+    cookieIdentity.visitorId,
+    geo.ipHash,
+    geo.ipPrefix,
+    geo.country,
+    geo.region,
+    geo.city,
+    geo.timezone,
+    geo.colo,
+    normalizeAnalyticsText(request.headers.get("User-Agent"), 500),
+    now
+  ).run();
+}
+
+function adminAccountRow(row) {
+  return {
+    id: row.id,
+    email: row.email,
+    role: row.role || "user",
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+    last_login_at: row.last_login_at || row.last_session_at || "",
+    active_sessions: Number(row.active_sessions || 0),
+    login_count: Number(row.login_count || 0),
+    save_slots: Number(row.save_slots || 0),
+    password_status: passwordStatusLabel(row.password_hash),
+    password_visible: false,
+    password_note: "密码只保存加密结果，后台不能查看原文；需要时可直接设置新密码。"
+  };
+}
+
+function adminLoginEventRow(row) {
+  return {
+    event_type: row.event_type || "login",
+    created_at: row.created_at,
+    ip_prefix: row.ip_prefix || "",
+    country: row.country || "",
+    region: row.region || "",
+    city: row.city || "",
+    timezone: row.timezone || "",
+    colo: row.colo || "",
+    user_agent: row.user_agent || "",
+    visitor_id: row.visitor_id || ""
+  };
+}
+
+function adminAccountActivityRow(row) {
+  return {
+    type: row.type || "",
+    created_at: row.created_at,
+    path: row.path || "",
+    route: row.route || "",
+    detail: row.detail || "",
+    country: row.country || "",
+    region: row.region || "",
+    city: row.city || "",
+    ip_prefix: row.ip_prefix || ""
+  };
+}
+
+function passwordStatusLabel(value) {
+  return String(value || "").startsWith("pbkdf2_sha256$")
+    ? "已加密保存"
+    : "旧格式或未知";
 }
 
 function getOrCreateVisitorIdentity(request) {
@@ -3766,6 +4255,14 @@ function validatePassword(password) {
   if (password.length < 8 || password.length > 128) {
     throw new HttpError("密码至少 8 位，最多 128 位。", 400);
   }
+}
+
+function normalizeAccountRole(value) {
+  const role = String(value || "user").trim().toLowerCase();
+  if (!["user", "admin"].includes(role)) {
+    throw new HttpError("账号角色只能是 user 或 admin。", 400);
+  }
+  return role;
 }
 
 function validateGameId(gameId) {
@@ -3893,6 +4390,13 @@ function normalizeInteger(value, min, max) {
     return 0;
   }
   return Math.min(Math.max(Math.round(number), min), max);
+}
+
+function normalizeSortOrder(value, fallback = 0) {
+  if (value === undefined || value === null || String(value).trim() === "") {
+    return normalizeInteger(fallback, -100000, 100000);
+  }
+  return normalizeInteger(value, -100000, 100000);
 }
 
 function normalizeRecordId(value, message) {

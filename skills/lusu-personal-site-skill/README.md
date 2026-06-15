@@ -88,4 +88,7 @@ skills/lusu-personal-site-skill/SKILL.md
 - 支持的链接域名限定为 YouTube、youtu.be、Bilibili、b23.tv；不要把用户输入的任意 URL 直接放进 iframe。
 - 公开视频接口必须返回 `original_url` 给“打开原地址”；站内窗口最大化/还原不要直接 fullscreen iframe，平台播放器自己的全屏交给 iframe 内部控件。
 - 跨域播放器热区不能由父页面精确改写，遇到默认信息栏或底部空白误触时，用站内遮罩、透明点击防护区和收窄本站按钮热区兜底。
+- 视频排序语义为置顶独立优先；未置顶视频和视频分类都按 `sort_order` 从大到小显示，新建默认取当前最大排序 +10。
+- Bilibili 元数据遇到 HTTP 412 或页面结构变化时，优先尝试页面 `__INITIAL_STATE__`、meta、结构化数据和更宽的页面状态兜底，不放宽白名单或 iframe 安全边界。
+- 主站所有视频卡片必须保持统一尺寸，封面铺满区域；缺少封面或加载失败时使用同尺寸像素风占位图。
 - 修改视频区前台、后台或样式后，同步更新缓存 query、`CHANGELOG.md`、`PROJECT_CONTEXT.md`、本 Skill 与网站更新记录。

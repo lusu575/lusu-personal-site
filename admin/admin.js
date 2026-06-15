@@ -12,6 +12,9 @@ const state = {
   chatMessages: [],
   selectedMessageId: "",
   bans: [],
+  accounts: [],
+  selectedAccountId: "",
+  accountDetail: null,
   timer: null
 };
 
@@ -23,11 +26,22 @@ const panelMeta = {
   videos: ["视频管理", "输入 YouTube / Bilibili 链接，服务端识别并缓存标题、简介、发布时间和封面。"],
   videoCategories: ["视频分类管理", "维护视频区顶部标签，支持新增、编辑、停用、排序和安全删除。"],
   chat: ["聊天室管理", "编辑、隐藏、删除聊天记录，按隐藏用户 ID 或 IP 来源禁言。"],
+  accounts: ["账号管理", "查看注册账号、重置密码、确认登录履历和近期活跃。"],
   updates: ["后台更新记录", "后台自己的私有更新说明，每次后台更新后同步记录。"],
   docs: ["后台说明", "后台项目说明，不混入主站知识库。"]
 };
 
 const adminUpdates = [
+  {
+    date: "2026-06-15",
+    title: "账号管理和统计口径优化",
+    body: "新增后台账号管理页，可查看邮箱、角色、密码加密状态、登录履历、活跃会话和近期站内活跃；密码只允许重置，不展示明文或哈希。统计埋点改为登录账号优先识别，同一登录账号的访问统一计为 1 个 UV，并补充自然语言说明。"
+  },
+  {
+    date: "2026-06-15",
+    title: "视频排序和 Bilibili 元数据兜底修复",
+    body: "视频和视频分类改为置顶优先、排序值越大越靠前，新建默认追加 +10；Bilibili 抓取在 API 412 后继续尝试页面 meta、结构化数据和页面状态解析；默认分类 seed 不再覆盖后台维护过的排序和启用状态。"
+  },
   {
     date: "2026-06-15",
     title: "视频元数据和后台更新记录优化",
@@ -202,6 +216,9 @@ function switchPanel(panel) {
     loadChatMessages();
     loadBans();
   }
+  if (panel === "accounts") {
+    loadAccounts();
+  }
 }
 
 async function loadMe() {
@@ -226,6 +243,7 @@ function renderOverview() {
   if (!state.overview) {
     return;
   }
+  $("#analytics-explainer").textContent = "统计口径：PV 是页面被打开的次数，UV 是独立访客数。已登录账号按账号合并，同一账号多设备、多次访问也只算 1 个 UV；匿名访问继续按隐藏访客标识统计。";
   renderKpis(state.overview.cards);
   renderDailyChart(state.overview.daily || []);
   renderHourlyChart(state.overview.hourly || []);
@@ -238,18 +256,19 @@ function renderOverview() {
 
 function renderKpis(cards) {
   const items = [
-    ["今日 PV", cards.todayPv],
-    ["今日 UV", cards.todayUv],
-    ["周期 PV", cards.totalPv],
-    ["周期 UV", cards.totalUv],
-    ["今日点击", cards.todayClicks],
-    ["在线访客", cards.onlineVisitors],
-    ["今日聊天", cards.todayMessages]
+    ["今日页面浏览", cards.todayPv, "所有页面打开次数，刷新也会计入。"],
+    ["今日独立访客", cards.todayUv, "登录账号按账号合并；匿名访客按隐藏访客标识计算。"],
+    [`最近 ${state.overview?.windowDays || 14} 天浏览`, cards.totalPv, "这段时间内站内页面被打开的总次数。"],
+    [`最近 ${state.overview?.windowDays || 14} 天访客`, cards.totalUv, "用于判断真实触达人数，登录用户多设备仍合并为 1 个 UV。"],
+    ["今日点击动作", cards.todayClicks, "按钮、卡片、筛选和播放等可点击操作次数。"],
+    ["正在活跃", cards.onlineVisitors, "最近 5 分钟内有访问记录的访客或登录账号。"],
+    ["今日聊天消息", cards.todayMessages, "匿名聊天室今天实际发出的消息数。"]
   ];
-  $("#kpi-grid").innerHTML = items.map(([label, value]) => `
+  $("#kpi-grid").innerHTML = items.map(([label, value, hint]) => `
     <article class="kpi-card">
       <span>${escapeHtml(label)}</span>
       <strong>${formatNumber(value)}</strong>
+      <small>${escapeHtml(hint)}</small>
     </article>
   `).join("");
 }
@@ -503,6 +522,9 @@ async function loadVideos() {
   state.videos = payload.videos || [];
   renderVideoList();
   renderVideoCategoryChecks();
+  if (!state.selectedVideoId) {
+    applyNewVideoSortDefault();
+  }
 }
 
 async function loadVideoCategories() {
@@ -510,6 +532,9 @@ async function loadVideoCategories() {
   state.videoCategories = payload.categories || [];
   renderVideoCategoryList();
   renderVideoCategoryChecks();
+  if (!state.selectedVideoCategoryId) {
+    applyNewVideoCategorySortDefault();
+  }
 }
 
 function renderVideoList() {
@@ -519,6 +544,7 @@ function renderVideoList() {
       <span class="list-meta">
         ${statusBadge(videoStatusLabel(video.status), video.status || "neutral")}
         ${statusBadge(video.platform || "未知平台", "neutral")}
+        ${statusBadge(`排序 ${formatNumber(video.sort_order)}`, "neutral")}
         ${video.pinned ? statusBadge("置顶", "visible") : ""}
       </span>
       <span class="list-subtle">${escapeHtml(video.author_name || "")} ${formatTime(video.published_at)} · 更新 ${formatTime(video.updated_at)}</span>
@@ -545,11 +571,31 @@ function selectedVideo() {
   return state.videos.find((item) => item.video_id === state.selectedVideoId);
 }
 
+function nextSortOrder(items) {
+  const max = items.reduce((result, item) => Math.max(result, Number(item.sort_order || 0)), 0);
+  return max + 10;
+}
+
+function applyNewVideoSortDefault() {
+  const field = $("#video-form")?.elements?.sort_order;
+  if (field) {
+    field.value = String(nextSortOrder(state.videos));
+  }
+}
+
+function applyNewVideoCategorySortDefault() {
+  const field = $("#video-category-form")?.elements?.sort_order;
+  if (field) {
+    field.value = String(nextSortOrder(state.videoCategories));
+  }
+}
+
 function resetVideoForm() {
   state.selectedVideoId = "";
   $("#video-editor-title").textContent = "新建视频";
   $("#video-form").reset();
   $("#video-form").elements.status.value = "draft";
+  applyNewVideoSortDefault();
   $("#delete-video").disabled = true;
   $("#refresh-video-metadata").disabled = true;
   $("#video-status").textContent = "";
@@ -715,6 +761,7 @@ function resetVideoCategoryForm() {
   $("#video-category-editor-title").textContent = "新建分类";
   $("#video-category-form").reset();
   $("#video-category-form").elements.enabled.checked = true;
+  applyNewVideoCategorySortDefault();
   $("#delete-video-category").disabled = true;
   $("#video-category-status").textContent = "";
   renderVideoCategoryList();
@@ -929,6 +976,185 @@ async function disableBan(banId) {
   await loadBans();
 }
 
+async function loadAccounts() {
+  const payload = await api("/api/admin/accounts");
+  state.accounts = payload.accounts || [];
+  renderAccountSummary();
+  renderAccountList();
+  if (!state.selectedAccountId && state.accounts[0]) {
+    await selectAccount(state.accounts[0].id);
+  } else if (state.selectedAccountId && !state.accounts.some((account) => account.id === state.selectedAccountId)) {
+    state.selectedAccountId = "";
+    state.accountDetail = null;
+    renderAccountDetail();
+  }
+}
+
+function renderAccountSummary() {
+  const total = state.accounts.length;
+  const admins = state.accounts.filter((account) => account.role === "admin").length;
+  const active = state.accounts.filter((account) => Number(account.active_sessions || 0) > 0).length;
+  $("#account-summary").innerHTML = `
+    <span>共 ${formatNumber(total)} 个注册账号</span>
+    <span>${formatNumber(admins)} 个管理员</span>
+    <span>${formatNumber(active)} 个账号有活跃会话</span>
+  `;
+}
+
+function renderAccountList() {
+  $("#account-list").innerHTML = state.accounts.map((account) => `
+    <button class="list-item ${account.id === state.selectedAccountId ? "active" : ""}" type="button" data-account-id="${escapeHtml(account.id)}">
+      <span class="list-title">${escapeHtml(account.email)}</span>
+      <span class="list-meta">
+        ${statusBadge(account.role === "admin" ? "管理员" : "普通用户", account.role === "admin" ? "active" : "neutral")}
+        ${statusBadge(account.password_status || "已加密保存", "visible")}
+        ${statusBadge(`${formatNumber(account.active_sessions)} 个活跃会话`, Number(account.active_sessions || 0) ? "active" : "off")}
+      </span>
+      <span class="list-subtle">最近登录：${formatTime(account.last_login_at) || "暂无记录"} · 登录 ${formatNumber(account.login_count)} 次 · 云存档 ${formatNumber(account.save_slots)} 个</span>
+    </button>
+  `).join("") || emptyState("还没有注册账号。");
+}
+
+async function selectAccount(accountId) {
+  state.selectedAccountId = accountId;
+  $("#account-status").textContent = "正在读取账号详情...";
+  renderAccountList();
+  const detail = await api(`/api/admin/accounts/${encodeURIComponent(accountId)}`);
+  state.accountDetail = detail;
+  state.accounts = upsertById(state.accounts, detail.account, "id");
+  fillAccountForm(detail.account);
+  renderAccountSummary();
+  renderAccountList();
+  renderAccountDetail();
+  $("#account-status").textContent = "";
+}
+
+function fillAccountForm(account) {
+  const form = $("#account-form");
+  $("#account-editor-title").textContent = `编辑：${account.email}`;
+  form.elements.email.value = account.email || "";
+  form.elements.role.value = account.role || "user";
+  form.elements.password.value = "";
+  form.elements.password_status.value = account.password_status || "已加密保存，不能查看原文";
+}
+
+async function saveAccount(event) {
+  event.preventDefault();
+  if (!state.selectedAccountId) {
+    $("#account-status").textContent = "请先选择一个账号。";
+    return;
+  }
+  const form = $("#account-form");
+  const password = form.elements.password.value.trim();
+  const payload = {
+    email: form.elements.email.value.trim(),
+    role: form.elements.role.value
+  };
+  if (password) {
+    payload.password = password;
+  }
+  $("#account-status").textContent = password ? "正在保存账号并重置密码..." : "正在保存账号...";
+  try {
+    const detail = await api(`/api/admin/accounts/${encodeURIComponent(state.selectedAccountId)}`, {
+      method: "PUT",
+      body: JSON.stringify(payload)
+    });
+    state.accountDetail = detail;
+    state.accounts = upsertById(state.accounts, detail.account, "id");
+    fillAccountForm(detail.account);
+    renderAccountSummary();
+    renderAccountList();
+    renderAccountDetail();
+    $("#account-status").textContent = password ? "已保存，新密码已生效，相关旧会话已清理。" : "已保存账号信息。";
+  } catch (error) {
+    $("#account-status").textContent = error.message;
+  }
+}
+
+function renderAccountDetail() {
+  const detail = state.accountDetail;
+  if (!detail) {
+    $("#login-history").innerHTML = emptyState("选择账号后查看登录履历。");
+    $("#account-activity").innerHTML = emptyState("选择账号后查看近期活跃。");
+    $("#account-sessions").innerHTML = emptyState("选择账号后查看会话状态。");
+    return;
+  }
+
+  $("#login-history").innerHTML = (detail.loginHistory || []).map((event) => `
+    <article class="event-item">
+      <strong>${escapeHtml(loginEventLabel(event.event_type))}</strong>
+      <small>${formatTime(event.created_at)} · ${escapeHtml(locationText(event))}</small>
+      <small>IP 来源：${escapeHtml(event.ip_prefix || "未记录")} · 设备：${escapeHtml(shortUserAgent(event.user_agent))}</small>
+    </article>
+  `).join("") || emptyState("这个账号还没有登录履历。");
+
+  $("#account-activity").innerHTML = (detail.activity || []).map((item) => `
+    <article class="event-item">
+      <strong>${escapeHtml(activityLabel(item))}</strong>
+      <small>${formatTime(item.created_at)} · ${escapeHtml(item.path || "")}</small>
+      <small>${escapeHtml([item.detail, item.route, locationText(item)].filter(Boolean).join(" · "))}</small>
+    </article>
+  `).join("") || emptyState("这个账号近期没有站内活跃记录。");
+
+  $("#account-sessions").innerHTML = (detail.sessions || []).map((session) => `
+    <article class="event-item">
+      <strong>${escapeHtml(session.active ? "当前有效" : "已过期")}</strong>
+      <small>登录时间：${formatTime(session.created_at)}</small>
+      <small>到期时间：${formatTime(session.expires_at)}</small>
+    </article>
+  `).join("") || emptyState("这个账号没有会话记录。");
+}
+
+function loginEventLabel(type) {
+  return type === "register" ? "注册后自动登录" : "登录成功";
+}
+
+function activityLabel(item) {
+  const labels = {
+    page_view: "浏览页面",
+    click: "点击操作",
+    article_view: "阅读文章"
+  };
+  return labels[item.type] || "站内活跃";
+}
+
+function locationText(row) {
+  return [row.country, row.region, row.city].filter(Boolean).join(" / ") || "未知位置";
+}
+
+function shortUserAgent(value) {
+  const text = String(value || "").trim();
+  if (!text) {
+    return "未记录";
+  }
+  if (/Edg\//.test(text)) {
+    return "Edge 浏览器";
+  }
+  if (/Chrome\//.test(text)) {
+    return "Chrome 浏览器";
+  }
+  if (/Firefox\//.test(text)) {
+    return "Firefox 浏览器";
+  }
+  if (/Safari\//.test(text)) {
+    return "Safari 浏览器";
+  }
+  return Array.from(text).slice(0, 80).join("");
+}
+
+function upsertById(items, nextItem, key) {
+  if (!nextItem?.[key]) {
+    return items;
+  }
+  const index = items.findIndex((item) => item[key] === nextItem[key]);
+  if (index === -1) {
+    return [nextItem, ...items];
+  }
+  const copy = [...items];
+  copy[index] = nextItem;
+  return copy;
+}
+
 function renderAdminUpdates() {
   $("#admin-updates").innerHTML = adminUpdates.map((item) => `
     <article class="event-item">
@@ -954,6 +1180,8 @@ function bindEvents() {
     } else if (state.activePanel === "chat") {
       loadChatMessages();
       loadBans();
+    } else if (state.activePanel === "accounts") {
+      loadAccounts();
     }
   });
   $("#logout-button").addEventListener("click", async () => {
@@ -1019,6 +1247,13 @@ function bindEvents() {
       disableBan(item.dataset.disableBan);
     }
   });
+  $("#account-list").addEventListener("click", (event) => {
+    const item = event.target.closest("[data-account-id]");
+    if (item) {
+      selectAccount(item.dataset.accountId);
+    }
+  });
+  $("#account-form").addEventListener("submit", saveAccount);
 }
 
 async function init() {
@@ -1029,7 +1264,7 @@ async function init() {
   resetVideoCategoryForm();
   try {
     await loadMe();
-    await Promise.all([loadOverview(), loadArticles(), loadVideoCategories(), loadVideos(), loadChatMessages(), loadBans()]);
+    await Promise.all([loadOverview(), loadArticles(), loadVideoCategories(), loadVideos(), loadChatMessages(), loadBans(), loadAccounts()]);
     state.timer = window.setInterval(() => {
       if (["dashboard", "visits", "clicks"].includes(state.activePanel)) {
         loadOverview();

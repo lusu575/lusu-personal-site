@@ -7,7 +7,7 @@ const translations = {
     homeLead: "开发施工中",
     navKnowledge: "知识库",
     navVideos: "视频区",
-    navVideosBuilding: "视频区（待定）",
+    navVideosBuilding: "视频区",
     navResources: "资源区",
     navResourcesBuilding: "资源区（待定）",
     navGames: "游戏区",
@@ -109,7 +109,7 @@ const translations = {
     homeLead: "A small XP pixel site under construction.",
     navKnowledge: "Knowledge",
     navVideos: "Videos",
-    navVideosBuilding: "Videos TBD",
+    navVideosBuilding: "Videos",
     navResources: "Resources",
     navResourcesBuilding: "Files TBD",
     navGames: "Games",
@@ -211,7 +211,7 @@ const translations = {
     homeLead: "工事中の XP ピクセル小サイトです。",
     navKnowledge: "知識庫",
     navVideos: "動画",
-    navVideosBuilding: "動画（未定）",
+    navVideosBuilding: "動画",
     navResources: "リソース",
     navResourcesBuilding: "資料（未定）",
     navGames: "ゲーム",
@@ -344,6 +344,16 @@ const labels = {
 
 const content = {
   updates: [
+    {
+      icon: "📺",
+      date: "2026.06.15",
+      title: { zh: "视频管理排序与 B 站信息修复", en: "Video Sorting and Bilibili Metadata Fixes", ja: "動画管理の並び順と Bilibili 情報取得を修正" },
+      desc: {
+        zh: "修复 Bilibili 元数据兜底、视频排序、统一卡片尺寸和首页视频入口文案",
+        en: "Improved Bilibili metadata fallback, video ordering, card sizing, and the home Videos label",
+        ja: "Bilibili メタ情報の補完、動画の並び順、カードサイズ、ホームの動画ラベルを調整しました"
+      }
+    },
     {
       icon: "📺",
       date: "2026.06.15",
@@ -1651,8 +1661,11 @@ function openVideo(index) {
   }
   document.getElementById("modal-title").textContent = video.title || localText(video.title) || "Video Player";
   if (sourceLink) {
-    if (video.original_url) {
-      sourceLink.href = video.original_url;
+    const originalUrl = video.original_url || video.url || "";
+    if (originalUrl) {
+      sourceLink.href = originalUrl;
+      sourceLink.target = "_blank";
+      sourceLink.rel = "noreferrer noopener";
       sourceLink.hidden = false;
     } else {
       sourceLink.hidden = true;

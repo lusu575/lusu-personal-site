@@ -17,6 +17,30 @@ create table if not exists sessions (
 create index if not exists sessions_user_id_idx on sessions(user_id);
 create index if not exists sessions_expires_at_idx on sessions(expires_at);
 
+create table if not exists user_login_events (
+  event_id text primary key,
+  user_id text not null references users(id) on delete cascade,
+  email text not null default '',
+  event_type text not null default 'login',
+  visitor_id text not null default '',
+  ip_hash text not null default '',
+  ip_prefix text not null default '',
+  country text not null default '',
+  region text not null default '',
+  city text not null default '',
+  timezone text not null default '',
+  colo text not null default '',
+  user_agent text not null default '',
+  created_at text not null
+);
+
+create index if not exists user_login_events_user_created_idx
+  on user_login_events(user_id, created_at);
+create index if not exists user_login_events_created_idx
+  on user_login_events(created_at);
+create index if not exists user_login_events_email_created_idx
+  on user_login_events(email, created_at);
+
 create table if not exists game_saves (
   user_id text not null references users(id) on delete cascade,
   game_id text not null,
@@ -159,8 +183,6 @@ on conflict(category_id) do update set
   name_zh = excluded.name_zh,
   name_en = excluded.name_en,
   name_ja = excluded.name_ja,
-  sort_order = excluded.sort_order,
-  enabled = excluded.enabled,
   updated_at = excluded.updated_at;
 
 create table if not exists site_visitors (
@@ -1723,6 +1745,32 @@ on conflict(article_id) do update set
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
 
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-15-video-management-sort-metadata',
+  '2026-06-15-video-management-sort-metadata',
+  'site-updates',
+  '["网站更新","视频区","后台","排序","Bilibili"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-15T16:20:00.000Z',
+  '2026-06-15T16:20:00.000Z',
+  '2026-06-15T16:20:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
@@ -1828,9 +1876,40 @@ This update fixes the XP-style video player window so site-level controls no lon
 
 - サイト内の「全画面」は、タイトルバー右上の XP 風の最大化/復元ボタンに変更しました。もう一度クリックするか Escape で元に戻せます。
 - iframe を優先してブラウザ全画面にしないようにし、YouTube / Bilibili の全画面はプレイヤー側に任せます。
-- 公開動画 API は実際の `original_url` を返し続け、「元のページを開く」が YouTube / Bilibili の元ページへ移動するようにしています。
-- iframe 上部と下部の情報バーは通常はサイト側のマスクで隠し、プレイヤー付近にマウスを置いた時だけ見えるようにしました。
-- 下部の空白部分には透明のクリック保護を置き、動画カードの再生ボタンもボタン本体だけが反応するようにして、プラットフォーム側ボタンの誤触を減らしました。', '2026-06-15T15:30:00.000Z', '2026-06-15T15:30:00.000Z')
+-- 下部の空白部分には透明のクリック保護を置き、動画カードの再生ボタンもボタン本体だけが反応するようにして、プラットフォーム側ボタンの誤触を減らしました。', '2026-06-15T15:30:00.000Z', '2026-06-15T15:30:00.000Z'),
+  ('seed-update-2026-06-15-video-management-sort-metadata-zh', 'seed-update-2026-06-15-video-management-sort-metadata', 'zh', '视频管理排序与 B 站信息修复', '修复 Bilibili 元数据兜底、视频排序、统一卡片尺寸和首页视频入口文案。', '# 视频管理排序与 B 站信息修复
+
+本次更新继续修复视频区和后台视频管理，让新视频更容易排在前面，Bilibili 链接也能尽量补齐公开信息。
+
+## 更新内容
+
+- Bilibili 元数据抓取增加页面 meta、结构化数据和更多页面状态兜底，遇到接口 412 时也会尽量补齐标题、简介、作者、发布时间和封面。
+- 视频列表改为置顶优先，未置顶视频按排序值从大到小显示；后台新建视频默认使用当前最大排序 + 10。
+- 视频分类管理使用同样的排序语义，默认新建分类也会自动追加 +10，并避免默认分类 seed 覆盖后台维护过的排序和启用状态。
+- 主站视频卡片统一高度，封面按钮清除默认内边距并让图片完全铺满，缺少封面时显示同尺寸像素风占位卡。
+- 视频播放器的“打开原地址”保持真实外链，并兼容旧 fallback 数据；首页视频区入口去掉“待定”文案。', '2026-06-15T16:20:00.000Z', '2026-06-15T16:20:00.000Z'),
+  ('seed-update-2026-06-15-video-management-sort-metadata-en', 'seed-update-2026-06-15-video-management-sort-metadata', 'en', 'Video Sorting and Bilibili Metadata Fixes', 'Improved Bilibili metadata fallback, video ordering, card sizing, and the home Videos label.', '# Video Sorting and Bilibili Metadata Fixes
+
+This update tightens the managed video workflow so newer videos can stay at the front and Bilibili links keep more of their public metadata.
+
+## Changes
+
+- Bilibili metadata now falls back to page meta tags, structured data, and broader page-state parsing when the API returns HTTP 412.
+- Video lists keep pinned items first, then sort unpinned videos by higher sort values first; new admin videos default to the current max sort + 10.
+- Video categories use the same sort meaning, new categories also default to +10, and default category seeds no longer overwrite admin-managed sort/enabled values.
+- Public video cards now share one stable height, thumbnails remove button padding and fully cover their frame, and missing thumbnails use a same-size pixel placeholder.
+- Open Original remains a real source link, including old fallback data, and the home Videos icon no longer says TBD.', '2026-06-15T16:20:00.000Z', '2026-06-15T16:20:00.000Z'),
+  ('seed-update-2026-06-15-video-management-sort-metadata-ja', 'seed-update-2026-06-15-video-management-sort-metadata', 'ja', '動画管理の並び順と Bilibili 情報取得を修正', 'Bilibili メタ情報の補完、動画の並び順、カードサイズ、ホームの動画ラベルを調整しました。', '# 動画管理の並び順と Bilibili 情報取得を修正
+
+今回の更新では、動画欄と管理画面の動画管理を続けて調整し、新しい動画を前に出しやすくし、Bilibili リンクの公開情報もできるだけ補えるようにしました。
+
+## 更新内容
+
+- Bilibili API が HTTP 412 を返した場合も、ページ meta、構造化データ、ページ状態からタイトル、概要、作者、公開時刻、サムネイルをできるだけ補完します。
+- 動画一覧は固定表示を最優先し、その下で並び順の数値が大きいものほど前に表示します。管理画面の新規動画は現在の最大値 +10 を初期値にします。
+- 動画分類も同じ並び順の意味にそろえ、新規分類も +10 で追加します。既定分類の seed は管理画面で変更した並び順と有効状態を上書きしません。
+- 公開側の動画カードは高さを統一し、サムネイル画像は余白なく枠いっぱいに表示します。サムネイルがない場合も同じサイズのピクセル風プレースホルダーを表示します。
+- 「元のページを開く」は実際の外部リンクとして維持し、ホームの動画アイコンから「未定」表記を外しました。', '2026-06-15T16:20:00.000Z', '2026-06-15T16:20:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,

@@ -1,5 +1,16 @@
 # PROJECT_CONTEXT.md
 
+## 2026-06-15 后台账号管理与登录态 UV 口径
+
+- 后台新增“账号管理”页面，入口在 `/admin/` 侧边栏，位置位于“后台更新记录”上方。
+- 后台账号接口：`GET /api/admin/accounts`、`GET /api/admin/accounts/:userId`、`PUT /api/admin/accounts/:userId`。
+- 账号管理只允许 `users.role = admin` 访问，继续复用 `/api/admin/*` 的 `requireAdmin` 服务端权限校验。
+- 账号页显示注册邮箱、角色、密码加密状态、最近登录、活跃会话、云存档数量、登录履历和近期站内活跃。
+- 密码不明文展示，也不向后台前端返回 `password_hash`；修改密码只能通过“新密码”字段重置。真实账号数据只存在 Cloudflare D1，不写入 GitHub 仓库。
+- D1 新增 `user_login_events` 表，记录成功登录/注册后的登录履历；只保存掩码 IP 前缀、IP hash、Cloudflare 地区字段、设备摘要和时间，不保存完整明文 IP。
+- 访问统计改为登录账号优先识别：登录用户的页面访问、点击和文章阅读使用由账号 ID 派生的不可逆统计 ID，因此同一登录账号跨设备、多次访问仍只计为 1 个 UV；匿名访客继续使用 HttpOnly `lusu_visitor` cookie。
+- 后台实时大屏增加自然语言说明，解释 PV、UV、在线访客和点击数据，减少只看缩写造成的误读。
+
 本文档用于帮助新的 AI / Codex 对话快速理解鲁肃个人站。它只保留项目总说明和核心事实；长期维护规则、强约束和踩坑点已拆分到项目专用 Skill。
 
 ## 项目背景与介绍
@@ -497,9 +508,12 @@ admin/docs/ADMIN_CHANGELOG.md
   - `DELETE /api/admin/video-categories/:categoryId`
 - 后台“视频管理”和“视频分类管理”模块仍只允许 `users.role = admin` 访问。
 - 后端只接受 YouTube / youtu.be / Bilibili / b23.tv 白名单链接，由服务端解析并生成规范化 `embed_url`；前端和后台预览不得直接 iframe 用户输入的任意 URL。
-- 视频元数据只在后台预览、保存或刷新时抓取，并缓存到 D1；公开视频访问不重新抓取。后台应尽量自动补齐标题、简介、作者、发布时间和封面，Bilibili 抓取遇到 API 风控时使用页面备用解析。
+- 视频元数据只在后台预览、保存或刷新时抓取，并缓存到 D1；公开视频访问不重新抓取。后台应尽量自动补齐标题、简介、作者、发布时间和封面，Bilibili 抓取遇到 API 风控时使用页面 `__INITIAL_STATE__`、meta、结构化数据和页面状态备用解析。
+- 视频排序规则：置顶独立优先；未置顶视频按 `sort_order` 从大到小显示，后台新建视频默认取当前最大排序 +10，方便新视频保持在前面。
+- 视频分类排序也使用数值越大越靠前的语义，后台新建分类默认 +10；默认分类 seed 不应覆盖后台维护过的排序和启用状态。
 - 公开视频接口必须返回服务端保存的 `original_url`，用于主站“打开原地址”按钮；`embed_url` 只用于站内 iframe 播放，不要把 embed 地址当作原链接展示。
 - 主站视频区从 `/api/videos` 读取列表和分类，使用安全 DOM/textContent 渲染，点击后在 XP 风格站内窗口加载 lazy iframe。
+- 主站视频卡片必须保持统一尺寸；封面图片要铺满卡片封面区域，缺少封面或封面加载失败时显示同尺寸像素风占位图。
 - 主站视频窗口的站内“全屏”语义是 XP 窗口最大化/还原，不要直接对 YouTube / Bilibili iframe 调用浏览器 Fullscreen API；播放器自带全屏由 iframe 内部控件自己处理。
 - 跨域 iframe 内部按钮热区无法由父页面精确重写，父页面要用遮罩、透明点击防护区和收窄本站按钮热区来减少默认信息栏和底部空白误触。
 - 视频区埋点复用 `js/telemetry.js`，覆盖分类筛选、视频点击、播放器打开和播放失败，不记录后台输入内容。

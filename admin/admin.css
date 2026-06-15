@@ -311,7 +311,7 @@ select:focus-visible {
 }
 
 .kpi-card {
-  min-height: 88px;
+  min-height: 118px;
   padding: 10px;
   background:
     linear-gradient(180deg, rgba(255,255,255,.64), rgba(255,255,255,0) 46%),
@@ -331,6 +331,46 @@ select:focus-visible {
   margin-top: 8px;
   font-size: clamp(24px, 3vw, 38px);
   line-height: 1;
+}
+
+.kpi-card small {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.insight-note,
+.safe-note,
+.account-summary {
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  color: #173048;
+  background:
+    linear-gradient(90deg, rgba(7,91,212,.1), transparent),
+    #fffef4;
+  border: 2px inset #fff;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.65;
+}
+
+.safe-note {
+  margin: 0;
+}
+
+.account-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px;
+}
+
+.account-summary span {
+  padding: 4px 7px;
+  background: #eaf4ff;
+  border: 1px solid #9fb4c9;
 }
 
 .dashboard-grid {
@@ -356,6 +396,10 @@ select:focus-visible {
 }
 
 .chat-layout {
+  grid-template-columns: minmax(320px, 440px) minmax(0, 1fr);
+}
+
+.account-layout {
   grid-template-columns: minmax(320px, 440px) minmax(0, 1fr);
 }
 
@@ -846,6 +890,32 @@ textarea {
   overflow-wrap: anywhere;
 }
 
+.account-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  padding: 0 12px 12px;
+}
+
+.mini-panel {
+  min-width: 0;
+  background: #f7fbff;
+  border: 2px inset #fff;
+}
+
+.mini-panel h3 {
+  margin: 0;
+  padding: 8px 10px;
+  color: #fff;
+  background: linear-gradient(#2f8fff, #1f6ed4 56%, #064ca5);
+  border-bottom: 1px solid #003a9b;
+  font-size: 14px;
+}
+
+.mini-panel .event-list {
+  max-height: 300px;
+}
+
 .prose {
   padding-bottom: 10px;
 }
@@ -876,7 +946,8 @@ code {
 
   .dashboard-grid,
   .dashboard-grid.two,
-  .split-layout {
+  .split-layout,
+  .account-detail-grid {
     grid-template-columns: 1fr;
   }
 

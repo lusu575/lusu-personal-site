@@ -1280,19 +1280,24 @@ main {
 
 .video-card {
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: 220px 1fr;
   flex: 0 0 calc((100% - 32px) / 3);
   align-self: start;
-  height: auto;
+  height: 520px;
   min-height: 0;
   overflow: hidden;
 }
 
 .video-thumb {
   position: relative;
+  display: block;
+  width: 100%;
+  height: 220px;
   min-height: 0;
-  aspect-ratio: 16 / 9;
+  padding: 0;
+  border: 0;
   border-bottom: 2px solid #9d9a86;
+  appearance: none;
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.38), transparent 40%),
     var(--thumb-bg, #74b9ff);
@@ -1301,10 +1306,19 @@ main {
 }
 
 .video-thumb img {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transform: scale(1.01);
+}
+
+.video-thumb.is-fallback {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.24) 0 12%, transparent 13%),
+    linear-gradient(135deg, #a8dcff, #5aaef0 55%, #2d74cf);
 }
 
 .video-thumb::before {
@@ -1335,10 +1349,21 @@ main {
 
 .video-body {
   display: grid;
-  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(45px, auto) minmax(50px, auto) minmax(24px, 1fr) auto;
   gap: 8px;
   min-height: 0;
   padding: 13px 13px 16px;
+}
+
+.video-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 4px 8px;
+  min-height: 24px;
+  color: #17233a;
+  font-size: 13px;
+  line-height: 1.35;
 }
 
 .video-body h3,
@@ -3408,7 +3433,7 @@ main {
 
   .video-thumb {
     min-height: 0;
-    aspect-ratio: 16 / 9;
+    height: min(56vw, 240px);
   }
 
   .video-body,
@@ -3427,6 +3452,7 @@ main {
 
   .video-card {
     flex-basis: 100%;
+    height: 540px;
     min-height: 0;
   }
 
