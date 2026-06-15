@@ -14,7 +14,7 @@
 - 首页动态云层 clean 底图残留修复：
   - 修补 night 中景云层上方残留在 `base-clean.png` 里的细小云片，修复云层漂移后出现“上半截留在背景上”的视觉断裂。
   - 同步检查 morning / day / dusk / night 四个时段：morning 和 day 未发现同类残留，dusk 有一条较淡的同类残影并已一并清理。
-  - 更新首页 CSS 与底图引用缓存版本为 `20260615-cloud-residual-fix`，避免浏览器继续加载旧 clean plate。
+  - 更新动态底图引用缓存版本为 `20260615-cloud-residual-fix`，并将首页 CSS query 合并为 `20260615-managed-videos-cloud-residual-fix`，避免浏览器继续加载旧 clean plate。
 
 - 视频区真实管理系统上线：
   - 新增 `videos`、`video_categories`、`video_category_relations` D1 表，并在运行时 schema guard 与 `cloudflare/schema.sql` 同步维护。
