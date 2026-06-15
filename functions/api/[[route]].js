@@ -1447,7 +1447,7 @@ function normalizeArticlePayload(body, options = {}) {
     article.is_pinned = body.is_pinned ? 1 : 0;
   }
   if (body.published_at !== undefined) {
-    article.published_at = normalizeOptionalText(body.published_at, 40) || null;
+    article.published_at = normalizeOptionalDateTime(body.published_at);
   }
   if (!partial || body.translations !== undefined) {
     article.translations = normalizeArticleTranslations(body.translations, partial);
@@ -1622,6 +1622,7 @@ function aiAgentWorkflowArticleHeadingMediaStatements(env, now) {
 }
 
 function articleSeedStatements(env) {
+  // Seed timestamps must be UTC ISO strings; the UI converts them to each visitor's local time.
   return [
     env.DB.prepare(`
       delete from article_translations
@@ -2390,9 +2391,9 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         'published',
         0,
         0,
-        '2026-06-15T09:30:00.000Z',
-        '2026-06-15T09:30:00.000Z',
-        '2026-06-15T09:30:00.000Z'
+        '2026-06-15T12:41:45.000Z',
+        '2026-06-15T12:41:45.000Z',
+        '2026-06-15T12:41:45.000Z'
       )
       on conflict(article_id) do update set
         slug = excluded.slug,
@@ -2490,7 +2491,7 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         summary: "ホームの4時間帯の雲移動を少し速め、合成レイヤー設定で初期フレームのずれを抑えました。",
         content_markdown: "# 雲レイヤーの速度と滑らかさを調整\n\n今回の更新では、ホームの雲アニメーションを少しだけ見えやすくしながら、XP風の静かな雰囲気を保つように調整しました。\n\n## 更新内容\n\n- 4時間帯の雲レイヤーの移動周期を少し短くし、漂う速度をわずかに上げました。\n- 雲要素に初期 `translate3d`、`backface-visibility`、`contain`、アニメーションの fill 設定を追加し、合成レイヤーを安定させました。\n- CSS の `transform` と `opacity` だけで動かし、低モーション設定、ページ非表示時の一時停止、小画面での静的降級は維持しています。"
       }
-    }, "2026-06-15T09:30:00.000Z"),
+    }, "2026-06-15T12:41:45.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')
@@ -2666,6 +2667,29 @@ function normalizeOptionalText(value, maxLength) {
     throw new HttpError(`文本最多 ${maxLength} 个字符。`, 400);
   }
   return text;
+}
+
+function normalizeOptionalDateTime(value) {
+  const raw = normalizeOptionalText(value, 80);
+  if (!raw) {
+    return null;
+  }
+  let normalized = raw;
+  if (/^\d{4}\.\d{2}\.\d{2}$/.test(normalized)) {
+    normalized = normalized.replace(/^(\d{4})\.(\d{2})\.(\d{2})$/, "$1-$2-$3T00:00:00Z");
+  } else if (/^\d{4}-\d{2}-\d{2}$/.test(normalized)) {
+    normalized = `${normalized}T00:00:00Z`;
+  } else {
+    normalized = normalized.replace(" ", "T");
+    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d{1,3})?)?$/.test(normalized)) {
+      normalized = `${normalized}Z`;
+    }
+  }
+  const date = new Date(normalized);
+  if (Number.isNaN(date.getTime())) {
+    throw new HttpError("发布时间格式不正确，请使用 ISO 时间。", 400);
+  }
+  return date.toISOString();
 }
 
 function normalizeAnalyticsText(value, maxLength) {

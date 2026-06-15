@@ -103,6 +103,41 @@ function formatTime(value) {
   }).format(date);
 }
 
+function toLocalDateTimeInputValue(value) {
+  if (!value) {
+    return "";
+  }
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+  const parts = new Intl.DateTimeFormat("zh-CN", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false
+  }).formatToParts(date).reduce((result, part) => {
+    result[part.type] = part.value;
+    return result;
+  }, {});
+  return `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}:${parts.second}`;
+}
+
+function normalizePublishedAtForApi(value) {
+  const raw = String(value || "").trim();
+  if (!raw) {
+    return undefined;
+  }
+  const date = new Date(raw.replace(" ", "T"));
+  if (Number.isNaN(date.getTime())) {
+    throw new Error("发布时间格式不正确，请使用日期时间选择器或 ISO 时间。");
+  }
+  return date.toISOString();
+}
+
 function emptyState(text) {
   return `<div class="empty-state">${escapeHtml(text)}</div>`;
 }
@@ -369,7 +404,7 @@ function fillArticleForm(article) {
   form.elements.tags.value = (article.tags || []).join(", ");
   form.elements.cover_image.value = article.cover_image || "";
   form.elements.status.value = article.status || "draft";
-  form.elements.published_at.value = article.published_at || "";
+  form.elements.published_at.value = toLocalDateTimeInputValue(article.published_at);
   form.elements.is_pinned.checked = Number(article.is_pinned || 0) === 1;
   ["zh", "en", "ja"].forEach((lang) => {
     const item = article.translations?.[lang] || {};
@@ -406,7 +441,7 @@ function articlePayload(statusOverride = "") {
     cover_image: form.elements.cover_image.value.trim(),
     status: statusOverride || form.elements.status.value,
     is_pinned: form.elements.is_pinned.checked,
-    published_at: form.elements.published_at.value.trim() || undefined,
+    published_at: normalizePublishedAtForApi(form.elements.published_at.value),
     translations
   };
 }

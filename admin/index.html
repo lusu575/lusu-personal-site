@@ -122,7 +122,7 @@
                     <option value="archived">归档</option>
                   </select>
                 </label>
-                <label>发布时间<input name="published_at" placeholder="留空则发布时自动写入当前时间"></label>
+                <label>发布时间<input name="published_at" type="datetime-local" step="1" placeholder="留空则发布时自动写入当前时间"></label>
                 <label class="checkbox-line"><input name="is_pinned" type="checkbox"> 置顶</label>
               </div>
 
@@ -254,6 +254,6 @@
     </main>
   </div>
 
-  <script src="/admin/admin.js?v=20260615-admin-visual-pass"></script>
+  <script src="/admin/admin.js?v=20260615-article-timezone-fix"></script>
 </body>
 </html>

@@ -4,6 +4,13 @@
 
 ## 2026-06-15
 
+- 知识库文章发布时间链路加固：
+  - 后台文章编辑器的发布时间改为本地日期时间选择器，编辑时把 UTC 发布时间转换为管理员本地时间显示。
+  - 后台保存文章时将本地发布时间统一转换为 UTC ISO 后提交，后端再次规范化 `published_at`，确保 D1 保存绝对时间。
+  - 公开知识库继续按访问者浏览器时区显示到秒，不显示时区名；不同时区用户会看到同一发布时间对应的各自本地时间。
+  - 更新 `/admin/admin.js` query 为 `20260615-article-timezone-fix`，减少后台继续加载旧保存逻辑的可能。
+  - 同步更新 `PROJECT_CONTEXT.md`、项目专用 Skill 和 Skill README 的时间维护规则。
+
 - 首页动态云层线上速度修复：
   - 取消 `?wallpaper=` 预览模式的单独加速 CSS 分支，让预览和正式访问使用同一组云层动画周期。
   - 将 morning / day / dusk / night 四个时间段的正式 `--cloud-duration` 同步到原预览速度，修复线上正常访问明显慢于预览的问题。
@@ -19,6 +26,7 @@
   - 为壁纸舞台和云层元素补充 `backface-visibility`、`contain`、初始 `translate3d` 和 `animation-fill-mode`，帮助浏览器更稳定地使用合成层，减少首帧跳动和动画卡顿。
   - 保持首页动态壁纸只使用 CSS `transform` / `opacity`，并继续保留 `prefers-reduced-motion`、页面隐藏暂停和小屏静态降级。
   - 新增 `seed-update-2026-06-15-cloud-speed-smoothness` 三语 `site-updates` 文章，并同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 与 `js/main.js` 的本地 fallback 最近更新。
+  - 修正该更新文章的 `published_at` / 翻译更新时间为实际代码更新提交时间 `2026-06-15 20:41:45`（UTC+8），避免知识库显示为手填的 `17:30:00`。
   - 更新 `index.html` 的 CSS / JS query 为 `20260615-cloud-speed-smoothness`，减少线上继续加载旧动画参数的可能。
 - 文章访问埋点与 PV/UV：
   - 新增 `article_view_events` 文章访问事件表，公开文章详情接口 `/api/articles/:slug` 每次成功读取文章时会按隐藏 `lusu_visitor` 记录文章 PV、UV、语言、访问来源和掩码 IP 信息。
