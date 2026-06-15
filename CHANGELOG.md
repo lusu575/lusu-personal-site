@@ -4,6 +4,10 @@
 
 ## 2026-06-15
 
+- 知识库接口 500 修复：
+  - 修复视频系统更新 seed 文案中的 Markdown 反引号未转义问题，避免 Pages Function 执行 `articleSeedStatements` 时把 `/api/videos` 片段误当成 JavaScript 表达式并抛出 `api is not defined`，导致 `/api/articles` 返回 500。
+  - `npm run build` 新增模拟 `/api/articles?lang=zh` 请求的运行时检查，即使没有真实 D1 也会执行文章 seed 路径，防止类似“语法检查通过、线上运行失败”的问题再次漏掉。
+
 - 补发合并更新文章：
   - 新增 `seed-update-2026-06-15-icons-cloud-fixes` 三语 `site-updates` 文章，把窗口/任务栏图标更新、标题栏图标对齐微调和 night/dusk 云层残影修复合并记录到一篇文章里。
   - 同步更新 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新，避免有可见更新但没有公开更新文章。

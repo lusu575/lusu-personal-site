@@ -1,5 +1,6 @@
 import { readFileSync, existsSync } from "node:fs";
 import { relative, resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 
 const root = resolve(import.meta.dirname, "..");
 
@@ -79,6 +80,64 @@ for (const selector of [
   }
 }
 
+function createMockD1() {
+  function createStatement(sql) {
+    return {
+      sql,
+      params: [],
+      bind(...params) {
+        this.params = params;
+        return this;
+      },
+      async run() {
+        return { success: true };
+      },
+      async first() {
+        return null;
+      },
+      async all() {
+        return { results: [] };
+      }
+    };
+  }
+
+  return {
+    prepare(sql) {
+      if (typeof sql !== "string") {
+        throw new TypeError("D1 prepare expected SQL string");
+      }
+      return createStatement(sql);
+    },
+    async batch(statements) {
+      for (const statement of statements) {
+        if (statement && typeof statement.run === "function") {
+          await statement.run();
+        }
+      }
+      return [];
+    }
+  };
+}
+
+try {
+  const apiPath = resolve(root, "functions/api/[[route]].js");
+  const { onRequest } = await import(pathToFileURL(apiPath).href);
+  const response = await onRequest({
+    request: new Request("https://example.test/api/articles?lang=zh"),
+    env: { DB: createMockD1() },
+    waitUntil() {}
+  });
+
+  if (!response || typeof response.status !== "number") {
+    fail("functions/api/[[route]].js did not return a Response for /api/articles");
+  } else if (response.status >= 500) {
+    const body = await response.text();
+    fail(`functions/api/[[route]].js /api/articles returned ${response.status}: ${body}`);
+  }
+} catch (error) {
+  fail(`functions/api/[[route]].js /api/articles runtime check failed: ${error.message}`);
+}
+
 if (!process.exitCode) {
-  console.log(`build-check: ok (${relative(root, resolve(root, "admin"))})`);
+  console.log(`build-check: ok (${relative(root, resolve(root, "admin"))}, api articles)`);
 }

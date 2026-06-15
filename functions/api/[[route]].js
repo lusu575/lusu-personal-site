@@ -2344,7 +2344,7 @@ function articleSeedStatements(env) {
 
 - 后台新增视频管理，可以输入 YouTube、Bilibili 或 b23.tv 链接并自动识别平台。
 - 服务端会规范化播放器地址，抓取标题、作者、简介和封面，并缓存到 D1。
-- 主站视频区改为读取 `/api/videos`，分类标签由后台视频分类动态生成。
+- 主站视频区改为读取 \`/api/videos\`，分类标签由后台视频分类动态生成。
 - 视频点击后在 XP 风格窗口内播放，不再跳转外站。
 - 后台新增视频分类管理，可以新增、编辑、停用、排序和安全删除分类。',
           '2026-06-15T08:30:00.000Z',
@@ -2364,7 +2364,7 @@ This update turns the old placeholder video cards into a real managed video syst
 
 - The admin area can now create and edit videos from YouTube, Bilibili, or b23.tv links.
 - The server normalizes embed URLs, fetches metadata, and caches title, author, description, and thumbnail data in D1.
-- The public videos section now reads from `/api/videos`, with category tabs generated from admin-managed video categories.
+- The public videos section now reads from \`/api/videos\`, with category tabs generated from admin-managed video categories.
 - Videos open inside the XP-style site window instead of jumping to an external site.
 - A new admin category manager supports creating, editing, disabling, sorting, and safely deleting video categories.',
           '2026-06-15T08:30:00.000Z',
@@ -2384,7 +2384,7 @@ This update turns the old placeholder video cards into a real managed video syst
 
 - 管理画面から YouTube、Bilibili、b23.tv のリンクを登録できるようになりました。
 - サーバー側で埋め込み URL を正規化し、タイトル、作者、説明、サムネイルを取得して D1 に保存します。
-- 公開側の動画欄は `/api/videos` から読み込み、分類タブも管理画面の動画分類から生成します。
+- 公開側の動画欄は \`/api/videos\` から読み込み、分類タブも管理画面の動画分類から生成します。
 - 動画は外部サイトへ移動せず、XP 風のウィンドウ内で再生します。
 - 動画分類の追加、編集、停止、並び替え、安全な削除に対応しました。',
           '2026-06-15T08:30:00.000Z',
