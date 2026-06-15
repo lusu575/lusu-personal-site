@@ -120,6 +120,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 后台文章管理接口必须要求登录用户 `role = admin`；普通登录用户不能新建、编辑、删除或发布文章。
 - 每次合并代码、上线功能或做可见更新时，必须在知识库 `site-updates`（网站更新记录）分类发布一篇真实文章。
 - 网站更新记录文章必须同时写入 zh / en / ja，包含主标题、简短简介和正文；正文要概括本次更新内容。
+- 这是合并前验收门槛，不是事后可选补记；如果本轮无法走后台发布，也必须在同一次变更中补齐 seed 与 fallback，确认知识库、欢迎弹窗“最近更新”和右上角最新日期都能读到这次更新。
 - 如果网站更新记录通过 seed 维护，必须同时更新 `functions/api/[[route]].js` 的 `articleSeedStatements`、`cloudflare/schema.sql` 和 `js/main.js` 的本地 fallback `content.updates`，避免线上 D1、手动 migration 和 D1 不可用兜底显示不一致。
 - 首页欢迎弹窗右侧“最近更新”自动读取 `site-updates` 分类文章；不要再把右侧更新列表改回只读写死数组。
 - 首页欢迎弹窗“查看更多更新”应跳转到知识库并筛选 `site-updates` 分类。
@@ -228,6 +229,9 @@ $env:XDG_CONFIG_HOME='F:\lusu575个人站\.wrangler-config'; npx.cmd wrangler pa
 - 视频区使用 D1 表 `videos`、`video_categories`、`video_category_relations`；“全部”分类只由前端生成，不写入数据库。
 - 后台视频和分类接口必须继续复用 `requireAdmin`，普通登录用户不得访问 `/api/admin/videos*` 或 `/api/admin/video-categories*`。
 - 后端只允许解析 YouTube、youtu.be、Bilibili、b23.tv 白名单链接；iframe `src` 必须使用服务端规范化生成的 `embed_url`，不得直接信任用户输入 URL。
+- 公开视频接口必须返回 `original_url` 供主站“打开原地址”使用；`embed_url` 只用于站内 iframe 播放，不要把 embed 地址当作原链接。
+- 主站视频窗口的站内“全屏”应保持为 XP 窗口最大化/还原，不要直接对 YouTube / Bilibili iframe 调用浏览器 Fullscreen API；播放器自己的全屏由 iframe 内部控件处理。
+- 跨域 iframe 内部按钮热区无法由父页面精确重写；遇到默认信息栏、底部空白误触或平台按钮误触时，优先用站内遮罩、透明点击防护区和收窄本站按钮热区兜底。
 - YouTube / Bilibili 元数据只在后台预览、保存或刷新元数据时抓取，并缓存到 D1；公开视频接口不得每次访问重新抓取。
 - 抓取失败时后台应显示可读原因，并允许管理员手动填写标题、简介、作者和封面；前台遇到不可播放或受限视频时显示站内不可播放提示。
 - 主站视频卡片标题、简介、分类名必须使用 `textContent` 或安全 DOM API 渲染，不要把视频数据拼接成未转义 HTML。

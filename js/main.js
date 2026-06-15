@@ -49,6 +49,8 @@ const translations = {
     downloadButton: "下载",
     externalButton: "外部链接",
     openOriginal: "打开原地址",
+    videoFullscreen: "全屏",
+    videoRestore: "还原",
     languageSupportLabel: "语言支持",
     gameSourceLabel: "来源",
     gameConfigLoading: "正在读取游戏配置...",
@@ -150,6 +152,7 @@ const translations = {
     externalButton: "External Link",
     openOriginal: "Open Original",
     videoFullscreen: "Full screen",
+    videoRestore: "Restore",
     languageSupportLabel: "Language support",
     gameSourceLabel: "Source",
     gameConfigLoading: "Loading game catalog...",
@@ -250,6 +253,8 @@ const translations = {
     downloadButton: "ダウンロード",
     externalButton: "外部リンク",
     openOriginal: "元のページを開く",
+    videoFullscreen: "全画面",
+    videoRestore: "元に戻す",
     languageSupportLabel: "言語対応",
     gameSourceLabel: "出典",
     gameConfigLoading: "ゲーム設定を読み込み中...",
@@ -339,6 +344,26 @@ const labels = {
 
 const content = {
   updates: [
+    {
+      icon: "📺",
+      date: "2026.06.15",
+      title: { zh: "视频播放器窗口交互修复", en: "Video Player Window Controls", ja: "動画プレイヤーのウィンドウ操作修正" },
+      desc: {
+        zh: "站内全屏改为 XP 窗口最大化/还原，原地址按钮恢复真实链接，并收紧 iframe 控制区热区",
+        en: "Changed site fullscreen into an XP window maximize toggle, restored original video links, and tightened iframe control hit zones",
+        ja: "サイト内全画面を XP 風ウィンドウの最大化/復元に変更し、元リンクと iframe 操作範囲を調整しました"
+      }
+    },
+    {
+      icon: "🖼️",
+      date: "2026.06.15",
+      title: { zh: "首页底部长条修复", en: "Home Bottom Strip Fix", ja: "ホーム下部ライン修正" },
+      desc: {
+        zh: "修复任务栏上方露出的绿色长条，四个时间段壁纸现在都会填满首页中间区域",
+        en: "Fixed the green strip above the taskbar so every time-of-day wallpaper fills the home area",
+        ja: "タスクバー上の緑の線を修正し、4時間帯の壁紙がホーム領域を埋めるようにしました"
+      }
+    },
     {
       icon: "🪟",
       date: "2026.06.15",
@@ -623,6 +648,10 @@ const videoState = {
   error: ""
 };
 
+const videoWindowState = {
+  maximized: false
+};
+
 const languageStorageKey = "lusu-site-language";
 const siteUpdateCategory = "site-updates";
 const articleCategoryLabels = {
@@ -807,6 +836,7 @@ function setLanguage(lang, options = {}) {
   loadArticles();
   loadVideos();
   updateWelcomeGreeting();
+  updateVideoWindowButton();
 }
 
 function navigate(route, options = {}) {
@@ -1439,15 +1469,38 @@ function videoAutoplayUrl(src) {
     if (url.hostname.includes("youtube.com")) {
       url.searchParams.set("autoplay", "1");
       url.searchParams.set("playsinline", "1");
+      url.searchParams.set("rel", "0");
+      url.searchParams.set("modestbranding", "1");
+      url.searchParams.set("iv_load_policy", "3");
     }
     if (url.hostname.includes("bilibili.com")) {
       url.searchParams.set("autoplay", "1");
       url.searchParams.set("high_quality", "1");
+      url.searchParams.set("as_wide", "1");
+      url.searchParams.set("danmaku", "0");
     }
     return url.toString();
   } catch {
     return src;
   }
+}
+
+function videoClickShield() {
+  const shield = document.createElement("div");
+  shield.className = "video-click-shield";
+  shield.setAttribute("aria-hidden", "true");
+  [
+    "middle-left",
+    "middle-right",
+    "middle-top",
+    "middle-bottom",
+    "bottom-center"
+  ].forEach((name) => {
+    const blocker = document.createElement("span");
+    blocker.className = `video-click-blocker--${name}`;
+    shield.appendChild(blocker);
+  });
+  return shield;
 }
 
 function videoUiText(key) {
@@ -1607,6 +1660,8 @@ function openVideo(index) {
     }
   }
   if (video.embed_url) {
+    const shell = document.createElement("div");
+    shell.className = "video-embed-shell";
     const iframe = document.createElement("iframe");
     iframe.src = videoAutoplayUrl(video.embed_url);
     iframe.title = video.title || "Video player";
@@ -1617,7 +1672,8 @@ function openVideo(index) {
     iframe.addEventListener("error", () => {
       window.lusuTrackClick?.("video:play-failed", video.video_id || video.external_id || "video", { route: "videos" });
     }, { once: true });
-    frame.appendChild(iframe);
+    shell.append(iframe, videoClickShield());
+    frame.appendChild(shell);
     window.lusuTrackClick?.("video:player-open", video.video_id || video.external_id || "video", { route: "videos" });
   } else {
     const placeholder = document.createElement("div");
@@ -1631,22 +1687,33 @@ function openVideo(index) {
     window.lusuTrackClick?.("video:play-failed", video.video_id || video.external_id || "video", { route: "videos" });
   }
   modal.hidden = false;
+  setVideoWindowMaximized(false);
+}
+
+function updateVideoWindowButton() {
+  const button = document.getElementById("video-window-maximize");
+  if (!button) {
+    return;
+  }
+  const labelText = videoWindowState.maximized ? t("videoRestore") : t("videoFullscreen");
+  button.setAttribute("aria-label", labelText);
+  button.setAttribute("title", labelText);
+  button.setAttribute("aria-pressed", String(videoWindowState.maximized));
+}
+
+function setVideoWindowMaximized(maximized) {
+  const modal = document.getElementById("video-modal");
+  videoWindowState.maximized = Boolean(maximized);
+  modal?.classList.toggle("is-video-maximized", videoWindowState.maximized);
+  updateVideoWindowButton();
 }
 
 function fullscreenVideo() {
-  const frame = document.getElementById("video-frame");
-  const iframe = frame?.querySelector("iframe");
-  const target = iframe || frame;
-  if (target?.requestFullscreen) {
-    target.requestFullscreen().catch(() => frame?.requestFullscreen?.());
-    return;
-  }
-  if (target?.webkitRequestFullscreen) {
-    target.webkitRequestFullscreen();
-  }
+  setVideoWindowMaximized(!videoWindowState.maximized);
 }
 
 function closeVideo() {
+  setVideoWindowMaximized(false);
   document.getElementById("video-modal").hidden = true;
   const frame = document.getElementById("video-frame");
   const sourceLink = document.getElementById("video-link");
@@ -2310,7 +2377,7 @@ document.addEventListener("click", (event) => {
     return;
   }
 
-  if (event.target.closest("[data-video-fullscreen]")) {
+  if (event.target.closest("[data-video-window-toggle], [data-video-fullscreen]")) {
     fullscreenVideo();
     return;
   }
@@ -2330,6 +2397,11 @@ document.addEventListener("click", (event) => {
 
 window.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
+    const videoModal = document.getElementById("video-modal");
+    if (videoWindowState.maximized && videoModal && !videoModal.hidden) {
+      setVideoWindowMaximized(false);
+      return;
+    }
     closeVideo();
     closeWelcome();
     closeAccountPopover();

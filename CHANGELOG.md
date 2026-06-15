@@ -4,6 +4,22 @@
 
 ## 2026-06-15
 
+- 视频播放器窗口交互修复：
+  - 将站内视频窗口“全屏”从 iframe Fullscreen API 改为 XP 标题栏右上角最大化/还原按钮，避免和 YouTube / Bilibili 自带全屏逻辑混在一起；最大化状态可再次点击或按 Escape 退出。
+  - 公开视频接口补回 `original_url`，前台“打开原地址”按钮会稳定打开 YouTube / Bilibili 原页面。
+  - 视频 iframe 增加站内默认遮罩与透明点击防护区，收起默认顶部/底部信息栏，并减少底部空白区域误触平台“保存到待看”等按钮。
+  - 视频卡片播放按钮热区从整行收窄到按钮本体，降低卡片底部空白误触。
+  - 新增 `seed-update-2026-06-15-video-player-window-controls` 三语 `site-updates` 更新文章，并同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新。
+- 更新记录约束补强：
+  - 在 `PROJECT_CONTEXT.md`、项目专用 Skill 和 Skill README 中强调：可见更新的三语 `site-updates` 文章是合并前验收门槛，不能当作事后可选补记。
+  - 如果无法通过后台直接发布更新文章，也必须在同一次代码变更里补齐 API seed、D1 schema seed 和前端 fallback 最近更新。
+
+- 首页任务栏上方绿色长条修复：
+  - 确认截图中的绿色长条不是 night 底图像素，而是首页页面高度使用固定 `100vh - 108px` 估算后，未填满 `site-shell` 中间网格行，导致外层绿色草地渐变在任务栏上方露出。
+  - 同步检查 morning / day / dusk / night 四个时段：同一布局缝隙都会存在，morning / day 因底部草色接近不明显，dusk / night 更容易看出，night 最突出。
+  - 将 `main` 改为填满网格中间行的布局容器，页面使用父级高度而不再依赖固定像素估算，并更新首页 CSS / JS query 为 `20260615-video-window-home-gap-fix`，避免旧样式缓存继续显示露底长条。
+  - 新增 `seed-update-2026-06-15-home-wallpaper-gap-fix` 三语 `site-updates` 文章，并同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 与 `js/main.js` fallback 最近更新。
+
 - 管理后台视频和导航更新：
   - 后台视频预览改为检查用小播放器，避免 YouTube / Bilibili iframe 在编辑区撑满页面。
   - 后台视频元数据抓取补齐简介和发布时间链路：YouTube 增加页面元信息解析，Bilibili 增加浏览器化请求头、页面备用解析和 b23 短链兜底。

@@ -1758,6 +1758,7 @@ function publicVideoRow(row, categories = []) {
   return {
     video_id: row.video_id,
     platform: row.platform,
+    original_url: row.original_url || "",
     external_id: row.external_id,
     embed_url: row.embed_url,
     title: row.title || "",
@@ -3447,6 +3448,60 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-15-home-wallpaper-gap-fix',
+        '2026-06-15-home-wallpaper-gap-fix',
+        'site-updates',
+        '["网站更新","首页","动态壁纸","布局修复"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-15T15:08:00.000Z',
+        '2026-06-15T15:08:00.000Z',
+        '2026-06-15T15:08:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-15-video-player-window-controls',
+        '2026-06-15-video-player-window-controls',
+        'site-updates',
+        '["网站更新","视频区","播放器","交互修复"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-15T15:30:00.000Z',
+        '2026-06-15T15:30:00.000Z',
+        '2026-06-15T15:30:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -3551,6 +3606,40 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# ウィンドウアイコンと雲の残影修正\n\n今回の更新では、すでに反映済みだったいくつかの見た目の調整を、公開用の更新記事としてまとめて記録しました。\n\n## 更新内容\n\n- 知識庫、動画区、リソース区、ゲーム区、雑談区、About 用に、新しいウィンドウタイトルバーとタスクバーのアイコン素材を追加しました。\n- セクションタイトル左側のアイコン表示枠、拡大率、縦位置を調整し、タイトル前のアイコンを見やすくしました。\n- 夜の壁紙 `base-clean.png` に残っていた中景雲の小さな残片を修正し、雲が動いた後に背景へ切れ端が残らないようにしました。\n- morning / day / dusk / night の4時間帯を確認し、morning と day には同種の残りはなく、dusk の薄い残影も同時に消しました。\n- ホーム CSS のキャッシュ版を更新し、古いアイコン表示や古い clean ベース画像が残りにくいようにしました。"
       }
     }, "2026-06-15T13:49:12.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-15-home-wallpaper-gap-fix", {
+      zh: {
+        title: "首页底部长条修复",
+        summary: "修复任务栏上方露出的绿色长条，四个时间段壁纸都会填满首页中间区域。",
+        content_markdown: "# 首页底部长条修复\n\n本次更新修复首页任务栏上方偶尔露出的绿色长条，让四个时间段的桌面壁纸和任务栏衔接更干净。\n\n## 更新内容\n\n- 确认绿色长条不是 night 壁纸图片里的像素，而是外层页面草地渐变从首页底部缝隙露出。\n- 检查 morning、day、dusk、night 四个时间段，同一布局缝隙都会存在，只是白天和早晨更接近草色所以不明显。\n- 首页中间区域现在直接填满站点网格剩余高度，不再用固定像素估算顶部栏和任务栏高度。\n- 小屏分支也同步改为使用父级高度，避免移动端出现同类露底。"
+      },
+      en: {
+        title: "Home Bottom Strip Fix",
+        summary: "Fixed the green strip above the taskbar so every time-of-day wallpaper fills the home area.",
+        content_markdown: "# Home Bottom Strip Fix\n\nThis update removes the green strip that could appear above the taskbar on the home screen.\n\n## Changes\n\n- Confirmed the strip was not part of the Night wallpaper image. It came from the outer page grass gradient showing through a small layout gap.\n- Checked Morning, Day, Dusk, and Night. The same gap could exist in all themes, but it was most visible at night.\n- The home page now fills the remaining site grid height instead of relying on a fixed pixel estimate for the top bar and taskbar.\n- The small-screen rule now uses the same parent-height behavior to avoid the same exposed strip on mobile."
+      },
+      ja: {
+        title: "ホーム下部ライン修正",
+        summary: "タスクバー上の緑の線を修正し、4時間帯の壁紙がホーム領域を埋めるようにしました。",
+        content_markdown: "# ホーム下部ライン修正\n\n今回の更新では、ホーム画面のタスクバー上に出ることがあった緑の線を修正しました。\n\n## 更新内容\n\n- 緑の線は night 壁紙画像の一部ではなく、外側ページの草地グラデーションが小さな隙間から見えていたものだと確認しました。\n- morning、day、dusk、night の4時間帯を確認し、同じ隙間は全テーマで起こり得ますが、夜がもっとも目立っていました。\n- ホーム画面はトップバーとタスクバーの高さを固定値で推定せず、サイトのグリッド残り領域を埋めるようにしました。\n- 小画面用の分岐も同じ高さルールにそろえ、モバイルでも同種の線が出にくいようにしました。"
+      }
+    }, "2026-06-15T15:08:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-15-video-player-window-controls", {
+      zh: {
+        title: "视频播放器窗口交互修复",
+        summary: "站内视频播放器修复了窗口全屏、原地址链接和 iframe 控制区误触问题。",
+        content_markdown: "# 视频播放器窗口交互修复\n\n本次更新集中修复视频区 XP 播放器窗口，让站内窗口控制和 YouTube / Bilibili 自带控制不再互相混淆。\n\n## 更新内容\n\n- 站内“全屏”改为标题栏右上角的 XP 风格最大化按钮，可再次点击或按 Escape 还原窗口。\n- 不再优先对 iframe 执行浏览器 Fullscreen API，YouTube / Bilibili 自带全屏仍由播放器自己处理。\n- 公开视频接口继续返回真实 `original_url`，所以“打开原地址”会打开 YouTube / Bilibili 原页面，而不是空链接或 embed 地址。\n- iframe 顶部和底部信息层默认用站内遮罩收起，鼠标进入播放器区域时再露出平台控件。\n- 底部空白区域增加透明点击防护，视频卡片的播放按钮热区也收窄到按钮本身，减少误触“保存到待看”等平台按钮。"
+      },
+      en: {
+        title: "Video Player Window Controls",
+        summary: "The embedded video window now separates site window controls from YouTube and Bilibili controls.",
+        content_markdown: "# Video Player Window Controls\n\nThis update fixes the XP-style video player window so site-level controls no longer fight with YouTube or Bilibili's own player controls.\n\n## Changes\n\n- The site fullscreen button is now a titlebar maximize/restore icon, and it can be toggled again or restored with Escape.\n- The site no longer fullscreen-requests the iframe first; YouTube and Bilibili native fullscreen remains inside the embedded player.\n- The public videos API keeps returning the real `original_url`, so Open Original goes to the source page instead of an empty or embed-only link.\n- The iframe top and bottom information bars are covered by the site by default and revealed when the user moves over the player area.\n- Transparent click blockers protect bottom blank areas, and video-card play buttons now only use the actual button as their hit target."
+      },
+      ja: {
+        title: "動画プレイヤーのウィンドウ操作修正",
+        summary: "サイト側の動画ウィンドウ操作と YouTube / Bilibili 側の操作が混ざらないように調整しました。",
+        content_markdown: "# 動画プレイヤーのウィンドウ操作修正\n\n今回の更新では、動画欄の XP 風プレイヤーウィンドウを調整し、サイト側のウィンドウ操作と YouTube / Bilibili のプレイヤー操作が混ざらないようにしました。\n\n## 更新内容\n\n- サイト内の「全画面」は、タイトルバー右上の XP 風の最大化/復元ボタンに変更しました。もう一度クリックするか Escape で元に戻せます。\n- iframe を優先してブラウザ全画面にしないようにし、YouTube / Bilibili の全画面はプレイヤー側に任せます。\n- 公開動画 API は実際の `original_url` を返し続け、「元のページを開く」が YouTube / Bilibili の元ページへ移動するようにしています。\n- iframe 上部と下部の情報バーは通常はサイト側のマスクで隠し、プレイヤー付近にマウスを置いた時だけ見えるようにしました。\n- 下部の空白部分には透明のクリック保護を置き、動画カードの再生ボタンもボタン本体だけが反応するようにして、プラットフォーム側ボタンの誤触を減らしました。"
+      }
+    }, "2026-06-15T15:30:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')
