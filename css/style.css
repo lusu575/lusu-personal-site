@@ -1236,7 +1236,7 @@ main {
   flex: 0 0 calc((100% - 32px) / 3);
   align-self: start;
   height: auto;
-  min-height: 318px;
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -1248,6 +1248,15 @@ main {
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.38), transparent 40%),
     var(--thumb-bg, #74b9ff);
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.video-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .video-thumb::before {
@@ -1278,9 +1287,9 @@ main {
 
 .video-body {
   display: grid;
-  grid-template-rows: 22px 46px 45px 36px;
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
   gap: 8px;
-  min-height: 166px;
+  min-height: 0;
   padding: 13px 13px 16px;
 }
 
@@ -1295,6 +1304,7 @@ main {
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+  overflow-wrap: anywhere;
 }
 
 .video-body h3,
@@ -1319,6 +1329,10 @@ main {
 .video-body .card-action {
   width: 100%;
   justify-self: stretch;
+  max-width: 100%;
+  min-width: 0;
+  white-space: normal;
+  text-align: center;
 }
 
 .platform {
@@ -2238,11 +2252,26 @@ main {
   overflow: auto;
 }
 
+#video-modal .modal-window {
+  width: min(920px, calc(100vw - 32px));
+  min-width: min(420px, calc(100vw - 32px));
+  min-height: 360px;
+  resize: both;
+}
+
 .video-frame {
   aspect-ratio: 16 / 9;
   margin: 14px;
   border: 3px solid #222;
   background: #111;
+  overflow: hidden;
+}
+
+.video-frame iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
 
 .video-placeholder {
@@ -2275,6 +2304,17 @@ main {
 .modal-window .xp-button {
   display: inline-flex;
   margin: 0 14px 14px;
+}
+
+.video-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 14px 14px;
+}
+
+.video-modal-actions .xp-button {
+  margin: 0;
 }
 
 .page-home {

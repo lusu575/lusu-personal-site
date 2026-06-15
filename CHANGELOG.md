@@ -4,6 +4,12 @@
 
 ## 2026-06-15
 
+- 视频区卡片与播放器修复：
+  - 调整视频封面为固定 16:9 铺满显示，封面图片使用 `object-fit: cover` 对齐 YouTube / Bilibili 常见封面比例。
+  - 修复视频介绍过长、播放按钮超出卡片和整张卡片都触发播放的问题，仅保留封面按钮与卡片内播放按钮作为播放热区。
+  - 视频弹窗 iframe 改为铺满播放窗，打开时自动追加 YouTube / Bilibili autoplay 参数，并恢复“打开原地址”链接。
+  - 视频播放窗支持拖拽调整大小，新增全屏按钮，并将标题栏星星替换为视频区同款图标。
+
 - 主站文档补充后台文档指引：
   - 在 `PROJECT_CONTEXT.md` 的项目结构和 Skill 索引中补充 `admin/docs/` 后台专用文档入口。
   - 在主站项目 Skill 和 Skill README 中新增规则：凡是管理后台相关改动，必须额外读取 `admin/docs/ADMIN_PROJECT_CONTEXT.md`、`admin/docs/ADMIN_SKILL.md`，必要时读取 `admin/docs/ADMIN_CHANGELOG.md`。

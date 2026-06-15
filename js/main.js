@@ -149,6 +149,7 @@ const translations = {
     downloadButton: "Download",
     externalButton: "External Link",
     openOriginal: "Open Original",
+    videoFullscreen: "Full screen",
     languageSupportLabel: "Language support",
     gameSourceLabel: "Source",
     gameConfigLoading: "Loading game catalog...",
@@ -669,6 +670,9 @@ const chatState = {
 };
 
 function t(key) {
+  if (key === "videoFullscreen") {
+    return translations[currentLang][key] || (currentLang === "en" ? "Full screen" : "全屏");
+  }
   return translations[currentLang][key] || translations.zh[key] || key;
 }
 
@@ -1382,7 +1386,6 @@ function renderVideoCategoryButtons() {
 function videoCardElement(item) {
   const card = document.createElement("article");
   card.className = "video-card";
-  card.dataset.videoId = item.video_id;
 
   const thumb = document.createElement("button");
   thumb.type = "button";
@@ -1428,6 +1431,23 @@ function videoCardElement(item) {
   body.append(platform, title, desc, meta, button);
   card.append(thumb, body);
   return card;
+}
+
+function videoAutoplayUrl(src) {
+  try {
+    const url = new URL(src);
+    if (url.hostname.includes("youtube.com")) {
+      url.searchParams.set("autoplay", "1");
+      url.searchParams.set("playsinline", "1");
+    }
+    if (url.hostname.includes("bilibili.com")) {
+      url.searchParams.set("autoplay", "1");
+      url.searchParams.set("high_quality", "1");
+    }
+    return url.toString();
+  } catch {
+    return src;
+  }
 }
 
 function videoUiText(key) {
@@ -1578,15 +1598,20 @@ function openVideo(index) {
   }
   document.getElementById("modal-title").textContent = video.title || localText(video.title) || "Video Player";
   if (sourceLink) {
-    sourceLink.hidden = true;
-    sourceLink.removeAttribute("href");
+    if (video.original_url) {
+      sourceLink.href = video.original_url;
+      sourceLink.hidden = false;
+    } else {
+      sourceLink.hidden = true;
+      sourceLink.removeAttribute("href");
+    }
   }
   if (video.embed_url) {
     const iframe = document.createElement("iframe");
-    iframe.src = video.embed_url;
+    iframe.src = videoAutoplayUrl(video.embed_url);
     iframe.title = video.title || "Video player";
     iframe.loading = "lazy";
-    iframe.allow = "accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+    iframe.allow = "autoplay; fullscreen; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
     iframe.allowFullscreen = true;
     iframe.referrerPolicy = "strict-origin-when-cross-origin";
     iframe.addEventListener("error", () => {
@@ -1608,10 +1633,28 @@ function openVideo(index) {
   modal.hidden = false;
 }
 
+function fullscreenVideo() {
+  const frame = document.getElementById("video-frame");
+  const iframe = frame?.querySelector("iframe");
+  const target = iframe || frame;
+  if (target?.requestFullscreen) {
+    target.requestFullscreen().catch(() => frame?.requestFullscreen?.());
+    return;
+  }
+  if (target?.webkitRequestFullscreen) {
+    target.webkitRequestFullscreen();
+  }
+}
+
 function closeVideo() {
   document.getElementById("video-modal").hidden = true;
   const frame = document.getElementById("video-frame");
+  const sourceLink = document.getElementById("video-link");
   frame.replaceChildren();
+  if (sourceLink) {
+    sourceLink.hidden = true;
+    sourceLink.removeAttribute("href");
+  }
   const placeholder = document.createElement("div");
   placeholder.className = "video-placeholder";
   const icon = document.createElement("span");
@@ -2264,6 +2307,11 @@ document.addEventListener("click", (event) => {
   const managedVideoButton = event.target.closest("[data-video-id]");
   if (managedVideoButton) {
     openVideo(managedVideoButton.dataset.videoId);
+    return;
+  }
+
+  if (event.target.closest("[data-video-fullscreen]")) {
+    fullscreenVideo();
     return;
   }
 
