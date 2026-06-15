@@ -32,9 +32,10 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 首页四时段壁纸基础图放在 `assets/images/wallpapers/`，按用户本地时间切换 `morning` / `day` / `dusk` / `night`。
 - 首页壁纸必须保留 `wallpaper-root` / `wallpaper-stage` 舞台坐标结构；静态底图和后续动画图层要共享同一套 cover 裁切尺寸，不要直接用视口百分比硬贴小图层。
 - 首页壁纸和欢迎弹窗问候语必须使用同一套时间段：05:00-10:59 morning，11:00-16:59 day，17:00-19:59 dusk，20:00-04:59 night。
-- 当前首页动画层默认关闭，只展示四时段静态底图；云、树冠、电视雪花、小女孩、星星、水面光效等 DOM/class 是预留接口。
-- 后续启用首页壁纸动画时，只使用 CSS `transform` / `opacity`，不要用 JS 每帧修改 `left` / `top`，不要使用整屏 GIF、整屏 APNG 或大视频循环。
-- 后续启用首页动态壁纸时，必须支持 `prefers-reduced-motion`、页面隐藏时暂停动画、手机端减少图层数量和动画强度。
+- 当前四个时段均已启用动态云层：`assets/images/wallpaper-dynamic/<time>/base-clean.png` 作为无云底图，独立透明云层按 1672x941 舞台坐标摆放并沿同一主风向慢速错相漂移；morning / dusk / night 的低地平线云默认保留静态，避免移动后像贴在地面。
+- 本地调试动态壁纸可用 `?wallpaper=morning` / `?wallpaper=day` / `?wallpaper=dusk` / `?wallpaper=night` 强制预览指定时间段；该预览模式可以临时加快动画以便肉眼确认移动，不要为了预览硬编码当前时间。
+- 首页壁纸动画只使用 CSS `transform` / `opacity`，不要用 JS 每帧修改 `left` / `top`，不要使用整屏 GIF、整屏 APNG 或大视频循环。
+- 首页动态壁纸必须支持 `prefers-reduced-motion`、页面隐藏时暂停动画、手机端减少图层数量和动画强度；减少动态或小屏降级时应回到对应静态壁纸。
 - 云、树冠/树叶/花瓣等尚未从底图完全拆分时，默认使用静态底图兜底，不启用同位置移动叠层，避免重影；电视机本体不做动画，只允许屏幕区域动。
 
 ## 前端和移动端检查
@@ -174,6 +175,18 @@ $env:XDG_CONFIG_HOME='F:\lusu575个人站\.wrangler-config'; npx.cmd wrangler pa
   - `assets/images/wallpapers/day.png`
   - `assets/images/wallpapers/dusk.png`
   - `assets/images/wallpapers/night.png`
+  - `assets/images/wallpaper-dynamic/morning/base-clean.png`
+  - `assets/images/wallpaper-dynamic/morning/cloud-*.png`
+  - `assets/images/wallpaper-dynamic/day/base-clean.png`
+  - `assets/images/wallpaper-dynamic/day/cloud-top-left.png`
+  - `assets/images/wallpaper-dynamic/day/cloud-top-center.png`
+  - `assets/images/wallpaper-dynamic/day/cloud-top-right.png`
+  - `assets/images/wallpaper-dynamic/day/cloud-mid-left.png`
+  - `assets/images/wallpaper-dynamic/day/cloud-mid-right.png`
+  - `assets/images/wallpaper-dynamic/dusk/base-clean.png`
+  - `assets/images/wallpaper-dynamic/dusk/cloud-*.png`
+  - `assets/images/wallpaper-dynamic/night/base-clean.png`
+  - `assets/images/wallpaper-dynamic/night/cloud-*.png`
   - `assets/images/homepage-pixel-coast.png`
   - `assets/images/lusu-tv-head-256.png`
   - `assets/images/lusu-about-avatar-256.png`

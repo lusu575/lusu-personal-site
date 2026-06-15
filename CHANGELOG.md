@@ -2,6 +2,36 @@
 
 本文件记录鲁肃个人站的功能、界面、后端、部署与项目约定变更。每次修改项目后都应同步更新这里，方便后续 AI / Codex 对话快速了解最近改动。
 
+## 2026-06-15
+
+- 首页四时段动态云层扩展：
+  - 将 morning / dusk / night 也接入与 Day 相同的动态云层方式：各自使用 `assets/images/wallpaper-dynamic/<time>/base-clean.png` 作为无云底图，并叠加单朵独立透明云层。
+  - morning / dusk 各拆出 7 朵中高空移动云，night 拆出 7 朵夜色云；低地平线云保留静态，避免移动后贴近地面或山坡。
+  - 四个时间段的云层都改为按同一主风向慢速错相漂移，速度和相位逐朵打散，避免所有云一起移动或排布过于规律。
+  - `?wallpaper=morning` / `?wallpaper=day` / `?wallpaper=dusk` / `?wallpaper=night` 均可强制预览对应动态壁纸，预览模式继续临时加快位移。
+  - 更新 CSS / JS query 为 `20260615-all-clouds-natural`，减少缓存加载旧壁纸逻辑。
+  - 更新 `PROJECT_CONTEXT.md` 和项目专用 Skill，记录四时段动态云层状态。
+
+- 首页 Day 动态云层 MVP：
+  - 首页 Day 时段改用 `assets/images/wallpaper-dynamic/day/base-clean.png` 作为无云 clean plate。
+  - 接入 5 张独立透明云层 PNG，按 1672x941 舞台坐标定位，并用 CSS `transform` 做慢速、错相、同一主风向的横向漂移。
+  - 将 Day 云层改为从原始 `day.png` 抠出的原尺寸云块，缩小云彩并下放位置，避免云层过大或过度贴近顶部。
+  - 继续微调 Day 云层：顶部云进一步下移，所有云改为同一主风向下的错相漂移，速度只小幅加快，并打散左右位置避免过度对称。
+  - 增加页面隐藏暂停和 `prefers-reduced-motion` / 小屏兜底：减少动态或移动端会回到原静态 Day 壁纸。
+  - 新增本地预览参数 `?wallpaper=day`，可不受当前时间段限制直接查看 Day 动态云层；预览模式会临时加快云层位移以便肉眼确认动画。
+  - 更新 CSS / JS query 为 `20260615-day-cloud-natural`，减少缓存加载旧壁纸逻辑。
+  - 更新 `PROJECT_CONTEXT.md` 和项目专用 Skill，记录 Day 动态云层已从预留接口进入 MVP 状态。
+
+- 首页 Day 动态云层资源草图：
+  - 使用 imagegen 生成 Day 时段像素云层草图，保存到 `assets/images/wallpaper-dynamic/day/`。
+  - 将云层拆分为 5 张独立透明 PNG，并额外生成蓝底预览图用于检查云层高度、像素边缘和后续独立移动分层。
+  - 生成 Day 时段 `base-clean.png` 无云底图，作为后续动态云层叠加的 clean plate。
+
+- 首页动态壁纸实验回退：
+  - 移除本地云层、树、水面反光和电视小女孩相关测试逻辑与生成素材。
+  - 首页恢复为四时段静态像素壁纸，只保留既有 `wallpaper-root` / `wallpaper-stage` 舞台和预留 layer 结构。
+  - 本地仓库分支清理为只保留 `main`。
+
 ## 2026-06-14
 
 - 知识库长文阅读体验优化：

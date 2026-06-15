@@ -54,7 +54,7 @@ Cloudflare Pages 项目状态：
 
 - 单页 XP 桌面风格个人站
 - 首页桌面图标入口
-- 首页使用四时段静态像素壁纸：基础底图位于 `assets/images/wallpapers/`，按用户本地时间切换 morning / day / dusk / night。页面保留 `wallpaper-root` / `wallpaper-stage` 舞台坐标结构和云、树冠、电视雪花、小女孩、星星、水面光效等 layer DOM/class 作为后续动画接口，但当前所有动画层默认关闭，只显示静态底图。
+- 首页使用四时段像素壁纸：基础静态底图位于 `assets/images/wallpapers/`，按用户本地时间切换 morning / day / dusk / night。四个时段均已接入动态云层，分别使用 `assets/images/wallpaper-dynamic/<time>/base-clean.png` 作为无云底图，并叠加从对应原始壁纸抠出的独立透明云层；云层沿用 `wallpaper-root` / `wallpaper-stage` 舞台坐标结构，只用 CSS `transform` / `opacity` 做同一主风向下的慢速错相漂移，并支持减少动态、小屏和页面隐藏暂停降级。本地调试可用 `?wallpaper=morning` / `?wallpaper=day` / `?wallpaper=dusk` / `?wallpaper=night` 强制预览指定动态壁纸，预览模式会临时加快云层位移以便肉眼确认动画。树冠、电视雪花、小女孩、星星、水面光效等层仍作为后续动画接口保留。
 - 顶部 XP 蓝色栏和底部任务栏
 - 知识库、视频区、资源区、游戏区、杂谈区、匿名聊天室、关于我
 - 中文 / English / 日本語 三语切换

@@ -339,6 +339,12 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "☁️",
+      date: "2026.06.15",
+      title: { zh: "四时段动态云层", en: "Four-time cloud animation", ja: "4時間帯の雲アニメーション" },
+      desc: { zh: "首页 morning / day / dusk / night 都接入无云底图和独立云层，使用同一主风向的慢速错相漂移，并支持页面隐藏暂停和减少动态模式", en: "Morning, Day, Dusk, and Night wallpapers now use cloudless bases with independent slow-drifting cloud layers, pause-on-hidden, and reduced-motion support", ja: "朝・昼・夕方・夜の壁紙に無雲ベースと独立した低速雲レイヤーを追加し、非表示時の一時停止と低モーション設定に対応しました" }
+    },
+    {
       icon: "📖",
       date: "2026.06.15",
       title: { zh: "AI Agent 文章直链与阅读优化", en: "AI Agent article links and reading polish", ja: "AI Agent 記事リンクと閲覧体験を調整" },
@@ -1405,6 +1411,13 @@ function closeWelcome() {
   document.getElementById("welcome-modal").hidden = true;
 }
 
+const wallpaperMotionMedia = typeof window.matchMedia === "function"
+  ? window.matchMedia("(prefers-reduced-motion: reduce)")
+  : null;
+const wallpaperPreviewTheme = ["morning", "day", "dusk", "night"].includes(pageParams.get("wallpaper"))
+  ? pageParams.get("wallpaper")
+  : "";
+
 function currentTimeTheme(date = new Date()) {
   const minutes = date.getHours() * 60 + date.getMinutes();
   if (minutes >= 5 * 60 && minutes < 11 * 60) {
@@ -1435,18 +1448,29 @@ function layoutWallpaperStage() {
   root.style.setProperty("--wallpaper-stage-height", `${Math.ceil(stageHeight)}px`);
 }
 
+function updateWallpaperMotionState() {
+  const root = document.getElementById("wallpaper-root");
+  if (!root) {
+    return;
+  }
+  root.dataset.motion = wallpaperMotionMedia?.matches ? "reduced" : "full";
+  root.dataset.paused = document.hidden ? "true" : "false";
+  root.dataset.previewMotion = wallpaperPreviewTheme ? "true" : "false";
+}
+
 function updateHomeTimeTheme() {
   const home = document.getElementById("home");
   const root = document.getElementById("wallpaper-root");
   if (!home) {
     return;
   }
-  const theme = currentTimeTheme();
+  const theme = wallpaperPreviewTheme || currentTimeTheme();
   home.dataset.timeTheme = theme;
   if (root) {
     root.dataset.time = theme;
   }
   layoutWallpaperStage();
+  updateWallpaperMotionState();
 }
 
 function updateWelcomeGreeting() {
@@ -2057,6 +2081,7 @@ document.getElementById("chat-edit-nickname")?.addEventListener("click", editCha
 window.addEventListener("resize", layoutWallpaperStage);
 
 document.addEventListener("visibilitychange", () => {
+  updateWallpaperMotionState();
   if (!document.hidden && document.getElementById("chatroom")?.classList.contains("active")) {
     chatState.idlePolls = 0;
     refreshChatMessages().then((newCount) => {
@@ -2066,6 +2091,15 @@ document.addEventListener("visibilitychange", () => {
     scheduleChatPolling(30000);
   }
 });
+
+if (wallpaperMotionMedia) {
+  const syncWallpaperMotionPreference = () => updateWallpaperMotionState();
+  if (typeof wallpaperMotionMedia.addEventListener === "function") {
+    wallpaperMotionMedia.addEventListener("change", syncWallpaperMotionPreference);
+  } else if (typeof wallpaperMotionMedia.addListener === "function") {
+    wallpaperMotionMedia.addListener(syncWallpaperMotionPreference);
+  }
+}
 
 function browserPreferredLanguage() {
   const candidates = [navigator.language, ...(navigator.languages || [])].filter(Boolean);
