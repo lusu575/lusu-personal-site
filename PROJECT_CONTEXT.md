@@ -458,3 +458,28 @@ skills/lusu-personal-site-skill/README.md
 - 更完善的账号资料页
 
 这些扩展都应优先保持现有 XP / Y2K / 像素桌面风格，不要把网站改成普通现代模板。
+
+## 2026-06-15 视频系统更新
+
+- 视频区已从本地占位卡片改为 D1 驱动的可管理视频系统。
+- D1 新增 `videos`、`video_categories`、`video_category_relations`；“全部”分类不入库，由前端自动生成。
+- 公开视频接口：
+  - `GET /api/videos?lang=zh|en|ja`
+  - `GET /api/videos/:videoId?lang=zh|en|ja`
+- 后台视频接口：
+  - `GET /api/admin/videos`
+  - `POST /api/admin/videos`
+  - `PUT /api/admin/videos/:videoId`
+  - `DELETE /api/admin/videos/:videoId`
+  - `POST /api/admin/videos/preview-url`
+  - `POST /api/admin/videos/:videoId/refresh-metadata`
+- 后台视频分类接口：
+  - `GET /api/admin/video-categories`
+  - `POST /api/admin/video-categories`
+  - `PUT /api/admin/video-categories/:categoryId`
+  - `DELETE /api/admin/video-categories/:categoryId`
+- 后台新增“视频管理”和“视频分类管理”模块，仍只允许 `users.role = admin` 访问。
+- 后端只接受 YouTube / youtu.be / Bilibili / b23.tv 白名单链接，由服务端解析并生成规范化 `embed_url`；前端和后台预览不得直接 iframe 用户输入的任意 URL。
+- 视频元数据只在后台预览、保存或刷新时抓取，并缓存到 D1；公开视频访问不重新抓取。
+- 主站视频区从 `/api/videos` 读取列表和分类，使用安全 DOM/textContent 渲染，点击后在 XP 风格站内窗口加载 lazy iframe。
+- 视频区埋点复用 `js/telemetry.js`，覆盖分类筛选、视频点击、播放器打开和播放失败，不记录后台输入内容。

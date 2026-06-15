@@ -16,6 +16,7 @@ let chatSchemaReady = false;
 let articleSchemaReady = false;
 let articleSeedReady = false;
 let analyticsSchemaReady = false;
+let videoSchemaReady = false;
 
 export async function onRequest(context) {
   const { request, env } = context;
@@ -78,6 +79,15 @@ export async function onRequest(context) {
         return await getArticle(request, env, parts[1]);
       }
     }
+    if (parts[0] === "videos") {
+      await ensureVideoSchema(env);
+      if (request.method === "GET" && !parts[1]) {
+        return await getVideos(request, env);
+      }
+      if (request.method === "GET" && parts[1]) {
+        return await getVideo(request, env, parts[1]);
+      }
+    }
     if (parts[0] === "admin" && request.method === "GET" && parts[1] === "me") {
       return await adminMe(request, env);
     }
@@ -128,6 +138,42 @@ export async function onRequest(context) {
       }
       if (request.method === "DELETE" && parts[2]) {
         return await deleteArticle(request, env, parts[2]);
+      }
+    }
+    if (parts[0] === "admin" && parts[1] === "videos") {
+      await ensureVideoSchema(env);
+      if (request.method === "GET" && !parts[2]) {
+        return await getAdminVideos(request, env);
+      }
+      if (request.method === "POST" && !parts[2]) {
+        return await createVideo(request, env);
+      }
+      if (request.method === "POST" && parts[2] === "preview-url") {
+        return await previewVideoUrl(request, env);
+      }
+      if (request.method === "PUT" && parts[2]) {
+        return await updateVideo(request, env, parts[2]);
+      }
+      if (request.method === "DELETE" && parts[2]) {
+        return await deleteVideo(request, env, parts[2]);
+      }
+      if (request.method === "POST" && parts[2] && parts[3] === "refresh-metadata") {
+        return await refreshVideoMetadata(request, env, parts[2]);
+      }
+    }
+    if (parts[0] === "admin" && parts[1] === "video-categories") {
+      await ensureVideoSchema(env);
+      if (request.method === "GET" && !parts[2]) {
+        return await getAdminVideoCategories(request, env);
+      }
+      if (request.method === "POST" && !parts[2]) {
+        return await createVideoCategory(request, env);
+      }
+      if (request.method === "PUT" && parts[2]) {
+        return await updateVideoCategory(request, env, parts[2]);
+      }
+      if (request.method === "DELETE" && parts[2]) {
+        return await deleteVideoCategory(request, env, parts[2]);
       }
     }
     if (parts[0] === "saves" && parts[1]) {
@@ -630,6 +676,210 @@ async function getAdminArticle(request, env, articleId) {
       article_today_uv: Number(metrics?.article_today_uv || 0)
     }
   });
+}
+
+async function getVideos(request, env) {
+  const url = new URL(request.url);
+  const lang = normalizeArticleLang(url.searchParams.get("lang"));
+  const categories = await publicVideoCategories(env, lang);
+  const rows = (await env.DB.prepare(`
+    select *
+    from videos
+    where status = 'published'
+    order by pinned desc, sort_order asc, coalesce(published_at, created_at) desc, created_at desc
+    limit 80
+  `).all()).results || [];
+  const videoIds = rows.map((row) => row.video_id);
+  const relations = await videoRelations(env, videoIds);
+  return json({
+    lang,
+    categories,
+    videos: rows.map((row) => publicVideoRow(row, relations.get(row.video_id) || []))
+  });
+}
+
+async function getVideo(request, env, videoId) {
+  const normalizedId = normalizeRecordId(videoId, "Video id is invalid.");
+  const row = await env.DB.prepare("select * from videos where video_id = ? and status = 'published'")
+    .bind(normalizedId).first();
+  if (!row) {
+    return json({ error: "Video not found." }, 404);
+  }
+  const relations = await videoRelations(env, [row.video_id]);
+  return json({ video: publicVideoRow(row, relations.get(row.video_id) || []) });
+}
+
+async function getAdminVideos(request, env) {
+  await requireAdmin(request, env);
+  const rows = (await env.DB.prepare(`
+    select *
+    from videos
+    order by pinned desc, sort_order asc, updated_at desc, created_at desc
+    limit 200
+  `).all()).results || [];
+  const relations = await videoRelations(env, rows.map((row) => row.video_id));
+  return json({ videos: rows.map((row) => adminVideoRow(row, relations.get(row.video_id) || [])) });
+}
+
+async function createVideo(request, env) {
+  await requireAdmin(request, env);
+  const body = await readJson(request);
+  const video = await normalizeVideoPayload(body, env);
+  const now = nowIso();
+  const videoId = crypto.randomUUID();
+  await env.DB.batch([
+    env.DB.prepare(`
+      insert into videos (
+        video_id, platform, original_url, external_id, embed_url, title, description,
+        thumbnail_url, author_name, published_at, status, sort_order, pinned,
+        metadata_error, created_at, updated_at
+      ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      videoId, video.platform, video.original_url, video.external_id, video.embed_url,
+      video.title, video.description, video.thumbnail_url, video.author_name,
+      video.published_at, video.status, video.sort_order, video.pinned,
+      video.metadata_error, now, now
+    ),
+    ...videoCategoryRelationStatements(env, videoId, video.category_ids)
+  ]);
+  return json({ ok: true, videoId }, 201);
+}
+
+async function updateVideo(request, env, videoId) {
+  await requireAdmin(request, env);
+  const normalizedId = normalizeRecordId(videoId, "Video id is invalid.");
+  const existing = await env.DB.prepare("select * from videos where video_id = ?").bind(normalizedId).first();
+  if (!existing) {
+    return json({ error: "Video not found." }, 404);
+  }
+  const body = await readJson(request);
+  const video = await normalizeVideoPayload(body, env, { existing });
+  await env.DB.batch([
+    env.DB.prepare(`
+      update videos
+      set platform = ?, original_url = ?, external_id = ?, embed_url = ?,
+          title = ?, description = ?, thumbnail_url = ?, author_name = ?,
+          published_at = ?, status = ?, sort_order = ?, pinned = ?,
+          metadata_error = ?, updated_at = ?
+      where video_id = ?
+    `).bind(
+      video.platform, video.original_url, video.external_id, video.embed_url,
+      video.title, video.description, video.thumbnail_url, video.author_name,
+      video.published_at, video.status, video.sort_order, video.pinned,
+      video.metadata_error, nowIso(), normalizedId
+    ),
+    env.DB.prepare("delete from video_category_relations where video_id = ?").bind(normalizedId),
+    ...videoCategoryRelationStatements(env, normalizedId, video.category_ids)
+  ]);
+  return json({ ok: true, videoId: normalizedId });
+}
+
+async function deleteVideo(request, env, videoId) {
+  await requireAdmin(request, env);
+  const normalizedId = normalizeRecordId(videoId, "Video id is invalid.");
+  const result = await env.DB.prepare("delete from videos where video_id = ?").bind(normalizedId).run();
+  if (!result.meta?.changes) {
+    return json({ error: "Video not found." }, 404);
+  }
+  return json({ ok: true });
+}
+
+async function previewVideoUrl(request, env) {
+  await requireAdmin(request, env);
+  const body = await readJson(request);
+  const parsed = await metadataForVideoUrl(body.url || body.original_url || "");
+  return json({ video: parsed });
+}
+
+async function refreshVideoMetadata(request, env, videoId) {
+  await requireAdmin(request, env);
+  const normalizedId = normalizeRecordId(videoId, "Video id is invalid.");
+  const existing = await env.DB.prepare("select * from videos where video_id = ?").bind(normalizedId).first();
+  if (!existing) {
+    return json({ error: "Video not found." }, 404);
+  }
+  const metadata = await metadataForVideoUrl(existing.original_url);
+  const title = metadata.title || existing.title;
+  const description = metadata.description || existing.description;
+  const thumbnail = metadata.thumbnail_url || existing.thumbnail_url;
+  const author = metadata.author_name || existing.author_name;
+  await env.DB.prepare(`
+    update videos
+    set platform = ?, external_id = ?, embed_url = ?, title = ?, description = ?,
+        thumbnail_url = ?, author_name = ?, published_at = coalesce(?, published_at),
+        metadata_error = ?, updated_at = ?
+    where video_id = ?
+  `).bind(
+    metadata.platform, metadata.external_id, metadata.embed_url, title, description,
+    thumbnail, author, metadata.published_at || null, metadata.metadata_error || "",
+    nowIso(), normalizedId
+  ).run();
+  return json({ ok: true, video: { ...metadata, title, description, thumbnail_url: thumbnail, author_name: author } });
+}
+
+async function getAdminVideoCategories(request, env) {
+  await requireAdmin(request, env);
+  const rows = (await env.DB.prepare(`
+    select video_categories.*,
+      count(video_category_relations.video_id) as video_count
+    from video_categories
+    left join video_category_relations on video_category_relations.category_id = video_categories.category_id
+    group by video_categories.category_id
+    order by video_categories.sort_order asc, video_categories.created_at asc
+  `).all()).results || [];
+  return json({ categories: rows.map((row) => ({ ...row, video_count: Number(row.video_count || 0) })) });
+}
+
+async function createVideoCategory(request, env) {
+  await requireAdmin(request, env);
+  const body = await readJson(request);
+  const category = normalizeVideoCategoryPayload(body);
+  const now = nowIso();
+  const categoryId = crypto.randomUUID();
+  await env.DB.prepare(`
+    insert into video_categories (
+      category_id, slug, name_zh, name_en, name_ja, sort_order, enabled, created_at, updated_at
+    ) values (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(
+    categoryId, category.slug, category.name_zh, category.name_en, category.name_ja,
+    category.sort_order, category.enabled, now, now
+  ).run();
+  return json({ ok: true, categoryId }, 201);
+}
+
+async function updateVideoCategory(request, env, categoryId) {
+  await requireAdmin(request, env);
+  const normalizedId = normalizeRecordId(categoryId, "Category id is invalid.");
+  const existing = await env.DB.prepare("select category_id from video_categories where category_id = ?")
+    .bind(normalizedId).first();
+  if (!existing) {
+    return json({ error: "Category not found." }, 404);
+  }
+  const category = normalizeVideoCategoryPayload(await readJson(request));
+  await env.DB.prepare(`
+    update video_categories
+    set slug = ?, name_zh = ?, name_en = ?, name_ja = ?, sort_order = ?, enabled = ?, updated_at = ?
+    where category_id = ?
+  `).bind(
+    category.slug, category.name_zh, category.name_en, category.name_ja,
+    category.sort_order, category.enabled, nowIso(), normalizedId
+  ).run();
+  return json({ ok: true, categoryId: normalizedId });
+}
+
+async function deleteVideoCategory(request, env, categoryId) {
+  await requireAdmin(request, env);
+  const normalizedId = normalizeRecordId(categoryId, "Category id is invalid.");
+  const usage = await env.DB.prepare("select count(*) as count from video_category_relations where category_id = ?")
+    .bind(normalizedId).first();
+  if (Number(usage?.count || 0) > 0) {
+    return json({ error: "这个分类已有视频使用，请先移动或取消关联后再删除。", videoCount: Number(usage.count) }, 409);
+  }
+  const result = await env.DB.prepare("delete from video_categories where category_id = ?").bind(normalizedId).run();
+  if (!result.meta?.changes) {
+    return json({ error: "Category not found." }, 404);
+  }
+  return json({ ok: true });
 }
 
 async function adminMe(request, env) {
@@ -1163,6 +1413,81 @@ async function ensureArticleSchema(env) {
   articleSchemaReady = true;
 }
 
+async function ensureVideoSchema(env) {
+  if (videoSchemaReady) {
+    return;
+  }
+  await env.DB.batch([
+    env.DB.prepare(`
+      create table if not exists videos (
+        video_id text primary key,
+        platform text not null,
+        original_url text not null,
+        external_id text not null,
+        embed_url text not null,
+        title text not null,
+        description text not null default '',
+        thumbnail_url text not null default '',
+        author_name text not null default '',
+        published_at text,
+        status text not null default 'draft',
+        sort_order integer not null default 0,
+        pinned integer not null default 0,
+        metadata_error text not null default '',
+        created_at text not null,
+        updated_at text not null
+      )
+    `),
+    env.DB.prepare(`
+      create table if not exists video_categories (
+        category_id text primary key,
+        slug text not null unique,
+        name_zh text not null,
+        name_en text not null default '',
+        name_ja text not null default '',
+        sort_order integer not null default 0,
+        enabled integer not null default 1,
+        created_at text not null,
+        updated_at text not null
+      )
+    `),
+    env.DB.prepare(`
+      create table if not exists video_category_relations (
+        video_id text not null references videos(video_id) on delete cascade,
+        category_id text not null references video_categories(category_id) on delete cascade,
+        sort_order integer not null default 0,
+        created_at text not null,
+        primary key (video_id, category_id)
+      )
+    `),
+    env.DB.prepare("create index if not exists videos_public_idx on videos(status, pinned, sort_order, published_at)"),
+    env.DB.prepare("create index if not exists videos_platform_external_idx on videos(platform, external_id)"),
+    env.DB.prepare("create index if not exists video_categories_enabled_idx on video_categories(enabled, sort_order)"),
+    env.DB.prepare("create index if not exists video_category_relations_category_idx on video_category_relations(category_id, sort_order)"),
+    env.DB.prepare(`
+      insert into video_categories (
+        category_id, slug, name_zh, name_en, name_ja, sort_order, enabled, created_at, updated_at
+      ) values
+        ('video-cat-vrchat', 'vrchat', 'VRChat作品', 'VRChat Works', 'VRChat作品', 10, 1, '2026-06-15T00:00:00.000Z', '2026-06-15T00:00:00.000Z'),
+        ('video-cat-ai', 'ai-experiments', 'AI实验', 'AI Experiments', 'AI実験', 20, 1, '2026-06-15T00:00:00.000Z', '2026-06-15T00:00:00.000Z'),
+        ('video-cat-games', 'game-records', '游戏录像', 'Game Records', 'ゲーム録画', 30, 1, '2026-06-15T00:00:00.000Z', '2026-06-15T00:00:00.000Z'),
+        ('video-cat-favorites', 'favorites', '收藏视频', 'Saved Videos', 'お気に入り動画', 40, 1, '2026-06-15T00:00:00.000Z', '2026-06-15T00:00:00.000Z')
+      on conflict(category_id) do update set
+        slug = excluded.slug,
+        name_zh = excluded.name_zh,
+        name_en = excluded.name_en,
+        name_ja = excluded.name_ja,
+        sort_order = excluded.sort_order,
+        enabled = excluded.enabled,
+        updated_at = excluded.updated_at
+    `)
+  ]);
+  await ensureTableColumns(env, "videos", [
+    ["metadata_error", "text not null default ''"]
+  ]);
+  videoSchemaReady = true;
+}
+
 async function ensureAnalyticsSchema(env) {
   if (analyticsSchemaReady) {
     return;
@@ -1412,6 +1737,348 @@ function publicArticleRow(row, includeContent = false) {
   return article;
 }
 
+function publicVideoRow(row, categories = []) {
+  return {
+    video_id: row.video_id,
+    platform: row.platform,
+    external_id: row.external_id,
+    embed_url: row.embed_url,
+    title: row.title || "",
+    description: row.description || "",
+    thumbnail_url: row.thumbnail_url || "",
+    author_name: row.author_name || "",
+    published_at: row.published_at || "",
+    status: row.status,
+    sort_order: Number(row.sort_order || 0),
+    pinned: Number(row.pinned || 0),
+    metadata_error: row.metadata_error || "",
+    categories
+  };
+}
+
+function adminVideoRow(row, categories = []) {
+  return {
+    ...publicVideoRow(row, categories),
+    original_url: row.original_url || "",
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+    category_ids: categories.map((category) => category.category_id)
+  };
+}
+
+async function publicVideoCategories(env, lang) {
+  const rows = (await env.DB.prepare(`
+    select category_id, slug, name_zh, name_en, name_ja, sort_order
+    from video_categories
+    where enabled = 1
+    order by sort_order asc, created_at asc
+  `).all()).results || [];
+  return rows.map((row) => ({
+    category_id: row.category_id,
+    slug: row.slug,
+    name: lang === "en" ? (row.name_en || row.name_zh) : (lang === "ja" ? (row.name_ja || row.name_zh) : row.name_zh),
+    name_zh: row.name_zh,
+    name_en: row.name_en,
+    name_ja: row.name_ja,
+    sort_order: Number(row.sort_order || 0)
+  }));
+}
+
+async function videoRelations(env, videoIds) {
+  const result = new Map();
+  videoIds.forEach((videoId) => result.set(videoId, []));
+  if (!videoIds.length) {
+    return result;
+  }
+  const placeholders = videoIds.map(() => "?").join(", ");
+  const rows = (await env.DB.prepare(`
+    select
+      video_category_relations.video_id,
+      video_categories.category_id,
+      video_categories.slug,
+      video_categories.name_zh,
+      video_categories.name_en,
+      video_categories.name_ja,
+      video_categories.sort_order,
+      video_categories.enabled
+    from video_category_relations
+    join video_categories on video_categories.category_id = video_category_relations.category_id
+    where video_category_relations.video_id in (${placeholders})
+    order by video_category_relations.sort_order asc, video_categories.sort_order asc
+  `).bind(...videoIds).all()).results || [];
+  rows.forEach((row) => {
+    const list = result.get(row.video_id) || [];
+    list.push({
+      category_id: row.category_id,
+      slug: row.slug,
+      name_zh: row.name_zh,
+      name_en: row.name_en,
+      name_ja: row.name_ja,
+      sort_order: Number(row.sort_order || 0),
+      enabled: Number(row.enabled || 0)
+    });
+    result.set(row.video_id, list);
+  });
+  return result;
+}
+
+async function normalizeVideoPayload(body, env, options = {}) {
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    throw new HttpError("Video payload is invalid.", 400);
+  }
+  const sourceUrl = normalizeOptionalText(body.original_url || body.url, 800) || options.existing?.original_url || "";
+  const parsed = sourceUrl ? await metadataForVideoUrl(sourceUrl) : {
+    platform: options.existing?.platform || "",
+    original_url: options.existing?.original_url || "",
+    external_id: options.existing?.external_id || "",
+    embed_url: options.existing?.embed_url || "",
+    title: "",
+    description: "",
+    thumbnail_url: "",
+    author_name: "",
+    published_at: "",
+    metadata_error: ""
+  };
+  if (!parsed.platform || !parsed.embed_url) {
+    throw new HttpError(parsed.metadata_error || "Please provide a supported YouTube or Bilibili URL.", 400);
+  }
+  const title = normalizeOptionalText(body.title, 220) || parsed.title || options.existing?.title || "";
+  if (!title) {
+    throw new HttpError("视频标题不能为空。", 400);
+  }
+  return {
+    platform: parsed.platform,
+    original_url: parsed.original_url,
+    external_id: parsed.external_id,
+    embed_url: parsed.embed_url,
+    title,
+    description: normalizeOptionalText(body.description, 2000) || parsed.description || "",
+    thumbnail_url: normalizeThumbnailUrl(body.thumbnail_url) || parsed.thumbnail_url || "",
+    author_name: normalizeOptionalText(body.author_name, 160) || parsed.author_name || "",
+    published_at: normalizeOptionalDateTime(body.published_at) || parsed.published_at || null,
+    status: normalizeVideoStatus(body.status),
+    sort_order: normalizeInteger(body.sort_order, -100000, 100000),
+    pinned: body.pinned ? 1 : 0,
+    metadata_error: normalizeOptionalText(body.metadata_error, 500) || parsed.metadata_error || "",
+    category_ids: await normalizeVideoCategoryIds(env, body.category_ids || body.categories || [])
+  };
+}
+
+function normalizeVideoCategoryPayload(body) {
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    throw new HttpError("Category payload is invalid.", 400);
+  }
+  return {
+    slug: normalizeSlug(body.slug),
+    name_zh: normalizeRequiredText(body.name_zh || body.name, 80, "中文分类名不能为空。"),
+    name_en: normalizeOptionalText(body.name_en, 80),
+    name_ja: normalizeOptionalText(body.name_ja, 80),
+    sort_order: normalizeInteger(body.sort_order, -100000, 100000),
+    enabled: body.enabled === false || body.enabled === 0 ? 0 : 1
+  };
+}
+
+async function normalizeVideoCategoryIds(env, value) {
+  const raw = Array.isArray(value) ? value : String(value || "").split(",");
+  const ids = [...new Set(raw.map((item) => String(item || "").trim()).filter(Boolean))].slice(0, 12);
+  if (!ids.length) {
+    return [];
+  }
+  ids.forEach((id) => normalizeRecordId(id, "Category id is invalid."));
+  const placeholders = ids.map(() => "?").join(", ");
+  const rows = (await env.DB.prepare(`select category_id from video_categories where category_id in (${placeholders})`)
+    .bind(...ids).all()).results || [];
+  const existing = new Set(rows.map((row) => row.category_id));
+  const missing = ids.find((id) => !existing.has(id));
+  if (missing) {
+    throw new HttpError("选择的视频分类不存在。", 400);
+  }
+  return ids;
+}
+
+function videoCategoryRelationStatements(env, videoId, categoryIds) {
+  const now = nowIso();
+  return categoryIds.map((categoryId, index) => env.DB.prepare(`
+    insert into video_category_relations (video_id, category_id, sort_order, created_at)
+    values (?, ?, ?, ?)
+    on conflict(video_id, category_id) do update set sort_order = excluded.sort_order
+  `).bind(videoId, categoryId, index, now));
+}
+
+async function metadataForVideoUrl(input) {
+  const parsed = await parseVideoUrl(input);
+  if (parsed.platform === "youtube") {
+    return await youtubeMetadata(parsed);
+  }
+  if (parsed.platform === "bilibili") {
+    return await bilibiliMetadata(parsed);
+  }
+  throw new HttpError("Unsupported video platform.", 400);
+}
+
+async function parseVideoUrl(input) {
+  const raw = normalizeOptionalText(input, 800);
+  if (!raw) {
+    throw new HttpError("请输入视频链接。", 400);
+  }
+  let url;
+  try {
+    url = new URL(raw);
+  } catch {
+    throw new HttpError("视频链接格式不正确。", 400);
+  }
+  if (!["http:", "https:"].includes(url.protocol)) {
+    throw new HttpError("视频链接必须使用 http 或 https。", 400);
+  }
+  const host = url.hostname.toLowerCase().replace(/^www\./, "");
+  if (host === "b23.tv") {
+    return parseVideoUrl(await resolveShortVideoUrl(url.toString()));
+  }
+  if (host === "youtu.be") {
+    const videoId = cleanYoutubeId(url.pathname.split("/").filter(Boolean)[0]);
+    return youtubeParsed(url, videoId);
+  }
+  if (host === "youtube.com" || host === "m.youtube.com") {
+    if (url.pathname === "/watch") {
+      return youtubeParsed(url, cleanYoutubeId(url.searchParams.get("v")));
+    }
+    const shorts = url.pathname.match(/^\/shorts\/([^/?#]+)/);
+    if (shorts) {
+      return youtubeParsed(url, cleanYoutubeId(shorts[1]));
+    }
+  }
+  if (host === "bilibili.com" || host.endsWith(".bilibili.com")) {
+    const bvid = (url.pathname.match(/\/video\/(BV[a-zA-Z0-9]+)/) || [])[1];
+    if (!bvid) {
+      throw new HttpError("暂时只支持 bilibili.com/video/BV... 视频链接。", 400);
+    }
+    const page = Math.max(1, Math.min(Number(url.searchParams.get("p") || url.searchParams.get("page") || 1), 99));
+    return {
+      platform: "bilibili",
+      original_url: url.toString(),
+      external_id: bvid,
+      page,
+      embed_url: `https://player.bilibili.com/player.html?bvid=${encodeURIComponent(bvid)}&page=${page}&high_quality=1&autoplay=0`
+    };
+  }
+  throw new HttpError("只支持 youtube.com、youtu.be、bilibili.com、b23.tv 视频链接。", 400);
+}
+
+function youtubeParsed(url, videoId) {
+  if (!videoId) {
+    throw new HttpError("无法识别 YouTube videoId。", 400);
+  }
+  return {
+    platform: "youtube",
+    original_url: url.toString(),
+    external_id: videoId,
+    embed_url: `https://www.youtube.com/embed/${encodeURIComponent(videoId)}`
+  };
+}
+
+function cleanYoutubeId(value) {
+  const id = String(value || "").trim();
+  return /^[a-zA-Z0-9_-]{6,20}$/.test(id) ? id : "";
+}
+
+async function youtubeMetadata(parsed) {
+  const fallbackThumb = `https://i.ytimg.com/vi/${parsed.external_id}/hqdefault.jpg`;
+  try {
+    const info = await fetchJsonWithTimeout(
+      `https://www.youtube.com/oembed?url=${encodeURIComponent(parsed.original_url)}&format=json`,
+      4500
+    );
+    return {
+      ...parsed,
+      title: normalizeOptionalText(info.title, 220),
+      description: "",
+      thumbnail_url: normalizeThumbnailUrl(info.thumbnail_url || fallbackThumb),
+      author_name: normalizeOptionalText(info.author_name, 160),
+      published_at: null,
+      metadata_error: ""
+    };
+  } catch (error) {
+    return {
+      ...parsed,
+      title: "",
+      description: "",
+      thumbnail_url: fallbackThumb,
+      author_name: "",
+      published_at: null,
+      metadata_error: `YouTube 元数据抓取失败：${error.message || "请手动填写。"}`
+    };
+  }
+}
+
+async function bilibiliMetadata(parsed) {
+  try {
+    const info = await fetchJsonWithTimeout(
+      `https://api.bilibili.com/x/web-interface/view?bvid=${encodeURIComponent(parsed.external_id)}`,
+      5000,
+      { Referer: "https://www.bilibili.com/" }
+    );
+    if (Number(info.code || 0) !== 0 || !info.data) {
+      throw new Error(info.message || "Bilibili 返回空数据。");
+    }
+    const data = info.data;
+    return {
+      ...parsed,
+      title: normalizeOptionalText(data.title, 220),
+      description: normalizeOptionalText(data.desc, 2000),
+      thumbnail_url: normalizeThumbnailUrl(String(data.pic || "").replace(/^http:\/\//, "https://")),
+      author_name: normalizeOptionalText(data.owner?.name, 160),
+      published_at: data.pubdate ? new Date(Number(data.pubdate) * 1000).toISOString() : null,
+      metadata_error: ""
+    };
+  } catch (error) {
+    return {
+      ...parsed,
+      title: "",
+      description: "",
+      thumbnail_url: "",
+      author_name: "",
+      published_at: null,
+      metadata_error: `Bilibili 元数据抓取失败：${error.message || "请手动填写。"}`
+    };
+  }
+}
+
+async function resolveShortVideoUrl(shortUrl) {
+  const response = await fetchWithTimeout(shortUrl, {
+    method: "GET",
+    redirect: "manual",
+    headers: { "User-Agent": "Mozilla/5.0 lusu575-video-preview" }
+  }, 4500);
+  const location = response.headers.get("location");
+  if (!location) {
+    throw new HttpError("b23.tv 短链接解析失败，请使用完整 Bilibili 链接或手动填写。", 400);
+  }
+  return new URL(location, shortUrl).toString();
+}
+
+async function fetchJsonWithTimeout(url, timeoutMs, headers = {}) {
+  const response = await fetchWithTimeout(url, { headers }, timeoutMs);
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+  return response.json();
+}
+
+async function fetchWithTimeout(url, options = {}, timeoutMs = 5000) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } catch (error) {
+    if (error.name === "AbortError") {
+      throw new Error("请求超时");
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 function parseTags(value) {
   try {
     const tags = JSON.parse(value || "[]");
@@ -1631,6 +2298,103 @@ function articleSeedStatements(env) {
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-15-managed-video-system',
+        '2026-06-15-managed-video-system',
+        'site-updates',
+        '["网站更新","视频区","后台"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-15T08:30:00.000Z',
+        '2026-06-15T08:30:00.000Z',
+        '2026-06-15T08:30:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into article_translations (
+        translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+      ) values
+        (
+          'seed-update-2026-06-15-managed-video-system-zh',
+          'seed-update-2026-06-15-managed-video-system',
+          'zh',
+          '视频区改造成可管理系统',
+          '视频区现在支持后台管理 YouTube 和 Bilibili 链接，并可在站内播放。',
+          '# 视频区改造成可管理系统
+
+这次更新把原来的占位视频卡片改成真实的视频管理系统。
+
+## 更新内容
+
+- 后台新增视频管理，可以输入 YouTube、Bilibili 或 b23.tv 链接并自动识别平台。
+- 服务端会规范化播放器地址，抓取标题、作者、简介和封面，并缓存到 D1。
+- 主站视频区改为读取 `/api/videos`，分类标签由后台视频分类动态生成。
+- 视频点击后在 XP 风格窗口内播放，不再跳转外站。
+- 后台新增视频分类管理，可以新增、编辑、停用、排序和安全删除分类。',
+          '2026-06-15T08:30:00.000Z',
+          '2026-06-15T08:30:00.000Z'
+        ),
+        (
+          'seed-update-2026-06-15-managed-video-system-en',
+          'seed-update-2026-06-15-managed-video-system',
+          'en',
+          'Managed Video System',
+          'The videos section now supports managed YouTube and Bilibili links with inline playback.',
+          '# Managed Video System
+
+This update turns the old placeholder video cards into a real managed video system.
+
+## What changed
+
+- The admin area can now create and edit videos from YouTube, Bilibili, or b23.tv links.
+- The server normalizes embed URLs, fetches metadata, and caches title, author, description, and thumbnail data in D1.
+- The public videos section now reads from `/api/videos`, with category tabs generated from admin-managed video categories.
+- Videos open inside the XP-style site window instead of jumping to an external site.
+- A new admin category manager supports creating, editing, disabling, sorting, and safely deleting video categories.',
+          '2026-06-15T08:30:00.000Z',
+          '2026-06-15T08:30:00.000Z'
+        ),
+        (
+          'seed-update-2026-06-15-managed-video-system-ja',
+          'seed-update-2026-06-15-managed-video-system',
+          'ja',
+          '動画欄を管理できる仕組みに変更',
+          '動画欄で YouTube と Bilibili のリンクを管理し、サイト内で再生できるようになりました。',
+          '# 動画欄を管理できる仕組みに変更
+
+今回の更新で、仮置きだった動画カードを実際に管理できる動画システムに変更しました。
+
+## 変更内容
+
+- 管理画面から YouTube、Bilibili、b23.tv のリンクを登録できるようになりました。
+- サーバー側で埋め込み URL を正規化し、タイトル、作者、説明、サムネイルを取得して D1 に保存します。
+- 公開側の動画欄は `/api/videos` から読み込み、分類タブも管理画面の動画分類から生成します。
+- 動画は外部サイトへ移動せず、XP 風のウィンドウ内で再生します。
+- 動画分類の追加、編集、停止、並び替え、安全な削除に対応しました。',
+          '2026-06-15T08:30:00.000Z',
+          '2026-06-15T08:30:00.000Z'
+        )
+      on conflict(article_id, lang) do update set
+        title = excluded.title,
+        summary = excluded.summary,
+        content_markdown = excluded.content_markdown,
+        updated_at = excluded.updated_at
     `),
     env.DB.prepare(`
       insert into articles (
@@ -2405,6 +3169,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-15-icons-cloud-fixes',
+        '2026-06-15-icons-cloud-fixes',
+        'site-updates',
+        '["网站更新","图标","首页","动态壁纸"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-15T13:49:12.000Z',
+        '2026-06-15T13:49:12.000Z',
+        '2026-06-15T13:49:12.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -2492,6 +3283,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# 雲レイヤーの速度と滑らかさを調整\n\n今回の更新では、ホームの雲アニメーションを少しだけ見えやすくしながら、XP風の静かな雰囲気を保つように調整しました。\n\n## 更新内容\n\n- 4時間帯の雲レイヤーの移動周期を少し短くし、漂う速度をわずかに上げました。\n- 雲要素に初期 `translate3d`、`backface-visibility`、`contain`、アニメーションの fill 設定を追加し、合成レイヤーを安定させました。\n- CSS の `transform` と `opacity` だけで動かし、低モーション設定、ページ非表示時の一時停止、小画面での静的降級は維持しています。"
       }
     }, "2026-06-15T12:41:45.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-15-icons-cloud-fixes", {
+      zh: {
+        title: "窗口图标与云层残影修复",
+        summary: "补齐窗口/任务栏图标更新记录，并修复夜晚与黄昏动态壁纸 clean 底图里的云层残影。",
+        content_markdown: "# 窗口图标与云层残影修复\n\n本次更新把几项已经完成但还没有合并进公开更新文章的内容补到同一篇记录里，方便之后从知识库追踪。\n\n## 更新内容\n\n- 为知识库、视频区、资源区、游戏区、杂谈区、关于我补齐新的窗口标题栏图标和任务栏图标资源。\n- 微调分区窗口左上角标题图标的显示盒子、缩放和垂直对齐，让图标在标题文字前更清楚。\n- 修复夜晚动态壁纸 `base-clean.png` 里残留的中景云片，避免云层漂移后背景上留下分离的小云盖。\n- 同步检查 morning / day / dusk / night 四个时段：morning 和 day 没有同类残留，dusk 的淡残影也已一并清理。\n- 更新首页 CSS 缓存版本，减少浏览器继续加载旧图标样式或旧 clean 底图的可能。"
+      },
+      en: {
+        title: "Window Icons and Cloud Cleanup",
+        summary: "Added the missing icon update record and cleaned residual cloud fragments from the Night and Dusk wallpaper plates.",
+        content_markdown: "# Window Icons and Cloud Cleanup\n\nThis update records a few shipped visual fixes that were not yet grouped into a public site update article.\n\n## Changes\n\n- Added new window titlebar and taskbar icon assets for Knowledge, Videos, Resources, Games, Talk, and About.\n- Tuned the section title icon box, scale, and vertical alignment so the icons read more clearly before the title text.\n- Cleaned the Night wallpaper `base-clean.png` plate so the moving mid-distance cloud no longer leaves a separated cap behind.\n- Checked all four time-of-day wallpapers: Morning and Day did not show the same issue, while a faint Dusk remnant was cleaned at the same time.\n- Updated the home CSS cache version to reduce the chance of browsers keeping older icon styles or clean plates."
+      },
+      ja: {
+        title: "ウィンドウアイコンと雲の残影修正",
+        summary: "未記録だったアイコン更新を補い、夜と夕方の壁紙ベースに残った雲の跡を修正しました。",
+        content_markdown: "# ウィンドウアイコンと雲の残影修正\n\n今回の更新では、すでに反映済みだったいくつかの見た目の調整を、公開用の更新記事としてまとめて記録しました。\n\n## 更新内容\n\n- 知識庫、動画区、リソース区、ゲーム区、雑談区、About 用に、新しいウィンドウタイトルバーとタスクバーのアイコン素材を追加しました。\n- セクションタイトル左側のアイコン表示枠、拡大率、縦位置を調整し、タイトル前のアイコンを見やすくしました。\n- 夜の壁紙 `base-clean.png` に残っていた中景雲の小さな残片を修正し、雲が動いた後に背景へ切れ端が残らないようにしました。\n- morning / day / dusk / night の4時間帯を確認し、morning と day には同種の残りはなく、dusk の薄い残影も同時に消しました。\n- ホーム CSS のキャッシュ版を更新し、古いアイコン表示や古い clean ベース画像が残りにくいようにしました。"
+      }
+    }, "2026-06-15T13:49:12.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')
@@ -2650,6 +3458,14 @@ function normalizeArticleStatus(value) {
   return status;
 }
 
+function normalizeVideoStatus(value) {
+  const status = String(value || "draft").trim();
+  if (!["draft", "published", "hidden"].includes(status)) {
+    throw new HttpError("视频状态只能是 draft / published / hidden。", 400);
+  }
+  return status;
+}
+
 function normalizeRequiredText(value, maxLength, message) {
   const text = String(value || "").trim();
   if (!text) {
@@ -2690,6 +3506,32 @@ function normalizeOptionalDateTime(value) {
     throw new HttpError("发布时间格式不正确，请使用 ISO 时间。", 400);
   }
   return date.toISOString();
+}
+
+function normalizeThumbnailUrl(value) {
+  const raw = normalizeOptionalText(value, 800);
+  if (!raw) {
+    return "";
+  }
+  let url;
+  try {
+    url = new URL(raw);
+  } catch {
+    throw new HttpError("封面地址格式不正确。", 400);
+  }
+  const host = url.hostname.toLowerCase().replace(/^www\./, "");
+  const allowed = new Set([
+    "i.ytimg.com",
+    "img.youtube.com",
+    "i0.hdslb.com",
+    "i1.hdslb.com",
+    "i2.hdslb.com",
+    "archive.biliimg.com"
+  ]);
+  if (url.protocol !== "https:" || !allowed.has(host)) {
+    throw new HttpError("封面地址只允许 YouTube 或 Bilibili 图片域名。", 400);
+  }
+  return url.toString();
 }
 
 function normalizeAnalyticsText(value, maxLength) {

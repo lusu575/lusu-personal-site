@@ -4,9 +4,27 @@
 
 ## 2026-06-15
 
+- 补发合并更新文章：
+  - 新增 `seed-update-2026-06-15-icons-cloud-fixes` 三语 `site-updates` 文章，把窗口/任务栏图标更新、标题栏图标对齐微调和 night/dusk 云层残影修复合并记录到一篇文章里。
+  - 同步更新 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新，避免有可见更新但没有公开更新文章。
 - 分区窗口标题栏图标对齐微调：
   - 放大各分区窗口左上角标题图标的显示盒子和背景缩放，让图标在标题文字前更清晰。
   - 保持标题栏、窗口尺寸和底部任务栏布局不变，仅调整标题栏图标的显示大小与垂直对齐。
+
+- 首页动态云层 clean 底图残留修复：
+  - 修补 night 中景云层上方残留在 `base-clean.png` 里的细小云片，修复云层漂移后出现“上半截留在背景上”的视觉断裂。
+  - 同步检查 morning / day / dusk / night 四个时段：morning 和 day 未发现同类残留，dusk 有一条较淡的同类残影并已一并清理。
+  - 更新首页 CSS 与底图引用缓存版本为 `20260615-cloud-residual-fix`，避免浏览器继续加载旧 clean plate。
+
+- 视频区真实管理系统上线：
+  - 新增 `videos`、`video_categories`、`video_category_relations` D1 表，并在运行时 schema guard 与 `cloudflare/schema.sql` 同步维护。
+  - 新增公开视频接口 `/api/videos`、`/api/videos/:videoId`，以及后台视频和视频分类 CRUD 接口，全部后台接口复用 `requireAdmin` 权限校验。
+  - 后台新增“视频管理”和“视频分类管理”，支持输入 YouTube / Bilibili / b23.tv 链接、服务端自动识别、抓取元数据、手动覆盖、分类关联、状态、排序、置顶、删除和刷新元数据。
+  - 主站视频区改为读取 D1 数据，分类标签由后台分类动态生成，“全部”仅由前端生成；视频在 XP 风格弹窗内 iframe 播放，不跳转外站。
+  - 视频渲染改为安全 DOM/textContent，iframe src 只使用服务端规范化 embed URL，封面失败时显示像素风占位图。
+  - 扩展 `js/telemetry.js` 支持 `data-video-id` 和播放器打开/播放失败埋点，不记录后台输入内容。
+  - 新增三语 `site-updates` 文章 `2026-06-15-managed-video-system`，并同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 更新。
+  - 更新 `index.html` 与 `admin/index.html` 的 CSS/JS query 到 `20260615-managed-videos`。
 
 - 窗口与任务栏图标更新：
   - 使用 imagegen 参考新图标绘制并裁切 1:1 透明像素图标，新增知识库、视频区、资源区、游戏区、杂谈区、关于我六组窗口图标资源。

@@ -2311,19 +2311,19 @@ main {
 }
 
 .wallpaper-root[data-time="morning"] .wallpaper-base {
-  background-image: url("../assets/images/wallpaper-dynamic/morning/base-clean.png?v=20260615-all-clouds-natural");
+  background-image: url("../assets/images/wallpaper-dynamic/morning/base-clean.png?v=20260615-cloud-residual-fix");
 }
 
 .wallpaper-root[data-time="day"] .wallpaper-base {
-  background-image: url("../assets/images/wallpaper-dynamic/day/base-clean.png?v=20260615-all-clouds-natural");
+  background-image: url("../assets/images/wallpaper-dynamic/day/base-clean.png?v=20260615-cloud-residual-fix");
 }
 
 .wallpaper-root[data-time="dusk"] .wallpaper-base {
-  background-image: url("../assets/images/wallpaper-dynamic/dusk/base-clean.png?v=20260615-all-clouds-natural");
+  background-image: url("../assets/images/wallpaper-dynamic/dusk/base-clean.png?v=20260615-cloud-residual-fix");
 }
 
 .wallpaper-root[data-time="night"] .wallpaper-base {
-  background-image: url("../assets/images/wallpaper-dynamic/night/base-clean.png?v=20260615-all-clouds-natural");
+  background-image: url("../assets/images/wallpaper-dynamic/night/base-clean.png?v=20260615-cloud-residual-fix");
 }
 
 .wallpaper-cloud,

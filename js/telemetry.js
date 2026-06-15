@@ -47,12 +47,30 @@
     }).catch(() => {});
   }
 
+  window.lusuTrackClick = function (targetKey, targetText, extra = {}) {
+    return send("/click", {
+      targetKey: cleanText(targetKey, 160),
+      targetText: cleanText(targetText, 160),
+      tagName: "CUSTOM",
+      elementId: "",
+      elementClasses: "",
+      href: "",
+      dataRoute: extra.route || currentRoute(),
+      path: `${window.location.pathname}${window.location.search}${window.location.hash}`,
+      route: extra.route || currentRoute(),
+      screenWidth: window.innerWidth || 0,
+      screenHeight: window.innerHeight || 0,
+      x: 0,
+      y: 0
+    });
+  };
+
   function cleanText(value, max = maxTextLength) {
     return String(value || "").replace(/\s+/g, " ").trim().slice(0, max);
   }
 
   function targetDescriptor(target) {
-    const element = target.closest("button, a, input, select, textarea, [data-route], [data-filter-type], [data-article-slug], [data-article-category], [data-video-index]");
+    const element = target.closest("button, a, input, select, textarea, [data-route], [data-filter-type], [data-article-slug], [data-article-category], [data-video-index], [data-video-id]");
     if (!element) {
       return null;
     }
@@ -67,7 +85,7 @@
       classes ? `.${classes}` : "",
       element.dataset.route ? `[route=${element.dataset.route}]` : "",
       element.dataset.articleSlug ? "[article]" : "",
-      element.dataset.videoIndex ? "[video]" : ""
+      element.dataset.videoIndex || element.dataset.videoId ? "[video]" : ""
     ].filter(Boolean).join("");
     return {
       targetKey,

@@ -5,6 +5,10 @@ const state = {
   articles: [],
   selectedArticleId: "",
   articleLang: "zh",
+  videos: [],
+  selectedVideoId: "",
+  videoCategories: [],
+  selectedVideoCategoryId: "",
   chatMessages: [],
   selectedMessageId: "",
   bans: [],
@@ -12,6 +16,8 @@ const state = {
 };
 
 const panelMeta = {
+  videos: ["视频管理", "输入 YouTube / Bilibili 链接，服务端识别并缓存标题、简介和封面。"],
+  videoCategories: ["视频分类管理", "维护视频区顶部标签，支持新增、编辑、停用、排序和安全删除。"],
   dashboard: ["实时监控大屏", "访问、点击、文章和聊天室状态集中查看。"],
   articles: ["知识库文章", "一次编辑 zh / en / ja 三种版本，按当前选择语言显示编辑区。"],
   visits: ["访问来源", "按国家、省份、地区和 IP 前缀查看每日访问。"],
@@ -179,6 +185,12 @@ function switchPanel(panel) {
   }
   if (panel === "articles") {
     loadArticles();
+  }
+  if (panel === "videos") {
+    loadVideoCategories().then(loadVideos);
+  }
+  if (panel === "videoCategories") {
+    loadVideoCategories();
   }
   if (panel === "chat") {
     loadChatMessages();
@@ -476,6 +488,309 @@ async function deleteArticle() {
   await loadArticles();
 }
 
+function videoStatusLabel(status) {
+  return ({ draft: "草稿", published: "已发布", hidden: "隐藏" })[status] || status || "未知";
+}
+
+async function loadVideos() {
+  const payload = await api("/api/admin/videos");
+  state.videos = payload.videos || [];
+  renderVideoList();
+  renderVideoCategoryChecks();
+}
+
+async function loadVideoCategories() {
+  const payload = await api("/api/admin/video-categories");
+  state.videoCategories = payload.categories || [];
+  renderVideoCategoryList();
+  renderVideoCategoryChecks();
+}
+
+function renderVideoList() {
+  $("#video-list-admin").innerHTML = state.videos.map((video) => `
+    <button class="list-item ${video.video_id === state.selectedVideoId ? "active" : ""}" type="button" data-admin-video-id="${escapeHtml(video.video_id)}">
+      <span class="list-title">${escapeHtml(video.title || video.original_url || "未命名视频")}</span>
+      <span class="list-meta">
+        ${statusBadge(videoStatusLabel(video.status), video.status || "neutral")}
+        ${statusBadge(video.platform || "未知平台", "neutral")}
+        ${video.pinned ? statusBadge("置顶", "visible") : ""}
+      </span>
+      <span class="list-subtle">${escapeHtml(video.author_name || "")} ${formatTime(video.published_at)} · 更新 ${formatTime(video.updated_at)}</span>
+      ${video.metadata_error ? `<span class="list-subtle">${escapeHtml(video.metadata_error)}</span>` : ""}
+    </button>
+  `).join("") || emptyState("暂无视频，先粘贴一个 YouTube 或 Bilibili 链接。");
+}
+
+function renderVideoCategoryChecks() {
+  const box = $("#video-category-checks");
+  if (!box) {
+    return;
+  }
+  const selected = new Set(selectedVideo()?.category_ids || []);
+  box.innerHTML = state.videoCategories.map((category) => `
+    <label class="mini-check">
+      <input type="checkbox" value="${escapeHtml(category.category_id)}" ${selected.has(category.category_id) ? "checked" : ""}>
+      ${escapeHtml(category.name_zh || category.slug)}
+    </label>
+  `).join("") || `<span class="empty-inline">暂无分类</span>`;
+}
+
+function selectedVideo() {
+  return state.videos.find((item) => item.video_id === state.selectedVideoId);
+}
+
+function resetVideoForm() {
+  state.selectedVideoId = "";
+  $("#video-editor-title").textContent = "新建视频";
+  $("#video-form").reset();
+  $("#video-form").elements.status.value = "draft";
+  $("#delete-video").disabled = true;
+  $("#refresh-video-metadata").disabled = true;
+  $("#video-status").textContent = "";
+  $("#admin-video-preview").replaceChildren();
+  renderVideoList();
+  renderVideoCategoryChecks();
+}
+
+function fillVideoForm(video) {
+  const form = $("#video-form");
+  $("#video-editor-title").textContent = `编辑：${video.title || video.video_id}`;
+  form.elements.original_url.value = video.original_url || "";
+  form.elements.platform.value = video.platform || "";
+  form.elements.external_id.value = video.external_id || "";
+  form.elements.embed_url.value = video.embed_url || "";
+  form.elements.thumbnail_url.value = video.thumbnail_url || "";
+  form.elements.author_name.value = video.author_name || "";
+  form.elements.published_at.value = toLocalDateTimeInputValue(video.published_at);
+  form.elements.status.value = video.status || "draft";
+  form.elements.sort_order.value = Number(video.sort_order || 0);
+  form.elements.pinned.checked = Boolean(video.pinned);
+  form.elements.title.value = video.title || "";
+  form.elements.description.value = video.description || "";
+  $("#delete-video").disabled = false;
+  $("#refresh-video-metadata").disabled = false;
+  $("#video-status").textContent = video.metadata_error || "";
+  renderVideoList();
+  renderVideoCategoryChecks();
+  renderAdminVideoPreview(video.embed_url);
+}
+
+function renderAdminVideoPreview(embedUrl) {
+  const preview = $("#admin-video-preview");
+  preview.replaceChildren();
+  if (!embedUrl) {
+    return;
+  }
+  const iframe = document.createElement("iframe");
+  iframe.src = embedUrl;
+  iframe.loading = "lazy";
+  iframe.allowFullscreen = true;
+  iframe.title = "后台播放器预览";
+  iframe.referrerPolicy = "strict-origin-when-cross-origin";
+  iframe.allow = "accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+  preview.appendChild(iframe);
+}
+
+function applyPreviewToVideoForm(video) {
+  const form = $("#video-form");
+  form.elements.platform.value = video.platform || "";
+  form.elements.external_id.value = video.external_id || "";
+  form.elements.embed_url.value = video.embed_url || "";
+  form.elements.title.value = video.title || form.elements.title.value;
+  form.elements.description.value = video.description || form.elements.description.value;
+  form.elements.thumbnail_url.value = video.thumbnail_url || form.elements.thumbnail_url.value;
+  form.elements.author_name.value = video.author_name || form.elements.author_name.value;
+  form.elements.published_at.value = toLocalDateTimeInputValue(video.published_at) || form.elements.published_at.value;
+  $("#video-status").textContent = video.metadata_error || "识别完成";
+  renderAdminVideoPreview(video.embed_url);
+}
+
+async function previewVideoUrl() {
+  const form = $("#video-form");
+  $("#video-status").textContent = "正在识别...";
+  try {
+    const payload = await api("/api/admin/videos/preview-url", {
+      method: "POST",
+      body: JSON.stringify({ url: form.elements.original_url.value })
+    });
+    applyPreviewToVideoForm(payload.video || {});
+  } catch (error) {
+    $("#video-status").textContent = error.message;
+  }
+}
+
+function videoPayload(statusOverride = "") {
+  const form = $("#video-form");
+  return {
+    original_url: form.elements.original_url.value.trim(),
+    title: form.elements.title.value.trim(),
+    description: form.elements.description.value.trim(),
+    thumbnail_url: form.elements.thumbnail_url.value.trim(),
+    author_name: form.elements.author_name.value.trim(),
+    published_at: normalizePublishedAtForApi(form.elements.published_at.value),
+    status: statusOverride || form.elements.status.value,
+    sort_order: Number(form.elements.sort_order.value || 0),
+    pinned: form.elements.pinned.checked,
+    category_ids: Array.from($("#video-category-checks").querySelectorAll("input:checked")).map((input) => input.value)
+  };
+}
+
+async function saveVideo(statusOverride = "") {
+  const status = $("#video-status");
+  try {
+    status.textContent = "正在保存...";
+    const path = state.selectedVideoId
+      ? `/api/admin/videos/${encodeURIComponent(state.selectedVideoId)}`
+      : "/api/admin/videos";
+    const method = state.selectedVideoId ? "PUT" : "POST";
+    const result = await api(path, { method, body: JSON.stringify(videoPayload(statusOverride)) });
+    state.selectedVideoId = result.videoId || state.selectedVideoId;
+    status.textContent = "已保存";
+    await loadVideos();
+    const video = selectedVideo();
+    if (video) {
+      fillVideoForm(video);
+    }
+  } catch (error) {
+    status.textContent = error.message;
+  }
+}
+
+function selectVideo(videoId) {
+  state.selectedVideoId = videoId;
+  const video = selectedVideo();
+  if (video) {
+    fillVideoForm(video);
+  }
+}
+
+async function deleteVideo() {
+  if (!state.selectedVideoId || !window.confirm("确定删除这个视频吗？")) {
+    return;
+  }
+  await api(`/api/admin/videos/${encodeURIComponent(state.selectedVideoId)}`, { method: "DELETE" });
+  resetVideoForm();
+  await loadVideos();
+}
+
+async function refreshVideoMetadata() {
+  if (!state.selectedVideoId) {
+    return previewVideoUrl();
+  }
+  $("#video-status").textContent = "正在刷新元数据...";
+  try {
+    const payload = await api(`/api/admin/videos/${encodeURIComponent(state.selectedVideoId)}/refresh-metadata`, { method: "POST" });
+    applyPreviewToVideoForm(payload.video || {});
+    await loadVideos();
+  } catch (error) {
+    $("#video-status").textContent = error.message;
+  }
+}
+
+function renderVideoCategoryList() {
+  $("#video-category-list-admin").innerHTML = state.videoCategories.map((category) => `
+    <button class="list-item ${category.category_id === state.selectedVideoCategoryId ? "active" : ""}" type="button" data-admin-video-category-id="${escapeHtml(category.category_id)}">
+      <span class="list-title">${escapeHtml(category.name_zh || category.slug)}</span>
+      <span class="list-meta">
+        ${statusBadge(category.enabled ? "启用" : "停用", category.enabled ? "visible" : "hidden")}
+        ${statusBadge(`${category.video_count || 0} 个视频`, "neutral")}
+      </span>
+      <span class="list-subtle">${escapeHtml(category.slug)} · 排序 ${formatNumber(category.sort_order)}</span>
+    </button>
+  `).join("") || emptyState("暂无视频分类。");
+}
+
+function selectedVideoCategory() {
+  return state.videoCategories.find((item) => item.category_id === state.selectedVideoCategoryId);
+}
+
+function resetVideoCategoryForm() {
+  state.selectedVideoCategoryId = "";
+  $("#video-category-editor-title").textContent = "新建分类";
+  $("#video-category-form").reset();
+  $("#video-category-form").elements.enabled.checked = true;
+  $("#delete-video-category").disabled = true;
+  $("#video-category-status").textContent = "";
+  renderVideoCategoryList();
+}
+
+function fillVideoCategoryForm(category) {
+  const form = $("#video-category-form");
+  $("#video-category-editor-title").textContent = `编辑：${category.name_zh || category.slug}`;
+  form.elements.slug.value = category.slug || "";
+  form.elements.name_zh.value = category.name_zh || "";
+  form.elements.name_en.value = category.name_en || "";
+  form.elements.name_ja.value = category.name_ja || "";
+  form.elements.sort_order.value = Number(category.sort_order || 0);
+  form.elements.enabled.checked = Boolean(category.enabled);
+  $("#delete-video-category").disabled = false;
+  $("#video-category-status").textContent = category.video_count ? `已有 ${category.video_count} 个视频使用，删除前请先取消关联。` : "";
+  renderVideoCategoryList();
+}
+
+function videoCategoryPayload() {
+  const form = $("#video-category-form");
+  return {
+    slug: form.elements.slug.value.trim(),
+    name_zh: form.elements.name_zh.value.trim(),
+    name_en: form.elements.name_en.value.trim(),
+    name_ja: form.elements.name_ja.value.trim(),
+    sort_order: Number(form.elements.sort_order.value || 0),
+    enabled: form.elements.enabled.checked
+  };
+}
+
+async function saveVideoCategory(event) {
+  event.preventDefault();
+  const status = $("#video-category-status");
+  try {
+    status.textContent = "正在保存...";
+    const path = state.selectedVideoCategoryId
+      ? `/api/admin/video-categories/${encodeURIComponent(state.selectedVideoCategoryId)}`
+      : "/api/admin/video-categories";
+    const method = state.selectedVideoCategoryId ? "PUT" : "POST";
+    const result = await api(path, { method, body: JSON.stringify(videoCategoryPayload()) });
+    state.selectedVideoCategoryId = result.categoryId || state.selectedVideoCategoryId;
+    status.textContent = "已保存";
+    await loadVideoCategories();
+    const category = selectedVideoCategory();
+    if (category) {
+      fillVideoCategoryForm(category);
+    }
+  } catch (error) {
+    status.textContent = error.message;
+  }
+}
+
+function selectVideoCategory(categoryId) {
+  state.selectedVideoCategoryId = categoryId;
+  const category = selectedVideoCategory();
+  if (category) {
+    fillVideoCategoryForm(category);
+  }
+}
+
+async function deleteVideoCategory() {
+  const category = selectedVideoCategory();
+  if (!category) {
+    return;
+  }
+  if (Number(category.video_count || 0) > 0) {
+    $("#video-category-status").textContent = `已有 ${category.video_count} 个视频使用，不能直接删除。`;
+    return;
+  }
+  if (!window.confirm("确定删除这个视频分类吗？")) {
+    return;
+  }
+  try {
+    await api(`/api/admin/video-categories/${encodeURIComponent(category.category_id)}`, { method: "DELETE" });
+    resetVideoCategoryForm();
+    await loadVideoCategories();
+  } catch (error) {
+    $("#video-category-status").textContent = error.message;
+  }
+}
+
 async function loadChatMessages() {
   const includeHidden = $("#include-hidden-chat")?.checked ? "1" : "0";
   const payload = await api(`/api/admin/chat/messages?limit=100&includeHidden=${includeHidden}`);
@@ -626,6 +941,10 @@ function bindEvents() {
       loadOverview();
     } else if (state.activePanel === "articles") {
       loadArticles();
+    } else if (state.activePanel === "videos") {
+      loadVideoCategories().then(loadVideos);
+    } else if (state.activePanel === "videoCategories") {
+      loadVideoCategories();
     } else if (state.activePanel === "chat") {
       loadChatMessages();
       loadBans();
@@ -651,6 +970,30 @@ function bindEvents() {
   });
   $("#publish-article").addEventListener("click", () => saveArticle("published"));
   $("#delete-article").addEventListener("click", deleteArticle);
+  $("#new-video").addEventListener("click", resetVideoForm);
+  $("#video-list-admin").addEventListener("click", (event) => {
+    const item = event.target.closest("[data-admin-video-id]");
+    if (item) {
+      selectVideo(item.dataset.adminVideoId);
+    }
+  });
+  $("#preview-video-url").addEventListener("click", previewVideoUrl);
+  $("#refresh-video-metadata").addEventListener("click", refreshVideoMetadata);
+  $("#video-form").addEventListener("submit", (event) => {
+    event.preventDefault();
+    saveVideo();
+  });
+  $("#publish-video").addEventListener("click", () => saveVideo("published"));
+  $("#delete-video").addEventListener("click", deleteVideo);
+  $("#new-video-category").addEventListener("click", resetVideoCategoryForm);
+  $("#video-category-list-admin").addEventListener("click", (event) => {
+    const item = event.target.closest("[data-admin-video-category-id]");
+    if (item) {
+      selectVideoCategory(item.dataset.adminVideoCategoryId);
+    }
+  });
+  $("#video-category-form").addEventListener("submit", saveVideoCategory);
+  $("#delete-video-category").addEventListener("click", deleteVideoCategory);
   $("#include-hidden-chat").addEventListener("change", loadChatMessages);
   $("#chat-list").addEventListener("click", (event) => {
     const item = event.target.closest("[data-message-id]");
@@ -676,9 +1019,11 @@ async function init() {
   bindEvents();
   renderDocs();
   resetArticleForm();
+  resetVideoForm();
+  resetVideoCategoryForm();
   try {
     await loadMe();
-    await Promise.all([loadOverview(), loadArticles(), loadChatMessages(), loadBans()]);
+    await Promise.all([loadOverview(), loadArticles(), loadVideoCategories(), loadVideos(), loadChatMessages(), loadBans()]);
     state.timer = window.setInterval(() => {
       if (["dashboard", "visits", "clicks"].includes(state.activePanel)) {
         loadOverview();

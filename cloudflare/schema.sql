@@ -97,6 +97,72 @@ create index if not exists articles_category_idx
 create index if not exists article_translations_article_lang_idx
   on article_translations(article_id, lang);
 
+create table if not exists videos (
+  video_id text primary key,
+  platform text not null,
+  original_url text not null,
+  external_id text not null,
+  embed_url text not null,
+  title text not null,
+  description text not null default '',
+  thumbnail_url text not null default '',
+  author_name text not null default '',
+  published_at text,
+  status text not null default 'draft',
+  sort_order integer not null default 0,
+  pinned integer not null default 0,
+  metadata_error text not null default '',
+  created_at text not null,
+  updated_at text not null
+);
+
+create index if not exists videos_public_idx
+  on videos(status, pinned, sort_order, published_at);
+create index if not exists videos_platform_external_idx
+  on videos(platform, external_id);
+
+create table if not exists video_categories (
+  category_id text primary key,
+  slug text not null unique,
+  name_zh text not null,
+  name_en text not null default '',
+  name_ja text not null default '',
+  sort_order integer not null default 0,
+  enabled integer not null default 1,
+  created_at text not null,
+  updated_at text not null
+);
+
+create index if not exists video_categories_enabled_idx
+  on video_categories(enabled, sort_order);
+
+create table if not exists video_category_relations (
+  video_id text not null references videos(video_id) on delete cascade,
+  category_id text not null references video_categories(category_id) on delete cascade,
+  sort_order integer not null default 0,
+  created_at text not null,
+  primary key (video_id, category_id)
+);
+
+create index if not exists video_category_relations_category_idx
+  on video_category_relations(category_id, sort_order);
+
+insert into video_categories (
+  category_id, slug, name_zh, name_en, name_ja, sort_order, enabled, created_at, updated_at
+) values
+  ('video-cat-vrchat', 'vrchat', 'VRChat作品', 'VRChat Works', 'VRChat作品', 10, 1, '2026-06-15T00:00:00.000Z', '2026-06-15T00:00:00.000Z'),
+  ('video-cat-ai', 'ai-experiments', 'AI实验', 'AI Experiments', 'AI実験', 20, 1, '2026-06-15T00:00:00.000Z', '2026-06-15T00:00:00.000Z'),
+  ('video-cat-games', 'game-records', '游戏录像', 'Game Records', 'ゲーム録画', 30, 1, '2026-06-15T00:00:00.000Z', '2026-06-15T00:00:00.000Z'),
+  ('video-cat-favorites', 'favorites', '收藏视频', 'Saved Videos', 'お気に入り動画', 40, 1, '2026-06-15T00:00:00.000Z', '2026-06-15T00:00:00.000Z')
+on conflict(category_id) do update set
+  slug = excluded.slug,
+  name_zh = excluded.name_zh,
+  name_en = excluded.name_en,
+  name_ja = excluded.name_ja,
+  sort_order = excluded.sort_order,
+  enabled = excluded.enabled,
+  updated_at = excluded.updated_at;
+
 create table if not exists site_visitors (
   visitor_id text primary key,
   first_seen_at text not null,
@@ -1449,6 +1515,101 @@ on conflict(article_id) do update set
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
 
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-15-managed-video-system',
+  '2026-06-15-managed-video-system',
+  'site-updates',
+  '["网站更新","视频区","后台"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-15T08:30:00.000Z',
+  '2026-06-15T08:30:00.000Z',
+  '2026-06-15T08:30:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  (
+    'seed-update-2026-06-15-managed-video-system-zh',
+    'seed-update-2026-06-15-managed-video-system',
+    'zh',
+    '视频区改造成可管理系统',
+    '视频区现在支持后台管理 YouTube 和 Bilibili 链接，并可在站内播放。',
+    '# 视频区改造成可管理系统
+
+这次更新把原来的占位视频卡片改成真实的视频管理系统。
+
+## 更新内容
+
+- 后台新增视频管理，可以输入 YouTube、Bilibili 或 b23.tv 链接并自动识别平台。
+- 服务端会规范化播放器地址，抓取标题、作者、简介和封面，并缓存到 D1。
+- 主站视频区改为读取 `/api/videos`，分类标签由后台视频分类动态生成。
+- 视频点击后在 XP 风格窗口内播放，不再跳转外站。
+- 后台新增视频分类管理，可以新增、编辑、停用、排序和安全删除分类。',
+    '2026-06-15T08:30:00.000Z',
+    '2026-06-15T08:30:00.000Z'
+  ),
+  (
+    'seed-update-2026-06-15-managed-video-system-en',
+    'seed-update-2026-06-15-managed-video-system',
+    'en',
+    'Managed Video System',
+    'The videos section now supports managed YouTube and Bilibili links with inline playback.',
+    '# Managed Video System
+
+This update turns the old placeholder video cards into a real managed video system.
+
+## What changed
+
+- The admin area can now create and edit videos from YouTube, Bilibili, or b23.tv links.
+- The server normalizes embed URLs, fetches metadata, and caches title, author, description, and thumbnail data in D1.
+- The public videos section now reads from `/api/videos`, with category tabs generated from admin-managed video categories.
+- Videos open inside the XP-style site window instead of jumping to an external site.
+- A new admin category manager supports creating, editing, disabling, sorting, and safely deleting video categories.',
+    '2026-06-15T08:30:00.000Z',
+    '2026-06-15T08:30:00.000Z'
+  ),
+  (
+    'seed-update-2026-06-15-managed-video-system-ja',
+    'seed-update-2026-06-15-managed-video-system',
+    'ja',
+    '動画欄を管理できる仕組みに変更',
+    '動画欄で YouTube と Bilibili のリンクを管理し、サイト内で再生できるようになりました。',
+    '# 動画欄を管理できる仕組みに変更
+
+今回の更新で、仮置きだった動画カードを実際に管理できる動画システムに変更しました。
+
+## 変更内容
+
+- 管理画面から YouTube、Bilibili、b23.tv のリンクを登録できるようになりました。
+- サーバー側で埋め込み URL を正規化し、タイトル、作者、説明、サムネイルを取得して D1 に保存します。
+- 公開側の動画欄は `/api/videos` から読み込み、分類タブも管理画面の動画分類から生成します。
+- 動画は外部サイトへ移動せず、XP 風のウィンドウ内で再生します。
+- 動画分類の追加、編集、停止、並び替え、安全な削除に対応しました。',
+    '2026-06-15T08:30:00.000Z',
+    '2026-06-15T08:30:00.000Z'
+  )
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
@@ -1484,6 +1645,74 @@ on conflict(article_id, lang) do update set
   summary = excluded.summary,
   content_markdown = excluded.content_markdown,
   updated_at = excluded.updated_at;
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-15-icons-cloud-fixes',
+  '2026-06-15-icons-cloud-fixes',
+  'site-updates',
+  '["网站更新","图标","首页","动态壁纸"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-15T13:49:12.000Z',
+  '2026-06-15T13:49:12.000Z',
+  '2026-06-15T13:49:12.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-15-icons-cloud-fixes-zh', 'seed-update-2026-06-15-icons-cloud-fixes', 'zh', '窗口图标与云层残影修复', '补齐窗口/任务栏图标更新记录，并修复夜晚与黄昏动态壁纸 clean 底图里的云层残影。', '# 窗口图标与云层残影修复
+
+本次更新把几项已经完成但还没有合并进公开更新文章的内容补到同一篇记录里，方便之后从知识库追踪。
+
+## 更新内容
+
+- 为知识库、视频区、资源区、游戏区、杂谈区、关于我补齐新的窗口标题栏图标和任务栏图标资源。
+- 微调分区窗口左上角标题图标的显示盒子、缩放和垂直对齐，让图标在标题文字前更清楚。
+- 修复夜晚动态壁纸 `base-clean.png` 里残留的中景云片，避免云层漂移后背景上留下分离的小云盖。
+- 同步检查 morning / day / dusk / night 四个时段：morning 和 day 没有同类残留，dusk 的淡残影也已一并清理。
+- 更新首页 CSS 缓存版本，减少浏览器继续加载旧图标样式或旧 clean 底图的可能。', '2026-06-15T13:49:12.000Z', '2026-06-15T13:49:12.000Z'),
+  ('seed-update-2026-06-15-icons-cloud-fixes-en', 'seed-update-2026-06-15-icons-cloud-fixes', 'en', 'Window Icons and Cloud Cleanup', 'Added the missing icon update record and cleaned residual cloud fragments from the Night and Dusk wallpaper plates.', '# Window Icons and Cloud Cleanup
+
+This update records a few shipped visual fixes that were not yet grouped into a public site update article.
+
+## Changes
+
+- Added new window titlebar and taskbar icon assets for Knowledge, Videos, Resources, Games, Talk, and About.
+- Tuned the section title icon box, scale, and vertical alignment so the icons read more clearly before the title text.
+- Cleaned the Night wallpaper `base-clean.png` plate so the moving mid-distance cloud no longer leaves a separated cap behind.
+- Checked all four time-of-day wallpapers: Morning and Day did not show the same issue, while a faint Dusk remnant was cleaned at the same time.
+- Updated the home CSS cache version to reduce the chance of browsers keeping older icon styles or clean plates.', '2026-06-15T13:49:12.000Z', '2026-06-15T13:49:12.000Z'),
+  ('seed-update-2026-06-15-icons-cloud-fixes-ja', 'seed-update-2026-06-15-icons-cloud-fixes', 'ja', 'ウィンドウアイコンと雲の残影修正', '未記録だったアイコン更新を補い、夜と夕方の壁紙ベースに残った雲の跡を修正しました。', '# ウィンドウアイコンと雲の残影修正
+
+今回の更新では、すでに反映済みだったいくつかの見た目の調整を、公開用の更新記事としてまとめて記録しました。
+
+## 更新内容
+
+- 知識庫、動画区、リソース区、ゲーム区、雑談区、About 用に、新しいウィンドウタイトルバーとタスクバーのアイコン素材を追加しました。
+- セクションタイトル左側のアイコン表示枠、拡大率、縦位置を調整し、タイトル前のアイコンを見やすくしました。
+- 夜の壁紙 `base-clean.png` に残っていた中景雲の小さな残片を修正し、雲が動いた後に背景へ切れ端が残らないようにしました。
+- morning / day / dusk / night の4時間帯を確認し、morning と day には同種の残りはなく、dusk の薄い残影も同時に消しました。
+- ホーム CSS のキャッシュ版を更新し、古いアイコン表示や古い clean ベース画像が残りにくいようにしました。', '2026-06-15T13:49:12.000Z', '2026-06-15T13:49:12.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
 delete from article_translations
 where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check');
 
@@ -1841,3 +2070,28 @@ where article_id = 'seed-ai-agent-workflow-guide-2026-06-14'
   and lang = 'ja'
   and instr(content_markdown, '## 6. AI 活用の実践テクニック') > 0
   and instr(content_markdown, 'ai-agent-gpt-chatroom-prompt.png') = 0;
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-15-managed-video-system',
+  '2026-06-15-managed-video-system',
+  'site-updates',
+  '["网站更新","视频区","后台"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-15T08:30:00.000Z',
+  '2026-06-15T08:30:00.000Z',
+  '2026-06-15T08:30:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;

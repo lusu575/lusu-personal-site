@@ -339,6 +339,26 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "🪟",
+      date: "2026.06.15",
+      title: { zh: "窗口图标与云层残影修复", en: "Window Icons and Cloud Cleanup", ja: "ウィンドウアイコンと雲の残影修正" },
+      desc: {
+        zh: "补发窗口与任务栏图标更新记录，并修复夜晚/黄昏动态壁纸 clean 底图里的云层残影",
+        en: "Added the missing window/taskbar icon update record and cleaned residual clouds from Night and Dusk wallpaper plates",
+        ja: "ウィンドウとタスクバーのアイコン更新記録を補い、夜と夕方の壁紙ベースに残った雲の跡を修正しました"
+      }
+    },
+    {
+      icon: "📺",
+      date: "2026.06.15",
+      title: { zh: "视频区改造成可管理系统", en: "Managed Video System", ja: "動画欄を管理できる仕組みに変更" },
+      desc: {
+        zh: "后台现在可以管理 YouTube 和 Bilibili 链接，自动识别信息并在主站 XP 窗口内播放",
+        en: "The admin can now manage YouTube and Bilibili links, fetch metadata, and play videos inline in the XP window",
+        ja: "管理画面で YouTube と Bilibili のリンクを登録し、XP 風ウィンドウ内で再生できるようになりました"
+      }
+    },
+    {
       icon: "☁️",
       date: "2026.06.15",
       title: { zh: "云层漂移提速与流畅度优化", en: "Smoother cloud drift", ja: "雲レイヤーの滑らかさ調整" },
@@ -594,6 +614,13 @@ const articleState = {
   currentArticle: null,
   error: ""
 };
+const videoState = {
+  loading: false,
+  requestId: 0,
+  categories: [],
+  videos: [],
+  error: ""
+};
 
 const languageStorageKey = "lusu-site-language";
 const siteUpdateCategory = "site-updates";
@@ -774,6 +801,7 @@ function setLanguage(lang, options = {}) {
 
   renderAll();
   loadArticles();
+  loadVideos();
   updateWelcomeGreeting();
 }
 
@@ -938,6 +966,42 @@ async function loadArticles() {
       renderKnowledge();
       renderUpdates();
       document.getElementById("top-updated").textContent = latestUpdateDate();
+    }
+  }
+}
+
+async function loadVideos() {
+  const requestId = videoState.requestId + 1;
+  videoState.requestId = requestId;
+  videoState.loading = true;
+  videoState.error = "";
+  renderVideos();
+  try {
+    const response = await fetch(`/api/videos?lang=${encodeURIComponent(currentLang)}`, { cache: "no-store" });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(payload.error || `HTTP ${response.status}`);
+    }
+    if (requestId !== videoState.requestId) {
+      return;
+    }
+    videoState.categories = payload.categories || [];
+    videoState.videos = payload.videos || [];
+    const known = new Set(["all", ...videoState.categories.map((category) => category.category_id)]);
+    if (!known.has(activeFilters.videos)) {
+      activeFilters.videos = "all";
+    }
+  } catch (error) {
+    if (requestId !== videoState.requestId) {
+      return;
+    }
+    videoState.categories = [];
+    videoState.videos = [];
+    videoState.error = error.message || "failed";
+  } finally {
+    if (requestId === videoState.requestId) {
+      videoState.loading = false;
+      renderVideos();
     }
   }
 }
@@ -1269,21 +1333,114 @@ function appendInlineMarkdown(parent, text) {
 }
 
 function renderVideos() {
-  renderCategoryButtons("video-categories", "videos", label("videoCategories"));
   const list = document.getElementById("video-list");
-  const items = content.videos.filter((item) => activeFilters.videos === "all" || String(item.category) === activeFilters.videos);
+  renderVideoCategoryButtons();
+  list.replaceChildren();
+  if (videoState.loading) {
+    const loading = document.createElement("p");
+    loading.className = "loading-text";
+    loading.textContent = videoUiText("loading");
+    list.appendChild(loading);
+    return;
+  }
+  if (videoState.error) {
+    const error = document.createElement("p");
+    error.className = "loading-text";
+    error.textContent = videoUiText("failed");
+    list.appendChild(error);
+    return;
+  }
+  const items = videoState.videos.filter((item) => (
+    activeFilters.videos === "all"
+      || (item.categories || []).some((category) => category.category_id === activeFilters.videos)
+  ));
+  if (!items.length) {
+    const empty = document.createElement("p");
+    empty.className = "loading-text";
+    empty.textContent = videoUiText("empty");
+    list.appendChild(empty);
+    return;
+  }
+  items.forEach((item) => list.appendChild(videoCardElement(item)));
+}
 
-  list.innerHTML = items.map((item) => `
-    <article class="video-card">
-      <div class="video-thumb" style="--thumb-bg: ${item.color}"></div>
-      <div class="video-body">
-        <span class="platform ${item.platform.toLowerCase()}">${item.platform}</span>
-        <h3>${contentTitle(item.title)}</h3>
-        <p>${localText(item.desc)}</p>
-        <button class="card-action" data-video-index="${content.videos.indexOf(item)}">${t("playButton")}</button>
-      </div>
-    </article>
-  `).join("");
+function renderVideoCategoryButtons() {
+  const target = document.getElementById("video-categories");
+  target.replaceChildren();
+  const categories = [{ category_id: "all", name: t("all") }, ...videoState.categories];
+  categories.forEach((category) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.dataset.filterType = "videos";
+    button.dataset.filter = category.category_id;
+    button.textContent = category.name || category.name_zh || category.slug || t("all");
+    button.classList.toggle("active", activeFilters.videos === category.category_id);
+    target.appendChild(button);
+  });
+}
+
+function videoCardElement(item) {
+  const card = document.createElement("article");
+  card.className = "video-card";
+  card.dataset.videoId = item.video_id;
+
+  const thumb = document.createElement("button");
+  thumb.type = "button";
+  thumb.className = "video-thumb";
+  thumb.dataset.videoId = item.video_id;
+  thumb.setAttribute("aria-label", videoUiText("playAria"));
+  if (item.thumbnail_url) {
+    const image = document.createElement("img");
+    image.src = item.thumbnail_url;
+    image.alt = "";
+    image.loading = "lazy";
+    image.addEventListener("error", () => {
+      thumb.classList.add("is-fallback");
+      image.remove();
+    }, { once: true });
+    thumb.appendChild(image);
+  } else {
+    thumb.classList.add("is-fallback");
+  }
+
+  const body = document.createElement("div");
+  body.className = "video-body";
+  const platform = document.createElement("span");
+  platform.className = `platform ${String(item.platform || "").toLowerCase()}`;
+  platform.textContent = item.platform === "youtube" ? "YouTube" : "Bilibili";
+  const title = document.createElement("h3");
+  title.textContent = item.title || videoUiText("untitled");
+  const desc = document.createElement("p");
+  desc.textContent = item.description || videoUiText("noDescription");
+  const meta = document.createElement("div");
+  meta.className = "video-meta";
+  [item.author_name, formatArticleDate(item.published_at)].filter(Boolean).forEach((text) => {
+    const span = document.createElement("span");
+    span.textContent = text;
+    meta.appendChild(span);
+  });
+  const button = document.createElement("button");
+  button.className = "card-action";
+  button.type = "button";
+  button.dataset.videoId = item.video_id;
+  button.textContent = t("playButton");
+
+  body.append(platform, title, desc, meta, button);
+  card.append(thumb, body);
+  return card;
+}
+
+function videoUiText(key) {
+  const copy = {
+    loading: { zh: "正在读取视频...", en: "Loading videos...", ja: "動画を読み込み中..." },
+    failed: { zh: "视频读取失败，请稍后再试。", en: "Videos failed to load. Please try again later.", ja: "動画を読み込めませんでした。後でお試しください。" },
+    empty: { zh: "这里还没有发布的视频。", en: "No published videos yet.", ja: "公開済みの動画はまだありません。" },
+    untitled: { zh: "未命名视频", en: "Untitled video", ja: "無題の動画" },
+    noDescription: { zh: "暂无简介。", en: "No description yet.", ja: "説明はまだありません。" },
+    unsupported: { zh: "该视频暂不支持站内播放", en: "This video cannot be played inline right now.", ja: "この動画は現在サイト内再生に対応していません。" },
+    playAria: { zh: "播放视频", en: "Play video", ja: "動画を再生" }
+  };
+  return copy[key]?.[currentLang] || copy[key]?.zh || key;
 }
 
 function renderResources() {
@@ -1408,15 +1565,61 @@ function renderAll() {
 }
 
 function openVideo(index) {
-  const video = content.videos[index];
+  const video = typeof index === "number"
+    ? content.videos[index]
+    : videoState.videos.find((item) => item.video_id === index);
   const modal = document.getElementById("video-modal");
-  document.getElementById("modal-title").textContent = localText(video.title);
-  document.getElementById("video-link").href = video.url;
+  const frame = document.getElementById("video-frame");
+  const sourceLink = document.getElementById("video-link");
+  frame.replaceChildren();
+  if (!video) {
+    window.lusuTrackClick?.("video:play-failed", "video not found", { route: "videos" });
+    return;
+  }
+  document.getElementById("modal-title").textContent = video.title || localText(video.title) || "Video Player";
+  if (sourceLink) {
+    sourceLink.hidden = true;
+    sourceLink.removeAttribute("href");
+  }
+  if (video.embed_url) {
+    const iframe = document.createElement("iframe");
+    iframe.src = video.embed_url;
+    iframe.title = video.title || "Video player";
+    iframe.loading = "lazy";
+    iframe.allow = "accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+    iframe.allowFullscreen = true;
+    iframe.referrerPolicy = "strict-origin-when-cross-origin";
+    iframe.addEventListener("error", () => {
+      window.lusuTrackClick?.("video:play-failed", video.video_id || video.external_id || "video", { route: "videos" });
+    }, { once: true });
+    frame.appendChild(iframe);
+    window.lusuTrackClick?.("video:player-open", video.video_id || video.external_id || "video", { route: "videos" });
+  } else {
+    const placeholder = document.createElement("div");
+    placeholder.className = "video-placeholder";
+    const icon = document.createElement("span");
+    icon.textContent = "!";
+    const text = document.createElement("p");
+    text.textContent = video.metadata_error || videoUiText("unsupported");
+    placeholder.append(icon, text);
+    frame.appendChild(placeholder);
+    window.lusuTrackClick?.("video:play-failed", video.video_id || video.external_id || "video", { route: "videos" });
+  }
   modal.hidden = false;
 }
 
 function closeVideo() {
   document.getElementById("video-modal").hidden = true;
+  const frame = document.getElementById("video-frame");
+  frame.replaceChildren();
+  const placeholder = document.createElement("div");
+  placeholder.className = "video-placeholder";
+  const icon = document.createElement("span");
+  icon.textContent = "▶";
+  const text = document.createElement("p");
+  text.textContent = t("videoPlaceholder");
+  placeholder.append(icon, text);
+  frame.appendChild(placeholder);
 }
 
 function closeWelcome() {
@@ -2055,6 +2258,12 @@ document.addEventListener("click", (event) => {
   const videoButton = event.target.closest("[data-video-index]");
   if (videoButton) {
     openVideo(Number(videoButton.dataset.videoIndex));
+    return;
+  }
+
+  const managedVideoButton = event.target.closest("[data-video-id]");
+  if (managedVideoButton) {
+    openVideo(managedVideoButton.dataset.videoId);
     return;
   }
 

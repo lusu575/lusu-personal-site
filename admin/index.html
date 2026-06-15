@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex,nofollow">
   <title>鲁肃个人站管理后台</title>
-  <link rel="stylesheet" href="/admin/admin.css?v=20260615-admin-visual-pass">
+  <link rel="stylesheet" href="/admin/admin.css?v=20260615-managed-videos">
 </head>
 <body>
   <div class="admin-shell">
@@ -18,6 +18,8 @@
         </div>
       </div>
       <nav class="nav-list">
+        <button class="nav-button" type="button" data-panel="videos">视频管理</button>
+        <button class="nav-button" type="button" data-panel="videoCategories">视频分类管理</button>
         <button class="nav-button active" type="button" data-panel="dashboard">实时大屏</button>
         <button class="nav-button" type="button" data-panel="articles">知识库文章</button>
         <button class="nav-button" type="button" data-panel="visits">访问来源</button>
@@ -159,6 +161,94 @@
         </div>
       </section>
 
+      <section class="panel" id="videos-panel">
+        <div class="split-layout articles-layout">
+          <section class="xp-panel list-panel">
+            <div class="panel-head">
+              <h2>视频列表</h2>
+              <button class="xp-button" type="button" id="new-video">新建</button>
+            </div>
+            <div class="article-list" id="video-list-admin"></div>
+          </section>
+          <section class="xp-panel editor-panel">
+            <div class="panel-head">
+              <h2 id="video-editor-title">新建视频</h2>
+              <span>链接由服务端识别并生成站内播放器</span>
+            </div>
+            <form id="video-form" class="editor-form">
+              <label>视频链接<input name="original_url" maxlength="800" placeholder="YouTube / Bilibili / b23.tv"></label>
+              <div class="form-actions compact-actions">
+                <button class="xp-button" type="button" id="preview-video-url">自动识别/获取信息</button>
+                <button class="xp-button" type="button" id="refresh-video-metadata">刷新元数据</button>
+              </div>
+              <div class="form-grid">
+                <label>平台<input name="platform" readonly></label>
+                <label>视频 ID<input name="external_id" readonly></label>
+                <label>播放器地址<input name="embed_url" readonly></label>
+                <label>封面<input name="thumbnail_url" maxlength="800"></label>
+                <label>作者<input name="author_name" maxlength="160"></label>
+                <label>发布时间<input name="published_at" type="datetime-local" step="1"></label>
+                <label>状态
+                  <select name="status">
+                    <option value="draft">草稿</option>
+                    <option value="published">已发布</option>
+                    <option value="hidden">隐藏</option>
+                  </select>
+                </label>
+                <label>排序<input name="sort_order" type="number" value="0"></label>
+                <label class="checkbox-line"><input name="pinned" type="checkbox"> 置顶</label>
+              </div>
+              <label>标题<input name="title" maxlength="220" required></label>
+              <label>简介<textarea name="description" rows="4" maxlength="2000"></textarea></label>
+              <fieldset class="category-checks">
+                <legend>分类</legend>
+                <div id="video-category-checks"></div>
+              </fieldset>
+              <div class="admin-video-preview" id="admin-video-preview"></div>
+              <div class="form-actions">
+                <button class="xp-button" type="submit">保存</button>
+                <button class="xp-button primary" type="button" id="publish-video">保存并发布</button>
+                <button class="xp-button danger" type="button" id="delete-video">删除</button>
+                <span class="form-status" id="video-status"></span>
+              </div>
+            </form>
+          </section>
+        </div>
+      </section>
+
+      <section class="panel" id="videoCategories-panel">
+        <div class="split-layout articles-layout">
+          <section class="xp-panel list-panel">
+            <div class="panel-head">
+              <h2>分类列表</h2>
+              <button class="xp-button" type="button" id="new-video-category">新建</button>
+            </div>
+            <div class="article-list" id="video-category-list-admin"></div>
+          </section>
+          <section class="xp-panel editor-panel">
+            <div class="panel-head">
+              <h2 id="video-category-editor-title">新建分类</h2>
+              <span>“全部”分类由前台自动生成，不写入数据库</span>
+            </div>
+            <form id="video-category-form" class="editor-form">
+              <div class="form-grid">
+                <label>Slug<input name="slug" required maxlength="120" placeholder="ai-experiments"></label>
+                <label>中文名称<input name="name_zh" required maxlength="80"></label>
+                <label>English<input name="name_en" maxlength="80"></label>
+                <label>日本語<input name="name_ja" maxlength="80"></label>
+                <label>排序<input name="sort_order" type="number" value="0"></label>
+                <label class="checkbox-line"><input name="enabled" type="checkbox" checked> 启用</label>
+              </div>
+              <div class="form-actions">
+                <button class="xp-button" type="submit">保存分类</button>
+                <button class="xp-button danger" type="button" id="delete-video-category">删除分类</button>
+                <span class="form-status" id="video-category-status"></span>
+              </div>
+            </form>
+          </section>
+        </div>
+      </section>
+
       <section class="panel" id="visits-panel">
         <div class="dashboard-grid two">
           <section class="xp-panel">
@@ -254,6 +344,6 @@
     </main>
   </div>
 
-  <script src="/admin/admin.js?v=20260615-article-timezone-fix"></script>
+  <script src="/admin/admin.js?v=20260615-managed-videos"></script>
 </body>
 </html>

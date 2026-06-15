@@ -217,3 +217,14 @@ $env:XDG_CONFIG_HOME='F:\lusu575个人站\.wrangler-config'; npx.cmd wrangler pa
   - `cloudflare/schema.sql`
 
 替换这些资源后，要检查桌面端和手机端显示效果。
+## 视频系统维护规则（2026-06-15）
+
+- 视频区使用 D1 表 `videos`、`video_categories`、`video_category_relations`；“全部”分类只由前端生成，不写入数据库。
+- 后台视频和分类接口必须继续复用 `requireAdmin`，普通登录用户不得访问 `/api/admin/videos*` 或 `/api/admin/video-categories*`。
+- 后端只允许解析 YouTube、youtu.be、Bilibili、b23.tv 白名单链接；iframe `src` 必须使用服务端规范化生成的 `embed_url`，不得直接信任用户输入 URL。
+- YouTube / Bilibili 元数据只在后台预览、保存或刷新元数据时抓取，并缓存到 D1；公开视频接口不得每次访问重新抓取。
+- 抓取失败时后台应显示可读原因，并允许管理员手动填写标题、简介、作者和封面；前台遇到不可播放或受限视频时显示站内不可播放提示。
+- 主站视频卡片标题、简介、分类名必须使用 `textContent` 或安全 DOM API 渲染，不要把视频数据拼接成未转义 HTML。
+- 视频封面失败时保留像素风默认占位图；移动端视频区必须单列适配且不得横向溢出。
+- 视频埋点复用 `js/telemetry.js`，可记录分类筛选、视频点击、播放按钮点击、播放器打开和播放失败；不得记录后台输入框内容。
+- 修改 `js/main.js`、`css/style.css`、`admin/admin.js`、`admin/admin.css` 或视频视觉资源后，必须更新 `index.html` / `admin/index.html` 的 query 版本号。
