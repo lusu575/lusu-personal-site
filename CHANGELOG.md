@@ -4,6 +4,11 @@
 
 ## 2026-06-15
 
+- 文章访问埋点与 PV/UV：
+  - 新增 `article_view_events` 文章访问事件表，公开文章详情接口 `/api/articles/:slug` 每次成功读取文章时会按隐藏 `lusu_visitor` 记录文章 PV、UV、语言、访问来源和掩码 IP 信息。
+  - 后台实时大屏新增“热门文章”表，按最近周期展示文章标题、slug、PV、UV 和最近访问时间。
+  - 后台文章列表和文章编辑详情新增文章总 PV/UV、今日 PV/UV 显示，方便在发布和维护文章时直接查看单篇访问表现。
+  - `js/telemetry.js` 新增 `history.pushState` / `history.replaceState` 监听，修复前端路由切换到文章详情时页面级 PV 可能漏记的问题。
 - 网站更新记录维护闭环补齐：
   - 新增 `seed-update-2026-06-15-clouds-docs-maintenance` 三语 `site-updates` 文章，公开记录四时段动态云层和维护文档补齐，本篇文章会驱动首页最近更新和右上角最新日期。
   - 同步更新 `functions/api/[[route]].js` 的文章 seed、`cloudflare/schema.sql` 的 D1 seed，以及 `js/main.js` 的本地 fallback 最近更新，避免 D1 不可用时回退到旧日期。

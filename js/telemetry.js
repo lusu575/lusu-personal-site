@@ -94,6 +94,21 @@
     send("/page-view", payload);
   }
 
+  function wrapHistoryMethod(name) {
+    const original = window.history[name];
+    if (typeof original !== "function") {
+      return;
+    }
+    window.history[name] = function (...args) {
+      const result = original.apply(this, args);
+      window.setTimeout(recordPageView, 0);
+      return result;
+    };
+  }
+
+  wrapHistoryMethod("pushState");
+  wrapHistoryMethod("replaceState");
+
   document.addEventListener("click", (event) => {
     const descriptor = targetDescriptor(event.target);
     if (!descriptor) {

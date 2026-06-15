@@ -180,6 +180,31 @@ create index if not exists analytics_click_events_target_idx
 create index if not exists analytics_click_events_visitor_idx
   on analytics_click_events(visitor_id, created_at);
 
+create table if not exists article_view_events (
+  event_id text primary key,
+  article_id text not null,
+  slug text not null,
+  lang text not null default 'zh',
+  visitor_id text not null,
+  country text not null default '',
+  region text not null default '',
+  city text not null default '',
+  timezone text not null default '',
+  colo text not null default '',
+  latitude real,
+  longitude real,
+  ip_hash text not null default '',
+  ip_prefix text not null default '',
+  created_at text not null
+);
+
+create index if not exists article_view_events_article_idx
+  on article_view_events(article_id, created_at);
+create index if not exists article_view_events_slug_idx
+  on article_view_events(slug, created_at);
+create index if not exists article_view_events_visitor_idx
+  on article_view_events(visitor_id, created_at);
+
 insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at

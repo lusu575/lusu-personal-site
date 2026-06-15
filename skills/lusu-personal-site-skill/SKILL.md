@@ -132,6 +132,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - `/admin/*` 必须通过 Pages Functions middleware 校验主站 `lusu_session`，只有 `users.role = admin` 的站长账号可以访问；所有 `/api/admin/*` 也必须继续做服务端 admin 校验。
 - 后台文章编辑可以按当前选择语言显示单个语言面板，但保存/发布正式文章时必须一次性提交 zh / en / ja 三种标题与正文。
 - 主站访问和点击埋点应使用独立 `js/telemetry.js`，避免把埋点逻辑写进主站可见 UI 流程；埋点脚本不得记录输入框内容、密码、正文草稿或聊天输入中的未发送内容。
+- 文章访问 PV/UV 使用服务端 `GET /api/articles/:slug` 写入 `article_view_events`，按隐藏 `lusu_visitor` 统计；后台热门文章、文章列表和文章详情的文章 PV/UV 应以该表为准，不要只依赖前端页面级 PV。
 - 访客后台识别使用 HttpOnly `lusu_visitor` cookie；该隐藏 visitor_id 不应在前台 UI 或公开 API 中展示。聊天室前端本地 client id 只能用于“我的消息”显示，后台禁言和审计使用隐藏 visitor_id。
 - IP 信息只保存 hash 和掩码前缀，以及 Cloudflare 提供的国家、region/省份、城市等来源字段；不要把完整明文 IP 暴露给普通前台。
 - 聊天室后台可以编辑、隐藏/恢复、删除消息，并按隐藏 visitor_id 或 IP hash 禁言；公开聊天室接口仍要保持纯文本渲染和频率限制。

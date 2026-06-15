@@ -154,6 +154,9 @@ Markdown 安全：
 - `POST /api/analytics/page-view`
 - `POST /api/analytics/click`
 
+文章访问埋点：
+- `GET /api/articles/:slug` 在成功返回已发布文章详情时，会额外写入 `article_view_events`，按隐藏 `lusu_visitor` 统计单篇文章 PV/UV、语言和来源地理信息；后台热门文章、文章列表和文章详情统计均以该表为准。
+
 后台接口：
 
 - `GET /api/admin/me`
@@ -319,6 +322,7 @@ D1 表：`anonymous_chat_messages`
 - `site_visitors`
 - `analytics_page_views`
 - `analytics_click_events`
+- `article_view_events`
 
 ## 主要文件结构
 

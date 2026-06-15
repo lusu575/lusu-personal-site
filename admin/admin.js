@@ -23,6 +23,11 @@ const panelMeta = {
 const adminUpdates = [
   {
     date: "2026-06-15",
+    title: "文章访问 PV/UV 统计",
+    body: "文章详情接口新增服务端访问事件记录，后台大屏新增热门文章表，文章列表和编辑详情显示每篇文章的总 PV/UV 与今日 PV/UV。"
+  },
+  {
+    date: "2026-06-15",
     title: "管理后台 MVP 接入",
     body: "新增独立 /admin/ 后台、实时监控大屏、三语文章编辑、访问来源地图、点击埋点、聊天室编辑删除和禁言能力。"
   }
@@ -147,6 +152,7 @@ function renderOverview() {
   renderHourlyChart(state.overview.hourly || []);
   renderMap(state.overview.regions || state.overview.countries || []);
   renderTopPages(state.overview.topPages || []);
+  renderTopArticles(state.overview.topArticles || []);
   renderVisitTables();
   renderClickPanels();
 }
@@ -235,6 +241,17 @@ function renderTopPages(rows) {
   `).join("") || `<tr><td colspan="4">暂无数据</td></tr>`;
 }
 
+function renderTopArticles(rows) {
+  $("#top-articles").innerHTML = rows.map((row) => `
+    <tr>
+      <td>${escapeHtml(row.title || row.slug || "未命名文章")}<br><small>${escapeHtml(row.slug || "")} ${escapeHtml(row.category || "")}</small></td>
+      <td>${formatNumber(row.pv)}</td>
+      <td>${formatNumber(row.uv)}</td>
+      <td>${formatTime(row.last_seen_at)}</td>
+    </tr>
+  `).join("") || `<tr><td colspan="4">暂无数据</td></tr>`;
+}
+
 function renderVisitTables() {
   const overview = state.overview || {};
   $("#country-table").innerHTML = (overview.countries || []).map((row) => `
@@ -290,7 +307,7 @@ function renderArticleList() {
   $("#article-list").innerHTML = state.articles.map((article) => `
     <button class="list-item ${article.article_id === state.selectedArticleId ? "active" : ""}" type="button" data-article-id="${escapeHtml(article.article_id)}">
       <strong>${escapeHtml(article.slug)}</strong>
-      <small>${escapeHtml(article.category)} · ${escapeHtml(article.status)} · ${article.translation_count || 0}/3 · ${formatTime(article.updated_at)}</small>
+      <small>${escapeHtml(article.category)} · ${escapeHtml(article.status)} · ${article.translation_count || 0}/3 · PV ${formatNumber(article.article_pv)} / UV ${formatNumber(article.article_uv)} · ${formatTime(article.updated_at)}</small>
     </button>
   `).join("") || `<p class="muted">暂无文章</p>`;
 }
@@ -330,7 +347,7 @@ function fillArticleForm(article) {
     form.elements[`content_${lang}`].value = item.content_markdown || "";
   });
   $("#delete-article").disabled = false;
-  $("#article-status").textContent = "";
+  $("#article-status").textContent = `文章访问：PV ${formatNumber(article.article_pv)} / UV ${formatNumber(article.article_uv)}，今日 PV ${formatNumber(article.article_today_pv)} / UV ${formatNumber(article.article_today_uv)}`;
 }
 
 function setArticleLang(lang) {

@@ -84,6 +84,8 @@ export async function onRequest(context) {
     if (parts[0] === "admin" && parts[1] === "analytics") {
       await ensureAnalyticsSchema(env);
       await ensureChatSchema(env);
+      await ensureArticleSchema(env);
+      await seedArticleTestData(env);
       if (request.method === "GET" && parts[2] === "overview") {
         return await getAdminAnalyticsOverview(request, env);
       }
@@ -472,14 +474,29 @@ async function getArticle(request, env, slug) {
 
   await env.DB.prepare("update articles set view_count = view_count + 1 where article_id = ?")
     .bind(row.article_id).run();
+  row.view_count = Number(row.view_count || 0) + 1;
 
-  return json({ article: publicArticleRow(row, true), lang });
+  const identity = await recordArticleView(request, env, row, row.lang || lang);
+  return withVisitorCookie(json({ article: publicArticleRow(row, true), lang }), request, identity);
 }
 
 async function getAdminArticles(request, env) {
   await requireAdmin(request, env);
+  await ensureAnalyticsSchema(env);
   const rows = (await env.DB.prepare(`
-    select articles.*, count(article_translations.translation_id) as translation_count
+    select
+      articles.*,
+      count(article_translations.translation_id) as translation_count,
+      (
+        select count(*)
+        from article_view_events
+        where article_view_events.article_id = articles.article_id
+      ) as article_pv,
+      (
+        select count(distinct visitor_id)
+        from article_view_events
+        where article_view_events.article_id = articles.article_id
+      ) as article_uv
     from articles
     left join article_translations on article_translations.article_id = articles.article_id
     group by articles.article_id
@@ -567,6 +584,7 @@ async function deleteArticle(request, env, articleId) {
 
 async function getAdminArticle(request, env, articleId) {
   await requireAdmin(request, env);
+  await ensureAnalyticsSchema(env);
   const normalizedId = normalizeRecordId(articleId, "文章编号不正确。");
   const article = await env.DB.prepare("select * from articles where article_id = ?")
     .bind(normalizedId).first();
@@ -589,7 +607,29 @@ async function getAdminArticle(request, env, articleId) {
       updated_at: item.updated_at
     };
   });
-  return json({ article: { ...article, tags: parseTags(article.tags), translations: translationMap } });
+  const today = new Date();
+  today.setUTCHours(0, 0, 0, 0);
+  const todayIso = today.toISOString();
+  const metrics = await env.DB.prepare(`
+    select
+      count(*) as article_pv,
+      count(distinct visitor_id) as article_uv,
+      sum(case when created_at >= ? then 1 else 0 end) as article_today_pv,
+      count(distinct case when created_at >= ? then visitor_id end) as article_today_uv
+    from article_view_events
+    where article_id = ?
+  `).bind(todayIso, todayIso, normalizedId).first();
+  return json({
+    article: {
+      ...article,
+      tags: parseTags(article.tags),
+      translations: translationMap,
+      article_pv: Number(metrics?.article_pv || 0),
+      article_uv: Number(metrics?.article_uv || 0),
+      article_today_pv: Number(metrics?.article_today_pv || 0),
+      article_today_uv: Number(metrics?.article_today_uv || 0)
+    }
+  });
 }
 
 async function adminMe(request, env) {
@@ -680,6 +720,39 @@ async function recordClickEvent(request, env) {
   return withVisitorCookie(json({ ok: true }), request, identity);
 }
 
+async function recordArticleView(request, env, article, lang) {
+  await ensureAnalyticsSchema(env);
+  const identity = getOrCreateVisitorIdentity(request);
+  const now = nowIso();
+  const geo = await requestIpInfo(request, env, "analytics");
+  await ensureVisitorProfile(env, request, identity.visitorId, {
+    language: request.headers.get("Accept-Language") || ""
+  }, false);
+  await env.DB.prepare(`
+    insert into article_view_events (
+      event_id, article_id, slug, lang, visitor_id, country, region, city,
+      timezone, colo, latitude, longitude, ip_hash, ip_prefix, created_at
+    ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(
+    crypto.randomUUID(),
+    article.article_id,
+    article.slug,
+    normalizeArticleLang(lang),
+    identity.visitorId,
+    geo.country,
+    geo.region,
+    geo.city,
+    geo.timezone,
+    geo.colo,
+    geo.latitude,
+    geo.longitude,
+    geo.ipHash,
+    geo.ipPrefix,
+    now
+  ).run();
+  return identity;
+}
+
 async function getAdminAnalyticsOverview(request, env) {
   await requireAdmin(request, env);
   const url = new URL(request.url);
@@ -706,6 +779,7 @@ async function getAdminAnalyticsOverview(request, env) {
     countryRows,
     regionRows,
     topPages,
+    topArticles,
     topClicks,
     recentViews,
     recentClicks
@@ -758,6 +832,24 @@ async function getAdminAnalyticsOverview(request, env) {
       limit 30
     `).bind(sinceIso).all(),
     env.DB.prepare(`
+      select
+        article_view_events.article_id,
+        article_view_events.slug,
+        articles.category,
+        coalesce(zh.title, article_view_events.slug) as title,
+        count(*) as pv,
+        count(distinct article_view_events.visitor_id) as uv,
+        max(article_view_events.created_at) as last_seen_at
+      from article_view_events
+      left join articles on articles.article_id = article_view_events.article_id
+      left join article_translations zh
+        on zh.article_id = article_view_events.article_id and zh.lang = 'zh'
+      where article_view_events.created_at >= ?
+      group by article_view_events.article_id, article_view_events.slug, articles.category, zh.title
+      order by pv desc, uv desc
+      limit 30
+    `).bind(sinceIso).all(),
+    env.DB.prepare(`
       select target_key, target_text, tag_name, data_route, path, count(*) as clicks, count(distinct visitor_id) as uv,
              max(created_at) as last_seen_at
       from analytics_click_events
@@ -797,6 +889,7 @@ async function getAdminAnalyticsOverview(request, env) {
     countries: countryRows.results || [],
     regions: regionRows.results || [],
     topPages: topPages.results || [],
+    topArticles: topArticles.results || [],
     topClicks: topClicks.results || [],
     recentViews: recentViews.results || [],
     recentClicks: recentClicks.results || []
@@ -1144,13 +1237,35 @@ async function ensureAnalyticsSchema(env) {
         created_at text not null
       )
     `),
+    env.DB.prepare(`
+      create table if not exists article_view_events (
+        event_id text primary key,
+        article_id text not null,
+        slug text not null,
+        lang text not null default 'zh',
+        visitor_id text not null,
+        country text not null default '',
+        region text not null default '',
+        city text not null default '',
+        timezone text not null default '',
+        colo text not null default '',
+        latitude real,
+        longitude real,
+        ip_hash text not null default '',
+        ip_prefix text not null default '',
+        created_at text not null
+      )
+    `),
     env.DB.prepare("create index if not exists site_visitors_last_seen_idx on site_visitors(last_seen_at)"),
     env.DB.prepare("create index if not exists analytics_page_views_created_idx on analytics_page_views(created_at)"),
     env.DB.prepare("create index if not exists analytics_page_views_visitor_idx on analytics_page_views(visitor_id, created_at)"),
     env.DB.prepare("create index if not exists analytics_page_views_geo_idx on analytics_page_views(country, region, city, created_at)"),
     env.DB.prepare("create index if not exists analytics_click_events_created_idx on analytics_click_events(created_at)"),
     env.DB.prepare("create index if not exists analytics_click_events_target_idx on analytics_click_events(target_key, created_at)"),
-    env.DB.prepare("create index if not exists analytics_click_events_visitor_idx on analytics_click_events(visitor_id, created_at)")
+    env.DB.prepare("create index if not exists analytics_click_events_visitor_idx on analytics_click_events(visitor_id, created_at)"),
+    env.DB.prepare("create index if not exists article_view_events_article_idx on article_view_events(article_id, created_at)"),
+    env.DB.prepare("create index if not exists article_view_events_slug_idx on article_view_events(slug, created_at)"),
+    env.DB.prepare("create index if not exists article_view_events_visitor_idx on article_view_events(visitor_id, created_at)")
   ]);
   analyticsSchemaReady = true;
 }
