@@ -12,6 +12,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 修改网站代码、样式、文案、图片、游戏区、聊天室、账号、云存档或后端接口。
 - 修改 `PROJECT_CONTEXT.md`、`CHANGELOG.md`、README、部署说明或维护规则。
 - 新增游戏、页面、窗口、图标、弹窗、任务栏入口或长期注意事项。
+- 如果任务涉及 `/admin/` 管理后台、后台样式、后台脚本、后台权限、后台 API、后台统计、后台视频管理、后台聊天室治理或后台专用文档，必须同时读取 `admin/docs/ADMIN_PROJECT_CONTEXT.md`、`admin/docs/ADMIN_SKILL.md` 和 `admin/docs/ADMIN_CHANGELOG.md`，并以后台专用 Skill 约束为准处理后台细节。
 
 ## 每次改动必须执行
 
@@ -19,6 +20,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 项目信息变化时，必须同步更新 `PROJECT_CONTEXT.md`，保持项目背景、技术栈、部署方式、主要功能、文件结构和本地开发方式准确。
 - 新增长期注意事项、维护规则、踩坑点或约束时，必须同步补充到本 Skill。
 - 本 Skill 规则变化时，必须同步更新 `skills/lusu-personal-site-skill/README.md`。
+- 后台专用文档或后台维护规则变化时，必须同步更新 `admin/docs/ADMIN_PROJECT_CONTEXT.md`、`admin/docs/ADMIN_SKILL.md` 或 `admin/docs/ADMIN_CHANGELOG.md` 中对应内容；不要把后台私有规则只写在主站文档里。
 - 用户明确要求“只改文档”时，只修改文档文件，不改网站代码、样式、功能或资源。
 - 用户明确要求“只美化 / 不动功能”时，只改视觉层文件，避免修改路由、登录、渲染数据、游戏加载、聊天室接口等功能逻辑。
 
@@ -127,6 +129,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 
 ## 管理后台与埋点规则
 
+- 凡是后台相关改动，先读取 `admin/docs/ADMIN_PROJECT_CONTEXT.md` 和 `admin/docs/ADMIN_SKILL.md`；需要了解后台私有历史时再读 `admin/docs/ADMIN_CHANGELOG.md`。不要只依赖主站 `PROJECT_CONTEXT.md` 或本 Skill 推断后台细节。
 - 管理后台入口固定为 `/admin/`，后台静态页面、样式、脚本应放在 `admin/` 目录，不要混进主站首页窗口、主站 CSS 或主站三语内容体系。
 - 后台只需要中文文案；后台项目介绍和后台更新记录必须单独维护在后台内，不写入主站知识库 `site-updates`，也不要在首页最近更新里公开展示。
 - `/admin/*` 必须通过 Pages Functions middleware 校验主站 `lusu_session`，只有 `users.role = admin` 的站长账号可以访问；所有 `/api/admin/*` 也必须继续做服务端 admin 校验。
@@ -211,6 +214,9 @@ $env:XDG_CONFIG_HOME='F:\lusu575个人站\.wrangler-config'; npx.cmd wrangler pa
   - `admin/index.html`
   - `admin/admin.css`
   - `admin/admin.js`
+  - `admin/docs/ADMIN_PROJECT_CONTEXT.md`
+  - `admin/docs/ADMIN_SKILL.md`
+  - `admin/docs/ADMIN_CHANGELOG.md`
   - `functions/admin/_middleware.js`
   - `functions/api/[[route]].js`
   - `js/telemetry.js`

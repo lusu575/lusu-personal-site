@@ -341,7 +341,11 @@ D1 表：`anonymous_chat_messages`
 ├── admin/
 │   ├── index.html
 │   ├── admin.css
-│   └── admin.js
+│   ├── admin.js
+│   └── docs/
+│       ├── ADMIN_PROJECT_CONTEXT.md
+│       ├── ADMIN_SKILL.md
+│       └── ADMIN_CHANGELOG.md
 ├── cloudflare/
 │   ├── README.md
 │   └── schema.sql
@@ -430,6 +434,16 @@ PowerShell 注意：
 skills/lusu-personal-site-skill/SKILL.md
 skills/lusu-personal-site-skill/README.md
 ```
+
+管理后台有单独的专用文档和 Skill。凡是修改 `/admin/` 页面、后台样式、后台脚本、后台权限、后台 API、后台统计、后台视频管理、后台聊天室治理或后台专用文档，必须额外先读取：
+
+```text
+admin/docs/ADMIN_PROJECT_CONTEXT.md
+admin/docs/ADMIN_SKILL.md
+admin/docs/ADMIN_CHANGELOG.md
+```
+
+这些后台文档只服务管理后台，不等同于主站 `PROJECT_CONTEXT.md`、根目录 `CHANGELOG.md` 或主站项目 Skill；后台私有更新仍不得写入主站知识库 `site-updates`。
 
 该 Skill 覆盖以下内容：
 

@@ -1,0 +1,97 @@
+---
+name: 鲁肃个人站管理后台专用 Skill
+description: 维护鲁肃个人站 `/admin/` 管理后台时使用。只适用于后台页面、后台样式、后台脚本、后台权限、后台 API、后台统计、后台视频管理、后台聊天室治理和后台专用文档；不要把它误当成主站总 Skill。
+---
+
+# 鲁肃个人站管理后台专用 Skill
+
+> 管理后台专用说明：本 Skill 只约束 `/admin/` 管理后台维护工作，不等同于主站 `skills/lusu-personal-site-skill/SKILL.md`。维护主站首页、知识库公开展示、游戏区、聊天室公开侧、首页壁纸或三语主站文案时，仍必须读取主站 Skill。
+
+## 使用时机
+
+- 修改 `admin/index.html`、`admin/admin.css`、`admin/admin.js`。
+- 修改 `functions/admin/_middleware.js`。
+- 修改 `/api/admin/*` 后台接口、后台权限、后台统计、后台文章管理、后台视频管理、后台视频分类管理或后台聊天室治理。
+- 修改后台专用文档：`admin/docs/ADMIN_PROJECT_CONTEXT.md`、`admin/docs/ADMIN_SKILL.md`、`admin/docs/ADMIN_CHANGELOG.md`。
+- 修改后台页面内“后台项目介绍”或后台私有更新记录。
+
+## 文档边界
+
+- 后台专用上下文写入 `admin/docs/ADMIN_PROJECT_CONTEXT.md`。
+- 后台专用规则和注意事项写入 `admin/docs/ADMIN_SKILL.md`。
+- 后台专用更新记录写入 `admin/docs/ADMIN_CHANGELOG.md`。
+- 根目录 `PROJECT_CONTEXT.md` 只保留全站总事实和后台索引，不复制后台细节。
+- 根目录 `CHANGELOG.md` 只记录项目级变更；后台私有细节优先写入 `admin/docs/ADMIN_CHANGELOG.md`。
+- 后台私有更新不得写入主站知识库 `site-updates`，也不得加入 `js/main.js` 的首页最近更新 fallback。
+
+## 改动边界
+
+- 后台静态页面、样式、脚本必须放在 `admin/`。
+- 后台访问拦截必须放在 `functions/admin/_middleware.js`。
+- 后台服务端接口必须继续使用 `/api/admin/*`。
+- 不要把后台组件混进主站首页窗口、主站 CSS、主站桌面图标或主站三语内容体系。
+- 用户明确要求“只做后台文档”时，只修改 `admin/docs/`、根目录 `CHANGELOG.md` 和必要 README 索引，不改功能代码。
+- 用户明确要求“只美化后台”时，只改 `admin/admin.css` 和必要的后台 HTML class/结构，不改 API、权限、数据写入或主站逻辑。
+
+## 后台文案和界面
+
+- 后台只使用中文文案。
+- 后台视觉可以保留轻量 Windows XP / 像素风元素，但要优先服务管理效率和可读性。
+- 后台不需要主站中文 / English / 日本語 三语切换。
+- 后台表格、表单、按钮、状态、空状态和错误提示必须清楚，不隐藏真实失败原因。
+- 移动端后台需要保持可读、可滚动、无横向溢出；侧边栏和编辑区不能卡死。
+
+## 权限和安全
+
+- `/admin/*` 必须由 `functions/admin/_middleware.js` 校验 `lusu_session` 和 `users.role = admin`。
+- 所有 `/api/admin/*` 必须继续在服务端调用 `requireAdmin`，不得只依赖前端隐藏入口。
+- 普通登录用户不能读取后台静态资源、后台 API 数据、后台统计、后台聊天审计或后台视频管理数据。
+- 后台 API 错误应返回 JSON，方便前端显示真实原因。
+- 不得新增绕过 admin 权限的调试接口、临时接口或公开管理接口。
+
+## 隐私和埋点
+
+- 后台不得记录输入框内容、密码、文章草稿、后台表单内容或未发送聊天内容。
+- IP 信息只保留 hash、掩码前缀和 Cloudflare 地理聚合字段，不展示完整明文 IP。
+- 后台访客识别使用 HttpOnly `lusu_visitor` 对应的隐藏 visitor id；前台公开 UI 和公开 API 不展示该 ID。
+- 聊天室前台 client id 只用于“我的消息”显示；后台禁言和审计使用隐藏 visitor id 或 IP hash。
+- 聊天室昵称和消息在后台展示、编辑和保存时仍要保持纯文本安全，不把用户内容当 HTML 执行。
+
+## 文章管理
+
+- 后台文章编辑可以按当前选择语言显示单个语言面板。
+- 保存和发布正式文章时必须一次性提交 zh / en / ja 三种标题与正文。
+- 文章发布时间在后台编辑器显示管理员本地时间，保存前转换为 UTC ISO；后端必须再次规范化 `published_at`。
+- 文章 PV/UV 以服务端 `article_view_events` 为准，不要只依赖前端页面级 PV。
+- 后台文章管理接口必须继续要求 admin 权限。
+
+## 视频管理
+
+- 后台视频链接只支持 YouTube、youtu.be、Bilibili、b23.tv 白名单来源。
+- 视频链接必须由服务端解析，并由服务端生成规范化 `embed_url`。
+- 前台和后台 iframe `src` 只能使用服务端规范化后的 `embed_url`，不得直接信任管理员输入 URL。
+- YouTube / Bilibili 元数据只在后台预览、保存或刷新时抓取，并缓存到 D1；公开视频访问不得每次重新抓取。
+- “全部”视频分类只由前台生成，不写入 `video_categories`。
+- 删除视频分类前要考虑已有视频关联，避免破坏公开视频筛选。
+
+## 聊天室管理
+
+- 后台可编辑、隐藏/恢复、删除聊天消息。
+- 后台可按隐藏 visitor id 或 IP hash 禁言。
+- 公开聊天室接口仍必须保持纯文本渲染、长度限制和频率限制。
+- 禁言原因和禁言时长属于后台治理信息，不公开给普通访客。
+
+## 缓存和版本
+
+- 修改 `admin/admin.css` 后，必须更新 `admin/index.html` 中 CSS query。
+- 修改 `admin/admin.js` 后，必须更新 `admin/index.html` 中 JS query。
+- 如果同时修改主站 `js/main.js`、`css/style.css` 或强视觉资源，还要按主站 Skill 更新 `index.html` query。
+- 后台文档更新不需要改后台资源 query。
+
+## 每次后台改动后的检查
+
+- 后台功能或样式变更后运行 `npm.cmd run build`。
+- 文档变更后检查 `admin/docs/` 标题和首段是否明确写着“管理后台专用 / 不等同于主站文档”。
+- 搜索确认后台私有更新没有写进 `site-updates` seed、`js/main.js` fallback 最近更新或公开知识库。
+- 检查根目录 `CHANGELOG.md` 只记录项目级摘要，后台细节写入 `admin/docs/ADMIN_CHANGELOG.md`。
+

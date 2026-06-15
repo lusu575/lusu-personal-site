@@ -4,6 +4,15 @@
 
 ## 2026-06-15
 
+- 主站文档补充后台文档指引：
+  - 在 `PROJECT_CONTEXT.md` 的项目结构和 Skill 索引中补充 `admin/docs/` 后台专用文档入口。
+  - 在主站项目 Skill 和 Skill README 中新增规则：凡是管理后台相关改动，必须额外读取 `admin/docs/ADMIN_PROJECT_CONTEXT.md`、`admin/docs/ADMIN_SKILL.md`，必要时读取 `admin/docs/ADMIN_CHANGELOG.md`。
+
+- 管理后台专用文档包：
+  - 新增 `admin/docs/ADMIN_PROJECT_CONTEXT.md`、`admin/docs/ADMIN_SKILL.md` 和 `admin/docs/ADMIN_CHANGELOG.md`，单独记录 `/admin/` 后台上下文、维护约束和私有更新记录。
+  - 根目录 README 补充后台专用文档索引，明确后台文档不等同于主站 `PROJECT_CONTEXT.md`、根目录 `CHANGELOG.md` 或主站项目 Skill。
+  - 本次仅做文档体系拆分，不改后台功能、样式、接口、D1 schema，也不写入主站知识库 `site-updates`。
+
 - 知识库接口 500 修复：
   - 修复视频系统更新 seed 文案中的 Markdown 反引号未转义问题，避免 Pages Function 执行 `articleSeedStatements` 时把 `/api/videos` 片段误当成 JavaScript 表达式并抛出 `api is not defined`，导致 `/api/articles` 返回 500。
   - `npm run build` 新增模拟 `/api/articles?lang=zh` 请求的运行时检查，即使没有真实 D1 也会执行文章 seed 路径，防止类似“语法检查通过、线上运行失败”的问题再次漏掉。
