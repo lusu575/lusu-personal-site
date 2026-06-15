@@ -1,5 +1,6 @@
 {
   "scripts": {
+    "build": "node scripts/build-check.mjs",
     "dev": "wrangler pages dev . --d1 DB=lusu_personal_site",
     "d1:create": "wrangler d1 create lusu_personal_site",
     "d1:migrate:local": "wrangler d1 execute lusu_personal_site --local --file=cloudflare/schema.sql",

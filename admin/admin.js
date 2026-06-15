@@ -23,6 +23,11 @@ const panelMeta = {
 const adminUpdates = [
   {
     date: "2026-06-15",
+    title: "后台视觉优化第一版",
+    body: "完成保守型后台视觉优化：统一侧边栏、顶部栏、卡片、按钮、表格、状态标签、空状态和移动端布局，后台更新记录继续独立于主站网站更新记录。"
+  },
+  {
+    date: "2026-06-15",
     title: "文章访问 PV/UV 统计",
     body: "文章详情接口新增服务端访问事件记录，后台大屏新增热门文章表，文章列表和编辑详情显示每篇文章的总 PV/UV 与今日 PV/UV。"
   },
@@ -96,6 +101,27 @@ function formatTime(value) {
     minute: "2-digit",
     second: "2-digit"
   }).format(date);
+}
+
+function emptyState(text) {
+  return `<div class="empty-state">${escapeHtml(text)}</div>`;
+}
+
+function emptyRow(colspan, text) {
+  return `<tr><td colspan="${colspan}"><span class="empty-inline">${escapeHtml(text)}</span></td></tr>`;
+}
+
+function statusBadge(text, tone = "neutral") {
+  return `<span class="status-badge ${escapeHtml(tone)}">${escapeHtml(text)}</span>`;
+}
+
+function articleStatusLabel(status) {
+  const labels = {
+    draft: "草稿",
+    published: "已发布",
+    archived: "已归档"
+  };
+  return labels[status] || status || "未知";
 }
 
 function setStatus(text) {
@@ -195,7 +221,7 @@ function renderBars(container, rows, labelKey) {
         <div class="bar-label">${escapeHtml(label)}</div>
       </div>
     `;
-  }).join("") || `<p class="muted">暂无数据</p>`;
+  }).join("") || emptyState("暂无图表数据");
 }
 
 function renderMap(rows) {
@@ -238,7 +264,7 @@ function renderTopPages(rows) {
       <td>${formatNumber(row.uv)}</td>
       <td>${formatTime(row.last_seen_at)}</td>
     </tr>
-  `).join("") || `<tr><td colspan="4">暂无数据</td></tr>`;
+  `).join("") || emptyRow(4, "暂无热门页面数据");
 }
 
 function renderTopArticles(rows) {
@@ -249,7 +275,7 @@ function renderTopArticles(rows) {
       <td>${formatNumber(row.uv)}</td>
       <td>${formatTime(row.last_seen_at)}</td>
     </tr>
-  `).join("") || `<tr><td colspan="4">暂无数据</td></tr>`;
+  `).join("") || emptyRow(4, "暂无热门文章数据");
 }
 
 function renderVisitTables() {
@@ -261,7 +287,7 @@ function renderVisitTables() {
       <td>${formatNumber(row.uv)}</td>
       <td>${formatTime(row.last_seen_at)}</td>
     </tr>
-  `).join("") || `<tr><td colspan="4">暂无数据</td></tr>`;
+  `).join("") || emptyRow(4, "暂无国家来源数据");
 
   $("#region-table").innerHTML = (overview.regions || []).map((row) => {
     const place = [row.country || "未知", row.region, row.city].filter(Boolean).join(" / ");
@@ -274,7 +300,7 @@ function renderVisitTables() {
         <td>${formatTime(row.last_seen_at)}</td>
       </tr>
     `;
-  }).join("") || `<tr><td colspan="5">暂无数据</td></tr>`;
+  }).join("") || emptyRow(5, "暂无地区来源数据");
 }
 
 function renderClickPanels() {
@@ -287,14 +313,14 @@ function renderClickPanels() {
       <td>${formatNumber(row.uv)}</td>
       <td>${formatTime(row.last_seen_at)}</td>
     </tr>
-  `).join("") || `<tr><td colspan="5">暂无数据</td></tr>`;
+  `).join("") || emptyRow(5, "暂无点击热点数据");
 
   $("#recent-clicks").innerHTML = (overview.recentClicks || []).map((row) => `
     <article class="event-item">
       <strong>${escapeHtml(row.target_text || row.target_key || row.tag_name || "未知点击")}</strong>
       <small>${formatTime(row.created_at)} · ${escapeHtml(row.path || "")} · ${escapeHtml([row.country, row.region, row.city].filter(Boolean).join(" / "))}</small>
     </article>
-  `).join("") || `<p class="muted">暂无点击事件</p>`;
+  `).join("") || emptyState("暂无点击事件");
 }
 
 async function loadArticles() {
@@ -306,10 +332,15 @@ async function loadArticles() {
 function renderArticleList() {
   $("#article-list").innerHTML = state.articles.map((article) => `
     <button class="list-item ${article.article_id === state.selectedArticleId ? "active" : ""}" type="button" data-article-id="${escapeHtml(article.article_id)}">
-      <strong>${escapeHtml(article.slug)}</strong>
-      <small>${escapeHtml(article.category)} · ${escapeHtml(article.status)} · ${article.translation_count || 0}/3 · PV ${formatNumber(article.article_pv)} / UV ${formatNumber(article.article_uv)} · ${formatTime(article.updated_at)}</small>
+      <span class="list-title">${escapeHtml(article.slug)}</span>
+      <span class="list-meta">
+        ${statusBadge(articleStatusLabel(article.status), article.status || "neutral")}
+        ${statusBadge(`${article.translation_count || 0}/3 语种`, Number(article.translation_count || 0) >= 3 ? "visible" : "warning")}
+        ${statusBadge(article.category || "未分类", "neutral")}
+      </span>
+      <span class="list-subtle">PV ${formatNumber(article.article_pv)} / UV ${formatNumber(article.article_uv)} · 更新 ${formatTime(article.updated_at)}</span>
     </button>
-  `).join("") || `<p class="muted">暂无文章</p>`;
+  `).join("") || emptyState("暂无文章，点击右上角“新建”开始。");
 }
 
 async function selectArticle(articleId) {
@@ -420,11 +451,15 @@ async function loadChatMessages() {
 function renderChatMessages() {
   $("#chat-list").innerHTML = state.chatMessages.map((message) => `
     <button class="list-item ${message.message_id === state.selectedMessageId ? "active" : ""}" type="button" data-message-id="${escapeHtml(message.message_id)}">
-      <strong>${escapeHtml(message.nickname)} ${Number(message.hidden) ? "（隐藏）" : ""}</strong>
-      <small>${escapeHtml(message.content)}</small>
-      <small>${formatTime(message.created_at)} · ${escapeHtml([message.country, message.region, message.city].filter(Boolean).join(" / "))}</small>
+      <span class="list-title">${escapeHtml(message.nickname)}</span>
+      <span class="list-meta">
+        ${Number(message.hidden) ? statusBadge("已隐藏", "hidden") : statusBadge("可见", "visible")}
+        ${statusBadge([message.country, message.region, message.city].filter(Boolean).join(" / ") || "未知来源", "neutral")}
+      </span>
+      <span class="list-subtle">${escapeHtml(message.content)}</span>
+      <span class="list-subtle">${formatTime(message.created_at)}</span>
     </button>
-  `).join("") || `<p class="muted">暂无聊天记录</p>`;
+  `).join("") || emptyState("暂无聊天记录");
 }
 
 function selectChatMessage(messageId) {
@@ -522,12 +557,15 @@ async function loadBans() {
 function renderBans() {
   $("#ban-list").innerHTML = state.bans.map((ban) => `
     <article class="ban-item">
-      <strong>${ban.active ? "生效中" : "已停用"} · ${escapeHtml(ban.ban_type)}</strong>
+      <div class="list-meta">
+        ${statusBadge(ban.active ? "生效中" : "已停用", ban.active ? "active" : "off")}
+        ${statusBadge(ban.ban_type, "neutral")}
+      </div>
       <small>${escapeHtml(ban.visitor_id || ban.ip_prefix || ban.ip_hash)} · ${escapeHtml(ban.reason || "")}</small>
       <small>${formatTime(ban.created_at)}${ban.expires_at ? ` 到 ${formatTime(ban.expires_at)}` : " · 长期"}</small>
       ${ban.active ? `<button class="xp-button" type="button" data-disable-ban="${escapeHtml(ban.ban_id)}">停用</button>` : ""}
     </article>
-  `).join("") || `<p class="muted">暂无禁言记录</p>`;
+  `).join("") || emptyState("暂无禁言记录");
 }
 
 async function disableBan(banId) {
