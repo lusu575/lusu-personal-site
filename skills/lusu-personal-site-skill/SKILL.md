@@ -111,7 +111,9 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 不要新增自动翻译 API、翻译按钮、`translate` 或 `retranslate` 管理接口。
 - 前台文章列表和详情必须按当前网站语言请求：`/api/articles?lang=zh|en|ja` 和 `/api/articles/:slug?lang=zh|en|ja`。
 - 文章读取 fallback 顺序为：当前语言 -> 中文 `zh` -> 任意已有语言。
+- 文章详情公开地址使用 `/articles/<slug>`，必须能通过 `https://lusu575.com/articles/<slug>` 直接分享和恢复单篇文章详情；内部 `article_id` 只用于数据库和后台管理，不能在公开链接或公开 API 中外显。旧的 `#knowledge/article/<slug>` 只作为兼容入口保留。
 - 文章正文使用 Markdown 保存；前端渲染必须防 XSS，不能把未经处理的 Markdown 或 HTML 直接作为 `innerHTML` 插入页面。
+- 文章正文可以使用安全的基础 Markdown、有序/无序列表、blockquote、`text` 代码块蓝色说明框和 `assets/images/articles/` 下的白名单文章图片；新增文章图片必须复制到项目资源目录，不要引用本机临时路径。
 - 后台文章管理接口必须要求登录用户 `role = admin`；普通登录用户不能新建、编辑、删除或发布文章。
 - 每次合并代码、上线功能或做可见更新时，必须在知识库 `site-updates`（网站更新记录）分类发布一篇真实文章。
 - 网站更新记录文章必须同时写入 zh / en / ja，包含主标题、简短简介和正文；正文要概括本次更新内容。

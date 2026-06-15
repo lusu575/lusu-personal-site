@@ -718,7 +718,6 @@ async function getSession(request, env) {
 
 function publicArticleRow(row, includeContent = false) {
   const article = {
-    article_id: row.article_id,
     slug: row.slug,
     category: row.category,
     tags: parseTags(row.tags),
@@ -838,6 +837,115 @@ function articleTranslationsStatements(env, articleId, translations, now) {
     now,
     now
   ));
+}
+
+function articleMarkdownReplaceStatements(env, articleId, lang, replacements, now) {
+  return replacements.map(([needle, replacement]) => env.DB.prepare(`
+    update article_translations
+    set content_markdown = replace(content_markdown, ?, ?),
+        updated_at = ?
+    where article_id = ?
+      and lang = ?
+      and instr(content_markdown, ?) > 0
+  `).bind(needle, replacement, now, articleId, lang, needle));
+}
+
+function aiAgentWorkflowArticleMediaStatements(env, now) {
+  const articleId = "seed-ai-agent-workflow-guide-2026-06-14";
+  const media = {
+    zh: [
+      [
+        "这不是“一句话让 AI 变出网站”，而是一个更实用的流程：人负责判断，AI 放大执行。\n\n## 1. AI 的基础原理：它本质上是在预测下一个 Token",
+        "这不是“一句话让 AI 变出网站”，而是一个更实用的流程：人负责判断，AI 放大执行。\n\n![Codex 把一次网站更新拆成待办、执行和验收记录](assets/images/articles/ai-agent-codex-update-thread.png)\n\n## 1. AI 的基础原理：它本质上是在预测下一个 Token"
+      ],
+      [
+        "换线程不是为了重新开始，而是为了让 AI 的上下文变干净。\n\n## 3. Agent 的工作原理",
+        "换线程不是为了重新开始，而是为了让 AI 的上下文变干净。\n\n![给 Codex 的项目背景、目标、范围和验收标准示例](assets/images/articles/ai-agent-codex-project-brief.png)\n\n## 3. Agent 的工作原理"
+      ],
+      [
+        "GitHub：托管代码和协作的平台。仓库是项目文件夹，commit 是一次保存记录，branch 是分支，PR 是把分支合并回主线前的审查申请。\n\n## 5. 最好用的提示词公式",
+        "GitHub：托管代码和协作的平台。仓库是项目文件夹，commit 是一次保存记录，branch 是分支，PR 是把分支合并回主线前的审查申请。\n\n![先用对话型 AI 把模糊需求整理成项目上下文](assets/images/articles/ai-agent-gpt-project-context.png)\n\n## 5. 最好用的提示词公式"
+      ],
+      [
+        "AI 不是怕任务难，是怕你让它猜。\n\n## 6. 使用 AI 的实战技巧",
+        "AI 不是怕任务难，是怕你让它猜。\n\n![把随口需求压缩成可执行提示词，再交给 Agent](assets/images/articles/ai-agent-gpt-chatroom-prompt.png)\n\n## 6. 使用 AI 的实战技巧"
+      ]
+    ],
+    en: [
+      [
+        "This is not “one sentence creates a website.” The practical workflow is: humans judge, AI multiplies execution.\n\n## 1. The Basic Principle: AI Predicts the Next Token",
+        "This is not “one sentence creates a website.” The practical workflow is: humans judge, AI multiplies execution.\n\n![Codex turns one site update into tasks, execution, and acceptance notes](assets/images/articles/ai-agent-codex-update-thread.png)\n\n## 1. The Basic Principle: AI Predicts the Next Token"
+      ],
+      [
+        "Switching threads is not starting over. It keeps the AI context clean.\n\n## 3. How an Agent Works",
+        "Switching threads is not starting over. It keeps the AI context clean.\n\n![A project handoff example for Codex: context, goals, scope, and checks](assets/images/articles/ai-agent-codex-project-brief.png)\n\n## 3. How an Agent Works"
+      ],
+      [
+        "GitHub: a platform for hosting code and collaborating. A repository is the project folder, a commit is a saved change, a branch is a separate work line, and a PR is a review request before merging work back into the main line.\n\n## 5. The Prompt Formula I Use Most",
+        "GitHub: a platform for hosting code and collaborating. A repository is the project folder, a commit is a saved change, a branch is a separate work line, and a PR is a review request before merging work back into the main line.\n\n![Use chat AI first to turn vague requirements into project context](assets/images/articles/ai-agent-gpt-project-context.png)\n\n## 5. The Prompt Formula I Use Most"
+      ],
+      [
+        "AI is not afraid of hard work. It is afraid of guessing.\n\n## 6. Practical AI Techniques",
+        "AI is not afraid of hard work. It is afraid of guessing.\n\n![Compress a rough request into an executable prompt before handing it to an Agent](assets/images/articles/ai-agent-gpt-chatroom-prompt.png)\n\n## 6. Practical AI Techniques"
+      ]
+    ],
+    ja: [
+      [
+        "これは「一文で AI がサイトを作る」という話ではありません。実用的な流れは、人が判断し、AI が実行を増幅する、ということです。\n\n## 1. AI の基本原理：次の Token を予測している",
+        "これは「一文で AI がサイトを作る」という話ではありません。実用的な流れは、人が判断し、AI が実行を増幅する、ということです。\n\n![Codex が一つのサイト更新をタスク、実行、確認記録に分ける例](assets/images/articles/ai-agent-codex-update-thread.png)\n\n## 1. AI の基本原理：次の Token を予測している"
+      ],
+      [
+        "スレッドを替えるのは、最初からやり直すためではありません。AI の文脈をきれいに保つためです。\n\n## 3. Agent の動き方",
+        "スレッドを替えるのは、最初からやり直すためではありません。AI の文脈をきれいに保つためです。\n\n![Codex に渡すプロジェクト背景、目標、範囲、確認基準の例](assets/images/articles/ai-agent-codex-project-brief.png)\n\n## 3. Agent の動き方"
+      ],
+      [
+        "GitHub：コードを置き、共同作業するためのプラットフォームです。repository はプロジェクトフォルダ、commit は保存記録、branch は作業分岐、PR は main に戻す前のレビュー依頼です。\n\n## 5. 一番よく使う Prompt 公式",
+        "GitHub：コードを置き、共同作業するためのプラットフォームです。repository はプロジェクトフォルダ、commit は保存記録、branch は作業分岐、PR は main に戻す前のレビュー依頼です。\n\n![まず対話型 AI で曖昧な要望をプロジェクト文脈に整理する例](assets/images/articles/ai-agent-gpt-project-context.png)\n\n## 5. 一番よく使う Prompt 公式"
+      ],
+      [
+        "AI は難しいタスクが苦手なのではありません。推測させられるのが苦手です。\n\n## 6. AI 活用の実践テクニック",
+        "AI は難しいタスクが苦手なのではありません。推測させられるのが苦手です。\n\n![ざっくりした依頼を Agent に渡せる実行用プロンプトへ圧縮する例](assets/images/articles/ai-agent-gpt-chatroom-prompt.png)\n\n## 6. AI 活用の実践テクニック"
+      ]
+    ]
+  };
+
+  return Object.entries(media).flatMap(([lang, replacements]) => (
+    articleMarkdownReplaceStatements(env, articleId, lang, replacements, now)
+  ));
+}
+
+function aiAgentWorkflowArticleHeadingMediaStatements(env, now) {
+  const articleId = "seed-ai-agent-workflow-guide-2026-06-14";
+  const media = {
+    zh: [
+      ["## 1. AI 的基础原理：它本质上是在预测下一个 Token", "![Codex 把一次网站更新拆成待办、执行和验收记录](assets/images/articles/ai-agent-codex-update-thread.png)", "ai-agent-codex-update-thread.png"],
+      ["## 3. Agent 的工作原理", "![给 Codex 的项目背景、目标、范围和验收标准示例](assets/images/articles/ai-agent-codex-project-brief.png)", "ai-agent-codex-project-brief.png"],
+      ["## 5. 最好用的提示词公式", "![先用对话型 AI 把模糊需求整理成项目上下文](assets/images/articles/ai-agent-gpt-project-context.png)", "ai-agent-gpt-project-context.png"],
+      ["## 6. 使用 AI 的实战技巧", "![把随口需求压缩成可执行提示词，再交给 Agent](assets/images/articles/ai-agent-gpt-chatroom-prompt.png)", "ai-agent-gpt-chatroom-prompt.png"]
+    ],
+    en: [
+      ["## 1. The Basic Principle: AI Predicts the Next Token", "![Codex turns one site update into tasks, execution, and acceptance notes](assets/images/articles/ai-agent-codex-update-thread.png)", "ai-agent-codex-update-thread.png"],
+      ["## 3. How an Agent Works", "![A project handoff example for Codex: context, goals, scope, and checks](assets/images/articles/ai-agent-codex-project-brief.png)", "ai-agent-codex-project-brief.png"],
+      ["## 5. The Prompt Formula I Use Most", "![Use chat AI first to turn vague requirements into project context](assets/images/articles/ai-agent-gpt-project-context.png)", "ai-agent-gpt-project-context.png"],
+      ["## 6. Practical AI Techniques", "![Compress a rough request into an executable prompt before handing it to an Agent](assets/images/articles/ai-agent-gpt-chatroom-prompt.png)", "ai-agent-gpt-chatroom-prompt.png"]
+    ],
+    ja: [
+      ["## 1. AI の基本原理：次の Token を予測している", "![Codex が一つのサイト更新をタスク、実行、確認記録に分ける例](assets/images/articles/ai-agent-codex-update-thread.png)", "ai-agent-codex-update-thread.png"],
+      ["## 3. Agent の動き方", "![Codex に渡すプロジェクト背景、目標、範囲、確認基準の例](assets/images/articles/ai-agent-codex-project-brief.png)", "ai-agent-codex-project-brief.png"],
+      ["## 5. 一番よく使う Prompt 公式", "![まず対話型 AI で曖昧な要望をプロジェクト文脈に整理する例](assets/images/articles/ai-agent-gpt-project-context.png)", "ai-agent-gpt-project-context.png"],
+      ["## 6. AI 活用の実践テクニック", "![ざっくりした依頼を Agent に渡せる実行用プロンプトへ圧縮する例](assets/images/articles/ai-agent-gpt-chatroom-prompt.png)", "ai-agent-gpt-chatroom-prompt.png"]
+    ]
+  };
+
+  return Object.entries(media).flatMap(([lang, entries]) => entries.map(([heading, image, filename]) => env.DB.prepare(`
+    update article_translations
+    set content_markdown = replace(content_markdown, ?, ?),
+        updated_at = ?
+    where article_id = ?
+      and lang = ?
+      and instr(content_markdown, ?) > 0
+      and instr(content_markdown, ?) = 0
+  `).bind(heading, `${image}\n\n${heading}`, now, articleId, lang, heading, filename)));
 }
 
 function articleSeedStatements(env) {
@@ -1583,7 +1691,8 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         view_count, created_at, updated_at, published_at
       ) values
         ('seed-ai-agent-workflow-guide-2026-06-14', 'ai-agent-workflow-guide', 'ai', '["AI","Agent","Codex","经验"]', '', 'published', 1, 0, '2026-06-14T15:00:00.000Z', '2026-06-14T15:00:00.000Z', '2026-06-14T15:00:00.000Z'),
-        ('seed-update-2026-06-14-ai-agent-article', '2026-06-14-ai-agent-article', 'site-updates', '["网站更新","AI","文章"]', '', 'published', 0, 0, '2026-06-14T15:01:00.000Z', '2026-06-14T15:01:00.000Z', '2026-06-14T15:01:00.000Z')
+        ('seed-update-2026-06-14-ai-agent-article', '2026-06-14-ai-agent-article', 'site-updates', '["网站更新","AI","文章"]', '', 'published', 0, 0, '2026-06-14T15:01:00.000Z', '2026-06-14T15:01:00.000Z', '2026-06-14T15:01:00.000Z'),
+        ('seed-update-2026-06-14-article-reading-links', '2026-06-14-article-reading-links', 'site-updates', '["网站更新","知识库","文章"]', '', 'published', 0, 0, '2026-06-14T16:20:00.000Z', '2026-06-14T16:20:00.000Z', '2026-06-14T16:20:00.000Z')
       on conflict(article_id) do update set
         slug = excluded.slug,
         category = excluded.category,
@@ -1611,6 +1720,8 @@ This update swaps the four home wallpapers used by the live page to higher-resol
                "content_markdown":  "# 質問から公開まで：普通の人が AI Agent で実行力を広げる方法\n\n\u003e 核心：AI は人を置き換えるものではなく、人の実行力を広げるものです。大事なのはコードを書けることではなく、仕事を分解し、正しく伝え、結果を確認できることです。\n\n多くの人はまだ、AI を「一問一答」の道具として使っています。それも役に立ちますが、本当に効率を変えるのは、AI を作業を前に進める Agent として使うことです。背景、目標、制約、受け入れ基準を渡すと、AI はタスクを分解し、実行し、確認し、記録する手助けをしてくれます。\n\n私が個人サイトを作る流れも同じです。まず GPT で曖昧なアイデアをサイトの位置づけ、ページ構成、ビジュアル方向、機能範囲に整理します。次に Codex を実際のプロジェクトに入れ、ファイルを読み、ルールに沿って修正、確認、記録更新を行います。最後の方向判断、範囲の取捨選択、受け入れ判断は人間が行います。\n\nこれは「一文で AI がサイトを作る」という話ではありません。実用的な流れは、人が判断し、AI が実行を増幅する、ということです。\n\n## 1. AI の基本原理：次の Token を予測している\n\n大規模モデルの回答は、ざっくり言えば「文脈から次の文字を予測する」ことです。より正確には、次の Token を予測しています。Token は文字、単語、数字、記号、コード片などです。\n\nこの理解は重要です。AI の特徴が見えてくるからです。\n\n1. AI は全知ではなく、現在の文脈に合いそうな内容を生成します。\n2. 入力が明確なほど、正しい方向に続けやすくなります。\n3. 入力が乱れているほど、重要点を取り違えやすくなります。\n4. 与えられていない事実は、推測してしまうことがあります。\n5. 会話が長くなりすぎると、重要な情報が薄まり、文脈の外に出ることがあります。\n\nつまり、AI 活用の第一原則は魔法のプロンプトではなく、文脈管理です。\n\n## 2. 長いプロジェクトをスレッド分割する理由\n\n多くの人は、一つのプロジェクトを最初から最後まで同じチャットで進めます。すると後半で AI が不安定になります。理由は単純で、古い履歴が多すぎるからです。AI は毎回、何が重要で、何が古く、何が途中案だったのかを判断しなければなりません。\n\n私の経験では、長いプロジェクトは段階ごとに分けるべきです。\n\nたとえばこう分けます。\n\n```text\n要件整理スレッド：目標、ユーザー、範囲、優先度\n設計スレッド：構成、ページ、流れ、リスク\n実行スレッド：明確なタスクを Agent に実行させる\nバグ修正スレッド：現象、再現手順、期待結果\nまとめスレッド：変更、経験、文書、次の一手\n```\n\n新しいスレッドを開くたびに、引き継ぎパックを渡します。\n\n```text\nプロジェクト背景：何のプロジェクトか\n現在の状態：完了済みと未完了\n今回の目標：今回だけで何をするか\n制約条件：変えてはいけないこと、守るルール\n関連ファイル：読むべき資料\n受け入れ基準：何ができれば完了か\n出力形式：一覧、案、コード、記事、PPT など\n```\n\nスレッドを替えるのは、最初からやり直すためではありません。AI の文脈をきれいに保つためです。\n\n## 3. Agent の動き方\n\nモデルは脳のようなものです。Agent は道具を持った作業担当者のようなものです。\n\n普通のチャットは主に回答します。Agent は許可された範囲で、ファイルを読み、ツールを呼び、コマンドを実行し、ブラウザを開き、文書を編集し、画像を作り、PPT を出力し、チェックを走らせることができます。基本的な流れはこうです。\n\n```text\nタスク理解 -\u003e 文脈読み込み -\u003e 手順作成 -\u003e ツール使用 -\u003e 結果確認 -\u003e 報告または修正継続\n```\n\nここに Codex の価値があります。Codex は「こう直せます」と言うだけではありません。プロジェクトフォルダに入り、README、PROJECT_CONTEXT、CHANGELOG、プロジェクト Skill を読み、既存ルールに沿って作業できます。\n\nただし、Agent は自動的に信頼できるわけではありません。権限、ツール、文脈、受け入れ基準が必要です。境界のない Agent は単純な問題を複雑にしがちです。受け入れ基準のない Agent は、完了したかどうかを判断できません。\n\n## 4. 知っておきたい基本概念\n\n大規模モデル：理解、推論、生成を担う中心能力です。モデルごとに得意分野は違います。パラメータ規模、学習品質、データ、ツール、推論設計が性能に影響します。大きければ必ず良いわけではありません。\n\nToken：AI が処理する基本単位です。入力や出力が長いほど、時間と費用は増えやすくなります。\n\nコンテキストウィンドウ：AI が今見られる情報範囲です。範囲外の情報は、見えていないのと同じです。\n\nPrompt：AI に渡す作業説明です。良い Prompt とは、良い引き継ぎです。\n\nRAG：検索拡張生成です。AI が指定資料を先に検索し、その資料に基づいて答えます。社内知識庫や文書 Q\u0026A に向いています。\n\n微調整：専用データでモデルを追加学習し、特定タスクに合わせる方法です。多くの小さなチームでは、まず Prompt、知識庫、作業フローを整えるほうが効果的です。\n\nTool Calling：モデルに外部ツールを呼ばせる仕組みです。検索、表、ファイル、HTTP リクエスト、ブラウザ、データベースなどを使えます。\n\nSkill：Agent 向けの専門作業手順です。ある種類のタスクについて、流れ、ルール、参考資料、スクリプトをまとめ、Codex が繰り返し安定して実行しやすくします。実務では、Skill は文書化されたプロンプトエンジニアリングです。\n\nMCP：Model Context Protocol です。AI が外部ツールや文脈につながるための標準インターフェースと考えられます。MCP により、Codex は文書、ブラウザ、Figma、GitHub などに接続できます。\n\nGit：バージョン管理ツールです。何を変更したかを記録し、戻す、比べる、共同作業することを楽にします。\n\nGitHub：コードを置き、共同作業するためのプラットフォームです。repository はプロジェクトフォルダ、commit は保存記録、branch は作業分岐、PR は main に戻す前のレビュー依頼です。\n\n## 5. 一番よく使う Prompt 公式\n\n私がよく使う形はこれです。\n\n```text\n背景 + 目標 + 現在の状態 + 制約条件 + 受け入れ基準 + 出力形式 + やらないこと\n```\n\n弱い依頼はこうです。\n\n```text\n匿名チャットを作って。\n```\n\nより良い依頼はこうです。\n\n```text\n個人サイトに軽量な匿名チャットを追加したいです。目的は訪問者が公開メッセージを残せることです。\n現在のサイトは Cloudflare Pages にデプロイされており、D1 データベースがあります。\n第一版では、公開ルーム、テキストのみ、ランダムニックネーム、ローカルでのニックネーム記憶、文字数制限、送信クールダウン、ポーリング更新だけを作ります。\n個別チャット、画像アップロード、複数ルーム、複雑な管理画面は作りません。\n受け入れ基準は、スマホと PC で送信できること、更新後もメッセージが残ること、入力がスクリプトとして実行されないこと、既存の XP ピクセル風に合うことです。\nまず案を出し、その後で最小利用可能版を実装し、プロジェクト文書も更新してください。\n```\n\nAI は難しいタスクが苦手なのではありません。推測させられるのが苦手です。\n\n## 6. AI 活用の実践テクニック\n\n第一に、先に AI に質問させます。要件が曖昧なときは、「不足情報とリスクを先に指摘し、まだ実行しないでください」と伝えます。\n\n第二に、大きな仕事を小さく分けます。「サイトを作る」は、構成、ビジュアル、ホーム、ログイン、データベース、スマホ表示、デプロイ、文書化に分けられます。一度に一つだけ任せます。\n\n第三に、やらないことを明確にします。多くのズレは、AI ができないからではなく、境界が書かれていないから起きます。\n\n第四に、受け入れチェックリストを出してもらいます。「完了後、私が確認すべき点を列挙してください」と頼むと、結果を確認しやすくなります。\n\n第五に、重要作業は先に案を出してもらいます。アカウント、データ、安全、費用、公開に関わる場合は、すぐ実行せず、案とリスクを先に出してもらいます。\n\n第六に、長期ルールを文書に残します。README、PROJECT_CONTEXT、CHANGELOG、Skill に入れておくと、毎回口頭で説明し直す必要がありません。\n\n第七に、こまめに引き継ぎパックを作らせます。スレッド終了前に、完了、未完了、重要決定、次の手順、注意点をまとめてもらうと、次のスレッドが安定します。\n\n## 7. 現在の AI 市場\n\n2026 年 6 月 14 日時点で、AI モデル市場は非常に混み合っており、一社独占ではありません。競争は大きく分けると次のようになります。\n\n1. 汎用クローズド旗艦モデル：OpenAI GPT、Anthropic Claude、Google Gemini、xAI Grok。\n2. 中国の大規模モデルと平台：Qwen / Alibaba Cloud Model Studio、DeepSeek、智譜 GLM、豆包 / 火山方舟、Kimi、MiniMax、Tencent Hunyuan など。\n3. オープンウェイトの生態系：Meta Llama、Mistral など。ローカル実行、私有化、二次開発に向いています。\n4. マルチモーダルとメディアモデル：画像、動画、音声、音声会話、文書理解が速く競争しています。\n5. Agent 平台：モデルの強さだけでなく、ツール呼び出し、文脈管理、権限、安全、観測性、ワークフローが重要です。\n\nざっくり見るとこうです。\n\nOpenAI：総合力、複雑な推論、コード、Agent、ツール利用に強い。\n\nClaude：長文書、文章作成、コード、慎重な分析に強い。\n\nGemini：マルチモーダル範囲と Google エコシステムが広い。\n\nDeepSeek：中国語とコード場面でよく注目され、コストや長文脈の選択肢として語られます。\n\nQwen / Alibaba Cloud Model Studio：中国での平台能力が強く、テキスト、画像、音声、動画、ベクトル、モデルサービスの範囲が広い。\n\nLlama：研究、ローカル化、私有環境、制御性で重要なオープン生態系。\n\nMistral：オープンモデルと企業向けモデルを併せ持ち、コード、Agent、文書、マルチモーダル領域に展開しています。\n\nGrok：xAI の汎用モデル群で、同社のエコシステムやツール利用と結びついています。\n\nGLM、豆包、Kimi、MiniMax、Hunyuan：中国でよく使われる選択肢です。中国語能力、文脈長、価格、API、コンプライアンス、平台生態系で比較します。\n\nモデル名はすぐ変わります。名前だけを覚えるより、選び方を覚えるほうが大切です。\n\n## 8. 良いモデルとは何か\n\n良いモデルとは、ランキング一位のモデルではありません。自分のタスクに合うモデルです。\n\n見るべき項目は次の通りです。\n\n1. 正確性：実際の質問で間違いが少ないか。\n2. 指示追従：形式、境界、役割を守れるか。\n3. 長文脈：長い文書、プロジェクト、会話を読んでも乱れないか。\n4. 推論能力：複雑な問題を分解し、矛盾を見つけ、取捨選択を説明できるか。\n5. ツール利用：検索、ファイル、コード、ブラウザ、データベースなどを安定して使えるか。\n6. コード能力：プロジェクトを読み、慎重に編集し、テストし、リスクを説明できるか。\n7. 中国語能力：中国語表現や業務文脈を理解できるか。\n8. 費用と速度：高頻度タスクでは能力だけでなく価格と応答速度も重要です。\n9. 安定性：同じタスクを複数回試して、結果が安定するか。\n10. 安全とコンプライアンス：そのデータを外部モデルに渡してよいか。企業版、私有化、ローカルが必要か。\n\n一番実用的なのは、自分の実タスクで小さな盲検比較をすることです。3 から 5 個の実問題を選び、複数モデルに答えさせ、正確性、使いやすさ、形式、速度、費用で採点します。公開ランキングだけに頼らないことです。\n\n## 9. AI と Agent の選び方\n\n文章作成、要約、ブレスト：自分にとって使いやすく、表現が安定した汎用モデルを選びます。\n\n長文書分析：文脈長、引用の扱い、長文での安定性を優先します。\n\nコードプロジェクト：プロジェクトを読み、ファイルを編集し、チェックを走らせられる Agent を選びます。Codex のようなワークフローが向いています。\n\nPPT、画像、動画：対応するプラグインやマルチモーダル能力を持つツールを使います。純粋なチャットモデルだけで視覚作業の細部まで任せるべきではありません。画像、動画、ファイルに対応しているかも確認します。\n\n社内知識庫：微調整より先に、RAG、権限、監査、データ安全を考えます。\n\n高頻度で低リスクの作業：速くて安い小さめのモデルで十分なことがあります。\n\n重要な意思決定資料：強いモデルを使ってよいですが、必ず人間が確認します。\n\nプライバシー、契約、顧客、社内システム：まず会社のルールを確認し、必要なら企業版、私有化、ローカルモデルを使います。\n\n## 10. 私の経験まとめ\n\n第一に、AI が一番広げるのは怠けではなく明確さです。目標、境界、受け入れ基準が明確なほど、AI は使いやすくなります。曖昧な要件はまず対話型 AI に渡し、整理してもらうとよいです。知らないキーワードが出たらすぐ聞きます。複数の実行案を出してもらい、自分で選びます。\n\n第二に、Agent は明確なタスクの実行に向いています。方向を決める役割ではありません。方向、取捨選択、責任は人間に残ります。\n\n第三に、長いプロジェクトは必ず文書化します。背景、ルール、変更記録、次の一手は、一回のきれいな回答より重要です。プロジェクト文書、注意点、Skill、更新記録を用意し、新しいスレッドでは AI にそれらを読ませます。\n\n第四に、一つのプラグインや Skill を過信しません。文章、コード、画像、PPT、知識庫、デプロイは、違う道具の組み合わせが必要なことがあります。ただし Skill が多すぎると文脈が重くなるので、絞って使います。\n\n第五に、足りない情報は明示します。信頼できる AI 協作とは、空白を作り話で埋めることではなく、不確実性を見えるようにすることです。"
            }
 }, "2026-06-14T15:00:00.000Z"),
+    ...aiAgentWorkflowArticleMediaStatements(env, "2026-06-14T16:20:00.000Z"),
+    ...aiAgentWorkflowArticleHeadingMediaStatements(env, "2026-06-14T16:20:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-06-14-ai-agent-article", {
     "zh":  {
                "title":  "新增 AI Agent 工作赋能文章",
@@ -1628,6 +1739,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
                "content_markdown":  "# AI Agent 活用記事を追加\n\n今回の更新では、知識庫に AI Agent の実践記事を追加しました。\n\n## 更新内容\n\n- 「質問から公開まで：普通の人が AI Agent で実行力を広げる方法」を追加しました。\n- 中国語、English、日本語の三言語版を公開しました。\n- AI の基本原理、スレッド分割、Agent、Skill、MCP、Git、モデル選び、実践経験を整理しました。\n- 今後の AI ワークフローメモを蓄積しやすいよう、AI カテゴリに配置しました。"
            }
 }, "2026-06-14T15:01:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-14-article-reading-links", {
+    "zh":  {
+               "title":  "知识库文章阅读体验优化",
+               "summary":  "知识库长文章窗口、正文排版、文章图片和独立文章链接完成优化。",
+               "content_markdown":  "# 知识库文章阅读体验优化\n\n本次更新继续整理知识库长文阅读体验，让文章更适合分享和长时间阅读。\n\n## 更新内容\n\n- 知识库文章详情公开地址支持 `/articles/<slug>`，可以通过域名直接分享单篇文章。\n- 内部 `article_id` 只用于数据库和后台管理，不在公开链接或公开 API 中外显。\n- 长文章阅读窗口会随浏览器大小扩展，桌面端可看到更多正文内容。\n- Markdown 渲染补充有序列表、文章图片和 `text` 蓝色说明框，避免编号内容挤成一行。\n- 《从提问到上线：普通人如何用 AI Agent 放大执行力》加入 Codex 与 GPT 聊天截图，减少纯文字阅读疲劳。\n- 更新项目上下文、专用 Skill、Cloudflare Pages 重写规则和缓存版本，方便后续维护。"
+           },
+    "en":  {
+               "title":  "Knowledge Article Reading Polish",
+               "summary":  "Improved long article windows, article typography, inline images, and shareable article links.",
+               "content_markdown":  "# Knowledge Article Reading Polish\n\nThis update makes long knowledge-base articles easier to read and share.\n\n## Changes\n\n- Public article detail URLs now support `/articles/<slug>` for direct sharing from the domain.\n- Internal `article_id` values stay in the database and admin workflow, not in public links or public API responses.\n- The long article window expands with the browser on desktop, showing more content at once.\n- Markdown rendering now supports ordered lists, article images, and blue `text` callout boxes, so numbered points no longer collapse into one line.\n- The AI Agent article now includes Codex and GPT chat screenshots to break up long text.\n- Project context, the site Skill, Cloudflare Pages rewrite rules, and cache versions were updated for future maintenance."
+           },
+    "ja":  {
+               "title":  "知識庫記事の閲覧体験を改善",
+               "summary":  "長文記事ウィンドウ、本文組版、記事画像、記事別共有リンクを改善しました。",
+               "content_markdown":  "# 知識庫記事の閲覧体験を改善\n\n今回の更新では、知識庫の長文記事を読みやすく、共有しやすくしました。\n\n## 更新内容\n\n- 公開記事詳細 URL が `/articles/<slug>` に対応し、ドメインから単独記事を直接共有できます。\n- 内部 `article_id` はデータベースと管理作業だけで使い、公開リンクや公開 API には出しません。\n- 長文記事ウィンドウがデスクトップのブラウザサイズに合わせて広がり、一度に読める本文量が増えました。\n- Markdown 表示に番号付きリスト、記事画像、青い `text` 説明枠を追加し、番号付き内容が一行に潰れる問題を防ぎました。\n- AI Agent 記事に Codex と GPT のチャット画面を追加し、長文だけにならないようにしました。\n- 今後の保守のため、プロジェクト文脈、専用 Skill、Cloudflare Pages のリライト規則、キャッシュ版も更新しました。"
+           }
+}, "2026-06-14T16:20:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')

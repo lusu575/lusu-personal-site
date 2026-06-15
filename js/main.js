@@ -339,6 +339,12 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "📖",
+      date: "2026.06.15",
+      title: { zh: "AI Agent 文章直链与阅读优化", en: "AI Agent article links and reading polish", ja: "AI Agent 記事リンクと閲覧体験を調整" },
+      desc: { zh: "知识库长文窗口改为随浏览器扩展，文章支持域名直链、蓝色说明框和配图展示", en: "Long knowledge articles now use a larger responsive window with domain article links, blue callout boxes, and inline images", ja: "知識庫の長文ウィンドウを広くし、ドメイン直リンク、青い説明枠、本文画像に対応しました" }
+    },
+    {
       icon: "🌄",
       date: "2026.06.12",
       title: { zh: "首页壁纸高清替换", en: "Sharper home wallpapers", ja: "ホーム壁紙を高解像度化" },
@@ -632,13 +638,71 @@ function localText(value) {
   return value?.[currentLang] || value?.zh || value?.en || value?.ja || "";
 }
 
+function decodeHashValue(value) {
+  try {
+    return decodeURIComponent(String(value || ""));
+  } catch {
+    return String(value || "");
+  }
+}
+
+function parseRouteHash(hash = window.location.hash) {
+  const raw = decodeHashValue(String(hash || "").replace(/^#/, "")).replace(/^\/+/, "");
+  if (!raw) {
+    return { route: "home", articleSlug: "" };
+  }
+  const articleMatch = raw.match(/^knowledge\/article\/([a-z0-9][a-z0-9-]{0,119})$/);
+  if (articleMatch) {
+    return { route: "knowledge", articleSlug: articleMatch[1] };
+  }
+  return {
+    route: pageIds.includes(raw) ? raw : "home",
+    articleSlug: ""
+  };
+}
+
+function parseRouteLocation() {
+  const articleMatch = window.location.pathname.match(/^\/articles\/([a-z0-9][a-z0-9-]{0,119})\/?$/);
+  if (articleMatch) {
+    return { route: "knowledge", articleSlug: articleMatch[1] };
+  }
+  return parseRouteHash();
+}
+
+function articleRoutePath(slug) {
+  return `/articles/${encodeURIComponent(slug)}`;
+}
+
+function routeUrl(route, articleSlug = "") {
+  if (route === "knowledge" && articleSlug) {
+    return articleRoutePath(articleSlug);
+  }
+  return route === "home" ? "/" : `/#${route}`;
+}
+
+function syncBrowserUrl(route, articleSlug = "") {
+  const nextUrl = routeUrl(route, articleSlug);
+  const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+  if (currentUrl !== nextUrl) {
+    window.history.pushState(null, "", nextUrl);
+  }
+}
+
+function sitePath(path) {
+  const value = String(path || "").trim();
+  if (!value || /^(https?:|data:|\/)/i.test(value)) {
+    return value;
+  }
+  return `/${value.replace(/^\.?\//, "")}`;
+}
+
 function contentTitle(value) {
   return `${localText(value)}${t("placeholderMark")}`;
 }
 
 function buildGameUrl(item) {
   if (item.playUrl) {
-    return item.playUrl;
+    return sitePath(item.playUrl);
   }
   if (item.externalUrl) {
     return item.externalUrl;
@@ -646,7 +710,7 @@ function buildGameUrl(item) {
   if (item.repo && !item.entry) {
     return item.repo;
   }
-  return `games/${item.entry}?lang=${encodeURIComponent(currentLang)}`;
+  return `/games/${item.entry}?lang=${encodeURIComponent(currentLang)}`;
 }
 
 function renderLanguageSupportTags(item) {
@@ -695,7 +759,7 @@ function setLanguage(lang, options = {}) {
   updateWelcomeGreeting();
 }
 
-function navigate(route) {
+function navigate(route, options = {}) {
   const nextRoute = pageIds.includes(route) ? route : "home";
   if (nextRoute === "home" && articleState.currentSlug) {
     articleState.currentSlug = "";
@@ -712,8 +776,30 @@ function navigate(route) {
   if (nextRoute === "chatroom") {
     initChatroom();
   }
-  window.location.hash = nextRoute === "home" ? "" : nextRoute;
+  if (options.updateUrl !== false && options.updateHash !== false) {
+    syncBrowserUrl(nextRoute, nextRoute === "knowledge" ? options.articleSlug || "" : "");
+  }
   window.scrollTo({ top: 0, behavior: "auto" });
+}
+
+function syncRouteFromLocation() {
+  const parsed = parseRouteLocation();
+  if (parsed.route === "knowledge") {
+    if (parsed.articleSlug) {
+      articleState.currentSlug = parsed.articleSlug;
+      articleState.currentArticle = null;
+      articleState.detailLoadingKey = "";
+    } else {
+      articleState.currentSlug = "";
+      articleState.currentArticle = null;
+      articleState.detailLoadingKey = "";
+    }
+  }
+  navigate(parsed.route, { updateUrl: false });
+  if (parsed.route === "knowledge") {
+    closeWelcome();
+    renderKnowledge();
+  }
 }
 
 function renderCategoryButtons(targetId, type, categories) {
@@ -776,7 +862,7 @@ function renderKnowledge() {
         <span>${t("articlePublished")}：${escapeHtml(formatArticleDate(item.published_at || item.created_at))}</span>
         ${item.lang !== currentLang ? `<span class="tag">${t("articleFallback")}</span>` : ""}
       </div>
-      <button class="card-action" data-article-slug="${escapeHtml(item.slug)}">${t("readButton")}</button>
+      <a class="card-action" href="${escapeHtml(articleRoutePath(item.slug))}" data-article-slug="${escapeHtml(item.slug)}">${t("readButton")}</a>
     </article>
   `).join("");
 }
@@ -907,7 +993,7 @@ function showArticle(slug) {
   articleState.currentSlug = slug;
   articleState.currentArticle = null;
   articleState.detailLoadingKey = "";
-  navigate("knowledge");
+  navigate("knowledge", { articleSlug: slug });
   closeWelcome();
   renderKnowledge();
 }
@@ -916,6 +1002,7 @@ function showArticleList() {
   articleState.currentSlug = "";
   articleState.currentArticle = null;
   articleState.detailLoadingKey = "";
+  navigate("knowledge");
   renderKnowledge();
 }
 
@@ -1000,6 +1087,7 @@ function renderMarkdownSafe(target, markdown) {
     }
 
     if (/^```/.test(line.trim())) {
+      const fence = line.trim().replace(/^```/, "").trim().toLowerCase();
       const codeLines = [];
       index += 1;
       while (index < lines.length && !/^```/.test(lines[index].trim())) {
@@ -1007,11 +1095,25 @@ function renderMarkdownSafe(target, markdown) {
         index += 1;
       }
       index += 1;
+      if (fence === "text") {
+        target.appendChild(renderArticleCallout(codeLines));
+        continue;
+      }
       const pre = document.createElement("pre");
       const code = document.createElement("code");
       code.textContent = codeLines.join("\n");
       pre.appendChild(code);
       target.appendChild(pre);
+      continue;
+    }
+
+    const image = line.trim().match(/^!\[([^\]]*)\]\(([^)\s]+)\)$/);
+    if (image) {
+      const figure = renderArticleFigure(image[1], image[2]);
+      if (figure) {
+        target.appendChild(figure);
+      }
+      index += 1;
       continue;
     }
 
@@ -1032,6 +1134,18 @@ function renderMarkdownSafe(target, markdown) {
       continue;
     }
 
+    if (/^\d+\.\s+/.test(line)) {
+      const list = document.createElement("ol");
+      while (index < lines.length && /^\d+\.\s+/.test(lines[index])) {
+        const item = document.createElement("li");
+        appendInlineMarkdown(item, lines[index].replace(/^\d+\.\s+/, ""));
+        list.appendChild(item);
+        index += 1;
+      }
+      target.appendChild(list);
+      continue;
+    }
+
     if (/^[-*]\s+/.test(line)) {
       const list = document.createElement("ul");
       while (index < lines.length && /^[-*]\s+/.test(lines[index])) {
@@ -1049,7 +1163,9 @@ function renderMarkdownSafe(target, markdown) {
       index < lines.length
       && lines[index].trim()
       && !/^(#{1,3})\s+/.test(lines[index])
+      && !/^\d+\.\s+/.test(lines[index])
       && !/^[-*]\s+/.test(lines[index])
+      && !/^!\[[^\]]*\]\([^)]+\)$/.test(lines[index].trim())
       && !/^>\s+/.test(lines[index])
       && !/^```/.test(lines[index].trim())
     ) {
@@ -1060,6 +1176,45 @@ function renderMarkdownSafe(target, markdown) {
     appendInlineMarkdown(paragraph, paragraphLines.join(" "));
     target.appendChild(paragraph);
   }
+}
+
+function renderArticleCallout(lines) {
+  const box = document.createElement("div");
+  box.className = "article-callout";
+  String(lines.join("\n")).split("\n").forEach((line) => {
+    const item = document.createElement("p");
+    appendInlineMarkdown(item, line);
+    box.appendChild(item);
+  });
+  return box;
+}
+
+function safeArticleImageSrc(src) {
+  const value = String(src || "").trim();
+  if (/^assets\/images\/articles\/[a-z0-9._/-]+\.(png|jpe?g|webp|gif)(\?[a-z0-9=&._-]+)?$/i.test(value)) {
+    return value;
+  }
+  return "";
+}
+
+function renderArticleFigure(alt, src) {
+  const safeSrc = safeArticleImageSrc(src);
+  if (!safeSrc) {
+    return null;
+  }
+  const figure = document.createElement("figure");
+  figure.className = "article-figure";
+  const image = document.createElement("img");
+  image.src = sitePath(safeSrc);
+  image.alt = alt || "";
+  image.loading = "lazy";
+  figure.appendChild(image);
+  if (alt) {
+    const caption = document.createElement("figcaption");
+    caption.textContent = alt;
+    figure.appendChild(caption);
+  }
+  return figure;
 }
 
 function stripRepeatedArticleHeading(markdown, title) {
@@ -1136,7 +1291,7 @@ function renderResources() {
 }
 
 async function loadGameCatalog() {
-  const response = await fetch("games/catalog.json", { cache: "no-store" });
+  const response = await fetch("/games/catalog.json", { cache: "no-store" });
   if (!response.ok) {
     throw new Error(`HTTP ${response.status}`);
   }
@@ -1150,7 +1305,7 @@ async function renderGames() {
     const catalog = await loadGameCatalog();
     list.innerHTML = catalog.games.map((item) => `
         <article class="game-card">
-          <img class="game-cover" src="${escapeHtml(String(item.cover || "assets/images/icon-games.png").replace("../", ""))}" alt="${escapeHtml(localText(item.titles || item.titleZh))}" loading="lazy">
+          <img class="game-cover" src="${escapeHtml(sitePath(String(item.cover || "assets/images/icon-games.png").replace("../", "")))}" alt="${escapeHtml(localText(item.titles || item.titleZh))}" loading="lazy">
           <div class="game-main">
             <h3>${escapeHtml(localText(item.titles || item.titleZh))}</h3>
             <p>${escapeHtml(localText(item.summaries || item.summary))}</p>
@@ -1194,13 +1349,13 @@ function renderUpdates() {
   }
   list.innerHTML = updateArticles.map((item) => `
     <li>
-      <button class="recent-update-link" type="button"${item.slug ? ` data-article-slug="${escapeHtml(item.slug)}"` : ""}>
+      <a class="recent-update-link"${item.slug ? ` href="${escapeHtml(articleRoutePath(item.slug))}" data-article-slug="${escapeHtml(item.slug)}"` : ' href="/#knowledge"'}>
         <span class="update-icon">📚</span>
         <span>
           <strong>${escapeHtml(truncateText(localText(item.title), 28))}</strong>
           <small>${escapeHtml(truncateText(item.summary || localText(item.desc) || "", 52))}<br>${escapeHtml(formatArticleDate(item.published_at || item.created_at || item.date))}</small>
         </span>
-      </button>
+      </a>
     </li>
   `).join("");
 }
@@ -1681,7 +1836,7 @@ function createChatMessageNode(message) {
 
   const avatar = document.createElement("img");
   avatar.className = "chat-message-avatar";
-  avatar.src = "assets/images/icon-chatroom-clean.png";
+  avatar.src = "/assets/images/icon-chatroom-clean.png";
   avatar.alt = "";
   avatar.setAttribute("aria-hidden", "true");
 
@@ -1845,6 +2000,7 @@ document.addEventListener("click", (event) => {
 
   const articleButton = event.target.closest("[data-article-slug]");
   if (articleButton) {
+    event.preventDefault();
     showArticle(articleButton.dataset.articleSlug);
     return;
   }
@@ -1888,7 +2044,11 @@ window.addEventListener("keydown", (event) => {
 });
 
 window.addEventListener("hashchange", () => {
-  navigate(window.location.hash.replace("#", ""));
+  syncRouteFromLocation();
+});
+
+window.addEventListener("popstate", () => {
+  syncRouteFromLocation();
 });
 
 document.getElementById("chat-form")?.addEventListener("submit", submitChatMessage);
@@ -1942,7 +2102,7 @@ setLanguage(initialLang);
 initAccountWidget();
 updateClock();
 setInterval(updateClock, 1000);
-navigate(window.location.hash.replace("#", "") || "home");
+syncRouteFromLocation();
 const hoverRoute = pageParams.get("hover");
 if (hoverRoute) {
   document.querySelector(`.desktop-icon[data-route="${hoverRoute}"]`)?.classList.add("is-hovered");

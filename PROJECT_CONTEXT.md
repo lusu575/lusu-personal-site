@@ -85,6 +85,7 @@ Cloudflare Pages 项目状态：
 - 如果当前语言版本不存在，fallback 到中文 `zh`。
 - 如果中文也不存在，fallback 到任意已有语言版本。
 - 知识库区域已改为从 `/api/articles` 读取文章列表，点击后从 `/api/articles/:slug` 读取详情。
+- 文章详情公开地址使用 `/articles/<slug>`，可以通过 `https://lusu575.com/articles/<slug>` 直接分享和访问单篇文章；内部 `article_id` 只用于数据库和后台管理，不在公开链接或公开 API 中外显。旧的 `#knowledge/article/<slug>` hash 入口仅作为兼容入口保留。
 - 网站切换语言时，文章列表和当前文章详情会重新请求对应语言版本。
 - 文章发布时间在前端按用户所在时区显示到秒，不显示时区名；后端时间字段应保持 ISO/UTC 语义，避免被浏览器误读成本地时间。
 - 从文章详情关闭知识库后，再次打开知识库默认回到知识库首页，不保留上一次打开的文章详情。
@@ -93,6 +94,7 @@ Cloudflare Pages 项目状态：
 - 首页欢迎弹窗右侧“最近更新”自动读取 `site-updates` 分类文章；“查看更多更新”跳转到知识库并筛选该分类。
 - 2026-06-11 已清理三篇文章系统测试内容：`xp-site-notes`、`local-ai-workflow`、`fallback-check`；当前保留真实 `site-updates` 更新文章。
 - 文章详情前端使用 slug + 请求语言缓存和请求状态保护，避免语言切换或重渲染时重复拉取同一详情并卡在“读取中”。
+- 文章正文渲染器支持基础 Markdown、有序/无序列表、blockquote、`text` 代码块蓝色说明框，以及白名单路径 `assets/images/articles/` 下的文章图片；仍必须用 DOM/textContent 构建，不能直接插入未处理 HTML。
 
 公开接口：
 
@@ -275,6 +277,7 @@ D1 表：`anonymous_chat_messages`
 ├── package-lock.json
 ├── wrangler.jsonc
 ├── _headers
+├── _redirects
 ├── assets/
 ├── cloudflare/
 │   ├── README.md

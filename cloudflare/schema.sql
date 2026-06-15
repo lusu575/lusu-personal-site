@@ -532,7 +532,8 @@ insert into articles (
   view_count, created_at, updated_at, published_at
 ) values
   ('seed-ai-agent-workflow-guide-2026-06-14', 'ai-agent-workflow-guide', 'ai', '["AI","Agent","Codex","经验"]', '', 'published', 1, 0, '2026-06-14T15:00:00.000Z', '2026-06-14T15:00:00.000Z', '2026-06-14T15:00:00.000Z'),
-  ('seed-update-2026-06-14-ai-agent-article', '2026-06-14-ai-agent-article', 'site-updates', '["网站更新","AI","文章"]', '', 'published', 0, 0, '2026-06-14T15:01:00.000Z', '2026-06-14T15:01:00.000Z', '2026-06-14T15:01:00.000Z')
+  ('seed-update-2026-06-14-ai-agent-article', '2026-06-14-ai-agent-article', 'site-updates', '["网站更新","AI","文章"]', '', 'published', 0, 0, '2026-06-14T15:01:00.000Z', '2026-06-14T15:01:00.000Z', '2026-06-14T15:01:00.000Z'),
+  ('seed-update-2026-06-14-article-reading-links', '2026-06-14-article-reading-links', 'site-updates', '["网站更新","知识库","文章"]', '', 'published', 0, 0, '2026-06-14T16:20:00.000Z', '2026-06-14T16:20:00.000Z', '2026-06-14T16:20:00.000Z')
 on conflict(article_id) do update set
   slug = excluded.slug,
   category = excluded.category,
@@ -1218,7 +1219,43 @@ This update adds a practical AI Agent article to the knowledge base.
 - 「質問から公開まで：普通の人が AI Agent で実行力を広げる方法」を追加しました。
 - 中国語、English、日本語の三言語版を公開しました。
 - AI の基本原理、スレッド分割、Agent、Skill、MCP、Git、モデル選び、実践経験を整理しました。
-- 今後の AI ワークフローメモを蓄積しやすいよう、AI カテゴリに配置しました。', '2026-06-14T15:01:00.000Z', '2026-06-14T15:01:00.000Z')
+- 今後の AI ワークフローメモを蓄積しやすいよう、AI カテゴリに配置しました。', '2026-06-14T15:01:00.000Z', '2026-06-14T15:01:00.000Z'),
+  ('seed-update-2026-06-14-article-reading-links-zh', 'seed-update-2026-06-14-article-reading-links', 'zh', '知识库文章阅读体验优化', '知识库长文章窗口、正文排版、文章图片和独立文章链接完成优化。', '# 知识库文章阅读体验优化
+
+本次更新继续整理知识库长文阅读体验，让文章更适合分享和长时间阅读。
+
+## 更新内容
+
+- 知识库文章详情公开地址支持 `/articles/<slug>`，可以通过域名直接分享单篇文章。
+- 内部 `article_id` 只用于数据库和后台管理，不在公开链接或公开 API 中外显。
+- 长文章阅读窗口会随浏览器大小扩展，桌面端可看到更多正文内容。
+- Markdown 渲染补充有序列表、文章图片和 `text` 蓝色说明框，避免编号内容挤成一行。
+- 《从提问到上线：普通人如何用 AI Agent 放大执行力》加入 Codex 与 GPT 聊天截图，减少纯文字阅读疲劳。
+- 更新项目上下文、专用 Skill、Cloudflare Pages 重写规则和缓存版本，方便后续维护。', '2026-06-14T16:20:00.000Z', '2026-06-14T16:20:00.000Z'),
+  ('seed-update-2026-06-14-article-reading-links-en', 'seed-update-2026-06-14-article-reading-links', 'en', 'Knowledge Article Reading Polish', 'Improved long article windows, article typography, inline images, and shareable article links.', '# Knowledge Article Reading Polish
+
+This update makes long knowledge-base articles easier to read and share.
+
+## Changes
+
+- Public article detail URLs now support `/articles/<slug>` for direct sharing from the domain.
+- Internal `article_id` values stay in the database and admin workflow, not in public links or public API responses.
+- The long article window expands with the browser on desktop, showing more content at once.
+- Markdown rendering now supports ordered lists, article images, and blue `text` callout boxes, so numbered points no longer collapse into one line.
+- The AI Agent article now includes Codex and GPT chat screenshots to break up long text.
+- Project context, the site Skill, Cloudflare Pages rewrite rules, and cache versions were updated for future maintenance.', '2026-06-14T16:20:00.000Z', '2026-06-14T16:20:00.000Z'),
+  ('seed-update-2026-06-14-article-reading-links-ja', 'seed-update-2026-06-14-article-reading-links', 'ja', '知識庫記事の閲覧体験を改善', '長文記事ウィンドウ、本文組版、記事画像、記事別共有リンクを改善しました。', '# 知識庫記事の閲覧体験を改善
+
+今回の更新では、知識庫の長文記事を読みやすく、共有しやすくしました。
+
+## 更新内容
+
+- 公開記事詳細 URL が `/articles/<slug>` に対応し、ドメインから単独記事を直接共有できます。
+- 内部 `article_id` はデータベースと管理作業だけで使い、公開リンクや公開 API には出しません。
+- 長文記事ウィンドウがデスクトップのブラウザサイズに合わせて広がり、一度に読める本文量が増えました。
+- Markdown 表示に番号付きリスト、記事画像、青い `text` 説明枠を追加し、番号付き内容が一行に潰れる問題を防ぎました。
+- AI Agent 記事に Codex と GPT のチャット画面を追加し、長文だけにならないようにしました。
+- 今後の保守のため、プロジェクト文脈、専用 Skill、Cloudflare Pages のリライト規則、キャッシュ版も更新しました。', '2026-06-14T16:20:00.000Z', '2026-06-14T16:20:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,
@@ -1229,3 +1266,355 @@ where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallb
 
 delete from articles
 where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check');
+
+update article_translations
+set content_markdown = replace(content_markdown, char(13) || char(10), char(10))
+where article_id = 'seed-ai-agent-workflow-guide-2026-06-14';
+
+update article_translations
+set content_markdown = replace(
+    content_markdown,
+    '这不是“一句话让 AI 变出网站”，而是一个更实用的流程：人负责判断，AI 放大执行。
+
+## 1. AI 的基础原理：它本质上是在预测下一个 Token',
+    '这不是“一句话让 AI 变出网站”，而是一个更实用的流程：人负责判断，AI 放大执行。
+
+![Codex 把一次网站更新拆成待办、执行和验收记录](assets/images/articles/ai-agent-codex-update-thread.png)
+
+## 1. AI 的基础原理：它本质上是在预测下一个 Token'
+  ),
+  updated_at = '2026-06-14T16:20:00.000Z'
+where article_id = 'seed-ai-agent-workflow-guide-2026-06-14'
+  and lang = 'zh'
+  and instr(content_markdown, '这不是“一句话让 AI 变出网站”，而是一个更实用的流程：人负责判断，AI 放大执行。
+
+## 1. AI 的基础原理：它本质上是在预测下一个 Token') > 0;
+
+update article_translations
+set content_markdown = replace(
+    content_markdown,
+    '换线程不是为了重新开始，而是为了让 AI 的上下文变干净。
+
+## 3. Agent 的工作原理',
+    '换线程不是为了重新开始，而是为了让 AI 的上下文变干净。
+
+![给 Codex 的项目背景、目标、范围和验收标准示例](assets/images/articles/ai-agent-codex-project-brief.png)
+
+## 3. Agent 的工作原理'
+  ),
+  updated_at = '2026-06-14T16:20:00.000Z'
+where article_id = 'seed-ai-agent-workflow-guide-2026-06-14'
+  and lang = 'zh'
+  and instr(content_markdown, '换线程不是为了重新开始，而是为了让 AI 的上下文变干净。
+
+## 3. Agent 的工作原理') > 0;
+
+update article_translations
+set content_markdown = replace(
+    content_markdown,
+    'GitHub：托管代码和协作的平台。仓库是项目文件夹，commit 是一次保存记录，branch 是分支，PR 是把分支合并回主线前的审查申请。
+
+## 5. 最好用的提示词公式',
+    'GitHub：托管代码和协作的平台。仓库是项目文件夹，commit 是一次保存记录，branch 是分支，PR 是把分支合并回主线前的审查申请。
+
+![先用对话型 AI 把模糊需求整理成项目上下文](assets/images/articles/ai-agent-gpt-project-context.png)
+
+## 5. 最好用的提示词公式'
+  ),
+  updated_at = '2026-06-14T16:20:00.000Z'
+where article_id = 'seed-ai-agent-workflow-guide-2026-06-14'
+  and lang = 'zh'
+  and instr(content_markdown, 'GitHub：托管代码和协作的平台。仓库是项目文件夹，commit 是一次保存记录，branch 是分支，PR 是把分支合并回主线前的审查申请。
+
+## 5. 最好用的提示词公式') > 0;
+
+update article_translations
+set content_markdown = replace(
+    content_markdown,
+    'AI 不是怕任务难，是怕你让它猜。
+
+## 6. 使用 AI 的实战技巧',
+    'AI 不是怕任务难，是怕你让它猜。
+
+![把随口需求压缩成可执行提示词，再交给 Agent](assets/images/articles/ai-agent-gpt-chatroom-prompt.png)
+
+## 6. 使用 AI 的实战技巧'
+  ),
+  updated_at = '2026-06-14T16:20:00.000Z'
+where article_id = 'seed-ai-agent-workflow-guide-2026-06-14'
+  and lang = 'zh'
+  and instr(content_markdown, 'AI 不是怕任务难，是怕你让它猜。
+
+## 6. 使用 AI 的实战技巧') > 0;
+
+update article_translations
+set content_markdown = replace(
+    content_markdown,
+    'This is not “one sentence creates a website.” The practical workflow is: humans judge, AI multiplies execution.
+
+## 1. The Basic Principle: AI Predicts the Next Token',
+    'This is not “one sentence creates a website.” The practical workflow is: humans judge, AI multiplies execution.
+
+![Codex turns one site update into tasks, execution, and acceptance notes](assets/images/articles/ai-agent-codex-update-thread.png)
+
+## 1. The Basic Principle: AI Predicts the Next Token'
+  ),
+  updated_at = '2026-06-14T16:20:00.000Z'
+where article_id = 'seed-ai-agent-workflow-guide-2026-06-14'
+  and lang = 'en'
+  and instr(content_markdown, 'This is not “one sentence creates a website.” The practical workflow is: humans judge, AI multiplies execution.
+
+## 1. The Basic Principle: AI Predicts the Next Token') > 0;
+
+update article_translations
+set content_markdown = replace(
+    content_markdown,
+    'Switching threads is not starting over. It keeps the AI context clean.
+
+## 3. How an Agent Works',
+    'Switching threads is not starting over. It keeps the AI context clean.
+
+![A project handoff example for Codex: context, goals, scope, and checks](assets/images/articles/ai-agent-codex-project-brief.png)
+
+## 3. How an Agent Works'
+  ),
+  updated_at = '2026-06-14T16:20:00.000Z'
+where article_id = 'seed-ai-agent-workflow-guide-2026-06-14'
+  and lang = 'en'
+  and instr(content_markdown, 'Switching threads is not starting over. It keeps the AI context clean.
+
+## 3. How an Agent Works') > 0;
+
+update article_translations
+set content_markdown = replace(
+    content_markdown,
+    'GitHub: a platform for hosting code and collaborating. A repository is the project folder, a commit is a saved change, a branch is a separate work line, and a PR is a review request before merging work back into the main line.
+
+## 5. The Prompt Formula I Use Most',
+    'GitHub: a platform for hosting code and collaborating. A repository is the project folder, a commit is a saved change, a branch is a separate work line, and a PR is a review request before merging work back into the main line.
+
+![Use chat AI first to turn vague requirements into project context](assets/images/articles/ai-agent-gpt-project-context.png)
+
+## 5. The Prompt Formula I Use Most'
+  ),
+  updated_at = '2026-06-14T16:20:00.000Z'
+where article_id = 'seed-ai-agent-workflow-guide-2026-06-14'
+  and lang = 'en'
+  and instr(content_markdown, 'GitHub: a platform for hosting code and collaborating. A repository is the project folder, a commit is a saved change, a branch is a separate work line, and a PR is a review request before merging work back into the main line.
+
+## 5. The Prompt Formula I Use Most') > 0;
+
+update article_translations
+set content_markdown = replace(
+    content_markdown,
+    'AI is not afraid of hard work. It is afraid of guessing.
+
+## 6. Practical AI Techniques',
+    'AI is not afraid of hard work. It is afraid of guessing.
+
+![Compress a rough request into an executable prompt before handing it to an Agent](assets/images/articles/ai-agent-gpt-chatroom-prompt.png)
+
+## 6. Practical AI Techniques'
+  ),
+  updated_at = '2026-06-14T16:20:00.000Z'
+where article_id = 'seed-ai-agent-workflow-guide-2026-06-14'
+  and lang = 'en'
+  and instr(content_markdown, 'AI is not afraid of hard work. It is afraid of guessing.
+
+## 6. Practical AI Techniques') > 0;
+
+update article_translations
+set content_markdown = replace(
+    content_markdown,
+    'これは「一文で AI がサイトを作る」という話ではありません。実用的な流れは、人が判断し、AI が実行を増幅する、ということです。
+
+## 1. AI の基本原理：次の Token を予測している',
+    'これは「一文で AI がサイトを作る」という話ではありません。実用的な流れは、人が判断し、AI が実行を増幅する、ということです。
+
+![Codex が一つのサイト更新をタスク、実行、確認記録に分ける例](assets/images/articles/ai-agent-codex-update-thread.png)
+
+## 1. AI の基本原理：次の Token を予測している'
+  ),
+  updated_at = '2026-06-14T16:20:00.000Z'
+where article_id = 'seed-ai-agent-workflow-guide-2026-06-14'
+  and lang = 'ja'
+  and instr(content_markdown, 'これは「一文で AI がサイトを作る」という話ではありません。実用的な流れは、人が判断し、AI が実行を増幅する、ということです。
+
+## 1. AI の基本原理：次の Token を予測している') > 0;
+
+update article_translations
+set content_markdown = replace(
+    content_markdown,
+    'スレッドを替えるのは、最初からやり直すためではありません。AI の文脈をきれいに保つためです。
+
+## 3. Agent の動き方',
+    'スレッドを替えるのは、最初からやり直すためではありません。AI の文脈をきれいに保つためです。
+
+![Codex に渡すプロジェクト背景、目標、範囲、確認基準の例](assets/images/articles/ai-agent-codex-project-brief.png)
+
+## 3. Agent の動き方'
+  ),
+  updated_at = '2026-06-14T16:20:00.000Z'
+where article_id = 'seed-ai-agent-workflow-guide-2026-06-14'
+  and lang = 'ja'
+  and instr(content_markdown, 'スレッドを替えるのは、最初からやり直すためではありません。AI の文脈をきれいに保つためです。
+
+## 3. Agent の動き方') > 0;
+
+update article_translations
+set content_markdown = replace(
+    content_markdown,
+    'GitHub：コードを置き、共同作業するためのプラットフォームです。repository はプロジェクトフォルダ、commit は保存記録、branch は作業分岐、PR は main に戻す前のレビュー依頼です。
+
+## 5. 一番よく使う Prompt 公式',
+    'GitHub：コードを置き、共同作業するためのプラットフォームです。repository はプロジェクトフォルダ、commit は保存記録、branch は作業分岐、PR は main に戻す前のレビュー依頼です。
+
+![まず対話型 AI で曖昧な要望をプロジェクト文脈に整理する例](assets/images/articles/ai-agent-gpt-project-context.png)
+
+## 5. 一番よく使う Prompt 公式'
+  ),
+  updated_at = '2026-06-14T16:20:00.000Z'
+where article_id = 'seed-ai-agent-workflow-guide-2026-06-14'
+  and lang = 'ja'
+  and instr(content_markdown, 'GitHub：コードを置き、共同作業するためのプラットフォームです。repository はプロジェクトフォルダ、commit は保存記録、branch は作業分岐、PR は main に戻す前のレビュー依頼です。
+
+## 5. 一番よく使う Prompt 公式') > 0;
+
+update article_translations
+set content_markdown = replace(
+    content_markdown,
+    'AI は難しいタスクが苦手なのではありません。推測させられるのが苦手です。
+
+## 6. AI 活用の実践テクニック',
+    'AI は難しいタスクが苦手なのではありません。推測させられるのが苦手です。
+
+![ざっくりした依頼を Agent に渡せる実行用プロンプトへ圧縮する例](assets/images/articles/ai-agent-gpt-chatroom-prompt.png)
+
+## 6. AI 活用の実践テクニック'
+  ),
+  updated_at = '2026-06-14T16:20:00.000Z'
+where article_id = 'seed-ai-agent-workflow-guide-2026-06-14'
+  and lang = 'ja'
+  and instr(content_markdown, 'AI は難しいタスクが苦手なのではありません。推測させられるのが苦手です。
+
+## 6. AI 活用の実践テクニック') > 0;
+
+update article_translations
+set content_markdown = replace(content_markdown, '## 1. AI 的基础原理：它本质上是在预测下一个 Token', '![Codex 把一次网站更新拆成待办、执行和验收记录](assets/images/articles/ai-agent-codex-update-thread.png)
+
+## 1. AI 的基础原理：它本质上是在预测下一个 Token'),
+  updated_at = '2026-06-14T16:20:00.000Z'
+where article_id = 'seed-ai-agent-workflow-guide-2026-06-14'
+  and lang = 'zh'
+  and instr(content_markdown, '## 1. AI 的基础原理：它本质上是在预测下一个 Token') > 0
+  and instr(content_markdown, 'ai-agent-codex-update-thread.png') = 0;
+
+update article_translations
+set content_markdown = replace(content_markdown, '## 3. Agent 的工作原理', '![给 Codex 的项目背景、目标、范围和验收标准示例](assets/images/articles/ai-agent-codex-project-brief.png)
+
+## 3. Agent 的工作原理'),
+  updated_at = '2026-06-14T16:20:00.000Z'
+where article_id = 'seed-ai-agent-workflow-guide-2026-06-14'
+  and lang = 'zh'
+  and instr(content_markdown, '## 3. Agent 的工作原理') > 0
+  and instr(content_markdown, 'ai-agent-codex-project-brief.png') = 0;
+
+update article_translations
+set content_markdown = replace(content_markdown, '## 5. 最好用的提示词公式', '![先用对话型 AI 把模糊需求整理成项目上下文](assets/images/articles/ai-agent-gpt-project-context.png)
+
+## 5. 最好用的提示词公式'),
+  updated_at = '2026-06-14T16:20:00.000Z'
+where article_id = 'seed-ai-agent-workflow-guide-2026-06-14'
+  and lang = 'zh'
+  and instr(content_markdown, '## 5. 最好用的提示词公式') > 0
+  and instr(content_markdown, 'ai-agent-gpt-project-context.png') = 0;
+
+update article_translations
+set content_markdown = replace(content_markdown, '## 6. 使用 AI 的实战技巧', '![把随口需求压缩成可执行提示词，再交给 Agent](assets/images/articles/ai-agent-gpt-chatroom-prompt.png)
+
+## 6. 使用 AI 的实战技巧'),
+  updated_at = '2026-06-14T16:20:00.000Z'
+where article_id = 'seed-ai-agent-workflow-guide-2026-06-14'
+  and lang = 'zh'
+  and instr(content_markdown, '## 6. 使用 AI 的实战技巧') > 0
+  and instr(content_markdown, 'ai-agent-gpt-chatroom-prompt.png') = 0;
+
+update article_translations
+set content_markdown = replace(content_markdown, '## 1. The Basic Principle: AI Predicts the Next Token', '![Codex turns one site update into tasks, execution, and acceptance notes](assets/images/articles/ai-agent-codex-update-thread.png)
+
+## 1. The Basic Principle: AI Predicts the Next Token'),
+  updated_at = '2026-06-14T16:20:00.000Z'
+where article_id = 'seed-ai-agent-workflow-guide-2026-06-14'
+  and lang = 'en'
+  and instr(content_markdown, '## 1. The Basic Principle: AI Predicts the Next Token') > 0
+  and instr(content_markdown, 'ai-agent-codex-update-thread.png') = 0;
+
+update article_translations
+set content_markdown = replace(content_markdown, '## 3. How an Agent Works', '![A project handoff example for Codex: context, goals, scope, and checks](assets/images/articles/ai-agent-codex-project-brief.png)
+
+## 3. How an Agent Works'),
+  updated_at = '2026-06-14T16:20:00.000Z'
+where article_id = 'seed-ai-agent-workflow-guide-2026-06-14'
+  and lang = 'en'
+  and instr(content_markdown, '## 3. How an Agent Works') > 0
+  and instr(content_markdown, 'ai-agent-codex-project-brief.png') = 0;
+
+update article_translations
+set content_markdown = replace(content_markdown, '## 5. The Prompt Formula I Use Most', '![Use chat AI first to turn vague requirements into project context](assets/images/articles/ai-agent-gpt-project-context.png)
+
+## 5. The Prompt Formula I Use Most'),
+  updated_at = '2026-06-14T16:20:00.000Z'
+where article_id = 'seed-ai-agent-workflow-guide-2026-06-14'
+  and lang = 'en'
+  and instr(content_markdown, '## 5. The Prompt Formula I Use Most') > 0
+  and instr(content_markdown, 'ai-agent-gpt-project-context.png') = 0;
+
+update article_translations
+set content_markdown = replace(content_markdown, '## 6. Practical AI Techniques', '![Compress a rough request into an executable prompt before handing it to an Agent](assets/images/articles/ai-agent-gpt-chatroom-prompt.png)
+
+## 6. Practical AI Techniques'),
+  updated_at = '2026-06-14T16:20:00.000Z'
+where article_id = 'seed-ai-agent-workflow-guide-2026-06-14'
+  and lang = 'en'
+  and instr(content_markdown, '## 6. Practical AI Techniques') > 0
+  and instr(content_markdown, 'ai-agent-gpt-chatroom-prompt.png') = 0;
+
+update article_translations
+set content_markdown = replace(content_markdown, '## 1. AI の基本原理：次の Token を予測している', '![Codex が一つのサイト更新をタスク、実行、確認記録に分ける例](assets/images/articles/ai-agent-codex-update-thread.png)
+
+## 1. AI の基本原理：次の Token を予測している'),
+  updated_at = '2026-06-14T16:20:00.000Z'
+where article_id = 'seed-ai-agent-workflow-guide-2026-06-14'
+  and lang = 'ja'
+  and instr(content_markdown, '## 1. AI の基本原理：次の Token を予測している') > 0
+  and instr(content_markdown, 'ai-agent-codex-update-thread.png') = 0;
+
+update article_translations
+set content_markdown = replace(content_markdown, '## 3. Agent の動き方', '![Codex に渡すプロジェクト背景、目標、範囲、確認基準の例](assets/images/articles/ai-agent-codex-project-brief.png)
+
+## 3. Agent の動き方'),
+  updated_at = '2026-06-14T16:20:00.000Z'
+where article_id = 'seed-ai-agent-workflow-guide-2026-06-14'
+  and lang = 'ja'
+  and instr(content_markdown, '## 3. Agent の動き方') > 0
+  and instr(content_markdown, 'ai-agent-codex-project-brief.png') = 0;
+
+update article_translations
+set content_markdown = replace(content_markdown, '## 5. 一番よく使う Prompt 公式', '![まず対話型 AI で曖昧な要望をプロジェクト文脈に整理する例](assets/images/articles/ai-agent-gpt-project-context.png)
+
+## 5. 一番よく使う Prompt 公式'),
+  updated_at = '2026-06-14T16:20:00.000Z'
+where article_id = 'seed-ai-agent-workflow-guide-2026-06-14'
+  and lang = 'ja'
+  and instr(content_markdown, '## 5. 一番よく使う Prompt 公式') > 0
+  and instr(content_markdown, 'ai-agent-gpt-project-context.png') = 0;
+
+update article_translations
+set content_markdown = replace(content_markdown, '## 6. AI 活用の実践テクニック', '![ざっくりした依頼を Agent に渡せる実行用プロンプトへ圧縮する例](assets/images/articles/ai-agent-gpt-chatroom-prompt.png)
+
+## 6. AI 活用の実践テクニック'),
+  updated_at = '2026-06-14T16:20:00.000Z'
+where article_id = 'seed-ai-agent-workflow-guide-2026-06-14'
+  and lang = 'ja'
+  and instr(content_markdown, '## 6. AI 活用の実践テクニック') > 0
+  and instr(content_markdown, 'ai-agent-gpt-chatroom-prompt.png') = 0;
