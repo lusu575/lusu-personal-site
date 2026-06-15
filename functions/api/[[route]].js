@@ -31,101 +31,101 @@ export async function onRequest(context) {
     await ensureCoreSchema(env);
 
     if (request.method === "GET" && parts[0] === "health") {
-      return health(env);
+      return await health(env);
     }
     if (request.method === "POST" && parts[0] === "auth" && parts[1] === "register") {
-      return register(request, env);
+      return await register(request, env);
     }
     if (request.method === "POST" && parts[0] === "auth" && parts[1] === "login") {
-      return login(request, env);
+      return await login(request, env);
     }
     if (request.method === "POST" && parts[0] === "auth" && parts[1] === "logout") {
-      return logout(request, env);
+      return await logout(request, env);
     }
     if (request.method === "GET" && parts[0] === "auth" && parts[1] === "me") {
-      return me(request, env);
+      return await me(request, env);
     }
     if (parts[0] === "chat" && parts[1] === "messages") {
       if (request.method === "GET") {
-        return getChatMessages(request, env);
+        return await getChatMessages(request, env);
       }
       if (request.method === "POST") {
-        return postChatMessage(request, env);
+        return await postChatMessage(request, env);
       }
     }
     if (request.method === "GET" && parts[0] === "chat" && parts[1] === "nickname") {
-      return getChatNickname(env);
+      return await getChatNickname(env);
     }
     if (parts[0] === "analytics") {
       await ensureAnalyticsSchema(env);
       if (request.method === "POST" && parts[1] === "identify") {
-        return identifyVisitor(request, env);
+        return await identifyVisitor(request, env);
       }
       if (request.method === "POST" && parts[1] === "page-view") {
-        return recordPageView(request, env);
+        return await recordPageView(request, env);
       }
       if (request.method === "POST" && parts[1] === "click") {
-        return recordClickEvent(request, env);
+        return await recordClickEvent(request, env);
       }
     }
     if (parts[0] === "articles") {
       await ensureArticleSchema(env);
       await seedArticleTestData(env);
       if (request.method === "GET" && !parts[1]) {
-        return getArticles(request, env);
+        return await getArticles(request, env);
       }
       if (request.method === "GET" && parts[1]) {
-        return getArticle(request, env, parts[1]);
+        return await getArticle(request, env, parts[1]);
       }
     }
     if (parts[0] === "admin" && request.method === "GET" && parts[1] === "me") {
-      return adminMe(request, env);
+      return await adminMe(request, env);
     }
     if (parts[0] === "admin" && parts[1] === "analytics") {
       await ensureAnalyticsSchema(env);
       await ensureChatSchema(env);
       if (request.method === "GET" && parts[2] === "overview") {
-        return getAdminAnalyticsOverview(request, env);
+        return await getAdminAnalyticsOverview(request, env);
       }
     }
     if (parts[0] === "admin" && parts[1] === "chat") {
       await ensureChatSchema(env);
       if (request.method === "GET" && parts[2] === "messages") {
-        return getAdminChatMessages(request, env);
+        return await getAdminChatMessages(request, env);
       }
       if (request.method === "PUT" && parts[2] === "messages" && parts[3]) {
-        return updateAdminChatMessage(request, env, parts[3]);
+        return await updateAdminChatMessage(request, env, parts[3]);
       }
       if (request.method === "DELETE" && parts[2] === "messages" && parts[3]) {
-        return deleteAdminChatMessage(request, env, parts[3]);
+        return await deleteAdminChatMessage(request, env, parts[3]);
       }
       if (request.method === "GET" && parts[2] === "bans") {
-        return getAdminChatBans(request, env);
+        return await getAdminChatBans(request, env);
       }
       if (request.method === "POST" && parts[2] === "bans") {
-        return createAdminChatBan(request, env);
+        return await createAdminChatBan(request, env);
       }
       if (request.method === "DELETE" && parts[2] === "bans" && parts[3]) {
-        return disableAdminChatBan(request, env, parts[3]);
+        return await disableAdminChatBan(request, env, parts[3]);
       }
     }
     if (parts[0] === "admin" && parts[1] === "articles") {
       await ensureArticleSchema(env);
       await seedArticleTestData(env);
       if (request.method === "GET" && !parts[2]) {
-        return getAdminArticles(request, env);
+        return await getAdminArticles(request, env);
       }
       if (request.method === "GET" && parts[2]) {
-        return getAdminArticle(request, env, parts[2]);
+        return await getAdminArticle(request, env, parts[2]);
       }
       if (request.method === "POST" && !parts[2]) {
-        return createArticle(request, env);
+        return await createArticle(request, env);
       }
       if (request.method === "PUT" && parts[2]) {
-        return updateArticle(request, env, parts[2]);
+        return await updateArticle(request, env, parts[2]);
       }
       if (request.method === "DELETE" && parts[2]) {
-        return deleteArticle(request, env, parts[2]);
+        return await deleteArticle(request, env, parts[2]);
       }
     }
     if (parts[0] === "saves" && parts[1]) {
@@ -134,10 +134,10 @@ export async function onRequest(context) {
         return saveAccessError;
       }
       if (request.method === "GET") {
-        return getSave(request, env, parts[1]);
+        return await getSave(request, env, parts[1]);
       }
       if (request.method === "PUT") {
-        return putSave(request, env, parts[1]);
+        return await putSave(request, env, parts[1]);
       }
     }
 
