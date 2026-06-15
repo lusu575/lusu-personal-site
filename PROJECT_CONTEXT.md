@@ -63,6 +63,8 @@ Cloudflare Pages 项目状态：
 - 数据库化三语文章系统：文章内容保存在 Cloudflare D1，网站按当前语言读取 zh / en / ja 内容
 - Cloudflare Pages Functions 后端接口
 - Cloudflare D1 持久化账号、会话、游戏存档、聊天室消息和文章内容
+- 独立中文管理后台：`/admin/` 仅允许 `users.role = admin` 的站长账号访问，复用主站账号系统，但后台页面、项目介绍和后台更新记录单独维护，不公开到主站知识库。
+- 访问与点击埋点：主站通过独立 `js/telemetry.js` 记录 PV、UV、访问来源、地理位置聚合和点击事件；访客使用 HttpOnly 隐藏 ID 识别，前台不显示该 ID。
 
 ## 数据库化三语文章系统
 
@@ -118,12 +120,60 @@ Cloudflare Pages 项目状态：
 - Pages Functions 的 schema guard 会为旧 `users` 表自动补 `role` 列。
 - 只有 `role = admin` 的登录用户可以访问后台文章接口。
 - 普通登录用户只能继续使用游戏云存档等原有能力，不能管理文章。
+- `/admin/` 后台文章编辑页会一次性保存 zh / en / ja 三种内容，但编辑界面只显示当前选择的语言面板。
 
 Markdown 安全：
 
 - 文章详情第一阶段只支持基础 Markdown。
 - 前端详情正文使用 DOM 节点和 `textContent` 构造，不直接把未处理 Markdown/HTML 插入页面。
 - 聊天室仍保持纯文本渲染规则不变。
+
+## 管理后台、访问监控与埋点
+
+后台入口：
+
+- 页面：`/admin/`
+- 静态文件：`admin/index.html`、`admin/admin.css`、`admin/admin.js`
+- 访问拦截：`functions/admin/_middleware.js`
+- 权限：复用主站 `lusu_session` HttpOnly cookie 和 `users.role = admin`，非 admin 只能看到后台登录/拒绝页，不能读取后台静态资源或后台 API 数据。
+- 后台只使用中文文案；后台项目介绍和后台更新记录保存在后台页面内，不写入主站知识库 `site-updates`，也不对外公开。
+
+后台能力：
+
+- 实时监控大屏：显示今日 PV、UV、周期 PV/UV、今日点击、在线访客、今日聊天数。
+- 访问来源：按 Cloudflare `request.cf` 和请求头记录国家、region/省份、城市、colo、时区、经纬度；IP 只保存 hash 和掩码前缀，不保存完整明文 IP。
+- 地图界面：后台根据访问聚合数据绘制像素风地图点位。
+- 点击埋点：记录站内按钮、链接、桌面入口、筛选、文章和视频等点击目标，保存路径、route、目标文本、元素标识和屏幕尺寸，不记录输入框内容。
+- 知识库文章：后台可新建、编辑、发布、删除文章；保存和发布时要求 zh / en / ja 三语标题与正文齐全。
+- 聊天室管理：后台可查看隐藏访客 ID、client id、IP hash/IP 前缀、来源地；可编辑、隐藏/恢复、删除消息，并按隐藏访客 ID 或 IP hash 禁言。
+
+公开埋点接口：
+
+- `POST /api/analytics/identify`
+- `POST /api/analytics/page-view`
+- `POST /api/analytics/click`
+
+后台接口：
+
+- `GET /api/admin/me`
+- `GET /api/admin/analytics/overview`
+- `GET /api/admin/articles`
+- `GET /api/admin/articles/:articleId`
+- `POST /api/admin/articles`
+- `PUT /api/admin/articles/:articleId`
+- `DELETE /api/admin/articles/:articleId`
+- `GET /api/admin/chat/messages`
+- `PUT /api/admin/chat/messages/:messageId`
+- `DELETE /api/admin/chat/messages/:messageId`
+- `GET /api/admin/chat/bans`
+- `POST /api/admin/chat/bans`
+- `DELETE /api/admin/chat/bans/:banId`
+
+访客 ID 规则：
+
+- `lusu_visitor` 是后台识别用 HttpOnly cookie，前台页面不显示、不通过公开接口返回。
+- 聊天室前端仍保留本地 client id 只用于“我的消息”显示；后台禁言和审计使用隐藏 `lusu_visitor` 对应的服务器 visitor_id。
+- 即使用户修改聊天室昵称，后台仍可通过隐藏 visitor_id 识别同一访客。
 
 ## 账号与云存档
 
@@ -207,7 +257,7 @@ D1 表：`anonymous_chat_messages`
 - `hidden`
 - `ip_hash`
 
-当前第一版不做私聊、图片发送、表情包、WebSocket、在线状态、管理后台、多聊天室房间。
+公开聊天室仍不做私聊、图片发送、表情包、WebSocket、在线状态或多聊天室房间；管理能力已放到独立 `/admin/` 后台。
 
 ## 游戏区
 
@@ -262,8 +312,12 @@ D1 表：`anonymous_chat_messages`
 - `sessions`
 - `game_saves`
 - `anonymous_chat_messages`
+- `chat_bans`
 - `articles`
 - `article_translations`
+- `site_visitors`
+- `analytics_page_views`
+- `analytics_click_events`
 
 ## 主要文件结构
 
@@ -279,12 +333,18 @@ D1 表：`anonymous_chat_messages`
 ├── _headers
 ├── _redirects
 ├── assets/
+├── admin/
+│   ├── index.html
+│   ├── admin.css
+│   └── admin.js
 ├── cloudflare/
 │   ├── README.md
 │   └── schema.sql
 ├── css/
 │   └── style.css
 ├── functions/
+│   ├── admin/
+│   │   └── _middleware.js
 │   └── api/
 │       └── [[route]].js
 ├── games/
@@ -298,7 +358,8 @@ D1 表：`anonymous_chat_messages`
 │   └── life-restart/
 │       （新增游戏必须优先本地静态部署，不要只做外部跳转入口）
 ├── js/
-│   └── main.js
+│   ├── main.js
+│   └── telemetry.js
 └── skills/
     └── lusu-personal-site-skill/
         ├── SKILL.md
@@ -382,7 +443,6 @@ skills/lusu-personal-site-skill/README.md
 
 ## 后续可扩展方向
 
-- 后台管理内容
 - 真正文章详情页
 - 资源上传与下载管理
 - 评论系统

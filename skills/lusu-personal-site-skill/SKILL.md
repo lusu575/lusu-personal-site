@@ -124,6 +124,18 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 文章发布时间和聊天室消息时间必须按用户所在时区显示；文章发布时间不显示时区名，聊天室消息仍按聊天规则显示时间信息；后端保存/返回时间应保持 ISO/UTC 语义，前端格式化时再转换到用户本机时区，避免把 UTC 误当成本地时间。
 - 从知识库文章详情关闭窗口或返回桌面后，再次打开知识库应回到知识库首页，不应继续停留在上一次文章详情。
 
+## 管理后台与埋点规则
+
+- 管理后台入口固定为 `/admin/`，后台静态页面、样式、脚本应放在 `admin/` 目录，不要混进主站首页窗口、主站 CSS 或主站三语内容体系。
+- 后台只需要中文文案；后台项目介绍和后台更新记录必须单独维护在后台内，不写入主站知识库 `site-updates`，也不要在首页最近更新里公开展示。
+- `/admin/*` 必须通过 Pages Functions middleware 校验主站 `lusu_session`，只有 `users.role = admin` 的站长账号可以访问；所有 `/api/admin/*` 也必须继续做服务端 admin 校验。
+- 后台文章编辑可以按当前选择语言显示单个语言面板，但保存/发布正式文章时必须一次性提交 zh / en / ja 三种标题与正文。
+- 主站访问和点击埋点应使用独立 `js/telemetry.js`，避免把埋点逻辑写进主站可见 UI 流程；埋点脚本不得记录输入框内容、密码、正文草稿或聊天输入中的未发送内容。
+- 访客后台识别使用 HttpOnly `lusu_visitor` cookie；该隐藏 visitor_id 不应在前台 UI 或公开 API 中展示。聊天室前端本地 client id 只能用于“我的消息”显示，后台禁言和审计使用隐藏 visitor_id。
+- IP 信息只保存 hash 和掩码前缀，以及 Cloudflare 提供的国家、region/省份、城市等来源字段；不要把完整明文 IP 暴露给普通前台。
+- 聊天室后台可以编辑、隐藏/恢复、删除消息，并按隐藏 visitor_id 或 IP hash 禁言；公开聊天室接口仍要保持纯文本渲染和频率限制。
+- 修改后台 schema、埋点接口、后台 middleware 或禁言逻辑时，必须同步更新 `PROJECT_CONTEXT.md` 和 `CHANGELOG.md`。
+
 ## Cloudflare 部署规则
 
 - 正式部署链路是 `GitHub main -> Cloudflare Pages Git 自动部署 -> lusu575.com`。
@@ -193,5 +205,13 @@ $env:XDG_CONFIG_HOME='F:\lusu575个人站\.wrangler-config'; npx.cmd wrangler pa
   - `assets/images/start-windows-pixel.png`
 - 聊天室图标资源：
   - `assets/images/icon-chatroom-clean.png`
+- 管理后台与埋点关键文件：
+  - `admin/index.html`
+  - `admin/admin.css`
+  - `admin/admin.js`
+  - `functions/admin/_middleware.js`
+  - `functions/api/[[route]].js`
+  - `js/telemetry.js`
+  - `cloudflare/schema.sql`
 
 替换这些资源后，要检查桌面端和手机端显示效果。

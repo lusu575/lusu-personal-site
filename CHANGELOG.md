@@ -4,6 +4,17 @@
 
 ## 2026-06-15
 
+- 独立管理后台与访问监控：
+  - 新增 `/admin/` 中文管理后台，包含实时监控大屏、知识库文章管理、访问来源、点击埋点、聊天室管理、后台项目介绍和私有后台更新记录。
+  - 新增 `functions/admin/_middleware.js`，后台静态资源也会复用主站账号 `lusu_session` 并校验 `users.role = admin`；非管理员只能看到后台登录/拒绝页。
+  - 后台文章编辑支持按当前选择语言显示中文 / English / 日本語面板，但保存和发布时要求三语标题与正文齐全。
+  - 新增访问与点击埋点接口：`/api/analytics/identify`、`/api/analytics/page-view`、`/api/analytics/click`，主站通过独立 `js/telemetry.js` 上报 PV、UV、地理来源和点击目标。
+  - 新增后台统计接口 `/api/admin/analytics/overview`，按最近周期返回 PV/UV、今日点击、在线访客、国家/省份/城市/IP 前缀、热门页面、点击热点和最近事件。
+  - 新增 HttpOnly `lusu_visitor` 隐藏访客 ID；前台不显示该 ID，聊天室公开接口继续返回本地 client id 用于“我的消息”显示，后台使用隐藏 visitor_id 做识别和禁言。
+  - 聊天室后台新增消息编辑、隐藏/恢复、删除、按隐藏 visitor_id 或 IP hash 禁言；D1 新增 `chat_bans`、`site_visitors`、`analytics_page_views`、`analytics_click_events`。
+  - 更新 `cloudflare/schema.sql`、`PROJECT_CONTEXT.md`、项目专用 Skill 和 README，记录后台权限、埋点隐私和后台更新记录不混入主站 `site-updates` 的规则。
+  - 补齐根目录 README 的当前项目状态、后台、埋点与上线链路说明，并将首页右上角“最近更新日期”的静态兜底文本同步为 `2026.06.15`；实际显示仍由 `site-updates` / `content.updates` 自动计算。
+
 - 首页四时段动态云层扩展：
   - 将 morning / dusk / night 也接入与 Day 相同的动态云层方式：各自使用 `assets/images/wallpaper-dynamic/<time>/base-clean.png` 作为无云底图，并叠加单朵独立透明云层。
   - morning / dusk 各拆出 7 朵中高空移动云，night 拆出 7 朵夜色云；低地平线云保留静态，避免移动后贴近地面或山坡。
