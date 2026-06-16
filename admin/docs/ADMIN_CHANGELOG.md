@@ -4,6 +4,12 @@
 
 ## 2026-06-16
 
+- 视频分类 seed 持久化修复：
+  - 运行时 schema guard 只在全新 `video_categories` 表首次创建时初始化默认视频分类。
+  - 已有视频分类表会写入 `site_runtime_state` 的 `video_categories_default_seeded` 标记，之后后台删除默认标签、停用标签或调整排序都不会被冷启动自动补回。
+  - `cloudflare/schema.sql` 同步增加状态表和条件 seed，减少手动 migration 复原后台维护结果的风险；旧库缺 `pinned_sort_order` 时，队列索引继续交给运行时 guard 补列后创建。
+  - 后台页面内 `adminUpdates` 和后台 JS query 已同步更新。
+
 - 视频置顶独立队列排序修复：
   - D1 `videos` 新增 `pinned_sort_order`，置顶视频走独立队列；只要勾选置顶，就一定排在未置顶视频前面。
   - 公开视频列表和后台视频列表统一按置顶优先、置顶排序从大到小、普通排序从大到小返回。

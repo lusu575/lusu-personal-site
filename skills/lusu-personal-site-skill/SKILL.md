@@ -237,7 +237,7 @@ $env:XDG_CONFIG_HOME='F:\lusu575个人站\.wrangler-config'; npx.cmd wrangler pa
 - 后台“从本地视频截首帧”只用于生成封面，不代表本站支持本地视频上传、托管或直接播放；不要因此放宽 YouTube / Bilibili / b23.tv 链接白名单和 iframe 安全边界。
 - Bilibili 元数据遇到 HTTP 412、页面状态变化或 API 风控时，必须保留白名单解析和服务端规范化 `embed_url`，并优先尝试详情接口、移动页、页面 `__INITIAL_STATE__` / `__NEXT_DATA__`、meta、结构化数据和更宽的页面状态兜底，不得放宽为任意 iframe。
 - 视频排序语义为置顶独立队列优先；只要 `pinned = 1` 就一定排在未置顶视频前面，多个置顶视频按 `pinned_sort_order` 从大到小显示，未置顶视频按 `sort_order` 从大到小显示。新建视频默认取当前最大普通排序 +10、当前最大置顶排序 +10。视频分类排序仍使用 `sort_order` 数值越大越靠前的语义，新建分类默认 +10。
-- 默认视频分类 seed 不要覆盖后台维护过的 `slug`、`name_zh`、`name_en`、`name_ja`、`sort_order` 和 `enabled`，避免运行时 schema guard 把后台分类名、排序或停用状态还原。
+- 默认视频分类 seed 只允许在全新 `video_categories` 表首次创建时初始化；已有表必须通过 `site_runtime_state.video_categories_default_seeded` 视为已处理，不要覆盖或补回后台维护过的 `slug`、`name_zh`、`name_en`、`name_ja`、`sort_order`、`enabled` 和已删除分类，避免运行时 schema guard 把后台分类名、排序、停用状态或删除结果还原。
 - 抓取失败时后台应显示可读原因，并允许管理员手动填写标题、简介、作者和封面；前台遇到不可播放或受限视频时显示站内不可播放提示。
 - 主站视频卡片标题、简介、分类名必须使用 `textContent` 或安全 DOM API 渲染，不要把视频数据拼接成未转义 HTML。
 - 主站所有视频卡片必须保持统一尺寸；视频封面要铺满封面区域，封面失败时保留同尺寸像素风默认占位图；移动端视频区必须单列适配且不得横向溢出。

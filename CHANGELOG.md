@@ -4,6 +4,13 @@
 
 ## 2026-06-16
 
+- 视频卡片与分类持久化修复：
+  - 主站视频卡片从 520px 收紧到 424px，封面区、正文行距和播放按钮间距同步压缩，减少图文信息下方的大块空白，同时保留标题、简介、来源/时间和播放按钮。
+  - 视频分类默认 seed 改为首次建表初始化；已有 `video_categories` 表会写入 `site_runtime_state` 状态标记，之后后台删除默认标签或修改排序都不会被运行时 schema guard 自动补回。
+  - `cloudflare/schema.sql` 同步增加 `site_runtime_state` 并让默认视频分类只在空库首次初始化，减少手动 migration 复原后台维护结果的风险；旧库缺 `pinned_sort_order` 时，相关队列索引继续交给运行时 guard 补列后创建，避免手动 schema 卡住。
+  - 首页匿名聊天室桌面图标略微缩小并增加与名称的间距，避免图标底部和文字贴在一起。
+  - `npm.cmd run build` 的运行时检查新增 `/api/videos?lang=zh` 路径，覆盖视频 schema guard；更新 `index.html` 的 CSS / JS query 为 `20260616-video-card-category-icon-fixes`、`admin/index.html` 的后台 JS query 为 `20260616-video-category-seed-state`，并新增同名三语 `site-updates` 更新文章。
+
 - 视频区窗口自适应放大：
   - 主站视频区列表窗口从固定 760px 高度上限改为跟随浏览器可用高度计算，减少大屏桌面底部空白，能露出更多视频卡片。
   - 桌面端视频窗口宽度小幅放大到更适合宽屏的范围，保留三列卡片、分类筛选和内部滚动逻辑。

@@ -32,6 +32,13 @@ const BILIBILI_PAGE_HEADERS = {
   ...BILIBILI_METADATA_HEADERS,
   Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
 };
+const VIDEO_CATEGORY_SEED_FLAG = "video_categories_default_seeded";
+const DEFAULT_VIDEO_CATEGORIES = [
+  ["video-cat-vrchat", "vrchat", "VRChat作品", "VRChat Works", "VRChat作品", 10],
+  ["video-cat-ai", "ai-experiments", "AI实验", "AI Experiments", "AI実験", 20],
+  ["video-cat-games", "game-records", "游戏录像", "Game Records", "ゲーム録画", 30],
+  ["video-cat-favorites", "favorites", "收藏视频", "Saved Videos", "お気に入り動画", 40]
+];
 let coreSchemaReady = false;
 let chatSchemaReady = false;
 let articleSchemaReady = false;
@@ -1636,7 +1643,15 @@ async function ensureVideoSchema(env) {
   if (videoSchemaReady) {
     return;
   }
+  const hadVideoCategoriesTable = await tableExists(env, "video_categories");
   await env.DB.batch([
+    env.DB.prepare(`
+      create table if not exists site_runtime_state (
+        key text primary key,
+        value text not null,
+        updated_at text not null
+      )
+    `),
     env.DB.prepare(`
       create table if not exists videos (
         video_id text primary key,
@@ -1705,18 +1720,9 @@ async function ensureVideoSchema(env) {
     env.DB.prepare("create index if not exists videos_public_queue_idx on videos(status, pinned, pinned_sort_order, sort_order, published_at)"),
     env.DB.prepare("create index if not exists videos_platform_external_idx on videos(platform, external_id)"),
     env.DB.prepare("create index if not exists video_categories_enabled_idx on video_categories(enabled, sort_order)"),
-    env.DB.prepare("create index if not exists video_category_relations_category_idx on video_category_relations(category_id, sort_order)"),
-    env.DB.prepare(`
-      insert into video_categories (
-        category_id, slug, name_zh, name_en, name_ja, sort_order, enabled, created_at, updated_at
-      ) values
-        ('video-cat-vrchat', 'vrchat', 'VRChat作品', 'VRChat Works', 'VRChat作品', 10, 1, '2026-06-15T00:00:00.000Z', '2026-06-15T00:00:00.000Z'),
-        ('video-cat-ai', 'ai-experiments', 'AI实验', 'AI Experiments', 'AI実験', 20, 1, '2026-06-15T00:00:00.000Z', '2026-06-15T00:00:00.000Z'),
-        ('video-cat-games', 'game-records', '游戏录像', 'Game Records', 'ゲーム録画', 30, 1, '2026-06-15T00:00:00.000Z', '2026-06-15T00:00:00.000Z'),
-        ('video-cat-favorites', 'favorites', '收藏视频', 'Saved Videos', 'お気に入り動画', 40, 1, '2026-06-15T00:00:00.000Z', '2026-06-15T00:00:00.000Z')
-      on conflict(category_id) do nothing
-    `)
+    env.DB.prepare("create index if not exists video_category_relations_category_idx on video_category_relations(category_id, sort_order)")
   ]);
+  await seedDefaultVideoCategories(env, { hadVideoCategoriesTable });
   videoSchemaReady = true;
 }
 
@@ -1914,6 +1920,44 @@ async function ensureTableColumns(env, tableName, columns) {
     }
   }
   return addedNames;
+}
+
+async function tableExists(env, tableName) {
+  const row = await env.DB.prepare(
+    "select name from sqlite_master where type = 'table' and name = ?"
+  ).bind(tableName).first();
+  return Boolean(row?.name);
+}
+
+async function seedDefaultVideoCategories(env, { hadVideoCategoriesTable }) {
+  const flag = await env.DB.prepare("select value from site_runtime_state where key = ?")
+    .bind(VIDEO_CATEGORY_SEED_FLAG).first();
+  if (flag) {
+    return;
+  }
+
+  const count = await env.DB.prepare("select count(*) as count from video_categories").first();
+  if (!hadVideoCategoriesTable && Number(count?.count || 0) === 0) {
+    await env.DB.batch(defaultVideoCategorySeedStatements(env));
+  }
+
+  await env.DB.prepare(`
+    insert into site_runtime_state (key, value, updated_at)
+    values (?, '1', ?)
+    on conflict(key) do update set
+      value = excluded.value,
+      updated_at = excluded.updated_at
+  `).bind(VIDEO_CATEGORY_SEED_FLAG, nowIso()).run();
+}
+
+function defaultVideoCategorySeedStatements(env) {
+  const createdAt = "2026-06-15T00:00:00.000Z";
+  return DEFAULT_VIDEO_CATEGORIES.map((category) => env.DB.prepare(`
+    insert into video_categories (
+      category_id, slug, name_zh, name_en, name_ja, sort_order, enabled, created_at, updated_at
+    ) values (?, ?, ?, ?, ?, ?, 1, ?, ?)
+    on conflict(category_id) do nothing
+  `).bind(...category, createdAt, createdAt));
 }
 
 async function createSessionResponse(env, request, userId, email, status = 200, role = "user") {
@@ -4084,6 +4128,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-16-video-card-category-icon-fixes',
+        '2026-06-16-video-card-category-icon-fixes',
+        'site-updates',
+        '["网站更新","视频区","后台","桌面图标"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-16T08:20:00.000Z',
+        '2026-06-16T08:20:00.000Z',
+        '2026-06-16T08:20:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -4273,6 +4344,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# 動画欄ウィンドウの自動拡大\n\n今回の更新では、メインサイトの動画欄ウィンドウがデスクトップ画面をより広く使えるようにしました。\n\n## 更新内容\n\n- 動画欄の XP ウィンドウは従来の 760px 上限に固定されず、ブラウザの利用可能な高さに合わせて伸びます。\n- ワイドなデスクトップ画面ではウィンドウ幅も少し広げ、3列の動画カードに余裕を持たせました。\n- 動画一覧は引き続きウィンドウ内でスクロールし、タイトルバー、カテゴリ絞り込み、安全なカード描画はそのままです。\n- モバイルでは既存の小画面ブレークポイントを維持し、単列表示と横方向のはみ出し防止を保っています。"
       }
     }, "2026-06-16T02:40:13.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-16-video-card-category-icon-fixes", {
+      zh: {
+        title: "视频卡片与分类持久化修复",
+        summary: "视频卡片减少下方空白，视频分类删除和排序会被保留，聊天室桌面图标也稍微缩小。",
+        content_markdown: "# 视频卡片与分类持久化修复\n\n本次更新继续修复视频区和首页桌面图标的细节，让显示更紧凑，后台维护结果也更稳定。\n\n## 更新内容\n\n- 主站视频卡片缩短整体高度，并压缩封面、正文和按钮间距，减少卡片下方无用空白。\n- 视频分类默认 seed 改为首次建表初始化，之后不再把后台已经删除的默认标签补回来，也不影响后台排序。\n- 构建检查新增公开视频接口路径，避免视频 schema guard 的运行时问题漏检。\n- 首页匿名聊天室桌面图标略微缩小，并和名称保留更多间距。"
+      },
+      en: {
+        title: "Video Card and Category Persistence Fixes",
+        summary: "Video cards are more compact, deleted or reordered video categories stay intact, and the chatroom desktop icon is slightly smaller.",
+        content_markdown: "# Video Card and Category Persistence Fixes\n\nThis update continues tightening the videos area and desktop icons so the public page is cleaner and admin-managed data stays stable.\n\n## Changes\n\n- Public video cards now use a shorter fixed height with tighter thumbnail, text, and button spacing to remove unnecessary lower blank space.\n- Default video category seeds now run only during first table creation, so deleted default tags are not restored and admin ordering is preserved.\n- The build check now exercises the public videos API path so video schema guard problems are less likely to slip through.\n- The anonymous chatroom desktop icon is slightly smaller and leaves clearer spacing above its label."
+      },
+      ja: {
+        title: "動画カードとカテゴリ保持の修正",
+        summary: "動画カードをコンパクトにし、削除・並べ替えた動画カテゴリを保持し、チャットルームのデスクトップアイコンも少し小さくしました。",
+        content_markdown: "# 動画カードとカテゴリ保持の修正\n\n今回の更新では、動画欄とホームのデスクトップアイコンをさらに調整し、表示をコンパクトにしつつ、管理画面の変更が戻らないようにしました。\n\n## 更新内容\n\n- 公開側の動画カードは固定高さを短くし、サムネイル、本文、ボタンの間隔を詰めて下部の不要な余白を減らしました。\n- 既定の動画カテゴリ seed は初回テーブル作成時だけ動くようにし、削除済みの既定タグを戻さず、管理画面の並び順も保持します。\n- ビルドチェックで公開動画 API の経路も確認し、動画 schema guard の実行時問題を見落としにくくしました。\n- 匿名チャットルームのデスクトップアイコンを少し小さくし、ラベルとの間隔を確保しました。"
+      }
+    }, "2026-06-16T08:20:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')

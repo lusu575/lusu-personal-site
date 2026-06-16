@@ -335,11 +335,16 @@ D1 表：`anonymous_chat_messages`
 
 - `users`
 - `sessions`
+- `user_login_events`
 - `game_saves`
 - `anonymous_chat_messages`
 - `chat_bans`
 - `articles`
 - `article_translations`
+- `videos`
+- `video_categories`
+- `video_category_relations`
+- `site_runtime_state`
 - `site_visitors`
 - `analytics_page_views`
 - `analytics_click_events`
@@ -517,7 +522,7 @@ admin/docs/ADMIN_CHANGELOG.md
 - 后端只接受 YouTube / youtu.be / Bilibili / b23.tv 白名单链接，由服务端解析并生成规范化 `embed_url`；前端和后台预览不得直接 iframe 用户输入的任意 URL。
 - 视频元数据只在后台预览、首次保存、URL 变化保存或刷新时抓取，并缓存到 D1；已有视频 URL 未变化的普通保存不重新抓取外部元数据，公开视频访问不重新抓取。后台应尽量自动补齐标题、简介、作者、发布时间和封面，Bilibili 抓取遇到 API 风控或 HTTP 412 时使用详情接口、移动页、`__INITIAL_STATE__`、`__NEXT_DATA__`、meta、结构化数据和页面状态备用解析。
 - 视频排序规则：置顶视频走独立队列，只要 `pinned = 1` 就一定排在未置顶视频前面；多个置顶视频按 `pinned_sort_order` 从大到小显示，未置顶视频按 `sort_order` 从大到小显示。后台新建视频默认取当前最大普通排序 +10、当前最大置顶排序 +10，方便新视频保持在前面。
-- 视频分类排序也使用数值越大越靠前的语义，后台新建分类默认 +10；默认分类 seed 不应覆盖后台维护过的 slug、中文名、英文名、日文名、排序和启用状态。
+- 视频分类排序也使用数值越大越靠前的语义，后台新建分类默认 +10；默认分类 seed 只在全新视频分类表首次创建时初始化，已有表会通过 `site_runtime_state.video_categories_default_seeded` 标记为已处理，不应覆盖或补回后台维护过的 slug、中文名、英文名、日文名、排序、启用状态和已删除分类。
 - 公开视频接口必须返回服务端保存的 `original_url`，用于主站“打开原地址”按钮；`embed_url` 只用于站内 iframe 播放，不要把 embed 地址当作原链接展示。
 - 主站视频区从 `/api/videos` 读取列表和分类，使用安全 DOM/textContent 渲染，点击后在 XP 风格站内窗口加载 lazy iframe。
 - 主站视频卡片必须保持统一尺寸；封面图片要铺满卡片封面区域，缺少封面或封面加载失败时显示同尺寸像素风占位图。

@@ -51,6 +51,12 @@ create table if not exists game_saves (
 
 create index if not exists game_saves_updated_at_idx on game_saves(updated_at);
 
+create table if not exists site_runtime_state (
+  key text primary key,
+  value text not null,
+  updated_at text not null
+);
+
 create table if not exists anonymous_chat_messages (
   message_id text primary key,
   visitor_id text not null,
@@ -143,8 +149,6 @@ create table if not exists videos (
 
 create index if not exists videos_public_idx
   on videos(status, pinned, sort_order, published_at);
-create index if not exists videos_public_queue_idx
-  on videos(status, pinned, pinned_sort_order, sort_order, published_at);
 create index if not exists videos_platform_external_idx
   on videos(platform, external_id);
 
@@ -174,14 +178,33 @@ create table if not exists video_category_relations (
 create index if not exists video_category_relations_category_idx
   on video_category_relations(category_id, sort_order);
 
+with default_video_categories(category_id, slug, name_zh, name_en, name_ja, sort_order) as (
+  values
+    ('video-cat-vrchat', 'vrchat', 'VRChat作品', 'VRChat Works', 'VRChat作品', 10),
+    ('video-cat-ai', 'ai-experiments', 'AI实验', 'AI Experiments', 'AI実験', 20),
+    ('video-cat-games', 'game-records', '游戏录像', 'Game Records', 'ゲーム録画', 30),
+    ('video-cat-favorites', 'favorites', '收藏视频', 'Saved Videos', 'お気に入り動画', 40)
+)
 insert into video_categories (
   category_id, slug, name_zh, name_en, name_ja, sort_order, enabled, created_at, updated_at
-) values
-  ('video-cat-vrchat', 'vrchat', 'VRChat作品', 'VRChat Works', 'VRChat作品', 10, 1, '2026-06-15T00:00:00.000Z', '2026-06-15T00:00:00.000Z'),
-  ('video-cat-ai', 'ai-experiments', 'AI实验', 'AI Experiments', 'AI実験', 20, 1, '2026-06-15T00:00:00.000Z', '2026-06-15T00:00:00.000Z'),
-  ('video-cat-games', 'game-records', '游戏录像', 'Game Records', 'ゲーム録画', 30, 1, '2026-06-15T00:00:00.000Z', '2026-06-15T00:00:00.000Z'),
-  ('video-cat-favorites', 'favorites', '收藏视频', 'Saved Videos', 'お気に入り動画', 40, 1, '2026-06-15T00:00:00.000Z', '2026-06-15T00:00:00.000Z')
+)
+select
+  category_id, slug, name_zh, name_en, name_ja, sort_order, 1,
+  '2026-06-15T00:00:00.000Z',
+  '2026-06-15T00:00:00.000Z'
+from default_video_categories
+where not exists (
+    select 1 from site_runtime_state where key = 'video_categories_default_seeded'
+  )
+  and not exists (select 1 from video_categories)
+  and not exists (select 1 from users)
 on conflict(category_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at)
+values ('video_categories_default_seeded', '1', '2026-06-16T08:20:00.000Z')
+on conflict(key) do update set
+  value = excluded.value,
+  updated_at = excluded.updated_at;
 
 create table if not exists site_visitors (
   visitor_id text primary key,
@@ -1821,6 +1844,32 @@ on conflict(article_id) do update set
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
 
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-16-video-card-category-icon-fixes',
+  '2026-06-16-video-card-category-icon-fixes',
+  'site-updates',
+  '["网站更新","视频区","后台","桌面图标"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-16T08:20:00.000Z',
+  '2026-06-16T08:20:00.000Z',
+  '2026-06-16T08:20:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
@@ -2041,6 +2090,45 @@ This update lets the main videos window use more of the available desktop screen
 - ワイドなデスクトップ画面ではウィンドウ幅も少し広げ、3列の動画カードに余裕を持たせました。
 - 動画一覧は引き続きウィンドウ内でスクロールし、タイトルバー、カテゴリ絞り込み、安全なカード描画はそのままです。
 - モバイルでは既存の小画面ブレークポイントを維持し、単列表示と横方向のはみ出し防止を保っています。', '2026-06-16T02:40:13.000Z', '2026-06-16T02:40:13.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-16-video-card-category-icon-fixes-zh', 'seed-update-2026-06-16-video-card-category-icon-fixes', 'zh', '视频卡片与分类持久化修复', '视频卡片减少下方空白，视频分类删除和排序会被保留，聊天室桌面图标也稍微缩小。', '# 视频卡片与分类持久化修复
+
+本次更新继续修复视频区和首页桌面图标的细节，让显示更紧凑，后台维护结果也更稳定。
+
+## 更新内容
+
+- 主站视频卡片缩短整体高度，并压缩封面、正文和按钮间距，减少卡片下方无用空白。
+- 视频分类默认 seed 改为首次建表初始化，之后不再把后台已经删除的默认标签补回来，也不影响后台排序。
+- 构建检查新增公开视频接口路径，避免视频 schema guard 的运行时问题漏检。
+- 首页匿名聊天室桌面图标略微缩小，并和名称保留更多间距。', '2026-06-16T08:20:00.000Z', '2026-06-16T08:20:00.000Z'),
+  ('seed-update-2026-06-16-video-card-category-icon-fixes-en', 'seed-update-2026-06-16-video-card-category-icon-fixes', 'en', 'Video Card and Category Persistence Fixes', 'Video cards are more compact, deleted or reordered video categories stay intact, and the chatroom desktop icon is slightly smaller.', '# Video Card and Category Persistence Fixes
+
+This update continues tightening the videos area and desktop icons so the public page is cleaner and admin-managed data stays stable.
+
+## Changes
+
+- Public video cards now use a shorter fixed height with tighter thumbnail, text, and button spacing to remove unnecessary lower blank space.
+- Default video category seeds now run only during first table creation, so deleted default tags are not restored and admin ordering is preserved.
+- The build check now exercises the public videos API path so video schema guard problems are less likely to slip through.
+- The anonymous chatroom desktop icon is slightly smaller and leaves clearer spacing above its label.', '2026-06-16T08:20:00.000Z', '2026-06-16T08:20:00.000Z'),
+  ('seed-update-2026-06-16-video-card-category-icon-fixes-ja', 'seed-update-2026-06-16-video-card-category-icon-fixes', 'ja', '動画カードとカテゴリ保持の修正', '動画カードをコンパクトにし、削除・並べ替えた動画カテゴリを保持し、チャットルームのデスクトップアイコンも少し小さくしました。', '# 動画カードとカテゴリ保持の修正
+
+今回の更新では、動画欄とホームのデスクトップアイコンをさらに調整し、表示をコンパクトにしつつ、管理画面の変更が戻らないようにしました。
+
+## 更新内容
+
+- 公開側の動画カードは固定高さを短くし、サムネイル、本文、ボタンの間隔を詰めて下部の不要な余白を減らしました。
+- 既定の動画カテゴリ seed は初回テーブル作成時だけ動くようにし、削除済みの既定タグを戻さず、管理画面の並び順も保持します。
+- ビルドチェックで公開動画 API の経路も確認し、動画 schema guard の実行時問題を見落としにくくしました。
+- 匿名チャットルームのデスクトップアイコンを少し小さくし、ラベルとの間隔を確保しました。', '2026-06-16T08:20:00.000Z', '2026-06-16T08:20:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,

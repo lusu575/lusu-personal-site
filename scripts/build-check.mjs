@@ -122,22 +122,24 @@ function createMockD1() {
 try {
   const apiPath = resolve(root, "functions/api/[[route]].js");
   const { onRequest } = await import(pathToFileURL(apiPath).href);
-  const response = await onRequest({
-    request: new Request("https://example.test/api/articles?lang=zh"),
-    env: { DB: createMockD1() },
-    waitUntil() {}
-  });
+  for (const path of ["/api/articles?lang=zh", "/api/videos?lang=zh"]) {
+    const response = await onRequest({
+      request: new Request(`https://example.test${path}`),
+      env: { DB: createMockD1() },
+      waitUntil() {}
+    });
 
-  if (!response || typeof response.status !== "number") {
-    fail("functions/api/[[route]].js did not return a Response for /api/articles");
-  } else if (response.status >= 500) {
-    const body = await response.text();
-    fail(`functions/api/[[route]].js /api/articles returned ${response.status}: ${body}`);
+    if (!response || typeof response.status !== "number") {
+      fail(`functions/api/[[route]].js did not return a Response for ${path}`);
+    } else if (response.status >= 500) {
+      const body = await response.text();
+      fail(`functions/api/[[route]].js ${path} returned ${response.status}: ${body}`);
+    }
   }
 } catch (error) {
-  fail(`functions/api/[[route]].js /api/articles runtime check failed: ${error.message}`);
+  fail(`functions/api/[[route]].js runtime check failed: ${error.message}`);
 }
 
 if (!process.exitCode) {
-  console.log(`build-check: ok (${relative(root, resolve(root, "admin"))}, api articles)`);
+  console.log(`build-check: ok (${relative(root, resolve(root, "admin"))}, api articles/videos)`);
 }
