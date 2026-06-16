@@ -974,6 +974,13 @@ main {
   max-height: calc(100vh - 150px);
 }
 
+#videos .xp-window {
+  width: min(1280px, calc(100% - 16px));
+  min-height: min(760px, calc(100dvh - 150px));
+  height: calc(100dvh - 150px);
+  max-height: calc(100dvh - 150px);
+}
+
 #about .xp-window {
   display: flex;
   flex-direction: column;

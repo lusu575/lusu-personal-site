@@ -345,6 +345,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "📺",
+      date: "2026.06.16",
+      title: { zh: "视频区窗口自适应放大", en: "Responsive Video Window", ja: "動画欄ウィンドウの自動拡大" },
+      desc: {
+        zh: "视频区列表窗口会跟随屏幕可用高度放大，减少桌面底部空白并显示更多视频卡片",
+        en: "The videos window now grows with available screen height, reducing empty desktop space and showing more cards",
+        ja: "動画欄のウィンドウが画面の高さに合わせて広がり、下部の空白を減らしてより多くのカードを表示します"
+      }
+    },
+    {
       icon: "📱",
       date: "2026.06.16",
       title: { zh: "移动端与后台视频维护修复", en: "Mobile and Admin Video Maintenance Fixes", ja: "モバイル表示と動画管理を修正" },

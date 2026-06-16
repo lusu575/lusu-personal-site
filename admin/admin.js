@@ -47,6 +47,11 @@ const panelMeta = {
 const adminUpdates = [
   {
     date: "2026-06-16",
+    title: "视频置顶独立队列排序修复",
+    body: "视频管理新增独立置顶排序值；勾选置顶的视频会先进入置顶队列，公开视频和后台列表都优先显示置顶队列，多个置顶视频再按置顶排序值从大到小排列，未置顶视频继续按普通排序显示。"
+  },
+  {
+    date: "2026-06-16",
     title: "视频封面本地上传与首帧生成",
     body: "视频管理支持上传 JPG、PNG、WEBP、AVIF 本地图片作为封面，并会压缩成适合卡片展示的封面数据；也可从本地视频文件读取第一帧生成封面，保存时如果封面为空会优先使用已选择的视频首帧。"
   },
@@ -717,7 +722,7 @@ function renderVideoList() {
         ${statusBadge(videoStatusLabel(video.status), video.status || "neutral")}
         ${statusBadge(video.platform || "未知平台", "neutral")}
         ${statusBadge(`排序 ${formatNumber(video.sort_order)}`, "neutral")}
-        ${video.pinned ? statusBadge("置顶", "visible") : ""}
+        ${video.pinned ? statusBadge(`置顶排序 ${formatNumber(pinnedSortOrderValue(video))}`, "visible") : ""}
       </span>
       <span class="list-subtle">${escapeHtml(video.author_name || "")} ${formatTime(video.published_at)} · 更新 ${formatTime(video.updated_at)}</span>
       ${video.metadata_error ? `<span class="list-subtle">${escapeHtml(video.metadata_error)}</span>` : ""}
@@ -749,10 +754,25 @@ function nextSortOrder(items) {
   return max + 10;
 }
 
+function pinnedSortOrderValue(video) {
+  return Number(video?.pinned_sort_order ?? video?.sort_order ?? 0);
+}
+
+function nextPinnedSortOrder(items) {
+  const pinnedVideos = items.filter((item) => Number(item.pinned || 0) === 1);
+  const max = pinnedVideos.reduce((result, item) => Math.max(result, pinnedSortOrderValue(item)), 0);
+  return max + 10;
+}
+
 function applyNewVideoSortDefault() {
-  const field = $("#video-form")?.elements?.sort_order;
-  if (field) {
-    field.value = String(nextSortOrder(state.videos));
+  const form = $("#video-form");
+  const sortField = form?.elements?.sort_order;
+  const pinnedSortField = form?.elements?.pinned_sort_order;
+  if (sortField) {
+    sortField.value = String(nextSortOrder(state.videos));
+  }
+  if (pinnedSortField) {
+    pinnedSortField.value = String(nextPinnedSortOrder(state.videos));
   }
 }
 
@@ -793,6 +813,7 @@ function fillVideoForm(video) {
   form.elements.status.value = video.status || "draft";
   form.elements.sort_order.value = Number(video.sort_order || 0);
   form.elements.pinned.checked = Boolean(video.pinned);
+  form.elements.pinned_sort_order.value = video.pinned ? pinnedSortOrderValue(video) : "";
   form.elements.title.value = video.title || "";
   form.elements.description.value = video.description || "";
   $("#delete-video").disabled = false;
@@ -950,8 +971,20 @@ function videoPayload(statusOverride = "") {
     status: statusOverride || form.elements.status.value,
     sort_order: Number(form.elements.sort_order.value || 0),
     pinned: form.elements.pinned.checked,
+    pinned_sort_order: form.elements.pinned.checked ? Number(form.elements.pinned_sort_order.value || 0) : 0,
     category_ids: Array.from($("#video-category-checks").querySelectorAll("input:checked")).map((input) => input.value)
   };
+}
+
+function handleVideoPinnedChange() {
+  const form = $("#video-form");
+  if (!form?.elements?.pinned?.checked) {
+    return;
+  }
+  const field = form.elements.pinned_sort_order;
+  if (field && Number(field.value || 0) === 0) {
+    field.value = String(nextPinnedSortOrder(state.videos));
+  }
 }
 
 async function saveVideo(statusOverride = "") {
@@ -1484,6 +1517,7 @@ function bindEvents() {
   $("#video-cover-file").addEventListener("change", handleLocalCoverFileChange);
   $("#video-frame-file").addEventListener("change", handleVideoFrameFileChange);
   $("#clear-video-thumbnail").addEventListener("click", clearVideoThumbnail);
+  $("#video-form").elements.pinned.addEventListener("change", handleVideoPinnedChange);
   $("#video-form").elements.thumbnail_url.addEventListener("input", (event) => {
     renderVideoThumbnailPreview(event.target.value);
   });

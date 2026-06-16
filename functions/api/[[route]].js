@@ -721,7 +721,12 @@ async function getVideos(request, env) {
     select *
     from videos
     where status = 'published'
-    order by pinned desc, sort_order desc, coalesce(published_at, created_at) desc, created_at desc
+    order by
+      pinned desc,
+      case when pinned = 1 then pinned_sort_order else sort_order end desc,
+      case when pinned = 1 then sort_order else 0 end desc,
+      coalesce(published_at, created_at) desc,
+      created_at desc
     limit 80
   `).all()).results || [];
   const videoIds = rows.map((row) => row.video_id);
@@ -749,7 +754,12 @@ async function getAdminVideos(request, env) {
   const rows = (await env.DB.prepare(`
     select *
     from videos
-    order by pinned desc, sort_order desc, updated_at desc, created_at desc
+    order by
+      pinned desc,
+      case when pinned = 1 then pinned_sort_order else sort_order end desc,
+      case when pinned = 1 then sort_order else 0 end desc,
+      updated_at desc,
+      created_at desc
     limit 200
   `).all()).results || [];
   const relations = await videoRelations(env, rows.map((row) => row.video_id));
@@ -758,6 +768,11 @@ async function getAdminVideos(request, env) {
 
 async function nextVideoSortOrder(env) {
   const row = await env.DB.prepare("select coalesce(max(sort_order), 0) as max_sort from videos").first();
+  return Number(row?.max_sort || 0) + 10;
+}
+
+async function nextPinnedVideoSortOrder(env) {
+  const row = await env.DB.prepare("select coalesce(max(pinned_sort_order), 0) as max_sort from videos where pinned = 1").first();
   return Number(row?.max_sort || 0) + 10;
 }
 
@@ -776,7 +791,10 @@ async function assertVideoNotDuplicate(env, video, excludeVideoId = "") {
 async function createVideo(request, env) {
   await requireAdmin(request, env);
   const body = await readJson(request);
-  const video = await normalizeVideoPayload(body, env, { defaultSortOrder: await nextVideoSortOrder(env) });
+  const video = await normalizeVideoPayload(body, env, {
+    defaultSortOrder: await nextVideoSortOrder(env),
+    defaultPinnedSortOrder: await nextPinnedVideoSortOrder(env)
+  });
   await assertVideoNotDuplicate(env, video);
   const now = nowIso();
   const videoId = crypto.randomUUID();
@@ -784,14 +802,14 @@ async function createVideo(request, env) {
     env.DB.prepare(`
       insert into videos (
         video_id, platform, original_url, external_id, embed_url, title, description,
-        thumbnail_url, author_name, published_at, status, sort_order, pinned,
+        thumbnail_url, author_name, published_at, status, sort_order, pinned, pinned_sort_order,
         metadata_error, created_at, updated_at
-      ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(
       videoId, video.platform, video.original_url, video.external_id, video.embed_url,
       video.title, video.description, video.thumbnail_url, video.author_name,
       video.published_at, video.status, video.sort_order, video.pinned,
-      video.metadata_error, now, now
+      video.pinned_sort_order, video.metadata_error, now, now
     ),
     ...videoCategoryRelationStatements(env, videoId, video.category_ids)
   ]);
@@ -813,14 +831,14 @@ async function updateVideo(request, env, videoId) {
       update videos
       set platform = ?, original_url = ?, external_id = ?, embed_url = ?,
           title = ?, description = ?, thumbnail_url = ?, author_name = ?,
-          published_at = ?, status = ?, sort_order = ?, pinned = ?,
+          published_at = ?, status = ?, sort_order = ?, pinned = ?, pinned_sort_order = ?,
           metadata_error = ?, updated_at = ?
       where video_id = ?
     `).bind(
       video.platform, video.original_url, video.external_id, video.embed_url,
       video.title, video.description, video.thumbnail_url, video.author_name,
       video.published_at, video.status, video.sort_order, video.pinned,
-      video.metadata_error, nowIso(), normalizedId
+      video.pinned_sort_order, video.metadata_error, nowIso(), normalizedId
     ),
     env.DB.prepare("delete from video_category_relations where video_id = ?").bind(normalizedId),
     ...videoCategoryRelationStatements(env, normalizedId, video.category_ids)
@@ -1634,6 +1652,7 @@ async function ensureVideoSchema(env) {
         status text not null default 'draft',
         sort_order integer not null default 0,
         pinned integer not null default 0,
+        pinned_sort_order integer not null default 0,
         metadata_error text not null default '',
         created_at text not null,
         updated_at text not null
@@ -1662,9 +1681,13 @@ async function ensureVideoSchema(env) {
       )
     `)
   ]);
-  await ensureTableColumns(env, "videos", [
-    ["metadata_error", "text not null default ''"]
+  const addedVideoColumns = await ensureTableColumns(env, "videos", [
+    ["metadata_error", "text not null default ''"],
+    ["pinned_sort_order", "integer not null default 0"]
   ]);
+  if (addedVideoColumns.has("pinned_sort_order")) {
+    await env.DB.prepare("update videos set pinned_sort_order = sort_order where pinned = 1").run();
+  }
   await ensureTableColumns(env, "video_categories", [
     ["name_en", "text not null default ''"],
     ["name_ja", "text not null default ''"],
@@ -1679,6 +1702,7 @@ async function ensureVideoSchema(env) {
   ]);
   await env.DB.batch([
     env.DB.prepare("create index if not exists videos_public_idx on videos(status, pinned, sort_order, published_at)"),
+    env.DB.prepare("create index if not exists videos_public_queue_idx on videos(status, pinned, pinned_sort_order, sort_order, published_at)"),
     env.DB.prepare("create index if not exists videos_platform_external_idx on videos(platform, external_id)"),
     env.DB.prepare("create index if not exists video_categories_enabled_idx on video_categories(enabled, sort_order)"),
     env.DB.prepare("create index if not exists video_category_relations_category_idx on video_category_relations(category_id, sort_order)"),
@@ -1882,11 +1906,14 @@ async function ensureOwnerAdminRole(env) {
 async function ensureTableColumns(env, tableName, columns) {
   const existing = (await env.DB.prepare(`pragma table_info(${tableName})`).all()).results || [];
   const existingNames = new Set(existing.map((column) => column.name));
+  const addedNames = new Set();
   for (const [name, definition] of columns) {
     if (!existingNames.has(name)) {
       await env.DB.prepare(`alter table ${tableName} add column ${name} ${definition}`).run();
+      addedNames.add(name);
     }
   }
+  return addedNames;
 }
 
 async function createSessionResponse(env, request, userId, email, status = 200, role = "user") {
@@ -1981,6 +2008,7 @@ function publicVideoRow(row, categories = []) {
     status: row.status,
     sort_order: Number(row.sort_order || 0),
     pinned: Number(row.pinned || 0),
+    pinned_sort_order: Number(row.pinned_sort_order || 0),
     metadata_error: row.metadata_error || "",
     categories
   };
@@ -2078,6 +2106,7 @@ async function normalizeVideoPayload(body, env, options = {}) {
   if (!title) {
     throw new HttpError("视频标题不能为空。", 400);
   }
+  const pinned = body.pinned ? 1 : 0;
   return {
     platform: parsed.platform,
     original_url: parsed.original_url,
@@ -2090,7 +2119,11 @@ async function normalizeVideoPayload(body, env, options = {}) {
     published_at: normalizeOptionalDateTime(body.published_at) || parsed.published_at || null,
     status: normalizeVideoStatus(body.status),
     sort_order: normalizeSortOrder(body.sort_order, options.defaultSortOrder ?? options.existing?.sort_order ?? 0),
-    pinned: body.pinned ? 1 : 0,
+    pinned,
+    pinned_sort_order: pinned ? normalizeSortOrder(
+      body.pinned_sort_order,
+      options.defaultPinnedSortOrder ?? options.existing?.pinned_sort_order ?? options.existing?.sort_order ?? 0
+    ) : 0,
     metadata_error: normalizeOptionalText(body.metadata_error, 500) || parsed.metadata_error || "",
     category_ids: await normalizeVideoCategoryIds(env, body.category_ids || body.categories || [])
   };
@@ -4024,6 +4057,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-16-responsive-video-window',
+        '2026-06-16-responsive-video-window',
+        'site-updates',
+        '["网站更新","视频区","响应式布局","桌面端"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-16T02:40:13.000Z',
+        '2026-06-16T02:40:13.000Z',
+        '2026-06-16T02:40:13.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -4196,6 +4256,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# モバイル表示と動画管理を修正\n\n今回の更新では、動画欄と管理画面を続けて調整し、スマートフォンでの閲覧と動画メンテナンスを安定させました。\n\n## 更新内容\n\n- 既定の動画カテゴリ seed は不足分だけを追加するようにし、管理画面で変更したカテゴリ名を上書きしないようにしました。\n- Bilibili メタ情報取得では不要な Origin ヘッダーを外し、詳細 API、モバイルページ、新しいページデータの補完を追加しました。URL が変わらない保存では外部メタ情報を毎回取り直しません。\n- 管理画面では、プレイヤー URL は生成できたがタイトル・作者・サムネイルを手入力する必要がある場合を分かりやすく表示し、重複動画も明確に止めます。\n- 動画一覧、リソース欄、ログインポップオーバー、ログイン済み表示、動画再生ウィンドウにモバイル向けの折り返し、単列、防溢出ルールを追加しました。\n- 管理画面の動画カテゴリ選択では停止中カテゴリを表示し、新しい動画で誤って再利用しにくくしました。"
       }
     }, "2026-06-16T02:20:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-16-responsive-video-window", {
+      zh: {
+        title: "视频区窗口自适应放大",
+        summary: "视频区列表窗口会跟随屏幕可用高度放大，减少桌面底部空白并显示更多视频卡片。",
+        content_markdown: "# 视频区窗口自适应放大\n\n本次更新调整主站视频区列表窗口，让它在桌面端更充分利用屏幕高度。\n\n## 更新内容\n\n- 视频区 XP 窗口不再被固定的 760px 高度上限限制，而是按当前浏览器可用高度计算。\n- 宽屏桌面端窗口宽度略微放大，让三列视频卡片更舒展。\n- 视频列表内部继续滚动，标题栏、分类筛选和卡片安全渲染逻辑保持不变。\n- 手机端仍使用原有小屏断点，保持单列布局和防横向溢出规则。"
+      },
+      en: {
+        title: "Responsive Video Window",
+        summary: "The videos window now grows with available screen height, reducing empty desktop space and showing more cards.",
+        content_markdown: "# Responsive Video Window\n\nThis update lets the main videos window use more of the available desktop screen.\n\n## Changes\n\n- The videos XP window is no longer capped by the old 760px height limit and now follows the browser's available height.\n- Wide desktop screens get a slightly wider window so the three-column video cards have more room.\n- The video list still scrolls inside the window, with the titlebar, filters, and safe card rendering unchanged.\n- Mobile keeps the existing small-screen breakpoint, single-column layout, and overflow protection."
+      },
+      ja: {
+        title: "動画欄ウィンドウの自動拡大",
+        summary: "動画欄のウィンドウが画面の高さに合わせて広がり、下部の空白を減らしてより多くのカードを表示します。",
+        content_markdown: "# 動画欄ウィンドウの自動拡大\n\n今回の更新では、メインサイトの動画欄ウィンドウがデスクトップ画面をより広く使えるようにしました。\n\n## 更新内容\n\n- 動画欄の XP ウィンドウは従来の 760px 上限に固定されず、ブラウザの利用可能な高さに合わせて伸びます。\n- ワイドなデスクトップ画面ではウィンドウ幅も少し広げ、3列の動画カードに余裕を持たせました。\n- 動画一覧は引き続きウィンドウ内でスクロールし、タイトルバー、カテゴリ絞り込み、安全なカード描画はそのままです。\n- モバイルでは既存の小画面ブレークポイントを維持し、単列表示と横方向のはみ出し防止を保っています。"
+      }
+    }, "2026-06-16T02:40:13.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')

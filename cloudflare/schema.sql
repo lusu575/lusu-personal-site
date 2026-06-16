@@ -135,6 +135,7 @@ create table if not exists videos (
   status text not null default 'draft',
   sort_order integer not null default 0,
   pinned integer not null default 0,
+  pinned_sort_order integer not null default 0,
   metadata_error text not null default '',
   created_at text not null,
   updated_at text not null
@@ -142,6 +143,8 @@ create table if not exists videos (
 
 create index if not exists videos_public_idx
   on videos(status, pinned, sort_order, published_at);
+create index if not exists videos_public_queue_idx
+  on videos(status, pinned, pinned_sort_order, sort_order, published_at);
 create index if not exists videos_platform_external_idx
   on videos(platform, external_id);
 
@@ -1792,6 +1795,32 @@ on conflict(article_id) do update set
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
 
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-16-responsive-video-window',
+  '2026-06-16-responsive-video-window',
+  'site-updates',
+  '["网站更新","视频区","响应式布局","桌面端"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-16T02:40:13.000Z',
+  '2026-06-16T02:40:13.000Z',
+  '2026-06-16T02:40:13.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
@@ -1973,6 +2002,45 @@ This update continues polishing the videos area and admin workflow so mobile bro
 - 管理画面では、プレイヤー URL は生成できたがタイトル・作者・サムネイルを手入力する必要がある場合を分かりやすく表示し、重複動画も明確に止めます。
 - 動画一覧、リソース欄、ログインポップオーバー、ログイン済み表示、動画再生ウィンドウにモバイル向けの折り返し、単列、防溢出ルールを追加しました。
 - 管理画面の動画カテゴリ選択では停止中カテゴリを表示し、新しい動画で誤って再利用しにくくしました。', '2026-06-16T02:20:00.000Z', '2026-06-16T02:20:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-16-responsive-video-window-zh', 'seed-update-2026-06-16-responsive-video-window', 'zh', '视频区窗口自适应放大', '视频区列表窗口会跟随屏幕可用高度放大，减少桌面底部空白并显示更多视频卡片。', '# 视频区窗口自适应放大
+
+本次更新调整主站视频区列表窗口，让它在桌面端更充分利用屏幕高度。
+
+## 更新内容
+
+- 视频区 XP 窗口不再被固定的 760px 高度上限限制，而是按当前浏览器可用高度计算。
+- 宽屏桌面端窗口宽度略微放大，让三列视频卡片更舒展。
+- 视频列表内部继续滚动，标题栏、分类筛选和卡片安全渲染逻辑保持不变。
+- 手机端仍使用原有小屏断点，保持单列布局和防横向溢出规则。', '2026-06-16T02:40:13.000Z', '2026-06-16T02:40:13.000Z'),
+  ('seed-update-2026-06-16-responsive-video-window-en', 'seed-update-2026-06-16-responsive-video-window', 'en', 'Responsive Video Window', 'The videos window now grows with available screen height, reducing empty desktop space and showing more cards.', '# Responsive Video Window
+
+This update lets the main videos window use more of the available desktop screen.
+
+## Changes
+
+- The videos XP window is no longer capped by the old 760px height limit and now follows the browser''s available height.
+- Wide desktop screens get a slightly wider window so the three-column video cards have more room.
+- The video list still scrolls inside the window, with the titlebar, filters, and safe card rendering unchanged.
+- Mobile keeps the existing small-screen breakpoint, single-column layout, and overflow protection.', '2026-06-16T02:40:13.000Z', '2026-06-16T02:40:13.000Z'),
+  ('seed-update-2026-06-16-responsive-video-window-ja', 'seed-update-2026-06-16-responsive-video-window', 'ja', '動画欄ウィンドウの自動拡大', '動画欄のウィンドウが画面の高さに合わせて広がり、下部の空白を減らしてより多くのカードを表示します。', '# 動画欄ウィンドウの自動拡大
+
+今回の更新では、メインサイトの動画欄ウィンドウがデスクトップ画面をより広く使えるようにしました。
+
+## 更新内容
+
+- 動画欄の XP ウィンドウは従来の 760px 上限に固定されず、ブラウザの利用可能な高さに合わせて伸びます。
+- ワイドなデスクトップ画面ではウィンドウ幅も少し広げ、3列の動画カードに余裕を持たせました。
+- 動画一覧は引き続きウィンドウ内でスクロールし、タイトルバー、カテゴリ絞り込み、安全なカード描画はそのままです。
+- モバイルでは既存の小画面ブレークポイントを維持し、単列表示と横方向のはみ出し防止を保っています。', '2026-06-16T02:40:13.000Z', '2026-06-16T02:40:13.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,
