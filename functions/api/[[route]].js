@@ -11,6 +11,9 @@ const CHAT_NICKNAME_LOOKBACK_LIMIT = 1000;
 const VISITOR_COOKIE = "lusu_visitor";
 const VISITOR_DAYS = 365;
 const OWNER_ADMIN_EMAILS = new Set(["630739094@qq.com"]);
+const MAX_VIDEO_THUMBNAIL_TEXT_CHARS = 420000;
+const MAX_LOCAL_THUMBNAIL_BYTES = 320 * 1024;
+const LOCAL_THUMBNAIL_MIME_TYPES = new Set(["jpeg", "jpg", "png", "webp", "avif"]);
 const VIDEO_METADATA_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0 Safari/537.36";
 const YOUTUBE_METADATA_HEADERS = {
   "User-Agent": VIDEO_METADATA_USER_AGENT,
@@ -4508,9 +4511,12 @@ function normalizeOptionalDateTime(value) {
 }
 
 function normalizeThumbnailUrl(value) {
-  const raw = normalizeOptionalText(value, 800);
+  const raw = normalizeOptionalText(value, MAX_VIDEO_THUMBNAIL_TEXT_CHARS);
   if (!raw) {
     return "";
+  }
+  if (/^data:/i.test(raw)) {
+    return normalizeThumbnailDataUrl(raw);
   }
   let url;
   try {
@@ -4528,9 +4534,30 @@ function normalizeThumbnailUrl(value) {
     "archive.biliimg.com"
   ]);
   if (url.protocol !== "https:" || !allowed.has(host)) {
-    throw new HttpError("封面地址只允许 YouTube 或 Bilibili 图片域名。", 400);
+    throw new HttpError("封面地址只允许 YouTube / Bilibili 图片域名，或后台上传的本地封面。", 400);
   }
   return url.toString();
+}
+
+function normalizeThumbnailDataUrl(raw) {
+  const match = String(raw || "").match(/^data:image\/([a-z0-9.+-]+);base64,([A-Za-z0-9+/]+={0,2})$/i);
+  if (!match) {
+    throw new HttpError("本地封面数据格式不正确。", 400);
+  }
+  const mime = match[1].toLowerCase() === "jpg" ? "jpeg" : match[1].toLowerCase();
+  if (!LOCAL_THUMBNAIL_MIME_TYPES.has(mime)) {
+    throw new HttpError("本地封面只支持 JPG、PNG、WEBP 或 AVIF。", 400);
+  }
+  const base64 = match[2];
+  if (base64.length % 4 === 1) {
+    throw new HttpError("本地封面数据格式不正确。", 400);
+  }
+  const padding = base64.endsWith("==") ? 2 : (base64.endsWith("=") ? 1 : 0);
+  const byteLength = Math.floor((base64.length * 3) / 4) - padding;
+  if (byteLength > MAX_LOCAL_THUMBNAIL_BYTES) {
+    throw new HttpError("本地封面过大，请重新上传更小的图片。", 400);
+  }
+  return `data:image/${mime};base64,${base64}`;
 }
 
 function normalizeAnalyticsText(value, maxLength) {

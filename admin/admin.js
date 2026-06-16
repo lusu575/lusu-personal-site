@@ -18,12 +18,25 @@ const state = {
   timer: null
 };
 
+const LOCAL_COVER_ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/jpg", "image/png", "image/webp", "image/avif"]);
+const LOCAL_COVER_ALLOWED_IMAGE_EXTENSIONS = new Set(["jpg", "jpeg", "png", "webp", "avif"]);
+const LOCAL_COVER_ALLOWED_VIDEO_TYPES = new Set(["video/mp4", "video/webm", "video/ogg", "video/quicktime"]);
+const LOCAL_COVER_ALLOWED_VIDEO_EXTENSIONS = new Set(["mp4", "m4v", "mov", "webm", "ogv"]);
+const LOCAL_COVER_MAX_SOURCE_BYTES = 12 * 1024 * 1024;
+const LOCAL_VIDEO_FRAME_MAX_SOURCE_BYTES = 768 * 1024 * 1024;
+const LOCAL_COVER_MAX_DATA_URL_CHARS = 360000;
+const LOCAL_COVER_SIZES = [
+  [960, 540],
+  [768, 432],
+  [640, 360]
+];
+
 const panelMeta = {
   dashboard: ["实时监控大屏", "访问、点击、文章和聊天室状态集中查看。"],
   visits: ["访问来源", "按国家、省份、地区和 IP 前缀查看每日访问。"],
   clicks: ["点击埋点", "查看站内各位置点击、PV/UV 和最近事件。"],
   articles: ["知识库文章", "一次编辑 zh / en / ja 三种版本，按当前选择语言显示编辑区。"],
-  videos: ["视频管理", "输入 YouTube / Bilibili 链接，服务端识别并缓存标题、简介、发布时间和封面。"],
+  videos: ["视频管理", "输入 YouTube / Bilibili 链接，服务端识别并缓存标题、简介、发布时间和封面，也可上传本地封面。"],
   videoCategories: ["视频分类管理", "维护视频区顶部标签，支持新增、编辑、停用、排序和安全删除。"],
   chat: ["聊天室管理", "编辑、隐藏、删除聊天记录，按隐藏用户 ID 或 IP 来源禁言。"],
   accounts: ["账号管理", "查看注册账号、重置密码、确认登录履历和近期活跃。"],
@@ -32,6 +45,11 @@ const panelMeta = {
 };
 
 const adminUpdates = [
+  {
+    date: "2026-06-16",
+    title: "视频封面本地上传与首帧生成",
+    body: "视频管理支持上传 JPG、PNG、WEBP、AVIF 本地图片作为封面，并会压缩成适合卡片展示的封面数据；也可从本地视频文件读取第一帧生成封面，保存时如果封面为空会优先使用已选择的视频首帧。"
+  },
   {
     date: "2026-06-16",
     title: "视频分类与 Bilibili 元数据维护修复",
@@ -132,6 +150,155 @@ function formatTime(value) {
     minute: "2-digit",
     second: "2-digit"
   }).format(date);
+}
+
+function fileExtension(file) {
+  return String(file?.name || "").split(".").pop()?.toLowerCase() || "";
+}
+
+function assertAllowedFile(file, typeSet, extensionSet, maxBytes, label) {
+  if (!file) {
+    throw new Error(`请选择${label}。`);
+  }
+  const type = String(file.type || "").toLowerCase();
+  const extension = fileExtension(file);
+  if ((!type || !typeSet.has(type)) && !extensionSet.has(extension)) {
+    throw new Error(`${label}格式不支持。`);
+  }
+  if (file.size > maxBytes) {
+    throw new Error(`${label}文件过大，请先压缩后再选择。`);
+  }
+}
+
+function loadImageElement(src) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error("封面图片读取失败，请换一张图片。"));
+    image.src = src;
+  });
+}
+
+function onceMediaEvent(target, eventName, timeoutMs, message) {
+  if (eventName === "loadedmetadata" && target.readyState >= 1) {
+    return Promise.resolve();
+  }
+  if (eventName === "loadeddata" && target.readyState >= 2) {
+    return Promise.resolve();
+  }
+  return new Promise((resolve, reject) => {
+    const timer = window.setTimeout(() => {
+      cleanup();
+      reject(new Error(message));
+    }, timeoutMs);
+    const done = () => {
+      cleanup();
+      resolve();
+    };
+    const fail = () => {
+      cleanup();
+      reject(new Error(message));
+    };
+    const cleanup = () => {
+      window.clearTimeout(timer);
+      target.removeEventListener(eventName, done);
+      target.removeEventListener("error", fail);
+    };
+    target.addEventListener(eventName, done, { once: true });
+    target.addEventListener("error", fail, { once: true });
+  });
+}
+
+function drawCoverToCanvas(source, width, height, targetWidth, targetHeight) {
+  const canvas = document.createElement("canvas");
+  canvas.width = targetWidth;
+  canvas.height = targetHeight;
+  const context = canvas.getContext("2d");
+  context.fillStyle = "#f7fbff";
+  context.fillRect(0, 0, targetWidth, targetHeight);
+  const scale = Math.max(targetWidth / width, targetHeight / height);
+  const drawWidth = width * scale;
+  const drawHeight = height * scale;
+  const x = (targetWidth - drawWidth) / 2;
+  const y = (targetHeight - drawHeight) / 2;
+  context.drawImage(source, x, y, drawWidth, drawHeight);
+  return canvas;
+}
+
+function coverCanvasDataUrl(source, sourceWidth, sourceHeight) {
+  if (!sourceWidth || !sourceHeight) {
+    throw new Error("无法读取封面尺寸。");
+  }
+  const qualities = [0.86, 0.76, 0.66, 0.56];
+  for (const [width, height] of LOCAL_COVER_SIZES) {
+    const canvas = drawCoverToCanvas(source, sourceWidth, sourceHeight, width, height);
+    for (const quality of qualities) {
+      const dataUrl = canvas.toDataURL("image/jpeg", quality);
+      if (dataUrl.length <= LOCAL_COVER_MAX_DATA_URL_CHARS) {
+        return dataUrl;
+      }
+    }
+  }
+  throw new Error("封面压缩后仍然过大，请换一张更简单的图片。");
+}
+
+async function imageFileToCoverDataUrl(file) {
+  assertAllowedFile(
+    file,
+    LOCAL_COVER_ALLOWED_IMAGE_TYPES,
+    LOCAL_COVER_ALLOWED_IMAGE_EXTENSIONS,
+    LOCAL_COVER_MAX_SOURCE_BYTES,
+    "封面图片"
+  );
+  const objectUrl = URL.createObjectURL(file);
+  try {
+    const image = await loadImageElement(objectUrl);
+    return coverCanvasDataUrl(image, image.naturalWidth, image.naturalHeight);
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+}
+
+async function videoFileToCoverDataUrl(file) {
+  assertAllowedFile(
+    file,
+    LOCAL_COVER_ALLOWED_VIDEO_TYPES,
+    LOCAL_COVER_ALLOWED_VIDEO_EXTENSIONS,
+    LOCAL_VIDEO_FRAME_MAX_SOURCE_BYTES,
+    "本地视频"
+  );
+  const objectUrl = URL.createObjectURL(file);
+  const video = document.createElement("video");
+  video.muted = true;
+  video.playsInline = true;
+  video.preload = "metadata";
+  try {
+    video.src = objectUrl;
+    video.load();
+    await onceMediaEvent(video, "loadedmetadata", 12000, "视频信息读取失败，无法截取首帧。");
+    const targetTime = Number.isFinite(video.duration) && video.duration > 0.2 ? 0.08 : 0;
+    if (targetTime > 0) {
+      video.currentTime = targetTime;
+      await onceMediaEvent(video, "seeked", 12000, "视频首帧定位失败，请换一个视频文件。");
+    } else {
+      await onceMediaEvent(video, "loadeddata", 12000, "视频画面读取失败，请换一个视频文件。");
+    }
+    return coverCanvasDataUrl(video, video.videoWidth, video.videoHeight);
+  } finally {
+    video.removeAttribute("src");
+    video.load();
+    URL.revokeObjectURL(objectUrl);
+  }
+}
+
+function thumbnailSourceLabel(value) {
+  if (!value) {
+    return "暂无封面";
+  }
+  if (/^data:image\//i.test(value)) {
+    return "本地封面预览";
+  }
+  return "链接封面预览";
 }
 
 function toLocalDateTimeInputValue(value) {
@@ -606,6 +773,9 @@ function resetVideoForm() {
   $("#refresh-video-metadata").disabled = true;
   $("#video-status").textContent = "";
   $("#admin-video-preview").replaceChildren();
+  $("#video-cover-file").value = "";
+  $("#video-frame-file").value = "";
+  renderVideoThumbnailPreview();
   renderVideoList();
   renderVideoCategoryChecks();
 }
@@ -631,6 +801,9 @@ function fillVideoForm(video) {
   renderVideoList();
   renderVideoCategoryChecks();
   renderAdminVideoPreview(video.embed_url);
+  $("#video-cover-file").value = "";
+  $("#video-frame-file").value = "";
+  renderVideoThumbnailPreview(video.thumbnail_url || "");
 }
 
 function renderAdminVideoPreview(embedUrl) {
@@ -649,6 +822,91 @@ function renderAdminVideoPreview(embedUrl) {
   preview.appendChild(iframe);
 }
 
+function renderVideoThumbnailPreview(value = "") {
+  const preview = $("#video-thumbnail-preview");
+  if (!preview) {
+    return;
+  }
+  const thumbnail = String(value || $("#video-form")?.elements?.thumbnail_url?.value || "").trim();
+  preview.replaceChildren();
+  preview.classList.toggle("is-empty", !thumbnail);
+  const label = document.createElement("span");
+  label.textContent = thumbnailSourceLabel(thumbnail);
+  preview.appendChild(label);
+  if (!thumbnail) {
+    return;
+  }
+  const image = document.createElement("img");
+  image.alt = "视频封面预览";
+  image.loading = "lazy";
+  image.src = thumbnail;
+  image.addEventListener("error", () => {
+    image.remove();
+    label.textContent = "封面无法预览，请检查链接或重新上传。";
+    preview.classList.add("is-empty");
+  }, { once: true });
+  preview.appendChild(image);
+}
+
+function setVideoThumbnailValue(value, message = "") {
+  const form = $("#video-form");
+  form.elements.thumbnail_url.value = value || "";
+  renderVideoThumbnailPreview(value || "");
+  if (message) {
+    $("#video-status").textContent = message;
+  }
+}
+
+async function handleLocalCoverFileChange(event) {
+  const file = event.target.files?.[0];
+  if (!file) {
+    return;
+  }
+  $("#video-status").textContent = "正在压缩本地封面...";
+  try {
+    const dataUrl = await imageFileToCoverDataUrl(file);
+    setVideoThumbnailValue(dataUrl, "本地封面已填入，保存后会显示在视频卡片中。");
+  } catch (error) {
+    $("#video-status").textContent = error.message;
+  } finally {
+    event.target.value = "";
+  }
+}
+
+async function handleVideoFrameFileChange(event) {
+  const file = event.target.files?.[0];
+  if (!file) {
+    return;
+  }
+  $("#video-status").textContent = "正在截取本地视频首帧...";
+  try {
+    const dataUrl = await videoFileToCoverDataUrl(file);
+    setVideoThumbnailValue(dataUrl, "已截取第一帧作为封面，保存后生效。");
+  } catch (error) {
+    $("#video-status").textContent = error.message;
+  }
+}
+
+async function ensureVideoThumbnailBeforeSave() {
+  const form = $("#video-form");
+  if (form.elements.thumbnail_url.value.trim()) {
+    return;
+  }
+  const file = $("#video-frame-file").files?.[0];
+  if (!file) {
+    return;
+  }
+  $("#video-status").textContent = "封面为空，正在从本地视频截取首帧...";
+  const dataUrl = await videoFileToCoverDataUrl(file);
+  setVideoThumbnailValue(dataUrl);
+}
+
+function clearVideoThumbnail() {
+  setVideoThumbnailValue("", "封面已清空。");
+  $("#video-cover-file").value = "";
+  $("#video-frame-file").value = "";
+}
+
 function applyPreviewToVideoForm(video) {
   const form = $("#video-form");
   form.elements.platform.value = video.platform || "";
@@ -663,6 +921,7 @@ function applyPreviewToVideoForm(video) {
     ? `已生成播放器地址；元数据受限，请手动补全：${video.metadata_error}`
     : "识别完成";
   renderAdminVideoPreview(video.embed_url);
+  renderVideoThumbnailPreview(form.elements.thumbnail_url.value);
 }
 
 async function previewVideoUrl() {
@@ -699,6 +958,7 @@ async function saveVideo(statusOverride = "") {
   const status = $("#video-status");
   try {
     status.textContent = "正在保存...";
+    await ensureVideoThumbnailBeforeSave();
     const path = state.selectedVideoId
       ? `/api/admin/videos/${encodeURIComponent(state.selectedVideoId)}`
       : "/api/admin/videos";
@@ -1221,6 +1481,12 @@ function bindEvents() {
   });
   $("#preview-video-url").addEventListener("click", previewVideoUrl);
   $("#refresh-video-metadata").addEventListener("click", refreshVideoMetadata);
+  $("#video-cover-file").addEventListener("change", handleLocalCoverFileChange);
+  $("#video-frame-file").addEventListener("change", handleVideoFrameFileChange);
+  $("#clear-video-thumbnail").addEventListener("click", clearVideoThumbnail);
+  $("#video-form").elements.thumbnail_url.addEventListener("input", (event) => {
+    renderVideoThumbnailPreview(event.target.value);
+  });
   $("#video-form").addEventListener("submit", (event) => {
     event.preventDefault();
     saveVideo();
