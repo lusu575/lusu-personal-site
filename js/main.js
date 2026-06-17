@@ -438,6 +438,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "🧭",
+      date: "2026.06.18",
+      title: { zh: "资源链接白名单", en: "Resource URL Allowlist", ja: "リソースURL許可リスト" },
+      desc: {
+        zh: "资源下载和外链在渲染前会先规范化 URL，并只接受安全本地路径或 http(s) 链接",
+        en: "Resource downloads and external links are normalized before rendering and only accept safe local paths or http(s) URLs",
+        ja: "リソースのダウンロードと外部リンクは描画前に正規化し、安全なローカルパスまたは http(s) URL のみ受け付けます"
+      }
+    },
+    {
       icon: "🎞️",
       date: "2026.06.18",
       title: { zh: "视频链接白名单", en: "Video Link Allowlist", ja: "動画リンク許可リスト" },
@@ -2383,11 +2393,16 @@ function safeResourceUrl(item) {
   if (!value) {
     return "";
   }
-  if (/^https?:\/\//i.test(value)) {
-    return value;
+  const httpUrl = safeHttpUrl(value);
+  if (httpUrl) {
+    return httpUrl;
   }
-  if (/^\/?(assets|downloads)\//i.test(value)) {
-    return sitePath(value);
+  const localPath = value.replace(/^\/+/, "").replace(/^\.\//, "");
+  if (/(^|\/)\.\.(\/|$)/.test(localPath)) {
+    return "";
+  }
+  if (/^(assets|downloads)\/[a-z0-9][a-z0-9._/-]*(\?[a-z0-9=&._-]+)?$/i.test(localPath)) {
+    return sitePath(localPath);
   }
   return "";
 }

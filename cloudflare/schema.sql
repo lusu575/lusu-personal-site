@@ -645,6 +645,32 @@ on conflict(article_id) do update set
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
 
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-resource-url-allowlist',
+  '2026-06-18-resource-url-allowlist',
+  'site-updates',
+  '["网站更新","资源区","链接","安全"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T20:05:00.000Z',
+  '2026-06-17T20:05:00.000Z',
+  '2026-06-17T20:05:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
@@ -2500,6 +2526,45 @@ This update keeps tightening the public Videos area by validating video thumbnai
 - 「元のページを開く」は YouTube、Bilibili、b23 リンクだけを受け付け、無効な URL ではボタンを隠します。
 - プレイヤー iframe は YouTube embed または Bilibili player の URL だけを受け付け、無効な embed は既存の未対応表示へ戻します。
 - 公開動画 API、管理画面の動画管理、動画空状態、モバイル表示は変更していません。', '2026-06-17T19:50:00.000Z', '2026-06-17T19:50:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-resource-url-allowlist-zh', 'seed-update-2026-06-18-resource-url-allowlist', 'zh', '资源链接白名单', '资源下载和外链 URL 增加更严格的前端白名单。', '# 资源链接白名单
+
+本次更新继续收紧公开主站资源区，让资源下载和外链地址在渲染前经过更明确的 URL 白名单。
+
+## 更新内容
+
+- 资源区下载/外链 URL 先经过 `safeHttpUrl()` 规范化，只接受 `http(s)` 外链。
+- 本地资源路径只接受安全的 `assets/` 或 `downloads/` 路径，并拒绝 `..` 路径穿越片段。
+- 无效 URL 继续显示原有的准备中按钮，不会输出不可信链接。
+- 现有 3 个资源占位卡、分类筛选、移动端布局和后台目录保持不变。', '2026-06-17T20:05:00.000Z', '2026-06-17T20:05:00.000Z'),
+  ('seed-update-2026-06-18-resource-url-allowlist-en', 'seed-update-2026-06-18-resource-url-allowlist', 'en', 'Resource URL Allowlist', 'Resource downloads and external links now use stricter frontend URL allowlist checks.', '# Resource URL Allowlist
+
+This update keeps tightening the public Resources area by checking resource download and external-link URLs against a clearer frontend allowlist before rendering.
+
+## Changes
+
+- Resource download and external URLs now pass through `safeHttpUrl()` normalization and only accept `http(s)` external links.
+- Local resource paths only accept safe `assets/` or `downloads/` paths and reject `..` traversal segments.
+- Invalid URLs keep showing the existing coming-soon button instead of writing untrusted links into the page.
+- The three current resource placeholder cards, category filters, mobile layout, and admin folders are unchanged.', '2026-06-17T20:05:00.000Z', '2026-06-17T20:05:00.000Z'),
+  ('seed-update-2026-06-18-resource-url-allowlist-ja', 'seed-update-2026-06-18-resource-url-allowlist', 'ja', 'リソースURL許可リスト', 'リソースのダウンロードと外部リンクに、より厳しいフロント側URL許可リスト確認を追加しました。', '# リソースURL許可リスト
+
+今回の更新では、公開リソース欄をさらに引き締め、リソースのダウンロードと外部リンクの URL を描画前により明確な許可リストで確認します。
+
+## 更新内容
+
+- リソースのダウンロード/外部 URL は `safeHttpUrl()` で正規化し、外部リンクは `http(s)` のみ受け付けます。
+- ローカルリソースパスは安全な `assets/` または `downloads/` パスだけを受け付け、`..` のパストラバーサル片を拒否します。
+- 無効な URL は既存の準備中ボタンを表示し続け、不審なリンクをページに出力しません。
+- 既存 3 件のリソース占位カード、カテゴリーフィルター、モバイル表示、管理画面ディレクトリは変更していません。', '2026-06-17T20:05:00.000Z', '2026-06-17T20:05:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,

@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 资源链接白名单：
+  - 资源区下载/外链 URL 改为先经过 `safeHttpUrl()` 规范化；无效协议继续显示准备中按钮。
+  - 本地资源路径只接受安全的 `assets/` 或 `downloads/` 路径，并拒绝 `..` 路径穿越片段。
+  - 更新 `index.html` 的 JS query 为 `20260618-resource-url-allowlist`，并新增同名三语 `site-updates` 更新文章。
 - 视频链接白名单：
   - 公开视频卡片缩略图在前端补充域名白名单，只接受 YouTube / Bilibili 图片域或本地 `data:image` 封面。
   - 播放窗口的“打开原地址”和 iframe `src` 也补充前端校验：原地址只接受 YouTube / Bilibili / b23，embed 只接受 YouTube embed 或 Bilibili player。

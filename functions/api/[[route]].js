@@ -4992,6 +4992,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-18-resource-url-allowlist',
+        '2026-06-18-resource-url-allowlist',
+        'site-updates',
+        '["网站更新","资源区","链接","安全"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T20:05:00.000Z',
+        '2026-06-17T20:05:00.000Z',
+        '2026-06-17T20:05:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -5725,6 +5752,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# 動画リンク許可リスト\n\n今回の更新では、公開動画欄をさらに引き締め、動画サムネイル、元リンク、プレイヤー iframe をフロント側でも許可リストで確認します。\n\n## 更新内容\n\n- 動画カードのサムネイルは YouTube / Bilibili の画像ホスト、または管理画面でアップロードされたローカル `data:image` 封面だけを受け付けます。\n- 「元のページを開く」は YouTube、Bilibili、b23 リンクだけを受け付け、無効な URL ではボタンを隠します。\n- プレイヤー iframe は YouTube embed または Bilibili player の URL だけを受け付け、無効な embed は既存の未対応表示へ戻します。\n- 公開動画 API、管理画面の動画管理、動画空状態、モバイル表示は変更していません。"
       }
     }, "2026-06-17T19:50:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-resource-url-allowlist", {
+      zh: {
+        title: "资源链接白名单",
+        summary: "资源下载和外链 URL 增加更严格的前端白名单。",
+        content_markdown: "# 资源链接白名单\n\n本次更新继续收紧公开主站资源区，让资源下载和外链地址在渲染前经过更明确的 URL 白名单。\n\n## 更新内容\n\n- 资源区下载/外链 URL 先经过 `safeHttpUrl()` 规范化，只接受 `http(s)` 外链。\n- 本地资源路径只接受安全的 `assets/` 或 `downloads/` 路径，并拒绝 `..` 路径穿越片段。\n- 无效 URL 继续显示原有的准备中按钮，不会输出不可信链接。\n- 现有 3 个资源占位卡、分类筛选、移动端布局和后台目录保持不变。"
+      },
+      en: {
+        title: "Resource URL Allowlist",
+        summary: "Resource downloads and external links now use stricter frontend URL allowlist checks.",
+        content_markdown: "# Resource URL Allowlist\n\nThis update keeps tightening the public Resources area by checking resource download and external-link URLs against a clearer frontend allowlist before rendering.\n\n## Changes\n\n- Resource download and external URLs now pass through `safeHttpUrl()` normalization and only accept `http(s)` external links.\n- Local resource paths only accept safe `assets/` or `downloads/` paths and reject `..` traversal segments.\n- Invalid URLs keep showing the existing coming-soon button instead of writing untrusted links into the page.\n- The three current resource placeholder cards, category filters, mobile layout, and admin folders are unchanged."
+      },
+      ja: {
+        title: "リソースURL許可リスト",
+        summary: "リソースのダウンロードと外部リンクに、より厳しいフロント側URL許可リスト確認を追加しました。",
+        content_markdown: "# リソースURL許可リスト\n\n今回の更新では、公開リソース欄をさらに引き締め、リソースのダウンロードと外部リンクの URL を描画前により明確な許可リストで確認します。\n\n## 更新内容\n\n- リソースのダウンロード/外部 URL は `safeHttpUrl()` で正規化し、外部リンクは `http(s)` のみ受け付けます。\n- ローカルリソースパスは安全な `assets/` または `downloads/` パスだけを受け付け、`..` のパストラバーサル片を拒否します。\n- 無効な URL は既存の準備中ボタンを表示し続け、不審なリンクをページに出力しません。\n- 既存 3 件のリソース占位カード、カテゴリーフィルター、モバイル表示、管理画面ディレクトリは変更していません。"
+      }
+    }, "2026-06-17T20:05:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')
