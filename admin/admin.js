@@ -5,6 +5,8 @@ const state = {
   articles: [],
   selectedArticleId: "",
   articleLang: "zh",
+  articleSaving: false,
+  articleSavingMode: "",
   videos: [],
   selectedVideoId: "",
   videoCategories: [],
@@ -59,6 +61,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-06-18",
+    title: "文章保存防重复提交优化",
+    body: "知识库文章保存或保存并发布时会临时禁用保存、发布和删除按钮，并显示保存中或发布中，避免慢网络下重复提交文章写入。"
+  },
   {
     date: "2026-06-18",
     title: "视频保存防重复提交优化",
@@ -825,6 +832,7 @@ function resetArticleForm() {
   $("#article-form").elements.status.value = "draft";
   $("#delete-article").disabled = true;
   $("#article-status").textContent = "";
+  syncArticleSaveButtons();
   renderArticleList();
 }
 
@@ -846,6 +854,7 @@ function fillArticleForm(article) {
   });
   $("#delete-article").disabled = false;
   $("#article-status").textContent = `文章访问：PV ${formatNumber(article.article_pv)} / UV ${formatNumber(article.article_uv)}，今日 PV ${formatNumber(article.article_today_pv)} / UV ${formatNumber(article.article_today_uv)}`;
+  syncArticleSaveButtons();
 }
 
 function setArticleLang(lang) {
@@ -879,6 +888,12 @@ function articlePayload(statusOverride = "") {
 }
 
 async function saveArticle(statusOverride = "") {
+  if (state.articleSaving) {
+    return;
+  }
+  state.articleSaving = true;
+  state.articleSavingMode = statusOverride === "published" ? "publish" : "save";
+  syncArticleSaveButtons();
   const status = $("#article-status");
   try {
     status.textContent = "正在保存...";
@@ -893,9 +908,40 @@ async function saveArticle(statusOverride = "") {
     await loadArticles();
     if (state.selectedArticleId) {
       await selectArticle(state.selectedArticleId);
+      status.textContent = "已保存。";
     }
   } catch (error) {
     status.textContent = error.message;
+  } finally {
+    state.articleSaving = false;
+    state.articleSavingMode = "";
+    syncArticleSaveButtons();
+  }
+}
+
+function syncArticleSaveButtons() {
+  const saveButton = $("#save-article");
+  const publishButton = $("#publish-article");
+  const deleteButton = $("#delete-article");
+  if (saveButton) {
+    const savingDraft = state.articleSaving && state.articleSavingMode !== "publish";
+    saveButton.disabled = state.articleSaving;
+    saveButton.textContent = savingDraft ? "保存中..." : "保存";
+    saveButton.setAttribute("aria-busy", savingDraft ? "true" : "false");
+    saveButton.title = state.articleSaving ? "正在保存文章" : "保存当前文章";
+  }
+  if (publishButton) {
+    const publishing = state.articleSaving && state.articleSavingMode === "publish";
+    publishButton.disabled = state.articleSaving;
+    publishButton.textContent = publishing ? "发布中..." : "保存并发布";
+    publishButton.setAttribute("aria-busy", publishing ? "true" : "false");
+    publishButton.title = state.articleSaving ? "正在保存文章" : "保存并发布当前文章";
+  }
+  if (deleteButton) {
+    deleteButton.disabled = state.articleSaving || !state.selectedArticleId;
+    deleteButton.title = state.articleSaving
+      ? "正在保存文章"
+      : (state.selectedArticleId ? "删除当前文章" : "请先选择已保存文章");
   }
 }
 

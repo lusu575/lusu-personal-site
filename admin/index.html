@@ -154,9 +154,9 @@
               </div>
 
               <div class="form-actions">
-                <button class="xp-button" type="submit">保存</button>
-                <button class="xp-button primary" type="button" id="publish-article">保存并发布</button>
-                <button class="xp-button danger" type="button" id="delete-article">删除</button>
+                <button class="xp-button" type="submit" id="save-article" title="保存当前文章">保存</button>
+                <button class="xp-button primary" type="button" id="publish-article" title="保存并发布当前文章">保存并发布</button>
+                <button class="xp-button danger" type="button" id="delete-article" title="请先选择已保存文章" disabled>删除</button>
                 <span class="form-status" id="article-status"></span>
               </div>
             </form>
@@ -414,6 +414,6 @@
     </main>
   </div>
 
-  <script src="/admin/admin.js?v=20260618-video-save-guard"></script>
+  <script src="/admin/admin.js?v=20260618-article-save-guard"></script>
 </body>
 </html>
