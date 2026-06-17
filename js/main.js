@@ -438,6 +438,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "🎮",
+      date: "2026.06.18",
+      title: { zh: "游戏 iframe 启动守卫", en: "Game Frame Source Guard", ja: "ゲームフレーム起動ガード" },
+      desc: {
+        zh: "游戏入口页会校验 catalog 中的 iframe 启动路径和语言参数名，再加载本地 source 页面",
+        en: "Game entry pages now validate catalog iframe launch paths and language query names before loading local source pages",
+        ja: "ゲーム入口ページが catalog の iframe 起動パスと言語パラメータ名を確認してからローカル source ページを読み込みます"
+      }
+    },
+    {
       icon: "💬",
       date: "2026.06.18",
       title: { zh: "聊天室昵称本地化", en: "Chat Nickname Locale", ja: "チャット名ロケール対応" },

@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 游戏 iframe 启动路径守卫：
+  - `game-shell.js` 新增 `safeGameSourceEntry()`，只允许游戏 catalog 把 iframe 指向本地 `source/...html` 页面。
+  - 游戏启动语言 query 参数名新增格式校验，异常配置会回退到 `lang`，不再直接拼进 iframe URL。
+  - 5 个游戏入口页的 `game-shell.js` query 更新为 `20260618-game-frame-source-guard`，并新增同名三语 `site-updates` 更新文章。
 - 聊天室昵称本地化：
   - 前端请求 `/api/chat/nickname` 时带上当前 `lang`，新随机昵称会跟随中文 / English / 日本語界面。
   - 本地 fallback 随机昵称拆分为三语词库，接口不可用时仍能生成与当前语言匹配的昵称。

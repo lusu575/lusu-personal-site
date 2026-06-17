@@ -701,6 +701,32 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-06-18-game-frame-source-guard',
+  '2026-06-18-game-frame-source-guard',
+  'site-updates',
+  '["网站更新","游戏区","安全","iframe"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T20:50:00.000Z',
+  '2026-06-17T20:50:00.000Z',
+  '2026-06-17T20:50:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-06-18-chat-nickname-locale',
   '2026-06-18-chat-nickname-locale',
   'site-updates',
@@ -2656,6 +2682,45 @@ This update keeps tightening public Knowledge article image rendering so Markdow
 - `safeArticleImageSrc()` が `..` のパストラバーサル片を拒否し、画像パスが記事画像フォルダから外へ出ないようにしました。
 - 画像は今後も `document.createElement(''img'')`、安全な `src`、`alt`、`figcaption` で描画し、未処理 HTML は挿入しません。
 - 既存の AI Agent 長文画像、知識庫一覧、記事直リンク、管理画面ディレクトリは変更していません。', '2026-06-17T20:20:00.000Z', '2026-06-17T20:20:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-game-frame-source-guard-zh', 'seed-update-2026-06-18-game-frame-source-guard', 'zh', '游戏 iframe 启动守卫', '游戏入口页会先校验 iframe 启动路径和语言参数名。', '# 游戏 iframe 启动守卫
+
+本次更新继续收紧公开游戏入口页，让游戏 iframe 只从可信的本地 source 页面启动。
+
+## 更新内容
+
+- `game-shell.js` 新增 `safeGameSourceEntry()`，只接受 catalog 中的 `source/...html` 本地页面路径。
+- `languageQueryParam` 新增格式校验，异常配置会回退到 `lang`，避免未校验参数名直接进入 iframe URL。
+- 5 个游戏入口页更新 `game-shell.js` 缓存版本，确保浏览器加载新的守卫逻辑。
+- 游戏列表、云存档、存档导入导出、语言选择和现有游戏内容保持不变。', '2026-06-17T20:50:00.000Z', '2026-06-17T20:50:00.000Z'),
+  ('seed-update-2026-06-18-game-frame-source-guard-en', 'seed-update-2026-06-18-game-frame-source-guard', 'en', 'Game Frame Source Guard', 'Game entry pages now validate iframe launch paths and language query names first.', '# Game Frame Source Guard
+
+This update tightens the public game entry pages so game iframes only launch trusted local source pages.
+
+## Changes
+
+- `game-shell.js` now includes `safeGameSourceEntry()`, accepting only local `source/...html` paths from the catalog.
+- `languageQueryParam` is format-checked and falls back to `lang` when the catalog value is invalid.
+- All five game entry pages now request a new `game-shell.js` cache version so browsers load the guard.
+- The game list, cloud saves, save import/export, language selection, and existing game content are unchanged.', '2026-06-17T20:50:00.000Z', '2026-06-17T20:50:00.000Z'),
+  ('seed-update-2026-06-18-game-frame-source-guard-ja', 'seed-update-2026-06-18-game-frame-source-guard', 'ja', 'ゲームフレーム起動ガード', 'ゲーム入口ページが iframe 起動パスと言語パラメータ名を先に確認します。', '# ゲームフレーム起動ガード
+
+今回の更新では、公開ゲーム入口ページをさらに引き締め、ゲーム iframe が信頼できるローカル source ページだけから起動するようにしました。
+
+## 更新内容
+
+- `game-shell.js` に `safeGameSourceEntry()` を追加し、catalog の `source/...html` ローカルページだけを受け付けます。
+- `languageQueryParam` は形式を確認し、無効な値は `lang` に戻します。
+- 5 つのゲーム入口ページで `game-shell.js` のキャッシュ版を更新し、新しいガードを読み込ませます。
+- ゲーム一覧、クラウド保存、セーブのインポート/エクスポート、言語選択、既存ゲーム内容は変更していません。', '2026-06-17T20:50:00.000Z', '2026-06-17T20:50:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,

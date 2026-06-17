@@ -48,7 +48,8 @@
       upstreamRepo: "上游仓库",
       loadedCloud: "游戏已加载，云端存档会自动同步。",
       loadedLocal: "游戏已加载，本地存档会保存在当前浏览器。",
-      gameLoadFailed: "游戏加载失败"
+      gameLoadFailed: "游戏加载失败",
+      invalidGameSource: "游戏启动路径无效"
     },
     en: {
       backToGames: "Back to Games",
@@ -86,7 +87,8 @@
       upstreamRepo: "Upstream repository",
       loadedCloud: "Game loaded. Cloud saves will sync automatically.",
       loadedLocal: "Game loaded. Local saves stay in this browser.",
-      gameLoadFailed: "Game failed to load"
+      gameLoadFailed: "Game failed to load",
+      invalidGameSource: "Invalid game launch path"
     },
     ja: {
       backToGames: "ゲーム一覧へ戻る",
@@ -124,7 +126,8 @@
       upstreamRepo: "上流リポジトリ",
       loadedCloud: "ゲームを読み込みました。クラウドセーブは自動同期されます。",
       loadedLocal: "ゲームを読み込みました。ローカルセーブはこのブラウザーに保存されます。",
-      gameLoadFailed: "ゲームの読み込みに失敗しました"
+      gameLoadFailed: "ゲームの読み込みに失敗しました",
+      invalidGameSource: "ゲーム起動パスが無効です"
     }
   };
   const languageNames = {
@@ -215,6 +218,19 @@
     }
   }
 
+  function safeGameSourceEntry(value) {
+    const entry = safeRelativeHref(value);
+    if (!entry || !/^source\/[a-z0-9][a-z0-9._/-]*\.html$/i.test(entry)) {
+      return "";
+    }
+    return entry;
+  }
+
+  function safeQueryParamName(value) {
+    const name = String(value || "").trim();
+    return /^[a-z0-9_-]{1,32}$/i.test(name) ? name : "lang";
+  }
+
   function renderLicensePanel(game) {
     if (!license) {
       return;
@@ -273,10 +289,14 @@
   }
 
   function buildEntry(game) {
+    const sourceEntry = safeGameSourceEntry(game.sourceEntry);
+    if (!sourceEntry) {
+      throw new Error(t("invalidGameSource"));
+    }
     const params = new URLSearchParams(game.launchQuery || "");
-    params.set(game.languageQueryParam || "lang", getGameLanguage(game));
+    params.set(safeQueryParamName(game.languageQueryParam), getGameLanguage(game));
     const query = params.toString();
-    return `${game.sourceEntry}${query ? `?${query}` : ""}`;
+    return `${sourceEntry}${query ? `?${query}` : ""}`;
   }
 
   function flushGameSave() {
