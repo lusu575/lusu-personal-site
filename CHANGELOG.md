@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 聊天室标题三语同步：
+  - 修复英文 / 日文界面打开聊天室时窗口标题仍显示中文“匿名聊天室”的问题，现在标题会跟随当前语言显示为 `Chat Room` / `匿名チャット`。
+  - 本轮只调整公开主站 `chatroomTitle` 翻译和更新记录，不改聊天室消息渲染、轮询、昵称或公开 API 安全逻辑。
+  - 更新 `index.html` 的 JS query 为 `20260618-chatroom-title-locale`，并新增同名三语 `site-updates` 更新文章，同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新。
 - 图片加载细节优化：
   - 聊天室头像和关于页头像补充 `loading="lazy"` 与 `decoding="async"`，减少非当前窗口图片对首屏加载和解码的影响。
   - 文章 Markdown 配图在继续走 `assets/images/articles/` 白名单和安全 DOM 渲染的基础上补充异步解码，阅读长文时更平滑。

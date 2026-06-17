@@ -139,7 +139,7 @@ const translations = {
     resourcesTitle: "Resources",
     gamesTitle: "Games",
     blogTitle: "Talk",
-    chatroomTitle: "匿名聊天室",
+    chatroomTitle: "Chat Room",
     aboutTitle: "About",
     toolbarBack: "Back to Desktop",
     toolbarRefresh: "Refresh",
@@ -252,7 +252,7 @@ const translations = {
     resourcesTitle: "リソース",
     gamesTitle: "ゲーム",
     blogTitle: "雑談",
-    chatroomTitle: "匿名聊天室",
+    chatroomTitle: "匿名チャット",
     aboutTitle: "プロフィール",
     toolbarBack: "デスクトップへ戻る",
     toolbarRefresh: "更新",
@@ -377,6 +377,16 @@ const labels = {
 
 const content = {
   updates: [
+    {
+      icon: "💬",
+      date: "2026.06.18",
+      title: { zh: "聊天室标题三语同步", en: "Chat Title Localization", ja: "チャット題名の多言語同期" },
+      desc: {
+        zh: "聊天室窗口标题会跟随中文、English、日本語 切换，不再在英文和日文界面保留中文标题",
+        en: "The chat room window title now follows the Chinese, English, and Japanese language switch",
+        ja: "チャットルームのウィンドウ題名が中文、English、日本語 の切り替えに合わせて表示されます"
+      }
+    },
     {
       icon: "🖼️",
       date: "2026.06.18",

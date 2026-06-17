@@ -4452,6 +4452,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-18-chatroom-title-locale',
+        '2026-06-18-chatroom-title-locale',
+        'site-updates',
+        '["网站更新","多语言","修复记录","移动端"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T17:16:00.000Z',
+        '2026-06-17T17:16:00.000Z',
+        '2026-06-17T17:16:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -4845,6 +4872,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# 画像読み込みの調整\n\n今回の更新では、公開側の重要度が低い画像読み込みを少し整理し、初期表示外の画像が読み込みとデコードに与える負荷を抑えました。\n\n## 更新内容\n\n- チャットルームのアバターとプロフィール画像に `loading=\"lazy\"` と `decoding=\"async\"` を追加し、対応するウィンドウを開くタイミングに近づけて読み込みます。\n- Markdown 記事画像は引き続き `assets/images/articles/` の許可リストと安全な DOM 描画を使い、非同期デコードも追加しました。\n- ホームのブランドアイコンと Start ボタン画像は現在の読み込み方式を維持し、初期表示の見え方を保ちます。\n- 公開側の画像属性、fallback 更新、公開記事 seed のみを調整し、管理画面ディレクトリや管理 API には触れていません。"
       }
     }, "2026-06-17T17:06:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-chatroom-title-locale", {
+      zh: {
+        title: "聊天室标题三语同步",
+        summary: "聊天室窗口标题现在会跟随中文、English、日本語 切换。",
+        content_markdown: "# 聊天室标题三语同步\n\n本次更新修复公开聊天室窗口标题的多语言细节，让它和页面里的其它聊天室文案保持一致。\n\n## 更新内容\n\n- English 界面下，聊天室窗口标题从中文“匿名聊天室”改为 `Chat Room`。\n- 日本語界面下，聊天室窗口标题从中文“匿名聊天室”改为 `匿名チャット`。\n- 聊天消息列表、昵称、轮询和发送逻辑不变，继续使用安全 DOM / `textContent` 渲染公开文本。\n- 只调整公开主站翻译和更新记录，不触碰后台目录或管理接口。"
+      },
+      en: {
+        title: "Chat Title Localization",
+        summary: "The chat room window title now follows the Chinese, English, and Japanese language switch.",
+        content_markdown: "# Chat Title Localization\n\nThis update fixes a small localization gap in the public chat room window title so it matches the rest of the chat UI.\n\n## Changes\n\n- In English, the chat room window title now shows `Chat Room` instead of the Chinese title.\n- In Japanese, the chat room window title now shows `匿名チャット` instead of the Chinese title.\n- Chat messages, nicknames, polling, and sending behavior are unchanged and continue to render public text through safe DOM / `textContent` paths.\n- Only public site translations and update records changed; admin folders and admin APIs were not touched."
+      },
+      ja: {
+        title: "チャット題名の多言語同期",
+        summary: "チャットルームのウィンドウ題名が中文、English、日本語の切り替えに合わせて表示されます。",
+        content_markdown: "# チャット題名の多言語同期\n\n今回の更新では、公開チャットルームのウィンドウ題名に残っていた翻訳漏れを修正し、ほかのチャット文言と揃えました。\n\n## 更新内容\n\n- English 表示では、チャットルームのウィンドウ題名を中国語のままではなく `Chat Room` と表示します。\n- 日本語表示では、チャットルームのウィンドウ題名を中国語のままではなく `匿名チャット` と表示します。\n- チャットメッセージ、ニックネーム、ポーリング、送信処理は変更せず、公開テキストは引き続き安全な DOM / `textContent` 経路で描画します。\n- 公開側の翻訳と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。"
+      }
+    }, "2026-06-17T17:16:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')
