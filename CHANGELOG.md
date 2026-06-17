@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 管理后台禁言 IP 前缀脱敏校验：
+  - `/api/admin/chat/bans` 新增 IP 前缀格式复查，只允许保存 `/24` 或 `/64` 掩码前缀，避免完整 IP 或任意文本进入禁言审计记录。
+  - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。
+
 - 管理后台账号密码状态脱敏优化：
   - `/api/admin/accounts` 和 `/api/admin/accounts/:userId` 改为只读取密码加密状态标记，不再在账号列表和详情处理链路中选择原始密码哈希字段。
   - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。

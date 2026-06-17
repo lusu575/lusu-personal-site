@@ -4,6 +4,11 @@
 
 ## 2026-06-18
 
+- 禁言 IP 前缀脱敏校验：
+  - `/api/admin/chat/bans` 写入禁言记录前会再次规范化 `ipPrefix` / `ip_prefix`，只保留 IPv4 `/24` 或 IPv6 `/64` 掩码前缀。
+  - 不符合掩码前缀形态的值会降为空字符串，避免完整 IP 或任意文本进入禁言审计记录；IP hash 校验和禁言类型校验保持不变。
+  - 后台页面内 `adminUpdates` 和后台 JS query 已同步更新。
+
 - 账号密码状态脱敏优化：
   - `/api/admin/accounts` 和 `/api/admin/accounts/:userId` 的账号查询改为由 SQL 返回 `password_scheme` 状态标记，而不是把原始密码哈希字段带入账号列表和详情处理。
   - 后台仍显示“已加密保存 / 旧格式或未知”状态，继续不返回密码哈希、会话令牌或明文密码。

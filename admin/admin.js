@@ -72,6 +72,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "禁言 IP 前缀脱敏校验",
+    body: "聊天室禁言接口新增 IP 前缀格式复查，只允许保存 /24 或 /64 掩码前缀，避免完整 IP 或任意文本进入审计记录。"
+  },
+  {
+    date: "2026-06-18",
     title: "账号密码状态脱敏优化",
     body: "后台账号接口改为只读取密码加密状态标记，不再把密码哈希字段带入账号列表和详情处理链路。"
   },

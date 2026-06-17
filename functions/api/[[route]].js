@@ -1473,7 +1473,7 @@ async function createAdminChatBan(request, env) {
   }
   const visitorId = banType === "visitor" ? normalizeRecordId(body.visitorId || body.visitor_id, "访客 ID 不正确。") : "";
   const ipHash = banType === "ip_hash" ? normalizeIpHash(body.ipHash || body.ip_hash) : "";
-  const ipPrefix = normalizeAnalyticsText(body.ipPrefix || body.ip_prefix, 80);
+  const ipPrefix = banType === "ip_hash" ? normalizeIpPrefix(body.ipPrefix || body.ip_prefix) : "";
   const reason = normalizeAnalyticsText(body.reason, 200) || "后台禁言";
   const durationHours = Number(body.durationHours || body.duration_hours || 0);
   const expiresAt = Number.isFinite(durationHours) && durationHours > 0
@@ -4781,6 +4781,20 @@ function normalizeIpHash(value) {
     throw new HttpError("IP hash 不正确。", 400);
   }
   return text;
+}
+
+function normalizeIpPrefix(value) {
+  const text = normalizeAnalyticsText(value, 80);
+  if (!text) {
+    return "";
+  }
+  if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.0\/24$/.test(text)) {
+    return text;
+  }
+  if (/^[0-9a-fA-F:]{0,64}::\/64$/.test(text)) {
+    return text;
+  }
+  return "";
 }
 
 function normalizeTags(value) {
