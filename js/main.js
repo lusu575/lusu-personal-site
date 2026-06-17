@@ -64,6 +64,7 @@ const translations = {
     externalButton: "外部链接",
     resourcePending: "准备中",
     resourcePendingTitle: "这个资源还在整理中，暂时没有下载或外链。",
+    resourceStatusReady: "可获取",
     openOriginal: "打开原地址",
     videoFullscreen: "全屏",
     videoRestore: "还原",
@@ -203,6 +204,7 @@ const translations = {
     externalButton: "External Link",
     resourcePending: "Coming soon",
     resourcePendingTitle: "This resource is still being organized and has no download or external link yet.",
+    resourceStatusReady: "Ready",
     openOriginal: "Open Original",
     videoFullscreen: "Full screen",
     videoRestore: "Restore",
@@ -342,6 +344,7 @@ const translations = {
     externalButton: "外部リンク",
     resourcePending: "準備中",
     resourcePendingTitle: "このリソースはまだ整理中で、ダウンロードや外部リンクはありません。",
+    resourceStatusReady: "利用可",
     openOriginal: "元のページを開く",
     videoFullscreen: "全画面",
     videoRestore: "元に戻す",
@@ -455,6 +458,16 @@ const labels = {
 
 const content = {
   updates: [
+    {
+      icon: "📦",
+      date: "2026.06.18",
+      title: { zh: "资源卡片状态徽标", en: "Resource Status Badges", ja: "リソース状態バッジ" },
+      desc: {
+        zh: "资源区卡片会显示准备中或可获取状态，下载按钮逻辑继续走安全链接校验",
+        en: "Resource cards now show pending or ready status badges while download actions still use safe link checks",
+        ja: "リソースカードに準備中または利用可の状態バッジを追加し、リンク確認は従来どおりです"
+      }
+    },
     {
       icon: "🎮",
       date: "2026.06.18",
@@ -2730,8 +2743,7 @@ function safeResourceUrl(item) {
   return "";
 }
 
-function resourceActionElement(item) {
-  const url = safeResourceUrl(item);
+function resourceActionElement(item, url = safeResourceUrl(item)) {
   const text = url
     ? item.external ? t("externalButton") : t("downloadButton")
     : t("resourcePending");
@@ -2757,9 +2769,17 @@ function resourceActionElement(item) {
   return link;
 }
 
+function resourceStatusElement(url) {
+  const status = document.createElement("span");
+  status.className = `tag resource-status-tag ${url ? "is-ready" : "is-pending"}`;
+  status.textContent = url ? t("resourceStatusReady") : t("resourcePending");
+  return status;
+}
+
 function resourceCardElement(item) {
   const card = document.createElement("article");
   card.className = "resource-card";
+  const resourceUrl = safeResourceUrl(item);
 
   const main = document.createElement("div");
   main.className = "resource-main";
@@ -2785,9 +2805,10 @@ function resourceCardElement(item) {
     itemNode.textContent = text;
     meta.appendChild(itemNode);
   });
+  meta.appendChild(resourceStatusElement(resourceUrl));
 
   main.append(title, desc, meta);
-  card.append(main, resourceActionElement(item));
+  card.append(main, resourceActionElement(item, resourceUrl));
   return card;
 }
 

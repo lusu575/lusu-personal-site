@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 资源卡片状态徽标：
+  - 资源区卡片 meta row 新增状态徽标：无安全 URL 时显示“准备中 / Coming soon / 準備中”，有可用 URL 时显示“可获取 / Ready / 利用可”。
+  - 状态判断复用 `safeResourceUrl()`，下载/外链按钮继续只接受安全项目路径或 `http(s)` 链接；原有禁用按钮行为不变。
+  - 更新 `index.html` 的 CSS / JS query 为 `20260618-resource-status-badges`，并新增同名三语 `site-updates` 更新文章。
 - 游戏卡片信息增强：
   - 游戏区卡片会根据 catalog 的 `storage` 字段显示“云存档 / Cloud save / クラウド保存”徽标，进入游戏前能看到存档状态。
   - 有 `repo` 的游戏新增“来源 / Source / 出典”链接，链接先经过 `safeHttpUrl()` 校验并限制为 `http(s)`；入口 iframe 和云存档同步逻辑不变。

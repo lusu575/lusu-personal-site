@@ -5187,6 +5187,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         article_id, slug, category, tags, cover_image, status, is_pinned,
         view_count, created_at, updated_at, published_at
       ) values (
+        'seed-update-2026-06-18-resource-status-badges',
+        '2026-06-18-resource-status-badges',
+        'site-updates',
+        '["网站更新","资源区","状态","链接"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T23:50:00.000Z',
+        '2026-06-17T23:50:00.000Z',
+        '2026-06-17T23:50:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
         'seed-update-2026-06-18-game-info-badges',
         '2026-06-18-game-info-badges',
         'site-updates',
@@ -6300,6 +6327,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# 記事画像パスガード\n\n今回の更新では、公開知識庫の記事画像描画をさらに引き締め、Markdown 画像パスがプロジェクトの記事画像フォルダ内に留まるよう明確にしました。\n\n## 更新内容\n\n- Markdown 記事画像は引き続き `assets/images/articles/` 配下のプロジェクト資源だけを受け付けます。\n- `safeArticleImageSrc()` が `..` のパストラバーサル片を拒否し、画像パスが記事画像フォルダから外へ出ないようにしました。\n- 画像は今後も `document.createElement('img')`、安全な `src`、`alt`、`figcaption` で描画し、未処理 HTML は挿入しません。\n- 既存の AI Agent 長文画像、知識庫一覧、記事直リンク、管理画面ディレクトリは変更していません。"
       }
     }, "2026-06-17T20:20:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-resource-status-badges", {
+      zh: {
+        title: "资源卡片状态徽标",
+        summary: "资源区卡片会显示准备中或可获取状态，下载按钮逻辑继续走安全链接校验。",
+        content_markdown: "# 资源卡片状态徽标\n\n本次更新继续整理资源区，让每张资源卡在按钮之外也能看到当前状态。\n\n## 更新内容\n\n- 资源卡片 meta row 新增状态徽标：没有安全 URL 时显示“准备中”，有可用 URL 时显示“可获取”。\n- 状态判断复用 `safeResourceUrl()`，下载/外链按钮继续只接受安全项目路径或 `http(s)` 链接。\n- 资源标题、简介、版本、大小和原有禁用按钮行为保持不变。\n- 本轮只调整公开资源区、前端文案、样式和更新记录，不触碰后台目录或管理 API。"
+      },
+      en: {
+        title: "Resource Status Badges",
+        summary: "Resource cards now show pending or ready status badges while download actions still use safe link checks.",
+        content_markdown: "# Resource Status Badges\n\nThis update continues polishing the Resources area so each card shows its current availability outside the action button too.\n\n## Changes\n\n- Resource card meta rows now include a status badge: `Coming soon` when no safe URL exists, and `Ready` when one is available.\n- Status detection reuses `safeResourceUrl()`, so download/external actions still only accept safe project paths or `http(s)` links.\n- Resource titles, summaries, versions, sizes, and disabled action behavior are unchanged.\n- This round only changes the public Resources area, frontend text, styling, and update records; admin folders and admin APIs are untouched."
+      },
+      ja: {
+        title: "リソース状態バッジ",
+        summary: "リソースカードに準備中または利用可の状態バッジを追加し、リンク確認は従来どおりです。",
+        content_markdown: "# リソース状態バッジ\n\n今回の更新では、リソース欄を少し整え、各カードの状態をボタン以外からも分かるようにしました。\n\n## 更新内容\n\n- リソースカードの meta row に状態バッジを追加しました。安全な URL がない場合は「準備中」、利用できる URL がある場合は「利用可」を表示します。\n- 状態判定は `safeResourceUrl()` を再利用し、ダウンロード/外部リンクは引き続き安全なプロジェクト内パスまたは `http(s)` のみ受け付けます。\n- リソースのタイトル、概要、バージョン、サイズ、無効ボタンの動作は変更していません。\n- 今回は公開リソース欄、フロント文言、スタイル、更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。"
+      }
+    }, "2026-06-17T23:50:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-06-18-game-info-badges", {
       zh: {
         title: "游戏卡片信息增强",

@@ -1488,6 +1488,18 @@ main {
   text-decoration: underline;
 }
 
+.resource-status-tag.is-ready {
+  border-color: #6bbf8d;
+  color: #135f32;
+  background: #e5f9ed;
+}
+
+.resource-status-tag.is-pending {
+  border-color: #d8b05b;
+  color: #704200;
+  background: #fff4c7;
+}
+
 .filter-row button.active {
   color: #704200;
   background: linear-gradient(180deg, #fff7b7, #ffcc4f);

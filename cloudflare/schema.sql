@@ -701,6 +701,32 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-06-18-resource-status-badges',
+  '2026-06-18-resource-status-badges',
+  'site-updates',
+  '["网站更新","资源区","状态","链接"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T23:50:00.000Z',
+  '2026-06-17T23:50:00.000Z',
+  '2026-06-17T23:50:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-06-18-game-info-badges',
   '2026-06-18-game-info-badges',
   'site-updates',
@@ -2977,6 +3003,36 @@ on conflict(article_id, lang) do update set
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
+  ('seed-update-2026-06-18-resource-status-badges-zh', 'seed-update-2026-06-18-resource-status-badges', 'zh', '资源卡片状态徽标', '资源区卡片会显示准备中或可获取状态，下载按钮逻辑继续走安全链接校验。', '# 资源卡片状态徽标
+
+本次更新继续整理资源区，让每张资源卡在按钮之外也能看到当前状态。
+
+## 更新内容
+
+- 资源卡片 meta row 新增状态徽标：没有安全 URL 时显示“准备中”，有可用 URL 时显示“可获取”。
+- 状态判断复用 `safeResourceUrl()`，下载/外链按钮继续只接受安全项目路径或 `http(s)` 链接。
+- 资源标题、简介、版本、大小和原有禁用按钮行为保持不变。
+- 本轮只调整公开资源区、前端文案、样式和更新记录，不触碰后台目录或管理 API。', '2026-06-17T23:50:00.000Z', '2026-06-17T23:50:00.000Z'),
+  ('seed-update-2026-06-18-resource-status-badges-en', 'seed-update-2026-06-18-resource-status-badges', 'en', 'Resource Status Badges', 'Resource cards now show pending or ready status badges while download actions still use safe link checks.', '# Resource Status Badges
+
+This update continues polishing the Resources area so each card shows its current availability outside the action button too.
+
+## Changes
+
+- Resource card meta rows now include a status badge: `Coming soon` when no safe URL exists, and `Ready` when one is available.
+- Status detection reuses `safeResourceUrl()`, so download/external actions still only accept safe project paths or `http(s)` links.
+- Resource titles, summaries, versions, sizes, and disabled action behavior are unchanged.
+- This round only changes the public Resources area, frontend text, styling, and update records; admin folders and admin APIs are untouched.', '2026-06-17T23:50:00.000Z', '2026-06-17T23:50:00.000Z'),
+  ('seed-update-2026-06-18-resource-status-badges-ja', 'seed-update-2026-06-18-resource-status-badges', 'ja', 'リソース状態バッジ', 'リソースカードに準備中または利用可の状態バッジを追加し、リンク確認は従来どおりです。', '# リソース状態バッジ
+
+今回の更新では、リソース欄を少し整え、各カードの状態をボタン以外からも分かるようにしました。
+
+## 更新内容
+
+- リソースカードの meta row に状態バッジを追加しました。安全な URL がない場合は「準備中」、利用できる URL がある場合は「利用可」を表示します。
+- 状態判定は `safeResourceUrl()` を再利用し、ダウンロード/外部リンクは引き続き安全なプロジェクト内パスまたは `http(s)` のみ受け付けます。
+- リソースのタイトル、概要、バージョン、サイズ、無効ボタンの動作は変更していません。
+- 今回は公開リソース欄、フロント文言、スタイル、更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T23:50:00.000Z', '2026-06-17T23:50:00.000Z'),
   ('seed-update-2026-06-18-game-info-badges-zh', 'seed-update-2026-06-18-game-info-badges', 'zh', '游戏卡片信息增强', '游戏区卡片新增云存档和源码徽标，进入游戏前能看到保存与开源状态。', '# 游戏卡片信息增强
 
 本次更新继续整理公开游戏区，让游戏入口卡片在进入前展示更清楚的状态信息。
