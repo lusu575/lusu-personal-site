@@ -4,6 +4,9 @@
 
 ## 2026-06-18
 
+- 管理后台账号详情读取失败提示优化：
+  - `/admin/` 账号管理在详情读取失败时会清空旧详情并显示明确失败原因；详情未成功读取前不允许保存账号，减少快速切换或接口失败时误提交旧表单的风险。
+  - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。
 - 管理后台 HTML 字符串 helper 清理：
   - `/admin/` 脚本移除已无调用的字符串 HTML helper，保留 DOM/textContent 渲染路径，减少后续维护误用拼接 HTML 的风险。
   - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。

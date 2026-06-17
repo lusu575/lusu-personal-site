@@ -72,6 +72,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "账号详情读取失败提示优化",
+    body: "账号管理读取详情失败时会清空旧详情并显示明确失败原因，详情未成功读取前保存按钮保持禁用，避免把上一位账号的表单状态误用于当前选择。"
+  },
+  {
+    date: "2026-06-18",
     title: "后台 HTML 字符串 helper 清理",
     body: "后台脚本移除已无调用的字符串 HTML helper，保留 DOM/textContent 渲染路径，减少后续维护时误回到拼接 HTML 的风险。"
   },
@@ -2391,18 +2396,34 @@ function renderAccountList() {
 
 async function selectAccount(accountId) {
   state.selectedAccountId = accountId;
+  state.accountDetail = null;
   $("#account-status").textContent = "正在读取账号详情...";
   renderAccountList();
-  syncAccountSaveButton();
-  const detail = await api(`/api/admin/accounts/${encodeURIComponent(accountId)}`);
-  state.accountDetail = detail;
-  state.accounts = upsertById(state.accounts, detail.account, "id");
-  fillAccountForm(detail.account);
-  renderAccountSummary();
-  renderAccountList();
   renderAccountDetail();
-  $("#account-status").textContent = "";
   syncAccountSaveButton();
+  try {
+    const detail = await api(`/api/admin/accounts/${encodeURIComponent(accountId)}`);
+    if (state.selectedAccountId !== accountId) {
+      return;
+    }
+    state.accountDetail = detail;
+    state.accounts = upsertById(state.accounts, detail.account, "id");
+    fillAccountForm(detail.account);
+    renderAccountSummary();
+    renderAccountList();
+    renderAccountDetail();
+    $("#account-status").textContent = "";
+  } catch (error) {
+    if (state.selectedAccountId === accountId) {
+      state.accountDetail = null;
+      renderAccountDetail();
+      $("#account-status").textContent = `读取账号详情失败：${error.message}`;
+    }
+  } finally {
+    if (state.selectedAccountId === accountId) {
+      syncAccountSaveButton();
+    }
+  }
 }
 
 function fillAccountForm(account) {
@@ -2421,6 +2442,11 @@ async function saveAccount(event) {
   }
   if (!state.selectedAccountId) {
     $("#account-status").textContent = "请先选择一个账号。";
+    syncAccountSaveButton();
+    return;
+  }
+  if (!state.accountDetail || state.accountDetail.account?.id !== state.selectedAccountId) {
+    $("#account-status").textContent = "请等待账号详情读取完成后再保存。";
     syncAccountSaveButton();
     return;
   }
@@ -2462,11 +2488,14 @@ function syncAccountSaveButton() {
     return;
   }
   const hasAccount = Boolean(state.selectedAccountId);
-  button.disabled = state.accountSaving || !hasAccount;
+  const hasLoadedAccount = Boolean(state.accountDetail?.account?.id === state.selectedAccountId);
+  button.disabled = state.accountSaving || !hasAccount || !hasLoadedAccount;
   button.textContent = state.accountSaving ? "保存中..." : "保存账号";
   button.setAttribute("aria-busy", state.accountSaving ? "true" : "false");
   if (!hasAccount) {
     button.title = "请先选择账号";
+  } else if (!hasLoadedAccount) {
+    button.title = "请先等待账号详情读取完成";
   } else if (state.accountSaving) {
     button.title = "正在保存账号";
   } else {
