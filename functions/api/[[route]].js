@@ -5187,6 +5187,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         article_id, slug, category, tags, cover_image, status, is_pinned,
         view_count, created_at, updated_at, published_at
       ) values (
+        'seed-update-2026-06-18-game-info-badges',
+        '2026-06-18-game-info-badges',
+        'site-updates',
+        '["网站更新","游戏区","云存档","源码"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T23:35:00.000Z',
+        '2026-06-17T23:35:00.000Z',
+        '2026-06-17T23:35:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
         'seed-update-2026-06-18-article-scroll-top',
         '2026-06-18-article-scroll-top',
         'site-updates',
@@ -6273,6 +6300,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# 記事画像パスガード\n\n今回の更新では、公開知識庫の記事画像描画をさらに引き締め、Markdown 画像パスがプロジェクトの記事画像フォルダ内に留まるよう明確にしました。\n\n## 更新内容\n\n- Markdown 記事画像は引き続き `assets/images/articles/` 配下のプロジェクト資源だけを受け付けます。\n- `safeArticleImageSrc()` が `..` のパストラバーサル片を拒否し、画像パスが記事画像フォルダから外へ出ないようにしました。\n- 画像は今後も `document.createElement('img')`、安全な `src`、`alt`、`figcaption` で描画し、未処理 HTML は挿入しません。\n- 既存の AI Agent 長文画像、知識庫一覧、記事直リンク、管理画面ディレクトリは変更していません。"
       }
     }, "2026-06-17T20:20:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-game-info-badges", {
+      zh: {
+        title: "游戏卡片信息增强",
+        summary: "游戏区卡片新增云存档和源码徽标，进入游戏前能看到保存与开源状态。",
+        content_markdown: "# 游戏卡片信息增强\n\n本次更新继续整理公开游戏区，让游戏入口卡片在进入前展示更清楚的状态信息。\n\n## 更新内容\n\n- 游戏卡片会根据 catalog 的 `storage` 字段显示“云存档”徽标。\n- 有 `repo` 的游戏会显示“源码”链接，并且链接会先通过 `safeHttpUrl()` 校验，只接受 `http(s)`。\n- 语言支持、license、开始按钮、iframe 入口和云存档同步逻辑保持不变。\n- 本轮只调整公开游戏列表、前端文案、样式和更新记录，不触碰后台目录或管理 API。"
+      },
+      en: {
+        title: "Game Card Info Badges",
+        summary: "Game cards now show cloud-save and source badges before launch.",
+        content_markdown: "# Game Card Info Badges\n\nThis update continues polishing the public games area so entry cards show clearer status before launch.\n\n## Changes\n\n- Game cards now show a `Cloud save` badge when the catalog entry declares storage keys or score storage.\n- Games with a `repo` now show a `Source` link, with the URL normalized through `safeHttpUrl()` and limited to `http(s)`.\n- Language support tags, license tags, start buttons, iframe entry points, and cloud-save sync behavior are unchanged.\n- This round only changes the public game list, frontend text, styling, and update records; admin folders and admin APIs are untouched."
+      },
+      ja: {
+        title: "ゲームカード情報バッジ",
+        summary: "ゲームカードにクラウド保存とソースのバッジを追加し、起動前に状態を確認できます。",
+        content_markdown: "# ゲームカード情報バッジ\n\n今回の更新では、公開ゲーム欄を少し整え、起動前に入口カードで状態を確認しやすくしました。\n\n## 更新内容\n\n- catalog の `storage` があるゲームカードに「クラウド保存」バッジを表示します。\n- `repo` があるゲームには「出典」リンクを表示し、URL は `safeHttpUrl()` で確認して `http(s)` のみ受け付けます。\n- 言語対応タグ、ライセンスタグ、開始ボタン、iframe 入口、クラウド保存同期の動作は変更していません。\n- 今回は公開ゲーム一覧、フロント文言、スタイル、更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。"
+      }
+    }, "2026-06-17T23:35:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-06-18-article-scroll-top", {
       zh: {
         title: "文章回到顶部按钮",

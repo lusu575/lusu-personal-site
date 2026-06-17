@@ -70,6 +70,7 @@ const translations = {
     languageSupportLabel: "语言支持",
     gameLanguageUnsupported: "不支持",
     gameSourceLabel: "来源",
+    gameCloudSaveReady: "云存档",
     gameConfigLoading: "正在读取游戏配置...",
     gameConfigFailed: "游戏配置读取失败",
     videoPlaceholder: "这里预留 Bilibili / YouTube 嵌入播放器。",
@@ -208,6 +209,7 @@ const translations = {
     languageSupportLabel: "Language support",
     gameLanguageUnsupported: "not supported",
     gameSourceLabel: "Source",
+    gameCloudSaveReady: "Cloud save",
     gameConfigLoading: "Loading game catalog...",
     gameConfigFailed: "Could not load game catalog",
     videoPlaceholder: "Bilibili / YouTube embed player is reserved here.",
@@ -346,6 +348,7 @@ const translations = {
     languageSupportLabel: "言語対応",
     gameLanguageUnsupported: "未対応",
     gameSourceLabel: "出典",
+    gameCloudSaveReady: "クラウド保存",
     gameConfigLoading: "ゲーム設定を読み込み中...",
     gameConfigFailed: "ゲーム設定を読み込めません",
     videoPlaceholder: "Bilibili / YouTube の埋め込みプレイヤー用スペースです。",
@@ -452,6 +455,16 @@ const labels = {
 
 const content = {
   updates: [
+    {
+      icon: "🎮",
+      date: "2026.06.18",
+      title: { zh: "游戏卡片信息增强", en: "Game Card Info Badges", ja: "ゲームカード情報バッジ" },
+      desc: {
+        zh: "游戏区卡片新增云存档和源码徽标，进入游戏前能看到保存与开源状态",
+        en: "Game cards now show cloud-save and source badges so save and open-source status are visible before launch",
+        ja: "ゲームカードにクラウド保存とソースのバッジを追加し、起動前に状態を確認できます"
+      }
+    },
     {
       icon: "⬆️",
       date: "2026.06.18",
@@ -2842,6 +2855,22 @@ function gameCardElement(item) {
     license.className = "tag";
     license.textContent = item.license.name;
     meta.appendChild(license);
+  }
+  if (item.storage?.keys?.length || item.storage?.scoreOnly) {
+    const save = document.createElement("span");
+    save.className = "tag game-save-tag";
+    save.textContent = t("gameCloudSaveReady");
+    meta.appendChild(save);
+  }
+  const repoUrl = safeHttpUrl(item.repo);
+  if (repoUrl) {
+    const source = document.createElement("a");
+    source.className = "tag game-source-link";
+    source.href = repoUrl;
+    source.target = "_blank";
+    source.rel = "noreferrer noopener";
+    source.textContent = t("gameSourceLabel");
+    meta.appendChild(source);
   }
   main.append(title, summary, meta);
 

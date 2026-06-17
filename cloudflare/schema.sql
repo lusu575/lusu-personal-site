@@ -701,6 +701,32 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-06-18-game-info-badges',
+  '2026-06-18-game-info-badges',
+  'site-updates',
+  '["网站更新","游戏区","云存档","源码"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T23:35:00.000Z',
+  '2026-06-17T23:35:00.000Z',
+  '2026-06-17T23:35:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-06-18-article-scroll-top',
   '2026-06-18-article-scroll-top',
   'site-updates',
@@ -2951,6 +2977,36 @@ on conflict(article_id, lang) do update set
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
+  ('seed-update-2026-06-18-game-info-badges-zh', 'seed-update-2026-06-18-game-info-badges', 'zh', '游戏卡片信息增强', '游戏区卡片新增云存档和源码徽标，进入游戏前能看到保存与开源状态。', '# 游戏卡片信息增强
+
+本次更新继续整理公开游戏区，让游戏入口卡片在进入前展示更清楚的状态信息。
+
+## 更新内容
+
+- 游戏卡片会根据 catalog 的 `storage` 字段显示“云存档”徽标。
+- 有 `repo` 的游戏会显示“源码”链接，并且链接会先通过 `safeHttpUrl()` 校验，只接受 `http(s)`。
+- 语言支持、license、开始按钮、iframe 入口和云存档同步逻辑保持不变。
+- 本轮只调整公开游戏列表、前端文案、样式和更新记录，不触碰后台目录或管理 API。', '2026-06-17T23:35:00.000Z', '2026-06-17T23:35:00.000Z'),
+  ('seed-update-2026-06-18-game-info-badges-en', 'seed-update-2026-06-18-game-info-badges', 'en', 'Game Card Info Badges', 'Game cards now show cloud-save and source badges before launch.', '# Game Card Info Badges
+
+This update continues polishing the public games area so entry cards show clearer status before launch.
+
+## Changes
+
+- Game cards now show a `Cloud save` badge when the catalog entry declares storage keys or score storage.
+- Games with a `repo` now show a `Source` link, with the URL normalized through `safeHttpUrl()` and limited to `http(s)`.
+- Language support tags, license tags, start buttons, iframe entry points, and cloud-save sync behavior are unchanged.
+- This round only changes the public game list, frontend text, styling, and update records; admin folders and admin APIs are untouched.', '2026-06-17T23:35:00.000Z', '2026-06-17T23:35:00.000Z'),
+  ('seed-update-2026-06-18-game-info-badges-ja', 'seed-update-2026-06-18-game-info-badges', 'ja', 'ゲームカード情報バッジ', 'ゲームカードにクラウド保存とソースのバッジを追加し、起動前に状態を確認できます。', '# ゲームカード情報バッジ
+
+今回の更新では、公開ゲーム欄を少し整え、起動前に入口カードで状態を確認しやすくしました。
+
+## 更新内容
+
+- catalog の `storage` があるゲームカードに「クラウド保存」バッジを表示します。
+- `repo` があるゲームには「出典」リンクを表示し、URL は `safeHttpUrl()` で確認して `http(s)` のみ受け付けます。
+- 言語対応タグ、ライセンスタグ、開始ボタン、iframe 入口、クラウド保存同期の動作は変更していません。
+- 今回は公開ゲーム一覧、フロント文言、スタイル、更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T23:35:00.000Z', '2026-06-17T23:35:00.000Z'),
   ('seed-update-2026-06-18-article-scroll-top-zh', 'seed-update-2026-06-18-article-scroll-top', 'zh', '文章回到顶部按钮', '知识库文章详情新增回到顶部按钮，目录跳转后可以快速回到标题区。', '# 文章回到顶部按钮
 
 本次更新继续整理知识库长文阅读工具，在文章详情动作区新增一个轻量的回到顶部按钮。

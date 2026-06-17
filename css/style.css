@@ -1470,6 +1470,24 @@ main {
   background: #f3f3f3;
 }
 
+.game-save-tag {
+  border-color: #6bbf8d;
+  color: #135f32;
+  background: #e5f9ed;
+}
+
+.game-source-link {
+  border-color: #b59be8;
+  color: #4b278f;
+  background: #f1eaff;
+  text-decoration: none;
+}
+
+.game-source-link:hover,
+.game-source-link:focus-visible {
+  text-decoration: underline;
+}
+
 .filter-row button.active {
   color: #704200;
   background: linear-gradient(180deg, #fff7b7, #ffcc4f);
