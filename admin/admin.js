@@ -15,6 +15,7 @@ const state = {
   accounts: [],
   selectedAccountId: "",
   accountDetail: null,
+  loadedPanels: {},
   timer: null
 };
 
@@ -44,7 +45,14 @@ const panelMeta = {
   docs: ["后台说明", "后台项目说明，不混入主站知识库。"]
 };
 
+const overviewPanels = new Set(["dashboard", "visits", "clicks"]);
+
 const adminUpdates = [
+  {
+    date: "2026-06-17",
+    title: "后台首屏按需加载优化",
+    body: "后台打开时只读取管理员身份和当前实时大屏数据；文章、视频、聊天室、禁言和账号资料会在进入对应标签页或手动刷新时再加载，减少首屏请求和敏感数据的无谓读取；概览读取失败后仍可切换或手动刷新重试。"
+  },
   {
     date: "2026-06-16",
     title: "视频分类 seed 持久化修复",
@@ -371,6 +379,46 @@ function setStatus(text) {
   $("#refresh-state").textContent = text;
 }
 
+function panelDataKey(panel) {
+  return overviewPanels.has(panel) ? "overview" : panel;
+}
+
+async function loadPanelData(panel, options = {}) {
+  const key = panelDataKey(panel);
+  const force = Boolean(options.force);
+  if (!force && state.loadedPanels[key]) {
+    return;
+  }
+
+  try {
+    if (!overviewPanels.has(panel)) {
+      setStatus(force ? "正在刷新当前标签..." : "正在读取当前标签...");
+    }
+
+    if (overviewPanels.has(panel)) {
+      await loadOverview();
+    } else if (panel === "articles") {
+      await loadArticles();
+    } else if (panel === "videos") {
+      await loadVideoCategories();
+      await loadVideos();
+    } else if (panel === "videoCategories") {
+      await loadVideoCategories();
+    } else if (panel === "chat") {
+      await Promise.all([loadChatMessages(), loadBans()]);
+    } else if (panel === "accounts") {
+      await loadAccounts();
+    }
+
+    state.loadedPanels[key] = Date.now();
+    if (!overviewPanels.has(panel)) {
+      setStatus(`已读取 ${panelMeta[panel][0]}`);
+    }
+  } catch (error) {
+    setStatus(error.message);
+  }
+}
+
 function switchPanel(panel) {
   state.activePanel = panel;
   $$(".nav-button").forEach((button) => {
@@ -381,26 +429,7 @@ function switchPanel(panel) {
   });
   $("#panel-title").textContent = panelMeta[panel][0];
   $("#panel-subtitle").textContent = panelMeta[panel][1];
-
-  if (panel === "dashboard" || panel === "visits" || panel === "clicks") {
-    loadOverview();
-  }
-  if (panel === "articles") {
-    loadArticles();
-  }
-  if (panel === "videos") {
-    loadVideoCategories().then(loadVideos);
-  }
-  if (panel === "videoCategories") {
-    loadVideoCategories();
-  }
-  if (panel === "chat") {
-    loadChatMessages();
-    loadBans();
-  }
-  if (panel === "accounts") {
-    loadAccounts();
-  }
+  loadPanelData(panel);
 }
 
 async function loadMe() {
@@ -410,15 +439,11 @@ async function loadMe() {
 }
 
 async function loadOverview() {
-  try {
-    setStatus("正在刷新数据...");
-    const payload = await api("/api/admin/analytics/overview?days=14");
-    state.overview = payload;
-    renderOverview();
-    setStatus(`已刷新 ${formatTime(payload.generatedAt)}`);
-  } catch (error) {
-    setStatus(error.message);
-  }
+  setStatus("正在刷新数据...");
+  const payload = await api("/api/admin/analytics/overview?days=14");
+  state.overview = payload;
+  renderOverview();
+  setStatus(`已刷新 ${formatTime(payload.generatedAt)}`);
 }
 
 function renderOverview() {
@@ -1475,20 +1500,7 @@ function bindEvents() {
     button.addEventListener("click", () => switchPanel(button.dataset.panel));
   });
   $("#manual-refresh").addEventListener("click", () => {
-    if (["dashboard", "visits", "clicks"].includes(state.activePanel)) {
-      loadOverview();
-    } else if (state.activePanel === "articles") {
-      loadArticles();
-    } else if (state.activePanel === "videos") {
-      loadVideoCategories().then(loadVideos);
-    } else if (state.activePanel === "videoCategories") {
-      loadVideoCategories();
-    } else if (state.activePanel === "chat") {
-      loadChatMessages();
-      loadBans();
-    } else if (state.activePanel === "accounts") {
-      loadAccounts();
-    }
+    loadPanelData(state.activePanel, { force: true });
   });
   $("#logout-button").addEventListener("click", async () => {
     await api("/api/auth/logout", { method: "POST", body: "{}" });
@@ -1577,10 +1589,10 @@ async function init() {
   resetVideoCategoryForm();
   try {
     await loadMe();
-    await Promise.all([loadOverview(), loadArticles(), loadVideoCategories(), loadVideos(), loadChatMessages(), loadBans(), loadAccounts()]);
+    await loadPanelData(state.activePanel, { force: true });
     state.timer = window.setInterval(() => {
-      if (["dashboard", "visits", "clicks"].includes(state.activePanel)) {
-        loadOverview();
+      if (overviewPanels.has(state.activePanel)) {
+        loadPanelData(state.activePanel, { force: true });
       }
     }, 30000);
   } catch (error) {
