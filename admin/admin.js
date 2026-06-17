@@ -24,6 +24,9 @@ const state = {
   chatActionBusy: false,
   chatActionBusyMode: "",
   bans: [],
+  banListBusy: false,
+  banListBusyMode: "",
+  banBusyId: "",
   accounts: [],
   selectedAccountId: "",
   accountDetail: null,
@@ -67,6 +70,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-06-18",
+    title: "聊天室禁言列表忙碌态优化",
+    body: "禁言列表刷新和停用禁言时会显示刷新中或停用中，并临时禁用列表操作，避免重复请求和状态误读。"
+  },
   {
     date: "2026-06-18",
     title: "聊天室禁言按钮忙碌态优化",
@@ -1853,11 +1861,61 @@ function renderBans() {
       ${ban.active ? `<button class="xp-button" type="button" data-disable-ban="${escapeHtml(ban.ban_id)}">停用</button>` : ""}
     </article>
   `).join("") || emptyState("暂无禁言记录");
+  syncBanListButtons();
+}
+
+function setBanListBusy(mode = "", banId = "") {
+  state.banListBusy = Boolean(mode);
+  state.banListBusyMode = mode;
+  state.banBusyId = banId;
+  syncBanListButtons();
+}
+
+function syncBanListButtons() {
+  const refreshButton = $("#refresh-bans");
+  if (refreshButton) {
+    const refreshing = state.banListBusyMode === "refresh";
+    refreshButton.disabled = state.banListBusy;
+    refreshButton.textContent = refreshing ? "刷新中..." : "刷新";
+    refreshButton.setAttribute("aria-busy", refreshing ? "true" : "false");
+    refreshButton.title = state.banListBusy ? "正在读取禁言列表" : "刷新禁言列表";
+  }
+  $$("[data-disable-ban]").forEach((button) => {
+    const disabling = state.banListBusyMode === "disable" && button.dataset.disableBan === state.banBusyId;
+    button.disabled = state.banListBusy;
+    button.textContent = disabling ? "停用中..." : "停用";
+    button.setAttribute("aria-busy", disabling ? "true" : "false");
+    button.title = state.banListBusy ? "正在处理禁言记录" : "停用这条禁言";
+  });
+}
+
+async function refreshBans() {
+  if (state.banListBusy) {
+    return;
+  }
+  setBanListBusy("refresh");
+  try {
+    await loadBans();
+  } catch (error) {
+    $("#ban-list").textContent = `读取禁言列表失败：${error.message}`;
+  } finally {
+    setBanListBusy("");
+  }
 }
 
 async function disableBan(banId) {
-  await api(`/api/admin/chat/bans/${encodeURIComponent(banId)}`, { method: "DELETE" });
-  await loadBans();
+  if (state.banListBusy) {
+    return;
+  }
+  setBanListBusy("disable", banId);
+  try {
+    await api(`/api/admin/chat/bans/${encodeURIComponent(banId)}`, { method: "DELETE" });
+    await loadBans();
+  } catch (error) {
+    $("#ban-list").textContent = `停用禁言失败：${error.message}`;
+  } finally {
+    setBanListBusy("");
+  }
 }
 
 async function loadAccounts() {
@@ -2184,7 +2242,7 @@ function bindEvents() {
   $("#delete-chat-message").addEventListener("click", deleteChatMessage);
   $("#ban-chat-visitor").addEventListener("click", () => banSelectedChat("visitor"));
   $("#ban-chat-ip").addEventListener("click", () => banSelectedChat("ip_hash"));
-  $("#refresh-bans").addEventListener("click", loadBans);
+  $("#refresh-bans").addEventListener("click", refreshBans);
   $("#ban-list").addEventListener("click", (event) => {
     const item = event.target.closest("[data-disable-ban]");
     if (item) {
