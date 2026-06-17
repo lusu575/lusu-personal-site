@@ -54,6 +54,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "后台刷新状态可访问性优化",
+    body: "顶部刷新状态改为可被辅助技术感知的状态区域，刷新按钮会按当前标签、读取中和无需刷新三种状态更新无障碍说明。"
+  },
+  {
+    date: "2026-06-18",
     title: "后台标签页记忆优化",
     body: "后台会在当前浏览器会话中记住最后打开的标签页，刷新页面后回到上次工作位置；旧值或异常值会自动回到实时大屏。"
   },
@@ -419,11 +424,16 @@ function panelDataKey(panel) {
 
 function updateRefreshButton() {
   const button = $("#manual-refresh");
+  const panelName = panelMeta[state.activePanel]?.[0] || "当前标签";
   const staticPanel = staticPanels.has(state.activePanel);
   const busy = !staticPanel && Boolean(state.loadingPanels[panelDataKey(state.activePanel)]);
+  const buttonText = staticPanel ? "无需刷新" : (busy ? "刷新中..." : "刷新");
+  const buttonLabel = staticPanel ? `${panelName}无需刷新` : (busy ? `${panelName}正在刷新` : `刷新${panelName}`);
   button.disabled = staticPanel || busy;
   button.setAttribute("aria-busy", busy ? "true" : "false");
-  button.textContent = staticPanel ? "无需刷新" : (busy ? "刷新中..." : "刷新");
+  button.setAttribute("aria-label", buttonLabel);
+  button.title = staticPanel ? `${panelName}为本地内容，无需刷新` : buttonLabel;
+  button.textContent = buttonText;
 }
 
 function getStoredActivePanel() {
