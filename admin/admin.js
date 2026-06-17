@@ -72,6 +72,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "后台更新记录渲染安全优化",
+    body: "后台更新记录改用 DOM API 写入日期、标题和正文，减少后续维护时误把更新文案当作 HTML 执行的风险。"
+  },
+  {
+    date: "2026-06-18",
     title: "后台表单状态换行稳定性优化",
     body: "文章、视频、视频分类和账号表单的状态提示增加最小宽度、换行和移动端整行约束，长错误文案不再挤压操作按钮。"
   },
@@ -2138,12 +2143,17 @@ function upsertById(items, nextItem, key) {
 }
 
 function renderAdminUpdates() {
-  $("#admin-updates").innerHTML = adminUpdates.map((item) => `
-    <article class="event-item">
-      <strong>${escapeHtml(item.date)} · ${escapeHtml(item.title)}</strong>
-      <small>${escapeHtml(item.body)}</small>
-    </article>
-  `).join("");
+  const box = $("#admin-updates");
+  box.replaceChildren(...adminUpdates.map((item) => {
+    const article = document.createElement("article");
+    const title = document.createElement("strong");
+    const body = document.createElement("small");
+    article.className = "event-item";
+    title.textContent = `${item.date} · ${item.title}`;
+    body.textContent = item.body;
+    article.append(title, body);
+    return article;
+  }));
 }
 
 function bindEvents() {
