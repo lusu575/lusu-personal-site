@@ -72,6 +72,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "视频链接 HTTPS 校验收紧",
+    body: "后台视频链接解析只接受 HTTPS 的 YouTube、Bilibili 和 b23.tv 地址，裸 BV 号仍由服务端规范化为 HTTPS 播放来源。"
+  },
+  {
+    date: "2026-06-18",
     title: "Bilibili BV 号校验收紧",
     body: "后台视频链接解析会把 Bilibili BV 号限定为 BV 开头的 12 位标准格式，避免超长或伪造 BV 号进入播放器地址。"
   },

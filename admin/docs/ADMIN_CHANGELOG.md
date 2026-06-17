@@ -4,6 +4,11 @@
 
 ## 2026-06-18
 
+- 视频链接 HTTPS 校验收紧：
+  - 后台视频链接解析从允许 `http` / `https` 收紧为只接受 `https` URL，继续限定 YouTube、youtu.be、Bilibili 和 b23.tv 白名单来源。
+  - 裸 Bilibili BV 号仍由服务端规范化为 HTTPS Bilibili 页面后再解析，不影响现有裸 BV 号录入路径。
+  - 后台页面内 `adminUpdates`、后台维护规则和后台 JS query 已同步更新。
+
 - Bilibili BV 号校验收紧：
   - 后台视频链接解析新增 `cleanBilibiliBvid()`，只接受 `BV` 开头、总长 12 位的标准 BV 号。
   - 裸 BV 号和 `bilibili.com/video/BV...` 路径都会经过同一规则，避免超长或伪造 BV 号进入规范化播放器地址。

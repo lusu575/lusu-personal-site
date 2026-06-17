@@ -2257,8 +2257,8 @@ async function parseVideoUrl(input) {
   } catch {
     throw new HttpError("视频链接格式不正确。", 400);
   }
-  if (!["http:", "https:"].includes(url.protocol)) {
-    throw new HttpError("视频链接必须使用 http 或 https。", 400);
+  if (url.protocol !== "https:") {
+    throw new HttpError("视频链接必须使用 https。", 400);
   }
   const host = url.hostname.toLowerCase().replace(/^www\./, "");
   if (host === "b23.tv") {

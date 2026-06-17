@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 管理后台视频链接 HTTPS 校验收紧：
+  - 后台视频解析链路只接受 HTTPS 的 YouTube、Bilibili 和 b23.tv 地址；裸 Bilibili BV 号仍会由服务端规范化为 HTTPS 来源。
+  - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。
+
 - 管理后台 Bilibili BV 号校验收紧：
   - 后台视频解析链路只接受 `BV` 开头、总长 12 位的标准 Bilibili BV 号，避免超长或伪造 BV 号生成不规范的播放器地址。
   - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。
