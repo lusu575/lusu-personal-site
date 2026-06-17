@@ -4641,6 +4641,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-18-resource-placeholder-hints',
+        '2026-06-18-resource-placeholder-hints',
+        'site-updates',
+        '["网站更新","资源区","多语言","无障碍"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T18:00:00.000Z',
+        '2026-06-17T18:00:00.000Z',
+        '2026-06-17T18:00:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -5153,6 +5180,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# ゲームシェルの多言語同期\n\n今回の更新では、各ゲーム入口ページを包む共通シェルを多言語化し、`?lang=en` と `?lang=ja` で固定の中国語コントロールが混ざらないようにしました。\n\n## 更新内容\n\n- ゲーム一覧への戻るリンク、読み込み表示、ローカルセーブツール、インポート/エクスポートボタン、クラウドセーブパネル、ライセンスリンク、状態表示が現在の言語に合わせて表示されます。\n- ゲームタイトル、iframe タイトル、対応言語のサブタイトルも現在のサイト言語を使います。\n- 5 つのゲーム入口ページで `game-shell.js` に新しいキャッシュ版を付けました。\n- 埋め込みゲーム iframe、起動言語、クラウドセーブ同期、インポート/エクスポートの動作は変更していません。"
       }
     }, "2026-06-17T17:55:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-resource-placeholder-hints", {
+      zh: {
+        title: "资源占位提示补齐",
+        summary: "资源区准备中的占位按钮现在会说明暂时没有下载或外链。",
+        content_markdown: "# 资源占位提示补齐\n\n本次更新继续整理资源区的占位体验，让没有真实 URL 的资源按钮不只显示“准备中”，也能说明原因。\n\n## 更新内容\n\n- 没有下载或外链的资源按钮增加中文 / English / 日本語 的 `title` 和 `aria-label`。\n- 占位按钮继续保持 disabled，并补充 `aria-disabled=\"true\"`。\n- 既有 URL 白名单、资源数据结构和安全 DOM 渲染逻辑不变。\n- 只调整公开主站资源区提示和更新记录，不触碰后台目录或管理接口。"
+      },
+      en: {
+        title: "Resource Placeholder Hints",
+        summary: "Coming-soon resource buttons now explain when no download or external link is available.",
+        content_markdown: "# Resource Placeholder Hints\n\nThis update continues polishing the Resources area so placeholder buttons explain why they are not clickable yet.\n\n## Changes\n\n- Resource buttons without a download or external link now include localized `title` and `aria-label` text in Chinese, English, and Japanese.\n- Placeholder buttons remain disabled and now include `aria-disabled=\"true\"`.\n- The existing URL allowlist, resource data shape, and safe DOM rendering path are unchanged.\n- Only public Resources hints and update records changed; admin folders and admin APIs were not touched."
+      },
+      ja: {
+        title: "リソース準備中ヒント",
+        summary: "準備中のリソースボタンが、ダウンロードや外部リンクがまだないことを説明します。",
+        content_markdown: "# リソース準備中ヒント\n\n今回の更新では、リソース欄の占位表示を少し整え、リンクのないボタンがなぜクリックできないのかを分かりやすくしました。\n\n## 更新内容\n\n- ダウンロードや外部リンクがないリソースボタンに、中文 / English / 日本語 の `title` と `aria-label` を追加しました。\n- 占位ボタンは引き続き disabled のまま、`aria-disabled=\"true\"` も追加しました。\n- 既存の URL 許可リスト、リソースデータ構造、安全な DOM 描画経路は変更していません。\n- 公開側のリソース欄ヒントと更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。"
+      }
+    }, "2026-06-17T18:00:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')

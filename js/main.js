@@ -60,6 +60,7 @@ const translations = {
     downloadButton: "下载",
     externalButton: "外部链接",
     resourcePending: "准备中",
+    resourcePendingTitle: "这个资源还在整理中，暂时没有下载或外链。",
     openOriginal: "打开原地址",
     videoFullscreen: "全屏",
     videoRestore: "还原",
@@ -192,6 +193,7 @@ const translations = {
     downloadButton: "Download",
     externalButton: "External Link",
     resourcePending: "Coming soon",
+    resourcePendingTitle: "This resource is still being organized and has no download or external link yet.",
     openOriginal: "Open Original",
     videoFullscreen: "Full screen",
     videoRestore: "Restore",
@@ -324,6 +326,7 @@ const translations = {
     downloadButton: "ダウンロード",
     externalButton: "外部リンク",
     resourcePending: "準備中",
+    resourcePendingTitle: "このリソースはまだ整理中で、ダウンロードや外部リンクはありません。",
     openOriginal: "元のページを開く",
     videoFullscreen: "全画面",
     videoRestore: "元に戻す",
@@ -434,6 +437,16 @@ const labels = {
 
 const content = {
   updates: [
+    {
+      icon: "📦",
+      date: "2026.06.18",
+      title: { zh: "资源占位提示补齐", en: "Resource Placeholder Hints", ja: "リソース準備中ヒント" },
+      desc: {
+        zh: "资源区准备中按钮增加三语 title 与 aria 说明，明确暂时没有下载或外链",
+        en: "Coming-soon resource buttons now include localized title and aria hints when no link is available",
+        ja: "準備中のリソースボタンに、リンク未設定を示す多言語 title と aria 説明を追加しました"
+      }
+    },
     {
       icon: "💾",
       date: "2026.06.18",
@@ -2129,6 +2142,9 @@ function resourceActionElement(item) {
     button.type = "button";
     button.className = "card-action is-disabled";
     button.disabled = true;
+    button.setAttribute("aria-disabled", "true");
+    button.setAttribute("aria-label", t("resourcePendingTitle"));
+    button.setAttribute("title", t("resourcePendingTitle"));
     button.textContent = text;
     return button;
   }
