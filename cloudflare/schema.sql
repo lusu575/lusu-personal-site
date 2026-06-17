@@ -1166,6 +1166,32 @@ on conflict(article_id) do update set
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
 
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-account-safe-dom',
+  '2026-06-18-account-safe-dom',
+  'site-updates',
+  '["网站更新","账号","安全","云存档"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T18:20:00.000Z',
+  '2026-06-17T18:20:00.000Z',
+  '2026-06-17T18:20:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
@@ -3432,7 +3458,37 @@ This update tightens the public rendering path around the shared game-entry tool
 - クラウド保存パネルは文字列の `innerHTML` 組み立てをやめ、メール、状態表示、ボタン文言を `textContent` で描画します。
 - ライセンス欄は DOM 構築に変更し、ライセンスファイルは相対パスのみ、上流リポジトリは `http(s)` リンクのみ受け付けます。
 - 5 つのゲーム入口ページで `game-shell.js` のキャッシュ版を更新しました。
-- ゲーム iframe、起動言語、クラウドセーブ同期、インポート/エクスポート動作は変更していません。', '2026-06-17T18:15:00.000Z', '2026-06-17T18:15:00.000Z')
+- ゲーム iframe、起動言語、クラウドセーブ同期、インポート/エクスポート動作は変更していません。', '2026-06-17T18:15:00.000Z', '2026-06-17T18:15:00.000Z'),
+  ('seed-update-2026-06-18-account-safe-dom-zh', 'seed-update-2026-06-18-account-safe-dom', 'zh', '账号弹窗安全 DOM 渲染', '顶部账号/云存档弹窗改为 DOM/textContent 构建。', '# 账号弹窗安全 DOM 渲染
+
+本次更新收紧公开主站右上角账号入口的渲染方式，让账号和云存档提示继续以纯文本方式显示。
+
+## 更新内容
+
+- 账号弹窗不再用模板字符串 `innerHTML` 拼接，按钮、邮箱、接口错误和状态提示改为 DOM / `textContent` 构建。
+- 登录、注册、退出账号、语言切换后的重渲染和云存档说明逻辑保持不变。
+- 邮箱和接口错误只作为文本节点渲染，不会被当作 HTML 执行。
+- 只调整公开主站账号弹窗和更新记录，不触碰后台目录或管理接口。', '2026-06-17T18:20:00.000Z', '2026-06-17T18:20:00.000Z'),
+  ('seed-update-2026-06-18-account-safe-dom-en', 'seed-update-2026-06-18-account-safe-dom', 'en', 'Account Popover Safe DOM', 'The top account and cloud-save popover now renders through DOM/textContent.', '# Account Popover Safe DOM
+
+This update tightens the rendering path for the public site''s top-right account entry so account and cloud-save notices stay plain text.
+
+## Changes
+
+- The account popover no longer builds markup with template-string `innerHTML`; buttons, email, API errors, and status notices are created through DOM / `textContent`.
+- Login, registration, sign-out, language-switch re-rendering, and cloud-save copy are unchanged.
+- Email addresses and API errors render only as text nodes and are not interpreted as HTML.
+- Only the public account popover and update records changed; admin folders and admin APIs were not touched.', '2026-06-17T18:20:00.000Z', '2026-06-17T18:20:00.000Z'),
+  ('seed-update-2026-06-18-account-safe-dom-ja', 'seed-update-2026-06-18-account-safe-dom', 'ja', 'アカウント表示の安全な DOM 描画', '上部アカウント/クラウド保存表示を DOM/textContent 描画にしました。', '# アカウント表示の安全な DOM 描画
+
+今回の更新では、公開サイト右上のアカウント入口の描画経路を引き締め、アカウントとクラウド保存の案内を純テキストとして表示します。
+
+## 更新内容
+
+- アカウント表示はテンプレート文字列の `innerHTML` 組み立てをやめ、ボタン、メール、API エラー、状態表示を DOM / `textContent` で構築します。
+- ログイン、登録、ログアウト、言語切り替え後の再描画、クラウド保存説明は変更していません。
+- メールアドレスと API エラーはテキストノードとしてのみ描画され、HTML として解釈されません。
+- 公開側のアカウント表示と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T18:20:00.000Z', '2026-06-17T18:20:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,

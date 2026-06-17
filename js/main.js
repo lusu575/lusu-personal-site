@@ -438,6 +438,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "🔐",
+      date: "2026.06.18",
+      title: { zh: "账号弹窗安全 DOM 渲染", en: "Account Popover Safe DOM", ja: "アカウント表示の安全な DOM 描画" },
+      desc: {
+        zh: "顶部账号/云存档弹窗改为 DOM/textContent 构建，登录、注册和退出行为保持不变",
+        en: "The top account and cloud-save popover now renders through DOM/textContent while keeping login flows unchanged",
+        ja: "上部アカウント/クラウド保存表示を DOM/textContent 描画にし、ログイン動作は維持しました"
+      }
+    },
+    {
       icon: "🛡️",
       date: "2026.06.18",
       title: { zh: "游戏外壳安全 DOM 渲染", en: "Game Shell Safe DOM", ja: "ゲームシェルの安全な DOM 描画" },
@@ -2598,46 +2608,92 @@ function renderAccountWidget(message = "") {
   if (!widget) {
     return;
   }
+  widget.replaceChildren();
+
+  const toggle = document.createElement("button");
+  toggle.className = authUser ? "account-button signed-in" : "account-button";
+  toggle.type = "button";
+  toggle.dataset.accountToggle = "";
+  const toggleText = document.createElement("span");
+  toggleText.textContent = authUser
+    ? `${t("accountSignedInPrefix")}${authUser.email}`
+    : t("accountLogin");
+  toggle.appendChild(toggleText);
+
+  const popover = document.createElement("div");
+  popover.className = "account-popover";
+  popover.id = "account-popover";
+  popover.hidden = true;
 
   if (authUser) {
-    widget.innerHTML = `
-      <button class="account-button signed-in" type="button" data-account-toggle>
-        <span>${escapeHtml(t("accountSignedInPrefix"))}${escapeHtml(authUser.email)}</span>
-      </button>
-      <div class="account-popover" id="account-popover" hidden>
-        <div class="account-signed-in">
-          <strong>${escapeHtml(t("accountTitle"))}</strong>
-          <p class="account-note">${escapeHtml(authUser.email)}</p>
-          <p class="account-note">${escapeHtml(t("accountSignedInNote"))}</p>
-          ${message ? `<p class="account-note">${escapeHtml(message)}</p>` : ""}
-          <div class="account-actions">
-            <button class="account-button" type="button" data-account-logout>${escapeHtml(t("accountLogout"))}</button>
-          </div>
-        </div>
-      </div>
-    `;
+    const signedInPanel = document.createElement("div");
+    signedInPanel.className = "account-signed-in";
+    const title = document.createElement("strong");
+    title.textContent = t("accountTitle");
+    const email = document.createElement("p");
+    email.className = "account-note";
+    email.textContent = authUser.email || "";
+    const note = document.createElement("p");
+    note.className = "account-note";
+    note.textContent = t("accountSignedInNote");
+    signedInPanel.append(title, email, note);
+    if (message) {
+      const messageNode = document.createElement("p");
+      messageNode.className = "account-note";
+      messageNode.textContent = message;
+      signedInPanel.appendChild(messageNode);
+    }
+    const actions = document.createElement("div");
+    actions.className = "account-actions";
+    const logoutButton = document.createElement("button");
+    logoutButton.className = "account-button";
+    logoutButton.type = "button";
+    logoutButton.dataset.accountLogout = "";
+    logoutButton.textContent = t("accountLogout");
+    actions.appendChild(logoutButton);
+    signedInPanel.appendChild(actions);
+    popover.appendChild(signedInPanel);
+    widget.append(toggle, popover);
     return;
   }
 
-  widget.innerHTML = `
-    <button class="account-button" type="button" data-account-toggle>
-      <span>${escapeHtml(t("accountLogin"))}</span>
-    </button>
-    <div class="account-popover" id="account-popover" hidden>
-      <form class="account-form" id="account-form">
-        <strong>${escapeHtml(t("accountTitle"))}</strong>
-        <input name="email" type="email" autocomplete="email" placeholder="${escapeHtml(t("accountEmailPlaceholder"))}" required>
-        <input name="password" type="password" autocomplete="current-password" placeholder="${escapeHtml(t("accountPasswordPlaceholder"))}" required>
-        <div class="account-actions">
-          <button class="account-button" type="submit" data-mode="login">${escapeHtml(t("accountLogin"))}</button>
-          <button class="account-button" type="submit" data-mode="register">${escapeHtml(t("accountRegister"))}</button>
-        </div>
-        <p class="account-note">${message ? escapeHtml(message) : escapeHtml(t("accountGuestNote"))}</p>
-      </form>
-    </div>
-  `;
-
-  document.getElementById("account-form")?.addEventListener("submit", submitAccountForm);
+  const form = document.createElement("form");
+  form.className = "account-form";
+  form.id = "account-form";
+  const title = document.createElement("strong");
+  title.textContent = t("accountTitle");
+  const emailInput = document.createElement("input");
+  emailInput.name = "email";
+  emailInput.type = "email";
+  emailInput.autocomplete = "email";
+  emailInput.placeholder = t("accountEmailPlaceholder");
+  emailInput.required = true;
+  const passwordInput = document.createElement("input");
+  passwordInput.name = "password";
+  passwordInput.type = "password";
+  passwordInput.autocomplete = "current-password";
+  passwordInput.placeholder = t("accountPasswordPlaceholder");
+  passwordInput.required = true;
+  const actions = document.createElement("div");
+  actions.className = "account-actions";
+  const loginButton = document.createElement("button");
+  loginButton.className = "account-button";
+  loginButton.type = "submit";
+  loginButton.dataset.mode = "login";
+  loginButton.textContent = t("accountLogin");
+  const registerButton = document.createElement("button");
+  registerButton.className = "account-button";
+  registerButton.type = "submit";
+  registerButton.dataset.mode = "register";
+  registerButton.textContent = t("accountRegister");
+  actions.append(loginButton, registerButton);
+  const note = document.createElement("p");
+  note.className = "account-note";
+  note.textContent = message || t("accountGuestNote");
+  form.append(title, emailInput, passwordInput, actions, note);
+  form.addEventListener("submit", submitAccountForm);
+  popover.appendChild(form);
+  widget.append(toggle, popover);
 }
 
 async function initAccountWidget() {
