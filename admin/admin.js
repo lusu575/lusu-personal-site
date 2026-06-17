@@ -74,6 +74,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "账号保存期间锁定表单",
+    body: "账号管理保存邮箱、角色或重置密码请求进行中会临时锁定账号表单字段，避免保存尚未完成时继续修改内容造成提交范围误解。"
+  },
+  {
+    date: "2026-06-18",
     title: "聊天治理期间锁定表单",
     body: "聊天室管理保存、隐藏、删除或禁言请求进行中会临时锁定昵称、内容和禁言参数输入框，避免请求尚未完成时继续修改字段造成误以为已经一并提交。"
   },
@@ -2755,6 +2760,7 @@ async function saveAccount(event) {
 function syncAccountSaveButton() {
   const button = $("#account-form button[type='submit']");
   if (!button) {
+    syncAccountFormBusyState();
     syncAccountListBusyState();
     return;
   }
@@ -2772,6 +2778,7 @@ function syncAccountSaveButton() {
   } else {
     button.removeAttribute("title");
   }
+  syncAccountFormBusyState();
   syncAccountListBusyState();
 }
 
@@ -2784,6 +2791,20 @@ function syncAccountListBusyState() {
   $$("#account-list .list-item").forEach((item) => {
     item.disabled = busy;
     item.title = busy ? "正在保存账号，完成后再切换" : "打开这个账号";
+  });
+}
+
+function syncAccountFormBusyState() {
+  const busy = isAccountWriteBusy();
+  const title = busy ? "正在保存账号，完成后再编辑表单" : "";
+  $$("#account-form input, #account-form select").forEach((field) => {
+    field.disabled = busy;
+    field.setAttribute("aria-busy", busy ? "true" : "false");
+    if (title) {
+      field.title = title;
+    } else {
+      field.removeAttribute("title");
+    }
   });
 }
 
