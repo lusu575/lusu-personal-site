@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 管理后台访问来源地图渲染安全优化：
+  - `/admin/` 访问来源地图点位改用 DOM API、`textContent`、`style` 和 `title` 属性渲染，减少来源地字段被误当作 HTML 的风险。
+  - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。
+
 - 管理后台访问来源表格渲染安全优化：
   - `/admin/` 访问来源的国家、地区、城市和 IP 掩码前缀表格改用 DOM API 与 `textContent` 渲染，减少来源字段被误当作 HTML 的风险。
   - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。

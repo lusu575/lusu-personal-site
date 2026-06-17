@@ -72,6 +72,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "访问来源地图渲染安全优化",
+    body: "访问来源地图点位改用 DOM API 和安全属性写入，国家、地区、城市字段只按文本展示。"
+  },
+  {
+    date: "2026-06-18",
     title: "访问来源表格渲染安全优化",
     body: "访问来源的国家、地区、城市和 IP 掩码前缀表格改用 DOM API 写入，避免来源字段被误当作 HTML。"
   },
@@ -861,22 +866,35 @@ function renderMap(rows) {
   const map = $("#visitor-map");
   const data = rows.filter((row) => Number(row.pv || 0) > 0).slice(0, 40);
   if (!data.length) {
-    map.innerHTML = `<span class="muted" style="position:absolute;z-index:3;left:12px;top:12px;">等待访问数据</span>`;
+    const empty = document.createElement("span");
+    empty.className = "muted";
+    empty.textContent = "等待访问数据";
+    empty.style.position = "absolute";
+    empty.style.zIndex = "3";
+    empty.style.left = "12px";
+    empty.style.top = "12px";
+    map.replaceChildren(empty);
     return;
   }
   const max = Math.max(...data.map((row) => Number(row.pv || 0)), 1);
-  map.innerHTML = data.map((row, index) => {
+  map.replaceChildren(...data.map((row, index) => {
     const [lon, lat] = coordinatesFor(row, index);
     const left = Math.min(94, Math.max(6, ((lon + 180) / 360) * 100));
     const top = Math.min(88, Math.max(10, ((90 - lat) / 180) * 100));
     const size = 10 + Math.round((Number(row.pv || 0) / max) * 22);
     const label = [row.country || "未知", row.region, row.city].filter(Boolean).join(" / ");
-    return `
-      <button class="map-point" type="button" style="left:${left}%;top:${top}%;--size:${size}px" title="${escapeHtml(label)} PV ${formatNumber(row.pv)} UV ${formatNumber(row.uv)}">
-        <span>${escapeHtml(row.country || "未知")} ${formatNumber(row.pv)}</span>
-      </button>
-    `;
-  }).join("");
+    const point = document.createElement("button");
+    const caption = document.createElement("span");
+    point.className = "map-point";
+    point.type = "button";
+    point.style.left = `${left}%`;
+    point.style.top = `${top}%`;
+    point.style.setProperty("--size", `${size}px`);
+    point.title = `${label} PV ${formatNumber(row.pv)} UV ${formatNumber(row.uv)}`;
+    caption.textContent = `${row.country || "未知"} ${formatNumber(row.pv)}`;
+    point.append(caption);
+    return point;
+  }));
 }
 
 function coordinatesFor(row, index) {
