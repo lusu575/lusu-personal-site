@@ -4,6 +4,11 @@
 
 ## 2026-06-18
 
+- 热门内容表格渲染安全优化：
+  - 实时大屏的热门页面和热门文章表格改用 `document.createElement` 与 `textContent` 渲染路径、route、文章标题、slug、分类、PV/UV 和最近访问时间。
+  - 现有表格列、空状态和数字格式保持不变，但不再通过 HTML 字符串拼接热门内容字段。
+  - 后台页面内 `adminUpdates` 和后台 JS query 已同步更新。
+
 - 点击埋点列表渲染安全优化：
   - 点击埋点的热点目标表格和最近点击事件改用 `document.createElement` 与 `textContent` 渲染目标文本、route、路径、来源和时间。
   - 现有表格列、最近事件列表、空状态和 PV/UV 数字格式保持不变，但不再通过 HTML 字符串拼接点击埋点字段。

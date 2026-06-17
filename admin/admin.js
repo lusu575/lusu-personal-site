@@ -72,6 +72,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "热门内容表格渲染安全优化",
+    body: "实时大屏的热门页面和热门文章表格改用 DOM API 写入，避免路径、route、文章标题、slug 和分类被误当作 HTML。"
+  },
+  {
+    date: "2026-06-18",
     title: "点击埋点列表渲染安全优化",
     body: "点击埋点的热点目标和最近点击事件改用 DOM API 写入，避免路径、目标文本和来源字段被误当作 HTML。"
   },
@@ -577,6 +582,15 @@ function createTableCell(text) {
   return cell;
 }
 
+function createStackedTableCell(primaryText, secondaryText) {
+  const cell = document.createElement("td");
+  const secondary = document.createElement("small");
+  cell.append(document.createTextNode(primaryText), document.createElement("br"));
+  secondary.textContent = secondaryText;
+  cell.append(secondary);
+  return cell;
+}
+
 function createEmptyTableRow(colspan, text) {
   const row = document.createElement("tr");
   const cell = document.createElement("td");
@@ -871,25 +885,39 @@ function coordinatesFor(row, index) {
 }
 
 function renderTopPages(rows) {
-  $("#top-pages").innerHTML = rows.map((row) => `
-    <tr>
-      <td>${escapeHtml(row.path || "/")}<br><small>${escapeHtml(row.route || "")}</small></td>
-      <td>${formatNumber(row.pv)}</td>
-      <td>${formatNumber(row.uv)}</td>
-      <td>${formatTime(row.last_seen_at)}</td>
-    </tr>
-  `).join("") || emptyRow(4, "暂无热门页面数据");
+  const table = $("#top-pages");
+  if (!rows.length) {
+    table.replaceChildren(createEmptyTableRow(4, "暂无热门页面数据"));
+    return;
+  }
+  table.replaceChildren(...rows.map((row) => {
+    const tableRow = document.createElement("tr");
+    tableRow.append(
+      createStackedTableCell(row.path || "/", row.route || ""),
+      createTableCell(formatNumber(row.pv)),
+      createTableCell(formatNumber(row.uv)),
+      createTableCell(formatTime(row.last_seen_at))
+    );
+    return tableRow;
+  }));
 }
 
 function renderTopArticles(rows) {
-  $("#top-articles").innerHTML = rows.map((row) => `
-    <tr>
-      <td>${escapeHtml(row.title || row.slug || "未命名文章")}<br><small>${escapeHtml(row.slug || "")} ${escapeHtml(row.category || "")}</small></td>
-      <td>${formatNumber(row.pv)}</td>
-      <td>${formatNumber(row.uv)}</td>
-      <td>${formatTime(row.last_seen_at)}</td>
-    </tr>
-  `).join("") || emptyRow(4, "暂无热门文章数据");
+  const table = $("#top-articles");
+  if (!rows.length) {
+    table.replaceChildren(createEmptyTableRow(4, "暂无热门文章数据"));
+    return;
+  }
+  table.replaceChildren(...rows.map((row) => {
+    const tableRow = document.createElement("tr");
+    tableRow.append(
+      createStackedTableCell(row.title || row.slug || "未命名文章", `${row.slug || ""} ${row.category || ""}`),
+      createTableCell(formatNumber(row.pv)),
+      createTableCell(formatNumber(row.uv)),
+      createTableCell(formatTime(row.last_seen_at))
+    );
+    return tableRow;
+  }));
 }
 
 function renderVisitTables() {
