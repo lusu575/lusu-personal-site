@@ -4,6 +4,11 @@
 
 ## 2026-06-18
 
+- 聊天室禁言列表渲染安全优化：
+  - 聊天室管理的禁言记录列表改用 `document.createElement`、`textContent` 和 `dataset` 渲染状态、类型、禁言对象、原因、期限和停用按钮。
+  - 现有禁言列表样式、停用按钮和刷新 / 停用忙碌态保持不变，但不再通过 HTML 字符串拼接禁言审计字段。
+  - 后台页面内 `adminUpdates` 和后台 JS query 已同步更新。
+
 - 聊天室元信息渲染安全优化：
   - 聊天室管理选中消息后，隐藏用户 ID、前端 client id、IP hash、IP 前缀和来源信息改用 `document.createElement` 与 `textContent` 渲染。
   - 现有展示字段、顺序和中文标签保持不变，但不再通过 HTML 字符串拼接这些审计字段。

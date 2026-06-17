@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 管理后台聊天室禁言列表渲染安全优化：
+  - `/admin/` 聊天室管理的禁言状态、类型、对象、原因、时间和停用按钮改用 DOM API 与 `textContent` 渲染，减少禁言审计字段被误当作 HTML 的风险。
+  - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。
+
 - 管理后台聊天室元信息渲染安全优化：
   - `/admin/` 聊天室管理的隐藏用户 ID、client id、IP hash、IP 前缀和来源信息改用 DOM API 与 `textContent` 渲染，减少审计字段被误当作 HTML 的风险。
   - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。

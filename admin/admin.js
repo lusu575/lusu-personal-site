@@ -72,6 +72,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "聊天室禁言列表渲染安全优化",
+    body: "聊天室管理的禁言类型、禁言对象、原因、时间和停用按钮改用 DOM API 写入，避免禁言审计字段被误当作 HTML。"
+  },
+  {
+    date: "2026-06-18",
     title: "聊天室元信息渲染安全优化",
     body: "聊天室管理的隐藏用户 ID、client id、IP hash、IP 前缀和来源信息改用 DOM API 写入，避免审计字段被误当作 HTML。"
   },
@@ -521,6 +526,17 @@ function emptyRow(colspan, text) {
 
 function statusBadge(text, tone = "neutral") {
   return `<span class="status-badge ${escapeHtml(tone)}">${escapeHtml(text)}</span>`;
+}
+
+function createStatusBadgeElement(text, tone = "neutral") {
+  const safeTone = String(tone || "neutral").replace(/[^a-z0-9_-]/gi, "");
+  const badge = document.createElement("span");
+  badge.className = "status-badge";
+  if (safeTone) {
+    badge.classList.add(safeTone);
+  }
+  badge.textContent = text;
+  return badge;
 }
 
 function articleStatusLabel(status) {
@@ -1874,17 +1890,40 @@ async function loadBans() {
 }
 
 function renderBans() {
-  $("#ban-list").innerHTML = state.bans.map((ban) => `
-    <article class="ban-item">
-      <div class="list-meta">
-        ${statusBadge(ban.active ? "生效中" : "已停用", ban.active ? "active" : "off")}
-        ${statusBadge(ban.ban_type, "neutral")}
-      </div>
-      <small>${escapeHtml(ban.visitor_id || ban.ip_prefix || ban.ip_hash)} · ${escapeHtml(ban.reason || "")}</small>
-      <small>${formatTime(ban.created_at)}${ban.expires_at ? ` 到 ${formatTime(ban.expires_at)}` : " · 长期"}</small>
-      ${ban.active ? `<button class="xp-button" type="button" data-disable-ban="${escapeHtml(ban.ban_id)}">停用</button>` : ""}
-    </article>
-  `).join("") || emptyState("暂无禁言记录");
+  const list = $("#ban-list");
+  if (!state.bans.length) {
+    const empty = document.createElement("div");
+    empty.className = "empty-state";
+    empty.textContent = "暂无禁言记录";
+    list.replaceChildren(empty);
+    syncBanListButtons();
+    return;
+  }
+
+  list.replaceChildren(...state.bans.map((ban) => {
+    const item = document.createElement("article");
+    const meta = document.createElement("div");
+    const target = document.createElement("small");
+    const duration = document.createElement("small");
+    item.className = "ban-item";
+    meta.className = "list-meta";
+    meta.append(
+      createStatusBadgeElement(ban.active ? "生效中" : "已停用", ban.active ? "active" : "off"),
+      createStatusBadgeElement(ban.ban_type || "", "neutral")
+    );
+    target.textContent = `${ban.visitor_id || ban.ip_prefix || ban.ip_hash || ""} · ${ban.reason || ""}`;
+    duration.textContent = `${formatTime(ban.created_at)}${ban.expires_at ? ` 到 ${formatTime(ban.expires_at)}` : " · 长期"}`;
+    item.append(meta, target, duration);
+    if (ban.active) {
+      const button = document.createElement("button");
+      button.className = "xp-button";
+      button.type = "button";
+      button.dataset.disableBan = ban.ban_id || "";
+      button.textContent = "停用";
+      item.append(button);
+    }
+    return item;
+  }));
   syncBanListButtons();
 }
 
