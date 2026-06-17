@@ -9,6 +9,8 @@ const state = {
   selectedVideoId: "",
   videoCategories: [],
   selectedVideoCategoryId: "",
+  videoPreviewing: false,
+  videoMetadataRefreshing: false,
   chatMessages: [],
   selectedMessageId: "",
   bans: [],
@@ -55,6 +57,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-06-18",
+    title: "视频元数据按钮忙碌态优化",
+    body: "视频管理在自动识别或刷新元数据时会临时禁用识别和刷新按钮，并显示识别中或刷新中，避免慢请求下重复抓取外部元数据。"
+  },
   {
     date: "2026-06-18",
     title: "账号保存防重复提交优化",
@@ -994,11 +1001,11 @@ function resetVideoForm() {
   $("#video-form").elements.status.value = "draft";
   applyNewVideoSortDefault();
   $("#delete-video").disabled = true;
-  $("#refresh-video-metadata").disabled = true;
   $("#video-status").textContent = "";
   $("#admin-video-preview").replaceChildren();
   $("#video-cover-file").value = "";
   $("#video-frame-file").value = "";
+  syncVideoMetadataButtons();
   renderVideoThumbnailPreview();
   renderVideoList();
   renderVideoCategoryChecks();
@@ -1021,8 +1028,8 @@ function fillVideoForm(video) {
   form.elements.title.value = video.title || "";
   form.elements.description.value = video.description || "";
   $("#delete-video").disabled = false;
-  $("#refresh-video-metadata").disabled = false;
   $("#video-status").textContent = video.metadata_error || "";
+  syncVideoMetadataButtons();
   renderVideoList();
   renderVideoCategoryChecks();
   renderAdminVideoPreview(video.embed_url);
@@ -1150,7 +1157,12 @@ function applyPreviewToVideoForm(video) {
 }
 
 async function previewVideoUrl() {
+  if (state.videoPreviewing || state.videoMetadataRefreshing) {
+    return;
+  }
   const form = $("#video-form");
+  state.videoPreviewing = true;
+  syncVideoMetadataButtons();
   $("#video-status").textContent = "正在识别...";
   try {
     const payload = await api("/api/admin/videos/preview-url", {
@@ -1160,6 +1172,34 @@ async function previewVideoUrl() {
     applyPreviewToVideoForm(payload.video || {});
   } catch (error) {
     $("#video-status").textContent = error.message;
+  } finally {
+    state.videoPreviewing = false;
+    syncVideoMetadataButtons();
+  }
+}
+
+function syncVideoMetadataButtons() {
+  const previewButton = $("#preview-video-url");
+  const refreshButton = $("#refresh-video-metadata");
+  const busy = state.videoPreviewing || state.videoMetadataRefreshing;
+  if (previewButton) {
+    previewButton.disabled = busy;
+    previewButton.textContent = state.videoPreviewing ? "识别中..." : "自动识别/获取信息";
+    previewButton.setAttribute("aria-busy", state.videoPreviewing ? "true" : "false");
+    previewButton.title = state.videoPreviewing ? "正在识别视频链接" : "自动识别视频链接并获取元数据";
+  }
+  if (refreshButton) {
+    const hasVideo = Boolean(state.selectedVideoId);
+    refreshButton.disabled = busy || !hasVideo;
+    refreshButton.textContent = state.videoMetadataRefreshing ? "刷新中..." : "刷新元数据";
+    refreshButton.setAttribute("aria-busy", state.videoMetadataRefreshing ? "true" : "false");
+    if (!hasVideo) {
+      refreshButton.title = "请先选择已保存视频";
+    } else if (state.videoMetadataRefreshing) {
+      refreshButton.title = "正在刷新外部元数据";
+    } else {
+      refreshButton.title = "刷新当前视频的外部元数据";
+    }
   }
 }
 
@@ -1231,9 +1271,14 @@ async function deleteVideo() {
 }
 
 async function refreshVideoMetadata() {
+  if (state.videoPreviewing || state.videoMetadataRefreshing) {
+    return;
+  }
   if (!state.selectedVideoId) {
     return previewVideoUrl();
   }
+  state.videoMetadataRefreshing = true;
+  syncVideoMetadataButtons();
   $("#video-status").textContent = "正在刷新元数据...";
   try {
     const payload = await api(`/api/admin/videos/${encodeURIComponent(state.selectedVideoId)}/refresh-metadata`, { method: "POST" });
@@ -1241,6 +1286,9 @@ async function refreshVideoMetadata() {
     await loadVideos();
   } catch (error) {
     $("#video-status").textContent = error.message;
+  } finally {
+    state.videoMetadataRefreshing = false;
+    syncVideoMetadataButtons();
   }
 }
 

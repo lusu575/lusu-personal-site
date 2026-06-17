@@ -181,8 +181,8 @@
             <form id="video-form" class="editor-form">
               <label>视频链接<input name="original_url" maxlength="800" placeholder="YouTube / Bilibili / b23.tv"></label>
               <div class="form-actions compact-actions">
-                <button class="xp-button" type="button" id="preview-video-url">自动识别/获取信息</button>
-                <button class="xp-button" type="button" id="refresh-video-metadata">刷新元数据</button>
+                <button class="xp-button" type="button" id="preview-video-url" title="自动识别视频链接并获取元数据">自动识别/获取信息</button>
+                <button class="xp-button" type="button" id="refresh-video-metadata" title="请先选择已保存视频" disabled>刷新元数据</button>
               </div>
               <div class="form-grid">
                 <label>平台<input name="platform" readonly></label>
@@ -414,6 +414,6 @@
     </main>
   </div>
 
-  <script src="/admin/admin.js?v=20260618-account-save-guard"></script>
+  <script src="/admin/admin.js?v=20260618-video-metadata-busy"></script>
 </body>
 </html>
