@@ -5060,6 +5060,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         article_id, slug, category, tags, cover_image, status, is_pinned,
         view_count, created_at, updated_at, published_at
       ) values (
+        'seed-update-2026-06-18-article-tag-locales',
+        '2026-06-18-article-tag-locales',
+        'site-updates',
+        '["网站更新","多语言","标签","知识库"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T21:05:00.000Z',
+        '2026-06-17T21:05:00.000Z',
+        '2026-06-17T21:05:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
         'seed-update-2026-06-18-game-frame-source-guard',
         '2026-06-18-game-frame-source-guard',
         'site-updates',
@@ -5876,6 +5903,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# 記事画像パスガード\n\n今回の更新では、公開知識庫の記事画像描画をさらに引き締め、Markdown 画像パスがプロジェクトの記事画像フォルダ内に留まるよう明確にしました。\n\n## 更新内容\n\n- Markdown 記事画像は引き続き `assets/images/articles/` 配下のプロジェクト資源だけを受け付けます。\n- `safeArticleImageSrc()` が `..` のパストラバーサル片を拒否し、画像パスが記事画像フォルダから外へ出ないようにしました。\n- 画像は今後も `document.createElement('img')`、安全な `src`、`alt`、`figcaption` で描画し、未処理 HTML は挿入しません。\n- 既存の AI Agent 長文画像、知識庫一覧、記事直リンク、管理画面ディレクトリは変更していません。"
       }
     }, "2026-06-17T20:20:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-article-tag-locales", {
+      zh: {
+        title: "文章标签本地化",
+        summary: "公开知识库和站点更新标签补齐了更多三语显示。",
+        content_markdown: "# 文章标签本地化\n\n本次更新继续打磨知识库和站点更新的阅读细节，让更多公开文章标签跟随当前语言显示。\n\n## 更新内容\n\n- `tagLabels` 补齐安全、iframe、聊天室、云存档、筛选、图片、账号等常见标签。\n- 知识库列表、文章详情和首页最近更新会继续通过 `articleTagName()` 输出对应语言标签。\n- 标签仍由 DOM / `textContent` 渲染，不改变文章内容、文章接口或管理后台数据。\n- `index.html` 的主脚本缓存版本已更新，帮助浏览器加载新的标签映射。"
+      },
+      en: {
+        title: "Article Tag Locales",
+        summary: "More public knowledge and site-update tags now have localized labels.",
+        content_markdown: "# Article Tag Locales\n\nThis update continues polishing the reading details in the knowledge base and site update log so more public article tags follow the active language.\n\n## Changes\n\n- `tagLabels` now covers common tags such as security, iframe, chat room, cloud saves, filters, images, and account.\n- The knowledge list, article detail view, and home recent updates continue to use `articleTagName()` for localized tag labels.\n- Tags still render through DOM / `textContent`, with no change to article content, article APIs, or admin data.\n- `index.html` now points at a new main-script cache version so browsers load the updated tag map."
+      },
+      ja: {
+        title: "記事タグのローカライズ",
+        summary: "公開知識庫とサイト更新のタグに、さらに多言語表示を追加しました。",
+        content_markdown: "# 記事タグのローカライズ\n\n今回の更新では、知識庫とサイト更新ログの読書細部をさらに整え、より多くの公開記事タグが現在の言語に合わせて表示されるようにしました。\n\n## 更新内容\n\n- `tagLabels` に安全、iframe、チャット、クラウド保存、フィルター、画像、アカウントなどの一般的なタグを追加しました。\n- 知識庫一覧、記事詳細、ホームの最近更新は引き続き `articleTagName()` で言語別タグを表示します。\n- タグは引き続き DOM / `textContent` で描画し、記事本文、記事 API、管理画面データは変更していません。\n- `index.html` のメインスクリプトのキャッシュ版を更新し、新しいタグマップを読み込めるようにしました。"
+      }
+    }, "2026-06-17T21:05:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-06-18-game-frame-source-guard", {
       zh: {
         title: "游戏 iframe 启动守卫",

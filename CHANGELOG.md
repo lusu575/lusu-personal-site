@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 文章标签本地化：
+  - `tagLabels` 补齐安全、iframe、聊天室、云存档、筛选、图片、账号等公开文章标签的中文 / English / 日本語显示。
+  - 知识库列表、文章详情和最近更新入口继续使用安全 DOM / `textContent` 输出标签，不改变文章数据。
+  - 更新 `index.html` 的 JS query 为 `20260618-article-tag-locales`，并新增同名三语 `site-updates` 更新文章。
 - 游戏 iframe 启动路径守卫：
   - `game-shell.js` 新增 `safeGameSourceEntry()`，只允许游戏 catalog 把 iframe 指向本地 `source/...html` 页面。
   - 游戏启动语言 query 参数名新增格式校验，异常配置会回退到 `lang`，不再直接拼进 iframe URL。

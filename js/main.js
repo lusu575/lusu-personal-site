@@ -438,6 +438,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "🏷️",
+      date: "2026.06.18",
+      title: { zh: "文章标签本地化", en: "Article Tag Locales", ja: "記事タグのローカライズ" },
+      desc: {
+        zh: "知识库和站点更新里的安全、iframe、聊天室、云存档等标签补齐三语显示",
+        en: "Knowledge and site-update tags such as security, iframe, chat room, and cloud saves now have localized labels",
+        ja: "知識庫とサイト更新の安全、iframe、チャット、クラウド保存などのタグに多言語表示を追加しました"
+      }
+    },
+    {
       icon: "🎮",
       date: "2026.06.18",
       title: { zh: "游戏 iframe 启动守卫", en: "Game Frame Source Guard", ja: "ゲームフレーム起動ガード" },
@@ -1212,7 +1222,30 @@ const tagLabels = {
   "性能": { zh: "性能", en: "Performance", ja: "性能" },
   "观察": { zh: "观察", en: "Observations", ja: "観察" },
   "游戏": { zh: "游戏", en: "Games", ja: "ゲーム" },
-  "碎碎念": { zh: "碎碎念", en: "Notes", ja: "メモ" }
+  "碎碎念": { zh: "碎碎念", en: "Notes", ja: "メモ" },
+  "最近更新": { zh: "最近更新", en: "Recent updates", ja: "最近の更新" },
+  "界面": { zh: "界面", en: "Interface", ja: "表示" },
+  "链接": { zh: "链接", en: "Links", ja: "リンク" },
+  "安全": { zh: "安全", en: "Security", ja: "安全" },
+  "图片": { zh: "图片", en: "Images", ja: "画像" },
+  "iframe": { zh: "iframe", en: "iframe", ja: "iframe" },
+  "聊天室": { zh: "聊天室", en: "Chat room", ja: "チャット" },
+  "三语": { zh: "三语", en: "Trilingual", ja: "三言語" },
+  "体验": { zh: "体验", en: "Experience", ja: "体験" },
+  "筛选": { zh: "筛选", en: "Filters", ja: "フィルター" },
+  "渲染": { zh: "渲染", en: "Rendering", ja: "描画" },
+  "云存档": { zh: "云存档", en: "Cloud saves", ja: "クラウド保存" },
+  "账号": { zh: "账号", en: "Account", ja: "アカウント" },
+  "无障碍": { zh: "无障碍", en: "Accessibility", ja: "アクセシビリティ" },
+  "AI": { zh: "AI", en: "AI", ja: "AI" },
+  "Agent": { zh: "Agent", en: "Agent", ja: "Agent" },
+  "Codex": { zh: "Codex", en: "Codex", ja: "Codex" },
+  "fallback": { zh: "fallback", en: "Fallback", ja: "Fallback" },
+  "测试": { zh: "测试", en: "Test", ja: "テスト" },
+  "工具": { zh: "工具", en: "Tools", ja: "ツール" },
+  "2048": { zh: "2048", en: "2048", ja: "2048" },
+  "Hextris": { zh: "Hextris", en: "Hextris", ja: "Hextris" },
+  "Bilibili": { zh: "Bilibili", en: "Bilibili", ja: "Bilibili" }
 };
 
 const pageIds = ["home", "knowledge", "videos", "resources", "games", "blog", "chatroom", "about"];
