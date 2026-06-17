@@ -2350,6 +2350,32 @@ on conflict(article_id) do update set
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
 
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-game-list-safe-dom',
+  '2026-06-18-game-list-safe-dom',
+  'site-updates',
+  '["网站更新","游戏区","安全","渲染"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T19:20:00.000Z',
+  '2026-06-17T19:20:00.000Z',
+  '2026-06-17T19:20:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
@@ -2383,6 +2409,45 @@ This update keeps tightening the public Knowledge area by changing category filt
 - `data-filter`、`data-filter-type`、active 状態、クリック絞り込み動作は変えていません。
 - 前回の記事カード DOM 描画と合わせて、知識庫リストとフィルター操作は記事/カテゴリ文字列の組み立て出力に依存しなくなりました。
 - 公開知識庫フィルターと更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T18:55:00.000Z', '2026-06-17T18:55:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-game-list-safe-dom-zh', 'seed-update-2026-06-18-game-list-safe-dom', 'zh', '游戏列表安全渲染', '游戏区列表卡片改为 DOM/textContent 构建。', '# 游戏列表安全渲染
+
+本次更新继续收紧公开主站游戏区，把游戏列表卡片从字符串模板改为 DOM / `textContent` 构建。
+
+## 更新内容
+
+- 游戏标题、简介、语言支持标签、许可证标签和加载/失败提示都改为 DOM 节点与文本节点输出。
+- 游戏封面仍保留懒加载与异步解码，入口链接和外部链接打开方式保持不变。
+- 游戏入口页、iframe、云存档同步、导入导出和游戏目录不变。
+- 本轮只调整公开游戏列表和更新记录，不触碰后台目录或管理接口。', '2026-06-17T19:20:00.000Z', '2026-06-17T19:20:00.000Z'),
+  ('seed-update-2026-06-18-game-list-safe-dom-en', 'seed-update-2026-06-18-game-list-safe-dom', 'en', 'Game List Safe DOM', 'Game list cards now render through DOM/textContent.', '# Game List Safe DOM
+
+This update keeps tightening the public Games area by changing game-list cards from string templates to DOM / `textContent` construction.
+
+## Changes
+
+- Game titles, summaries, language-support tags, license tags, and loading/failure states now render through DOM nodes and text nodes.
+- Game covers keep lazy loading and async decoding, and entry links plus external-link behavior are unchanged.
+- Game entry pages, iframes, cloud-save sync, import/export, and the game catalog are unchanged.
+- Only the public Games list and update records changed; admin folders and admin APIs were not touched.', '2026-06-17T19:20:00.000Z', '2026-06-17T19:20:00.000Z'),
+  ('seed-update-2026-06-18-game-list-safe-dom-ja', 'seed-update-2026-06-18-game-list-safe-dom', 'ja', 'ゲーム一覧の安全な DOM 描画', 'ゲーム一覧カードを DOM/textContent 構築にしました。', '# ゲーム一覧の安全な DOM 描画
+
+今回の更新では、公開ゲーム欄をさらに引き締め、ゲーム一覧カードを文字列テンプレートから DOM / `textContent` 構築へ変更しました。
+
+## 更新内容
+
+- ゲームタイトル、概要、言語対応タグ、ライセンスタグ、読み込み/失敗表示を DOM ノードとテキストノードで出力します。
+- ゲームカバーの遅延読み込みと非同期デコード、入口リンク、外部リンクの開き方は変えていません。
+- ゲーム入口ページ、iframe、クラウド保存同期、インポート/エクスポート、ゲームカタログは変更していません。
+- 公開ゲーム一覧と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T19:20:00.000Z', '2026-06-17T19:20:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,

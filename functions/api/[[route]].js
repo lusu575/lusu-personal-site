@@ -4911,6 +4911,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-18-game-list-safe-dom',
+        '2026-06-18-game-list-safe-dom',
+        'site-updates',
+        '["网站更新","游戏区","安全","渲染"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T19:20:00.000Z',
+        '2026-06-17T19:20:00.000Z',
+        '2026-06-17T19:20:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -5593,6 +5620,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# リソースフィルターの安全な DOM 描画\n\n今回の更新では、公開リソース欄をさらに引き締め、カテゴリーフィルターボタンを文字列連結から DOM / `textContent` 構築へ変更しました。\n\n## 更新内容\n\n- リソースカテゴリーボタンは `document.createElement('button')` で作成し、ラベルは `textContent` で入れます。\n- `data-filter`、`data-filter-type`、active 状態、クリック絞り込み動作は変えていません。\n- 動画フィルターはすでに DOM 構築のため、本輪では共通のリソースフィルター経路だけを補いました。\n- 公開リソースフィルターと更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。"
       }
     }, "2026-06-17T19:05:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-game-list-safe-dom", {
+      zh: {
+        title: "游戏列表安全渲染",
+        summary: "游戏区列表卡片改为 DOM/textContent 构建。",
+        content_markdown: "# 游戏列表安全渲染\n\n本次更新继续收紧公开主站游戏区，把游戏列表卡片从字符串模板改为 DOM / `textContent` 构建。\n\n## 更新内容\n\n- 游戏标题、简介、语言支持标签、许可证标签和加载/失败提示都改为 DOM 节点与文本节点输出。\n- 游戏封面仍保留懒加载与异步解码，入口链接和外部链接打开方式保持不变。\n- 游戏入口页、iframe、云存档同步、导入导出和游戏目录不变。\n- 本轮只调整公开游戏列表和更新记录，不触碰后台目录或管理接口。"
+      },
+      en: {
+        title: "Game List Safe DOM",
+        summary: "Game list cards now render through DOM/textContent.",
+        content_markdown: "# Game List Safe DOM\n\nThis update keeps tightening the public Games area by changing game-list cards from string templates to DOM / `textContent` construction.\n\n## Changes\n\n- Game titles, summaries, language-support tags, license tags, and loading/failure states now render through DOM nodes and text nodes.\n- Game covers keep lazy loading and async decoding, and entry links plus external-link behavior are unchanged.\n- Game entry pages, iframes, cloud-save sync, import/export, and the game catalog are unchanged.\n- Only the public Games list and update records changed; admin folders and admin APIs were not touched."
+      },
+      ja: {
+        title: "ゲーム一覧の安全な DOM 描画",
+        summary: "ゲーム一覧カードを DOM/textContent 構築にしました。",
+        content_markdown: "# ゲーム一覧の安全な DOM 描画\n\n今回の更新では、公開ゲーム欄をさらに引き締め、ゲーム一覧カードを文字列テンプレートから DOM / `textContent` 構築へ変更しました。\n\n## 更新内容\n\n- ゲームタイトル、概要、言語対応タグ、ライセンスタグ、読み込み/失敗表示を DOM ノードとテキストノードで出力します。\n- ゲームカバーの遅延読み込みと非同期デコード、入口リンク、外部リンクの開き方は変えていません。\n- ゲーム入口ページ、iframe、クラウド保存同期、インポート/エクスポート、ゲームカタログは変更していません。\n- 公開ゲーム一覧と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。"
+      }
+    }, "2026-06-17T19:20:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')

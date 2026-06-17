@@ -438,6 +438,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "🎮",
+      date: "2026.06.18",
+      title: { zh: "游戏列表安全渲染", en: "Game List Safe DOM", ja: "ゲーム一覧の安全な DOM 描画" },
+      desc: {
+        zh: "游戏区卡片、语言标签、许可证和加载状态改为 DOM/textContent 构建",
+        en: "Game cards, language tags, license labels, and loading states now render through DOM/textContent",
+        ja: "ゲームカード、言語タグ、ライセンス、読み込み状態を DOM/textContent 構築にしました"
+      }
+    },
+    {
       icon: "🧰",
       date: "2026.06.18",
       title: { zh: "资源筛选安全渲染", en: "Resource Filters Safe DOM", ja: "リソースフィルターの安全な DOM 描画" },
@@ -1277,7 +1287,7 @@ function buildGameUrl(item) {
   return `/games/${item.entry}?lang=${encodeURIComponent(currentLang)}`;
 }
 
-function renderLanguageSupportTags(item) {
+function languageSupportTagElements(item) {
   const supported = item.languageSupport || {};
   const languageNames = {
     zh: { zh: "中文", en: "英文", ja: "日文" },
@@ -1288,18 +1298,16 @@ function renderLanguageSupportTags(item) {
   return ["zh", "en", "ja"].map((lang) => {
     const name = languageNames[currentLang]?.[lang] || languageNames.zh[lang] || lang;
     const title = supported[lang] ? name : `${name} ${t("gameLanguageUnsupported")}`;
-    return `
-    <span class="tag language-tag${supported[lang] ? " supported" : " unsupported"}" title="${escapeHtml(title)}">
-      ${escapeHtml(name)} ${supported[lang] ? "✓" : "×"}
-    </span>
-  `;
-  }).join("");
+    const tag = document.createElement("span");
+    tag.className = `tag language-tag${supported[lang] ? " supported" : " unsupported"}`;
+    tag.title = title;
+    tag.textContent = `${name} ${supported[lang] ? "✓" : "×"}`;
+    return tag;
+  });
 }
 
-function gameLinkAttributes(item) {
-  return item.external || item.playUrl || item.externalUrl || (!item.entry && item.repo)
-    ? ' target="_blank" rel="noreferrer"'
-    : "";
+function isExternalGameLink(item) {
+  return Boolean(item.external || item.playUrl || item.externalUrl || (!item.entry && item.repo));
 }
 
 function setLanguage(lang, options = {}) {
@@ -2353,27 +2361,65 @@ async function loadGameCatalog() {
 
 async function renderGames() {
   const list = document.getElementById("game-list");
-  list.innerHTML = `<p class="loading-text">${t("gameConfigLoading")}</p>`;
+  const loading = document.createElement("p");
+  loading.className = "loading-text";
+  loading.textContent = t("gameConfigLoading");
+  list.replaceChildren(loading);
   try {
     const catalog = await loadGameCatalog();
-    list.innerHTML = catalog.games.map((item) => `
-        <article class="game-card">
-          <img class="game-cover" src="${escapeHtml(sitePath(String(item.cover || "assets/images/icon-games.png").replace("../", "")))}" alt="${escapeHtml(localText(item.titles || item.titleZh))}" loading="lazy" decoding="async">
-          <div class="game-main">
-            <h3>${escapeHtml(localText(item.titles || item.titleZh))}</h3>
-            <p>${escapeHtml(localText(item.summaries || item.summary))}</p>
-            <div class="meta-row">
-              <span class="language-support-label">${t("languageSupportLabel")}:</span>
-              ${renderLanguageSupportTags(item)}
-              ${item.license?.name ? `<span class="tag">${escapeHtml(item.license.name)}</span>` : ""}
-            </div>
-          </div>
-          <a class="card-action" href="${escapeHtml(buildGameUrl(item))}"${gameLinkAttributes(item)}>${item.external || item.playUrl || item.externalUrl ? t("openGameButton") : t("startGameButton")}</a>
-        </article>
-      `).join("");
+    list.replaceChildren();
+    catalog.games.forEach((item) => list.appendChild(gameCardElement(item)));
   } catch (error) {
-    list.innerHTML = `<p class="loading-text">${t("gameConfigFailed")}：${escapeHtml(error.message)}</p>`;
+    const failed = document.createElement("p");
+    failed.className = "loading-text";
+    failed.textContent = `${t("gameConfigFailed")}：${error.message}`;
+    list.replaceChildren(failed);
   }
+}
+
+function gameCardElement(item) {
+  const card = document.createElement("article");
+  card.className = "game-card";
+
+  const titleText = localText(item.titles || item.titleZh);
+  const cover = document.createElement("img");
+  cover.className = "game-cover";
+  cover.src = sitePath(String(item.cover || "assets/images/icon-games.png").replace("../", ""));
+  cover.alt = titleText;
+  cover.loading = "lazy";
+  cover.decoding = "async";
+
+  const main = document.createElement("div");
+  main.className = "game-main";
+  const title = document.createElement("h3");
+  title.textContent = titleText;
+  const summary = document.createElement("p");
+  summary.textContent = localText(item.summaries || item.summary);
+  const meta = document.createElement("div");
+  meta.className = "meta-row";
+  const languageLabel = document.createElement("span");
+  languageLabel.className = "language-support-label";
+  languageLabel.textContent = `${t("languageSupportLabel")}:`;
+  meta.append(languageLabel, ...languageSupportTagElements(item));
+  if (item.license?.name) {
+    const license = document.createElement("span");
+    license.className = "tag";
+    license.textContent = item.license.name;
+    meta.appendChild(license);
+  }
+  main.append(title, summary, meta);
+
+  const action = document.createElement("a");
+  action.className = "card-action";
+  action.href = buildGameUrl(item);
+  if (isExternalGameLink(item)) {
+    action.target = "_blank";
+    action.rel = "noreferrer";
+  }
+  action.textContent = item.external || item.playUrl || item.externalUrl ? t("openGameButton") : t("startGameButton");
+
+  card.append(cover, main, action);
+  return card;
 }
 
 function blogCardElement(item) {
