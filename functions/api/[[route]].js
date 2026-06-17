@@ -4776,6 +4776,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-18-recent-update-icons',
+        '2026-06-18-recent-update-icons',
+        'site-updates',
+        '["网站更新","首页","最近更新","界面"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T18:25:00.000Z',
+        '2026-06-17T18:25:00.000Z',
+        '2026-06-17T18:25:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -5373,6 +5400,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# アカウント表示の安全な DOM 描画\n\n今回の更新では、公開サイト右上のアカウント入口の描画経路を引き締め、アカウントとクラウド保存の案内を純テキストとして表示します。\n\n## 更新内容\n\n- アカウント表示はテンプレート文字列の `innerHTML` 組み立てをやめ、ボタン、メール、API エラー、状態表示を DOM / `textContent` で構築します。\n- ログイン、登録、ログアウト、言語切り替え後の再描画、クラウド保存説明は変更していません。\n- メールアドレスと API エラーはテキストノードとしてのみ描画され、HTML として解釈されません。\n- 公開側のアカウント表示と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。"
       }
     }, "2026-06-17T18:20:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-recent-update-icons", {
+      zh: {
+        title: "最近更新图标优化",
+        summary: "首页最近更新会按站点更新类型显示工具图标。",
+        content_markdown: "# 最近更新图标优化\n\n本次更新让首页“最近更新”列表更像一个网站更新窗口：从文章 API 读取的站点更新记录会显示工具图标，而不是全部显示成书本图标。\n\n## 更新内容\n\n- `site-updates` 类型的文章在首页最近更新列表中显示工具图标，普通文章仍回退为书本图标。\n- 本地 fallback 最近更新继续使用每条记录自己的图标，不影响无网络或接口失败时的展示。\n- 列表标题、摘要、日期和文章直链逻辑保持不变；只调整公开首页的视觉提示和更新记录。\n- 本轮没有触碰后台目录或管理接口。"
+      },
+      en: {
+        title: "Recent Update Icons",
+        summary: "The home recent-update list now shows a site-update tool icon.",
+        content_markdown: "# Recent Update Icons\n\nThis update makes the home Recent Updates list feel more like a site-update window: site update records loaded from the article API now show a tool icon instead of every API-backed article looking like a book.\n\n## Changes\n\n- `site-updates` articles use a tool icon in the home Recent Updates list, while regular articles still fall back to the book icon.\n- Local fallback updates keep their per-item icons, so offline or failed API states stay readable.\n- Titles, summaries, dates, and article deep links are unchanged; only the public home visual hint and update record changed.\n- Admin folders and admin APIs were not touched."
+      },
+      ja: {
+        title: "最近更新アイコンを調整",
+        summary: "ホームの最近更新でサイト更新らしいツールアイコンを表示します。",
+        content_markdown: "# 最近更新アイコンを調整\n\n今回の更新では、ホームの「最近更新」リストをサイト更新ウィンドウらしく整えました。記事 API から読み込んだサイト更新記録は、すべて本アイコンになるのではなく、ツールアイコンで表示します。\n\n## 更新内容\n\n- `site-updates` の記事はホームの最近更新リストでツールアイコンを使い、通常の記事は引き続き本アイコンに戻ります。\n- ローカル fallback の最近更新は各項目のアイコンを保ち、オフライン時や API 失敗時の表示も変えません。\n- タイトル、概要、日付、記事直リンクの動作はそのままで、公開ホームの視覚ヒントと更新記録だけを調整しました。\n- 管理画面ディレクトリや管理 API には触れていません。"
+      }
+    }, "2026-06-17T18:25:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')

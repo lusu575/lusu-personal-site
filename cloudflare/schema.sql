@@ -619,6 +619,70 @@ on conflict(article_id) do update set
   is_pinned = excluded.is_pinned,
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-recent-update-icons',
+  '2026-06-18-recent-update-icons',
+  'site-updates',
+  '["网站更新","首页","最近更新","界面"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T18:25:00.000Z',
+  '2026-06-17T18:25:00.000Z',
+  '2026-06-17T18:25:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-recent-update-icons-zh', 'seed-update-2026-06-18-recent-update-icons', 'zh', '最近更新图标优化', '首页最近更新会按站点更新类型显示工具图标。', '# 最近更新图标优化
+
+本次更新让首页“最近更新”列表更像一个网站更新窗口：从文章 API 读取的站点更新记录会显示工具图标，而不是全部显示成书本图标。
+
+## 更新内容
+
+- `site-updates` 类型的文章在首页最近更新列表中显示工具图标，普通文章仍回退为书本图标。
+- 本地 fallback 最近更新继续使用每条记录自己的图标，不影响无网络或接口失败时的展示。
+- 列表标题、摘要、日期和文章直链逻辑保持不变；只调整公开首页的视觉提示和更新记录。
+- 本轮没有触碰后台目录或管理接口。', '2026-06-17T18:25:00.000Z', '2026-06-17T18:25:00.000Z'),
+  ('seed-update-2026-06-18-recent-update-icons-en', 'seed-update-2026-06-18-recent-update-icons', 'en', 'Recent Update Icons', 'The home recent-update list now shows a site-update tool icon.', '# Recent Update Icons
+
+This update makes the home Recent Updates list feel more like a site-update window: site update records loaded from the article API now show a tool icon instead of every API-backed article looking like a book.
+
+## Changes
+
+- `site-updates` articles use a tool icon in the home Recent Updates list, while regular articles still fall back to the book icon.
+- Local fallback updates keep their per-item icons, so offline or failed API states stay readable.
+- Titles, summaries, dates, and article deep links are unchanged; only the public home visual hint and update record changed.
+- Admin folders and admin APIs were not touched.', '2026-06-17T18:25:00.000Z', '2026-06-17T18:25:00.000Z'),
+  ('seed-update-2026-06-18-recent-update-icons-ja', 'seed-update-2026-06-18-recent-update-icons', 'ja', '最近更新アイコンを調整', 'ホームの最近更新でサイト更新らしいツールアイコンを表示します。', '# 最近更新アイコンを調整
+
+今回の更新では、ホームの「最近更新」リストをサイト更新ウィンドウらしく整えました。記事 API から読み込んだサイト更新記録は、すべて本アイコンになるのではなく、ツールアイコンで表示します。
+
+## 更新内容
+
+- `site-updates` の記事はホームの最近更新リストでツールアイコンを使い、通常の記事は引き続き本アイコンに戻ります。
+- ローカル fallback の最近更新は各項目のアイコンを保ち、オフライン時や API 失敗時の表示も変えません。
+- タイトル、概要、日付、記事直リンクの動作はそのままで、公開ホームの視覚ヒントと更新記録だけを調整しました。
+- 管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T18:25:00.000Z', '2026-06-17T18:25:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
 
 insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,

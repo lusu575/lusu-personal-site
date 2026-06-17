@@ -438,6 +438,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "🛠️",
+      date: "2026.06.18",
+      title: { zh: "最近更新图标优化", en: "Recent Update Icons", ja: "最近更新アイコンを調整" },
+      desc: {
+        zh: "首页最近更新会按站点更新类型显示工具图标，避免从文章 API 读取后全部显示书本图标",
+        en: "The home recent-update list now shows a site-update tool icon instead of treating every API article as a book",
+        ja: "ホームの最近更新で、記事 API 由来の更新もすべて本アイコンにならず、サイト更新らしいツールアイコンを表示します"
+      }
+    },
+    {
       icon: "🔐",
       date: "2026.06.18",
       title: { zh: "账号弹窗安全 DOM 渲染", en: "Account Popover Safe DOM", ja: "アカウント表示の安全な DOM 描画" },
@@ -2326,7 +2336,7 @@ function renderUpdates() {
   list.innerHTML = updateArticles.map((item) => `
     <li>
       <a class="recent-update-link"${item.slug ? ` href="${escapeHtml(articleRoutePath(item.slug))}" data-article-slug="${escapeHtml(item.slug)}"` : ' href="/#knowledge"'}>
-        <span class="update-icon">📚</span>
+        <span class="update-icon">${escapeHtml(recentUpdateIcon(item))}</span>
         <span>
           <strong>${escapeHtml(truncateText(localText(item.title), 28))}</strong>
           <small>${escapeHtml(truncateText(item.summary || localText(item.desc) || "", 52))}<br>${escapeHtml(formatArticleDate(item.published_at || item.created_at || item.date))}</small>
@@ -2334,6 +2344,13 @@ function renderUpdates() {
       </a>
     </li>
   `).join("");
+}
+
+function recentUpdateIcon(item) {
+  if (item?.category === siteUpdateCategory) {
+    return "🛠️";
+  }
+  return localText(item?.icon) || "📚";
 }
 
 function latestUpdateDate() {
