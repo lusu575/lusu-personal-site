@@ -72,6 +72,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "视频分类占用状态提示",
+    body: "后台视频分类列表会在已有视频使用的分类上显示“占用中”标签，管理员无需进入编辑区也能判断哪些分类不能直接删除。"
+  },
+  {
+    date: "2026-06-18",
     title: "视频分类删除状态优化",
     body: "后台选中仍有视频使用的分类时，删除按钮会直接禁用并提示先取消关联，减少点按后才发现不能删除的无效操作。"
   },
@@ -1826,6 +1831,9 @@ function renderVideoCategoryList() {
       createStatusBadgeElement(category.enabled ? "启用" : "停用", category.enabled ? "visible" : "hidden"),
       createStatusBadgeElement(`${category.video_count || 0} 个视频`, "neutral")
     );
+    if (Number(category.video_count || 0) > 0) {
+      meta.append(createStatusBadgeElement("占用中", "warning"));
+    }
     summary.className = "list-subtle";
     summary.textContent = `${category.slug || ""} · 排序 ${formatNumber(category.sort_order)}`;
     item.append(title, meta, summary);
