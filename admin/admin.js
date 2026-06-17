@@ -69,6 +69,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "聊天室禁言按钮忙碌态优化",
+    body: "聊天室管理按隐藏用户 ID 或 IP 来源禁言时会临时禁用治理按钮，并在对应按钮显示禁言中，避免慢网络下重复提交禁言请求。"
+  },
+  {
+    date: "2026-06-18",
     title: "聊天室治理按钮忙碌态优化",
     body: "聊天室管理保存、隐藏恢复或删除消息时会临时禁用治理按钮，并显示保存中、隐藏中、恢复中或删除中，减少慢网络下重复提交。"
   },
@@ -1664,12 +1669,14 @@ function syncChatActionState() {
   const saveButton = $("#chat-form-admin button[type='submit']");
   const toggleButton = $("#toggle-chat-hidden");
   const deleteButton = $("#delete-chat-message");
+  const visitorBanButton = $("#ban-chat-visitor");
+  const ipBanButton = $("#ban-chat-ip");
   const actionButtons = [
     saveButton,
     toggleButton,
     deleteButton,
-    $("#ban-chat-visitor"),
-    $("#ban-chat-ip")
+    visitorBanButton,
+    ipBanButton
   ].filter(Boolean);
   actionButtons.forEach((button) => {
     button.disabled = busy || !hasMessage;
@@ -1701,6 +1708,18 @@ function syncChatActionState() {
     deleteButton.textContent = state.chatActionBusyMode === "delete" ? "删除中..." : "删除";
     if (hasMessage && !busy) {
       deleteButton.title = "删除当前聊天记录";
+    }
+  }
+  if (visitorBanButton) {
+    visitorBanButton.textContent = state.chatActionBusyMode === "banVisitor" ? "禁言中..." : "禁言用户ID";
+    if (hasMessage && !busy) {
+      visitorBanButton.title = "按隐藏用户 ID 禁言";
+    }
+  }
+  if (ipBanButton) {
+    ipBanButton.textContent = state.chatActionBusyMode === "banIp" ? "禁言中..." : "禁言IP来源";
+    if (hasMessage && !busy) {
+      ipBanButton.title = "按 IP hash 禁言";
     }
   }
 }
@@ -1796,6 +1815,7 @@ async function banSelectedChat(type) {
   if (!message) {
     return;
   }
+  setChatActionBusy(type === "ip_hash" || type === "ip" ? "banIp" : "banVisitor");
   const form = $("#chat-form-admin");
   const body = {
     type,
@@ -1805,8 +1825,14 @@ async function banSelectedChat(type) {
     ipHash: message.ip_hash,
     ipPrefix: message.ip_prefix
   };
-  await api("/api/admin/chat/bans", { method: "POST", body: JSON.stringify(body) });
-  await loadBans();
+  try {
+    await api("/api/admin/chat/bans", { method: "POST", body: JSON.stringify(body) });
+    await loadBans();
+  } catch (error) {
+    showChatActionError(error);
+  } finally {
+    setChatActionBusy("");
+  }
 }
 
 async function loadBans() {
