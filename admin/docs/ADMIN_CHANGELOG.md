@@ -4,6 +4,11 @@
 
 ## 2026-06-18
 
+- 后台输入键盘提示优化：
+  - 文章 slug、文章封面路径、视频链接、视频封面地址和视频分类 slug 输入框补充 `inputmode="url"`、关闭自动大写、自动补全和拼写检查。
+  - 输入类型保持为普通文本，不影响裸 Bilibili BV 号、站内资源路径或受限 `data:image` 封面粘贴。
+  - 后台页面内 `adminUpdates` 和后台 JS query 已同步更新。
+
 - 视频链接 HTTPS 校验收紧：
   - 后台视频链接解析从允许 `http` / `https` 收紧为只接受 `https` URL，继续限定 YouTube、youtu.be、Bilibili 和 b23.tv 白名单来源。
   - 裸 Bilibili BV 号仍由服务端规范化为 HTTPS Bilibili 页面后再解析，不影响现有裸 BV 号录入路径。

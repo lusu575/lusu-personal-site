@@ -72,6 +72,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "后台输入键盘提示优化",
+    body: "文章 slug、视频链接、封面地址和视频分类 slug 补充移动端输入提示，减少自动大写、拼写纠正或普通键盘影响链接与 slug 粘贴。"
+  },
+  {
+    date: "2026-06-18",
     title: "视频链接 HTTPS 校验收紧",
     body: "后台视频链接解析只接受 HTTPS 的 YouTube、Bilibili 和 b23.tv 地址，裸 BV 号仍由服务端规范化为 HTTPS 播放来源。"
   },

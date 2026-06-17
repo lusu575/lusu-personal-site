@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 管理后台输入键盘提示优化：
+  - `/admin/` 的文章 slug、视频链接、封面地址和视频分类 slug 输入框补充移动端 URL 键盘提示，并关闭自动大写与拼写纠正，减少粘贴链接或 slug 时被输入法改写。
+  - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。
+
 - 管理后台视频链接 HTTPS 校验收紧：
   - 后台视频解析链路只接受 HTTPS 的 YouTube、Bilibili 和 b23.tv 地址；裸 Bilibili BV 号仍会由服务端规范化为 HTTPS 来源。
   - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。
