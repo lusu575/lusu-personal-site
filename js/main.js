@@ -74,6 +74,18 @@ const translations = {
     desktopIconsAria: "主要栏目",
     closeWindowAria: "关闭窗口",
     closeDialogAria: "关闭对话框",
+    accountSignedInPrefix: "账号：",
+    accountTitle: "云存档账号",
+    accountSignedInNote: "网站可以正常浏览；进入游戏后会自动同步云端存档。",
+    accountLogout: "退出账号",
+    accountLogin: "登录",
+    accountRegister: "注册",
+    accountEmailPlaceholder: "邮箱",
+    accountPasswordPlaceholder: "密码至少 8 位",
+    accountGuestNote: "登录只用于游戏自动云存档，网站浏览不受影响。",
+    accountUnavailable: "云存档接口暂时不可用。",
+    accountLoggedIn: "已登录。",
+    accountLoggedOut: "已退出账号。",
     all: "全部",
     nicknameLabel: "昵称",
     nicknameValue: "鲁肃",
@@ -192,6 +204,18 @@ const translations = {
     desktopIconsAria: "Main sections",
     closeWindowAria: "Close window",
     closeDialogAria: "Close dialog",
+    accountSignedInPrefix: "Account: ",
+    accountTitle: "Cloud Save Account",
+    accountSignedInNote: "You can browse the site normally; games will sync cloud saves automatically after opening.",
+    accountLogout: "Sign out",
+    accountLogin: "Log in",
+    accountRegister: "Register",
+    accountEmailPlaceholder: "Email",
+    accountPasswordPlaceholder: "At least 8 characters",
+    accountGuestNote: "Login is only for automatic game cloud saves. Site browsing is not affected.",
+    accountUnavailable: "Cloud save service is temporarily unavailable.",
+    accountLoggedIn: "Logged in.",
+    accountLoggedOut: "Signed out.",
     all: "All",
     nicknameLabel: "Nickname",
     nicknameValue: "LuSu",
@@ -310,6 +334,18 @@ const translations = {
     desktopIconsAria: "主なセクション",
     closeWindowAria: "ウィンドウを閉じる",
     closeDialogAria: "ダイアログを閉じる",
+    accountSignedInPrefix: "アカウント：",
+    accountTitle: "クラウドセーブアカウント",
+    accountSignedInNote: "サイトは通常どおり閲覧できます。ゲームを開くとクラウドセーブを自動同期します。",
+    accountLogout: "ログアウト",
+    accountLogin: "ログイン",
+    accountRegister: "登録",
+    accountEmailPlaceholder: "メール",
+    accountPasswordPlaceholder: "8文字以上のパスワード",
+    accountGuestNote: "ログインはゲームの自動クラウドセーブ専用です。サイト閲覧には影響しません。",
+    accountUnavailable: "クラウドセーブサービスは一時的に利用できません。",
+    accountLoggedIn: "ログインしました。",
+    accountLoggedOut: "ログアウトしました。",
     all: "すべて",
     nicknameLabel: "ニックネーム",
     nicknameValue: "魯粛",
@@ -392,6 +428,16 @@ const labels = {
 
 const content = {
   updates: [
+    {
+      icon: "☁️",
+      date: "2026.06.18",
+      title: { zh: "账号弹窗三语同步", en: "Account Popover Localization", ja: "アカウント表示の多言語同期" },
+      desc: {
+        zh: "登录、注册、邮箱、密码、云存档说明和退出账号等账号弹窗文案会跟随当前语言显示",
+        en: "Login, register, email, password, cloud-save notes, and sign-out copy now follow the active language",
+        ja: "ログイン、登録、メール、パスワード、クラウドセーブ説明、ログアウト文言が現在の言語に合わせて表示されます"
+      }
+    },
     {
       icon: "♿",
       date: "2026.06.18",
@@ -1139,6 +1185,7 @@ function setLanguage(lang, options = {}) {
   loadVideos();
   updateWelcomeGreeting();
   updateVideoWindowButton();
+  renderAccountWidget();
 }
 
 function navigate(route, options = {}) {
@@ -2458,16 +2505,16 @@ function renderAccountWidget(message = "") {
   if (authUser) {
     widget.innerHTML = `
       <button class="account-button signed-in" type="button" data-account-toggle>
-        <span>账号：${escapeHtml(authUser.email)}</span>
+        <span>${escapeHtml(t("accountSignedInPrefix"))}${escapeHtml(authUser.email)}</span>
       </button>
       <div class="account-popover" id="account-popover" hidden>
         <div class="account-signed-in">
-          <strong>云存档账号</strong>
+          <strong>${escapeHtml(t("accountTitle"))}</strong>
           <p class="account-note">${escapeHtml(authUser.email)}</p>
-          <p class="account-note">网站可以正常浏览；进入游戏后会自动同步云端存档。</p>
+          <p class="account-note">${escapeHtml(t("accountSignedInNote"))}</p>
           ${message ? `<p class="account-note">${escapeHtml(message)}</p>` : ""}
           <div class="account-actions">
-            <button class="account-button" type="button" data-account-logout>退出账号</button>
+            <button class="account-button" type="button" data-account-logout>${escapeHtml(t("accountLogout"))}</button>
           </div>
         </div>
       </div>
@@ -2477,18 +2524,18 @@ function renderAccountWidget(message = "") {
 
   widget.innerHTML = `
     <button class="account-button" type="button" data-account-toggle>
-      <span>登录</span>
+      <span>${escapeHtml(t("accountLogin"))}</span>
     </button>
     <div class="account-popover" id="account-popover" hidden>
       <form class="account-form" id="account-form">
-        <strong>云存档账号</strong>
-        <input name="email" type="email" autocomplete="email" placeholder="邮箱" required>
-        <input name="password" type="password" autocomplete="current-password" placeholder="密码至少 8 位" required>
+        <strong>${escapeHtml(t("accountTitle"))}</strong>
+        <input name="email" type="email" autocomplete="email" placeholder="${escapeHtml(t("accountEmailPlaceholder"))}" required>
+        <input name="password" type="password" autocomplete="current-password" placeholder="${escapeHtml(t("accountPasswordPlaceholder"))}" required>
         <div class="account-actions">
-          <button class="account-button" type="submit" data-mode="login">登录</button>
-          <button class="account-button" type="submit" data-mode="register">注册</button>
+          <button class="account-button" type="submit" data-mode="login">${escapeHtml(t("accountLogin"))}</button>
+          <button class="account-button" type="submit" data-mode="register">${escapeHtml(t("accountRegister"))}</button>
         </div>
-        <p class="account-note">${message ? escapeHtml(message) : "登录只用于游戏自动云存档，网站浏览不受影响。"}</p>
+        <p class="account-note">${message ? escapeHtml(message) : escapeHtml(t("accountGuestNote"))}</p>
       </form>
     </div>
   `;
@@ -2503,7 +2550,7 @@ async function initAccountWidget() {
     authUser = payload.user || null;
     renderAccountWidget();
   } catch {
-    renderAccountWidget("云存档接口暂时不可用。");
+    renderAccountWidget(t("accountUnavailable"));
   }
 }
 
@@ -2520,7 +2567,7 @@ async function submitAccountForm(event) {
       })
     });
     authUser = payload.user;
-    renderAccountWidget("已登录。");
+    renderAccountWidget(t("accountLoggedIn"));
     openAccountPopover();
   } catch (error) {
     renderAccountWidget(error.message);
@@ -2535,7 +2582,7 @@ async function logoutAccount() {
     // Keep the UI responsive even if the network is gone.
   }
   authUser = null;
-  renderAccountWidget("已退出账号。");
+  renderAccountWidget(t("accountLoggedOut"));
   openAccountPopover();
 }
 

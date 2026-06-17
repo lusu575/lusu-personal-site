@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 账号弹窗三语同步：
+  - 顶部账号/云存档弹窗的登录、注册、邮箱、密码、云存档说明、退出账号和本地状态提示改为跟随当前语言显示。
+  - 语言切换时会重新渲染账号控件；账号邮箱、错误信息和动态提示继续通过 `escapeHtml` 输出，避免把外部文本当作 HTML 执行。
+  - 更新 `index.html` 的 JS query 为 `20260618-account-widget-locale`，并新增同名三语 `site-updates` 更新文章，同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新。
 - 无障碍标签三语同步：
   - 新增 `data-i18n-aria-label` / `data-i18n-title` 通用同步逻辑，让无障碍标签和提示标题也能跟随当前语言更新。
   - 品牌返回按钮、语言切换区域、桌面图标区域、页面关闭按钮、欢迎窗关闭按钮和视频弹窗关闭按钮补充中文 / English / 日本語 `aria-label`。

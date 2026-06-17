@@ -932,6 +932,32 @@ on conflict(article_id) do update set
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
 
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-account-widget-locale',
+  '2026-06-18-account-widget-locale',
+  'site-updates',
+  '["网站更新","多语言","修复记录","移动端"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T17:28:00.000Z',
+  '2026-06-17T17:28:00.000Z',
+  '2026-06-17T17:28:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
@@ -2928,7 +2954,37 @@ This update brings public site accessibility labels into the language-switching 
 - 既存の三言語翻訳表を使う `data-i18n-aria-label` と `data-i18n-title` の同期処理を追加しました。
 - ブランドのホームボタン、言語切り替え、デスクトップアイコン領域、各種閉じるボタンに現在言語の `aria-label` を設定します。
 - 動画ウィンドウの最大化ボタンは、既存の `videoFullscreen` / `videoRestore` 文言による動的更新を維持します。
-- 公開側の HTML / JS と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T17:22:00.000Z', '2026-06-17T17:22:00.000Z')
+- 公開側の HTML / JS と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T17:22:00.000Z', '2026-06-17T17:22:00.000Z'),
+  ('seed-update-2026-06-18-account-widget-locale-zh', 'seed-update-2026-06-18-account-widget-locale', 'zh', '账号弹窗三语同步', '顶部账号/云存档弹窗的登录、注册、邮箱和云存档说明会跟随当前语言显示。', '# 账号弹窗三语同步
+
+本次更新继续整理公开主站的三语体验，把顶部账号/云存档弹窗里的静态文案接入当前语言。
+
+## 更新内容
+
+- 登录、注册、邮箱、密码、云存档说明、退出账号和本地状态提示改为中文 / English / 日本語 文案。
+- 用户切换语言时会重新渲染账号控件，避免弹窗保留上一种语言的静态文字。
+- 邮箱、后端错误信息和动态提示继续通过 `escapeHtml` 输出，避免外部文本被当作 HTML 执行。
+- 只调整公开主站账号弹窗渲染和更新记录，不触碰后台目录或管理接口。', '2026-06-17T17:28:00.000Z', '2026-06-17T17:28:00.000Z'),
+  ('seed-update-2026-06-18-account-widget-locale-en', 'seed-update-2026-06-18-account-widget-locale', 'en', 'Account Popover Localization', 'The account and cloud-save popover now localizes login, register, email, and cloud-save copy.', '# Account Popover Localization
+
+This update continues the public site''s trilingual polish by moving static account and cloud-save popover copy into the active language.
+
+## Changes
+
+- Login, register, email, password, cloud-save notes, sign-out, and local status messages now have Chinese, English, and Japanese copy.
+- Switching languages re-renders the account widget so the popover does not keep stale static text.
+- Email addresses, backend error messages, and dynamic notices still pass through `escapeHtml`, so external text is not executed as HTML.
+- Only public site account popover rendering and update records changed; admin folders and admin APIs were not touched.', '2026-06-17T17:28:00.000Z', '2026-06-17T17:28:00.000Z'),
+  ('seed-update-2026-06-18-account-widget-locale-ja', 'seed-update-2026-06-18-account-widget-locale', 'ja', 'アカウント表示の多言語同期', 'アカウントとクラウドセーブのポップオーバー文言が現在の言語に合わせて表示されます。', '# アカウント表示の多言語同期
+
+今回の更新では、公開サイトの三言語体験を整えるため、上部のアカウント / クラウドセーブ表示の固定文言を現在の言語に接続しました。
+
+## 更新内容
+
+- ログイン、登録、メール、パスワード、クラウドセーブ説明、ログアウト、ローカル状態メッセージを中文 / English / 日本語で用意しました。
+- 言語を切り替えたときにアカウントウィジェットを再描画し、ポップオーバーに前の言語の固定文言が残らないようにしました。
+- メールアドレス、バックエンドのエラーメッセージ、動的通知は引き続き `escapeHtml` を通し、外部テキストを HTML として実行しません。
+- 公開側のアカウント表示と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T17:28:00.000Z', '2026-06-17T17:28:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,
