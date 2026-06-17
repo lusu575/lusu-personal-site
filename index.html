@@ -8,7 +8,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32.png?v=20260611-unified-tv-icon">
   <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png?v=20260611-unified-tv-icon">
   <link rel="alternate" type="application/rss+xml" title="LuSu Site RSS" href="/api/rss.xml?lang=zh" data-rss-alternate>
-  <link rel="stylesheet" href="/css/style.css?v=20260618-rss-feed-entry">
+  <link rel="stylesheet" href="/css/style.css?v=20260618-article-progress">
 </head>
 <body>
   <div class="site-shell">
@@ -135,6 +135,15 @@
                       <span data-i18n="articleCopyLink">复制文章链接</span>
                     </button>
                     <span class="article-copy-status" id="article-copy-status" aria-live="polite"></span>
+                  </div>
+                </div>
+                <div class="article-read-progress" aria-live="off">
+                  <div class="article-read-progress-label">
+                    <span data-i18n="articleReadProgress">阅读进度</span>
+                    <strong id="article-read-progress-value">0%</strong>
+                  </div>
+                  <div class="article-read-progress-track" id="article-read-progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="阅读进度" data-i18n-aria-label="articleReadProgress">
+                    <span id="article-read-progress-fill"></span>
                   </div>
                 </div>
                 <div class="markdown-body" id="article-detail-body"></div>
@@ -332,6 +341,6 @@
   </div>
 
   <script src="/js/telemetry.js?v=20260615-video-window-controls"></script>
-  <script src="/js/main.js?v=20260618-rss-alternate-lang"></script>
+  <script src="/js/main.js?v=20260618-article-progress"></script>
 </body>
 </html>

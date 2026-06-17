@@ -5187,6 +5187,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         article_id, slug, category, tags, cover_image, status, is_pinned,
         view_count, created_at, updated_at, published_at
       ) values (
+        'seed-update-2026-06-18-article-progress',
+        '2026-06-18-article-progress',
+        'site-updates',
+        '["网站更新","知识库","阅读","进度"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T22:50:00.000Z',
+        '2026-06-17T22:50:00.000Z',
+        '2026-06-17T22:50:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
         'seed-update-2026-06-18-rss-alternate-lang',
         '2026-06-18-rss-alternate-lang',
         'site-updates',
@@ -6192,6 +6219,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# 記事画像パスガード\n\n今回の更新では、公開知識庫の記事画像描画をさらに引き締め、Markdown 画像パスがプロジェクトの記事画像フォルダ内に留まるよう明確にしました。\n\n## 更新内容\n\n- Markdown 記事画像は引き続き `assets/images/articles/` 配下のプロジェクト資源だけを受け付けます。\n- `safeArticleImageSrc()` が `..` のパストラバーサル片を拒否し、画像パスが記事画像フォルダから外へ出ないようにしました。\n- 画像は今後も `document.createElement('img')`、安全な `src`、`alt`、`figcaption` で描画し、未処理 HTML は挿入しません。\n- 既存の AI Agent 長文画像、知識庫一覧、記事直リンク、管理画面ディレクトリは変更していません。"
       }
     }, "2026-06-17T20:20:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-article-progress", {
+      zh: {
+        title: "文章阅读进度条",
+        summary: "知识库文章详情新增阅读进度条，长文滚动时可以看到当前位置。",
+        content_markdown: "# 文章阅读进度条\n\n本次更新继续打磨知识库阅读体验，在文章详情窗口里加入一个轻量的阅读进度提示。\n\n## 更新内容\n\n- 文章详情头部下方新增三语“阅读进度”槽条和百分比。\n- 长文滚动时进度条通过 `transform: scaleX()` 更新，不改变文章正文布局。\n- 进度条的文字、数值和 `progressbar` 可访问状态都通过 DOM / `textContent` 更新。\n- Markdown 正文仍使用安全渲染流程，后台目录和管理接口不受影响。"
+      },
+      en: {
+        title: "Article Reading Progress",
+        summary: "Knowledge article details now show a reading progress bar while long posts scroll.",
+        content_markdown: "# Article Reading Progress\n\nThis update continues polishing the Knowledge reading experience with a lightweight progress indicator inside article detail windows.\n\n## Changes\n\n- Article details now show a trilingual reading-progress strip and percentage below the header.\n- While long posts scroll, the fill updates with `transform: scaleX()` without changing the article body layout.\n- The label, percentage, and `progressbar` accessibility state update through DOM / `textContent` paths.\n- Markdown article content still uses the safe rendering flow, with admin folders and admin APIs untouched."
+      },
+      ja: {
+        title: "記事の読書進捗バー",
+        summary: "知識庫の記事詳細に読書進捗バーを追加し、長文スクロール中の位置が分かるようになりました。",
+        content_markdown: "# 記事の読書進捗バー\n\n今回の更新では、知識庫の記事詳細ウィンドウに軽い読書進捗表示を追加し、長文を読みやすくしました。\n\n## 更新内容\n\n- 記事詳細のヘッダー下に三言語の「読書進捗」バーとパーセント表示を追加しました。\n- 長文スクロール時は `transform: scaleX()` でバーだけを更新し、本文レイアウトは動かしません。\n- ラベル、数値、`progressbar` のアクセシビリティ状態は DOM / `textContent` 経由で更新します。\n- Markdown 本文は引き続き安全な描画フローを使い、管理画面ディレクトリや管理 API には触れていません。"
+      }
+    }, "2026-06-17T22:50:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-06-18-rss-alternate-lang", {
       zh: {
         title: "RSS 发现链接同步",

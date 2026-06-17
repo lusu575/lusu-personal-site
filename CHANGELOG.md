@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 文章阅读进度条：
+  - 知识库文章详情头部下方新增三语“阅读进度”槽条和百分比，长文滚动时能看到当前位置。
+  - 进度条通过 `transform: scaleX()` 更新，并同步 `progressbar` 的 `aria-valuenow`；正文仍走安全 Markdown DOM 渲染。
+  - 更新 `index.html` 的 CSS / JS query 为 `20260618-article-progress`，并新增同名三语 `site-updates` 更新文章。
 - RSS 发现链接同步：
   - 首页 `<head>` 里的 RSS `rel="alternate"` 链接新增同步标记，语言切换时会跟随当前 `lang` 更新。
   - 欢迎窗口 RSS 按钮和浏览器/RSS 阅读器可发现的 feed 链接现在指向同一语言版本。

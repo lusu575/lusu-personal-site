@@ -49,6 +49,7 @@ const translations = {
     articleCopyLink: "复制文章链接",
     articleCopyDone: "链接已复制。",
     articleCopyFailed: "复制失败，请手动复制地址栏链接。",
+    articleReadProgress: "阅读进度",
     articlePublished: "发布时间",
     articleCategory: "分类",
     articleFallback: "当前语言版本缺失，已显示备用语言版本。",
@@ -184,6 +185,7 @@ const translations = {
     articleCopyLink: "Copy article link",
     articleCopyDone: "Link copied.",
     articleCopyFailed: "Copy failed. Please copy the address bar link manually.",
+    articleReadProgress: "Reading progress",
     articlePublished: "Published",
     articleCategory: "Category",
     articleFallback: "This language is missing, so a fallback language is shown.",
@@ -319,6 +321,7 @@ const translations = {
     articleCopyLink: "記事リンクをコピー",
     articleCopyDone: "リンクをコピーしました。",
     articleCopyFailed: "コピーできません。アドレスバーのリンクを手動でコピーしてください。",
+    articleReadProgress: "読書進捗",
     articlePublished: "公開日",
     articleCategory: "分類",
     articleFallback: "この言語版がないため、別の言語版を表示しています。",
@@ -443,6 +446,16 @@ const labels = {
 
 const content = {
   updates: [
+    {
+      icon: "📊",
+      date: "2026.06.18",
+      title: { zh: "文章阅读进度条", en: "Article Reading Progress", ja: "記事の読書進捗バー" },
+      desc: {
+        zh: "知识库文章详情新增三语阅读进度条，长文滚动时能看到当前位置",
+        en: "Knowledge article details now show a trilingual reading progress bar while long posts scroll",
+        ja: "知識庫の記事詳細に三言語の読書進捗バーを追加し、長文の現在位置が分かります"
+      }
+    },
     {
       icon: "📶",
       date: "2026.06.18",
@@ -1199,6 +1212,7 @@ const articleState = {
   currentArticle: null,
   searchTerm: "",
   copyStatusTimer: 0,
+  readProgressFrame: 0,
   error: ""
 };
 const videoState = {
@@ -1915,6 +1929,7 @@ async function loadArticleDetail(slug) {
   summary.textContent = "";
   meta.replaceChildren();
   body.replaceChildren();
+  resetArticleReadProgress();
 
   try {
     const payload = await articleApi(`/api/articles/${encodeURIComponent(slug)}?lang=${encodeURIComponent(currentLang)}`);
@@ -1942,6 +1957,7 @@ function renderArticleDetail(article) {
   const body = document.getElementById("article-detail-body");
 
   clearArticleCopyStatus();
+  resetArticleReadProgress();
   title.textContent = article.title || "";
   summary.textContent = article.summary || "";
   meta.replaceChildren();
@@ -1957,6 +1973,7 @@ function renderArticleDetail(article) {
     meta.appendChild(item);
   });
   renderMarkdownSafe(body, stripRepeatedArticleHeading(article.content_markdown || "", article.title || ""));
+  scheduleArticleReadProgressUpdate();
 }
 
 function clearArticleCopyStatus() {
@@ -1968,6 +1985,51 @@ function clearArticleCopyStatus() {
     status.textContent = "";
   }
   button?.classList.remove("is-done");
+}
+
+function setArticleReadProgress(percent) {
+  const bounded = Math.min(100, Math.max(0, Math.round(percent)));
+  const fill = document.getElementById("article-read-progress-fill");
+  const value = document.getElementById("article-read-progress-value");
+  const bar = document.getElementById("article-read-progress-bar");
+  if (fill) {
+    fill.style.transform = `scaleX(${bounded / 100})`;
+  }
+  if (value) {
+    value.textContent = `${bounded}%`;
+  }
+  if (bar) {
+    bar.setAttribute("aria-valuenow", String(bounded));
+  }
+}
+
+function resetArticleReadProgress() {
+  const detail = document.getElementById("article-detail");
+  if (detail) {
+    detail.scrollTop = 0;
+  }
+  setArticleReadProgress(0);
+}
+
+function updateArticleReadProgress() {
+  articleState.readProgressFrame = 0;
+  const detail = document.getElementById("article-detail");
+  if (!detail || detail.hidden) {
+    return;
+  }
+  const scrollable = Math.max(0, detail.scrollHeight - detail.clientHeight);
+  if (scrollable <= 1) {
+    setArticleReadProgress(100);
+    return;
+  }
+  setArticleReadProgress((detail.scrollTop / scrollable) * 100);
+}
+
+function scheduleArticleReadProgressUpdate() {
+  if (articleState.readProgressFrame) {
+    return;
+  }
+  articleState.readProgressFrame = window.requestAnimationFrame(updateArticleReadProgress);
 }
 
 function articleShareLink(slug) {
@@ -2032,6 +2094,7 @@ function showArticleList() {
   articleState.currentSlug = "";
   articleState.currentArticle = null;
   articleState.detailLoadingKey = "";
+  resetArticleReadProgress();
   navigate("knowledge");
   renderKnowledge();
 }
@@ -3699,7 +3762,9 @@ document.getElementById("knowledge-search-input")?.addEventListener("input", (ev
   articleState.searchTerm = event.target.value;
   renderKnowledge();
 });
+document.getElementById("article-detail")?.addEventListener("scroll", scheduleArticleReadProgressUpdate, { passive: true });
 window.addEventListener("resize", layoutWallpaperStage);
+window.addEventListener("resize", scheduleArticleReadProgressUpdate);
 
 document.addEventListener("visibilitychange", () => {
   updateWallpaperMotionState();
