@@ -74,6 +74,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "视频置顶排序字段联动优化",
+    body: "视频管理表单未勾选置顶时会禁用置顶排序输入框并显示提示；勾选置顶后再启用并自动填入下一个置顶排序，减少误编辑。"
+  },
+  {
+    date: "2026-06-18",
     title: "新建视频置顶排序提示优化",
     body: "新建视频未勾选置顶时，置顶排序字段会保持空白；勾选置顶后再自动填入下一个置顶排序，取消勾选会清空该字段，减少普通排序和置顶排序混淆。"
   },
@@ -1940,11 +1945,13 @@ function handleVideoPinnedChange() {
     if (field) {
       field.value = "";
     }
+    syncVideoFormBusyState();
     return;
   }
   if (field && Number(field.value || 0) === 0) {
     field.value = String(nextPinnedSortOrder(state.videos));
   }
+  syncVideoFormBusyState();
 }
 
 async function saveVideo(statusOverride = "") {
@@ -2040,10 +2047,13 @@ function syncVideoFormBusyState() {
   const busyTitle = videoBusyFormTitle();
   $$("#video-form input, #video-form textarea, #video-form select").forEach((field) => {
     const categoryOptionDisabled = shouldDisableVideoCategoryOption(field);
-    field.disabled = busy || categoryOptionDisabled;
+    const pinnedSortDisabled = shouldDisableVideoPinnedSortField(field);
+    field.disabled = busy || categoryOptionDisabled || pinnedSortDisabled;
     field.setAttribute("aria-busy", busy ? "true" : "false");
     if (busy) {
       field.title = busyTitle;
+    } else if (pinnedSortDisabled) {
+      field.title = "勾选置顶后再设置置顶排序";
     } else {
       field.removeAttribute("title");
     }
@@ -2069,6 +2079,10 @@ function syncVideoFormBusyState() {
 function shouldDisableVideoCategoryOption(field) {
   const option = field.closest?.("#video-category-checks .mini-check");
   return Boolean(option?.classList.contains("is-disabled") && !field.checked);
+}
+
+function shouldDisableVideoPinnedSortField(field) {
+  return field?.name === "pinned_sort_order" && !$("#video-form")?.elements?.pinned?.checked;
 }
 
 function videoBusyFormTitle() {
