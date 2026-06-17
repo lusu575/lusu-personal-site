@@ -72,6 +72,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "知识库文章列表渲染安全优化",
+    body: "知识库文章列表的 slug、状态、分类、语种数量和统计摘要改用 DOM API 写入，避免文章字段被误当作 HTML。"
+  },
+  {
+    date: "2026-06-18",
     title: "账号详情列表渲染安全优化",
     body: "账号管理的登录履历、近期活跃和会话状态改用 DOM API 写入，避免登录来源、路径或设备摘要被误当作 HTML。"
   },
@@ -901,17 +906,36 @@ async function loadArticles() {
 }
 
 function renderArticleList() {
-  $("#article-list").innerHTML = state.articles.map((article) => `
-    <button class="list-item ${article.article_id === state.selectedArticleId ? "active" : ""}" type="button" data-article-id="${escapeHtml(article.article_id)}">
-      <span class="list-title">${escapeHtml(article.slug)}</span>
-      <span class="list-meta">
-        ${statusBadge(articleStatusLabel(article.status), article.status || "neutral")}
-        ${statusBadge(`${article.translation_count || 0}/3 语种`, Number(article.translation_count || 0) >= 3 ? "visible" : "warning")}
-        ${statusBadge(article.category || "未分类", "neutral")}
-      </span>
-      <span class="list-subtle">PV ${formatNumber(article.article_pv)} / UV ${formatNumber(article.article_uv)} · 更新 ${formatTime(article.updated_at)}</span>
-    </button>
-  `).join("") || emptyState("暂无文章，点击右上角“新建”开始。");
+  const list = $("#article-list");
+  if (!state.articles.length) {
+    list.replaceChildren(createEmptyStateElement("暂无文章，点击右上角“新建”开始。"));
+    return;
+  }
+
+  list.replaceChildren(...state.articles.map((article) => {
+    const item = document.createElement("button");
+    const title = document.createElement("span");
+    const meta = document.createElement("span");
+    const summary = document.createElement("span");
+    item.className = "list-item";
+    if (article.article_id === state.selectedArticleId) {
+      item.classList.add("active");
+    }
+    item.type = "button";
+    item.dataset.articleId = article.article_id || "";
+    title.className = "list-title";
+    title.textContent = article.slug || "";
+    meta.className = "list-meta";
+    meta.append(
+      createStatusBadgeElement(articleStatusLabel(article.status), article.status || "neutral"),
+      createStatusBadgeElement(`${article.translation_count || 0}/3 语种`, Number(article.translation_count || 0) >= 3 ? "visible" : "warning"),
+      createStatusBadgeElement(article.category || "未分类", "neutral")
+    );
+    summary.className = "list-subtle";
+    summary.textContent = `PV ${formatNumber(article.article_pv)} / UV ${formatNumber(article.article_uv)} · 更新 ${formatTime(article.updated_at)}`;
+    item.append(title, meta, summary);
+    return item;
+  }));
 }
 
 async function selectArticle(articleId) {
