@@ -74,6 +74,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "视频元数据读取期间锁定编辑",
+    body: "视频管理自动识别链接或刷新元数据时，会临时锁定视频表单、保存按钮、列表切换和新建入口，避免慢请求返回后覆盖另一个视频。"
+  },
+  {
+    date: "2026-06-18",
     title: "账号详情读取期间锁定表单",
     body: "账号管理切换到已有账号但详情尚未读取完成时，会先清空旧表单并临时锁定邮箱、角色和密码状态字段，避免加载中输入内容随后被接口返回覆盖。"
   },
@@ -1535,7 +1540,7 @@ function renderVideoList() {
     }
     item.type = "button";
     item.dataset.adminVideoId = video.video_id || "";
-    item.disabled = isVideoWriteBusy();
+    item.disabled = isVideoEditBusy();
     title.className = "list-title";
     title.textContent = video.title || video.original_url || "未命名视频";
     meta.className = "list-meta";
@@ -1803,20 +1808,25 @@ async function previewVideoUrl() {
     return;
   }
   const form = $("#video-form");
+  const requestUrl = form.elements.original_url.value;
   state.videoPreviewing = true;
-  syncVideoMetadataButtons();
+  syncVideoSaveButtons();
   $("#video-status").textContent = "正在识别...";
   try {
     const payload = await api("/api/admin/videos/preview-url", {
       method: "POST",
-      body: JSON.stringify({ url: form.elements.original_url.value })
+      body: JSON.stringify({ url: requestUrl })
     });
+    if (form.elements.original_url.value !== requestUrl) {
+      $("#video-status").textContent = "链接已变化，请重新识别。";
+      return;
+    }
     applyPreviewToVideoForm(payload.video || {});
   } catch (error) {
     $("#video-status").textContent = error.message;
   } finally {
     state.videoPreviewing = false;
-    syncVideoMetadataButtons();
+    syncVideoSaveButtons();
   }
 }
 
@@ -1842,6 +1852,8 @@ function syncVideoMetadataButtons() {
       refreshButton.title = videoBusyMetadataTitle("刷新");
     } else if (!hasVideo) {
       refreshButton.title = "请先选择已保存视频";
+    } else if (state.videoPreviewing) {
+      refreshButton.title = "正在识别视频链接";
     } else if (state.videoMetadataRefreshing) {
       refreshButton.title = "正在刷新外部元数据";
     } else {
@@ -1924,7 +1936,8 @@ function syncVideoSaveButtons() {
   const saveButton = $("#video-form button[type='submit']");
   const publishButton = $("#publish-video");
   const deleteButton = $("#delete-video");
-  const busy = isVideoWriteBusy();
+  const busy = isVideoEditBusy();
+  const metadataBusy = isVideoMetadataBusy();
   if (saveButton) {
     const savingDraft = state.videoSaving && state.videoSavingMode !== "publish";
     saveButton.disabled = busy;
@@ -1932,7 +1945,9 @@ function syncVideoSaveButtons() {
     saveButton.setAttribute("aria-busy", savingDraft ? "true" : "false");
     saveButton.title = state.videoDeleting
       ? "正在删除视频"
-      : (state.videoSaving ? "正在保存视频" : "保存当前视频");
+      : (state.videoSaving
+      ? "正在保存视频"
+      : (metadataBusy ? videoMetadataBusyTitle() : "保存当前视频"));
   }
   if (publishButton) {
     const publishing = state.videoSaving && state.videoSavingMode === "publish";
@@ -1941,14 +1956,18 @@ function syncVideoSaveButtons() {
     publishButton.setAttribute("aria-busy", publishing ? "true" : "false");
     publishButton.title = state.videoDeleting
       ? "正在删除视频"
-      : (state.videoSaving ? "正在保存视频" : "保存并发布当前视频");
+      : (state.videoSaving
+      ? "正在保存视频"
+      : (metadataBusy ? videoMetadataBusyTitle() : "保存并发布当前视频"));
   }
   if (deleteButton) {
     deleteButton.disabled = busy || !state.selectedVideoId;
     deleteButton.textContent = state.videoDeleting ? "删除中..." : "删除";
     deleteButton.setAttribute("aria-busy", state.videoDeleting ? "true" : "false");
     deleteButton.title = busy
-      ? (state.videoDeleting ? "正在删除视频" : "正在保存视频")
+      ? (state.videoDeleting
+      ? "正在删除视频"
+      : (state.videoSaving ? "正在保存视频" : videoMetadataBusyTitle()))
       : (state.selectedVideoId ? "删除当前视频" : "请先选择已保存视频");
   }
   syncVideoFormBusyState();
@@ -1960,8 +1979,16 @@ function isVideoWriteBusy() {
   return state.videoSaving || state.videoDeleting;
 }
 
+function isVideoMetadataBusy() {
+  return state.videoPreviewing || state.videoMetadataRefreshing;
+}
+
+function isVideoEditBusy() {
+  return isVideoWriteBusy() || isVideoMetadataBusy();
+}
+
 function syncVideoFormBusyState() {
-  const busy = isVideoWriteBusy();
+  const busy = isVideoEditBusy();
   const busyTitle = videoBusyFormTitle();
   $$("#video-form input, #video-form textarea, #video-form select").forEach((field) => {
     const categoryOptionDisabled = shouldDisableVideoCategoryOption(field);
@@ -1997,6 +2024,12 @@ function shouldDisableVideoCategoryOption(field) {
 }
 
 function videoBusyFormTitle() {
+  if (state.videoPreviewing) {
+    return "正在识别视频链接，完成后再编辑表单";
+  }
+  if (state.videoMetadataRefreshing) {
+    return "正在刷新视频元数据，完成后再编辑表单";
+  }
   if (state.videoDeleting) {
     return "正在删除视频，完成后再编辑表单";
   }
@@ -2005,15 +2038,30 @@ function videoBusyFormTitle() {
     : "正在保存视频，完成后再编辑表单";
 }
 
+function videoMetadataBusyTitle() {
+  return state.videoPreviewing ? "正在识别视频链接" : "正在刷新视频元数据";
+}
+
+function videoSelectionBusyTitle(action) {
+  if (state.videoPreviewing) {
+    return `正在识别视频链接，完成后再${action}`;
+  }
+  if (state.videoMetadataRefreshing) {
+    return `正在刷新视频元数据，完成后再${action}`;
+  }
+  if (state.videoDeleting) {
+    return `正在删除视频，完成后再${action}`;
+  }
+  return `正在保存视频，完成后再${action}`;
+}
+
 function syncVideoListBusyState() {
-  const busy = isVideoWriteBusy();
-  const busyTitle = state.videoDeleting ? "正在删除视频，完成后再切换" : "正在保存视频，完成后再切换";
+  const busy = isVideoEditBusy();
+  const busyTitle = videoSelectionBusyTitle("切换");
   const newButton = $("#new-video");
   if (newButton) {
     newButton.disabled = busy;
-    newButton.title = busy
-      ? (state.videoDeleting ? "正在删除视频，完成后再新建" : "正在保存视频，完成后再新建")
-      : "新建视频";
+    newButton.title = busy ? videoSelectionBusyTitle("新建") : "新建视频";
   }
   $$("#video-list-admin .list-item").forEach((item) => {
     item.disabled = busy;
@@ -2057,18 +2105,26 @@ async function refreshVideoMetadata() {
   if (!state.selectedVideoId) {
     return previewVideoUrl();
   }
+  const videoId = state.selectedVideoId;
   state.videoMetadataRefreshing = true;
-  syncVideoMetadataButtons();
+  syncVideoSaveButtons();
   $("#video-status").textContent = "正在刷新元数据...";
   try {
-    const payload = await api(`/api/admin/videos/${encodeURIComponent(state.selectedVideoId)}/refresh-metadata`, { method: "POST" });
-    applyPreviewToVideoForm(payload.video || {});
+    const payload = await api(`/api/admin/videos/${encodeURIComponent(videoId)}/refresh-metadata`, { method: "POST" });
+    if (state.selectedVideoId !== videoId) {
+      return;
+    }
+    const refreshedVideo = payload.video || {};
+    applyPreviewToVideoForm(refreshedVideo);
+    $("#video-status").textContent = refreshedVideo.metadata_error
+      ? `元数据刷新受限，请手动补全：${refreshedVideo.metadata_error}`
+      : "元数据已刷新。";
     await loadVideos();
   } catch (error) {
     $("#video-status").textContent = error.message;
   } finally {
     state.videoMetadataRefreshing = false;
-    syncVideoMetadataButtons();
+    syncVideoSaveButtons();
   }
 }
 
@@ -3167,14 +3223,14 @@ function bindEvents() {
   $("#publish-article").addEventListener("click", () => saveArticle("published"));
   $("#delete-article").addEventListener("click", deleteArticle);
   $("#new-video").addEventListener("click", () => {
-    if (isVideoWriteBusy()) {
+    if (isVideoEditBusy()) {
       return;
     }
     resetVideoForm();
   });
   $("#video-list-admin").addEventListener("click", (event) => {
     const item = event.target.closest("[data-admin-video-id]");
-    if (item && !isVideoWriteBusy()) {
+    if (item && !isVideoEditBusy()) {
       selectVideo(item.dataset.adminVideoId);
     }
   });
