@@ -438,6 +438,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "🧭",
+      date: "2026.06.18",
+      title: { zh: "知识库筛选安全渲染", en: "Knowledge Filters Safe DOM", ja: "知識庫フィルターの安全な DOM 描画" },
+      desc: {
+        zh: "知识库分类筛选按钮改为 DOM/textContent 构建，分类名和 active 状态保持不变",
+        en: "Knowledge category filter buttons now render through DOM/textContent while preserving labels and active state",
+        ja: "知識庫カテゴリーフィルターを DOM/textContent 構築にし、ラベルと active 状態を維持します"
+      }
+    },
+    {
       icon: "🧾",
       date: "2026.06.18",
       title: { zh: "知识库列表安全渲染", en: "Knowledge List Safe DOM", ja: "知識庫リストの安全な DOM 描画" },
@@ -1543,11 +1553,17 @@ function articleMatchesSearch(item) {
 
 function renderKnowledgeCategoryButtons(categories) {
   const target = document.getElementById("knowledge-categories");
-  const buttons = [t("all"), ...categories].map((name, index) => {
-    const value = index === 0 ? "all" : String(name);
-    return `<button class="${activeFilters.knowledge === value ? "active " : ""}category-button" data-filter-type="knowledge" data-filter="${escapeHtml(value)}">${escapeHtml(articleCategoryName(value))}</button>`;
+  const buttons = ["all", ...categories].map((category) => {
+    const value = String(category);
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `${activeFilters.knowledge === value ? "active " : ""}category-button`;
+    button.dataset.filterType = "knowledge";
+    button.dataset.filter = value;
+    button.textContent = articleCategoryName(value);
+    return button;
   });
-  target.innerHTML = buttons.join("");
+  target.replaceChildren(...buttons);
 }
 
 function sortArticleCategories(categories) {

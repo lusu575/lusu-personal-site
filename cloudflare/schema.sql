@@ -2298,6 +2298,71 @@ on conflict(article_id) do update set
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
 
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-knowledge-filters-safe-dom',
+  '2026-06-18-knowledge-filters-safe-dom',
+  'site-updates',
+  '["网站更新","知识库","筛选","安全"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T18:55:00.000Z',
+  '2026-06-17T18:55:00.000Z',
+  '2026-06-17T18:55:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-knowledge-filters-safe-dom-zh', 'seed-update-2026-06-18-knowledge-filters-safe-dom', 'zh', '知识库筛选安全渲染', '知识库分类筛选按钮改为 DOM/textContent 构建。', '# 知识库筛选安全渲染
+
+本次更新继续收紧公开知识库，把分类筛选按钮从字符串拼接改为 DOM / `textContent` 构建。
+
+## 更新内容
+
+- 知识库分类按钮现在通过 `document.createElement(''button'')` 创建，分类名用 `textContent` 写入。
+- `data-filter`、`data-filter-type`、active 状态和点击筛选行为保持不变。
+- 和上一轮文章卡片 DOM 渲染配合后，知识库列表与筛选控件都不再依赖文章/分类字符串拼接输出。
+- 本轮只调整公开知识库筛选控件和更新记录，不触碰后台目录或管理接口。', '2026-06-17T18:55:00.000Z', '2026-06-17T18:55:00.000Z'),
+  ('seed-update-2026-06-18-knowledge-filters-safe-dom-en', 'seed-update-2026-06-18-knowledge-filters-safe-dom', 'en', 'Knowledge Filters Safe DOM', 'Knowledge category filter buttons now render through DOM/textContent.', '# Knowledge Filters Safe DOM
+
+This update keeps tightening the public Knowledge area by changing category filter buttons from string-built markup to DOM / `textContent` construction.
+
+## Changes
+
+- Knowledge category buttons are now created with `document.createElement(''button'')`, with labels assigned through `textContent`.
+- `data-filter`, `data-filter-type`, active state, and click filtering behavior are unchanged.
+- Together with the previous article-card DOM rendering pass, the Knowledge list and filter controls no longer rely on article/category string-built output.
+- Only the public Knowledge filter controls and update records changed; admin folders and admin APIs were not touched.', '2026-06-17T18:55:00.000Z', '2026-06-17T18:55:00.000Z'),
+  ('seed-update-2026-06-18-knowledge-filters-safe-dom-ja', 'seed-update-2026-06-18-knowledge-filters-safe-dom', 'ja', '知識庫フィルターの安全な DOM 描画', '知識庫カテゴリーフィルターを DOM/textContent 構築にしました。', '# 知識庫フィルターの安全な DOM 描画
+
+今回の更新では、公開知識庫をさらに引き締め、カテゴリーフィルターボタンを文字列連結から DOM / `textContent` 構築へ変更しました。
+
+## 更新内容
+
+- 知識庫カテゴリーボタンは `document.createElement(''button'')` で作成し、ラベルは `textContent` で入れます。
+- `data-filter`、`data-filter-type`、active 状態、クリック絞り込み動作は変えていません。
+- 前回の記事カード DOM 描画と合わせて、知識庫リストとフィルター操作は記事/カテゴリ文字列の組み立て出力に依存しなくなりました。
+- 公開知識庫フィルターと更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T18:55:00.000Z', '2026-06-17T18:55:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values

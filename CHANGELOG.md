@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 知识库筛选安全渲染：
+  - 知识库分类筛选按钮从字符串 `innerHTML` 拼接改为 DOM / `textContent` 构建，分类名、`data-filter`、active 状态和点击筛选行为保持不变。
+  - 配合上一轮文章卡片 DOM 渲染，知识库列表和筛选控件不再依赖文章/分类字符串拼接输出。
+  - 更新 `index.html` 的 JS query 为 `20260618-knowledge-filters-safe-dom`，并新增同名三语 `site-updates` 更新文章。
 - 知识库列表安全渲染：
   - 知识库文章列表从字符串 `innerHTML` 拼接改为 DOM / `textContent` 构建，标题、摘要、标签、发布日期和阅读入口都按纯文本节点渲染。
   - 搜索、分类筛选、文章详情直链、fallback 语言提示和阅读按钮行为保持不变。
