@@ -257,8 +257,8 @@
                 <label class="checkbox-line"><input name="enabled" type="checkbox" checked> 启用</label>
               </div>
               <div class="form-actions">
-                <button class="xp-button" type="submit">保存分类</button>
-                <button class="xp-button danger" type="button" id="delete-video-category">删除分类</button>
+                <button class="xp-button" type="submit" id="save-video-category" title="保存当前视频分类">保存分类</button>
+                <button class="xp-button danger" type="button" id="delete-video-category" title="请先选择已保存分类" disabled>删除分类</button>
                 <span class="form-status" id="video-category-status"></span>
               </div>
             </form>
@@ -414,6 +414,6 @@
     </main>
   </div>
 
-  <script src="/admin/admin.js?v=20260618-article-save-guard"></script>
+  <script src="/admin/admin.js?v=20260618-video-category-guard"></script>
 </body>
 </html>

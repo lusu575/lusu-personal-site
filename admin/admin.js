@@ -11,6 +11,8 @@ const state = {
   selectedVideoId: "",
   videoCategories: [],
   selectedVideoCategoryId: "",
+  videoCategoryBusy: false,
+  videoCategoryBusyMode: "",
   videoPreviewing: false,
   videoMetadataRefreshing: false,
   videoSaving: false,
@@ -61,6 +63,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-06-18",
+    title: "视频分类保存删除防重复操作优化",
+    body: "视频分类管理保存或删除分类时会临时禁用保存、删除按钮，并显示保存中或删除中，减少慢网络下重复提交分类变更。"
+  },
   {
     date: "2026-06-18",
     title: "文章保存防重复提交优化",
@@ -1409,6 +1416,7 @@ function resetVideoCategoryForm() {
   applyNewVideoCategorySortDefault();
   $("#delete-video-category").disabled = true;
   $("#video-category-status").textContent = "";
+  syncVideoCategoryButtons();
   renderVideoCategoryList();
 }
 
@@ -1423,6 +1431,7 @@ function fillVideoCategoryForm(category) {
   form.elements.enabled.checked = Boolean(category.enabled);
   $("#delete-video-category").disabled = false;
   $("#video-category-status").textContent = category.video_count ? `已有 ${category.video_count} 个视频使用，删除前请先取消关联。` : "";
+  syncVideoCategoryButtons();
   renderVideoCategoryList();
 }
 
@@ -1440,6 +1449,12 @@ function videoCategoryPayload() {
 
 async function saveVideoCategory(event) {
   event.preventDefault();
+  if (state.videoCategoryBusy) {
+    return;
+  }
+  state.videoCategoryBusy = true;
+  state.videoCategoryBusyMode = "save";
+  syncVideoCategoryButtons();
   const status = $("#video-category-status");
   try {
     status.textContent = "正在保存...";
@@ -1454,9 +1469,35 @@ async function saveVideoCategory(event) {
     const category = selectedVideoCategory();
     if (category) {
       fillVideoCategoryForm(category);
+      status.textContent = "已保存";
     }
   } catch (error) {
     status.textContent = error.message;
+  } finally {
+    state.videoCategoryBusy = false;
+    state.videoCategoryBusyMode = "";
+    syncVideoCategoryButtons();
+  }
+}
+
+function syncVideoCategoryButtons() {
+  const saveButton = $("#save-video-category");
+  const deleteButton = $("#delete-video-category");
+  if (saveButton) {
+    const saving = state.videoCategoryBusy && state.videoCategoryBusyMode === "save";
+    saveButton.disabled = state.videoCategoryBusy;
+    saveButton.textContent = saving ? "保存中..." : "保存分类";
+    saveButton.setAttribute("aria-busy", saving ? "true" : "false");
+    saveButton.title = state.videoCategoryBusy ? "正在处理视频分类" : "保存当前视频分类";
+  }
+  if (deleteButton) {
+    const deleting = state.videoCategoryBusy && state.videoCategoryBusyMode === "delete";
+    deleteButton.disabled = state.videoCategoryBusy || !state.selectedVideoCategoryId;
+    deleteButton.textContent = deleting ? "删除中..." : "删除分类";
+    deleteButton.setAttribute("aria-busy", deleting ? "true" : "false");
+    deleteButton.title = state.videoCategoryBusy
+      ? "正在处理视频分类"
+      : (state.selectedVideoCategoryId ? "删除当前视频分类" : "请先选择已保存分类");
   }
 }
 
@@ -1469,6 +1510,9 @@ function selectVideoCategory(categoryId) {
 }
 
 async function deleteVideoCategory() {
+  if (state.videoCategoryBusy) {
+    return;
+  }
   const category = selectedVideoCategory();
   if (!category) {
     return;
@@ -1480,12 +1524,21 @@ async function deleteVideoCategory() {
   if (!window.confirm("确定删除这个视频分类吗？")) {
     return;
   }
+  state.videoCategoryBusy = true;
+  state.videoCategoryBusyMode = "delete";
+  syncVideoCategoryButtons();
   try {
+    $("#video-category-status").textContent = "正在删除...";
     await api(`/api/admin/video-categories/${encodeURIComponent(category.category_id)}`, { method: "DELETE" });
     resetVideoCategoryForm();
     await loadVideoCategories();
+    $("#video-category-status").textContent = "已删除。";
   } catch (error) {
     $("#video-category-status").textContent = error.message;
+  } finally {
+    state.videoCategoryBusy = false;
+    state.videoCategoryBusyMode = "";
+    syncVideoCategoryButtons();
   }
 }
 
