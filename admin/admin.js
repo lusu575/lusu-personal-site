@@ -74,6 +74,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "账号详情读取期间锁定表单",
+    body: "账号管理切换到已有账号但详情尚未读取完成时，会先清空旧表单并临时锁定邮箱、角色和密码状态字段，避免加载中输入内容随后被接口返回覆盖。"
+  },
+  {
+    date: "2026-06-18",
     title: "文章详情读取期间锁定表单",
     body: "知识库文章切换到已有文章但详情尚未读取完成时，会临时锁定编辑表单和语言切换按钮，避免加载中输入内容随后被接口返回覆盖。"
   },
@@ -2754,6 +2759,7 @@ async function loadAccounts() {
   } else if (state.selectedAccountId && !state.accounts.some((account) => account.id === state.selectedAccountId)) {
     state.selectedAccountId = "";
     state.accountDetail = null;
+    resetAccountForm();
     renderAccountDetail();
     syncAccountSaveButton();
   }
@@ -2815,6 +2821,7 @@ function renderAccountList() {
 async function selectAccount(accountId) {
   state.selectedAccountId = accountId;
   state.accountDetail = null;
+  resetAccountForm("正在读取账号详情...");
   $("#account-status").textContent = "正在读取账号详情...";
   renderAccountList();
   renderAccountDetail();
@@ -2834,6 +2841,7 @@ async function selectAccount(accountId) {
   } catch (error) {
     if (state.selectedAccountId === accountId) {
       state.accountDetail = null;
+      resetAccountForm("账号详情读取失败");
       renderAccountDetail();
       $("#account-status").textContent = `读取账号详情失败：${error.message}`;
     }
@@ -2851,6 +2859,15 @@ function fillAccountForm(account) {
   form.elements.role.value = account.role || "user";
   form.elements.password.value = "";
   form.elements.password_status.value = account.password_status || "已加密保存，不能查看原文";
+}
+
+function resetAccountForm(title = "选择账号后编辑") {
+  const form = $("#account-form");
+  $("#account-editor-title").textContent = title;
+  form.elements.email.value = "";
+  form.elements.role.value = "user";
+  form.elements.password.value = "";
+  form.elements.password_status.value = "已加密保存，不能查看原文";
 }
 
 async function saveAccount(event) {
@@ -2938,17 +2955,29 @@ function syncAccountListBusyState() {
 }
 
 function syncAccountFormBusyState() {
-  const busy = isAccountWriteBusy();
-  const title = busy ? "正在保存账号，完成后再编辑表单" : "";
+  const locked = isAccountWriteBusy() || isAccountDetailPending();
+  const title = isAccountDetailPending() ? accountDetailPendingFormTitle() : accountBusyFormTitle();
   $$("#account-form input, #account-form select").forEach((field) => {
-    field.disabled = busy;
-    field.setAttribute("aria-busy", busy ? "true" : "false");
-    if (title) {
+    field.disabled = locked;
+    field.setAttribute("aria-busy", locked ? "true" : "false");
+    if (locked) {
       field.title = title;
     } else {
       field.removeAttribute("title");
     }
   });
+}
+
+function isAccountDetailPending() {
+  return Boolean(state.selectedAccountId && !state.accountDetail && !isAccountWriteBusy());
+}
+
+function accountDetailPendingFormTitle() {
+  return "正在读取账号详情，完成后再编辑表单";
+}
+
+function accountBusyFormTitle() {
+  return "正在保存账号，完成后再编辑表单";
 }
 
 function createEventItemElement(titleText, detailTexts) {
