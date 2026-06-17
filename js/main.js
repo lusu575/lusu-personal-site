@@ -64,6 +64,7 @@ const translations = {
     videoFullscreen: "全屏",
     videoRestore: "还原",
     languageSupportLabel: "语言支持",
+    gameLanguageUnsupported: "不支持",
     gameSourceLabel: "来源",
     gameConfigLoading: "正在读取游戏配置...",
     gameConfigFailed: "游戏配置读取失败",
@@ -195,6 +196,7 @@ const translations = {
     videoFullscreen: "Full screen",
     videoRestore: "Restore",
     languageSupportLabel: "Language support",
+    gameLanguageUnsupported: "not supported",
     gameSourceLabel: "Source",
     gameConfigLoading: "Loading game catalog...",
     gameConfigFailed: "Could not load game catalog",
@@ -326,6 +328,7 @@ const translations = {
     videoFullscreen: "全画面",
     videoRestore: "元に戻す",
     languageSupportLabel: "言語対応",
+    gameLanguageUnsupported: "未対応",
     gameSourceLabel: "出典",
     gameConfigLoading: "ゲーム設定を読み込み中...",
     gameConfigFailed: "ゲーム設定を読み込めません",
@@ -431,6 +434,16 @@ const labels = {
 
 const content = {
   updates: [
+    {
+      icon: "🌐",
+      date: "2026.06.18",
+      title: { zh: "游戏语言标记三语同步", en: "Game Language Labels", ja: "ゲーム言語ラベルの多言語同期" },
+      desc: {
+        zh: "游戏卡片里的中文、英文、日文支持标记会跟随当前站点语言显示名称和不支持提示",
+        en: "Game language support tags now localize Chinese, English, Japanese, and unsupported labels",
+        ja: "ゲームカードの対応言語タグが、中国語・英語・日本語・未対応表示を現在の言語に合わせます"
+      }
+    },
     {
       icon: "🎮",
       date: "2026.06.18",
@@ -1154,16 +1167,20 @@ function buildGameUrl(item) {
 function renderLanguageSupportTags(item) {
   const supported = item.languageSupport || {};
   const languageNames = {
-    zh: "中文",
-    en: "EN",
-    ja: "日本語"
+    zh: { zh: "中文", en: "英文", ja: "日文" },
+    en: { zh: "Chinese", en: "English", ja: "Japanese" },
+    ja: { zh: "中国語", en: "英語", ja: "日本語" }
   };
 
-  return ["zh", "en", "ja"].map((lang) => `
-    <span class="tag language-tag${supported[lang] ? " supported" : " unsupported"}" title="${languageNames[lang]}${supported[lang] ? "" : " not supported"}">
-      ${languageNames[lang]} ${supported[lang] ? "✓" : "×"}
+  return ["zh", "en", "ja"].map((lang) => {
+    const name = languageNames[currentLang]?.[lang] || languageNames.zh[lang] || lang;
+    const title = supported[lang] ? name : `${name} ${t("gameLanguageUnsupported")}`;
+    return `
+    <span class="tag language-tag${supported[lang] ? " supported" : " unsupported"}" title="${escapeHtml(title)}">
+      ${escapeHtml(name)} ${supported[lang] ? "✓" : "×"}
     </span>
-  `).join("");
+  `;
+  }).join("");
 }
 
 function gameLinkAttributes(item) {

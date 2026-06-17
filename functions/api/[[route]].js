@@ -4587,6 +4587,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-18-game-language-labels',
+        '2026-06-18-game-language-labels',
+        'site-updates',
+        '["网站更新","多语言","游戏区","修复记录"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T17:43:00.000Z',
+        '2026-06-17T17:43:00.000Z',
+        '2026-06-17T17:43:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -5065,6 +5092,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# ゲームカバーの非同期デコード\n\n今回の更新では、公開サイトの軽量な性能調整として、ゲーム欄のカバー画像に非同期デコードを追加しました。\n\n## 更新内容\n\n- 動的に描画される `game-cover` 画像に `decoding=\"async\"` を追加しました。\n- 既存の `loading=\"lazy\"` は維持し、ゲーム一覧を開くときの画像読み込みとデコード負荷を抑えます。\n- ゲームカタログ、クラウドセーブ、入口リンク、ゲーム実行ロジックは変更していません。\n- 公開側のゲーム一覧画像属性と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。"
       }
     }, "2026-06-17T17:38:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-game-language-labels", {
+      zh: {
+        title: "游戏语言标记三语同步",
+        summary: "游戏卡片里的语言支持标记现在会跟随当前站点语言显示。",
+        content_markdown: "# 游戏语言标记三语同步\n\n本次更新整理游戏区卡片里的语言支持标记，减少 English / 日本語 页面里的固定中文混杂。\n\n## 更新内容\n\n- 中文界面显示 `中文 / 英文 / 日文`。\n- English 界面显示 `Chinese / English / Japanese`。\n- 日本語界面显示 `中国語 / 英語 / 日本語`。\n- 不支持状态的 `title` 提示也使用当前语言；✓ / × 状态、游戏目录、云存档和入口链接逻辑保持不变。"
+      },
+      en: {
+        title: "Game Language Labels",
+        summary: "Game-card language support tags now localize their language names and unsupported hints.",
+        content_markdown: "# Game Language Labels\n\nThis update cleans up the language support tags on game cards so English and Japanese pages do not keep fixed Chinese labels.\n\n## Changes\n\n- Chinese shows `中文 / 英文 / 日文`.\n- English shows `Chinese / English / Japanese`.\n- Japanese shows `中国語 / 英語 / 日本語`.\n- Unsupported-state `title` hints also use the active language; ✓ / × status, game catalog data, cloud saves, and entry links are unchanged."
+      },
+      ja: {
+        title: "ゲーム言語ラベルの多言語同期",
+        summary: "ゲームカードの対応言語タグが、現在のサイト言語に合わせて表示されます。",
+        content_markdown: "# ゲーム言語ラベルの多言語同期\n\n今回の更新では、ゲームカードの対応言語タグを整理し、English / 日本語 ページに固定の中国語ラベルが混ざらないようにしました。\n\n## 更新内容\n\n- 中文表示では `中文 / 英文 / 日文` を表示します。\n- English 表示では `Chinese / English / Japanese` を表示します。\n- 日本語表示では `中国語 / 英語 / 日本語` を表示します。\n- 未対応状態の `title` ヒントも現在の言語を使います。✓ / × の状態、ゲームカタログ、クラウドセーブ、入口リンクは変更していません。"
+      }
+    }, "2026-06-17T17:43:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')

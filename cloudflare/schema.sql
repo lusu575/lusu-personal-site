@@ -1010,6 +1010,32 @@ on conflict(article_id) do update set
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
 
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-game-language-labels',
+  '2026-06-18-game-language-labels',
+  'site-updates',
+  '["网站更新","多语言","游戏区","修复记录"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T17:43:00.000Z',
+  '2026-06-17T17:43:00.000Z',
+  '2026-06-17T17:43:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
@@ -3096,7 +3122,37 @@ This update continues the public site''s lightweight performance polish by addin
 - 動的に描画される `game-cover` 画像に `decoding="async"` を追加しました。
 - 既存の `loading="lazy"` は維持し、ゲーム一覧を開くときの画像読み込みとデコード負荷を抑えます。
 - ゲームカタログ、クラウドセーブ、入口リンク、ゲーム実行ロジックは変更していません。
-- 公開側のゲーム一覧画像属性と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T17:38:00.000Z', '2026-06-17T17:38:00.000Z')
+- 公開側のゲーム一覧画像属性と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T17:38:00.000Z', '2026-06-17T17:38:00.000Z'),
+  ('seed-update-2026-06-18-game-language-labels-zh', 'seed-update-2026-06-18-game-language-labels', 'zh', '游戏语言标记三语同步', '游戏卡片里的语言支持标记现在会跟随当前站点语言显示。', '# 游戏语言标记三语同步
+
+本次更新整理游戏区卡片里的语言支持标记，减少 English / 日本語 页面里的固定中文混杂。
+
+## 更新内容
+
+- 中文界面显示 `中文 / 英文 / 日文`。
+- English 界面显示 `Chinese / English / Japanese`。
+- 日本語界面显示 `中国語 / 英語 / 日本語`。
+- 不支持状态的 `title` 提示也使用当前语言；✓ / × 状态、游戏目录、云存档和入口链接逻辑保持不变。', '2026-06-17T17:43:00.000Z', '2026-06-17T17:43:00.000Z'),
+  ('seed-update-2026-06-18-game-language-labels-en', 'seed-update-2026-06-18-game-language-labels', 'en', 'Game Language Labels', 'Game-card language support tags now localize their language names and unsupported hints.', '# Game Language Labels
+
+This update cleans up the language support tags on game cards so English and Japanese pages do not keep fixed Chinese labels.
+
+## Changes
+
+- Chinese shows `中文 / 英文 / 日文`.
+- English shows `Chinese / English / Japanese`.
+- Japanese shows `中国語 / 英語 / 日本語`.
+- Unsupported-state `title` hints also use the active language; ✓ / × status, game catalog data, cloud saves, and entry links are unchanged.', '2026-06-17T17:43:00.000Z', '2026-06-17T17:43:00.000Z'),
+  ('seed-update-2026-06-18-game-language-labels-ja', 'seed-update-2026-06-18-game-language-labels', 'ja', 'ゲーム言語ラベルの多言語同期', 'ゲームカードの対応言語タグが、現在のサイト言語に合わせて表示されます。', '# ゲーム言語ラベルの多言語同期
+
+今回の更新では、ゲームカードの対応言語タグを整理し、English / 日本語 ページに固定の中国語ラベルが混ざらないようにしました。
+
+## 更新内容
+
+- 中文表示では `中文 / 英文 / 日文` を表示します。
+- English 表示では `Chinese / English / Japanese` を表示します。
+- 日本語表示では `中国語 / 英語 / 日本語` を表示します。
+- 未対応状態の `title` ヒントも現在の言語を使います。✓ / × の状態、ゲームカタログ、クラウドセーブ、入口リンクは変更していません。', '2026-06-17T17:43:00.000Z', '2026-06-17T17:43:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,

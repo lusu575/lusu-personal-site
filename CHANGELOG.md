@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 游戏语言标记三语同步：
+  - 游戏卡片的语言支持标记从固定 `中文 / EN / 日本語` 改为跟随当前语言显示 `中文/英文/日文`、`Chinese/English/Japanese` 或 `中国語/英語/日本語`。
+  - 不支持状态的 `title` 提示也改为三语文案；✓ / × 状态、游戏目录、云存档和入口链接逻辑保持不变。
+  - 更新 `index.html` 的 JS query 为 `20260618-game-language-labels`，并新增同名三语 `site-updates` 更新文章，同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新。
 - 游戏封面异步解码：
   - 游戏区动态渲染的 `game-cover` 图片在已有 `loading="lazy"` 基础上补充 `decoding="async"`，减少打开游戏列表时的图片解码阻塞。
   - 只调整公开主站游戏列表图片属性和更新记录，不改变游戏目录、云存档、入口链接或游戏运行逻辑。
