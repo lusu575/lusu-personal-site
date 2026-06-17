@@ -701,6 +701,32 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-06-18-article-scroll-top',
+  '2026-06-18-article-scroll-top',
+  'site-updates',
+  '["网站更新","知识库","阅读","导航"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T23:20:00.000Z',
+  '2026-06-17T23:20:00.000Z',
+  '2026-06-17T23:20:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-06-18-article-toc',
   '2026-06-18-article-toc',
   'site-updates',
@@ -2925,6 +2951,36 @@ on conflict(article_id, lang) do update set
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
+  ('seed-update-2026-06-18-article-scroll-top-zh', 'seed-update-2026-06-18-article-scroll-top', 'zh', '文章回到顶部按钮', '知识库文章详情新增回到顶部按钮，目录跳转后可以快速回到标题区。', '# 文章回到顶部按钮
+
+本次更新继续整理知识库长文阅读工具，在文章详情动作区新增一个轻量的回到顶部按钮。
+
+## 更新内容
+
+- 文章详情复制链接按钮旁新增“回到顶部 / Back to top / 先頭へ戻る”三语按钮。
+- 点击后只滚动当前文章详情容器，并同步阅读进度条，不改变页面路由或正文内容。
+- 按钮使用现有 DOM 事件代理和 `data-i18n` 文案，不插入外部 HTML。
+- 目录导航、Markdown 安全渲染、聊天和后台接口保持不变。', '2026-06-17T23:20:00.000Z', '2026-06-17T23:20:00.000Z'),
+  ('seed-update-2026-06-18-article-scroll-top-en', 'seed-update-2026-06-18-article-scroll-top', 'en', 'Article Back-to-Top Button', 'Knowledge article details now include a back-to-top button after jumping through contents.', '# Article Back-to-Top Button
+
+This update continues refining long-form Knowledge reading tools with a lightweight back-to-top action in article detail windows.
+
+## Changes
+
+- Article details now show a trilingual `回到顶部 / Back to top / 先頭へ戻る` button beside the copy-link action.
+- Clicking it scrolls only the current article detail container and keeps the reading progress bar in sync, without changing the route or article body.
+- The button uses the existing DOM event delegation and `data-i18n` text, with no external HTML insertion.
+- Contents navigation, safe Markdown rendering, chat, and admin APIs are unchanged.', '2026-06-17T23:20:00.000Z', '2026-06-17T23:20:00.000Z'),
+  ('seed-update-2026-06-18-article-scroll-top-ja', 'seed-update-2026-06-18-article-scroll-top', 'ja', '記事先頭へ戻るボタン', '知識庫の記事詳細に先頭へ戻るボタンを追加し、目次移動後に戻りやすくしました。', '# 記事先頭へ戻るボタン
+
+今回の更新では、知識庫の長文閲覧ツールをもう少し整え、記事詳細の操作列に軽い先頭へ戻るボタンを追加しました。
+
+## 更新内容
+
+- 記事詳細のリンクコピーボタン横に `回到顶部 / Back to top / 先頭へ戻る` の三言語ボタンを追加しました。
+- クリック時は現在の記事詳細コンテナだけを先頭へスクロールし、読書進捗バーも同期します。ルートや本文は変更しません。
+- ボタンは既存の DOM イベント委譲と `data-i18n` 文言を使い、外部 HTML は挿入しません。
+- 目次ナビ、安全な Markdown 描画、チャット、管理 API は変更していません。', '2026-06-17T23:20:00.000Z', '2026-06-17T23:20:00.000Z'),
   ('seed-update-2026-06-18-article-toc-zh', 'seed-update-2026-06-18-article-toc', 'zh', '文章目录导航', '知识库文章详情会按正文标题生成目录，长文可以快速跳到对应段落。', '# 文章目录导航
 
 本次更新继续优化知识库长文阅读，在文章详情里新增由正文标题生成的目录导航。

@@ -51,6 +51,7 @@ const translations = {
     articleCopyFailed: "复制失败，请手动复制地址栏链接。",
     articleReadProgress: "阅读进度",
     articleTocTitle: "文章目录",
+    articleScrollTop: "回到顶部",
     articlePublished: "发布时间",
     articleCategory: "分类",
     articleFallback: "当前语言版本缺失，已显示备用语言版本。",
@@ -188,6 +189,7 @@ const translations = {
     articleCopyFailed: "Copy failed. Please copy the address bar link manually.",
     articleReadProgress: "Reading progress",
     articleTocTitle: "Contents",
+    articleScrollTop: "Back to top",
     articlePublished: "Published",
     articleCategory: "Category",
     articleFallback: "This language is missing, so a fallback language is shown.",
@@ -325,6 +327,7 @@ const translations = {
     articleCopyFailed: "コピーできません。アドレスバーのリンクを手動でコピーしてください。",
     articleReadProgress: "読書進捗",
     articleTocTitle: "目次",
+    articleScrollTop: "先頭へ戻る",
     articlePublished: "公開日",
     articleCategory: "分類",
     articleFallback: "この言語版がないため、別の言語版を表示しています。",
@@ -449,6 +452,16 @@ const labels = {
 
 const content = {
   updates: [
+    {
+      icon: "⬆️",
+      date: "2026.06.18",
+      title: { zh: "文章回到顶部按钮", en: "Article Back-to-Top Button", ja: "記事先頭へ戻るボタン" },
+      desc: {
+        zh: "知识库文章详情新增三语回到顶部按钮，目录跳转后可以快速回到标题区",
+        en: "Knowledge article details now include a trilingual back-to-top button after jumping through contents",
+        ja: "知識庫の記事詳細に三言語の先頭へ戻るボタンを追加し、目次移動後に戻りやすくしました"
+      }
+    },
     {
       icon: "🧭",
       date: "2026.06.18",
@@ -2044,6 +2057,15 @@ function scrollToArticleHeading(targetId) {
     return;
   }
   heading.scrollIntoView({ block: "start", behavior: "smooth" });
+  scheduleArticleReadProgressUpdate();
+}
+
+function scrollArticleToTop() {
+  const detail = document.getElementById("article-detail");
+  if (!detail || detail.hidden) {
+    return;
+  }
+  detail.scrollTo({ top: 0, behavior: "smooth" });
   scheduleArticleReadProgressUpdate();
 }
 
@@ -3749,6 +3771,11 @@ document.addEventListener("click", (event) => {
   const articleHeadingButton = event.target.closest("[data-article-heading-target]");
   if (articleHeadingButton) {
     scrollToArticleHeading(articleHeadingButton.dataset.articleHeadingTarget);
+    return;
+  }
+
+  if (event.target.closest("[data-article-scroll-top]")) {
+    scrollArticleToTop();
     return;
   }
 

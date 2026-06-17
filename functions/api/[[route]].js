@@ -5187,6 +5187,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         article_id, slug, category, tags, cover_image, status, is_pinned,
         view_count, created_at, updated_at, published_at
       ) values (
+        'seed-update-2026-06-18-article-scroll-top',
+        '2026-06-18-article-scroll-top',
+        'site-updates',
+        '["网站更新","知识库","阅读","导航"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T23:20:00.000Z',
+        '2026-06-17T23:20:00.000Z',
+        '2026-06-17T23:20:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
         'seed-update-2026-06-18-article-toc',
         '2026-06-18-article-toc',
         'site-updates',
@@ -6246,6 +6273,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# 記事画像パスガード\n\n今回の更新では、公開知識庫の記事画像描画をさらに引き締め、Markdown 画像パスがプロジェクトの記事画像フォルダ内に留まるよう明確にしました。\n\n## 更新内容\n\n- Markdown 記事画像は引き続き `assets/images/articles/` 配下のプロジェクト資源だけを受け付けます。\n- `safeArticleImageSrc()` が `..` のパストラバーサル片を拒否し、画像パスが記事画像フォルダから外へ出ないようにしました。\n- 画像は今後も `document.createElement('img')`、安全な `src`、`alt`、`figcaption` で描画し、未処理 HTML は挿入しません。\n- 既存の AI Agent 長文画像、知識庫一覧、記事直リンク、管理画面ディレクトリは変更していません。"
       }
     }, "2026-06-17T20:20:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-article-scroll-top", {
+      zh: {
+        title: "文章回到顶部按钮",
+        summary: "知识库文章详情新增回到顶部按钮，目录跳转后可以快速回到标题区。",
+        content_markdown: "# 文章回到顶部按钮\n\n本次更新继续整理知识库长文阅读工具，在文章详情动作区新增一个轻量的回到顶部按钮。\n\n## 更新内容\n\n- 文章详情复制链接按钮旁新增“回到顶部 / Back to top / 先頭へ戻る”三语按钮。\n- 点击后只滚动当前文章详情容器，并同步阅读进度条，不改变页面路由或正文内容。\n- 按钮使用现有 DOM 事件代理和 `data-i18n` 文案，不插入外部 HTML。\n- 目录导航、Markdown 安全渲染、聊天和后台接口保持不变。"
+      },
+      en: {
+        title: "Article Back-to-Top Button",
+        summary: "Knowledge article details now include a back-to-top button after jumping through contents.",
+        content_markdown: "# Article Back-to-Top Button\n\nThis update continues refining long-form Knowledge reading tools with a lightweight back-to-top action in article detail windows.\n\n## Changes\n\n- Article details now show a trilingual `回到顶部 / Back to top / 先頭へ戻る` button beside the copy-link action.\n- Clicking it scrolls only the current article detail container and keeps the reading progress bar in sync, without changing the route or article body.\n- The button uses the existing DOM event delegation and `data-i18n` text, with no external HTML insertion.\n- Contents navigation, safe Markdown rendering, chat, and admin APIs are unchanged."
+      },
+      ja: {
+        title: "記事先頭へ戻るボタン",
+        summary: "知識庫の記事詳細に先頭へ戻るボタンを追加し、目次移動後に戻りやすくしました。",
+        content_markdown: "# 記事先頭へ戻るボタン\n\n今回の更新では、知識庫の長文閲覧ツールをもう少し整え、記事詳細の操作列に軽い先頭へ戻るボタンを追加しました。\n\n## 更新内容\n\n- 記事詳細のリンクコピーボタン横に `回到顶部 / Back to top / 先頭へ戻る` の三言語ボタンを追加しました。\n- クリック時は現在の記事詳細コンテナだけを先頭へスクロールし、読書進捗バーも同期します。ルートや本文は変更しません。\n- ボタンは既存の DOM イベント委譲と `data-i18n` 文言を使い、外部 HTML は挿入しません。\n- 目次ナビ、安全な Markdown 描画、チャット、管理 API は変更していません。"
+      }
+    }, "2026-06-17T23:20:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-06-18-article-toc", {
       zh: {
         title: "文章目录导航",

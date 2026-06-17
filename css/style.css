@@ -1284,13 +1284,19 @@ main {
   margin-top: 12px;
 }
 
-.article-copy-link {
+.article-copy-link,
+.article-top-link {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   min-height: 34px;
   padding: 5px 12px;
   white-space: nowrap;
+}
+
+.article-top-link {
+  color: #184d0d;
+  background: linear-gradient(180deg, #ffffff, #dff7c8);
 }
 
 .article-copy-link.is-done {
