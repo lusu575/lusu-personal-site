@@ -984,6 +984,32 @@ on conflict(article_id) do update set
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
 
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-game-cover-decoding',
+  '2026-06-18-game-cover-decoding',
+  'site-updates',
+  '["网站更新","性能","游戏区","移动端"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T17:38:00.000Z',
+  '2026-06-17T17:38:00.000Z',
+  '2026-06-17T17:38:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
@@ -3040,7 +3066,37 @@ This update fixes the static language on the Talk area''s Notepad-style menu so 
 - 中文表示では `文件  编辑  查看  帮助` を表示します。
 - English 表示では `File  Edit  View  Help` を維持します。
 - 日本語表示では `ファイル  編集  表示  ヘルプ` を表示します。
-- 公開側の静的メニュー文言と更新記録だけを調整し、雑談カードの DOM / `textContent` 安全描画経路は変更していません。', '2026-06-17T17:33:00.000Z', '2026-06-17T17:33:00.000Z')
+- 公開側の静的メニュー文言と更新記録だけを調整し、雑談カードの DOM / `textContent` 安全描画経路は変更していません。', '2026-06-17T17:33:00.000Z', '2026-06-17T17:33:00.000Z'),
+  ('seed-update-2026-06-18-game-cover-decoding-zh', 'seed-update-2026-06-18-game-cover-decoding', 'zh', '游戏封面异步解码', '游戏区封面图在懒加载基础上补充异步解码。', '# 游戏封面异步解码
+
+本次更新继续补齐公开主站的轻量性能细节，让游戏区封面图在懒加载之外也使用异步解码。
+
+## 更新内容
+
+- 游戏区动态渲染的 `game-cover` 图片补充 `decoding="async"`。
+- 保留已有 `loading="lazy"`，减少打开游戏列表时的图片加载和解码压力。
+- 游戏目录、云存档、入口链接和游戏运行逻辑保持不变。
+- 只调整公开主站游戏列表图片属性和更新记录，不触碰后台目录或管理接口。', '2026-06-17T17:38:00.000Z', '2026-06-17T17:38:00.000Z'),
+  ('seed-update-2026-06-18-game-cover-decoding-en', 'seed-update-2026-06-18-game-cover-decoding', 'en', 'Async Game Cover Decoding', 'Game cover images now add async decoding on top of lazy loading.', '# Async Game Cover Decoding
+
+This update continues the public site''s lightweight performance polish by adding async decoding to game cover images.
+
+## Changes
+
+- Dynamically rendered `game-cover` images now include `decoding="async"`.
+- Existing `loading="lazy"` behavior stays in place, reducing image load and decode pressure when the games list opens.
+- Game catalog data, cloud saves, entry links, and game runtime behavior are unchanged.
+- Only public site game-list image attributes and update records changed; admin folders and admin APIs were not touched.', '2026-06-17T17:38:00.000Z', '2026-06-17T17:38:00.000Z'),
+  ('seed-update-2026-06-18-game-cover-decoding-ja', 'seed-update-2026-06-18-game-cover-decoding', 'ja', 'ゲームカバーの非同期デコード', 'ゲーム欄のカバー画像に、遅延読み込みに加えて非同期デコードを追加しました。', '# ゲームカバーの非同期デコード
+
+今回の更新では、公開サイトの軽量な性能調整として、ゲーム欄のカバー画像に非同期デコードを追加しました。
+
+## 更新内容
+
+- 動的に描画される `game-cover` 画像に `decoding="async"` を追加しました。
+- 既存の `loading="lazy"` は維持し、ゲーム一覧を開くときの画像読み込みとデコード負荷を抑えます。
+- ゲームカタログ、クラウドセーブ、入口リンク、ゲーム実行ロジックは変更していません。
+- 公開側のゲーム一覧画像属性と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T17:38:00.000Z', '2026-06-17T17:38:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,

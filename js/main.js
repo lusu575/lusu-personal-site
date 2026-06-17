@@ -432,6 +432,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "🎮",
+      date: "2026.06.18",
+      title: { zh: "游戏封面异步解码", en: "Async Game Cover Decoding", ja: "ゲームカバーの非同期デコード" },
+      desc: {
+        zh: "游戏区封面图在继续懒加载的基础上补充异步解码，减少打开游戏列表时的解码阻塞",
+        en: "Game cover images now add async decoding on top of lazy loading to reduce decode pressure when opening the games list",
+        ja: "ゲーム欄のカバー画像に遅延読み込みに加えて非同期デコードを追加し、一覧表示時の負荷を抑えます"
+      }
+    },
+    {
       icon: "📝",
       date: "2026.06.18",
       title: { zh: "杂谈菜单三语同步", en: "Talk Menu Localization", ja: "雑談メニューの多言語同期" },
@@ -2164,7 +2174,7 @@ async function renderGames() {
     const catalog = await loadGameCatalog();
     list.innerHTML = catalog.games.map((item) => `
         <article class="game-card">
-          <img class="game-cover" src="${escapeHtml(sitePath(String(item.cover || "assets/images/icon-games.png").replace("../", "")))}" alt="${escapeHtml(localText(item.titles || item.titleZh))}" loading="lazy">
+          <img class="game-cover" src="${escapeHtml(sitePath(String(item.cover || "assets/images/icon-games.png").replace("../", "")))}" alt="${escapeHtml(localText(item.titles || item.titleZh))}" loading="lazy" decoding="async">
           <div class="game-main">
             <h3>${escapeHtml(localText(item.titles || item.titleZh))}</h3>
             <p>${escapeHtml(localText(item.summaries || item.summary))}</p>

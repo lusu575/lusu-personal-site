@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 游戏封面异步解码：
+  - 游戏区动态渲染的 `game-cover` 图片在已有 `loading="lazy"` 基础上补充 `decoding="async"`，减少打开游戏列表时的图片解码阻塞。
+  - 只调整公开主站游戏列表图片属性和更新记录，不改变游戏目录、云存档、入口链接或游戏运行逻辑。
+  - 更新 `index.html` 的 JS query 为 `20260618-game-cover-decoding`，并新增同名三语 `site-updates` 更新文章，同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新。
 - 杂谈菜单三语同步：
   - 杂谈区顶部 Notepad 风格菜单从固定英文 `File Edit View Help` 改为跟随中文 / English / 日本語 显示。
   - 只调整公开主站静态菜单文案和更新记录，不改杂谈卡片 DOM / `textContent` 安全渲染逻辑。

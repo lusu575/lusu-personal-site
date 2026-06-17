@@ -4560,6 +4560,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-18-game-cover-decoding',
+        '2026-06-18-game-cover-decoding',
+        'site-updates',
+        '["网站更新","性能","游戏区","移动端"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T17:38:00.000Z',
+        '2026-06-17T17:38:00.000Z',
+        '2026-06-17T17:38:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -5021,6 +5048,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# 雑談メニューの多言語同期\n\n今回の更新では、雑談欄上部の Notepad 風メニューに残っていた固定言語を修正し、雑談ウィンドウのほかの文言と同じようにサイト言語へ合わせました。\n\n## 更新内容\n\n- 中文表示では `文件  编辑  查看  帮助` を表示します。\n- English 表示では `File  Edit  View  Help` を維持します。\n- 日本語表示では `ファイル  編集  表示  ヘルプ` を表示します。\n- 公開側の静的メニュー文言と更新記録だけを調整し、雑談カードの DOM / `textContent` 安全描画経路は変更していません。"
       }
     }, "2026-06-17T17:33:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-game-cover-decoding", {
+      zh: {
+        title: "游戏封面异步解码",
+        summary: "游戏区封面图在懒加载基础上补充异步解码。",
+        content_markdown: "# 游戏封面异步解码\n\n本次更新继续补齐公开主站的轻量性能细节，让游戏区封面图在懒加载之外也使用异步解码。\n\n## 更新内容\n\n- 游戏区动态渲染的 `game-cover` 图片补充 `decoding=\"async\"`。\n- 保留已有 `loading=\"lazy\"`，减少打开游戏列表时的图片加载和解码压力。\n- 游戏目录、云存档、入口链接和游戏运行逻辑保持不变。\n- 只调整公开主站游戏列表图片属性和更新记录，不触碰后台目录或管理接口。"
+      },
+      en: {
+        title: "Async Game Cover Decoding",
+        summary: "Game cover images now add async decoding on top of lazy loading.",
+        content_markdown: "# Async Game Cover Decoding\n\nThis update continues the public site's lightweight performance polish by adding async decoding to game cover images.\n\n## Changes\n\n- Dynamically rendered `game-cover` images now include `decoding=\"async\"`.\n- Existing `loading=\"lazy\"` behavior stays in place, reducing image load and decode pressure when the games list opens.\n- Game catalog data, cloud saves, entry links, and game runtime behavior are unchanged.\n- Only public site game-list image attributes and update records changed; admin folders and admin APIs were not touched."
+      },
+      ja: {
+        title: "ゲームカバーの非同期デコード",
+        summary: "ゲーム欄のカバー画像に、遅延読み込みに加えて非同期デコードを追加しました。",
+        content_markdown: "# ゲームカバーの非同期デコード\n\n今回の更新では、公開サイトの軽量な性能調整として、ゲーム欄のカバー画像に非同期デコードを追加しました。\n\n## 更新内容\n\n- 動的に描画される `game-cover` 画像に `decoding=\"async\"` を追加しました。\n- 既存の `loading=\"lazy\"` は維持し、ゲーム一覧を開くときの画像読み込みとデコード負荷を抑えます。\n- ゲームカタログ、クラウドセーブ、入口リンク、ゲーム実行ロジックは変更していません。\n- 公開側のゲーム一覧画像属性と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。"
+      }
+    }, "2026-06-17T17:38:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')
