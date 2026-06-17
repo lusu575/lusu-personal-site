@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 管理后台来源 IP 头规范化：
+  - 访问统计和聊天室记录请求来源时会清理 `CF-Connecting-IP` 与 `x-forwarded-for` 首段空白值，减少同一来源因请求头空格被拆分为不同哈希或掩码的情况。
+  - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。
+
 - 管理后台 Bilibili 页码解析修复：
   - 后台视频链接解析遇到异常 Bilibili `p` / `page` 页码时回落为第 1 页，并将有效页码限制在 1-99，避免播放器地址出现 `page=NaN`。
   - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。

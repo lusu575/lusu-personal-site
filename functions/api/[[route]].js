@@ -4909,9 +4909,13 @@ async function requestIpInfo(request, env, purpose = "analytics") {
 }
 
 function requestIp(request) {
-  return request.headers.get("CF-Connecting-IP")
-    || request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+  return cleanRequestIp(request.headers.get("CF-Connecting-IP"))
+    || cleanRequestIp(request.headers.get("x-forwarded-for")?.split(",")[0])
     || "unknown";
+}
+
+function cleanRequestIp(value) {
+  return String(value || "").trim();
 }
 
 function maskIp(ip) {

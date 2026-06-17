@@ -72,6 +72,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "来源 IP 头规范化",
+    body: "访问统计和聊天室记录请求来源时会先清理 IP 请求头空白值，减少同一来源被不同哈希或掩码拆分的情况。"
+  },
+  {
+    date: "2026-06-18",
     title: "Bilibili 页码解析修复",
     body: "后台视频链接解析会把异常 Bilibili p/page 页码回落为第 1 页，避免播放器地址出现 NaN 页码。"
   },

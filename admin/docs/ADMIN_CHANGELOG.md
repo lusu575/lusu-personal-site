@@ -4,6 +4,11 @@
 
 ## 2026-06-18
 
+- 来源 IP 头规范化：
+  - 访问统计和聊天室记录请求来源时，`requestIp()` 会先清理 `CF-Connecting-IP` 与 `x-forwarded-for` 首段的首尾空白。
+  - 空白来源会回落为 `unknown`，完整 IP 仍只用于计算哈希和掩码前缀，不返回给前台或后台页面。
+  - 后台页面内 `adminUpdates` 和后台 JS query 已同步更新。
+
 - Bilibili 页码解析修复：
   - 后台视频链接解析新增 Bilibili `p` / `page` 页码规范化，非数字页码会回落为第 1 页。
   - 有效页码会取整并限制在 1-99，避免规范化播放器地址出现 `page=NaN` 或异常页码。
