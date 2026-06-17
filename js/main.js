@@ -438,6 +438,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "🔗",
+      date: "2026.06.18",
+      title: { zh: "游戏链接白名单", en: "Game Link Allowlist", ja: "ゲームリンク許可リスト" },
+      desc: {
+        zh: "游戏列表入口和封面路径补充白名单校验，避免不可信 URL 进入页面",
+        en: "Game entry links and cover paths now use allowlist checks before rendering",
+        ja: "ゲーム入口リンクとカバー画像パスに許可リスト確認を追加しました"
+      }
+    },
+    {
       icon: "🎮",
       date: "2026.06.18",
       title: { zh: "游戏列表安全渲染", en: "Game List Safe DOM", ja: "ゲーム一覧の安全な DOM 描画" },
@@ -1270,21 +1280,51 @@ function sitePath(path) {
   return `/${value.replace(/^\.?\//, "")}`;
 }
 
+function safeHttpUrl(value) {
+  try {
+    const url = new URL(String(value || "").trim());
+    return ["http:", "https:"].includes(url.protocol) ? url.href : "";
+  } catch (error) {
+    return "";
+  }
+}
+
 function contentTitle(value) {
   return `${localText(value)}${t("placeholderMark")}`;
 }
 
+function safeGameCoverSrc(value) {
+  const fallback = "/assets/images/icon-games.png";
+  const path = String(value || "").trim().replace(/^(\.\.\/)+/, "");
+  if (/^assets\/images\/[a-z0-9._/-]+\.(png|jpe?g|webp|gif)(\?[a-z0-9=&._-]+)?$/i.test(path)) {
+    return sitePath(path);
+  }
+  return fallback;
+}
+
+function safeGameEntry(value) {
+  const entry = String(value || "").trim().replace(/^\/+/, "");
+  return /^[a-z0-9][a-z0-9-]*\/?$/i.test(entry) ? entry.replace(/\/?$/, "/") : "";
+}
+
 function buildGameUrl(item) {
   if (item.playUrl) {
-    return sitePath(item.playUrl);
+    const value = String(item.playUrl).trim();
+    const external = safeHttpUrl(value);
+    if (external) {
+      return external;
+    }
+    const localPath = value.replace(/^\.?\//, "");
+    return /^[a-z0-9._/-]+$/i.test(localPath) ? sitePath(localPath) : "";
   }
   if (item.externalUrl) {
-    return item.externalUrl;
+    return safeHttpUrl(item.externalUrl);
   }
   if (item.repo && !item.entry) {
-    return item.repo;
+    return safeHttpUrl(item.repo);
   }
-  return `/games/${item.entry}?lang=${encodeURIComponent(currentLang)}`;
+  const entry = safeGameEntry(item.entry);
+  return entry ? `/games/${entry}?lang=${encodeURIComponent(currentLang)}` : "";
 }
 
 function languageSupportTagElements(item) {
@@ -1306,8 +1346,8 @@ function languageSupportTagElements(item) {
   });
 }
 
-function isExternalGameLink(item) {
-  return Boolean(item.external || item.playUrl || item.externalUrl || (!item.entry && item.repo));
+function isExternalGameUrl(url) {
+  return /^https?:\/\//i.test(url);
 }
 
 function setLanguage(lang, options = {}) {
@@ -2384,7 +2424,7 @@ function gameCardElement(item) {
   const titleText = localText(item.titles || item.titleZh);
   const cover = document.createElement("img");
   cover.className = "game-cover";
-  cover.src = sitePath(String(item.cover || "assets/images/icon-games.png").replace("../", ""));
+  cover.src = safeGameCoverSrc(item.cover || "assets/images/icon-games.png");
   cover.alt = titleText;
   cover.loading = "lazy";
   cover.decoding = "async";
@@ -2409,10 +2449,17 @@ function gameCardElement(item) {
   }
   main.append(title, summary, meta);
 
-  const action = document.createElement("a");
+  const actionUrl = buildGameUrl(item);
+  const action = actionUrl ? document.createElement("a") : document.createElement("button");
   action.className = "card-action";
-  action.href = buildGameUrl(item);
-  if (isExternalGameLink(item)) {
+  if (actionUrl) {
+    action.href = actionUrl;
+  } else {
+    action.type = "button";
+    action.disabled = true;
+    action.setAttribute("aria-disabled", "true");
+  }
+  if (isExternalGameUrl(actionUrl)) {
     action.target = "_blank";
     action.rel = "noreferrer";
   }

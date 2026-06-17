@@ -4938,6 +4938,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-18-game-url-allowlist',
+        '2026-06-18-game-url-allowlist',
+        'site-updates',
+        '["网站更新","游戏区","链接","安全"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T19:35:00.000Z',
+        '2026-06-17T19:35:00.000Z',
+        '2026-06-17T19:35:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -5637,6 +5664,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# ゲーム一覧の安全な DOM 描画\n\n今回の更新では、公開ゲーム欄をさらに引き締め、ゲーム一覧カードを文字列テンプレートから DOM / `textContent` 構築へ変更しました。\n\n## 更新内容\n\n- ゲームタイトル、概要、言語対応タグ、ライセンスタグ、読み込み/失敗表示を DOM ノードとテキストノードで出力します。\n- ゲームカバーの遅延読み込みと非同期デコード、入口リンク、外部リンクの開き方は変えていません。\n- ゲーム入口ページ、iframe、クラウド保存同期、インポート/エクスポート、ゲームカタログは変更していません。\n- 公開ゲーム一覧と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。"
       }
     }, "2026-06-17T19:20:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-game-url-allowlist", {
+      zh: {
+        title: "游戏链接白名单",
+        summary: "游戏列表入口和封面路径补充白名单校验。",
+        content_markdown: "# 游戏链接白名单\n\n本次更新继续收紧公开主站游戏区，让游戏列表的入口链接和封面路径在渲染前经过白名单校验。\n\n## 更新内容\n\n- 本地游戏入口只接受 `games/catalog.json` 中的安全目录名，继续生成 `/games/<entry>?lang=...` 链接。\n- 外部游戏链接和仓库链接只接受 `http(s)`，无效 URL 不会输出到页面。\n- 游戏封面只接受 `assets/images/` 下的常见图片路径，无效封面会回退到游戏图标。\n- 5 个现有游戏入口、iframe、云存档同步和导入导出逻辑保持不变。"
+      },
+      en: {
+        title: "Game Link Allowlist",
+        summary: "Game entry links and cover paths now use allowlist checks.",
+        content_markdown: "# Game Link Allowlist\n\nThis update keeps tightening the public Games area by validating game entry links and cover paths before rendering them.\n\n## Changes\n\n- Local game entries only accept safe directory names from `games/catalog.json` and still produce `/games/<entry>?lang=...` links.\n- External game links and repository links only accept `http(s)`, so invalid URLs are not written into the page.\n- Game covers only accept common image paths under `assets/images/`; invalid covers fall back to the games icon.\n- The five existing game entries, iframes, cloud-save sync, and import/export behavior are unchanged."
+      },
+      ja: {
+        title: "ゲームリンク許可リスト",
+        summary: "ゲーム入口リンクとカバー画像パスに許可リスト確認を追加しました。",
+        content_markdown: "# ゲームリンク許可リスト\n\n今回の更新では、公開ゲーム欄をさらに引き締め、ゲーム入口リンクとカバー画像パスを描画前に許可リストで確認します。\n\n## 更新内容\n\n- ローカルゲーム入口は `games/catalog.json` の安全なディレクトリ名だけを受け付け、引き続き `/games/<entry>?lang=...` リンクを生成します。\n- 外部ゲームリンクとリポジトリリンクは `http(s)` のみ受け付け、無効な URL はページに出力しません。\n- ゲームカバーは `assets/images/` 配下の一般的な画像パスのみ受け付け、無効な場合はゲームアイコンへ戻します。\n- 既存 5 件のゲーム入口、iframe、クラウド保存同期、インポート/エクスポート動作は変更していません。"
+      }
+    }, "2026-06-17T19:35:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')

@@ -2376,6 +2376,32 @@ on conflict(article_id) do update set
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
 
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-game-url-allowlist',
+  '2026-06-18-game-url-allowlist',
+  'site-updates',
+  '["网站更新","游戏区","链接","安全"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T19:35:00.000Z',
+  '2026-06-17T19:35:00.000Z',
+  '2026-06-17T19:35:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
@@ -2409,6 +2435,45 @@ This update keeps tightening the public Knowledge area by changing category filt
 - `data-filter`、`data-filter-type`、active 状態、クリック絞り込み動作は変えていません。
 - 前回の記事カード DOM 描画と合わせて、知識庫リストとフィルター操作は記事/カテゴリ文字列の組み立て出力に依存しなくなりました。
 - 公開知識庫フィルターと更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T18:55:00.000Z', '2026-06-17T18:55:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-game-url-allowlist-zh', 'seed-update-2026-06-18-game-url-allowlist', 'zh', '游戏链接白名单', '游戏列表入口和封面路径补充白名单校验。', '# 游戏链接白名单
+
+本次更新继续收紧公开主站游戏区，让游戏列表的入口链接和封面路径在渲染前经过白名单校验。
+
+## 更新内容
+
+- 本地游戏入口只接受 `games/catalog.json` 中的安全目录名，继续生成 `/games/<entry>?lang=...` 链接。
+- 外部游戏链接和仓库链接只接受 `http(s)`，无效 URL 不会输出到页面。
+- 游戏封面只接受 `assets/images/` 下的常见图片路径，无效封面会回退到游戏图标。
+- 5 个现有游戏入口、iframe、云存档同步和导入导出逻辑保持不变。', '2026-06-17T19:35:00.000Z', '2026-06-17T19:35:00.000Z'),
+  ('seed-update-2026-06-18-game-url-allowlist-en', 'seed-update-2026-06-18-game-url-allowlist', 'en', 'Game Link Allowlist', 'Game entry links and cover paths now use allowlist checks.', '# Game Link Allowlist
+
+This update keeps tightening the public Games area by validating game entry links and cover paths before rendering them.
+
+## Changes
+
+- Local game entries only accept safe directory names from `games/catalog.json` and still produce `/games/<entry>?lang=...` links.
+- External game links and repository links only accept `http(s)`, so invalid URLs are not written into the page.
+- Game covers only accept common image paths under `assets/images/`; invalid covers fall back to the games icon.
+- The five existing game entries, iframes, cloud-save sync, and import/export behavior are unchanged.', '2026-06-17T19:35:00.000Z', '2026-06-17T19:35:00.000Z'),
+  ('seed-update-2026-06-18-game-url-allowlist-ja', 'seed-update-2026-06-18-game-url-allowlist', 'ja', 'ゲームリンク許可リスト', 'ゲーム入口リンクとカバー画像パスに許可リスト確認を追加しました。', '# ゲームリンク許可リスト
+
+今回の更新では、公開ゲーム欄をさらに引き締め、ゲーム入口リンクとカバー画像パスを描画前に許可リストで確認します。
+
+## 更新内容
+
+- ローカルゲーム入口は `games/catalog.json` の安全なディレクトリ名だけを受け付け、引き続き `/games/<entry>?lang=...` リンクを生成します。
+- 外部ゲームリンクとリポジトリリンクは `http(s)` のみ受け付け、無効な URL はページに出力しません。
+- ゲームカバーは `assets/images/` 配下の一般的な画像パスのみ受け付け、無効な場合はゲームアイコンへ戻します。
+- 既存 5 件のゲーム入口、iframe、クラウド保存同期、インポート/エクスポート動作は変更していません。', '2026-06-17T19:35:00.000Z', '2026-06-17T19:35:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,
