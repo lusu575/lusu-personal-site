@@ -7,6 +7,7 @@ const state = {
   articleLang: "zh",
   articleSaving: false,
   articleSavingMode: "",
+  articleDeleting: false,
   videos: [],
   selectedVideoId: "",
   videoCategories: [],
@@ -63,6 +64,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-06-18",
+    title: "文章删除防重复操作优化",
+    body: "知识库文章删除请求进行中会临时禁用保存、发布和删除按钮，并显示删除中，避免慢网络下重复删除同一篇文章。"
+  },
   {
     date: "2026-06-18",
     title: "视频分类保存删除防重复操作优化",
@@ -930,35 +936,54 @@ function syncArticleSaveButtons() {
   const saveButton = $("#save-article");
   const publishButton = $("#publish-article");
   const deleteButton = $("#delete-article");
+  const busy = state.articleSaving || state.articleDeleting;
   if (saveButton) {
     const savingDraft = state.articleSaving && state.articleSavingMode !== "publish";
-    saveButton.disabled = state.articleSaving;
+    saveButton.disabled = busy;
     saveButton.textContent = savingDraft ? "保存中..." : "保存";
     saveButton.setAttribute("aria-busy", savingDraft ? "true" : "false");
-    saveButton.title = state.articleSaving ? "正在保存文章" : "保存当前文章";
+    saveButton.title = state.articleDeleting
+      ? "正在删除文章"
+      : (state.articleSaving ? "正在保存文章" : "保存当前文章");
   }
   if (publishButton) {
     const publishing = state.articleSaving && state.articleSavingMode === "publish";
-    publishButton.disabled = state.articleSaving;
+    publishButton.disabled = busy;
     publishButton.textContent = publishing ? "发布中..." : "保存并发布";
     publishButton.setAttribute("aria-busy", publishing ? "true" : "false");
-    publishButton.title = state.articleSaving ? "正在保存文章" : "保存并发布当前文章";
+    publishButton.title = state.articleDeleting
+      ? "正在删除文章"
+      : (state.articleSaving ? "正在保存文章" : "保存并发布当前文章");
   }
   if (deleteButton) {
-    deleteButton.disabled = state.articleSaving || !state.selectedArticleId;
-    deleteButton.title = state.articleSaving
-      ? "正在保存文章"
+    deleteButton.disabled = busy || !state.selectedArticleId;
+    deleteButton.textContent = state.articleDeleting ? "删除中..." : "删除";
+    deleteButton.setAttribute("aria-busy", state.articleDeleting ? "true" : "false");
+    deleteButton.title = busy
+      ? (state.articleDeleting ? "正在删除文章" : "正在保存文章")
       : (state.selectedArticleId ? "删除当前文章" : "请先选择已保存文章");
   }
 }
 
 async function deleteArticle() {
-  if (!state.selectedArticleId || !window.confirm("确定删除这篇文章？")) {
+  if (state.articleSaving || state.articleDeleting || !state.selectedArticleId || !window.confirm("确定删除这篇文章？")) {
     return;
   }
-  await api(`/api/admin/articles/${encodeURIComponent(state.selectedArticleId)}`, { method: "DELETE" });
-  resetArticleForm();
-  await loadArticles();
+  state.articleDeleting = true;
+  syncArticleSaveButtons();
+  const status = $("#article-status");
+  try {
+    status.textContent = "正在删除...";
+    await api(`/api/admin/articles/${encodeURIComponent(state.selectedArticleId)}`, { method: "DELETE" });
+    resetArticleForm();
+    await loadArticles();
+    status.textContent = "已删除。";
+  } catch (error) {
+    status.textContent = error.message;
+  } finally {
+    state.articleDeleting = false;
+    syncArticleSaveButtons();
+  }
 }
 
 function videoStatusLabel(status) {
