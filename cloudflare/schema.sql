@@ -958,6 +958,32 @@ on conflict(article_id) do update set
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
 
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-notepad-menu-locale',
+  '2026-06-18-notepad-menu-locale',
+  'site-updates',
+  '["网站更新","多语言","杂谈区","修复记录"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T17:33:00.000Z',
+  '2026-06-17T17:33:00.000Z',
+  '2026-06-17T17:33:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
@@ -2984,7 +3010,37 @@ This update continues the public site''s trilingual polish by moving static acco
 - ログイン、登録、メール、パスワード、クラウドセーブ説明、ログアウト、ローカル状態メッセージを中文 / English / 日本語で用意しました。
 - 言語を切り替えたときにアカウントウィジェットを再描画し、ポップオーバーに前の言語の固定文言が残らないようにしました。
 - メールアドレス、バックエンドのエラーメッセージ、動的通知は引き続き `escapeHtml` を通し、外部テキストを HTML として実行しません。
-- 公開側のアカウント表示と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T17:28:00.000Z', '2026-06-17T17:28:00.000Z')
+- 公開側のアカウント表示と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T17:28:00.000Z', '2026-06-17T17:28:00.000Z'),
+  ('seed-update-2026-06-18-notepad-menu-locale-zh', 'seed-update-2026-06-18-notepad-menu-locale', 'zh', '杂谈菜单三语同步', '杂谈区 Notepad 风格菜单现在会跟随当前语言显示。', '# 杂谈菜单三语同步
+
+本次更新修正杂谈区顶部 Notepad 风格菜单的静态语言，让它和杂谈区标题、卡片按钮一起跟随站点语言切换。
+
+## 更新内容
+
+- 中文界面显示 `文件  编辑  查看  帮助`。
+- English 界面继续显示 `File  Edit  View  Help`。
+- 日本語界面显示 `ファイル  編集  表示  ヘルプ`。
+- 只调整公开主站静态菜单文案和更新记录，不改杂谈卡片 DOM / `textContent` 安全渲染逻辑。', '2026-06-17T17:33:00.000Z', '2026-06-17T17:33:00.000Z'),
+  ('seed-update-2026-06-18-notepad-menu-locale-en', 'seed-update-2026-06-18-notepad-menu-locale', 'en', 'Talk Menu Localization', 'The Talk area Notepad-style menu now follows the active site language.', '# Talk Menu Localization
+
+This update fixes the static language on the Talk area''s Notepad-style menu so it follows the site language with the rest of the Talk window.
+
+## Changes
+
+- Chinese shows `文件  编辑  查看  帮助`.
+- English keeps `File  Edit  View  Help`.
+- Japanese shows `ファイル  編集  表示  ヘルプ`.
+- Only public site static menu copy and update records changed; the Talk card DOM / `textContent` safe rendering path was not changed.', '2026-06-17T17:33:00.000Z', '2026-06-17T17:33:00.000Z'),
+  ('seed-update-2026-06-18-notepad-menu-locale-ja', 'seed-update-2026-06-18-notepad-menu-locale', 'ja', '雑談メニューの多言語同期', '雑談欄の Notepad 風メニューが現在のサイト言語に合わせて表示されます。', '# 雑談メニューの多言語同期
+
+今回の更新では、雑談欄上部の Notepad 風メニューに残っていた固定言語を修正し、雑談ウィンドウのほかの文言と同じようにサイト言語へ合わせました。
+
+## 更新内容
+
+- 中文表示では `文件  编辑  查看  帮助` を表示します。
+- English 表示では `File  Edit  View  Help` を維持します。
+- 日本語表示では `ファイル  編集  表示  ヘルプ` を表示します。
+- 公開側の静的メニュー文言と更新記録だけを調整し、雑談カードの DOM / `textContent` 安全描画経路は変更していません。', '2026-06-17T17:33:00.000Z', '2026-06-17T17:33:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,

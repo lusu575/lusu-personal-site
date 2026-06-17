@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 杂谈菜单三语同步：
+  - 杂谈区顶部 Notepad 风格菜单从固定英文 `File Edit View Help` 改为跟随中文 / English / 日本語 显示。
+  - 只调整公开主站静态菜单文案和更新记录，不改杂谈卡片 DOM / `textContent` 安全渲染逻辑。
+  - 更新 `index.html` 的 JS query 为 `20260618-notepad-menu-locale`，并新增同名三语 `site-updates` 更新文章，同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新。
 - 账号弹窗三语同步：
   - 顶部账号/云存档弹窗的登录、注册、邮箱、密码、云存档说明、退出账号和本地状态提示改为跟随当前语言显示。
   - 语言切换时会重新渲染账号控件；账号邮箱、错误信息和动态提示继续通过 `escapeHtml` 输出，避免把外部文本当作 HTML 执行。

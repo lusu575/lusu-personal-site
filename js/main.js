@@ -26,6 +26,7 @@ const translations = {
     resourcesTitle: "资源区",
     gamesTitle: "游戏区",
     blogTitle: "杂谈区",
+    notepadMenu: "文件  编辑  查看  帮助",
     chatroomTitle: "匿名聊天室",
     aboutTitle: "关于我",
     toolbarBack: "返回桌面",
@@ -156,6 +157,7 @@ const translations = {
     resourcesTitle: "Resources",
     gamesTitle: "Games",
     blogTitle: "Talk",
+    notepadMenu: "File  Edit  View  Help",
     chatroomTitle: "Chat Room",
     aboutTitle: "About",
     toolbarBack: "Back to Desktop",
@@ -286,6 +288,7 @@ const translations = {
     resourcesTitle: "リソース",
     gamesTitle: "ゲーム",
     blogTitle: "雑談",
+    notepadMenu: "ファイル  編集  表示  ヘルプ",
     chatroomTitle: "匿名チャット",
     aboutTitle: "プロフィール",
     toolbarBack: "デスクトップへ戻る",
@@ -428,6 +431,16 @@ const labels = {
 
 const content = {
   updates: [
+    {
+      icon: "📝",
+      date: "2026.06.18",
+      title: { zh: "杂谈菜单三语同步", en: "Talk Menu Localization", ja: "雑談メニューの多言語同期" },
+      desc: {
+        zh: "杂谈区 Notepad 风格菜单从固定英文改为跟随中文、English、日本語 切换",
+        en: "The Talk area Notepad-style menu now follows the Chinese, English, and Japanese language switch",
+        ja: "雑談欄の Notepad 風メニューが中文、English、日本語 の切り替えに合わせて表示されます"
+      }
+    },
     {
       icon: "☁️",
       date: "2026.06.18",

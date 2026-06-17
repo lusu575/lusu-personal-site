@@ -4533,6 +4533,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-18-notepad-menu-locale',
+        '2026-06-18-notepad-menu-locale',
+        'site-updates',
+        '["网站更新","多语言","杂谈区","修复记录"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T17:33:00.000Z',
+        '2026-06-17T17:33:00.000Z',
+        '2026-06-17T17:33:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -4977,6 +5004,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# アカウント表示の多言語同期\n\n今回の更新では、公開サイトの三言語体験を整えるため、上部のアカウント / クラウドセーブ表示の固定文言を現在の言語に接続しました。\n\n## 更新内容\n\n- ログイン、登録、メール、パスワード、クラウドセーブ説明、ログアウト、ローカル状態メッセージを中文 / English / 日本語で用意しました。\n- 言語を切り替えたときにアカウントウィジェットを再描画し、ポップオーバーに前の言語の固定文言が残らないようにしました。\n- メールアドレス、バックエンドのエラーメッセージ、動的通知は引き続き `escapeHtml` を通し、外部テキストを HTML として実行しません。\n- 公開側のアカウント表示と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。"
       }
     }, "2026-06-17T17:28:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-notepad-menu-locale", {
+      zh: {
+        title: "杂谈菜单三语同步",
+        summary: "杂谈区 Notepad 风格菜单现在会跟随当前语言显示。",
+        content_markdown: "# 杂谈菜单三语同步\n\n本次更新修正杂谈区顶部 Notepad 风格菜单的静态语言，让它和杂谈区标题、卡片按钮一起跟随站点语言切换。\n\n## 更新内容\n\n- 中文界面显示 `文件  编辑  查看  帮助`。\n- English 界面继续显示 `File  Edit  View  Help`。\n- 日本語界面显示 `ファイル  編集  表示  ヘルプ`。\n- 只调整公开主站静态菜单文案和更新记录，不改杂谈卡片 DOM / `textContent` 安全渲染逻辑。"
+      },
+      en: {
+        title: "Talk Menu Localization",
+        summary: "The Talk area Notepad-style menu now follows the active site language.",
+        content_markdown: "# Talk Menu Localization\n\nThis update fixes the static language on the Talk area's Notepad-style menu so it follows the site language with the rest of the Talk window.\n\n## Changes\n\n- Chinese shows `文件  编辑  查看  帮助`.\n- English keeps `File  Edit  View  Help`.\n- Japanese shows `ファイル  編集  表示  ヘルプ`.\n- Only public site static menu copy and update records changed; the Talk card DOM / `textContent` safe rendering path was not changed."
+      },
+      ja: {
+        title: "雑談メニューの多言語同期",
+        summary: "雑談欄の Notepad 風メニューが現在のサイト言語に合わせて表示されます。",
+        content_markdown: "# 雑談メニューの多言語同期\n\n今回の更新では、雑談欄上部の Notepad 風メニューに残っていた固定言語を修正し、雑談ウィンドウのほかの文言と同じようにサイト言語へ合わせました。\n\n## 更新内容\n\n- 中文表示では `文件  编辑  查看  帮助` を表示します。\n- English 表示では `File  Edit  View  Help` を維持します。\n- 日本語表示では `ファイル  編集  表示  ヘルプ` を表示します。\n- 公開側の静的メニュー文言と更新記録だけを調整し、雑談カードの DOM / `textContent` 安全描画経路は変更していません。"
+      }
+    }, "2026-06-17T17:33:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')
