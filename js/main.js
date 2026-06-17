@@ -50,6 +50,7 @@ const translations = {
     articleCopyDone: "链接已复制。",
     articleCopyFailed: "复制失败，请手动复制地址栏链接。",
     articleReadProgress: "阅读进度",
+    articleTocTitle: "文章目录",
     articlePublished: "发布时间",
     articleCategory: "分类",
     articleFallback: "当前语言版本缺失，已显示备用语言版本。",
@@ -186,6 +187,7 @@ const translations = {
     articleCopyDone: "Link copied.",
     articleCopyFailed: "Copy failed. Please copy the address bar link manually.",
     articleReadProgress: "Reading progress",
+    articleTocTitle: "Contents",
     articlePublished: "Published",
     articleCategory: "Category",
     articleFallback: "This language is missing, so a fallback language is shown.",
@@ -322,6 +324,7 @@ const translations = {
     articleCopyDone: "リンクをコピーしました。",
     articleCopyFailed: "コピーできません。アドレスバーのリンクを手動でコピーしてください。",
     articleReadProgress: "読書進捗",
+    articleTocTitle: "目次",
     articlePublished: "公開日",
     articleCategory: "分類",
     articleFallback: "この言語版がないため、別の言語版を表示しています。",
@@ -446,6 +449,16 @@ const labels = {
 
 const content = {
   updates: [
+    {
+      icon: "🧭",
+      date: "2026.06.18",
+      title: { zh: "文章目录导航", en: "Article Contents Navigation", ja: "記事目次ナビ" },
+      desc: {
+        zh: "知识库文章详情会按正文标题生成三语目录，长文可以快速跳到对应段落",
+        en: "Knowledge article details now build a trilingual contents strip from body headings for quicker jumps",
+        ja: "知識庫の記事詳細で本文見出しから三言語の目次を作り、長文の移動を速くしました"
+      }
+    },
     {
       icon: "📊",
       date: "2026.06.18",
@@ -1930,6 +1943,7 @@ async function loadArticleDetail(slug) {
   meta.replaceChildren();
   body.replaceChildren();
   resetArticleReadProgress();
+  resetArticleToc();
 
   try {
     const payload = await articleApi(`/api/articles/${encodeURIComponent(slug)}?lang=${encodeURIComponent(currentLang)}`);
@@ -1958,6 +1972,7 @@ function renderArticleDetail(article) {
 
   clearArticleCopyStatus();
   resetArticleReadProgress();
+  resetArticleToc();
   title.textContent = article.title || "";
   summary.textContent = article.summary || "";
   meta.replaceChildren();
@@ -1973,6 +1988,62 @@ function renderArticleDetail(article) {
     meta.appendChild(item);
   });
   renderMarkdownSafe(body, stripRepeatedArticleHeading(article.content_markdown || "", article.title || ""));
+  renderArticleToc();
+  scheduleArticleReadProgressUpdate();
+}
+
+function resetArticleToc() {
+  const toc = document.getElementById("article-detail-toc");
+  const list = document.getElementById("article-detail-toc-list");
+  if (list) {
+    list.replaceChildren();
+  }
+  if (toc) {
+    toc.hidden = true;
+  }
+}
+
+function articleHeadingId(index) {
+  return `article-heading-${index + 1}`;
+}
+
+function renderArticleToc() {
+  const toc = document.getElementById("article-detail-toc");
+  const list = document.getElementById("article-detail-toc-list");
+  const body = document.getElementById("article-detail-body");
+  if (!toc || !list || !body) {
+    return;
+  }
+  const headings = [...body.querySelectorAll("h2, h3")]
+    .map((heading, index) => ({ heading, index, text: heading.textContent.trim() }))
+    .filter((item) => item.text);
+  if (headings.length < 2) {
+    resetArticleToc();
+    return;
+  }
+  const buttons = headings.map(({ heading, index, text }) => {
+    const id = articleHeadingId(index);
+    heading.id = id;
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `article-toc-link level-${heading.tagName === "H3" ? "3" : "2"}`;
+    button.dataset.articleHeadingTarget = id;
+    button.textContent = text;
+    return button;
+  });
+  list.replaceChildren(...buttons);
+  toc.hidden = false;
+}
+
+function scrollToArticleHeading(targetId) {
+  if (!/^article-heading-\d+$/.test(targetId || "")) {
+    return;
+  }
+  const heading = document.getElementById(targetId);
+  if (!heading) {
+    return;
+  }
+  heading.scrollIntoView({ block: "start", behavior: "smooth" });
   scheduleArticleReadProgressUpdate();
 }
 
@@ -2095,6 +2166,7 @@ function showArticleList() {
   articleState.currentArticle = null;
   articleState.detailLoadingKey = "";
   resetArticleReadProgress();
+  resetArticleToc();
   navigate("knowledge");
   renderKnowledge();
 }
@@ -3671,6 +3743,12 @@ document.addEventListener("click", (event) => {
   if (filterButton) {
     activeFilters[filterButton.dataset.filterType] = filterButton.dataset.filter;
     renderAll();
+    return;
+  }
+
+  const articleHeadingButton = event.target.closest("[data-article-heading-target]");
+  if (articleHeadingButton) {
+    scrollToArticleHeading(articleHeadingButton.dataset.articleHeadingTarget);
     return;
   }
 

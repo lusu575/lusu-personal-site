@@ -701,6 +701,32 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-06-18-article-toc',
+  '2026-06-18-article-toc',
+  'site-updates',
+  '["网站更新","知识库","目录","阅读"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T23:05:00.000Z',
+  '2026-06-17T23:05:00.000Z',
+  '2026-06-17T23:05:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-06-18-article-progress',
   '2026-06-18-article-progress',
   'site-updates',
@@ -2899,6 +2925,36 @@ on conflict(article_id, lang) do update set
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
+  ('seed-update-2026-06-18-article-toc-zh', 'seed-update-2026-06-18-article-toc', 'zh', '文章目录导航', '知识库文章详情会按正文标题生成目录，长文可以快速跳到对应段落。', '# 文章目录导航
+
+本次更新继续优化知识库长文阅读，在文章详情里新增由正文标题生成的目录导航。
+
+## 更新内容
+
+- 文章 Markdown 安全渲染完成后，会读取正文里的 `h2` / `h3` 标题生成目录按钮。
+- 目录按钮使用 DOM / `textContent` 创建，并只允许滚动到 `article-heading-N` 这种内部目标。
+- 少于两个标题的文章不会显示目录，避免短文多出无意义控件。
+- 阅读进度条、复制链接、语言切换和后台目录保持不变。', '2026-06-17T23:05:00.000Z', '2026-06-17T23:05:00.000Z'),
+  ('seed-update-2026-06-18-article-toc-en', 'seed-update-2026-06-18-article-toc', 'en', 'Article Contents Navigation', 'Knowledge article details now build a contents strip from body headings for quicker jumps.', '# Article Contents Navigation
+
+This update continues improving long-form Knowledge reading with a contents strip generated from article body headings.
+
+## Changes
+
+- After safe Markdown rendering finishes, `h2` / `h3` headings are read and turned into contents buttons.
+- Contents buttons are created through DOM / `textContent` and only scroll to internal `article-heading-N` targets.
+- Articles with fewer than two headings hide the contents strip, so short posts do not gain extra controls.
+- The reading progress bar, copy link, language switching, and admin folders are unchanged.', '2026-06-17T23:05:00.000Z', '2026-06-17T23:05:00.000Z'),
+  ('seed-update-2026-06-18-article-toc-ja', 'seed-update-2026-06-18-article-toc', 'ja', '記事目次ナビ', '知識庫の記事詳細で本文見出しから目次を作り、長文の移動を速くしました。', '# 記事目次ナビ
+
+今回の更新では、知識庫の長文を読みやすくするため、記事本文の見出しから作る目次ナビを追加しました。
+
+## 更新内容
+
+- 安全な Markdown 描画が終わったあと、本文内の `h2` / `h3` 見出しを読み取り、目次ボタンを生成します。
+- 目次ボタンは DOM / `textContent` で作り、`article-heading-N` 形式の内部目標だけへスクロールします。
+- 見出しが2つ未満の記事では目次を非表示にし、短い記事に余分な操作を増やしません。
+- 読書進捗バー、リンクコピー、言語切り替え、管理画面ディレクトリは変更していません。', '2026-06-17T23:05:00.000Z', '2026-06-17T23:05:00.000Z'),
   ('seed-update-2026-06-18-article-progress-zh', 'seed-update-2026-06-18-article-progress', 'zh', '文章阅读进度条', '知识库文章详情新增阅读进度条，长文滚动时可以看到当前位置。', '# 文章阅读进度条
 
 本次更新继续打磨知识库阅读体验，在文章详情窗口里加入一个轻量的阅读进度提示。

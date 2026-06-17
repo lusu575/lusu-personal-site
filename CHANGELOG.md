@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 文章目录导航：
+  - 知识库文章详情会在安全 Markdown 渲染后读取正文 `h2` / `h3`，生成三语“文章目录 / Contents / 目次”导航。
+  - 目录按钮通过 DOM / `textContent` 创建，只允许滚动到内部 `article-heading-N` 目标；少于两个标题的短文不显示目录。
+  - 更新 `index.html` 的 CSS / JS query 为 `20260618-article-toc`，并新增同名三语 `site-updates` 更新文章。
 - 文章阅读进度条：
   - 知识库文章详情头部下方新增三语“阅读进度”槽条和百分比，长文滚动时能看到当前位置。
   - 进度条通过 `transform: scaleX()` 更新，并同步 `progressbar` 的 `aria-valuenow`；正文仍走安全 Markdown DOM 渲染。

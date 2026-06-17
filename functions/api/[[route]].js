@@ -5187,6 +5187,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         article_id, slug, category, tags, cover_image, status, is_pinned,
         view_count, created_at, updated_at, published_at
       ) values (
+        'seed-update-2026-06-18-article-toc',
+        '2026-06-18-article-toc',
+        'site-updates',
+        '["网站更新","知识库","目录","阅读"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T23:05:00.000Z',
+        '2026-06-17T23:05:00.000Z',
+        '2026-06-17T23:05:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
         'seed-update-2026-06-18-article-progress',
         '2026-06-18-article-progress',
         'site-updates',
@@ -6219,6 +6246,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# 記事画像パスガード\n\n今回の更新では、公開知識庫の記事画像描画をさらに引き締め、Markdown 画像パスがプロジェクトの記事画像フォルダ内に留まるよう明確にしました。\n\n## 更新内容\n\n- Markdown 記事画像は引き続き `assets/images/articles/` 配下のプロジェクト資源だけを受け付けます。\n- `safeArticleImageSrc()` が `..` のパストラバーサル片を拒否し、画像パスが記事画像フォルダから外へ出ないようにしました。\n- 画像は今後も `document.createElement('img')`、安全な `src`、`alt`、`figcaption` で描画し、未処理 HTML は挿入しません。\n- 既存の AI Agent 長文画像、知識庫一覧、記事直リンク、管理画面ディレクトリは変更していません。"
       }
     }, "2026-06-17T20:20:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-article-toc", {
+      zh: {
+        title: "文章目录导航",
+        summary: "知识库文章详情会按正文标题生成目录，长文可以快速跳到对应段落。",
+        content_markdown: "# 文章目录导航\n\n本次更新继续优化知识库长文阅读，在文章详情里新增由正文标题生成的目录导航。\n\n## 更新内容\n\n- 文章 Markdown 安全渲染完成后，会读取正文里的 `h2` / `h3` 标题生成目录按钮。\n- 目录按钮使用 DOM / `textContent` 创建，并只允许滚动到 `article-heading-N` 这种内部目标。\n- 少于两个标题的文章不会显示目录，避免短文多出无意义控件。\n- 阅读进度条、复制链接、语言切换和后台目录保持不变。"
+      },
+      en: {
+        title: "Article Contents Navigation",
+        summary: "Knowledge article details now build a contents strip from body headings for quicker jumps.",
+        content_markdown: "# Article Contents Navigation\n\nThis update continues improving long-form Knowledge reading with a contents strip generated from article body headings.\n\n## Changes\n\n- After safe Markdown rendering finishes, `h2` / `h3` headings are read and turned into contents buttons.\n- Contents buttons are created through DOM / `textContent` and only scroll to internal `article-heading-N` targets.\n- Articles with fewer than two headings hide the contents strip, so short posts do not gain extra controls.\n- The reading progress bar, copy link, language switching, and admin folders are unchanged."
+      },
+      ja: {
+        title: "記事目次ナビ",
+        summary: "知識庫の記事詳細で本文見出しから目次を作り、長文の移動を速くしました。",
+        content_markdown: "# 記事目次ナビ\n\n今回の更新では、知識庫の長文を読みやすくするため、記事本文の見出しから作る目次ナビを追加しました。\n\n## 更新内容\n\n- 安全な Markdown 描画が終わったあと、本文内の `h2` / `h3` 見出しを読み取り、目次ボタンを生成します。\n- 目次ボタンは DOM / `textContent` で作り、`article-heading-N` 形式の内部目標だけへスクロールします。\n- 見出しが2つ未満の記事では目次を非表示にし、短い記事に余分な操作を増やしません。\n- 読書進捗バー、リンクコピー、言語切り替え、管理画面ディレクトリは変更していません。"
+      }
+    }, "2026-06-17T23:05:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-06-18-article-progress", {
       zh: {
         title: "文章阅读进度条",
