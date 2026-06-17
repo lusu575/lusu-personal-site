@@ -4479,6 +4479,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-18-aria-label-localization',
+        '2026-06-18-aria-label-localization',
+        'site-updates',
+        '["网站更新","多语言","修复记录","移动端"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T17:22:00.000Z',
+        '2026-06-17T17:22:00.000Z',
+        '2026-06-17T17:22:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -4889,6 +4916,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# チャット題名の多言語同期\n\n今回の更新では、公開チャットルームのウィンドウ題名に残っていた翻訳漏れを修正し、ほかのチャット文言と揃えました。\n\n## 更新内容\n\n- English 表示では、チャットルームのウィンドウ題名を中国語のままではなく `Chat Room` と表示します。\n- 日本語表示では、チャットルームのウィンドウ題名を中国語のままではなく `匿名チャット` と表示します。\n- チャットメッセージ、ニックネーム、ポーリング、送信処理は変更せず、公開テキストは引き続き安全な DOM / `textContent` 経路で描画します。\n- 公開側の翻訳と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。"
       }
     }, "2026-06-17T17:16:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-aria-label-localization", {
+      zh: {
+        title: "无障碍标签三语同步",
+        summary: "品牌、语言切换、桌面图标区和关闭按钮的 aria-label 会跟随当前语言更新。",
+        content_markdown: "# 无障碍标签三语同步\n\n本次更新把公开主站的无障碍标签也纳入语言切换，让键盘和读屏用户听到的控件名称更一致。\n\n## 更新内容\n\n- 新增 `data-i18n-aria-label` 与 `data-i18n-title` 同步逻辑，复用现有三语翻译表。\n- 品牌返回按钮、语言切换区域、桌面图标区域和各类关闭按钮补充当前语言的 `aria-label`。\n- 视频窗口最大化按钮继续使用已有 `videoFullscreen` / `videoRestore` 文案动态更新。\n- 只调整公开主站 HTML / JS 与更新记录，不触碰后台目录或管理接口。"
+      },
+      en: {
+        title: "Localized ARIA Labels",
+        summary: "Brand, language switcher, desktop icon group, and close-button aria labels now follow the active language.",
+        content_markdown: "# Localized ARIA Labels\n\nThis update brings public site accessibility labels into the language-switching path, so keyboard and screen-reader users get control names in the active language.\n\n## Changes\n\n- Added `data-i18n-aria-label` and `data-i18n-title` synchronization using the existing trilingual translation table.\n- The brand home button, language switcher, desktop icon group, and close buttons now receive active-language `aria-label` text.\n- The video window maximize button keeps using the existing dynamic `videoFullscreen` / `videoRestore` labels.\n- Only public site HTML / JS and update records changed; admin folders and admin APIs were not touched."
+      },
+      ja: {
+        title: "ARIAラベルの多言語同期",
+        summary: "ブランド、言語切り替え、デスクトップアイコン領域、閉じるボタンの aria-label が現在の言語に合わせて変わります。",
+        content_markdown: "# ARIAラベルの多言語同期\n\n今回の更新では、公開サイトのアクセシビリティラベルも言語切り替えの対象にし、キーボード操作や読み上げで聞こえる名前を現在の言語に揃えました。\n\n## 更新内容\n\n- 既存の三言語翻訳表を使う `data-i18n-aria-label` と `data-i18n-title` の同期処理を追加しました。\n- ブランドのホームボタン、言語切り替え、デスクトップアイコン領域、各種閉じるボタンに現在言語の `aria-label` を設定します。\n- 動画ウィンドウの最大化ボタンは、既存の `videoFullscreen` / `videoRestore` 文言による動的更新を維持します。\n- 公開側の HTML / JS と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。"
+      }
+    }, "2026-06-17T17:22:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')

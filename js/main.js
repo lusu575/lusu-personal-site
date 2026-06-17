@@ -69,6 +69,11 @@ const translations = {
     videoPlaceholder: "这里预留 Bilibili / YouTube 嵌入播放器。",
     startButton: "首页",
     lastUpdatedLabel: "最近更新日期",
+    brandHomeAria: "返回桌面",
+    languageSwitcherAria: "语言切换",
+    desktopIconsAria: "主要栏目",
+    closeWindowAria: "关闭窗口",
+    closeDialogAria: "关闭对话框",
     all: "全部",
     nicknameLabel: "昵称",
     nicknameValue: "鲁肃",
@@ -182,6 +187,11 @@ const translations = {
     videoPlaceholder: "Bilibili / YouTube embed player is reserved here.",
     startButton: "Home",
     lastUpdatedLabel: "Last updated",
+    brandHomeAria: "Back to desktop",
+    languageSwitcherAria: "Language switcher",
+    desktopIconsAria: "Main sections",
+    closeWindowAria: "Close window",
+    closeDialogAria: "Close dialog",
     all: "All",
     nicknameLabel: "Nickname",
     nicknameValue: "LuSu",
@@ -295,6 +305,11 @@ const translations = {
     videoPlaceholder: "Bilibili / YouTube の埋め込みプレイヤー用スペースです。",
     startButton: "ホーム",
     lastUpdatedLabel: "最終更新日",
+    brandHomeAria: "デスクトップへ戻る",
+    languageSwitcherAria: "言語切り替え",
+    desktopIconsAria: "主なセクション",
+    closeWindowAria: "ウィンドウを閉じる",
+    closeDialogAria: "ダイアログを閉じる",
     all: "すべて",
     nicknameLabel: "ニックネーム",
     nicknameValue: "魯粛",
@@ -377,6 +392,16 @@ const labels = {
 
 const content = {
   updates: [
+    {
+      icon: "♿",
+      date: "2026.06.18",
+      title: { zh: "无障碍标签三语同步", en: "Localized ARIA Labels", ja: "ARIAラベルの多言語同期" },
+      desc: {
+        zh: "品牌按钮、语言切换、桌面图标区和窗口关闭按钮的 aria-label 会跟随当前语言切换",
+        en: "Brand, language switcher, desktop icon group, and close-button aria labels now follow the active language",
+        ja: "ブランド、言語切り替え、デスクトップアイコン領域、閉じるボタンの aria-label が現在の言語に合わせて変わります"
+      }
+    },
     {
       icon: "💬",
       date: "2026.06.18",
@@ -1095,6 +1120,14 @@ function setLanguage(lang, options = {}) {
 
   document.querySelectorAll("[data-i18n-placeholder]").forEach((node) => {
     node.setAttribute("placeholder", t(node.dataset.i18nPlaceholder));
+  });
+
+  document.querySelectorAll("[data-i18n-aria-label]").forEach((node) => {
+    node.setAttribute("aria-label", t(node.dataset.i18nAriaLabel));
+  });
+
+  document.querySelectorAll("[data-i18n-title]").forEach((node) => {
+    node.setAttribute("title", t(node.dataset.i18nTitle));
   });
 
   document.querySelectorAll(".lang-button").forEach((button) => {

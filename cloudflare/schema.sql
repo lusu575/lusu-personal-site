@@ -906,6 +906,32 @@ on conflict(article_id) do update set
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
 
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-aria-label-localization',
+  '2026-06-18-aria-label-localization',
+  'site-updates',
+  '["网站更新","多语言","修复记录","移动端"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T17:22:00.000Z',
+  '2026-06-17T17:22:00.000Z',
+  '2026-06-17T17:22:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
@@ -2872,7 +2898,37 @@ This update fixes a small localization gap in the public chat room window title 
 - English 表示では、チャットルームのウィンドウ題名を中国語のままではなく `Chat Room` と表示します。
 - 日本語表示では、チャットルームのウィンドウ題名を中国語のままではなく `匿名チャット` と表示します。
 - チャットメッセージ、ニックネーム、ポーリング、送信処理は変更せず、公開テキストは引き続き安全な DOM / `textContent` 経路で描画します。
-- 公開側の翻訳と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T17:16:00.000Z', '2026-06-17T17:16:00.000Z')
+- 公開側の翻訳と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T17:16:00.000Z', '2026-06-17T17:16:00.000Z'),
+  ('seed-update-2026-06-18-aria-label-localization-zh', 'seed-update-2026-06-18-aria-label-localization', 'zh', '无障碍标签三语同步', '品牌、语言切换、桌面图标区和关闭按钮的 aria-label 会跟随当前语言更新。', '# 无障碍标签三语同步
+
+本次更新把公开主站的无障碍标签也纳入语言切换，让键盘和读屏用户听到的控件名称更一致。
+
+## 更新内容
+
+- 新增 `data-i18n-aria-label` 与 `data-i18n-title` 同步逻辑，复用现有三语翻译表。
+- 品牌返回按钮、语言切换区域、桌面图标区域和各类关闭按钮补充当前语言的 `aria-label`。
+- 视频窗口最大化按钮继续使用已有 `videoFullscreen` / `videoRestore` 文案动态更新。
+- 只调整公开主站 HTML / JS 与更新记录，不触碰后台目录或管理接口。', '2026-06-17T17:22:00.000Z', '2026-06-17T17:22:00.000Z'),
+  ('seed-update-2026-06-18-aria-label-localization-en', 'seed-update-2026-06-18-aria-label-localization', 'en', 'Localized ARIA Labels', 'Brand, language switcher, desktop icon group, and close-button aria labels now follow the active language.', '# Localized ARIA Labels
+
+This update brings public site accessibility labels into the language-switching path, so keyboard and screen-reader users get control names in the active language.
+
+## Changes
+
+- Added `data-i18n-aria-label` and `data-i18n-title` synchronization using the existing trilingual translation table.
+- The brand home button, language switcher, desktop icon group, and close buttons now receive active-language `aria-label` text.
+- The video window maximize button keeps using the existing dynamic `videoFullscreen` / `videoRestore` labels.
+- Only public site HTML / JS and update records changed; admin folders and admin APIs were not touched.', '2026-06-17T17:22:00.000Z', '2026-06-17T17:22:00.000Z'),
+  ('seed-update-2026-06-18-aria-label-localization-ja', 'seed-update-2026-06-18-aria-label-localization', 'ja', 'ARIAラベルの多言語同期', 'ブランド、言語切り替え、デスクトップアイコン領域、閉じるボタンの aria-label が現在の言語に合わせて変わります。', '# ARIAラベルの多言語同期
+
+今回の更新では、公開サイトのアクセシビリティラベルも言語切り替えの対象にし、キーボード操作や読み上げで聞こえる名前を現在の言語に揃えました。
+
+## 更新内容
+
+- 既存の三言語翻訳表を使う `data-i18n-aria-label` と `data-i18n-title` の同期処理を追加しました。
+- ブランドのホームボタン、言語切り替え、デスクトップアイコン領域、各種閉じるボタンに現在言語の `aria-label` を設定します。
+- 動画ウィンドウの最大化ボタンは、既存の `videoFullscreen` / `videoRestore` 文言による動的更新を維持します。
+- 公開側の HTML / JS と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T17:22:00.000Z', '2026-06-17T17:22:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,

@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 无障碍标签三语同步：
+  - 新增 `data-i18n-aria-label` / `data-i18n-title` 通用同步逻辑，让无障碍标签和提示标题也能跟随当前语言更新。
+  - 品牌返回按钮、语言切换区域、桌面图标区域、页面关闭按钮、欢迎窗关闭按钮和视频弹窗关闭按钮补充中文 / English / 日本語 `aria-label`。
+  - 更新 `index.html` 的 JS query 为 `20260618-aria-label-localization`，并新增同名三语 `site-updates` 更新文章，同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新。
 - 聊天室标题三语同步：
   - 修复英文 / 日文界面打开聊天室时窗口标题仍显示中文“匿名聊天室”的问题，现在标题会跟随当前语言显示为 `Chat Room` / `匿名チャット`。
   - 本轮只调整公开主站 `chatroomTitle` 翻译和更新记录，不改聊天室消息渲染、轮询、昵称或公开 API 安全逻辑。

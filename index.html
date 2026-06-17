@@ -12,13 +12,13 @@
 <body>
   <div class="site-shell">
     <header class="xp-topbar">
-      <button class="brand-button" data-route="home" aria-label="返回桌面">
+      <button class="brand-button" data-route="home" aria-label="返回桌面" data-i18n-aria-label="brandHomeAria">
         <img class="brand-orb" src="/assets/images/lusu-tv-head-64.png?v=20260611-unified-tv-icon" alt="" aria-hidden="true">
         <span data-i18n="siteName">鲁肃的个人站</span>
       </button>
       <div class="topbar-actions">
         <div class="account-widget" id="account-widget"></div>
-        <nav class="language-switcher" aria-label="Language switcher">
+        <nav class="language-switcher" aria-label="Language switcher" data-i18n-aria-label="languageSwitcherAria">
           <button class="lang-button active" data-lang="zh">中文</button>
           <button class="lang-button" data-lang="en">EN</button>
           <button class="lang-button" data-lang="ja">日本語</button>
@@ -67,7 +67,7 @@
           </div>
         </div>
 
-        <div class="desktop-icons" aria-label="Main sections">
+        <div class="desktop-icons" aria-label="Main sections" data-i18n-aria-label="desktopIconsAria">
           <button class="desktop-icon" data-route="knowledge">
             <span class="pixel-icon folder-icon"></span>
             <span class="icon-title" data-i18n="navKnowledge">知识库</span>
@@ -108,7 +108,7 @@
         <div class="xp-window folder-window">
           <div class="window-titlebar">
             <span><span class="title-icon section-title-icon title-icon-knowledge" aria-hidden="true"></span><span id="knowledge-title" data-i18n="knowledgeTitle">知识库</span></span>
-            <button class="close-button" data-route="home" aria-label="关闭">×</button>
+            <button class="close-button" data-route="home" aria-label="关闭窗口" data-i18n-aria-label="closeWindowAria">×</button>
           </div>
           <div class="knowledge-searchbar" id="knowledge-searchbar">
             <label for="knowledge-search-input" data-i18n="articleSearchLabel">搜索知识库</label>
@@ -147,7 +147,7 @@
         <div class="xp-window">
           <div class="window-titlebar">
             <span><span class="title-icon section-title-icon title-icon-videos" aria-hidden="true"></span><span id="videos-title" data-i18n="videosTitle">视频区</span></span>
-            <button class="close-button" data-route="home" aria-label="关闭">×</button>
+            <button class="close-button" data-route="home" aria-label="关闭窗口" data-i18n-aria-label="closeWindowAria">×</button>
           </div>
           <div class="filter-row" id="video-categories"></div>
           <div class="card-grid video-grid" id="video-list"></div>
@@ -158,7 +158,7 @@
         <div class="xp-window">
           <div class="window-titlebar">
             <span><span class="title-icon section-title-icon title-icon-resources" aria-hidden="true"></span><span id="resources-title" data-i18n="resourcesTitle">资源区</span></span>
-            <button class="close-button" data-route="home" aria-label="关闭">×</button>
+            <button class="close-button" data-route="home" aria-label="关闭窗口" data-i18n-aria-label="closeWindowAria">×</button>
           </div>
           <div class="filter-row" id="resource-categories"></div>
           <div class="download-list" id="resource-list"></div>
@@ -169,7 +169,7 @@
         <div class="xp-window">
           <div class="window-titlebar">
             <span><span class="title-icon section-title-icon title-icon-games" aria-hidden="true"></span><span id="games-title" data-i18n="gamesTitle">游戏区</span></span>
-            <button class="close-button" data-route="home" aria-label="关闭">×</button>
+            <button class="close-button" data-route="home" aria-label="关闭窗口" data-i18n-aria-label="closeWindowAria">×</button>
           </div>
           <div class="game-list" id="game-list"></div>
         </div>
@@ -179,7 +179,7 @@
         <div class="xp-window notepad-window">
           <div class="window-titlebar">
             <span><span class="title-icon section-title-icon title-icon-blog" aria-hidden="true"></span><span id="blog-title" data-i18n="blogTitle">杂谈区</span></span>
-            <button class="close-button" data-route="home" aria-label="关闭">×</button>
+            <button class="close-button" data-route="home" aria-label="关闭窗口" data-i18n-aria-label="closeWindowAria">×</button>
           </div>
           <div class="notepad-menu">File&nbsp;&nbsp;Edit&nbsp;&nbsp;View&nbsp;&nbsp;Help</div>
           <div class="notepad-paper" id="blog-list"></div>
@@ -190,7 +190,7 @@
         <div class="xp-window chatroom-window">
           <div class="window-titlebar">
             <span><span class="title-icon section-title-icon title-icon-chatroom chatroom-title-icon" aria-hidden="true"></span><span id="chatroom-title" data-i18n="chatroomTitle">匿名聊天室</span></span>
-            <button class="close-button" data-route="home" aria-label="关闭">×</button>
+            <button class="close-button" data-route="home" aria-label="关闭窗口" data-i18n-aria-label="closeWindowAria">×</button>
           </div>
           <div class="chatroom-header">
             <img class="chatroom-avatar" src="/assets/images/icon-chatroom-clean.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
@@ -228,7 +228,7 @@
         <div class="xp-window about-window">
           <div class="window-titlebar">
             <span><span class="title-icon section-title-icon title-icon-about" aria-hidden="true"></span><span id="about-title" data-i18n="aboutTitle">关于我</span></span>
-            <button class="close-button" data-route="home" aria-label="关闭">×</button>
+            <button class="close-button" data-route="home" aria-label="关闭窗口" data-i18n-aria-label="closeWindowAria">×</button>
           </div>
           <div class="profile-card">
             <div class="profile-avatar">
@@ -272,7 +272,7 @@
     <div class="xp-window welcome-window" role="dialog" aria-modal="true" aria-labelledby="welcome-title">
       <div class="window-titlebar">
         <span><span class="title-icon">★</span><span id="welcome-title" data-i18n="welcomeTitle">欢迎来到我的空间</span></span>
-        <button class="close-button" data-close-welcome aria-label="关闭">×</button>
+        <button class="close-button" data-close-welcome aria-label="关闭对话框" data-i18n-aria-label="closeDialogAria">×</button>
       </div>
       <div class="welcome-content">
         <section class="welcome-main">
@@ -309,7 +309,7 @@
         <span><span class="title-icon section-title-icon title-icon-videos" aria-hidden="true"></span><span id="modal-title">Video Player</span></span>
         <div class="window-controls">
           <button class="titlebar-button maximize-button" type="button" id="video-window-maximize" data-video-window-toggle aria-label="全屏" title="全屏" aria-pressed="false"></button>
-          <button class="close-button" data-close-modal aria-label="关闭">×</button>
+          <button class="close-button" data-close-modal aria-label="关闭对话框" data-i18n-aria-label="closeDialogAria">×</button>
         </div>
       </div>
       <div class="video-frame" id="video-frame">
@@ -325,6 +325,6 @@
   </div>
 
   <script src="/js/telemetry.js?v=20260615-video-window-controls"></script>
-  <script src="/js/main.js?v=20260618-chatroom-title-locale"></script>
+  <script src="/js/main.js?v=20260618-aria-label-localization"></script>
 </body>
 </html>
