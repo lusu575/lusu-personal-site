@@ -4,6 +4,11 @@
 
 ## 2026-06-18
 
+- 视频封面预览加载优化：
+  - 后台视频封面预览图补充 `decoding="async"`，减少较大封面图片解码时对编辑界面的阻塞。
+  - 封面预览图补充 `referrerPolicy="no-referrer"`，避免向 YouTube / Bilibili 图片域名或后台上传封面预览请求携带后台页面来源。
+  - 后台页面内 `adminUpdates` 和后台 JS query 已同步更新。
+
 - 后台输入键盘提示优化：
   - 文章 slug、文章封面路径、视频链接、视频封面地址和视频分类 slug 输入框补充 `inputmode="url"`、关闭自动大写、自动补全和拼写检查。
   - 输入类型保持为普通文本，不影响裸 Bilibili BV 号、站内资源路径或受限 `data:image` 封面粘贴。

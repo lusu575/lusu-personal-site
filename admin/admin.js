@@ -72,6 +72,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "视频封面预览加载优化",
+    body: "后台视频封面预览图增加异步解码和 no-referrer，减少大图预览阻塞，同时避免向外部封面域名携带后台页面来源。"
+  },
+  {
+    date: "2026-06-18",
     title: "后台输入键盘提示优化",
     body: "文章 slug、视频链接、封面地址和视频分类 slug 补充移动端输入提示，减少自动大写、拼写纠正或普通键盘影响链接与 slug 粘贴。"
   },
@@ -1511,7 +1516,9 @@ function renderVideoThumbnailPreview(value = "") {
   }
   const image = document.createElement("img");
   image.alt = "视频封面预览";
+  image.decoding = "async";
   image.loading = "lazy";
+  image.referrerPolicy = "no-referrer";
   image.src = thumbnail;
   image.addEventListener("error", () => {
     image.remove();
