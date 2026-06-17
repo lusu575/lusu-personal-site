@@ -73,6 +73,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "文章写入期间切换防护",
+    body: "知识库文章保存或删除请求进行中会临时禁用文章列表和新建按钮，并在点击入口做二次拦截，避免慢请求期间切换文章导致当前表单和正在提交的文章错位。"
+  },
+  {
+    date: "2026-06-18",
     title: "文章详情读取失败防护",
     body: "知识库文章选择后会先清空旧编辑表单，详情未成功读取前会禁用保存、发布和删除，接口失败时显示明确原因，避免旧文章内容误提交到当前选择。"
   },
@@ -1126,6 +1131,7 @@ function renderArticleList() {
   const list = $("#article-list");
   if (!state.articles.length) {
     list.replaceChildren(createEmptyStateElement("暂无文章，点击右上角“新建”开始。"));
+    syncArticleListBusyState();
     return;
   }
 
@@ -1140,6 +1146,7 @@ function renderArticleList() {
     }
     item.type = "button";
     item.dataset.articleId = article.article_id || "";
+    item.disabled = isArticleWriteBusy();
     title.className = "list-title";
     title.textContent = article.slug || "";
     meta.className = "list-meta";
@@ -1153,6 +1160,7 @@ function renderArticleList() {
     item.append(title, meta, summary);
     return item;
   }));
+  syncArticleListBusyState();
 }
 
 async function selectArticle(articleId) {
@@ -1294,7 +1302,7 @@ function syncArticleSaveButtons() {
   const saveButton = $("#save-article");
   const publishButton = $("#publish-article");
   const deleteButton = $("#delete-article");
-  const busy = state.articleSaving || state.articleDeleting;
+  const busy = isArticleWriteBusy();
   const existingArticleNotReady = Boolean(state.selectedArticleId && !state.articleDetailReady);
   if (saveButton) {
     const savingDraft = state.articleSaving && state.articleSavingMode !== "publish";
@@ -1328,6 +1336,27 @@ function syncArticleSaveButtons() {
       ? (state.articleDeleting ? "正在删除文章" : "正在保存文章")
       : (state.selectedArticleId ? "删除当前文章" : "请先选择已保存文章"));
   }
+  syncArticleListBusyState();
+}
+
+function isArticleWriteBusy() {
+  return state.articleSaving || state.articleDeleting;
+}
+
+function syncArticleListBusyState() {
+  const busy = isArticleWriteBusy();
+  const busyTitle = state.articleDeleting ? "正在删除文章，完成后再切换" : "正在保存文章，完成后再切换";
+  const newButton = $("#new-article");
+  if (newButton) {
+    newButton.disabled = busy;
+    newButton.title = busy
+      ? (state.articleDeleting ? "正在删除文章，完成后再新建" : "正在保存文章，完成后再新建")
+      : "新建文章";
+  }
+  $$("#article-list .list-item").forEach((item) => {
+    item.disabled = busy;
+    item.title = busy ? busyTitle : "打开这篇文章";
+  });
 }
 
 async function deleteArticle() {
@@ -2714,10 +2743,15 @@ function bindEvents() {
       }
     }
   });
-  $("#new-article").addEventListener("click", resetArticleForm);
+  $("#new-article").addEventListener("click", () => {
+    if (isArticleWriteBusy()) {
+      return;
+    }
+    resetArticleForm();
+  });
   $("#article-list").addEventListener("click", (event) => {
     const item = event.target.closest("[data-article-id]");
-    if (item) {
+    if (item && !isArticleWriteBusy()) {
       selectArticle(item.dataset.articleId);
     }
   });
