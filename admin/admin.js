@@ -74,6 +74,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "文章详情读取期间锁定表单",
+    body: "知识库文章切换到已有文章但详情尚未读取完成时，会临时锁定编辑表单和语言切换按钮，避免加载中输入内容随后被接口返回覆盖。"
+  },
+  {
+    date: "2026-06-18",
     title: "文章写入期间锁定表单",
     body: "知识库文章保存、发布或删除请求进行中会临时锁定 slug、分类、封面、发布时间、置顶和三语标题/正文等字段，避免写入尚未完成时继续修改内容造成提交范围误解。"
   },
@@ -1406,26 +1411,34 @@ function isArticleWriteBusy() {
 }
 
 function syncArticleFormBusyState() {
-  const busy = isArticleWriteBusy();
-  const busyTitle = articleBusyFormTitle();
+  const locked = isArticleWriteBusy() || isArticleDetailPending();
+  const busyTitle = isArticleDetailPending() ? articleDetailPendingFormTitle() : articleBusyFormTitle();
   $$("#article-form input, #article-form textarea, #article-form select").forEach((field) => {
-    field.disabled = busy;
-    field.setAttribute("aria-busy", busy ? "true" : "false");
-    if (busy) {
+    field.disabled = locked;
+    field.setAttribute("aria-busy", locked ? "true" : "false");
+    if (locked) {
       field.title = busyTitle;
     } else {
       field.removeAttribute("title");
     }
   });
   $$(".lang-tab").forEach((button) => {
-    button.disabled = busy;
-    button.setAttribute("aria-busy", busy ? "true" : "false");
-    if (busy) {
+    button.disabled = locked;
+    button.setAttribute("aria-busy", locked ? "true" : "false");
+    if (locked) {
       button.title = busyTitle;
     } else {
       button.removeAttribute("title");
     }
   });
+}
+
+function isArticleDetailPending() {
+  return Boolean(state.selectedArticleId && !state.articleDetailReady && !isArticleWriteBusy());
+}
+
+function articleDetailPendingFormTitle() {
+  return "正在读取文章详情，完成后再编辑表单";
 }
 
 function articleBusyFormTitle() {
