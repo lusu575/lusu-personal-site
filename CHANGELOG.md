@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 管理后台账号密码状态脱敏优化：
+  - `/api/admin/accounts` 和 `/api/admin/accounts/:userId` 改为只读取密码加密状态标记，不再在账号列表和详情处理链路中选择原始密码哈希字段。
+  - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。
+
 - 管理后台 KPI 卡片渲染安全优化：
   - `/admin/` 实时大屏 KPI 卡片改用 DOM API 与 `textContent` 渲染标题、数值和说明，移除后台脚本最后一处动态面板 HTML 字符串拼接。
   - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。

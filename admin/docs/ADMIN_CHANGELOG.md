@@ -4,6 +4,11 @@
 
 ## 2026-06-18
 
+- 账号密码状态脱敏优化：
+  - `/api/admin/accounts` 和 `/api/admin/accounts/:userId` 的账号查询改为由 SQL 返回 `password_scheme` 状态标记，而不是把原始密码哈希字段带入账号列表和详情处理。
+  - 后台仍显示“已加密保存 / 旧格式或未知”状态，继续不返回密码哈希、会话令牌或明文密码。
+  - 后台页面内 `adminUpdates` 和后台 JS query 已同步更新。
+
 - KPI 卡片渲染安全优化：
   - 实时大屏 KPI 卡片改用 `document.createElement` 和 `textContent` 渲染标题、数值和说明。
   - 现有 KPI 数量、说明文案、样式和统计口径保持不变；完成后后台脚本不再用 HTML 字符串拼接动态面板内容。

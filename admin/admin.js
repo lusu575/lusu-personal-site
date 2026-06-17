@@ -72,6 +72,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "账号密码状态脱敏优化",
+    body: "后台账号接口改为只读取密码加密状态标记，不再把密码哈希字段带入账号列表和详情处理链路。"
+  },
+  {
+    date: "2026-06-18",
     title: "KPI 卡片渲染安全优化",
     body: "实时大屏 KPI 卡片改用 DOM API 渲染标题、数值和说明，后台脚本不再用 HTML 字符串拼接动态面板内容。"
   },

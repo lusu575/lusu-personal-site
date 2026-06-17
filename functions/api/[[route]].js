@@ -978,7 +978,11 @@ async function getAdminAccounts(request, env) {
     select
       users.id,
       users.email,
-      users.password_hash,
+      case
+        when substr(users.password_hash, 1, 14) = 'pbkdf2_sha256$' then 'pbkdf2'
+        when users.password_hash is not null and users.password_hash <> '' then 'legacy'
+        else ''
+      end as password_scheme,
       users.role,
       users.created_at,
       users.updated_at,
@@ -998,7 +1002,17 @@ async function getAdminAccount(request, env, userId) {
   await requireAdmin(request, env);
   const normalizedId = normalizeRecordId(userId, "账号编号不正确。");
   const account = await env.DB.prepare(`
-    select id, email, password_hash, role, created_at, updated_at
+    select
+      id,
+      email,
+      case
+        when substr(password_hash, 1, 14) = 'pbkdf2_sha256$' then 'pbkdf2'
+        when password_hash is not null and password_hash <> '' then 'legacy'
+        else ''
+      end as password_scheme,
+      role,
+      created_at,
+      updated_at
     from users
     where id = ?
   `).bind(normalizedId).first();
@@ -4477,7 +4491,7 @@ function adminAccountRow(row) {
     active_sessions: Number(row.active_sessions || 0),
     login_count: Number(row.login_count || 0),
     save_slots: Number(row.save_slots || 0),
-    password_status: passwordStatusLabel(row.password_hash),
+    password_status: passwordStatusLabel(row.password_scheme),
     password_visible: false,
     password_note: "密码只保存加密结果，后台不能查看原文；需要时可直接设置新密码。"
   };
@@ -4513,7 +4527,7 @@ function adminAccountActivityRow(row) {
 }
 
 function passwordStatusLabel(value) {
-  return String(value || "").startsWith("pbkdf2_sha256$")
+  return value === "pbkdf2"
     ? "已加密保存"
     : "旧格式或未知";
 }
