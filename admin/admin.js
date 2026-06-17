@@ -51,6 +51,11 @@ const overviewPanels = new Set(["dashboard", "visits", "clicks"]);
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "后台自动刷新可见性优化",
+    body: "后台实时大屏、访问来源和点击埋点的 30 秒自动刷新会在页面隐藏时暂停，回到前台后再补一次刷新，减少后台标签页长期打开时的无效请求。"
+  },
+  {
+    date: "2026-06-18",
     title: "后台刷新忙碌状态优化",
     body: "后台面板数据读取中会同步禁用顶部刷新按钮，并显示“刷新中...”，避免快速连点造成误解；请求结束或失败后按钮会自动恢复，可继续手动重试。"
   },
@@ -470,6 +475,14 @@ function switchPanel(panel) {
   $("#panel-subtitle").textContent = panelMeta[panel][1];
   updateRefreshButton();
   loadPanelData(panel);
+}
+
+function autoRefreshActivePanel() {
+  if (document.hidden || !overviewPanels.has(state.activePanel)) {
+    return false;
+  }
+  loadPanelData(state.activePanel, { force: true });
+  return true;
 }
 
 async function loadMe() {
@@ -1542,6 +1555,11 @@ function bindEvents() {
   $("#manual-refresh").addEventListener("click", () => {
     loadPanelData(state.activePanel, { force: true });
   });
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) {
+      autoRefreshActivePanel();
+    }
+  });
   $("#logout-button").addEventListener("click", async () => {
     await api("/api/auth/logout", { method: "POST", body: "{}" });
     window.location.reload();
@@ -1630,11 +1648,7 @@ async function init() {
   try {
     await loadMe();
     await loadPanelData(state.activePanel, { force: true });
-    state.timer = window.setInterval(() => {
-      if (overviewPanels.has(state.activePanel)) {
-        loadPanelData(state.activePanel, { force: true });
-      }
-    }, 30000);
+    state.timer = window.setInterval(autoRefreshActivePanel, 30000);
   } catch (error) {
     setStatus(error.message);
   }
