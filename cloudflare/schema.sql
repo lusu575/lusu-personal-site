@@ -828,6 +828,32 @@ on conflict(article_id) do update set
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
 
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-trilingual-tags',
+  '2026-06-18-trilingual-tags',
+  'site-updates',
+  '["网站更新","多语言","标签","知识库"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T16:56:00.000Z',
+  '2026-06-17T16:56:00.000Z',
+  '2026-06-17T16:56:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
@@ -2704,7 +2730,37 @@ This update fixes the knowledge article detail view so the search bar no longer 
 - 記事詳細または記事直リンクを開いたとき、知識庫検索バーを完全に非表示にします。
 - `.knowledge-searchbar[hidden]`、`.content-list[hidden]`、`.article-detail[hidden]` に明示的な非表示ルールを追加し、コンポーネント側の display 指定が HTML の `hidden` 状態を上書きしないようにしました。
 - 記事一覧へ戻ると既存ロジックで検索バーが復帰し、知識庫のローカル検索はそのまま使えます。
-- 公開側の CSS と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T16:50:00.000Z', '2026-06-17T16:50:00.000Z')
+- 公開側の CSS と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T16:50:00.000Z', '2026-06-17T16:50:00.000Z'),
+  ('seed-update-2026-06-18-trilingual-tags-zh', 'seed-update-2026-06-18-trilingual-tags', 'zh', '标签三语显示', '文章列表、文章详情和杂谈卡片的常见标签会跟随三语切换显示。', '# 标签三语显示
+
+本次更新继续整理主站公开阅读体验，让文章和杂谈卡片里的常见标签跟随当前语言显示。
+
+## 更新内容
+
+- 文章列表、文章详情和杂谈卡片的常见中文 seed 标签会显示为当前语言标签。
+- 知识库本地搜索会同时匹配原始标签和当前语言标签，方便用 English / 日本語 搜索标签词。
+- 标签仍通过安全 DOM / `textContent` 或已有 HTML escape 渲染，不引入动态脚本执行风险。
+- 只调整公开主站渲染和更新记录，不触碰后台目录或管理接口。', '2026-06-17T16:56:00.000Z', '2026-06-17T16:56:00.000Z'),
+  ('seed-update-2026-06-18-trilingual-tags-en', 'seed-update-2026-06-18-trilingual-tags', 'en', 'Trilingual Tag Labels', 'Common tags on article lists, article details, and talk cards now follow the site language switch.', '# Trilingual Tag Labels
+
+This update keeps common article and talk tags aligned with the active public site language.
+
+## Changes
+
+- Common Chinese seed tags on article cards, article details, and talk cards now render in the current language.
+- Local knowledge search matches both the original tag text and the current-language tag label, so English and Japanese tag terms can still be used.
+- Tags continue to render through safe DOM / `textContent` or existing HTML escaping, without adding script execution risk.
+- Only public site rendering and update records changed; admin folders and admin APIs were not touched.', '2026-06-17T16:56:00.000Z', '2026-06-17T16:56:00.000Z'),
+  ('seed-update-2026-06-18-trilingual-tags-ja', 'seed-update-2026-06-18-trilingual-tags', 'ja', 'タグ三言語表示', '記事一覧、記事詳細、雑談カードの主なタグがサイト言語に合わせて表示されます。', '# タグ三言語表示
+
+今回の更新では、公開側の記事と雑談カードの主なタグを現在の言語に合わせて表示するようにしました。
+
+## 更新内容
+
+- 記事カード、記事詳細、雑談カードの主な中国語 seed タグを現在の言語ラベルで表示します。
+- 知識庫のローカル検索は元のタグ文字列と現在言語のタグラベルの両方に一致し、English / 日本語 のタグ語でも検索できます。
+- タグは引き続き安全な DOM / `textContent` または既存の HTML escape で描画し、スクリプト実行リスクは増やしません。
+- 公開側の描画と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T16:56:00.000Z', '2026-06-17T16:56:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,

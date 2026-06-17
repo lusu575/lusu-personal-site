@@ -4398,6 +4398,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-18-trilingual-tags',
+        '2026-06-18-trilingual-tags',
+        'site-updates',
+        '["网站更新","多语言","标签","知识库"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T16:56:00.000Z',
+        '2026-06-17T16:56:00.000Z',
+        '2026-06-17T16:56:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -4757,6 +4784,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# 記事詳細の検索バー非表示\n\n今回の更新では、知識庫の記事詳細で検索バーが本文の上に残ってしまう表示を修正しました。\n\n## 更新内容\n\n- 記事詳細または記事直リンクを開いたとき、知識庫検索バーを完全に非表示にします。\n- `.knowledge-searchbar[hidden]`、`.content-list[hidden]`、`.article-detail[hidden]` に明示的な非表示ルールを追加し、コンポーネント側の display 指定が HTML の `hidden` 状態を上書きしないようにしました。\n- 記事一覧へ戻ると既存ロジックで検索バーが復帰し、知識庫のローカル検索はそのまま使えます。\n- 公開側の CSS と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。"
       }
     }, "2026-06-17T16:50:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-trilingual-tags", {
+      zh: {
+        title: "标签三语显示",
+        summary: "文章列表、文章详情和杂谈卡片的常见标签会跟随三语切换显示。",
+        content_markdown: "# 标签三语显示\n\n本次更新继续整理主站公开阅读体验，让文章和杂谈卡片里的常见标签跟随当前语言显示。\n\n## 更新内容\n\n- 文章列表、文章详情和杂谈卡片的常见中文 seed 标签会显示为当前语言标签。\n- 知识库本地搜索会同时匹配原始标签和当前语言标签，方便用 English / 日本語 搜索标签词。\n- 标签仍通过安全 DOM / `textContent` 或已有 HTML escape 渲染，不引入动态脚本执行风险。\n- 只调整公开主站渲染和更新记录，不触碰后台目录或管理接口。"
+      },
+      en: {
+        title: "Trilingual Tag Labels",
+        summary: "Common tags on article lists, article details, and talk cards now follow the site language switch.",
+        content_markdown: "# Trilingual Tag Labels\n\nThis update keeps common article and talk tags aligned with the active public site language.\n\n## Changes\n\n- Common Chinese seed tags on article cards, article details, and talk cards now render in the current language.\n- Local knowledge search matches both the original tag text and the current-language tag label, so English and Japanese tag terms can still be used.\n- Tags continue to render through safe DOM / `textContent` or existing HTML escaping, without adding script execution risk.\n- Only public site rendering and update records changed; admin folders and admin APIs were not touched."
+      },
+      ja: {
+        title: "タグ三言語表示",
+        summary: "記事一覧、記事詳細、雑談カードの主なタグがサイト言語に合わせて表示されます。",
+        content_markdown: "# タグ三言語表示\n\n今回の更新では、公開側の記事と雑談カードの主なタグを現在の言語に合わせて表示するようにしました。\n\n## 更新内容\n\n- 記事カード、記事詳細、雑談カードの主な中国語 seed タグを現在の言語ラベルで表示します。\n- 知識庫のローカル検索は元のタグ文字列と現在言語のタグラベルの両方に一致し、English / 日本語 のタグ語でも検索できます。\n- タグは引き続き安全な DOM / `textContent` または既存の HTML escape で描画し、スクリプト実行リスクは増やしません。\n- 公開側の描画と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。"
+      }
+    }, "2026-06-17T16:56:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')

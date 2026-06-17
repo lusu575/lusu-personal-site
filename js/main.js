@@ -378,6 +378,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "🏷️",
+      date: "2026.06.18",
+      title: { zh: "标签三语显示", en: "Trilingual Tag Labels", ja: "タグ三言語表示" },
+      desc: {
+        zh: "文章和杂谈卡片的常见标签会跟随中文、English、日本語 切换显示",
+        en: "Common article and talk tags now follow the Chinese, English, and Japanese language switch",
+        ja: "記事と雑談カードの主なタグが中文、English、日本語 の切り替えに合わせて表示されます"
+      }
+    },
+    {
       icon: "📖",
       date: "2026.06.18",
       title: { zh: "文章详情搜索条隐藏修复", en: "Article Detail Search Hide", ja: "記事詳細の検索バー非表示" },
@@ -842,6 +852,59 @@ const articleCategoryLabels = {
   }
 };
 
+const tagLabels = {
+  "网站更新": { zh: "网站更新", en: "Site update", ja: "サイト更新" },
+  "网站": { zh: "网站", en: "Site", ja: "サイト" },
+  "首页": { zh: "首页", en: "Home", ja: "ホーム" },
+  "日常": { zh: "日常", en: "Daily", ja: "日常" },
+  "记录": { zh: "记录", en: "Log", ja: "記録" },
+  "上线记录": { zh: "上线记录", en: "Launch log", ja: "公開記録" },
+  "维护记录": { zh: "维护记录", en: "Maintenance", ja: "保守記録" },
+  "修复记录": { zh: "修复记录", en: "Fix log", ja: "修正記録" },
+  "经验": { zh: "经验", en: "Experience", ja: "経験" },
+  "文章": { zh: "文章", en: "Article", ja: "記事" },
+  "知识库": { zh: "知识库", en: "Knowledge", ja: "知識庫" },
+  "标签": { zh: "标签", en: "Tag", ja: "タグ" },
+  "搜索": { zh: "搜索", en: "Search", ja: "検索" },
+  "文章详情": { zh: "文章详情", en: "Article detail", ja: "記事詳細" },
+  "阅读体验": { zh: "阅读体验", en: "Reading", ja: "読書体験" },
+  "分享": { zh: "分享", en: "Sharing", ja: "共有" },
+  "链接分享": { zh: "链接分享", en: "Link sharing", ja: "リンク共有" },
+  "多语言": { zh: "多语言", en: "Languages", ja: "多言語" },
+  "路由": { zh: "路由", en: "Routing", ja: "ルート" },
+  "导航": { zh: "导航", en: "Navigation", ja: "ナビ" },
+  "任务栏": { zh: "任务栏", en: "Taskbar", ja: "タスクバー" },
+  "可访问性": { zh: "可访问性", en: "Accessibility", ja: "アクセシビリティ" },
+  "交互修复": { zh: "交互修复", en: "Interaction fix", ja: "操作修正" },
+  "视频区": { zh: "视频区", en: "Videos", ja: "動画欄" },
+  "播放器": { zh: "播放器", en: "Player", ja: "プレイヤー" },
+  "空状态": { zh: "空状态", en: "Empty state", ja: "空状態" },
+  "资源区": { zh: "资源区", en: "Resources", ja: "リソース" },
+  "下载": { zh: "下载", en: "Download", ja: "ダウンロード" },
+  "占位按钮": { zh: "占位按钮", en: "Placeholder button", ja: "準備中ボタン" },
+  "杂谈区": { zh: "杂谈区", en: "Talk", ja: "雑談" },
+  "安全渲染": { zh: "安全渲染", en: "Safe rendering", ja: "安全描画" },
+  "后台": { zh: "后台", en: "Admin", ja: "管理画面" },
+  "游戏区": { zh: "游戏区", en: "Games", ja: "ゲーム欄" },
+  "移动端": { zh: "移动端", en: "Mobile", ja: "モバイル" },
+  "桌面端": { zh: "桌面端", en: "Desktop", ja: "デスクトップ" },
+  "桌面图标": { zh: "桌面图标", en: "Desktop icons", ja: "デスクトップアイコン" },
+  "布局修复": { zh: "布局修复", en: "Layout fix", ja: "レイアウト修正" },
+  "响应式布局": { zh: "响应式布局", en: "Responsive layout", ja: "レスポンシブ" },
+  "窗口": { zh: "窗口", en: "Window", ja: "ウィンドウ" },
+  "图标": { zh: "图标", en: "Icons", ja: "アイコン" },
+  "动态壁纸": { zh: "动态壁纸", en: "Animated wallpaper", ja: "動く壁紙" },
+  "像素壁纸": { zh: "像素壁纸", en: "Pixel wallpaper", ja: "ピクセル壁紙" },
+  "欢迎窗": { zh: "欢迎窗", en: "Welcome modal", ja: "歓迎ウィンドウ" },
+  "直链": { zh: "直链", en: "Deep link", ja: "直リンク" },
+  "时间显示": { zh: "时间显示", en: "Time display", ja: "時刻表示" },
+  "排序": { zh: "排序", en: "Sorting", ja: "並び替え" },
+  "性能": { zh: "性能", en: "Performance", ja: "性能" },
+  "观察": { zh: "观察", en: "Observations", ja: "観察" },
+  "游戏": { zh: "游戏", en: "Games", ja: "ゲーム" },
+  "碎碎念": { zh: "碎碎念", en: "Notes", ja: "メモ" }
+};
+
 const pageIds = ["home", "knowledge", "videos", "resources", "games", "blog", "chatroom", "about"];
 
 const chatStorageKeys = {
@@ -1155,7 +1218,7 @@ function renderKnowledge() {
       <p>${escapeHtml(item.summary || "")}</p>
       <div class="meta-row">
         <span>${t("articleCategory")}：${escapeHtml(articleCategoryName(item.category || "note"))}</span>
-        ${(item.tags || []).map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}
+              ${(item.tags || []).map((tag) => `<span class="tag">${escapeHtml(articleTagName(tag))}</span>`).join("")}
         <span>${t("articlePublished")}：${escapeHtml(formatArticleDate(item.published_at || item.created_at))}</span>
         ${item.lang !== currentLang ? `<span class="tag">${t("articleFallback")}</span>` : ""}
       </div>
@@ -1204,7 +1267,8 @@ function articleMatchesSearch(item) {
     item.slug,
     item.category,
     articleCategoryName(item.category || "note"),
-    ...(item.tags || [])
+    ...(item.tags || []),
+    ...(item.tags || []).map(articleTagName)
   ].map(normalizeSearchText).join(" ");
   return haystack.includes(term);
 }
@@ -1231,6 +1295,10 @@ function articleCategoryName(category) {
     return t("all");
   }
   return articleCategoryLabels[category]?.[currentLang] || category || "note";
+}
+
+function articleTagName(tag) {
+  return tagLabels[tag]?.[currentLang] || tag || "";
 }
 
 async function loadArticles() {
@@ -1358,7 +1426,7 @@ function renderArticleDetail(article) {
   [
     `${t("articleCategory")}：${articleCategoryName(article.category || "note")}`,
     `${t("articlePublished")}：${formatArticleDate(article.published_at || article.created_at)}`,
-    ...(article.tags || []).map((tag) => `#${tag}`),
+    ...(article.tags || []).map((tag) => `#${articleTagName(tag)}`),
     article.lang !== currentLang ? t("articleFallback") : ""
   ].filter(Boolean).forEach((text) => {
     const item = document.createElement("span");
@@ -2018,7 +2086,7 @@ function blogCardElement(item) {
   (item.tags || []).forEach((tag) => {
     const tagNode = document.createElement("span");
     tagNode.className = "tag";
-    tagNode.textContent = tag;
+    tagNode.textContent = articleTagName(tag);
     meta.appendChild(tagNode);
   });
 

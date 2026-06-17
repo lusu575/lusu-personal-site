@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 标签三语显示：
+  - 文章列表、文章详情和杂谈卡片的常见中文 seed 标签会跟随中文 / English / 日本語 切换显示，减少英文/日文页面里的中文标签混杂。
+  - 知识库本地搜索会同时匹配原始标签和当前语言标签，例如 English 下可用 `Reading`、`Routing` 等标签词继续搜索。
+  - 更新 `index.html` 的 JS query 为 `20260618-trilingual-tags`，并新增同名三语 `site-updates` 更新文章，同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新。
 - 文章详情搜索条隐藏修复：
   - 知识库文章详情页会真正隐藏顶部搜索条，避免阅读文章时出现与当前详情无关的搜索控件。
   - 为 `.knowledge-searchbar[hidden]`、`.content-list[hidden]` 和 `.article-detail[hidden]` 补充明确 `display: none` 规则，防止组件自身 display 样式覆盖 HTML `hidden` 状态。
