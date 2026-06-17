@@ -4,6 +4,11 @@
 
 ## 2026-06-17
 
+- 文章详情复制链接：
+  - 知识库文章详情头部新增 XP 风格“复制文章链接”按钮，生成包含当前语言参数的直链，方便分享文章详情页。
+  - 复制成功 / 失败状态使用中文 / English / 日本語 文案，通过 `textContent` 更新，不影响 Markdown 安全渲染。
+  - 更新 `index.html` 的 CSS / JS query 为 `20260617-article-share-link`，并新增同名三语 `site-updates` 更新文章，同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新。
+
 - 知识库本地搜索：
   - 主站知识库窗口顶部新增 XP 风格搜索条，可在当前已加载文章中按标题、简介、分类、slug 和标签即时过滤。
   - 搜索状态会显示命中数量，清空按钮可一键恢复完整列表；输入和状态文案同步维护中文 / English / 日本語。

@@ -4182,6 +4182,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-17-article-share-link',
+        '2026-06-17-article-share-link',
+        'site-updates',
+        '["网站更新","知识库","分享","文章"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T15:40:00.000Z',
+        '2026-06-17T15:40:00.000Z',
+        '2026-06-17T15:40:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -4405,6 +4432,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# 知識庫検索を追加\n\n今回の更新では、記事とサイト更新記録が増えても探しやすいように、公開側の知識庫へ軽量な検索バーを追加しました。\n\n## 更新内容\n\n- 知識庫ウィンドウ上部に検索欄を追加し、記事タイトル、概要、分類、slug、タグをブラウザ内で即時に絞り込めます。\n- 結果件数を表示し、クリアボタンで一覧全体にすぐ戻せます。\n- 検索ラベル、プレースホルダー、件数表示は中文、English、日本語で同期しています。\n- モバイルでは検索バーが自然に折り返し、横方向にはみ出さないようにしました。\n- 記事詳細リンク、Markdown の安全描画、チャットルームの純テキスト表示ルールはそのままです。"
       }
     }, "2026-06-17T15:25:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-17-article-share-link", {
+      zh: {
+        title: "文章详情复制链接",
+        summary: "知识库文章详情新增复制直链按钮，便于分享当前语言的文章页面。",
+        content_markdown: "# 文章详情复制链接\n\n本次更新继续打磨知识库阅读体验，让文章详情页更适合分享和回访。\n\n## 更新内容\n\n- 文章详情头部新增“复制文章链接”按钮，会生成当前文章的直链。\n- 复制链接会保留当前语言参数，中文、English、日本語 页面都能分享对应语言视图。\n- 成功和失败提示均使用三语文案，并通过安全 DOM 文本更新。\n- 手机端按钮和提示会自然换行，避免文章页横向溢出。"
+      },
+      en: {
+        title: "Article Link Copy",
+        summary: "Knowledge article pages now include a copy-link button for sharing the current language view.",
+        content_markdown: "# Article Link Copy\n\nThis update keeps improving the knowledge reading flow so article detail pages are easier to share and revisit.\n\n## Changes\n\n- Article detail headers now include a copy-link button that creates a direct URL for the current article.\n- The copied link keeps the current language parameter, so Chinese, English, and Japanese views can be shared directly.\n- Success and failure messages are maintained in all three languages and update through safe DOM text.\n- On mobile, the button and status text wrap cleanly without horizontal overflow."
+      },
+      ja: {
+        title: "記事リンクコピー",
+        summary: "知識庫の記事詳細に、現在の言語表示を共有しやすいリンクコピーボタンを追加しました。",
+        content_markdown: "# 記事リンクコピー\n\n今回の更新では、知識庫の記事詳細ページを共有しやすくするため、読み物まわりの操作を少し整えました。\n\n## 更新内容\n\n- 記事詳細のヘッダーに、現在の記事の直リンクをコピーするボタンを追加しました。\n- コピーされるリンクには現在の言語パラメータが含まれ、中文、English、日本語の表示をそのまま共有できます。\n- 成功・失敗メッセージは三言語で用意し、安全な DOM テキストとして更新します。\n- モバイルではボタンと状態表示が自然に折り返し、横方向にはみ出さないようにしました。"
+      }
+    }, "2026-06-17T15:40:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')

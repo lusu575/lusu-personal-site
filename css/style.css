@@ -1162,6 +1162,40 @@ main {
   line-height: 1.7;
 }
 
+.article-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  margin-top: 12px;
+}
+
+.article-copy-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 5px 12px;
+  white-space: nowrap;
+}
+
+.article-copy-link.is-done {
+  background: linear-gradient(180deg, #eaffd9, #b9f090);
+  color: #184d0d;
+}
+
+.article-copy-icon {
+  line-height: 1;
+}
+
+.article-copy-status {
+  min-height: 20px;
+  color: #12616f;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
 .markdown-body {
   padding: 0;
   border: 0;
@@ -3477,6 +3511,14 @@ main {
   .article-detail {
     grid-column: 1;
     grid-row: auto;
+  }
+
+  .article-detail-actions {
+    align-items: flex-start;
+  }
+
+  .article-copy-status {
+    width: 100%;
   }
 
   .category-panel {

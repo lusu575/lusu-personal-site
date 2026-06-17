@@ -45,6 +45,9 @@ const translations = {
     articleSearchFiltered: "显示 {count} / {total} 篇",
     articleSearchNoResults: "没有找到匹配的文章。",
     articleBack: "返回文章列表",
+    articleCopyLink: "复制文章链接",
+    articleCopyDone: "链接已复制。",
+    articleCopyFailed: "复制失败，请手动复制地址栏链接。",
     articlePublished: "发布时间",
     articleCategory: "分类",
     articleFallback: "当前语言版本缺失，已显示备用语言版本。",
@@ -153,6 +156,9 @@ const translations = {
     articleSearchFiltered: "Showing {count} / {total}",
     articleSearchNoResults: "No matching articles found.",
     articleBack: "Back to article list",
+    articleCopyLink: "Copy article link",
+    articleCopyDone: "Link copied.",
+    articleCopyFailed: "Copy failed. Please copy the address bar link manually.",
     articlePublished: "Published",
     articleCategory: "Category",
     articleFallback: "This language is missing, so a fallback language is shown.",
@@ -261,6 +267,9 @@ const translations = {
     articleSearchFiltered: "{count} / {total} 件を表示",
     articleSearchNoResults: "一致する記事が見つかりません。",
     articleBack: "記事一覧へ戻る",
+    articleCopyLink: "記事リンクをコピー",
+    articleCopyDone: "リンクをコピーしました。",
+    articleCopyFailed: "コピーできません。アドレスバーのリンクを手動でコピーしてください。",
     articlePublished: "公開日",
     articleCategory: "分類",
     articleFallback: "この言語版がないため、別の言語版を表示しています。",
@@ -362,6 +371,16 @@ const labels = {
 
 const content = {
   updates: [
+    {
+      icon: "🔗",
+      date: "2026.06.17",
+      title: { zh: "文章详情复制链接", en: "Article Link Copy", ja: "記事リンクコピー" },
+      desc: {
+        zh: "知识库文章详情新增复制直链按钮，便于分享当前语言的文章页面",
+        en: "Knowledge articles now have a copy-link button for sharing the current language view",
+        ja: "知識庫の記事詳細に、現在の言語ページを共有しやすいリンクコピーを追加しました"
+      }
+    },
     {
       icon: "📚",
       date: "2026.06.17",
@@ -707,6 +726,7 @@ const articleState = {
   currentSlug: "",
   currentArticle: null,
   searchTerm: "",
+  copyStatusTimer: 0,
   error: ""
 };
 const videoState = {
@@ -1187,6 +1207,7 @@ async function loadArticleDetail(slug) {
   const meta = document.getElementById("article-detail-meta");
   const body = document.getElementById("article-detail-body");
 
+  clearArticleCopyStatus();
   title.textContent = t("articleLoading");
   summary.textContent = "";
   meta.replaceChildren();
@@ -1217,6 +1238,7 @@ function renderArticleDetail(article) {
   const meta = document.getElementById("article-detail-meta");
   const body = document.getElementById("article-detail-body");
 
+  clearArticleCopyStatus();
   title.textContent = article.title || "";
   summary.textContent = article.summary || "";
   meta.replaceChildren();
@@ -1232,6 +1254,67 @@ function renderArticleDetail(article) {
     meta.appendChild(item);
   });
   renderMarkdownSafe(body, stripRepeatedArticleHeading(article.content_markdown || "", article.title || ""));
+}
+
+function clearArticleCopyStatus() {
+  window.clearTimeout(articleState.copyStatusTimer);
+  articleState.copyStatusTimer = 0;
+  const status = document.getElementById("article-copy-status");
+  const button = document.querySelector("[data-article-copy-link]");
+  if (status) {
+    status.textContent = "";
+  }
+  button?.classList.remove("is-done");
+}
+
+function articleShareLink(slug) {
+  const url = new URL(articleRoutePath(slug), window.location.origin);
+  url.searchParams.set("lang", currentLang);
+  return url.toString();
+}
+
+function fallbackCopyText(text) {
+  const field = document.createElement("textarea");
+  field.value = text;
+  field.setAttribute("readonly", "");
+  field.style.position = "fixed";
+  field.style.top = "-1000px";
+  field.style.left = "-1000px";
+  document.body.appendChild(field);
+  field.focus();
+  field.select();
+  const copied = document.execCommand("copy");
+  field.remove();
+  if (!copied) {
+    throw new Error("copy failed");
+  }
+}
+
+async function copyArticleLink() {
+  const slug = articleState.currentArticle?.slug || articleState.currentSlug;
+  const status = document.getElementById("article-copy-status");
+  const button = document.querySelector("[data-article-copy-link]");
+  if (!slug || !status) {
+    return;
+  }
+  const shareUrl = articleShareLink(slug);
+  try {
+    if (navigator.clipboard?.writeText && window.isSecureContext) {
+      await navigator.clipboard.writeText(shareUrl);
+    } else {
+      fallbackCopyText(shareUrl);
+    }
+    status.textContent = t("articleCopyDone");
+    button?.classList.add("is-done");
+  } catch {
+    status.textContent = t("articleCopyFailed");
+    button?.classList.remove("is-done");
+  }
+  window.clearTimeout(articleState.copyStatusTimer);
+  articleState.copyStatusTimer = window.setTimeout(() => {
+    status.textContent = "";
+    button?.classList.remove("is-done");
+  }, 2400);
 }
 
 function showArticle(slug) {
@@ -2495,6 +2578,11 @@ document.addEventListener("click", (event) => {
 
   if (event.target.closest("[data-article-back]")) {
     showArticleList();
+    return;
+  }
+
+  if (event.target.closest("[data-article-copy-link]")) {
+    copyArticleLink();
     return;
   }
 

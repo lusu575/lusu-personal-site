@@ -620,6 +620,32 @@ on conflict(article_id) do update set
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
 
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-17-article-share-link',
+  '2026-06-17-article-share-link',
+  'site-updates',
+  '["网站更新","知识库","分享","文章"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T15:40:00.000Z',
+  '2026-06-17T15:40:00.000Z',
+  '2026-06-17T15:40:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
@@ -2197,6 +2223,45 @@ This update adds a lightweight search bar to the public knowledge base so articl
 - 検索ラベル、プレースホルダー、件数表示は中文、English、日本語で同期しています。
 - モバイルでは検索バーが自然に折り返し、横方向にはみ出さないようにしました。
 - 記事詳細リンク、Markdown の安全描画、チャットルームの純テキスト表示ルールはそのままです。', '2026-06-17T15:25:00.000Z', '2026-06-17T15:25:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-17-article-share-link-zh', 'seed-update-2026-06-17-article-share-link', 'zh', '文章详情复制链接', '知识库文章详情新增复制直链按钮，便于分享当前语言的文章页面。', '# 文章详情复制链接
+
+本次更新继续打磨知识库阅读体验，让文章详情页更适合分享和回访。
+
+## 更新内容
+
+- 文章详情头部新增“复制文章链接”按钮，会生成当前文章的直链。
+- 复制链接会保留当前语言参数，中文、English、日本語 页面都能分享对应语言视图。
+- 成功和失败提示均使用三语文案，并通过安全 DOM 文本更新。
+- 手机端按钮和提示会自然换行，避免文章页横向溢出。', '2026-06-17T15:40:00.000Z', '2026-06-17T15:40:00.000Z'),
+  ('seed-update-2026-06-17-article-share-link-en', 'seed-update-2026-06-17-article-share-link', 'en', 'Article Link Copy', 'Knowledge article pages now include a copy-link button for sharing the current language view.', '# Article Link Copy
+
+This update keeps improving the knowledge reading flow so article detail pages are easier to share and revisit.
+
+## Changes
+
+- Article detail headers now include a copy-link button that creates a direct URL for the current article.
+- The copied link keeps the current language parameter, so Chinese, English, and Japanese views can be shared directly.
+- Success and failure messages are maintained in all three languages and update through safe DOM text.
+- On mobile, the button and status text wrap cleanly without horizontal overflow.', '2026-06-17T15:40:00.000Z', '2026-06-17T15:40:00.000Z'),
+  ('seed-update-2026-06-17-article-share-link-ja', 'seed-update-2026-06-17-article-share-link', 'ja', '記事リンクコピー', '知識庫の記事詳細に、現在の言語表示を共有しやすいリンクコピーボタンを追加しました。', '# 記事リンクコピー
+
+今回の更新では、知識庫の記事詳細ページを共有しやすくするため、読み物まわりの操作を少し整えました。
+
+## 更新内容
+
+- 記事詳細のヘッダーに、現在の記事の直リンクをコピーするボタンを追加しました。
+- コピーされるリンクには現在の言語パラメータが含まれ、中文、English、日本語の表示をそのまま共有できます。
+- 成功・失敗メッセージは三言語で用意し、安全な DOM テキストとして更新します。
+- モバイルではボタンと状態表示が自然に折り返し、横方向にはみ出さないようにしました。', '2026-06-17T15:40:00.000Z', '2026-06-17T15:40:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,
