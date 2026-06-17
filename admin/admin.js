@@ -74,6 +74,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "聊天禁言同步列表状态",
+    body: "从聊天室记录发起禁言用户 ID 或 IP 来源时，禁言列表会同步进入刷新中状态，临时禁用刷新和停用按钮，避免禁言写入与列表操作并发导致状态闪动。"
+  },
+  {
+    date: "2026-06-18",
     title: "聊天筛选读取防抖",
     body: "聊天室管理正在读取消息列表时会临时锁定“显示隐藏”筛选，并忽略重复读取入口，减少快速切换筛选造成的重复请求和列表闪动。"
   },
@@ -2437,7 +2442,7 @@ async function deleteChatMessage() {
 }
 
 async function banSelectedChat(type) {
-  if (state.chatActionBusy) {
+  if (state.chatActionBusy || state.banListBusy) {
     return;
   }
   const message = selectedChatMessage();
@@ -2445,6 +2450,7 @@ async function banSelectedChat(type) {
     return;
   }
   setChatActionBusy(type === "ip_hash" || type === "ip" ? "banIp" : "banVisitor");
+  setBanListBusy("refresh");
   const form = $("#chat-form-admin");
   const body = {
     type,
@@ -2460,6 +2466,7 @@ async function banSelectedChat(type) {
   } catch (error) {
     showChatActionError(error);
   } finally {
+    setBanListBusy("");
     setChatActionBusy("");
   }
 }
