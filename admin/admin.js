@@ -74,6 +74,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "账号列表刷新丢失选中项提示",
+    body: "账号列表刷新后如果当前选中账号已不在列表中，后台会清空账号编辑区并显示提示，避免管理员误以为旧账号仍可编辑。"
+  },
+  {
+    date: "2026-06-18",
     title: "文章列表刷新丢失选中项防护",
     body: "知识库文章刷新后如果当前选中文章已不在列表中，后台会自动清空编辑表单并提示，避免继续保存已不存在的文章。"
   },
@@ -2855,6 +2860,7 @@ async function loadAccounts() {
     state.accountDetail = null;
     resetAccountForm();
     renderAccountDetail();
+    $("#account-status").textContent = "当前账号已不在列表中，已清空编辑表单。";
     syncAccountSaveButton();
   }
 }
