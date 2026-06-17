@@ -74,6 +74,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "视频列表刷新丢失选中项防护",
+    body: "视频或视频分类刷新后如果当前选中项已不在列表中，后台会自动清空对应编辑表单并提示，避免继续保存已不存在的对象。"
+  },
+  {
+    date: "2026-06-18",
     title: "聊天室消息读取期间锁定编辑",
     body: "聊天室管理刷新消息列表时，会临时锁定消息列表、编辑表单和治理按钮，避免列表读取中继续处理旧记录。"
   },
@@ -1509,6 +1514,11 @@ function videoStatusLabel(status) {
 async function loadVideos() {
   const payload = await api("/api/admin/videos");
   state.videos = payload.videos || [];
+  if (state.selectedVideoId && !state.videos.some((video) => video.video_id === state.selectedVideoId)) {
+    resetVideoForm();
+    $("#video-status").textContent = "当前视频已不在列表中，已清空编辑表单。";
+    return;
+  }
   renderVideoList();
   renderVideoCategoryChecks();
   if (!state.selectedVideoId) {
@@ -1519,6 +1529,11 @@ async function loadVideos() {
 async function loadVideoCategories() {
   const payload = await api("/api/admin/video-categories");
   state.videoCategories = payload.categories || [];
+  if (state.selectedVideoCategoryId && !state.videoCategories.some((category) => category.category_id === state.selectedVideoCategoryId)) {
+    resetVideoCategoryForm();
+    $("#video-category-status").textContent = "当前分类已不在列表中，已清空编辑表单。";
+    return;
+  }
   renderVideoCategoryList();
   renderVideoCategoryChecks();
   if (!state.selectedVideoCategoryId) {
