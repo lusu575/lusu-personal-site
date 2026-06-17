@@ -73,6 +73,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "视频写入期间切换防护",
+    body: "视频管理保存或删除请求进行中会临时禁用视频列表和新建按钮，并在点击入口做二次拦截，避免慢请求期间切换视频导致当前表单和正在提交的视频错位。"
+  },
+  {
+    date: "2026-06-18",
     title: "文章写入期间切换防护",
     body: "知识库文章保存或删除请求进行中会临时禁用文章列表和新建按钮，并在点击入口做二次拦截，避免慢请求期间切换文章导致当前表单和正在提交的文章错位。"
   },
@@ -1408,6 +1413,7 @@ function renderVideoList() {
   const list = $("#video-list-admin");
   if (!state.videos.length) {
     list.replaceChildren(createEmptyStateElement("暂无视频，先粘贴一个 YouTube 或 Bilibili 链接。"));
+    syncVideoListBusyState();
     return;
   }
 
@@ -1422,6 +1428,7 @@ function renderVideoList() {
     }
     item.type = "button";
     item.dataset.adminVideoId = video.video_id || "";
+    item.disabled = isVideoWriteBusy();
     title.className = "list-title";
     title.textContent = video.title || video.original_url || "未命名视频";
     meta.className = "list-meta";
@@ -1444,6 +1451,7 @@ function renderVideoList() {
     }
     return item;
   }));
+  syncVideoListBusyState();
 }
 
 function renderVideoCategoryChecks() {
@@ -1795,7 +1803,7 @@ function syncVideoSaveButtons() {
   const saveButton = $("#video-form button[type='submit']");
   const publishButton = $("#publish-video");
   const deleteButton = $("#delete-video");
-  const busy = state.videoSaving || state.videoDeleting;
+  const busy = isVideoWriteBusy();
   if (saveButton) {
     const savingDraft = state.videoSaving && state.videoSavingMode !== "publish";
     saveButton.disabled = busy;
@@ -1822,6 +1830,27 @@ function syncVideoSaveButtons() {
       ? (state.videoDeleting ? "正在删除视频" : "正在保存视频")
       : (state.selectedVideoId ? "删除当前视频" : "请先选择已保存视频");
   }
+  syncVideoListBusyState();
+}
+
+function isVideoWriteBusy() {
+  return state.videoSaving || state.videoDeleting;
+}
+
+function syncVideoListBusyState() {
+  const busy = isVideoWriteBusy();
+  const busyTitle = state.videoDeleting ? "正在删除视频，完成后再切换" : "正在保存视频，完成后再切换";
+  const newButton = $("#new-video");
+  if (newButton) {
+    newButton.disabled = busy;
+    newButton.title = busy
+      ? (state.videoDeleting ? "正在删除视频，完成后再新建" : "正在保存视频，完成后再新建")
+      : "新建视频";
+  }
+  $$("#video-list-admin .list-item").forEach((item) => {
+    item.disabled = busy;
+    item.title = busy ? busyTitle : "打开这个视频";
+  });
 }
 
 function selectVideo(videoId) {
@@ -2764,10 +2793,15 @@ function bindEvents() {
   });
   $("#publish-article").addEventListener("click", () => saveArticle("published"));
   $("#delete-article").addEventListener("click", deleteArticle);
-  $("#new-video").addEventListener("click", resetVideoForm);
+  $("#new-video").addEventListener("click", () => {
+    if (isVideoWriteBusy()) {
+      return;
+    }
+    resetVideoForm();
+  });
   $("#video-list-admin").addEventListener("click", (event) => {
     const item = event.target.closest("[data-admin-video-id]");
-    if (item) {
+    if (item && !isVideoWriteBusy()) {
       selectVideo(item.dataset.adminVideoId);
     }
   });
