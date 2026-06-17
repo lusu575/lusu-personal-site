@@ -4,6 +4,11 @@
 
 ## 2026-06-18
 
+- 导航当前态增强：
+  - 底部任务栏按钮和首页 Start 按钮会根据当前 route 同步 `active` 样式，首页 Start 按钮获得更明确的按下态。
+  - 当前任务栏 / Start 按钮同步 `aria-current="page"`；首页桌面图标同步 `aria-pressed`，增强键盘与辅助技术识别。
+  - 更新 `index.html` 的 CSS / JS query 为 `20260618-nav-active-state`，并新增同名三语 `site-updates` 更新文章，同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新。
+
 - 资源区占位按钮修复：
   - 资源区卡片没有真实下载地址或外部链接时，动作按钮改为三语“准备中 / Coming soon / 準備中”禁用态，不再输出会跳到页面顶部的 `href="#"`。
   - 资源区卡片渲染从字符串拼接改为 DOM / `textContent` 构建，后续接入真实资源 URL 时降低 XSS 风险；真实 `http(s)` 或项目内 `assets/`、`downloads/` 地址仍会生成下载/外链按钮。

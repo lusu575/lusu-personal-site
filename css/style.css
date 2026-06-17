@@ -521,7 +521,8 @@ main {
 
 .desktop-icon:hover,
 .desktop-icon:focus-visible,
-.desktop-icon.is-hovered {
+.desktop-icon.is-hovered,
+.desktop-icon.is-active {
   outline: none;
   border-color: transparent;
   background: transparent;
@@ -2142,6 +2143,11 @@ main {
   background: linear-gradient(180deg, #54e0b0 0%, #18aa70 46%, #077549 100%);
   font-weight: 900;
   text-shadow: 1px 1px 0 #064e35;
+}
+
+.start-button.active {
+  background: linear-gradient(180deg, #7cf3bc 0%, #1e9a61 48%, #065e33 100%);
+  box-shadow: inset 2px 2px 0 rgba(255, 255, 255, 0.34), inset -2px -2px 0 rgba(0, 45, 24, 0.55);
 }
 
 .start-windows-icon {

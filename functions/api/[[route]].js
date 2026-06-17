@@ -4290,6 +4290,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-18-nav-active-state',
+        '2026-06-18-nav-active-state',
+        'site-updates',
+        '["网站更新","导航","任务栏","可访问性"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T16:18:00.000Z',
+        '2026-06-17T16:18:00.000Z',
+        '2026-06-17T16:18:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -4581,6 +4608,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# リソース準備中ボタン\n\n今回の更新では、公開側のリソース欄を整理し、実際のダウンロードや外部リンクがないカードが無効なリンクのように見えないようにしました。\n\n## 更新内容\n\n- 実際の URL がないリソースカードは、「準備中」の無効ボタンを表示します。\n- 今後 `http(s)`、`assets/`、`downloads/` の実リンクを設定すると、ダウンロードまたは外部リンクボタンとして表示されます。\n- リソースカードは DOM と `textContent` で構築するようにし、将来リソースデータを動的化する場合の XSS リスクを下げました。\n- 右上の最新更新日は閲覧者のローカル日付で計算し、中国時間 00:00 以降の更新が UTC の前日表示にならないようにしました。\n- 中文、English、日本語 のボタン文言とモバイル表示を合わせて維持しています。"
       }
     }, "2026-06-17T16:09:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-nav-active-state", {
+      zh: {
+        title: "导航当前态增强",
+        summary: "底部任务栏和首页 Start 按钮会标记当前页面，并同步 aria-current。",
+        content_markdown: "# 导航当前态增强\n\n本次更新继续打磨 XP 桌面导航反馈，让当前打开的页面更容易识别。\n\n## 更新内容\n\n- 底部任务栏按钮继续跟随当前 route 高亮，并同步 `aria-current=\"page\"`。\n- 首页 Start 按钮在桌面首页时显示更明确的当前态。\n- 首页桌面图标同步 `aria-pressed` 状态，便于键盘和辅助技术识别。\n- 路由、文章直链、聊天室轮询、视频窗口和游戏入口行为保持不变。"
+      },
+      en: {
+        title: "Active Navigation State",
+        summary: "The taskbar and Start button now mark the current page and keep aria-current in sync.",
+        content_markdown: "# Active Navigation State\n\nThis update refines the XP desktop navigation feedback so the currently open page is easier to identify.\n\n## Changes\n\n- Taskbar buttons continue to highlight the current route and now keep `aria-current=\"page\"` in sync.\n- The Start button now shows a clearer active state when the desktop home page is open.\n- Desktop icons keep `aria-pressed` synchronized for keyboard and assistive technology users.\n- Routing, article deep links, chat polling, video windows, and game entry behavior are unchanged."
+      },
+      ja: {
+        title: "ナビ現在状態を強化",
+        summary: "タスクバーと Start ボタンが現在ページを示し、aria-current も同期します。",
+        content_markdown: "# ナビ現在状態を強化\n\n今回の更新では、XP デスクトップ風のナビゲーション表示を整え、現在開いているページを分かりやすくしました。\n\n## 更新内容\n\n- タスクバーのボタンは現在 route のハイライトを維持し、`aria-current=\"page\"` も同期します。\n- ホーム画面では Start ボタンに、より分かりやすい現在状態を表示します。\n- デスクトップアイコンは `aria-pressed` を同期し、キーボード操作や支援技術でも状態を把握しやすくしました。\n- ルート処理、記事直リンク、チャットの更新、動画ウィンドウ、ゲーム入口の動作はそのままです。"
+      }
+    }, "2026-06-17T16:18:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')

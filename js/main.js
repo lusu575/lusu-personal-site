@@ -375,6 +375,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "🖱️",
+      date: "2026.06.18",
+      title: { zh: "导航当前态增强", en: "Active Navigation State", ja: "ナビ現在状態を強化" },
+      desc: {
+        zh: "底部任务栏和首页 Start 按钮会标记当前页面，并同步 aria-current",
+        en: "The taskbar and Start button now mark the current page and keep aria-current in sync",
+        ja: "タスクバーと Start ボタンが現在ページを示し、aria-current も同期します"
+      }
+    },
+    {
       icon: "📦",
       date: "2026.06.18",
       title: { zh: "资源区占位按钮修复", en: "Resource Placeholder Buttons", ja: "リソース準備中ボタン" },
@@ -972,9 +982,7 @@ function navigate(route, options = {}) {
   document.querySelectorAll(".page").forEach((page) => {
     page.classList.toggle("active", page.id === nextRoute);
   });
-  document.querySelectorAll(".taskbar-tabs button").forEach((button) => {
-    button.classList.toggle("active", button.dataset.route === nextRoute);
-  });
+  updateNavigationState(nextRoute);
   if (nextRoute === "chatroom") {
     initChatroom();
   }
@@ -982,6 +990,24 @@ function navigate(route, options = {}) {
     syncBrowserUrl(nextRoute, nextRoute === "knowledge" ? options.articleSlug || "" : "");
   }
   window.scrollTo({ top: 0, behavior: "auto" });
+}
+
+function updateNavigationState(route) {
+  document.querySelectorAll(".taskbar-tabs button[data-route], .start-button[data-route]").forEach((button) => {
+    const active = button.dataset.route === route;
+    button.classList.toggle("active", active);
+    if (active) {
+      button.setAttribute("aria-current", "page");
+    } else {
+      button.removeAttribute("aria-current");
+    }
+  });
+
+  document.querySelectorAll(".desktop-icon[data-route]").forEach((button) => {
+    const active = button.dataset.route === route;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
 }
 
 function syncRouteFromLocation() {
