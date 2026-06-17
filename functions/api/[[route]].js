@@ -2245,7 +2245,11 @@ async function parseVideoUrl(input) {
     throw new HttpError("请输入视频链接。", 400);
   }
   if (/^BV[a-zA-Z0-9]+$/.test(raw)) {
-    return parseVideoUrl(`https://www.bilibili.com/video/${raw}`);
+    const bvid = cleanBilibiliBvid(raw);
+    if (!bvid) {
+      throw new HttpError("无法识别 Bilibili BV 号。", 400);
+    }
+    return parseVideoUrl(`https://www.bilibili.com/video/${bvid}`);
   }
   let url;
   try {
@@ -2274,7 +2278,7 @@ async function parseVideoUrl(input) {
     }
   }
   if (host === "bilibili.com" || host.endsWith(".bilibili.com")) {
-    const bvid = (url.pathname.match(/\/video\/(BV[a-zA-Z0-9]+)/) || [])[1];
+    const bvid = cleanBilibiliBvid((url.pathname.match(/\/video\/(BV[a-zA-Z0-9]{10})(?:\/|$)/) || [])[1]);
     if (!bvid) {
       throw new HttpError("暂时只支持 bilibili.com/video/BV... 视频链接。", 400);
     }
@@ -2313,6 +2317,11 @@ function youtubeParsed(url, videoId) {
 function cleanYoutubeId(value) {
   const id = String(value || "").trim();
   return /^[a-zA-Z0-9_-]{11}$/.test(id) ? id : "";
+}
+
+function cleanBilibiliBvid(value) {
+  const id = String(value || "").trim();
+  return /^BV[a-zA-Z0-9]{10}$/.test(id) ? id : "";
 }
 
 function bilibiliVideoPageUrl(parsed, mobile = false) {

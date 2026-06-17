@@ -4,6 +4,11 @@
 
 ## 2026-06-18
 
+- Bilibili BV 号校验收紧：
+  - 后台视频链接解析新增 `cleanBilibiliBvid()`，只接受 `BV` 开头、总长 12 位的标准 BV 号。
+  - 裸 BV 号和 `bilibili.com/video/BV...` 路径都会经过同一规则，避免超长或伪造 BV 号进入规范化播放器地址。
+  - 后台页面内 `adminUpdates`、后台维护规则和后台 JS query 已同步更新。
+
 - YouTube 视频 ID 校验收紧：
   - 后台视频链接解析的 `cleanYoutubeId()` 改为只接受 11 位 YouTube 标准 videoId，继续允许字母、数字、下划线和连字符。
   - 过短、过长或伪造的 YouTube ID 会被视为无法识别，避免生成看似有效但不规范的 `embed_url`。

@@ -72,6 +72,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "Bilibili BV 号校验收紧",
+    body: "后台视频链接解析会把 Bilibili BV 号限定为 BV 开头的 12 位标准格式，避免超长或伪造 BV 号进入播放器地址。"
+  },
+  {
+    date: "2026-06-18",
     title: "YouTube 视频 ID 校验收紧",
     body: "后台视频链接解析会把 YouTube videoId 限定为 11 位标准字符，避免过短或伪造 ID 被规范化为可嵌入播放器地址。"
   },

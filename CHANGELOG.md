@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 管理后台 Bilibili BV 号校验收紧：
+  - 后台视频解析链路只接受 `BV` 开头、总长 12 位的标准 Bilibili BV 号，避免超长或伪造 BV 号生成不规范的播放器地址。
+  - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。
+
 - 管理后台 YouTube 视频 ID 校验收紧：
   - `/api/admin/videos/preview-url` 等后台视频解析链路只接受 11 位 YouTube 标准 videoId，避免过短或伪造 ID 生成不规范的嵌入地址。
   - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。

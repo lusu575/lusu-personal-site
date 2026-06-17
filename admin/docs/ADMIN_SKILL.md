@@ -69,7 +69,7 @@ description: 维护鲁肃个人站 `/admin/` 管理后台时使用。只适用�
 
 ## 视频管理
 
-- 后台视频链接只支持 YouTube、youtu.be、Bilibili、b23.tv 白名单来源。
+- 后台视频链接只支持 YouTube、youtu.be、Bilibili、b23.tv 白名单来源；YouTube videoId 必须是 11 位标准字符，Bilibili BV 号必须是 `BV` 开头、总长 12 位的标准格式。
 - 视频链接必须由服务端解析，并由服务端生成规范化 `embed_url`。
 - 前台和后台 iframe `src` 只能使用服务端规范化后的 `embed_url`，不得直接信任管理员输入 URL。
 - YouTube / Bilibili 元数据只在后台预览、首次保存、URL 变化保存或刷新时抓取，并缓存到 D1；已有视频 URL 未变化的普通保存不得重新抓取外部元数据，公开视频访问不得每次重新抓取。元数据抓取应尽量补齐标题、简介、作者、发布时间和封面；抓取失败时要保留可读错误并允许管理员手动填写。
