@@ -2312,7 +2312,7 @@ function youtubeParsed(url, videoId) {
 
 function cleanYoutubeId(value) {
   const id = String(value || "").trim();
-  return /^[a-zA-Z0-9_-]{6,20}$/.test(id) ? id : "";
+  return /^[a-zA-Z0-9_-]{11}$/.test(id) ? id : "";
 }
 
 function bilibiliVideoPageUrl(parsed, mobile = false) {

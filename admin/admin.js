@@ -72,6 +72,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "YouTube 视频 ID 校验收紧",
+    body: "后台视频链接解析会把 YouTube videoId 限定为 11 位标准字符，避免过短或伪造 ID 被规范化为可嵌入播放器地址。"
+  },
+  {
+    date: "2026-06-18",
     title: "来源 IP 头规范化",
     body: "访问统计和聊天室记录请求来源时会先清理 IP 请求头空白值，减少同一来源被不同哈希或掩码拆分的情况。"
   },

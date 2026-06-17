@@ -4,6 +4,11 @@
 
 ## 2026-06-18
 
+- YouTube 视频 ID 校验收紧：
+  - 后台视频链接解析的 `cleanYoutubeId()` 改为只接受 11 位 YouTube 标准 videoId，继续允许字母、数字、下划线和连字符。
+  - 过短、过长或伪造的 YouTube ID 会被视为无法识别，避免生成看似有效但不规范的 `embed_url`。
+  - 后台页面内 `adminUpdates` 和后台 JS query 已同步更新。
+
 - 来源 IP 头规范化：
   - 访问统计和聊天室记录请求来源时，`requestIp()` 会先清理 `CF-Connecting-IP` 与 `x-forwarded-for` 首段的首尾空白。
   - 空白来源会回落为 `unknown`，完整 IP 仍只用于计算哈希和掩码前缀，不返回给前台或后台页面。
