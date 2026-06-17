@@ -378,6 +378,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "🔗",
+      date: "2026.06.18",
+      title: { zh: "语言链接参数同步", en: "Language URL Sync", ja: "言語URL同期" },
+      desc: {
+        zh: "切换语言会同步地址栏 lang 参数，复制当前页面链接时不再带旧语言",
+        en: "Language switching now updates the address bar lang parameter so copied links keep the current language",
+        ja: "言語切り替え時に URL の lang パラメータを同期し、コピーしたリンクが現在の言語を保ちます"
+      }
+    },
+    {
       icon: "📝",
       date: "2026.06.18",
       title: { zh: "杂谈区占位按钮修复", en: "Talk Placeholder Buttons", ja: "雑談の準備中ボタン" },
@@ -903,8 +913,26 @@ function routeUrl(route, articleSlug = "") {
   return route === "home" ? "/" : `/#${route}`;
 }
 
+function withLanguageQuery(path, lang = currentLang) {
+  const nextUrl = new URL(path, window.location.origin);
+  const params = new URLSearchParams(window.location.search);
+  params.set("lang", lang);
+  nextUrl.search = params.toString();
+  return `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`;
+}
+
+function syncLanguageUrl(lang = currentLang) {
+  const nextUrl = new URL(window.location.href);
+  nextUrl.searchParams.set("lang", lang);
+  const nextPath = `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`;
+  const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+  if (currentPath !== nextPath) {
+    window.history.replaceState(null, "", nextPath);
+  }
+}
+
 function syncBrowserUrl(route, articleSlug = "") {
-  const nextUrl = routeUrl(route, articleSlug);
+  const nextUrl = withLanguageQuery(routeUrl(route, articleSlug));
   const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
   if (currentUrl !== nextUrl) {
     window.history.pushState(null, "", nextUrl);
@@ -961,6 +989,9 @@ function setLanguage(lang, options = {}) {
   currentLang = lang;
   if (options.persist) {
     localStorage.setItem(languageStorageKey, lang);
+  }
+  if (options.syncUrl) {
+    syncLanguageUrl(lang);
   }
   document.documentElement.lang = lang === "zh" ? "zh-CN" : lang;
   document.title = t("heroTitle");
@@ -2755,7 +2786,7 @@ document.addEventListener("click", (event) => {
 
   const langButton = event.target.closest("[data-lang]");
   if (langButton) {
-    setLanguage(langButton.dataset.lang, { persist: true });
+    setLanguage(langButton.dataset.lang, { persist: true, syncUrl: true });
     return;
   }
 

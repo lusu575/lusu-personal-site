@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 语言链接参数同步：
+  - 用户点击中文 / English / 日本語 语言按钮后，地址栏 `lang=` 参数会同步更新为当前语言，复制当前页面链接时不再带旧语言。
+  - 主站路由跳转会保留当前查询参数并刷新 `lang=`，文章详情、知识库、视频区、聊天室、游戏区等公开页面继续沿用当前语言上下文。
+  - 更新 `index.html` 的 JS query 为 `20260618-language-url-sync`，并新增同名三语 `site-updates` 更新文章，同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新。
 - 杂谈区占位按钮修复：
   - 杂谈区没有真实文章详情入口时，卡片动作从无功能“阅读”改为三语“整理中 / Drafting / 準備中”禁用态。
   - 杂谈区卡片渲染从字符串拼接改为 DOM / `textContent` 构建，后续接入真实杂谈文章时降低 XSS 风险。

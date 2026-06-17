@@ -776,6 +776,32 @@ on conflict(article_id) do update set
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
 
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-language-url-sync',
+  '2026-06-18-language-url-sync',
+  'site-updates',
+  '["网站更新","多语言","链接分享","路由"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T16:41:00.000Z',
+  '2026-06-17T16:41:00.000Z',
+  '2026-06-17T16:41:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
@@ -2592,7 +2618,37 @@ This update tidies the public Talk area so placeholder cards without article det
 - 実際の記事入口がない雑談カードは、「準備中」の無効ボタンを表示します。
 - 雑談カードは DOM と `textContent` で構築するようにし、将来データを動的化する場合の XSS リスクを下げました。
 - 中文、English、日本語 のボタン文言を合わせて維持しています。
-- 知識庫の記事システム、記事直リンク、既存のホームナビゲーション動作はそのままです。', '2026-06-17T16:23:00.000Z', '2026-06-17T16:23:00.000Z')
+- 知識庫の記事システム、記事直リンク、既存のホームナビゲーション動作はそのままです。', '2026-06-17T16:23:00.000Z', '2026-06-17T16:23:00.000Z'),
+  ('seed-update-2026-06-18-language-url-sync-zh', 'seed-update-2026-06-18-language-url-sync', 'zh', '语言链接参数同步', '切换语言时会同步地址栏 lang 参数，复制当前页面链接不再带旧语言。', '# 语言链接参数同步
+
+本次更新修正了主站三语切换后的链接状态，让地址栏和页面语言保持一致。
+
+## 更新内容
+
+- 点击中文 / English / 日本語 语言按钮时，地址栏 `lang=` 参数会同步更新为当前语言。
+- 主站窗口路由跳转会保留当前查询参数并刷新 `lang=`，复制当前页面链接时不再带旧语言。
+- 语言切换只使用 `replaceState` 更新当前地址，不额外制造浏览历史层级。
+- 知识库文章、视频区、聊天室和游戏入口继续使用现有公开渲染逻辑，不影响后台接口。', '2026-06-17T16:41:00.000Z', '2026-06-17T16:41:00.000Z'),
+  ('seed-update-2026-06-18-language-url-sync-en', 'seed-update-2026-06-18-language-url-sync', 'en', 'Language URL Sync', 'Language switching now updates the address bar lang parameter so copied page links keep the current language.', '# Language URL Sync
+
+This update keeps the address bar in sync with the current language after switching between the three site languages.
+
+## Changes
+
+- Clicking Chinese / English / Japanese now updates the `lang=` parameter in the address bar.
+- Public route changes preserve the current query parameters and refresh `lang=`, so copied page links no longer carry an old language.
+- Language switching uses `replaceState`, so it updates the current URL without adding extra browser history entries.
+- Knowledge articles, videos, chat room, and game entries continue using the existing public rendering paths, with no admin API changes.', '2026-06-17T16:41:00.000Z', '2026-06-17T16:41:00.000Z'),
+  ('seed-update-2026-06-18-language-url-sync-ja', 'seed-update-2026-06-18-language-url-sync', 'ja', '言語URL同期', '言語切り替え時にアドレスバーの lang パラメータを同期し、コピーしたリンクが現在の言語を保ちます。', '# 言語URL同期
+
+今回の更新では、三言語を切り替えた後もアドレスバーと表示言語がずれないようにしました。
+
+## 更新内容
+
+- 中文 / English / 日本語 の言語ボタンを押すと、アドレスバーの `lang=` パラメータも現在の言語に更新します。
+- 公開ページのルート移動では現在のクエリパラメータを保ちつつ `lang=` を更新し、コピーしたリンクが古い言語を持たないようにしました。
+- 言語切り替えは `replaceState` で現在の URL だけを更新し、余分な履歴を増やしません。
+- 知識庫の記事、動画欄、チャット、ゲーム入口は既存の公開描画ロジックを使い、管理 API には触れていません。', '2026-06-17T16:41:00.000Z', '2026-06-17T16:41:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,

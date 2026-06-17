@@ -4344,6 +4344,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-18-language-url-sync',
+        '2026-06-18-language-url-sync',
+        'site-updates',
+        '["网站更新","多语言","链接分享","路由"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T16:41:00.000Z',
+        '2026-06-17T16:41:00.000Z',
+        '2026-06-17T16:41:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -4669,6 +4696,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# 雑談の準備中ボタン\n\n今回の更新では、公開側の雑談欄を整理し、記事詳細がまだないカードに効果のない読むボタンを出さないようにしました。\n\n## 更新内容\n\n- 実際の記事入口がない雑談カードは、「準備中」の無効ボタンを表示します。\n- 雑談カードは DOM と `textContent` で構築するようにし、将来データを動的化する場合の XSS リスクを下げました。\n- 中文、English、日本語 のボタン文言を合わせて維持しています。\n- 知識庫の記事システム、記事直リンク、既存のホームナビゲーション動作はそのままです。"
       }
     }, "2026-06-17T16:23:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-language-url-sync", {
+      zh: {
+        title: "语言链接参数同步",
+        summary: "切换语言时会同步地址栏 lang 参数，复制当前页面链接不再带旧语言。",
+        content_markdown: "# 语言链接参数同步\n\n本次更新修正了主站三语切换后的链接状态，让地址栏和页面语言保持一致。\n\n## 更新内容\n\n- 点击中文 / English / 日本語 语言按钮时，地址栏 `lang=` 参数会同步更新为当前语言。\n- 主站窗口路由跳转会保留当前查询参数并刷新 `lang=`，复制当前页面链接时不再带旧语言。\n- 语言切换只使用 `replaceState` 更新当前地址，不额外制造浏览历史层级。\n- 知识库文章、视频区、聊天室和游戏入口继续使用现有公开渲染逻辑，不影响后台接口。"
+      },
+      en: {
+        title: "Language URL Sync",
+        summary: "Language switching now updates the address bar lang parameter so copied page links keep the current language.",
+        content_markdown: "# Language URL Sync\n\nThis update keeps the address bar in sync with the current language after switching between the three site languages.\n\n## Changes\n\n- Clicking Chinese / English / Japanese now updates the `lang=` parameter in the address bar.\n- Public route changes preserve the current query parameters and refresh `lang=`, so copied page links no longer carry an old language.\n- Language switching uses `replaceState`, so it updates the current URL without adding extra browser history entries.\n- Knowledge articles, videos, chat room, and game entries continue using the existing public rendering paths, with no admin API changes."
+      },
+      ja: {
+        title: "言語URL同期",
+        summary: "言語切り替え時にアドレスバーの lang パラメータを同期し、コピーしたリンクが現在の言語を保ちます。",
+        content_markdown: "# 言語URL同期\n\n今回の更新では、三言語を切り替えた後もアドレスバーと表示言語がずれないようにしました。\n\n## 更新内容\n\n- 中文 / English / 日本語 の言語ボタンを押すと、アドレスバーの `lang=` パラメータも現在の言語に更新します。\n- 公開ページのルート移動では現在のクエリパラメータを保ちつつ `lang=` を更新し、コピーしたリンクが古い言語を持たないようにしました。\n- 言語切り替えは `replaceState` で現在の URL だけを更新し、余分な履歴を増やしません。\n- 知識庫の記事、動画欄、チャット、ゲーム入口は既存の公開描画ロジックを使い、管理 API には触れていません。"
+      }
+    }, "2026-06-17T16:41:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')
