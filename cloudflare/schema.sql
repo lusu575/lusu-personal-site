@@ -701,6 +701,32 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-06-18-rss-button-label',
+  '2026-06-18-rss-button-label',
+  'site-updates',
+  '["网站更新","RSS","订阅","可访问性"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T21:50:00.000Z',
+  '2026-06-17T21:50:00.000Z',
+  '2026-06-17T21:50:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-06-18-rss-feed-entry',
   '2026-06-18-rss-feed-entry',
   'site-updates',
@@ -2760,6 +2786,48 @@ This update keeps tightening public Knowledge article image rendering so Markdow
 - `safeArticleImageSrc()` が `..` のパストラバーサル片を拒否し、画像パスが記事画像フォルダから外へ出ないようにしました。
 - 画像は今後も `document.createElement(''img'')`、安全な `src`、`alt`、`figcaption` で描画し、未処理 HTML は挿入しません。
 - 既存の AI Agent 長文画像、知識庫一覧、記事直リンク、管理画面ディレクトリは変更していません。', '2026-06-17T20:20:00.000Z', '2026-06-17T20:20:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-rss-button-label-zh', 'seed-update-2026-06-18-rss-button-label', 'zh', 'RSS 按钮文案整理', '欢迎窗口 RSS 按钮改为徽标加短文案，并让 ?welcome=1 稳定重开欢迎窗口。', '# RSS 按钮文案整理
+
+本次更新继续打磨欢迎窗口的订阅入口，让 RSS 按钮在视觉和读屏名称上都更清楚。
+
+## 更新内容
+
+- RSS 按钮保留橙色 `RSS` 徽标，可见文案改为更短的“订阅 / Feed / 購読”，避免重复显示 RSS。
+- 按钮新增会跟随语言切换的完整 `aria-label`，读屏仍可听到完整 RSS 订阅含义。
+- `?welcome=1` 现在会跳过“今日已看过”记录，便于复查欢迎窗口三语可见态；普通首访每日只弹一次逻辑不变。
+- `/api/rss.xml`、`/api/feed.xml`、最近更新文章列表和 feed 生成逻辑保持不变。
+- 本轮只调整公开欢迎窗口、前端翻译和更新记录，不触碰后台目录或管理接口。', '2026-06-17T21:50:00.000Z', '2026-06-17T21:50:00.000Z'),
+  ('seed-update-2026-06-18-rss-button-label-en', 'seed-update-2026-06-18-rss-button-label', 'en', 'RSS Button Label Polish', 'The welcome RSS button now uses a badge plus shorter label, and ?welcome=1 reliably reopens the welcome window.', '# RSS Button Label Polish
+
+This update continues polishing the welcome-window subscription entry so the RSS button reads more cleanly on screen and through assistive tech.
+
+## Changes
+
+- The RSS button keeps the orange `RSS` badge, while the visible text is shortened to `订阅 / Feed / 購読` to avoid repeating RSS.
+- The button now has a full localized `aria-label` that follows language switching, so screen readers still announce the full RSS subscription meaning.
+- `?welcome=1` now skips the daily already-seen flag, making it reliable for checking the welcome window in all three languages; normal first-visit daily behavior is unchanged.
+- `/api/rss.xml`, `/api/feed.xml`, the recent-update article list, and feed generation behavior are unchanged.
+- This round only changes the public welcome window, frontend translations, and update records; admin folders and admin APIs are untouched.', '2026-06-17T21:50:00.000Z', '2026-06-17T21:50:00.000Z'),
+  ('seed-update-2026-06-18-rss-button-label-ja', 'seed-update-2026-06-18-rss-button-label', 'ja', 'RSS ボタン文言調整', 'ウェルカム画面の RSS ボタンを短い文言に整え、?welcome=1 で確実に再表示できるようにしました。', '# RSS ボタン文言調整
+
+今回の更新では、ウェルカム画面の購読入口を少し整え、RSS ボタンの見た目と読み上げ名を分かりやすくしました。
+
+## 更新内容
+
+- RSS ボタンはオレンジ色の `RSS` バッジを残し、表示文言を短い `订阅 / Feed / 購読` にして RSS の重複表示を避けました。
+- ボタンには言語切り替えに合わせて変わる完全な `aria-label` を追加し、読み上げでは RSS 購読の意味が伝わるようにしました。
+- `?welcome=1` は当日の表示済み記録を越えてウェルカム画面を開けるようになり、三言語の表示確認に使いやすくなりました。通常の初回訪問では従来どおり一日一回だけ表示されます。
+- `/api/rss.xml`、`/api/feed.xml`、最近の更新記事一覧、feed 生成ロジックは変更していません。
+- 今回は公開ウェルカム画面、フロント翻訳、更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T21:50:00.000Z', '2026-06-17T21:50:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,

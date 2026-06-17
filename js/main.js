@@ -108,7 +108,8 @@ const translations = {
     goGames: "打开游戏区",
     recentUpdates: "最近更新",
     moreUpdates: "查看更多更新",
-    rssFeed: "RSS 订阅",
+    rssFeed: "订阅",
+    rssFeedAria: "RSS 订阅",
     chatNicknameLabel: "我的昵称：",
     chatEditNickname: "修改昵称",
     chatSyncStatus: "自动增量刷新，空闲时会降低频率",
@@ -242,7 +243,8 @@ const translations = {
     goGames: "Open Games",
     recentUpdates: "Recent Updates",
     moreUpdates: "More updates",
-    rssFeed: "RSS Feed",
+    rssFeed: "Feed",
+    rssFeedAria: "RSS Feed",
     chatNicknameLabel: "My nickname:",
     chatEditNickname: "Edit nickname",
     chatSyncStatus: "Incremental auto refresh, slower while idle",
@@ -376,7 +378,8 @@ const translations = {
     goGames: "ゲームへ",
     recentUpdates: "最近の更新",
     moreUpdates: "もっと見る",
-    rssFeed: "RSS フィード",
+    rssFeed: "購読",
+    rssFeedAria: "RSS フィードを購読",
     chatNicknameLabel: "ニックネーム：",
     chatEditNickname: "変更",
     chatSyncStatus: "差分自動更新、待機中は低頻度",
@@ -440,6 +443,16 @@ const labels = {
 
 const content = {
   updates: [
+    {
+      icon: "📡",
+      date: "2026.06.18",
+      title: { zh: "RSS 按钮文案整理", en: "RSS Button Label Polish", ja: "RSS ボタン文言調整" },
+      desc: {
+        zh: "欢迎窗口里的 RSS 按钮改为徽标加短文案，并让 ?welcome=1 稳定重开欢迎窗口",
+        en: "The welcome RSS button now uses a badge plus shorter label, and ?welcome=1 reliably reopens the welcome window",
+        ja: "ウェルカム画面の RSS ボタンを短い文言に整え、?welcome=1 で確実に再表示できるようにしました"
+      }
+    },
     {
       icon: "🛰️",
       date: "2026.06.18",
@@ -2978,16 +2991,18 @@ function localDateKey(date) {
 }
 
 function maybeShowWelcome() {
-  if (pageParams.get("welcome") === "0") {
+  const welcomeMode = pageParams.get("welcome");
+  const forceWelcome = welcomeMode === "1";
+  if (welcomeMode === "0") {
     return;
   }
   const route = parseRouteLocation();
-  if (pageParams.get("welcome") !== "1" && (route.route !== "home" || route.articleSlug)) {
+  if (!forceWelcome && (route.route !== "home" || route.articleSlug)) {
     return;
   }
   const today = localDateKey(new Date());
   const key = `lusu-welcome-seen-${today}`;
-  if (localStorage.getItem(key) === "1") {
+  if (!forceWelcome && localStorage.getItem(key) === "1") {
     return;
   }
   updateWelcomeGreeting();

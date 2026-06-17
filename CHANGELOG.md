@@ -4,6 +4,11 @@
 
 ## 2026-06-18
 
+- RSS 按钮文案整理：
+  - 欢迎窗口 RSS 按钮保留橙色 `RSS` 徽标，可见文案改为“订阅 / Feed / 購読”，避免重复显示 RSS。
+  - 链接新增跟随当前语言切换的完整 `aria-label`，读屏仍可获得完整 RSS 订阅含义。
+  - `?welcome=1` 现在会跳过“今日已看过”记录，方便复查欢迎窗口三语可见态；普通首访每日只弹一次逻辑不变。
+  - 更新 `index.html` 的 JS query 为 `20260618-rss-button-label`，并新增同名三语 `site-updates` 更新文章。
 - RSS 订阅入口：
   - 新增公开 `GET /api/rss.xml` / `/api/feed.xml`，按 `lang` 输出已发布文章和站点更新的 RSS XML。
   - 首页“最近更新”面板新增三语 RSS 链接，语言切换时会同步到当前语言的 feed。
