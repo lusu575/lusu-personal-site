@@ -271,6 +271,10 @@ select:focus-visible {
   line-height: 1.18;
 }
 
+.topbar > div:first-child {
+  min-width: 0;
+}
+
 .topbar p {
   margin: 0;
   color: var(--muted);
@@ -283,15 +287,20 @@ select:focus-visible {
   gap: 8px;
   flex-wrap: wrap;
   justify-content: flex-end;
+  max-width: min(560px, 100%);
+  min-width: 0;
 }
 
 .refresh-state {
   min-width: 170px;
+  max-width: min(360px, 100%);
   color: #10213a;
   background: #fffef4;
   border: 2px inset #fff;
   padding: 7px 9px;
   font-size: 12px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
   box-shadow: inset 1px 1px #d7d0b6;
 }
 
@@ -1082,6 +1091,7 @@ code {
 
   .topbar-actions {
     justify-content: flex-start;
+    width: 100%;
   }
 
   .kpi-grid,
