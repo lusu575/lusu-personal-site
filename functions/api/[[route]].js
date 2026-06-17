@@ -39,6 +39,20 @@ const DEFAULT_VIDEO_CATEGORIES = [
   ["video-cat-games", "game-records", "游戏录像", "Game Records", "ゲーム録画", 30],
   ["video-cat-favorites", "favorites", "收藏视频", "Saved Videos", "お気に入り動画", 40]
 ];
+const PUBLIC_LOOP_NIGHTLY_UPDATE_SLUG = "2026-06-18-public-site-nightly-update";
+const PUBLIC_LOOP_NIGHTLY_UPDATE_FILTER = `not (
+  articles.category = 'site-updates'
+  and (
+    articles.slug like '2026-06-18-%'
+    or articles.slug in (
+      '2026-06-17-knowledge-search',
+      '2026-06-17-article-share-link',
+      '2026-06-17-video-empty-state',
+      '2026-06-17-route-aware-welcome'
+    )
+  )
+  and articles.slug <> '${PUBLIC_LOOP_NIGHTLY_UPDATE_SLUG}'
+)`;
 let coreSchemaReady = false;
 let chatSchemaReady = false;
 let articleSchemaReady = false;
@@ -477,7 +491,7 @@ async function getArticles(request, env) {
   const lang = normalizeArticleLang(url.searchParams.get("lang"));
   const limit = clampLimit(url.searchParams.get("limit"), 50);
   const category = normalizeOptionalText(url.searchParams.get("category"), 80);
-  const where = ["articles.status = 'published'"];
+  const where = ["articles.status = 'published'", PUBLIC_LOOP_NIGHTLY_UPDATE_FILTER];
   const binds = [lang, limit];
 
   if (category) {
@@ -563,6 +577,7 @@ async function getArticleFeed(request, env) {
         limit 1
       )
     where articles.status = 'published'
+      and ${PUBLIC_LOOP_NIGHTLY_UPDATE_FILTER}
       and coalesce(requested.title, zh.title, fallback.title) is not null
     order by coalesce(articles.published_at, articles.created_at) desc, articles.article_id desc
     limit ?
@@ -5614,6 +5629,50 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-18-public-site-nightly-update',
+        '2026-06-18-public-site-nightly-update',
+        'site-updates',
+        '["网站更新","主站优化","夜间汇总","阅读体验","资源区","游戏区","RSS"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-18T00:00:00.000Z',
+        '2026-06-18T00:00:00.000Z',
+        '2026-06-18T00:00:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-public-site-nightly-update", {
+      zh: {
+        title: "主站夜间优化汇总",
+        summary: "合并昨晚主站优化记录：阅读体验、资源区、游戏区、RSS、安全渲染和移动端适配统一收进一篇更新。",
+        content_markdown: "# 主站夜间优化汇总\n\n这篇记录把昨晚主站公开侧的小步优化合并到一起，避免网站更新记录被一串细项刷屏。\n\n## 汇总内容\n\n- 知识库文章详情补齐目录、阅读进度、复制链接和回到顶部能力；本轮把进度条移到窗口底部，把回到顶部按钮挂到右下角，减少标题区拥挤。\n- 资源区补齐分类数量、卡片状态、空分类提示和更严格的资源链接白名单。\n- 游戏区补齐云存档、源码徽标、语言标记、入口路径守卫和游戏外壳安全 DOM 渲染。\n- 首页最近更新、知识库列表、筛选、资源筛选和游戏列表继续收紧为 DOM / textContent 渲染，降低公开内容的 XSS 风险。\n- RSS 入口、语言同步、文章链接保留语言和最近更新提示统一整理，订阅和分享更稳定。\n- 图片懒加载、异步解码、固定图片尺寸和移动端布局细节继续做轻量优化。\n\n旧的单项记录会保留为历史数据和可回退内容，但公开列表与 RSS 只展示这一篇汇总。"
+      },
+      en: {
+        title: "Public Site Nightly Summary",
+        summary: "Merged last night's public-site updates into one record covering reading, resources, games, RSS, safe rendering, and mobile layout.",
+        content_markdown: "# Public Site Nightly Summary\n\nThis entry merges last night's small public-site updates into one readable record, so the site update log no longer gets flooded by one article per tiny adjustment.\n\n## Summary\n\n- Knowledge articles gained contents navigation, reading progress, copy-link, and back-to-top controls; this round moves the progress bar to the bottom of the window and floats the back-to-top button at the lower right.\n- The Resources area gained category counts, status badges, empty-category guidance, and stricter resource link allowlists.\n- The Games area gained cloud-save and source badges, localized language labels, launch-path guards, and safer DOM rendering in the game shell.\n- Recent updates, the knowledge list, filters, resource filters, and the game list continue to render through DOM / textContent to reduce XSS risk for public content.\n- RSS, language-aware links, article share URLs, and recent-update labels were aligned for more stable subscription and sharing behavior.\n- Lazy loading, async image decoding, fixed image dimensions, and mobile layout details received lightweight polish.\n\nThe old single-topic entries remain as historical and rollback data, but public lists and RSS now show this one summary instead."
+      },
+      ja: {
+        title: "メインサイト夜間更新まとめ",
+        summary: "昨夜のメインサイト更新を一つにまとめ、読書体験、リソース、ゲーム、RSS、安全描画、モバイル調整を整理しました。",
+        content_markdown: "# メインサイト夜間更新まとめ\n\nこの記録では、昨夜の公開サイト側の小さな更新を一つにまとめました。更新記録が細かな記事で埋まりすぎないようにするためです。\n\n## まとめ\n\n- 知識庫の記事詳細に、目次、読書進捗、リンクコピー、先頭へ戻る操作を追加しました。今回、進捗バーはウィンドウ下部へ移動し、先頭へ戻るボタンは右下に浮かせました。\n- リソース欄には分類件数、状態バッジ、空分類の案内、より厳しいリンク許可リストを追加しました。\n- ゲーム欄にはクラウド保存、ソース表示、言語ラベル、起動パスの確認、ゲームシェルの安全な DOM 描画を追加しました。\n- 最近の更新、知識庫一覧、フィルター、リソースフィルター、ゲーム一覧は DOM / textContent 描画を続け、公開内容の XSS リスクを下げます。\n- RSS、言語付きリンク、記事共有 URL、最近の更新ラベルをそろえ、購読と共有を安定させました。\n- 画像の遅延読み込み、非同期デコード、固定画像サイズ、モバイル表示の細部も軽く調整しました。\n\n古い単項目の記事は履歴と回退用データとして残しますが、公開一覧と RSS ではこのまとめ記事だけを表示します。"
+      }
+    }, "2026-06-18T00:00:00.000Z"),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",

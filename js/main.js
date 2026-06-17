@@ -468,6 +468,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "🪟",
+      date: "2026.06.18",
+      title: { zh: "主站夜间优化汇总", en: "Public Site Nightly Summary", ja: "メインサイト夜間更新まとめ" },
+      desc: {
+        zh: "合并昨晚主站优化记录：阅读体验、资源区、游戏区、RSS、安全渲染和移动端适配统一收进一篇更新",
+        en: "Merged last night's public-site updates into one record covering reading, resources, games, RSS, safe rendering, and mobile layout",
+        ja: "昨夜のメインサイト更新を一つにまとめ、読書体験、リソース、ゲーム、RSS、安全描画、モバイル調整を整理しました"
+      }
+    },
+    {
       icon: "🗂️",
       date: "2026.06.18",
       title: { zh: "资源空分类提示", en: "Resource Empty Category State", ja: "リソース空分類表示" },
@@ -1310,6 +1320,20 @@ const videoWindowState = {
 
 const languageStorageKey = "lusu-site-language";
 const siteUpdateCategory = "site-updates";
+const publicLoopNightlyUpdateSlug = "2026-06-18-public-site-nightly-update";
+const publicLoopNightlyUpdateTitleEn = "Public Site Nightly Summary";
+const publicLoopNightlyCollapsedSlugs = new Set([
+  "2026-06-17-knowledge-search",
+  "2026-06-17-article-share-link",
+  "2026-06-17-video-empty-state",
+  "2026-06-17-route-aware-welcome"
+]);
+const publicLoopNightlyCollapsedFallbackTitlesEn = new Set([
+  "Knowledge Search Added",
+  "Article Link Copy",
+  "Video Empty State",
+  "Cleaner Article Deep Links"
+]);
 const articleCategoryLabels = {
   "site-updates": {
     zh: "网站更新记录",
@@ -1361,8 +1385,15 @@ const tagLabels = {
   "播放器": { zh: "播放器", en: "Player", ja: "プレイヤー" },
   "空状态": { zh: "空状态", en: "Empty state", ja: "空状態" },
   "资源区": { zh: "资源区", en: "Resources", ja: "リソース" },
+  "主站优化": { zh: "主站优化", en: "Main site", ja: "メインサイト" },
+  "夜间汇总": { zh: "夜间汇总", en: "Nightly summary", ja: "夜間まとめ" },
   "下载": { zh: "下载", en: "Download", ja: "ダウンロード" },
   "占位按钮": { zh: "占位按钮", en: "Placeholder button", ja: "準備中ボタン" },
+  "状态": { zh: "状态", en: "Status", ja: "状態" },
+  "源码": { zh: "源码", en: "Source", ja: "ソース" },
+  "目录": { zh: "目录", en: "Contents", ja: "目次" },
+  "进度": { zh: "进度", en: "Progress", ja: "進捗" },
+  "阅读": { zh: "阅读", en: "Reading", ja: "読書" },
   "杂谈区": { zh: "杂谈区", en: "Talk", ja: "雑談" },
   "安全渲染": { zh: "安全渲染", en: "Safe rendering", ja: "安全描画" },
   "后台": { zh: "后台", en: "Admin", ja: "管理画面" },
@@ -1921,6 +1952,32 @@ function articleTagName(tag) {
   return tagLabels[tag]?.[currentLang] || tag || "";
 }
 
+function isCollapsedPublicLoopUpdate(item) {
+  const slug = String(item?.slug || "");
+  if (slug === publicLoopNightlyUpdateSlug) {
+    return false;
+  }
+  if (item?.category === siteUpdateCategory && publicLoopNightlyCollapsedSlugs.has(slug)) {
+    return true;
+  }
+  if (item?.category === siteUpdateCategory && slug.startsWith("2026-06-18-")) {
+    return true;
+  }
+  const fallbackTitleEn = typeof item?.title === "object" ? item.title.en : "";
+  if (!slug && publicLoopNightlyCollapsedFallbackTitlesEn.has(fallbackTitleEn)) {
+    return true;
+  }
+  return !slug && item?.date === "2026.06.18" && fallbackTitleEn !== publicLoopNightlyUpdateTitleEn;
+}
+
+function visiblePublicArticles(items) {
+  return (items || []).filter((item) => !isCollapsedPublicLoopUpdate(item));
+}
+
+function visibleLocalUpdates() {
+  return visiblePublicArticles(content.updates);
+}
+
 async function loadArticles() {
   const requestId = articleState.requestId + 1;
   articleState.requestId = requestId;
@@ -1932,7 +1989,7 @@ async function loadArticles() {
     if (requestId !== articleState.requestId) {
       return;
     }
-    articleState.articles = payload.articles || [];
+    articleState.articles = visiblePublicArticles(payload.articles || []);
     renderUpdates();
   } catch (error) {
     if (requestId !== articleState.requestId) {
@@ -3057,7 +3114,7 @@ function renderUpdates() {
   const list = document.getElementById("recent-updates");
   const updateArticles = siteUpdateArticles().length
     ? siteUpdateArticles().slice(0, 5)
-    : content.updates.slice(0, 5);
+    : visibleLocalUpdates().slice(0, 5);
   if (!updateArticles.length) {
     const emptyItem = document.createElement("li");
     const icon = document.createElement("span");
@@ -3122,7 +3179,7 @@ function recentUpdateIcon(item) {
 }
 
 function latestUpdateDate() {
-  const dates = siteUpdateArticles().length ? siteUpdateArticles() : content.updates;
+  const dates = siteUpdateArticles().length ? siteUpdateArticles() : visibleLocalUpdates();
   return dates.reduce((latest, item) => {
     const date = formatLocalDateKey(item.published_at || item.created_at || item.date);
     return date > latest ? date : latest;
@@ -3130,7 +3187,7 @@ function latestUpdateDate() {
 }
 
 function siteUpdateArticles() {
-  return articleState.articles
+  return visiblePublicArticles(articleState.articles)
     .filter((item) => item.category === siteUpdateCategory)
     .sort((a, b) => String(b.published_at || b.created_at || "").localeCompare(String(a.published_at || a.created_at || "")));
 }

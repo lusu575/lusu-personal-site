@@ -1194,6 +1194,7 @@ main {
 .article-detail {
   grid-column: 2;
   grid-row: 1;
+  position: relative;
   padding: 16px;
   background:
     linear-gradient(90deg, rgba(52, 134, 255, 0.08) 0 1px, transparent 1px 100%),
@@ -1203,7 +1204,7 @@ main {
 
 .folder-layout.is-reading .article-detail {
   grid-column: 1;
-  padding: 18px 22px 22px;
+  padding: 18px 22px 126px;
 }
 
 .article-back-button {
@@ -1242,12 +1243,18 @@ main {
 .article-read-progress {
   display: grid;
   gap: 6px;
-  margin: 0 0 14px;
+  position: fixed;
+  right: clamp(84px, 7vw, 150px);
+  bottom: 54px;
+  left: clamp(84px, 7vw, 150px);
+  z-index: 44;
+  margin: 0;
   padding: 8px 10px;
   border: 1px solid #8aa7d8;
   border-radius: 6px;
   background: linear-gradient(180deg, #f7fbff, #e6f0ff);
-  box-shadow: inset 1px 1px 0 #fff;
+  box-shadow: inset 1px 1px 0 #fff, 2px 2px 0 rgba(0, 60, 158, 0.16);
+  pointer-events: none;
 }
 
 .article-read-progress-label {
@@ -1365,8 +1372,13 @@ main {
 }
 
 .article-top-link {
+  position: fixed;
+  right: clamp(20px, 4vw, 64px);
+  bottom: 106px;
+  z-index: 45;
   color: #184d0d;
   background: linear-gradient(180deg, #ffffff, #dff7c8);
+  box-shadow: inset 1px 1px 0 #fff, 2px 2px 0 rgba(0, 60, 158, 0.18);
 }
 
 .article-copy-link.is-done {
@@ -3826,10 +3838,24 @@ main {
   .article-detail {
     grid-column: 1;
     grid-row: auto;
+    padding-bottom: 172px;
   }
 
   .article-detail-actions {
     align-items: flex-start;
+  }
+
+  .article-read-progress {
+    right: 12px;
+    bottom: 98px;
+    left: 12px;
+    padding: 7px 8px;
+  }
+
+  .article-top-link {
+    right: 12px;
+    bottom: 156px;
+    max-width: calc(100vw - 24px);
   }
 
   .article-copy-status {
@@ -3935,6 +3961,10 @@ main {
   .notepad-paper,
   .game-list {
     padding: 12px;
+  }
+
+  .folder-layout.is-reading .article-detail {
+    padding-bottom: 172px;
   }
 
   .video-grid {
