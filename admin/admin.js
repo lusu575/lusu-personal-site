@@ -74,6 +74,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "聊天室消息读取期间锁定编辑",
+    body: "聊天室管理刷新消息列表时，会临时锁定消息列表、编辑表单和治理按钮，避免列表读取中继续处理旧记录。"
+  },
+  {
+    date: "2026-06-18",
     title: "视频元数据读取期间锁定编辑",
     body: "视频管理自动识别链接或刷新元数据时，会临时锁定视频表单、保存按钮、列表切换和新建入口，避免慢请求返回后覆盖另一个视频。"
   },
@@ -2355,7 +2360,7 @@ async function loadChatMessages() {
     return;
   }
   state.chatMessagesLoading = true;
-  syncChatFilterBusyState();
+  syncChatActionState();
   try {
     const includeHidden = $("#include-hidden-chat")?.checked ? "1" : "0";
     const payload = await api(`/api/admin/chat/messages?limit=100&includeHidden=${includeHidden}`);
@@ -2367,7 +2372,7 @@ async function loadChatMessages() {
     renderChatMessages();
   } finally {
     state.chatMessagesLoading = false;
-    syncChatFilterBusyState();
+    syncChatActionState();
   }
 }
 
@@ -2391,7 +2396,7 @@ function renderChatMessages() {
     }
     item.type = "button";
     item.dataset.messageId = message.message_id || "";
-    item.disabled = isChatActionBusy();
+    item.disabled = isChatInteractionBusy();
     title.className = "list-title";
     title.textContent = message.nickname || "";
     meta.className = "list-meta";
@@ -2448,7 +2453,7 @@ function resetChatForm() {
 function syncChatActionState() {
   const message = selectedChatMessage();
   const hasMessage = Boolean(message);
-  const busy = state.chatActionBusy;
+  const busy = isChatInteractionBusy();
   const saveButton = $("#chat-form-admin button[type='submit']");
   const toggleButton = $("#toggle-chat-hidden");
   const deleteButton = $("#delete-chat-message");
@@ -2468,7 +2473,7 @@ function syncChatActionState() {
       button.title = "请先选择聊天记录";
       button.setAttribute("aria-disabled", "true");
     } else if (busy) {
-      button.title = "正在处理聊天记录";
+      button.title = chatInteractionBusyTitle();
       button.removeAttribute("aria-disabled");
     } else {
       button.removeAttribute("title");
@@ -2518,13 +2523,17 @@ function isChatMessagesLoading() {
   return state.chatMessagesLoading;
 }
 
-function isChatFilterBusy() {
+function isChatInteractionBusy() {
   return isChatActionBusy() || isChatMessagesLoading();
 }
 
+function isChatFilterBusy() {
+  return isChatInteractionBusy();
+}
+
 function syncChatListBusyState() {
-  const busy = isChatActionBusy();
-  const busyTitle = chatActionBusyListTitle();
+  const busy = isChatInteractionBusy();
+  const busyTitle = isChatMessagesLoading() ? "正在读取聊天记录，完成后再切换" : chatActionBusyListTitle();
   $$("#chat-list .list-item").forEach((item) => {
     item.disabled = busy;
     item.title = busy ? busyTitle : "打开这条聊天记录";
@@ -2574,8 +2583,8 @@ function chatActionBusyFilterTitle() {
 }
 
 function syncChatFormBusyState() {
-  const busy = isChatActionBusy();
-  const title = busy ? chatActionBusyFormTitle() : "";
+  const busy = isChatInteractionBusy();
+  const title = busy ? (isChatMessagesLoading() ? "正在读取聊天记录，完成后再编辑表单" : chatActionBusyFormTitle()) : "";
   $$("#chat-form-admin input, #chat-form-admin textarea").forEach((field) => {
     field.disabled = busy;
     field.setAttribute("aria-busy", busy ? "true" : "false");
@@ -2595,6 +2604,10 @@ function chatActionBusyFormTitle() {
     banVisitor: "正在禁言用户 ID，完成后再编辑表单",
     banIp: "正在禁言 IP 来源，完成后再编辑表单"
   }[state.chatActionBusyMode] || "正在处理聊天记录，完成后再编辑表单";
+}
+
+function chatInteractionBusyTitle() {
+  return isChatMessagesLoading() ? "正在读取聊天记录" : "正在处理聊天记录";
 }
 
 function setChatActionBusy(mode) {
@@ -3270,7 +3283,7 @@ function bindEvents() {
   });
   $("#chat-list").addEventListener("click", (event) => {
     const item = event.target.closest("[data-message-id]");
-    if (item && !isChatActionBusy()) {
+    if (item && !isChatInteractionBusy()) {
       selectChatMessage(item.dataset.messageId);
     }
   });
