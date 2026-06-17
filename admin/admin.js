@@ -73,6 +73,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "聊天筛选切换防护",
+    body: "聊天室管理保存、隐藏、删除或禁言请求进行中会临时禁用“显示隐藏”筛选，并在筛选变更入口做二次拦截，避免慢请求期间刷新消息列表导致当前选中记录丢失。"
+  },
+  {
+    date: "2026-06-18",
     title: "聊天治理期间切换防护",
     body: "聊天室管理保存、隐藏、删除或禁言请求进行中会临时禁用消息列表，并在列表点击入口做二次拦截，避免慢请求期间切换消息导致当前表单和正在处理的记录错位。"
   },
@@ -2266,6 +2271,7 @@ function syncChatActionState() {
     }
   }
   syncChatListBusyState();
+  syncChatFilterBusyState();
 }
 
 function isChatActionBusy() {
@@ -2289,6 +2295,28 @@ function chatActionBusyListTitle() {
     banVisitor: "正在禁言用户 ID，完成后再切换",
     banIp: "正在禁言 IP 来源，完成后再切换"
   }[state.chatActionBusyMode] || "正在处理聊天记录，完成后再切换";
+}
+
+function syncChatFilterBusyState() {
+  const checkbox = $("#include-hidden-chat");
+  if (!checkbox) {
+    return;
+  }
+  const busy = isChatActionBusy();
+  const title = busy ? chatActionBusyFilterTitle() : "显示或隐藏已隐藏聊天记录";
+  checkbox.disabled = busy;
+  checkbox.title = title;
+  checkbox.closest("label")?.setAttribute("title", title);
+}
+
+function chatActionBusyFilterTitle() {
+  return {
+    save: "正在保存聊天记录，完成后再调整筛选",
+    toggle: "正在处理聊天可见性，完成后再调整筛选",
+    delete: "正在删除聊天记录，完成后再调整筛选",
+    banVisitor: "正在禁言用户 ID，完成后再调整筛选",
+    banIp: "正在禁言 IP 来源，完成后再调整筛选"
+  }[state.chatActionBusyMode] || "正在处理聊天记录，完成后再调整筛选";
 }
 
 function setChatActionBusy(mode) {
@@ -2915,7 +2943,11 @@ function bindEvents() {
   });
   $("#video-category-form").addEventListener("submit", saveVideoCategory);
   $("#delete-video-category").addEventListener("click", deleteVideoCategory);
-  $("#include-hidden-chat").addEventListener("change", loadChatMessages);
+  $("#include-hidden-chat").addEventListener("change", () => {
+    if (!isChatActionBusy()) {
+      loadChatMessages();
+    }
+  });
   $("#chat-list").addEventListener("click", (event) => {
     const item = event.target.closest("[data-message-id]");
     if (item && !isChatActionBusy()) {
