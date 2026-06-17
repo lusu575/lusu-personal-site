@@ -91,7 +91,7 @@ function adminLoginHtml(email) {
     <form id="login-form">
       ${denied}
       <p>后台只允许站长账号进入。这里复用主站账号系统，登录后会重新检查 admin 权限。</p>
-      <label>邮箱<input id="email" name="email" type="email" autocomplete="email" required></label>
+      <label>邮箱<input id="email" name="email" type="email" autocomplete="username" required></label>
       <label>密码<input id="password" name="password" type="password" autocomplete="current-password" required></label>
       <button type="submit">登录后台</button>
       <p class="status" id="status"></p>

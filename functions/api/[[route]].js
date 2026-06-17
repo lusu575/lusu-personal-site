@@ -978,7 +978,11 @@ async function getAdminAccounts(request, env) {
     select
       users.id,
       users.email,
-      users.password_hash,
+      case
+        when substr(users.password_hash, 1, 14) = 'pbkdf2_sha256$' then 'pbkdf2'
+        when users.password_hash is not null and users.password_hash <> '' then 'legacy'
+        else ''
+      end as password_scheme,
       users.role,
       users.created_at,
       users.updated_at,
@@ -998,7 +1002,17 @@ async function getAdminAccount(request, env, userId) {
   await requireAdmin(request, env);
   const normalizedId = normalizeRecordId(userId, "账号编号不正确。");
   const account = await env.DB.prepare(`
-    select id, email, password_hash, role, created_at, updated_at
+    select
+      id,
+      email,
+      case
+        when substr(password_hash, 1, 14) = 'pbkdf2_sha256$' then 'pbkdf2'
+        when password_hash is not null and password_hash <> '' then 'legacy'
+        else ''
+      end as password_scheme,
+      role,
+      created_at,
+      updated_at
     from users
     where id = ?
   `).bind(normalizedId).first();
@@ -1459,7 +1473,7 @@ async function createAdminChatBan(request, env) {
   }
   const visitorId = banType === "visitor" ? normalizeRecordId(body.visitorId || body.visitor_id, "访客 ID 不正确。") : "";
   const ipHash = banType === "ip_hash" ? normalizeIpHash(body.ipHash || body.ip_hash) : "";
-  const ipPrefix = normalizeAnalyticsText(body.ipPrefix || body.ip_prefix, 80);
+  const ipPrefix = banType === "ip_hash" ? normalizeIpPrefix(body.ipPrefix || body.ip_prefix) : "";
   const reason = normalizeAnalyticsText(body.reason, 200) || "后台禁言";
   const durationHours = Number(body.durationHours || body.duration_hours || 0);
   const expiresAt = Number.isFinite(durationHours) && durationHours > 0
@@ -2231,7 +2245,11 @@ async function parseVideoUrl(input) {
     throw new HttpError("请输入视频链接。", 400);
   }
   if (/^BV[a-zA-Z0-9]+$/.test(raw)) {
-    return parseVideoUrl(`https://www.bilibili.com/video/${raw}`);
+    const bvid = cleanBilibiliBvid(raw);
+    if (!bvid) {
+      throw new HttpError("无法识别 Bilibili BV 号。", 400);
+    }
+    return parseVideoUrl(`https://www.bilibili.com/video/${bvid}`);
   }
   let url;
   try {
@@ -2239,8 +2257,8 @@ async function parseVideoUrl(input) {
   } catch {
     throw new HttpError("视频链接格式不正确。", 400);
   }
-  if (!["http:", "https:"].includes(url.protocol)) {
-    throw new HttpError("视频链接必须使用 http 或 https。", 400);
+  if (url.protocol !== "https:") {
+    throw new HttpError("视频链接必须使用 https。", 400);
   }
   const host = url.hostname.toLowerCase().replace(/^www\./, "");
   if (host === "b23.tv") {
@@ -2260,11 +2278,11 @@ async function parseVideoUrl(input) {
     }
   }
   if (host === "bilibili.com" || host.endsWith(".bilibili.com")) {
-    const bvid = (url.pathname.match(/\/video\/(BV[a-zA-Z0-9]+)/) || [])[1];
+    const bvid = cleanBilibiliBvid((url.pathname.match(/\/video\/(BV[a-zA-Z0-9]{10})(?:\/|$)/) || [])[1]);
     if (!bvid) {
       throw new HttpError("暂时只支持 bilibili.com/video/BV... 视频链接。", 400);
     }
-    const page = Math.max(1, Math.min(Number(url.searchParams.get("p") || url.searchParams.get("page") || 1), 99));
+    const page = normalizeBilibiliPage(url.searchParams.get("p") || url.searchParams.get("page"));
     return {
       platform: "bilibili",
       original_url: url.toString(),
@@ -2274,6 +2292,14 @@ async function parseVideoUrl(input) {
     };
   }
   throw new HttpError("只支持 youtube.com、youtu.be、bilibili.com、b23.tv 视频链接。", 400);
+}
+
+function normalizeBilibiliPage(value) {
+  const page = Number(value || 1);
+  if (!Number.isFinite(page)) {
+    return 1;
+  }
+  return Math.max(1, Math.min(Math.round(page), 99));
 }
 
 function youtubeParsed(url, videoId) {
@@ -2290,7 +2316,12 @@ function youtubeParsed(url, videoId) {
 
 function cleanYoutubeId(value) {
   const id = String(value || "").trim();
-  return /^[a-zA-Z0-9_-]{6,20}$/.test(id) ? id : "";
+  return /^[a-zA-Z0-9_-]{11}$/.test(id) ? id : "";
+}
+
+function cleanBilibiliBvid(value) {
+  const id = String(value || "").trim();
+  return /^BV[a-zA-Z0-9]{10}$/.test(id) ? id : "";
 }
 
 function bilibiliVideoPageUrl(parsed, mobile = false) {
@@ -4477,7 +4508,7 @@ function adminAccountRow(row) {
     active_sessions: Number(row.active_sessions || 0),
     login_count: Number(row.login_count || 0),
     save_slots: Number(row.save_slots || 0),
-    password_status: passwordStatusLabel(row.password_hash),
+    password_status: passwordStatusLabel(row.password_scheme),
     password_visible: false,
     password_note: "密码只保存加密结果，后台不能查看原文；需要时可直接设置新密码。"
   };
@@ -4513,7 +4544,7 @@ function adminAccountActivityRow(row) {
 }
 
 function passwordStatusLabel(value) {
-  return String(value || "").startsWith("pbkdf2_sha256$")
+  return value === "pbkdf2"
     ? "已加密保存"
     : "旧格式或未知";
 }
@@ -4769,6 +4800,42 @@ function normalizeIpHash(value) {
   return text;
 }
 
+function normalizeIpPrefix(value) {
+  const text = normalizeAnalyticsText(value, 80);
+  if (!text) {
+    return "";
+  }
+  if (isMaskedIpv4Prefix(text)) {
+    return text;
+  }
+  if (isMaskedIpv6Prefix(text)) {
+    return text;
+  }
+  return "";
+}
+
+function isMaskedIpv4Prefix(value) {
+  const match = String(value || "").match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.0\/24$/);
+  return Boolean(match && hasValidIpv4Octets(match.slice(1)));
+}
+
+function isFullIpv4Address(value) {
+  const parts = String(value || "").split(".");
+  return parts.length === 4
+    && parts.every((part) => /^\d{1,3}$/.test(part))
+    && hasValidIpv4Octets(parts);
+}
+
+function hasValidIpv4Octets(parts) {
+  return parts.every((part) => Number(part) >= 0 && Number(part) <= 255);
+}
+
+function isMaskedIpv6Prefix(value) {
+  const text = String(value || "").trim();
+  const match = text.match(/^([0-9a-fA-F]{1,4}:){3}[0-9a-fA-F]{1,4}::\/64$/);
+  return Boolean(match);
+}
+
 function normalizeTags(value) {
   if (!Array.isArray(value)) {
     return [];
@@ -4851,21 +4918,59 @@ async function requestIpInfo(request, env, purpose = "analytics") {
 }
 
 function requestIp(request) {
-  return request.headers.get("CF-Connecting-IP")
-    || request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+  return cleanRequestIp(request.headers.get("CF-Connecting-IP"))
+    || cleanRequestIp(request.headers.get("x-forwarded-for")?.split(",")[0])
     || "unknown";
+}
+
+function cleanRequestIp(value) {
+  return String(value || "").trim();
 }
 
 function maskIp(ip) {
   const value = String(ip || "");
-  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(value)) {
+  if (isFullIpv4Address(value)) {
     const parts = value.split(".");
     return `${parts[0]}.${parts[1]}.${parts[2]}.0/24`;
   }
   if (value.includes(":")) {
-    return `${value.split(":").slice(0, 4).join(":")}::/64`;
+    return maskIpv6(value);
   }
   return "";
+}
+
+function maskIpv6(ip) {
+  const groups = expandIpv6(ip);
+  if (!groups) {
+    return "";
+  }
+  return `${groups.slice(0, 4).map(compactIpv6Group).join(":")}::/64`;
+}
+
+function expandIpv6(ip) {
+  const value = String(ip || "").trim().toLowerCase();
+  if (!/^[0-9a-f:]+$/.test(value) || (value.match(/::/g) || []).length > 1) {
+    return null;
+  }
+  const hasCompression = value.includes("::");
+  const [headText, tailText = ""] = value.split("::");
+  const head = headText ? headText.split(":") : [];
+  const tail = tailText ? tailText.split(":") : [];
+  const fillCount = 8 - head.length - tail.length;
+  if (hasCompression && fillCount < 1) {
+    return null;
+  }
+  const groups = hasCompression
+    ? [...head, ...Array(fillCount).fill("0"), ...tail]
+    : value.split(":");
+  if (groups.length !== 8 || groups.some((group) => !/^[0-9a-f]{1,4}$/.test(group))) {
+    return null;
+  }
+  return groups.map((group) => group.padStart(4, "0"));
+}
+
+function compactIpv6Group(group) {
+  return String(group || "0").replace(/^0+([0-9a-f])$/i, "$1").replace(/^0+/, "") || "0";
 }
 
 function fillDailySeries(rows, since, days) {
