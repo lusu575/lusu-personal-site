@@ -372,6 +372,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "📺",
+      date: "2026.06.17",
+      title: { zh: "视频区空状态增强", en: "Video Empty State", ja: "動画欄の空状態を改善" },
+      desc: {
+        zh: "视频区没有公开视频时会显示 XP 风格提示，并提供查看网站更新记录的入口",
+        en: "The videos area now shows an XP-style empty state with a shortcut to site updates when no videos are published",
+        ja: "公開動画がない場合、動画欄に XP 風の空状態とサイト更新記録への入口を表示します"
+      }
+    },
+    {
       icon: "🔗",
       date: "2026.06.17",
       title: { zh: "文章详情复制链接", en: "Article Link Copy", ja: "記事リンクコピー" },
@@ -1601,13 +1611,37 @@ function renderVideos() {
       || (item.categories || []).some((category) => category.category_id === activeFilters.videos)
   ));
   if (!items.length) {
-    const empty = document.createElement("p");
-    empty.className = "loading-text";
-    empty.textContent = videoUiText("empty");
-    list.appendChild(empty);
+    list.appendChild(renderVideoEmptyState(videoState.videos.length > 0));
     return;
   }
   items.forEach((item) => list.appendChild(videoCardElement(item)));
+}
+
+function renderVideoEmptyState(isFiltered = false) {
+  const state = document.createElement("article");
+  state.className = "video-empty-state";
+
+  const icon = document.createElement("span");
+  icon.className = "video-empty-icon";
+  icon.setAttribute("aria-hidden", "true");
+  icon.textContent = "▣";
+
+  const copy = document.createElement("div");
+  copy.className = "video-empty-copy";
+  const title = document.createElement("h3");
+  title.textContent = videoUiText("emptyTitle");
+  const text = document.createElement("p");
+  text.textContent = videoUiText(isFiltered ? "emptyFiltered" : "emptyBody");
+  copy.append(title, text);
+
+  const action = document.createElement("button");
+  action.type = "button";
+  action.className = "xp-button";
+  action.dataset.articleCategory = siteUpdateCategory;
+  action.textContent = videoUiText("emptyAction");
+
+  state.append(icon, copy, action);
+  return state;
 }
 
 function renderVideoCategoryButtons() {
@@ -1720,6 +1754,10 @@ function videoUiText(key) {
     loading: { zh: "正在读取视频...", en: "Loading videos...", ja: "動画を読み込み中..." },
     failed: { zh: "视频读取失败，请稍后再试。", en: "Videos failed to load. Please try again later.", ja: "動画を読み込めませんでした。後でお試しください。" },
     empty: { zh: "这里还没有发布的视频。", en: "No published videos yet.", ja: "公開済みの動画はまだありません。" },
+    emptyTitle: { zh: "视频还在整理中", en: "Videos are being organized", ja: "動画を整理中です" },
+    emptyBody: { zh: "这里会放 Bilibili / YouTube 作品、收藏和网站施工记录。可以先查看最近的网站更新。", en: "Bilibili / YouTube works, favorites, and build logs will live here. You can check recent site updates first.", ja: "ここには Bilibili / YouTube の作品、保存動画、制作記録を置く予定です。まずは最近のサイト更新を確認できます。" },
+    emptyFiltered: { zh: "当前分类暂时没有公开视频，换个分类或先看看网站更新记录。", en: "This category has no published videos yet. Try another category or check site updates.", ja: "このカテゴリには公開動画がまだありません。別のカテゴリ、またはサイト更新記録を確認してください。" },
+    emptyAction: { zh: "查看网站更新", en: "View site updates", ja: "サイト更新を見る" },
     untitled: { zh: "未命名视频", en: "Untitled video", ja: "無題の動画" },
     noDescription: { zh: "暂无简介。", en: "No description yet.", ja: "説明はまだありません。" },
     unsupported: { zh: "该视频暂不支持站内播放", en: "This video cannot be played inline right now.", ja: "この動画は現在サイト内再生に対応していません。" },

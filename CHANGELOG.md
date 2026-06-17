@@ -4,6 +4,11 @@
 
 ## 2026-06-17
 
+- 视频区空状态增强：
+  - 视频区在当前没有公开视频或筛选分类无结果时，显示 XP 风格空状态卡片，说明视频区内容正在整理中。
+  - 空状态提供“查看网站更新”入口，复用现有知识库分类跳转，不影响已有视频卡片、播放窗口和后台视频数据。
+  - 更新 `index.html` 的 CSS / JS query 为 `20260617-video-empty-state`，并新增同名三语 `site-updates` 更新文章，同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新。
+
 - 文章详情复制链接：
   - 知识库文章详情头部新增 XP 风格“复制文章链接”按钮，生成包含当前语言参数的直链，方便分享文章详情页。
   - 复制成功 / 失败状态使用中文 / English / 日本語 文案，通过 `textContent` 更新，不影响 Markdown 安全渲染。

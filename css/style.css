@@ -1373,6 +1373,58 @@ main {
   grid-auto-rows: auto;
 }
 
+.video-empty-state {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 126px;
+  padding: 16px;
+  border: 2px dashed #7fa4df;
+  border-radius: 7px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(232, 245, 255, 0.94)),
+    repeating-linear-gradient(90deg, rgba(59, 128, 226, 0.08) 0 1px, transparent 1px 18px);
+  box-shadow: inset 1px 1px 0 #fff, 3px 3px 0 rgba(0, 60, 158, 0.12);
+}
+
+.video-empty-icon {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border: 2px solid #285fb8;
+  border-radius: 6px;
+  color: #073a91;
+  background: linear-gradient(180deg, #fff7b7, #90d6ff);
+  font-size: 28px;
+  box-shadow: inset 2px 2px 0 rgba(255, 255, 255, 0.82), 2px 2px 0 rgba(0, 60, 158, 0.24);
+}
+
+.video-empty-copy {
+  min-width: 0;
+}
+
+.video-empty-copy h3 {
+  margin: 0 0 5px;
+  color: #073a91;
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.video-empty-copy p {
+  margin: 0;
+  color: var(--xp-muted);
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.video-empty-state .xp-button {
+  min-height: 34px;
+  white-space: nowrap;
+}
+
 .video-card {
   display: grid;
   grid-template-rows: 188px 1fr;
@@ -3629,6 +3681,17 @@ main {
     gap: 12px;
     align-content: start;
     align-items: start;
+  }
+
+  .video-empty-state {
+    grid-template-columns: 1fr;
+    justify-items: start;
+    width: 100%;
+    padding: 14px;
+  }
+
+  .video-empty-state .xp-button {
+    width: 100%;
   }
 
   .video-card {

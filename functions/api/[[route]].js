@@ -4209,6 +4209,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-17-video-empty-state',
+        '2026-06-17-video-empty-state',
+        'site-updates',
+        '["网站更新","视频区","空状态","移动端"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T15:53:00.000Z',
+        '2026-06-17T15:53:00.000Z',
+        '2026-06-17T15:53:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -4449,6 +4476,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# 記事リンクコピー\n\n今回の更新では、知識庫の記事詳細ページを共有しやすくするため、読み物まわりの操作を少し整えました。\n\n## 更新内容\n\n- 記事詳細のヘッダーに、現在の記事の直リンクをコピーするボタンを追加しました。\n- コピーされるリンクには現在の言語パラメータが含まれ、中文、English、日本語の表示をそのまま共有できます。\n- 成功・失敗メッセージは三言語で用意し、安全な DOM テキストとして更新します。\n- モバイルではボタンと状態表示が自然に折り返し、横方向にはみ出さないようにしました。"
       }
     }, "2026-06-17T15:40:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-17-video-empty-state", {
+      zh: {
+        title: "视频区空状态增强",
+        summary: "视频区没有公开视频时，会显示 XP 风格提示并提供网站更新入口。",
+        content_markdown: "# 视频区空状态增强\n\n本次更新给主站视频区补上更清晰的空状态，让没有公开视频或筛选无结果时也不显得像页面坏掉了。\n\n## 更新内容\n\n- 视频区无公开视频时显示 XP 风格提示卡片，说明视频内容正在整理中。\n- 筛选到空分类时会提示换分类或查看网站更新记录。\n- 空状态按钮会跳转到知识库的网站更新记录分类，方便继续浏览施工进度。\n- 手机端空状态改为单列布局，保持视频区无横向溢出。\n- 已有视频卡片、播放窗口、公开 API 和后台视频数据不受影响。"
+      },
+      en: {
+        title: "Video Empty State",
+        summary: "The videos area now shows an XP-style empty state with a shortcut to site updates when no videos are published.",
+        content_markdown: "# Video Empty State\n\nThis update adds a clearer empty state to the public videos area, so the page still feels intentional when no videos are published or a filter has no results.\n\n## Changes\n\n- When no public videos are available, the videos area now shows an XP-style message card explaining that the archive is being organized.\n- Empty filtered categories suggest trying another category or checking site updates.\n- The empty-state button opens the knowledge base site update category so visitors can keep browsing recent build notes.\n- On mobile, the empty state switches to a single-column layout and keeps the videos area free of horizontal overflow.\n- Existing video cards, the playback window, public API behavior, and admin-managed video data are unchanged."
+      },
+      ja: {
+        title: "動画欄の空状態を改善",
+        summary: "公開動画がない場合、動画欄に XP 風の空状態とサイト更新記録への入口を表示します。",
+        content_markdown: "# 動画欄の空状態を改善\n\n今回の更新では、公開動画がない場合やフィルター結果が空の場合でも、動画欄が壊れて見えないように空状態を整えました。\n\n## 更新内容\n\n- 公開動画がないとき、動画を整理中であることを伝える XP 風の案内カードを表示します。\n- 空のカテゴリを選んだ場合は、別カテゴリまたはサイト更新記録を見る案内を出します。\n- 空状態ボタンから、知識庫のサイト更新記録カテゴリへ移動できます。\n- モバイルでは空状態を一列にし、動画欄が横方向にはみ出さないようにしました。\n- 既存の動画カード、再生ウィンドウ、公開 API、管理画面の動画データには影響しません。"
+      }
+    }, "2026-06-17T15:53:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')
