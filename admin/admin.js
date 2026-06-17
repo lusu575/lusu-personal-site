@@ -20,6 +20,7 @@ const state = {
   timer: null
 };
 
+const ACTIVE_PANEL_STORAGE_KEY = "lusu-admin-active-panel";
 const LOCAL_COVER_ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/jpg", "image/png", "image/webp", "image/avif"]);
 const LOCAL_COVER_ALLOWED_IMAGE_EXTENSIONS = new Set(["jpg", "jpeg", "png", "webp", "avif"]);
 const LOCAL_COVER_ALLOWED_VIDEO_TYPES = new Set(["video/mp4", "video/webm", "video/ogg", "video/quicktime"]);
@@ -48,8 +49,14 @@ const panelMeta = {
 
 const overviewPanels = new Set(["dashboard", "visits", "clicks"]);
 const staticPanels = new Set(["updates", "docs"]);
+const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-06-18",
+    title: "后台标签页记忆优化",
+    body: "后台会在当前浏览器会话中记住最后打开的标签页，刷新页面后回到上次工作位置；旧值或异常值会自动回到实时大屏。"
+  },
   {
     date: "2026-06-18",
     title: "后台静态面板刷新状态优化",
@@ -419,6 +426,23 @@ function updateRefreshButton() {
   button.textContent = staticPanel ? "无需刷新" : (busy ? "刷新中..." : "刷新");
 }
 
+function getStoredActivePanel() {
+  try {
+    const panel = window.sessionStorage.getItem(ACTIVE_PANEL_STORAGE_KEY);
+    return validPanels.has(panel) ? panel : "dashboard";
+  } catch (error) {
+    return "dashboard";
+  }
+}
+
+function rememberActivePanel(panel) {
+  try {
+    window.sessionStorage.setItem(ACTIVE_PANEL_STORAGE_KEY, panel);
+  } catch (error) {
+    // 忽略浏览器隐私模式或存储策略导致的写入失败。
+  }
+}
+
 async function loadPanelData(panel, options = {}) {
   if (staticPanels.has(panel)) {
     setStatus("当前标签为本地内容，无需刷新。");
@@ -476,7 +500,7 @@ async function loadPanelData(panel, options = {}) {
   return state.loadingPanels[key];
 }
 
-function switchPanel(panel) {
+function applyActivePanel(panel) {
   state.activePanel = panel;
   $$(".nav-button").forEach((button) => {
     button.classList.toggle("active", button.dataset.panel === panel);
@@ -486,6 +510,14 @@ function switchPanel(panel) {
   });
   $("#panel-title").textContent = panelMeta[panel][0];
   $("#panel-subtitle").textContent = panelMeta[panel][1];
+}
+
+function switchPanel(panel) {
+  if (!validPanels.has(panel)) {
+    return;
+  }
+  applyActivePanel(panel);
+  rememberActivePanel(panel);
   updateRefreshButton();
   loadPanelData(panel);
 }
@@ -1659,6 +1691,7 @@ async function init() {
   resetVideoForm();
   resetVideoCategoryForm();
   try {
+    applyActivePanel(getStoredActivePanel());
     await loadMe();
     await loadPanelData(state.activePanel, { force: true });
     state.timer = window.setInterval(autoRefreshActivePanel, 30000);
