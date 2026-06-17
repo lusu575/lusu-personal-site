@@ -74,6 +74,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "聊天治理期间锁定表单",
+    body: "聊天室管理保存、隐藏、删除或禁言请求进行中会临时锁定昵称、内容和禁言参数输入框，避免请求尚未完成时继续修改字段造成误以为已经一并提交。"
+  },
+  {
+    date: "2026-06-18",
     title: "聊天禁言同步列表状态",
     body: "从聊天室记录发起禁言用户 ID 或 IP 来源时，禁言列表会同步进入刷新中状态，临时禁用刷新和停用按钮，避免禁言写入与列表操作并发导致状态闪动。"
   },
@@ -2293,6 +2298,7 @@ function syncChatActionState() {
   }
   syncChatListBusyState();
   syncChatFilterBusyState();
+  syncChatFormBusyState();
 }
 
 function isChatActionBusy() {
@@ -2356,6 +2362,30 @@ function chatActionBusyFilterTitle() {
     banVisitor: "正在禁言用户 ID，完成后再调整筛选",
     banIp: "正在禁言 IP 来源，完成后再调整筛选"
   }[state.chatActionBusyMode] || "正在处理聊天记录，完成后再调整筛选";
+}
+
+function syncChatFormBusyState() {
+  const busy = isChatActionBusy();
+  const title = busy ? chatActionBusyFormTitle() : "";
+  $$("#chat-form-admin input, #chat-form-admin textarea").forEach((field) => {
+    field.disabled = busy;
+    field.setAttribute("aria-busy", busy ? "true" : "false");
+    if (title) {
+      field.title = title;
+    } else {
+      field.removeAttribute("title");
+    }
+  });
+}
+
+function chatActionBusyFormTitle() {
+  return {
+    save: "正在保存聊天记录，完成后再编辑表单",
+    toggle: "正在处理聊天可见性，完成后再编辑表单",
+    delete: "正在删除聊天记录，完成后再编辑表单",
+    banVisitor: "正在禁言用户 ID，完成后再编辑表单",
+    banIp: "正在禁言 IP 来源，完成后再编辑表单"
+  }[state.chatActionBusyMode] || "正在处理聊天记录，完成后再编辑表单";
 }
 
 function setChatActionBusy(mode) {
