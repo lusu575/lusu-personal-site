@@ -55,6 +55,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "后台退出中暂停自动刷新",
+    body: "后台退出流程开始后会暂停 30 秒自动刷新，避免退出挂起时继续发送统计面板请求；退出失败后会恢复自动刷新。"
+  },
+  {
+    date: "2026-06-18",
     title: "后台导航当前项语义优化",
     body: "后台侧边栏会为当前标签同步 aria-current，键盘浏览和辅助技术能更清楚地识别当前所在模块。"
   },
@@ -553,7 +558,7 @@ function switchPanel(panel) {
 }
 
 function autoRefreshActivePanel() {
-  if (document.hidden || !overviewPanels.has(state.activePanel)) {
+  if (state.loggingOut || document.hidden || !overviewPanels.has(state.activePanel)) {
     return false;
   }
   loadPanelData(state.activePanel, { force: true });
@@ -1640,7 +1645,12 @@ function bindEvents() {
     if (state.loggingOut) {
       return;
     }
+    const resumeAutoRefresh = Boolean(state.timer);
     state.loggingOut = true;
+    if (state.timer) {
+      window.clearInterval(state.timer);
+      state.timer = null;
+    }
     button.disabled = true;
     button.textContent = "退出中...";
     button.setAttribute("aria-busy", "true");
@@ -1658,6 +1668,9 @@ function bindEvents() {
       button.setAttribute("aria-label", "退出后台");
       button.title = "退出后台";
       setStatus(error.message);
+      if (resumeAutoRefresh && !state.timer) {
+        state.timer = window.setInterval(autoRefreshActivePanel, 30000);
+      }
     }
   });
   $("#new-article").addEventListener("click", resetArticleForm);
