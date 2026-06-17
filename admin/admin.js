@@ -72,6 +72,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "Bilibili 页码解析修复",
+    body: "后台视频链接解析会把异常 Bilibili p/page 页码回落为第 1 页，避免播放器地址出现 NaN 页码。"
+  },
+  {
+    date: "2026-06-18",
     title: "IPv4 来源掩码范围校验",
     body: "访问和聊天来源生成 IPv4 /24 掩码前，会校验四个地址段都在 0 到 255 之间，避免无效来源写入统计。"
   },

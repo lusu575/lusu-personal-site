@@ -2278,7 +2278,7 @@ async function parseVideoUrl(input) {
     if (!bvid) {
       throw new HttpError("暂时只支持 bilibili.com/video/BV... 视频链接。", 400);
     }
-    const page = Math.max(1, Math.min(Number(url.searchParams.get("p") || url.searchParams.get("page") || 1), 99));
+    const page = normalizeBilibiliPage(url.searchParams.get("p") || url.searchParams.get("page"));
     return {
       platform: "bilibili",
       original_url: url.toString(),
@@ -2288,6 +2288,14 @@ async function parseVideoUrl(input) {
     };
   }
   throw new HttpError("只支持 youtube.com、youtu.be、bilibili.com、b23.tv 视频链接。", 400);
+}
+
+function normalizeBilibiliPage(value) {
+  const page = Number(value || 1);
+  if (!Number.isFinite(page)) {
+    return 1;
+  }
+  return Math.max(1, Math.min(Math.round(page), 99));
 }
 
 function youtubeParsed(url, videoId) {
