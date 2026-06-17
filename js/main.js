@@ -459,6 +459,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "📊",
+      date: "2026.06.18",
+      title: { zh: "资源分类数量徽标", en: "Resource Filter Counts", ja: "リソース分類数バッジ" },
+      desc: {
+        zh: "资源区分类按钮现在显示每类资源数量，筛选前就能看到占位和资源分布",
+        en: "Resource category buttons now show item counts so the resource distribution is visible before filtering",
+        ja: "リソース分類ボタンに件数を表示し、絞り込み前に配分が分かるようにしました"
+      }
+    },
+    {
       icon: "📦",
       date: "2026.06.18",
       title: { zh: "资源卡片状态徽标", en: "Resource Status Badges", ja: "リソース状態バッジ" },
@@ -1379,6 +1389,8 @@ const tagLabels = {
   "Hextris": { zh: "Hextris", en: "Hextris", ja: "Hextris" },
   "Bilibili": { zh: "Bilibili", en: "Bilibili", ja: "Bilibili" },
   "RSS": { zh: "RSS", en: "RSS", ja: "RSS" },
+  "筛选": { zh: "筛选", en: "Filters", ja: "フィルター" },
+  "数量": { zh: "数量", en: "Counts", ja: "件数" },
   "订阅": { zh: "订阅", en: "Subscribe", ja: "購読" }
 };
 
@@ -2812,8 +2824,46 @@ function resourceCardElement(item) {
   return card;
 }
 
+function renderResourceCategoryButtons() {
+  const target = document.getElementById("resource-categories");
+  const categories = label("resourceCategories");
+  const counts = new Map(categories.map((_, index) => [String(index), 0]));
+  content.resources.forEach((item) => {
+    const key = String(item.category);
+    counts.set(key, (counts.get(key) || 0) + 1);
+  });
+
+  const entries = [
+    { name: t("all"), value: "all", count: content.resources.length },
+    ...categories.map((name, index) => ({
+      name,
+      value: String(index),
+      count: counts.get(String(index)) || 0
+    }))
+  ];
+
+  const buttons = entries.map((entry) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.dataset.filterType = "resources";
+    button.dataset.filter = entry.value;
+    button.classList.toggle("active", activeFilters.resources === entry.value);
+    button.setAttribute("aria-label", `${entry.name} ${entry.count}`);
+
+    const name = document.createElement("span");
+    name.textContent = entry.name;
+    const count = document.createElement("span");
+    count.className = "filter-count";
+    count.textContent = String(entry.count);
+
+    button.append(name, count);
+    return button;
+  });
+  target.replaceChildren(...buttons);
+}
+
 function renderResources() {
-  renderCategoryButtons("resource-categories", "resources", label("resourceCategories"));
+  renderResourceCategoryButtons();
   const list = document.getElementById("resource-list");
   const items = content.resources.filter((item) => activeFilters.resources === "all" || String(item.category) === activeFilters.resources);
 

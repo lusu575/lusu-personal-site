@@ -899,6 +899,33 @@ main {
   white-space: nowrap;
 }
 
+.filter-row button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.filter-count {
+  min-width: 20px;
+  height: 18px;
+  padding: 0 5px;
+  border: 1px solid #5e95c7;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #f7feff, #bfe3f1);
+  color: #06436b;
+  font-size: 12px;
+  line-height: 16px;
+  text-align: center;
+  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.8);
+  font-variant-numeric: tabular-nums;
+}
+
+.filter-row button.active .filter-count {
+  border-color: #9a6d00;
+  background: #fff8c5;
+  color: #704200;
+}
+
 .window-toolbar span {
   min-width: max-content;
   color: var(--xp-muted);

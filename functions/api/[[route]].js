@@ -5187,6 +5187,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         article_id, slug, category, tags, cover_image, status, is_pinned,
         view_count, created_at, updated_at, published_at
       ) values (
+        'seed-update-2026-06-18-resource-filter-counts',
+        '2026-06-18-resource-filter-counts',
+        'site-updates',
+        '["网站更新","资源区","筛选","数量"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T23:55:00.000Z',
+        '2026-06-17T23:55:00.000Z',
+        '2026-06-17T23:55:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
         'seed-update-2026-06-18-resource-status-badges',
         '2026-06-18-resource-status-badges',
         'site-updates',
@@ -6327,6 +6354,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# 記事画像パスガード\n\n今回の更新では、公開知識庫の記事画像描画をさらに引き締め、Markdown 画像パスがプロジェクトの記事画像フォルダ内に留まるよう明確にしました。\n\n## 更新内容\n\n- Markdown 記事画像は引き続き `assets/images/articles/` 配下のプロジェクト資源だけを受け付けます。\n- `safeArticleImageSrc()` が `..` のパストラバーサル片を拒否し、画像パスが記事画像フォルダから外へ出ないようにしました。\n- 画像は今後も `document.createElement('img')`、安全な `src`、`alt`、`figcaption` で描画し、未処理 HTML は挿入しません。\n- 既存の AI Agent 長文画像、知識庫一覧、記事直リンク、管理画面ディレクトリは変更していません。"
       }
     }, "2026-06-17T20:20:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-resource-filter-counts", {
+      zh: {
+        title: "资源分类数量徽标",
+        summary: "资源区分类按钮现在显示每类资源数量，筛选前就能看到占位和资源分布。",
+        content_markdown: "# 资源分类数量徽标\n\n本次更新继续整理资源区，让分类筛选按钮直接显示每一类里有多少资源项。\n\n## 更新内容\n\n- 资源区筛选按钮新增数量徽标：全部显示资源总数，各分类显示当前分类数量。\n- 数量来自本地 `content.resources`，不会改变资源卡片、下载按钮或外链安全校验。\n- 按钮继续通过 DOM / `textContent` 构建，分类名和数量都不会当作 HTML 插入。\n- 本轮只调整公开资源区、前端样式、缓存版本和更新记录；后台目录和管理 API 不受影响。"
+      },
+      en: {
+        title: "Resource Filter Counts",
+        summary: "Resource category buttons now show item counts before filtering.",
+        content_markdown: "# Resource Filter Counts\n\nThis update keeps polishing the Resources area by showing how many items sit behind each category filter.\n\n## Changes\n\n- Resource filter buttons now include compact count badges: All shows the total, and each category shows its own count.\n- Counts come from local `content.resources`; resource cards, download buttons, and safe link checks are unchanged.\n- Buttons still render through DOM / `textContent`, so category labels and counts are never inserted as HTML.\n- This round only changes the public Resources area, frontend styling, cache version, and update records; admin folders and admin APIs are untouched."
+      },
+      ja: {
+        title: "リソース分類数バッジ",
+        summary: "リソース分類ボタンに件数を表示し、絞り込み前に配分が分かるようにしました。",
+        content_markdown: "# リソース分類数バッジ\n\n今回の更新ではリソース欄を少し整え、分類フィルターごとの件数をボタン上で分かるようにしました。\n\n## 更新内容\n\n- リソース分類ボタンに小さな件数バッジを追加しました。すべては総数、各分類はその分類の件数を表示します。\n- 件数はローカルの `content.resources` から数え、リソースカード、ダウンロードボタン、リンク安全確認は変更しません。\n- ボタンは引き続き DOM / `textContent` で構築し、分類名や件数を HTML として挿入しません。\n- 今回は公開リソース欄、フロント側スタイル、キャッシュ版、更新記録だけを調整し、管理画面や管理 API には触れていません。"
+      }
+    }, "2026-06-17T23:55:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-06-18-resource-status-badges", {
       zh: {
         title: "资源卡片状态徽标",

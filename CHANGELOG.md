@@ -4,6 +4,11 @@
 
 ## 2026-06-18
 
+- 资源分类数量徽标：
+  - 资源区分类筛选按钮新增数量徽标，`全部 / All / すべて` 显示资源总数，各分类显示当前分类资源数量。
+  - 分类按钮继续通过 DOM / `textContent` 构建，数量只来自本地 `content.resources`，不会改变下载/外链安全校验。
+  - 更新 `index.html` 的 CSS / JS query 为 `20260618-resource-filter-counts`，并新增同名三语 `site-updates` 更新文章。
+
 - 资源卡片状态徽标：
   - 资源区卡片 meta row 新增状态徽标：无安全 URL 时显示“准备中 / Coming soon / 準備中”，有可用 URL 时显示“可获取 / Ready / 利用可”。
   - 状态判断复用 `safeResourceUrl()`，下载/外链按钮继续只接受安全项目路径或 `http(s)` 链接；原有禁用按钮行为不变。

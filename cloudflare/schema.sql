@@ -701,6 +701,32 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-06-18-resource-filter-counts',
+  '2026-06-18-resource-filter-counts',
+  'site-updates',
+  '["网站更新","资源区","筛选","数量"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T23:55:00.000Z',
+  '2026-06-17T23:55:00.000Z',
+  '2026-06-17T23:55:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-06-18-resource-status-badges',
   '2026-06-18-resource-status-badges',
   'site-updates',
@@ -3003,6 +3029,36 @@ on conflict(article_id, lang) do update set
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
+  ('seed-update-2026-06-18-resource-filter-counts-zh', 'seed-update-2026-06-18-resource-filter-counts', 'zh', '资源分类数量徽标', '资源区分类按钮现在显示每类资源数量，筛选前就能看到占位和资源分布。', '# 资源分类数量徽标
+
+本次更新继续整理资源区，让分类筛选按钮直接显示每一类里有多少资源项。
+
+## 更新内容
+
+- 资源区筛选按钮新增数量徽标：全部显示资源总数，各分类显示当前分类数量。
+- 数量来自本地 `content.resources`，不会改变资源卡片、下载按钮或外链安全校验。
+- 按钮继续通过 DOM / `textContent` 构建，分类名和数量都不会当作 HTML 插入。
+- 本轮只调整公开资源区、前端样式、缓存版本和更新记录；后台目录和管理 API 不受影响。', '2026-06-17T23:55:00.000Z', '2026-06-17T23:55:00.000Z'),
+  ('seed-update-2026-06-18-resource-filter-counts-en', 'seed-update-2026-06-18-resource-filter-counts', 'en', 'Resource Filter Counts', 'Resource category buttons now show item counts before filtering.', '# Resource Filter Counts
+
+This update keeps polishing the Resources area by showing how many items sit behind each category filter.
+
+## Changes
+
+- Resource filter buttons now include compact count badges: All shows the total, and each category shows its own count.
+- Counts come from local `content.resources`; resource cards, download buttons, and safe link checks are unchanged.
+- Buttons still render through DOM / `textContent`, so category labels and counts are never inserted as HTML.
+- This round only changes the public Resources area, frontend styling, cache version, and update records; admin folders and admin APIs are untouched.', '2026-06-17T23:55:00.000Z', '2026-06-17T23:55:00.000Z'),
+  ('seed-update-2026-06-18-resource-filter-counts-ja', 'seed-update-2026-06-18-resource-filter-counts', 'ja', 'リソース分類数バッジ', 'リソース分類ボタンに件数を表示し、絞り込み前に配分が分かるようにしました。', '# リソース分類数バッジ
+
+今回の更新ではリソース欄を少し整え、分類フィルターごとの件数をボタン上で分かるようにしました。
+
+## 更新内容
+
+- リソース分類ボタンに小さな件数バッジを追加しました。すべては総数、各分類はその分類の件数を表示します。
+- 件数はローカルの `content.resources` から数え、リソースカード、ダウンロードボタン、リンク安全確認は変更しません。
+- ボタンは引き続き DOM / `textContent` で構築し、分類名や件数を HTML として挿入しません。
+- 今回は公開リソース欄、フロント側スタイル、キャッシュ版、更新記録だけを調整し、管理画面や管理 API には触れていません。', '2026-06-17T23:55:00.000Z', '2026-06-17T23:55:00.000Z'),
   ('seed-update-2026-06-18-resource-status-badges-zh', 'seed-update-2026-06-18-resource-status-badges', 'zh', '资源卡片状态徽标', '资源区卡片会显示准备中或可获取状态，下载按钮逻辑继续走安全链接校验。', '# 资源卡片状态徽标
 
 本次更新继续整理资源区，让每张资源卡在按钮之外也能看到当前状态。
