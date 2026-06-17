@@ -701,6 +701,32 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-06-18-resource-empty-state',
+  '2026-06-18-resource-empty-state',
+  'site-updates',
+  '["网站更新","资源区","空状态","筛选"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T23:58:00.000Z',
+  '2026-06-17T23:58:00.000Z',
+  '2026-06-17T23:58:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-06-18-resource-filter-counts',
   '2026-06-18-resource-filter-counts',
   'site-updates',
@@ -3029,6 +3055,36 @@ on conflict(article_id, lang) do update set
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
+  ('seed-update-2026-06-18-resource-empty-state-zh', 'seed-update-2026-06-18-resource-empty-state', 'zh', '资源空分类提示', '资源区空分类现在会显示三语空状态和返回全部资源按钮。', '# 资源空分类提示
+
+本次更新继续整理资源区筛选体验，点击暂无资源的分类时不再只看到空白列表。
+
+## 更新内容
+
+- 资源区空分类会显示 XP 风格空状态，说明该分类仍在整理中。
+- 空状态提供“显示全部资源”按钮，可直接回到全部资源列表。
+- 标题、说明和按钮都通过 DOM / `textContent` 构建，不插入未处理 HTML。
+- 本轮只调整公开资源区、前端样式、缓存版本和更新记录；后台目录和管理 API 不受影响。', '2026-06-17T23:58:00.000Z', '2026-06-17T23:58:00.000Z'),
+  ('seed-update-2026-06-18-resource-empty-state-en', 'seed-update-2026-06-18-resource-empty-state', 'en', 'Resource Empty Category State', 'Empty resource categories now show a trilingual empty state with a button back to all resources.', '# Resource Empty Category State
+
+This update keeps polishing the Resources filter flow so categories with no items no longer leave a blank list behind.
+
+## Changes
+
+- Empty resource categories now show an XP-style empty state explaining that the category is still being organized.
+- The empty state includes a `Show all resources` button that returns the filter to the full list.
+- The title, copy, and button are built through DOM / `textContent`, with no raw HTML insertion.
+- This round only changes the public Resources area, frontend styling, cache version, and update records; admin folders and admin APIs are untouched.', '2026-06-17T23:58:00.000Z', '2026-06-17T23:58:00.000Z'),
+  ('seed-update-2026-06-18-resource-empty-state-ja', 'seed-update-2026-06-18-resource-empty-state', 'ja', 'リソース空分類表示', '空のリソース分類に三言語の空状態とすべてへ戻るボタンを表示します。', '# リソース空分類表示
+
+今回の更新ではリソース欄のフィルター体験を整え、項目がない分類でも空白だけにならないようにしました。
+
+## 更新内容
+
+- 空のリソース分類では XP 風の空状態を表示し、その分類が整理中であることを伝えます。
+- 空状態には「すべてのリソースを表示」ボタンを追加し、全件表示へ戻れるようにしました。
+- タイトル、説明、ボタンは DOM / `textContent` で構築し、未処理 HTML は挿入しません。
+- 今回は公開リソース欄、フロント側スタイル、キャッシュ版、更新記録だけを調整し、管理画面や管理 API には触れていません。', '2026-06-17T23:58:00.000Z', '2026-06-17T23:58:00.000Z'),
   ('seed-update-2026-06-18-resource-filter-counts-zh', 'seed-update-2026-06-18-resource-filter-counts', 'zh', '资源分类数量徽标', '资源区分类按钮现在显示每类资源数量，筛选前就能看到占位和资源分布。', '# 资源分类数量徽标
 
 本次更新继续整理资源区，让分类筛选按钮直接显示每一类里有多少资源项。

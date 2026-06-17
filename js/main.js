@@ -65,6 +65,9 @@ const translations = {
     resourcePending: "准备中",
     resourcePendingTitle: "这个资源还在整理中，暂时没有下载或外链。",
     resourceStatusReady: "可获取",
+    resourceEmptyTitle: "这个分类还在整理中",
+    resourceEmptyBody: "可以先切回全部资源，之后这里会补上下载、素材或文档。",
+    resourceEmptyAction: "显示全部资源",
     openOriginal: "打开原地址",
     videoFullscreen: "全屏",
     videoRestore: "还原",
@@ -205,6 +208,9 @@ const translations = {
     resourcePending: "Coming soon",
     resourcePendingTitle: "This resource is still being organized and has no download or external link yet.",
     resourceStatusReady: "Ready",
+    resourceEmptyTitle: "This category is still being organized",
+    resourceEmptyBody: "Switch back to all resources for now. Downloads, assets, or docs can be added here later.",
+    resourceEmptyAction: "Show all resources",
     openOriginal: "Open Original",
     videoFullscreen: "Full screen",
     videoRestore: "Restore",
@@ -345,6 +351,9 @@ const translations = {
     resourcePending: "準備中",
     resourcePendingTitle: "このリソースはまだ整理中で、ダウンロードや外部リンクはありません。",
     resourceStatusReady: "利用可",
+    resourceEmptyTitle: "この分類はまだ整理中です",
+    resourceEmptyBody: "いったんすべてのリソースに戻れます。ここには後でダウンロード、素材、資料を追加できます。",
+    resourceEmptyAction: "すべてのリソースを表示",
     openOriginal: "元のページを開く",
     videoFullscreen: "全画面",
     videoRestore: "元に戻す",
@@ -458,6 +467,16 @@ const labels = {
 
 const content = {
   updates: [
+    {
+      icon: "🗂️",
+      date: "2026.06.18",
+      title: { zh: "资源空分类提示", en: "Resource Empty Category State", ja: "リソース空分類表示" },
+      desc: {
+        zh: "资源区空分类现在会显示三语空状态和返回全部资源按钮，不再留下空白列表",
+        en: "Empty resource categories now show a trilingual empty state with a button back to all resources",
+        ja: "空のリソース分類に三言語の空状態とすべてへ戻るボタンを表示します"
+      }
+    },
     {
       icon: "📊",
       date: "2026.06.18",
@@ -1389,6 +1408,7 @@ const tagLabels = {
   "Hextris": { zh: "Hextris", en: "Hextris", ja: "Hextris" },
   "Bilibili": { zh: "Bilibili", en: "Bilibili", ja: "Bilibili" },
   "RSS": { zh: "RSS", en: "RSS", ja: "RSS" },
+  "空状态": { zh: "空状态", en: "Empty state", ja: "空状態" },
   "筛选": { zh: "筛选", en: "Filters", ja: "フィルター" },
   "数量": { zh: "数量", en: "Counts", ja: "件数" },
   "订阅": { zh: "订阅", en: "Subscribe", ja: "購読" }
@@ -2788,6 +2808,32 @@ function resourceStatusElement(url) {
   return status;
 }
 
+function resourceEmptyStateElement() {
+  const state = document.createElement("div");
+  state.className = "resource-empty-state";
+
+  const icon = document.createElement("span");
+  icon.className = "resource-empty-icon";
+  icon.textContent = "🗂️";
+
+  const copy = document.createElement("div");
+  copy.className = "resource-empty-copy";
+  const title = document.createElement("h3");
+  title.textContent = t("resourceEmptyTitle");
+  const body = document.createElement("p");
+  body.textContent = t("resourceEmptyBody");
+  copy.append(title, body);
+
+  const action = document.createElement("button");
+  action.type = "button";
+  action.className = "xp-button";
+  action.dataset.resourceShowAll = "true";
+  action.textContent = t("resourceEmptyAction");
+
+  state.append(icon, copy, action);
+  return state;
+}
+
 function resourceCardElement(item) {
   const card = document.createElement("article");
   card.className = "resource-card";
@@ -2868,6 +2914,10 @@ function renderResources() {
   const items = content.resources.filter((item) => activeFilters.resources === "all" || String(item.category) === activeFilters.resources);
 
   list.replaceChildren();
+  if (items.length === 0) {
+    list.appendChild(resourceEmptyStateElement());
+    return;
+  }
   items.forEach((item) => list.appendChild(resourceCardElement(item)));
 }
 
@@ -3858,6 +3908,12 @@ document.addEventListener("click", (event) => {
   const langButton = event.target.closest("[data-lang]");
   if (langButton) {
     setLanguage(langButton.dataset.lang, { persist: true, syncUrl: true });
+    return;
+  }
+
+  if (event.target.closest("[data-resource-show-all]")) {
+    activeFilters.resources = "all";
+    renderResources();
     return;
   }
 
