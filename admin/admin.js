@@ -73,6 +73,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "聊天治理期间切换防护",
+    body: "聊天室管理保存、隐藏、删除或禁言请求进行中会临时禁用消息列表，并在列表点击入口做二次拦截，避免慢请求期间切换消息导致当前表单和正在处理的记录错位。"
+  },
+  {
+    date: "2026-06-18",
     title: "账号保存期间切换防护",
     body: "账号管理保存角色、邮箱或重置密码时会临时禁用账号列表，并在列表点击入口做二次拦截，避免慢请求期间切换账号导致当前表单和正在提交的账号错位。"
   },
@@ -2146,6 +2151,7 @@ function renderChatMessages() {
     }
     item.type = "button";
     item.dataset.messageId = message.message_id || "";
+    item.disabled = isChatActionBusy();
     title.className = "list-title";
     title.textContent = message.nickname || "";
     meta.className = "list-meta";
@@ -2259,6 +2265,30 @@ function syncChatActionState() {
       ipBanButton.title = "按 IP hash 禁言";
     }
   }
+  syncChatListBusyState();
+}
+
+function isChatActionBusy() {
+  return state.chatActionBusy;
+}
+
+function syncChatListBusyState() {
+  const busy = isChatActionBusy();
+  const busyTitle = chatActionBusyListTitle();
+  $$("#chat-list .list-item").forEach((item) => {
+    item.disabled = busy;
+    item.title = busy ? busyTitle : "打开这条聊天记录";
+  });
+}
+
+function chatActionBusyListTitle() {
+  return {
+    save: "正在保存聊天记录，完成后再切换",
+    toggle: "正在处理聊天可见性，完成后再切换",
+    delete: "正在删除聊天记录，完成后再切换",
+    banVisitor: "正在禁言用户 ID，完成后再切换",
+    banIp: "正在禁言 IP 来源，完成后再切换"
+  }[state.chatActionBusyMode] || "正在处理聊天记录，完成后再切换";
 }
 
 function setChatActionBusy(mode) {
@@ -2888,7 +2918,7 @@ function bindEvents() {
   $("#include-hidden-chat").addEventListener("change", loadChatMessages);
   $("#chat-list").addEventListener("click", (event) => {
     const item = event.target.closest("[data-message-id]");
-    if (item) {
+    if (item && !isChatActionBusy()) {
       selectChatMessage(item.dataset.messageId);
     }
   });
