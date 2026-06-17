@@ -438,6 +438,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "🛡️",
+      date: "2026.06.18",
+      title: { zh: "游戏外壳安全 DOM 渲染", en: "Game Shell Safe DOM", ja: "ゲームシェルの安全な DOM 描画" },
+      desc: {
+        zh: "游戏入口页的云存档面板和协议栏改为 DOM/textContent 构建，并限制协议链接格式",
+        en: "Game entry cloud-save panels and license links now render through DOM/textContent with safer link checks",
+        ja: "ゲーム入口のクラウド保存パネルとライセンス欄を DOM/textContent 描画にし、リンク形式も確認します"
+      }
+    },
+    {
       icon: "🗂️",
       date: "2026.06.18",
       title: { zh: "资源入口文案对齐", en: "Resources Label Sync", ja: "リソース入口ラベル同期" },

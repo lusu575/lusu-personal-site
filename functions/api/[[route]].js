@@ -4722,6 +4722,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-18-game-shell-safe-dom',
+        '2026-06-18-game-shell-safe-dom',
+        'site-updates',
+        '["网站更新","游戏区","安全","云存档"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T18:15:00.000Z',
+        '2026-06-17T18:15:00.000Z',
+        '2026-06-17T18:15:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -5285,6 +5312,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# リソース入口ラベル同期\n\n今回の更新では、リソース欄のデスクトップアイコン名を、開いた後のリソースウィンドウ名と揃えました。\n\n## 更新内容\n\n- English 表示のデスクトップ入口を `Files TBD` から `Resources TBD` に変更しました。\n- 日本語表示のデスクトップ入口を `資料（未定）` から `リソース（未定）` に変更しました。\n- 中文入口は `资源区（待定）` のままです。\n- リソース欄のルート、占位状態、リソースデータ、安全な DOM 描画経路は変更していません。"
       }
     }, "2026-06-17T18:10:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-game-shell-safe-dom", {
+      zh: {
+        title: "游戏外壳安全 DOM 渲染",
+        summary: "游戏入口页的云存档面板和协议栏改为更安全的 DOM/textContent 构建。",
+        content_markdown: "# 游戏外壳安全 DOM 渲染\n\n本次更新收紧游戏入口页外层工具栏的公开渲染路径，让云存档信息和协议链接都通过 DOM API 构建。\n\n## 更新内容\n\n- 云存档面板不再用字符串 `innerHTML` 拼接，邮箱、状态提示和按钮文案都通过 `textContent` 渲染。\n- 协议栏改为 DOM 构建，协议文件只接受相对路径，上游仓库只接受 `http(s)` 链接。\n- 5 个游戏入口页更新 `game-shell.js` 缓存版本，帮助浏览器获取新脚本。\n- 游戏 iframe、启动语言、云存档同步和导入导出逻辑保持不变。"
+      },
+      en: {
+        title: "Game Shell Safe DOM",
+        summary: "Game entry cloud-save panels and license links now render through safer DOM/textContent paths.",
+        content_markdown: "# Game Shell Safe DOM\n\nThis update tightens the public rendering path around the shared game-entry toolbar so cloud-save information and license links are built with DOM APIs.\n\n## Changes\n\n- The cloud-save panel no longer builds strings with `innerHTML`; email, status text, and button labels render through `textContent`.\n- The license panel now uses DOM construction, accepts only relative license-file paths, and accepts only `http(s)` upstream repository links.\n- All five game entry pages now request `game-shell.js` with a new cache version.\n- Game iframes, launch language, cloud-save sync, and import/export behavior are unchanged."
+      },
+      ja: {
+        title: "ゲームシェルの安全な DOM 描画",
+        summary: "ゲーム入口ページのクラウド保存パネルとライセンス欄を、より安全な DOM/textContent 経路にしました。",
+        content_markdown: "# ゲームシェルの安全な DOM 描画\n\n今回の更新では、ゲーム入口ページ共通ツールバーの公開描画経路を引き締め、クラウド保存情報とライセンスリンクを DOM API で構築するようにしました。\n\n## 更新内容\n\n- クラウド保存パネルは文字列の `innerHTML` 組み立てをやめ、メール、状態表示、ボタン文言を `textContent` で描画します。\n- ライセンス欄は DOM 構築に変更し、ライセンスファイルは相対パスのみ、上流リポジトリは `http(s)` リンクのみ受け付けます。\n- 5 つのゲーム入口ページで `game-shell.js` のキャッシュ版を更新しました。\n- ゲーム iframe、起動言語、クラウドセーブ同期、インポート/エクスポート動作は変更していません。"
+      }
+    }, "2026-06-17T18:15:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')

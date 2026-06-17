@@ -189,6 +189,63 @@
 
   applyShellChrome();
 
+  function textElement(tagName, text, className = "") {
+    const element = document.createElement(tagName);
+    if (className) {
+      element.className = className;
+    }
+    element.textContent = text;
+    return element;
+  }
+
+  function safeRelativeHref(value) {
+    const href = String(value || "").trim();
+    if (!href || href.startsWith("//") || /^[a-z][a-z0-9+.-]*:/i.test(href) || href.includes("\\") || href.split("/").includes("..")) {
+      return "";
+    }
+    return href;
+  }
+
+  function safeExternalHref(value) {
+    try {
+      const url = new URL(String(value || "").trim());
+      return ["http:", "https:"].includes(url.protocol) ? url.href : "";
+    } catch {
+      return "";
+    }
+  }
+
+  function renderLicensePanel(game) {
+    if (!license) {
+      return;
+    }
+    license.replaceChildren();
+
+    const licenseName = document.createElement("strong");
+    licenseName.textContent = game.license?.name || "";
+    const licenseSummary = document.createElement("span");
+    licenseSummary.append(document.createTextNode(t("licenseLabel")), licenseName);
+    license.appendChild(licenseSummary);
+
+    const fileHref = safeRelativeHref(game.license?.file);
+    if (fileHref) {
+      const fileLink = textElement("a", t("licenseFile"));
+      fileLink.href = fileHref;
+      fileLink.target = "_blank";
+      fileLink.rel = "noreferrer";
+      license.appendChild(fileLink);
+    }
+
+    const repoHref = safeExternalHref(game.repo);
+    if (repoHref) {
+      const repoLink = textElement("a", t("upstreamRepo"));
+      repoLink.href = repoHref;
+      repoLink.target = "_blank";
+      repoLink.rel = "noreferrer";
+      license.appendChild(repoLink);
+    }
+  }
+
   function setStatus(text) {
     status.textContent = text;
   }
@@ -350,34 +407,44 @@
     if (!cloudPanel) {
       return;
     }
+    cloudPanel.replaceChildren();
+
+    const account = document.createElement("div");
+    account.className = "cloud-account";
+    account.appendChild(textElement("strong", t("cloudSave")));
 
     if (authUser) {
-      cloudPanel.innerHTML = `
-        <div class="cloud-account">
-          <strong>${escapeHtml(t("cloudSave"))}</strong>
-          <span>${escapeHtml(authUser.email)}</span>
-          <div class="cloud-actions">
-            <button class="tool-button" id="sync-cloud-save" type="button">${escapeHtml(t("syncNow"))}</button>
-            <button class="tool-button subtle" id="logout-account" type="button">${escapeHtml(t("logout"))}</button>
-          </div>
-          ${message ? `<p>${escapeHtml(message)}</p>` : ""}
-        </div>
-      `;
-      document.getElementById("sync-cloud-save").addEventListener("click", () => syncToCloud(currentGame, true));
-      document.getElementById("logout-account").addEventListener("click", logout);
+      account.appendChild(textElement("span", authUser.email || ""));
+
+      const actions = document.createElement("div");
+      actions.className = "cloud-actions";
+      const syncButton = textElement("button", t("syncNow"), "tool-button");
+      syncButton.id = "sync-cloud-save";
+      syncButton.type = "button";
+      const logoutButton = textElement("button", t("logout"), "tool-button subtle");
+      logoutButton.id = "logout-account";
+      logoutButton.type = "button";
+      actions.append(syncButton, logoutButton);
+      account.appendChild(actions);
+
+      if (message) {
+        account.appendChild(textElement("p", message));
+      }
+      cloudPanel.appendChild(account);
+      syncButton.addEventListener("click", () => syncToCloud(currentGame, true));
+      logoutButton.addEventListener("click", logout);
       return;
     }
 
-    cloudPanel.innerHTML = `
-      <div class="cloud-account">
-        <strong>${escapeHtml(t("cloudSave"))}</strong>
-        <span>${escapeHtml(t("notSignedIn"))}</span>
-        <p>${message ? escapeHtml(message) : escapeHtml(t("signinHint"))}</p>
-        <div class="cloud-actions">
-          <a class="tool-button" href="${backToGamesUrl}">${escapeHtml(t("loginFromHome"))}</a>
-        </div>
-      </div>
-    `;
+    account.appendChild(textElement("span", t("notSignedIn")));
+    account.appendChild(textElement("p", message || t("signinHint")));
+    const actions = document.createElement("div");
+    actions.className = "cloud-actions";
+    const loginLink = textElement("a", t("loginFromHome"), "tool-button");
+    loginLink.href = backToGamesUrl;
+    actions.appendChild(loginLink);
+    account.appendChild(actions);
+    cloudPanel.appendChild(account);
   }
 
   async function logout() {
@@ -514,15 +581,6 @@
     frame.contentWindow.location.reload();
   }
 
-  function escapeHtml(value) {
-    return String(value)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  }
-
   try {
     const catalog = await loadCatalog();
     const game = catalog.games.find((item) => item.id === slug);
@@ -536,11 +594,7 @@
     title.textContent = displayTitle;
     subtitle.textContent = `${game.title} · ${formatLanguageSupport(game)}`;
     frame.setAttribute("title", displayTitle);
-    license.innerHTML = `
-      <span>${escapeHtml(t("licenseLabel"))}<strong>${escapeHtml(game.license.name)}</strong></span>
-      <a href="${game.license.file}" target="_blank" rel="noreferrer">${escapeHtml(t("licenseFile"))}</a>
-      <a href="${game.repo}" target="_blank" rel="noreferrer">${escapeHtml(t("upstreamRepo"))}</a>
-    `;
+    renderLicensePanel(game);
 
     applyStorageDefaults(game);
     await loadAuthSession();
