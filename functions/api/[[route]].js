@@ -4236,6 +4236,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-17-route-aware-welcome',
+        '2026-06-17-route-aware-welcome',
+        'site-updates',
+        '["网站更新","文章","直链","欢迎窗"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T16:02:00.000Z',
+        '2026-06-17T16:02:00.000Z',
+        '2026-06-17T16:02:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -4493,6 +4520,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# 動画欄の空状態を改善\n\n今回の更新では、公開動画がない場合やフィルター結果が空の場合でも、動画欄が壊れて見えないように空状態を整えました。\n\n## 更新内容\n\n- 公開動画がないとき、動画を整理中であることを伝える XP 風の案内カードを表示します。\n- 空のカテゴリを選んだ場合は、別カテゴリまたはサイト更新記録を見る案内を出します。\n- 空状態ボタンから、知識庫のサイト更新記録カテゴリへ移動できます。\n- モバイルでは空状態を一列にし、動画欄が横方向にはみ出さないようにしました。\n- 既存の動画カード、再生ウィンドウ、公開 API、管理画面の動画データには影響しません。"
       }
     }, "2026-06-17T15:53:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-17-route-aware-welcome", {
+      zh: {
+        title: "文章直链不再弹欢迎窗",
+        summary: "首次打开文章或其他非首页直链时，不再自动弹出欢迎窗口遮挡内容。",
+        content_markdown: "# 文章直链不再弹欢迎窗\n\n本次更新修复文章详情直链的首次访问体验，让链接打开后直接看到目标内容。\n\n## 更新内容\n\n- 首次打开文章详情、知识库、视频区等非首页直链时，不再自动弹出欢迎窗口遮挡内容。\n- 首页首次访问仍保留欢迎窗口，用于展示快捷入口和最近更新。\n- `?welcome=0` 继续禁用欢迎窗，`?welcome=1` 可显式触发欢迎窗，方便人工检查。\n- 文章详情、搜索、视频区、聊天室和游戏区路由逻辑保持不变。"
+      },
+      en: {
+        title: "Cleaner Article Deep Links",
+        summary: "Article and non-home deep links no longer auto-open the welcome modal over the content.",
+        content_markdown: "# Cleaner Article Deep Links\n\nThis update fixes the first-visit experience for article detail URLs so deep links open directly on the target content.\n\n## Changes\n\n- Article detail, knowledge, videos, and other non-home deep links no longer auto-open the welcome modal over the page content.\n- First visits to the home page still keep the welcome modal for quick links and recent updates.\n- `?welcome=0` still disables the modal, while `?welcome=1` can explicitly open it for manual checks.\n- Article detail, search, videos, chatroom, and games route behavior is otherwise unchanged."
+      },
+      ja: {
+        title: "記事直リンクを読みやすく",
+        summary: "記事やホーム以外の直リンクでは、歓迎ウィンドウが内容を隠さないようにしました。",
+        content_markdown: "# 記事直リンクを読みやすく\n\n今回の更新では、記事詳細への直リンクを初めて開いたときも、目的の記事をすぐ読めるようにしました。\n\n## 更新内容\n\n- 記事詳細、知識庫、動画欄などホーム以外の直リンクでは、歓迎ウィンドウを自動表示しません。\n- ホームの初回訪問では、快捷入口と最近の更新を案内する歓迎ウィンドウを引き続き表示します。\n- `?welcome=0` は引き続き歓迎ウィンドウを無効化し、`?welcome=1` で明示的に表示できます。\n- 記事詳細、検索、動画欄、チャット、ゲーム区のルート処理はそのままです。"
+      }
+    }, "2026-06-17T16:02:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')

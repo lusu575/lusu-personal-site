@@ -672,6 +672,32 @@ on conflict(article_id) do update set
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
 
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-17-route-aware-welcome',
+  '2026-06-17-route-aware-welcome',
+  'site-updates',
+  '["网站更新","文章","直链","欢迎窗"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T16:02:00.000Z',
+  '2026-06-17T16:02:00.000Z',
+  '2026-06-17T16:02:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
@@ -2330,6 +2356,45 @@ This update adds a clearer empty state to the public videos area, so the page st
 - 空状態ボタンから、知識庫のサイト更新記録カテゴリへ移動できます。
 - モバイルでは空状態を一列にし、動画欄が横方向にはみ出さないようにしました。
 - 既存の動画カード、再生ウィンドウ、公開 API、管理画面の動画データには影響しません。', '2026-06-17T15:53:00.000Z', '2026-06-17T15:53:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-17-route-aware-welcome-zh', 'seed-update-2026-06-17-route-aware-welcome', 'zh', '文章直链不再弹欢迎窗', '首次打开文章或其他非首页直链时，不再自动弹出欢迎窗口遮挡内容。', '# 文章直链不再弹欢迎窗
+
+本次更新修复文章详情直链的首次访问体验，让链接打开后直接看到目标内容。
+
+## 更新内容
+
+- 首次打开文章详情、知识库、视频区等非首页直链时，不再自动弹出欢迎窗口遮挡内容。
+- 首页首次访问仍保留欢迎窗口，用于展示快捷入口和最近更新。
+- `?welcome=0` 继续禁用欢迎窗，`?welcome=1` 可显式触发欢迎窗，方便人工检查。
+- 文章详情、搜索、视频区、聊天室和游戏区路由逻辑保持不变。', '2026-06-17T16:02:00.000Z', '2026-06-17T16:02:00.000Z'),
+  ('seed-update-2026-06-17-route-aware-welcome-en', 'seed-update-2026-06-17-route-aware-welcome', 'en', 'Cleaner Article Deep Links', 'Article and non-home deep links no longer auto-open the welcome modal over the content.', '# Cleaner Article Deep Links
+
+This update fixes the first-visit experience for article detail URLs so deep links open directly on the target content.
+
+## Changes
+
+- Article detail, knowledge, videos, and other non-home deep links no longer auto-open the welcome modal over the page content.
+- First visits to the home page still keep the welcome modal for quick links and recent updates.
+- `?welcome=0` still disables the modal, while `?welcome=1` can explicitly open it for manual checks.
+- Article detail, search, videos, chatroom, and games route behavior is otherwise unchanged.', '2026-06-17T16:02:00.000Z', '2026-06-17T16:02:00.000Z'),
+  ('seed-update-2026-06-17-route-aware-welcome-ja', 'seed-update-2026-06-17-route-aware-welcome', 'ja', '記事直リンクを読みやすく', '記事やホーム以外の直リンクでは、歓迎ウィンドウが内容を隠さないようにしました。', '# 記事直リンクを読みやすく
+
+今回の更新では、記事詳細への直リンクを初めて開いたときも、目的の記事をすぐ読めるようにしました。
+
+## 更新内容
+
+- 記事詳細、知識庫、動画欄などホーム以外の直リンクでは、歓迎ウィンドウを自動表示しません。
+- ホームの初回訪問では、快捷入口と最近の更新を案内する歓迎ウィンドウを引き続き表示します。
+- `?welcome=0` は引き続き歓迎ウィンドウを無効化し、`?welcome=1` で明示的に表示できます。
+- 記事詳細、検索、動画欄、チャット、ゲーム区のルート処理はそのままです。', '2026-06-17T16:02:00.000Z', '2026-06-17T16:02:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,

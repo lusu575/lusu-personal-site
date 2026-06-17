@@ -372,6 +372,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "🪟",
+      date: "2026.06.17",
+      title: { zh: "文章直链不再弹欢迎窗", en: "Cleaner Article Deep Links", ja: "記事直リンクを読みやすく" },
+      desc: {
+        zh: "首次打开文章或其他非首页直链时，不再自动弹出欢迎窗口遮挡内容",
+        en: "Article and non-home deep links no longer auto-open the welcome modal over the content",
+        ja: "記事やホーム以外の直リンクでは、歓迎ウィンドウが内容を隠さないようにしました"
+      }
+    },
+    {
       icon: "📺",
       date: "2026.06.17",
       title: { zh: "视频区空状态增强", en: "Video Empty State", ja: "動画欄の空状態を改善" },
@@ -2082,6 +2092,10 @@ function localDateKey(date) {
 
 function maybeShowWelcome() {
   if (pageParams.get("welcome") === "0") {
+    return;
+  }
+  const route = parseRouteLocation();
+  if (pageParams.get("welcome") !== "1" && (route.route !== "home" || route.articleSlug)) {
     return;
   }
   const today = localDateKey(new Date());
