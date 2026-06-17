@@ -5187,6 +5187,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         article_id, slug, category, tags, cover_image, status, is_pinned,
         view_count, created_at, updated_at, published_at
       ) values (
+        'seed-update-2026-06-18-article-link-lang',
+        '2026-06-18-article-link-lang',
+        'site-updates',
+        '["网站更新","链接","三语","知识库"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T22:20:00.000Z',
+        '2026-06-17T22:20:00.000Z',
+        '2026-06-17T22:20:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
         'seed-update-2026-06-18-recent-update-labels',
         '2026-06-18-recent-update-labels',
         'site-updates',
@@ -6138,6 +6165,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# 記事画像パスガード\n\n今回の更新では、公開知識庫の記事画像描画をさらに引き締め、Markdown 画像パスがプロジェクトの記事画像フォルダ内に留まるよう明確にしました。\n\n## 更新内容\n\n- Markdown 記事画像は引き続き `assets/images/articles/` 配下のプロジェクト資源だけを受け付けます。\n- `safeArticleImageSrc()` が `..` のパストラバーサル片を拒否し、画像パスが記事画像フォルダから外へ出ないようにしました。\n- 画像は今後も `document.createElement('img')`、安全な `src`、`alt`、`figcaption` で描画し、未処理 HTML は挿入しません。\n- 既存の AI Agent 長文画像、知識庫一覧、記事直リンク、管理画面ディレクトリは変更していません。"
       }
     }, "2026-06-17T20:20:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-article-link-lang", {
+      zh: {
+        title: "文章链接保留语言",
+        summary: "文章卡片和最近更新链接现在会带上当前 lang 参数。",
+        content_markdown: "# 文章链接保留语言\n\n本次更新继续整理公开文章入口，让复制链接、右键新开标签和普通点击保持一致的语言上下文。\n\n## 更新内容\n\n- 知识库文章卡片的真实 `href` 会带上当前 `lang` 参数。\n- 欢迎窗口最近更新列表的文章链接也会带上当前 `lang` 参数，右键新开标签不会掉回默认语言。\n- 文章详情里的“复制文章链接”复用同一条链接生成逻辑，继续输出当前语言直链。\n- 点击拦截、文章安全渲染、RSS feed 和后台目录保持不变。"
+      },
+      en: {
+        title: "Article Links Keep Language",
+        summary: "Article cards and recent-update links now include the active lang parameter.",
+        content_markdown: "# Article Links Keep Language\n\nThis update keeps public article entry points aligned so copied links, new tabs, and normal clicks preserve the same language context.\n\n## Changes\n\n- Knowledge article card `href` values now include the active `lang` parameter.\n- Welcome-window Recent Updates article links also include the active `lang`, so opening in a new tab does not fall back to the default language.\n- The article detail copy-link button reuses the same link helper and still outputs a current-language deep link.\n- Click interception, safe article rendering, RSS feeds, and admin folders are unchanged."
+      },
+      ja: {
+        title: "記事リンクの言語保持",
+        summary: "記事カードと最近の更新リンクに現在の lang パラメータを含めました。",
+        content_markdown: "# 記事リンクの言語保持\n\n今回の更新では、公開記事への入口を整え、コピーしたリンク、新しいタブ、通常クリックで同じ言語コンテキストを保てるようにしました。\n\n## 更新内容\n\n- 知識庫の記事カードの実際の `href` に現在の `lang` パラメータを含めます。\n- ウェルカム画面の最近の更新リンクにも現在の `lang` を含め、新しいタブで開いても既定言語に戻りません。\n- 記事詳細の「記事リンクをコピー」ボタンも同じリンク生成処理を使い、現在言語の直リンクを出力します。\n- クリック処理、安全な記事描画、RSS feed、管理画面ディレクトリは変更していません。"
+      }
+    }, "2026-06-17T22:20:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-06-18-recent-update-labels", {
       zh: {
         title: "最近更新完整提示",

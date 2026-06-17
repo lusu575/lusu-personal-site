@@ -701,6 +701,32 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-06-18-article-link-lang',
+  '2026-06-18-article-link-lang',
+  'site-updates',
+  '["网站更新","链接","三语","知识库"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T22:20:00.000Z',
+  '2026-06-17T22:20:00.000Z',
+  '2026-06-17T22:20:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-06-18-recent-update-labels',
   '2026-06-18-recent-update-labels',
   'site-updates',
@@ -2812,6 +2838,45 @@ This update keeps tightening public Knowledge article image rendering so Markdow
 - `safeArticleImageSrc()` が `..` のパストラバーサル片を拒否し、画像パスが記事画像フォルダから外へ出ないようにしました。
 - 画像は今後も `document.createElement(''img'')`、安全な `src`、`alt`、`figcaption` で描画し、未処理 HTML は挿入しません。
 - 既存の AI Agent 長文画像、知識庫一覧、記事直リンク、管理画面ディレクトリは変更していません。', '2026-06-17T20:20:00.000Z', '2026-06-17T20:20:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-article-link-lang-zh', 'seed-update-2026-06-18-article-link-lang', 'zh', '文章链接保留语言', '文章卡片和最近更新链接现在会带上当前 lang 参数。', '# 文章链接保留语言
+
+本次更新继续整理公开文章入口，让复制链接、右键新开标签和普通点击保持一致的语言上下文。
+
+## 更新内容
+
+- 知识库文章卡片的真实 `href` 会带上当前 `lang` 参数。
+- 欢迎窗口最近更新列表的文章链接也会带上当前 `lang` 参数，右键新开标签不会掉回默认语言。
+- 文章详情里的“复制文章链接”复用同一条链接生成逻辑，继续输出当前语言直链。
+- 点击拦截、文章安全渲染、RSS feed 和后台目录保持不变。', '2026-06-17T22:20:00.000Z', '2026-06-17T22:20:00.000Z'),
+  ('seed-update-2026-06-18-article-link-lang-en', 'seed-update-2026-06-18-article-link-lang', 'en', 'Article Links Keep Language', 'Article cards and recent-update links now include the active lang parameter.', '# Article Links Keep Language
+
+This update keeps public article entry points aligned so copied links, new tabs, and normal clicks preserve the same language context.
+
+## Changes
+
+- Knowledge article card `href` values now include the active `lang` parameter.
+- Welcome-window Recent Updates article links also include the active `lang`, so opening in a new tab does not fall back to the default language.
+- The article detail copy-link button reuses the same link helper and still outputs a current-language deep link.
+- Click interception, safe article rendering, RSS feeds, and admin folders are unchanged.', '2026-06-17T22:20:00.000Z', '2026-06-17T22:20:00.000Z'),
+  ('seed-update-2026-06-18-article-link-lang-ja', 'seed-update-2026-06-18-article-link-lang', 'ja', '記事リンクの言語保持', '記事カードと最近の更新リンクに現在の lang パラメータを含めました。', '# 記事リンクの言語保持
+
+今回の更新では、公開記事への入口を整え、コピーしたリンク、新しいタブ、通常クリックで同じ言語コンテキストを保てるようにしました。
+
+## 更新内容
+
+- 知識庫の記事カードの実際の `href` に現在の `lang` パラメータを含めます。
+- ウェルカム画面の最近の更新リンクにも現在の `lang` を含め、新しいタブで開いても既定言語に戻りません。
+- 記事詳細の「記事リンクをコピー」ボタンも同じリンク生成処理を使い、現在言語の直リンクを出力します。
+- クリック処理、安全な記事描画、RSS feed、管理画面ディレクトリは変更していません。', '2026-06-17T22:20:00.000Z', '2026-06-17T22:20:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,

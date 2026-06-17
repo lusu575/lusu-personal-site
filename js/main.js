@@ -444,6 +444,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "🔗",
+      date: "2026.06.18",
+      title: { zh: "文章链接保留语言", en: "Article Links Keep Language", ja: "記事リンクの言語保持" },
+      desc: {
+        zh: "文章卡片和最近更新的真实链接会带上当前 lang，新开标签也保留语言",
+        en: "Article cards and recent updates now include the active lang in their real links for new tabs",
+        ja: "記事カードと最近の更新リンクに現在の lang を含め、新しいタブでも言語を保持します"
+      }
+    },
+    {
       icon: "🧾",
       date: "2026.06.18",
       title: { zh: "最近更新完整提示", en: "Recent Update Full Labels", ja: "最近の更新ラベル補足" },
@@ -1370,6 +1380,12 @@ function articleRoutePath(slug) {
   return `/articles/${encodeURIComponent(slug)}`;
 }
 
+function articleRouteHref(slug, lang = currentLang) {
+  const url = new URL(articleRoutePath(slug), window.location.origin);
+  url.searchParams.set("lang", lang);
+  return `${url.pathname}${url.search}`;
+}
+
 function routeUrl(route, articleSlug = "") {
   if (route === "knowledge" && articleSlug) {
     return articleRoutePath(articleSlug);
@@ -1706,7 +1722,7 @@ function articleCardElement(item) {
 
   const action = document.createElement("a");
   action.className = "card-action";
-  action.href = articleRoutePath(item.slug);
+  action.href = articleRouteHref(item.slug);
   action.dataset.articleSlug = item.slug;
   action.textContent = t("readButton");
 
@@ -1942,8 +1958,7 @@ function clearArticleCopyStatus() {
 }
 
 function articleShareLink(slug) {
-  const url = new URL(articleRoutePath(slug), window.location.origin);
-  url.searchParams.set("lang", currentLang);
+  const url = new URL(articleRouteHref(slug), window.location.origin);
   return url.toString();
 }
 
@@ -2746,7 +2761,7 @@ function recentUpdateElement(item) {
   const link = document.createElement("a");
   link.className = "recent-update-link";
   if (item.slug) {
-    link.href = articleRoutePath(item.slug);
+    link.href = articleRouteHref(item.slug);
     link.dataset.articleSlug = item.slug;
   } else {
     link.href = "/#knowledge";
