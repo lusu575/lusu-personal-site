@@ -74,6 +74,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "新建视频置顶排序提示优化",
+    body: "新建视频未勾选置顶时，置顶排序字段会保持空白；勾选置顶后再自动填入下一个置顶排序，取消勾选会清空该字段，减少普通排序和置顶排序混淆。"
+  },
+  {
+    date: "2026-06-18",
     title: "聊天室刷新丢失选中记录提示",
     body: "聊天室消息刷新后如果当前选中记录已不在列表中，后台会清空编辑表单并显示提示，避免继续处理旧聊天记录。"
   },
@@ -1666,7 +1671,7 @@ function applyNewVideoSortDefault() {
     sortField.value = String(nextSortOrder(state.videos));
   }
   if (pinnedSortField) {
-    pinnedSortField.value = String(nextPinnedSortOrder(state.videos));
+    pinnedSortField.value = "";
   }
 }
 
@@ -1930,10 +1935,13 @@ function videoPayload(statusOverride = "") {
 
 function handleVideoPinnedChange() {
   const form = $("#video-form");
+  const field = form?.elements?.pinned_sort_order;
   if (!form?.elements?.pinned?.checked) {
+    if (field) {
+      field.value = "";
+    }
     return;
   }
-  const field = form.elements.pinned_sort_order;
   if (field && Number(field.value || 0) === 0) {
     field.value = String(nextPinnedSortOrder(state.videos));
   }
