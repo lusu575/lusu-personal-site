@@ -72,6 +72,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "点击埋点列表渲染安全优化",
+    body: "点击埋点的热点目标和最近点击事件改用 DOM API 写入，避免路径、目标文本和来源字段被误当作 HTML。"
+  },
+  {
+    date: "2026-06-18",
     title: "视频分类列表渲染安全优化",
     body: "视频分类管理列表的分类名、slug、启用状态、视频数量和排序改用 DOM API 写入，避免分类字段被误当作 HTML。"
   },
@@ -566,6 +571,24 @@ function emptyRow(colspan, text) {
   return `<tr><td colspan="${colspan}"><span class="empty-inline">${escapeHtml(text)}</span></td></tr>`;
 }
 
+function createTableCell(text) {
+  const cell = document.createElement("td");
+  cell.textContent = text;
+  return cell;
+}
+
+function createEmptyTableRow(colspan, text) {
+  const row = document.createElement("tr");
+  const cell = document.createElement("td");
+  const empty = document.createElement("span");
+  cell.colSpan = colspan;
+  empty.className = "empty-inline";
+  empty.textContent = text;
+  cell.append(empty);
+  row.append(cell);
+  return row;
+}
+
 function statusBadge(text, tone = "neutral") {
   return `<span class="status-badge ${escapeHtml(tone)}">${escapeHtml(text)}</span>`;
 }
@@ -896,22 +919,34 @@ function renderVisitTables() {
 
 function renderClickPanels() {
   const overview = state.overview || {};
-  $("#top-clicks").innerHTML = (overview.topClicks || []).map((row) => `
-    <tr>
-      <td>${escapeHtml(row.target_text || row.target_key || row.tag_name || "未知目标")}<br><small>${escapeHtml(row.data_route || row.target_key || "")}</small></td>
-      <td>${escapeHtml(row.path || "")}</td>
-      <td>${formatNumber(row.clicks)}</td>
-      <td>${formatNumber(row.uv)}</td>
-      <td>${formatTime(row.last_seen_at)}</td>
-    </tr>
-  `).join("") || emptyRow(5, "暂无点击热点数据");
+  const topClicks = $("#top-clicks");
+  const topRows = overview.topClicks || [];
+  if (!topRows.length) {
+    topClicks.replaceChildren(createEmptyTableRow(5, "暂无点击热点数据"));
+  } else {
+    topClicks.replaceChildren(...topRows.map((row) => {
+      const tableRow = document.createElement("tr");
+      const target = document.createElement("td");
+      const route = document.createElement("small");
+      target.append(document.createTextNode(row.target_text || row.target_key || row.tag_name || "未知目标"), document.createElement("br"));
+      route.textContent = row.data_route || row.target_key || "";
+      target.append(route);
+      tableRow.append(
+        target,
+        createTableCell(row.path || ""),
+        createTableCell(formatNumber(row.clicks)),
+        createTableCell(formatNumber(row.uv)),
+        createTableCell(formatTime(row.last_seen_at))
+      );
+      return tableRow;
+    }));
+  }
 
-  $("#recent-clicks").innerHTML = (overview.recentClicks || []).map((row) => `
-    <article class="event-item">
-      <strong>${escapeHtml(row.target_text || row.target_key || row.tag_name || "未知点击")}</strong>
-      <small>${formatTime(row.created_at)} · ${escapeHtml(row.path || "")} · ${escapeHtml([row.country, row.region, row.city].filter(Boolean).join(" / "))}</small>
-    </article>
-  `).join("") || emptyState("暂无点击事件");
+  renderEventList("#recent-clicks", overview.recentClicks || [], "暂无点击事件", (row) => (
+    createEventItemElement(row.target_text || row.target_key || row.tag_name || "未知点击", [
+      `${formatTime(row.created_at)} · ${row.path || ""} · ${[row.country, row.region, row.city].filter(Boolean).join(" / ")}`
+    ])
+  ));
 }
 
 async function loadArticles() {

@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 管理后台点击埋点列表渲染安全优化：
+  - `/admin/` 点击埋点的热点目标表格和最近点击事件改用 DOM API 与 `textContent` 渲染，减少路径、目标文本和来源字段被误当作 HTML 的风险。
+  - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。
+
 - 管理后台视频分类列表渲染安全优化：
   - `/admin/` 视频分类管理列表的分类名、slug、启用状态、视频数量和排序改用 DOM API 与 `textContent` 渲染，减少分类字段被误当作 HTML 的风险。
   - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。

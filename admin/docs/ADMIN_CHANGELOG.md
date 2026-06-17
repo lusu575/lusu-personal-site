@@ -4,6 +4,11 @@
 
 ## 2026-06-18
 
+- 点击埋点列表渲染安全优化：
+  - 点击埋点的热点目标表格和最近点击事件改用 `document.createElement` 与 `textContent` 渲染目标文本、route、路径、来源和时间。
+  - 现有表格列、最近事件列表、空状态和 PV/UV 数字格式保持不变，但不再通过 HTML 字符串拼接点击埋点字段。
+  - 后台页面内 `adminUpdates` 和后台 JS query 已同步更新。
+
 - 视频分类列表渲染安全优化：
   - 视频分类管理列表改用 `document.createElement`、`textContent`、`classList` 和 `dataset` 渲染分类名、slug、启用状态、视频数量和排序。
   - 现有列表选中态、启用/停用徽标、空状态和点击进入编辑的行为保持不变，但不再通过 HTML 字符串拼接分类列表字段。
