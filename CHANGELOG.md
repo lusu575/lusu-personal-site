@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 管理后台账号列表渲染安全优化：
+  - `/admin/` 账号管理列表的邮箱、角色、密码状态、活跃会话和登录摘要改用 DOM API 与 `textContent` 渲染，减少账号字段被误当作 HTML 的风险。
+  - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。
+
 - 管理后台聊天室消息列表渲染安全优化：
   - `/admin/` 聊天室管理的昵称、消息摘要、可见状态和来源徽标改用 DOM API 与 `textContent` 渲染，减少聊天内容被误当作 HTML 的风险。
   - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。

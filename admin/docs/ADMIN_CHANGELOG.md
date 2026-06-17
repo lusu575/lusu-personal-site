@@ -4,6 +4,11 @@
 
 ## 2026-06-18
 
+- 账号列表渲染安全优化：
+  - 账号管理列表改用 `document.createElement`、`textContent`、`classList` 和 `dataset` 渲染邮箱、角色、密码状态、活跃会话和登录摘要。
+  - 现有列表选中态、状态徽标、空状态和点击读取详情的行为保持不变，但不再通过 HTML 字符串拼接账号字段。
+  - 后台页面内 `adminUpdates` 和后台 JS query 已同步更新。
+
 - 聊天室消息列表渲染安全优化：
   - 聊天室管理的消息列表改用 `document.createElement`、`textContent`、`classList` 和 `dataset` 渲染昵称、可见状态、来源、消息摘要和发送时间。
   - 现有列表选中态、隐藏/可见徽标、来源徽标、空状态和点击进入编辑的行为保持不变，但不再通过 HTML 字符串拼接用户昵称或消息内容。

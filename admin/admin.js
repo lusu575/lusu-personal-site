@@ -72,6 +72,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "账号列表渲染安全优化",
+    body: "账号管理列表的邮箱、角色、密码状态、活跃会话和登录摘要改用 DOM API 写入，避免账号字段被误当作 HTML。"
+  },
+  {
+    date: "2026-06-18",
     title: "聊天室消息列表渲染安全优化",
     body: "聊天室管理的昵称、消息摘要、可见状态和来源徽标改用 DOM API 写入，进一步避免聊天内容被误当作 HTML。"
   },
@@ -2039,17 +2044,36 @@ function renderAccountSummary() {
 }
 
 function renderAccountList() {
-  $("#account-list").innerHTML = state.accounts.map((account) => `
-    <button class="list-item ${account.id === state.selectedAccountId ? "active" : ""}" type="button" data-account-id="${escapeHtml(account.id)}">
-      <span class="list-title">${escapeHtml(account.email)}</span>
-      <span class="list-meta">
-        ${statusBadge(account.role === "admin" ? "管理员" : "普通用户", account.role === "admin" ? "active" : "neutral")}
-        ${statusBadge(account.password_status || "已加密保存", "visible")}
-        ${statusBadge(`${formatNumber(account.active_sessions)} 个活跃会话`, Number(account.active_sessions || 0) ? "active" : "off")}
-      </span>
-      <span class="list-subtle">最近登录：${formatTime(account.last_login_at) || "暂无记录"} · 登录 ${formatNumber(account.login_count)} 次 · 云存档 ${formatNumber(account.save_slots)} 个</span>
-    </button>
-  `).join("") || emptyState("还没有注册账号。");
+  const list = $("#account-list");
+  if (!state.accounts.length) {
+    list.replaceChildren(createEmptyStateElement("还没有注册账号。"));
+    return;
+  }
+
+  list.replaceChildren(...state.accounts.map((account) => {
+    const item = document.createElement("button");
+    const title = document.createElement("span");
+    const meta = document.createElement("span");
+    const summary = document.createElement("span");
+    item.className = "list-item";
+    if (account.id === state.selectedAccountId) {
+      item.classList.add("active");
+    }
+    item.type = "button";
+    item.dataset.accountId = account.id || "";
+    title.className = "list-title";
+    title.textContent = account.email || "";
+    meta.className = "list-meta";
+    meta.append(
+      createStatusBadgeElement(account.role === "admin" ? "管理员" : "普通用户", account.role === "admin" ? "active" : "neutral"),
+      createStatusBadgeElement(account.password_status || "已加密保存", "visible"),
+      createStatusBadgeElement(`${formatNumber(account.active_sessions)} 个活跃会话`, Number(account.active_sessions || 0) ? "active" : "off")
+    );
+    summary.className = "list-subtle";
+    summary.textContent = `最近登录：${formatTime(account.last_login_at) || "暂无记录"} · 登录 ${formatNumber(account.login_count)} 次 · 云存档 ${formatNumber(account.save_slots)} 个`;
+    item.append(title, meta, summary);
+    return item;
+  }));
 }
 
 async function selectAccount(accountId) {
