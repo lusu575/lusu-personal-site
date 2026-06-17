@@ -4799,7 +4799,18 @@ function normalizeIpPrefix(value) {
 
 function isMaskedIpv4Prefix(value) {
   const match = String(value || "").match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.0\/24$/);
-  return Boolean(match && match.slice(1).every((part) => Number(part) >= 0 && Number(part) <= 255));
+  return Boolean(match && hasValidIpv4Octets(match.slice(1)));
+}
+
+function isFullIpv4Address(value) {
+  const parts = String(value || "").split(".");
+  return parts.length === 4
+    && parts.every((part) => /^\d{1,3}$/.test(part))
+    && hasValidIpv4Octets(parts);
+}
+
+function hasValidIpv4Octets(parts) {
+  return parts.every((part) => Number(part) >= 0 && Number(part) <= 255);
 }
 
 function isMaskedIpv6Prefix(value) {
@@ -4897,7 +4908,7 @@ function requestIp(request) {
 
 function maskIp(ip) {
   const value = String(ip || "");
-  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(value)) {
+  if (isFullIpv4Address(value)) {
     const parts = value.split(".");
     return `${parts[0]}.${parts[1]}.${parts[2]}.0/24`;
   }

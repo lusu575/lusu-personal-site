@@ -72,6 +72,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "IPv4 来源掩码范围校验",
+    body: "访问和聊天来源生成 IPv4 /24 掩码前，会校验四个地址段都在 0 到 255 之间，避免无效来源写入统计。"
+  },
+  {
+    date: "2026-06-18",
     title: "IPv6 来源前缀规范化",
     body: "访问和聊天来源的 IPv6 掩码生成改为展开后保留前四段，避免压缩地址生成不规范的 /64 前缀。"
   },
