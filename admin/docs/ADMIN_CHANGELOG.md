@@ -4,6 +4,11 @@
 
 ## 2026-06-18
 
+- KPI 卡片渲染安全优化：
+  - 实时大屏 KPI 卡片改用 `document.createElement` 和 `textContent` 渲染标题、数值和说明。
+  - 现有 KPI 数量、说明文案、样式和统计口径保持不变；完成后后台脚本不再用 HTML 字符串拼接动态面板内容。
+  - 后台页面内 `adminUpdates` 和后台 JS query 已同步更新。
+
 - 账号摘要渲染安全优化：
   - 账号管理顶部摘要改用 `document.createElement` 和 `textContent` 渲染注册账号数、管理员数和活跃会话数。
   - 现有摘要统计口径、顺序和样式保持不变，但不再通过 HTML 字符串拼接统计文案。

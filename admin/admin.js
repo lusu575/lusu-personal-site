@@ -72,6 +72,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "KPI 卡片渲染安全优化",
+    body: "实时大屏 KPI 卡片改用 DOM API 渲染标题、数值和说明，后台脚本不再用 HTML 字符串拼接动态面板内容。"
+  },
+  {
+    date: "2026-06-18",
     title: "账号摘要渲染安全优化",
     body: "账号管理顶部摘要改用 DOM API 渲染注册数、管理员数和活跃会话数，避免统计文案走 HTML 拼接。"
   },
@@ -840,13 +845,18 @@ function renderKpis(cards) {
     ["正在活跃", cards.onlineVisitors, "最近 5 分钟内有访问记录的访客或登录账号。"],
     ["今日聊天消息", cards.todayMessages, "匿名聊天室今天实际发出的消息数。"]
   ];
-  $("#kpi-grid").innerHTML = items.map(([label, value, hint]) => `
-    <article class="kpi-card">
-      <span>${escapeHtml(label)}</span>
-      <strong>${formatNumber(value)}</strong>
-      <small>${escapeHtml(hint)}</small>
-    </article>
-  `).join("");
+  $("#kpi-grid").replaceChildren(...items.map(([label, value, hint]) => {
+    const card = document.createElement("article");
+    const title = document.createElement("span");
+    const number = document.createElement("strong");
+    const description = document.createElement("small");
+    card.className = "kpi-card";
+    title.textContent = label;
+    number.textContent = formatNumber(value);
+    description.textContent = hint;
+    card.append(title, number, description);
+    return card;
+  }));
 }
 
 function renderDailyChart(rows) {

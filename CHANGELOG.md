@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 管理后台 KPI 卡片渲染安全优化：
+  - `/admin/` 实时大屏 KPI 卡片改用 DOM API 与 `textContent` 渲染标题、数值和说明，移除后台脚本最后一处动态面板 HTML 字符串拼接。
+  - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。
+
 - 管理后台账号摘要渲染安全优化：
   - `/admin/` 账号管理顶部摘要改用 DOM API 与 `textContent` 渲染注册账号数、管理员数和活跃会话数，减少统计文案 HTML 拼接。
   - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。
