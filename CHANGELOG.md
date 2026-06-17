@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 管理后台账号摘要渲染安全优化：
+  - `/admin/` 账号管理顶部摘要改用 DOM API 与 `textContent` 渲染注册账号数、管理员数和活跃会话数，减少统计文案 HTML 拼接。
+  - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。
+
 - 管理后台趋势图渲染性能优化：
   - `/admin/` 实时大屏每日和小时趋势图改用 DOM API 渲染柱体、标签和 tooltip，减少整块 HTML 字符串重绘。
   - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。

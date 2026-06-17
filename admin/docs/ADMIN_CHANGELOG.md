@@ -4,6 +4,11 @@
 
 ## 2026-06-18
 
+- 账号摘要渲染安全优化：
+  - 账号管理顶部摘要改用 `document.createElement` 和 `textContent` 渲染注册账号数、管理员数和活跃会话数。
+  - 现有摘要统计口径、顺序和样式保持不变，但不再通过 HTML 字符串拼接统计文案。
+  - 后台页面内 `adminUpdates` 和后台 JS query 已同步更新。
+
 - 趋势图渲染性能优化：
   - 实时大屏的每日趋势图和小时趋势图改用 `document.createElement`、`textContent`、`style.height` 和 `title` 属性渲染柱体、标签与 PV/UV 提示。
   - 现有图表高度、横向滚动、空状态、柱体比例和标签截断保持不变，但不再整块拼接 HTML 字符串。

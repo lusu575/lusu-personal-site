@@ -72,6 +72,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "账号摘要渲染安全优化",
+    body: "账号管理顶部摘要改用 DOM API 渲染注册数、管理员数和活跃会话数，避免统计文案走 HTML 拼接。"
+  },
+  {
+    date: "2026-06-18",
     title: "趋势图渲染性能优化",
     body: "实时大屏的每日和小时趋势图改用 DOM API 渲染柱体与标签，减少整块 HTML 字符串重绘。"
   },
@@ -2260,11 +2265,17 @@ function renderAccountSummary() {
   const total = state.accounts.length;
   const admins = state.accounts.filter((account) => account.role === "admin").length;
   const active = state.accounts.filter((account) => Number(account.active_sessions || 0) > 0).length;
-  $("#account-summary").innerHTML = `
-    <span>共 ${formatNumber(total)} 个注册账号</span>
-    <span>${formatNumber(admins)} 个管理员</span>
-    <span>${formatNumber(active)} 个账号有活跃会话</span>
-  `;
+  const summary = $("#account-summary");
+  const items = [
+    `共 ${formatNumber(total)} 个注册账号`,
+    `${formatNumber(admins)} 个管理员`,
+    `${formatNumber(active)} 个账号有活跃会话`
+  ];
+  summary.replaceChildren(...items.map((text) => {
+    const item = document.createElement("span");
+    item.textContent = text;
+    return item;
+  }));
 }
 
 function renderAccountList() {
