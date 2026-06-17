@@ -72,6 +72,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "聊天室消息列表渲染安全优化",
+    body: "聊天室管理的昵称、消息摘要、可见状态和来源徽标改用 DOM API 写入，进一步避免聊天内容被误当作 HTML。"
+  },
+  {
+    date: "2026-06-18",
     title: "聊天室禁言列表渲染安全优化",
     body: "聊天室管理的禁言类型、禁言对象、原因、时间和停用按钮改用 DOM API 写入，避免禁言审计字段被误当作 HTML。"
   },
@@ -518,6 +523,13 @@ function normalizePublishedAtForApi(value) {
 
 function emptyState(text) {
   return `<div class="empty-state">${escapeHtml(text)}</div>`;
+}
+
+function createEmptyStateElement(text) {
+  const empty = document.createElement("div");
+  empty.className = "empty-state";
+  empty.textContent = text;
+  return empty;
 }
 
 function emptyRow(colspan, text) {
@@ -1660,17 +1672,39 @@ async function loadChatMessages() {
 }
 
 function renderChatMessages() {
-  $("#chat-list").innerHTML = state.chatMessages.map((message) => `
-    <button class="list-item ${message.message_id === state.selectedMessageId ? "active" : ""}" type="button" data-message-id="${escapeHtml(message.message_id)}">
-      <span class="list-title">${escapeHtml(message.nickname)}</span>
-      <span class="list-meta">
-        ${Number(message.hidden) ? statusBadge("已隐藏", "hidden") : statusBadge("可见", "visible")}
-        ${statusBadge([message.country, message.region, message.city].filter(Boolean).join(" / ") || "未知来源", "neutral")}
-      </span>
-      <span class="list-subtle">${escapeHtml(message.content)}</span>
-      <span class="list-subtle">${formatTime(message.created_at)}</span>
-    </button>
-  `).join("") || emptyState("暂无聊天记录");
+  const list = $("#chat-list");
+  if (!state.chatMessages.length) {
+    list.replaceChildren(createEmptyStateElement("暂无聊天记录"));
+    syncChatActionState();
+    return;
+  }
+
+  list.replaceChildren(...state.chatMessages.map((message) => {
+    const item = document.createElement("button");
+    const title = document.createElement("span");
+    const meta = document.createElement("span");
+    const content = document.createElement("span");
+    const createdAt = document.createElement("span");
+    item.className = "list-item";
+    if (message.message_id === state.selectedMessageId) {
+      item.classList.add("active");
+    }
+    item.type = "button";
+    item.dataset.messageId = message.message_id || "";
+    title.className = "list-title";
+    title.textContent = message.nickname || "";
+    meta.className = "list-meta";
+    meta.append(
+      Number(message.hidden) ? createStatusBadgeElement("已隐藏", "hidden") : createStatusBadgeElement("可见", "visible"),
+      createStatusBadgeElement([message.country, message.region, message.city].filter(Boolean).join(" / ") || "未知来源", "neutral")
+    );
+    content.className = "list-subtle";
+    content.textContent = message.content || "";
+    createdAt.className = "list-subtle";
+    createdAt.textContent = formatTime(message.created_at);
+    item.append(title, meta, content, createdAt);
+    return item;
+  }));
   syncChatActionState();
 }
 
@@ -1892,10 +1926,7 @@ async function loadBans() {
 function renderBans() {
   const list = $("#ban-list");
   if (!state.bans.length) {
-    const empty = document.createElement("div");
-    empty.className = "empty-state";
-    empty.textContent = "暂无禁言记录";
-    list.replaceChildren(empty);
+    list.replaceChildren(createEmptyStateElement("暂无禁言记录"));
     syncBanListButtons();
     return;
   }
