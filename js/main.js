@@ -435,6 +435,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "💾",
+      date: "2026.06.18",
+      title: { zh: "游戏外壳三语同步", en: "Localized Game Shell", ja: "ゲームシェルの多言語同期" },
+      desc: {
+        zh: "游戏入口页的返回、存档工具、云存档、协议和状态文案会跟随当前语言显示",
+        en: "Game entry pages now localize back links, save tools, cloud-save panels, license labels, and status text",
+        ja: "ゲーム入口ページの戻るリンク、セーブツール、クラウド保存、ライセンス、状態表示が現在の言語に合わせて表示されます"
+      }
+    },
+    {
       icon: "🌐",
       date: "2026.06.18",
       title: { zh: "游戏语言标记三语同步", en: "Game Language Labels", ja: "ゲーム言語ラベルの多言語同期" },

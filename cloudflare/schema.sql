@@ -1036,6 +1036,32 @@ on conflict(article_id) do update set
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
 
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-game-shell-locale',
+  '2026-06-18-game-shell-locale',
+  'site-updates',
+  '["网站更新","多语言","游戏区","云存档"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T17:55:00.000Z',
+  '2026-06-17T17:55:00.000Z',
+  '2026-06-17T17:55:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
@@ -3152,7 +3178,37 @@ This update cleans up the language support tags on game cards so English and Jap
 - 中文表示では `中文 / 英文 / 日文` を表示します。
 - English 表示では `Chinese / English / Japanese` を表示します。
 - 日本語表示では `中国語 / 英語 / 日本語` を表示します。
-- 未対応状態の `title` ヒントも現在の言語を使います。✓ / × の状態、ゲームカタログ、クラウドセーブ、入口リンクは変更していません。', '2026-06-17T17:43:00.000Z', '2026-06-17T17:43:00.000Z')
+- 未対応状態の `title` ヒントも現在の言語を使います。✓ / × の状態、ゲームカタログ、クラウドセーブ、入口リンクは変更していません。', '2026-06-17T17:43:00.000Z', '2026-06-17T17:43:00.000Z'),
+  ('seed-update-2026-06-18-game-shell-locale-zh', 'seed-update-2026-06-18-game-shell-locale', 'zh', '游戏外壳三语同步', '游戏入口页的共享外壳文案现在会跟随站点语言显示。', '# 游戏外壳三语同步
+
+本次更新整理每个游戏入口页外层工具栏的三语体验，让 `?lang=en` 和 `?lang=ja` 不再混入固定中文外壳文案。
+
+## 更新内容
+
+- 返回游戏区、加载状态、本地存档工具、导入导出按钮、云端存档面板、协议链接和状态提示会跟随当前语言显示。
+- 游戏标题、iframe 标题和语言支持副标题使用当前站点语言。
+- 5 个游戏入口页的 `game-shell.js` 增加缓存版本，帮助浏览器获取新外壳脚本。
+- 游戏本体 iframe、启动语言、云存档同步、导入导出逻辑保持不变。', '2026-06-17T17:55:00.000Z', '2026-06-17T17:55:00.000Z'),
+  ('seed-update-2026-06-18-game-shell-locale-en', 'seed-update-2026-06-18-game-shell-locale', 'en', 'Localized Game Shell', 'The shared game entry shell now follows the active site language.', '# Localized Game Shell
+
+This update localizes the shared wrapper around each game entry page, so `?lang=en` and `?lang=ja` no longer keep fixed Chinese shell controls.
+
+## Changes
+
+- Back links, loading text, local-save tools, import/export buttons, cloud-save panels, license links, and status messages follow the active language.
+- Game titles, iframe titles, and language-support subtitles use the current site language.
+- All five game entry pages now request `game-shell.js` with a new cache version.
+- The embedded game iframe, launch language, cloud-save sync, and import/export behavior are unchanged.', '2026-06-17T17:55:00.000Z', '2026-06-17T17:55:00.000Z'),
+  ('seed-update-2026-06-18-game-shell-locale-ja', 'seed-update-2026-06-18-game-shell-locale', 'ja', 'ゲームシェルの多言語同期', 'ゲーム入口ページの共通シェルが現在のサイト言語に合わせて表示されます。', '# ゲームシェルの多言語同期
+
+今回の更新では、各ゲーム入口ページを包む共通シェルを多言語化し、`?lang=en` と `?lang=ja` で固定の中国語コントロールが混ざらないようにしました。
+
+## 更新内容
+
+- ゲーム一覧への戻るリンク、読み込み表示、ローカルセーブツール、インポート/エクスポートボタン、クラウドセーブパネル、ライセンスリンク、状態表示が現在の言語に合わせて表示されます。
+- ゲームタイトル、iframe タイトル、対応言語のサブタイトルも現在のサイト言語を使います。
+- 5 つのゲーム入口ページで `game-shell.js` に新しいキャッシュ版を付けました。
+- 埋め込みゲーム iframe、起動言語、クラウドセーブ同期、インポート/エクスポートの動作は変更していません。', '2026-06-17T17:55:00.000Z', '2026-06-17T17:55:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,

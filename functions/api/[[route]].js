@@ -4614,6 +4614,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-18-game-shell-locale',
+        '2026-06-18-game-shell-locale',
+        'site-updates',
+        '["网站更新","多语言","游戏区","云存档"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T17:55:00.000Z',
+        '2026-06-17T17:55:00.000Z',
+        '2026-06-17T17:55:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -5109,6 +5136,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# ゲーム言語ラベルの多言語同期\n\n今回の更新では、ゲームカードの対応言語タグを整理し、English / 日本語 ページに固定の中国語ラベルが混ざらないようにしました。\n\n## 更新内容\n\n- 中文表示では `中文 / 英文 / 日文` を表示します。\n- English 表示では `Chinese / English / Japanese` を表示します。\n- 日本語表示では `中国語 / 英語 / 日本語` を表示します。\n- 未対応状態の `title` ヒントも現在の言語を使います。✓ / × の状態、ゲームカタログ、クラウドセーブ、入口リンクは変更していません。"
       }
     }, "2026-06-17T17:43:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-game-shell-locale", {
+      zh: {
+        title: "游戏外壳三语同步",
+        summary: "游戏入口页的共享外壳文案现在会跟随站点语言显示。",
+        content_markdown: "# 游戏外壳三语同步\n\n本次更新整理每个游戏入口页外层工具栏的三语体验，让 `?lang=en` 和 `?lang=ja` 不再混入固定中文外壳文案。\n\n## 更新内容\n\n- 返回游戏区、加载状态、本地存档工具、导入导出按钮、云端存档面板、协议链接和状态提示会跟随当前语言显示。\n- 游戏标题、iframe 标题和语言支持副标题使用当前站点语言。\n- 5 个游戏入口页的 `game-shell.js` 增加缓存版本，帮助浏览器获取新外壳脚本。\n- 游戏本体 iframe、启动语言、云存档同步、导入导出逻辑保持不变。"
+      },
+      en: {
+        title: "Localized Game Shell",
+        summary: "The shared game entry shell now follows the active site language.",
+        content_markdown: "# Localized Game Shell\n\nThis update localizes the shared wrapper around each game entry page, so `?lang=en` and `?lang=ja` no longer keep fixed Chinese shell controls.\n\n## Changes\n\n- Back links, loading text, local-save tools, import/export buttons, cloud-save panels, license links, and status messages follow the active language.\n- Game titles, iframe titles, and language-support subtitles use the current site language.\n- All five game entry pages now request `game-shell.js` with a new cache version.\n- The embedded game iframe, launch language, cloud-save sync, and import/export behavior are unchanged."
+      },
+      ja: {
+        title: "ゲームシェルの多言語同期",
+        summary: "ゲーム入口ページの共通シェルが現在のサイト言語に合わせて表示されます。",
+        content_markdown: "# ゲームシェルの多言語同期\n\n今回の更新では、各ゲーム入口ページを包む共通シェルを多言語化し、`?lang=en` と `?lang=ja` で固定の中国語コントロールが混ざらないようにしました。\n\n## 更新内容\n\n- ゲーム一覧への戻るリンク、読み込み表示、ローカルセーブツール、インポート/エクスポートボタン、クラウドセーブパネル、ライセンスリンク、状態表示が現在の言語に合わせて表示されます。\n- ゲームタイトル、iframe タイトル、対応言語のサブタイトルも現在のサイト言語を使います。\n- 5 つのゲーム入口ページで `game-shell.js` に新しいキャッシュ版を付けました。\n- 埋め込みゲーム iframe、起動言語、クラウドセーブ同期、インポート/エクスポートの動作は変更していません。"
+      }
+    }, "2026-06-17T17:55:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')
