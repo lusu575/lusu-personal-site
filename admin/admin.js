@@ -74,6 +74,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "视频写入期间锁定表单",
+    body: "视频保存、发布或删除请求进行中会临时锁定链接、标题、封面、分类、排序和发布状态等字段，避免写入尚未完成时继续修改内容造成提交范围误解。"
+  },
+  {
+    date: "2026-06-18",
     title: "视频分类写入期间锁定表单",
     body: "视频分类保存或删除请求进行中会临时锁定 slug、分类名称、排序和启用状态字段，避免写入尚未完成时继续修改内容造成提交范围误解。"
   },
@@ -1762,19 +1767,24 @@ async function previewVideoUrl() {
 function syncVideoMetadataButtons() {
   const previewButton = $("#preview-video-url");
   const refreshButton = $("#refresh-video-metadata");
-  const busy = state.videoPreviewing || state.videoMetadataRefreshing;
+  const writeBusy = isVideoWriteBusy();
+  const busy = state.videoPreviewing || state.videoMetadataRefreshing || writeBusy;
   if (previewButton) {
     previewButton.disabled = busy;
     previewButton.textContent = state.videoPreviewing ? "识别中..." : "自动识别/获取信息";
     previewButton.setAttribute("aria-busy", state.videoPreviewing ? "true" : "false");
-    previewButton.title = state.videoPreviewing ? "正在识别视频链接" : "自动识别视频链接并获取元数据";
+    previewButton.title = state.videoPreviewing
+      ? "正在识别视频链接"
+      : (writeBusy ? videoBusyMetadataTitle("识别") : "自动识别视频链接并获取元数据");
   }
   if (refreshButton) {
     const hasVideo = Boolean(state.selectedVideoId);
     refreshButton.disabled = busy || !hasVideo;
     refreshButton.textContent = state.videoMetadataRefreshing ? "刷新中..." : "刷新元数据";
     refreshButton.setAttribute("aria-busy", state.videoMetadataRefreshing ? "true" : "false");
-    if (!hasVideo) {
+    if (writeBusy) {
+      refreshButton.title = videoBusyMetadataTitle("刷新");
+    } else if (!hasVideo) {
       refreshButton.title = "请先选择已保存视频";
     } else if (state.videoMetadataRefreshing) {
       refreshButton.title = "正在刷新外部元数据";
@@ -1782,6 +1792,15 @@ function syncVideoMetadataButtons() {
       refreshButton.title = "刷新当前视频的外部元数据";
     }
   }
+}
+
+function videoBusyMetadataTitle(action) {
+  if (state.videoDeleting) {
+    return `正在删除视频，完成后再${action}元数据`;
+  }
+  return state.videoSavingMode === "publish"
+    ? `正在发布视频，完成后再${action}元数据`
+    : `正在保存视频，完成后再${action}元数据`;
 }
 
 function videoPayload(statusOverride = "") {
@@ -1876,11 +1895,58 @@ function syncVideoSaveButtons() {
       ? (state.videoDeleting ? "正在删除视频" : "正在保存视频")
       : (state.selectedVideoId ? "删除当前视频" : "请先选择已保存视频");
   }
+  syncVideoFormBusyState();
+  syncVideoMetadataButtons();
   syncVideoListBusyState();
 }
 
 function isVideoWriteBusy() {
   return state.videoSaving || state.videoDeleting;
+}
+
+function syncVideoFormBusyState() {
+  const busy = isVideoWriteBusy();
+  const busyTitle = videoBusyFormTitle();
+  $$("#video-form input, #video-form textarea, #video-form select").forEach((field) => {
+    const categoryOptionDisabled = shouldDisableVideoCategoryOption(field);
+    field.disabled = busy || categoryOptionDisabled;
+    field.setAttribute("aria-busy", busy ? "true" : "false");
+    if (busy) {
+      field.title = busyTitle;
+    } else {
+      field.removeAttribute("title");
+    }
+  });
+  const categoryFieldset = $("#video-form .category-checks");
+  if (categoryFieldset) {
+    categoryFieldset.disabled = busy;
+    categoryFieldset.setAttribute("aria-busy", busy ? "true" : "false");
+    if (busy) {
+      categoryFieldset.title = busyTitle;
+    } else {
+      categoryFieldset.removeAttribute("title");
+    }
+  }
+  const clearButton = $("#clear-video-thumbnail");
+  if (clearButton) {
+    clearButton.disabled = busy;
+    clearButton.setAttribute("aria-busy", busy ? "true" : "false");
+    clearButton.title = busy ? busyTitle : "清空封面";
+  }
+}
+
+function shouldDisableVideoCategoryOption(field) {
+  const option = field.closest?.("#video-category-checks .mini-check");
+  return Boolean(option?.classList.contains("is-disabled") && !field.checked);
+}
+
+function videoBusyFormTitle() {
+  if (state.videoDeleting) {
+    return "正在删除视频，完成后再编辑表单";
+  }
+  return state.videoSavingMode === "publish"
+    ? "正在发布视频，完成后再编辑表单"
+    : "正在保存视频，完成后再编辑表单";
 }
 
 function syncVideoListBusyState() {
