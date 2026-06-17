@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 文章图片路径守卫：
+  - 文章 Markdown 图片仍只允许 `assets/images/articles/` 下的项目资源，并继续通过安全 DOM 渲染。
+  - `safeArticleImageSrc()` 新增 `..` 路径片段拒绝，避免图片路径逃出文章图片目录。
+  - 更新 `index.html` 的 JS query 为 `20260618-article-image-path-guard`，并新增同名三语 `site-updates` 更新文章。
 - 资源链接白名单：
   - 资源区下载/外链 URL 改为先经过 `safeHttpUrl()` 规范化；无效协议继续显示准备中按钮。
   - 本地资源路径只接受安全的 `assets/` 或 `downloads/` 路径，并拒绝 `..` 路径穿越片段。

@@ -5019,6 +5019,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-18-article-image-path-guard',
+        '2026-06-18-article-image-path-guard',
+        'site-updates',
+        '["网站更新","知识库","图片","安全"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T20:20:00.000Z',
+        '2026-06-17T20:20:00.000Z',
+        '2026-06-17T20:20:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -5769,6 +5796,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# リソースURL許可リスト\n\n今回の更新では、公開リソース欄をさらに引き締め、リソースのダウンロードと外部リンクの URL を描画前により明確な許可リストで確認します。\n\n## 更新内容\n\n- リソースのダウンロード/外部 URL は `safeHttpUrl()` で正規化し、外部リンクは `http(s)` のみ受け付けます。\n- ローカルリソースパスは安全な `assets/` または `downloads/` パスだけを受け付け、`..` のパストラバーサル片を拒否します。\n- 無効な URL は既存の準備中ボタンを表示し続け、不審なリンクをページに出力しません。\n- 既存 3 件のリソース占位カード、カテゴリーフィルター、モバイル表示、管理画面ディレクトリは変更していません。"
       }
     }, "2026-06-17T20:05:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-article-image-path-guard", {
+      zh: {
+        title: "文章图片路径守卫",
+        summary: "文章 Markdown 配图白名单补充路径穿越片段拒绝。",
+        content_markdown: "# 文章图片路径守卫\n\n本次更新继续收紧公开知识库的文章图片渲染规则，让 Markdown 配图路径更明确地留在项目文章图片目录内。\n\n## 更新内容\n\n- 文章 Markdown 图片仍只允许 `assets/images/articles/` 下的项目资源。\n- `safeArticleImageSrc()` 新增 `..` 路径片段拒绝，避免图片路径逃出文章图片目录。\n- 图片仍通过 `document.createElement('img')`、安全 `src`、`alt` 和 `figcaption` 渲染，不插入未处理 HTML。\n- 现有 AI Agent 长文配图、知识库列表、文章直链和后台目录保持不变。"
+      },
+      en: {
+        title: "Article Image Path Guard",
+        summary: "Markdown article image allowlist now rejects traversal path segments.",
+        content_markdown: "# Article Image Path Guard\n\nThis update keeps tightening public Knowledge article image rendering so Markdown image paths stay clearly inside the project article-image folder.\n\n## Changes\n\n- Markdown article images are still limited to project assets under `assets/images/articles/`.\n- `safeArticleImageSrc()` now rejects `..` traversal segments so image paths cannot escape the article-image folder.\n- Images still render through `document.createElement('img')`, safe `src`, `alt`, and `figcaption` instead of raw HTML insertion.\n- The existing AI Agent article images, Knowledge list, article deep links, and admin folders are unchanged."
+      },
+      ja: {
+        title: "記事画像パスガード",
+        summary: "Markdown 記事画像の許可リストが、パストラバーサル片を拒否するようになりました。",
+        content_markdown: "# 記事画像パスガード\n\n今回の更新では、公開知識庫の記事画像描画をさらに引き締め、Markdown 画像パスがプロジェクトの記事画像フォルダ内に留まるよう明確にしました。\n\n## 更新内容\n\n- Markdown 記事画像は引き続き `assets/images/articles/` 配下のプロジェクト資源だけを受け付けます。\n- `safeArticleImageSrc()` が `..` のパストラバーサル片を拒否し、画像パスが記事画像フォルダから外へ出ないようにしました。\n- 画像は今後も `document.createElement('img')`、安全な `src`、`alt`、`figcaption` で描画し、未処理 HTML は挿入しません。\n- 既存の AI Agent 長文画像、知識庫一覧、記事直リンク、管理画面ディレクトリは変更していません。"
+      }
+    }, "2026-06-17T20:20:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')

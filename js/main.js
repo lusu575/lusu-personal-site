@@ -438,6 +438,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "🖼️",
+      date: "2026.06.18",
+      title: { zh: "文章图片路径守卫", en: "Article Image Path Guard", ja: "記事画像パスガード" },
+      desc: {
+        zh: "文章 Markdown 配图继续限制在项目文章图片目录，并显式拒绝路径穿越片段",
+        en: "Markdown article images stay limited to the project article-image folder and now explicitly reject traversal segments",
+        ja: "Markdown 記事画像は記事画像フォルダに限定し、パストラバーサル片を明示的に拒否します"
+      }
+    },
+    {
       icon: "🧭",
       date: "2026.06.18",
       title: { zh: "资源链接白名单", en: "Resource URL Allowlist", ja: "リソースURL許可リスト" },
@@ -2088,6 +2098,9 @@ function renderArticleCallout(lines) {
 
 function safeArticleImageSrc(src) {
   const value = String(src || "").trim();
+  if (/(^|\/)\.\.(\/|$)/.test(value)) {
+    return "";
+  }
   if (/^assets\/images\/articles\/[a-z0-9._/-]+\.(png|jpe?g|webp|gif)(\?[a-z0-9=&._-]+)?$/i.test(value)) {
     return value;
   }

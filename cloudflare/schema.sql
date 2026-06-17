@@ -671,6 +671,32 @@ on conflict(article_id) do update set
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
 
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-article-image-path-guard',
+  '2026-06-18-article-image-path-guard',
+  'site-updates',
+  '["网站更新","知识库","图片","安全"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T20:20:00.000Z',
+  '2026-06-17T20:20:00.000Z',
+  '2026-06-17T20:20:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
@@ -2565,6 +2591,45 @@ This update keeps tightening the public Resources area by checking resource down
 - ローカルリソースパスは安全な `assets/` または `downloads/` パスだけを受け付け、`..` のパストラバーサル片を拒否します。
 - 無効な URL は既存の準備中ボタンを表示し続け、不審なリンクをページに出力しません。
 - 既存 3 件のリソース占位カード、カテゴリーフィルター、モバイル表示、管理画面ディレクトリは変更していません。', '2026-06-17T20:05:00.000Z', '2026-06-17T20:05:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-article-image-path-guard-zh', 'seed-update-2026-06-18-article-image-path-guard', 'zh', '文章图片路径守卫', '文章 Markdown 配图白名单补充路径穿越片段拒绝。', '# 文章图片路径守卫
+
+本次更新继续收紧公开知识库的文章图片渲染规则，让 Markdown 配图路径更明确地留在项目文章图片目录内。
+
+## 更新内容
+
+- 文章 Markdown 图片仍只允许 `assets/images/articles/` 下的项目资源。
+- `safeArticleImageSrc()` 新增 `..` 路径片段拒绝，避免图片路径逃出文章图片目录。
+- 图片仍通过 `document.createElement(''img'')`、安全 `src`、`alt` 和 `figcaption` 渲染，不插入未处理 HTML。
+- 现有 AI Agent 长文配图、知识库列表、文章直链和后台目录保持不变。', '2026-06-17T20:20:00.000Z', '2026-06-17T20:20:00.000Z'),
+  ('seed-update-2026-06-18-article-image-path-guard-en', 'seed-update-2026-06-18-article-image-path-guard', 'en', 'Article Image Path Guard', 'Markdown article image allowlist now rejects traversal path segments.', '# Article Image Path Guard
+
+This update keeps tightening public Knowledge article image rendering so Markdown image paths stay clearly inside the project article-image folder.
+
+## Changes
+
+- Markdown article images are still limited to project assets under `assets/images/articles/`.
+- `safeArticleImageSrc()` now rejects `..` traversal segments so image paths cannot escape the article-image folder.
+- Images still render through `document.createElement(''img'')`, safe `src`, `alt`, and `figcaption` instead of raw HTML insertion.
+- The existing AI Agent article images, Knowledge list, article deep links, and admin folders are unchanged.', '2026-06-17T20:20:00.000Z', '2026-06-17T20:20:00.000Z'),
+  ('seed-update-2026-06-18-article-image-path-guard-ja', 'seed-update-2026-06-18-article-image-path-guard', 'ja', '記事画像パスガード', 'Markdown 記事画像の許可リストが、パストラバーサル片を拒否するようになりました。', '# 記事画像パスガード
+
+今回の更新では、公開知識庫の記事画像描画をさらに引き締め、Markdown 画像パスがプロジェクトの記事画像フォルダ内に留まるよう明確にしました。
+
+## 更新内容
+
+- Markdown 記事画像は引き続き `assets/images/articles/` 配下のプロジェクト資源だけを受け付けます。
+- `safeArticleImageSrc()` が `..` のパストラバーサル片を拒否し、画像パスが記事画像フォルダから外へ出ないようにしました。
+- 画像は今後も `document.createElement(''img'')`、安全な `src`、`alt`、`figcaption` で描画し、未処理 HTML は挿入しません。
+- 既存の AI Agent 長文画像、知識庫一覧、記事直リンク、管理画面ディレクトリは変更していません。', '2026-06-17T20:20:00.000Z', '2026-06-17T20:20:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,
