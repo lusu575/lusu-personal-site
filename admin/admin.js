@@ -51,6 +51,11 @@ const overviewPanels = new Set(["dashboard", "visits", "clicks"]);
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "后台刷新忙碌状态优化",
+    body: "后台面板数据读取中会同步禁用顶部刷新按钮，并显示“刷新中...”，避免快速连点造成误解；请求结束或失败后按钮会自动恢复，可继续手动重试。"
+  },
+  {
+    date: "2026-06-18",
     title: "后台面板请求合并优化",
     body: "后台同一标签页数据正在读取时，快速切换或连续点击刷新会复用当前请求，不再并发打出重复后台请求；失败后仍会释放状态，方便再次刷新重试。"
   },
@@ -394,6 +399,14 @@ function panelDataKey(panel) {
   return overviewPanels.has(panel) ? "overview" : panel;
 }
 
+function updateRefreshButton() {
+  const button = $("#manual-refresh");
+  const busy = Boolean(state.loadingPanels[panelDataKey(state.activePanel)]);
+  button.disabled = busy;
+  button.setAttribute("aria-busy", busy ? "true" : "false");
+  button.textContent = busy ? "刷新中..." : "刷新";
+}
+
 async function loadPanelData(panel, options = {}) {
   const key = panelDataKey(panel);
   const force = Boolean(options.force);
@@ -401,6 +414,7 @@ async function loadPanelData(panel, options = {}) {
     if (!overviewPanels.has(panel)) {
       setStatus("当前标签正在读取，请稍候...");
     }
+    updateRefreshButton();
     return state.loadingPanels[key];
   }
   if (!force && state.loadedPanels[key]) {
@@ -436,9 +450,11 @@ async function loadPanelData(panel, options = {}) {
       setStatus(error.message);
     } finally {
       delete state.loadingPanels[key];
+      updateRefreshButton();
     }
   })();
 
+  updateRefreshButton();
   return state.loadingPanels[key];
 }
 
@@ -452,6 +468,7 @@ function switchPanel(panel) {
   });
   $("#panel-title").textContent = panelMeta[panel][0];
   $("#panel-subtitle").textContent = panelMeta[panel][1];
+  updateRefreshButton();
   loadPanelData(panel);
 }
 
