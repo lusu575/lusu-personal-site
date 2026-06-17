@@ -73,6 +73,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "视频分类写入期间切换防护",
+    body: "视频分类保存或删除请求进行中会临时禁用分类列表和新建按钮，并在点击入口做二次拦截，避免慢请求期间切换分类导致当前表单和正在提交的分类错位。"
+  },
+  {
+    date: "2026-06-18",
     title: "视频写入期间切换防护",
     body: "视频管理保存或删除请求进行中会临时禁用视频列表和新建按钮，并在点击入口做二次拦截，避免慢请求期间切换视频导致当前表单和正在提交的视频错位。"
   },
@@ -1908,6 +1913,7 @@ function renderVideoCategoryList() {
   const list = $("#video-category-list-admin");
   if (!state.videoCategories.length) {
     list.replaceChildren(createEmptyStateElement("暂无视频分类。"));
+    syncVideoCategoryListBusyState();
     return;
   }
 
@@ -1922,6 +1928,7 @@ function renderVideoCategoryList() {
     }
     item.type = "button";
     item.dataset.adminVideoCategoryId = category.category_id || "";
+    item.disabled = isVideoCategoryWriteBusy();
     title.className = "list-title";
     title.textContent = category.name_zh || category.slug || "";
     meta.className = "list-meta";
@@ -1937,6 +1944,7 @@ function renderVideoCategoryList() {
     item.append(title, meta, summary);
     return item;
   }));
+  syncVideoCategoryListBusyState();
 }
 
 function selectedVideoCategory() {
@@ -2038,6 +2046,27 @@ function syncVideoCategoryButtons() {
         ? "请先选择已保存分类"
         : (hasLinkedVideos ? "已有视频使用，先取消关联后再删除" : "删除当前视频分类"));
   }
+  syncVideoCategoryListBusyState();
+}
+
+function isVideoCategoryWriteBusy() {
+  return state.videoCategoryBusy;
+}
+
+function syncVideoCategoryListBusyState() {
+  const busy = isVideoCategoryWriteBusy();
+  const busyTitle = state.videoCategoryBusyMode === "delete" ? "正在删除分类，完成后再切换" : "正在保存分类，完成后再切换";
+  const newButton = $("#new-video-category");
+  if (newButton) {
+    newButton.disabled = busy;
+    newButton.title = busy
+      ? (state.videoCategoryBusyMode === "delete" ? "正在删除分类，完成后再新建" : "正在保存分类，完成后再新建")
+      : "新建视频分类";
+  }
+  $$("#video-category-list-admin .list-item").forEach((item) => {
+    item.disabled = busy;
+    item.title = busy ? busyTitle : "打开这个视频分类";
+  });
 }
 
 function selectVideoCategory(categoryId) {
@@ -2820,10 +2849,15 @@ function bindEvents() {
   });
   $("#publish-video").addEventListener("click", () => saveVideo("published"));
   $("#delete-video").addEventListener("click", deleteVideo);
-  $("#new-video-category").addEventListener("click", resetVideoCategoryForm);
+  $("#new-video-category").addEventListener("click", () => {
+    if (isVideoCategoryWriteBusy()) {
+      return;
+    }
+    resetVideoCategoryForm();
+  });
   $("#video-category-list-admin").addEventListener("click", (event) => {
     const item = event.target.closest("[data-admin-video-category-id]");
-    if (item) {
+    if (item && !isVideoCategoryWriteBusy()) {
       selectVideoCategory(item.dataset.adminVideoCategoryId);
     }
   });
