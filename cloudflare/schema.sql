@@ -701,6 +701,32 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-06-18-static-image-dimensions',
+  '2026-06-18-static-image-dimensions',
+  'site-updates',
+  '["网站更新","性能","图片","首页"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T21:20:00.000Z',
+  '2026-06-17T21:20:00.000Z',
+  '2026-06-17T21:20:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-06-18-article-tag-locales',
   '2026-06-18-article-tag-locales',
   'site-updates',
@@ -2708,6 +2734,45 @@ This update keeps tightening public Knowledge article image rendering so Markdow
 - `safeArticleImageSrc()` が `..` のパストラバーサル片を拒否し、画像パスが記事画像フォルダから外へ出ないようにしました。
 - 画像は今後も `document.createElement(''img'')`、安全な `src`、`alt`、`figcaption` で描画し、未処理 HTML は挿入しません。
 - 既存の AI Agent 長文画像、知識庫一覧、記事直リンク、管理画面ディレクトリは変更していません。', '2026-06-17T20:20:00.000Z', '2026-06-17T20:20:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-static-image-dimensions-zh', 'seed-update-2026-06-18-static-image-dimensions', 'zh', '静态图片尺寸提示', '首屏和固定 UI 的静态图片补充了真实尺寸属性。', '# 静态图片尺寸提示
+
+本次更新继续做轻量性能打磨，为公开主站里几处固定 UI 图片补充真实尺寸属性。
+
+## 更新内容
+
+- 顶部品牌头像、聊天室头像、关于页头像和底部 Start 图标新增 `width` / `height`。
+- 属性使用图片自身像素尺寸，现有 CSS 展示尺寸和响应式布局保持不变。
+- 浏览器可以在图片解码前预留稳定比例，减少首屏和固定 UI 的布局不确定性。
+- 本轮只调整公开首页标记、更新记录和本地 fallback，不触碰后台目录或管理接口。', '2026-06-17T21:20:00.000Z', '2026-06-17T21:20:00.000Z'),
+  ('seed-update-2026-06-18-static-image-dimensions-en', 'seed-update-2026-06-18-static-image-dimensions', 'en', 'Static Image Dimensions', 'Static images in the first-screen and fixed UI now declare real dimensions.', '# Static Image Dimensions
+
+This update continues lightweight performance polish by adding real dimensions to several fixed UI images on the public site.
+
+## Changes
+
+- The top brand avatar, chat room avatar, about-page avatar, and bottom Start icon now declare `width` / `height`.
+- The attributes use each image''s intrinsic pixel size; existing CSS display sizes and responsive behavior are unchanged.
+- Browsers can reserve a stable ratio before image decoding, reducing layout uncertainty in the first-screen and fixed UI.
+- This round only changes public homepage markup, update records, and local fallback data; admin folders and admin APIs are untouched.', '2026-06-17T21:20:00.000Z', '2026-06-17T21:20:00.000Z'),
+  ('seed-update-2026-06-18-static-image-dimensions-ja', 'seed-update-2026-06-18-static-image-dimensions', 'ja', '静的画像サイズ指定', '初期画面と固定 UI の静的画像に実寸属性を追加しました。', '# 静的画像サイズ指定
+
+今回の更新では、公開サイトの固定 UI 画像に実寸属性を追加し、軽量なパフォーマンス調整を続けました。
+
+## 更新内容
+
+- 上部ブランド画像、チャット画像、プロフィール画像、下部 Start アイコンに `width` / `height` を追加しました。
+- 属性は画像本来のピクセルサイズを使い、既存 CSS の表示サイズとレスポンシブ挙動は変更していません。
+- ブラウザーが画像デコード前に安定した比率を確保でき、初期画面と固定 UI のレイアウト揺れを減らします。
+- 今回は公開ホームのマークアップ、更新記録、ローカル fallback のみを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T21:20:00.000Z', '2026-06-17T21:20:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,

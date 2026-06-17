@@ -438,6 +438,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "🖼️",
+      date: "2026.06.18",
+      title: { zh: "静态图片尺寸提示", en: "Static Image Dimensions", ja: "静的画像サイズ指定" },
+      desc: {
+        zh: "首屏品牌头像、聊天室头像、关于头像和 Start 图标补充真实 width / height，减少图片解码前的布局不确定性",
+        en: "Brand, chat, profile, and Start images now declare real width / height values to reduce layout uncertainty before decoding",
+        ja: "ブランド、チャット、プロフィール、Start 画像に実寸の width / height を追加し、デコード前のレイアウト揺れを減らします"
+      }
+    },
+    {
       icon: "🏷️",
       date: "2026.06.18",
       title: { zh: "文章标签本地化", en: "Article Tag Locales", ja: "記事タグのローカライズ" },
