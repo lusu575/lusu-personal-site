@@ -47,8 +47,14 @@ const panelMeta = {
 };
 
 const overviewPanels = new Set(["dashboard", "visits", "clicks"]);
+const staticPanels = new Set(["updates", "docs"]);
 
 const adminUpdates = [
+  {
+    date: "2026-06-18",
+    title: "后台静态面板刷新状态优化",
+    body: "后台更新记录和后台说明属于本地静态内容，进入后顶部刷新按钮会显示“无需刷新”并禁用，避免误以为会重新请求后台接口。"
+  },
   {
     date: "2026-06-18",
     title: "后台自动刷新可见性优化",
@@ -406,13 +412,20 @@ function panelDataKey(panel) {
 
 function updateRefreshButton() {
   const button = $("#manual-refresh");
-  const busy = Boolean(state.loadingPanels[panelDataKey(state.activePanel)]);
-  button.disabled = busy;
+  const staticPanel = staticPanels.has(state.activePanel);
+  const busy = !staticPanel && Boolean(state.loadingPanels[panelDataKey(state.activePanel)]);
+  button.disabled = staticPanel || busy;
   button.setAttribute("aria-busy", busy ? "true" : "false");
-  button.textContent = busy ? "刷新中..." : "刷新";
+  button.textContent = staticPanel ? "无需刷新" : (busy ? "刷新中..." : "刷新");
 }
 
 async function loadPanelData(panel, options = {}) {
+  if (staticPanels.has(panel)) {
+    setStatus("当前标签为本地内容，无需刷新。");
+    updateRefreshButton();
+    return;
+  }
+
   const key = panelDataKey(panel);
   const force = Boolean(options.force);
   if (state.loadingPanels[key]) {
