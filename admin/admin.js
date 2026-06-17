@@ -55,6 +55,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "后台导航当前项语义优化",
+    body: "后台侧边栏会为当前标签同步 aria-current，键盘浏览和辅助技术能更清楚地识别当前所在模块。"
+  },
+  {
+    date: "2026-06-18",
     title: "后台退出按钮防连点优化",
     body: "点击退出后按钮会进入“退出中...”状态并临时禁用，避免慢网络下重复提交登出请求；失败时会恢复按钮并显示错误。"
   },
@@ -522,7 +527,13 @@ async function loadPanelData(panel, options = {}) {
 function applyActivePanel(panel) {
   state.activePanel = panel;
   $$(".nav-button").forEach((button) => {
-    button.classList.toggle("active", button.dataset.panel === panel);
+    const active = button.dataset.panel === panel;
+    button.classList.toggle("active", active);
+    if (active) {
+      button.setAttribute("aria-current", "page");
+    } else {
+      button.removeAttribute("aria-current");
+    }
   });
   $$(".panel").forEach((item) => {
     item.classList.toggle("active", item.id === `${panel}-panel`);
