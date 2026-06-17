@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 管理后台 HTML 字符串 helper 清理：
+  - `/admin/` 脚本移除已无调用的字符串 HTML helper，保留 DOM/textContent 渲染路径，减少后续维护误用拼接 HTML 的风险。
+  - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。
+
 - 管理后台账号邮箱输入体验优化：
   - `/admin/` 账号管理邮箱输入框补充 email 键盘提示，并关闭自动大写和拼写检查，减少移动端账号编辑误输入。
   - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。

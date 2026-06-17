@@ -4,6 +4,11 @@
 
 ## 2026-06-18
 
+- 后台 HTML 字符串 helper 清理：
+  - 后台脚本移除已无调用的 `emptyState()`、`emptyRow()`、`statusBadge()` 和对应 `escapeHtml()` 字符串 helper。
+  - 现有空状态、表格空行和状态标签继续使用 `document.createElement` 与 `textContent` 渲染，功能和视觉保持不变。
+  - 后台页面内 `adminUpdates` 和后台 JS query 已同步更新。
+
 - 账号邮箱输入体验优化：
   - 账号管理邮箱输入框补充 `inputmode="email"`，移动端会优先显示适合邮箱输入的键盘。
   - 同步关闭自动大写和拼写检查，减少移动端编辑账号邮箱时被输入法改写的概率；保存接口和账号权限校验保持不变。

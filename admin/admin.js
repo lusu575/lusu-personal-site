@@ -72,6 +72,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "后台 HTML 字符串 helper 清理",
+    body: "后台脚本移除已无调用的字符串 HTML helper，保留 DOM/textContent 渲染路径，减少后续维护时误回到拼接 HTML 的风险。"
+  },
+  {
+    date: "2026-06-18",
     title: "账号邮箱输入体验优化",
     body: "账号管理的邮箱输入框补充 email 键盘提示，并关闭自动大写和拼写检查，减少移动端编辑账号时的误输入。"
   },
@@ -446,15 +451,6 @@ async function api(path, options = {}) {
   return payload;
 }
 
-function escapeHtml(value) {
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
 function formatNumber(value) {
   return Number(value || 0).toLocaleString("zh-CN");
 }
@@ -661,19 +657,11 @@ function normalizePublishedAtForApi(value) {
   return date.toISOString();
 }
 
-function emptyState(text) {
-  return `<div class="empty-state">${escapeHtml(text)}</div>`;
-}
-
 function createEmptyStateElement(text) {
   const empty = document.createElement("div");
   empty.className = "empty-state";
   empty.textContent = text;
   return empty;
-}
-
-function emptyRow(colspan, text) {
-  return `<tr><td colspan="${colspan}"><span class="empty-inline">${escapeHtml(text)}</span></td></tr>`;
 }
 
 function createTableCell(text) {
@@ -701,10 +689,6 @@ function createEmptyTableRow(colspan, text) {
   cell.append(empty);
   row.append(cell);
   return row;
-}
-
-function statusBadge(text, tone = "neutral") {
-  return `<span class="status-badge ${escapeHtml(tone)}">${escapeHtml(text)}</span>`;
 }
 
 function createStatusBadgeElement(text, tone = "neutral") {
