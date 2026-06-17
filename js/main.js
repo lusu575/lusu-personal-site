@@ -438,6 +438,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "💬",
+      date: "2026.06.18",
+      title: { zh: "聊天室昵称本地化", en: "Chat Nickname Locale", ja: "チャット名ロケール対応" },
+      desc: {
+        zh: "匿名聊天室的新随机昵称会跟随当前中文、英文、日文界面生成",
+        en: "New random chat nicknames now follow the current Chinese, English, or Japanese interface",
+        ja: "匿名チャットの新しいランダム名が現在の中国語・英語・日本語表示に合わせて生成されます"
+      }
+    },
+    {
       icon: "🖼️",
       date: "2026.06.18",
       title: { zh: "文章图片路径守卫", en: "Article Image Path Guard", ja: "記事画像パスガード" },
@@ -3110,7 +3120,7 @@ async function ensureChatIdentity() {
 
 async function fetchAvailableChatNickname() {
   try {
-    const payload = await chatApi("/api/chat/nickname");
+    const payload = await chatApi(`/api/chat/nickname?lang=${encodeURIComponent(currentLang)}`);
     if (isValidChatNickname(payload.nickname)) {
       return payload.nickname.trim();
     }
@@ -3121,11 +3131,12 @@ async function fetchAvailableChatNickname() {
 }
 
 function randomChatNickname() {
-  const names = [
-    "蓝屏小企鹅", "像素幽灵", "草地路人A", "CRT访客", "电视小粉", "泡泡旅人",
-    "BluePenguin", "PixelGhost", "CRTGuest", "GrassWalker",
-    "ピクセル幽霊", "CRT旅人", "草原の人"
-  ];
+  const pools = {
+    zh: ["蓝屏像素", "像素幽灵", "草地路人A", "CRT访客", "电视小粉", "泡泡旅人"],
+    en: ["BluePixel", "PixelGhost", "CRTGuest", "GrassWalk", "BubbleTrip", "TVHead"],
+    ja: ["青いピクセル", "ピクセル幽霊", "CRT旅人", "草原の人", "テレビ旅人", "泡の旅人"]
+  };
+  const names = pools[currentLang] || pools.zh;
   const suffixes = ["9527", "1024", "2333", "404", "88", "7"];
   const name = names[Math.floor(Math.random() * names.length)];
   return `${name}${suffixes[Math.floor(Math.random() * suffixes.length)]}`;

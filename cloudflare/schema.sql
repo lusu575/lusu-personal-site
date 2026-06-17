@@ -697,6 +697,32 @@ on conflict(article_id) do update set
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
 
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-chat-nickname-locale',
+  '2026-06-18-chat-nickname-locale',
+  'site-updates',
+  '["网站更新","聊天室","三语","体验"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T20:35:00.000Z',
+  '2026-06-17T20:35:00.000Z',
+  '2026-06-17T20:35:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
@@ -2630,6 +2656,45 @@ This update keeps tightening public Knowledge article image rendering so Markdow
 - `safeArticleImageSrc()` が `..` のパストラバーサル片を拒否し、画像パスが記事画像フォルダから外へ出ないようにしました。
 - 画像は今後も `document.createElement(''img'')`、安全な `src`、`alt`、`figcaption` で描画し、未処理 HTML は挿入しません。
 - 既存の AI Agent 長文画像、知識庫一覧、記事直リンク、管理画面ディレクトリは変更していません。', '2026-06-17T20:20:00.000Z', '2026-06-17T20:20:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-chat-nickname-locale-zh', 'seed-update-2026-06-18-chat-nickname-locale', 'zh', '聊天室昵称本地化', '匿名聊天室的新随机昵称会跟随当前语言生成。', '# 聊天室昵称本地化
+
+本次更新继续打磨公开匿名聊天室，让新访客拿到的随机昵称更贴合当前语言界面。
+
+## 更新内容
+
+- 前端请求 `/api/chat/nickname` 时会带上当前 `lang` 参数。
+- 公开昵称接口按中文、English、日本語分别选择随机昵称词库。
+- 接口不可用时，本地 fallback 也会使用当前语言对应的词库。
+- 已保存或手动编辑过的昵称不会被强制替换，聊天室消息仍通过安全 DOM / `textContent` 渲染。', '2026-06-17T20:35:00.000Z', '2026-06-17T20:35:00.000Z'),
+  ('seed-update-2026-06-18-chat-nickname-locale-en', 'seed-update-2026-06-18-chat-nickname-locale', 'en', 'Chat Nickname Locale', 'New anonymous chat random nicknames now follow the current language.', '# Chat Nickname Locale
+
+This update continues polishing the public anonymous chat room so new visitors receive random nicknames that better match the current interface language.
+
+## Changes
+
+- The frontend now sends the current `lang` parameter when requesting `/api/chat/nickname`.
+- The public nickname endpoint chooses separate nickname pools for Chinese, English, and Japanese.
+- If the endpoint is unavailable, the local fallback also uses the current language pool.
+- Saved or manually edited nicknames are not forcibly replaced, and chat messages still render through safe DOM / `textContent`.', '2026-06-17T20:35:00.000Z', '2026-06-17T20:35:00.000Z'),
+  ('seed-update-2026-06-18-chat-nickname-locale-ja', 'seed-update-2026-06-18-chat-nickname-locale', 'ja', 'チャット名ロケール対応', '匿名チャットの新しいランダム名が現在の言語に合わせて生成されます。', '# チャット名ロケール対応
+
+今回の更新では、公開匿名チャットをさらに磨き、新しい訪問者のランダム名が現在の表示言語に合うようにしました。
+
+## 更新内容
+
+- フロントエンドが `/api/chat/nickname` を呼ぶとき、現在の `lang` パラメータを送ります。
+- 公開ニックネーム API は中国語、English、日本語ごとのランダム名リストを選びます。
+- API が使えない場合のローカル fallback も、現在の言語リストを使います。
+- 保存済み、または手動編集済みのニックネームは強制変更せず、チャットメッセージは引き続き安全な DOM / `textContent` で描画します。', '2026-06-17T20:35:00.000Z', '2026-06-17T20:35:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,

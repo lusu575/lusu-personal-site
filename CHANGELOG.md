@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 聊天室昵称本地化：
+  - 前端请求 `/api/chat/nickname` 时带上当前 `lang`，新随机昵称会跟随中文 / English / 日本語界面。
+  - 本地 fallback 随机昵称拆分为三语词库，接口不可用时仍能生成与当前语言匹配的昵称。
+  - 更新 `index.html` 的 JS query 为 `20260618-chat-nickname-locale`，并新增同名三语 `site-updates` 更新文章。
 - 文章图片路径守卫：
   - 文章 Markdown 图片仍只允许 `assets/images/articles/` 下的项目资源，并继续通过安全 DOM 渲染。
   - `safeArticleImageSrc()` 新增 `..` 路径片段拒绝，避免图片路径逃出文章图片目录。

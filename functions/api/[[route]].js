@@ -83,7 +83,7 @@ export async function onRequest(context) {
       }
     }
     if (request.method === "GET" && parts[0] === "chat" && parts[1] === "nickname") {
-      return await getChatNickname(env);
+      return await getChatNickname(request, env);
     }
     if (parts[0] === "analytics") {
       await ensureAnalyticsSchema(env);
@@ -459,10 +459,12 @@ async function postChatMessage(request, env) {
   }, 201), request, identity);
 }
 
-async function getChatNickname(env) {
+async function getChatNickname(request, env) {
   await ensureChatSchema(env);
+  const url = new URL(request.url);
+  const lang = normalizeArticleLang(url.searchParams.get("lang"));
   const used = await recentChatNicknames(env);
-  return json({ nickname: randomAvailableChatNickname(used) });
+  return json({ nickname: randomAvailableChatNickname(used, lang) });
 }
 
 async function getArticles(request, env) {
@@ -1516,12 +1518,14 @@ async function recentChatNicknames(env) {
   return new Set(rows.map((row) => String(row.nickname || "").trim()).filter(Boolean));
 }
 
-function randomAvailableChatNickname(used) {
-  const names = [
-    "蓝屏小企鹅", "像素幽灵", "草地路人A", "CRT访客", "电视小粉", "泡泡旅人",
-    "BluePenguin", "PixelGhost", "CRTGuest", "GrassWalker",
-    "ピクセル幽霊", "CRT旅人", "草原の人"
-  ];
+function randomAvailableChatNickname(used, lang = "zh") {
+  const pools = {
+    zh: ["蓝屏像素", "像素幽灵", "草地路人A", "CRT访客", "电视小粉", "泡泡旅人"],
+    en: ["BluePixel", "PixelGhost", "CRTGuest", "GrassWalk", "BubbleTrip", "TVHead"],
+    ja: ["青いピクセル", "ピクセル幽霊", "CRT旅人", "草原の人", "テレビ旅人", "泡の旅人"]
+  };
+  const normalizedLang = normalizeArticleLang(lang);
+  const names = pools[normalizedLang] || pools.zh;
   const suffixes = ["9527", "1024", "2333", "404", "88", "7"];
   const candidates = names.flatMap((name) => suffixes.map((suffix) => `${name}${suffix}`));
   for (let index = candidates.length - 1; index > 0; index -= 1) {
@@ -1532,13 +1536,18 @@ function randomAvailableChatNickname(used) {
   if (available) {
     return available;
   }
+  const fallbackPrefix = {
+    zh: "访客",
+    en: "Guest",
+    ja: "ゲスト"
+  }[normalizedLang] || "访客";
   for (let attempt = 0; attempt < 30; attempt += 1) {
-    const fallback = `访客${Math.floor(100000 + Math.random() * 900000)}`;
+    const fallback = `${fallbackPrefix}${Math.floor(100000 + Math.random() * 900000)}`;
     if (!used.has(fallback) && isValidChatNicknameLength(fallback)) {
       return fallback;
     }
   }
-  return `访客${Date.now().toString(36).slice(-6)}`;
+  return `${fallbackPrefix}${Date.now().toString(36).slice(-6)}`;
 }
 
 async function ensureChatSchema(env) {
@@ -5046,6 +5055,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-18-chat-nickname-locale',
+        '2026-06-18-chat-nickname-locale',
+        'site-updates',
+        '["网站更新","聊天室","三语","体验"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T20:35:00.000Z',
+        '2026-06-17T20:35:00.000Z',
+        '2026-06-17T20:35:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -5813,6 +5849,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# 記事画像パスガード\n\n今回の更新では、公開知識庫の記事画像描画をさらに引き締め、Markdown 画像パスがプロジェクトの記事画像フォルダ内に留まるよう明確にしました。\n\n## 更新内容\n\n- Markdown 記事画像は引き続き `assets/images/articles/` 配下のプロジェクト資源だけを受け付けます。\n- `safeArticleImageSrc()` が `..` のパストラバーサル片を拒否し、画像パスが記事画像フォルダから外へ出ないようにしました。\n- 画像は今後も `document.createElement('img')`、安全な `src`、`alt`、`figcaption` で描画し、未処理 HTML は挿入しません。\n- 既存の AI Agent 長文画像、知識庫一覧、記事直リンク、管理画面ディレクトリは変更していません。"
       }
     }, "2026-06-17T20:20:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-chat-nickname-locale", {
+      zh: {
+        title: "聊天室昵称本地化",
+        summary: "匿名聊天室的新随机昵称会跟随当前语言生成。",
+        content_markdown: "# 聊天室昵称本地化\n\n本次更新继续打磨公开匿名聊天室，让新访客拿到的随机昵称更贴合当前语言界面。\n\n## 更新内容\n\n- 前端请求 `/api/chat/nickname` 时会带上当前 `lang` 参数。\n- 公开昵称接口按中文、English、日本語分别选择随机昵称词库。\n- 接口不可用时，本地 fallback 也会使用当前语言对应的词库。\n- 已保存或手动编辑过的昵称不会被强制替换，聊天室消息仍通过安全 DOM / `textContent` 渲染。"
+      },
+      en: {
+        title: "Chat Nickname Locale",
+        summary: "New anonymous chat random nicknames now follow the current language.",
+        content_markdown: "# Chat Nickname Locale\n\nThis update continues polishing the public anonymous chat room so new visitors receive random nicknames that better match the current interface language.\n\n## Changes\n\n- The frontend now sends the current `lang` parameter when requesting `/api/chat/nickname`.\n- The public nickname endpoint chooses separate nickname pools for Chinese, English, and Japanese.\n- If the endpoint is unavailable, the local fallback also uses the current language pool.\n- Saved or manually edited nicknames are not forcibly replaced, and chat messages still render through safe DOM / `textContent`."
+      },
+      ja: {
+        title: "チャット名ロケール対応",
+        summary: "匿名チャットの新しいランダム名が現在の言語に合わせて生成されます。",
+        content_markdown: "# チャット名ロケール対応\n\n今回の更新では、公開匿名チャットをさらに磨き、新しい訪問者のランダム名が現在の表示言語に合うようにしました。\n\n## 更新内容\n\n- フロントエンドが `/api/chat/nickname` を呼ぶとき、現在の `lang` パラメータを送ります。\n- 公開ニックネーム API は中国語、English、日本語ごとのランダム名リストを選びます。\n- API が使えない場合のローカル fallback も、現在の言語リストを使います。\n- 保存済み、または手動編集済みのニックネームは強制変更せず、チャットメッセージは引き続き安全な DOM / `textContent` で描画します。"
+      }
+    }, "2026-06-17T20:35:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')
