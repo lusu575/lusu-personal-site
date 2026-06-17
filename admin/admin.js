@@ -72,6 +72,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "视频列表渲染安全优化",
+    body: "视频管理列表的标题、平台、排序、作者、发布时间和元数据错误改用 DOM API 写入，避免视频字段被误当作 HTML。"
+  },
+  {
+    date: "2026-06-18",
     title: "知识库文章列表渲染安全优化",
     body: "知识库文章列表的 slug、状态、分类、语种数量和统计摘要改用 DOM API 写入，避免文章字段被误当作 HTML。"
   },
@@ -1119,19 +1124,45 @@ async function loadVideoCategories() {
 }
 
 function renderVideoList() {
-  $("#video-list-admin").innerHTML = state.videos.map((video) => `
-    <button class="list-item ${video.video_id === state.selectedVideoId ? "active" : ""}" type="button" data-admin-video-id="${escapeHtml(video.video_id)}">
-      <span class="list-title">${escapeHtml(video.title || video.original_url || "未命名视频")}</span>
-      <span class="list-meta">
-        ${statusBadge(videoStatusLabel(video.status), video.status || "neutral")}
-        ${statusBadge(video.platform || "未知平台", "neutral")}
-        ${statusBadge(`排序 ${formatNumber(video.sort_order)}`, "neutral")}
-        ${video.pinned ? statusBadge(`置顶排序 ${formatNumber(pinnedSortOrderValue(video))}`, "visible") : ""}
-      </span>
-      <span class="list-subtle">${escapeHtml(video.author_name || "")} ${formatTime(video.published_at)} · 更新 ${formatTime(video.updated_at)}</span>
-      ${video.metadata_error ? `<span class="list-subtle">${escapeHtml(video.metadata_error)}</span>` : ""}
-    </button>
-  `).join("") || emptyState("暂无视频，先粘贴一个 YouTube 或 Bilibili 链接。");
+  const list = $("#video-list-admin");
+  if (!state.videos.length) {
+    list.replaceChildren(createEmptyStateElement("暂无视频，先粘贴一个 YouTube 或 Bilibili 链接。"));
+    return;
+  }
+
+  list.replaceChildren(...state.videos.map((video) => {
+    const item = document.createElement("button");
+    const title = document.createElement("span");
+    const meta = document.createElement("span");
+    const summary = document.createElement("span");
+    item.className = "list-item";
+    if (video.video_id === state.selectedVideoId) {
+      item.classList.add("active");
+    }
+    item.type = "button";
+    item.dataset.adminVideoId = video.video_id || "";
+    title.className = "list-title";
+    title.textContent = video.title || video.original_url || "未命名视频";
+    meta.className = "list-meta";
+    meta.append(
+      createStatusBadgeElement(videoStatusLabel(video.status), video.status || "neutral"),
+      createStatusBadgeElement(video.platform || "未知平台", "neutral"),
+      createStatusBadgeElement(`排序 ${formatNumber(video.sort_order)}`, "neutral")
+    );
+    if (video.pinned) {
+      meta.append(createStatusBadgeElement(`置顶排序 ${formatNumber(pinnedSortOrderValue(video))}`, "visible"));
+    }
+    summary.className = "list-subtle";
+    summary.textContent = `${video.author_name || ""} ${formatTime(video.published_at)} · 更新 ${formatTime(video.updated_at)}`;
+    item.append(title, meta, summary);
+    if (video.metadata_error) {
+      const metadataError = document.createElement("span");
+      metadataError.className = "list-subtle";
+      metadataError.textContent = video.metadata_error;
+      item.append(metadataError);
+    }
+    return item;
+  }));
 }
 
 function renderVideoCategoryChecks() {

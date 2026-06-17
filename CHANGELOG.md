@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 管理后台视频列表渲染安全优化：
+  - `/admin/` 视频管理列表的标题、平台、排序、作者、发布时间和元数据错误改用 DOM API 与 `textContent` 渲染，减少视频字段被误当作 HTML 的风险。
+  - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。
+
 - 管理后台知识库文章列表渲染安全优化：
   - `/admin/` 知识库文章列表的 slug、状态、分类、语种数量和 PV/UV 摘要改用 DOM API 与 `textContent` 渲染，减少文章字段被误当作 HTML 的风险。
   - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。

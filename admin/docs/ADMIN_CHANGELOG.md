@@ -4,6 +4,11 @@
 
 ## 2026-06-18
 
+- 视频列表渲染安全优化：
+  - 视频管理列表改用 `document.createElement`、`textContent`、`classList` 和 `dataset` 渲染标题、平台、状态、排序、置顶排序、作者、发布时间和元数据错误。
+  - 现有列表选中态、状态徽标、置顶排序、空状态和点击进入编辑的行为保持不变，但不再通过 HTML 字符串拼接视频列表字段。
+  - 后台页面内 `adminUpdates` 和后台 JS query 已同步更新。
+
 - 知识库文章列表渲染安全优化：
   - 知识库文章管理列表改用 `document.createElement`、`textContent`、`classList` 和 `dataset` 渲染 slug、状态、分类、语种数量、PV/UV 和更新时间。
   - 现有列表选中态、状态徽标、空状态和点击进入编辑的行为保持不变，但不再通过 HTML 字符串拼接文章列表字段。
