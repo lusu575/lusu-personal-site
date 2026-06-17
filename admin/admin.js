@@ -11,6 +11,8 @@ const state = {
   selectedVideoCategoryId: "",
   videoPreviewing: false,
   videoMetadataRefreshing: false,
+  videoSaving: false,
+  videoSavingMode: "",
   chatMessages: [],
   selectedMessageId: "",
   bans: [],
@@ -57,6 +59,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-06-18",
+    title: "视频保存防重复提交优化",
+    body: "视频管理保存或保存并发布时会临时禁用保存、发布和删除按钮，并显示保存中或发布中，避免慢网络下重复提交视频写入。"
+  },
   {
     date: "2026-06-18",
     title: "视频元数据按钮忙碌态优化",
@@ -1006,6 +1013,7 @@ function resetVideoForm() {
   $("#video-cover-file").value = "";
   $("#video-frame-file").value = "";
   syncVideoMetadataButtons();
+  syncVideoSaveButtons();
   renderVideoThumbnailPreview();
   renderVideoList();
   renderVideoCategoryChecks();
@@ -1030,6 +1038,7 @@ function fillVideoForm(video) {
   $("#delete-video").disabled = false;
   $("#video-status").textContent = video.metadata_error || "";
   syncVideoMetadataButtons();
+  syncVideoSaveButtons();
   renderVideoList();
   renderVideoCategoryChecks();
   renderAdminVideoPreview(video.embed_url);
@@ -1232,6 +1241,12 @@ function handleVideoPinnedChange() {
 }
 
 async function saveVideo(statusOverride = "") {
+  if (state.videoSaving) {
+    return;
+  }
+  state.videoSaving = true;
+  state.videoSavingMode = statusOverride === "published" ? "publish" : "save";
+  syncVideoSaveButtons();
   const status = $("#video-status");
   try {
     status.textContent = "正在保存...";
@@ -1247,9 +1262,40 @@ async function saveVideo(statusOverride = "") {
     const video = selectedVideo();
     if (video) {
       fillVideoForm(video);
+      status.textContent = video.metadata_error ? `已保存；${video.metadata_error}` : "已保存";
     }
   } catch (error) {
     status.textContent = error.message;
+  } finally {
+    state.videoSaving = false;
+    state.videoSavingMode = "";
+    syncVideoSaveButtons();
+  }
+}
+
+function syncVideoSaveButtons() {
+  const saveButton = $("#video-form button[type='submit']");
+  const publishButton = $("#publish-video");
+  const deleteButton = $("#delete-video");
+  if (saveButton) {
+    const savingDraft = state.videoSaving && state.videoSavingMode !== "publish";
+    saveButton.disabled = state.videoSaving;
+    saveButton.textContent = savingDraft ? "保存中..." : "保存";
+    saveButton.setAttribute("aria-busy", savingDraft ? "true" : "false");
+    saveButton.title = state.videoSaving ? "正在保存视频" : "保存当前视频";
+  }
+  if (publishButton) {
+    const publishing = state.videoSaving && state.videoSavingMode === "publish";
+    publishButton.disabled = state.videoSaving;
+    publishButton.textContent = publishing ? "发布中..." : "保存并发布";
+    publishButton.setAttribute("aria-busy", publishing ? "true" : "false");
+    publishButton.title = state.videoSaving ? "正在保存视频" : "保存并发布当前视频";
+  }
+  if (deleteButton) {
+    deleteButton.disabled = state.videoSaving || !state.selectedVideoId;
+    deleteButton.title = state.videoSaving
+      ? "正在保存视频"
+      : (state.selectedVideoId ? "删除当前视频" : "请先选择已保存视频");
   }
 }
 

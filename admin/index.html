@@ -223,9 +223,9 @@
               </fieldset>
               <div class="admin-video-preview" id="admin-video-preview"></div>
               <div class="form-actions">
-                <button class="xp-button" type="submit">保存</button>
-                <button class="xp-button primary" type="button" id="publish-video">保存并发布</button>
-                <button class="xp-button danger" type="button" id="delete-video">删除</button>
+                <button class="xp-button" type="submit" title="保存当前视频">保存</button>
+                <button class="xp-button primary" type="button" id="publish-video" title="保存并发布当前视频">保存并发布</button>
+                <button class="xp-button danger" type="button" id="delete-video" title="请先选择已保存视频" disabled>删除</button>
                 <span class="form-status" id="video-status"></span>
               </div>
             </form>
@@ -414,6 +414,6 @@
     </main>
   </div>
 
-  <script src="/admin/admin.js?v=20260618-video-metadata-busy"></script>
+  <script src="/admin/admin.js?v=20260618-video-save-guard"></script>
 </body>
 </html>
