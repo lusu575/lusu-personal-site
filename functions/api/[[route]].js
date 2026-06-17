@@ -4884,6 +4884,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-18-resource-filters-safe-dom',
+        '2026-06-18-resource-filters-safe-dom',
+        'site-updates',
+        '["网站更新","资源区","筛选","安全"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T19:05:00.000Z',
+        '2026-06-17T19:05:00.000Z',
+        '2026-06-17T19:05:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -5549,6 +5576,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# 知識庫フィルターの安全な DOM 描画\n\n今回の更新では、公開知識庫をさらに引き締め、カテゴリーフィルターボタンを文字列連結から DOM / `textContent` 構築へ変更しました。\n\n## 更新内容\n\n- 知識庫カテゴリーボタンは `document.createElement('button')` で作成し、ラベルは `textContent` で入れます。\n- `data-filter`、`data-filter-type`、active 状態、クリック絞り込み動作は変えていません。\n- 前回の記事カード DOM 描画と合わせて、知識庫リストとフィルター操作は記事/カテゴリ文字列の組み立て出力に依存しなくなりました。\n- 公開知識庫フィルターと更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。"
       }
     }, "2026-06-17T18:55:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-resource-filters-safe-dom", {
+      zh: {
+        title: "资源筛选安全渲染",
+        summary: "资源区分类筛选按钮改为 DOM/textContent 构建。",
+        content_markdown: "# 资源筛选安全渲染\n\n本次更新继续收紧公开主站资源区，把分类筛选按钮从字符串拼接改为 DOM / `textContent` 构建。\n\n## 更新内容\n\n- 资源区分类按钮现在通过 `document.createElement('button')` 创建，按钮文案用 `textContent` 写入。\n- `data-filter`、`data-filter-type`、active 状态和点击筛选行为保持不变。\n- 视频区筛选本来已经使用 DOM 构建，本轮只补齐通用资源筛选按钮。\n- 本轮只调整公开资源区筛选控件和更新记录，不触碰后台目录或管理接口。"
+      },
+      en: {
+        title: "Resource Filters Safe DOM",
+        summary: "Resource category filter buttons now render through DOM/textContent.",
+        content_markdown: "# Resource Filters Safe DOM\n\nThis update keeps tightening the public Resources area by changing category filter buttons from string-built markup to DOM / `textContent` construction.\n\n## Changes\n\n- Resource category buttons are now created with `document.createElement('button')`, with labels assigned through `textContent`.\n- `data-filter`, `data-filter-type`, active state, and click filtering behavior are unchanged.\n- Video filters were already DOM-built; this pass only completes the shared resource-filter path.\n- Only the public Resources filter controls and update records changed; admin folders and admin APIs were not touched."
+      },
+      ja: {
+        title: "リソースフィルターの安全な DOM 描画",
+        summary: "リソースカテゴリーフィルターを DOM/textContent 構築にしました。",
+        content_markdown: "# リソースフィルターの安全な DOM 描画\n\n今回の更新では、公開リソース欄をさらに引き締め、カテゴリーフィルターボタンを文字列連結から DOM / `textContent` 構築へ変更しました。\n\n## 更新内容\n\n- リソースカテゴリーボタンは `document.createElement('button')` で作成し、ラベルは `textContent` で入れます。\n- `data-filter`、`data-filter-type`、active 状態、クリック絞り込み動作は変えていません。\n- 動画フィルターはすでに DOM 構築のため、本輪では共通のリソースフィルター経路だけを補いました。\n- 公開リソースフィルターと更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。"
+      }
+    }, "2026-06-17T19:05:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')

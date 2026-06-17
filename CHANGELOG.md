@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 资源筛选安全渲染：
+  - 资源区分类筛选按钮从字符串 `innerHTML` 拼接改为 DOM / `textContent` 构建，分类名、`data-filter`、active 状态和点击筛选行为保持不变。
+  - 视频区筛选按钮此前已经是 DOM 渲染，本轮只补齐通用资源筛选路径；后台目录和管理接口未触碰。
+  - 更新 `index.html` 的 JS query 为 `20260618-resource-filters-safe-dom`，并新增同名三语 `site-updates` 更新文章。
 - 知识库筛选安全渲染：
   - 知识库分类筛选按钮从字符串 `innerHTML` 拼接改为 DOM / `textContent` 构建，分类名、`data-filter`、active 状态和点击筛选行为保持不变。
   - 配合上一轮文章卡片 DOM 渲染，知识库列表和筛选控件不再依赖文章/分类字符串拼接输出。

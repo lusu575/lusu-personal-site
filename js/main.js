@@ -438,6 +438,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "🧰",
+      date: "2026.06.18",
+      title: { zh: "资源筛选安全渲染", en: "Resource Filters Safe DOM", ja: "リソースフィルターの安全な DOM 描画" },
+      desc: {
+        zh: "资源区分类筛选按钮改为 DOM/textContent 构建，筛选值和 active 状态保持不变",
+        en: "Resource filter buttons now render through DOM/textContent while keeping filter values and active state",
+        ja: "リソースのフィルターボタンを DOM/textContent 構築にし、値と active 状態を維持します"
+      }
+    },
+    {
       icon: "🧭",
       date: "2026.06.18",
       title: { zh: "知识库筛选安全渲染", en: "Knowledge Filters Safe DOM", ja: "知識庫フィルターの安全な DOM 描画" },
@@ -1394,9 +1404,18 @@ function renderCategoryButtons(targetId, type, categories) {
   const target = document.getElementById(targetId);
   const buttons = [t("all"), ...categories].map((name, index) => {
     const value = index === 0 ? "all" : String(index - 1);
-    return `<button class="${activeFilters[type] === value ? "active " : ""}${type === "knowledge" ? "category-button" : ""}" data-filter-type="${type}" data-filter="${value}">${name}</button>`;
+    const button = document.createElement("button");
+    button.type = "button";
+    button.dataset.filterType = type;
+    button.dataset.filter = value;
+    button.textContent = name;
+    button.classList.toggle("active", activeFilters[type] === value);
+    if (type === "knowledge") {
+      button.classList.add("category-button");
+    }
+    return button;
   });
-  target.innerHTML = buttons.join("");
+  target.replaceChildren(...buttons);
 }
 
 function renderKnowledge() {
