@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- RSS 订阅入口：
+  - 新增公开 `GET /api/rss.xml` / `/api/feed.xml`，按 `lang` 输出已发布文章和站点更新的 RSS XML。
+  - 首页“最近更新”面板新增三语 RSS 链接，语言切换时会同步到当前语言的 feed。
+  - 更新 `index.html` 的 CSS/JS query 为 `20260618-rss-feed-entry`，并新增同名三语 `site-updates` 更新文章。
 - 静态图片尺寸提示：
   - 顶部品牌头像、聊天室头像、关于页头像和 Start 图标补充真实 `width` / `height` 属性，CSS 展示尺寸保持不变。
   - 帮助浏览器在图片解码前保留稳定比例，降低首屏和固定 UI 的布局不确定性。

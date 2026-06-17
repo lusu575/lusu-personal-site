@@ -97,6 +97,11 @@ export async function onRequest(context) {
         return await recordClickEvent(request, env);
       }
     }
+    if (request.method === "GET" && (parts[0] === "rss.xml" || parts[0] === "feed.xml")) {
+      await ensureArticleSchema(env);
+      await seedArticleTestData(env);
+      return await getArticleFeed(request, env);
+    }
     if (parts[0] === "articles") {
       await ensureArticleSchema(env);
       await seedArticleTestData(env);
@@ -517,6 +522,128 @@ async function getArticles(request, env) {
   `).bind(...binds).all()).results || [];
 
   return json({ articles: rows.map(publicArticleRow), lang });
+}
+
+async function getArticleFeed(request, env) {
+  const url = new URL(request.url);
+  const lang = normalizeArticleLang(url.searchParams.get("lang"));
+  const limit = clampLimit(url.searchParams.get("limit"), 30);
+  const siteMeta = rssSiteMeta(lang);
+  const origin = url.origin;
+  const siteUrl = new URL(`/?lang=${encodeURIComponent(lang)}`, origin).toString();
+  const feedUrl = new URL(`/api/rss.xml?lang=${encodeURIComponent(lang)}`, origin).toString();
+  const rows = (await env.DB.prepare(`
+    select
+      articles.article_id,
+      articles.slug,
+      articles.category,
+      articles.tags,
+      articles.cover_image,
+      articles.status,
+      articles.is_pinned,
+      articles.view_count,
+      articles.created_at,
+      articles.updated_at,
+      articles.published_at,
+      requested.lang as requested_lang,
+      coalesce(requested.lang, zh.lang, fallback.lang) as lang,
+      coalesce(requested.title, zh.title, fallback.title) as title,
+      coalesce(requested.summary, zh.summary, fallback.summary) as summary
+    from articles
+    left join article_translations requested
+      on requested.article_id = articles.article_id and requested.lang = ?
+    left join article_translations zh
+      on zh.article_id = articles.article_id and zh.lang = 'zh'
+    left join article_translations fallback
+      on fallback.translation_id = (
+        select inner_translations.translation_id
+        from article_translations inner_translations
+        where inner_translations.article_id = articles.article_id
+        order by case inner_translations.lang when 'zh' then 0 when 'en' then 1 when 'ja' then 2 else 3 end
+        limit 1
+      )
+    where articles.status = 'published'
+      and coalesce(requested.title, zh.title, fallback.title) is not null
+    order by coalesce(articles.published_at, articles.created_at) desc, articles.article_id desc
+    limit ?
+  `).bind(lang, limit).all()).results || [];
+
+  const articles = rows.map(publicArticleRow);
+  const lastBuildDate = rssDate(articles[0]?.published_at || articles[0]?.updated_at || new Date().toISOString());
+  const items = articles.map((article) => {
+    const articleUrl = new URL(`/articles/${encodeURIComponent(article.slug)}?lang=${encodeURIComponent(lang)}`, origin).toString();
+    const categories = (article.tags || [])
+      .map((tag) => `      <category>${xmlEscape(tag)}</category>`)
+      .join("\n");
+    return [
+      "    <item>",
+      `      <title>${xmlEscape(article.title)}</title>`,
+      `      <link>${xmlEscape(articleUrl)}</link>`,
+      `      <guid isPermaLink="true">${xmlEscape(articleUrl)}</guid>`,
+      `      <pubDate>${rssDate(article.published_at || article.created_at)}</pubDate>`,
+      categories,
+      `      <description>${xmlEscape(article.summary || "")}</description>`,
+      "    </item>"
+    ].filter(Boolean).join("\n");
+  }).join("\n");
+
+  const xml = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">',
+    '  <channel>',
+    `    <title>${xmlEscape(siteMeta.title)}</title>`,
+    `    <link>${xmlEscape(siteUrl)}</link>`,
+    `    <atom:link href="${xmlEscape(feedUrl)}" rel="self" type="application/rss+xml" />`,
+    `    <description>${xmlEscape(siteMeta.description)}</description>`,
+    `    <language>${xmlEscape(rssLanguage(lang))}</language>`,
+    `    <lastBuildDate>${lastBuildDate}</lastBuildDate>`,
+    items,
+    '  </channel>',
+    '</rss>'
+  ].join("\n");
+
+  return new Response(xml, {
+    headers: {
+      "Content-Type": "application/rss+xml; charset=utf-8",
+      "Cache-Control": "public, max-age=300"
+    }
+  });
+}
+
+function rssSiteMeta(lang) {
+  const meta = {
+    zh: {
+      title: "鲁肃的个人站",
+      description: "鲁肃个人站的公开文章和网站更新。"
+    },
+    en: {
+      title: "LuSu's Personal Site",
+      description: "Public articles and site updates from LuSu's personal site."
+    },
+    ja: {
+      title: "魯粛サイト",
+      description: "魯粛サイトの公開記事とサイト更新です。"
+    }
+  };
+  return meta[lang] || meta.zh;
+}
+
+function rssLanguage(lang) {
+  return { zh: "zh-CN", en: "en", ja: "ja" }[lang] || "zh-CN";
+}
+
+function rssDate(value) {
+  const date = new Date(value || Date.now());
+  return Number.isNaN(date.getTime()) ? new Date().toUTCString() : date.toUTCString();
+}
+
+function xmlEscape(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
 }
 
 async function getArticle(request, env, slug) {
@@ -5060,6 +5187,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         article_id, slug, category, tags, cover_image, status, is_pinned,
         view_count, created_at, updated_at, published_at
       ) values (
+        'seed-update-2026-06-18-rss-feed-entry',
+        '2026-06-18-rss-feed-entry',
+        'site-updates',
+        '["网站更新","RSS","订阅","知识库"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T21:35:00.000Z',
+        '2026-06-17T21:35:00.000Z',
+        '2026-06-17T21:35:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
         'seed-update-2026-06-18-static-image-dimensions',
         '2026-06-18-static-image-dimensions',
         'site-updates',
@@ -5930,6 +6084,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# 記事画像パスガード\n\n今回の更新では、公開知識庫の記事画像描画をさらに引き締め、Markdown 画像パスがプロジェクトの記事画像フォルダ内に留まるよう明確にしました。\n\n## 更新内容\n\n- Markdown 記事画像は引き続き `assets/images/articles/` 配下のプロジェクト資源だけを受け付けます。\n- `safeArticleImageSrc()` が `..` のパストラバーサル片を拒否し、画像パスが記事画像フォルダから外へ出ないようにしました。\n- 画像は今後も `document.createElement('img')`、安全な `src`、`alt`、`figcaption` で描画し、未処理 HTML は挿入しません。\n- 既存の AI Agent 長文画像、知識庫一覧、記事直リンク、管理画面ディレクトリは変更していません。"
       }
     }, "2026-06-17T20:20:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-rss-feed-entry", {
+      zh: {
+        title: "RSS 订阅入口",
+        summary: "公开文章和站点更新现在可以通过 RSS 订阅。",
+        content_markdown: "# RSS 订阅入口\n\n本次更新给公开主站补上轻量订阅能力，方便用 RSS 阅读器跟进文章和网站更新。\n\n## 更新内容\n\n- 新增公开 `GET /api/rss.xml`，也兼容 `/api/feed.xml`。\n- Feed 会按 `lang` 输出中文、English、日本語标题、摘要和文章链接，并只包含已发布文章。\n- 首页“最近更新”面板新增三语 RSS 链接，语言切换时会同步到当前语言 feed。\n- RSS XML 对标题、摘要、链接和标签做转义处理，不改变文章、聊天室、视频、游戏和后台逻辑。"
+      },
+      en: {
+        title: "RSS Feed Entry",
+        summary: "Public articles and site updates can now be subscribed to through RSS.",
+        content_markdown: "# RSS Feed Entry\n\nThis update adds a lightweight subscription path to the public site so RSS readers can follow articles and site updates.\n\n## Changes\n\n- Added public `GET /api/rss.xml`, with `/api/feed.xml` supported as an alias.\n- The feed follows `lang` and returns Chinese, English, or Japanese titles, summaries, and article links for published articles only.\n- The home Recent Updates panel now includes a localized RSS link that follows language switching.\n- RSS XML escapes titles, summaries, links, and tags, without changing article, chat, video, game, or admin behavior."
+      },
+      ja: {
+        title: "RSS フィード入口",
+        summary: "公開記事とサイト更新を RSS で購読できるようにしました。",
+        content_markdown: "# RSS フィード入口\n\n今回の更新では、公開サイトに軽量な購読導線を追加し、RSS リーダーで記事とサイト更新を追えるようにしました。\n\n## 更新内容\n\n- 公開 `GET /api/rss.xml` を追加し、`/api/feed.xml` も同じ feed として使えます。\n- Feed は `lang` に合わせて、中国語、English、日本語のタイトル、概要、記事リンクを返し、公開済み記事だけを含みます。\n- ホームの「最近の更新」パネルに多言語 RSS リンクを追加し、言語切り替えに合わせて feed も変わります。\n- RSS XML はタイトル、概要、リンク、タグをエスケープし、記事、チャット、動画、ゲーム、管理画面の動作は変更していません。"
+      }
+    }, "2026-06-17T21:35:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-06-18-static-image-dimensions", {
       zh: {
         title: "静态图片尺寸提示",

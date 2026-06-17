@@ -108,6 +108,7 @@ const translations = {
     goGames: "打开游戏区",
     recentUpdates: "最近更新",
     moreUpdates: "查看更多更新",
+    rssFeed: "RSS 订阅",
     chatNicknameLabel: "我的昵称：",
     chatEditNickname: "修改昵称",
     chatSyncStatus: "自动增量刷新，空闲时会降低频率",
@@ -241,6 +242,7 @@ const translations = {
     goGames: "Open Games",
     recentUpdates: "Recent Updates",
     moreUpdates: "More updates",
+    rssFeed: "RSS Feed",
     chatNicknameLabel: "My nickname:",
     chatEditNickname: "Edit nickname",
     chatSyncStatus: "Incremental auto refresh, slower while idle",
@@ -374,6 +376,7 @@ const translations = {
     goGames: "ゲームへ",
     recentUpdates: "最近の更新",
     moreUpdates: "もっと見る",
+    rssFeed: "RSS フィード",
     chatNicknameLabel: "ニックネーム：",
     chatEditNickname: "変更",
     chatSyncStatus: "差分自動更新、待機中は低頻度",
@@ -437,6 +440,16 @@ const labels = {
 
 const content = {
   updates: [
+    {
+      icon: "🛰️",
+      date: "2026.06.18",
+      title: { zh: "RSS 订阅入口", en: "RSS Feed Entry", ja: "RSS フィード入口" },
+      desc: {
+        zh: "首页最近更新面板新增 RSS 链接，公开文章可通过 /api/rss.xml 按当前语言订阅",
+        en: "The Recent Updates panel now includes an RSS link, and public articles can be subscribed to through /api/rss.xml in the current language",
+        ja: "最近の更新パネルに RSS リンクを追加し、公開記事を現在の言語で /api/rss.xml から購読できます"
+      }
+    },
     {
       icon: "🖼️",
       date: "2026.06.18",
@@ -1255,7 +1268,9 @@ const tagLabels = {
   "工具": { zh: "工具", en: "Tools", ja: "ツール" },
   "2048": { zh: "2048", en: "2048", ja: "2048" },
   "Hextris": { zh: "Hextris", en: "Hextris", ja: "Hextris" },
-  "Bilibili": { zh: "Bilibili", en: "Bilibili", ja: "Bilibili" }
+  "Bilibili": { zh: "Bilibili", en: "Bilibili", ja: "Bilibili" },
+  "RSS": { zh: "RSS", en: "RSS", ja: "RSS" },
+  "订阅": { zh: "订阅", en: "Subscribe", ja: "購読" }
 };
 
 const pageIds = ["home", "knowledge", "videos", "resources", "games", "blog", "chatroom", "about"];
@@ -1357,6 +1372,16 @@ function syncLanguageUrl(lang = currentLang) {
   }
 }
 
+function rssFeedPath(lang = currentLang) {
+  return `/api/rss.xml?lang=${encodeURIComponent(lang)}`;
+}
+
+function syncRssLinks(lang = currentLang) {
+  document.querySelectorAll("[data-rss-link]").forEach((link) => {
+    link.href = rssFeedPath(lang);
+  });
+}
+
 function syncBrowserUrl(route, articleSlug = "") {
   const nextUrl = withLanguageQuery(routeUrl(route, articleSlug));
   const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
@@ -1453,6 +1478,7 @@ function setLanguage(lang, options = {}) {
   }
   document.documentElement.lang = lang === "zh" ? "zh-CN" : lang;
   document.title = t("heroTitle");
+  syncRssLinks(lang);
 
   document.querySelectorAll("[data-i18n]").forEach((node) => {
     node.textContent = t(node.dataset.i18n);

@@ -701,6 +701,32 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-06-18-rss-feed-entry',
+  '2026-06-18-rss-feed-entry',
+  'site-updates',
+  '["网站更新","RSS","订阅","知识库"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T21:35:00.000Z',
+  '2026-06-17T21:35:00.000Z',
+  '2026-06-17T21:35:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-06-18-static-image-dimensions',
   '2026-06-18-static-image-dimensions',
   'site-updates',
@@ -2734,6 +2760,45 @@ This update keeps tightening public Knowledge article image rendering so Markdow
 - `safeArticleImageSrc()` が `..` のパストラバーサル片を拒否し、画像パスが記事画像フォルダから外へ出ないようにしました。
 - 画像は今後も `document.createElement(''img'')`、安全な `src`、`alt`、`figcaption` で描画し、未処理 HTML は挿入しません。
 - 既存の AI Agent 長文画像、知識庫一覧、記事直リンク、管理画面ディレクトリは変更していません。', '2026-06-17T20:20:00.000Z', '2026-06-17T20:20:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-rss-feed-entry-zh', 'seed-update-2026-06-18-rss-feed-entry', 'zh', 'RSS 订阅入口', '公开文章和站点更新现在可以通过 RSS 订阅。', '# RSS 订阅入口
+
+本次更新给公开主站补上轻量订阅能力，方便用 RSS 阅读器跟进文章和网站更新。
+
+## 更新内容
+
+- 新增公开 `GET /api/rss.xml`，也兼容 `/api/feed.xml`。
+- Feed 会按 `lang` 输出中文、English、日本語标题、摘要和文章链接，并只包含已发布文章。
+- 首页“最近更新”面板新增三语 RSS 链接，语言切换时会同步到当前语言 feed。
+- RSS XML 对标题、摘要、链接和标签做转义处理，不改变文章、聊天室、视频、游戏和后台逻辑。', '2026-06-17T21:35:00.000Z', '2026-06-17T21:35:00.000Z'),
+  ('seed-update-2026-06-18-rss-feed-entry-en', 'seed-update-2026-06-18-rss-feed-entry', 'en', 'RSS Feed Entry', 'Public articles and site updates can now be subscribed to through RSS.', '# RSS Feed Entry
+
+This update adds a lightweight subscription path to the public site so RSS readers can follow articles and site updates.
+
+## Changes
+
+- Added public `GET /api/rss.xml`, with `/api/feed.xml` supported as an alias.
+- The feed follows `lang` and returns Chinese, English, or Japanese titles, summaries, and article links for published articles only.
+- The home Recent Updates panel now includes a localized RSS link that follows language switching.
+- RSS XML escapes titles, summaries, links, and tags, without changing article, chat, video, game, or admin behavior.', '2026-06-17T21:35:00.000Z', '2026-06-17T21:35:00.000Z'),
+  ('seed-update-2026-06-18-rss-feed-entry-ja', 'seed-update-2026-06-18-rss-feed-entry', 'ja', 'RSS フィード入口', '公開記事とサイト更新を RSS で購読できるようにしました。', '# RSS フィード入口
+
+今回の更新では、公開サイトに軽量な購読導線を追加し、RSS リーダーで記事とサイト更新を追えるようにしました。
+
+## 更新内容
+
+- 公開 `GET /api/rss.xml` を追加し、`/api/feed.xml` も同じ feed として使えます。
+- Feed は `lang` に合わせて、中国語、English、日本語のタイトル、概要、記事リンクを返し、公開済み記事だけを含みます。
+- ホームの「最近の更新」パネルに多言語 RSS リンクを追加し、言語切り替えに合わせて feed も変わります。
+- RSS XML はタイトル、概要、リンク、タグをエスケープし、記事、チャット、動画、ゲーム、管理画面の動作は変更していません。', '2026-06-17T21:35:00.000Z', '2026-06-17T21:35:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,
