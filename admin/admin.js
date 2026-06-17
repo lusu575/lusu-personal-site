@@ -74,6 +74,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "文章列表刷新丢失选中项防护",
+    body: "知识库文章刷新后如果当前选中文章已不在列表中，后台会自动清空编辑表单并提示，避免继续保存已不存在的文章。"
+  },
+  {
+    date: "2026-06-18",
     title: "视频列表刷新丢失选中项防护",
     body: "视频或视频分类刷新后如果当前选中项已不在列表中，后台会自动清空对应编辑表单并提示，避免继续保存已不存在的对象。"
   },
@@ -1210,6 +1215,11 @@ function renderClickPanels() {
 async function loadArticles() {
   const payload = await api("/api/admin/articles");
   state.articles = payload.articles || [];
+  if (state.selectedArticleId && !state.articles.some((article) => article.article_id === state.selectedArticleId)) {
+    resetArticleForm();
+    $("#article-status").textContent = "当前文章已不在列表中，已清空编辑表单。";
+    return;
+  }
   renderArticleList();
 }
 
