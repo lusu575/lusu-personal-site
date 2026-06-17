@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 管理后台访问来源表格渲染安全优化：
+  - `/admin/` 访问来源的国家、地区、城市和 IP 掩码前缀表格改用 DOM API 与 `textContent` 渲染，减少来源字段被误当作 HTML 的风险。
+  - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。
+
 - 管理后台热门内容表格渲染安全优化：
   - `/admin/` 实时大屏的热门页面和热门文章表格改用 DOM API 与 `textContent` 渲染，减少路径、route、文章标题、slug 和分类被误当作 HTML 的风险。
   - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。

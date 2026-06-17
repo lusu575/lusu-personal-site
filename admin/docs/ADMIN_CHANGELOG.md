@@ -4,6 +4,11 @@
 
 ## 2026-06-18
 
+- 访问来源表格渲染安全优化：
+  - 访问来源的国家表格和地区 / IP 前缀表格改用 `document.createElement` 与 `textContent` 渲染国家、region、省市、IP 掩码前缀、PV/UV 和最近访问时间。
+  - 现有表格列、空状态和数字格式保持不变，但不再通过 HTML 字符串拼接来源字段。
+  - 后台页面内 `adminUpdates` 和后台 JS query 已同步更新。
+
 - 热门内容表格渲染安全优化：
   - 实时大屏的热门页面和热门文章表格改用 `document.createElement` 与 `textContent` 渲染路径、route、文章标题、slug、分类、PV/UV 和最近访问时间。
   - 现有表格列、空状态和数字格式保持不变，但不再通过 HTML 字符串拼接热门内容字段。

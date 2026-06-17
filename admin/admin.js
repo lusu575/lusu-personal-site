@@ -72,6 +72,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "访问来源表格渲染安全优化",
+    body: "访问来源的国家、地区、城市和 IP 掩码前缀表格改用 DOM API 写入，避免来源字段被误当作 HTML。"
+  },
+  {
+    date: "2026-06-18",
     title: "热门内容表格渲染安全优化",
     body: "实时大屏的热门页面和热门文章表格改用 DOM API 写入，避免路径、route、文章标题、slug 和分类被误当作 HTML。"
   },
@@ -922,27 +927,41 @@ function renderTopArticles(rows) {
 
 function renderVisitTables() {
   const overview = state.overview || {};
-  $("#country-table").innerHTML = (overview.countries || []).map((row) => `
-    <tr>
-      <td>${escapeHtml(row.country || "未知")}</td>
-      <td>${formatNumber(row.pv)}</td>
-      <td>${formatNumber(row.uv)}</td>
-      <td>${formatTime(row.last_seen_at)}</td>
-    </tr>
-  `).join("") || emptyRow(4, "暂无国家来源数据");
+  const countryTable = $("#country-table");
+  const countries = overview.countries || [];
+  if (!countries.length) {
+    countryTable.replaceChildren(createEmptyTableRow(4, "暂无国家来源数据"));
+  } else {
+    countryTable.replaceChildren(...countries.map((row) => {
+      const tableRow = document.createElement("tr");
+      tableRow.append(
+        createTableCell(row.country || "未知"),
+        createTableCell(formatNumber(row.pv)),
+        createTableCell(formatNumber(row.uv)),
+        createTableCell(formatTime(row.last_seen_at))
+      );
+      return tableRow;
+    }));
+  }
 
-  $("#region-table").innerHTML = (overview.regions || []).map((row) => {
+  const regionTable = $("#region-table");
+  const regions = overview.regions || [];
+  if (!regions.length) {
+    regionTable.replaceChildren(createEmptyTableRow(5, "暂无地区来源数据"));
+    return;
+  }
+  regionTable.replaceChildren(...regions.map((row) => {
     const place = [row.country || "未知", row.region, row.city].filter(Boolean).join(" / ");
-    return `
-      <tr>
-        <td>${escapeHtml(place)}</td>
-        <td>${escapeHtml(row.ip_prefix || "")}</td>
-        <td>${formatNumber(row.pv)}</td>
-        <td>${formatNumber(row.uv)}</td>
-        <td>${formatTime(row.last_seen_at)}</td>
-      </tr>
-    `;
-  }).join("") || emptyRow(5, "暂无地区来源数据");
+    const tableRow = document.createElement("tr");
+    tableRow.append(
+      createTableCell(place),
+      createTableCell(row.ip_prefix || ""),
+      createTableCell(formatNumber(row.pv)),
+      createTableCell(formatNumber(row.uv)),
+      createTableCell(formatTime(row.last_seen_at))
+    );
+    return tableRow;
+  }));
 }
 
 function renderClickPanels() {
