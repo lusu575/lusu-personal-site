@@ -4,6 +4,7 @@ const state = {
   overview: null,
   articles: [],
   selectedArticleId: "",
+  articleDetailReady: false,
   articleLang: "zh",
   articleSaving: false,
   articleSavingMode: "",
@@ -70,6 +71,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-06-18",
+    title: "文章详情读取失败防护",
+    body: "知识库文章选择后会先清空旧编辑表单，详情未成功读取前会禁用保存、发布和删除，接口失败时显示明确原因，避免旧文章内容误提交到当前选择。"
+  },
   {
     date: "2026-06-18",
     title: "账号详情读取失败提示优化",
@@ -1151,13 +1157,41 @@ function renderArticleList() {
 
 async function selectArticle(articleId) {
   state.selectedArticleId = articleId;
+  state.articleDetailReady = false;
+  resetArticleEditorForSelection(articleId, "正在读取文章详情...");
   renderArticleList();
-  const payload = await api(`/api/admin/articles/${encodeURIComponent(articleId)}`);
-  fillArticleForm(payload.article);
+  syncArticleSaveButtons();
+  try {
+    const payload = await api(`/api/admin/articles/${encodeURIComponent(articleId)}`);
+    if (state.selectedArticleId !== articleId) {
+      return;
+    }
+    state.articleDetailReady = true;
+    fillArticleForm(payload.article);
+  } catch (error) {
+    if (state.selectedArticleId === articleId) {
+      state.articleDetailReady = false;
+      resetArticleEditorForSelection(articleId, `读取文章详情失败：${error.message}`);
+      syncArticleSaveButtons();
+    }
+  }
+}
+
+function resetArticleEditorForSelection(articleId, statusText) {
+  const form = $("#article-form");
+  const article = state.articles.find((item) => item.article_id === articleId);
+  $("#article-editor-title").textContent = article ? `读取中：${article.slug || "未命名文章"}` : "正在读取文章";
+  form.reset();
+  form.elements.slug.value = article?.slug || "";
+  form.elements.category.value = article?.category || "note";
+  form.elements.status.value = article?.status || "draft";
+  $("#delete-article").disabled = true;
+  $("#article-status").textContent = statusText;
 }
 
 function resetArticleForm() {
   state.selectedArticleId = "";
+  state.articleDetailReady = false;
   $("#article-editor-title").textContent = "新建文章";
   $("#article-form").reset();
   $("#article-form").elements.category.value = "note";
@@ -1223,6 +1257,11 @@ async function saveArticle(statusOverride = "") {
   if (state.articleSaving) {
     return;
   }
+  if (state.selectedArticleId && !state.articleDetailReady) {
+    $("#article-status").textContent = "请等待文章详情读取完成后再保存。";
+    syncArticleSaveButtons();
+    return;
+  }
   state.articleSaving = true;
   state.articleSavingMode = statusOverride === "published" ? "publish" : "save";
   syncArticleSaveButtons();
@@ -1256,31 +1295,38 @@ function syncArticleSaveButtons() {
   const publishButton = $("#publish-article");
   const deleteButton = $("#delete-article");
   const busy = state.articleSaving || state.articleDeleting;
+  const existingArticleNotReady = Boolean(state.selectedArticleId && !state.articleDetailReady);
   if (saveButton) {
     const savingDraft = state.articleSaving && state.articleSavingMode !== "publish";
-    saveButton.disabled = busy;
+    saveButton.disabled = busy || existingArticleNotReady;
     saveButton.textContent = savingDraft ? "保存中..." : "保存";
     saveButton.setAttribute("aria-busy", savingDraft ? "true" : "false");
-    saveButton.title = state.articleDeleting
+    saveButton.title = existingArticleNotReady
+      ? "请先等待文章详情读取完成"
+      : (state.articleDeleting
       ? "正在删除文章"
-      : (state.articleSaving ? "正在保存文章" : "保存当前文章");
+      : (state.articleSaving ? "正在保存文章" : "保存当前文章"));
   }
   if (publishButton) {
     const publishing = state.articleSaving && state.articleSavingMode === "publish";
-    publishButton.disabled = busy;
+    publishButton.disabled = busy || existingArticleNotReady;
     publishButton.textContent = publishing ? "发布中..." : "保存并发布";
     publishButton.setAttribute("aria-busy", publishing ? "true" : "false");
-    publishButton.title = state.articleDeleting
+    publishButton.title = existingArticleNotReady
+      ? "请先等待文章详情读取完成"
+      : (state.articleDeleting
       ? "正在删除文章"
-      : (state.articleSaving ? "正在保存文章" : "保存并发布当前文章");
+      : (state.articleSaving ? "正在保存文章" : "保存并发布当前文章"));
   }
   if (deleteButton) {
-    deleteButton.disabled = busy || !state.selectedArticleId;
+    deleteButton.disabled = busy || !state.selectedArticleId || existingArticleNotReady;
     deleteButton.textContent = state.articleDeleting ? "删除中..." : "删除";
     deleteButton.setAttribute("aria-busy", state.articleDeleting ? "true" : "false");
-    deleteButton.title = busy
+    deleteButton.title = existingArticleNotReady
+      ? "请先等待文章详情读取完成"
+      : (busy
       ? (state.articleDeleting ? "正在删除文章" : "正在保存文章")
-      : (state.selectedArticleId ? "删除当前文章" : "请先选择已保存文章");
+      : (state.selectedArticleId ? "删除当前文章" : "请先选择已保存文章"));
   }
 }
 
