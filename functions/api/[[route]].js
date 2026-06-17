@@ -4788,13 +4788,18 @@ function normalizeIpPrefix(value) {
   if (!text) {
     return "";
   }
-  if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.0\/24$/.test(text)) {
+  if (isMaskedIpv4Prefix(text)) {
     return text;
   }
   if (/^[0-9a-fA-F:]{0,64}::\/64$/.test(text)) {
     return text;
   }
   return "";
+}
+
+function isMaskedIpv4Prefix(value) {
+  const match = String(value || "").match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.0\/24$/);
+  return Boolean(match && match.slice(1).every((part) => Number(part) >= 0 && Number(part) <= 255));
 }
 
 function normalizeTags(value) {

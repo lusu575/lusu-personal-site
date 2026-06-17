@@ -72,6 +72,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "禁言 IPv4 前缀范围校验",
+    body: "禁言 IP 前缀校验进一步收紧 IPv4 /24 掩码，每个地址段必须在 0 到 255 之间。"
+  },
+  {
+    date: "2026-06-18",
     title: "禁言 IP 前缀脱敏校验",
     body: "聊天室禁言接口新增 IP 前缀格式复查，只允许保存 /24 或 /64 掩码前缀，避免完整 IP 或任意文本进入审计记录。"
   },

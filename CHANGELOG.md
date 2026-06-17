@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 管理后台禁言 IPv4 前缀范围校验：
+  - `/api/admin/chat/bans` 的 IPv4 `/24` 前缀校验继续收紧，每个地址段必须在 0 到 255 之间，避免无效掩码前缀写入审计记录。
+  - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。
+
 - 管理后台禁言 IP 前缀脱敏校验：
   - `/api/admin/chat/bans` 新增 IP 前缀格式复查，只允许保存 `/24` 或 `/64` 掩码前缀，避免完整 IP 或任意文本进入禁言审计记录。
   - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。
