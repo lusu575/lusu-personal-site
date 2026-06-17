@@ -4791,7 +4791,7 @@ function normalizeIpPrefix(value) {
   if (isMaskedIpv4Prefix(text)) {
     return text;
   }
-  if (/^[0-9a-fA-F:]{0,64}::\/64$/.test(text)) {
+  if (isMaskedIpv6Prefix(text)) {
     return text;
   }
   return "";
@@ -4800,6 +4800,12 @@ function normalizeIpPrefix(value) {
 function isMaskedIpv4Prefix(value) {
   const match = String(value || "").match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.0\/24$/);
   return Boolean(match && match.slice(1).every((part) => Number(part) >= 0 && Number(part) <= 255));
+}
+
+function isMaskedIpv6Prefix(value) {
+  const text = String(value || "").trim();
+  const match = text.match(/^([0-9a-fA-F]{1,4}:){3}[0-9a-fA-F]{1,4}::\/64$/);
+  return Boolean(match);
 }
 
 function normalizeTags(value) {
@@ -4896,9 +4902,43 @@ function maskIp(ip) {
     return `${parts[0]}.${parts[1]}.${parts[2]}.0/24`;
   }
   if (value.includes(":")) {
-    return `${value.split(":").slice(0, 4).join(":")}::/64`;
+    return maskIpv6(value);
   }
   return "";
+}
+
+function maskIpv6(ip) {
+  const groups = expandIpv6(ip);
+  if (!groups) {
+    return "";
+  }
+  return `${groups.slice(0, 4).map(compactIpv6Group).join(":")}::/64`;
+}
+
+function expandIpv6(ip) {
+  const value = String(ip || "").trim().toLowerCase();
+  if (!/^[0-9a-f:]+$/.test(value) || (value.match(/::/g) || []).length > 1) {
+    return null;
+  }
+  const hasCompression = value.includes("::");
+  const [headText, tailText = ""] = value.split("::");
+  const head = headText ? headText.split(":") : [];
+  const tail = tailText ? tailText.split(":") : [];
+  const fillCount = 8 - head.length - tail.length;
+  if (hasCompression && fillCount < 1) {
+    return null;
+  }
+  const groups = hasCompression
+    ? [...head, ...Array(fillCount).fill("0"), ...tail]
+    : value.split(":");
+  if (groups.length !== 8 || groups.some((group) => !/^[0-9a-f]{1,4}$/.test(group))) {
+    return null;
+  }
+  return groups.map((group) => group.padStart(4, "0"));
+}
+
+function compactIpv6Group(group) {
+  return String(group || "0").replace(/^0+([0-9a-f])$/i, "$1").replace(/^0+/, "") || "0";
 }
 
 function fillDailySeries(rows, since, days) {
