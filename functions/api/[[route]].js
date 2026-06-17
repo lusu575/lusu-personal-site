@@ -4425,6 +4425,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-18-image-loading-polish',
+        '2026-06-18-image-loading-polish',
+        'site-updates',
+        '["网站更新","性能","阅读体验","移动端"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T17:06:00.000Z',
+        '2026-06-17T17:06:00.000Z',
+        '2026-06-17T17:06:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -4801,6 +4828,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# タグ三言語表示\n\n今回の更新では、公開側の記事と雑談カードの主なタグを現在の言語に合わせて表示するようにしました。\n\n## 更新内容\n\n- 記事カード、記事詳細、雑談カードの主な中国語 seed タグを現在の言語ラベルで表示します。\n- 知識庫のローカル検索は元のタグ文字列と現在言語のタグラベルの両方に一致し、English / 日本語 のタグ語でも検索できます。\n- タグは引き続き安全な DOM / `textContent` または既存の HTML escape で描画し、スクリプト実行リスクは増やしません。\n- 公開側の描画と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。"
       }
     }, "2026-06-17T16:56:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-image-loading-polish", {
+      zh: {
+        title: "图片加载细节优化",
+        summary: "首屏外头像和文章配图补充懒加载与异步解码，阅读体验更平滑。",
+        content_markdown: "# 图片加载细节优化\n\n本次更新对公开主站的非关键图片加载做小幅整理，优先减少首屏外图片对加载和解码路径的影响。\n\n## 更新内容\n\n- 聊天室头像和关于页头像补充 `loading=\"lazy\"` 与 `decoding=\"async\"`，只在需要显示对应窗口时再参与加载。\n- 文章 Markdown 配图继续使用 `assets/images/articles/` 白名单和安全 DOM 渲染，同时补充异步解码。\n- 首屏品牌图标和开始按钮图标保持原加载方式，避免影响首页视觉信号。\n- 只调整公开主站图片属性、fallback 更新和公开文章 seed，不触碰后台目录或管理接口。"
+      },
+      en: {
+        title: "Image Loading Polish",
+        summary: "Off-screen avatars and article images now use lazy loading and async decoding for smoother reading.",
+        content_markdown: "# Image Loading Polish\n\nThis update makes a small pass over non-critical public site images so off-screen assets put less pressure on the initial load and decode path.\n\n## Changes\n\n- The chatroom avatar and about-page avatar now use `loading=\"lazy\"` and `decoding=\"async\"`, so they load closer to when their windows are opened.\n- Markdown article images still use the `assets/images/articles/` whitelist and safe DOM rendering, with async decoding added.\n- First-screen brand and Start button icons keep their current loading behavior so the home screen remains immediate.\n- Only public site image attributes, fallback updates, and public article seeds changed; admin folders and admin APIs were not touched."
+      },
+      ja: {
+        title: "画像読み込みの調整",
+        summary: "初期表示外のアバターと記事画像に遅延読み込みと非同期デコードを追加しました。",
+        content_markdown: "# 画像読み込みの調整\n\n今回の更新では、公開側の重要度が低い画像読み込みを少し整理し、初期表示外の画像が読み込みとデコードに与える負荷を抑えました。\n\n## 更新内容\n\n- チャットルームのアバターとプロフィール画像に `loading=\"lazy\"` と `decoding=\"async\"` を追加し、対応するウィンドウを開くタイミングに近づけて読み込みます。\n- Markdown 記事画像は引き続き `assets/images/articles/` の許可リストと安全な DOM 描画を使い、非同期デコードも追加しました。\n- ホームのブランドアイコンと Start ボタン画像は現在の読み込み方式を維持し、初期表示の見え方を保ちます。\n- 公開側の画像属性、fallback 更新、公開記事 seed のみを調整し、管理画面ディレクトリや管理 API には触れていません。"
+      }
+    }, "2026-06-17T17:06:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')

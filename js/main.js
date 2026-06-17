@@ -378,6 +378,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "🖼️",
+      date: "2026.06.18",
+      title: { zh: "图片加载细节优化", en: "Image Loading Polish", ja: "画像読み込みの調整" },
+      desc: {
+        zh: "首屏外头像和文章配图补充懒加载与异步解码，继续保留本地图片白名单",
+        en: "Off-screen avatars and article images now use lazy loading and async decoding while keeping the local image whitelist",
+        ja: "初期表示外のアバターと記事画像に遅延読み込みと非同期デコードを加え、ローカル画像の許可リストは維持しました"
+      }
+    },
+    {
       icon: "🏷️",
       date: "2026.06.18",
       title: { zh: "标签三语显示", en: "Trilingual Tag Labels", ja: "タグ三言語表示" },
@@ -1734,6 +1744,7 @@ function renderArticleFigure(alt, src) {
   image.src = sitePath(safeSrc);
   image.alt = alt || "";
   image.loading = "lazy";
+  image.decoding = "async";
   figure.appendChild(image);
   if (alt) {
     const caption = document.createElement("figcaption");

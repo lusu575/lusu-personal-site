@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 图片加载细节优化：
+  - 聊天室头像和关于页头像补充 `loading="lazy"` 与 `decoding="async"`，减少非当前窗口图片对首屏加载和解码的影响。
+  - 文章 Markdown 配图在继续走 `assets/images/articles/` 白名单和安全 DOM 渲染的基础上补充异步解码，阅读长文时更平滑。
+  - 更新 `index.html` 的 JS query 为 `20260618-image-loading-polish`，并新增同名三语 `site-updates` 更新文章，同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新。
 - 标签三语显示：
   - 文章列表、文章详情和杂谈卡片的常见中文 seed 标签会跟随中文 / English / 日本語 切换显示，减少英文/日文页面里的中文标签混杂。
   - 知识库本地搜索会同时匹配原始标签和当前语言标签，例如 English 下可用 `Reading`、`Routing` 等标签词继续搜索。
