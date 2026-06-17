@@ -16,6 +16,7 @@ const state = {
   selectedAccountId: "",
   accountDetail: null,
   loadedPanels: {},
+  loadingPanels: {},
   timer: null
 };
 
@@ -48,6 +49,11 @@ const panelMeta = {
 const overviewPanels = new Set(["dashboard", "visits", "clicks"]);
 
 const adminUpdates = [
+  {
+    date: "2026-06-18",
+    title: "后台面板请求合并优化",
+    body: "后台同一标签页数据正在读取时，快速切换或连续点击刷新会复用当前请求，不再并发打出重复后台请求；失败后仍会释放状态，方便再次刷新重试。"
+  },
   {
     date: "2026-06-17",
     title: "后台凭据表单语义优化",
@@ -391,37 +397,49 @@ function panelDataKey(panel) {
 async function loadPanelData(panel, options = {}) {
   const key = panelDataKey(panel);
   const force = Boolean(options.force);
+  if (state.loadingPanels[key]) {
+    if (!overviewPanels.has(panel)) {
+      setStatus("当前标签正在读取，请稍候...");
+    }
+    return state.loadingPanels[key];
+  }
   if (!force && state.loadedPanels[key]) {
     return;
   }
 
-  try {
-    if (!overviewPanels.has(panel)) {
-      setStatus(force ? "正在刷新当前标签..." : "正在读取当前标签...");
-    }
+  state.loadingPanels[key] = (async () => {
+    try {
+      if (!overviewPanels.has(panel)) {
+        setStatus(force ? "正在刷新当前标签..." : "正在读取当前标签...");
+      }
 
-    if (overviewPanels.has(panel)) {
-      await loadOverview();
-    } else if (panel === "articles") {
-      await loadArticles();
-    } else if (panel === "videos") {
-      await loadVideoCategories();
-      await loadVideos();
-    } else if (panel === "videoCategories") {
-      await loadVideoCategories();
-    } else if (panel === "chat") {
-      await Promise.all([loadChatMessages(), loadBans()]);
-    } else if (panel === "accounts") {
-      await loadAccounts();
-    }
+      if (overviewPanels.has(panel)) {
+        await loadOverview();
+      } else if (panel === "articles") {
+        await loadArticles();
+      } else if (panel === "videos") {
+        await loadVideoCategories();
+        await loadVideos();
+      } else if (panel === "videoCategories") {
+        await loadVideoCategories();
+      } else if (panel === "chat") {
+        await Promise.all([loadChatMessages(), loadBans()]);
+      } else if (panel === "accounts") {
+        await loadAccounts();
+      }
 
-    state.loadedPanels[key] = Date.now();
-    if (!overviewPanels.has(panel)) {
-      setStatus(`已读取 ${panelMeta[panel][0]}`);
+      state.loadedPanels[key] = Date.now();
+      if (!overviewPanels.has(panel)) {
+        setStatus(`已读取 ${panelMeta[panel][0]}`);
+      }
+    } catch (error) {
+      setStatus(error.message);
+    } finally {
+      delete state.loadingPanels[key];
     }
-  } catch (error) {
-    setStatus(error.message);
-  }
+  })();
+
+  return state.loadingPanels[key];
 }
 
 function switchPanel(panel) {
