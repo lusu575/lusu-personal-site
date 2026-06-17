@@ -4830,6 +4830,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-18-knowledge-list-safe-dom',
+        '2026-06-18-knowledge-list-safe-dom',
+        'site-updates',
+        '["网站更新","知识库","安全","文章"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T18:45:00.000Z',
+        '2026-06-17T18:45:00.000Z',
+        '2026-06-17T18:45:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -5461,6 +5488,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# 最近更新の安全な DOM 描画\n\n今回の更新では、ホームの「最近更新」リストを文字列連結から DOM / `textContent` 構築へ変更し、公開更新記録を純テキストとして描画し続けます。\n\n## 更新内容\n\n- 最近更新のタイトル、概要、日付、アイコンはテンプレート文字列の `innerHTML` ではなく、DOM ノードとテキストノードで出力します。\n- `site-updates` のツールアイコン、通常記事の本アイコン fallback、ローカル fallback アイコン、記事直リンクの動作は変えていません。\n- リストは引き続き最新 5 件のサイト更新を表示し、API 失敗時はローカル最近更新へ戻ります。\n- 公開ホームの最近更新リストと更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。"
       }
     }, "2026-06-17T18:40:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-knowledge-list-safe-dom", {
+      zh: {
+        title: "知识库列表安全渲染",
+        summary: "知识库文章列表改为 DOM/textContent 构建。",
+        content_markdown: "# 知识库列表安全渲染\n\n本次更新把公开知识库的文章卡片列表从字符串拼接改为 DOM / `textContent` 构建，继续降低公开文章字段进入页面时的 XSS 风险。\n\n## 更新内容\n\n- 文章标题、摘要、分类、标签、发布日期、fallback 提示和阅读按钮都改为 DOM 节点与文本节点输出。\n- 搜索、分类筛选、文章详情直链和阅读按钮行为保持不变。\n- 加载、失败、空列表和无搜索结果提示也改为纯文本节点渲染。\n- 本轮只调整公开知识库列表和更新记录，不触碰后台目录或管理接口。"
+      },
+      en: {
+        title: "Knowledge List Safe DOM",
+        summary: "Knowledge article cards now render through DOM/textContent.",
+        content_markdown: "# Knowledge List Safe DOM\n\nThis update changes the public Knowledge article-card list from string-built markup to DOM / `textContent` construction, reducing XSS risk as public article fields enter the page.\n\n## Changes\n\n- Article titles, summaries, categories, tags, published dates, fallback notices, and read buttons now render through DOM nodes and text nodes.\n- Search, category filters, article deep links, and read-button behavior are unchanged.\n- Loading, failure, empty-list, and no-result states also render as plain text nodes.\n- Only the public Knowledge list and update records changed; admin folders and admin APIs were not touched."
+      },
+      ja: {
+        title: "知識庫リストの安全な DOM 描画",
+        summary: "知識庫の記事カードを DOM/textContent 構築にしました。",
+        content_markdown: "# 知識庫リストの安全な DOM 描画\n\n今回の更新では、公開知識庫の記事カード一覧を文字列連結から DOM / `textContent` 構築へ変更し、公開記事フィールドがページに入るときの XSS リスクをさらに下げます。\n\n## 更新内容\n\n- 記事タイトル、概要、カテゴリ、タグ、公開日、fallback 表示、読むボタンを DOM ノードとテキストノードで出力します。\n- 検索、カテゴリ絞り込み、記事詳細直リンク、読むボタンの動作は変えていません。\n- 読み込み中、失敗、空リスト、検索結果なしの表示も純テキストノードで描画します。\n- 公開知識庫リストと更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。"
+      }
+    }, "2026-06-17T18:45:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')

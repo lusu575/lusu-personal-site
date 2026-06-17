@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 知识库列表安全渲染：
+  - 知识库文章列表从字符串 `innerHTML` 拼接改为 DOM / `textContent` 构建，标题、摘要、标签、发布日期和阅读入口都按纯文本节点渲染。
+  - 搜索、分类筛选、文章详情直链、fallback 语言提示和阅读按钮行为保持不变。
+  - 更新 `index.html` 的 JS query 为 `20260618-knowledge-list-safe-dom`，并新增同名三语 `site-updates` 更新文章。
 - 最近更新安全渲染：
   - 首页“最近更新”列表从字符串 `innerHTML` 拼接改为 DOM / `textContent` 构建，标题、摘要、日期和图标都按纯文本节点渲染。
   - 文章直链、`site-updates` 工具图标、本地 fallback 图标和最近更新日期逻辑保持不变。

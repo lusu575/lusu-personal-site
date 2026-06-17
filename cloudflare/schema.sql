@@ -2272,6 +2272,71 @@ on conflict(article_id) do update set
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
 
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-knowledge-list-safe-dom',
+  '2026-06-18-knowledge-list-safe-dom',
+  'site-updates',
+  '["网站更新","知识库","安全","文章"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T18:45:00.000Z',
+  '2026-06-17T18:45:00.000Z',
+  '2026-06-17T18:45:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-knowledge-list-safe-dom-zh', 'seed-update-2026-06-18-knowledge-list-safe-dom', 'zh', '知识库列表安全渲染', '知识库文章列表改为 DOM/textContent 构建。', '# 知识库列表安全渲染
+
+本次更新把公开知识库的文章卡片列表从字符串拼接改为 DOM / `textContent` 构建，继续降低公开文章字段进入页面时的 XSS 风险。
+
+## 更新内容
+
+- 文章标题、摘要、分类、标签、发布日期、fallback 提示和阅读按钮都改为 DOM 节点与文本节点输出。
+- 搜索、分类筛选、文章详情直链和阅读按钮行为保持不变。
+- 加载、失败、空列表和无搜索结果提示也改为纯文本节点渲染。
+- 本轮只调整公开知识库列表和更新记录，不触碰后台目录或管理接口。', '2026-06-17T18:45:00.000Z', '2026-06-17T18:45:00.000Z'),
+  ('seed-update-2026-06-18-knowledge-list-safe-dom-en', 'seed-update-2026-06-18-knowledge-list-safe-dom', 'en', 'Knowledge List Safe DOM', 'Knowledge article cards now render through DOM/textContent.', '# Knowledge List Safe DOM
+
+This update changes the public Knowledge article-card list from string-built markup to DOM / `textContent` construction, reducing XSS risk as public article fields enter the page.
+
+## Changes
+
+- Article titles, summaries, categories, tags, published dates, fallback notices, and read buttons now render through DOM nodes and text nodes.
+- Search, category filters, article deep links, and read-button behavior are unchanged.
+- Loading, failure, empty-list, and no-result states also render as plain text nodes.
+- Only the public Knowledge list and update records changed; admin folders and admin APIs were not touched.', '2026-06-17T18:45:00.000Z', '2026-06-17T18:45:00.000Z'),
+  ('seed-update-2026-06-18-knowledge-list-safe-dom-ja', 'seed-update-2026-06-18-knowledge-list-safe-dom', 'ja', '知識庫リストの安全な DOM 描画', '知識庫の記事カードを DOM/textContent 構築にしました。', '# 知識庫リストの安全な DOM 描画
+
+今回の更新では、公開知識庫の記事カード一覧を文字列連結から DOM / `textContent` 構築へ変更し、公開記事フィールドがページに入るときの XSS リスクをさらに下げます。
+
+## 更新内容
+
+- 記事タイトル、概要、カテゴリ、タグ、公開日、fallback 表示、読むボタンを DOM ノードとテキストノードで出力します。
+- 検索、カテゴリ絞り込み、記事詳細直リンク、読むボタンの動作は変えていません。
+- 読み込み中、失敗、空リスト、検索結果なしの表示も純テキストノードで描画します。
+- 公開知識庫リストと更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T18:45:00.000Z', '2026-06-17T18:45:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values

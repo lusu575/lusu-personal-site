@@ -438,6 +438,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "🧾",
+      date: "2026.06.18",
+      title: { zh: "知识库列表安全渲染", en: "Knowledge List Safe DOM", ja: "知識庫リストの安全な DOM 描画" },
+      desc: {
+        zh: "知识库文章列表改为 DOM/textContent 构建，标题、摘要、标签、日期和阅读入口继续按纯文本渲染",
+        en: "Knowledge article cards now render through DOM/textContent for titles, summaries, tags, dates, and read links",
+        ja: "知識庫の記事カードを DOM/textContent 構築にし、タイトル、概要、タグ、日付、読む入口を純テキストで描画します"
+      }
+    },
+    {
       icon: "🛡️",
       date: "2026.06.18",
       title: { zh: "最近更新安全渲染", en: "Recent Updates Safe DOM", ja: "最近更新の安全な DOM 描画" },
@@ -1414,12 +1424,12 @@ function renderKnowledge() {
   detail.hidden = true;
   if (articleState.loading) {
     renderKnowledgeSearchControls(null, null);
-    list.innerHTML = `<p class="loading-text">${t("articleLoading")}</p>`;
+    renderListMessage(list, t("articleLoading"));
     return;
   }
   if (articleState.error) {
     renderKnowledgeSearchControls(null, null);
-    list.innerHTML = `<p class="loading-text">${t("articleLoadFailed")}</p>`;
+    renderListMessage(list, t("articleLoadFailed"));
     return;
   }
 
@@ -1427,27 +1437,62 @@ function renderKnowledge() {
   const items = categoryItems.filter(articleMatchesSearch);
   renderKnowledgeSearchControls(items.length, categoryItems.length);
   if (!articleState.articles.length) {
-    list.innerHTML = `<p class="loading-text">${t("articleEmpty")}</p>`;
+    renderListMessage(list, t("articleEmpty"));
     return;
   }
   if (!items.length) {
-    list.innerHTML = `<p class="loading-text">${t("articleSearchNoResults")}</p>`;
+    renderListMessage(list, t("articleSearchNoResults"));
     return;
   }
 
-  list.innerHTML = items.map((item) => `
-    <article class="article-card">
-      <h3>${escapeHtml(item.title)}</h3>
-      <p>${escapeHtml(item.summary || "")}</p>
-      <div class="meta-row">
-        <span>${t("articleCategory")}：${escapeHtml(articleCategoryName(item.category || "note"))}</span>
-              ${(item.tags || []).map((tag) => `<span class="tag">${escapeHtml(articleTagName(tag))}</span>`).join("")}
-        <span>${t("articlePublished")}：${escapeHtml(formatArticleDate(item.published_at || item.created_at))}</span>
-        ${item.lang !== currentLang ? `<span class="tag">${t("articleFallback")}</span>` : ""}
-      </div>
-      <a class="card-action" href="${escapeHtml(articleRoutePath(item.slug))}" data-article-slug="${escapeHtml(item.slug)}">${t("readButton")}</a>
-    </article>
-  `).join("");
+  list.replaceChildren(...items.map((item) => articleCardElement(item)));
+}
+
+function renderListMessage(list, message) {
+  const note = document.createElement("p");
+  note.className = "loading-text";
+  note.textContent = message;
+  list.replaceChildren(note);
+}
+
+function articleCardElement(item) {
+  const card = document.createElement("article");
+  card.className = "article-card";
+
+  const title = document.createElement("h3");
+  title.textContent = item.title || "";
+  const summary = document.createElement("p");
+  summary.textContent = item.summary || "";
+
+  const meta = document.createElement("div");
+  meta.className = "meta-row";
+  const category = document.createElement("span");
+  category.textContent = `${t("articleCategory")}：${articleCategoryName(item.category || "note")}`;
+  meta.appendChild(category);
+  (item.tags || []).forEach((tag) => {
+    const tagNode = document.createElement("span");
+    tagNode.className = "tag";
+    tagNode.textContent = articleTagName(tag);
+    meta.appendChild(tagNode);
+  });
+  const published = document.createElement("span");
+  published.textContent = `${t("articlePublished")}：${formatArticleDate(item.published_at || item.created_at)}`;
+  meta.appendChild(published);
+  if (item.lang !== currentLang) {
+    const fallback = document.createElement("span");
+    fallback.className = "tag";
+    fallback.textContent = t("articleFallback");
+    meta.appendChild(fallback);
+  }
+
+  const action = document.createElement("a");
+  action.className = "card-action";
+  action.href = articleRoutePath(item.slug);
+  action.dataset.articleSlug = item.slug;
+  action.textContent = t("readButton");
+
+  card.append(title, summary, meta, action);
+  return card;
 }
 
 function renderKnowledgeSearchControls(count, total) {
@@ -1546,7 +1591,7 @@ async function loadArticles() {
     const list = document.getElementById("knowledge-list");
     list.hidden = false;
     document.getElementById("article-detail").hidden = true;
-    list.innerHTML = `<p class="loading-text">${t("articleLoadFailed")}</p>`;
+    renderListMessage(list, t("articleLoadFailed"));
   } finally {
     if (requestId === articleState.requestId) {
       articleState.loading = false;
