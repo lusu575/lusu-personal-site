@@ -73,6 +73,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "账号保存期间切换防护",
+    body: "账号管理保存角色、邮箱或重置密码时会临时禁用账号列表，并在列表点击入口做二次拦截，避免慢请求期间切换账号导致当前表单和正在提交的账号错位。"
+  },
+  {
+    date: "2026-06-18",
     title: "视频分类写入期间切换防护",
     body: "视频分类保存或删除请求进行中会临时禁用分类列表和新建按钮，并在点击入口做二次拦截，避免慢请求期间切换分类导致当前表单和正在提交的分类错位。"
   },
@@ -2498,6 +2503,7 @@ function renderAccountList() {
   const list = $("#account-list");
   if (!state.accounts.length) {
     list.replaceChildren(createEmptyStateElement("还没有注册账号。"));
+    syncAccountListBusyState();
     return;
   }
 
@@ -2512,6 +2518,7 @@ function renderAccountList() {
     }
     item.type = "button";
     item.dataset.accountId = account.id || "";
+    item.disabled = isAccountWriteBusy();
     title.className = "list-title";
     title.textContent = account.email || "";
     meta.className = "list-meta";
@@ -2525,6 +2532,7 @@ function renderAccountList() {
     item.append(title, meta, summary);
     return item;
   }));
+  syncAccountListBusyState();
 }
 
 async function selectAccount(accountId) {
@@ -2618,6 +2626,7 @@ async function saveAccount(event) {
 function syncAccountSaveButton() {
   const button = $("#account-form button[type='submit']");
   if (!button) {
+    syncAccountListBusyState();
     return;
   }
   const hasAccount = Boolean(state.selectedAccountId);
@@ -2634,6 +2643,19 @@ function syncAccountSaveButton() {
   } else {
     button.removeAttribute("title");
   }
+  syncAccountListBusyState();
+}
+
+function isAccountWriteBusy() {
+  return state.accountSaving;
+}
+
+function syncAccountListBusyState() {
+  const busy = isAccountWriteBusy();
+  $$("#account-list .list-item").forEach((item) => {
+    item.disabled = busy;
+    item.title = busy ? "正在保存账号，完成后再切换" : "打开这个账号";
+  });
 }
 
 function createEventItemElement(titleText, detailTexts) {
@@ -2884,7 +2906,7 @@ function bindEvents() {
   });
   $("#account-list").addEventListener("click", (event) => {
     const item = event.target.closest("[data-account-id]");
-    if (item) {
+    if (item && !isAccountWriteBusy()) {
       selectAccount(item.dataset.accountId);
     }
   });
