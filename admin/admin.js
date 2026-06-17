@@ -15,6 +15,7 @@ const state = {
   accounts: [],
   selectedAccountId: "",
   accountDetail: null,
+  accountSaving: false,
   loadedPanels: {},
   loadingPanels: {},
   loggingOut: false,
@@ -54,6 +55,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-06-18",
+    title: "账号保存防重复提交优化",
+    body: "账号管理保存时会临时禁用保存按钮并显示保存中，避免慢网络下重复提交角色修改或密码重置；未选择账号时保存按钮也会保持不可用。"
+  },
   {
     date: "2026-06-18",
     title: "聊天室治理操作状态优化",
@@ -1528,6 +1534,7 @@ async function loadAccounts() {
     state.selectedAccountId = "";
     state.accountDetail = null;
     renderAccountDetail();
+    syncAccountSaveButton();
   }
 }
 
@@ -1560,6 +1567,7 @@ async function selectAccount(accountId) {
   state.selectedAccountId = accountId;
   $("#account-status").textContent = "正在读取账号详情...";
   renderAccountList();
+  syncAccountSaveButton();
   const detail = await api(`/api/admin/accounts/${encodeURIComponent(accountId)}`);
   state.accountDetail = detail;
   state.accounts = upsertById(state.accounts, detail.account, "id");
@@ -1568,6 +1576,7 @@ async function selectAccount(accountId) {
   renderAccountList();
   renderAccountDetail();
   $("#account-status").textContent = "";
+  syncAccountSaveButton();
 }
 
 function fillAccountForm(account) {
@@ -1581,8 +1590,12 @@ function fillAccountForm(account) {
 
 async function saveAccount(event) {
   event.preventDefault();
+  if (state.accountSaving) {
+    return;
+  }
   if (!state.selectedAccountId) {
     $("#account-status").textContent = "请先选择一个账号。";
+    syncAccountSaveButton();
     return;
   }
   const form = $("#account-form");
@@ -1594,6 +1607,8 @@ async function saveAccount(event) {
   if (password) {
     payload.password = password;
   }
+  state.accountSaving = true;
+  syncAccountSaveButton();
   $("#account-status").textContent = password ? "正在保存账号并重置密码..." : "正在保存账号...";
   try {
     const detail = await api(`/api/admin/accounts/${encodeURIComponent(state.selectedAccountId)}`, {
@@ -1609,6 +1624,27 @@ async function saveAccount(event) {
     $("#account-status").textContent = password ? "已保存，新密码已生效，相关旧会话已清理。" : "已保存账号信息。";
   } catch (error) {
     $("#account-status").textContent = error.message;
+  } finally {
+    state.accountSaving = false;
+    syncAccountSaveButton();
+  }
+}
+
+function syncAccountSaveButton() {
+  const button = $("#account-form button[type='submit']");
+  if (!button) {
+    return;
+  }
+  const hasAccount = Boolean(state.selectedAccountId);
+  button.disabled = state.accountSaving || !hasAccount;
+  button.textContent = state.accountSaving ? "保存中..." : "保存账号";
+  button.setAttribute("aria-busy", state.accountSaving ? "true" : "false");
+  if (!hasAccount) {
+    button.title = "请先选择账号";
+  } else if (state.accountSaving) {
+    button.title = "正在保存账号";
+  } else {
+    button.removeAttribute("title");
   }
 }
 
@@ -1834,6 +1870,7 @@ async function init() {
   resetVideoForm();
   resetVideoCategoryForm();
   resetChatForm();
+  syncAccountSaveButton();
   try {
     applyActivePanel(getStoredActivePanel());
     await loadMe();

@@ -373,7 +373,7 @@
               </div>
               <p class="safe-note">为了不让 GitHub、浏览器或后台页面泄露账号资料，这里不展示明文密码，也不返回密码哈希。需要修改密码时，直接填写新密码并保存。</p>
               <div class="form-actions">
-                <button class="xp-button primary" type="submit">保存账号</button>
+                <button class="xp-button primary" type="submit" disabled>保存账号</button>
                 <span class="form-status" id="account-status"></span>
               </div>
             </form>
@@ -414,6 +414,6 @@
     </main>
   </div>
 
-  <script src="/admin/admin.js?v=20260618-chat-action-state"></script>
+  <script src="/admin/admin.js?v=20260618-account-save-guard"></script>
 </body>
 </html>
