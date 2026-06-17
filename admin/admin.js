@@ -72,6 +72,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "视频分类列表渲染安全优化",
+    body: "视频分类管理列表的分类名、slug、启用状态、视频数量和排序改用 DOM API 写入，避免分类字段被误当作 HTML。"
+  },
+  {
+    date: "2026-06-18",
     title: "视频分类勾选渲染安全优化",
     body: "视频编辑表单里的分类勾选项改用 DOM API 写入，分类名称和停用徽标不再通过 HTML 字符串拼接。"
   },
@@ -1598,16 +1603,35 @@ async function refreshVideoMetadata() {
 }
 
 function renderVideoCategoryList() {
-  $("#video-category-list-admin").innerHTML = state.videoCategories.map((category) => `
-    <button class="list-item ${category.category_id === state.selectedVideoCategoryId ? "active" : ""}" type="button" data-admin-video-category-id="${escapeHtml(category.category_id)}">
-      <span class="list-title">${escapeHtml(category.name_zh || category.slug)}</span>
-      <span class="list-meta">
-        ${statusBadge(category.enabled ? "启用" : "停用", category.enabled ? "visible" : "hidden")}
-        ${statusBadge(`${category.video_count || 0} 个视频`, "neutral")}
-      </span>
-      <span class="list-subtle">${escapeHtml(category.slug)} · 排序 ${formatNumber(category.sort_order)}</span>
-    </button>
-  `).join("") || emptyState("暂无视频分类。");
+  const list = $("#video-category-list-admin");
+  if (!state.videoCategories.length) {
+    list.replaceChildren(createEmptyStateElement("暂无视频分类。"));
+    return;
+  }
+
+  list.replaceChildren(...state.videoCategories.map((category) => {
+    const item = document.createElement("button");
+    const title = document.createElement("span");
+    const meta = document.createElement("span");
+    const summary = document.createElement("span");
+    item.className = "list-item";
+    if (category.category_id === state.selectedVideoCategoryId) {
+      item.classList.add("active");
+    }
+    item.type = "button";
+    item.dataset.adminVideoCategoryId = category.category_id || "";
+    title.className = "list-title";
+    title.textContent = category.name_zh || category.slug || "";
+    meta.className = "list-meta";
+    meta.append(
+      createStatusBadgeElement(category.enabled ? "启用" : "停用", category.enabled ? "visible" : "hidden"),
+      createStatusBadgeElement(`${category.video_count || 0} 个视频`, "neutral")
+    );
+    summary.className = "list-subtle";
+    summary.textContent = `${category.slug || ""} · 排序 ${formatNumber(category.sort_order)}`;
+    item.append(title, meta, summary);
+    return item;
+  }));
 }
 
 function selectedVideoCategory() {
