@@ -21,6 +21,8 @@ const state = {
   videoDeleting: false,
   chatMessages: [],
   selectedMessageId: "",
+  chatActionBusy: false,
+  chatActionBusyMode: "",
   bans: [],
   accounts: [],
   selectedAccountId: "",
@@ -65,6 +67,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-06-18",
+    title: "聊天室治理按钮忙碌态优化",
+    body: "聊天室管理保存、隐藏恢复或删除消息时会临时禁用治理按钮，并显示保存中、隐藏中、恢复中或删除中，减少慢网络下重复提交。"
+  },
   {
     date: "2026-06-18",
     title: "视频删除防重复操作优化",
@@ -1653,77 +1660,138 @@ function resetChatForm() {
 function syncChatActionState() {
   const message = selectedChatMessage();
   const hasMessage = Boolean(message);
+  const busy = state.chatActionBusy;
+  const saveButton = $("#chat-form-admin button[type='submit']");
   const toggleButton = $("#toggle-chat-hidden");
+  const deleteButton = $("#delete-chat-message");
   const actionButtons = [
-    $("#chat-form-admin button[type='submit']"),
+    saveButton,
     toggleButton,
-    $("#delete-chat-message"),
+    deleteButton,
     $("#ban-chat-visitor"),
     $("#ban-chat-ip")
   ].filter(Boolean);
   actionButtons.forEach((button) => {
-    button.disabled = !hasMessage;
+    button.disabled = busy || !hasMessage;
+    button.setAttribute("aria-busy", busy ? "true" : "false");
     if (!hasMessage) {
       button.title = "请先选择聊天记录";
       button.setAttribute("aria-disabled", "true");
+    } else if (busy) {
+      button.title = "正在处理聊天记录";
+      button.removeAttribute("aria-disabled");
     } else {
       button.removeAttribute("title");
       button.removeAttribute("aria-disabled");
     }
   });
+  if (saveButton) {
+    saveButton.textContent = state.chatActionBusyMode === "save" ? "保存中..." : "保存修改";
+  }
   if (toggleButton) {
-    const label = hasMessage && Number(message.hidden) === 1 ? "恢复消息" : "隐藏消息";
-    toggleButton.textContent = label;
-    if (hasMessage) {
+    const hidden = hasMessage && Number(message.hidden) === 1;
+    const label = hidden ? "恢复消息" : "隐藏消息";
+    const busyLabel = hidden ? "恢复中..." : "隐藏中...";
+    toggleButton.textContent = state.chatActionBusyMode === "toggle" ? busyLabel : label;
+    if (hasMessage && !busy) {
       toggleButton.title = label;
+    }
+  }
+  if (deleteButton) {
+    deleteButton.textContent = state.chatActionBusyMode === "delete" ? "删除中..." : "删除";
+    if (hasMessage && !busy) {
+      deleteButton.title = "删除当前聊天记录";
     }
   }
 }
 
+function setChatActionBusy(mode) {
+  state.chatActionBusy = Boolean(mode);
+  state.chatActionBusyMode = mode || "";
+  syncChatActionState();
+}
+
+function showChatActionError(error) {
+  $("#chat-selected-id").textContent = `操作失败：${error.message}`;
+}
+
 async function saveChatMessage(event) {
   event.preventDefault();
+  if (state.chatActionBusy) {
+    return;
+  }
   const message = selectedChatMessage();
   if (!message) {
     return;
   }
+  setChatActionBusy("save");
   const form = $("#chat-form-admin");
-  await api(`/api/admin/chat/messages/${encodeURIComponent(message.message_id)}`, {
-    method: "PUT",
-    body: JSON.stringify({
-      nickname: form.elements.nickname.value,
-      content: form.elements.content.value,
-      hidden: Number(message.hidden) === 1
-    })
-  });
-  await loadChatMessages();
-  selectChatMessage(message.message_id);
+  try {
+    await api(`/api/admin/chat/messages/${encodeURIComponent(message.message_id)}`, {
+      method: "PUT",
+      body: JSON.stringify({
+        nickname: form.elements.nickname.value,
+        content: form.elements.content.value,
+        hidden: Number(message.hidden) === 1
+      })
+    });
+    await loadChatMessages();
+    selectChatMessage(message.message_id);
+  } catch (error) {
+    showChatActionError(error);
+  } finally {
+    setChatActionBusy("");
+  }
 }
 
 async function toggleChatHidden() {
+  if (state.chatActionBusy) {
+    return;
+  }
   const message = selectedChatMessage();
   if (!message) {
     return;
   }
-  await api(`/api/admin/chat/messages/${encodeURIComponent(message.message_id)}`, {
-    method: "PUT",
-    body: JSON.stringify({ hidden: Number(message.hidden) !== 1 })
-  });
-  await loadChatMessages();
-  selectChatMessage(message.message_id);
+  setChatActionBusy("toggle");
+  try {
+    await api(`/api/admin/chat/messages/${encodeURIComponent(message.message_id)}`, {
+      method: "PUT",
+      body: JSON.stringify({ hidden: Number(message.hidden) !== 1 })
+    });
+    await loadChatMessages();
+    selectChatMessage(message.message_id);
+  } catch (error) {
+    showChatActionError(error);
+  } finally {
+    setChatActionBusy("");
+  }
 }
 
 async function deleteChatMessage() {
+  if (state.chatActionBusy) {
+    return;
+  }
   const message = selectedChatMessage();
   if (!message || !window.confirm("确定删除这条聊天记录？")) {
     return;
   }
-  await api(`/api/admin/chat/messages/${encodeURIComponent(message.message_id)}`, { method: "DELETE" });
-  state.selectedMessageId = "";
-  resetChatForm();
-  await loadChatMessages();
+  setChatActionBusy("delete");
+  try {
+    await api(`/api/admin/chat/messages/${encodeURIComponent(message.message_id)}`, { method: "DELETE" });
+    state.selectedMessageId = "";
+    resetChatForm();
+    await loadChatMessages();
+  } catch (error) {
+    showChatActionError(error);
+  } finally {
+    setChatActionBusy("");
+  }
 }
 
 async function banSelectedChat(type) {
+  if (state.chatActionBusy) {
+    return;
+  }
   const message = selectedChatMessage();
   if (!message) {
     return;
