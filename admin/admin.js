@@ -24,6 +24,7 @@ const state = {
   selectedMessageId: "",
   chatActionBusy: false,
   chatActionBusyMode: "",
+  chatMessagesLoading: false,
   bans: [],
   banListBusy: false,
   banListBusyMode: "",
@@ -71,6 +72,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-06-18",
+    title: "聊天筛选读取防抖",
+    body: "聊天室管理正在读取消息列表时会临时锁定“显示隐藏”筛选，并忽略重复读取入口，减少快速切换筛选造成的重复请求和列表闪动。"
+  },
   {
     date: "2026-06-18",
     title: "聊天筛选切换防护",
@@ -2126,14 +2132,24 @@ async function deleteVideoCategory() {
 }
 
 async function loadChatMessages() {
-  const includeHidden = $("#include-hidden-chat")?.checked ? "1" : "0";
-  const payload = await api(`/api/admin/chat/messages?limit=100&includeHidden=${includeHidden}`);
-  state.chatMessages = payload.messages || [];
-  if (state.selectedMessageId && !state.chatMessages.some((message) => message.message_id === state.selectedMessageId)) {
-    state.selectedMessageId = "";
-    resetChatForm();
+  if (state.chatMessagesLoading) {
+    return;
   }
-  renderChatMessages();
+  state.chatMessagesLoading = true;
+  syncChatFilterBusyState();
+  try {
+    const includeHidden = $("#include-hidden-chat")?.checked ? "1" : "0";
+    const payload = await api(`/api/admin/chat/messages?limit=100&includeHidden=${includeHidden}`);
+    state.chatMessages = payload.messages || [];
+    if (state.selectedMessageId && !state.chatMessages.some((message) => message.message_id === state.selectedMessageId)) {
+      state.selectedMessageId = "";
+      resetChatForm();
+    }
+    renderChatMessages();
+  } finally {
+    state.chatMessagesLoading = false;
+    syncChatFilterBusyState();
+  }
 }
 
 function renderChatMessages() {
@@ -2278,6 +2294,14 @@ function isChatActionBusy() {
   return state.chatActionBusy;
 }
 
+function isChatMessagesLoading() {
+  return state.chatMessagesLoading;
+}
+
+function isChatFilterBusy() {
+  return isChatActionBusy() || isChatMessagesLoading();
+}
+
 function syncChatListBusyState() {
   const busy = isChatActionBusy();
   const busyTitle = chatActionBusyListTitle();
@@ -2302,11 +2326,21 @@ function syncChatFilterBusyState() {
   if (!checkbox) {
     return;
   }
-  const busy = isChatActionBusy();
-  const title = busy ? chatActionBusyFilterTitle() : "显示或隐藏已隐藏聊天记录";
+  const busy = isChatFilterBusy();
+  const title = busy ? chatFilterBusyTitle() : "显示或隐藏已隐藏聊天记录";
   checkbox.disabled = busy;
   checkbox.title = title;
   checkbox.closest("label")?.setAttribute("title", title);
+}
+
+function chatFilterBusyTitle() {
+  if (isChatActionBusy()) {
+    return chatActionBusyFilterTitle();
+  }
+  if (isChatMessagesLoading()) {
+    return "正在读取聊天记录，完成后再调整筛选";
+  }
+  return "显示或隐藏已隐藏聊天记录";
 }
 
 function chatActionBusyFilterTitle() {
@@ -2944,7 +2978,7 @@ function bindEvents() {
   $("#video-category-form").addEventListener("submit", saveVideoCategory);
   $("#delete-video-category").addEventListener("click", deleteVideoCategory);
   $("#include-hidden-chat").addEventListener("change", () => {
-    if (!isChatActionBusy()) {
+    if (!isChatFilterBusy()) {
       loadChatMessages();
     }
   });
