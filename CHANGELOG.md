@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 管理后台趋势图渲染性能优化：
+  - `/admin/` 实时大屏每日和小时趋势图改用 DOM API 渲染柱体、标签和 tooltip，减少整块 HTML 字符串重绘。
+  - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。
+
 - 管理后台访问来源地图渲染安全优化：
   - `/admin/` 访问来源地图点位改用 DOM API、`textContent`、`style` 和 `title` 属性渲染，减少来源地字段被误当作 HTML 的风险。
   - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。

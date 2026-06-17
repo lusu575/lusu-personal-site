@@ -72,6 +72,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "趋势图渲染性能优化",
+    body: "实时大屏的每日和小时趋势图改用 DOM API 渲染柱体与标签，减少整块 HTML 字符串重绘。"
+  },
+  {
+    date: "2026-06-18",
     title: "访问来源地图渲染安全优化",
     body: "访问来源地图点位改用 DOM API 和安全属性写入，国家、地区、城市字段只按文本展示。"
   },
@@ -849,17 +854,29 @@ function renderHourlyChart(rows) {
 }
 
 function renderBars(container, rows, labelKey) {
+  if (!rows.length) {
+    container.replaceChildren(createEmptyStateElement("暂无图表数据"));
+    return;
+  }
   const max = Math.max(1, ...rows.map((row) => Number(row.pv || 0)));
-  container.innerHTML = rows.map((row) => {
+  container.replaceChildren(...rows.map((row) => {
     const height = Math.max(2, Math.round((Number(row.pv || 0) / max) * 100));
     const label = labelKey === "hour" ? String(row.hour || "").slice(11, 16) : String(row.day || "").slice(5);
-    return `
-      <div class="bar-cell" title="PV ${formatNumber(row.pv)} / UV ${formatNumber(row.uv)}">
-        <div class="bar-stack"><div class="bar-fill" style="height:${height}%"></div></div>
-        <div class="bar-label">${escapeHtml(label)}</div>
-      </div>
-    `;
-  }).join("") || emptyState("暂无图表数据");
+    const cell = document.createElement("div");
+    const stack = document.createElement("div");
+    const fill = document.createElement("div");
+    const labelNode = document.createElement("div");
+    cell.className = "bar-cell";
+    cell.title = `PV ${formatNumber(row.pv)} / UV ${formatNumber(row.uv)}`;
+    stack.className = "bar-stack";
+    fill.className = "bar-fill";
+    fill.style.height = `${height}%`;
+    labelNode.className = "bar-label";
+    labelNode.textContent = label;
+    stack.append(fill);
+    cell.append(stack, labelNode);
+    return cell;
+  }));
 }
 
 function renderMap(rows) {

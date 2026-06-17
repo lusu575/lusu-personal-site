@@ -4,6 +4,11 @@
 
 ## 2026-06-18
 
+- 趋势图渲染性能优化：
+  - 实时大屏的每日趋势图和小时趋势图改用 `document.createElement`、`textContent`、`style.height` 和 `title` 属性渲染柱体、标签与 PV/UV 提示。
+  - 现有图表高度、横向滚动、空状态、柱体比例和标签截断保持不变，但不再整块拼接 HTML 字符串。
+  - 后台页面内 `adminUpdates` 和后台 JS query 已同步更新。
+
 - 访问来源地图渲染安全优化：
   - 访问来源地图的等待提示和点位按钮改用 `document.createElement`、`textContent`、`style` 和 `title` 属性渲染国家、region、省市、PV/UV 和位置。
   - 现有点位数量、坐标兜底、尺寸比例、tooltip 和空状态保持不变，但不再通过 HTML 字符串拼接来源字段。
