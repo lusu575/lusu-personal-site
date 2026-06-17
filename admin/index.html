@@ -328,11 +328,11 @@
               <label>禁言时长（小时，0 为长期）<input name="ban_hours" type="number" min="0" max="8760" value="24"></label>
               <div class="chat-meta" id="chat-meta"></div>
               <div class="form-actions">
-                <button class="xp-button" type="submit">保存修改</button>
-                <button class="xp-button" type="button" id="toggle-chat-hidden">隐藏/恢复</button>
-                <button class="xp-button danger" type="button" id="delete-chat-message">删除</button>
-                <button class="xp-button warning" type="button" id="ban-chat-visitor">禁言用户ID</button>
-                <button class="xp-button warning" type="button" id="ban-chat-ip">禁言IP来源</button>
+                <button class="xp-button" type="submit" disabled>保存修改</button>
+                <button class="xp-button" type="button" id="toggle-chat-hidden" disabled>隐藏消息</button>
+                <button class="xp-button danger" type="button" id="delete-chat-message" disabled>删除</button>
+                <button class="xp-button warning" type="button" id="ban-chat-visitor" disabled>禁言用户ID</button>
+                <button class="xp-button warning" type="button" id="ban-chat-ip" disabled>禁言IP来源</button>
               </div>
             </form>
             <div class="panel-head subhead">
@@ -414,6 +414,6 @@
     </main>
   </div>
 
-  <script src="/admin/admin.js?v=20260618-status-wrap"></script>
+  <script src="/admin/admin.js?v=20260618-chat-action-state"></script>
 </body>
 </html>

@@ -56,6 +56,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "聊天室治理操作状态优化",
+    body: "聊天室管理在未选择记录时会禁用保存、隐藏、删除和禁言操作，选择记录后再恢复可用；隐藏按钮会按当前状态显示隐藏或恢复，减少误点和空操作。"
+  },
+  {
+    date: "2026-06-18",
     title: "后台顶部状态文本换行优化",
     body: "后台顶部状态提示增加宽度和换行约束，长错误文案在窄屏和中等宽度窗口下不再挤压刷新、退出按钮。"
   },
@@ -1342,6 +1347,10 @@ async function loadChatMessages() {
   const includeHidden = $("#include-hidden-chat")?.checked ? "1" : "0";
   const payload = await api(`/api/admin/chat/messages?limit=100&includeHidden=${includeHidden}`);
   state.chatMessages = payload.messages || [];
+  if (state.selectedMessageId && !state.chatMessages.some((message) => message.message_id === state.selectedMessageId)) {
+    state.selectedMessageId = "";
+    resetChatForm();
+  }
   renderChatMessages();
 }
 
@@ -1357,6 +1366,7 @@ function renderChatMessages() {
       <span class="list-subtle">${formatTime(message.created_at)}</span>
     </button>
   `).join("") || emptyState("暂无聊天记录");
+  syncChatActionState();
 }
 
 function selectChatMessage(messageId) {
@@ -1377,10 +1387,48 @@ function selectChatMessage(messageId) {
     <span>IP 前缀：${escapeHtml(message.ip_prefix || "")}</span>
     <span>来源：${escapeHtml([message.country, message.region, message.city].filter(Boolean).join(" / ") || "未知")}</span>
   `;
+  syncChatActionState();
 }
 
 function selectedChatMessage() {
   return state.chatMessages.find((item) => item.message_id === state.selectedMessageId);
+}
+
+function resetChatForm() {
+  $("#chat-form-admin").reset();
+  $("#chat-selected-id").textContent = "未选择";
+  $("#chat-meta").textContent = "";
+  syncChatActionState();
+}
+
+function syncChatActionState() {
+  const message = selectedChatMessage();
+  const hasMessage = Boolean(message);
+  const toggleButton = $("#toggle-chat-hidden");
+  const actionButtons = [
+    $("#chat-form-admin button[type='submit']"),
+    toggleButton,
+    $("#delete-chat-message"),
+    $("#ban-chat-visitor"),
+    $("#ban-chat-ip")
+  ].filter(Boolean);
+  actionButtons.forEach((button) => {
+    button.disabled = !hasMessage;
+    if (!hasMessage) {
+      button.title = "请先选择聊天记录";
+      button.setAttribute("aria-disabled", "true");
+    } else {
+      button.removeAttribute("title");
+      button.removeAttribute("aria-disabled");
+    }
+  });
+  if (toggleButton) {
+    const label = hasMessage && Number(message.hidden) === 1 ? "恢复消息" : "隐藏消息";
+    toggleButton.textContent = label;
+    if (hasMessage) {
+      toggleButton.title = label;
+    }
+  }
 }
 
 async function saveChatMessage(event) {
@@ -1422,8 +1470,7 @@ async function deleteChatMessage() {
   }
   await api(`/api/admin/chat/messages/${encodeURIComponent(message.message_id)}`, { method: "DELETE" });
   state.selectedMessageId = "";
-  $("#chat-form-admin").reset();
-  $("#chat-meta").textContent = "";
+  resetChatForm();
   await loadChatMessages();
 }
 
@@ -1786,6 +1833,7 @@ async function init() {
   resetArticleForm();
   resetVideoForm();
   resetVideoCategoryForm();
+  resetChatForm();
   try {
     applyActivePanel(getStoredActivePanel());
     await loadMe();
