@@ -72,6 +72,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "聊天室元信息渲染安全优化",
+    body: "聊天室管理的隐藏用户 ID、client id、IP hash、IP 前缀和来源信息改用 DOM API 写入，避免审计字段被误当作 HTML。"
+  },
+  {
+    date: "2026-06-18",
     title: "后台更新记录渲染安全优化",
     body: "后台更新记录改用 DOM API 写入日期、标题和正文，减少后续维护时误把更新文案当作 HTML 执行的风险。"
   },
@@ -1664,13 +1669,17 @@ function selectChatMessage(messageId) {
   form.elements.nickname.value = message.nickname || "";
   form.elements.content.value = message.content || "";
   $("#chat-selected-id").textContent = message.message_id;
-  $("#chat-meta").innerHTML = `
-    <span>隐藏用户 ID：${escapeHtml(message.visitor_id || "")}</span>
-    <span>前端 client id：${escapeHtml(message.client_id || "")}</span>
-    <span>IP hash：${escapeHtml(message.ip_hash || "")}</span>
-    <span>IP 前缀：${escapeHtml(message.ip_prefix || "")}</span>
-    <span>来源：${escapeHtml([message.country, message.region, message.city].filter(Boolean).join(" / ") || "未知")}</span>
-  `;
+  $("#chat-meta").replaceChildren(...[
+    ["隐藏用户 ID", message.visitor_id || ""],
+    ["前端 client id", message.client_id || ""],
+    ["IP hash", message.ip_hash || ""],
+    ["IP 前缀", message.ip_prefix || ""],
+    ["来源", [message.country, message.region, message.city].filter(Boolean).join(" / ") || "未知"]
+  ].map(([label, value]) => {
+    const item = document.createElement("span");
+    item.textContent = `${label}：${value}`;
+    return item;
+  }));
   syncChatActionState();
 }
 

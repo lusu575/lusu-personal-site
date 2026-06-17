@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 管理后台聊天室元信息渲染安全优化：
+  - `/admin/` 聊天室管理的隐藏用户 ID、client id、IP hash、IP 前缀和来源信息改用 DOM API 与 `textContent` 渲染，减少审计字段被误当作 HTML 的风险。
+  - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。
+
 - 管理后台更新记录渲染安全优化：
   - `/admin/` 后台更新记录改用 DOM API 和 `textContent` 渲染，减少维护时误把后台私有更新文案当作 HTML 执行的风险。
   - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。
