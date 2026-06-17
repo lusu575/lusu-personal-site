@@ -72,6 +72,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "视频分类勾选渲染安全优化",
+    body: "视频编辑表单里的分类勾选项改用 DOM API 写入，分类名称和停用徽标不再通过 HTML 字符串拼接。"
+  },
+  {
+    date: "2026-06-18",
     title: "视频列表渲染安全优化",
     body: "视频管理列表的标题、平台、排序、作者、发布时间和元数据错误改用 DOM API 写入，避免视频字段被误当作 HTML。"
   },
@@ -1171,13 +1176,31 @@ function renderVideoCategoryChecks() {
     return;
   }
   const selected = new Set(selectedVideo()?.category_ids || []);
-  box.innerHTML = state.videoCategories.map((category) => `
-    <label class="mini-check ${category.enabled ? "" : "is-disabled"}">
-      <input type="checkbox" value="${escapeHtml(category.category_id)}" ${selected.has(category.category_id) ? "checked" : ""} ${!category.enabled && !selected.has(category.category_id) ? "disabled" : ""}>
-      ${escapeHtml(category.name_zh || category.slug)}
-      ${category.enabled ? "" : statusBadge("停用", "hidden")}
-    </label>
-  `).join("") || `<span class="empty-inline">暂无分类</span>`;
+  if (!state.videoCategories.length) {
+    const empty = document.createElement("span");
+    empty.className = "empty-inline";
+    empty.textContent = "暂无分类";
+    box.replaceChildren(empty);
+    return;
+  }
+
+  box.replaceChildren(...state.videoCategories.map((category) => {
+    const label = document.createElement("label");
+    const input = document.createElement("input");
+    label.className = "mini-check";
+    if (!category.enabled) {
+      label.classList.add("is-disabled");
+    }
+    input.type = "checkbox";
+    input.value = category.category_id || "";
+    input.checked = selected.has(category.category_id);
+    input.disabled = !category.enabled && !selected.has(category.category_id);
+    label.append(input, document.createTextNode(category.name_zh || category.slug || ""));
+    if (!category.enabled) {
+      label.append(createStatusBadgeElement("停用", "hidden"));
+    }
+    return label;
+  }));
 }
 
 function selectedVideo() {

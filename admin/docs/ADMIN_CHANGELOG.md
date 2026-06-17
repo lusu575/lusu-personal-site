@@ -4,6 +4,11 @@
 
 ## 2026-06-18
 
+- 视频分类勾选渲染安全优化：
+  - 视频编辑表单里的分类勾选区改用 `document.createElement`、`textContent`、`classList` 和 `input.value` 渲染分类名称、选中态、禁用态和“停用”徽标。
+  - 现有已选分类、停用未选分类禁用、空状态和保存时读取 checked 分类的行为保持不变，但不再通过 HTML 字符串拼接分类名称。
+  - 后台页面内 `adminUpdates` 和后台 JS query 已同步更新。
+
 - 视频列表渲染安全优化：
   - 视频管理列表改用 `document.createElement`、`textContent`、`classList` 和 `dataset` 渲染标题、平台、状态、排序、置顶排序、作者、发布时间和元数据错误。
   - 现有列表选中态、状态徽标、置顶排序、空状态和点击进入编辑的行为保持不变，但不再通过 HTML 字符串拼接视频列表字段。

@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 管理后台视频分类勾选渲染安全优化：
+  - `/admin/` 视频编辑表单里的分类勾选项改用 DOM API 与 `textContent` 渲染，减少分类名称被误当作 HTML 的风险。
+  - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。
+
 - 管理后台视频列表渲染安全优化：
   - `/admin/` 视频管理列表的标题、平台、排序、作者、发布时间和元数据错误改用 DOM API 与 `textContent` 渲染，减少视频字段被误当作 HTML 的风险。
   - 后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。
