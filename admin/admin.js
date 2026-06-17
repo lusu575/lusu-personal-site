@@ -74,6 +74,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "视频分类写入期间锁定表单",
+    body: "视频分类保存或删除请求进行中会临时锁定 slug、分类名称、排序和启用状态字段，避免写入尚未完成时继续修改内容造成提交范围误解。"
+  },
+  {
+    date: "2026-06-18",
     title: "账号保存期间锁定表单",
     body: "账号管理保存邮箱、角色或重置密码请求进行中会临时锁定账号表单字段，避免保存尚未完成时继续修改内容造成提交范围误解。"
   },
@@ -2082,11 +2087,32 @@ function syncVideoCategoryButtons() {
         ? "请先选择已保存分类"
         : (hasLinkedVideos ? "已有视频使用，先取消关联后再删除" : "删除当前视频分类"));
   }
+  syncVideoCategoryFormBusyState();
   syncVideoCategoryListBusyState();
 }
 
 function isVideoCategoryWriteBusy() {
   return state.videoCategoryBusy;
+}
+
+function syncVideoCategoryFormBusyState() {
+  const busy = isVideoCategoryWriteBusy();
+  const busyTitle = videoCategoryBusyFormTitle();
+  $$("#video-category-form input").forEach((field) => {
+    field.disabled = busy;
+    field.setAttribute("aria-busy", busy ? "true" : "false");
+    if (busy) {
+      field.title = busyTitle;
+    } else {
+      field.removeAttribute("title");
+    }
+  });
+}
+
+function videoCategoryBusyFormTitle() {
+  return state.videoCategoryBusyMode === "delete"
+    ? "正在删除视频分类，完成后再编辑表单"
+    : "正在保存视频分类，完成后再编辑表单";
 }
 
 function syncVideoCategoryListBusyState() {
