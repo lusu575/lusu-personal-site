@@ -74,6 +74,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "聊天室刷新丢失选中记录提示",
+    body: "聊天室消息刷新后如果当前选中记录已不在列表中，后台会清空编辑表单并显示提示，避免继续处理旧聊天记录。"
+  },
+  {
+    date: "2026-06-18",
     title: "账号列表刷新丢失选中项提示",
     body: "账号列表刷新后如果当前选中账号已不在列表中，后台会清空账号编辑区并显示提示，避免管理员误以为旧账号仍可编辑。"
   },
@@ -2397,7 +2402,7 @@ async function loadChatMessages() {
     state.chatMessages = payload.messages || [];
     if (state.selectedMessageId && !state.chatMessages.some((message) => message.message_id === state.selectedMessageId)) {
       state.selectedMessageId = "";
-      resetChatForm();
+      resetChatForm("当前记录已不在列表中", "已清空编辑表单。");
     }
     renderChatMessages();
   } finally {
@@ -2473,10 +2478,10 @@ function selectedChatMessage() {
   return state.chatMessages.find((item) => item.message_id === state.selectedMessageId);
 }
 
-function resetChatForm() {
+function resetChatForm(selectedText = "未选择", metaText = "") {
   $("#chat-form-admin").reset();
-  $("#chat-selected-id").textContent = "未选择";
-  $("#chat-meta").textContent = "";
+  $("#chat-selected-id").textContent = selectedText;
+  $("#chat-meta").textContent = metaText;
   syncChatActionState();
 }
 
