@@ -72,6 +72,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "视频分类删除状态优化",
+    body: "后台选中仍有视频使用的分类时，删除按钮会直接禁用并提示先取消关联，减少点按后才发现不能删除的无效操作。"
+  },
+  {
+    date: "2026-06-18",
     title: "视频封面预览加载优化",
     body: "后台视频封面预览图增加异步解码和 no-referrer，减少大图预览阻塞，同时避免向外部封面域名携带后台页面来源。"
   },
@@ -1853,7 +1858,7 @@ function fillVideoCategoryForm(category) {
   form.elements.name_ja.value = category.name_ja || "";
   form.elements.sort_order.value = Number(category.sort_order || 0);
   form.elements.enabled.checked = Boolean(category.enabled);
-  $("#delete-video-category").disabled = false;
+  $("#delete-video-category").disabled = Number(category.video_count || 0) > 0;
   $("#video-category-status").textContent = category.video_count ? `已有 ${category.video_count} 个视频使用，删除前请先取消关联。` : "";
   syncVideoCategoryButtons();
   renderVideoCategoryList();
@@ -1916,12 +1921,16 @@ function syncVideoCategoryButtons() {
   }
   if (deleteButton) {
     const deleting = state.videoCategoryBusy && state.videoCategoryBusyMode === "delete";
-    deleteButton.disabled = state.videoCategoryBusy || !state.selectedVideoCategoryId;
+    const category = selectedVideoCategory();
+    const hasLinkedVideos = Number(category?.video_count || 0) > 0;
+    deleteButton.disabled = state.videoCategoryBusy || !state.selectedVideoCategoryId || hasLinkedVideos;
     deleteButton.textContent = deleting ? "删除中..." : "删除分类";
     deleteButton.setAttribute("aria-busy", deleting ? "true" : "false");
     deleteButton.title = state.videoCategoryBusy
       ? "正在处理视频分类"
-      : (state.selectedVideoCategoryId ? "删除当前视频分类" : "请先选择已保存分类");
+      : (!state.selectedVideoCategoryId
+        ? "请先选择已保存分类"
+        : (hasLinkedVideos ? "已有视频使用，先取消关联后再删除" : "删除当前视频分类"));
   }
 }
 
