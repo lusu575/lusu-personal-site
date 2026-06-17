@@ -444,6 +444,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "📶",
+      date: "2026.06.18",
+      title: { zh: "RSS 发现链接同步", en: "RSS Discovery Link Sync", ja: "RSS 検出リンク同期" },
+      desc: {
+        zh: "页面 head 里的 RSS alternate 链接会随当前语言同步，订阅发现不再固定中文",
+        en: "The RSS alternate link in the page head now follows the active language for feed discovery",
+        ja: "ページ head の RSS alternate リンクが現在の言語に合わせて更新されます"
+      }
+    },
+    {
       icon: "🔗",
       date: "2026.06.18",
       title: { zh: "文章链接保留语言", en: "Article Links Keep Language", ja: "記事リンクの言語保持" },
@@ -1417,6 +1427,9 @@ function rssFeedPath(lang = currentLang) {
 
 function syncRssLinks(lang = currentLang) {
   document.querySelectorAll("[data-rss-link]").forEach((link) => {
+    link.href = rssFeedPath(lang);
+  });
+  document.querySelectorAll("[data-rss-alternate]").forEach((link) => {
     link.href = rssFeedPath(lang);
   });
 }

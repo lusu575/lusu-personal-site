@@ -5187,6 +5187,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         article_id, slug, category, tags, cover_image, status, is_pinned,
         view_count, created_at, updated_at, published_at
       ) values (
+        'seed-update-2026-06-18-rss-alternate-lang',
+        '2026-06-18-rss-alternate-lang',
+        'site-updates',
+        '["网站更新","RSS","三语","订阅"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T22:35:00.000Z',
+        '2026-06-17T22:35:00.000Z',
+        '2026-06-17T22:35:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
         'seed-update-2026-06-18-article-link-lang',
         '2026-06-18-article-link-lang',
         'site-updates',
@@ -6165,6 +6192,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# 記事画像パスガード\n\n今回の更新では、公開知識庫の記事画像描画をさらに引き締め、Markdown 画像パスがプロジェクトの記事画像フォルダ内に留まるよう明確にしました。\n\n## 更新内容\n\n- Markdown 記事画像は引き続き `assets/images/articles/` 配下のプロジェクト資源だけを受け付けます。\n- `safeArticleImageSrc()` が `..` のパストラバーサル片を拒否し、画像パスが記事画像フォルダから外へ出ないようにしました。\n- 画像は今後も `document.createElement('img')`、安全な `src`、`alt`、`figcaption` で描画し、未処理 HTML は挿入しません。\n- 既存の AI Agent 長文画像、知識庫一覧、記事直リンク、管理画面ディレクトリは変更していません。"
       }
     }, "2026-06-17T20:20:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-rss-alternate-lang", {
+      zh: {
+        title: "RSS 发现链接同步",
+        summary: "页面 head 里的 RSS alternate 链接会跟随当前语言。",
+        content_markdown: "# RSS 发现链接同步\n\n本次更新继续整理公开订阅入口，让浏览器和 RSS 阅读器发现 feed 时也能拿到当前语言版本。\n\n## 更新内容\n\n- 页面 `<head>` 里的 `rel=\"alternate\"` RSS 链接新增同步标记。\n- 语言切换时，欢迎窗口 RSS 按钮和 head 里的 RSS alternate 会一起更新到当前 `lang`。\n- `/api/rss.xml` 与 `/api/feed.xml` 的 feed 输出逻辑不变，仍按 `lang` 返回三语文章内容。\n- 本轮只调整公开首页标记、前端语言同步和更新记录，不触碰后台目录或管理接口。"
+      },
+      en: {
+        title: "RSS Discovery Link Sync",
+        summary: "The RSS alternate link in the page head now follows the active language.",
+        content_markdown: "# RSS Discovery Link Sync\n\nThis update continues polishing public subscription entry points so browsers and RSS readers discover the feed in the active language.\n\n## Changes\n\n- The `<head>` `rel=\"alternate\"` RSS link now has a sync marker.\n- When the language changes, the welcome-window RSS button and the head RSS alternate link both update to the active `lang`.\n- `/api/rss.xml` and `/api/feed.xml` feed generation is unchanged and still returns trilingual article content according to `lang`.\n- This round only changes public homepage markup, frontend language sync, and update records; admin folders and admin APIs are untouched."
+      },
+      ja: {
+        title: "RSS 検出リンク同期",
+        summary: "ページ head の RSS alternate リンクが現在の言語に合わせて更新されます。",
+        content_markdown: "# RSS 検出リンク同期\n\n今回の更新では、公開サイトの購読入口をさらに整え、ブラウザーや RSS リーダーが現在の言語の feed を見つけやすくしました。\n\n## 更新内容\n\n- ページ `<head>` の `rel=\"alternate\"` RSS リンクに同期用の印を追加しました。\n- 言語切り替え時に、ウェルカム画面の RSS ボタンと head の RSS alternate がどちらも現在の `lang` に更新されます。\n- `/api/rss.xml` と `/api/feed.xml` の生成処理は変更せず、`lang` に応じた三言語の記事内容を返します。\n- 今回は公開ホームのマークアップ、フロントの言語同期、更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。"
+      }
+    }, "2026-06-17T22:35:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-06-18-article-link-lang", {
       zh: {
         title: "文章链接保留语言",
