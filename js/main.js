@@ -378,6 +378,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "📖",
+      date: "2026.06.18",
+      title: { zh: "文章详情搜索条隐藏修复", en: "Article Detail Search Hide", ja: "記事詳細の検索バー非表示" },
+      desc: {
+        zh: "阅读文章详情时隐藏知识库搜索条，避免搜索控件占用阅读区顶部空间",
+        en: "Article detail pages now hide the knowledge search bar so reading space stays focused",
+        ja: "記事詳細では知識庫検索バーを隠し、読書スペースをすっきり保ちます"
+      }
+    },
+    {
       icon: "🔗",
       date: "2026.06.18",
       title: { zh: "语言链接参数同步", en: "Language URL Sync", ja: "言語URL同期" },

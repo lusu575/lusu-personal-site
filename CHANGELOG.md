@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 文章详情搜索条隐藏修复：
+  - 知识库文章详情页会真正隐藏顶部搜索条，避免阅读文章时出现与当前详情无关的搜索控件。
+  - 为 `.knowledge-searchbar[hidden]`、`.content-list[hidden]` 和 `.article-detail[hidden]` 补充明确 `display: none` 规则，防止组件自身 display 样式覆盖 HTML `hidden` 状态。
+  - 更新 `index.html` 的 CSS / JS query 为 `20260618-article-detail-search-hide`，并新增同名三语 `site-updates` 更新文章，同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新。
 - 语言链接参数同步：
   - 用户点击中文 / English / 日本語 语言按钮后，地址栏 `lang=` 参数会同步更新为当前语言，复制当前页面链接时不再带旧语言。
   - 主站路由跳转会保留当前查询参数并刷新 `lang=`，文章详情、知识库、视频区、聊天室、游戏区等公开页面继续沿用当前语言上下文。

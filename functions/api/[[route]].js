@@ -4371,6 +4371,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-18-article-detail-search-hide',
+        '2026-06-18-article-detail-search-hide',
+        'site-updates',
+        '["网站更新","知识库","文章详情","阅读体验"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T16:50:00.000Z',
+        '2026-06-17T16:50:00.000Z',
+        '2026-06-17T16:50:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -4713,6 +4740,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# 言語URL同期\n\n今回の更新では、三言語を切り替えた後もアドレスバーと表示言語がずれないようにしました。\n\n## 更新内容\n\n- 中文 / English / 日本語 の言語ボタンを押すと、アドレスバーの `lang=` パラメータも現在の言語に更新します。\n- 公開ページのルート移動では現在のクエリパラメータを保ちつつ `lang=` を更新し、コピーしたリンクが古い言語を持たないようにしました。\n- 言語切り替えは `replaceState` で現在の URL だけを更新し、余分な履歴を増やしません。\n- 知識庫の記事、動画欄、チャット、ゲーム入口は既存の公開描画ロジックを使い、管理 API には触れていません。"
       }
     }, "2026-06-17T16:41:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-article-detail-search-hide", {
+      zh: {
+        title: "文章详情搜索条隐藏修复",
+        summary: "知识库文章详情页会隐藏顶部搜索条，让阅读区更专注。",
+        content_markdown: "# 文章详情搜索条隐藏修复\n\n本次更新修正了知识库文章详情页顶部仍显示搜索条的问题，让阅读页更像独立文章窗口。\n\n## 更新内容\n\n- 打开文章详情或文章直链时，知识库搜索条会真正隐藏，不再占用详情顶部空间。\n- 为 `.knowledge-searchbar[hidden]`、`.content-list[hidden]` 和 `.article-detail[hidden]` 补充明确隐藏规则，避免组件 display 样式覆盖 HTML `hidden` 状态。\n- 返回文章列表后，搜索条会按原逻辑恢复，知识库本地搜索功能不受影响。\n- 只调整公开主站 CSS 和更新记录，不触碰后台目录或管理接口。"
+      },
+      en: {
+        title: "Article Detail Search Hide",
+        summary: "Knowledge article detail pages now hide the top search bar so the reading area stays focused.",
+        content_markdown: "# Article Detail Search Hide\n\nThis update fixes the knowledge article detail view so the search bar no longer stays visible above the article body.\n\n## Changes\n\n- Opening an article detail page or deep link now fully hides the knowledge search bar.\n- Explicit hidden-state rules were added for `.knowledge-searchbar[hidden]`, `.content-list[hidden]`, and `.article-detail[hidden]` so component display styles cannot override HTML `hidden` state.\n- Returning to the article list restores the search bar through the existing logic, so local knowledge search still works.\n- Only the public site CSS and update records changed; admin folders and admin APIs were not touched."
+      },
+      ja: {
+        title: "記事詳細の検索バー非表示",
+        summary: "知識庫の記事詳細では上部検索バーを隠し、読みやすい表示にしました。",
+        content_markdown: "# 記事詳細の検索バー非表示\n\n今回の更新では、知識庫の記事詳細で検索バーが本文の上に残ってしまう表示を修正しました。\n\n## 更新内容\n\n- 記事詳細または記事直リンクを開いたとき、知識庫検索バーを完全に非表示にします。\n- `.knowledge-searchbar[hidden]`、`.content-list[hidden]`、`.article-detail[hidden]` に明示的な非表示ルールを追加し、コンポーネント側の display 指定が HTML の `hidden` 状態を上書きしないようにしました。\n- 記事一覧へ戻ると既存ロジックで検索バーが復帰し、知識庫のローカル検索はそのまま使えます。\n- 公開側の CSS と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。"
+      }
+    }, "2026-06-17T16:50:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')
