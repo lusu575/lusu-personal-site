@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 最近更新安全渲染：
+  - 首页“最近更新”列表从字符串 `innerHTML` 拼接改为 DOM / `textContent` 构建，标题、摘要、日期和图标都按纯文本节点渲染。
+  - 文章直链、`site-updates` 工具图标、本地 fallback 图标和最近更新日期逻辑保持不变。
+  - 更新 `index.html` 的 JS query 为 `20260618-recent-updates-safe-dom`，并新增同名三语 `site-updates` 更新文章。
 - 最近更新图标优化：
   - 首页“最近更新”列表从文章 API 读取 `site-updates` 时，会显示更贴近网站更新的工具图标，不再把所有 API 文章都显示成书本图标。
   - 本地 fallback 最近更新继续保留各自图标；普通文章仍回退为书本图标。

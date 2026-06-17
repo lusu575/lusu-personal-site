@@ -4803,6 +4803,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-18-recent-updates-safe-dom',
+        '2026-06-18-recent-updates-safe-dom',
+        'site-updates',
+        '["网站更新","首页","最近更新","安全"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T18:40:00.000Z',
+        '2026-06-17T18:40:00.000Z',
+        '2026-06-17T18:40:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -5417,6 +5444,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# 最近更新アイコンを調整\n\n今回の更新では、ホームの「最近更新」リストをサイト更新ウィンドウらしく整えました。記事 API から読み込んだサイト更新記録は、すべて本アイコンになるのではなく、ツールアイコンで表示します。\n\n## 更新内容\n\n- `site-updates` の記事はホームの最近更新リストでツールアイコンを使い、通常の記事は引き続き本アイコンに戻ります。\n- ローカル fallback の最近更新は各項目のアイコンを保ち、オフライン時や API 失敗時の表示も変えません。\n- タイトル、概要、日付、記事直リンクの動作はそのままで、公開ホームの視覚ヒントと更新記録だけを調整しました。\n- 管理画面ディレクトリや管理 API には触れていません。"
       }
     }, "2026-06-17T18:25:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-recent-updates-safe-dom", {
+      zh: {
+        title: "最近更新安全渲染",
+        summary: "首页最近更新列表改为 DOM/textContent 构建。",
+        content_markdown: "# 最近更新安全渲染\n\n本次更新把首页“最近更新”列表从字符串拼接改为 DOM / `textContent` 构建，让公开更新记录继续以纯文本方式渲染。\n\n## 更新内容\n\n- 最近更新的标题、摘要、日期和图标都改为 DOM 节点与文本节点输出，不再用模板字符串 `innerHTML` 组装列表。\n- `site-updates` 工具图标、普通文章书本图标、本地 fallback 图标和文章直链行为保持不变。\n- 列表仍显示最新 5 条站点更新；接口失败时仍回退到本地最近更新。\n- 本轮只调整公开首页最近更新列表和更新记录，不触碰后台目录或管理接口。"
+      },
+      en: {
+        title: "Recent Updates Safe DOM",
+        summary: "The home recent-update list now renders through DOM/textContent.",
+        content_markdown: "# Recent Updates Safe DOM\n\nThis update changes the home Recent Updates list from string-built markup to DOM / `textContent` construction, keeping public update records rendered as plain text.\n\n## Changes\n\n- Recent-update titles, summaries, dates, and icons now render through DOM nodes and text nodes instead of template-string `innerHTML`.\n- The `site-updates` tool icon, regular article book fallback, local fallback icons, and article deep links are unchanged.\n- The list still shows the latest five site updates and still falls back to local updates if the API fails.\n- Only the public home Recent Updates list and update records changed; admin folders and admin APIs were not touched."
+      },
+      ja: {
+        title: "最近更新の安全な DOM 描画",
+        summary: "ホームの最近更新リストを DOM/textContent 構築にしました。",
+        content_markdown: "# 最近更新の安全な DOM 描画\n\n今回の更新では、ホームの「最近更新」リストを文字列連結から DOM / `textContent` 構築へ変更し、公開更新記録を純テキストとして描画し続けます。\n\n## 更新内容\n\n- 最近更新のタイトル、概要、日付、アイコンはテンプレート文字列の `innerHTML` ではなく、DOM ノードとテキストノードで出力します。\n- `site-updates` のツールアイコン、通常記事の本アイコン fallback、ローカル fallback アイコン、記事直リンクの動作は変えていません。\n- リストは引き続き最新 5 件のサイト更新を表示し、API 失敗時はローカル最近更新へ戻ります。\n- 公開ホームの最近更新リストと更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。"
+      }
+    }, "2026-06-17T18:40:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')

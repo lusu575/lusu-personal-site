@@ -438,6 +438,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "🛡️",
+      date: "2026.06.18",
+      title: { zh: "最近更新安全渲染", en: "Recent Updates Safe DOM", ja: "最近更新の安全な DOM 描画" },
+      desc: {
+        zh: "首页最近更新列表改为 DOM/textContent 构建，标题、摘要、日期和图标都按纯文本渲染",
+        en: "The home recent-update list now renders through DOM/textContent for titles, summaries, dates, and icons",
+        ja: "ホームの最近更新リストを DOM/textContent 構築にし、タイトル、概要、日付、アイコンを純テキストで描画します"
+      }
+    },
+    {
       icon: "🛠️",
       date: "2026.06.18",
       title: { zh: "最近更新图标优化", en: "Recent Update Icons", ja: "最近更新アイコンを調整" },
@@ -2330,20 +2340,50 @@ function renderUpdates() {
     ? siteUpdateArticles().slice(0, 5)
     : content.updates.slice(0, 5);
   if (!updateArticles.length) {
-    list.innerHTML = `<li><span class="update-icon">📚</span><span><strong>${t("articleLoading")}</strong><small>${t("articleEmpty")}</small></span></li>`;
+    const emptyItem = document.createElement("li");
+    const icon = document.createElement("span");
+    icon.className = "update-icon";
+    icon.textContent = "📚";
+    const copy = document.createElement("span");
+    const title = document.createElement("strong");
+    title.textContent = t("articleLoading");
+    const detail = document.createElement("small");
+    detail.textContent = t("articleEmpty");
+    copy.append(title, detail);
+    emptyItem.append(icon, copy);
+    list.replaceChildren(emptyItem);
     return;
   }
-  list.innerHTML = updateArticles.map((item) => `
-    <li>
-      <a class="recent-update-link"${item.slug ? ` href="${escapeHtml(articleRoutePath(item.slug))}" data-article-slug="${escapeHtml(item.slug)}"` : ' href="/#knowledge"'}>
-        <span class="update-icon">${escapeHtml(recentUpdateIcon(item))}</span>
-        <span>
-          <strong>${escapeHtml(truncateText(localText(item.title), 28))}</strong>
-          <small>${escapeHtml(truncateText(item.summary || localText(item.desc) || "", 52))}<br>${escapeHtml(formatArticleDate(item.published_at || item.created_at || item.date))}</small>
-        </span>
-      </a>
-    </li>
-  `).join("");
+  list.replaceChildren(...updateArticles.map((item) => recentUpdateElement(item)));
+}
+
+function recentUpdateElement(item) {
+  const row = document.createElement("li");
+  const link = document.createElement("a");
+  link.className = "recent-update-link";
+  if (item.slug) {
+    link.href = articleRoutePath(item.slug);
+    link.dataset.articleSlug = item.slug;
+  } else {
+    link.href = "/#knowledge";
+  }
+
+  const icon = document.createElement("span");
+  icon.className = "update-icon";
+  icon.textContent = recentUpdateIcon(item);
+
+  const copy = document.createElement("span");
+  const title = document.createElement("strong");
+  title.textContent = truncateText(localText(item.title), 28);
+  const detail = document.createElement("small");
+  detail.append(document.createTextNode(truncateText(item.summary || localText(item.desc) || "", 52)));
+  detail.appendChild(document.createElement("br"));
+  detail.append(document.createTextNode(formatArticleDate(item.published_at || item.created_at || item.date)));
+
+  copy.append(title, detail);
+  link.append(icon, copy);
+  row.appendChild(link);
+  return row;
 }
 
 function recentUpdateIcon(item) {
