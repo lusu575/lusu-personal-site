@@ -4965,6 +4965,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-18-video-url-allowlist',
+        '2026-06-18-video-url-allowlist',
+        'site-updates',
+        '["网站更新","视频区","链接","安全"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T19:50:00.000Z',
+        '2026-06-17T19:50:00.000Z',
+        '2026-06-17T19:50:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -5681,6 +5708,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# ゲームリンク許可リスト\n\n今回の更新では、公開ゲーム欄をさらに引き締め、ゲーム入口リンクとカバー画像パスを描画前に許可リストで確認します。\n\n## 更新内容\n\n- ローカルゲーム入口は `games/catalog.json` の安全なディレクトリ名だけを受け付け、引き続き `/games/<entry>?lang=...` リンクを生成します。\n- 外部ゲームリンクとリポジトリリンクは `http(s)` のみ受け付け、無効な URL はページに出力しません。\n- ゲームカバーは `assets/images/` 配下の一般的な画像パスのみ受け付け、無効な場合はゲームアイコンへ戻します。\n- 既存 5 件のゲーム入口、iframe、クラウド保存同期、インポート/エクスポート動作は変更していません。"
       }
     }, "2026-06-17T19:35:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-video-url-allowlist", {
+      zh: {
+        title: "视频链接白名单",
+        summary: "视频缩略图、原地址和播放器 iframe 补充前端白名单。",
+        content_markdown: "# 视频链接白名单\n\n本次更新继续收紧公开主站视频区，让视频缩略图、原地址和播放器 iframe 在前端也经过白名单校验。\n\n## 更新内容\n\n- 视频卡片缩略图只接受 YouTube / Bilibili 图片域或后台上传的本地 `data:image` 封面。\n- “打开原地址”只接受 YouTube、Bilibili 和 b23 链接，无效 URL 会隐藏按钮。\n- 播放器 iframe 只接受 YouTube embed 或 Bilibili player 地址，无效 embed 会显示原有不支持提示。\n- 公开视频 API、后台视频管理、视频空状态和移动端布局保持不变。"
+      },
+      en: {
+        title: "Video Link Allowlist",
+        summary: "Video thumbnails, source links, and player iframes now have frontend allowlist checks.",
+        content_markdown: "# Video Link Allowlist\n\nThis update keeps tightening the public Videos area by validating video thumbnails, source links, and player iframes on the frontend too.\n\n## Changes\n\n- Video card thumbnails only accept YouTube / Bilibili image hosts or local `data:image` thumbnails uploaded through the admin flow.\n- Open Original only accepts YouTube, Bilibili, and b23 links; invalid URLs hide the button.\n- Player iframes only accept YouTube embed or Bilibili player URLs; invalid embeds fall back to the existing unsupported-video notice.\n- Public video APIs, admin video management, the empty video state, and mobile layout are unchanged."
+      },
+      ja: {
+        title: "動画リンク許可リスト",
+        summary: "動画サムネイル、元リンク、プレイヤー iframe にフロント側の許可リスト確認を追加しました。",
+        content_markdown: "# 動画リンク許可リスト\n\n今回の更新では、公開動画欄をさらに引き締め、動画サムネイル、元リンク、プレイヤー iframe をフロント側でも許可リストで確認します。\n\n## 更新内容\n\n- 動画カードのサムネイルは YouTube / Bilibili の画像ホスト、または管理画面でアップロードされたローカル `data:image` 封面だけを受け付けます。\n- 「元のページを開く」は YouTube、Bilibili、b23 リンクだけを受け付け、無効な URL ではボタンを隠します。\n- プレイヤー iframe は YouTube embed または Bilibili player の URL だけを受け付け、無効な embed は既存の未対応表示へ戻します。\n- 公開動画 API、管理画面の動画管理、動画空状態、モバイル表示は変更していません。"
+      }
+    }, "2026-06-17T19:50:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')

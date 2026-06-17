@@ -2402,6 +2402,32 @@ on conflict(article_id) do update set
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
 
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-video-url-allowlist',
+  '2026-06-18-video-url-allowlist',
+  'site-updates',
+  '["网站更新","视频区","链接","安全"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T19:50:00.000Z',
+  '2026-06-17T19:50:00.000Z',
+  '2026-06-17T19:50:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
@@ -2435,6 +2461,45 @@ This update keeps tightening the public Knowledge area by changing category filt
 - `data-filter`、`data-filter-type`、active 状態、クリック絞り込み動作は変えていません。
 - 前回の記事カード DOM 描画と合わせて、知識庫リストとフィルター操作は記事/カテゴリ文字列の組み立て出力に依存しなくなりました。
 - 公開知識庫フィルターと更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T18:55:00.000Z', '2026-06-17T18:55:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-video-url-allowlist-zh', 'seed-update-2026-06-18-video-url-allowlist', 'zh', '视频链接白名单', '视频缩略图、原地址和播放器 iframe 补充前端白名单。', '# 视频链接白名单
+
+本次更新继续收紧公开主站视频区，让视频缩略图、原地址和播放器 iframe 在前端也经过白名单校验。
+
+## 更新内容
+
+- 视频卡片缩略图只接受 YouTube / Bilibili 图片域或后台上传的本地 `data:image` 封面。
+- “打开原地址”只接受 YouTube、Bilibili 和 b23 链接，无效 URL 会隐藏按钮。
+- 播放器 iframe 只接受 YouTube embed 或 Bilibili player 地址，无效 embed 会显示原有不支持提示。
+- 公开视频 API、后台视频管理、视频空状态和移动端布局保持不变。', '2026-06-17T19:50:00.000Z', '2026-06-17T19:50:00.000Z'),
+  ('seed-update-2026-06-18-video-url-allowlist-en', 'seed-update-2026-06-18-video-url-allowlist', 'en', 'Video Link Allowlist', 'Video thumbnails, source links, and player iframes now have frontend allowlist checks.', '# Video Link Allowlist
+
+This update keeps tightening the public Videos area by validating video thumbnails, source links, and player iframes on the frontend too.
+
+## Changes
+
+- Video card thumbnails only accept YouTube / Bilibili image hosts or local `data:image` thumbnails uploaded through the admin flow.
+- Open Original only accepts YouTube, Bilibili, and b23 links; invalid URLs hide the button.
+- Player iframes only accept YouTube embed or Bilibili player URLs; invalid embeds fall back to the existing unsupported-video notice.
+- Public video APIs, admin video management, the empty video state, and mobile layout are unchanged.', '2026-06-17T19:50:00.000Z', '2026-06-17T19:50:00.000Z'),
+  ('seed-update-2026-06-18-video-url-allowlist-ja', 'seed-update-2026-06-18-video-url-allowlist', 'ja', '動画リンク許可リスト', '動画サムネイル、元リンク、プレイヤー iframe にフロント側の許可リスト確認を追加しました。', '# 動画リンク許可リスト
+
+今回の更新では、公開動画欄をさらに引き締め、動画サムネイル、元リンク、プレイヤー iframe をフロント側でも許可リストで確認します。
+
+## 更新内容
+
+- 動画カードのサムネイルは YouTube / Bilibili の画像ホスト、または管理画面でアップロードされたローカル `data:image` 封面だけを受け付けます。
+- 「元のページを開く」は YouTube、Bilibili、b23 リンクだけを受け付け、無効な URL ではボタンを隠します。
+- プレイヤー iframe は YouTube embed または Bilibili player の URL だけを受け付け、無効な embed は既存の未対応表示へ戻します。
+- 公開動画 API、管理画面の動画管理、動画空状態、モバイル表示は変更していません。', '2026-06-17T19:50:00.000Z', '2026-06-17T19:50:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,

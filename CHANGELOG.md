@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 视频链接白名单：
+  - 公开视频卡片缩略图在前端补充域名白名单，只接受 YouTube / Bilibili 图片域或本地 `data:image` 封面。
+  - 播放窗口的“打开原地址”和 iframe `src` 也补充前端校验：原地址只接受 YouTube / Bilibili / b23，embed 只接受 YouTube embed 或 Bilibili player。
+  - 更新 `index.html` 的 JS query 为 `20260618-video-url-allowlist`，并新增同名三语 `site-updates` 更新文章。
 - 游戏链接白名单：
   - 游戏列表入口 URL 补充白名单校验：本地入口只接受 `games/catalog.json` 中的安全目录名，外部链接和仓库链接只接受 `http(s)`。
   - 游戏封面只接受 `assets/images/` 下的常见图片路径；无效封面回退到游戏图标，无效入口显示禁用按钮，不输出不可信链接。

@@ -438,6 +438,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "🎞️",
+      date: "2026.06.18",
+      title: { zh: "视频链接白名单", en: "Video Link Allowlist", ja: "動画リンク許可リスト" },
+      desc: {
+        zh: "视频缩略图、原地址和播放器 iframe 在前端也会经过域名白名单校验",
+        en: "Video thumbnails, source links, and player iframes now pass frontend domain allowlist checks",
+        ja: "動画サムネイル、元リンク、プレイヤー iframe にフロント側のドメイン許可リストを追加しました"
+      }
+    },
+    {
       icon: "🔗",
       date: "2026.06.18",
       title: { zh: "游戏链接白名单", en: "Game Link Allowlist", ja: "ゲームリンク許可リスト" },
@@ -2208,9 +2218,10 @@ function videoCardElement(item) {
   thumb.className = "video-thumb";
   thumb.dataset.videoId = item.video_id;
   thumb.setAttribute("aria-label", videoUiText("playAria"));
-  if (item.thumbnail_url) {
+  const thumbnailUrl = safeVideoThumbnailSrc(item.thumbnail_url);
+  if (thumbnailUrl) {
     const image = document.createElement("img");
-    image.src = item.thumbnail_url;
+    image.src = thumbnailUrl;
     image.alt = "";
     image.loading = "lazy";
     image.decoding = "async";
@@ -2250,26 +2261,86 @@ function videoCardElement(item) {
   return card;
 }
 
-function videoAutoplayUrl(src) {
-  try {
-    const url = new URL(src);
-    if (url.hostname.includes("youtube.com")) {
-      url.searchParams.set("autoplay", "1");
-      url.searchParams.set("playsinline", "1");
-      url.searchParams.set("rel", "0");
-      url.searchParams.set("modestbranding", "1");
-      url.searchParams.set("iv_load_policy", "3");
-    }
-    if (url.hostname.includes("bilibili.com")) {
-      url.searchParams.set("autoplay", "1");
-      url.searchParams.set("high_quality", "1");
-      url.searchParams.set("as_wide", "1");
-      url.searchParams.set("danmaku", "0");
-    }
-    return url.toString();
-  } catch {
-    return src;
+function safeVideoThumbnailSrc(src) {
+  const value = String(src || "").trim();
+  if (!value) {
+    return "";
   }
+  if (/^data:image\/(avif|jpe?g|png|webp);base64,[A-Za-z0-9+/]+={0,2}$/i.test(value)) {
+    return value;
+  }
+  try {
+    const url = new URL(value);
+    const host = url.hostname.toLowerCase().replace(/^www\./, "");
+    const allowed = new Set([
+      "i.ytimg.com",
+      "img.youtube.com",
+      "i0.hdslb.com",
+      "i1.hdslb.com",
+      "i2.hdslb.com",
+      "archive.biliimg.com"
+    ]);
+    return url.protocol === "https:" && allowed.has(host) ? url.toString() : "";
+  } catch (error) {
+    return "";
+  }
+}
+
+function safeVideoSourceUrl(src) {
+  const url = safeHttpUrl(src);
+  if (!url) {
+    return "";
+  }
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname.toLowerCase().replace(/^www\./, "");
+    return host === "youtube.com"
+      || host === "youtu.be"
+      || host === "bilibili.com"
+      || host.endsWith(".bilibili.com")
+      || host === "b23.tv"
+      ? parsed.toString()
+      : "";
+  } catch (error) {
+    return "";
+  }
+}
+
+function safeVideoEmbedUrl(src) {
+  const url = safeHttpUrl(src);
+  if (!url) {
+    return null;
+  }
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname.toLowerCase().replace(/^www\./, "");
+    const isYoutube = host === "youtube.com" && parsed.pathname.startsWith("/embed/");
+    const isBilibili = host === "player.bilibili.com" && parsed.pathname === "/player.html";
+    return isYoutube || isBilibili ? parsed : null;
+  } catch (error) {
+    return null;
+  }
+}
+
+function videoAutoplayUrl(src) {
+  const url = safeVideoEmbedUrl(src);
+  if (!url) {
+    return "";
+  }
+  if (url.hostname.toLowerCase().includes("youtube.com")) {
+    url.searchParams.set("autoplay", "1");
+    url.searchParams.set("playsinline", "1");
+    url.searchParams.set("rel", "0");
+    url.searchParams.set("modestbranding", "1");
+    url.searchParams.set("iv_load_policy", "3");
+  }
+  if (url.hostname.toLowerCase().includes("bilibili.com")) {
+    url.searchParams.set("autoplay", "1");
+    url.searchParams.set("high_quality", "1");
+    url.searchParams.set("as_wide", "1");
+    url.searchParams.set("danmaku", "0");
+  }
+  return url.toString();
 }
 
 function videoClickShield() {
@@ -2610,7 +2681,7 @@ function openVideo(index) {
   const videoTitle = localText(video.title) || "Video Player";
   document.getElementById("modal-title").textContent = videoTitle;
   if (sourceLink) {
-    const originalUrl = video.original_url || video.url || "";
+    const originalUrl = safeVideoSourceUrl(video.original_url || video.url || "");
     if (originalUrl) {
       sourceLink.href = originalUrl;
       sourceLink.target = "_blank";
@@ -2621,11 +2692,12 @@ function openVideo(index) {
       sourceLink.removeAttribute("href");
     }
   }
-  if (video.embed_url) {
+  const embedUrl = videoAutoplayUrl(video.embed_url);
+  if (embedUrl) {
     const shell = document.createElement("div");
     shell.className = "video-embed-shell";
     const iframe = document.createElement("iframe");
-    iframe.src = videoAutoplayUrl(video.embed_url);
+    iframe.src = embedUrl;
     iframe.title = videoTitle;
     iframe.loading = "lazy";
     iframe.allow = "autoplay; fullscreen; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
