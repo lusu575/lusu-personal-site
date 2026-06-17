@@ -72,6 +72,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "账号详情列表渲染安全优化",
+    body: "账号管理的登录履历、近期活跃和会话状态改用 DOM API 写入，避免登录来源、路径或设备摘要被误当作 HTML。"
+  },
+  {
+    date: "2026-06-18",
     title: "账号列表渲染安全优化",
     body: "账号管理列表的邮箱、角色、密码状态、活跃会话和登录摘要改用 DOM API 写入，避免账号字段被误当作 HTML。"
   },
@@ -2161,38 +2166,58 @@ function syncAccountSaveButton() {
   }
 }
 
+function createEventItemElement(titleText, detailTexts) {
+  const item = document.createElement("article");
+  const title = document.createElement("strong");
+  item.className = "event-item";
+  title.textContent = titleText;
+  item.append(title);
+  detailTexts.forEach((text) => {
+    const detail = document.createElement("small");
+    detail.textContent = text;
+    item.append(detail);
+  });
+  return item;
+}
+
+function renderEventList(selector, items, emptyText, createItem) {
+  const box = $(selector);
+  if (!items.length) {
+    box.replaceChildren(createEmptyStateElement(emptyText));
+    return;
+  }
+  box.replaceChildren(...items.map(createItem));
+}
+
 function renderAccountDetail() {
   const detail = state.accountDetail;
   if (!detail) {
-    $("#login-history").innerHTML = emptyState("选择账号后查看登录履历。");
-    $("#account-activity").innerHTML = emptyState("选择账号后查看近期活跃。");
-    $("#account-sessions").innerHTML = emptyState("选择账号后查看会话状态。");
+    renderEventList("#login-history", [], "选择账号后查看登录履历。", () => null);
+    renderEventList("#account-activity", [], "选择账号后查看近期活跃。", () => null);
+    renderEventList("#account-sessions", [], "选择账号后查看会话状态。", () => null);
     return;
   }
 
-  $("#login-history").innerHTML = (detail.loginHistory || []).map((event) => `
-    <article class="event-item">
-      <strong>${escapeHtml(loginEventLabel(event.event_type))}</strong>
-      <small>${formatTime(event.created_at)} · ${escapeHtml(locationText(event))}</small>
-      <small>IP 来源：${escapeHtml(event.ip_prefix || "未记录")} · 设备：${escapeHtml(shortUserAgent(event.user_agent))}</small>
-    </article>
-  `).join("") || emptyState("这个账号还没有登录履历。");
+  renderEventList("#login-history", detail.loginHistory || [], "这个账号还没有登录履历。", (event) => (
+    createEventItemElement(loginEventLabel(event.event_type), [
+      `${formatTime(event.created_at)} · ${locationText(event)}`,
+      `IP 来源：${event.ip_prefix || "未记录"} · 设备：${shortUserAgent(event.user_agent)}`
+    ])
+  ));
 
-  $("#account-activity").innerHTML = (detail.activity || []).map((item) => `
-    <article class="event-item">
-      <strong>${escapeHtml(activityLabel(item))}</strong>
-      <small>${formatTime(item.created_at)} · ${escapeHtml(item.path || "")}</small>
-      <small>${escapeHtml([item.detail, item.route, locationText(item)].filter(Boolean).join(" · "))}</small>
-    </article>
-  `).join("") || emptyState("这个账号近期没有站内活跃记录。");
+  renderEventList("#account-activity", detail.activity || [], "这个账号近期没有站内活跃记录。", (item) => (
+    createEventItemElement(activityLabel(item), [
+      `${formatTime(item.created_at)} · ${item.path || ""}`,
+      [item.detail, item.route, locationText(item)].filter(Boolean).join(" · ")
+    ])
+  ));
 
-  $("#account-sessions").innerHTML = (detail.sessions || []).map((session) => `
-    <article class="event-item">
-      <strong>${escapeHtml(session.active ? "当前有效" : "已过期")}</strong>
-      <small>登录时间：${formatTime(session.created_at)}</small>
-      <small>到期时间：${formatTime(session.expires_at)}</small>
-    </article>
-  `).join("") || emptyState("这个账号没有会话记录。");
+  renderEventList("#account-sessions", detail.sessions || [], "这个账号没有会话记录。", (session) => (
+    createEventItemElement(session.active ? "当前有效" : "已过期", [
+      `登录时间：${formatTime(session.created_at)}`,
+      `到期时间：${formatTime(session.expires_at)}`
+    ])
+  ));
 }
 
 function loginEventLabel(type) {
