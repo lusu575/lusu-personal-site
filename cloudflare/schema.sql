@@ -698,6 +698,32 @@ on conflict(article_id) do update set
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
 
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-resource-actions',
+  '2026-06-18-resource-actions',
+  'site-updates',
+  '["网站更新","资源区","占位按钮","安全渲染"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T16:09:00.000Z',
+  '2026-06-17T16:09:00.000Z',
+  '2026-06-17T16:09:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
@@ -2395,6 +2421,48 @@ This update fixes the first-visit experience for article detail URLs so deep lin
 - ホームの初回訪問では、快捷入口と最近の更新を案内する歓迎ウィンドウを引き続き表示します。
 - `?welcome=0` は引き続き歓迎ウィンドウを無効化し、`?welcome=1` で明示的に表示できます。
 - 記事詳細、検索、動画欄、チャット、ゲーム区のルート処理はそのままです。', '2026-06-17T16:02:00.000Z', '2026-06-17T16:02:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-resource-actions-zh', 'seed-update-2026-06-18-resource-actions', 'zh', '资源区占位按钮修复', '资源区没有真实下载或外链时显示准备中按钮，不再使用无效 # 链接。', '# 资源区占位按钮修复
+
+本次更新整理了主站资源区的占位卡片，让还没有真实下载或外链的资源不会表现得像可点击链接。
+
+## 更新内容
+
+- 资源卡片没有真实 URL 时，动作按钮显示“准备中”并进入禁用态。
+- 后续资源配置补上真实 `http(s)`、`assets/` 或 `downloads/` 地址后，仍会显示下载或外链按钮。
+- 资源卡片改为使用 DOM 和 `textContent` 构建，减少未来接入动态资源数据时的 XSS 风险。
+- 右上角最近更新日期改为按用户本地日期计算，避免北京时间 00:00 后发布的更新仍显示前一天。
+- 中文、English、日本語 的按钮文案和移动端布局同步维护。', '2026-06-17T16:09:00.000Z', '2026-06-17T16:09:00.000Z'),
+  ('seed-update-2026-06-18-resource-actions-en', 'seed-update-2026-06-18-resource-actions', 'en', 'Resource Placeholder Buttons', 'Resource cards without real download or external URLs now show a coming-soon button instead of a dead # link.', '# Resource Placeholder Buttons
+
+This update tidies the public resources area so placeholder cards without real downloads or external URLs no longer behave like clickable dead links.
+
+## Changes
+
+- Resource cards without a real URL now show a disabled coming-soon action.
+- When a future resource gets a real `http(s)`, `assets/`, or `downloads/` URL, the card still renders a download or external-link button.
+- Resource cards now render through DOM nodes and `textContent`, reducing XSS risk if resource data becomes dynamic later.
+- The top-right latest update date now uses the local date, so updates published after midnight in China no longer show the previous UTC day.
+- Chinese, English, and Japanese button text and mobile layout behavior are maintained together.', '2026-06-17T16:09:00.000Z', '2026-06-17T16:09:00.000Z'),
+  ('seed-update-2026-06-18-resource-actions-ja', 'seed-update-2026-06-18-resource-actions', 'ja', 'リソース準備中ボタン', '実際のダウンロードや外部リンクがないリソースは、無効な # リンクではなく準備中ボタンを表示します。', '# リソース準備中ボタン
+
+今回の更新では、公開側のリソース欄を整理し、実際のダウンロードや外部リンクがないカードが無効なリンクのように見えないようにしました。
+
+## 更新内容
+
+- 実際の URL がないリソースカードは、「準備中」の無効ボタンを表示します。
+- 今後 `http(s)`、`assets/`、`downloads/` の実リンクを設定すると、ダウンロードまたは外部リンクボタンとして表示されます。
+- リソースカードは DOM と `textContent` で構築するようにし、将来リソースデータを動的化する場合の XSS リスクを下げました。
+- 右上の最新更新日は閲覧者のローカル日付で計算し、中国時間 00:00 以降の更新が UTC の前日表示にならないようにしました。
+- 中文、English、日本語 のボタン文言とモバイル表示を合わせて維持しています。', '2026-06-17T16:09:00.000Z', '2026-06-17T16:09:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,

@@ -57,6 +57,7 @@ const translations = {
     openGameButton: "打开",
     downloadButton: "下载",
     externalButton: "外部链接",
+    resourcePending: "准备中",
     openOriginal: "打开原地址",
     videoFullscreen: "全屏",
     videoRestore: "还原",
@@ -168,6 +169,7 @@ const translations = {
     openGameButton: "Open",
     downloadButton: "Download",
     externalButton: "External Link",
+    resourcePending: "Coming soon",
     openOriginal: "Open Original",
     videoFullscreen: "Full screen",
     videoRestore: "Restore",
@@ -279,6 +281,7 @@ const translations = {
     openGameButton: "開く",
     downloadButton: "ダウンロード",
     externalButton: "外部リンク",
+    resourcePending: "準備中",
     openOriginal: "元のページを開く",
     videoFullscreen: "全画面",
     videoRestore: "元に戻す",
@@ -371,6 +374,16 @@ const labels = {
 
 const content = {
   updates: [
+    {
+      icon: "📦",
+      date: "2026.06.18",
+      title: { zh: "资源区占位按钮修复", en: "Resource Placeholder Buttons", ja: "リソース準備中ボタン" },
+      desc: {
+        zh: "资源区没有真实下载或外链时显示准备中按钮，不再使用无效 # 链接",
+        en: "Resource cards without real download or external URLs now show a coming-soon button instead of a dead # link",
+        ja: "実際のダウンロードや外部リンクがないリソースは、無効な # リンクではなく準備中ボタンを表示します"
+      }
+    },
     {
       icon: "🪟",
       date: "2026.06.17",
@@ -1423,6 +1436,23 @@ function formatArticleDate(value) {
   return formatZonedDateTime(value, { includeDate: true, includeTimeZone: false });
 }
 
+function formatLocalDateKey(value) {
+  const normalizedValue = normalizeDateInput(value);
+  const date = new Date(normalizedValue);
+  if (Number.isNaN(date.getTime())) {
+    return String(value || "").slice(0, 10).replace(/-/g, ".");
+  }
+  const parts = new Intl.DateTimeFormat(undefined, {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).formatToParts(date).reduce((result, part) => {
+    result[part.type] = part.value;
+    return result;
+  }, {});
+  return `${parts.year}.${parts.month}.${parts.day}`;
+}
+
 function renderMarkdownSafe(target, markdown) {
   target.replaceChildren();
   const lines = String(markdown || "").replace(/\r\n/g, "\n").split("\n");
@@ -1776,26 +1806,85 @@ function videoUiText(key) {
   return copy[key]?.[currentLang] || copy[key]?.zh || key;
 }
 
+function safeResourceUrl(item) {
+  const value = String(item.url || item.href || item.downloadUrl || "").trim();
+  if (!value) {
+    return "";
+  }
+  if (/^https?:\/\//i.test(value)) {
+    return value;
+  }
+  if (/^\/?(assets|downloads)\//i.test(value)) {
+    return sitePath(value);
+  }
+  return "";
+}
+
+function resourceActionElement(item) {
+  const url = safeResourceUrl(item);
+  const text = url
+    ? item.external ? t("externalButton") : t("downloadButton")
+    : t("resourcePending");
+  if (!url) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "card-action is-disabled";
+    button.disabled = true;
+    button.textContent = text;
+    return button;
+  }
+  const link = document.createElement("a");
+  link.className = "card-action";
+  link.href = url;
+  link.textContent = text;
+  if (item.external || /^https?:\/\//i.test(url)) {
+    link.target = "_blank";
+    link.rel = "noreferrer noopener";
+  }
+  return link;
+}
+
+function resourceCardElement(item) {
+  const card = document.createElement("article");
+  card.className = "resource-card";
+
+  const main = document.createElement("div");
+  main.className = "resource-main";
+
+  const title = document.createElement("h3");
+  const icon = document.createElement("span");
+  icon.className = "resource-icon";
+  icon.textContent = item.icon || "";
+  title.append(icon, document.createTextNode(contentTitle(item.title)));
+
+  const desc = document.createElement("p");
+  desc.textContent = localText(item.desc);
+
+  const meta = document.createElement("div");
+  meta.className = "meta-row";
+  [
+    `${label("type")}：${label("resourceCategories")[item.category] || ""}`,
+    `${label("version")}：${item.version || ""}`,
+    `${label("size")}：${item.size || ""}`,
+    `${label("updated")}：${item.updated || ""}`
+  ].forEach((text) => {
+    const itemNode = document.createElement("span");
+    itemNode.textContent = text;
+    meta.appendChild(itemNode);
+  });
+
+  main.append(title, desc, meta);
+  card.append(main, resourceActionElement(item));
+  return card;
+}
+
 function renderResources() {
   renderCategoryButtons("resource-categories", "resources", label("resourceCategories"));
   const list = document.getElementById("resource-list");
   const items = content.resources.filter((item) => activeFilters.resources === "all" || String(item.category) === activeFilters.resources);
 
-  list.innerHTML = items.map((item) => `
-    <article class="resource-card">
-      <div class="resource-main">
-        <h3><span class="resource-icon">${item.icon}</span>${contentTitle(item.title)}</h3>
-        <p>${localText(item.desc)}</p>
-        <div class="meta-row">
-          <span>${label("type")}：${label("resourceCategories")[item.category]}</span>
-          <span>${label("version")}：${item.version}</span>
-          <span>${label("size")}：${item.size}</span>
-          <span>${label("updated")}：${item.updated}</span>
-        </div>
-      </div>
-      <a class="card-action" href="#" aria-label="${localText(item.title)}">${item.external ? t("externalButton") : t("downloadButton")}</a>
-    </article>
-  `).join("");
+  list.replaceChildren();
+  items.forEach((item) => list.appendChild(resourceCardElement(item)));
 }
 
 async function loadGameCatalog() {
@@ -1871,7 +1960,7 @@ function renderUpdates() {
 function latestUpdateDate() {
   const dates = siteUpdateArticles().length ? siteUpdateArticles() : content.updates;
   return dates.reduce((latest, item) => {
-    const date = String(item.published_at || item.created_at || item.date || "").slice(0, 10).replace(/-/g, ".");
+    const date = formatLocalDateKey(item.published_at || item.created_at || item.date);
     return date > latest ? date : latest;
   }, "");
 }

@@ -2,6 +2,14 @@
 
 本文件记录鲁肃个人站的功能、界面、后端、部署与项目约定变更。每次修改项目后都应同步更新这里，方便后续 AI / Codex 对话快速了解最近改动。
 
+## 2026-06-18
+
+- 资源区占位按钮修复：
+  - 资源区卡片没有真实下载地址或外部链接时，动作按钮改为三语“准备中 / Coming soon / 準備中”禁用态，不再输出会跳到页面顶部的 `href="#"`。
+  - 资源区卡片渲染从字符串拼接改为 DOM / `textContent` 构建，后续接入真实资源 URL 时降低 XSS 风险；真实 `http(s)` 或项目内 `assets/`、`downloads/` 地址仍会生成下载/外链按钮。
+  - 右上角“最近更新日期”改为按用户本地时区计算日期，避免北京时间 00:00 后发布的 UTC 文章仍显示前一天。
+  - 更新 `index.html` 的 CSS / JS query 为 `20260618-resource-actions`，并新增同名三语 `site-updates` 更新文章，同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新。
+
 ## 2026-06-17
 
 - 文章直链欢迎窗修复：

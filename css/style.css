@@ -1557,6 +1557,15 @@ main {
   text-align: center;
 }
 
+.card-action.is-disabled,
+.card-action:disabled {
+  color: #52647d;
+  background: linear-gradient(180deg, #f7f7f7 0%, #e2e6ec 48%, #c0c8d3 100%);
+  border-color: #8797ad;
+  box-shadow: inset 1px 1px 0 #fff;
+  filter: grayscale(0.2);
+}
+
 .platform {
   width: fit-content;
   height: 22px;
