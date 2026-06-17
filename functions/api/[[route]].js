@@ -4317,6 +4317,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-18-blog-placeholders',
+        '2026-06-18-blog-placeholders',
+        'site-updates',
+        '["网站更新","杂谈区","占位按钮","安全渲染"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T16:23:00.000Z',
+        '2026-06-17T16:23:00.000Z',
+        '2026-06-17T16:23:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -4625,6 +4652,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# ナビ現在状態を強化\n\n今回の更新では、XP デスクトップ風のナビゲーション表示を整え、現在開いているページを分かりやすくしました。\n\n## 更新内容\n\n- タスクバーのボタンは現在 route のハイライトを維持し、`aria-current=\"page\"` も同期します。\n- ホーム画面では Start ボタンに、より分かりやすい現在状態を表示します。\n- デスクトップアイコンは `aria-pressed` を同期し、キーボード操作や支援技術でも状態を把握しやすくしました。\n- ルート処理、記事直リンク、チャットの更新、動画ウィンドウ、ゲーム入口の動作はそのままです。"
       }
     }, "2026-06-17T16:18:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-blog-placeholders", {
+      zh: {
+        title: "杂谈区占位按钮修复",
+        summary: "杂谈区没有真实文章入口时显示整理中按钮，并改用安全 DOM 渲染。",
+        content_markdown: "# 杂谈区占位按钮修复\n\n本次更新整理了主站杂谈区的占位卡片，避免还没有文章详情时出现没有效果的阅读按钮。\n\n## 更新内容\n\n- 杂谈区卡片没有真实文章入口时，动作按钮显示“整理中”并进入禁用态。\n- 杂谈区卡片改为使用 DOM 和 `textContent` 构建，减少未来接入动态杂谈数据时的 XSS 风险。\n- 中文、English、日本語 的按钮文案同步维护。\n- 知识库文章系统、文章直链和现有首页导航行为保持不变。"
+      },
+      en: {
+        title: "Talk Placeholder Buttons",
+        summary: "Talk cards without article targets now show a drafting button and render through safe DOM nodes.",
+        content_markdown: "# Talk Placeholder Buttons\n\nThis update tidies the public Talk area so placeholder cards without article detail targets no longer show a read button that does nothing.\n\n## Changes\n\n- Talk cards without a real article target now show a disabled drafting action.\n- Talk cards now render through DOM nodes and `textContent`, reducing XSS risk if talk data becomes dynamic later.\n- Chinese, English, and Japanese button text are maintained together.\n- The knowledge article system, article deep links, and existing home navigation behavior are unchanged."
+      },
+      ja: {
+        title: "雑談の準備中ボタン",
+        summary: "実際の記事リンクがない雑談カードは準備中ボタンを表示し、安全な DOM 描画にしました。",
+        content_markdown: "# 雑談の準備中ボタン\n\n今回の更新では、公開側の雑談欄を整理し、記事詳細がまだないカードに効果のない読むボタンを出さないようにしました。\n\n## 更新内容\n\n- 実際の記事入口がない雑談カードは、「準備中」の無効ボタンを表示します。\n- 雑談カードは DOM と `textContent` で構築するようにし、将来データを動的化する場合の XSS リスクを下げました。\n- 中文、English、日本語 のボタン文言を合わせて維持しています。\n- 知識庫の記事システム、記事直リンク、既存のホームナビゲーション動作はそのままです。"
+      }
+    }, "2026-06-17T16:23:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')

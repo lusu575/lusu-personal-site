@@ -750,6 +750,32 @@ on conflict(article_id) do update set
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
 
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-blog-placeholders',
+  '2026-06-18-blog-placeholders',
+  'site-updates',
+  '["网站更新","杂谈区","占位按钮","安全渲染"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T16:23:00.000Z',
+  '2026-06-17T16:23:00.000Z',
+  '2026-06-17T16:23:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
@@ -2528,6 +2554,45 @@ This update refines the XP desktop navigation feedback so the currently open pag
 - ホーム画面では Start ボタンに、より分かりやすい現在状態を表示します。
 - デスクトップアイコンは `aria-pressed` を同期し、キーボード操作や支援技術でも状態を把握しやすくしました。
 - ルート処理、記事直リンク、チャットの更新、動画ウィンドウ、ゲーム入口の動作はそのままです。', '2026-06-17T16:18:00.000Z', '2026-06-17T16:18:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-blog-placeholders-zh', 'seed-update-2026-06-18-blog-placeholders', 'zh', '杂谈区占位按钮修复', '杂谈区没有真实文章入口时显示整理中按钮，并改用安全 DOM 渲染。', '# 杂谈区占位按钮修复
+
+本次更新整理了主站杂谈区的占位卡片，避免还没有文章详情时出现没有效果的阅读按钮。
+
+## 更新内容
+
+- 杂谈区卡片没有真实文章入口时，动作按钮显示“整理中”并进入禁用态。
+- 杂谈区卡片改为使用 DOM 和 `textContent` 构建，减少未来接入动态杂谈数据时的 XSS 风险。
+- 中文、English、日本語 的按钮文案同步维护。
+- 知识库文章系统、文章直链和现有首页导航行为保持不变。', '2026-06-17T16:23:00.000Z', '2026-06-17T16:23:00.000Z'),
+  ('seed-update-2026-06-18-blog-placeholders-en', 'seed-update-2026-06-18-blog-placeholders', 'en', 'Talk Placeholder Buttons', 'Talk cards without article targets now show a drafting button and render through safe DOM nodes.', '# Talk Placeholder Buttons
+
+This update tidies the public Talk area so placeholder cards without article detail targets no longer show a read button that does nothing.
+
+## Changes
+
+- Talk cards without a real article target now show a disabled drafting action.
+- Talk cards now render through DOM nodes and `textContent`, reducing XSS risk if talk data becomes dynamic later.
+- Chinese, English, and Japanese button text are maintained together.
+- The knowledge article system, article deep links, and existing home navigation behavior are unchanged.', '2026-06-17T16:23:00.000Z', '2026-06-17T16:23:00.000Z'),
+  ('seed-update-2026-06-18-blog-placeholders-ja', 'seed-update-2026-06-18-blog-placeholders', 'ja', '雑談の準備中ボタン', '実際の記事リンクがない雑談カードは準備中ボタンを表示し、安全な DOM 描画にしました。', '# 雑談の準備中ボタン
+
+今回の更新では、公開側の雑談欄を整理し、記事詳細がまだないカードに効果のない読むボタンを出さないようにしました。
+
+## 更新内容
+
+- 実際の記事入口がない雑談カードは、「準備中」の無効ボタンを表示します。
+- 雑談カードは DOM と `textContent` で構築するようにし、将来データを動的化する場合の XSS リスクを下げました。
+- 中文、English、日本語 のボタン文言を合わせて維持しています。
+- 知識庫の記事システム、記事直リンク、既存のホームナビゲーション動作はそのままです。', '2026-06-17T16:23:00.000Z', '2026-06-17T16:23:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,

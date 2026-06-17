@@ -4,6 +4,11 @@
 
 ## 2026-06-18
 
+- 杂谈区占位按钮修复：
+  - 杂谈区没有真实文章详情入口时，卡片动作从无功能“阅读”改为三语“整理中 / Drafting / 準備中”禁用态。
+  - 杂谈区卡片渲染从字符串拼接改为 DOM / `textContent` 构建，后续接入真实杂谈文章时降低 XSS 风险。
+  - 更新 `index.html` 的 JS query 为 `20260618-blog-placeholders`，并新增同名三语 `site-updates` 更新文章，同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新。
+
 - 导航当前态增强：
   - 底部任务栏按钮和首页 Start 按钮会根据当前 route 同步 `active` 样式，首页 Start 按钮获得更明确的按下态。
   - 当前任务栏 / Start 按钮同步 `aria-current="page"`；首页桌面图标同步 `aria-pressed`，增强键盘与辅助技术识别。

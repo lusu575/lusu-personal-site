@@ -52,6 +52,7 @@ const translations = {
     articleCategory: "分类",
     articleFallback: "当前语言版本缺失，已显示备用语言版本。",
     readButton: "阅读",
+    blogPending: "整理中",
     playButton: "播放",
     startGameButton: "开始",
     openGameButton: "打开",
@@ -164,6 +165,7 @@ const translations = {
     articleCategory: "Category",
     articleFallback: "This language is missing, so a fallback language is shown.",
     readButton: "Read",
+    blogPending: "Drafting",
     playButton: "Play",
     startGameButton: "Start",
     openGameButton: "Open",
@@ -276,6 +278,7 @@ const translations = {
     articleCategory: "分類",
     articleFallback: "この言語版がないため、別の言語版を表示しています。",
     readButton: "読む",
+    blogPending: "準備中",
     playButton: "再生",
     startGameButton: "開始",
     openGameButton: "開く",
@@ -374,6 +377,16 @@ const labels = {
 
 const content = {
   updates: [
+    {
+      icon: "📝",
+      date: "2026.06.18",
+      title: { zh: "杂谈区占位按钮修复", en: "Talk Placeholder Buttons", ja: "雑談の準備中ボタン" },
+      desc: {
+        zh: "杂谈区没有真实文章入口时显示整理中按钮，并改用安全 DOM 渲染",
+        en: "Talk cards without article targets now show a drafting button and render through safe DOM nodes",
+        ja: "実際の記事リンクがない雑談カードは準備中ボタンを表示し、安全な DOM 描画にしました"
+      }
+    },
     {
       icon: "🖱️",
       date: "2026.06.18",
@@ -1946,19 +1959,42 @@ async function renderGames() {
   }
 }
 
+function blogCardElement(item) {
+  const card = document.createElement("article");
+  card.className = "blog-card";
+
+  const title = document.createElement("h3");
+  title.textContent = contentTitle(item.title);
+
+  const desc = document.createElement("p");
+  desc.textContent = localText(item.desc);
+
+  const meta = document.createElement("div");
+  meta.className = "meta-row";
+  const date = document.createElement("span");
+  date.textContent = `${label("date")}：${item.date || ""}`;
+  meta.appendChild(date);
+  (item.tags || []).forEach((tag) => {
+    const tagNode = document.createElement("span");
+    tagNode.className = "tag";
+    tagNode.textContent = tag;
+    meta.appendChild(tagNode);
+  });
+
+  const action = document.createElement("button");
+  action.type = "button";
+  action.className = "card-action is-disabled";
+  action.disabled = true;
+  action.textContent = t("blogPending");
+
+  card.append(title, desc, meta, action);
+  return card;
+}
+
 function renderBlog() {
   const list = document.getElementById("blog-list");
-  list.innerHTML = content.blog.map((item) => `
-    <article class="blog-card">
-      <h3>${contentTitle(item.title)}</h3>
-      <p>${localText(item.desc)}</p>
-      <div class="meta-row">
-        <span>${label("date")}：${item.date}</span>
-        ${item.tags.map((tag) => `<span class="tag">${tag}</span>`).join("")}
-      </div>
-      <button class="card-action">${t("readButton")}</button>
-    </article>
-  `).join("");
+  list.replaceChildren();
+  content.blog.forEach((item) => list.appendChild(blogCardElement(item)));
 }
 
 function renderUpdates() {
