@@ -17,6 +17,7 @@ const state = {
   accountDetail: null,
   loadedPanels: {},
   loadingPanels: {},
+  loggingOut: false,
   timer: null
 };
 
@@ -52,6 +53,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-06-18",
+    title: "后台退出按钮防连点优化",
+    body: "点击退出后按钮会进入“退出中...”状态并临时禁用，避免慢网络下重复提交登出请求；失败时会恢复按钮并显示错误。"
+  },
   {
     date: "2026-06-18",
     title: "后台刷新状态可访问性优化",
@@ -414,7 +420,10 @@ function articleStatusLabel(status) {
   return labels[status] || status || "未知";
 }
 
-function setStatus(text) {
+function setStatus(text, options = {}) {
+  if (state.loggingOut && !options.force) {
+    return;
+  }
   $("#refresh-state").textContent = text;
 }
 
@@ -1616,8 +1625,29 @@ function bindEvents() {
     }
   });
   $("#logout-button").addEventListener("click", async () => {
-    await api("/api/auth/logout", { method: "POST", body: "{}" });
-    window.location.reload();
+    const button = $("#logout-button");
+    if (state.loggingOut) {
+      return;
+    }
+    state.loggingOut = true;
+    button.disabled = true;
+    button.textContent = "退出中...";
+    button.setAttribute("aria-busy", "true");
+    button.setAttribute("aria-label", "正在退出后台");
+    button.title = "正在退出后台";
+    setStatus("正在退出后台...", { force: true });
+    try {
+      await api("/api/auth/logout", { method: "POST", body: "{}" });
+      window.location.reload();
+    } catch (error) {
+      state.loggingOut = false;
+      button.disabled = false;
+      button.textContent = "退出";
+      button.setAttribute("aria-busy", "false");
+      button.setAttribute("aria-label", "退出后台");
+      button.title = "退出后台";
+      setStatus(error.message);
+    }
   });
   $("#new-article").addEventListener("click", resetArticleForm);
   $("#article-list").addEventListener("click", (event) => {
