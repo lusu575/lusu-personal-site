@@ -18,6 +18,7 @@ const state = {
   videoMetadataRefreshing: false,
   videoSaving: false,
   videoSavingMode: "",
+  videoDeleting: false,
   chatMessages: [],
   selectedMessageId: "",
   bans: [],
@@ -64,6 +65,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-06-18",
+    title: "视频删除防重复操作优化",
+    body: "视频管理删除请求进行中会临时禁用保存、发布和删除按钮，并显示删除中，避免慢网络下重复删除同一个视频。"
+  },
   {
     date: "2026-06-18",
     title: "文章删除防重复操作优化",
@@ -1355,24 +1361,31 @@ function syncVideoSaveButtons() {
   const saveButton = $("#video-form button[type='submit']");
   const publishButton = $("#publish-video");
   const deleteButton = $("#delete-video");
+  const busy = state.videoSaving || state.videoDeleting;
   if (saveButton) {
     const savingDraft = state.videoSaving && state.videoSavingMode !== "publish";
-    saveButton.disabled = state.videoSaving;
+    saveButton.disabled = busy;
     saveButton.textContent = savingDraft ? "保存中..." : "保存";
     saveButton.setAttribute("aria-busy", savingDraft ? "true" : "false");
-    saveButton.title = state.videoSaving ? "正在保存视频" : "保存当前视频";
+    saveButton.title = state.videoDeleting
+      ? "正在删除视频"
+      : (state.videoSaving ? "正在保存视频" : "保存当前视频");
   }
   if (publishButton) {
     const publishing = state.videoSaving && state.videoSavingMode === "publish";
-    publishButton.disabled = state.videoSaving;
+    publishButton.disabled = busy;
     publishButton.textContent = publishing ? "发布中..." : "保存并发布";
     publishButton.setAttribute("aria-busy", publishing ? "true" : "false");
-    publishButton.title = state.videoSaving ? "正在保存视频" : "保存并发布当前视频";
+    publishButton.title = state.videoDeleting
+      ? "正在删除视频"
+      : (state.videoSaving ? "正在保存视频" : "保存并发布当前视频");
   }
   if (deleteButton) {
-    deleteButton.disabled = state.videoSaving || !state.selectedVideoId;
-    deleteButton.title = state.videoSaving
-      ? "正在保存视频"
+    deleteButton.disabled = busy || !state.selectedVideoId;
+    deleteButton.textContent = state.videoDeleting ? "删除中..." : "删除";
+    deleteButton.setAttribute("aria-busy", state.videoDeleting ? "true" : "false");
+    deleteButton.title = busy
+      ? (state.videoDeleting ? "正在删除视频" : "正在保存视频")
       : (state.selectedVideoId ? "删除当前视频" : "请先选择已保存视频");
   }
 }
@@ -1386,12 +1399,24 @@ function selectVideo(videoId) {
 }
 
 async function deleteVideo() {
-  if (!state.selectedVideoId || !window.confirm("确定删除这个视频吗？")) {
+  if (state.videoSaving || state.videoDeleting || !state.selectedVideoId || !window.confirm("确定删除这个视频吗？")) {
     return;
   }
-  await api(`/api/admin/videos/${encodeURIComponent(state.selectedVideoId)}`, { method: "DELETE" });
-  resetVideoForm();
-  await loadVideos();
+  state.videoDeleting = true;
+  syncVideoSaveButtons();
+  const status = $("#video-status");
+  try {
+    status.textContent = "正在删除...";
+    await api(`/api/admin/videos/${encodeURIComponent(state.selectedVideoId)}`, { method: "DELETE" });
+    resetVideoForm();
+    await loadVideos();
+    status.textContent = "已删除。";
+  } catch (error) {
+    status.textContent = error.message;
+  } finally {
+    state.videoDeleting = false;
+    syncVideoSaveButtons();
+  }
 }
 
 async function refreshVideoMetadata() {
