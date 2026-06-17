@@ -142,7 +142,7 @@ const translations = {
     navVideos: "Videos",
     navVideosBuilding: "Videos",
     navResources: "Resources",
-    navResourcesBuilding: "Files TBD",
+    navResourcesBuilding: "Resources TBD",
     navGames: "Games",
     navBlog: "Talk",
     navBlogBuilding: "Talk TBD",
@@ -275,7 +275,7 @@ const translations = {
     navVideos: "動画",
     navVideosBuilding: "動画",
     navResources: "リソース",
-    navResourcesBuilding: "資料（未定）",
+    navResourcesBuilding: "リソース（未定）",
     navGames: "ゲーム",
     navBlog: "雑談",
     navBlogBuilding: "雑談（未定）",
@@ -437,6 +437,16 @@ const labels = {
 
 const content = {
   updates: [
+    {
+      icon: "🗂️",
+      date: "2026.06.18",
+      title: { zh: "资源入口文案对齐", en: "Resources Label Sync", ja: "リソース入口ラベル同期" },
+      desc: {
+        zh: "资源区桌面入口继续保留待定状态，但英文和日文名称与资源窗口标题保持一致",
+        en: "The Resources desktop icon keeps its TBD state while matching the Resources window label",
+        ja: "リソースのデスクトップ入口は未定表示を保ちつつ、リソースウィンドウ名と揃えました"
+      }
+    },
     {
       icon: "🎞️",
       date: "2026.06.18",

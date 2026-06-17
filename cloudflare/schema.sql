@@ -1114,6 +1114,32 @@ on conflict(article_id) do update set
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
 
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-resource-label-sync',
+  '2026-06-18-resource-label-sync',
+  'site-updates',
+  '["网站更新","资源区","多语言","界面"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T18:10:00.000Z',
+  '2026-06-17T18:10:00.000Z',
+  '2026-06-17T18:10:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
@@ -3320,7 +3346,37 @@ This update continues lightweight public-site performance polish by aligning vid
 - 公開動画カードのサムネイルに、既存の `loading="lazy"` に加えて `decoding="async"` を追加しました。
 - 動画一覧、カテゴリ、再生ウィンドウ、外部リンク許可リスト、公開動画 API の動作は変更していません。
 - 公開動画がない場合、動画欄はこれまで通り XP 風の空状態を表示します。
-- 公開側の動画カード画像属性と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T18:07:00.000Z', '2026-06-17T18:07:00.000Z')
+- 公開側の動画カード画像属性と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T18:07:00.000Z', '2026-06-17T18:07:00.000Z'),
+  ('seed-update-2026-06-18-resource-label-sync-zh', 'seed-update-2026-06-18-resource-label-sync', 'zh', '资源入口文案对齐', '资源区桌面入口的英文和日文名称现在与资源窗口标题一致。', '# 资源入口文案对齐
+
+本次更新修正资源区桌面图标的英文和日文名称，让入口名称与打开后的资源窗口标题保持一致。
+
+## 更新内容
+
+- English 桌面入口从 `Files TBD` 改为 `Resources TBD`。
+- 日本語桌面入口从 `資料（未定）` 改为 `リソース（未定）`。
+- 中文入口继续显示 `资源区（待定）`。
+- 资源区路由、占位状态、资源数据和安全 DOM 渲染逻辑保持不变。', '2026-06-17T18:10:00.000Z', '2026-06-17T18:10:00.000Z'),
+  ('seed-update-2026-06-18-resource-label-sync-en', 'seed-update-2026-06-18-resource-label-sync', 'en', 'Resources Label Sync', 'The Resources desktop icon now matches the Resources window label in English and Japanese.', '# Resources Label Sync
+
+This update aligns the Resources desktop icon text with the title of the Resources window that opens from it.
+
+## Changes
+
+- The English desktop icon now says `Resources TBD` instead of `Files TBD`.
+- The Japanese desktop icon now says `リソース（未定）` instead of `資料（未定）`.
+- The Chinese icon keeps `资源区（待定）`.
+- Resource routes, placeholder state, resource data, and safe DOM rendering are unchanged.', '2026-06-17T18:10:00.000Z', '2026-06-17T18:10:00.000Z'),
+  ('seed-update-2026-06-18-resource-label-sync-ja', 'seed-update-2026-06-18-resource-label-sync', 'ja', 'リソース入口ラベル同期', 'リソースのデスクトップ入口名を、リソースウィンドウの名称に合わせました。', '# リソース入口ラベル同期
+
+今回の更新では、リソース欄のデスクトップアイコン名を、開いた後のリソースウィンドウ名と揃えました。
+
+## 更新内容
+
+- English 表示のデスクトップ入口を `Files TBD` から `Resources TBD` に変更しました。
+- 日本語表示のデスクトップ入口を `資料（未定）` から `リソース（未定）` に変更しました。
+- 中文入口は `资源区（待定）` のままです。
+- リソース欄のルート、占位状態、リソースデータ、安全な DOM 描画経路は変更していません。', '2026-06-17T18:10:00.000Z', '2026-06-17T18:10:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,

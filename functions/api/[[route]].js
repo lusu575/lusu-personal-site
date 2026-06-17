@@ -4695,6 +4695,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-18-resource-label-sync',
+        '2026-06-18-resource-label-sync',
+        'site-updates',
+        '["网站更新","资源区","多语言","界面"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T18:10:00.000Z',
+        '2026-06-17T18:10:00.000Z',
+        '2026-06-17T18:10:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -5241,6 +5268,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# 動画サムネイルの非同期デコード\n\n今回の更新では、公開サイトの軽量な性能調整として、動画サムネイルの画像読み込み方を記事画像やゲームカバーと揃えました。\n\n## 更新内容\n\n- 公開動画カードのサムネイルに、既存の `loading=\"lazy\"` に加えて `decoding=\"async\"` を追加しました。\n- 動画一覧、カテゴリ、再生ウィンドウ、外部リンク許可リスト、公開動画 API の動作は変更していません。\n- 公開動画がない場合、動画欄はこれまで通り XP 風の空状態を表示します。\n- 公開側の動画カード画像属性と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。"
       }
     }, "2026-06-17T18:07:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-resource-label-sync", {
+      zh: {
+        title: "资源入口文案对齐",
+        summary: "资源区桌面入口的英文和日文名称现在与资源窗口标题一致。",
+        content_markdown: "# 资源入口文案对齐\n\n本次更新修正资源区桌面图标的英文和日文名称，让入口名称与打开后的资源窗口标题保持一致。\n\n## 更新内容\n\n- English 桌面入口从 `Files TBD` 改为 `Resources TBD`。\n- 日本語桌面入口从 `資料（未定）` 改为 `リソース（未定）`。\n- 中文入口继续显示 `资源区（待定）`。\n- 资源区路由、占位状态、资源数据和安全 DOM 渲染逻辑保持不变。"
+      },
+      en: {
+        title: "Resources Label Sync",
+        summary: "The Resources desktop icon now matches the Resources window label in English and Japanese.",
+        content_markdown: "# Resources Label Sync\n\nThis update aligns the Resources desktop icon text with the title of the Resources window that opens from it.\n\n## Changes\n\n- The English desktop icon now says `Resources TBD` instead of `Files TBD`.\n- The Japanese desktop icon now says `リソース（未定）` instead of `資料（未定）`.\n- The Chinese icon keeps `资源区（待定）`.\n- Resource routes, placeholder state, resource data, and safe DOM rendering are unchanged."
+      },
+      ja: {
+        title: "リソース入口ラベル同期",
+        summary: "リソースのデスクトップ入口名を、リソースウィンドウの名称に合わせました。",
+        content_markdown: "# リソース入口ラベル同期\n\n今回の更新では、リソース欄のデスクトップアイコン名を、開いた後のリソースウィンドウ名と揃えました。\n\n## 更新内容\n\n- English 表示のデスクトップ入口を `Files TBD` から `Resources TBD` に変更しました。\n- 日本語表示のデスクトップ入口を `資料（未定）` から `リソース（未定）` に変更しました。\n- 中文入口は `资源区（待定）` のままです。\n- リソース欄のルート、占位状態、リソースデータ、安全な DOM 描画経路は変更していません。"
+      }
+    }, "2026-06-17T18:10:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')
