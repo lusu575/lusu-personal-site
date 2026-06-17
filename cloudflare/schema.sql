@@ -1088,6 +1088,32 @@ on conflict(article_id) do update set
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
 
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-video-thumb-decoding',
+  '2026-06-18-video-thumb-decoding',
+  'site-updates',
+  '["网站更新","视频区","性能","图片"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T18:07:00.000Z',
+  '2026-06-17T18:07:00.000Z',
+  '2026-06-17T18:07:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
@@ -3264,7 +3290,37 @@ This update continues polishing the Resources area so placeholder buttons explai
 - ダウンロードや外部リンクがないリソースボタンに、中文 / English / 日本語 の `title` と `aria-label` を追加しました。
 - 占位ボタンは引き続き disabled のまま、`aria-disabled="true"` も追加しました。
 - 既存の URL 許可リスト、リソースデータ構造、安全な DOM 描画経路は変更していません。
-- 公開側のリソース欄ヒントと更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T18:00:00.000Z', '2026-06-17T18:00:00.000Z')
+- 公開側のリソース欄ヒントと更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T18:00:00.000Z', '2026-06-17T18:00:00.000Z'),
+  ('seed-update-2026-06-18-video-thumb-decoding-zh', 'seed-update-2026-06-18-video-thumb-decoding', 'zh', '视频缩略图异步解码', '公开视频卡片缩略图现在会在懒加载之外使用异步解码。', '# 视频缩略图异步解码
+
+本次更新继续做公开主站的轻量性能整理，把视频区缩略图的图片加载策略和文章配图、游戏封面对齐。
+
+## 更新内容
+
+- 公开视频卡片缩略图在已有 `loading="lazy"` 基础上增加 `decoding="async"`。
+- 视频列表、视频分类、播放窗口、外链白名单和公开视频 API 行为不变。
+- 当前没有公开视频时，视频区仍显示原有 XP 风格空状态。
+- 只调整公开主站视频卡片图片属性和更新记录，不触碰后台目录或管理接口。', '2026-06-17T18:07:00.000Z', '2026-06-17T18:07:00.000Z'),
+  ('seed-update-2026-06-18-video-thumb-decoding-en', 'seed-update-2026-06-18-video-thumb-decoding', 'en', 'Async Video Thumbnail Decoding', 'Public video card thumbnails now use async decoding in addition to lazy loading.', '# Async Video Thumbnail Decoding
+
+This update continues lightweight public-site performance polish by aligning video thumbnails with article images and game covers.
+
+## Changes
+
+- Public video card thumbnails now add `decoding="async"` alongside the existing `loading="lazy"` behavior.
+- Video lists, categories, playback windows, external-link allowlists, and public video API behavior are unchanged.
+- When there are no public videos, the Videos area keeps the existing XP-style empty state.
+- Only public video-card image attributes and update records changed; admin folders and admin APIs were not touched.', '2026-06-17T18:07:00.000Z', '2026-06-17T18:07:00.000Z'),
+  ('seed-update-2026-06-18-video-thumb-decoding-ja', 'seed-update-2026-06-18-video-thumb-decoding', 'ja', '動画サムネイルの非同期デコード', '公開動画カードのサムネイルが、遅延読み込みに加えて非同期デコードを使うようになりました。', '# 動画サムネイルの非同期デコード
+
+今回の更新では、公開サイトの軽量な性能調整として、動画サムネイルの画像読み込み方を記事画像やゲームカバーと揃えました。
+
+## 更新内容
+
+- 公開動画カードのサムネイルに、既存の `loading="lazy"` に加えて `decoding="async"` を追加しました。
+- 動画一覧、カテゴリ、再生ウィンドウ、外部リンク許可リスト、公開動画 API の動作は変更していません。
+- 公開動画がない場合、動画欄はこれまで通り XP 風の空状態を表示します。
+- 公開側の動画カード画像属性と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T18:07:00.000Z', '2026-06-17T18:07:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,

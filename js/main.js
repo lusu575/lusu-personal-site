@@ -438,6 +438,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "🎞️",
+      date: "2026.06.18",
+      title: { zh: "视频缩略图异步解码", en: "Async Video Thumbnail Decoding", ja: "動画サムネイルの非同期デコード" },
+      desc: {
+        zh: "公开视频卡片缩略图在懒加载基础上补充异步解码，和文章图、游戏封面保持一致",
+        en: "Public video thumbnails now add async decoding on top of lazy loading, matching article images and game covers",
+        ja: "公開動画カードのサムネイルに遅延読み込みに加えて非同期デコードを追加し、記事画像やゲームカバーと揃えました"
+      }
+    },
+    {
       icon: "📦",
       date: "2026.06.18",
       title: { zh: "资源占位提示补齐", en: "Resource Placeholder Hints", ja: "リソース準備中ヒント" },
@@ -2025,6 +2035,7 @@ function videoCardElement(item) {
     image.src = item.thumbnail_url;
     image.alt = "";
     image.loading = "lazy";
+    image.decoding = "async";
     image.addEventListener("error", () => {
       thumb.classList.add("is-fallback");
       image.remove();

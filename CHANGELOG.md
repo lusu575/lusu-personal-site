@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 视频缩略图异步解码：
+  - 公开视频卡片的缩略图在已有 `loading="lazy"` 基础上补充 `decoding="async"`，和文章配图、游戏封面图片的加载策略保持一致。
+  - 视频列表、视频分类、播放窗口、外链白名单和公开视频 API 行为不变。
+  - 更新 `index.html` 的 JS query 为 `20260618-video-thumb-decoding`，并新增同名三语 `site-updates` 更新文章。
 - 资源占位提示补齐：
   - 资源区没有真实 URL 的“准备中 / Coming soon / 準備中”按钮增加当前语言的 `title`、`aria-label` 和 `aria-disabled`，明确这些占位项暂时没有下载或外链。
   - 继续保留既有 URL 白名单和禁用按钮行为，不新增无效链接，也不改变资源数据结构。

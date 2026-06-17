@@ -4668,6 +4668,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-18-video-thumb-decoding',
+        '2026-06-18-video-thumb-decoding',
+        'site-updates',
+        '["网站更新","视频区","性能","图片"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-17T18:07:00.000Z',
+        '2026-06-17T18:07:00.000Z',
+        '2026-06-17T18:07:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
     "zh":  {
                "title":  "从提问到上线：普通人如何用 AI Agent 放大执行力",
@@ -5197,6 +5224,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# リソース準備中ヒント\n\n今回の更新では、リソース欄の占位表示を少し整え、リンクのないボタンがなぜクリックできないのかを分かりやすくしました。\n\n## 更新内容\n\n- ダウンロードや外部リンクがないリソースボタンに、中文 / English / 日本語 の `title` と `aria-label` を追加しました。\n- 占位ボタンは引き続き disabled のまま、`aria-disabled=\"true\"` も追加しました。\n- 既存の URL 許可リスト、リソースデータ構造、安全な DOM 描画経路は変更していません。\n- 公開側のリソース欄ヒントと更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。"
       }
     }, "2026-06-17T18:00:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-18-video-thumb-decoding", {
+      zh: {
+        title: "视频缩略图异步解码",
+        summary: "公开视频卡片缩略图现在会在懒加载之外使用异步解码。",
+        content_markdown: "# 视频缩略图异步解码\n\n本次更新继续做公开主站的轻量性能整理，把视频区缩略图的图片加载策略和文章配图、游戏封面对齐。\n\n## 更新内容\n\n- 公开视频卡片缩略图在已有 `loading=\"lazy\"` 基础上增加 `decoding=\"async\"`。\n- 视频列表、视频分类、播放窗口、外链白名单和公开视频 API 行为不变。\n- 当前没有公开视频时，视频区仍显示原有 XP 风格空状态。\n- 只调整公开主站视频卡片图片属性和更新记录，不触碰后台目录或管理接口。"
+      },
+      en: {
+        title: "Async Video Thumbnail Decoding",
+        summary: "Public video card thumbnails now use async decoding in addition to lazy loading.",
+        content_markdown: "# Async Video Thumbnail Decoding\n\nThis update continues lightweight public-site performance polish by aligning video thumbnails with article images and game covers.\n\n## Changes\n\n- Public video card thumbnails now add `decoding=\"async\"` alongside the existing `loading=\"lazy\"` behavior.\n- Video lists, categories, playback windows, external-link allowlists, and public video API behavior are unchanged.\n- When there are no public videos, the Videos area keeps the existing XP-style empty state.\n- Only public video-card image attributes and update records changed; admin folders and admin APIs were not touched."
+      },
+      ja: {
+        title: "動画サムネイルの非同期デコード",
+        summary: "公開動画カードのサムネイルが、遅延読み込みに加えて非同期デコードを使うようになりました。",
+        content_markdown: "# 動画サムネイルの非同期デコード\n\n今回の更新では、公開サイトの軽量な性能調整として、動画サムネイルの画像読み込み方を記事画像やゲームカバーと揃えました。\n\n## 更新内容\n\n- 公開動画カードのサムネイルに、既存の `loading=\"lazy\"` に加えて `decoding=\"async\"` を追加しました。\n- 動画一覧、カテゴリ、再生ウィンドウ、外部リンク許可リスト、公開動画 API の動作は変更していません。\n- 公開動画がない場合、動画欄はこれまで通り XP 風の空状態を表示します。\n- 公開側の動画カード画像属性と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。"
+      }
+    }, "2026-06-17T18:07:00.000Z"),
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')
