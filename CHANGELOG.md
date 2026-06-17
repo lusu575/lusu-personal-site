@@ -4,6 +4,10 @@
 
 ## 2026-06-18
 
+- 最近更新完整提示：
+  - 欢迎窗口“最近更新”列表的每条链接新增完整 `title` 与 `aria-label`，包含标题、摘要和日期。
+  - 屏幕上继续保留紧凑截断展示，链接提示和读屏名称使用 DOM / `textContent` 来源，不插入未处理 HTML。
+  - 更新 `index.html` 的 JS query 为 `20260618-recent-update-labels`，并新增同名三语 `site-updates` 更新文章。
 - RSS 按钮文案整理：
   - 欢迎窗口 RSS 按钮保留橙色 `RSS` 徽标，可见文案改为“订阅 / Feed / 購読”，避免重复显示 RSS。
   - 链接新增跟随当前语言切换的完整 `aria-label`，读屏仍可获得完整 RSS 订阅含义。

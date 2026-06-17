@@ -444,6 +444,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "🧾",
+      date: "2026.06.18",
+      title: { zh: "最近更新完整提示", en: "Recent Update Full Labels", ja: "最近の更新ラベル補足" },
+      desc: {
+        zh: "最近更新链接补充完整 title 和 aria-label，截断标题也能读到完整内容",
+        en: "Recent update links now include full title and aria-label text even when the visible title is truncated",
+        ja: "最近の更新リンクに完全な title と aria-label を追加し、省略表示でも内容を確認できます"
+      }
+    },
+    {
       icon: "📡",
       date: "2026.06.18",
       title: { zh: "RSS 按钮文案整理", en: "RSS Button Label Polish", ja: "RSS ボタン文言調整" },
@@ -2748,11 +2758,20 @@ function recentUpdateElement(item) {
 
   const copy = document.createElement("span");
   const title = document.createElement("strong");
-  title.textContent = truncateText(localText(item.title), 28);
+  const fullTitle = localText(item.title);
+  const fullSummary = item.summary || localText(item.desc) || "";
+  const publishedDate = formatArticleDate(item.published_at || item.created_at || item.date);
+  title.textContent = truncateText(fullTitle, 28);
   const detail = document.createElement("small");
-  detail.append(document.createTextNode(truncateText(item.summary || localText(item.desc) || "", 52)));
+  detail.append(document.createTextNode(truncateText(fullSummary, 52)));
   detail.appendChild(document.createElement("br"));
-  detail.append(document.createTextNode(formatArticleDate(item.published_at || item.created_at || item.date)));
+  detail.append(document.createTextNode(publishedDate));
+
+  const accessibleLabel = [fullTitle, fullSummary, publishedDate].filter(Boolean).join(" - ");
+  if (accessibleLabel) {
+    link.title = accessibleLabel;
+    link.setAttribute("aria-label", accessibleLabel);
+  }
 
   copy.append(title, detail);
   link.append(icon, copy);

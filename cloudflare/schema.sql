@@ -701,6 +701,32 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-06-18-recent-update-labels',
+  '2026-06-18-recent-update-labels',
+  'site-updates',
+  '["网站更新","最近更新","可访问性","首页"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T22:05:00.000Z',
+  '2026-06-17T22:05:00.000Z',
+  '2026-06-17T22:05:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-06-18-rss-button-label',
   '2026-06-18-rss-button-label',
   'site-updates',
@@ -2786,6 +2812,45 @@ This update keeps tightening public Knowledge article image rendering so Markdow
 - `safeArticleImageSrc()` が `..` のパストラバーサル片を拒否し、画像パスが記事画像フォルダから外へ出ないようにしました。
 - 画像は今後も `document.createElement(''img'')`、安全な `src`、`alt`、`figcaption` で描画し、未処理 HTML は挿入しません。
 - 既存の AI Agent 長文画像、知識庫一覧、記事直リンク、管理画面ディレクトリは変更していません。', '2026-06-17T20:20:00.000Z', '2026-06-17T20:20:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-recent-update-labels-zh', 'seed-update-2026-06-18-recent-update-labels', 'zh', '最近更新完整提示', '最近更新链接补充完整 title 和 aria-label，截断标题也能读到完整内容。', '# 最近更新完整提示
+
+本次更新继续打磨欢迎窗口里的最近更新面板，让被截断的更新标题也能被完整读取。
+
+## 更新内容
+
+- 每条最近更新链接新增完整 `title` 和 `aria-label`，包含标题、摘要和日期。
+- 屏幕上仍保留紧凑的截断标题与摘要，窗口布局和 XP 面板样式不变。
+- 标题、摘要和日期继续通过 DOM / `textContent` 输出，不插入未处理 HTML。
+- 本轮只调整公开最近更新面板、前端缓存版本和更新记录，不触碰后台目录或管理接口。', '2026-06-17T22:05:00.000Z', '2026-06-17T22:05:00.000Z'),
+  ('seed-update-2026-06-18-recent-update-labels-en', 'seed-update-2026-06-18-recent-update-labels', 'en', 'Recent Update Full Labels', 'Recent update links now include full title and aria-label text when visible text is truncated.', '# Recent Update Full Labels
+
+This update continues polishing the welcome-window Recent Updates panel so truncated update titles still expose the full context.
+
+## Changes
+
+- Each recent-update link now gets a full `title` and `aria-label` containing the title, summary, and date.
+- The visible panel keeps its compact truncated title and summary, so the XP layout stays unchanged.
+- Titles, summaries, and dates still render through DOM / `textContent`, with no raw HTML insertion.
+- This round only changes the public Recent Updates panel, frontend cache version, and update records; admin folders and admin APIs are untouched.', '2026-06-17T22:05:00.000Z', '2026-06-17T22:05:00.000Z'),
+  ('seed-update-2026-06-18-recent-update-labels-ja', 'seed-update-2026-06-18-recent-update-labels', 'ja', '最近の更新ラベル補足', '最近の更新リンクに完全な title と aria-label を追加しました。', '# 最近の更新ラベル補足
+
+今回の更新では、ウェルカム画面の「最近の更新」パネルを少し整え、省略された更新タイトルでも内容を確認しやすくしました。
+
+## 更新内容
+
+- 各最近更新リンクに、タイトル・概要・日付を含む完全な `title` と `aria-label` を追加しました。
+- 画面上はこれまで通りコンパクトな省略表示のまま、XP 風パネルのレイアウトは変更していません。
+- タイトル、概要、日付は引き続き DOM / `textContent` で描画し、未処理 HTML は挿入しません。
+- 今回は公開側の最近の更新パネル、フロントのキャッシュ版、更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T22:05:00.000Z', '2026-06-17T22:05:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,
