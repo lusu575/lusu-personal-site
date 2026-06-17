@@ -72,6 +72,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-18",
+    title: "账号邮箱输入体验优化",
+    body: "账号管理的邮箱输入框补充 email 键盘提示，并关闭自动大写和拼写检查，减少移动端编辑账号时的误输入。"
+  },
+  {
+    date: "2026-06-18",
     title: "视频分类占用状态提示",
     body: "后台视频分类列表会在已有视频使用的分类上显示“占用中”标签，管理员无需进入编辑区也能判断哪些分类不能直接删除。"
   },

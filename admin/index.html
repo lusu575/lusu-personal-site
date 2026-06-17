@@ -361,7 +361,7 @@
             </div>
             <form id="account-form" class="editor-form" autocomplete="off">
               <div class="form-grid">
-                <label>邮箱<input name="email" type="email" maxlength="254" autocomplete="username" required></label>
+                <label>邮箱<input name="email" type="email" maxlength="254" inputmode="email" autocomplete="username" autocapitalize="none" spellcheck="false" required></label>
                 <label>角色
                   <select name="role">
                     <option value="user">普通用户</option>
@@ -414,6 +414,6 @@
     </main>
   </div>
 
-  <script src="/admin/admin.js?v=20260618-category-usage-badge"></script>
+  <script src="/admin/admin.js?v=20260618-account-email-input"></script>
 </body>
 </html>
