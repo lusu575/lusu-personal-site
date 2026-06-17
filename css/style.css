@@ -920,6 +920,60 @@ main {
   display: none;
 }
 
+.knowledge-searchbar {
+  display: grid;
+  grid-template-columns: auto minmax(220px, 1fr) auto auto;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 13px;
+  border-bottom: 2px solid #d3d0bd;
+  background: linear-gradient(180deg, #fff8d8, #e9f6ff);
+}
+
+.knowledge-searchbar label {
+  color: #123f88;
+  font-size: 14px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.knowledge-searchbar input {
+  width: 100%;
+  min-width: 0;
+  height: 34px;
+  padding: 6px 9px;
+  border: 2px inset #f8f8f8;
+  background: #fff;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  outline: 0;
+}
+
+.knowledge-searchbar input:focus {
+  box-shadow: 0 0 0 2px rgba(45, 133, 255, 0.28);
+}
+
+.knowledge-searchbar .xp-button {
+  min-height: 34px;
+  padding: 5px 12px;
+}
+
+.knowledge-searchbar .xp-button:disabled {
+  color: #657082;
+  cursor: default;
+  filter: grayscale(0.35);
+  opacity: 0.72;
+}
+
+#knowledge-search-status {
+  color: #315b8d;
+  font-size: 13px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
 .category-panel {
   padding: 13px;
   border-right: 2px solid #d3d0bd;
@@ -3402,6 +3456,22 @@ main {
   .profile-card,
   .welcome-content {
     grid-template-columns: 1fr;
+  }
+
+  .knowledge-searchbar {
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    padding: 9px 10px;
+  }
+
+  .knowledge-searchbar label,
+  #knowledge-search-status {
+    grid-column: 1 / -1;
+    white-space: normal;
+  }
+
+  .knowledge-searchbar input {
+    height: 36px;
   }
 
   .article-detail {

@@ -594,6 +594,32 @@ on conflict(article_id) do update set
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
 
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-17-knowledge-search',
+  '2026-06-17-knowledge-search',
+  'site-updates',
+  '["网站更新","知识库","搜索","移动端"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T15:25:00.000Z',
+  '2026-06-17T15:25:00.000Z',
+  '2026-06-17T15:25:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
@@ -2129,6 +2155,48 @@ This update continues tightening the videos area and desktop icons so the public
 - 既定の動画カテゴリ seed は初回テーブル作成時だけ動くようにし、削除済みの既定タグを戻さず、管理画面の並び順も保持します。
 - ビルドチェックで公開動画 API の経路も確認し、動画 schema guard の実行時問題を見落としにくくしました。
 - 匿名チャットルームのデスクトップアイコンを少し小さくし、ラベルとの間隔を確保しました。', '2026-06-16T08:20:00.000Z', '2026-06-16T08:20:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-17-knowledge-search-zh', 'seed-update-2026-06-17-knowledge-search', 'zh', '知识库本地搜索上线', '知识库顶部新增本地搜索，可按标题、简介、分类和标签快速过滤文章。', '# 知识库本地搜索上线
+
+本次更新给主站知识库增加了轻量搜索条，方便在文章和网站更新记录越来越多时快速定位内容。
+
+## 更新内容
+
+- 知识库窗口顶部新增搜索框，可按文章标题、简介、分类、slug 和标签即时过滤。
+- 搜索结果会显示当前命中数量，清空按钮可以一键恢复完整列表。
+- 搜索文案同步维护中文、English、日本語，切换语言后会更新标签、占位提示和结果数量。
+- 手机端搜索条会自动换行，继续保持无横向溢出。
+- 文章详情、直链、Markdown 安全渲染和聊天室纯文本规则保持不变。', '2026-06-17T15:25:00.000Z', '2026-06-17T15:25:00.000Z'),
+  ('seed-update-2026-06-17-knowledge-search-en', 'seed-update-2026-06-17-knowledge-search', 'en', 'Knowledge Search Added', 'The knowledge base now has local search across titles, summaries, categories, and tags.', '# Knowledge Search Added
+
+This update adds a lightweight search bar to the public knowledge base so articles and site update logs are easier to find as the archive grows.
+
+## Changes
+
+- The knowledge window now has a search field that filters by article title, summary, category, slug, and tags instantly in the browser.
+- Result text shows the current match count, and the clear button restores the full list in one click.
+- Search labels, placeholders, and count text are maintained in Chinese, English, and Japanese.
+- The mobile search bar wraps cleanly and keeps the page free of horizontal overflow.
+- Article detail links, Markdown safe rendering, and chatroom plain-text rules are unchanged.', '2026-06-17T15:25:00.000Z', '2026-06-17T15:25:00.000Z'),
+  ('seed-update-2026-06-17-knowledge-search-ja', 'seed-update-2026-06-17-knowledge-search', 'ja', '知識庫検索を追加', '知識庫に、タイトル・概要・分類・タグで絞り込めるローカル検索を追加しました。', '# 知識庫検索を追加
+
+今回の更新では、記事とサイト更新記録が増えても探しやすいように、公開側の知識庫へ軽量な検索バーを追加しました。
+
+## 更新内容
+
+- 知識庫ウィンドウ上部に検索欄を追加し、記事タイトル、概要、分類、slug、タグをブラウザ内で即時に絞り込めます。
+- 結果件数を表示し、クリアボタンで一覧全体にすぐ戻せます。
+- 検索ラベル、プレースホルダー、件数表示は中文、English、日本語で同期しています。
+- モバイルでは検索バーが自然に折り返し、横方向にはみ出さないようにしました。
+- 記事詳細リンク、Markdown の安全描画、チャットルームの純テキスト表示ルールはそのままです。', '2026-06-17T15:25:00.000Z', '2026-06-17T15:25:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,

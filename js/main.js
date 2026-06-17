@@ -38,6 +38,12 @@ const translations = {
     articleLoading: "正在从数据库读取文章...",
     articleLoadFailed: "文章读取失败，请稍后再试。",
     articleEmpty: "数据库里暂时还没有已发布文章。",
+    articleSearchLabel: "搜索知识库",
+    articleSearchPlaceholder: "搜索标题、简介、标签...",
+    articleSearchClear: "清空",
+    articleSearchCount: "共 {count} 篇文章",
+    articleSearchFiltered: "显示 {count} / {total} 篇",
+    articleSearchNoResults: "没有找到匹配的文章。",
     articleBack: "返回文章列表",
     articlePublished: "发布时间",
     articleCategory: "分类",
@@ -140,6 +146,12 @@ const translations = {
     articleLoading: "Loading articles from the database...",
     articleLoadFailed: "Could not load articles. Please try again later.",
     articleEmpty: "No published articles are in the database yet.",
+    articleSearchLabel: "Search knowledge",
+    articleSearchPlaceholder: "Search titles, summaries, tags...",
+    articleSearchClear: "Clear",
+    articleSearchCount: "{count} articles",
+    articleSearchFiltered: "Showing {count} / {total}",
+    articleSearchNoResults: "No matching articles found.",
     articleBack: "Back to article list",
     articlePublished: "Published",
     articleCategory: "Category",
@@ -242,6 +254,12 @@ const translations = {
     articleLoading: "データベースから記事を読み込み中...",
     articleLoadFailed: "記事を読み込めません。あとで試してください。",
     articleEmpty: "公開済みの記事はまだデータベースにありません。",
+    articleSearchLabel: "知識庫を検索",
+    articleSearchPlaceholder: "タイトル・概要・タグを検索...",
+    articleSearchClear: "クリア",
+    articleSearchCount: "{count}件の記事",
+    articleSearchFiltered: "{count} / {total} 件を表示",
+    articleSearchNoResults: "一致する記事が見つかりません。",
     articleBack: "記事一覧へ戻る",
     articlePublished: "公開日",
     articleCategory: "分類",
@@ -344,6 +362,16 @@ const labels = {
 
 const content = {
   updates: [
+    {
+      icon: "📚",
+      date: "2026.06.17",
+      title: { zh: "知识库本地搜索上线", en: "Knowledge Search Added", ja: "知識庫検索を追加" },
+      desc: {
+        zh: "知识库顶部新增本地搜索，可按标题、简介、分类和标签快速过滤文章，并适配三语和手机端布局",
+        en: "The knowledge base now has local search across titles, summaries, categories, and tags, with trilingual and mobile layouts",
+        ja: "知識庫にローカル検索を追加し、タイトル・概要・分類・タグを三言語とモバイル表示で絞り込めるようにしました"
+      }
+    },
     {
       icon: "📺",
       date: "2026.06.16",
@@ -678,6 +706,7 @@ const articleState = {
   articles: [],
   currentSlug: "",
   currentArticle: null,
+  searchTerm: "",
   error: ""
 };
 const videoState = {
@@ -935,9 +964,13 @@ function renderKnowledge() {
   const list = document.getElementById("knowledge-list");
   const detail = document.getElementById("article-detail");
   const layout = document.querySelector("#knowledge .folder-layout");
+  const searchBar = document.getElementById("knowledge-searchbar");
   const categories = sortArticleCategories([...new Set(articleState.articles.map((item) => item.category).filter(Boolean))]);
 
   if (articleState.currentSlug) {
+    if (searchBar) {
+      searchBar.hidden = true;
+    }
     layout?.classList.add("is-reading");
     list.hidden = true;
     detail.hidden = false;
@@ -953,22 +986,33 @@ function renderKnowledge() {
     return;
   }
 
+  if (searchBar) {
+    searchBar.hidden = false;
+  }
   layout?.classList.remove("is-reading");
   renderKnowledgeCategoryButtons(categories);
   list.hidden = false;
   detail.hidden = true;
   if (articleState.loading) {
+    renderKnowledgeSearchControls(null, null);
     list.innerHTML = `<p class="loading-text">${t("articleLoading")}</p>`;
     return;
   }
   if (articleState.error) {
+    renderKnowledgeSearchControls(null, null);
     list.innerHTML = `<p class="loading-text">${t("articleLoadFailed")}</p>`;
     return;
   }
 
-  const items = articleState.articles.filter((item) => activeFilters.knowledge === "all" || item.category === activeFilters.knowledge);
-  if (!items.length) {
+  const categoryItems = articleState.articles.filter((item) => activeFilters.knowledge === "all" || item.category === activeFilters.knowledge);
+  const items = categoryItems.filter(articleMatchesSearch);
+  renderKnowledgeSearchControls(items.length, categoryItems.length);
+  if (!articleState.articles.length) {
     list.innerHTML = `<p class="loading-text">${t("articleEmpty")}</p>`;
+    return;
+  }
+  if (!items.length) {
+    list.innerHTML = `<p class="loading-text">${t("articleSearchNoResults")}</p>`;
     return;
   }
 
@@ -978,13 +1022,58 @@ function renderKnowledge() {
       <p>${escapeHtml(item.summary || "")}</p>
       <div class="meta-row">
         <span>${t("articleCategory")}：${escapeHtml(articleCategoryName(item.category || "note"))}</span>
-        ${item.tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}
+        ${(item.tags || []).map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}
         <span>${t("articlePublished")}：${escapeHtml(formatArticleDate(item.published_at || item.created_at))}</span>
         ${item.lang !== currentLang ? `<span class="tag">${t("articleFallback")}</span>` : ""}
       </div>
       <a class="card-action" href="${escapeHtml(articleRoutePath(item.slug))}" data-article-slug="${escapeHtml(item.slug)}">${t("readButton")}</a>
     </article>
   `).join("");
+}
+
+function renderKnowledgeSearchControls(count, total) {
+  const input = document.getElementById("knowledge-search-input");
+  const clearButton = document.querySelector("[data-article-search-clear]");
+  const status = document.getElementById("knowledge-search-status");
+  if (input && input.value !== articleState.searchTerm) {
+    input.value = articleState.searchTerm;
+  }
+  if (clearButton) {
+    clearButton.disabled = !articleState.searchTerm.trim();
+  }
+  if (!status) {
+    return;
+  }
+  if (typeof count !== "number" || typeof total !== "number") {
+    status.textContent = "";
+    return;
+  }
+  const template = articleState.searchTerm.trim() || activeFilters.knowledge !== "all"
+    ? t("articleSearchFiltered")
+    : t("articleSearchCount");
+  status.textContent = template
+    .replace("{count}", String(count))
+    .replace("{total}", String(total));
+}
+
+function normalizeSearchText(value) {
+  return String(value || "").toLocaleLowerCase();
+}
+
+function articleMatchesSearch(item) {
+  const term = normalizeSearchText(articleState.searchTerm.trim());
+  if (!term) {
+    return true;
+  }
+  const haystack = [
+    item.title,
+    item.summary,
+    item.slug,
+    item.category,
+    articleCategoryName(item.category || "note"),
+    ...(item.tags || [])
+  ].map(normalizeSearchText).join(" ");
+  return haystack.includes(term);
 }
 
 function renderKnowledgeCategoryButtons(categories) {
@@ -1689,7 +1778,8 @@ function openVideo(index) {
     window.lusuTrackClick?.("video:play-failed", "video not found", { route: "videos" });
     return;
   }
-  document.getElementById("modal-title").textContent = video.title || localText(video.title) || "Video Player";
+  const videoTitle = localText(video.title) || "Video Player";
+  document.getElementById("modal-title").textContent = videoTitle;
   if (sourceLink) {
     const originalUrl = video.original_url || video.url || "";
     if (originalUrl) {
@@ -1707,7 +1797,7 @@ function openVideo(index) {
     shell.className = "video-embed-shell";
     const iframe = document.createElement("iframe");
     iframe.src = videoAutoplayUrl(video.embed_url);
-    iframe.title = video.title || "Video player";
+    iframe.title = videoTitle;
     iframe.loading = "lazy";
     iframe.allow = "autoplay; fullscreen; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
     iframe.allowFullscreen = true;
@@ -2408,6 +2498,13 @@ document.addEventListener("click", (event) => {
     return;
   }
 
+  if (event.target.closest("[data-article-search-clear]")) {
+    articleState.searchTerm = "";
+    renderKnowledge();
+    document.getElementById("knowledge-search-input")?.focus();
+    return;
+  }
+
   const videoButton = event.target.closest("[data-video-index]");
   if (videoButton) {
     openVideo(Number(videoButton.dataset.videoIndex));
@@ -2462,6 +2559,10 @@ window.addEventListener("popstate", () => {
 document.getElementById("chat-form")?.addEventListener("submit", submitChatMessage);
 document.getElementById("chat-message-input")?.addEventListener("input", updateChatCounter);
 document.getElementById("chat-edit-nickname")?.addEventListener("click", editChatNickname);
+document.getElementById("knowledge-search-input")?.addEventListener("input", (event) => {
+  articleState.searchTerm = event.target.value;
+  renderKnowledge();
+});
 window.addEventListener("resize", layoutWallpaperStage);
 
 document.addEventListener("visibilitychange", () => {
