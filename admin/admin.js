@@ -18,6 +18,7 @@ const state = {
   loadedPanels: {},
   loadingPanels: {},
   loggingOut: false,
+  statusHoldUntil: 0,
   timer: null
 };
 
@@ -53,6 +54,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-06-18",
+    title: "后台退出中手动刷新防护",
+    body: "后台退出流程开始后会同步禁用顶部刷新按钮，并拦截手动刷新入口，避免退出挂起时继续触发后台统计请求；退出失败提示会短暂保留，避免被刷新状态覆盖。"
+  },
   {
     date: "2026-06-18",
     title: "后台退出中暂停自动刷新",
@@ -431,10 +437,16 @@ function articleStatusLabel(status) {
 }
 
 function setStatus(text, options = {}) {
-  if (state.loggingOut && !options.force) {
+  const force = Boolean(options.force);
+  if (!force && (state.loggingOut || Date.now() < state.statusHoldUntil)) {
     return;
   }
   $("#refresh-state").textContent = text;
+  if (options.holdMs) {
+    state.statusHoldUntil = Date.now() + options.holdMs;
+  } else if (force) {
+    state.statusHoldUntil = 0;
+  }
 }
 
 function panelDataKey(panel) {
@@ -444,6 +456,14 @@ function panelDataKey(panel) {
 function updateRefreshButton() {
   const button = $("#manual-refresh");
   const panelName = panelMeta[state.activePanel]?.[0] || "当前标签";
+  if (state.loggingOut) {
+    button.disabled = true;
+    button.setAttribute("aria-busy", "false");
+    button.setAttribute("aria-label", "正在退出后台，暂停刷新");
+    button.title = "正在退出后台，暂停刷新";
+    button.textContent = "暂停刷新";
+    return;
+  }
   const staticPanel = staticPanels.has(state.activePanel);
   const busy = !staticPanel && Boolean(state.loadingPanels[panelDataKey(state.activePanel)]);
   const buttonText = staticPanel ? "无需刷新" : (busy ? "刷新中..." : "刷新");
@@ -473,6 +493,11 @@ function rememberActivePanel(panel) {
 }
 
 async function loadPanelData(panel, options = {}) {
+  if (state.loggingOut) {
+    updateRefreshButton();
+    return;
+  }
+
   if (staticPanels.has(panel)) {
     setStatus("当前标签为本地内容，无需刷新。");
     updateRefreshButton();
@@ -1657,6 +1682,7 @@ function bindEvents() {
     button.setAttribute("aria-label", "正在退出后台");
     button.title = "正在退出后台";
     setStatus("正在退出后台...", { force: true });
+    updateRefreshButton();
     try {
       await api("/api/auth/logout", { method: "POST", body: "{}" });
       window.location.reload();
@@ -1667,7 +1693,8 @@ function bindEvents() {
       button.setAttribute("aria-busy", "false");
       button.setAttribute("aria-label", "退出后台");
       button.title = "退出后台";
-      setStatus(error.message);
+      setStatus(error.message, { force: true, holdMs: 4000 });
+      updateRefreshButton();
       if (resumeAutoRefresh && !state.timer) {
         state.timer = window.setInterval(autoRefreshActivePanel, 30000);
       }
