@@ -27,7 +27,7 @@
 
 - `/admin/*` 静态后台资源由 `functions/admin/_middleware.js` 拦截。
 - 中间件读取 `lusu_session`，校验 D1 `sessions` 和 `users`，只有 `users.role = admin` 的账号可进入。
-- `functions/admin/_middleware.js` 还保留 `OWNER_ADMIN_EMAILS` 兜底名单，用于站长邮箱直接通过后台静态资源校验。
+- `functions/admin/_middleware.js` 不再把站长邮箱白名单作为访问旁路；站长邮箱必须在 D1 中拥有 `users.role = admin` 才能通过后台静态资源校验。
 - 未登录访问后台 HTML 时返回后台登录页；已登录但非 admin 时返回拒绝页。
 - 所有 `/api/admin/*` 接口必须继续在服务端调用 `requireAdmin`，不能只依赖前端隐藏按钮或静态中间件。
 
