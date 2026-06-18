@@ -39,7 +39,7 @@ const DEFAULT_VIDEO_CATEGORIES = [
   ["video-cat-games", "game-records", "游戏录像", "Game Records", "ゲーム録画", 30],
   ["video-cat-favorites", "favorites", "收藏视频", "Saved Videos", "お気に入り動画", 40]
 ];
-const PUBLIC_LOOP_NIGHTLY_UPDATE_SLUG = "2026-06-18-public-site-nightly-update";
+const PUBLIC_LOOP_NIGHTLY_UPDATE_SLUG = "2026-06-18-main-visual-polish-cycle";
 const PUBLIC_LOOP_NIGHTLY_UPDATE_FILTER = `not (
   articles.category = 'site-updates'
   and (
