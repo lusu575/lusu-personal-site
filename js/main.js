@@ -85,6 +85,8 @@ const translations = {
     brandHomeAria: "返回桌面",
     languageSwitcherAria: "语言切换",
     desktopIconsAria: "主要栏目",
+    windowMinimizeAria: "最小化窗口",
+    windowMaximizeAria: "最大化窗口",
     closeWindowAria: "关闭窗口",
     closeDialogAria: "关闭对话框",
     accountSignedInPrefix: "账号：",
@@ -230,6 +232,8 @@ const translations = {
     brandHomeAria: "Back to desktop",
     languageSwitcherAria: "Language switcher",
     desktopIconsAria: "Main sections",
+    windowMinimizeAria: "Minimize window",
+    windowMaximizeAria: "Maximize window",
     closeWindowAria: "Close window",
     closeDialogAria: "Close dialog",
     accountSignedInPrefix: "Account: ",
@@ -375,6 +379,8 @@ const translations = {
     brandHomeAria: "デスクトップへ戻る",
     languageSwitcherAria: "言語切り替え",
     desktopIconsAria: "主なセクション",
+    windowMinimizeAria: "ウィンドウを最小化",
+    windowMaximizeAria: "ウィンドウを最大化",
     closeWindowAria: "ウィンドウを閉じる",
     closeDialogAria: "ダイアログを閉じる",
     accountSignedInPrefix: "アカウント：",
@@ -478,9 +484,9 @@ const content = {
       date: "2026.06.18",
       title: { zh: "主站夜间优化汇总", en: "Public Site Nightly Summary", ja: "メインサイト夜間更新まとめ" },
       desc: {
-        zh: "合并昨晚主站优化记录：文章页布局、阅读体验、资源区、游戏区、RSS、安全渲染和移动端适配统一收进一篇更新",
-        en: "Merged last night's public-site updates into one record covering article layout, reading, resources, games, RSS, safe rendering, and mobile layout",
-        ja: "昨夜のメインサイト更新を一つにまとめ、記事レイアウト、読書体験、リソース、ゲーム、RSS、安全描画、モバイル調整を整理しました"
+        zh: "合并昨晚主站优化记录，并按参考图完成知识库文章页 10 轮阅读布局复刻打磨",
+        en: "Merged last night's public-site updates and completed ten reference-matching passes on the knowledge article reader",
+        ja: "昨夜のメインサイト更新をまとめ、参考画像に合わせて知識庫の記事ページを10回調整しました"
       }
     },
     {
@@ -1783,6 +1789,7 @@ function renderKnowledge() {
     if (searchBar) {
       searchBar.hidden = true;
     }
+    document.body.classList.add("is-article-reading");
     layout?.classList.add("is-reading");
     list.hidden = true;
     detail.hidden = false;
@@ -1801,6 +1808,8 @@ function renderKnowledge() {
   if (searchBar) {
     searchBar.hidden = false;
   }
+  document.body.classList.remove("is-article-reading");
+  document.body.classList.remove("is-article-window-restored");
   layout?.classList.remove("is-reading");
   renderKnowledgeCategoryButtons(categories);
   list.hidden = false;
@@ -2219,6 +2228,17 @@ function scrollArticleToTop() {
   scheduleArticleReadProgressUpdate();
 }
 
+function toggleArticleWindowSize() {
+  if (!document.body.classList.contains("is-article-reading")) {
+    return;
+  }
+  document.body.classList.toggle("is-article-window-restored");
+  const button = document.querySelector("[data-article-window-toggle]");
+  if (button) {
+    button.setAttribute("aria-pressed", document.body.classList.contains("is-article-window-restored") ? "false" : "true");
+  }
+}
+
 function clearArticleCopyStatus() {
   window.clearTimeout(articleState.copyStatusTimer);
   articleState.copyStatusTimer = 0;
@@ -2243,6 +2263,7 @@ function setArticleReadProgress(percent) {
   }
   if (bar) {
     bar.setAttribute("aria-valuenow", String(bounded));
+    bar.style.setProperty("--article-progress", String(bounded));
   }
 }
 
@@ -4026,6 +4047,11 @@ document.addEventListener("click", (event) => {
 
   if (event.target.closest("[data-article-scroll-top]")) {
     scrollArticleToTop();
+    return;
+  }
+
+  if (event.target.closest("[data-article-window-toggle]")) {
+    toggleArticleWindowSize();
     return;
   }
 
