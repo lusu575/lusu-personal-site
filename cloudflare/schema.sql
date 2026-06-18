@@ -654,7 +654,7 @@ insert into article_translations (
     'seed-update-2026-06-18-public-site-nightly-update',
     'zh',
     '主站夜间优化汇总',
-    '合并昨晚主站优化记录，并按参考图完成知识库文章页 10 轮阅读布局复刻打磨。',
+    '合并昨晚主站优化记录，并按参考图完成知识库文章页 10 轮阅读布局复刻打磨；文章窗口不再拉伸占满全站。',
     '# 主站夜间优化汇总
 
 这篇记录把昨晚主站公开侧的小步优化合并到一起，避免网站更新记录被一串细项刷屏。
@@ -662,7 +662,7 @@ insert into article_translations (
 ## 汇总内容
 
 - 知识库文章详情补齐目录、阅读进度、复制链接和回到顶部能力；本轮参考验收图重排为左侧目录/小贴士、右侧正文卡片，并把底部进度条与回到顶部按钮并排悬浮。
-- 追加 10 轮视觉复刻打磨：阅读态知识库窗口沉浸铺满视口，标题栏补最小化/最大化/关闭三按钮，底部进度条改为单行蓝色分段条，正文节奏和左侧小贴士位置更贴近参考图。
+- 追加 10 轮视觉复刻打磨：阅读态知识库窗口保持站内 XP 窗口尺寸，不再拉伸占满整个网站；标题栏补最小化/最大化/关闭三按钮，底部进度条改为单行蓝色分段条，正文节奏和左侧小贴士位置更贴近参考图。
 - 资源区补齐分类数量、卡片状态、空分类提示和更严格的资源链接白名单。
 - 游戏区补齐云存档、源码徽标、语言标记、入口路径守卫和游戏外壳安全 DOM 渲染。
 - 首页最近更新、知识库列表、筛选、资源筛选和游戏列表继续收紧为 DOM / textContent 渲染，降低公开内容的 XSS 风险。
@@ -678,7 +678,7 @@ insert into article_translations (
     'seed-update-2026-06-18-public-site-nightly-update',
     'en',
     'Public Site Nightly Summary',
-    'Merged last night''s public-site updates and completed ten reference-matching passes on the knowledge article reader.',
+    'Merged last night''s public-site updates, completed ten reference-matching passes, and kept the article window inside the site frame.',
     '# Public Site Nightly Summary
 
 This entry merges last night''s small public-site updates into one readable record, so the site update log no longer gets flooded by one article per tiny adjustment.
@@ -686,7 +686,7 @@ This entry merges last night''s small public-site updates into one readable reco
 ## Summary
 
 - Knowledge articles gained contents navigation, reading progress, copy-link, and back-to-top controls; this round rebuilds the article view from the reference image with a left contents/tip sidebar, a right reading card, and bottom progress plus back-to-top controls floating side by side.
-- Ten visual matching passes were added: the article reading window now fills the viewport, the titlebar has minimize/maximize/close controls, the progress bar is a single-row segmented blue strip, and the body rhythm plus left tip placement are closer to the reference image.
+- Ten visual matching passes were added: the article reading window now stays inside the site''s XP window frame instead of stretching across the whole site, the titlebar has minimize/maximize/close controls, the progress bar is a single-row segmented blue strip, and the body rhythm plus left tip placement are closer to the reference image.
 - The Resources area gained category counts, status badges, empty-category guidance, and stricter resource link allowlists.
 - The Games area gained cloud-save and source badges, localized language labels, launch-path guards, and safer DOM rendering in the game shell.
 - Recent updates, the knowledge list, filters, resource filters, and the game list continue to render through DOM / textContent to reduce XSS risk for public content.
@@ -702,7 +702,7 @@ The old single-topic entries remain as historical and rollback data, but public 
     'seed-update-2026-06-18-public-site-nightly-update',
     'ja',
     'メインサイト夜間更新まとめ',
-    '昨夜のメインサイト更新をまとめ、参考画像に合わせて知識庫の記事ページを10回調整しました。',
+    '昨夜のメインサイト更新をまとめ、参考画像に合わせて知識庫の記事ページを10回調整し、記事ウィンドウはサイト内サイズに戻しました。',
     '# メインサイト夜間更新まとめ
 
 この記録では、昨夜の公開サイト側の小さな更新を一つにまとめました。更新記録が細かな記事で埋まりすぎないようにするためです。
@@ -710,7 +710,7 @@ The old single-topic entries remain as historical and rollback data, but public 
 ## まとめ
 
 - 知識庫の記事詳細に、目次、読書進捗、リンクコピー、先頭へ戻る操作を追加しました。今回、参考画像に合わせて左側の目次/ヒント、右側の本文カード、下部の進捗バーと先頭へ戻るボタンを並べた表示に整えました。
-- さらに10回の視覚調整を行い、記事閲覧ウィンドウを画面いっぱいに広げ、タイトルバーに最小化/最大化/閉じるボタンを追加し、進捗バーを1行の青い分割バーにし、本文の余白と左側ヒントの位置も参考画像に近づけました。
+- さらに10回の視覚調整を行い、記事閲覧ウィンドウはサイト内の XP ウィンドウサイズに戻し、全体へ引き伸ばさない表示にしました。タイトルバーに最小化/最大化/閉じるボタンを追加し、進捗バーを1行の青い分割バーにし、本文の余白と左側ヒントの位置も参考画像に近づけました。
 - リソース欄には分類件数、状態バッジ、空分類の案内、より厳しいリンク許可リストを追加しました。
 - ゲーム欄にはクラウド保存、ソース表示、言語ラベル、起動パスの確認、ゲームシェルの安全な DOM 描画を追加しました。
 - 最近の更新、知識庫一覧、フィルター、リソースフィルター、ゲーム一覧は DOM / textContent 描画を続け、公開内容の XSS リスクを下げます。

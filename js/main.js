@@ -484,9 +484,9 @@ const content = {
       date: "2026.06.18",
       title: { zh: "主站夜间优化汇总", en: "Public Site Nightly Summary", ja: "メインサイト夜間更新まとめ" },
       desc: {
-        zh: "合并昨晚主站优化记录，并按参考图完成知识库文章页 10 轮阅读布局复刻打磨",
-        en: "Merged last night's public-site updates and completed ten reference-matching passes on the knowledge article reader",
-        ja: "昨夜のメインサイト更新をまとめ、参考画像に合わせて知識庫の記事ページを10回調整しました"
+        zh: "合并昨晚主站优化记录，并按参考图完成知识库文章页 10 轮阅读布局复刻打磨；文章窗口不再拉伸占满全站",
+        en: "Merged last night's public-site updates, completed ten reference-matching passes, and kept the article window inside the site frame",
+        ja: "昨夜のメインサイト更新をまとめ、参考画像に合わせて知識庫の記事ページを10回調整し、記事ウィンドウはサイト内サイズに戻しました"
       }
     },
     {
@@ -2255,6 +2255,7 @@ function setArticleReadProgress(percent) {
   const fill = document.getElementById("article-read-progress-fill");
   const value = document.getElementById("article-read-progress-value");
   const bar = document.getElementById("article-read-progress-bar");
+  const topButton = document.querySelector("[data-article-scroll-top]");
   if (fill) {
     fill.style.transform = `scaleX(${bounded / 100})`;
   }
@@ -2265,6 +2266,7 @@ function setArticleReadProgress(percent) {
     bar.setAttribute("aria-valuenow", String(bounded));
     bar.style.setProperty("--article-progress", String(bounded));
   }
+  topButton?.classList.toggle("is-at-article-top", bounded <= 2);
 }
 
 function resetArticleReadProgress() {

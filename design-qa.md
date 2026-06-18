@@ -9,13 +9,16 @@ Prototype captures:
 - `F:\lusu575个人站-public-loop\output\public-loop-qa\20260618-article-10loop\final-desktop-top.png`
 - `F:\lusu575个人站-public-loop\output\public-loop-qa\20260618-article-10loop\final-desktop-scrolled-68.png`
 - `F:\lusu575个人站-public-loop\output\public-loop-qa\20260618-article-10loop\final-mobile.png`
+- `F:\lusu575个人站-public-loop\output\public-loop-qa\20260618-article-contained-window\desktop-contained-final2.png`
+- `F:\lusu575个人站-public-loop\output\public-loop-qa\20260618-article-contained-window\mobile-contained-top-final2.png`
+- `F:\lusu575个人站-public-loop\output\public-loop-qa\20260618-article-contained-window\mobile-contained-scrolled-final2.png`
 
 ## Checks
 
-- Desktop window now fills the viewport like the reference, with a 48px XP titlebar and three titlebar controls.
+- Desktop window now stays inside the site frame instead of filling the whole viewport, while keeping the 48px XP titlebar and three titlebar controls.
 - Back button, left contents sidebar, right article card, bottom dashed divider, reading progress, and back-to-top button are aligned to the reference layout.
 - Reading progress uses a single-row bottom bar with a blue segmented fill and a separate right-side percentage.
-- Back-to-top no longer collides with the progress bar on desktop or mobile.
+- Back-to-top no longer collides with the progress bar, taskbar, or mobile contents controls; on mobile it appears after scrolling away from the article top.
 - Article contents and body continue using DOM/textContent-safe rendering paths.
 - Mobile layout remains single-column with no horizontal overflow.
 - Three-language article switching was verified through restored window controls and direct article links.
