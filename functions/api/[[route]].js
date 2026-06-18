@@ -1499,7 +1499,8 @@ async function getAdminAnalyticsOverview(request, env) {
       limit 30
     `).all(),
     env.DB.prepare(`
-      select created_at, visitor_id, path, target_text, target_key, tag_name, data_route, country, region, city
+      select created_at, visitor_id, path, target_text, target_key, tag_name, data_route,
+             screen_width, screen_height, country, region, city
       from analytics_click_events
       order by created_at desc
       limit 30
@@ -2174,8 +2175,7 @@ async function getSession(request, env) {
     return null;
   }
 
-  const email = normalizeEmail(row.email);
-  const role = OWNER_ADMIN_EMAILS.has(email) ? "admin" : (row.role || "user");
+  const role = row.role || "user";
   return { tokenHash, user: { id: row.id, email: row.email, role } };
 }
 
