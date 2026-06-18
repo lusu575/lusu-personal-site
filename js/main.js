@@ -480,6 +480,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "🎨",
+      date: "2026.06.18",
+      title: { zh: "主端视觉改版循环更新", en: "Main Site Visual Polish Cycle", ja: "メインサイト視覚調整サイクル更新" },
+      desc: {
+        zh: "本次循环统一打磨首页、知识库、视频区、资源区、游戏区、聊天室、关于我和账号入口的 XP 桌面视觉与移动端排版",
+        en: "This cycle polished the XP desktop visuals and responsive layout across Home, Knowledge, Videos, Resources, Games, Chat, About, and Account surfaces",
+        ja: "今回のサイクルでは、ホーム、知識庫、動画、リソース、ゲーム、チャット、About、アカウント周りの XP デスクトップ表示とモバイル配置を整えました"
+      }
+    },
+    {
       icon: "🪟",
       date: "2026.06.18",
       title: { zh: "主站夜间优化汇总", en: "Public Site Nightly Summary", ja: "メインサイト夜間更新まとめ" },
@@ -1332,8 +1342,8 @@ const videoWindowState = {
 
 const languageStorageKey = "lusu-site-language";
 const siteUpdateCategory = "site-updates";
-const publicLoopNightlyUpdateSlug = "2026-06-18-public-site-nightly-update";
-const publicLoopNightlyUpdateTitleEn = "Public Site Nightly Summary";
+const publicLoopNightlyUpdateSlug = "2026-06-18-main-visual-polish-cycle";
+const publicLoopNightlyUpdateTitleEn = "Main Site Visual Polish Cycle";
 const publicLoopNightlyCollapsedSlugs = new Set([
   "2026-06-17-knowledge-search",
   "2026-06-17-article-share-link",
@@ -1942,7 +1952,12 @@ function renderKnowledgeCategoryButtons(categories) {
     button.className = `${activeFilters.knowledge === value ? "active " : ""}category-button`;
     button.dataset.filterType = "knowledge";
     button.dataset.filter = value;
-    button.textContent = articleCategoryName(value);
+    const labelText = articleCategoryName(value);
+    button.title = labelText;
+    button.setAttribute("aria-label", labelText);
+    const labelNode = document.createElement("span");
+    labelNode.textContent = labelText;
+    button.appendChild(labelNode);
     return button;
   });
   target.replaceChildren(...buttons);
@@ -2638,17 +2653,11 @@ function renderVideos() {
   renderVideoCategoryButtons();
   list.replaceChildren();
   if (videoState.loading) {
-    const loading = document.createElement("p");
-    loading.className = "loading-text";
-    loading.textContent = videoUiText("loading");
-    list.appendChild(loading);
+    list.appendChild(renderVideoStatusState("loading"));
     return;
   }
   if (videoState.error) {
-    const error = document.createElement("p");
-    error.className = "loading-text";
-    error.textContent = videoUiText("failed");
-    list.appendChild(error);
+    list.appendChild(renderVideoStatusState("failed"));
     return;
   }
   const items = videoState.videos.filter((item) => (
@@ -2660,6 +2669,25 @@ function renderVideos() {
     return;
   }
   items.forEach((item) => list.appendChild(videoCardElement(item)));
+}
+
+function renderVideoStatusState(kind) {
+  const state = document.createElement("article");
+  state.className = "video-empty-state video-status-state";
+
+  const icon = document.createElement("span");
+  icon.className = "video-empty-icon";
+  icon.setAttribute("aria-hidden", "true");
+  icon.textContent = kind === "loading" ? "▣" : "!";
+
+  const copy = document.createElement("div");
+  copy.className = "video-empty-copy";
+  const title = document.createElement("h3");
+  title.textContent = videoUiText(kind);
+
+  copy.appendChild(title);
+  state.append(icon, copy);
+  return state;
 }
 
 function renderVideoEmptyState(isFiltered = false) {
@@ -2695,11 +2723,16 @@ function renderVideoCategoryButtons() {
   const categories = [{ category_id: "all", name: t("all") }, ...videoState.categories];
   categories.forEach((category) => {
     const button = document.createElement("button");
+    const name = category.name || category.name_zh || category.slug || t("all");
     button.type = "button";
     button.dataset.filterType = "videos";
     button.dataset.filter = category.category_id;
-    button.textContent = category.name || category.name_zh || category.slug || t("all");
+    button.title = name;
+    button.setAttribute("aria-label", name);
     button.classList.toggle("active", activeFilters.videos === category.category_id);
+    const labelNode = document.createElement("span");
+    labelNode.textContent = name;
+    button.appendChild(labelNode);
     target.appendChild(button);
   });
 }
