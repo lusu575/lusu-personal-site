@@ -8,7 +8,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32.png?v=20260611-unified-tv-icon">
   <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png?v=20260611-unified-tv-icon">
   <link rel="alternate" type="application/rss+xml" title="LuSu Site RSS" href="/api/rss.xml?lang=zh" data-rss-alternate>
-  <link rel="stylesheet" href="/css/style.css?v=20260618-article-layout-summary">
+  <link rel="stylesheet" href="/css/style.css?v=20260618-article-reference-layout">
 </head>
 <body>
   <div class="site-shell">
@@ -137,6 +137,22 @@
                   <span id="article-read-progress-fill"></span>
                 </div>
               </div>
+              <aside class="article-reader-sidebar">
+                <nav class="article-toc" id="article-detail-toc" aria-label="文章目录" data-i18n-aria-label="articleTocTitle" hidden>
+                  <p>
+                    <span class="article-toc-icon" aria-hidden="true">📖</span>
+                    <span data-i18n="articleTocTitle">文章目录</span>
+                  </p>
+                  <div id="article-detail-toc-list"></div>
+                </nav>
+                <div class="article-toc-tip">
+                  <strong>
+                    <span aria-hidden="true">📌</span>
+                    <span data-i18n="articleTocTipTitle">小贴士</span>
+                  </strong>
+                  <p data-i18n="articleTocTip">点击目录项可快速跳转到对应章节</p>
+                </div>
+              </aside>
               <div class="article-detail-card">
                 <div class="article-detail-head">
                   <div class="meta-row" id="article-detail-meta"></div>
@@ -150,10 +166,6 @@
                     <span class="article-copy-status" id="article-copy-status" aria-live="polite"></span>
                   </div>
                 </div>
-                <nav class="article-toc" id="article-detail-toc" aria-label="文章目录" data-i18n-aria-label="articleTocTitle" hidden>
-                  <p data-i18n="articleTocTitle">文章目录</p>
-                  <div id="article-detail-toc-list"></div>
-                </nav>
                 <div class="markdown-body" id="article-detail-body"></div>
               </div>
             </article>
@@ -349,6 +361,6 @@
   </div>
 
   <script src="/js/telemetry.js?v=20260615-video-window-controls"></script>
-  <script src="/js/main.js?v=20260618-article-layout-summary"></script>
+  <script src="/js/main.js?v=20260618-article-reference-layout"></script>
 </body>
 </html>

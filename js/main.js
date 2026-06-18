@@ -51,6 +51,8 @@ const translations = {
     articleCopyFailed: "复制失败，请手动复制地址栏链接。",
     articleReadProgress: "阅读进度",
     articleTocTitle: "文章目录",
+    articleTocTipTitle: "小贴士",
+    articleTocTip: "点击目录项可快速跳转到对应章节",
     articleScrollTop: "回到顶部",
     articlePublished: "发布时间",
     articleCategory: "分类",
@@ -194,6 +196,8 @@ const translations = {
     articleCopyFailed: "Copy failed. Please copy the address bar link manually.",
     articleReadProgress: "Reading progress",
     articleTocTitle: "Contents",
+    articleTocTipTitle: "Tip",
+    articleTocTip: "Click a contents item to jump to that section.",
     articleScrollTop: "Back to top",
     articlePublished: "Published",
     articleCategory: "Category",
@@ -337,6 +341,8 @@ const translations = {
     articleCopyFailed: "コピーできません。アドレスバーのリンクを手動でコピーしてください。",
     articleReadProgress: "読書進捗",
     articleTocTitle: "目次",
+    articleTocTipTitle: "ヒント",
+    articleTocTip: "目次項目をクリックすると対応する章へ移動できます。",
     articleScrollTop: "先頭へ戻る",
     articlePublished: "公開日",
     articleCategory: "分類",
@@ -472,9 +478,9 @@ const content = {
       date: "2026.06.18",
       title: { zh: "主站夜间优化汇总", en: "Public Site Nightly Summary", ja: "メインサイト夜間更新まとめ" },
       desc: {
-        zh: "合并昨晚主站优化记录：阅读体验、资源区、游戏区、RSS、安全渲染和移动端适配统一收进一篇更新",
-        en: "Merged last night's public-site updates into one record covering reading, resources, games, RSS, safe rendering, and mobile layout",
-        ja: "昨夜のメインサイト更新を一つにまとめ、読書体験、リソース、ゲーム、RSS、安全描画、モバイル調整を整理しました"
+        zh: "合并昨晚主站优化记录：文章页布局、阅读体验、资源区、游戏区、RSS、安全渲染和移动端适配统一收进一篇更新",
+        en: "Merged last night's public-site updates into one record covering article layout, reading, resources, games, RSS, safe rendering, and mobile layout",
+        ja: "昨夜のメインサイト更新を一つにまとめ、記事レイアウト、読書体験、リソース、ゲーム、RSS、安全描画、モバイル調整を整理しました"
       }
     },
     {
@@ -2105,13 +2111,13 @@ function renderArticleDetail(article) {
   summary.textContent = article.summary || "";
   meta.replaceChildren();
   [
-    `${t("articleCategory")}：${articleCategoryName(article.category || "note")}`,
-    `${t("articlePublished")}：${formatArticleDate(article.published_at || article.created_at)}`,
-    ...(article.tags || []).map((tag) => `#${articleTagName(tag)}`),
-    article.lang !== currentLang ? t("articleFallback") : ""
-  ].filter(Boolean).forEach((text) => {
+    { text: `${t("articleCategory")}：${articleCategoryName(article.category || "note")}`, className: "article-meta-item article-meta-category" },
+    { text: `${t("articlePublished")}：${formatArticleDate(article.published_at || article.created_at)}`, className: "article-meta-item article-meta-published" },
+    ...(article.tags || []).map((tag) => ({ text: `#${articleTagName(tag)}`, className: "tag" })),
+    article.lang !== currentLang ? { text: t("articleFallback"), className: "tag" } : null
+  ].filter(Boolean).forEach(({ text, className }) => {
     const item = document.createElement("span");
-    item.className = text.startsWith("#") || text === t("articleFallback") ? "tag" : "";
+    item.className = className;
     item.textContent = text;
     meta.appendChild(item);
   });
@@ -2149,18 +2155,46 @@ function renderArticleToc() {
     resetArticleToc();
     return;
   }
-  const buttons = headings.map(({ heading, index, text }) => {
+  const buttons = headings.map(({ heading, index, text }, itemIndex) => {
     const id = articleHeadingId(index);
     heading.id = id;
     const button = document.createElement("button");
     button.type = "button";
     button.className = `article-toc-link level-${heading.tagName === "H3" ? "3" : "2"}`;
+    if (itemIndex === 0) {
+      button.classList.add("is-active");
+    }
     button.dataset.articleHeadingTarget = id;
     button.textContent = text;
     return button;
   });
   list.replaceChildren(...buttons);
   toc.hidden = false;
+  updateArticleTocActive();
+}
+
+function updateArticleTocActive() {
+  const detail = document.getElementById("article-detail");
+  const body = document.getElementById("article-detail-body");
+  const list = document.getElementById("article-detail-toc-list");
+  if (!detail || detail.hidden || !body || !list) {
+    return;
+  }
+  const headings = [...body.querySelectorAll("h2[id], h3[id]")];
+  const links = [...list.querySelectorAll("[data-article-heading-target]")];
+  if (!headings.length || !links.length) {
+    return;
+  }
+  const detailTop = detail.getBoundingClientRect().top;
+  let activeId = headings[0].id;
+  headings.forEach((heading) => {
+    if (heading.getBoundingClientRect().top - detailTop <= 108) {
+      activeId = heading.id;
+    }
+  });
+  links.forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.articleHeadingTarget === activeId);
+  });
 }
 
 function scrollToArticleHeading(targetId) {
@@ -2172,6 +2206,7 @@ function scrollToArticleHeading(targetId) {
     return;
   }
   heading.scrollIntoView({ block: "start", behavior: "smooth" });
+  updateArticleTocActive();
   scheduleArticleReadProgressUpdate();
 }
 
@@ -2228,9 +2263,11 @@ function updateArticleReadProgress() {
   const scrollable = Math.max(0, detail.scrollHeight - detail.clientHeight);
   if (scrollable <= 1) {
     setArticleReadProgress(100);
+    updateArticleTocActive();
     return;
   }
   setArticleReadProgress((detail.scrollTop / scrollable) * 100);
+  updateArticleTocActive();
 }
 
 function scheduleArticleReadProgressUpdate() {
