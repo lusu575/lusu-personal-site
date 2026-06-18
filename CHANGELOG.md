@@ -6,6 +6,200 @@
 
 - 管理后台循环优化整合更新：将昨晚 `/admin/` 管理后台循环优化的多条 checkpoint 更新说明合并为一条后台私有更新记录；本轮集中完成后台渲染安全收口、账号与聊天室隐私保护、视频链接与 IP 前缀校验、表单写入/详情读取/列表刷新期间的锁定防护、重复请求和状态错位修复，并同步优化视频分类占用提示、置顶排序联动、封面预览隐私、移动端输入提示和后台移动端可读性；后台私有更新仍只写入 `adminUpdates` 与 `admin/docs/ADMIN_CHANGELOG.md`，不写入主站 `site-updates` 或 `js/main.js` 最近更新。
 
+- 主站夜间更新汇总与文章浮层整理：
+  - 将昨晚主站公开侧多篇细碎 `site-updates` 收口为一篇三语“主站夜间优化汇总 / Public Site Nightly Summary / メインサイト夜間更新まとめ”文章；公开文章列表、本地 fallback 最近更新和 RSS 均隐藏 2026-06-17 夜间与 2026-06-18 的单项记录，仅保留汇总入口。
+  - 知识库文章详情里的“回到顶部”从标题操作区移到右下角浮动位置，阅读进度条移到窗口底部任务栏上方，并为桌面端和移动端预留底部阅读安全区。
+  - 参考验收图重排知识库文章页：桌面端改为左侧文章目录、小贴士侧栏，右侧正文阅读卡片，底部阅读进度条和“回到顶部”按钮并排悬浮；移动端自动收为单栏。
+  - 按参考图追加 10 轮文章页视觉打磨：阅读态知识库窗口保持站内 XP 窗口尺寸，不再拉伸占满整个网站；标题栏补最小化/最大化/关闭三按钮，进度条改成底部单行蓝色分段条，并把回到顶部按钮对齐到右侧同一行。
+  - 更新 `index.html` 的 CSS / JS query 为 `20260618-article-contained-window`，并同步公开 Functions seed、D1 schema seed 和三语 fallback 最近更新。
+
+- 资源空分类提示：
+  - 资源区点击数量为 0 的分类时新增 XP 风格三语空状态，提示该分类仍在整理中。
+  - 空状态的标题、说明和“显示全部资源”按钮均通过 DOM / `textContent` 构建，按钮只把资源筛选切回 `all`。
+  - 更新 `index.html` 的 CSS / JS query 为 `20260618-resource-empty-state`，并新增同名三语 `site-updates` 更新文章。
+
+- 资源分类数量徽标：
+  - 资源区分类筛选按钮新增数量徽标，`全部 / All / すべて` 显示资源总数，各分类显示当前分类资源数量。
+  - 分类按钮继续通过 DOM / `textContent` 构建，数量只来自本地 `content.resources`，不会改变下载/外链安全校验。
+  - 更新 `index.html` 的 CSS / JS query 为 `20260618-resource-filter-counts`，并新增同名三语 `site-updates` 更新文章。
+
+- 资源卡片状态徽标：
+  - 资源区卡片 meta row 新增状态徽标：无安全 URL 时显示“准备中 / Coming soon / 準備中”，有可用 URL 时显示“可获取 / Ready / 利用可”。
+  - 状态判断复用 `safeResourceUrl()`，下载/外链按钮继续只接受安全项目路径或 `http(s)` 链接；原有禁用按钮行为不变。
+  - 更新 `index.html` 的 CSS / JS query 为 `20260618-resource-status-badges`，并新增同名三语 `site-updates` 更新文章。
+- 游戏卡片信息增强：
+  - 游戏区卡片会根据 catalog 的 `storage` 字段显示“云存档 / Cloud save / クラウド保存”徽标，进入游戏前能看到存档状态。
+  - 有 `repo` 的游戏新增“来源 / Source / 出典”链接，链接先经过 `safeHttpUrl()` 校验并限制为 `http(s)`；入口 iframe 和云存档同步逻辑不变。
+  - 更新 `index.html` 的 CSS / JS query 为 `20260618-game-info-badges`，并新增同名三语 `site-updates` 更新文章。
+- 文章回到顶部按钮：
+  - 知识库文章详情复制链接按钮旁新增三语“回到顶部 / Back to top / 先頭へ戻る”按钮，方便目录跳转后快速回到标题区。
+  - 点击只滚动当前文章详情容器，并同步阅读进度条；不改变路由、正文 Markdown 渲染或后台接口。
+  - 更新 `index.html` 的 CSS / JS query 为 `20260618-article-scroll-top`，并新增同名三语 `site-updates` 更新文章。
+- 文章目录导航：
+  - 知识库文章详情会在安全 Markdown 渲染后读取正文 `h2` / `h3`，生成三语“文章目录 / Contents / 目次”导航。
+  - 目录按钮通过 DOM / `textContent` 创建，只允许滚动到内部 `article-heading-N` 目标；少于两个标题的短文不显示目录。
+  - 更新 `index.html` 的 CSS / JS query 为 `20260618-article-toc`，并新增同名三语 `site-updates` 更新文章。
+- 文章阅读进度条：
+  - 知识库文章详情头部下方新增三语“阅读进度”槽条和百分比，长文滚动时能看到当前位置。
+  - 进度条通过 `transform: scaleX()` 更新，并同步 `progressbar` 的 `aria-valuenow`；正文仍走安全 Markdown DOM 渲染。
+  - 更新 `index.html` 的 CSS / JS query 为 `20260618-article-progress`，并新增同名三语 `site-updates` 更新文章。
+- RSS 发现链接同步：
+  - 首页 `<head>` 里的 RSS `rel="alternate"` 链接新增同步标记，语言切换时会跟随当前 `lang` 更新。
+  - 欢迎窗口 RSS 按钮和浏览器/RSS 阅读器可发现的 feed 链接现在指向同一语言版本。
+  - 更新 `index.html` 的 JS query 为 `20260618-rss-alternate-lang`，并新增同名三语 `site-updates` 更新文章。
+- 文章链接保留语言：
+  - 知识库文章卡片和欢迎窗口“最近更新”文章链接的真实 `href` 会带上当前 `lang` 参数，右键新开标签也保留语言。
+  - 文章详情“复制文章链接”复用同一条链接生成逻辑，继续输出当前语言直链。
+  - 更新 `index.html` 的 JS query 为 `20260618-article-link-lang`，并新增同名三语 `site-updates` 更新文章。
+- 最近更新完整提示：
+  - 欢迎窗口“最近更新”列表的每条链接新增完整 `title` 与 `aria-label`，包含标题、摘要和日期。
+  - 屏幕上继续保留紧凑截断展示，链接提示和读屏名称使用 DOM / `textContent` 来源，不插入未处理 HTML。
+  - 更新 `index.html` 的 JS query 为 `20260618-recent-update-labels`，并新增同名三语 `site-updates` 更新文章。
+- RSS 按钮文案整理：
+  - 欢迎窗口 RSS 按钮保留橙色 `RSS` 徽标，可见文案改为“订阅 / Feed / 購読”，避免重复显示 RSS。
+  - 链接新增跟随当前语言切换的完整 `aria-label`，读屏仍可获得完整 RSS 订阅含义。
+  - `?welcome=1` 现在会跳过“今日已看过”记录，方便复查欢迎窗口三语可见态；普通首访每日只弹一次逻辑不变。
+  - 更新 `index.html` 的 JS query 为 `20260618-rss-button-label`，并新增同名三语 `site-updates` 更新文章。
+- RSS 订阅入口：
+  - 新增公开 `GET /api/rss.xml` / `/api/feed.xml`，按 `lang` 输出已发布文章和站点更新的 RSS XML。
+  - 首页“最近更新”面板新增三语 RSS 链接，语言切换时会同步到当前语言的 feed。
+  - 更新 `index.html` 的 CSS/JS query 为 `20260618-rss-feed-entry`，并新增同名三语 `site-updates` 更新文章。
+- 静态图片尺寸提示：
+  - 顶部品牌头像、聊天室头像、关于页头像和 Start 图标补充真实 `width` / `height` 属性，CSS 展示尺寸保持不变。
+  - 帮助浏览器在图片解码前保留稳定比例，降低首屏和固定 UI 的布局不确定性。
+  - 更新 `index.html` 的 JS query 为 `20260618-static-image-dimensions`，并新增同名三语 `site-updates` 更新文章。
+- 文章标签本地化：
+  - `tagLabels` 补齐安全、iframe、聊天室、云存档、筛选、图片、账号等公开文章标签的中文 / English / 日本語显示。
+  - 知识库列表、文章详情和最近更新入口继续使用安全 DOM / `textContent` 输出标签，不改变文章数据。
+  - 更新 `index.html` 的 JS query 为 `20260618-article-tag-locales`，并新增同名三语 `site-updates` 更新文章。
+- 游戏 iframe 启动路径守卫：
+  - `game-shell.js` 新增 `safeGameSourceEntry()`，只允许游戏 catalog 把 iframe 指向本地 `source/...html` 页面。
+  - 游戏启动语言 query 参数名新增格式校验，异常配置会回退到 `lang`，不再直接拼进 iframe URL。
+  - 5 个游戏入口页的 `game-shell.js` query 更新为 `20260618-game-frame-source-guard`，并新增同名三语 `site-updates` 更新文章。
+- 聊天室昵称本地化：
+  - 前端请求 `/api/chat/nickname` 时带上当前 `lang`，新随机昵称会跟随中文 / English / 日本語界面。
+  - 本地 fallback 随机昵称拆分为三语词库，接口不可用时仍能生成与当前语言匹配的昵称。
+  - 更新 `index.html` 的 JS query 为 `20260618-chat-nickname-locale`，并新增同名三语 `site-updates` 更新文章。
+- 文章图片路径守卫：
+  - 文章 Markdown 图片仍只允许 `assets/images/articles/` 下的项目资源，并继续通过安全 DOM 渲染。
+  - `safeArticleImageSrc()` 新增 `..` 路径片段拒绝，避免图片路径逃出文章图片目录。
+  - 更新 `index.html` 的 JS query 为 `20260618-article-image-path-guard`，并新增同名三语 `site-updates` 更新文章。
+- 资源链接白名单：
+  - 资源区下载/外链 URL 改为先经过 `safeHttpUrl()` 规范化；无效协议继续显示准备中按钮。
+  - 本地资源路径只接受安全的 `assets/` 或 `downloads/` 路径，并拒绝 `..` 路径穿越片段。
+  - 更新 `index.html` 的 JS query 为 `20260618-resource-url-allowlist`，并新增同名三语 `site-updates` 更新文章。
+- 视频链接白名单：
+  - 公开视频卡片缩略图在前端补充域名白名单，只接受 YouTube / Bilibili 图片域或本地 `data:image` 封面。
+  - 播放窗口的“打开原地址”和 iframe `src` 也补充前端校验：原地址只接受 YouTube / Bilibili / b23，embed 只接受 YouTube embed 或 Bilibili player。
+  - 更新 `index.html` 的 JS query 为 `20260618-video-url-allowlist`，并新增同名三语 `site-updates` 更新文章。
+- 游戏链接白名单：
+  - 游戏列表入口 URL 补充白名单校验：本地入口只接受 `games/catalog.json` 中的安全目录名，外部链接和仓库链接只接受 `http(s)`。
+  - 游戏封面只接受 `assets/images/` 下的常见图片路径；无效封面回退到游戏图标，无效入口显示禁用按钮，不输出不可信链接。
+  - 更新 `index.html` 的 JS query 为 `20260618-game-url-allowlist`，并新增同名三语 `site-updates` 更新文章。
+- 游戏列表安全渲染：
+  - 游戏区列表从字符串 `innerHTML` 模板改为 DOM / `textContent` 构建，游戏标题、简介、语言支持标签、许可证和加载/失败提示都按文本节点渲染。
+  - 游戏封面懒加载与异步解码、入口链接、外部链接打开方式、云存档和游戏入口页逻辑保持不变。
+  - 更新 `index.html` 的 JS query 为 `20260618-game-list-safe-dom`，并新增同名三语 `site-updates` 更新文章。
+- 资源筛选安全渲染：
+  - 资源区分类筛选按钮从字符串 `innerHTML` 拼接改为 DOM / `textContent` 构建，分类名、`data-filter`、active 状态和点击筛选行为保持不变。
+  - 视频区筛选按钮此前已经是 DOM 渲染，本轮只补齐通用资源筛选路径；后台目录和管理接口未触碰。
+  - 更新 `index.html` 的 JS query 为 `20260618-resource-filters-safe-dom`，并新增同名三语 `site-updates` 更新文章。
+- 知识库筛选安全渲染：
+  - 知识库分类筛选按钮从字符串 `innerHTML` 拼接改为 DOM / `textContent` 构建，分类名、`data-filter`、active 状态和点击筛选行为保持不变。
+  - 配合上一轮文章卡片 DOM 渲染，知识库列表和筛选控件不再依赖文章/分类字符串拼接输出。
+  - 更新 `index.html` 的 JS query 为 `20260618-knowledge-filters-safe-dom`，并新增同名三语 `site-updates` 更新文章。
+- 知识库列表安全渲染：
+  - 知识库文章列表从字符串 `innerHTML` 拼接改为 DOM / `textContent` 构建，标题、摘要、标签、发布日期和阅读入口都按纯文本节点渲染。
+  - 搜索、分类筛选、文章详情直链、fallback 语言提示和阅读按钮行为保持不变。
+  - 更新 `index.html` 的 JS query 为 `20260618-knowledge-list-safe-dom`，并新增同名三语 `site-updates` 更新文章。
+- 最近更新安全渲染：
+  - 首页“最近更新”列表从字符串 `innerHTML` 拼接改为 DOM / `textContent` 构建，标题、摘要、日期和图标都按纯文本节点渲染。
+  - 文章直链、`site-updates` 工具图标、本地 fallback 图标和最近更新日期逻辑保持不变。
+  - 更新 `index.html` 的 JS query 为 `20260618-recent-updates-safe-dom`，并新增同名三语 `site-updates` 更新文章。
+- 最近更新图标优化：
+  - 首页“最近更新”列表从文章 API 读取 `site-updates` 时，会显示更贴近网站更新的工具图标，不再把所有 API 文章都显示成书本图标。
+  - 本地 fallback 最近更新继续保留各自图标；普通文章仍回退为书本图标。
+  - 更新 `index.html` 的 JS query 为 `20260618-recent-update-icons`，并新增同名三语 `site-updates` 更新文章。
+- 账号弹窗安全 DOM 渲染：
+  - 顶部账号 / 云存档弹窗从模板字符串 `innerHTML` 改为 DOM / `textContent` 构建，邮箱、接口错误和状态提示都继续按纯文本显示。
+  - 登录、注册、退出账号、语言切换后重渲染和云存档说明逻辑保持不变。
+  - 更新 `index.html` 的 JS query 为 `20260618-account-safe-dom`，并新增同名三语 `site-updates` 更新文章。
+- 游戏外壳安全 DOM 渲染：
+  - 游戏入口页的云存档面板从字符串 `innerHTML` 拼接改为 DOM / `textContent` 构建，邮箱、状态提示和按钮文案继续按文本渲染。
+  - 游戏入口页协议栏改为 DOM 构建，并限制协议文件为相对路径、上游仓库为 `http(s)` 链接；游戏 iframe、云存档同步和入口语言逻辑不变。
+  - 为 5 个游戏入口页的 `game-shell.js` 增加 `20260618-game-shell-safe-dom` 缓存版本，并新增同名三语 `site-updates` 更新文章。
+- 资源入口文案对齐：
+  - 英文桌面入口从 `Files TBD` 改为 `Resources TBD`，日文入口从 `資料（未定）` 改为 `リソース（未定）`，和资源窗口标题保持一致。
+  - 中文入口继续显示 `资源区（待定）`；只调整公开主站翻译和最近更新记录，不改变资源区路由、占位状态或数据。
+  - 更新 `index.html` 的 JS query 为 `20260618-resource-label-sync`，并新增同名三语 `site-updates` 更新文章。
+- 视频缩略图异步解码：
+  - 公开视频卡片的缩略图在已有 `loading="lazy"` 基础上补充 `decoding="async"`，和文章配图、游戏封面图片的加载策略保持一致。
+  - 视频列表、视频分类、播放窗口、外链白名单和公开视频 API 行为不变。
+  - 更新 `index.html` 的 JS query 为 `20260618-video-thumb-decoding`，并新增同名三语 `site-updates` 更新文章。
+- 资源占位提示补齐：
+  - 资源区没有真实 URL 的“准备中 / Coming soon / 準備中”按钮增加当前语言的 `title`、`aria-label` 和 `aria-disabled`，明确这些占位项暂时没有下载或外链。
+  - 继续保留既有 URL 白名单和禁用按钮行为，不新增无效链接，也不改变资源数据结构。
+  - 更新 `index.html` 的 JS query 为 `20260618-resource-placeholder-hints`，并新增同名三语 `site-updates` 更新文章。
+- 游戏外壳三语同步：
+  - 统一游戏入口页的返回入口、加载状态、本地存档工具、导入导出按钮、云端存档面板、协议链接和状态提示，跟随 `?lang=zh|en|ja` 显示中文 / English / 日本語。
+  - 游戏标题、iframe 标题和语言支持副标题改为使用当前语言；游戏本体 iframe、启动语言、云存档同步、导入导出逻辑不变。
+  - 为 5 个游戏入口页的 `game-shell.js` 增加 `20260618-game-shell-locale` 缓存版本，并新增同名三语 `site-updates` 更新文章。
+- 游戏语言标记三语同步：
+  - 游戏卡片的语言支持标记从固定 `中文 / EN / 日本語` 改为跟随当前语言显示 `中文/英文/日文`、`Chinese/English/Japanese` 或 `中国語/英語/日本語`。
+  - 不支持状态的 `title` 提示也改为三语文案；✓ / × 状态、游戏目录、云存档和入口链接逻辑保持不变。
+  - 更新 `index.html` 的 JS query 为 `20260618-game-language-labels`，并新增同名三语 `site-updates` 更新文章，同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新。
+- 游戏封面异步解码：
+  - 游戏区动态渲染的 `game-cover` 图片在已有 `loading="lazy"` 基础上补充 `decoding="async"`，减少打开游戏列表时的图片解码阻塞。
+  - 只调整公开主站游戏列表图片属性和更新记录，不改变游戏目录、云存档、入口链接或游戏运行逻辑。
+  - 更新 `index.html` 的 JS query 为 `20260618-game-cover-decoding`，并新增同名三语 `site-updates` 更新文章，同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新。
+- 杂谈菜单三语同步：
+  - 杂谈区顶部 Notepad 风格菜单从固定英文 `File Edit View Help` 改为跟随中文 / English / 日本語 显示。
+  - 只调整公开主站静态菜单文案和更新记录，不改杂谈卡片 DOM / `textContent` 安全渲染逻辑。
+  - 更新 `index.html` 的 JS query 为 `20260618-notepad-menu-locale`，并新增同名三语 `site-updates` 更新文章，同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新。
+- 账号弹窗三语同步：
+  - 顶部账号/云存档弹窗的登录、注册、邮箱、密码、云存档说明、退出账号和本地状态提示改为跟随当前语言显示。
+  - 语言切换时会重新渲染账号控件；账号邮箱、错误信息和动态提示继续通过 `escapeHtml` 输出，避免把外部文本当作 HTML 执行。
+  - 更新 `index.html` 的 JS query 为 `20260618-account-widget-locale`，并新增同名三语 `site-updates` 更新文章，同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新。
+- 无障碍标签三语同步：
+  - 新增 `data-i18n-aria-label` / `data-i18n-title` 通用同步逻辑，让无障碍标签和提示标题也能跟随当前语言更新。
+  - 品牌返回按钮、语言切换区域、桌面图标区域、页面关闭按钮、欢迎窗关闭按钮和视频弹窗关闭按钮补充中文 / English / 日本語 `aria-label`。
+  - 更新 `index.html` 的 JS query 为 `20260618-aria-label-localization`，并新增同名三语 `site-updates` 更新文章，同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新。
+- 聊天室标题三语同步：
+  - 修复英文 / 日文界面打开聊天室时窗口标题仍显示中文“匿名聊天室”的问题，现在标题会跟随当前语言显示为 `Chat Room` / `匿名チャット`。
+  - 本轮只调整公开主站 `chatroomTitle` 翻译和更新记录，不改聊天室消息渲染、轮询、昵称或公开 API 安全逻辑。
+  - 更新 `index.html` 的 JS query 为 `20260618-chatroom-title-locale`，并新增同名三语 `site-updates` 更新文章，同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新。
+- 图片加载细节优化：
+  - 聊天室头像和关于页头像补充 `loading="lazy"` 与 `decoding="async"`，减少非当前窗口图片对首屏加载和解码的影响。
+  - 文章 Markdown 配图在继续走 `assets/images/articles/` 白名单和安全 DOM 渲染的基础上补充异步解码，阅读长文时更平滑。
+  - 更新 `index.html` 的 JS query 为 `20260618-image-loading-polish`，并新增同名三语 `site-updates` 更新文章，同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新。
+- 标签三语显示：
+  - 文章列表、文章详情和杂谈卡片的常见中文 seed 标签会跟随中文 / English / 日本語 切换显示，减少英文/日文页面里的中文标签混杂。
+  - 知识库本地搜索会同时匹配原始标签和当前语言标签，例如 English 下可用 `Reading`、`Routing` 等标签词继续搜索。
+  - 更新 `index.html` 的 JS query 为 `20260618-trilingual-tags`，并新增同名三语 `site-updates` 更新文章，同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新。
+- 文章详情搜索条隐藏修复：
+  - 知识库文章详情页会真正隐藏顶部搜索条，避免阅读文章时出现与当前详情无关的搜索控件。
+  - 为 `.knowledge-searchbar[hidden]`、`.content-list[hidden]` 和 `.article-detail[hidden]` 补充明确 `display: none` 规则，防止组件自身 display 样式覆盖 HTML `hidden` 状态。
+  - 更新 `index.html` 的 CSS / JS query 为 `20260618-article-detail-search-hide`，并新增同名三语 `site-updates` 更新文章，同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新。
+- 语言链接参数同步：
+  - 用户点击中文 / English / 日本語 语言按钮后，地址栏 `lang=` 参数会同步更新为当前语言，复制当前页面链接时不再带旧语言。
+  - 主站路由跳转会保留当前查询参数并刷新 `lang=`，文章详情、知识库、视频区、聊天室、游戏区等公开页面继续沿用当前语言上下文。
+  - 更新 `index.html` 的 JS query 为 `20260618-language-url-sync`，并新增同名三语 `site-updates` 更新文章，同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新。
+- 杂谈区占位按钮修复：
+  - 杂谈区没有真实文章详情入口时，卡片动作从无功能“阅读”改为三语“整理中 / Drafting / 準備中”禁用态。
+  - 杂谈区卡片渲染从字符串拼接改为 DOM / `textContent` 构建，后续接入真实杂谈文章时降低 XSS 风险。
+  - 更新 `index.html` 的 JS query 为 `20260618-blog-placeholders`，并新增同名三语 `site-updates` 更新文章，同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新。
+
+- 导航当前态增强：
+  - 底部任务栏按钮和首页 Start 按钮会根据当前 route 同步 `active` 样式，首页 Start 按钮获得更明确的按下态。
+  - 当前任务栏 / Start 按钮同步 `aria-current="page"`；首页桌面图标同步 `aria-pressed`，增强键盘与辅助技术识别。
+  - 更新 `index.html` 的 CSS / JS query 为 `20260618-nav-active-state`，并新增同名三语 `site-updates` 更新文章，同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新。
+
+- 资源区占位按钮修复：
+  - 资源区卡片没有真实下载地址或外部链接时，动作按钮改为三语“准备中 / Coming soon / 準備中”禁用态，不再输出会跳到页面顶部的 `href="#"`。
+  - 资源区卡片渲染从字符串拼接改为 DOM / `textContent` 构建，后续接入真实资源 URL 时降低 XSS 风险；真实 `http(s)` 或项目内 `assets/`、`downloads/` 地址仍会生成下载/外链按钮。
+  - 右上角“最近更新日期”改为按用户本地时区计算日期，避免北京时间 00:00 后发布的 UTC 文章仍显示前一天。
+  - 更新 `index.html` 的 CSS / JS query 为 `20260618-resource-actions`，并新增同名三语 `site-updates` 更新文章，同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新。
+
 ## 2026-06-17
 
 - 管理后台凭据表单语义优化：
@@ -16,6 +210,28 @@
   - `/admin/` 初始化改为只读取管理员身份和当前实时大屏数据，文章、视频、聊天室、禁言和账号资料进入对应后台标签页时再按需加载。
   - 后台手动刷新改为刷新当前标签页数据；30 秒自动刷新只保留在实时大屏、访问来源和点击埋点统计面板内。
   - 更新 `admin/index.html` 的后台 JS query 为 `20260617-lazy-panel-load`，减少线上继续加载旧后台脚本的概率；后台私有细节记录在 `admin/docs/ADMIN_CHANGELOG.md`。
+
+- 文章直链欢迎窗修复：
+  - 首次打开文章详情、知识库、视频区等非首页直链时，不再自动弹出欢迎窗口遮挡目标内容；首页首次访问仍保留欢迎弹窗。
+  - `?welcome=0` 继续禁用欢迎窗，`?welcome=1` 可显式触发欢迎窗，便于人工检查欢迎窗口。
+  - 更新 `index.html` 的 JS query 为 `20260617-route-aware-welcome`，并新增同名三语 `site-updates` 更新文章，同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新。
+
+- 视频区空状态增强：
+  - 视频区在当前没有公开视频或筛选分类无结果时，显示 XP 风格空状态卡片，说明视频区内容正在整理中。
+  - 空状态提供“查看网站更新”入口，复用现有知识库分类跳转，不影响已有视频卡片、播放窗口和后台视频数据。
+  - 更新 `index.html` 的 CSS / JS query 为 `20260617-video-empty-state`，并新增同名三语 `site-updates` 更新文章，同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新。
+
+- 文章详情复制链接：
+  - 知识库文章详情头部新增 XP 风格“复制文章链接”按钮，生成包含当前语言参数的直链，方便分享文章详情页。
+  - 复制成功 / 失败状态使用中文 / English / 日本語 文案，通过 `textContent` 更新，不影响 Markdown 安全渲染。
+  - 更新 `index.html` 的 CSS / JS query 为 `20260617-article-share-link`，并新增同名三语 `site-updates` 更新文章，同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新。
+
+- 知识库本地搜索：
+  - 主站知识库窗口顶部新增 XP 风格搜索条，可在当前已加载文章中按标题、简介、分类、slug 和标签即时过滤。
+  - 搜索状态会显示命中数量，清空按钮可一键恢复完整列表；输入和状态文案同步维护中文 / English / 日本語。
+  - 手机端搜索条改为自然换行布局，保持知识库列表无横向溢出。
+  - 顺手修复 fallback 视频数据打开播放窗口时标题显示为 `[object Object]` 的问题，弹窗标题和 iframe title 统一使用当前语言文本。
+  - 更新 `index.html` 的 CSS / JS query 为 `20260617-knowledge-search`，并新增同名三语 `site-updates` 更新文章，同步 `functions/api/[[route]].js`、`cloudflare/schema.sql` 和 `js/main.js` fallback 最近更新。
 
 ## 2026-06-16
 

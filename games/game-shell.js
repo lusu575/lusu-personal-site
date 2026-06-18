@@ -11,6 +11,130 @@
   const cloudPanel = document.getElementById("cloud-panel");
   const cloudMetaPrefix = "lusu.cloudSave.";
   const backToGamesUrl = `../../index.html?lang=${encodeURIComponent(requestedSiteLang)}#games`;
+  const shellTranslations = {
+    zh: {
+      backToGames: "返回个人站游戏区",
+      loading: "加载中...",
+      saveToolTitle: "本地存档工具",
+      saveToolDesc: "游戏默认使用浏览器本地存储。你可以下载 JSON 备份，也可以导入备份。",
+      exportSave: "下载存档",
+      importSave: "导入存档",
+      ready: "准备就绪",
+      cloudSave: "云端存档",
+      syncNow: "立即同步",
+      logout: "退出",
+      notSignedIn: "未登录，当前使用本地存档。",
+      signinHint: "如需自动云存档，请回主界面右上角登录账号。",
+      loginFromHome: "回主界面登录",
+      loggedOutPanel: "已退出，当前仍会保留本地存档。",
+      loggedOutStatus: "已退出账号，本地存档仍在当前浏览器。",
+      mergedCloudScore: "已合并云端历史分数，游戏会从新对局开始。",
+      restoreCloudConfirm: "检测到云端存档较新，要恢复云端存档吗？",
+      restoredCloud: "已恢复云端存档，正在加载游戏。",
+      signedInNoCloud: "已登录云端存档，暂时没有可恢复的云端数据。",
+      cloudUnavailable: "云端存档暂不可用：{message}",
+      noLocalSave: "还没有找到本地存档，先玩一会儿再同步。",
+      cloudSynced: "云端存档已同步：{time}",
+      cloudOk: "云端同步正常。",
+      cloudSyncFailed: "云端同步失败：{message}",
+      exportSuccess: "已导出 {count} 项本地存档。",
+      noGameSave: "未找到该游戏的本地存档。",
+      saveMismatch: "存档文件与当前游戏不匹配。",
+      saveImported: "存档已导入，正在刷新游戏。",
+      importFailed: "导入失败：{message}",
+      shellTitleSuffix: "鲁肃的个人站",
+      licenseLabel: "开源协议：",
+      licenseFile: "查看协议文件",
+      upstreamRepo: "上游仓库",
+      loadedCloud: "游戏已加载，云端存档会自动同步。",
+      loadedLocal: "游戏已加载，本地存档会保存在当前浏览器。",
+      gameLoadFailed: "游戏加载失败",
+      invalidGameSource: "游戏启动路径无效"
+    },
+    en: {
+      backToGames: "Back to Games",
+      loading: "Loading...",
+      saveToolTitle: "Local Save Tools",
+      saveToolDesc: "Games use browser local storage by default. You can download a JSON backup or import one here.",
+      exportSave: "Download Save",
+      importSave: "Import Save",
+      ready: "Ready",
+      cloudSave: "Cloud Save",
+      syncNow: "Sync Now",
+      logout: "Log out",
+      notSignedIn: "Not signed in. This game is using local saves.",
+      signinHint: "To enable automatic cloud saves, return to the home screen and sign in from the top right.",
+      loginFromHome: "Sign in from Home",
+      loggedOutPanel: "You are signed out. Local saves are still kept here.",
+      loggedOutStatus: "Signed out. Local saves remain in this browser.",
+      mergedCloudScore: "Cloud score history merged. The game will start from a new round.",
+      restoreCloudConfirm: "A newer cloud save was found. Restore it now?",
+      restoredCloud: "Cloud save restored. Loading the game...",
+      signedInNoCloud: "Cloud saves are signed in, but there is no cloud data to restore yet.",
+      cloudUnavailable: "Cloud saves are unavailable: {message}",
+      noLocalSave: "No local save found yet. Play for a bit, then sync.",
+      cloudSynced: "Cloud save synced: {time}",
+      cloudOk: "Cloud sync is healthy.",
+      cloudSyncFailed: "Cloud sync failed: {message}",
+      exportSuccess: "Exported {count} local save item(s).",
+      noGameSave: "No local save found for this game.",
+      saveMismatch: "This save file does not match the current game.",
+      saveImported: "Save imported. Reloading the game...",
+      importFailed: "Import failed: {message}",
+      shellTitleSuffix: "LuSu's Personal Site",
+      licenseLabel: "License: ",
+      licenseFile: "View license file",
+      upstreamRepo: "Upstream repository",
+      loadedCloud: "Game loaded. Cloud saves will sync automatically.",
+      loadedLocal: "Game loaded. Local saves stay in this browser.",
+      gameLoadFailed: "Game failed to load",
+      invalidGameSource: "Invalid game launch path"
+    },
+    ja: {
+      backToGames: "ゲーム一覧へ戻る",
+      loading: "読み込み中...",
+      saveToolTitle: "ローカルセーブツール",
+      saveToolDesc: "ゲームは既定でブラウザーのローカル保存を使います。JSON バックアップのダウンロードとインポートができます。",
+      exportSave: "セーブをダウンロード",
+      importSave: "セーブをインポート",
+      ready: "準備完了",
+      cloudSave: "クラウドセーブ",
+      syncNow: "今すぐ同期",
+      logout: "ログアウト",
+      notSignedIn: "未ログインです。現在はローカルセーブを使用しています。",
+      signinHint: "自動クラウドセーブを使うには、ホーム画面右上からログインしてください。",
+      loginFromHome: "ホームでログイン",
+      loggedOutPanel: "ログアウトしました。ローカルセーブは引き続き保存されます。",
+      loggedOutStatus: "ログアウトしました。ローカルセーブはこのブラウザーに残ります。",
+      mergedCloudScore: "クラウドの履歴スコアを統合しました。ゲームは新しい対局から始まります。",
+      restoreCloudConfirm: "新しいクラウドセーブが見つかりました。復元しますか？",
+      restoredCloud: "クラウドセーブを復元しました。ゲームを読み込んでいます。",
+      signedInNoCloud: "クラウドセーブにログイン済みですが、復元できるデータはまだありません。",
+      cloudUnavailable: "クラウドセーブを利用できません: {message}",
+      noLocalSave: "ローカルセーブがまだありません。少し遊んでから同期してください。",
+      cloudSynced: "クラウドセーブを同期しました: {time}",
+      cloudOk: "クラウド同期は正常です。",
+      cloudSyncFailed: "クラウド同期に失敗しました: {message}",
+      exportSuccess: "{count} 件のローカルセーブをエクスポートしました。",
+      noGameSave: "このゲームのローカルセーブは見つかりませんでした。",
+      saveMismatch: "このセーブファイルは現在のゲームと一致しません。",
+      saveImported: "セーブをインポートしました。ゲームを再読み込みしています。",
+      importFailed: "インポートに失敗しました: {message}",
+      shellTitleSuffix: "魯粛の個人サイト",
+      licenseLabel: "ライセンス: ",
+      licenseFile: "ライセンスファイルを見る",
+      upstreamRepo: "上流リポジトリ",
+      loadedCloud: "ゲームを読み込みました。クラウドセーブは自動同期されます。",
+      loadedLocal: "ゲームを読み込みました。ローカルセーブはこのブラウザーに保存されます。",
+      gameLoadFailed: "ゲームの読み込みに失敗しました",
+      invalidGameSource: "ゲーム起動パスが無効です"
+    }
+  };
+  const languageNames = {
+    zh: { zh: "中文", en: "英文", ja: "日文" },
+    en: { zh: "Chinese", en: "English", ja: "Japanese" },
+    ja: { zh: "中国語", en: "英語", ja: "日本語" }
+  };
 
   let authUser = null;
   let currentGame = null;
@@ -18,9 +142,125 @@
   let syncInFlight = false;
 
   document.documentElement.lang = requestedSiteLang === "zh" ? "zh-CN" : requestedSiteLang;
-  document.querySelectorAll(".back-link, a[href='../../index.html#games']").forEach((link) => {
-    link.setAttribute("href", backToGamesUrl);
-  });
+
+  function t(key, values = {}) {
+    const template = shellTranslations[requestedSiteLang]?.[key] || shellTranslations.zh[key] || key;
+    return Object.entries(values).reduce((text, [name, value]) => text.split(`{${name}}`).join(String(value)), template);
+  }
+
+  function formatLanguageSupport(game) {
+    const support = game.languageSupport || {};
+    const names = languageNames[requestedSiteLang] || languageNames.zh;
+    return ["zh", "en", "ja"]
+      .filter((lang) => support[lang])
+      .map((lang) => names[lang] || languageNames.zh[lang] || lang)
+      .join(" / ");
+  }
+
+  function setFileButtonText(label, text) {
+    const input = label?.querySelector("input");
+    if (!label || !input) {
+      return;
+    }
+    label.textContent = text;
+    label.appendChild(input);
+  }
+
+  function applyShellChrome() {
+    document.querySelectorAll(".back-link, a[href='../../index.html#games']").forEach((link) => {
+      link.setAttribute("href", backToGamesUrl);
+      link.textContent = t("backToGames");
+    });
+    const toolsTitle = document.querySelector(".game-title h1");
+    const toolsDesc = document.querySelector(".game-title p");
+    const exportButton = document.getElementById("export-save");
+    if (subtitle) {
+      subtitle.textContent = t("loading");
+    }
+    if (toolsTitle) {
+      toolsTitle.textContent = t("saveToolTitle");
+    }
+    if (toolsDesc) {
+      toolsDesc.textContent = t("saveToolDesc");
+    }
+    if (exportButton) {
+      exportButton.textContent = t("exportSave");
+    }
+    setFileButtonText(document.querySelector(".file-button"), t("importSave"));
+    setStatus(t("ready"));
+  }
+
+  applyShellChrome();
+
+  function textElement(tagName, text, className = "") {
+    const element = document.createElement(tagName);
+    if (className) {
+      element.className = className;
+    }
+    element.textContent = text;
+    return element;
+  }
+
+  function safeRelativeHref(value) {
+    const href = String(value || "").trim();
+    if (!href || href.startsWith("//") || /^[a-z][a-z0-9+.-]*:/i.test(href) || href.includes("\\") || href.split("/").includes("..")) {
+      return "";
+    }
+    return href;
+  }
+
+  function safeExternalHref(value) {
+    try {
+      const url = new URL(String(value || "").trim());
+      return ["http:", "https:"].includes(url.protocol) ? url.href : "";
+    } catch {
+      return "";
+    }
+  }
+
+  function safeGameSourceEntry(value) {
+    const entry = safeRelativeHref(value);
+    if (!entry || !/^source\/[a-z0-9][a-z0-9._/-]*\.html$/i.test(entry)) {
+      return "";
+    }
+    return entry;
+  }
+
+  function safeQueryParamName(value) {
+    const name = String(value || "").trim();
+    return /^[a-z0-9_-]{1,32}$/i.test(name) ? name : "lang";
+  }
+
+  function renderLicensePanel(game) {
+    if (!license) {
+      return;
+    }
+    license.replaceChildren();
+
+    const licenseName = document.createElement("strong");
+    licenseName.textContent = game.license?.name || "";
+    const licenseSummary = document.createElement("span");
+    licenseSummary.append(document.createTextNode(t("licenseLabel")), licenseName);
+    license.appendChild(licenseSummary);
+
+    const fileHref = safeRelativeHref(game.license?.file);
+    if (fileHref) {
+      const fileLink = textElement("a", t("licenseFile"));
+      fileLink.href = fileHref;
+      fileLink.target = "_blank";
+      fileLink.rel = "noreferrer";
+      license.appendChild(fileLink);
+    }
+
+    const repoHref = safeExternalHref(game.repo);
+    if (repoHref) {
+      const repoLink = textElement("a", t("upstreamRepo"));
+      repoLink.href = repoHref;
+      repoLink.target = "_blank";
+      repoLink.rel = "noreferrer";
+      license.appendChild(repoLink);
+    }
+  }
 
   function setStatus(text) {
     status.textContent = text;
@@ -49,10 +289,14 @@
   }
 
   function buildEntry(game) {
+    const sourceEntry = safeGameSourceEntry(game.sourceEntry);
+    if (!sourceEntry) {
+      throw new Error(t("invalidGameSource"));
+    }
     const params = new URLSearchParams(game.launchQuery || "");
-    params.set(game.languageQueryParam || "lang", getGameLanguage(game));
+    params.set(safeQueryParamName(game.languageQueryParam), getGameLanguage(game));
     const query = params.toString();
-    return `${game.sourceEntry}${query ? `?${query}` : ""}`;
+    return `${sourceEntry}${query ? `?${query}` : ""}`;
   }
 
   function flushGameSave() {
@@ -183,34 +427,44 @@
     if (!cloudPanel) {
       return;
     }
+    cloudPanel.replaceChildren();
+
+    const account = document.createElement("div");
+    account.className = "cloud-account";
+    account.appendChild(textElement("strong", t("cloudSave")));
 
     if (authUser) {
-      cloudPanel.innerHTML = `
-        <div class="cloud-account">
-          <strong>云端存档</strong>
-          <span>${escapeHtml(authUser.email)}</span>
-          <div class="cloud-actions">
-            <button class="tool-button" id="sync-cloud-save" type="button">立即同步</button>
-            <button class="tool-button subtle" id="logout-account" type="button">退出</button>
-          </div>
-          ${message ? `<p>${escapeHtml(message)}</p>` : ""}
-        </div>
-      `;
-      document.getElementById("sync-cloud-save").addEventListener("click", () => syncToCloud(currentGame, true));
-      document.getElementById("logout-account").addEventListener("click", logout);
+      account.appendChild(textElement("span", authUser.email || ""));
+
+      const actions = document.createElement("div");
+      actions.className = "cloud-actions";
+      const syncButton = textElement("button", t("syncNow"), "tool-button");
+      syncButton.id = "sync-cloud-save";
+      syncButton.type = "button";
+      const logoutButton = textElement("button", t("logout"), "tool-button subtle");
+      logoutButton.id = "logout-account";
+      logoutButton.type = "button";
+      actions.append(syncButton, logoutButton);
+      account.appendChild(actions);
+
+      if (message) {
+        account.appendChild(textElement("p", message));
+      }
+      cloudPanel.appendChild(account);
+      syncButton.addEventListener("click", () => syncToCloud(currentGame, true));
+      logoutButton.addEventListener("click", logout);
       return;
     }
 
-    cloudPanel.innerHTML = `
-      <div class="cloud-account">
-        <strong>云端存档</strong>
-        <span>未登录，当前使用本地存档。</span>
-        <p>${message ? escapeHtml(message) : "如需自动云存档，请回主界面右上角登录账号。"}</p>
-        <div class="cloud-actions">
-          <a class="tool-button" href="${backToGamesUrl}">回主界面登录</a>
-        </div>
-      </div>
-    `;
+    account.appendChild(textElement("span", t("notSignedIn")));
+    account.appendChild(textElement("p", message || t("signinHint")));
+    const actions = document.createElement("div");
+    actions.className = "cloud-actions";
+    const loginLink = textElement("a", t("loginFromHome"), "tool-button");
+    loginLink.href = backToGamesUrl;
+    actions.appendChild(loginLink);
+    account.appendChild(actions);
+    cloudPanel.appendChild(account);
   }
 
   async function logout() {
@@ -222,8 +476,8 @@
     }
     authUser = null;
     stopAutoSync();
-    renderCloudPanel("已退出，当前仍会保留本地存档。");
-    setStatus("已退出账号，本地存档仍在当前浏览器。");
+    renderCloudPanel(t("loggedOutPanel"));
+    setStatus(t("loggedOutStatus"));
   }
 
   async function restoreOrUpload(game) {
@@ -241,7 +495,7 @@
       if (cloudSave && isScoreOnlyStorage(game)) {
         applySaveData(game, cloudSave);
         rememberCloudTime(game, payload.updatedAt);
-        setStatus("已合并云端历史分数，游戏会从新对局开始。");
+        setStatus(t("mergedCloudScore"));
         if (hasLocalSave(game)) {
           await syncToCloud(game, false);
         }
@@ -249,11 +503,11 @@
       }
 
       if (cloudSave && (!localExists || cloudTime > knownCloudTime)) {
-        const shouldRestore = !localExists || window.confirm("检测到云端存档较新，要恢复云端存档吗？");
+        const shouldRestore = !localExists || window.confirm(t("restoreCloudConfirm"));
         if (shouldRestore) {
           applySaveData(game, cloudSave);
           rememberCloudTime(game, payload.updatedAt);
-          setStatus("已恢复云端存档，正在加载游戏。");
+          setStatus(t("restoredCloud"));
           return;
         }
       }
@@ -261,10 +515,10 @@
       if (localExists) {
         await syncToCloud(game, false);
       } else {
-        setStatus("已登录云端存档，暂时没有可恢复的云端数据。");
+        setStatus(t("signedInNoCloud"));
       }
     } catch (error) {
-      setStatus(`云端存档暂不可用：${error.message}`);
+      setStatus(t("cloudUnavailable", { message: error.message }));
     }
   }
 
@@ -275,7 +529,7 @@
     const saveData = collectSaveData(game);
     if (!Object.keys(saveData).length) {
       if (visible) {
-        setStatus("还没有找到本地存档，先玩一会儿再同步。");
+        setStatus(t("noLocalSave"));
       }
       return;
     }
@@ -287,11 +541,11 @@
         body: JSON.stringify({ saveData })
       });
       rememberCloudTime(game, payload.updatedAt);
-      setStatus(`云端存档已同步：${new Date(payload.updatedAt).toLocaleTimeString()}`);
-      renderCloudPanel("云端同步正常。");
+      setStatus(t("cloudSynced", { time: new Date(payload.updatedAt).toLocaleTimeString() }));
+      renderCloudPanel(t("cloudOk"));
     } catch (error) {
       if (visible) {
-        setStatus(`云端同步失败：${error.message}`);
+        setStatus(t("cloudSyncFailed", { message: error.message }));
         renderCloudPanel(error.message);
       }
     } finally {
@@ -330,30 +584,21 @@
     link.click();
     link.remove();
     URL.revokeObjectURL(link.href);
-    setStatus(keys.length ? `已导出 ${keys.length} 项本地存档。` : "未找到该游戏的本地存档。");
+    setStatus(keys.length ? t("exportSuccess", { count: keys.length }) : t("noGameSave"));
   }
 
   async function importSave(game, file) {
     const text = await file.text();
     const payload = JSON.parse(text);
     if (payload.type !== "lusu-game-save" || payload.gameId !== game.id || !payload.storage) {
-      throw new Error("存档文件与当前游戏不匹配。");
+      throw new Error(t("saveMismatch"));
     }
     applySaveData(game, payload.storage);
-    setStatus("存档已导入，正在刷新游戏。");
+    setStatus(t("saveImported"));
     if (authUser) {
       await syncToCloud(game, false);
     }
     frame.contentWindow.location.reload();
-  }
-
-  function escapeHtml(value) {
-    return String(value)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
   }
 
   try {
@@ -365,14 +610,11 @@
     currentGame = game;
 
     const displayTitle = localText(game.titles || game.titleZh);
-    document.title = `${displayTitle} · 鲁肃的个人站`;
+    document.title = `${displayTitle} · ${t("shellTitleSuffix")}`;
     title.textContent = displayTitle;
-    subtitle.textContent = `${game.title} · ${game.language}`;
-    license.innerHTML = `
-      <span>开源协议：<strong>${game.license.name}</strong></span>
-      <a href="${game.license.file}" target="_blank" rel="noreferrer">查看协议文件</a>
-      <a href="${game.repo}" target="_blank" rel="noreferrer">上游仓库</a>
-    `;
+    subtitle.textContent = `${game.title} · ${formatLanguageSupport(game)}`;
+    frame.setAttribute("title", displayTitle);
+    renderLicensePanel(game);
 
     applyStorageDefaults(game);
     await loadAuthSession();
@@ -384,7 +626,7 @@
     applyLanguagePreference(game);
     frame.src = buildEntry(game);
     frame.addEventListener("load", () => {
-      setStatus(authUser ? "游戏已加载，云端存档会自动同步。" : "游戏已加载，本地存档会保存在当前浏览器。");
+      setStatus(authUser ? t("loadedCloud") : t("loadedLocal"));
     });
     window.addEventListener("beforeunload", flushGameSave);
     document.addEventListener("visibilitychange", () => {
@@ -403,13 +645,13 @@
       try {
         await importSave(game, file);
       } catch (error) {
-        setStatus(`导入失败：${error.message}`);
+        setStatus(t("importFailed", { message: error.message }));
       } finally {
         importInput.value = "";
       }
     });
   } catch (error) {
-    title.textContent = "游戏加载失败";
+    title.textContent = t("gameLoadFailed");
     subtitle.textContent = error.message;
     setStatus(error.message);
   }

@@ -594,6 +594,1243 @@ on conflict(article_id) do update set
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
 
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-17-knowledge-search',
+  '2026-06-17-knowledge-search',
+  'site-updates',
+  '["网站更新","知识库","搜索","移动端"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T15:25:00.000Z',
+  '2026-06-17T15:25:00.000Z',
+  '2026-06-17T15:25:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-public-site-nightly-update',
+  '2026-06-18-public-site-nightly-update',
+  'site-updates',
+  '["网站更新","主站优化","夜间汇总","阅读体验","资源区","游戏区","RSS"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-18T00:00:00.000Z',
+  '2026-06-18T00:00:00.000Z',
+  '2026-06-18T00:00:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  (
+    'seed-update-2026-06-18-public-site-nightly-update-zh',
+    'seed-update-2026-06-18-public-site-nightly-update',
+    'zh',
+    '主站夜间优化汇总',
+    '合并昨晚主站优化记录，并按参考图完成知识库文章页 10 轮阅读布局复刻打磨；文章窗口不再拉伸占满全站。',
+    '# 主站夜间优化汇总
+
+这篇记录把昨晚主站公开侧的小步优化合并到一起，避免网站更新记录被一串细项刷屏。
+
+## 汇总内容
+
+- 知识库文章详情补齐目录、阅读进度、复制链接和回到顶部能力；本轮参考验收图重排为左侧目录/小贴士、右侧正文卡片，并把底部进度条与回到顶部按钮并排悬浮。
+- 追加 10 轮视觉复刻打磨：阅读态知识库窗口保持站内 XP 窗口尺寸，不再拉伸占满整个网站；标题栏补最小化/最大化/关闭三按钮，底部进度条改为单行蓝色分段条，正文节奏和左侧小贴士位置更贴近参考图。
+- 资源区补齐分类数量、卡片状态、空分类提示和更严格的资源链接白名单。
+- 游戏区补齐云存档、源码徽标、语言标记、入口路径守卫和游戏外壳安全 DOM 渲染。
+- 首页最近更新、知识库列表、筛选、资源筛选和游戏列表继续收紧为 DOM / textContent 渲染，降低公开内容的 XSS 风险。
+- RSS 入口、语言同步、文章链接保留语言和最近更新提示统一整理，订阅和分享更稳定。
+- 图片懒加载、异步解码、固定图片尺寸和移动端布局细节继续做轻量优化。
+
+旧的单项记录会保留为历史数据和可回退内容，但公开列表与 RSS 只展示这一篇汇总。',
+    '2026-06-18T00:00:00.000Z',
+    '2026-06-18T00:00:00.000Z'
+  ),
+  (
+    'seed-update-2026-06-18-public-site-nightly-update-en',
+    'seed-update-2026-06-18-public-site-nightly-update',
+    'en',
+    'Public Site Nightly Summary',
+    'Merged last night''s public-site updates, completed ten reference-matching passes, and kept the article window inside the site frame.',
+    '# Public Site Nightly Summary
+
+This entry merges last night''s small public-site updates into one readable record, so the site update log no longer gets flooded by one article per tiny adjustment.
+
+## Summary
+
+- Knowledge articles gained contents navigation, reading progress, copy-link, and back-to-top controls; this round rebuilds the article view from the reference image with a left contents/tip sidebar, a right reading card, and bottom progress plus back-to-top controls floating side by side.
+- Ten visual matching passes were added: the article reading window now stays inside the site''s XP window frame instead of stretching across the whole site, the titlebar has minimize/maximize/close controls, the progress bar is a single-row segmented blue strip, and the body rhythm plus left tip placement are closer to the reference image.
+- The Resources area gained category counts, status badges, empty-category guidance, and stricter resource link allowlists.
+- The Games area gained cloud-save and source badges, localized language labels, launch-path guards, and safer DOM rendering in the game shell.
+- Recent updates, the knowledge list, filters, resource filters, and the game list continue to render through DOM / textContent to reduce XSS risk for public content.
+- RSS, language-aware links, article share URLs, and recent-update labels were aligned for more stable subscription and sharing behavior.
+- Lazy loading, async image decoding, fixed image dimensions, and mobile layout details received lightweight polish.
+
+The old single-topic entries remain as historical and rollback data, but public lists and RSS now show this one summary instead.',
+    '2026-06-18T00:00:00.000Z',
+    '2026-06-18T00:00:00.000Z'
+  ),
+  (
+    'seed-update-2026-06-18-public-site-nightly-update-ja',
+    'seed-update-2026-06-18-public-site-nightly-update',
+    'ja',
+    'メインサイト夜間更新まとめ',
+    '昨夜のメインサイト更新をまとめ、参考画像に合わせて知識庫の記事ページを10回調整し、記事ウィンドウはサイト内サイズに戻しました。',
+    '# メインサイト夜間更新まとめ
+
+この記録では、昨夜の公開サイト側の小さな更新を一つにまとめました。更新記録が細かな記事で埋まりすぎないようにするためです。
+
+## まとめ
+
+- 知識庫の記事詳細に、目次、読書進捗、リンクコピー、先頭へ戻る操作を追加しました。今回、参考画像に合わせて左側の目次/ヒント、右側の本文カード、下部の進捗バーと先頭へ戻るボタンを並べた表示に整えました。
+- さらに10回の視覚調整を行い、記事閲覧ウィンドウはサイト内の XP ウィンドウサイズに戻し、全体へ引き伸ばさない表示にしました。タイトルバーに最小化/最大化/閉じるボタンを追加し、進捗バーを1行の青い分割バーにし、本文の余白と左側ヒントの位置も参考画像に近づけました。
+- リソース欄には分類件数、状態バッジ、空分類の案内、より厳しいリンク許可リストを追加しました。
+- ゲーム欄にはクラウド保存、ソース表示、言語ラベル、起動パスの確認、ゲームシェルの安全な DOM 描画を追加しました。
+- 最近の更新、知識庫一覧、フィルター、リソースフィルター、ゲーム一覧は DOM / textContent 描画を続け、公開内容の XSS リスクを下げます。
+- RSS、言語付きリンク、記事共有 URL、最近の更新ラベルをそろえ、購読と共有を安定させました。
+- 画像の遅延読み込み、非同期デコード、固定画像サイズ、モバイル表示の細部も軽く調整しました。
+
+古い単項目の記事は履歴と回退用データとして残しますが、公開一覧と RSS ではこのまとめ記事だけを表示します。',
+    '2026-06-18T00:00:00.000Z',
+    '2026-06-18T00:00:00.000Z'
+  )
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-recent-update-icons',
+  '2026-06-18-recent-update-icons',
+  'site-updates',
+  '["网站更新","首页","最近更新","界面"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T18:25:00.000Z',
+  '2026-06-17T18:25:00.000Z',
+  '2026-06-17T18:25:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-resource-url-allowlist',
+  '2026-06-18-resource-url-allowlist',
+  'site-updates',
+  '["网站更新","资源区","链接","安全"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T20:05:00.000Z',
+  '2026-06-17T20:05:00.000Z',
+  '2026-06-17T20:05:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-article-image-path-guard',
+  '2026-06-18-article-image-path-guard',
+  'site-updates',
+  '["网站更新","知识库","图片","安全"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T20:20:00.000Z',
+  '2026-06-17T20:20:00.000Z',
+  '2026-06-17T20:20:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-resource-empty-state',
+  '2026-06-18-resource-empty-state',
+  'site-updates',
+  '["网站更新","资源区","空状态","筛选"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T23:58:00.000Z',
+  '2026-06-17T23:58:00.000Z',
+  '2026-06-17T23:58:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-resource-filter-counts',
+  '2026-06-18-resource-filter-counts',
+  'site-updates',
+  '["网站更新","资源区","筛选","数量"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T23:55:00.000Z',
+  '2026-06-17T23:55:00.000Z',
+  '2026-06-17T23:55:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-resource-status-badges',
+  '2026-06-18-resource-status-badges',
+  'site-updates',
+  '["网站更新","资源区","状态","链接"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T23:50:00.000Z',
+  '2026-06-17T23:50:00.000Z',
+  '2026-06-17T23:50:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-game-info-badges',
+  '2026-06-18-game-info-badges',
+  'site-updates',
+  '["网站更新","游戏区","云存档","源码"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T23:35:00.000Z',
+  '2026-06-17T23:35:00.000Z',
+  '2026-06-17T23:35:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-article-scroll-top',
+  '2026-06-18-article-scroll-top',
+  'site-updates',
+  '["网站更新","知识库","阅读","导航"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T23:20:00.000Z',
+  '2026-06-17T23:20:00.000Z',
+  '2026-06-17T23:20:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-article-toc',
+  '2026-06-18-article-toc',
+  'site-updates',
+  '["网站更新","知识库","目录","阅读"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T23:05:00.000Z',
+  '2026-06-17T23:05:00.000Z',
+  '2026-06-17T23:05:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-article-progress',
+  '2026-06-18-article-progress',
+  'site-updates',
+  '["网站更新","知识库","阅读","进度"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T22:50:00.000Z',
+  '2026-06-17T22:50:00.000Z',
+  '2026-06-17T22:50:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-rss-alternate-lang',
+  '2026-06-18-rss-alternate-lang',
+  'site-updates',
+  '["网站更新","RSS","三语","订阅"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T22:35:00.000Z',
+  '2026-06-17T22:35:00.000Z',
+  '2026-06-17T22:35:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-article-link-lang',
+  '2026-06-18-article-link-lang',
+  'site-updates',
+  '["网站更新","链接","三语","知识库"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T22:20:00.000Z',
+  '2026-06-17T22:20:00.000Z',
+  '2026-06-17T22:20:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-recent-update-labels',
+  '2026-06-18-recent-update-labels',
+  'site-updates',
+  '["网站更新","最近更新","可访问性","首页"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T22:05:00.000Z',
+  '2026-06-17T22:05:00.000Z',
+  '2026-06-17T22:05:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-rss-button-label',
+  '2026-06-18-rss-button-label',
+  'site-updates',
+  '["网站更新","RSS","订阅","可访问性"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T21:50:00.000Z',
+  '2026-06-17T21:50:00.000Z',
+  '2026-06-17T21:50:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-rss-feed-entry',
+  '2026-06-18-rss-feed-entry',
+  'site-updates',
+  '["网站更新","RSS","订阅","知识库"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T21:35:00.000Z',
+  '2026-06-17T21:35:00.000Z',
+  '2026-06-17T21:35:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-static-image-dimensions',
+  '2026-06-18-static-image-dimensions',
+  'site-updates',
+  '["网站更新","性能","图片","首页"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T21:20:00.000Z',
+  '2026-06-17T21:20:00.000Z',
+  '2026-06-17T21:20:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-article-tag-locales',
+  '2026-06-18-article-tag-locales',
+  'site-updates',
+  '["网站更新","多语言","标签","知识库"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T21:05:00.000Z',
+  '2026-06-17T21:05:00.000Z',
+  '2026-06-17T21:05:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-game-frame-source-guard',
+  '2026-06-18-game-frame-source-guard',
+  'site-updates',
+  '["网站更新","游戏区","安全","iframe"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T20:50:00.000Z',
+  '2026-06-17T20:50:00.000Z',
+  '2026-06-17T20:50:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-chat-nickname-locale',
+  '2026-06-18-chat-nickname-locale',
+  'site-updates',
+  '["网站更新","聊天室","三语","体验"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T20:35:00.000Z',
+  '2026-06-17T20:35:00.000Z',
+  '2026-06-17T20:35:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-recent-update-icons-zh', 'seed-update-2026-06-18-recent-update-icons', 'zh', '最近更新图标优化', '首页最近更新会按站点更新类型显示工具图标。', '# 最近更新图标优化
+
+本次更新让首页“最近更新”列表更像一个网站更新窗口：从文章 API 读取的站点更新记录会显示工具图标，而不是全部显示成书本图标。
+
+## 更新内容
+
+- `site-updates` 类型的文章在首页最近更新列表中显示工具图标，普通文章仍回退为书本图标。
+- 本地 fallback 最近更新继续使用每条记录自己的图标，不影响无网络或接口失败时的展示。
+- 列表标题、摘要、日期和文章直链逻辑保持不变；只调整公开首页的视觉提示和更新记录。
+- 本轮没有触碰后台目录或管理接口。', '2026-06-17T18:25:00.000Z', '2026-06-17T18:25:00.000Z'),
+  ('seed-update-2026-06-18-recent-update-icons-en', 'seed-update-2026-06-18-recent-update-icons', 'en', 'Recent Update Icons', 'The home recent-update list now shows a site-update tool icon.', '# Recent Update Icons
+
+This update makes the home Recent Updates list feel more like a site-update window: site update records loaded from the article API now show a tool icon instead of every API-backed article looking like a book.
+
+## Changes
+
+- `site-updates` articles use a tool icon in the home Recent Updates list, while regular articles still fall back to the book icon.
+- Local fallback updates keep their per-item icons, so offline or failed API states stay readable.
+- Titles, summaries, dates, and article deep links are unchanged; only the public home visual hint and update record changed.
+- Admin folders and admin APIs were not touched.', '2026-06-17T18:25:00.000Z', '2026-06-17T18:25:00.000Z'),
+  ('seed-update-2026-06-18-recent-update-icons-ja', 'seed-update-2026-06-18-recent-update-icons', 'ja', '最近更新アイコンを調整', 'ホームの最近更新でサイト更新らしいツールアイコンを表示します。', '# 最近更新アイコンを調整
+
+今回の更新では、ホームの「最近更新」リストをサイト更新ウィンドウらしく整えました。記事 API から読み込んだサイト更新記録は、すべて本アイコンになるのではなく、ツールアイコンで表示します。
+
+## 更新内容
+
+- `site-updates` の記事はホームの最近更新リストでツールアイコンを使い、通常の記事は引き続き本アイコンに戻ります。
+- ローカル fallback の最近更新は各項目のアイコンを保ち、オフライン時や API 失敗時の表示も変えません。
+- タイトル、概要、日付、記事直リンクの動作はそのままで、公開ホームの視覚ヒントと更新記録だけを調整しました。
+- 管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T18:25:00.000Z', '2026-06-17T18:25:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-17-article-share-link',
+  '2026-06-17-article-share-link',
+  'site-updates',
+  '["网站更新","知识库","分享","文章"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T15:40:00.000Z',
+  '2026-06-17T15:40:00.000Z',
+  '2026-06-17T15:40:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-17-video-empty-state',
+  '2026-06-17-video-empty-state',
+  'site-updates',
+  '["网站更新","视频区","空状态","移动端"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T15:53:00.000Z',
+  '2026-06-17T15:53:00.000Z',
+  '2026-06-17T15:53:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-17-route-aware-welcome',
+  '2026-06-17-route-aware-welcome',
+  'site-updates',
+  '["网站更新","文章","直链","欢迎窗"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T16:02:00.000Z',
+  '2026-06-17T16:02:00.000Z',
+  '2026-06-17T16:02:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-resource-actions',
+  '2026-06-18-resource-actions',
+  'site-updates',
+  '["网站更新","资源区","占位按钮","安全渲染"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T16:09:00.000Z',
+  '2026-06-17T16:09:00.000Z',
+  '2026-06-17T16:09:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-nav-active-state',
+  '2026-06-18-nav-active-state',
+  'site-updates',
+  '["网站更新","导航","任务栏","可访问性"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T16:18:00.000Z',
+  '2026-06-17T16:18:00.000Z',
+  '2026-06-17T16:18:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-blog-placeholders',
+  '2026-06-18-blog-placeholders',
+  'site-updates',
+  '["网站更新","杂谈区","占位按钮","安全渲染"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T16:23:00.000Z',
+  '2026-06-17T16:23:00.000Z',
+  '2026-06-17T16:23:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-language-url-sync',
+  '2026-06-18-language-url-sync',
+  'site-updates',
+  '["网站更新","多语言","链接分享","路由"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T16:41:00.000Z',
+  '2026-06-17T16:41:00.000Z',
+  '2026-06-17T16:41:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-article-detail-search-hide',
+  '2026-06-18-article-detail-search-hide',
+  'site-updates',
+  '["网站更新","知识库","文章详情","阅读体验"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T16:50:00.000Z',
+  '2026-06-17T16:50:00.000Z',
+  '2026-06-17T16:50:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-trilingual-tags',
+  '2026-06-18-trilingual-tags',
+  'site-updates',
+  '["网站更新","多语言","标签","知识库"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T16:56:00.000Z',
+  '2026-06-17T16:56:00.000Z',
+  '2026-06-17T16:56:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-image-loading-polish',
+  '2026-06-18-image-loading-polish',
+  'site-updates',
+  '["网站更新","性能","阅读体验","移动端"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T17:06:00.000Z',
+  '2026-06-17T17:06:00.000Z',
+  '2026-06-17T17:06:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-chatroom-title-locale',
+  '2026-06-18-chatroom-title-locale',
+  'site-updates',
+  '["网站更新","多语言","修复记录","移动端"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T17:16:00.000Z',
+  '2026-06-17T17:16:00.000Z',
+  '2026-06-17T17:16:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-aria-label-localization',
+  '2026-06-18-aria-label-localization',
+  'site-updates',
+  '["网站更新","多语言","修复记录","移动端"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T17:22:00.000Z',
+  '2026-06-17T17:22:00.000Z',
+  '2026-06-17T17:22:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-account-widget-locale',
+  '2026-06-18-account-widget-locale',
+  'site-updates',
+  '["网站更新","多语言","修复记录","移动端"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T17:28:00.000Z',
+  '2026-06-17T17:28:00.000Z',
+  '2026-06-17T17:28:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-notepad-menu-locale',
+  '2026-06-18-notepad-menu-locale',
+  'site-updates',
+  '["网站更新","多语言","杂谈区","修复记录"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T17:33:00.000Z',
+  '2026-06-17T17:33:00.000Z',
+  '2026-06-17T17:33:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-game-cover-decoding',
+  '2026-06-18-game-cover-decoding',
+  'site-updates',
+  '["网站更新","性能","游戏区","移动端"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T17:38:00.000Z',
+  '2026-06-17T17:38:00.000Z',
+  '2026-06-17T17:38:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-game-language-labels',
+  '2026-06-18-game-language-labels',
+  'site-updates',
+  '["网站更新","多语言","游戏区","修复记录"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T17:43:00.000Z',
+  '2026-06-17T17:43:00.000Z',
+  '2026-06-17T17:43:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-game-shell-locale',
+  '2026-06-18-game-shell-locale',
+  'site-updates',
+  '["网站更新","多语言","游戏区","云存档"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T17:55:00.000Z',
+  '2026-06-17T17:55:00.000Z',
+  '2026-06-17T17:55:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-resource-placeholder-hints',
+  '2026-06-18-resource-placeholder-hints',
+  'site-updates',
+  '["网站更新","资源区","多语言","无障碍"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T18:00:00.000Z',
+  '2026-06-17T18:00:00.000Z',
+  '2026-06-17T18:00:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-video-thumb-decoding',
+  '2026-06-18-video-thumb-decoding',
+  'site-updates',
+  '["网站更新","视频区","性能","图片"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T18:07:00.000Z',
+  '2026-06-17T18:07:00.000Z',
+  '2026-06-17T18:07:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-resource-label-sync',
+  '2026-06-18-resource-label-sync',
+  'site-updates',
+  '["网站更新","资源区","多语言","界面"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T18:10:00.000Z',
+  '2026-06-17T18:10:00.000Z',
+  '2026-06-17T18:10:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-game-shell-safe-dom',
+  '2026-06-18-game-shell-safe-dom',
+  'site-updates',
+  '["网站更新","游戏区","安全","云存档"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T18:15:00.000Z',
+  '2026-06-17T18:15:00.000Z',
+  '2026-06-17T18:15:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-account-safe-dom',
+  '2026-06-18-account-safe-dom',
+  'site-updates',
+  '["网站更新","账号","安全","云存档"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T18:20:00.000Z',
+  '2026-06-17T18:20:00.000Z',
+  '2026-06-17T18:20:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
@@ -1584,6 +2821,1103 @@ on conflict(article_id) do update set
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
 
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-recent-updates-safe-dom',
+  '2026-06-18-recent-updates-safe-dom',
+  'site-updates',
+  '["网站更新","首页","最近更新","安全"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T18:40:00.000Z',
+  '2026-06-17T18:40:00.000Z',
+  '2026-06-17T18:40:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-knowledge-list-safe-dom',
+  '2026-06-18-knowledge-list-safe-dom',
+  'site-updates',
+  '["网站更新","知识库","安全","文章"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T18:45:00.000Z',
+  '2026-06-17T18:45:00.000Z',
+  '2026-06-17T18:45:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-knowledge-filters-safe-dom',
+  '2026-06-18-knowledge-filters-safe-dom',
+  'site-updates',
+  '["网站更新","知识库","筛选","安全"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T18:55:00.000Z',
+  '2026-06-17T18:55:00.000Z',
+  '2026-06-17T18:55:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-resource-filters-safe-dom',
+  '2026-06-18-resource-filters-safe-dom',
+  'site-updates',
+  '["网站更新","资源区","筛选","安全"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T19:05:00.000Z',
+  '2026-06-17T19:05:00.000Z',
+  '2026-06-17T19:05:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-game-list-safe-dom',
+  '2026-06-18-game-list-safe-dom',
+  'site-updates',
+  '["网站更新","游戏区","安全","渲染"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T19:20:00.000Z',
+  '2026-06-17T19:20:00.000Z',
+  '2026-06-17T19:20:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-game-url-allowlist',
+  '2026-06-18-game-url-allowlist',
+  'site-updates',
+  '["网站更新","游戏区","链接","安全"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T19:35:00.000Z',
+  '2026-06-17T19:35:00.000Z',
+  '2026-06-17T19:35:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-06-18-video-url-allowlist',
+  '2026-06-18-video-url-allowlist',
+  'site-updates',
+  '["网站更新","视频区","链接","安全"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-17T19:50:00.000Z',
+  '2026-06-17T19:50:00.000Z',
+  '2026-06-17T19:50:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-knowledge-filters-safe-dom-zh', 'seed-update-2026-06-18-knowledge-filters-safe-dom', 'zh', '知识库筛选安全渲染', '知识库分类筛选按钮改为 DOM/textContent 构建。', '# 知识库筛选安全渲染
+
+本次更新继续收紧公开知识库，把分类筛选按钮从字符串拼接改为 DOM / `textContent` 构建。
+
+## 更新内容
+
+- 知识库分类按钮现在通过 `document.createElement(''button'')` 创建，分类名用 `textContent` 写入。
+- `data-filter`、`data-filter-type`、active 状态和点击筛选行为保持不变。
+- 和上一轮文章卡片 DOM 渲染配合后，知识库列表与筛选控件都不再依赖文章/分类字符串拼接输出。
+- 本轮只调整公开知识库筛选控件和更新记录，不触碰后台目录或管理接口。', '2026-06-17T18:55:00.000Z', '2026-06-17T18:55:00.000Z'),
+  ('seed-update-2026-06-18-knowledge-filters-safe-dom-en', 'seed-update-2026-06-18-knowledge-filters-safe-dom', 'en', 'Knowledge Filters Safe DOM', 'Knowledge category filter buttons now render through DOM/textContent.', '# Knowledge Filters Safe DOM
+
+This update keeps tightening the public Knowledge area by changing category filter buttons from string-built markup to DOM / `textContent` construction.
+
+## Changes
+
+- Knowledge category buttons are now created with `document.createElement(''button'')`, with labels assigned through `textContent`.
+- `data-filter`, `data-filter-type`, active state, and click filtering behavior are unchanged.
+- Together with the previous article-card DOM rendering pass, the Knowledge list and filter controls no longer rely on article/category string-built output.
+- Only the public Knowledge filter controls and update records changed; admin folders and admin APIs were not touched.', '2026-06-17T18:55:00.000Z', '2026-06-17T18:55:00.000Z'),
+  ('seed-update-2026-06-18-knowledge-filters-safe-dom-ja', 'seed-update-2026-06-18-knowledge-filters-safe-dom', 'ja', '知識庫フィルターの安全な DOM 描画', '知識庫カテゴリーフィルターを DOM/textContent 構築にしました。', '# 知識庫フィルターの安全な DOM 描画
+
+今回の更新では、公開知識庫をさらに引き締め、カテゴリーフィルターボタンを文字列連結から DOM / `textContent` 構築へ変更しました。
+
+## 更新内容
+
+- 知識庫カテゴリーボタンは `document.createElement(''button'')` で作成し、ラベルは `textContent` で入れます。
+- `data-filter`、`data-filter-type`、active 状態、クリック絞り込み動作は変えていません。
+- 前回の記事カード DOM 描画と合わせて、知識庫リストとフィルター操作は記事/カテゴリ文字列の組み立て出力に依存しなくなりました。
+- 公開知識庫フィルターと更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T18:55:00.000Z', '2026-06-17T18:55:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-video-url-allowlist-zh', 'seed-update-2026-06-18-video-url-allowlist', 'zh', '视频链接白名单', '视频缩略图、原地址和播放器 iframe 补充前端白名单。', '# 视频链接白名单
+
+本次更新继续收紧公开主站视频区，让视频缩略图、原地址和播放器 iframe 在前端也经过白名单校验。
+
+## 更新内容
+
+- 视频卡片缩略图只接受 YouTube / Bilibili 图片域或后台上传的本地 `data:image` 封面。
+- “打开原地址”只接受 YouTube、Bilibili 和 b23 链接，无效 URL 会隐藏按钮。
+- 播放器 iframe 只接受 YouTube embed 或 Bilibili player 地址，无效 embed 会显示原有不支持提示。
+- 公开视频 API、后台视频管理、视频空状态和移动端布局保持不变。', '2026-06-17T19:50:00.000Z', '2026-06-17T19:50:00.000Z'),
+  ('seed-update-2026-06-18-video-url-allowlist-en', 'seed-update-2026-06-18-video-url-allowlist', 'en', 'Video Link Allowlist', 'Video thumbnails, source links, and player iframes now have frontend allowlist checks.', '# Video Link Allowlist
+
+This update keeps tightening the public Videos area by validating video thumbnails, source links, and player iframes on the frontend too.
+
+## Changes
+
+- Video card thumbnails only accept YouTube / Bilibili image hosts or local `data:image` thumbnails uploaded through the admin flow.
+- Open Original only accepts YouTube, Bilibili, and b23 links; invalid URLs hide the button.
+- Player iframes only accept YouTube embed or Bilibili player URLs; invalid embeds fall back to the existing unsupported-video notice.
+- Public video APIs, admin video management, the empty video state, and mobile layout are unchanged.', '2026-06-17T19:50:00.000Z', '2026-06-17T19:50:00.000Z'),
+  ('seed-update-2026-06-18-video-url-allowlist-ja', 'seed-update-2026-06-18-video-url-allowlist', 'ja', '動画リンク許可リスト', '動画サムネイル、元リンク、プレイヤー iframe にフロント側の許可リスト確認を追加しました。', '# 動画リンク許可リスト
+
+今回の更新では、公開動画欄をさらに引き締め、動画サムネイル、元リンク、プレイヤー iframe をフロント側でも許可リストで確認します。
+
+## 更新内容
+
+- 動画カードのサムネイルは YouTube / Bilibili の画像ホスト、または管理画面でアップロードされたローカル `data:image` 封面だけを受け付けます。
+- 「元のページを開く」は YouTube、Bilibili、b23 リンクだけを受け付け、無効な URL ではボタンを隠します。
+- プレイヤー iframe は YouTube embed または Bilibili player の URL だけを受け付け、無効な embed は既存の未対応表示へ戻します。
+- 公開動画 API、管理画面の動画管理、動画空状態、モバイル表示は変更していません。', '2026-06-17T19:50:00.000Z', '2026-06-17T19:50:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-resource-url-allowlist-zh', 'seed-update-2026-06-18-resource-url-allowlist', 'zh', '资源链接白名单', '资源下载和外链 URL 增加更严格的前端白名单。', '# 资源链接白名单
+
+本次更新继续收紧公开主站资源区，让资源下载和外链地址在渲染前经过更明确的 URL 白名单。
+
+## 更新内容
+
+- 资源区下载/外链 URL 先经过 `safeHttpUrl()` 规范化，只接受 `http(s)` 外链。
+- 本地资源路径只接受安全的 `assets/` 或 `downloads/` 路径，并拒绝 `..` 路径穿越片段。
+- 无效 URL 继续显示原有的准备中按钮，不会输出不可信链接。
+- 现有 3 个资源占位卡、分类筛选、移动端布局和后台目录保持不变。', '2026-06-17T20:05:00.000Z', '2026-06-17T20:05:00.000Z'),
+  ('seed-update-2026-06-18-resource-url-allowlist-en', 'seed-update-2026-06-18-resource-url-allowlist', 'en', 'Resource URL Allowlist', 'Resource downloads and external links now use stricter frontend URL allowlist checks.', '# Resource URL Allowlist
+
+This update keeps tightening the public Resources area by checking resource download and external-link URLs against a clearer frontend allowlist before rendering.
+
+## Changes
+
+- Resource download and external URLs now pass through `safeHttpUrl()` normalization and only accept `http(s)` external links.
+- Local resource paths only accept safe `assets/` or `downloads/` paths and reject `..` traversal segments.
+- Invalid URLs keep showing the existing coming-soon button instead of writing untrusted links into the page.
+- The three current resource placeholder cards, category filters, mobile layout, and admin folders are unchanged.', '2026-06-17T20:05:00.000Z', '2026-06-17T20:05:00.000Z'),
+  ('seed-update-2026-06-18-resource-url-allowlist-ja', 'seed-update-2026-06-18-resource-url-allowlist', 'ja', 'リソースURL許可リスト', 'リソースのダウンロードと外部リンクに、より厳しいフロント側URL許可リスト確認を追加しました。', '# リソースURL許可リスト
+
+今回の更新では、公開リソース欄をさらに引き締め、リソースのダウンロードと外部リンクの URL を描画前により明確な許可リストで確認します。
+
+## 更新内容
+
+- リソースのダウンロード/外部 URL は `safeHttpUrl()` で正規化し、外部リンクは `http(s)` のみ受け付けます。
+- ローカルリソースパスは安全な `assets/` または `downloads/` パスだけを受け付け、`..` のパストラバーサル片を拒否します。
+- 無効な URL は既存の準備中ボタンを表示し続け、不審なリンクをページに出力しません。
+- 既存 3 件のリソース占位カード、カテゴリーフィルター、モバイル表示、管理画面ディレクトリは変更していません。', '2026-06-17T20:05:00.000Z', '2026-06-17T20:05:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-article-image-path-guard-zh', 'seed-update-2026-06-18-article-image-path-guard', 'zh', '文章图片路径守卫', '文章 Markdown 配图白名单补充路径穿越片段拒绝。', '# 文章图片路径守卫
+
+本次更新继续收紧公开知识库的文章图片渲染规则，让 Markdown 配图路径更明确地留在项目文章图片目录内。
+
+## 更新内容
+
+- 文章 Markdown 图片仍只允许 `assets/images/articles/` 下的项目资源。
+- `safeArticleImageSrc()` 新增 `..` 路径片段拒绝，避免图片路径逃出文章图片目录。
+- 图片仍通过 `document.createElement(''img'')`、安全 `src`、`alt` 和 `figcaption` 渲染，不插入未处理 HTML。
+- 现有 AI Agent 长文配图、知识库列表、文章直链和后台目录保持不变。', '2026-06-17T20:20:00.000Z', '2026-06-17T20:20:00.000Z'),
+  ('seed-update-2026-06-18-article-image-path-guard-en', 'seed-update-2026-06-18-article-image-path-guard', 'en', 'Article Image Path Guard', 'Markdown article image allowlist now rejects traversal path segments.', '# Article Image Path Guard
+
+This update keeps tightening public Knowledge article image rendering so Markdown image paths stay clearly inside the project article-image folder.
+
+## Changes
+
+- Markdown article images are still limited to project assets under `assets/images/articles/`.
+- `safeArticleImageSrc()` now rejects `..` traversal segments so image paths cannot escape the article-image folder.
+- Images still render through `document.createElement(''img'')`, safe `src`, `alt`, and `figcaption` instead of raw HTML insertion.
+- The existing AI Agent article images, Knowledge list, article deep links, and admin folders are unchanged.', '2026-06-17T20:20:00.000Z', '2026-06-17T20:20:00.000Z'),
+  ('seed-update-2026-06-18-article-image-path-guard-ja', 'seed-update-2026-06-18-article-image-path-guard', 'ja', '記事画像パスガード', 'Markdown 記事画像の許可リストが、パストラバーサル片を拒否するようになりました。', '# 記事画像パスガード
+
+今回の更新では、公開知識庫の記事画像描画をさらに引き締め、Markdown 画像パスがプロジェクトの記事画像フォルダ内に留まるよう明確にしました。
+
+## 更新内容
+
+- Markdown 記事画像は引き続き `assets/images/articles/` 配下のプロジェクト資源だけを受け付けます。
+- `safeArticleImageSrc()` が `..` のパストラバーサル片を拒否し、画像パスが記事画像フォルダから外へ出ないようにしました。
+- 画像は今後も `document.createElement(''img'')`、安全な `src`、`alt`、`figcaption` で描画し、未処理 HTML は挿入しません。
+- 既存の AI Agent 長文画像、知識庫一覧、記事直リンク、管理画面ディレクトリは変更していません。', '2026-06-17T20:20:00.000Z', '2026-06-17T20:20:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-resource-empty-state-zh', 'seed-update-2026-06-18-resource-empty-state', 'zh', '资源空分类提示', '资源区空分类现在会显示三语空状态和返回全部资源按钮。', '# 资源空分类提示
+
+本次更新继续整理资源区筛选体验，点击暂无资源的分类时不再只看到空白列表。
+
+## 更新内容
+
+- 资源区空分类会显示 XP 风格空状态，说明该分类仍在整理中。
+- 空状态提供“显示全部资源”按钮，可直接回到全部资源列表。
+- 标题、说明和按钮都通过 DOM / `textContent` 构建，不插入未处理 HTML。
+- 本轮只调整公开资源区、前端样式、缓存版本和更新记录；后台目录和管理 API 不受影响。', '2026-06-17T23:58:00.000Z', '2026-06-17T23:58:00.000Z'),
+  ('seed-update-2026-06-18-resource-empty-state-en', 'seed-update-2026-06-18-resource-empty-state', 'en', 'Resource Empty Category State', 'Empty resource categories now show a trilingual empty state with a button back to all resources.', '# Resource Empty Category State
+
+This update keeps polishing the Resources filter flow so categories with no items no longer leave a blank list behind.
+
+## Changes
+
+- Empty resource categories now show an XP-style empty state explaining that the category is still being organized.
+- The empty state includes a `Show all resources` button that returns the filter to the full list.
+- The title, copy, and button are built through DOM / `textContent`, with no raw HTML insertion.
+- This round only changes the public Resources area, frontend styling, cache version, and update records; admin folders and admin APIs are untouched.', '2026-06-17T23:58:00.000Z', '2026-06-17T23:58:00.000Z'),
+  ('seed-update-2026-06-18-resource-empty-state-ja', 'seed-update-2026-06-18-resource-empty-state', 'ja', 'リソース空分類表示', '空のリソース分類に三言語の空状態とすべてへ戻るボタンを表示します。', '# リソース空分類表示
+
+今回の更新ではリソース欄のフィルター体験を整え、項目がない分類でも空白だけにならないようにしました。
+
+## 更新内容
+
+- 空のリソース分類では XP 風の空状態を表示し、その分類が整理中であることを伝えます。
+- 空状態には「すべてのリソースを表示」ボタンを追加し、全件表示へ戻れるようにしました。
+- タイトル、説明、ボタンは DOM / `textContent` で構築し、未処理 HTML は挿入しません。
+- 今回は公開リソース欄、フロント側スタイル、キャッシュ版、更新記録だけを調整し、管理画面や管理 API には触れていません。', '2026-06-17T23:58:00.000Z', '2026-06-17T23:58:00.000Z'),
+  ('seed-update-2026-06-18-resource-filter-counts-zh', 'seed-update-2026-06-18-resource-filter-counts', 'zh', '资源分类数量徽标', '资源区分类按钮现在显示每类资源数量，筛选前就能看到占位和资源分布。', '# 资源分类数量徽标
+
+本次更新继续整理资源区，让分类筛选按钮直接显示每一类里有多少资源项。
+
+## 更新内容
+
+- 资源区筛选按钮新增数量徽标：全部显示资源总数，各分类显示当前分类数量。
+- 数量来自本地 `content.resources`，不会改变资源卡片、下载按钮或外链安全校验。
+- 按钮继续通过 DOM / `textContent` 构建，分类名和数量都不会当作 HTML 插入。
+- 本轮只调整公开资源区、前端样式、缓存版本和更新记录；后台目录和管理 API 不受影响。', '2026-06-17T23:55:00.000Z', '2026-06-17T23:55:00.000Z'),
+  ('seed-update-2026-06-18-resource-filter-counts-en', 'seed-update-2026-06-18-resource-filter-counts', 'en', 'Resource Filter Counts', 'Resource category buttons now show item counts before filtering.', '# Resource Filter Counts
+
+This update keeps polishing the Resources area by showing how many items sit behind each category filter.
+
+## Changes
+
+- Resource filter buttons now include compact count badges: All shows the total, and each category shows its own count.
+- Counts come from local `content.resources`; resource cards, download buttons, and safe link checks are unchanged.
+- Buttons still render through DOM / `textContent`, so category labels and counts are never inserted as HTML.
+- This round only changes the public Resources area, frontend styling, cache version, and update records; admin folders and admin APIs are untouched.', '2026-06-17T23:55:00.000Z', '2026-06-17T23:55:00.000Z'),
+  ('seed-update-2026-06-18-resource-filter-counts-ja', 'seed-update-2026-06-18-resource-filter-counts', 'ja', 'リソース分類数バッジ', 'リソース分類ボタンに件数を表示し、絞り込み前に配分が分かるようにしました。', '# リソース分類数バッジ
+
+今回の更新ではリソース欄を少し整え、分類フィルターごとの件数をボタン上で分かるようにしました。
+
+## 更新内容
+
+- リソース分類ボタンに小さな件数バッジを追加しました。すべては総数、各分類はその分類の件数を表示します。
+- 件数はローカルの `content.resources` から数え、リソースカード、ダウンロードボタン、リンク安全確認は変更しません。
+- ボタンは引き続き DOM / `textContent` で構築し、分類名や件数を HTML として挿入しません。
+- 今回は公開リソース欄、フロント側スタイル、キャッシュ版、更新記録だけを調整し、管理画面や管理 API には触れていません。', '2026-06-17T23:55:00.000Z', '2026-06-17T23:55:00.000Z'),
+  ('seed-update-2026-06-18-resource-status-badges-zh', 'seed-update-2026-06-18-resource-status-badges', 'zh', '资源卡片状态徽标', '资源区卡片会显示准备中或可获取状态，下载按钮逻辑继续走安全链接校验。', '# 资源卡片状态徽标
+
+本次更新继续整理资源区，让每张资源卡在按钮之外也能看到当前状态。
+
+## 更新内容
+
+- 资源卡片 meta row 新增状态徽标：没有安全 URL 时显示“准备中”，有可用 URL 时显示“可获取”。
+- 状态判断复用 `safeResourceUrl()`，下载/外链按钮继续只接受安全项目路径或 `http(s)` 链接。
+- 资源标题、简介、版本、大小和原有禁用按钮行为保持不变。
+- 本轮只调整公开资源区、前端文案、样式和更新记录，不触碰后台目录或管理 API。', '2026-06-17T23:50:00.000Z', '2026-06-17T23:50:00.000Z'),
+  ('seed-update-2026-06-18-resource-status-badges-en', 'seed-update-2026-06-18-resource-status-badges', 'en', 'Resource Status Badges', 'Resource cards now show pending or ready status badges while download actions still use safe link checks.', '# Resource Status Badges
+
+This update continues polishing the Resources area so each card shows its current availability outside the action button too.
+
+## Changes
+
+- Resource card meta rows now include a status badge: `Coming soon` when no safe URL exists, and `Ready` when one is available.
+- Status detection reuses `safeResourceUrl()`, so download/external actions still only accept safe project paths or `http(s)` links.
+- Resource titles, summaries, versions, sizes, and disabled action behavior are unchanged.
+- This round only changes the public Resources area, frontend text, styling, and update records; admin folders and admin APIs are untouched.', '2026-06-17T23:50:00.000Z', '2026-06-17T23:50:00.000Z'),
+  ('seed-update-2026-06-18-resource-status-badges-ja', 'seed-update-2026-06-18-resource-status-badges', 'ja', 'リソース状態バッジ', 'リソースカードに準備中または利用可の状態バッジを追加し、リンク確認は従来どおりです。', '# リソース状態バッジ
+
+今回の更新では、リソース欄を少し整え、各カードの状態をボタン以外からも分かるようにしました。
+
+## 更新内容
+
+- リソースカードの meta row に状態バッジを追加しました。安全な URL がない場合は「準備中」、利用できる URL がある場合は「利用可」を表示します。
+- 状態判定は `safeResourceUrl()` を再利用し、ダウンロード/外部リンクは引き続き安全なプロジェクト内パスまたは `http(s)` のみ受け付けます。
+- リソースのタイトル、概要、バージョン、サイズ、無効ボタンの動作は変更していません。
+- 今回は公開リソース欄、フロント文言、スタイル、更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T23:50:00.000Z', '2026-06-17T23:50:00.000Z'),
+  ('seed-update-2026-06-18-game-info-badges-zh', 'seed-update-2026-06-18-game-info-badges', 'zh', '游戏卡片信息增强', '游戏区卡片新增云存档和源码徽标，进入游戏前能看到保存与开源状态。', '# 游戏卡片信息增强
+
+本次更新继续整理公开游戏区，让游戏入口卡片在进入前展示更清楚的状态信息。
+
+## 更新内容
+
+- 游戏卡片会根据 catalog 的 `storage` 字段显示“云存档”徽标。
+- 有 `repo` 的游戏会显示“源码”链接，并且链接会先通过 `safeHttpUrl()` 校验，只接受 `http(s)`。
+- 语言支持、license、开始按钮、iframe 入口和云存档同步逻辑保持不变。
+- 本轮只调整公开游戏列表、前端文案、样式和更新记录，不触碰后台目录或管理 API。', '2026-06-17T23:35:00.000Z', '2026-06-17T23:35:00.000Z'),
+  ('seed-update-2026-06-18-game-info-badges-en', 'seed-update-2026-06-18-game-info-badges', 'en', 'Game Card Info Badges', 'Game cards now show cloud-save and source badges before launch.', '# Game Card Info Badges
+
+This update continues polishing the public games area so entry cards show clearer status before launch.
+
+## Changes
+
+- Game cards now show a `Cloud save` badge when the catalog entry declares storage keys or score storage.
+- Games with a `repo` now show a `Source` link, with the URL normalized through `safeHttpUrl()` and limited to `http(s)`.
+- Language support tags, license tags, start buttons, iframe entry points, and cloud-save sync behavior are unchanged.
+- This round only changes the public game list, frontend text, styling, and update records; admin folders and admin APIs are untouched.', '2026-06-17T23:35:00.000Z', '2026-06-17T23:35:00.000Z'),
+  ('seed-update-2026-06-18-game-info-badges-ja', 'seed-update-2026-06-18-game-info-badges', 'ja', 'ゲームカード情報バッジ', 'ゲームカードにクラウド保存とソースのバッジを追加し、起動前に状態を確認できます。', '# ゲームカード情報バッジ
+
+今回の更新では、公開ゲーム欄を少し整え、起動前に入口カードで状態を確認しやすくしました。
+
+## 更新内容
+
+- catalog の `storage` があるゲームカードに「クラウド保存」バッジを表示します。
+- `repo` があるゲームには「出典」リンクを表示し、URL は `safeHttpUrl()` で確認して `http(s)` のみ受け付けます。
+- 言語対応タグ、ライセンスタグ、開始ボタン、iframe 入口、クラウド保存同期の動作は変更していません。
+- 今回は公開ゲーム一覧、フロント文言、スタイル、更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T23:35:00.000Z', '2026-06-17T23:35:00.000Z'),
+  ('seed-update-2026-06-18-article-scroll-top-zh', 'seed-update-2026-06-18-article-scroll-top', 'zh', '文章回到顶部按钮', '知识库文章详情新增回到顶部按钮，目录跳转后可以快速回到标题区。', '# 文章回到顶部按钮
+
+本次更新继续整理知识库长文阅读工具，在文章详情动作区新增一个轻量的回到顶部按钮。
+
+## 更新内容
+
+- 文章详情复制链接按钮旁新增“回到顶部 / Back to top / 先頭へ戻る”三语按钮。
+- 点击后只滚动当前文章详情容器，并同步阅读进度条，不改变页面路由或正文内容。
+- 按钮使用现有 DOM 事件代理和 `data-i18n` 文案，不插入外部 HTML。
+- 目录导航、Markdown 安全渲染、聊天和后台接口保持不变。', '2026-06-17T23:20:00.000Z', '2026-06-17T23:20:00.000Z'),
+  ('seed-update-2026-06-18-article-scroll-top-en', 'seed-update-2026-06-18-article-scroll-top', 'en', 'Article Back-to-Top Button', 'Knowledge article details now include a back-to-top button after jumping through contents.', '# Article Back-to-Top Button
+
+This update continues refining long-form Knowledge reading tools with a lightweight back-to-top action in article detail windows.
+
+## Changes
+
+- Article details now show a trilingual `回到顶部 / Back to top / 先頭へ戻る` button beside the copy-link action.
+- Clicking it scrolls only the current article detail container and keeps the reading progress bar in sync, without changing the route or article body.
+- The button uses the existing DOM event delegation and `data-i18n` text, with no external HTML insertion.
+- Contents navigation, safe Markdown rendering, chat, and admin APIs are unchanged.', '2026-06-17T23:20:00.000Z', '2026-06-17T23:20:00.000Z'),
+  ('seed-update-2026-06-18-article-scroll-top-ja', 'seed-update-2026-06-18-article-scroll-top', 'ja', '記事先頭へ戻るボタン', '知識庫の記事詳細に先頭へ戻るボタンを追加し、目次移動後に戻りやすくしました。', '# 記事先頭へ戻るボタン
+
+今回の更新では、知識庫の長文閲覧ツールをもう少し整え、記事詳細の操作列に軽い先頭へ戻るボタンを追加しました。
+
+## 更新内容
+
+- 記事詳細のリンクコピーボタン横に `回到顶部 / Back to top / 先頭へ戻る` の三言語ボタンを追加しました。
+- クリック時は現在の記事詳細コンテナだけを先頭へスクロールし、読書進捗バーも同期します。ルートや本文は変更しません。
+- ボタンは既存の DOM イベント委譲と `data-i18n` 文言を使い、外部 HTML は挿入しません。
+- 目次ナビ、安全な Markdown 描画、チャット、管理 API は変更していません。', '2026-06-17T23:20:00.000Z', '2026-06-17T23:20:00.000Z'),
+  ('seed-update-2026-06-18-article-toc-zh', 'seed-update-2026-06-18-article-toc', 'zh', '文章目录导航', '知识库文章详情会按正文标题生成目录，长文可以快速跳到对应段落。', '# 文章目录导航
+
+本次更新继续优化知识库长文阅读，在文章详情里新增由正文标题生成的目录导航。
+
+## 更新内容
+
+- 文章 Markdown 安全渲染完成后，会读取正文里的 `h2` / `h3` 标题生成目录按钮。
+- 目录按钮使用 DOM / `textContent` 创建，并只允许滚动到 `article-heading-N` 这种内部目标。
+- 少于两个标题的文章不会显示目录，避免短文多出无意义控件。
+- 阅读进度条、复制链接、语言切换和后台目录保持不变。', '2026-06-17T23:05:00.000Z', '2026-06-17T23:05:00.000Z'),
+  ('seed-update-2026-06-18-article-toc-en', 'seed-update-2026-06-18-article-toc', 'en', 'Article Contents Navigation', 'Knowledge article details now build a contents strip from body headings for quicker jumps.', '# Article Contents Navigation
+
+This update continues improving long-form Knowledge reading with a contents strip generated from article body headings.
+
+## Changes
+
+- After safe Markdown rendering finishes, `h2` / `h3` headings are read and turned into contents buttons.
+- Contents buttons are created through DOM / `textContent` and only scroll to internal `article-heading-N` targets.
+- Articles with fewer than two headings hide the contents strip, so short posts do not gain extra controls.
+- The reading progress bar, copy link, language switching, and admin folders are unchanged.', '2026-06-17T23:05:00.000Z', '2026-06-17T23:05:00.000Z'),
+  ('seed-update-2026-06-18-article-toc-ja', 'seed-update-2026-06-18-article-toc', 'ja', '記事目次ナビ', '知識庫の記事詳細で本文見出しから目次を作り、長文の移動を速くしました。', '# 記事目次ナビ
+
+今回の更新では、知識庫の長文を読みやすくするため、記事本文の見出しから作る目次ナビを追加しました。
+
+## 更新内容
+
+- 安全な Markdown 描画が終わったあと、本文内の `h2` / `h3` 見出しを読み取り、目次ボタンを生成します。
+- 目次ボタンは DOM / `textContent` で作り、`article-heading-N` 形式の内部目標だけへスクロールします。
+- 見出しが2つ未満の記事では目次を非表示にし、短い記事に余分な操作を増やしません。
+- 読書進捗バー、リンクコピー、言語切り替え、管理画面ディレクトリは変更していません。', '2026-06-17T23:05:00.000Z', '2026-06-17T23:05:00.000Z'),
+  ('seed-update-2026-06-18-article-progress-zh', 'seed-update-2026-06-18-article-progress', 'zh', '文章阅读进度条', '知识库文章详情新增阅读进度条，长文滚动时可以看到当前位置。', '# 文章阅读进度条
+
+本次更新继续打磨知识库阅读体验，在文章详情窗口里加入一个轻量的阅读进度提示。
+
+## 更新内容
+
+- 文章详情头部下方新增三语“阅读进度”槽条和百分比。
+- 长文滚动时进度条通过 `transform: scaleX()` 更新，不改变文章正文布局。
+- 进度条的文字、数值和 `progressbar` 可访问状态都通过 DOM / `textContent` 更新。
+- Markdown 正文仍使用安全渲染流程，后台目录和管理接口不受影响。', '2026-06-17T22:50:00.000Z', '2026-06-17T22:50:00.000Z'),
+  ('seed-update-2026-06-18-article-progress-en', 'seed-update-2026-06-18-article-progress', 'en', 'Article Reading Progress', 'Knowledge article details now show a reading progress bar while long posts scroll.', '# Article Reading Progress
+
+This update continues polishing the Knowledge reading experience with a lightweight progress indicator inside article detail windows.
+
+## Changes
+
+- Article details now show a trilingual reading-progress strip and percentage below the header.
+- While long posts scroll, the fill updates with `transform: scaleX()` without changing the article body layout.
+- The label, percentage, and `progressbar` accessibility state update through DOM / `textContent` paths.
+- Markdown article content still uses the safe rendering flow, with admin folders and admin APIs untouched.', '2026-06-17T22:50:00.000Z', '2026-06-17T22:50:00.000Z'),
+  ('seed-update-2026-06-18-article-progress-ja', 'seed-update-2026-06-18-article-progress', 'ja', '記事の読書進捗バー', '知識庫の記事詳細に読書進捗バーを追加し、長文スクロール中の位置が分かるようになりました。', '# 記事の読書進捗バー
+
+今回の更新では、知識庫の記事詳細ウィンドウに軽い読書進捗表示を追加し、長文を読みやすくしました。
+
+## 更新内容
+
+- 記事詳細のヘッダー下に三言語の「読書進捗」バーとパーセント表示を追加しました。
+- 長文スクロール時は `transform: scaleX()` でバーだけを更新し、本文レイアウトは動かしません。
+- ラベル、数値、`progressbar` のアクセシビリティ状態は DOM / `textContent` 経由で更新します。
+- Markdown 本文は引き続き安全な描画フローを使い、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T22:50:00.000Z', '2026-06-17T22:50:00.000Z'),
+  ('seed-update-2026-06-18-rss-alternate-lang-zh', 'seed-update-2026-06-18-rss-alternate-lang', 'zh', 'RSS 发现链接同步', '页面 head 里的 RSS alternate 链接会跟随当前语言。', '# RSS 发现链接同步
+
+本次更新继续整理公开订阅入口，让浏览器和 RSS 阅读器发现 feed 时也能拿到当前语言版本。
+
+## 更新内容
+
+- 页面 `<head>` 里的 `rel="alternate"` RSS 链接新增同步标记。
+- 语言切换时，欢迎窗口 RSS 按钮和 head 里的 RSS alternate 会一起更新到当前 `lang`。
+- `/api/rss.xml` 与 `/api/feed.xml` 的 feed 输出逻辑不变，仍按 `lang` 返回三语文章内容。
+- 本轮只调整公开首页标记、前端语言同步和更新记录，不触碰后台目录或管理接口。', '2026-06-17T22:35:00.000Z', '2026-06-17T22:35:00.000Z'),
+  ('seed-update-2026-06-18-rss-alternate-lang-en', 'seed-update-2026-06-18-rss-alternate-lang', 'en', 'RSS Discovery Link Sync', 'The RSS alternate link in the page head now follows the active language.', '# RSS Discovery Link Sync
+
+This update continues polishing public subscription entry points so browsers and RSS readers discover the feed in the active language.
+
+## Changes
+
+- The `<head>` `rel="alternate"` RSS link now has a sync marker.
+- When the language changes, the welcome-window RSS button and the head RSS alternate link both update to the active `lang`.
+- `/api/rss.xml` and `/api/feed.xml` feed generation is unchanged and still returns trilingual article content according to `lang`.
+- This round only changes public homepage markup, frontend language sync, and update records; admin folders and admin APIs are untouched.', '2026-06-17T22:35:00.000Z', '2026-06-17T22:35:00.000Z'),
+  ('seed-update-2026-06-18-rss-alternate-lang-ja', 'seed-update-2026-06-18-rss-alternate-lang', 'ja', 'RSS 検出リンク同期', 'ページ head の RSS alternate リンクが現在の言語に合わせて更新されます。', '# RSS 検出リンク同期
+
+今回の更新では、公開サイトの購読入口をさらに整え、ブラウザーや RSS リーダーが現在の言語の feed を見つけやすくしました。
+
+## 更新内容
+
+- ページ `<head>` の `rel="alternate"` RSS リンクに同期用の印を追加しました。
+- 言語切り替え時に、ウェルカム画面の RSS ボタンと head の RSS alternate がどちらも現在の `lang` に更新されます。
+- `/api/rss.xml` と `/api/feed.xml` の生成処理は変更せず、`lang` に応じた三言語の記事内容を返します。
+- 今回は公開ホームのマークアップ、フロントの言語同期、更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T22:35:00.000Z', '2026-06-17T22:35:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-article-link-lang-zh', 'seed-update-2026-06-18-article-link-lang', 'zh', '文章链接保留语言', '文章卡片和最近更新链接现在会带上当前 lang 参数。', '# 文章链接保留语言
+
+本次更新继续整理公开文章入口，让复制链接、右键新开标签和普通点击保持一致的语言上下文。
+
+## 更新内容
+
+- 知识库文章卡片的真实 `href` 会带上当前 `lang` 参数。
+- 欢迎窗口最近更新列表的文章链接也会带上当前 `lang` 参数，右键新开标签不会掉回默认语言。
+- 文章详情里的“复制文章链接”复用同一条链接生成逻辑，继续输出当前语言直链。
+- 点击拦截、文章安全渲染、RSS feed 和后台目录保持不变。', '2026-06-17T22:20:00.000Z', '2026-06-17T22:20:00.000Z'),
+  ('seed-update-2026-06-18-article-link-lang-en', 'seed-update-2026-06-18-article-link-lang', 'en', 'Article Links Keep Language', 'Article cards and recent-update links now include the active lang parameter.', '# Article Links Keep Language
+
+This update keeps public article entry points aligned so copied links, new tabs, and normal clicks preserve the same language context.
+
+## Changes
+
+- Knowledge article card `href` values now include the active `lang` parameter.
+- Welcome-window Recent Updates article links also include the active `lang`, so opening in a new tab does not fall back to the default language.
+- The article detail copy-link button reuses the same link helper and still outputs a current-language deep link.
+- Click interception, safe article rendering, RSS feeds, and admin folders are unchanged.', '2026-06-17T22:20:00.000Z', '2026-06-17T22:20:00.000Z'),
+  ('seed-update-2026-06-18-article-link-lang-ja', 'seed-update-2026-06-18-article-link-lang', 'ja', '記事リンクの言語保持', '記事カードと最近の更新リンクに現在の lang パラメータを含めました。', '# 記事リンクの言語保持
+
+今回の更新では、公開記事への入口を整え、コピーしたリンク、新しいタブ、通常クリックで同じ言語コンテキストを保てるようにしました。
+
+## 更新内容
+
+- 知識庫の記事カードの実際の `href` に現在の `lang` パラメータを含めます。
+- ウェルカム画面の最近の更新リンクにも現在の `lang` を含め、新しいタブで開いても既定言語に戻りません。
+- 記事詳細の「記事リンクをコピー」ボタンも同じリンク生成処理を使い、現在言語の直リンクを出力します。
+- クリック処理、安全な記事描画、RSS feed、管理画面ディレクトリは変更していません。', '2026-06-17T22:20:00.000Z', '2026-06-17T22:20:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-recent-update-labels-zh', 'seed-update-2026-06-18-recent-update-labels', 'zh', '最近更新完整提示', '最近更新链接补充完整 title 和 aria-label，截断标题也能读到完整内容。', '# 最近更新完整提示
+
+本次更新继续打磨欢迎窗口里的最近更新面板，让被截断的更新标题也能被完整读取。
+
+## 更新内容
+
+- 每条最近更新链接新增完整 `title` 和 `aria-label`，包含标题、摘要和日期。
+- 屏幕上仍保留紧凑的截断标题与摘要，窗口布局和 XP 面板样式不变。
+- 标题、摘要和日期继续通过 DOM / `textContent` 输出，不插入未处理 HTML。
+- 本轮只调整公开最近更新面板、前端缓存版本和更新记录，不触碰后台目录或管理接口。', '2026-06-17T22:05:00.000Z', '2026-06-17T22:05:00.000Z'),
+  ('seed-update-2026-06-18-recent-update-labels-en', 'seed-update-2026-06-18-recent-update-labels', 'en', 'Recent Update Full Labels', 'Recent update links now include full title and aria-label text when visible text is truncated.', '# Recent Update Full Labels
+
+This update continues polishing the welcome-window Recent Updates panel so truncated update titles still expose the full context.
+
+## Changes
+
+- Each recent-update link now gets a full `title` and `aria-label` containing the title, summary, and date.
+- The visible panel keeps its compact truncated title and summary, so the XP layout stays unchanged.
+- Titles, summaries, and dates still render through DOM / `textContent`, with no raw HTML insertion.
+- This round only changes the public Recent Updates panel, frontend cache version, and update records; admin folders and admin APIs are untouched.', '2026-06-17T22:05:00.000Z', '2026-06-17T22:05:00.000Z'),
+  ('seed-update-2026-06-18-recent-update-labels-ja', 'seed-update-2026-06-18-recent-update-labels', 'ja', '最近の更新ラベル補足', '最近の更新リンクに完全な title と aria-label を追加しました。', '# 最近の更新ラベル補足
+
+今回の更新では、ウェルカム画面の「最近の更新」パネルを少し整え、省略された更新タイトルでも内容を確認しやすくしました。
+
+## 更新内容
+
+- 各最近更新リンクに、タイトル・概要・日付を含む完全な `title` と `aria-label` を追加しました。
+- 画面上はこれまで通りコンパクトな省略表示のまま、XP 風パネルのレイアウトは変更していません。
+- タイトル、概要、日付は引き続き DOM / `textContent` で描画し、未処理 HTML は挿入しません。
+- 今回は公開側の最近の更新パネル、フロントのキャッシュ版、更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T22:05:00.000Z', '2026-06-17T22:05:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-rss-button-label-zh', 'seed-update-2026-06-18-rss-button-label', 'zh', 'RSS 按钮文案整理', '欢迎窗口 RSS 按钮改为徽标加短文案，并让 ?welcome=1 稳定重开欢迎窗口。', '# RSS 按钮文案整理
+
+本次更新继续打磨欢迎窗口的订阅入口，让 RSS 按钮在视觉和读屏名称上都更清楚。
+
+## 更新内容
+
+- RSS 按钮保留橙色 `RSS` 徽标，可见文案改为更短的“订阅 / Feed / 購読”，避免重复显示 RSS。
+- 按钮新增会跟随语言切换的完整 `aria-label`，读屏仍可听到完整 RSS 订阅含义。
+- `?welcome=1` 现在会跳过“今日已看过”记录，便于复查欢迎窗口三语可见态；普通首访每日只弹一次逻辑不变。
+- `/api/rss.xml`、`/api/feed.xml`、最近更新文章列表和 feed 生成逻辑保持不变。
+- 本轮只调整公开欢迎窗口、前端翻译和更新记录，不触碰后台目录或管理接口。', '2026-06-17T21:50:00.000Z', '2026-06-17T21:50:00.000Z'),
+  ('seed-update-2026-06-18-rss-button-label-en', 'seed-update-2026-06-18-rss-button-label', 'en', 'RSS Button Label Polish', 'The welcome RSS button now uses a badge plus shorter label, and ?welcome=1 reliably reopens the welcome window.', '# RSS Button Label Polish
+
+This update continues polishing the welcome-window subscription entry so the RSS button reads more cleanly on screen and through assistive tech.
+
+## Changes
+
+- The RSS button keeps the orange `RSS` badge, while the visible text is shortened to `订阅 / Feed / 購読` to avoid repeating RSS.
+- The button now has a full localized `aria-label` that follows language switching, so screen readers still announce the full RSS subscription meaning.
+- `?welcome=1` now skips the daily already-seen flag, making it reliable for checking the welcome window in all three languages; normal first-visit daily behavior is unchanged.
+- `/api/rss.xml`, `/api/feed.xml`, the recent-update article list, and feed generation behavior are unchanged.
+- This round only changes the public welcome window, frontend translations, and update records; admin folders and admin APIs are untouched.', '2026-06-17T21:50:00.000Z', '2026-06-17T21:50:00.000Z'),
+  ('seed-update-2026-06-18-rss-button-label-ja', 'seed-update-2026-06-18-rss-button-label', 'ja', 'RSS ボタン文言調整', 'ウェルカム画面の RSS ボタンを短い文言に整え、?welcome=1 で確実に再表示できるようにしました。', '# RSS ボタン文言調整
+
+今回の更新では、ウェルカム画面の購読入口を少し整え、RSS ボタンの見た目と読み上げ名を分かりやすくしました。
+
+## 更新内容
+
+- RSS ボタンはオレンジ色の `RSS` バッジを残し、表示文言を短い `订阅 / Feed / 購読` にして RSS の重複表示を避けました。
+- ボタンには言語切り替えに合わせて変わる完全な `aria-label` を追加し、読み上げでは RSS 購読の意味が伝わるようにしました。
+- `?welcome=1` は当日の表示済み記録を越えてウェルカム画面を開けるようになり、三言語の表示確認に使いやすくなりました。通常の初回訪問では従来どおり一日一回だけ表示されます。
+- `/api/rss.xml`、`/api/feed.xml`、最近の更新記事一覧、feed 生成ロジックは変更していません。
+- 今回は公開ウェルカム画面、フロント翻訳、更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T21:50:00.000Z', '2026-06-17T21:50:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-rss-feed-entry-zh', 'seed-update-2026-06-18-rss-feed-entry', 'zh', 'RSS 订阅入口', '公开文章和站点更新现在可以通过 RSS 订阅。', '# RSS 订阅入口
+
+本次更新给公开主站补上轻量订阅能力，方便用 RSS 阅读器跟进文章和网站更新。
+
+## 更新内容
+
+- 新增公开 `GET /api/rss.xml`，也兼容 `/api/feed.xml`。
+- Feed 会按 `lang` 输出中文、English、日本語标题、摘要和文章链接，并只包含已发布文章。
+- 首页“最近更新”面板新增三语 RSS 链接，语言切换时会同步到当前语言 feed。
+- RSS XML 对标题、摘要、链接和标签做转义处理，不改变文章、聊天室、视频、游戏和后台逻辑。', '2026-06-17T21:35:00.000Z', '2026-06-17T21:35:00.000Z'),
+  ('seed-update-2026-06-18-rss-feed-entry-en', 'seed-update-2026-06-18-rss-feed-entry', 'en', 'RSS Feed Entry', 'Public articles and site updates can now be subscribed to through RSS.', '# RSS Feed Entry
+
+This update adds a lightweight subscription path to the public site so RSS readers can follow articles and site updates.
+
+## Changes
+
+- Added public `GET /api/rss.xml`, with `/api/feed.xml` supported as an alias.
+- The feed follows `lang` and returns Chinese, English, or Japanese titles, summaries, and article links for published articles only.
+- The home Recent Updates panel now includes a localized RSS link that follows language switching.
+- RSS XML escapes titles, summaries, links, and tags, without changing article, chat, video, game, or admin behavior.', '2026-06-17T21:35:00.000Z', '2026-06-17T21:35:00.000Z'),
+  ('seed-update-2026-06-18-rss-feed-entry-ja', 'seed-update-2026-06-18-rss-feed-entry', 'ja', 'RSS フィード入口', '公開記事とサイト更新を RSS で購読できるようにしました。', '# RSS フィード入口
+
+今回の更新では、公開サイトに軽量な購読導線を追加し、RSS リーダーで記事とサイト更新を追えるようにしました。
+
+## 更新内容
+
+- 公開 `GET /api/rss.xml` を追加し、`/api/feed.xml` も同じ feed として使えます。
+- Feed は `lang` に合わせて、中国語、English、日本語のタイトル、概要、記事リンクを返し、公開済み記事だけを含みます。
+- ホームの「最近の更新」パネルに多言語 RSS リンクを追加し、言語切り替えに合わせて feed も変わります。
+- RSS XML はタイトル、概要、リンク、タグをエスケープし、記事、チャット、動画、ゲーム、管理画面の動作は変更していません。', '2026-06-17T21:35:00.000Z', '2026-06-17T21:35:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-static-image-dimensions-zh', 'seed-update-2026-06-18-static-image-dimensions', 'zh', '静态图片尺寸提示', '首屏和固定 UI 的静态图片补充了真实尺寸属性。', '# 静态图片尺寸提示
+
+本次更新继续做轻量性能打磨，为公开主站里几处固定 UI 图片补充真实尺寸属性。
+
+## 更新内容
+
+- 顶部品牌头像、聊天室头像、关于页头像和底部 Start 图标新增 `width` / `height`。
+- 属性使用图片自身像素尺寸，现有 CSS 展示尺寸和响应式布局保持不变。
+- 浏览器可以在图片解码前预留稳定比例，减少首屏和固定 UI 的布局不确定性。
+- 本轮只调整公开首页标记、更新记录和本地 fallback，不触碰后台目录或管理接口。', '2026-06-17T21:20:00.000Z', '2026-06-17T21:20:00.000Z'),
+  ('seed-update-2026-06-18-static-image-dimensions-en', 'seed-update-2026-06-18-static-image-dimensions', 'en', 'Static Image Dimensions', 'Static images in the first-screen and fixed UI now declare real dimensions.', '# Static Image Dimensions
+
+This update continues lightweight performance polish by adding real dimensions to several fixed UI images on the public site.
+
+## Changes
+
+- The top brand avatar, chat room avatar, about-page avatar, and bottom Start icon now declare `width` / `height`.
+- The attributes use each image''s intrinsic pixel size; existing CSS display sizes and responsive behavior are unchanged.
+- Browsers can reserve a stable ratio before image decoding, reducing layout uncertainty in the first-screen and fixed UI.
+- This round only changes public homepage markup, update records, and local fallback data; admin folders and admin APIs are untouched.', '2026-06-17T21:20:00.000Z', '2026-06-17T21:20:00.000Z'),
+  ('seed-update-2026-06-18-static-image-dimensions-ja', 'seed-update-2026-06-18-static-image-dimensions', 'ja', '静的画像サイズ指定', '初期画面と固定 UI の静的画像に実寸属性を追加しました。', '# 静的画像サイズ指定
+
+今回の更新では、公開サイトの固定 UI 画像に実寸属性を追加し、軽量なパフォーマンス調整を続けました。
+
+## 更新内容
+
+- 上部ブランド画像、チャット画像、プロフィール画像、下部 Start アイコンに `width` / `height` を追加しました。
+- 属性は画像本来のピクセルサイズを使い、既存 CSS の表示サイズとレスポンシブ挙動は変更していません。
+- ブラウザーが画像デコード前に安定した比率を確保でき、初期画面と固定 UI のレイアウト揺れを減らします。
+- 今回は公開ホームのマークアップ、更新記録、ローカル fallback のみを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T21:20:00.000Z', '2026-06-17T21:20:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-article-tag-locales-zh', 'seed-update-2026-06-18-article-tag-locales', 'zh', '文章标签本地化', '公开知识库和站点更新标签补齐了更多三语显示。', '# 文章标签本地化
+
+本次更新继续打磨知识库和站点更新的阅读细节，让更多公开文章标签跟随当前语言显示。
+
+## 更新内容
+
+- `tagLabels` 补齐安全、iframe、聊天室、云存档、筛选、图片、账号等常见标签。
+- 知识库列表、文章详情和首页最近更新会继续通过 `articleTagName()` 输出对应语言标签。
+- 标签仍由 DOM / `textContent` 渲染，不改变文章内容、文章接口或管理后台数据。
+- `index.html` 的主脚本缓存版本已更新，帮助浏览器加载新的标签映射。', '2026-06-17T21:05:00.000Z', '2026-06-17T21:05:00.000Z'),
+  ('seed-update-2026-06-18-article-tag-locales-en', 'seed-update-2026-06-18-article-tag-locales', 'en', 'Article Tag Locales', 'More public knowledge and site-update tags now have localized labels.', '# Article Tag Locales
+
+This update continues polishing the reading details in the knowledge base and site update log so more public article tags follow the active language.
+
+## Changes
+
+- `tagLabels` now covers common tags such as security, iframe, chat room, cloud saves, filters, images, and account.
+- The knowledge list, article detail view, and home recent updates continue to use `articleTagName()` for localized tag labels.
+- Tags still render through DOM / `textContent`, with no change to article content, article APIs, or admin data.
+- `index.html` now points at a new main-script cache version so browsers load the updated tag map.', '2026-06-17T21:05:00.000Z', '2026-06-17T21:05:00.000Z'),
+  ('seed-update-2026-06-18-article-tag-locales-ja', 'seed-update-2026-06-18-article-tag-locales', 'ja', '記事タグのローカライズ', '公開知識庫とサイト更新のタグに、さらに多言語表示を追加しました。', '# 記事タグのローカライズ
+
+今回の更新では、知識庫とサイト更新ログの読書細部をさらに整え、より多くの公開記事タグが現在の言語に合わせて表示されるようにしました。
+
+## 更新内容
+
+- `tagLabels` に安全、iframe、チャット、クラウド保存、フィルター、画像、アカウントなどの一般的なタグを追加しました。
+- 知識庫一覧、記事詳細、ホームの最近更新は引き続き `articleTagName()` で言語別タグを表示します。
+- タグは引き続き DOM / `textContent` で描画し、記事本文、記事 API、管理画面データは変更していません。
+- `index.html` のメインスクリプトのキャッシュ版を更新し、新しいタグマップを読み込めるようにしました。', '2026-06-17T21:05:00.000Z', '2026-06-17T21:05:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-game-frame-source-guard-zh', 'seed-update-2026-06-18-game-frame-source-guard', 'zh', '游戏 iframe 启动守卫', '游戏入口页会先校验 iframe 启动路径和语言参数名。', '# 游戏 iframe 启动守卫
+
+本次更新继续收紧公开游戏入口页，让游戏 iframe 只从可信的本地 source 页面启动。
+
+## 更新内容
+
+- `game-shell.js` 新增 `safeGameSourceEntry()`，只接受 catalog 中的 `source/...html` 本地页面路径。
+- `languageQueryParam` 新增格式校验，异常配置会回退到 `lang`，避免未校验参数名直接进入 iframe URL。
+- 5 个游戏入口页更新 `game-shell.js` 缓存版本，确保浏览器加载新的守卫逻辑。
+- 游戏列表、云存档、存档导入导出、语言选择和现有游戏内容保持不变。', '2026-06-17T20:50:00.000Z', '2026-06-17T20:50:00.000Z'),
+  ('seed-update-2026-06-18-game-frame-source-guard-en', 'seed-update-2026-06-18-game-frame-source-guard', 'en', 'Game Frame Source Guard', 'Game entry pages now validate iframe launch paths and language query names first.', '# Game Frame Source Guard
+
+This update tightens the public game entry pages so game iframes only launch trusted local source pages.
+
+## Changes
+
+- `game-shell.js` now includes `safeGameSourceEntry()`, accepting only local `source/...html` paths from the catalog.
+- `languageQueryParam` is format-checked and falls back to `lang` when the catalog value is invalid.
+- All five game entry pages now request a new `game-shell.js` cache version so browsers load the guard.
+- The game list, cloud saves, save import/export, language selection, and existing game content are unchanged.', '2026-06-17T20:50:00.000Z', '2026-06-17T20:50:00.000Z'),
+  ('seed-update-2026-06-18-game-frame-source-guard-ja', 'seed-update-2026-06-18-game-frame-source-guard', 'ja', 'ゲームフレーム起動ガード', 'ゲーム入口ページが iframe 起動パスと言語パラメータ名を先に確認します。', '# ゲームフレーム起動ガード
+
+今回の更新では、公開ゲーム入口ページをさらに引き締め、ゲーム iframe が信頼できるローカル source ページだけから起動するようにしました。
+
+## 更新内容
+
+- `game-shell.js` に `safeGameSourceEntry()` を追加し、catalog の `source/...html` ローカルページだけを受け付けます。
+- `languageQueryParam` は形式を確認し、無効な値は `lang` に戻します。
+- 5 つのゲーム入口ページで `game-shell.js` のキャッシュ版を更新し、新しいガードを読み込ませます。
+- ゲーム一覧、クラウド保存、セーブのインポート/エクスポート、言語選択、既存ゲーム内容は変更していません。', '2026-06-17T20:50:00.000Z', '2026-06-17T20:50:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-chat-nickname-locale-zh', 'seed-update-2026-06-18-chat-nickname-locale', 'zh', '聊天室昵称本地化', '匿名聊天室的新随机昵称会跟随当前语言生成。', '# 聊天室昵称本地化
+
+本次更新继续打磨公开匿名聊天室，让新访客拿到的随机昵称更贴合当前语言界面。
+
+## 更新内容
+
+- 前端请求 `/api/chat/nickname` 时会带上当前 `lang` 参数。
+- 公开昵称接口按中文、English、日本語分别选择随机昵称词库。
+- 接口不可用时，本地 fallback 也会使用当前语言对应的词库。
+- 已保存或手动编辑过的昵称不会被强制替换，聊天室消息仍通过安全 DOM / `textContent` 渲染。', '2026-06-17T20:35:00.000Z', '2026-06-17T20:35:00.000Z'),
+  ('seed-update-2026-06-18-chat-nickname-locale-en', 'seed-update-2026-06-18-chat-nickname-locale', 'en', 'Chat Nickname Locale', 'New anonymous chat random nicknames now follow the current language.', '# Chat Nickname Locale
+
+This update continues polishing the public anonymous chat room so new visitors receive random nicknames that better match the current interface language.
+
+## Changes
+
+- The frontend now sends the current `lang` parameter when requesting `/api/chat/nickname`.
+- The public nickname endpoint chooses separate nickname pools for Chinese, English, and Japanese.
+- If the endpoint is unavailable, the local fallback also uses the current language pool.
+- Saved or manually edited nicknames are not forcibly replaced, and chat messages still render through safe DOM / `textContent`.', '2026-06-17T20:35:00.000Z', '2026-06-17T20:35:00.000Z'),
+  ('seed-update-2026-06-18-chat-nickname-locale-ja', 'seed-update-2026-06-18-chat-nickname-locale', 'ja', 'チャット名ロケール対応', '匿名チャットの新しいランダム名が現在の言語に合わせて生成されます。', '# チャット名ロケール対応
+
+今回の更新では、公開匿名チャットをさらに磨き、新しい訪問者のランダム名が現在の表示言語に合うようにしました。
+
+## 更新内容
+
+- フロントエンドが `/api/chat/nickname` を呼ぶとき、現在の `lang` パラメータを送ります。
+- 公開ニックネーム API は中国語、English、日本語ごとのランダム名リストを選びます。
+- API が使えない場合のローカル fallback も、現在の言語リストを使います。
+- 保存済み、または手動編集済みのニックネームは強制変更せず、チャットメッセージは引き続き安全な DOM / `textContent` で描画します。', '2026-06-17T20:35:00.000Z', '2026-06-17T20:35:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-game-url-allowlist-zh', 'seed-update-2026-06-18-game-url-allowlist', 'zh', '游戏链接白名单', '游戏列表入口和封面路径补充白名单校验。', '# 游戏链接白名单
+
+本次更新继续收紧公开主站游戏区，让游戏列表的入口链接和封面路径在渲染前经过白名单校验。
+
+## 更新内容
+
+- 本地游戏入口只接受 `games/catalog.json` 中的安全目录名，继续生成 `/games/<entry>?lang=...` 链接。
+- 外部游戏链接和仓库链接只接受 `http(s)`，无效 URL 不会输出到页面。
+- 游戏封面只接受 `assets/images/` 下的常见图片路径，无效封面会回退到游戏图标。
+- 5 个现有游戏入口、iframe、云存档同步和导入导出逻辑保持不变。', '2026-06-17T19:35:00.000Z', '2026-06-17T19:35:00.000Z'),
+  ('seed-update-2026-06-18-game-url-allowlist-en', 'seed-update-2026-06-18-game-url-allowlist', 'en', 'Game Link Allowlist', 'Game entry links and cover paths now use allowlist checks.', '# Game Link Allowlist
+
+This update keeps tightening the public Games area by validating game entry links and cover paths before rendering them.
+
+## Changes
+
+- Local game entries only accept safe directory names from `games/catalog.json` and still produce `/games/<entry>?lang=...` links.
+- External game links and repository links only accept `http(s)`, so invalid URLs are not written into the page.
+- Game covers only accept common image paths under `assets/images/`; invalid covers fall back to the games icon.
+- The five existing game entries, iframes, cloud-save sync, and import/export behavior are unchanged.', '2026-06-17T19:35:00.000Z', '2026-06-17T19:35:00.000Z'),
+  ('seed-update-2026-06-18-game-url-allowlist-ja', 'seed-update-2026-06-18-game-url-allowlist', 'ja', 'ゲームリンク許可リスト', 'ゲーム入口リンクとカバー画像パスに許可リスト確認を追加しました。', '# ゲームリンク許可リスト
+
+今回の更新では、公開ゲーム欄をさらに引き締め、ゲーム入口リンクとカバー画像パスを描画前に許可リストで確認します。
+
+## 更新内容
+
+- ローカルゲーム入口は `games/catalog.json` の安全なディレクトリ名だけを受け付け、引き続き `/games/<entry>?lang=...` リンクを生成します。
+- 外部ゲームリンクとリポジトリリンクは `http(s)` のみ受け付け、無効な URL はページに出力しません。
+- ゲームカバーは `assets/images/` 配下の一般的な画像パスのみ受け付け、無効な場合はゲームアイコンへ戻します。
+- 既存 5 件のゲーム入口、iframe、クラウド保存同期、インポート/エクスポート動作は変更していません。', '2026-06-17T19:35:00.000Z', '2026-06-17T19:35:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-game-list-safe-dom-zh', 'seed-update-2026-06-18-game-list-safe-dom', 'zh', '游戏列表安全渲染', '游戏区列表卡片改为 DOM/textContent 构建。', '# 游戏列表安全渲染
+
+本次更新继续收紧公开主站游戏区，把游戏列表卡片从字符串模板改为 DOM / `textContent` 构建。
+
+## 更新内容
+
+- 游戏标题、简介、语言支持标签、许可证标签和加载/失败提示都改为 DOM 节点与文本节点输出。
+- 游戏封面仍保留懒加载与异步解码，入口链接和外部链接打开方式保持不变。
+- 游戏入口页、iframe、云存档同步、导入导出和游戏目录不变。
+- 本轮只调整公开游戏列表和更新记录，不触碰后台目录或管理接口。', '2026-06-17T19:20:00.000Z', '2026-06-17T19:20:00.000Z'),
+  ('seed-update-2026-06-18-game-list-safe-dom-en', 'seed-update-2026-06-18-game-list-safe-dom', 'en', 'Game List Safe DOM', 'Game list cards now render through DOM/textContent.', '# Game List Safe DOM
+
+This update keeps tightening the public Games area by changing game-list cards from string templates to DOM / `textContent` construction.
+
+## Changes
+
+- Game titles, summaries, language-support tags, license tags, and loading/failure states now render through DOM nodes and text nodes.
+- Game covers keep lazy loading and async decoding, and entry links plus external-link behavior are unchanged.
+- Game entry pages, iframes, cloud-save sync, import/export, and the game catalog are unchanged.
+- Only the public Games list and update records changed; admin folders and admin APIs were not touched.', '2026-06-17T19:20:00.000Z', '2026-06-17T19:20:00.000Z'),
+  ('seed-update-2026-06-18-game-list-safe-dom-ja', 'seed-update-2026-06-18-game-list-safe-dom', 'ja', 'ゲーム一覧の安全な DOM 描画', 'ゲーム一覧カードを DOM/textContent 構築にしました。', '# ゲーム一覧の安全な DOM 描画
+
+今回の更新では、公開ゲーム欄をさらに引き締め、ゲーム一覧カードを文字列テンプレートから DOM / `textContent` 構築へ変更しました。
+
+## 更新内容
+
+- ゲームタイトル、概要、言語対応タグ、ライセンスタグ、読み込み/失敗表示を DOM ノードとテキストノードで出力します。
+- ゲームカバーの遅延読み込みと非同期デコード、入口リンク、外部リンクの開き方は変えていません。
+- ゲーム入口ページ、iframe、クラウド保存同期、インポート/エクスポート、ゲームカタログは変更していません。
+- 公開ゲーム一覧と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T19:20:00.000Z', '2026-06-17T19:20:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-resource-filters-safe-dom-zh', 'seed-update-2026-06-18-resource-filters-safe-dom', 'zh', '资源筛选安全渲染', '资源区分类筛选按钮改为 DOM/textContent 构建。', '# 资源筛选安全渲染
+
+本次更新继续收紧公开主站资源区，把分类筛选按钮从字符串拼接改为 DOM / `textContent` 构建。
+
+## 更新内容
+
+- 资源区分类按钮现在通过 `document.createElement(''button'')` 创建，按钮文案用 `textContent` 写入。
+- `data-filter`、`data-filter-type`、active 状态和点击筛选行为保持不变。
+- 视频区筛选本来已经使用 DOM 构建，本轮只补齐通用资源筛选按钮。
+- 本轮只调整公开资源区筛选控件和更新记录，不触碰后台目录或管理接口。', '2026-06-17T19:05:00.000Z', '2026-06-17T19:05:00.000Z'),
+  ('seed-update-2026-06-18-resource-filters-safe-dom-en', 'seed-update-2026-06-18-resource-filters-safe-dom', 'en', 'Resource Filters Safe DOM', 'Resource category filter buttons now render through DOM/textContent.', '# Resource Filters Safe DOM
+
+This update keeps tightening the public Resources area by changing category filter buttons from string-built markup to DOM / `textContent` construction.
+
+## Changes
+
+- Resource category buttons are now created with `document.createElement(''button'')`, with labels assigned through `textContent`.
+- `data-filter`, `data-filter-type`, active state, and click filtering behavior are unchanged.
+- Video filters were already DOM-built; this pass only completes the shared resource-filter path.
+- Only the public Resources filter controls and update records changed; admin folders and admin APIs were not touched.', '2026-06-17T19:05:00.000Z', '2026-06-17T19:05:00.000Z'),
+  ('seed-update-2026-06-18-resource-filters-safe-dom-ja', 'seed-update-2026-06-18-resource-filters-safe-dom', 'ja', 'リソースフィルターの安全な DOM 描画', 'リソースカテゴリーフィルターを DOM/textContent 構築にしました。', '# リソースフィルターの安全な DOM 描画
+
+今回の更新では、公開リソース欄をさらに引き締め、カテゴリーフィルターボタンを文字列連結から DOM / `textContent` 構築へ変更しました。
+
+## 更新内容
+
+- リソースカテゴリーボタンは `document.createElement(''button'')` で作成し、ラベルは `textContent` で入れます。
+- `data-filter`、`data-filter-type`、active 状態、クリック絞り込み動作は変えていません。
+- 動画フィルターはすでに DOM 構築のため、本輪では共通のリソースフィルター経路だけを補いました。
+- 公開リソースフィルターと更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T19:05:00.000Z', '2026-06-17T19:05:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-knowledge-list-safe-dom-zh', 'seed-update-2026-06-18-knowledge-list-safe-dom', 'zh', '知识库列表安全渲染', '知识库文章列表改为 DOM/textContent 构建。', '# 知识库列表安全渲染
+
+本次更新把公开知识库的文章卡片列表从字符串拼接改为 DOM / `textContent` 构建，继续降低公开文章字段进入页面时的 XSS 风险。
+
+## 更新内容
+
+- 文章标题、摘要、分类、标签、发布日期、fallback 提示和阅读按钮都改为 DOM 节点与文本节点输出。
+- 搜索、分类筛选、文章详情直链和阅读按钮行为保持不变。
+- 加载、失败、空列表和无搜索结果提示也改为纯文本节点渲染。
+- 本轮只调整公开知识库列表和更新记录，不触碰后台目录或管理接口。', '2026-06-17T18:45:00.000Z', '2026-06-17T18:45:00.000Z'),
+  ('seed-update-2026-06-18-knowledge-list-safe-dom-en', 'seed-update-2026-06-18-knowledge-list-safe-dom', 'en', 'Knowledge List Safe DOM', 'Knowledge article cards now render through DOM/textContent.', '# Knowledge List Safe DOM
+
+This update changes the public Knowledge article-card list from string-built markup to DOM / `textContent` construction, reducing XSS risk as public article fields enter the page.
+
+## Changes
+
+- Article titles, summaries, categories, tags, published dates, fallback notices, and read buttons now render through DOM nodes and text nodes.
+- Search, category filters, article deep links, and read-button behavior are unchanged.
+- Loading, failure, empty-list, and no-result states also render as plain text nodes.
+- Only the public Knowledge list and update records changed; admin folders and admin APIs were not touched.', '2026-06-17T18:45:00.000Z', '2026-06-17T18:45:00.000Z'),
+  ('seed-update-2026-06-18-knowledge-list-safe-dom-ja', 'seed-update-2026-06-18-knowledge-list-safe-dom', 'ja', '知識庫リストの安全な DOM 描画', '知識庫の記事カードを DOM/textContent 構築にしました。', '# 知識庫リストの安全な DOM 描画
+
+今回の更新では、公開知識庫の記事カード一覧を文字列連結から DOM / `textContent` 構築へ変更し、公開記事フィールドがページに入るときの XSS リスクをさらに下げます。
+
+## 更新内容
+
+- 記事タイトル、概要、カテゴリ、タグ、公開日、fallback 表示、読むボタンを DOM ノードとテキストノードで出力します。
+- 検索、カテゴリ絞り込み、記事詳細直リンク、読むボタンの動作は変えていません。
+- 読み込み中、失敗、空リスト、検索結果なしの表示も純テキストノードで描画します。
+- 公開知識庫リストと更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T18:45:00.000Z', '2026-06-17T18:45:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-recent-updates-safe-dom-zh', 'seed-update-2026-06-18-recent-updates-safe-dom', 'zh', '最近更新安全渲染', '首页最近更新列表改为 DOM/textContent 构建。', '# 最近更新安全渲染
+
+本次更新把首页“最近更新”列表从字符串拼接改为 DOM / `textContent` 构建，让公开更新记录继续以纯文本方式渲染。
+
+## 更新内容
+
+- 最近更新的标题、摘要、日期和图标都改为 DOM 节点与文本节点输出，不再用模板字符串 `innerHTML` 组装列表。
+- `site-updates` 工具图标、普通文章书本图标、本地 fallback 图标和文章直链行为保持不变。
+- 列表仍显示最新 5 条站点更新；接口失败时仍回退到本地最近更新。
+- 本轮只调整公开首页最近更新列表和更新记录，不触碰后台目录或管理接口。', '2026-06-17T18:40:00.000Z', '2026-06-17T18:40:00.000Z'),
+  ('seed-update-2026-06-18-recent-updates-safe-dom-en', 'seed-update-2026-06-18-recent-updates-safe-dom', 'en', 'Recent Updates Safe DOM', 'The home recent-update list now renders through DOM/textContent.', '# Recent Updates Safe DOM
+
+This update changes the home Recent Updates list from string-built markup to DOM / `textContent` construction, keeping public update records rendered as plain text.
+
+## Changes
+
+- Recent-update titles, summaries, dates, and icons now render through DOM nodes and text nodes instead of template-string `innerHTML`.
+- The `site-updates` tool icon, regular article book fallback, local fallback icons, and article deep links are unchanged.
+- The list still shows the latest five site updates and still falls back to local updates if the API fails.
+- Only the public home Recent Updates list and update records changed; admin folders and admin APIs were not touched.', '2026-06-17T18:40:00.000Z', '2026-06-17T18:40:00.000Z'),
+  ('seed-update-2026-06-18-recent-updates-safe-dom-ja', 'seed-update-2026-06-18-recent-updates-safe-dom', 'ja', '最近更新の安全な DOM 描画', 'ホームの最近更新リストを DOM/textContent 構築にしました。', '# 最近更新の安全な DOM 描画
+
+今回の更新では、ホームの「最近更新」リストを文字列連結から DOM / `textContent` 構築へ変更し、公開更新記録を純テキストとして描画し続けます。
+
+## 更新内容
+
+- 最近更新のタイトル、概要、日付、アイコンはテンプレート文字列の `innerHTML` ではなく、DOM ノードとテキストノードで出力します。
+- `site-updates` のツールアイコン、通常記事の本アイコン fallback、ローカル fallback アイコン、記事直リンクの動作は変えていません。
+- リストは引き続き最新 5 件のサイト更新を表示し、API 失敗時はローカル最近更新へ戻ります。
+- 公開ホームの最近更新リストと更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T18:40:00.000Z', '2026-06-17T18:40:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
@@ -2129,6 +4463,768 @@ This update continues tightening the videos area and desktop icons so the public
 - 既定の動画カテゴリ seed は初回テーブル作成時だけ動くようにし、削除済みの既定タグを戻さず、管理画面の並び順も保持します。
 - ビルドチェックで公開動画 API の経路も確認し、動画 schema guard の実行時問題を見落としにくくしました。
 - 匿名チャットルームのデスクトップアイコンを少し小さくし、ラベルとの間隔を確保しました。', '2026-06-16T08:20:00.000Z', '2026-06-16T08:20:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-17-knowledge-search-zh', 'seed-update-2026-06-17-knowledge-search', 'zh', '知识库本地搜索上线', '知识库顶部新增本地搜索，可按标题、简介、分类和标签快速过滤文章。', '# 知识库本地搜索上线
+
+本次更新给主站知识库增加了轻量搜索条，方便在文章和网站更新记录越来越多时快速定位内容。
+
+## 更新内容
+
+- 知识库窗口顶部新增搜索框，可按文章标题、简介、分类、slug 和标签即时过滤。
+- 搜索结果会显示当前命中数量，清空按钮可以一键恢复完整列表。
+- 搜索文案同步维护中文、English、日本語，切换语言后会更新标签、占位提示和结果数量。
+- 手机端搜索条会自动换行，继续保持无横向溢出。
+- 文章详情、直链、Markdown 安全渲染和聊天室纯文本规则保持不变。', '2026-06-17T15:25:00.000Z', '2026-06-17T15:25:00.000Z'),
+  ('seed-update-2026-06-17-knowledge-search-en', 'seed-update-2026-06-17-knowledge-search', 'en', 'Knowledge Search Added', 'The knowledge base now has local search across titles, summaries, categories, and tags.', '# Knowledge Search Added
+
+This update adds a lightweight search bar to the public knowledge base so articles and site update logs are easier to find as the archive grows.
+
+## Changes
+
+- The knowledge window now has a search field that filters by article title, summary, category, slug, and tags instantly in the browser.
+- Result text shows the current match count, and the clear button restores the full list in one click.
+- Search labels, placeholders, and count text are maintained in Chinese, English, and Japanese.
+- The mobile search bar wraps cleanly and keeps the page free of horizontal overflow.
+- Article detail links, Markdown safe rendering, and chatroom plain-text rules are unchanged.', '2026-06-17T15:25:00.000Z', '2026-06-17T15:25:00.000Z'),
+  ('seed-update-2026-06-17-knowledge-search-ja', 'seed-update-2026-06-17-knowledge-search', 'ja', '知識庫検索を追加', '知識庫に、タイトル・概要・分類・タグで絞り込めるローカル検索を追加しました。', '# 知識庫検索を追加
+
+今回の更新では、記事とサイト更新記録が増えても探しやすいように、公開側の知識庫へ軽量な検索バーを追加しました。
+
+## 更新内容
+
+- 知識庫ウィンドウ上部に検索欄を追加し、記事タイトル、概要、分類、slug、タグをブラウザ内で即時に絞り込めます。
+- 結果件数を表示し、クリアボタンで一覧全体にすぐ戻せます。
+- 検索ラベル、プレースホルダー、件数表示は中文、English、日本語で同期しています。
+- モバイルでは検索バーが自然に折り返し、横方向にはみ出さないようにしました。
+- 記事詳細リンク、Markdown の安全描画、チャットルームの純テキスト表示ルールはそのままです。', '2026-06-17T15:25:00.000Z', '2026-06-17T15:25:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-17-article-share-link-zh', 'seed-update-2026-06-17-article-share-link', 'zh', '文章详情复制链接', '知识库文章详情新增复制直链按钮，便于分享当前语言的文章页面。', '# 文章详情复制链接
+
+本次更新继续打磨知识库阅读体验，让文章详情页更适合分享和回访。
+
+## 更新内容
+
+- 文章详情头部新增“复制文章链接”按钮，会生成当前文章的直链。
+- 复制链接会保留当前语言参数，中文、English、日本語 页面都能分享对应语言视图。
+- 成功和失败提示均使用三语文案，并通过安全 DOM 文本更新。
+- 手机端按钮和提示会自然换行，避免文章页横向溢出。', '2026-06-17T15:40:00.000Z', '2026-06-17T15:40:00.000Z'),
+  ('seed-update-2026-06-17-article-share-link-en', 'seed-update-2026-06-17-article-share-link', 'en', 'Article Link Copy', 'Knowledge article pages now include a copy-link button for sharing the current language view.', '# Article Link Copy
+
+This update keeps improving the knowledge reading flow so article detail pages are easier to share and revisit.
+
+## Changes
+
+- Article detail headers now include a copy-link button that creates a direct URL for the current article.
+- The copied link keeps the current language parameter, so Chinese, English, and Japanese views can be shared directly.
+- Success and failure messages are maintained in all three languages and update through safe DOM text.
+- On mobile, the button and status text wrap cleanly without horizontal overflow.', '2026-06-17T15:40:00.000Z', '2026-06-17T15:40:00.000Z'),
+  ('seed-update-2026-06-17-article-share-link-ja', 'seed-update-2026-06-17-article-share-link', 'ja', '記事リンクコピー', '知識庫の記事詳細に、現在の言語表示を共有しやすいリンクコピーボタンを追加しました。', '# 記事リンクコピー
+
+今回の更新では、知識庫の記事詳細ページを共有しやすくするため、読み物まわりの操作を少し整えました。
+
+## 更新内容
+
+- 記事詳細のヘッダーに、現在の記事の直リンクをコピーするボタンを追加しました。
+- コピーされるリンクには現在の言語パラメータが含まれ、中文、English、日本語の表示をそのまま共有できます。
+- 成功・失敗メッセージは三言語で用意し、安全な DOM テキストとして更新します。
+- モバイルではボタンと状態表示が自然に折り返し、横方向にはみ出さないようにしました。', '2026-06-17T15:40:00.000Z', '2026-06-17T15:40:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-17-video-empty-state-zh', 'seed-update-2026-06-17-video-empty-state', 'zh', '视频区空状态增强', '视频区没有公开视频时，会显示 XP 风格提示并提供网站更新入口。', '# 视频区空状态增强
+
+本次更新给主站视频区补上更清晰的空状态，让没有公开视频或筛选无结果时也不显得像页面坏掉了。
+
+## 更新内容
+
+- 视频区无公开视频时显示 XP 风格提示卡片，说明视频内容正在整理中。
+- 筛选到空分类时会提示换分类或查看网站更新记录。
+- 空状态按钮会跳转到知识库的网站更新记录分类，方便继续浏览施工进度。
+- 手机端空状态改为单列布局，保持视频区无横向溢出。
+- 已有视频卡片、播放窗口、公开 API 和后台视频数据不受影响。', '2026-06-17T15:53:00.000Z', '2026-06-17T15:53:00.000Z'),
+  ('seed-update-2026-06-17-video-empty-state-en', 'seed-update-2026-06-17-video-empty-state', 'en', 'Video Empty State', 'The videos area now shows an XP-style empty state with a shortcut to site updates when no videos are published.', '# Video Empty State
+
+This update adds a clearer empty state to the public videos area, so the page still feels intentional when no videos are published or a filter has no results.
+
+## Changes
+
+- When no public videos are available, the videos area now shows an XP-style message card explaining that the archive is being organized.
+- Empty filtered categories suggest trying another category or checking site updates.
+- The empty-state button opens the knowledge base site update category so visitors can keep browsing recent build notes.
+- On mobile, the empty state switches to a single-column layout and keeps the videos area free of horizontal overflow.
+- Existing video cards, the playback window, public API behavior, and admin-managed video data are unchanged.', '2026-06-17T15:53:00.000Z', '2026-06-17T15:53:00.000Z'),
+  ('seed-update-2026-06-17-video-empty-state-ja', 'seed-update-2026-06-17-video-empty-state', 'ja', '動画欄の空状態を改善', '公開動画がない場合、動画欄に XP 風の空状態とサイト更新記録への入口を表示します。', '# 動画欄の空状態を改善
+
+今回の更新では、公開動画がない場合やフィルター結果が空の場合でも、動画欄が壊れて見えないように空状態を整えました。
+
+## 更新内容
+
+- 公開動画がないとき、動画を整理中であることを伝える XP 風の案内カードを表示します。
+- 空のカテゴリを選んだ場合は、別カテゴリまたはサイト更新記録を見る案内を出します。
+- 空状態ボタンから、知識庫のサイト更新記録カテゴリへ移動できます。
+- モバイルでは空状態を一列にし、動画欄が横方向にはみ出さないようにしました。
+- 既存の動画カード、再生ウィンドウ、公開 API、管理画面の動画データには影響しません。', '2026-06-17T15:53:00.000Z', '2026-06-17T15:53:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-17-route-aware-welcome-zh', 'seed-update-2026-06-17-route-aware-welcome', 'zh', '文章直链不再弹欢迎窗', '首次打开文章或其他非首页直链时，不再自动弹出欢迎窗口遮挡内容。', '# 文章直链不再弹欢迎窗
+
+本次更新修复文章详情直链的首次访问体验，让链接打开后直接看到目标内容。
+
+## 更新内容
+
+- 首次打开文章详情、知识库、视频区等非首页直链时，不再自动弹出欢迎窗口遮挡内容。
+- 首页首次访问仍保留欢迎窗口，用于展示快捷入口和最近更新。
+- `?welcome=0` 继续禁用欢迎窗，`?welcome=1` 可显式触发欢迎窗，方便人工检查。
+- 文章详情、搜索、视频区、聊天室和游戏区路由逻辑保持不变。', '2026-06-17T16:02:00.000Z', '2026-06-17T16:02:00.000Z'),
+  ('seed-update-2026-06-17-route-aware-welcome-en', 'seed-update-2026-06-17-route-aware-welcome', 'en', 'Cleaner Article Deep Links', 'Article and non-home deep links no longer auto-open the welcome modal over the content.', '# Cleaner Article Deep Links
+
+This update fixes the first-visit experience for article detail URLs so deep links open directly on the target content.
+
+## Changes
+
+- Article detail, knowledge, videos, and other non-home deep links no longer auto-open the welcome modal over the page content.
+- First visits to the home page still keep the welcome modal for quick links and recent updates.
+- `?welcome=0` still disables the modal, while `?welcome=1` can explicitly open it for manual checks.
+- Article detail, search, videos, chatroom, and games route behavior is otherwise unchanged.', '2026-06-17T16:02:00.000Z', '2026-06-17T16:02:00.000Z'),
+  ('seed-update-2026-06-17-route-aware-welcome-ja', 'seed-update-2026-06-17-route-aware-welcome', 'ja', '記事直リンクを読みやすく', '記事やホーム以外の直リンクでは、歓迎ウィンドウが内容を隠さないようにしました。', '# 記事直リンクを読みやすく
+
+今回の更新では、記事詳細への直リンクを初めて開いたときも、目的の記事をすぐ読めるようにしました。
+
+## 更新内容
+
+- 記事詳細、知識庫、動画欄などホーム以外の直リンクでは、歓迎ウィンドウを自動表示しません。
+- ホームの初回訪問では、快捷入口と最近の更新を案内する歓迎ウィンドウを引き続き表示します。
+- `?welcome=0` は引き続き歓迎ウィンドウを無効化し、`?welcome=1` で明示的に表示できます。
+- 記事詳細、検索、動画欄、チャット、ゲーム区のルート処理はそのままです。', '2026-06-17T16:02:00.000Z', '2026-06-17T16:02:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-resource-actions-zh', 'seed-update-2026-06-18-resource-actions', 'zh', '资源区占位按钮修复', '资源区没有真实下载或外链时显示准备中按钮，不再使用无效 # 链接。', '# 资源区占位按钮修复
+
+本次更新整理了主站资源区的占位卡片，让还没有真实下载或外链的资源不会表现得像可点击链接。
+
+## 更新内容
+
+- 资源卡片没有真实 URL 时，动作按钮显示“准备中”并进入禁用态。
+- 后续资源配置补上真实 `http(s)`、`assets/` 或 `downloads/` 地址后，仍会显示下载或外链按钮。
+- 资源卡片改为使用 DOM 和 `textContent` 构建，减少未来接入动态资源数据时的 XSS 风险。
+- 右上角最近更新日期改为按用户本地日期计算，避免北京时间 00:00 后发布的更新仍显示前一天。
+- 中文、English、日本語 的按钮文案和移动端布局同步维护。', '2026-06-17T16:09:00.000Z', '2026-06-17T16:09:00.000Z'),
+  ('seed-update-2026-06-18-resource-actions-en', 'seed-update-2026-06-18-resource-actions', 'en', 'Resource Placeholder Buttons', 'Resource cards without real download or external URLs now show a coming-soon button instead of a dead # link.', '# Resource Placeholder Buttons
+
+This update tidies the public resources area so placeholder cards without real downloads or external URLs no longer behave like clickable dead links.
+
+## Changes
+
+- Resource cards without a real URL now show a disabled coming-soon action.
+- When a future resource gets a real `http(s)`, `assets/`, or `downloads/` URL, the card still renders a download or external-link button.
+- Resource cards now render through DOM nodes and `textContent`, reducing XSS risk if resource data becomes dynamic later.
+- The top-right latest update date now uses the local date, so updates published after midnight in China no longer show the previous UTC day.
+- Chinese, English, and Japanese button text and mobile layout behavior are maintained together.', '2026-06-17T16:09:00.000Z', '2026-06-17T16:09:00.000Z'),
+  ('seed-update-2026-06-18-resource-actions-ja', 'seed-update-2026-06-18-resource-actions', 'ja', 'リソース準備中ボタン', '実際のダウンロードや外部リンクがないリソースは、無効な # リンクではなく準備中ボタンを表示します。', '# リソース準備中ボタン
+
+今回の更新では、公開側のリソース欄を整理し、実際のダウンロードや外部リンクがないカードが無効なリンクのように見えないようにしました。
+
+## 更新内容
+
+- 実際の URL がないリソースカードは、「準備中」の無効ボタンを表示します。
+- 今後 `http(s)`、`assets/`、`downloads/` の実リンクを設定すると、ダウンロードまたは外部リンクボタンとして表示されます。
+- リソースカードは DOM と `textContent` で構築するようにし、将来リソースデータを動的化する場合の XSS リスクを下げました。
+- 右上の最新更新日は閲覧者のローカル日付で計算し、中国時間 00:00 以降の更新が UTC の前日表示にならないようにしました。
+- 中文、English、日本語 のボタン文言とモバイル表示を合わせて維持しています。', '2026-06-17T16:09:00.000Z', '2026-06-17T16:09:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-nav-active-state-zh', 'seed-update-2026-06-18-nav-active-state', 'zh', '导航当前态增强', '底部任务栏和首页 Start 按钮会标记当前页面，并同步 aria-current。', '# 导航当前态增强
+
+本次更新继续打磨 XP 桌面导航反馈，让当前打开的页面更容易识别。
+
+## 更新内容
+
+- 底部任务栏按钮继续跟随当前 route 高亮，并同步 `aria-current="page"`。
+- 首页 Start 按钮在桌面首页时显示更明确的当前态。
+- 首页桌面图标同步 `aria-pressed` 状态，便于键盘和辅助技术识别。
+- 路由、文章直链、聊天室轮询、视频窗口和游戏入口行为保持不变。', '2026-06-17T16:18:00.000Z', '2026-06-17T16:18:00.000Z'),
+  ('seed-update-2026-06-18-nav-active-state-en', 'seed-update-2026-06-18-nav-active-state', 'en', 'Active Navigation State', 'The taskbar and Start button now mark the current page and keep aria-current in sync.', '# Active Navigation State
+
+This update refines the XP desktop navigation feedback so the currently open page is easier to identify.
+
+## Changes
+
+- Taskbar buttons continue to highlight the current route and now keep `aria-current="page"` in sync.
+- The Start button now shows a clearer active state when the desktop home page is open.
+- Desktop icons keep `aria-pressed` synchronized for keyboard and assistive technology users.
+- Routing, article deep links, chat polling, video windows, and game entry behavior are unchanged.', '2026-06-17T16:18:00.000Z', '2026-06-17T16:18:00.000Z'),
+  ('seed-update-2026-06-18-nav-active-state-ja', 'seed-update-2026-06-18-nav-active-state', 'ja', 'ナビ現在状態を強化', 'タスクバーと Start ボタンが現在ページを示し、aria-current も同期します。', '# ナビ現在状態を強化
+
+今回の更新では、XP デスクトップ風のナビゲーション表示を整え、現在開いているページを分かりやすくしました。
+
+## 更新内容
+
+- タスクバーのボタンは現在 route のハイライトを維持し、`aria-current="page"` も同期します。
+- ホーム画面では Start ボタンに、より分かりやすい現在状態を表示します。
+- デスクトップアイコンは `aria-pressed` を同期し、キーボード操作や支援技術でも状態を把握しやすくしました。
+- ルート処理、記事直リンク、チャットの更新、動画ウィンドウ、ゲーム入口の動作はそのままです。', '2026-06-17T16:18:00.000Z', '2026-06-17T16:18:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-06-18-blog-placeholders-zh', 'seed-update-2026-06-18-blog-placeholders', 'zh', '杂谈区占位按钮修复', '杂谈区没有真实文章入口时显示整理中按钮，并改用安全 DOM 渲染。', '# 杂谈区占位按钮修复
+
+本次更新整理了主站杂谈区的占位卡片，避免还没有文章详情时出现没有效果的阅读按钮。
+
+## 更新内容
+
+- 杂谈区卡片没有真实文章入口时，动作按钮显示“整理中”并进入禁用态。
+- 杂谈区卡片改为使用 DOM 和 `textContent` 构建，减少未来接入动态杂谈数据时的 XSS 风险。
+- 中文、English、日本語 的按钮文案同步维护。
+- 知识库文章系统、文章直链和现有首页导航行为保持不变。', '2026-06-17T16:23:00.000Z', '2026-06-17T16:23:00.000Z'),
+  ('seed-update-2026-06-18-blog-placeholders-en', 'seed-update-2026-06-18-blog-placeholders', 'en', 'Talk Placeholder Buttons', 'Talk cards without article targets now show a drafting button and render through safe DOM nodes.', '# Talk Placeholder Buttons
+
+This update tidies the public Talk area so placeholder cards without article detail targets no longer show a read button that does nothing.
+
+## Changes
+
+- Talk cards without a real article target now show a disabled drafting action.
+- Talk cards now render through DOM nodes and `textContent`, reducing XSS risk if talk data becomes dynamic later.
+- Chinese, English, and Japanese button text are maintained together.
+- The knowledge article system, article deep links, and existing home navigation behavior are unchanged.', '2026-06-17T16:23:00.000Z', '2026-06-17T16:23:00.000Z'),
+  ('seed-update-2026-06-18-blog-placeholders-ja', 'seed-update-2026-06-18-blog-placeholders', 'ja', '雑談の準備中ボタン', '実際の記事リンクがない雑談カードは準備中ボタンを表示し、安全な DOM 描画にしました。', '# 雑談の準備中ボタン
+
+今回の更新では、公開側の雑談欄を整理し、記事詳細がまだないカードに効果のない読むボタンを出さないようにしました。
+
+## 更新内容
+
+- 実際の記事入口がない雑談カードは、「準備中」の無効ボタンを表示します。
+- 雑談カードは DOM と `textContent` で構築するようにし、将来データを動的化する場合の XSS リスクを下げました。
+- 中文、English、日本語 のボタン文言を合わせて維持しています。
+- 知識庫の記事システム、記事直リンク、既存のホームナビゲーション動作はそのままです。', '2026-06-17T16:23:00.000Z', '2026-06-17T16:23:00.000Z'),
+  ('seed-update-2026-06-18-language-url-sync-zh', 'seed-update-2026-06-18-language-url-sync', 'zh', '语言链接参数同步', '切换语言时会同步地址栏 lang 参数，复制当前页面链接不再带旧语言。', '# 语言链接参数同步
+
+本次更新修正了主站三语切换后的链接状态，让地址栏和页面语言保持一致。
+
+## 更新内容
+
+- 点击中文 / English / 日本語 语言按钮时，地址栏 `lang=` 参数会同步更新为当前语言。
+- 主站窗口路由跳转会保留当前查询参数并刷新 `lang=`，复制当前页面链接时不再带旧语言。
+- 语言切换只使用 `replaceState` 更新当前地址，不额外制造浏览历史层级。
+- 知识库文章、视频区、聊天室和游戏入口继续使用现有公开渲染逻辑，不影响后台接口。', '2026-06-17T16:41:00.000Z', '2026-06-17T16:41:00.000Z'),
+  ('seed-update-2026-06-18-language-url-sync-en', 'seed-update-2026-06-18-language-url-sync', 'en', 'Language URL Sync', 'Language switching now updates the address bar lang parameter so copied page links keep the current language.', '# Language URL Sync
+
+This update keeps the address bar in sync with the current language after switching between the three site languages.
+
+## Changes
+
+- Clicking Chinese / English / Japanese now updates the `lang=` parameter in the address bar.
+- Public route changes preserve the current query parameters and refresh `lang=`, so copied page links no longer carry an old language.
+- Language switching uses `replaceState`, so it updates the current URL without adding extra browser history entries.
+- Knowledge articles, videos, chat room, and game entries continue using the existing public rendering paths, with no admin API changes.', '2026-06-17T16:41:00.000Z', '2026-06-17T16:41:00.000Z'),
+  ('seed-update-2026-06-18-language-url-sync-ja', 'seed-update-2026-06-18-language-url-sync', 'ja', '言語URL同期', '言語切り替え時にアドレスバーの lang パラメータを同期し、コピーしたリンクが現在の言語を保ちます。', '# 言語URL同期
+
+今回の更新では、三言語を切り替えた後もアドレスバーと表示言語がずれないようにしました。
+
+## 更新内容
+
+- 中文 / English / 日本語 の言語ボタンを押すと、アドレスバーの `lang=` パラメータも現在の言語に更新します。
+- 公開ページのルート移動では現在のクエリパラメータを保ちつつ `lang=` を更新し、コピーしたリンクが古い言語を持たないようにしました。
+- 言語切り替えは `replaceState` で現在の URL だけを更新し、余分な履歴を増やしません。
+- 知識庫の記事、動画欄、チャット、ゲーム入口は既存の公開描画ロジックを使い、管理 API には触れていません。', '2026-06-17T16:41:00.000Z', '2026-06-17T16:41:00.000Z'),
+  ('seed-update-2026-06-18-article-detail-search-hide-zh', 'seed-update-2026-06-18-article-detail-search-hide', 'zh', '文章详情搜索条隐藏修复', '知识库文章详情页会隐藏顶部搜索条，让阅读区更专注。', '# 文章详情搜索条隐藏修复
+
+本次更新修正了知识库文章详情页顶部仍显示搜索条的问题，让阅读页更像独立文章窗口。
+
+## 更新内容
+
+- 打开文章详情或文章直链时，知识库搜索条会真正隐藏，不再占用详情顶部空间。
+- 为 `.knowledge-searchbar[hidden]`、`.content-list[hidden]` 和 `.article-detail[hidden]` 补充明确隐藏规则，避免组件 display 样式覆盖 HTML `hidden` 状态。
+- 返回文章列表后，搜索条会按原逻辑恢复，知识库本地搜索功能不受影响。
+- 只调整公开主站 CSS 和更新记录，不触碰后台目录或管理接口。', '2026-06-17T16:50:00.000Z', '2026-06-17T16:50:00.000Z'),
+  ('seed-update-2026-06-18-article-detail-search-hide-en', 'seed-update-2026-06-18-article-detail-search-hide', 'en', 'Article Detail Search Hide', 'Knowledge article detail pages now hide the top search bar so the reading area stays focused.', '# Article Detail Search Hide
+
+This update fixes the knowledge article detail view so the search bar no longer stays visible above the article body.
+
+## Changes
+
+- Opening an article detail page or deep link now fully hides the knowledge search bar.
+- Explicit hidden-state rules were added for `.knowledge-searchbar[hidden]`, `.content-list[hidden]`, and `.article-detail[hidden]` so component display styles cannot override HTML `hidden` state.
+- Returning to the article list restores the search bar through the existing logic, so local knowledge search still works.
+- Only the public site CSS and update records changed; admin folders and admin APIs were not touched.', '2026-06-17T16:50:00.000Z', '2026-06-17T16:50:00.000Z'),
+  ('seed-update-2026-06-18-article-detail-search-hide-ja', 'seed-update-2026-06-18-article-detail-search-hide', 'ja', '記事詳細の検索バー非表示', '知識庫の記事詳細では上部検索バーを隠し、読みやすい表示にしました。', '# 記事詳細の検索バー非表示
+
+今回の更新では、知識庫の記事詳細で検索バーが本文の上に残ってしまう表示を修正しました。
+
+## 更新内容
+
+- 記事詳細または記事直リンクを開いたとき、知識庫検索バーを完全に非表示にします。
+- `.knowledge-searchbar[hidden]`、`.content-list[hidden]`、`.article-detail[hidden]` に明示的な非表示ルールを追加し、コンポーネント側の display 指定が HTML の `hidden` 状態を上書きしないようにしました。
+- 記事一覧へ戻ると既存ロジックで検索バーが復帰し、知識庫のローカル検索はそのまま使えます。
+- 公開側の CSS と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T16:50:00.000Z', '2026-06-17T16:50:00.000Z'),
+  ('seed-update-2026-06-18-trilingual-tags-zh', 'seed-update-2026-06-18-trilingual-tags', 'zh', '标签三语显示', '文章列表、文章详情和杂谈卡片的常见标签会跟随三语切换显示。', '# 标签三语显示
+
+本次更新继续整理主站公开阅读体验，让文章和杂谈卡片里的常见标签跟随当前语言显示。
+
+## 更新内容
+
+- 文章列表、文章详情和杂谈卡片的常见中文 seed 标签会显示为当前语言标签。
+- 知识库本地搜索会同时匹配原始标签和当前语言标签，方便用 English / 日本語 搜索标签词。
+- 标签仍通过安全 DOM / `textContent` 或已有 HTML escape 渲染，不引入动态脚本执行风险。
+- 只调整公开主站渲染和更新记录，不触碰后台目录或管理接口。', '2026-06-17T16:56:00.000Z', '2026-06-17T16:56:00.000Z'),
+  ('seed-update-2026-06-18-trilingual-tags-en', 'seed-update-2026-06-18-trilingual-tags', 'en', 'Trilingual Tag Labels', 'Common tags on article lists, article details, and talk cards now follow the site language switch.', '# Trilingual Tag Labels
+
+This update keeps common article and talk tags aligned with the active public site language.
+
+## Changes
+
+- Common Chinese seed tags on article cards, article details, and talk cards now render in the current language.
+- Local knowledge search matches both the original tag text and the current-language tag label, so English and Japanese tag terms can still be used.
+- Tags continue to render through safe DOM / `textContent` or existing HTML escaping, without adding script execution risk.
+- Only public site rendering and update records changed; admin folders and admin APIs were not touched.', '2026-06-17T16:56:00.000Z', '2026-06-17T16:56:00.000Z'),
+  ('seed-update-2026-06-18-trilingual-tags-ja', 'seed-update-2026-06-18-trilingual-tags', 'ja', 'タグ三言語表示', '記事一覧、記事詳細、雑談カードの主なタグがサイト言語に合わせて表示されます。', '# タグ三言語表示
+
+今回の更新では、公開側の記事と雑談カードの主なタグを現在の言語に合わせて表示するようにしました。
+
+## 更新内容
+
+- 記事カード、記事詳細、雑談カードの主な中国語 seed タグを現在の言語ラベルで表示します。
+- 知識庫のローカル検索は元のタグ文字列と現在言語のタグラベルの両方に一致し、English / 日本語 のタグ語でも検索できます。
+- タグは引き続き安全な DOM / `textContent` または既存の HTML escape で描画し、スクリプト実行リスクは増やしません。
+- 公開側の描画と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T16:56:00.000Z', '2026-06-17T16:56:00.000Z'),
+  ('seed-update-2026-06-18-image-loading-polish-zh', 'seed-update-2026-06-18-image-loading-polish', 'zh', '图片加载细节优化', '首屏外头像和文章配图补充懒加载与异步解码，阅读体验更平滑。', '# 图片加载细节优化
+
+本次更新对公开主站的非关键图片加载做小幅整理，优先减少首屏外图片对加载和解码路径的影响。
+
+## 更新内容
+
+- 聊天室头像和关于页头像补充 `loading="lazy"` 与 `decoding="async"`，只在需要显示对应窗口时再参与加载。
+- 文章 Markdown 配图继续使用 `assets/images/articles/` 白名单和安全 DOM 渲染，同时补充异步解码。
+- 首屏品牌图标和开始按钮图标保持原加载方式，避免影响首页视觉信号。
+- 只调整公开主站图片属性、fallback 更新和公开文章 seed，不触碰后台目录或管理接口。', '2026-06-17T17:06:00.000Z', '2026-06-17T17:06:00.000Z'),
+  ('seed-update-2026-06-18-image-loading-polish-en', 'seed-update-2026-06-18-image-loading-polish', 'en', 'Image Loading Polish', 'Off-screen avatars and article images now use lazy loading and async decoding for smoother reading.', '# Image Loading Polish
+
+This update makes a small pass over non-critical public site images so off-screen assets put less pressure on the initial load and decode path.
+
+## Changes
+
+- The chatroom avatar and about-page avatar now use `loading="lazy"` and `decoding="async"`, so they load closer to when their windows are opened.
+- Markdown article images still use the `assets/images/articles/` whitelist and safe DOM rendering, with async decoding added.
+- First-screen brand and Start button icons keep their current loading behavior so the home screen remains immediate.
+- Only public site image attributes, fallback updates, and public article seeds changed; admin folders and admin APIs were not touched.', '2026-06-17T17:06:00.000Z', '2026-06-17T17:06:00.000Z'),
+  ('seed-update-2026-06-18-image-loading-polish-ja', 'seed-update-2026-06-18-image-loading-polish', 'ja', '画像読み込みの調整', '初期表示外のアバターと記事画像に遅延読み込みと非同期デコードを追加しました。', '# 画像読み込みの調整
+
+今回の更新では、公開側の重要度が低い画像読み込みを少し整理し、初期表示外の画像が読み込みとデコードに与える負荷を抑えました。
+
+## 更新内容
+
+- チャットルームのアバターとプロフィール画像に `loading="lazy"` と `decoding="async"` を追加し、対応するウィンドウを開くタイミングに近づけて読み込みます。
+- Markdown 記事画像は引き続き `assets/images/articles/` の許可リストと安全な DOM 描画を使い、非同期デコードも追加しました。
+- ホームのブランドアイコンと Start ボタン画像は現在の読み込み方式を維持し、初期表示の見え方を保ちます。
+- 公開側の画像属性、fallback 更新、公開記事 seed のみを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T17:06:00.000Z', '2026-06-17T17:06:00.000Z'),
+  ('seed-update-2026-06-18-chatroom-title-locale-zh', 'seed-update-2026-06-18-chatroom-title-locale', 'zh', '聊天室标题三语同步', '聊天室窗口标题现在会跟随中文、English、日本語 切换。', '# 聊天室标题三语同步
+
+本次更新修复公开聊天室窗口标题的多语言细节，让它和页面里的其它聊天室文案保持一致。
+
+## 更新内容
+
+- English 界面下，聊天室窗口标题从中文“匿名聊天室”改为 `Chat Room`。
+- 日本語界面下，聊天室窗口标题从中文“匿名聊天室”改为 `匿名チャット`。
+- 聊天消息列表、昵称、轮询和发送逻辑不变，继续使用安全 DOM / `textContent` 渲染公开文本。
+- 只调整公开主站翻译和更新记录，不触碰后台目录或管理接口。', '2026-06-17T17:16:00.000Z', '2026-06-17T17:16:00.000Z'),
+  ('seed-update-2026-06-18-chatroom-title-locale-en', 'seed-update-2026-06-18-chatroom-title-locale', 'en', 'Chat Title Localization', 'The chat room window title now follows the Chinese, English, and Japanese language switch.', '# Chat Title Localization
+
+This update fixes a small localization gap in the public chat room window title so it matches the rest of the chat UI.
+
+## Changes
+
+- In English, the chat room window title now shows `Chat Room` instead of the Chinese title.
+- In Japanese, the chat room window title now shows `匿名チャット` instead of the Chinese title.
+- Chat messages, nicknames, polling, and sending behavior are unchanged and continue to render public text through safe DOM / `textContent` paths.
+- Only public site translations and update records changed; admin folders and admin APIs were not touched.', '2026-06-17T17:16:00.000Z', '2026-06-17T17:16:00.000Z'),
+  ('seed-update-2026-06-18-chatroom-title-locale-ja', 'seed-update-2026-06-18-chatroom-title-locale', 'ja', 'チャット題名の多言語同期', 'チャットルームのウィンドウ題名が中文、English、日本語の切り替えに合わせて表示されます。', '# チャット題名の多言語同期
+
+今回の更新では、公開チャットルームのウィンドウ題名に残っていた翻訳漏れを修正し、ほかのチャット文言と揃えました。
+
+## 更新内容
+
+- English 表示では、チャットルームのウィンドウ題名を中国語のままではなく `Chat Room` と表示します。
+- 日本語表示では、チャットルームのウィンドウ題名を中国語のままではなく `匿名チャット` と表示します。
+- チャットメッセージ、ニックネーム、ポーリング、送信処理は変更せず、公開テキストは引き続き安全な DOM / `textContent` 経路で描画します。
+- 公開側の翻訳と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T17:16:00.000Z', '2026-06-17T17:16:00.000Z'),
+  ('seed-update-2026-06-18-aria-label-localization-zh', 'seed-update-2026-06-18-aria-label-localization', 'zh', '无障碍标签三语同步', '品牌、语言切换、桌面图标区和关闭按钮的 aria-label 会跟随当前语言更新。', '# 无障碍标签三语同步
+
+本次更新把公开主站的无障碍标签也纳入语言切换，让键盘和读屏用户听到的控件名称更一致。
+
+## 更新内容
+
+- 新增 `data-i18n-aria-label` 与 `data-i18n-title` 同步逻辑，复用现有三语翻译表。
+- 品牌返回按钮、语言切换区域、桌面图标区域和各类关闭按钮补充当前语言的 `aria-label`。
+- 视频窗口最大化按钮继续使用已有 `videoFullscreen` / `videoRestore` 文案动态更新。
+- 只调整公开主站 HTML / JS 与更新记录，不触碰后台目录或管理接口。', '2026-06-17T17:22:00.000Z', '2026-06-17T17:22:00.000Z'),
+  ('seed-update-2026-06-18-aria-label-localization-en', 'seed-update-2026-06-18-aria-label-localization', 'en', 'Localized ARIA Labels', 'Brand, language switcher, desktop icon group, and close-button aria labels now follow the active language.', '# Localized ARIA Labels
+
+This update brings public site accessibility labels into the language-switching path, so keyboard and screen-reader users get control names in the active language.
+
+## Changes
+
+- Added `data-i18n-aria-label` and `data-i18n-title` synchronization using the existing trilingual translation table.
+- The brand home button, language switcher, desktop icon group, and close buttons now receive active-language `aria-label` text.
+- The video window maximize button keeps using the existing dynamic `videoFullscreen` / `videoRestore` labels.
+- Only public site HTML / JS and update records changed; admin folders and admin APIs were not touched.', '2026-06-17T17:22:00.000Z', '2026-06-17T17:22:00.000Z'),
+  ('seed-update-2026-06-18-aria-label-localization-ja', 'seed-update-2026-06-18-aria-label-localization', 'ja', 'ARIAラベルの多言語同期', 'ブランド、言語切り替え、デスクトップアイコン領域、閉じるボタンの aria-label が現在の言語に合わせて変わります。', '# ARIAラベルの多言語同期
+
+今回の更新では、公開サイトのアクセシビリティラベルも言語切り替えの対象にし、キーボード操作や読み上げで聞こえる名前を現在の言語に揃えました。
+
+## 更新内容
+
+- 既存の三言語翻訳表を使う `data-i18n-aria-label` と `data-i18n-title` の同期処理を追加しました。
+- ブランドのホームボタン、言語切り替え、デスクトップアイコン領域、各種閉じるボタンに現在言語の `aria-label` を設定します。
+- 動画ウィンドウの最大化ボタンは、既存の `videoFullscreen` / `videoRestore` 文言による動的更新を維持します。
+- 公開側の HTML / JS と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T17:22:00.000Z', '2026-06-17T17:22:00.000Z'),
+  ('seed-update-2026-06-18-account-widget-locale-zh', 'seed-update-2026-06-18-account-widget-locale', 'zh', '账号弹窗三语同步', '顶部账号/云存档弹窗的登录、注册、邮箱和云存档说明会跟随当前语言显示。', '# 账号弹窗三语同步
+
+本次更新继续整理公开主站的三语体验，把顶部账号/云存档弹窗里的静态文案接入当前语言。
+
+## 更新内容
+
+- 登录、注册、邮箱、密码、云存档说明、退出账号和本地状态提示改为中文 / English / 日本語 文案。
+- 用户切换语言时会重新渲染账号控件，避免弹窗保留上一种语言的静态文字。
+- 邮箱、后端错误信息和动态提示继续通过 `escapeHtml` 输出，避免外部文本被当作 HTML 执行。
+- 只调整公开主站账号弹窗渲染和更新记录，不触碰后台目录或管理接口。', '2026-06-17T17:28:00.000Z', '2026-06-17T17:28:00.000Z'),
+  ('seed-update-2026-06-18-account-widget-locale-en', 'seed-update-2026-06-18-account-widget-locale', 'en', 'Account Popover Localization', 'The account and cloud-save popover now localizes login, register, email, and cloud-save copy.', '# Account Popover Localization
+
+This update continues the public site''s trilingual polish by moving static account and cloud-save popover copy into the active language.
+
+## Changes
+
+- Login, register, email, password, cloud-save notes, sign-out, and local status messages now have Chinese, English, and Japanese copy.
+- Switching languages re-renders the account widget so the popover does not keep stale static text.
+- Email addresses, backend error messages, and dynamic notices still pass through `escapeHtml`, so external text is not executed as HTML.
+- Only public site account popover rendering and update records changed; admin folders and admin APIs were not touched.', '2026-06-17T17:28:00.000Z', '2026-06-17T17:28:00.000Z'),
+  ('seed-update-2026-06-18-account-widget-locale-ja', 'seed-update-2026-06-18-account-widget-locale', 'ja', 'アカウント表示の多言語同期', 'アカウントとクラウドセーブのポップオーバー文言が現在の言語に合わせて表示されます。', '# アカウント表示の多言語同期
+
+今回の更新では、公開サイトの三言語体験を整えるため、上部のアカウント / クラウドセーブ表示の固定文言を現在の言語に接続しました。
+
+## 更新内容
+
+- ログイン、登録、メール、パスワード、クラウドセーブ説明、ログアウト、ローカル状態メッセージを中文 / English / 日本語で用意しました。
+- 言語を切り替えたときにアカウントウィジェットを再描画し、ポップオーバーに前の言語の固定文言が残らないようにしました。
+- メールアドレス、バックエンドのエラーメッセージ、動的通知は引き続き `escapeHtml` を通し、外部テキストを HTML として実行しません。
+- 公開側のアカウント表示と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T17:28:00.000Z', '2026-06-17T17:28:00.000Z'),
+  ('seed-update-2026-06-18-notepad-menu-locale-zh', 'seed-update-2026-06-18-notepad-menu-locale', 'zh', '杂谈菜单三语同步', '杂谈区 Notepad 风格菜单现在会跟随当前语言显示。', '# 杂谈菜单三语同步
+
+本次更新修正杂谈区顶部 Notepad 风格菜单的静态语言，让它和杂谈区标题、卡片按钮一起跟随站点语言切换。
+
+## 更新内容
+
+- 中文界面显示 `文件  编辑  查看  帮助`。
+- English 界面继续显示 `File  Edit  View  Help`。
+- 日本語界面显示 `ファイル  編集  表示  ヘルプ`。
+- 只调整公开主站静态菜单文案和更新记录，不改杂谈卡片 DOM / `textContent` 安全渲染逻辑。', '2026-06-17T17:33:00.000Z', '2026-06-17T17:33:00.000Z'),
+  ('seed-update-2026-06-18-notepad-menu-locale-en', 'seed-update-2026-06-18-notepad-menu-locale', 'en', 'Talk Menu Localization', 'The Talk area Notepad-style menu now follows the active site language.', '# Talk Menu Localization
+
+This update fixes the static language on the Talk area''s Notepad-style menu so it follows the site language with the rest of the Talk window.
+
+## Changes
+
+- Chinese shows `文件  编辑  查看  帮助`.
+- English keeps `File  Edit  View  Help`.
+- Japanese shows `ファイル  編集  表示  ヘルプ`.
+- Only public site static menu copy and update records changed; the Talk card DOM / `textContent` safe rendering path was not changed.', '2026-06-17T17:33:00.000Z', '2026-06-17T17:33:00.000Z'),
+  ('seed-update-2026-06-18-notepad-menu-locale-ja', 'seed-update-2026-06-18-notepad-menu-locale', 'ja', '雑談メニューの多言語同期', '雑談欄の Notepad 風メニューが現在のサイト言語に合わせて表示されます。', '# 雑談メニューの多言語同期
+
+今回の更新では、雑談欄上部の Notepad 風メニューに残っていた固定言語を修正し、雑談ウィンドウのほかの文言と同じようにサイト言語へ合わせました。
+
+## 更新内容
+
+- 中文表示では `文件  编辑  查看  帮助` を表示します。
+- English 表示では `File  Edit  View  Help` を維持します。
+- 日本語表示では `ファイル  編集  表示  ヘルプ` を表示します。
+- 公開側の静的メニュー文言と更新記録だけを調整し、雑談カードの DOM / `textContent` 安全描画経路は変更していません。', '2026-06-17T17:33:00.000Z', '2026-06-17T17:33:00.000Z'),
+  ('seed-update-2026-06-18-game-cover-decoding-zh', 'seed-update-2026-06-18-game-cover-decoding', 'zh', '游戏封面异步解码', '游戏区封面图在懒加载基础上补充异步解码。', '# 游戏封面异步解码
+
+本次更新继续补齐公开主站的轻量性能细节，让游戏区封面图在懒加载之外也使用异步解码。
+
+## 更新内容
+
+- 游戏区动态渲染的 `game-cover` 图片补充 `decoding="async"`。
+- 保留已有 `loading="lazy"`，减少打开游戏列表时的图片加载和解码压力。
+- 游戏目录、云存档、入口链接和游戏运行逻辑保持不变。
+- 只调整公开主站游戏列表图片属性和更新记录，不触碰后台目录或管理接口。', '2026-06-17T17:38:00.000Z', '2026-06-17T17:38:00.000Z'),
+  ('seed-update-2026-06-18-game-cover-decoding-en', 'seed-update-2026-06-18-game-cover-decoding', 'en', 'Async Game Cover Decoding', 'Game cover images now add async decoding on top of lazy loading.', '# Async Game Cover Decoding
+
+This update continues the public site''s lightweight performance polish by adding async decoding to game cover images.
+
+## Changes
+
+- Dynamically rendered `game-cover` images now include `decoding="async"`.
+- Existing `loading="lazy"` behavior stays in place, reducing image load and decode pressure when the games list opens.
+- Game catalog data, cloud saves, entry links, and game runtime behavior are unchanged.
+- Only public site game-list image attributes and update records changed; admin folders and admin APIs were not touched.', '2026-06-17T17:38:00.000Z', '2026-06-17T17:38:00.000Z'),
+  ('seed-update-2026-06-18-game-cover-decoding-ja', 'seed-update-2026-06-18-game-cover-decoding', 'ja', 'ゲームカバーの非同期デコード', 'ゲーム欄のカバー画像に、遅延読み込みに加えて非同期デコードを追加しました。', '# ゲームカバーの非同期デコード
+
+今回の更新では、公開サイトの軽量な性能調整として、ゲーム欄のカバー画像に非同期デコードを追加しました。
+
+## 更新内容
+
+- 動的に描画される `game-cover` 画像に `decoding="async"` を追加しました。
+- 既存の `loading="lazy"` は維持し、ゲーム一覧を開くときの画像読み込みとデコード負荷を抑えます。
+- ゲームカタログ、クラウドセーブ、入口リンク、ゲーム実行ロジックは変更していません。
+- 公開側のゲーム一覧画像属性と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T17:38:00.000Z', '2026-06-17T17:38:00.000Z'),
+  ('seed-update-2026-06-18-game-language-labels-zh', 'seed-update-2026-06-18-game-language-labels', 'zh', '游戏语言标记三语同步', '游戏卡片里的语言支持标记现在会跟随当前站点语言显示。', '# 游戏语言标记三语同步
+
+本次更新整理游戏区卡片里的语言支持标记，减少 English / 日本語 页面里的固定中文混杂。
+
+## 更新内容
+
+- 中文界面显示 `中文 / 英文 / 日文`。
+- English 界面显示 `Chinese / English / Japanese`。
+- 日本語界面显示 `中国語 / 英語 / 日本語`。
+- 不支持状态的 `title` 提示也使用当前语言；✓ / × 状态、游戏目录、云存档和入口链接逻辑保持不变。', '2026-06-17T17:43:00.000Z', '2026-06-17T17:43:00.000Z'),
+  ('seed-update-2026-06-18-game-language-labels-en', 'seed-update-2026-06-18-game-language-labels', 'en', 'Game Language Labels', 'Game-card language support tags now localize their language names and unsupported hints.', '# Game Language Labels
+
+This update cleans up the language support tags on game cards so English and Japanese pages do not keep fixed Chinese labels.
+
+## Changes
+
+- Chinese shows `中文 / 英文 / 日文`.
+- English shows `Chinese / English / Japanese`.
+- Japanese shows `中国語 / 英語 / 日本語`.
+- Unsupported-state `title` hints also use the active language; ✓ / × status, game catalog data, cloud saves, and entry links are unchanged.', '2026-06-17T17:43:00.000Z', '2026-06-17T17:43:00.000Z'),
+  ('seed-update-2026-06-18-game-language-labels-ja', 'seed-update-2026-06-18-game-language-labels', 'ja', 'ゲーム言語ラベルの多言語同期', 'ゲームカードの対応言語タグが、現在のサイト言語に合わせて表示されます。', '# ゲーム言語ラベルの多言語同期
+
+今回の更新では、ゲームカードの対応言語タグを整理し、English / 日本語 ページに固定の中国語ラベルが混ざらないようにしました。
+
+## 更新内容
+
+- 中文表示では `中文 / 英文 / 日文` を表示します。
+- English 表示では `Chinese / English / Japanese` を表示します。
+- 日本語表示では `中国語 / 英語 / 日本語` を表示します。
+- 未対応状態の `title` ヒントも現在の言語を使います。✓ / × の状態、ゲームカタログ、クラウドセーブ、入口リンクは変更していません。', '2026-06-17T17:43:00.000Z', '2026-06-17T17:43:00.000Z'),
+  ('seed-update-2026-06-18-game-shell-locale-zh', 'seed-update-2026-06-18-game-shell-locale', 'zh', '游戏外壳三语同步', '游戏入口页的共享外壳文案现在会跟随站点语言显示。', '# 游戏外壳三语同步
+
+本次更新整理每个游戏入口页外层工具栏的三语体验，让 `?lang=en` 和 `?lang=ja` 不再混入固定中文外壳文案。
+
+## 更新内容
+
+- 返回游戏区、加载状态、本地存档工具、导入导出按钮、云端存档面板、协议链接和状态提示会跟随当前语言显示。
+- 游戏标题、iframe 标题和语言支持副标题使用当前站点语言。
+- 5 个游戏入口页的 `game-shell.js` 增加缓存版本，帮助浏览器获取新外壳脚本。
+- 游戏本体 iframe、启动语言、云存档同步、导入导出逻辑保持不变。', '2026-06-17T17:55:00.000Z', '2026-06-17T17:55:00.000Z'),
+  ('seed-update-2026-06-18-game-shell-locale-en', 'seed-update-2026-06-18-game-shell-locale', 'en', 'Localized Game Shell', 'The shared game entry shell now follows the active site language.', '# Localized Game Shell
+
+This update localizes the shared wrapper around each game entry page, so `?lang=en` and `?lang=ja` no longer keep fixed Chinese shell controls.
+
+## Changes
+
+- Back links, loading text, local-save tools, import/export buttons, cloud-save panels, license links, and status messages follow the active language.
+- Game titles, iframe titles, and language-support subtitles use the current site language.
+- All five game entry pages now request `game-shell.js` with a new cache version.
+- The embedded game iframe, launch language, cloud-save sync, and import/export behavior are unchanged.', '2026-06-17T17:55:00.000Z', '2026-06-17T17:55:00.000Z'),
+  ('seed-update-2026-06-18-game-shell-locale-ja', 'seed-update-2026-06-18-game-shell-locale', 'ja', 'ゲームシェルの多言語同期', 'ゲーム入口ページの共通シェルが現在のサイト言語に合わせて表示されます。', '# ゲームシェルの多言語同期
+
+今回の更新では、各ゲーム入口ページを包む共通シェルを多言語化し、`?lang=en` と `?lang=ja` で固定の中国語コントロールが混ざらないようにしました。
+
+## 更新内容
+
+- ゲーム一覧への戻るリンク、読み込み表示、ローカルセーブツール、インポート/エクスポートボタン、クラウドセーブパネル、ライセンスリンク、状態表示が現在の言語に合わせて表示されます。
+- ゲームタイトル、iframe タイトル、対応言語のサブタイトルも現在のサイト言語を使います。
+- 5 つのゲーム入口ページで `game-shell.js` に新しいキャッシュ版を付けました。
+- 埋め込みゲーム iframe、起動言語、クラウドセーブ同期、インポート/エクスポートの動作は変更していません。', '2026-06-17T17:55:00.000Z', '2026-06-17T17:55:00.000Z'),
+  ('seed-update-2026-06-18-resource-placeholder-hints-zh', 'seed-update-2026-06-18-resource-placeholder-hints', 'zh', '资源占位提示补齐', '资源区准备中的占位按钮现在会说明暂时没有下载或外链。', '# 资源占位提示补齐
+
+本次更新继续整理资源区的占位体验，让没有真实 URL 的资源按钮不只显示“准备中”，也能说明原因。
+
+## 更新内容
+
+- 没有下载或外链的资源按钮增加中文 / English / 日本語 的 `title` 和 `aria-label`。
+- 占位按钮继续保持 disabled，并补充 `aria-disabled="true"`。
+- 既有 URL 白名单、资源数据结构和安全 DOM 渲染逻辑不变。
+- 只调整公开主站资源区提示和更新记录，不触碰后台目录或管理接口。', '2026-06-17T18:00:00.000Z', '2026-06-17T18:00:00.000Z'),
+  ('seed-update-2026-06-18-resource-placeholder-hints-en', 'seed-update-2026-06-18-resource-placeholder-hints', 'en', 'Resource Placeholder Hints', 'Coming-soon resource buttons now explain when no download or external link is available.', '# Resource Placeholder Hints
+
+This update continues polishing the Resources area so placeholder buttons explain why they are not clickable yet.
+
+## Changes
+
+- Resource buttons without a download or external link now include localized `title` and `aria-label` text in Chinese, English, and Japanese.
+- Placeholder buttons remain disabled and now include `aria-disabled="true"`.
+- The existing URL allowlist, resource data shape, and safe DOM rendering path are unchanged.
+- Only public Resources hints and update records changed; admin folders and admin APIs were not touched.', '2026-06-17T18:00:00.000Z', '2026-06-17T18:00:00.000Z'),
+  ('seed-update-2026-06-18-resource-placeholder-hints-ja', 'seed-update-2026-06-18-resource-placeholder-hints', 'ja', 'リソース準備中ヒント', '準備中のリソースボタンが、ダウンロードや外部リンクがまだないことを説明します。', '# リソース準備中ヒント
+
+今回の更新では、リソース欄の占位表示を少し整え、リンクのないボタンがなぜクリックできないのかを分かりやすくしました。
+
+## 更新内容
+
+- ダウンロードや外部リンクがないリソースボタンに、中文 / English / 日本語 の `title` と `aria-label` を追加しました。
+- 占位ボタンは引き続き disabled のまま、`aria-disabled="true"` も追加しました。
+- 既存の URL 許可リスト、リソースデータ構造、安全な DOM 描画経路は変更していません。
+- 公開側のリソース欄ヒントと更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T18:00:00.000Z', '2026-06-17T18:00:00.000Z'),
+  ('seed-update-2026-06-18-video-thumb-decoding-zh', 'seed-update-2026-06-18-video-thumb-decoding', 'zh', '视频缩略图异步解码', '公开视频卡片缩略图现在会在懒加载之外使用异步解码。', '# 视频缩略图异步解码
+
+本次更新继续做公开主站的轻量性能整理，把视频区缩略图的图片加载策略和文章配图、游戏封面对齐。
+
+## 更新内容
+
+- 公开视频卡片缩略图在已有 `loading="lazy"` 基础上增加 `decoding="async"`。
+- 视频列表、视频分类、播放窗口、外链白名单和公开视频 API 行为不变。
+- 当前没有公开视频时，视频区仍显示原有 XP 风格空状态。
+- 只调整公开主站视频卡片图片属性和更新记录，不触碰后台目录或管理接口。', '2026-06-17T18:07:00.000Z', '2026-06-17T18:07:00.000Z'),
+  ('seed-update-2026-06-18-video-thumb-decoding-en', 'seed-update-2026-06-18-video-thumb-decoding', 'en', 'Async Video Thumbnail Decoding', 'Public video card thumbnails now use async decoding in addition to lazy loading.', '# Async Video Thumbnail Decoding
+
+This update continues lightweight public-site performance polish by aligning video thumbnails with article images and game covers.
+
+## Changes
+
+- Public video card thumbnails now add `decoding="async"` alongside the existing `loading="lazy"` behavior.
+- Video lists, categories, playback windows, external-link allowlists, and public video API behavior are unchanged.
+- When there are no public videos, the Videos area keeps the existing XP-style empty state.
+- Only public video-card image attributes and update records changed; admin folders and admin APIs were not touched.', '2026-06-17T18:07:00.000Z', '2026-06-17T18:07:00.000Z'),
+  ('seed-update-2026-06-18-video-thumb-decoding-ja', 'seed-update-2026-06-18-video-thumb-decoding', 'ja', '動画サムネイルの非同期デコード', '公開動画カードのサムネイルが、遅延読み込みに加えて非同期デコードを使うようになりました。', '# 動画サムネイルの非同期デコード
+
+今回の更新では、公開サイトの軽量な性能調整として、動画サムネイルの画像読み込み方を記事画像やゲームカバーと揃えました。
+
+## 更新内容
+
+- 公開動画カードのサムネイルに、既存の `loading="lazy"` に加えて `decoding="async"` を追加しました。
+- 動画一覧、カテゴリ、再生ウィンドウ、外部リンク許可リスト、公開動画 API の動作は変更していません。
+- 公開動画がない場合、動画欄はこれまで通り XP 風の空状態を表示します。
+- 公開側の動画カード画像属性と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T18:07:00.000Z', '2026-06-17T18:07:00.000Z'),
+  ('seed-update-2026-06-18-resource-label-sync-zh', 'seed-update-2026-06-18-resource-label-sync', 'zh', '资源入口文案对齐', '资源区桌面入口的英文和日文名称现在与资源窗口标题一致。', '# 资源入口文案对齐
+
+本次更新修正资源区桌面图标的英文和日文名称，让入口名称与打开后的资源窗口标题保持一致。
+
+## 更新内容
+
+- English 桌面入口从 `Files TBD` 改为 `Resources TBD`。
+- 日本語桌面入口从 `資料（未定）` 改为 `リソース（未定）`。
+- 中文入口继续显示 `资源区（待定）`。
+- 资源区路由、占位状态、资源数据和安全 DOM 渲染逻辑保持不变。', '2026-06-17T18:10:00.000Z', '2026-06-17T18:10:00.000Z'),
+  ('seed-update-2026-06-18-resource-label-sync-en', 'seed-update-2026-06-18-resource-label-sync', 'en', 'Resources Label Sync', 'The Resources desktop icon now matches the Resources window label in English and Japanese.', '# Resources Label Sync
+
+This update aligns the Resources desktop icon text with the title of the Resources window that opens from it.
+
+## Changes
+
+- The English desktop icon now says `Resources TBD` instead of `Files TBD`.
+- The Japanese desktop icon now says `リソース（未定）` instead of `資料（未定）`.
+- The Chinese icon keeps `资源区（待定）`.
+- Resource routes, placeholder state, resource data, and safe DOM rendering are unchanged.', '2026-06-17T18:10:00.000Z', '2026-06-17T18:10:00.000Z'),
+  ('seed-update-2026-06-18-resource-label-sync-ja', 'seed-update-2026-06-18-resource-label-sync', 'ja', 'リソース入口ラベル同期', 'リソースのデスクトップ入口名を、リソースウィンドウの名称に合わせました。', '# リソース入口ラベル同期
+
+今回の更新では、リソース欄のデスクトップアイコン名を、開いた後のリソースウィンドウ名と揃えました。
+
+## 更新内容
+
+- English 表示のデスクトップ入口を `Files TBD` から `Resources TBD` に変更しました。
+- 日本語表示のデスクトップ入口を `資料（未定）` から `リソース（未定）` に変更しました。
+- 中文入口は `资源区（待定）` のままです。
+- リソース欄のルート、占位状態、リソースデータ、安全な DOM 描画経路は変更していません。', '2026-06-17T18:10:00.000Z', '2026-06-17T18:10:00.000Z'),
+  ('seed-update-2026-06-18-game-shell-safe-dom-zh', 'seed-update-2026-06-18-game-shell-safe-dom', 'zh', '游戏外壳安全 DOM 渲染', '游戏入口页的云存档面板和协议栏改为更安全的 DOM/textContent 构建。', '# 游戏外壳安全 DOM 渲染
+
+本次更新收紧游戏入口页外层工具栏的公开渲染路径，让云存档信息和协议链接都通过 DOM API 构建。
+
+## 更新内容
+
+- 云存档面板不再用字符串 `innerHTML` 拼接，邮箱、状态提示和按钮文案都通过 `textContent` 渲染。
+- 协议栏改为 DOM 构建，协议文件只接受相对路径，上游仓库只接受 `http(s)` 链接。
+- 5 个游戏入口页更新 `game-shell.js` 缓存版本，帮助浏览器获取新脚本。
+- 游戏 iframe、启动语言、云存档同步和导入导出逻辑保持不变。', '2026-06-17T18:15:00.000Z', '2026-06-17T18:15:00.000Z'),
+  ('seed-update-2026-06-18-game-shell-safe-dom-en', 'seed-update-2026-06-18-game-shell-safe-dom', 'en', 'Game Shell Safe DOM', 'Game entry cloud-save panels and license links now render through safer DOM/textContent paths.', '# Game Shell Safe DOM
+
+This update tightens the public rendering path around the shared game-entry toolbar so cloud-save information and license links are built with DOM APIs.
+
+## Changes
+
+- The cloud-save panel no longer builds strings with `innerHTML`; email, status text, and button labels render through `textContent`.
+- The license panel now uses DOM construction, accepts only relative license-file paths, and accepts only `http(s)` upstream repository links.
+- All five game entry pages now request `game-shell.js` with a new cache version.
+- Game iframes, launch language, cloud-save sync, and import/export behavior are unchanged.', '2026-06-17T18:15:00.000Z', '2026-06-17T18:15:00.000Z'),
+  ('seed-update-2026-06-18-game-shell-safe-dom-ja', 'seed-update-2026-06-18-game-shell-safe-dom', 'ja', 'ゲームシェルの安全な DOM 描画', 'ゲーム入口ページのクラウド保存パネルとライセンス欄を、より安全な DOM/textContent 経路にしました。', '# ゲームシェルの安全な DOM 描画
+
+今回の更新では、ゲーム入口ページ共通ツールバーの公開描画経路を引き締め、クラウド保存情報とライセンスリンクを DOM API で構築するようにしました。
+
+## 更新内容
+
+- クラウド保存パネルは文字列の `innerHTML` 組み立てをやめ、メール、状態表示、ボタン文言を `textContent` で描画します。
+- ライセンス欄は DOM 構築に変更し、ライセンスファイルは相対パスのみ、上流リポジトリは `http(s)` リンクのみ受け付けます。
+- 5 つのゲーム入口ページで `game-shell.js` のキャッシュ版を更新しました。
+- ゲーム iframe、起動言語、クラウドセーブ同期、インポート/エクスポート動作は変更していません。', '2026-06-17T18:15:00.000Z', '2026-06-17T18:15:00.000Z'),
+  ('seed-update-2026-06-18-account-safe-dom-zh', 'seed-update-2026-06-18-account-safe-dom', 'zh', '账号弹窗安全 DOM 渲染', '顶部账号/云存档弹窗改为 DOM/textContent 构建。', '# 账号弹窗安全 DOM 渲染
+
+本次更新收紧公开主站右上角账号入口的渲染方式，让账号和云存档提示继续以纯文本方式显示。
+
+## 更新内容
+
+- 账号弹窗不再用模板字符串 `innerHTML` 拼接，按钮、邮箱、接口错误和状态提示改为 DOM / `textContent` 构建。
+- 登录、注册、退出账号、语言切换后的重渲染和云存档说明逻辑保持不变。
+- 邮箱和接口错误只作为文本节点渲染，不会被当作 HTML 执行。
+- 只调整公开主站账号弹窗和更新记录，不触碰后台目录或管理接口。', '2026-06-17T18:20:00.000Z', '2026-06-17T18:20:00.000Z'),
+  ('seed-update-2026-06-18-account-safe-dom-en', 'seed-update-2026-06-18-account-safe-dom', 'en', 'Account Popover Safe DOM', 'The top account and cloud-save popover now renders through DOM/textContent.', '# Account Popover Safe DOM
+
+This update tightens the rendering path for the public site''s top-right account entry so account and cloud-save notices stay plain text.
+
+## Changes
+
+- The account popover no longer builds markup with template-string `innerHTML`; buttons, email, API errors, and status notices are created through DOM / `textContent`.
+- Login, registration, sign-out, language-switch re-rendering, and cloud-save copy are unchanged.
+- Email addresses and API errors render only as text nodes and are not interpreted as HTML.
+- Only the public account popover and update records changed; admin folders and admin APIs were not touched.', '2026-06-17T18:20:00.000Z', '2026-06-17T18:20:00.000Z'),
+  ('seed-update-2026-06-18-account-safe-dom-ja', 'seed-update-2026-06-18-account-safe-dom', 'ja', 'アカウント表示の安全な DOM 描画', '上部アカウント/クラウド保存表示を DOM/textContent 描画にしました。', '# アカウント表示の安全な DOM 描画
+
+今回の更新では、公開サイト右上のアカウント入口の描画経路を引き締め、アカウントとクラウド保存の案内を純テキストとして表示します。
+
+## 更新内容
+
+- アカウント表示はテンプレート文字列の `innerHTML` 組み立てをやめ、ボタン、メール、API エラー、状態表示を DOM / `textContent` で構築します。
+- ログイン、登録、ログアウト、言語切り替え後の再描画、クラウド保存説明は変更していません。
+- メールアドレスと API エラーはテキストノードとしてのみ描画され、HTML として解釈されません。
+- 公開側のアカウント表示と更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。', '2026-06-17T18:20:00.000Z', '2026-06-17T18:20:00.000Z')
 on conflict(article_id, lang) do update set
   title = excluded.title,
   summary = excluded.summary,

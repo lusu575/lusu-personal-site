@@ -26,6 +26,7 @@ const translations = {
     resourcesTitle: "资源区",
     gamesTitle: "游戏区",
     blogTitle: "杂谈区",
+    notepadMenu: "文件  编辑  查看  帮助",
     chatroomTitle: "匿名聊天室",
     aboutTitle: "关于我",
     toolbarBack: "返回桌面",
@@ -38,26 +39,68 @@ const translations = {
     articleLoading: "正在从数据库读取文章...",
     articleLoadFailed: "文章读取失败，请稍后再试。",
     articleEmpty: "数据库里暂时还没有已发布文章。",
+    articleSearchLabel: "搜索知识库",
+    articleSearchPlaceholder: "搜索标题、简介、标签...",
+    articleSearchClear: "清空",
+    articleSearchCount: "共 {count} 篇文章",
+    articleSearchFiltered: "显示 {count} / {total} 篇",
+    articleSearchNoResults: "没有找到匹配的文章。",
     articleBack: "返回文章列表",
+    articleCopyLink: "复制文章链接",
+    articleCopyDone: "链接已复制。",
+    articleCopyFailed: "复制失败，请手动复制地址栏链接。",
+    articleReadProgress: "阅读进度",
+    articleTocTitle: "文章目录",
+    articleTocTipTitle: "小贴士",
+    articleTocTip: "点击目录项可快速跳转到对应章节",
+    articleScrollTop: "回到顶部",
     articlePublished: "发布时间",
     articleCategory: "分类",
     articleFallback: "当前语言版本缺失，已显示备用语言版本。",
     readButton: "阅读",
+    blogPending: "整理中",
     playButton: "播放",
     startGameButton: "开始",
     openGameButton: "打开",
     downloadButton: "下载",
     externalButton: "外部链接",
+    resourcePending: "准备中",
+    resourcePendingTitle: "这个资源还在整理中，暂时没有下载或外链。",
+    resourceStatusReady: "可获取",
+    resourceEmptyTitle: "这个分类还在整理中",
+    resourceEmptyBody: "可以先切回全部资源，之后这里会补上下载、素材或文档。",
+    resourceEmptyAction: "显示全部资源",
     openOriginal: "打开原地址",
     videoFullscreen: "全屏",
     videoRestore: "还原",
     languageSupportLabel: "语言支持",
+    gameLanguageUnsupported: "不支持",
     gameSourceLabel: "来源",
+    gameCloudSaveReady: "云存档",
     gameConfigLoading: "正在读取游戏配置...",
     gameConfigFailed: "游戏配置读取失败",
     videoPlaceholder: "这里预留 Bilibili / YouTube 嵌入播放器。",
     startButton: "首页",
     lastUpdatedLabel: "最近更新日期",
+    brandHomeAria: "返回桌面",
+    languageSwitcherAria: "语言切换",
+    desktopIconsAria: "主要栏目",
+    windowMinimizeAria: "最小化窗口",
+    windowMaximizeAria: "最大化窗口",
+    closeWindowAria: "关闭窗口",
+    closeDialogAria: "关闭对话框",
+    accountSignedInPrefix: "账号：",
+    accountTitle: "云存档账号",
+    accountSignedInNote: "网站可以正常浏览；进入游戏后会自动同步云端存档。",
+    accountLogout: "退出账号",
+    accountLogin: "登录",
+    accountRegister: "注册",
+    accountEmailPlaceholder: "邮箱",
+    accountPasswordPlaceholder: "密码至少 8 位",
+    accountGuestNote: "登录只用于游戏自动云存档，网站浏览不受影响。",
+    accountUnavailable: "云存档接口暂时不可用。",
+    accountLoggedIn: "已登录。",
+    accountLoggedOut: "已退出账号。",
     all: "全部",
     nicknameLabel: "昵称",
     nicknameValue: "鲁肃",
@@ -77,6 +120,8 @@ const translations = {
     goGames: "打开游戏区",
     recentUpdates: "最近更新",
     moreUpdates: "查看更多更新",
+    rssFeed: "订阅",
+    rssFeedAria: "RSS 订阅",
     chatNicknameLabel: "我的昵称：",
     chatEditNickname: "修改昵称",
     chatSyncStatus: "自动增量刷新，空闲时会降低频率",
@@ -111,7 +156,7 @@ const translations = {
     navVideos: "Videos",
     navVideosBuilding: "Videos",
     navResources: "Resources",
-    navResourcesBuilding: "Files TBD",
+    navResourcesBuilding: "Resources TBD",
     navGames: "Games",
     navBlog: "Talk",
     navBlogBuilding: "Talk TBD",
@@ -128,7 +173,8 @@ const translations = {
     resourcesTitle: "Resources",
     gamesTitle: "Games",
     blogTitle: "Talk",
-    chatroomTitle: "匿名聊天室",
+    notepadMenu: "File  Edit  View  Help",
+    chatroomTitle: "Chat Room",
     aboutTitle: "About",
     toolbarBack: "Back to Desktop",
     toolbarRefresh: "Refresh",
@@ -140,26 +186,68 @@ const translations = {
     articleLoading: "Loading articles from the database...",
     articleLoadFailed: "Could not load articles. Please try again later.",
     articleEmpty: "No published articles are in the database yet.",
+    articleSearchLabel: "Search knowledge",
+    articleSearchPlaceholder: "Search titles, summaries, tags...",
+    articleSearchClear: "Clear",
+    articleSearchCount: "{count} articles",
+    articleSearchFiltered: "Showing {count} / {total}",
+    articleSearchNoResults: "No matching articles found.",
     articleBack: "Back to article list",
+    articleCopyLink: "Copy article link",
+    articleCopyDone: "Link copied.",
+    articleCopyFailed: "Copy failed. Please copy the address bar link manually.",
+    articleReadProgress: "Reading progress",
+    articleTocTitle: "Contents",
+    articleTocTipTitle: "Tip",
+    articleTocTip: "Click a contents item to jump to that section.",
+    articleScrollTop: "Back to top",
     articlePublished: "Published",
     articleCategory: "Category",
     articleFallback: "This language is missing, so a fallback language is shown.",
     readButton: "Read",
+    blogPending: "Drafting",
     playButton: "Play",
     startGameButton: "Start",
     openGameButton: "Open",
     downloadButton: "Download",
     externalButton: "External Link",
+    resourcePending: "Coming soon",
+    resourcePendingTitle: "This resource is still being organized and has no download or external link yet.",
+    resourceStatusReady: "Ready",
+    resourceEmptyTitle: "This category is still being organized",
+    resourceEmptyBody: "Switch back to all resources for now. Downloads, assets, or docs can be added here later.",
+    resourceEmptyAction: "Show all resources",
     openOriginal: "Open Original",
     videoFullscreen: "Full screen",
     videoRestore: "Restore",
     languageSupportLabel: "Language support",
+    gameLanguageUnsupported: "not supported",
     gameSourceLabel: "Source",
+    gameCloudSaveReady: "Cloud save",
     gameConfigLoading: "Loading game catalog...",
     gameConfigFailed: "Could not load game catalog",
     videoPlaceholder: "Bilibili / YouTube embed player is reserved here.",
     startButton: "Home",
     lastUpdatedLabel: "Last updated",
+    brandHomeAria: "Back to desktop",
+    languageSwitcherAria: "Language switcher",
+    desktopIconsAria: "Main sections",
+    windowMinimizeAria: "Minimize window",
+    windowMaximizeAria: "Maximize window",
+    closeWindowAria: "Close window",
+    closeDialogAria: "Close dialog",
+    accountSignedInPrefix: "Account: ",
+    accountTitle: "Cloud Save Account",
+    accountSignedInNote: "You can browse the site normally; games will sync cloud saves automatically after opening.",
+    accountLogout: "Sign out",
+    accountLogin: "Log in",
+    accountRegister: "Register",
+    accountEmailPlaceholder: "Email",
+    accountPasswordPlaceholder: "At least 8 characters",
+    accountGuestNote: "Login is only for automatic game cloud saves. Site browsing is not affected.",
+    accountUnavailable: "Cloud save service is temporarily unavailable.",
+    accountLoggedIn: "Logged in.",
+    accountLoggedOut: "Signed out.",
     all: "All",
     nicknameLabel: "Nickname",
     nicknameValue: "LuSu",
@@ -179,6 +267,8 @@ const translations = {
     goGames: "Open Games",
     recentUpdates: "Recent Updates",
     moreUpdates: "More updates",
+    rssFeed: "Feed",
+    rssFeedAria: "RSS Feed",
     chatNicknameLabel: "My nickname:",
     chatEditNickname: "Edit nickname",
     chatSyncStatus: "Incremental auto refresh, slower while idle",
@@ -213,7 +303,7 @@ const translations = {
     navVideos: "動画",
     navVideosBuilding: "動画",
     navResources: "リソース",
-    navResourcesBuilding: "資料（未定）",
+    navResourcesBuilding: "リソース（未定）",
     navGames: "ゲーム",
     navBlog: "雑談",
     navBlogBuilding: "雑談（未定）",
@@ -230,7 +320,8 @@ const translations = {
     resourcesTitle: "リソース",
     gamesTitle: "ゲーム",
     blogTitle: "雑談",
-    chatroomTitle: "匿名聊天室",
+    notepadMenu: "ファイル  編集  表示  ヘルプ",
+    chatroomTitle: "匿名チャット",
     aboutTitle: "プロフィール",
     toolbarBack: "デスクトップへ戻る",
     toolbarRefresh: "更新",
@@ -242,26 +333,68 @@ const translations = {
     articleLoading: "データベースから記事を読み込み中...",
     articleLoadFailed: "記事を読み込めません。あとで試してください。",
     articleEmpty: "公開済みの記事はまだデータベースにありません。",
+    articleSearchLabel: "知識庫を検索",
+    articleSearchPlaceholder: "タイトル・概要・タグを検索...",
+    articleSearchClear: "クリア",
+    articleSearchCount: "{count}件の記事",
+    articleSearchFiltered: "{count} / {total} 件を表示",
+    articleSearchNoResults: "一致する記事が見つかりません。",
     articleBack: "記事一覧へ戻る",
+    articleCopyLink: "記事リンクをコピー",
+    articleCopyDone: "リンクをコピーしました。",
+    articleCopyFailed: "コピーできません。アドレスバーのリンクを手動でコピーしてください。",
+    articleReadProgress: "読書進捗",
+    articleTocTitle: "目次",
+    articleTocTipTitle: "ヒント",
+    articleTocTip: "目次項目をクリックすると対応する章へ移動できます。",
+    articleScrollTop: "先頭へ戻る",
     articlePublished: "公開日",
     articleCategory: "分類",
     articleFallback: "この言語版がないため、別の言語版を表示しています。",
     readButton: "読む",
+    blogPending: "準備中",
     playButton: "再生",
     startGameButton: "開始",
     openGameButton: "開く",
     downloadButton: "ダウンロード",
     externalButton: "外部リンク",
+    resourcePending: "準備中",
+    resourcePendingTitle: "このリソースはまだ整理中で、ダウンロードや外部リンクはありません。",
+    resourceStatusReady: "利用可",
+    resourceEmptyTitle: "この分類はまだ整理中です",
+    resourceEmptyBody: "いったんすべてのリソースに戻れます。ここには後でダウンロード、素材、資料を追加できます。",
+    resourceEmptyAction: "すべてのリソースを表示",
     openOriginal: "元のページを開く",
     videoFullscreen: "全画面",
     videoRestore: "元に戻す",
     languageSupportLabel: "言語対応",
+    gameLanguageUnsupported: "未対応",
     gameSourceLabel: "出典",
+    gameCloudSaveReady: "クラウド保存",
     gameConfigLoading: "ゲーム設定を読み込み中...",
     gameConfigFailed: "ゲーム設定を読み込めません",
     videoPlaceholder: "Bilibili / YouTube の埋め込みプレイヤー用スペースです。",
     startButton: "ホーム",
     lastUpdatedLabel: "最終更新日",
+    brandHomeAria: "デスクトップへ戻る",
+    languageSwitcherAria: "言語切り替え",
+    desktopIconsAria: "主なセクション",
+    windowMinimizeAria: "ウィンドウを最小化",
+    windowMaximizeAria: "ウィンドウを最大化",
+    closeWindowAria: "ウィンドウを閉じる",
+    closeDialogAria: "ダイアログを閉じる",
+    accountSignedInPrefix: "アカウント：",
+    accountTitle: "クラウドセーブアカウント",
+    accountSignedInNote: "サイトは通常どおり閲覧できます。ゲームを開くとクラウドセーブを自動同期します。",
+    accountLogout: "ログアウト",
+    accountLogin: "ログイン",
+    accountRegister: "登録",
+    accountEmailPlaceholder: "メール",
+    accountPasswordPlaceholder: "8文字以上のパスワード",
+    accountGuestNote: "ログインはゲームの自動クラウドセーブ専用です。サイト閲覧には影響しません。",
+    accountUnavailable: "クラウドセーブサービスは一時的に利用できません。",
+    accountLoggedIn: "ログインしました。",
+    accountLoggedOut: "ログアウトしました。",
     all: "すべて",
     nicknameLabel: "ニックネーム",
     nicknameValue: "魯粛",
@@ -281,6 +414,8 @@ const translations = {
     goGames: "ゲームへ",
     recentUpdates: "最近の更新",
     moreUpdates: "もっと見る",
+    rssFeed: "購読",
+    rssFeedAria: "RSS フィードを購読",
     chatNicknameLabel: "ニックネーム：",
     chatEditNickname: "変更",
     chatSyncStatus: "差分自動更新、待機中は低頻度",
@@ -344,6 +479,506 @@ const labels = {
 
 const content = {
   updates: [
+    {
+      icon: "🪟",
+      date: "2026.06.18",
+      title: { zh: "主站夜间优化汇总", en: "Public Site Nightly Summary", ja: "メインサイト夜間更新まとめ" },
+      desc: {
+        zh: "合并昨晚主站优化记录，并按参考图完成知识库文章页 10 轮阅读布局复刻打磨；文章窗口不再拉伸占满全站",
+        en: "Merged last night's public-site updates, completed ten reference-matching passes, and kept the article window inside the site frame",
+        ja: "昨夜のメインサイト更新をまとめ、参考画像に合わせて知識庫の記事ページを10回調整し、記事ウィンドウはサイト内サイズに戻しました"
+      }
+    },
+    {
+      icon: "🗂️",
+      date: "2026.06.18",
+      title: { zh: "资源空分类提示", en: "Resource Empty Category State", ja: "リソース空分類表示" },
+      desc: {
+        zh: "资源区空分类现在会显示三语空状态和返回全部资源按钮，不再留下空白列表",
+        en: "Empty resource categories now show a trilingual empty state with a button back to all resources",
+        ja: "空のリソース分類に三言語の空状態とすべてへ戻るボタンを表示します"
+      }
+    },
+    {
+      icon: "📊",
+      date: "2026.06.18",
+      title: { zh: "资源分类数量徽标", en: "Resource Filter Counts", ja: "リソース分類数バッジ" },
+      desc: {
+        zh: "资源区分类按钮现在显示每类资源数量，筛选前就能看到占位和资源分布",
+        en: "Resource category buttons now show item counts so the resource distribution is visible before filtering",
+        ja: "リソース分類ボタンに件数を表示し、絞り込み前に配分が分かるようにしました"
+      }
+    },
+    {
+      icon: "📦",
+      date: "2026.06.18",
+      title: { zh: "资源卡片状态徽标", en: "Resource Status Badges", ja: "リソース状態バッジ" },
+      desc: {
+        zh: "资源区卡片会显示准备中或可获取状态，下载按钮逻辑继续走安全链接校验",
+        en: "Resource cards now show pending or ready status badges while download actions still use safe link checks",
+        ja: "リソースカードに準備中または利用可の状態バッジを追加し、リンク確認は従来どおりです"
+      }
+    },
+    {
+      icon: "🎮",
+      date: "2026.06.18",
+      title: { zh: "游戏卡片信息增强", en: "Game Card Info Badges", ja: "ゲームカード情報バッジ" },
+      desc: {
+        zh: "游戏区卡片新增云存档和源码徽标，进入游戏前能看到保存与开源状态",
+        en: "Game cards now show cloud-save and source badges so save and open-source status are visible before launch",
+        ja: "ゲームカードにクラウド保存とソースのバッジを追加し、起動前に状態を確認できます"
+      }
+    },
+    {
+      icon: "⬆️",
+      date: "2026.06.18",
+      title: { zh: "文章回到顶部按钮", en: "Article Back-to-Top Button", ja: "記事先頭へ戻るボタン" },
+      desc: {
+        zh: "知识库文章详情新增三语回到顶部按钮，目录跳转后可以快速回到标题区",
+        en: "Knowledge article details now include a trilingual back-to-top button after jumping through contents",
+        ja: "知識庫の記事詳細に三言語の先頭へ戻るボタンを追加し、目次移動後に戻りやすくしました"
+      }
+    },
+    {
+      icon: "🧭",
+      date: "2026.06.18",
+      title: { zh: "文章目录导航", en: "Article Contents Navigation", ja: "記事目次ナビ" },
+      desc: {
+        zh: "知识库文章详情会按正文标题生成三语目录，长文可以快速跳到对应段落",
+        en: "Knowledge article details now build a trilingual contents strip from body headings for quicker jumps",
+        ja: "知識庫の記事詳細で本文見出しから三言語の目次を作り、長文の移動を速くしました"
+      }
+    },
+    {
+      icon: "📊",
+      date: "2026.06.18",
+      title: { zh: "文章阅读进度条", en: "Article Reading Progress", ja: "記事の読書進捗バー" },
+      desc: {
+        zh: "知识库文章详情新增三语阅读进度条，长文滚动时能看到当前位置",
+        en: "Knowledge article details now show a trilingual reading progress bar while long posts scroll",
+        ja: "知識庫の記事詳細に三言語の読書進捗バーを追加し、長文の現在位置が分かります"
+      }
+    },
+    {
+      icon: "📶",
+      date: "2026.06.18",
+      title: { zh: "RSS 发现链接同步", en: "RSS Discovery Link Sync", ja: "RSS 検出リンク同期" },
+      desc: {
+        zh: "页面 head 里的 RSS alternate 链接会随当前语言同步，订阅发现不再固定中文",
+        en: "The RSS alternate link in the page head now follows the active language for feed discovery",
+        ja: "ページ head の RSS alternate リンクが現在の言語に合わせて更新されます"
+      }
+    },
+    {
+      icon: "🔗",
+      date: "2026.06.18",
+      title: { zh: "文章链接保留语言", en: "Article Links Keep Language", ja: "記事リンクの言語保持" },
+      desc: {
+        zh: "文章卡片和最近更新的真实链接会带上当前 lang，新开标签也保留语言",
+        en: "Article cards and recent updates now include the active lang in their real links for new tabs",
+        ja: "記事カードと最近の更新リンクに現在の lang を含め、新しいタブでも言語を保持します"
+      }
+    },
+    {
+      icon: "🧾",
+      date: "2026.06.18",
+      title: { zh: "最近更新完整提示", en: "Recent Update Full Labels", ja: "最近の更新ラベル補足" },
+      desc: {
+        zh: "最近更新链接补充完整 title 和 aria-label，截断标题也能读到完整内容",
+        en: "Recent update links now include full title and aria-label text even when the visible title is truncated",
+        ja: "最近の更新リンクに完全な title と aria-label を追加し、省略表示でも内容を確認できます"
+      }
+    },
+    {
+      icon: "📡",
+      date: "2026.06.18",
+      title: { zh: "RSS 按钮文案整理", en: "RSS Button Label Polish", ja: "RSS ボタン文言調整" },
+      desc: {
+        zh: "欢迎窗口里的 RSS 按钮改为徽标加短文案，并让 ?welcome=1 稳定重开欢迎窗口",
+        en: "The welcome RSS button now uses a badge plus shorter label, and ?welcome=1 reliably reopens the welcome window",
+        ja: "ウェルカム画面の RSS ボタンを短い文言に整え、?welcome=1 で確実に再表示できるようにしました"
+      }
+    },
+    {
+      icon: "🛰️",
+      date: "2026.06.18",
+      title: { zh: "RSS 订阅入口", en: "RSS Feed Entry", ja: "RSS フィード入口" },
+      desc: {
+        zh: "首页最近更新面板新增 RSS 链接，公开文章可通过 /api/rss.xml 按当前语言订阅",
+        en: "The Recent Updates panel now includes an RSS link, and public articles can be subscribed to through /api/rss.xml in the current language",
+        ja: "最近の更新パネルに RSS リンクを追加し、公開記事を現在の言語で /api/rss.xml から購読できます"
+      }
+    },
+    {
+      icon: "🖼️",
+      date: "2026.06.18",
+      title: { zh: "静态图片尺寸提示", en: "Static Image Dimensions", ja: "静的画像サイズ指定" },
+      desc: {
+        zh: "首屏品牌头像、聊天室头像、关于头像和 Start 图标补充真实 width / height，减少图片解码前的布局不确定性",
+        en: "Brand, chat, profile, and Start images now declare real width / height values to reduce layout uncertainty before decoding",
+        ja: "ブランド、チャット、プロフィール、Start 画像に実寸の width / height を追加し、デコード前のレイアウト揺れを減らします"
+      }
+    },
+    {
+      icon: "🏷️",
+      date: "2026.06.18",
+      title: { zh: "文章标签本地化", en: "Article Tag Locales", ja: "記事タグのローカライズ" },
+      desc: {
+        zh: "知识库和站点更新里的安全、iframe、聊天室、云存档等标签补齐三语显示",
+        en: "Knowledge and site-update tags such as security, iframe, chat room, and cloud saves now have localized labels",
+        ja: "知識庫とサイト更新の安全、iframe、チャット、クラウド保存などのタグに多言語表示を追加しました"
+      }
+    },
+    {
+      icon: "🎮",
+      date: "2026.06.18",
+      title: { zh: "游戏 iframe 启动守卫", en: "Game Frame Source Guard", ja: "ゲームフレーム起動ガード" },
+      desc: {
+        zh: "游戏入口页会校验 catalog 中的 iframe 启动路径和语言参数名，再加载本地 source 页面",
+        en: "Game entry pages now validate catalog iframe launch paths and language query names before loading local source pages",
+        ja: "ゲーム入口ページが catalog の iframe 起動パスと言語パラメータ名を確認してからローカル source ページを読み込みます"
+      }
+    },
+    {
+      icon: "💬",
+      date: "2026.06.18",
+      title: { zh: "聊天室昵称本地化", en: "Chat Nickname Locale", ja: "チャット名ロケール対応" },
+      desc: {
+        zh: "匿名聊天室的新随机昵称会跟随当前中文、英文、日文界面生成",
+        en: "New random chat nicknames now follow the current Chinese, English, or Japanese interface",
+        ja: "匿名チャットの新しいランダム名が現在の中国語・英語・日本語表示に合わせて生成されます"
+      }
+    },
+    {
+      icon: "🖼️",
+      date: "2026.06.18",
+      title: { zh: "文章图片路径守卫", en: "Article Image Path Guard", ja: "記事画像パスガード" },
+      desc: {
+        zh: "文章 Markdown 配图继续限制在项目文章图片目录，并显式拒绝路径穿越片段",
+        en: "Markdown article images stay limited to the project article-image folder and now explicitly reject traversal segments",
+        ja: "Markdown 記事画像は記事画像フォルダに限定し、パストラバーサル片を明示的に拒否します"
+      }
+    },
+    {
+      icon: "🧭",
+      date: "2026.06.18",
+      title: { zh: "资源链接白名单", en: "Resource URL Allowlist", ja: "リソースURL許可リスト" },
+      desc: {
+        zh: "资源下载和外链在渲染前会先规范化 URL，并只接受安全本地路径或 http(s) 链接",
+        en: "Resource downloads and external links are normalized before rendering and only accept safe local paths or http(s) URLs",
+        ja: "リソースのダウンロードと外部リンクは描画前に正規化し、安全なローカルパスまたは http(s) URL のみ受け付けます"
+      }
+    },
+    {
+      icon: "🎞️",
+      date: "2026.06.18",
+      title: { zh: "视频链接白名单", en: "Video Link Allowlist", ja: "動画リンク許可リスト" },
+      desc: {
+        zh: "视频缩略图、原地址和播放器 iframe 在前端也会经过域名白名单校验",
+        en: "Video thumbnails, source links, and player iframes now pass frontend domain allowlist checks",
+        ja: "動画サムネイル、元リンク、プレイヤー iframe にフロント側のドメイン許可リストを追加しました"
+      }
+    },
+    {
+      icon: "🔗",
+      date: "2026.06.18",
+      title: { zh: "游戏链接白名单", en: "Game Link Allowlist", ja: "ゲームリンク許可リスト" },
+      desc: {
+        zh: "游戏列表入口和封面路径补充白名单校验，避免不可信 URL 进入页面",
+        en: "Game entry links and cover paths now use allowlist checks before rendering",
+        ja: "ゲーム入口リンクとカバー画像パスに許可リスト確認を追加しました"
+      }
+    },
+    {
+      icon: "🎮",
+      date: "2026.06.18",
+      title: { zh: "游戏列表安全渲染", en: "Game List Safe DOM", ja: "ゲーム一覧の安全な DOM 描画" },
+      desc: {
+        zh: "游戏区卡片、语言标签、许可证和加载状态改为 DOM/textContent 构建",
+        en: "Game cards, language tags, license labels, and loading states now render through DOM/textContent",
+        ja: "ゲームカード、言語タグ、ライセンス、読み込み状態を DOM/textContent 構築にしました"
+      }
+    },
+    {
+      icon: "🧰",
+      date: "2026.06.18",
+      title: { zh: "资源筛选安全渲染", en: "Resource Filters Safe DOM", ja: "リソースフィルターの安全な DOM 描画" },
+      desc: {
+        zh: "资源区分类筛选按钮改为 DOM/textContent 构建，筛选值和 active 状态保持不变",
+        en: "Resource filter buttons now render through DOM/textContent while keeping filter values and active state",
+        ja: "リソースのフィルターボタンを DOM/textContent 構築にし、値と active 状態を維持します"
+      }
+    },
+    {
+      icon: "🧭",
+      date: "2026.06.18",
+      title: { zh: "知识库筛选安全渲染", en: "Knowledge Filters Safe DOM", ja: "知識庫フィルターの安全な DOM 描画" },
+      desc: {
+        zh: "知识库分类筛选按钮改为 DOM/textContent 构建，分类名和 active 状态保持不变",
+        en: "Knowledge category filter buttons now render through DOM/textContent while preserving labels and active state",
+        ja: "知識庫カテゴリーフィルターを DOM/textContent 構築にし、ラベルと active 状態を維持します"
+      }
+    },
+    {
+      icon: "🧾",
+      date: "2026.06.18",
+      title: { zh: "知识库列表安全渲染", en: "Knowledge List Safe DOM", ja: "知識庫リストの安全な DOM 描画" },
+      desc: {
+        zh: "知识库文章列表改为 DOM/textContent 构建，标题、摘要、标签、日期和阅读入口继续按纯文本渲染",
+        en: "Knowledge article cards now render through DOM/textContent for titles, summaries, tags, dates, and read links",
+        ja: "知識庫の記事カードを DOM/textContent 構築にし、タイトル、概要、タグ、日付、読む入口を純テキストで描画します"
+      }
+    },
+    {
+      icon: "🛡️",
+      date: "2026.06.18",
+      title: { zh: "最近更新安全渲染", en: "Recent Updates Safe DOM", ja: "最近更新の安全な DOM 描画" },
+      desc: {
+        zh: "首页最近更新列表改为 DOM/textContent 构建，标题、摘要、日期和图标都按纯文本渲染",
+        en: "The home recent-update list now renders through DOM/textContent for titles, summaries, dates, and icons",
+        ja: "ホームの最近更新リストを DOM/textContent 構築にし、タイトル、概要、日付、アイコンを純テキストで描画します"
+      }
+    },
+    {
+      icon: "🛠️",
+      date: "2026.06.18",
+      title: { zh: "最近更新图标优化", en: "Recent Update Icons", ja: "最近更新アイコンを調整" },
+      desc: {
+        zh: "首页最近更新会按站点更新类型显示工具图标，避免从文章 API 读取后全部显示书本图标",
+        en: "The home recent-update list now shows a site-update tool icon instead of treating every API article as a book",
+        ja: "ホームの最近更新で、記事 API 由来の更新もすべて本アイコンにならず、サイト更新らしいツールアイコンを表示します"
+      }
+    },
+    {
+      icon: "🔐",
+      date: "2026.06.18",
+      title: { zh: "账号弹窗安全 DOM 渲染", en: "Account Popover Safe DOM", ja: "アカウント表示の安全な DOM 描画" },
+      desc: {
+        zh: "顶部账号/云存档弹窗改为 DOM/textContent 构建，登录、注册和退出行为保持不变",
+        en: "The top account and cloud-save popover now renders through DOM/textContent while keeping login flows unchanged",
+        ja: "上部アカウント/クラウド保存表示を DOM/textContent 描画にし、ログイン動作は維持しました"
+      }
+    },
+    {
+      icon: "🛡️",
+      date: "2026.06.18",
+      title: { zh: "游戏外壳安全 DOM 渲染", en: "Game Shell Safe DOM", ja: "ゲームシェルの安全な DOM 描画" },
+      desc: {
+        zh: "游戏入口页的云存档面板和协议栏改为 DOM/textContent 构建，并限制协议链接格式",
+        en: "Game entry cloud-save panels and license links now render through DOM/textContent with safer link checks",
+        ja: "ゲーム入口のクラウド保存パネルとライセンス欄を DOM/textContent 描画にし、リンク形式も確認します"
+      }
+    },
+    {
+      icon: "🗂️",
+      date: "2026.06.18",
+      title: { zh: "资源入口文案对齐", en: "Resources Label Sync", ja: "リソース入口ラベル同期" },
+      desc: {
+        zh: "资源区桌面入口继续保留待定状态，但英文和日文名称与资源窗口标题保持一致",
+        en: "The Resources desktop icon keeps its TBD state while matching the Resources window label",
+        ja: "リソースのデスクトップ入口は未定表示を保ちつつ、リソースウィンドウ名と揃えました"
+      }
+    },
+    {
+      icon: "🎞️",
+      date: "2026.06.18",
+      title: { zh: "视频缩略图异步解码", en: "Async Video Thumbnail Decoding", ja: "動画サムネイルの非同期デコード" },
+      desc: {
+        zh: "公开视频卡片缩略图在懒加载基础上补充异步解码，和文章图、游戏封面保持一致",
+        en: "Public video thumbnails now add async decoding on top of lazy loading, matching article images and game covers",
+        ja: "公開動画カードのサムネイルに遅延読み込みに加えて非同期デコードを追加し、記事画像やゲームカバーと揃えました"
+      }
+    },
+    {
+      icon: "📦",
+      date: "2026.06.18",
+      title: { zh: "资源占位提示补齐", en: "Resource Placeholder Hints", ja: "リソース準備中ヒント" },
+      desc: {
+        zh: "资源区准备中按钮增加三语 title 与 aria 说明，明确暂时没有下载或外链",
+        en: "Coming-soon resource buttons now include localized title and aria hints when no link is available",
+        ja: "準備中のリソースボタンに、リンク未設定を示す多言語 title と aria 説明を追加しました"
+      }
+    },
+    {
+      icon: "💾",
+      date: "2026.06.18",
+      title: { zh: "游戏外壳三语同步", en: "Localized Game Shell", ja: "ゲームシェルの多言語同期" },
+      desc: {
+        zh: "游戏入口页的返回、存档工具、云存档、协议和状态文案会跟随当前语言显示",
+        en: "Game entry pages now localize back links, save tools, cloud-save panels, license labels, and status text",
+        ja: "ゲーム入口ページの戻るリンク、セーブツール、クラウド保存、ライセンス、状態表示が現在の言語に合わせて表示されます"
+      }
+    },
+    {
+      icon: "🌐",
+      date: "2026.06.18",
+      title: { zh: "游戏语言标记三语同步", en: "Game Language Labels", ja: "ゲーム言語ラベルの多言語同期" },
+      desc: {
+        zh: "游戏卡片里的中文、英文、日文支持标记会跟随当前站点语言显示名称和不支持提示",
+        en: "Game language support tags now localize Chinese, English, Japanese, and unsupported labels",
+        ja: "ゲームカードの対応言語タグが、中国語・英語・日本語・未対応表示を現在の言語に合わせます"
+      }
+    },
+    {
+      icon: "🎮",
+      date: "2026.06.18",
+      title: { zh: "游戏封面异步解码", en: "Async Game Cover Decoding", ja: "ゲームカバーの非同期デコード" },
+      desc: {
+        zh: "游戏区封面图在继续懒加载的基础上补充异步解码，减少打开游戏列表时的解码阻塞",
+        en: "Game cover images now add async decoding on top of lazy loading to reduce decode pressure when opening the games list",
+        ja: "ゲーム欄のカバー画像に遅延読み込みに加えて非同期デコードを追加し、一覧表示時の負荷を抑えます"
+      }
+    },
+    {
+      icon: "📝",
+      date: "2026.06.18",
+      title: { zh: "杂谈菜单三语同步", en: "Talk Menu Localization", ja: "雑談メニューの多言語同期" },
+      desc: {
+        zh: "杂谈区 Notepad 风格菜单从固定英文改为跟随中文、English、日本語 切换",
+        en: "The Talk area Notepad-style menu now follows the Chinese, English, and Japanese language switch",
+        ja: "雑談欄の Notepad 風メニューが中文、English、日本語 の切り替えに合わせて表示されます"
+      }
+    },
+    {
+      icon: "☁️",
+      date: "2026.06.18",
+      title: { zh: "账号弹窗三语同步", en: "Account Popover Localization", ja: "アカウント表示の多言語同期" },
+      desc: {
+        zh: "登录、注册、邮箱、密码、云存档说明和退出账号等账号弹窗文案会跟随当前语言显示",
+        en: "Login, register, email, password, cloud-save notes, and sign-out copy now follow the active language",
+        ja: "ログイン、登録、メール、パスワード、クラウドセーブ説明、ログアウト文言が現在の言語に合わせて表示されます"
+      }
+    },
+    {
+      icon: "♿",
+      date: "2026.06.18",
+      title: { zh: "无障碍标签三语同步", en: "Localized ARIA Labels", ja: "ARIAラベルの多言語同期" },
+      desc: {
+        zh: "品牌按钮、语言切换、桌面图标区和窗口关闭按钮的 aria-label 会跟随当前语言切换",
+        en: "Brand, language switcher, desktop icon group, and close-button aria labels now follow the active language",
+        ja: "ブランド、言語切り替え、デスクトップアイコン領域、閉じるボタンの aria-label が現在の言語に合わせて変わります"
+      }
+    },
+    {
+      icon: "💬",
+      date: "2026.06.18",
+      title: { zh: "聊天室标题三语同步", en: "Chat Title Localization", ja: "チャット題名の多言語同期" },
+      desc: {
+        zh: "聊天室窗口标题会跟随中文、English、日本語 切换，不再在英文和日文界面保留中文标题",
+        en: "The chat room window title now follows the Chinese, English, and Japanese language switch",
+        ja: "チャットルームのウィンドウ題名が中文、English、日本語 の切り替えに合わせて表示されます"
+      }
+    },
+    {
+      icon: "🖼️",
+      date: "2026.06.18",
+      title: { zh: "图片加载细节优化", en: "Image Loading Polish", ja: "画像読み込みの調整" },
+      desc: {
+        zh: "首屏外头像和文章配图补充懒加载与异步解码，继续保留本地图片白名单",
+        en: "Off-screen avatars and article images now use lazy loading and async decoding while keeping the local image whitelist",
+        ja: "初期表示外のアバターと記事画像に遅延読み込みと非同期デコードを加え、ローカル画像の許可リストは維持しました"
+      }
+    },
+    {
+      icon: "🏷️",
+      date: "2026.06.18",
+      title: { zh: "标签三语显示", en: "Trilingual Tag Labels", ja: "タグ三言語表示" },
+      desc: {
+        zh: "文章和杂谈卡片的常见标签会跟随中文、English、日本語 切换显示",
+        en: "Common article and talk tags now follow the Chinese, English, and Japanese language switch",
+        ja: "記事と雑談カードの主なタグが中文、English、日本語 の切り替えに合わせて表示されます"
+      }
+    },
+    {
+      icon: "📖",
+      date: "2026.06.18",
+      title: { zh: "文章详情搜索条隐藏修复", en: "Article Detail Search Hide", ja: "記事詳細の検索バー非表示" },
+      desc: {
+        zh: "阅读文章详情时隐藏知识库搜索条，避免搜索控件占用阅读区顶部空间",
+        en: "Article detail pages now hide the knowledge search bar so reading space stays focused",
+        ja: "記事詳細では知識庫検索バーを隠し、読書スペースをすっきり保ちます"
+      }
+    },
+    {
+      icon: "🔗",
+      date: "2026.06.18",
+      title: { zh: "语言链接参数同步", en: "Language URL Sync", ja: "言語URL同期" },
+      desc: {
+        zh: "切换语言会同步地址栏 lang 参数，复制当前页面链接时不再带旧语言",
+        en: "Language switching now updates the address bar lang parameter so copied links keep the current language",
+        ja: "言語切り替え時に URL の lang パラメータを同期し、コピーしたリンクが現在の言語を保ちます"
+      }
+    },
+    {
+      icon: "📝",
+      date: "2026.06.18",
+      title: { zh: "杂谈区占位按钮修复", en: "Talk Placeholder Buttons", ja: "雑談の準備中ボタン" },
+      desc: {
+        zh: "杂谈区没有真实文章入口时显示整理中按钮，并改用安全 DOM 渲染",
+        en: "Talk cards without article targets now show a drafting button and render through safe DOM nodes",
+        ja: "実際の記事リンクがない雑談カードは準備中ボタンを表示し、安全な DOM 描画にしました"
+      }
+    },
+    {
+      icon: "🖱️",
+      date: "2026.06.18",
+      title: { zh: "导航当前态增强", en: "Active Navigation State", ja: "ナビ現在状態を強化" },
+      desc: {
+        zh: "底部任务栏和首页 Start 按钮会标记当前页面，并同步 aria-current",
+        en: "The taskbar and Start button now mark the current page and keep aria-current in sync",
+        ja: "タスクバーと Start ボタンが現在ページを示し、aria-current も同期します"
+      }
+    },
+    {
+      icon: "📦",
+      date: "2026.06.18",
+      title: { zh: "资源区占位按钮修复", en: "Resource Placeholder Buttons", ja: "リソース準備中ボタン" },
+      desc: {
+        zh: "资源区没有真实下载或外链时显示准备中按钮，不再使用无效 # 链接",
+        en: "Resource cards without real download or external URLs now show a coming-soon button instead of a dead # link",
+        ja: "実際のダウンロードや外部リンクがないリソースは、無効な # リンクではなく準備中ボタンを表示します"
+      }
+    },
+    {
+      icon: "🪟",
+      date: "2026.06.17",
+      title: { zh: "文章直链不再弹欢迎窗", en: "Cleaner Article Deep Links", ja: "記事直リンクを読みやすく" },
+      desc: {
+        zh: "首次打开文章或其他非首页直链时，不再自动弹出欢迎窗口遮挡内容",
+        en: "Article and non-home deep links no longer auto-open the welcome modal over the content",
+        ja: "記事やホーム以外の直リンクでは、歓迎ウィンドウが内容を隠さないようにしました"
+      }
+    },
+    {
+      icon: "📺",
+      date: "2026.06.17",
+      title: { zh: "视频区空状态增强", en: "Video Empty State", ja: "動画欄の空状態を改善" },
+      desc: {
+        zh: "视频区没有公开视频时会显示 XP 风格提示，并提供查看网站更新记录的入口",
+        en: "The videos area now shows an XP-style empty state with a shortcut to site updates when no videos are published",
+        ja: "公開動画がない場合、動画欄に XP 風の空状態とサイト更新記録への入口を表示します"
+      }
+    },
+    {
+      icon: "🔗",
+      date: "2026.06.17",
+      title: { zh: "文章详情复制链接", en: "Article Link Copy", ja: "記事リンクコピー" },
+      desc: {
+        zh: "知识库文章详情新增复制直链按钮，便于分享当前语言的文章页面",
+        en: "Knowledge articles now have a copy-link button for sharing the current language view",
+        ja: "知識庫の記事詳細に、現在の言語ページを共有しやすいリンクコピーを追加しました"
+      }
+    },
+    {
+      icon: "📚",
+      date: "2026.06.17",
+      title: { zh: "知识库本地搜索上线", en: "Knowledge Search Added", ja: "知識庫検索を追加" },
+      desc: {
+        zh: "知识库顶部新增本地搜索，可按标题、简介、分类和标签快速过滤文章，并适配三语和手机端布局",
+        en: "The knowledge base now has local search across titles, summaries, categories, and tags, with trilingual and mobile layouts",
+        ja: "知識庫にローカル検索を追加し、タイトル・概要・分類・タグを三言語とモバイル表示で絞り込めるようにしました"
+      }
+    },
     {
       icon: "📺",
       date: "2026.06.16",
@@ -678,6 +1313,9 @@ const articleState = {
   articles: [],
   currentSlug: "",
   currentArticle: null,
+  searchTerm: "",
+  copyStatusTimer: 0,
+  readProgressFrame: 0,
   error: ""
 };
 const videoState = {
@@ -694,6 +1332,20 @@ const videoWindowState = {
 
 const languageStorageKey = "lusu-site-language";
 const siteUpdateCategory = "site-updates";
+const publicLoopNightlyUpdateSlug = "2026-06-18-public-site-nightly-update";
+const publicLoopNightlyUpdateTitleEn = "Public Site Nightly Summary";
+const publicLoopNightlyCollapsedSlugs = new Set([
+  "2026-06-17-knowledge-search",
+  "2026-06-17-article-share-link",
+  "2026-06-17-video-empty-state",
+  "2026-06-17-route-aware-welcome"
+]);
+const publicLoopNightlyCollapsedFallbackTitlesEn = new Set([
+  "Knowledge Search Added",
+  "Article Link Copy",
+  "Video Empty State",
+  "Cleaner Article Deep Links"
+]);
 const articleCategoryLabels = {
   "site-updates": {
     zh: "网站更新记录",
@@ -715,6 +1367,94 @@ const articleCategoryLabels = {
     en: "Notes",
     ja: "メモ"
   }
+};
+
+const tagLabels = {
+  "网站更新": { zh: "网站更新", en: "Site update", ja: "サイト更新" },
+  "网站": { zh: "网站", en: "Site", ja: "サイト" },
+  "首页": { zh: "首页", en: "Home", ja: "ホーム" },
+  "日常": { zh: "日常", en: "Daily", ja: "日常" },
+  "记录": { zh: "记录", en: "Log", ja: "記録" },
+  "上线记录": { zh: "上线记录", en: "Launch log", ja: "公開記録" },
+  "维护记录": { zh: "维护记录", en: "Maintenance", ja: "保守記録" },
+  "修复记录": { zh: "修复记录", en: "Fix log", ja: "修正記録" },
+  "经验": { zh: "经验", en: "Experience", ja: "経験" },
+  "文章": { zh: "文章", en: "Article", ja: "記事" },
+  "知识库": { zh: "知识库", en: "Knowledge", ja: "知識庫" },
+  "标签": { zh: "标签", en: "Tag", ja: "タグ" },
+  "搜索": { zh: "搜索", en: "Search", ja: "検索" },
+  "文章详情": { zh: "文章详情", en: "Article detail", ja: "記事詳細" },
+  "阅读体验": { zh: "阅读体验", en: "Reading", ja: "読書体験" },
+  "分享": { zh: "分享", en: "Sharing", ja: "共有" },
+  "链接分享": { zh: "链接分享", en: "Link sharing", ja: "リンク共有" },
+  "多语言": { zh: "多语言", en: "Languages", ja: "多言語" },
+  "路由": { zh: "路由", en: "Routing", ja: "ルート" },
+  "导航": { zh: "导航", en: "Navigation", ja: "ナビ" },
+  "任务栏": { zh: "任务栏", en: "Taskbar", ja: "タスクバー" },
+  "可访问性": { zh: "可访问性", en: "Accessibility", ja: "アクセシビリティ" },
+  "交互修复": { zh: "交互修复", en: "Interaction fix", ja: "操作修正" },
+  "视频区": { zh: "视频区", en: "Videos", ja: "動画欄" },
+  "播放器": { zh: "播放器", en: "Player", ja: "プレイヤー" },
+  "空状态": { zh: "空状态", en: "Empty state", ja: "空状態" },
+  "资源区": { zh: "资源区", en: "Resources", ja: "リソース" },
+  "主站优化": { zh: "主站优化", en: "Main site", ja: "メインサイト" },
+  "夜间汇总": { zh: "夜间汇总", en: "Nightly summary", ja: "夜間まとめ" },
+  "下载": { zh: "下载", en: "Download", ja: "ダウンロード" },
+  "占位按钮": { zh: "占位按钮", en: "Placeholder button", ja: "準備中ボタン" },
+  "状态": { zh: "状态", en: "Status", ja: "状態" },
+  "源码": { zh: "源码", en: "Source", ja: "ソース" },
+  "目录": { zh: "目录", en: "Contents", ja: "目次" },
+  "进度": { zh: "进度", en: "Progress", ja: "進捗" },
+  "阅读": { zh: "阅读", en: "Reading", ja: "読書" },
+  "杂谈区": { zh: "杂谈区", en: "Talk", ja: "雑談" },
+  "安全渲染": { zh: "安全渲染", en: "Safe rendering", ja: "安全描画" },
+  "后台": { zh: "后台", en: "Admin", ja: "管理画面" },
+  "游戏区": { zh: "游戏区", en: "Games", ja: "ゲーム欄" },
+  "移动端": { zh: "移动端", en: "Mobile", ja: "モバイル" },
+  "桌面端": { zh: "桌面端", en: "Desktop", ja: "デスクトップ" },
+  "桌面图标": { zh: "桌面图标", en: "Desktop icons", ja: "デスクトップアイコン" },
+  "布局修复": { zh: "布局修复", en: "Layout fix", ja: "レイアウト修正" },
+  "响应式布局": { zh: "响应式布局", en: "Responsive layout", ja: "レスポンシブ" },
+  "窗口": { zh: "窗口", en: "Window", ja: "ウィンドウ" },
+  "图标": { zh: "图标", en: "Icons", ja: "アイコン" },
+  "动态壁纸": { zh: "动态壁纸", en: "Animated wallpaper", ja: "動く壁紙" },
+  "像素壁纸": { zh: "像素壁纸", en: "Pixel wallpaper", ja: "ピクセル壁紙" },
+  "欢迎窗": { zh: "欢迎窗", en: "Welcome modal", ja: "歓迎ウィンドウ" },
+  "直链": { zh: "直链", en: "Deep link", ja: "直リンク" },
+  "时间显示": { zh: "时间显示", en: "Time display", ja: "時刻表示" },
+  "排序": { zh: "排序", en: "Sorting", ja: "並び替え" },
+  "性能": { zh: "性能", en: "Performance", ja: "性能" },
+  "观察": { zh: "观察", en: "Observations", ja: "観察" },
+  "游戏": { zh: "游戏", en: "Games", ja: "ゲーム" },
+  "碎碎念": { zh: "碎碎念", en: "Notes", ja: "メモ" },
+  "最近更新": { zh: "最近更新", en: "Recent updates", ja: "最近の更新" },
+  "界面": { zh: "界面", en: "Interface", ja: "表示" },
+  "链接": { zh: "链接", en: "Links", ja: "リンク" },
+  "安全": { zh: "安全", en: "Security", ja: "安全" },
+  "图片": { zh: "图片", en: "Images", ja: "画像" },
+  "iframe": { zh: "iframe", en: "iframe", ja: "iframe" },
+  "聊天室": { zh: "聊天室", en: "Chat room", ja: "チャット" },
+  "三语": { zh: "三语", en: "Trilingual", ja: "三言語" },
+  "体验": { zh: "体验", en: "Experience", ja: "体験" },
+  "筛选": { zh: "筛选", en: "Filters", ja: "フィルター" },
+  "渲染": { zh: "渲染", en: "Rendering", ja: "描画" },
+  "云存档": { zh: "云存档", en: "Cloud saves", ja: "クラウド保存" },
+  "账号": { zh: "账号", en: "Account", ja: "アカウント" },
+  "无障碍": { zh: "无障碍", en: "Accessibility", ja: "アクセシビリティ" },
+  "AI": { zh: "AI", en: "AI", ja: "AI" },
+  "Agent": { zh: "Agent", en: "Agent", ja: "Agent" },
+  "Codex": { zh: "Codex", en: "Codex", ja: "Codex" },
+  "fallback": { zh: "fallback", en: "Fallback", ja: "Fallback" },
+  "测试": { zh: "测试", en: "Test", ja: "テスト" },
+  "工具": { zh: "工具", en: "Tools", ja: "ツール" },
+  "2048": { zh: "2048", en: "2048", ja: "2048" },
+  "Hextris": { zh: "Hextris", en: "Hextris", ja: "Hextris" },
+  "Bilibili": { zh: "Bilibili", en: "Bilibili", ja: "Bilibili" },
+  "RSS": { zh: "RSS", en: "RSS", ja: "RSS" },
+  "空状态": { zh: "空状态", en: "Empty state", ja: "空状態" },
+  "筛选": { zh: "筛选", en: "Filters", ja: "フィルター" },
+  "数量": { zh: "数量", en: "Counts", ja: "件数" },
+  "订阅": { zh: "订阅", en: "Subscribe", ja: "購読" }
 };
 
 const pageIds = ["home", "knowledge", "videos", "resources", "games", "blog", "chatroom", "about"];
@@ -791,6 +1531,12 @@ function articleRoutePath(slug) {
   return `/articles/${encodeURIComponent(slug)}`;
 }
 
+function articleRouteHref(slug, lang = currentLang) {
+  const url = new URL(articleRoutePath(slug), window.location.origin);
+  url.searchParams.set("lang", lang);
+  return `${url.pathname}${url.search}`;
+}
+
 function routeUrl(route, articleSlug = "") {
   if (route === "knowledge" && articleSlug) {
     return articleRoutePath(articleSlug);
@@ -798,8 +1544,39 @@ function routeUrl(route, articleSlug = "") {
   return route === "home" ? "/" : `/#${route}`;
 }
 
+function withLanguageQuery(path, lang = currentLang) {
+  const nextUrl = new URL(path, window.location.origin);
+  const params = new URLSearchParams(window.location.search);
+  params.set("lang", lang);
+  nextUrl.search = params.toString();
+  return `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`;
+}
+
+function syncLanguageUrl(lang = currentLang) {
+  const nextUrl = new URL(window.location.href);
+  nextUrl.searchParams.set("lang", lang);
+  const nextPath = `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`;
+  const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+  if (currentPath !== nextPath) {
+    window.history.replaceState(null, "", nextPath);
+  }
+}
+
+function rssFeedPath(lang = currentLang) {
+  return `/api/rss.xml?lang=${encodeURIComponent(lang)}`;
+}
+
+function syncRssLinks(lang = currentLang) {
+  document.querySelectorAll("[data-rss-link]").forEach((link) => {
+    link.href = rssFeedPath(lang);
+  });
+  document.querySelectorAll("[data-rss-alternate]").forEach((link) => {
+    link.href = rssFeedPath(lang);
+  });
+}
+
 function syncBrowserUrl(route, articleSlug = "") {
-  const nextUrl = routeUrl(route, articleSlug);
+  const nextUrl = withLanguageQuery(routeUrl(route, articleSlug));
   const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
   if (currentUrl !== nextUrl) {
     window.history.pushState(null, "", nextUrl);
@@ -814,42 +1591,74 @@ function sitePath(path) {
   return `/${value.replace(/^\.?\//, "")}`;
 }
 
+function safeHttpUrl(value) {
+  try {
+    const url = new URL(String(value || "").trim());
+    return ["http:", "https:"].includes(url.protocol) ? url.href : "";
+  } catch (error) {
+    return "";
+  }
+}
+
 function contentTitle(value) {
   return `${localText(value)}${t("placeholderMark")}`;
 }
 
+function safeGameCoverSrc(value) {
+  const fallback = "/assets/images/icon-games.png";
+  const path = String(value || "").trim().replace(/^(\.\.\/)+/, "");
+  if (/^assets\/images\/[a-z0-9._/-]+\.(png|jpe?g|webp|gif)(\?[a-z0-9=&._-]+)?$/i.test(path)) {
+    return sitePath(path);
+  }
+  return fallback;
+}
+
+function safeGameEntry(value) {
+  const entry = String(value || "").trim().replace(/^\/+/, "");
+  return /^[a-z0-9][a-z0-9-]*\/?$/i.test(entry) ? entry.replace(/\/?$/, "/") : "";
+}
+
 function buildGameUrl(item) {
   if (item.playUrl) {
-    return sitePath(item.playUrl);
+    const value = String(item.playUrl).trim();
+    const external = safeHttpUrl(value);
+    if (external) {
+      return external;
+    }
+    const localPath = value.replace(/^\.?\//, "");
+    return /^[a-z0-9._/-]+$/i.test(localPath) ? sitePath(localPath) : "";
   }
   if (item.externalUrl) {
-    return item.externalUrl;
+    return safeHttpUrl(item.externalUrl);
   }
   if (item.repo && !item.entry) {
-    return item.repo;
+    return safeHttpUrl(item.repo);
   }
-  return `/games/${item.entry}?lang=${encodeURIComponent(currentLang)}`;
+  const entry = safeGameEntry(item.entry);
+  return entry ? `/games/${entry}?lang=${encodeURIComponent(currentLang)}` : "";
 }
 
-function renderLanguageSupportTags(item) {
+function languageSupportTagElements(item) {
   const supported = item.languageSupport || {};
   const languageNames = {
-    zh: "中文",
-    en: "EN",
-    ja: "日本語"
+    zh: { zh: "中文", en: "英文", ja: "日文" },
+    en: { zh: "Chinese", en: "English", ja: "Japanese" },
+    ja: { zh: "中国語", en: "英語", ja: "日本語" }
   };
 
-  return ["zh", "en", "ja"].map((lang) => `
-    <span class="tag language-tag${supported[lang] ? " supported" : " unsupported"}" title="${languageNames[lang]}${supported[lang] ? "" : " not supported"}">
-      ${languageNames[lang]} ${supported[lang] ? "✓" : "×"}
-    </span>
-  `).join("");
+  return ["zh", "en", "ja"].map((lang) => {
+    const name = languageNames[currentLang]?.[lang] || languageNames.zh[lang] || lang;
+    const title = supported[lang] ? name : `${name} ${t("gameLanguageUnsupported")}`;
+    const tag = document.createElement("span");
+    tag.className = `tag language-tag${supported[lang] ? " supported" : " unsupported"}`;
+    tag.title = title;
+    tag.textContent = `${name} ${supported[lang] ? "✓" : "×"}`;
+    return tag;
+  });
 }
 
-function gameLinkAttributes(item) {
-  return item.external || item.playUrl || item.externalUrl || (!item.entry && item.repo)
-    ? ' target="_blank" rel="noreferrer"'
-    : "";
+function isExternalGameUrl(url) {
+  return /^https?:\/\//i.test(url);
 }
 
 function setLanguage(lang, options = {}) {
@@ -857,8 +1666,12 @@ function setLanguage(lang, options = {}) {
   if (options.persist) {
     localStorage.setItem(languageStorageKey, lang);
   }
+  if (options.syncUrl) {
+    syncLanguageUrl(lang);
+  }
   document.documentElement.lang = lang === "zh" ? "zh-CN" : lang;
   document.title = t("heroTitle");
+  syncRssLinks(lang);
 
   document.querySelectorAll("[data-i18n]").forEach((node) => {
     node.textContent = t(node.dataset.i18n);
@@ -866,6 +1679,14 @@ function setLanguage(lang, options = {}) {
 
   document.querySelectorAll("[data-i18n-placeholder]").forEach((node) => {
     node.setAttribute("placeholder", t(node.dataset.i18nPlaceholder));
+  });
+
+  document.querySelectorAll("[data-i18n-aria-label]").forEach((node) => {
+    node.setAttribute("aria-label", t(node.dataset.i18nAriaLabel));
+  });
+
+  document.querySelectorAll("[data-i18n-title]").forEach((node) => {
+    node.setAttribute("title", t(node.dataset.i18nTitle));
   });
 
   document.querySelectorAll(".lang-button").forEach((button) => {
@@ -877,6 +1698,7 @@ function setLanguage(lang, options = {}) {
   loadVideos();
   updateWelcomeGreeting();
   updateVideoWindowButton();
+  renderAccountWidget();
 }
 
 function navigate(route, options = {}) {
@@ -890,9 +1712,7 @@ function navigate(route, options = {}) {
   document.querySelectorAll(".page").forEach((page) => {
     page.classList.toggle("active", page.id === nextRoute);
   });
-  document.querySelectorAll(".taskbar-tabs button").forEach((button) => {
-    button.classList.toggle("active", button.dataset.route === nextRoute);
-  });
+  updateNavigationState(nextRoute);
   if (nextRoute === "chatroom") {
     initChatroom();
   }
@@ -900,6 +1720,24 @@ function navigate(route, options = {}) {
     syncBrowserUrl(nextRoute, nextRoute === "knowledge" ? options.articleSlug || "" : "");
   }
   window.scrollTo({ top: 0, behavior: "auto" });
+}
+
+function updateNavigationState(route) {
+  document.querySelectorAll(".taskbar-tabs button[data-route], .start-button[data-route]").forEach((button) => {
+    const active = button.dataset.route === route;
+    button.classList.toggle("active", active);
+    if (active) {
+      button.setAttribute("aria-current", "page");
+    } else {
+      button.removeAttribute("aria-current");
+    }
+  });
+
+  document.querySelectorAll(".desktop-icon[data-route]").forEach((button) => {
+    const active = button.dataset.route === route;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
 }
 
 function syncRouteFromLocation() {
@@ -926,18 +1764,32 @@ function renderCategoryButtons(targetId, type, categories) {
   const target = document.getElementById(targetId);
   const buttons = [t("all"), ...categories].map((name, index) => {
     const value = index === 0 ? "all" : String(index - 1);
-    return `<button class="${activeFilters[type] === value ? "active " : ""}${type === "knowledge" ? "category-button" : ""}" data-filter-type="${type}" data-filter="${value}">${name}</button>`;
+    const button = document.createElement("button");
+    button.type = "button";
+    button.dataset.filterType = type;
+    button.dataset.filter = value;
+    button.textContent = name;
+    button.classList.toggle("active", activeFilters[type] === value);
+    if (type === "knowledge") {
+      button.classList.add("category-button");
+    }
+    return button;
   });
-  target.innerHTML = buttons.join("");
+  target.replaceChildren(...buttons);
 }
 
 function renderKnowledge() {
   const list = document.getElementById("knowledge-list");
   const detail = document.getElementById("article-detail");
   const layout = document.querySelector("#knowledge .folder-layout");
+  const searchBar = document.getElementById("knowledge-searchbar");
   const categories = sortArticleCategories([...new Set(articleState.articles.map((item) => item.category).filter(Boolean))]);
 
   if (articleState.currentSlug) {
+    if (searchBar) {
+      searchBar.hidden = true;
+    }
+    document.body.classList.add("is-article-reading");
     layout?.classList.add("is-reading");
     list.hidden = true;
     detail.hidden = false;
@@ -953,47 +1805,147 @@ function renderKnowledge() {
     return;
   }
 
+  if (searchBar) {
+    searchBar.hidden = false;
+  }
+  document.body.classList.remove("is-article-reading");
+  document.body.classList.remove("is-article-window-restored");
   layout?.classList.remove("is-reading");
   renderKnowledgeCategoryButtons(categories);
   list.hidden = false;
   detail.hidden = true;
   if (articleState.loading) {
-    list.innerHTML = `<p class="loading-text">${t("articleLoading")}</p>`;
+    renderKnowledgeSearchControls(null, null);
+    renderListMessage(list, t("articleLoading"));
     return;
   }
   if (articleState.error) {
-    list.innerHTML = `<p class="loading-text">${t("articleLoadFailed")}</p>`;
+    renderKnowledgeSearchControls(null, null);
+    renderListMessage(list, t("articleLoadFailed"));
     return;
   }
 
-  const items = articleState.articles.filter((item) => activeFilters.knowledge === "all" || item.category === activeFilters.knowledge);
+  const categoryItems = articleState.articles.filter((item) => activeFilters.knowledge === "all" || item.category === activeFilters.knowledge);
+  const items = categoryItems.filter(articleMatchesSearch);
+  renderKnowledgeSearchControls(items.length, categoryItems.length);
+  if (!articleState.articles.length) {
+    renderListMessage(list, t("articleEmpty"));
+    return;
+  }
   if (!items.length) {
-    list.innerHTML = `<p class="loading-text">${t("articleEmpty")}</p>`;
+    renderListMessage(list, t("articleSearchNoResults"));
     return;
   }
 
-  list.innerHTML = items.map((item) => `
-    <article class="article-card">
-      <h3>${escapeHtml(item.title)}</h3>
-      <p>${escapeHtml(item.summary || "")}</p>
-      <div class="meta-row">
-        <span>${t("articleCategory")}：${escapeHtml(articleCategoryName(item.category || "note"))}</span>
-        ${item.tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}
-        <span>${t("articlePublished")}：${escapeHtml(formatArticleDate(item.published_at || item.created_at))}</span>
-        ${item.lang !== currentLang ? `<span class="tag">${t("articleFallback")}</span>` : ""}
-      </div>
-      <a class="card-action" href="${escapeHtml(articleRoutePath(item.slug))}" data-article-slug="${escapeHtml(item.slug)}">${t("readButton")}</a>
-    </article>
-  `).join("");
+  list.replaceChildren(...items.map((item) => articleCardElement(item)));
+}
+
+function renderListMessage(list, message) {
+  const note = document.createElement("p");
+  note.className = "loading-text";
+  note.textContent = message;
+  list.replaceChildren(note);
+}
+
+function articleCardElement(item) {
+  const card = document.createElement("article");
+  card.className = "article-card";
+
+  const title = document.createElement("h3");
+  title.textContent = item.title || "";
+  const summary = document.createElement("p");
+  summary.textContent = item.summary || "";
+
+  const meta = document.createElement("div");
+  meta.className = "meta-row";
+  const category = document.createElement("span");
+  category.textContent = `${t("articleCategory")}：${articleCategoryName(item.category || "note")}`;
+  meta.appendChild(category);
+  (item.tags || []).forEach((tag) => {
+    const tagNode = document.createElement("span");
+    tagNode.className = "tag";
+    tagNode.textContent = articleTagName(tag);
+    meta.appendChild(tagNode);
+  });
+  const published = document.createElement("span");
+  published.textContent = `${t("articlePublished")}：${formatArticleDate(item.published_at || item.created_at)}`;
+  meta.appendChild(published);
+  if (item.lang !== currentLang) {
+    const fallback = document.createElement("span");
+    fallback.className = "tag";
+    fallback.textContent = t("articleFallback");
+    meta.appendChild(fallback);
+  }
+
+  const action = document.createElement("a");
+  action.className = "card-action";
+  action.href = articleRouteHref(item.slug);
+  action.dataset.articleSlug = item.slug;
+  action.textContent = t("readButton");
+
+  card.append(title, summary, meta, action);
+  return card;
+}
+
+function renderKnowledgeSearchControls(count, total) {
+  const input = document.getElementById("knowledge-search-input");
+  const clearButton = document.querySelector("[data-article-search-clear]");
+  const status = document.getElementById("knowledge-search-status");
+  if (input && input.value !== articleState.searchTerm) {
+    input.value = articleState.searchTerm;
+  }
+  if (clearButton) {
+    clearButton.disabled = !articleState.searchTerm.trim();
+  }
+  if (!status) {
+    return;
+  }
+  if (typeof count !== "number" || typeof total !== "number") {
+    status.textContent = "";
+    return;
+  }
+  const template = articleState.searchTerm.trim() || activeFilters.knowledge !== "all"
+    ? t("articleSearchFiltered")
+    : t("articleSearchCount");
+  status.textContent = template
+    .replace("{count}", String(count))
+    .replace("{total}", String(total));
+}
+
+function normalizeSearchText(value) {
+  return String(value || "").toLocaleLowerCase();
+}
+
+function articleMatchesSearch(item) {
+  const term = normalizeSearchText(articleState.searchTerm.trim());
+  if (!term) {
+    return true;
+  }
+  const haystack = [
+    item.title,
+    item.summary,
+    item.slug,
+    item.category,
+    articleCategoryName(item.category || "note"),
+    ...(item.tags || []),
+    ...(item.tags || []).map(articleTagName)
+  ].map(normalizeSearchText).join(" ");
+  return haystack.includes(term);
 }
 
 function renderKnowledgeCategoryButtons(categories) {
   const target = document.getElementById("knowledge-categories");
-  const buttons = [t("all"), ...categories].map((name, index) => {
-    const value = index === 0 ? "all" : String(name);
-    return `<button class="${activeFilters.knowledge === value ? "active " : ""}category-button" data-filter-type="knowledge" data-filter="${escapeHtml(value)}">${escapeHtml(articleCategoryName(value))}</button>`;
+  const buttons = ["all", ...categories].map((category) => {
+    const value = String(category);
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `${activeFilters.knowledge === value ? "active " : ""}category-button`;
+    button.dataset.filterType = "knowledge";
+    button.dataset.filter = value;
+    button.textContent = articleCategoryName(value);
+    return button;
   });
-  target.innerHTML = buttons.join("");
+  target.replaceChildren(...buttons);
 }
 
 function sortArticleCategories(categories) {
@@ -1011,6 +1963,36 @@ function articleCategoryName(category) {
   return articleCategoryLabels[category]?.[currentLang] || category || "note";
 }
 
+function articleTagName(tag) {
+  return tagLabels[tag]?.[currentLang] || tag || "";
+}
+
+function isCollapsedPublicLoopUpdate(item) {
+  const slug = String(item?.slug || "");
+  if (slug === publicLoopNightlyUpdateSlug) {
+    return false;
+  }
+  if (item?.category === siteUpdateCategory && publicLoopNightlyCollapsedSlugs.has(slug)) {
+    return true;
+  }
+  if (item?.category === siteUpdateCategory && slug.startsWith("2026-06-18-")) {
+    return true;
+  }
+  const fallbackTitleEn = typeof item?.title === "object" ? item.title.en : "";
+  if (!slug && publicLoopNightlyCollapsedFallbackTitlesEn.has(fallbackTitleEn)) {
+    return true;
+  }
+  return !slug && item?.date === "2026.06.18" && fallbackTitleEn !== publicLoopNightlyUpdateTitleEn;
+}
+
+function visiblePublicArticles(items) {
+  return (items || []).filter((item) => !isCollapsedPublicLoopUpdate(item));
+}
+
+function visibleLocalUpdates() {
+  return visiblePublicArticles(content.updates);
+}
+
 async function loadArticles() {
   const requestId = articleState.requestId + 1;
   articleState.requestId = requestId;
@@ -1022,7 +2004,7 @@ async function loadArticles() {
     if (requestId !== articleState.requestId) {
       return;
     }
-    articleState.articles = payload.articles || [];
+    articleState.articles = visiblePublicArticles(payload.articles || []);
     renderUpdates();
   } catch (error) {
     if (requestId !== articleState.requestId) {
@@ -1033,7 +2015,7 @@ async function loadArticles() {
     const list = document.getElementById("knowledge-list");
     list.hidden = false;
     document.getElementById("article-detail").hidden = true;
-    list.innerHTML = `<p class="loading-text">${t("articleLoadFailed")}</p>`;
+    renderListMessage(list, t("articleLoadFailed"));
   } finally {
     if (requestId === articleState.requestId) {
       articleState.loading = false;
@@ -1098,10 +2080,13 @@ async function loadArticleDetail(slug) {
   const meta = document.getElementById("article-detail-meta");
   const body = document.getElementById("article-detail-body");
 
+  clearArticleCopyStatus();
   title.textContent = t("articleLoading");
   summary.textContent = "";
   meta.replaceChildren();
   body.replaceChildren();
+  resetArticleReadProgress();
+  resetArticleToc();
 
   try {
     const payload = await articleApi(`/api/articles/${encodeURIComponent(slug)}?lang=${encodeURIComponent(currentLang)}`);
@@ -1128,21 +2113,240 @@ function renderArticleDetail(article) {
   const meta = document.getElementById("article-detail-meta");
   const body = document.getElementById("article-detail-body");
 
+  clearArticleCopyStatus();
+  resetArticleReadProgress();
+  resetArticleToc();
   title.textContent = article.title || "";
   summary.textContent = article.summary || "";
   meta.replaceChildren();
   [
-    `${t("articleCategory")}：${articleCategoryName(article.category || "note")}`,
-    `${t("articlePublished")}：${formatArticleDate(article.published_at || article.created_at)}`,
-    ...(article.tags || []).map((tag) => `#${tag}`),
-    article.lang !== currentLang ? t("articleFallback") : ""
-  ].filter(Boolean).forEach((text) => {
+    { text: `${t("articleCategory")}：${articleCategoryName(article.category || "note")}`, className: "article-meta-item article-meta-category" },
+    { text: `${t("articlePublished")}：${formatArticleDate(article.published_at || article.created_at)}`, className: "article-meta-item article-meta-published" },
+    ...(article.tags || []).map((tag) => ({ text: `#${articleTagName(tag)}`, className: "tag" })),
+    article.lang !== currentLang ? { text: t("articleFallback"), className: "tag" } : null
+  ].filter(Boolean).forEach(({ text, className }) => {
     const item = document.createElement("span");
-    item.className = text.startsWith("#") || text === t("articleFallback") ? "tag" : "";
+    item.className = className;
     item.textContent = text;
     meta.appendChild(item);
   });
   renderMarkdownSafe(body, stripRepeatedArticleHeading(article.content_markdown || "", article.title || ""));
+  renderArticleToc();
+  scheduleArticleReadProgressUpdate();
+}
+
+function resetArticleToc() {
+  const toc = document.getElementById("article-detail-toc");
+  const list = document.getElementById("article-detail-toc-list");
+  if (list) {
+    list.replaceChildren();
+  }
+  if (toc) {
+    toc.hidden = true;
+  }
+}
+
+function articleHeadingId(index) {
+  return `article-heading-${index + 1}`;
+}
+
+function renderArticleToc() {
+  const toc = document.getElementById("article-detail-toc");
+  const list = document.getElementById("article-detail-toc-list");
+  const body = document.getElementById("article-detail-body");
+  if (!toc || !list || !body) {
+    return;
+  }
+  const headings = [...body.querySelectorAll("h2, h3")]
+    .map((heading, index) => ({ heading, index, text: heading.textContent.trim() }))
+    .filter((item) => item.text);
+  if (headings.length < 2) {
+    resetArticleToc();
+    return;
+  }
+  const buttons = headings.map(({ heading, index, text }, itemIndex) => {
+    const id = articleHeadingId(index);
+    heading.id = id;
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `article-toc-link level-${heading.tagName === "H3" ? "3" : "2"}`;
+    if (itemIndex === 0) {
+      button.classList.add("is-active");
+    }
+    button.dataset.articleHeadingTarget = id;
+    button.textContent = text;
+    return button;
+  });
+  list.replaceChildren(...buttons);
+  toc.hidden = false;
+  updateArticleTocActive();
+}
+
+function updateArticleTocActive() {
+  const detail = document.getElementById("article-detail");
+  const body = document.getElementById("article-detail-body");
+  const list = document.getElementById("article-detail-toc-list");
+  if (!detail || detail.hidden || !body || !list) {
+    return;
+  }
+  const headings = [...body.querySelectorAll("h2[id], h3[id]")];
+  const links = [...list.querySelectorAll("[data-article-heading-target]")];
+  if (!headings.length || !links.length) {
+    return;
+  }
+  const detailTop = detail.getBoundingClientRect().top;
+  let activeId = headings[0].id;
+  headings.forEach((heading) => {
+    if (heading.getBoundingClientRect().top - detailTop <= 108) {
+      activeId = heading.id;
+    }
+  });
+  links.forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.articleHeadingTarget === activeId);
+  });
+}
+
+function scrollToArticleHeading(targetId) {
+  if (!/^article-heading-\d+$/.test(targetId || "")) {
+    return;
+  }
+  const heading = document.getElementById(targetId);
+  if (!heading) {
+    return;
+  }
+  heading.scrollIntoView({ block: "start", behavior: "smooth" });
+  updateArticleTocActive();
+  scheduleArticleReadProgressUpdate();
+}
+
+function scrollArticleToTop() {
+  const detail = document.getElementById("article-detail");
+  if (!detail || detail.hidden) {
+    return;
+  }
+  detail.scrollTo({ top: 0, behavior: "smooth" });
+  scheduleArticleReadProgressUpdate();
+}
+
+function toggleArticleWindowSize() {
+  if (!document.body.classList.contains("is-article-reading")) {
+    return;
+  }
+  document.body.classList.toggle("is-article-window-restored");
+  const button = document.querySelector("[data-article-window-toggle]");
+  if (button) {
+    button.setAttribute("aria-pressed", document.body.classList.contains("is-article-window-restored") ? "false" : "true");
+  }
+}
+
+function clearArticleCopyStatus() {
+  window.clearTimeout(articleState.copyStatusTimer);
+  articleState.copyStatusTimer = 0;
+  const status = document.getElementById("article-copy-status");
+  const button = document.querySelector("[data-article-copy-link]");
+  if (status) {
+    status.textContent = "";
+  }
+  button?.classList.remove("is-done");
+}
+
+function setArticleReadProgress(percent) {
+  const bounded = Math.min(100, Math.max(0, Math.round(percent)));
+  const fill = document.getElementById("article-read-progress-fill");
+  const value = document.getElementById("article-read-progress-value");
+  const bar = document.getElementById("article-read-progress-bar");
+  const topButton = document.querySelector("[data-article-scroll-top]");
+  if (fill) {
+    fill.style.transform = `scaleX(${bounded / 100})`;
+  }
+  if (value) {
+    value.textContent = `${bounded}%`;
+  }
+  if (bar) {
+    bar.setAttribute("aria-valuenow", String(bounded));
+    bar.style.setProperty("--article-progress", String(bounded));
+  }
+  topButton?.classList.toggle("is-at-article-top", bounded <= 2);
+}
+
+function resetArticleReadProgress() {
+  const detail = document.getElementById("article-detail");
+  if (detail) {
+    detail.scrollTop = 0;
+  }
+  setArticleReadProgress(0);
+}
+
+function updateArticleReadProgress() {
+  articleState.readProgressFrame = 0;
+  const detail = document.getElementById("article-detail");
+  if (!detail || detail.hidden) {
+    return;
+  }
+  const scrollable = Math.max(0, detail.scrollHeight - detail.clientHeight);
+  if (scrollable <= 1) {
+    setArticleReadProgress(100);
+    updateArticleTocActive();
+    return;
+  }
+  setArticleReadProgress((detail.scrollTop / scrollable) * 100);
+  updateArticleTocActive();
+}
+
+function scheduleArticleReadProgressUpdate() {
+  if (articleState.readProgressFrame) {
+    return;
+  }
+  articleState.readProgressFrame = window.requestAnimationFrame(updateArticleReadProgress);
+}
+
+function articleShareLink(slug) {
+  const url = new URL(articleRouteHref(slug), window.location.origin);
+  return url.toString();
+}
+
+function fallbackCopyText(text) {
+  const field = document.createElement("textarea");
+  field.value = text;
+  field.setAttribute("readonly", "");
+  field.style.position = "fixed";
+  field.style.top = "-1000px";
+  field.style.left = "-1000px";
+  document.body.appendChild(field);
+  field.focus();
+  field.select();
+  const copied = document.execCommand("copy");
+  field.remove();
+  if (!copied) {
+    throw new Error("copy failed");
+  }
+}
+
+async function copyArticleLink() {
+  const slug = articleState.currentArticle?.slug || articleState.currentSlug;
+  const status = document.getElementById("article-copy-status");
+  const button = document.querySelector("[data-article-copy-link]");
+  if (!slug || !status) {
+    return;
+  }
+  const shareUrl = articleShareLink(slug);
+  try {
+    if (navigator.clipboard?.writeText && window.isSecureContext) {
+      await navigator.clipboard.writeText(shareUrl);
+    } else {
+      fallbackCopyText(shareUrl);
+    }
+    status.textContent = t("articleCopyDone");
+    button?.classList.add("is-done");
+  } catch {
+    status.textContent = t("articleCopyFailed");
+    button?.classList.remove("is-done");
+  }
+  window.clearTimeout(articleState.copyStatusTimer);
+  articleState.copyStatusTimer = window.setTimeout(() => {
+    status.textContent = "";
+    button?.classList.remove("is-done");
+  }, 2400);
 }
 
 function showArticle(slug) {
@@ -1158,6 +2362,8 @@ function showArticleList() {
   articleState.currentSlug = "";
   articleState.currentArticle = null;
   articleState.detailLoadingKey = "";
+  resetArticleReadProgress();
+  resetArticleToc();
   navigate("knowledge");
   renderKnowledge();
 }
@@ -1229,6 +2435,23 @@ function formatZonedDateTime(value, options = {}) {
 
 function formatArticleDate(value) {
   return formatZonedDateTime(value, { includeDate: true, includeTimeZone: false });
+}
+
+function formatLocalDateKey(value) {
+  const normalizedValue = normalizeDateInput(value);
+  const date = new Date(normalizedValue);
+  if (Number.isNaN(date.getTime())) {
+    return String(value || "").slice(0, 10).replace(/-/g, ".");
+  }
+  const parts = new Intl.DateTimeFormat(undefined, {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).formatToParts(date).reduce((result, part) => {
+    result[part.type] = part.value;
+    return result;
+  }, {});
+  return `${parts.year}.${parts.month}.${parts.day}`;
 }
 
 function renderMarkdownSafe(target, markdown) {
@@ -1347,6 +2570,9 @@ function renderArticleCallout(lines) {
 
 function safeArticleImageSrc(src) {
   const value = String(src || "").trim();
+  if (/(^|\/)\.\.(\/|$)/.test(value)) {
+    return "";
+  }
   if (/^assets\/images\/articles\/[a-z0-9._/-]+\.(png|jpe?g|webp|gif)(\?[a-z0-9=&._-]+)?$/i.test(value)) {
     return value;
   }
@@ -1364,6 +2590,7 @@ function renderArticleFigure(alt, src) {
   image.src = sitePath(safeSrc);
   image.alt = alt || "";
   image.loading = "lazy";
+  image.decoding = "async";
   figure.appendChild(image);
   if (alt) {
     const caption = document.createElement("figcaption");
@@ -1429,13 +2656,37 @@ function renderVideos() {
       || (item.categories || []).some((category) => category.category_id === activeFilters.videos)
   ));
   if (!items.length) {
-    const empty = document.createElement("p");
-    empty.className = "loading-text";
-    empty.textContent = videoUiText("empty");
-    list.appendChild(empty);
+    list.appendChild(renderVideoEmptyState(videoState.videos.length > 0));
     return;
   }
   items.forEach((item) => list.appendChild(videoCardElement(item)));
+}
+
+function renderVideoEmptyState(isFiltered = false) {
+  const state = document.createElement("article");
+  state.className = "video-empty-state";
+
+  const icon = document.createElement("span");
+  icon.className = "video-empty-icon";
+  icon.setAttribute("aria-hidden", "true");
+  icon.textContent = "▣";
+
+  const copy = document.createElement("div");
+  copy.className = "video-empty-copy";
+  const title = document.createElement("h3");
+  title.textContent = videoUiText("emptyTitle");
+  const text = document.createElement("p");
+  text.textContent = videoUiText(isFiltered ? "emptyFiltered" : "emptyBody");
+  copy.append(title, text);
+
+  const action = document.createElement("button");
+  action.type = "button";
+  action.className = "xp-button";
+  action.dataset.articleCategory = siteUpdateCategory;
+  action.textContent = videoUiText("emptyAction");
+
+  state.append(icon, copy, action);
+  return state;
 }
 
 function renderVideoCategoryButtons() {
@@ -1462,11 +2713,13 @@ function videoCardElement(item) {
   thumb.className = "video-thumb";
   thumb.dataset.videoId = item.video_id;
   thumb.setAttribute("aria-label", videoUiText("playAria"));
-  if (item.thumbnail_url) {
+  const thumbnailUrl = safeVideoThumbnailSrc(item.thumbnail_url);
+  if (thumbnailUrl) {
     const image = document.createElement("img");
-    image.src = item.thumbnail_url;
+    image.src = thumbnailUrl;
     image.alt = "";
     image.loading = "lazy";
+    image.decoding = "async";
     image.addEventListener("error", () => {
       thumb.classList.add("is-fallback");
       image.remove();
@@ -1503,26 +2756,86 @@ function videoCardElement(item) {
   return card;
 }
 
-function videoAutoplayUrl(src) {
-  try {
-    const url = new URL(src);
-    if (url.hostname.includes("youtube.com")) {
-      url.searchParams.set("autoplay", "1");
-      url.searchParams.set("playsinline", "1");
-      url.searchParams.set("rel", "0");
-      url.searchParams.set("modestbranding", "1");
-      url.searchParams.set("iv_load_policy", "3");
-    }
-    if (url.hostname.includes("bilibili.com")) {
-      url.searchParams.set("autoplay", "1");
-      url.searchParams.set("high_quality", "1");
-      url.searchParams.set("as_wide", "1");
-      url.searchParams.set("danmaku", "0");
-    }
-    return url.toString();
-  } catch {
-    return src;
+function safeVideoThumbnailSrc(src) {
+  const value = String(src || "").trim();
+  if (!value) {
+    return "";
   }
+  if (/^data:image\/(avif|jpe?g|png|webp);base64,[A-Za-z0-9+/]+={0,2}$/i.test(value)) {
+    return value;
+  }
+  try {
+    const url = new URL(value);
+    const host = url.hostname.toLowerCase().replace(/^www\./, "");
+    const allowed = new Set([
+      "i.ytimg.com",
+      "img.youtube.com",
+      "i0.hdslb.com",
+      "i1.hdslb.com",
+      "i2.hdslb.com",
+      "archive.biliimg.com"
+    ]);
+    return url.protocol === "https:" && allowed.has(host) ? url.toString() : "";
+  } catch (error) {
+    return "";
+  }
+}
+
+function safeVideoSourceUrl(src) {
+  const url = safeHttpUrl(src);
+  if (!url) {
+    return "";
+  }
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname.toLowerCase().replace(/^www\./, "");
+    return host === "youtube.com"
+      || host === "youtu.be"
+      || host === "bilibili.com"
+      || host.endsWith(".bilibili.com")
+      || host === "b23.tv"
+      ? parsed.toString()
+      : "";
+  } catch (error) {
+    return "";
+  }
+}
+
+function safeVideoEmbedUrl(src) {
+  const url = safeHttpUrl(src);
+  if (!url) {
+    return null;
+  }
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname.toLowerCase().replace(/^www\./, "");
+    const isYoutube = host === "youtube.com" && parsed.pathname.startsWith("/embed/");
+    const isBilibili = host === "player.bilibili.com" && parsed.pathname === "/player.html";
+    return isYoutube || isBilibili ? parsed : null;
+  } catch (error) {
+    return null;
+  }
+}
+
+function videoAutoplayUrl(src) {
+  const url = safeVideoEmbedUrl(src);
+  if (!url) {
+    return "";
+  }
+  if (url.hostname.toLowerCase().includes("youtube.com")) {
+    url.searchParams.set("autoplay", "1");
+    url.searchParams.set("playsinline", "1");
+    url.searchParams.set("rel", "0");
+    url.searchParams.set("modestbranding", "1");
+    url.searchParams.set("iv_load_policy", "3");
+  }
+  if (url.hostname.toLowerCase().includes("bilibili.com")) {
+    url.searchParams.set("autoplay", "1");
+    url.searchParams.set("high_quality", "1");
+    url.searchParams.set("as_wide", "1");
+    url.searchParams.set("danmaku", "0");
+  }
+  return url.toString();
 }
 
 function videoClickShield() {
@@ -1548,6 +2861,10 @@ function videoUiText(key) {
     loading: { zh: "正在读取视频...", en: "Loading videos...", ja: "動画を読み込み中..." },
     failed: { zh: "视频读取失败，请稍后再试。", en: "Videos failed to load. Please try again later.", ja: "動画を読み込めませんでした。後でお試しください。" },
     empty: { zh: "这里还没有发布的视频。", en: "No published videos yet.", ja: "公開済みの動画はまだありません。" },
+    emptyTitle: { zh: "视频还在整理中", en: "Videos are being organized", ja: "動画を整理中です" },
+    emptyBody: { zh: "这里会放 Bilibili / YouTube 作品、收藏和网站施工记录。可以先查看最近的网站更新。", en: "Bilibili / YouTube works, favorites, and build logs will live here. You can check recent site updates first.", ja: "ここには Bilibili / YouTube の作品、保存動画、制作記録を置く予定です。まずは最近のサイト更新を確認できます。" },
+    emptyFiltered: { zh: "当前分类暂时没有公开视频，换个分类或先看看网站更新记录。", en: "This category has no published videos yet. Try another category or check site updates.", ja: "このカテゴリには公開動画がまだありません。別のカテゴリ、またはサイト更新記録を確認してください。" },
+    emptyAction: { zh: "查看网站更新", en: "View site updates", ja: "サイト更新を見る" },
     untitled: { zh: "未命名视频", en: "Untitled video", ja: "無題の動画" },
     noDescription: { zh: "暂无简介。", en: "No description yet.", ja: "説明はまだありません。" },
     unsupported: { zh: "该视频暂不支持站内播放", en: "This video cannot be played inline right now.", ja: "この動画は現在サイト内再生に対応していません。" },
@@ -1556,26 +2873,169 @@ function videoUiText(key) {
   return copy[key]?.[currentLang] || copy[key]?.zh || key;
 }
 
+function safeResourceUrl(item) {
+  const value = String(item.url || item.href || item.downloadUrl || "").trim();
+  if (!value) {
+    return "";
+  }
+  const httpUrl = safeHttpUrl(value);
+  if (httpUrl) {
+    return httpUrl;
+  }
+  const localPath = value.replace(/^\/+/, "").replace(/^\.\//, "");
+  if (/(^|\/)\.\.(\/|$)/.test(localPath)) {
+    return "";
+  }
+  if (/^(assets|downloads)\/[a-z0-9][a-z0-9._/-]*(\?[a-z0-9=&._-]+)?$/i.test(localPath)) {
+    return sitePath(localPath);
+  }
+  return "";
+}
+
+function resourceActionElement(item, url = safeResourceUrl(item)) {
+  const text = url
+    ? item.external ? t("externalButton") : t("downloadButton")
+    : t("resourcePending");
+  if (!url) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "card-action is-disabled";
+    button.disabled = true;
+    button.setAttribute("aria-disabled", "true");
+    button.setAttribute("aria-label", t("resourcePendingTitle"));
+    button.setAttribute("title", t("resourcePendingTitle"));
+    button.textContent = text;
+    return button;
+  }
+  const link = document.createElement("a");
+  link.className = "card-action";
+  link.href = url;
+  link.textContent = text;
+  if (item.external || /^https?:\/\//i.test(url)) {
+    link.target = "_blank";
+    link.rel = "noreferrer noopener";
+  }
+  return link;
+}
+
+function resourceStatusElement(url) {
+  const status = document.createElement("span");
+  status.className = `tag resource-status-tag ${url ? "is-ready" : "is-pending"}`;
+  status.textContent = url ? t("resourceStatusReady") : t("resourcePending");
+  return status;
+}
+
+function resourceEmptyStateElement() {
+  const state = document.createElement("div");
+  state.className = "resource-empty-state";
+
+  const icon = document.createElement("span");
+  icon.className = "resource-empty-icon";
+  icon.textContent = "🗂️";
+
+  const copy = document.createElement("div");
+  copy.className = "resource-empty-copy";
+  const title = document.createElement("h3");
+  title.textContent = t("resourceEmptyTitle");
+  const body = document.createElement("p");
+  body.textContent = t("resourceEmptyBody");
+  copy.append(title, body);
+
+  const action = document.createElement("button");
+  action.type = "button";
+  action.className = "xp-button";
+  action.dataset.resourceShowAll = "true";
+  action.textContent = t("resourceEmptyAction");
+
+  state.append(icon, copy, action);
+  return state;
+}
+
+function resourceCardElement(item) {
+  const card = document.createElement("article");
+  card.className = "resource-card";
+  const resourceUrl = safeResourceUrl(item);
+
+  const main = document.createElement("div");
+  main.className = "resource-main";
+
+  const title = document.createElement("h3");
+  const icon = document.createElement("span");
+  icon.className = "resource-icon";
+  icon.textContent = item.icon || "";
+  title.append(icon, document.createTextNode(contentTitle(item.title)));
+
+  const desc = document.createElement("p");
+  desc.textContent = localText(item.desc);
+
+  const meta = document.createElement("div");
+  meta.className = "meta-row";
+  [
+    `${label("type")}：${label("resourceCategories")[item.category] || ""}`,
+    `${label("version")}：${item.version || ""}`,
+    `${label("size")}：${item.size || ""}`,
+    `${label("updated")}：${item.updated || ""}`
+  ].forEach((text) => {
+    const itemNode = document.createElement("span");
+    itemNode.textContent = text;
+    meta.appendChild(itemNode);
+  });
+  meta.appendChild(resourceStatusElement(resourceUrl));
+
+  main.append(title, desc, meta);
+  card.append(main, resourceActionElement(item, resourceUrl));
+  return card;
+}
+
+function renderResourceCategoryButtons() {
+  const target = document.getElementById("resource-categories");
+  const categories = label("resourceCategories");
+  const counts = new Map(categories.map((_, index) => [String(index), 0]));
+  content.resources.forEach((item) => {
+    const key = String(item.category);
+    counts.set(key, (counts.get(key) || 0) + 1);
+  });
+
+  const entries = [
+    { name: t("all"), value: "all", count: content.resources.length },
+    ...categories.map((name, index) => ({
+      name,
+      value: String(index),
+      count: counts.get(String(index)) || 0
+    }))
+  ];
+
+  const buttons = entries.map((entry) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.dataset.filterType = "resources";
+    button.dataset.filter = entry.value;
+    button.classList.toggle("active", activeFilters.resources === entry.value);
+    button.setAttribute("aria-label", `${entry.name} ${entry.count}`);
+
+    const name = document.createElement("span");
+    name.textContent = entry.name;
+    const count = document.createElement("span");
+    count.className = "filter-count";
+    count.textContent = String(entry.count);
+
+    button.append(name, count);
+    return button;
+  });
+  target.replaceChildren(...buttons);
+}
+
 function renderResources() {
-  renderCategoryButtons("resource-categories", "resources", label("resourceCategories"));
+  renderResourceCategoryButtons();
   const list = document.getElementById("resource-list");
   const items = content.resources.filter((item) => activeFilters.resources === "all" || String(item.category) === activeFilters.resources);
 
-  list.innerHTML = items.map((item) => `
-    <article class="resource-card">
-      <div class="resource-main">
-        <h3><span class="resource-icon">${item.icon}</span>${contentTitle(item.title)}</h3>
-        <p>${localText(item.desc)}</p>
-        <div class="meta-row">
-          <span>${label("type")}：${label("resourceCategories")[item.category]}</span>
-          <span>${label("version")}：${item.version}</span>
-          <span>${label("size")}：${item.size}</span>
-          <span>${label("updated")}：${item.updated}</span>
-        </div>
-      </div>
-      <a class="card-action" href="#" aria-label="${localText(item.title)}">${item.external ? t("externalButton") : t("downloadButton")}</a>
-    </article>
-  `).join("");
+  list.replaceChildren();
+  if (items.length === 0) {
+    list.appendChild(resourceEmptyStateElement());
+    return;
+  }
+  items.forEach((item) => list.appendChild(resourceCardElement(item)));
 }
 
 async function loadGameCatalog() {
@@ -1588,76 +3048,206 @@ async function loadGameCatalog() {
 
 async function renderGames() {
   const list = document.getElementById("game-list");
-  list.innerHTML = `<p class="loading-text">${t("gameConfigLoading")}</p>`;
+  const loading = document.createElement("p");
+  loading.className = "loading-text";
+  loading.textContent = t("gameConfigLoading");
+  list.replaceChildren(loading);
   try {
     const catalog = await loadGameCatalog();
-    list.innerHTML = catalog.games.map((item) => `
-        <article class="game-card">
-          <img class="game-cover" src="${escapeHtml(sitePath(String(item.cover || "assets/images/icon-games.png").replace("../", "")))}" alt="${escapeHtml(localText(item.titles || item.titleZh))}" loading="lazy">
-          <div class="game-main">
-            <h3>${escapeHtml(localText(item.titles || item.titleZh))}</h3>
-            <p>${escapeHtml(localText(item.summaries || item.summary))}</p>
-            <div class="meta-row">
-              <span class="language-support-label">${t("languageSupportLabel")}:</span>
-              ${renderLanguageSupportTags(item)}
-              ${item.license?.name ? `<span class="tag">${escapeHtml(item.license.name)}</span>` : ""}
-            </div>
-          </div>
-          <a class="card-action" href="${escapeHtml(buildGameUrl(item))}"${gameLinkAttributes(item)}>${item.external || item.playUrl || item.externalUrl ? t("openGameButton") : t("startGameButton")}</a>
-        </article>
-      `).join("");
+    list.replaceChildren();
+    catalog.games.forEach((item) => list.appendChild(gameCardElement(item)));
   } catch (error) {
-    list.innerHTML = `<p class="loading-text">${t("gameConfigFailed")}：${escapeHtml(error.message)}</p>`;
+    const failed = document.createElement("p");
+    failed.className = "loading-text";
+    failed.textContent = `${t("gameConfigFailed")}：${error.message}`;
+    list.replaceChildren(failed);
   }
+}
+
+function gameCardElement(item) {
+  const card = document.createElement("article");
+  card.className = "game-card";
+
+  const titleText = localText(item.titles || item.titleZh);
+  const cover = document.createElement("img");
+  cover.className = "game-cover";
+  cover.src = safeGameCoverSrc(item.cover || "assets/images/icon-games.png");
+  cover.alt = titleText;
+  cover.loading = "lazy";
+  cover.decoding = "async";
+
+  const main = document.createElement("div");
+  main.className = "game-main";
+  const title = document.createElement("h3");
+  title.textContent = titleText;
+  const summary = document.createElement("p");
+  summary.textContent = localText(item.summaries || item.summary);
+  const meta = document.createElement("div");
+  meta.className = "meta-row";
+  const languageLabel = document.createElement("span");
+  languageLabel.className = "language-support-label";
+  languageLabel.textContent = `${t("languageSupportLabel")}:`;
+  meta.append(languageLabel, ...languageSupportTagElements(item));
+  if (item.license?.name) {
+    const license = document.createElement("span");
+    license.className = "tag";
+    license.textContent = item.license.name;
+    meta.appendChild(license);
+  }
+  if (item.storage?.keys?.length || item.storage?.scoreOnly) {
+    const save = document.createElement("span");
+    save.className = "tag game-save-tag";
+    save.textContent = t("gameCloudSaveReady");
+    meta.appendChild(save);
+  }
+  const repoUrl = safeHttpUrl(item.repo);
+  if (repoUrl) {
+    const source = document.createElement("a");
+    source.className = "tag game-source-link";
+    source.href = repoUrl;
+    source.target = "_blank";
+    source.rel = "noreferrer noopener";
+    source.textContent = t("gameSourceLabel");
+    meta.appendChild(source);
+  }
+  main.append(title, summary, meta);
+
+  const actionUrl = buildGameUrl(item);
+  const action = actionUrl ? document.createElement("a") : document.createElement("button");
+  action.className = "card-action";
+  if (actionUrl) {
+    action.href = actionUrl;
+  } else {
+    action.type = "button";
+    action.disabled = true;
+    action.setAttribute("aria-disabled", "true");
+  }
+  if (isExternalGameUrl(actionUrl)) {
+    action.target = "_blank";
+    action.rel = "noreferrer";
+  }
+  action.textContent = item.external || item.playUrl || item.externalUrl ? t("openGameButton") : t("startGameButton");
+
+  card.append(cover, main, action);
+  return card;
+}
+
+function blogCardElement(item) {
+  const card = document.createElement("article");
+  card.className = "blog-card";
+
+  const title = document.createElement("h3");
+  title.textContent = contentTitle(item.title);
+
+  const desc = document.createElement("p");
+  desc.textContent = localText(item.desc);
+
+  const meta = document.createElement("div");
+  meta.className = "meta-row";
+  const date = document.createElement("span");
+  date.textContent = `${label("date")}：${item.date || ""}`;
+  meta.appendChild(date);
+  (item.tags || []).forEach((tag) => {
+    const tagNode = document.createElement("span");
+    tagNode.className = "tag";
+    tagNode.textContent = articleTagName(tag);
+    meta.appendChild(tagNode);
+  });
+
+  const action = document.createElement("button");
+  action.type = "button";
+  action.className = "card-action is-disabled";
+  action.disabled = true;
+  action.textContent = t("blogPending");
+
+  card.append(title, desc, meta, action);
+  return card;
 }
 
 function renderBlog() {
   const list = document.getElementById("blog-list");
-  list.innerHTML = content.blog.map((item) => `
-    <article class="blog-card">
-      <h3>${contentTitle(item.title)}</h3>
-      <p>${localText(item.desc)}</p>
-      <div class="meta-row">
-        <span>${label("date")}：${item.date}</span>
-        ${item.tags.map((tag) => `<span class="tag">${tag}</span>`).join("")}
-      </div>
-      <button class="card-action">${t("readButton")}</button>
-    </article>
-  `).join("");
+  list.replaceChildren();
+  content.blog.forEach((item) => list.appendChild(blogCardElement(item)));
 }
 
 function renderUpdates() {
   const list = document.getElementById("recent-updates");
   const updateArticles = siteUpdateArticles().length
     ? siteUpdateArticles().slice(0, 5)
-    : content.updates.slice(0, 5);
+    : visibleLocalUpdates().slice(0, 5);
   if (!updateArticles.length) {
-    list.innerHTML = `<li><span class="update-icon">📚</span><span><strong>${t("articleLoading")}</strong><small>${t("articleEmpty")}</small></span></li>`;
+    const emptyItem = document.createElement("li");
+    const icon = document.createElement("span");
+    icon.className = "update-icon";
+    icon.textContent = "📚";
+    const copy = document.createElement("span");
+    const title = document.createElement("strong");
+    title.textContent = t("articleLoading");
+    const detail = document.createElement("small");
+    detail.textContent = t("articleEmpty");
+    copy.append(title, detail);
+    emptyItem.append(icon, copy);
+    list.replaceChildren(emptyItem);
     return;
   }
-  list.innerHTML = updateArticles.map((item) => `
-    <li>
-      <a class="recent-update-link"${item.slug ? ` href="${escapeHtml(articleRoutePath(item.slug))}" data-article-slug="${escapeHtml(item.slug)}"` : ' href="/#knowledge"'}>
-        <span class="update-icon">📚</span>
-        <span>
-          <strong>${escapeHtml(truncateText(localText(item.title), 28))}</strong>
-          <small>${escapeHtml(truncateText(item.summary || localText(item.desc) || "", 52))}<br>${escapeHtml(formatArticleDate(item.published_at || item.created_at || item.date))}</small>
-        </span>
-      </a>
-    </li>
-  `).join("");
+  list.replaceChildren(...updateArticles.map((item) => recentUpdateElement(item)));
+}
+
+function recentUpdateElement(item) {
+  const row = document.createElement("li");
+  const link = document.createElement("a");
+  link.className = "recent-update-link";
+  if (item.slug) {
+    link.href = articleRouteHref(item.slug);
+    link.dataset.articleSlug = item.slug;
+  } else {
+    link.href = "/#knowledge";
+  }
+
+  const icon = document.createElement("span");
+  icon.className = "update-icon";
+  icon.textContent = recentUpdateIcon(item);
+
+  const copy = document.createElement("span");
+  const title = document.createElement("strong");
+  const fullTitle = localText(item.title);
+  const fullSummary = item.summary || localText(item.desc) || "";
+  const publishedDate = formatArticleDate(item.published_at || item.created_at || item.date);
+  title.textContent = truncateText(fullTitle, 28);
+  const detail = document.createElement("small");
+  detail.append(document.createTextNode(truncateText(fullSummary, 52)));
+  detail.appendChild(document.createElement("br"));
+  detail.append(document.createTextNode(publishedDate));
+
+  const accessibleLabel = [fullTitle, fullSummary, publishedDate].filter(Boolean).join(" - ");
+  if (accessibleLabel) {
+    link.title = accessibleLabel;
+    link.setAttribute("aria-label", accessibleLabel);
+  }
+
+  copy.append(title, detail);
+  link.append(icon, copy);
+  row.appendChild(link);
+  return row;
+}
+
+function recentUpdateIcon(item) {
+  if (item?.category === siteUpdateCategory) {
+    return "🛠️";
+  }
+  return localText(item?.icon) || "📚";
 }
 
 function latestUpdateDate() {
-  const dates = siteUpdateArticles().length ? siteUpdateArticles() : content.updates;
+  const dates = siteUpdateArticles().length ? siteUpdateArticles() : visibleLocalUpdates();
   return dates.reduce((latest, item) => {
-    const date = String(item.published_at || item.created_at || item.date || "").slice(0, 10).replace(/-/g, ".");
+    const date = formatLocalDateKey(item.published_at || item.created_at || item.date);
     return date > latest ? date : latest;
   }, "");
 }
 
 function siteUpdateArticles() {
-  return articleState.articles
+  return visiblePublicArticles(articleState.articles)
     .filter((item) => item.category === siteUpdateCategory)
     .sort((a, b) => String(b.published_at || b.created_at || "").localeCompare(String(a.published_at || a.created_at || "")));
 }
@@ -1689,9 +3279,10 @@ function openVideo(index) {
     window.lusuTrackClick?.("video:play-failed", "video not found", { route: "videos" });
     return;
   }
-  document.getElementById("modal-title").textContent = video.title || localText(video.title) || "Video Player";
+  const videoTitle = localText(video.title) || "Video Player";
+  document.getElementById("modal-title").textContent = videoTitle;
   if (sourceLink) {
-    const originalUrl = video.original_url || video.url || "";
+    const originalUrl = safeVideoSourceUrl(video.original_url || video.url || "");
     if (originalUrl) {
       sourceLink.href = originalUrl;
       sourceLink.target = "_blank";
@@ -1702,12 +3293,13 @@ function openVideo(index) {
       sourceLink.removeAttribute("href");
     }
   }
-  if (video.embed_url) {
+  const embedUrl = videoAutoplayUrl(video.embed_url);
+  if (embedUrl) {
     const shell = document.createElement("div");
     shell.className = "video-embed-shell";
     const iframe = document.createElement("iframe");
-    iframe.src = videoAutoplayUrl(video.embed_url);
-    iframe.title = video.title || "Video player";
+    iframe.src = embedUrl;
+    iframe.title = videoTitle;
     iframe.loading = "lazy";
     iframe.allow = "autoplay; fullscreen; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
     iframe.allowFullscreen = true;
@@ -1870,12 +3462,18 @@ function localDateKey(date) {
 }
 
 function maybeShowWelcome() {
-  if (pageParams.get("welcome") === "0") {
+  const welcomeMode = pageParams.get("welcome");
+  const forceWelcome = welcomeMode === "1";
+  if (welcomeMode === "0") {
+    return;
+  }
+  const route = parseRouteLocation();
+  if (!forceWelcome && (route.route !== "home" || route.articleSlug)) {
     return;
   }
   const today = localDateKey(new Date());
   const key = `lusu-welcome-seen-${today}`;
-  if (localStorage.getItem(key) === "1") {
+  if (!forceWelcome && localStorage.getItem(key) === "1") {
     return;
   }
   updateWelcomeGreeting();
@@ -1915,46 +3513,92 @@ function renderAccountWidget(message = "") {
   if (!widget) {
     return;
   }
+  widget.replaceChildren();
+
+  const toggle = document.createElement("button");
+  toggle.className = authUser ? "account-button signed-in" : "account-button";
+  toggle.type = "button";
+  toggle.dataset.accountToggle = "";
+  const toggleText = document.createElement("span");
+  toggleText.textContent = authUser
+    ? `${t("accountSignedInPrefix")}${authUser.email}`
+    : t("accountLogin");
+  toggle.appendChild(toggleText);
+
+  const popover = document.createElement("div");
+  popover.className = "account-popover";
+  popover.id = "account-popover";
+  popover.hidden = true;
 
   if (authUser) {
-    widget.innerHTML = `
-      <button class="account-button signed-in" type="button" data-account-toggle>
-        <span>账号：${escapeHtml(authUser.email)}</span>
-      </button>
-      <div class="account-popover" id="account-popover" hidden>
-        <div class="account-signed-in">
-          <strong>云存档账号</strong>
-          <p class="account-note">${escapeHtml(authUser.email)}</p>
-          <p class="account-note">网站可以正常浏览；进入游戏后会自动同步云端存档。</p>
-          ${message ? `<p class="account-note">${escapeHtml(message)}</p>` : ""}
-          <div class="account-actions">
-            <button class="account-button" type="button" data-account-logout>退出账号</button>
-          </div>
-        </div>
-      </div>
-    `;
+    const signedInPanel = document.createElement("div");
+    signedInPanel.className = "account-signed-in";
+    const title = document.createElement("strong");
+    title.textContent = t("accountTitle");
+    const email = document.createElement("p");
+    email.className = "account-note";
+    email.textContent = authUser.email || "";
+    const note = document.createElement("p");
+    note.className = "account-note";
+    note.textContent = t("accountSignedInNote");
+    signedInPanel.append(title, email, note);
+    if (message) {
+      const messageNode = document.createElement("p");
+      messageNode.className = "account-note";
+      messageNode.textContent = message;
+      signedInPanel.appendChild(messageNode);
+    }
+    const actions = document.createElement("div");
+    actions.className = "account-actions";
+    const logoutButton = document.createElement("button");
+    logoutButton.className = "account-button";
+    logoutButton.type = "button";
+    logoutButton.dataset.accountLogout = "";
+    logoutButton.textContent = t("accountLogout");
+    actions.appendChild(logoutButton);
+    signedInPanel.appendChild(actions);
+    popover.appendChild(signedInPanel);
+    widget.append(toggle, popover);
     return;
   }
 
-  widget.innerHTML = `
-    <button class="account-button" type="button" data-account-toggle>
-      <span>登录</span>
-    </button>
-    <div class="account-popover" id="account-popover" hidden>
-      <form class="account-form" id="account-form">
-        <strong>云存档账号</strong>
-        <input name="email" type="email" autocomplete="email" placeholder="邮箱" required>
-        <input name="password" type="password" autocomplete="current-password" placeholder="密码至少 8 位" required>
-        <div class="account-actions">
-          <button class="account-button" type="submit" data-mode="login">登录</button>
-          <button class="account-button" type="submit" data-mode="register">注册</button>
-        </div>
-        <p class="account-note">${message ? escapeHtml(message) : "登录只用于游戏自动云存档，网站浏览不受影响。"}</p>
-      </form>
-    </div>
-  `;
-
-  document.getElementById("account-form")?.addEventListener("submit", submitAccountForm);
+  const form = document.createElement("form");
+  form.className = "account-form";
+  form.id = "account-form";
+  const title = document.createElement("strong");
+  title.textContent = t("accountTitle");
+  const emailInput = document.createElement("input");
+  emailInput.name = "email";
+  emailInput.type = "email";
+  emailInput.autocomplete = "email";
+  emailInput.placeholder = t("accountEmailPlaceholder");
+  emailInput.required = true;
+  const passwordInput = document.createElement("input");
+  passwordInput.name = "password";
+  passwordInput.type = "password";
+  passwordInput.autocomplete = "current-password";
+  passwordInput.placeholder = t("accountPasswordPlaceholder");
+  passwordInput.required = true;
+  const actions = document.createElement("div");
+  actions.className = "account-actions";
+  const loginButton = document.createElement("button");
+  loginButton.className = "account-button";
+  loginButton.type = "submit";
+  loginButton.dataset.mode = "login";
+  loginButton.textContent = t("accountLogin");
+  const registerButton = document.createElement("button");
+  registerButton.className = "account-button";
+  registerButton.type = "submit";
+  registerButton.dataset.mode = "register";
+  registerButton.textContent = t("accountRegister");
+  actions.append(loginButton, registerButton);
+  const note = document.createElement("p");
+  note.className = "account-note";
+  note.textContent = message || t("accountGuestNote");
+  form.append(title, emailInput, passwordInput, actions, note);
+  form.addEventListener("submit", submitAccountForm);
+  popover.appendChild(form);
+  widget.append(toggle, popover);
 }
 
 async function initAccountWidget() {
@@ -1964,7 +3608,7 @@ async function initAccountWidget() {
     authUser = payload.user || null;
     renderAccountWidget();
   } catch {
-    renderAccountWidget("云存档接口暂时不可用。");
+    renderAccountWidget(t("accountUnavailable"));
   }
 }
 
@@ -1981,7 +3625,7 @@ async function submitAccountForm(event) {
       })
     });
     authUser = payload.user;
-    renderAccountWidget("已登录。");
+    renderAccountWidget(t("accountLoggedIn"));
     openAccountPopover();
   } catch (error) {
     renderAccountWidget(error.message);
@@ -1996,7 +3640,7 @@ async function logoutAccount() {
     // Keep the UI responsive even if the network is gone.
   }
   authUser = null;
-  renderAccountWidget("已退出账号。");
+  renderAccountWidget(t("accountLoggedOut"));
   openAccountPopover();
 }
 
@@ -2041,7 +3685,7 @@ async function ensureChatIdentity() {
 
 async function fetchAvailableChatNickname() {
   try {
-    const payload = await chatApi("/api/chat/nickname");
+    const payload = await chatApi(`/api/chat/nickname?lang=${encodeURIComponent(currentLang)}`);
     if (isValidChatNickname(payload.nickname)) {
       return payload.nickname.trim();
     }
@@ -2052,11 +3696,12 @@ async function fetchAvailableChatNickname() {
 }
 
 function randomChatNickname() {
-  const names = [
-    "蓝屏小企鹅", "像素幽灵", "草地路人A", "CRT访客", "电视小粉", "泡泡旅人",
-    "BluePenguin", "PixelGhost", "CRTGuest", "GrassWalker",
-    "ピクセル幽霊", "CRT旅人", "草原の人"
-  ];
+  const pools = {
+    zh: ["蓝屏像素", "像素幽灵", "草地路人A", "CRT访客", "电视小粉", "泡泡旅人"],
+    en: ["BluePixel", "PixelGhost", "CRTGuest", "GrassWalk", "BubbleTrip", "TVHead"],
+    ja: ["青いピクセル", "ピクセル幽霊", "CRT旅人", "草原の人", "テレビ旅人", "泡の旅人"]
+  };
+  const names = pools[currentLang] || pools.zh;
   const suffixes = ["9527", "1024", "2333", "404", "88", "7"];
   const name = names[Math.floor(Math.random() * names.length)];
   return `${name}${suffixes[Math.floor(Math.random() * suffixes.length)]}`;
@@ -2379,7 +4024,13 @@ document.addEventListener("click", (event) => {
 
   const langButton = event.target.closest("[data-lang]");
   if (langButton) {
-    setLanguage(langButton.dataset.lang, { persist: true });
+    setLanguage(langButton.dataset.lang, { persist: true, syncUrl: true });
+    return;
+  }
+
+  if (event.target.closest("[data-resource-show-all]")) {
+    activeFilters.resources = "all";
+    renderResources();
     return;
   }
 
@@ -2387,6 +4038,22 @@ document.addEventListener("click", (event) => {
   if (filterButton) {
     activeFilters[filterButton.dataset.filterType] = filterButton.dataset.filter;
     renderAll();
+    return;
+  }
+
+  const articleHeadingButton = event.target.closest("[data-article-heading-target]");
+  if (articleHeadingButton) {
+    scrollToArticleHeading(articleHeadingButton.dataset.articleHeadingTarget);
+    return;
+  }
+
+  if (event.target.closest("[data-article-scroll-top]")) {
+    scrollArticleToTop();
+    return;
+  }
+
+  if (event.target.closest("[data-article-window-toggle]")) {
+    toggleArticleWindowSize();
     return;
   }
 
@@ -2405,6 +4072,18 @@ document.addEventListener("click", (event) => {
 
   if (event.target.closest("[data-article-back]")) {
     showArticleList();
+    return;
+  }
+
+  if (event.target.closest("[data-article-copy-link]")) {
+    copyArticleLink();
+    return;
+  }
+
+  if (event.target.closest("[data-article-search-clear]")) {
+    articleState.searchTerm = "";
+    renderKnowledge();
+    document.getElementById("knowledge-search-input")?.focus();
     return;
   }
 
@@ -2462,7 +4141,13 @@ window.addEventListener("popstate", () => {
 document.getElementById("chat-form")?.addEventListener("submit", submitChatMessage);
 document.getElementById("chat-message-input")?.addEventListener("input", updateChatCounter);
 document.getElementById("chat-edit-nickname")?.addEventListener("click", editChatNickname);
+document.getElementById("knowledge-search-input")?.addEventListener("input", (event) => {
+  articleState.searchTerm = event.target.value;
+  renderKnowledge();
+});
+document.getElementById("article-detail")?.addEventListener("scroll", scheduleArticleReadProgressUpdate, { passive: true });
 window.addEventListener("resize", layoutWallpaperStage);
+window.addEventListener("resize", scheduleArticleReadProgressUpdate);
 
 document.addEventListener("visibilitychange", () => {
   updateWallpaperMotionState();
