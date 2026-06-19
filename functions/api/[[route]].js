@@ -116,6 +116,11 @@ export async function onRequest(context) {
       await seedArticleTestData(env);
       return await getArticleFeed(request, env);
     }
+    if (request.method === "GET" && parts[0] === "sitemap.xml") {
+      await ensureArticleSchema(env);
+      await seedArticleTestData(env);
+      return await getSitemap(request, env);
+    }
     if (parts[0] === "articles") {
       await ensureArticleSchema(env);
       await seedArticleTestData(env);
@@ -623,6 +628,66 @@ async function getArticleFeed(request, env) {
       "Cache-Control": "public, max-age=300"
     }
   });
+}
+
+async function getSitemap(request, env) {
+  const url = new URL(request.url);
+  const langs = ["zh", "en", "ja"];
+  const rows = (await env.DB.prepare(`
+    select slug, created_at, updated_at, published_at
+    from articles
+    where status = 'published'
+      and ${PUBLIC_LOOP_NIGHTLY_UPDATE_FILTER}
+    order by coalesce(published_at, created_at) desc, article_id desc
+    limit 500
+  `).all()).results || [];
+
+  const rootEntries = langs.map((lang) => sitemapUrlEntry(
+    new URL(`/?lang=${encodeURIComponent(lang)}`, url.origin).toString(),
+    new Date().toISOString(),
+    "daily",
+    "1.0"
+  ));
+  const articleEntries = rows.flatMap((article) => langs.map((lang) => sitemapUrlEntry(
+    new URL(`/articles/${encodeURIComponent(article.slug)}?lang=${encodeURIComponent(lang)}`, url.origin).toString(),
+    article.updated_at || article.published_at || article.created_at,
+    "weekly",
+    "0.8"
+  )));
+
+  const xml = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ...rootEntries,
+    ...articleEntries,
+    '</urlset>'
+  ].join("\n");
+
+  return new Response(xml, {
+    headers: {
+      "Content-Type": "application/xml; charset=utf-8",
+      "Cache-Control": "public, max-age=300"
+    }
+  });
+}
+
+function sitemapUrlEntry(location, lastmod, changefreq, priority) {
+  return [
+    "  <url>",
+    `    <loc>${xmlEscape(location)}</loc>`,
+    `    <lastmod>${xmlEscape(sitemapDate(lastmod))}</lastmod>`,
+    `    <changefreq>${xmlEscape(changefreq)}</changefreq>`,
+    `    <priority>${xmlEscape(priority)}</priority>`,
+    "  </url>"
+  ].join("\n");
+}
+
+function sitemapDate(value) {
+  const date = new Date(value || Date.now());
+  if (Number.isNaN(date.getTime())) {
+    return new Date().toISOString().slice(0, 10);
+  }
+  return date.toISOString().slice(0, 10);
 }
 
 function rssSiteMeta(lang) {
@@ -5692,6 +5757,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         article_id, slug, category, tags, cover_image, status, is_pinned,
         view_count, created_at, updated_at, published_at
       ) values (
+        'seed-update-2026-06-19-main-discovery-wrap-up',
+        '2026-06-19-main-discovery-wrap-up',
+        'site-updates',
+        '["网站更新","SEO","站点地图","PWA","循环汇总"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-19T00:15:00.000Z',
+        '2026-06-19T00:15:00.000Z',
+        '2026-06-19T00:15:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
         'seed-update-2026-06-18-main-visual-polish-cycle',
         '2026-06-18-main-visual-polish-cycle',
         'site-updates',
@@ -5731,6 +5823,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# メインサイト夜間更新まとめ\n\nこの記録では、昨夜の公開サイト側の小さな更新を一つにまとめました。更新記録が細かな記事で埋まりすぎないようにするためです。\n\n## まとめ\n\n- 知識庫の記事詳細に、目次、読書進捗、リンクコピー、先頭へ戻る操作を追加しました。今回、参考画像に合わせて左側の目次/ヒント、右側の本文カード、下部の進捗バーと先頭へ戻るボタンを並べた表示に整えました。\n- さらに10回の視覚調整を行い、記事閲覧ウィンドウはサイト内の XP ウィンドウサイズに戻し、全体へ引き伸ばさない表示にしました。タイトルバーに最小化/最大化/閉じるボタンを追加し、進捗バーを1行の青い分割バーにし、本文の余白と左側ヒントの位置も参考画像に近づけました。\n- リソース欄には分類件数、状態バッジ、空分類の案内、より厳しいリンク許可リストを追加しました。\n- ゲーム欄にはクラウド保存、ソース表示、言語ラベル、起動パスの確認、ゲームシェルの安全な DOM 描画を追加しました。\n- 最近の更新、知識庫一覧、フィルター、リソースフィルター、ゲーム一覧は DOM / textContent 描画を続け、公開内容の XSS リスクを下げます。\n- RSS、言語付きリンク、記事共有 URL、最近の更新ラベルをそろえ、購読と共有を安定させました。\n- 画像の遅延読み込み、非同期デコード、固定画像サイズ、モバイル表示の細部も軽く調整しました。\n\n古い単項目の記事は履歴と回退用データとして残しますが、公開一覧と RSS ではこのまとめ記事だけを表示します。"
       }
     }, "2026-06-18T00:00:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-19-main-discovery-wrap-up", {
+      zh: {
+        title: "主站发现与收口记录",
+        summary: "本次主站循环补齐搜索发现配置、站点地图、manifest、robots、三语页面 meta 和语言按钮状态，并完成最终验证。",
+        content_markdown: "# 主站发现与收口记录\n\n这篇记录合并 2026 年 6 月 19 日早上 8 点前的主站公开侧循环结果。循环期间只处理公开主站与公开文章接口，避开 `/admin/` 页面、后台私有更新、后台权限和管理接口。\n\n## 更新内容\n\n- 首页补齐 canonical、Open Graph、Twitter Card、主题色、manifest 和移动端 PWA 发现信息。\n- 新增 `robots.txt`、`manifest.webmanifest`、`/api/sitemap.xml` 和根路径 `/sitemap.xml`，站点地图会输出三语首页与公开文章 URL。\n- 语言切换会同步 `html lang`、页面标题、description、canonical、OG/Twitter meta、RSS alternate 和语言按钮 `aria-pressed` 状态。\n- 构建检查覆盖文章、视频、站点地图、manifest、robots、主站脚本与遥测脚本，减少上线前遗漏。\n- 本地多视口扫描覆盖首页、知识库、文章详情、视频、资源、游戏、杂谈、聊天室、关于我和账号入口，没有发现页面错误或横向溢出。\n\n后续如果继续优化，建议优先补真实线上 Search Console / 社交分享卡片抓取结果，再决定是否扩展结构化数据。"
+      },
+      en: {
+        title: "Main Site Discovery Wrap-up",
+        summary: "This public-site cycle added discovery metadata, sitemap, manifest, robots, trilingual page meta sync, language button state, and final validation.",
+        content_markdown: "# Main Site Discovery Wrap-up\n\nThis entry consolidates the public-site loop that ended before 8:00 AM on June 19, 2026. The work stayed on the public main site and public article API, while avoiding `/admin/`, private admin updates, admin permissions, and admin APIs.\n\n## Changes\n\n- The home page now has canonical, Open Graph, Twitter Card, theme-color, manifest, and mobile PWA discovery metadata.\n- `robots.txt`, `manifest.webmanifest`, `/api/sitemap.xml`, and root `/sitemap.xml` were added; the sitemap emits trilingual home URLs and public article URLs.\n- Language switching now syncs `html lang`, page title, description, canonical, OG/Twitter meta, RSS alternate links, and language-button `aria-pressed` state.\n- Build checks now cover articles, videos, sitemap, manifest, robots, the main script, and the telemetry script to reduce pre-release misses.\n- Local viewport scanning covered Home, Knowledge, article details, Videos, Resources, Games, Talk, Chat, About, and Account with no page errors or horizontal overflow found.\n\nFor the next pass, live Search Console checks and social-card crawler previews are the best follow-up before expanding structured data."
+      },
+      ja: {
+        title: "メインサイト発見性の仕上げ",
+        summary: "今回の公開側サイクルでは、検索向けメタ情報、サイトマップ、manifest、robots、三言語 meta 同期、言語ボタン状態、最終確認を追加しました。",
+        content_markdown: "# メインサイト発見性の仕上げ\n\nこの記録では、2026年6月19日午前8時までの公開サイト側ループ結果をまとめます。作業範囲は公開メインサイトと公開記事 API に限定し、`/admin/`、管理側の非公開更新、管理権限、管理 API には触れていません。\n\n## 更新内容\n\n- ホームに canonical、Open Graph、Twitter Card、テーマカラー、manifest、モバイル PWA 向けの発見情報を追加しました。\n- `robots.txt`、`manifest.webmanifest`、`/api/sitemap.xml`、ルートの `/sitemap.xml` を追加し、サイトマップには三言語ホーム URL と公開記事 URL を出力します。\n- 言語切り替え時に `html lang`、ページタイトル、description、canonical、OG/Twitter meta、RSS alternate、言語ボタンの `aria-pressed` 状態を同期します。\n- ビルド確認では記事、動画、サイトマップ、manifest、robots、メインスクリプト、テレメトリスクリプトを確認します。\n- ローカルの複数ビューポート確認では、ホーム、知識庫、記事詳細、動画、リソース、ゲーム、雑談、チャット、About、アカウント入口でページエラーや横方向のはみ出しは見つかりませんでした。\n\n次に進めるなら、実際の Search Console と SNS カードの取得結果を確認してから構造化データを広げるのがよさそうです。"
+      }
+    }, "2026-06-19T00:15:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-06-18-main-visual-polish-cycle", {
       zh: {
         title: "主端视觉改版循环更新",

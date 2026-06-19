@@ -572,6 +572,32 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-06-19-main-discovery-wrap-up',
+  '2026-06-19-main-discovery-wrap-up',
+  'site-updates',
+  '["网站更新","SEO","站点地图","PWA","循环汇总"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-19T00:15:00.000Z',
+  '2026-06-19T00:15:00.000Z',
+  '2026-06-19T00:15:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-06-18-main-visual-polish-cycle',
   '2026-06-18-main-visual-polish-cycle',
   'site-updates',
@@ -597,6 +623,72 @@ on conflict(article_id) do update set
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
+  (
+    'seed-update-2026-06-19-main-discovery-wrap-up-zh',
+    'seed-update-2026-06-19-main-discovery-wrap-up',
+    'zh',
+    '主站发现与收口记录',
+    '本次主站循环补齐搜索发现配置、站点地图、manifest、robots、三语页面 meta 和语言按钮状态，并完成最终验证。',
+    '# 主站发现与收口记录
+
+这篇记录合并 2026 年 6 月 19 日早上 8 点前的主站公开侧循环结果。循环期间只处理公开主站与公开文章接口，避开 `/admin/` 页面、后台私有更新、后台权限和管理接口。
+
+## 更新内容
+
+- 首页补齐 canonical、Open Graph、Twitter Card、主题色、manifest 和移动端 PWA 发现信息。
+- 新增 `robots.txt`、`manifest.webmanifest`、`/api/sitemap.xml` 和根路径 `/sitemap.xml`，站点地图会输出三语首页与公开文章 URL。
+- 语言切换会同步 `html lang`、页面标题、description、canonical、OG/Twitter meta、RSS alternate 和语言按钮 `aria-pressed` 状态。
+- 构建检查覆盖文章、视频、站点地图、manifest、robots、主站脚本与遥测脚本，减少上线前遗漏。
+- 本地多视口扫描覆盖首页、知识库、文章详情、视频、资源、游戏、杂谈、聊天室、关于我和账号入口，没有发现页面错误或横向溢出。
+
+后续如果继续优化，建议优先补真实线上 Search Console / 社交分享卡片抓取结果，再决定是否扩展结构化数据。',
+    '2026-06-19T00:15:00.000Z',
+    '2026-06-19T00:15:00.000Z'
+  ),
+  (
+    'seed-update-2026-06-19-main-discovery-wrap-up-en',
+    'seed-update-2026-06-19-main-discovery-wrap-up',
+    'en',
+    'Main Site Discovery Wrap-up',
+    'This public-site cycle added discovery metadata, sitemap, manifest, robots, trilingual page meta sync, language button state, and final validation.',
+    '# Main Site Discovery Wrap-up
+
+This entry consolidates the public-site loop that ended before 8:00 AM on June 19, 2026. The work stayed on the public main site and public article API, while avoiding `/admin/`, private admin updates, admin permissions, and admin APIs.
+
+## Changes
+
+- The home page now has canonical, Open Graph, Twitter Card, theme-color, manifest, and mobile PWA discovery metadata.
+- `robots.txt`, `manifest.webmanifest`, `/api/sitemap.xml`, and root `/sitemap.xml` were added; the sitemap emits trilingual home URLs and public article URLs.
+- Language switching now syncs `html lang`, page title, description, canonical, OG/Twitter meta, RSS alternate links, and language-button `aria-pressed` state.
+- Build checks now cover articles, videos, sitemap, manifest, robots, the main script, and the telemetry script to reduce pre-release misses.
+- Local viewport scanning covered Home, Knowledge, article details, Videos, Resources, Games, Talk, Chat, About, and Account with no page errors or horizontal overflow found.
+
+For the next pass, live Search Console checks and social-card crawler previews are the best follow-up before expanding structured data.',
+    '2026-06-19T00:15:00.000Z',
+    '2026-06-19T00:15:00.000Z'
+  ),
+  (
+    'seed-update-2026-06-19-main-discovery-wrap-up-ja',
+    'seed-update-2026-06-19-main-discovery-wrap-up',
+    'ja',
+    'メインサイト発見性の仕上げ',
+    '今回の公開側サイクルでは、検索向けメタ情報、サイトマップ、manifest、robots、三言語 meta 同期、言語ボタン状態、最終確認を追加しました。',
+    '# メインサイト発見性の仕上げ
+
+この記録では、2026年6月19日午前8時までの公開サイト側ループ結果をまとめます。作業範囲は公開メインサイトと公開記事 API に限定し、`/admin/`、管理側の非公開更新、管理権限、管理 API には触れていません。
+
+## 更新内容
+
+- ホームに canonical、Open Graph、Twitter Card、テーマカラー、manifest、モバイル PWA 向けの発見情報を追加しました。
+- `robots.txt`、`manifest.webmanifest`、`/api/sitemap.xml`、ルートの `/sitemap.xml` を追加し、サイトマップには三言語ホーム URL と公開記事 URL を出力します。
+- 言語切り替え時に `html lang`、ページタイトル、description、canonical、OG/Twitter meta、RSS alternate、言語ボタンの `aria-pressed` 状態を同期します。
+- ビルド確認では記事、動画、サイトマップ、manifest、robots、メインスクリプト、テレメトリスクリプトを確認します。
+- ローカルの複数ビューポート確認では、ホーム、知識庫、記事詳細、動画、リソース、ゲーム、雑談、チャット、About、アカウント入口でページエラーや横方向のはみ出しは見つかりませんでした。
+
+次に進めるなら、実際の Search Console と SNS カードの取得結果を確認してから構造化データを広げるのがよさそうです。',
+    '2026-06-19T00:15:00.000Z',
+    '2026-06-19T00:15:00.000Z'
+  ),
   (
     'seed-update-2026-06-18-main-visual-polish-cycle-zh',
     'seed-update-2026-06-18-main-visual-polish-cycle',

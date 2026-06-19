@@ -1,0 +1,31 @@
+{
+  "name": "鲁肃的个人站",
+  "short_name": "鲁肃站",
+  "description": "Windows XP、Pixel Art 和 Y2K 风格的个人空间，用来记录 AI、游戏、工具、资源、视频、知识库和杂谈。",
+  "lang": "zh-CN",
+  "start_url": "/?lang=zh",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#2297f2",
+  "theme_color": "#1d6fe8",
+  "categories": ["personalization", "games", "productivity"],
+  "icons": [
+    {
+      "src": "/assets/images/favicon-32.png?v=20260611-unified-tv-icon",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/images/apple-touch-icon.png?v=20260611-unified-tv-icon",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/images/lusu-tv-head-256.png?v=20260611-unified-tv-icon",
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
