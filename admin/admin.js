@@ -17,6 +17,8 @@ const state = {
   videoCategoryBusyMode: "",
   videoPreviewing: false,
   videoMetadataRefreshing: false,
+  videoCoverProcessing: false,
+  videoCoverProcessingMode: "",
   videoSaving: false,
   videoSavingMode: "",
   videoDeleting: false,
@@ -72,6 +74,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-06-19",
+    title: "管理后台夜间 loop 可用性与权限加固",
+    body: "本轮按 2026-06-19 08:00 截止完成后台 loop 合并记录：增强文章、视频、视频分类、聊天室、禁言和账号面板的局部失败提示与忙碌锁定，补齐面板/三语编辑区语义状态、侧边栏键盘导航和视频封面本地处理反馈；后台入口继续只允许 users.role = admin，并统一 no-store、noindex、nosniff、Referrer-Policy、安全兜底 D1/session 异常和畸形 cookie。后台私有更新仍只保留在管理后台，不写入主站 site-updates 或 js/main.js fallback。"
+  },
   {
     date: "2026-06-18",
     title: "管理后台视觉改版循环更新",
@@ -628,6 +635,7 @@ async function loadPanelData(panel, options = {}) {
 
   state.loadingPanels[key] = (async () => {
     try {
+      let completionStatus = "";
       if (!overviewPanels.has(panel)) {
         setStatus(force ? "正在刷新当前标签..." : "正在读取当前标签...");
       }
@@ -635,21 +643,64 @@ async function loadPanelData(panel, options = {}) {
       if (overviewPanels.has(panel)) {
         await loadOverview();
       } else if (panel === "articles") {
-        await loadArticles();
+        try {
+          await loadArticles();
+        } catch (error) {
+          renderArticleListNotice(`读取文章列表失败：${error.message}`, "文章列表错误");
+          throw new Error(`文章列表：${error.message}`);
+        }
       } else if (panel === "videos") {
-        await loadVideoCategories();
-        await loadVideos();
+        const videoResults = await Promise.allSettled([loadVideoCategories(), loadVideos()]);
+        const videoErrors = [];
+        if (videoResults[0].status === "rejected") {
+          const message = videoResults[0].reason?.message || "未知错误";
+          renderVideoCategoryChecksNotice(`读取视频分类失败：${message}`, "视频分类错误");
+          videoErrors.push(`视频分类：${message}`);
+        }
+        if (videoResults[1].status === "rejected") {
+          const message = videoResults[1].reason?.message || "未知错误";
+          renderVideoListNotice(`读取视频列表失败：${message}`, "视频列表错误");
+          videoErrors.push(`视频列表：${message}`);
+        }
+        if (videoErrors.length) {
+          throw new Error(videoErrors.join("；"));
+        }
       } else if (panel === "videoCategories") {
-        await loadVideoCategories();
+        try {
+          await loadVideoCategories();
+        } catch (error) {
+          renderVideoCategoryListNotice(`读取分类列表失败：${error.message}`, "分类列表错误");
+          throw new Error(`分类列表：${error.message}`);
+        }
       } else if (panel === "chat") {
-        await Promise.all([loadChatMessages(), loadBans()]);
+        const chatResults = await Promise.allSettled([loadChatMessages(), loadBans()]);
+        const chatErrors = [];
+        if (chatResults[0].status === "rejected") {
+          const message = chatResults[0].reason?.message || "未知错误";
+          renderChatListNotice(`读取聊天记录失败：${message}`, "聊天记录错误");
+          chatErrors.push(`聊天记录：${message}`);
+        }
+        if (chatResults[1].status === "rejected") {
+          const message = chatResults[1].reason?.message || "未知错误";
+          renderBanListNotice(`读取禁言列表失败：${message}`, "禁言列表错误");
+          chatErrors.push(`禁言列表：${message}`);
+        }
+        if (chatErrors.length) {
+          throw new Error(chatErrors.join("；"));
+        }
       } else if (panel === "accounts") {
-        await loadAccounts();
+        try {
+          const accountResult = await loadAccounts();
+          completionStatus = accountResult?.partialError || "";
+        } catch (error) {
+          renderAccountListNotice(`读取账号列表失败：${error.message}`, "账号列表错误");
+          throw new Error(`账号列表：${error.message}`);
+        }
       }
 
       state.loadedPanels[key] = Date.now();
       if (!overviewPanels.has(panel)) {
-        setStatus(`已读取 ${panelMeta[panel][0]}`);
+        setStatus(completionStatus || `已读取 ${panelMeta[panel][0]}`);
       }
     } catch (error) {
       setStatus(error.message);
@@ -675,7 +726,10 @@ function applyActivePanel(panel) {
     }
   });
   $$(".panel").forEach((item) => {
-    item.classList.toggle("active", item.id === `${panel}-panel`);
+    const active = item.id === `${panel}-panel`;
+    item.classList.toggle("active", active);
+    item.hidden = !active;
+    item.setAttribute("aria-hidden", active ? "false" : "true");
   });
   setElementText($("#panel-title"), panelMeta[panel][0]);
   setElementText($("#panel-subtitle"), panelMeta[panel][1]);
@@ -689,6 +743,24 @@ function switchPanel(panel) {
   rememberActivePanel(panel);
   updateRefreshButton();
   loadPanelData(panel);
+}
+
+function handleNavKeydown(event, index, buttons) {
+  const nextIndex = {
+    ArrowDown: (index + 1) % buttons.length,
+    ArrowRight: (index + 1) % buttons.length,
+    ArrowUp: (index - 1 + buttons.length) % buttons.length,
+    ArrowLeft: (index - 1 + buttons.length) % buttons.length,
+    Home: 0,
+    End: buttons.length - 1
+  }[event.key];
+  if (nextIndex === undefined) {
+    return;
+  }
+  event.preventDefault();
+  const next = buttons[nextIndex];
+  next.focus();
+  switchPanel(next.dataset.panel);
 }
 
 function autoRefreshActivePanel() {
@@ -1072,6 +1144,14 @@ function renderArticleList() {
   syncArticleListBusyState();
 }
 
+function renderArticleListNotice(text, label = "文章列表提示") {
+  const list = $("#article-list");
+  setElementText($("#article-list-count"), label);
+  syncBoxLabel(list, `${label}：${text}`);
+  list.replaceChildren(createEmptyStateElement(text));
+  syncArticleListBusyState();
+}
+
 function articleListLabel(article) {
   const status = articleStatusLabel(article.status);
   const translationCount = Number(article.translation_count || 0);
@@ -1129,6 +1209,7 @@ function resetArticleForm() {
   $("#article-form").elements.status.value = "draft";
   $("#delete-article").disabled = true;
   $("#article-status").textContent = "";
+  setArticleLang(state.articleLang);
   syncArticleSaveButtons();
   renderArticleList();
 }
@@ -1166,6 +1247,7 @@ function setArticleLang(lang) {
     const active = panel.dataset.langPanel === lang;
     panel.classList.toggle("active", active);
     panel.hidden = !active;
+    panel.setAttribute("aria-hidden", active ? "false" : "true");
   });
 }
 
@@ -1462,6 +1544,14 @@ function renderVideoList() {
   syncVideoListBusyState();
 }
 
+function renderVideoListNotice(text, label = "视频列表提示") {
+  const list = $("#video-list-admin");
+  setElementText($("#video-list-count"), label);
+  syncBoxLabel(list, `${label}：${text}`);
+  list.replaceChildren(createEmptyStateElement(text));
+  syncVideoListBusyState();
+}
+
 function videoListLabel(video) {
   const pinnedText = video.pinned
     ? `已置顶，置顶排序 ${formatNumber(pinnedSortOrderValue(video))}`
@@ -1488,6 +1578,11 @@ function renderVideoCategoryChecks() {
     return;
   }
   const selected = new Set(selectedVideo()?.category_ids || []);
+  const enabledCount = state.videoCategories.filter((category) => category.enabled).length;
+  const checkLabel = state.videoCategories.length
+    ? `视频分类选项：共 ${formatNumber(state.videoCategories.length)} 个，启用 ${formatNumber(enabledCount)} 个`
+    : "视频分类选项：暂无分类";
+  syncBoxLabel(box, checkLabel);
   if (!state.videoCategories.length) {
     const empty = document.createElement("span");
     empty.className = "empty-inline";
@@ -1513,6 +1608,18 @@ function renderVideoCategoryChecks() {
     }
     return label;
   }));
+}
+
+function renderVideoCategoryChecksNotice(text, label = "视频分类提示") {
+  const box = $("#video-category-checks");
+  if (!box) {
+    return;
+  }
+  const empty = document.createElement("span");
+  empty.className = "empty-inline";
+  setElementText(empty, text);
+  syncBoxLabel(box, `${label}：${text}`);
+  box.replaceChildren(empty);
 }
 
 function selectedVideo() {
@@ -1658,6 +1765,9 @@ async function handleLocalCoverFileChange(event) {
   if (!file) {
     return;
   }
+  state.videoCoverProcessing = true;
+  state.videoCoverProcessingMode = "cover";
+  syncVideoSaveButtons();
   $("#video-status").textContent = "正在压缩本地封面...";
   try {
     const dataUrl = await imageFileToCoverDataUrl(file);
@@ -1666,6 +1776,9 @@ async function handleLocalCoverFileChange(event) {
     $("#video-status").textContent = error.message;
   } finally {
     event.target.value = "";
+    state.videoCoverProcessing = false;
+    state.videoCoverProcessingMode = "";
+    syncVideoSaveButtons();
   }
 }
 
@@ -1674,12 +1787,20 @@ async function handleVideoFrameFileChange(event) {
   if (!file) {
     return;
   }
+  state.videoCoverProcessing = true;
+  state.videoCoverProcessingMode = "frame";
+  syncVideoSaveButtons();
   $("#video-status").textContent = "正在截取本地视频首帧...";
   try {
     const dataUrl = await videoFileToCoverDataUrl(file);
     setVideoThumbnailValue(dataUrl, "已截取第一帧作为封面，保存后生效。");
   } catch (error) {
     $("#video-status").textContent = error.message;
+  } finally {
+    event.target.value = "";
+    state.videoCoverProcessing = false;
+    state.videoCoverProcessingMode = "";
+    syncVideoSaveButtons();
   }
 }
 
@@ -1725,7 +1846,12 @@ async function previewVideoUrl() {
     return;
   }
   const form = $("#video-form");
-  const requestUrl = form.elements.original_url.value;
+  const requestUrl = form.elements.original_url.value.trim();
+  if (!requestUrl) {
+    $("#video-status").textContent = "请先填写视频链接。";
+    syncVideoMetadataButtons();
+    return;
+  }
   state.videoPreviewing = true;
   syncVideoSaveButtons();
   $("#video-status").textContent = "正在识别...";
@@ -1750,15 +1876,19 @@ async function previewVideoUrl() {
 function syncVideoMetadataButtons() {
   const previewButton = $("#preview-video-url");
   const refreshButton = $("#refresh-video-metadata");
+  const hasRequestUrl = Boolean($("#video-form")?.elements?.original_url?.value.trim());
   const writeBusy = isVideoWriteBusy();
-  const busy = state.videoPreviewing || state.videoMetadataRefreshing || writeBusy;
+  const metadataBusy = isVideoMetadataBusy();
+  const busy = metadataBusy || writeBusy;
   if (previewButton) {
-    previewButton.disabled = busy;
+    previewButton.disabled = busy || !hasRequestUrl;
     previewButton.textContent = state.videoPreviewing ? "识别中..." : "自动识别/获取信息";
     previewButton.setAttribute("aria-busy", state.videoPreviewing ? "true" : "false");
-    const previewHint = state.videoPreviewing
+    const previewHint = !hasRequestUrl
+      ? "请先填写视频链接"
+      : (state.videoPreviewing
       ? "正在识别视频链接"
-      : (writeBusy ? videoBusyMetadataTitle("识别") : "自动识别视频链接并获取元数据");
+      : (writeBusy || state.videoCoverProcessing ? videoBusyMetadataTitle("识别") : "自动识别视频链接并获取元数据"));
     syncButtonHint(previewButton, previewHint);
   }
   if (refreshButton) {
@@ -1767,7 +1897,7 @@ function syncVideoMetadataButtons() {
     refreshButton.textContent = state.videoMetadataRefreshing ? "刷新中..." : "刷新元数据";
     refreshButton.setAttribute("aria-busy", state.videoMetadataRefreshing ? "true" : "false");
     let refreshHint = "刷新当前视频的外部元数据";
-    if (writeBusy) {
+    if (writeBusy || state.videoCoverProcessing) {
       refreshHint = videoBusyMetadataTitle("刷新");
     } else if (!hasVideo) {
       refreshHint = "请先选择已保存视频";
@@ -1781,6 +1911,9 @@ function syncVideoMetadataButtons() {
 }
 
 function videoBusyMetadataTitle(action) {
+  if (state.videoCoverProcessing) {
+    return `${videoCoverProcessingTitle()}，完成后再${action}元数据`;
+  }
   if (state.videoDeleting) {
     return `正在删除视频，完成后再${action}元数据`;
   }
@@ -1922,7 +2055,7 @@ function isVideoWriteBusy() {
 }
 
 function isVideoMetadataBusy() {
-  return state.videoPreviewing || state.videoMetadataRefreshing;
+  return state.videoPreviewing || state.videoMetadataRefreshing || state.videoCoverProcessing;
 }
 
 function isVideoEditBusy() {
@@ -1962,7 +2095,7 @@ function syncVideoFormBusyState() {
   if (clearButton) {
     clearButton.disabled = busy;
     clearButton.setAttribute("aria-busy", busy ? "true" : "false");
-    clearButton.title = busy ? busyTitle : "清空封面";
+    syncButtonHint(clearButton, busy ? busyTitle : "清空封面");
   }
 }
 
@@ -1982,6 +2115,9 @@ function videoBusyFormTitle() {
   if (state.videoMetadataRefreshing) {
     return "正在刷新视频元数据，完成后再编辑表单";
   }
+  if (state.videoCoverProcessing) {
+    return `${videoCoverProcessingTitle()}，完成后再编辑表单`;
+  }
   if (state.videoDeleting) {
     return "正在删除视频，完成后再编辑表单";
   }
@@ -1991,7 +2127,13 @@ function videoBusyFormTitle() {
 }
 
 function videoMetadataBusyTitle() {
-  return state.videoPreviewing ? "正在识别视频链接" : "正在刷新视频元数据";
+  if (state.videoPreviewing) {
+    return "正在识别视频链接";
+  }
+  if (state.videoMetadataRefreshing) {
+    return "正在刷新视频元数据";
+  }
+  return videoCoverProcessingTitle();
 }
 
 function videoSelectionBusyTitle(action) {
@@ -2001,10 +2143,19 @@ function videoSelectionBusyTitle(action) {
   if (state.videoMetadataRefreshing) {
     return `正在刷新视频元数据，完成后再${action}`;
   }
+  if (state.videoCoverProcessing) {
+    return `${videoCoverProcessingTitle()}，完成后再${action}`;
+  }
   if (state.videoDeleting) {
     return `正在删除视频，完成后再${action}`;
   }
   return `正在保存视频，完成后再${action}`;
+}
+
+function videoCoverProcessingTitle() {
+  return state.videoCoverProcessingMode === "frame"
+    ? "正在截取本地视频首帧"
+    : "正在压缩本地封面";
 }
 
 function syncVideoListBusyState() {
@@ -2129,6 +2280,14 @@ function renderVideoCategoryList() {
     item.append(title, meta, summary);
     return item;
   }));
+  syncVideoCategoryListBusyState();
+}
+
+function renderVideoCategoryListNotice(text, label = "分类列表提示") {
+  const list = $("#video-category-list-admin");
+  setElementText($("#video-category-list-count"), label);
+  syncBoxLabel(list, `${label}：${text}`);
+  list.replaceChildren(createEmptyStateElement(text));
   syncVideoCategoryListBusyState();
 }
 
@@ -2409,6 +2568,14 @@ function renderChatMessages() {
   syncChatActionState();
 }
 
+function renderChatListNotice(text, label = "聊天记录提示") {
+  const list = $("#chat-list");
+  setElementText($("#chat-list-count"), label);
+  syncBoxLabel(list, `${label}：${text}`);
+  list.replaceChildren(createEmptyStateElement(text));
+  syncChatActionState();
+}
+
 function chatMessageListLabel(message) {
   const visibility = Number(message.hidden) === 1 ? "已隐藏" : "可见";
   const nickname = message.nickname || "未命名访客";
@@ -2461,9 +2628,7 @@ function syncChatActionState() {
   const actionButtons = [
     saveButton,
     toggleButton,
-    deleteButton,
-    visitorBanButton,
-    ipBanButton
+    deleteButton
   ].filter(Boolean);
   actionButtons.forEach((button) => {
     button.disabled = busy || !hasMessage;
@@ -2492,12 +2657,26 @@ function syncChatActionState() {
     syncButtonHint(deleteButton, chatActionButtonHint("删除当前聊天记录", hasMessage, busy));
   }
   if (visitorBanButton) {
+    const missingVisitorId = hasMessage && !message.visitor_id;
+    visitorBanButton.disabled = busy || !hasMessage || missingVisitorId;
+    visitorBanButton.setAttribute("aria-busy", busy ? "true" : "false");
+    visitorBanButton.setAttribute("aria-disabled", visitorBanButton.disabled ? "true" : "false");
     visitorBanButton.textContent = state.chatActionBusyMode === "banVisitor" ? "禁言中..." : "禁言用户ID";
-    syncButtonHint(visitorBanButton, chatActionButtonHint("按隐藏用户 ID 禁言", hasMessage, busy));
+    syncButtonHint(
+      visitorBanButton,
+      missingVisitorId ? "这条记录没有隐藏用户 ID，无法按用户禁言" : chatActionButtonHint("按隐藏用户 ID 禁言", hasMessage, busy)
+    );
   }
   if (ipBanButton) {
+    const missingIpHash = hasMessage && !message.ip_hash;
+    ipBanButton.disabled = busy || !hasMessage || missingIpHash;
+    ipBanButton.setAttribute("aria-busy", busy ? "true" : "false");
+    ipBanButton.setAttribute("aria-disabled", ipBanButton.disabled ? "true" : "false");
     ipBanButton.textContent = state.chatActionBusyMode === "banIp" ? "禁言中..." : "禁言IP来源";
-    syncButtonHint(ipBanButton, chatActionButtonHint("按 IP hash 禁言", hasMessage, busy));
+    syncButtonHint(
+      ipBanButton,
+      missingIpHash ? "这条记录没有 IP hash，无法按 IP 来源禁言" : chatActionButtonHint("按 IP hash 禁言", hasMessage, busy)
+    );
   }
   syncChatListBusyState();
   syncChatFilterBusyState();
@@ -2701,6 +2880,14 @@ async function banSelectedChat(type) {
   if (!message) {
     return;
   }
+  if (type === "visitor" && !message.visitor_id) {
+    showChatActionError(new Error("这条记录没有隐藏用户 ID，无法按用户禁言。"));
+    return;
+  }
+  if ((type === "ip_hash" || type === "ip") && !message.ip_hash) {
+    showChatActionError(new Error("这条记录没有 IP hash，无法按 IP 来源禁言。"));
+    return;
+  }
   setChatActionBusy(type === "ip_hash" || type === "ip" ? "banIp" : "banVisitor");
   setBanListBusy("refresh");
   const form = $("#chat-form-admin");
@@ -2778,6 +2965,14 @@ function renderBans() {
   syncBanListButtons();
 }
 
+function renderBanListNotice(text, label = "禁言列表提示") {
+  const list = $("#ban-list");
+  setElementText($("#ban-list-count"), label);
+  syncBoxLabel(list, `${label}：${text}`);
+  list.replaceChildren(createEmptyStateElement(text));
+  syncBanListButtons();
+}
+
 function banListLabel(ban) {
   const target = ban.visitor_id || ban.ip_prefix || ban.ip_hash || "未记录目标";
   const reason = ban.reason || "未记录原因";
@@ -2832,7 +3027,7 @@ async function refreshBans() {
   try {
     await loadBans();
   } catch (error) {
-    $("#ban-list").textContent = `读取禁言列表失败：${error.message}`;
+    renderBanListNotice(`读取禁言列表失败：${error.message}`, "禁言列表错误");
   } finally {
     setBanListBusy("");
   }
@@ -2847,7 +3042,7 @@ async function disableBan(banId) {
     await api(`/api/admin/chat/bans/${encodeURIComponent(banId)}`, { method: "DELETE" });
     await loadBans();
   } catch (error) {
-    $("#ban-list").textContent = `停用禁言失败：${error.message}`;
+    renderBanListNotice(`停用禁言失败：${error.message}`, "禁言列表错误");
   } finally {
     setBanListBusy("");
   }
@@ -2859,7 +3054,10 @@ async function loadAccounts() {
   renderAccountSummary();
   renderAccountList();
   if (!state.selectedAccountId && state.accounts[0]) {
-    await selectAccount(state.accounts[0].id);
+    const loadedDetail = await selectAccount(state.accounts[0].id);
+    if (!loadedDetail) {
+      return { partialError: $("#account-status").textContent || "账号详情读取失败" };
+    }
   } else if (state.selectedAccountId && !state.accounts.some((account) => account.id === state.selectedAccountId)) {
     state.selectedAccountId = "";
     state.accountDetail = null;
@@ -2868,6 +3066,7 @@ async function loadAccounts() {
     $("#account-status").textContent = "当前账号已不在列表中，已清空编辑表单。";
     syncAccountSaveButton();
   }
+  return {};
 }
 
 function renderAccountSummary() {
@@ -2880,6 +3079,10 @@ function renderAccountSummary() {
     : "暂无账号数据";
   setElementText($("#account-list-count"), countText);
   syncBoxLabel(summary, total ? `账号概览：${countText}` : "账号概览：暂无账号数据");
+  if (!total) {
+    summary.replaceChildren(createEmptyStateElement("暂无账号数据，注册账号后会显示角色、登录和云存档概览。"));
+    return;
+  }
   const items = [
     `共 ${formatNumber(total)} 个注册账号`,
     `${formatNumber(admins)} 个管理员`,
@@ -2933,6 +3136,18 @@ function renderAccountList() {
   syncAccountListBusyState();
 }
 
+function renderAccountListNotice(text, label = "账号列表提示") {
+  const summary = $("#account-summary");
+  const list = $("#account-list");
+  setElementText($("#account-list-count"), label);
+  syncBoxLabel(summary, `${label}：${text}`);
+  syncBoxLabel(list, `${label}：${text}`);
+  summary.replaceChildren(createEmptyStateElement(text));
+  list.replaceChildren(createEmptyStateElement(text));
+  syncAccountListBusyState();
+  syncAccountSaveButton();
+}
+
 function accountListLabel(account) {
   const role = account.role === "admin" ? "管理员" : "普通用户";
   return [
@@ -2966,6 +3181,7 @@ async function selectAccount(accountId) {
     renderAccountList();
     renderAccountDetail();
     $("#account-status").textContent = "";
+    return true;
   } catch (error) {
     if (state.selectedAccountId === accountId) {
       state.accountDetail = null;
@@ -2973,6 +3189,7 @@ async function selectAccount(accountId) {
       renderAccountDetail();
       $("#account-status").textContent = `读取账号详情失败：${error.message}`;
     }
+    return false;
   } finally {
     if (state.selectedAccountId === accountId) {
       syncAccountSaveButton();
@@ -3344,6 +3561,11 @@ function renderAdminUpdates() {
     ? `共 ${formatNumber(adminUpdates.length)} 条 · 最近 ${adminUpdates[0]?.date || "未知日期"}`
     : "暂无后台更新记录";
   setElementText($("#admin-updates-count"), countText);
+  syncBoxLabel(box, adminUpdates.length ? `后台更新记录：${countText}` : "后台更新记录：暂无记录");
+  if (!adminUpdates.length) {
+    box.replaceChildren(createEmptyStateElement("暂无后台更新记录。"));
+    return;
+  }
   box.replaceChildren(...adminUpdates.map((item) => {
     const article = document.createElement("article");
     const title = document.createElement("strong");
@@ -3382,8 +3604,9 @@ function initFormStatusTones() {
 }
 
 function bindEvents() {
-  $$(".nav-button").forEach((button) => {
+  $$(".nav-button").forEach((button, index, buttons) => {
     button.addEventListener("click", () => switchPanel(button.dataset.panel));
+    button.addEventListener("keydown", (event) => handleNavKeydown(event, index, buttons));
   });
   $("#manual-refresh").addEventListener("click", () => {
     loadPanelData(state.activePanel, { force: true });
@@ -3444,12 +3667,17 @@ function bindEvents() {
   $$(".lang-tab").forEach((button, index, tabs) => {
     button.addEventListener("click", () => setArticleLang(button.dataset.articleLang));
     button.addEventListener("keydown", (event) => {
-      const offset = event.key === "ArrowRight" ? 1 : (event.key === "ArrowLeft" ? -1 : 0);
-      if (!offset) {
+      const nextIndex = {
+        ArrowRight: (index + 1) % tabs.length,
+        ArrowLeft: (index - 1 + tabs.length) % tabs.length,
+        Home: 0,
+        End: tabs.length - 1
+      }[event.key];
+      if (nextIndex === undefined) {
         return;
       }
       event.preventDefault();
-      const next = tabs[(index + offset + tabs.length) % tabs.length];
+      const next = tabs[nextIndex];
       setArticleLang(next.dataset.articleLang);
       next.focus();
     });
@@ -3477,6 +3705,7 @@ function bindEvents() {
   });
   $("#preview-video-url").addEventListener("click", previewVideoUrl);
   $("#refresh-video-metadata").addEventListener("click", refreshVideoMetadata);
+  $("#video-form").elements.original_url.addEventListener("input", syncVideoMetadataButtons);
   $("#copy-video-original-url").addEventListener("click", (event) => {
     copyFieldValue("#video-form input[name='original_url']", event.currentTarget, "视频原始链接");
   });
@@ -3515,7 +3744,9 @@ function bindEvents() {
   $("#delete-video-category").addEventListener("click", deleteVideoCategory);
   $("#include-hidden-chat").addEventListener("change", () => {
     if (!isChatFilterBusy()) {
-      loadChatMessages();
+      loadChatMessages().catch((error) => {
+        renderChatListNotice(`读取聊天记录失败：${error.message}`, "聊天记录错误");
+      });
     }
   });
   $("#chat-list").addEventListener("click", (event) => {

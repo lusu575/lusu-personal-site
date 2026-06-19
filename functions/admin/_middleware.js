@@ -2,29 +2,60 @@ const SESSION_COOKIE = "lusu_session";
 export async function onRequest(context) {
   const { request, env } = context;
   if (!env.DB) {
-    return new Response("D1 database binding DB is not configured.", { status: 500 });
+    return new Response("D1 database binding DB is not configured.", {
+      status: 500,
+      headers: adminSecurityHeaders({
+        "Content-Type": "text/plain; charset=utf-8"
+      })
+    });
   }
 
-  const session = await getSession(request, env);
+  let session = null;
+  try {
+    session = await getSession(request, env);
+  } catch {
+    return new Response("Admin session check failed.", {
+      status: 500,
+      headers: adminSecurityHeaders({
+        "Content-Type": "text/plain; charset=utf-8"
+      })
+    });
+  }
+
   if (session?.user?.role === "admin") {
-    return context.next();
+    const response = await context.next();
+    return new Response(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: adminSecurityHeaders(response.headers)
+    });
   }
 
   const acceptsHtml = (request.headers.get("Accept") || "").includes("text/html");
   if (acceptsHtml) {
     return new Response(adminLoginHtml(session?.user?.email || ""), {
       status: session ? 403 : 401,
-      headers: {
-        "Content-Type": "text/html; charset=utf-8",
-        "Cache-Control": "no-store"
-      }
+      headers: adminSecurityHeaders({
+        "Content-Type": "text/html; charset=utf-8"
+      })
     });
   }
 
   return new Response("Forbidden", {
     status: 403,
-    headers: { "Cache-Control": "no-store" }
+    headers: adminSecurityHeaders({
+      "Content-Type": "text/plain; charset=utf-8"
+    })
   });
+}
+
+function adminSecurityHeaders(headers = {}) {
+  const secured = new Headers(headers);
+  secured.set("Cache-Control", "no-store");
+  secured.set("X-Robots-Tag", "noindex, nofollow");
+  secured.set("X-Content-Type-Options", "nosniff");
+  secured.set("Referrer-Policy", "same-origin");
+  return secured;
 }
 
 async function getSession(request, env) {
@@ -52,7 +83,14 @@ function readCookie(request, name) {
       return found;
     }
     const [key, ...rest] = item.split("=");
-    return key === name ? decodeURIComponent(rest.join("=")) : "";
+    if (key !== name) {
+      return "";
+    }
+    try {
+      return decodeURIComponent(rest.join("="));
+    } catch {
+      return "";
+    }
   }, "");
 }
 
@@ -136,6 +174,8 @@ function adminLoginHtml(email) {
     }
     .error { color: #9f0016; font-weight: 700; overflow-wrap: anywhere; }
     .status { min-height: 26px; padding: 5px 0 0; color: #0b5fc7; font-weight: 700; overflow-wrap: anywhere; }
+    .status.busy { color: #003a9b; }
+    .status.error { color: #9f0016; }
     .helper { color: #42506a; }
     @media (max-width: 420px) {
       body { padding: 10px; align-items: start; }
@@ -150,9 +190,9 @@ function adminLoginHtml(email) {
     <form id="login-form">
       ${denied}
       <p class="notice">${stateText}</p>
-      <label>邮箱<input id="email" name="email" type="email" autocomplete="username" required></label>
-      <label>密码<input id="password" name="password" type="password" autocomplete="current-password" required></label>
-      <button type="submit">登录后台</button>
+      <label>邮箱<input id="email" name="email" type="email" inputmode="email" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="254" required></label>
+      <label>密码<input id="password" name="password" type="password" autocomplete="current-password" maxlength="128" required></label>
+      <button type="submit" aria-label="登录后台" title="登录后台">登录后台</button>
       <p class="helper">不会在页面中展示密码、session token 或后台数据；登录成功后由服务端重新判断权限。</p>
       <p class="status" id="status" role="status" aria-live="polite" aria-atomic="true"></p>
     </form>
@@ -163,10 +203,17 @@ function adminLoginHtml(email) {
       const status = document.getElementById("status");
       const button = event.currentTarget.querySelector("button[type='submit']");
       const buttonText = button.textContent;
-      status.textContent = "正在登录...";
+      const buttonLabel = button.getAttribute("aria-label") || buttonText;
+      const setLoginStatus = (message, tone) => {
+        status.textContent = message;
+        status.className = tone ? "status " + tone : "status";
+      };
+      setLoginStatus("正在登录...", "busy");
       button.disabled = true;
       button.textContent = "正在登录...";
       button.setAttribute("aria-busy", "true");
+      button.setAttribute("aria-label", "正在登录后台");
+      button.title = "正在登录后台";
       try {
         const response = await fetch("/api/auth/login", {
           method: "POST",
@@ -178,18 +225,22 @@ function adminLoginHtml(email) {
         });
         const payload = await response.json().catch(() => ({}));
         if (!response.ok) {
-          status.textContent = payload.error || "登录失败。";
+          setLoginStatus(payload.error || "登录失败。", "error");
           button.disabled = false;
           button.textContent = buttonText;
           button.setAttribute("aria-busy", "false");
+          button.setAttribute("aria-label", buttonLabel);
+          button.title = buttonLabel;
           return;
         }
         window.location.reload();
       } catch (error) {
-        status.textContent = "登录请求失败，请检查网络后重试。";
+        setLoginStatus("登录请求失败，请检查网络后重试。", "error");
         button.disabled = false;
         button.textContent = buttonText;
         button.setAttribute("aria-busy", "false");
+        button.setAttribute("aria-label", buttonLabel);
+        button.title = buttonLabel;
       }
     });
   </script>

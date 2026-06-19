@@ -2,6 +2,14 @@
 
 本文件记录鲁肃个人站的功能、界面、后端、部署与项目约定变更。每次修改项目后都应同步更新这里，方便后续 AI / Codex 对话快速了解最近改动。
 
+## 2026-06-19
+
+- 管理后台夜间 loop 合并记录：
+  - 按 2026-06-19 08:00（Asia/Shanghai）截止完成 `/admin/` 后台 loop，只保留一条合并记录，不写 checkpoint 流水记录。
+  - 本轮集中加固后台局部失败态、忙碌锁定、面板语义状态、侧边栏键盘导航、视频本地封面处理反馈和后台入口安全响应头。
+  - `/admin/*` 仍只允许 `users.role = admin`；后台私有更新只同步到 `adminUpdates` 和 `admin/docs/ADMIN_CHANGELOG.md`，未写入主站 `site-updates`、`js/main.js` fallback 或公开最近更新。
+  - 扩展 `scripts/build-check.mjs`，覆盖后台结构、权限、响应头、异常 session、畸形 cookie、局部失败提示和公共 API 基础响应；更新后台 JS query 为 `20260619-admin-loop-r014`。
+
 ## 2026-06-18
 
 - 管理后台视觉改版循环合并记录：

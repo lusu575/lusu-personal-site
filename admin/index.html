@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex,nofollow">
   <title>鲁肃个人站管理后台</title>
-  <link rel="stylesheet" href="/admin/admin.css?v=20260618-admin-visual-r62">
+  <link rel="stylesheet" href="/admin/admin.css?v=20260619-admin-loop-r001">
 </head>
 <body>
   <div class="admin-shell">
@@ -17,17 +17,17 @@
           <small>鲁肃个人站</small>
         </div>
       </div>
-      <nav class="nav-list">
-        <button class="nav-button active" type="button" data-panel="dashboard" aria-current="page">实时大屏</button>
-        <button class="nav-button" type="button" data-panel="visits">访问来源</button>
-        <button class="nav-button" type="button" data-panel="clicks">点击埋点</button>
-        <button class="nav-button" type="button" data-panel="articles">知识库文章</button>
-        <button class="nav-button" type="button" data-panel="videos">视频管理</button>
-        <button class="nav-button" type="button" data-panel="videoCategories">视频分类管理</button>
-        <button class="nav-button" type="button" data-panel="chat">聊天室管理</button>
-        <button class="nav-button" type="button" data-panel="accounts">账号管理</button>
-        <button class="nav-button" type="button" data-panel="updates">后台更新记录</button>
-        <button class="nav-button" type="button" data-panel="docs">后台说明</button>
+      <nav class="nav-list" aria-label="后台功能导航">
+        <button class="nav-button active" type="button" data-panel="dashboard" aria-current="page" aria-controls="dashboard-panel">实时大屏</button>
+        <button class="nav-button" type="button" data-panel="visits" aria-controls="visits-panel">访问来源</button>
+        <button class="nav-button" type="button" data-panel="clicks" aria-controls="clicks-panel">点击埋点</button>
+        <button class="nav-button" type="button" data-panel="articles" aria-controls="articles-panel">知识库文章</button>
+        <button class="nav-button" type="button" data-panel="videos" aria-controls="videos-panel">视频管理</button>
+        <button class="nav-button" type="button" data-panel="videoCategories" aria-controls="videoCategories-panel">视频分类管理</button>
+        <button class="nav-button" type="button" data-panel="chat" aria-controls="chat-panel">聊天室管理</button>
+        <button class="nav-button" type="button" data-panel="accounts" aria-controls="accounts-panel">账号管理</button>
+        <button class="nav-button" type="button" data-panel="updates" aria-controls="updates-panel">后台更新记录</button>
+        <button class="nav-button" type="button" data-panel="docs" aria-controls="docs-panel">后台说明</button>
       </nav>
       <div class="sidebar-note">
         <span>仅站长可见</span>
@@ -49,7 +49,7 @@
         </div>
       </header>
 
-      <section class="panel active" id="dashboard-panel">
+      <section class="panel active" id="dashboard-panel" aria-hidden="false">
         <div class="insight-note" id="analytics-explainer">正在整理访问数据...</div>
         <div class="kpi-grid" id="kpi-grid"></div>
         <div class="dashboard-grid">
@@ -101,7 +101,7 @@
         </div>
       </section>
 
-      <section class="panel" id="articles-panel">
+      <section class="panel" id="articles-panel" hidden aria-hidden="true">
         <div class="split-layout articles-layout">
           <section class="xp-panel list-panel">
             <div class="panel-head">
@@ -140,17 +140,17 @@
                 <button class="lang-tab" type="button" role="tab" id="article-lang-tab-ja" data-article-lang="ja" aria-selected="false" aria-controls="article-lang-panel-ja" tabindex="-1">日本語</button>
               </div>
 
-              <div class="language-editor active" data-lang-panel="zh" role="tabpanel" id="article-lang-panel-zh" aria-labelledby="article-lang-tab-zh">
+              <div class="language-editor active" data-lang-panel="zh" role="tabpanel" id="article-lang-panel-zh" aria-labelledby="article-lang-tab-zh" aria-hidden="false">
                 <label>中文标题<input name="title_zh" maxlength="180" required></label>
                 <label>中文简介<textarea name="summary_zh" maxlength="500" rows="2"></textarea></label>
                 <label>中文正文 Markdown<textarea name="content_zh" rows="14" required></textarea></label>
               </div>
-              <div class="language-editor" data-lang-panel="en" role="tabpanel" id="article-lang-panel-en" aria-labelledby="article-lang-tab-en" hidden>
+              <div class="language-editor" data-lang-panel="en" role="tabpanel" id="article-lang-panel-en" aria-labelledby="article-lang-tab-en" hidden aria-hidden="true">
                 <label>English 标题<input name="title_en" maxlength="180" required></label>
                 <label>English 简介<textarea name="summary_en" maxlength="500" rows="2"></textarea></label>
                 <label>English 正文 Markdown<textarea name="content_en" rows="14" required></textarea></label>
               </div>
-              <div class="language-editor" data-lang-panel="ja" role="tabpanel" id="article-lang-panel-ja" aria-labelledby="article-lang-tab-ja" hidden>
+              <div class="language-editor" data-lang-panel="ja" role="tabpanel" id="article-lang-panel-ja" aria-labelledby="article-lang-tab-ja" hidden aria-hidden="true">
                 <label>日本語标题<input name="title_ja" maxlength="180" required></label>
                 <label>日本語简介<textarea name="summary_ja" maxlength="500" rows="2"></textarea></label>
                 <label>日本語正文 Markdown<textarea name="content_ja" rows="14" required></textarea></label>
@@ -167,7 +167,7 @@
         </div>
       </section>
 
-      <section class="panel" id="videos-panel">
+      <section class="panel" id="videos-panel" hidden aria-hidden="true">
         <div class="split-layout articles-layout">
           <section class="xp-panel list-panel">
             <div class="panel-head">
@@ -206,7 +206,7 @@
                     <button class="xp-button" type="button" id="clear-video-thumbnail">清空封面</button>
                   </div>
                   <small class="field-hint">支持 JPG / PNG / WEBP / AVIF；首帧生成只读取本机视频，不上传视频文件。</small>
-                  <div class="thumbnail-preview" id="video-thumbnail-preview" aria-live="polite"></div>
+                  <div class="thumbnail-preview" id="video-thumbnail-preview" role="status" aria-live="polite" aria-atomic="true"></div>
                 </div>
                 <label>作者<input name="author_name" maxlength="160"></label>
                 <label>发布时间<input name="published_at" type="datetime-local" step="1"></label>
@@ -239,7 +239,7 @@
         </div>
       </section>
 
-      <section class="panel" id="videoCategories-panel">
+      <section class="panel" id="videoCategories-panel" hidden aria-hidden="true">
         <div class="split-layout articles-layout">
           <section class="xp-panel list-panel">
             <div class="panel-head">
@@ -274,7 +274,7 @@
         </div>
       </section>
 
-      <section class="panel" id="visits-panel">
+      <section class="panel" id="visits-panel" hidden aria-hidden="true">
         <div class="dashboard-grid two">
           <section class="xp-panel">
             <div class="panel-head"><h2>国家来源</h2><span id="country-table-count">PV / UV</span></div>
@@ -297,7 +297,7 @@
         </div>
       </section>
 
-      <section class="panel" id="clicks-panel">
+      <section class="panel" id="clicks-panel" hidden aria-hidden="true">
         <div class="dashboard-grid two">
           <section class="xp-panel">
             <div class="panel-head"><h2>点击热点</h2><span id="top-clicks-count">按目标聚合</span></div>
@@ -315,7 +315,7 @@
         </div>
       </section>
 
-      <section class="panel" id="chat-panel">
+      <section class="panel" id="chat-panel" hidden aria-hidden="true">
         <div class="split-layout chat-layout">
           <section class="xp-panel list-panel">
             <div class="panel-head">
@@ -354,7 +354,7 @@
         </div>
       </section>
 
-      <section class="panel" id="accounts-panel">
+      <section class="panel" id="accounts-panel" hidden aria-hidden="true">
         <div class="split-layout account-layout">
           <section class="xp-panel list-panel">
             <div class="panel-head">
@@ -406,7 +406,7 @@
         </div>
       </section>
 
-      <section class="panel" id="docs-panel">
+      <section class="panel" id="docs-panel" hidden aria-hidden="true">
         <section class="xp-panel prose">
           <div class="panel-head"><h2>后台项目介绍</h2><span>独立于主站公开内容</span></div>
           <div class="list-meta admin-docs-boundary" aria-label="后台边界摘要">
@@ -416,11 +416,11 @@
           </div>
           <p>这个后台只服务站长维护个人站，不对外展示，也不复用知识库的网站更新记录。</p>
           <p>后台复用主站账号系统和 <code>users.role = admin</code> 权限，只允许管理员账号访问页面和 API。</p>
-          <p>后台包含实时大屏、访问来源、点击埋点、三语文章编辑、视频管理、视频分类管理、聊天室编辑/删除/禁言和后台私有更新记录。</p>
+          <p>后台包含实时大屏、访问来源、点击埋点、三语文章编辑、视频管理、视频分类管理、聊天室编辑/删除/禁言、账号管理和后台私有更新记录。</p>
         </section>
       </section>
 
-      <section class="panel" id="updates-panel">
+      <section class="panel" id="updates-panel" hidden aria-hidden="true">
         <section class="xp-panel updates-panel">
           <div class="panel-head"><h2>后台更新记录</h2><span id="admin-updates-count">每次后台更新后同步维护</span></div>
           <div class="admin-updates" id="admin-updates"></div>
@@ -429,6 +429,6 @@
     </main>
   </div>
 
-  <script src="/admin/admin.js?v=20260618-admin-visual-r101"></script>
+  <script src="/admin/admin.js?v=20260619-admin-loop-r014"></script>
 </body>
 </html>

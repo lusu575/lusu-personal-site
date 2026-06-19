@@ -2,6 +2,17 @@
 
 > 管理后台专用说明：本文档只记录 `/admin/` 管理后台的私有维护记录，不等同于主站根目录 `CHANGELOG.md`。后台私有更新不写入主站知识库 `site-updates`，也不展示到首页最近更新。
 
+## 2026-06-19
+
+- 管理后台夜间 loop 可用性与权限加固：
+  - 本轮按 2026-06-19 08:00（Asia/Shanghai）截止执行后台 loop，不新增 checkpoint 流水记录，只保留这一条后台私有合并记录。
+  - 文章、视频、视频分类、聊天室、禁言和账号面板补强局部失败提示，视频/聊天并行读取改为局部失败可见，账号详情读取失败时保留账号列表并提示具体原因。
+  - 后台面板切换同步 `hidden` / `aria-hidden`，文章三语编辑区补齐初始和运行时语义状态，侧边栏支持方向键、Home、End 导航。
+  - 视频本地封面压缩和本地视频首帧截取期间锁定保存、发布、切换、清空和元数据按钮，文件选择器显示明确忙碌态。
+  - `/admin/*` 中间件继续只允许 `users.role = admin`，并统一 `Cache-Control: no-store`、`X-Robots-Tag: noindex, nofollow`、`X-Content-Type-Options: nosniff` 和 `Referrer-Policy: same-origin`；D1/session 查询异常返回后台自己的 500 文本响应，畸形 session cookie 按未登录处理。
+  - `scripts/build-check.mjs` 扩展后台结构、语义、权限、响应头、局部失败、公共 API 基础响应和主站边界检查；本轮未写入主站 `site-updates`、`js/main.js` fallback 或公开最近更新。
+  - 后台 CSS query 为 `20260619-admin-loop-r001`，JS query 已更新为 `20260619-admin-loop-r014`。
+
 ## 2026-06-18
 
 - 管理后台视觉改版循环更新：

@@ -951,6 +951,25 @@ tbody tr:hover td {
   filter: brightness(1.04);
 }
 
+.file-picker:has(input:disabled) {
+  cursor: progress;
+  color: #4b5668;
+  background:
+    repeating-linear-gradient(135deg, rgba(7,91,212,.09) 0 6px, rgba(255,255,255,.44) 6px 12px),
+    #eef3f8;
+  border-color: #f7fbff #abb8ca #abb8ca #f7fbff;
+  filter: none;
+}
+
+.file-picker:has(input:disabled):hover {
+  filter: none;
+}
+
+.file-picker:has(input:disabled):active {
+  border-style: outset;
+  transform: none;
+}
+
 .file-picker:focus-within {
   outline: 2px solid var(--focus);
   outline-offset: 1px;
