@@ -11,7 +11,7 @@ description: 维护鲁肃个人站 `/admin/` 管理后台时使用。只适用�
 
 - 修改 `admin/index.html`、`admin/admin.css`、`admin/admin.js`。
 - 修改 `functions/admin/_middleware.js`。
-- 修改 `/api/admin/*` 后台接口、后台权限、后台统计、后台文章管理、后台视频管理、后台视频分类管理或后台聊天室治理。
+- 修改 `/api/admin/*` 后台接口、后台权限、后台统计、后台文章管理、后台视频管理、后台视频分类管理、后台社交链接管理或后台聊天室治理。
 - 修改后台专用文档：`admin/docs/ADMIN_PROJECT_CONTEXT.md`、`admin/docs/ADMIN_SKILL.md`、`admin/docs/ADMIN_CHANGELOG.md`。
 - 修改后台页面内“后台项目介绍”或后台私有更新记录。
 
@@ -24,6 +24,7 @@ description: 维护鲁肃个人站 `/admin/` 管理后台时使用。只适用�
 - 根目录 `PROJECT_CONTEXT.md` 只保留全站总事实和后台索引，不复制后台细节。
 - 根目录 `CHANGELOG.md` 只记录项目级变更；后台私有细节优先写入 `admin/docs/ADMIN_CHANGELOG.md`。
 - 后台私有更新不得写入主站知识库 `site-updates`，也不得加入 `js/main.js` 的首页最近更新 fallback。
+- 如果一次后台改动同时改变主站公开可见体验（例如关于我图标、公开视频区展示），公开侧仍按主站 Skill 发布 `site-updates` 三语文章和 fallback；后台私有细节仍单独记录在 `adminUpdates` 与 `admin/docs/ADMIN_CHANGELOG.md`。
 
 ## 改动边界
 
@@ -41,7 +42,7 @@ description: 维护鲁肃个人站 `/admin/` 管理后台时使用。只适用�
 - 后台不需要主站中文 / English / 日本語 三语切换。
 - 后台表格、表单、按钮、状态、空状态和错误提示必须清楚，不隐藏真实失败原因。
 - 移动端后台需要保持可读、可滚动、无横向溢出；侧边栏和编辑区不能卡死。
-- 后台导航默认从上到下为：实时大屏、访问来源、点击埋点、知识库文章、视频管理、视频分类管理、聊天室管理、账号管理、后台更新记录、后台说明。
+- 后台导航默认从上到下为：实时大屏、访问来源、点击埋点、知识库文章、视频管理、视频分类管理、聊天室管理、账号管理、社交链接、后台更新记录、后台说明。
 
 ## 权限和安全
 
@@ -83,6 +84,15 @@ description: 维护鲁肃个人站 `/admin/` 管理后台时使用。只适用�
 - 后台视频预览只是编辑检查用，不应占满编辑区；播放器容器要限制宽度、高度并在小屏单列适配。
 - “全部”视频分类只由前台生成，不写入 `video_categories`。
 - 删除视频分类前要考虑已有视频关联，避免破坏公开视频筛选。
+
+## 社交链接管理
+
+- 社交链接管理页面只放在 `/admin/`，所有接口必须继续调用 `requireAdmin`。
+- 后台只维护关于我窗口的 X、GitHub、Bilibili、Instagram、Discord 五个跳转 URL，不管理可见平台文字。
+- 配置保存到 D1 `site_runtime_state` 的 `about_social_links` key；公开主站通过 `GET /api/social-links` 只读读取。
+- 保存时只允许 http(s) URL，管理员省略协议时可由服务端补 `https://`；不得支持 `javascript:`、`data:`、相对路径或任意 HTML。
+- 主站关于我窗口必须只显示小图标按钮，不把后台填写的链接文字作为可见文案输出；按钮保留 `aria-label` 供辅助技术使用。
+- 后台预览列表也必须用 DOM/textContent 渲染，不得使用 `innerHTML` 拼接链接。
 
 ## 聊天室管理
 

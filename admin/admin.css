@@ -516,6 +516,10 @@ select:focus-visible {
   grid-template-columns: minmax(320px, 440px) minmax(0, 1fr);
 }
 
+.social-links-layout {
+  grid-template-columns: minmax(360px, 640px) minmax(280px, 420px);
+}
+
 .xp-panel {
   min-width: 0;
   overflow: hidden;
@@ -913,7 +917,8 @@ tbody tr:hover td {
 .chat-list,
 .ban-list,
 .event-list,
-.admin-updates {
+.admin-updates,
+.social-link-preview-list {
   display: grid;
   gap: 8px;
   min-width: 0;
@@ -1622,6 +1627,12 @@ textarea[name="description"] {
   white-space: normal;
 }
 
+#social-links-form .form-actions .xp-button {
+  flex: 0 1 152px;
+  min-width: min(142px, 100%);
+  white-space: normal;
+}
+
 .form-status {
   flex: 1 1 220px;
   min-width: min(220px, 100%);
@@ -1742,6 +1753,43 @@ textarea[name="description"] {
   cursor: progress;
   filter: none;
   opacity: .86;
+}
+
+.social-link-fields {
+  display: grid;
+  gap: 10px;
+}
+
+.social-link-fields label {
+  padding: 9px;
+  background:
+    linear-gradient(90deg, rgba(7,91,212,.07), transparent),
+    #fffef4;
+  border: 1px solid #b8b39c;
+  box-shadow: inset 1px 1px rgba(255,255,255,.7);
+}
+
+.social-link-preview-list {
+  max-height: calc(100vh - 178px);
+}
+
+.social-link-preview-item {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.social-link-preview-item code {
+  display: block;
+  min-width: 0;
+  padding: 5px 6px;
+  color: #36445c;
+  background: #eef6ff;
+  border: 1px solid #9fb4c9;
+  font-family: "Consolas", "Microsoft YaHei", "SimSun", monospace;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .account-detail-grid {

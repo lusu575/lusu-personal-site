@@ -483,6 +483,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "🔗",
+      date: "2026.06.20",
+      title: { zh: "关于我社交图标上线", en: "About Social Icons", ja: "プロフィールのSNSアイコン" },
+      desc: {
+        zh: "关于我窗口新增 X、GitHub、Bilibili、Instagram 和 Discord 纯图标入口，后台可修改每个跳转链接",
+        en: "The About window now has icon-only links for X, GitHub, Bilibili, Instagram, and Discord, with admin-editable URLs",
+        ja: "プロフィール画面に X、GitHub、Bilibili、Instagram、Discord のアイコンリンクを追加し、管理画面でURLを変更できます"
+      }
+    },
+    {
       icon: "🖥️",
       date: "2026.06.19",
       title: { zh: "四时段沉浸式桌面栏", en: "Immersive Time-of-Day Chrome", ja: "時間帯別の没入デスクトップバー" },
@@ -1492,6 +1502,15 @@ const tagLabels = {
 
 const pageIds = ["home", "knowledge", "videos", "resources", "games", "blog", "chatroom", "about"];
 
+const socialLinkPlatforms = [
+  { id: "x", label: "X", defaultUrl: "https://x.com/lusu575" },
+  { id: "github", label: "GitHub", defaultUrl: "https://github.com/lusu575" },
+  { id: "bilibili", label: "Bilibili", defaultUrl: "https://space.bilibili.com/" },
+  { id: "instagram", label: "Instagram", defaultUrl: "https://www.instagram.com/lusu575/" },
+  { id: "discord", label: "Discord", defaultUrl: "https://discord.com/" }
+];
+const socialLinkPlatformMap = new Map(socialLinkPlatforms.map((item) => [item.id, item]));
+
 const chatStorageKeys = {
   visitorId: "lusu-chat-visitor-id",
   nickname: "lusu-chat-nickname",
@@ -1671,6 +1690,47 @@ function safeHttpUrl(value) {
     return ["http:", "https:"].includes(url.protocol) ? url.href : "";
   } catch (error) {
     return "";
+  }
+}
+
+function normalizeSocialLinksPayload(payload) {
+  const source = Array.isArray(payload?.links) ? payload.links : [];
+  return source.reduce((result, item) => {
+    const platform = String(item?.platform || item?.id || "").trim();
+    const url = safeHttpUrl(item?.url);
+    if (platform && url) {
+      result[platform] = url;
+    }
+    return result;
+  }, {});
+}
+
+function syncSocialLinks(links = {}) {
+  document.querySelectorAll("[data-social-link]").forEach((anchor) => {
+    const platform = socialLinkPlatformMap.get(anchor.dataset.socialLink);
+    if (!platform) {
+      return;
+    }
+    const url = safeHttpUrl(links[platform.id]) || platform.defaultUrl;
+    anchor.href = url;
+    anchor.title = platform.label;
+    anchor.setAttribute("aria-label", platform.label);
+    anchor.rel = "noopener noreferrer";
+    anchor.target = "_blank";
+  });
+}
+
+async function loadSocialLinks() {
+  syncSocialLinks();
+  try {
+    const response = await fetch("/api/social-links", { cache: "no-store" });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(payload.error || `HTTP ${response.status}`);
+    }
+    syncSocialLinks(normalizeSocialLinksPayload(payload));
+  } catch (error) {
+    syncSocialLinks();
   }
 }
 
@@ -4302,6 +4362,7 @@ function initialLanguage() {
 const initialLang = initialLanguage();
 
 setLanguage(initialLang);
+loadSocialLinks();
 initAccountWidget();
 updateClock();
 setInterval(updateClock, 1000);

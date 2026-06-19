@@ -12,7 +12,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 修改网站代码、样式、文案、图片、游戏区、聊天室、账号、云存档或后端接口。
 - 修改 `PROJECT_CONTEXT.md`、`CHANGELOG.md`、README、部署说明或维护规则。
 - 新增游戏、页面、窗口、图标、弹窗、任务栏入口或长期注意事项。
-- 如果任务涉及 `/admin/` 管理后台、后台样式、后台脚本、后台权限、后台 API、后台统计、后台视频管理、后台聊天室治理或后台专用文档，必须同时读取 `admin/docs/ADMIN_PROJECT_CONTEXT.md`、`admin/docs/ADMIN_SKILL.md` 和 `admin/docs/ADMIN_CHANGELOG.md`，并以后台专用 Skill 约束为准处理后台细节。
+- 如果任务涉及 `/admin/` 管理后台、后台样式、后台脚本、后台权限、后台 API、后台统计、后台视频管理、后台社交链接管理、后台聊天室治理或后台专用文档，必须同时读取 `admin/docs/ADMIN_PROJECT_CONTEXT.md`、`admin/docs/ADMIN_SKILL.md` 和 `admin/docs/ADMIN_CHANGELOG.md`，并以后台专用 Skill 约束为准处理后台细节。
 
 ## 每次改动必须执行
 
@@ -40,6 +40,14 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 首页壁纸动画只使用 CSS `transform` / `opacity`，不要用 JS 每帧修改 `left` / `top`，不要使用整屏 GIF、整屏 APNG 或大视频循环。
 - 首页动态壁纸必须支持 `prefers-reduced-motion`、页面隐藏时暂停动画、手机端减少图层数量和动画强度；减少动态或小屏降级时应回到对应静态壁纸。
 - 云、树冠/树叶/花瓣等尚未从底图完全拆分时，默认使用静态底图兜底，不启用同位置移动叠层，避免重影；电视机本体不做动画，只允许屏幕区域动。
+
+## 关于我社交图标规则
+
+- 关于我窗口的 X、GitHub、Bilibili、Instagram、Discord 入口必须保持小图标按钮展示，不额外增加可见平台文字；可为辅助技术保留 `aria-label`。
+- 社交链接公开读取接口为 `GET /api/social-links`，后台维护接口为 `GET /api/admin/social-links` 和 `PUT /api/admin/social-links`。
+- 社交链接运行时配置保存到 D1 `site_runtime_state` 的 `about_social_links` key；公开接口只读，修改必须走后台 admin 权限。
+- 保存链接只允许 http(s) URL；不要支持 `javascript:`、`data:`、相对路径、任意 HTML 或把管理员填写的链接文字插入为可见文案。
+- 维护关于我社交入口时，如改动 `js/main.js`、`css/style.css` 或 `admin/admin.js` / `admin/admin.css`，必须同步更新 `index.html` / `admin/index.html` 对应资源 query。
 
 ## 前端和移动端检查
 
@@ -134,6 +142,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 凡是后台相关改动，先读取 `admin/docs/ADMIN_PROJECT_CONTEXT.md` 和 `admin/docs/ADMIN_SKILL.md`；需要了解后台私有历史时再读 `admin/docs/ADMIN_CHANGELOG.md`。不要只依赖主站 `PROJECT_CONTEXT.md` 或本 Skill 推断后台细节。
 - 管理后台入口固定为 `/admin/`，后台静态页面、样式、脚本应放在 `admin/` 目录，不要混进主站首页窗口、主站 CSS 或主站三语内容体系。
 - 后台只需要中文文案；后台项目介绍和后台更新记录必须单独维护在后台内，不写入主站知识库 `site-updates`，也不要在首页最近更新里公开展示。
+- 纯后台私有更新不写入主站 `site-updates`；如果后台改动同时改变主站公开可见体验，公开侧仍必须按网站更新记录规则补 `site-updates` 三语文章、schema seed 和 `js/main.js` fallback。
 - `/admin/*` 必须通过 Pages Functions middleware 校验主站 `lusu_session`，只有 `users.role = admin` 的站长账号可以访问；所有 `/api/admin/*` 也必须继续做服务端 admin 校验。
 - 后台文章编辑可以按当前选择语言显示单个语言面板，但保存/发布正式文章时必须一次性提交 zh / en / ja 三种标题与正文。
 - 主站访问和点击埋点应使用独立 `js/telemetry.js`，避免把埋点逻辑写进主站可见 UI 流程；埋点脚本不得记录输入框内容、密码、正文草稿或聊天输入中的未发送内容。

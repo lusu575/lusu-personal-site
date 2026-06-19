@@ -2,6 +2,16 @@
 
 本文件记录鲁肃个人站的功能、界面、后端、部署与项目约定变更。每次修改项目后都应同步更新这里，方便后续 AI / Codex 对话快速了解最近改动。
 
+## 2026-06-20
+
+- 关于我社交图标与后台链接管理：
+  - 关于我窗口新增 X、GitHub、Bilibili、Instagram、Discord 五个纯图标按钮，不增加可见平台文字；按钮可点击并在新标签打开对应链接。
+  - 新增公开只读接口 `GET /api/social-links`，主站初始化时读取 D1 配置，失败时回退默认链接。
+  - `/admin/` 新增“社交链接”页面，可维护五个平台跳转地址；新增 `GET /api/admin/social-links`、`PUT /api/admin/social-links`，继续要求 `users.role = admin`。
+  - 社交链接保存到 `site_runtime_state.about_social_links`，服务端只接受 http(s) URL，并可自动补齐省略的 `https://`。
+  - 同步新增三语 `site-updates` 文章“关于我社交图标上线 / About Social Icons / プロフィールのSNSアイコン”、前端 fallback、Functions seed、schema seed、后台私有更新记录、项目上下文和 Skill 规则。
+  - 更新主站 CSS/JS query 为 `20260620-about-social-links-r1`，后台 CSS/JS query 为 `20260620-admin-social-links-r1`。
+
 ## 2026-06-19
 
 - 主站四时段沉浸式桌面栏：

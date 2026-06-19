@@ -65,6 +65,7 @@ for (const id of [
   "videoCategories-panel",
   "chat-panel",
   "accounts-panel",
+  "socialLinks-panel",
   "updates-panel",
   "docs-panel",
   "admin-updates"
@@ -83,6 +84,7 @@ for (const panel of [
   "videoCategories",
   "chat",
   "accounts",
+  "socialLinks",
   "updates",
   "docs"
 ]) {
@@ -98,8 +100,8 @@ if (!adminHtml.includes('class="nav-list" aria-label="后台功能导航"')) {
   fail("admin/index.html sidebar navigation must expose an aria-label");
 }
 
-if (!adminHtml.includes("账号管理和后台私有更新记录")) {
-  fail("admin/index.html backend docs summary must mention account management");
+if (!adminHtml.includes("账号管理、社交链接管理和后台私有更新记录")) {
+  fail("admin/index.html backend docs summary must mention account and social link management");
 }
 
 if (!adminHtml.includes('id="dashboard-panel" aria-hidden="false"')) {
@@ -114,6 +116,7 @@ for (const panel of [
   "videoCategories",
   "chat",
   "accounts",
+  "socialLinks",
   "updates",
   "docs"
 ]) {
@@ -163,7 +166,8 @@ for (const requiredAdminGuard of [
   "renderVideoCategoryChecksNotice",
   "renderVideoCategoryListNotice",
   "renderBanListNotice",
-  "renderAccountListNotice"
+  "renderAccountListNotice",
+  "renderSocialLinkPreviewNotice"
 ]) {
   if (!adminJs.includes(`function ${requiredAdminGuard}`)) {
     fail(`admin/admin.js missing ${requiredAdminGuard} local failure state`);
@@ -186,6 +190,7 @@ for (const contextualErrorPrefix of [
   "文章列表：",
   "分类列表：",
   "账号列表：",
+  "社交链接：",
   "partialError",
   "读取账号详情失败："
 ]) {
@@ -574,7 +579,7 @@ try {
 
   const apiPath = resolve(root, "functions/api/[[route]].js");
   const { onRequest } = await import(pathToFileURL(apiPath).href);
-  for (const path of ["/api/articles?lang=zh", "/api/videos?lang=zh", "/api/sitemap.xml"]) {
+  for (const path of ["/api/articles?lang=zh", "/api/videos?lang=zh", "/api/social-links", "/api/sitemap.xml"]) {
     const response = await onRequest({
       request: new Request(`https://example.test${path}`),
       env: { DB: createMockD1() },

@@ -1,5 +1,13 @@
 # PROJECT_CONTEXT.md
 
+## 2026-06-20 关于我社交图标与后台链接管理
+
+- 关于我窗口新增 X、GitHub、Bilibili、Instagram、Discord 五个小图标入口；主站只显示图标按钮，不增加可见文字，按钮保留 `aria-label` 并在新标签打开对应链接。
+- 主站新增公开只读接口 `GET /api/social-links`，前端初始化时读取 D1 配置，接口不可用时回退到代码内默认链接。
+- 后台新增“社交链接”页面，接口为 `GET /api/admin/social-links` 和 `PUT /api/admin/social-links`，继续通过 `requireAdmin` 限制 `users.role = admin` 才能读取或修改。
+- 社交链接保存到 D1 `site_runtime_state` 的 `about_social_links` key；保存时只接受 http(s) URL，省略协议时由服务端补 `https://`。
+- 本次属于公开可见更新，已同步 `site-updates` 三语文章、`js/main.js` fallback、Functions seed、schema seed、根目录 changelog、主站 Skill 和后台专用文档。
+
 ## 2026-06-19 主站四时段沉浸式桌面栏
 
 - 首页顶部栏和底部任务栏新增 morning / day / dusk / night 四套无竖线的现代玻璃像素 HUD 样式，跟随现有本地时间判断与 `?wallpaper=morning|day|dusk|night` 预览参数切换。
@@ -81,6 +89,7 @@ Cloudflare Pages 项目状态：
 - 首页使用四时段像素壁纸：基础静态底图位于 `assets/images/wallpapers/`，按用户本地时间切换 morning / day / dusk / night。四个时段均已接入动态云层，分别使用 `assets/images/wallpaper-dynamic/<time>/base-clean.png` 作为无云底图，并叠加从对应原始壁纸抠出的独立透明云层；云层沿用 `wallpaper-root` / `wallpaper-stage` 舞台坐标结构，只用 CSS `transform` / `opacity` 做同一主风向下的慢速错相漂移，并支持减少动态、小屏和页面隐藏暂停降级。本地调试可用 `?wallpaper=morning` / `?wallpaper=day` / `?wallpaper=dusk` / `?wallpaper=night` 强制预览指定动态壁纸，预览模式会临时加快云层位移以便肉眼确认动画。树冠、电视雪花、小女孩、星星、水面光效等层仍作为后续动画接口保留。
 - 顶部栏和底部任务栏：保留 XP 桌面结构与原有图标，并跟随 morning / day / dusk / night 四时段切换无竖线的现代玻璃像素 HUD 色温与高光
 - 知识库、视频区、资源区、游戏区、杂谈区、匿名聊天室、关于我
+- 关于我窗口含 X、GitHub、Bilibili、Instagram、Discord 五个可点击小图标入口，链接从 D1 `site_runtime_state.about_social_links` 读取，后台可维护
 - 中文 / English / 日本語 三语切换
 - 主站右上角账号入口
 - 游戏页统一外壳和云存档能力
@@ -132,6 +141,7 @@ Cloudflare Pages 项目状态：
 - `GET /api/articles/:slug?lang=zh`
 - `GET /api/articles/:slug?lang=en`
 - `GET /api/articles/:slug?lang=ja`
+- `GET /api/social-links`
 
 后台接口：
 
@@ -173,6 +183,7 @@ Markdown 安全：
 - 知识库文章：后台可新建、编辑、发布、删除文章；保存和发布时要求 zh / en / ja 三语标题与正文齐全。
 - 视频管理：后台可维护 YouTube / Bilibili / b23.tv 视频和视频分类；服务端解析链接、生成规范化播放器地址，并在后台预览、保存或刷新时抓取标题、简介、作者、发布时间和封面。
 - 聊天室管理：后台可查看隐藏访客 ID、client id、IP hash/IP 前缀、来源地；可编辑、隐藏/恢复、删除消息，并按隐藏访客 ID 或 IP hash 禁言。
+- 社交链接管理：后台可修改关于我窗口中 X、GitHub、Bilibili、Instagram、Discord 五个图标按钮的跳转地址；配置保存到 `site_runtime_state.about_social_links`，主站只读展示图标入口。
 - 后台更新记录：后台私有更新说明独立于“后台说明”，每次后台更新后同步维护页面内记录和 `admin/docs/ADMIN_CHANGELOG.md`。
 
 公开埋点接口：
@@ -199,6 +210,8 @@ Markdown 安全：
 - `GET /api/admin/chat/bans`
 - `POST /api/admin/chat/bans`
 - `DELETE /api/admin/chat/bans/:banId`
+- `GET /api/admin/social-links`
+- `PUT /api/admin/social-links`
 
 访客 ID 规则：
 
@@ -350,7 +363,7 @@ D1 表：`anonymous_chat_messages`
 - `videos`
 - `video_categories`
 - `video_category_relations`
-- `site_runtime_state`
+- `site_runtime_state`（视频分类 seed 标记、关于我社交链接等轻量运行时配置）
 - `site_visitors`
 - `analytics_page_views`
 - `analytics_click_events`

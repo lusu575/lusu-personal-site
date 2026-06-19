@@ -35,6 +35,8 @@ const state = {
   selectedAccountId: "",
   accountDetail: null,
   accountSaving: false,
+  socialLinks: [],
+  socialLinksSaving: false,
   loadedPanels: {},
   loadingPanels: {},
   loggingOut: false,
@@ -57,6 +59,13 @@ const LOCAL_COVER_SIZES = [
   [768, 432],
   [640, 360]
 ];
+const SOCIAL_LINK_PLATFORMS = [
+  { platform: "x", label: "X", default_url: "https://x.com/lusu575" },
+  { platform: "github", label: "GitHub", default_url: "https://github.com/lusu575" },
+  { platform: "bilibili", label: "Bilibili", default_url: "https://space.bilibili.com/" },
+  { platform: "instagram", label: "Instagram", default_url: "https://www.instagram.com/lusu575/" },
+  { platform: "discord", label: "Discord", default_url: "https://discord.com/" }
+];
 
 const panelMeta = {
   dashboard: ["实时监控大屏", "访问、点击、文章和聊天室状态集中查看。"],
@@ -67,6 +76,7 @@ const panelMeta = {
   videoCategories: ["视频分类管理", "维护视频区顶部标签，支持新增、编辑、停用、排序和安全删除。"],
   chat: ["聊天室管理", "编辑、隐藏、删除聊天记录，按隐藏用户 ID 或 IP 来源禁言。"],
   accounts: ["账号管理", "查看注册账号、重置密码、确认登录履历和近期活跃。"],
+  socialLinks: ["社交链接", "维护主站关于我窗口里的 X、GitHub、Bilibili、Instagram 和 Discord 跳转。"],
   updates: ["后台更新记录", "后台自己的私有更新说明，每次后台更新后同步记录。"],
   docs: ["后台说明", "后台项目说明，不混入主站知识库。"]
 };
@@ -76,6 +86,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-06-20",
+    title: "关于我社交链接管理",
+    body: "后台新增“社交链接”页，可维护主站关于我窗口中的 X、GitHub、Bilibili、Instagram 和 Discord 跳转地址；配置保存到 site_runtime_state，主站通过公开只读接口读取并只展示小图标。"
+  },
   {
     date: "2026-06-19",
     title: "访问地图投影对齐修复",
@@ -707,6 +722,13 @@ async function loadPanelData(panel, options = {}) {
         } catch (error) {
           renderAccountListNotice(`读取账号列表失败：${error.message}`, "账号列表错误");
           throw new Error(`账号列表：${error.message}`);
+        }
+      } else if (panel === "socialLinks") {
+        try {
+          await loadSocialLinks();
+        } catch (error) {
+          renderSocialLinkPreviewNotice(`读取社交链接失败：${error.message}`, "社交链接错误");
+          throw new Error(`社交链接：${error.message}`);
         }
       }
 
@@ -3423,6 +3445,165 @@ function accountBusyFormTitle() {
   return "正在保存账号，完成后再编辑表单";
 }
 
+function fillSocialLinksForm(links = state.socialLinks) {
+  const form = $("#social-links-form");
+  if (!form) {
+    return;
+  }
+  const byPlatform = new Map((links || []).map((item) => [item.platform, item]));
+  SOCIAL_LINK_PLATFORMS.forEach((platform) => {
+    const field = form.elements[platform.platform];
+    if (!field) {
+      return;
+    }
+    const item = byPlatform.get(platform.platform) || platform;
+    field.value = item.url || item.default_url || platform.default_url;
+  });
+  syncSocialLinksFormBusyState();
+}
+
+function resetSocialLinksFormToDefaults() {
+  const form = $("#social-links-form");
+  if (!form || state.socialLinksSaving) {
+    return;
+  }
+  state.socialLinks = SOCIAL_LINK_PLATFORMS.map((item) => ({
+    ...item,
+    url: item.default_url
+  }));
+  fillSocialLinksForm(state.socialLinks);
+  renderSocialLinkPreview();
+  setElementText($("#social-links-status"), "已填入默认链接，保存后才会写入数据库。");
+}
+
+function socialLinksPayloadFromForm() {
+  const form = $("#social-links-form");
+  return {
+    links: SOCIAL_LINK_PLATFORMS.reduce((result, platform) => {
+      result[platform.platform] = form.elements[platform.platform].value.trim();
+      return result;
+    }, {})
+  };
+}
+
+async function loadSocialLinks() {
+  const payload = await api("/api/admin/social-links");
+  state.socialLinks = normalizeAdminSocialLinks(payload.links || []);
+  fillSocialLinksForm(state.socialLinks);
+  renderSocialLinkPreview();
+  setElementText($("#social-links-status"), "");
+}
+
+function normalizeAdminSocialLinks(links) {
+  const byPlatform = new Map((links || []).map((item) => [item.platform, item]));
+  return SOCIAL_LINK_PLATFORMS.map((platform) => {
+    const item = byPlatform.get(platform.platform) || {};
+    return {
+      platform: platform.platform,
+      label: item.label || platform.label,
+      url: item.url || item.default_url || platform.default_url,
+      default_url: item.default_url || platform.default_url,
+      updated_at: item.updated_at || ""
+    };
+  });
+}
+
+function renderSocialLinkPreview() {
+  const list = $("#social-link-preview-list");
+  if (!list) {
+    return;
+  }
+  const links = state.socialLinks.length ? state.socialLinks : normalizeAdminSocialLinks([]);
+  const countText = `${formatNumber(links.length)} 个入口`;
+  setElementText($("#social-link-preview-count"), countText);
+  syncBoxLabel(list, `社交链接预览：${countText}`);
+  list.replaceChildren(...links.map((item) => {
+    const article = document.createElement("article");
+    const title = document.createElement("strong");
+    const meta = document.createElement("span");
+    const code = document.createElement("code");
+    const url = item.url || item.default_url || "";
+    const label = `${item.label || item.platform}；${url}`;
+    article.className = "event-item social-link-preview-item";
+    article.tabIndex = 0;
+    article.title = label;
+    article.setAttribute("aria-label", label);
+    setElementText(title, item.label || item.platform);
+    meta.className = "list-meta";
+    meta.append(createStatusBadgeElement("公开图标", "visible"));
+    if (item.updated_at) {
+      meta.append(createStatusBadgeElement(`更新 ${formatTime(item.updated_at)}`, "neutral"));
+    }
+    setElementText(code, url || "未设置");
+    article.append(title, meta, code);
+    return article;
+  }));
+  syncSocialLinksFormBusyState();
+}
+
+function renderSocialLinkPreviewNotice(text, label = "社交链接提示") {
+  const list = $("#social-link-preview-list");
+  if (!list) {
+    return;
+  }
+  setElementText($("#social-link-preview-count"), label);
+  syncBoxLabel(list, `${label}：${text}`);
+  list.replaceChildren(createEmptyStateElement(text));
+  syncSocialLinksFormBusyState();
+}
+
+function syncSocialLinksFormBusyState() {
+  const form = $("#social-links-form");
+  if (!form) {
+    return;
+  }
+  const locked = state.socialLinksSaving;
+  $$("#social-links-form input, #social-links-form button").forEach((field) => {
+    field.disabled = locked;
+    field.setAttribute("aria-busy", locked ? "true" : "false");
+    if (locked) {
+      field.title = "正在保存社交链接";
+    } else if (field.id !== "save-social-links" && field.id !== "reset-social-links-defaults") {
+      field.removeAttribute("title");
+    }
+  });
+  const saveButton = $("#save-social-links");
+  if (saveButton) {
+    saveButton.textContent = locked ? "保存中..." : "保存链接";
+    syncButtonHint(saveButton, locked ? "正在保存社交链接" : "保存社交链接");
+  }
+  const resetButton = $("#reset-social-links-defaults");
+  if (resetButton && !locked) {
+    syncButtonHint(resetButton, "恢复默认社交链接");
+  }
+}
+
+async function saveSocialLinks(event) {
+  event.preventDefault();
+  if (state.socialLinksSaving) {
+    return;
+  }
+  state.socialLinksSaving = true;
+  setElementText($("#social-links-status"), "正在保存社交链接...");
+  syncSocialLinksFormBusyState();
+  try {
+    const payload = await api("/api/admin/social-links", {
+      method: "PUT",
+      body: JSON.stringify(socialLinksPayloadFromForm())
+    });
+    state.socialLinks = normalizeAdminSocialLinks(payload.links || []);
+    fillSocialLinksForm(state.socialLinks);
+    renderSocialLinkPreview();
+    setElementText($("#social-links-status"), "已保存，主站关于我图标将读取新的跳转地址。");
+    state.loadedPanels[panelDataKey("socialLinks")] = Date.now();
+  } catch (error) {
+    setElementText($("#social-links-status"), error.message);
+  } finally {
+    state.socialLinksSaving = false;
+    syncSocialLinksFormBusyState();
+  }
+}
+
 function createEventItemElement(titleText, detailTexts) {
   const item = document.createElement("article");
   const title = document.createElement("strong");
@@ -3885,6 +4066,8 @@ function bindEvents() {
     }
   });
   $("#account-form").addEventListener("submit", saveAccount);
+  $("#social-links-form").addEventListener("submit", saveSocialLinks);
+  $("#reset-social-links-defaults").addEventListener("click", resetSocialLinksFormToDefaults);
 }
 
 async function init() {
@@ -3896,6 +4079,9 @@ async function init() {
   resetVideoCategoryForm();
   resetChatForm();
   syncAccountSaveButton();
+  state.socialLinks = normalizeAdminSocialLinks([]);
+  fillSocialLinksForm(state.socialLinks);
+  renderSocialLinkPreview();
   try {
     applyActivePanel(getStoredActivePanel());
     await loadMe();

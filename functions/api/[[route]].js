@@ -33,11 +33,19 @@ const BILIBILI_PAGE_HEADERS = {
   Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
 };
 const VIDEO_CATEGORY_SEED_FLAG = "video_categories_default_seeded";
+const SOCIAL_LINKS_STATE_KEY = "about_social_links";
 const DEFAULT_VIDEO_CATEGORIES = [
   ["video-cat-vrchat", "vrchat", "VRChat作品", "VRChat Works", "VRChat作品", 10],
   ["video-cat-ai", "ai-experiments", "AI实验", "AI Experiments", "AI実験", 20],
   ["video-cat-games", "game-records", "游戏录像", "Game Records", "ゲーム録画", 30],
   ["video-cat-favorites", "favorites", "收藏视频", "Saved Videos", "お気に入り動画", 40]
+];
+const SOCIAL_LINK_PLATFORMS = [
+  ["x", "X", "https://x.com/lusu575"],
+  ["github", "GitHub", "https://github.com/lusu575"],
+  ["bilibili", "Bilibili", "https://space.bilibili.com/"],
+  ["instagram", "Instagram", "https://www.instagram.com/lusu575/"],
+  ["discord", "Discord", "https://discord.com/"]
 ];
 const PUBLIC_LOOP_NIGHTLY_UPDATE_SLUG = "2026-06-18-main-visual-polish-cycle";
 const PUBLIC_LOOP_NIGHTLY_UPDATE_FILTER = `not (
@@ -140,8 +148,19 @@ export async function onRequest(context) {
         return await getVideo(request, env, parts[1]);
       }
     }
+    if (request.method === "GET" && parts[0] === "social-links") {
+      return await getSocialLinks(request, env);
+    }
     if (parts[0] === "admin" && request.method === "GET" && parts[1] === "me") {
       return await adminMe(request, env);
+    }
+    if (parts[0] === "admin" && parts[1] === "social-links") {
+      if (request.method === "GET") {
+        return await getAdminSocialLinks(request, env);
+      }
+      if (request.method === "PUT") {
+        return await updateAdminSocialLinks(request, env);
+      }
     }
     if (parts[0] === "admin" && parts[1] === "accounts") {
       await ensureAnalyticsSchema(env);
@@ -1175,6 +1194,100 @@ async function deleteVideoCategory(request, env, categoryId) {
   return json({ ok: true });
 }
 
+async function getSocialLinks(request, env) {
+  return json({ links: await socialLinkRows(env) });
+}
+
+async function getAdminSocialLinks(request, env) {
+  await requireAdmin(request, env);
+  return json({ links: await socialLinkRows(env) });
+}
+
+async function updateAdminSocialLinks(request, env) {
+  await requireAdmin(request, env);
+  const links = normalizeSocialLinksPayload(await readJson(request));
+  const now = nowIso();
+  await env.DB.prepare(`
+    insert into site_runtime_state (key, value, updated_at)
+    values (?, ?, ?)
+    on conflict(key) do update set
+      value = excluded.value,
+      updated_at = excluded.updated_at
+  `).bind(SOCIAL_LINKS_STATE_KEY, JSON.stringify(links), now).run();
+  return json({ ok: true, links: socialLinkRowsFromValue(links, now) });
+}
+
+async function socialLinkRows(env) {
+  const row = await env.DB.prepare("select value, updated_at from site_runtime_state where key = ?")
+    .bind(SOCIAL_LINKS_STATE_KEY).first();
+  let stored = {};
+  try {
+    const parsed = row?.value ? JSON.parse(row.value) : {};
+    stored = parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+  } catch {
+    stored = {};
+  }
+  return socialLinkRowsFromValue(stored, row?.updated_at || "");
+}
+
+function socialLinkRowsFromValue(value, updatedAt = "") {
+  return SOCIAL_LINK_PLATFORMS.map(([platform, label, defaultUrl]) => ({
+    platform,
+    label,
+    url: normalizeStoredSocialLinkUrl(value?.[platform], label, defaultUrl),
+    default_url: defaultUrl,
+    updated_at: updatedAt
+  }));
+}
+
+function normalizeSocialLinksPayload(body) {
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    throw new HttpError("社交链接数据格式不正确。", 400);
+  }
+  const links = {};
+  for (const [platform, label, defaultUrl] of SOCIAL_LINK_PLATFORMS) {
+    links[platform] = normalizeSocialLinkUrl(socialLinkInputValue(body, platform), label, defaultUrl);
+  }
+  return links;
+}
+
+function socialLinkInputValue(body, platform) {
+  const source = body.links && typeof body.links === "object" ? body.links : body;
+  if (Array.isArray(source)) {
+    const item = source.find((entry) => String(entry?.platform || entry?.id || "") === platform);
+    return item?.url || "";
+  }
+  const value = source?.[platform];
+  return value && typeof value === "object" ? value.url : value;
+}
+
+function normalizeStoredSocialLinkUrl(value, label, defaultUrl) {
+  try {
+    return normalizeSocialLinkUrl(value && typeof value === "object" ? value.url : value, label, defaultUrl);
+  } catch {
+    return defaultUrl;
+  }
+}
+
+function normalizeSocialLinkUrl(value, label, defaultUrl) {
+  const raw = normalizeOptionalText(value, 800);
+  if (!raw) {
+    return defaultUrl;
+  }
+  const withProtocol = /^[a-z][a-z0-9+.-]*:/i.test(raw)
+    ? raw
+    : `https://${raw.replace(/^\/+/, "")}`;
+  try {
+    const url = new URL(withProtocol);
+    if (!["http:", "https:"].includes(url.protocol)) {
+      throw new Error("unsupported protocol");
+    }
+    return url.href;
+  } catch {
+    throw new HttpError(`${label} 链接必须是有效的 http(s) 地址。`, 400);
+  }
+}
+
 async function adminMe(request, env) {
   const session = await requireAdmin(request, env);
   return json({ user: session.user });
@@ -2117,6 +2230,13 @@ async function ensureCoreSchema(env) {
         save_data text not null,
         updated_at text not null,
         primary key (user_id, game_id)
+      )
+    `),
+    env.DB.prepare(`
+      create table if not exists site_runtime_state (
+        key text primary key,
+        value text not null,
+        updated_at text not null
       )
     `),
     env.DB.prepare("create index if not exists game_saves_updated_at_idx on game_saves(updated_at)")
@@ -5757,6 +5877,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         article_id, slug, category, tags, cover_image, status, is_pinned,
         view_count, created_at, updated_at, published_at
       ) values (
+        'seed-update-2026-06-20-about-social-links',
+        '2026-06-20-about-social-links',
+        'site-updates',
+        '["网站更新","关于我","社交链接","后台"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-19T18:00:00.000Z',
+        '2026-06-19T18:00:00.000Z',
+        '2026-06-19T18:00:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
         'seed-update-2026-06-19-immersive-time-chrome',
         '2026-06-19-immersive-time-chrome',
         'site-updates',
@@ -5850,6 +5997,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# メインサイト夜間更新まとめ\n\nこの記録では、昨夜の公開サイト側の小さな更新を一つにまとめました。更新記録が細かな記事で埋まりすぎないようにするためです。\n\n## まとめ\n\n- 知識庫の記事詳細に、目次、読書進捗、リンクコピー、先頭へ戻る操作を追加しました。今回、参考画像に合わせて左側の目次/ヒント、右側の本文カード、下部の進捗バーと先頭へ戻るボタンを並べた表示に整えました。\n- さらに10回の視覚調整を行い、記事閲覧ウィンドウはサイト内の XP ウィンドウサイズに戻し、全体へ引き伸ばさない表示にしました。タイトルバーに最小化/最大化/閉じるボタンを追加し、進捗バーを1行の青い分割バーにし、本文の余白と左側ヒントの位置も参考画像に近づけました。\n- リソース欄には分類件数、状態バッジ、空分類の案内、より厳しいリンク許可リストを追加しました。\n- ゲーム欄にはクラウド保存、ソース表示、言語ラベル、起動パスの確認、ゲームシェルの安全な DOM 描画を追加しました。\n- 最近の更新、知識庫一覧、フィルター、リソースフィルター、ゲーム一覧は DOM / textContent 描画を続け、公開内容の XSS リスクを下げます。\n- RSS、言語付きリンク、記事共有 URL、最近の更新ラベルをそろえ、購読と共有を安定させました。\n- 画像の遅延読み込み、非同期デコード、固定画像サイズ、モバイル表示の細部も軽く調整しました。\n\n古い単項目の記事は履歴と回退用データとして残しますが、公開一覧と RSS ではこのまとめ記事だけを表示します。"
       }
     }, "2026-06-18T00:00:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-20-about-social-links", {
+      zh: {
+        title: "关于我社交图标上线",
+        summary: "关于我窗口新增五个纯图标社交入口，并可在后台修改每个跳转链接。",
+        content_markdown: "# 关于我社交图标上线\n\n关于我窗口现在多了一排纯图标社交入口，不额外增加可见文字，继续保持个人站的 XP 像素桌面排版。\n\n## 更新内容\n\n- 新增 X、GitHub、Bilibili、Instagram 和 Discord 五个图标按钮。\n- 每个图标都是可点击超链接，并默认跳转到对应平台页面。\n- 后台新增“社交链接”页，可替换和修改每个平台的跳转地址。\n- 社交链接配置保存到 D1 的 `site_runtime_state`，主站通过公开只读接口读取。\n- 图标按钮保留 `aria-label`，移动端会自动换行，避免撑开关于我窗口。"
+      },
+      en: {
+        title: "About Social Icons",
+        summary: "The About window now has five icon-only social links with admin-editable URLs.",
+        content_markdown: "# About Social Icons\n\nThe About window now includes an icon-only row of social links, without adding visible text inside the panel.\n\n## Changes\n\n- Added icon buttons for X, GitHub, Bilibili, Instagram, and Discord.\n- Each icon opens its configured external page in a new tab.\n- The admin area now has a Social Links page for editing every destination URL.\n- Social link settings are stored in D1 `site_runtime_state`, and the public site reads them through a read-only endpoint.\n- The buttons keep `aria-label` text and wrap on small screens so the About window stays tidy."
+      },
+      ja: {
+        title: "プロフィールのSNSアイコン",
+        summary: "プロフィール画面に5つのアイコンリンクを追加し、管理画面でURLを変更できます。",
+        content_markdown: "# プロフィールのSNSアイコン\n\nプロフィール画面に、文字を増やさないアイコンだけのSNSリンク列を追加しました。\n\n## 更新内容\n\n- X、GitHub、Bilibili、Instagram、Discord の5つのアイコンボタンを追加しました。\n- 各アイコンはクリックでき、設定された外部ページを新しいタブで開きます。\n- 管理画面に「社交リンク」ページを追加し、各リンク先URLを変更できます。\n- SNSリンク設定は D1 の `site_runtime_state` に保存し、公開側は読み取り専用APIから取得します。\n- ボタンには `aria-label` を残し、小画面では折り返してプロフィール画面を崩さないようにしています。"
+      }
+    }, "2026-06-19T18:00:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-06-19-immersive-time-chrome", {
       zh: {
         title: "四时段沉浸式桌面栏",

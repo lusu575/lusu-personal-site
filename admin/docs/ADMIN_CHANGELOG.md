@@ -2,6 +2,15 @@
 
 > 管理后台专用说明：本文档只记录 `/admin/` 管理后台的私有维护记录，不等同于主站根目录 `CHANGELOG.md`。后台私有更新不写入主站知识库 `site-updates`，也不展示到首页最近更新。
 
+## 2026-06-20
+
+- 关于我社交链接管理：
+  - 后台新增“社交链接”标签页，位置在“账号管理”和“后台更新记录”之间。
+  - 可维护主站关于我窗口中的 X、GitHub、Bilibili、Instagram、Discord 五个跳转地址，并提供默认值恢复和当前链接预览。
+  - 新增 `GET /api/admin/social-links`、`PUT /api/admin/social-links`，继续调用 `requireAdmin`；配置保存到 D1 `site_runtime_state.about_social_links`。
+  - 公开主站通过 `GET /api/social-links` 只读读取配置；后台保存只接受 http(s) URL，省略协议时由服务端补 `https://`。
+  - 后台 CSS/JS query 更新为 `20260620-admin-social-links-r1`；本次同时改变主站公开关于我窗口，因此公开侧另按主站规则写入 `site-updates`。
+
 ## 2026-06-19
 
 - 访问地图投影对齐修复：

@@ -572,6 +572,32 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-06-20-about-social-links',
+  '2026-06-20-about-social-links',
+  'site-updates',
+  '["网站更新","关于我","社交链接","后台"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-19T18:00:00.000Z',
+  '2026-06-19T18:00:00.000Z',
+  '2026-06-19T18:00:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-06-19-immersive-time-chrome',
   '2026-06-19-immersive-time-chrome',
   'site-updates',
@@ -649,6 +675,66 @@ on conflict(article_id) do update set
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
+  (
+    'seed-update-2026-06-20-about-social-links-zh',
+    'seed-update-2026-06-20-about-social-links',
+    'zh',
+    '关于我社交图标上线',
+    '关于我窗口新增五个纯图标社交入口，并可在后台修改每个跳转链接。',
+    '# 关于我社交图标上线
+
+关于我窗口现在多了一排纯图标社交入口，不额外增加可见文字，继续保持个人站的 XP 像素桌面排版。
+
+## 更新内容
+
+- 新增 X、GitHub、Bilibili、Instagram 和 Discord 五个图标按钮。
+- 每个图标都是可点击超链接，并默认跳转到对应平台页面。
+- 后台新增“社交链接”页，可替换和修改每个平台的跳转地址。
+- 社交链接配置保存到 D1 的 `site_runtime_state`，主站通过公开只读接口读取。
+- 图标按钮保留 `aria-label`，移动端会自动换行，避免撑开关于我窗口。',
+    '2026-06-19T18:00:00.000Z',
+    '2026-06-19T18:00:00.000Z'
+  ),
+  (
+    'seed-update-2026-06-20-about-social-links-en',
+    'seed-update-2026-06-20-about-social-links',
+    'en',
+    'About Social Icons',
+    'The About window now has five icon-only social links with admin-editable URLs.',
+    '# About Social Icons
+
+The About window now includes an icon-only row of social links, without adding visible text inside the panel.
+
+## Changes
+
+- Added icon buttons for X, GitHub, Bilibili, Instagram, and Discord.
+- Each icon opens its configured external page in a new tab.
+- The admin area now has a Social Links page for editing every destination URL.
+- Social link settings are stored in D1 `site_runtime_state`, and the public site reads them through a read-only endpoint.
+- The buttons keep `aria-label` text and wrap on small screens so the About window stays tidy.',
+    '2026-06-19T18:00:00.000Z',
+    '2026-06-19T18:00:00.000Z'
+  ),
+  (
+    'seed-update-2026-06-20-about-social-links-ja',
+    'seed-update-2026-06-20-about-social-links',
+    'ja',
+    'プロフィールのSNSアイコン',
+    'プロフィール画面に5つのアイコンリンクを追加し、管理画面でURLを変更できます。',
+    '# プロフィールのSNSアイコン
+
+プロフィール画面に、文字を増やさないアイコンだけのSNSリンク列を追加しました。
+
+## 更新内容
+
+- X、GitHub、Bilibili、Instagram、Discord の5つのアイコンボタンを追加しました。
+- 各アイコンはクリックでき、設定された外部ページを新しいタブで開きます。
+- 管理画面に「社交リンク」ページを追加し、各リンク先URLを変更できます。
+- SNSリンク設定は D1 の `site_runtime_state` に保存し、公開側は読み取り専用APIから取得します。
+- ボタンには `aria-label` を残し、小画面では折り返してプロフィール画面を崩さないようにしています。',
+    '2026-06-19T18:00:00.000Z',
+    '2026-06-19T18:00:00.000Z'
+  ),
   (
     'seed-update-2026-06-19-immersive-time-chrome-zh',
     'seed-update-2026-06-19-immersive-time-chrome',

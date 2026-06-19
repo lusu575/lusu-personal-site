@@ -11,7 +11,7 @@
 - 前端逻辑：`admin/admin.js`
 - 后台访问拦截：`functions/admin/_middleware.js`
 - 后台 API：`functions/api/[[route]].js` 中的 `/api/admin/*`
-- 主要用途：站长维护个人站内容、视频、访问统计、点击埋点和聊天室治理。
+- 主要用途：站长维护个人站内容、视频、关于我社交链接、访问统计、点击埋点和聊天室治理。
 - 文案范围：后台只使用中文文案，不进入主站中文 / English / 日本語 三语窗口体系。
 - 更新范围：后台项目介绍和后台更新记录属于后台私有内容，不写入主站知识库 `site-updates`，也不公开展示到首页最近更新。
 
@@ -40,6 +40,7 @@
 - 视频管理：维护 YouTube / Bilibili / b23.tv 视频，服务端识别链接、抓取标题、简介、作者、发布时间、封面和规范化 `embed_url`，支持草稿、发布、隐藏、排序、置顶、置顶排序、删除和刷新元数据。元数据只在后台预览、首次保存、URL 变化保存或刷新时抓取，已有视频 URL 未变化的普通保存不重新抓取外部元数据。封面可使用平台图片 URL，或在后台选择 JPG、PNG、WEBP、AVIF 本地图片后压缩写入 `thumbnail_url`；也可从本地视频文件读取第一帧生成封面，但这只生成封面，不上传或托管本地视频。置顶视频进入独立置顶队列并一定排在未置顶视频前面；多个置顶视频按 `pinned_sort_order` 从大到小显示，未置顶视频按 `sort_order` 从大到小显示，新建视频默认普通排序最大值 +10、置顶排序最大值 +10；后台编辑区只展示检查用小播放器，避免 iframe 预览占满页面。
 - 视频分类管理：维护视频区分类标签，支持 slug、中文名、English、日本語、排序和启用状态；分类排序同样是数值越大越靠前，新建默认 +10；默认分类 seed 只在全新视频分类表首次创建时初始化，已有表会通过 `site_runtime_state.video_categories_default_seeded` 标记为已处理，不覆盖或补回后台维护过的 slug、分类名、排序、启用状态和已删除分类；“全部”分类只由前台生成，不写入数据库。
 - 聊天室管理：查看聊天记录，编辑、隐藏/恢复、删除消息，并按隐藏 visitor id 或 IP hash 禁言。
+- 社交链接管理：维护主站关于我窗口的 X、GitHub、Bilibili、Instagram、Discord 五个图标跳转；保存到 `site_runtime_state.about_social_links`，只允许 http(s) 链接，主站只显示小图标不显示平台文字。
 - 后台更新记录：展示后台私有更新说明，每次后台更新后必须同步维护页面内 `adminUpdates` 和 `admin/docs/ADMIN_CHANGELOG.md`。
 - 后台说明：展示后台项目介绍，不对外公开。
 
@@ -68,6 +69,8 @@
 - `GET /api/admin/chat/bans`
 - `POST /api/admin/chat/bans`
 - `DELETE /api/admin/chat/bans/:banId`
+- `GET /api/admin/social-links`
+- `PUT /api/admin/social-links`
 
 ## 相关公开接口
 
@@ -80,6 +83,7 @@
 - `GET /api/articles/:slug`
 - `GET /api/videos`
 - `GET /api/videos/:videoId`
+- `GET /api/social-links`
 - `GET /api/chat/messages`
 - `POST /api/chat/messages`
 
@@ -96,7 +100,7 @@
 - `videos`
 - `video_categories`
 - `video_category_relations`
-- `site_runtime_state`
+- `site_runtime_state`（视频分类默认 seed 标记、关于我社交链接等运行时配置）
 - `site_visitors`
 - `analytics_page_views`
 - `analytics_click_events`
@@ -111,6 +115,7 @@
 - 埋点不得记录输入框内容、密码、文章草稿、后台表单内容或未发送聊天内容。
 - 聊天室内容和昵称必须纯文本渲染；后台展示也要避免把用户内容当 HTML 执行。
 - 后台视频 iframe 只能使用服务端规范化生成的 `embed_url`，不得直接信任管理员输入的任意 URL。
+- 社交链接保存时只接受 http(s) URL；前台关于我窗口只显示图标按钮，不能把后台填写的链接文字作为 HTML 或可见文案注入页面。
 
 ## 部署和缓存
 
@@ -157,6 +162,15 @@ npm.cmd run build
 - PowerShell 优先使用 `npm.cmd` / `npx.cmd`。
 - `.wrangler/`、`.wrangler-config/`、`node_modules/`、`.codex-remote-attachments/` 是本地生成内容，不得提交。
 - 如果本地没有 admin 账号，需要先注册/登录主站账号，再在 D1 中把对应 `users.role` 更新为 `admin`。
+
+## 2026-06-20 社交链接管理模块
+
+- 后台新增“社交链接”模块，导航位置在“账号管理”和“后台更新记录”之间。
+- 接口为 `GET /api/admin/social-links`、`PUT /api/admin/social-links`，全部必须继续使用 `requireAdmin`。
+- 后台表单维护 X、GitHub、Bilibili、Instagram、Discord 五个跳转地址；保存时服务端补齐省略的 `https://`，拒绝非 http(s) URL。
+- 配置保存到 `site_runtime_state` 的 `about_social_links` key；公开主站通过 `GET /api/social-links` 只读获取。
+- 主站关于我窗口只显示图标按钮，不显示后台填写的链接文字；后台预览列表也必须用 DOM/textContent 渲染。
+
 ## 2026-06-15 账号管理模块
 
 - 后台新增“账号管理”模块，导航位置在“后台更新记录”上方。

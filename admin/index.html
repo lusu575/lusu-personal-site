@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex,nofollow">
   <title>鲁肃个人站管理后台</title>
-  <link rel="stylesheet" href="/admin/admin.css?v=20260619-admin-real-map-r001">
+  <link rel="stylesheet" href="/admin/admin.css?v=20260620-admin-social-links-r1">
 </head>
 <body>
   <div class="admin-shell">
@@ -26,6 +26,7 @@
         <button class="nav-button" type="button" data-panel="videoCategories" aria-controls="videoCategories-panel">视频分类管理</button>
         <button class="nav-button" type="button" data-panel="chat" aria-controls="chat-panel">聊天室管理</button>
         <button class="nav-button" type="button" data-panel="accounts" aria-controls="accounts-panel">账号管理</button>
+        <button class="nav-button" type="button" data-panel="socialLinks" aria-controls="socialLinks-panel">社交链接</button>
         <button class="nav-button" type="button" data-panel="updates" aria-controls="updates-panel">后台更新记录</button>
         <button class="nav-button" type="button" data-panel="docs" aria-controls="docs-panel">后台说明</button>
       </nav>
@@ -406,6 +407,39 @@
         </div>
       </section>
 
+      <section class="panel" id="socialLinks-panel" hidden aria-hidden="true">
+        <div class="split-layout social-links-layout">
+          <section class="xp-panel editor-panel">
+            <div class="panel-head">
+              <h2>关于我社交链接</h2>
+              <span>控制主站关于我窗口的图标跳转</span>
+            </div>
+            <form id="social-links-form" class="editor-form" autocomplete="off">
+              <div class="social-link-fields">
+                <label>X（推特）<input name="x" maxlength="800" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="https://x.com/lusu575"></label>
+                <label>GitHub<input name="github" maxlength="800" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="https://github.com/lusu575"></label>
+                <label>Bilibili<input name="bilibili" maxlength="800" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="https://space.bilibili.com/..."></label>
+                <label>Instagram<input name="instagram" maxlength="800" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="https://www.instagram.com/lusu575/"></label>
+                <label>Discord<input name="discord" maxlength="800" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="https://discord.com/..."></label>
+              </div>
+              <p class="safe-note">只保存 http(s) 链接；如果省略 https://，保存时会自动补齐。主站只显示小图标，不显示这些平台文字。</p>
+              <div class="form-actions">
+                <button class="xp-button primary" type="submit" id="save-social-links" title="保存社交链接">保存链接</button>
+                <button class="xp-button" type="button" id="reset-social-links-defaults" title="恢复默认社交链接">恢复默认</button>
+                <span class="form-status" id="social-links-status" role="status" aria-live="polite" aria-atomic="true"></span>
+              </div>
+            </form>
+          </section>
+          <section class="xp-panel list-panel">
+            <div class="panel-head">
+              <h2>图标预览</h2>
+              <span id="social-link-preview-count">5 个入口</span>
+            </div>
+            <div class="social-link-preview-list" id="social-link-preview-list" aria-label="社交链接预览"></div>
+          </section>
+        </div>
+      </section>
+
       <section class="panel" id="docs-panel" hidden aria-hidden="true">
         <section class="xp-panel prose">
           <div class="panel-head"><h2>后台项目介绍</h2><span>独立于主站公开内容</span></div>
@@ -416,7 +450,7 @@
           </div>
           <p>这个后台只服务站长维护个人站，不对外展示，也不复用知识库的网站更新记录。</p>
           <p>后台复用主站账号系统和 <code>users.role = admin</code> 权限，只允许管理员账号访问页面和 API。</p>
-          <p>后台包含实时大屏、访问来源、点击埋点、三语文章编辑、视频管理、视频分类管理、聊天室编辑/删除/禁言、账号管理和后台私有更新记录。</p>
+          <p>后台包含实时大屏、访问来源、点击埋点、三语文章编辑、视频管理、视频分类管理、聊天室编辑/删除/禁言、账号管理、社交链接管理和后台私有更新记录。</p>
         </section>
       </section>
 
@@ -429,6 +463,6 @@
     </main>
   </div>
 
-  <script src="/admin/admin.js?v=20260619-admin-map-projection-r001"></script>
+  <script src="/admin/admin.js?v=20260620-admin-social-links-r1"></script>
 </body>
 </html>
