@@ -39,10 +39,12 @@ const state = {
   loadingPanels: {},
   loggingOut: false,
   statusHoldUntil: 0,
-  timer: null
+  timer: null,
+  mapResizeTimer: null
 };
 
 const ACTIVE_PANEL_STORAGE_KEY = "lusu-admin-active-panel";
+const WORLD_MAP_ASPECT_RATIO = 1000 / 500;
 const LOCAL_COVER_ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/jpg", "image/png", "image/webp", "image/avif"]);
 const LOCAL_COVER_ALLOWED_IMAGE_EXTENSIONS = new Set(["jpg", "jpeg", "png", "webp", "avif"]);
 const LOCAL_COVER_ALLOWED_VIDEO_TYPES = new Set(["video/mp4", "video/webm", "video/ogg", "video/quicktime"]);
@@ -74,6 +76,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-06-19",
+    title: "访问地图投影对齐修复",
+    body: "修复宽屏下面板蓝色背景和真实世界地图 SVG 可见区域不一致导致的点位偏移；来源点现在按 SVG 实际显示的 2:1 地图框重新投影，并在窗口尺寸变化后自动重算，确保经纬度落在对应城市和大陆位置。"
+  },
   {
     date: "2026-06-19",
     title: "访问地图真实底图与经纬度点位",
@@ -738,6 +745,9 @@ function applyActivePanel(panel) {
   });
   setElementText($("#panel-title"), panelMeta[panel][0]);
   setElementText($("#panel-subtitle"), panelMeta[panel][1]);
+  if (panel === "dashboard" && state.overview) {
+    window.requestAnimationFrame(renderVisitorMapFromOverview);
+  }
 }
 
 function switchPanel(panel) {
@@ -798,7 +808,7 @@ function renderOverview() {
   renderKpis(state.overview.cards);
   renderDailyChart(state.overview.daily || []);
   renderHourlyChart(state.overview.hourly || []);
-  renderMap((state.overview.regions || []).length ? state.overview.regions : (state.overview.countries || []));
+  renderMap(overviewMapRows());
   renderTopPages(state.overview.topPages || []);
   renderTopArticles(state.overview.topArticles || []);
   renderVisitTables();
@@ -902,10 +912,10 @@ function renderMap(rows) {
   map.title = mapLabel;
   map.setAttribute("aria-label", mapLabel);
   const max = Math.max(...data.map((row) => Number(row.pv || 0)), 1);
+  const mapBounds = getVisibleMapBounds(map);
   map.replaceChildren(...data.map((row, index) => {
     const [lon, lat] = coordinatesFor(row, index);
-    const left = clampNumber(((lon + 180) / 360) * 100, 3, 97);
-    const top = clampNumber(((90 - lat) / 180) * 100, 5, 95);
+    const { left, top } = projectCoordinateToVisibleMap(lon, lat, mapBounds);
     const size = 10 + Math.round((Number(row.pv || 0) / max) * 22);
     const label = mapPlaceLabel(row);
     const shortLabel = mapShortPlaceLabel(row);
@@ -928,6 +938,59 @@ function renderMap(rows) {
     point.append(caption);
     return point;
   }));
+}
+
+function overviewMapRows() {
+  if (!state.overview) {
+    return [];
+  }
+  return (state.overview.regions || []).length ? state.overview.regions : (state.overview.countries || []);
+}
+
+function renderVisitorMapFromOverview() {
+  renderMap(overviewMapRows());
+}
+
+function getVisibleMapBounds(map) {
+  const rect = map.getBoundingClientRect();
+  if (!rect.width || !rect.height) {
+    return { left: 0, top: 0, width: 100, height: 100 };
+  }
+  const containerAspect = rect.width / rect.height;
+  if (containerAspect > WORLD_MAP_ASPECT_RATIO) {
+    const width = (WORLD_MAP_ASPECT_RATIO / containerAspect) * 100;
+    return {
+      left: (100 - width) / 2,
+      top: 0,
+      width,
+      height: 100
+    };
+  }
+  const height = (containerAspect / WORLD_MAP_ASPECT_RATIO) * 100;
+  return {
+    left: 0,
+    top: (100 - height) / 2,
+    width: 100,
+    height
+  };
+}
+
+function projectCoordinateToVisibleMap(lon, lat, bounds) {
+  const lonRatio = clampNumber((lon + 180) / 360, 0, 1);
+  const latRatio = clampNumber((90 - lat) / 180, 0, 1);
+  const edgePadding = 1.4;
+  return {
+    left: clampNumber(
+      bounds.left + lonRatio * bounds.width,
+      bounds.left + edgePadding,
+      bounds.left + bounds.width - edgePadding
+    ),
+    top: clampNumber(
+      bounds.top + latRatio * bounds.height,
+      bounds.top + edgePadding,
+      bounds.top + bounds.height - edgePadding
+    )
+  };
 }
 
 function coordinatesFor(row, index) {
@@ -3637,6 +3700,19 @@ function initFormStatusTones() {
   });
 }
 
+function handleMapResize() {
+  if (!state.overview || state.activePanel !== "dashboard") {
+    return;
+  }
+  if (state.mapResizeTimer) {
+    window.clearTimeout(state.mapResizeTimer);
+  }
+  state.mapResizeTimer = window.setTimeout(() => {
+    state.mapResizeTimer = null;
+    renderVisitorMapFromOverview();
+  }, 120);
+}
+
 function bindEvents() {
   $$(".nav-button").forEach((button, index, buttons) => {
     button.addEventListener("click", () => switchPanel(button.dataset.panel));
@@ -3651,6 +3727,7 @@ function bindEvents() {
       autoRefreshActivePanel();
     }
   });
+  window.addEventListener("resize", handleMapResize);
   $("#logout-button").addEventListener("click", async () => {
     const button = $("#logout-button");
     if (state.loggingOut) {

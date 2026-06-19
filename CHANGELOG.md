@@ -11,6 +11,10 @@
   - 新增三语 `site-updates` 文章“四时段沉浸式桌面栏 / Immersive Time-of-Day Chrome / 時間帯別の没入デスクトップバー”，并同步前端 fallback、Cloudflare Functions seed、schema seed。
   - 更新 `index.html` 的主站 CSS/JS query 为 `20260619-immersive-chrome-r1`；未修改 `/admin/`、账号接口、聊天接口、文章接口或游戏存档逻辑。
 
+- 管理后台访问地图投影修复：
+  - `/admin/` 实时大屏访问地图点位改为按本地世界地图 SVG 实际可见的 2:1 地图框投影，修复宽屏下经纬度点按整块蓝色面板计算导致落点偏离真实地图的问题。
+  - 切回实时大屏和窗口尺寸变化后会重新计算点位位置；后台 JS query 更新为 `20260619-admin-map-projection-r001`，未写入主站 `site-updates` 或首页最近更新。
+
 - 管理后台访问地图真实化：
   - `/admin/` 实时大屏访问地图改为本地真实世界地图轮廓资源，来源点按现有 Cloudflare 经纬度聚合字段投影到国家、地区和城市位置。
   - 点位标签和悬停信息显示来源地区、PV/UV 与掩码 IP 前缀，继续不展示完整明文 IP，也不接入第三方在线地图瓦片服务。
