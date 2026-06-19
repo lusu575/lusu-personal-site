@@ -5757,6 +5757,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         article_id, slug, category, tags, cover_image, status, is_pinned,
         view_count, created_at, updated_at, published_at
       ) values (
+        'seed-update-2026-06-19-immersive-time-chrome',
+        '2026-06-19-immersive-time-chrome',
+        'site-updates',
+        '["网站更新","主端视觉","XP桌面","四时段","任务栏"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-19T12:00:00.000Z',
+        '2026-06-19T12:00:00.000Z',
+        '2026-06-19T12:00:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
         'seed-update-2026-06-19-main-discovery-wrap-up',
         '2026-06-19-main-discovery-wrap-up',
         'site-updates',
@@ -5823,6 +5850,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# メインサイト夜間更新まとめ\n\nこの記録では、昨夜の公開サイト側の小さな更新を一つにまとめました。更新記録が細かな記事で埋まりすぎないようにするためです。\n\n## まとめ\n\n- 知識庫の記事詳細に、目次、読書進捗、リンクコピー、先頭へ戻る操作を追加しました。今回、参考画像に合わせて左側の目次/ヒント、右側の本文カード、下部の進捗バーと先頭へ戻るボタンを並べた表示に整えました。\n- さらに10回の視覚調整を行い、記事閲覧ウィンドウはサイト内の XP ウィンドウサイズに戻し、全体へ引き伸ばさない表示にしました。タイトルバーに最小化/最大化/閉じるボタンを追加し、進捗バーを1行の青い分割バーにし、本文の余白と左側ヒントの位置も参考画像に近づけました。\n- リソース欄には分類件数、状態バッジ、空分類の案内、より厳しいリンク許可リストを追加しました。\n- ゲーム欄にはクラウド保存、ソース表示、言語ラベル、起動パスの確認、ゲームシェルの安全な DOM 描画を追加しました。\n- 最近の更新、知識庫一覧、フィルター、リソースフィルター、ゲーム一覧は DOM / textContent 描画を続け、公開内容の XSS リスクを下げます。\n- RSS、言語付きリンク、記事共有 URL、最近の更新ラベルをそろえ、購読と共有を安定させました。\n- 画像の遅延読み込み、非同期デコード、固定画像サイズ、モバイル表示の細部も軽く調整しました。\n\n古い単項目の記事は履歴と回退用データとして残しますが、公開一覧と RSS ではこのまとめ記事だけを表示します。"
       }
     }, "2026-06-18T00:00:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-19-immersive-time-chrome", {
+      zh: {
+        title: "四时段沉浸式桌面栏",
+        summary: "首页顶部栏和底部任务栏改为四套无竖线的现代玻璃像素 HUD。",
+        content_markdown: "# 四时段沉浸式桌面栏\n\n本次更新重新设计了首页最上方和最下方两排，去掉旧版竖向栅格，改成更现代的玻璃像素 HUD。\n\n## 更新内容\n\n- 顶部栏继续跟随 morning、day、dusk、night 四个时间段，但背景改为柔和光斑、横向光带和半透明玻璃层。\n- 底部任务栏改为更轻的 dock 式像素轨道，Start、任务按钮和右侧状态托盘会跟随当前时间段换色。\n- 保留所有原有图标资源、入口、语言切换、账号入口、时间显示和在线状态逻辑。\n- 本地预览仍可用 `?wallpaper=morning`、`?wallpaper=day`、`?wallpaper=dusk`、`?wallpaper=night` 检查四套效果。\n- 同步更新 CSS / JS 缓存版本，避免线上继续加载旧样式。\n\n本轮只调整公开主站顶部栏和任务栏视觉，没有修改后台、账号、聊天、文章接口或游戏存档逻辑。"
+      },
+      en: {
+        title: "Immersive Time-of-Day Chrome",
+        summary: "The home top bar and taskbar now use four modern glass pixel HUD themes without vertical grid lines.",
+        content_markdown: "# Immersive Time-of-Day Chrome\n\nThis update redesigns the top and bottom rows of the home screen, removing the old vertical grid texture and replacing it with a more modern glass pixel HUD.\n\n## Changes\n\n- The top bar still follows morning, day, dusk, and night, but now uses soft glints, horizontal light bands, and translucent glass layers.\n- The taskbar is now a lighter dock-like pixel rail, with Start, task buttons, and the status tray following the active time theme.\n- Existing icon assets, navigation entries, language switching, account entry, local clock, and online status behavior are unchanged.\n- Local previews still support `?wallpaper=morning`, `?wallpaper=day`, `?wallpaper=dusk`, and `?wallpaper=night` for checking the four styles.\n- CSS and JS cache versions were updated so production browsers do not keep the old chrome.\n\nThis pass only changes the public main-site chrome visuals. Admin pages, account APIs, chat APIs, article APIs, and game-save logic were not changed."
+      },
+      ja: {
+        title: "時間帯別の没入デスクトップバー",
+        summary: "ホームの上部バーとタスクバーを、縦線なしの4種類のモダンなガラス調ピクセル HUD に更新しました。",
+        content_markdown: "# 時間帯別の没入デスクトップバー\n\n今回の更新では、ホーム画面の上部と下部の2列を見直し、旧版の縦方向グリッドを外して、よりモダンなガラス調ピクセル HUD にしました。\n\n## 更新内容\n\n- 上部バーは morning、day、dusk、night に引き続き連動しつつ、柔らかい光点、横方向の光帯、半透明のガラス層で表現します。\n- 下部タスクバーは軽い dock 風のピクセルレールにし、Start、タスクボタン、右側ステータストレイが現在の時間帯に合わせて変化します。\n- 既存のアイコン素材、入口、言語切り替え、アカウント入口、時計、オンライン表示の動作はそのままです。\n- ローカル確認では引き続き `?wallpaper=morning`、`?wallpaper=day`、`?wallpaper=dusk`、`?wallpaper=night` で4種類を確認できます。\n- CSS / JS のキャッシュ版を更新し、公開環境で古い表示が残りにくいようにしました。\n\nこの作業では公開メインサイトの上部バーとタスクバーの見た目だけを調整し、管理画面、アカウント API、チャット API、記事 API、ゲーム保存ロジックは変更していません。"
+      }
+    }, "2026-06-19T12:00:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-06-19-main-discovery-wrap-up", {
       zh: {
         title: "主站发现与收口记录",

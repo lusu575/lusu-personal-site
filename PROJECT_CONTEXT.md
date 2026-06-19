@@ -2,9 +2,9 @@
 
 ## 2026-06-19 主站四时段沉浸式桌面栏
 
-- 首页顶部栏和底部任务栏新增 morning / day / dusk / night 四套沉浸式像素 HUD 样式，跟随现有本地时间判断与 `?wallpaper=morning|day|dusk|night` 预览参数切换。
+- 首页顶部栏和底部任务栏新增 morning / day / dusk / night 四套无竖线的现代玻璃像素 HUD 样式，跟随现有本地时间判断与 `?wallpaper=morning|day|dusk|night` 预览参数切换。
 - 顶部栏保留站点图标、站名、账号入口、语言切换和最近更新日期；底部任务栏保留 Start、现有窗口图标、导航入口、本地时间和在线状态，不替换原有图标资源。
-- 本次只调整公开主站视觉层和缓存版本，并同步 `site-updates` 三语更新文章、前端 fallback、Functions seed 与 schema seed；未修改 `/admin/`、账号接口、聊天接口、文章接口或游戏存档逻辑。
+- 本次只调整公开主站视觉层和缓存版本，顶部栏去掉旧版竖向栅格、底部栏改为更轻的 dock 式像素轨道，并同步 `site-updates` 三语更新文章、前端 fallback、Functions seed 与 schema seed；未修改 `/admin/`、账号接口、聊天接口、文章接口或游戏存档逻辑。
 
 ## 2026-06-16 后台视频封面上传
 
@@ -79,7 +79,7 @@ Cloudflare Pages 项目状态：
 - 单页 XP 桌面风格个人站
 - 首页桌面图标入口
 - 首页使用四时段像素壁纸：基础静态底图位于 `assets/images/wallpapers/`，按用户本地时间切换 morning / day / dusk / night。四个时段均已接入动态云层，分别使用 `assets/images/wallpaper-dynamic/<time>/base-clean.png` 作为无云底图，并叠加从对应原始壁纸抠出的独立透明云层；云层沿用 `wallpaper-root` / `wallpaper-stage` 舞台坐标结构，只用 CSS `transform` / `opacity` 做同一主风向下的慢速错相漂移，并支持减少动态、小屏和页面隐藏暂停降级。本地调试可用 `?wallpaper=morning` / `?wallpaper=day` / `?wallpaper=dusk` / `?wallpaper=night` 强制预览指定动态壁纸，预览模式会临时加快云层位移以便肉眼确认动画。树冠、电视雪花、小女孩、星星、水面光效等层仍作为后续动画接口保留。
-- 顶部栏和底部任务栏：保留 XP 桌面结构与原有图标，并跟随 morning / day / dusk / night 四时段切换沉浸式像素 HUD 色温与高光
+- 顶部栏和底部任务栏：保留 XP 桌面结构与原有图标，并跟随 morning / day / dusk / night 四时段切换无竖线的现代玻璃像素 HUD 色温与高光
 - 知识库、视频区、资源区、游戏区、杂谈区、匿名聊天室、关于我
 - 中文 / English / 日本語 三语切换
 - 主站右上角账号入口

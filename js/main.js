@@ -483,6 +483,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "🖥️",
+      date: "2026.06.19",
+      title: { zh: "四时段沉浸式桌面栏", en: "Immersive Time-of-Day Chrome", ja: "時間帯別の没入デスクトップバー" },
+      desc: {
+        zh: "首页顶部栏和底部任务栏改为无竖线的现代玻璃像素 HUD，morning、day、dusk、night 四套主题继续保留原有图标和功能",
+        en: "The home top bar and taskbar now use four modern glass pixel HUD themes without vertical grid lines while keeping all existing icons and behavior",
+        ja: "ホームの上部バーとタスクバーを縦線なしのモダンなガラス調ピクセル HUD に更新し、既存アイコンと動作はそのまま保ちました"
+      }
+    },
+    {
       icon: "🧭",
       date: "2026.06.19",
       title: { zh: "主站发现与收口记录", en: "Main Site Discovery Wrap-up", ja: "メインサイト発見性の仕上げ" },
@@ -3515,6 +3525,7 @@ function updateHomeTimeTheme() {
   }
   const theme = wallpaperPreviewTheme || currentTimeTheme();
   home.dataset.timeTheme = theme;
+  document.body.dataset.timeTheme = theme;
   if (root) {
     root.dataset.time = theme;
   }

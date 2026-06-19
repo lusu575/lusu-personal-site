@@ -3,3 +3,5 @@ node_modules/
 .wrangler-config/
 .dev.vars
 .codex-remote-attachments/
+.codex-screenshots/
+.codex-wrangler-preview*.log

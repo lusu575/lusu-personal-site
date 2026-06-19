@@ -14,6 +14,40 @@
   --shadow-hard: 4px 5px 0 rgba(0, 35, 120, 0.28);
   --shadow-window: 0 18px 34px rgba(0, 33, 96, 0.28);
   --ui-font: Tahoma, Verdana, "Microsoft YaHei", "Yu Gothic", "MS PGothic", sans-serif;
+  --chrome-top-bg:
+    linear-gradient(180deg, rgba(82, 169, 255, 0.82) 0%, rgba(25, 102, 217, 0.84) 48%, rgba(10, 48, 142, 0.88) 100%);
+  --chrome-top-texture:
+    radial-gradient(circle at 12% 34%, rgba(255, 255, 255, 0.2) 0 2px, transparent 3px 100%),
+    radial-gradient(circle at 62% 0%, rgba(148, 219, 255, 0.28) 0 28%, transparent 58%),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.16), transparent 30%, transparent 72%, rgba(155, 213, 255, 0.18));
+  --chrome-taskbar-bg:
+    linear-gradient(180deg, rgba(70, 152, 244, 0.78) 0%, rgba(17, 84, 204, 0.84) 48%, rgba(4, 41, 132, 0.9) 100%);
+  --chrome-taskbar-texture:
+    radial-gradient(circle at 18% 36%, rgba(255, 255, 255, 0.18) 0 2px, transparent 3px 100%),
+    radial-gradient(circle at 76% 0%, rgba(151, 210, 255, 0.24) 0 24%, transparent 58%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.26), transparent 56%);
+  --chrome-border: rgba(116, 194, 255, 0.92);
+  --chrome-border-strong: #063d9e;
+  --chrome-rail-bg: rgba(4, 45, 134, 0.36);
+  --chrome-rail-border: rgba(184, 224, 255, 0.72);
+  --chrome-button-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(220, 238, 255, 0.9) 100%);
+  --chrome-button-hover-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(235, 247, 255, 0.94) 100%);
+  --chrome-button-active-bg: linear-gradient(180deg, #fff2a5 0%, #ffbd3f 100%);
+  --chrome-button-border: #0b4bab;
+  --chrome-button-text: #082f78;
+  --chrome-active-text: #673800;
+  --chrome-task-button-bg: linear-gradient(180deg, rgba(98, 168, 255, 0.74) 0%, rgba(18, 93, 210, 0.78) 100%);
+  --chrome-task-button-hover-bg: linear-gradient(180deg, rgba(139, 198, 255, 0.86) 0%, rgba(28, 112, 226, 0.86) 100%);
+  --chrome-task-button-active-bg: linear-gradient(180deg, rgba(161, 214, 255, 0.92) 0%, rgba(45, 127, 230, 0.92) 100%);
+  --chrome-brand-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(8, 52, 151, 0.14));
+  --chrome-brand-border: rgba(184, 224, 255, 0.64);
+  --chrome-start-bg: linear-gradient(180deg, #60efbd 0%, #18aa70 46%, #067349 100%);
+  --chrome-start-active-bg: linear-gradient(180deg, #8affc9 0%, #1fa76a 48%, #075e34 100%);
+  --chrome-start-border: #0a9b5a;
+  --chrome-tray-bg: rgba(4, 36, 118, 0.58);
+  --chrome-tray-border: rgba(165, 217, 255, 0.74);
+  --chrome-soft-shadow: rgba(0, 31, 108, 0.34);
+  --chrome-glow: rgba(114, 196, 255, 0.34);
 }
 
 * {
@@ -34,6 +68,127 @@ body {
   cursor: default;
   caret-color: transparent;
   overflow-x: hidden;
+}
+
+body[data-time-theme="morning"] {
+  --chrome-top-bg:
+    linear-gradient(180deg, rgba(255, 232, 154, 0.82) 0%, rgba(92, 191, 232, 0.84) 40%, rgba(21, 105, 207, 0.88) 100%);
+  --chrome-top-texture:
+    radial-gradient(circle at 11% 30%, rgba(255, 249, 202, 0.28) 0 2px, transparent 3px 100%),
+    radial-gradient(circle at 52% 0%, rgba(255, 229, 144, 0.32) 0 27%, transparent 58%),
+    linear-gradient(90deg, rgba(255, 236, 152, 0.22), transparent 34%, transparent 75%, rgba(181, 236, 255, 0.18));
+  --chrome-taskbar-bg:
+    linear-gradient(180deg, rgba(255, 213, 112, 0.72) 0%, rgba(42, 151, 220, 0.84) 42%, rgba(9, 81, 184, 0.9) 100%);
+  --chrome-taskbar-texture:
+    radial-gradient(circle at 20% 34%, rgba(255, 247, 190, 0.26) 0 2px, transparent 3px 100%),
+    radial-gradient(circle at 72% 0%, rgba(255, 222, 135, 0.24) 0 24%, transparent 58%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.32), transparent 56%);
+  --chrome-border: rgba(255, 229, 151, 0.9);
+  --chrome-border-strong: #0c67b0;
+  --chrome-rail-bg: rgba(18, 106, 177, 0.36);
+  --chrome-rail-border: rgba(255, 237, 181, 0.72);
+  --chrome-button-bg: linear-gradient(180deg, #fffaf0 0%, #dcf4ff 42%, #80c9ff 100%);
+  --chrome-button-hover-bg: linear-gradient(180deg, #fffdf4 0%, #f2fbff 38%, #a8dcff 100%);
+  --chrome-button-active-bg: linear-gradient(180deg, #fff4b2 0%, #ffc04f 100%);
+  --chrome-button-border: #1370b5;
+  --chrome-button-text: #073466;
+  --chrome-active-text: #684000;
+  --chrome-task-button-bg: linear-gradient(180deg, #65baff 0%, #1c7cdd 48%, #0b55b6 100%);
+  --chrome-task-button-hover-bg: linear-gradient(180deg, #91d3ff 0%, #2d91e9 48%, #1162c3 100%);
+  --chrome-task-button-active-bg: linear-gradient(180deg, #ffe6a1 0%, #56a6ee 42%, #1768bd 100%);
+  --chrome-brand-bg: linear-gradient(180deg, rgba(255, 247, 195, 0.24), rgba(24, 110, 188, 0.12));
+  --chrome-brand-border: rgba(255, 239, 174, 0.68);
+  --chrome-start-bg: linear-gradient(180deg, #a9f8c5 0%, #39ba75 46%, #0b7441 100%);
+  --chrome-start-active-bg: linear-gradient(180deg, #c8ffd7 0%, #48c67c 48%, #0a6538 100%);
+  --chrome-start-border: #2ca766;
+  --chrome-tray-bg: rgba(6, 79, 145, 0.58);
+  --chrome-tray-border: rgba(255, 235, 166, 0.74);
+  --chrome-soft-shadow: rgba(23, 78, 126, 0.34);
+  --chrome-glow: rgba(255, 220, 122, 0.42);
+}
+
+body[data-time-theme="day"] {
+  --chrome-top-bg:
+    linear-gradient(180deg, rgba(112, 207, 255, 0.8) 0%, rgba(30, 130, 236, 0.84) 48%, rgba(8, 68, 166, 0.9) 100%);
+  --chrome-taskbar-bg:
+    linear-gradient(180deg, rgba(86, 181, 255, 0.76) 0%, rgba(17, 101, 221, 0.84) 48%, rgba(5, 53, 149, 0.9) 100%);
+  --chrome-border: rgba(130, 219, 255, 0.92);
+  --chrome-border-strong: #06449d;
+  --chrome-glow: rgba(118, 218, 255, 0.35);
+}
+
+body[data-time-theme="dusk"] {
+  --chrome-top-bg:
+    linear-gradient(180deg, rgba(255, 173, 112, 0.8) 0%, rgba(171, 86, 213, 0.84) 42%, rgba(35, 44, 126, 0.9) 100%);
+  --chrome-top-texture:
+    radial-gradient(circle at 11% 32%, rgba(255, 223, 184, 0.26) 0 2px, transparent 3px 100%),
+    radial-gradient(circle at 58% 0%, rgba(255, 156, 113, 0.3) 0 28%, transparent 58%),
+    linear-gradient(90deg, rgba(255, 187, 121, 0.24), transparent 36%, transparent 74%, rgba(211, 151, 255, 0.2));
+  --chrome-taskbar-bg:
+    linear-gradient(180deg, rgba(232, 126, 174, 0.76) 0%, rgba(101, 69, 193, 0.84) 44%, rgba(32, 43, 126, 0.9) 100%);
+  --chrome-taskbar-texture:
+    radial-gradient(circle at 18% 36%, rgba(255, 218, 178, 0.24) 0 2px, transparent 3px 100%),
+    radial-gradient(circle at 76% 0%, rgba(213, 151, 255, 0.2) 0 24%, transparent 58%),
+    linear-gradient(180deg, rgba(255, 226, 178, 0.26), transparent 56%);
+  --chrome-border: rgba(255, 189, 142, 0.82);
+  --chrome-border-strong: #34327f;
+  --chrome-rail-bg: rgba(58, 41, 130, 0.46);
+  --chrome-rail-border: rgba(255, 205, 156, 0.64);
+  --chrome-button-bg: linear-gradient(180deg, #fff7ed 0%, #f2ddff 42%, #9bb3ff 100%);
+  --chrome-button-hover-bg: linear-gradient(180deg, #fffaf3 0%, #f9edff 40%, #bdc7ff 100%);
+  --chrome-button-active-bg: linear-gradient(180deg, #ffe5a8 0%, #ff985d 100%);
+  --chrome-button-border: #5143a5;
+  --chrome-button-text: #241f68;
+  --chrome-active-text: #642a00;
+  --chrome-task-button-bg: linear-gradient(180deg, #bd8dff 0%, #6850cf 48%, #303782 100%);
+  --chrome-task-button-hover-bg: linear-gradient(180deg, #ffd1a8 0%, #8260dd 48%, #3b3f93 100%);
+  --chrome-task-button-active-bg: linear-gradient(180deg, #ffc47c 0%, #9a67df 42%, #3f4197 100%);
+  --chrome-brand-bg: linear-gradient(180deg, rgba(255, 197, 145, 0.23), rgba(63, 44, 142, 0.16));
+  --chrome-brand-border: rgba(255, 204, 161, 0.62);
+  --chrome-start-bg: linear-gradient(180deg, #98f5bd 0%, #2cad71 44%, #076846 100%);
+  --chrome-start-active-bg: linear-gradient(180deg, #c0ffd3 0%, #39b870 48%, #075a3c 100%);
+  --chrome-start-border: #178558;
+  --chrome-tray-bg: rgba(40, 34, 108, 0.64);
+  --chrome-tray-border: rgba(255, 196, 146, 0.62);
+  --chrome-soft-shadow: rgba(25, 21, 78, 0.38);
+  --chrome-glow: rgba(255, 155, 106, 0.32);
+}
+
+body[data-time-theme="night"] {
+  --chrome-top-bg:
+    linear-gradient(180deg, rgba(26, 68, 165, 0.82) 0%, rgba(10, 37, 113, 0.88) 48%, rgba(3, 15, 56, 0.94) 100%);
+  --chrome-top-texture:
+    radial-gradient(circle at 10% 32%, rgba(188, 214, 255, 0.18) 0 2px, transparent 3px 100%),
+    radial-gradient(circle at 58% 0%, rgba(95, 127, 255, 0.2) 0 28%, transparent 58%),
+    linear-gradient(90deg, rgba(133, 164, 255, 0.18), transparent 32%, transparent 75%, rgba(213, 188, 255, 0.14));
+  --chrome-taskbar-bg:
+    linear-gradient(180deg, rgba(30, 70, 162, 0.78) 0%, rgba(8, 36, 117, 0.86) 48%, rgba(3, 16, 60, 0.94) 100%);
+  --chrome-taskbar-texture:
+    radial-gradient(circle at 18% 36%, rgba(178, 207, 255, 0.18) 0 2px, transparent 3px 100%),
+    radial-gradient(circle at 76% 0%, rgba(118, 151, 255, 0.18) 0 24%, transparent 58%),
+    linear-gradient(180deg, rgba(184, 210, 255, 0.22), transparent 56%);
+  --chrome-border: rgba(133, 168, 255, 0.84);
+  --chrome-border-strong: #07184f;
+  --chrome-rail-bg: rgba(5, 15, 58, 0.58);
+  --chrome-rail-border: rgba(148, 180, 255, 0.58);
+  --chrome-button-bg: linear-gradient(180deg, #f8fbff 0%, #d9e5ff 42%, #7598ee 100%);
+  --chrome-button-hover-bg: linear-gradient(180deg, #ffffff 0%, #e9f0ff 40%, #9fb7ff 100%);
+  --chrome-button-active-bg: linear-gradient(180deg, #ffe8a7 0%, #f2b454 100%);
+  --chrome-button-border: #2d4da5;
+  --chrome-button-text: #10265e;
+  --chrome-active-text: #593200;
+  --chrome-task-button-bg: linear-gradient(180deg, #446bd8 0%, #1d3d9c 48%, #071f67 100%);
+  --chrome-task-button-hover-bg: linear-gradient(180deg, #6f8ff0 0%, #294dac 48%, #0a2a77 100%);
+  --chrome-task-button-active-bg: linear-gradient(180deg, #829dff 0%, #3556ba 44%, #0b2b79 100%);
+  --chrome-brand-bg: linear-gradient(180deg, rgba(188, 214, 255, 0.18), rgba(5, 19, 72, 0.18));
+  --chrome-brand-border: rgba(160, 190, 255, 0.55);
+  --chrome-start-bg: linear-gradient(180deg, #60d99f 0%, #17865f 46%, #064a38 100%);
+  --chrome-start-active-bg: linear-gradient(180deg, #90efb6 0%, #1b9663 48%, #073d2f 100%);
+  --chrome-start-border: #137151;
+  --chrome-tray-bg: rgba(5, 15, 54, 0.68);
+  --chrome-tray-border: rgba(143, 174, 255, 0.58);
+  --chrome-soft-shadow: rgba(0, 10, 48, 0.5);
+  --chrome-glow: rgba(145, 174, 255, 0.34);
 }
 
 button,
@@ -76,9 +231,43 @@ button:disabled {
   padding: 8px 24px;
   overflow: hidden;
   color: #fff;
-  border-bottom: 3px solid #0439a8;
-  background: linear-gradient(180deg, #4aa4ff 0%, #1d6fe8 48%, #12439f 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 3px 0 rgba(1, 45, 144, 0.25);
+  isolation: isolate;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+  background:
+    var(--chrome-top-texture),
+    var(--chrome-top-bg);
+  backdrop-filter: blur(14px) saturate(1.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.44),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.12),
+    0 1px 0 var(--chrome-border),
+    0 10px 28px var(--chrome-soft-shadow);
+}
+
+.xp-topbar::before,
+.xp-topbar::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.xp-topbar::before {
+  inset: 0;
+  background:
+    radial-gradient(circle at 8% 52%, var(--chrome-glow) 0 2px, transparent 3px 100%),
+    radial-gradient(circle at 48% 18%, rgba(255, 255, 255, 0.28) 0 2px, transparent 3px 100%),
+    radial-gradient(circle at 86% 58%, var(--chrome-glow) 0 2px, transparent 3px 100%),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.1), transparent 28%, transparent 76%, rgba(255, 255, 255, 0.1));
+  opacity: 0.64;
+}
+
+.xp-topbar::after {
+  right: 14px;
+  bottom: 4px;
+  left: 14px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.48), transparent);
+  opacity: 0.58;
 }
 
 .brand-button,
@@ -98,19 +287,37 @@ button:disabled {
 }
 
 .brand-button {
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   align-items: center;
   min-width: 0;
   max-width: min(360px, 36vw);
   gap: 10px;
-  padding: 0;
+  min-height: 38px;
+  padding: 3px 11px 3px 6px;
   color: #fff;
-  border: 0;
-  background: transparent;
-  box-shadow: none;
+  border: 1px solid var(--chrome-brand-border);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.04)),
+    var(--chrome-brand-bg);
+  backdrop-filter: blur(10px) saturate(1.12);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 8px 18px rgba(0, 18, 72, 0.14);
   font-size: 18px;
   font-weight: 900;
-  text-shadow: 2px 2px 0 #093eaa;
+  text-shadow: 2px 2px 0 rgba(0, 32, 114, 0.86);
+}
+
+.brand-button:hover,
+.brand-button:focus-visible {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.08)),
+    var(--chrome-brand-bg);
+  outline: 2px solid rgba(255, 255, 255, 0.48);
+  outline-offset: 2px;
 }
 
 .page-home,
@@ -139,7 +346,7 @@ button:disabled {
   flex: 0 0 auto;
   object-fit: contain;
   image-rendering: auto;
-  filter: drop-shadow(2px 2px 0 rgba(0, 25, 90, 0.3));
+  filter: drop-shadow(2px 2px 0 rgba(0, 25, 90, 0.34)) drop-shadow(0 0 6px var(--chrome-glow));
 }
 
 .topbar-actions,
@@ -150,8 +357,20 @@ button:disabled {
 }
 
 .topbar-actions {
-  gap: 10px;
+  position: relative;
+  z-index: 1;
+  gap: 8px;
   min-width: max-content;
+  padding: 4px;
+  border: 1px solid var(--chrome-rail-border);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.06)),
+    var(--chrome-rail-bg);
+  backdrop-filter: blur(12px) saturate(1.16);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 8px 18px rgba(0, 20, 72, 0.12);
 }
 
 .account-widget {
@@ -169,14 +388,23 @@ button:disabled {
   min-width: 88px;
   height: 34px;
   padding: 0 10px;
-  border: 2px solid #0c45a8;
-  border-radius: 6px;
-  color: #082f78;
-  background: linear-gradient(180deg, #ffffff 0%, #dceeff 42%, #76b7ff 100%);
-  box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 rgba(0, 45, 120, 0.24), 1px 1px 0 rgba(0, 0, 0, 0.18);
+  border: 1px solid var(--chrome-button-border);
+  border-radius: 7px;
+  color: var(--chrome-button-text);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22), transparent 54%),
+    var(--chrome-button-bg);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    0 4px 10px rgba(0, 20, 72, 0.14);
   font-size: 13px;
   font-weight: 900;
   line-height: 1;
+}
+
+.account-button:hover,
+.account-button:focus-visible {
+  background: var(--chrome-button-hover-bg);
 }
 
 .account-button.signed-in {
@@ -263,17 +491,34 @@ button:disabled {
   font-size: 14px;
   font-weight: 900;
   line-height: 1;
+  border: 1px solid var(--chrome-button-border);
+  color: var(--chrome-button-text);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22), transparent 54%),
+    var(--chrome-button-bg);
+}
+
+.lang-button:hover,
+.lang-button:focus-visible {
+  background: var(--chrome-button-hover-bg);
 }
 
 .lang-button.active {
-  color: #673800;
-  background: linear-gradient(180deg, #fff3a7, #ffbd38);
+  color: var(--chrome-active-text);
+  background: var(--chrome-button-active-bg);
 }
 
 .top-updated {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 9px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 7px;
+  background: rgba(4, 33, 106, 0.18);
   font-size: 14px;
   font-weight: 900;
-  text-shadow: 1px 1px 0 #002b8b;
+  text-shadow: 1px 1px 0 rgba(0, 30, 105, 0.88);
 }
 
 main {
@@ -2911,14 +3156,48 @@ body.is-article-reading .article-figure {
   padding: 3px 8px;
   overflow: hidden;
   color: #fff;
-  border-top: 2px solid #62afff;
+  isolation: isolate;
+  border-top: 1px solid rgba(255, 255, 255, 0.24);
   background:
-    linear-gradient(180deg, rgba(89, 172, 255, 0.55) 0 2px, transparent 2px),
-    linear-gradient(180deg, #2278f1 0%, #0d55d6 48%, #07369b 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.48), 0 -2px 0 rgba(1, 43, 135, 0.42);
+    var(--chrome-taskbar-texture),
+    var(--chrome-taskbar-bg);
+  backdrop-filter: blur(16px) saturate(1.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.36),
+    inset 0 -1px 0 rgba(0, 17, 74, 0.28),
+    0 -1px 0 var(--chrome-border),
+    0 -14px 28px var(--chrome-soft-shadow);
+}
+
+.xp-taskbar::before,
+.xp-taskbar::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.xp-taskbar::before {
+  inset: 0;
+  background:
+    radial-gradient(circle at 6% 56%, var(--chrome-glow) 0 2px, transparent 3px 100%),
+    radial-gradient(circle at 64% 30%, rgba(255, 255, 255, 0.22) 0 2px, transparent 3px 100%),
+    radial-gradient(circle at 91% 62%, var(--chrome-glow) 0 2px, transparent 3px 100%),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.08), transparent 28%, transparent 76%, rgba(255, 255, 255, 0.08));
+  opacity: 0.62;
+}
+
+.xp-taskbar::after {
+  top: 4px;
+  right: 10px;
+  left: 10px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.42), transparent);
+  opacity: 0.56;
 }
 
 .start-button {
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -2927,12 +3206,24 @@ body.is-article-reading .article-figure {
   min-height: 30px;
   padding: 5px 12px;
   overflow: hidden;
-  border-color: #0a9b5a;
+  border: 1px solid var(--chrome-start-border);
   border-radius: 8px;
   color: #fff;
-  background: linear-gradient(180deg, #54e0b0 0%, #18aa70 46%, #077549 100%);
+  background: var(--chrome-start-bg);
   font-weight: 900;
   text-shadow: 1px 1px 0 #064e35;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.52),
+    inset 0 -1px 0 rgba(0, 51, 28, 0.26),
+    0 6px 14px rgba(0, 25, 48, 0.22),
+    0 0 12px rgba(47, 255, 147, 0.14);
+}
+
+.start-button:hover,
+.start-button:focus-visible {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.2), transparent),
+    var(--chrome-start-bg);
 }
 
 .start-button span {
@@ -2943,8 +3234,8 @@ body.is-article-reading .article-figure {
 }
 
 .start-button.active {
-  background: linear-gradient(180deg, #7cf3bc 0%, #1e9a61 48%, #065e33 100%);
-  box-shadow: inset 2px 2px 0 rgba(255, 255, 255, 0.34), inset -2px -2px 0 rgba(0, 45, 24, 0.55);
+  background: var(--chrome-start-active-bg);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.34), inset 0 -2px 0 rgba(0, 45, 24, 0.36);
 }
 
 .start-windows-icon {
@@ -2956,14 +3247,23 @@ body.is-article-reading .article-figure {
   filter: drop-shadow(1px 1px 0 rgba(0, 45, 25, 0.45));
 }
 
-  .taskbar-tabs {
-    display: flex;
-    gap: 5px;
-    min-width: 0;
-    max-width: 100%;
-    overflow-x: auto;
-    overscroll-behavior-inline: contain;
-  }
+.taskbar-tabs {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 6px;
+  min-width: 0;
+  max-width: 100%;
+  padding: 3px;
+  overflow-x: auto;
+  border: 1px solid var(--chrome-rail-border);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04)),
+    var(--chrome-rail-bg);
+  backdrop-filter: blur(12px) saturate(1.12);
+  overscroll-behavior-inline: contain;
+}
 
 .taskbar-tabs,
 .filter-row,
@@ -2979,22 +3279,34 @@ body.is-article-reading .article-figure {
   display: none;
 }
 
-  .taskbar-tabs button {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    min-width: 0;
-    max-width: 160px;
-    overflow: hidden;
-  min-height: 30px;
+.taskbar-tabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  max-width: 160px;
+  overflow: hidden;
+  min-height: 31px;
   padding: 5px 10px;
   color: #fff;
-  border-color: #07358f;
-  border-radius: 5px;
-  background: linear-gradient(180deg, #4a9bff 0%, #176adf 48%, #0b3fa8 100%);
+  border: 1px solid var(--chrome-button-border);
+  border-radius: 7px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent 52%),
+    var(--chrome-task-button-bg);
   font-size: 13px;
   font-weight: 800;
-  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.55), inset -1px -1px 0 rgba(0, 32, 112, 0.42), 1px 1px 0 rgba(0, 0, 0, 0.22);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.46),
+    inset 0 -1px 0 rgba(0, 32, 112, 0.24),
+    0 4px 10px rgba(0, 0, 0, 0.14);
+}
+
+.taskbar-tabs button:hover,
+.taskbar-tabs button:focus-visible {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.28), transparent 52%),
+    var(--chrome-task-button-hover-bg);
 }
 
 .taskbar-tabs button > span:last-child {
@@ -3005,7 +3317,15 @@ body.is-article-reading .article-figure {
 }
 
 .taskbar-tabs button.active {
-  background: linear-gradient(180deg, #70b5ff 0%, #2f77df 44%, #0c459f 100%);
+  color: #fff;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.4), transparent 52%),
+    var(--chrome-task-button-active-bg);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.38),
+    inset 0 -2px 0 rgba(0, 25, 96, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.18),
+    0 0 12px var(--chrome-glow);
 }
 
 .mini-icon,
@@ -3056,14 +3376,22 @@ body.is-article-reading .article-figure {
 }
 
 .status-tray {
+  position: relative;
+  z-index: 1;
   gap: 9px;
   min-width: max-content;
   padding: 6px 10px;
-  border: 1px solid rgba(162, 210, 255, 0.75);
-  background: rgba(8, 48, 135, 0.55);
+  border: 1px solid var(--chrome-tray-border);
+  border-radius: 7px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.02)),
+    var(--chrome-tray-bg);
   font-size: 13px;
   font-weight: 900;
-  text-shadow: 1px 1px 0 #002b8b;
+  text-shadow: 1px 1px 0 rgba(0, 30, 105, 0.88);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 1px 0 rgba(0, 0, 0, 0.22);
 }
 
 .online-dot {
@@ -4888,6 +5216,10 @@ body.is-article-reading .article-figure {
   }
 
   .xp-taskbar {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
     grid-template-columns: 1fr;
     gap: 6px;
     padding: 5px 8px;
@@ -4915,7 +5247,17 @@ body.is-article-reading .article-figure {
   }
 
   .status-tray {
-    display: none;
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    display: inline-flex;
+    max-width: calc(100% - 196px);
+    min-height: 30px;
+    padding: 5px 8px;
+    gap: 6px;
+    overflow: hidden;
+    font-size: 11px;
+    white-space: nowrap;
   }
 
   .welcome-window,
@@ -5119,11 +5461,15 @@ body.is-article-reading .article-figure {
   }
 
   body.is-article-reading .article-read-progress {
-    bottom: 72px;
+    bottom: 128px;
   }
 
   body.is-article-reading .article-top-link {
-    bottom: 142px;
+    bottom: 198px;
+  }
+
+  .page-home.active {
+    padding-bottom: 132px;
   }
 
   .desktop-icons {
@@ -5149,6 +5495,23 @@ body.is-article-reading .article-figure {
   }
 
   .taskbar-tabs {
+    display: flex;
+    width: 100%;
+    min-height: 34px;
+    justify-content: flex-start;
+    overflow-x: auto;
+  }
+
+  .taskbar-tabs button {
+    flex: 0 0 auto;
+    max-width: 112px;
+  }
+
+  .status-tray {
+    max-width: 96px;
+  }
+
+  .status-tray #local-time {
     display: none;
   }
 

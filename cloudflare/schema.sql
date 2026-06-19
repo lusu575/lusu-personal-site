@@ -572,6 +572,32 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-06-19-immersive-time-chrome',
+  '2026-06-19-immersive-time-chrome',
+  'site-updates',
+  '["网站更新","主端视觉","XP桌面","四时段","任务栏"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-19T12:00:00.000Z',
+  '2026-06-19T12:00:00.000Z',
+  '2026-06-19T12:00:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-06-19-main-discovery-wrap-up',
   '2026-06-19-main-discovery-wrap-up',
   'site-updates',
@@ -623,6 +649,72 @@ on conflict(article_id) do update set
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
+  (
+    'seed-update-2026-06-19-immersive-time-chrome-zh',
+    'seed-update-2026-06-19-immersive-time-chrome',
+    'zh',
+    '四时段沉浸式桌面栏',
+    '首页顶部栏和底部任务栏改为四套无竖线的现代玻璃像素 HUD。',
+    '# 四时段沉浸式桌面栏
+
+本次更新重新设计了首页最上方和最下方两排，去掉旧版竖向栅格，改成更现代的玻璃像素 HUD。
+
+## 更新内容
+
+- 顶部栏继续跟随 morning、day、dusk、night 四个时间段，但背景改为柔和光斑、横向光带和半透明玻璃层。
+- 底部任务栏改为更轻的 dock 式像素轨道，Start、任务按钮和右侧状态托盘会跟随当前时间段换色。
+- 保留所有原有图标资源、入口、语言切换、账号入口、时间显示和在线状态逻辑。
+- 本地预览仍可用 `?wallpaper=morning`、`?wallpaper=day`、`?wallpaper=dusk`、`?wallpaper=night` 检查四套效果。
+- 同步更新 CSS / JS 缓存版本，避免线上继续加载旧样式。
+
+本轮只调整公开主站顶部栏和任务栏视觉，没有修改后台、账号、聊天、文章接口或游戏存档逻辑。',
+    '2026-06-19T12:00:00.000Z',
+    '2026-06-19T12:00:00.000Z'
+  ),
+  (
+    'seed-update-2026-06-19-immersive-time-chrome-en',
+    'seed-update-2026-06-19-immersive-time-chrome',
+    'en',
+    'Immersive Time-of-Day Chrome',
+    'The home top bar and taskbar now use four modern glass pixel HUD themes without vertical grid lines.',
+    '# Immersive Time-of-Day Chrome
+
+This update redesigns the top and bottom rows of the home screen, removing the old vertical grid texture and replacing it with a more modern glass pixel HUD.
+
+## Changes
+
+- The top bar still follows morning, day, dusk, and night, but now uses soft glints, horizontal light bands, and translucent glass layers.
+- The taskbar is now a lighter dock-like pixel rail, with Start, task buttons, and the status tray following the active time theme.
+- Existing icon assets, navigation entries, language switching, account entry, local clock, and online status behavior are unchanged.
+- Local previews still support `?wallpaper=morning`, `?wallpaper=day`, `?wallpaper=dusk`, and `?wallpaper=night` for checking the four styles.
+- CSS and JS cache versions were updated so production browsers do not keep the old chrome.
+
+This pass only changes the public main-site chrome visuals. Admin pages, account APIs, chat APIs, article APIs, and game-save logic were not changed.',
+    '2026-06-19T12:00:00.000Z',
+    '2026-06-19T12:00:00.000Z'
+  ),
+  (
+    'seed-update-2026-06-19-immersive-time-chrome-ja',
+    'seed-update-2026-06-19-immersive-time-chrome',
+    'ja',
+    '時間帯別の没入デスクトップバー',
+    'ホームの上部バーとタスクバーを、縦線なしの4種類のモダンなガラス調ピクセル HUD に更新しました。',
+    '# 時間帯別の没入デスクトップバー
+
+今回の更新では、ホーム画面の上部と下部の2列を見直し、旧版の縦方向グリッドを外して、よりモダンなガラス調ピクセル HUD にしました。
+
+## 更新内容
+
+- 上部バーは morning、day、dusk、night に引き続き連動しつつ、柔らかい光点、横方向の光帯、半透明のガラス層で表現します。
+- 下部タスクバーは軽い dock 風のピクセルレールにし、Start、タスクボタン、右側ステータストレイが現在の時間帯に合わせて変化します。
+- 既存のアイコン素材、入口、言語切り替え、アカウント入口、時計、オンライン表示の動作はそのままです。
+- ローカル確認では引き続き `?wallpaper=morning`、`?wallpaper=day`、`?wallpaper=dusk`、`?wallpaper=night` で4種類を確認できます。
+- CSS / JS のキャッシュ版を更新し、公開環境で古い表示が残りにくいようにしました。
+
+この作業では公開メインサイトの上部バーとタスクバーの見た目だけを調整し、管理画面、アカウント API、チャット API、記事 API、ゲーム保存ロジックは変更していません。',
+    '2026-06-19T12:00:00.000Z',
+    '2026-06-19T12:00:00.000Z'
+  ),
   (
     'seed-update-2026-06-19-main-discovery-wrap-up-zh',
     'seed-update-2026-06-19-main-discovery-wrap-up',
