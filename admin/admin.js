@@ -76,6 +76,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-19",
+    title: "访问地图真实底图与经纬度点位",
+    body: "实时大屏访问地图改为本地真实世界地图轮廓，来源点按 Cloudflare 经纬度投影到国家、地区和城市位置；点位悬停与辅助标签显示 PV/UV、来源地区和掩码 IP 前缀，继续不展示完整明文 IP。"
+  },
+  {
+    date: "2026-06-19",
     title: "管理后台夜间 loop 可用性与权限加固",
     body: "本轮按 2026-06-19 08:00 截止完成后台 loop 合并记录：增强文章、视频、视频分类、聊天室、禁言和账号面板的局部失败提示与忙碌锁定，补齐面板/三语编辑区语义状态、侧边栏键盘导航和视频封面本地处理反馈；后台入口继续只允许 users.role = admin，并统一 no-store、noindex、nosniff、Referrer-Policy、安全兜底 D1/session 异常和畸形 cookie。后台私有更新仍只保留在管理后台，不写入主站 site-updates 或 js/main.js fallback。"
   },
@@ -793,7 +798,7 @@ function renderOverview() {
   renderKpis(state.overview.cards);
   renderDailyChart(state.overview.daily || []);
   renderHourlyChart(state.overview.hourly || []);
-  renderMap(state.overview.regions || state.overview.countries || []);
+  renderMap((state.overview.regions || []).length ? state.overview.regions : (state.overview.countries || []));
   renderTopPages(state.overview.topPages || []);
   renderTopArticles(state.overview.topArticles || []);
   renderVisitTables();
@@ -879,7 +884,10 @@ function renderBars(container, rows, labelKey) {
 
 function renderMap(rows) {
   const map = $("#visitor-map");
-  const data = rows.filter((row) => Number(row.pv || 0) > 0).slice(0, 40);
+  const data = rows
+    .filter((row) => Number(row.pv || 0) > 0)
+    .sort((a, b) => Number(b.pv || 0) - Number(a.pv || 0))
+    .slice(0, 60);
   if (!data.length) {
     const emptyText = "访问地图：暂无访问数据";
     map.title = emptyText;
@@ -890,16 +898,18 @@ function renderMap(rows) {
     map.replaceChildren(empty);
     return;
   }
-  const mapLabel = `访问地图：${formatNumber(data.length)} 个来源点`;
+  const mapLabel = `访问地图：${formatNumber(data.length)} 个真实经纬度来源点`;
   map.title = mapLabel;
   map.setAttribute("aria-label", mapLabel);
   const max = Math.max(...data.map((row) => Number(row.pv || 0)), 1);
   map.replaceChildren(...data.map((row, index) => {
     const [lon, lat] = coordinatesFor(row, index);
-    const left = Math.min(94, Math.max(6, ((lon + 180) / 360) * 100));
-    const top = Math.min(88, Math.max(10, ((90 - lat) / 180) * 100));
+    const left = clampNumber(((lon + 180) / 360) * 100, 3, 97);
+    const top = clampNumber(((90 - lat) / 180) * 100, 5, 95);
     const size = 10 + Math.round((Number(row.pv || 0) / max) * 22);
-    const label = [row.country || "未知", row.region, row.city].filter(Boolean).join(" / ");
+    const label = mapPlaceLabel(row);
+    const shortLabel = mapShortPlaceLabel(row);
+    const ipHint = row.ip_prefix ? ` · IP 前缀 ${row.ip_prefix}` : "";
     const point = document.createElement("button");
     const caption = document.createElement("span");
     point.className = "map-point";
@@ -908,10 +918,12 @@ function renderMap(rows) {
     point.style.top = `${top}%`;
     point.style.setProperty("--size", `${size}px`);
     point.classList.toggle("is-low", top > 72);
-    const pointTitle = `${label} PV ${formatNumber(row.pv)} UV ${formatNumber(row.uv)}`;
+    point.classList.toggle("is-left", left < 16);
+    point.classList.toggle("is-right", left > 84);
+    const pointTitle = `${label}${ipHint} · PV ${formatNumber(row.pv)} / UV ${formatNumber(row.uv)}`;
     point.title = pointTitle;
     point.setAttribute("aria-label", pointTitle);
-    caption.textContent = `${row.country || "未知"} ${formatNumber(row.pv)}`;
+    caption.textContent = `${shortLabel} ${formatNumber(row.pv)}`;
     caption.title = pointTitle;
     point.append(caption);
     return point;
@@ -921,11 +933,33 @@ function renderMap(rows) {
 function coordinatesFor(row, index) {
   const lat = Number(row.latitude);
   const lon = Number(row.longitude);
-  if (Number.isFinite(lat) && Number.isFinite(lon) && (lat || lon)) {
+  if (isUsableCoordinate(lat, lon)) {
     return [lon, lat];
   }
   const fallback = countryPositions[String(row.country || "").toUpperCase()] || [20 + index * 17, 25 - (index % 5) * 8];
   return [fallback[0] + (index % 3) * 3, fallback[1] - (index % 4) * 2];
+}
+
+function isUsableCoordinate(lat, lon) {
+  return Number.isFinite(lat)
+    && Number.isFinite(lon)
+    && lat >= -90
+    && lat <= 90
+    && lon >= -180
+    && lon <= 180
+    && (Math.abs(lat) > 0.0001 || Math.abs(lon) > 0.0001);
+}
+
+function clampNumber(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function mapPlaceLabel(row) {
+  return [row.country || "未知", row.region, row.city].filter(Boolean).join(" / ") || "未知位置";
+}
+
+function mapShortPlaceLabel(row) {
+  return row.city || row.region || row.country || "未知";
 }
 
 function renderTopPages(rows) {

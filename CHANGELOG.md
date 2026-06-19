@@ -4,6 +4,18 @@
 
 ## 2026-06-19
 
+- 主站四时段沉浸式桌面栏：
+  - 重新设计首页顶部栏和底部任务栏，新增 morning / day / dusk / night 四套像素 HUD 主题，跟随现有本地时间与 `?wallpaper=` 预览机制切换。
+  - 保留原有图标资源、导航入口、语言切换、账号入口、本地时间和在线状态逻辑，只调整公开主站视觉层。
+  - 顶部栏新增半透明信息轨、像素高光和时间段色温；底部任务栏新增像素轨道、激活态按钮、Start 按钮和状态托盘的主题化层次。
+  - 新增三语 `site-updates` 文章“四时段沉浸式桌面栏 / Immersive Time-of-Day Chrome / 時間帯別の没入デスクトップバー”，并同步前端 fallback、Cloudflare Functions seed、schema seed。
+  - 更新 `index.html` 的主站 CSS/JS query 为 `20260619-immersive-chrome-r1`；未修改 `/admin/`、账号接口、聊天接口、文章接口或游戏存档逻辑。
+
+- 管理后台访问地图真实化：
+  - `/admin/` 实时大屏访问地图改为本地真实世界地图轮廓资源，来源点按现有 Cloudflare 经纬度聚合字段投影到国家、地区和城市位置。
+  - 点位标签和悬停信息显示来源地区、PV/UV 与掩码 IP 前缀，继续不展示完整明文 IP，也不接入第三方在线地图瓦片服务。
+  - 同步更新后台页面内 `adminUpdates`、`admin/docs/ADMIN_CHANGELOG.md` 和后台 CSS/JS query 为 `20260619-admin-real-map-r001`；未写入主站 `site-updates` 或首页最近更新。
+
 - 管理后台夜间 loop 合并记录：
   - 按 2026-06-19 08:00（Asia/Shanghai）截止完成 `/admin/` 后台 loop，只保留一条合并记录，不写 checkpoint 流水记录。
   - 本轮集中加固后台局部失败态、忙碌锁定、面板语义状态、侧边栏键盘导航、视频本地封面处理反馈和后台入口安全响应头。
