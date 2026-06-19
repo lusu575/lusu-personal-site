@@ -3,6 +3,7 @@ const pageParams = new URLSearchParams(window.location.search);
 const translations = {
   zh: {
     siteName: "鲁肃个人站",
+    siteDescription: "鲁肃的个人站，一个 Windows XP、Pixel Art 和 Y2K 风格的个人空间，用来记录 AI、游戏、工具、资源、视频、知识库和杂谈。",
     heroTitle: "鲁肃的个人站",
     homeLead: "开发施工中",
     navKnowledge: "知识库",
@@ -150,6 +151,7 @@ const translations = {
   },
   en: {
     siteName: "LuSu Site",
+    siteDescription: "LuSu's personal site, a Windows XP, pixel art, and Y2K desktop space for AI notes, games, tools, resources, videos, knowledge, and thoughts.",
     heroTitle: "LuSu Site",
     homeLead: "A small XP pixel site under construction.",
     navKnowledge: "Knowledge",
@@ -297,6 +299,7 @@ const translations = {
   },
   ja: {
     siteName: "魯粛サイト",
+    siteDescription: "Windows XP、ピクセルアート、Y2K 風の個人サイトです。AI、ゲーム、ツール、リソース、動画、知識庫、雑談を記録しています。",
     heroTitle: "魯粛サイト",
     homeLead: "工事中の XP ピクセル小サイトです。",
     navKnowledge: "知識庫",
@@ -479,6 +482,16 @@ const labels = {
 
 const content = {
   updates: [
+    {
+      icon: "🧭",
+      date: "2026.06.19",
+      title: { zh: "主站发现与收口记录", en: "Main Site Discovery Wrap-up", ja: "メインサイト発見性の仕上げ" },
+      desc: {
+        zh: "本次主站循环补齐搜索发现配置、站点地图、manifest、robots、三语页面 meta 和语言按钮状态，并完成构建与多视口检查",
+        en: "This cycle added discovery metadata, sitemap, manifest, robots, trilingual page meta sync, language button state, and final build plus viewport checks",
+        ja: "今回のサイクルでは、検索向けメタ情報、サイトマップ、manifest、robots、三言語 meta 同期、言語ボタン状態、最終確認を追加しました"
+      }
+    },
     {
       icon: "🎨",
       date: "2026.06.18",
@@ -1585,6 +1598,47 @@ function syncRssLinks(lang = currentLang) {
   });
 }
 
+function canonicalSiteUrl(lang = currentLang) {
+  const pathname = window.location.pathname.startsWith("/articles/")
+    ? window.location.pathname
+    : "/";
+  const params = new URLSearchParams();
+  params.set("lang", lang);
+  return `https://lusu575.com${pathname}?${params.toString()}`;
+}
+
+function setMetaContent(selector, content) {
+  const node = document.querySelector(selector);
+  if (node) {
+    node.setAttribute("content", content);
+  }
+}
+
+function setLinkHref(selector, href) {
+  const node = document.querySelector(selector);
+  if (node) {
+    node.setAttribute("href", href);
+  }
+}
+
+function syncDocumentMeta(lang = currentLang) {
+  const title = t("heroTitle");
+  const description = t("siteDescription");
+  const canonicalUrl = canonicalSiteUrl(lang);
+  const locale = { zh: "zh_CN", en: "en_US", ja: "ja_JP" }[lang] || "zh_CN";
+
+  document.title = title;
+  setLinkHref('link[rel="canonical"]', canonicalUrl);
+  setMetaContent('meta[name="description"]', description);
+  setMetaContent('meta[property="og:site_name"]', title);
+  setMetaContent('meta[property="og:title"]', title);
+  setMetaContent('meta[property="og:description"]', description);
+  setMetaContent('meta[property="og:url"]', canonicalUrl);
+  setMetaContent('meta[property="og:locale"]', locale);
+  setMetaContent('meta[name="twitter:title"]', title);
+  setMetaContent('meta[name="twitter:description"]', description);
+}
+
 function syncBrowserUrl(route, articleSlug = "") {
   const nextUrl = withLanguageQuery(routeUrl(route, articleSlug));
   const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
@@ -1680,8 +1734,8 @@ function setLanguage(lang, options = {}) {
     syncLanguageUrl(lang);
   }
   document.documentElement.lang = lang === "zh" ? "zh-CN" : lang;
-  document.title = t("heroTitle");
   syncRssLinks(lang);
+  syncDocumentMeta(lang);
 
   document.querySelectorAll("[data-i18n]").forEach((node) => {
     node.textContent = t(node.dataset.i18n);
@@ -1700,7 +1754,9 @@ function setLanguage(lang, options = {}) {
   });
 
   document.querySelectorAll(".lang-button").forEach((button) => {
-    button.classList.toggle("active", button.dataset.lang === lang);
+    const active = button.dataset.lang === lang;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
   });
 
   renderAll();

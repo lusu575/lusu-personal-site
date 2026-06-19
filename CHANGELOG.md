@@ -10,6 +10,13 @@
   - `/admin/*` 仍只允许 `users.role = admin`；后台私有更新只同步到 `adminUpdates` 和 `admin/docs/ADMIN_CHANGELOG.md`，未写入主站 `site-updates`、`js/main.js` fallback 或公开最近更新。
   - 扩展 `scripts/build-check.mjs`，覆盖后台结构、权限、响应头、异常 session、畸形 cookie、局部失败提示和公共 API 基础响应；更新后台 JS query 为 `20260619-admin-loop-r014`。
 
+- 主站发现与收口循环记录：
+  - 本轮在独立 `codex/main-site-loop-20260619-night` 工作树中处理主站公开侧，避开 `/admin/` 页面、后台私有更新、后台权限和管理接口。
+  - 补齐首页 canonical、Open Graph、Twitter Card、manifest、robots 和 sitemap 入口；`/sitemap.xml` 与 `/api/sitemap.xml` 都返回 XML，并包含三语首页与文章 URL。
+  - 主站语言切换会同步 `html lang`、页面 title/description、canonical、OG/Twitter meta、RSS alternate 和语言按钮 `aria-pressed` 状态。
+  - 新增一篇三语 `site-updates` 文章“主站发现与收口记录 / Main Site Discovery Wrap-up / メインサイト発見性の仕上げ”，并同步前端 fallback 最近更新。
+  - `npm.cmd run build` 已覆盖文章、视频、sitemap、manifest、robots、主站脚本和遥测脚本检查；本地多视口扫描未发现页面错误或横向溢出。
+
 ## 2026-06-18
 
 - 管理后台视觉改版循环合并记录：
