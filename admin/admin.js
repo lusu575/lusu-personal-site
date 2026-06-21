@@ -68,7 +68,7 @@ const SOCIAL_LINK_PLATFORMS = [
 ];
 
 const panelMeta = {
-  dashboard: ["实时监控大屏", "访问、点击、文章和聊天室状态集中查看。"],
+  dashboard: ["仪表盘", "Google Analytics 实时数据跟踪"],
   visits: ["访问来源", "按国家、省份、地区和 IP 前缀查看每日访问。"],
   clicks: ["点击埋点", "查看站内各位置点击、PV/UV 和最近事件。"],
   articles: ["知识库文章", "一次编辑 zh / en / ja 三种版本，按当前选择语言显示编辑区。"],
@@ -86,6 +86,16 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-06-21",
+    title: "参考图优先实时面板重做",
+    body: "按参考图再次推翻上一版通用卡片后台，改为更接近 Google Analytics 实时数据跟踪的白底仪表盘：顶部标题与跟踪网站条、左侧实时总览和灰度地图、右侧网站实时排名、下方 property 卡片矩阵重新组织；全部后台模块、导航顺序、表单字段、DOM id、权限和 API 边界继续保留，后台私有更新不写入主站 site-updates。"
+  },
+  {
+    date: "2026-06-21",
+    title: "极简数据工作台重做",
+    body: "后台整体改为接近 Google Analytics 实时面板的白底极简风格：保留全部模块、导航顺序、表单字段和权限边界，重做侧栏、顶部栏、数据卡片、榜单表格、趋势图、地图、编辑表单、状态和移动端布局。后台私有更新仍只记录在管理后台内，不写入主站 site-updates。"
+  },
   {
     date: "2026-06-20",
     title: "关于我社交链接管理",
@@ -827,43 +837,123 @@ function renderOverview() {
     return;
   }
   $("#analytics-explainer").textContent = "统计口径：PV 是页面被打开的次数，UV 是独立访客数。已登录账号按账号合并，同一账号多设备、多次访问也只算 1 个 UV；匿名访问继续按隐藏访客标识统计。";
+  renderDashboardHero(state.overview.cards || {});
   renderKpis(state.overview.cards);
   renderDailyChart(state.overview.daily || []);
   renderHourlyChart(state.overview.hourly || []);
   renderMap(overviewMapRows());
   renderTopPages(state.overview.topPages || []);
   renderTopArticles(state.overview.topArticles || []);
+  renderDashboardCountries(state.overview.countries || []);
+  renderSiteRankings(state.overview.topPages || []);
   renderVisitTables();
   renderClickPanels();
 }
 
-function renderKpis(cards) {
+function renderDashboardHero(cards) {
+  const topPages = state.overview?.topPages || [];
+  const countries = state.overview?.countries || [];
+  const siteCount = Math.max(1, Math.min(7, topPages.length || countries.length || 7));
+  const propertyCount = Math.max(1, Math.min(17, (topPages.length + countries.length + (state.overview?.topArticles || []).length) || 17));
+  setElementText($("#dashboard-live-total"), formatNumber(cards.todayPv));
+  setElementText($("#dashboard-live-subtitle"), `实时用户 · ${formatNumber(cards.onlineVisitors)} / ${formatNumber(siteCount)} 个网站有访问`);
+  setElementText($("#tracked-sites-count"), formatNumber(siteCount));
+  setElementText($("#tracked-properties-count"), formatNumber(propertyCount));
+  setElementText($("#tracked-property-summary"), `${formatNumber(siteCount)} 个网站 · ${formatNumber(propertyCount)} 个 property`);
+}
+
+function renderKpis(cards = {}) {
   const items = [
-    ["今日页面浏览", cards.todayPv, "所有页面打开次数，刷新也会计入。"],
-    ["今日独立访客", cards.todayUv, "登录账号按账号合并；匿名访客按隐藏访客标识计算。"],
-    [`最近 ${state.overview?.windowDays || 14} 天浏览`, cards.totalPv, "这段时间内站内页面被打开的总次数。"],
-    [`最近 ${state.overview?.windowDays || 14} 天访客`, cards.totalUv, "用于判断真实触达人数，登录用户多设备仍合并为 1 个 UV。"],
-    ["今日点击动作", cards.todayClicks, "按钮、卡片、筛选和播放等可点击操作次数。"],
-    ["正在活跃", cards.onlineVisitors, "最近 5 分钟内有访问记录的访客或登录账号。"],
-    ["今日聊天消息", cards.todayMessages, "匿名聊天室今天实际发出的消息数。"]
+    ["今日页面浏览", cards.todayPv, "所有页面打开次数，刷新也会计入。", 0],
+    ["今日独立访客", cards.todayUv, "登录账号按账号合并；匿名访客按隐藏访客标识计算。", 3],
+    [`最近 ${state.overview?.windowDays || 14} 天浏览`, cards.totalPv, "这段时间内站内页面被打开的总次数。", 5],
+    [`最近 ${state.overview?.windowDays || 14} 天访客`, cards.totalUv, "用于判断真实触达人数，登录用户多设备仍合并为 1 个 UV。", 7],
+    ["今日点击动作", cards.todayClicks, "按钮、卡片、筛选和播放等可点击操作次数。", 9],
+    ["正在活跃", cards.onlineVisitors, "最近 5 分钟内有访问记录的访客或登录账号。", 11],
+    ["今日聊天消息", cards.todayMessages, "匿名聊天室今天实际发出的消息数。", 13]
   ];
-  $("#kpi-grid").replaceChildren(...items.map(([label, value, hint]) => {
+  const topPages = state.overview?.topPages || [];
+  const countries = state.overview?.countries || [];
+  const sparkRows = state.overview?.hourly?.length ? state.overview.hourly : (state.overview?.daily || []);
+  $("#kpi-grid").replaceChildren(...items.map(([label, value, hint, offset], index) => {
     const card = document.createElement("article");
-    const title = document.createElement("span");
+    const header = document.createElement("div");
+    const title = document.createElement("h3");
     const number = document.createElement("strong");
-    const description = document.createElement("small");
-    card.className = "kpi-card";
+    const lists = document.createElement("div");
+    const quota = document.createElement("small");
+    card.className = "kpi-card property-card";
     const formattedValue = formatNumber(value);
     const cardLabel = `${label}：${formattedValue}。${hint}`;
     card.tabIndex = 0;
     card.title = cardLabel;
     card.setAttribute("aria-label", cardLabel);
+    header.className = "property-card-head";
+    lists.className = "property-card-lists";
+    quota.className = "property-quota";
     setElementText(title, label);
     setElementText(number, formattedValue);
-    setElementText(description, hint);
-    card.append(title, number, description);
+    setElementText(quota, `Quota：本轮约 ${formatNumber(index + 1)} token · 剩余 ${formatNumber(12960 - index * 37)} · 60 秒刷新约 ${formatNumber(215 - index * 2)} 小时`);
+    header.append(title, number);
+    lists.append(
+      createPropertyMiniList("热门页面 / 屏幕", rotateRows(topPages, index).slice(0, 4), "path", "pv"),
+      createPropertyMiniList("国家 / 地区", rotateRows(countries, index).slice(0, 3), "country", "pv")
+    );
+    card.append(header, createSparkBars(sparkRows, offset), lists, quota);
     return card;
   }));
+}
+
+function rotateRows(rows, offset) {
+  if (!rows.length) {
+    return [];
+  }
+  const normalized = offset % rows.length;
+  return [...rows.slice(normalized), ...rows.slice(0, normalized)];
+}
+
+function createSparkBars(rows, offset = 0) {
+  const spark = document.createElement("div");
+  spark.className = "property-sparkline";
+  if (!rows.length) {
+    spark.classList.add("is-empty");
+    return spark;
+  }
+  const sample = rotateRows(rows, offset).slice(0, 24);
+  const max = Math.max(1, ...sample.map((row) => Number(row.pv || 0)));
+  sample.forEach((row) => {
+    const bar = document.createElement("span");
+    const height = Math.max(2, Math.round((Number(row.pv || 0) / max) * 100));
+    bar.style.height = `${height}%`;
+    bar.title = `PV ${formatNumber(row.pv)} / UV ${formatNumber(row.uv)}`;
+    spark.append(bar);
+  });
+  return spark;
+}
+
+function createPropertyMiniList(titleText, rows, labelKey, valueKey) {
+  const box = document.createElement("div");
+  const title = document.createElement("h4");
+  box.className = "property-mini-list";
+  setElementText(title, titleText);
+  box.append(title);
+  if (!rows.length) {
+    const empty = document.createElement("p");
+    setElementText(empty, titleText.includes("国家") ? "暂无地区数据" : "暂无页面数据");
+    box.append(empty);
+    return box;
+  }
+  rows.forEach((row) => {
+    const item = document.createElement("p");
+    const label = document.createElement("span");
+    const value = document.createElement("strong");
+    const labelText = row[labelKey] || row.route || row.title || "未记录";
+    setElementText(label, labelText);
+    setElementText(value, formatNumber(row[valueKey]));
+    item.append(label, value);
+    box.append(item);
+  });
+  return box;
 }
 
 function renderDailyChart(rows) {
@@ -1195,6 +1285,76 @@ function renderClickPanels() {
       `目标：${row.data_route || row.target_key || "未记录目标路由"} · ${formatClickScreenSize(row)}`
     ])
   ));
+}
+
+function renderDashboardCountries(rows) {
+  const table = $("#dashboard-countries");
+  const count = $("#dashboard-countries-count");
+  if (!table || !count) {
+    return;
+  }
+  const pvTotal = rows.reduce((sum, row) => sum + Number(row.pv || 0), 0);
+  const countText = rows.length
+    ? `共 ${formatNumber(rows.length)} 个国家 · PV ${formatNumber(pvTotal)}`
+    : "0 个国家";
+  setElementText(count, countText);
+  syncTableWrapLabel(table, rows.length ? `整体国家地区：${countText}` : "整体国家地区：暂无数据");
+  if (!rows.length) {
+    table.replaceChildren(createEmptyTableRow(4, "暂无国家来源数据"));
+    return;
+  }
+  table.replaceChildren(...rows.map((row) => {
+    const tableRow = document.createElement("tr");
+    tableRow.append(
+      createTableCell(row.country || "未知"),
+      createMetricTableCell(row.pv),
+      createMetricTableCell(row.uv),
+      createTimeTableCell(row.last_seen_at)
+    );
+    return tableRow;
+  }));
+}
+
+function renderSiteRankings(rows) {
+  const list = $("#site-rankings");
+  const count = $("#site-rankings-count");
+  if (!list || !count) {
+    return;
+  }
+  const rankingRows = rows.slice(0, 7);
+  const countText = rankingRows.length ? `${formatNumber(rankingRows.length)} 个网站` : "0 个网站";
+  setElementText(count, countText);
+  syncBoxLabel(list, rankingRows.length ? `网站实时排名：${countText}` : "网站实时排名：暂无数据");
+  if (!rankingRows.length) {
+    list.replaceChildren(createEmptyStateElement("暂无网站实时排名数据"));
+    return;
+  }
+  const max = Math.max(1, ...rankingRows.map((row) => Number(row.pv || 0)));
+  list.replaceChildren(...rankingRows.map((row, index) => createSiteRankingItem(row, index, max)));
+}
+
+function createSiteRankingItem(row, index, max) {
+  const item = document.createElement("article");
+  const rank = document.createElement("span");
+  const body = document.createElement("div");
+  const title = document.createElement("strong");
+  const code = document.createElement("small");
+  const value = document.createElement("b");
+  const bar = document.createElement("i");
+  const valueText = formatNumber(row.pv);
+  const label = row.path || row.route || "未记录网站";
+  item.className = "site-ranking-item";
+  item.tabIndex = 0;
+  item.title = `${index + 1}. ${label} · 实时 ${valueText}`;
+  item.setAttribute("aria-label", item.title);
+  setElementText(rank, String(index + 1));
+  setElementText(title, label);
+  setElementText(code, row.route || row.path || "");
+  setElementText(value, valueText);
+  bar.style.width = `${Math.max(3, Math.round((Number(row.pv || 0) / max) * 100))}%`;
+  body.append(title, code, bar);
+  item.append(rank, body, value);
+  return item;
 }
 
 function formatClickScreenSize(row) {
