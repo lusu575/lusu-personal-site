@@ -68,9 +68,9 @@ const LOCAL_COVER_SIZES = [
   [640, 360]
 ];
 const SOCIAL_LINK_PLATFORMS = [
-  { platform: "x", label: "X", default_url: "https://x.com/lusu575" },
+  { platform: "x", label: "X（推特）", default_url: "https://x.com/lusu575" },
   { platform: "github", label: "GitHub", default_url: "https://github.com/lusu575" },
-  { platform: "bilibili", label: "Bilibili", default_url: "https://space.bilibili.com/" },
+  { platform: "bilibili", label: "哔哩哔哩", default_url: "https://space.bilibili.com/" },
   { platform: "instagram", label: "Instagram", default_url: "https://www.instagram.com/lusu575/" },
   { platform: "discord", label: "Discord", default_url: "https://discord.com/" }
 ];
@@ -94,6 +94,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-06-22",
+    title: "社交链接预览新增状态概览",
+    body: "第 34 轮 loop 在社交链接图标预览上方新增状态概览条，显示全部入口、已设置、自定义、默认链接、有更新记录和待补链接数量，并将哔哩哔哩入口在后台预览中中文显示；不改变社交链接接口和主站图标展示，后台资源版本更新为 20260622-admin-insight-r32。"
+  },
   {
     date: "2026-06-22",
     title: "账号列表新增状态概览",
@@ -4544,6 +4549,7 @@ function renderSocialLinkPreview() {
   const links = state.socialLinks.length ? state.socialLinks : normalizeAdminSocialLinks([]);
   const countText = `${formatNumber(links.length)} 个入口`;
   setElementText($("#social-link-preview-count"), countText);
+  renderSocialLinkStatusOverview(links);
   syncBoxLabel(list, `社交链接预览：${countText}`);
   list.replaceChildren(...links.map((item) => {
     const article = document.createElement("article");
@@ -4551,12 +4557,13 @@ function renderSocialLinkPreview() {
     const meta = document.createElement("span");
     const code = document.createElement("code");
     const url = item.url || item.default_url || "";
-    const label = `${item.label || item.platform}；${url}`;
+    const displayLabel = socialPlatformDisplayLabel(item);
+    const label = `${displayLabel}；${url}`;
     article.className = "event-item social-link-preview-item";
     article.tabIndex = 0;
     article.title = label;
     article.setAttribute("aria-label", label);
-    setElementText(title, item.label || item.platform);
+    setElementText(title, displayLabel);
     meta.className = "list-meta";
     meta.append(createStatusBadgeElement("公开图标", "visible"));
     if (item.updated_at) {
@@ -4567,6 +4574,34 @@ function renderSocialLinkPreview() {
     return article;
   }));
   syncSocialLinksFormBusyState();
+}
+
+function socialPlatformDisplayLabel(item) {
+  const value = String(item?.platform || "").toLowerCase();
+  const localLabel = SOCIAL_LINK_PLATFORMS.find((platform) => platform.platform === value)?.label;
+  return localLabel || item?.label || item?.platform || "社交入口";
+}
+
+function renderSocialLinkStatusOverview(links) {
+  const box = $("#social-link-status-overview");
+  if (!box) {
+    return;
+  }
+  const rows = links || [];
+  const configuredCount = rows.filter((item) => Boolean(item.url || item.default_url)).length;
+  const customCount = rows.filter((item) => Boolean(item.url) && item.url !== item.default_url).length;
+  const defaultCount = rows.filter((item) => Boolean(item.default_url) && (!item.url || item.url === item.default_url)).length;
+  const updatedCount = rows.filter((item) => Boolean(item.updated_at)).length;
+  const missingCount = rows.filter((item) => !item.url && !item.default_url).length;
+  const items = [
+    ["全部入口", rows.length],
+    ["已设置", configuredCount],
+    ["自定义", customCount],
+    ["默认链接", defaultCount],
+    ["有更新记录", updatedCount],
+    ["待补链接", missingCount]
+  ];
+  box.replaceChildren(...items.map(([label, value]) => createListOverviewItem(label, value)));
 }
 
 function renderSocialLinkPreviewNotice(text, label = "社交链接提示") {
