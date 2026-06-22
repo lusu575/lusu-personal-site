@@ -3353,6 +3353,10 @@ select:focus-visible,
   border-top: 1px solid var(--ga-line-final);
 }
 
+.region-source-bars {
+  margin-bottom: 12px;
+}
+
 .insight-bar-item {
   display: grid;
   grid-template-columns: 28px minmax(0, 1fr) minmax(72px, auto);

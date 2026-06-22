@@ -96,6 +96,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-22",
+    title: "地区来源明细增加比例概览",
+    body: "第 22 轮 loop 在访问来源页的地区明细表上方新增“地区来源概览”比例条，筛选后同步展示匹配来源的前 6 条浏览/访客表现；IP 前缀表格仍保留用于复制和排查。后台资源 query 更新为 20260622-admin-insight-r20。"
+  },
+  {
+    date: "2026-06-22",
     title: "最近点击新增本地筛选",
     body: "第 21 轮 loop 在点击埋点页的“最近点击”列表上方新增本地筛选框，可按点击目标、页面、来源和屏幕尺寸快速定位已加载事件；计数同步显示“显示 X / 共 Y”。后台资源 query 更新为 20260622-admin-insight-r19。"
   },
@@ -1572,6 +1577,7 @@ function renderVisitTables() {
   }
 
   const regionTable = $("#region-table");
+  const regionBars = $("#region-bars");
   const regions = overview.regions || [];
   const regionPrefixCount = regions.filter((row) => row.ip_prefix).length;
   const regionPvTotal = regions.reduce((sum, row) => sum + Number(row.pv || 0), 0);
@@ -1584,14 +1590,18 @@ function renderVisitTables() {
     : "0 条来源";
   setElementText($("#region-table-count"), regionCountText);
   syncTableWrapLabel(regionTable, regions.length ? `地区与 IP 来源：${regionCountText}` : "地区与 IP 来源：暂无数据");
+  syncBoxLabel(regionBars, regions.length ? `地区来源概览：${regionCountText}` : "地区来源概览：暂无数据");
   if (!regions.length) {
+    regionBars.replaceChildren(createEmptyStateElement("暂无地区来源数据"));
     regionTable.replaceChildren(createEmptyTableRow(5, "暂无地区来源数据"));
     return;
   }
   if (!visibleRegions.length) {
+    regionBars.replaceChildren(createEmptyStateElement("没有匹配的地区来源"));
     regionTable.replaceChildren(createEmptyTableRow(5, "没有匹配的地区来源，换个国家、地区、城市或 IP 前缀试试。"));
     return;
   }
+  renderRegionBars(regionBars, visibleRegions);
   regionTable.replaceChildren(...visibleRegions.map((row) => {
     const place = mapPlaceLabel(row);
     const tableRow = document.createElement("tr");
@@ -2366,6 +2376,22 @@ function renderVideoCategoryChecks() {
     }
     return label;
   }));
+}
+
+function renderRegionBars(box, rows) {
+  const visibleRows = rows.slice(0, 6);
+  const max = Math.max(1, ...visibleRows.map((row) => Number(row.pv || 0)));
+  box.replaceChildren(...visibleRows.map((row, index) => createInsightBarItem({
+    rank: index + 1,
+    label: mapPlaceLabel(row),
+    detail: row.ip_prefix ? `IP 前缀 ${row.ip_prefix}` : "地区来源",
+    value: row.pv,
+    secondaryValue: row.uv,
+    max,
+    lastSeenAt: row.last_seen_at,
+    primaryLabel: "浏览",
+    secondaryLabel: "访客"
+  })));
 }
 
 function regionMatchesFilter(row, filterText) {
