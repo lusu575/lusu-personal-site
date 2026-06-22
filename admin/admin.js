@@ -27,6 +27,7 @@ const state = {
   videoDeleting: false,
   chatMessages: [],
   selectedMessageId: "",
+  chatFilter: "",
   chatActionBusy: false,
   chatActionBusyMode: "",
   chatMessagesLoading: false,
@@ -90,6 +91,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-06-22",
+    title: "聊天室消息新增本地筛选",
+    body: "第 17 轮 loop 在聊天记录列表上方新增“筛选已加载消息”，可按昵称、内容、来源和隐藏状态快速定位当前加载的聊天记录；计数同步显示“显示 X / 共 Y”。后台资源 query 更新为 20260622-admin-insight-r15。"
+  },
   {
     date: "2026-06-22",
     title: "账号列表新增本地筛选",
@@ -3245,9 +3251,16 @@ function renderChatMessages() {
   const list = $("#chat-list");
   const includeHidden = Boolean($("#include-hidden-chat")?.checked);
   const hiddenCount = state.chatMessages.filter((message) => Number(message.hidden) === 1).length;
-  const countText = includeHidden && state.chatMessages.length
+  const filterText = normalizeFilterText(state.chatFilter);
+  const visibleMessages = filterText
+    ? state.chatMessages.filter((message) => chatMessageMatchesFilter(message, filterText))
+    : state.chatMessages;
+  const baseCountText = includeHidden && state.chatMessages.length
     ? `含隐藏 ${formatNumber(state.chatMessages.length)} 条 · ${formatNumber(hiddenCount)} 条隐藏`
     : `${includeHidden ? "含隐藏" : "可见"} ${formatNumber(state.chatMessages.length)} 条消息`;
+  const countText = state.chatMessages.length && filterText
+    ? `显示 ${formatNumber(visibleMessages.length)} / ${baseCountText}`
+    : baseCountText;
   setElementText($("#chat-list-count"), countText);
   syncBoxLabel(list, state.chatMessages.length ? `聊天记录：${countText}` : `聊天记录：${includeHidden ? "暂无聊天记录" : "暂无可见聊天记录"}`);
   if (!state.chatMessages.length) {
@@ -3255,8 +3268,13 @@ function renderChatMessages() {
     syncChatActionState();
     return;
   }
+  if (!visibleMessages.length) {
+    list.replaceChildren(createEmptyStateElement("当前已加载消息中没有匹配结果，换个昵称、内容、来源或隐藏状态试试。"));
+    syncChatActionState();
+    return;
+  }
 
-  list.replaceChildren(...state.chatMessages.map((message) => {
+  list.replaceChildren(...visibleMessages.map((message) => {
     const item = document.createElement("button");
     const title = document.createElement("span");
     const meta = document.createElement("span");
@@ -3288,6 +3306,25 @@ function renderChatMessages() {
     return item;
   }));
   syncChatActionState();
+}
+
+function chatMessageMatchesFilter(message, filterText) {
+  if (!filterText) {
+    return true;
+  }
+  const visibility = Number(message.hidden) === 1 ? "已隐藏" : "可见";
+  const searchText = [
+    message.nickname,
+    message.content,
+    visibility,
+    message.country,
+    message.region,
+    message.city,
+    message.ip_prefix,
+    message.visitor_id,
+    formatTime(message.created_at)
+  ].filter(Boolean).join(" ").toLowerCase();
+  return searchText.includes(filterText);
 }
 
 function renderChatListNotice(text, label = "聊天记录提示") {
@@ -4694,6 +4731,10 @@ function bindEvents() {
     if (item && !isChatInteractionBusy()) {
       selectChatMessage(item.dataset.messageId);
     }
+  });
+  $("#chat-list-filter").addEventListener("input", (event) => {
+    state.chatFilter = event.currentTarget.value;
+    renderChatMessages();
   });
   $("#chat-form-admin").addEventListener("submit", saveChatMessage);
   $("#toggle-chat-hidden").addEventListener("click", toggleChatHidden);
