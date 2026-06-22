@@ -476,64 +476,9 @@ body {
 }
 
 .site-rankings {
-  display: grid;
-  gap: 0;
-  border-top: 1px solid var(--ga-line);
-}
-
-.site-ranking-item {
-  display: grid;
-  grid-template-columns: 24px minmax(0, 1fr) 54px;
-  gap: 10px;
-  align-items: center;
-  min-height: 64px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--ga-line);
-}
-
-.site-ranking-item > span {
-  color: #687182;
-  font-size: 14px;
-  text-align: left;
-}
-
-.site-ranking-item div {
-  min-width: 0;
-}
-
-.site-ranking-item strong {
-  display: block;
-  color: var(--ga-text);
-  font-size: 14px;
-  font-weight: 800;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.site-ranking-item small {
-  display: block;
-  margin-top: 2px;
-  color: #7a8493;
-  font-size: 12px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.site-ranking-item i {
-  display: block;
-  height: 4px;
-  margin-top: 8px;
-  background: var(--ga-blue);
-  border-radius: 999px;
-}
-
-.site-ranking-item b {
-  color: var(--ga-text);
-  font-size: 22px;
-  font-weight: 900;
-  text-align: right;
+  max-height: 452px;
+  overflow: auto;
+  padding-right: 2px;
 }
 
 .property-section {
@@ -770,14 +715,6 @@ body {
 
   .pixel-map {
     min-height: 260px;
-  }
-
-  .site-ranking-item {
-    grid-template-columns: 22px minmax(0, 1fr) 42px;
-  }
-
-  .site-ranking-item b {
-    font-size: 19px;
   }
 
   .compact-table table {
@@ -2778,62 +2715,6 @@ td {
   border-top: 1px solid var(--ga-line-final);
 }
 
-.site-ranking-item {
-  display: grid;
-  grid-template-columns: 24px minmax(0, 1fr) 54px;
-  gap: 10px;
-  align-items: center;
-  min-height: 64px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--ga-line-final);
-}
-
-.site-ranking-item > span {
-  color: #687182;
-  font-size: 14px;
-  text-align: left;
-}
-
-.site-ranking-item div {
-  min-width: 0;
-}
-
-.site-ranking-item strong {
-  display: block;
-  color: var(--ga-text-final);
-  font-size: 14px;
-  font-weight: 800;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.site-ranking-item small {
-  display: block;
-  margin-top: 2px;
-  color: #7a8493;
-  font-size: 12px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.site-ranking-item i {
-  display: block;
-  height: 5px;
-  margin-top: 8px;
-  background: var(--ga-blue-final);
-  border-radius: 999px;
-}
-
-.site-ranking-item b {
-  color: var(--ga-text-final);
-  font-size: 23px;
-  line-height: 1;
-  font-weight: 900;
-  text-align: right;
-}
-
 .property-section {
   margin-bottom: 22px;
 }
@@ -3028,14 +2909,6 @@ td {
 
   .pixel-map {
     min-height: 260px;
-  }
-
-  .site-ranking-item {
-    grid-template-columns: 22px minmax(0, 1fr) 42px;
-  }
-
-  .site-ranking-item b {
-    font-size: 19px;
   }
 
   .compact-table table {
@@ -3452,11 +3325,6 @@ select:focus-visible,
 
 .realtime-hero strong {
   font-size: 56px !important;
-}
-
-.site-rankings {
-  max-height: 452px;
-  overflow: auto;
 }
 
 @media (max-width: 1180px) {

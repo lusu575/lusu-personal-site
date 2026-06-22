@@ -96,6 +96,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-22",
+    title: "实时访问排行改为页面表现比例条",
+    body: "第 24 轮 loop 将实时大屏右侧的“实时访问排行”改为“实时页面表现”比例条，直接显示中文页面名、浏览量、访客数和最近访问时间；减少长列表阅读压力，后台资源 query 更新为 20260622-admin-insight-r22。"
+  },
+  {
+    date: "2026-06-22",
     title: "最近点击增加页面概览",
     body: "第 23 轮 loop 在点击埋点页的“最近点击”列表上方新增“点击页面概览”比例条，按页面聚合已加载点击事件；筛选点击后概览同步收窄，事件列表仍保留用于排查细节。后台资源 query 更新为 20260622-admin-insight-r21。"
   },
@@ -1793,41 +1798,27 @@ function renderSiteRankings(rows) {
   if (!list || !count) {
     return;
   }
-  const rankingRows = rows.slice(0, 7);
-  const countText = rankingRows.length ? `${formatNumber(rankingRows.length)} 个页面` : "0 个页面";
+  const rankingRows = rows.slice(0, 6);
+  const pvTotal = rows.reduce((sum, row) => sum + Number(row.pv || 0), 0);
+  const countText = rows.length
+    ? `展示前 ${formatNumber(rankingRows.length)} / 共 ${formatNumber(rows.length)} 个页面 · 浏览 ${formatNumber(pvTotal)}`
+    : "0 个页面";
   setElementText(count, countText);
-  syncBoxLabel(list, rankingRows.length ? `实时访问排行：${countText}` : "实时访问排行：暂无数据");
+  syncBoxLabel(list, rankingRows.length ? `实时页面表现：${countText}` : "实时页面表现：暂无数据");
   if (!rankingRows.length) {
-    list.replaceChildren(createEmptyStateElement("暂无实时访问排行数据"));
+    list.replaceChildren(createEmptyStateElement("暂无实时页面数据"));
     return;
   }
   const max = Math.max(1, ...rankingRows.map((row) => Number(row.pv || 0)));
-  list.replaceChildren(...rankingRows.map((row, index) => createSiteRankingItem(row, index, max)));
-}
-
-function createSiteRankingItem(row, index, max) {
-  const item = document.createElement("article");
-  const rank = document.createElement("span");
-  const body = document.createElement("div");
-  const title = document.createElement("strong");
-  const code = document.createElement("small");
-  const value = document.createElement("b");
-  const bar = document.createElement("i");
-  const valueText = formatNumber(row.pv);
-  const label = pageDisplayName(row.path || row.route, row.route);
-  const detail = pageDisplayDetail(row.path || row.route, row.route);
-  item.className = "site-ranking-item";
-  item.tabIndex = 0;
-  item.title = `${index + 1}. ${label} · 今日访问 ${valueText}`;
-  item.setAttribute("aria-label", item.title);
-  setElementText(rank, String(index + 1));
-  setElementText(title, label);
-  setElementText(code, detail || "站内页面");
-  setElementText(value, valueText);
-  bar.style.width = `${Math.max(3, Math.round((Number(row.pv || 0) / max) * 100))}%`;
-  body.append(title, code, bar);
-  item.append(rank, body, value);
-  return item;
+  list.replaceChildren(...rankingRows.map((row, index) => createInsightBarItem({
+    rank: index + 1,
+    label: pageDisplayName(row.path || row.route, row.route),
+    detail: pageDisplayDetail(row.path || row.route, row.route) || "站内页面",
+    value: row.pv,
+    secondaryValue: row.uv,
+    max,
+    lastSeenAt: row.last_seen_at
+  })));
 }
 
 function formatClickScreenSize(row) {
