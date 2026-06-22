@@ -88,6 +88,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-22",
+    title: "未知页面路径显示收口",
+    body: "第 8 轮 loop 将页面显示兜底从原始路径改为“站内页面”，避免未登记页面在排行、洞察、账号活跃和点击事件中再次露出 /xxx 或带语言参数的技术路径。后台资源 query 更新为 20260622-admin-insight-r6，接口原始数据仍保留给排查使用，权限和数据写入不变。"
+  },
+  {
+    date: "2026-06-22",
     title: "统计覆盖文案校准",
     body: "第 7 轮 loop 将侧边栏和实时大屏里的“已选站点 / 追踪项”改为更贴近真实数据的“页面 / 地区 / 文章覆盖”，避免把统计结果误读为后台配置数量。后台资源 query 更新为 20260622-admin-insight-r5，统计接口、权限和数据写入不变。"
   },
@@ -423,7 +428,7 @@ function pageDisplayName(value, route = "") {
 
 function pageDisplayDetail(value, route = "") {
   const info = pageDisplayInfo(value, route);
-  return info.detail || info.raw || "";
+  return info.detail || "站内页面";
 }
 
 function fileExtension(file) {
