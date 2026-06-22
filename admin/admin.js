@@ -92,9 +92,14 @@ const panelMeta = {
 const overviewPanels = new Set(["dashboard", "visits", "clicks"]);
 const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
-const navBadgePanels = new Set(["articles", "videos", "videoCategories", "chat", "accounts", "socialLinks", "updates"]);
+const navBadgePanels = new Set(["visits", "clicks", "articles", "videos", "videoCategories", "chat", "accounts", "socialLinks", "updates"]);
 
 const adminUpdates = [
+  {
+    date: "2026-06-22",
+    title: "侧边栏徽标单位优化",
+    body: "第 39 轮 loop 将侧边栏数量徽标的悬停提示改为对应单位，并把访问来源、点击埋点也接入已有概览数量；徽标继续只复用已加载状态，不增加接口请求。后台资源版本更新为 20260622-admin-insight-r37。"
+  },
   {
     date: "2026-06-22",
     title: "侧边栏新增数量徽标",
@@ -1998,16 +2003,18 @@ function createListOverviewItem(label, value) {
   return item;
 }
 
-function navBadgeValue(panel) {
-  return {
-    articles: state.articles.length,
-    videos: state.videos.length,
-    videoCategories: state.videoCategories.length,
-    chat: state.chatMessages.length,
-    accounts: state.accounts.length,
-    socialLinks: state.socialLinks.length,
-    updates: adminUpdates.length
-  }[panel] || 0;
+function navBadgeInfo(panel) {
+  return ({
+    visits: { value: state.overview?.regions?.length || 0, unit: "条来源" },
+    clicks: { value: state.overview?.recentClicks?.length || 0, unit: "条点击" },
+    articles: { value: state.articles.length, unit: "篇文章" },
+    videos: { value: state.videos.length, unit: "个视频" },
+    videoCategories: { value: state.videoCategories.length, unit: "个分类" },
+    chat: { value: state.chatMessages.length, unit: "条消息" },
+    accounts: { value: state.accounts.length, unit: "个账号" },
+    socialLinks: { value: state.socialLinks.length, unit: "个入口" },
+    updates: { value: adminUpdates.length, unit: "条记录" }
+  })[panel] || { value: 0, unit: "条" };
 }
 
 function setupNavBadges() {
@@ -2037,11 +2044,12 @@ function updateNavBadges() {
     if (!badge) {
       return;
     }
-    const value = navBadgeValue(button.dataset.panel);
+    const info = navBadgeInfo(button.dataset.panel);
+    const value = info.value;
     badge.hidden = value <= 0;
     setElementText(badge, value > 99 ? "99+" : formatNumber(value));
     const label = button.querySelector(".nav-text")?.textContent || button.textContent;
-    button.title = value > 0 ? `${label}：${formatNumber(value)} 条已加载` : label;
+    button.title = value > 0 ? `${label}：${formatNumber(value)} ${info.unit}已加载` : label;
   });
 }
 
