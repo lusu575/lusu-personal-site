@@ -88,6 +88,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-22",
+    title: "文章列表改用标题识别",
+    body: "第 10 轮 loop 将知识库文章列表的主标题从路径标识改为文章标题，路径标识退到次级信息，减少站长在文章管理里靠 slug 识别内容的成本。后台文章列表接口只补充读取已有标题字段，不改变权限、保存逻辑或数据库结构；后台资源 query 更新为 20260622-admin-insight-r8。"
+  },
+  {
+    date: "2026-06-22",
     title: "顶部面板说明继续中文化",
     body: "第 9 轮 loop 将后台切换面板后的顶部说明继续中文化：文章说明不再显示 zh/en/ja，视频说明减少平台名堆叠，访问来源说明补充“掩码 IP 前缀”，社交链接说明改为“社交入口”。后台资源 query 更新为 20260622-admin-insight-r7，功能逻辑和接口不变。"
   },
@@ -1722,15 +1727,15 @@ function renderArticleList() {
     item.setAttribute("aria-label", item.dataset.readyTitle);
     item.setAttribute("aria-pressed", article.article_id === state.selectedArticleId ? "true" : "false");
     title.className = "list-title";
-    setElementText(title, article.slug || "");
+    setElementText(title, adminArticleDisplayTitle(article));
     meta.className = "list-meta";
     meta.append(
       createStatusBadgeElement(articleStatusLabel(article.status), article.status || "neutral"),
       createStatusBadgeElement(`${article.translation_count || 0}/3 语种`, Number(article.translation_count || 0) >= 3 ? "visible" : "warning"),
-      createStatusBadgeElement(article.category || "未分类", "neutral")
+      createStatusBadgeElement(categoryDisplayName(article.category) || "未分类", "neutral")
     );
     summary.className = "list-subtle";
-    setElementText(summary, `浏览 ${formatNumber(article.article_pv)} / 访客 ${formatNumber(article.article_uv)} · 更新 ${formatTime(article.updated_at)}`);
+    setElementText(summary, `标识：${article.slug || "未记录"} · 浏览 ${formatNumber(article.article_pv)} / 访客 ${formatNumber(article.article_uv)} · 更新 ${formatTime(article.updated_at)}`);
     item.append(title, meta, summary);
     return item;
   }));
@@ -1750,13 +1755,24 @@ function articleListLabel(article) {
   const translationCount = Number(article.translation_count || 0);
   const translationLabel = translationCount >= 3 ? "三语完整" : `三语缺 ${formatNumber(3 - translationCount)} 项`;
   return [
-    article.slug || "未命名文章",
+    adminArticleDisplayTitle(article),
+    `路径标识 ${article.slug || "未记录"}`,
     status,
-    article.category || "未分类",
+    categoryDisplayName(article.category) || "未分类",
     `${formatNumber(translationCount)}/3 语种，${translationLabel}`,
     `浏览 ${formatNumber(article.article_pv)} / 访客 ${formatNumber(article.article_uv)}`,
     `更新 ${formatTime(article.updated_at)}`
   ].join("；");
+}
+
+function adminArticleDisplayTitle(article = {}) {
+  return article.title
+    || article.translations?.zh?.title
+    || article.translations?.en?.title
+    || article.translations?.ja?.title
+    || articleSlugLabels[article.slug]
+    || article.slug
+    || "未命名文章";
 }
 
 async function selectArticle(articleId) {
@@ -1784,7 +1800,7 @@ async function selectArticle(articleId) {
 function resetArticleEditorForSelection(articleId, statusText) {
   const form = $("#article-form");
   const article = state.articles.find((item) => item.article_id === articleId);
-  setElementText($("#article-editor-title"), article ? `读取中：${article.slug || "未命名文章"}` : "正在读取文章");
+  setElementText($("#article-editor-title"), article ? `读取中：${adminArticleDisplayTitle(article)}` : "正在读取文章");
   form.reset();
   form.elements.slug.value = article?.slug || "";
   form.elements.category.value = article?.category || "note";
@@ -1809,7 +1825,7 @@ function resetArticleForm() {
 
 function fillArticleForm(article) {
   const form = $("#article-form");
-  setElementText($("#article-editor-title"), `编辑：${article.slug}`);
+  setElementText($("#article-editor-title"), `编辑：${adminArticleDisplayTitle(article)}`);
   form.elements.slug.value = article.slug || "";
   form.elements.category.value = article.category || "note";
   form.elements.tags.value = (article.tags || []).join(", ");

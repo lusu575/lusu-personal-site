@@ -802,7 +802,8 @@ async function getAdminArticles(request, env) {
   const rows = (await env.DB.prepare(`
     select
       articles.*,
-      count(article_translations.translation_id) as translation_count,
+      coalesce(zh.title, fallback.title, articles.slug) as title,
+      count(distinct article_translations.translation_id) as translation_count,
       (
         select count(*)
         from article_view_events
@@ -815,6 +816,16 @@ async function getAdminArticles(request, env) {
       ) as article_uv
     from articles
     left join article_translations on article_translations.article_id = articles.article_id
+    left join article_translations zh
+      on zh.article_id = articles.article_id and zh.lang = 'zh'
+    left join article_translations fallback
+      on fallback.translation_id = (
+        select inner_translations.translation_id
+        from article_translations inner_translations
+        where inner_translations.article_id = articles.article_id
+        order by case inner_translations.lang when 'zh' then 0 when 'en' then 1 when 'ja' then 2 else 3 end
+        limit 1
+      )
     group by articles.article_id
     order by articles.updated_at desc, articles.article_id desc
   `).all()).results || [];
