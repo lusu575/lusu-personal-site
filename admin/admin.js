@@ -88,6 +88,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-22",
+    title: "统计与治理文案去英文缩写",
+    body: "第 12 轮 loop 将实时大屏里的 PV/UV 解释改为“浏览量/独立访客”，聊天室消息详情和禁言提示里的 IP hash 改为“隐藏 IP 指纹”，减少后台运行时的英文缩写直出。后台资源 query 更新为 20260622-admin-insight-r10。"
+  },
+  {
+    date: "2026-06-22",
     title: "后台运行文案去除 slug 直出",
     body: "第 11 轮 loop 将文章保存校验、视频分类列表摘要和分类完整提示里的 slug 直出改为“路径标识”，让后台运行界面尽量使用中文说明；字段名和接口参数仍保持不变。后台资源 query 更新为 20260622-admin-insight-r9。"
   },
@@ -1038,7 +1043,7 @@ function renderOverview() {
   if (!state.overview) {
     return;
   }
-  $("#analytics-explainer").textContent = "统计口径：PV 是页面被打开的次数，UV 是独立访客数。已登录账号按账号合并，同一账号多设备、多次访问也只算 1 个 UV；匿名访问继续按隐藏访客标识统计。";
+  $("#analytics-explainer").textContent = "统计口径：浏览量是页面被打开的次数，独立访客数是去重后的访客人数。已登录账号按账号合并，同一账号多设备、多次访问也只算 1 个独立访客；匿名访问继续按隐藏访客标识统计。";
   renderDashboardHero(state.overview.cards || {});
   renderDashboardInsightStrip();
   renderKpis(state.overview.cards);
@@ -1129,7 +1134,7 @@ function renderKpis(cards = {}) {
     ["今日页面浏览", cards.todayPv, "所有页面打开次数，刷新也会计入。", 0],
     ["今日独立访客", cards.todayUv, "登录账号按账号合并；匿名访客按隐藏访客标识计算。", 3],
     [`最近 ${state.overview?.windowDays || 14} 天浏览`, cards.totalPv, "这段时间内站内页面被打开的总次数。", 5],
-    [`最近 ${state.overview?.windowDays || 14} 天访客`, cards.totalUv, "用于判断真实触达人数，登录用户多设备仍合并为 1 个 UV。", 7],
+    [`最近 ${state.overview?.windowDays || 14} 天访客`, cards.totalUv, "用于判断真实触达人数，登录用户多设备仍合并为 1 个独立访客。", 7],
     ["今日点击动作", cards.todayClicks, "按钮、卡片、筛选和播放等可点击操作次数。", 9],
     ["正在活跃", cards.onlineVisitors, "最近 5 分钟内有访问记录的访客或登录账号。", 11],
     ["今日聊天消息", cards.todayMessages, "匿名聊天室今天实际发出的消息数。", 13]
@@ -3212,7 +3217,7 @@ function selectChatMessage(messageId) {
   $("#chat-meta").replaceChildren(...[
     ["隐藏用户 ID", message.visitor_id || ""],
     ["前端 client id", message.client_id || ""],
-    ["IP hash", message.ip_hash || ""],
+    ["隐藏 IP 指纹", message.ip_hash || ""],
     ["IP 前缀", message.ip_prefix || ""],
     ["来源", [message.country, message.region, message.city].filter(Boolean).join(" / ") || "未知"]
   ].map(([label, value]) => createChatMetaItem(label, value)));
@@ -3289,7 +3294,7 @@ function syncChatActionState() {
     ipBanButton.textContent = state.chatActionBusyMode === "banIp" ? "禁言中..." : "禁言IP来源";
     syncButtonHint(
       ipBanButton,
-      missingIpHash ? "这条记录没有 IP hash，无法按 IP 来源禁言" : chatActionButtonHint("按 IP hash 禁言", hasMessage, busy)
+      missingIpHash ? "这条记录没有隐藏 IP 指纹，无法按 IP 来源禁言" : chatActionButtonHint("按 IP 来源禁言", hasMessage, busy)
     );
   }
   syncChatListBusyState();
@@ -3499,7 +3504,7 @@ async function banSelectedChat(type) {
     return;
   }
   if ((type === "ip_hash" || type === "ip") && !message.ip_hash) {
-    showChatActionError(new Error("这条记录没有 IP hash，无法按 IP 来源禁言。"));
+    showChatActionError(new Error("这条记录没有隐藏 IP 指纹，无法按 IP 来源禁言。"));
     return;
   }
   setChatActionBusy(type === "ip_hash" || type === "ip" ? "banIp" : "banVisitor");
