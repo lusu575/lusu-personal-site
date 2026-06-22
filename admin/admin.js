@@ -36,6 +36,7 @@ const state = {
   banBusyId: "",
   accounts: [],
   selectedAccountId: "",
+  accountFilter: "",
   accountDetail: null,
   accountSaving: false,
   socialLinks: [],
@@ -89,6 +90,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-06-22",
+    title: "账号列表新增本地筛选",
+    body: "第 16 轮 loop 在账号列表上方新增本地筛选框，可按邮箱、角色、密码状态和活跃信息快速定位账号；账号概览仍显示全量状态，列表计数显示“显示 X / 共 Y”。后台资源 query 更新为 20260622-admin-insight-r14。"
+  },
   {
     date: "2026-06-22",
     title: "视频分类新增本地筛选",
@@ -3813,14 +3819,29 @@ function renderAccountSummary() {
 
 function renderAccountList() {
   const list = $("#account-list");
-  syncBoxLabel(list, state.accounts.length ? `账号列表：${$("#account-list-count")?.textContent || ""}` : "账号列表：暂无账号");
+  const filterText = normalizeFilterText(state.accountFilter);
+  const visibleAccounts = filterText
+    ? state.accounts.filter((account) => accountMatchesFilter(account, filterText))
+    : state.accounts;
+  const admins = state.accounts.filter((account) => account.role === "admin").length;
+  const active = state.accounts.filter((account) => Number(account.active_sessions || 0) > 0).length;
+  const countText = state.accounts.length
+    ? `${filterText ? `显示 ${formatNumber(visibleAccounts.length)} / ` : ""}共 ${formatNumber(state.accounts.length)} 个 · 管理员 ${formatNumber(admins)} · 活跃 ${formatNumber(active)}`
+    : "暂无账号数据";
+  setElementText($("#account-list-count"), countText);
+  syncBoxLabel(list, state.accounts.length ? `账号列表：${countText}` : "账号列表：暂无账号");
   if (!state.accounts.length) {
     list.replaceChildren(createEmptyStateElement("还没有注册账号。"));
     syncAccountListBusyState();
     return;
   }
+  if (!visibleAccounts.length) {
+    list.replaceChildren(createEmptyStateElement("没有匹配的账号，换个邮箱、角色、密码状态或活跃信息试试。"));
+    syncAccountListBusyState();
+    return;
+  }
 
-  list.replaceChildren(...state.accounts.map((account) => {
+  list.replaceChildren(...visibleAccounts.map((account) => {
     const item = document.createElement("button");
     const title = document.createElement("span");
     const meta = document.createElement("span");
@@ -3850,6 +3871,24 @@ function renderAccountList() {
     return item;
   }));
   syncAccountListBusyState();
+}
+
+function accountMatchesFilter(account, filterText) {
+  if (!filterText) {
+    return true;
+  }
+  const role = account.role === "admin" ? "管理员" : "普通用户";
+  const searchText = [
+    account.email,
+    role,
+    account.role,
+    account.password_status,
+    `${formatNumber(account.active_sessions)} 个活跃会话`,
+    `最近登录 ${formatTime(account.last_login_at) || "暂无记录"}`,
+    `登录 ${formatNumber(account.login_count)} 次`,
+    `云存档 ${formatNumber(account.save_slots)} 个`
+  ].filter(Boolean).join(" ").toLowerCase();
+  return searchText.includes(filterText);
 }
 
 function renderAccountListNotice(text, label = "账号列表提示") {
@@ -4673,6 +4712,10 @@ function bindEvents() {
     if (item && !isAccountWriteBusy()) {
       selectAccount(item.dataset.accountId);
     }
+  });
+  $("#account-list-filter").addEventListener("input", (event) => {
+    state.accountFilter = event.currentTarget.value;
+    renderAccountList();
   });
   $("#account-form").addEventListener("submit", saveAccount);
   $("#social-links-form").addEventListener("submit", saveSocialLinks);
