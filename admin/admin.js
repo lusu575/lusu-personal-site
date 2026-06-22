@@ -96,6 +96,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-22",
+    title: "账号列表新增状态概览",
+    body: "第 33 轮 loop 在账号列表筛选框下方新增状态概览条，按当前筛选结果显示全部/当前显示、管理员、普通用户、当前活跃、有云存档和有登录记录数量，减少逐条看账号状态的压力；不改变账号详情和密码逻辑，后台资源版本更新为 20260622-admin-insight-r31。"
+  },
+  {
+    date: "2026-06-22",
     title: "禁言列表新增治理概览",
     body: "第 32 轮 loop 在禁言列表上方新增治理概览条，按当前筛选结果显示全部/当前显示、生效中、已停用、按用户、按 IP 和有原因数量，方便快速判断治理状态；不改变停用逻辑，后台资源版本更新为 20260622-admin-insight-r30。"
   },
@@ -4194,6 +4199,7 @@ function renderAccountList() {
     ? `${filterText ? `显示 ${formatNumber(visibleAccounts.length)} / ` : ""}共 ${formatNumber(state.accounts.length)} 个 · 管理员 ${formatNumber(admins)} · 活跃 ${formatNumber(active)}`
     : "暂无账号数据";
   setElementText($("#account-list-count"), countText);
+  renderAccountStatusOverview(visibleAccounts, Boolean(filterText));
   syncBoxLabel(list, state.accounts.length ? `账号列表：${countText}` : "账号列表：暂无账号");
   if (!state.accounts.length) {
     list.replaceChildren(createEmptyStateElement("还没有注册账号。"));
@@ -4236,6 +4242,27 @@ function renderAccountList() {
     return item;
   }));
   syncAccountListBusyState();
+}
+
+function renderAccountStatusOverview(accounts, isFiltered) {
+  const box = $("#account-status-overview");
+  if (!box) {
+    return;
+  }
+  const rows = accounts || [];
+  const adminCount = rows.filter((account) => account.role === "admin").length;
+  const activeCount = rows.filter((account) => Number(account.active_sessions || 0) > 0).length;
+  const saveCount = rows.filter((account) => Number(account.save_slots || 0) > 0).length;
+  const loginCount = rows.filter((account) => Boolean(account.last_login_at)).length;
+  const items = [
+    [isFiltered ? "当前显示" : "全部账号", rows.length],
+    ["管理员", adminCount],
+    ["普通用户", Math.max(0, rows.length - adminCount)],
+    ["当前活跃", activeCount],
+    ["有云存档", saveCount],
+    ["有登录记录", loginCount]
+  ];
+  box.replaceChildren(...items.map(([label, value]) => createListOverviewItem(label, value)));
 }
 
 function accountMatchesFilter(account, filterText) {
