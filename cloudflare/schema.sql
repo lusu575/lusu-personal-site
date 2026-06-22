@@ -572,6 +572,32 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-06-22-fixed-dock-window-backdrops',
+  '2026-06-22-fixed-dock-window-backdrops',
+  'site-updates',
+  '["网站更新","主端视觉","任务栏","四时段","窗口背景"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-22T14:30:00.000Z',
+  '2026-06-22T14:30:00.000Z',
+  '2026-06-22T14:30:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-06-22-about-contact-icons',
   '2026-06-22-about-contact-icons',
   'site-updates',
@@ -701,6 +727,66 @@ on conflict(article_id) do update set
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
+  (
+    'seed-update-2026-06-22-fixed-dock-window-backdrops-zh',
+    'seed-update-2026-06-22-fixed-dock-window-backdrops',
+    'zh',
+    '底部导航与四时段窗口背景',
+    '底部导航固定贴合屏幕下沿，窗口页改用专用低干扰四时段背景。',
+    '# 底部导航与四时段窗口背景
+
+本次更新整理主站窗口页的桌面底层和底部导航位置，让不同页面之间的视觉基线保持一致。
+
+## 更新内容
+
+- 底部导航栏改为固定贴合浏览器视口下沿，不再被不同页面内容高度顶下去。
+- 知识库、视频区、资源区、游戏区、杂谈区、聊天室和关于我等窗口页统一预留底栏空间，避免正常窗口被底栏遮住或互相重叠。
+- 非首页窗口页改用 `assets/images/window-backdrops/<time>.png` 专用四时段背景图，并增加低对比度遮罩，让背景更现代、更简单。
+- 首页仍保留原有动态壁纸舞台、云层和四时段预览参数。
+- 更新主站 CSS / JS 缓存版本，减少线上继续加载旧任务栏或旧背景的概率。',
+    '2026-06-22T14:30:00.000Z',
+    '2026-06-22T14:30:00.000Z'
+  ),
+  (
+    'seed-update-2026-06-22-fixed-dock-window-backdrops-en',
+    'seed-update-2026-06-22-fixed-dock-window-backdrops',
+    'en',
+    'Pinned Taskbar and Window Backdrops',
+    'The bottom taskbar now pins to the viewport edge, and window pages use dedicated quiet time-of-day backdrops.',
+    '# Pinned Taskbar and Window Backdrops
+
+This update tidies the desktop layer behind the main windows and keeps the bottom navigation aligned across routes.
+
+## Changes
+
+- The bottom taskbar now pins to the browser viewport edge instead of being pushed down by different page heights.
+- Knowledge, Videos, Resources, Games, Blog, Chatroom, and About now reserve space for the taskbar so normal windows are not covered or overlapped.
+- Non-home window pages now use dedicated `assets/images/window-backdrops/<time>.png` backdrops for morning, day, dusk, and night, with a low-contrast wash to keep them modern and quiet.
+- The home screen keeps the existing animated wallpaper stage, cloud layers, and preview query parameter.
+- The public CSS / JS cache version was updated to avoid stale taskbar or backdrop styles online.',
+    '2026-06-22T14:30:00.000Z',
+    '2026-06-22T14:30:00.000Z'
+  ),
+  (
+    'seed-update-2026-06-22-fixed-dock-window-backdrops-ja',
+    'seed-update-2026-06-22-fixed-dock-window-backdrops',
+    'ja',
+    '固定タスクバーと時間帯背景',
+    '下部タスクバーを画面下端に固定し、ウィンドウ画面に専用の控えめな時間帯別背景を追加しました。',
+    '# 固定タスクバーと時間帯背景
+
+今回の更新では、各ウィンドウ画面の背面レイヤーと下部ナビゲーションの位置を整え、ページを切り替えても表示の基準がずれないようにしました。
+
+## 更新内容
+
+- 下部タスクバーをブラウザ画面の下端に固定し、ページ内容の高さで押し下げられないようにしました。
+- 知識庫、動画、リソース、ゲーム、雑談、匿名チャット、プロフィールなどのウィンドウ画面にタスクバー分の余白を確保し、通常のウィンドウを隠したり重ねたりしないようにしました。
+- ホーム以外のウィンドウ画面に、`assets/images/window-backdrops/<time>.png` の専用4時間帯背景を適用し、低コントラストのベールで現代的かつ控えめにしました。
+- ホーム画面の既存の動く壁紙ステージ、雲レイヤー、時間帯プレビュー用クエリはそのまま保ちます。
+- 公開側 CSS / JS のキャッシュ版を更新し、オンラインで古いタスクバーや背景が残りにくくしました。',
+    '2026-06-22T14:30:00.000Z',
+    '2026-06-22T14:30:00.000Z'
+  ),
   (
     'seed-update-2026-06-22-about-contact-icons-zh',
     'seed-update-2026-06-22-about-contact-icons',

@@ -483,6 +483,16 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "🧭",
+      date: "2026.06.22",
+      title: { zh: "底部导航与四时段窗口背景", en: "Pinned Taskbar and Window Backdrops", ja: "固定タスクバーと時間帯背景" },
+      desc: {
+        zh: "底部导航固定贴合屏幕下沿，窗口页改用随时间切换的专用低干扰背景，切换页面时不再漂移或盖住窗口",
+        en: "The bottom taskbar now stays pinned to the viewport edge, while window pages use dedicated quiet time-of-day backdrops without covering active windows",
+        ja: "下部タスクバーを画面下端に固定し、各ウィンドウ画面に専用の控えめな時間帯別背景を適用して、切り替え時のずれや重なりを防ぎました"
+      }
+    },
+    {
       icon: "📇",
       date: "2026.06.22",
       title: { zh: "联系方式图标归位", en: "Contact Icons Aligned", ja: "連絡先アイコンを整理" },
@@ -1858,6 +1868,7 @@ function navigate(route, options = {}) {
   document.querySelectorAll(".page").forEach((page) => {
     page.classList.toggle("active", page.id === nextRoute);
   });
+  document.body.dataset.route = nextRoute;
   updateNavigationState(nextRoute);
   if (nextRoute === "chatroom") {
     initChatroom();

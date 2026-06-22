@@ -14,6 +14,13 @@
   --shadow-hard: 4px 5px 0 rgba(0, 35, 120, 0.28);
   --shadow-window: 0 18px 34px rgba(0, 33, 96, 0.28);
   --ui-font: Tahoma, Verdana, "Microsoft YaHei", "Yu Gothic", "MS PGothic", sans-serif;
+  --chrome-topbar-height: 56px;
+  --chrome-taskbar-height: 48px;
+  --chrome-window-reserve: calc(var(--chrome-topbar-height) + var(--chrome-taskbar-height) + 72px);
+  --chrome-window-compact-reserve: calc(var(--chrome-topbar-height) + var(--chrome-taskbar-height) + 62px);
+  --desktop-backdrop-image: url("../assets/images/window-backdrops/day.png?v=20260622-window-backdrops-r2");
+  --desktop-backdrop-wash:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04) 48%, rgba(24, 44, 88, 0.16));
   --chrome-top-bg:
     linear-gradient(180deg, rgba(82, 169, 255, 0.82) 0%, rgba(25, 102, 217, 0.84) 48%, rgba(10, 48, 142, 0.88) 100%);
   --chrome-top-texture:
@@ -71,6 +78,9 @@ body {
 }
 
 body[data-time-theme="morning"] {
+  --desktop-backdrop-image: url("../assets/images/window-backdrops/morning.png?v=20260622-window-backdrops-r2");
+  --desktop-backdrop-wash:
+    linear-gradient(180deg, rgba(255, 248, 228, 0.2), rgba(255, 255, 255, 0.04) 50%, rgba(105, 76, 136, 0.12));
   --chrome-top-bg:
     linear-gradient(180deg, rgba(255, 232, 154, 0.82) 0%, rgba(92, 191, 232, 0.84) 40%, rgba(21, 105, 207, 0.88) 100%);
   --chrome-top-texture:
@@ -108,6 +118,9 @@ body[data-time-theme="morning"] {
 }
 
 body[data-time-theme="day"] {
+  --desktop-backdrop-image: url("../assets/images/window-backdrops/day.png?v=20260622-window-backdrops-r2");
+  --desktop-backdrop-wash:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(232, 244, 255, 0.06) 50%, rgba(48, 68, 116, 0.12));
   --chrome-top-bg:
     linear-gradient(180deg, rgba(112, 207, 255, 0.8) 0%, rgba(30, 130, 236, 0.84) 48%, rgba(8, 68, 166, 0.9) 100%);
   --chrome-taskbar-bg:
@@ -118,6 +131,9 @@ body[data-time-theme="day"] {
 }
 
 body[data-time-theme="dusk"] {
+  --desktop-backdrop-image: url("../assets/images/window-backdrops/dusk.png?v=20260622-window-backdrops-r2");
+  --desktop-backdrop-wash:
+    linear-gradient(180deg, rgba(255, 220, 184, 0.16), rgba(255, 255, 255, 0.03) 48%, rgba(37, 31, 86, 0.2));
   --chrome-top-bg:
     linear-gradient(180deg, rgba(255, 173, 112, 0.8) 0%, rgba(171, 86, 213, 0.84) 42%, rgba(35, 44, 126, 0.9) 100%);
   --chrome-top-texture:
@@ -155,6 +171,9 @@ body[data-time-theme="dusk"] {
 }
 
 body[data-time-theme="night"] {
+  --desktop-backdrop-image: url("../assets/images/window-backdrops/night.png?v=20260622-window-backdrops-r2");
+  --desktop-backdrop-wash:
+    linear-gradient(180deg, rgba(128, 154, 255, 0.08), rgba(9, 24, 68, 0.08) 52%, rgba(3, 10, 37, 0.22));
   --chrome-top-bg:
     linear-gradient(180deg, rgba(26, 68, 165, 0.82) 0%, rgba(10, 37, 113, 0.88) 48%, rgba(3, 15, 56, 0.94) 100%);
   --chrome-top-texture:
@@ -205,15 +224,52 @@ button:disabled {
 }
 
 .site-shell {
+  position: relative;
+  isolation: isolate;
   min-width: 0;
   max-width: 100vw;
-  min-height: 100vh;
+  min-height: 100dvh;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto minmax(0, 1fr);
   overflow-x: hidden;
+  background: #65b7f0;
+}
+
+.site-shell::before,
+.site-shell::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.site-shell::before {
+  background-image: var(--desktop-backdrop-image);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  filter: saturate(1.04) contrast(0.96) brightness(1.02);
+  transform: scale(1.018);
+  transform-origin: center;
+}
+
+.site-shell::after {
   background:
-    radial-gradient(circle at 84% 72%, rgba(255, 255, 255, 0.2) 0 1px, transparent 2px 100%),
-    linear-gradient(180deg, #228ff2 0%, #35a9ff 43%, #8fdb6a 72%, #4ab438 100%);
+    radial-gradient(circle at 14% 18%, rgba(255, 255, 255, 0.26) 0 12%, transparent 34%),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.18), transparent 24%, transparent 76%, rgba(255, 255, 255, 0.12)),
+    var(--desktop-backdrop-wash);
+  opacity: 0.42;
+}
+
+body[data-route="home"] .site-shell::after {
+  opacity: 0;
+}
+
+.site-shell > header,
+.site-shell > main {
+  position: relative;
+  z-index: 1;
 }
 
 .xp-topbar {
@@ -525,15 +581,15 @@ main {
   position: relative;
   display: grid;
   min-width: 0;
-  min-height: 0;
+  min-height: calc(100dvh - var(--chrome-topbar-height));
 }
 
 .page {
   display: none;
   grid-area: 1 / 1;
   min-width: 0;
-  min-height: 100%;
-  padding: 26px;
+  min-height: calc(100dvh - var(--chrome-topbar-height));
+  padding: 26px 26px calc(var(--chrome-taskbar-height) + 24px);
   animation: popIn 180ms ease-out;
 }
 
@@ -544,7 +600,7 @@ main {
 .page-home {
   position: relative;
   overflow: hidden;
-  padding: 0 24px 72px 24px;
+  padding: 0 24px calc(var(--chrome-taskbar-height) + 24px) 24px;
 }
 
 .sky-layer {
@@ -1353,8 +1409,8 @@ main {
   flex-direction: column;
   width: min(1560px, calc(100% - 16px));
   min-height: 560px;
-  height: calc(100dvh - 176px);
-  max-height: calc(100dvh - 176px);
+  height: calc(100dvh - var(--chrome-window-reserve));
+  max-height: calc(100dvh - var(--chrome-window-reserve));
 }
 
 #videos .xp-window,
@@ -1363,23 +1419,23 @@ main {
   display: flex;
   flex-direction: column;
   width: min(1120px, calc(100% - 16px));
-  height: min(760px, calc(100dvh - 166px));
-  max-height: calc(100dvh - 166px);
+  height: min(760px, calc(100dvh - var(--chrome-window-compact-reserve)));
+  max-height: calc(100dvh - var(--chrome-window-compact-reserve));
 }
 
 #videos .xp-window {
   width: min(1280px, calc(100% - 16px));
-  min-height: min(760px, calc(100dvh - 166px));
-  height: calc(100dvh - 166px);
-  max-height: calc(100dvh - 166px);
+  min-height: min(760px, calc(100dvh - var(--chrome-window-compact-reserve)));
+  height: calc(100dvh - var(--chrome-window-compact-reserve));
+  max-height: calc(100dvh - var(--chrome-window-compact-reserve));
 }
 
 #games .xp-window {
   display: flex;
   flex-direction: column;
   width: min(960px, calc(100% - 16px));
-  min-height: min(420px, calc(100dvh - 166px));
-  max-height: min(760px, calc(100dvh - 166px));
+  min-height: min(420px, calc(100dvh - var(--chrome-window-compact-reserve)));
+  max-height: min(760px, calc(100dvh - var(--chrome-window-compact-reserve)));
 }
 
 #about .xp-window {
@@ -1387,7 +1443,7 @@ main {
   flex-direction: column;
   height: auto;
   min-height: 0;
-  max-height: calc(100vh - 162px);
+  max-height: calc(100dvh - var(--chrome-window-compact-reserve));
 }
 
 #knowledge .folder-layout,
@@ -1477,8 +1533,8 @@ body.is-article-reading #knowledge {
 
 body.is-article-reading #knowledge .xp-window {
   width: min(1560px, calc(100% - 16px));
-  height: calc(100dvh - 176px);
-  max-height: calc(100dvh - 176px);
+  height: calc(100dvh - var(--chrome-window-reserve));
+  max-height: calc(100dvh - var(--chrome-window-reserve));
   margin: 24px auto 0;
   border-radius: 7px 7px 5px 5px;
 }
@@ -1502,8 +1558,8 @@ body.is-article-reading.is-article-window-restored #knowledge {
 
 body.is-article-reading.is-article-window-restored #knowledge .xp-window {
   width: min(1240px, calc(100% - 16px));
-  height: calc(100dvh - 176px);
-  max-height: calc(100dvh - 176px);
+  height: calc(100dvh - var(--chrome-window-reserve));
+  max-height: calc(100dvh - var(--chrome-window-reserve));
   margin: 24px auto 0;
   border-radius: 7px 7px 5px 5px;
 }
@@ -1670,7 +1726,7 @@ body.is-article-reading .folder-layout.is-reading .article-detail::after {
   content: "";
   position: fixed;
   right: max(56px, calc((100vw - 1560px) / 2 + 22px));
-  bottom: 124px;
+  bottom: calc(var(--chrome-taskbar-height) + 76px);
   left: max(56px, calc((100vw - 1560px) / 2 + 22px));
   z-index: 43;
   border-top: 2px dashed rgba(126, 173, 255, 0.72);
@@ -1766,7 +1822,7 @@ body.is-article-reading .article-reader-sidebar {
   gap: 8px;
   position: fixed;
   right: clamp(222px, 14vw, 292px);
-  bottom: 50px;
+  bottom: calc(var(--chrome-taskbar-height) + 2px);
   left: clamp(22px, 4vw, 72px);
   z-index: 44;
   margin: 0;
@@ -1942,7 +1998,7 @@ body.is-article-reading .article-reader-sidebar {
 .article-top-link {
   position: fixed;
   right: clamp(20px, 4vw, 64px);
-  bottom: 62px;
+  bottom: calc(var(--chrome-taskbar-height) + 14px);
   z-index: 45;
   color: #184d0d;
   background: linear-gradient(180deg, #ffffff, #dff7c8);
@@ -1955,7 +2011,7 @@ body.is-article-reading .article-read-progress {
   gap: 12px;
   left: max(56px, calc((100vw - 1560px) / 2 + 22px));
   right: max(232px, calc((100vw - 1560px) / 2 + 232px));
-  bottom: 64px;
+  bottom: calc(var(--chrome-taskbar-height) + 16px);
   min-height: 50px;
   padding: 7px 16px;
 }
@@ -1996,7 +2052,7 @@ body.is-article-reading .article-read-progress-track {
 
 body.is-article-reading .article-top-link {
   right: max(57px, calc((100vw - 1560px) / 2 + 57px));
-  bottom: 65px;
+  bottom: calc(var(--chrome-taskbar-height) + 17px);
   min-width: 116px;
   min-height: 38px;
   justify-content: center;
@@ -3240,8 +3296,10 @@ body.is-article-reading .article-figure {
 }
 
 .xp-taskbar {
-  position: sticky;
+  position: fixed;
+  right: 0;
   bottom: 0;
+  left: 0;
   z-index: 50;
   display: grid;
   grid-template-columns: auto 1fr auto;
@@ -3250,7 +3308,8 @@ body.is-article-reading .article-figure {
   box-sizing: border-box;
   width: 100%;
   max-width: 100vw;
-  min-height: 40px;
+  height: var(--chrome-taskbar-height);
+  min-height: var(--chrome-taskbar-height);
   padding: 3px 8px;
   overflow: hidden;
   color: #fff;
@@ -4687,6 +4746,11 @@ body.is-article-reading .article-figure {
 }
 
 @media (max-width: 760px) {
+  body {
+    --chrome-topbar-height: 72px;
+    --chrome-taskbar-height: 104px;
+  }
+
   .xp-topbar {
     position: static;
     align-items: center;
@@ -4779,13 +4843,13 @@ body.is-article-reading .article-figure {
 
   .page {
     min-height: 100%;
-    padding: 10px;
+    padding: 10px 10px calc(var(--chrome-taskbar-height) + 12px);
   }
 
   .page-home.active {
     display: flex;
     flex-direction: column;
-    padding-bottom: 100px;
+    padding-bottom: calc(var(--chrome-taskbar-height) + 24px);
   }
 
   .desktop-intro {
@@ -5036,17 +5100,17 @@ body.is-article-reading .article-figure {
   #blog .xp-window {
     width: 100%;
     max-width: 100%;
-    height: calc(100dvh - 176px);
+    height: calc(100dvh - var(--chrome-topbar-height) - var(--chrome-taskbar-height) - 22px);
     min-height: 0;
-    max-height: calc(100dvh - 176px);
+    max-height: calc(100dvh - var(--chrome-topbar-height) - var(--chrome-taskbar-height) - 22px);
     overflow: hidden;
   }
 
   body.is-article-reading #knowledge .xp-window,
   body.is-article-reading.is-article-window-restored #knowledge .xp-window {
     width: 100%;
-    height: calc(100dvh - 176px);
-    max-height: calc(100dvh - 176px);
+    height: calc(100dvh - var(--chrome-topbar-height) - var(--chrome-taskbar-height) - 22px);
+    max-height: calc(100dvh - var(--chrome-topbar-height) - var(--chrome-taskbar-height) - 22px);
     margin-top: 10px;
   }
 
@@ -5107,7 +5171,7 @@ body.is-article-reading .article-figure {
 
   #about .xp-window {
     height: auto;
-    max-height: calc(100dvh - 176px);
+    max-height: calc(100dvh - var(--chrome-topbar-height) - var(--chrome-taskbar-height) - 22px);
     overflow: auto;
   }
 
@@ -5245,7 +5309,7 @@ body.is-article-reading .article-figure {
 
   .chatroom-window {
     margin-top: 10px;
-    max-height: calc(100dvh - 178px);
+    max-height: calc(100dvh - var(--chrome-topbar-height) - var(--chrome-taskbar-height) - 24px);
     display: grid;
     grid-template-rows: auto auto minmax(0, 1fr) auto auto;
   }
@@ -5320,6 +5384,8 @@ body.is-article-reading .article-figure {
     left: 0;
     grid-template-columns: 1fr;
     gap: 6px;
+    height: auto;
+    min-height: var(--chrome-taskbar-height);
     padding: 5px 8px;
   }
 
@@ -5511,6 +5577,10 @@ body.is-article-reading .article-figure {
 }
 
 @media (max-width: 460px) {
+  body {
+    --chrome-taskbar-height: 118px;
+  }
+
   .xp-topbar {
     padding-inline: 8px;
   }
@@ -5566,10 +5636,6 @@ body.is-article-reading .article-figure {
     bottom: 198px;
   }
 
-  .page-home.active {
-    padding-bottom: 132px;
-  }
-
   .desktop-icons {
     grid-template-columns: 1fr;
     width: 100%;
@@ -5619,7 +5685,7 @@ body.is-article-reading .article-figure {
   }
 
   .chatroom-window {
-    max-height: calc(100dvh - 168px);
+    max-height: calc(100dvh - var(--chrome-topbar-height) - var(--chrome-taskbar-height) - 18px);
   }
 
   .chatroom-log {

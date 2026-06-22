@@ -35,6 +35,8 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 首页壁纸必须保留 `wallpaper-root` / `wallpaper-stage` 舞台坐标结构；静态底图和后续动画图层要共享同一套 cover 裁切尺寸，不要直接用视口百分比硬贴小图层。
 - 首页壁纸和欢迎弹窗问候语必须使用同一套时间段：05:00-10:59 morning，11:00-16:59 day，17:00-19:59 dusk，20:00-04:59 night。
 - 顶部栏和底部任务栏也跟随同一套 `body[data-time-theme]` 四时段主题变量；维护 `.xp-topbar`、`.xp-taskbar`、Start、任务栏按钮、账号入口、语言切换或状态托盘时，必须同时检查 morning / day / dusk / night 四套外观，保持无竖线的现代玻璃像素 HUD 方向，并保留现有图标资源。
+- 底部任务栏必须固定贴合浏览器视口下沿；维护窗口高度、页面 padding、文章阅读浮层或移动端断点时，必须为 `.xp-taskbar` 预留空间，避免任务栏被页面内容顶下去、盖住正常窗口或与窗口控件重叠。
+- 非首页窗口页背景必须跟随同一套 `body[data-time-theme]` 四时段背景图，当前资产为 `assets/images/window-backdrops/<time>.png`；它们必须比首页更低干扰、更简单、更现代。不要恢复成单一蓝绿色渐变，也不要把首页大场景图直接拿来压在窗口后面喧宾夺主。
 - 当前四个时段均已启用动态云层：`assets/images/wallpaper-dynamic/<time>/base-clean.png` 作为无云底图，独立透明云层按 1672x941 舞台坐标摆放并沿同一主风向慢速错相漂移；morning / dusk / night 的低地平线云默认保留静态，避免移动后像贴在地面。
 - 本地调试动态壁纸可用 `?wallpaper=morning` / `?wallpaper=day` / `?wallpaper=dusk` / `?wallpaper=night` 强制预览指定时间段；该预览模式可以临时加快动画以便肉眼确认移动，不要为了预览硬编码当前时间。
 - 首页壁纸动画只使用 CSS `transform` / `opacity`，不要用 JS 每帧修改 `left` / `top`，不要使用整屏 GIF、整屏 APNG 或大视频循环。
@@ -215,6 +217,10 @@ $env:XDG_CONFIG_HOME='F:\lusu575个人站\.wrangler-config'; npx.cmd wrangler pa
   - `assets/images/wallpaper-dynamic/dusk/cloud-*.png`
   - `assets/images/wallpaper-dynamic/night/base-clean.png`
   - `assets/images/wallpaper-dynamic/night/cloud-*.png`
+  - `assets/images/window-backdrops/morning.png`
+  - `assets/images/window-backdrops/day.png`
+  - `assets/images/window-backdrops/dusk.png`
+  - `assets/images/window-backdrops/night.png`
   - `assets/images/homepage-pixel-coast.png`
   - `assets/images/lusu-tv-head-256.png`
   - `assets/images/lusu-about-avatar-256.png`

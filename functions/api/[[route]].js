@@ -5888,6 +5888,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         article_id, slug, category, tags, cover_image, status, is_pinned,
         view_count, created_at, updated_at, published_at
       ) values (
+        'seed-update-2026-06-22-fixed-dock-window-backdrops',
+        '2026-06-22-fixed-dock-window-backdrops',
+        'site-updates',
+        '["网站更新","主端视觉","任务栏","四时段","窗口背景"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-22T14:30:00.000Z',
+        '2026-06-22T14:30:00.000Z',
+        '2026-06-22T14:30:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
         'seed-update-2026-06-22-about-contact-icons',
         '2026-06-22-about-contact-icons',
         'site-updates',
@@ -6035,6 +6062,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# メインサイト夜間更新まとめ\n\nこの記録では、昨夜の公開サイト側の小さな更新を一つにまとめました。更新記録が細かな記事で埋まりすぎないようにするためです。\n\n## まとめ\n\n- 知識庫の記事詳細に、目次、読書進捗、リンクコピー、先頭へ戻る操作を追加しました。今回、参考画像に合わせて左側の目次/ヒント、右側の本文カード、下部の進捗バーと先頭へ戻るボタンを並べた表示に整えました。\n- さらに10回の視覚調整を行い、記事閲覧ウィンドウはサイト内の XP ウィンドウサイズに戻し、全体へ引き伸ばさない表示にしました。タイトルバーに最小化/最大化/閉じるボタンを追加し、進捗バーを1行の青い分割バーにし、本文の余白と左側ヒントの位置も参考画像に近づけました。\n- リソース欄には分類件数、状態バッジ、空分類の案内、より厳しいリンク許可リストを追加しました。\n- ゲーム欄にはクラウド保存、ソース表示、言語ラベル、起動パスの確認、ゲームシェルの安全な DOM 描画を追加しました。\n- 最近の更新、知識庫一覧、フィルター、リソースフィルター、ゲーム一覧は DOM / textContent 描画を続け、公開内容の XSS リスクを下げます。\n- RSS、言語付きリンク、記事共有 URL、最近の更新ラベルをそろえ、購読と共有を安定させました。\n- 画像の遅延読み込み、非同期デコード、固定画像サイズ、モバイル表示の細部も軽く調整しました。\n\n古い単項目の記事は履歴と回退用データとして残しますが、公開一覧と RSS ではこのまとめ記事だけを表示します。"
       }
     }, "2026-06-18T00:00:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-22-fixed-dock-window-backdrops", {
+      zh: {
+        title: "底部导航与四时段窗口背景",
+        summary: "底部导航固定贴合屏幕下沿，窗口页改用专用低干扰四时段背景。",
+        content_markdown: "# 底部导航与四时段窗口背景\n\n本次更新整理主站窗口页的桌面底层和底部导航位置，让不同页面之间的视觉基线保持一致。\n\n## 更新内容\n\n- 底部导航栏改为固定贴合浏览器视口下沿，不再被不同页面内容高度顶下去。\n- 知识库、视频区、资源区、游戏区、杂谈区、聊天室和关于我等窗口页统一预留底栏空间，避免正常窗口被底栏遮住或互相重叠。\n- 非首页窗口页改用 `assets/images/window-backdrops/<time>.png` 专用四时段背景图，并增加低对比度遮罩，让背景更现代、更简单。\n- 首页仍保留原有动态壁纸舞台、云层和四时段预览参数。\n- 更新主站 CSS / JS 缓存版本，减少线上继续加载旧任务栏或旧背景的概率。"
+      },
+      en: {
+        title: "Pinned Taskbar and Window Backdrops",
+        summary: "The bottom taskbar now pins to the viewport edge, and window pages use dedicated quiet time-of-day backdrops.",
+        content_markdown: "# Pinned Taskbar and Window Backdrops\n\nThis update tidies the desktop layer behind the main windows and keeps the bottom navigation aligned across routes.\n\n## Changes\n\n- The bottom taskbar now pins to the browser viewport edge instead of being pushed down by different page heights.\n- Knowledge, Videos, Resources, Games, Blog, Chatroom, and About now reserve space for the taskbar so normal windows are not covered or overlapped.\n- Non-home window pages now use dedicated `assets/images/window-backdrops/<time>.png` backdrops for morning, day, dusk, and night, with a low-contrast wash to keep them modern and quiet.\n- The home screen keeps the existing animated wallpaper stage, cloud layers, and preview query parameter.\n- The public CSS / JS cache version was updated to avoid stale taskbar or backdrop styles online."
+      },
+      ja: {
+        title: "固定タスクバーと時間帯背景",
+        summary: "下部タスクバーを画面下端に固定し、ウィンドウ画面に専用の控えめな時間帯別背景を追加しました。",
+        content_markdown: "# 固定タスクバーと時間帯背景\n\n今回の更新では、各ウィンドウ画面の背面レイヤーと下部ナビゲーションの位置を整え、ページを切り替えても表示の基準がずれないようにしました。\n\n## 更新内容\n\n- 下部タスクバーをブラウザ画面の下端に固定し、ページ内容の高さで押し下げられないようにしました。\n- 知識庫、動画、リソース、ゲーム、雑談、匿名チャット、プロフィールなどのウィンドウ画面にタスクバー分の余白を確保し、通常のウィンドウを隠したり重ねたりしないようにしました。\n- ホーム以外のウィンドウ画面に、`assets/images/window-backdrops/<time>.png` の専用4時間帯背景を適用し、低コントラストのベールで現代的かつ控えめにしました。\n- ホーム画面の既存の動く壁紙ステージ、雲レイヤー、時間帯プレビュー用クエリはそのまま保ちます。\n- 公開側 CSS / JS のキャッシュ版を更新し、オンラインで古いタスクバーや背景が残りにくくしました。"
+      }
+    }, "2026-06-22T14:30:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-06-22-about-contact-icons", {
       zh: {
         title: "联系方式图标归位",
