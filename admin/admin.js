@@ -96,6 +96,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-22",
+    title: "视频分类新增状态概览",
+    body: "第 30 轮 loop 在视频分类列表上方新增状态概览条，按当前筛选结果显示全部/当前显示、启用、停用、已被使用、可删除和最高排序，减少逐条看分类状态的压力；不增加接口请求，后台资源版本更新为 20260622-admin-insight-r28。"
+  },
+  {
+    date: "2026-06-22",
     title: "视频列表新增状态概览",
     body: "第 29 轮 loop 在视频管理列表上方新增状态概览条，按当前筛选结果显示全部/当前显示、已发布、草稿、隐藏、置顶和需补资料数量，减少只读视频条目的压力；不增加接口请求，后台资源版本更新为 20260622-admin-insight-r27。"
   },
@@ -3170,6 +3175,7 @@ function renderVideoCategoryList() {
     ? `${filterText ? `显示 ${formatNumber(visibleCategories.length)} / ` : ""}共 ${formatNumber(state.videoCategories.length)} 个 · 启用 ${formatNumber(enabledCount)} · 停用 ${formatNumber(disabledCount)} · 占用 ${formatNumber(occupiedCount)}`
     : "0 个分类";
   setElementText($("#video-category-list-count"), countText);
+  renderVideoCategoryStatusOverview(visibleCategories, Boolean(filterText));
   syncBoxLabel(list, state.videoCategories.length ? `视频分类列表：${countText}` : "视频分类列表：暂无分类");
   if (!state.videoCategories.length) {
     list.replaceChildren(createEmptyStateElement("暂无视频分类。"));
@@ -3214,6 +3220,25 @@ function renderVideoCategoryList() {
     return item;
   }));
   syncVideoCategoryListBusyState();
+}
+
+function renderVideoCategoryStatusOverview(categories, isFiltered) {
+  const box = $("#video-category-status-overview");
+  if (!box) {
+    return;
+  }
+  const rows = categories || [];
+  const linkedCount = rows.filter((category) => Number(category.video_count || 0) > 0).length;
+  const topSort = rows.reduce((result, category) => Math.max(result, Number(category.sort_order || 0)), 0);
+  const items = [
+    [isFiltered ? "当前显示" : "全部分类", rows.length],
+    ["启用", rows.filter((category) => category.enabled).length],
+    ["停用", rows.filter((category) => !category.enabled).length],
+    ["已被使用", linkedCount],
+    ["可删除", Math.max(0, rows.length - linkedCount)],
+    ["最高排序", topSort]
+  ];
+  box.replaceChildren(...items.map(([label, value]) => createListOverviewItem(label, value)));
 }
 
 function videoCategoryMatchesFilter(category, filterText) {
