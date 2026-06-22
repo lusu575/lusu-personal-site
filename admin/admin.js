@@ -12,6 +12,7 @@ const state = {
   articleDeleting: false,
   videos: [],
   selectedVideoId: "",
+  videoFilter: "",
   videoCategories: [],
   selectedVideoCategoryId: "",
   videoCategoryBusy: false,
@@ -87,6 +88,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-06-22",
+    title: "视频列表新增本地筛选",
+    body: "第 14 轮 loop 在视频列表上方新增本地筛选框，可按标题、作者、平台和链接快速定位视频；计数同步显示“显示 X / 共 Y”，与文章列表保持一致。后台资源 query 更新为 20260622-admin-insight-r12。"
+  },
   {
     date: "2026-06-22",
     title: "文章列表新增本地筛选",
@@ -2146,8 +2152,12 @@ function renderVideoList() {
   const publishedCount = state.videos.filter((video) => video.status === "published").length;
   const hiddenCount = state.videos.filter((video) => video.status === "hidden").length;
   const pinnedCount = state.videos.filter((video) => video.pinned).length;
+  const filterText = normalizeFilterText(state.videoFilter);
+  const visibleVideos = filterText
+    ? state.videos.filter((video) => videoMatchesVideoFilter(video, filterText))
+    : state.videos;
   const countText = state.videos.length
-    ? `共 ${formatNumber(state.videos.length)} 个 · 已发布 ${formatNumber(publishedCount)} · 隐藏 ${formatNumber(hiddenCount)} · 置顶 ${formatNumber(pinnedCount)}`
+    ? `${filterText ? `显示 ${formatNumber(visibleVideos.length)} / ` : ""}共 ${formatNumber(state.videos.length)} 个 · 已发布 ${formatNumber(publishedCount)} · 隐藏 ${formatNumber(hiddenCount)} · 置顶 ${formatNumber(pinnedCount)}`
     : "0 个视频";
   setElementText($("#video-list-count"), countText);
   syncBoxLabel(list, state.videos.length ? `视频列表：${countText}` : "视频列表：暂无视频");
@@ -2156,8 +2166,13 @@ function renderVideoList() {
     syncVideoListBusyState();
     return;
   }
+  if (!visibleVideos.length) {
+    list.replaceChildren(createEmptyStateElement("没有匹配的视频，换个标题、作者、平台或链接试试。"));
+    syncVideoListBusyState();
+    return;
+  }
 
-  list.replaceChildren(...state.videos.map((video) => {
+  list.replaceChildren(...visibleVideos.map((video) => {
     const item = document.createElement("button");
     const title = document.createElement("span");
     const meta = document.createElement("span");
@@ -2196,6 +2211,22 @@ function renderVideoList() {
     return item;
   }));
   syncVideoListBusyState();
+}
+
+function videoMatchesVideoFilter(video, filterText) {
+  if (!filterText) {
+    return true;
+  }
+  const searchText = [
+    video.title,
+    video.author_name,
+    video.platform,
+    video.original_url,
+    video.embed_url,
+    video.external_id,
+    videoStatusLabel(video.status)
+  ].filter(Boolean).join(" ").toLowerCase();
+  return searchText.includes(filterText);
 }
 
 function renderVideoListNotice(text, label = "视频列表提示") {
@@ -4533,6 +4564,10 @@ function bindEvents() {
     if (item && !isVideoEditBusy()) {
       selectVideo(item.dataset.adminVideoId);
     }
+  });
+  $("#video-list-filter").addEventListener("input", (event) => {
+    state.videoFilter = event.currentTarget.value;
+    renderVideoList();
   });
   $("#preview-video-url").addEventListener("click", previewVideoUrl);
   $("#refresh-video-metadata").addEventListener("click", refreshVideoMetadata);
