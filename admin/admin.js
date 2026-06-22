@@ -69,14 +69,14 @@ const SOCIAL_LINK_PLATFORMS = [
 
 const panelMeta = {
   dashboard: ["仪表盘", "实时访问工作台"],
-  visits: ["访问来源", "按国家、省份、地区和 IP 前缀查看每日访问。"],
+  visits: ["访问来源", "按国家、省份、城市和掩码 IP 前缀查看每日访问。"],
   clicks: ["点击埋点", "查看站内各位置点击、浏览访客和最近事件。"],
-  articles: ["知识库文章", "一次编辑 zh / en / ja 三种版本，按当前选择语言显示编辑区。"],
-  videos: ["视频管理", "输入 YouTube / Bilibili 链接，服务端识别并缓存标题、简介、发布时间和封面，也可上传本地封面。"],
+  articles: ["知识库文章", "一次编辑中文、英文、日文三种版本，按当前选择语言显示编辑区。"],
+  videos: ["视频管理", "输入视频链接后由服务端识别并缓存标题、简介、发布时间和封面，也可上传本地封面。"],
   videoCategories: ["视频分类管理", "维护视频区顶部标签，支持新增、编辑、停用、排序和安全删除。"],
   chat: ["聊天室管理", "编辑、隐藏、删除聊天记录，按隐藏用户 ID 或 IP 来源禁言。"],
   accounts: ["账号管理", "查看注册账号、重置密码、确认登录履历和近期活跃。"],
-  socialLinks: ["社交链接", "维护主站关于我窗口里的 X、GitHub、Bilibili、Instagram 和 Discord 跳转。"],
+  socialLinks: ["社交链接", "维护主站关于我窗口里的社交入口跳转。"],
   updates: ["后台更新记录", "后台自己的私有更新说明，每次后台更新后同步记录。"],
   docs: ["后台说明", "后台项目说明，不混入主站知识库。"]
 };
@@ -86,6 +86,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-06-22",
+    title: "顶部面板说明继续中文化",
+    body: "第 9 轮 loop 将后台切换面板后的顶部说明继续中文化：文章说明不再显示 zh/en/ja，视频说明减少平台名堆叠，访问来源说明补充“掩码 IP 前缀”，社交链接说明改为“社交入口”。后台资源 query 更新为 20260622-admin-insight-r7，功能逻辑和接口不变。"
+  },
   {
     date: "2026-06-22",
     title: "未知页面路径显示收口",
