@@ -1590,6 +1590,32 @@ tbody tr:hover td {
   scrollbar-gutter: stable;
 }
 
+.list-filter {
+  display: block;
+  margin: -2px 0 12px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.list-filter input {
+  width: 100%;
+  height: 38px;
+  margin-top: 6px;
+  padding: 0 11px;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font: inherit;
+  font-weight: 700;
+}
+
+.list-filter input:focus {
+  outline: 2px solid rgba(66, 133, 244, 0.22);
+  border-color: var(--ga-blue);
+}
+
 .editor-panel .editor-form {
   max-height: none;
 }

@@ -4,6 +4,7 @@ const state = {
   overview: null,
   articles: [],
   selectedArticleId: "",
+  articleFilter: "",
   articleDetailReady: false,
   articleLang: "zh",
   articleSaving: false,
@@ -86,6 +87,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-06-22",
+    title: "文章列表新增本地筛选",
+    body: "第 13 轮 loop 在知识库文章列表上方新增本地筛选框，可按标题、路径标识、分类和标签快速缩小列表；计数同步显示“显示 X / 共 Y”，不增加接口请求。后台资源 query 更新为 20260622-admin-insight-r11。"
+  },
   {
     date: "2026-06-22",
     title: "统计与治理文案去英文缩写",
@@ -1709,8 +1715,12 @@ function renderArticleList() {
   const list = $("#article-list");
   const publishedCount = state.articles.filter((article) => article.status === "published").length;
   const completeTranslationCount = state.articles.filter((article) => Number(article.translation_count || 0) >= 3).length;
+  const filterText = normalizeFilterText(state.articleFilter);
+  const visibleArticles = filterText
+    ? state.articles.filter((article) => articleMatchesArticleFilter(article, filterText))
+    : state.articles;
   const countText = state.articles.length
-    ? `共 ${formatNumber(state.articles.length)} 篇 · 已发布 ${formatNumber(publishedCount)} · 三语完整 ${formatNumber(completeTranslationCount)}`
+    ? `${filterText ? `显示 ${formatNumber(visibleArticles.length)} / ` : ""}共 ${formatNumber(state.articles.length)} 篇 · 已发布 ${formatNumber(publishedCount)} · 三语完整 ${formatNumber(completeTranslationCount)}`
     : "0 篇文章";
   setElementText($("#article-list-count"), countText);
   syncBoxLabel(list, state.articles.length ? `文章列表：${countText}` : "文章列表：暂无文章");
@@ -1719,8 +1729,13 @@ function renderArticleList() {
     syncArticleListBusyState();
     return;
   }
+  if (!visibleArticles.length) {
+    list.replaceChildren(createEmptyStateElement("没有匹配的文章，换个标题、路径标识、分类或标签试试。"));
+    syncArticleListBusyState();
+    return;
+  }
 
-  list.replaceChildren(...state.articles.map((article) => {
+  list.replaceChildren(...visibleArticles.map((article) => {
     const item = document.createElement("button");
     const title = document.createElement("span");
     const meta = document.createElement("span");
@@ -1750,6 +1765,26 @@ function renderArticleList() {
     return item;
   }));
   syncArticleListBusyState();
+}
+
+function normalizeFilterText(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function articleMatchesArticleFilter(article, filterText) {
+  if (!filterText) {
+    return true;
+  }
+  const searchText = [
+    adminArticleDisplayTitle(article),
+    article.slug,
+    article.category,
+    categoryDisplayName(article.category),
+    article.tags,
+    article.status,
+    articleStatusLabel(article.status)
+  ].filter(Boolean).join(" ").toLowerCase();
+  return searchText.includes(filterText);
 }
 
 function renderArticleListNotice(text, label = "文章列表提示") {
@@ -4455,6 +4490,10 @@ function bindEvents() {
     if (item && !isArticleWriteBusy()) {
       selectArticle(item.dataset.articleId);
     }
+  });
+  $("#article-list-filter").addEventListener("input", (event) => {
+    state.articleFilter = event.currentTarget.value;
+    renderArticleList();
   });
   $$(".lang-tab").forEach((button, index, tabs) => {
     button.addEventListener("click", () => setArticleLang(button.dataset.articleLang));
