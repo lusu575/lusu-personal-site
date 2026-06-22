@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex,nofollow">
   <title>鲁肃个人站管理后台</title>
-  <link rel="stylesheet" href="/admin/admin.css?v=20260622-admin-usability-r2">
+  <link rel="stylesheet" href="/admin/admin.css?v=20260622-admin-insight-r1">
 </head>
 <body>
   <div class="admin-shell">
@@ -51,6 +51,29 @@
 
       <section class="panel active" id="dashboard-panel" aria-hidden="false">
         <div class="insight-note" id="analytics-explainer">正在整理访问数据...</div>
+        <div class="dashboard-priority-grid">
+          <section class="xp-panel map-block priority-map">
+            <div class="mini-table-head">
+              <h2>实时城市分布</h2>
+              <span>按真实经纬度聚合</span>
+            </div>
+            <div class="pixel-map" id="visitor-map" aria-label="访问地图"></div>
+          </section>
+          <section class="xp-panel page-overview-panel">
+            <div class="mini-table-head">
+              <h2>页面概览</h2>
+              <span id="top-pages-count">浏览 / 访客</span>
+            </div>
+            <div class="insight-bars" id="top-pages" role="list" aria-label="页面概览"></div>
+          </section>
+          <section class="xp-panel country-overview-panel">
+            <div class="mini-table-head">
+              <h2>地区概览</h2>
+              <span id="dashboard-countries-count">浏览 / 访客</span>
+            </div>
+            <div class="insight-bars compact-bars" id="dashboard-countries" role="list" aria-label="地区概览"></div>
+          </section>
+        </div>
         <div class="ga-live-board">
           <section class="xp-panel realtime-panel">
             <div class="realtime-hero">
@@ -62,39 +85,6 @@
               <span class="live-clock" id="hourly-range">按服务器时间聚合</span>
             </div>
             <div class="bar-chart live-bars" id="hourly-chart"></div>
-            <div class="realtime-summary-grid">
-              <section class="mini-table-block">
-                <div class="mini-table-head">
-                  <h2>整体热门页面</h2>
-                  <span id="top-pages-count">浏览 / 访客</span>
-                </div>
-                <div class="table-wrap compact-table" tabindex="0" aria-label="热门页面表格滚动区，窄屏可横向滑动查看完整表格">
-                  <table>
-                    <thead><tr><th>页面</th><th>浏览</th><th>访客</th><th>最近访问</th></tr></thead>
-                    <tbody id="top-pages"></tbody>
-                  </table>
-                </div>
-              </section>
-              <section class="mini-table-block">
-                <div class="mini-table-head">
-                  <h2>整体国家 / 地区</h2>
-                  <span id="dashboard-countries-count">浏览 / 访客</span>
-                </div>
-                <div class="table-wrap compact-table" tabindex="0" aria-label="整体国家地区表格滚动区，窄屏可横向滑动查看完整表格">
-                  <table>
-                    <thead><tr><th>国家</th><th>浏览</th><th>访客</th><th>最近访问</th></tr></thead>
-                    <tbody id="dashboard-countries"></tbody>
-                  </table>
-                </div>
-              </section>
-            </div>
-            <div class="map-block">
-              <div class="mini-table-head">
-                <h2>实时城市分布</h2>
-                <span>按真实经纬度聚合</span>
-              </div>
-              <div class="pixel-map" id="visitor-map" aria-label="访问地图"></div>
-            </div>
           </section>
           <aside class="xp-panel realtime-rank-panel">
             <div class="panel-head">
@@ -102,7 +92,7 @@
                 <h2>实时访问排行</h2>
                 <span>按今日访问量排序</span>
               </div>
-              <span id="site-rankings-count">0 个网站</span>
+              <span id="site-rankings-count">0 个页面</span>
             </div>
             <div class="site-rankings" id="site-rankings"></div>
           </aside>
@@ -496,6 +486,6 @@
     </main>
   </div>
 
-  <script src="/admin/admin.js?v=20260622-admin-usability-r2"></script>
+  <script src="/admin/admin.js?v=20260622-admin-insight-r1"></script>
 </body>
 </html>

@@ -3175,3 +3175,277 @@ select:focus-visible,
     width: 100%;
   }
 }
+
+/* 2026-06-22 insight loop: left navigation and chart-first realtime overview. */
+.main {
+  display: grid !important;
+  grid-template-columns: 258px minmax(0, 1fr) !important;
+  gap: 18px 20px !important;
+  align-items: start !important;
+  width: min(100%, 1540px) !important;
+}
+
+.topbar {
+  grid-column: 1 / -1 !important;
+  margin-bottom: 0 !important;
+}
+
+.sidebar {
+  position: sticky !important;
+  top: 18px !important;
+  grid-column: 1 !important;
+  grid-row: 2 / span 20 !important;
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  align-content: start !important;
+  align-items: stretch !important;
+  gap: 16px !important;
+  min-height: calc(100vh - 118px) !important;
+  margin: 0 !important;
+  padding: 16px !important;
+}
+
+.sidebar-brand {
+  align-items: center !important;
+}
+
+.sidebar-note {
+  min-width: 0 !important;
+  padding-top: 12px !important;
+  border-top: 1px solid var(--ga-line-final) !important;
+  text-align: left !important;
+  white-space: normal !important;
+}
+
+.sidebar .nav-list {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 8px !important;
+  width: 100% !important;
+  overflow: visible !important;
+}
+
+.sidebar .nav-button {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  width: 100% !important;
+  min-height: 38px !important;
+  padding: 9px 12px !important;
+  color: #4f5662 !important;
+  line-height: 1.25 !important;
+  text-align: left !important;
+  white-space: normal !important;
+}
+
+.sidebar .nav-button::before {
+  display: none !important;
+}
+
+.sidebar .nav-button.active,
+.sidebar .nav-button[aria-current="page"] {
+  color: #1a5ec8 !important;
+  background: #f7fbff !important;
+  border-color: #8ab4f8 !important;
+}
+
+.panel {
+  grid-column: 2 !important;
+  min-width: 0 !important;
+}
+
+.dashboard-priority-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.32fr) minmax(320px, .82fr);
+  grid-template-areas:
+    "map pages"
+    "map countries";
+  gap: 16px;
+  margin: 0 0 22px;
+}
+
+.priority-map {
+  grid-area: map;
+  margin-top: 0 !important;
+}
+
+.page-overview-panel {
+  grid-area: pages;
+}
+
+.country-overview-panel {
+  grid-area: countries;
+}
+
+.priority-map .pixel-map {
+  min-height: 438px;
+}
+
+.insight-bars {
+  display: grid;
+  gap: 0;
+  border-top: 1px solid var(--ga-line-final);
+}
+
+.insight-bar-item {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) minmax(72px, auto);
+  gap: 10px;
+  align-items: center;
+  min-height: 62px;
+  padding: 9px 0;
+  border-bottom: 1px solid #edf0f2;
+}
+
+.insight-bar-rank {
+  color: #687182;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.insight-bar-body {
+  min-width: 0;
+}
+
+.insight-bar-body strong {
+  display: block;
+  color: var(--ga-text-final);
+  font-size: 14px;
+  line-height: 1.25;
+  font-weight: 900;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.insight-bar-meta {
+  display: block;
+  margin-top: 3px;
+  color: #7a8493;
+  font-size: 12px;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.insight-bar-track {
+  display: block;
+  height: 5px;
+  margin-top: 7px;
+  overflow: hidden;
+  background: #edf2fb;
+  border-radius: 999px;
+}
+
+.insight-bar-fill {
+  display: block;
+  height: 100%;
+  background: var(--ga-blue-final);
+  border-radius: inherit;
+}
+
+.insight-bar-value {
+  color: var(--ga-text-final);
+  font-size: 16px;
+  line-height: 1.1;
+  font-weight: 900;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.compact-bars .insight-bar-item {
+  min-height: 54px;
+}
+
+.ga-live-board {
+  grid-template-columns: minmax(0, 1.1fr) minmax(320px, .82fr) !important;
+  gap: 16px !important;
+}
+
+.realtime-panel,
+.realtime-rank-panel {
+  min-height: 0 !important;
+}
+
+.realtime-panel {
+  padding: 16px !important;
+}
+
+.realtime-hero {
+  min-height: 84px !important;
+}
+
+.realtime-hero strong {
+  font-size: 56px !important;
+}
+
+.site-rankings {
+  max-height: 452px;
+  overflow: auto;
+}
+
+@media (max-width: 1180px) {
+  .main {
+    grid-template-columns: 224px minmax(0, 1fr) !important;
+  }
+
+  .dashboard-priority-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "map"
+      "pages"
+      "countries";
+  }
+
+  .priority-map .pixel-map {
+    min-height: 340px;
+  }
+}
+
+@media (max-width: 920px) {
+  .main {
+    grid-template-columns: 1fr !important;
+  }
+
+  .topbar,
+  .sidebar,
+  .panel {
+    grid-column: 1 !important;
+    grid-row: auto !important;
+  }
+
+  .sidebar {
+    position: static !important;
+    min-height: 0 !important;
+  }
+
+  .sidebar .nav-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-priority-grid,
+  .ga-live-board {
+    grid-template-columns: 1fr !important;
+  }
+
+  .sidebar .nav-list {
+    grid-template-columns: 1fr !important;
+  }
+
+  .insight-bar-item {
+    grid-template-columns: 24px minmax(0, 1fr);
+  }
+
+  .insight-bar-value {
+    grid-column: 2;
+    text-align: left;
+  }
+
+  .insight-bar-body strong,
+  .insight-bar-meta {
+    white-space: normal;
+  }
+}

@@ -88,8 +88,13 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-22",
+    title: "后台实时大屏图表化与侧边栏优化",
+    body: "按新的 loop 目标继续优化管理后台：将实时城市分布、页面概览和地区概览提前到首屏，原先很长的热门页面/国家表格改为中文名称和比例条；页面路径会显示为首页、视频区、知识库、聊天室等中文名称，TW、US、SG、CN 等地区码改为中文地区名；顶部小标签导航改为左侧栏，保留现有白底数据后台风格、权限、接口和 DOM 绑定边界。"
+  },
+  {
+    date: "2026-06-22",
     title: "后台首屏中文化与信息口径优化",
-    body: "优化管理后台首屏、编辑区和窄屏阅读体验：将实时面板标题、站点追踪摘要、访问排行、追踪项说明、文章路径标识、三语编辑标签、分类路径标识和表格指标标题改为更直观的中文表达；恢复 PV/UV 统计口径说明，给窄屏表格增加滑动提示，并移除卡片里的 Quota/token 模板残留。后台风格、导航顺序、DOM 绑定、权限和 API 边界保持不变，本次仍是后台私有更新。"
+    body: "优化管理后台首屏、编辑区和窄屏阅读体验：将实时面板标题、站点追踪摘要、访问排行、追踪项说明、文章路径标识、三语编辑标签、分类路径标识和表格指标标题改为更直观的中文表达；恢复浏览 / 访客统计口径说明，给窄屏表格增加滑动提示，并移除卡片里的 Quota/token 模板残留。后台风格、导航顺序、DOM 绑定、权限和 API 边界保持不变，本次仍是后台私有更新。"
   },
   {
     date: "2026-06-21",
@@ -183,8 +188,8 @@ const adminUpdates = [
   },
   {
     date: "2026-06-15",
-    title: "文章访问 PV/UV 统计",
-    body: "文章详情接口新增服务端访问事件记录，后台大屏新增热门文章表，文章列表和编辑详情显示每篇文章的总 PV/UV 与今日 PV/UV。"
+    title: "文章浏览与访客统计",
+    body: "文章详情接口新增服务端访问事件记录，后台大屏新增热门文章表，文章列表和编辑详情显示每篇文章的总浏览、总访客、今日浏览和今日访客。"
   },
   {
     date: "2026-06-15",
@@ -207,6 +212,69 @@ const countryPositions = {
   RU: [90, 61],
   IN: [78, 22],
   BR: [-51, -10]
+};
+
+const countryNames = {
+  AD: "安道尔",
+  AE: "阿联酋",
+  AL: "阿尔巴尼亚",
+  AR: "阿根廷",
+  AT: "奥地利",
+  AU: "澳大利亚",
+  BE: "比利时",
+  BR: "巴西",
+  CA: "加拿大",
+  CH: "瑞士",
+  CN: "中国大陆",
+  DE: "德国",
+  ES: "西班牙",
+  FI: "芬兰",
+  FR: "法国",
+  GB: "英国",
+  HK: "中国香港",
+  ID: "印度尼西亚",
+  IN: "印度",
+  IT: "意大利",
+  JP: "日本",
+  KR: "韩国",
+  MO: "中国澳门",
+  MY: "马来西亚",
+  NL: "荷兰",
+  PH: "菲律宾",
+  PL: "波兰",
+  RU: "俄罗斯",
+  SE: "瑞典",
+  SG: "新加坡",
+  TH: "泰国",
+  TR: "土耳其",
+  TW: "中国台湾",
+  US: "美国",
+  VN: "越南"
+};
+
+const pageRouteLabels = {
+  home: "首页",
+  videos: "视频区",
+  knowledge: "知识库",
+  resources: "资源区",
+  games: "游戏区",
+  chatroom: "聊天室",
+  about: "关于我",
+  article: "知识库文章"
+};
+
+const articleSlugLabels = {
+  "ai-agent-workflow-guide": "AI 代理工作流指南",
+  "ai-agent-article": "AI 代理文章",
+  "2026-06-11-knowledge-video-home-fix": "知识库视频首页修复记录",
+  "2026-06-14-ai-agent-article": "AI 代理文章记录",
+  "2026-06-15-cloud-speed-smoothness": "云朵速度平滑优化",
+  "2026-06-15-icons-cloud-fixes": "图标云修复",
+  "2026-06-15-video-player-window-controls": "视频播放器窗口控制",
+  "2026-06-16-mobile-admin-video-fixes": "移动端后台视频修复",
+  "2026-06-16-responsive-video-window": "响应式视频窗口记录",
+  "2026-06-16-video-card-category-icon-fixes": "视频卡片分类图标修复",
+  "2026-06-18-main-visual-polish-cycle": "主站视觉打磨记录"
 };
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -247,6 +315,79 @@ function formatTime(value) {
     minute: "2-digit",
     second: "2-digit"
   }).format(date);
+}
+
+function countryDisplayName(value) {
+  const code = String(value || "").trim().toUpperCase();
+  if (!code) {
+    return "未知地区";
+  }
+  return countryNames[code] || code;
+}
+
+function languageDisplayName(value) {
+  const labels = {
+    zh: "中文访问",
+    en: "英文访问",
+    ja: "日文访问"
+  };
+  return labels[String(value || "").toLowerCase()] || "";
+}
+
+function parsePageReference(value) {
+  const raw = String(value || "").trim();
+  if (!raw || raw === "home") {
+    return { pathname: "/", hash: "", lang: "", slug: "", raw };
+  }
+  try {
+    const url = new URL(raw, window.location.origin);
+    const slug = url.pathname.startsWith("/articles/")
+      ? decodeURIComponent(url.pathname.replace("/articles/", "").replace(/\/$/, ""))
+      : "";
+    return {
+      pathname: url.pathname || "/",
+      hash: decodeURIComponent(url.hash || "").replace(/^#/, ""),
+      lang: url.searchParams.get("lang") || "",
+      slug,
+      raw
+    };
+  } catch {
+    const cleaned = raw.replace(/^\//, "").replace(/^#/, "");
+    return { pathname: raw.startsWith("/") ? raw : "/", hash: cleaned, lang: "", slug: "", raw };
+  }
+}
+
+function pageDisplayInfo(value, route = "") {
+  const parsed = parsePageReference(value || route);
+  const routeKey = String(route || "").trim();
+  const detailParts = [];
+  const langText = languageDisplayName(parsed.lang);
+  if (langText) {
+    detailParts.push(langText);
+  }
+  if (parsed.slug) {
+    return {
+      label: articleSlugLabels[parsed.slug] || "知识库文章",
+      detail: ["知识库文章", ...detailParts].filter(Boolean).join(" · "),
+      raw: parsed.raw
+    };
+  }
+  const sectionKey = routeKey && routeKey !== "home" ? routeKey : parsed.hash;
+  const label = pageRouteLabels[sectionKey] || pageRouteLabels[routeKey] || (parsed.pathname === "/" ? "首页" : "站内页面");
+  return {
+    label,
+    detail: detailParts.join(" · "),
+    raw: parsed.raw
+  };
+}
+
+function pageDisplayName(value, route = "") {
+  return pageDisplayInfo(value, route).label;
+}
+
+function pageDisplayDetail(value, route = "") {
+  const info = pageDisplayInfo(value, route);
+  return info.detail || info.raw || "";
 }
 
 function fileExtension(file) {
@@ -930,7 +1071,7 @@ function createSparkBars(rows, offset = 0) {
     const bar = document.createElement("span");
     const height = Math.max(2, Math.round((Number(row.pv || 0) / max) * 100));
     bar.style.height = `${height}%`;
-    bar.title = `PV ${formatNumber(row.pv)} / UV ${formatNumber(row.uv)}`;
+    bar.title = `浏览 ${formatNumber(row.pv)} / 访客 ${formatNumber(row.uv)}`;
     spark.append(bar);
   });
   return spark;
@@ -952,7 +1093,9 @@ function createPropertyMiniList(titleText, rows, labelKey, valueKey) {
     const item = document.createElement("p");
     const label = document.createElement("span");
     const value = document.createElement("strong");
-    const labelText = row[labelKey] || row.route || row.title || "未记录";
+    const labelText = labelKey === "country"
+      ? countryDisplayName(row.country)
+      : pageDisplayName(row.path || row.route || row.title, row.route);
     setElementText(label, labelText);
     setElementText(value, formatNumber(row[valueKey]));
     item.append(label, value);
@@ -1047,7 +1190,7 @@ function renderMap(rows) {
     point.classList.toggle("is-low", top > 72);
     point.classList.toggle("is-left", left < 16);
     point.classList.toggle("is-right", left > 84);
-    const pointTitle = `${label}${ipHint} · PV ${formatNumber(row.pv)} / UV ${formatNumber(row.uv)}`;
+    const pointTitle = `${label}${ipHint} · 浏览 ${formatNumber(row.pv)} / 访客 ${formatNumber(row.uv)}`;
     point.title = pointTitle;
     point.setAttribute("aria-label", pointTitle);
     caption.textContent = `${shortLabel} ${formatNumber(row.pv)}`;
@@ -1135,35 +1278,72 @@ function clampNumber(value, min, max) {
 }
 
 function mapPlaceLabel(row) {
-  return [row.country || "未知", row.region, row.city].filter(Boolean).join(" / ") || "未知位置";
+  return [countryDisplayName(row.country), row.region, row.city].filter(Boolean).join(" / ") || "未知位置";
 }
 
 function mapShortPlaceLabel(row) {
-  return row.city || row.region || row.country || "未知";
+  return row.city || row.region || countryDisplayName(row.country) || "未知";
 }
 
 function renderTopPages(rows) {
-  const table = $("#top-pages");
+  const box = $("#top-pages");
   const pvTotal = rows.reduce((sum, row) => sum + Number(row.pv || 0), 0);
+  const visibleRows = rows.slice(0, 8);
   const countText = rows.length
-    ? `共 ${formatNumber(rows.length)} 个页面 · 浏览 ${formatNumber(pvTotal)}`
+    ? `展示前 ${formatNumber(visibleRows.length)} / 共 ${formatNumber(rows.length)} 个页面 · 浏览 ${formatNumber(pvTotal)}`
     : "0 个页面";
   setElementText($("#top-pages-count"), countText);
-  syncTableWrapLabel(table, rows.length ? `热门页面：${countText}` : "热门页面：暂无数据");
+  syncBoxLabel(box, rows.length ? `页面概览：${countText}` : "页面概览：暂无数据");
   if (!rows.length) {
-    table.replaceChildren(createEmptyTableRow(4, "暂无热门页面数据"));
+    box.replaceChildren(createEmptyStateElement("暂无页面访问数据"));
     return;
   }
-  table.replaceChildren(...rows.map((row) => {
-    const tableRow = document.createElement("tr");
-    tableRow.append(
-      createStackedTableCell(row.path || "/", row.route || "", "table-path"),
-      createMetricTableCell(row.pv),
-      createMetricTableCell(row.uv),
-      createTimeTableCell(row.last_seen_at)
-    );
-    return tableRow;
-  }));
+  const max = Math.max(1, ...visibleRows.map((row) => Number(row.pv || 0)));
+  box.replaceChildren(...visibleRows.map((row, index) => createInsightBarItem({
+    rank: index + 1,
+    label: pageDisplayName(row.path || row.route, row.route),
+    detail: pageDisplayDetail(row.path || row.route, row.route) || "站内页面",
+    value: row.pv,
+    secondaryValue: row.uv,
+    max,
+    lastSeenAt: row.last_seen_at
+  })));
+}
+
+function createInsightBarItem({ rank, label, detail, value, secondaryValue, max, lastSeenAt }) {
+  const item = document.createElement("article");
+  const rankNode = document.createElement("span");
+  const body = document.createElement("div");
+  const title = document.createElement("strong");
+  const meta = document.createElement("small");
+  const track = document.createElement("i");
+  const fill = document.createElement("span");
+  const metrics = document.createElement("b");
+  const pv = Number(value || 0);
+  const uv = Number(secondaryValue || 0);
+  const width = Math.max(4, Math.round((pv / Math.max(1, Number(max || 0))) * 100));
+  const lastSeen = lastSeenAt ? ` · 最近 ${formatTime(lastSeenAt)}` : "";
+  const itemLabel = `${rank}. ${label}：浏览 ${formatNumber(pv)}，访客 ${formatNumber(uv)}${lastSeen}`;
+  item.className = "insight-bar-item";
+  item.tabIndex = 0;
+  item.setAttribute("role", "listitem");
+  item.title = itemLabel;
+  item.setAttribute("aria-label", itemLabel);
+  rankNode.className = "insight-bar-rank";
+  body.className = "insight-bar-body";
+  meta.className = "insight-bar-meta";
+  track.className = "insight-bar-track";
+  fill.className = "insight-bar-fill";
+  metrics.className = "insight-bar-value";
+  fill.style.width = `${width}%`;
+  setElementText(rankNode, String(rank));
+  setElementText(title, label || "未记录页面");
+  setElementText(meta, [detail, `访客 ${formatNumber(uv)}`, lastSeenAt ? `最近 ${formatTime(lastSeenAt)}` : ""].filter(Boolean).join(" · ") || "暂无细节");
+  setElementText(metrics, `${formatNumber(pv)} 浏览`);
+  track.append(fill);
+  body.append(title, meta, track);
+  item.append(rankNode, body, metrics);
+  return item;
 }
 
 function renderTopArticles(rows) {
@@ -1206,7 +1386,7 @@ function renderVisitTables() {
     countryTable.replaceChildren(...countries.map((row) => {
       const tableRow = document.createElement("tr");
       tableRow.append(
-        createTableCell(row.country || "未知"),
+        createTableCell(countryDisplayName(row.country)),
         createMetricTableCell(row.pv),
         createMetricTableCell(row.uv),
         createTimeTableCell(row.last_seen_at)
@@ -1229,7 +1409,7 @@ function renderVisitTables() {
     return;
   }
   regionTable.replaceChildren(...regions.map((row) => {
-    const place = [row.country || "未知", row.region, row.city].filter(Boolean).join(" / ");
+    const place = mapPlaceLabel(row);
     const tableRow = document.createElement("tr");
     tableRow.append(
       createTableCell(place),
@@ -1268,7 +1448,7 @@ function renderClickPanels() {
       target.append(route);
       tableRow.append(
         target,
-        createTableCell(row.path || "", "table-path"),
+        createTableCell(pageDisplayName(row.path || row.route, row.route), "table-path"),
         createMetricTableCell(row.clicks),
         createMetricTableCell(row.uv),
         createTimeTableCell(row.last_seen_at)
@@ -1286,38 +1466,39 @@ function renderClickPanels() {
   syncBoxLabel($("#recent-clicks"), recentClicks.length ? `最近点击：${recentCountText}` : "最近点击：暂无数据");
   renderEventList("#recent-clicks", recentClicks, "暂无点击事件", (row) => (
     createEventItemElement(row.target_text || row.target_key || row.tag_name || "未知点击", [
-      `页面：${row.path || "未知页面"} · 时间：${formatTime(row.created_at)} · 来源：${[row.country, row.region, row.city].filter(Boolean).join(" / ") || "未知来源"}`,
+      `页面：${pageDisplayName(row.path || row.route, row.route)} · 时间：${formatTime(row.created_at)} · 来源：${mapPlaceLabel(row)}`,
       `目标：${row.data_route || row.target_key || "未记录目标路由"} · ${formatClickScreenSize(row)}`
     ])
   ));
 }
 
 function renderDashboardCountries(rows) {
-  const table = $("#dashboard-countries");
+  const box = $("#dashboard-countries");
   const count = $("#dashboard-countries-count");
-  if (!table || !count) {
+  if (!box || !count) {
     return;
   }
   const pvTotal = rows.reduce((sum, row) => sum + Number(row.pv || 0), 0);
+  const visibleRows = rows.slice(0, 6);
   const countText = rows.length
-    ? `共 ${formatNumber(rows.length)} 个国家 · 浏览 ${formatNumber(pvTotal)}`
-    : "0 个国家";
+    ? `展示前 ${formatNumber(visibleRows.length)} / 共 ${formatNumber(rows.length)} 个地区 · 浏览 ${formatNumber(pvTotal)}`
+    : "0 个地区";
   setElementText(count, countText);
-  syncTableWrapLabel(table, rows.length ? `整体国家地区：${countText}` : "整体国家地区：暂无数据");
+  syncBoxLabel(box, rows.length ? `地区概览：${countText}` : "地区概览：暂无数据");
   if (!rows.length) {
-    table.replaceChildren(createEmptyTableRow(4, "暂无国家来源数据"));
+    box.replaceChildren(createEmptyStateElement("暂无地区来源数据"));
     return;
   }
-  table.replaceChildren(...rows.map((row) => {
-    const tableRow = document.createElement("tr");
-    tableRow.append(
-      createTableCell(row.country || "未知"),
-      createMetricTableCell(row.pv),
-      createMetricTableCell(row.uv),
-      createTimeTableCell(row.last_seen_at)
-    );
-    return tableRow;
-  }));
+  const max = Math.max(1, ...visibleRows.map((row) => Number(row.pv || 0)));
+  box.replaceChildren(...visibleRows.map((row, index) => createInsightBarItem({
+    rank: index + 1,
+    label: countryDisplayName(row.country),
+    detail: row.region || row.city || "访问来源",
+    value: row.pv,
+    secondaryValue: row.uv,
+    max,
+    lastSeenAt: row.last_seen_at
+  })));
 }
 
 function renderSiteRankings(rows) {
@@ -1327,7 +1508,7 @@ function renderSiteRankings(rows) {
     return;
   }
   const rankingRows = rows.slice(0, 7);
-  const countText = rankingRows.length ? `${formatNumber(rankingRows.length)} 个网站` : "0 个网站";
+  const countText = rankingRows.length ? `${formatNumber(rankingRows.length)} 个页面` : "0 个页面";
   setElementText(count, countText);
   syncBoxLabel(list, rankingRows.length ? `实时访问排行：${countText}` : "实时访问排行：暂无数据");
   if (!rankingRows.length) {
@@ -1347,14 +1528,15 @@ function createSiteRankingItem(row, index, max) {
   const value = document.createElement("b");
   const bar = document.createElement("i");
   const valueText = formatNumber(row.pv);
-  const label = row.path || row.route || "未记录网站";
+  const label = pageDisplayName(row.path || row.route, row.route);
+  const detail = pageDisplayDetail(row.path || row.route, row.route);
   item.className = "site-ranking-item";
   item.tabIndex = 0;
   item.title = `${index + 1}. ${label} · 今日访问 ${valueText}`;
   item.setAttribute("aria-label", item.title);
   setElementText(rank, String(index + 1));
   setElementText(title, label);
-  setElementText(code, row.route || row.path || "");
+  setElementText(code, detail || "站内页面");
   setElementText(value, valueText);
   bar.style.width = `${Math.max(3, Math.round((Number(row.pv || 0) / max) * 100))}%`;
   body.append(title, code, bar);
@@ -1421,7 +1603,7 @@ function renderArticleList() {
       createStatusBadgeElement(article.category || "未分类", "neutral")
     );
     summary.className = "list-subtle";
-    setElementText(summary, `PV ${formatNumber(article.article_pv)} / UV ${formatNumber(article.article_uv)} · 更新 ${formatTime(article.updated_at)}`);
+    setElementText(summary, `浏览 ${formatNumber(article.article_pv)} / 访客 ${formatNumber(article.article_uv)} · 更新 ${formatTime(article.updated_at)}`);
     item.append(title, meta, summary);
     return item;
   }));
@@ -1445,7 +1627,7 @@ function articleListLabel(article) {
     status,
     article.category || "未分类",
     `${formatNumber(translationCount)}/3 语种，${translationLabel}`,
-    `PV ${formatNumber(article.article_pv)} / UV ${formatNumber(article.article_uv)}`,
+    `浏览 ${formatNumber(article.article_pv)} / 访客 ${formatNumber(article.article_uv)}`,
     `更新 ${formatTime(article.updated_at)}`
   ].join("；");
 }
@@ -1515,7 +1697,7 @@ function fillArticleForm(article) {
     form.elements[`content_${lang}`].value = item.content_markdown || "";
   });
   $("#delete-article").disabled = false;
-  $("#article-status").textContent = `文章访问：PV ${formatNumber(article.article_pv)} / UV ${formatNumber(article.article_uv)}，今日 PV ${formatNumber(article.article_today_pv)} / UV ${formatNumber(article.article_today_uv)}`;
+  $("#article-status").textContent = `文章访问：总浏览 ${formatNumber(article.article_pv)} / 总访客 ${formatNumber(article.article_uv)}，今日浏览 ${formatNumber(article.article_today_pv)} / 今日访客 ${formatNumber(article.article_today_uv)}`;
   syncArticleSaveButtons();
 }
 
@@ -3935,8 +4117,8 @@ function renderAccountDetail() {
 
   renderEventList("#account-activity", detail.activity || [], "这个账号近期没有站内活跃记录。", (item) => (
     createEventItemElement(activityLabel(item), [
-      `${formatTime(item.created_at)} · ${item.path || ""}`,
-      [item.detail, item.route, locationText(item)].filter(Boolean).join(" · ")
+      `${formatTime(item.created_at)} · ${pageDisplayName(item.path || item.route, item.route)}`,
+      [item.detail, pageDisplayDetail(item.path || item.route, item.route), locationText(item)].filter(Boolean).join(" · ")
     ])
   ), `近期活跃：共 ${formatNumber(detail.activity?.length || 0)} 条记录`);
 
@@ -3962,7 +4144,7 @@ function activityLabel(item) {
 }
 
 function locationText(row) {
-  return [row.country, row.region, row.city].filter(Boolean).join(" / ") || "未知位置";
+  return mapPlaceLabel(row);
 }
 
 function shortUserAgent(value) {
