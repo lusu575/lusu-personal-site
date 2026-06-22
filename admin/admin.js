@@ -88,6 +88,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-22",
+    title: "统计覆盖文案校准",
+    body: "第 7 轮 loop 将侧边栏和实时大屏里的“已选站点 / 追踪项”改为更贴近真实数据的“页面 / 地区 / 文章覆盖”，避免把统计结果误读为后台配置数量。后台资源 query 更新为 20260622-admin-insight-r5，统计接口、权限和数据写入不变。"
+  },
+  {
+    date: "2026-06-22",
     title: "实时大屏新增访问洞察摘要",
     body: "第 6 轮 loop 在实时大屏顶部新增访问洞察摘要条，直接提炼最热页面、主要地区、热门文章和最高点击动作，减少站长在多张图表之间来回寻找结论。摘要继续使用中文页面名、中文地区名和中文指标表达；后台资源 query 更新为 20260622-admin-insight-r4，接口和权限不变。"
   },
@@ -1031,13 +1036,15 @@ function renderOverview() {
 function renderDashboardHero(cards) {
   const topPages = state.overview?.topPages || [];
   const countries = state.overview?.countries || [];
-  const siteCount = Math.max(1, Math.min(7, topPages.length || countries.length || 7));
-  const propertyCount = Math.max(1, Math.min(17, (topPages.length + countries.length + (state.overview?.topArticles || []).length) || 17));
+  const topArticles = state.overview?.topArticles || [];
+  const pageCount = topPages.length;
+  const countryCount = countries.length;
+  const articleCount = topArticles.length;
   setElementText($("#dashboard-live-total"), formatNumber(cards.todayPv));
-  setElementText($("#dashboard-live-subtitle"), `近 5 分钟活跃 · ${formatNumber(cards.onlineVisitors)} 个访客 / ${formatNumber(siteCount)} 个站点有访问`);
-  setElementText($("#tracked-sites-count"), formatNumber(siteCount));
-  setElementText($("#tracked-properties-count"), formatNumber(propertyCount));
-  setElementText($("#tracked-property-summary"), `${formatNumber(siteCount)} 个站点 · ${formatNumber(propertyCount)} 个追踪项`);
+  setElementText($("#dashboard-live-subtitle"), `近 5 分钟活跃 · ${formatNumber(cards.onlineVisitors)} 个访客 / ${formatNumber(pageCount)} 个页面有访问`);
+  setElementText($("#tracked-sites-count"), formatNumber(pageCount));
+  setElementText($("#tracked-properties-count"), formatNumber(countryCount));
+  setElementText($("#tracked-property-summary"), `${formatNumber(pageCount)} 个页面 · ${formatNumber(countryCount)} 个地区 · ${formatNumber(articleCount)} 篇文章`);
 }
 
 function renderDashboardInsightStrip() {
