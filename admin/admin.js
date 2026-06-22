@@ -88,6 +88,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-22",
+    title: "后台运行文案去除 slug 直出",
+    body: "第 11 轮 loop 将文章保存校验、视频分类列表摘要和分类完整提示里的 slug 直出改为“路径标识”，让后台运行界面尽量使用中文说明；字段名和接口参数仍保持不变。后台资源 query 更新为 20260622-admin-insight-r9。"
+  },
+  {
+    date: "2026-06-22",
     title: "文章列表改用标题识别",
     body: "第 10 轮 loop 将知识库文章列表的主标题从路径标识改为文章标题，路径标识退到次级信息，减少站长在文章管理里靠 slug 识别内容的成本。后台文章列表接口只补充读取已有标题字段，不改变权限、保存逻辑或数据库结构；后台资源 query 更新为 20260622-admin-insight-r8。"
   },
@@ -1864,7 +1869,7 @@ function articlePayload(statusOverride = "") {
   const form = $("#article-form");
   const slug = form.elements.slug.value.trim();
   if (!slug) {
-    throw new Error("请填写文章 slug。");
+    throw new Error("请填写文章路径标识。");
   }
   const translations = {};
   ["zh", "en", "ja"].forEach((lang) => {
@@ -2885,7 +2890,7 @@ function renderVideoCategoryList() {
       meta.append(createStatusBadgeElement("占用中", "warning"));
     }
     summary.className = "list-subtle";
-    setElementText(summary, `${category.slug || ""} · 排序 ${formatNumber(category.sort_order)}`);
+    setElementText(summary, `标识：${category.slug || "未记录"} · 排序 ${formatNumber(category.sort_order)}`);
     item.append(title, meta, summary);
     return item;
   }));
@@ -2904,7 +2909,7 @@ function videoCategoryListLabel(category) {
   const linkedVideos = Number(category.video_count || 0);
   return [
     category.name_zh || category.slug || "未命名分类",
-    `slug ${category.slug || "未记录"}`,
+    `路径标识 ${category.slug || "未记录"}`,
     category.enabled ? "启用" : "停用",
     `占用视频 ${formatNumber(linkedVideos)} 个`,
     linkedVideos > 0 ? "删除前需先取消关联" : "未被视频使用",
