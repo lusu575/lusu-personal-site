@@ -96,6 +96,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-22",
+    title: "视频列表新增状态概览",
+    body: "第 29 轮 loop 在视频管理列表上方新增状态概览条，按当前筛选结果显示全部/当前显示、已发布、草稿、隐藏、置顶和需补资料数量，减少只读视频条目的压力；不增加接口请求，后台资源版本更新为 20260622-admin-insight-r27。"
+  },
+  {
+    date: "2026-06-22",
     title: "文章列表新增状态概览",
     body: "第 28 轮 loop 在知识库文章列表上方新增状态概览条，按当前筛选结果显示全部/当前显示、已发布、草稿、归档、置顶和三语完整数量，先看结构再看明细；不增加接口请求，后台资源版本更新为 20260622-admin-insight-r26。"
   },
@@ -2345,6 +2350,7 @@ function renderVideoList() {
     ? `${filterText ? `显示 ${formatNumber(visibleVideos.length)} / ` : ""}共 ${formatNumber(state.videos.length)} 个 · 已发布 ${formatNumber(publishedCount)} · 隐藏 ${formatNumber(hiddenCount)} · 置顶 ${formatNumber(pinnedCount)}`
     : "0 个视频";
   setElementText($("#video-list-count"), countText);
+  renderVideoStatusOverview(visibleVideos, Boolean(filterText));
   syncBoxLabel(list, state.videos.length ? `视频列表：${countText}` : "视频列表：暂无视频");
   if (!state.videos.length) {
     list.replaceChildren(createEmptyStateElement("暂无视频，先粘贴一个 YouTube 或 Bilibili 链接。"));
@@ -2396,6 +2402,23 @@ function renderVideoList() {
     return item;
   }));
   syncVideoListBusyState();
+}
+
+function renderVideoStatusOverview(videos, isFiltered) {
+  const box = $("#video-status-overview");
+  if (!box) {
+    return;
+  }
+  const rows = videos || [];
+  const items = [
+    [isFiltered ? "当前显示" : "全部视频", rows.length],
+    ["已发布", rows.filter((video) => video.status === "published").length],
+    ["草稿", rows.filter((video) => video.status === "draft").length],
+    ["隐藏", rows.filter((video) => video.status === "hidden").length],
+    ["置顶", rows.filter((video) => Number(video.pinned || 0) > 0).length],
+    ["需补资料", rows.filter((video) => Boolean(video.metadata_error)).length]
+  ];
+  box.replaceChildren(...items.map(([label, value]) => createListOverviewItem(label, value)));
 }
 
 function videoMatchesVideoFilter(video, filterText) {
