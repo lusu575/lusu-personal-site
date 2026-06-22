@@ -96,6 +96,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-22",
+    title: "后台更新记录新增概览",
+    body: "第 35 轮 loop 在后台更新记录列表上方新增概览条，显示全部记录、最新日记录、循环记录、概览优化、文案优化和最新一轮编号，让回看维护历史时先看到结构再进入长列表；不增加接口请求，后台资源版本更新为 20260622-admin-insight-r33。"
+  },
+  {
+    date: "2026-06-22",
     title: "社交链接预览新增状态概览",
     body: "第 34 轮 loop 在社交链接图标预览上方新增状态概览条，显示全部入口、已设置、自定义、默认链接、有更新记录和待补链接数量，并将哔哩哔哩入口在后台预览中中文显示；不改变社交链接接口和主站图标展示，后台资源版本更新为 20260622-admin-insight-r32。"
   },
@@ -1973,6 +1978,11 @@ function createListOverviewItem(label, value) {
   setElementText(number, formatNumber(value));
   item.append(text, number);
   return item;
+}
+
+function adminUpdateRoundNumber(item) {
+  const match = String(item?.body || "").match(/第\s*(\d+)\s*轮/i);
+  return match ? Number(match[1]) : 0;
 }
 
 function normalizeFilterText(value) {
@@ -4898,6 +4908,7 @@ function upsertById(items, nextItem, key) {
 
 function renderAdminUpdates() {
   const box = $("#admin-updates");
+  renderAdminUpdatesOverview();
   const countText = adminUpdates.length
     ? `共 ${formatNumber(adminUpdates.length)} 条 · 最近 ${adminUpdates[0]?.date || "未知日期"}`
     : "暂无后台更新记录";
@@ -4921,6 +4932,29 @@ function renderAdminUpdates() {
     article.append(title, body);
     return article;
   }));
+}
+
+function renderAdminUpdatesOverview() {
+  const box = $("#admin-updates-overview");
+  if (!box) {
+    return;
+  }
+  if (!adminUpdates.length) {
+    box.replaceChildren(createListOverviewItem("全部记录", 0));
+    return;
+  }
+  const latestDate = adminUpdates[0]?.date || "";
+  const latestRound = adminUpdates.reduce((max, item) => Math.max(max, adminUpdateRoundNumber(item)), 0);
+  const textOf = (item) => `${item.title || ""} ${item.body || ""}`;
+  const items = [
+    ["全部记录", adminUpdates.length],
+    ["最新日记录", latestDate ? adminUpdates.filter((item) => item.date === latestDate).length : 0],
+    ["循环记录", adminUpdates.filter((item) => adminUpdateRoundNumber(item) > 0).length],
+    ["概览优化", adminUpdates.filter((item) => /概览|比例条|图表|图|状态/.test(textOf(item))).length],
+    ["文案优化", adminUpdates.filter((item) => /中文|文案|可读|识别|占位|技术词/.test(textOf(item))).length],
+    ["最新一轮", latestRound]
+  ];
+  box.replaceChildren(...items.map(([label, value]) => createListOverviewItem(label, value)));
 }
 
 function scrollAdminToTop() {
