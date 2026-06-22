@@ -96,6 +96,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-22",
+    title: "后台表单占位提示中文化",
+    body: "第 26 轮 loop 将文章路径标识、封面路径、视频链接、视频分类路径标识和哔哩哔哩社交链接的占位提示改成更自然的中文说明；字段值和保存逻辑保持不变，后台资源 query 更新为 20260622-admin-insight-r24。"
+  },
+  {
+    date: "2026-06-22",
     title: "视频列表标题和平台显示优化",
     body: "第 25 轮 loop 将视频列表和编辑标题的兜底显示从原始链接 / 内部编号改为“待补全标题的视频”或作者名，平台徽章将 bilibili 显示为“哔哩哔哩”；只调整后台展示层，后台资源 query 更新为 20260622-admin-insight-r23。"
   },

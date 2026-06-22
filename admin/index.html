@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex,nofollow">
   <title>鲁肃个人站管理后台</title>
-  <link rel="stylesheet" href="/admin/admin.css?v=20260622-admin-insight-r23">
+  <link rel="stylesheet" href="/admin/admin.css?v=20260622-admin-insight-r24">
 </head>
 <body>
   <div class="admin-shell">
@@ -141,11 +141,11 @@
             </div>
             <form id="article-form" class="editor-form" novalidate>
               <div class="form-grid">
-                <label>文章路径标识<input name="slug" required maxlength="120" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="my-article-slug"></label>
+                <label>文章路径标识<input name="slug" required maxlength="120" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="例如：ai-notes-2026"></label>
                 <button class="xp-button copy-field-button" type="button" id="copy-article-slug" aria-label="复制文章路径标识" title="复制文章路径标识">复制标识</button>
                 <label>分类<input name="category" maxlength="80" value="note"></label>
-                <label>标签<input name="tags" placeholder="AI, 网站更新"></label>
-                <label>封面<input name="cover_image" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="assets/images/articles/..."></label>
+                <label>标签<input name="tags" placeholder="AI、网站更新"></label>
+                <label>封面<input name="cover_image" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="文章图片路径，例如 assets/images/articles/..."></label>
                 <label>状态
                   <select name="status">
                     <option value="draft">草稿</option>
@@ -209,7 +209,7 @@
               <span>链接由服务端识别并生成站内播放器</span>
             </div>
             <form id="video-form" class="editor-form">
-              <label>视频链接<input name="original_url" maxlength="800" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="YouTube / Bilibili / b23.tv"></label>
+              <label>视频链接<input name="original_url" maxlength="800" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="粘贴 YouTube、哔哩哔哩或 b23.tv 链接"></label>
               <div class="form-actions compact-actions">
                 <button class="xp-button" type="button" id="preview-video-url" title="自动识别视频链接并获取元数据">自动识别/获取信息</button>
                 <button class="xp-button" type="button" id="refresh-video-metadata" title="请先选择已保存视频" disabled>刷新元数据</button>
@@ -285,7 +285,7 @@
             </div>
             <form id="video-category-form" class="editor-form">
               <div class="form-grid">
-                <label>分类路径标识<input name="slug" required maxlength="120" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="ai-experiments"></label>
+                <label>分类路径标识<input name="slug" required maxlength="120" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="例如：ai-videos"></label>
                 <button class="xp-button copy-field-button" type="button" id="copy-video-category-slug" aria-label="复制视频分类路径标识" title="复制视频分类路径标识">复制标识</button>
                 <label>中文名称<input name="name_zh" required maxlength="80"></label>
                 <label>英文名称<input name="name_en" maxlength="80"></label>
@@ -453,7 +453,7 @@
               <div class="social-link-fields">
                 <label>X（推特）<input name="x" maxlength="800" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="https://x.com/lusu575"></label>
                 <label>GitHub<input name="github" maxlength="800" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="https://github.com/lusu575"></label>
-                <label>Bilibili<input name="bilibili" maxlength="800" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="https://space.bilibili.com/..."></label>
+                <label>哔哩哔哩<input name="bilibili" maxlength="800" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="https://space.bilibili.com/..."></label>
                 <label>Instagram<input name="instagram" maxlength="800" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="https://www.instagram.com/lusu575/"></label>
                 <label>Discord<input name="discord" maxlength="800" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="https://discord.com/..."></label>
               </div>
@@ -498,6 +498,6 @@
     </main>
   </div>
 
-  <script src="/admin/admin.js?v=20260622-admin-insight-r23"></script>
+  <script src="/admin/admin.js?v=20260622-admin-insight-r24"></script>
 </body>
 </html>
