@@ -3182,31 +3182,6 @@ select:focus-visible,
   display: none !important;
 }
 
-.nav-text {
-  min-width: 0;
-}
-
-.nav-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 auto;
-  min-width: 24px;
-  height: 20px;
-  padding: 0 7px;
-  border: 1px solid #d7e2f2;
-  border-radius: 999px;
-  background: #f8fbff;
-  color: #1a5ec8;
-  font-size: 12px;
-  font-weight: 900;
-  line-height: 1;
-}
-
-.nav-badge[hidden] {
-  display: none !important;
-}
-
 .sidebar .nav-button.active,
 .sidebar .nav-button[aria-current="page"] {
   color: #1a5ec8 !important;
@@ -3463,5 +3438,74 @@ select:focus-visible,
   .insight-bar-body strong,
   .insight-bar-meta {
     white-space: normal;
+  }
+}
+
+/* 2026-06-22 r39: tighter realtime layout, plain sidebar navigation, floating top action. */
+.sidebar .nav-button {
+  justify-content: flex-start !important;
+}
+
+.dashboard-priority-grid {
+  grid-template-columns: minmax(0, 1.18fr) minmax(340px, .82fr) !important;
+  grid-template-areas:
+    "map pages"
+    "countries countries" !important;
+  align-items: start !important;
+}
+
+.priority-map,
+.page-overview-panel,
+.country-overview-panel,
+.realtime-panel,
+.realtime-rank-panel {
+  align-self: start !important;
+}
+
+.priority-map .pixel-map {
+  width: 100%;
+  height: auto;
+  min-height: 0 !important;
+  aspect-ratio: 2 / 1;
+}
+
+.page-overview-panel .insight-bar-item,
+.country-overview-panel .insight-bar-item,
+.site-rankings .insight-bar-item {
+  min-height: 52px;
+}
+
+.ga-live-board {
+  align-items: start !important;
+}
+
+.site-rankings {
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+.floating-top-button {
+  position: fixed;
+  right: max(20px, env(safe-area-inset-right));
+  bottom: max(20px, env(safe-area-inset-bottom));
+  z-index: 80;
+  min-width: 58px;
+  box-shadow: 0 5px 18px rgba(32, 33, 36, .16);
+}
+
+@media (max-width: 1180px) {
+  .dashboard-priority-grid {
+    grid-template-columns: 1fr !important;
+    grid-template-areas:
+      "map"
+      "pages"
+      "countries" !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .floating-top-button {
+    right: 14px;
+    bottom: 14px;
   }
 }

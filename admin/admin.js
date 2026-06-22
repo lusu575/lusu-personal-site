@@ -47,7 +47,6 @@ const state = {
   socialLinksSaving: false,
   loadedPanels: {},
   loadingPanels: {},
-  loggingOut: false,
   statusHoldUntil: 0,
   timer: null,
   mapResizeTimer: null
@@ -76,7 +75,7 @@ const SOCIAL_LINK_PLATFORMS = [
 ];
 
 const panelMeta = {
-  dashboard: ["仪表盘", "实时访问工作台"],
+  dashboard: ["鲁肃个人站管理后台", "实时访问工作台"],
   visits: ["访问来源", "按国家、省份、城市和掩码网络前缀查看每日访问。"],
   clicks: ["点击埋点", "查看站内各位置点击、浏览访客和最近事件。"],
   articles: ["知识库文章", "一次编辑中文、英文、日文三种版本，按当前选择语言显示编辑区。"],
@@ -92,9 +91,13 @@ const panelMeta = {
 const overviewPanels = new Set(["dashboard", "visits", "clicks"]);
 const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
-const navBadgePanels = new Set(["visits", "clicks", "articles", "videos", "videoCategories", "chat", "accounts", "socialLinks", "updates"]);
 
 const adminUpdates = [
+  {
+    date: "2026-06-22",
+    title: "实时大屏排版收紧与顶栏操作收口",
+    body: "第 41 轮 loop 收紧实时大屏首屏排版：地图、页面表现、地区概览和实时页面表现不再互相拉伸出大块空白；侧栏数字气泡功能已移除，只保留文字导航和底部已加载概况；右上角退出按钮已删除，“顶部”改为右下角浮动按钮，首页标题改为“鲁肃个人站管理后台”。后台资源版本更新为 20260622-admin-insight-r39；不增加接口请求，不改变权限、导航顺序或统计口径。"
+  },
   {
     date: "2026-06-22",
     title: "侧边栏新增已加载概况",
@@ -944,7 +947,7 @@ function applyStatusTone(element) {
 
 function setStatus(text, options = {}) {
   const force = Boolean(options.force);
-  if (!force && (state.loggingOut || Date.now() < state.statusHoldUntil)) {
+  if (!force && Date.now() < state.statusHoldUntil) {
     return;
   }
   const refreshState = $("#refresh-state");
@@ -965,14 +968,6 @@ function panelDataKey(panel) {
 function updateRefreshButton() {
   const button = $("#manual-refresh");
   const panelName = panelMeta[state.activePanel]?.[0] || "当前标签";
-  if (state.loggingOut) {
-    button.disabled = true;
-    button.setAttribute("aria-busy", "false");
-    button.setAttribute("aria-label", "正在退出后台，暂停刷新");
-    button.title = "正在退出后台，暂停刷新";
-    button.textContent = "暂停刷新";
-    return;
-  }
   const staticPanel = staticPanels.has(state.activePanel);
   const busy = !staticPanel && Boolean(state.loadingPanels[panelDataKey(state.activePanel)]);
   const buttonText = staticPanel ? "无需刷新" : (busy ? "刷新中..." : "刷新");
@@ -1002,11 +997,6 @@ function rememberActivePanel(panel) {
 }
 
 async function loadPanelData(panel, options = {}) {
-  if (state.loggingOut) {
-    updateRefreshButton();
-    return;
-  }
-
   if (staticPanels.has(panel)) {
     setStatus("当前标签为本地内容，无需刷新。");
     updateRefreshButton();
@@ -1107,7 +1097,7 @@ async function loadPanelData(panel, options = {}) {
     } finally {
       delete state.loadingPanels[key];
       updateRefreshButton();
-      updateNavBadges();
+      updateSidebarLoadedSummary();
     }
   })();
 
@@ -1168,7 +1158,7 @@ function handleNavKeydown(event, index, buttons) {
 }
 
 function autoRefreshActivePanel() {
-  if (state.loggingOut || document.hidden || !overviewPanels.has(state.activePanel)) {
+  if (document.hidden || !overviewPanels.has(state.activePanel)) {
     return false;
   }
   loadPanelData(state.activePanel, { force: true });
@@ -1559,7 +1549,7 @@ function mapShortPlaceLabel(row) {
 function renderTopPages(rows) {
   const box = $("#top-pages");
   const pvTotal = rows.reduce((sum, row) => sum + Number(row.pv || 0), 0);
-  const visibleRows = rows.slice(0, 8);
+  const visibleRows = rows.slice(0, 6);
   const countText = rows.length
     ? `展示前 ${formatNumber(visibleRows.length)} / 共 ${formatNumber(rows.length)} 个页面 · 浏览 ${formatNumber(pvTotal)}`
     : "0 个页面";
@@ -1936,7 +1926,7 @@ function renderArticleList() {
   setElementText($("#article-list-count"), countText);
   renderArticleStatusOverview(visibleArticles, Boolean(filterText));
   syncBoxLabel(list, state.articles.length ? `文章列表：${countText}` : "文章列表：暂无文章");
-  updateNavBadges();
+  updateSidebarLoadedSummary();
   if (!state.articles.length) {
     list.replaceChildren(createEmptyStateElement("暂无文章，点击右上角“新建”开始。"));
     syncArticleListBusyState();
@@ -2006,57 +1996,6 @@ function createListOverviewItem(label, value) {
   setElementText(number, formatNumber(value));
   item.append(text, number);
   return item;
-}
-
-function navBadgeInfo(panel) {
-  return ({
-    visits: { value: state.overview?.regions?.length || 0, unit: "条来源" },
-    clicks: { value: state.overview?.recentClicks?.length || 0, unit: "条点击" },
-    articles: { value: state.articles.length, unit: "篇文章" },
-    videos: { value: state.videos.length, unit: "个视频" },
-    videoCategories: { value: state.videoCategories.length, unit: "个分类" },
-    chat: { value: state.chatMessages.length, unit: "条消息" },
-    accounts: { value: state.accounts.length, unit: "个账号" },
-    socialLinks: { value: state.socialLinks.length, unit: "个入口" },
-    updates: { value: adminUpdates.length, unit: "条记录" }
-  })[panel] || { value: 0, unit: "条" };
-}
-
-function setupNavBadges() {
-  $$(".nav-button").forEach((button) => {
-    if (button.querySelector(".nav-text")) {
-      return;
-    }
-    const label = button.textContent.trim();
-    button.replaceChildren();
-    const text = document.createElement("span");
-    text.className = "nav-text";
-    setElementText(text, label);
-    button.append(text);
-    if (navBadgePanels.has(button.dataset.panel)) {
-      const badge = document.createElement("span");
-      badge.className = "nav-badge";
-      badge.hidden = true;
-      button.append(badge);
-    }
-  });
-  updateNavBadges();
-}
-
-function updateNavBadges() {
-  $$(".nav-button").forEach((button) => {
-    const badge = button.querySelector(".nav-badge");
-    if (!badge) {
-      return;
-    }
-    const info = navBadgeInfo(button.dataset.panel);
-    const value = info.value;
-    badge.hidden = value <= 0;
-    setElementText(badge, value > 99 ? "99+" : formatNumber(value));
-    const label = button.querySelector(".nav-text")?.textContent || button.textContent;
-    button.title = value > 0 ? `${label}：${formatNumber(value)} ${info.unit}已加载` : label;
-  });
-  updateSidebarLoadedSummary();
 }
 
 function updateSidebarLoadedSummary() {
@@ -2480,7 +2419,7 @@ function renderVideoList() {
   setElementText($("#video-list-count"), countText);
   renderVideoStatusOverview(visibleVideos, Boolean(filterText));
   syncBoxLabel(list, state.videos.length ? `视频列表：${countText}` : "视频列表：暂无视频");
-  updateNavBadges();
+  updateSidebarLoadedSummary();
   if (!state.videos.length) {
     list.replaceChildren(createEmptyStateElement("暂无视频，先粘贴一个 YouTube 或 Bilibili 链接。"));
     syncVideoListBusyState();
@@ -3301,7 +3240,7 @@ function renderVideoCategoryList() {
   setElementText($("#video-category-list-count"), countText);
   renderVideoCategoryStatusOverview(visibleCategories, Boolean(filterText));
   syncBoxLabel(list, state.videoCategories.length ? `视频分类列表：${countText}` : "视频分类列表：暂无分类");
-  updateNavBadges();
+  updateSidebarLoadedSummary();
   if (!state.videoCategories.length) {
     list.replaceChildren(createEmptyStateElement("暂无视频分类。"));
     syncVideoCategoryListBusyState();
@@ -3635,7 +3574,7 @@ function renderChatMessages() {
   setElementText($("#chat-list-count"), countText);
   renderChatStatusOverview(visibleMessages, Boolean(filterText));
   syncBoxLabel(list, state.chatMessages.length ? `聊天记录：${countText}` : `聊天记录：${includeHidden ? "暂无聊天记录" : "暂无可见聊天记录"}`);
-  updateNavBadges();
+  updateSidebarLoadedSummary();
   if (!state.chatMessages.length) {
     list.replaceChildren(createEmptyStateElement(includeHidden ? "暂无聊天记录" : "暂无可见聊天记录"));
     syncChatActionState();
@@ -4312,7 +4251,7 @@ function renderAccountList() {
   setElementText($("#account-list-count"), countText);
   renderAccountStatusOverview(visibleAccounts, Boolean(filterText));
   syncBoxLabel(list, state.accounts.length ? `账号列表：${countText}` : "账号列表：暂无账号");
-  updateNavBadges();
+  updateSidebarLoadedSummary();
   if (!state.accounts.length) {
     list.replaceChildren(createEmptyStateElement("还没有注册账号。"));
     syncAccountListBusyState();
@@ -4658,7 +4597,7 @@ function renderSocialLinkPreview() {
   setElementText($("#social-link-preview-count"), countText);
   renderSocialLinkStatusOverview(links);
   syncBoxLabel(list, `社交链接预览：${countText}`);
-  updateNavBadges();
+  updateSidebarLoadedSummary();
   list.replaceChildren(...links.map((item) => {
     const article = document.createElement("article");
     const title = document.createElement("strong");
@@ -5012,7 +4951,7 @@ function renderAdminUpdates() {
     : "暂无后台更新记录";
   setElementText($("#admin-updates-count"), countText);
   syncBoxLabel(box, adminUpdates.length ? `后台更新记录：${countText}` : "后台更新记录：暂无记录");
-  updateNavBadges();
+  updateSidebarLoadedSummary();
   if (!adminUpdates.length) {
     box.replaceChildren(createEmptyStateElement("暂无后台更新记录。"));
     return;
@@ -5113,41 +5052,6 @@ function bindEvents() {
     }
   });
   window.addEventListener("resize", handleMapResize);
-  $("#logout-button").addEventListener("click", async () => {
-    const button = $("#logout-button");
-    if (state.loggingOut) {
-      return;
-    }
-    const resumeAutoRefresh = Boolean(state.timer);
-    state.loggingOut = true;
-    if (state.timer) {
-      window.clearInterval(state.timer);
-      state.timer = null;
-    }
-    button.disabled = true;
-    button.textContent = "退出中...";
-    button.setAttribute("aria-busy", "true");
-    button.setAttribute("aria-label", "正在退出后台");
-    button.title = "正在退出后台";
-    setStatus("正在退出后台...", { force: true });
-    updateRefreshButton();
-    try {
-      await api("/api/auth/logout", { method: "POST", body: "{}" });
-      window.location.reload();
-    } catch (error) {
-      state.loggingOut = false;
-      button.disabled = false;
-      button.textContent = "退出";
-      button.setAttribute("aria-busy", "false");
-      button.setAttribute("aria-label", "退出后台");
-      button.title = "退出后台";
-      setStatus(error.message, { force: true, holdMs: 4000 });
-      updateRefreshButton();
-      if (resumeAutoRefresh && !state.timer) {
-        state.timer = window.setInterval(autoRefreshActivePanel, 30000);
-      }
-    }
-  });
   $("#new-article").addEventListener("click", () => {
     if (isArticleWriteBusy()) {
       return;
@@ -5299,10 +5203,10 @@ function bindEvents() {
 }
 
 async function init() {
-  setupNavBadges();
   bindEvents();
   initFormStatusTones();
   renderAdminUpdates();
+  updateSidebarLoadedSummary();
   resetArticleForm();
   resetVideoForm();
   resetVideoCategoryForm();
