@@ -4,6 +4,7 @@
 
 - 主站底部任务栏从页面内 sticky 改为固定贴合浏览器视口下沿，切换知识库、视频区、资源区、游戏区、杂谈区、聊天室和关于我时不再被页面内容高度顶下去。
 - 主窗口高度统一通过顶部栏、底部任务栏和窗口间距变量计算，桌面端和移动端都为底部栏预留空间，避免任务栏盖住正常窗口或和窗口控件重叠。
+- 460px 以下窄屏手机单独提高 `--chrome-topbar-height` 预留值，覆盖顶部栏换行后的实际高度，避免 iPhone SE / 390px 宽度下窗口底部压进 118px 底部任务栏。
 - 非首页窗口页不再使用蓝绿色兜底渐变，改为 `assets/images/window-backdrops/<time>.png` 专用四时段低干扰背景图，并叠加轻量现代遮罩；首页原有动态壁纸舞台、云层和 `?wallpaper=` 预览参数保持不变。
 - 本次属于公开可见更新，已同步 `site-updates` 三语文章、`js/main.js` fallback、Functions seed、schema seed、根目录 changelog、主站 Skill 和主站 CSS/JS cache query。
 

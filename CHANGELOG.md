@@ -7,8 +7,9 @@
 - 主站底部导航与四时段窗口背景：
   - 底部任务栏改为固定贴合浏览器视口下沿，切换知识库、视频区、资源区、游戏区、杂谈区、聊天室和关于我时不再被页面高度顶下去。
   - 主站窗口高度统一按顶部栏、底部任务栏和窗口间距变量计算，桌面端与移动端都为底栏预留空间，避免底栏盖住正常窗口或和窗口控件重叠。
+  - 补测手机端后，提高 460px 以下窄屏顶部栏高度预留，修复 iPhone SE / 390px 宽度下部分窗口底部压进底部任务栏的问题。
   - 新增 `assets/images/window-backdrops/` 四张窗口页专用低干扰背景，跟随 morning / day / dusk / night 切换，并叠加轻量现代遮罩；首页动态壁纸舞台、云层和 `?wallpaper=` 预览参数保持不变。
-  - 更新主站 CSS/JS query 为 `20260622-fixed-dock-window-backdrops-r2`，并同步 `site-updates` 三语文章、前端 fallback、Functions seed、schema seed、项目上下文和主站 Skill。
+  - 更新主站 CSS/JS query 为 `20260622-fixed-dock-window-backdrops-r3`，并同步 `site-updates` 三语文章、前端 fallback、Functions seed、schema seed、项目上下文和主站 Skill。
 
 - 管理后台全局等高空白收口：
   - `/admin/` 第 42 轮 loop 按全局后台界面重新收口布局，实时大屏、访问来源、点击埋点、内容编辑和统计覆盖等多栏区域统一取消默认等高拉伸。

@@ -732,7 +732,7 @@ insert into article_translations (
     'seed-update-2026-06-22-fixed-dock-window-backdrops',
     'zh',
     '底部导航与四时段窗口背景',
-    '底部导航固定贴合屏幕下沿，窗口页改用专用低干扰四时段背景。',
+    '底部导航固定贴合屏幕下沿，窗口页改用专用低干扰四时段背景，并补齐手机窄屏避让。',
     '# 底部导航与四时段窗口背景
 
 本次更新整理主站窗口页的桌面底层和底部导航位置，让不同页面之间的视觉基线保持一致。
@@ -741,6 +741,7 @@ insert into article_translations (
 
 - 底部导航栏改为固定贴合浏览器视口下沿，不再被不同页面内容高度顶下去。
 - 知识库、视频区、资源区、游戏区、杂谈区、聊天室和关于我等窗口页统一预留底栏空间，避免正常窗口被底栏遮住或互相重叠。
+- 460px 以下窄屏手机补足顶部栏换行后的高度预留，避免 iPhone SE / 390px 宽度下窗口底部压进底部任务栏。
 - 非首页窗口页改用 `assets/images/window-backdrops/<time>.png` 专用四时段背景图，并增加低对比度遮罩，让背景更现代、更简单。
 - 首页仍保留原有动态壁纸舞台、云层和四时段预览参数。
 - 更新主站 CSS / JS 缓存版本，减少线上继续加载旧任务栏或旧背景的概率。',
@@ -752,7 +753,7 @@ insert into article_translations (
     'seed-update-2026-06-22-fixed-dock-window-backdrops',
     'en',
     'Pinned Taskbar and Window Backdrops',
-    'The bottom taskbar now pins to the viewport edge, and window pages use dedicated quiet time-of-day backdrops.',
+    'The bottom taskbar pins to the viewport edge, with dedicated quiet backdrops and small-phone spacing.',
     '# Pinned Taskbar and Window Backdrops
 
 This update tidies the desktop layer behind the main windows and keeps the bottom navigation aligned across routes.
@@ -761,6 +762,7 @@ This update tidies the desktop layer behind the main windows and keeps the botto
 
 - The bottom taskbar now pins to the browser viewport edge instead of being pushed down by different page heights.
 - Knowledge, Videos, Resources, Games, Blog, Chatroom, and About now reserve space for the taskbar so normal windows are not covered or overlapped.
+- Narrow phones below 460px now reserve extra height for the wrapped top bar, preventing windows from pressing into the bottom taskbar on iPhone SE / 390px widths.
 - Non-home window pages now use dedicated `assets/images/window-backdrops/<time>.png` backdrops for morning, day, dusk, and night, with a low-contrast wash to keep them modern and quiet.
 - The home screen keeps the existing animated wallpaper stage, cloud layers, and preview query parameter.
 - The public CSS / JS cache version was updated to avoid stale taskbar or backdrop styles online.',
@@ -772,7 +774,7 @@ This update tidies the desktop layer behind the main windows and keeps the botto
     'seed-update-2026-06-22-fixed-dock-window-backdrops',
     'ja',
     '固定タスクバーと時間帯背景',
-    '下部タスクバーを画面下端に固定し、ウィンドウ画面に専用の控えめな時間帯別背景を追加しました。',
+    '下部タスクバーを画面下端に固定し、専用背景と狭いスマホ幅での余白を整えました。',
     '# 固定タスクバーと時間帯背景
 
 今回の更新では、各ウィンドウ画面の背面レイヤーと下部ナビゲーションの位置を整え、ページを切り替えても表示の基準がずれないようにしました。
@@ -781,6 +783,7 @@ This update tidies the desktop layer behind the main windows and keeps the botto
 
 - 下部タスクバーをブラウザ画面の下端に固定し、ページ内容の高さで押し下げられないようにしました。
 - 知識庫、動画、リソース、ゲーム、雑談、匿名チャット、プロフィールなどのウィンドウ画面にタスクバー分の余白を確保し、通常のウィンドウを隠したり重ねたりしないようにしました。
+- 460px 未満の狭いスマホ幅では、折り返した上部バーの高さを追加で確保し、iPhone SE / 390px 幅でウィンドウ下部が下部タスクバーに入り込まないようにしました。
 - ホーム以外のウィンドウ画面に、`assets/images/window-backdrops/<time>.png` の専用4時間帯背景を適用し、低コントラストのベールで現代的かつ控えめにしました。
 - ホーム画面の既存の動く壁紙ステージ、雲レイヤー、時間帯プレビュー用クエリはそのまま保ちます。
 - 公開側 CSS / JS のキャッシュ版を更新し、オンラインで古いタスクバーや背景が残りにくくしました。',

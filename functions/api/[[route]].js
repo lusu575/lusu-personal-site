@@ -6065,18 +6065,18 @@ This update swaps the four home wallpapers used by the live page to higher-resol
     ...articleTranslationsStatements(env, "seed-update-2026-06-22-fixed-dock-window-backdrops", {
       zh: {
         title: "底部导航与四时段窗口背景",
-        summary: "底部导航固定贴合屏幕下沿，窗口页改用专用低干扰四时段背景。",
-        content_markdown: "# 底部导航与四时段窗口背景\n\n本次更新整理主站窗口页的桌面底层和底部导航位置，让不同页面之间的视觉基线保持一致。\n\n## 更新内容\n\n- 底部导航栏改为固定贴合浏览器视口下沿，不再被不同页面内容高度顶下去。\n- 知识库、视频区、资源区、游戏区、杂谈区、聊天室和关于我等窗口页统一预留底栏空间，避免正常窗口被底栏遮住或互相重叠。\n- 非首页窗口页改用 `assets/images/window-backdrops/<time>.png` 专用四时段背景图，并增加低对比度遮罩，让背景更现代、更简单。\n- 首页仍保留原有动态壁纸舞台、云层和四时段预览参数。\n- 更新主站 CSS / JS 缓存版本，减少线上继续加载旧任务栏或旧背景的概率。"
+        summary: "底部导航固定贴合屏幕下沿，窗口页改用专用低干扰四时段背景，并补齐手机窄屏避让。",
+        content_markdown: "# 底部导航与四时段窗口背景\n\n本次更新整理主站窗口页的桌面底层和底部导航位置，让不同页面之间的视觉基线保持一致。\n\n## 更新内容\n\n- 底部导航栏改为固定贴合浏览器视口下沿，不再被不同页面内容高度顶下去。\n- 知识库、视频区、资源区、游戏区、杂谈区、聊天室和关于我等窗口页统一预留底栏空间，避免正常窗口被底栏遮住或互相重叠。\n- 460px 以下窄屏手机补足顶部栏换行后的高度预留，避免 iPhone SE / 390px 宽度下窗口底部压进底部任务栏。\n- 非首页窗口页改用 `assets/images/window-backdrops/<time>.png` 专用四时段背景图，并增加低对比度遮罩，让背景更现代、更简单。\n- 首页仍保留原有动态壁纸舞台、云层和四时段预览参数。\n- 更新主站 CSS / JS 缓存版本，减少线上继续加载旧任务栏或旧背景的概率。"
       },
       en: {
         title: "Pinned Taskbar and Window Backdrops",
-        summary: "The bottom taskbar now pins to the viewport edge, and window pages use dedicated quiet time-of-day backdrops.",
-        content_markdown: "# Pinned Taskbar and Window Backdrops\n\nThis update tidies the desktop layer behind the main windows and keeps the bottom navigation aligned across routes.\n\n## Changes\n\n- The bottom taskbar now pins to the browser viewport edge instead of being pushed down by different page heights.\n- Knowledge, Videos, Resources, Games, Blog, Chatroom, and About now reserve space for the taskbar so normal windows are not covered or overlapped.\n- Non-home window pages now use dedicated `assets/images/window-backdrops/<time>.png` backdrops for morning, day, dusk, and night, with a low-contrast wash to keep them modern and quiet.\n- The home screen keeps the existing animated wallpaper stage, cloud layers, and preview query parameter.\n- The public CSS / JS cache version was updated to avoid stale taskbar or backdrop styles online."
+        summary: "The bottom taskbar pins to the viewport edge, with dedicated quiet backdrops and small-phone spacing.",
+        content_markdown: "# Pinned Taskbar and Window Backdrops\n\nThis update tidies the desktop layer behind the main windows and keeps the bottom navigation aligned across routes.\n\n## Changes\n\n- The bottom taskbar now pins to the browser viewport edge instead of being pushed down by different page heights.\n- Knowledge, Videos, Resources, Games, Blog, Chatroom, and About now reserve space for the taskbar so normal windows are not covered or overlapped.\n- Narrow phones below 460px now reserve extra height for the wrapped top bar, preventing windows from pressing into the bottom taskbar on iPhone SE / 390px widths.\n- Non-home window pages now use dedicated `assets/images/window-backdrops/<time>.png` backdrops for morning, day, dusk, and night, with a low-contrast wash to keep them modern and quiet.\n- The home screen keeps the existing animated wallpaper stage, cloud layers, and preview query parameter.\n- The public CSS / JS cache version was updated to avoid stale taskbar or backdrop styles online."
       },
       ja: {
         title: "固定タスクバーと時間帯背景",
-        summary: "下部タスクバーを画面下端に固定し、ウィンドウ画面に専用の控えめな時間帯別背景を追加しました。",
-        content_markdown: "# 固定タスクバーと時間帯背景\n\n今回の更新では、各ウィンドウ画面の背面レイヤーと下部ナビゲーションの位置を整え、ページを切り替えても表示の基準がずれないようにしました。\n\n## 更新内容\n\n- 下部タスクバーをブラウザ画面の下端に固定し、ページ内容の高さで押し下げられないようにしました。\n- 知識庫、動画、リソース、ゲーム、雑談、匿名チャット、プロフィールなどのウィンドウ画面にタスクバー分の余白を確保し、通常のウィンドウを隠したり重ねたりしないようにしました。\n- ホーム以外のウィンドウ画面に、`assets/images/window-backdrops/<time>.png` の専用4時間帯背景を適用し、低コントラストのベールで現代的かつ控えめにしました。\n- ホーム画面の既存の動く壁紙ステージ、雲レイヤー、時間帯プレビュー用クエリはそのまま保ちます。\n- 公開側 CSS / JS のキャッシュ版を更新し、オンラインで古いタスクバーや背景が残りにくくしました。"
+        summary: "下部タスクバーを画面下端に固定し、専用背景と狭いスマホ幅での余白を整えました。",
+        content_markdown: "# 固定タスクバーと時間帯背景\n\n今回の更新では、各ウィンドウ画面の背面レイヤーと下部ナビゲーションの位置を整え、ページを切り替えても表示の基準がずれないようにしました。\n\n## 更新内容\n\n- 下部タスクバーをブラウザ画面の下端に固定し、ページ内容の高さで押し下げられないようにしました。\n- 知識庫、動画、リソース、ゲーム、雑談、匿名チャット、プロフィールなどのウィンドウ画面にタスクバー分の余白を確保し、通常のウィンドウを隠したり重ねたりしないようにしました。\n- 460px 未満の狭いスマホ幅では、折り返した上部バーの高さを追加で確保し、iPhone SE / 390px 幅でウィンドウ下部が下部タスクバーに入り込まないようにしました。\n- ホーム以外のウィンドウ画面に、`assets/images/window-backdrops/<time>.png` の専用4時間帯背景を適用し、低コントラストのベールで現代的かつ控えめにしました。\n- ホーム画面の既存の動く壁紙ステージ、雲レイヤー、時間帯プレビュー用クエリはそのまま保ちます。\n- 公開側 CSS / JS のキャッシュ版を更新し、オンラインで古いタスクバーや背景が残りにくくしました。"
       }
     }, "2026-06-22T14:30:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-06-22-about-contact-icons", {

@@ -5578,6 +5578,7 @@ body.is-article-reading .article-figure {
 
 @media (max-width: 460px) {
   body {
+    --chrome-topbar-height: 104px;
     --chrome-taskbar-height: 118px;
   }
 
