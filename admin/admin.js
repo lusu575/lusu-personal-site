@@ -96,6 +96,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-22",
+    title: "文章列表新增状态概览",
+    body: "第 28 轮 loop 在知识库文章列表上方新增状态概览条，按当前筛选结果显示全部/当前显示、已发布、草稿、归档、置顶和三语完整数量，先看结构再看明细；不增加接口请求，后台资源版本更新为 20260622-admin-insight-r26。"
+  },
+  {
+    date: "2026-06-22",
     title: "后台更新记录技术词收口",
     body: "第 27 轮 loop 将后台更新记录里反复出现的资源版本技术词收口为“资源版本”，减少站长回看历史记录时遇到的英文术语；只调整后台可见文案，后台资源版本更新为 20260622-admin-insight-r25。"
   },
@@ -1867,6 +1872,7 @@ function renderArticleList() {
     ? `${filterText ? `显示 ${formatNumber(visibleArticles.length)} / ` : ""}共 ${formatNumber(state.articles.length)} 篇 · 已发布 ${formatNumber(publishedCount)} · 三语完整 ${formatNumber(completeTranslationCount)}`
     : "0 篇文章";
   setElementText($("#article-list-count"), countText);
+  renderArticleStatusOverview(visibleArticles, Boolean(filterText));
   syncBoxLabel(list, state.articles.length ? `文章列表：${countText}` : "文章列表：暂无文章");
   if (!state.articles.length) {
     list.replaceChildren(createEmptyStateElement("暂无文章，点击右上角“新建”开始。"));
@@ -1909,6 +1915,34 @@ function renderArticleList() {
     return item;
   }));
   syncArticleListBusyState();
+}
+
+function renderArticleStatusOverview(articles, isFiltered) {
+  const box = $("#article-status-overview");
+  if (!box) {
+    return;
+  }
+  const rows = articles || [];
+  const items = [
+    [isFiltered ? "当前显示" : "全部文章", rows.length],
+    ["已发布", rows.filter((article) => article.status === "published").length],
+    ["草稿", rows.filter((article) => article.status === "draft").length],
+    ["归档", rows.filter((article) => article.status === "archived").length],
+    ["置顶", rows.filter((article) => Number(article.is_pinned || article.pinned || 0) > 0).length],
+    ["三语完整", rows.filter((article) => Number(article.translation_count || 0) >= 3).length]
+  ];
+  box.replaceChildren(...items.map(([label, value]) => createListOverviewItem(label, value)));
+}
+
+function createListOverviewItem(label, value) {
+  const item = document.createElement("span");
+  const text = document.createElement("span");
+  const number = document.createElement("strong");
+  item.className = "list-overview-item";
+  setElementText(text, label);
+  setElementText(number, formatNumber(value));
+  item.append(text, number);
+  return item;
 }
 
 function normalizeFilterText(value) {

@@ -1553,6 +1553,36 @@ tbody tr:hover td {
   border-color: var(--ga-blue);
 }
 
+.list-overview-strip {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: -2px 0 12px;
+}
+
+.list-overview-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 34px;
+  padding: 7px 9px;
+  border: 1px solid #e3e8f1;
+  border-radius: 8px;
+  background: #fafcff;
+  color: #687182;
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+.list-overview-item strong {
+  color: var(--ga-text-final, #202124);
+  font-size: 16px;
+  line-height: 1;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
 .editor-panel .editor-form {
   max-height: none;
 }
