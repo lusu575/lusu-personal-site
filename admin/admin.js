@@ -96,6 +96,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-22",
+    title: "聊天记录新增治理概览",
+    body: "第 31 轮 loop 在聊天记录列表上方新增治理概览条，按当前筛选结果显示已加载/当前显示、可见、已隐藏、有来源、有用户标识和可禁言数量，方便先判断治理范围；不增加接口请求，后台资源版本更新为 20260622-admin-insight-r29。"
+  },
+  {
+    date: "2026-06-22",
     title: "视频分类新增状态概览",
     body: "第 30 轮 loop 在视频分类列表上方新增状态概览条，按当前筛选结果显示全部/当前显示、启用、停用、已被使用、可删除和最高排序，减少逐条看分类状态的压力；不增加接口请求，后台资源版本更新为 20260622-admin-insight-r28。"
   },
@@ -3508,6 +3513,7 @@ function renderChatMessages() {
     ? `显示 ${formatNumber(visibleMessages.length)} / ${baseCountText}`
     : baseCountText;
   setElementText($("#chat-list-count"), countText);
+  renderChatStatusOverview(visibleMessages, Boolean(filterText));
   syncBoxLabel(list, state.chatMessages.length ? `聊天记录：${countText}` : `聊天记录：${includeHidden ? "暂无聊天记录" : "暂无可见聊天记录"}`);
   if (!state.chatMessages.length) {
     list.replaceChildren(createEmptyStateElement(includeHidden ? "暂无聊天记录" : "暂无可见聊天记录"));
@@ -3552,6 +3558,27 @@ function renderChatMessages() {
     return item;
   }));
   syncChatActionState();
+}
+
+function renderChatStatusOverview(messages, isFiltered) {
+  const box = $("#chat-status-overview");
+  if (!box) {
+    return;
+  }
+  const rows = messages || [];
+  const hiddenCount = rows.filter((message) => Number(message.hidden) === 1).length;
+  const withPlace = rows.filter((message) => [message.country, message.region, message.city].some(Boolean)).length;
+  const withVisitor = rows.filter((message) => Boolean(message.visitor_id)).length;
+  const withBanSource = rows.filter((message) => Boolean(message.visitor_id || message.ip_hash)).length;
+  const items = [
+    [isFiltered ? "当前显示" : "已加载", rows.length],
+    ["可见", Math.max(0, rows.length - hiddenCount)],
+    ["已隐藏", hiddenCount],
+    ["有来源", withPlace],
+    ["有用户标识", withVisitor],
+    ["可禁言", withBanSource]
+  ];
+  box.replaceChildren(...items.map(([label, value]) => createListOverviewItem(label, value)));
 }
 
 function chatMessageMatchesFilter(message, filterText) {
