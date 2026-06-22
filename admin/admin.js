@@ -97,6 +97,11 @@ const navBadgePanels = new Set(["visits", "clicks", "articles", "videos", "video
 const adminUpdates = [
   {
     date: "2026-06-22",
+    title: "侧边栏新增已加载概况",
+    body: "第 40 轮 loop 在侧边栏底部新增“已加载”概况行，按当前本地状态显示文章、视频、消息和账号数量；与数量徽标共用状态，不增加接口请求，方便先判断哪些模块已有内容。后台资源版本更新为 20260622-admin-insight-r38。"
+  },
+  {
+    date: "2026-06-22",
     title: "侧边栏徽标单位优化",
     body: "第 39 轮 loop 将侧边栏数量徽标的悬停提示改为对应单位，并把访问来源、点击埋点也接入已有概览数量；徽标继续只复用已加载状态，不增加接口请求。后台资源版本更新为 20260622-admin-insight-r37。"
   },
@@ -2051,6 +2056,21 @@ function updateNavBadges() {
     const label = button.querySelector(".nav-text")?.textContent || button.textContent;
     button.title = value > 0 ? `${label}：${formatNumber(value)} ${info.unit}已加载` : label;
   });
+  updateSidebarLoadedSummary();
+}
+
+function updateSidebarLoadedSummary() {
+  const target = $("#sidebar-loaded-summary");
+  if (!target) {
+    return;
+  }
+  const parts = [
+    state.articles.length ? `文章 ${formatNumber(state.articles.length)}` : "",
+    state.videos.length ? `视频 ${formatNumber(state.videos.length)}` : "",
+    state.chatMessages.length ? `消息 ${formatNumber(state.chatMessages.length)}` : "",
+    state.accounts.length ? `账号 ${formatNumber(state.accounts.length)}` : ""
+  ].filter(Boolean);
+  setElementText(target, parts.length ? `已加载：${parts.slice(0, 4).join(" · ")}` : "内容数据按需加载");
 }
 
 function adminUpdateRoundNumber(item) {
