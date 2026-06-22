@@ -15,6 +15,7 @@ const state = {
   videoFilter: "",
   videoCategories: [],
   selectedVideoCategoryId: "",
+  videoCategoryFilter: "",
   videoCategoryBusy: false,
   videoCategoryBusyMode: "",
   videoPreviewing: false,
@@ -88,6 +89,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-06-22",
+    title: "视频分类新增本地筛选",
+    body: "第 15 轮 loop 在视频分类列表上方新增本地筛选框，可按分类名、路径标识和排序快速定位分类；计数同步显示“显示 X / 共 Y”。后台资源 query 更新为 20260622-admin-insight-r13。"
+  },
   {
     date: "2026-06-22",
     title: "视频列表新增本地筛选",
@@ -2923,8 +2929,12 @@ function renderVideoCategoryList() {
   const enabledCount = state.videoCategories.filter((category) => category.enabled).length;
   const disabledCount = state.videoCategories.length - enabledCount;
   const occupiedCount = state.videoCategories.filter((category) => Number(category.video_count || 0) > 0).length;
+  const filterText = normalizeFilterText(state.videoCategoryFilter);
+  const visibleCategories = filterText
+    ? state.videoCategories.filter((category) => videoCategoryMatchesFilter(category, filterText))
+    : state.videoCategories;
   const countText = state.videoCategories.length
-    ? `共 ${formatNumber(state.videoCategories.length)} 个 · 启用 ${formatNumber(enabledCount)} · 停用 ${formatNumber(disabledCount)} · 占用 ${formatNumber(occupiedCount)}`
+    ? `${filterText ? `显示 ${formatNumber(visibleCategories.length)} / ` : ""}共 ${formatNumber(state.videoCategories.length)} 个 · 启用 ${formatNumber(enabledCount)} · 停用 ${formatNumber(disabledCount)} · 占用 ${formatNumber(occupiedCount)}`
     : "0 个分类";
   setElementText($("#video-category-list-count"), countText);
   syncBoxLabel(list, state.videoCategories.length ? `视频分类列表：${countText}` : "视频分类列表：暂无分类");
@@ -2933,8 +2943,13 @@ function renderVideoCategoryList() {
     syncVideoCategoryListBusyState();
     return;
   }
+  if (!visibleCategories.length) {
+    list.replaceChildren(createEmptyStateElement("没有匹配的分类，换个分类名、路径标识或排序试试。"));
+    syncVideoCategoryListBusyState();
+    return;
+  }
 
-  list.replaceChildren(...state.videoCategories.map((category) => {
+  list.replaceChildren(...visibleCategories.map((category) => {
     const item = document.createElement("button");
     const title = document.createElement("span");
     const meta = document.createElement("span");
@@ -2966,6 +2981,22 @@ function renderVideoCategoryList() {
     return item;
   }));
   syncVideoCategoryListBusyState();
+}
+
+function videoCategoryMatchesFilter(category, filterText) {
+  if (!filterText) {
+    return true;
+  }
+  const searchText = [
+    category.name_zh,
+    category.name_en,
+    category.name_ja,
+    category.slug,
+    category.enabled ? "启用" : "停用",
+    `排序 ${formatNumber(category.sort_order)}`,
+    `视频 ${formatNumber(category.video_count)}`
+  ].filter(Boolean).join(" ").toLowerCase();
+  return searchText.includes(filterText);
 }
 
 function renderVideoCategoryListNotice(text, label = "分类列表提示") {
@@ -4602,6 +4633,10 @@ function bindEvents() {
     if (item && !isVideoCategoryWriteBusy()) {
       selectVideoCategory(item.dataset.adminVideoCategoryId);
     }
+  });
+  $("#video-category-list-filter").addEventListener("input", (event) => {
+    state.videoCategoryFilter = event.currentTarget.value;
+    renderVideoCategoryList();
   });
   $("#video-category-form").addEventListener("submit", saveVideoCategory);
   $("#copy-video-category-slug").addEventListener("click", (event) => {
