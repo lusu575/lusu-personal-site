@@ -3157,7 +3157,8 @@ select:focus-visible,
 .sidebar .nav-button {
   display: flex !important;
   align-items: center !important;
-  justify-content: flex-start !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
   width: 100% !important;
   min-height: 38px !important;
   padding: 9px 12px !important;
@@ -3168,6 +3169,31 @@ select:focus-visible,
 }
 
 .sidebar .nav-button::before {
+  display: none !important;
+}
+
+.nav-text {
+  min-width: 0;
+}
+
+.nav-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-width: 24px;
+  height: 20px;
+  padding: 0 7px;
+  border: 1px solid #d7e2f2;
+  border-radius: 999px;
+  background: #f8fbff;
+  color: #1a5ec8;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.nav-badge[hidden] {
   display: none !important;
 }
 

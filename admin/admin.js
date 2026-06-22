@@ -92,8 +92,14 @@ const panelMeta = {
 const overviewPanels = new Set(["dashboard", "visits", "clicks"]);
 const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
+const navBadgePanels = new Set(["articles", "videos", "videoCategories", "chat", "accounts", "socialLinks", "updates"]);
 
 const adminUpdates = [
+  {
+    date: "2026-06-22",
+    title: "侧边栏新增数量徽标",
+    body: "第 38 轮 loop 在侧边栏的文章、视频、视频分类、聊天室、账号、社交链接和后台更新记录入口右侧新增小数量徽标；数据加载后自动显示已加载数量，不新增接口请求，帮助站长快速识别各模块是否已有内容。后台资源版本更新为 20260622-admin-insight-r36。"
+  },
   {
     date: "2026-06-22",
     title: "历史更新记录术语收口",
@@ -1091,6 +1097,7 @@ async function loadPanelData(panel, options = {}) {
     } finally {
       delete state.loadingPanels[key];
       updateRefreshButton();
+      updateNavBadges();
     }
   })();
 
@@ -1919,6 +1926,7 @@ function renderArticleList() {
   setElementText($("#article-list-count"), countText);
   renderArticleStatusOverview(visibleArticles, Boolean(filterText));
   syncBoxLabel(list, state.articles.length ? `文章列表：${countText}` : "文章列表：暂无文章");
+  updateNavBadges();
   if (!state.articles.length) {
     list.replaceChildren(createEmptyStateElement("暂无文章，点击右上角“新建”开始。"));
     syncArticleListBusyState();
@@ -1988,6 +1996,53 @@ function createListOverviewItem(label, value) {
   setElementText(number, formatNumber(value));
   item.append(text, number);
   return item;
+}
+
+function navBadgeValue(panel) {
+  return {
+    articles: state.articles.length,
+    videos: state.videos.length,
+    videoCategories: state.videoCategories.length,
+    chat: state.chatMessages.length,
+    accounts: state.accounts.length,
+    socialLinks: state.socialLinks.length,
+    updates: adminUpdates.length
+  }[panel] || 0;
+}
+
+function setupNavBadges() {
+  $$(".nav-button").forEach((button) => {
+    if (button.querySelector(".nav-text")) {
+      return;
+    }
+    const label = button.textContent.trim();
+    button.replaceChildren();
+    const text = document.createElement("span");
+    text.className = "nav-text";
+    setElementText(text, label);
+    button.append(text);
+    if (navBadgePanels.has(button.dataset.panel)) {
+      const badge = document.createElement("span");
+      badge.className = "nav-badge";
+      badge.hidden = true;
+      button.append(badge);
+    }
+  });
+  updateNavBadges();
+}
+
+function updateNavBadges() {
+  $$(".nav-button").forEach((button) => {
+    const badge = button.querySelector(".nav-badge");
+    if (!badge) {
+      return;
+    }
+    const value = navBadgeValue(button.dataset.panel);
+    badge.hidden = value <= 0;
+    setElementText(badge, value > 99 ? "99+" : formatNumber(value));
+    const label = button.querySelector(".nav-text")?.textContent || button.textContent;
+    button.title = value > 0 ? `${label}：${formatNumber(value)} 条已加载` : label;
+  });
 }
 
 function adminUpdateRoundNumber(item) {
@@ -2397,6 +2452,7 @@ function renderVideoList() {
   setElementText($("#video-list-count"), countText);
   renderVideoStatusOverview(visibleVideos, Boolean(filterText));
   syncBoxLabel(list, state.videos.length ? `视频列表：${countText}` : "视频列表：暂无视频");
+  updateNavBadges();
   if (!state.videos.length) {
     list.replaceChildren(createEmptyStateElement("暂无视频，先粘贴一个 YouTube 或 Bilibili 链接。"));
     syncVideoListBusyState();
@@ -3217,6 +3273,7 @@ function renderVideoCategoryList() {
   setElementText($("#video-category-list-count"), countText);
   renderVideoCategoryStatusOverview(visibleCategories, Boolean(filterText));
   syncBoxLabel(list, state.videoCategories.length ? `视频分类列表：${countText}` : "视频分类列表：暂无分类");
+  updateNavBadges();
   if (!state.videoCategories.length) {
     list.replaceChildren(createEmptyStateElement("暂无视频分类。"));
     syncVideoCategoryListBusyState();
@@ -3550,6 +3607,7 @@ function renderChatMessages() {
   setElementText($("#chat-list-count"), countText);
   renderChatStatusOverview(visibleMessages, Boolean(filterText));
   syncBoxLabel(list, state.chatMessages.length ? `聊天记录：${countText}` : `聊天记录：${includeHidden ? "暂无聊天记录" : "暂无可见聊天记录"}`);
+  updateNavBadges();
   if (!state.chatMessages.length) {
     list.replaceChildren(createEmptyStateElement(includeHidden ? "暂无聊天记录" : "暂无可见聊天记录"));
     syncChatActionState();
@@ -4226,6 +4284,7 @@ function renderAccountList() {
   setElementText($("#account-list-count"), countText);
   renderAccountStatusOverview(visibleAccounts, Boolean(filterText));
   syncBoxLabel(list, state.accounts.length ? `账号列表：${countText}` : "账号列表：暂无账号");
+  updateNavBadges();
   if (!state.accounts.length) {
     list.replaceChildren(createEmptyStateElement("还没有注册账号。"));
     syncAccountListBusyState();
@@ -4571,6 +4630,7 @@ function renderSocialLinkPreview() {
   setElementText($("#social-link-preview-count"), countText);
   renderSocialLinkStatusOverview(links);
   syncBoxLabel(list, `社交链接预览：${countText}`);
+  updateNavBadges();
   list.replaceChildren(...links.map((item) => {
     const article = document.createElement("article");
     const title = document.createElement("strong");
@@ -4924,6 +4984,7 @@ function renderAdminUpdates() {
     : "暂无后台更新记录";
   setElementText($("#admin-updates-count"), countText);
   syncBoxLabel(box, adminUpdates.length ? `后台更新记录：${countText}` : "后台更新记录：暂无记录");
+  updateNavBadges();
   if (!adminUpdates.length) {
     box.replaceChildren(createEmptyStateElement("暂无后台更新记录。"));
     return;
@@ -5210,6 +5271,7 @@ function bindEvents() {
 }
 
 async function init() {
+  setupNavBadges();
   bindEvents();
   initFormStatusTones();
   renderAdminUpdates();
