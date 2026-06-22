@@ -88,6 +88,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-22",
+    title: "实时大屏新增访问洞察摘要",
+    body: "第 6 轮 loop 在实时大屏顶部新增访问洞察摘要条，直接提炼最热页面、主要地区、热门文章和最高点击动作，减少站长在多张图表之间来回寻找结论。摘要继续使用中文页面名、中文地区名和中文指标表达；后台资源 query 更新为 20260622-admin-insight-r4，接口和权限不变。"
+  },
+  {
+    date: "2026-06-22",
     title: "热门文章改为表现比例条",
     body: "第 5 轮 loop 将实时大屏里的热门文章从表格改为文章表现比例条，和页面概览、地区概览、国家来源、点击热点保持同一套阅读方式；主数字展示浏览量，副信息展示访客、分类和最近访问时间。后台资源 query 更新为 20260622-admin-insight-r3，后台权限、文章接口和主站公开更新边界不变。"
   },
@@ -1010,6 +1015,7 @@ function renderOverview() {
   }
   $("#analytics-explainer").textContent = "统计口径：PV 是页面被打开的次数，UV 是独立访客数。已登录账号按账号合并，同一账号多设备、多次访问也只算 1 个 UV；匿名访问继续按隐藏访客标识统计。";
   renderDashboardHero(state.overview.cards || {});
+  renderDashboardInsightStrip();
   renderKpis(state.overview.cards);
   renderDailyChart(state.overview.daily || []);
   renderHourlyChart(state.overview.hourly || []);
@@ -1032,6 +1038,63 @@ function renderDashboardHero(cards) {
   setElementText($("#tracked-sites-count"), formatNumber(siteCount));
   setElementText($("#tracked-properties-count"), formatNumber(propertyCount));
   setElementText($("#tracked-property-summary"), `${formatNumber(siteCount)} 个站点 · ${formatNumber(propertyCount)} 个追踪项`);
+}
+
+function renderDashboardInsightStrip() {
+  const box = $("#dashboard-insight-strip");
+  if (!box) {
+    return;
+  }
+  const overview = state.overview || {};
+  const topPage = overview.topPages?.[0];
+  const topCountry = overview.countries?.[0];
+  const topArticle = overview.topArticles?.[0];
+  const topClick = overview.topClicks?.[0];
+  const items = [
+    topPage ? {
+      label: "最热页面",
+      value: pageDisplayName(topPage.path || topPage.route, topPage.route),
+      detail: `浏览 ${formatNumber(topPage.pv)}`
+    } : null,
+    topCountry ? {
+      label: "主要地区",
+      value: countryDisplayName(topCountry.country),
+      detail: `浏览 ${formatNumber(topCountry.pv)}`
+    } : null,
+    topArticle ? {
+      label: "热门文章",
+      value: topArticle.title || articleSlugLabels[topArticle.slug] || "未命名文章",
+      detail: `浏览 ${formatNumber(topArticle.pv)}`
+    } : null,
+    topClick ? {
+      label: "最高点击",
+      value: clickTargetDisplayName(topClick),
+      detail: `点击 ${formatNumber(topClick.clicks)}`
+    } : null
+  ].filter(Boolean);
+  syncBoxLabel(box, items.length ? "访问洞察摘要" : "访问洞察摘要：暂无数据");
+  if (!items.length) {
+    box.replaceChildren(createEmptyStateElement("暂无可提炼的访问洞察"));
+    return;
+  }
+  box.replaceChildren(...items.map(createInsightSummaryChip));
+}
+
+function createInsightSummaryChip(item) {
+  const chip = document.createElement("article");
+  const label = document.createElement("span");
+  const value = document.createElement("strong");
+  const detail = document.createElement("small");
+  const text = `${item.label}：${item.value}，${item.detail}`;
+  chip.className = "dashboard-insight-chip";
+  chip.tabIndex = 0;
+  chip.title = text;
+  chip.setAttribute("aria-label", text);
+  setElementText(label, item.label);
+  setElementText(value, item.value);
+  setElementText(detail, item.detail);
+  chip.append(label, value, detail);
+  return chip;
 }
 
 function renderKpis(cards = {}) {
