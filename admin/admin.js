@@ -2,6 +2,7 @@ const state = {
   user: null,
   activePanel: "dashboard",
   overview: null,
+  regionFilter: "",
   articles: [],
   selectedArticleId: "",
   articleFilter: "",
@@ -92,6 +93,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-06-22",
+    title: "地区来源明细新增本地筛选",
+    body: "第 20 轮 loop 在访问来源页的“省份 / 地区 / IP 来源”明细表上方新增本地筛选框，可按国家、地区、城市和 IP 前缀快速定位来源；计数同步显示“显示 X / 共 Y”。后台资源 query 更新为 20260622-admin-insight-r18。"
+  },
   {
     date: "2026-06-22",
     title: "后台标识文案中文化",
@@ -1563,8 +1569,12 @@ function renderVisitTables() {
   const regions = overview.regions || [];
   const regionPrefixCount = regions.filter((row) => row.ip_prefix).length;
   const regionPvTotal = regions.reduce((sum, row) => sum + Number(row.pv || 0), 0);
+  const regionFilterText = normalizeFilterText(state.regionFilter);
+  const visibleRegions = regionFilterText
+    ? regions.filter((row) => regionMatchesFilter(row, regionFilterText))
+    : regions;
   const regionCountText = regions.length
-    ? `共 ${formatNumber(regions.length)} 条 · 浏览 ${formatNumber(regionPvTotal)} · ${formatNumber(regionPrefixCount)} 条含 IP 前缀`
+    ? `${regionFilterText ? `显示 ${formatNumber(visibleRegions.length)} / ` : ""}共 ${formatNumber(regions.length)} 条 · 浏览 ${formatNumber(regionPvTotal)} · ${formatNumber(regionPrefixCount)} 条含 IP 前缀`
     : "0 条来源";
   setElementText($("#region-table-count"), regionCountText);
   syncTableWrapLabel(regionTable, regions.length ? `地区与 IP 来源：${regionCountText}` : "地区与 IP 来源：暂无数据");
@@ -1572,7 +1582,11 @@ function renderVisitTables() {
     regionTable.replaceChildren(createEmptyTableRow(5, "暂无地区来源数据"));
     return;
   }
-  regionTable.replaceChildren(...regions.map((row) => {
+  if (!visibleRegions.length) {
+    regionTable.replaceChildren(createEmptyTableRow(5, "没有匹配的地区来源，换个国家、地区、城市或 IP 前缀试试。"));
+    return;
+  }
+  regionTable.replaceChildren(...visibleRegions.map((row) => {
     const place = mapPlaceLabel(row);
     const tableRow = document.createElement("tr");
     tableRow.append(
@@ -2322,6 +2336,21 @@ function renderVideoCategoryChecks() {
     }
     return label;
   }));
+}
+
+function regionMatchesFilter(row, filterText) {
+  if (!filterText) {
+    return true;
+  }
+  const searchText = [
+    countryDisplayName(row.country),
+    row.country,
+    row.region,
+    row.city,
+    row.ip_prefix,
+    mapPlaceLabel(row)
+  ].filter(Boolean).join(" ").toLowerCase();
+  return searchText.includes(filterText);
 }
 
 function renderVideoCategoryChecksNotice(text, label = "视频分类提示") {
@@ -4613,6 +4642,10 @@ function bindEvents() {
   });
   $("#manual-refresh").addEventListener("click", () => {
     loadPanelData(state.activePanel, { force: true });
+  });
+  $("#region-table-filter").addEventListener("input", (event) => {
+    state.regionFilter = event.currentTarget.value;
+    renderVisitTables();
   });
   $("#back-to-top").addEventListener("click", scrollAdminToTop);
   document.addEventListener("visibilitychange", () => {

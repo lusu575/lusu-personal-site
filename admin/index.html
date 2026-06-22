@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex,nofollow">
   <title>鲁肃个人站管理后台</title>
-  <link rel="stylesheet" href="/admin/admin.css?v=20260622-admin-insight-r17">
+  <link rel="stylesheet" href="/admin/admin.css?v=20260622-admin-insight-r18">
 </head>
 <body>
   <div class="admin-shell">
@@ -311,6 +311,9 @@
           </section>
           <section class="xp-panel">
             <div class="panel-head"><h2>省份 / 地区 / IP 来源</h2><span id="region-table-count">掩码 IP 前缀</span></div>
+            <label class="list-filter">筛选来源
+              <input id="region-table-filter" type="search" autocomplete="off" placeholder="国家、地区、城市、IP 前缀">
+            </label>
             <div class="table-wrap" tabindex="0" aria-label="省份地区和 IP 来源表格滚动区，窄屏可横向滑动查看完整表格">
               <table>
                 <thead><tr><th>位置</th><th>IP 前缀</th><th>浏览</th><th>访客</th><th>最近访问</th></tr></thead>
@@ -490,6 +493,6 @@
     </main>
   </div>
 
-  <script src="/admin/admin.js?v=20260622-admin-insight-r17"></script>
+  <script src="/admin/admin.js?v=20260622-admin-insight-r18"></script>
 </body>
 </html>
