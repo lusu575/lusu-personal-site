@@ -88,6 +88,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-22",
+    title: "访问来源与点击热点继续图表化",
+    body: "第 4 轮 loop 继续减少后台统计页的长表格：访问来源页的国家来源改为中文地区比例条，点击埋点页的点击热点改为按目标聚合的比例条；地区/IP 明细表保留为工具表，方便继续复制掩码 IP 前缀。后台资源 query 更新为 20260622-admin-insight-r2，权限、接口和数据写入不变。"
+  },
+  {
+    date: "2026-06-22",
     title: "后台实时大屏图表化与侧边栏优化",
     body: "按新的 loop 目标继续优化管理后台：将实时城市分布、页面概览和地区概览提前到首屏，原先很长的热门页面/国家表格改为中文名称和比例条；页面路径会显示为首页、视频区、知识库、聊天室等中文名称，TW、US、SG、CN 等地区码改为中文地区名；顶部小标签导航改为左侧栏，保留现有白底数据后台风格、权限、接口和 DOM 绑定边界。"
   },
@@ -1310,7 +1315,7 @@ function renderTopPages(rows) {
   })));
 }
 
-function createInsightBarItem({ rank, label, detail, value, secondaryValue, max, lastSeenAt }) {
+function createInsightBarItem({ rank, label, detail, value, secondaryValue, max, lastSeenAt, primaryLabel = "浏览", secondaryLabel = "访客" }) {
   const item = document.createElement("article");
   const rankNode = document.createElement("span");
   const body = document.createElement("div");
@@ -1323,7 +1328,7 @@ function createInsightBarItem({ rank, label, detail, value, secondaryValue, max,
   const uv = Number(secondaryValue || 0);
   const width = Math.max(4, Math.round((pv / Math.max(1, Number(max || 0))) * 100));
   const lastSeen = lastSeenAt ? ` · 最近 ${formatTime(lastSeenAt)}` : "";
-  const itemLabel = `${rank}. ${label}：浏览 ${formatNumber(pv)}，访客 ${formatNumber(uv)}${lastSeen}`;
+  const itemLabel = `${rank}. ${label}：${primaryLabel} ${formatNumber(pv)}，${secondaryLabel} ${formatNumber(uv)}${lastSeen}`;
   item.className = "insight-bar-item";
   item.tabIndex = 0;
   item.setAttribute("role", "listitem");
@@ -1338,8 +1343,8 @@ function createInsightBarItem({ rank, label, detail, value, secondaryValue, max,
   fill.style.width = `${width}%`;
   setElementText(rankNode, String(rank));
   setElementText(title, label || "未记录页面");
-  setElementText(meta, [detail, `访客 ${formatNumber(uv)}`, lastSeenAt ? `最近 ${formatTime(lastSeenAt)}` : ""].filter(Boolean).join(" · ") || "暂无细节");
-  setElementText(metrics, `${formatNumber(pv)} 浏览`);
+  setElementText(meta, [detail, `${secondaryLabel} ${formatNumber(uv)}`, lastSeenAt ? `最近 ${formatTime(lastSeenAt)}` : ""].filter(Boolean).join(" · ") || "暂无细节");
+  setElementText(metrics, `${formatNumber(pv)} ${primaryLabel}`);
   track.append(fill);
   body.append(title, meta, track);
   item.append(rankNode, body, metrics);
@@ -1372,27 +1377,28 @@ function renderTopArticles(rows) {
 
 function renderVisitTables() {
   const overview = state.overview || {};
-  const countryTable = $("#country-table");
+  const countryBox = $("#country-table");
   const countries = overview.countries || [];
   const countryPvTotal = countries.reduce((sum, row) => sum + Number(row.pv || 0), 0);
+  const visibleCountries = countries.slice(0, 8);
   const countryCountText = countries.length
-    ? `共 ${formatNumber(countries.length)} 个国家 · 浏览 ${formatNumber(countryPvTotal)}`
-    : "0 个国家";
+    ? `展示前 ${formatNumber(visibleCountries.length)} / 共 ${formatNumber(countries.length)} 个地区 · 浏览 ${formatNumber(countryPvTotal)}`
+    : "0 个地区";
   setElementText($("#country-table-count"), countryCountText);
-  syncTableWrapLabel(countryTable, countries.length ? `国家来源：${countryCountText}` : "国家来源：暂无数据");
+  syncBoxLabel(countryBox, countries.length ? `国家来源：${countryCountText}` : "国家来源：暂无数据");
   if (!countries.length) {
-    countryTable.replaceChildren(createEmptyTableRow(4, "暂无国家来源数据"));
+    countryBox.replaceChildren(createEmptyStateElement("暂无国家来源数据"));
   } else {
-    countryTable.replaceChildren(...countries.map((row) => {
-      const tableRow = document.createElement("tr");
-      tableRow.append(
-        createTableCell(countryDisplayName(row.country)),
-        createMetricTableCell(row.pv),
-        createMetricTableCell(row.uv),
-        createTimeTableCell(row.last_seen_at)
-      );
-      return tableRow;
-    }));
+    const max = Math.max(1, ...visibleCountries.map((row) => Number(row.pv || 0)));
+    countryBox.replaceChildren(...visibleCountries.map((row, index) => createInsightBarItem({
+      rank: index + 1,
+      label: countryDisplayName(row.country),
+      detail: "访问来源",
+      value: row.pv,
+      secondaryValue: row.uv,
+      max,
+      lastSeenAt: row.last_seen_at
+    })));
   }
 
   const regionTable = $("#region-table");
@@ -1431,30 +1437,23 @@ function renderClickPanels() {
     ? `共 ${formatNumber(topRows.length)} 个目标 · 点击 ${formatNumber(clickTotal)}`
     : "0 个目标";
   setElementText($("#top-clicks-count"), clickCountText);
-  syncTableWrapLabel(topClicks, topRows.length ? `点击热点：${clickCountText}` : "点击热点：暂无数据");
+  syncBoxLabel(topClicks, topRows.length ? `点击热点：${clickCountText}` : "点击热点：暂无数据");
   if (!topRows.length) {
-    topClicks.replaceChildren(createEmptyTableRow(5, "暂无点击热点数据"));
+    topClicks.replaceChildren(createEmptyStateElement("暂无点击热点数据"));
   } else {
-    topClicks.replaceChildren(...topRows.map((row) => {
-      const tableRow = document.createElement("tr");
-      const target = document.createElement("td");
-      const route = document.createElement("small");
-      const targetText = row.target_text || row.target_key || row.tag_name || "未知目标";
-      const routeText = row.data_route || row.target_key || "";
-      target.title = [targetText, routeText].filter(Boolean).join(" · ");
-      target.append(document.createTextNode(targetText), document.createElement("br"));
-      route.textContent = routeText;
-      route.title = routeText;
-      target.append(route);
-      tableRow.append(
-        target,
-        createTableCell(pageDisplayName(row.path || row.route, row.route), "table-path"),
-        createMetricTableCell(row.clicks),
-        createMetricTableCell(row.uv),
-        createTimeTableCell(row.last_seen_at)
-      );
-      return tableRow;
-    }));
+    const visibleClicks = topRows.slice(0, 8);
+    const max = Math.max(1, ...visibleClicks.map((row) => Number(row.clicks || 0)));
+    topClicks.replaceChildren(...visibleClicks.map((row, index) => createInsightBarItem({
+      rank: index + 1,
+      label: clickTargetDisplayName(row),
+      detail: pageDisplayName(row.path || row.route, row.route),
+      value: row.clicks,
+      secondaryValue: row.uv,
+      max,
+      lastSeenAt: row.last_seen_at,
+      primaryLabel: "点击",
+      secondaryLabel: "访客"
+    })));
   }
 
   const recentClicks = overview.recentClicks || [];
@@ -1465,11 +1464,37 @@ function renderClickPanels() {
   setElementText($("#recent-clicks-count"), recentCountText);
   syncBoxLabel($("#recent-clicks"), recentClicks.length ? `最近点击：${recentCountText}` : "最近点击：暂无数据");
   renderEventList("#recent-clicks", recentClicks, "暂无点击事件", (row) => (
-    createEventItemElement(row.target_text || row.target_key || row.tag_name || "未知点击", [
+    createEventItemElement(clickTargetDisplayName(row), [
       `页面：${pageDisplayName(row.path || row.route, row.route)} · 时间：${formatTime(row.created_at)} · 来源：${mapPlaceLabel(row)}`,
-      `目标：${row.data_route || row.target_key || "未记录目标路由"} · ${formatClickScreenSize(row)}`
+      `目标位置：${clickRouteDisplayName(row)} · ${formatClickScreenSize(row)}`
     ])
   ));
+}
+
+function clickTargetDisplayName(row) {
+  const text = String(row.target_text || "").trim();
+  if (text) {
+    return text;
+  }
+  const key = String(row.target_key || row.data_route || row.tag_name || "").trim();
+  if (!key) {
+    return "未知点击";
+  }
+  const cleaned = key
+    .replace(/^#/, "")
+    .replace(/^data[-_]?route[:=]?/i, "")
+    .replace(/[-_]+/g, " ")
+    .trim();
+  return cleaned ? `目标：${cleaned}` : "未知点击";
+}
+
+function clickRouteDisplayName(row) {
+  const route = String(row.data_route || row.target_key || "").trim();
+  if (!route) {
+    return "未记录目标位置";
+  }
+  const page = pageDisplayName(route, route);
+  return page === "站内页面" ? clickTargetDisplayName(row) : page;
 }
 
 function renderDashboardCountries(rows) {
