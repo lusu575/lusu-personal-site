@@ -96,6 +96,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-22",
+    title: "禁言列表新增治理概览",
+    body: "第 32 轮 loop 在禁言列表上方新增治理概览条，按当前筛选结果显示全部/当前显示、生效中、已停用、按用户、按 IP 和有原因数量，方便快速判断治理状态；不改变停用逻辑，后台资源版本更新为 20260622-admin-insight-r30。"
+  },
+  {
+    date: "2026-06-22",
     title: "聊天记录新增治理概览",
     body: "第 31 轮 loop 在聊天记录列表上方新增治理概览条，按当前筛选结果显示已加载/当前显示、可见、已隐藏、有来源、有用户标识和可禁言数量，方便先判断治理范围；不增加接口请求，后台资源版本更新为 20260622-admin-insight-r29。"
   },
@@ -3959,6 +3964,7 @@ function renderBans() {
     ? `${filterText ? `显示 ${formatNumber(visibleBans.length)} / ` : ""}共 ${formatNumber(state.bans.length)} 条 · ${formatNumber(activeCount)} 条生效中`
     : "0 条禁言";
   setElementText($("#ban-list-count"), countText);
+  renderBanStatusOverview(visibleBans, Boolean(filterText));
   syncBoxLabel(list, state.bans.length ? `禁言列表：${countText}` : "禁言列表：暂无记录");
   if (!state.bans.length) {
     list.replaceChildren(createEmptyStateElement("暂无禁言记录"));
@@ -4004,6 +4010,27 @@ function renderBans() {
     return item;
   }));
   syncBanListButtons();
+}
+
+function renderBanStatusOverview(bans, isFiltered) {
+  const box = $("#ban-status-overview");
+  if (!box) {
+    return;
+  }
+  const rows = bans || [];
+  const activeCount = rows.filter((ban) => ban.active).length;
+  const userCount = rows.filter((ban) => ban.ban_type === "visitor").length;
+  const ipCount = rows.filter((ban) => ban.ban_type === "ip_hash" || ban.ban_type === "ip").length;
+  const reasonCount = rows.filter((ban) => Boolean(ban.reason)).length;
+  const items = [
+    [isFiltered ? "当前显示" : "全部禁言", rows.length],
+    ["生效中", activeCount],
+    ["已停用", Math.max(0, rows.length - activeCount)],
+    ["按用户", userCount],
+    ["按 IP", ipCount],
+    ["有原因", reasonCount]
+  ];
+  box.replaceChildren(...items.map(([label, value]) => createListOverviewItem(label, value)));
 }
 
 function banMatchesFilter(ban, filterText) {
