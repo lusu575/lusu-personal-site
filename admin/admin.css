@@ -3357,6 +3357,10 @@ select:focus-visible,
   margin-bottom: 12px;
 }
 
+.recent-click-page-bars {
+  margin-bottom: 12px;
+}
+
 .insight-bar-item {
   display: grid;
   grid-template-columns: 28px minmax(0, 1fr) minmax(72px, auto);

@@ -96,6 +96,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-22",
+    title: "最近点击增加页面概览",
+    body: "第 23 轮 loop 在点击埋点页的“最近点击”列表上方新增“点击页面概览”比例条，按页面聚合已加载点击事件；筛选点击后概览同步收窄，事件列表仍保留用于排查细节。后台资源 query 更新为 20260622-admin-insight-r21。"
+  },
+  {
+    date: "2026-06-22",
     title: "地区来源明细增加比例概览",
     body: "第 22 轮 loop 在访问来源页的地区明细表上方新增“地区来源概览”比例条，筛选后同步展示匹配来源的前 6 条浏览/访客表现；IP 前缀表格仍保留用于复制和排查。后台资源 query 更新为 20260622-admin-insight-r20。"
   },
@@ -1645,6 +1650,7 @@ function renderClickPanels() {
   }
 
   const recentClicks = overview.recentClicks || [];
+  const recentClickPageBars = $("#recent-click-page-bars");
   const clickFilterText = normalizeFilterText(state.clickFilter);
   const visibleRecentClicks = clickFilterText
     ? recentClicks.filter((row) => clickEventMatchesFilter(row, clickFilterText))
@@ -1655,12 +1661,55 @@ function renderClickPanels() {
     : "0 条事件";
   setElementText($("#recent-clicks-count"), recentCountText);
   syncBoxLabel($("#recent-clicks"), recentClicks.length ? `最近点击：${recentCountText}` : "最近点击：暂无数据");
+  syncBoxLabel(recentClickPageBars, recentClicks.length ? `点击页面概览：${recentCountText}` : "点击页面概览：暂无数据");
+  if (!recentClicks.length) {
+    recentClickPageBars.replaceChildren(createEmptyStateElement("暂无点击页面概览"));
+  } else if (!visibleRecentClicks.length) {
+    recentClickPageBars.replaceChildren(createEmptyStateElement("没有匹配的点击页面"));
+  } else {
+    renderRecentClickPageBars(recentClickPageBars, visibleRecentClicks);
+  }
   renderEventList("#recent-clicks", visibleRecentClicks, clickFilterText ? "没有匹配的点击事件，换个目标、页面、来源或尺寸试试。" : "暂无点击事件", (row) => (
     createEventItemElement(clickTargetDisplayName(row), [
       `页面：${pageDisplayName(row.path || row.route, row.route)} · 时间：${formatTime(row.created_at)} · 来源：${mapPlaceLabel(row)}`,
       `目标位置：${clickRouteDisplayName(row)} · ${formatClickScreenSize(row)}`
     ])
   ));
+}
+
+function renderRecentClickPageBars(box, rows) {
+  const pageRows = aggregateRecentClicksByPage(rows).slice(0, 6);
+  const max = Math.max(1, ...pageRows.map((row) => row.clicks));
+  box.replaceChildren(...pageRows.map((row, index) => createInsightBarItem({
+    rank: index + 1,
+    label: row.label,
+    detail: row.detail,
+    value: row.clicks,
+    secondaryValue: row.targets,
+    max,
+    lastSeenAt: row.lastSeenAt,
+    primaryLabel: "点击",
+    secondaryLabel: "目标"
+  })));
+}
+
+function aggregateRecentClicksByPage(rows) {
+  const pages = new Map();
+  rows.forEach((row) => {
+    const label = pageDisplayName(row.path || row.route, row.route);
+    const detail = pageDisplayDetail(row.path || row.route, row.route) || "站内页面";
+    const key = `${label}::${detail}`;
+    const item = pages.get(key) || { label, detail, clicks: 0, targets: new Set(), lastSeenAt: "" };
+    item.clicks += 1;
+    item.targets.add(clickTargetDisplayName(row));
+    if (!item.lastSeenAt || new Date(row.created_at || 0) > new Date(item.lastSeenAt || 0)) {
+      item.lastSeenAt = row.created_at || item.lastSeenAt;
+    }
+    pages.set(key, item);
+  });
+  return [...pages.values()]
+    .map((item) => ({ ...item, targets: item.targets.size }))
+    .sort((a, b) => (b.clicks - a.clicks) || (new Date(b.lastSeenAt || 0) - new Date(a.lastSeenAt || 0)));
 }
 
 function clickEventMatchesFilter(row, filterText) {
