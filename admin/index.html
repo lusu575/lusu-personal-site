@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex,nofollow">
   <title>鲁肃个人站管理后台</title>
-  <link rel="stylesheet" href="/admin/admin.css?v=20260622-admin-insight-r16">
+  <link rel="stylesheet" href="/admin/admin.css?v=20260622-admin-insight-r17">
 </head>
 <body>
   <div class="admin-shell">
@@ -217,7 +217,7 @@
               </div>
               <div class="form-grid">
                 <label>平台<input name="platform" readonly></label>
-                <label>视频 ID<input name="external_id" readonly></label>
+                <label>平台视频编号<input name="external_id" readonly></label>
                 <label>播放器地址<input name="embed_url" readonly></label>
                 <button class="xp-button copy-field-button" type="button" id="copy-video-embed-url" aria-label="复制视频播放器地址" title="复制视频播放器地址">复制播放器</button>
                 <div class="thumbnail-field">
@@ -362,8 +362,8 @@
                 <button class="xp-button" type="submit" disabled>保存修改</button>
                 <button class="xp-button" type="button" id="toggle-chat-hidden" disabled>隐藏消息</button>
                 <button class="xp-button danger" type="button" id="delete-chat-message" disabled>删除</button>
-                <button class="xp-button warning" type="button" id="ban-chat-visitor" disabled>禁言用户 ID</button>
-                <button class="xp-button warning" type="button" id="ban-chat-ip" disabled>禁言IP来源</button>
+                <button class="xp-button warning" type="button" id="ban-chat-visitor" disabled>禁言用户标识</button>
+                <button class="xp-button warning" type="button" id="ban-chat-ip" disabled>禁言 IP 来源</button>
               </div>
             </form>
             <div class="panel-head subhead">
@@ -490,6 +490,6 @@
     </main>
   </div>
 
-  <script src="/admin/admin.js?v=20260622-admin-insight-r16"></script>
+  <script src="/admin/admin.js?v=20260622-admin-insight-r17"></script>
 </body>
 </html>

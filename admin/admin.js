@@ -80,7 +80,7 @@ const panelMeta = {
   articles: ["知识库文章", "一次编辑中文、英文、日文三种版本，按当前选择语言显示编辑区。"],
   videos: ["视频管理", "输入视频链接后由服务端识别并缓存标题、简介、发布时间和封面，也可上传本地封面。"],
   videoCategories: ["视频分类管理", "维护视频区顶部标签，支持新增、编辑、停用、排序和安全删除。"],
-  chat: ["聊天室管理", "编辑、隐藏、删除聊天记录，按隐藏用户 ID 或 IP 来源禁言。"],
+  chat: ["聊天室管理", "编辑、隐藏、删除聊天记录，按隐藏用户标识或 IP 来源禁言。"],
   accounts: ["账号管理", "查看注册账号、重置密码、确认登录履历和近期活跃。"],
   socialLinks: ["社交链接", "维护主站关于我窗口里的社交入口跳转。"],
   updates: ["后台更新记录", "后台自己的私有更新说明，每次后台更新后同步记录。"],
@@ -92,6 +92,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-06-22",
+    title: "后台标识文案中文化",
+    body: "第 19 轮 loop 将视频表单里的编号标签改为“平台视频编号”，聊天室详情和禁言按钮里的识别字段改为“用户标识 / 前端临时标识”，减少后台运行界面的英文缩写直出。后台资源 query 更新为 20260622-admin-insight-r17。"
+  },
   {
     date: "2026-06-22",
     title: "禁言列表新增本地筛选",
@@ -3361,8 +3366,8 @@ function selectChatMessage(messageId) {
   form.elements.content.value = message.content || "";
   setElementText($("#chat-selected-id"), message.message_id);
   $("#chat-meta").replaceChildren(...[
-    ["隐藏用户 ID", message.visitor_id || ""],
-    ["前端 client id", message.client_id || ""],
+    ["隐藏用户标识", message.visitor_id || ""],
+    ["前端临时标识", message.client_id || ""],
     ["隐藏 IP 指纹", message.ip_hash || ""],
     ["IP 前缀", message.ip_prefix || ""],
     ["来源", [message.country, message.region, message.city].filter(Boolean).join(" / ") || "未知"]
@@ -3426,10 +3431,10 @@ function syncChatActionState() {
     visitorBanButton.disabled = busy || !hasMessage || missingVisitorId;
     visitorBanButton.setAttribute("aria-busy", busy ? "true" : "false");
     visitorBanButton.setAttribute("aria-disabled", visitorBanButton.disabled ? "true" : "false");
-    visitorBanButton.textContent = state.chatActionBusyMode === "banVisitor" ? "禁言中..." : "禁言用户 ID";
+    visitorBanButton.textContent = state.chatActionBusyMode === "banVisitor" ? "禁言中..." : "禁言用户标识";
     syncButtonHint(
       visitorBanButton,
-      missingVisitorId ? "这条记录没有隐藏用户 ID，无法按用户禁言" : chatActionButtonHint("按隐藏用户 ID 禁言", hasMessage, busy)
+      missingVisitorId ? "这条记录没有隐藏用户标识，无法按用户禁言" : chatActionButtonHint("按隐藏用户标识禁言", hasMessage, busy)
     );
   }
   if (ipBanButton) {
@@ -3437,7 +3442,7 @@ function syncChatActionState() {
     ipBanButton.disabled = busy || !hasMessage || missingIpHash;
     ipBanButton.setAttribute("aria-busy", busy ? "true" : "false");
     ipBanButton.setAttribute("aria-disabled", ipBanButton.disabled ? "true" : "false");
-    ipBanButton.textContent = state.chatActionBusyMode === "banIp" ? "禁言中..." : "禁言IP来源";
+    ipBanButton.textContent = state.chatActionBusyMode === "banIp" ? "禁言中..." : "禁言 IP 来源";
     syncButtonHint(
       ipBanButton,
       missingIpHash ? "这条记录没有隐藏 IP 指纹，无法按 IP 来源禁言" : chatActionButtonHint("按 IP 来源禁言", hasMessage, busy)
@@ -3489,7 +3494,7 @@ function chatActionBusyListTitle() {
     save: "正在保存聊天记录，完成后再切换",
     toggle: "正在处理聊天可见性，完成后再切换",
     delete: "正在删除聊天记录，完成后再切换",
-    banVisitor: "正在禁言用户 ID，完成后再切换",
+    banVisitor: "正在禁言用户标识，完成后再切换",
     banIp: "正在禁言 IP 来源，完成后再切换"
   }[state.chatActionBusyMode] || "正在处理聊天记录，完成后再切换";
 }
@@ -3521,7 +3526,7 @@ function chatActionBusyFilterTitle() {
     save: "正在保存聊天记录，完成后再调整筛选",
     toggle: "正在处理聊天可见性，完成后再调整筛选",
     delete: "正在删除聊天记录，完成后再调整筛选",
-    banVisitor: "正在禁言用户 ID，完成后再调整筛选",
+    banVisitor: "正在禁言用户标识，完成后再调整筛选",
     banIp: "正在禁言 IP 来源，完成后再调整筛选"
   }[state.chatActionBusyMode] || "正在处理聊天记录，完成后再调整筛选";
 }
@@ -3545,7 +3550,7 @@ function chatActionBusyFormTitle() {
     save: "正在保存聊天记录，完成后再编辑表单",
     toggle: "正在处理聊天可见性，完成后再编辑表单",
     delete: "正在删除聊天记录，完成后再编辑表单",
-    banVisitor: "正在禁言用户 ID，完成后再编辑表单",
+    banVisitor: "正在禁言用户标识，完成后再编辑表单",
     banIp: "正在禁言 IP 来源，完成后再编辑表单"
   }[state.chatActionBusyMode] || "正在处理聊天记录，完成后再编辑表单";
 }
@@ -3646,7 +3651,7 @@ async function banSelectedChat(type) {
     return;
   }
   if (type === "visitor" && !message.visitor_id) {
-    showChatActionError(new Error("这条记录没有隐藏用户 ID，无法按用户禁言。"));
+    showChatActionError(new Error("这条记录没有隐藏用户标识，无法按用户禁言。"));
     return;
   }
   if ((type === "ip_hash" || type === "ip") && !message.ip_hash) {
@@ -3782,7 +3787,7 @@ function banListLabel(ban) {
 
 function banTypeLabel(type) {
   return {
-    visitor: "用户 ID",
+    visitor: "用户标识",
     ip_hash: "IP 来源"
   }[type] || type || "未知类型";
 }
