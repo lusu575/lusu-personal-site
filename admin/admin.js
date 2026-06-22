@@ -68,9 +68,9 @@ const SOCIAL_LINK_PLATFORMS = [
 ];
 
 const panelMeta = {
-  dashboard: ["仪表盘", "Google Analytics 实时数据跟踪"],
+  dashboard: ["仪表盘", "实时访问工作台"],
   visits: ["访问来源", "按国家、省份、地区和 IP 前缀查看每日访问。"],
-  clicks: ["点击埋点", "查看站内各位置点击、PV/UV 和最近事件。"],
+  clicks: ["点击埋点", "查看站内各位置点击、浏览访客和最近事件。"],
   articles: ["知识库文章", "一次编辑 zh / en / ja 三种版本，按当前选择语言显示编辑区。"],
   videos: ["视频管理", "输入 YouTube / Bilibili 链接，服务端识别并缓存标题、简介、发布时间和封面，也可上传本地封面。"],
   videoCategories: ["视频分类管理", "维护视频区顶部标签，支持新增、编辑、停用、排序和安全删除。"],
@@ -86,6 +86,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-06-22",
+    title: "后台首屏中文化与信息口径优化",
+    body: "优化管理后台首屏、编辑区和窄屏阅读体验：将实时面板标题、站点追踪摘要、访问排行、追踪项说明、文章路径标识、三语编辑标签、分类路径标识和表格指标标题改为更直观的中文表达；恢复 PV/UV 统计口径说明，给窄屏表格增加滑动提示，并移除卡片里的 Quota/token 模板残留。后台风格、导航顺序、DOM 绑定、权限和 API 边界保持不变，本次仍是后台私有更新。"
+  },
   {
     date: "2026-06-21",
     title: "参考图优先实时面板重做",
@@ -856,10 +861,10 @@ function renderDashboardHero(cards) {
   const siteCount = Math.max(1, Math.min(7, topPages.length || countries.length || 7));
   const propertyCount = Math.max(1, Math.min(17, (topPages.length + countries.length + (state.overview?.topArticles || []).length) || 17));
   setElementText($("#dashboard-live-total"), formatNumber(cards.todayPv));
-  setElementText($("#dashboard-live-subtitle"), `实时用户 · ${formatNumber(cards.onlineVisitors)} / ${formatNumber(siteCount)} 个网站有访问`);
+  setElementText($("#dashboard-live-subtitle"), `近 5 分钟活跃 · ${formatNumber(cards.onlineVisitors)} 个访客 / ${formatNumber(siteCount)} 个站点有访问`);
   setElementText($("#tracked-sites-count"), formatNumber(siteCount));
   setElementText($("#tracked-properties-count"), formatNumber(propertyCount));
-  setElementText($("#tracked-property-summary"), `${formatNumber(siteCount)} 个网站 · ${formatNumber(propertyCount)} 个 property`);
+  setElementText($("#tracked-property-summary"), `${formatNumber(siteCount)} 个站点 · ${formatNumber(propertyCount)} 个追踪项`);
 }
 
 function renderKpis(cards = {}) {
@@ -893,10 +898,10 @@ function renderKpis(cards = {}) {
     quota.className = "property-quota";
     setElementText(title, label);
     setElementText(number, formattedValue);
-    setElementText(quota, `Quota：本轮约 ${formatNumber(index + 1)} token · 剩余 ${formatNumber(12960 - index * 37)} · 60 秒刷新约 ${formatNumber(215 - index * 2)} 小时`);
+    setElementText(quota, `口径：${hint}`);
     header.append(title, number);
     lists.append(
-      createPropertyMiniList("热门页面 / 屏幕", rotateRows(topPages, index).slice(0, 4), "path", "pv"),
+      createPropertyMiniList("热门页面", rotateRows(topPages, index).slice(0, 4), "path", "pv"),
       createPropertyMiniList("国家 / 地区", rotateRows(countries, index).slice(0, 3), "country", "pv")
     );
     card.append(header, createSparkBars(sparkRows, offset), lists, quota);
@@ -963,12 +968,12 @@ function renderDailyChart(rows) {
 }
 
 function renderHourlyChart(rows) {
-  $("#hourly-range").textContent = `UTC 聚合 · ${formatNumber(rows.length)} 个小时`;
+  $("#hourly-range").textContent = `服务器时间 · ${formatNumber(rows.length)} 个小时`;
   renderBars($("#hourly-chart"), rows, "hour");
 }
 
 function renderBars(container, rows, labelKey) {
-  const chartLabel = labelKey === "hour" ? "今日小时走势" : "每日 PV / UV";
+  const chartLabel = labelKey === "hour" ? "今日小时走势" : "每日浏览 / 访客";
   if (!rows.length) {
     const emptyText = `${chartLabel}：暂无图表数据`;
     container.title = emptyText;
@@ -987,7 +992,7 @@ function renderBars(container, rows, labelKey) {
     const stack = document.createElement("div");
     const fill = document.createElement("div");
     const labelNode = document.createElement("div");
-    const pointLabel = `${label}：PV ${formatNumber(row.pv)} / UV ${formatNumber(row.uv)}`;
+    const pointLabel = `${label}：浏览 ${formatNumber(row.pv)} / 访客 ${formatNumber(row.uv)}`;
     cell.className = "bar-cell";
     cell.tabIndex = 0;
     cell.setAttribute("role", "img");
@@ -1141,7 +1146,7 @@ function renderTopPages(rows) {
   const table = $("#top-pages");
   const pvTotal = rows.reduce((sum, row) => sum + Number(row.pv || 0), 0);
   const countText = rows.length
-    ? `共 ${formatNumber(rows.length)} 个页面 · PV ${formatNumber(pvTotal)}`
+    ? `共 ${formatNumber(rows.length)} 个页面 · 浏览 ${formatNumber(pvTotal)}`
     : "0 个页面";
   setElementText($("#top-pages-count"), countText);
   syncTableWrapLabel(table, rows.length ? `热门页面：${countText}` : "热门页面：暂无数据");
@@ -1165,7 +1170,7 @@ function renderTopArticles(rows) {
   const table = $("#top-articles");
   const pvTotal = rows.reduce((sum, row) => sum + Number(row.pv || 0), 0);
   const countText = rows.length
-    ? `共 ${formatNumber(rows.length)} 篇 · PV ${formatNumber(pvTotal)}`
+    ? `共 ${formatNumber(rows.length)} 篇 · 浏览 ${formatNumber(pvTotal)}`
     : "0 篇文章";
   setElementText($("#top-articles-count"), countText);
   syncTableWrapLabel(table, rows.length ? `热门文章：${countText}` : "热门文章：暂无数据");
@@ -1191,7 +1196,7 @@ function renderVisitTables() {
   const countries = overview.countries || [];
   const countryPvTotal = countries.reduce((sum, row) => sum + Number(row.pv || 0), 0);
   const countryCountText = countries.length
-    ? `共 ${formatNumber(countries.length)} 个国家 · PV ${formatNumber(countryPvTotal)}`
+    ? `共 ${formatNumber(countries.length)} 个国家 · 浏览 ${formatNumber(countryPvTotal)}`
     : "0 个国家";
   setElementText($("#country-table-count"), countryCountText);
   syncTableWrapLabel(countryTable, countries.length ? `国家来源：${countryCountText}` : "国家来源：暂无数据");
@@ -1215,7 +1220,7 @@ function renderVisitTables() {
   const regionPrefixCount = regions.filter((row) => row.ip_prefix).length;
   const regionPvTotal = regions.reduce((sum, row) => sum + Number(row.pv || 0), 0);
   const regionCountText = regions.length
-    ? `共 ${formatNumber(regions.length)} 条 · PV ${formatNumber(regionPvTotal)} · ${formatNumber(regionPrefixCount)} 条含 IP 前缀`
+    ? `共 ${formatNumber(regions.length)} 条 · 浏览 ${formatNumber(regionPvTotal)} · ${formatNumber(regionPrefixCount)} 条含 IP 前缀`
     : "0 条来源";
   setElementText($("#region-table-count"), regionCountText);
   syncTableWrapLabel(regionTable, regions.length ? `地区与 IP 来源：${regionCountText}` : "地区与 IP 来源：暂无数据");
@@ -1295,7 +1300,7 @@ function renderDashboardCountries(rows) {
   }
   const pvTotal = rows.reduce((sum, row) => sum + Number(row.pv || 0), 0);
   const countText = rows.length
-    ? `共 ${formatNumber(rows.length)} 个国家 · PV ${formatNumber(pvTotal)}`
+    ? `共 ${formatNumber(rows.length)} 个国家 · 浏览 ${formatNumber(pvTotal)}`
     : "0 个国家";
   setElementText(count, countText);
   syncTableWrapLabel(table, rows.length ? `整体国家地区：${countText}` : "整体国家地区：暂无数据");
@@ -1324,9 +1329,9 @@ function renderSiteRankings(rows) {
   const rankingRows = rows.slice(0, 7);
   const countText = rankingRows.length ? `${formatNumber(rankingRows.length)} 个网站` : "0 个网站";
   setElementText(count, countText);
-  syncBoxLabel(list, rankingRows.length ? `网站实时排名：${countText}` : "网站实时排名：暂无数据");
+  syncBoxLabel(list, rankingRows.length ? `实时访问排行：${countText}` : "实时访问排行：暂无数据");
   if (!rankingRows.length) {
-    list.replaceChildren(createEmptyStateElement("暂无网站实时排名数据"));
+    list.replaceChildren(createEmptyStateElement("暂无实时访问排行数据"));
     return;
   }
   const max = Math.max(1, ...rankingRows.map((row) => Number(row.pv || 0)));
@@ -1345,7 +1350,7 @@ function createSiteRankingItem(row, index, max) {
   const label = row.path || row.route || "未记录网站";
   item.className = "site-ranking-item";
   item.tabIndex = 0;
-  item.title = `${index + 1}. ${label} · 实时 ${valueText}`;
+  item.title = `${index + 1}. ${label} · 今日访问 ${valueText}`;
   item.setAttribute("aria-label", item.title);
   setElementText(rank, String(index + 1));
   setElementText(title, label);
@@ -2940,7 +2945,7 @@ function syncChatActionState() {
     visitorBanButton.disabled = busy || !hasMessage || missingVisitorId;
     visitorBanButton.setAttribute("aria-busy", busy ? "true" : "false");
     visitorBanButton.setAttribute("aria-disabled", visitorBanButton.disabled ? "true" : "false");
-    visitorBanButton.textContent = state.chatActionBusyMode === "banVisitor" ? "禁言中..." : "禁言用户ID";
+    visitorBanButton.textContent = state.chatActionBusyMode === "banVisitor" ? "禁言中..." : "禁言用户 ID";
     syncButtonHint(
       visitorBanButton,
       missingVisitorId ? "这条记录没有隐藏用户 ID，无法按用户禁言" : chatActionButtonHint("按隐藏用户 ID 禁言", hasMessage, busy)
@@ -4139,7 +4144,7 @@ function bindEvents() {
     saveArticle();
   });
   $("#copy-article-slug").addEventListener("click", (event) => {
-    copyFieldValue("#article-form input[name='slug']", event.currentTarget, "文章 slug");
+    copyFieldValue("#article-form input[name='slug']", event.currentTarget, "文章路径标识");
   });
   $("#publish-article").addEventListener("click", () => saveArticle("published"));
   $("#delete-article").addEventListener("click", deleteArticle);
@@ -4191,7 +4196,7 @@ function bindEvents() {
   });
   $("#video-category-form").addEventListener("submit", saveVideoCategory);
   $("#copy-video-category-slug").addEventListener("click", (event) => {
-    copyFieldValue("#video-category-form input[name='slug']", event.currentTarget, "视频分类 slug");
+    copyFieldValue("#video-category-form input[name='slug']", event.currentTarget, "视频分类路径标识");
   });
   $("#delete-video-category").addEventListener("click", deleteVideoCategory);
   $("#include-hidden-chat").addEventListener("change", () => {

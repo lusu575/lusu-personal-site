@@ -3102,3 +3102,76 @@ td {
     width: auto !important;
   }
 }
+
+/* 2026-06-22 usability loop: keep the GA-like shell, but surface useful Chinese guidance. */
+#dashboard-panel > .insight-note {
+  display: block !important;
+  margin: 0 0 16px !important;
+  padding: 10px 12px !important;
+  color: #4f5f73 !important;
+  background: #f8fbff !important;
+  border: 1px solid #d9e5fb !important;
+  border-radius: 4px !important;
+  box-shadow: none !important;
+  font-size: 13px !important;
+}
+
+.panel-head,
+.mini-table-head,
+.section-title-line {
+  flex-wrap: wrap;
+}
+
+.panel-head span,
+.mini-table-head span,
+.section-title-line span {
+  max-width: 100%;
+}
+
+.table-wrap {
+  position: relative;
+}
+
+.form-status {
+  min-width: min(100%, 220px);
+}
+
+.xp-button:focus-visible,
+.nav-button:focus-visible,
+.lang-tab:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+.list-item:focus-visible,
+.event-item:focus-visible,
+.ban-item:focus-visible {
+  outline: 2px solid #4b7fdf;
+  outline-offset: 2px;
+}
+
+@media (max-width: 760px) {
+  .table-wrap::before {
+    content: "左右滑动查看完整表格";
+    position: sticky;
+    left: 0;
+    display: inline-flex;
+    margin: 8px 0 4px;
+    padding: 3px 8px;
+    color: #5f6368;
+    background: #f5f7fb;
+    border: 1px solid #e3e7ef;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .panel-head,
+  .mini-table-head,
+  .section-title-line {
+    align-items: flex-start;
+  }
+
+  .form-status {
+    width: 100%;
+  }
+}

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex,nofollow">
   <title>鲁肃个人站管理后台</title>
-  <link rel="stylesheet" href="/admin/admin.css?v=20260621-admin-ga-realtime-r2">
+  <link rel="stylesheet" href="/admin/admin.css?v=20260622-admin-usability-r2">
 </head>
 <body>
   <div class="admin-shell">
@@ -13,7 +13,7 @@
       <header class="topbar">
         <div>
           <h1 id="panel-title">仪表盘</h1>
-          <p id="panel-subtitle">Google Analytics 实时数据跟踪</p>
+          <p id="panel-subtitle">实时访问工作台</p>
         </div>
         <div class="topbar-actions">
           <span class="refresh-state" id="refresh-state" role="status" aria-live="polite" aria-atomic="true">等待刷新</span>
@@ -27,7 +27,7 @@
         <div class="sidebar-brand">
           <span class="brand-mark">LS</span>
           <div>
-            <strong>跟踪网站</strong>
+            <strong>站点追踪</strong>
             <small>已连接 <span id="admin-email">读取中...</span></small>
           </div>
         </div>
@@ -45,7 +45,7 @@
           <button class="nav-button" type="button" data-panel="docs" aria-controls="docs-panel">后台说明</button>
         </nav>
         <div class="sidebar-note">
-          <span>已选 <strong id="tracked-sites-count">7</strong> 个 · 已同步 <strong id="tracked-properties-count">17</strong> 个 property</span>
+          <span>已选 <strong id="tracked-sites-count">7</strong> 个站点 · <strong id="tracked-properties-count">17</strong> 个追踪项</span>
         </div>
       </aside>
 
@@ -55,22 +55,22 @@
           <section class="xp-panel realtime-panel">
             <div class="realtime-hero">
               <div>
-                <span>所有已选网站实时用户</span>
+                <span>今日访问总览</span>
                 <strong id="dashboard-live-total">0</strong>
                 <small id="dashboard-live-subtitle">实时用户 · 正在读取访问状态</small>
               </div>
-              <span class="live-clock" id="hourly-range">UTC 聚合</span>
+              <span class="live-clock" id="hourly-range">按服务器时间聚合</span>
             </div>
             <div class="bar-chart live-bars" id="hourly-chart"></div>
             <div class="realtime-summary-grid">
               <section class="mini-table-block">
                 <div class="mini-table-head">
-                  <h2>整体热门页面 / 屏幕</h2>
-                  <span id="top-pages-count">PV / UV</span>
+                  <h2>整体热门页面</h2>
+                  <span id="top-pages-count">浏览 / 访客</span>
                 </div>
                 <div class="table-wrap compact-table" tabindex="0" aria-label="热门页面表格滚动区，窄屏可横向滑动查看完整表格">
                   <table>
-                    <thead><tr><th>页面</th><th>PV</th><th>UV</th><th>最近访问</th></tr></thead>
+                    <thead><tr><th>页面</th><th>浏览</th><th>访客</th><th>最近访问</th></tr></thead>
                     <tbody id="top-pages"></tbody>
                   </table>
                 </div>
@@ -78,11 +78,11 @@
               <section class="mini-table-block">
                 <div class="mini-table-head">
                   <h2>整体国家 / 地区</h2>
-                  <span id="dashboard-countries-count">PV / UV</span>
+                  <span id="dashboard-countries-count">浏览 / 访客</span>
                 </div>
                 <div class="table-wrap compact-table" tabindex="0" aria-label="整体国家地区表格滚动区，窄屏可横向滑动查看完整表格">
                   <table>
-                    <thead><tr><th>国家</th><th>PV</th><th>UV</th><th>最近访问</th></tr></thead>
+                    <thead><tr><th>国家</th><th>浏览</th><th>访客</th><th>最近访问</th></tr></thead>
                     <tbody id="dashboard-countries"></tbody>
                   </table>
                 </div>
@@ -99,8 +99,8 @@
           <aside class="xp-panel realtime-rank-panel">
             <div class="panel-head">
               <div>
-                <h2>网站实时排名</h2>
-                <span>按实时访问量排序</span>
+                <h2>实时访问排行</h2>
+                <span>按今日访问量排序</span>
               </div>
               <span id="site-rankings-count">0 个网站</span>
             </div>
@@ -109,26 +109,26 @@
         </div>
         <section class="property-section">
           <div class="section-title-line">
-            <h2>已选网站概览</h2>
-            <span id="tracked-property-summary">7 个网站 · 17 个 property</span>
+            <h2>已选站点概览</h2>
+            <span id="tracked-property-summary">7 个站点 · 17 个追踪项</span>
           </div>
           <div class="kpi-grid" id="kpi-grid"></div>
         </section>
         <section class="xp-panel article-overview-panel">
           <div class="panel-head">
             <h2>热门文章</h2>
-            <span id="top-articles-count">文章 PV / UV</span>
+            <span id="top-articles-count">文章浏览 / 访客</span>
           </div>
           <div class="table-wrap" tabindex="0" aria-label="热门文章表格滚动区，窄屏可横向滑动查看完整表格">
             <table>
-              <thead><tr><th>文章</th><th>PV</th><th>UV</th><th>最近访问</th></tr></thead>
+              <thead><tr><th>文章</th><th>浏览</th><th>访客</th><th>最近访问</th></tr></thead>
               <tbody id="top-articles"></tbody>
             </table>
           </div>
         </section>
         <section class="xp-panel daily-panel">
           <div class="panel-head">
-            <h2>每日 PV / UV</h2>
+            <h2>每日浏览 / 访客</h2>
             <span id="daily-range">最近 14 天</span>
           </div>
           <div class="bar-chart daily-bars" id="daily-chart"></div>
@@ -152,8 +152,8 @@
             </div>
             <form id="article-form" class="editor-form" novalidate>
               <div class="form-grid">
-                <label>Slug<input name="slug" required maxlength="120" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="my-article-slug"></label>
-                <button class="xp-button copy-field-button" type="button" id="copy-article-slug" aria-label="复制文章 slug" title="复制文章 slug">复制 slug</button>
+                <label>文章路径标识<input name="slug" required maxlength="120" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="my-article-slug"></label>
+                <button class="xp-button copy-field-button" type="button" id="copy-article-slug" aria-label="复制文章路径标识" title="复制文章路径标识">复制标识</button>
                 <label>分类<input name="category" maxlength="80" value="note"></label>
                 <label>标签<input name="tags" placeholder="AI, 网站更新"></label>
                 <label>封面<input name="cover_image" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="assets/images/articles/..."></label>
@@ -170,24 +170,24 @@
 
               <div class="lang-tabs" role="tablist" aria-label="文章语言">
                 <button class="lang-tab active" type="button" role="tab" id="article-lang-tab-zh" data-article-lang="zh" aria-selected="true" aria-controls="article-lang-panel-zh">中文</button>
-                <button class="lang-tab" type="button" role="tab" id="article-lang-tab-en" data-article-lang="en" aria-selected="false" aria-controls="article-lang-panel-en" tabindex="-1">English</button>
-                <button class="lang-tab" type="button" role="tab" id="article-lang-tab-ja" data-article-lang="ja" aria-selected="false" aria-controls="article-lang-panel-ja" tabindex="-1">日本語</button>
+                <button class="lang-tab" type="button" role="tab" id="article-lang-tab-en" data-article-lang="en" aria-selected="false" aria-controls="article-lang-panel-en" tabindex="-1">英文</button>
+                <button class="lang-tab" type="button" role="tab" id="article-lang-tab-ja" data-article-lang="ja" aria-selected="false" aria-controls="article-lang-panel-ja" tabindex="-1">日文</button>
               </div>
 
               <div class="language-editor active" data-lang-panel="zh" role="tabpanel" id="article-lang-panel-zh" aria-labelledby="article-lang-tab-zh" aria-hidden="false">
                 <label>中文标题<input name="title_zh" maxlength="180" required></label>
                 <label>中文简介<textarea name="summary_zh" maxlength="500" rows="2"></textarea></label>
-                <label>中文正文 Markdown<textarea name="content_zh" rows="14" required></textarea></label>
+                <label>中文正文（Markdown）<textarea name="content_zh" rows="14" required></textarea></label>
               </div>
               <div class="language-editor" data-lang-panel="en" role="tabpanel" id="article-lang-panel-en" aria-labelledby="article-lang-tab-en" hidden aria-hidden="true">
-                <label>English 标题<input name="title_en" maxlength="180" required></label>
-                <label>English 简介<textarea name="summary_en" maxlength="500" rows="2"></textarea></label>
-                <label>English 正文 Markdown<textarea name="content_en" rows="14" required></textarea></label>
+                <label>英文标题<input name="title_en" maxlength="180" required></label>
+                <label>英文简介<textarea name="summary_en" maxlength="500" rows="2"></textarea></label>
+                <label>英文正文（Markdown）<textarea name="content_en" rows="14" required></textarea></label>
               </div>
               <div class="language-editor" data-lang-panel="ja" role="tabpanel" id="article-lang-panel-ja" aria-labelledby="article-lang-tab-ja" hidden aria-hidden="true">
-                <label>日本語标题<input name="title_ja" maxlength="180" required></label>
-                <label>日本語简介<textarea name="summary_ja" maxlength="500" rows="2"></textarea></label>
-                <label>日本語正文 Markdown<textarea name="content_ja" rows="14" required></textarea></label>
+                <label>日文标题<input name="title_ja" maxlength="180" required></label>
+                <label>日文简介<textarea name="summary_ja" maxlength="500" rows="2"></textarea></label>
+                <label>日文正文（Markdown）<textarea name="content_ja" rows="14" required></textarea></label>
               </div>
 
               <div class="form-actions">
@@ -290,11 +290,11 @@
             </div>
             <form id="video-category-form" class="editor-form">
               <div class="form-grid">
-                <label>Slug<input name="slug" required maxlength="120" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="ai-experiments"></label>
-                <button class="xp-button copy-field-button" type="button" id="copy-video-category-slug" aria-label="复制视频分类 slug" title="复制视频分类 slug">复制 slug</button>
+                <label>分类路径标识<input name="slug" required maxlength="120" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="ai-experiments"></label>
+                <button class="xp-button copy-field-button" type="button" id="copy-video-category-slug" aria-label="复制视频分类路径标识" title="复制视频分类路径标识">复制标识</button>
                 <label>中文名称<input name="name_zh" required maxlength="80"></label>
-                <label>English<input name="name_en" maxlength="80"></label>
-                <label>日本語<input name="name_ja" maxlength="80"></label>
+                <label>英文名称<input name="name_en" maxlength="80"></label>
+                <label>日文名称<input name="name_ja" maxlength="80"></label>
                 <label>排序<input name="sort_order" type="number" value="10"></label>
                 <label class="checkbox-line"><input name="enabled" type="checkbox" checked> 启用</label>
               </div>
@@ -311,10 +311,10 @@
       <section class="panel" id="visits-panel" hidden aria-hidden="true">
         <div class="dashboard-grid two">
           <section class="xp-panel">
-            <div class="panel-head"><h2>国家来源</h2><span id="country-table-count">PV / UV</span></div>
+            <div class="panel-head"><h2>国家来源</h2><span id="country-table-count">浏览 / 访客</span></div>
             <div class="table-wrap" tabindex="0" aria-label="国家来源表格滚动区，窄屏可横向滑动查看完整表格">
               <table>
-                <thead><tr><th>国家</th><th>PV</th><th>UV</th><th>最近访问</th></tr></thead>
+                <thead><tr><th>国家</th><th>浏览</th><th>访客</th><th>最近访问</th></tr></thead>
                 <tbody id="country-table"></tbody>
               </table>
             </div>
@@ -323,7 +323,7 @@
             <div class="panel-head"><h2>省份 / 地区 / IP 来源</h2><span id="region-table-count">掩码 IP 前缀</span></div>
             <div class="table-wrap" tabindex="0" aria-label="省份地区和 IP 来源表格滚动区，窄屏可横向滑动查看完整表格">
               <table>
-                <thead><tr><th>位置</th><th>IP 前缀</th><th>PV</th><th>UV</th><th>最近访问</th></tr></thead>
+                <thead><tr><th>位置</th><th>IP 前缀</th><th>浏览</th><th>访客</th><th>最近访问</th></tr></thead>
                 <tbody id="region-table"></tbody>
               </table>
             </div>
@@ -337,7 +337,7 @@
             <div class="panel-head"><h2>点击热点</h2><span id="top-clicks-count">按目标聚合</span></div>
             <div class="table-wrap" tabindex="0" aria-label="点击热点表格滚动区，窄屏可横向滑动查看完整表格">
               <table>
-                <thead><tr><th>目标</th><th>页面</th><th>点击</th><th>UV</th><th>最近</th></tr></thead>
+                <thead><tr><th>目标</th><th>页面</th><th>点击</th><th>访客</th><th>最近</th></tr></thead>
                 <tbody id="top-clicks"></tbody>
               </table>
             </div>
@@ -374,7 +374,7 @@
                 <button class="xp-button" type="submit" disabled>保存修改</button>
                 <button class="xp-button" type="button" id="toggle-chat-hidden" disabled>隐藏消息</button>
                 <button class="xp-button danger" type="button" id="delete-chat-message" disabled>删除</button>
-                <button class="xp-button warning" type="button" id="ban-chat-visitor" disabled>禁言用户ID</button>
+                <button class="xp-button warning" type="button" id="ban-chat-visitor" disabled>禁言用户 ID</button>
                 <button class="xp-button warning" type="button" id="ban-chat-ip" disabled>禁言IP来源</button>
               </div>
             </form>
@@ -496,6 +496,6 @@
     </main>
   </div>
 
-  <script src="/admin/admin.js?v=20260621-admin-ga-realtime-r2"></script>
+  <script src="/admin/admin.js?v=20260622-admin-usability-r2"></script>
 </body>
 </html>
