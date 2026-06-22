@@ -96,6 +96,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-22",
+    title: "视频列表标题和平台显示优化",
+    body: "第 25 轮 loop 将视频列表和编辑标题的兜底显示从原始链接 / 内部编号改为“待补全标题的视频”或作者名，平台徽章将 bilibili 显示为“哔哩哔哩”；只调整后台展示层，后台资源 query 更新为 20260622-admin-insight-r23。"
+  },
+  {
+    date: "2026-06-22",
     title: "实时访问排行改为页面表现比例条",
     body: "第 24 轮 loop 将实时大屏右侧的“实时访问排行”改为“实时页面表现”比例条，直接显示中文页面名、浏览量、访客数和最近访问时间；减少长列表阅读压力，后台资源 query 更新为 20260622-admin-insight-r22。"
   },
@@ -2240,6 +2245,19 @@ function videoStatusLabel(status) {
   return ({ draft: "草稿", published: "已发布", hidden: "隐藏" })[status] || status || "未知";
 }
 
+function videoPlatformLabel(platform) {
+  const value = String(platform || "").toLowerCase();
+  return ({
+    youtube: "YouTube",
+    bilibili: "哔哩哔哩",
+    b23: "哔哩哔哩短链"
+  })[value] || platform || "未知平台";
+}
+
+function adminVideoDisplayTitle(video) {
+  return video?.title || video?.author_name || "待补全标题的视频";
+}
+
 async function loadVideos() {
   const payload = await api("/api/admin/videos");
   state.videos = payload.videos || [];
@@ -2312,18 +2330,18 @@ function renderVideoList() {
     item.setAttribute("aria-label", item.dataset.readyTitle);
     item.setAttribute("aria-pressed", video.video_id === state.selectedVideoId ? "true" : "false");
     title.className = "list-title";
-    setElementText(title, video.title || video.original_url || "未命名视频");
+    setElementText(title, adminVideoDisplayTitle(video));
     meta.className = "list-meta";
     meta.append(
       createStatusBadgeElement(videoStatusLabel(video.status), video.status || "neutral"),
-      createStatusBadgeElement(video.platform || "未知平台", "neutral"),
+      createStatusBadgeElement(videoPlatformLabel(video.platform), "neutral"),
       createStatusBadgeElement(`排序 ${formatNumber(video.sort_order)}`, "neutral")
     );
     if (video.pinned) {
       meta.append(createStatusBadgeElement(`置顶排序 ${formatNumber(pinnedSortOrderValue(video))}`, "visible"));
     }
     summary.className = "list-subtle";
-    setElementText(summary, `${video.author_name || ""} ${formatTime(video.published_at)} · 更新 ${formatTime(video.updated_at)}`);
+    setElementText(summary, `${video.author_name || "作者未记录"} · 发布时间 ${formatTime(video.published_at) || "未记录"} · 更新 ${formatTime(video.updated_at) || "未记录"}`);
     item.append(title, meta, summary);
     if (video.metadata_error) {
       const metadataError = document.createElement("span");
@@ -2368,9 +2386,9 @@ function videoListLabel(video) {
     ? `元数据提示：${video.metadata_error}`
     : "元数据正常";
   return [
-    video.title || video.original_url || "未命名视频",
+    adminVideoDisplayTitle(video),
     videoStatusLabel(video.status),
-    video.platform || "未知平台",
+    videoPlatformLabel(video.platform),
     `排序 ${formatNumber(video.sort_order)}`,
     pinnedText,
     `作者 ${video.author_name || "未记录"}`,
@@ -2519,7 +2537,7 @@ function resetVideoForm() {
 
 function fillVideoForm(video) {
   const form = $("#video-form");
-  setElementText($("#video-editor-title"), `编辑：${video.title || video.video_id}`);
+  setElementText($("#video-editor-title"), `编辑：${adminVideoDisplayTitle(video)}`);
   form.elements.original_url.value = video.original_url || "";
   form.elements.platform.value = video.platform || "";
   form.elements.external_id.value = video.external_id || "";
