@@ -3509,3 +3509,114 @@ select:focus-visible,
     bottom: 14px;
   }
 }
+
+/* 2026-06-22 r41: global whitespace cleanup across the admin dashboard. */
+.sidebar {
+  align-self: start !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: calc(100vh - 36px) !important;
+  overflow: auto !important;
+}
+
+.sidebar-note {
+  margin-top: 0 !important;
+}
+
+.dashboard-priority-grid,
+.ga-live-board,
+.dashboard-grid,
+.dashboard-grid.two,
+.split-layout,
+.articles-layout,
+.chat-layout,
+.account-layout,
+.social-links-layout,
+.kpi-grid {
+  align-items: start !important;
+}
+
+.ga-live-board {
+  grid-template-columns: 1fr !important;
+  gap: 14px !important;
+  margin-bottom: 16px !important;
+}
+
+.dashboard-grid.two {
+  grid-template-columns: 1fr !important;
+  gap: 14px !important;
+}
+
+.xp-panel,
+.kpi-card,
+.kpi-card:first-child,
+.list-panel,
+.editor-panel,
+.mini-panel,
+.realtime-panel,
+.realtime-rank-panel,
+.page-overview-panel,
+.country-overview-panel,
+.article-overview-panel,
+.daily-panel {
+  align-self: start !important;
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+.realtime-panel,
+.realtime-rank-panel {
+  padding-bottom: 14px !important;
+}
+
+.realtime-hero {
+  min-height: 70px !important;
+  padding-bottom: 8px !important;
+}
+
+.bar-chart.live-bars {
+  min-height: 54px !important;
+}
+
+.live-bars .bar-cell,
+.live-bars .bar-stack {
+  min-height: 44px !important;
+}
+
+.property-section {
+  margin-bottom: 16px !important;
+}
+
+.kpi-grid {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
+}
+
+.kpi-card,
+.kpi-card:first-child {
+  padding: 14px !important;
+}
+
+.property-card-head {
+  min-height: 0 !important;
+}
+
+.property-card strong,
+.kpi-card strong,
+.kpi-card:first-child strong {
+  font-size: 34px !important;
+}
+
+.property-sparkline {
+  height: 34px !important;
+  margin: 10px 0 11px !important;
+}
+
+.property-card-lists {
+  min-height: 0 !important;
+  gap: 12px !important;
+}
+
+.property-quota,
+.kpi-card small {
+  margin-top: 10px !important;
+}
