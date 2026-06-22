@@ -77,12 +77,12 @@ const SOCIAL_LINK_PLATFORMS = [
 
 const panelMeta = {
   dashboard: ["仪表盘", "实时访问工作台"],
-  visits: ["访问来源", "按国家、省份、城市和掩码 IP 前缀查看每日访问。"],
+  visits: ["访问来源", "按国家、省份、城市和掩码网络前缀查看每日访问。"],
   clicks: ["点击埋点", "查看站内各位置点击、浏览访客和最近事件。"],
   articles: ["知识库文章", "一次编辑中文、英文、日文三种版本，按当前选择语言显示编辑区。"],
   videos: ["视频管理", "输入视频链接后由服务端识别并缓存标题、简介、发布时间和封面，也可上传本地封面。"],
   videoCategories: ["视频分类管理", "维护视频区顶部标签，支持新增、编辑、停用、排序和安全删除。"],
-  chat: ["聊天室管理", "编辑、隐藏、删除聊天记录，按隐藏用户标识或 IP 来源禁言。"],
+  chat: ["聊天室管理", "编辑、隐藏、删除聊天记录，按隐藏用户标识或网络来源禁言。"],
   accounts: ["账号管理", "查看注册账号、重置密码、确认登录履历和近期活跃。"],
   socialLinks: ["社交链接", "维护主站关于我窗口里的社交入口跳转。"],
   updates: ["后台更新记录", "后台自己的私有更新说明，每次后台更新后同步记录。"],
@@ -94,6 +94,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-06-22",
+    title: "网络来源文案中文化",
+    body: "第 36 轮 loop 将访问来源表、聊天室禁言按钮、聊天详情、登录履历和后台说明里不必直出的网络地址缩写、接口缩写和权限字段表达改为“网络来源”“后台接口”“管理员角色”等中文说明；只调整后台可见文案，后台资源版本更新为 20260622-admin-insight-r34。"
+  },
   {
     date: "2026-06-22",
     title: "后台更新记录新增概览",
@@ -1423,7 +1428,7 @@ function renderMap(rows) {
     const size = 10 + Math.round((Number(row.pv || 0) / max) * 22);
     const label = mapPlaceLabel(row);
     const shortLabel = mapShortPlaceLabel(row);
-    const ipHint = row.ip_prefix ? ` · IP 前缀 ${row.ip_prefix}` : "";
+    const ipHint = row.ip_prefix ? ` · 网络前缀 ${row.ip_prefix}` : "";
     const point = document.createElement("button");
     const caption = document.createElement("span");
     point.className = "map-point";
@@ -1651,10 +1656,10 @@ function renderVisitTables() {
     ? regions.filter((row) => regionMatchesFilter(row, regionFilterText))
     : regions;
   const regionCountText = regions.length
-    ? `${regionFilterText ? `显示 ${formatNumber(visibleRegions.length)} / ` : ""}共 ${formatNumber(regions.length)} 条 · 浏览 ${formatNumber(regionPvTotal)} · ${formatNumber(regionPrefixCount)} 条含 IP 前缀`
+    ? `${regionFilterText ? `显示 ${formatNumber(visibleRegions.length)} / ` : ""}共 ${formatNumber(regions.length)} 条 · 浏览 ${formatNumber(regionPvTotal)} · ${formatNumber(regionPrefixCount)} 条含网络前缀`
     : "0 条来源";
   setElementText($("#region-table-count"), regionCountText);
-  syncTableWrapLabel(regionTable, regions.length ? `地区与 IP 来源：${regionCountText}` : "地区与 IP 来源：暂无数据");
+  syncTableWrapLabel(regionTable, regions.length ? `地区与网络来源：${regionCountText}` : "地区与网络来源：暂无数据");
   syncBoxLabel(regionBars, regions.length ? `地区来源概览：${regionCountText}` : "地区来源概览：暂无数据");
   if (!regions.length) {
     regionBars.replaceChildren(createEmptyStateElement("暂无地区来源数据"));
@@ -1663,7 +1668,7 @@ function renderVisitTables() {
   }
   if (!visibleRegions.length) {
     regionBars.replaceChildren(createEmptyStateElement("没有匹配的地区来源"));
-    regionTable.replaceChildren(createEmptyTableRow(5, "没有匹配的地区来源，换个国家、地区、城市或 IP 前缀试试。"));
+    regionTable.replaceChildren(createEmptyTableRow(5, "没有匹配的地区来源，换个国家、地区、城市或网络前缀试试。"));
     return;
   }
   renderRegionBars(regionBars, visibleRegions);
@@ -1672,7 +1677,7 @@ function renderVisitTables() {
     const tableRow = document.createElement("tr");
     tableRow.append(
       createTableCell(place),
-      createCopyableCodeTableCell(row.ip_prefix || "", "IP 前缀"),
+      createCopyableCodeTableCell(row.ip_prefix || "", "网络前缀"),
       createMetricTableCell(row.pv),
       createMetricTableCell(row.uv),
       createTimeTableCell(row.last_seen_at)
@@ -2544,7 +2549,7 @@ function renderRegionBars(box, rows) {
   box.replaceChildren(...visibleRows.map((row, index) => createInsightBarItem({
     rank: index + 1,
     label: mapPlaceLabel(row),
-    detail: row.ip_prefix ? `IP 前缀 ${row.ip_prefix}` : "地区来源",
+    detail: row.ip_prefix ? `网络前缀 ${row.ip_prefix}` : "地区来源",
     value: row.pv,
     secondaryValue: row.uv,
     max,
@@ -3655,8 +3660,8 @@ function selectChatMessage(messageId) {
   $("#chat-meta").replaceChildren(...[
     ["隐藏用户标识", message.visitor_id || ""],
     ["前端临时标识", message.client_id || ""],
-    ["隐藏 IP 指纹", message.ip_hash || ""],
-    ["IP 前缀", message.ip_prefix || ""],
+    ["隐藏网络指纹", message.ip_hash || ""],
+    ["网络前缀", message.ip_prefix || ""],
     ["来源", [message.country, message.region, message.city].filter(Boolean).join(" / ") || "未知"]
   ].map(([label, value]) => createChatMetaItem(label, value)));
   syncChatActionState();
@@ -3729,10 +3734,10 @@ function syncChatActionState() {
     ipBanButton.disabled = busy || !hasMessage || missingIpHash;
     ipBanButton.setAttribute("aria-busy", busy ? "true" : "false");
     ipBanButton.setAttribute("aria-disabled", ipBanButton.disabled ? "true" : "false");
-    ipBanButton.textContent = state.chatActionBusyMode === "banIp" ? "禁言中..." : "禁言 IP 来源";
+    ipBanButton.textContent = state.chatActionBusyMode === "banIp" ? "禁言中..." : "禁言网络来源";
     syncButtonHint(
       ipBanButton,
-      missingIpHash ? "这条记录没有隐藏 IP 指纹，无法按 IP 来源禁言" : chatActionButtonHint("按 IP 来源禁言", hasMessage, busy)
+      missingIpHash ? "这条记录没有隐藏网络指纹，无法按网络来源禁言" : chatActionButtonHint("按网络来源禁言", hasMessage, busy)
     );
   }
   syncChatListBusyState();
@@ -3782,7 +3787,7 @@ function chatActionBusyListTitle() {
     toggle: "正在处理聊天可见性，完成后再切换",
     delete: "正在删除聊天记录，完成后再切换",
     banVisitor: "正在禁言用户标识，完成后再切换",
-    banIp: "正在禁言 IP 来源，完成后再切换"
+    banIp: "正在禁言网络来源，完成后再切换"
   }[state.chatActionBusyMode] || "正在处理聊天记录，完成后再切换";
 }
 
@@ -3814,7 +3819,7 @@ function chatActionBusyFilterTitle() {
     toggle: "正在处理聊天可见性，完成后再调整筛选",
     delete: "正在删除聊天记录，完成后再调整筛选",
     banVisitor: "正在禁言用户标识，完成后再调整筛选",
-    banIp: "正在禁言 IP 来源，完成后再调整筛选"
+    banIp: "正在禁言网络来源，完成后再调整筛选"
   }[state.chatActionBusyMode] || "正在处理聊天记录，完成后再调整筛选";
 }
 
@@ -3838,7 +3843,7 @@ function chatActionBusyFormTitle() {
     toggle: "正在处理聊天可见性，完成后再编辑表单",
     delete: "正在删除聊天记录，完成后再编辑表单",
     banVisitor: "正在禁言用户标识，完成后再编辑表单",
-    banIp: "正在禁言 IP 来源，完成后再编辑表单"
+    banIp: "正在禁言网络来源，完成后再编辑表单"
   }[state.chatActionBusyMode] || "正在处理聊天记录，完成后再编辑表单";
 }
 
@@ -3942,7 +3947,7 @@ async function banSelectedChat(type) {
     return;
   }
   if ((type === "ip_hash" || type === "ip") && !message.ip_hash) {
-    showChatActionError(new Error("这条记录没有隐藏 IP 指纹，无法按 IP 来源禁言。"));
+    showChatActionError(new Error("这条记录没有隐藏网络指纹，无法按网络来源禁言。"));
     return;
   }
   setChatActionBusy(type === "ip_hash" || type === "ip" ? "banIp" : "banVisitor");
@@ -4047,7 +4052,7 @@ function renderBanStatusOverview(bans, isFiltered) {
     ["生效中", activeCount],
     ["已停用", Math.max(0, rows.length - activeCount)],
     ["按用户", userCount],
-    ["按 IP", ipCount],
+    ["按网络来源", ipCount],
     ["有原因", reasonCount]
   ];
   box.replaceChildren(...items.map(([label, value]) => createListOverviewItem(label, value)));
@@ -4097,7 +4102,7 @@ function banListLabel(ban) {
 function banTypeLabel(type) {
   return {
     visitor: "用户标识",
-    ip_hash: "IP 来源"
+    ip_hash: "网络来源"
   }[type] || type || "未知类型";
 }
 
@@ -4837,7 +4842,7 @@ function renderAccountDetail() {
   renderEventList("#login-history", detail.loginHistory || [], "这个账号还没有登录履历。", (event) => (
     createEventItemElement(loginEventLabel(event.event_type), [
       `${formatTime(event.created_at)} · ${locationText(event)}`,
-      `IP 来源：${event.ip_prefix || "未记录"} · 设备：${shortUserAgent(event.user_agent)}`
+      `网络来源：${event.ip_prefix || "未记录"} · 设备：${shortUserAgent(event.user_agent)}`
     ])
   ), `登录履历：共 ${formatNumber(detail.loginHistory?.length || 0)} 条记录`);
 

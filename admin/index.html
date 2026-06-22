@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex,nofollow">
   <title>鲁肃个人站管理后台</title>
-  <link rel="stylesheet" href="/admin/admin.css?v=20260622-admin-insight-r33">
+  <link rel="stylesheet" href="/admin/admin.css?v=20260622-admin-insight-r34">
 </head>
 <body>
   <div class="admin-shell">
@@ -313,14 +313,14 @@
             <div class="insight-bars" id="country-table" role="list" aria-label="国家来源"></div>
           </section>
           <section class="xp-panel">
-            <div class="panel-head"><h2>省份 / 地区 / IP 来源</h2><span id="region-table-count">掩码 IP 前缀</span></div>
+            <div class="panel-head"><h2>省份 / 地区 / 网络来源</h2><span id="region-table-count">掩码网络前缀</span></div>
             <label class="list-filter">筛选来源
-              <input id="region-table-filter" type="search" autocomplete="off" placeholder="国家、地区、城市、IP 前缀">
+              <input id="region-table-filter" type="search" autocomplete="off" placeholder="国家、地区、城市、网络前缀">
             </label>
             <div class="insight-bars compact-bars region-source-bars" id="region-bars" role="list" aria-label="地区来源概览"></div>
-            <div class="table-wrap" tabindex="0" aria-label="省份地区和 IP 来源表格滚动区，窄屏可横向滑动查看完整表格">
+            <div class="table-wrap" tabindex="0" aria-label="省份地区和网络来源表格滚动区，窄屏可横向滑动查看完整表格">
               <table>
-                <thead><tr><th>位置</th><th>IP 前缀</th><th>浏览</th><th>访客</th><th>最近访问</th></tr></thead>
+                <thead><tr><th>位置</th><th>网络前缀</th><th>浏览</th><th>访客</th><th>最近访问</th></tr></thead>
                 <tbody id="region-table"></tbody>
               </table>
             </div>
@@ -375,7 +375,7 @@
                 <button class="xp-button" type="button" id="toggle-chat-hidden" disabled>隐藏消息</button>
                 <button class="xp-button danger" type="button" id="delete-chat-message" disabled>删除</button>
                 <button class="xp-button warning" type="button" id="ban-chat-visitor" disabled>禁言用户标识</button>
-                <button class="xp-button warning" type="button" id="ban-chat-ip" disabled>禁言 IP 来源</button>
+                <button class="xp-button warning" type="button" id="ban-chat-ip" disabled>禁言网络来源</button>
               </div>
             </form>
             <div class="panel-head subhead">
@@ -487,11 +487,11 @@
           <div class="panel-head"><h2>后台项目介绍</h2><span>独立于主站公开内容</span></div>
           <div class="list-meta admin-docs-boundary" aria-label="后台边界摘要">
             <span class="status-badge active" title="/admin/ 固定入口">/admin/ 固定入口</span>
-            <span class="status-badge visible" title="仅 users.role = admin 的站长账号可访问">仅管理员可访问</span>
-            <span class="status-badge neutral" title="后台项目介绍和后台更新记录不写入主站知识库 site-updates">私有记录不进主站</span>
+            <span class="status-badge visible" title="仅管理员角色的站长账号可访问">仅管理员可访问</span>
+            <span class="status-badge neutral" title="后台项目介绍和后台更新记录不写入主站知识库的网站更新分类">私有记录不进主站</span>
           </div>
           <p>这个后台只服务站长维护个人站，不对外展示，也不复用知识库的网站更新记录。</p>
-          <p>后台复用主站账号系统和 <code>users.role = admin</code> 权限，只允许管理员账号访问页面和 API。</p>
+          <p>后台复用主站账号系统，只有管理员角色可以访问页面和后台接口。</p>
           <p>后台包含实时大屏、访问来源、点击埋点、三语文章编辑、视频管理、视频分类管理、聊天室编辑/删除/禁言、账号管理、社交链接管理和后台私有更新记录。</p>
         </section>
       </section>
@@ -506,6 +506,6 @@
     </main>
   </div>
 
-  <script src="/admin/admin.js?v=20260622-admin-insight-r33"></script>
+  <script src="/admin/admin.js?v=20260622-admin-insight-r34"></script>
 </body>
 </html>
