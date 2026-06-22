@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex,nofollow">
   <title>鲁肃个人站管理后台</title>
-  <link rel="stylesheet" href="/admin/admin.css?v=20260622-admin-insight-r2">
+  <link rel="stylesheet" href="/admin/admin.css?v=20260622-admin-insight-r3">
 </head>
 <body>
   <div class="admin-shell">
@@ -109,12 +109,7 @@
             <h2>热门文章</h2>
             <span id="top-articles-count">文章浏览 / 访客</span>
           </div>
-          <div class="table-wrap" tabindex="0" aria-label="热门文章表格滚动区，窄屏可横向滑动查看完整表格">
-            <table>
-              <thead><tr><th>文章</th><th>浏览</th><th>访客</th><th>最近访问</th></tr></thead>
-              <tbody id="top-articles"></tbody>
-            </table>
-          </div>
+          <div class="insight-bars article-bars" id="top-articles" role="list" aria-label="热门文章"></div>
         </section>
         <section class="xp-panel daily-panel">
           <div class="panel-head">
@@ -476,6 +471,6 @@
     </main>
   </div>
 
-  <script src="/admin/admin.js?v=20260622-admin-insight-r2"></script>
+  <script src="/admin/admin.js?v=20260622-admin-insight-r3"></script>
 </body>
 </html>

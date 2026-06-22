@@ -88,6 +88,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 const adminUpdates = [
   {
     date: "2026-06-22",
+    title: "热门文章改为表现比例条",
+    body: "第 5 轮 loop 将实时大屏里的热门文章从表格改为文章表现比例条，和页面概览、地区概览、国家来源、点击热点保持同一套阅读方式；主数字展示浏览量，副信息展示访客、分类和最近访问时间。后台资源 query 更新为 20260622-admin-insight-r3，后台权限、文章接口和主站公开更新边界不变。"
+  },
+  {
+    date: "2026-06-22",
     title: "访问来源与点击热点继续图表化",
     body: "第 4 轮 loop 继续减少后台统计页的长表格：访问来源页的国家来源改为中文地区比例条，点击埋点页的点击热点改为按目标聚合的比例条；地区/IP 明细表保留为工具表，方便继续复制掩码 IP 前缀。后台资源 query 更新为 20260622-admin-insight-r2，权限、接口和数据写入不变。"
   },
@@ -337,6 +342,22 @@ function languageDisplayName(value) {
     ja: "日文访问"
   };
   return labels[String(value || "").toLowerCase()] || "";
+}
+
+function categoryDisplayName(value) {
+  const labels = {
+    note: "随笔",
+    knowledge: "知识库",
+    "site-updates": "网站更新",
+    update: "更新记录",
+    guide: "指南",
+    ai: "AI"
+  };
+  const key = String(value || "").trim();
+  if (!key) {
+    return "";
+  }
+  return labels[key] || key;
 }
 
 function parsePageReference(value) {
@@ -1352,27 +1373,28 @@ function createInsightBarItem({ rank, label, detail, value, secondaryValue, max,
 }
 
 function renderTopArticles(rows) {
-  const table = $("#top-articles");
+  const box = $("#top-articles");
   const pvTotal = rows.reduce((sum, row) => sum + Number(row.pv || 0), 0);
+  const visibleRows = rows.slice(0, 8);
   const countText = rows.length
-    ? `共 ${formatNumber(rows.length)} 篇 · 浏览 ${formatNumber(pvTotal)}`
+    ? `展示前 ${formatNumber(visibleRows.length)} / 共 ${formatNumber(rows.length)} 篇 · 浏览 ${formatNumber(pvTotal)}`
     : "0 篇文章";
   setElementText($("#top-articles-count"), countText);
-  syncTableWrapLabel(table, rows.length ? `热门文章：${countText}` : "热门文章：暂无数据");
+  syncBoxLabel(box, rows.length ? `热门文章：${countText}` : "热门文章：暂无数据");
   if (!rows.length) {
-    table.replaceChildren(createEmptyTableRow(4, "暂无热门文章数据"));
+    box.replaceChildren(createEmptyStateElement("暂无热门文章数据"));
     return;
   }
-  table.replaceChildren(...rows.map((row) => {
-    const tableRow = document.createElement("tr");
-    tableRow.append(
-      createStackedTableCell(row.title || row.slug || "未命名文章", `${row.slug || ""} ${row.category || ""}`, "table-path"),
-      createMetricTableCell(row.pv),
-      createMetricTableCell(row.uv),
-      createTimeTableCell(row.last_seen_at)
-    );
-    return tableRow;
-  }));
+  const max = Math.max(1, ...visibleRows.map((row) => Number(row.pv || 0)));
+  box.replaceChildren(...visibleRows.map((row, index) => createInsightBarItem({
+    rank: index + 1,
+    label: row.title || articleSlugLabels[row.slug] || "未命名文章",
+    detail: row.category ? `分类：${categoryDisplayName(row.category)}` : "知识库文章",
+    value: row.pv,
+    secondaryValue: row.uv,
+    max,
+    lastSeenAt: row.last_seen_at
+  })));
 }
 
 function renderVisitTables() {
