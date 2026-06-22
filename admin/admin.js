@@ -32,6 +32,7 @@ const state = {
   chatActionBusyMode: "",
   chatMessagesLoading: false,
   bans: [],
+  banFilter: "",
   banListBusy: false,
   banListBusyMode: "",
   banBusyId: "",
@@ -91,6 +92,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-06-22",
+    title: "禁言列表新增本地筛选",
+    body: "第 18 轮 loop 在禁言列表上方新增本地筛选框，可按禁言对象、原因、生效状态和来源类型快速定位记录；计数同步显示“显示 X / 共 Y”。后台资源 query 更新为 20260622-admin-insight-r16。"
+  },
   {
     date: "2026-06-22",
     title: "聊天室消息新增本地筛选",
@@ -3678,8 +3684,12 @@ async function loadBans() {
 function renderBans() {
   const list = $("#ban-list");
   const activeCount = state.bans.filter((ban) => ban.active).length;
+  const filterText = normalizeFilterText(state.banFilter);
+  const visibleBans = filterText
+    ? state.bans.filter((ban) => banMatchesFilter(ban, filterText))
+    : state.bans;
   const countText = state.bans.length
-    ? `共 ${formatNumber(state.bans.length)} 条 · ${formatNumber(activeCount)} 条生效中`
+    ? `${filterText ? `显示 ${formatNumber(visibleBans.length)} / ` : ""}共 ${formatNumber(state.bans.length)} 条 · ${formatNumber(activeCount)} 条生效中`
     : "0 条禁言";
   setElementText($("#ban-list-count"), countText);
   syncBoxLabel(list, state.bans.length ? `禁言列表：${countText}` : "禁言列表：暂无记录");
@@ -3688,8 +3698,13 @@ function renderBans() {
     syncBanListButtons();
     return;
   }
+  if (!visibleBans.length) {
+    list.replaceChildren(createEmptyStateElement("没有匹配的禁言记录，换个对象、原因、状态或来源类型试试。"));
+    syncBanListButtons();
+    return;
+  }
 
-  list.replaceChildren(...state.bans.map((ban) => {
+  list.replaceChildren(...visibleBans.map((ban) => {
     const item = document.createElement("article");
     const meta = document.createElement("div");
     const target = document.createElement("small");
@@ -3722,6 +3737,25 @@ function renderBans() {
     return item;
   }));
   syncBanListButtons();
+}
+
+function banMatchesFilter(ban, filterText) {
+  if (!filterText) {
+    return true;
+  }
+  const target = ban.visitor_id || ban.ip_prefix || ban.ip_hash || "";
+  const searchText = [
+    ban.active ? "生效中" : "已停用",
+    banTypeLabel(ban.ban_type),
+    ban.ban_type,
+    target,
+    ban.reason,
+    ban.ip_prefix,
+    formatTime(ban.created_at),
+    formatTime(ban.expires_at),
+    ban.expires_at ? "有期限" : "长期"
+  ].filter(Boolean).join(" ").toLowerCase();
+  return searchText.includes(filterText);
 }
 
 function renderBanListNotice(text, label = "禁言列表提示") {
@@ -4747,6 +4781,10 @@ function bindEvents() {
     if (item) {
       disableBan(item.dataset.disableBan);
     }
+  });
+  $("#ban-list-filter").addEventListener("input", (event) => {
+    state.banFilter = event.currentTarget.value;
+    renderBans();
   });
   $("#account-list").addEventListener("click", (event) => {
     const item = event.target.closest("[data-account-id]");
