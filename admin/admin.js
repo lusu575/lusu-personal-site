@@ -3,6 +3,7 @@ const state = {
   activePanel: "dashboard",
   overview: null,
   regionFilter: "",
+  clickFilter: "",
   articles: [],
   selectedArticleId: "",
   articleFilter: "",
@@ -93,6 +94,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-06-22",
+    title: "最近点击新增本地筛选",
+    body: "第 21 轮 loop 在点击埋点页的“最近点击”列表上方新增本地筛选框，可按点击目标、页面、来源和屏幕尺寸快速定位已加载事件；计数同步显示“显示 X / 共 Y”。后台资源 query 更新为 20260622-admin-insight-r19。"
+  },
   {
     date: "2026-06-22",
     title: "地区来源明细新增本地筛选",
@@ -1629,18 +1635,42 @@ function renderClickPanels() {
   }
 
   const recentClicks = overview.recentClicks || [];
+  const clickFilterText = normalizeFilterText(state.clickFilter);
+  const visibleRecentClicks = clickFilterText
+    ? recentClicks.filter((row) => clickEventMatchesFilter(row, clickFilterText))
+    : recentClicks;
   const clickSizeCount = recentClicks.filter((row) => Number(row.screen_width || 0) > 0 && Number(row.screen_height || 0) > 0).length;
   const recentCountText = recentClicks.length
-    ? `共 ${formatNumber(recentClicks.length)} 条 · ${formatNumber(clickSizeCount)} 条含尺寸`
+    ? `${clickFilterText ? `显示 ${formatNumber(visibleRecentClicks.length)} / ` : ""}共 ${formatNumber(recentClicks.length)} 条 · ${formatNumber(clickSizeCount)} 条含尺寸`
     : "0 条事件";
   setElementText($("#recent-clicks-count"), recentCountText);
   syncBoxLabel($("#recent-clicks"), recentClicks.length ? `最近点击：${recentCountText}` : "最近点击：暂无数据");
-  renderEventList("#recent-clicks", recentClicks, "暂无点击事件", (row) => (
+  renderEventList("#recent-clicks", visibleRecentClicks, clickFilterText ? "没有匹配的点击事件，换个目标、页面、来源或尺寸试试。" : "暂无点击事件", (row) => (
     createEventItemElement(clickTargetDisplayName(row), [
       `页面：${pageDisplayName(row.path || row.route, row.route)} · 时间：${formatTime(row.created_at)} · 来源：${mapPlaceLabel(row)}`,
       `目标位置：${clickRouteDisplayName(row)} · ${formatClickScreenSize(row)}`
     ])
   ));
+}
+
+function clickEventMatchesFilter(row, filterText) {
+  if (!filterText) {
+    return true;
+  }
+  const searchText = [
+    clickTargetDisplayName(row),
+    clickRouteDisplayName(row),
+    pageDisplayName(row.path || row.route, row.route),
+    pageDisplayDetail(row.path || row.route, row.route),
+    mapPlaceLabel(row),
+    row.country,
+    row.region,
+    row.city,
+    row.ip_prefix,
+    formatClickScreenSize(row),
+    formatTime(row.created_at)
+  ].filter(Boolean).join(" ").toLowerCase();
+  return searchText.includes(filterText);
 }
 
 function clickTargetDisplayName(row) {
@@ -4646,6 +4676,10 @@ function bindEvents() {
   $("#region-table-filter").addEventListener("input", (event) => {
     state.regionFilter = event.currentTarget.value;
     renderVisitTables();
+  });
+  $("#recent-clicks-filter").addEventListener("input", (event) => {
+    state.clickFilter = event.currentTarget.value;
+    renderClickPanels();
   });
   $("#back-to-top").addEventListener("click", scrollAdminToTop);
   document.addEventListener("visibilitychange", () => {
