@@ -4,6 +4,12 @@
 
 ## 2026-06-22
 
+- 关于我联系方式图标归位：
+  - 删除关于我窗口联系方式里的占位文案，把 X、GitHub、Bilibili、Instagram、Discord 五个入口移动到“联系方式”这一行内展示。
+  - 新增 `assets/images/social/` 本地 SVG 品牌图标资源，主站通过 CSS mask 渲染原应用图标形状和品牌色，继续只显示小图标按钮和 `aria-label`。
+  - 社交链接读取、后台维护接口、D1 配置和新标签打开行为不变；本次同步 `site-updates` 三语文章、前端 fallback、Functions seed、schema seed、项目上下文和主站 CSS/JS query。
+  - 更新主站 CSS/JS query 为 `20260622-about-social-icons-r1`。
+
 - 管理后台运行文案去除 slug 直出：
   - `/admin/` 第 11 轮 loop 将文章保存校验、视频分类列表摘要和分类完整提示里的 `slug` 直出改为“路径标识”。
   - 后台 CSS/JS query 更新为 `20260622-admin-insight-r9`，只调整中文可读性，不改变字段名、接口参数、权限或主站公开更新边界。

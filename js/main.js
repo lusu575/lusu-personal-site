@@ -108,7 +108,7 @@ const translations = {
     interestLabel: "兴趣",
     interestValue: "AI / 游戏 / 工具折腾",
     contactLabel: "联系方式",
-    contactValue: "暂留空",
+    socialLinksAria: "社交链接",
     statusLabel: "网站状态",
     statusValue: "持续建设中",
     aboutCopy: "你好，我是鲁肃。这里是我的个人站，用来记录 AI、游戏、工具、资源和一些杂谈。",
@@ -256,7 +256,7 @@ const translations = {
     interestLabel: "Interests",
     interestValue: "AI / Games / Tool experiments",
     contactLabel: "Contact",
-    contactValue: "Blank for now",
+    socialLinksAria: "Social links",
     statusLabel: "Site Status",
     statusValue: "Under construction",
     aboutCopy: "Hi, I'm LuSu. This is my personal site for AI notes, games, tools, resources and random thoughts.",
@@ -404,7 +404,7 @@ const translations = {
     interestLabel: "興味",
     interestValue: "AI / ゲーム / ツールいじり",
     contactLabel: "連絡先",
-    contactValue: "未設定",
+    socialLinksAria: "SNSリンク",
     statusLabel: "サイト状態",
     statusValue: "建設中",
     aboutCopy: "こんにちは、魯粛です。ここはAI、ゲーム、ツール、リソース、雑談を記録する個人サイトです。",
@@ -482,6 +482,16 @@ const labels = {
 
 const content = {
   updates: [
+    {
+      icon: "📇",
+      date: "2026.06.22",
+      title: { zh: "联系方式图标归位", en: "Contact Icons Aligned", ja: "連絡先アイコンを整理" },
+      desc: {
+        zh: "关于我窗口删除联系方式占位文案，把 X、GitHub、Bilibili、Instagram 和 Discord 原应用图标移入联系方式行",
+        en: "The About window removes the contact placeholder and moves the X, GitHub, Bilibili, Instagram, and Discord app icons into the Contact row",
+        ja: "プロフィール画面の連絡先プレースホルダーを削除し、X、GitHub、Bilibili、Instagram、Discord のアプリアイコンを連絡先行へ移動しました"
+      }
+    },
     {
       icon: "🔗",
       date: "2026.06.20",

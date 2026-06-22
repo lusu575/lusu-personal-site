@@ -1,5 +1,12 @@
 # PROJECT_CONTEXT.md
 
+## 2026-06-22 关于我联系方式图标归位
+
+- 关于我窗口删除联系方式里的占位文案，将 X、GitHub、Bilibili、Instagram、Discord 五个入口移动到“联系方式”这一行内展示。
+- 五个平台图标改为项目内本地 SVG 品牌图标资源，前端通过 CSS mask 渲染原应用图标形状和品牌色；主站仍只显示小图标按钮，不增加可见平台文字。
+- 社交链接读取和后台维护逻辑不变：主站继续通过 `GET /api/social-links` 读取 D1 `site_runtime_state.about_social_links`，按钮保留 `aria-label` 并在新标签打开。
+- 本次属于公开可见更新，已同步 `site-updates` 三语文章、`js/main.js` fallback、Functions seed、schema seed、根目录 changelog 和主站 CSS/JS cache query。
+
 ## 2026-06-20 关于我社交图标与后台链接管理
 
 - 关于我窗口新增 X、GitHub、Bilibili、Instagram、Discord 五个小图标入口；主站只显示图标按钮，不增加可见文字，按钮保留 `aria-label` 并在新标签打开对应链接。

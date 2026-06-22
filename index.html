@@ -25,7 +25,7 @@
   <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png?v=20260611-unified-tv-icon">
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="alternate" type="application/rss+xml" title="LuSu Site RSS" href="/api/rss.xml?lang=zh" data-rss-alternate>
-  <link rel="stylesheet" href="/css/style.css?v=20260620-about-social-links-r1">
+  <link rel="stylesheet" href="/css/style.css?v=20260622-about-social-icons-r1">
 </head>
 <body>
   <div class="site-shell">
@@ -289,27 +289,31 @@
               <dl>
                 <div><dt data-i18n="nicknameLabel">昵称</dt><dd data-i18n="nicknameValue">鲁肃</dd></div>
                 <div><dt data-i18n="interestLabel">兴趣</dt><dd data-i18n="interestValue">AI / 游戏 / 工具折腾</dd></div>
-                <div><dt data-i18n="contactLabel">联系方式</dt><dd data-i18n="contactValue">暂留空</dd></div>
+                <div class="about-contact-row">
+                  <dt data-i18n="contactLabel">联系方式</dt>
+                  <dd class="profile-contact-links">
+                    <nav class="about-social-links" id="about-social-links" aria-label="社交链接" data-i18n-aria-label="socialLinksAria">
+                      <a class="about-social-link social-link-x" data-social-link="x" href="https://x.com/lusu575" target="_blank" rel="noopener noreferrer" aria-label="X">
+                        <span class="social-icon social-icon-x" aria-hidden="true"></span>
+                      </a>
+                      <a class="about-social-link social-link-github" data-social-link="github" href="https://github.com/lusu575" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+                        <span class="social-icon social-icon-github" aria-hidden="true"></span>
+                      </a>
+                      <a class="about-social-link social-link-bilibili" data-social-link="bilibili" href="https://space.bilibili.com/" target="_blank" rel="noopener noreferrer" aria-label="Bilibili">
+                        <span class="social-icon social-icon-bilibili" aria-hidden="true"></span>
+                      </a>
+                      <a class="about-social-link social-link-instagram" data-social-link="instagram" href="https://www.instagram.com/lusu575/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                        <span class="social-icon social-icon-instagram" aria-hidden="true"></span>
+                      </a>
+                      <a class="about-social-link social-link-discord" data-social-link="discord" href="https://discord.com/" target="_blank" rel="noopener noreferrer" aria-label="Discord">
+                        <span class="social-icon social-icon-discord" aria-hidden="true"></span>
+                      </a>
+                    </nav>
+                  </dd>
+                </div>
                 <div><dt data-i18n="statusLabel">网站状态</dt><dd data-i18n="statusValue">持续建设中</dd></div>
               </dl>
               <p class="about-copy" data-i18n="aboutCopy">你好，我是鲁肃。这里是我的个人站，用来记录 AI、游戏、工具、资源和一些杂谈。</p>
-              <nav class="about-social-links" id="about-social-links" aria-label="社交链接">
-                <a class="about-social-link social-link-x" data-social-link="x" href="https://x.com/lusu575" target="_blank" rel="noopener noreferrer" aria-label="X">
-                  <span class="social-icon social-icon-x" aria-hidden="true"></span>
-                </a>
-                <a class="about-social-link social-link-github" data-social-link="github" href="https://github.com/lusu575" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-                  <span class="social-icon social-icon-github" aria-hidden="true"></span>
-                </a>
-                <a class="about-social-link social-link-bilibili" data-social-link="bilibili" href="https://space.bilibili.com/" target="_blank" rel="noopener noreferrer" aria-label="Bilibili">
-                  <span class="social-icon social-icon-bilibili" aria-hidden="true"></span>
-                </a>
-                <a class="about-social-link social-link-instagram" data-social-link="instagram" href="https://www.instagram.com/lusu575/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-                  <span class="social-icon social-icon-instagram" aria-hidden="true"></span>
-                </a>
-                <a class="about-social-link social-link-discord" data-social-link="discord" href="https://discord.com/" target="_blank" rel="noopener noreferrer" aria-label="Discord">
-                  <span class="social-icon social-icon-discord" aria-hidden="true"></span>
-                </a>
-              </nav>
             </div>
           </div>
         </div>
@@ -399,6 +403,6 @@
   </div>
 
   <script src="/js/telemetry.js?v=20260615-video-window-controls"></script>
-  <script src="/js/main.js?v=20260620-about-social-links-r1"></script>
+  <script src="/js/main.js?v=20260622-about-social-icons-r1"></script>
 </body>
 </html>

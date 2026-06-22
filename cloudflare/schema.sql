@@ -572,6 +572,32 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-06-22-about-contact-icons',
+  '2026-06-22-about-contact-icons',
+  'site-updates',
+  '["网站更新","关于我","联系方式","社交图标","品牌图标"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-22T00:00:00.000Z',
+  '2026-06-22T00:00:00.000Z',
+  '2026-06-22T00:00:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-06-20-about-social-links',
   '2026-06-20-about-social-links',
   'site-updates',
@@ -675,6 +701,66 @@ on conflict(article_id) do update set
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
+  (
+    'seed-update-2026-06-22-about-contact-icons-zh',
+    'seed-update-2026-06-22-about-contact-icons',
+    'zh',
+    '联系方式图标归位',
+    '关于我窗口删除联系方式占位文案，把五个平台原应用图标移入联系方式行。',
+    '# 联系方式图标归位
+
+本次更新继续整理关于我窗口，把联系方式从占位文案改成真实可点击的社交图标入口。
+
+## 更新内容
+
+- 删除联系方式里的空占位文字。
+- 将 X、GitHub、Bilibili、Instagram 和 Discord 图标移入联系方式这一行，不再单独占用一条底部图标栏。
+- 五个平台图标改为项目内本地 SVG 品牌图标资源，保留图标按钮和 XP 风格外框。
+- 社交链接仍通过公开只读接口读取后台配置，按钮继续在新标签打开并保留 `aria-label`。
+- 更新主站 CSS / JS 缓存版本，移动端窄屏下图标会在联系方式行内自动换行。',
+    '2026-06-22T00:00:00.000Z',
+    '2026-06-22T00:00:00.000Z'
+  ),
+  (
+    'seed-update-2026-06-22-about-contact-icons-en',
+    'seed-update-2026-06-22-about-contact-icons',
+    'en',
+    'Contact Icons Aligned',
+    'The About window now removes the contact placeholder and moves the five app icons into the Contact row.',
+    '# Contact Icons Aligned
+
+This update tidies the About window by replacing the contact placeholder with real clickable social icon entries.
+
+## Changes
+
+- Removed the placeholder contact text.
+- Moved the X, GitHub, Bilibili, Instagram, and Discord icons into the Contact row instead of keeping a separate icon strip below the intro copy.
+- Switched the five platforms to local SVG brand icon assets while keeping the small XP-style icon buttons.
+- Social links still read admin-configured URLs through the public read-only endpoint, open in a new tab, and keep `aria-label` text.
+- Updated the public CSS / JS cache version, with icons wrapping inside the Contact row on narrow screens.',
+    '2026-06-22T00:00:00.000Z',
+    '2026-06-22T00:00:00.000Z'
+  ),
+  (
+    'seed-update-2026-06-22-about-contact-icons-ja',
+    'seed-update-2026-06-22-about-contact-icons',
+    'ja',
+    '連絡先アイコンを整理',
+    'プロフィール画面の連絡先プレースホルダーを削除し、5つのアプリアイコンを連絡先行へ移動しました。',
+    '# 連絡先アイコンを整理
+
+今回の更新では、プロフィール画面の連絡先を空の文言ではなく、実際にクリックできるSNSアイコンにしました。
+
+## 更新内容
+
+- 連絡先の空プレースホルダー文言を削除しました。
+- X、GitHub、Bilibili、Instagram、Discord のアイコンを、紹介文下の独立した列ではなく連絡先行へ移動しました。
+- 5つのプラットフォームは、プロジェクト内のローカル SVG ブランドアイコンを使い、XP 風の小さなボタン表示を保ちます。
+- SNSリンクは引き続き公開読み取り専用APIから管理画面の設定を読み込み、新しいタブで開き、`aria-label` も保持します。
+- 公開側 CSS / JS のキャッシュ版を更新し、狭い画面では連絡先行の中でアイコンが折り返します。',
+    '2026-06-22T00:00:00.000Z',
+    '2026-06-22T00:00:00.000Z'
+  ),
   (
     'seed-update-2026-06-20-about-social-links-zh',
     'seed-update-2026-06-20-about-social-links',

@@ -3128,6 +3128,14 @@ body.is-article-reading .article-figure {
   overflow-wrap: anywhere;
 }
 
+.profile-info .about-contact-row {
+  align-items: center;
+}
+
+.profile-contact-links {
+  overflow: visible;
+}
+
 .about-copy {
   margin: 0;
   padding: 12px;
@@ -3144,13 +3152,10 @@ body.is-article-reading .article-figure {
 .about-social-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 9px;
-  margin-top: 12px;
-  padding: 9px;
-  border: 2px inset #ffffff;
-  background:
-    linear-gradient(90deg, rgba(65, 145, 255, 0.12), transparent 72%),
-    #eef7ff;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
 }
 
 .about-social-link {
@@ -3158,8 +3163,8 @@ body.is-article-reading .article-figure {
   display: inline-grid;
   place-items: center;
   flex: 0 0 auto;
-  width: 42px;
-  height: 42px;
+  width: 36px;
+  height: 36px;
   color: #10213a;
   border: 2px outset #ffffff;
   border-radius: 7px;
@@ -3189,146 +3194,49 @@ body.is-article-reading .article-figure {
 }
 
 .social-link-x {
-  --social-bg: #f4f7fb;
+  --social-bg: #f5f7fb;
+  --social-icon-paint: #000000;
+  --social-icon-mask: url("../assets/images/social/x.svg");
 }
 
 .social-link-github {
   --social-bg: #eef0f8;
+  --social-icon-paint: #181717;
+  --social-icon-mask: url("../assets/images/social/github.svg");
 }
 
 .social-link-bilibili {
   --social-bg: #ddf7ff;
+  --social-icon-paint: #00a1d6;
+  --social-icon-mask: url("../assets/images/social/bilibili.svg");
 }
 
 .social-link-instagram {
   --social-bg: #ffe8f2;
+  --social-icon-paint:
+    radial-gradient(circle at 32% 106%, #fdf497 0 9%, #fdf497 10% 16%, #fd5949 39%, #d6249f 62%, #285aeb 92%);
+  --social-icon-mask: url("../assets/images/social/instagram.svg");
 }
 
 .social-link-discord {
   --social-bg: #e8edff;
+  --social-icon-paint: #5865f2;
+  --social-icon-mask: url("../assets/images/social/discord.svg");
 }
 
 .social-icon {
-  position: relative;
   display: block;
-  width: 24px;
-  height: 24px;
-}
-
-.social-icon-x::before,
-.social-icon-x::after {
-  content: "";
-  position: absolute;
-  left: 10px;
-  top: 1px;
-  width: 4px;
-  height: 22px;
-  border-radius: 2px;
-  background: #111827;
-}
-
-.social-icon-x::before {
-  transform: rotate(39deg);
-}
-
-.social-icon-x::after {
-  transform: rotate(-39deg);
-}
-
-.social-icon-github {
-  border-radius: 50%;
-  background: #111827;
-}
-
-.social-icon-github::before {
-  content: "";
-  position: absolute;
-  left: 5px;
-  top: -2px;
-  width: 6px;
-  height: 6px;
-  border-radius: 2px 2px 0 0;
-  background: #111827;
-  box-shadow: 8px 0 0 #111827;
-}
-
-.social-icon-github::after {
-  content: "";
-  position: absolute;
-  left: 7px;
-  bottom: -3px;
-  width: 10px;
-  height: 8px;
-  border-radius: 0 0 5px 5px;
-  background: #111827;
-}
-
-.social-icon-bilibili {
-  border: 3px solid #00a1d6;
-  border-radius: 6px;
-  background: #ffffff;
-}
-
-.social-icon-bilibili::before,
-.social-icon-bilibili::after {
-  content: "";
-  position: absolute;
-  background: #00a1d6;
-}
-
-.social-icon-bilibili::before {
-  left: 3px;
-  right: 3px;
-  top: -7px;
-  height: 3px;
-  border-radius: 2px;
-  transform: rotate(-23deg);
-  box-shadow: 8px 4px 0 #00a1d6;
-}
-
-.social-icon-bilibili::after {
-  left: 5px;
-  top: 8px;
-  width: 3px;
-  height: 3px;
-  box-shadow: 8px 0 0 #00a1d6, 4px 6px 0 #00a1d6;
-}
-
-.social-icon-instagram {
-  border: 3px solid #d62976;
-  border-radius: 8px;
-  background:
-    radial-gradient(circle at 17px 7px, #d62976 0 2px, transparent 3px),
-    radial-gradient(circle at 50% 50%, transparent 0 5px, #d62976 6px 8px, transparent 9px),
-    #ffffff;
-}
-
-.social-icon-discord {
-  border-radius: 9px;
-  background: #5865f2;
-}
-
-.social-icon-discord::before {
-  content: "";
-  position: absolute;
-  left: 5px;
-  top: 8px;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: #ffffff;
-  box-shadow: 10px 0 0 #ffffff;
-}
-
-.social-icon-discord::after {
-  content: "";
-  position: absolute;
-  left: 5px;
-  right: 5px;
-  bottom: 6px;
-  height: 5px;
-  border-bottom: 3px solid #ffffff;
-  border-radius: 0 0 12px 12px;
+  width: 23px;
+  height: 23px;
+  background: var(--social-icon-paint, #111827);
+  -webkit-mask-image: var(--social-icon-mask);
+  mask-image: var(--social-icon-mask);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
 }
 
 .xp-taskbar {

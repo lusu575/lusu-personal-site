@@ -5888,6 +5888,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         article_id, slug, category, tags, cover_image, status, is_pinned,
         view_count, created_at, updated_at, published_at
       ) values (
+        'seed-update-2026-06-22-about-contact-icons',
+        '2026-06-22-about-contact-icons',
+        'site-updates',
+        '["网站更新","关于我","联系方式","社交图标","品牌图标"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-22T00:00:00.000Z',
+        '2026-06-22T00:00:00.000Z',
+        '2026-06-22T00:00:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
         'seed-update-2026-06-20-about-social-links',
         '2026-06-20-about-social-links',
         'site-updates',
@@ -6008,6 +6035,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# メインサイト夜間更新まとめ\n\nこの記録では、昨夜の公開サイト側の小さな更新を一つにまとめました。更新記録が細かな記事で埋まりすぎないようにするためです。\n\n## まとめ\n\n- 知識庫の記事詳細に、目次、読書進捗、リンクコピー、先頭へ戻る操作を追加しました。今回、参考画像に合わせて左側の目次/ヒント、右側の本文カード、下部の進捗バーと先頭へ戻るボタンを並べた表示に整えました。\n- さらに10回の視覚調整を行い、記事閲覧ウィンドウはサイト内の XP ウィンドウサイズに戻し、全体へ引き伸ばさない表示にしました。タイトルバーに最小化/最大化/閉じるボタンを追加し、進捗バーを1行の青い分割バーにし、本文の余白と左側ヒントの位置も参考画像に近づけました。\n- リソース欄には分類件数、状態バッジ、空分類の案内、より厳しいリンク許可リストを追加しました。\n- ゲーム欄にはクラウド保存、ソース表示、言語ラベル、起動パスの確認、ゲームシェルの安全な DOM 描画を追加しました。\n- 最近の更新、知識庫一覧、フィルター、リソースフィルター、ゲーム一覧は DOM / textContent 描画を続け、公開内容の XSS リスクを下げます。\n- RSS、言語付きリンク、記事共有 URL、最近の更新ラベルをそろえ、購読と共有を安定させました。\n- 画像の遅延読み込み、非同期デコード、固定画像サイズ、モバイル表示の細部も軽く調整しました。\n\n古い単項目の記事は履歴と回退用データとして残しますが、公開一覧と RSS ではこのまとめ記事だけを表示します。"
       }
     }, "2026-06-18T00:00:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-22-about-contact-icons", {
+      zh: {
+        title: "联系方式图标归位",
+        summary: "关于我窗口删除联系方式占位文案，把五个平台原应用图标移入联系方式行。",
+        content_markdown: "# 联系方式图标归位\n\n本次更新继续整理关于我窗口，把联系方式从占位文案改成真实可点击的社交图标入口。\n\n## 更新内容\n\n- 删除联系方式里的空占位文字。\n- 将 X、GitHub、Bilibili、Instagram 和 Discord 图标移入联系方式这一行，不再单独占用一条底部图标栏。\n- 五个平台图标改为项目内本地 SVG 品牌图标资源，保留图标按钮和 XP 风格外框。\n- 社交链接仍通过公开只读接口读取后台配置，按钮继续在新标签打开并保留 `aria-label`。\n- 更新主站 CSS / JS 缓存版本，移动端窄屏下图标会在联系方式行内自动换行。"
+      },
+      en: {
+        title: "Contact Icons Aligned",
+        summary: "The About window now removes the contact placeholder and moves the five app icons into the Contact row.",
+        content_markdown: "# Contact Icons Aligned\n\nThis update tidies the About window by replacing the contact placeholder with real clickable social icon entries.\n\n## Changes\n\n- Removed the placeholder contact text.\n- Moved the X, GitHub, Bilibili, Instagram, and Discord icons into the Contact row instead of keeping a separate icon strip below the intro copy.\n- Switched the five platforms to local SVG brand icon assets while keeping the small XP-style icon buttons.\n- Social links still read admin-configured URLs through the public read-only endpoint, open in a new tab, and keep `aria-label` text.\n- Updated the public CSS / JS cache version, with icons wrapping inside the Contact row on narrow screens."
+      },
+      ja: {
+        title: "連絡先アイコンを整理",
+        summary: "プロフィール画面の連絡先プレースホルダーを削除し、5つのアプリアイコンを連絡先行へ移動しました。",
+        content_markdown: "# 連絡先アイコンを整理\n\n今回の更新では、プロフィール画面の連絡先を空の文言ではなく、実際にクリックできるSNSアイコンにしました。\n\n## 更新内容\n\n- 連絡先の空プレースホルダー文言を削除しました。\n- X、GitHub、Bilibili、Instagram、Discord のアイコンを、紹介文下の独立した列ではなく連絡先行へ移動しました。\n- 5つのプラットフォームは、プロジェクト内のローカル SVG ブランドアイコンを使い、XP 風の小さなボタン表示を保ちます。\n- SNSリンクは引き続き公開読み取り専用APIから管理画面の設定を読み込み、新しいタブで開き、`aria-label` も保持します。\n- 公開側 CSS / JS のキャッシュ版を更新し、狭い画面では連絡先行の中でアイコンが折り返します。"
+      }
+    }, "2026-06-22T00:00:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-06-20-about-social-links", {
       zh: {
         title: "关于我社交图标上线",
