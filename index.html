@@ -24,8 +24,8 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32.png?v=20260611-unified-tv-icon">
   <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png?v=20260611-unified-tv-icon">
   <link rel="manifest" href="/manifest.webmanifest">
-  <link rel="alternate" type="application/rss+xml" title="LuSu Site RSS" href="/api/rss.xml?lang=zh" data-rss-alternate>
-  <link rel="stylesheet" href="/css/style.css?v=20260622-fixed-dock-window-backdrops-r3">
+  <link rel="alternate" type="application/rss+xml" title="鲁肃的个人站 RSS 订阅" href="/api/rss.xml?lang=zh" data-rss-alternate>
+  <link rel="stylesheet" href="/css/style.css?v=20260623-hidden-dialog-focus-r1">
 </head>
 <body data-route="home">
   <div class="site-shell">
@@ -36,12 +36,12 @@
       </button>
       <div class="topbar-actions">
         <div class="account-widget" id="account-widget"></div>
-        <nav class="language-switcher" aria-label="Language switcher" data-i18n-aria-label="languageSwitcherAria">
+        <nav class="language-switcher" aria-label="语言切换" data-i18n-aria-label="languageSwitcherAria">
           <button class="lang-button active" type="button" data-lang="zh" aria-pressed="true">中文</button>
           <button class="lang-button" type="button" data-lang="en" aria-pressed="false">EN</button>
           <button class="lang-button" type="button" data-lang="ja" aria-pressed="false">日本語</button>
         </nav>
-        <span class="top-updated"><span data-i18n="lastUpdatedLabel">最近更新日期</span>：<span id="top-updated">2026.06.16</span></span>
+        <span class="top-updated"><span data-i18n="lastUpdatedLabel">最近更新日期</span>：<span id="top-updated">2026.06.23</span></span>
       </div>
     </header>
 
@@ -85,7 +85,7 @@
           </div>
         </div>
 
-        <div class="desktop-icons" aria-label="Main sections" data-i18n-aria-label="desktopIconsAria">
+        <nav class="desktop-icons" aria-label="主要栏目" data-i18n-aria-label="desktopIconsAria">
           <button class="desktop-icon" data-route="knowledge">
             <span class="pixel-icon folder-icon"></span>
             <span class="icon-title" data-i18n="navKnowledge">知识库</span>
@@ -114,7 +114,7 @@
             <span class="pixel-icon avatar-icon"></span>
             <span class="icon-title" data-i18n="navAbout">关于我</span>
           </button>
-        </div>
+        </nav>
 
         <div class="desktop-intro">
           <h1 id="home-title" data-i18n="heroTitle">鲁肃的个人站</h1>
@@ -136,7 +136,7 @@
             <label for="knowledge-search-input" data-i18n="articleSearchLabel">搜索知识库</label>
             <input id="knowledge-search-input" type="search" autocomplete="off" data-i18n-placeholder="articleSearchPlaceholder" placeholder="搜索标题、简介、标签...">
             <button class="xp-button" type="button" data-article-search-clear data-i18n="articleSearchClear">清空</button>
-            <span id="knowledge-search-status" aria-live="polite"></span>
+            <span id="knowledge-search-status" role="status" aria-live="polite" aria-atomic="true"></span>
           </div>
           <div class="folder-layout">
             <aside class="category-panel" id="knowledge-categories"></aside>
@@ -251,7 +251,7 @@
               <button class="xp-button chat-nickname-button" id="chat-edit-nickname" type="button" data-i18n="chatEditNickname">修改昵称</button>
             </div>
             <div class="chatroom-status">
-              <span data-i18n="chatSyncStatus">每 5 秒自动刷新</span>
+              <span id="chat-sync-status" data-i18n="chatSyncStatus">每 5 秒自动刷新</span>
               <span class="online-dot"></span>
             </div>
           </div>
@@ -266,7 +266,7 @@
             </button>
           </form>
           <div class="chatroom-footer">
-            <span id="chat-feedback" data-i18n="chatCooldownHint">每 3 秒可发送一条消息哦~</span>
+            <span id="chat-feedback" data-i18n="chatCooldownHint" role="status" aria-live="polite" aria-atomic="true">每 3 秒可发送一条消息哦~</span>
             <label class="chatroom-autoscroll">
               <input id="chat-autoscroll" type="checkbox" checked>
               <span data-i18n="chatAutoscroll">自动滚动</span>
@@ -283,7 +283,7 @@
           </div>
           <div class="profile-card">
             <div class="profile-avatar">
-              <img class="profile-avatar-image" src="/assets/images/lusu-about-avatar-256.png" width="256" height="256" alt="鲁肃头像" loading="lazy" decoding="async">
+              <img class="profile-avatar-image" src="/assets/images/lusu-about-avatar-256.png" width="256" height="256" alt="鲁肃头像" data-i18n-alt="profileAvatarAlt" loading="lazy" decoding="async">
             </div>
             <div class="profile-info">
               <dl>
@@ -299,13 +299,13 @@
                       <a class="about-social-link social-link-github" data-social-link="github" href="https://github.com/lusu575" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
                         <span class="social-icon social-icon-github" aria-hidden="true"></span>
                       </a>
-                      <a class="about-social-link social-link-bilibili" data-social-link="bilibili" href="https://space.bilibili.com/" target="_blank" rel="noopener noreferrer" aria-label="Bilibili">
+                      <a class="about-social-link social-link-bilibili" data-social-link="bilibili" target="_blank" rel="noopener noreferrer" hidden>
                         <span class="social-icon social-icon-bilibili" aria-hidden="true"></span>
                       </a>
                       <a class="about-social-link social-link-instagram" data-social-link="instagram" href="https://www.instagram.com/lusu575/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
                         <span class="social-icon social-icon-instagram" aria-hidden="true"></span>
                       </a>
-                      <a class="about-social-link social-link-discord" data-social-link="discord" href="https://discord.com/" target="_blank" rel="noopener noreferrer" aria-label="Discord">
+                      <a class="about-social-link social-link-discord" data-social-link="discord" target="_blank" rel="noopener noreferrer" hidden>
                         <span class="social-icon social-icon-discord" aria-hidden="true"></span>
                       </a>
                     </nav>
@@ -322,15 +322,15 @@
 
     <footer class="xp-taskbar">
       <button class="start-button" data-route="home"><img class="start-windows-icon" src="/assets/images/start-windows-pixel.png" width="96" height="96" alt="" aria-hidden="true"><span data-i18n="startButton">首页</span></button>
-      <div class="taskbar-tabs">
+      <nav class="taskbar-tabs" aria-label="底部主导航" data-i18n-aria-label="taskbarNavAria">
         <button data-route="knowledge"><span class="mini-icon taskbar-icon taskbar-icon-knowledge" aria-hidden="true"></span><span data-i18n="navKnowledge">知识库</span></button>
         <button data-route="videos"><span class="mini-icon taskbar-icon taskbar-icon-videos" aria-hidden="true"></span><span data-i18n="navVideos">视频区</span></button>
         <button data-route="resources"><span class="mini-icon taskbar-icon taskbar-icon-resources" aria-hidden="true"></span><span data-i18n="navResources">资源区</span></button>
         <button data-route="games"><span class="mini-icon taskbar-icon taskbar-icon-games" aria-hidden="true"></span><span data-i18n="navGames">游戏区</span></button>
         <button data-route="blog"><span class="mini-icon taskbar-icon taskbar-icon-blog" aria-hidden="true"></span><span data-i18n="navBlog">杂谈区</span></button>
-        <button data-route="chatroom"><span class="mini-icon chat-mini-icon"></span><span data-i18n="navChatroom">匿名聊天室</span></button>
+        <button data-route="chatroom"><span class="mini-icon chat-mini-icon" aria-hidden="true"></span><span data-i18n="navChatroom">匿名聊天室</span></button>
         <button data-route="about"><span class="mini-icon taskbar-icon taskbar-icon-about" aria-hidden="true"></span><span data-i18n="navAbout">关于我</span></button>
-      </div>
+      </nav>
       <div class="status-tray">
         <span id="local-time">--:--:--</span>
         <span class="online-dot"></span>
@@ -343,14 +343,14 @@
     <div class="modal-backdrop" data-close-welcome></div>
     <div class="xp-window welcome-window" role="dialog" aria-modal="true" aria-labelledby="welcome-title">
       <div class="window-titlebar">
-        <span><span class="title-icon">★</span><span id="welcome-title" data-i18n="welcomeTitle">欢迎来到我的空间</span></span>
+        <span><span class="title-icon" aria-hidden="true">★</span><span id="welcome-title" data-i18n="welcomeTitle">欢迎来到我的空间</span></span>
         <button class="close-button" data-close-welcome aria-label="关闭对话框" data-i18n-aria-label="closeDialogAria">×</button>
       </div>
       <div class="welcome-content">
         <section class="welcome-main">
           <h2 data-i18n="welcomeHeading">欢迎回来，朋友！</h2>
           <div class="welcome-note">
-            <span class="pixel-icon monitor-icon"></span>
+            <span class="pixel-icon monitor-icon" aria-hidden="true"></span>
             <div class="welcome-status-copy">
               <strong data-i18n="welcomeStatusTitle">站长状态：正在施工中</strong>
               <p data-i18n="welcomeStatusCopy">这个网站会持续加入文章、资源、小游戏和一些奇怪的小功能。</p>
@@ -360,17 +360,18 @@
           <div class="dashed-line"></div>
           <h3 data-i18n="quickEntry">快捷入口</h3>
           <div class="quick-links">
-            <button class="quick-link green" data-route="knowledge"><span>📁</span><span data-i18n="goKnowledge">进入知识库</span><b>›</b></button>
-            <button class="quick-link blue" data-route="videos"><span>▶</span><span data-i18n="goVideos">看看视频</span><b>›</b></button>
-            <button class="quick-link pink" data-route="games"><span>🎮</span><span data-i18n="goGames">打开游戏区</span><b>›</b></button>
+            <button class="quick-link blue" data-route="chatroom" data-analytics-label="welcome:quick-link:chatroom"><span aria-hidden="true">💬</span><span data-i18n="navChatroom">匿名聊天室</span><b aria-hidden="true">›</b></button>
+            <button class="quick-link pink" data-route="games" data-analytics-label="welcome:quick-link:games"><span aria-hidden="true">🎮</span><span data-i18n="goGames">打开游戏区</span><b aria-hidden="true">›</b></button>
+            <button class="quick-link green" data-route="knowledge" data-analytics-label="welcome:quick-link:knowledge"><span aria-hidden="true">📁</span><span data-i18n="goKnowledge">进入知识库</span><b aria-hidden="true">›</b></button>
+            <button class="quick-link blue" data-article-category="site-updates" data-analytics-label="welcome:quick-link:updates"><span aria-hidden="true">NEW</span><span data-i18n="recentUpdates">最近更新</span><b aria-hidden="true">›</b></button>
           </div>
         </section>
         <aside class="recent-panel">
           <h3><span data-i18n="recentUpdates">最近更新</span><em>NEW</em></h3>
           <ul id="recent-updates"></ul>
           <div class="recent-actions">
-            <button class="xp-button more-button" data-article-category="site-updates"><span data-i18n="moreUpdates">查看更多更新</span><b>›</b></button>
-            <a class="xp-button rss-button" href="/api/rss.xml?lang=zh" data-rss-link target="_blank" rel="alternate noopener" type="application/rss+xml" aria-label="RSS 订阅" data-i18n-aria-label="rssFeedAria">
+            <button class="xp-button more-button" data-article-category="site-updates"><span data-i18n="moreUpdates">查看更多更新</span><b aria-hidden="true">›</b></button>
+            <a class="xp-button rss-button" href="/api/rss.xml?lang=zh" data-rss-link target="_blank" rel="alternate noopener" type="application/rss+xml" aria-label="RSS 订阅" title="鲁肃的个人站 RSS 订阅" data-i18n-aria-label="rssFeedAria" data-i18n-title="rssFeedTitle">
               <span class="rss-icon" aria-hidden="true">RSS</span>
               <span data-i18n="rssFeed">订阅</span>
             </a>
@@ -392,7 +393,7 @@
       </div>
       <div class="video-frame" id="video-frame">
         <div class="video-placeholder">
-          <span>▶</span>
+          <span aria-hidden="true">▶</span>
           <p data-i18n="videoPlaceholder">这里预留 Bilibili / YouTube 嵌入播放器。</p>
         </div>
       </div>
@@ -402,7 +403,7 @@
     </div>
   </div>
 
-  <script src="/js/telemetry.js?v=20260615-video-window-controls"></script>
-  <script src="/js/main.js?v=20260622-fixed-dock-window-backdrops-r3"></script>
+  <script src="/js/telemetry.js?v=20260623-analytics-privacy-r1"></script>
+  <script src="/js/main.js?v=20260623-public-loop-summary-r1"></script>
 </body>
 </html>

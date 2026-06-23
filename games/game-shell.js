@@ -140,8 +140,46 @@
   let currentGame = null;
   let syncTimer = null;
   let syncInFlight = false;
+  let localStorageReadBlocked = false;
+  let localStorageWarningShown = false;
+  const sessionStorageFallback = new Map();
 
   document.documentElement.lang = requestedSiteLang === "zh" ? "zh-CN" : requestedSiteLang;
+
+  function warnLocalStorageFallback(error) {
+    if (localStorageWarningShown) {
+      return;
+    }
+    localStorageWarningShown = true;
+    console.warn("Local storage is unavailable; using session-only game save fallback.", error);
+  }
+
+  function safeGetStorageItem(key) {
+    if (localStorageReadBlocked) {
+      return sessionStorageFallback.get(key) ?? null;
+    }
+    try {
+      return window.localStorage.getItem(key) ?? sessionStorageFallback.get(key) ?? null;
+    } catch (error) {
+      localStorageReadBlocked = true;
+      warnLocalStorageFallback(error);
+      return sessionStorageFallback.get(key) ?? null;
+    }
+  }
+
+  function safeSetStorageItem(key, value) {
+    const textValue = String(value);
+    try {
+      window.localStorage.setItem(key, textValue);
+      localStorageReadBlocked = false;
+      sessionStorageFallback.delete(key);
+      return true;
+    } catch (error) {
+      sessionStorageFallback.set(key, textValue);
+      warnLocalStorageFallback(error);
+      return false;
+    }
+  }
 
   function t(key, values = {}) {
     const template = shellTranslations[requestedSiteLang]?.[key] || shellTranslations.zh[key] || key;
@@ -209,10 +247,18 @@
     return href;
   }
 
-  function safeExternalHref(value) {
+  function safeGithubHref(value) {
     try {
       const url = new URL(String(value || "").trim());
-      return ["http:", "https:"].includes(url.protocol) ? url.href : "";
+      if (url.protocol !== "https:" || !["github.com", "www.github.com"].includes(url.hostname.toLowerCase())) {
+        return "";
+      }
+      if (!/^\/[a-z0-9_.-]+\/[a-z0-9_.-]+\/?$/i.test(url.pathname)) {
+        return "";
+      }
+      url.search = "";
+      url.hash = "";
+      return url.href;
     } catch {
       return "";
     }
@@ -252,7 +298,7 @@
       license.appendChild(fileLink);
     }
 
-    const repoHref = safeExternalHref(game.repo);
+    const repoHref = safeGithubHref(game.repo);
     if (repoHref) {
       const repoLink = textElement("a", t("upstreamRepo"));
       repoLink.href = repoHref;
@@ -320,8 +366,8 @@
   function applyStorageDefaults(game) {
     const defaults = game.storage?.defaults || {};
     Object.entries(defaults).forEach(([key, value]) => {
-      if (localStorage.getItem(key) === null) {
-        localStorage.setItem(key, value);
+      if (safeGetStorageItem(key) === null) {
+        safeSetStorageItem(key, value);
       }
     });
   }
@@ -329,10 +375,10 @@
   function applyLanguagePreference(game) {
     const gameLang = getGameLanguage(game);
     if (game.id === "kittens-game") {
-      localStorage.setItem("com.nuclearunicorn.kittengame.language", gameLang);
+      safeSetStorageItem("com.nuclearunicorn.kittengame.language", gameLang);
     }
     if (game.id === "a-dark-room") {
-      localStorage.setItem("lang", gameLang);
+      safeSetStorageItem("lang", gameLang);
     }
   }
 
@@ -352,14 +398,14 @@
   }
 
   function getStorageKeys(game) {
-    return getConfiguredKeys(game).filter((key) => isMeaningfulStorageValue(game, localStorage.getItem(key)));
+    return getConfiguredKeys(game).filter((key) => isMeaningfulStorageValue(game, safeGetStorageItem(key)));
   }
 
   function collectSaveData(game) {
     flushGameSave();
     const data = {};
     getStorageKeys(game).forEach((key) => {
-      data[key] = localStorage.getItem(key);
+      data[key] = safeGetStorageItem(key);
     });
     return data;
   }
@@ -375,12 +421,12 @@
     Object.entries(data).forEach(([key, value]) => {
       if (getConfiguredKeys(game).includes(key) && typeof value === "string") {
         if (isScoreOnlyStorage(game)) {
-          const nextValue = Math.max(Number(localStorage.getItem(key) || 0), Number(value || 0));
+          const nextValue = Math.max(Number(safeGetStorageItem(key) || 0), Number(value || 0));
           if (nextValue > 0) {
-            localStorage.setItem(key, String(nextValue));
+            safeSetStorageItem(key, String(nextValue));
           }
         } else {
-          localStorage.setItem(key, value);
+          safeSetStorageItem(key, value);
         }
       }
     });
@@ -391,12 +437,12 @@
   }
 
   function getKnownCloudTime(game) {
-    return Date.parse(localStorage.getItem(getCloudMetaKey(game)) || "") || 0;
+    return Date.parse(safeGetStorageItem(getCloudMetaKey(game)) || "") || 0;
   }
 
   function rememberCloudTime(game, updatedAt) {
     if (updatedAt) {
-      localStorage.setItem(getCloudMetaKey(game), updatedAt);
+      safeSetStorageItem(getCloudMetaKey(game), updatedAt);
     }
   }
 

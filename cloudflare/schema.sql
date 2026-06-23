@@ -572,6 +572,32 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-06-23-public-ux-accessibility-privacy-wrap-up',
+  '2026-06-23-public-ux-accessibility-privacy-wrap-up',
+  'site-updates',
+  '["网站更新","公开体验","无障碍","隐私","按钮修复"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-23T06:00:00.000Z',
+  '2026-06-23T06:00:00.000Z',
+  '2026-06-23T06:00:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-06-22-fixed-dock-window-backdrops',
   '2026-06-22-fixed-dock-window-backdrops',
   'site-updates',
@@ -727,6 +753,69 @@ on conflict(article_id) do update set
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
+  (
+    'seed-update-2026-06-23-public-ux-accessibility-privacy-wrap-up-zh',
+    'seed-update-2026-06-23-public-ux-accessibility-privacy-wrap-up',
+    'zh',
+    '公开体验、无障碍和隐私收尾',
+    '主站按钮点击、弹窗焦点、资源空状态、社交入口、游戏来源链接和访问统计隐私做了一轮集中收口。',
+    '# 公开体验、无障碍和隐私收尾
+
+这次更新集中整理主站公开页面里最容易影响日常浏览的交互细节，让按钮、弹窗和入口的反馈更加明确。
+
+## 更新内容
+
+- 主站按钮点击处理顺序重新梳理，账号、重试、语言、筛选、文章、视频、弹窗关闭等具体操作会优先响应，通用页面跳转作为最后的兜底处理。
+- 欢迎弹窗和视频弹窗打开后会把焦点放到真正可操作的关闭按钮上，关闭时也会更稳定地回到合适的位置。
+- 资源区和杂谈区只展示已有真实入口的内容；暂时没有可打开内容时，会显示明确的整理中空状态，不再把示例占位伪装成可点击资源。
+- 关于我里的 Bilibili 和 Discord 在没有真实配置时保持隐藏，社交链接会按已知平台归一化处理，减少空图标和错误跳转。
+- 游戏来源链接和游戏外壳里的仓库入口继续限制为可信 GitHub 地址，游戏本地存档读取也优先使用真实浏览器存储。
+- 前端访问统计继续收紧隐私边界，页面路径、来源和点击标记会在发送前做规范化和脱敏处理。',
+    '2026-06-23T06:00:00.000Z',
+    '2026-06-23T06:00:00.000Z'
+  ),
+  (
+    'seed-update-2026-06-23-public-ux-accessibility-privacy-wrap-up-en',
+    'seed-update-2026-06-23-public-ux-accessibility-privacy-wrap-up',
+    'en',
+    'Public UX, Accessibility, and Privacy Wrap-up',
+    'Button clicks, modal focus, honest empty states, social links, game source links, and analytics privacy were tightened across the public site.',
+    '# Public UX, Accessibility, and Privacy Wrap-up
+
+This update tightens the public site interactions that matter most during everyday browsing, with clearer feedback for buttons, dialogs, and content entry points.
+
+## Changes
+
+- Button click handling now prioritizes specific actions such as account controls, retries, language switching, filters, article actions, video playback, and dialog closing before falling back to general page navigation.
+- The welcome dialog and video dialog move focus to a real close button when opened, then restore focus more predictably when closed.
+- Resources and Talk now show only entries with real usable destinations. When there is nothing ready to open, visitors see a clear in-progress empty state instead of placeholder cards that look downloadable.
+- Bilibili and Discord remain hidden until real URLs are configured, and social links are normalized by known platform names to reduce empty icons or wrong destinations.
+- Game source links and game-shell repository links stay limited to trusted GitHub URLs, while local save reads prefer real browser storage before falling back.
+- Public analytics keeps a tighter privacy boundary by normalizing paths, referrers, links, and click labels before anything is sent.',
+    '2026-06-23T06:00:00.000Z',
+    '2026-06-23T06:00:00.000Z'
+  ),
+  (
+    'seed-update-2026-06-23-public-ux-accessibility-privacy-wrap-up-ja',
+    'seed-update-2026-06-23-public-ux-accessibility-privacy-wrap-up',
+    'ja',
+    '公開体験・アクセシビリティ・プライバシー仕上げ',
+    '公開サイトのボタン操作、モーダルのフォーカス、空状態、SNS入口、ゲーム出典リンク、アクセス解析のプライバシーをまとめて整えました。',
+    '# 公開体験・アクセシビリティ・プライバシー仕上げ
+
+今回の更新では、普段の閲覧で迷いやすいボタン、ダイアログ、入口まわりの反応をまとめて整えました。
+
+## 更新内容
+
+- クリック処理の順序を整理し、アカウント、再試行、言語切替、フィルター、記事、動画、ダイアログを閉じる操作が、通常のページ移動より先に反応するようにしました。
+- 歓迎ダイアログと動画ダイアログを開いたとき、フォーカスが実際に操作できる閉じるボタンへ移動し、閉じたあとも戻り先が安定します。
+- リソース欄と雑談欄は、実際に開ける入口がある内容だけを表示します。まだ公開できる内容がない場合は、整理中であることが分かる空状態を表示します。
+- Bilibili と Discord は実際のURLが設定されるまで非表示のままにし、SNSリンクは既知のプラットフォーム名で整理して、空アイコンや誤った移動先を減らしました。
+- ゲームの出典リンクとゲームシェル内のリポジトリ入口は、信頼できる GitHub URL に限定したままです。ゲームのローカル保存も、まずブラウザーの本来の保存先を優先して読みます。
+- 公開側のアクセス解析は、送信前にページパス、参照元、リンク、クリックラベルを正規化し、プライバシー境界をさらに明確にしました。',
+    '2026-06-23T06:00:00.000Z',
+    '2026-06-23T06:00:00.000Z'
+  ),
   (
     'seed-update-2026-06-22-fixed-dock-window-backdrops-zh',
     'seed-update-2026-06-22-fixed-dock-window-backdrops',

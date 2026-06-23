@@ -14,6 +14,7 @@ const OWNER_ADMIN_EMAILS = new Set(["630739094@qq.com"]);
 const MAX_VIDEO_THUMBNAIL_TEXT_CHARS = 420000;
 const MAX_LOCAL_THUMBNAIL_BYTES = 320 * 1024;
 const LOCAL_THUMBNAIL_MIME_TYPES = new Set(["jpeg", "jpg", "png", "webp", "avif"]);
+const EMAIL_LIKE_TEXT_PATTERN = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi;
 const VIDEO_METADATA_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0 Safari/537.36";
 const YOUTUBE_METADATA_HEADERS = {
   "User-Agent": VIDEO_METADATA_USER_AGENT,
@@ -43,9 +44,9 @@ const DEFAULT_VIDEO_CATEGORIES = [
 const SOCIAL_LINK_PLATFORMS = [
   ["x", "X", "https://x.com/lusu575"],
   ["github", "GitHub", "https://github.com/lusu575"],
-  ["bilibili", "Bilibili", "https://space.bilibili.com/"],
+  ["bilibili", "Bilibili", ""],
   ["instagram", "Instagram", "https://www.instagram.com/lusu575/"],
-  ["discord", "Discord", "https://discord.com/"]
+  ["discord", "Discord", ""]
 ];
 const PUBLIC_LOOP_NIGHTLY_UPDATE_SLUG = "2026-06-18-main-visual-polish-cycle";
 const PUBLIC_LOOP_NIGHTLY_UPDATE_FILTER = `not (
@@ -404,32 +405,43 @@ async function getChatMessages(request, env) {
     ).bind(after).first();
 
     if (!cursor) {
-      rows = [];
+      const recoveredCreatedAt = createdAtFromChatMessageId(after);
+      rows = recoveredCreatedAt
+        ? await getChatMessagesAfter(env, recoveredCreatedAt, after, limit)
+        : await getRecentChatMessages(env, limit);
     } else {
-      rows = (await env.DB.prepare(`
-        select message_id, coalesce(nullif(client_id, ''), visitor_id) as visitor_id, nickname, content, created_at
-        from anonymous_chat_messages
-        where hidden = 0
-          and (created_at > ? or (created_at = ? and message_id > ?))
-        order by created_at asc, message_id asc
-        limit ?
-      `).bind(cursor.created_at, cursor.created_at, after, limit).all()).results || [];
+      rows = await getChatMessagesAfter(env, cursor.created_at, after, limit);
     }
   } else {
-    rows = (await env.DB.prepare(`
-      select message_id, visitor_id, nickname, content, created_at
-      from (
-        select message_id, coalesce(nullif(client_id, ''), visitor_id) as visitor_id, nickname, content, created_at
-        from anonymous_chat_messages
-        where hidden = 0
-        order by created_at desc, message_id desc
-        limit ?
-      )
-      order by created_at asc, message_id asc
-    `).bind(limit).all()).results || [];
+    rows = await getRecentChatMessages(env, limit);
   }
 
   return json({ messages: rows });
+}
+
+async function getChatMessagesAfter(env, createdAt, after, limit) {
+  return (await env.DB.prepare(`
+    select message_id, coalesce(nullif(client_id, ''), visitor_id) as visitor_id, nickname, content, created_at
+    from anonymous_chat_messages
+    where hidden = 0
+      and (created_at > ? or (created_at = ? and message_id > ?))
+    order by created_at asc, message_id asc
+    limit ?
+  `).bind(createdAt, createdAt, after, limit).all()).results || [];
+}
+
+async function getRecentChatMessages(env, limit) {
+  return (await env.DB.prepare(`
+    select message_id, visitor_id, nickname, content, created_at
+    from (
+      select message_id, coalesce(nullif(client_id, ''), visitor_id) as visitor_id, nickname, content, created_at
+      from anonymous_chat_messages
+      where hidden = 0
+      order by created_at desc, message_id desc
+      limit ?
+    )
+    order by created_at asc, message_id asc
+  `).bind(limit).all()).results || [];
 }
 
 async function postChatMessage(request, env) {
@@ -1265,10 +1277,10 @@ function normalizeSocialLinksPayload(body) {
 function socialLinkInputValue(body, platform) {
   const source = body.links && typeof body.links === "object" ? body.links : body;
   if (Array.isArray(source)) {
-    const item = source.find((entry) => String(entry?.platform || entry?.id || "") === platform);
+    const item = source.find((entry) => String(entry?.platform || entry?.id || "").trim().toLowerCase() === platform);
     return item?.url || "";
   }
-  const value = source?.[platform];
+  const value = source?.[platform] ?? Object.entries(source || {}).find(([key]) => key.trim().toLowerCase() === platform)?.[1];
   return value && typeof value === "object" ? value.url : value;
 }
 
@@ -1521,7 +1533,7 @@ async function recordClickEvent(request, env) {
     normalizeAnalyticsPath(body?.path),
     normalizeAnalyticsText(body?.route, 80),
     normalizeAnalyticsText(body?.targetKey, 160),
-    normalizeAnalyticsText(body?.targetText, 160),
+    normalizeAnalyticsTargetText(body?.targetText, 160),
     normalizeAnalyticsText(body?.tagName, 40).toUpperCase(),
     normalizeAnalyticsText(body?.elementId, 120),
     normalizeAnalyticsText(body?.elementClasses, 240),
@@ -5888,6 +5900,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         article_id, slug, category, tags, cover_image, status, is_pinned,
         view_count, created_at, updated_at, published_at
       ) values (
+        'seed-update-2026-06-23-public-ux-accessibility-privacy-wrap-up',
+        '2026-06-23-public-ux-accessibility-privacy-wrap-up',
+        'site-updates',
+        '["网站更新","公开体验","无障碍","隐私","按钮修复"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-23T06:00:00.000Z',
+        '2026-06-23T06:00:00.000Z',
+        '2026-06-23T06:00:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
         'seed-update-2026-06-22-fixed-dock-window-backdrops',
         '2026-06-22-fixed-dock-window-backdrops',
         'site-updates',
@@ -6045,6 +6084,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-23-public-ux-accessibility-privacy-wrap-up", {
+      zh: {
+        title: "公开体验、无障碍和隐私收尾",
+        summary: "主站按钮点击、弹窗焦点、资源空状态、社交入口、游戏来源链接和访问统计隐私做了一轮集中收口。",
+        content_markdown: "# 公开体验、无障碍和隐私收尾\n\n这次更新集中整理主站公开页面里最容易影响日常浏览的交互细节，让按钮、弹窗和入口的反馈更加明确。\n\n## 更新内容\n\n- 主站按钮点击处理顺序重新梳理，账号、重试、语言、筛选、文章、视频、弹窗关闭等具体操作会优先响应，通用页面跳转作为最后的兜底处理。\n- 欢迎弹窗和视频弹窗打开后会把焦点放到真正可操作的关闭按钮上，关闭时也会更稳定地回到合适的位置。\n- 资源区和杂谈区只展示已有真实入口的内容；暂时没有可打开内容时，会显示明确的整理中空状态，不再把示例占位伪装成可点击资源。\n- 关于我里的 Bilibili 和 Discord 在没有真实配置时保持隐藏，社交链接会按已知平台归一化处理，减少空图标和错误跳转。\n- 游戏来源链接和游戏外壳里的仓库入口继续限制为可信 GitHub 地址，游戏本地存档读取也优先使用真实浏览器存储。\n- 前端访问统计继续收紧隐私边界，页面路径、来源和点击标记会在发送前做规范化和脱敏处理。"
+      },
+      en: {
+        title: "Public UX, Accessibility, and Privacy Wrap-up",
+        summary: "Button clicks, modal focus, honest empty states, social links, game source links, and analytics privacy were tightened across the public site.",
+        content_markdown: "# Public UX, Accessibility, and Privacy Wrap-up\n\nThis update tightens the public site interactions that matter most during everyday browsing, with clearer feedback for buttons, dialogs, and content entry points.\n\n## Changes\n\n- Button click handling now prioritizes specific actions such as account controls, retries, language switching, filters, article actions, video playback, and dialog closing before falling back to general page navigation.\n- The welcome dialog and video dialog move focus to a real close button when opened, then restore focus more predictably when closed.\n- Resources and Talk now show only entries with real usable destinations. When there is nothing ready to open, visitors see a clear in-progress empty state instead of placeholder cards that look downloadable.\n- Bilibili and Discord remain hidden until real URLs are configured, and social links are normalized by known platform names to reduce empty icons or wrong destinations.\n- Game source links and game-shell repository links stay limited to trusted GitHub URLs, while local save reads prefer real browser storage before falling back.\n- Public analytics keeps a tighter privacy boundary by normalizing paths, referrers, links, and click labels before anything is sent."
+      },
+      ja: {
+        title: "公開体験・アクセシビリティ・プライバシー仕上げ",
+        summary: "公開サイトのボタン操作、モーダルのフォーカス、空状態、SNS入口、ゲーム出典リンク、アクセス解析のプライバシーをまとめて整えました。",
+        content_markdown: "# 公開体験・アクセシビリティ・プライバシー仕上げ\n\n今回の更新では、普段の閲覧で迷いやすいボタン、ダイアログ、入口まわりの反応をまとめて整えました。\n\n## 更新内容\n\n- クリック処理の順序を整理し、アカウント、再試行、言語切替、フィルター、記事、動画、ダイアログを閉じる操作が、通常のページ移動より先に反応するようにしました。\n- 歓迎ダイアログと動画ダイアログを開いたとき、フォーカスが実際に操作できる閉じるボタンへ移動し、閉じたあとも戻り先が安定します。\n- リソース欄と雑談欄は、実際に開ける入口がある内容だけを表示します。まだ公開できる内容がない場合は、整理中であることが分かる空状態を表示します。\n- Bilibili と Discord は実際のURLが設定されるまで非表示のままにし、SNSリンクは既知のプラットフォーム名で整理して、空アイコンや誤った移動先を減らしました。\n- ゲームの出典リンクとゲームシェル内のリポジトリ入口は、信頼できる GitHub URL に限定したままです。ゲームのローカル保存も、まずブラウザーの本来の保存先を優先して読みます。\n- 公開側のアクセス解析は、送信前にページパス、参照元、リンク、クリックラベルを正規化し、プライバシー境界をさらに明確にしました。"
+      }
+    }, "2026-06-23T06:00:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-06-18-public-site-nightly-update", {
       zh: {
         title: "主站夜间优化汇总",
@@ -7568,8 +7624,19 @@ function normalizeThumbnailDataUrl(raw) {
 }
 
 function normalizeAnalyticsText(value, maxLength) {
-  const text = String(value || "").replace(/\s+/g, " ").trim();
+  const text = redactAnalyticsEmails(value).replace(/\s+/g, " ").trim();
   return Array.from(text).slice(0, maxLength).join("");
+}
+
+function redactAnalyticsEmails(value) {
+  const text = String(value || "");
+  return text
+    .replace(EMAIL_LIKE_TEXT_PATTERN, "[email]")
+    .replace(/[A-Z0-9._%+-]+(?:%40|%2540)[A-Z0-9.-]+(?:\.|%2E|%252E)[A-Z]{2,}/gi, "[email]");
+}
+
+function normalizeAnalyticsTargetText(value, maxLength) {
+  return normalizeAnalyticsText(value, maxLength);
 }
 
 function normalizeAnalyticsPath(value) {
@@ -7701,6 +7768,19 @@ function normalizeChatContent(value) {
 
 function chatMessageId(date) {
   return `${date.getTime().toString(36)}-${randomToken(9)}`;
+}
+
+function createdAtFromChatMessageId(messageId) {
+  const match = String(messageId || "").match(/^([a-z0-9]+)-[a-z0-9]+$/i);
+  if (!match) {
+    return "";
+  }
+  const timestamp = Number.parseInt(match[1], 36);
+  if (!Number.isFinite(timestamp)) {
+    return "";
+  }
+  const date = new Date(timestamp);
+  return Number.isNaN(date.getTime()) ? "" : date.toISOString();
 }
 
 async function requestIpHash(request, env) {

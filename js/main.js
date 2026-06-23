@@ -1,19 +1,21 @@
 const pageParams = new URLSearchParams(window.location.search);
+const defaultShareImageUrl = "https://lusu575.com/assets/images/homepage-pixel-coast.png?v=20260612-hd-wallpapers";
 
 const translations = {
   zh: {
     siteName: "鲁肃个人站",
     siteDescription: "鲁肃的个人站，一个 Windows XP、Pixel Art 和 Y2K 风格的个人空间，用来记录 AI、游戏、工具、资源、视频、知识库和杂谈。",
+    rssFeedTitle: "鲁肃的个人站 RSS 订阅",
     heroTitle: "鲁肃的个人站",
     homeLead: "开发施工中",
     navKnowledge: "知识库",
     navVideos: "视频区",
     navVideosBuilding: "视频区",
     navResources: "资源区",
-    navResourcesBuilding: "资源区（待定）",
+    navResourcesBuilding: "资源区",
     navGames: "游戏区",
     navBlog: "杂谈区",
-    navBlogBuilding: "杂谈区（待定）",
+    navBlogBuilding: "杂谈区",
     navChatroom: "匿名聊天室",
     navAbout: "关于我",
     capKnowledge: "笔记 · 教程 · 想法",
@@ -39,10 +41,12 @@ const translations = {
     welcomeRecommend: "目前推荐体验：匿名聊天室、游戏区、知识库。",
     articleLoading: "正在从数据库读取文章...",
     articleLoadFailed: "文章读取失败，请稍后再试。",
+    articleRetryAction: "重新读取文章",
     articleEmpty: "数据库里暂时还没有已发布文章。",
     articleSearchLabel: "搜索知识库",
     articleSearchPlaceholder: "搜索标题、简介、标签...",
     articleSearchClear: "清空",
+    articleSearchReset: "显示全部文章",
     articleSearchCount: "共 {count} 篇文章",
     articleSearchFiltered: "显示 {count} / {total} 篇",
     articleSearchNoResults: "没有找到匹配的文章。",
@@ -55,6 +59,7 @@ const translations = {
     articleTocTipTitle: "小贴士",
     articleTocTip: "点击目录项可快速跳转到对应章节",
     articleScrollTop: "回到顶部",
+    profileAvatarAlt: "鲁肃头像",
     articlePublished: "发布时间",
     articleCategory: "分类",
     articleFallback: "当前语言版本缺失，已显示备用语言版本。",
@@ -65,12 +70,18 @@ const translations = {
     openGameButton: "打开",
     downloadButton: "下载",
     externalButton: "外部链接",
-    resourcePending: "准备中",
+    resourcePending: "待补链接",
     resourcePendingTitle: "这个资源还在整理中，暂时没有下载或外链。",
     resourceStatusReady: "可获取",
     resourceEmptyTitle: "这个分类还在整理中",
     resourceEmptyBody: "可以先切回全部资源，之后这里会补上下载、素材或文档。",
     resourceEmptyAction: "显示全部资源",
+    resourceEmptyAllTitle: "资源区正在整理中",
+    resourceEmptyAllBody: "这里之后会放真实可下载的工具、素材和文档。可以先去知识库看看已经发布的内容。",
+    resourceEmptyAllAction: "查看知识库",
+    blogEmptyTitle: "杂谈区正在整理中",
+    blogEmptyBody: "这里会保留正式随笔和站点记录。内容发布前，可以先查看知识库和最近更新。",
+    blogEmptyAction: "查看知识库",
     openOriginal: "打开原地址",
     videoFullscreen: "全屏",
     videoRestore: "还原",
@@ -80,12 +91,16 @@ const translations = {
     gameCloudSaveReady: "云存档",
     gameConfigLoading: "正在读取游戏配置...",
     gameConfigFailed: "游戏配置读取失败",
+    gameRetryAction: "重新读取游戏列表",
+    gameEmptyTitle: "游戏目录正在整理中",
+    gameEmptyBody: "可以稍后重新读取，或先看看知识库和网站更新记录。",
     videoPlaceholder: "这里预留 Bilibili / YouTube 嵌入播放器。",
     startButton: "首页",
     lastUpdatedLabel: "最近更新日期",
     brandHomeAria: "返回桌面",
     languageSwitcherAria: "语言切换",
     desktopIconsAria: "主要栏目",
+    taskbarNavAria: "底部主导航",
     windowMinimizeAria: "最小化窗口",
     windowMaximizeAria: "最大化窗口",
     closeWindowAria: "关闭窗口",
@@ -97,7 +112,9 @@ const translations = {
     accountLogin: "登录",
     accountRegister: "注册",
     accountEmailPlaceholder: "邮箱",
+    accountEmailLabel: "邮箱",
     accountPasswordPlaceholder: "密码至少 8 位",
+    accountPasswordLabel: "密码",
     accountGuestNote: "登录只用于游戏自动云存档，网站浏览不受影响。",
     accountUnavailable: "云存档接口暂时不可用。",
     accountLoggedIn: "已登录。",
@@ -126,6 +143,9 @@ const translations = {
     chatNicknameLabel: "我的昵称：",
     chatEditNickname: "修改昵称",
     chatSyncStatus: "自动增量刷新，空闲时会降低频率",
+    chatSyncStatusActive: "约 5 秒刷新",
+    chatSyncStatusIdle: "约 15 秒刷新",
+    chatSyncStatusSlow: "约 30 秒低频刷新",
     chatInputLabel: "聊天内容",
     chatPlaceholder: "说点什么吧...",
     chatSend: "发送",
@@ -137,6 +157,7 @@ const translations = {
     chatEmptyMessage: "空消息不可发送。",
     chatTooLong: "单条消息最多 300 字。",
     chatCooldown: "发送太快啦，请等 3 秒。",
+    chatSending: "正在发送...",
     chatNicknameTaken: "这个随机昵称已经被使用，正在为你换一个新昵称。",
     chatNicknamePrompt: "请输入 2-16 个字符的新昵称：",
     chatNicknameInvalid: "昵称需要 2-16 个字符，不能是空白。",
@@ -152,20 +173,21 @@ const translations = {
   en: {
     siteName: "LuSu Site",
     siteDescription: "LuSu's personal site, a Windows XP, pixel art, and Y2K desktop space for AI notes, games, tools, resources, videos, knowledge, and thoughts.",
+    rssFeedTitle: "LuSu Site RSS Feed",
     heroTitle: "LuSu Site",
     homeLead: "A small XP pixel site under construction.",
     navKnowledge: "Knowledge",
     navVideos: "Videos",
     navVideosBuilding: "Videos",
     navResources: "Resources",
-    navResourcesBuilding: "Resources TBD",
+    navResourcesBuilding: "Resources",
     navGames: "Games",
     navBlog: "Talk",
-    navBlogBuilding: "Talk TBD",
+    navBlogBuilding: "Talk",
     navChatroom: "Chat Room",
     navAbout: "About",
     capKnowledge: "Notes · Tutorials · Ideas",
-    capVideos: "Works · Translation · Saves",
+    capVideos: "Works · Translation · Favorites",
     capResources: "Software · Assets · Tools",
     capGames: "H5 · Idle games",
     capBlog: "Thoughts · Daily · Sharing",
@@ -187,10 +209,12 @@ const translations = {
     welcomeRecommend: "Recommended now: anonymous chat room, games, and knowledge base.",
     articleLoading: "Loading articles from the database...",
     articleLoadFailed: "Could not load articles. Please try again later.",
+    articleRetryAction: "Retry loading articles",
     articleEmpty: "No published articles are in the database yet.",
     articleSearchLabel: "Search knowledge",
     articleSearchPlaceholder: "Search titles, summaries, tags...",
     articleSearchClear: "Clear",
+    articleSearchReset: "Show all articles",
     articleSearchCount: "{count} articles",
     articleSearchFiltered: "Showing {count} / {total}",
     articleSearchNoResults: "No matching articles found.",
@@ -203,6 +227,7 @@ const translations = {
     articleTocTipTitle: "Tip",
     articleTocTip: "Click a contents item to jump to that section.",
     articleScrollTop: "Back to top",
+    profileAvatarAlt: "LuSu avatar",
     articlePublished: "Published",
     articleCategory: "Category",
     articleFallback: "This language is missing, so a fallback language is shown.",
@@ -213,12 +238,18 @@ const translations = {
     openGameButton: "Open",
     downloadButton: "Download",
     externalButton: "External Link",
-    resourcePending: "Coming soon",
+    resourcePending: "Link pending",
     resourcePendingTitle: "This resource is still being organized and has no download or external link yet.",
     resourceStatusReady: "Ready",
     resourceEmptyTitle: "This category is still being organized",
     resourceEmptyBody: "Switch back to all resources for now. Downloads, assets, or docs can be added here later.",
     resourceEmptyAction: "Show all resources",
+    resourceEmptyAllTitle: "Resources are being organized",
+    resourceEmptyAllBody: "Real downloadable tools, assets, and docs will appear here. For now, check the Knowledge window for published notes.",
+    resourceEmptyAllAction: "Open Knowledge",
+    blogEmptyTitle: "Notes are being organized",
+    blogEmptyBody: "Published essays and site notes will live here. Until then, the Knowledge window has the current public writing.",
+    blogEmptyAction: "Open Knowledge",
     openOriginal: "Open Original",
     videoFullscreen: "Full screen",
     videoRestore: "Restore",
@@ -228,12 +259,16 @@ const translations = {
     gameCloudSaveReady: "Cloud save",
     gameConfigLoading: "Loading game catalog...",
     gameConfigFailed: "Could not load game catalog",
+    gameRetryAction: "Retry loading games",
+    gameEmptyTitle: "The game catalog is being organized",
+    gameEmptyBody: "Retry later, or visit the knowledge base and site updates for now.",
     videoPlaceholder: "Bilibili / YouTube embed player is reserved here.",
     startButton: "Home",
     lastUpdatedLabel: "Last updated",
     brandHomeAria: "Back to desktop",
     languageSwitcherAria: "Language switcher",
     desktopIconsAria: "Main sections",
+    taskbarNavAria: "Taskbar navigation",
     windowMinimizeAria: "Minimize window",
     windowMaximizeAria: "Maximize window",
     closeWindowAria: "Close window",
@@ -245,7 +280,9 @@ const translations = {
     accountLogin: "Log in",
     accountRegister: "Register",
     accountEmailPlaceholder: "Email",
+    accountEmailLabel: "Email address",
     accountPasswordPlaceholder: "At least 8 characters",
+    accountPasswordLabel: "Password",
     accountGuestNote: "Login is only for automatic game cloud saves. Site browsing is not affected.",
     accountUnavailable: "Cloud save service is temporarily unavailable.",
     accountLoggedIn: "Logged in.",
@@ -274,6 +311,9 @@ const translations = {
     chatNicknameLabel: "My nickname:",
     chatEditNickname: "Edit nickname",
     chatSyncStatus: "Incremental auto refresh, slower while idle",
+    chatSyncStatusActive: "Refreshes about every 5 seconds",
+    chatSyncStatusIdle: "Refreshes about every 15 seconds",
+    chatSyncStatusSlow: "Low-frequency refresh, about every 30 seconds",
     chatInputLabel: "Chat message",
     chatPlaceholder: "Say something...",
     chatSend: "Send",
@@ -285,6 +325,7 @@ const translations = {
     chatEmptyMessage: "Empty messages cannot be sent.",
     chatTooLong: "Messages can be up to 300 characters.",
     chatCooldown: "Too fast. Please wait 3 seconds.",
+    chatSending: "Sending...",
     chatNicknameTaken: "This random nickname is already in use. Getting a new one for you.",
     chatNicknamePrompt: "Enter a new nickname, 2-16 characters:",
     chatNicknameInvalid: "Nickname must be 2-16 characters and cannot be blank.",
@@ -300,16 +341,17 @@ const translations = {
   ja: {
     siteName: "魯粛サイト",
     siteDescription: "Windows XP、ピクセルアート、Y2K 風の個人サイトです。AI、ゲーム、ツール、リソース、動画、知識庫、雑談を記録しています。",
+    rssFeedTitle: "魯粛サイト RSS フィード",
     heroTitle: "魯粛サイト",
     homeLead: "工事中の XP ピクセル小サイトです。",
     navKnowledge: "知識庫",
     navVideos: "動画",
     navVideosBuilding: "動画",
     navResources: "リソース",
-    navResourcesBuilding: "リソース（未定）",
+    navResourcesBuilding: "リソース",
     navGames: "ゲーム",
     navBlog: "雑談",
-    navBlogBuilding: "雑談（未定）",
+    navBlogBuilding: "雑談",
     navChatroom: "匿名チャット",
     navAbout: "プロフィール",
     capKnowledge: "メモ · チュートリアル · 考え",
@@ -335,10 +377,12 @@ const translations = {
     welcomeRecommend: "今のおすすめ：匿名チャット、ゲーム、知識庫。",
     articleLoading: "データベースから記事を読み込み中...",
     articleLoadFailed: "記事を読み込めません。あとで試してください。",
+    articleRetryAction: "記事を再読み込み",
     articleEmpty: "公開済みの記事はまだデータベースにありません。",
     articleSearchLabel: "知識庫を検索",
     articleSearchPlaceholder: "タイトル・概要・タグを検索...",
     articleSearchClear: "クリア",
+    articleSearchReset: "すべての記事を表示",
     articleSearchCount: "{count}件の記事",
     articleSearchFiltered: "{count} / {total} 件を表示",
     articleSearchNoResults: "一致する記事が見つかりません。",
@@ -351,6 +395,7 @@ const translations = {
     articleTocTipTitle: "ヒント",
     articleTocTip: "目次項目をクリックすると対応する章へ移動できます。",
     articleScrollTop: "先頭へ戻る",
+    profileAvatarAlt: "魯粛のアバター",
     articlePublished: "公開日",
     articleCategory: "分類",
     articleFallback: "この言語版がないため、別の言語版を表示しています。",
@@ -361,12 +406,18 @@ const translations = {
     openGameButton: "開く",
     downloadButton: "ダウンロード",
     externalButton: "外部リンク",
-    resourcePending: "準備中",
+    resourcePending: "リンク待ち",
     resourcePendingTitle: "このリソースはまだ整理中で、ダウンロードや外部リンクはありません。",
     resourceStatusReady: "利用可",
     resourceEmptyTitle: "この分類はまだ整理中です",
     resourceEmptyBody: "いったんすべてのリソースに戻れます。ここには後でダウンロード、素材、資料を追加できます。",
     resourceEmptyAction: "すべてのリソースを表示",
+    resourceEmptyAllTitle: "リソースを整理中です",
+    resourceEmptyAllBody: "実際に入手できるツール、素材、資料をここに置く予定です。今はナレッジ欄の公開済み記事をご覧ください。",
+    resourceEmptyAllAction: "ナレッジを見る",
+    blogEmptyTitle: "雑談欄を整理中です",
+    blogEmptyBody: "正式な随筆やサイト記録をここに置く予定です。公開前はナレッジ欄と最近の更新をご覧ください。",
+    blogEmptyAction: "ナレッジを見る",
     openOriginal: "元のページを開く",
     videoFullscreen: "全画面",
     videoRestore: "元に戻す",
@@ -376,12 +427,16 @@ const translations = {
     gameCloudSaveReady: "クラウド保存",
     gameConfigLoading: "ゲーム設定を読み込み中...",
     gameConfigFailed: "ゲーム設定を読み込めません",
+    gameRetryAction: "ゲーム一覧を再読み込み",
+    gameEmptyTitle: "ゲーム一覧を整理中です",
+    gameEmptyBody: "あとで再読み込みするか、知識ベースとサイト更新記録をご覧ください。",
     videoPlaceholder: "Bilibili / YouTube の埋め込みプレイヤー用スペースです。",
     startButton: "ホーム",
     lastUpdatedLabel: "最終更新日",
     brandHomeAria: "デスクトップへ戻る",
     languageSwitcherAria: "言語切り替え",
     desktopIconsAria: "主なセクション",
+    taskbarNavAria: "下部メインナビゲーション",
     windowMinimizeAria: "ウィンドウを最小化",
     windowMaximizeAria: "ウィンドウを最大化",
     closeWindowAria: "ウィンドウを閉じる",
@@ -393,7 +448,9 @@ const translations = {
     accountLogin: "ログイン",
     accountRegister: "登録",
     accountEmailPlaceholder: "メール",
+    accountEmailLabel: "メールアドレス",
     accountPasswordPlaceholder: "8文字以上のパスワード",
+    accountPasswordLabel: "パスワード",
     accountGuestNote: "ログインはゲームの自動クラウドセーブ専用です。サイト閲覧には影響しません。",
     accountUnavailable: "クラウドセーブサービスは一時的に利用できません。",
     accountLoggedIn: "ログインしました。",
@@ -422,6 +479,9 @@ const translations = {
     chatNicknameLabel: "ニックネーム：",
     chatEditNickname: "変更",
     chatSyncStatus: "差分自動更新、待機中は低頻度",
+    chatSyncStatusActive: "約5秒ごとに更新",
+    chatSyncStatusIdle: "約15秒ごとに更新",
+    chatSyncStatusSlow: "低頻度更新、約30秒ごと",
     chatInputLabel: "チャット本文",
     chatPlaceholder: "何か話してみよう...",
     chatSend: "送信",
@@ -433,6 +493,7 @@ const translations = {
     chatEmptyMessage: "空のメッセージは送れません。",
     chatTooLong: "1通は最大300文字です。",
     chatCooldown: "送信が速すぎます。3秒待ってください。",
+    chatSending: "送信中...",
     chatNicknameTaken: "このランダム名はすでに使われています。新しい名前に変更します。",
     chatNicknamePrompt: "2-16文字の新しいニックネームを入力：",
     chatNicknameInvalid: "ニックネームは2-16文字で、空白のみは使えません。",
@@ -482,6 +543,20 @@ const labels = {
 
 const content = {
   updates: [
+    {
+      icon: "🛠️",
+      date: "2026.06.23",
+      title: {
+        zh: "公开体验、无障碍和隐私收尾",
+        en: "Public UX, Accessibility, and Privacy Wrap-up",
+        ja: "公開体験・アクセシビリティ・プライバシー仕上げ"
+      },
+      desc: {
+        zh: "主站按钮点击、弹窗焦点、资源空状态、社交入口、游戏来源链接和访问统计隐私做了一轮集中收口",
+        en: "The public site received a wrap-up pass for button clicks, modal focus, honest empty states, social links, game source links, and analytics privacy",
+        ja: "公開サイトのボタン操作、モーダルのフォーカス、空状態、SNS入口、ゲーム出典リンク、アクセス解析のプライバシーをまとめて整えました"
+      }
+    },
     {
       icon: "🧭",
       date: "2026.06.22",
@@ -1388,9 +1463,17 @@ const videoState = {
   videos: [],
   error: ""
 };
+const gameState = {
+  catalog: null,
+  pending: null
+};
 
 const videoWindowState = {
   maximized: false
+};
+const modalFocusState = {
+  videoTrigger: null,
+  welcomeTrigger: null
 };
 
 const languageStorageKey = "lusu-site-language";
@@ -1525,11 +1608,13 @@ const pageIds = ["home", "knowledge", "videos", "resources", "games", "blog", "c
 const socialLinkPlatforms = [
   { id: "x", label: "X", defaultUrl: "https://x.com/lusu575" },
   { id: "github", label: "GitHub", defaultUrl: "https://github.com/lusu575" },
-  { id: "bilibili", label: "Bilibili", defaultUrl: "https://space.bilibili.com/" },
+  { id: "bilibili", label: "Bilibili", defaultUrl: "" },
   { id: "instagram", label: "Instagram", defaultUrl: "https://www.instagram.com/lusu575/" },
-  { id: "discord", label: "Discord", defaultUrl: "https://discord.com/" }
+  { id: "discord", label: "Discord", defaultUrl: "" }
 ];
 const socialLinkPlatformMap = new Map(socialLinkPlatforms.map((item) => [item.id, item]));
+const trustedResourceExternalHosts = new Set(["github.com", "www.github.com", "raw.githubusercontent.com", "gist.github.com"]);
+const trustedGameExternalHosts = new Set(["github.com", "www.github.com", "github.io"]);
 
 const chatStorageKeys = {
   visitorId: "lusu-chat-visitor-id",
@@ -1537,9 +1622,14 @@ const chatStorageKeys = {
   lastSentAt: "lusu-chat-last-sent-at"
 };
 
+const chatInitialMessageLimit = 100;
+const chatUnanchoredRefreshLimit = 20;
+const chatCooldownMs = 3000;
+
 const chatState = {
   initialized: false,
   loading: false,
+  sending: false,
   hasLoadedInitial: false,
   idlePolls: 0,
   visitorId: "",
@@ -1547,7 +1637,8 @@ const chatState = {
   lastMessageId: "",
   seenMessageIds: new Set(),
   pollTimer: null,
-  lastSentAt: Number(localStorage.getItem(chatStorageKeys.lastSentAt) || "0")
+  pollDelay: 5000,
+  lastSentAt: sanitizeChatLastSentAt(safeStorageGet(chatStorageKeys.lastSentAt, "0"))
 };
 
 function t(key) {
@@ -1568,6 +1659,31 @@ function localText(value) {
   return value?.[currentLang] || value?.zh || value?.en || value?.ja || "";
 }
 
+function safeStorageGet(key, fallback = "") {
+  try {
+    return localStorage.getItem(key) ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function safeStorageSet(key, value) {
+  try {
+    localStorage.setItem(key, value);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function sanitizeChatLastSentAt(value, now = Date.now()) {
+  const timestamp = Number(value);
+  if (!Number.isFinite(timestamp) || timestamp < 0 || timestamp > now) {
+    return 0;
+  }
+  return timestamp;
+}
+
 function decodeHashValue(value) {
   try {
     return decodeURIComponent(String(value || ""));
@@ -1581,7 +1697,7 @@ function parseRouteHash(hash = window.location.hash) {
   if (!raw) {
     return { route: "home", articleSlug: "" };
   }
-  const articleMatch = raw.match(/^knowledge\/article\/([a-z0-9][a-z0-9-]{0,119})$/);
+  const articleMatch = raw.match(/^knowledge\/(?:article\/)?([a-z0-9][a-z0-9-]{0,119})$/);
   if (articleMatch) {
     return { route: "knowledge", articleSlug: articleMatch[1] };
   }
@@ -1641,9 +1757,11 @@ function rssFeedPath(lang = currentLang) {
 function syncRssLinks(lang = currentLang) {
   document.querySelectorAll("[data-rss-link]").forEach((link) => {
     link.href = rssFeedPath(lang);
+    link.title = t("rssFeedTitle");
   });
   document.querySelectorAll("[data-rss-alternate]").forEach((link) => {
     link.href = rssFeedPath(lang);
+    link.title = t("rssFeedTitle");
   });
 }
 
@@ -1679,13 +1797,44 @@ function syncDocumentMeta(lang = currentLang) {
   document.title = title;
   setLinkHref('link[rel="canonical"]', canonicalUrl);
   setMetaContent('meta[name="description"]', description);
+  setMetaContent('meta[property="og:type"]', "website");
   setMetaContent('meta[property="og:site_name"]', title);
   setMetaContent('meta[property="og:title"]', title);
   setMetaContent('meta[property="og:description"]', description);
   setMetaContent('meta[property="og:url"]', canonicalUrl);
+  setMetaContent('meta[property="og:image"]', defaultShareImageUrl);
   setMetaContent('meta[property="og:locale"]', locale);
   setMetaContent('meta[name="twitter:title"]', title);
   setMetaContent('meta[name="twitter:description"]', description);
+  setMetaContent('meta[name="twitter:image"]', defaultShareImageUrl);
+}
+
+function articleShareImageUrl(article) {
+  const safeCover = safeArticleImageSrc(article?.cover_image || "");
+  return safeCover ? `https://lusu575.com/${safeCover}` : defaultShareImageUrl;
+}
+
+function syncArticleDocumentMeta(article) {
+  const siteTitle = t("heroTitle");
+  const articleTitle = String(article?.title || "").trim() || siteTitle;
+  const description = String(article?.summary || "").trim() || t("siteDescription");
+  const canonicalUrl = new URL(articleRouteHref(article?.slug || articleState.currentSlug, currentLang), "https://lusu575.com").href;
+  const locale = { zh: "zh_CN", en: "en_US", ja: "ja_JP" }[currentLang] || "zh_CN";
+  const imageUrl = articleShareImageUrl(article);
+
+  document.title = articleTitle === siteTitle ? siteTitle : `${articleTitle} | ${siteTitle}`;
+  setLinkHref('link[rel="canonical"]', canonicalUrl);
+  setMetaContent('meta[name="description"]', description);
+  setMetaContent('meta[property="og:type"]', "article");
+  setMetaContent('meta[property="og:site_name"]', siteTitle);
+  setMetaContent('meta[property="og:title"]', articleTitle);
+  setMetaContent('meta[property="og:description"]', description);
+  setMetaContent('meta[property="og:url"]', canonicalUrl);
+  setMetaContent('meta[property="og:image"]', imageUrl);
+  setMetaContent('meta[property="og:locale"]', locale);
+  setMetaContent('meta[name="twitter:title"]', articleTitle);
+  setMetaContent('meta[name="twitter:description"]', description);
+  setMetaContent('meta[name="twitter:image"]', imageUrl);
 }
 
 function syncBrowserUrl(route, articleSlug = "") {
@@ -1713,12 +1862,43 @@ function safeHttpUrl(value) {
   }
 }
 
+function hostMatches(hostname, allowedHosts) {
+  const host = String(hostname || "").toLowerCase();
+  return [...allowedHosts].some((allowed) => host === allowed || host.endsWith(`.${allowed}`));
+}
+
+function safeTrustedExternalUrl(value, allowedHosts) {
+  try {
+    const url = new URL(String(value || "").trim());
+    return url.protocol === "https:" && hostMatches(url.hostname, allowedHosts) ? url.href : "";
+  } catch {
+    return "";
+  }
+}
+
+function safeGithubUrl(value) {
+  try {
+    const url = new URL(String(value || "").trim());
+    if (url.protocol !== "https:" || !["github.com", "www.github.com"].includes(url.hostname.toLowerCase())) {
+      return "";
+    }
+    if (!/^\/[a-z0-9_.-]+\/[a-z0-9_.-]+\/?$/i.test(url.pathname)) {
+      return "";
+    }
+    url.search = "";
+    url.hash = "";
+    return url.href;
+  } catch {
+    return "";
+  }
+}
+
 function normalizeSocialLinksPayload(payload) {
   const source = Array.isArray(payload?.links) ? payload.links : [];
   return source.reduce((result, item) => {
-    const platform = String(item?.platform || item?.id || "").trim();
+    const platform = String(item?.platform || item?.id || "").trim().toLowerCase();
     const url = safeHttpUrl(item?.url);
-    if (platform && url) {
+    if (socialLinkPlatformMap.has(platform) && url) {
       result[platform] = url;
     }
     return result;
@@ -1731,7 +1911,14 @@ function syncSocialLinks(links = {}) {
     if (!platform) {
       return;
     }
-    const url = safeHttpUrl(links[platform.id]) || platform.defaultUrl;
+    const url = safeHttpUrl(links[platform.id]) || safeHttpUrl(platform.defaultUrl);
+    anchor.hidden = !url;
+    if (!url) {
+      anchor.removeAttribute("href");
+      anchor.removeAttribute("title");
+      anchor.removeAttribute("aria-label");
+      return;
+    }
     anchor.href = url;
     anchor.title = platform.label;
     anchor.setAttribute("aria-label", platform.label);
@@ -1775,18 +1962,17 @@ function safeGameEntry(value) {
 function buildGameUrl(item) {
   if (item.playUrl) {
     const value = String(item.playUrl).trim();
-    const external = safeHttpUrl(value);
+    const external = safeTrustedExternalUrl(value, trustedGameExternalHosts);
     if (external) {
       return external;
     }
-    const localPath = value.replace(/^\.?\//, "");
-    return /^[a-z0-9._/-]+$/i.test(localPath) ? sitePath(localPath) : "";
+    return "";
   }
   if (item.externalUrl) {
-    return safeHttpUrl(item.externalUrl);
+    return safeTrustedExternalUrl(item.externalUrl, trustedGameExternalHosts);
   }
   if (item.repo && !item.entry) {
-    return safeHttpUrl(item.repo);
+    return safeGithubUrl(item.repo);
   }
   const entry = safeGameEntry(item.entry);
   return entry ? `/games/${entry}?lang=${encodeURIComponent(currentLang)}` : "";
@@ -1806,6 +1992,7 @@ function languageSupportTagElements(item) {
     const tag = document.createElement("span");
     tag.className = `tag language-tag${supported[lang] ? " supported" : " unsupported"}`;
     tag.title = title;
+    tag.setAttribute("aria-label", title);
     tag.textContent = `${name} ${supported[lang] ? "✓" : "×"}`;
     return tag;
   });
@@ -1818,7 +2005,7 @@ function isExternalGameUrl(url) {
 function setLanguage(lang, options = {}) {
   currentLang = lang;
   if (options.persist) {
-    localStorage.setItem(languageStorageKey, lang);
+    safeStorageSet(languageStorageKey, lang);
   }
   if (options.syncUrl) {
     syncLanguageUrl(lang);
@@ -1843,6 +2030,10 @@ function setLanguage(lang, options = {}) {
     node.setAttribute("title", t(node.dataset.i18nTitle));
   });
 
+  document.querySelectorAll("[data-i18n-alt]").forEach((node) => {
+    node.setAttribute("alt", t(node.dataset.i18nAlt));
+  });
+
   document.querySelectorAll(".lang-button").forEach((button) => {
     const active = button.dataset.lang === lang;
     button.classList.toggle("active", active);
@@ -1855,11 +2046,12 @@ function setLanguage(lang, options = {}) {
   updateWelcomeGreeting();
   updateVideoWindowButton();
   renderAccountWidget();
+  updateChatSyncStatus();
 }
 
 function navigate(route, options = {}) {
   const nextRoute = pageIds.includes(route) ? route : "home";
-  if (nextRoute === "home" && articleState.currentSlug) {
+  if (!(nextRoute === "knowledge" && options.articleSlug) && articleState.currentSlug) {
     articleState.currentSlug = "";
     articleState.currentArticle = null;
     articleState.detailLoadingKey = "";
@@ -1874,7 +2066,10 @@ function navigate(route, options = {}) {
     initChatroom();
   }
   if (options.updateUrl !== false && options.updateHash !== false) {
-    syncBrowserUrl(nextRoute, nextRoute === "knowledge" ? options.articleSlug || "" : "");
+      syncBrowserUrl(nextRoute, nextRoute === "knowledge" ? options.articleSlug || "" : "");
+  }
+  if (!(nextRoute === "knowledge" && options.articleSlug)) {
+    syncDocumentMeta();
   }
   window.scrollTo({ top: 0, behavior: "auto" });
 }
@@ -1910,9 +2105,9 @@ function syncRouteFromLocation() {
       articleState.detailLoadingKey = "";
     }
   }
-  navigate(parsed.route, { updateUrl: false });
+  navigate(parsed.route, { updateUrl: false, articleSlug: parsed.articleSlug || "" });
   if (parsed.route === "knowledge") {
-    closeWelcome();
+    closeWelcome({ restoreFocus: false });
     renderKnowledge();
   }
 }
@@ -1978,7 +2173,10 @@ function renderKnowledge() {
   }
   if (articleState.error) {
     renderKnowledgeSearchControls(null, null);
-    renderListMessage(list, t("articleLoadFailed"));
+    renderListMessage(list, t("articleLoadFailed"), {
+      label: t("articleRetryAction"),
+      dataset: { articleRetry: "" }
+    });
     return;
   }
 
@@ -1990,26 +2188,48 @@ function renderKnowledge() {
     return;
   }
   if (!items.length) {
-    renderListMessage(list, t("articleSearchNoResults"));
+    renderListMessage(list, t("articleSearchNoResults"), {
+      label: t("articleSearchReset"),
+      dataset: { articleSearchReset: "" }
+    });
     return;
   }
 
   list.replaceChildren(...items.map((item) => articleCardElement(item)));
 }
 
-function renderListMessage(list, message) {
+function renderListMessage(list, message, action = null) {
   const note = document.createElement("p");
   note.className = "loading-text";
   note.textContent = message;
-  list.replaceChildren(note);
+  markStatusMessage(note);
+  if (!action) {
+    list.replaceChildren(note);
+    return;
+  }
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "xp-button";
+  button.textContent = action.label;
+  Object.entries(action.dataset || {}).forEach(([key, value]) => {
+    button.dataset[key] = value;
+  });
+  list.replaceChildren(note, button);
+}
+
+function markStatusMessage(node) {
+  node.setAttribute("role", "status");
+  node.setAttribute("aria-live", "polite");
+  node.setAttribute("aria-atomic", "true");
 }
 
 function articleCardElement(item) {
   const card = document.createElement("article");
   card.className = "article-card";
+  const titleText = item.title || "";
 
   const title = document.createElement("h3");
-  title.textContent = item.title || "";
+  title.textContent = titleText;
   const summary = document.createElement("p");
   summary.textContent = item.summary || "";
 
@@ -2039,6 +2259,11 @@ function articleCardElement(item) {
   action.href = articleRouteHref(item.slug);
   action.dataset.articleSlug = item.slug;
   action.textContent = t("readButton");
+  if (titleText) {
+    const actionLabel = `${t("readButton")}: ${titleText}`;
+    action.setAttribute("aria-label", actionLabel);
+    action.setAttribute("title", actionLabel);
+  }
 
   card.append(title, summary, meta, action);
   return card;
@@ -2092,19 +2317,33 @@ function articleMatchesSearch(item) {
 
 function renderKnowledgeCategoryButtons(categories) {
   const target = document.getElementById("knowledge-categories");
+  const counts = new Map(categories.map((category) => [String(category), 0]));
+  articleState.articles.forEach((item) => {
+    const key = String(item.category || "");
+    if (counts.has(key)) {
+      counts.set(key, counts.get(key) + 1);
+    }
+  });
+
   const buttons = ["all", ...categories].map((category) => {
     const value = String(category);
+    const active = activeFilters.knowledge === value;
+    const countValue = value === "all" ? articleState.articles.length : counts.get(value) || 0;
     const button = document.createElement("button");
     button.type = "button";
-    button.className = `${activeFilters.knowledge === value ? "active " : ""}category-button`;
+    button.className = `${active ? "active " : ""}category-button`;
     button.dataset.filterType = "knowledge";
     button.dataset.filter = value;
     const labelText = articleCategoryName(value);
     button.title = labelText;
-    button.setAttribute("aria-label", labelText);
+    button.setAttribute("aria-label", `${labelText} ${countValue}`);
+    button.setAttribute("aria-pressed", String(active));
     const labelNode = document.createElement("span");
     labelNode.textContent = labelText;
-    button.appendChild(labelNode);
+    const countNode = document.createElement("span");
+    countNode.className = "filter-count";
+    countNode.textContent = String(countValue);
+    button.append(labelNode, countNode);
     return button;
   });
   target.replaceChildren(...buttons);
@@ -2166,6 +2405,7 @@ async function loadArticles() {
     if (requestId !== articleState.requestId) {
       return;
     }
+    articleState.detailCache.clear();
     articleState.articles = visiblePublicArticles(payload.articles || []);
     renderUpdates();
   } catch (error) {
@@ -2243,6 +2483,7 @@ async function loadArticleDetail(slug) {
   const body = document.getElementById("article-detail-body");
 
   clearArticleCopyStatus();
+  syncDocumentMeta();
   title.textContent = t("articleLoading");
   summary.textContent = "";
   meta.replaceChildren();
@@ -2259,14 +2500,40 @@ async function loadArticleDetail(slug) {
     articleState.detailCache.set(detailKey, articleState.currentArticle);
     renderArticleDetail(articleState.currentArticle);
   } catch {
-    if (requestId === articleState.detailRequestId) {
-      title.textContent = t("articleLoadFailed");
+    if (articleState.currentSlug === slug && requestId === articleState.detailRequestId) {
+      renderArticleDetailFailure(slug);
     }
   } finally {
     if (requestId === articleState.detailRequestId) {
       articleState.detailLoadingKey = "";
     }
   }
+}
+
+function renderArticleDetailFailure(slug) {
+  const title = document.getElementById("article-detail-title");
+  const summary = document.getElementById("article-detail-summary");
+  const meta = document.getElementById("article-detail-meta");
+  const body = document.getElementById("article-detail-body");
+
+  clearArticleCopyStatus();
+  syncDocumentMeta();
+  resetArticleReadProgress();
+  resetArticleToc();
+  title.textContent = t("articleLoadFailed");
+  summary.textContent = "";
+  meta.replaceChildren();
+
+  const note = document.createElement("p");
+  note.className = "loading-text";
+  note.textContent = t("articleLoadFailed");
+  markStatusMessage(note);
+  const action = document.createElement("button");
+  action.type = "button";
+  action.className = "xp-button";
+  action.dataset.articleDetailRetry = slug;
+  action.textContent = t("articleRetryAction");
+  body.replaceChildren(note, action);
 }
 
 function renderArticleDetail(article) {
@@ -2295,6 +2562,7 @@ function renderArticleDetail(article) {
   renderMarkdownSafe(body, stripRepeatedArticleHeading(article.content_markdown || "", article.title || ""));
   renderArticleToc();
   scheduleArticleReadProgressUpdate();
+  syncArticleDocumentMeta(article);
 }
 
 function resetArticleToc() {
@@ -2329,13 +2597,16 @@ function renderArticleToc() {
   const buttons = headings.map(({ heading, index, text }, itemIndex) => {
     const id = articleHeadingId(index);
     heading.id = id;
+    heading.tabIndex = -1;
     const button = document.createElement("button");
     button.type = "button";
     button.className = `article-toc-link level-${heading.tagName === "H3" ? "3" : "2"}`;
     if (itemIndex === 0) {
       button.classList.add("is-active");
+      button.setAttribute("aria-current", "location");
     }
     button.dataset.articleHeadingTarget = id;
+    button.setAttribute("aria-controls", id);
     button.textContent = text;
     return button;
   });
@@ -2364,7 +2635,13 @@ function updateArticleTocActive() {
     }
   });
   links.forEach((button) => {
-    button.classList.toggle("is-active", button.dataset.articleHeadingTarget === activeId);
+    const active = button.dataset.articleHeadingTarget === activeId;
+    button.classList.toggle("is-active", active);
+    if (active) {
+      button.setAttribute("aria-current", "location");
+    } else {
+      button.removeAttribute("aria-current");
+    }
   });
 }
 
@@ -2377,6 +2654,7 @@ function scrollToArticleHeading(targetId) {
     return;
   }
   heading.scrollIntoView({ block: "start", behavior: "smooth" });
+  heading.focus({ preventScroll: true });
   updateArticleTocActive();
   scheduleArticleReadProgressUpdate();
 }
@@ -2516,7 +2794,7 @@ function showArticle(slug) {
   articleState.currentArticle = null;
   articleState.detailLoadingKey = "";
   navigate("knowledge", { articleSlug: slug });
-  closeWelcome();
+  closeWelcome({ restoreFocus: false });
   renderKnowledge();
 }
 
@@ -2536,12 +2814,12 @@ function showArticleCategory(category) {
   articleState.currentArticle = null;
   articleState.detailLoadingKey = "";
   navigate("knowledge");
-  closeWelcome();
+  closeWelcome({ restoreFocus: false });
   renderKnowledge();
 }
 
 async function articleApi(path) {
-  const response = await fetch(path, { headers: { "Accept": "application/json" } });
+  const response = await fetch(path, { cache: "no-store", headers: { "Accept": "application/json" } });
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) {
     throw new Error(payload.error || `HTTP ${response.status}`);
@@ -2829,11 +3107,20 @@ function renderVideoStatusState(kind) {
 
   const copy = document.createElement("div");
   copy.className = "video-empty-copy";
+  markStatusMessage(copy);
   const title = document.createElement("h3");
   title.textContent = videoUiText(kind);
 
   copy.appendChild(title);
   state.append(icon, copy);
+  if (kind === "failed") {
+    const action = document.createElement("button");
+    action.type = "button";
+    action.className = "xp-button";
+    action.dataset.videoRetry = "";
+    action.textContent = videoUiText("retryAction");
+    state.appendChild(action);
+  }
   return state;
 }
 
@@ -2867,19 +3154,35 @@ function renderVideoEmptyState(isFiltered = false) {
 function renderVideoCategoryButtons() {
   const target = document.getElementById("video-categories");
   target.replaceChildren();
+  const counts = new Map(videoState.categories.map((category) => [category.category_id, 0]));
+  videoState.videos.forEach((item) => {
+    (item.categories || []).forEach((category) => {
+      const key = category.category_id;
+      if (counts.has(key)) {
+        counts.set(key, counts.get(key) + 1);
+      }
+    });
+  });
+
   const categories = [{ category_id: "all", name: t("all") }, ...videoState.categories];
   categories.forEach((category) => {
     const button = document.createElement("button");
     const name = category.name || category.name_zh || category.slug || t("all");
+    const countValue = category.category_id === "all" ? videoState.videos.length : counts.get(category.category_id) || 0;
     button.type = "button";
     button.dataset.filterType = "videos";
     button.dataset.filter = category.category_id;
     button.title = name;
-    button.setAttribute("aria-label", name);
-    button.classList.toggle("active", activeFilters.videos === category.category_id);
+    button.setAttribute("aria-label", `${name} ${countValue}`);
+    const active = activeFilters.videos === category.category_id;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
     const labelNode = document.createElement("span");
     labelNode.textContent = name;
-    button.appendChild(labelNode);
+    const countNode = document.createElement("span");
+    countNode.className = "filter-count";
+    countNode.textContent = String(countValue);
+    button.append(labelNode, countNode);
     target.appendChild(button);
   });
 }
@@ -2887,12 +3190,14 @@ function renderVideoCategoryButtons() {
 function videoCardElement(item) {
   const card = document.createElement("article");
   card.className = "video-card";
+  const videoTitleText = item.title || videoUiText("untitled");
+  const videoPlayLabel = `${videoUiText("playAria")}: ${videoTitleText}`;
 
   const thumb = document.createElement("button");
   thumb.type = "button";
   thumb.className = "video-thumb";
   thumb.dataset.videoId = item.video_id;
-  thumb.setAttribute("aria-label", videoUiText("playAria"));
+  thumb.setAttribute("aria-label", videoPlayLabel);
   const thumbnailUrl = safeVideoThumbnailSrc(item.thumbnail_url);
   if (thumbnailUrl) {
     const image = document.createElement("img");
@@ -2915,7 +3220,7 @@ function videoCardElement(item) {
   platform.className = `platform ${String(item.platform || "").toLowerCase()}`;
   platform.textContent = item.platform === "youtube" ? "YouTube" : "Bilibili";
   const title = document.createElement("h3");
-  title.textContent = item.title || videoUiText("untitled");
+  title.textContent = videoTitleText;
   const desc = document.createElement("p");
   desc.textContent = item.description || videoUiText("noDescription");
   const meta = document.createElement("div");
@@ -2929,6 +3234,7 @@ function videoCardElement(item) {
   button.className = "card-action";
   button.type = "button";
   button.dataset.videoId = item.video_id;
+  button.setAttribute("aria-label", videoPlayLabel);
   button.textContent = t("playButton");
 
   body.append(platform, title, desc, meta, button);
@@ -3045,6 +3351,7 @@ function videoUiText(key) {
     emptyBody: { zh: "这里会放 Bilibili / YouTube 作品、收藏和网站施工记录。可以先查看最近的网站更新。", en: "Bilibili / YouTube works, favorites, and build logs will live here. You can check recent site updates first.", ja: "ここには Bilibili / YouTube の作品、保存動画、制作記録を置く予定です。まずは最近のサイト更新を確認できます。" },
     emptyFiltered: { zh: "当前分类暂时没有公开视频，换个分类或先看看网站更新记录。", en: "This category has no published videos yet. Try another category or check site updates.", ja: "このカテゴリには公開動画がまだありません。別のカテゴリ、またはサイト更新記録を確認してください。" },
     emptyAction: { zh: "查看网站更新", en: "View site updates", ja: "サイト更新を見る" },
+    retryAction: { zh: "重新读取视频", en: "Retry loading videos", ja: "動画を再読み込み" },
     untitled: { zh: "未命名视频", en: "Untitled video", ja: "無題の動画" },
     noDescription: { zh: "暂无简介。", en: "No description yet.", ja: "説明はまだありません。" },
     unsupported: { zh: "该视频暂不支持站内播放", en: "This video cannot be played inline right now.", ja: "この動画は現在サイト内再生に対応していません。" },
@@ -3060,7 +3367,7 @@ function safeResourceUrl(item) {
   }
   const httpUrl = safeHttpUrl(value);
   if (httpUrl) {
-    return httpUrl;
+    return item.external === true ? safeTrustedExternalUrl(value, trustedResourceExternalHosts) : "";
   }
   const localPath = value.replace(/^\/+/, "").replace(/^\.\//, "");
   if (/(^|\/)\.\.(\/|$)/.test(localPath)) {
@@ -3073,24 +3380,24 @@ function safeResourceUrl(item) {
 }
 
 function resourceActionElement(item, url = safeResourceUrl(item)) {
+  const resourceTitle = contentTitle(item.title);
   const text = url
     ? item.external ? t("externalButton") : t("downloadButton")
     : t("resourcePending");
   if (!url) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "card-action is-disabled";
-    button.disabled = true;
-    button.setAttribute("aria-disabled", "true");
-    button.setAttribute("aria-label", t("resourcePendingTitle"));
-    button.setAttribute("title", t("resourcePendingTitle"));
-    button.textContent = text;
-    return button;
+    const status = document.createElement("span");
+    status.className = "card-action resource-pending-action";
+    status.setAttribute("role", "status");
+    status.setAttribute("aria-label", `${t("resourcePendingTitle")}: ${resourceTitle}`);
+    status.setAttribute("title", t("resourcePendingTitle"));
+    status.textContent = text;
+    return status;
   }
   const link = document.createElement("a");
   link.className = "card-action";
   link.href = url;
   link.textContent = text;
+  link.setAttribute("aria-label", `${text}: ${resourceTitle}`);
   if (item.external || /^https?:\/\//i.test(url)) {
     link.target = "_blank";
     link.rel = "noreferrer noopener";
@@ -3098,37 +3405,50 @@ function resourceActionElement(item, url = safeResourceUrl(item)) {
   return link;
 }
 
-function resourceStatusElement(url) {
+function resourceStatusElement(url, title) {
   const status = document.createElement("span");
   status.className = `tag resource-status-tag ${url ? "is-ready" : "is-pending"}`;
-  status.textContent = url ? t("resourceStatusReady") : t("resourcePending");
+  const text = url ? t("resourceStatusReady") : t("resourcePending");
+  status.textContent = text;
+  status.setAttribute("aria-label", `${text}: ${title}`);
+  status.setAttribute("title", `${text}: ${title}`);
   return status;
 }
 
-function resourceEmptyStateElement() {
+function resourceEmptyStateElement({ hasAnyReady = true } = {}) {
   const state = document.createElement("div");
   state.className = "resource-empty-state";
 
   const icon = document.createElement("span");
   icon.className = "resource-empty-icon";
+  icon.setAttribute("aria-hidden", "true");
   icon.textContent = "🗂️";
 
   const copy = document.createElement("div");
   copy.className = "resource-empty-copy";
   const title = document.createElement("h3");
-  title.textContent = t("resourceEmptyTitle");
+  title.textContent = hasAnyReady ? t("resourceEmptyTitle") : t("resourceEmptyAllTitle");
   const body = document.createElement("p");
-  body.textContent = t("resourceEmptyBody");
+  body.textContent = hasAnyReady ? t("resourceEmptyBody") : t("resourceEmptyAllBody");
   copy.append(title, body);
 
   const action = document.createElement("button");
   action.type = "button";
   action.className = "xp-button";
-  action.dataset.resourceShowAll = "true";
-  action.textContent = t("resourceEmptyAction");
+  if (hasAnyReady) {
+    action.dataset.resourceShowAll = "true";
+    action.textContent = t("resourceEmptyAction");
+  } else {
+    action.dataset.route = "knowledge";
+    action.textContent = t("resourceEmptyAllAction");
+  }
 
   state.append(icon, copy, action);
   return state;
+}
+
+function readyResourceItems() {
+  return content.resources.filter((item) => safeResourceUrl(item));
 }
 
 function resourceCardElement(item) {
@@ -3142,47 +3462,54 @@ function resourceCardElement(item) {
   const title = document.createElement("h3");
   const icon = document.createElement("span");
   icon.className = "resource-icon";
+  icon.setAttribute("aria-hidden", "true");
   icon.textContent = item.icon || "";
-  title.append(icon, document.createTextNode(contentTitle(item.title)));
+  const resourceTitle = contentTitle(item.title);
+  title.append(icon, document.createTextNode(resourceTitle));
 
   const desc = document.createElement("p");
   desc.textContent = localText(item.desc);
 
   const meta = document.createElement("div");
   meta.className = "meta-row";
-  [
-    `${label("type")}：${label("resourceCategories")[item.category] || ""}`,
-    `${label("version")}：${item.version || ""}`,
-    `${label("size")}：${item.size || ""}`,
-    `${label("updated")}：${item.updated || ""}`
-  ].forEach((text) => {
+  const metaItems = [
+    `${label("type")}\uFF1A${label("resourceCategories")[item.category] || ""}`
+  ];
+  if (resourceUrl) {
+    metaItems.push(
+      `${label("version")}\uFF1A${item.version || ""}`,
+      `${label("size")}\uFF1A${item.size || ""}`,
+      `${label("updated")}\uFF1A${item.updated || ""}`
+    );
+  }
+  metaItems.forEach((text) => {
     const itemNode = document.createElement("span");
     itemNode.textContent = text;
     meta.appendChild(itemNode);
   });
-  meta.appendChild(resourceStatusElement(resourceUrl));
+  meta.appendChild(resourceStatusElement(resourceUrl, resourceTitle));
 
   main.append(title, desc, meta);
   card.append(main, resourceActionElement(item, resourceUrl));
   return card;
 }
 
-function renderResourceCategoryButtons() {
+function renderResourceCategoryButtons(items = readyResourceItems()) {
   const target = document.getElementById("resource-categories");
   const categories = label("resourceCategories");
   const counts = new Map(categories.map((_, index) => [String(index), 0]));
-  content.resources.forEach((item) => {
+  items.forEach((item) => {
     const key = String(item.category);
     counts.set(key, (counts.get(key) || 0) + 1);
   });
 
   const entries = [
-    { name: t("all"), value: "all", count: content.resources.length },
+    { name: t("all"), value: "all", count: items.length },
     ...categories.map((name, index) => ({
       name,
       value: String(index),
       count: counts.get(String(index)) || 0
-    }))
+    })).filter((entry) => entry.count > 0 || activeFilters.resources === entry.value)
   ];
 
   const buttons = entries.map((entry) => {
@@ -3191,6 +3518,7 @@ function renderResourceCategoryButtons() {
     button.dataset.filterType = "resources";
     button.dataset.filter = entry.value;
     button.classList.toggle("active", activeFilters.resources === entry.value);
+    button.setAttribute("aria-pressed", String(activeFilters.resources === entry.value));
     button.setAttribute("aria-label", `${entry.name} ${entry.count}`);
 
     const name = document.createElement("span");
@@ -3206,42 +3534,116 @@ function renderResourceCategoryButtons() {
 }
 
 function renderResources() {
-  renderResourceCategoryButtons();
   const list = document.getElementById("resource-list");
-  const items = content.resources.filter((item) => activeFilters.resources === "all" || String(item.category) === activeFilters.resources);
+  const readyItems = readyResourceItems();
+  if (activeFilters.resources !== "all" && !readyItems.some((item) => String(item.category) === activeFilters.resources)) {
+    activeFilters.resources = "all";
+  }
+  renderResourceCategoryButtons(readyItems);
+  const items = readyItems.filter((item) => activeFilters.resources === "all" || String(item.category) === activeFilters.resources);
 
   list.replaceChildren();
   if (items.length === 0) {
-    list.appendChild(resourceEmptyStateElement());
+    list.appendChild(resourceEmptyStateElement({ hasAnyReady: readyItems.length > 0 }));
     return;
   }
   items.forEach((item) => list.appendChild(resourceCardElement(item)));
 }
 
-async function loadGameCatalog() {
-  const response = await fetch("/games/catalog.json", { cache: "no-store" });
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status}`);
+async function loadGameCatalog({ forceRefresh = false } = {}) {
+  if (gameState.catalog && !forceRefresh) {
+    return gameState.catalog;
   }
-  return response.json();
+  if (gameState.pending && !forceRefresh) {
+    return gameState.pending;
+  }
+  const pending = fetch("/games/catalog.json", { cache: "no-store" }).then(async (response) => {
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    const catalog = await response.json();
+    if (!Array.isArray(catalog.games)) {
+      throw new Error("Invalid games catalog");
+    }
+    gameState.catalog = catalog;
+    return catalog;
+  });
+  gameState.pending = pending;
+  try {
+    return await pending;
+  } finally {
+    if (gameState.pending === pending) {
+      gameState.pending = null;
+    }
+  }
 }
 
-async function renderGames() {
+async function renderGames({ forceRefresh = false } = {}) {
   const list = document.getElementById("game-list");
+  if (gameState.catalog && !forceRefresh) {
+    renderGameCatalog(list, gameState.catalog);
+    return;
+  }
   const loading = document.createElement("p");
   loading.className = "loading-text";
   loading.textContent = t("gameConfigLoading");
+  markStatusMessage(loading);
   list.replaceChildren(loading);
   try {
-    const catalog = await loadGameCatalog();
-    list.replaceChildren();
-    catalog.games.forEach((item) => list.appendChild(gameCardElement(item)));
+    const catalog = await loadGameCatalog({ forceRefresh });
+    renderGameCatalog(list, catalog);
   } catch (error) {
     const failed = document.createElement("p");
     failed.className = "loading-text";
     failed.textContent = `${t("gameConfigFailed")}：${error.message}`;
-    list.replaceChildren(failed);
+    markStatusMessage(failed);
+    const action = document.createElement("button");
+    action.type = "button";
+    action.className = "xp-button";
+    action.dataset.gameRetry = "";
+    action.textContent = t("gameRetryAction");
+    list.replaceChildren(failed, action);
   }
+}
+
+function renderGameCatalog(list, catalog) {
+  if (!Array.isArray(catalog.games)) {
+    throw new Error("Invalid games catalog");
+  }
+  list.replaceChildren();
+  if (!catalog.games.length) {
+    list.appendChild(renderGameEmptyState());
+    return;
+  }
+  catalog.games.forEach((item) => list.appendChild(gameCardElement(item)));
+}
+
+function renderGameEmptyState() {
+  const state = document.createElement("article");
+  state.className = "game-empty-state";
+
+  const icon = document.createElement("span");
+  icon.className = "game-empty-icon";
+  icon.setAttribute("aria-hidden", "true");
+  icon.textContent = "▣";
+
+  const copy = document.createElement("div");
+  copy.className = "game-empty-copy";
+  markStatusMessage(copy);
+  const title = document.createElement("h3");
+  title.textContent = t("gameEmptyTitle");
+  const body = document.createElement("p");
+  body.textContent = t("gameEmptyBody");
+  copy.append(title, body);
+
+  const action = document.createElement("button");
+  action.type = "button";
+  action.className = "xp-button";
+  action.dataset.gameRetry = "";
+  action.textContent = t("gameRetryAction");
+
+  state.append(icon, copy, action);
+  return state;
 }
 
 function gameCardElement(item) {
@@ -3278,15 +3680,18 @@ function gameCardElement(item) {
     const save = document.createElement("span");
     save.className = "tag game-save-tag";
     save.textContent = t("gameCloudSaveReady");
+    save.setAttribute("aria-label", `${titleText}: ${t("gameCloudSaveReady")}`);
+    save.setAttribute("title", `${titleText}: ${t("gameCloudSaveReady")}`);
     meta.appendChild(save);
   }
-  const repoUrl = safeHttpUrl(item.repo);
+  const repoUrl = safeGithubUrl(item.repo);
   if (repoUrl) {
     const source = document.createElement("a");
     source.className = "tag game-source-link";
     source.href = repoUrl;
     source.target = "_blank";
     source.rel = "noreferrer noopener";
+    source.setAttribute("aria-label", `${t("gameSourceLabel")}: ${titleText}`);
     source.textContent = t("gameSourceLabel");
     meta.appendChild(source);
   }
@@ -3307,6 +3712,7 @@ function gameCardElement(item) {
     action.rel = "noreferrer";
   }
   action.textContent = item.external || item.playUrl || item.externalUrl ? t("openGameButton") : t("startGameButton");
+  action.setAttribute("aria-label", `${action.textContent}: ${titleText}`);
 
   card.append(cover, main, action);
   return card;
@@ -3315,9 +3721,10 @@ function gameCardElement(item) {
 function blogCardElement(item) {
   const card = document.createElement("article");
   card.className = "blog-card";
+  const titleText = contentTitle(item.title);
 
   const title = document.createElement("h3");
-  title.textContent = contentTitle(item.title);
+  title.textContent = titleText;
 
   const desc = document.createElement("p");
   desc.textContent = localText(item.desc);
@@ -3337,17 +3744,55 @@ function blogCardElement(item) {
   const action = document.createElement("button");
   action.type = "button";
   action.className = "card-action is-disabled";
-  action.disabled = true;
+  action.setAttribute("aria-disabled", "true");
+  action.setAttribute("aria-label", `${t("blogPending")}: ${titleText}`);
+  action.setAttribute("title", `${t("blogPending")}: ${titleText}`);
   action.textContent = t("blogPending");
 
   card.append(title, desc, meta, action);
   return card;
 }
 
+function blogEmptyStateElement() {
+  const state = document.createElement("article");
+  state.className = "resource-empty-state blog-empty-state";
+
+  const icon = document.createElement("span");
+  icon.className = "resource-empty-icon";
+  icon.setAttribute("aria-hidden", "true");
+  icon.textContent = "✎";
+
+  const copy = document.createElement("div");
+  copy.className = "resource-empty-copy";
+  const title = document.createElement("h3");
+  title.textContent = t("blogEmptyTitle");
+  const body = document.createElement("p");
+  body.textContent = t("blogEmptyBody");
+  copy.append(title, body);
+
+  const action = document.createElement("button");
+  action.type = "button";
+  action.className = "xp-button";
+  action.dataset.route = "knowledge";
+  action.textContent = t("blogEmptyAction");
+
+  state.append(icon, copy, action);
+  return state;
+}
+
+function publishedBlogItems() {
+  return content.blog.filter((item) => item.published === true || item.url || item.content);
+}
+
 function renderBlog() {
   const list = document.getElementById("blog-list");
   list.replaceChildren();
-  content.blog.forEach((item) => list.appendChild(blogCardElement(item)));
+  const items = publishedBlogItems();
+  if (!items.length) {
+    list.appendChild(blogEmptyStateElement());
+    return;
+  }
+  items.forEach((item) => list.appendChild(blogCardElement(item)));
 }
 
 function renderUpdates() {
@@ -3359,6 +3804,7 @@ function renderUpdates() {
     const emptyItem = document.createElement("li");
     const icon = document.createElement("span");
     icon.className = "update-icon";
+    icon.setAttribute("aria-hidden", "true");
     icon.textContent = "📚";
     const copy = document.createElement("span");
     const title = document.createElement("strong");
@@ -3459,18 +3905,26 @@ function openVideo(index) {
     window.lusuTrackClick?.("video:play-failed", "video not found", { route: "videos" });
     return;
   }
+  modalFocusState.videoTrigger = document.activeElement && !modal.contains(document.activeElement)
+    ? document.activeElement
+    : null;
   const videoTitle = localText(video.title) || "Video Player";
   document.getElementById("modal-title").textContent = videoTitle;
   if (sourceLink) {
     const originalUrl = safeVideoSourceUrl(video.original_url || video.url || "");
     if (originalUrl) {
+      const sourceLabel = `${t("openOriginal")}: ${videoTitle}`;
       sourceLink.href = originalUrl;
       sourceLink.target = "_blank";
       sourceLink.rel = "noreferrer noopener";
+      sourceLink.setAttribute("aria-label", sourceLabel);
+      sourceLink.setAttribute("title", sourceLabel);
       sourceLink.hidden = false;
     } else {
       sourceLink.hidden = true;
       sourceLink.removeAttribute("href");
+      sourceLink.removeAttribute("aria-label");
+      sourceLink.removeAttribute("title");
     }
   }
   const embedUrl = videoAutoplayUrl(video.embed_url);
@@ -3495,6 +3949,7 @@ function openVideo(index) {
     placeholder.className = "video-placeholder";
     const icon = document.createElement("span");
     icon.textContent = "!";
+    icon.setAttribute("aria-hidden", "true");
     const text = document.createElement("p");
     text.textContent = video.metadata_error || videoUiText("unsupported");
     placeholder.append(icon, text);
@@ -3503,6 +3958,7 @@ function openVideo(index) {
   }
   modal.hidden = false;
   setVideoWindowMaximized(false);
+  modal.querySelector("button[data-close-modal]")?.focus({ preventScroll: true });
 }
 
 function updateVideoWindowButton() {
@@ -3527,28 +3983,118 @@ function fullscreenVideo() {
   setVideoWindowMaximized(!videoWindowState.maximized);
 }
 
-function closeVideo() {
+function restoreModalFocus(key) {
+  const target = modalFocusState[key];
+  modalFocusState[key] = null;
+  if (target && document.contains(target) && typeof target.focus === "function") {
+    target.focus({ preventScroll: true });
+  }
+}
+
+function closeVideo(options = {}) {
+  const modal = document.getElementById("video-modal");
+  const wasOpen = modal && !modal.hidden;
   setVideoWindowMaximized(false);
-  document.getElementById("video-modal").hidden = true;
+  if (modal) {
+    modal.hidden = true;
+  }
   const frame = document.getElementById("video-frame");
   const sourceLink = document.getElementById("video-link");
   frame.replaceChildren();
   if (sourceLink) {
     sourceLink.hidden = true;
     sourceLink.removeAttribute("href");
+    sourceLink.removeAttribute("aria-label");
+    sourceLink.removeAttribute("title");
   }
   const placeholder = document.createElement("div");
   placeholder.className = "video-placeholder";
   const icon = document.createElement("span");
   icon.textContent = "▶";
+  icon.setAttribute("aria-hidden", "true");
   const text = document.createElement("p");
   text.textContent = t("videoPlaceholder");
   placeholder.append(icon, text);
   frame.appendChild(placeholder);
+  if (wasOpen && options.restoreFocus !== false) {
+    restoreModalFocus("videoTrigger");
+  }
 }
 
-function closeWelcome() {
-  document.getElementById("welcome-modal").hidden = true;
+function closeWelcome(options = {}) {
+  const modal = document.getElementById("welcome-modal");
+  const wasOpen = modal && !modal.hidden;
+  if (modal) {
+    modal.hidden = true;
+  }
+  if (wasOpen && options.restoreFocus !== false) {
+    restoreModalFocus("welcomeTrigger");
+  }
+}
+
+function focusableDialogElements(dialog) {
+  return [...dialog.querySelectorAll([
+    "a[href]",
+    "button:not([disabled])",
+    "input:not([disabled])",
+    "select:not([disabled])",
+    "textarea:not([disabled])",
+    "iframe",
+    "[tabindex]:not([tabindex='-1'])"
+  ].join(","))].filter((element) => {
+    if (element.hidden || element.getAttribute("aria-hidden") === "true") {
+      return false;
+    }
+    const rects = element.getClientRects();
+    return rects.length > 0;
+  });
+}
+
+function activeModalDialog() {
+  const videoModal = document.getElementById("video-modal");
+  if (videoModal && !videoModal.hidden) {
+    return videoModal.querySelector("[role='dialog']");
+  }
+  const welcomeModal = document.getElementById("welcome-modal");
+  if (welcomeModal && !welcomeModal.hidden) {
+    return welcomeModal.querySelector("[role='dialog']");
+  }
+  return null;
+}
+
+function trapDialogFocus(event) {
+  if (event.key !== "Tab") {
+    return false;
+  }
+  const dialog = activeModalDialog();
+  if (!dialog) {
+    return false;
+  }
+  const focusable = focusableDialogElements(dialog);
+  if (!focusable.length) {
+    event.preventDefault();
+    dialog.focus?.({ preventScroll: true });
+    return true;
+  }
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  const active = document.activeElement;
+  if (!dialog.contains(active)) {
+    event.preventDefault();
+    first.focus({ preventScroll: true });
+    return true;
+  }
+  if (event.shiftKey && active === first) {
+    event.preventDefault();
+    last.focus({ preventScroll: true });
+    return true;
+  }
+  if (!event.shiftKey && active === last) {
+    event.preventDefault();
+    first.focus({ preventScroll: true });
+    return true;
+  }
+  return false;
 }
 
 const wallpaperMotionMedia = typeof window.matchMedia === "function"
@@ -3654,12 +4200,19 @@ function maybeShowWelcome() {
   }
   const today = localDateKey(new Date());
   const key = `lusu-welcome-seen-${today}`;
-  if (!forceWelcome && localStorage.getItem(key) === "1") {
+  if (!forceWelcome && safeStorageGet(key) === "1") {
     return;
   }
   updateWelcomeGreeting();
-  document.getElementById("welcome-modal").hidden = false;
-  localStorage.setItem(key, "1");
+  const modal = document.getElementById("welcome-modal");
+  modalFocusState.welcomeTrigger = document.activeElement && !modal?.contains(document.activeElement)
+    ? document.activeElement
+    : null;
+  if (modal) {
+    modal.hidden = false;
+    modal.querySelector("button[data-close-welcome]")?.focus({ preventScroll: true });
+  }
+  safeStorageSet(key, "1");
 }
 
 function updateClock() {
@@ -3700,9 +4253,12 @@ function renderAccountWidget(message = "") {
   toggle.className = authUser ? "account-button signed-in" : "account-button";
   toggle.type = "button";
   toggle.dataset.accountToggle = "";
+  toggle.dataset.analyticsLabel = authUser ? "account:signed-in-toggle" : "account:login-toggle";
+  toggle.setAttribute("aria-controls", "account-popover");
+  toggle.setAttribute("aria-expanded", "false");
   const toggleText = document.createElement("span");
   toggleText.textContent = authUser
-    ? `${t("accountSignedInPrefix")}${authUser.email}`
+    ? t("accountTitle")
     : t("accountLogin");
   toggle.appendChild(toggleText);
 
@@ -3753,12 +4309,14 @@ function renderAccountWidget(message = "") {
   emailInput.type = "email";
   emailInput.autocomplete = "email";
   emailInput.placeholder = t("accountEmailPlaceholder");
+  emailInput.setAttribute("aria-label", t("accountEmailLabel"));
   emailInput.required = true;
   const passwordInput = document.createElement("input");
   passwordInput.name = "password";
   passwordInput.type = "password";
   passwordInput.autocomplete = "current-password";
   passwordInput.placeholder = t("accountPasswordPlaceholder");
+  passwordInput.setAttribute("aria-label", t("accountPasswordLabel"));
   passwordInput.required = true;
   const actions = document.createElement("div");
   actions.className = "account-actions";
@@ -3829,6 +4387,7 @@ function openAccountPopover() {
   const popover = document.getElementById("account-popover");
   if (popover) {
     popover.hidden = false;
+    syncAccountPopoverState(popover);
   }
 }
 
@@ -3836,6 +4395,7 @@ function closeAccountPopover() {
   const popover = document.getElementById("account-popover");
   if (popover) {
     popover.hidden = true;
+    syncAccountPopoverState(popover);
   }
 }
 
@@ -3843,20 +4403,29 @@ function toggleAccountPopover() {
   const popover = document.getElementById("account-popover");
   if (popover) {
     popover.hidden = !popover.hidden;
+    syncAccountPopoverState(popover);
   }
 }
 
+function syncAccountPopoverState(popover = document.getElementById("account-popover")) {
+  const toggle = document.querySelector("[data-account-toggle]");
+  if (!toggle || !popover) {
+    return;
+  }
+  toggle.setAttribute("aria-expanded", String(!popover.hidden));
+}
+
 async function ensureChatIdentity() {
-  let visitorId = localStorage.getItem(chatStorageKeys.visitorId);
+  let visitorId = safeStorageGet(chatStorageKeys.visitorId);
   if (!visitorId) {
     visitorId = crypto.randomUUID ? crypto.randomUUID() : `visitor-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-    localStorage.setItem(chatStorageKeys.visitorId, visitorId);
+    safeStorageSet(chatStorageKeys.visitorId, visitorId);
   }
 
-  let nickname = localStorage.getItem(chatStorageKeys.nickname);
+  let nickname = safeStorageGet(chatStorageKeys.nickname);
   if (!isValidChatNickname(nickname)) {
     nickname = await fetchAvailableChatNickname();
-    localStorage.setItem(chatStorageKeys.nickname, nickname);
+    safeStorageSet(chatStorageKeys.nickname, nickname);
   }
 
   chatState.visitorId = visitorId;
@@ -3910,6 +4479,38 @@ function setChatFeedback(message, isError = false) {
   feedback.classList.toggle("is-error", isError);
 }
 
+function setChatSendingState(sending) {
+  chatState.sending = sending;
+  const form = document.getElementById("chat-form");
+  const input = document.getElementById("chat-message-input");
+  const button = document.querySelector(".chat-send-button");
+  form?.setAttribute("aria-busy", String(sending));
+  if (input) {
+    input.disabled = sending;
+  }
+  if (button) {
+    button.disabled = sending;
+  }
+}
+
+function chatSyncStatusText(delay = chatState.pollDelay) {
+  if (delay >= 30000) {
+    return t("chatSyncStatusSlow");
+  }
+  if (delay >= 15000) {
+    return t("chatSyncStatusIdle");
+  }
+  return t("chatSyncStatusActive");
+}
+
+function updateChatSyncStatus(delay = chatState.pollDelay) {
+  const status = document.getElementById("chat-sync-status");
+  if (!status) {
+    return;
+  }
+  status.textContent = chatSyncStatusText(delay);
+}
+
 function updateChatCounter() {
   const input = document.getElementById("chat-message-input");
   const count = document.getElementById("chat-char-count");
@@ -3921,6 +4522,7 @@ function updateChatCounter() {
 async function initChatroom() {
   await ensureChatIdentity();
   updateChatCounter();
+  updateChatSyncStatus();
 
   if (!chatState.initialized) {
     chatState.initialized = true;
@@ -3941,6 +4543,8 @@ function startChatPolling() {
 }
 
 function scheduleChatPolling(delay) {
+  chatState.pollDelay = delay;
+  updateChatSyncStatus(delay);
   if (chatState.pollTimer) {
     window.clearTimeout(chatState.pollTimer);
   }
@@ -3999,11 +4603,12 @@ async function refreshChatMessages(options = {}) {
   chatState.loading = true;
   let appendedCount = 0;
   try {
-    const params = new URLSearchParams({ limit: "100" });
+    const shouldRefreshRecentMessages = !options.initial && chatState.hasLoadedInitial && !chatState.lastMessageId;
+    const params = new URLSearchParams({
+      limit: String(shouldRefreshRecentMessages ? chatUnanchoredRefreshLimit : chatInitialMessageLimit)
+    });
     if (!options.initial && chatState.lastMessageId) {
       params.set("after", chatState.lastMessageId);
-    } else if (!options.initial && chatState.hasLoadedInitial) {
-      params.set("after", "__no_messages_loaded__");
     }
     const payload = await chatApi(`/api/chat/messages?${params.toString()}`);
     if (options.initial) {
@@ -4096,7 +4701,10 @@ function formatChatTime(value) {
 
 async function submitChatMessage(event) {
   event.preventDefault();
-  await ensureChatIdentity();
+  if (chatState.sending) {
+    setChatFeedback(t("chatSending"));
+    return;
+  }
 
   const input = document.getElementById("chat-message-input");
   const contentText = input.value.trim();
@@ -4109,12 +4717,15 @@ async function submitChatMessage(event) {
     setChatFeedback(t("chatTooLong"), true);
     return;
   }
-  if (Date.now() - chatState.lastSentAt < 3000) {
+  if (Date.now() - chatState.lastSentAt < chatCooldownMs) {
     setChatFeedback(t("chatCooldown"), true);
     return;
   }
 
   try {
+    setChatSendingState(true);
+    setChatFeedback(t("chatSending"));
+    await ensureChatIdentity();
     const payload = await chatApi("/api/chat/messages", {
       method: "POST",
       body: JSON.stringify({
@@ -4124,7 +4735,7 @@ async function submitChatMessage(event) {
       })
     });
     chatState.lastSentAt = Date.now();
-    localStorage.setItem(chatStorageKeys.lastSentAt, String(chatState.lastSentAt));
+    safeStorageSet(chatStorageKeys.lastSentAt, String(chatState.lastSentAt));
     input.value = "";
     updateChatCounter();
     setChatFeedback(t("chatSent"));
@@ -4137,11 +4748,13 @@ async function submitChatMessage(event) {
       setChatFeedback(t("chatNicknameTaken"), true);
       const nickname = await fetchAvailableChatNickname();
       chatState.nickname = nickname;
-      localStorage.setItem(chatStorageKeys.nickname, nickname);
+      safeStorageSet(chatStorageKeys.nickname, nickname);
       updateChatNicknameDisplay();
       return;
     }
     setChatFeedback(error.message || t("chatLoadFailed"), true);
+  } finally {
+    setChatSendingState(false);
   }
 }
 
@@ -4157,7 +4770,7 @@ async function editChatNickname() {
     return;
   }
   chatState.nickname = normalized;
-  localStorage.setItem(chatStorageKeys.nickname, normalized);
+  safeStorageSet(chatStorageKeys.nickname, normalized);
   updateChatNicknameDisplay();
   setChatFeedback(t("chatNicknameSaved"));
 }
@@ -4186,127 +4799,174 @@ function escapeHtml(value) {
 }
 
 document.addEventListener("click", (event) => {
-  if (event.target.closest("[data-account-toggle]")) {
+  const target = event.target instanceof Element ? event.target : event.target?.parentElement;
+  if (!target) {
+    return;
+  }
+
+  if (target.closest("[data-account-toggle]")) {
     toggleAccountPopover();
     return;
   }
 
-  if (event.target.closest("[data-account-logout]")) {
+  if (target.closest("[data-account-logout]")) {
     logoutAccount();
     return;
   }
 
-  const routeButton = event.target.closest("[data-route]");
-  if (routeButton) {
-    navigate(routeButton.dataset.route);
-    closeWelcome();
+  if (target.closest("[data-video-retry]")) {
+    loadVideos();
     return;
   }
 
-  const langButton = event.target.closest("[data-lang]");
+  if (target.closest("[data-article-retry]")) {
+    loadArticles();
+    return;
+  }
+
+  const articleDetailRetryButton = target.closest("[data-article-detail-retry]");
+  if (articleDetailRetryButton) {
+    loadArticleDetail(articleDetailRetryButton.dataset.articleDetailRetry || articleState.currentSlug);
+    return;
+  }
+
+  if (target.closest("[data-game-retry]")) {
+    renderGames({ forceRefresh: true });
+    return;
+  }
+
+  const langButton = target.closest("[data-lang]");
   if (langButton) {
     setLanguage(langButton.dataset.lang, { persist: true, syncUrl: true });
     return;
   }
 
-  if (event.target.closest("[data-resource-show-all]")) {
+  if (target.closest("[data-resource-show-all]")) {
     activeFilters.resources = "all";
     renderResources();
     return;
   }
 
-  const filterButton = event.target.closest("[data-filter-type]");
+  const filterButton = target.closest("[data-filter-type]");
   if (filterButton) {
     activeFilters[filterButton.dataset.filterType] = filterButton.dataset.filter;
     renderAll();
     return;
   }
 
-  const articleHeadingButton = event.target.closest("[data-article-heading-target]");
+  const articleHeadingButton = target.closest("[data-article-heading-target]");
   if (articleHeadingButton) {
     scrollToArticleHeading(articleHeadingButton.dataset.articleHeadingTarget);
     return;
   }
 
-  if (event.target.closest("[data-article-scroll-top]")) {
+  if (target.closest("[data-article-scroll-top]")) {
     scrollArticleToTop();
     return;
   }
 
-  if (event.target.closest("[data-article-window-toggle]")) {
+  if (target.closest("[data-article-window-toggle]")) {
     toggleArticleWindowSize();
     return;
   }
 
-  const articleButton = event.target.closest("[data-article-slug]");
+  const articleButton = target.closest("[data-article-slug]");
   if (articleButton) {
     event.preventDefault();
     showArticle(articleButton.dataset.articleSlug);
     return;
   }
 
-  const articleCategoryButton = event.target.closest("[data-article-category]");
+  const articleCategoryButton = target.closest("[data-article-category]");
   if (articleCategoryButton) {
     showArticleCategory(articleCategoryButton.dataset.articleCategory);
     return;
   }
 
-  if (event.target.closest("[data-article-back]")) {
+  if (target.closest("[data-article-back]")) {
     showArticleList();
     return;
   }
 
-  if (event.target.closest("[data-article-copy-link]")) {
+  if (target.closest("[data-article-copy-link]")) {
     copyArticleLink();
     return;
   }
 
-  if (event.target.closest("[data-article-search-clear]")) {
+  if (target.closest("[data-article-search-clear]")) {
     articleState.searchTerm = "";
     renderKnowledge();
     document.getElementById("knowledge-search-input")?.focus();
     return;
   }
 
-  const videoButton = event.target.closest("[data-video-index]");
+  if (target.closest("[data-article-search-reset]")) {
+    articleState.searchTerm = "";
+    activeFilters.knowledge = "all";
+    renderKnowledge();
+    document.getElementById("knowledge-search-input")?.focus();
+    return;
+  }
+
+  const videoButton = target.closest("[data-video-index]");
   if (videoButton) {
     openVideo(Number(videoButton.dataset.videoIndex));
     return;
   }
 
-  const managedVideoButton = event.target.closest("[data-video-id]");
+  const managedVideoButton = target.closest("[data-video-id]");
   if (managedVideoButton) {
     openVideo(managedVideoButton.dataset.videoId);
     return;
   }
 
-  if (event.target.closest("[data-video-window-toggle], [data-video-fullscreen]")) {
+  if (target.closest("[data-video-window-toggle], [data-video-fullscreen]")) {
     fullscreenVideo();
     return;
   }
 
-  if (event.target.closest("[data-close-modal]")) {
+  if (target.closest("[data-close-modal]")) {
     closeVideo();
+    return;
   }
 
-  if (event.target.closest("[data-close-welcome]")) {
+  if (target.closest("[data-close-welcome]")) {
     closeWelcome();
+    return;
   }
 
-  if (!event.target.closest("#account-widget")) {
+  const routeButton = target.closest("[data-route]:not(body)");
+  if (routeButton) {
+    event.preventDefault();
+    navigate(routeButton.dataset.route);
+    closeWelcome({ restoreFocus: false });
+    return;
+  }
+
+  if (!target.closest("#account-widget")) {
     closeAccountPopover();
   }
 });
 
 window.addEventListener("keydown", (event) => {
+  if (trapDialogFocus(event)) {
+    return;
+  }
   if (event.key === "Escape") {
     const videoModal = document.getElementById("video-modal");
+    const welcomeModal = document.getElementById("welcome-modal");
     if (videoWindowState.maximized && videoModal && !videoModal.hidden) {
       setVideoWindowMaximized(false);
       return;
     }
-    closeVideo();
-    closeWelcome();
+    if (videoModal && !videoModal.hidden) {
+      closeVideo();
+      return;
+    }
+    if (welcomeModal && !welcomeModal.hidden) {
+      closeWelcome();
+      return;
+    }
     closeAccountPopover();
   }
 });
@@ -4373,7 +5033,7 @@ function initialLanguage() {
   if (["zh", "en", "ja"].includes(requestedLang)) {
     return requestedLang;
   }
-  const storedLang = localStorage.getItem(languageStorageKey);
+  const storedLang = safeStorageGet(languageStorageKey);
   if (["zh", "en", "ja"].includes(storedLang)) {
     return storedLang;
   }
@@ -4389,7 +5049,7 @@ updateClock();
 setInterval(updateClock, 1000);
 syncRouteFromLocation();
 const hoverRoute = pageParams.get("hover");
-if (hoverRoute) {
+if (pageIds.includes(hoverRoute)) {
   document.querySelector(`.desktop-icon[data-route="${hoverRoute}"]`)?.classList.add("is-hovered");
 }
 window.addEventListener("load", maybeShowWelcome);
