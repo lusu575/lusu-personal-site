@@ -4,6 +4,12 @@
 
 ## 2026-06-23
 
+- 本地收尾清理与文档归档：
+  - 删除未被 Git 跟踪、且已在 `.gitignore` 中忽略的本地预览和附件残留：`.wrangler/`、`.wrangler-config/`、`.codex-remote-attachments/`、`.codex-wrangler-preview.log` 和 `.codex-wrangler-preview.err.log`。
+  - 保留 `node_modules/`，它是本地依赖目录，不属于本次备份或临时残留清理范围。
+  - 复扫常见备份 / 临时命名后，没有发现需要删除的已跟踪备份文件；匹配到的 `temporal*` 文件属于第三方游戏源码中的正常 Babel helper。
+  - `PROJECT_CONTEXT.md` 顶部补充 2026-06-23 公开体验、隐私、发布和本地清理收口摘要，方便后续对话直接接续。
+
 - 最终公开体验、无障碍和隐私收尾：
   - 新增三语 `site-updates` 文章“公开体验、无障碍和隐私收尾 / Public UX, Accessibility, and Privacy Wrap-up / 公開体験・アクセシビリティ・プライバシー仕上げ”，公开说明只覆盖按钮、弹窗、资源空状态、社交入口、游戏来源链接和访问统计隐私等用户可见变化。
   - 同步 `js/main.js` fallback 最近更新、`functions/api/[[route]].js` Functions seed、`cloudflare/schema.sql` schema seed、首页最近更新日期和主站脚本版本，保持接口、D1 兜底和本地 fallback 一致。
