@@ -2,6 +2,15 @@
 
 本文件记录鲁肃个人站的功能、界面、后端、部署与项目约定变更。每次修改项目后都应同步更新这里，方便后续 AI / Codex 对话快速了解最近改动。
 
+## 2026-06-24
+
+- 账号流程、入口清理与合并上线：
+  - 删除主站公开聚合入口相关内容：移除首页发现链接、欢迎窗口按钮、前端语言同步逻辑、对应公开路由和对应公开更新 seed。
+  - 右上角账号弹窗改为按钮显式提交模式：回车默认登录，点击注册走注册流程；登录、注册和退出请求期间会锁定按钮，退出异常时前端仍回到未登录状态。
+  - `npm run deploy` 改为提示“合并到 GitHub main 后由 Cloudflare Pages 自动上线”，不再执行 Wrangler 手动发布命令。
+  - 新增三语 `site-updates` 文章“账号流程与合并上线整理 / Account Flow and Merge Launch / アカウント操作とマージ公開の整理”，并同步 `js/main.js` fallback、`functions/api/[[route]].js` Functions seed、`cloudflare/schema.sql` schema seed、首页最近更新日期和主站脚本版本。
+  - 主站 main.js cache query 更新为 `20260624-account-cleanup-merge-r1`。
+
 ## 2026-06-23
 
 - 本地收尾清理与文档归档：

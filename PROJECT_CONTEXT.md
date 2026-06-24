@@ -1,5 +1,12 @@
 # PROJECT_CONTEXT.md
 
+## 2026-06-24 账号流程、入口清理与合并上线
+
+- 主站欢迎窗口最近更新操作区已精简为只保留“查看更多网站更新”入口，公开聚合发现链接、入口按钮和对应公开接口已从主站代码与 Functions 路由中移除。
+- 右上角账号弹窗改为由登录/注册按钮显式记录提交模式，回车默认登录，点击注册走注册流程；请求期间会临时锁定登录、注册和退出按钮，退出失败时前端也会回到未登录状态，避免界面卡住。
+- `npm run deploy` 不再执行 Wrangler 手动发布，只输出合并到 GitHub `main` 后由 Cloudflare Pages 自动上线的提醒；正式发布链路继续保持 `GitHub main -> Cloudflare Pages Git 自动部署 -> lusu575.com`。
+- 本次属于公开可见更新，已同步 `site-updates` 三语文章、`js/main.js` fallback、Functions seed、schema seed、根目录 changelog、主站 Skill 和 `main.js` cache query `20260624-account-cleanup-merge-r1`。
+
 ## 2026-06-23 公开体验、隐私与发布收口
 
 - 主站已完成一轮公开体验收尾：按钮点击委托改为具体动作优先、通用路由最后兜底，覆盖账号、语言、筛选、文章、视频、弹窗关闭、重试和栏目跳转等常见入口，降低“按钮点了没反应”的风险。
@@ -535,7 +542,6 @@ admin/docs/ADMIN_CHANGELOG.md
 - 资源上传与下载管理
 - 评论系统
 - 搜索功能
-- RSS
 - Markdown 内容系统
 - Cloudflare R2 文件存储
 - 更完善的账号资料页

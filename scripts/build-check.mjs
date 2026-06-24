@@ -39,6 +39,7 @@ const requiredFiles = [
   "js/main.js",
   "js/telemetry.js",
   "manifest.webmanifest",
+  "package.json",
   "robots.txt",
   "CHANGELOG.md"
 ];
@@ -319,6 +320,7 @@ const gameIndexHtmls = gameIndexFiles.map((file) => [file, readRequired(file)]);
 const mainJs = readRequired("js/main.js");
 const telemetryJs = readRequired("js/telemetry.js");
 const manifest = readRequired("manifest.webmanifest");
+const packageJson = readRequired("package.json");
 const robots = readRequired("robots.txt");
 const changelog = readRequired("CHANGELOG.md");
 
@@ -607,8 +609,7 @@ for (const token of [
   'rel="canonical"',
   'property="og:title"',
   'name="twitter:card"',
-  'rel="manifest"',
-  'data-rss-alternate'
+  'rel="manifest"'
 ]) {
   if (!indexHtml.includes(token)) {
     fail(`index.html missing ${token}`);
@@ -755,18 +756,8 @@ const welcomeRecentActionsHtml = findRequiredHtml(
   "index.html missing welcome recent actions block"
 );
 
-const welcomeRssButton = findRequiredHtml(
-  welcomeRecentActionsHtml,
-  tagWithAttributesPattern("a", ['class="xp-button rss-button"', "data-rss-link"]),
-  "index.html missing visible RSS button"
-);
-
-if (!welcomeRssButton.includes('title="鲁肃的个人站 RSS 订阅"')) {
-  fail("index.html visible RSS button title should use the Chinese default");
-}
-
-if (!welcomeRssButton.includes('data-i18n-title="rssFeedTitle"')) {
-  fail("index.html visible RSS button should sync its title with rssFeedTitle");
+if (!welcomeRecentActionsHtml.includes('data-article-category="site-updates"') || /data-rss|rss-button|application\/rss\+xml/i.test(welcomeRecentActionsHtml)) {
+  fail("index.html welcome recent actions should keep only the site-updates action and no RSS subscription entry");
 }
 
 const profileAvatarHtml = findRequiredHtml(
@@ -791,11 +782,6 @@ const chatSyncStatusHtml = findRequiredHtml(
 
 if (/aria-live|role=["']status["']/.test(chatSyncStatusHtml)) {
   fail("index.html chat sync polling text should not be a live status region");
-}
-
-const visibleRssSyncWindow = windowAfter(mainJs, 'document.querySelectorAll("[data-rss-link]")', 260);
-if (!visibleRssSyncWindow.includes('link.title = t("rssFeedTitle")')) {
-  fail("js/main.js should sync the visible RSS link title in syncRssLinks");
 }
 
 for (const asset of [
@@ -892,10 +878,6 @@ for (const token of [
   'target.closest("[data-article-search-reset]")',
   'action.dataset.gameRetry = ""',
   'target.closest("[data-game-retry]")',
-  'rssFeedTitle: "鲁肃的个人站 RSS 订阅"',
-  'rssFeedTitle: "LuSu Site RSS Feed"',
-  'rssFeedTitle: "魯粛サイト RSS フィード"',
-  'link.title = t("rssFeedTitle")',
   "articleRetryAction",
   "gameRetryAction",
   'accountEmailLabel: "邮箱"',
@@ -906,6 +888,9 @@ for (const token of [
   'accountPasswordLabel: "パスワード"',
   'emailInput.setAttribute("aria-label", t("accountEmailLabel"))',
   'passwordInput.setAttribute("aria-label", t("accountPasswordLabel"))',
+  'form.dataset.accountMode = "login"',
+  'button.dataset.accountMode || "login"',
+  "function setAccountSubmitting",
   'toggle.setAttribute("aria-controls", "account-popover")',
   'toggle.setAttribute("aria-expanded", "false")',
   "function syncAccountPopoverState",
@@ -1363,12 +1348,12 @@ for (const obsoleteText of [
   }
 }
 
-const finalUpdateId = "seed-update-2026-06-23-public-ux-accessibility-privacy-wrap-up";
-const finalUpdateSlug = "2026-06-23-public-ux-accessibility-privacy-wrap-up";
-const finalMainVersion = "20260623-public-loop-summary-r1";
+const finalUpdateId = "seed-update-2026-06-24-account-cleanup-merge-launch";
+const finalUpdateSlug = "2026-06-24-account-cleanup-merge-launch";
+const finalMainVersion = "20260624-account-cleanup-merge-r1";
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Public UX, Accessibility, and Privacy Wrap-up";
-const finalPublishedAt = "2026-06-23T06:00:00.000Z";
+const finalTitleEn = "Account Flow and Merge Launch";
+const finalPublishedAt = "2026-06-24T08:00:00.000Z";
 const finalTranslationMinimums = {
   title: 8,
   summary: 24,
@@ -1379,6 +1364,7 @@ const finalUpdateStarted = [mainJs, apiJs, schemaSql, indexHtml, changelog].some
   finalUpdateTokens.some((token) => source.includes(token))
 );
 const changelog20260623Section = markdownSection(changelog, "## 2026-06-23");
+const changelog20260624Section = markdownSection(changelog, "## 2026-06-24");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -1399,6 +1385,7 @@ if (!finalUpdateStarted) {
 if (finalUpdateStarted) {
   for (const token of [
     'date: "2026.06.23"',
+    'date: "2026.06.24"',
     finalTitleEn
   ]) {
     if (!mainJs.includes(token)) {
@@ -1479,7 +1466,7 @@ if (finalUpdateStarted) {
   }
 
   for (const token of [
-    'id="top-updated">2026.06.23',
+    'id="top-updated">2026.06.24',
     `/js/main.js?v=${finalMainVersion}`
   ]) {
     if (!indexHtml.includes(token)) {
@@ -1494,10 +1481,25 @@ if (finalUpdateStarted) {
     "Functions seed",
     "schema seed"
   ]) {
-    if (!changelog20260623Section.includes(token)) {
+    if (!changelog20260624Section.includes(token)) {
       fail(`CHANGELOG.md final public update sync missing ${token}`);
     }
   }
+}
+
+for (const [name, source] of [
+  ["index.html", indexHtml],
+  ["css/style.css", styleCss],
+  ["js/main.js", mainJs],
+  ["functions/api/[[route]].js", apiJs]
+]) {
+  if (/data-rss|rssFeed|syncRssLinks|rss\.xml|feed\.xml|application\/rss\+xml|rss-button|rss-icon/i.test(source)) {
+    fail(`${name} should not keep RSS subscription entry points or feed code`);
+  }
+}
+
+if (/wrangler\s+(?:pages\s+)?deploy/i.test(packageJson) || !packageJson.includes("Merge to GitHub main")) {
+  fail("package.json deploy script should point to merge-to-main Cloudflare Pages deployment, not Wrangler manual deploy");
 }
 
 for (const token of ['"display": "standalone"', '"theme_color"', '"icons"']) {

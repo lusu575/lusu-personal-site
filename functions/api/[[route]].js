@@ -120,11 +120,6 @@ export async function onRequest(context) {
         return await recordClickEvent(request, env);
       }
     }
-    if (request.method === "GET" && (parts[0] === "rss.xml" || parts[0] === "feed.xml")) {
-      await ensureArticleSchema(env);
-      await seedArticleTestData(env);
-      return await getArticleFeed(request, env);
-    }
     if (request.method === "GET" && parts[0] === "sitemap.xml") {
       await ensureArticleSchema(env);
       await seedArticleTestData(env);
@@ -574,93 +569,6 @@ async function getArticles(request, env) {
   return json({ articles: rows.map(publicArticleRow), lang });
 }
 
-async function getArticleFeed(request, env) {
-  const url = new URL(request.url);
-  const lang = normalizeArticleLang(url.searchParams.get("lang"));
-  const limit = clampLimit(url.searchParams.get("limit"), 30);
-  const siteMeta = rssSiteMeta(lang);
-  const origin = url.origin;
-  const siteUrl = new URL(`/?lang=${encodeURIComponent(lang)}`, origin).toString();
-  const feedUrl = new URL(`/api/rss.xml?lang=${encodeURIComponent(lang)}`, origin).toString();
-  const rows = (await env.DB.prepare(`
-    select
-      articles.article_id,
-      articles.slug,
-      articles.category,
-      articles.tags,
-      articles.cover_image,
-      articles.status,
-      articles.is_pinned,
-      articles.view_count,
-      articles.created_at,
-      articles.updated_at,
-      articles.published_at,
-      requested.lang as requested_lang,
-      coalesce(requested.lang, zh.lang, fallback.lang) as lang,
-      coalesce(requested.title, zh.title, fallback.title) as title,
-      coalesce(requested.summary, zh.summary, fallback.summary) as summary
-    from articles
-    left join article_translations requested
-      on requested.article_id = articles.article_id and requested.lang = ?
-    left join article_translations zh
-      on zh.article_id = articles.article_id and zh.lang = 'zh'
-    left join article_translations fallback
-      on fallback.translation_id = (
-        select inner_translations.translation_id
-        from article_translations inner_translations
-        where inner_translations.article_id = articles.article_id
-        order by case inner_translations.lang when 'zh' then 0 when 'en' then 1 when 'ja' then 2 else 3 end
-        limit 1
-      )
-    where articles.status = 'published'
-      and ${PUBLIC_LOOP_NIGHTLY_UPDATE_FILTER}
-      and coalesce(requested.title, zh.title, fallback.title) is not null
-    order by coalesce(articles.published_at, articles.created_at) desc, articles.article_id desc
-    limit ?
-  `).bind(lang, limit).all()).results || [];
-
-  const articles = rows.map(publicArticleRow);
-  const lastBuildDate = rssDate(articles[0]?.published_at || articles[0]?.updated_at || new Date().toISOString());
-  const items = articles.map((article) => {
-    const articleUrl = new URL(`/articles/${encodeURIComponent(article.slug)}?lang=${encodeURIComponent(lang)}`, origin).toString();
-    const categories = (article.tags || [])
-      .map((tag) => `      <category>${xmlEscape(tag)}</category>`)
-      .join("\n");
-    return [
-      "    <item>",
-      `      <title>${xmlEscape(article.title)}</title>`,
-      `      <link>${xmlEscape(articleUrl)}</link>`,
-      `      <guid isPermaLink="true">${xmlEscape(articleUrl)}</guid>`,
-      `      <pubDate>${rssDate(article.published_at || article.created_at)}</pubDate>`,
-      categories,
-      `      <description>${xmlEscape(article.summary || "")}</description>`,
-      "    </item>"
-    ].filter(Boolean).join("\n");
-  }).join("\n");
-
-  const xml = [
-    '<?xml version="1.0" encoding="UTF-8"?>',
-    '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">',
-    '  <channel>',
-    `    <title>${xmlEscape(siteMeta.title)}</title>`,
-    `    <link>${xmlEscape(siteUrl)}</link>`,
-    `    <atom:link href="${xmlEscape(feedUrl)}" rel="self" type="application/rss+xml" />`,
-    `    <description>${xmlEscape(siteMeta.description)}</description>`,
-    `    <language>${xmlEscape(rssLanguage(lang))}</language>`,
-    `    <lastBuildDate>${lastBuildDate}</lastBuildDate>`,
-    items,
-    '  </channel>',
-    '</rss>'
-  ].join("\n");
-
-  return new Response(xml, {
-    headers: {
-      "Content-Type": "application/rss+xml; charset=utf-8",
-      "Cache-Control": "public, max-age=300"
-    }
-  });
-}
-
 async function getSitemap(request, env) {
   const url = new URL(request.url);
   const langs = ["zh", "en", "ja"];
@@ -719,33 +627,6 @@ function sitemapDate(value) {
     return new Date().toISOString().slice(0, 10);
   }
   return date.toISOString().slice(0, 10);
-}
-
-function rssSiteMeta(lang) {
-  const meta = {
-    zh: {
-      title: "鲁肃的个人站",
-      description: "鲁肃个人站的公开文章和网站更新。"
-    },
-    en: {
-      title: "LuSu's Personal Site",
-      description: "Public articles and site updates from LuSu's personal site."
-    },
-    ja: {
-      title: "魯粛サイト",
-      description: "魯粛サイトの公開記事とサイト更新です。"
-    }
-  };
-  return meta[lang] || meta.zh;
-}
-
-function rssLanguage(lang) {
-  return { zh: "zh-CN", en: "en", ja: "ja" }[lang] || "zh-CN";
-}
-
-function rssDate(value) {
-  const date = new Date(value || Date.now());
-  return Number.isNaN(date.getTime()) ? new Date().toUTCString() : date.toUTCString();
 }
 
 function xmlEscape(value) {
@@ -5630,33 +5511,6 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         article_id, slug, category, tags, cover_image, status, is_pinned,
         view_count, created_at, updated_at, published_at
       ) values (
-        'seed-update-2026-06-18-rss-alternate-lang',
-        '2026-06-18-rss-alternate-lang',
-        'site-updates',
-        '["网站更新","RSS","三语","订阅"]',
-        '',
-        'published',
-        0,
-        0,
-        '2026-06-17T22:35:00.000Z',
-        '2026-06-17T22:35:00.000Z',
-        '2026-06-17T22:35:00.000Z'
-      )
-      on conflict(article_id) do update set
-        slug = excluded.slug,
-        category = excluded.category,
-        tags = excluded.tags,
-        cover_image = excluded.cover_image,
-        status = excluded.status,
-        is_pinned = excluded.is_pinned,
-        updated_at = excluded.updated_at,
-        published_at = excluded.published_at
-    `),
-    env.DB.prepare(`
-      insert into articles (
-        article_id, slug, category, tags, cover_image, status, is_pinned,
-        view_count, created_at, updated_at, published_at
-      ) values (
         'seed-update-2026-06-18-article-link-lang',
         '2026-06-18-article-link-lang',
         'site-updates',
@@ -5695,60 +5549,6 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         '2026-06-17T22:05:00.000Z',
         '2026-06-17T22:05:00.000Z',
         '2026-06-17T22:05:00.000Z'
-      )
-      on conflict(article_id) do update set
-        slug = excluded.slug,
-        category = excluded.category,
-        tags = excluded.tags,
-        cover_image = excluded.cover_image,
-        status = excluded.status,
-        is_pinned = excluded.is_pinned,
-        updated_at = excluded.updated_at,
-        published_at = excluded.published_at
-    `),
-    env.DB.prepare(`
-      insert into articles (
-        article_id, slug, category, tags, cover_image, status, is_pinned,
-        view_count, created_at, updated_at, published_at
-      ) values (
-        'seed-update-2026-06-18-rss-button-label',
-        '2026-06-18-rss-button-label',
-        'site-updates',
-        '["网站更新","RSS","订阅","可访问性"]',
-        '',
-        'published',
-        0,
-        0,
-        '2026-06-17T21:50:00.000Z',
-        '2026-06-17T21:50:00.000Z',
-        '2026-06-17T21:50:00.000Z'
-      )
-      on conflict(article_id) do update set
-        slug = excluded.slug,
-        category = excluded.category,
-        tags = excluded.tags,
-        cover_image = excluded.cover_image,
-        status = excluded.status,
-        is_pinned = excluded.is_pinned,
-        updated_at = excluded.updated_at,
-        published_at = excluded.published_at
-    `),
-    env.DB.prepare(`
-      insert into articles (
-        article_id, slug, category, tags, cover_image, status, is_pinned,
-        view_count, created_at, updated_at, published_at
-      ) values (
-        'seed-update-2026-06-18-rss-feed-entry',
-        '2026-06-18-rss-feed-entry',
-        'site-updates',
-        '["网站更新","RSS","订阅","知识库"]',
-        '',
-        'published',
-        0,
-        0,
-        '2026-06-17T21:35:00.000Z',
-        '2026-06-17T21:35:00.000Z',
-        '2026-06-17T21:35:00.000Z'
       )
       on conflict(article_id) do update set
         slug = excluded.slug,
@@ -5876,7 +5676,7 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         'seed-update-2026-06-18-public-site-nightly-update',
         '2026-06-18-public-site-nightly-update',
         'site-updates',
-        '["网站更新","主站优化","夜间汇总","阅读体验","资源区","游戏区","RSS"]',
+        '["网站更新","主站优化","夜间汇总","阅读体验","资源区","游戏区"]',
         '',
         'published',
         0,
@@ -5884,6 +5684,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         '2026-06-18T00:00:00.000Z',
         '2026-06-18T00:00:00.000Z',
         '2026-06-18T00:00:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-24-account-cleanup-merge-launch',
+        '2026-06-24-account-cleanup-merge-launch',
+        'site-updates',
+        '["网站更新","账号","合并上线","发布流程"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-24T08:00:00.000Z',
+        '2026-06-24T08:00:00.000Z',
+        '2026-06-24T08:00:00.000Z'
       )
       on conflict(article_id) do update set
         slug = excluded.slug,
@@ -6084,6 +5911,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-24-account-cleanup-merge-launch", {
+      zh: {
+        title: "账号流程与合并上线整理",
+        summary: "账号登录、注册和退出更稳定，最近更新操作区完成精简，发布方式回到合并 main 后自动上线。",
+        content_markdown: "# 账号流程与合并上线整理\n\n这次更新把主站右上角账号入口和发布流程重新收拢，让日常访问时的账号操作更明确，也让上线方式回到项目约定的 GitHub main 自动发布链路。\n\n## 更新内容\n\n- 账号登录和注册按钮改为显式记录当前操作，回车默认登录，点击注册就按注册流程提交。\n- 账号请求期间会临时锁定登录、注册和退出按钮，减少慢网或重复点击造成的状态错乱。\n- 退出账号继续优先清理服务端会话，网络异常时也会让前端回到未登录状态，避免界面卡住。\n- 欢迎窗口最近更新操作区完成精简，只保留查看网站更新记录的入口。\n- 常规上线方式回到合并到 GitHub main 后由 Cloudflare Pages 自动发布，`npm run deploy` 只保留提示，不再执行手动发布命令。\n\n这轮没有改变游戏存档格式、聊天接口、后台权限或文章发布权限。"
+      },
+      en: {
+        title: "Account Flow and Merge Launch",
+        summary: "Account sign-in, registration, and sign-out are steadier, recent-update actions are simpler, and deployment returns to merge-to-main publishing.",
+        content_markdown: "# Account Flow and Merge Launch\n\nThis update tightens the top-right account entry and brings release handling back to the project's GitHub main auto-publish path.\n\n## Changes\n\n- The sign-in and registration buttons now record the intended action explicitly: Enter defaults to sign-in, while clicking Register submits the registration flow.\n- Account requests briefly lock sign-in, registration, and sign-out buttons to avoid stale UI during slow or repeated clicks.\n- Sign-out still clears the server session first, while the front end returns to the signed-out state even if the network is unavailable.\n- The welcome window's recent-update action area is simplified to keep only the site update log entry point.\n- Normal releases now point back to merging into GitHub main so Cloudflare Pages publishes automatically; `npm run deploy` only prints that reminder instead of running a manual publish command.\n\nThis round does not change game save formats, chat APIs, admin permissions, or article publishing permissions."
+      },
+      ja: {
+        title: "アカウント操作とマージ公開の整理",
+        summary: "ログイン、登録、ログアウトを安定させ、最近の更新の操作欄を簡潔にし、main へのマージ公開に戻しました。",
+        content_markdown: "# アカウント操作とマージ公開の整理\n\n今回の更新では、右上のアカウント入口と公開手順を整理し、通常利用時の操作を分かりやすくしながら、GitHub main から Cloudflare Pages が自動公開する流れに戻しました。\n\n## 更新内容\n\n- ログインと登録ボタンは、どちらの操作かを明示してから送信します。Enter はログイン、登録ボタンのクリックは登録として扱います。\n- アカウント操作中は、ログイン、登録、ログアウトボタンを一時的にロックし、遅い通信や連打による表示のずれを減らします。\n- ログアウトは引き続きサーバー側セッションの削除を優先し、通信に失敗しても画面は未ログイン状態へ戻します。\n- ようこそ画面の最近の更新の操作欄を簡潔にし、サイト更新記録への入口だけを残しました。\n- 通常公開は GitHub main へマージしたあと Cloudflare Pages が自動公開する方式に戻し、`npm run deploy` は手動公開ではなく注意メッセージだけを表示します。\n\n今回、ゲーム保存形式、チャット API、管理画面権限、記事公開権限は変更していません。"
+      }
+    }, "2026-06-24T08:00:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-06-23-public-ux-accessibility-privacy-wrap-up", {
       zh: {
         title: "公开体验、无障碍和隐私收尾",
@@ -6105,17 +5949,17 @@ This update swaps the four home wallpapers used by the live page to higher-resol
       zh: {
         title: "主站夜间优化汇总",
         summary: "合并昨晚主站优化记录，并按参考图完成知识库文章页 10 轮阅读布局复刻打磨；文章窗口不再拉伸占满全站。",
-        content_markdown: "# 主站夜间优化汇总\n\n这篇记录把昨晚主站公开侧的小步优化合并到一起，避免网站更新记录被一串细项刷屏。\n\n## 汇总内容\n\n- 知识库文章详情补齐目录、阅读进度、复制链接和回到顶部能力；本轮参考验收图重排为左侧目录/小贴士、右侧正文卡片，并把底部进度条与回到顶部按钮并排悬浮。\n- 追加 10 轮视觉复刻打磨：阅读态知识库窗口保持站内 XP 窗口尺寸，不再拉伸占满整个网站；标题栏补最小化/最大化/关闭三按钮，底部进度条改为单行蓝色分段条，正文节奏和左侧小贴士位置更贴近参考图。\n- 资源区补齐分类数量、卡片状态、空分类提示和更严格的资源链接白名单。\n- 游戏区补齐云存档、源码徽标、语言标记、入口路径守卫和游戏外壳安全 DOM 渲染。\n- 首页最近更新、知识库列表、筛选、资源筛选和游戏列表继续收紧为 DOM / textContent 渲染，降低公开内容的 XSS 风险。\n- RSS 入口、语言同步、文章链接保留语言和最近更新提示统一整理，订阅和分享更稳定。\n- 图片懒加载、异步解码、固定图片尺寸和移动端布局细节继续做轻量优化。\n\n旧的单项记录会保留为历史数据和可回退内容，但公开列表与 RSS 只展示这一篇汇总。"
+        content_markdown: "# 主站夜间优化汇总\n\n这篇记录把昨晚主站公开侧的小步优化合并到一起，避免网站更新记录被一串细项刷屏。\n\n## 汇总内容\n\n- 知识库文章详情补齐目录、阅读进度、复制链接和回到顶部能力；本轮参考验收图重排为左侧目录/小贴士、右侧正文卡片，并把底部进度条与回到顶部按钮并排悬浮。\n- 追加 10 轮视觉复刻打磨：阅读态知识库窗口保持站内 XP 窗口尺寸，不再拉伸占满整个网站；标题栏补最小化/最大化/关闭三按钮，底部进度条改为单行蓝色分段条，正文节奏和左侧小贴士位置更贴近参考图。\n- 资源区补齐分类数量、卡片状态、空分类提示和更严格的资源链接白名单。\n- 游戏区补齐云存档、源码徽标、语言标记、入口路径守卫和游戏外壳安全 DOM 渲染。\n- 首页最近更新、知识库列表、筛选、资源筛选和游戏列表继续收紧为 DOM / textContent 渲染，降低公开内容的 XSS 风险。\n- 文章链接、语言同步和最近更新提示统一整理，分享更稳定。\n- 图片懒加载、异步解码、固定图片尺寸和移动端布局细节继续做轻量优化。\n\n旧的单项记录会保留为历史数据和可回退内容，公开列表只展示这一篇汇总。"
       },
       en: {
         title: "Public Site Nightly Summary",
         summary: "Merged last night's public-site updates, completed ten reference-matching passes, and kept the article window inside the site frame.",
-        content_markdown: "# Public Site Nightly Summary\n\nThis entry merges last night's small public-site updates into one readable record, so the site update log no longer gets flooded by one article per tiny adjustment.\n\n## Summary\n\n- Knowledge articles gained contents navigation, reading progress, copy-link, and back-to-top controls; this round rebuilds the article view from the reference image with a left contents/tip sidebar, a right reading card, and bottom progress plus back-to-top controls floating side by side.\n- Ten visual matching passes were added: the article reading window now stays inside the site's XP window frame instead of stretching across the whole site, the titlebar has minimize/maximize/close controls, the progress bar is a single-row segmented blue strip, and the body rhythm plus left tip placement are closer to the reference image.\n- The Resources area gained category counts, status badges, empty-category guidance, and stricter resource link allowlists.\n- The Games area gained cloud-save and source badges, localized language labels, launch-path guards, and safer DOM rendering in the game shell.\n- Recent updates, the knowledge list, filters, resource filters, and the game list continue to render through DOM / textContent to reduce XSS risk for public content.\n- RSS, language-aware links, article share URLs, and recent-update labels were aligned for more stable subscription and sharing behavior.\n- Lazy loading, async image decoding, fixed image dimensions, and mobile layout details received lightweight polish.\n\nThe old single-topic entries remain as historical and rollback data, but public lists and RSS now show this one summary instead."
+        content_markdown: "# Public Site Nightly Summary\n\nThis entry merges last night's small public-site updates into one readable record, so the site update log no longer gets flooded by one article per tiny adjustment.\n\n## Summary\n\n- Knowledge articles gained contents navigation, reading progress, copy-link, and back-to-top controls; this round rebuilds the article view from the reference image with a left contents/tip sidebar, a right reading card, and bottom progress plus back-to-top controls floating side by side.\n- Ten visual matching passes were added: the article reading window now stays inside the site's XP window frame instead of stretching across the whole site, the titlebar has minimize/maximize/close controls, the progress bar is a single-row segmented blue strip, and the body rhythm plus left tip placement are closer to the reference image.\n- The Resources area gained category counts, status badges, empty-category guidance, and stricter resource link allowlists.\n- The Games area gained cloud-save and source badges, localized language labels, launch-path guards, and safer DOM rendering in the game shell.\n- Recent updates, the knowledge list, filters, resource filters, and the game list continue to render through DOM / textContent to reduce XSS risk for public content.\n- Language-aware links, article share URLs, and recent-update labels were aligned for more stable sharing behavior.\n- Lazy loading, async image decoding, fixed image dimensions, and mobile layout details received lightweight polish.\n\nThe old single-topic entries remain as historical and rollback data, but public lists now show this one summary instead."
       },
       ja: {
         title: "メインサイト夜間更新まとめ",
         summary: "昨夜のメインサイト更新をまとめ、参考画像に合わせて知識庫の記事ページを10回調整し、記事ウィンドウはサイト内サイズに戻しました。",
-        content_markdown: "# メインサイト夜間更新まとめ\n\nこの記録では、昨夜の公開サイト側の小さな更新を一つにまとめました。更新記録が細かな記事で埋まりすぎないようにするためです。\n\n## まとめ\n\n- 知識庫の記事詳細に、目次、読書進捗、リンクコピー、先頭へ戻る操作を追加しました。今回、参考画像に合わせて左側の目次/ヒント、右側の本文カード、下部の進捗バーと先頭へ戻るボタンを並べた表示に整えました。\n- さらに10回の視覚調整を行い、記事閲覧ウィンドウはサイト内の XP ウィンドウサイズに戻し、全体へ引き伸ばさない表示にしました。タイトルバーに最小化/最大化/閉じるボタンを追加し、進捗バーを1行の青い分割バーにし、本文の余白と左側ヒントの位置も参考画像に近づけました。\n- リソース欄には分類件数、状態バッジ、空分類の案内、より厳しいリンク許可リストを追加しました。\n- ゲーム欄にはクラウド保存、ソース表示、言語ラベル、起動パスの確認、ゲームシェルの安全な DOM 描画を追加しました。\n- 最近の更新、知識庫一覧、フィルター、リソースフィルター、ゲーム一覧は DOM / textContent 描画を続け、公開内容の XSS リスクを下げます。\n- RSS、言語付きリンク、記事共有 URL、最近の更新ラベルをそろえ、購読と共有を安定させました。\n- 画像の遅延読み込み、非同期デコード、固定画像サイズ、モバイル表示の細部も軽く調整しました。\n\n古い単項目の記事は履歴と回退用データとして残しますが、公開一覧と RSS ではこのまとめ記事だけを表示します。"
+        content_markdown: "# メインサイト夜間更新まとめ\n\nこの記録では、昨夜の公開サイト側の小さな更新を一つにまとめました。更新記録が細かな記事で埋まりすぎないようにするためです。\n\n## まとめ\n\n- 知識庫の記事詳細に、目次、読書進捗、リンクコピー、先頭へ戻る操作を追加しました。今回、参考画像に合わせて左側の目次/ヒント、右側の本文カード、下部の進捗バーと先頭へ戻るボタンを並べた表示に整えました。\n- さらに10回の視覚調整を行い、記事閲覧ウィンドウはサイト内の XP ウィンドウサイズに戻し、全体へ引き伸ばさない表示にしました。タイトルバーに最小化/最大化/閉じるボタンを追加し、進捗バーを1行の青い分割バーにし、本文の余白と左側ヒントの位置も参考画像に近づけました。\n- リソース欄には分類件数、状態バッジ、空分類の案内、より厳しいリンク許可リストを追加しました。\n- ゲーム欄にはクラウド保存、ソース表示、言語ラベル、起動パスの確認、ゲームシェルの安全な DOM 描画を追加しました。\n- 最近の更新、知識庫一覧、フィルター、リソースフィルター、ゲーム一覧は DOM / textContent 描画を続け、公開内容の XSS リスクを下げます。\n- 言語付きリンク、記事共有 URL、最近の更新ラベルをそろえ、共有を安定させました。\n- 画像の遅延読み込み、非同期デコード、固定画像サイズ、モバイル表示の細部も軽く調整しました。\n\n古い単項目の記事は履歴と回退用データとして残しますが、公開一覧ではこのまとめ記事だけを表示します。"
       }
     }, "2026-06-18T00:00:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-06-22-fixed-dock-window-backdrops", {
@@ -6190,34 +6034,34 @@ This update swaps the four home wallpapers used by the live page to higher-resol
       zh: {
         title: "主站发现与收口记录",
         summary: "本次主站循环补齐搜索发现配置、站点地图、manifest、robots、三语页面 meta 和语言按钮状态，并完成最终验证。",
-        content_markdown: "# 主站发现与收口记录\n\n这篇记录合并 2026 年 6 月 19 日早上 8 点前的主站公开侧循环结果。循环期间只处理公开主站与公开文章接口，避开 `/admin/` 页面、后台私有更新、后台权限和管理接口。\n\n## 更新内容\n\n- 首页补齐 canonical、Open Graph、Twitter Card、主题色、manifest 和移动端 PWA 发现信息。\n- 新增 `robots.txt`、`manifest.webmanifest`、`/api/sitemap.xml` 和根路径 `/sitemap.xml`，站点地图会输出三语首页与公开文章 URL。\n- 语言切换会同步 `html lang`、页面标题、description、canonical、OG/Twitter meta、RSS alternate 和语言按钮 `aria-pressed` 状态。\n- 构建检查覆盖文章、视频、站点地图、manifest、robots、主站脚本与遥测脚本，减少上线前遗漏。\n- 本地多视口扫描覆盖首页、知识库、文章详情、视频、资源、游戏、杂谈、聊天室、关于我和账号入口，没有发现页面错误或横向溢出。\n\n后续如果继续优化，建议优先补真实线上 Search Console / 社交分享卡片抓取结果，再决定是否扩展结构化数据。"
+        content_markdown: "# 主站发现与收口记录\n\n这篇记录合并 2026 年 6 月 19 日早上 8 点前的主站公开侧循环结果。循环期间只处理公开主站与公开文章接口，避开 `/admin/` 页面、后台私有更新、后台权限和管理接口。\n\n## 更新内容\n\n- 首页补齐 canonical、Open Graph、Twitter Card、主题色、manifest 和移动端 PWA 发现信息。\n- 新增 `robots.txt`、`manifest.webmanifest`、`/api/sitemap.xml` 和根路径 `/sitemap.xml`，站点地图会输出三语首页与公开文章 URL。\n- 语言切换会同步 `html lang`、页面标题、description、canonical、OG/Twitter meta 和语言按钮 `aria-pressed` 状态。\n- 构建检查覆盖文章、视频、站点地图、manifest、robots、主站脚本与遥测脚本，减少上线前遗漏。\n- 本地多视口扫描覆盖首页、知识库、文章详情、视频、资源、游戏、杂谈、聊天室、关于我和账号入口，没有发现页面错误或横向溢出。\n\n后续如果继续优化，建议优先补真实线上 Search Console / 社交分享卡片抓取结果，再决定是否扩展结构化数据。"
       },
       en: {
         title: "Main Site Discovery Wrap-up",
         summary: "This public-site cycle added discovery metadata, sitemap, manifest, robots, trilingual page meta sync, language button state, and final validation.",
-        content_markdown: "# Main Site Discovery Wrap-up\n\nThis entry consolidates the public-site loop that ended before 8:00 AM on June 19, 2026. The work stayed on the public main site and public article API, while avoiding `/admin/`, private admin updates, admin permissions, and admin APIs.\n\n## Changes\n\n- The home page now has canonical, Open Graph, Twitter Card, theme-color, manifest, and mobile PWA discovery metadata.\n- `robots.txt`, `manifest.webmanifest`, `/api/sitemap.xml`, and root `/sitemap.xml` were added; the sitemap emits trilingual home URLs and public article URLs.\n- Language switching now syncs `html lang`, page title, description, canonical, OG/Twitter meta, RSS alternate links, and language-button `aria-pressed` state.\n- Build checks now cover articles, videos, sitemap, manifest, robots, the main script, and the telemetry script to reduce pre-release misses.\n- Local viewport scanning covered Home, Knowledge, article details, Videos, Resources, Games, Talk, Chat, About, and Account with no page errors or horizontal overflow found.\n\nFor the next pass, live Search Console checks and social-card crawler previews are the best follow-up before expanding structured data."
+        content_markdown: "# Main Site Discovery Wrap-up\n\nThis entry consolidates the public-site loop that ended before 8:00 AM on June 19, 2026. The work stayed on the public main site and public article API, while avoiding `/admin/`, private admin updates, admin permissions, and admin APIs.\n\n## Changes\n\n- The home page now has canonical, Open Graph, Twitter Card, theme-color, manifest, and mobile PWA discovery metadata.\n- `robots.txt`, `manifest.webmanifest`, `/api/sitemap.xml`, and root `/sitemap.xml` were added; the sitemap emits trilingual home URLs and public article URLs.\n- Language switching now syncs `html lang`, page title, description, canonical, OG/Twitter meta, and language-button `aria-pressed` state.\n- Build checks now cover articles, videos, sitemap, manifest, robots, the main script, and the telemetry script to reduce pre-release misses.\n- Local viewport scanning covered Home, Knowledge, article details, Videos, Resources, Games, Talk, Chat, About, and Account with no page errors or horizontal overflow found.\n\nFor the next pass, live Search Console checks and social-card crawler previews are the best follow-up before expanding structured data."
       },
       ja: {
         title: "メインサイト発見性の仕上げ",
         summary: "今回の公開側サイクルでは、検索向けメタ情報、サイトマップ、manifest、robots、三言語 meta 同期、言語ボタン状態、最終確認を追加しました。",
-        content_markdown: "# メインサイト発見性の仕上げ\n\nこの記録では、2026年6月19日午前8時までの公開サイト側ループ結果をまとめます。作業範囲は公開メインサイトと公開記事 API に限定し、`/admin/`、管理側の非公開更新、管理権限、管理 API には触れていません。\n\n## 更新内容\n\n- ホームに canonical、Open Graph、Twitter Card、テーマカラー、manifest、モバイル PWA 向けの発見情報を追加しました。\n- `robots.txt`、`manifest.webmanifest`、`/api/sitemap.xml`、ルートの `/sitemap.xml` を追加し、サイトマップには三言語ホーム URL と公開記事 URL を出力します。\n- 言語切り替え時に `html lang`、ページタイトル、description、canonical、OG/Twitter meta、RSS alternate、言語ボタンの `aria-pressed` 状態を同期します。\n- ビルド確認では記事、動画、サイトマップ、manifest、robots、メインスクリプト、テレメトリスクリプトを確認します。\n- ローカルの複数ビューポート確認では、ホーム、知識庫、記事詳細、動画、リソース、ゲーム、雑談、チャット、About、アカウント入口でページエラーや横方向のはみ出しは見つかりませんでした。\n\n次に進めるなら、実際の Search Console と SNS カードの取得結果を確認してから構造化データを広げるのがよさそうです。"
+        content_markdown: "# メインサイト発見性の仕上げ\n\nこの記録では、2026年6月19日午前8時までの公開サイト側ループ結果をまとめます。作業範囲は公開メインサイトと公開記事 API に限定し、`/admin/`、管理側の非公開更新、管理権限、管理 API には触れていません。\n\n## 更新内容\n\n- ホームに canonical、Open Graph、Twitter Card、テーマカラー、manifest、モバイル PWA 向けの発見情報を追加しました。\n- `robots.txt`、`manifest.webmanifest`、`/api/sitemap.xml`、ルートの `/sitemap.xml` を追加し、サイトマップには三言語ホーム URL と公開記事 URL を出力します。\n- 言語切り替え時に `html lang`、ページタイトル、description、canonical、OG/Twitter meta、言語ボタンの `aria-pressed` 状態を同期します。\n- ビルド確認では記事、動画、サイトマップ、manifest、robots、メインスクリプト、テレメトリスクリプトを確認します。\n- ローカルの複数ビューポート確認では、ホーム、知識庫、記事詳細、動画、リソース、ゲーム、雑談、チャット、About、アカウント入口でページエラーや横方向のはみ出しは見つかりませんでした。\n\n次に進めるなら、実際の Search Console と SNS カードの取得結果を確認してから構造化データを広げるのがよさそうです。"
       }
     }, "2026-06-19T00:15:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-06-18-main-visual-polish-cycle", {
       zh: {
         title: "主端视觉改版循环更新",
         summary: "本次主端视觉改版循环统一打磨首页、知识库、视频、资源、游戏、聊天室、关于我和账号入口的展示体验。",
-        content_markdown: "# 主端视觉改版循环更新\n\n这篇记录合并本线程的主端视觉改版循环结果。循环期间只处理公开主站页面，避开 `/admin/` 管理后台、后台接口和 D1 权限逻辑，继续保留 Windows XP + Pixel Art + Y2K + 可爱复古互联网桌面风格。\n\n## 主要变化\n\n- 首页桌面、顶部栏、任务栏、桌面图标和欢迎弹窗继续保持 XP 桌面感，同时补充长文案、省略显示、短屏和移动端安全间距。\n- 欢迎弹窗的最近更新区域在手机竖屏和短横屏下改为更紧凑的三段式布局，更新列表内部滚动，`查看更多更新` 与 RSS 按钮更早可见。\n- 知识库列表、分类栏、文章详情、复制链接状态、阅读进度和长文排版补齐长词换行与短屏保护，避免文章卡片被极端标题撑宽。\n- 视频区、资源区和游戏区卡片统一加强标题、简介、元信息、分类标签和操作按钮的最大宽度与换行规则，减少按钮不齐、卡片挤压和横向溢出。\n- 游戏外壳在移动端和短横屏下压缩本地存档工具、云存档提示、协议栏和 iframe 起点，保留导入导出、云存档和游戏本体逻辑不变。\n- 匿名聊天室继续使用纯文本渲染；昵称区、状态行、消息输入、发送按钮和底部提示在三语与窄屏下都补充宽度保护。\n- 关于我窗口、账号入口和登录弹窗补齐长字段、长邮箱、短横屏和移动端下的换行与高度保护。\n\n## 验证记录\n\n- 已执行构建检查，`build-check` 通过。\n- 已用桌面、移动竖屏、平板和短横屏尺寸扫描首页、知识库、视频、资源、游戏、杂谈、聊天室、关于我八个主端区域，中文 / English / 日本語 三语均无页面级横向溢出。\n- 本轮没有修改管理后台页面、后台权限、聊天发送接口、账号登录接口或游戏存档逻辑。\n\n后续如果继续打磨，建议优先接入真实视频数据后的播放器弹窗复验、游戏外壳缓存版本策略，以及更多真实长文章内容的阅读截图验收。"
+        content_markdown: "# 主端视觉改版循环更新\n\n这篇记录合并本线程的主端视觉改版循环结果。循环期间只处理公开主站页面，避开 `/admin/` 管理后台、后台接口和 D1 权限逻辑，继续保留 Windows XP + Pixel Art + Y2K + 可爱复古互联网桌面风格。\n\n## 主要变化\n\n- 首页桌面、顶部栏、任务栏、桌面图标和欢迎弹窗继续保持 XP 桌面感，同时补充长文案、省略显示、短屏和移动端安全间距。\n- 欢迎弹窗的最近更新区域在手机竖屏和短横屏下改为更紧凑的三段式布局，更新列表内部滚动，`查看更多更新` 按钮更早可见。\n- 知识库列表、分类栏、文章详情、复制链接状态、阅读进度和长文排版补齐长词换行与短屏保护，避免文章卡片被极端标题撑宽。\n- 视频区、资源区和游戏区卡片统一加强标题、简介、元信息、分类标签和操作按钮的最大宽度与换行规则，减少按钮不齐、卡片挤压和横向溢出。\n- 游戏外壳在移动端和短横屏下压缩本地存档工具、云存档提示、协议栏和 iframe 起点，保留导入导出、云存档和游戏本体逻辑不变。\n- 匿名聊天室继续使用纯文本渲染；昵称区、状态行、消息输入、发送按钮和底部提示在三语与窄屏下都补充宽度保护。\n- 关于我窗口、账号入口和登录弹窗补齐长字段、长邮箱、短横屏和移动端下的换行与高度保护。\n\n## 验证记录\n\n- 已执行构建检查，`build-check` 通过。\n- 已用桌面、移动竖屏、平板和短横屏尺寸扫描首页、知识库、视频、资源、游戏、杂谈、聊天室、关于我八个主端区域，中文 / English / 日本語 三语均无页面级横向溢出。\n- 本轮没有修改管理后台页面、后台权限、聊天发送接口、账号登录接口或游戏存档逻辑。\n\n后续如果继续打磨，建议优先接入真实视频数据后的播放器弹窗复验、游戏外壳缓存版本策略，以及更多真实长文章内容的阅读截图验收。"
       },
       en: {
         title: "Main Site Visual Polish Cycle",
         summary: "This public-site visual cycle polished Home, Knowledge, Videos, Resources, Games, Chat, About, and Account layouts as one unified update.",
-        content_markdown: "# Main Site Visual Polish Cycle\n\nThis entry consolidates the public-site visual polish cycle from this thread. The work stayed on the visible main site, avoided `/admin/`, admin APIs, and D1 permission logic, and kept the Windows XP + Pixel Art + Y2K + cute retro desktop identity intact.\n\n## Highlights\n\n- Home, the top bar, taskbar, desktop icons, and welcome dialog keep the XP desktop mood while gaining safer long-label handling, ellipsis behavior, short-screen spacing, and mobile guards.\n- The welcome dialog's Recent Updates panel is more compact on phones and short landscape screens: the update list scrolls inside the panel, while `More updates` and RSS are visible much sooner.\n- Knowledge lists, category tabs, article details, copy-link status, reading progress, and long-form typography now have stronger long-word wrapping and short-screen protection.\n- Video, Resource, and Game cards gained more consistent title, summary, metadata, category-label, and action-button width rules to reduce uneven buttons, cramped cards, and horizontal overflow.\n- The game shell is tighter on mobile and short landscape screens, with compact save tools, cloud-save notes, license rows, and iframe placement while import/export, cloud saves, and game logic remain unchanged.\n- The anonymous chat room still renders visitor content as plain text; nickname, status, message input, send button, and footer copy now have stronger width protection across languages and small screens.\n- About, Account, and login popovers gained wrapping and height guards for long fields, long email addresses, mobile layouts, and short landscape screens.\n\n## Validation\n\n- Build checks passed with `build-check`.\n- Home, Knowledge, Videos, Resources, Games, Talk, Chat, and About were scanned across desktop, mobile portrait, tablet, and short landscape viewports in Chinese, English, and Japanese with no page-level horizontal overflow.\n- This cycle did not change admin pages, admin permissions, chat sending APIs, account login APIs, or game save logic.\n\nNext visual passes should focus on player modal QA once real video data is available locally, cache busting for game-shell CSS, and screenshot acceptance against more real long-form article content."
+        content_markdown: "# Main Site Visual Polish Cycle\n\nThis entry consolidates the public-site visual polish cycle from this thread. The work stayed on the visible main site, avoided `/admin/`, admin APIs, and D1 permission logic, and kept the Windows XP + Pixel Art + Y2K + cute retro desktop identity intact.\n\n## Highlights\n\n- Home, the top bar, taskbar, desktop icons, and welcome dialog keep the XP desktop mood while gaining safer long-label handling, ellipsis behavior, short-screen spacing, and mobile guards.\n- The welcome dialog's Recent Updates panel is more compact on phones and short landscape screens: the update list scrolls inside the panel, while `More updates` stays easy to reach.\n- Knowledge lists, category tabs, article details, copy-link status, reading progress, and long-form typography now have stronger long-word wrapping and short-screen protection.\n- Video, Resource, and Game cards gained more consistent title, summary, metadata, category-label, and action-button width rules to reduce uneven buttons, cramped cards, and horizontal overflow.\n- The game shell is tighter on mobile and short landscape screens, with compact save tools, cloud-save notes, license rows, and iframe placement while import/export, cloud saves, and game logic remain unchanged.\n- The anonymous chat room still renders visitor content as plain text; nickname, status, message input, send button, and footer copy now have stronger width protection across languages and small screens.\n- About, Account, and login popovers gained wrapping and height guards for long fields, long email addresses, mobile layouts, and short landscape screens.\n\n## Validation\n\n- Build checks passed with `build-check`.\n- Home, Knowledge, Videos, Resources, Games, Talk, Chat, and About were scanned across desktop, mobile portrait, tablet, and short landscape viewports in Chinese, English, and Japanese with no page-level horizontal overflow.\n- This cycle did not change admin pages, admin permissions, chat sending APIs, account login APIs, or game save logic.\n\nNext visual passes should focus on player modal QA once real video data is available locally, cache busting for game-shell CSS, and screenshot acceptance against more real long-form article content."
       },
       ja: {
         title: "メインサイト視覚調整サイクル更新",
         summary: "今回の公開側視覚調整では、ホーム、知識庫、動画、リソース、ゲーム、チャット、About、アカウント周りをまとめて整えました。",
-        content_markdown: "# メインサイト視覚調整サイクル更新\n\nこの記録では、本スレッドで行った公開サイト側の視覚調整サイクルを一つにまとめます。作業範囲は主端の見た目に限定し、`/admin/` 管理画面、管理 API、D1 権限ロジックには触れず、Windows XP + Pixel Art + Y2K + かわいいレトロインターネットデスクトップの雰囲気を保ちました。\n\n## 主な変更\n\n- ホーム、上部バー、タスクバー、デスクトップアイコン、歓迎ウィンドウは XP デスクトップ感を保ちながら、長い文言、省略表示、短い画面、モバイル余白に強くしました。\n- 歓迎ウィンドウの最近の更新欄は、スマホ縦画面と短い横画面でよりコンパクトになりました。更新リストをパネル内スクロールにし、`もっと見る` と RSS ボタンを早く見える位置に置きました。\n- 知識庫一覧、分類バー、記事詳細、リンクコピー状態、読書進捗、長文組版では、長い単語の折り返しと短画面保護を強化しました。\n- 動画、リソース、ゲームのカードでは、タイトル、説明、メタ情報、分類ラベル、操作ボタンの幅と折り返しをそろえ、ボタンの不揃い、カードの圧迫、横方向のはみ出しを減らしました。\n- ゲーム外枠はモバイルと短横画面で、ローカルセーブ工具、クラウドセーブ表示、ライセンス欄、iframe の開始位置をコンパクトにしつつ、インポート/エクスポート、クラウド保存、ゲーム本体の動作は変えていません。\n- 匿名チャットは引き続きユーザー内容を純テキストで描画します。ニックネーム、状態行、入力欄、送信ボタン、下部表示は三言語と小画面で幅保護を強化しました。\n- About、アカウント入口、ログイン表示では、長い項目、長いメールアドレス、モバイル、短横画面向けに折り返しと高さの保護を追加しました。\n\n## 検証\n\n- `build-check` は通過しました。\n- ホーム、知識庫、動画、リソース、ゲーム、雑談、チャット、About を、デスクトップ、スマホ縦画面、タブレット、短横画面で確認し、中国語 / English / 日本語の三言語でページ全体の横はみ出しがないことを確認しました。\n- 今回のサイクルでは、管理画面、管理権限、チャット送信 API、アカウントログイン API、ゲーム保存ロジックは変更していません。\n\n次回の視覚調整では、ローカルに実動画データがある状態でのプレイヤーウィンドウ確認、game-shell CSS のキャッシュ対策、実際の長文記事スクリーンショットでの受け入れ確認を優先するとよさそうです。"
+        content_markdown: "# メインサイト視覚調整サイクル更新\n\nこの記録では、本スレッドで行った公開サイト側の視覚調整サイクルを一つにまとめます。作業範囲は主端の見た目に限定し、`/admin/` 管理画面、管理 API、D1 権限ロジックには触れず、Windows XP + Pixel Art + Y2K + かわいいレトロインターネットデスクトップの雰囲気を保ちました。\n\n## 主な変更\n\n- ホーム、上部バー、タスクバー、デスクトップアイコン、歓迎ウィンドウは XP デスクトップ感を保ちながら、長い文言、省略表示、短い画面、モバイル余白に強くしました。\n- 歓迎ウィンドウの最近の更新欄は、スマホ縦画面と短い横画面でよりコンパクトになりました。更新リストをパネル内スクロールにし、`もっと見る` ボタンを見つけやすくしました。\n- 知識庫一覧、分類バー、記事詳細、リンクコピー状態、読書進捗、長文組版では、長い単語の折り返しと短画面保護を強化しました。\n- 動画、リソース、ゲームのカードでは、タイトル、説明、メタ情報、分類ラベル、操作ボタンの幅と折り返しをそろえ、ボタンの不揃い、カードの圧迫、横方向のはみ出しを減らしました。\n- ゲーム外枠はモバイルと短横画面で、ローカルセーブ工具、クラウドセーブ表示、ライセンス欄、iframe の開始位置をコンパクトにしつつ、インポート/エクスポート、クラウド保存、ゲーム本体の動作は変えていません。\n- 匿名チャットは引き続きユーザー内容を純テキストで描画します。ニックネーム、状態行、入力欄、送信ボタン、下部表示は三言語と小画面で幅保護を強化しました。\n- About、アカウント入口、ログイン表示では、長い項目、長いメールアドレス、モバイル、短横画面向けに折り返しと高さの保護を追加しました。\n\n## 検証\n\n- `build-check` は通過しました。\n- ホーム、知識庫、動画、リソース、ゲーム、雑談、チャット、About を、デスクトップ、スマホ縦画面、タブレット、短横画面で確認し、中国語 / English / 日本語の三言語でページ全体の横はみ出しがないことを確認しました。\n- 今回のサイクルでは、管理画面、管理権限、チャット送信 API、アカウントログイン API、ゲーム保存ロジックは変更していません。\n\n次回の視覚調整では、ローカルに実動画データがある状態でのプレイヤーウィンドウ確認、game-shell CSS のキャッシュ対策、実際の長文記事スクリーンショットでの受け入れ確認を優先するとよさそうです。"
       }
     }, "2026-06-18T11:30:00.000Z"),
     ...articleTranslationsStatements(env, "seed-ai-agent-workflow-guide-2026-06-14", {
@@ -7106,38 +6950,21 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# 記事の読書進捗バー\n\n今回の更新では、知識庫の記事詳細ウィンドウに軽い読書進捗表示を追加し、長文を読みやすくしました。\n\n## 更新内容\n\n- 記事詳細のヘッダー下に三言語の「読書進捗」バーとパーセント表示を追加しました。\n- 長文スクロール時は `transform: scaleX()` でバーだけを更新し、本文レイアウトは動かしません。\n- ラベル、数値、`progressbar` のアクセシビリティ状態は DOM / `textContent` 経由で更新します。\n- Markdown 本文は引き続き安全な描画フローを使い、管理画面ディレクトリや管理 API には触れていません。"
       }
     }, "2026-06-17T22:50:00.000Z"),
-    ...articleTranslationsStatements(env, "seed-update-2026-06-18-rss-alternate-lang", {
-      zh: {
-        title: "RSS 发现链接同步",
-        summary: "页面 head 里的 RSS alternate 链接会跟随当前语言。",
-        content_markdown: "# RSS 发现链接同步\n\n本次更新继续整理公开订阅入口，让浏览器和 RSS 阅读器发现 feed 时也能拿到当前语言版本。\n\n## 更新内容\n\n- 页面 `<head>` 里的 `rel=\"alternate\"` RSS 链接新增同步标记。\n- 语言切换时，欢迎窗口 RSS 按钮和 head 里的 RSS alternate 会一起更新到当前 `lang`。\n- `/api/rss.xml` 与 `/api/feed.xml` 的 feed 输出逻辑不变，仍按 `lang` 返回三语文章内容。\n- 本轮只调整公开首页标记、前端语言同步和更新记录，不触碰后台目录或管理接口。"
-      },
-      en: {
-        title: "RSS Discovery Link Sync",
-        summary: "The RSS alternate link in the page head now follows the active language.",
-        content_markdown: "# RSS Discovery Link Sync\n\nThis update continues polishing public subscription entry points so browsers and RSS readers discover the feed in the active language.\n\n## Changes\n\n- The `<head>` `rel=\"alternate\"` RSS link now has a sync marker.\n- When the language changes, the welcome-window RSS button and the head RSS alternate link both update to the active `lang`.\n- `/api/rss.xml` and `/api/feed.xml` feed generation is unchanged and still returns trilingual article content according to `lang`.\n- This round only changes public homepage markup, frontend language sync, and update records; admin folders and admin APIs are untouched."
-      },
-      ja: {
-        title: "RSS 検出リンク同期",
-        summary: "ページ head の RSS alternate リンクが現在の言語に合わせて更新されます。",
-        content_markdown: "# RSS 検出リンク同期\n\n今回の更新では、公開サイトの購読入口をさらに整え、ブラウザーや RSS リーダーが現在の言語の feed を見つけやすくしました。\n\n## 更新内容\n\n- ページ `<head>` の `rel=\"alternate\"` RSS リンクに同期用の印を追加しました。\n- 言語切り替え時に、ウェルカム画面の RSS ボタンと head の RSS alternate がどちらも現在の `lang` に更新されます。\n- `/api/rss.xml` と `/api/feed.xml` の生成処理は変更せず、`lang` に応じた三言語の記事内容を返します。\n- 今回は公開ホームのマークアップ、フロントの言語同期、更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。"
-      }
-    }, "2026-06-17T22:35:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-06-18-article-link-lang", {
       zh: {
         title: "文章链接保留语言",
         summary: "文章卡片和最近更新链接现在会带上当前 lang 参数。",
-        content_markdown: "# 文章链接保留语言\n\n本次更新继续整理公开文章入口，让复制链接、右键新开标签和普通点击保持一致的语言上下文。\n\n## 更新内容\n\n- 知识库文章卡片的真实 `href` 会带上当前 `lang` 参数。\n- 欢迎窗口最近更新列表的文章链接也会带上当前 `lang` 参数，右键新开标签不会掉回默认语言。\n- 文章详情里的“复制文章链接”复用同一条链接生成逻辑，继续输出当前语言直链。\n- 点击拦截、文章安全渲染、RSS feed 和后台目录保持不变。"
+        content_markdown: "# 文章链接保留语言\n\n本次更新继续整理公开文章入口，让复制链接、右键新开标签和普通点击保持一致的语言上下文。\n\n## 更新内容\n\n- 知识库文章卡片的真实 `href` 会带上当前 `lang` 参数。\n- 欢迎窗口最近更新列表的文章链接也会带上当前 `lang` 参数，右键新开标签不会掉回默认语言。\n- 文章详情里的“复制文章链接”复用同一条链接生成逻辑，继续输出当前语言直链。\n- 点击拦截、文章安全渲染、站点地图和后台目录保持不变。"
       },
       en: {
         title: "Article Links Keep Language",
         summary: "Article cards and recent-update links now include the active lang parameter.",
-        content_markdown: "# Article Links Keep Language\n\nThis update keeps public article entry points aligned so copied links, new tabs, and normal clicks preserve the same language context.\n\n## Changes\n\n- Knowledge article card `href` values now include the active `lang` parameter.\n- Welcome-window Recent Updates article links also include the active `lang`, so opening in a new tab does not fall back to the default language.\n- The article detail copy-link button reuses the same link helper and still outputs a current-language deep link.\n- Click interception, safe article rendering, RSS feeds, and admin folders are unchanged."
+        content_markdown: "# Article Links Keep Language\n\nThis update keeps public article entry points aligned so copied links, new tabs, and normal clicks preserve the same language context.\n\n## Changes\n\n- Knowledge article card `href` values now include the active `lang` parameter.\n- Welcome-window Recent Updates article links also include the active `lang`, so opening in a new tab does not fall back to the default language.\n- The article detail copy-link button reuses the same link helper and still outputs a current-language deep link.\n- Click interception, safe article rendering, sitemap output, and admin folders are unchanged."
       },
       ja: {
         title: "記事リンクの言語保持",
         summary: "記事カードと最近の更新リンクに現在の lang パラメータを含めました。",
-        content_markdown: "# 記事リンクの言語保持\n\n今回の更新では、公開記事への入口を整え、コピーしたリンク、新しいタブ、通常クリックで同じ言語コンテキストを保てるようにしました。\n\n## 更新内容\n\n- 知識庫の記事カードの実際の `href` に現在の `lang` パラメータを含めます。\n- ウェルカム画面の最近の更新リンクにも現在の `lang` を含め、新しいタブで開いても既定言語に戻りません。\n- 記事詳細の「記事リンクをコピー」ボタンも同じリンク生成処理を使い、現在言語の直リンクを出力します。\n- クリック処理、安全な記事描画、RSS feed、管理画面ディレクトリは変更していません。"
+        content_markdown: "# 記事リンクの言語保持\n\n今回の更新では、公開記事への入口を整え、コピーしたリンク、新しいタブ、通常クリックで同じ言語コンテキストを保てるようにしました。\n\n## 更新内容\n\n- 知識庫の記事カードの実際の `href` に現在の `lang` パラメータを含めます。\n- ウェルカム画面の最近の更新リンクにも現在の `lang` を含め、新しいタブで開いても既定言語に戻りません。\n- 記事詳細の「記事リンクをコピー」ボタンも同じリンク生成処理を使い、現在言語の直リンクを出力します。\n- クリック処理、安全な記事描画、サイトマップ、管理画面ディレクトリは変更していません。"
       }
     }, "2026-06-17T22:20:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-06-18-recent-update-labels", {
@@ -7157,40 +6984,6 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# 最近の更新ラベル補足\n\n今回の更新では、ウェルカム画面の「最近の更新」パネルを少し整え、省略された更新タイトルでも内容を確認しやすくしました。\n\n## 更新内容\n\n- 各最近更新リンクに、タイトル・概要・日付を含む完全な `title` と `aria-label` を追加しました。\n- 画面上はこれまで通りコンパクトな省略表示のまま、XP 風パネルのレイアウトは変更していません。\n- タイトル、概要、日付は引き続き DOM / `textContent` で描画し、未処理 HTML は挿入しません。\n- 今回は公開側の最近の更新パネル、フロントのキャッシュ版、更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。"
       }
     }, "2026-06-17T22:05:00.000Z"),
-    ...articleTranslationsStatements(env, "seed-update-2026-06-18-rss-button-label", {
-      zh: {
-        title: "RSS 按钮文案整理",
-        summary: "欢迎窗口 RSS 按钮改为徽标加短文案，并让 ?welcome=1 稳定重开欢迎窗口。",
-        content_markdown: "# RSS 按钮文案整理\n\n本次更新继续打磨欢迎窗口的订阅入口，让 RSS 按钮在视觉和读屏名称上都更清楚。\n\n## 更新内容\n\n- RSS 按钮保留橙色 `RSS` 徽标，可见文案改为更短的“订阅 / Feed / 購読”，避免重复显示 RSS。\n- 按钮新增会跟随语言切换的完整 `aria-label`，读屏仍可听到完整 RSS 订阅含义。\n- `?welcome=1` 现在会跳过“今日已看过”记录，便于复查欢迎窗口三语可见态；普通首访每日只弹一次逻辑不变。\n- `/api/rss.xml`、`/api/feed.xml`、最近更新文章列表和 feed 生成逻辑保持不变。\n- 本轮只调整公开欢迎窗口、前端翻译和更新记录，不触碰后台目录或管理接口。"
-      },
-      en: {
-        title: "RSS Button Label Polish",
-        summary: "The welcome RSS button now uses a badge plus shorter label, and ?welcome=1 reliably reopens the welcome window.",
-        content_markdown: "# RSS Button Label Polish\n\nThis update continues polishing the welcome-window subscription entry so the RSS button reads more cleanly on screen and through assistive tech.\n\n## Changes\n\n- The RSS button keeps the orange `RSS` badge, while the visible text is shortened to `订阅 / Feed / 購読` to avoid repeating RSS.\n- The button now has a full localized `aria-label` that follows language switching, so screen readers still announce the full RSS subscription meaning.\n- `?welcome=1` now skips the daily already-seen flag, making it reliable for checking the welcome window in all three languages; normal first-visit daily behavior is unchanged.\n- `/api/rss.xml`, `/api/feed.xml`, the recent-update article list, and feed generation behavior are unchanged.\n- This round only changes the public welcome window, frontend translations, and update records; admin folders and admin APIs are untouched."
-      },
-      ja: {
-        title: "RSS ボタン文言調整",
-        summary: "ウェルカム画面の RSS ボタンを短い文言に整え、?welcome=1 で確実に再表示できるようにしました。",
-        content_markdown: "# RSS ボタン文言調整\n\n今回の更新では、ウェルカム画面の購読入口を少し整え、RSS ボタンの見た目と読み上げ名を分かりやすくしました。\n\n## 更新内容\n\n- RSS ボタンはオレンジ色の `RSS` バッジを残し、表示文言を短い `订阅 / Feed / 購読` にして RSS の重複表示を避けました。\n- ボタンには言語切り替えに合わせて変わる完全な `aria-label` を追加し、読み上げでは RSS 購読の意味が伝わるようにしました。\n- `?welcome=1` は当日の表示済み記録を越えてウェルカム画面を開けるようになり、三言語の表示確認に使いやすくなりました。通常の初回訪問では従来どおり一日一回だけ表示されます。\n- `/api/rss.xml`、`/api/feed.xml`、最近の更新記事一覧、feed 生成ロジックは変更していません。\n- 今回は公開ウェルカム画面、フロント翻訳、更新記録だけを調整し、管理画面ディレクトリや管理 API には触れていません。"
-      }
-    }, "2026-06-17T21:50:00.000Z"),
-    ...articleTranslationsStatements(env, "seed-update-2026-06-18-rss-feed-entry", {
-      zh: {
-        title: "RSS 订阅入口",
-        summary: "公开文章和站点更新现在可以通过 RSS 订阅。",
-        content_markdown: "# RSS 订阅入口\n\n本次更新给公开主站补上轻量订阅能力，方便用 RSS 阅读器跟进文章和网站更新。\n\n## 更新内容\n\n- 新增公开 `GET /api/rss.xml`，也兼容 `/api/feed.xml`。\n- Feed 会按 `lang` 输出中文、English、日本語标题、摘要和文章链接，并只包含已发布文章。\n- 首页“最近更新”面板新增三语 RSS 链接，语言切换时会同步到当前语言 feed。\n- RSS XML 对标题、摘要、链接和标签做转义处理，不改变文章、聊天室、视频、游戏和后台逻辑。"
-      },
-      en: {
-        title: "RSS Feed Entry",
-        summary: "Public articles and site updates can now be subscribed to through RSS.",
-        content_markdown: "# RSS Feed Entry\n\nThis update adds a lightweight subscription path to the public site so RSS readers can follow articles and site updates.\n\n## Changes\n\n- Added public `GET /api/rss.xml`, with `/api/feed.xml` supported as an alias.\n- The feed follows `lang` and returns Chinese, English, or Japanese titles, summaries, and article links for published articles only.\n- The home Recent Updates panel now includes a localized RSS link that follows language switching.\n- RSS XML escapes titles, summaries, links, and tags, without changing article, chat, video, game, or admin behavior."
-      },
-      ja: {
-        title: "RSS フィード入口",
-        summary: "公開記事とサイト更新を RSS で購読できるようにしました。",
-        content_markdown: "# RSS フィード入口\n\n今回の更新では、公開サイトに軽量な購読導線を追加し、RSS リーダーで記事とサイト更新を追えるようにしました。\n\n## 更新内容\n\n- 公開 `GET /api/rss.xml` を追加し、`/api/feed.xml` も同じ feed として使えます。\n- Feed は `lang` に合わせて、中国語、English、日本語のタイトル、概要、記事リンクを返し、公開済み記事だけを含みます。\n- ホームの「最近の更新」パネルに多言語 RSS リンクを追加し、言語切り替えに合わせて feed も変わります。\n- RSS XML はタイトル、概要、リンク、タグをエスケープし、記事、チャット、動画、ゲーム、管理画面の動作は変更していません。"
-      }
-    }, "2026-06-17T21:35:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-06-18-static-image-dimensions", {
       zh: {
         title: "静态图片尺寸提示",

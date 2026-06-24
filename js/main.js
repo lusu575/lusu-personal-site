@@ -5,7 +5,6 @@ const translations = {
   zh: {
     siteName: "鲁肃个人站",
     siteDescription: "鲁肃的个人站，一个 Windows XP、Pixel Art 和 Y2K 风格的个人空间，用来记录 AI、游戏、工具、资源、视频、知识库和杂谈。",
-    rssFeedTitle: "鲁肃的个人站 RSS 订阅",
     heroTitle: "鲁肃的个人站",
     homeLead: "开发施工中",
     navKnowledge: "知识库",
@@ -138,8 +137,6 @@ const translations = {
     goGames: "打开游戏区",
     recentUpdates: "最近更新",
     moreUpdates: "查看更多更新",
-    rssFeed: "订阅",
-    rssFeedAria: "RSS 订阅",
     chatNicknameLabel: "我的昵称：",
     chatEditNickname: "修改昵称",
     chatSyncStatus: "自动增量刷新，空闲时会降低频率",
@@ -173,7 +170,6 @@ const translations = {
   en: {
     siteName: "LuSu Site",
     siteDescription: "LuSu's personal site, a Windows XP, pixel art, and Y2K desktop space for AI notes, games, tools, resources, videos, knowledge, and thoughts.",
-    rssFeedTitle: "LuSu Site RSS Feed",
     heroTitle: "LuSu Site",
     homeLead: "A small XP pixel site under construction.",
     navKnowledge: "Knowledge",
@@ -306,8 +302,6 @@ const translations = {
     goGames: "Open Games",
     recentUpdates: "Recent Updates",
     moreUpdates: "More updates",
-    rssFeed: "Feed",
-    rssFeedAria: "RSS Feed",
     chatNicknameLabel: "My nickname:",
     chatEditNickname: "Edit nickname",
     chatSyncStatus: "Incremental auto refresh, slower while idle",
@@ -341,7 +335,6 @@ const translations = {
   ja: {
     siteName: "魯粛サイト",
     siteDescription: "Windows XP、ピクセルアート、Y2K 風の個人サイトです。AI、ゲーム、ツール、リソース、動画、知識庫、雑談を記録しています。",
-    rssFeedTitle: "魯粛サイト RSS フィード",
     heroTitle: "魯粛サイト",
     homeLead: "工事中の XP ピクセル小サイトです。",
     navKnowledge: "知識庫",
@@ -474,8 +467,6 @@ const translations = {
     goGames: "ゲームへ",
     recentUpdates: "最近の更新",
     moreUpdates: "もっと見る",
-    rssFeed: "購読",
-    rssFeedAria: "RSS フィードを購読",
     chatNicknameLabel: "ニックネーム：",
     chatEditNickname: "変更",
     chatSyncStatus: "差分自動更新、待機中は低頻度",
@@ -543,6 +534,20 @@ const labels = {
 
 const content = {
   updates: [
+    {
+      icon: "🧩",
+      date: "2026.06.24",
+      title: {
+        zh: "账号流程与合并上线整理",
+        en: "Account Flow and Merge Launch",
+        ja: "アカウント操作とマージ公開の整理"
+      },
+      desc: {
+        zh: "账号登录、注册和退出改为更稳定的按钮流程，最近更新操作区完成精简，发布方式回到合并 main 后自动上线",
+        en: "Account sign-in, registration, and sign-out now use steadier button handling, the recent-update actions are simplified, and releases return to merge-to-main deployment",
+        ja: "ログイン、登録、ログアウトのボタン処理を安定させ、最近の更新の操作欄を簡潔にし、main へのマージで公開する流れに戻しました"
+      }
+    },
     {
       icon: "🛠️",
       date: "2026.06.23",
@@ -698,16 +703,6 @@ const content = {
       }
     },
     {
-      icon: "📶",
-      date: "2026.06.18",
-      title: { zh: "RSS 发现链接同步", en: "RSS Discovery Link Sync", ja: "RSS 検出リンク同期" },
-      desc: {
-        zh: "页面 head 里的 RSS alternate 链接会随当前语言同步，订阅发现不再固定中文",
-        en: "The RSS alternate link in the page head now follows the active language for feed discovery",
-        ja: "ページ head の RSS alternate リンクが現在の言語に合わせて更新されます"
-      }
-    },
-    {
       icon: "🔗",
       date: "2026.06.18",
       title: { zh: "文章链接保留语言", en: "Article Links Keep Language", ja: "記事リンクの言語保持" },
@@ -725,26 +720,6 @@ const content = {
         zh: "最近更新链接补充完整 title 和 aria-label，截断标题也能读到完整内容",
         en: "Recent update links now include full title and aria-label text even when the visible title is truncated",
         ja: "最近の更新リンクに完全な title と aria-label を追加し、省略表示でも内容を確認できます"
-      }
-    },
-    {
-      icon: "📡",
-      date: "2026.06.18",
-      title: { zh: "RSS 按钮文案整理", en: "RSS Button Label Polish", ja: "RSS ボタン文言調整" },
-      desc: {
-        zh: "欢迎窗口里的 RSS 按钮改为徽标加短文案，并让 ?welcome=1 稳定重开欢迎窗口",
-        en: "The welcome RSS button now uses a badge plus shorter label, and ?welcome=1 reliably reopens the welcome window",
-        ja: "ウェルカム画面の RSS ボタンを短い文言に整え、?welcome=1 で確実に再表示できるようにしました"
-      }
-    },
-    {
-      icon: "🛰️",
-      date: "2026.06.18",
-      title: { zh: "RSS 订阅入口", en: "RSS Feed Entry", ja: "RSS フィード入口" },
-      desc: {
-        zh: "首页最近更新面板新增 RSS 链接，公开文章可通过 /api/rss.xml 按当前语言订阅",
-        en: "The Recent Updates panel now includes an RSS link, and public articles can be subscribed to through /api/rss.xml in the current language",
-        ja: "最近の更新パネルに RSS リンクを追加し、公開記事を現在の言語で /api/rss.xml から購読できます"
       }
     },
     {
@@ -1442,6 +1417,7 @@ const activeFilters = {
   resources: "all"
 };
 let authUser = null;
+let accountSubmitting = false;
 const articleState = {
   loading: false,
   requestId: 0,
@@ -1596,11 +1572,9 @@ const tagLabels = {
   "2048": { zh: "2048", en: "2048", ja: "2048" },
   "Hextris": { zh: "Hextris", en: "Hextris", ja: "Hextris" },
   "Bilibili": { zh: "Bilibili", en: "Bilibili", ja: "Bilibili" },
-  "RSS": { zh: "RSS", en: "RSS", ja: "RSS" },
   "空状态": { zh: "空状态", en: "Empty state", ja: "空状態" },
   "筛选": { zh: "筛选", en: "Filters", ja: "フィルター" },
-  "数量": { zh: "数量", en: "Counts", ja: "件数" },
-  "订阅": { zh: "订阅", en: "Subscribe", ja: "購読" }
+  "数量": { zh: "数量", en: "Counts", ja: "件数" }
 };
 
 const pageIds = ["home", "knowledge", "videos", "resources", "games", "blog", "chatroom", "about"];
@@ -1748,21 +1722,6 @@ function syncLanguageUrl(lang = currentLang) {
   if (currentPath !== nextPath) {
     window.history.replaceState(null, "", nextPath);
   }
-}
-
-function rssFeedPath(lang = currentLang) {
-  return `/api/rss.xml?lang=${encodeURIComponent(lang)}`;
-}
-
-function syncRssLinks(lang = currentLang) {
-  document.querySelectorAll("[data-rss-link]").forEach((link) => {
-    link.href = rssFeedPath(lang);
-    link.title = t("rssFeedTitle");
-  });
-  document.querySelectorAll("[data-rss-alternate]").forEach((link) => {
-    link.href = rssFeedPath(lang);
-    link.title = t("rssFeedTitle");
-  });
 }
 
 function canonicalSiteUrl(lang = currentLang) {
@@ -2011,7 +1970,6 @@ function setLanguage(lang, options = {}) {
     syncLanguageUrl(lang);
   }
   document.documentElement.lang = lang === "zh" ? "zh-CN" : lang;
-  syncRssLinks(lang);
   syncDocumentMeta(lang);
 
   document.querySelectorAll("[data-i18n]").forEach((node) => {
@@ -4302,6 +4260,7 @@ function renderAccountWidget(message = "") {
   const form = document.createElement("form");
   form.className = "account-form";
   form.id = "account-form";
+  form.dataset.accountMode = "login";
   const title = document.createElement("strong");
   title.textContent = t("accountTitle");
   const emailInput = document.createElement("input");
@@ -4323,13 +4282,18 @@ function renderAccountWidget(message = "") {
   const loginButton = document.createElement("button");
   loginButton.className = "account-button";
   loginButton.type = "submit";
-  loginButton.dataset.mode = "login";
+  loginButton.dataset.accountMode = "login";
   loginButton.textContent = t("accountLogin");
   const registerButton = document.createElement("button");
   registerButton.className = "account-button";
   registerButton.type = "submit";
-  registerButton.dataset.mode = "register";
+  registerButton.dataset.accountMode = "register";
   registerButton.textContent = t("accountRegister");
+  [loginButton, registerButton].forEach((button) => {
+    button.addEventListener("click", () => {
+      form.dataset.accountMode = button.dataset.accountMode || "login";
+    });
+  });
   actions.append(loginButton, registerButton);
   const note = document.createElement("p");
   note.className = "account-note";
@@ -4353,8 +4317,12 @@ async function initAccountWidget() {
 
 async function submitAccountForm(event) {
   event.preventDefault();
+  if (accountSubmitting) {
+    return;
+  }
   const form = event.currentTarget;
-  const mode = event.submitter?.dataset.mode || "login";
+  const mode = event.submitter?.dataset.accountMode || form.dataset.accountMode || "login";
+  setAccountSubmitting(true);
   try {
     const payload = await accountApi(`/api/auth/${mode}`, {
       method: "POST",
@@ -4369,10 +4337,16 @@ async function submitAccountForm(event) {
   } catch (error) {
     renderAccountWidget(error.message);
     openAccountPopover();
+  } finally {
+    accountSubmitting = false;
   }
 }
 
 async function logoutAccount() {
+  if (accountSubmitting) {
+    return;
+  }
+  setAccountSubmitting(true);
   try {
     await accountApi("/api/auth/logout", { method: "POST", body: "{}" });
   } catch {
@@ -4381,6 +4355,18 @@ async function logoutAccount() {
   authUser = null;
   renderAccountWidget(t("accountLoggedOut"));
   openAccountPopover();
+  accountSubmitting = false;
+}
+
+function setAccountSubmitting(isSubmitting) {
+  accountSubmitting = isSubmitting;
+  const form = document.getElementById("account-form");
+  if (form) {
+    form.setAttribute("aria-busy", String(isSubmitting));
+  }
+  document.querySelectorAll("#account-widget button:not([data-account-toggle])").forEach((button) => {
+    button.disabled = isSubmitting;
+  });
 }
 
 function openAccountPopover() {

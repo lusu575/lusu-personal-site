@@ -3841,32 +3841,7 @@ body.is-article-reading .article-figure {
 }
 
 .recent-actions {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 8px;
-}
-
-.rss-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  min-height: 34px;
-  padding-inline: 10px;
-}
-
-.rss-icon {
-  display: inline-grid;
-  place-items: center;
-  min-width: 28px;
-  height: 18px;
-  border: 1px solid #0c45a8;
-  border-radius: 3px;
-  color: #fff;
-  background: #ff8a24;
-  font-size: 10px;
-  line-height: 1;
-  text-shadow: 1px 1px 0 rgba(120, 45, 0, 0.7);
+  display: block;
 }
 
 .modal-window {
