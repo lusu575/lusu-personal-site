@@ -4,6 +4,12 @@
 
 ## 2026-06-30
 
+- 账号弹窗层级修复收口：
+  - 顶栏所在的 `header` 明确提升到主内容 `main` 之上，账号弹窗不再被首页内容或知识库、视频区、资源区、游戏区、聊天室、关于我等窗口遮挡。
+  - 顶栏继续使用可溢出显示，账号弹窗可以从按钮下方展开；登录、注册、退出、会话 cookie、云存档和账号接口逻辑不变。
+  - 同步补齐公开 `site-updates` 三语记录：`js/main.js` fallback、`functions/api/[[route]].js` Functions seed、`cloudflare/schema.sql` schema seed，并更新首页 CSS/JS cache query 到 `20260630-account-popover-layer-r2`。
+  - 补充项目上下文和主站 Skill，明确账号弹窗这类顶栏浮层必须同时检查顶栏裁剪和 header/main 层级。
+
 - 修复主站右上角账号按钮点击后看似无响应的问题：顶栏不再裁剪账号弹窗，登录/注册弹窗可以正常从按钮下方展开；本次不改账号接口、登录注册提交逻辑或云存档逻辑。
 - 主站 CSS 缓存版本更新为 `20260630-account-popover-clip-r1`，避免线上继续加载旧的顶栏裁剪样式。
 

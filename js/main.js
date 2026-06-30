@@ -535,6 +535,20 @@ const labels = {
 const content = {
   updates: [
     {
+      icon: "🪟",
+      date: "2026.06.30",
+      title: {
+        zh: "账号弹窗层级修复",
+        en: "Account Popover Layer Fix",
+        ja: "アカウント表示の重なり修正"
+      },
+      desc: {
+        zh: "右上角账号入口现在会显示在首页和各栏目窗口之上，登录、注册和退出流程保持不变",
+        en: "The top-right account entry now opens above the home page and section windows while keeping login, registration, and sign-out behavior unchanged",
+        ja: "右上のアカウント入口がホームや各セクションのウィンドウより前面に表示され、ログイン、登録、ログアウトの動作はそのままです"
+      }
+    },
+    {
       icon: "🧩",
       date: "2026.06.24",
       title: {

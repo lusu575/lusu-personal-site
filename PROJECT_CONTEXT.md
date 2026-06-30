@@ -1,5 +1,12 @@
 # PROJECT_CONTEXT.md
 
+## 2026-06-30 账号弹窗层级修复与更新记录补齐
+
+- 主站右上角账号入口的弹窗修复分两层处理：`.xp-topbar` 允许弹窗向下溢出，同时 `.site-shell > header` 的层级高于 `.site-shell > main`，避免首页和各栏目 XP 窗口继续遮挡登录/注册弹窗。
+- 本次不修改账号接口、登录/注册/退出提交逻辑、会话 cookie 或游戏云存档逻辑，只修正前端显示层级和缓存版本。
+- 该修复属于公开可见更新，已补齐 `site-updates` 三语记录、`js/main.js` fallback、`functions/api/[[route]].js` Functions seed、`cloudflare/schema.sql` schema seed、根目录 changelog、项目上下文和主站 Skill；首页最近更新日期由 `content.updates` 自动读取到 `2026.06.30`。
+- 后续维护顶栏账号入口、语言切换或其他顶栏浮层时，必须同时检查裁剪、header/main stacking context、移动端断点和资源 query，不能只看按钮 click handler。
+
 ## 2026-06-24 账号流程、入口清理与合并上线
 
 - 主站欢迎窗口最近更新操作区已精简为只保留“查看更多网站更新”入口，公开聚合发现链接、入口按钮和对应公开接口已从主站代码与 Functions 路由中移除。

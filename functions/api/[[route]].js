@@ -5700,6 +5700,33 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         article_id, slug, category, tags, cover_image, status, is_pinned,
         view_count, created_at, updated_at, published_at
       ) values (
+        'seed-update-2026-06-30-account-popover-layer-fix',
+        '2026-06-30-account-popover-layer-fix',
+        'site-updates',
+        '["网站更新","账号","弹窗","层级修复"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-30T08:00:00.000Z',
+        '2026-06-30T08:00:00.000Z',
+        '2026-06-30T08:00:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
         'seed-update-2026-06-24-account-cleanup-merge-launch',
         '2026-06-24-account-cleanup-merge-launch',
         'site-updates',
@@ -5911,6 +5938,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    ...articleTranslationsStatements(env, "seed-update-2026-06-30-account-popover-layer-fix", {
+      zh: {
+        title: "账号弹窗层级修复",
+        summary: "右上角账号入口现在会显示在首页和各栏目窗口之上，登录、注册和退出流程保持不变。",
+        content_markdown: "# 账号弹窗层级修复\n\n这次修复集中处理右上角账号入口的显示层级，让登录弹窗在首页和其他栏目里都能稳定露出。\n\n## 更新内容\n\n- 顶栏整体层级现在高于主内容窗口，账号弹窗不会再被首页内容、知识库、视频区、资源区、游戏区、聊天室或关于我窗口遮挡。\n- 顶栏继续允许账号弹窗从按钮下方展开，避免点击后弹窗被顶栏自身裁剪。\n- 登录、注册、退出、会话 cookie、云存档和账号接口逻辑保持不变，本次只调整账号入口的前端显示层级。\n- 同步更新前端 fallback、Functions seed、schema seed、缓存版本和项目记录，让首页最近更新日期能读取到本次修复。"
+      },
+      en: {
+        title: "Account Popover Layer Fix",
+        summary: "The top-right account entry now opens above the home page and section windows while login, registration, and sign-out stay unchanged.",
+        content_markdown: "# Account Popover Layer Fix\n\nThis update fixes the top-right account entry so the login popover reliably appears above the home page and every section window.\n\n## Changes\n\n- The top bar now sits above the main content windows, so the account popover is no longer hidden behind Home, Knowledge, Videos, Resources, Games, Chat, or About surfaces.\n- The top bar continues to allow the account popover to extend below the button instead of clipping it.\n- Login, registration, sign-out, session cookies, cloud saves, and account APIs are unchanged; this is a front-end layering fix.\n- The front-end fallback, Functions seed, schema seed, cache versions, and project records were updated so the recent-update date reflects this fix."
+      },
+      ja: {
+        title: "アカウント表示の重なり修正",
+        summary: "右上のアカウント入口がホームや各セクションのウィンドウより前面に表示され、ログイン、登録、ログアウトの動作はそのままです。",
+        content_markdown: "# アカウント表示の重なり修正\n\n今回の更新では、右上のアカウント入口がホーム画面や各セクションのウィンドウに隠れないよう、表示の重なり順を修正しました。\n\n## 更新内容\n\n- トップバー全体をメインコンテンツのウィンドウより前面に配置し、アカウント表示がホーム、知識庫、動画、リソース、ゲーム、チャット、プロフィール画面の後ろに隠れないようにしました。\n- アカウント表示は引き続きボタンの下に展開され、トップバー自身に切り取られません。\n- ログイン、登録、ログアウト、セッション cookie、クラウドセーブ、アカウント API の動作は変更していません。今回は前端の表示階層だけの修正です。\n- フロントエンド fallback、Functions seed、schema seed、キャッシュ版、プロジェクト記録も更新し、最近の更新日が今回の修正を反映するようにしました。"
+      }
+    }, "2026-06-30T08:00:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-06-24-account-cleanup-merge-launch", {
       zh: {
         title: "账号流程与合并上线整理",

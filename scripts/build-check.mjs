@@ -795,7 +795,7 @@ for (const asset of [
 }
 
 const currentPreFinalMainVersion = "20260623-click-delegation-r1";
-const currentPreFinalCssVersion = "20260630-account-popover-clip-r1";
+const currentPreFinalCssVersion = "20260630-account-popover-layer-r2";
 const currentPreFinalTelemetryVersion = "20260623-analytics-privacy-r1";
 const currentGameShellVersion = "20260623-game-shell-storage-safe-r1";
 
@@ -1348,12 +1348,12 @@ for (const obsoleteText of [
   }
 }
 
-const finalUpdateId = "seed-update-2026-06-24-account-cleanup-merge-launch";
-const finalUpdateSlug = "2026-06-24-account-cleanup-merge-launch";
-const finalMainVersion = "20260624-account-cleanup-merge-r1";
+const finalUpdateId = "seed-update-2026-06-30-account-popover-layer-fix";
+const finalUpdateSlug = "2026-06-30-account-popover-layer-fix";
+const finalMainVersion = "20260630-account-popover-layer-r2";
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Account Flow and Merge Launch";
-const finalPublishedAt = "2026-06-24T08:00:00.000Z";
+const finalTitleEn = "Account Popover Layer Fix";
+const finalPublishedAt = "2026-06-30T08:00:00.000Z";
 const finalTranslationMinimums = {
   title: 8,
   summary: 24,
@@ -1365,6 +1365,7 @@ const finalUpdateStarted = [mainJs, apiJs, schemaSql, indexHtml, changelog].some
 );
 const changelog20260623Section = markdownSection(changelog, "## 2026-06-23");
 const changelog20260624Section = markdownSection(changelog, "## 2026-06-24");
+const changelog20260630Section = markdownSection(changelog, "## 2026-06-30");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -1466,7 +1467,7 @@ if (finalUpdateStarted) {
   }
 
   for (const token of [
-    'id="top-updated">2026.06.24',
+    'id="top-updated">2026.06.30',
     `/js/main.js?v=${finalMainVersion}`
   ]) {
     if (!indexHtml.includes(token)) {
@@ -1481,7 +1482,7 @@ if (finalUpdateStarted) {
     "Functions seed",
     "schema seed"
   ]) {
-    if (!changelog20260624Section.includes(token)) {
+    if (!changelog20260630Section.includes(token)) {
       fail(`CHANGELOG.md final public update sync missing ${token}`);
     }
   }

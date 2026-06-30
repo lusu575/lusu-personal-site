@@ -273,6 +273,13 @@ body[data-route="home"] .site-shell::after {
 .site-shell > header,
 .site-shell > main {
   position: relative;
+}
+
+.site-shell > header {
+  z-index: 80;
+}
+
+.site-shell > main {
   z-index: 1;
 }
 
