@@ -795,7 +795,7 @@ for (const asset of [
 }
 
 const currentPreFinalMainVersion = "20260623-click-delegation-r1";
-const currentPreFinalCssVersion = "20260623-hidden-dialog-focus-r1";
+const currentPreFinalCssVersion = "20260630-account-popover-clip-r1";
 const currentPreFinalTelemetryVersion = "20260623-analytics-privacy-r1";
 const currentGameShellVersion = "20260623-game-shell-storage-safe-r1";
 
