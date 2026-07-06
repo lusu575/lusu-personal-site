@@ -446,8 +446,46 @@ if (!hasPattern(apiJs, /function\s+createdAtFromChatMessageId[\s\S]*Number\.pars
   fail("functions/api/[[route]].js should recover chat cursor timestamps from generated message ids");
 }
 
-if (!hasPattern(apiJs, /if\s*\(!cursor\)\s*\{[\s\S]*const\s+recoveredCreatedAt\s*=\s*createdAtFromChatMessageId\(after\)[\s\S]*await\s+getChatMessagesAfter\(env,\s*recoveredCreatedAt,\s*after,\s*limit\)[\s\S]*await\s+getRecentChatMessages\(env,\s*limit\)/)) {
+if (!hasPattern(apiJs, /if\s*\(!cursor\)\s*\{[\s\S]*const\s+recoveredCreatedAt\s*=\s*createdAtFromChatMessageId\(after\)[\s\S]*await\s+getChatMessagesAfter\(env,\s*recoveredCreatedAt,\s*after,\s*limit,\s*roomKey\)[\s\S]*await\s+getRecentChatMessages\(env,\s*limit,\s*roomKey\)/)) {
   fail("functions/api/[[route]].js should recover deleted chat cursors instead of returning an empty incremental result forever");
+}
+
+for (const requiredChatApiText of [
+  "normalizeChatRoomKey",
+  "normalizeChatEncryptedContent",
+  "cleanupExpiredPrivateChatRooms",
+  "room_key",
+  "encrypted"
+]) {
+  if (!apiJs.includes(requiredChatApiText)) {
+    fail(`functions/api/[[route]].js missing private chat room support: ${requiredChatApiText}`);
+  }
+}
+
+for (const requiredChatUiText of [
+  "chat-private-room-form",
+  "chat-room-toggle",
+  'type="password"'
+]) {
+  if (!indexHtml.includes(requiredChatUiText)) {
+    fail(`index.html missing private chat room UI: ${requiredChatUiText}`);
+  }
+}
+
+for (const requiredChatCryptoText of [
+  "crypto.subtle",
+  "PBKDF2",
+  "AES-GCM",
+  "encryptChatContent",
+  "decryptChatContent"
+]) {
+  if (!mainJs.includes(requiredChatCryptoText)) {
+    fail(`js/main.js missing private chat crypto support: ${requiredChatCryptoText}`);
+  }
+}
+
+if (!adminJs.includes("密码房加密消息")) {
+  fail("admin/admin.js should show a placeholder for encrypted password-room messages");
 }
 
 for (const sensitiveText of ["password_hash", "token_hash"]) {
@@ -795,7 +833,7 @@ for (const asset of [
 }
 
 const currentPreFinalMainVersion = "20260623-click-delegation-r1";
-const currentPreFinalCssVersion = "20260630-account-popover-layer-r2";
+const currentPreFinalCssVersion = "20260706-private-chat-rooms-r1";
 const currentPreFinalTelemetryVersion = "20260623-analytics-privacy-r1";
 const currentGameShellVersion = "20260623-game-shell-storage-safe-r1";
 
@@ -1348,12 +1386,12 @@ for (const obsoleteText of [
   }
 }
 
-const finalUpdateId = "seed-update-2026-06-30-account-popover-layer-fix";
-const finalUpdateSlug = "2026-06-30-account-popover-layer-fix";
-const finalMainVersion = "20260630-account-popover-layer-r2";
+const finalUpdateId = "seed-update-2026-07-06-private-chat-rooms";
+const finalUpdateSlug = "2026-07-06-private-chat-rooms";
+const finalMainVersion = "20260706-private-chat-rooms-r1";
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Account Popover Layer Fix";
-const finalPublishedAt = "2026-06-30T08:00:00.000Z";
+const finalTitleEn = "Dark Encrypted Password Rooms";
+const finalPublishedAt = "2026-07-06T08:00:00.000Z";
 const finalTranslationMinimums = {
   title: 8,
   summary: 24,
@@ -1366,6 +1404,7 @@ const finalUpdateStarted = [mainJs, apiJs, schemaSql, indexHtml, changelog].some
 const changelog20260623Section = markdownSection(changelog, "## 2026-06-23");
 const changelog20260624Section = markdownSection(changelog, "## 2026-06-24");
 const changelog20260630Section = markdownSection(changelog, "## 2026-06-30");
+const changelog20260706Section = markdownSection(changelog, "## 2026-07-06");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -1387,6 +1426,7 @@ if (finalUpdateStarted) {
   for (const token of [
     'date: "2026.06.23"',
     'date: "2026.06.24"',
+    'date: "2026.07.06"',
     finalTitleEn
   ]) {
     if (!mainJs.includes(token)) {
@@ -1467,7 +1507,7 @@ if (finalUpdateStarted) {
   }
 
   for (const token of [
-    'id="top-updated">2026.06.30',
+    'id="top-updated">2026.07.06',
     `/js/main.js?v=${finalMainVersion}`
   ]) {
     if (!indexHtml.includes(token)) {
@@ -1482,7 +1522,7 @@ if (finalUpdateStarted) {
     "Functions seed",
     "schema seed"
   ]) {
-    if (!changelog20260630Section.includes(token)) {
+    if (!changelog20260706Section.includes(token)) {
       fail(`CHANGELOG.md final public update sync missing ${token}`);
     }
   }
@@ -1609,14 +1649,19 @@ function createChatCursorRecoveryD1({ cursorId, cursorCreatedAt, rows }) {
         return { success: true };
       },
       async first() {
-        if (/select\s+created_at\s+from\s+anonymous_chat_messages\s+where\s+message_id\s*=\s*\?/i.test(sql)) {
+        if (/select\s+created_at\s+from\s+anonymous_chat_messages\s+where\s+message_id\s*=\s*\?\s+and\s+room_key\s*=\s*\?/i.test(sql)) {
           return null;
         }
         return null;
       },
       async all() {
         if (/from\s+anonymous_chat_messages/i.test(sql) && /created_at\s*>\s*\?/i.test(sql)) {
-          if (this.params[0] !== cursorCreatedAt || this.params[1] !== cursorCreatedAt || this.params[2] !== cursorId) {
+          if (
+            this.params[0] !== "public"
+            || this.params[1] !== cursorCreatedAt
+            || this.params[2] !== cursorCreatedAt
+            || this.params[3] !== cursorId
+          ) {
             fail("functions/api/[[route]].js chat cursor recovery should query from the recovered message timestamp");
           }
           return { results: rows };

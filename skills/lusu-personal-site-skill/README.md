@@ -33,6 +33,9 @@ skills/lusu-personal-site-skill/SKILL.md
 - 首页动态壁纸动画只使用 CSS `transform` / `opacity`，必须支持减少动态、页面隐藏暂停和手机端降级；降级时回到对应静态壁纸。
 - 聊天室用户内容必须纯文本渲染，不能用 `innerHTML` 插入访客昵称或消息。
 - 聊天室前端应保持 `after/message_id` 增量拉取，空闲和后台时降频，发送后立即刷新；不要每次重复拉最近 100 条。
+- 聊天室普通大厅固定 `room_key='public'`，密码房使用暗色 UI 和浏览器端 Web Crypto 前端加密；密码房只提交密文 `encryptedContent`，不得保存密码或后台解密。
+- 密码房的读取、发送、随机昵称占用、发送限流和增量游标恢复都必须按 `room_key` 隔离；仅密码房在 24 小时无发言后删除该房密文消息，普通大厅不受影响。
+- 维护密码房时只能称为前端加密或浏览器端加密，不承诺绝对安全 E2EE；必须提醒弱密码可能被猜中，网页端仍信任当前加载的站点 JS。
 - 用户要求只美化、不动功能时，只改视觉层，避免改功能逻辑。
 - 用户要求只改文档时，只修改文档文件，不改网站代码、样式、功能或资源。
 - Cloudflare Pages Git 自动部署是正式部署链路，不要把 `npx wrangler deploy` 或 `npx wrangler pages deploy .` 写成 Git 自动部署命令。

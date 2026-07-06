@@ -8,6 +8,10 @@ const CHAT_COOLDOWN_MS = 3000;
 const CHAT_IP_WINDOW_MS = 60000;
 const CHAT_IP_WINDOW_LIMIT = 20;
 const CHAT_NICKNAME_LOOKBACK_LIMIT = 1000;
+const PUBLIC_CHAT_ROOM_KEY = "public";
+const CHAT_PRIVATE_ROOM_TTL_MS = 24 * 60 * 60 * 1000;
+const MAX_CHAT_ROOM_KEY_CHARS = 80;
+const MAX_CHAT_ENCRYPTED_CONTENT_CHARS = 3200;
 const VISITOR_COOKIE = "lusu_visitor";
 const VISITOR_DAYS = 365;
 const OWNER_ADMIN_EMAILS = new Set(["630739094@qq.com"]);
@@ -392,51 +396,54 @@ async function getChatMessages(request, env) {
   const url = new URL(request.url);
   const limit = clampLimit(url.searchParams.get("limit"), 100);
   const after = String(url.searchParams.get("after") || "").trim();
+  const roomKey = normalizeChatRoomKey(url.searchParams.get("room"));
+  await cleanupExpiredPrivateChatRooms(env);
 
   let rows;
   if (after) {
     const cursor = await env.DB.prepare(
-      "select created_at from anonymous_chat_messages where message_id = ?"
-    ).bind(after).first();
+      "select created_at from anonymous_chat_messages where message_id = ? and room_key = ?"
+    ).bind(after, roomKey).first();
 
     if (!cursor) {
       const recoveredCreatedAt = createdAtFromChatMessageId(after);
       rows = recoveredCreatedAt
-        ? await getChatMessagesAfter(env, recoveredCreatedAt, after, limit)
-        : await getRecentChatMessages(env, limit);
+        ? await getChatMessagesAfter(env, recoveredCreatedAt, after, limit, roomKey)
+        : await getRecentChatMessages(env, limit, roomKey);
     } else {
-      rows = await getChatMessagesAfter(env, cursor.created_at, after, limit);
+      rows = await getChatMessagesAfter(env, cursor.created_at, after, limit, roomKey);
     }
   } else {
-    rows = await getRecentChatMessages(env, limit);
+    rows = await getRecentChatMessages(env, limit, roomKey);
   }
 
   return json({ messages: rows });
 }
 
-async function getChatMessagesAfter(env, createdAt, after, limit) {
+async function getChatMessagesAfter(env, createdAt, after, limit, roomKey = PUBLIC_CHAT_ROOM_KEY) {
   return (await env.DB.prepare(`
-    select message_id, coalesce(nullif(client_id, ''), visitor_id) as visitor_id, nickname, content, created_at
+    select message_id, coalesce(nullif(client_id, ''), visitor_id) as visitor_id, nickname, content, created_at, encrypted
     from anonymous_chat_messages
     where hidden = 0
+      and room_key = ?
       and (created_at > ? or (created_at = ? and message_id > ?))
     order by created_at asc, message_id asc
     limit ?
-  `).bind(createdAt, createdAt, after, limit).all()).results || [];
+  `).bind(roomKey, createdAt, createdAt, after, limit).all()).results || [];
 }
 
-async function getRecentChatMessages(env, limit) {
+async function getRecentChatMessages(env, limit, roomKey = PUBLIC_CHAT_ROOM_KEY) {
   return (await env.DB.prepare(`
-    select message_id, visitor_id, nickname, content, created_at
+    select message_id, visitor_id, nickname, content, created_at, encrypted
     from (
-      select message_id, coalesce(nullif(client_id, ''), visitor_id) as visitor_id, nickname, content, created_at
+      select message_id, coalesce(nullif(client_id, ''), visitor_id) as visitor_id, nickname, content, created_at, encrypted
       from anonymous_chat_messages
-      where hidden = 0
+      where hidden = 0 and room_key = ?
       order by created_at desc, message_id desc
       limit ?
     )
     order by created_at asc, message_id asc
-  `).bind(limit).all()).results || [];
+  `).bind(roomKey, limit).all()).results || [];
 }
 
 async function postChatMessage(request, env) {
@@ -446,7 +453,11 @@ async function postChatMessage(request, env) {
   const clientId = normalizeVisitorId(body.visitorId);
   const identity = getOrCreateVisitorIdentity(request);
   const nickname = normalizeChatNickname(body.nickname);
-  const content = normalizeChatContent(body.content);
+  const roomKey = normalizeChatRoomKey(body.room);
+  const encrypted = isPrivateChatRoom(roomKey);
+  const content = encrypted
+    ? normalizeChatEncryptedContent(body.encryptedContent, body.content)
+    : normalizeChatContent(body.content);
   const ipInfo = await requestIpInfo(request, env, "chat");
   const ipHash = ipInfo.ipHash;
   const now = new Date();
@@ -454,6 +465,7 @@ async function postChatMessage(request, env) {
   const visitorSince = new Date(now.getTime() - CHAT_COOLDOWN_MS).toISOString();
   const ipSince = new Date(now.getTime() - CHAT_IP_WINDOW_MS).toISOString();
 
+  await cleanupExpiredPrivateChatRooms(env);
   await ensureVisitorProfile(env, request, identity.visitorId, {}, false);
   const ban = await activeChatBan(env, identity.visitorId, ipHash);
   if (ban) {
@@ -464,10 +476,10 @@ async function postChatMessage(request, env) {
   const recentVisitor = await env.DB.prepare(`
     select created_at
     from anonymous_chat_messages
-    where visitor_id = ? and created_at > ?
+    where visitor_id = ? and room_key = ? and created_at > ?
     order by created_at desc
     limit 1
-  `).bind(identity.visitorId, visitorSince).first();
+  `).bind(identity.visitorId, roomKey, visitorSince).first();
   if (recentVisitor) {
     return withVisitorCookie(json({ error: "发送太快啦，请等 3 秒。" }, 429), request, identity);
   }
@@ -475,8 +487,8 @@ async function postChatMessage(request, env) {
   const ipRow = await env.DB.prepare(`
     select count(*) as count
     from anonymous_chat_messages
-    where ip_hash = ? and created_at > ?
-  `).bind(ipHash, ipSince).first();
+    where ip_hash = ? and room_key = ? and created_at > ?
+  `).bind(ipHash, roomKey, ipSince).first();
   if (Number(ipRow?.count || 0) >= CHAT_IP_WINDOW_LIMIT) {
     return withVisitorCookie(json({ error: "当前网络发送过于频繁，请稍后再试。" }, 429), request, identity);
   }
@@ -484,19 +496,22 @@ async function postChatMessage(request, env) {
   const nicknameOwner = await env.DB.prepare(`
     select visitor_id
     from anonymous_chat_messages
-    where hidden = 0 and nickname = ? and visitor_id <> ?
+    where hidden = 0 and room_key = ? and nickname = ? and visitor_id <> ?
     order by created_at desc
     limit 1
-  `).bind(nickname, identity.visitorId).first();
+  `).bind(roomKey, nickname, identity.visitorId).first();
   if (nicknameOwner) {
     return withVisitorCookie(json({ error: "这个随机昵称已经被使用，请刷新聊天室获取新昵称。", code: "nickname_taken" }, 409), request, identity);
   }
 
   const messageId = chatMessageId(now);
   await env.DB.prepare(`
-    insert into anonymous_chat_messages (message_id, visitor_id, client_id, nickname, content, created_at, hidden, ip_hash, ip_prefix)
-    values (?, ?, ?, ?, ?, ?, 0, ?, ?)
-  `).bind(messageId, identity.visitorId, clientId, nickname, content, nowText, ipHash, ipInfo.ipPrefix).run();
+    insert into anonymous_chat_messages (
+      message_id, visitor_id, client_id, nickname, content, created_at,
+      hidden, ip_hash, ip_prefix, room_key, encrypted
+    )
+    values (?, ?, ?, ?, ?, ?, 0, ?, ?, ?, ?)
+  `).bind(messageId, identity.visitorId, clientId, nickname, content, nowText, ipHash, ipInfo.ipPrefix, roomKey, encrypted ? 1 : 0).run();
 
   return withVisitorCookie(json({
     message: {
@@ -504,7 +519,8 @@ async function postChatMessage(request, env) {
       visitor_id: clientId,
       nickname,
       content,
-      created_at: nowText
+      created_at: nowText,
+      encrypted: encrypted ? 1 : 0
     }
   }, 201), request, identity);
 }
@@ -513,7 +529,9 @@ async function getChatNickname(request, env) {
   await ensureChatSchema(env);
   const url = new URL(request.url);
   const lang = normalizeArticleLang(url.searchParams.get("lang"));
-  const used = await recentChatNicknames(env);
+  const roomKey = normalizeChatRoomKey(url.searchParams.get("room"));
+  await cleanupExpiredPrivateChatRooms(env);
+  const used = await recentChatNicknames(env, roomKey);
   return json({ nickname: randomAvailableChatNickname(used, lang) });
 }
 
@@ -1627,6 +1645,8 @@ async function getAdminChatMessages(request, env) {
       anonymous_chat_messages.client_id,
       anonymous_chat_messages.nickname,
       anonymous_chat_messages.content,
+      anonymous_chat_messages.room_key,
+      anonymous_chat_messages.encrypted,
       anonymous_chat_messages.created_at,
       anonymous_chat_messages.edited_at,
       anonymous_chat_messages.hidden,
@@ -1649,12 +1669,15 @@ async function updateAdminChatMessage(request, env, messageId) {
   await requireAdmin(request, env);
   const body = await readJson(request);
   const normalizedId = normalizeRecordId(messageId, "消息编号不正确。");
-  const existing = await env.DB.prepare("select message_id from anonymous_chat_messages where message_id = ?")
+  const existing = await env.DB.prepare("select message_id, encrypted from anonymous_chat_messages where message_id = ?")
     .bind(normalizedId).first();
   if (!existing) {
     return json({ error: "消息不存在。" }, 404);
   }
   const nickname = body.nickname === undefined ? undefined : normalizeChatNickname(body.nickname);
+  if (Number(existing.encrypted) === 1 && body.content !== undefined) {
+    return json({ error: "加密消息内容不能在后台编辑。" }, 400);
+  }
   const content = body.content === undefined ? undefined : normalizeChatContent(body.content);
   const hidden = body.hidden === undefined ? undefined : (body.hidden ? 1 : 0);
   await env.DB.prepare(`
@@ -1743,18 +1766,40 @@ async function activeChatBan(env, visitorId, ipHash) {
   `).bind(nowIso(), visitorId, ipHash).first();
 }
 
-async function recentChatNicknames(env) {
+async function recentChatNicknames(env, roomKey = PUBLIC_CHAT_ROOM_KEY) {
   const rows = (await env.DB.prepare(`
     select distinct nickname
     from (
       select nickname
       from anonymous_chat_messages
-      where hidden = 0
+      where hidden = 0 and room_key = ?
       order by created_at desc, message_id desc
       limit ?
     )
-  `).bind(CHAT_NICKNAME_LOOKBACK_LIMIT).all()).results || [];
+  `).bind(roomKey, CHAT_NICKNAME_LOOKBACK_LIMIT).all()).results || [];
   return new Set(rows.map((row) => String(row.nickname || "").trim()).filter(Boolean));
+}
+
+async function cleanupExpiredPrivateChatRooms(env) {
+  const cutoff = new Date(Date.now() - CHAT_PRIVATE_ROOM_TTL_MS).toISOString();
+  const rows = (await env.DB.prepare(`
+    select room_key
+    from anonymous_chat_messages
+    where room_key <> ?
+    group by room_key
+    having max(created_at) < ?
+    limit 20
+  `).bind(PUBLIC_CHAT_ROOM_KEY, cutoff).all()).results || [];
+  if (!rows.length) {
+    return;
+  }
+  const deletes = rows
+    .map((row) => String(row.room_key || "").trim())
+    .filter((roomKey) => roomKey && roomKey !== PUBLIC_CHAT_ROOM_KEY)
+    .map((roomKey) => env.DB.prepare("delete from anonymous_chat_messages where room_key = ?").bind(roomKey));
+  if (deletes.length) {
+    await env.DB.batch(deletes);
+  }
 }
 
 function randomAvailableChatNickname(used, lang = "zh") {
@@ -1805,7 +1850,9 @@ async function ensureChatSchema(env) {
         edited_at text,
         hidden integer not null default 0,
         ip_hash text not null,
-        ip_prefix text not null default ''
+        ip_prefix text not null default '',
+        room_key text not null default 'public',
+        encrypted integer not null default 0
       )
     `),
     env.DB.prepare(`
@@ -1827,6 +1874,10 @@ async function ensureChatSchema(env) {
         on anonymous_chat_messages(hidden, created_at, message_id)
     `),
     env.DB.prepare(`
+      create index if not exists anonymous_chat_messages_room_visible_idx
+        on anonymous_chat_messages(room_key, hidden, created_at, message_id)
+    `),
+    env.DB.prepare(`
       create index if not exists anonymous_chat_messages_visitor_idx
         on anonymous_chat_messages(visitor_id, created_at)
     `),
@@ -1840,9 +1891,15 @@ async function ensureChatSchema(env) {
   await ensureTableColumns(env, "anonymous_chat_messages", [
     ["client_id", "text not null default ''"],
     ["edited_at", "text"],
-    ["ip_prefix", "text not null default ''"]
+    ["ip_prefix", "text not null default ''"],
+    ["room_key", "text not null default 'public'"],
+    ["encrypted", "integer not null default 0"]
   ]);
   await env.DB.prepare("create index if not exists anonymous_chat_messages_client_idx on anonymous_chat_messages(client_id, created_at)").run();
+  await env.DB.prepare("create index if not exists anonymous_chat_messages_room_nickname_idx on anonymous_chat_messages(room_key, hidden, nickname, created_at)").run();
+  await env.DB.prepare("create index if not exists anonymous_chat_messages_room_created_idx on anonymous_chat_messages(room_key, created_at)").run();
+  await env.DB.prepare("create index if not exists anonymous_chat_messages_room_visitor_idx on anonymous_chat_messages(room_key, visitor_id, created_at)").run();
+  await env.DB.prepare("create index if not exists anonymous_chat_messages_room_ip_idx on anonymous_chat_messages(room_key, ip_hash, created_at)").run();
   chatSchemaReady = true;
 }
 
@@ -3366,6 +3423,33 @@ function articleSeedStatements(env) {
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-06-private-chat-rooms',
+        '2026-07-06-private-chat-rooms',
+        'site-updates',
+        '["网站更新","聊天室","隐私"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-07-06T08:00:00.000Z',
+        '2026-07-06T08:00:00.000Z',
+        '2026-07-06T08:00:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
     `),
     env.DB.prepare(`
       insert into articles (
@@ -5938,6 +6022,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    ...articleTranslationsStatements(env, "seed-update-2026-07-06-private-chat-rooms", {
+      zh: {
+        title: "暗色加密密码房上线",
+        summary: "匿名聊天室新增暗色密码房，同密码进入同一房间，消息在浏览器端加密，24 小时无发言后清空。",
+        content_markdown: "# 暗色加密密码房上线\n\n匿名聊天室现在增加了密码房模式：点击角落里的密码房按钮，输入同一个密码的人会进入同一个暗色聊天室。\n\n## 更新内容\n\n- 浏览器会用密码派生房间标识和 AES-GCM 密钥，后端只接收和保存密文。\n- 普通匿名大厅保持原来的浅色 XP 样式和明文聊天接口。\n- 密码房 24 小时没有新发言时，会自动删除该房间的密文消息并释放房间。\n- 后台只能看到“密码房加密消息”的占位说明，仍可隐藏、删除和禁言来源。\n- 这是前端加密：弱密码仍可能被猜到，网页端也需要信任当前加载的站点脚本。"
+      },
+      en: {
+        title: "Dark Encrypted Password Rooms",
+        summary: "Anonymous chat now has dark password rooms with browser-side encryption and 24-hour idle cleanup.",
+        content_markdown: "# Dark Encrypted Password Rooms\n\nAnonymous chat now includes password rooms: click the password-room button, enter a password, and people using the same password enter the same dark chat room.\n\n## What changed\n\n- The browser derives the room identifier and AES-GCM key from the password, so the backend only receives encrypted messages.\n- The public anonymous room keeps its original light XP style and plaintext chat flow.\n- If a password room has no new messages for 24 hours, its encrypted messages are deleted and the room is released.\n- Admin chat management shows a placeholder for encrypted password-room messages while keeping hide, delete, and ban actions.\n- This is client-side encryption: weak passwords can still be guessed, and the web model still trusts the currently loaded site script."
+      },
+      ja: {
+        title: "暗色の暗号化パスワード部屋",
+        summary: "匿名チャットに暗色のパスワード部屋を追加し、ブラウザ側暗号化と24時間未発言時の削除に対応しました。",
+        content_markdown: "# 暗色の暗号化パスワード部屋\n\n匿名チャットにパスワード部屋を追加しました。パスワード部屋ボタンを押して同じパスワードを入力すると、同じ暗色チャットルームに入ります。\n\n## 変更内容\n\n- ブラウザがパスワードから部屋識別子と AES-GCM 鍵を派生し、バックエンドには暗号文だけを送ります。\n- 通常の匿名ルームはこれまで通り、明るい XP 風 UI と平文チャットのままです。\n- パスワード部屋は24時間新しい発言がないと、その部屋の暗号文メッセージを削除して部屋を解放します。\n- 管理画面では暗号化メッセージを占位表示にし、非表示、削除、禁言は引き続き使えます。\n- これはブラウザ側暗号化です。弱いパスワードは推測される可能性があり、Web では現在読み込んだサイトスクリプトを信頼する必要があります。"
+      }
+    }, "2026-07-06T08:00:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-06-30-account-popover-layer-fix", {
       zh: {
         title: "账号弹窗层级修复",
@@ -7599,6 +7700,39 @@ function normalizeChatContent(value) {
   }
   if (length > MAX_CHAT_MESSAGE_CHARS) {
     throw new HttpError("单条消息最多 300 字。", 400);
+  }
+  return content;
+}
+
+function normalizeChatRoomKey(value) {
+  const roomKey = String(value || "").trim();
+  if (!roomKey || roomKey === PUBLIC_CHAT_ROOM_KEY) {
+    return PUBLIC_CHAT_ROOM_KEY;
+  }
+  if (
+    roomKey.length > MAX_CHAT_ROOM_KEY_CHARS
+    || !/^room_[A-Za-z0-9_-]{32,76}$/.test(roomKey)
+  ) {
+    throw new HttpError("聊天室房间标识不正确。", 400);
+  }
+  return roomKey;
+}
+
+function isPrivateChatRoom(roomKey) {
+  return Boolean(roomKey && roomKey !== PUBLIC_CHAT_ROOM_KEY);
+}
+
+function normalizeChatEncryptedContent(encryptedContent, plainContent) {
+  if (String(plainContent || "").trim()) {
+    throw new HttpError("密码房只接收加密消息。", 400);
+  }
+  const content = String(encryptedContent || "").trim();
+  if (
+    !content
+    || content.length > MAX_CHAT_ENCRYPTED_CONTENT_CHARS
+    || !/^[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{16,}$/.test(content)
+  ) {
+    throw new HttpError("加密消息格式不正确。", 400);
   }
   return content;
 }

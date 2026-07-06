@@ -24,7 +24,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32.png?v=20260611-unified-tv-icon">
   <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png?v=20260611-unified-tv-icon">
   <link rel="manifest" href="/manifest.webmanifest">
-  <link rel="stylesheet" href="/css/style.css?v=20260630-account-popover-layer-r2">
+  <link rel="stylesheet" href="/css/style.css?v=20260706-private-chat-rooms-r1">
 </head>
 <body data-route="home">
   <div class="site-shell">
@@ -40,7 +40,7 @@
           <button class="lang-button" type="button" data-lang="en" aria-pressed="false">EN</button>
           <button class="lang-button" type="button" data-lang="ja" aria-pressed="false">日本語</button>
         </nav>
-        <span class="top-updated"><span data-i18n="lastUpdatedLabel">最近更新日期</span>：<span id="top-updated">2026.06.30</span></span>
+        <span class="top-updated"><span data-i18n="lastUpdatedLabel">最近更新日期</span>：<span id="top-updated">2026.07.06</span></span>
       </div>
     </header>
 
@@ -250,10 +250,19 @@
               <button class="xp-button chat-nickname-button" id="chat-edit-nickname" type="button" data-i18n="chatEditNickname">修改昵称</button>
             </div>
             <div class="chatroom-status">
+              <span id="chat-room-label" data-i18n="chatRoomPublicLabel">普通房间</span>
               <span id="chat-sync-status" data-i18n="chatSyncStatus">每 5 秒自动刷新</span>
               <span class="online-dot"></span>
+              <button class="xp-button chat-room-toggle" id="chat-room-toggle" type="button" data-i18n="chatEnterPrivateRoom">密码房</button>
             </div>
           </div>
+          <form class="chat-private-room-panel" id="chat-private-room-form" hidden>
+            <label for="chat-private-password" data-i18n="chatPrivatePasswordLabel">密码房密码</label>
+            <input id="chat-private-password" name="password" type="password" minlength="6" maxlength="96" autocomplete="off" data-i18n-placeholder="chatPrivatePasswordPlaceholder" placeholder="至少 6 个字符">
+            <button class="xp-button" type="submit" data-i18n="chatPrivateRoomEnter">进入</button>
+            <button class="xp-button" id="chat-private-room-cancel" type="button" data-i18n="chatPrivateRoomCancel">取消</button>
+            <small data-i18n="chatPrivateRoomHint">同一密码进入同一暗色房间；请使用不容易猜到的密码。</small>
+          </form>
           <div class="chatroom-log" id="chat-message-list" role="log" aria-live="polite" aria-relevant="additions"></div>
           <form class="chatroom-compose" id="chat-form">
             <label class="sr-only" for="chat-message-input" data-i18n="chatInputLabel">聊天内容</label>
@@ -399,6 +408,6 @@
   </div>
 
   <script src="/js/telemetry.js?v=20260623-analytics-privacy-r1"></script>
-  <script src="/js/main.js?v=20260630-account-popover-layer-r2"></script>
+  <script src="/js/main.js?v=20260706-private-chat-rooms-r1"></script>
 </body>
 </html>

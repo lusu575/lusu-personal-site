@@ -139,6 +139,21 @@ const translations = {
     moreUpdates: "查看更多更新",
     chatNicknameLabel: "我的昵称：",
     chatEditNickname: "修改昵称",
+    chatRoomPublicLabel: "普通房间",
+    chatRoomPrivateLabel: "密码房",
+    chatEnterPrivateRoom: "密码房",
+    chatSwitchPublicRoom: "普通房间",
+    chatPrivatePasswordLabel: "密码房密码",
+    chatPrivatePasswordPlaceholder: "至少 6 个字符",
+    chatPrivateRoomEnter: "进入",
+    chatPrivateRoomCancel: "取消",
+    chatPrivateRoomHint: "同一密码进入同一暗色房间；请使用不容易猜到的密码。",
+    chatPrivatePasswordTooShort: "密码至少需要 6 个字符。",
+    chatPrivateCryptoUnavailable: "当前浏览器不支持前端加密，无法进入密码房。",
+    chatPrivateRoomReady: "已进入暗色密码房，消息会在浏览器端加密。",
+    chatPublicRoomReady: "已切回普通匿名大厅。",
+    chatDecryptFailed: "这条消息无法用当前密码解开。",
+    chatEncryptFailed: "消息加密失败，请稍后再试。",
     chatSyncStatus: "自动增量刷新，空闲时会降低频率",
     chatSyncStatusActive: "约 5 秒刷新",
     chatSyncStatusIdle: "约 15 秒刷新",
@@ -304,6 +319,21 @@ const translations = {
     moreUpdates: "More updates",
     chatNicknameLabel: "My nickname:",
     chatEditNickname: "Edit nickname",
+    chatRoomPublicLabel: "Public room",
+    chatRoomPrivateLabel: "Password room",
+    chatEnterPrivateRoom: "Password room",
+    chatSwitchPublicRoom: "Public room",
+    chatPrivatePasswordLabel: "Room password",
+    chatPrivatePasswordPlaceholder: "At least 6 characters",
+    chatPrivateRoomEnter: "Enter",
+    chatPrivateRoomCancel: "Cancel",
+    chatPrivateRoomHint: "The same password opens the same dark room. Use a password that is hard to guess.",
+    chatPrivatePasswordTooShort: "Password must be at least 6 characters.",
+    chatPrivateCryptoUnavailable: "This browser does not support client-side encryption, so password rooms are unavailable.",
+    chatPrivateRoomReady: "Entered the dark password room. Messages are encrypted in your browser.",
+    chatPublicRoomReady: "Switched back to the public anonymous room.",
+    chatDecryptFailed: "This message could not be decrypted with the current password.",
+    chatEncryptFailed: "Message encryption failed. Please try again.",
     chatSyncStatus: "Incremental auto refresh, slower while idle",
     chatSyncStatusActive: "Refreshes about every 5 seconds",
     chatSyncStatusIdle: "Refreshes about every 15 seconds",
@@ -469,6 +499,21 @@ const translations = {
     moreUpdates: "もっと見る",
     chatNicknameLabel: "ニックネーム：",
     chatEditNickname: "変更",
+    chatRoomPublicLabel: "通常ルーム",
+    chatRoomPrivateLabel: "パスワード部屋",
+    chatEnterPrivateRoom: "パスワード部屋",
+    chatSwitchPublicRoom: "通常ルーム",
+    chatPrivatePasswordLabel: "部屋のパスワード",
+    chatPrivatePasswordPlaceholder: "6文字以上",
+    chatPrivateRoomEnter: "入る",
+    chatPrivateRoomCancel: "キャンセル",
+    chatPrivateRoomHint: "同じパスワードで同じ暗色部屋に入ります。推測されにくいパスワードを使ってください。",
+    chatPrivatePasswordTooShort: "パスワードは6文字以上にしてください。",
+    chatPrivateCryptoUnavailable: "このブラウザはフロントエンド暗号化に対応していないため、パスワード部屋を利用できません。",
+    chatPrivateRoomReady: "暗色のパスワード部屋に入りました。メッセージはブラウザ側で暗号化されます。",
+    chatPublicRoomReady: "通常の匿名ルームに戻りました。",
+    chatDecryptFailed: "このメッセージは現在のパスワードでは復号できません。",
+    chatEncryptFailed: "メッセージの暗号化に失敗しました。もう一度試してください。",
     chatSyncStatus: "差分自動更新、待機中は低頻度",
     chatSyncStatusActive: "約5秒ごとに更新",
     chatSyncStatusIdle: "約15秒ごとに更新",
@@ -534,6 +579,20 @@ const labels = {
 
 const content = {
   updates: [
+    {
+      icon: "🔒",
+      date: "2026.07.06",
+      title: {
+        zh: "暗色加密密码房上线",
+        en: "Dark Encrypted Password Rooms",
+        ja: "暗色の暗号化パスワード部屋"
+      },
+      desc: {
+        zh: "匿名聊天室新增暗色密码房，同密码进入同一房间，消息在浏览器端加密，24 小时无发言后清空",
+        en: "Anonymous chat now has dark password rooms with browser-side encryption and 24-hour idle cleanup",
+        ja: "匿名チャットに暗色のパスワード部屋を追加し、ブラウザ側暗号化と24時間未発言時の削除に対応しました"
+      }
+    },
     {
       icon: "🪟",
       date: "2026.06.30",
@@ -1613,6 +1672,9 @@ const chatStorageKeys = {
 const chatInitialMessageLimit = 100;
 const chatUnanchoredRefreshLimit = 20;
 const chatCooldownMs = 3000;
+const chatPublicRoomKey = "public";
+const chatPrivateRoomSalt = "lusu575-private-chat-v1";
+const chatPrivateRoomIterations = 150000;
 
 const chatState = {
   initialized: false,
@@ -1626,6 +1688,10 @@ const chatState = {
   seenMessageIds: new Set(),
   pollTimer: null,
   pollDelay: 5000,
+  roomKey: chatPublicRoomKey,
+  roomMode: "public",
+  roomCryptoKey: null,
+  roomRevision: 0,
   lastSentAt: sanitizeChatLastSentAt(safeStorageGet(chatStorageKeys.lastSentAt, "0"))
 };
 
@@ -2019,6 +2085,7 @@ function setLanguage(lang, options = {}) {
   updateVideoWindowButton();
   renderAccountWidget();
   updateChatSyncStatus();
+  syncChatRoomUi();
 }
 
 function navigate(route, options = {}) {
@@ -4435,7 +4502,9 @@ async function ensureChatIdentity() {
 
 async function fetchAvailableChatNickname() {
   try {
-    const payload = await chatApi(`/api/chat/nickname?lang=${encodeURIComponent(currentLang)}`);
+    const params = new URLSearchParams({ lang: currentLang });
+    appendChatRoomParam(params);
+    const payload = await chatApi(`/api/chat/nickname?${params.toString()}`);
     if (isValidChatNickname(payload.nickname)) {
       return payload.nickname.trim();
     }
@@ -4461,6 +4530,221 @@ function isValidChatNickname(value) {
   const text = String(value || "").trim();
   const length = Array.from(text).length;
   return length >= 2 && length <= 16;
+}
+
+function isPrivateChatRoomActive() {
+  return chatState.roomMode === "private"
+    && chatState.roomKey !== chatPublicRoomKey
+    && Boolean(chatState.roomCryptoKey);
+}
+
+function appendChatRoomParam(params) {
+  if (chatState.roomKey && chatState.roomKey !== chatPublicRoomKey) {
+    params.set("room", chatState.roomKey);
+  }
+  return params;
+}
+
+function hasChatPrivateCrypto() {
+  return Boolean(window.crypto?.subtle && window.crypto?.getRandomValues && window.TextEncoder && window.TextDecoder);
+}
+
+function base64UrlEncode(bytes) {
+  let binary = "";
+  bytes.forEach((byte) => {
+    binary += String.fromCharCode(byte);
+  });
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+}
+
+function base64UrlDecode(value) {
+  const normalized = String(value || "").replace(/-/g, "+").replace(/_/g, "/");
+  const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, "=");
+  const binary = atob(padded);
+  return Uint8Array.from(binary, (char) => char.charCodeAt(0));
+}
+
+async function deriveChatPrivateRoom(password) {
+  if (!hasChatPrivateCrypto()) {
+    throw new Error(t("chatPrivateCryptoUnavailable"));
+  }
+  const encoder = new TextEncoder();
+  const imported = await window.crypto.subtle.importKey(
+    "raw",
+    encoder.encode(password),
+    "PBKDF2",
+    false,
+    ["deriveBits"]
+  );
+  const derivedBits = await window.crypto.subtle.deriveBits(
+    {
+      name: "PBKDF2",
+      salt: encoder.encode(chatPrivateRoomSalt),
+      iterations: chatPrivateRoomIterations,
+      hash: "SHA-256"
+    },
+    imported,
+    512
+  );
+  const derived = new Uint8Array(derivedBits);
+  const roomKey = `room_${base64UrlEncode(derived.slice(0, 32))}`;
+  const roomCryptoKey = await window.crypto.subtle.importKey(
+    "raw",
+    derived.slice(32, 64),
+    "AES-GCM",
+    false,
+    ["encrypt", "decrypt"]
+  );
+  return { roomKey, roomCryptoKey };
+}
+
+async function encryptChatContent(content) {
+  if (!isPrivateChatRoomActive()) {
+    return content;
+  }
+  try {
+    const encoder = new TextEncoder();
+    const iv = new Uint8Array(12);
+    window.crypto.getRandomValues(iv);
+    const encrypted = await window.crypto.subtle.encrypt(
+      { name: "AES-GCM", iv },
+      chatState.roomCryptoKey,
+      encoder.encode(content)
+    );
+    return `${base64UrlEncode(iv)}.${base64UrlEncode(new Uint8Array(encrypted))}`;
+  } catch {
+    throw new Error(t("chatEncryptFailed"));
+  }
+}
+
+async function decryptChatContent(content) {
+  const parts = String(content || "").split(".");
+  if (parts.length !== 2 || !parts[0] || !parts[1] || !chatState.roomCryptoKey) {
+    throw new Error(t("chatDecryptFailed"));
+  }
+  const decrypted = await window.crypto.subtle.decrypt(
+    { name: "AES-GCM", iv: base64UrlDecode(parts[0]) },
+    chatState.roomCryptoKey,
+    base64UrlDecode(parts[1])
+  );
+  return new TextDecoder().decode(decrypted);
+}
+
+async function prepareChatMessagesForDisplay(messages) {
+  if (!isPrivateChatRoomActive()) {
+    return messages;
+  }
+  const prepared = [];
+  for (const message of messages) {
+    if (Number(message.encrypted) !== 1) {
+      prepared.push(message);
+      continue;
+    }
+    try {
+      prepared.push({ ...message, content: await decryptChatContent(message.content) });
+    } catch {
+      prepared.push({ ...message, content: t("chatDecryptFailed") });
+    }
+  }
+  return prepared;
+}
+
+function syncChatRoomUi() {
+  const isPrivate = isPrivateChatRoomActive();
+  const windowElement = document.querySelector(".chatroom-window");
+  const labelElement = document.getElementById("chat-room-label");
+  const toggleButton = document.getElementById("chat-room-toggle");
+  windowElement?.classList.toggle("is-private-room", isPrivate);
+  if (labelElement) {
+    labelElement.dataset.i18n = isPrivate ? "chatRoomPrivateLabel" : "chatRoomPublicLabel";
+    labelElement.textContent = t(labelElement.dataset.i18n);
+  }
+  if (toggleButton) {
+    toggleButton.dataset.i18n = isPrivate ? "chatSwitchPublicRoom" : "chatEnterPrivateRoom";
+    toggleButton.textContent = t(toggleButton.dataset.i18n);
+  }
+}
+
+function showChatPrivateRoomForm() {
+  const form = document.getElementById("chat-private-room-form");
+  const input = document.getElementById("chat-private-password");
+  if (!hasChatPrivateCrypto()) {
+    setChatFeedback(t("chatPrivateCryptoUnavailable"), true);
+    return;
+  }
+  if (form) {
+    form.hidden = false;
+  }
+  input?.focus();
+}
+
+function hideChatPrivateRoomForm() {
+  const form = document.getElementById("chat-private-room-form");
+  const input = document.getElementById("chat-private-password");
+  if (form) {
+    form.hidden = true;
+  }
+  if (input) {
+    input.value = "";
+  }
+}
+
+function prepareChatRoomSwitch() {
+  if (chatState.pollTimer) {
+    window.clearTimeout(chatState.pollTimer);
+    chatState.pollTimer = null;
+  }
+  chatState.loading = false;
+  chatState.roomRevision += 1;
+}
+
+async function enterChatPrivateRoom(event) {
+  event?.preventDefault();
+  const input = document.getElementById("chat-private-password");
+  const password = String(input?.value || "");
+  if (Array.from(password).length < 6) {
+    setChatFeedback(t("chatPrivatePasswordTooShort"), true);
+    input?.focus();
+    return;
+  }
+
+  try {
+    setChatFeedback(t("chatLoading"));
+    const room = await deriveChatPrivateRoom(password);
+    prepareChatRoomSwitch();
+    chatState.roomKey = room.roomKey;
+    chatState.roomCryptoKey = room.roomCryptoKey;
+    chatState.roomMode = "private";
+    hideChatPrivateRoomForm();
+    syncChatRoomUi();
+    resetChatLog(t("chatLoading"));
+    await refreshChatMessages({ initial: true });
+    setChatFeedback(t("chatPrivateRoomReady"));
+    scheduleChatPolling(5000);
+  } catch (error) {
+    setChatFeedback(error.message || t("chatPrivateCryptoUnavailable"), true);
+  }
+}
+
+async function switchChatPublicRoom() {
+  prepareChatRoomSwitch();
+  chatState.roomKey = chatPublicRoomKey;
+  chatState.roomCryptoKey = null;
+  chatState.roomMode = "public";
+  hideChatPrivateRoomForm();
+  syncChatRoomUi();
+  resetChatLog(t("chatLoading"));
+  await refreshChatMessages({ initial: true });
+  setChatFeedback(t("chatPublicRoomReady"));
+  scheduleChatPolling(5000);
+}
+
+async function handleChatRoomToggle() {
+  if (isPrivateChatRoomActive()) {
+    await switchChatPublicRoom();
+    return;
+  }
+  showChatPrivateRoomForm();
 }
 
 function updateChatNicknameDisplay() {
@@ -4523,6 +4807,7 @@ async function initChatroom() {
   await ensureChatIdentity();
   updateChatCounter();
   updateChatSyncStatus();
+  syncChatRoomUi();
 
   if (!chatState.initialized) {
     chatState.initialized = true;
@@ -4601,20 +4886,29 @@ async function refreshChatMessages(options = {}) {
     return 0;
   }
   chatState.loading = true;
+  const roomRevision = chatState.roomRevision;
   let appendedCount = 0;
   try {
     const shouldRefreshRecentMessages = !options.initial && chatState.hasLoadedInitial && !chatState.lastMessageId;
     const params = new URLSearchParams({
       limit: String(shouldRefreshRecentMessages ? chatUnanchoredRefreshLimit : chatInitialMessageLimit)
     });
+    appendChatRoomParam(params);
     if (!options.initial && chatState.lastMessageId) {
       params.set("after", chatState.lastMessageId);
     }
     const payload = await chatApi(`/api/chat/messages?${params.toString()}`);
+    if (roomRevision !== chatState.roomRevision) {
+      return 0;
+    }
     if (options.initial) {
       resetChatLog(t("chatWelcome"));
     }
-    appendedCount = appendChatMessages(payload.messages || []);
+    const messages = await prepareChatMessagesForDisplay(payload.messages || []);
+    if (roomRevision !== chatState.roomRevision) {
+      return 0;
+    }
+    appendedCount = appendChatMessages(messages);
     chatState.hasLoadedInitial = true;
   } catch {
     if (options.initial) {
@@ -4623,7 +4917,9 @@ async function refreshChatMessages(options = {}) {
       setChatFeedback(t("chatLoadFailed"), true);
     }
   } finally {
-    chatState.loading = false;
+    if (roomRevision === chatState.roomRevision) {
+      chatState.loading = false;
+    }
   }
   return appendedCount;
 }
@@ -4726,20 +5022,27 @@ async function submitChatMessage(event) {
     setChatSendingState(true);
     setChatFeedback(t("chatSending"));
     await ensureChatIdentity();
+    const body = {
+      visitorId: chatState.visitorId,
+      nickname: chatState.nickname
+    };
+    if (isPrivateChatRoomActive()) {
+      body.room = chatState.roomKey;
+      body.encryptedContent = await encryptChatContent(contentText);
+    } else {
+      body.content = contentText;
+    }
     const payload = await chatApi("/api/chat/messages", {
       method: "POST",
-      body: JSON.stringify({
-        visitorId: chatState.visitorId,
-        nickname: chatState.nickname,
-        content: contentText
-      })
+      body: JSON.stringify(body)
     });
     chatState.lastSentAt = Date.now();
     safeStorageSet(chatStorageKeys.lastSentAt, String(chatState.lastSentAt));
     input.value = "";
     updateChatCounter();
     setChatFeedback(t("chatSent"));
-    appendChatMessages(payload.message ? [payload.message] : []);
+    const messages = await prepareChatMessagesForDisplay(payload.message ? [payload.message] : []);
+    appendChatMessages(messages);
     chatState.idlePolls = 0;
     await refreshChatMessages({ immediate: true });
     scheduleChatPolling(5000);
@@ -4967,6 +5270,11 @@ window.addEventListener("keydown", (event) => {
       closeWelcome();
       return;
     }
+    const privateRoomForm = document.getElementById("chat-private-room-form");
+    if (privateRoomForm && !privateRoomForm.hidden) {
+      hideChatPrivateRoomForm();
+      return;
+    }
     closeAccountPopover();
   }
 });
@@ -4982,6 +5290,13 @@ window.addEventListener("popstate", () => {
 document.getElementById("chat-form")?.addEventListener("submit", submitChatMessage);
 document.getElementById("chat-message-input")?.addEventListener("input", updateChatCounter);
 document.getElementById("chat-edit-nickname")?.addEventListener("click", editChatNickname);
+document.getElementById("chat-room-toggle")?.addEventListener("click", () => {
+  handleChatRoomToggle().catch((error) => {
+    setChatFeedback(error.message || t("chatLoadFailed"), true);
+  });
+});
+document.getElementById("chat-private-room-form")?.addEventListener("submit", enterChatPrivateRoom);
+document.getElementById("chat-private-room-cancel")?.addEventListener("click", hideChatPrivateRoomForm);
 document.getElementById("knowledge-search-input")?.addEventListener("input", (event) => {
   articleState.searchTerm = event.target.value;
   renderKnowledge();

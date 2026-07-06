@@ -67,15 +67,27 @@ create table if not exists anonymous_chat_messages (
   edited_at text,
   hidden integer not null default 0,
   ip_hash text not null,
-  ip_prefix text not null default ''
+  ip_prefix text not null default '',
+  room_key text not null default 'public',
+  encrypted integer not null default 0
 );
 
 create index if not exists anonymous_chat_messages_visible_idx
   on anonymous_chat_messages(hidden, created_at, message_id);
+create index if not exists anonymous_chat_messages_room_visible_idx
+  on anonymous_chat_messages(room_key, hidden, created_at, message_id);
 create index if not exists anonymous_chat_messages_visitor_idx
   on anonymous_chat_messages(visitor_id, created_at);
 create index if not exists anonymous_chat_messages_ip_idx
   on anonymous_chat_messages(ip_hash, created_at);
+create index if not exists anonymous_chat_messages_room_nickname_idx
+  on anonymous_chat_messages(room_key, hidden, nickname, created_at);
+create index if not exists anonymous_chat_messages_room_created_idx
+  on anonymous_chat_messages(room_key, created_at);
+create index if not exists anonymous_chat_messages_room_visitor_idx
+  on anonymous_chat_messages(room_key, visitor_id, created_at);
+create index if not exists anonymous_chat_messages_room_ip_idx
+  on anonymous_chat_messages(room_key, ip_hash, created_at);
 create table if not exists chat_bans (
   ban_id text primary key,
   ban_type text not null,
@@ -572,6 +584,32 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-07-06-private-chat-rooms',
+  '2026-07-06-private-chat-rooms',
+  'site-updates',
+  '["网站更新","聊天室","隐私"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-07-06T08:00:00.000Z',
+  '2026-07-06T08:00:00.000Z',
+  '2026-07-06T08:00:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-06-30-account-popover-layer-fix',
   '2026-06-30-account-popover-layer-fix',
   'site-updates',
@@ -805,6 +843,39 @@ on conflict(article_id) do update set
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
+  ('seed-update-2026-07-06-private-chat-rooms-zh', 'seed-update-2026-07-06-private-chat-rooms', 'zh', '暗色加密密码房上线', '匿名聊天室新增暗色密码房，同密码进入同一房间，消息在浏览器端加密，24 小时无发言后清空。', '# 暗色加密密码房上线
+
+匿名聊天室现在增加了密码房模式：点击角落里的密码房按钮，输入同一个密码的人会进入同一个暗色聊天室。
+
+## 更新内容
+
+- 浏览器会用密码派生房间标识和 AES-GCM 密钥，后端只接收和保存密文。
+- 普通匿名大厅保持原来的浅色 XP 样式和明文聊天接口。
+- 密码房 24 小时没有新发言时，会自动删除该房间的密文消息并释放房间。
+- 后台只能看到“密码房加密消息”的占位说明，仍可隐藏、删除和禁言来源。
+- 这是前端加密：弱密码仍可能被猜到，网页端也需要信任当前加载的站点脚本。', '2026-07-06T08:00:00.000Z', '2026-07-06T08:00:00.000Z'),
+  ('seed-update-2026-07-06-private-chat-rooms-en', 'seed-update-2026-07-06-private-chat-rooms', 'en', 'Dark Encrypted Password Rooms', 'Anonymous chat now has dark password rooms with browser-side encryption and 24-hour idle cleanup.', '# Dark Encrypted Password Rooms
+
+Anonymous chat now includes password rooms: click the password-room button, enter a password, and people using the same password enter the same dark chat room.
+
+## What changed
+
+- The browser derives the room identifier and AES-GCM key from the password, so the backend only receives encrypted messages.
+- The public anonymous room keeps its original light XP style and plaintext chat flow.
+- If a password room has no new messages for 24 hours, its encrypted messages are deleted and the room is released.
+- Admin chat management shows a placeholder for encrypted password-room messages while keeping hide, delete, and ban actions.
+- This is client-side encryption: weak passwords can still be guessed, and the web model still trusts the currently loaded site script.', '2026-07-06T08:00:00.000Z', '2026-07-06T08:00:00.000Z'),
+  ('seed-update-2026-07-06-private-chat-rooms-ja', 'seed-update-2026-07-06-private-chat-rooms', 'ja', '暗色の暗号化パスワード部屋', '匿名チャットに暗色のパスワード部屋を追加し、ブラウザ側暗号化と24時間未発言時の削除に対応しました。', '# 暗色の暗号化パスワード部屋
+
+匿名チャットにパスワード部屋を追加しました。パスワード部屋ボタンを押して同じパスワードを入力すると、同じ暗色チャットルームに入ります。
+
+## 変更内容
+
+- ブラウザがパスワードから部屋識別子と AES-GCM 鍵を派生し、バックエンドには暗号文だけを送ります。
+- 通常の匿名ルームはこれまで通り、明るい XP 風 UI と平文チャットのままです。
+- パスワード部屋は24時間新しい発言がないと、その部屋の暗号文メッセージを削除して部屋を解放します。
+- 管理画面では暗号化メッセージを占位表示にし、非表示、削除、禁言は引き続き使えます。
+- これはブラウザ側暗号化です。弱いパスワードは推測される可能性があり、Web では現在読み込んだサイトスクリプトを信頼する必要があります。', '2026-07-06T08:00:00.000Z', '2026-07-06T08:00:00.000Z'),
   ('seed-update-2026-06-30-account-popover-layer-fix-zh', 'seed-update-2026-06-30-account-popover-layer-fix', 'zh', '账号弹窗层级修复', '右上角账号入口现在会显示在首页和各栏目窗口之上，登录、注册和退出流程保持不变。', '# 账号弹窗层级修复
 
 这次修复集中处理右上角账号入口的显示层级，让登录弹窗在首页和其他栏目里都能稳定露出。

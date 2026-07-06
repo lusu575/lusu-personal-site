@@ -94,6 +94,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
   {
+    date: "2026-07-06",
+    title: "密码房加密消息治理显示",
+    body: "聊天室管理支持主站暗色密码房：后台列表会把加密消息显示为“密码房加密消息（后台无法解密）”，状态概览增加密码房数量，详情表单锁定密文内容编辑；隐藏、删除、按隐藏用户标识或网络来源禁言继续可用。后台 JS query 更新为 20260706-private-chat-rooms-r1。"
+  },
+  {
     date: "2026-06-22",
     title: "点击埋点邮箱样式文本脱敏",
     body: "点击埋点隐私边界收紧：主站账号入口不再把已登录邮箱放进可点击按钮文本，前端埋点和后端写入会对目标文本、页面路径、来源、链接、元素标识和点击聚合键中的邮箱样式文本（含 URL 编码和双重编码形态）统一替换为 [email]；后台点击热点和最近点击只展示脱敏后的分析文本。后台 JS query 更新为 20260622-admin-analytics-email-redact-r1；不改变点击采集范围、统计聚合、权限或接口路径。"
@@ -3618,10 +3623,11 @@ function renderChatMessages() {
     meta.className = "list-meta";
     meta.append(
       Number(message.hidden) ? createStatusBadgeElement("已隐藏", "hidden") : createStatusBadgeElement("可见", "visible"),
+      createStatusBadgeElement(chatRoomBadgeLabel(message), isEncryptedChatMessage(message) ? "warning" : "neutral"),
       createStatusBadgeElement([message.country, message.region, message.city].filter(Boolean).join(" / ") || "未知来源", "neutral")
     );
     content.className = "list-subtle";
-    setElementText(content, message.content || "");
+    setElementText(content, chatMessageDisplayContent(message));
     createdAt.className = "list-subtle";
     setElementText(createdAt, formatTime(message.created_at));
     item.append(title, meta, content, createdAt);
@@ -3637,6 +3643,7 @@ function renderChatStatusOverview(messages, isFiltered) {
   }
   const rows = messages || [];
   const hiddenCount = rows.filter((message) => Number(message.hidden) === 1).length;
+  const encryptedCount = rows.filter(isEncryptedChatMessage).length;
   const withPlace = rows.filter((message) => [message.country, message.region, message.city].some(Boolean)).length;
   const withVisitor = rows.filter((message) => Boolean(message.visitor_id)).length;
   const withBanSource = rows.filter((message) => Boolean(message.visitor_id || message.ip_hash)).length;
@@ -3644,6 +3651,7 @@ function renderChatStatusOverview(messages, isFiltered) {
     [isFiltered ? "当前显示" : "已加载", rows.length],
     ["可见", Math.max(0, rows.length - hiddenCount)],
     ["已隐藏", hiddenCount],
+    ["密码房", encryptedCount],
     ["有来源", withPlace],
     ["有用户标识", withVisitor],
     ["可禁言", withBanSource]
@@ -3656,10 +3664,12 @@ function chatMessageMatchesFilter(message, filterText) {
     return true;
   }
   const visibility = Number(message.hidden) === 1 ? "已隐藏" : "可见";
+  const room = chatRoomBadgeLabel(message);
   const searchText = [
     message.nickname,
-    message.content,
+    chatMessageDisplayContent(message),
     visibility,
+    room,
     message.country,
     message.region,
     message.city,
@@ -3668,6 +3678,18 @@ function chatMessageMatchesFilter(message, filterText) {
     formatTime(message.created_at)
   ].filter(Boolean).join(" ").toLowerCase();
   return searchText.includes(filterText);
+}
+
+function isEncryptedChatMessage(message) {
+  return Number(message?.encrypted) === 1;
+}
+
+function chatMessageDisplayContent(message) {
+  return isEncryptedChatMessage(message) ? "密码房加密消息（后台无法解密）" : (message?.content || "");
+}
+
+function chatRoomBadgeLabel(message) {
+  return isEncryptedChatMessage(message) || (message?.room_key && message.room_key !== "public") ? "密码房" : "普通房间";
 }
 
 function renderChatListNotice(text, label = "聊天记录提示") {
@@ -3682,8 +3704,8 @@ function chatMessageListLabel(message) {
   const visibility = Number(message.hidden) === 1 ? "已隐藏" : "可见";
   const nickname = message.nickname || "未命名访客";
   const place = [message.country, message.region, message.city].filter(Boolean).join(" / ") || "未知来源";
-  const content = message.content || "空消息";
-  return `${nickname}；${visibility}；${place}；${formatTime(message.created_at)}；${content}`;
+  const content = chatMessageDisplayContent(message) || "空消息";
+  return `${nickname}；${visibility}；${chatRoomBadgeLabel(message)}；${place}；${formatTime(message.created_at)}；${content}`;
 }
 
 function selectChatMessage(messageId) {
@@ -3695,9 +3717,11 @@ function selectChatMessage(messageId) {
   renderChatMessages();
   const form = $("#chat-form-admin");
   form.elements.nickname.value = message.nickname || "";
-  form.elements.content.value = message.content || "";
+  form.elements.content.value = chatMessageDisplayContent(message);
   setElementText($("#chat-selected-id"), message.message_id);
   $("#chat-meta").replaceChildren(...[
+    ["房间类型", chatRoomBadgeLabel(message)],
+    ["内容状态", isEncryptedChatMessage(message) ? "密码房加密消息，后台不能解密或编辑内容" : "普通明文消息"],
     ["隐藏用户标识", message.visitor_id || ""],
     ["前端临时标识", message.client_id || ""],
     ["隐藏网络指纹", message.ip_hash || ""],
@@ -3745,7 +3769,10 @@ function syncChatActionState() {
   });
   if (saveButton) {
     saveButton.textContent = state.chatActionBusyMode === "save" ? "保存中..." : "保存修改";
-    syncButtonHint(saveButton, chatActionButtonHint("保存当前聊天记录修改", hasMessage, busy));
+    syncButtonHint(
+      saveButton,
+      chatActionButtonHint(isEncryptedChatMessage(message) ? "保存昵称或隐藏状态；加密内容不能编辑" : "保存当前聊天记录修改", hasMessage, busy)
+    );
   }
   if (toggleButton) {
     const hidden = hasMessage && Number(message.hidden) === 1;
@@ -3865,11 +3892,16 @@ function chatActionBusyFilterTitle() {
 
 function syncChatFormBusyState() {
   const busy = isChatInteractionBusy();
+  const message = selectedChatMessage();
+  const encrypted = isEncryptedChatMessage(message);
   const title = busy ? (isChatMessagesLoading() ? "正在读取聊天记录，完成后再编辑表单" : chatActionBusyFormTitle()) : "";
   $$("#chat-form-admin input, #chat-form-admin textarea").forEach((field) => {
-    field.disabled = busy;
+    const lockedEncryptedContent = encrypted && field.name === "content";
+    field.disabled = busy || lockedEncryptedContent;
     field.setAttribute("aria-busy", busy ? "true" : "false");
-    if (title) {
+    if (lockedEncryptedContent) {
+      field.title = "密码房加密消息不能在后台解密或编辑内容";
+    } else if (title) {
       field.title = title;
     } else {
       field.removeAttribute("title");
@@ -3912,14 +3944,17 @@ async function saveChatMessage(event) {
   }
   setChatActionBusy("save");
   const form = $("#chat-form-admin");
+  const body = {
+    nickname: form.elements.nickname.value,
+    hidden: Number(message.hidden) === 1
+  };
+  if (!isEncryptedChatMessage(message)) {
+    body.content = form.elements.content.value;
+  }
   try {
     await api(`/api/admin/chat/messages/${encodeURIComponent(message.message_id)}`, {
       method: "PUT",
-      body: JSON.stringify({
-        nickname: form.elements.nickname.value,
-        content: form.elements.content.value,
-        hidden: Number(message.hidden) === 1
-      })
+      body: JSON.stringify(body)
     });
     await loadChatMessages();
     selectChatMessage(message.message_id);
