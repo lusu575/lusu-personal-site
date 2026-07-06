@@ -1874,10 +1874,6 @@ async function ensureChatSchema(env) {
         on anonymous_chat_messages(hidden, created_at, message_id)
     `),
     env.DB.prepare(`
-      create index if not exists anonymous_chat_messages_room_visible_idx
-        on anonymous_chat_messages(room_key, hidden, created_at, message_id)
-    `),
-    env.DB.prepare(`
       create index if not exists anonymous_chat_messages_visitor_idx
         on anonymous_chat_messages(visitor_id, created_at)
     `),
@@ -1896,6 +1892,7 @@ async function ensureChatSchema(env) {
     ["encrypted", "integer not null default 0"]
   ]);
   await env.DB.prepare("create index if not exists anonymous_chat_messages_client_idx on anonymous_chat_messages(client_id, created_at)").run();
+  await env.DB.prepare("create index if not exists anonymous_chat_messages_room_visible_idx on anonymous_chat_messages(room_key, hidden, created_at, message_id)").run();
   await env.DB.prepare("create index if not exists anonymous_chat_messages_room_nickname_idx on anonymous_chat_messages(room_key, hidden, nickname, created_at)").run();
   await env.DB.prepare("create index if not exists anonymous_chat_messages_room_created_idx on anonymous_chat_messages(room_key, created_at)").run();
   await env.DB.prepare("create index if not exists anonymous_chat_messages_room_visitor_idx on anonymous_chat_messages(room_key, visitor_id, created_at)").run();
@@ -6025,18 +6022,18 @@ This update swaps the four home wallpapers used by the live page to higher-resol
     ...articleTranslationsStatements(env, "seed-update-2026-07-06-private-chat-rooms", {
       zh: {
         title: "暗色加密密码房上线",
-        summary: "匿名聊天室新增暗色密码房，同密码进入同一房间，消息在浏览器端加密，24 小时无发言后清空。",
-        content_markdown: "# 暗色加密密码房上线\n\n匿名聊天室现在增加了密码房模式：点击角落里的密码房按钮，输入同一个密码的人会进入同一个暗色聊天室。\n\n## 更新内容\n\n- 浏览器会用密码派生房间标识和 AES-GCM 密钥，后端只接收和保存密文。\n- 普通匿名大厅保持原来的浅色 XP 样式和明文聊天接口。\n- 密码房 24 小时没有新发言时，会自动删除该房间的密文消息并释放房间。\n- 后台只能看到“密码房加密消息”的占位说明，仍可隐藏、删除和禁言来源。\n- 这是前端加密：弱密码仍可能被猜到，网页端也需要信任当前加载的站点脚本。"
+        summary: "匿名聊天室新增暗色密码房，并修复旧库自动补字段时普通大厅读取失败的问题。",
+        content_markdown: "# 暗色加密密码房上线\n\n匿名聊天室现在增加了密码房模式：点击角落里的密码房按钮，输入同一个密码的人会进入同一个暗色聊天室。\n\n## 更新内容\n\n- 浏览器会用密码派生房间标识和 AES-GCM 密钥，后端只接收和保存密文。\n- 普通匿名大厅保持原来的浅色 XP 样式和明文聊天接口。\n- 密码房 24 小时没有新发言时，会自动删除该房间的密文消息并释放房间。\n- 后台只能看到“密码房加密消息”的占位说明，仍可隐藏、删除和禁言来源。\n- 修复现有 D1 聊天表首次自动补 `room_key` / `encrypted` 字段时，过早创建房间索引导致普通大厅读取失败的问题。\n- 这是前端加密：弱密码仍可能被猜到，网页端也需要信任当前加载的站点脚本。"
       },
       en: {
         title: "Dark Encrypted Password Rooms",
-        summary: "Anonymous chat now has dark password rooms with browser-side encryption and 24-hour idle cleanup.",
-        content_markdown: "# Dark Encrypted Password Rooms\n\nAnonymous chat now includes password rooms: click the password-room button, enter a password, and people using the same password enter the same dark chat room.\n\n## What changed\n\n- The browser derives the room identifier and AES-GCM key from the password, so the backend only receives encrypted messages.\n- The public anonymous room keeps its original light XP style and plaintext chat flow.\n- If a password room has no new messages for 24 hours, its encrypted messages are deleted and the room is released.\n- Admin chat management shows a placeholder for encrypted password-room messages while keeping hide, delete, and ban actions.\n- This is client-side encryption: weak passwords can still be guessed, and the web model still trusts the currently loaded site script."
+        summary: "Anonymous chat now has dark encrypted password rooms, with a migration fix for existing public rooms.",
+        content_markdown: "# Dark Encrypted Password Rooms\n\nAnonymous chat now includes password rooms: click the password-room button, enter a password, and people using the same password enter the same dark chat room.\n\n## What changed\n\n- The browser derives the room identifier and AES-GCM key from the password, so the backend only receives encrypted messages.\n- The public anonymous room keeps its original light XP style and plaintext chat flow.\n- If a password room has no new messages for 24 hours, its encrypted messages are deleted and the room is released.\n- Admin chat management shows a placeholder for encrypted password-room messages while keeping hide, delete, and ban actions.\n- Fixed existing D1 chat table migration so room indexes are created only after `room_key` / `encrypted` columns exist, keeping the public room readable.\n- This is client-side encryption: weak passwords can still be guessed, and the web model still trusts the currently loaded site script."
       },
       ja: {
         title: "暗色の暗号化パスワード部屋",
-        summary: "匿名チャットに暗色のパスワード部屋を追加し、ブラウザ側暗号化と24時間未発言時の削除に対応しました。",
-        content_markdown: "# 暗色の暗号化パスワード部屋\n\n匿名チャットにパスワード部屋を追加しました。パスワード部屋ボタンを押して同じパスワードを入力すると、同じ暗色チャットルームに入ります。\n\n## 変更内容\n\n- ブラウザがパスワードから部屋識別子と AES-GCM 鍵を派生し、バックエンドには暗号文だけを送ります。\n- 通常の匿名ルームはこれまで通り、明るい XP 風 UI と平文チャットのままです。\n- パスワード部屋は24時間新しい発言がないと、その部屋の暗号文メッセージを削除して部屋を解放します。\n- 管理画面では暗号化メッセージを占位表示にし、非表示、削除、禁言は引き続き使えます。\n- これはブラウザ側暗号化です。弱いパスワードは推測される可能性があり、Web では現在読み込んだサイトスクリプトを信頼する必要があります。"
+        summary: "匿名チャットに暗色の暗号化パスワード部屋を追加し、既存ルームの移行時読み込み不具合も修正しました。",
+        content_markdown: "# 暗色の暗号化パスワード部屋\n\n匿名チャットにパスワード部屋を追加しました。パスワード部屋ボタンを押して同じパスワードを入力すると、同じ暗色チャットルームに入ります。\n\n## 変更内容\n\n- ブラウザがパスワードから部屋識別子と AES-GCM 鍵を派生し、バックエンドには暗号文だけを送ります。\n- 通常の匿名ルームはこれまで通り、明るい XP 風 UI と平文チャットのままです。\n- パスワード部屋は24時間新しい発言がないと、その部屋の暗号文メッセージを削除して部屋を解放します。\n- 管理画面では暗号化メッセージを占位表示にし、非表示、削除、禁言は引き続き使えます。\n- 既存の D1 チャット表に `room_key` / `encrypted` 列を自動追加するとき、列追加前に部屋インデックスを作ろうとして通常ルームが読めなくなる問題を修正しました。\n- これはブラウザ側暗号化です。弱いパスワードは推測される可能性があり、Web では現在読み込んだサイトスクリプトを信頼する必要があります。"
       }
     }, "2026-07-06T08:00:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-06-30-account-popover-layer-fix", {

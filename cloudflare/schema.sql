@@ -843,7 +843,7 @@ on conflict(article_id) do update set
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
-  ('seed-update-2026-07-06-private-chat-rooms-zh', 'seed-update-2026-07-06-private-chat-rooms', 'zh', '暗色加密密码房上线', '匿名聊天室新增暗色密码房，同密码进入同一房间，消息在浏览器端加密，24 小时无发言后清空。', '# 暗色加密密码房上线
+  ('seed-update-2026-07-06-private-chat-rooms-zh', 'seed-update-2026-07-06-private-chat-rooms', 'zh', '暗色加密密码房上线', '匿名聊天室新增暗色密码房，并修复旧库自动补字段时普通大厅读取失败的问题。', '# 暗色加密密码房上线
 
 匿名聊天室现在增加了密码房模式：点击角落里的密码房按钮，输入同一个密码的人会进入同一个暗色聊天室。
 
@@ -853,8 +853,9 @@ insert into article_translations (
 - 普通匿名大厅保持原来的浅色 XP 样式和明文聊天接口。
 - 密码房 24 小时没有新发言时，会自动删除该房间的密文消息并释放房间。
 - 后台只能看到“密码房加密消息”的占位说明，仍可隐藏、删除和禁言来源。
+- 修复现有 D1 聊天表首次自动补 `room_key` / `encrypted` 字段时，过早创建房间索引导致普通大厅读取失败的问题。
 - 这是前端加密：弱密码仍可能被猜到，网页端也需要信任当前加载的站点脚本。', '2026-07-06T08:00:00.000Z', '2026-07-06T08:00:00.000Z'),
-  ('seed-update-2026-07-06-private-chat-rooms-en', 'seed-update-2026-07-06-private-chat-rooms', 'en', 'Dark Encrypted Password Rooms', 'Anonymous chat now has dark password rooms with browser-side encryption and 24-hour idle cleanup.', '# Dark Encrypted Password Rooms
+  ('seed-update-2026-07-06-private-chat-rooms-en', 'seed-update-2026-07-06-private-chat-rooms', 'en', 'Dark Encrypted Password Rooms', 'Anonymous chat now has dark encrypted password rooms, with a migration fix for existing public rooms.', '# Dark Encrypted Password Rooms
 
 Anonymous chat now includes password rooms: click the password-room button, enter a password, and people using the same password enter the same dark chat room.
 
@@ -864,8 +865,9 @@ Anonymous chat now includes password rooms: click the password-room button, ente
 - The public anonymous room keeps its original light XP style and plaintext chat flow.
 - If a password room has no new messages for 24 hours, its encrypted messages are deleted and the room is released.
 - Admin chat management shows a placeholder for encrypted password-room messages while keeping hide, delete, and ban actions.
+- Fixed existing D1 chat table migration so room indexes are created only after `room_key` / `encrypted` columns exist, keeping the public room readable.
 - This is client-side encryption: weak passwords can still be guessed, and the web model still trusts the currently loaded site script.', '2026-07-06T08:00:00.000Z', '2026-07-06T08:00:00.000Z'),
-  ('seed-update-2026-07-06-private-chat-rooms-ja', 'seed-update-2026-07-06-private-chat-rooms', 'ja', '暗色の暗号化パスワード部屋', '匿名チャットに暗色のパスワード部屋を追加し、ブラウザ側暗号化と24時間未発言時の削除に対応しました。', '# 暗色の暗号化パスワード部屋
+  ('seed-update-2026-07-06-private-chat-rooms-ja', 'seed-update-2026-07-06-private-chat-rooms', 'ja', '暗色の暗号化パスワード部屋', '匿名チャットに暗色の暗号化パスワード部屋を追加し、既存ルームの移行時読み込み不具合も修正しました。', '# 暗色の暗号化パスワード部屋
 
 匿名チャットにパスワード部屋を追加しました。パスワード部屋ボタンを押して同じパスワードを入力すると、同じ暗色チャットルームに入ります。
 
@@ -875,6 +877,7 @@ Anonymous chat now includes password rooms: click the password-room button, ente
 - 通常の匿名ルームはこれまで通り、明るい XP 風 UI と平文チャットのままです。
 - パスワード部屋は24時間新しい発言がないと、その部屋の暗号文メッセージを削除して部屋を解放します。
 - 管理画面では暗号化メッセージを占位表示にし、非表示、削除、禁言は引き続き使えます。
+- 既存の D1 チャット表に `room_key` / `encrypted` 列を自動追加するとき、列追加前に部屋インデックスを作ろうとして通常ルームが読めなくなる問題を修正しました。
 - これはブラウザ側暗号化です。弱いパスワードは推測される可能性があり、Web では現在読み込んだサイトスクリプトを信頼する必要があります。', '2026-07-06T08:00:00.000Z', '2026-07-06T08:00:00.000Z'),
   ('seed-update-2026-06-30-account-popover-layer-fix-zh', 'seed-update-2026-06-30-account-popover-layer-fix', 'zh', '账号弹窗层级修复', '右上角账号入口现在会显示在首页和各栏目窗口之上，登录、注册和退出流程保持不变。', '# 账号弹窗层级修复
 

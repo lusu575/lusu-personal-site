@@ -588,9 +588,9 @@ const content = {
         ja: "暗色の暗号化パスワード部屋"
       },
       desc: {
-        zh: "匿名聊天室新增暗色密码房，同密码进入同一房间，消息在浏览器端加密，24 小时无发言后清空",
-        en: "Anonymous chat now has dark password rooms with browser-side encryption and 24-hour idle cleanup",
-        ja: "匿名チャットに暗色のパスワード部屋を追加し、ブラウザ側暗号化と24時間未発言時の削除に対応しました"
+        zh: "匿名聊天室新增暗色密码房，并修复旧库自动补字段时普通大厅读取失败的问题",
+        en: "Anonymous chat now has dark encrypted password rooms, with a migration fix for existing public rooms",
+        ja: "匿名チャットに暗色の暗号化パスワード部屋を追加し、既存ルームの移行時読み込み不具合も修正しました"
       }
     },
     {

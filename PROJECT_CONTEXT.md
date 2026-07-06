@@ -9,6 +9,7 @@
 - 后台聊天室管理对加密消息只显示“密码房加密消息（后台无法解密）”，内容框锁定；管理员仍可隐藏、删除和按隐藏用户标识 / 网络来源禁言。
 - 安全边界：这是网页端前端加密，不承诺绝对安全的完整 E2EE。弱密码可被猜中，房间标识本身也会给离线猜测提供验证目标；同时网页端仍需信任当前加载的站点 JS。
 - 本次公开可见更新已补齐三语 `site-updates`、`js/main.js` fallback、Functions seed、schema seed、主站/后台资源 query、根目录 changelog、主站 Skill/README 和后台专用文档。
+- 运行时 schema guard 的顺序很重要：旧 D1 表首次加载新聊天字段时，必须先通过 `ensureTableColumns()` 补 `room_key` / `encrypted`，再创建任何依赖 `room_key` 的索引；否则普通大厅会在迁移前读取失败。
 
 ## 2026-06-30 账号弹窗层级修复与更新记录补齐
 

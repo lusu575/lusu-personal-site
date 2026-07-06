@@ -488,6 +488,17 @@ if (!adminJs.includes("密码房加密消息")) {
   fail("admin/admin.js should show a placeholder for encrypted password-room messages");
 }
 
+const ensureChatSchemaBlock = objectBlockAfterMarker(apiJs, "async function ensureChatSchema");
+if (!ensureChatSchemaBlock) {
+  fail("functions/api/[[route]].js missing ensureChatSchema body");
+} else {
+  const addRoomKeyColumnAt = ensureChatSchemaBlock.indexOf('["room_key", "text not null default');
+  const createRoomVisibleIndexAt = ensureChatSchemaBlock.indexOf("anonymous_chat_messages_room_visible_idx");
+  if (addRoomKeyColumnAt < 0 || createRoomVisibleIndexAt < 0 || createRoomVisibleIndexAt < addRoomKeyColumnAt) {
+    fail("functions/api/[[route]].js must add chat room_key/encrypted columns before creating room_key indexes");
+  }
+}
+
 for (const sensitiveText of ["password_hash", "token_hash"]) {
   if (adminHtml.includes(sensitiveText) || adminJs.includes(sensitiveText)) {
     fail(`admin UI must not expose ${sensitiveText}`);
@@ -1388,7 +1399,7 @@ for (const obsoleteText of [
 
 const finalUpdateId = "seed-update-2026-07-06-private-chat-rooms";
 const finalUpdateSlug = "2026-07-06-private-chat-rooms";
-const finalMainVersion = "20260706-private-chat-rooms-r1";
+const finalMainVersion = "20260706-private-chat-rooms-r2";
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
 const finalTitleEn = "Dark Encrypted Password Rooms";
 const finalPublishedAt = "2026-07-06T08:00:00.000Z";

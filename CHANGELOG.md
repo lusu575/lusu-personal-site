@@ -12,6 +12,10 @@
   - 后台聊天室管理显示“密码房加密消息（后台无法解密）”，禁止编辑密文内容，但保留隐藏、删除、按用户标识或网络来源禁言。
   - 同步补齐 `site-updates` 三语记录、`js/main.js` fallback、Functions seed、schema seed、后台文档、项目上下文、主站 Skill/README、构建检查和主站/后台资源 query `20260706-private-chat-rooms-r1`。
   - 安全边界说明：这是前端加密，D1 只存密文；弱密码仍可能被猜中，网页端加密仍需要信任当前加载的站点 JS。
+- 密码房上线热修复：
+  - 修复现有 D1 聊天表还没有 `room_key` / `encrypted` 字段时，运行时 schema guard 先创建 `room_key` 索引导致普通大厅读取失败的问题。
+  - `ensureChatSchema()` 现在先创建旧字段兼容索引，再补齐新字段，最后创建所有房间相关索引；构建检查新增对应顺序守卫。
+  - 同步更新 2026-07-06 `site-updates` 三语说明、前端 fallback、schema seed 和主站脚本 query `20260706-private-chat-rooms-r2`，记录这次普通大厅恢复读取的修复。
 
 ## 2026-06-30
 

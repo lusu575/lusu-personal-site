@@ -75,6 +75,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 聊天室有两种房间：普通大厅固定 `room_key='public'`，继续用浅色 XP UI 和明文 `content`；密码房用暗色 UI，前端通过 Web Crypto 从用户密码派生 `room_key` 和 AES-GCM 密钥，只提交 `encryptedContent`，后端必须拒收密码房明文 `content`。
 - 密码房不得保存或回显明文密码，也不要把密码、密钥、未发送消息或草稿写入 analytics、localStorage、sessionStorage、URL、日志或后台 UI。刷新页面默认回普通大厅，不自动记住密码房。
 - `anonymous_chat_messages` 必须保留 `room_key` 和 `encrypted` 字段；读取、发送、随机昵称占用、发送限流和 `after/message_id` 游标恢复都要按 `room_key` 隔离，旧消息默认留在 `public`。
+- 修改聊天室表 schema guard 时，必须先用 `ensureTableColumns()` 补齐新增列，再创建依赖新增列的索引；旧 D1 表没有新列时，提前创建 `room_key` 索引会让普通大厅读取失败。
 - 仅密码房执行 24 小时无发言清理：房间最新消息超过 24 小时后删除该房全部密文消息并释放房间；普通大厅不能被这条清理规则影响。
 - 后台聊天室治理遇到 `encrypted=1` 的消息时，只显示“密码房加密消息”占位，不提供密文内容编辑或后台解密；隐藏、删除、按隐藏用户标识 / 网络来源禁言仍可用。
 - 密码房只能称为“前端加密”或“浏览器端加密”，不要承诺绝对安全的完整 E2EE；需要说明弱密码可能被猜中，且网页端加密仍信任当前加载的站点 JS。
