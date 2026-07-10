@@ -776,7 +776,7 @@ if (!hasPattern(motionSystemCss, /\.welcome-title-icon\s*\{[\s\S]*width:\s*24px[
   fail("css/motion-system.css should give the desktop welcome bitmap a visible intrinsic box");
 }
 
-if (!hasPattern(uiMotionJs, /function\s+animateAfterCommit\(result,\s*options\)[\s\S]*options\s*&&\s*options\.deferCleanup[\s\S]*animateAfterCommit\(committedResult,\s*\{\s*deferCleanup:\s*true\s*\}\)[\s\S]*transition\.finished\.then[\s\S]*cleanup\(\)/)) {
+if (!hasPattern(uiMotionJs, /function\s+animateAfterCommit\(result,\s*options\)[\s\S]*options\s*&&\s*options\.deferCleanup[\s\S]*animateAfterCommit\(committedResult,\s*\{\s*deferCleanup:\s*true[\s\S]*?\}\)[\s\S]*transition\.finished\.then[\s\S]*cleanup\(\)/)) {
   fail("js/ui-motion.js should retain View Transition state until the browser transition actually finishes");
 }
 
@@ -1031,7 +1031,7 @@ for (const asset of [
   }
 }
 
-const premiumUiVersion = "20260710-premium-mobile-os-r6";
+const premiumUiVersion = "20260710-premium-mobile-os-r7";
 const currentPreFinalMainVersion = premiumUiVersion;
 const currentPreFinalTelemetryVersion = "20260623-analytics-privacy-r1";
 const currentGameShellVersion = "20260623-game-shell-storage-safe-r1";
@@ -1564,6 +1564,26 @@ if (!hasPattern(mainJs, /useViewTransition:\s*motionKind\s*===\s*["']route["']/)
   fail("js/main.js route navigation should progressively enhance with the View Transitions API when available");
 }
 
+if (!hasPattern(uiMotionJs, /PAGE_TURN_ROUTES[\s\S]*function\s+pageTurnDirection[\s\S]*kind\s*===\s*["']route["'][\s\S]*setData\(root,\s*["']uiPageTurn["']/)
+  || !hasPattern(motionSystemCss, /html\[data-ui-transition="route"\]\s+\.site-shell\s*\{[\s\S]*view-transition-name:\s*module-page/)
+  || !hasPattern(motionSystemCss, /::view-transition-old\(root\),\s*::view-transition-new\(root\)\s*\{[\s\S]*animation:\s*none/)
+  || !hasPattern(motionSystemCss, /::view-transition-old\(module-page\)[\s\S]*neo-xp-page-turn-forward[\s\S]*data-ui-page-turn="backward"[\s\S]*neo-xp-page-turn-backward/)) {
+  fail("route changes should use directional module-page turns without the old full-screen root flash");
+}
+
+if (/<div\b[^>]*class="desktop-intro"/.test(indexHtml)
+  || /data-i18n=["']homeLead["']/.test(indexHtml)
+  || /homeLead\s*:/.test(mainJs)) {
+  fail("Home should not render the removed three-language headline, construction note, or divider block");
+}
+
+if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.desktop-icons\s*\{[\s\S]*grid-auto-rows:\s*90px[\s\S]*justify-items:\s*center/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.desktop-icon\s*\{[\s\S]*width:\s*min\(78px,\s*100%\)[\s\S]*height:\s*90px/)
+  || !hasPattern(mobileIosShellCss, /\.page:not\(\.page-home\)\s*>\s*\.xp-window\s*\{[\s\S]*--mobile-frame-edge|\.page:not\(\.page-home\)\s*>\s*\.xp-window\s*\{[\s\S]*border:\s*2px\s+solid\s+var\(--mobile-frame-edge\)/)
+  || !hasPattern(mobileIosShellCss, /#videos\s+\.card-grid,[\s\S]*#about\s+\.profile-card\s*\{[\s\S]*border:\s*1px\s+solid\s+var\(--mobile-frame-edge\)/)) {
+  fail("mobile Home hit areas and all App surfaces should keep the compact grid and layered frame system");
+}
+
 if (!hasPattern(mainJs, /function\s+updateWallpaperMotionState[\s\S]*document\.documentElement\.dataset\.motion[\s\S]*\[\s*["']full["']\s*,\s*["']reduced["']\s*,\s*["']off["']\s*\]\.includes\(managedMode\)/)
   || !hasPattern(mainJs, /LusuUiMotion\.run\(\s*["']theme["']\s*,\s*\{\s*theme\s*,\s*useViewTransition:\s*true\s*\}/)) {
   fail("js/main.js wallpaper should share the canonical motion mode and use progressive theme crossfades");
@@ -1585,13 +1605,13 @@ if (!hasPattern(motionSystemCss, /html\[data-ui-shell="mobile"\]\[data-motion="r
 
 if (hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*?\.chatroom-header\s*\{\s*display:\s*none/)
   || hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*?\.chatroom-footer\s*\{\s*display:\s*none/)
-  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-window\.is-private-room\s+\.send-bubble-icon[\s\S]*pixel-ui-glyph-atlas\.png\?v=20260710-premium-mobile-os-r6/)) {
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-window\.is-private-room\s+\.send-bubble-icon[\s\S]*pixel-ui-glyph-atlas\.png\?v=20260710-premium-mobile-os-r7/)) {
   fail("css/mobile-ios-shell.css should preserve landscape chat room controls, feedback, and the private-room send bitmap");
 }
 
-if (!hasPattern(styleCss, /\.minimize-button::before,\s*\.maximize-button::before\s*\{[\s\S]*pixel-ui-glyph-atlas\.png\?v=20260710-premium-mobile-os-r6[\s\S]*background-size:\s*200%\s+200%/)
+if (!hasPattern(styleCss, /\.minimize-button::before,\s*\.maximize-button::before\s*\{[\s\S]*pixel-ui-glyph-atlas\.png\?v=20260710-premium-mobile-os-r7[\s\S]*background-size:\s*200%\s+200%/)
   || !hasPattern(styleCss, /\.minimize-button::before\s*\{\s*background-position:\s*0\s+0[\s\S]*\.maximize-button::before\s*\{\s*background-position:\s*100%\s+0[\s\S]*\.maximize-button\[aria-pressed="true"\]::before\s*\{\s*background-position:\s*0\s+100%/)
-  || !hasPattern(styleCss, /\.send-bubble-icon\s*\{[\s\S]*pixel-ui-glyph-atlas\.png\?v=20260710-premium-mobile-os-r6[\s\S]*background-position:\s*100%\s+100%/)
+  || !hasPattern(styleCss, /\.send-bubble-icon\s*\{[\s\S]*pixel-ui-glyph-atlas\.png\?v=20260710-premium-mobile-os-r7[\s\S]*background-position:\s*100%\s+100%/)
   || hasPattern(styleCss, /\.send-bubble-icon::(?:before|after)\s*\{[\s\S]{0,320}(?:clip-path|border|box-shadow|background\s*:)/)) {
   fail("public window and chat glyphs should use the image2 bitmap atlas instead of CSS-drawn geometry");
 }
@@ -1659,7 +1679,7 @@ if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+#knowledge\
   fail("css/mobile-ios-shell.css should override legacy ID sizing so every mobile App is a full-screen surface");
 }
 
-if (!hasPattern(mobileIosShellCss, /body\.is-article-reading\s+#knowledge\.page\s*>\s*\.xp-window[\s\S]*border-radius:\s*26px\s+26px\s+0\s+0[\s\S]*body\.is-article-reading\s+#knowledge\.page\s+\.close-button[\s\S]*min-width:\s*44px[\s\S]*min-height:\s*44px/)) {
+if (!hasPattern(mobileIosShellCss, /body\.is-article-reading\s+#knowledge\.page\s*>\s*\.xp-window[\s\S]*border-radius:\s*22px\s+22px\s+0\s+0[\s\S]*body\.is-article-reading\s+#knowledge\.page\s+\.close-button[\s\S]*min-width:\s*44px[\s\S]*min-height:\s*44px/)) {
   fail("css/mobile-ios-shell.css should preserve full-App article chrome and 44px window controls");
 }
 
@@ -1877,7 +1897,7 @@ const finalUpdateSlug = "2026-07-10-premium-interaction-mobile-os";
 const finalMainVersion = premiumUiVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
 const finalTitleEn = "GPT-5.6 Premium Interaction & Mobile OS Redesign";
-const finalPublishedAt = "2026-07-10T04:30:00.000Z";
+const finalPublishedAt = "2026-07-10T16:20:00.000Z";
 const finalTranslationMinimums = {
   title: 8,
   summary: 24,
@@ -1892,6 +1912,7 @@ const changelog20260624Section = markdownSection(changelog, "## 2026-06-24");
 const changelog20260630Section = markdownSection(changelog, "## 2026-06-30");
 const changelog20260706Section = markdownSection(changelog, "## 2026-07-06");
 const changelog20260710Section = markdownSection(changelog, "## 2026-07-10");
+const changelog20260711Section = markdownSection(changelog, "## 2026-07-11");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -1914,7 +1935,7 @@ if (finalUpdateStarted) {
     'date: "2026.06.23"',
     'date: "2026.06.24"',
     'date: "2026.07.06"',
-    'date: "2026.07.10"',
+    'date: "2026.07.11"',
     finalTitleEn
   ]) {
     if (!mainJs.includes(token)) {
@@ -2027,7 +2048,7 @@ if (finalUpdateStarted) {
   }
 
   for (const token of [
-    'id="top-updated">2026.07.10',
+    'id="top-updated">2026.07.11',
     `/js/main.js?v=${finalMainVersion}`
   ]) {
     if (!indexHtml.includes(token)) {
@@ -2043,7 +2064,7 @@ if (finalUpdateStarted) {
     "Functions seed",
     "schema seed"
   ]) {
-    if (!changelog20260710Section.includes(token)) {
+    if (!changelog20260711Section.includes(token)) {
       fail(`CHANGELOG.md final public update sync missing ${token}`);
     }
   }

@@ -7,8 +7,9 @@
 
   var document = global.document;
   var root = document.documentElement;
-  var VERSION = "1.0.0";
+  var VERSION = "1.1.0";
   var MAX_PARALLAX_PX = 6;
+  var PAGE_TURN_ROUTES = ["home", "knowledge", "videos", "resources", "games", "blog", "chatroom", "about"];
   var TRIGGER_SELECTOR = [
     ".desktop-icon",
     ".start-button",
@@ -235,6 +236,15 @@
   function currentRoute() {
     var body = document.body;
     return routeName(body && readData(body, "route")) || "home";
+  }
+
+  function pageTurnDirection(fromRoute, toRoute) {
+    var fromIndex = PAGE_TURN_ROUTES.indexOf(routeName(fromRoute) || "home");
+    var toIndex = PAGE_TURN_ROUTES.indexOf(routeName(toRoute) || "home");
+    if (fromIndex < 0 || toIndex < 0 || fromIndex === toIndex) {
+      return "forward";
+    }
+    return toIndex > fromIndex ? "forward" : "backward";
   }
 
   function currentTheme() {
@@ -723,6 +733,10 @@
       return safeQuery("#wallpaper-root .wallpaper-base") || safeQuery("#wallpaper-root");
     }
 
+    if (kind === "route") {
+      return safeQuery(".site-shell") || safeQuery(".page.active");
+    }
+
     if (phase === "before") {
       return safeQuery(".page.active .xp-window") || safeQuery(".page.active");
     }
@@ -819,6 +833,50 @@
     ], { duration: DURATIONS.window, easing: EASING.spring });
   }
 
+  function pageTurnExitAnimation(target, direction) {
+    if (!isElement(target)) {
+      return null;
+    }
+    var backward = direction === "backward";
+    var degrees = backward ? 76 : -76;
+    return animateElement(target, [
+      {
+        opacity: 1,
+        transformOrigin: backward ? "right center" : "left center",
+        transform: "perspective(1400px) rotateY(0deg)",
+        filter: "brightness(1)"
+      },
+      {
+        opacity: 0.22,
+        transformOrigin: backward ? "right center" : "left center",
+        transform: "perspective(1400px) rotateY(" + degrees + "deg)",
+        filter: "brightness(.82)"
+      }
+    ], { duration: 180, easing: EASING.in });
+  }
+
+  function pageTurnEnterAnimation(target, direction) {
+    if (!isElement(target)) {
+      return null;
+    }
+    var backward = direction === "backward";
+    var degrees = backward ? -9 : 9;
+    return animateElement(target, [
+      {
+        opacity: 0.78,
+        transformOrigin: backward ? "left center" : "right center",
+        transform: "perspective(1400px) rotateY(" + degrees + "deg) scale(.995)",
+        filter: "brightness(.9)"
+      },
+      {
+        opacity: 1,
+        transformOrigin: backward ? "left center" : "right center",
+        transform: "perspective(1400px) rotateY(0deg) scale(1)",
+        filter: "brightness(1)"
+      }
+    ], { duration: 220, easing: EASING.out });
+  }
+
   function isExitKind(kind) {
     return kind === "window-close"
       || kind === "window-minimize"
@@ -889,6 +947,9 @@
       && canUseFullMotion()
       && typeof document.startViewTransition === "function"
     );
+    var turnDirection = kind === "route"
+      ? pageTurnDirection(beforeRoute, context.route || "home")
+      : "";
 
     if (!state.initialized && document.body) {
       init();
@@ -896,6 +957,9 @@
 
     state.activeRunId = runId;
     setData(root, "uiTransition", kind);
+    if (turnDirection) {
+      setData(root, "uiPageTurn", turnDirection);
+    }
     state.suppressRouteUntil = now() + (deferCommit ? DURATIONS.window + 220 : 180);
     if (kind === "theme") {
       state.suppressThemeUntil = now() + (useViewTransition ? DURATIONS.scene + 180 : 180);
@@ -919,6 +983,7 @@
       }
       if (state.activeRunId === runId) {
         removeData(root, "uiTransition");
+        removeData(root, "uiPageTurn");
         state.activeRunId = 0;
       }
       dispatchHook("lusu:ui-motion-after", {
@@ -944,7 +1009,9 @@
         handleThemeProjection(beforeTheme, afterTheme, true);
       } else if (isLayoutKind(kind)) {
         animation = flipAnimation(target || beforeTarget, beforeRect);
-      } else if (!isExitKind(kind)) {
+      } else if (kind === "route" && options && options.pageTurnFallback) {
+        animation = pageTurnEnterAnimation(target, turnDirection);
+      } else if (!isExitKind(kind) && !(kind === "route" && options && options.skipEnter)) {
         animation = enterAnimation(kind, target, origin);
       }
 
@@ -981,6 +1048,30 @@
       }
     }
 
+    if (kind === "route" && !useViewTransition) {
+      var pageExit = pageTurnExitAnimation(beforeTarget, turnDirection);
+      if (global.Promise && pageExit && typeof pageExit.then === "function") {
+        var commitAfterPageTurn = function commitAfterPageTurn() {
+          try {
+            return animateAfterCommit(commitOnce(), { pageTurnFallback: true });
+          } catch (error) {
+            cleanup();
+            throw error;
+          }
+        };
+        return pageExit.then(commitAfterPageTurn, commitAfterPageTurn);
+      }
+      try {
+        return animateAfterCommit(commitOnce(), { pageTurnFallback: true });
+      } catch (error) {
+        cleanup();
+        if (global.Promise) {
+          return global.Promise.reject(error);
+        }
+        throw error;
+      }
+    }
+
     if (useViewTransition) {
       try {
         var transition = document.startViewTransition(function transitionCommit() {
@@ -991,7 +1082,7 @@
         }
         if (global.Promise && transition && transition.updateCallbackDone) {
           return transition.updateCallbackDone.then(function viewCommitDone() {
-            var afterResult = animateAfterCommit(committedResult, { deferCleanup: true });
+            var afterResult = animateAfterCommit(committedResult, { deferCleanup: true, skipEnter: kind === "route" });
             return global.Promise.resolve(afterResult).then(function waitForViewTransition(result) {
               if (transition.finished && typeof transition.finished.then === "function") {
                 return transition.finished.then(function viewTransitionDone() {

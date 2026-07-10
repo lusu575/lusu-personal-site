@@ -2,6 +2,15 @@
 
 本文件记录鲁肃个人站的功能、界面、后端、部署与项目约定变更。每次修改项目后都应同步更新这里，方便后续 AI / Codex 对话快速了解最近改动。
 
+## 2026-07-11（本地功能分支，尚未发布）
+
+- GPT-5.6 Premium Interaction & Mobile OS Redesign 继续收口：
+  - 页面/模块 route 改为 `.site-shell` 整页拟真书页翻动，顶栏、活动模块和底栏作为一张页面共同翻动；root 快照动画为 `none`，不再出现旧整屏淡入淡出或叠加窗口放大。
+  - Home 删除三语站点大标题、施工提示和分隔横线；手机图标固定行高、按从左到右再从上到下排列，按钮热区与可见图标/标题盒面积比保持接近 1，同时保留 44px 触控下限。
+  - 知识库、视频、资源、游戏、杂谈、聊天室和关于页统一为“外框—工具/筛选区—标签区—内容区”的多层边框结构，继续使用本站四时段/Neo-XP token，不复制参考图颜色或图标。
+  - 唯一汇总型公开 `site-updates` 记录继续使用 ID `seed-update-2026-07-10-premium-interaction-mobile-os`；`js/main.js` fallback、Functions seed 与 schema seed 的 zh / en / ja 内容和发布时间同步到 2026.07.11。
+  - 公开资源 query 更新为 `20260710-premium-mobile-os-r7`；本地构建、四视口 Home 热区、28 个移动 App 状态、卡片/子项几何、44px 控件、整页翻页中间态和控制台检查通过。
+
 ## 2026-07-10（本地功能分支，尚未发布）
 
 - GPT-5.6 Premium Interaction & Mobile OS Redesign：
@@ -15,10 +24,13 @@
   - 手机端字号与按钮按视口密度自适应，但主要触控目标仍不小于 44px；新增“包含且不相交”验收，覆盖标题、摘要、元信息、CTA、相邻卡片、密码房按钮和聊天 footer，禁止用裁掉 UI、缩小按钮或隐藏越界来伪装通过。
   - 桌面景深与视差统一到单个 `requestAnimationFrame` 循环，位移上限 6px；`document.hidden`、`prefers-reduced-motion` 或用户关闭动效时停止，在线状态不再持续闪烁。
   - Web Animations 完成后会取消填充效果并清理 transform / filter，避免不可见的动画终态把文章阅读进度等 fixed 控件错误绑定到窗口坐标系。
+  - 模块路由切换移除旧的整屏 root 淡入淡出和二次窗口放大，改为让包含顶栏、活动内容与底栏的 `.site-shell` 使用有方向的拟真书页翻动；不支持 View Transitions 时使用先翻走旧页、再显现新页的 Web Animations fallback，减少动态与关闭动效继续即时导航。
+  - 桌面与手机 Home 删除三语站点大标题、施工提示及其分隔横线；手机 App 图标改为固定行高、从左到右再从上到下排列，按钮宽高与可见图标/标题盒对齐，不再让细长屏幕拉大行距或生成异常大的点击热区。
+  - 所有手机模块增加统一的多层框架：外框、搜索/筛选工具区、标签区、内容滚动区与列表项使用分层边线；配色继续跟随本站 morning/day/dusk/night 和 Neo-XP 变量，不复刻参考图颜色或图标。
   - 保留既有公开路由、Pages Functions API、Cloudflare D1、HttpOnly 账号会话、游戏云存档、普通大厅与前端加密密码房、三语内容、视频系统和遥测隐私边界；本次没有修改正式部署链路。
 - 公开更新与缓存收口：
   - 本次可见改动只使用一条合并 `site-updates` 更新记录：ID `seed-update-2026-07-10-premium-interaction-mobile-os`，slug `2026-07-10-premium-interaction-mobile-os`，并要求 zh / en / ja fallback、Functions seed 与 schema seed 同步。
-  - 本轮公开 CSS / JS、移动状态图和强视觉资产引用统一使用 query `20260710-premium-mobile-os-r6`；`js/telemetry.js` 保留既有隐私发布版本。以后新增或改动公开 CSS、JS 或强视觉资产时，必须同步 `index.html` 对应 query。
+  - 本轮公开 CSS / JS、移动状态图和强视觉资产引用统一使用 query `20260710-premium-mobile-os-r7`；`js/telemetry.js` 保留既有隐私发布版本。以后新增或改动公开 CSS、JS 或强视觉资产时，必须同步 `index.html` 对应 query。
 - 当前视觉与交互证据：
   - 390x844 的 Home 与 Chat 均无横向溢出；375x667 的 7 个 App 全部位于首屏；430x932 纳入回归矩阵。
   - 844x390 coarse pointer 横屏 Chat 的输入框与发送按钮位于底部 Home indicator 安全区上方，可正常触达。

@@ -22,7 +22,10 @@ skills/lusu-personal-site-skill/SKILL.md
 - 改首页、窗口、任务栏、图标、弹窗、游戏外壳等前端内容时，必须检查手机端适配。
 - 桌面壳与移动壳共享同一业务状态；`js/main.js` 是 route/account/article/video/game/chat 等状态的唯一来源，禁止壳层复制或分叉状态。
 - `mobile-shell.js` 只能观察现有状态并委托既有 `data-route`；不要克隆或 reparent 账号、文章详情、视频弹窗、游戏和聊天等高耦合 DOM。
+- 页面/模块 route 让包含顶栏、活动内容与底栏的 `.site-shell` 做有方向书页翻动；不要恢复 root 整屏淡入淡出，也不要与窗口进入缩放叠加。最小化、关闭、弹窗和主题变化保留自己的反馈，fallback 不克隆业务 DOM。
 - 移动 Home 使用 App grid / 完整 Dock；栏目 App 只保留单一 Appbar 和底部 Home indicator，不重复显示页内 XP titlebar 或完整 Dock。账号与语言控制只在 Home 常驻，App 内通过 44px Home 控制返回。主要触控目标至少 44x44 CSS px，同时处理 safe area 与 `visualViewport`，固定复测 359x500、375x667、390x844、430x932 和 coarse 横屏 844x390。
+- 移动 Home 图标固定行高并按从左到右、从上到下排列，热区贴近图标和标题实际盒；禁止用弹性行高把图标摊开或让空白区域成为异常大点击区。
+- 所有移动栏目保持“外框—工具/筛选区—标签区—内容区”多层边框，颜色来自本站四时段/Neo-XP token；加框后必须复测短屏内容容量、聊天日志和卡片/文案/按钮相交。
 - 移动 QA 必须量内容容量和真实几何，不能只检查父容器溢出：App 窗口高度至少占视口 80%，Games 列表不得继承桌面高度上限，Chat 日志在 375x667 / 844x390 至少为 260px / 150px，短屏文章首屏至少有 44px 无遮挡正文；卡片标题/摘要/元信息/CTA、聊天输入/计数/发送与密码房按钮必须完全包含且互不相交，zh / en / ja 都要检查。
 - 桌面景深与视差使用单个 RAF，位移上限 6px；页面隐藏、减少动态或用户关闭动效时停止，在线状态等提示不得持续闪烁。
 - 新增或修改 `mobile-ios-shell.css`、`motion-system.css`、`mobile-shell.js`、`ui-motion.js` 或其他公开 CSS/JS/强视觉资产时，必须同步 `index.html` 对应 query。

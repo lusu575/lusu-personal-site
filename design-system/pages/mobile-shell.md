@@ -3,7 +3,9 @@
 - Treat the browser viewport as the phone screen; never add a thick physical-device frame.
 - Respect `env(safe-area-inset-*)`, with a compact status region, original island-inspired capsule, and generated bitmap network/Wi-Fi/battery artwork.
 - Home Screen uses the existing four-time pixel world, profile/status widget, app grid, and the five-item full Dock.
+- Home omits the large site headline, construction note, and divider. Its App grid fills left-to-right and top-to-bottom with fixed row heights; each tappable button hugs the visible icon/label box while remaining at least 44px.
 - Existing route pages become full-height app surfaces with one 44px App bar, 8–16px edge margins, 44px touch targets, and only a slim bottom Home indicator. The repeated XP page titlebar, full Dock, account widget, and language control are hidden inside Apps; account and language remain available on Home.
+- Every App uses a layered pixel frame: outer edge, toolbar/filter frame, tabs or category frame, and inset content scrollport. Frame colors follow the existing four-time Neo-XP tokens rather than a copied reference palette.
 - The XP top bar and desktop taskbar do not appear as compressed desktop chrome. On Home, the existing account widget stays in place and is restyled; a 44px mobile language-cycle control delegates to the original three language buttons without owning language state.
 - A visible Home control and bottom-edge swipe both return to Home; the gesture is never the only exit.
 - Mobile cards are lists or adaptive grids, not nested desktop windows. Game actions use an in-card trailing column; chat input, count and send controls use separate grid cells. Text, metadata, controls and neighboring cards may not overlap in either orientation.

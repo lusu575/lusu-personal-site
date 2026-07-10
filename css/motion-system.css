@@ -11,6 +11,7 @@
   --motion-fast: 160ms;
   --motion-standard: 260ms;
   --motion-window: 380ms;
+  --motion-page-turn: 460ms;
   --motion-scene: 680ms;
   --motion-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
   --motion-ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
@@ -42,6 +43,7 @@ body[data-motion="off"] {
   --motion-fast: 1ms;
   --motion-standard: 1ms;
   --motion-window: 1ms;
+  --motion-page-turn: 1ms;
   --motion-scene: 1ms;
   --ui-parallax-x: 0px;
   --ui-parallax-y: 0px;
@@ -534,10 +536,14 @@ body.is-ui-theme-changing .xp-taskbar {
 
 /* Progressive enhancement when a caller explicitly opts into View Transitions. */
 @supports (view-transition-name: none) {
+  html[data-ui-transition="route"] .site-shell {
+    view-transition-name: module-page;
+  }
+
   ::view-transition-old(root),
   ::view-transition-new(root) {
-    animation-duration: var(--motion-standard);
-    animation-timing-function: var(--motion-ease-out);
+    animation: none;
+    mix-blend-mode: normal;
   }
 
   html[data-ui-transition="theme"]::view-transition-old(root) {
@@ -550,16 +556,39 @@ body.is-ui-theme-changing .xp-taskbar {
     animation-duration: var(--motion-scene);
   }
 
-  html[data-ui-transition="route"]::view-transition-old(root),
-  html[data-ui-transition="window-open"]::view-transition-old(root) {
-    animation-name: neo-xp-view-route-out;
+  html[data-ui-transition="route"]::view-transition-group(module-page),
+  html[data-ui-transition="route"]::view-transition-image-pair(module-page) {
+    overflow: visible;
+    animation: none;
+    transform-style: preserve-3d;
   }
 
-  html[data-ui-transition="route"]::view-transition-new(root),
-  html[data-ui-transition="window-open"]::view-transition-new(root) {
-    animation-name: neo-xp-view-route-in;
-    animation-duration: var(--motion-window);
-    animation-timing-function: var(--motion-ease-spring);
+  html[data-ui-transition="route"]::view-transition-group(module-page) {
+    perspective: 1600px;
+  }
+
+  html[data-ui-transition="route"]::view-transition-old(module-page),
+  html[data-ui-transition="route"]::view-transition-new(module-page) {
+    height: 100%;
+    overflow: hidden;
+    backface-visibility: hidden;
+    mix-blend-mode: normal;
+  }
+
+  html[data-ui-transition="route"]::view-transition-old(module-page) {
+    z-index: 2;
+    transform-origin: left center;
+    animation: neo-xp-page-turn-forward var(--motion-page-turn) cubic-bezier(.42, 0, .18, 1) both;
+  }
+
+  html[data-ui-transition="route"]::view-transition-new(module-page) {
+    z-index: 1;
+    animation: neo-xp-page-reveal var(--motion-page-turn) var(--motion-ease-out) both;
+  }
+
+  html[data-ui-transition="route"][data-ui-page-turn="backward"]::view-transition-old(module-page) {
+    transform-origin: right center;
+    animation-name: neo-xp-page-turn-backward;
   }
 }
 
@@ -685,14 +714,62 @@ body.is-ui-theme-changing .xp-taskbar {
   to { opacity: 1; }
 }
 
-@keyframes neo-xp-view-route-out {
-  from { opacity: 1; transform: scale(1); }
-  to { opacity: 0; transform: scale(0.992); }
+@keyframes neo-xp-page-turn-forward {
+  0% {
+    opacity: 1;
+    transform: rotateY(0deg);
+    filter: brightness(1);
+    box-shadow: 0 0 0 rgba(3, 15, 52, 0);
+  }
+
+  52% {
+    opacity: 1;
+    transform: rotateY(-38deg);
+    filter: brightness(.9);
+    box-shadow: 18px 0 24px rgba(3, 15, 52, .24);
+  }
+
+  100% {
+    opacity: .08;
+    transform: rotateY(-92deg);
+    filter: brightness(.76);
+    box-shadow: 3px 0 8px rgba(3, 15, 52, .18);
+  }
 }
 
-@keyframes neo-xp-view-route-in {
-  from { opacity: 0; transform: translate3d(0, 8px, 0) scale(0.982); }
-  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+@keyframes neo-xp-page-turn-backward {
+  0% {
+    opacity: 1;
+    transform: rotateY(0deg);
+    filter: brightness(1);
+    box-shadow: 0 0 0 rgba(3, 15, 52, 0);
+  }
+
+  52% {
+    opacity: 1;
+    transform: rotateY(38deg);
+    filter: brightness(.9);
+    box-shadow: -18px 0 24px rgba(3, 15, 52, .24);
+  }
+
+  100% {
+    opacity: .08;
+    transform: rotateY(92deg);
+    filter: brightness(.76);
+    box-shadow: -3px 0 8px rgba(3, 15, 52, .18);
+  }
+}
+
+@keyframes neo-xp-page-reveal {
+  from {
+    opacity: .82;
+    filter: brightness(.88) saturate(.96);
+  }
+
+  to {
+    opacity: 1;
+    filter: brightness(1) saturate(1);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

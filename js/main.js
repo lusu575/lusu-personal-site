@@ -6,7 +6,6 @@ const translations = {
     siteName: "鲁肃个人站",
     siteDescription: "鲁肃的个人站，一个 Windows XP、Pixel Art 和 Y2K 风格的个人空间，用来记录 AI、游戏、工具、资源、视频、知识库和杂谈。",
     heroTitle: "鲁肃的个人站",
-    homeLead: "开发施工中",
     navKnowledge: "知识库",
     navVideos: "视频区",
     navVideosBuilding: "视频区",
@@ -187,7 +186,6 @@ const translations = {
     siteName: "LuSu Site",
     siteDescription: "LuSu's personal site, a Windows XP, pixel art, and Y2K desktop space for AI notes, games, tools, resources, videos, knowledge, and thoughts.",
     heroTitle: "LuSu Site",
-    homeLead: "A small XP pixel site under construction.",
     navKnowledge: "Knowledge",
     navVideos: "Videos",
     navVideosBuilding: "Videos",
@@ -368,7 +366,6 @@ const translations = {
     siteName: "魯粛サイト",
     siteDescription: "Windows XP、ピクセルアート、Y2K 風の個人サイトです。AI、ゲーム、ツール、リソース、動画、知識庫、雑談を記録しています。",
     heroTitle: "魯粛サイト",
-    homeLead: "工事中の XP ピクセル小サイトです。",
     navKnowledge: "知識庫",
     navVideos: "動画",
     navVideosBuilding: "動画",
@@ -590,26 +587,26 @@ const content = {
       cover_image: "",
       status: "published",
       is_pinned: 0,
-      created_at: "2026-07-10T04:30:00.000Z",
-      updated_at: "2026-07-10T04:30:00.000Z",
-      published_at: "2026-07-10T04:30:00.000Z",
+      created_at: "2026-07-10T16:20:00.000Z",
+      updated_at: "2026-07-10T16:20:00.000Z",
+      published_at: "2026-07-10T16:20:00.000Z",
       fallbackOnly: true,
       icon: "system",
-      date: "2026.07.10",
+      date: "2026.07.11",
       title: {
         zh: "GPT-5.6 高级交互与移动 OS 重设计",
         en: "GPT-5.6 Premium Interaction & Mobile OS Redesign",
         ja: "GPT-5.6 プレミアム操作とモバイル OS 再設計"
       },
       summary: {
-        zh: "桌面升级为 Neo-XP / Pixel Glass，移动端重建为原创虚拟手机 OS，同时完整保留既有内容、账户、聊天与隐私能力。",
-        en: "Desktop evolves into Neo-XP / Pixel Glass and mobile becomes an original virtual phone OS while existing content, accounts, chat, and privacy guarantees remain intact.",
-        ja: "デスクトップを Neo-XP / Pixel Glass へ進化させ、モバイルを独自の仮想スマートフォン OS に再構築しながら、既存のコンテンツ、アカウント、チャット、プライバシー機能を維持します。"
+        zh: "模块切换改为轻量拟真翻页，手机首页图标与热区重新收紧，所有移动模块增加清晰的分层边框，同时保留既有功能与三语内容。",
+        en: "Module changes now use a restrained page turn, the mobile Home grid and hit areas are tighter, and every mobile App has a clearer layered frame without changing existing features.",
+        ja: "モジュール切り替えを控えめなページめくりに変更し、モバイル Home の配置とタップ範囲を整え、全 App に明確な多層フレームを追加しました。"
       },
       content_markdown: {
-        zh: "# GPT-5.6 高级交互与移动 OS 重设计\n\n这次合并更新把同一套网站内容重新组织成两种适合不同屏幕的操作系统体验：桌面继续延展 Windows XP、像素艺术与 Y2K 气质，手机端则从压缩桌面布局彻底重建为原创的 iOS-inspired 虚拟手机 OS。\n\n## 桌面：Neo-XP / Pixel Glass\n\n- 桌面窗口、任务栏、图标和弹层升级为 Neo-XP / Pixel Glass 视觉，保留熟悉的 XP 轮廓并增加更清晰的层次与动效。\n- 页面切换、窗口出现、图标按压和时段主题变化获得统一的过渡节奏，同时避免让装饰动画干扰阅读和操作。\n- 首页、知识库、视频、资源、游戏、聊天室与关于我继续使用原来的路由和内容来源。\n\n## 移动端：原创虚拟手机 OS\n\n- 手机端拥有独立的状态区、App 主屏和 Dock，各栏目以全屏 App 形式打开，不再只是把桌面窗口缩窄排列。\n- 顶部和底部会尊重设备安全区，窄屏、短屏与横屏都拥有对应布局，返回主屏和栏目切换保持直观。\n- 四个时段使用 image2 生成的竖版像素壁纸，状态图标同样由 image2 生成，并与既有站点角色和色彩保持一致。\n\n## 能力、隐私与无障碍保持完整\n\n- 所有原有路由、API、D1 数据、账户登录与游戏云存档继续沿用同一套状态和接口。\n- 公开聊天室、密码聊天的浏览器端加密、中文 / English / 日本語内容、视频系统和遥测隐私边界均保持不变。\n- 动效支持 `prefers-reduced-motion`，键盘焦点保持清晰，并移除持续闪烁，避免为视觉效果牺牲可访问性。",
-        en: "# GPT-5.6 Premium Interaction & Mobile OS Redesign\n\nThis consolidated update reshapes the same site content into two screen-appropriate operating-system experiences. Desktop extends the Windows XP, pixel-art, and Y2K identity, while mobile is rebuilt from a compressed desktop layout into an original iOS-inspired virtual phone OS.\n\n## Desktop: Neo-XP / Pixel Glass\n\n- Desktop windows, the taskbar, icons, and floating layers move to a Neo-XP / Pixel Glass treatment that preserves the familiar XP silhouette with clearer depth and motion.\n- Route changes, window entrances, icon presses, and time-of-day theme changes now follow one motion rhythm without letting decoration interrupt reading or control.\n- Home, Knowledge, Videos, Resources, Games, Chat, and About continue to use their existing routes and content sources.\n\n## Mobile: an original virtual phone OS\n\n- Mobile now has its own status area, App Home Screen, and Dock, with every section opening as a full-screen App instead of a narrow stack of desktop windows.\n- Top and bottom safe areas are respected, with dedicated behavior for narrow, short, and landscape screens plus direct Home Screen and App navigation.\n- Four time-of-day portrait pixel wallpapers are generated with image2, and the status glyphs are also generated with image2 to match the existing characters and palette.\n\n## Capabilities, privacy, and access stay intact\n\n- Every existing route, API, D1 record, account session, and game cloud save continues through the same state and service contracts.\n- Public chat, browser-side encrypted password chat, Chinese / English / Japanese content, video delivery, and telemetry privacy boundaries remain available.\n- Motion honors `prefers-reduced-motion`, keyboard focus stays visible, and continuous flashing is removed so the visual upgrade does not compromise accessibility.",
-        ja: "# GPT-5.6 プレミアム操作とモバイル OS 再設計\n\n今回の統合更新では、同じサイト内容を画面に適した二つの OS 体験として再構成しました。デスクトップは Windows XP、ピクセルアート、Y2K の個性を発展させ、モバイルは縮小されたデスクトップ配置から、独自の iOS-inspired 仮想スマートフォン OS へ全面的に作り直しています。\n\n## デスクトップ：Neo-XP / Pixel Glass\n\n- ウィンドウ、タスクバー、アイコン、フローティングレイヤーを Neo-XP / Pixel Glass 表現へ更新し、親しみやすい XP の輪郭を保ちながら奥行きと操作の反応を明確にしました。\n- ページ遷移、ウィンドウ表示、アイコン押下、時間帯テーマの変化を統一したリズムに整え、装飾が閲覧や操作を妨げないようにしています。\n- ホーム、知識庫、動画、リソース、ゲーム、チャット、プロフィールは、従来のルートとコンテンツソースをそのまま利用します。\n\n## モバイル：独自の仮想スマートフォン OS\n\n- モバイル専用のステータス領域、App ホーム画面、Dock を用意し、各セクションを狭いデスクトップウィンドウの積み重ねではなく、全画面 App として開きます。\n- 上下のセーフエリアを尊重し、狭い画面、低い画面、横向きに対応したレイアウトと、分かりやすいホーム復帰・App 切り替えを備えます。\n- 4 時間帯の縦長ピクセル壁紙を image2 で生成し、ステータスアイコンも image2 で生成して、既存キャラクターと配色に合わせました。\n\n## 機能、プライバシー、アクセシビリティを維持\n\n- 既存の全ルート、API、D1 データ、アカウントセッション、ゲームのクラウドセーブは、同じ状態とサービス契約を引き続き使います。\n- 公開チャット、ブラウザ側で暗号化するパスワードチャット、中国語 / English / 日本語コンテンツ、動画、テレメトリーのプライバシー境界も維持します。\n- `prefers-reduced-motion` に対応し、キーボードフォーカスを明確に保ち、継続的な点滅をなくして、視覚表現とアクセシビリティを両立します。"
+        zh: "# GPT-5.6 高级交互与移动 OS 重设计\n\n这次汇总更新继续保留桌面端 Windows XP、像素艺术与 Y2K 识别度，并把手机端完善为更紧凑、更易读的原创虚拟手机 OS。\n\n## 更轻的页面翻动\n\n- 模块之间的路由切换改为沿页边翻动的拟真书页效果，移除了原来的整屏淡入淡出和二次窗口放大，减少切换时的闪屏感。\n- 翻页只用于页面与模块切换；窗口最小化、关闭、弹窗和主题变化继续使用各自的交互反馈。\n- `prefers-reduced-motion` 与关闭动效模式会立即完成导航，不强制空间运动。\n\n## 更紧凑的手机首页\n\n- 首页移除了三语站点大标题、施工提示和分隔横线，把首屏空间还给 App 图标。\n- 图标按从左到右、从上到下排列，固定行高，不再随细长屏幕把行距拉开。\n- 每个按钮的点击区域与实际图标和标题盒对齐，同时保持至少 44px 的触控尺寸。\n\n## 所有手机模块的分层边框\n\n- 参考像素应用的外框、工具区、标签区和内容区层级，为知识库、视频、资源、游戏、杂谈、聊天室与关于页建立统一多层边框。\n- 边框继续使用本站四时段和 Neo-XP 色彩，不复制参考图的配色或图标；卡片、文案和按钮仍按短竖屏与横屏布局。\n- 账号与语言控制只保留在 Home，模块内继续使用单一 Appbar 与 Home 返回入口。\n\n所有原有路由、API、D1 数据、账户登录、游戏云存档、普通与密码聊天室、三语内容、视频系统和遥测隐私边界保持不变。",
+        en: "# GPT-5.6 Premium Interaction & Mobile OS Redesign\n\nThis consolidated update keeps the Windows XP, pixel-art, and Y2K identity on desktop while refining mobile into a tighter and more readable original virtual phone OS.\n\n## A lighter page turn\n\n- Route changes between modules now turn from the page edge like a physical sheet. The previous full-screen crossfade and the second window zoom are removed to prevent the heavy flash.\n- The page turn is reserved for page and module navigation. Minimize, close, modal, and time-theme actions keep their own feedback.\n- Reduced-motion and motion-off modes commit navigation immediately without forced spatial movement.\n\n## A tighter mobile Home Screen\n\n- The three-language Home headline, construction note, and divider are removed so App icons receive the first-screen space.\n- Icons fill left to right and top to bottom with fixed row heights instead of stretching apart on tall screens.\n- Each button hit area now matches the visible icon and label box while retaining at least a 44px touch target.\n\n## Layered frames in every mobile App\n\n- Knowledge, Videos, Resources, Games, Notes, Chat, and About now share a clear outer-frame, toolbar, tab, and content hierarchy inspired by pixel applications.\n- The frame keeps this site's four-time and Neo-XP palette rather than copying the reference colors or icons. Cards, text, and controls still adapt to short portrait and landscape layouts.\n- Account and language controls remain on Home; Apps keep one Appbar and a visible Home return control.\n\nExisting routes, APIs, D1 data, account sessions, game cloud saves, public and password chat, three-language content, video delivery, and telemetry privacy boundaries remain unchanged.",
+        ja: "# GPT-5.6 プレミアム操作とモバイル OS 再設計\n\n今回の統合更新では、デスクトップの Windows XP、ピクセルアート、Y2K の個性を保ちながら、モバイルをよりコンパクトで読みやすい独自の仮想スマートフォン OS に整えました。\n\n## 軽いページめくり\n\n- モジュール間のルート切り替えを、ページ端から紙がめくれるような表現に変更しました。従来の全画面クロスフェードと二重のウィンドウ拡大をなくし、強い点滅感を抑えています。\n- ページめくりはページとモジュールの移動だけに使います。最小化、閉じる、モーダル、時間帯テーマは個別の反応を維持します。\n- 動きを減らす設定と動きオフでは、空間移動を強制せず直ちにナビゲーションを完了します。\n\n## コンパクトなモバイル Home\n\n- 三言語の Home 大見出し、工事中の説明、区切り線を削除し、最初の画面を App アイコンに戻しました。\n- アイコンは左から右、上から下へ固定行高で並び、縦長画面でも行間が広がりません。\n- ボタンのタップ範囲を見えているアイコンとラベルの箱に合わせ、44px 以上の操作サイズを維持します。\n\n## 全モバイル App の多層フレーム\n\n- 知識庫、動画、リソース、ゲーム、雑談、チャット、プロフィールに、外枠、ツール領域、タブ、内容領域が分かる共通フレームを追加しました。\n- 参考画像の色やアイコンはコピーせず、このサイトの四時間帯と Neo-XP 配色を使います。カード、文章、ボタンは短い縦画面と横画面にも適応します。\n- アカウントと言語操作は Home のみに置き、App 内は一つの Appbar と見える Home 復帰操作を維持します。\n\n既存のルート、API、D1 データ、アカウント、ゲームのクラウドセーブ、公開・パスワードチャット、三言語コンテンツ、動画、テレメトリーのプライバシー境界は変更していません。"
       }
     },
     {

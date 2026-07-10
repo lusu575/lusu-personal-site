@@ -1,6 +1,6 @@
 # LuSu Personal Site — Neo-XP / Pocket Pixel OS
 
-Last updated: 2026-07-10
+Last updated: 2026-07-11
 
 ## Product Direction
 
@@ -75,7 +75,8 @@ Every interactive control supports default, hover where available, pressed, focu
 
 ## Motion
 
-- Route/app opening expands from the invoking desktop icon, task button, app icon, or Dock item when coordinates are available.
+- Route/module navigation uses a directional physical-page turn on `.site-shell`, so the top chrome, active content, and bottom chrome move as one sheet; the root snapshot does not crossfade, and the arriving window does not run a second scale-in. Window minimize/close, modal, and theme transitions remain separate motion families.
+- Browsers without View Transitions fold the outgoing page before revealing the incoming page without cloning business DOM.
 - Route/app closing returns toward its source and restores focus.
 - Use transform and opacity for animation. Avoid frame-by-frame left/top, width, or height changes.
 - Use View Transitions progressively; CSS/Web Animations fallback must preserve the same state semantics.
