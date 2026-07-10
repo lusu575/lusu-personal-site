@@ -584,6 +584,32 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-07-10-premium-interaction-mobile-os',
+  '2026-07-10-premium-interaction-mobile-os',
+  'site-updates',
+  '["design","mobile","interaction","accessibility"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-07-10T04:30:00.000Z',
+  '2026-07-10T04:30:00.000Z',
+  '2026-07-10T04:30:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-07-06-private-chat-rooms',
   '2026-07-06-private-chat-rooms',
   'site-updates',
@@ -843,6 +869,69 @@ on conflict(article_id) do update set
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
+  ('seed-update-2026-07-10-premium-interaction-mobile-os-zh', 'seed-update-2026-07-10-premium-interaction-mobile-os', 'zh', 'GPT-5.6 高级交互与移动 OS 重设计', '桌面升级为 Neo-XP / Pixel Glass，移动端重建为原创虚拟手机 OS，同时完整保留既有内容、账户、聊天与隐私能力。', '# GPT-5.6 高级交互与移动 OS 重设计
+
+这次合并更新把同一套网站内容重新组织成两种适合不同屏幕的操作系统体验：桌面继续延展 Windows XP、像素艺术与 Y2K 气质，手机端则从压缩桌面布局彻底重建为原创的 iOS-inspired 虚拟手机 OS。
+
+## 桌面：Neo-XP / Pixel Glass
+
+- 桌面窗口、任务栏、图标和弹层升级为 Neo-XP / Pixel Glass 视觉，保留熟悉的 XP 轮廓并增加更清晰的层次与动效。
+- 页面切换、窗口出现、图标按压和时段主题变化获得统一的过渡节奏，同时避免让装饰动画干扰阅读和操作。
+- 首页、知识库、视频、资源、游戏、聊天室与关于我继续使用原来的路由和内容来源。
+
+## 移动端：原创虚拟手机 OS
+
+- 手机端拥有独立的状态区、App 主屏和 Dock，各栏目以全屏 App 形式打开，不再只是把桌面窗口缩窄排列。
+- 顶部和底部会尊重设备安全区，窄屏、短屏与横屏都拥有对应布局，返回主屏和栏目切换保持直观。
+- 四个时段使用 image2 生成的竖版像素壁纸，状态图标同样由 image2 生成，并与既有站点角色和色彩保持一致。
+
+## 能力、隐私与无障碍保持完整
+
+- 所有原有路由、API、D1 数据、账户登录与游戏云存档继续沿用同一套状态和接口。
+- 公开聊天室、密码聊天的浏览器端加密、中文 / English / 日本語内容、视频系统和遥测隐私边界均保持不变。
+- 动效支持 `prefers-reduced-motion`，键盘焦点保持清晰，并移除持续闪烁，避免为视觉效果牺牲可访问性。', '2026-07-10T04:30:00.000Z', '2026-07-10T04:30:00.000Z'),
+  ('seed-update-2026-07-10-premium-interaction-mobile-os-en', 'seed-update-2026-07-10-premium-interaction-mobile-os', 'en', 'GPT-5.6 Premium Interaction & Mobile OS Redesign', 'Desktop evolves into Neo-XP / Pixel Glass and mobile becomes an original virtual phone OS while existing content, accounts, chat, and privacy guarantees remain intact.', '# GPT-5.6 Premium Interaction & Mobile OS Redesign
+
+This consolidated update reshapes the same site content into two screen-appropriate operating-system experiences. Desktop extends the Windows XP, pixel-art, and Y2K identity, while mobile is rebuilt from a compressed desktop layout into an original iOS-inspired virtual phone OS.
+
+## Desktop: Neo-XP / Pixel Glass
+
+- Desktop windows, the taskbar, icons, and floating layers move to a Neo-XP / Pixel Glass treatment that preserves the familiar XP silhouette with clearer depth and motion.
+- Route changes, window entrances, icon presses, and time-of-day theme changes now follow one motion rhythm without letting decoration interrupt reading or control.
+- Home, Knowledge, Videos, Resources, Games, Chat, and About continue to use their existing routes and content sources.
+
+## Mobile: an original virtual phone OS
+
+- Mobile now has its own status area, App Home Screen, and Dock, with every section opening as a full-screen App instead of a narrow stack of desktop windows.
+- Top and bottom safe areas are respected, with dedicated behavior for narrow, short, and landscape screens plus direct Home Screen and App navigation.
+- Four time-of-day portrait pixel wallpapers are generated with image2, and the status glyphs are also generated with image2 to match the existing characters and palette.
+
+## Capabilities, privacy, and access stay intact
+
+- Every existing route, API, D1 record, account session, and game cloud save continues through the same state and service contracts.
+- Public chat, browser-side encrypted password chat, Chinese / English / Japanese content, video delivery, and telemetry privacy boundaries remain available.
+- Motion honors `prefers-reduced-motion`, keyboard focus stays visible, and continuous flashing is removed so the visual upgrade does not compromise accessibility.', '2026-07-10T04:30:00.000Z', '2026-07-10T04:30:00.000Z'),
+  ('seed-update-2026-07-10-premium-interaction-mobile-os-ja', 'seed-update-2026-07-10-premium-interaction-mobile-os', 'ja', 'GPT-5.6 プレミアム操作とモバイル OS 再設計', 'デスクトップを Neo-XP / Pixel Glass へ進化させ、モバイルを独自の仮想スマートフォン OS に再構築しながら、既存のコンテンツ、アカウント、チャット、プライバシー機能を維持します。', '# GPT-5.6 プレミアム操作とモバイル OS 再設計
+
+今回の統合更新では、同じサイト内容を画面に適した二つの OS 体験として再構成しました。デスクトップは Windows XP、ピクセルアート、Y2K の個性を発展させ、モバイルは縮小されたデスクトップ配置から、独自の iOS-inspired 仮想スマートフォン OS へ全面的に作り直しています。
+
+## デスクトップ：Neo-XP / Pixel Glass
+
+- ウィンドウ、タスクバー、アイコン、フローティングレイヤーを Neo-XP / Pixel Glass 表現へ更新し、親しみやすい XP の輪郭を保ちながら奥行きと操作の反応を明確にしました。
+- ページ遷移、ウィンドウ表示、アイコン押下、時間帯テーマの変化を統一したリズムに整え、装飾が閲覧や操作を妨げないようにしています。
+- ホーム、知識庫、動画、リソース、ゲーム、チャット、プロフィールは、従来のルートとコンテンツソースをそのまま利用します。
+
+## モバイル：独自の仮想スマートフォン OS
+
+- モバイル専用のステータス領域、App ホーム画面、Dock を用意し、各セクションを狭いデスクトップウィンドウの積み重ねではなく、全画面 App として開きます。
+- 上下のセーフエリアを尊重し、狭い画面、低い画面、横向きに対応したレイアウトと、分かりやすいホーム復帰・App 切り替えを備えます。
+- 4 時間帯の縦長ピクセル壁紙を image2 で生成し、ステータスアイコンも image2 で生成して、既存キャラクターと配色に合わせました。
+
+## 機能、プライバシー、アクセシビリティを維持
+
+- 既存の全ルート、API、D1 データ、アカウントセッション、ゲームのクラウドセーブは、同じ状態とサービス契約を引き続き使います。
+- 公開チャット、ブラウザ側で暗号化するパスワードチャット、中国語 / English / 日本語コンテンツ、動画、テレメトリーのプライバシー境界も維持します。
+- `prefers-reduced-motion` に対応し、キーボードフォーカスを明確に保ち、継続的な点滅をなくして、視覚表現とアクセシビリティを両立します。', '2026-07-10T04:30:00.000Z', '2026-07-10T04:30:00.000Z'),
   ('seed-update-2026-07-06-private-chat-rooms-zh', 'seed-update-2026-07-06-private-chat-rooms', 'zh', '暗色加密密码房上线', '匿名聊天室新增暗色密码房，并修复旧库自动补字段时普通大厅读取失败的问题。', '# 暗色加密密码房上线
 
 匿名聊天室现在增加了密码房模式：点击角落里的密码房按钮，输入同一个密码的人会进入同一个暗色聊天室。

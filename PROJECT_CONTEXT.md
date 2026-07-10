@@ -1,5 +1,17 @@
 # PROJECT_CONTEXT.md
 
+## 2026-07-10 双呈现壳与移动虚拟 OS（本地未发布）
+
+- 主站仍是同一套原生 HTML / CSS / JavaScript 单页应用和同一份业务状态，但根据输入与视口使用两套呈现壳：桌面端为 Neo-XP / Pixel Glass OS，移动端为原创、受 iOS 交互启发的虚拟手机 OS。移动端不是桌面 XP 的缩小版。
+- `js/main.js` 是路由、语言、账号、文章、视频、游戏、聊天室和主题状态的唯一业务状态源。`js/mobile-shell.js` 只能观察当前 DOM / 路由并把用户操作委托给现有 `data-route`；`js/ui-motion.js` 只包装呈现动画。任何壳层都不得复制或分叉业务状态。
+- 新的呈现文件为 `css/mobile-ios-shell.css`、`css/motion-system.css`、`js/mobile-shell.js` 和 `js/ui-motion.js`。高耦合节点（账号、文章详情、视频弹窗、游戏、聊天）保持原位，不通过克隆或 reparent 制造第二套 DOM 生命周期。
+- 移动 Home 使用 App grid 和完整 Dock；进入栏目后只保留顶部 Appbar 与底部 Home indicator，页内 XP titlebar、完整 Dock、账号和语言操作不重复常驻，用户通过 44px Home 控制返回。布局同时适配 safe area 与 `visualViewport`，主要触控目标不小于 44px。Home 上的移动语言入口是 44px 单按钮循环控制，只委托既有三语按钮，不持有语言状态。固定回归尺寸为 359x500、375x667、390x844、430x932 和 coarse pointer 横屏 844x390。
+- image2 生成四时段竖版移动壁纸和透明状态图标；它们作为项目本地资产引用。新增或更新公开 CSS、JS、图标、壁纸或交互资产时，必须同步 `index.html` query，本轮统一版本为 `20260710-premium-mobile-os-r6`。
+- 桌面动效使用单个 RAF 协调，视差位移上限 6px，并在页面隐藏、减少动态或用户关闭动效时停止；状态指示不使用持续闪烁。移动端只保留短促、有退出路径且不影响操作的过渡。
+- 改版不改变公开路由、Pages Functions API、D1 schema 语义、账号 HttpOnly 会话、游戏云存档、普通/密码聊天室、三语内容、视频系统或遥测隐私边界。
+- 本轮公开记录收口为唯一文章 ID `seed-update-2026-07-10-premium-interaction-mobile-os`、slug `2026-07-10-premium-interaction-mobile-os`。当前仍是本地功能分支，未推送或合并 `main`，因此尚未触发 Cloudflare Pages。
+- 当前 QA 覆盖桌面/移动全路由、四时段、三语、账户层级、文章直链、聊天与密码房面板、游戏目录、视频弹窗、Back / Forward、760 / 761 边界、44px 触控目标、reduced/off 动效和动画终态清理。移动验收不只检查溢出：还会量 App 窗口占比、卡片结构子项与相邻卡片的二维相交、Chat 输入/计数/发送布局、日志高度、文章首屏无遮挡正文和 Appbar 阅读控件；完整基线与通过证据见 `design-qa-mobile-os.md`。
+
 ## 2026-07-06 暗色前端加密密码房
 
 - 匿名聊天室现在有普通大厅和密码房两种模式：普通大厅继续使用浅色 XP UI 和明文接口；密码房使用暗色 UI，浏览器用用户输入的密码派生房间标识和 AES-GCM 密钥。
@@ -93,7 +105,7 @@
 - 当前正式域名：`https://lusu575.com`
 - 当前备用 Pages 域名：`https://lusu-personal-site-9hd.pages.dev`
 - 站点定位：个人空间，用于记录 AI、游戏、工具、资源、视频、知识库和杂谈内容。
-- 风格目标：Windows XP + Pixel Art + Y2K + 可爱复古互联网桌面。
+- 风格目标：桌面端保持 Windows XP + Pixel Art + Y2K 并升级为 Neo-XP / Pixel Glass OS；移动端使用原创、受 iOS 交互启发的虚拟手机 OS，两端共享同一业务状态。
 
 ## 技术栈
 
@@ -133,8 +145,8 @@ Cloudflare Pages 项目状态：
 
 ## 主要功能
 
-- 单页 XP 桌面风格个人站
-- 首页桌面图标入口
+- 单页、单业务状态的双呈现壳个人站：桌面端 Neo-XP，移动端原创虚拟手机 OS
+- 桌面首页图标入口；移动 Home 的 App grid 与 Dock 复用同一组既有路由
 - 首页使用四时段像素壁纸：基础静态底图位于 `assets/images/wallpapers/`，按用户本地时间切换 morning / day / dusk / night。四个时段均已接入动态云层，分别使用 `assets/images/wallpaper-dynamic/<time>/base-clean.png` 作为无云底图，并叠加从对应原始壁纸抠出的独立透明云层；云层沿用 `wallpaper-root` / `wallpaper-stage` 舞台坐标结构，只用 CSS `transform` / `opacity` 做同一主风向下的慢速错相漂移，并支持减少动态、小屏和页面隐藏暂停降级。本地调试可用 `?wallpaper=morning` / `?wallpaper=day` / `?wallpaper=dusk` / `?wallpaper=night` 强制预览指定动态壁纸，预览模式会临时加快云层位移以便肉眼确认动画。树冠、电视雪花、小女孩、星星、水面光效等层仍作为后续动画接口保留。
 - 顶部栏和底部任务栏：保留 XP 桌面结构与原有图标，并跟随 morning / day / dusk / night 四时段切换无竖线的现代玻璃像素 HUD 色温与高光
 - 知识库、视频区、资源区、游戏区、杂谈区、匿名聊天室、关于我
@@ -425,6 +437,7 @@ D1 表：`anonymous_chat_messages`
 ├── index.html
 ├── CHANGELOG.md
 ├── PROJECT_CONTEXT.md
+├── design-qa-mobile-os.md
 ├── README.md
 ├── package.json
 ├── package-lock.json
@@ -444,7 +457,9 @@ D1 表：`anonymous_chat_messages`
 │   ├── README.md
 │   └── schema.sql
 ├── css/
-│   └── style.css
+│   ├── style.css
+│   ├── mobile-ios-shell.css
+│   └── motion-system.css
 ├── functions/
 │   ├── admin/
 │   │   └── _middleware.js
@@ -462,6 +477,8 @@ D1 表：`anonymous_chat_messages`
 │       （新增游戏必须优先本地静态部署，不要只做外部跳转入口）
 ├── js/
 │   ├── main.js
+│   ├── mobile-shell.js
+│   ├── ui-motion.js
 │   └── telemetry.js
 └── skills/
     └── lusu-personal-site-skill/

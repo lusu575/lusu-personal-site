@@ -1,4 +1,4 @@
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, existsSync, statSync } from "node:fs";
 import { relative, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { runInNewContext } from "node:vm";
@@ -29,15 +29,28 @@ const requiredFiles = [
   "functions/admin/_middleware.js",
   "functions/api/[[route]].js",
   "functions/sitemap.xml.js",
+  "assets/images/ui/pixel-ui-glyph-atlas.png",
+  "assets/images/mobile-shell/mobile-status-glyphs.png",
+  "assets/images/mobile-wallpapers/morning.webp",
+  "assets/images/mobile-wallpapers/day.webp",
+  "assets/images/mobile-wallpapers/dusk.webp",
+  "assets/images/mobile-wallpapers/night.webp",
+  "css/mobile-ios-shell.css",
+  "css/motion-system.css",
   "css/style.css",
+  "design-system/MASTER.md",
+  "design-system/pages/desktop-shell.md",
+  "design-system/pages/mobile-shell.md",
   "games/2048/index.html",
   "games/a-dark-room/index.html",
   "games/hextris/index.html",
   "games/kittens-game/index.html",
   "games/life-restart/index.html",
   "games/game-shell.js",
+  "js/mobile-shell.js",
   "js/main.js",
   "js/telemetry.js",
+  "js/ui-motion.js",
   "manifest.webmanifest",
   "package.json",
   "robots.txt",
@@ -58,6 +71,33 @@ function readRequired(path) {
   return readFileSync(fullPath, "utf8");
 }
 
+function requireNonEmptyFile(path) {
+  const fullPath = resolve(root, path);
+  if (!existsSync(fullPath)) {
+    fail(`missing ${path}`);
+    return;
+  }
+  if (statSync(fullPath).size <= 0) {
+    fail(`${path} must not be empty`);
+  }
+}
+
+function requireBalancedCss(path, source) {
+  const openBraces = (source.match(/\{/g) || []).length;
+  const closeBraces = (source.match(/\}/g) || []).length;
+  if (openBraces !== closeBraces) {
+    fail(`${path} brace mismatch (${openBraces} open, ${closeBraces} close)`);
+  }
+}
+
+function visibleHtmlText(source) {
+  return source
+    .replace(/<!--[\s\S]*?-->/g, " ")
+    .replace(/<script\b[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style\b[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]+>/g, " ");
+}
+
 function escapeRegExp(value) {
   return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
@@ -65,6 +105,11 @@ function escapeRegExp(value) {
 function hasVersionedAssetReference(html, assetPath) {
   const pattern = new RegExp(`${escapeRegExp(assetPath)}\\?v=[^"']+`);
   return pattern.test(html);
+}
+
+function assetQueryVersions(source, assetPath) {
+  const pattern = new RegExp(`${escapeRegExp(assetPath)}\\?v=([^"')\\s;]+)`, "g");
+  return [...source.matchAll(pattern)].map((match) => match[1]);
 }
 
 function findRequiredHtml(source, pattern, message) {
@@ -249,7 +294,11 @@ function readJsQuotedString(source, quoteIndex) {
     const char = source[index];
     if (char === "\\") {
       if (index + 1 < source.length) {
-        value += source[index + 1];
+        const escaped = source[index + 1];
+        value += escaped === "n" ? "\n"
+          : escaped === "r" ? "\r"
+            : escaped === "t" ? "\t"
+              : escaped;
         index += 1;
       }
       continue;
@@ -300,6 +349,24 @@ for (const file of requiredFiles) {
   readRequired(file);
 }
 
+for (const file of [
+  "assets/images/ui/pixel-ui-glyph-atlas.png",
+  "assets/images/mobile-shell/mobile-status-glyphs.png",
+  "assets/images/mobile-wallpapers/morning.webp",
+  "assets/images/mobile-wallpapers/day.webp",
+  "assets/images/mobile-wallpapers/dusk.webp",
+  "assets/images/mobile-wallpapers/night.webp",
+  "css/mobile-ios-shell.css",
+  "css/motion-system.css",
+  "design-system/MASTER.md",
+  "design-system/pages/desktop-shell.md",
+  "design-system/pages/mobile-shell.md",
+  "js/mobile-shell.js",
+  "js/ui-motion.js"
+]) {
+  requireNonEmptyFile(file);
+}
+
 const adminHtml = readRequired("admin/index.html");
 const adminCss = readRequired("admin/admin.css");
 const adminJs = readRequired("admin/admin.js");
@@ -307,6 +374,8 @@ const adminMiddlewareJs = readRequired("functions/admin/_middleware.js");
 const apiJs = readRequired("functions/api/[[route]].js");
 const schemaSql = readRequired("cloudflare/schema.sql");
 const indexHtml = readRequired("index.html");
+const mobileIosShellCss = readRequired("css/mobile-ios-shell.css");
+const motionSystemCss = readRequired("css/motion-system.css");
 const styleCss = readRequired("css/style.css");
 const gameShellJs = readRequired("games/game-shell.js");
 const gameIndexFiles = [
@@ -317,8 +386,10 @@ const gameIndexFiles = [
   "games/life-restart/index.html"
 ];
 const gameIndexHtmls = gameIndexFiles.map((file) => [file, readRequired(file)]);
+const mobileShellJs = readRequired("js/mobile-shell.js");
 const mainJs = readRequired("js/main.js");
 const telemetryJs = readRequired("js/telemetry.js");
+const uiMotionJs = readRequired("js/ui-motion.js");
 const manifest = readRequired("manifest.webmanifest");
 const packageJson = readRequired("package.json");
 const robots = readRequired("robots.txt");
@@ -628,6 +699,35 @@ try {
   fail(`js/main.js syntax error: ${error.message}`);
 }
 
+for (const [path, source] of [
+  ["js/mobile-shell.js", mobileShellJs],
+  ["js/ui-motion.js", uiMotionJs]
+]) {
+  try {
+    new Function(source);
+  } catch (error) {
+    fail(`${path} syntax error: ${error.message}`);
+  }
+
+  for (const pattern of [
+    /\binnerHTML\b/,
+    /\bouterHTML\b/,
+    /\binsertAdjacentHTML\b/,
+    /\bdocument\.write\s*\(/,
+    /\beval\s*\(/,
+    /\bnew\s+Function\s*\(/,
+    /\bfetch\s*\(/,
+    /\bXMLHttpRequest\b/,
+    /\blocalStorage\b/,
+    /\bsessionStorage\b/,
+    /\bdocument\.cookie\b/
+  ]) {
+    if (pattern.test(source)) {
+      fail(`${path} presentation adapter must not use ${pattern}`);
+    }
+  }
+}
+
 try {
   new Function(telemetryJs);
 } catch (error) {
@@ -639,6 +739,9 @@ const closeBraces = (adminCss.match(/\}/g) || []).length;
 if (openBraces !== closeBraces) {
   fail(`admin/admin.css brace mismatch (${openBraces} open, ${closeBraces} close)`);
 }
+
+requireBalancedCss("css/mobile-ios-shell.css", mobileIosShellCss);
+requireBalancedCss("css/motion-system.css", motionSystemCss);
 
 for (const selector of [
   ".admin-shell",
@@ -665,6 +768,39 @@ for (const token of [
   }
 }
 
+if (!hasPattern(mainJs, /function\s+recentUpdateIconClass[\s\S]*item\?\.category\s*===\s*siteUpdateCategory\s*\|\|\s*item\?\.icon\s*===\s*["']system["'][\s\S]*update-icon-system/)) {
+  fail("js/main.js should preserve the system bitmap for the consolidated update when the articles API falls back to local content");
+}
+
+if (!hasPattern(motionSystemCss, /\.welcome-title-icon\s*\{[\s\S]*width:\s*24px[\s\S]*height:\s*24px/)) {
+  fail("css/motion-system.css should give the desktop welcome bitmap a visible intrinsic box");
+}
+
+if (!hasPattern(uiMotionJs, /function\s+animateAfterCommit\(result,\s*options\)[\s\S]*options\s*&&\s*options\.deferCleanup[\s\S]*animateAfterCommit\(committedResult,\s*\{\s*deferCleanup:\s*true\s*\}\)[\s\S]*transition\.finished\.then[\s\S]*cleanup\(\)/)) {
+  fail("js/ui-motion.js should retain View Transition state until the browser transition actually finishes");
+}
+
+if (!hasPattern(uiMotionJs, /transition\.ready\s*&&\s*typeof\s+transition\.ready\.then\s*===\s*["']function["'][\s\S]*transition\.ready\.then\(\s*function\s+viewTransitionReady\(\)\s*\{\s*\}\s*,\s*function\s+viewTransitionReadySkipped\(\)\s*\{\s*\}\s*\)/)) {
+  fail("js/ui-motion.js should consume skipped View Transition ready rejections without leaking page errors");
+}
+
+if (!hasPattern(uiMotionJs, /function\s+enterAnimation[\s\S]*transformOrigin:\s*["']center center["'][\s\S]*function\s+exitAnimation[\s\S]*transformOrigin:\s*["']center center["']/)) {
+  fail("js/ui-motion.js center-based window deltas should use an explicit center transform origin");
+}
+
+if (!hasPattern(uiMotionJs, /function\s+handlePointerDown[\s\S]*setData\(root,\s*["']inputMethod["'],\s*["']pointer["']\)[\s\S]*releasePressedTarget\(\)[\s\S]*function\s+handleKeyDown/)
+  || !hasPattern(uiMotionJs, /addListener\(global,\s*["']blur["'][\s\S]*releasePressedTarget\(\)[\s\S]*resetParallax\(false\)/)) {
+  fail("js/ui-motion.js should release stale pressed state before a new press and whenever the window loses focus");
+}
+
+if (!hasPattern(motionSystemCss, /\.resource-empty-icon\.blog-empty-icon\s*\{[\s\S]*icon-window-blog-64\.png/)) {
+  fail("css/motion-system.css should preserve the blog bitmap when the empty-state node also carries the shared resource class");
+}
+
+if (!indexHtml.includes('content="width=device-width, initial-scale=1.0, viewport-fit=cover"')) {
+  fail("index.html viewport should opt into iOS safe-area coverage");
+}
+
 const welcomeQuickLinksHtml = findRequiredHtml(
   indexHtml,
   /<div class="quick-links">[\s\S]*?<\/div>/,
@@ -672,16 +808,53 @@ const welcomeQuickLinksHtml = findRequiredHtml(
 );
 
 for (const token of [
-  '<span class="title-icon" aria-hidden="true">★</span><span id="welcome-title"',
+  '<span class="title-icon welcome-title-icon" aria-hidden="true"></span><span id="welcome-title"',
   '<span class="pixel-icon monitor-icon" aria-hidden="true"></span>',
-  '<span aria-hidden="true">▶</span>'
+  '<span class="video-placeholder-asset" aria-hidden="true"></span>',
+  '<span class="article-toc-icon asset-icon asset-icon-knowledge" aria-hidden="true"></span>',
+  '<span class="article-copy-icon asset-icon asset-icon-link" aria-hidden="true"></span>'
 ]) {
   if (!indexHtml.includes(token)) {
-    fail(`index.html missing decorative welcome icon accessibility token ${token}`);
+    fail(`index.html missing bitmap-backed decorative asset token ${token}`);
   }
 }
 if (indexHtml.includes("<b>›</b>")) {
   fail("index.html decorative arrow markers must be aria-hidden");
+}
+
+const visibleEmojiPattern = /[\u2600-\u27bf]|\p{Extended_Pictographic}/u;
+if (visibleEmojiPattern.test(visibleHtmlText(indexHtml))) {
+  fail("index.html visible text must not use emoji or symbol artwork; use bitmap-backed asset classes");
+}
+
+const runtimeVisibleEmojiLines = mainJs.split(/\r?\n/).filter((line) => (
+  /\b(?:textContent|innerText)\s*=|createTextNode\s*\(/.test(line)
+  && visibleEmojiPattern.test(line)
+));
+if (runtimeVisibleEmojiLines.length) {
+  fail("js/main.js runtime renderers must not write visible emoji or symbol artwork");
+}
+const mainWithoutLegacyIconMetadata = mainJs.replace(/^\s*icon\s*:\s*(["'`]).*?\1\s*,?\s*$/gmu, "");
+if (visibleEmojiPattern.test(mainWithoutLegacyIconMetadata)) {
+  fail("js/main.js must keep emoji out of runtime-visible copy; legacy non-rendered icon metadata is the only tolerated source");
+}
+if (/\b(?:textContent|innerText)\s*=\s*(?:item|update)\??\.icon\b/.test(mainJs)) {
+  fail("js/main.js runtime renderers must map update types to bitmap-backed classes instead of rendering raw icon values");
+}
+
+for (const [marker, pattern, message] of [
+  [
+    "function recentUpdateElement",
+    /icon\.className\s*=\s*`update-icon\s+\$\{recentUpdateIconClass\(item\)\}`[\s\S]*icon\.setAttribute\(\s*["']aria-hidden["']\s*,\s*["']true["']\s*\)/,
+    "js/main.js recent updates should render a hidden bitmap-backed class instead of raw emoji"
+  ],
+  [
+    "function closeVideo",
+    /icon\.className\s*=\s*["']video-placeholder-asset["'][\s\S]*icon\.setAttribute\(\s*["']aria-hidden["']\s*,\s*["']true["']\s*\)/,
+    "js/main.js closeVideo should restore the bitmap-backed video placeholder asset"
+  ]
+]) {
+  requireFunctionPattern(mainJs, marker, pattern, message);
 }
 
 if (!indexHtml.includes('<nav class="desktop-icons" aria-label="主要栏目" data-i18n-aria-label="desktopIconsAria">')) {
@@ -721,10 +894,10 @@ if (welcomeQuickLinkButtons.length < 4) {
   fail("index.html expected at least four welcome quick-link buttons");
 }
 for (const buttonHtml of welcomeQuickLinkButtons) {
-  if (!/<span\b[^>]*aria-hidden="true"[^>]*>/.test(buttonHtml)) {
-    fail("index.html welcome quick-link decorative icon should be aria-hidden");
+  if (!/<span\b[^>]*class="[^"]*\bquick-link-asset\b[^"]*"[^>]*aria-hidden="true"[^>]*><\/span>/.test(buttonHtml)) {
+    fail("index.html welcome quick-link should use an aria-hidden bitmap-backed asset span");
   }
-  if (!/<b\b[^>]*aria-hidden="true"[^>]*>/.test(buttonHtml)) {
+  if (/<b\b/.test(buttonHtml) && !/<b\b[^>]*aria-hidden="true"[^>]*>/.test(buttonHtml)) {
     fail("index.html welcome quick-link arrow should be aria-hidden");
   }
 }
@@ -745,6 +918,17 @@ for (const token of [
 ]) {
   if (!welcomeChatQuickLink.includes(token)) {
     fail(`index.html missing chatroom welcome quick-link token ${token}`);
+  }
+}
+
+for (const [label, pattern] of [
+  ["chat quick link", /\.quick-link-chat\s+\.quick-link-asset\s*\{[\s\S]*?background-image:\s*url\(["']\.\.\/assets\/images\/icon-chatroom-clean\.png["']\)/],
+  ["games quick link", /\.quick-link-games\s+\.quick-link-asset[\s\S]*?\{[\s\S]*?background-image:\s*url\(["']\.\.\/assets\/images\/icon-games\.png["']\)/],
+  ["knowledge quick link", /\.quick-link-knowledge\s+\.quick-link-asset\s*\{[\s\S]*?background-image:\s*url\(["']\.\.\/assets\/images\/icon-knowledge\.png["']\)/],
+  ["video placeholder", /\.video-placeholder-asset\s*,\s*\.video-empty-icon\s*\{[\s\S]*?background-image:\s*url\(["']\.\.\/assets\/images\/icon-videos\.png["']\)/]
+]) {
+  if (!hasPattern(motionSystemCss, pattern)) {
+    fail(`css/motion-system.css missing bitmap-backed ${label} asset mapping`);
   }
 }
 
@@ -835,6 +1019,10 @@ if (/aria-live|role=["']status["']/.test(chatSyncStatusHtml)) {
 
 for (const asset of [
   "/css/style.css",
+  "/css/mobile-ios-shell.css",
+  "/css/motion-system.css",
+  "/js/mobile-shell.js",
+  "/js/ui-motion.js",
   "/js/main.js",
   "/js/telemetry.js"
 ]) {
@@ -843,17 +1031,41 @@ for (const asset of [
   }
 }
 
-const currentPreFinalMainVersion = "20260623-click-delegation-r1";
-const currentPreFinalCssVersion = "20260706-private-chat-rooms-r1";
+const premiumUiVersion = "20260710-premium-mobile-os-r6";
+const currentPreFinalMainVersion = premiumUiVersion;
 const currentPreFinalTelemetryVersion = "20260623-analytics-privacy-r1";
 const currentGameShellVersion = "20260623-game-shell-storage-safe-r1";
 
-if (!indexHtml.includes(`/css/style.css?v=${currentPreFinalCssVersion}`)) {
-  fail(`index.html pre-final style.css query should be ${currentPreFinalCssVersion}`);
+for (const asset of [
+  "/css/style.css",
+  "/css/mobile-ios-shell.css",
+  "/css/motion-system.css",
+  "/js/mobile-shell.js",
+  "/js/ui-motion.js",
+  "/js/main.js"
+]) {
+  const versions = assetQueryVersions(indexHtml, asset);
+  if (versions.length !== 1 || versions[0] !== premiumUiVersion) {
+    fail(`index.html ${asset} query should appear once as ${premiumUiVersion}`);
+  }
 }
 
-if (!indexHtml.includes(`/js/telemetry.js?v=${currentPreFinalTelemetryVersion}`)) {
+const telemetryVersions = assetQueryVersions(indexHtml, "/js/telemetry.js");
+if (telemetryVersions.length !== 1 || telemetryVersions[0] !== currentPreFinalTelemetryVersion) {
   fail(`index.html pre-final telemetry.js query should be ${currentPreFinalTelemetryVersion}`);
+}
+
+const statusGlyphVersions = assetQueryVersions(indexHtml, "/assets/images/mobile-shell/mobile-status-glyphs.png");
+if (statusGlyphVersions.length !== 1 || statusGlyphVersions[0] !== premiumUiVersion) {
+  fail(`index.html mobile status glyph query should appear once as ${premiumUiVersion}`);
+}
+
+for (const theme of ["morning", "day", "dusk", "night"]) {
+  const wallpaperPath = `../assets/images/mobile-wallpapers/${theme}.webp`;
+  const versions = assetQueryVersions(mobileIosShellCss, wallpaperPath);
+  if (!versions.length || versions.some((version) => version !== premiumUiVersion)) {
+    fail(`css/mobile-ios-shell.css ${theme} wallpaper query should be ${premiumUiVersion}`);
+  }
 }
 
 for (const [file, html] of gameIndexHtmls) {
@@ -901,6 +1113,81 @@ for (const token of [
   if (!styleCss.includes(token)) {
     fail(`css/style.css missing ${token}`);
   }
+}
+
+for (const token of [
+  'html[data-ui-shell="mobile"]',
+  "env(safe-area-inset-top, 0px)",
+  "env(safe-area-inset-bottom, 0px)",
+  "--mobile-viewport-height",
+  ".mobile-statusbar",
+  ".mobile-appbar",
+  ".mobile-home-indicator",
+  ".account-popover",
+  ".xp-taskbar",
+  "@media (orientation: landscape) and (max-height: 520px)",
+  "@media (prefers-reduced-motion: reduce)"
+]) {
+  if (!mobileIosShellCss.includes(token)) {
+    fail(`css/mobile-ios-shell.css missing ${token}`);
+  }
+}
+
+for (const token of [
+  "--motion-standard",
+  ".asset-icon",
+  ".quick-link-asset",
+  ".video-placeholder-asset",
+  "background-image: url(\"../assets/images/icon-videos.png\")",
+  "background-image: url(\"../assets/images/icon-knowledge.png\")",
+  "background-image: url(\"../assets/images/icon-games.png\")",
+  ".online-dot",
+  "animation: none !important",
+  "@media (prefers-reduced-motion: reduce)"
+]) {
+  if (!motionSystemCss.includes(token)) {
+    fail(`css/motion-system.css missing ${token}`);
+  }
+}
+
+for (const token of [
+  'const MOBILE_QUERY = "(max-width: 760px), (max-height: 520px) and (pointer: coarse)"',
+  "root.dataset.uiShell = nextShell",
+  "window.visualViewport",
+  'new CustomEvent("lusu:shellchange"',
+  "window.requestAnimationFrame",
+  "MutationObserver",
+  "startHomeGesture",
+  "finishHomeGesture",
+  "window.LusuMobileShell = Object.freeze"
+]) {
+  if (!mobileShellJs.includes(token)) {
+    fail(`js/mobile-shell.js missing ${token}`);
+  }
+}
+
+for (const token of [
+  "MAX_PARALLAX_PX = 6",
+  "function run(kindValue, contextValue, commitValue)",
+  "function commitOnce()",
+  'createMediaQuery("(prefers-reduced-motion: reduce)")',
+  'addListener(document, "visibilitychange", handleVisibilityChange)',
+  'dispatchHook("lusu:ui-motion-before"',
+  'dispatchHook("lusu:ui-motion-after"',
+  "global.LusuUiMotion = api"
+]) {
+  if (!uiMotionJs.includes(token)) {
+    fail(`js/ui-motion.js missing ${token}`);
+  }
+}
+
+const onlineDotBlocks = [styleCss, mobileIosShellCss, motionSystemCss]
+  .flatMap((source) => [...source.matchAll(/\.online-dot\s*\{([\s\S]*?)\}/g)].map((match) => match[1]));
+if (!onlineDotBlocks.length) {
+  fail("public CSS missing .online-dot styling");
+}
+if (onlineDotBlocks.some((block) => /animation\s*:[^;}]*(?:blink|infinite)/i.test(block))) {
+  fail(".online-dot must remain steady and must not restore an infinite blink animation");
 }
 
 for (const token of [
@@ -993,8 +1280,8 @@ for (const [marker, pattern, message] of [
   ],
   [
     "function languageSupportTagElements",
-    /tag\.title\s*=\s*title[\s\S]*tag\.setAttribute\(\s*["']aria-label["']\s*,\s*title\s*\)/,
-    "js/main.js language support tags should expose their computed title as an aria-label"
+    /tag\.title\s*=\s*title[\s\S]*tag\.setAttribute\(\s*["']aria-label["']\s*,\s*title\s*\)[\s\S]*tag\.textContent\s*=\s*title/,
+    "js/main.js language support tags should expose unsupported status visibly and through an aria-label"
   ],
   [
     "function gameCardElement",
@@ -1108,7 +1395,7 @@ for (const [marker, pattern, message] of [
   ],
   [
     "function scrollToArticleHeading",
-    /heading\.scrollIntoView\(\s*\{\s*block:\s*["']start["']\s*,\s*behavior:\s*["']smooth["']\s*\}\s*\)[\s\S]*heading\.focus\(\s*\{\s*preventScroll:\s*true\s*\}\s*\)/,
+    /heading\.scrollIntoView\(\s*\{\s*block:\s*["']start["']\s*,\s*behavior:\s*motionScrollBehavior\(\)\s*\}\s*\)[\s\S]*heading\.focus\(\s*\{\s*preventScroll:\s*true\s*\}\s*\)/,
     "js/main.js article TOC jumps should move programmatic focus to the target heading without extra scroll"
   ],
   [
@@ -1203,12 +1490,12 @@ for (const [marker, pattern, message] of [
   ],
   [
     "function showArticle",
-    /closeWelcome\(\s*\{\s*restoreFocus:\s*false\s*\}\s*\)/,
+    /closeWelcome\(\s*\{\s*restoreFocus:\s*false\s*,\s*motion:\s*false\s*\}\s*\)/,
     "js/main.js showArticle should close the welcome dialog without restoring stale modal focus"
   ],
   [
     "function showArticleCategory",
-    /closeWelcome\(\s*\{\s*restoreFocus:\s*false\s*\}\s*\)/,
+    /closeWelcome\(\s*\{\s*restoreFocus:\s*false\s*,\s*motion:\s*false\s*\}\s*\)/,
     "js/main.js showArticleCategory should close the welcome dialog without restoring stale modal focus"
   ],
   [
@@ -1235,8 +1522,190 @@ for (const [marker, pattern, message] of [
   requireFunctionPattern(mainJs, marker, pattern, message);
 }
 
-if (!hasPattern(mainJs, /const\s+routeButton[\s\S]*if\s*\(routeButton\)\s*\{[\s\S]*navigate\(routeButton\.dataset\.route\)[\s\S]*closeWelcome\(\s*\{\s*restoreFocus:\s*false\s*\}\s*\)/)) {
-  fail("js/main.js route click branch should close the welcome dialog without restoring stale modal focus");
+if (!hasPattern(mainJs, /const\s+routeButton[\s\S]*if\s*\(routeButton\)\s*\{[\s\S]*const\s+motionKind\s*=\s*routeButton\.matches\(\s*["']\.minimize-button["']\s*\)[\s\S]*["']window-minimize["'][\s\S]*routeButton\.matches\(\s*["']\.close-button["']\s*\)[\s\S]*["']window-close["'][\s\S]*navigate\(\s*routeButton\.dataset\.route\s*,\s*\{\s*trigger:\s*routeButton\s*,\s*motionKind\s*\}\s*\)\s*;\s*closeWelcome\(\s*\{\s*restoreFocus:\s*false\s*,\s*motion:\s*false\s*\}\s*\)/)) {
+  fail("js/main.js route click branch should classify minimize/close motion, pass its trigger, and close welcome without restoring stale modal focus");
+}
+
+if (!hasPattern(mainJs, /const\s+routeIconRectCache\s*=\s*new\s+Map[\s\S]*function\s+captureRouteIconRects[\s\S]*document\.body\.dataset\.route\s*!==\s*["']home["'][\s\S]*routeIconRectCache\.set/)
+  || !hasPattern(mainJs, /function\s+cachedRouteIconRect[\s\S]*cached\.shell[\s\S]*cached\.viewportWidth\s*!==\s*window\.innerWidth[\s\S]*cached\.viewportHeight\s*!==\s*window\.innerHeight/)
+  || !hasPattern(mainJs, /function\s+routeExitOriginRect[\s\S]*motionKind\s*===\s*["']window-minimize["'][\s\S]*cachedRouteIconRect\(route\)[\s\S]*taskbar-tabs button\[data-route\][\s\S]*\.start-button/)
+  || !hasPattern(mainJs, /function\s+navigate[\s\S]*const\s+exitOriginRect\s*=\s*isExitMotion[\s\S]*focusReturnTarget\.focus\(\s*\{\s*preventScroll:\s*true\s*\}\s*\)[\s\S]*originRect:\s*exitOriginRect[\s\S]*deferCommit:\s*isExitMotion/)) {
+  fail("js/main.js navigate should reverse close/minimize toward the route icon or task button and restore focus after committing");
+}
+
+if (!hasPattern(mainJs, /function\s+routeWindowFocusTarget[\s\S]*\.find\(\(element\)\s*=>\s*focusTargetIsVisible\(element\)\)[\s\S]*windowSurface\.tabIndex\s*=\s*-1[\s\S]*const\s+shouldFocusWindow[\s\S]*document\.documentElement\.dataset\.inputMethod\s*===\s*["']keyboard["'][\s\S]*!focusTargetIsVisible\(options\.trigger\)[\s\S]*routeWindowFocusTarget\(nextRoute\)[\s\S]*focusTarget\.focus\(\s*\{\s*preventScroll:\s*true\s*\}\s*\)/)) {
+  fail("js/main.js route navigation should move focus into a window when its launch trigger becomes hidden or keyboard navigation requests it");
+}
+
+if (!hasPattern(mainJs, /const\s+mobileHomeReturnTarget[\s\S]*\.mobile-home-button[\s\S]*routeReturnTarget\(previousRoute,\s*["']window-close["']\)[\s\S]*const\s+focusReturnTarget\s*=\s*returnTarget\s*\|\|\s*mobileHomeReturnTarget[\s\S]*focusReturnTarget\.focus/)) {
+  fail("js/main.js mobile App home navigation should restore focus to a visible Home-screen App icon");
+}
+
+if (!hasPattern(mainJs, /function\s+focusTargetIsVisible[\s\S]*element\.closest\(\s*["']\[hidden\]["']\s*\)[\s\S]*page\.classList\.contains\(\s*["']active["']\s*\)[\s\S]*const\s+hadInteractiveFocus[\s\S]*!hadInteractiveFocus\s*\|\|\s*focusTargetIsVisible\(activeElement\)[\s\S]*fallbackTarget\?\.focus/)) {
+  fail("js/main.js navigation should recover focus from controls hidden by browser history or route projection");
+}
+
+if (!hasPattern(mainJs, /function\s+showArticle\(slug,\s*options\s*=\s*\{\}\)[\s\S]*trigger:\s*options\.trigger[\s\S]*focusWindow:\s*true[\s\S]*function\s+showArticleList\(options\s*=\s*\{\}\)[\s\S]*trigger:\s*options\.trigger[\s\S]*focusWindow:\s*true/)
+  || !hasPattern(mainJs, /showArticle\(articleButton\.dataset\.articleSlug,\s*\{\s*trigger:\s*articleButton\s*\}\)[\s\S]*showArticleList\(\{\s*trigger:\s*articleBackButton\s*\}\)/)) {
+  fail("js/main.js article detail and back controls should carry focus into the newly revealed surface");
+}
+
+if (!hasPattern(mainJs, /function\s+motionScrollBehavior[\s\S]*managedMode\s*===\s*["']reduced["']\s*\|\|\s*managedMode\s*===\s*["']off["'][\s\S]*return\s+["']auto["'][\s\S]*prefers-reduced-motion:\s*reduce/)
+  || !hasPattern(mainJs, /scrollIntoView\(\s*\{\s*block:\s*["']start["']\s*,\s*behavior:\s*motionScrollBehavior\(\)\s*\}\s*\)/)
+  || !hasPattern(mainJs, /detail\.scrollTo\(\s*\{\s*top:\s*0\s*,\s*behavior:\s*motionScrollBehavior\(\)\s*\}\s*\)/)) {
+  fail("js/main.js article scrolling should honor reduced and off motion modes");
+}
+
+if (!hasPattern(motionSystemCss, /html\[data-ui-shell="desktop"\]\s+\.desktop-icon\.is-active[\s\S]*\.desktop-icon\[aria-pressed="true"\][\s\S]*border-color:[\s\S]*box-shadow:/)) {
+  fail("css/motion-system.css should provide a visible non-color-only desktop icon selected state");
+}
+
+if (!hasPattern(mainJs, /useViewTransition:\s*motionKind\s*===\s*["']route["']/)) {
+  fail("js/main.js route navigation should progressively enhance with the View Transitions API when available");
+}
+
+if (!hasPattern(mainJs, /function\s+updateWallpaperMotionState[\s\S]*document\.documentElement\.dataset\.motion[\s\S]*\[\s*["']full["']\s*,\s*["']reduced["']\s*,\s*["']off["']\s*\]\.includes\(managedMode\)/)
+  || !hasPattern(mainJs, /LusuUiMotion\.run\(\s*["']theme["']\s*,\s*\{\s*theme\s*,\s*useViewTransition:\s*true\s*\}/)) {
+  fail("js/main.js wallpaper should share the canonical motion mode and use progressive theme crossfades");
+}
+
+if (!hasPattern(mobileShellJs, /function\s+cycleLanguage[\s\S]*CustomEvent\(\s*["']lusu:language-request["'][\s\S]*detail:\s*\{\s*lang:\s*nextLang\s*\}[\s\S]*\}\s*\)/)
+  || hasPattern(mobileShellJs, /function\s+cycleLanguage[\s\S]{0,500}\.click\(\)/)
+  || !hasPattern(mainJs, /addEventListener\(\s*["']lusu:language-request["'][\s\S]*\[\s*["']zh["']\s*,\s*["']en["']\s*,\s*["']ja["']\s*\]\.includes\(lang\)[\s\S]*setLanguage\(lang,\s*\{\s*persist:\s*true,\s*syncUrl:\s*true\s*\}\)/)) {
+  fail("mobile language cycle should request one shared language change without synthesizing a second tracked click");
+}
+
+if (!hasPattern(motionSystemCss, /html\[data-motion="reduced"\]\s+\.page[\s\S]*html\[data-motion="off"\]\s+\.desktop-icon[\s\S]*animation:\s*none\s*!important/)) {
+  fail("css/motion-system.css should disable legacy page/icon animations in reduced and off modes");
+}
+
+if (!hasPattern(motionSystemCss, /html\[data-ui-shell="mobile"\]\[data-motion="reduced"\]\s+\.wallpaper-stage[\s\S]*html\[data-ui-shell="mobile"\]\[data-motion="off"\]\s+\.wallpaper-stage[\s\S]*transform:\s*none\s*!important/)) {
+  fail("css/motion-system.css should keep the mobile wallpaper stage in its mobile coordinate system when motion is reduced or off");
+}
+
+if (hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*?\.chatroom-header\s*\{\s*display:\s*none/)
+  || hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*?\.chatroom-footer\s*\{\s*display:\s*none/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-window\.is-private-room\s+\.send-bubble-icon[\s\S]*pixel-ui-glyph-atlas\.png\?v=20260710-premium-mobile-os-r6/)) {
+  fail("css/mobile-ios-shell.css should preserve landscape chat room controls, feedback, and the private-room send bitmap");
+}
+
+if (!hasPattern(styleCss, /\.minimize-button::before,\s*\.maximize-button::before\s*\{[\s\S]*pixel-ui-glyph-atlas\.png\?v=20260710-premium-mobile-os-r6[\s\S]*background-size:\s*200%\s+200%/)
+  || !hasPattern(styleCss, /\.minimize-button::before\s*\{\s*background-position:\s*0\s+0[\s\S]*\.maximize-button::before\s*\{\s*background-position:\s*100%\s+0[\s\S]*\.maximize-button\[aria-pressed="true"\]::before\s*\{\s*background-position:\s*0\s+100%/)
+  || !hasPattern(styleCss, /\.send-bubble-icon\s*\{[\s\S]*pixel-ui-glyph-atlas\.png\?v=20260710-premium-mobile-os-r6[\s\S]*background-position:\s*100%\s+100%/)
+  || hasPattern(styleCss, /\.send-bubble-icon::(?:before|after)\s*\{[\s\S]{0,320}(?:clip-path|border|box-shadow|background\s*:)/)) {
+  fail("public window and chat glyphs should use the image2 bitmap atlas instead of CSS-drawn geometry");
+}
+
+if (!hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*\.chatroom-window\s*\{[\s\S]*grid-template-columns:\s*minmax\(220px,\s*0\.56fr\)\s+minmax\(0,\s*1\.44fr\)[\s\S]*grid-template-rows:\s*auto\s+minmax\(0,\s*1fr\)\s+52px[\s\S]*\.chatroom-header\s*\{[\s\S]*grid-row:\s*1\s*\/\s*3[\s\S]*\.chat-private-room-panel\s*\{[\s\S]*grid-row:\s*1[\s\S]*grid-column:\s*2[\s\S]*\.chatroom-log\s*\{[\s\S]*grid-row:\s*2[\s\S]*grid-column:\s*2[\s\S]*\.chatroom-compose\s*\{[\s\S]*grid-row:\s*3[\s\S]*grid-column:\s*2[\s\S]*\.chatroom-footer\s*\{[\s\S]*grid-row:\s*3[\s\S]*grid-column:\s*1/)) {
+  fail("css/mobile-ios-shell.css should use the available landscape width so chat and private-room controls remain simultaneously reachable");
+}
+
+if (!hasPattern(mobileIosShellCss, /@media\s*\(max-width:\s*380px\)[\s\S]*\.chat-private-room-panel[\s\S]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto\s+auto[\s\S]*\.chat-private-room-panel small\s*\{\s*display:\s*none/)
+  || !hasPattern(mobileIosShellCss, /@media\s*\(max-width:\s*760px\)\s*and\s*\(max-height:\s*720px\)\s*and\s*\(orientation:\s*portrait\)[\s\S]*\.chatroom-compose textarea[\s\S]*height:\s*44px[\s\S]*\.chatroom-footer[\s\S]*min-height:\s*44px/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-window\s*\{\s*display:\s*grid;\s*grid-template-rows:\s*auto\s+auto\s+minmax\(0,\s*1fr\)\s+auto\s+auto/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-compose\s*\{[\s\S]*grid-row:\s*4[\s\S]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto\s+auto/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-counter\s*\{[\s\S]*position:\s*static[\s\S]*grid-column:\s*2[\s\S]*min-width:\s*44px/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chat-send-button\s*\{[\s\S]*grid-column:\s*3[\s\S]*min-height:\s*44px/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-autoscroll\s*\{[\s\S]*min-height:\s*44px/)) {
+  fail("css/mobile-ios-shell.css should keep password and chat controls reachable on narrow and soft-keyboard portrait viewports");
+}
+
+if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+body:not\(\[data-route="home"\]\)\s*\{[\s\S]*--mobile-dock-height:\s*calc\(16px\s*\+\s*var\(--mobile-safe-bottom\)\)[\s\S]*--mobile-dock-space:\s*calc\(18px\s*\+\s*var\(--mobile-safe-bottom\)\)/)
+  || !hasPattern(mobileIosShellCss, /body:not\(\[data-route="home"\]\)\s+\.page\.active\s*>\s*\.xp-window\s*>\s*\.window-titlebar\s*\{\s*display:\s*none/)
+  || !hasPattern(mobileIosShellCss, /body:not\(\[data-route="home"\]\)\s+\.xp-taskbar\s*>\s*:not\(\.mobile-home-indicator\)\s*\{\s*display:\s*none/)) {
+  fail("css/mobile-ios-shell.css should reserve the full Dock for Home and give Apps one title bar plus a slim Home indicator");
+}
+
+if (!hasPattern(mobileIosShellCss, /body:not\(\[data-route="home"\]\)\s+\.mobile-route-copy strong\s*\{\s*max-width:\s*min\(72vw,\s*520px\)/)
+  || !hasPattern(mobileIosShellCss, /body:not\(\[data-route="home"\]\)\s+\.topbar-actions\s*\{\s*display:\s*none/)) {
+  fail("css/mobile-ios-shell.css should leave enough App-bar width for readable translated route titles");
+}
+
+if (!hasPattern(mobileIosShellCss, /\.knowledge-searchbar\s+label\s*\{[\s\S]*position:\s*absolute[\s\S]*clip:\s*rect\(0\s+0\s+0\s+0\)/)
+  || !hasPattern(mobileIosShellCss, /#knowledge-search-status:empty\s*\{\s*display:\s*none/)
+  || !hasPattern(mobileIosShellCss, /\.knowledge-searchbar\.has-search-status\s*\{[\s\S]*grid-template-rows:\s*44px\s+14px[\s\S]*height:\s*70px/)
+  || !hasPattern(mainJs, /function\s+renderKnowledgeSearchControls[\s\S]*classList\.toggle\(\s*["']has-search-status["'][\s\S]*if\s*\(!articleState\.searchTerm\.trim\(\)\)[\s\S]*setSearchStatus\(\s*["']["']\s*\)/)
+  || !hasPattern(mobileIosShellCss, /\.notepad-menu\s*\{\s*display:\s*none/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.game-list\s*\{\s*max-height:\s*none/)) {
+  fail("css/mobile-ios-shell.css should remove decorative mobile rows that reduce readable App content");
+}
+
+if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.game-card\s*\{[\s\S]*grid-template-columns:\s*52px\s+minmax\(0,\s*1fr\)\s+minmax\(70px,\s*82px\)/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.game-card\s+\.card-action\s*\{[\s\S]*grid-column:\s*3[\s\S]*grid-row:\s*1[\s\S]*min-height:\s*44px/)
+  || !hasPattern(mobileIosShellCss, /#blog\s+\.blog-empty-state,[\s\S]*#blog\s+\.list-message[\s\S]*grid-column:\s*1\s*\/\s*-1/)) {
+  fail("css/mobile-ios-shell.css should keep mobile card actions inside their cards and span landscape empty states");
+}
+
+if (!hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*\.chat-private-room-panel\s*\{[\s\S]*grid-template-columns:\s*minmax\(120px,\s*1fr\)\s+auto\s+auto[\s\S]*gap:\s*8px/)) {
+  fail("css/mobile-ios-shell.css should keep the visually hidden private-room label out of the landscape control columns");
+}
+
+if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+#about\s+\.profile-card\s*\{\s*overflow:\s*auto/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.profile-avatar\s*\{[\s\S]*height:\s*clamp\(160px,\s*26dvh,\s*180px\)[\s\S]*min-height:\s*0/)
+  || !hasPattern(mobileIosShellCss, /#about\s+\.profile-card\s*\{[\s\S]*align-content:\s*safe\s+center[\s\S]*height:\s*100%/)
+  || !hasPattern(mobileIosShellCss, /#about\s+\.profile-avatar\s*\{\s*height:\s*172px[\s\S]*min-height:\s*0/)
+  || !hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*\.folder-layout\.is-reading\s+\.article-detail\s*\{[\s\S]*padding:\s*8px\s+8px\s+calc\(var\(--mobile-dock-space\)\s*\+\s*44px\)/)) {
+  fail("css/mobile-ios-shell.css should keep translated About content scrollable and reserve landscape article space above fixed reading controls");
+}
+
+if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+#article-detail-meta\s*\{[\s\S]*flex-wrap:\s*nowrap[\s\S]*min-height:\s*36px[\s\S]*overflow-x:\s*auto/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.article-detail-head\s*>\s*p\s*\{[\s\S]*-webkit-line-clamp:\s*2/)
+  || !hasPattern(mobileIosShellCss, /@media\s*\(max-width:\s*760px\)\s*and\s*\(max-height:\s*720px\)\s*and\s*\(orientation:\s*portrait\)[\s\S]*\.folder-layout\.is-reading\s+#article-detail-meta\s*\{[\s\S]*min-height:\s*32px[\s\S]*\.folder-layout\.is-reading\s+\.article-detail-head\s*>\s*p\s*\{[\s\S]*-webkit-line-clamp:\s*1/)
+  || !hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*\.folder-layout\.is-reading\s+\.article-detail-head\s*>\s*p\s*\{\s*-webkit-line-clamp:\s*1/)) {
+  fail("css/mobile-ios-shell.css should compact mobile article metadata and summaries so the first body paragraph remains readable");
+}
+
+if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+#knowledge\.page\s*>\s*\.xp-window[\s\S]*html\[data-ui-shell="mobile"\]\s+#about\.page\s*>\s*\.xp-window[\s\S]*height:\s*100%[\s\S]*max-height:\s*none/)) {
+  fail("css/mobile-ios-shell.css should override legacy ID sizing so every mobile App is a full-screen surface");
+}
+
+if (!hasPattern(mobileIosShellCss, /body\.is-article-reading\s+#knowledge\.page\s*>\s*\.xp-window[\s\S]*border-radius:\s*26px\s+26px\s+0\s+0[\s\S]*body\.is-article-reading\s+#knowledge\.page\s+\.close-button[\s\S]*min-width:\s*44px[\s\S]*min-height:\s*44px/)) {
+  fail("css/mobile-ios-shell.css should preserve full-App article chrome and 44px window controls");
+}
+
+if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\[data-article-window-toggle\]\s*\{\s*display:\s*none/)) {
+  fail("css/mobile-ios-shell.css should hide the no-op article maximize control inside always-full-screen mobile Apps");
+}
+
+if (!hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-read-progress\s*\{[\s\S]*top:\s*calc\(var\(--mobile-safe-top\)\s*\+\s*var\(--mobile-status-height\)\s*\+\s*8px\)[\s\S]*bottom:\s*auto[\s\S]*z-index:\s*95[\s\S]*height:\s*32px/)
+  || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-top-link\s*\{[\s\S]*top:\s*calc\(var\(--mobile-safe-top\)\s*\+\s*var\(--mobile-status-height\)\s*\+\s*2px\)[\s\S]*bottom:\s*auto[\s\S]*width:\s*44px/)
+  || !hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*body\.is-article-reading\s+\.article-top-link\s*\{[\s\S]*right:\s*104px[\s\S]*bottom:\s*auto/)) {
+  fail("css/mobile-ios-shell.css should place mobile article controls in the App bar without covering copy controls or body text");
+}
+
+if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+#video-window-maximize\s*\{\s*display:\s*none/)) {
+  fail("css/mobile-ios-shell.css should hide the no-op video maximize control inside always-full-screen mobile modals");
+}
+
+if (!hasPattern(mainJs, /let\s+navigationRequestId\s*=\s*0[\s\S]*function\s+navigate[\s\S]*const\s+requestId\s*=\s*\+\+navigationRequestId[\s\S]*navigationCommitted\s*\|\|\s*requestId\s*!==\s*navigationRequestId/)) {
+  fail("js/main.js navigate should reject stale deferred commits so rapid route changes remain last-action-wins");
+}
+
+if (!hasPattern(mainJs, /function\s+toggleArticleWindowSize[\s\S]*runWindowLayoutTransition\(\s*nextRestored\s*\?\s*["']window-restore["']\s*:\s*["']window-maximize["'][\s\S]*function\s+fullscreenVideo[\s\S]*runWindowLayoutTransition\(\s*nextMaximized\s*\?\s*["']window-maximize["']\s*:\s*["']window-restore["']/)) {
+  fail("js/main.js article and video window controls should use coherent maximize/restore layout transitions");
+}
+
+if (!hasPattern(mainJs, /windowRestoreAria:\s*["']还原窗口["'][\s\S]*windowRestoreAria:\s*["']Restore window["'][\s\S]*windowRestoreAria:\s*["']ウィンドウを元に戻す["']/)
+  || !hasPattern(mainJs, /function\s+renderKnowledge[\s\S]*classList\.add\(\s*["']is-article-reading["']\s*\)[\s\S]*updateArticleWindowButton\(\)[\s\S]*classList\.remove\(\s*["']is-article-window-restored["']\s*\)[\s\S]*updateArticleWindowButton\(\)/)
+  || !hasPattern(mainJs, /function\s+updateArticleWindowButton[\s\S]*const\s+reading[\s\S]*restored\s*\?\s*["']windowMaximizeAria["']\s*:\s*["']windowRestoreAria["'][\s\S]*button\.hidden\s*=\s*!reading[\s\S]*aria-pressed[\s\S]*aria-label[\s\S]*title[\s\S]*function\s+toggleArticleWindowSize[\s\S]*updateArticleWindowButton\(\)/)) {
+  fail("js/main.js article maximize/restore control should expose its current action in all three languages");
+}
+
+if (!hasPattern(motionSystemCss, /\.page\s*\{\s*animation:\s*none/)) {
+  fail("css/motion-system.css should disable the legacy page popIn so routes have one authoritative transition system");
+}
+
+if (!hasPattern(mainJs, /function\s+runSurfaceClose[\s\S]*LusuUiMotion\.run\(\s*["']modal-close["'][\s\S]*deferCommit:\s*true[\s\S]*function\s+closeVideo[\s\S]*runSurfaceClose\(modal[\s\S]*function\s+closeWelcome[\s\S]*runSurfaceClose\(modal/)) {
+  fail("js/main.js video and welcome dialogs should use a deferred reverse close animation with an immediate reduced-motion fallback");
+}
+
+if (!hasPattern(mainJs, /function\s+closeAccountPopover\(options\s*=\s*\{\}\)[\s\S]*runSurfaceClose\(popover[\s\S]*toggle\.focus\(\s*\{\s*preventScroll:\s*true\s*\}\s*\)/)
+  || !hasPattern(mainJs, /function\s+hideChatPrivateRoomForm\(options\s*=\s*\{\}\)[\s\S]*chat-room-toggle["']\)\?\.focus\(\s*\{\s*preventScroll:\s*true\s*\}\s*\)/)) {
+  fail("js/main.js account and private-room surfaces should restore focus when they close");
+}
+
+if (!hasPattern(mainJs, /if\s*\(\s*!target\.closest\(\s*["']#account-widget["']\s*\)\s*\)[\s\S]*closeAccountPopover\(\s*\{\s*restoreFocus:\s*Boolean\(popover\?\.contains\(document\.activeElement\)\)/)) {
+  fail("js/main.js outside-click account closure should only restore focus when focus would otherwise remain inside the hidden popover");
 }
 
 if (!hasPattern(mainJs, /if\s*\(videoModal\s*&&\s*!videoModal\.hidden\)\s*\{[\s\S]*closeVideo\(\)[\s\S]*return;[\s\S]*if\s*\(welcomeModal\s*&&\s*!welcomeModal\.hidden\)\s*\{[\s\S]*closeWelcome\(\)[\s\S]*return;/)) {
@@ -1286,21 +1755,27 @@ if (!hasPattern(
   fail("js/main.js renderBlog should show an honest empty state until real posts are published");
 }
 
-for (const functionName of ["openAccountPopover", "closeAccountPopover", "toggleAccountPopover"]) {
+for (const functionName of ["openAccountPopover", "closeAccountPopover"]) {
   const functionBody = objectBlockAfterMarker(mainJs, `function ${functionName}`);
   if (!functionBody.includes("syncAccountPopoverState(popover)")) {
     fail(`js/main.js ${functionName} should sync account aria-expanded state`);
   }
 }
 
+const toggleAccountPopoverBody = objectBlockAfterMarker(mainJs, "function toggleAccountPopover");
+if (!hasPattern(toggleAccountPopoverBody, /if\s*\(popover\.hidden\)[\s\S]*openAccountPopover\(\)[\s\S]*else[\s\S]*closeAccountPopover\(\)/)) {
+  fail("js/main.js toggleAccountPopover should delegate to the shared accessible open/close paths");
+}
+
 for (const [label, pattern] of [
-  ["resource empty icon", /icon\.className\s*=\s*["']resource-empty-icon["'][\s\S]{0,120}icon\.setAttribute\(\s*["']aria-hidden["']\s*,\s*["']true["']\s*\)/],
-  ["recent updates empty icon", /icon\.className\s*=\s*["']update-icon["'][\s\S]{0,120}icon\.setAttribute\(\s*["']aria-hidden["']\s*,\s*["']true["']\s*\)/],
-  ["video unsupported icon", /icon\.textContent\s*=\s*["']!["'][\s\S]{0,120}icon\.setAttribute\(\s*["']aria-hidden["']\s*,\s*["']true["']\s*\)/],
-  ["video placeholder icon", /icon\.textContent\s*=\s*["']▶["'][\s\S]{0,120}icon\.setAttribute\(\s*["']aria-hidden["']\s*,\s*["']true["']\s*\)/]
+  ["resource empty asset", /icon\.className\s*=\s*["']resource-empty-icon["'][\s\S]{0,120}icon\.setAttribute\(\s*["']aria-hidden["']\s*,\s*["']true["']\s*\)/],
+  ["recent updates empty asset", /icon\.className\s*=\s*["']update-icon update-icon-knowledge["'][\s\S]{0,120}icon\.setAttribute\(\s*["']aria-hidden["']\s*,\s*["']true["']\s*\)/],
+  ["video status asset", /icon\.className\s*=\s*`video-empty-icon\$\{kind\s*===\s*["']failed["']\s*\?\s*["'] is-error["']\s*:\s*["']["']\}`[\s\S]{0,160}icon\.setAttribute\(\s*["']aria-hidden["']\s*,\s*["']true["']\s*\)/],
+  ["video empty asset", /icon\.className\s*=\s*["']video-empty-icon["'][\s\S]{0,120}icon\.setAttribute\(\s*["']aria-hidden["']\s*,\s*["']true["']\s*\)/],
+  ["game empty asset", /icon\.className\s*=\s*["']game-empty-icon["'][\s\S]{0,120}icon\.setAttribute\(\s*["']aria-hidden["']\s*,\s*["']true["']\s*\)/]
 ]) {
   if (!hasPattern(mainJs, pattern)) {
-    fail(`js/main.js missing decorative dynamic icon accessibility guard for ${label}`);
+    fail(`js/main.js missing bitmap-backed dynamic asset accessibility guard for ${label}`);
   }
 }
 
@@ -1397,12 +1872,12 @@ for (const obsoleteText of [
   }
 }
 
-const finalUpdateId = "seed-update-2026-07-06-private-chat-rooms";
-const finalUpdateSlug = "2026-07-06-private-chat-rooms";
-const finalMainVersion = "20260706-private-chat-rooms-r2";
+const finalUpdateId = "seed-update-2026-07-10-premium-interaction-mobile-os";
+const finalUpdateSlug = "2026-07-10-premium-interaction-mobile-os";
+const finalMainVersion = premiumUiVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Dark Encrypted Password Rooms";
-const finalPublishedAt = "2026-07-06T08:00:00.000Z";
+const finalTitleEn = "GPT-5.6 Premium Interaction & Mobile OS Redesign";
+const finalPublishedAt = "2026-07-10T04:30:00.000Z";
 const finalTranslationMinimums = {
   title: 8,
   summary: 24,
@@ -1416,6 +1891,7 @@ const changelog20260623Section = markdownSection(changelog, "## 2026-06-23");
 const changelog20260624Section = markdownSection(changelog, "## 2026-06-24");
 const changelog20260630Section = markdownSection(changelog, "## 2026-06-30");
 const changelog20260706Section = markdownSection(changelog, "## 2026-07-06");
+const changelog20260710Section = markdownSection(changelog, "## 2026-07-10");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -1438,6 +1914,7 @@ if (finalUpdateStarted) {
     'date: "2026.06.23"',
     'date: "2026.06.24"',
     'date: "2026.07.06"',
+    'date: "2026.07.10"',
     finalTitleEn
   ]) {
     if (!mainJs.includes(token)) {
@@ -1461,6 +1938,7 @@ if (finalUpdateStarted) {
     ? `articleTranslationsStatements(env, "${finalUpdateId}"`
     : `articleTranslationsStatements(env, '${finalUpdateId}'`;
   const apiFinalTranslations = objectBlockAfterMarker(apiJs, apiTranslationMarker);
+  const apiFinalTranslationValues = {};
   if (!apiFinalTranslations) {
     fail("functions/api/[[route]].js final public update translations missing");
   } else {
@@ -1475,6 +1953,35 @@ if (finalUpdateStarted) {
         if (!value || value.trim().length < minimumLength) {
           fail(`functions/api/[[route]].js final public update ${lang}.${field} should be populated`);
         }
+        apiFinalTranslationValues[lang] ||= {};
+        apiFinalTranslationValues[lang][field] = value;
+      }
+    }
+  }
+
+  const mainFinalFallback = windowAfter(mainJs, `article_id: "${finalUpdateId}"`, 12000);
+  for (const token of [
+    `article_id: "${finalUpdateId}"`,
+    `slug: "${finalUpdateSlug}"`,
+    'category: "site-updates"',
+    `published_at: "${finalPublishedAt}"`,
+    "fallbackOnly: true"
+  ]) {
+    if (!mainFinalFallback.includes(token)) {
+      fail(`js/main.js final public update fallback metadata missing ${token}`);
+    }
+  }
+  const mainFallbackFieldBlocks = Object.fromEntries(
+    Object.keys(finalTranslationMinimums).map((field) => [field, propertyObjectBlock(mainFinalFallback, field)])
+  );
+  for (const lang of ["zh", "en", "ja"]) {
+    for (const [field, minimumLength] of Object.entries(finalTranslationMinimums)) {
+      const fallbackValue = jsStringPropertyValue(mainFallbackFieldBlocks[field], lang);
+      const apiValue = apiFinalTranslationValues[lang]?.[field];
+      if (!fallbackValue || fallbackValue.trim().length < minimumLength) {
+        fail(`js/main.js final public update fallback ${lang}.${field} should be populated`);
+      } else if (fallbackValue !== apiValue) {
+        fail(`js/main.js and Functions final public update ${lang}.${field} should match exactly`);
       }
     }
   }
@@ -1513,12 +2020,14 @@ if (finalUpdateStarted) {
     ]) {
       if (!value || value.trim().length < finalTranslationMinimums[field]) {
         fail(`cloudflare/schema.sql final public update ${lang}.${field} should be populated`);
+      } else if (value.replace(/\r\n/g, "\n") !== apiFinalTranslationValues[lang]?.[field]?.replace(/\r\n/g, "\n")) {
+        fail(`Functions and schema final public update ${lang}.${field} should match exactly`);
       }
     }
   }
 
   for (const token of [
-    'id="top-updated">2026.07.06',
+    'id="top-updated">2026.07.10',
     `/js/main.js?v=${finalMainVersion}`
   ]) {
     if (!indexHtml.includes(token)) {
@@ -1528,12 +2037,13 @@ if (finalUpdateStarted) {
 
   for (const token of [
     finalMainVersion,
+    finalUpdateId,
     "site-updates",
     "fallback",
     "Functions seed",
     "schema seed"
   ]) {
-    if (!changelog20260706Section.includes(token)) {
+    if (!changelog20260710Section.includes(token)) {
       fail(`CHANGELOG.md final public update sync missing ${token}`);
     }
   }

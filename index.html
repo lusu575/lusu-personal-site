@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="description" content="鲁肃的个人站，一个 Windows XP 像素桌面风格的个人空间。">
   <meta name="theme-color" content="#1d6fe8">
   <meta name="color-scheme" content="light">
@@ -24,23 +24,44 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32.png?v=20260611-unified-tv-icon">
   <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png?v=20260611-unified-tv-icon">
   <link rel="manifest" href="/manifest.webmanifest">
-  <link rel="stylesheet" href="/css/style.css?v=20260706-private-chat-rooms-r1">
+  <script src="/js/mobile-shell.js?v=20260710-premium-mobile-os-r6"></script>
+  <link rel="stylesheet" href="/css/style.css?v=20260710-premium-mobile-os-r6">
+  <link rel="stylesheet" href="/css/mobile-ios-shell.css?v=20260710-premium-mobile-os-r6">
+  <link rel="stylesheet" href="/css/motion-system.css?v=20260710-premium-mobile-os-r6">
 </head>
 <body data-route="home">
   <div class="site-shell">
     <header class="xp-topbar">
+      <div class="mobile-statusbar" aria-label="Mobile status bar">
+        <time class="mobile-status-time" id="mobile-status-time" data-local-time="compact">--:--</time>
+        <div class="mobile-status-island" aria-hidden="true">
+          <img src="/assets/images/lusu-tv-head-64.png?v=20260611-unified-tv-icon" width="64" height="64" alt="">
+          <span>LUSU OS</span>
+        </div>
+        <img class="mobile-status-glyphs" src="/assets/images/mobile-shell/mobile-status-glyphs.png?v=20260710-premium-mobile-os-r6" width="1619" height="338" alt="" aria-hidden="true">
+      </div>
+      <div class="mobile-appbar">
+        <button class="mobile-home-button" type="button" data-route="home" aria-label="返回桌面" data-i18n-aria-label="brandHomeAria">
+          <img src="/assets/images/lusu-tv-head-64.png?v=20260611-unified-tv-icon" width="64" height="64" alt="" aria-hidden="true">
+        </button>
+        <div class="mobile-route-copy">
+          <span>PIXEL APP</span>
+          <strong id="mobile-route-title">LuSu OS</strong>
+        </div>
+      </div>
       <button class="brand-button" data-route="home" aria-label="返回桌面" data-i18n-aria-label="brandHomeAria">
         <img class="brand-orb" src="/assets/images/lusu-tv-head-64.png?v=20260611-unified-tv-icon" width="64" height="64" alt="" aria-hidden="true">
         <span data-i18n="siteName">鲁肃的个人站</span>
       </button>
       <div class="topbar-actions">
         <div class="account-widget" id="account-widget"></div>
+        <button class="mobile-language-cycle" type="button" aria-label="语言切换" data-i18n-aria-label="languageSwitcherAria"><span data-mobile-language-label>中</span></button>
         <nav class="language-switcher" aria-label="语言切换" data-i18n-aria-label="languageSwitcherAria">
           <button class="lang-button active" type="button" data-lang="zh" aria-pressed="true">中文</button>
           <button class="lang-button" type="button" data-lang="en" aria-pressed="false">EN</button>
           <button class="lang-button" type="button" data-lang="ja" aria-pressed="false">日本語</button>
         </nav>
-        <span class="top-updated"><span data-i18n="lastUpdatedLabel">最近更新日期</span>：<span id="top-updated">2026.07.06</span></span>
+        <span class="top-updated"><span data-i18n="lastUpdatedLabel">最近更新日期</span>：<span id="top-updated">2026.07.10</span></span>
       </div>
     </header>
 
@@ -160,14 +181,14 @@
               <aside class="article-reader-sidebar">
                 <nav class="article-toc" id="article-detail-toc" aria-label="文章目录" data-i18n-aria-label="articleTocTitle" hidden>
                   <p>
-                    <span class="article-toc-icon" aria-hidden="true">📖</span>
+                    <span class="article-toc-icon asset-icon asset-icon-knowledge" aria-hidden="true"></span>
                     <span data-i18n="articleTocTitle">文章目录</span>
                   </p>
                   <div id="article-detail-toc-list"></div>
                 </nav>
                 <div class="article-toc-tip">
                   <strong>
-                    <span aria-hidden="true">📌</span>
+                    <span class="asset-icon asset-icon-note" aria-hidden="true"></span>
                     <span data-i18n="articleTocTipTitle">小贴士</span>
                   </strong>
                   <p data-i18n="articleTocTip">点击目录项可快速跳转到对应章节</p>
@@ -180,7 +201,7 @@
                   <p id="article-detail-summary"></p>
                   <div class="article-detail-actions">
                     <button class="xp-button article-copy-link" type="button" data-article-copy-link>
-                      <span class="article-copy-icon" aria-hidden="true">🔗</span>
+                      <span class="article-copy-icon asset-icon asset-icon-link" aria-hidden="true"></span>
                       <span data-i18n="articleCopyLink">复制文章链接</span>
                     </button>
                     <span class="article-copy-status" id="article-copy-status" aria-live="polite"></span>
@@ -340,10 +361,11 @@
         <button data-route="about"><span class="mini-icon taskbar-icon taskbar-icon-about" aria-hidden="true"></span><span data-i18n="navAbout">关于我</span></button>
       </nav>
       <div class="status-tray">
-        <span id="local-time">--:--:--</span>
+        <span id="local-time" data-local-time="full">--:--:--</span>
         <span class="online-dot"></span>
         <span>ONLINE</span>
       </div>
+      <div class="mobile-home-indicator" aria-hidden="true"><span></span></div>
     </footer>
   </div>
 
@@ -351,7 +373,7 @@
     <div class="modal-backdrop" data-close-welcome></div>
     <div class="xp-window welcome-window" role="dialog" aria-modal="true" aria-labelledby="welcome-title">
       <div class="window-titlebar">
-        <span><span class="title-icon" aria-hidden="true">★</span><span id="welcome-title" data-i18n="welcomeTitle">欢迎来到我的空间</span></span>
+        <span><span class="title-icon welcome-title-icon" aria-hidden="true"></span><span id="welcome-title" data-i18n="welcomeTitle">欢迎来到我的空间</span></span>
         <button class="close-button" data-close-welcome aria-label="关闭对话框" data-i18n-aria-label="closeDialogAria">×</button>
       </div>
       <div class="welcome-content">
@@ -368,10 +390,10 @@
           <div class="dashed-line"></div>
           <h3 data-i18n="quickEntry">快捷入口</h3>
           <div class="quick-links">
-            <button class="quick-link blue" data-route="chatroom" data-analytics-label="welcome:quick-link:chatroom"><span aria-hidden="true">💬</span><span data-i18n="navChatroom">匿名聊天室</span><b aria-hidden="true">›</b></button>
-            <button class="quick-link pink" data-route="games" data-analytics-label="welcome:quick-link:games"><span aria-hidden="true">🎮</span><span data-i18n="goGames">打开游戏区</span><b aria-hidden="true">›</b></button>
-            <button class="quick-link green" data-route="knowledge" data-analytics-label="welcome:quick-link:knowledge"><span aria-hidden="true">📁</span><span data-i18n="goKnowledge">进入知识库</span><b aria-hidden="true">›</b></button>
-            <button class="quick-link blue" data-article-category="site-updates" data-analytics-label="welcome:quick-link:updates"><span aria-hidden="true">NEW</span><span data-i18n="recentUpdates">最近更新</span><b aria-hidden="true">›</b></button>
+            <button class="quick-link blue quick-link-chat" data-route="chatroom" data-analytics-label="welcome:quick-link:chatroom"><span class="quick-link-asset" aria-hidden="true"></span><span data-i18n="navChatroom">匿名聊天室</span></button>
+            <button class="quick-link pink quick-link-games" data-route="games" data-analytics-label="welcome:quick-link:games"><span class="quick-link-asset" aria-hidden="true"></span><span data-i18n="goGames">打开游戏区</span></button>
+            <button class="quick-link green quick-link-knowledge" data-route="knowledge" data-analytics-label="welcome:quick-link:knowledge"><span class="quick-link-asset" aria-hidden="true"></span><span data-i18n="goKnowledge">进入知识库</span></button>
+            <button class="quick-link blue quick-link-updates" data-article-category="site-updates" data-analytics-label="welcome:quick-link:updates"><span class="quick-link-asset" aria-hidden="true"></span><span data-i18n="recentUpdates">最近更新</span></button>
           </div>
         </section>
         <aside class="recent-panel">
@@ -397,7 +419,7 @@
       </div>
       <div class="video-frame" id="video-frame">
         <div class="video-placeholder">
-          <span aria-hidden="true">▶</span>
+          <span class="video-placeholder-asset" aria-hidden="true"></span>
           <p data-i18n="videoPlaceholder">这里预留 Bilibili / YouTube 嵌入播放器。</p>
         </div>
       </div>
@@ -408,6 +430,7 @@
   </div>
 
   <script src="/js/telemetry.js?v=20260623-analytics-privacy-r1"></script>
-  <script src="/js/main.js?v=20260706-private-chat-rooms-r2"></script>
+  <script src="/js/ui-motion.js?v=20260710-premium-mobile-os-r6"></script>
+  <script src="/js/main.js?v=20260710-premium-mobile-os-r6"></script>
 </body>
 </html>

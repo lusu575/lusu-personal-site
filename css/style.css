@@ -792,7 +792,7 @@ main {
 }
 
 .desktop-intro h1::after {
-  content: "★";
+  content: "";
   position: absolute;
   top: -4px;
   margin-left: 10px;
@@ -820,7 +820,7 @@ main {
 .desktop-icons {
   position: absolute;
   z-index: 3;
-  top: 196px;
+  top: 176px;
   left: 48px;
   display: grid;
   grid-template-columns: repeat(3, 136px);
@@ -1216,34 +1216,28 @@ main {
   background: linear-gradient(180deg, #8acaff, #2f82f1 58%, #0b53c9);
 }
 
-.minimize-button::before {
-  content: "";
-  display: block;
-  width: 15px;
-  height: 4px;
-  margin-top: 12px;
-  border-radius: 2px;
-  background: #fff;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.55);
-}
-
+.minimize-button::before,
 .maximize-button::before {
   content: "";
   display: block;
-  width: 15px;
-  height: 12px;
-  border: 3px solid #fff;
-  box-shadow: inset 0 3px 0 rgba(255, 255, 255, 0.55);
+  width: 26px;
+  height: 26px;
+  background-image: url("../assets/images/ui/pixel-ui-glyph-atlas.png?v=20260710-premium-mobile-os-r6");
+  background-repeat: no-repeat;
+  background-size: 200% 200%;
+  image-rendering: pixelated;
+}
+
+.minimize-button::before {
+  background-position: 0 0;
+}
+
+.maximize-button::before {
+  background-position: 100% 0;
 }
 
 .maximize-button[aria-pressed="true"]::before {
-  width: 13px;
-  height: 10px;
-  transform: translate(2px, -1px);
-  box-shadow:
-    -5px 5px 0 -2px #136de3,
-    -5px 5px 0 0 #fff,
-    inset 0 3px 0 rgba(255, 255, 255, 0.55);
+  background-position: 0 100%;
 }
 
 .window-toolbar,
@@ -1603,7 +1597,7 @@ body.is-article-reading.is-article-window-restored #knowledge {
 }
 
 body.is-article-reading.is-article-window-restored #knowledge .xp-window {
-  width: min(1240px, calc(100% - 16px));
+  width: min(1080px, calc(100% - 16px));
   height: calc(100dvh - var(--chrome-window-reserve));
   max-height: calc(100dvh - var(--chrome-window-reserve));
   margin: 24px auto 0;
@@ -1856,7 +1850,7 @@ body.is-article-reading .article-reader-sidebar {
 }
 
 .article-meta-category::before {
-  content: "🏠";
+  content: "";
 }
 
 .article-meta-published::before {
@@ -2075,7 +2069,7 @@ body.is-article-reading .article-read-progress-label span {
 }
 
 body.is-article-reading .article-read-progress-label span::before {
-  content: "📖";
+  content: "";
   font-size: 18px;
   line-height: 1;
 }
@@ -2475,7 +2469,7 @@ body.is-article-reading .article-figure {
 }
 
 .video-thumb::after {
-  content: "▶";
+  content: "";
   position: absolute;
   left: 50%;
   top: 50%;
@@ -3154,36 +3148,16 @@ body.is-article-reading .article-figure {
 }
 
 .send-bubble-icon {
-  position: relative;
   width: 34px;
-  height: 27px;
-  border: 2px solid #315a82;
-  border-radius: 10px;
-  background: #eefaff;
-}
-
-.send-bubble-icon::before,
-.send-bubble-icon::after {
-  content: "";
-  position: absolute;
-  top: 11px;
-  width: 4px;
-  height: 4px;
-  background: #315a82;
-}
-
-.send-bubble-icon::before {
-  left: 9px;
-  box-shadow: 7px 0 0 #315a82;
-}
-
-.send-bubble-icon::after {
-  left: 5px;
-  top: auto;
-  bottom: -8px;
-  width: 12px;
-  height: 12px;
-  clip-path: polygon(0 0, 100% 0, 0 100%);
+  height: 34px;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+  background-image: url("../assets/images/ui/pixel-ui-glyph-atlas.png?v=20260710-premium-mobile-os-r6");
+  background-position: 100% 100%;
+  background-repeat: no-repeat;
+  background-size: 200% 200%;
+  image-rendering: pixelated;
 }
 
 .chatroom-footer {
@@ -3337,13 +3311,8 @@ body.is-article-reading .article-figure {
 }
 
 .chatroom-window.is-private-room .send-bubble-icon {
-  border-color: #bdd1f2;
-  background: #18243a;
-}
-
-.chatroom-window.is-private-room .send-bubble-icon::before,
-.chatroom-window.is-private-room .send-bubble-icon::after {
-  background: #bdd1f2;
+  border-color: transparent;
+  background-color: transparent;
 }
 
 .about-window {
@@ -3807,7 +3776,7 @@ body.is-article-reading .article-figure {
   border-radius: 50%;
   background: #35ee62;
   box-shadow: 0 0 0 2px rgba(83, 255, 99, 0.18), 0 0 8px #53ff63;
-  animation: blink 1200ms infinite;
+  animation: none;
 }
 
 .modal[hidden] {
@@ -4947,9 +4916,9 @@ body.is-article-reading .article-figure {
   }
 
   .desktop-icons {
-    top: 324px;
+    top: 240px;
     left: 18px;
-    grid-template-columns: repeat(3, 132px);
+    grid-template-columns: repeat(4, 132px);
     grid-auto-rows: 132px;
     gap: 10px;
   }

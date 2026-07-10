@@ -5,3 +5,6 @@ node_modules/
 .codex-remote-attachments/
 .codex-screenshots/
 .codex-wrangler-preview*.log
+output/playwright/
+output/imagegen/
+.playwright-cli/

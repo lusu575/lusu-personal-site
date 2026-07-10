@@ -2,6 +2,37 @@
 
 本文件记录鲁肃个人站的功能、界面、后端、部署与项目约定变更。每次修改项目后都应同步更新这里，方便后续 AI / Codex 对话快速了解最近改动。
 
+## 2026-07-10（本地功能分支，尚未发布）
+
+- GPT-5.6 Premium Interaction & Mobile OS Redesign：
+  - 主站改为“同一业务状态、两套呈现壳”：桌面端升级为 Neo-XP / Pixel Glass OS，继续保持 Windows XP + Pixel Art + Y2K 桌面语义；移动端不再压缩桌面布局，改为原创、受 iOS 交互启发的虚拟手机系统，包含 Home App grid、Dock、全屏 App、状态区、Home 控制和 safe-area 适配。
+  - `js/main.js` 继续作为路由、语言、账号、文章、视频、游戏、聊天室和主题的唯一业务状态源；新增 `css/mobile-ios-shell.css`、`css/motion-system.css`、`js/mobile-shell.js`、`js/ui-motion.js` 只负责呈现、视口适配和动效委托，不复制业务状态，不重挂载高耦合 DOM。
+  - image2 生成 morning / day / dusk / night 四时段竖版壁纸、透明移动状态图标和像素 UI glyph atlas；窗口最小化/最大化/还原与聊天发送等可见图标改为本地位图，不再使用 CSS 几何拼图。
+  - 移动端覆盖 375x667、390x844、430x932 和 coarse pointer 横屏 844x390；所有主要触控目标不小于 44px，并同时处理 `env(safe-area-inset-*)` 与 `visualViewport`，避免 Dock、Home 控制或软键盘遮挡内容。
+  - 移动端语言入口收口为 44px 单按钮循环控制，继续委托原有中文 / English / 日本語按钮和 URL 同步，不创建第二份语言状态；窗口关闭、账号、Dock 与 App 入口也统一通过 44px 触控目标检查。
+  - 移动端完整 Dock、账号与语言操作收口到 Home；进入 Knowledge、Videos、Resources、Games、Blog、Chatroom 或 About 后，只保留顶部 Appbar 与底部 Home indicator，隐藏重复页内 titlebar，为横竖屏内容回收约 100-128px 高度，同时保留明确的 44px Home 返回入口。
+  - 移动 Knowledge 搜索、卡片、Games 列表、About、Chat 和文章详情按短竖屏/短横屏重排；搜索结果状态只在真实搜索时展开独立行，Games CTA 使用卡片内尾随列，Chat 输入/计数/发送使用互不覆盖的三列。文章元数据与摘要按高度压缩，阅读进度与回顶控制移入 Appbar 空余区域，不再覆盖复制按钮或正文。
+  - 手机端字号与按钮按视口密度自适应，但主要触控目标仍不小于 44px；新增“包含且不相交”验收，覆盖标题、摘要、元信息、CTA、相邻卡片、密码房按钮和聊天 footer，禁止用裁掉 UI、缩小按钮或隐藏越界来伪装通过。
+  - 桌面景深与视差统一到单个 `requestAnimationFrame` 循环，位移上限 6px；`document.hidden`、`prefers-reduced-motion` 或用户关闭动效时停止，在线状态不再持续闪烁。
+  - Web Animations 完成后会取消填充效果并清理 transform / filter，避免不可见的动画终态把文章阅读进度等 fixed 控件错误绑定到窗口坐标系。
+  - 保留既有公开路由、Pages Functions API、Cloudflare D1、HttpOnly 账号会话、游戏云存档、普通大厅与前端加密密码房、三语内容、视频系统和遥测隐私边界；本次没有修改正式部署链路。
+- 公开更新与缓存收口：
+  - 本次可见改动只使用一条合并 `site-updates` 更新记录：ID `seed-update-2026-07-10-premium-interaction-mobile-os`，slug `2026-07-10-premium-interaction-mobile-os`，并要求 zh / en / ja fallback、Functions seed 与 schema seed 同步。
+  - 本轮公开 CSS / JS、移动状态图和强视觉资产引用统一使用 query `20260710-premium-mobile-os-r6`；`js/telemetry.js` 保留既有隐私发布版本。以后新增或改动公开 CSS、JS 或强视觉资产时，必须同步 `index.html` 对应 query。
+- 当前视觉与交互证据：
+  - 390x844 的 Home 与 Chat 均无横向溢出；375x667 的 7 个 App 全部位于首屏；430x932 纳入回归矩阵。
+  - 844x390 coarse pointer 横屏 Chat 的输入框与发送按钮位于底部 Home indicator 安全区上方，可正常触达。
+  - 1440x900 桌面 full motion 下视差实测水平/垂直轴均未超过 6px 上限；本轮验证页面控制台为 0 error / 0 warning。
+  - 390x844 与 1440x900 的 Home、Knowledge、Videos、Resources、Games、Blog、Chatroom、About 全路由矩阵均为单一活动页面且无横向溢出；760 / 761 壳层边界、三语公开更新直链、Back / Forward、账户层级、欢迎与视频弹窗、密码房面板、reduced/off 动效也已通过。
+  - 移动内容容量专项通过：375x667 的 App 窗口高 565px，Chat 密码房日志约 349px，Games 首屏完整显示 2 张卡；844x390 的 App 窗口高 328px，Games 列表由旧的 180px 恢复为 327px 并完整显示 4 张卡，Chat 密码房日志约 212px。
+  - 359x500 短屏文章首屏保留约 88px 正文；375x667 / 844x390 的文章首屏分别保留约 263px / 131px 可读正文，阅读控件位于 Appbar，滚到末尾后最后正文仍完整可见；三语全路由 Appbar 标题无截断。
+  - 新增 359x500、375x667、390x844、844x390 × zh / en / ja × 7 App 的无重叠矩阵，并深测 12 个密码房状态与 12 个文章状态；15,486 条几何断言全部通过，卡片、文案、按钮相交为 0，控制台为 0 error / 0 warning。
+  - 全量浏览器回归 21/21 检查通过，本地 API 回归 21/21 通过，包含账号 HttpOnly 会话、云存档、普通聊天、真实 PBKDF2 + AES-GCM 密码房加密/解密与 5 个游戏入口。
+  - 基线与本轮截图仅保存在本地 QA 输出目录，不提交仓库；详细证据和剩余门槛见 `design-qa-mobile-os.md`。
+- 发布状态：
+  - 当前改动只保留在功能分支，未推送、未合并 `main`、未触发 Cloudflare Pages；正式链路仍为 `GitHub main -> Cloudflare Pages Git 自动部署 -> lusu575.com`。
+  - 最终 `npm.cmd run build`、资源 query、全路由浏览器多视口回归与差异检查均已通过；本轮以功能分支本地提交收口，仍不推送或触发生产部署。
+
 ## 2026-07-06
 
 - 匿名聊天室新增暗色前端加密密码房：

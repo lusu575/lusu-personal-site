@@ -26,8 +26,8 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 
 ## 风格与文案规则
 
-- 保持 Windows XP + Pixel Art + Y2K + 可爱复古互联网桌面风格。
-- 必须保留桌面感、蓝色标题栏、XP 风格按钮、任务栏、状态栏、像素图标、蓝天白云、草地和老互联网氛围。
+- 桌面端保持 Windows XP + Pixel Art + Y2K + 可爱复古互联网桌面风格，并沿 Neo-XP / Pixel Glass OS 方向演进。
+- 桌面端必须保留桌面感、蓝色标题栏、XP 风格按钮、任务栏、状态栏、像素图标、蓝天白云、草地和老互联网氛围；移动端使用原创、受 iOS 交互启发的虚拟手机 OS，不要把桌面 XP 布局压缩后继续当作手机界面。
 - 避免现代极简博客风、商务 landing page、大面积纯白卡片堆砌、过重单色渐变背景。
 - 可见文案必须维护中文 / English / 日本語 三种语言，不能只改一种语言。
 - 调整图标、按钮、任务栏标签、桌面入口或标题栏时，必须检查图标和文字的对齐、换行、截断和小屏幕显示。
@@ -37,14 +37,29 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 顶部栏和底部任务栏也跟随同一套 `body[data-time-theme]` 四时段主题变量；维护 `.xp-topbar`、`.xp-taskbar`、Start、任务栏按钮、账号入口、语言切换或状态托盘时，必须同时检查 morning / day / dusk / night 四套外观，保持无竖线的现代玻璃像素 HUD 方向，并保留现有图标资源。
 - 维护右上角账号入口、语言切换或其他顶栏浮层时，必须同时检查 `.xp-topbar` 的裁剪行为和 `.site-shell > header` / `.site-shell > main` 的 stacking context。账号弹窗需要能从顶栏按钮下方溢出显示，且顶栏所在 `header` 必须高于主内容 `main`；否则会出现首页点击像没反应、其他栏目被窗口遮挡的问题。
 - 修改账号入口、顶栏浮层或任何公开可见交互后，必须同步更新 `CHANGELOG.md`、`PROJECT_CONTEXT.md`、`content.updates` 的日期项、`site-updates` 三语记录、相关 seed、以及 CSS/JS query。不能只改代码不写记录，也不能只写 changelog 而不让首页最近更新日期变更。
-- 底部任务栏必须固定贴合浏览器视口下沿；维护窗口高度、页面 padding、文章阅读浮层或移动端断点时，必须为 `.xp-taskbar` 预留空间，避免任务栏被页面内容顶下去、盖住正常窗口或与窗口控件重叠。
-- 460px 以下窄屏手机顶部栏通常会换成两行，窗口高度计算必须使用足够的 `--chrome-topbar-height` 预留值；修改 `.xp-topbar`、`.topbar-actions`、语言按钮或账号入口后，必须复测 375x667、390x844 和横屏 844x390。
+- 桌面底部任务栏和移动 Home 完整 Dock 必须固定贴合浏览器视口下沿；移动 App 内只保留 Home indicator。维护窗口高度、页面 padding 或文章阅读浮层时，必须按当前壳层为底部安全区预留空间，避免导航、indicator 或固定控件盖住内容。
+- 移动顶部高度由 `--mobile-header-height` 统一组合 safe area、状态区和 Appbar；不得把旧的“460px 以下两行 XP 顶栏”或 `--chrome-topbar-height` 当作新移动壳的布局来源。修改 `.xp-topbar`、`.topbar-actions`、语言按钮或账号入口后，必须复测 375x667、390x844 和横屏 844x390。
 - 非首页窗口页背景必须跟随同一套 `body[data-time-theme]` 四时段背景图，当前资产为 `assets/images/window-backdrops/<time>.png`；它们必须比首页更低干扰、更简单、更现代。不要恢复成单一蓝绿色渐变，也不要把首页大场景图直接拿来压在窗口后面喧宾夺主。
 - 当前四个时段均已启用动态云层：`assets/images/wallpaper-dynamic/<time>/base-clean.png` 作为无云底图，独立透明云层按 1672x941 舞台坐标摆放并沿同一主风向慢速错相漂移；morning / dusk / night 的低地平线云默认保留静态，避免移动后像贴在地面。
 - 本地调试动态壁纸可用 `?wallpaper=morning` / `?wallpaper=day` / `?wallpaper=dusk` / `?wallpaper=night` 强制预览指定时间段；该预览模式可以临时加快动画以便肉眼确认移动，不要为了预览硬编码当前时间。
 - 首页壁纸动画只使用 CSS `transform` / `opacity`，不要用 JS 每帧修改 `left` / `top`，不要使用整屏 GIF、整屏 APNG 或大视频循环。
 - 首页动态壁纸必须支持 `prefers-reduced-motion`、页面隐藏时暂停动画、手机端减少图层数量和动画强度；减少动态或小屏降级时应回到对应静态壁纸。
 - 云、树冠/树叶/花瓣等尚未从底图完全拆分时，默认使用静态底图兜底，不启用同位置移动叠层，避免重影；电视机本体不做动画，只允许屏幕区域动。
+
+## 双呈现壳、状态与动效规则
+
+- 桌面 Neo-XP 与移动虚拟 OS 是同一站点的两套呈现壳，不是两套应用。`js/main.js` 始终是路由、语言、账号、文章、视频、游戏、聊天室和主题的唯一业务状态源；严禁在壳层复制、镜像或重新维护这些状态。
+- `js/mobile-shell.js` 只能观察既有状态、维护 safe-area / `visualViewport` 等短生命周期呈现变量，并把导航委托给原有 `data-route` 元素；不得建立第二套路由器、账号状态或内容缓存。
+- `js/ui-motion.js` 只负责过渡与动效编排；业务提交必须继续由现有处理函数完成，并保证一次用户操作只提交一次。动效失败、关闭或减少动态时，业务操作仍必须立即完成。
+- 不要克隆或 reparent 账号入口/弹窗、文章详情、视频弹窗、游戏或聊天等高耦合 DOM。移动壳应通过 CSS 和轻量装饰节点呈现现有内容，避免同一 ID、事件监听、焦点或异步请求产生两套生命周期。
+- 公开呈现文件目前包括 `css/style.css`、`css/mobile-ios-shell.css`、`css/motion-system.css`、`js/main.js`、`js/mobile-shell.js` 和 `js/ui-motion.js`。新增或修改任何公开 CSS、JS、图标、壁纸或强视觉资产时，必须同步 `index.html` 中对应 query；同一发布批次使用同一可追踪版本。
+- 移动 Home 使用 App grid 与完整 Dock；栏目 App 内不得同时保留 Appbar、页内 XP titlebar 和完整 Dock，应只使用单一 Appbar 与底部 Home indicator，把高度留给内容。账号和语言控制保留在 Home，不在每个栏目 App 内常驻；用户始终可通过 44px Home 控制返回。主要触控目标不得小于 44x44 CSS px。必须同时处理 `env(safe-area-inset-*)` 和 `visualViewport`，使顶部状态区、软键盘、输入框、发送按钮和 Home 控制互不遮挡。
+- 移动端固定复测 359x500、375x667、390x844、430x932 和 coarse pointer 横屏 844x390；至少验证 Home、Chat、账号弹窗、文章详情、视频弹窗和底部返回路径。验收不能只看“没有横向溢出”：App 窗口应至少占视口高度 80%，Games 列表要使用可用高度，Chat 日志区在短竖屏/横屏要分别保留至少 260px/150px，短屏文章首屏至少显示 44px 无遮挡正文。文章进度与回顶控制应放在移动 Appbar 的空余区域，不能覆盖复制按钮或正文。
+- 移动排版以“包含且不相交”为硬门槛：卡片内标题、摘要、元信息和 CTA 必须完全位于卡片内，结构子项不得伸进下一张卡；输入框、计数、发送按钮、密码房操作和 footer 文案不得相互覆盖。不得靠把按钮缩到 44px 以下、把反馈字缩到难读或用 `overflow: hidden` 掩盖排版错误来通过验收；横竖屏与 zh / en / ja 长文案都要做真实几何检查。
+- 桌面视差与景深统一使用单个 `requestAnimationFrame` 协调循环，任一轴位移不得超过 6px；禁止每个组件创建自己的永久 RAF。`document.hidden`、`prefers-reduced-motion` 或用户关闭动效时必须停止并回到稳定静态状态。
+- 在线状态、托盘图标和其他状态提示不得持续闪烁。移动和桌面过渡都要短促、可中断，并禁止通过整页 `transform` 破坏 fixed 元素的包含块。
+- 四时段移动竖版壁纸与移动状态图标使用 image2 生成并复制到项目资产目录；不要把 Codex 临时生成目录或本地 QA 输出目录写进公开页面。QA 截图属于本地证据，不提交仓库。
+- 壳层改造必须保持现有公开路由、Pages Functions API、D1、HttpOnly 账号会话、游戏云存档、普通大厅与前端加密密码房、三语内容、视频系统和遥测隐私边界不变，除非用户另行明确授权功能变更。
 
 ## 关于我社交图标规则
 
@@ -59,10 +74,13 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 改首页、窗口、任务栏、图标、卡片、弹窗、游戏外壳或任意前端样式时，必须检查手机端适配：
 
 - 避免横向溢出。
-- 避免顶部常驻区域占屏过多。
+- 移动端必须按虚拟手机 OS 的 Home / 全屏 App 结构检查，不能只确认缩窄的桌面 XP 布局“还能显示”。
+- 避免顶部常驻区域占屏过多；状态区、动态岛式装饰、账号入口和语言入口都要遵守 safe area。
 - 避免弹窗超出屏幕。
 - 避免游戏 iframe 尺寸过大。
+- 所有主要触控目标至少 44x44 CSS px，并验证 `visualViewport` 改变时输入控件仍在底部 Home indicator 与 safe area 上方。
 - 确认桌面端和手机端文字不重叠、不被图标遮挡、不从按钮或卡片中溢出。
+- 手机端卡片、文案与按钮必须做二维相交检查；单看父卡片自身没有溢出不足以证明子按钮没有压住下一张卡。
 
 ## 匿名聊天室安全规则
 

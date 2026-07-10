@@ -1,10 +1,11 @@
 # lusu-personal-site
 
-鲁肃的个人站，一个 Windows XP + Pixel Art + Y2K 桌面风格的个人空间。
+鲁肃的个人站，一个保留 Windows XP + Pixel Art + Y2K 桌面识别度、同时提供原创移动虚拟 OS 的个人空间。
 
 ## 当前状态
 
 - 首页使用 morning / day / dusk / night 四时段像素壁纸，并已接入无云底图 + 单朵独立云层的动态云层效果。
+- 公开主站使用“同一业务状态、两套呈现壳”：桌面端是 Neo-XP / Pixel Glass OS，移动端是带状态栏、App Home 和 safe-area 适配的虚拟手机系统。完整 Dock、账号和语言操作只在 Home 常驻，栏目内使用单一 Appbar、全屏内容和 Home indicator；路由、语言、账号、文章、视频、游戏与聊天数据仍只由 `js/main.js` 管理。
 - 知识库文章内容保存在 Cloudflare D1，正式文章需要同时维护中文 / English / 日本語 三语内容。
 - 关于我窗口提供 X、GitHub、Bilibili、Instagram、Discord 小图标入口，链接从 `GET /api/social-links` 公开只读读取。
 - `/admin/` 是独立中文管理后台，只有 `users.role = admin` 的站长账号可以访问，用于文章管理、视频管理、社交链接、访问监控、点击埋点和聊天室管理。
@@ -26,8 +27,12 @@
 ## 关键文件
 
 - 主站入口：`index.html`
-- 主站样式：`css/style.css`
-- 主站逻辑：`js/main.js`
+- 主站基础样式：`css/style.css`
+- 桌面/共享动效样式：`css/motion-system.css`
+- 移动虚拟 OS 样式：`css/mobile-ios-shell.css`
+- 主站业务逻辑：`js/main.js`
+- 共享交互动效：`js/ui-motion.js`
+- 移动呈现壳：`js/mobile-shell.js`
 - 访问埋点：`js/telemetry.js`
 - 后台页面：`admin/index.html`、`admin/admin.css`、`admin/admin.js`
 - 后台访问拦截：`functions/admin/_middleware.js`

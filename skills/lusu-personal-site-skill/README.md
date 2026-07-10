@@ -17,16 +17,23 @@ skills/lusu-personal-site-skill/SKILL.md
 - 新增长期注意事项、维护规则、踩坑点时，必须同步补充到本 Skill。
 - Skill 规则变化时，必须同步更新本 README。
 - 如果改动涉及 `/admin/` 管理后台、后台权限、后台 API、后台统计、后台视频管理、后台社交链接管理、后台聊天室治理或后台专用文档，必须额外先读取 `admin/docs/ADMIN_PROJECT_CONTEXT.md`、`admin/docs/ADMIN_SKILL.md` 和必要时的 `admin/docs/ADMIN_CHANGELOG.md`。
-- 保持 Windows XP + Pixel Art + Y2K + 可爱复古互联网桌面风格。
+- 桌面端保持 Windows XP + Pixel Art + Y2K，并沿 Neo-XP / Pixel Glass OS 演进；移动端使用原创、受 iOS 交互启发的虚拟手机 OS，不能只压缩桌面 XP 布局。
 - 可见文案必须维护中文 / English / 日本語。
 - 改首页、窗口、任务栏、图标、弹窗、游戏外壳等前端内容时，必须检查手机端适配。
+- 桌面壳与移动壳共享同一业务状态；`js/main.js` 是 route/account/article/video/game/chat 等状态的唯一来源，禁止壳层复制或分叉状态。
+- `mobile-shell.js` 只能观察现有状态并委托既有 `data-route`；不要克隆或 reparent 账号、文章详情、视频弹窗、游戏和聊天等高耦合 DOM。
+- 移动 Home 使用 App grid / 完整 Dock；栏目 App 只保留单一 Appbar 和底部 Home indicator，不重复显示页内 XP titlebar 或完整 Dock。账号与语言控制只在 Home 常驻，App 内通过 44px Home 控制返回。主要触控目标至少 44x44 CSS px，同时处理 safe area 与 `visualViewport`，固定复测 359x500、375x667、390x844、430x932 和 coarse 横屏 844x390。
+- 移动 QA 必须量内容容量和真实几何，不能只检查父容器溢出：App 窗口高度至少占视口 80%，Games 列表不得继承桌面高度上限，Chat 日志在 375x667 / 844x390 至少为 260px / 150px，短屏文章首屏至少有 44px 无遮挡正文；卡片标题/摘要/元信息/CTA、聊天输入/计数/发送与密码房按钮必须完全包含且互不相交，zh / en / ja 都要检查。
+- 桌面景深与视差使用单个 RAF，位移上限 6px；页面隐藏、减少动态或用户关闭动效时停止，在线状态等提示不得持续闪烁。
+- 新增或修改 `mobile-ios-shell.css`、`motion-system.css`、`mobile-shell.js`、`ui-motion.js` 或其他公开 CSS/JS/强视觉资产时，必须同步 `index.html` 对应 query。
+- 移动竖版壁纸和状态图标等生成素材必须由 image2 产出并复制到项目资产目录；本地 QA 截图与临时生成文件不得提交。
 - 首页四时段壁纸基础图放在 `assets/images/wallpapers/`；时间段统一为 05:00-10:59 morning、11:00-16:59 day、17:00-19:59 dusk、20:00-04:59 night。
 - 首页保留 `wallpaper-root` / `wallpaper-stage` 舞台坐标结构和动画 layer DOM/class；当前 morning / day / dusk / night 四时段均已启用无云底图 + 独立云层的动态云层。
 - 顶部栏和底部任务栏跟随同一套 `body[data-time-theme]` 四时段主题；维护顶部栏、任务栏、Start、任务按钮、账号入口、语言切换或状态托盘时，必须同时检查四套外观，保持无竖线的现代玻璃像素 HUD 方向，并保留现有图标资源。
 - 维护右上角账号入口、语言切换或其他顶栏浮层时，必须同时检查 `.xp-topbar` 的裁剪行为和 `.site-shell > header` / `.site-shell > main` 的 stacking context；账号弹窗必须能从按钮下方溢出显示，且 `header` 必须高于 `main`，否则首页会像点了没反应、其他栏目会被窗口遮挡。
 - 每次改动都必须写记录并更新日期：至少更新 `CHANGELOG.md`；公开可见更新还必须补 `PROJECT_CONTEXT.md`、`content.updates`、`site-updates` 三语记录、相关 seed 和资源 query，确保首页最近更新日期真的变化。
 - 底部任务栏必须固定贴合浏览器视口下沿，窗口高度、页面 padding、文章阅读浮层和移动端断点都要为它预留空间，避免导航被顶下去或盖住正常窗口。
-- 460px 以下窄屏手机顶部栏通常会换成两行，窗口高度计算必须使用足够的 `--chrome-topbar-height` 预留值；修改顶部栏或任务栏后必须复测 375x667、390x844 和横屏 844x390。
+- 旧版 460px 以下“两行 XP 顶栏”规则只用于兼容历史样式；当前移动壳必须按虚拟手机 OS 的状态区、全屏 App、Dock 和 Home 控制校验，不能恢复成压缩桌面布局。
 - 非首页窗口页背景必须跟随 `body[data-time-theme]` 的四时段专用图片 `assets/images/window-backdrops/<time>.png`，并保持比首页更低干扰、更简单的现代遮罩，不要恢复成单一蓝绿色渐变，也不要直接复用首页大场景图。
 - 关于我窗口的 X、GitHub、Bilibili、Instagram、Discord 必须保持小图标按钮展示，链接从 `GET /api/social-links` 公开读取，后台通过 `GET/PUT /api/admin/social-links` 修改并保存到 `site_runtime_state.about_social_links`。
 - 本地调试动态壁纸可用 `?wallpaper=morning` / `?wallpaper=day` / `?wallpaper=dusk` / `?wallpaper=night` 强制预览指定时间段；预览模式可临时加快动画，不要为了预览硬编码当前时间。

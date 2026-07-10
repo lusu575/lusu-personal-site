@@ -102,6 +102,7 @@ const translations = {
     taskbarNavAria: "底部主导航",
     windowMinimizeAria: "最小化窗口",
     windowMaximizeAria: "最大化窗口",
+    windowRestoreAria: "还原窗口",
     closeWindowAria: "关闭窗口",
     closeDialogAria: "关闭对话框",
     accountSignedInPrefix: "账号：",
@@ -282,6 +283,7 @@ const translations = {
     taskbarNavAria: "Taskbar navigation",
     windowMinimizeAria: "Minimize window",
     windowMaximizeAria: "Maximize window",
+    windowRestoreAria: "Restore window",
     closeWindowAria: "Close window",
     closeDialogAria: "Close dialog",
     accountSignedInPrefix: "Account: ",
@@ -462,6 +464,7 @@ const translations = {
     taskbarNavAria: "下部メインナビゲーション",
     windowMinimizeAria: "ウィンドウを最小化",
     windowMaximizeAria: "ウィンドウを最大化",
+    windowRestoreAria: "ウィンドウを元に戻す",
     closeWindowAria: "ウィンドウを閉じる",
     closeDialogAria: "ダイアログを閉じる",
     accountSignedInPrefix: "アカウント：",
@@ -579,6 +582,36 @@ const labels = {
 
 const content = {
   updates: [
+    {
+      article_id: "seed-update-2026-07-10-premium-interaction-mobile-os",
+      slug: "2026-07-10-premium-interaction-mobile-os",
+      category: "site-updates",
+      tags: ["design", "mobile", "interaction", "accessibility"],
+      cover_image: "",
+      status: "published",
+      is_pinned: 0,
+      created_at: "2026-07-10T04:30:00.000Z",
+      updated_at: "2026-07-10T04:30:00.000Z",
+      published_at: "2026-07-10T04:30:00.000Z",
+      fallbackOnly: true,
+      icon: "system",
+      date: "2026.07.10",
+      title: {
+        zh: "GPT-5.6 高级交互与移动 OS 重设计",
+        en: "GPT-5.6 Premium Interaction & Mobile OS Redesign",
+        ja: "GPT-5.6 プレミアム操作とモバイル OS 再設計"
+      },
+      summary: {
+        zh: "桌面升级为 Neo-XP / Pixel Glass，移动端重建为原创虚拟手机 OS，同时完整保留既有内容、账户、聊天与隐私能力。",
+        en: "Desktop evolves into Neo-XP / Pixel Glass and mobile becomes an original virtual phone OS while existing content, accounts, chat, and privacy guarantees remain intact.",
+        ja: "デスクトップを Neo-XP / Pixel Glass へ進化させ、モバイルを独自の仮想スマートフォン OS に再構築しながら、既存のコンテンツ、アカウント、チャット、プライバシー機能を維持します。"
+      },
+      content_markdown: {
+        zh: "# GPT-5.6 高级交互与移动 OS 重设计\n\n这次合并更新把同一套网站内容重新组织成两种适合不同屏幕的操作系统体验：桌面继续延展 Windows XP、像素艺术与 Y2K 气质，手机端则从压缩桌面布局彻底重建为原创的 iOS-inspired 虚拟手机 OS。\n\n## 桌面：Neo-XP / Pixel Glass\n\n- 桌面窗口、任务栏、图标和弹层升级为 Neo-XP / Pixel Glass 视觉，保留熟悉的 XP 轮廓并增加更清晰的层次与动效。\n- 页面切换、窗口出现、图标按压和时段主题变化获得统一的过渡节奏，同时避免让装饰动画干扰阅读和操作。\n- 首页、知识库、视频、资源、游戏、聊天室与关于我继续使用原来的路由和内容来源。\n\n## 移动端：原创虚拟手机 OS\n\n- 手机端拥有独立的状态区、App 主屏和 Dock，各栏目以全屏 App 形式打开，不再只是把桌面窗口缩窄排列。\n- 顶部和底部会尊重设备安全区，窄屏、短屏与横屏都拥有对应布局，返回主屏和栏目切换保持直观。\n- 四个时段使用 image2 生成的竖版像素壁纸，状态图标同样由 image2 生成，并与既有站点角色和色彩保持一致。\n\n## 能力、隐私与无障碍保持完整\n\n- 所有原有路由、API、D1 数据、账户登录与游戏云存档继续沿用同一套状态和接口。\n- 公开聊天室、密码聊天的浏览器端加密、中文 / English / 日本語内容、视频系统和遥测隐私边界均保持不变。\n- 动效支持 `prefers-reduced-motion`，键盘焦点保持清晰，并移除持续闪烁，避免为视觉效果牺牲可访问性。",
+        en: "# GPT-5.6 Premium Interaction & Mobile OS Redesign\n\nThis consolidated update reshapes the same site content into two screen-appropriate operating-system experiences. Desktop extends the Windows XP, pixel-art, and Y2K identity, while mobile is rebuilt from a compressed desktop layout into an original iOS-inspired virtual phone OS.\n\n## Desktop: Neo-XP / Pixel Glass\n\n- Desktop windows, the taskbar, icons, and floating layers move to a Neo-XP / Pixel Glass treatment that preserves the familiar XP silhouette with clearer depth and motion.\n- Route changes, window entrances, icon presses, and time-of-day theme changes now follow one motion rhythm without letting decoration interrupt reading or control.\n- Home, Knowledge, Videos, Resources, Games, Chat, and About continue to use their existing routes and content sources.\n\n## Mobile: an original virtual phone OS\n\n- Mobile now has its own status area, App Home Screen, and Dock, with every section opening as a full-screen App instead of a narrow stack of desktop windows.\n- Top and bottom safe areas are respected, with dedicated behavior for narrow, short, and landscape screens plus direct Home Screen and App navigation.\n- Four time-of-day portrait pixel wallpapers are generated with image2, and the status glyphs are also generated with image2 to match the existing characters and palette.\n\n## Capabilities, privacy, and access stay intact\n\n- Every existing route, API, D1 record, account session, and game cloud save continues through the same state and service contracts.\n- Public chat, browser-side encrypted password chat, Chinese / English / Japanese content, video delivery, and telemetry privacy boundaries remain available.\n- Motion honors `prefers-reduced-motion`, keyboard focus stays visible, and continuous flashing is removed so the visual upgrade does not compromise accessibility.",
+        ja: "# GPT-5.6 プレミアム操作とモバイル OS 再設計\n\n今回の統合更新では、同じサイト内容を画面に適した二つの OS 体験として再構成しました。デスクトップは Windows XP、ピクセルアート、Y2K の個性を発展させ、モバイルは縮小されたデスクトップ配置から、独自の iOS-inspired 仮想スマートフォン OS へ全面的に作り直しています。\n\n## デスクトップ：Neo-XP / Pixel Glass\n\n- ウィンドウ、タスクバー、アイコン、フローティングレイヤーを Neo-XP / Pixel Glass 表現へ更新し、親しみやすい XP の輪郭を保ちながら奥行きと操作の反応を明確にしました。\n- ページ遷移、ウィンドウ表示、アイコン押下、時間帯テーマの変化を統一したリズムに整え、装飾が閲覧や操作を妨げないようにしています。\n- ホーム、知識庫、動画、リソース、ゲーム、チャット、プロフィールは、従来のルートとコンテンツソースをそのまま利用します。\n\n## モバイル：独自の仮想スマートフォン OS\n\n- モバイル専用のステータス領域、App ホーム画面、Dock を用意し、各セクションを狭いデスクトップウィンドウの積み重ねではなく、全画面 App として開きます。\n- 上下のセーフエリアを尊重し、狭い画面、低い画面、横向きに対応したレイアウトと、分かりやすいホーム復帰・App 切り替えを備えます。\n- 4 時間帯の縦長ピクセル壁紙を image2 で生成し、ステータスアイコンも image2 で生成して、既存キャラクターと配色に合わせました。\n\n## 機能、プライバシー、アクセシビリティを維持\n\n- 既存の全ルート、API、D1 データ、アカウントセッション、ゲームのクラウドセーブは、同じ状態とサービス契約を引き続き使います。\n- 公開チャット、ブラウザ側で暗号化するパスワードチャット、中国語 / English / 日本語コンテンツ、動画、テレメトリーのプライバシー境界も維持します。\n- `prefers-reduced-motion` に対応し、キーボードフォーカスを明確に保ち、継続的な点滅をなくして、視覚表現とアクセシビリティを両立します。"
+      }
+    },
     {
       icon: "🔒",
       date: "2026.07.06",
@@ -2032,7 +2065,7 @@ function languageSupportTagElements(item) {
     tag.className = `tag language-tag${supported[lang] ? " supported" : " unsupported"}`;
     tag.title = title;
     tag.setAttribute("aria-label", title);
-    tag.textContent = `${name} ${supported[lang] ? "✓" : "×"}`;
+    tag.textContent = title;
     return tag;
   });
 }
@@ -2082,39 +2115,223 @@ function setLanguage(lang, options = {}) {
   loadArticles();
   loadVideos();
   updateWelcomeGreeting();
+  updateArticleWindowButton();
   updateVideoWindowButton();
   renderAccountWidget();
   updateChatSyncStatus();
   syncChatRoomUi();
 }
 
-function navigate(route, options = {}) {
-  const nextRoute = pageIds.includes(route) ? route : "home";
-  if (!(nextRoute === "knowledge" && options.articleSlug) && articleState.currentSlug) {
-    articleState.currentSlug = "";
-    articleState.currentArticle = null;
-    articleState.detailLoadingKey = "";
-    renderKnowledge();
+function routeReturnTarget(route, motionKind) {
+  if (!pageIds.includes(route)) {
+    return null;
   }
-  document.querySelectorAll(".page").forEach((page) => {
-    page.classList.toggle("active", page.id === nextRoute);
+  const selector = motionKind === "window-minimize"
+    ? ".taskbar-tabs button[data-route]"
+    : ".desktop-icon[data-route]";
+  return Array.from(document.querySelectorAll(selector)).find((element) => element.dataset.route === route) || null;
+}
+
+const routeIconRectCache = new Map();
+
+function elementMotionRect(element) {
+  if (!(element instanceof Element)) {
+    return null;
+  }
+  const rect = element.getBoundingClientRect();
+  if (rect.width < 1 || rect.height < 1) {
+    return null;
+  }
+  return {
+    top: rect.top,
+    right: rect.right,
+    bottom: rect.bottom,
+    left: rect.left,
+    width: rect.width,
+    height: rect.height
+  };
+}
+
+function captureRouteIconRects() {
+  if (document.body.dataset.route !== "home") {
+    return;
+  }
+  const shell = document.documentElement.dataset.uiShell || "";
+  document.querySelectorAll(".desktop-icon[data-route]").forEach((element) => {
+    const rect = elementMotionRect(element);
+    if (rect && pageIds.includes(element.dataset.route)) {
+      routeIconRectCache.set(element.dataset.route, {
+        rect,
+        shell,
+        viewportWidth: window.innerWidth,
+        viewportHeight: window.innerHeight
+      });
+    }
   });
-  document.body.dataset.route = nextRoute;
-  updateNavigationState(nextRoute);
-  if (nextRoute === "chatroom") {
-    initChatroom();
+}
+
+function cachedRouteIconRect(route) {
+  const cached = routeIconRectCache.get(route);
+  if (!cached
+    || cached.shell !== (document.documentElement.dataset.uiShell || "")
+    || cached.viewportWidth !== window.innerWidth
+    || cached.viewportHeight !== window.innerHeight) {
+    return null;
   }
-  if (options.updateUrl !== false && options.updateHash !== false) {
+  return cached.rect;
+}
+
+function routeExitOriginRect(route, motionKind, returnTarget) {
+  if (motionKind === "window-minimize") {
+    return elementMotionRect(returnTarget);
+  }
+  const cachedIcon = cachedRouteIconRect(route);
+  if (cachedIcon) {
+    return cachedIcon;
+  }
+  const taskButton = Array.from(document.querySelectorAll(".taskbar-tabs button[data-route]"))
+    .find((element) => element.dataset.route === route && elementMotionRect(element));
+  return elementMotionRect(taskButton) || elementMotionRect(document.querySelector(".start-button"));
+}
+
+function routeWindowFocusTarget(route) {
+  const page = pageIds.includes(route) ? document.getElementById(route) : null;
+  if (!page) {
+    return null;
+  }
+  const candidate = Array.from(page.querySelectorAll(".close-button, [data-article-back], button, a[href], input, textarea"))
+    .find((element) => focusTargetIsVisible(element));
+  if (candidate) {
+    return candidate;
+  }
+  const windowSurface = page.querySelector(":scope > .xp-window");
+  if (windowSurface) {
+    windowSurface.tabIndex = -1;
+  }
+  return windowSurface;
+}
+
+function focusTargetIsVisible(element) {
+  if (!(element instanceof Element) || element === document.body || element === document.documentElement) {
+    return false;
+  }
+  if (element.closest("[hidden]")) {
+    return false;
+  }
+  const page = element.closest(".page");
+  return (!page || page.classList.contains("active")) && element.getClientRects().length > 0;
+}
+
+let navigationRequestId = 0;
+
+function navigate(route, options = {}) {
+  const requestId = ++navigationRequestId;
+  const nextRoute = pageIds.includes(route) ? route : "home";
+  const previousRoute = pageIds.includes(document.body.dataset.route) ? document.body.dataset.route : "home";
+  if (previousRoute === "home") {
+    captureRouteIconRects();
+  }
+  const motionKind = typeof options.motionKind === "string" ? options.motionKind : "route";
+  const isExitMotion = motionKind === "window-close" || motionKind === "window-minimize";
+  const returnTarget = isExitMotion && nextRoute === "home" && previousRoute !== "home"
+    ? routeReturnTarget(previousRoute, motionKind)
+    : null;
+  const mobileHomeReturnTarget = nextRoute === "home"
+    && previousRoute !== "home"
+    && options.trigger?.matches?.(".mobile-home-button")
+    ? routeReturnTarget(previousRoute, "window-close")
+    : null;
+  const focusReturnTarget = returnTarget || mobileHomeReturnTarget;
+  const exitOriginRect = isExitMotion
+    ? routeExitOriginRect(previousRoute, motionKind, returnTarget)
+    : null;
+  let navigationCommitted = false;
+  const commitNavigation = () => {
+    if (navigationCommitted || requestId !== navigationRequestId) {
+      return;
+    }
+    navigationCommitted = true;
+    if (!(nextRoute === "knowledge" && options.articleSlug) && articleState.currentSlug) {
+      articleState.currentSlug = "";
+      articleState.currentArticle = null;
+      articleState.detailLoadingKey = "";
+      renderKnowledge();
+    }
+    document.querySelectorAll(".page").forEach((page) => {
+      page.classList.toggle("active", page.id === nextRoute);
+    });
+    document.body.dataset.route = nextRoute;
+    updateNavigationState(nextRoute);
+    if (nextRoute === "chatroom") {
+      initChatroom();
+    }
+    if (options.updateUrl !== false && options.updateHash !== false) {
       syncBrowserUrl(nextRoute, nextRoute === "knowledge" ? options.articleSlug || "" : "");
+    }
+    if (!(nextRoute === "knowledge" && options.articleSlug)) {
+      syncDocumentMeta();
+    }
+    window.scrollTo({ top: 0, behavior: "auto" });
+    window.dispatchEvent(new CustomEvent("lusu:navigation", {
+      detail: { route: nextRoute }
+    }));
+    const shouldFocusWindow = motionKind === "route" && nextRoute !== "home" && Boolean(
+      options.focusWindow === true
+        || options.trigger && (
+          document.documentElement.dataset.inputMethod === "keyboard"
+            || !focusTargetIsVisible(options.trigger) && previousRoute !== nextRoute
+        )
+    );
+    if (focusReturnTarget && options.restoreFocus !== false) {
+      window.requestAnimationFrame(() => {
+        if (document.contains(focusReturnTarget) && typeof focusReturnTarget.focus === "function") {
+          focusReturnTarget.focus({ preventScroll: true });
+        }
+      });
+    } else if (shouldFocusWindow) {
+      window.requestAnimationFrame(() => {
+        const focusTarget = routeWindowFocusTarget(nextRoute);
+        if (focusTarget && typeof focusTarget.focus === "function") {
+          focusTarget.focus({ preventScroll: true });
+        }
+      });
+    }
+    window.requestAnimationFrame(() => {
+      const activeElement = document.activeElement;
+      const hadInteractiveFocus = activeElement instanceof Element
+        && activeElement !== document.body
+        && activeElement !== document.documentElement;
+      if (!hadInteractiveFocus || focusTargetIsVisible(activeElement)) {
+        return;
+      }
+      const fallbackTarget = nextRoute === "home"
+        ? routeReturnTarget(previousRoute, "window-close") || document.querySelector(".start-button")
+        : routeWindowFocusTarget(nextRoute);
+      fallbackTarget?.focus?.({ preventScroll: true });
+    });
+    if (nextRoute === "home") {
+      window.requestAnimationFrame(captureRouteIconRects);
+    }
+  };
+
+  if (options.motion === false || !window.LusuUiMotion?.run) {
+    commitNavigation();
+    return;
   }
-  if (!(nextRoute === "knowledge" && options.articleSlug)) {
-    syncDocumentMeta();
-  }
-  window.scrollTo({ top: 0, behavior: "auto" });
+
+  window.LusuUiMotion.run(motionKind, {
+    route: nextRoute,
+    trigger: options.trigger || null,
+    originRect: exitOriginRect,
+    deferCommit: isExitMotion,
+    useViewTransition: motionKind === "route"
+  }, commitNavigation).catch(() => {
+    commitNavigation();
+  });
 }
 
 function updateNavigationState(route) {
-  document.querySelectorAll(".taskbar-tabs button[data-route], .start-button[data-route]").forEach((button) => {
+  document.querySelectorAll(".taskbar-tabs button[data-route], .start-button[data-route], .mobile-home-button[data-route]").forEach((button) => {
     const active = button.dataset.route === route;
     button.classList.toggle("active", active);
     if (active) {
@@ -2181,6 +2398,7 @@ function renderKnowledge() {
       searchBar.hidden = true;
     }
     document.body.classList.add("is-article-reading");
+    updateArticleWindowButton();
     layout?.classList.add("is-reading");
     list.hidden = true;
     detail.hidden = false;
@@ -2201,6 +2419,7 @@ function renderKnowledge() {
   }
   document.body.classList.remove("is-article-reading");
   document.body.classList.remove("is-article-window-restored");
+  updateArticleWindowButton();
   layout?.classList.remove("is-reading");
   renderKnowledgeCategoryButtons(categories);
   list.hidden = false;
@@ -2311,7 +2530,15 @@ function articleCardElement(item) {
 function renderKnowledgeSearchControls(count, total) {
   const input = document.getElementById("knowledge-search-input");
   const clearButton = document.querySelector("[data-article-search-clear]");
+  const searchBar = document.getElementById("knowledge-searchbar");
   const status = document.getElementById("knowledge-search-status");
+  const setSearchStatus = (value) => {
+    if (!status) {
+      return;
+    }
+    status.textContent = value;
+    searchBar?.classList.toggle("has-search-status", Boolean(value));
+  };
   if (input && input.value !== articleState.searchTerm) {
     input.value = articleState.searchTerm;
   }
@@ -2322,15 +2549,16 @@ function renderKnowledgeSearchControls(count, total) {
     return;
   }
   if (typeof count !== "number" || typeof total !== "number") {
-    status.textContent = "";
+    setSearchStatus("");
     return;
   }
-  const template = articleState.searchTerm.trim() || activeFilters.knowledge !== "all"
-    ? t("articleSearchFiltered")
-    : t("articleSearchCount");
-  status.textContent = template
+  if (!articleState.searchTerm.trim()) {
+    setSearchStatus("");
+    return;
+  }
+  setSearchStatus(t("articleSearchFiltered")
     .replace("{count}", String(count))
-    .replace("{total}", String(total));
+    .replace("{total}", String(total)));
 }
 
 function normalizeSearchText(value) {
@@ -2692,7 +2920,7 @@ function scrollToArticleHeading(targetId) {
   if (!heading) {
     return;
   }
-  heading.scrollIntoView({ block: "start", behavior: "smooth" });
+  heading.scrollIntoView({ block: "start", behavior: motionScrollBehavior() });
   heading.focus({ preventScroll: true });
   updateArticleTocActive();
   scheduleArticleReadProgressUpdate();
@@ -2703,19 +2931,58 @@ function scrollArticleToTop() {
   if (!detail || detail.hidden) {
     return;
   }
-  detail.scrollTo({ top: 0, behavior: "smooth" });
+  detail.scrollTo({ top: 0, behavior: motionScrollBehavior() });
   scheduleArticleReadProgressUpdate();
+}
+
+function motionScrollBehavior() {
+  const managedMode = window.LusuUiMotion?.getMode?.() || document.documentElement.dataset.motion;
+  if (managedMode === "reduced" || managedMode === "off") {
+    return "auto";
+  }
+  return window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+}
+
+function runWindowLayoutTransition(kind, target, commit) {
+  let committed = false;
+  const commitOnce = () => {
+    if (committed) {
+      return;
+    }
+    committed = true;
+    commit();
+  };
+  if (!window.LusuUiMotion?.run) {
+    commitOnce();
+    return;
+  }
+  window.LusuUiMotion.run(kind, { target }, commitOnce).catch(commitOnce);
+}
+
+function updateArticleWindowButton() {
+  const button = document.querySelector("[data-article-window-toggle]");
+  if (!button) {
+    return;
+  }
+  const reading = document.body.classList.contains("is-article-reading");
+  const restored = document.body.classList.contains("is-article-window-restored");
+  const actionLabel = t(restored ? "windowMaximizeAria" : "windowRestoreAria");
+  button.hidden = !reading;
+  button.setAttribute("aria-pressed", String(!restored));
+  button.setAttribute("aria-label", actionLabel);
+  button.setAttribute("title", actionLabel);
 }
 
 function toggleArticleWindowSize() {
   if (!document.body.classList.contains("is-article-reading")) {
     return;
   }
-  document.body.classList.toggle("is-article-window-restored");
-  const button = document.querySelector("[data-article-window-toggle]");
-  if (button) {
-    button.setAttribute("aria-pressed", document.body.classList.contains("is-article-window-restored") ? "false" : "true");
-  }
+  const nextRestored = !document.body.classList.contains("is-article-window-restored");
+  const windowSurface = document.querySelector("#knowledge .xp-window");
+  runWindowLayoutTransition(nextRestored ? "window-restore" : "window-maximize", windowSurface, () => {
+    document.body.classList.toggle("is-article-window-restored", nextRestored);
+    updateArticleWindowButton();
+  });
 }
 
 function clearArticleCopyStatus() {
@@ -2828,32 +3095,32 @@ async function copyArticleLink() {
   }, 2400);
 }
 
-function showArticle(slug) {
+function showArticle(slug, options = {}) {
   articleState.currentSlug = slug;
   articleState.currentArticle = null;
   articleState.detailLoadingKey = "";
-  navigate("knowledge", { articleSlug: slug });
-  closeWelcome({ restoreFocus: false });
+  navigate("knowledge", { articleSlug: slug, trigger: options.trigger, focusWindow: true });
+  closeWelcome({ restoreFocus: false, motion: false });
   renderKnowledge();
 }
 
-function showArticleList() {
+function showArticleList(options = {}) {
   articleState.currentSlug = "";
   articleState.currentArticle = null;
   articleState.detailLoadingKey = "";
   resetArticleReadProgress();
   resetArticleToc();
-  navigate("knowledge");
+  navigate("knowledge", { trigger: options.trigger, focusWindow: true });
   renderKnowledge();
 }
 
-function showArticleCategory(category) {
+function showArticleCategory(category, options = {}) {
   activeFilters.knowledge = category;
   articleState.currentSlug = "";
   articleState.currentArticle = null;
   articleState.detailLoadingKey = "";
-  navigate("knowledge");
-  closeWelcome({ restoreFocus: false });
+  navigate("knowledge", { trigger: options.trigger });
+  closeWelcome({ restoreFocus: false, motion: false });
   renderKnowledge();
 }
 
@@ -3140,9 +3407,8 @@ function renderVideoStatusState(kind) {
   state.className = "video-empty-state video-status-state";
 
   const icon = document.createElement("span");
-  icon.className = "video-empty-icon";
+  icon.className = `video-empty-icon${kind === "failed" ? " is-error" : ""}`;
   icon.setAttribute("aria-hidden", "true");
-  icon.textContent = kind === "loading" ? "▣" : "!";
 
   const copy = document.createElement("div");
   copy.className = "video-empty-copy";
@@ -3170,7 +3436,6 @@ function renderVideoEmptyState(isFiltered = false) {
   const icon = document.createElement("span");
   icon.className = "video-empty-icon";
   icon.setAttribute("aria-hidden", "true");
-  icon.textContent = "▣";
 
   const copy = document.createElement("div");
   copy.className = "video-empty-copy";
@@ -3461,7 +3726,6 @@ function resourceEmptyStateElement({ hasAnyReady = true } = {}) {
   const icon = document.createElement("span");
   icon.className = "resource-empty-icon";
   icon.setAttribute("aria-hidden", "true");
-  icon.textContent = "🗂️";
 
   const copy = document.createElement("div");
   copy.className = "resource-empty-copy";
@@ -3502,7 +3766,6 @@ function resourceCardElement(item) {
   const icon = document.createElement("span");
   icon.className = "resource-icon";
   icon.setAttribute("aria-hidden", "true");
-  icon.textContent = item.icon || "";
   const resourceTitle = contentTitle(item.title);
   title.append(icon, document.createTextNode(resourceTitle));
 
@@ -3664,7 +3927,6 @@ function renderGameEmptyState() {
   const icon = document.createElement("span");
   icon.className = "game-empty-icon";
   icon.setAttribute("aria-hidden", "true");
-  icon.textContent = "▣";
 
   const copy = document.createElement("div");
   copy.className = "game-empty-copy";
@@ -3797,9 +4059,8 @@ function blogEmptyStateElement() {
   state.className = "resource-empty-state blog-empty-state";
 
   const icon = document.createElement("span");
-  icon.className = "resource-empty-icon";
+  icon.className = "resource-empty-icon blog-empty-icon";
   icon.setAttribute("aria-hidden", "true");
-  icon.textContent = "✎";
 
   const copy = document.createElement("div");
   copy.className = "resource-empty-copy";
@@ -3842,9 +4103,8 @@ function renderUpdates() {
   if (!updateArticles.length) {
     const emptyItem = document.createElement("li");
     const icon = document.createElement("span");
-    icon.className = "update-icon";
+    icon.className = "update-icon update-icon-knowledge";
     icon.setAttribute("aria-hidden", "true");
-    icon.textContent = "📚";
     const copy = document.createElement("span");
     const title = document.createElement("strong");
     title.textContent = t("articleLoading");
@@ -3862,7 +4122,7 @@ function recentUpdateElement(item) {
   const row = document.createElement("li");
   const link = document.createElement("a");
   link.className = "recent-update-link";
-  if (item.slug) {
+  if (item.slug && !item.fallbackOnly) {
     link.href = articleRouteHref(item.slug);
     link.dataset.articleSlug = item.slug;
   } else {
@@ -3870,13 +4130,13 @@ function recentUpdateElement(item) {
   }
 
   const icon = document.createElement("span");
-  icon.className = "update-icon";
-  icon.textContent = recentUpdateIcon(item);
+  icon.className = `update-icon ${recentUpdateIconClass(item)}`;
+  icon.setAttribute("aria-hidden", "true");
 
   const copy = document.createElement("span");
   const title = document.createElement("strong");
   const fullTitle = localText(item.title);
-  const fullSummary = item.summary || localText(item.desc) || "";
+  const fullSummary = localText(item.summary) || localText(item.desc) || "";
   const publishedDate = formatArticleDate(item.published_at || item.created_at || item.date);
   title.textContent = truncateText(fullTitle, 28);
   const detail = document.createElement("small");
@@ -3896,11 +4156,10 @@ function recentUpdateElement(item) {
   return row;
 }
 
-function recentUpdateIcon(item) {
-  if (item?.category === siteUpdateCategory) {
-    return "🛠️";
-  }
-  return localText(item?.icon) || "📚";
+function recentUpdateIconClass(item) {
+  return item?.category === siteUpdateCategory || item?.icon === "system"
+    ? "update-icon-system"
+    : "update-icon-knowledge";
 }
 
 function latestUpdateDate() {
@@ -3939,6 +4198,7 @@ function openVideo(index) {
   const modal = document.getElementById("video-modal");
   const frame = document.getElementById("video-frame");
   const sourceLink = document.getElementById("video-link");
+  cancelSurfaceClose(modal);
   frame.replaceChildren();
   if (!video) {
     window.lusuTrackClick?.("video:play-failed", "video not found", { route: "videos" });
@@ -3987,7 +4247,7 @@ function openVideo(index) {
     const placeholder = document.createElement("div");
     placeholder.className = "video-placeholder";
     const icon = document.createElement("span");
-    icon.textContent = "!";
+    icon.className = "video-placeholder-asset";
     icon.setAttribute("aria-hidden", "true");
     const text = document.createElement("p");
     text.textContent = video.metadata_error || videoUiText("unsupported");
@@ -4019,7 +4279,12 @@ function setVideoWindowMaximized(maximized) {
 }
 
 function fullscreenVideo() {
-  setVideoWindowMaximized(!videoWindowState.maximized);
+  const nextMaximized = !videoWindowState.maximized;
+  const modal = document.getElementById("video-modal");
+  const windowSurface = modal?.querySelector(".xp-window") || modal;
+  runWindowLayoutTransition(nextMaximized ? "window-maximize" : "window-restore", windowSurface, () => {
+    setVideoWindowMaximized(nextMaximized);
+  });
 }
 
 function restoreModalFocus(key) {
@@ -4030,45 +4295,112 @@ function restoreModalFocus(key) {
   }
 }
 
+const surfaceCloseRequests = new WeakMap();
+
+function surfaceMotionTarget(surface) {
+  return surface?.querySelector?.(".xp-window") || surface || null;
+}
+
+function cancelSurfaceClose(surface) {
+  if (!surface) {
+    return;
+  }
+  surfaceCloseRequests.delete(surface);
+  surface.removeAttribute("data-ui-closing");
+  const target = surfaceMotionTarget(surface);
+  target?.getAnimations?.().forEach((animation) => animation.cancel());
+}
+
+function runSurfaceClose(surface, options, commit) {
+  if (!surface || typeof commit !== "function") {
+    commit?.();
+    return;
+  }
+  if (surface.getAttribute("data-ui-closing") === "true") {
+    return;
+  }
+  const request = {};
+  const origin = options?.origin instanceof Element ? options.origin : null;
+  const commitOnce = () => {
+    if (surfaceCloseRequests.get(surface) !== request) {
+      return;
+    }
+    surfaceCloseRequests.delete(surface);
+    surface.removeAttribute("data-ui-closing");
+    commit();
+  };
+  surfaceCloseRequests.set(surface, request);
+  surface.setAttribute("data-ui-closing", "true");
+  if (options?.motion === false || !window.LusuUiMotion?.run) {
+    commitOnce();
+    return;
+  }
+  window.LusuUiMotion.run("modal-close", {
+    target: surfaceMotionTarget(surface),
+    originRect: origin?.getBoundingClientRect() || null,
+    deferCommit: true
+  }, commitOnce).catch(commitOnce);
+}
+
 function closeVideo(options = {}) {
   const modal = document.getElementById("video-modal");
   const wasOpen = modal && !modal.hidden;
-  setVideoWindowMaximized(false);
-  if (modal) {
-    modal.hidden = true;
+  const finalizeClose = () => {
+    setVideoWindowMaximized(false);
+    if (modal) {
+      modal.hidden = true;
+    }
+    const frame = document.getElementById("video-frame");
+    const sourceLink = document.getElementById("video-link");
+    frame.replaceChildren();
+    if (sourceLink) {
+      sourceLink.hidden = true;
+      sourceLink.removeAttribute("href");
+      sourceLink.removeAttribute("aria-label");
+      sourceLink.removeAttribute("title");
+    }
+    const placeholder = document.createElement("div");
+    placeholder.className = "video-placeholder";
+    const icon = document.createElement("span");
+    icon.className = "video-placeholder-asset";
+    icon.setAttribute("aria-hidden", "true");
+    const text = document.createElement("p");
+    text.textContent = t("videoPlaceholder");
+    placeholder.append(icon, text);
+    frame.appendChild(placeholder);
+    if (wasOpen && options.restoreFocus !== false) {
+      restoreModalFocus("videoTrigger");
+    }
+  };
+  if (!wasOpen) {
+    finalizeClose();
+    return;
   }
-  const frame = document.getElementById("video-frame");
-  const sourceLink = document.getElementById("video-link");
-  frame.replaceChildren();
-  if (sourceLink) {
-    sourceLink.hidden = true;
-    sourceLink.removeAttribute("href");
-    sourceLink.removeAttribute("aria-label");
-    sourceLink.removeAttribute("title");
-  }
-  const placeholder = document.createElement("div");
-  placeholder.className = "video-placeholder";
-  const icon = document.createElement("span");
-  icon.textContent = "▶";
-  icon.setAttribute("aria-hidden", "true");
-  const text = document.createElement("p");
-  text.textContent = t("videoPlaceholder");
-  placeholder.append(icon, text);
-  frame.appendChild(placeholder);
-  if (wasOpen && options.restoreFocus !== false) {
-    restoreModalFocus("videoTrigger");
-  }
+  runSurfaceClose(modal, {
+    motion: options.motion,
+    origin: modalFocusState.videoTrigger
+  }, finalizeClose);
 }
 
 function closeWelcome(options = {}) {
   const modal = document.getElementById("welcome-modal");
   const wasOpen = modal && !modal.hidden;
-  if (modal) {
-    modal.hidden = true;
+  const finalizeClose = () => {
+    if (modal) {
+      modal.hidden = true;
+    }
+    if (wasOpen && options.restoreFocus !== false) {
+      restoreModalFocus("welcomeTrigger");
+    }
+  };
+  if (!wasOpen) {
+    finalizeClose();
+    return;
   }
-  if (wasOpen && options.restoreFocus !== false) {
-    restoreModalFocus("welcomeTrigger");
-  }
+  runSurfaceClose(modal, {
+    motion: options.motion,
+    origin: modalFocusState.welcomeTrigger
+  }, finalizeClose);
 }
 
 function focusableDialogElements(dialog) {
@@ -4142,6 +4474,7 @@ const wallpaperMotionMedia = typeof window.matchMedia === "function"
 const wallpaperPreviewTheme = ["morning", "day", "dusk", "night"].includes(pageParams.get("wallpaper"))
   ? pageParams.get("wallpaper")
   : "";
+let renderedHomeTimeTheme = "";
 
 function currentTimeTheme(date = new Date()) {
   const minutes = date.getHours() * 60 + date.getMinutes();
@@ -4178,7 +4511,10 @@ function updateWallpaperMotionState() {
   if (!root) {
     return;
   }
-  root.dataset.motion = wallpaperMotionMedia?.matches ? "reduced" : "full";
+  const managedMode = document.documentElement.dataset.motion;
+  root.dataset.motion = ["full", "reduced", "off"].includes(managedMode)
+    ? managedMode
+    : wallpaperMotionMedia?.matches ? "reduced" : "full";
   root.dataset.paused = document.hidden ? "true" : "false";
   root.dataset.previewMotion = wallpaperPreviewTheme ? "true" : "false";
 }
@@ -4190,13 +4526,26 @@ function updateHomeTimeTheme() {
     return;
   }
   const theme = wallpaperPreviewTheme || currentTimeTheme();
-  home.dataset.timeTheme = theme;
-  document.body.dataset.timeTheme = theme;
-  if (root) {
-    root.dataset.time = theme;
+  if (theme === renderedHomeTimeTheme) {
+    return;
   }
-  layoutWallpaperStage();
-  updateWallpaperMotionState();
+
+  const applyTheme = () => {
+    renderedHomeTimeTheme = theme;
+    home.dataset.timeTheme = theme;
+    document.body.dataset.timeTheme = theme;
+    if (root) {
+      root.dataset.time = theme;
+    }
+    layoutWallpaperStage();
+    updateWallpaperMotionState();
+  };
+
+  if (renderedHomeTimeTheme && window.LusuUiMotion?.run) {
+    window.LusuUiMotion.run("theme", { theme, useViewTransition: true }, applyTheme).catch(applyTheme);
+    return;
+  }
+  applyTheme();
 }
 
 function updateWelcomeGreeting() {
@@ -4248,14 +4597,14 @@ function maybeShowWelcome() {
     ? document.activeElement
     : null;
   if (modal) {
+    cancelSurfaceClose(modal);
     modal.hidden = false;
     modal.querySelector("button[data-close-welcome]")?.focus({ preventScroll: true });
   }
   safeStorageSet(key, "1");
 }
 
-function updateClock() {
-  const formatter = new Intl.DateTimeFormat(undefined, {
+const fullClockFormatter = new Intl.DateTimeFormat(undefined, {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
@@ -4264,7 +4613,22 @@ function updateClock() {
     second: "2-digit",
     hour12: false
   });
-  document.getElementById("local-time").textContent = formatter.format(new Date()).replace(/\//g, ".");
+const compactClockFormatter = new Intl.DateTimeFormat(undefined, {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false
+  });
+
+function updateClock() {
+  const now = new Date();
+  const fullTime = fullClockFormatter.format(now).replace(/\//g, ".");
+  const compactTime = compactClockFormatter.format(now);
+  document.querySelectorAll("[data-local-time]").forEach((node) => {
+    node.textContent = node.dataset.localTime === "compact" ? compactTime : fullTime;
+    if (node.tagName === "TIME") {
+      node.setAttribute("datetime", now.toISOString());
+    }
+  });
   updateHomeTimeTheme();
 }
 
@@ -4453,24 +4817,40 @@ function setAccountSubmitting(isSubmitting) {
 function openAccountPopover() {
   const popover = document.getElementById("account-popover");
   if (popover) {
+    cancelSurfaceClose(popover);
     popover.hidden = false;
     syncAccountPopoverState(popover);
   }
 }
 
-function closeAccountPopover() {
+function closeAccountPopover(options = {}) {
   const popover = document.getElementById("account-popover");
-  if (popover) {
+  const wasOpen = popover && !popover.hidden;
+  if (!popover || !wasOpen) {
+    return;
+  }
+  const toggle = document.querySelector("[data-account-toggle]");
+  runSurfaceClose(popover, {
+    motion: options.motion,
+    origin: toggle
+  }, () => {
     popover.hidden = true;
     syncAccountPopoverState(popover);
-  }
+    if (options.restoreFocus !== false && toggle && typeof toggle.focus === "function") {
+      toggle.focus({ preventScroll: true });
+    }
+  });
 }
 
 function toggleAccountPopover() {
   const popover = document.getElementById("account-popover");
-  if (popover) {
-    popover.hidden = !popover.hidden;
-    syncAccountPopoverState(popover);
+  if (!popover) {
+    return;
+  }
+  if (popover.hidden) {
+    openAccountPopover();
+  } else {
+    closeAccountPopover();
   }
 }
 
@@ -4678,14 +5058,18 @@ function showChatPrivateRoomForm() {
   input?.focus();
 }
 
-function hideChatPrivateRoomForm() {
+function hideChatPrivateRoomForm(options = {}) {
   const form = document.getElementById("chat-private-room-form");
   const input = document.getElementById("chat-private-password");
+  const wasOpen = form && !form.hidden;
   if (form) {
     form.hidden = true;
   }
   if (input) {
     input.value = "";
+  }
+  if (wasOpen && options.restoreFocus !== false) {
+    document.getElementById("chat-room-toggle")?.focus({ preventScroll: true });
   }
 }
 
@@ -5107,6 +5491,11 @@ document.addEventListener("click", (event) => {
     return;
   }
 
+  if (!target.closest("#account-widget")) {
+    const popover = document.getElementById("account-popover");
+    closeAccountPopover({ restoreFocus: Boolean(popover?.contains(document.activeElement)) });
+  }
+
   if (target.closest("[data-account-toggle]")) {
     toggleAccountPopover();
     return;
@@ -5176,18 +5565,19 @@ document.addEventListener("click", (event) => {
   const articleButton = target.closest("[data-article-slug]");
   if (articleButton) {
     event.preventDefault();
-    showArticle(articleButton.dataset.articleSlug);
+    showArticle(articleButton.dataset.articleSlug, { trigger: articleButton });
     return;
   }
 
   const articleCategoryButton = target.closest("[data-article-category]");
   if (articleCategoryButton) {
-    showArticleCategory(articleCategoryButton.dataset.articleCategory);
+    showArticleCategory(articleCategoryButton.dataset.articleCategory, { trigger: articleCategoryButton });
     return;
   }
 
-  if (target.closest("[data-article-back]")) {
-    showArticleList();
+  const articleBackButton = target.closest("[data-article-back]");
+  if (articleBackButton) {
+    showArticleList({ trigger: articleBackButton });
     return;
   }
 
@@ -5241,13 +5631,14 @@ document.addEventListener("click", (event) => {
   const routeButton = target.closest("[data-route]:not(body)");
   if (routeButton) {
     event.preventDefault();
-    navigate(routeButton.dataset.route);
-    closeWelcome({ restoreFocus: false });
+    const motionKind = routeButton.matches(".minimize-button")
+      ? "window-minimize"
+      : routeButton.matches(".close-button") && routeButton.dataset.route === "home"
+        ? "window-close"
+        : "route";
+    navigate(routeButton.dataset.route, { trigger: routeButton, motionKind });
+    closeWelcome({ restoreFocus: false, motion: false });
     return;
-  }
-
-  if (!target.closest("#account-widget")) {
-    closeAccountPopover();
   }
 });
 
@@ -5259,7 +5650,7 @@ window.addEventListener("keydown", (event) => {
     const videoModal = document.getElementById("video-modal");
     const welcomeModal = document.getElementById("welcome-modal");
     if (videoWindowState.maximized && videoModal && !videoModal.hidden) {
-      setVideoWindowMaximized(false);
+      fullscreenVideo();
       return;
     }
     if (videoModal && !videoModal.hidden) {
@@ -5276,6 +5667,13 @@ window.addEventListener("keydown", (event) => {
       return;
     }
     closeAccountPopover();
+  }
+});
+
+window.addEventListener("lusu:language-request", (event) => {
+  const lang = event.detail?.lang;
+  if (["zh", "en", "ja"].includes(lang)) {
+    setLanguage(lang, { persist: true, syncUrl: true });
   }
 });
 
@@ -5304,6 +5702,7 @@ document.getElementById("knowledge-search-input")?.addEventListener("input", (ev
 document.getElementById("article-detail")?.addEventListener("scroll", scheduleArticleReadProgressUpdate, { passive: true });
 window.addEventListener("resize", layoutWallpaperStage);
 window.addEventListener("resize", scheduleArticleReadProgressUpdate);
+window.addEventListener("resize", () => window.requestAnimationFrame(captureRouteIconRects));
 
 document.addEventListener("visibilitychange", () => {
   updateWallpaperMotionState();

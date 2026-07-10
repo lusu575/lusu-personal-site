@@ -30,7 +30,7 @@ For article / update-log work, also inspect:
 
 ## Project Shape
 
-- Public site: `index.html`, `css/style.css`, `js/main.js`, `js/telemetry.js`
+- Public site: `index.html`, `css/style.css`, `css/motion-system.css`, `css/mobile-ios-shell.css`, `js/main.js`, `js/ui-motion.js`, `js/mobile-shell.js`, `js/telemetry.js`
 - Backend: Cloudflare Pages Functions in `functions/api/[[route]].js`
 - Database: Cloudflare D1, schema in `cloudflare/schema.sql`
 - Admin site: `admin/`
@@ -67,6 +67,9 @@ Fixing only one side can make the home page look unresponsive or make the popove
 - Do not make public UI look like a modern landing page.
 - Keep the bottom taskbar fixed to the viewport edge.
 - For mobile changes, check narrow portrait and short landscape layouts.
+- Keep the full mobile Dock on Home only; App routes use one App bar plus the bottom Home indicator, without a duplicate page titlebar.
+- Keep mobile account and language controls on Home rather than repeating them inside every App; App routes must retain a visible 44px Home return control.
+- Mobile QA must measure readable capacity and child geometry, not only parent overflow: check App height, complete cards, Chat log height, unobscured article body, and text/button/card intersections at 359x500, 375x667, 390x844, and 844x390 in zh / en / ja. Never pass by shrinking touch targets below 44px.
 - For floating panels or modals, check z-index, clipping, keyboard focus, Escape behavior, and outside-click behavior.
 
 ## Security And Data Rules
