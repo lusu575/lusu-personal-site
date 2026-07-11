@@ -30,7 +30,6 @@ const requiredFiles = [
   "functions/api/[[route]].js",
   "functions/sitemap.xml.js",
   "assets/images/ui/pixel-ui-glyph-atlas.png",
-  "assets/images/mobile-shell/mobile-status-glyphs.png",
   "assets/images/mobile-wallpapers/morning.webp",
   "assets/images/mobile-wallpapers/day.webp",
   "assets/images/mobile-wallpapers/dusk.webp",
@@ -351,7 +350,6 @@ for (const file of requiredFiles) {
 
 for (const file of [
   "assets/images/ui/pixel-ui-glyph-atlas.png",
-  "assets/images/mobile-shell/mobile-status-glyphs.png",
   "assets/images/mobile-wallpapers/morning.webp",
   "assets/images/mobile-wallpapers/day.webp",
   "assets/images/mobile-wallpapers/dusk.webp",
@@ -789,7 +787,7 @@ if (!hasPattern(uiMotionJs, /function\s+enterAnimation[\s\S]*transformOrigin:\s*
 }
 
 if (!hasPattern(uiMotionJs, /function\s+handlePointerDown[\s\S]*setData\(root,\s*["']inputMethod["'],\s*["']pointer["']\)[\s\S]*releasePressedTarget\(\)[\s\S]*function\s+handleKeyDown/)
-  || !hasPattern(uiMotionJs, /addListener\(global,\s*["']blur["'][\s\S]*releasePressedTarget\(\)[\s\S]*resetParallax\(false\)/)) {
+  || !hasPattern(uiMotionJs, /addListener\(global,\s*["']blur["'][\s\S]*releasePressedTarget\(\)/)) {
   fail("js/ui-motion.js should release stale pressed state before a new press and whenever the window loses focus");
 }
 
@@ -1031,18 +1029,16 @@ for (const asset of [
   }
 }
 
-const premiumUiVersion = "20260710-premium-mobile-os-r7";
-const currentPreFinalMainVersion = premiumUiVersion;
+const premiumUiVersion = "20260711-calm-motion-r12";
+const currentPreFinalMainVersion = "20260711-calm-motion-r12";
 const currentPreFinalTelemetryVersion = "20260623-analytics-privacy-r1";
 const currentGameShellVersion = "20260623-game-shell-storage-safe-r1";
 
 for (const asset of [
-  "/css/style.css",
   "/css/mobile-ios-shell.css",
   "/css/motion-system.css",
   "/js/mobile-shell.js",
-  "/js/ui-motion.js",
-  "/js/main.js"
+  "/js/ui-motion.js"
 ]) {
   const versions = assetQueryVersions(indexHtml, asset);
   if (versions.length !== 1 || versions[0] !== premiumUiVersion) {
@@ -1055,9 +1051,8 @@ if (telemetryVersions.length !== 1 || telemetryVersions[0] !== currentPreFinalTe
   fail(`index.html pre-final telemetry.js query should be ${currentPreFinalTelemetryVersion}`);
 }
 
-const statusGlyphVersions = assetQueryVersions(indexHtml, "/assets/images/mobile-shell/mobile-status-glyphs.png");
-if (statusGlyphVersions.length !== 1 || statusGlyphVersions[0] !== premiumUiVersion) {
-  fail(`index.html mobile status glyph query should appear once as ${premiumUiVersion}`);
+if (indexHtml.includes("mobile-status-glyphs") || mobileIosShellCss.includes("mobile-status-glyphs")) {
+  fail("mobile UI should not show decorative battery, Wi-Fi, or signal glyphs that could be mistaken for real device status");
 }
 
 for (const theme of ["morning", "day", "dusk", "night"]) {
@@ -1167,7 +1162,7 @@ for (const token of [
 }
 
 for (const token of [
-  "MAX_PARALLAX_PX = 6",
+  "MAX_PARALLAX_PX = 0",
   "function run(kindValue, contextValue, commitValue)",
   "function commitOnce()",
   'createMediaQuery("(prefers-reduced-motion: reduce)")',
@@ -1560,15 +1555,45 @@ if (!hasPattern(motionSystemCss, /html\[data-ui-shell="desktop"\]\s+\.desktop-ic
   fail("css/motion-system.css should provide a visible non-color-only desktop icon selected state");
 }
 
-if (!hasPattern(mainJs, /useViewTransition:\s*motionKind\s*===\s*["']route["']/)) {
-  fail("js/main.js route navigation should progressively enhance with the View Transitions API when available");
+if (!hasPattern(mainJs, /const\s+keepsDesktopChromeLive\s*=\s*isDesktopShell[\s\S]*motionKind\s*===\s*["']app-open["'][\s\S]*motionKind\s*===\s*["']route["']\s*&&\s*nextRoute\s*===\s*["']home["']/)
+  || !hasPattern(mainJs, /useViewTransition:\s*\[["']route["'],\s*["']app-open["'],\s*["']mobile-tab["']\]\.includes\(motionKind\)[\s\S]*&&\s*!keepsDesktopChromeLive/)
+  || !hasPattern(uiMotionJs, /function\s+resolveMotionTarget[\s\S]*kind\s*===\s*["']route["'][\s\S]*kind\s*===\s*["']app-open["'][\s\S]*shellMode\(\)\s*===\s*["']desktop["'][\s\S]*currentRoute\(\)\s*===\s*["']home["'][\s\S]*\.desktop-icons[\s\S]*\.page\.active\s*>\s*\.xp-window/)
+  || !hasPattern(uiMotionJs, /function\s+appOpenEnterAnimation[\s\S]*opacity:\s*0\.84[\s\S]*translate3d\(0,3px,0\)[\s\S]*duration:\s*DURATIONS\.standard/)) {
+  fail("desktop App launch and Home return must animate live window/icon surfaces without a full-page snapshot covering fixed chrome");
 }
 
-if (!hasPattern(uiMotionJs, /PAGE_TURN_ROUTES[\s\S]*function\s+pageTurnDirection[\s\S]*kind\s*===\s*["']route["'][\s\S]*setData\(root,\s*["']uiPageTurn["']/)
-  || !hasPattern(motionSystemCss, /html\[data-ui-transition="route"\]\s+\.site-shell\s*\{[\s\S]*view-transition-name:\s*module-page/)
+for (const asset of ["/css/style.css", "/js/main.js"]) {
+  const versions = assetQueryVersions(indexHtml, asset);
+  if (versions.length !== 1 || versions[0] !== currentPreFinalMainVersion) {
+    fail(`index.html ${asset} query should appear once as ${currentPreFinalMainVersion}`);
+  }
+}
+
+if (/\brotateY\s*\(|\bperspective\s*:|@keyframes\s+[\w-]*page-turn|data-ui-page-turn|--ui-app-open-(?:x|y|scale)|app-open-origin/i.test(motionSystemCss)
+  || /PAGE_TURN_ROUTES|pageTurnDirection|uiPageTurn|writeAppOpenOrigin|clearAppOpenOrigin|--ui-app-open-(?:x|y|scale)/.test(uiMotionJs)) {
+  fail("the calm motion system must not restore 3D page turns, icon-origin scaling, or their legacy state and keyframes");
+}
+
+if (!hasPattern(uiMotionJs, /ROUTE_ORDER[\s\S]*function\s+routeDirection/)
+  || !hasPattern(uiMotionJs, /setData\(root,\s*["']uiDirection["']/)
+  || !hasPattern(uiMotionJs, /removeData\(root,\s*["']uiDirection["']\)/)
+  || !hasPattern(motionSystemCss, /html\[data-ui-transition="route"\]\s+\.page\.active\s*\{[\s\S]*view-transition-name:\s*module-page/)
   || !hasPattern(motionSystemCss, /::view-transition-old\(root\),\s*::view-transition-new\(root\)\s*\{[\s\S]*animation:\s*none/)
-  || !hasPattern(motionSystemCss, /::view-transition-old\(module-page\)[\s\S]*neo-xp-page-turn-forward[\s\S]*data-ui-page-turn="backward"[\s\S]*neo-xp-page-turn-backward/)) {
-  fail("route changes should use directional module-page turns without the old full-screen root flash");
+  || !hasPattern(motionSystemCss, /data-ui-transition="route"[\s\S]*::view-transition-old\(module-page\)\s*\{[\s\S]*opacity:\s*0[\s\S]*animation:\s*none/)
+  || !hasPattern(motionSystemCss, /data-ui-transition="route"[\s\S]*::view-transition-new\(module-page\)[\s\S]*neo-xp-route-in/)) {
+  fail("desktop taskbar route changes should reveal one calm active page without a second border snapshot while unchanged chrome remains stable");
+}
+
+if (!hasPattern(mainJs, /routeButton\.matches\(\s*["']\.desktop-icon["']\s*\)[\s\S]*["']app-open["']/)
+  || !hasPattern(mainJs, /dataset\.uiShell\s*===\s*["']mobile["'][\s\S]*\.taskbar-tabs button, \.start-button, \.mobile-home-button[\s\S]*["']mobile-tab["']/)
+  || !hasPattern(motionSystemCss, /data-ui-transition="app-open"[\s\S]*view-transition-name:\s*app-screen/)
+  || !hasPattern(motionSystemCss, /data-ui-transition="app-open"[\s\S]*::view-transition-new\(app-screen\)[\s\S]*neo-xp-app-open-calm/)
+  || !hasPattern(motionSystemCss, /data-ui-transition="mobile-tab"[\s\S]*view-transition-name:\s*mobile-tab-page/)
+  || !hasPattern(motionSystemCss, /data-ui-transition="mobile-tab"[\s\S]*::view-transition-old\(mobile-tab-page\)[\s\S]*neo-xp-mobile-slide-out/)
+  || !hasPattern(motionSystemCss, /data-ui-transition="mobile-tab"[\s\S]*::view-transition-new\(mobile-tab-page\)[\s\S]*neo-xp-mobile-slide-in/)
+  || !hasPattern(motionSystemCss, /data-ui-transition="mobile-tab"\]\[data-ui-direction="backward"\]/)
+  || /\.desktop-icon\.is-opening/.test(motionSystemCss)) {
+  fail("Home Apps should open calmly while mobile Dock routes use a directional, lightweight slide without page turns");
 }
 
 if (/<div\b[^>]*class="desktop-intro"/.test(indexHtml)
@@ -1605,13 +1630,13 @@ if (!hasPattern(motionSystemCss, /html\[data-ui-shell="mobile"\]\[data-motion="r
 
 if (hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*?\.chatroom-header\s*\{\s*display:\s*none/)
   || hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*?\.chatroom-footer\s*\{\s*display:\s*none/)
-  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-window\.is-private-room\s+\.send-bubble-icon[\s\S]*pixel-ui-glyph-atlas\.png\?v=20260710-premium-mobile-os-r7/)) {
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-window\.is-private-room\s+\.send-bubble-icon[\s\S]*pixel-ui-glyph-atlas\.png\?v=20260711-calm-motion-r12/)) {
   fail("css/mobile-ios-shell.css should preserve landscape chat room controls, feedback, and the private-room send bitmap");
 }
 
-if (!hasPattern(styleCss, /\.minimize-button::before,\s*\.maximize-button::before\s*\{[\s\S]*pixel-ui-glyph-atlas\.png\?v=20260710-premium-mobile-os-r7[\s\S]*background-size:\s*200%\s+200%/)
+if (!hasPattern(styleCss, /\.minimize-button::before,\s*\.maximize-button::before\s*\{[\s\S]*pixel-ui-glyph-atlas\.png\?v=20260711-calm-motion-r12[\s\S]*background-size:\s*200%\s+200%/)
   || !hasPattern(styleCss, /\.minimize-button::before\s*\{\s*background-position:\s*0\s+0[\s\S]*\.maximize-button::before\s*\{\s*background-position:\s*100%\s+0[\s\S]*\.maximize-button\[aria-pressed="true"\]::before\s*\{\s*background-position:\s*0\s+100%/)
-  || !hasPattern(styleCss, /\.send-bubble-icon\s*\{[\s\S]*pixel-ui-glyph-atlas\.png\?v=20260710-premium-mobile-os-r7[\s\S]*background-position:\s*100%\s+100%/)
+  || !hasPattern(styleCss, /\.send-bubble-icon\s*\{[\s\S]*pixel-ui-glyph-atlas\.png\?v=20260711-calm-motion-r12[\s\S]*background-position:\s*100%\s+100%/)
   || hasPattern(styleCss, /\.send-bubble-icon::(?:before|after)\s*\{[\s\S]{0,320}(?:clip-path|border|box-shadow|background\s*:)/)) {
   fail("public window and chat glyphs should use the image2 bitmap atlas instead of CSS-drawn geometry");
 }
@@ -1630,13 +1655,30 @@ if (!hasPattern(mobileIosShellCss, /@media\s*\(max-width:\s*380px\)[\s\S]*\.chat
   fail("css/mobile-ios-shell.css should keep password and chat controls reachable on narrow and soft-keyboard portrait viewports");
 }
 
-if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+body:not\(\[data-route="home"\]\)\s*\{[\s\S]*--mobile-dock-height:\s*calc\(16px\s*\+\s*var\(--mobile-safe-bottom\)\)[\s\S]*--mobile-dock-space:\s*calc\(18px\s*\+\s*var\(--mobile-safe-bottom\)\)/)
-  || !hasPattern(mobileIosShellCss, /body:not\(\[data-route="home"\]\)\s+\.page\.active\s*>\s*\.xp-window\s*>\s*\.window-titlebar\s*\{\s*display:\s*none/)
-  || !hasPattern(mobileIosShellCss, /body:not\(\[data-route="home"\]\)\s+\.xp-taskbar\s*>\s*:not\(\.mobile-home-indicator\)\s*\{\s*display:\s*none/)) {
-  fail("css/mobile-ios-shell.css should reserve the full Dock for Home and give Apps one title bar plus a slim Home indicator");
+const dockIndicatorReferences = mobileShellJs.match(/\bsyncDockIndicator\s*\(/g) || [];
+
+if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.mobile-dock-scroll\s*\{[\s\S]*overflow-x:\s*auto[\s\S]*touch-action:\s*pan-x/)
+  || !hasPattern(mobileIosShellCss, /body\[data-mobile-dock="collapsed"\]\s+\.xp-taskbar\s*\{[\s\S]*transform:\s*translate3d/)
+  || !hasPattern(mobileShellJs, /function\s+toggleDock[\s\S]*dockCollapsed[\s\S]*syncDockState/)
+  || !hasPattern(mobileShellJs, /function\s+revealActiveDockItem[\s\S]*isClipped[\s\S]*scrollIntoView[\s\S]*behavior:/)
+  || !hasPattern(indexHtml, /class=["'][^"']*\bmobile-dock-selection\b[^"']*["'][^>]*aria-hidden=["']true["']/)
+  || !hasPattern(mobileIosShellCss, /\.mobile-dock-selection\s*\{[\s\S]*width:\s*var\(--mobile-dock-selection-width/)
+  || !hasPattern(mobileIosShellCss, /\.mobile-dock-selection\s*\{[\s\S]*transform:\s*translate3d\(var\(--mobile-dock-selection-x/)
+  || !hasPattern(mobileShellJs, /function\s+syncDockIndicator[\s\S]*setProperty\(\s*["']--mobile-dock-selection-x["']/)
+  || !hasPattern(mobileShellJs, /function\s+syncDockIndicator[\s\S]*setProperty\(\s*["']--mobile-dock-selection-width["']/)
+  || !hasPattern(indexHtml, /data-route="blog"\s+data-mobile-dock-excluded/)
+  || !hasPattern(indexHtml, /data-route="about"\s+data-mobile-dock-excluded/)
+  || !hasPattern(mobileIosShellCss, /taskbar-tabs\s+button\[data-mobile-dock-excluded\]\s*\{\s*display:\s*none/)
+  || !hasPattern(mobileIosShellCss, /@media\s*\(min-width:\s*375px\)[\s\S]*mobile-dock-scroll\s*\{\s*justify-content:\s*center/)
+  || !hasPattern(mobileShellJs, /dockRouteElements[\s\S]*:not\(\[data-mobile-dock-excluded\]\)[\s\S]*has-no-dock-route/)
+  || dockIndicatorReferences.length < 2
+  || !hasPattern(indexHtml, /data-mobile-dock-toggle[\s\S]*aria-expanded="true"/)
+  || !hasPattern(mobileIosShellCss, /body:not\(\[data-route="home"\]\)\s+\.page\.active\s*>\s*\.xp-window\s*>\s*\.window-titlebar\s*\{\s*display:\s*none/)) {
+  fail("mobile Apps should retain one App bar and a six-item, balanced, collapsible frosted Dock with a truthful sliding indicator");
 }
 
-if (!hasPattern(mobileIosShellCss, /body:not\(\[data-route="home"\]\)\s+\.mobile-route-copy strong\s*\{\s*max-width:\s*min\(72vw,\s*520px\)/)
+if (!hasPattern(mobileIosShellCss, /body:not\(\[data-route="home"\]\)\s+\.mobile-route-copy strong\s*\{\s*max-width:\s*min\(58vw,\s*520px\)/)
+  || !hasPattern(mobileIosShellCss, /\.mobile-route-copy\s*\{[\s\S]*margin-left:\s*auto[\s\S]*text-align:\s*right/)
   || !hasPattern(mobileIosShellCss, /body:not\(\[data-route="home"\]\)\s+\.topbar-actions\s*\{\s*display:\s*none/)) {
   fail("css/mobile-ios-shell.css should leave enough App-bar width for readable translated route titles");
 }
@@ -2027,7 +2069,7 @@ if (finalUpdateStarted) {
     if (!hasPattern(schemaSql, languageTuplePattern)) {
       fail(`cloudflare/schema.sql final public update missing ${lang} language tuple`);
     }
-    const schemaLangSeed = windowAfter(schemaSql, `'${finalUpdateId}-${lang}'`, 2400);
+    const schemaLangSeed = windowAfter(schemaSql, `'${finalUpdateId}-${lang}'`, 4200);
     const schemaValues = sqlSingleQuotedValues(schemaLangSeed);
     const [translationId, articleId, rowLang, title, summary, contentMarkdown] = schemaValues;
     if (translationId !== `${finalUpdateId}-${lang}` || articleId !== finalUpdateId || rowLang !== lang) {

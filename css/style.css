@@ -601,7 +601,6 @@ main {
   min-width: 0;
   min-height: calc(100dvh - var(--chrome-topbar-height));
   padding: 26px 26px calc(var(--chrome-taskbar-height) + 24px);
-  animation: popIn 180ms ease-out;
 }
 
 .page.active {
@@ -637,7 +636,6 @@ main {
     74px 9px 0 #c7e7ff;
   image-rendering: pixelated;
   opacity: 0.95;
-  animation: cloudFloat 18s ease-in-out infinite;
 }
 
 .cloud-a {
@@ -853,7 +851,6 @@ main {
   outline: none;
   border-color: transparent;
   background: transparent;
-  animation: iconHop 380ms ease;
 }
 
 .desktop-icon:focus-visible {
@@ -1222,7 +1219,7 @@ main {
   display: block;
   width: 26px;
   height: 26px;
-  background-image: url("../assets/images/ui/pixel-ui-glyph-atlas.png?v=20260710-premium-mobile-os-r7");
+  background-image: url("../assets/images/ui/pixel-ui-glyph-atlas.png?v=20260711-calm-motion-r12");
   background-repeat: no-repeat;
   background-size: 200% 200%;
   image-rendering: pixelated;
@@ -3153,7 +3150,7 @@ body.is-article-reading .article-figure {
   border: 0;
   border-radius: 0;
   background-color: transparent;
-  background-image: url("../assets/images/ui/pixel-ui-glyph-atlas.png?v=20260710-premium-mobile-os-r7");
+  background-image: url("../assets/images/ui/pixel-ui-glyph-atlas.png?v=20260711-calm-motion-r12");
   background-position: 100% 100%;
   background-repeat: no-repeat;
   background-size: 200% 200%;
@@ -4267,7 +4264,7 @@ body.is-article-reading .article-figure {
 .wallpaper-root[data-time="dusk"] .wallpaper-cloud-dusk,
 .wallpaper-root[data-time="night"] .wallpaper-cloud-night {
   display: block;
-  animation: wallpaper-cloud-drift var(--cloud-duration, 160s) linear infinite alternate;
+  animation: wallpaper-cloud-drift 180s linear infinite alternate;
   animation-delay: var(--cloud-delay, 0s);
   animation-fill-mode: both;
 }
@@ -4870,44 +4867,6 @@ body.is-article-reading .article-figure {
 
 .monitor-icon {
   background-image: url("../assets/images/icon-monitor.png") !important;
-}
-
-@keyframes popIn {
-  from {
-    opacity: 0;
-    transform: scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes cloudFloat {
-  0%, 100% {
-    margin-left: -10px;
-  }
-  50% {
-    margin-left: 18px;
-  }
-}
-
-@keyframes iconHop {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  45% {
-    transform: translateY(-7px);
-  }
-}
-
-@keyframes blink {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.45;
-  }
 }
 
 @media (max-width: 980px) {

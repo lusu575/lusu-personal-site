@@ -1,23 +1,28 @@
 # PROJECT_CONTEXT.md
 
-## 2026-07-11 整页翻动与移动模块框架（本地未发布）
+## 2026-07-11 全站轻动效重置与真实移动 Dock（本地未发布）
 
-- 模块 route 只在 `.site-shell` 上使用有方向的书页翻动，顶栏、活动内容和底栏作为一张页面共同翻动；root 快照不做淡入淡出，进入模块不再叠加第二次窗口缩放。减少动态和关闭动效仍立即导航。
+- 全站交互动效改为低位移、无眩晕的统一节奏：桌面 Home 图标进入模块不使用 View Transition 全屏快照，只让新窗口克制淡入并上移 3px 归位；不再从点击图标原点巨幅放大，也不使用翻页、弹跳、闪光或带回弹的缩放。指针驱动视差完全关闭，壁纸和系统栏不会在打开 App 时抖动。
+- 桌面底栏的模块间 route 只让新活动页面轻淡入并小幅方向滑动，旧窗口快照直接隐藏；返回 Home 时不捕获整张 Home 页面，只在实时壁纸上轻滑入 `.desktop-icons`，因此任务栏不会被顶层快照短暂盖住。手机 Dock route 使用短促方向滑动和共享选中底板。固定顶栏、桌面任务栏与移动 Dock 不进入页面过渡快照。
+- 大面积页面、窗口与弹层只允许用 `transform + opacity` 过渡，不动画 `filter`、`box-shadow` 或 `border-radius`，也不使用大面积 3D 透视/书页翻转。统一时长约为 instant 80ms、fast 140ms、standard 200ms、window 220ms、scene 300ms；`reduced` 与 `off` 都立即提交状态，不保留空间位移。
+- 移动 Dock 在 Home 和全部 App 内均为真实导航，只保留 Home、Knowledge、Videos、Resources、Games、Chatroom 六个高频入口；Blog 与 About 模块仍保留并从 Home App grid 进入。375px 以上六项居中，359px 可短距离横滑；进入未列入 Dock 的模块时选中底板隐藏。横线仍是 44px 收起/展开按钮，Dock 只委托既有 `data-route`。
+- 手机 Appbar 左上角是带文案的 Home 返回按钮，模块名在右上角。网页无法稳定读取真实移动信号、Wi-Fi 与电量，因此不显示模拟状态图标；状态区只保留真实本地时间和 LUSU OS 标识。
 - Home 不再显示三语站点大标题、施工提示和分隔横线。移动 App grid 固定行高，从左到右、从上到下填充，按钮热区贴近图标与标题实际盒并保持 44px 下限。
 - 所有移动栏目使用“外框—工具/筛选区—标签区—内容区”多层边框，配色来自本站四时段与 Neo-XP token；知识库、视频、资源、游戏、杂谈、聊天室和关于页共用结构规则。
-- 公开 `site-updates` 仍只有一条本轮汇总记录，fallback、Functions seed、schema seed 和首页最近更新日期同步到 2026.07.11；公开资源 query 为 `20260710-premium-mobile-os-r7`。
+- 本轮移动交互继续复用同一条汇总型 `site-updates` 记录，fallback、Functions seed、schema seed 和首页最近更新日期同步到 2026.07.11；公开主站 `style.css`、`mobile-ios-shell.css`、`motion-system.css`、`main.js`、`mobile-shell.js` 与 `ui-motion.js` 统一使用 query `20260711-calm-motion-r12`。
 
 ## 2026-07-10 双呈现壳与移动虚拟 OS（本地未发布）
 
+- 本节保留 2026-07-10 的阶段实现记录；其中拟真书页翻动、图标原点放大和指针视差方案已由上方 2026-07-11 全站轻动效重置取代，不再是当前维护规则。
 - 主站仍是同一套原生 HTML / CSS / JavaScript 单页应用和同一份业务状态，但根据输入与视口使用两套呈现壳：桌面端为 Neo-XP / Pixel Glass OS，移动端为原创、受 iOS 交互启发的虚拟手机 OS。移动端不是桌面 XP 的缩小版。
-- 页面/模块之间的 `route` 切换现在使用有方向的拟真书页翻动：包含顶栏、活动内容与底栏的整张站点页面沿左右页边翻走，新页面在下层显现；默认 root 快照不再做整屏淡入淡出，也不再叠加第二次窗口缩放。翻页只属于 route，最小化、关闭、弹窗和时间主题仍使用各自反馈；减少动态与关闭动效会立即提交导航。
+- 这一阶段曾让页面/模块 `route` 使用有方向的拟真书页翻动；该方案会让窗口边框进入快照，现已被上方低位移单页淡入全面取代。当前任何 route 都不得恢复整屏翻页、root 闪白或二次窗口缩放。
 - `js/main.js` 是路由、语言、账号、文章、视频、游戏、聊天室和主题状态的唯一业务状态源。`js/mobile-shell.js` 只能观察当前 DOM / 路由并把用户操作委托给现有 `data-route`；`js/ui-motion.js` 只包装呈现动画。任何壳层都不得复制或分叉业务状态。
 - 新的呈现文件为 `css/mobile-ios-shell.css`、`css/motion-system.css`、`js/mobile-shell.js` 和 `js/ui-motion.js`。高耦合节点（账号、文章详情、视频弹窗、游戏、聊天）保持原位，不通过克隆或 reparent 制造第二套 DOM 生命周期。
-- 移动 Home 使用 App grid 和完整 Dock；进入栏目后只保留顶部 Appbar 与底部 Home indicator，页内 XP titlebar、完整 Dock、账号和语言操作不重复常驻，用户通过 44px Home 控制返回。布局同时适配 safe area 与 `visualViewport`，主要触控目标不小于 44px。Home 上的移动语言入口是 44px 单按钮循环控制，只委托既有三语按钮，不持有语言状态。固定回归尺寸为 359x500、375x667、390x844、430x932 和 coarse pointer 横屏 844x390。
+- 移动 Home 使用 App grid；真实毛玻璃 Dock 在 Home 与栏目 App 内持续悬浮，当前六个高频入口横向可滑、选中态跟随共享 route，并可由 44px 横线收起/展开。Blog 与 About 不占 Dock 空间，但仍从 Home 进入。栏目内只保留顶部 Appbar、隐藏页内 XP titlebar，账号和语言仍只在 Home；固定回归尺寸为 359x500、375x667、390x844、430x932 和 coarse pointer 横屏 844x390。
 - Home 不再显示三语站点大标题、施工提示和分隔横线；移动 App grid 按 DOM 顺序从左到右、从上到下填充，使用固定行高和接近可见图标/标题盒的按钮宽度，禁止在细长屏幕用弹性行高拉大间距或让整格成为异常热区。
 - 所有移动栏目使用同一套多层模块框架：外框、工具/筛选区、标签区和内容滚动区分别有清晰边线，知识库、视频、资源、游戏、杂谈、聊天室与关于页共享结构规则，但颜色继续跟随本站四时段与 Neo-XP 变量，不复制参考图的配色或图标。
-- image2 生成四时段竖版移动壁纸和透明状态图标；它们作为项目本地资产引用。新增或更新公开 CSS、JS、图标、壁纸或交互资产时，必须同步 `index.html` query，本轮统一版本为 `20260710-premium-mobile-os-r7`。
-- 桌面动效使用单个 RAF 协调，视差位移上限 6px，并在页面隐藏、减少动态或用户关闭动效时停止；状态指示不使用持续闪烁。移动端只保留短促、有退出路径且不影响操作的过渡。
+- image2 生成四时段竖版移动壁纸与位图 UI 素材；模拟信号、Wi-Fi 和电量图不再被公开页面引用。新增或更新公开 CSS、JS、图标、壁纸或交互资产时，必须同步 `index.html` query；当前公开主站版本为 `20260711-calm-motion-r12`。
+- 这一阶段曾用单个 RAF 提供 6px 指针视差；当前已完全关闭输入驱动视差，只保留与输入无关、速度很慢且可在减少动态/关闭动效时静止的壁纸氛围。状态指示不得持续闪烁。
 - 改版不改变公开路由、Pages Functions API、D1 schema 语义、账号 HttpOnly 会话、游戏云存档、普通/密码聊天室、三语内容、视频系统或遥测隐私边界。
 - 本轮公开记录收口为唯一文章 ID `seed-update-2026-07-10-premium-interaction-mobile-os`、slug `2026-07-10-premium-interaction-mobile-os`。当前仍是本地功能分支，未推送或合并 `main`，因此尚未触发 Cloudflare Pages。
 - 当前 QA 覆盖桌面/移动全路由、四时段、三语、账户层级、文章直链、聊天与密码房面板、游戏目录、视频弹窗、Back / Forward、760 / 761 边界、44px 触控目标、reduced/off 动效和动画终态清理。移动验收不只检查溢出：还会量 App 窗口占比、卡片结构子项与相邻卡片的二维相交、Chat 输入/计数/发送布局、日志高度、文章首屏无遮挡正文和 Appbar 阅读控件；完整基线与通过证据见 `design-qa-mobile-os.md`。

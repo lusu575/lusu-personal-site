@@ -7,9 +7,9 @@
 
   var document = global.document;
   var root = document.documentElement;
-  var VERSION = "1.1.0";
-  var MAX_PARALLAX_PX = 6;
-  var PAGE_TURN_ROUTES = ["home", "knowledge", "videos", "resources", "games", "blog", "chatroom", "about"];
+  var VERSION = "1.3.0";
+  var MAX_PARALLAX_PX = 0;
+  var ROUTE_ORDER = ["home", "knowledge", "videos", "resources", "games", "blog", "chatroom", "about"];
   var TRIGGER_SELECTOR = [
     ".desktop-icon",
     ".start-button",
@@ -32,17 +32,17 @@
   ].join(",");
 
   var DURATIONS = {
-    instant: 100,
-    fast: 160,
-    standard: 260,
-    window: 380,
-    scene: 680
+    instant: 80,
+    fast: 140,
+    standard: 200,
+    window: 220,
+    scene: 300
   };
 
   var EASING = {
-    out: "cubic-bezier(.2,.8,.2,1)",
-    spring: "cubic-bezier(.16,1,.3,1)",
-    in: "cubic-bezier(.4,0,.8,.2)"
+    out: "cubic-bezier(.22,1,.36,1)",
+    spring: "cubic-bezier(.22,1,.36,1)",
+    in: "cubic-bezier(.4,0,1,1)"
   };
 
   var state = {
@@ -70,6 +70,7 @@
     lastTheme: "",
     runId: 0,
     activeRunId: 0,
+    activeViewTransition: null,
     suppressRouteUntil: 0,
     suppressThemeUntil: 0
   };
@@ -238,9 +239,9 @@
     return routeName(body && readData(body, "route")) || "home";
   }
 
-  function pageTurnDirection(fromRoute, toRoute) {
-    var fromIndex = PAGE_TURN_ROUTES.indexOf(routeName(fromRoute) || "home");
-    var toIndex = PAGE_TURN_ROUTES.indexOf(routeName(toRoute) || "home");
+  function routeDirection(fromRoute, toRoute) {
+    var fromIndex = ROUTE_ORDER.indexOf(routeName(fromRoute) || "home");
+    var toIndex = ROUTE_ORDER.indexOf(routeName(toRoute) || "home");
     if (fromIndex < 0 || toIndex < 0 || fromIndex === toIndex) {
       return "forward";
     }
@@ -402,13 +403,7 @@
   }
 
   function canUseParallax() {
-    if (!canUseFullMotion() || currentRoute() !== "home") {
-      return false;
-    }
-    if (shellMode() === "mobile" || global.innerWidth <= 760) {
-      return false;
-    }
-    return !state.finePointerMedia || state.finePointerMedia.matches;
+    return false;
   }
 
   function writeParallax() {
@@ -560,13 +555,7 @@
     if (!target) {
       return;
     }
-    var snapshot = noteTrigger(target, { kind: "activate" });
-    if (snapshot && elementMatches(target, ".desktop-icon") && snapshot.route && snapshot.route !== "home") {
-      transientClass(target, "is-opening", DURATIONS.window);
-    }
-    if (elementMatches(target, ".taskbar-tabs button, .start-button")) {
-      transientClass(target, "is-ui-awakening", DURATIONS.standard);
-    }
+    noteTrigger(target, { kind: "activate" });
   }
 
   function handleKeyDown(event) {
@@ -687,26 +676,6 @@
     };
   }
 
-  function writeWindowOrigin(element, origin) {
-    if (!isElement(element)) {
-      return;
-    }
-    var targetRect = safeRect(element);
-    var delta = originTransform(origin, targetRect);
-    element.style.setProperty("--ui-window-origin-x", delta.x.toFixed(2) + "px");
-    element.style.setProperty("--ui-window-origin-y", delta.y.toFixed(2) + "px");
-    element.style.setProperty("--ui-window-origin-scale", delta.scale.toFixed(4));
-  }
-
-  function clearWindowOrigin(element) {
-    if (!isElement(element)) {
-      return;
-    }
-    element.style.removeProperty("--ui-window-origin-x");
-    element.style.removeProperty("--ui-window-origin-y");
-    element.style.removeProperty("--ui-window-origin-scale");
-  }
-
   function resolveContextElement(value) {
     if (isElement(value)) {
       return value;
@@ -733,8 +702,15 @@
       return safeQuery("#wallpaper-root .wallpaper-base") || safeQuery("#wallpaper-root");
     }
 
-    if (kind === "route") {
-      return safeQuery(".site-shell") || safeQuery(".page.active");
+    if ((kind === "route" || kind === "app-open") && shellMode() === "desktop") {
+      if (currentRoute() === "home") {
+        return safeQuery(".desktop-icons") || safeQuery(".page.active");
+      }
+      return safeQuery(".page.active > .xp-window") || safeQuery(".page.active");
+    }
+
+    if (kind === "route" || kind === "app-open" || kind === "mobile-tab") {
+      return safeQuery(".page.active") || safeQuery(".site-shell");
     }
 
     if (phase === "before") {
@@ -747,26 +723,17 @@
     if (!isElement(target)) {
       return null;
     }
-    var targetRect = safeRect(target);
-    var delta = originTransform(origin, targetRect);
-    writeWindowOrigin(target, origin);
-
     if (kind.indexOf("modal") === 0) {
       return animateElement(target, [
-        { opacity: 0, transformOrigin: "center center", transform: "translate3d(0,12px,0) scale(.965)", filter: "brightness(1.05)" },
-        { opacity: 1, transformOrigin: "center center", transform: "translate3d(0,0,0) scale(1)", filter: "brightness(1)" }
-      ], { duration: DURATIONS.window, easing: EASING.spring });
+        { opacity: 0, transformOrigin: "center center", transform: "translate3d(0,6px,0) scale(.995)" },
+        { opacity: 1, transformOrigin: "center center", transform: "translate3d(0,0,0) scale(1)" }
+      ], { duration: DURATIONS.standard, easing: EASING.out });
     }
 
     return animateElement(target, [
-      {
-        opacity: 0.18,
-        transformOrigin: "center center",
-        transform: "translate3d(" + delta.x.toFixed(2) + "px," + delta.y.toFixed(2) + "px,0) scale(" + delta.scale.toFixed(4) + ")",
-        filter: "brightness(1.06) saturate(.92)"
-      },
-      { opacity: 1, transformOrigin: "center center", transform: "translate3d(0,0,0) scale(1)", filter: "brightness(1) saturate(1)" }
-    ], { duration: DURATIONS.window, easing: EASING.spring });
+      { opacity: 0.72, transformOrigin: "center center", transform: "translate3d(0,6px,0) scale(.995)" },
+      { opacity: 1, transformOrigin: "center center", transform: "translate3d(0,0,0) scale(1)" }
+    ], { duration: DURATIONS.standard, easing: EASING.out });
   }
 
   function exitAnimation(kind, target, origin) {
@@ -774,107 +741,61 @@
       return null;
     }
     var targetRect = safeRect(target);
-    var minimizing = kind === "window-minimize" || kind === "minimize";
     var delta = originTransform(origin, targetRect);
-    var scaleX = minimizing ? 0.2 : delta.scale;
-    var scaleY = minimizing ? 0.12 : delta.scale;
-    if (origin && targetRect) {
-      var originCenterX = origin.left + origin.width / 2;
-      var originCenterY = origin.top + origin.height / 2;
-      var targetCenterX = targetRect.left + targetRect.width / 2;
-      var targetCenterY = targetRect.top + targetRect.height / 2;
-      var viewportWidth = Math.max(1, Number(global.innerWidth) || targetRect.width);
-      var viewportHeight = Math.max(1, Number(global.innerHeight) || targetRect.height);
-      delta.x = clamp(originCenterX - targetCenterX, -viewportWidth, viewportWidth);
-      delta.y = clamp(originCenterY - targetCenterY, -viewportHeight, viewportHeight);
-      if (minimizing) {
-        scaleX = clamp(origin.width / Math.max(1, targetRect.width), 0.12, 0.52);
-        scaleY = clamp(origin.height / Math.max(1, targetRect.height), 0.08, 0.36);
-      } else {
-        var closeScale = clamp(Math.min(
-          origin.width / Math.max(1, targetRect.width),
-          origin.height / Math.max(1, targetRect.height)
-        ), 0.18, 0.56);
-        scaleX = closeScale;
-        scaleY = closeScale;
-      }
-    }
+    var maxShift = kind === "window-minimize" || kind === "minimize" ? 12 : 8;
+    var exitX = origin ? clamp(delta.x, -maxShift, maxShift) : 0;
+    var exitY = origin ? clamp(delta.y, -maxShift, maxShift) : 4;
     return animateElement(target, [
       { opacity: 1, transformOrigin: "center center", transform: "translate3d(0,0,0) scale(1)" },
       {
         opacity: 0,
         transformOrigin: "center center",
-        transform: "translate3d(" + delta.x.toFixed(2) + "px," + delta.y.toFixed(2) + "px,0) scale(" + scaleX.toFixed(4) + "," + scaleY.toFixed(4) + ")"
+        transform: "translate3d(" + exitX.toFixed(2) + "px," + exitY.toFixed(2) + "px,0) scale(.995)"
       }
-    ], {
-      duration: minimizing ? DURATIONS.standard : DURATIONS.fast,
-      easing: EASING.in
-    });
+    ], { duration: DURATIONS.fast, easing: EASING.in });
   }
 
   function flipAnimation(target, beforeRect) {
-    var afterRect = safeRect(target);
-    if (!beforeRect || !afterRect || afterRect.width < 1 || afterRect.height < 1) {
-      return null;
-    }
-    var x = clamp(beforeRect.left - afterRect.left, -240, 240);
-    var y = clamp(beforeRect.top - afterRect.top, -180, 180);
-    var scaleX = clamp(beforeRect.width / afterRect.width, 0.72, 1.32);
-    var scaleY = clamp(beforeRect.height / afterRect.height, 0.72, 1.32);
-    if (Math.abs(x) < 0.5 && Math.abs(y) < 0.5 && Math.abs(scaleX - 1) < 0.01 && Math.abs(scaleY - 1) < 0.01) {
+    if (!isElement(target)) {
       return null;
     }
     return animateElement(target, [
-      {
-        transformOrigin: "left top",
-        transform: "translate3d(" + x.toFixed(2) + "px," + y.toFixed(2) + "px,0) scale(" + scaleX.toFixed(4) + "," + scaleY.toFixed(4) + ")"
-      },
-      { transformOrigin: "left top", transform: "translate3d(0,0,0) scale(1,1)" }
-    ], { duration: DURATIONS.window, easing: EASING.spring });
+      { opacity: 0.92, transformOrigin: "center center", transform: "scale(.997)" },
+      { opacity: 1, transformOrigin: "center center", transform: "scale(1)" }
+    ], { duration: DURATIONS.standard, easing: EASING.out });
   }
 
-  function pageTurnExitAnimation(target, direction) {
+  function routeEnterAnimation(target, direction) {
     if (!isElement(target)) {
       return null;
     }
     var backward = direction === "backward";
-    var degrees = backward ? 76 : -76;
+    var distance = backward ? -6 : 6;
     return animateElement(target, [
-      {
-        opacity: 1,
-        transformOrigin: backward ? "right center" : "left center",
-        transform: "perspective(1400px) rotateY(0deg)",
-        filter: "brightness(1)"
-      },
-      {
-        opacity: 0.22,
-        transformOrigin: backward ? "right center" : "left center",
-        transform: "perspective(1400px) rotateY(" + degrees + "deg)",
-        filter: "brightness(.82)"
-      }
-    ], { duration: 180, easing: EASING.in });
+      { opacity: 0.68, transform: "translate3d(" + distance + "px,0,0)" },
+      { opacity: 1, transform: "translate3d(0,0,0)" }
+    ], { duration: DURATIONS.standard, easing: EASING.out });
   }
 
-  function pageTurnEnterAnimation(target, direction) {
+  function appOpenEnterAnimation(target) {
     if (!isElement(target)) {
       return null;
     }
-    var backward = direction === "backward";
-    var degrees = backward ? -9 : 9;
     return animateElement(target, [
-      {
-        opacity: 0.78,
-        transformOrigin: backward ? "left center" : "right center",
-        transform: "perspective(1400px) rotateY(" + degrees + "deg) scale(.995)",
-        filter: "brightness(.9)"
-      },
-      {
-        opacity: 1,
-        transformOrigin: backward ? "left center" : "right center",
-        transform: "perspective(1400px) rotateY(0deg) scale(1)",
-        filter: "brightness(1)"
-      }
-    ], { duration: 220, easing: EASING.out });
+      { opacity: 0.84, transform: "translate3d(0,3px,0)" },
+      { opacity: 1, transform: "translate3d(0,0,0)" }
+    ], { duration: DURATIONS.standard, easing: EASING.out });
+  }
+
+  function mobileTabEnterAnimation(target, direction) {
+    if (!isElement(target)) {
+      return null;
+    }
+    var distance = direction === "backward" ? -12 : 12;
+    return animateElement(target, [
+      { opacity: 0.68, transform: "translate3d(" + distance + "px,0,0)" },
+      { opacity: 1, transform: "translate3d(0,0,0)" }
+    ], { duration: DURATIONS.window, easing: EASING.out });
   }
 
   function isExitKind(kind) {
@@ -941,24 +862,33 @@
     var origin = sanitizeRect(context.originRect) || (snapshot && snapshot.rect) || null;
     var beforeTarget = resolveMotionTarget(kind, context, "before");
     var beforeRect = safeRect(beforeTarget);
+    var transition = null;
     var deferCommit = Boolean(context.deferCommit && isExitKind(kind));
     var useViewTransition = Boolean(
       context.useViewTransition
       && canUseFullMotion()
       && typeof document.startViewTransition === "function"
     );
-    var turnDirection = kind === "route"
-      ? pageTurnDirection(beforeRoute, context.route || "home")
+    var direction = kind === "route" || kind === "app-open" || kind === "mobile-tab"
+      ? routeDirection(beforeRoute, context.route || "home")
       : "";
 
     if (!state.initialized && document.body) {
       init();
     }
 
+    if (state.activeViewTransition && typeof state.activeViewTransition.skipTransition === "function") {
+      try {
+        state.activeViewTransition.skipTransition();
+      } catch (error) {
+        // A transition that already finished does not need further cleanup.
+      }
+      state.activeViewTransition = null;
+    }
     state.activeRunId = runId;
     setData(root, "uiTransition", kind);
-    if (turnDirection) {
-      setData(root, "uiPageTurn", turnDirection);
+    if (direction) {
+      setData(root, "uiDirection", direction);
     }
     state.suppressRouteUntil = now() + (deferCommit ? DURATIONS.window + 220 : 180);
     if (kind === "theme") {
@@ -976,15 +906,13 @@
     }
 
     function cleanup() {
-      var afterTarget = resolveMotionTarget(kind, context, "after");
-      clearWindowOrigin(beforeTarget);
-      if (afterTarget !== beforeTarget) {
-        clearWindowOrigin(afterTarget);
-      }
       if (state.activeRunId === runId) {
         removeData(root, "uiTransition");
-        removeData(root, "uiPageTurn");
+        removeData(root, "uiDirection");
         state.activeRunId = 0;
+      }
+      if (state.activeViewTransition === transition) {
+        state.activeViewTransition = null;
       }
       dispatchHook("lusu:ui-motion-after", {
         kind: kind,
@@ -1009,8 +937,12 @@
         handleThemeProjection(beforeTheme, afterTheme, true);
       } else if (isLayoutKind(kind)) {
         animation = flipAnimation(target || beforeTarget, beforeRect);
-      } else if (kind === "route" && options && options.pageTurnFallback) {
-        animation = pageTurnEnterAnimation(target, turnDirection);
+      } else if (kind === "route" && options && options.routeFallback) {
+        animation = routeEnterAnimation(target, direction);
+      } else if (kind === "app-open" && options && options.appOpenFallback) {
+        animation = appOpenEnterAnimation(target);
+      } else if (kind === "mobile-tab" && options && options.mobileTabFallback) {
+        animation = mobileTabEnterAnimation(target, direction);
       } else if (!isExitKind(kind) && !(kind === "route" && options && options.skipEnter)) {
         animation = enterAnimation(kind, target, origin);
       }
@@ -1049,20 +981,32 @@
     }
 
     if (kind === "route" && !useViewTransition) {
-      var pageExit = pageTurnExitAnimation(beforeTarget, turnDirection);
-      if (global.Promise && pageExit && typeof pageExit.then === "function") {
-        var commitAfterPageTurn = function commitAfterPageTurn() {
-          try {
-            return animateAfterCommit(commitOnce(), { pageTurnFallback: true });
-          } catch (error) {
-            cleanup();
-            throw error;
-          }
-        };
-        return pageExit.then(commitAfterPageTurn, commitAfterPageTurn);
-      }
       try {
-        return animateAfterCommit(commitOnce(), { pageTurnFallback: true });
+        return animateAfterCommit(commitOnce(), { routeFallback: true });
+      } catch (error) {
+        cleanup();
+        if (global.Promise) {
+          return global.Promise.reject(error);
+        }
+        throw error;
+      }
+    }
+
+    if (kind === "app-open" && !useViewTransition) {
+      try {
+        return animateAfterCommit(commitOnce(), { appOpenFallback: true });
+      } catch (error) {
+        cleanup();
+        if (global.Promise) {
+          return global.Promise.reject(error);
+        }
+        throw error;
+      }
+    }
+
+    if (kind === "mobile-tab" && !useViewTransition) {
+      try {
+        return animateAfterCommit(commitOnce(), { mobileTabFallback: true });
       } catch (error) {
         cleanup();
         if (global.Promise) {
@@ -1074,15 +1018,19 @@
 
     if (useViewTransition) {
       try {
-        var transition = document.startViewTransition(function transitionCommit() {
+        transition = document.startViewTransition(function transitionCommit() {
           return commitOnce();
         });
+        state.activeViewTransition = transition;
         if (global.Promise && transition && transition.ready && typeof transition.ready.then === "function") {
           transition.ready.then(function viewTransitionReady() {}, function viewTransitionReadySkipped() {});
         }
         if (global.Promise && transition && transition.updateCallbackDone) {
           return transition.updateCallbackDone.then(function viewCommitDone() {
-            var afterResult = animateAfterCommit(committedResult, { deferCleanup: true, skipEnter: kind === "route" });
+            var afterResult = animateAfterCommit(committedResult, {
+              deferCleanup: true,
+              skipEnter: kind === "route" || kind === "app-open" || kind === "mobile-tab"
+            });
             return global.Promise.resolve(afterResult).then(function waitForViewTransition(result) {
               if (transition.finished && typeof transition.finished.then === "function") {
                 return transition.finished.then(function viewTransitionDone() {
@@ -1109,7 +1057,16 @@
             throw error;
           });
         }
-        scheduleTimer(cleanup, (kind === "theme" ? DURATIONS.scene : DURATIONS.window) + 100);
+        if (transition && transition.finished && typeof transition.finished.then === "function") {
+          return transition.finished.then(function viewTransitionDoneWithoutUpdatePromise() {
+            cleanup();
+            return committedResult;
+          }, function viewTransitionSkippedWithoutUpdatePromise() {
+            cleanup();
+            return committedResult;
+          });
+        }
+        cleanup();
         return committedResult;
       } catch (error) {
         if (!committed) {
@@ -1137,50 +1094,10 @@
     }
   }
 
-  function findDesktopIcon(route) {
-    var normalized = routeName(route);
-    if (!normalized) {
-      return null;
-    }
-    var icons = safeQueryAll(".desktop-icon[data-route]");
-    for (var index = 0; index < icons.length; index += 1) {
-      if (routeName(readData(icons[index], "route")) === normalized) {
-        return icons[index];
-      }
-    }
-    return null;
-  }
-
   function decorateRouteTransition(fromRoute, toRoute, snapshot, fromRun) {
     if (fromRoute === toRoute) {
       return;
     }
-    var activePage = safeQuery(".page.active");
-    var targetWindow = activePage && (safeQuery(".xp-window", activePage) || activePage);
-    var trigger = snapshot && snapshot.element;
-
-    if (toRoute === "home") {
-      var returningIcon = findDesktopIcon(fromRoute);
-      transientClass(returningIcon, "is-returning", DURATIONS.standard);
-      if (!fromRun && activePage) {
-        transientClass(activePage, "is-ui-entering", DURATIONS.window);
-      }
-    } else {
-      if (isElement(trigger) && elementMatches(trigger, ".desktop-icon")) {
-        transientClass(trigger, "is-opening", DURATIONS.window);
-      }
-      if (!fromRun && targetWindow) {
-        var origin = snapshot && snapshot.rect;
-        if (!enterAnimation("route", targetWindow, origin)) {
-          transientClass(activePage || targetWindow, "is-ui-entering", DURATIONS.window);
-        }
-        scheduleTimer(function clearObservedWindowOrigin() {
-          clearWindowOrigin(targetWindow);
-        }, DURATIONS.window + 40);
-      }
-    }
-
-    resetParallax(toRoute !== "home");
     dispatchHook("lusu:ui-motion-route", {
       from: fromRoute,
       to: toRoute,
@@ -1193,7 +1110,6 @@
     var previous = routeName(fromRoute) || "home";
     state.lastRoute = next;
     if (now() < state.suppressRouteUntil) {
-      resetParallax(next !== "home");
       return;
     }
     decorateRouteTransition(previous, next, triggerSnapshot(), false);
@@ -1331,8 +1247,6 @@
     addListener(global, "pointercancel", releasePressedTarget, { passive: true });
     addListener(document, "click", handleClick, true);
     addListener(document, "keydown", handleKeyDown, true);
-    addListener(global, typeof global.PointerEvent === "function" ? "pointermove" : "mousemove", handlePointerMove, { passive: true });
-    addListener(document, "mouseout", handlePointerLeave, { passive: true });
     addListener(global, "blur", function resetOnBlur() {
       releasePressedTarget();
       resetParallax(false);
@@ -1369,6 +1283,14 @@
     removeListeners();
     removeMediaListeners();
     stopAnimations();
+    if (state.activeViewTransition && typeof state.activeViewTransition.skipTransition === "function") {
+      try {
+        state.activeViewTransition.skipTransition();
+      } catch (error) {
+        // Teardown is best-effort.
+      }
+    }
+    state.activeViewTransition = null;
     clearTimers();
     state.lastTrigger = null;
     state.targetX = 0;
@@ -1378,14 +1300,15 @@
     root.style.removeProperty("--ui-parallax-x");
     root.style.removeProperty("--ui-parallax-y");
     removeData(root, "uiTransition");
+    removeData(root, "uiDirection");
     removeData(root, "uiModal");
     removeData(root, "inputMethod");
     removeData(root, "motion");
     if (document.body) {
       removeData(document.body, "motion");
     }
-    safeQueryAll(".is-ui-entering, .is-ui-leaving, .is-ui-pressed, .is-opening, .is-returning, .is-ui-awakening").forEach(function clearStateClass(element) {
-      ["is-ui-entering", "is-ui-leaving", "is-ui-pressed", "is-opening", "is-returning", "is-ui-awakening"].forEach(function removeStateClass(className) {
+    safeQueryAll(".is-ui-entering, .is-ui-leaving, .is-ui-pressed").forEach(function clearStateClass(element) {
+      ["is-ui-entering", "is-ui-leaving", "is-ui-pressed"].forEach(function removeStateClass(className) {
         element.classList.remove(className);
       });
     });

@@ -4,12 +4,23 @@
 
 ## 2026-07-11（本地功能分支，尚未发布）
 
+- 全站轻动效重置（取代下方同日记录的原点放大、书页翻动和 Dock 淡化中间方案）：
+  - 移除 Home 点击后的图标原点巨幅缩放、大面积 3D 书页翻转、弹跳、闪光与指针视差；桌面图标打开不再捕获 Home 全屏快照，只让目标模块窗口做 200ms、3px 的克制淡入归位，壁纸与系统栏全程稳定。
+  - 桌面任务栏的模块间切换只让新活动页面轻淡入并小幅方向滑动，旧窗口快照直接隐藏；返回 Home 时改为在实时壁纸上轻滑入图标区，不再让 Home 快照进入顶层盖住任务栏。固定顶栏和任务栏始终不参与转场。
+  - 手机真实 Dock 精简为 Home、知识库、视频、资源、游戏和聊天室六个高频入口，移除“杂谈区”“关于我”两个 Dock 快捷项但保留对应 Home App；六项在 375px 以上居中排布，359px 只保留很短的横向滑动。进入未列入 Dock 的模块时共享选中底板隐藏，不伪造选中状态。
+  - 动效节奏统一为 instant 80ms、fast 140ms、standard 200ms、window 220ms、scene 300ms；大面积表面只动画 `transform + opacity`，禁止动画 `filter`、`box-shadow`、`border-radius` 或使用过冲弹簧。
+  - `data-motion="reduced"` 与 `off` 都立即完成导航和状态提交；弹窗、窗口、主题和按压反馈同步收敛为低位移、可中断的轻反馈，不再通过整页 transform 破坏 fixed 元素坐标系。
+  - 公开主站六个可见 CSS / JS 入口统一更新 query 为 `20260711-calm-motion-r12`；同一条 Premium Interaction 汇总记录已同步 fallback、Functions seed 与 schema seed 的 zh / en / ja 动效和六项 Dock 说明，不新增重复更新文章。桌面中间帧与手机 359×500、375×667、390×844、844×390 三语全路由重新验收。
+
 - GPT-5.6 Premium Interaction & Mobile OS Redesign 继续收口：
-  - 页面/模块 route 改为 `.site-shell` 整页拟真书页翻动，顶栏、活动模块和底栏作为一张页面共同翻动；root 快照动画为 `none`，不再出现旧整屏淡入淡出或叠加窗口放大。
+  - Home App 图标取消旧翻页、弹跳和闪光，改为从实际点击图标位置直接放大到模块区域的 320ms `transform + opacity` 动画；减少动态/关闭动效仍立即完成导航。
+  - 桌面底栏切换保留减弱后的 300ms 拟真书页翻动，但 View Transition 只命名 `.page.active`，顶部栏和底部栏保持稳定；fallback 不再等待旧页先退场。手机 Dock 切换使用 170ms 轻淡化/位移，不使用翻页。
+  - 手机底部 Dock 从 Home 装饰栏升级为全路由真实导航：8 个入口可横向滑动、真实显示选中状态、点击切换，并通过 44px 横线按钮向下收起或向上展开；毛玻璃栏继续避让 safe area 与内容区。
+  - 手机 Appbar 左上角改为带图标和 Home 文案的返回按钮，模块名右对齐；删除无法代表用户真实设备状态的模拟信号、Wi-Fi 和电量图标，只保留真实本地时间与站点标识。
   - Home 删除三语站点大标题、施工提示和分隔横线；手机图标固定行高、按从左到右再从上到下排列，按钮热区与可见图标/标题盒面积比保持接近 1，同时保留 44px 触控下限。
   - 知识库、视频、资源、游戏、杂谈、聊天室和关于页统一为“外框—工具/筛选区—标签区—内容区”的多层边框结构，继续使用本站四时段/Neo-XP token，不复制参考图颜色或图标。
   - 唯一汇总型公开 `site-updates` 记录继续使用 ID `seed-update-2026-07-10-premium-interaction-mobile-os`；`js/main.js` fallback、Functions seed 与 schema seed 的 zh / en / ja 内容和发布时间同步到 2026.07.11。
-  - 公开资源 query 更新为 `20260710-premium-mobile-os-r7`；本地构建、四视口 Home 热区、28 个移动 App 状态、卡片/子项几何、44px 控件、整页翻页中间态和控制台检查通过。
+  - 这一阶段曾使用 `20260710-premium-mobile-os-r8` query，现已由上方轻动效版本统一覆盖。四视口 Home/Dock/模块几何、44px 控件、动效类型与控制台检查会在最终轻动效实现后重新执行。
 
 ## 2026-07-10（本地功能分支，尚未发布）
 
@@ -30,7 +41,7 @@
   - 保留既有公开路由、Pages Functions API、Cloudflare D1、HttpOnly 账号会话、游戏云存档、普通大厅与前端加密密码房、三语内容、视频系统和遥测隐私边界；本次没有修改正式部署链路。
 - 公开更新与缓存收口：
   - 本次可见改动只使用一条合并 `site-updates` 更新记录：ID `seed-update-2026-07-10-premium-interaction-mobile-os`，slug `2026-07-10-premium-interaction-mobile-os`，并要求 zh / en / ja fallback、Functions seed 与 schema seed 同步。
-  - 本轮公开 CSS / JS、移动状态图和强视觉资产引用统一使用 query `20260710-premium-mobile-os-r7`；`js/telemetry.js` 保留既有隐私发布版本。以后新增或改动公开 CSS、JS 或强视觉资产时，必须同步 `index.html` 对应 query。
+  - 本轮公开 CSS / JS、移动状态图和强视觉资产引用统一使用 query `20260710-premium-mobile-os-r8`；`js/telemetry.js` 保留既有隐私发布版本。以后新增或改动公开 CSS、JS 或强视觉资产时，必须同步 `index.html` 对应 query。
 - 当前视觉与交互证据：
   - 390x844 的 Home 与 Chat 均无横向溢出；375x667 的 7 个 App 全部位于首屏；430x932 纳入回归矩阵。
   - 844x390 coarse pointer 横屏 Chat 的输入框与发送按钮位于底部 Home indicator 安全区上方，可正常触达。

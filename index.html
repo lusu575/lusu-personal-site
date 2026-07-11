@@ -24,10 +24,10 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32.png?v=20260611-unified-tv-icon">
   <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png?v=20260611-unified-tv-icon">
   <link rel="manifest" href="/manifest.webmanifest">
-  <script src="/js/mobile-shell.js?v=20260710-premium-mobile-os-r7"></script>
-  <link rel="stylesheet" href="/css/style.css?v=20260710-premium-mobile-os-r7">
-  <link rel="stylesheet" href="/css/mobile-ios-shell.css?v=20260710-premium-mobile-os-r7">
-  <link rel="stylesheet" href="/css/motion-system.css?v=20260710-premium-mobile-os-r7">
+  <script src="/js/mobile-shell.js?v=20260711-calm-motion-r12"></script>
+  <link rel="stylesheet" href="/css/style.css?v=20260711-calm-motion-r12">
+  <link rel="stylesheet" href="/css/mobile-ios-shell.css?v=20260711-calm-motion-r12">
+  <link rel="stylesheet" href="/css/motion-system.css?v=20260711-calm-motion-r12">
 </head>
 <body data-route="home">
   <div class="site-shell">
@@ -38,11 +38,11 @@
           <img src="/assets/images/lusu-tv-head-64.png?v=20260611-unified-tv-icon" width="64" height="64" alt="">
           <span>LUSU OS</span>
         </div>
-        <img class="mobile-status-glyphs" src="/assets/images/mobile-shell/mobile-status-glyphs.png?v=20260710-premium-mobile-os-r7" width="1619" height="338" alt="" aria-hidden="true">
       </div>
       <div class="mobile-appbar">
         <button class="mobile-home-button" type="button" data-route="home" aria-label="返回桌面" data-i18n-aria-label="brandHomeAria">
           <img src="/assets/images/lusu-tv-head-64.png?v=20260611-unified-tv-icon" width="64" height="64" alt="" aria-hidden="true">
+          <span class="mobile-home-label" data-i18n="startButton">首页</span>
         </button>
         <div class="mobile-route-copy">
           <span>PIXEL APP</span>
@@ -346,22 +346,25 @@
     </main>
 
     <footer class="xp-taskbar">
-      <button class="start-button" data-route="home"><img class="start-windows-icon" src="/assets/images/start-windows-pixel.png" width="96" height="96" alt="" aria-hidden="true"><span data-i18n="startButton">首页</span></button>
-      <nav class="taskbar-tabs" aria-label="底部主导航" data-i18n-aria-label="taskbarNavAria">
-        <button data-route="knowledge"><span class="mini-icon taskbar-icon taskbar-icon-knowledge" aria-hidden="true"></span><span data-i18n="navKnowledge">知识库</span></button>
-        <button data-route="videos"><span class="mini-icon taskbar-icon taskbar-icon-videos" aria-hidden="true"></span><span data-i18n="navVideos">视频区</span></button>
-        <button data-route="resources"><span class="mini-icon taskbar-icon taskbar-icon-resources" aria-hidden="true"></span><span data-i18n="navResources">资源区</span></button>
-        <button data-route="games"><span class="mini-icon taskbar-icon taskbar-icon-games" aria-hidden="true"></span><span data-i18n="navGames">游戏区</span></button>
-        <button data-route="blog"><span class="mini-icon taskbar-icon taskbar-icon-blog" aria-hidden="true"></span><span data-i18n="navBlog">杂谈区</span></button>
-        <button data-route="chatroom"><span class="mini-icon chat-mini-icon" aria-hidden="true"></span><span data-i18n="navChatroom">匿名聊天室</span></button>
-        <button data-route="about"><span class="mini-icon taskbar-icon taskbar-icon-about" aria-hidden="true"></span><span data-i18n="navAbout">关于我</span></button>
-      </nav>
+      <div class="mobile-dock-scroll">
+        <span class="mobile-dock-selection" aria-hidden="true"></span>
+        <button class="start-button" data-route="home"><img class="start-windows-icon" src="/assets/images/start-windows-pixel.png" width="96" height="96" alt="" aria-hidden="true"><span data-i18n="startButton">首页</span></button>
+        <nav class="taskbar-tabs" aria-label="底部主导航" data-i18n-aria-label="taskbarNavAria">
+          <button data-route="knowledge"><span class="mini-icon taskbar-icon taskbar-icon-knowledge" aria-hidden="true"></span><span data-i18n="navKnowledge">知识库</span></button>
+          <button data-route="videos"><span class="mini-icon taskbar-icon taskbar-icon-videos" aria-hidden="true"></span><span data-i18n="navVideos">视频区</span></button>
+          <button data-route="resources"><span class="mini-icon taskbar-icon taskbar-icon-resources" aria-hidden="true"></span><span data-i18n="navResources">资源区</span></button>
+          <button data-route="games"><span class="mini-icon taskbar-icon taskbar-icon-games" aria-hidden="true"></span><span data-i18n="navGames">游戏区</span></button>
+          <button data-route="blog" data-mobile-dock-excluded><span class="mini-icon taskbar-icon taskbar-icon-blog" aria-hidden="true"></span><span data-i18n="navBlog">杂谈区</span></button>
+          <button data-route="chatroom"><span class="mini-icon chat-mini-icon" aria-hidden="true"></span><span data-i18n="navChatroom">匿名聊天室</span></button>
+          <button data-route="about" data-mobile-dock-excluded><span class="mini-icon taskbar-icon taskbar-icon-about" aria-hidden="true"></span><span data-i18n="navAbout">关于我</span></button>
+        </nav>
+      </div>
       <div class="status-tray">
         <span id="local-time" data-local-time="full">--:--:--</span>
         <span class="online-dot"></span>
         <span>ONLINE</span>
       </div>
-      <div class="mobile-home-indicator" aria-hidden="true"><span></span></div>
+      <button class="mobile-home-indicator" type="button" data-mobile-dock-toggle aria-expanded="true" aria-label="收起或展开底部导航" data-i18n-aria-label="mobileDockToggleAria"><span aria-hidden="true"></span></button>
     </footer>
   </div>
 
@@ -426,7 +429,7 @@
   </div>
 
   <script src="/js/telemetry.js?v=20260623-analytics-privacy-r1"></script>
-  <script src="/js/ui-motion.js?v=20260710-premium-mobile-os-r7"></script>
-  <script src="/js/main.js?v=20260710-premium-mobile-os-r7"></script>
+  <script src="/js/ui-motion.js?v=20260711-calm-motion-r12"></script>
+  <script src="/js/main.js?v=20260711-calm-motion-r12"></script>
 </body>
 </html>

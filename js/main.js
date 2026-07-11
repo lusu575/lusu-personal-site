@@ -96,6 +96,7 @@ const translations = {
     startButton: "首页",
     lastUpdatedLabel: "最近更新日期",
     brandHomeAria: "返回桌面",
+    mobileDockToggleAria: "收起或展开底部导航",
     languageSwitcherAria: "语言切换",
     desktopIconsAria: "主要栏目",
     taskbarNavAria: "底部主导航",
@@ -276,6 +277,7 @@ const translations = {
     startButton: "Home",
     lastUpdatedLabel: "Last updated",
     brandHomeAria: "Back to desktop",
+    mobileDockToggleAria: "Collapse or expand bottom navigation",
     languageSwitcherAria: "Language switcher",
     desktopIconsAria: "Main sections",
     taskbarNavAria: "Taskbar navigation",
@@ -456,6 +458,7 @@ const translations = {
     startButton: "ホーム",
     lastUpdatedLabel: "最終更新日",
     brandHomeAria: "デスクトップへ戻る",
+    mobileDockToggleAria: "下部ナビゲーションを折りたたむ、または展開する",
     languageSwitcherAria: "言語切り替え",
     desktopIconsAria: "主なセクション",
     taskbarNavAria: "下部メインナビゲーション",
@@ -599,14 +602,14 @@ const content = {
         ja: "GPT-5.6 プレミアム操作とモバイル OS 再設計"
       },
       summary: {
-        zh: "模块切换改为轻量拟真翻页，手机首页图标与热区重新收紧，所有移动模块增加清晰的分层边框，同时保留既有功能与三语内容。",
-        en: "Module changes now use a restrained page turn, the mobile Home grid and hit areas are tighter, and every mobile App has a clearer layered frame without changing existing features.",
-        ja: "モジュール切り替えを控えめなページめくりに変更し、モバイル Home の配置とタップ範囲を整え、全 App に明確な多層フレームを追加しました。"
+        zh: "桌面 App 打开和返回 Home 不再捕获整页快照，固定任务栏全程稳定；手机 Dock 精简为六个高频入口并重新居中排版。",
+        en: "Desktop App launch and Home return keep the taskbar stable without full-page snapshots, while the mobile Dock is refined to six balanced high-frequency routes.",
+        ja: "デスクトップの App 起動と Home 復帰でタスクバーを常時固定し、モバイル Dock は高頻度の 6 項目に整理して中央配置を整えました。"
       },
       content_markdown: {
-        zh: "# GPT-5.6 高级交互与移动 OS 重设计\n\n这次汇总更新继续保留桌面端 Windows XP、像素艺术与 Y2K 识别度，并把手机端完善为更紧凑、更易读的原创虚拟手机 OS。\n\n## 更轻的页面翻动\n\n- 模块之间的路由切换改为沿页边翻动的拟真书页效果，移除了原来的整屏淡入淡出和二次窗口放大，减少切换时的闪屏感。\n- 翻页只用于页面与模块切换；窗口最小化、关闭、弹窗和主题变化继续使用各自的交互反馈。\n- `prefers-reduced-motion` 与关闭动效模式会立即完成导航，不强制空间运动。\n\n## 更紧凑的手机首页\n\n- 首页移除了三语站点大标题、施工提示和分隔横线，把首屏空间还给 App 图标。\n- 图标按从左到右、从上到下排列，固定行高，不再随细长屏幕把行距拉开。\n- 每个按钮的点击区域与实际图标和标题盒对齐，同时保持至少 44px 的触控尺寸。\n\n## 所有手机模块的分层边框\n\n- 参考像素应用的外框、工具区、标签区和内容区层级，为知识库、视频、资源、游戏、杂谈、聊天室与关于页建立统一多层边框。\n- 边框继续使用本站四时段和 Neo-XP 色彩，不复制参考图的配色或图标；卡片、文案和按钮仍按短竖屏与横屏布局。\n- 账号与语言控制只保留在 Home，模块内继续使用单一 Appbar 与 Home 返回入口。\n\n所有原有路由、API、D1 数据、账户登录、游戏云存档、普通与密码聊天室、三语内容、视频系统和遥测隐私边界保持不变。",
-        en: "# GPT-5.6 Premium Interaction & Mobile OS Redesign\n\nThis consolidated update keeps the Windows XP, pixel-art, and Y2K identity on desktop while refining mobile into a tighter and more readable original virtual phone OS.\n\n## A lighter page turn\n\n- Route changes between modules now turn from the page edge like a physical sheet. The previous full-screen crossfade and the second window zoom are removed to prevent the heavy flash.\n- The page turn is reserved for page and module navigation. Minimize, close, modal, and time-theme actions keep their own feedback.\n- Reduced-motion and motion-off modes commit navigation immediately without forced spatial movement.\n\n## A tighter mobile Home Screen\n\n- The three-language Home headline, construction note, and divider are removed so App icons receive the first-screen space.\n- Icons fill left to right and top to bottom with fixed row heights instead of stretching apart on tall screens.\n- Each button hit area now matches the visible icon and label box while retaining at least a 44px touch target.\n\n## Layered frames in every mobile App\n\n- Knowledge, Videos, Resources, Games, Notes, Chat, and About now share a clear outer-frame, toolbar, tab, and content hierarchy inspired by pixel applications.\n- The frame keeps this site's four-time and Neo-XP palette rather than copying the reference colors or icons. Cards, text, and controls still adapt to short portrait and landscape layouts.\n- Account and language controls remain on Home; Apps keep one Appbar and a visible Home return control.\n\nExisting routes, APIs, D1 data, account sessions, game cloud saves, public and password chat, three-language content, video delivery, and telemetry privacy boundaries remain unchanged.",
-        ja: "# GPT-5.6 プレミアム操作とモバイル OS 再設計\n\n今回の統合更新では、デスクトップの Windows XP、ピクセルアート、Y2K の個性を保ちながら、モバイルをよりコンパクトで読みやすい独自の仮想スマートフォン OS に整えました。\n\n## 軽いページめくり\n\n- モジュール間のルート切り替えを、ページ端から紙がめくれるような表現に変更しました。従来の全画面クロスフェードと二重のウィンドウ拡大をなくし、強い点滅感を抑えています。\n- ページめくりはページとモジュールの移動だけに使います。最小化、閉じる、モーダル、時間帯テーマは個別の反応を維持します。\n- 動きを減らす設定と動きオフでは、空間移動を強制せず直ちにナビゲーションを完了します。\n\n## コンパクトなモバイル Home\n\n- 三言語の Home 大見出し、工事中の説明、区切り線を削除し、最初の画面を App アイコンに戻しました。\n- アイコンは左から右、上から下へ固定行高で並び、縦長画面でも行間が広がりません。\n- ボタンのタップ範囲を見えているアイコンとラベルの箱に合わせ、44px 以上の操作サイズを維持します。\n\n## 全モバイル App の多層フレーム\n\n- 知識庫、動画、リソース、ゲーム、雑談、チャット、プロフィールに、外枠、ツール領域、タブ、内容領域が分かる共通フレームを追加しました。\n- 参考画像の色やアイコンはコピーせず、このサイトの四時間帯と Neo-XP 配色を使います。カード、文章、ボタンは短い縦画面と横画面にも適応します。\n- アカウントと言語操作は Home のみに置き、App 内は一つの Appbar と見える Home 復帰操作を維持します。\n\n既存のルート、API、D1 データ、アカウント、ゲームのクラウドセーブ、公開・パスワードチャット、三言語コンテンツ、動画、テレメトリーのプライバシー境界は変更していません。"
+        zh: "# GPT-5.6 高级交互与移动 OS 重设计\n\n这次汇总更新继续保留桌面端 Windows XP、像素艺术与 Y2K 识别度，并把手机端完善为更紧凑、更易读的原创虚拟手机 OS。\n\n## 全站轻动效重置\n\n- 桌面 Home 图标打开 App 时不再创建 Home 全屏快照，只让目标窗口用 200ms 淡入并上移 3px 归位；实时壁纸、顶栏和任务栏保持不动。\n- 桌面任务栏在模块间切换时只显示新活动页面的约 200ms、±6px 轻滑入；返回 Home 时仅让图标区轻滑入，Home 快照不会进入顶层遮住任务栏。\n- 手机 Dock 切换使用约 220ms、±12px 的方向滑动；一个共享选中底板在入口间连续移动，快速连续点击会中止旧转场，不再硬切或留下重影。\n- 弹窗、窗口、按钮和主题统一为低位移反馈；减少动态与关闭动效模式立即完成导航。\n\n## 真实可用的手机导航\n\n- 手机 Appbar 左上角使用带文字的 Home 返回按钮，当前模块名移到右上角，账号和语言仍只在 Home 显示。\n- 底部 Dock 在所有模块内保持悬浮，只保留 Home、知识库、视频、资源、游戏和聊天室六个高频入口；375px 以上居中排列，359px 可短距离横滑，杂谈与关于仍从 Home 图标进入。\n- 网页无法可靠读取 iPhone 的真实信号、Wi-Fi 与电量，因此移除装饰性状态图标，避免把模拟状态误认为设备状态。\n\n## 更紧凑的首页与分层模块\n\n- Home 图标按从左到右、从上到下排列，固定行高，热区贴合图标与标题并保持至少 44px。\n- 知识库、视频、资源、游戏、杂谈、聊天室与关于页继续使用统一的外框、工具区、标签区和内容区层级。\n- 边框使用本站四时段和 Neo-XP 色彩，不复制参考图配色或图标；卡片、文案和按钮继续适配短竖屏与横屏。\n\n所有原有路由、API、D1 数据、账户登录、游戏云存档、普通与密码聊天室、三语内容、视频系统和遥测隐私边界保持不变。",
+        en: "# GPT-5.6 Premium Interaction & Mobile OS Redesign\n\nThis consolidated update keeps the Windows XP, pixel-art, and Y2K identity on desktop while refining mobile into a tighter and more readable original virtual phone OS.\n\n## Site-wide calm motion reset\n\n- Desktop Home App launches no longer create a full Home-screen snapshot. Only the destination window fades in and settles upward by 3px over 200ms, while the live wallpaper, top bar, and taskbar remain still.\n- Desktop taskbar module changes reveal only the new active page with an approximately 200ms, ±6px slide. Returning Home animates only the icon group, so no Home snapshot can cover the taskbar.\n- Mobile Dock changes use an approximately 220ms directional ±12px slide. One shared selection pill moves continuously between routes, and rapid taps skip the previous transition instead of producing a hard cut or ghost frame.\n- Dialogs, windows, buttons, and theme changes now share low-displacement feedback. Reduced-motion and motion-off modes navigate immediately.\n\n## A real mobile navigation Dock\n\n- The mobile Appbar has a labeled Home button on the left and the current module name aligned on the right. Account and language controls remain Home-only.\n- The frosted Dock persists across Apps with six high-frequency routes: Home, Knowledge, Videos, Resources, Games, and Chat. They center from 375px upward and briefly scroll at 359px; Notes and About remain available from Home.\n- Browsers cannot reliably read an iPhone's real signal, Wi-Fi, or battery status, so decorative status glyphs were removed to avoid presenting simulated values as device state.\n\n## Tighter Home and layered Apps\n\n- Home icons fill left to right and top to bottom with fixed rows; hit areas hug the visible icon and label while retaining a 44px minimum.\n- Knowledge, Videos, Resources, Games, Notes, Chat, and About keep a shared outer-frame, toolbar, tab, and content hierarchy.\n- Frames use this site's four-time Neo-XP palette rather than copying reference colors or icons, and content remains adaptive in short portrait and landscape layouts.\n\nExisting routes, APIs, D1 data, account sessions, game cloud saves, public and password chat, three-language content, video delivery, and telemetry privacy boundaries remain unchanged.",
+        ja: "# GPT-5.6 プレミアム操作とモバイル OS 再設計\n\n今回の統合更新では、デスクトップの Windows XP、ピクセルアート、Y2K の個性を保ちながら、モバイルをよりコンパクトで読みやすい独自の仮想スマートフォン OS に整えました。\n\n## 全体を軽い動きに再設計\n\n- デスクトップの Home から App を開くときは全画面スナップショットを作らず、対象ウィンドウだけを 200ms のフェードと 3px の上移動で整えます。壁紙、上部バー、タスクバーは動きません。\n- デスクトップ下部ナビのモジュール切り替えは、新しい活動ページだけを約 200ms、±6px で軽く表示します。Home 復帰ではアイコン領域だけを動かし、Home のスナップショットがタスクバーを覆うことはありません。\n- モバイル Dock は約 220ms、±12px の方向付きスライドを使います。一つの共有選択プレートが項目間を連続して移動し、素早い連続操作では古い遷移を中止するため、硬い切り替えや残像が出ません。\n- ダイアログ、ウィンドウ、ボタン、テーマも低移動量の反応に統一しました。動きを減らす設定では直ちに移動します。\n\n## 実際に使えるモバイル Dock\n\n- Appbar 左上に文字付き Home ボタンを置き、現在のモジュール名を右上に揃えました。アカウントと言語操作は Home のみに残します。\n- 半透明 Dock は Home、知識庫、動画、リソース、ゲーム、チャットの高頻度 6 項目に整理しました。375px 以上では中央に並び、359px では短く横スクロールできます。雑談とプロフィールは Home から開けます。\n- ブラウザーは iPhone の実際の電波、Wi-Fi、バッテリーを安定して取得できないため、模擬値と誤解される装飾表示を削除しました。\n\n## コンパクトな Home と多層 App\n\n- Home アイコンは左から右、上から下へ固定行高で並び、タップ範囲は見えるアイコンとラベルに沿わせつつ 44px 以上を保ちます。\n- 知識庫、動画、リソース、ゲーム、雑談、チャット、プロフィールは、外枠、ツール、タブ、内容領域の共通階層を維持します。\n- 参考画像の色やアイコンはコピーせず、このサイトの四時間帯 Neo-XP 配色を使い、短い縦画面と横画面にも適応します。\n\n既存のルート、API、D1 データ、アカウント、ゲームのクラウドセーブ、公開・パスワードチャット、三言語コンテンツ、動画、テレメトリーのプライバシー境界は変更していません。"
       }
     },
     {
@@ -2228,7 +2231,18 @@ function navigate(route, options = {}) {
   if (previousRoute === "home") {
     captureRouteIconRects();
   }
-  const motionKind = typeof options.motionKind === "string" ? options.motionKind : "route";
+  const isSameRouteNoop = previousRoute === nextRoute
+    && !(nextRoute === "knowledge" && (options.articleSlug || articleState.currentSlug));
+  if (isSameRouteNoop) {
+    updateNavigationState(nextRoute);
+    return;
+  }
+  let motionKind = typeof options.motionKind === "string" ? options.motionKind : "route";
+  if (motionKind === "route"
+    && document.documentElement.dataset.uiShell === "mobile"
+    && !options.trigger?.matches?.(".desktop-icon")) {
+    motionKind = "mobile-tab";
+  }
   const isExitMotion = motionKind === "window-close" || motionKind === "window-minimize";
   const returnTarget = isExitMotion && nextRoute === "home" && previousRoute !== "home"
     ? routeReturnTarget(previousRoute, motionKind)
@@ -2272,7 +2286,7 @@ function navigate(route, options = {}) {
     window.dispatchEvent(new CustomEvent("lusu:navigation", {
       detail: { route: nextRoute }
     }));
-    const shouldFocusWindow = motionKind === "route" && nextRoute !== "home" && Boolean(
+    const shouldFocusWindow = ["route", "app-open", "mobile-tab"].includes(motionKind) && nextRoute !== "home" && Boolean(
       options.focusWindow === true
         || options.trigger && (
           document.documentElement.dataset.inputMethod === "keyboard"
@@ -2316,12 +2330,19 @@ function navigate(route, options = {}) {
     return;
   }
 
+  const isDesktopShell = document.documentElement.dataset.uiShell !== "mobile";
+  const keepsDesktopChromeLive = isDesktopShell && (
+    motionKind === "app-open"
+    || motionKind === "route" && nextRoute === "home"
+  );
+
   window.LusuUiMotion.run(motionKind, {
     route: nextRoute,
     trigger: options.trigger || null,
     originRect: exitOriginRect,
     deferCommit: isExitMotion,
-    useViewTransition: motionKind === "route"
+    useViewTransition: ["route", "app-open", "mobile-tab"].includes(motionKind)
+      && !keepsDesktopChromeLive
   }, commitNavigation).catch(() => {
     commitNavigation();
   });
@@ -5632,7 +5653,12 @@ document.addEventListener("click", (event) => {
       ? "window-minimize"
       : routeButton.matches(".close-button") && routeButton.dataset.route === "home"
         ? "window-close"
-        : "route";
+        : routeButton.matches(".desktop-icon")
+          ? "app-open"
+          : document.documentElement.dataset.uiShell === "mobile"
+            && routeButton.matches(".taskbar-tabs button, .start-button, .mobile-home-button")
+            ? "mobile-tab"
+            : "route";
     navigate(routeButton.dataset.route, { trigger: routeButton, motionKind });
     closeWelcome({ restoreFocus: false, motion: false });
     return;

@@ -7,7 +7,7 @@ Last updated: 2026-07-11
 The public site is one personal operating system with one shared route, content, account, video, game, and chat state.
 
 - Desktop shell: **Neo-XP / Pixel Glass OS** — recognizable Windows XP structure, pixel art, Y2K warmth, crisp window depth, restrained glass, and spatial motion.
-- Mobile shell: **Pocket Pixel OS** — an original iOS-inspired full-viewport phone interface with safe areas, status bar, compact island, Home Screen, app grid, a Home-only Dock, single-bar App navigation, and a Home gesture/control.
+- Mobile shell: **Pocket Pixel OS** — an original iOS-inspired full-viewport phone interface with safe areas, a truthful status region, compact island, Home Screen, App grid, persistent scrollable Dock, single-bar App navigation, and a labeled Home control.
 - The memorable idea is the same personal world changing presentation shell without duplicating business state.
 
 Avoid modern landing-page composition, generic white-card dashboards, excessive blur, constant bouncing, autoplay sound, particle trails, copied Apple artwork, emoji icons, and CSS-drawn substitute artwork.
@@ -16,13 +16,13 @@ Avoid modern landing-page composition, generic white-card dashboards, excessive 
 
 ```css
 :root {
-  --ui-instant: 90ms;
-  --ui-fast: 160ms;
-  --ui-normal: 260ms;
-  --ui-window: 380ms;
-  --ui-scene: 680ms;
-  --ui-ease-standard: cubic-bezier(.2, .8, .2, 1);
-  --ui-ease-emphasized: cubic-bezier(.16, 1, .3, 1);
+  --ui-instant: 80ms;
+  --ui-fast: 140ms;
+  --ui-normal: 200ms;
+  --ui-window: 220ms;
+  --ui-scene: 300ms;
+  --ui-ease-standard: cubic-bezier(.2, .7, .2, 1);
+  --ui-ease-emphasized: cubic-bezier(.22, 1, .36, 1);
 
   --space-1: 4px;
   --space-2: 8px;
@@ -67,7 +67,7 @@ Avoid modern landing-page composition, generic white-card dashboards, excessive 
 Every interactive control supports default, hover where available, pressed, focus-visible, disabled, loading, success, and error.
 
 - Touch targets: minimum 44×44 CSS px, with at least 8px separation.
-- Pressed: 1–2px displacement, compressed shadow, and highlight change.
+- Pressed: color, highlight, or inner-depth feedback without moving or scaling the whole control.
 - Hover: only inside `@media (hover: hover) and (pointer: fine)`.
 - Focus: yellow pixel/glass ring with a dark separation edge.
 - Primary actions remain single tap; no double-click requirement.
@@ -75,13 +75,13 @@ Every interactive control supports default, hover where available, pressed, focu
 
 ## Motion
 
-- Route/module navigation uses a directional physical-page turn on `.site-shell`, so the top chrome, active content, and bottom chrome move as one sheet; the root snapshot does not crossfade, and the arriving window does not run a second scale-in. Window minimize/close, modal, and theme transitions remain separate motion families.
-- Browsers without View Transitions fold the outgoing page before revealing the incoming page without cloning business DOM.
-- Route/app closing returns toward its source and restores focus.
-- Use transform and opacity for animation. Avoid frame-by-frame left/top, width, or height changes.
+- Desktop Home App launch keeps the live wallpaper and fixed chrome in place, then fades only the destination window through a 3px upward settle. Large icon-origin expansion, Home-screen snapshots, bounce, glint, perspective, and physical-page turns are forbidden.
+- Desktop taskbar module navigation reveals only the new active page with a slight directional fade-slide; returning Home animates only the live `.desktop-icons` surface. Mobile Dock navigation uses a short directional content slide plus one shared selection surface across six high-frequency routes; Blog and About remain Home-only shortcuts. Fixed chrome never participates in route snapshots.
+- Pointer-driven parallax is disabled across the site. Slow wallpaper atmosphere may continue only when it is non-interactive, transform/opacity-only, and removed by reduced/off motion.
+- Large page, window, and modal surfaces animate only transform and opacity. Do not animate filter, box-shadow, border-radius, left/top, width, or height, and do not use overshooting springs.
+- Browsers without View Transitions use the same calm content-only semantics without cloning business DOM. Closing restores focus without spatially flying the surface back to an icon.
 - Use View Transitions progressively; CSS/Web Animations fallback must preserve the same state semantics.
-- Wallpaper parallax is one requestAnimationFrame loop, desktop/fine-pointer only, capped at 6px, paused while hidden, and disabled for reduced motion.
-- `data-motion="reduced"` removes spatial travel while keeping short opacity feedback; `off` removes nonessential animation.
+- `data-motion="reduced"` and `off` commit navigation and state changes immediately with no spatial travel; native focus and state feedback remain available.
 
 ## Shell Contract
 
@@ -105,3 +105,7 @@ Every interactive control supports default, hover where available, pressed, focu
 - Shell boundary: 760px mobile and 761px desktop.
 - Check Home plus Knowledge, Videos, Resources, Games, Chat, About, account popover, welcome modal, video modal, and an `/articles/<slug>?lang=` direct link.
 - Capacity checks accompany overflow checks: App surfaces use at least 80% of viewport height, Games fills its scrollport, Chat retains a meaningful log, and the article body exposes at least 44px before fixed reading controls.
+
+## Page Overrides
+
+- `pages/mobile-shell.md` defines the Pocket Pixel OS shell details.
