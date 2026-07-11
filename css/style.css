@@ -1219,7 +1219,7 @@ main {
   display: block;
   width: 26px;
   height: 26px;
-  background-image: url("../assets/images/ui/pixel-ui-glyph-atlas.png?v=20260711-calm-motion-r12");
+  background-image: url("../assets/images/ui/pixel-ui-glyph-atlas.png?v=20260711-calm-motion-r13");
   background-repeat: no-repeat;
   background-size: 200% 200%;
   image-rendering: pixelated;
@@ -3163,7 +3163,7 @@ body.is-article-reading .article-figure {
   border: 0;
   border-radius: 0;
   background-color: transparent;
-  background-image: url("../assets/images/ui/pixel-ui-glyph-atlas.png?v=20260711-calm-motion-r12");
+  background-image: url("../assets/images/ui/pixel-ui-glyph-atlas.png?v=20260711-calm-motion-r13");
   background-position: 100% 100%;
   background-repeat: no-repeat;
   background-size: 200% 200%;

@@ -40,26 +40,26 @@ html[data-ui-shell="mobile"] {
   --mobile-frame-mid: #8cadd7;
   --mobile-frame-highlight: #f8fbff;
   --mobile-frame-surface: #e9f1fb;
-  --mobile-wallpaper: url("../assets/images/mobile-wallpapers/day.webp?v=20260711-calm-motion-r12");
+  --mobile-wallpaper: url("../assets/images/mobile-wallpapers/day.webp?v=20260711-calm-motion-r13");
   min-height: 100%;
   background: #071536;
   color-scheme: light;
 }
 
 html[data-ui-shell="mobile"] body[data-time-theme="morning"] {
-  --mobile-wallpaper: url("../assets/images/mobile-wallpapers/morning.webp?v=20260711-calm-motion-r12");
+  --mobile-wallpaper: url("../assets/images/mobile-wallpapers/morning.webp?v=20260711-calm-motion-r13");
 }
 
 html[data-ui-shell="mobile"] body[data-time-theme="day"] {
-  --mobile-wallpaper: url("../assets/images/mobile-wallpapers/day.webp?v=20260711-calm-motion-r12");
+  --mobile-wallpaper: url("../assets/images/mobile-wallpapers/day.webp?v=20260711-calm-motion-r13");
 }
 
 html[data-ui-shell="mobile"] body[data-time-theme="dusk"] {
-  --mobile-wallpaper: url("../assets/images/mobile-wallpapers/dusk.webp?v=20260711-calm-motion-r12");
+  --mobile-wallpaper: url("../assets/images/mobile-wallpapers/dusk.webp?v=20260711-calm-motion-r13");
 }
 
 html[data-ui-shell="mobile"] body[data-time-theme="night"] {
-  --mobile-wallpaper: url("../assets/images/mobile-wallpapers/night.webp?v=20260711-calm-motion-r12");
+  --mobile-wallpaper: url("../assets/images/mobile-wallpapers/night.webp?v=20260711-calm-motion-r13");
 }
 
 html[data-ui-shell="mobile"] body {
@@ -1377,7 +1377,7 @@ html[data-ui-shell="mobile"] .chatroom-window.is-private-room .send-bubble-icon 
   height: 26px;
   border: 0;
   border-radius: 0;
-  background-image: url("../assets/images/ui/pixel-ui-glyph-atlas.png?v=20260711-calm-motion-r12");
+  background-image: url("../assets/images/ui/pixel-ui-glyph-atlas.png?v=20260711-calm-motion-r13");
   background-position: 100% 100%;
   background-repeat: no-repeat;
   background-size: 200% 200%;
@@ -1484,7 +1484,7 @@ html[data-ui-shell="mobile"] .xp-taskbar {
   left: max(12px, var(--mobile-safe-left));
   display: block;
   width: auto;
-  max-width: 520px;
+  max-width: 340px;
   height: var(--mobile-dock-height);
   min-height: var(--mobile-dock-height);
   margin: 0 auto;
@@ -1512,11 +1512,11 @@ html[data-ui-shell="mobile"] .xp-taskbar::after {
 
 html[data-ui-shell="mobile"] .mobile-dock-scroll {
   --mobile-dock-selection-x: 8px;
-  --mobile-dock-selection-width: 52px;
+  --mobile-dock-selection-width: 48px;
   position: relative;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   width: 100%;
   height: 100%;
   padding: 7px 8px 12px;
@@ -1573,12 +1573,12 @@ html[data-ui-shell="mobile"] .taskbar-tabs button {
   align-items: center;
   justify-content: center;
   gap: 2px;
-  width: 52px;
-  min-width: 52px;
-  max-width: 52px;
+  width: 48px;
+  min-width: 48px;
+  max-width: 48px;
   height: 60px;
   min-height: 60px;
-  flex: 0 0 52px;
+  flex: 0 0 48px;
   padding: 3px 2px;
   overflow: hidden;
   border: 0;
@@ -1602,9 +1602,9 @@ html[data-ui-shell="mobile"] .start-button {
 
 html[data-ui-shell="mobile"] .start-button::before {
   content: "";
-  width: 37px;
-  height: 37px;
-  flex: 0 0 37px;
+  width: 39px;
+  height: 39px;
+  flex: 0 0 39px;
   background: url("../assets/images/lusu-tv-head-desktop-icon.png") center / contain no-repeat;
   filter: drop-shadow(0 5px 7px rgba(0, 19, 65, 0.26));
 }
@@ -1629,9 +1629,9 @@ html[data-ui-shell="mobile"] .taskbar-tabs button[data-mobile-dock-excluded] {
 
 html[data-ui-shell="mobile"] .taskbar-icon,
 html[data-ui-shell="mobile"] .chat-mini-icon {
-  width: 32px;
-  height: 32px;
-  flex: 0 0 32px;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
   filter: drop-shadow(0 5px 7px rgba(0, 19, 65, 0.26));
 }
 
