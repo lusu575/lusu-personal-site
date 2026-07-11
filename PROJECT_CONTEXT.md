@@ -103,7 +103,7 @@
 - 当前正式域名：`https://lusu575.com`
 - 当前备用 Pages 域名：`https://lusu-personal-site-9hd.pages.dev`
 - 站点定位：个人空间，用于记录 AI、游戏、工具、资源、视频、知识库和杂谈内容。
-- 风格目标：Windows XP + Pixel Art + Y2K + 可爱复古互联网桌面。
+- 风格目标：桌面端保持 Windows XP + Pixel Art + Y2K 并升级为 Neo-XP / Pixel Glass OS；移动端使用原创、受 iOS 交互启发的虚拟手机 OS，两端共享同一业务状态。
 
 ## 技术栈
 
@@ -143,8 +143,8 @@ Cloudflare Pages 项目状态：
 
 ## 主要功能
 
-- 单页 XP 桌面风格个人站
-- 首页桌面图标入口
+- 单页、单业务状态的双呈现壳个人站：桌面端 Neo-XP，移动端原创虚拟手机 OS
+- 桌面首页图标入口；移动 Home 的 App grid 与 Dock 复用同一组既有路由
 - 首页使用四时段像素壁纸：基础静态底图位于 `assets/images/wallpapers/`，按用户本地时间切换 morning / day / dusk / night。四个时段均已接入动态云层，分别使用 `assets/images/wallpaper-dynamic/<time>/base-clean.png` 作为无云底图，并叠加从对应原始壁纸抠出的独立透明云层；云层沿用 `wallpaper-root` / `wallpaper-stage` 舞台坐标结构，只用 CSS `transform` / `opacity` 做同一主风向下的慢速错相漂移，并支持减少动态、小屏和页面隐藏暂停降级。本地调试可用 `?wallpaper=morning` / `?wallpaper=day` / `?wallpaper=dusk` / `?wallpaper=night` 强制预览指定动态壁纸，预览模式会临时加快云层位移以便肉眼确认动画。树冠、电视雪花、小女孩、星星、水面光效等层仍作为后续动画接口保留。
 - 顶部栏和底部任务栏：保留 XP 桌面结构与原有图标，并跟随 morning / day / dusk / night 四时段切换无竖线的现代玻璃像素 HUD 色温与高光
 - 知识库、视频区、资源区、游戏区、杂谈区、匿名聊天室、关于我
@@ -435,6 +435,7 @@ D1 表：`anonymous_chat_messages`
 ├── index.html
 ├── CHANGELOG.md
 ├── PROJECT_CONTEXT.md
+├── design-qa-mobile-os.md
 ├── README.md
 ├── package.json
 ├── package-lock.json
@@ -454,7 +455,9 @@ D1 表：`anonymous_chat_messages`
 │   ├── README.md
 │   └── schema.sql
 ├── css/
-│   └── style.css
+│   ├── style.css
+│   ├── mobile-ios-shell.css
+│   └── motion-system.css
 ├── functions/
 │   ├── admin/
 │   │   └── _middleware.js
@@ -472,6 +475,8 @@ D1 表：`anonymous_chat_messages`
 │       （新增游戏必须优先本地静态部署，不要只做外部跳转入口）
 ├── js/
 │   ├── main.js
+│   ├── mobile-shell.js
+│   ├── ui-motion.js
 │   └── telemetry.js
 └── skills/
     └── lusu-personal-site-skill/

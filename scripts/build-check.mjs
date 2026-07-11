@@ -1,4 +1,3 @@
-import { createHash } from "node:crypto";
 import { readFileSync, existsSync, statSync } from "node:fs";
 import { relative, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
@@ -19,61 +18,7 @@ backendEmailSmokeSample.doubleEncoded = encodeURIComponent(backendEmailSmokeSamp
 const frontendForbiddenEmailTexts = Object.values(frontendEmailSmokeSample);
 const backendForbiddenEmailTexts = Object.values(backendEmailSmokeSample);
 
-const japaneseSubtextRequiredFiles = [
-  "design-system/pages/japanese-subtext-trainer.md",
-  "tools/japanese-subtext/index.html",
-  "tools/japanese-subtext/style.css",
-  "tools/japanese-subtext/app.mjs",
-  "tools/japanese-subtext/manifest.json",
-  "tools/japanese-subtext/README.md",
-  "tools/japanese-subtext/lib/audio-player.mjs",
-  "tools/japanese-subtext/lib/cloud.mjs",
-  "tools/japanese-subtext/lib/constants.mjs",
-  "tools/japanese-subtext/lib/content-loader.mjs",
-  "tools/japanese-subtext/lib/i18n.mjs",
-  "tools/japanese-subtext/lib/storage.mjs",
-  "tools/japanese-subtext/content/blueprint.json",
-  "tools/japanese-subtext/content/catalog.json",
-  "tools/japanese-subtext/content/generation-state.json",
-  "tools/japanese-subtext/content/voices.json",
-  "tools/japanese-subtext/content/schema/stage.schema.json",
-  "tools/japanese-subtext/content/level-1/index.json",
-  "tools/japanese-subtext/content/level-2/index.json",
-  "tools/japanese-subtext/content/level-3/index.json",
-  "tools/japanese-subtext/content/level-4/index.json",
-  "tools/japanese-subtext/content/level-5/index.json",
-  "tools/japanese-subtext/audio/manifest.json",
-  "tools/japanese-subtext/assets/icons/tool-icon-64.webp",
-  "tools/japanese-subtext/assets/covers/tool-cover.webp",
-  "tools/japanese-subtext/assets/covers/level-1.webp",
-  "tools/japanese-subtext/assets/covers/level-2.webp",
-  "tools/japanese-subtext/assets/covers/level-3.webp",
-  "tools/japanese-subtext/assets/covers/level-4.webp",
-  "tools/japanese-subtext/assets/covers/level-5.webp",
-  "tools/japanese-subtext/assets/ui/audio-start.webp",
-  "tools/japanese-subtext/scripts/build-content.mjs",
-  "tools/japanese-subtext/scripts/content-stats.mjs",
-  "tools/japanese-subtext/scripts/content-utils.mjs",
-  "tools/japanese-subtext/scripts/estimate-audio-size.mjs",
-  "tools/japanese-subtext/scripts/merge-audio-manifests.mjs",
-  "tools/japanese-subtext/scripts/validate-audio.mjs",
-  "tools/japanese-subtext/scripts/validate-content.mjs",
-  "tools/japanese-subtext/scripts/tts/generate_audio.py",
-  "tools/japanese-subtext/scripts/tts/kokoro_adapter.py",
-  "tools/japanese-subtext/scripts/tts/model-files.sha256.json",
-  "tools/japanese-subtext/scripts/tts/licenses/LICENSE-kokoro-model-Apache-2.0.txt",
-  "tools/japanese-subtext/scripts/tts/licenses/LICENSE-kokoro-onnx-MIT.txt",
-  "tools/japanese-subtext/scripts/tts/licenses/NOTICE-japanese-voices.md",
-  "tools/japanese-subtext/config/pronunciations.json",
-  "tools/japanese-subtext/config/tts.local.example.json",
-  "tools/japanese-subtext/config/tts.local.schema.json",
-  "tools/japanese-subtext/reports/final-stats.json",
-  "tools/japanese-subtext/reports/release-report.md"
-];
-
 const requiredFiles = [
-  "_headers",
-  "_redirects",
   "admin/index.html",
   "admin/admin.css",
   "admin/admin.js",
@@ -84,20 +29,31 @@ const requiredFiles = [
   "functions/admin/_middleware.js",
   "functions/api/[[route]].js",
   "functions/sitemap.xml.js",
+  "assets/images/ui/pixel-ui-glyph-atlas.png",
+  "assets/images/mobile-wallpapers/morning.webp",
+  "assets/images/mobile-wallpapers/day.webp",
+  "assets/images/mobile-wallpapers/dusk.webp",
+  "assets/images/mobile-wallpapers/night.webp",
+  "css/mobile-ios-shell.css",
+  "css/motion-system.css",
   "css/style.css",
+  "design-system/MASTER.md",
+  "design-system/pages/desktop-shell.md",
+  "design-system/pages/mobile-shell.md",
   "games/2048/index.html",
   "games/a-dark-room/index.html",
   "games/hextris/index.html",
   "games/kittens-game/index.html",
   "games/life-restart/index.html",
   "games/game-shell.js",
+  "js/mobile-shell.js",
   "js/main.js",
   "js/telemetry.js",
+  "js/ui-motion.js",
   "manifest.webmanifest",
   "package.json",
   "robots.txt",
-  "CHANGELOG.md",
-  ...japaneseSubtextRequiredFiles
+  "CHANGELOG.md"
 ];
 
 function fail(message) {
@@ -112,74 +68,6 @@ function readRequired(path) {
     return "";
   }
   return readFileSync(fullPath, "utf8");
-}
-
-function parseJsonSource(path, source) {
-  try {
-    return JSON.parse(source);
-  } catch (error) {
-    fail(`${path} must contain valid JSON: ${error.message}`);
-    return {};
-  }
-}
-
-function canonicalJson(value) {
-  if (Array.isArray(value)) return `[${value.map(canonicalJson).join(",")}]`;
-  if (value && typeof value === "object") {
-    return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${canonicalJson(value[key])}`).join(",")}}`;
-  }
-  return JSON.stringify(value);
-}
-
-function readRequiredJson(path) {
-  return parseJsonSource(path, readRequired(path));
-}
-
-function referencedFilePath(basePath, referencedPath, boundaryPath, label, { allowParentSegments = false } = {}) {
-  const value = String(referencedPath || "").trim().replace(/\\/g, "/");
-  if (
-    !value
-    || value.startsWith("/")
-    || /^[a-z]:/i.test(value)
-    || /[?#]/.test(value)
-    || (!allowParentSegments && value.split("/").includes(".."))
-  ) {
-    fail(`${label} must use a plain relative published path`);
-    return "";
-  }
-
-  const base = resolve(root, basePath);
-  const boundary = resolve(root, boundaryPath);
-  const fullPath = resolve(base, value);
-  const fromBoundary = relative(boundary, fullPath);
-  if (
-    !fromBoundary
-    || fromBoundary === ".."
-    || fromBoundary.startsWith(`..\\`)
-    || fromBoundary.startsWith("../")
-    || /^[a-z]:/i.test(fromBoundary)
-  ) {
-    fail(`${label} escapes ${boundaryPath}`);
-    return "";
-  }
-  return fullPath;
-}
-
-function requireReferencedNonEmptyFile(basePath, referencedPath, boundaryPath, label, options) {
-  const fullPath = referencedFilePath(basePath, referencedPath, boundaryPath, label, options);
-  if (!fullPath) {
-    return "";
-  }
-  if (!existsSync(fullPath)) {
-    fail(`${label} missing ${relative(root, fullPath)}`);
-    return "";
-  }
-  const fileStat = statSync(fullPath);
-  if (!fileStat.isFile() || fileStat.size <= 0) {
-    fail(`${label} must reference a non-empty file`);
-    return "";
-  }
-  return fullPath;
 }
 
 function requireNonEmptyFile(path) {
@@ -199,6 +87,14 @@ function requireBalancedCss(path, source) {
   if (openBraces !== closeBraces) {
     fail(`${path} brace mismatch (${openBraces} open, ${closeBraces} close)`);
   }
+}
+
+function visibleHtmlText(source) {
+  return source
+    .replace(/<!--[\s\S]*?-->/g, " ")
+    .replace(/<script\b[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style\b[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]+>/g, " ");
 }
 
 function escapeRegExp(value) {
@@ -452,7 +348,20 @@ for (const file of requiredFiles) {
   readRequired(file);
 }
 
-for (const file of japaneseSubtextRequiredFiles) {
+for (const file of [
+  "assets/images/ui/pixel-ui-glyph-atlas.png",
+  "assets/images/mobile-wallpapers/morning.webp",
+  "assets/images/mobile-wallpapers/day.webp",
+  "assets/images/mobile-wallpapers/dusk.webp",
+  "assets/images/mobile-wallpapers/night.webp",
+  "css/mobile-ios-shell.css",
+  "css/motion-system.css",
+  "design-system/MASTER.md",
+  "design-system/pages/desktop-shell.md",
+  "design-system/pages/mobile-shell.md",
+  "js/mobile-shell.js",
+  "js/ui-motion.js"
+]) {
   requireNonEmptyFile(file);
 }
 
@@ -463,6 +372,8 @@ const adminMiddlewareJs = readRequired("functions/admin/_middleware.js");
 const apiJs = readRequired("functions/api/[[route]].js");
 const schemaSql = readRequired("cloudflare/schema.sql");
 const indexHtml = readRequired("index.html");
+const mobileIosShellCss = readRequired("css/mobile-ios-shell.css");
+const motionSystemCss = readRequired("css/motion-system.css");
 const styleCss = readRequired("css/style.css");
 const gameShellJs = readRequired("games/game-shell.js");
 const gameIndexFiles = [
@@ -473,628 +384,14 @@ const gameIndexFiles = [
   "games/life-restart/index.html"
 ];
 const gameIndexHtmls = gameIndexFiles.map((file) => [file, readRequired(file)]);
+const mobileShellJs = readRequired("js/mobile-shell.js");
 const mainJs = readRequired("js/main.js");
 const telemetryJs = readRequired("js/telemetry.js");
+const uiMotionJs = readRequired("js/ui-motion.js");
 const manifest = readRequired("manifest.webmanifest");
 const packageJson = readRequired("package.json");
 const robots = readRequired("robots.txt");
 const changelog = readRequired("CHANGELOG.md");
-const headersConfig = readRequired("_headers");
-const redirectsConfig = readRequired("_redirects");
-const japaneseSubtextHtml = readRequired("tools/japanese-subtext/index.html");
-const japaneseSubtextCss = readRequired("tools/japanese-subtext/style.css");
-const japaneseSubtextApp = readRequired("tools/japanese-subtext/app.mjs");
-const japaneseSubtextLibrarySources = Object.fromEntries([
-  "audio-player.mjs",
-  "cloud.mjs",
-  "constants.mjs",
-  "content-loader.mjs",
-  "i18n.mjs",
-  "storage.mjs"
-].map((file) => [file, readRequired(`tools/japanese-subtext/lib/${file}`)]));
-const japaneseSubtextManifest = readRequiredJson("tools/japanese-subtext/manifest.json");
-const japaneseSubtextCatalog = readRequiredJson("tools/japanese-subtext/content/catalog.json");
-const japaneseSubtextGenerationState = readRequiredJson("tools/japanese-subtext/content/generation-state.json");
-const japaneseSubtextAudioManifest = readRequiredJson("tools/japanese-subtext/audio/manifest.json");
-const japaneseSubtextFinalStats = readRequiredJson("tools/japanese-subtext/reports/final-stats.json");
-const japaneseSubtextReleaseReport = readRequired("tools/japanese-subtext/reports/release-report.md");
-
-function validateJapaneseSubtextReleaseContract() {
-  const toolRoot = "tools/japanese-subtext";
-  const contentRoot = `${toolRoot}/content`;
-  const audioRoot = `${toolRoot}/audio`;
-  const contentVersion = "1.0.0";
-  const publicTitle = "日本語の裏側";
-  const assetVersion = "20260711-japanese-subtext-r11";
-  const expectedAudioCounts = Object.freeze({
-    scene: 250,
-    line: 2400,
-    option: 2445,
-    token: 4993
-  });
-  const expectedAudioItems = Object.values(expectedAudioCounts).reduce((sum, count) => sum + count, 0);
-  const statsExpectedAudio = japaneseSubtextFinalStats.expectedAudio || {};
-  const statsGeneratedAudio = japaneseSubtextFinalStats.generatedAudio || {};
-  if (
-    japaneseSubtextFinalStats.totalStages !== 250
-    || japaneseSubtextFinalStats.totalLines !== 2400
-    || japaneseSubtextFinalStats.totalQuestions !== 610
-    || japaneseSubtextFinalStats.singleChoice !== 497
-    || japaneseSubtextFinalStats.multipleChoice !== 113
-    || japaneseSubtextFinalStats.multiQuestionStages !== 180
-    || japaneseSubtextFinalStats.illustrationStyles?.crayon !== 25
-    || japaneseSubtextFinalStats.illustrationStyles?.["chibi-four-panel"] !== 6
-    || japaneseSubtextFinalStats.illustrationStyles?.monochrome !== 0
-    || statsExpectedAudio.scenes !== expectedAudioCounts.scene
-    || statsExpectedAudio.lines !== expectedAudioCounts.line
-    || statsExpectedAudio.options !== expectedAudioCounts.option
-    || statsExpectedAudio.tokens !== expectedAudioCounts.token
-    || statsExpectedAudio.total !== expectedAudioItems
-    || statsGeneratedAudio.scene !== expectedAudioCounts.scene
-    || statsGeneratedAudio.line !== expectedAudioCounts.line
-    || statsGeneratedAudio.option !== expectedAudioCounts.option
-    || statsGeneratedAudio.token !== expectedAudioCounts.token
-    || !(statsGeneratedAudio.durationSeconds > 0)
-    || !(statsGeneratedAudio.bytes > 0)
-  ) {
-    fail(`${toolRoot}/reports/final-stats.json must contain the final verified content and audio totals`);
-  }
-  const expectedStageIds = new Set();
-  for (let level = 1; level <= 5; level += 1) {
-    for (let stage = 1; stage <= 50; stage += 1) {
-      expectedStageIds.add(`L${level}-${String(stage).padStart(3, "0")}`);
-    }
-  }
-
-  requireBalancedCss(`${toolRoot}/style.css`, japaneseSubtextCss);
-  if (!japaneseSubtextHtml.includes(`<title>${publicTitle}</title>`)) {
-    fail(`${toolRoot}/index.html must keep the exact public document title ${publicTitle}`);
-  }
-  const toolHeading = japaneseSubtextHtml.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)?.[1]?.replace(/<[^>]+>/g, "").trim();
-  if (toolHeading !== publicTitle) {
-    fail(`${toolRoot}/index.html h1 must be exactly ${publicTitle}`);
-  }
-  for (const asset of ["./style.css", "./app.mjs"]) {
-    const versions = assetQueryVersions(japaneseSubtextHtml, asset);
-    if (versions.length !== 1 || versions[0] !== assetVersion) {
-      fail(`${toolRoot}/index.html ${asset} query should appear once as ${assetVersion}`);
-    }
-  }
-  const publicModuleSources = [
-    ["app.mjs", japaneseSubtextApp],
-    ...Object.entries(japaneseSubtextLibrarySources).map(([file, source]) => [`lib/${file}`, source])
-  ];
-  for (const [file, source] of publicModuleSources) {
-    const imports = [...source.matchAll(/\bfrom\s+["'](\.[^"'?]+\.mjs)(?:\?v=([^"']+))?["']/g)];
-    for (const [, specifier, version] of imports) {
-      if (version !== assetVersion) {
-        fail(`${toolRoot}/${file} import ${specifier} must use query ${assetVersion}`);
-      }
-    }
-    if (/\b(?:innerHTML|outerHTML|insertAdjacentHTML)\b/.test(source)) {
-      fail(`${toolRoot}/${file} must not use HTML string insertion for trainer data`);
-    }
-  }
-  if (!japaneseSubtextApp.includes("textContent")) {
-    fail(`${toolRoot}/app.mjs should render trainer strings with safe text APIs`);
-  }
-
-  const packageData = parseJsonSource("package.json", packageJson);
-  const requiredPackageScripts = {
-    "jp-subtext:build": "tools/japanese-subtext/scripts/build-content.mjs",
-    "jp-subtext:validate": "tools/japanese-subtext/scripts/validate-content.mjs",
-    "jp-subtext:validate:content": "tools/japanese-subtext/scripts/validate-content.mjs --skip-audio",
-    "jp-subtext:validate:draft": "tools/japanese-subtext/scripts/validate-content.mjs --skip-audio --allow-partial --allow-unlocked",
-    "jp-subtext:stats": "tools/japanese-subtext/scripts/content-stats.mjs",
-    "jp-subtext:test": "tools/japanese-subtext/tests/*.test.mjs",
-    "jp-subtext:audio:validate": "tools/japanese-subtext/scripts/validate-audio.mjs",
-    "jp-subtext:audio:validate:quick": "tools/japanese-subtext/scripts/validate-audio.mjs --skip-probe",
-    "jp-subtext:audio:estimate": "tools/japanese-subtext/scripts/estimate-audio-size.mjs",
-    "jp-subtext:audio:merge": "tools/japanese-subtext/scripts/merge-audio-manifests.mjs"
-  };
-  for (const [name, token] of Object.entries(requiredPackageScripts)) {
-    if (!String(packageData.scripts?.[name] || "").includes(token)) {
-      fail(`package.json ${name} must run ${token}`);
-    }
-  }
-  const releaseSteps = String(packageData.scripts?.["jp-subtext:release-check"] || "")
-    .split("&&")
-    .map((step) => step.trim());
-  const expectedReleaseSteps = [
-    "npm run jp-subtext:validate",
-    "npm run jp-subtext:audio:validate -- --check-silence",
-    "npm run jp-subtext:test",
-    "npm run build"
-  ];
-  if (JSON.stringify(releaseSteps) !== JSON.stringify(expectedReleaseSteps)) {
-    fail(`package.json jp-subtext:release-check must run ${expectedReleaseSteps.join(" -> ")}`);
-  }
-
-  for (const [field, expected] of Object.entries({
-    id: "japanese-subtext",
-    schemaVersion: 1,
-    contentVersion,
-    title: publicTitle,
-    entry: "./index.html",
-    catalog: "./content/catalog.json",
-    audioManifest: "./audio/manifest.json",
-    audioBaseUrl: "./audio/",
-    stageCount: 250,
-    levels: 5
-  })) {
-    if (japaneseSubtextManifest[field] !== expected) {
-      fail(`${toolRoot}/manifest.json ${field} must be ${JSON.stringify(expected)}`);
-    }
-  }
-  if (JSON.stringify(japaneseSubtextManifest.supportedUiLanguages) !== JSON.stringify(["zh", "en", "ja"])) {
-    fail(`${toolRoot}/manifest.json must advertise zh/en/ja UI languages`);
-  }
-
-  if (
-    japaneseSubtextCatalog.schemaVersion !== 1
-    || japaneseSubtextCatalog.contentVersion !== contentVersion
-    || japaneseSubtextCatalog.stageCount !== 250
-    || !Array.isArray(japaneseSubtextCatalog.levels)
-    || japaneseSubtextCatalog.levels.length !== 5
-  ) {
-    fail(`${contentRoot}/catalog.json must describe content ${contentVersion} with 5 levels and 250 stages`);
-  }
-  for (const lang of ["zh", "en", "ja"]) {
-    if (japaneseSubtextCatalog.title?.[lang] !== publicTitle) {
-      fail(`${contentRoot}/catalog.json title.${lang} must be ${publicTitle}`);
-    }
-  }
-
-  const indexedStages = new Map();
-  const indexedBatches = new Map();
-  const lockedContentStages = new Map();
-  const publishedStageIllustrations = new Set();
-  const expectedJlptTargets = ["N3", "N2", "N1", "N1-advanced", "N1-pragmatics"];
-  for (let index = 0; index < 5; index += 1) {
-    const level = index + 1;
-    const catalogLevel = japaneseSubtextCatalog.levels?.[index] || {};
-    if (catalogLevel.level !== level || catalogLevel.jlptTarget !== expectedJlptTargets[index]) {
-      fail(`${contentRoot}/catalog.json level ${level} must target ${expectedJlptTargets[index]}`);
-    }
-    if (level >= 3 && !String(catalogLevel.jlptTarget || "").startsWith("N1")) {
-      fail(`${contentRoot}/catalog.json levels 3-5 must remain N1 difficulty`);
-    }
-    requireReferencedNonEmptyFile(toolRoot, catalogLevel.cover, toolRoot, `catalog level ${level} cover`);
-    const indexFile = requireReferencedNonEmptyFile(contentRoot, catalogLevel.index, contentRoot, `catalog level ${level} index`);
-    if (!indexFile) {
-      continue;
-    }
-    const levelIndex = parseJsonSource(relative(root, indexFile), readFileSync(indexFile, "utf8"));
-    if (
-      levelIndex.schemaVersion !== 1
-      || levelIndex.contentVersion !== contentVersion
-      || levelIndex.level !== level
-      || levelIndex.jlptTarget !== expectedJlptTargets[index]
-      || !Array.isArray(levelIndex.stages)
-      || levelIndex.stages.length !== 50
-    ) {
-      fail(`${relative(root, indexFile)} must contain the locked 50-stage level ${level} index`);
-      continue;
-    }
-    for (let stageIndex = 0; stageIndex < levelIndex.stages.length; stageIndex += 1) {
-      const stage = levelIndex.stages[stageIndex] || {};
-      const expectedId = `L${level}-${String(stageIndex + 1).padStart(3, "0")}`;
-      if (stage.id !== expectedId || stage.stage !== stageIndex + 1 || !/^[a-f0-9]{64}$/.test(stage.contentHash || "")) {
-        fail(`${relative(root, indexFile)} stage ${stageIndex + 1} must keep stable id ${expectedId} and a locked content hash`);
-      }
-      if (indexedStages.has(stage.id)) {
-        fail(`${contentRoot} contains duplicate stage id ${stage.id}`);
-      }
-      indexedStages.set(stage.id, stage);
-      if (!/^batch-\d{3}-\d{3}\.json$/.test(stage.batch || "")) {
-        fail(`${relative(root, indexFile)} ${expectedId} has an unsafe batch path`);
-        continue;
-      }
-      const batchPath = `level-${level}/${stage.batch}`;
-      if (!indexedBatches.has(batchPath)) {
-        indexedBatches.set(batchPath, []);
-      }
-      indexedBatches.get(batchPath).push(stage);
-    }
-  }
-  if (indexedStages.size !== 250 || [...expectedStageIds].some((id) => !indexedStages.has(id))) {
-    fail(`${contentRoot} level indexes must expose every stable stage id from L1-001 through L5-050`);
-  }
-  if (indexedBatches.size !== 25) {
-    fail(`${contentRoot} indexes must reference exactly 25 ten-stage batches`);
-  }
-  for (const [batchPath, indexEntries] of indexedBatches) {
-    const fullPath = requireReferencedNonEmptyFile(contentRoot, batchPath, contentRoot, `content batch ${batchPath}`);
-    if (!fullPath) {
-      continue;
-    }
-    const batch = parseJsonSource(relative(root, fullPath), readFileSync(fullPath, "utf8"));
-    if (
-      batch.schemaVersion !== 1
-      || batch.contentVersion !== contentVersion
-      || !Array.isArray(batch.stages)
-      || batch.stages.length !== indexEntries.length
-    ) {
-      fail(`${relative(root, fullPath)} must match its level index and content version`);
-      continue;
-    }
-    const expectedById = new Map(indexEntries.map((stage) => [stage.id, stage]));
-    const seenBatchStageIds = new Set();
-    for (const stage of batch.stages) {
-      const indexed = expectedById.get(stage?.id);
-      if (
-        !indexed
-        || seenBatchStageIds.has(stage?.id)
-        || stage.textLocked !== true
-        || stage.contentHash !== indexed.contentHash
-      ) {
-        fail(`${relative(root, fullPath)} ${stage?.id || "unknown stage"} must be text-locked with the indexed hash`);
-      }
-      seenBatchStageIds.add(stage?.id);
-      lockedContentStages.set(stage?.id, stage);
-      const illustration = stage?.illustration || {};
-      if (illustration.enabled === true) {
-        if (!["crayon", "chibi-four-panel"].includes(illustration.style)) {
-          fail(`${relative(root, fullPath)} ${stage?.id} must use an approved color illustration style`);
-        }
-        const illustrationFile = requireReferencedNonEmptyFile(toolRoot, illustration.src, toolRoot, `illustration ${stage?.id}`);
-        if (!illustrationFile || !String(illustration.src || "").endsWith(".webp")) {
-          fail(`${relative(root, fullPath)} ${stage?.id} must reference a published WebP illustration`);
-        }
-        publishedStageIllustrations.add(illustration.src);
-      } else if (illustration.style !== "none" || illustration.src) {
-        fail(`${relative(root, fullPath)} ${stage?.id} disabled illustration must use style none and no source`);
-      }
-    }
-    if ([...expectedById.keys()].some((id) => !seenBatchStageIds.has(id))) {
-      fail(`${relative(root, fullPath)} must contain every stage referenced by its level index exactly once`);
-    }
-  }
-  if (publishedStageIllustrations.size !== 31) {
-    fail(`${contentRoot} must reference exactly 31 unique color stage illustrations`);
-  }
-
-  const generationState = japaneseSubtextGenerationState;
-  if (
-    generationState.schemaVersion !== 1
-    || generationState.contentVersion !== contentVersion
-    || generationState.blueprint?.status !== "complete"
-    || generationState.blueprint?.stageCount !== 250
-    || generationState.formalContent?.status !== "reviewed-and-locked"
-  ) {
-    fail(`${contentRoot}/generation-state.json must record the complete, reviewed, locked 250-stage bank`);
-  }
-  for (let level = 1; level <= 5; level += 1) {
-    if (generationState.blueprint?.levelCounts?.[String(level)] !== 50) {
-      fail(`${contentRoot}/generation-state.json blueprint level ${level} count must be 50`);
-    }
-  }
-  for (const key of ["authoredBatches", "reviewedBatches", "lockedBatches"]) {
-    const batches = generationState.formalContent?.[key];
-    if (!Array.isArray(batches) || batches.length !== 25 || new Set(batches).size !== 25) {
-      fail(`${contentRoot}/generation-state.json formalContent.${key} must list 25 unique batches`);
-      continue;
-    }
-    for (const batch of batches) {
-      requireReferencedNonEmptyFile(contentRoot, batch, contentRoot, `generation-state ${key}`);
-      if (!indexedBatches.has(batch)) {
-        fail(`${contentRoot}/generation-state.json formalContent.${key} contains unindexed batch ${batch}`);
-      }
-    }
-  }
-  if (!Array.isArray(generationState.needsReworkStageIds) || generationState.needsReworkStageIds.length) {
-    fail(`${contentRoot}/generation-state.json must not contain release-time rework stages`);
-  }
-  if (
-    generationState.illustrations?.status !== "complete"
-    || generationState.illustrations?.stageAssetCount !== 31
-    || generationState.illustrations?.styleCounts?.monochrome !== 0
-    || generationState.illustrations?.styleCounts?.crayon !== 25
-    || generationState.illustrations?.styleCounts?.["chibi-four-panel"] !== 6
-  ) {
-    fail(`${contentRoot}/generation-state.json must record 31 color-only stage illustrations and zero monochrome art`);
-  }
-  if (
-    generationState.audio?.status !== "complete"
-    || generationState.audio?.expectedArtifacts !== expectedAudioItems
-    || generationState.audio?.generatedArtifacts !== expectedAudioItems
-    || generationState.audio?.generatedStages !== 250
-  ) {
-    fail(`${contentRoot}/generation-state.json audio must be complete with 250 stages and ${expectedAudioItems} artifacts`);
-  }
-
-  const audioManifest = japaneseSubtextAudioManifest;
-  const expectedAudioOutput = {
-    format: "mp3",
-    sampleRate: 24000,
-    channels: 1,
-    bitrate: "64k",
-    targetLufs: -18,
-    leadingSilenceMs: 60,
-    trailingSilenceMs: 100,
-    sceneGapMs: 180
-  };
-  const pronunciationsSource = readRequired("tools/japanese-subtext/config/pronunciations.json");
-  const pronunciationsData = parseJsonSource("tools/japanese-subtext/config/pronunciations.json", pronunciationsSource);
-  const pronunciationsSha256 = createHash("sha256").update(canonicalJson(pronunciationsData), "utf8").digest("hex");
-  if (
-    audioManifest.schemaVersion !== 1
-    || audioManifest.contentVersion !== contentVersion
-    || audioManifest.audioBaseUrl !== "./"
-    || audioManifest.generator?.name !== "kokoro-onnx-offline"
-    || audioManifest.generator?.pipelineVersion !== "kokoro-ja-mp3-v2"
-    || audioManifest.generator?.executionProvider !== "CPUExecutionProvider"
-    || audioManifest.generator?.pronunciationsSha256 !== pronunciationsSha256
-    || Object.entries(expectedAudioOutput).some(([key, value]) => audioManifest.generator?.output?.[key] !== value)
-  ) {
-    fail(`${audioRoot}/manifest.json must keep the locked Kokoro pipeline, output, and pronunciation metadata for ${contentVersion}`);
-  }
-  const requiredModelVoices = ["jf_alpha", "jf_gongitsune", "jf_nezumi", "jf_tebukuro", "jm_kumo"];
-  const modelVoices = new Set(Object.values(audioManifest.voices || {}).map((voice) => voice?.modelVoice).filter(Boolean));
-  for (const voice of requiredModelVoices) {
-    if (!modelVoices.has(voice)) {
-      fail(`${audioRoot}/manifest.json missing licensed Japanese model voice ${voice}`);
-    }
-  }
-  const licensePaths = audioManifest.generator?.licenses;
-  if (!Array.isArray(licensePaths) || licensePaths.length !== 3) {
-    fail(`${audioRoot}/manifest.json must expose the model, runtime, and Japanese voice notices`);
-  } else {
-    for (const licensePath of licensePaths) {
-      requireReferencedNonEmptyFile(audioRoot, licensePath, toolRoot, "audio generator license", { allowParentSegments: true });
-    }
-  }
-
-  const items = audioManifest.items && typeof audioManifest.items === "object" ? audioManifest.items : {};
-  const stages = audioManifest.stages && typeof audioManifest.stages === "object" ? audioManifest.stages : {};
-  const itemEntries = Object.entries(items);
-  const stageEntries = Object.entries(stages);
-  if (itemEntries.length !== expectedAudioItems || stageEntries.length !== 250) {
-    fail(`${audioRoot}/manifest.json must contain 250 stage records and exactly ${expectedAudioItems} audio items`);
-  }
-  if (stageEntries.length !== 250 || [...expectedStageIds].some((id) => !Object.hasOwn(stages, id))) {
-    fail(`${audioRoot}/manifest.json must cover every stage id from L1-001 through L5-050`);
-  }
-  const actualAudioCounts = { scene: 0, line: 0, option: 0, token: 0 };
-  const publishedAudioPaths = new Set();
-  let audioBytes = 0;
-  let audioDuration = 0;
-  for (const [id, item] of itemEntries) {
-    if (item?.id !== id || !Object.hasOwn(actualAudioCounts, item?.type)) {
-      fail(`${audioRoot}/manifest.json audio item ${id} has an invalid id or type`);
-      continue;
-    }
-    actualAudioCounts[item.type] += 1;
-    if (!expectedStageIds.has(item.stageId) || item.level !== Number(String(item.stageId || "")[1])) {
-      fail(`${audioRoot}/manifest.json audio item ${id} has an unknown stage or mismatched level (${item.stageId})`);
-    }
-    if (
-      item.codec !== "mp3"
-      || item.sampleRate !== 24000
-      || item.channels !== 1
-      || item.bitrate !== 64000
-      || !(item.durationSeconds > 0)
-      || !(item.bytes > 0)
-      || !/^[a-f0-9]{64}$/.test(item.contentHash || "")
-      || !/^[a-f0-9]{64}$/.test(item.sha256 || "")
-      || !String(item.path || "").endsWith(".mp3")
-    ) {
-      fail(`${audioRoot}/manifest.json audio item ${id} must be a hashed 24 kHz mono 64 kbps MP3`);
-    }
-    const audioFile = requireReferencedNonEmptyFile(audioRoot, item.path, audioRoot, `audio item ${id}`);
-    if (audioFile && statSync(audioFile).size !== item.bytes) {
-      fail(`${audioRoot}/manifest.json audio item ${id} byte count does not match its file`);
-    }
-    if (publishedAudioPaths.has(item.path)) {
-      fail(`${audioRoot}/manifest.json reuses audio path ${item.path}`);
-    }
-    publishedAudioPaths.add(item.path);
-    audioBytes += Number(item.bytes) || 0;
-    audioDuration += Number(item.durationSeconds) || 0;
-  }
-  for (const [type, expected] of Object.entries(expectedAudioCounts)) {
-    if (actualAudioCounts[type] !== expected || audioManifest.stats?.[type] !== expected) {
-      fail(`${audioRoot}/manifest.json ${type} count must be ${expected}`);
-    }
-  }
-  if (
-    audioManifest.stats?.bytes !== audioBytes
-    || Math.abs(Number(audioManifest.stats?.durationSeconds) - audioDuration) > 0.01
-  ) {
-    fail(`${audioRoot}/manifest.json aggregate byte/duration stats must match all audio items`);
-  }
-
-  for (const expectedId of expectedStageIds) {
-    const stage = stages[expectedId];
-    const contentStage = lockedContentStages.get(expectedId);
-    if (!stage) {
-      continue;
-    }
-    if (
-      stage.stageId !== expectedId
-      || stage.contentVersion !== contentVersion
-      || stage.level !== Number(expectedId[1])
-      || stage.sampleRate !== 24000
-      || !(stage.duration > 0)
-      || !/^[a-f0-9]{64}$/.test(stage.contentHash || "")
-      || stage.sourceContentHash !== contentStage?.contentHash
-    ) {
-      fail(`${audioRoot}/manifest.json missing valid stage audio record ${expectedId}`);
-      continue;
-    }
-    const expectedLinks = {
-      line: (contentStage?.lines || []).map((line) => line.audioId),
-      option: (contentStage?.questions || []).flatMap((question) => (question.options || []).map((option) => option.audioId)),
-      token: (contentStage?.lines || []).flatMap((line) => (line.tokens || []).map((token) => token.audioId))
-    };
-    const audioGroups = [
-      ["scene", [stage.sceneAudioId]],
-      ["line", stage.lineAudioIds],
-      ["option", stage.optionAudioIds],
-      ["token", stage.tokenAudioIds]
-    ];
-    for (const [type, ids] of audioGroups) {
-      if (!Array.isArray(ids) || ids.length === 0) {
-        fail(`${audioRoot}/manifest.json ${expectedId} must link at least one ${type} audio id`);
-        continue;
-      }
-      if (new Set(ids).size !== ids.length) {
-        fail(`${audioRoot}/manifest.json ${expectedId} repeats a ${type} audio id`);
-      }
-      for (const audioId of ids) {
-        if (items[audioId]?.type !== type || items[audioId]?.stageId !== expectedId) {
-          fail(`${audioRoot}/manifest.json ${expectedId} has invalid ${type} audio link ${audioId}`);
-        }
-      }
-      if (type !== "scene" && JSON.stringify(ids) !== JSON.stringify(expectedLinks[type])) {
-        fail(`${audioRoot}/manifest.json ${expectedId} ${type} links must exactly match locked content order`);
-      }
-    }
-    const expectedCueLinks = (contentStage?.lines || []).map((line) => [line.id, line.audioId]);
-    const embeddedCueLinks = (stage.cues || []).map((cue) => [cue.lineId, cue.audioId]);
-    if (JSON.stringify(embeddedCueLinks) !== JSON.stringify(expectedCueLinks)) {
-      fail(`${audioRoot}/manifest.json ${expectedId} cues must exactly match locked line order`);
-    }
-    const timelineFile = requireReferencedNonEmptyFile(audioRoot, stage.timelinePath, audioRoot, `timeline ${expectedId}`);
-    if (!timelineFile) {
-      continue;
-    }
-    const timeline = parseJsonSource(relative(root, timelineFile), readFileSync(timelineFile, "utf8"));
-    if (
-      timeline.schemaVersion !== 1
-      || timeline.stageId !== expectedId
-      || timeline.timelineId !== stage.timelineId
-      || timeline.sceneAudioId !== stage.sceneAudioId
-      || timeline.contentHash !== stage.contentHash
-      || timeline.sourceContentHash !== stage.sourceContentHash
-      || timeline.sampleRate !== 24000
-      || !Array.isArray(timeline.cues)
-      || timeline.cues.length !== stage.lineAudioIds.length
-      || JSON.stringify((timeline.cues || []).map((cue) => [cue.lineId, cue.audioId])) !== JSON.stringify(expectedCueLinks)
-      || Math.abs(Number(timeline.duration) - Number(stage.duration)) > 0.01
-    ) {
-      fail(`${relative(root, timelineFile)} must match the ${expectedId} stage audio record`);
-    }
-  }
-
-  const resourceEntry = windowAfter(mainJs, 'iconSrc: "tools/japanese-subtext/assets/icons/tool-icon-64.webp"', 2200);
-  for (const token of [
-    'version: "v1.0.0"',
-    'size: "250 STAGES"',
-    'updated: "2026.07.11"',
-    'external: false',
-    'url: "/tools/japanese-subtext/"',
-    `title: { zh: "${publicTitle}", en: "${publicTitle}", ja: "${publicTitle}" }`,
-    'actionLabel: { zh: "开始训练", en: "Start Training", ja: "トレーニング開始" }',
-    '{ zh: "250 关", en: "250 stages", ja: "250 ステージ" }',
-    '{ zh: "男声 / 女声", en: "Male / female voices", ja: "男声 / 女声" }',
-    '{ zh: "本地 + 云端进度", en: "Local + cloud progress", ja: "ローカル + クラウド進捗" }'
-  ]) {
-    if (!resourceEntry.includes(token)) {
-      fail(`js/main.js Japanese subtext Resources entry missing ${token}`);
-    }
-  }
-  for (const lang of ["zh", "en", "ja"]) {
-    if (!new RegExp(`${lang}:\\s*"[^"]{12,}"`).test(windowAfter(resourceEntry, "desc:", 650))) {
-      fail(`js/main.js Japanese subtext Resources entry needs a meaningful ${lang} description`);
-    }
-  }
-  if (
-    !windowAfter(mainJs, "function safeResourceIconSrc", 700).includes('path === "tools/japanese-subtext/assets/icons/tool-icon-64.webp"')
-    || !windowAfter(mainJs, "function safeResourceUrl", 1300).includes('/^tools\\/japanese-subtext\\/?$/i.test(localPath)')
-  ) {
-    fail("js/main.js must keep explicit safe allowlists for the Japanese subtext resource URL and icon");
-  }
-
-  const progressRoute = windowAfter(apiJs, 'parts[0] === "tools"', 900);
-  if (
-    !progressRoute.includes('parts[1] === "japanese-subtext"')
-    || !progressRoute.includes('parts[2] === "progress"')
-    || !progressRoute.includes('request.method === "GET"')
-    || !progressRoute.includes('request.method === "PUT"')
-  ) {
-    fail("functions/api/[[route]].js must expose exact GET/PUT /api/tools/japanese-subtext/progress routing");
-  }
-  const getProgressBody = objectBlockAfterMarker(apiJs, "async function getJapaneseSubtextProgress");
-  const putProgressBody = objectBlockAfterMarker(apiJs, "async function putJapaneseSubtextProgress");
-  for (const [name, body] of [["GET", getProgressBody], ["PUT", putProgressBody]]) {
-    if (!body.includes("requireSession(request, env)") || !body.includes("ensureJapaneseSubtextSchema(env)")) {
-      fail(`functions/api/[[route]].js Japanese subtext ${name} progress must require an HttpOnly-backed session and dedicated schema`);
-    }
-    if (body.includes("game_saves")) {
-      fail(`functions/api/[[route]].js Japanese subtext ${name} progress must not reuse game_saves`);
-    }
-  }
-  for (const token of [
-    "const MAX_JAPANESE_SUBTEXT_PROGRESS_BYTES = 256 * 1024",
-    'const JAPANESE_SUBTEXT_CONTENT_VERSION = "1.0.0"',
-    "const JAPANESE_SUBTEXT_STAGE_LIMIT = 250",
-    "create table if not exists japanese_subtext_profiles",
-    "create table if not exists japanese_subtext_stage_progress",
-    "primary key (user_id, stage_id)"
-  ]) {
-    if (!apiJs.includes(token)) {
-      fail(`functions/api/[[route]].js Japanese subtext contract missing ${token}`);
-    }
-  }
-  for (const token of [
-    "create table if not exists japanese_subtext_profiles",
-    "create table if not exists japanese_subtext_stage_progress",
-    "primary key (user_id, stage_id)",
-    "japanese_subtext_stage_progress_user_level_idx"
-  ]) {
-    if (!schemaSql.includes(token)) {
-      fail(`cloudflare/schema.sql Japanese subtext contract missing ${token}`);
-    }
-  }
-
-  const requiredHeaderRules = [
-    ["/tools/japanese-subtext/manifest.json", "public, max-age=0, must-revalidate"],
-    ["/tools/japanese-subtext/content/*", "public, max-age=300, must-revalidate"],
-    ["/tools/japanese-subtext/audio/manifest.json", "public, max-age=0, must-revalidate"],
-    ["/tools/japanese-subtext/audio/*", "public, max-age=86400, must-revalidate"],
-    ["/tools/japanese-subtext/assets/*", "public, max-age=86400, must-revalidate"]
-  ];
-  for (const [path, cacheControl] of requiredHeaderRules) {
-    const pattern = new RegExp(`(?:^|\\r?\\n)${escapeRegExp(path)}\\r?\\n[ \\t]+Cache-Control:\\s*${escapeRegExp(cacheControl)}(?:\\r?\\n|$)`);
-    if (!pattern.test(headersConfig)) {
-      fail(`_headers missing ${path} Cache-Control: ${cacheControl}`);
-    }
-  }
-  if (!/(?:^|\r?\n)\/tools\/japanese-subtext \/tools\/japanese-subtext\/ 301(?:\r?\n|$)/.test(redirectsConfig)) {
-    fail("_redirects must canonicalize /tools/japanese-subtext to its trailing-slash URL");
-  }
-  if (
-    !apiJs.includes("const japaneseSubtextEntries = langs.map")
-    || !apiJs.includes("/tools/japanese-subtext/?lang=${encodeURIComponent(lang)}")
-    || !apiJs.includes("...japaneseSubtextEntries")
-  ) {
-    fail("functions/api/[[route]].js sitemap must publish the Japanese subtext URL for zh/en/ja");
-  }
-
-  for (const markerName of [
-    "AUDIO_ITEM_COUNT",
-    "AUDIO_STAGE_COUNT",
-    "AUDIO_DURATION",
-    "AUDIO_BYTES",
-    "AUDIO_VALIDATION",
-    "BROWSER_QA"
-  ]) {
-    for (const edge of ["START", "END"]) {
-      const marker = `<!-- AUTO:${markerName}:${edge} -->`;
-      if (!japaneseSubtextReleaseReport.includes(marker)) {
-        fail(`${toolRoot}/reports/release-report.md missing replaceable marker ${marker}`);
-      }
-    }
-  }
-  for (const releaseGate of ["AUDIO_VALIDATION", "BROWSER_QA"]) {
-    if (!japaneseSubtextReleaseReport.includes(`<!-- RELEASE:${releaseGate}:PASS -->`)) {
-      fail(`${toolRoot}/reports/release-report.md must record RELEASE:${releaseGate}:PASS before publishing`);
-    }
-  }
-}
-
-validateJapaneseSubtextReleaseContract();
 
 const translationsBlock = objectBlockAfterMarker(mainJs, "const translations =");
 if (!translationsBlock) {
@@ -1400,6 +697,35 @@ try {
   fail(`js/main.js syntax error: ${error.message}`);
 }
 
+for (const [path, source] of [
+  ["js/mobile-shell.js", mobileShellJs],
+  ["js/ui-motion.js", uiMotionJs]
+]) {
+  try {
+    new Function(source);
+  } catch (error) {
+    fail(`${path} syntax error: ${error.message}`);
+  }
+
+  for (const pattern of [
+    /\binnerHTML\b/,
+    /\bouterHTML\b/,
+    /\binsertAdjacentHTML\b/,
+    /\bdocument\.write\s*\(/,
+    /\beval\s*\(/,
+    /\bnew\s+Function\s*\(/,
+    /\bfetch\s*\(/,
+    /\bXMLHttpRequest\b/,
+    /\blocalStorage\b/,
+    /\bsessionStorage\b/,
+    /\bdocument\.cookie\b/
+  ]) {
+    if (pattern.test(source)) {
+      fail(`${path} presentation adapter must not use ${pattern}`);
+    }
+  }
+}
+
 try {
   new Function(telemetryJs);
 } catch (error) {
@@ -1411,6 +737,9 @@ const closeBraces = (adminCss.match(/\}/g) || []).length;
 if (openBraces !== closeBraces) {
   fail(`admin/admin.css brace mismatch (${openBraces} open, ${closeBraces} close)`);
 }
+
+requireBalancedCss("css/mobile-ios-shell.css", mobileIosShellCss);
+requireBalancedCss("css/motion-system.css", motionSystemCss);
 
 for (const selector of [
   ".admin-shell",
@@ -1437,6 +766,39 @@ for (const token of [
   }
 }
 
+if (!hasPattern(mainJs, /function\s+recentUpdateIconClass[\s\S]*item\?\.category\s*===\s*siteUpdateCategory\s*\|\|\s*item\?\.icon\s*===\s*["']system["'][\s\S]*update-icon-system/)) {
+  fail("js/main.js should preserve the system bitmap for the consolidated update when the articles API falls back to local content");
+}
+
+if (!hasPattern(motionSystemCss, /\.welcome-title-icon\s*\{[\s\S]*width:\s*24px[\s\S]*height:\s*24px/)) {
+  fail("css/motion-system.css should give the desktop welcome bitmap a visible intrinsic box");
+}
+
+if (!hasPattern(uiMotionJs, /function\s+animateAfterCommit\(result,\s*options\)[\s\S]*options\s*&&\s*options\.deferCleanup[\s\S]*animateAfterCommit\(committedResult,\s*\{\s*deferCleanup:\s*true[\s\S]*?\}\)[\s\S]*transition\.finished\.then[\s\S]*cleanup\(\)/)) {
+  fail("js/ui-motion.js should retain View Transition state until the browser transition actually finishes");
+}
+
+if (!hasPattern(uiMotionJs, /transition\.ready\s*&&\s*typeof\s+transition\.ready\.then\s*===\s*["']function["'][\s\S]*transition\.ready\.then\(\s*function\s+viewTransitionReady\(\)\s*\{\s*\}\s*,\s*function\s+viewTransitionReadySkipped\(\)\s*\{\s*\}\s*\)/)) {
+  fail("js/ui-motion.js should consume skipped View Transition ready rejections without leaking page errors");
+}
+
+if (!hasPattern(uiMotionJs, /function\s+enterAnimation[\s\S]*transformOrigin:\s*["']center center["'][\s\S]*function\s+exitAnimation[\s\S]*transformOrigin:\s*["']center center["']/)) {
+  fail("js/ui-motion.js center-based window deltas should use an explicit center transform origin");
+}
+
+if (!hasPattern(uiMotionJs, /function\s+handlePointerDown[\s\S]*setData\(root,\s*["']inputMethod["'],\s*["']pointer["']\)[\s\S]*releasePressedTarget\(\)[\s\S]*function\s+handleKeyDown/)
+  || !hasPattern(uiMotionJs, /addListener\(global,\s*["']blur["'][\s\S]*releasePressedTarget\(\)/)) {
+  fail("js/ui-motion.js should release stale pressed state before a new press and whenever the window loses focus");
+}
+
+if (!hasPattern(motionSystemCss, /\.resource-empty-icon\.blog-empty-icon\s*\{[\s\S]*icon-window-blog-64\.png/)) {
+  fail("css/motion-system.css should preserve the blog bitmap when the empty-state node also carries the shared resource class");
+}
+
+if (!indexHtml.includes('content="width=device-width, initial-scale=1.0, viewport-fit=cover"')) {
+  fail("index.html viewport should opt into iOS safe-area coverage");
+}
+
 const welcomeQuickLinksHtml = findRequiredHtml(
   indexHtml,
   /<div class="quick-links">[\s\S]*?<\/div>/,
@@ -1444,16 +806,53 @@ const welcomeQuickLinksHtml = findRequiredHtml(
 );
 
 for (const token of [
-  '<span class="title-icon" aria-hidden="true">★</span><span id="welcome-title"',
+  '<span class="title-icon welcome-title-icon" aria-hidden="true"></span><span id="welcome-title"',
   '<span class="pixel-icon monitor-icon" aria-hidden="true"></span>',
-  '<span aria-hidden="true">▶</span>'
+  '<span class="video-placeholder-asset" aria-hidden="true"></span>',
+  '<span class="article-toc-icon asset-icon asset-icon-knowledge" aria-hidden="true"></span>',
+  '<span class="article-copy-icon asset-icon asset-icon-link" aria-hidden="true"></span>'
 ]) {
   if (!indexHtml.includes(token)) {
-    fail(`index.html missing decorative welcome icon accessibility token ${token}`);
+    fail(`index.html missing bitmap-backed decorative asset token ${token}`);
   }
 }
 if (indexHtml.includes("<b>›</b>")) {
   fail("index.html decorative arrow markers must be aria-hidden");
+}
+
+const visibleEmojiPattern = /[\u2600-\u27bf]|\p{Extended_Pictographic}/u;
+if (visibleEmojiPattern.test(visibleHtmlText(indexHtml))) {
+  fail("index.html visible text must not use emoji or symbol artwork; use bitmap-backed asset classes");
+}
+
+const runtimeVisibleEmojiLines = mainJs.split(/\r?\n/).filter((line) => (
+  /\b(?:textContent|innerText)\s*=|createTextNode\s*\(/.test(line)
+  && visibleEmojiPattern.test(line)
+));
+if (runtimeVisibleEmojiLines.length) {
+  fail("js/main.js runtime renderers must not write visible emoji or symbol artwork");
+}
+const mainWithoutLegacyIconMetadata = mainJs.replace(/^\s*icon\s*:\s*(["'`]).*?\1\s*,?\s*$/gmu, "");
+if (visibleEmojiPattern.test(mainWithoutLegacyIconMetadata)) {
+  fail("js/main.js must keep emoji out of runtime-visible copy; legacy non-rendered icon metadata is the only tolerated source");
+}
+if (/\b(?:textContent|innerText)\s*=\s*(?:item|update)\??\.icon\b/.test(mainJs)) {
+  fail("js/main.js runtime renderers must map update types to bitmap-backed classes instead of rendering raw icon values");
+}
+
+for (const [marker, pattern, message] of [
+  [
+    "function recentUpdateElement",
+    /icon\.className\s*=\s*`update-icon\s+\$\{recentUpdateIconClass\(item\)\}`[\s\S]*icon\.setAttribute\(\s*["']aria-hidden["']\s*,\s*["']true["']\s*\)/,
+    "js/main.js recent updates should render a hidden bitmap-backed class instead of raw emoji"
+  ],
+  [
+    "function closeVideo",
+    /icon\.className\s*=\s*["']video-placeholder-asset["'][\s\S]*icon\.setAttribute\(\s*["']aria-hidden["']\s*,\s*["']true["']\s*\)/,
+    "js/main.js closeVideo should restore the bitmap-backed video placeholder asset"
+  ]
+]) {
+  requireFunctionPattern(mainJs, marker, pattern, message);
 }
 
 if (!indexHtml.includes('<nav class="desktop-icons" aria-label="主要栏目" data-i18n-aria-label="desktopIconsAria">')) {
@@ -1493,10 +892,10 @@ if (welcomeQuickLinkButtons.length < 4) {
   fail("index.html expected at least four welcome quick-link buttons");
 }
 for (const buttonHtml of welcomeQuickLinkButtons) {
-  if (!/<span\b[^>]*aria-hidden="true"[^>]*>/.test(buttonHtml)) {
-    fail("index.html welcome quick-link decorative icon should be aria-hidden");
+  if (!/<span\b[^>]*class="[^"]*\bquick-link-asset\b[^"]*"[^>]*aria-hidden="true"[^>]*><\/span>/.test(buttonHtml)) {
+    fail("index.html welcome quick-link should use an aria-hidden bitmap-backed asset span");
   }
-  if (!/<b\b[^>]*aria-hidden="true"[^>]*>/.test(buttonHtml)) {
+  if (/<b\b/.test(buttonHtml) && !/<b\b[^>]*aria-hidden="true"[^>]*>/.test(buttonHtml)) {
     fail("index.html welcome quick-link arrow should be aria-hidden");
   }
 }
@@ -1517,6 +916,17 @@ for (const token of [
 ]) {
   if (!welcomeChatQuickLink.includes(token)) {
     fail(`index.html missing chatroom welcome quick-link token ${token}`);
+  }
+}
+
+for (const [label, pattern] of [
+  ["chat quick link", /\.quick-link-chat\s+\.quick-link-asset\s*\{[\s\S]*?background-image:\s*url\(["']\.\.\/assets\/images\/icon-chatroom-clean\.png["']\)/],
+  ["games quick link", /\.quick-link-games\s+\.quick-link-asset[\s\S]*?\{[\s\S]*?background-image:\s*url\(["']\.\.\/assets\/images\/icon-games\.png["']\)/],
+  ["knowledge quick link", /\.quick-link-knowledge\s+\.quick-link-asset\s*\{[\s\S]*?background-image:\s*url\(["']\.\.\/assets\/images\/icon-knowledge\.png["']\)/],
+  ["video placeholder", /\.video-placeholder-asset\s*,\s*\.video-empty-icon\s*\{[\s\S]*?background-image:\s*url\(["']\.\.\/assets\/images\/icon-videos\.png["']\)/]
+]) {
+  if (!hasPattern(motionSystemCss, pattern)) {
+    fail(`css/motion-system.css missing bitmap-backed ${label} asset mapping`);
   }
 }
 
@@ -1607,6 +1017,10 @@ if (/aria-live|role=["']status["']/.test(chatSyncStatusHtml)) {
 
 for (const asset of [
   "/css/style.css",
+  "/css/mobile-ios-shell.css",
+  "/css/motion-system.css",
+  "/js/mobile-shell.js",
+  "/js/ui-motion.js",
   "/js/main.js",
   "/js/telemetry.js"
 ]) {
@@ -1615,17 +1029,38 @@ for (const asset of [
   }
 }
 
-const currentPreFinalMainVersion = "20260623-click-delegation-r1";
-const currentPreFinalCssVersion = "20260711-japanese-subtext-r1";
+const premiumUiVersion = "20260711-calm-motion-r12";
+const currentPreFinalMainVersion = "20260711-calm-motion-r12";
 const currentPreFinalTelemetryVersion = "20260623-analytics-privacy-r1";
 const currentGameShellVersion = "20260623-game-shell-storage-safe-r1";
 
-if (!indexHtml.includes(`/css/style.css?v=${currentPreFinalCssVersion}`)) {
-  fail(`index.html pre-final style.css query should be ${currentPreFinalCssVersion}`);
+for (const asset of [
+  "/css/mobile-ios-shell.css",
+  "/css/motion-system.css",
+  "/js/mobile-shell.js",
+  "/js/ui-motion.js"
+]) {
+  const versions = assetQueryVersions(indexHtml, asset);
+  if (versions.length !== 1 || versions[0] !== premiumUiVersion) {
+    fail(`index.html ${asset} query should appear once as ${premiumUiVersion}`);
+  }
 }
 
-if (!indexHtml.includes(`/js/telemetry.js?v=${currentPreFinalTelemetryVersion}`)) {
+const telemetryVersions = assetQueryVersions(indexHtml, "/js/telemetry.js");
+if (telemetryVersions.length !== 1 || telemetryVersions[0] !== currentPreFinalTelemetryVersion) {
   fail(`index.html pre-final telemetry.js query should be ${currentPreFinalTelemetryVersion}`);
+}
+
+if (indexHtml.includes("mobile-status-glyphs") || mobileIosShellCss.includes("mobile-status-glyphs")) {
+  fail("mobile UI should not show decorative battery, Wi-Fi, or signal glyphs that could be mistaken for real device status");
+}
+
+for (const theme of ["morning", "day", "dusk", "night"]) {
+  const wallpaperPath = `../assets/images/mobile-wallpapers/${theme}.webp`;
+  const versions = assetQueryVersions(mobileIosShellCss, wallpaperPath);
+  if (!versions.length || versions.some((version) => version !== premiumUiVersion)) {
+    fail(`css/mobile-ios-shell.css ${theme} wallpaper query should be ${premiumUiVersion}`);
+  }
 }
 
 for (const [file, html] of gameIndexHtmls) {
@@ -1673,6 +1108,81 @@ for (const token of [
   if (!styleCss.includes(token)) {
     fail(`css/style.css missing ${token}`);
   }
+}
+
+for (const token of [
+  'html[data-ui-shell="mobile"]',
+  "env(safe-area-inset-top, 0px)",
+  "env(safe-area-inset-bottom, 0px)",
+  "--mobile-viewport-height",
+  ".mobile-statusbar",
+  ".mobile-appbar",
+  ".mobile-home-indicator",
+  ".account-popover",
+  ".xp-taskbar",
+  "@media (orientation: landscape) and (max-height: 520px)",
+  "@media (prefers-reduced-motion: reduce)"
+]) {
+  if (!mobileIosShellCss.includes(token)) {
+    fail(`css/mobile-ios-shell.css missing ${token}`);
+  }
+}
+
+for (const token of [
+  "--motion-standard",
+  ".asset-icon",
+  ".quick-link-asset",
+  ".video-placeholder-asset",
+  "background-image: url(\"../assets/images/icon-videos.png\")",
+  "background-image: url(\"../assets/images/icon-knowledge.png\")",
+  "background-image: url(\"../assets/images/icon-games.png\")",
+  ".online-dot",
+  "animation: none !important",
+  "@media (prefers-reduced-motion: reduce)"
+]) {
+  if (!motionSystemCss.includes(token)) {
+    fail(`css/motion-system.css missing ${token}`);
+  }
+}
+
+for (const token of [
+  'const MOBILE_QUERY = "(max-width: 760px), (max-height: 520px) and (pointer: coarse)"',
+  "root.dataset.uiShell = nextShell",
+  "window.visualViewport",
+  'new CustomEvent("lusu:shellchange"',
+  "window.requestAnimationFrame",
+  "MutationObserver",
+  "startHomeGesture",
+  "finishHomeGesture",
+  "window.LusuMobileShell = Object.freeze"
+]) {
+  if (!mobileShellJs.includes(token)) {
+    fail(`js/mobile-shell.js missing ${token}`);
+  }
+}
+
+for (const token of [
+  "MAX_PARALLAX_PX = 0",
+  "function run(kindValue, contextValue, commitValue)",
+  "function commitOnce()",
+  'createMediaQuery("(prefers-reduced-motion: reduce)")',
+  'addListener(document, "visibilitychange", handleVisibilityChange)',
+  'dispatchHook("lusu:ui-motion-before"',
+  'dispatchHook("lusu:ui-motion-after"',
+  "global.LusuUiMotion = api"
+]) {
+  if (!uiMotionJs.includes(token)) {
+    fail(`js/ui-motion.js missing ${token}`);
+  }
+}
+
+const onlineDotBlocks = [styleCss, mobileIosShellCss, motionSystemCss]
+  .flatMap((source) => [...source.matchAll(/\.online-dot\s*\{([\s\S]*?)\}/g)].map((match) => match[1]));
+if (!onlineDotBlocks.length) {
+  fail("public CSS missing .online-dot styling");
+}
+if (onlineDotBlocks.some((block) => /animation\s*:[^;}]*(?:blink|infinite)/i.test(block))) {
+  fail(".online-dot must remain steady and must not restore an infinite blink animation");
 }
 
 for (const token of [
@@ -1750,8 +1260,8 @@ for (const [marker, pattern, message] of [
   ],
   [
     "function resourceActionElement",
-    /const\s+resourceTitle\s*=\s*url\s*\?\s*localText\(item\.title\)\s*:\s*contentTitle\(item\.title\)[\s\S]*localText\(item\.actionLabel\)[\s\S]*status\.className\s*=\s*["']card-action resource-pending-action["'][\s\S]*status\.setAttribute\(\s*["']role["']\s*,\s*["']status["']\s*\)[\s\S]*status\.setAttribute\(\s*["']aria-label["']\s*,\s*`\$\{t\(["']resourcePendingTitle["']\)\}:\s*\$\{resourceTitle\}`\s*\)[\s\S]*link\.setAttribute\(\s*["']aria-label["']\s*,\s*`\$\{text\}:\s*\$\{resourceTitle\}`\s*\)/,
-    "js/main.js resourceActionElement should support localized tool actions and expose pending resources as non-interactive titled status text"
+    /const\s+resourceTitle\s*=\s*contentTitle\(item\.title\)[\s\S]*status\.className\s*=\s*["']card-action resource-pending-action["'][\s\S]*status\.setAttribute\(\s*["']role["']\s*,\s*["']status["']\s*\)[\s\S]*status\.setAttribute\(\s*["']aria-label["']\s*,\s*`\$\{t\(["']resourcePendingTitle["']\)\}:\s*\$\{resourceTitle\}`\s*\)[\s\S]*link\.setAttribute\(\s*["']aria-label["']\s*,\s*`\$\{text\}:\s*\$\{resourceTitle\}`\s*\)/,
+    "js/main.js resourceActionElement should expose pending resources as non-interactive titled status text"
   ],
   [
     "function resourceStatusElement",
@@ -1765,8 +1275,8 @@ for (const [marker, pattern, message] of [
   ],
   [
     "function languageSupportTagElements",
-    /tag\.title\s*=\s*title[\s\S]*tag\.setAttribute\(\s*["']aria-label["']\s*,\s*title\s*\)/,
-    "js/main.js language support tags should expose their computed title as an aria-label"
+    /tag\.title\s*=\s*title[\s\S]*tag\.setAttribute\(\s*["']aria-label["']\s*,\s*title\s*\)[\s\S]*tag\.textContent\s*=\s*title/,
+    "js/main.js language support tags should expose unsupported status visibly and through an aria-label"
   ],
   [
     "function gameCardElement",
@@ -1880,7 +1390,7 @@ for (const [marker, pattern, message] of [
   ],
   [
     "function scrollToArticleHeading",
-    /heading\.scrollIntoView\(\s*\{\s*block:\s*["']start["']\s*,\s*behavior:\s*["']smooth["']\s*\}\s*\)[\s\S]*heading\.focus\(\s*\{\s*preventScroll:\s*true\s*\}\s*\)/,
+    /heading\.scrollIntoView\(\s*\{\s*block:\s*["']start["']\s*,\s*behavior:\s*motionScrollBehavior\(\)\s*\}\s*\)[\s\S]*heading\.focus\(\s*\{\s*preventScroll:\s*true\s*\}\s*\)/,
     "js/main.js article TOC jumps should move programmatic focus to the target heading without extra scroll"
   ],
   [
@@ -1975,12 +1485,12 @@ for (const [marker, pattern, message] of [
   ],
   [
     "function showArticle",
-    /closeWelcome\(\s*\{\s*restoreFocus:\s*false\s*\}\s*\)/,
+    /closeWelcome\(\s*\{\s*restoreFocus:\s*false\s*,\s*motion:\s*false\s*\}\s*\)/,
     "js/main.js showArticle should close the welcome dialog without restoring stale modal focus"
   ],
   [
     "function showArticleCategory",
-    /closeWelcome\(\s*\{\s*restoreFocus:\s*false\s*\}\s*\)/,
+    /closeWelcome\(\s*\{\s*restoreFocus:\s*false\s*,\s*motion:\s*false\s*\}\s*\)/,
     "js/main.js showArticleCategory should close the welcome dialog without restoring stale modal focus"
   ],
   [
@@ -2007,8 +1517,257 @@ for (const [marker, pattern, message] of [
   requireFunctionPattern(mainJs, marker, pattern, message);
 }
 
-if (!hasPattern(mainJs, /const\s+routeButton[\s\S]*if\s*\(routeButton\)\s*\{[\s\S]*navigate\(routeButton\.dataset\.route\)[\s\S]*closeWelcome\(\s*\{\s*restoreFocus:\s*false\s*\}\s*\)/)) {
-  fail("js/main.js route click branch should close the welcome dialog without restoring stale modal focus");
+if (!hasPattern(mainJs, /const\s+routeButton[\s\S]*if\s*\(routeButton\)\s*\{[\s\S]*const\s+motionKind\s*=\s*routeButton\.matches\(\s*["']\.minimize-button["']\s*\)[\s\S]*["']window-minimize["'][\s\S]*routeButton\.matches\(\s*["']\.close-button["']\s*\)[\s\S]*["']window-close["'][\s\S]*navigate\(\s*routeButton\.dataset\.route\s*,\s*\{\s*trigger:\s*routeButton\s*,\s*motionKind\s*\}\s*\)\s*;\s*closeWelcome\(\s*\{\s*restoreFocus:\s*false\s*,\s*motion:\s*false\s*\}\s*\)/)) {
+  fail("js/main.js route click branch should classify minimize/close motion, pass its trigger, and close welcome without restoring stale modal focus");
+}
+
+if (!hasPattern(mainJs, /const\s+routeIconRectCache\s*=\s*new\s+Map[\s\S]*function\s+captureRouteIconRects[\s\S]*document\.body\.dataset\.route\s*!==\s*["']home["'][\s\S]*routeIconRectCache\.set/)
+  || !hasPattern(mainJs, /function\s+cachedRouteIconRect[\s\S]*cached\.shell[\s\S]*cached\.viewportWidth\s*!==\s*window\.innerWidth[\s\S]*cached\.viewportHeight\s*!==\s*window\.innerHeight/)
+  || !hasPattern(mainJs, /function\s+routeExitOriginRect[\s\S]*motionKind\s*===\s*["']window-minimize["'][\s\S]*cachedRouteIconRect\(route\)[\s\S]*taskbar-tabs button\[data-route\][\s\S]*\.start-button/)
+  || !hasPattern(mainJs, /function\s+navigate[\s\S]*const\s+exitOriginRect\s*=\s*isExitMotion[\s\S]*focusReturnTarget\.focus\(\s*\{\s*preventScroll:\s*true\s*\}\s*\)[\s\S]*originRect:\s*exitOriginRect[\s\S]*deferCommit:\s*isExitMotion/)) {
+  fail("js/main.js navigate should reverse close/minimize toward the route icon or task button and restore focus after committing");
+}
+
+if (!hasPattern(mainJs, /function\s+routeWindowFocusTarget[\s\S]*\.find\(\(element\)\s*=>\s*focusTargetIsVisible\(element\)\)[\s\S]*windowSurface\.tabIndex\s*=\s*-1[\s\S]*const\s+shouldFocusWindow[\s\S]*document\.documentElement\.dataset\.inputMethod\s*===\s*["']keyboard["'][\s\S]*!focusTargetIsVisible\(options\.trigger\)[\s\S]*routeWindowFocusTarget\(nextRoute\)[\s\S]*focusTarget\.focus\(\s*\{\s*preventScroll:\s*true\s*\}\s*\)/)) {
+  fail("js/main.js route navigation should move focus into a window when its launch trigger becomes hidden or keyboard navigation requests it");
+}
+
+if (!hasPattern(mainJs, /const\s+mobileHomeReturnTarget[\s\S]*\.mobile-home-button[\s\S]*routeReturnTarget\(previousRoute,\s*["']window-close["']\)[\s\S]*const\s+focusReturnTarget\s*=\s*returnTarget\s*\|\|\s*mobileHomeReturnTarget[\s\S]*focusReturnTarget\.focus/)) {
+  fail("js/main.js mobile App home navigation should restore focus to a visible Home-screen App icon");
+}
+
+if (!hasPattern(mainJs, /function\s+focusTargetIsVisible[\s\S]*element\.closest\(\s*["']\[hidden\]["']\s*\)[\s\S]*page\.classList\.contains\(\s*["']active["']\s*\)[\s\S]*const\s+hadInteractiveFocus[\s\S]*!hadInteractiveFocus\s*\|\|\s*focusTargetIsVisible\(activeElement\)[\s\S]*fallbackTarget\?\.focus/)) {
+  fail("js/main.js navigation should recover focus from controls hidden by browser history or route projection");
+}
+
+if (!hasPattern(mainJs, /function\s+showArticle\(slug,\s*options\s*=\s*\{\}\)[\s\S]*trigger:\s*options\.trigger[\s\S]*focusWindow:\s*true[\s\S]*function\s+showArticleList\(options\s*=\s*\{\}\)[\s\S]*trigger:\s*options\.trigger[\s\S]*focusWindow:\s*true/)
+  || !hasPattern(mainJs, /showArticle\(articleButton\.dataset\.articleSlug,\s*\{\s*trigger:\s*articleButton\s*\}\)[\s\S]*showArticleList\(\{\s*trigger:\s*articleBackButton\s*\}\)/)) {
+  fail("js/main.js article detail and back controls should carry focus into the newly revealed surface");
+}
+
+if (!hasPattern(mainJs, /function\s+motionScrollBehavior[\s\S]*managedMode\s*===\s*["']reduced["']\s*\|\|\s*managedMode\s*===\s*["']off["'][\s\S]*return\s+["']auto["'][\s\S]*prefers-reduced-motion:\s*reduce/)
+  || !hasPattern(mainJs, /scrollIntoView\(\s*\{\s*block:\s*["']start["']\s*,\s*behavior:\s*motionScrollBehavior\(\)\s*\}\s*\)/)
+  || !hasPattern(mainJs, /detail\.scrollTo\(\s*\{\s*top:\s*0\s*,\s*behavior:\s*motionScrollBehavior\(\)\s*\}\s*\)/)) {
+  fail("js/main.js article scrolling should honor reduced and off motion modes");
+}
+
+if (!hasPattern(motionSystemCss, /html\[data-ui-shell="desktop"\]\s+\.desktop-icon\.is-active[\s\S]*\.desktop-icon\[aria-pressed="true"\][\s\S]*border-color:[\s\S]*box-shadow:/)) {
+  fail("css/motion-system.css should provide a visible non-color-only desktop icon selected state");
+}
+
+if (!hasPattern(mainJs, /const\s+keepsDesktopChromeLive\s*=\s*isDesktopShell[\s\S]*motionKind\s*===\s*["']app-open["'][\s\S]*motionKind\s*===\s*["']route["']\s*&&\s*nextRoute\s*===\s*["']home["']/)
+  || !hasPattern(mainJs, /useViewTransition:\s*\[["']route["'],\s*["']app-open["'],\s*["']mobile-tab["']\]\.includes\(motionKind\)[\s\S]*&&\s*!keepsDesktopChromeLive/)
+  || !hasPattern(uiMotionJs, /function\s+resolveMotionTarget[\s\S]*kind\s*===\s*["']route["'][\s\S]*kind\s*===\s*["']app-open["'][\s\S]*shellMode\(\)\s*===\s*["']desktop["'][\s\S]*currentRoute\(\)\s*===\s*["']home["'][\s\S]*\.desktop-icons[\s\S]*\.page\.active\s*>\s*\.xp-window/)
+  || !hasPattern(uiMotionJs, /function\s+appOpenEnterAnimation[\s\S]*opacity:\s*0\.84[\s\S]*translate3d\(0,3px,0\)[\s\S]*duration:\s*DURATIONS\.standard/)) {
+  fail("desktop App launch and Home return must animate live window/icon surfaces without a full-page snapshot covering fixed chrome");
+}
+
+for (const asset of ["/css/style.css", "/js/main.js"]) {
+  const versions = assetQueryVersions(indexHtml, asset);
+  if (versions.length !== 1 || versions[0] !== currentPreFinalMainVersion) {
+    fail(`index.html ${asset} query should appear once as ${currentPreFinalMainVersion}`);
+  }
+}
+
+if (/\brotateY\s*\(|\bperspective\s*:|@keyframes\s+[\w-]*page-turn|data-ui-page-turn|--ui-app-open-(?:x|y|scale)|app-open-origin/i.test(motionSystemCss)
+  || /PAGE_TURN_ROUTES|pageTurnDirection|uiPageTurn|writeAppOpenOrigin|clearAppOpenOrigin|--ui-app-open-(?:x|y|scale)/.test(uiMotionJs)) {
+  fail("the calm motion system must not restore 3D page turns, icon-origin scaling, or their legacy state and keyframes");
+}
+
+if (!hasPattern(uiMotionJs, /ROUTE_ORDER[\s\S]*function\s+routeDirection/)
+  || !hasPattern(uiMotionJs, /setData\(root,\s*["']uiDirection["']/)
+  || !hasPattern(uiMotionJs, /removeData\(root,\s*["']uiDirection["']\)/)
+  || !hasPattern(motionSystemCss, /html\[data-ui-transition="route"\]\s+\.page\.active\s*\{[\s\S]*view-transition-name:\s*module-page/)
+  || !hasPattern(motionSystemCss, /::view-transition-old\(root\),\s*::view-transition-new\(root\)\s*\{[\s\S]*animation:\s*none/)
+  || !hasPattern(motionSystemCss, /data-ui-transition="route"[\s\S]*::view-transition-old\(module-page\)\s*\{[\s\S]*opacity:\s*0[\s\S]*animation:\s*none/)
+  || !hasPattern(motionSystemCss, /data-ui-transition="route"[\s\S]*::view-transition-new\(module-page\)[\s\S]*neo-xp-route-in/)) {
+  fail("desktop taskbar route changes should reveal one calm active page without a second border snapshot while unchanged chrome remains stable");
+}
+
+if (!hasPattern(mainJs, /routeButton\.matches\(\s*["']\.desktop-icon["']\s*\)[\s\S]*["']app-open["']/)
+  || !hasPattern(mainJs, /dataset\.uiShell\s*===\s*["']mobile["'][\s\S]*\.taskbar-tabs button, \.start-button, \.mobile-home-button[\s\S]*["']mobile-tab["']/)
+  || !hasPattern(motionSystemCss, /data-ui-transition="app-open"[\s\S]*view-transition-name:\s*app-screen/)
+  || !hasPattern(motionSystemCss, /data-ui-transition="app-open"[\s\S]*::view-transition-new\(app-screen\)[\s\S]*neo-xp-app-open-calm/)
+  || !hasPattern(motionSystemCss, /data-ui-transition="mobile-tab"[\s\S]*view-transition-name:\s*mobile-tab-page/)
+  || !hasPattern(motionSystemCss, /data-ui-transition="mobile-tab"[\s\S]*::view-transition-old\(mobile-tab-page\)[\s\S]*neo-xp-mobile-slide-out/)
+  || !hasPattern(motionSystemCss, /data-ui-transition="mobile-tab"[\s\S]*::view-transition-new\(mobile-tab-page\)[\s\S]*neo-xp-mobile-slide-in/)
+  || !hasPattern(motionSystemCss, /data-ui-transition="mobile-tab"\]\[data-ui-direction="backward"\]/)
+  || /\.desktop-icon\.is-opening/.test(motionSystemCss)) {
+  fail("Home Apps should open calmly while mobile Dock routes use a directional, lightweight slide without page turns");
+}
+
+if (/<div\b[^>]*class="desktop-intro"/.test(indexHtml)
+  || /data-i18n=["']homeLead["']/.test(indexHtml)
+  || /homeLead\s*:/.test(mainJs)) {
+  fail("Home should not render the removed three-language headline, construction note, or divider block");
+}
+
+if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.desktop-icons\s*\{[\s\S]*grid-auto-rows:\s*90px[\s\S]*justify-items:\s*center/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.desktop-icon\s*\{[\s\S]*width:\s*min\(78px,\s*100%\)[\s\S]*height:\s*90px/)
+  || !hasPattern(mobileIosShellCss, /\.page:not\(\.page-home\)\s*>\s*\.xp-window\s*\{[\s\S]*--mobile-frame-edge|\.page:not\(\.page-home\)\s*>\s*\.xp-window\s*\{[\s\S]*border:\s*2px\s+solid\s+var\(--mobile-frame-edge\)/)
+  || !hasPattern(mobileIosShellCss, /#videos\s+\.card-grid,[\s\S]*#about\s+\.profile-card\s*\{[\s\S]*border:\s*1px\s+solid\s+var\(--mobile-frame-edge\)/)) {
+  fail("mobile Home hit areas and all App surfaces should keep the compact grid and layered frame system");
+}
+
+if (!hasPattern(mainJs, /function\s+updateWallpaperMotionState[\s\S]*document\.documentElement\.dataset\.motion[\s\S]*\[\s*["']full["']\s*,\s*["']reduced["']\s*,\s*["']off["']\s*\]\.includes\(managedMode\)/)
+  || !hasPattern(mainJs, /LusuUiMotion\.run\(\s*["']theme["']\s*,\s*\{\s*theme\s*,\s*useViewTransition:\s*true\s*\}/)) {
+  fail("js/main.js wallpaper should share the canonical motion mode and use progressive theme crossfades");
+}
+
+if (!hasPattern(mobileShellJs, /function\s+cycleLanguage[\s\S]*CustomEvent\(\s*["']lusu:language-request["'][\s\S]*detail:\s*\{\s*lang:\s*nextLang\s*\}[\s\S]*\}\s*\)/)
+  || hasPattern(mobileShellJs, /function\s+cycleLanguage[\s\S]{0,500}\.click\(\)/)
+  || !hasPattern(mainJs, /addEventListener\(\s*["']lusu:language-request["'][\s\S]*\[\s*["']zh["']\s*,\s*["']en["']\s*,\s*["']ja["']\s*\]\.includes\(lang\)[\s\S]*setLanguage\(lang,\s*\{\s*persist:\s*true,\s*syncUrl:\s*true\s*\}\)/)) {
+  fail("mobile language cycle should request one shared language change without synthesizing a second tracked click");
+}
+
+if (!hasPattern(motionSystemCss, /html\[data-motion="reduced"\]\s+\.page[\s\S]*html\[data-motion="off"\]\s+\.desktop-icon[\s\S]*animation:\s*none\s*!important/)) {
+  fail("css/motion-system.css should disable legacy page/icon animations in reduced and off modes");
+}
+
+if (!hasPattern(motionSystemCss, /html\[data-ui-shell="mobile"\]\[data-motion="reduced"\]\s+\.wallpaper-stage[\s\S]*html\[data-ui-shell="mobile"\]\[data-motion="off"\]\s+\.wallpaper-stage[\s\S]*transform:\s*none\s*!important/)) {
+  fail("css/motion-system.css should keep the mobile wallpaper stage in its mobile coordinate system when motion is reduced or off");
+}
+
+if (hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*?\.chatroom-header\s*\{\s*display:\s*none/)
+  || hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*?\.chatroom-footer\s*\{\s*display:\s*none/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-window\.is-private-room\s+\.send-bubble-icon[\s\S]*pixel-ui-glyph-atlas\.png\?v=20260711-calm-motion-r12/)) {
+  fail("css/mobile-ios-shell.css should preserve landscape chat room controls, feedback, and the private-room send bitmap");
+}
+
+if (!hasPattern(styleCss, /\.minimize-button::before,\s*\.maximize-button::before\s*\{[\s\S]*pixel-ui-glyph-atlas\.png\?v=20260711-calm-motion-r12[\s\S]*background-size:\s*200%\s+200%/)
+  || !hasPattern(styleCss, /\.minimize-button::before\s*\{\s*background-position:\s*0\s+0[\s\S]*\.maximize-button::before\s*\{\s*background-position:\s*100%\s+0[\s\S]*\.maximize-button\[aria-pressed="true"\]::before\s*\{\s*background-position:\s*0\s+100%/)
+  || !hasPattern(styleCss, /\.send-bubble-icon\s*\{[\s\S]*pixel-ui-glyph-atlas\.png\?v=20260711-calm-motion-r12[\s\S]*background-position:\s*100%\s+100%/)
+  || hasPattern(styleCss, /\.send-bubble-icon::(?:before|after)\s*\{[\s\S]{0,320}(?:clip-path|border|box-shadow|background\s*:)/)) {
+  fail("public window and chat glyphs should use the image2 bitmap atlas instead of CSS-drawn geometry");
+}
+
+if (!hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*\.chatroom-window\s*\{[\s\S]*grid-template-columns:\s*minmax\(220px,\s*0\.56fr\)\s+minmax\(0,\s*1\.44fr\)[\s\S]*grid-template-rows:\s*auto\s+minmax\(0,\s*1fr\)\s+52px[\s\S]*\.chatroom-header\s*\{[\s\S]*grid-row:\s*1\s*\/\s*3[\s\S]*\.chat-private-room-panel\s*\{[\s\S]*grid-row:\s*1[\s\S]*grid-column:\s*2[\s\S]*\.chatroom-log\s*\{[\s\S]*grid-row:\s*2[\s\S]*grid-column:\s*2[\s\S]*\.chatroom-compose\s*\{[\s\S]*grid-row:\s*3[\s\S]*grid-column:\s*2[\s\S]*\.chatroom-footer\s*\{[\s\S]*grid-row:\s*3[\s\S]*grid-column:\s*1/)) {
+  fail("css/mobile-ios-shell.css should use the available landscape width so chat and private-room controls remain simultaneously reachable");
+}
+
+if (!hasPattern(mobileIosShellCss, /@media\s*\(max-width:\s*380px\)[\s\S]*\.chat-private-room-panel[\s\S]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto\s+auto[\s\S]*\.chat-private-room-panel small\s*\{\s*display:\s*none/)
+  || !hasPattern(mobileIosShellCss, /@media\s*\(max-width:\s*760px\)\s*and\s*\(max-height:\s*720px\)\s*and\s*\(orientation:\s*portrait\)[\s\S]*\.chatroom-compose textarea[\s\S]*height:\s*44px[\s\S]*\.chatroom-footer[\s\S]*min-height:\s*44px/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-window\s*\{\s*display:\s*grid;\s*grid-template-rows:\s*auto\s+auto\s+minmax\(0,\s*1fr\)\s+auto\s+auto/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-compose\s*\{[\s\S]*grid-row:\s*4[\s\S]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto\s+auto/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-counter\s*\{[\s\S]*position:\s*static[\s\S]*grid-column:\s*2[\s\S]*min-width:\s*44px/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chat-send-button\s*\{[\s\S]*grid-column:\s*3[\s\S]*min-height:\s*44px/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-autoscroll\s*\{[\s\S]*min-height:\s*44px/)) {
+  fail("css/mobile-ios-shell.css should keep password and chat controls reachable on narrow and soft-keyboard portrait viewports");
+}
+
+const dockIndicatorReferences = mobileShellJs.match(/\bsyncDockIndicator\s*\(/g) || [];
+
+if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.mobile-dock-scroll\s*\{[\s\S]*overflow-x:\s*auto[\s\S]*touch-action:\s*pan-x/)
+  || !hasPattern(mobileIosShellCss, /body\[data-mobile-dock="collapsed"\]\s+\.xp-taskbar\s*\{[\s\S]*transform:\s*translate3d/)
+  || !hasPattern(mobileShellJs, /function\s+toggleDock[\s\S]*dockCollapsed[\s\S]*syncDockState/)
+  || !hasPattern(mobileShellJs, /function\s+revealActiveDockItem[\s\S]*isClipped[\s\S]*scrollIntoView[\s\S]*behavior:/)
+  || !hasPattern(indexHtml, /class=["'][^"']*\bmobile-dock-selection\b[^"']*["'][^>]*aria-hidden=["']true["']/)
+  || !hasPattern(mobileIosShellCss, /\.mobile-dock-selection\s*\{[\s\S]*width:\s*var\(--mobile-dock-selection-width/)
+  || !hasPattern(mobileIosShellCss, /\.mobile-dock-selection\s*\{[\s\S]*transform:\s*translate3d\(var\(--mobile-dock-selection-x/)
+  || !hasPattern(mobileShellJs, /function\s+syncDockIndicator[\s\S]*setProperty\(\s*["']--mobile-dock-selection-x["']/)
+  || !hasPattern(mobileShellJs, /function\s+syncDockIndicator[\s\S]*setProperty\(\s*["']--mobile-dock-selection-width["']/)
+  || !hasPattern(indexHtml, /data-route="blog"\s+data-mobile-dock-excluded/)
+  || !hasPattern(indexHtml, /data-route="about"\s+data-mobile-dock-excluded/)
+  || !hasPattern(mobileIosShellCss, /taskbar-tabs\s+button\[data-mobile-dock-excluded\]\s*\{\s*display:\s*none/)
+  || !hasPattern(mobileIosShellCss, /@media\s*\(min-width:\s*375px\)[\s\S]*mobile-dock-scroll\s*\{\s*justify-content:\s*center/)
+  || !hasPattern(mobileShellJs, /dockRouteElements[\s\S]*:not\(\[data-mobile-dock-excluded\]\)[\s\S]*has-no-dock-route/)
+  || dockIndicatorReferences.length < 2
+  || !hasPattern(indexHtml, /data-mobile-dock-toggle[\s\S]*aria-expanded="true"/)
+  || !hasPattern(mobileIosShellCss, /body:not\(\[data-route="home"\]\)\s+\.page\.active\s*>\s*\.xp-window\s*>\s*\.window-titlebar\s*\{\s*display:\s*none/)) {
+  fail("mobile Apps should retain one App bar and a six-item, balanced, collapsible frosted Dock with a truthful sliding indicator");
+}
+
+if (!hasPattern(mobileIosShellCss, /body:not\(\[data-route="home"\]\)\s+\.mobile-route-copy strong\s*\{\s*max-width:\s*min\(58vw,\s*520px\)/)
+  || !hasPattern(mobileIosShellCss, /\.mobile-route-copy\s*\{[\s\S]*margin-left:\s*auto[\s\S]*text-align:\s*right/)
+  || !hasPattern(mobileIosShellCss, /body:not\(\[data-route="home"\]\)\s+\.topbar-actions\s*\{\s*display:\s*none/)) {
+  fail("css/mobile-ios-shell.css should leave enough App-bar width for readable translated route titles");
+}
+
+if (!hasPattern(mobileIosShellCss, /\.knowledge-searchbar\s+label\s*\{[\s\S]*position:\s*absolute[\s\S]*clip:\s*rect\(0\s+0\s+0\s+0\)/)
+  || !hasPattern(mobileIosShellCss, /#knowledge-search-status:empty\s*\{\s*display:\s*none/)
+  || !hasPattern(mobileIosShellCss, /\.knowledge-searchbar\.has-search-status\s*\{[\s\S]*grid-template-rows:\s*44px\s+14px[\s\S]*height:\s*70px/)
+  || !hasPattern(mainJs, /function\s+renderKnowledgeSearchControls[\s\S]*classList\.toggle\(\s*["']has-search-status["'][\s\S]*if\s*\(!articleState\.searchTerm\.trim\(\)\)[\s\S]*setSearchStatus\(\s*["']["']\s*\)/)
+  || !hasPattern(mobileIosShellCss, /\.notepad-menu\s*\{\s*display:\s*none/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.game-list\s*\{\s*max-height:\s*none/)) {
+  fail("css/mobile-ios-shell.css should remove decorative mobile rows that reduce readable App content");
+}
+
+if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.game-card\s*\{[\s\S]*grid-template-columns:\s*52px\s+minmax\(0,\s*1fr\)\s+minmax\(70px,\s*82px\)/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.game-card\s+\.card-action\s*\{[\s\S]*grid-column:\s*3[\s\S]*grid-row:\s*1[\s\S]*min-height:\s*44px/)
+  || !hasPattern(mobileIosShellCss, /#blog\s+\.blog-empty-state,[\s\S]*#blog\s+\.list-message[\s\S]*grid-column:\s*1\s*\/\s*-1/)) {
+  fail("css/mobile-ios-shell.css should keep mobile card actions inside their cards and span landscape empty states");
+}
+
+if (!hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*\.chat-private-room-panel\s*\{[\s\S]*grid-template-columns:\s*minmax\(120px,\s*1fr\)\s+auto\s+auto[\s\S]*gap:\s*8px/)) {
+  fail("css/mobile-ios-shell.css should keep the visually hidden private-room label out of the landscape control columns");
+}
+
+if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+#about\s+\.profile-card\s*\{\s*overflow:\s*auto/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.profile-avatar\s*\{[\s\S]*height:\s*clamp\(160px,\s*26dvh,\s*180px\)[\s\S]*min-height:\s*0/)
+  || !hasPattern(mobileIosShellCss, /#about\s+\.profile-card\s*\{[\s\S]*align-content:\s*safe\s+center[\s\S]*height:\s*100%/)
+  || !hasPattern(mobileIosShellCss, /#about\s+\.profile-avatar\s*\{\s*height:\s*172px[\s\S]*min-height:\s*0/)
+  || !hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*\.folder-layout\.is-reading\s+\.article-detail\s*\{[\s\S]*padding:\s*8px\s+8px\s+calc\(var\(--mobile-dock-space\)\s*\+\s*44px\)/)) {
+  fail("css/mobile-ios-shell.css should keep translated About content scrollable and reserve landscape article space above fixed reading controls");
+}
+
+if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+#article-detail-meta\s*\{[\s\S]*flex-wrap:\s*nowrap[\s\S]*min-height:\s*36px[\s\S]*overflow-x:\s*auto/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.article-detail-head\s*>\s*p\s*\{[\s\S]*-webkit-line-clamp:\s*2/)
+  || !hasPattern(mobileIosShellCss, /@media\s*\(max-width:\s*760px\)\s*and\s*\(max-height:\s*720px\)\s*and\s*\(orientation:\s*portrait\)[\s\S]*\.folder-layout\.is-reading\s+#article-detail-meta\s*\{[\s\S]*min-height:\s*32px[\s\S]*\.folder-layout\.is-reading\s+\.article-detail-head\s*>\s*p\s*\{[\s\S]*-webkit-line-clamp:\s*1/)
+  || !hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*\.folder-layout\.is-reading\s+\.article-detail-head\s*>\s*p\s*\{\s*-webkit-line-clamp:\s*1/)) {
+  fail("css/mobile-ios-shell.css should compact mobile article metadata and summaries so the first body paragraph remains readable");
+}
+
+if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+#knowledge\.page\s*>\s*\.xp-window[\s\S]*html\[data-ui-shell="mobile"\]\s+#about\.page\s*>\s*\.xp-window[\s\S]*height:\s*100%[\s\S]*max-height:\s*none/)) {
+  fail("css/mobile-ios-shell.css should override legacy ID sizing so every mobile App is a full-screen surface");
+}
+
+if (!hasPattern(mobileIosShellCss, /body\.is-article-reading\s+#knowledge\.page\s*>\s*\.xp-window[\s\S]*border-radius:\s*22px\s+22px\s+0\s+0[\s\S]*body\.is-article-reading\s+#knowledge\.page\s+\.close-button[\s\S]*min-width:\s*44px[\s\S]*min-height:\s*44px/)) {
+  fail("css/mobile-ios-shell.css should preserve full-App article chrome and 44px window controls");
+}
+
+if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\[data-article-window-toggle\]\s*\{\s*display:\s*none/)) {
+  fail("css/mobile-ios-shell.css should hide the no-op article maximize control inside always-full-screen mobile Apps");
+}
+
+if (!hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-read-progress\s*\{[\s\S]*top:\s*calc\(var\(--mobile-safe-top\)\s*\+\s*var\(--mobile-status-height\)\s*\+\s*8px\)[\s\S]*bottom:\s*auto[\s\S]*z-index:\s*95[\s\S]*height:\s*32px/)
+  || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-top-link\s*\{[\s\S]*top:\s*calc\(var\(--mobile-safe-top\)\s*\+\s*var\(--mobile-status-height\)\s*\+\s*2px\)[\s\S]*bottom:\s*auto[\s\S]*width:\s*44px/)
+  || !hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*body\.is-article-reading\s+\.article-top-link\s*\{[\s\S]*right:\s*104px[\s\S]*bottom:\s*auto/)) {
+  fail("css/mobile-ios-shell.css should place mobile article controls in the App bar without covering copy controls or body text");
+}
+
+if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+#video-window-maximize\s*\{\s*display:\s*none/)) {
+  fail("css/mobile-ios-shell.css should hide the no-op video maximize control inside always-full-screen mobile modals");
+}
+
+if (!hasPattern(mainJs, /let\s+navigationRequestId\s*=\s*0[\s\S]*function\s+navigate[\s\S]*const\s+requestId\s*=\s*\+\+navigationRequestId[\s\S]*navigationCommitted\s*\|\|\s*requestId\s*!==\s*navigationRequestId/)) {
+  fail("js/main.js navigate should reject stale deferred commits so rapid route changes remain last-action-wins");
+}
+
+if (!hasPattern(mainJs, /function\s+toggleArticleWindowSize[\s\S]*runWindowLayoutTransition\(\s*nextRestored\s*\?\s*["']window-restore["']\s*:\s*["']window-maximize["'][\s\S]*function\s+fullscreenVideo[\s\S]*runWindowLayoutTransition\(\s*nextMaximized\s*\?\s*["']window-maximize["']\s*:\s*["']window-restore["']/)) {
+  fail("js/main.js article and video window controls should use coherent maximize/restore layout transitions");
+}
+
+if (!hasPattern(mainJs, /windowRestoreAria:\s*["']还原窗口["'][\s\S]*windowRestoreAria:\s*["']Restore window["'][\s\S]*windowRestoreAria:\s*["']ウィンドウを元に戻す["']/)
+  || !hasPattern(mainJs, /function\s+renderKnowledge[\s\S]*classList\.add\(\s*["']is-article-reading["']\s*\)[\s\S]*updateArticleWindowButton\(\)[\s\S]*classList\.remove\(\s*["']is-article-window-restored["']\s*\)[\s\S]*updateArticleWindowButton\(\)/)
+  || !hasPattern(mainJs, /function\s+updateArticleWindowButton[\s\S]*const\s+reading[\s\S]*restored\s*\?\s*["']windowMaximizeAria["']\s*:\s*["']windowRestoreAria["'][\s\S]*button\.hidden\s*=\s*!reading[\s\S]*aria-pressed[\s\S]*aria-label[\s\S]*title[\s\S]*function\s+toggleArticleWindowSize[\s\S]*updateArticleWindowButton\(\)/)) {
+  fail("js/main.js article maximize/restore control should expose its current action in all three languages");
+}
+
+if (!hasPattern(motionSystemCss, /\.page\s*\{\s*animation:\s*none/)) {
+  fail("css/motion-system.css should disable the legacy page popIn so routes have one authoritative transition system");
+}
+
+if (!hasPattern(mainJs, /function\s+runSurfaceClose[\s\S]*LusuUiMotion\.run\(\s*["']modal-close["'][\s\S]*deferCommit:\s*true[\s\S]*function\s+closeVideo[\s\S]*runSurfaceClose\(modal[\s\S]*function\s+closeWelcome[\s\S]*runSurfaceClose\(modal/)) {
+  fail("js/main.js video and welcome dialogs should use a deferred reverse close animation with an immediate reduced-motion fallback");
+}
+
+if (!hasPattern(mainJs, /function\s+closeAccountPopover\(options\s*=\s*\{\}\)[\s\S]*runSurfaceClose\(popover[\s\S]*toggle\.focus\(\s*\{\s*preventScroll:\s*true\s*\}\s*\)/)
+  || !hasPattern(mainJs, /function\s+hideChatPrivateRoomForm\(options\s*=\s*\{\}\)[\s\S]*chat-room-toggle["']\)\?\.focus\(\s*\{\s*preventScroll:\s*true\s*\}\s*\)/)) {
+  fail("js/main.js account and private-room surfaces should restore focus when they close");
+}
+
+if (!hasPattern(mainJs, /if\s*\(\s*!target\.closest\(\s*["']#account-widget["']\s*\)\s*\)[\s\S]*closeAccountPopover\(\s*\{\s*restoreFocus:\s*Boolean\(popover\?\.contains\(document\.activeElement\)\)/)) {
+  fail("js/main.js outside-click account closure should only restore focus when focus would otherwise remain inside the hidden popover");
 }
 
 if (!hasPattern(mainJs, /if\s*\(videoModal\s*&&\s*!videoModal\.hidden\)\s*\{[\s\S]*closeVideo\(\)[\s\S]*return;[\s\S]*if\s*\(welcomeModal\s*&&\s*!welcomeModal\.hidden\)\s*\{[\s\S]*closeWelcome\(\)[\s\S]*return;/)) {
@@ -2058,21 +1817,27 @@ if (!hasPattern(
   fail("js/main.js renderBlog should show an honest empty state until real posts are published");
 }
 
-for (const functionName of ["openAccountPopover", "closeAccountPopover", "toggleAccountPopover"]) {
+for (const functionName of ["openAccountPopover", "closeAccountPopover"]) {
   const functionBody = objectBlockAfterMarker(mainJs, `function ${functionName}`);
   if (!functionBody.includes("syncAccountPopoverState(popover)")) {
     fail(`js/main.js ${functionName} should sync account aria-expanded state`);
   }
 }
 
+const toggleAccountPopoverBody = objectBlockAfterMarker(mainJs, "function toggleAccountPopover");
+if (!hasPattern(toggleAccountPopoverBody, /if\s*\(popover\.hidden\)[\s\S]*openAccountPopover\(\)[\s\S]*else[\s\S]*closeAccountPopover\(\)/)) {
+  fail("js/main.js toggleAccountPopover should delegate to the shared accessible open/close paths");
+}
+
 for (const [label, pattern] of [
-  ["resource empty icon", /icon\.className\s*=\s*["']resource-empty-icon["'][\s\S]{0,120}icon\.setAttribute\(\s*["']aria-hidden["']\s*,\s*["']true["']\s*\)/],
-  ["recent updates empty icon", /icon\.className\s*=\s*["']update-icon["'][\s\S]{0,120}icon\.setAttribute\(\s*["']aria-hidden["']\s*,\s*["']true["']\s*\)/],
-  ["video unsupported icon", /icon\.textContent\s*=\s*["']!["'][\s\S]{0,120}icon\.setAttribute\(\s*["']aria-hidden["']\s*,\s*["']true["']\s*\)/],
-  ["video placeholder icon", /icon\.textContent\s*=\s*["']▶["'][\s\S]{0,120}icon\.setAttribute\(\s*["']aria-hidden["']\s*,\s*["']true["']\s*\)/]
+  ["resource empty asset", /icon\.className\s*=\s*["']resource-empty-icon["'][\s\S]{0,120}icon\.setAttribute\(\s*["']aria-hidden["']\s*,\s*["']true["']\s*\)/],
+  ["recent updates empty asset", /icon\.className\s*=\s*["']update-icon update-icon-knowledge["'][\s\S]{0,120}icon\.setAttribute\(\s*["']aria-hidden["']\s*,\s*["']true["']\s*\)/],
+  ["video status asset", /icon\.className\s*=\s*`video-empty-icon\$\{kind\s*===\s*["']failed["']\s*\?\s*["'] is-error["']\s*:\s*["']["']\}`[\s\S]{0,160}icon\.setAttribute\(\s*["']aria-hidden["']\s*,\s*["']true["']\s*\)/],
+  ["video empty asset", /icon\.className\s*=\s*["']video-empty-icon["'][\s\S]{0,120}icon\.setAttribute\(\s*["']aria-hidden["']\s*,\s*["']true["']\s*\)/],
+  ["game empty asset", /icon\.className\s*=\s*["']game-empty-icon["'][\s\S]{0,120}icon\.setAttribute\(\s*["']aria-hidden["']\s*,\s*["']true["']\s*\)/]
 ]) {
   if (!hasPattern(mainJs, pattern)) {
-    fail(`js/main.js missing decorative dynamic icon accessibility guard for ${label}`);
+    fail(`js/main.js missing bitmap-backed dynamic asset accessibility guard for ${label}`);
   }
 }
 
@@ -2169,12 +1934,12 @@ for (const obsoleteText of [
   }
 }
 
-const finalUpdateId = "seed-update-2026-07-11-japanese-subtext-trainer";
-const finalUpdateSlug = "2026-07-11-japanese-subtext-trainer";
-const finalMainVersion = "20260711-japanese-subtext-r1";
+const finalUpdateId = "seed-update-2026-07-10-premium-interaction-mobile-os";
+const finalUpdateSlug = "2026-07-10-premium-interaction-mobile-os";
+const finalMainVersion = premiumUiVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Japanese Subtext Trainer Released";
-const finalPublishedAt = "2026-07-10T17:30:00.000Z";
+const finalTitleEn = "GPT-5.6 Premium Interaction & Mobile OS Redesign";
+const finalPublishedAt = "2026-07-10T16:20:00.000Z";
 const finalTranslationMinimums = {
   title: 8,
   summary: 24,
@@ -2304,7 +2069,7 @@ if (finalUpdateStarted) {
     if (!hasPattern(schemaSql, languageTuplePattern)) {
       fail(`cloudflare/schema.sql final public update missing ${lang} language tuple`);
     }
-    const schemaLangSeed = windowAfter(schemaSql, `'${finalUpdateId}-${lang}'`, 2400);
+    const schemaLangSeed = windowAfter(schemaSql, `'${finalUpdateId}-${lang}'`, 4200);
     const schemaValues = sqlSingleQuotedValues(schemaLangSeed);
     const [translationId, articleId, rowLang, title, summary, contentMarkdown] = schemaValues;
     if (translationId !== `${finalUpdateId}-${lang}` || articleId !== finalUpdateId || rowLang !== lang) {
@@ -2925,37 +2690,6 @@ try {
         fail("functions/api/[[route]].js /api/social-links should keep Bilibili/Discord empty until configured");
       }
     }
-    if (path === "/api/sitemap.xml" && response.status < 500) {
-      const xml = await response.text();
-      for (const lang of ["zh", "en", "ja"]) {
-        if (!xml.includes(`https://example.test/tools/japanese-subtext/?lang=${lang}`)) {
-          fail(`functions/api/[[route]].js sitemap missing Japanese subtext ${lang} URL`);
-        }
-      }
-    }
-  }
-
-  for (const method of ["GET", "PUT"]) {
-    const originalConsoleError = console.error;
-    let response;
-    try {
-      console.error = () => {};
-      response = await onRequest({
-        request: new Request("https://example.test/api/tools/japanese-subtext/progress", {
-          method,
-          headers: method === "PUT" ? { "Content-Type": "application/json" } : undefined,
-          body: method === "PUT" ? "{}" : undefined
-        }),
-        env: { DB: createMockD1() },
-        waitUntil() {}
-      });
-    } finally {
-      console.error = originalConsoleError;
-    }
-    if (response?.status !== 401) {
-      const body = response ? await response.text() : "";
-      fail(`functions/api/[[route]].js anonymous ${method} Japanese subtext progress should return 401, got ${response?.status || "no response"}: ${body}`);
-    }
   }
 
   const deletedChatCursorDate = new Date("2026-06-23T01:02:03.456Z");
@@ -3104,5 +2838,5 @@ try {
 }
 
 if (!process.exitCode) {
-  console.log(`build-check: ok (${relative(root, resolve(root, "admin"))}, api articles/videos/sitemap, admin auth, Japanese subtext 250/10088 release contract)`);
+  console.log(`build-check: ok (${relative(root, resolve(root, "admin"))}, api articles/videos/sitemap, admin auth)`);
 }

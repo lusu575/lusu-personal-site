@@ -1,0 +1,767 @@
+/*
+ * LuSu Personal Site - Neo-XP motion system
+ *
+ * This layer owns presentation timing and transient interaction states only.
+ * Route, article, video, account, game, and chat state continue to belong to
+ * js/main.js. Keep this file after the base stylesheet when it is wired in.
+ */
+
+:root {
+  --motion-instant: 80ms;
+  --motion-fast: 140ms;
+  --motion-standard: 200ms;
+  --motion-window: 220ms;
+  --motion-scene: 300ms;
+  --motion-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-ease-in: cubic-bezier(0.4, 0, 1, 1);
+
+  --ui-parallax-x: 0px;
+  --ui-parallax-y: 0px;
+  --ui-route-in-x: 6px;
+  --ui-mobile-in-x: 12px;
+  --ui-mobile-out-x: -10px;
+  --ui-layer-content: 1;
+  --ui-layer-window: 5;
+  --ui-layer-taskbar: 50;
+  --ui-layer-header: 80;
+  --ui-layer-modal: 100;
+  --ui-layer-motion: 120;
+
+  --neo-xp-window-highlight: rgba(255, 255, 255, 0.72);
+  --neo-xp-window-glow: rgba(91, 174, 255, 0.26);
+  --neo-xp-press-shadow: rgba(0, 28, 92, 0.24);
+}
+
+html[data-ui-direction="backward"] {
+  --ui-route-in-x: -6px;
+  --ui-mobile-in-x: -12px;
+  --ui-mobile-out-x: 10px;
+}
+
+html[data-motion="reduced"],
+html[data-motion="off"],
+body[data-motion="reduced"],
+body[data-motion="off"] {
+  --motion-instant: 1ms;
+  --motion-fast: 1ms;
+  --motion-standard: 1ms;
+  --motion-window: 1ms;
+  --motion-scene: 1ms;
+  --ui-parallax-x: 0px;
+  --ui-parallax-y: 0px;
+}
+
+/* Keep the cover-stage fixed. Pointer parallax is intentionally disabled. */
+.wallpaper-stage {
+  transform: translate3d(-50%, -50%, 0);
+}
+
+body[data-route="home"] {
+  overflow-y: hidden;
+}
+
+.page {
+  animation: none;
+}
+
+html[data-ui-shell="desktop"] body:not(.is-article-reading) {
+  overflow: hidden;
+}
+
+html[data-ui-shell="desktop"] body:not(.is-article-reading) .site-shell {
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/* Bitmap-backed UI glyphs: no emoji or CSS-drawn substitute artwork. */
+.asset-icon,
+.welcome-title-icon,
+.quick-link-asset,
+.video-placeholder-asset,
+.video-empty-icon,
+.game-empty-icon,
+.resource-empty-icon,
+.resource-icon,
+.update-icon {
+  display: inline-block;
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  color: transparent;
+  font-size: 0;
+  line-height: 0;
+  box-shadow: none;
+}
+
+.asset-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.asset-icon-knowledge,
+.article-meta-category::before,
+body.is-article-reading .article-read-progress-label span::before,
+.update-icon-knowledge {
+  background-image: url("../assets/images/icon-window-knowledge-64.png");
+}
+
+.asset-icon-note,
+.article-meta-published::before,
+.blog-empty-icon {
+  background-image: url("../assets/images/icon-window-blog-64.png");
+}
+
+.asset-icon-link,
+.resource-icon,
+.resource-empty-icon {
+  background-image: url("../assets/images/icon-resources.png");
+}
+
+.resource-empty-icon.blog-empty-icon {
+  background-image: url("../assets/images/icon-window-blog-64.png");
+}
+
+.welcome-title-icon,
+.update-icon-system {
+  background-image: url("../assets/images/lusu-tv-head-64.png?v=20260611-unified-tv-icon");
+}
+
+.welcome-title-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+}
+
+.quick-link-asset {
+  width: 34px;
+  height: 34px;
+}
+
+.quick-link {
+  grid-template-columns: 34px minmax(0, 1fr);
+}
+
+.quick-link-chat .quick-link-asset {
+  background-image: url("../assets/images/icon-chatroom-clean.png");
+}
+
+.quick-link-games .quick-link-asset,
+.game-empty-icon {
+  background-image: url("../assets/images/icon-games.png");
+}
+
+.quick-link-knowledge .quick-link-asset {
+  background-image: url("../assets/images/icon-knowledge.png");
+}
+
+.quick-link-updates .quick-link-asset {
+  background-image: url("../assets/images/lusu-tv-head-desktop-icon.png");
+}
+
+.video-placeholder-asset,
+.video-empty-icon {
+  width: 58px;
+  height: 58px;
+  background-image: url("../assets/images/icon-videos.png");
+  filter: drop-shadow(0 8px 14px rgba(0, 18, 62, 0.32));
+}
+
+.video-empty-icon,
+.game-empty-icon,
+.resource-empty-icon {
+  width: 54px;
+  height: 54px;
+}
+
+.video-empty-icon.is-error {
+  filter: grayscale(0.38) drop-shadow(0 6px 10px rgba(96, 26, 26, 0.22));
+}
+
+.resource-icon {
+  width: 26px;
+  height: 26px;
+  margin-right: 7px;
+  vertical-align: middle;
+}
+
+.update-icon {
+  width: 28px;
+  height: 28px;
+}
+
+.article-meta-item::before,
+body.is-article-reading .article-read-progress-label span::before {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  background-color: transparent;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.video-thumb::after {
+  content: "";
+  border: 0;
+  border-radius: 0;
+  background: url("../assets/images/icon-videos.png") center / contain no-repeat;
+  filter: drop-shadow(0 8px 16px rgba(0, 18, 62, 0.42));
+}
+
+.video-placeholder span.video-placeholder-asset {
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+}
+
+.content-list > .loading-text::before {
+  content: "";
+  border: 0;
+  border-radius: 0;
+  background: url("../assets/images/icon-knowledge.png") center / contain no-repeat;
+  box-shadow: none;
+}
+
+html[data-motion="off"] .wallpaper-cloud,
+body[data-motion="off"] .wallpaper-cloud {
+  animation-play-state: paused !important;
+}
+
+/* Layer ownership stays explicit so animated surfaces never outrank dialogs. */
+.site-shell > main {
+  z-index: var(--ui-layer-content);
+}
+
+.site-shell > header {
+  z-index: var(--ui-layer-header);
+}
+
+.xp-taskbar {
+  z-index: var(--ui-layer-taskbar);
+}
+
+.modal {
+  z-index: var(--ui-layer-modal);
+}
+
+/*
+ * Shared press language. Movement is transform-only and never changes layout.
+ * Existing color treatments remain authoritative in the base stylesheet.
+ */
+.brand-button,
+.account-button,
+.lang-button,
+.start-button,
+.taskbar-tabs button,
+.titlebar-button,
+.close-button,
+.filter-row button,
+.category-button,
+.xp-button,
+.card-action,
+.quick-link {
+  transform: translate3d(0, 0, 0);
+  transition:
+    transform var(--motion-instant) var(--motion-ease-out),
+    box-shadow var(--motion-fast) var(--motion-ease-out),
+    border-color var(--motion-fast) ease,
+    background-color var(--motion-fast) ease,
+    opacity var(--motion-fast) ease,
+    filter var(--motion-fast) ease;
+}
+
+.brand-button:active,
+.account-button:active,
+.lang-button:active,
+.start-button:active,
+.taskbar-tabs button:active,
+.titlebar-button:active,
+.close-button:active,
+.filter-row button:active,
+.category-button:active,
+.xp-button:active,
+.card-action:active,
+.quick-link:active,
+.is-ui-pressed {
+  transform: scale(0.99);
+  filter: brightness(0.98) saturate(1.03);
+  box-shadow:
+    inset 0 2px 3px var(--neo-xp-press-shadow),
+    0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+/* Preserve strong, non-color-only keyboard focus throughout the OS shell. */
+.desktop-icon:focus-visible,
+.brand-button:focus-visible,
+.account-button:focus-visible,
+.lang-button:focus-visible,
+.start-button:focus-visible,
+.taskbar-tabs button:focus-visible,
+.titlebar-button:focus-visible,
+.close-button:focus-visible,
+.filter-row button:focus-visible,
+.category-button:focus-visible,
+.xp-button:focus-visible,
+.card-action:focus-visible,
+.quick-link:focus-visible {
+  transition-duration: 0ms;
+}
+
+/* Desktop icon states: selected, pressed, opening, and focus return. */
+.desktop-icon {
+  transform: translate3d(0, 0, 0);
+  transform-origin: 50% 72%;
+  transition:
+    transform var(--motion-fast) var(--motion-ease-out),
+    filter var(--motion-fast) var(--motion-ease-out),
+    background-color var(--motion-fast) ease,
+    border-color var(--motion-fast) ease,
+    box-shadow var(--motion-standard) var(--motion-ease-out);
+}
+
+.desktop-icon .pixel-icon,
+.desktop-icon .icon-title {
+  transition:
+    filter var(--motion-fast) var(--motion-ease-out),
+    opacity var(--motion-fast) ease;
+}
+
+/* Override the old hop loop with one restrained, stateful lift. */
+.desktop-icon:hover,
+.desktop-icon:focus-visible,
+.desktop-icon.is-hovered,
+.desktop-icon.is-active {
+  animation: none;
+}
+
+@media (hover: hover) and (pointer: fine) and (min-width: 761px) {
+  .desktop-icon:hover {
+    filter: brightness(1.025) saturate(1.025);
+  }
+
+  .desktop-icon:hover .pixel-icon {
+    filter:
+      drop-shadow(3px 5px 0 rgba(0, 33, 110, 0.24))
+      drop-shadow(0 6px 10px rgba(76, 164, 255, 0.16));
+  }
+}
+
+.desktop-icon:active,
+.desktop-icon.is-ui-pressed {
+  transform: scale(0.99);
+}
+
+html[data-ui-shell="desktop"] .desktop-icon.is-active,
+html[data-ui-shell="desktop"] .desktop-icon[aria-pressed="true"] {
+  border-color: rgba(214, 238, 255, 0.88);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(79, 145, 236, 0.12)),
+    rgba(18, 86, 188, 0.22);
+  box-shadow:
+    inset 0 0 0 1px rgba(19, 76, 170, 0.72),
+    0 0 0 1px rgba(255, 255, 255, 0.36),
+    0 8px 18px rgba(0, 35, 110, 0.18);
+}
+
+/* Window surfaces keep the XP silhouette and gain a restrained active sheen. */
+.xp-window {
+  transform-origin: center top;
+  transition:
+    border-color var(--motion-standard) ease,
+    box-shadow var(--motion-standard) var(--motion-ease-out);
+}
+
+.page.active .xp-window,
+.modal:not([hidden]) .xp-window {
+  box-shadow:
+    inset 0 1px 0 var(--neo-xp-window-highlight),
+    0 18px 34px rgba(0, 33, 96, 0.28),
+    0 0 0 1px rgba(116, 194, 255, 0.18),
+    0 12px 34px var(--neo-xp-window-glow);
+}
+
+.window-titlebar {
+  transition:
+    box-shadow var(--motion-standard) var(--motion-ease-out),
+    background-color var(--motion-scene) ease;
+}
+
+.page.active .window-titlebar,
+.modal:not([hidden]) .window-titlebar {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 0 rgba(0, 28, 108, 0.32);
+}
+
+.page.is-ui-entering,
+.page.is-ui-entering .xp-window,
+.xp-window.is-ui-entering,
+.modal.is-ui-entering .xp-window,
+.account-popover.is-ui-entering {
+  will-change: transform, opacity;
+}
+
+.page.is-ui-entering .xp-window,
+.xp-window.is-ui-entering {
+  animation: neo-xp-window-enter var(--motion-window) var(--motion-ease-out) both;
+}
+
+.xp-window.is-ui-leaving {
+  animation: neo-xp-window-exit var(--motion-fast) var(--motion-ease-in) both;
+  pointer-events: none;
+}
+
+.xp-window.is-ui-minimizing {
+  animation: neo-xp-window-minimize var(--motion-standard) var(--motion-ease-in) both;
+  pointer-events: none;
+}
+
+.xp-window.is-ui-layout-transition {
+  will-change: transform;
+}
+
+/* Taskbar actions read as OS controls without pulsing or glowing forever. */
+.taskbar-tabs button,
+.start-button {
+  transform-origin: 50% 100%;
+}
+
+.taskbar-tabs button.active {
+  filter: brightness(1.035) saturate(1.025);
+}
+
+/* Modal depth is finite and small-area; the content remains fully readable. */
+.modal-backdrop {
+  opacity: 1;
+  backdrop-filter: blur(2px) saturate(0.9);
+  transition:
+    opacity var(--motion-standard) ease;
+}
+
+.modal.is-ui-entering .modal-backdrop {
+  animation: neo-xp-backdrop-enter var(--motion-standard) ease both;
+}
+
+.modal.is-ui-entering .xp-window,
+.account-popover.is-ui-entering {
+  animation: neo-xp-modal-enter var(--motion-standard) var(--motion-ease-out) both;
+}
+
+.modal.is-ui-leaving .xp-window,
+.account-popover.is-ui-leaving {
+  animation: neo-xp-modal-exit var(--motion-fast) var(--motion-ease-in) both;
+  pointer-events: none;
+}
+
+[data-ui-closing="true"] {
+  pointer-events: none;
+}
+
+.modal[data-ui-closing="true"] .modal-backdrop {
+  opacity: 0;
+}
+
+/* Theme changes use one quiet opacity settle; large chrome never flashes. */
+.xp-topbar,
+.xp-taskbar,
+.wallpaper-base,
+.site-shell::after {
+  transition:
+    opacity var(--motion-scene) ease,
+    background-color var(--motion-scene) ease,
+    border-color var(--motion-scene) ease;
+}
+
+html.is-ui-theme-changing .wallpaper-base,
+body.is-ui-theme-changing .wallpaper-base {
+  animation: neo-xp-theme-settle var(--motion-scene) ease both;
+}
+
+/* The legacy ONLINE indicator becomes a steady lamp instead of a blink loop. */
+.online-dot {
+  animation: none !important;
+  opacity: 1;
+  transition:
+    opacity var(--motion-fast) ease,
+    box-shadow var(--motion-standard) ease;
+}
+
+/* Progressive enhancement when a caller explicitly opts into View Transitions. */
+@supports (view-transition-name: none) {
+  html[data-ui-transition="route"] .page.active {
+    view-transition-name: module-page;
+  }
+
+  html[data-ui-transition="app-open"] .page.active {
+    view-transition-name: app-screen;
+  }
+
+  html[data-ui-transition="mobile-tab"] .page.active {
+    view-transition-name: mobile-tab-page;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
+
+  html[data-ui-transition="route"]::view-transition-group(module-page),
+  html[data-ui-transition="route"]::view-transition-image-pair(module-page) {
+    overflow: hidden;
+    animation: none;
+  }
+
+  html[data-ui-transition="route"]::view-transition-old(module-page),
+  html[data-ui-transition="route"]::view-transition-new(module-page) {
+    height: 100%;
+    overflow: hidden;
+    mix-blend-mode: normal;
+  }
+
+  html[data-ui-transition="route"]::view-transition-old(module-page) {
+    z-index: 1;
+    opacity: 0;
+    animation: none;
+  }
+
+  html[data-ui-transition="route"]::view-transition-new(module-page) {
+    z-index: 2;
+    animation: neo-xp-route-in var(--motion-standard) var(--motion-ease-out) both;
+  }
+
+  html[data-ui-transition="app-open"]::view-transition-group(app-screen),
+  html[data-ui-transition="app-open"]::view-transition-image-pair(app-screen) {
+    overflow: hidden;
+    animation: none;
+  }
+
+  html[data-ui-transition="app-open"]::view-transition-group(app-screen) {
+    z-index: 4;
+  }
+
+  html[data-ui-transition="app-open"]::view-transition-old(app-screen) {
+    z-index: 1;
+    mix-blend-mode: normal;
+    animation: neo-xp-app-close-calm 120ms ease-out both;
+  }
+
+  html[data-ui-transition="app-open"]::view-transition-new(app-screen) {
+    z-index: 2;
+    transform-origin: center center;
+    mix-blend-mode: normal;
+    animation: neo-xp-app-open-calm var(--motion-window) var(--motion-ease-out) both;
+  }
+
+  html[data-ui-transition="mobile-tab"]::view-transition-group(mobile-tab-page),
+  html[data-ui-transition="mobile-tab"]::view-transition-image-pair(mobile-tab-page) {
+    overflow: hidden;
+    animation: none;
+  }
+
+  html[data-ui-transition="mobile-tab"]::view-transition-old(mobile-tab-page) {
+    z-index: 1;
+    mix-blend-mode: normal;
+    animation: neo-xp-mobile-slide-out var(--motion-fast) ease-out both;
+  }
+
+  html[data-ui-transition="mobile-tab"]::view-transition-new(mobile-tab-page) {
+    z-index: 2;
+    mix-blend-mode: normal;
+    animation: neo-xp-mobile-slide-in var(--motion-window) var(--motion-ease-out) both;
+  }
+
+  html[data-ui-transition="mobile-tab"][data-ui-direction="backward"]::view-transition-group(mobile-tab-page) {
+    animation: none;
+  }
+}
+
+@keyframes neo-xp-window-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0) scale(.995);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes neo-xp-window-exit {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate3d(0, 4px, 0) scale(.995);
+  }
+}
+
+@keyframes neo-xp-window-minimize {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate3d(0, 4px, 0) scale(.995);
+  }
+}
+
+@keyframes neo-xp-modal-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0) scale(.995);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes neo-xp-modal-exit {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate3d(0, 4px, 0) scale(.995);
+  }
+}
+
+@keyframes neo-xp-backdrop-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes neo-xp-theme-settle {
+  from { opacity: .86; }
+  to { opacity: 1; }
+}
+
+@keyframes neo-xp-route-in {
+  from { opacity: .68; transform: translate3d(var(--ui-route-in-x), 0, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes neo-xp-app-close-calm {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes neo-xp-app-open-calm {
+  from {
+    opacity: .72;
+    transform: translate3d(0, 6px, 0) scale(.995);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes neo-xp-mobile-slide-out {
+  from { opacity: 1; transform: translate3d(0, 0, 0); }
+  to { opacity: 0; transform: translate3d(var(--ui-mobile-out-x), 0, 0); }
+}
+
+@keyframes neo-xp-mobile-slide-in {
+  from { opacity: .58; transform: translate3d(var(--ui-mobile-in-x), 0, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wallpaper-stage {
+    transform: translate3d(-50%, -50%, 0) !important;
+  }
+
+  .page,
+  .cloud,
+  .wallpaper-cloud,
+  .desktop-icon,
+  .desktop-icon .pixel-icon,
+  .desktop-icon .icon-title,
+  .xp-window,
+  .window-titlebar,
+  .modal-backdrop,
+  .account-popover,
+  .xp-topbar,
+  .xp-taskbar,
+  .wallpaper-base,
+  .site-shell::after {
+    animation: none !important;
+    transition-delay: 0s !important;
+    transition-duration: 1ms !important;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 1ms !important;
+  }
+}
+
+html[data-motion="reduced"] .wallpaper-stage,
+html[data-motion="off"] .wallpaper-stage,
+body[data-motion="reduced"] .wallpaper-stage,
+body[data-motion="off"] .wallpaper-stage {
+  transform: translate3d(-50%, -50%, 0) !important;
+}
+
+html[data-motion="reduced"] .is-ui-entering,
+html[data-motion="reduced"] .is-ui-leaving,
+html[data-motion="off"] .is-ui-entering,
+html[data-motion="off"] .is-ui-leaving,
+body[data-motion="reduced"] .is-ui-entering,
+body[data-motion="reduced"] .is-ui-leaving,
+body[data-motion="off"] .is-ui-entering,
+body[data-motion="off"] .is-ui-leaving {
+  animation: none !important;
+  transition-duration: 1ms !important;
+}
+
+html[data-motion="reduced"] .page,
+html[data-motion="reduced"] .cloud,
+html[data-motion="reduced"] .wallpaper-cloud,
+html[data-motion="reduced"] .desktop-icon,
+html[data-motion="off"] .page,
+html[data-motion="off"] .cloud,
+html[data-motion="off"] .wallpaper-cloud,
+html[data-motion="off"] .desktop-icon,
+body[data-motion="reduced"] .page,
+body[data-motion="reduced"] .cloud,
+body[data-motion="reduced"] .wallpaper-cloud,
+body[data-motion="reduced"] .desktop-icon,
+body[data-motion="off"] .page,
+body[data-motion="off"] .cloud,
+body[data-motion="off"] .wallpaper-cloud,
+body[data-motion="off"] .desktop-icon {
+  animation: none !important;
+  transition-delay: 0s !important;
+  transition-duration: 1ms !important;
+}
+
+html[data-ui-shell="mobile"][data-motion="reduced"] .wallpaper-stage,
+html[data-ui-shell="mobile"][data-motion="off"] .wallpaper-stage {
+  transform: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-ui-shell="mobile"] .wallpaper-stage {
+    transform: none !important;
+  }
+}

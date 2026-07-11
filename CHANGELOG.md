@@ -4,6 +4,9 @@
 
 ## 2026-07-11
 
+- Mobile Dock and calm-motion reset shipped as `seed-update-2026-07-10-premium-interaction-mobile-os`; the Dock now keeps six high-frequency routes and omits About/Notes on mobile.
+- Public shell assets use cache key `20260711-calm-motion-r12`; desktop and mobile navigation transitions were reduced and stabilized.
+
 - 新增独立日语潜台词训练工具“日本語の裏側”（`/tools/japanese-subtext/`）：
   - 题库按版本化 JSON 分成 5 个等级、每级 50 关，难度从 N3、N2 递进到 N1 高阶；前段短关帮助熟悉玩法，后段逐步增加多人关系、信息差、不可靠叙述和开放解释。
   - 支持纯听、日语、双语三种正文模式，假名提示和选项 ja / zh / en 独立切换；逐句、词块和日语选项均有稳定音频 ID，播放器支持自动播放、暂停/继续、重播、前后句、倍速、静音和任意进度 seek。

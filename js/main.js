@@ -6,7 +6,6 @@ const translations = {
     siteName: "鲁肃个人站",
     siteDescription: "鲁肃的个人站，一个 Windows XP、Pixel Art 和 Y2K 风格的个人空间，用来记录 AI、游戏、工具、资源、视频、知识库和杂谈。",
     heroTitle: "鲁肃的个人站",
-    homeLead: "开发施工中",
     navKnowledge: "知识库",
     navVideos: "视频区",
     navVideosBuilding: "视频区",
@@ -97,11 +96,13 @@ const translations = {
     startButton: "首页",
     lastUpdatedLabel: "最近更新日期",
     brandHomeAria: "返回桌面",
+    mobileDockToggleAria: "收起或展开底部导航",
     languageSwitcherAria: "语言切换",
     desktopIconsAria: "主要栏目",
     taskbarNavAria: "底部主导航",
     windowMinimizeAria: "最小化窗口",
     windowMaximizeAria: "最大化窗口",
+    windowRestoreAria: "还原窗口",
     closeWindowAria: "关闭窗口",
     closeDialogAria: "关闭对话框",
     accountSignedInPrefix: "账号：",
@@ -186,7 +187,6 @@ const translations = {
     siteName: "LuSu Site",
     siteDescription: "LuSu's personal site, a Windows XP, pixel art, and Y2K desktop space for AI notes, games, tools, resources, videos, knowledge, and thoughts.",
     heroTitle: "LuSu Site",
-    homeLead: "A small XP pixel site under construction.",
     navKnowledge: "Knowledge",
     navVideos: "Videos",
     navVideosBuilding: "Videos",
@@ -277,11 +277,13 @@ const translations = {
     startButton: "Home",
     lastUpdatedLabel: "Last updated",
     brandHomeAria: "Back to desktop",
+    mobileDockToggleAria: "Collapse or expand bottom navigation",
     languageSwitcherAria: "Language switcher",
     desktopIconsAria: "Main sections",
     taskbarNavAria: "Taskbar navigation",
     windowMinimizeAria: "Minimize window",
     windowMaximizeAria: "Maximize window",
+    windowRestoreAria: "Restore window",
     closeWindowAria: "Close window",
     closeDialogAria: "Close dialog",
     accountSignedInPrefix: "Account: ",
@@ -366,7 +368,6 @@ const translations = {
     siteName: "魯粛サイト",
     siteDescription: "Windows XP、ピクセルアート、Y2K 風の個人サイトです。AI、ゲーム、ツール、リソース、動画、知識庫、雑談を記録しています。",
     heroTitle: "魯粛サイト",
-    homeLead: "工事中の XP ピクセル小サイトです。",
     navKnowledge: "知識庫",
     navVideos: "動画",
     navVideosBuilding: "動画",
@@ -457,11 +458,13 @@ const translations = {
     startButton: "ホーム",
     lastUpdatedLabel: "最終更新日",
     brandHomeAria: "デスクトップへ戻る",
+    mobileDockToggleAria: "下部ナビゲーションを折りたたむ、または展開する",
     languageSwitcherAria: "言語切り替え",
     desktopIconsAria: "主なセクション",
     taskbarNavAria: "下部メインナビゲーション",
     windowMinimizeAria: "ウィンドウを最小化",
     windowMaximizeAria: "ウィンドウを最大化",
+    windowRestoreAria: "ウィンドウを元に戻す",
     closeWindowAria: "ウィンドウを閉じる",
     closeDialogAria: "ダイアログを閉じる",
     accountSignedInPrefix: "アカウント：",
@@ -607,6 +610,36 @@ const content = {
         zh: "# 日语潜台词训练工具上线\n\n新的独立工具「日本語の裏側」已接入资源区，用小场景、日语语音和选择题训练对话中的真实意图。\n\n## 五级进阶题库\n\n- 从 LEVEL 1 的 N3 日常委婉表达，逐步进阶到 LEVEL 2 的 N2 口语省略与敬语距离，再到 LEVEL 3～5 的 N1 信息差、反话、隐瞒和多重解释。\n- 五个难度各 50 关，共 250 关；每个难度的前几关较短，后续场景与推理长度逐步增加。\n- 解析会引用具体台词和人物关系，说明在当前上下文中更可能的解释，避免把单句日语绝对化。\n\n## 可控的离线语音\n\n- 题库语音由本地模型提前生成，提供男声、女声和角色区分，浏览器不会在游玩时调用外部 TTS。\n- 支持纯听、日语和双语场景模式，以及日语、中文、English 选项。\n- 可以自动播放、暂停、续播、切换倍速、拖动进度，也可以点击单句从指定位置开始播放。\n\n## 不丢失的学习进度\n\n- 未登录时使用版本化本地进度，记录解锁、成绩、奖章、尝试次数和播放设置。\n- 登录后通过独立 D1 学习进度表同步，不复用游戏存档表；本地与云端合并会保留已通关关卡和最佳奖章。\n- 云端不可用时不会阻止本地答题，退出登录后也仍然可以继续训练。",
         en: "# Japanese Subtext Trainer Released\n\nThe standalone tool 「日本語の裏側」 is now available from Resources. Short scenes, Japanese speech, and choice questions train the intent hidden behind tone, context, and relationships.\n\n## Five progressive levels\n\n- LEVEL 1 starts with N3 everyday indirect expressions, LEVEL 2 moves into N2 ellipsis and honorific distance, and LEVELS 3 to 5 develop N1 information gaps, irony, concealment, and multiple supported interpretations.\n- Each level contains 50 stages for a total of 250. Early stages in every level stay shorter, while later scenes and inference chains gradually grow.\n- Explanations cite specific lines and relationships and describe the interpretation that is more likely in the current context instead of treating one Japanese sentence as an absolute formula.\n\n## Controllable offline speech\n\n- Speech is generated ahead of time with local models, including male and female voices and consistent character assignment. The browser does not call an external TTS service while training.\n- Listening-only, Japanese, and bilingual scene modes are available, independently from Japanese, Chinese, or English answer text.\n- Playback supports autoplay after sound unlock, pause, resume, speed controls, timeline seeking, and sentence-level start positions.\n\n## Learning progress that survives sessions\n\n- Signed-out visitors use versioned local progress for unlocks, scores, medals, attempts, and playback settings.\n- Signed-in users synchronize through dedicated D1 learning tables rather than the game-save table. Local and cloud merging preserves cleared stages and the strongest medals.\n- Cloud failures never block local questions, and signing out keeps the local trainer usable.",
         ja: "# 日本語の裏側を公開\n\n独立ツール「日本語の裏側」をリソース欄から開けるようにしました。短い場面、日本語音声、選択問題を通して、口調、文脈、人間関係の奥にある意図を読み取ります。\n\n## 5 レベルの段階式問題\n\n- LEVEL 1 は N3 の日常的な遠回し表現から始まり、LEVEL 2 は N2 の省略と敬語の距離感、LEVEL 3～5 は N1 の情報差、皮肉、隠し事、複数の解釈へ進みます。\n- 各レベル 50 問、合計 250 ステージです。各レベルの最初は短く、後半ほど場面と推理を長くしています。\n- 解説は具体的な台詞と関係性を引用し、一文を絶対的な公式にせず、この文脈でより支持される解釈を示します。\n\n## 操作できるオフライン音声\n\n- 男声・女声とキャラクター別の音声をローカルモデルで事前生成し、練習中に外部 TTS を呼び出しません。\n- 聴解のみ、日本語、対訳の場面表示と、日本語・中国語・English の選択肢を別々に選べます。\n- 音声の自動再生、一時停止、再開、速度変更、シーク、文ごとの開始位置に対応します。\n\n## 失われない学習進捗\n\n- ログイン前はバージョン付きローカル進捗に、解放、得点、メダル、挑戦回数、再生設定を保存します。\n- ログイン後はゲームセーブ表を使わず、専用 D1 学習表で同期します。ローカルとクラウドを統合しても、クリア済みステージと上位メダルを保持します。\n- クラウド障害はローカル回答を止めず、ログアウト後も練習を続けられます。"
+      }
+    },
+    {
+      article_id: "seed-update-2026-07-10-premium-interaction-mobile-os",
+      slug: "2026-07-10-premium-interaction-mobile-os",
+      category: "site-updates",
+      tags: ["design", "mobile", "interaction", "accessibility"],
+      cover_image: "",
+      status: "published",
+      is_pinned: 0,
+      created_at: "2026-07-10T16:20:00.000Z",
+      updated_at: "2026-07-10T16:20:00.000Z",
+      published_at: "2026-07-10T16:20:00.000Z",
+      fallbackOnly: true,
+      icon: "system",
+      date: "2026.07.11",
+      title: {
+        zh: "GPT-5.6 高级交互与移动 OS 重设计",
+        en: "GPT-5.6 Premium Interaction & Mobile OS Redesign",
+        ja: "GPT-5.6 プレミアム操作とモバイル OS 再設計"
+      },
+      summary: {
+        zh: "桌面 App 打开和返回 Home 不再捕获整页快照，固定任务栏全程稳定；手机 Dock 精简为六个高频入口并重新居中排版。",
+        en: "Desktop App launch and Home return keep the taskbar stable without full-page snapshots, while the mobile Dock is refined to six balanced high-frequency routes.",
+        ja: "デスクトップの App 起動と Home 復帰でタスクバーを常時固定し、モバイル Dock は高頻度の 6 項目に整理して中央配置を整えました。"
+      },
+      content_markdown: {
+        zh: "# GPT-5.6 高级交互与移动 OS 重设计\n\n这次汇总更新继续保留桌面端 Windows XP、像素艺术与 Y2K 识别度，并把手机端完善为更紧凑、更易读的原创虚拟手机 OS。\n\n## 全站轻动效重置\n\n- 桌面 Home 图标打开 App 时不再创建 Home 全屏快照，只让目标窗口用 200ms 淡入并上移 3px 归位；实时壁纸、顶栏和任务栏保持不动。\n- 桌面任务栏在模块间切换时只显示新活动页面的约 200ms、±6px 轻滑入；返回 Home 时仅让图标区轻滑入，Home 快照不会进入顶层遮住任务栏。\n- 手机 Dock 切换使用约 220ms、±12px 的方向滑动；一个共享选中底板在入口间连续移动，快速连续点击会中止旧转场，不再硬切或留下重影。\n- 弹窗、窗口、按钮和主题统一为低位移反馈；减少动态与关闭动效模式立即完成导航。\n\n## 真实可用的手机导航\n\n- 手机 Appbar 左上角使用带文字的 Home 返回按钮，当前模块名移到右上角，账号和语言仍只在 Home 显示。\n- 底部 Dock 在所有模块内保持悬浮，只保留 Home、知识库、视频、资源、游戏和聊天室六个高频入口；375px 以上居中排列，359px 可短距离横滑，杂谈与关于仍从 Home 图标进入。\n- 网页无法可靠读取 iPhone 的真实信号、Wi-Fi 与电量，因此移除装饰性状态图标，避免把模拟状态误认为设备状态。\n\n## 更紧凑的首页与分层模块\n\n- Home 图标按从左到右、从上到下排列，固定行高，热区贴合图标与标题并保持至少 44px。\n- 知识库、视频、资源、游戏、杂谈、聊天室与关于页继续使用统一的外框、工具区、标签区和内容区层级。\n- 边框使用本站四时段和 Neo-XP 色彩，不复制参考图配色或图标；卡片、文案和按钮继续适配短竖屏与横屏。\n\n所有原有路由、API、D1 数据、账户登录、游戏云存档、普通与密码聊天室、三语内容、视频系统和遥测隐私边界保持不变。",
+        en: "# GPT-5.6 Premium Interaction & Mobile OS Redesign\n\nThis consolidated update keeps the Windows XP, pixel-art, and Y2K identity on desktop while refining mobile into a tighter and more readable original virtual phone OS.\n\n## Site-wide calm motion reset\n\n- Desktop Home App launches no longer create a full Home-screen snapshot. Only the destination window fades in and settles upward by 3px over 200ms, while the live wallpaper, top bar, and taskbar remain still.\n- Desktop taskbar module changes reveal only the new active page with an approximately 200ms, ±6px slide. Returning Home animates only the icon group, so no Home snapshot can cover the taskbar.\n- Mobile Dock changes use an approximately 220ms directional ±12px slide. One shared selection pill moves continuously between routes, and rapid taps skip the previous transition instead of producing a hard cut or ghost frame.\n- Dialogs, windows, buttons, and theme changes now share low-displacement feedback. Reduced-motion and motion-off modes navigate immediately.\n\n## A real mobile navigation Dock\n\n- The mobile Appbar has a labeled Home button on the left and the current module name aligned on the right. Account and language controls remain Home-only.\n- The frosted Dock persists across Apps with six high-frequency routes: Home, Knowledge, Videos, Resources, Games, and Chat. They center from 375px upward and briefly scroll at 359px; Notes and About remain available from Home.\n- Browsers cannot reliably read an iPhone's real signal, Wi-Fi, or battery status, so decorative status glyphs were removed to avoid presenting simulated values as device state.\n\n## Tighter Home and layered Apps\n\n- Home icons fill left to right and top to bottom with fixed rows; hit areas hug the visible icon and label while retaining a 44px minimum.\n- Knowledge, Videos, Resources, Games, Notes, Chat, and About keep a shared outer-frame, toolbar, tab, and content hierarchy.\n- Frames use this site's four-time Neo-XP palette rather than copying reference colors or icons, and content remains adaptive in short portrait and landscape layouts.\n\nExisting routes, APIs, D1 data, account sessions, game cloud saves, public and password chat, three-language content, video delivery, and telemetry privacy boundaries remain unchanged.",
+        ja: "# GPT-5.6 プレミアム操作とモバイル OS 再設計\n\n今回の統合更新では、デスクトップの Windows XP、ピクセルアート、Y2K の個性を保ちながら、モバイルをよりコンパクトで読みやすい独自の仮想スマートフォン OS に整えました。\n\n## 全体を軽い動きに再設計\n\n- デスクトップの Home から App を開くときは全画面スナップショットを作らず、対象ウィンドウだけを 200ms のフェードと 3px の上移動で整えます。壁紙、上部バー、タスクバーは動きません。\n- デスクトップ下部ナビのモジュール切り替えは、新しい活動ページだけを約 200ms、±6px で軽く表示します。Home 復帰ではアイコン領域だけを動かし、Home のスナップショットがタスクバーを覆うことはありません。\n- モバイル Dock は約 220ms、±12px の方向付きスライドを使います。一つの共有選択プレートが項目間を連続して移動し、素早い連続操作では古い遷移を中止するため、硬い切り替えや残像が出ません。\n- ダイアログ、ウィンドウ、ボタン、テーマも低移動量の反応に統一しました。動きを減らす設定では直ちに移動します。\n\n## 実際に使えるモバイル Dock\n\n- Appbar 左上に文字付き Home ボタンを置き、現在のモジュール名を右上に揃えました。アカウントと言語操作は Home のみに残します。\n- 半透明 Dock は Home、知識庫、動画、リソース、ゲーム、チャットの高頻度 6 項目に整理しました。375px 以上では中央に並び、359px では短く横スクロールできます。雑談とプロフィールは Home から開けます。\n- ブラウザーは iPhone の実際の電波、Wi-Fi、バッテリーを安定して取得できないため、模擬値と誤解される装飾表示を削除しました。\n\n## コンパクトな Home と多層 App\n\n- Home アイコンは左から右、上から下へ固定行高で並び、タップ範囲は見えるアイコンとラベルに沿わせつつ 44px 以上を保ちます。\n- 知識庫、動画、リソース、ゲーム、雑談、チャット、プロフィールは、外枠、ツール、タブ、内容領域の共通階層を維持します。\n- 参考画像の色やアイコンはコピーせず、このサイトの四時間帯 Neo-XP 配色を使い、短い縦画面と横画面にも適応します。\n\n既存のルート、API、D1 データ、アカウント、ゲームのクラウドセーブ、公開・パスワードチャット、三言語コンテンツ、動画、テレメトリーのプライバシー境界は変更していません。"
       }
     },
     {
@@ -2097,7 +2130,7 @@ function languageSupportTagElements(item) {
     tag.className = `tag language-tag${supported[lang] ? " supported" : " unsupported"}`;
     tag.title = title;
     tag.setAttribute("aria-label", title);
-    tag.textContent = `${name} ${supported[lang] ? "✓" : "×"}`;
+    tag.textContent = title;
     return tag;
   });
 }
@@ -2147,39 +2180,241 @@ function setLanguage(lang, options = {}) {
   loadArticles();
   loadVideos();
   updateWelcomeGreeting();
+  updateArticleWindowButton();
   updateVideoWindowButton();
   renderAccountWidget();
   updateChatSyncStatus();
   syncChatRoomUi();
 }
 
-function navigate(route, options = {}) {
-  const nextRoute = pageIds.includes(route) ? route : "home";
-  if (!(nextRoute === "knowledge" && options.articleSlug) && articleState.currentSlug) {
-    articleState.currentSlug = "";
-    articleState.currentArticle = null;
-    articleState.detailLoadingKey = "";
-    renderKnowledge();
+function routeReturnTarget(route, motionKind) {
+  if (!pageIds.includes(route)) {
+    return null;
   }
-  document.querySelectorAll(".page").forEach((page) => {
-    page.classList.toggle("active", page.id === nextRoute);
+  const selector = motionKind === "window-minimize"
+    ? ".taskbar-tabs button[data-route]"
+    : ".desktop-icon[data-route]";
+  return Array.from(document.querySelectorAll(selector)).find((element) => element.dataset.route === route) || null;
+}
+
+const routeIconRectCache = new Map();
+
+function elementMotionRect(element) {
+  if (!(element instanceof Element)) {
+    return null;
+  }
+  const rect = element.getBoundingClientRect();
+  if (rect.width < 1 || rect.height < 1) {
+    return null;
+  }
+  return {
+    top: rect.top,
+    right: rect.right,
+    bottom: rect.bottom,
+    left: rect.left,
+    width: rect.width,
+    height: rect.height
+  };
+}
+
+function captureRouteIconRects() {
+  if (document.body.dataset.route !== "home") {
+    return;
+  }
+  const shell = document.documentElement.dataset.uiShell || "";
+  document.querySelectorAll(".desktop-icon[data-route]").forEach((element) => {
+    const rect = elementMotionRect(element);
+    if (rect && pageIds.includes(element.dataset.route)) {
+      routeIconRectCache.set(element.dataset.route, {
+        rect,
+        shell,
+        viewportWidth: window.innerWidth,
+        viewportHeight: window.innerHeight
+      });
+    }
   });
-  document.body.dataset.route = nextRoute;
-  updateNavigationState(nextRoute);
-  if (nextRoute === "chatroom") {
-    initChatroom();
+}
+
+function cachedRouteIconRect(route) {
+  const cached = routeIconRectCache.get(route);
+  if (!cached
+    || cached.shell !== (document.documentElement.dataset.uiShell || "")
+    || cached.viewportWidth !== window.innerWidth
+    || cached.viewportHeight !== window.innerHeight) {
+    return null;
   }
-  if (options.updateUrl !== false && options.updateHash !== false) {
+  return cached.rect;
+}
+
+function routeExitOriginRect(route, motionKind, returnTarget) {
+  if (motionKind === "window-minimize") {
+    return elementMotionRect(returnTarget);
+  }
+  const cachedIcon = cachedRouteIconRect(route);
+  if (cachedIcon) {
+    return cachedIcon;
+  }
+  const taskButton = Array.from(document.querySelectorAll(".taskbar-tabs button[data-route]"))
+    .find((element) => element.dataset.route === route && elementMotionRect(element));
+  return elementMotionRect(taskButton) || elementMotionRect(document.querySelector(".start-button"));
+}
+
+function routeWindowFocusTarget(route) {
+  const page = pageIds.includes(route) ? document.getElementById(route) : null;
+  if (!page) {
+    return null;
+  }
+  const candidate = Array.from(page.querySelectorAll(".close-button, [data-article-back], button, a[href], input, textarea"))
+    .find((element) => focusTargetIsVisible(element));
+  if (candidate) {
+    return candidate;
+  }
+  const windowSurface = page.querySelector(":scope > .xp-window");
+  if (windowSurface) {
+    windowSurface.tabIndex = -1;
+  }
+  return windowSurface;
+}
+
+function focusTargetIsVisible(element) {
+  if (!(element instanceof Element) || element === document.body || element === document.documentElement) {
+    return false;
+  }
+  if (element.closest("[hidden]")) {
+    return false;
+  }
+  const page = element.closest(".page");
+  return (!page || page.classList.contains("active")) && element.getClientRects().length > 0;
+}
+
+let navigationRequestId = 0;
+
+function navigate(route, options = {}) {
+  const requestId = ++navigationRequestId;
+  const nextRoute = pageIds.includes(route) ? route : "home";
+  const previousRoute = pageIds.includes(document.body.dataset.route) ? document.body.dataset.route : "home";
+  if (previousRoute === "home") {
+    captureRouteIconRects();
+  }
+  const isSameRouteNoop = previousRoute === nextRoute
+    && !(nextRoute === "knowledge" && (options.articleSlug || articleState.currentSlug));
+  if (isSameRouteNoop) {
+    updateNavigationState(nextRoute);
+    return;
+  }
+  let motionKind = typeof options.motionKind === "string" ? options.motionKind : "route";
+  if (motionKind === "route"
+    && document.documentElement.dataset.uiShell === "mobile"
+    && !options.trigger?.matches?.(".desktop-icon")) {
+    motionKind = "mobile-tab";
+  }
+  const isExitMotion = motionKind === "window-close" || motionKind === "window-minimize";
+  const returnTarget = isExitMotion && nextRoute === "home" && previousRoute !== "home"
+    ? routeReturnTarget(previousRoute, motionKind)
+    : null;
+  const mobileHomeReturnTarget = nextRoute === "home"
+    && previousRoute !== "home"
+    && options.trigger?.matches?.(".mobile-home-button")
+    ? routeReturnTarget(previousRoute, "window-close")
+    : null;
+  const focusReturnTarget = returnTarget || mobileHomeReturnTarget;
+  const exitOriginRect = isExitMotion
+    ? routeExitOriginRect(previousRoute, motionKind, returnTarget)
+    : null;
+  let navigationCommitted = false;
+  const commitNavigation = () => {
+    if (navigationCommitted || requestId !== navigationRequestId) {
+      return;
+    }
+    navigationCommitted = true;
+    if (!(nextRoute === "knowledge" && options.articleSlug) && articleState.currentSlug) {
+      articleState.currentSlug = "";
+      articleState.currentArticle = null;
+      articleState.detailLoadingKey = "";
+      renderKnowledge();
+    }
+    document.querySelectorAll(".page").forEach((page) => {
+      page.classList.toggle("active", page.id === nextRoute);
+    });
+    document.body.dataset.route = nextRoute;
+    updateNavigationState(nextRoute);
+    if (nextRoute === "chatroom") {
+      initChatroom();
+    }
+    if (options.updateUrl !== false && options.updateHash !== false) {
       syncBrowserUrl(nextRoute, nextRoute === "knowledge" ? options.articleSlug || "" : "");
+    }
+    if (!(nextRoute === "knowledge" && options.articleSlug)) {
+      syncDocumentMeta();
+    }
+    window.scrollTo({ top: 0, behavior: "auto" });
+    window.dispatchEvent(new CustomEvent("lusu:navigation", {
+      detail: { route: nextRoute }
+    }));
+    const shouldFocusWindow = ["route", "app-open", "mobile-tab"].includes(motionKind) && nextRoute !== "home" && Boolean(
+      options.focusWindow === true
+        || options.trigger && (
+          document.documentElement.dataset.inputMethod === "keyboard"
+            || !focusTargetIsVisible(options.trigger) && previousRoute !== nextRoute
+        )
+    );
+    if (focusReturnTarget && options.restoreFocus !== false) {
+      window.requestAnimationFrame(() => {
+        if (document.contains(focusReturnTarget) && typeof focusReturnTarget.focus === "function") {
+          focusReturnTarget.focus({ preventScroll: true });
+        }
+      });
+    } else if (shouldFocusWindow) {
+      window.requestAnimationFrame(() => {
+        const focusTarget = routeWindowFocusTarget(nextRoute);
+        if (focusTarget && typeof focusTarget.focus === "function") {
+          focusTarget.focus({ preventScroll: true });
+        }
+      });
+    }
+    window.requestAnimationFrame(() => {
+      const activeElement = document.activeElement;
+      const hadInteractiveFocus = activeElement instanceof Element
+        && activeElement !== document.body
+        && activeElement !== document.documentElement;
+      if (!hadInteractiveFocus || focusTargetIsVisible(activeElement)) {
+        return;
+      }
+      const fallbackTarget = nextRoute === "home"
+        ? routeReturnTarget(previousRoute, "window-close") || document.querySelector(".start-button")
+        : routeWindowFocusTarget(nextRoute);
+      fallbackTarget?.focus?.({ preventScroll: true });
+    });
+    if (nextRoute === "home") {
+      window.requestAnimationFrame(captureRouteIconRects);
+    }
+  };
+
+  if (options.motion === false || !window.LusuUiMotion?.run) {
+    commitNavigation();
+    return;
   }
-  if (!(nextRoute === "knowledge" && options.articleSlug)) {
-    syncDocumentMeta();
-  }
-  window.scrollTo({ top: 0, behavior: "auto" });
+
+  const isDesktopShell = document.documentElement.dataset.uiShell !== "mobile";
+  const keepsDesktopChromeLive = isDesktopShell && (
+    motionKind === "app-open"
+    || motionKind === "route" && nextRoute === "home"
+  );
+
+  window.LusuUiMotion.run(motionKind, {
+    route: nextRoute,
+    trigger: options.trigger || null,
+    originRect: exitOriginRect,
+    deferCommit: isExitMotion,
+    useViewTransition: ["route", "app-open", "mobile-tab"].includes(motionKind)
+      && !keepsDesktopChromeLive
+  }, commitNavigation).catch(() => {
+    commitNavigation();
+  });
 }
 
 function updateNavigationState(route) {
-  document.querySelectorAll(".taskbar-tabs button[data-route], .start-button[data-route]").forEach((button) => {
+  document.querySelectorAll(".taskbar-tabs button[data-route], .start-button[data-route], .mobile-home-button[data-route]").forEach((button) => {
     const active = button.dataset.route === route;
     button.classList.toggle("active", active);
     if (active) {
@@ -2246,6 +2481,7 @@ function renderKnowledge() {
       searchBar.hidden = true;
     }
     document.body.classList.add("is-article-reading");
+    updateArticleWindowButton();
     layout?.classList.add("is-reading");
     list.hidden = true;
     detail.hidden = false;
@@ -2266,6 +2502,7 @@ function renderKnowledge() {
   }
   document.body.classList.remove("is-article-reading");
   document.body.classList.remove("is-article-window-restored");
+  updateArticleWindowButton();
   layout?.classList.remove("is-reading");
   renderKnowledgeCategoryButtons(categories);
   list.hidden = false;
@@ -2376,7 +2613,15 @@ function articleCardElement(item) {
 function renderKnowledgeSearchControls(count, total) {
   const input = document.getElementById("knowledge-search-input");
   const clearButton = document.querySelector("[data-article-search-clear]");
+  const searchBar = document.getElementById("knowledge-searchbar");
   const status = document.getElementById("knowledge-search-status");
+  const setSearchStatus = (value) => {
+    if (!status) {
+      return;
+    }
+    status.textContent = value;
+    searchBar?.classList.toggle("has-search-status", Boolean(value));
+  };
   if (input && input.value !== articleState.searchTerm) {
     input.value = articleState.searchTerm;
   }
@@ -2387,15 +2632,16 @@ function renderKnowledgeSearchControls(count, total) {
     return;
   }
   if (typeof count !== "number" || typeof total !== "number") {
-    status.textContent = "";
+    setSearchStatus("");
     return;
   }
-  const template = articleState.searchTerm.trim() || activeFilters.knowledge !== "all"
-    ? t("articleSearchFiltered")
-    : t("articleSearchCount");
-  status.textContent = template
+  if (!articleState.searchTerm.trim()) {
+    setSearchStatus("");
+    return;
+  }
+  setSearchStatus(t("articleSearchFiltered")
     .replace("{count}", String(count))
-    .replace("{total}", String(total));
+    .replace("{total}", String(total)));
 }
 
 function normalizeSearchText(value) {
@@ -2757,7 +3003,7 @@ function scrollToArticleHeading(targetId) {
   if (!heading) {
     return;
   }
-  heading.scrollIntoView({ block: "start", behavior: "smooth" });
+  heading.scrollIntoView({ block: "start", behavior: motionScrollBehavior() });
   heading.focus({ preventScroll: true });
   updateArticleTocActive();
   scheduleArticleReadProgressUpdate();
@@ -2768,19 +3014,58 @@ function scrollArticleToTop() {
   if (!detail || detail.hidden) {
     return;
   }
-  detail.scrollTo({ top: 0, behavior: "smooth" });
+  detail.scrollTo({ top: 0, behavior: motionScrollBehavior() });
   scheduleArticleReadProgressUpdate();
+}
+
+function motionScrollBehavior() {
+  const managedMode = window.LusuUiMotion?.getMode?.() || document.documentElement.dataset.motion;
+  if (managedMode === "reduced" || managedMode === "off") {
+    return "auto";
+  }
+  return window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+}
+
+function runWindowLayoutTransition(kind, target, commit) {
+  let committed = false;
+  const commitOnce = () => {
+    if (committed) {
+      return;
+    }
+    committed = true;
+    commit();
+  };
+  if (!window.LusuUiMotion?.run) {
+    commitOnce();
+    return;
+  }
+  window.LusuUiMotion.run(kind, { target }, commitOnce).catch(commitOnce);
+}
+
+function updateArticleWindowButton() {
+  const button = document.querySelector("[data-article-window-toggle]");
+  if (!button) {
+    return;
+  }
+  const reading = document.body.classList.contains("is-article-reading");
+  const restored = document.body.classList.contains("is-article-window-restored");
+  const actionLabel = t(restored ? "windowMaximizeAria" : "windowRestoreAria");
+  button.hidden = !reading;
+  button.setAttribute("aria-pressed", String(!restored));
+  button.setAttribute("aria-label", actionLabel);
+  button.setAttribute("title", actionLabel);
 }
 
 function toggleArticleWindowSize() {
   if (!document.body.classList.contains("is-article-reading")) {
     return;
   }
-  document.body.classList.toggle("is-article-window-restored");
-  const button = document.querySelector("[data-article-window-toggle]");
-  if (button) {
-    button.setAttribute("aria-pressed", document.body.classList.contains("is-article-window-restored") ? "false" : "true");
-  }
+  const nextRestored = !document.body.classList.contains("is-article-window-restored");
+  const windowSurface = document.querySelector("#knowledge .xp-window");
+  runWindowLayoutTransition(nextRestored ? "window-restore" : "window-maximize", windowSurface, () => {
+    document.body.classList.toggle("is-article-window-restored", nextRestored);
+    updateArticleWindowButton();
+  });
 }
 
 function clearArticleCopyStatus() {
@@ -2893,32 +3178,32 @@ async function copyArticleLink() {
   }, 2400);
 }
 
-function showArticle(slug) {
+function showArticle(slug, options = {}) {
   articleState.currentSlug = slug;
   articleState.currentArticle = null;
   articleState.detailLoadingKey = "";
-  navigate("knowledge", { articleSlug: slug });
-  closeWelcome({ restoreFocus: false });
+  navigate("knowledge", { articleSlug: slug, trigger: options.trigger, focusWindow: true });
+  closeWelcome({ restoreFocus: false, motion: false });
   renderKnowledge();
 }
 
-function showArticleList() {
+function showArticleList(options = {}) {
   articleState.currentSlug = "";
   articleState.currentArticle = null;
   articleState.detailLoadingKey = "";
   resetArticleReadProgress();
   resetArticleToc();
-  navigate("knowledge");
+  navigate("knowledge", { trigger: options.trigger, focusWindow: true });
   renderKnowledge();
 }
 
-function showArticleCategory(category) {
+function showArticleCategory(category, options = {}) {
   activeFilters.knowledge = category;
   articleState.currentSlug = "";
   articleState.currentArticle = null;
   articleState.detailLoadingKey = "";
-  navigate("knowledge");
-  closeWelcome({ restoreFocus: false });
+  navigate("knowledge", { trigger: options.trigger });
+  closeWelcome({ restoreFocus: false, motion: false });
   renderKnowledge();
 }
 
@@ -3205,9 +3490,8 @@ function renderVideoStatusState(kind) {
   state.className = "video-empty-state video-status-state";
 
   const icon = document.createElement("span");
-  icon.className = "video-empty-icon";
+  icon.className = `video-empty-icon${kind === "failed" ? " is-error" : ""}`;
   icon.setAttribute("aria-hidden", "true");
-  icon.textContent = kind === "loading" ? "▣" : "!";
 
   const copy = document.createElement("div");
   copy.className = "video-empty-copy";
@@ -3235,7 +3519,6 @@ function renderVideoEmptyState(isFiltered = false) {
   const icon = document.createElement("span");
   icon.className = "video-empty-icon";
   icon.setAttribute("aria-hidden", "true");
-  icon.textContent = "▣";
 
   const copy = document.createElement("div");
   copy.className = "video-empty-copy";
@@ -3487,9 +3770,9 @@ function safeResourceUrl(item) {
 }
 
 function resourceActionElement(item, url = safeResourceUrl(item)) {
-  const resourceTitle = url ? localText(item.title) : contentTitle(item.title);
+  const resourceTitle = contentTitle(item.title);
   const text = url
-    ? localText(item.actionLabel) || (item.external ? t("externalButton") : t("downloadButton"))
+    ? item.external ? t("externalButton") : t("downloadButton")
     : t("resourcePending");
   if (!url) {
     const status = document.createElement("span");
@@ -3529,7 +3812,6 @@ function resourceEmptyStateElement({ hasAnyReady = true } = {}) {
   const icon = document.createElement("span");
   icon.className = "resource-empty-icon";
   icon.setAttribute("aria-hidden", "true");
-  icon.textContent = "🗂️";
 
   const copy = document.createElement("div");
   copy.className = "resource-empty-copy";
@@ -3748,7 +4030,6 @@ function renderGameEmptyState() {
   const icon = document.createElement("span");
   icon.className = "game-empty-icon";
   icon.setAttribute("aria-hidden", "true");
-  icon.textContent = "▣";
 
   const copy = document.createElement("div");
   copy.className = "game-empty-copy";
@@ -3881,9 +4162,8 @@ function blogEmptyStateElement() {
   state.className = "resource-empty-state blog-empty-state";
 
   const icon = document.createElement("span");
-  icon.className = "resource-empty-icon";
+  icon.className = "resource-empty-icon blog-empty-icon";
   icon.setAttribute("aria-hidden", "true");
-  icon.textContent = "✎";
 
   const copy = document.createElement("div");
   copy.className = "resource-empty-copy";
@@ -3926,9 +4206,8 @@ function renderUpdates() {
   if (!updateArticles.length) {
     const emptyItem = document.createElement("li");
     const icon = document.createElement("span");
-    icon.className = "update-icon";
+    icon.className = "update-icon update-icon-knowledge";
     icon.setAttribute("aria-hidden", "true");
-    icon.textContent = "📚";
     const copy = document.createElement("span");
     const title = document.createElement("strong");
     title.textContent = t("articleLoading");
@@ -3954,8 +4233,8 @@ function recentUpdateElement(item) {
   }
 
   const icon = document.createElement("span");
-  icon.className = "update-icon";
-  icon.textContent = recentUpdateIcon(item);
+  icon.className = `update-icon ${recentUpdateIconClass(item)}`;
+  icon.setAttribute("aria-hidden", "true");
 
   const copy = document.createElement("span");
   const title = document.createElement("strong");
@@ -3980,11 +4259,10 @@ function recentUpdateElement(item) {
   return row;
 }
 
-function recentUpdateIcon(item) {
-  if (item?.category === siteUpdateCategory) {
-    return "🛠️";
-  }
-  return localText(item?.icon) || "📚";
+function recentUpdateIconClass(item) {
+  return item?.category === siteUpdateCategory || item?.icon === "system"
+    ? "update-icon-system"
+    : "update-icon-knowledge";
 }
 
 function latestUpdateDate() {
@@ -4023,6 +4301,7 @@ function openVideo(index) {
   const modal = document.getElementById("video-modal");
   const frame = document.getElementById("video-frame");
   const sourceLink = document.getElementById("video-link");
+  cancelSurfaceClose(modal);
   frame.replaceChildren();
   if (!video) {
     window.lusuTrackClick?.("video:play-failed", "video not found", { route: "videos" });
@@ -4071,7 +4350,7 @@ function openVideo(index) {
     const placeholder = document.createElement("div");
     placeholder.className = "video-placeholder";
     const icon = document.createElement("span");
-    icon.textContent = "!";
+    icon.className = "video-placeholder-asset";
     icon.setAttribute("aria-hidden", "true");
     const text = document.createElement("p");
     text.textContent = video.metadata_error || videoUiText("unsupported");
@@ -4103,7 +4382,12 @@ function setVideoWindowMaximized(maximized) {
 }
 
 function fullscreenVideo() {
-  setVideoWindowMaximized(!videoWindowState.maximized);
+  const nextMaximized = !videoWindowState.maximized;
+  const modal = document.getElementById("video-modal");
+  const windowSurface = modal?.querySelector(".xp-window") || modal;
+  runWindowLayoutTransition(nextMaximized ? "window-maximize" : "window-restore", windowSurface, () => {
+    setVideoWindowMaximized(nextMaximized);
+  });
 }
 
 function restoreModalFocus(key) {
@@ -4114,45 +4398,112 @@ function restoreModalFocus(key) {
   }
 }
 
+const surfaceCloseRequests = new WeakMap();
+
+function surfaceMotionTarget(surface) {
+  return surface?.querySelector?.(".xp-window") || surface || null;
+}
+
+function cancelSurfaceClose(surface) {
+  if (!surface) {
+    return;
+  }
+  surfaceCloseRequests.delete(surface);
+  surface.removeAttribute("data-ui-closing");
+  const target = surfaceMotionTarget(surface);
+  target?.getAnimations?.().forEach((animation) => animation.cancel());
+}
+
+function runSurfaceClose(surface, options, commit) {
+  if (!surface || typeof commit !== "function") {
+    commit?.();
+    return;
+  }
+  if (surface.getAttribute("data-ui-closing") === "true") {
+    return;
+  }
+  const request = {};
+  const origin = options?.origin instanceof Element ? options.origin : null;
+  const commitOnce = () => {
+    if (surfaceCloseRequests.get(surface) !== request) {
+      return;
+    }
+    surfaceCloseRequests.delete(surface);
+    surface.removeAttribute("data-ui-closing");
+    commit();
+  };
+  surfaceCloseRequests.set(surface, request);
+  surface.setAttribute("data-ui-closing", "true");
+  if (options?.motion === false || !window.LusuUiMotion?.run) {
+    commitOnce();
+    return;
+  }
+  window.LusuUiMotion.run("modal-close", {
+    target: surfaceMotionTarget(surface),
+    originRect: origin?.getBoundingClientRect() || null,
+    deferCommit: true
+  }, commitOnce).catch(commitOnce);
+}
+
 function closeVideo(options = {}) {
   const modal = document.getElementById("video-modal");
   const wasOpen = modal && !modal.hidden;
-  setVideoWindowMaximized(false);
-  if (modal) {
-    modal.hidden = true;
+  const finalizeClose = () => {
+    setVideoWindowMaximized(false);
+    if (modal) {
+      modal.hidden = true;
+    }
+    const frame = document.getElementById("video-frame");
+    const sourceLink = document.getElementById("video-link");
+    frame.replaceChildren();
+    if (sourceLink) {
+      sourceLink.hidden = true;
+      sourceLink.removeAttribute("href");
+      sourceLink.removeAttribute("aria-label");
+      sourceLink.removeAttribute("title");
+    }
+    const placeholder = document.createElement("div");
+    placeholder.className = "video-placeholder";
+    const icon = document.createElement("span");
+    icon.className = "video-placeholder-asset";
+    icon.setAttribute("aria-hidden", "true");
+    const text = document.createElement("p");
+    text.textContent = t("videoPlaceholder");
+    placeholder.append(icon, text);
+    frame.appendChild(placeholder);
+    if (wasOpen && options.restoreFocus !== false) {
+      restoreModalFocus("videoTrigger");
+    }
+  };
+  if (!wasOpen) {
+    finalizeClose();
+    return;
   }
-  const frame = document.getElementById("video-frame");
-  const sourceLink = document.getElementById("video-link");
-  frame.replaceChildren();
-  if (sourceLink) {
-    sourceLink.hidden = true;
-    sourceLink.removeAttribute("href");
-    sourceLink.removeAttribute("aria-label");
-    sourceLink.removeAttribute("title");
-  }
-  const placeholder = document.createElement("div");
-  placeholder.className = "video-placeholder";
-  const icon = document.createElement("span");
-  icon.textContent = "▶";
-  icon.setAttribute("aria-hidden", "true");
-  const text = document.createElement("p");
-  text.textContent = t("videoPlaceholder");
-  placeholder.append(icon, text);
-  frame.appendChild(placeholder);
-  if (wasOpen && options.restoreFocus !== false) {
-    restoreModalFocus("videoTrigger");
-  }
+  runSurfaceClose(modal, {
+    motion: options.motion,
+    origin: modalFocusState.videoTrigger
+  }, finalizeClose);
 }
 
 function closeWelcome(options = {}) {
   const modal = document.getElementById("welcome-modal");
   const wasOpen = modal && !modal.hidden;
-  if (modal) {
-    modal.hidden = true;
+  const finalizeClose = () => {
+    if (modal) {
+      modal.hidden = true;
+    }
+    if (wasOpen && options.restoreFocus !== false) {
+      restoreModalFocus("welcomeTrigger");
+    }
+  };
+  if (!wasOpen) {
+    finalizeClose();
+    return;
   }
-  if (wasOpen && options.restoreFocus !== false) {
-    restoreModalFocus("welcomeTrigger");
-  }
+  runSurfaceClose(modal, {
+    motion: options.motion,
+    origin: modalFocusState.welcomeTrigger
+  }, finalizeClose);
 }
 
 function focusableDialogElements(dialog) {
@@ -4226,6 +4577,7 @@ const wallpaperMotionMedia = typeof window.matchMedia === "function"
 const wallpaperPreviewTheme = ["morning", "day", "dusk", "night"].includes(pageParams.get("wallpaper"))
   ? pageParams.get("wallpaper")
   : "";
+let renderedHomeTimeTheme = "";
 
 function currentTimeTheme(date = new Date()) {
   const minutes = date.getHours() * 60 + date.getMinutes();
@@ -4262,7 +4614,10 @@ function updateWallpaperMotionState() {
   if (!root) {
     return;
   }
-  root.dataset.motion = wallpaperMotionMedia?.matches ? "reduced" : "full";
+  const managedMode = document.documentElement.dataset.motion;
+  root.dataset.motion = ["full", "reduced", "off"].includes(managedMode)
+    ? managedMode
+    : wallpaperMotionMedia?.matches ? "reduced" : "full";
   root.dataset.paused = document.hidden ? "true" : "false";
   root.dataset.previewMotion = wallpaperPreviewTheme ? "true" : "false";
 }
@@ -4274,13 +4629,26 @@ function updateHomeTimeTheme() {
     return;
   }
   const theme = wallpaperPreviewTheme || currentTimeTheme();
-  home.dataset.timeTheme = theme;
-  document.body.dataset.timeTheme = theme;
-  if (root) {
-    root.dataset.time = theme;
+  if (theme === renderedHomeTimeTheme) {
+    return;
   }
-  layoutWallpaperStage();
-  updateWallpaperMotionState();
+
+  const applyTheme = () => {
+    renderedHomeTimeTheme = theme;
+    home.dataset.timeTheme = theme;
+    document.body.dataset.timeTheme = theme;
+    if (root) {
+      root.dataset.time = theme;
+    }
+    layoutWallpaperStage();
+    updateWallpaperMotionState();
+  };
+
+  if (renderedHomeTimeTheme && window.LusuUiMotion?.run) {
+    window.LusuUiMotion.run("theme", { theme, useViewTransition: true }, applyTheme).catch(applyTheme);
+    return;
+  }
+  applyTheme();
 }
 
 function updateWelcomeGreeting() {
@@ -4332,14 +4700,14 @@ function maybeShowWelcome() {
     ? document.activeElement
     : null;
   if (modal) {
+    cancelSurfaceClose(modal);
     modal.hidden = false;
     modal.querySelector("button[data-close-welcome]")?.focus({ preventScroll: true });
   }
   safeStorageSet(key, "1");
 }
 
-function updateClock() {
-  const formatter = new Intl.DateTimeFormat(undefined, {
+const fullClockFormatter = new Intl.DateTimeFormat(undefined, {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
@@ -4348,7 +4716,22 @@ function updateClock() {
     second: "2-digit",
     hour12: false
   });
-  document.getElementById("local-time").textContent = formatter.format(new Date()).replace(/\//g, ".");
+const compactClockFormatter = new Intl.DateTimeFormat(undefined, {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false
+  });
+
+function updateClock() {
+  const now = new Date();
+  const fullTime = fullClockFormatter.format(now).replace(/\//g, ".");
+  const compactTime = compactClockFormatter.format(now);
+  document.querySelectorAll("[data-local-time]").forEach((node) => {
+    node.textContent = node.dataset.localTime === "compact" ? compactTime : fullTime;
+    if (node.tagName === "TIME") {
+      node.setAttribute("datetime", now.toISOString());
+    }
+  });
   updateHomeTimeTheme();
 }
 
@@ -4537,24 +4920,40 @@ function setAccountSubmitting(isSubmitting) {
 function openAccountPopover() {
   const popover = document.getElementById("account-popover");
   if (popover) {
+    cancelSurfaceClose(popover);
     popover.hidden = false;
     syncAccountPopoverState(popover);
   }
 }
 
-function closeAccountPopover() {
+function closeAccountPopover(options = {}) {
   const popover = document.getElementById("account-popover");
-  if (popover) {
+  const wasOpen = popover && !popover.hidden;
+  if (!popover || !wasOpen) {
+    return;
+  }
+  const toggle = document.querySelector("[data-account-toggle]");
+  runSurfaceClose(popover, {
+    motion: options.motion,
+    origin: toggle
+  }, () => {
     popover.hidden = true;
     syncAccountPopoverState(popover);
-  }
+    if (options.restoreFocus !== false && toggle && typeof toggle.focus === "function") {
+      toggle.focus({ preventScroll: true });
+    }
+  });
 }
 
 function toggleAccountPopover() {
   const popover = document.getElementById("account-popover");
-  if (popover) {
-    popover.hidden = !popover.hidden;
-    syncAccountPopoverState(popover);
+  if (!popover) {
+    return;
+  }
+  if (popover.hidden) {
+    openAccountPopover();
+  } else {
+    closeAccountPopover();
   }
 }
 
@@ -4762,14 +5161,18 @@ function showChatPrivateRoomForm() {
   input?.focus();
 }
 
-function hideChatPrivateRoomForm() {
+function hideChatPrivateRoomForm(options = {}) {
   const form = document.getElementById("chat-private-room-form");
   const input = document.getElementById("chat-private-password");
+  const wasOpen = form && !form.hidden;
   if (form) {
     form.hidden = true;
   }
   if (input) {
     input.value = "";
+  }
+  if (wasOpen && options.restoreFocus !== false) {
+    document.getElementById("chat-room-toggle")?.focus({ preventScroll: true });
   }
 }
 
@@ -5191,6 +5594,11 @@ document.addEventListener("click", (event) => {
     return;
   }
 
+  if (!target.closest("#account-widget")) {
+    const popover = document.getElementById("account-popover");
+    closeAccountPopover({ restoreFocus: Boolean(popover?.contains(document.activeElement)) });
+  }
+
   if (target.closest("[data-account-toggle]")) {
     toggleAccountPopover();
     return;
@@ -5260,18 +5668,19 @@ document.addEventListener("click", (event) => {
   const articleButton = target.closest("[data-article-slug]");
   if (articleButton) {
     event.preventDefault();
-    showArticle(articleButton.dataset.articleSlug);
+    showArticle(articleButton.dataset.articleSlug, { trigger: articleButton });
     return;
   }
 
   const articleCategoryButton = target.closest("[data-article-category]");
   if (articleCategoryButton) {
-    showArticleCategory(articleCategoryButton.dataset.articleCategory);
+    showArticleCategory(articleCategoryButton.dataset.articleCategory, { trigger: articleCategoryButton });
     return;
   }
 
-  if (target.closest("[data-article-back]")) {
-    showArticleList();
+  const articleBackButton = target.closest("[data-article-back]");
+  if (articleBackButton) {
+    showArticleList({ trigger: articleBackButton });
     return;
   }
 
@@ -5325,13 +5734,19 @@ document.addEventListener("click", (event) => {
   const routeButton = target.closest("[data-route]:not(body)");
   if (routeButton) {
     event.preventDefault();
-    navigate(routeButton.dataset.route);
-    closeWelcome({ restoreFocus: false });
+    const motionKind = routeButton.matches(".minimize-button")
+      ? "window-minimize"
+      : routeButton.matches(".close-button") && routeButton.dataset.route === "home"
+        ? "window-close"
+        : routeButton.matches(".desktop-icon")
+          ? "app-open"
+          : document.documentElement.dataset.uiShell === "mobile"
+            && routeButton.matches(".taskbar-tabs button, .start-button, .mobile-home-button")
+            ? "mobile-tab"
+            : "route";
+    navigate(routeButton.dataset.route, { trigger: routeButton, motionKind });
+    closeWelcome({ restoreFocus: false, motion: false });
     return;
-  }
-
-  if (!target.closest("#account-widget")) {
-    closeAccountPopover();
   }
 });
 
@@ -5343,7 +5758,7 @@ window.addEventListener("keydown", (event) => {
     const videoModal = document.getElementById("video-modal");
     const welcomeModal = document.getElementById("welcome-modal");
     if (videoWindowState.maximized && videoModal && !videoModal.hidden) {
-      setVideoWindowMaximized(false);
+      fullscreenVideo();
       return;
     }
     if (videoModal && !videoModal.hidden) {
@@ -5360,6 +5775,13 @@ window.addEventListener("keydown", (event) => {
       return;
     }
     closeAccountPopover();
+  }
+});
+
+window.addEventListener("lusu:language-request", (event) => {
+  const lang = event.detail?.lang;
+  if (["zh", "en", "ja"].includes(lang)) {
+    setLanguage(lang, { persist: true, syncUrl: true });
   }
 });
 
@@ -5388,6 +5810,7 @@ document.getElementById("knowledge-search-input")?.addEventListener("input", (ev
 document.getElementById("article-detail")?.addEventListener("scroll", scheduleArticleReadProgressUpdate, { passive: true });
 window.addEventListener("resize", layoutWallpaperStage);
 window.addEventListener("resize", scheduleArticleReadProgressUpdate);
+window.addEventListener("resize", () => window.requestAnimationFrame(captureRouteIconRects));
 
 document.addEventListener("visibilitychange", () => {
   updateWallpaperMotionState();
