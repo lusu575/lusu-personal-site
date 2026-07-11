@@ -998,7 +998,7 @@ The standalone tool 「日本語の裏側」 is now available from Resources. Sh
 - ログイン前はバージョン付きローカル進捗に、解放、得点、メダル、挑戦回数、再生設定を保存します。
 - ログイン後はゲームセーブ表を使わず、専用 D1 学習表で同期します。ローカルとクラウドを統合しても、クリア済みステージと上位メダルを保持します。
 - クラウド障害はローカル回答を止めず、ログアウト後も練習を続けられます。', '2026-07-10T17:30:00.000Z', '2026-07-10T17:30:00.000Z'),
-  ('seed-update-2026-07-10-premium-interaction-mobile-os-zh', 'seed-update-2026-07-10-premium-interaction-mobile-os', 'zh', 'GPT-5.6 高级交互与移动 OS 重设计', '桌面 App 打开和返回 Home 不再捕获整页快照，固定任务栏全程稳定；手机 Dock 精简为六个高频入口并重新居中排版。', '# GPT-5.6 高级交互与移动 OS 重设计
+  ('seed-update-2026-07-10-premium-interaction-mobile-os-zh', 'seed-update-2026-07-10-premium-interaction-mobile-os', 'zh', 'GPT-5.6 高级交互与移动 OS 重设计', '桌面任务栏选中态随模块切换即时同步；手机 Dock 按六个高频入口重新适配为更短的栏体与更清晰的图标尺寸。', '# GPT-5.6 高级交互与移动 OS 重设计
 
 这次汇总更新继续保留桌面端 Windows XP、像素艺术与 Y2K 识别度，并把手机端完善为更紧凑、更易读的原创虚拟手机 OS。
 
@@ -1022,7 +1022,7 @@ The standalone tool 「日本語の裏側」 is now available from Resources. Sh
 - 边框使用本站四时段和 Neo-XP 色彩，不复制参考图配色或图标；卡片、文案和按钮继续适配短竖屏与横屏。
 
 所有原有路由、API、D1 数据、账户登录、游戏云存档、普通与密码聊天室、三语内容、视频系统和遥测隐私边界保持不变。', '2026-07-10T16:20:00.000Z', '2026-07-10T16:20:00.000Z'),
-  ('seed-update-2026-07-10-premium-interaction-mobile-os-en', 'seed-update-2026-07-10-premium-interaction-mobile-os', 'en', 'GPT-5.6 Premium Interaction & Mobile OS Redesign', 'Desktop App launch and Home return keep the taskbar stable without full-page snapshots, while the mobile Dock is refined to six balanced high-frequency routes.', '# GPT-5.6 Premium Interaction & Mobile OS Redesign
+  ('seed-update-2026-07-10-premium-interaction-mobile-os-en', 'seed-update-2026-07-10-premium-interaction-mobile-os', 'en', 'GPT-5.6 Premium Interaction & Mobile OS Redesign', 'Desktop taskbar selection now follows module changes immediately, while the six-item mobile Dock uses a shorter bar and clearer icon sizing.', '# GPT-5.6 Premium Interaction & Mobile OS Redesign
 
 This consolidated update keeps the Windows XP, pixel-art, and Y2K identity on desktop while refining mobile into a tighter and more readable original virtual phone OS.
 
@@ -1046,7 +1046,7 @@ This consolidated update keeps the Windows XP, pixel-art, and Y2K identity on de
 - Frames use this site''s four-time Neo-XP palette rather than copying reference colors or icons, and content remains adaptive in short portrait and landscape layouts.
 
 Existing routes, APIs, D1 data, account sessions, game cloud saves, public and password chat, three-language content, video delivery, and telemetry privacy boundaries remain unchanged.', '2026-07-10T16:20:00.000Z', '2026-07-10T16:20:00.000Z'),
-  ('seed-update-2026-07-10-premium-interaction-mobile-os-ja', 'seed-update-2026-07-10-premium-interaction-mobile-os', 'ja', 'GPT-5.6 プレミアム操作とモバイル OS 再設計', 'デスクトップの App 起動と Home 復帰でタスクバーを常時固定し、モバイル Dock は高頻度の 6 項目に整理して中央配置を整えました。', '# GPT-5.6 プレミアム操作とモバイル OS 再設計
+  ('seed-update-2026-07-10-premium-interaction-mobile-os-ja', 'seed-update-2026-07-10-premium-interaction-mobile-os', 'ja', 'GPT-5.6 プレミアム操作とモバイル OS 再設計', 'デスクトップのタスクバー選択状態を切り替えと同時に同期し、6 項目のモバイル Dock を短いバーと見やすいアイコン寸法に最適化しました。', '# GPT-5.6 プレミアム操作とモバイル OS 再設計
 
 今回の統合更新では、デスクトップの Windows XP、ピクセルアート、Y2K の個性を保ちながら、モバイルをよりコンパクトで読みやすい独自の仮想スマートフォン OS に整えました。
 

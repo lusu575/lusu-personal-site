@@ -4,8 +4,9 @@
 
 ## 2026-07-11
 
+- 手机端六项 Dock 改为专用紧凑宽度：整栏最大宽度收至 340px，单项保持 48px 触控宽度，同时把主图标提升到 34px、Home 图标提升到 39px；桌面任务栏在导航点击时立即同步选中态，不再等待页面转场提交。
 - Mobile Dock and calm-motion reset shipped as `seed-update-2026-07-10-premium-interaction-mobile-os`; the Dock now keeps six high-frequency routes and omits About/Notes on mobile.
-- Public shell assets use cache key `20260711-calm-motion-r12`; desktop and mobile navigation transitions were reduced and stabilized.
+- Public shell assets use cache key `20260711-calm-motion-r13`; desktop and mobile navigation transitions were reduced, resized, and kept in sync.
 
 - 新增独立日语潜台词训练工具“日本語の裏側”（`/tools/japanese-subtext/`）：
   - 题库按版本化 JSON 分成 5 个等级、每级 50 关，难度从 N3、N2 递进到 N1 高阶；前段短关帮助熟悉玩法，后段逐步增加多人关系、信息差、不可靠叙述和开放解释。
