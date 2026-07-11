@@ -26,7 +26,7 @@ test("cloud saves serialize and coalesce the newest state while a request is in 
 
   assert.equal(requests.length, 2);
   assert.equal(requests[1].body.settings.playbackRate, 1.15);
-  assert.equal(requests[1].body.settings.muted, true);
+  assert.equal(requests[1].body.settings.muted, false);
   requests[1].resolve(okResponse());
   await Promise.all([second, newest]);
   assert.equal(cloud.inFlight, false);

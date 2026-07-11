@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "level": 4,
   "batch": "041-050",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L4-041",
-      "revision": 1,
+      "revision": 2,
       "level": 4,
       "stage": 41,
       "jlptTarget": "N1-advanced",
@@ -557,9 +557,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "表面上は複数の説明が可能ですが、line-009、line-010、line-011、line-012、line-014の明示情報を同時に満たす必要があります。",
-              "zh": "表面上似乎存在多种解释，但必须同时满足 line-009、line-010、line-011、line-012、line-014 的明确信息。",
-              "en": "Several readings look possible on the surface, but all explicit details in line-009、line-010、line-011、line-012、line-014 must hold together."
+              "ja": "表面上は複数の説明が可能ですが、9番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞、14番目の台詞の明示情報を同時に満たす必要があります。",
+              "zh": "表面上似乎存在多种解释，但必须同时满足第9句台词、第10句台词、第11句台词、第12句台词、第14句台词的明确信息。",
+              "en": "Several readings look possible on the surface, but all explicit details in the ninth line、the tenth line、the eleventh line、the twelfth line、the fourteenth line must hold together."
             },
             "intent": {
               "ja": "最も整合する読みは「この枠組みでの交渉継続を断る婉曲な拒否」です。",
@@ -567,9 +567,9 @@
               "en": "The reading that best unifies the scene is: An indirect refusal to continue under this framework."
             },
             "evidence": {
-              "ja": "line-009、line-010、line-011、line-012、line-014を突き合わせると、法務は資料を即時返却し、再提示しないと明言しており、持ち帰る対象も検討でなく自社資料です。",
-              "zh": "对照 line-009、line-010、line-011、line-012、line-014 可知，法务当场退还资料并明确不再提案，所“带回”的也不是议题而是本公司资料。",
-              "en": "Taken together, line-009、line-010、line-011、line-012、line-014 show that legal immediately returns materials, rejects resubmission, and identifies company documents—not the proposal—as what goes back."
+              "ja": "9番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞、14番目の台詞を突き合わせると、法務は資料を即時返却し、再提示しないと明言しており、持ち帰る対象も検討でなく自社資料です。",
+              "zh": "对照第9句台词、第10句台词、第11句台词、第12句台词、第14句台词可知，法务当场退还资料并明确不再提案，所“带回”的也不是议题而是本公司资料。",
+              "en": "Taken together, the ninth line、the tenth line、the eleventh line、the twelfth line、the fourteenth line show that legal immediately returns materials, rejects resubmission, and identifies company documents—not the proposal—as what goes back."
             },
             "nuance": {
               "ja": "法務は資料を即時返却し、再提示しないと明言しており、持ち帰る対象も検討でなく自社資料です。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
@@ -577,9 +577,9 @@
               "en": "legal immediately returns materials, rejects resubmission, and identifies company documents—not the proposal—as what goes back. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
-              "ja": "他の選択肢は一部の発言だけなら説明できますが、line-009、line-010、line-011、line-012、line-014の時間順・語の範囲・行動証拠を同時には説明できません。",
-              "zh": "其他选项或许能解释个别话语，却无法同时解释 line-009、line-010、line-011、line-012、line-014 的时间顺序、措辞范围与行为证据。",
-              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across line-009、line-010、line-011、line-012、line-014."
+              "ja": "他の選択肢は一部の発言だけなら説明できますが、9番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞、14番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
+              "zh": "其他选项或许能解释个别话语，却无法同时解释第9句台词、第10句台词、第11句台词、第12句台词、第14句台词的时间顺序、措辞范围与行为证据。",
+              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across the ninth line、the tenth line、the eleventh line、the twelfth line、the fourteenth line."
             }
           }
         },
@@ -645,9 +645,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "表面上は複数の説明が可能ですが、line-002、line-004、line-005、line-006、line-008の明示情報を同時に満たす必要があります。",
-              "zh": "表面上似乎存在多种解释，但必须同时满足 line-002、line-004、line-005、line-006、line-008 的明确信息。",
-              "en": "Several readings look possible on the surface, but all explicit details in line-002、line-004、line-005、line-006、line-008 must hold together."
+              "ja": "表面上は複数の説明が可能ですが、2番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞、8番目の台詞の明示情報を同時に満たす必要があります。",
+              "zh": "表面上似乎存在多种解释，但必须同时满足第2句台词、第4句台词、第5句台词、第6句台词、第8句台词的明确信息。",
+              "en": "Several readings look possible on the surface, but all explicit details in the second line、the fourth line、the fifth line、the sixth line、the eighth line must hold together."
             },
             "intent": {
               "ja": "最も整合する読みは「具体的な期限・担当・試作品などの後続コミットメント」です。",
@@ -655,9 +655,9 @@
               "en": "The reading that best unifies the scene is: Subsequent commitments such as dates, ownership, and prototypes."
             },
             "evidence": {
-              "ja": "line-002、line-004、line-005、line-006、line-008を突き合わせると、営業と技術は言葉の直後に将来の行動と期限を引き受け、交渉継続を可観測にしています。",
-              "zh": "对照 line-002、line-004、line-005、line-006、line-008 可知，销售与技术在该表达后立即承担未来行动与期限，使继续协商变得可观察。",
-              "en": "Taken together, line-002、line-004、line-005、line-006、line-008 show that sales and engineering immediately assume observable future actions and deadlines."
+              "ja": "2番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞、8番目の台詞を突き合わせると、営業と技術は言葉の直後に将来の行動と期限を引き受け、交渉継続を可観測にしています。",
+              "zh": "对照第2句台词、第4句台词、第5句台词、第6句台词、第8句台词可知，销售与技术在该表达后立即承担未来行动与期限，使继续协商变得可观察。",
+              "en": "Taken together, the second line、the fourth line、the fifth line、the sixth line、the eighth line show that sales and engineering immediately assume observable future actions and deadlines."
             },
             "nuance": {
               "ja": "営業と技術は言葉の直後に将来の行動と期限を引き受け、交渉継続を可観測にしています。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
@@ -665,9 +665,9 @@
               "en": "sales and engineering immediately assume observable future actions and deadlines. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
-              "ja": "他の選択肢は一部の発言だけなら説明できますが、line-002、line-004、line-005、line-006、line-008の時間順・語の範囲・行動証拠を同時には説明できません。",
-              "zh": "其他选项或许能解释个别话语，却无法同时解释 line-002、line-004、line-005、line-006、line-008 的时间顺序、措辞范围与行为证据。",
-              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across line-002、line-004、line-005、line-006、line-008."
+              "ja": "他の選択肢は一部の発言だけなら説明できますが、2番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞、8番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
+              "zh": "其他选项或许能解释个别话语，却无法同时解释第2句台词、第4句台词、第5句台词、第6句台词、第8句台词的时间顺序、措辞范围与行为证据。",
+              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across the second line、the fourth line、the fifth line、the sixth line、the eighth line."
             }
           }
         },
@@ -734,9 +734,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "表面上は複数の説明が可能ですが、line-002、line-006、line-010、line-012、line-013、line-015の明示情報を同時に満たす必要があります。",
-              "zh": "表面上似乎存在多种解释，但必须同时满足 line-002、line-006、line-010、line-012、line-013、line-015 的明确信息。",
-              "en": "Several readings look possible on the surface, but all explicit details in line-002、line-006、line-010、line-012、line-013、line-015 must hold together."
+              "ja": "表面上は複数の説明が可能ですが、2番目の台詞、6番目の台詞、10番目の台詞、12番目の台詞、13番目の台詞、15番目の台詞の明示情報を同時に満たす必要があります。",
+              "zh": "表面上似乎存在多种解释，但必须同时满足第2句台词、第6句台词、第10句台词、第12句台词、第13句台词、第15句台词的明确信息。",
+              "en": "Several readings look possible on the surface, but all explicit details in the second line、the sixth line、the tenth line、the twelfth line、the thirteenth line、the fifteenth line must hold together."
             },
             "intent": {
               "ja": "最も整合する読みは「婉曲表現の機能は、話者の役割と後続行動を併せて判断する」です。",
@@ -744,9 +744,9 @@
               "en": "The reading that best unifies the scene is: Interpret a hedge through speaker role and subsequent action."
             },
             "evidence": {
-              "ja": "line-002、line-006、line-010、line-012、line-013、line-015を突き合わせると、同一文字列でも、具体的なコミットメントか資料返却かによって機能が変わります。",
-              "zh": "对照 line-002、line-006、line-010、line-012、line-013、line-015 可知，同一字符串会因后续是具体承诺还是退回资料而具有不同功能。",
-              "en": "Taken together, line-002、line-006、line-010、line-012、line-013、line-015 show that the identical wording changes function depending on whether it is followed by commitments or withdrawal."
+              "ja": "2番目の台詞、6番目の台詞、10番目の台詞、12番目の台詞、13番目の台詞、15番目の台詞を突き合わせると、同一文字列でも、具体的なコミットメントか資料返却かによって機能が変わります。",
+              "zh": "对照第2句台词、第6句台词、第10句台词、第12句台词、第13句台词、第15句台词可知，同一字符串会因后续是具体承诺还是退回资料而具有不同功能。",
+              "en": "Taken together, the second line、the sixth line、the tenth line、the twelfth line、the thirteenth line、the fifteenth line show that the identical wording changes function depending on whether it is followed by commitments or withdrawal."
             },
             "nuance": {
               "ja": "同一文字列でも、具体的なコミットメントか資料返却かによって機能が変わります。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
@@ -754,9 +754,9 @@
               "en": "the identical wording changes function depending on whether it is followed by commitments or withdrawal. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
-              "ja": "他の選択肢は一部の発言だけなら説明できますが、line-002、line-006、line-010、line-012、line-013、line-015の時間順・語の範囲・行動証拠を同時には説明できません。",
-              "zh": "其他选项或许能解释个别话语，却无法同时解释 line-002、line-006、line-010、line-012、line-013、line-015 的时间顺序、措辞范围与行为证据。",
-              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across line-002、line-006、line-010、line-012、line-013、line-015."
+              "ja": "他の選択肢は一部の発言だけなら説明できますが、2番目の台詞、6番目の台詞、10番目の台詞、12番目の台詞、13番目の台詞、15番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
+              "zh": "其他选项或许能解释个别话语，却无法同时解释第2句台词、第6句台词、第10句台词、第12句台词、第13句台词、第15句台词的时间顺序、措辞范围与行为证据。",
+              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across the second line、the sixth line、the tenth line、the twelfth line、the thirteenth line、the fifteenth line."
             }
           }
         }
@@ -771,13 +771,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "b7d0884a7ac48152f3ee18829bddf33d7df712ff46b159f6a68f44e2bdce9f24"
+      "contentHash": "b58e8c4ad63bfce844e6bb68f310d42d1f18bd799b85670ba8c9246be8540d78"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L4-042",
-      "revision": 1,
+      "revision": 2,
       "level": 4,
       "stage": 42,
       "jlptTarget": "N1-advanced",
@@ -1294,9 +1294,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "表面上は複数の説明が可能ですが、line-001、line-002、line-003、line-007、line-008の明示情報を同時に満たす必要があります。",
-              "zh": "表面上似乎存在多种解释，但必须同时满足 line-001、line-002、line-003、line-007、line-008 的明确信息。",
-              "en": "Several readings look possible on the surface, but all explicit details in line-001、line-002、line-003、line-007、line-008 must hold together."
+              "ja": "表面上は複数の説明が可能ですが、1番目の台詞、2番目の台詞、3番目の台詞、7番目の台詞、8番目の台詞の明示情報を同時に満たす必要があります。",
+              "zh": "表面上似乎存在多种解释，但必须同时满足第1句台词、第2句台词、第3句台词、第7句台词、第8句台词的明确信息。",
+              "en": "Several readings look possible on the surface, but all explicit details in the first line、the second line、the third line、the seventh line、the eighth line must hold together."
             },
             "intent": {
               "ja": "最も整合する読みは「提出締切を金曜にする確認」です。",
@@ -1304,9 +1304,9 @@
               "en": "The reading that best unifies the scene is: Confirmation of a Friday deadline."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-003、line-007、line-008を突き合わせると、反応は締切確認の直後かつ企画本文の投稿前に付いています。",
-              "zh": "对照 line-001、line-002、line-003、line-007、line-008 可知，点赞紧接在截止日期确认之后，且早于企划正文发布。",
-              "en": "Taken together, line-001、line-002、line-003、line-007、line-008 show that the reactions immediately follow the deadline question and precede the proposal."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、7番目の台詞、8番目の台詞を突き合わせると、反応は締切確認の直後かつ企画本文の投稿前に付いています。",
+              "zh": "对照第1句台词、第2句台词、第3句台词、第7句台词、第8句台词可知，点赞紧接在截止日期确认之后，且早于企划正文发布。",
+              "en": "Taken together, the first line、the second line、the third line、the seventh line、the eighth line show that the reactions immediately follow the deadline question and precede the proposal."
             },
             "nuance": {
               "ja": "反応は締切確認の直後かつ企画本文の投稿前に付いています。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
@@ -1314,9 +1314,9 @@
               "en": "the reactions immediately follow the deadline question and precede the proposal. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
-              "ja": "他の選択肢は一部の発言だけなら説明できますが、line-001、line-002、line-003、line-007、line-008の時間順・語の範囲・行動証拠を同時には説明できません。",
-              "zh": "其他选项或许能解释个别话语，却无法同时解释 line-001、line-002、line-003、line-007、line-008 的时间顺序、措辞范围与行为证据。",
-              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across line-001、line-002、line-003、line-007、line-008."
+              "ja": "他の選択肢は一部の発言だけなら説明できますが、1番目の台詞、2番目の台詞、3番目の台詞、7番目の台詞、8番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
+              "zh": "其他选项或许能解释个别话语，却无法同时解释第1句台词、第2句台词、第3句台词、第7句台词、第8句台词的时间顺序、措辞范围与行为证据。",
+              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across the first line、the second line、the third line、the seventh line、the eighth line."
             }
           }
         },
@@ -1382,9 +1382,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "表面上は複数の説明が可能ですが、line-004、line-006、line-009、line-010、line-011の明示情報を同時に満たす必要があります。",
-              "zh": "表面上似乎存在多种解释，但必须同时满足 line-004、line-006、line-009、line-010、line-011 的明确信息。",
-              "en": "Several readings look possible on the surface, but all explicit details in line-004、line-006、line-009、line-010、line-011 must hold together."
+              "ja": "表面上は複数の説明が可能ですが、4番目の台詞、6番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞の明示情報を同時に満たす必要があります。",
+              "zh": "表面上似乎存在多种解释，但必须同时满足第4句台词、第6句台词、第9句台词、第10句台词、第11句台词的明确信息。",
+              "en": "Several readings look possible on the surface, but all explicit details in the fourth line、the sixth line、the ninth line、the tenth line、the eleventh line must hold together."
             },
             "intent": {
               "ja": "最も整合する読みは「別の投稿への反応を企画への同意にすり替えた」です。",
@@ -1392,9 +1392,9 @@
               "en": "The reading that best unifies the scene is: Reassigning reactions to another post as approval of the proposal."
             },
             "evidence": {
-              "ja": "line-004、line-006、line-009、line-010、line-011を突き合わせると、反応のスコープは付着先の締切投稿であり、後発の企画書へ遡及しません。",
-              "zh": "对照 line-004、line-006、line-009、line-010、line-011 可知，反应的作用域是它所附着的截止日期消息，不能追溯覆盖之后才发布的企划书。",
-              "en": "Taken together, line-004、line-006、line-009、line-010、line-011 show that reaction scope belongs to the attached deadline message and cannot apply retroactively."
+              "ja": "4番目の台詞、6番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞を突き合わせると、反応のスコープは付着先の締切投稿であり、後発の企画書へ遡及しません。",
+              "zh": "对照第4句台词、第6句台词、第9句台词、第10句台词、第11句台词可知，反应的作用域是它所附着的截止日期消息，不能追溯覆盖之后才发布的企划书。",
+              "en": "Taken together, the fourth line、the sixth line、the ninth line、the tenth line、the eleventh line show that reaction scope belongs to the attached deadline message and cannot apply retroactively."
             },
             "nuance": {
               "ja": "反応のスコープは付着先の締切投稿であり、後発の企画書へ遡及しません。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
@@ -1402,9 +1402,9 @@
               "en": "reaction scope belongs to the attached deadline message and cannot apply retroactively. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
-              "ja": "他の選択肢は一部の発言だけなら説明できますが、line-004、line-006、line-009、line-010、line-011の時間順・語の範囲・行動証拠を同時には説明できません。",
-              "zh": "其他选项或许能解释个别话语，却无法同时解释 line-004、line-006、line-009、line-010、line-011 的时间顺序、措辞范围与行为证据。",
-              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across line-004、line-006、line-009、line-010、line-011."
+              "ja": "他の選択肢は一部の発言だけなら説明できますが、4番目の台詞、6番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
+              "zh": "其他选项或许能解释个别话语，却无法同时解释第4句台词、第6句台词、第9句台词、第10句台词、第11句台词的时间顺序、措辞范围与行为证据。",
+              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across the fourth line、the sixth line、the ninth line、the tenth line、the eleventh line."
             }
           }
         },
@@ -1472,9 +1472,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "表面上は複数の説明が可能ですが、line-001、line-002、line-003、line-006、line-010、line-011の明示情報を同時に満たす必要があります。",
-              "zh": "表面上似乎存在多种解释，但必须同时满足 line-001、line-002、line-003、line-006、line-010、line-011 的明确信息。",
-              "en": "Several readings look possible on the surface, but all explicit details in line-001、line-002、line-003、line-006、line-010、line-011 must hold together."
+              "ja": "表面上は複数の説明が可能ですが、1番目の台詞、2番目の台詞、3番目の台詞、6番目の台詞、10番目の台詞、11番目の台詞の明示情報を同時に満たす必要があります。",
+              "zh": "表面上似乎存在多种解释，但必须同时满足第1句台词、第2句台词、第3句台词、第6句台词、第10句台词、第11句台词的明确信息。",
+              "en": "Several readings look possible on the surface, but all explicit details in the first line、the second line、the third line、the sixth line、the tenth line、the eleventh line must hold together."
             },
             "intent": {
               "ja": "最も整合する読みは「二つの反応は締切確認に付いている／企画本文は反応の後に投稿された」です。",
@@ -1482,9 +1482,9 @@
               "en": "The reading that best unifies the scene is: The reactions attach to the deadline check / The proposal was posted after the reactions."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-003、line-006、line-010、line-011を突き合わせると、付着対象と時間順のどちらから見ても、親指印を企画への同意と読むことはできません。",
-              "zh": "对照 line-001、line-002、line-003、line-006、line-010、line-011 可知，无论从附着对象还是时间顺序看，都不能把点赞解释成对企划的同意。",
-              "en": "Taken together, line-001、line-002、line-003、line-006、line-010、line-011 show that both attachment scope and chronology rule out reading the reactions as proposal approval."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、6番目の台詞、10番目の台詞、11番目の台詞を突き合わせると、付着対象と時間順のどちらから見ても、親指印を企画への同意と読むことはできません。",
+              "zh": "对照第1句台词、第2句台词、第3句台词、第6句台词、第10句台词、第11句台词可知，无论从附着对象还是时间顺序看，都不能把点赞解释成对企划的同意。",
+              "en": "Taken together, the first line、the second line、the third line、the sixth line、the tenth line、the eleventh line show that both attachment scope and chronology rule out reading the reactions as proposal approval."
             },
             "nuance": {
               "ja": "付着対象と時間順のどちらから見ても、親指印を企画への同意と読むことはできません。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
@@ -1492,9 +1492,9 @@
               "en": "both attachment scope and chronology rule out reading the reactions as proposal approval. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
-              "ja": "他の選択肢は一部の発言だけなら説明できますが、line-001、line-002、line-003、line-006、line-010、line-011の時間順・語の範囲・行動証拠を同時には説明できません。",
-              "zh": "其他选项或许能解释个别话语，却无法同时解释 line-001、line-002、line-003、line-006、line-010、line-011 的时间顺序、措辞范围与行为证据。",
-              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across line-001、line-002、line-003、line-006、line-010、line-011."
+              "ja": "他の選択肢は一部の発言だけなら説明できますが、1番目の台詞、2番目の台詞、3番目の台詞、6番目の台詞、10番目の台詞、11番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
+              "zh": "其他选项或许能解释个别话语，却无法同时解释第1句台词、第2句台词、第3句台词、第6句台词、第10句台词、第11句台词的时间顺序、措辞范围与行为证据。",
+              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across the first line、the second line、the third line、the sixth line、the tenth line、the eleventh line."
             }
           }
         },
@@ -1560,9 +1560,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "表面上は複数の説明が可能ですが、line-008、line-012、line-013、line-014、line-015の明示情報を同時に満たす必要があります。",
-              "zh": "表面上似乎存在多种解释，但必须同时满足 line-008、line-012、line-013、line-014、line-015 的明确信息。",
-              "en": "Several readings look possible on the surface, but all explicit details in line-008、line-012、line-013、line-014、line-015 must hold together."
+              "ja": "表面上は複数の説明が可能ですが、8番目の台詞、12番目の台詞、13番目の台詞、14番目の台詞、15番目の台詞の明示情報を同時に満たす必要があります。",
+              "zh": "表面上似乎存在多种解释，但必须同时满足第8句台词、第12句台词、第13句台词、第14句台词、第15句台词的明确信息。",
+              "en": "Several readings look possible on the surface, but all explicit details in the eighth line、the twelfth line、the thirteenth line、the fourteenth line、the fifteenth line must hold together."
             },
             "intent": {
               "ja": "最も整合する読みは「企画を明示した投票を、読了後に各人へ行う」です。",
@@ -1570,9 +1570,9 @@
               "en": "The reading that best unifies the scene is: Poll each person after reading, explicitly naming the proposal."
             },
             "evidence": {
-              "ja": "line-008、line-012、line-013、line-014、line-015を突き合わせると、判断対象を明示し、対象情報を読める時点で本人の意思を改めて取得します。",
-              "zh": "对照 line-008、line-012、line-013、line-014、line-015 可知，明确判断对象，并在成员能够阅读对象信息后重新取得本人意愿。",
-              "en": "Taken together, line-008、line-012、line-013、line-014、line-015 show that it names the object and collects each person’s intent only after they can access it."
+              "ja": "8番目の台詞、12番目の台詞、13番目の台詞、14番目の台詞、15番目の台詞を突き合わせると、判断対象を明示し、対象情報を読める時点で本人の意思を改めて取得します。",
+              "zh": "对照第8句台词、第12句台词、第13句台词、第14句台词、第15句台词可知，明确判断对象，并在成员能够阅读对象信息后重新取得本人意愿。",
+              "en": "Taken together, the eighth line、the twelfth line、the thirteenth line、the fourteenth line、the fifteenth line show that it names the object and collects each person’s intent only after they can access it."
             },
             "nuance": {
               "ja": "判断対象を明示し、対象情報を読める時点で本人の意思を改めて取得します。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
@@ -1580,9 +1580,9 @@
               "en": "it names the object and collects each person’s intent only after they can access it. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
-              "ja": "他の選択肢は一部の発言だけなら説明できますが、line-008、line-012、line-013、line-014、line-015の時間順・語の範囲・行動証拠を同時には説明できません。",
-              "zh": "其他选项或许能解释个别话语，却无法同时解释 line-008、line-012、line-013、line-014、line-015 的时间顺序、措辞范围与行为证据。",
-              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across line-008、line-012、line-013、line-014、line-015."
+              "ja": "他の選択肢は一部の発言だけなら説明できますが、8番目の台詞、12番目の台詞、13番目の台詞、14番目の台詞、15番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
+              "zh": "其他选项或许能解释个别话语，却无法同时解释第8句台词、第12句台词、第13句台词、第14句台词、第15句台词的时间顺序、措辞范围与行为证据。",
+              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across the eighth line、the twelfth line、the thirteenth line、the fourteenth line、the fifteenth line."
             }
           }
         }
@@ -1597,13 +1597,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "4450d7ca1bc554df8ac9d453b00bf5f885a1a53d9c9ac5f47422db55d8a6b4c9"
+      "contentHash": "ca8216ebb1631e3f22113ca24a75d0c4edfba390613c1ea532613827616e6535"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L4-043",
-      "revision": 1,
+      "revision": 2,
       "level": 4,
       "stage": 43,
       "jlptTarget": "N1-advanced",
@@ -2160,9 +2160,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "表面上は複数の説明が可能ですが、line-001、line-002、line-003、line-005、line-010、line-014の明示情報を同時に満たす必要があります。",
-              "zh": "表面上似乎存在多种解释，但必须同时满足 line-001、line-002、line-003、line-005、line-010、line-014 的明确信息。",
-              "en": "Several readings look possible on the surface, but all explicit details in line-001、line-002、line-003、line-005、line-010、line-014 must hold together."
+              "ja": "表面上は複数の説明が可能ですが、1番目の台詞、2番目の台詞、3番目の台詞、5番目の台詞、10番目の台詞、14番目の台詞の明示情報を同時に満たす必要があります。",
+              "zh": "表面上似乎存在多种解释，但必须同时满足第1句台词、第2句台词、第3句台词、第5句台词、第10句台词、第14句台词的明确信息。",
+              "en": "Several readings look possible on the surface, but all explicit details in the first line、the second line、the third line、the fifth line、the tenth line、the fourteenth line must hold together."
             },
             "intent": {
               "ja": "最も整合する読みは「「お任せ」が与える裁量の範囲を三者が異なって理解した」です。",
@@ -2170,9 +2170,9 @@
               "en": "The reading that best unifies the scene is: The three parties assigned different scopes of discretion to omakase."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-003、line-005、line-010、line-014を突き合わせると、客は一品選択、通訳は推薦、料理人は献立全体の創作権として同じ語を処理しています。",
-              "zh": "对照 line-001、line-002、line-003、line-005、line-010、line-014 可知，顾客理解为选择一道，口译理解为推荐，厨师则理解为整套菜单创作权。",
-              "en": "Taken together, line-001、line-002、line-003、line-005、line-010、line-014 show that the diner delegates one choice, the interpreter conveys recommendation, and the chef hears full menu authority."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、5番目の台詞、10番目の台詞、14番目の台詞を突き合わせると、客は一品選択、通訳は推薦、料理人は献立全体の創作権として同じ語を処理しています。",
+              "zh": "对照第1句台词、第2句台词、第3句台词、第5句台词、第10句台词、第14句台词可知，顾客理解为选择一道，口译理解为推荐，厨师则理解为整套菜单创作权。",
+              "en": "Taken together, the first line、the second line、the third line、the fifth line、the tenth line、the fourteenth line show that the diner delegates one choice, the interpreter conveys recommendation, and the chef hears full menu authority."
             },
             "nuance": {
               "ja": "客は一品選択、通訳は推薦、料理人は献立全体の創作権として同じ語を処理しています。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
@@ -2180,9 +2180,9 @@
               "en": "the diner delegates one choice, the interpreter conveys recommendation, and the chef hears full menu authority. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
-              "ja": "他の選択肢は一部の発言だけなら説明できますが、line-001、line-002、line-003、line-005、line-010、line-014の時間順・語の範囲・行動証拠を同時には説明できません。",
-              "zh": "其他选项或许能解释个别话语，却无法同时解释 line-001、line-002、line-003、line-005、line-010、line-014 的时间顺序、措辞范围与行为证据。",
-              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across line-001、line-002、line-003、line-005、line-010、line-014."
+              "ja": "他の選択肢は一部の発言だけなら説明できますが、1番目の台詞、2番目の台詞、3番目の台詞、5番目の台詞、10番目の台詞、14番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
+              "zh": "其他选项或许能解释个别话语，却无法同时解释第1句台词、第2句台词、第3句台词、第5句台词、第10句台词、第14句台词的时间顺序、措辞范围与行为证据。",
+              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across the first line、the second line、the third line、the fifth line、the tenth line、the fourteenth line."
             }
           }
         },
@@ -2248,9 +2248,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "表面上は複数の説明が可能ですが、line-009、line-010、line-011、line-013の明示情報を同時に満たす必要があります。",
-              "zh": "表面上似乎存在多种解释，但必须同时满足 line-009、line-010、line-011、line-013 的明确信息。",
-              "en": "Several readings look possible on the surface, but all explicit details in line-009、line-010、line-011、line-013 must hold together."
+              "ja": "表面上は複数の説明が可能ですが、9番目の台詞、10番目の台詞、11番目の台詞、13番目の台詞の明示情報を同時に満たす必要があります。",
+              "zh": "表面上似乎存在多种解释，但必须同时满足第9句台词、第10句台词、第11句台词、第13句台词的明确信息。",
+              "en": "Several readings look possible on the surface, but all explicit details in the ninth line、the tenth line、the eleventh line、the thirteenth line must hold together."
             },
             "intent": {
               "ja": "最も整合する読みは「客は定番のおすすめを期待した／店はお任せを献立全体の委任として扱う」です。",
@@ -2258,9 +2258,9 @@
               "en": "The reading that best unifies the scene is: The diner expected a classic recommendation / The restaurant treats omakase as delegation of the entire menu."
             },
             "evidence": {
-              "ja": "line-009、line-010、line-011、line-013を突き合わせると、客は定番一品の選択を想定し、店は構成全体への裁量を規約として運用しています。",
-              "zh": "对照 line-009、line-010、line-011、line-013 可知，顾客设想的是经典单品选择，店方则把整套构成的裁量作为惯例。",
-              "en": "Taken together, line-009、line-010、line-011、line-013 show that the diner expected one classic choice while house practice delegates full composition."
+              "ja": "9番目の台詞、10番目の台詞、11番目の台詞、13番目の台詞を突き合わせると、客は定番一品の選択を想定し、店は構成全体への裁量を規約として運用しています。",
+              "zh": "对照第9句台词、第10句台词、第11句台词、第13句台词可知，顾客设想的是经典单品选择，店方则把整套构成的裁量作为惯例。",
+              "en": "Taken together, the ninth line、the tenth line、the eleventh line、the thirteenth line show that the diner expected one classic choice while house practice delegates full composition."
             },
             "nuance": {
               "ja": "客は定番一品の選択を想定し、店は構成全体への裁量を規約として運用しています。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
@@ -2268,9 +2268,9 @@
               "en": "the diner expected one classic choice while house practice delegates full composition. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
-              "ja": "他の選択肢は一部の発言だけなら説明できますが、line-009、line-010、line-011、line-013の時間順・語の範囲・行動証拠を同時には説明できません。",
-              "zh": "其他选项或许能解释个别话语，却无法同时解释 line-009、line-010、line-011、line-013 的时间顺序、措辞范围与行为证据。",
-              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across line-009、line-010、line-011、line-013."
+              "ja": "他の選択肢は一部の発言だけなら説明できますが、9番目の台詞、10番目の台詞、11番目の台詞、13番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
+              "zh": "其他选项或许能解释个别话语，却无法同时解释第9句台词、第10句台词、第11句台词、第13句台词的时间顺序、措辞范围与行为证据。",
+              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across the ninth line、the tenth line、the eleventh line、the thirteenth line."
             }
           }
         },
@@ -2336,9 +2336,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "表面上は複数の説明が可能ですが、line-012、line-013、line-014、line-015、line-016の明示情報を同時に満たす必要があります。",
-              "zh": "表面上似乎存在多种解释，但必须同时满足 line-012、line-013、line-014、line-015、line-016 的明确信息。",
-              "en": "Several readings look possible on the surface, but all explicit details in line-012、line-013、line-014、line-015、line-016 must hold together."
+              "ja": "表面上は複数の説明が可能ですが、12番目の台詞、13番目の台詞、14番目の台詞、15番目の台詞、16番目の台詞の明示情報を同時に満たす必要があります。",
+              "zh": "表面上似乎存在多种解释，但必须同时满足第12句台词、第13句台词、第14句台词、第15句台词、第16句台词的明确信息。",
+              "en": "Several readings look possible on the surface, but all explicit details in the twelfth line、the thirteenth line、the fourteenth line、the fifteenth line、the sixteenth line must hold together."
             },
             "intent": {
               "ja": "最も整合する読みは「残りの品数と料理の型を明示し、裁量範囲を共有するから」です。",
@@ -2346,9 +2346,9 @@
               "en": "The reading that best unifies the scene is: It specifies remaining courses and style, aligning the scope of discretion."
             },
             "evidence": {
-              "ja": "line-012、line-013、line-014、line-015、line-016を突き合わせると、曖昧な語を繰り返さず、二品・定番という境界を明示して合意を取り直します。",
-              "zh": "对照 line-012、line-013、line-014、line-015、line-016 可知，不再重复含糊词，而是明确“两道、经典”这两个边界后重新取得同意。",
-              "en": "Taken together, line-012、line-013、line-014、line-015、line-016 show that it replaces the ambiguous word with explicit boundaries—two dishes and classic style—and renews consent."
+              "ja": "12番目の台詞、13番目の台詞、14番目の台詞、15番目の台詞、16番目の台詞を突き合わせると、曖昧な語を繰り返さず、二品・定番という境界を明示して合意を取り直します。",
+              "zh": "对照第12句台词、第13句台词、第14句台词、第15句台词、第16句台词可知，不再重复含糊词，而是明确“两道、经典”这两个边界后重新取得同意。",
+              "en": "Taken together, the twelfth line、the thirteenth line、the fourteenth line、the fifteenth line、the sixteenth line show that it replaces the ambiguous word with explicit boundaries—two dishes and classic style—and renews consent."
             },
             "nuance": {
               "ja": "曖昧な語を繰り返さず、二品・定番という境界を明示して合意を取り直します。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
@@ -2356,9 +2356,9 @@
               "en": "it replaces the ambiguous word with explicit boundaries—two dishes and classic style—and renews consent. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
-              "ja": "他の選択肢は一部の発言だけなら説明できますが、line-012、line-013、line-014、line-015、line-016の時間順・語の範囲・行動証拠を同時には説明できません。",
-              "zh": "其他选项或许能解释个别话语，却无法同时解释 line-012、line-013、line-014、line-015、line-016 的时间顺序、措辞范围与行为证据。",
-              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across line-012、line-013、line-014、line-015、line-016."
+              "ja": "他の選択肢は一部の発言だけなら説明できますが、12番目の台詞、13番目の台詞、14番目の台詞、15番目の台詞、16番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
+              "zh": "其他选项或许能解释个别话语，却无法同时解释第12句台词、第13句台词、第14句台词、第15句台词、第16句台词的时间顺序、措辞范围与行为证据。",
+              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across the twelfth line、the thirteenth line、the fourteenth line、the fifteenth line、the sixteenth line."
             }
           }
         }
@@ -2373,13 +2373,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "ad23e024afe15d55ce88e10116d1f8ac7a6c388a385d9b4ab7014141ace37842"
+      "contentHash": "c43a47607ff36efc5fe2a21eb0c1ceaeeccacd05b58f06a1eb8e6773a9ea0880"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L4-044",
-      "revision": 1,
+      "revision": 2,
       "level": 4,
       "stage": 44,
       "jlptTarget": "N1-advanced",
@@ -2914,9 +2914,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "表面上は複数の説明が可能ですが、line-005、line-006、line-007、line-009の明示情報を同時に満たす必要があります。",
-              "zh": "表面上似乎存在多种解释，但必须同时满足 line-005、line-006、line-007、line-009 的明确信息。",
-              "en": "Several readings look possible on the surface, but all explicit details in line-005、line-006、line-007、line-009 must hold together."
+              "ja": "表面上は複数の説明が可能ですが、5番目の台詞、6番目の台詞、7番目の台詞、9番目の台詞の明示情報を同時に満たす必要があります。",
+              "zh": "表面上似乎存在多种解释，但必须同时满足第5句台词、第6句台词、第7句台词、第9句台词的明确信息。",
+              "en": "Several readings look possible on the surface, but all explicit details in the fifth line、the sixth line、the seventh line、the ninth line must hold together."
             },
             "intent": {
               "ja": "最も整合する読みは「残響がファイル境界を越えて続く／同じ空調ノイズと七秒周期が続く」です。",
@@ -2924,9 +2924,9 @@
               "en": "The reading that best unifies the scene is: Reverberation continues across a file boundary / Identical HVAC noise and a seven-second cycle continue."
             },
             "evidence": {
-              "ja": "line-005、line-006、line-007、line-009を突き合わせると、境界をまたぐ残響と連続する環境ノイズは、独立した三地点録音より一続きの音場を示します。",
-              "zh": "对照 line-005、line-006、line-007、line-009 可知，跨越边界的余响与连续环境噪声，更指向一个连续声场，而非三个独立地点。",
-              "en": "Taken together, line-005、line-006、line-007、line-009 show that cross-boundary reverberation and continuous ambient noise indicate one acoustic field."
+              "ja": "5番目の台詞、6番目の台詞、7番目の台詞、9番目の台詞を突き合わせると、境界をまたぐ残響と連続する環境ノイズは、独立した三地点録音より一続きの音場を示します。",
+              "zh": "对照第5句台词、第6句台词、第7句台词、第9句台词可知，跨越边界的余响与连续环境噪声，更指向一个连续声场，而非三个独立地点。",
+              "en": "Taken together, the fifth line、the sixth line、the seventh line、the ninth line show that cross-boundary reverberation and continuous ambient noise indicate one acoustic field."
             },
             "nuance": {
               "ja": "境界をまたぐ残響と連続する環境ノイズは、独立した三地点録音より一続きの音場を示します。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
@@ -2934,9 +2934,9 @@
               "en": "cross-boundary reverberation and continuous ambient noise indicate one acoustic field. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
-              "ja": "他の選択肢は一部の発言だけなら説明できますが、line-005、line-006、line-007、line-009の時間順・語の範囲・行動証拠を同時には説明できません。",
-              "zh": "其他选项或许能解释个别话语，却无法同时解释 line-005、line-006、line-007、line-009 的时间顺序、措辞范围与行为证据。",
-              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across line-005、line-006、line-007、line-009."
+              "ja": "他の選択肢は一部の発言だけなら説明できますが、5番目の台詞、6番目の台詞、7番目の台詞、9番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
+              "zh": "其他选项或许能解释个别话语，却无法同时解释第5句台词、第6句台词、第7句台词、第9句台词的时间顺序、措辞范围与行为证据。",
+              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across the fifth line、the sixth line、the seventh line、the ninth line."
             }
           }
         },
@@ -3002,9 +3002,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "表面上は複数の説明が可能ですが、line-001、line-002、line-003、line-007、line-012の明示情報を同時に満たす必要があります。",
-              "zh": "表面上似乎存在多种解释，但必须同时满足 line-001、line-002、line-003、line-007、line-012 的明确信息。",
-              "en": "Several readings look possible on the surface, but all explicit details in line-001、line-002、line-003、line-007、line-012 must hold together."
+              "ja": "表面上は複数の説明が可能ですが、1番目の台詞、2番目の台詞、3番目の台詞、7番目の台詞、12番目の台詞の明示情報を同時に満たす必要があります。",
+              "zh": "表面上似乎存在多种解释，但必须同时满足第1句台词、第2句台词、第3句台词、第7句台词、第12句台词的明确信息。",
+              "en": "Several readings look possible on the surface, but all explicit details in the first line、the second line、the third line、the seventh line、the twelfth line must hold together."
             },
             "intent": {
               "ja": "最も整合する読みは「ド・ミ・ソが一つのチャイムとして時間的に連続する」です。",
@@ -3012,9 +3012,9 @@
               "en": "The reading that best unifies the scene is: Do, mi, and sol form one temporally continuous chime."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-003、line-007、line-012を突き合わせると、個別ファイルの背景音が順番に和音構成音を受け継ぎ、同じ周期内の一旋律になります。",
-              "zh": "对照 line-001、line-002、line-003、line-007、line-012 可知，各文件背景音依次承接和弦音，并在同一节拍周期内组成一段旋律。",
-              "en": "Taken together, line-001、line-002、line-003、line-007、line-012 show that the files inherit successive chord tones within one timing cycle."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、7番目の台詞、12番目の台詞を突き合わせると、個別ファイルの背景音が順番に和音構成音を受け継ぎ、同じ周期内の一旋律になります。",
+              "zh": "对照第1句台词、第2句台词、第3句台词、第7句台词、第12句台词可知，各文件背景音依次承接和弦音，并在同一节拍周期内组成一段旋律。",
+              "en": "Taken together, the first line、the second line、the third line、the seventh line、the twelfth line show that the files inherit successive chord tones within one timing cycle."
             },
             "nuance": {
               "ja": "個別ファイルの背景音が順番に和音構成音を受け継ぎ、同じ周期内の一旋律になります。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
@@ -3022,9 +3022,9 @@
               "en": "the files inherit successive chord tones within one timing cycle. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
-              "ja": "他の選択肢は一部の発言だけなら説明できますが、line-001、line-002、line-003、line-007、line-012の時間順・語の範囲・行動証拠を同時には説明できません。",
-              "zh": "其他选项或许能解释个别话语，却无法同时解释 line-001、line-002、line-003、line-007、line-012 的时间顺序、措辞范围与行为证据。",
-              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across line-001、line-002、line-003、line-007、line-012."
+              "ja": "他の選択肢は一部の発言だけなら説明できますが、1番目の台詞、2番目の台詞、3番目の台詞、7番目の台詞、12番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
+              "zh": "其他选项或许能解释个别话语，却无法同时解释第1句台词、第2句台词、第3句台词、第7句台词、第12句台词的时间顺序、措辞范围与行为证据。",
+              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across the first line、the second line、the third line、the seventh line、the twelfth line."
             }
           }
         },
@@ -3090,9 +3090,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "表面上は複数の説明が可能ですが、line-009、line-011、line-013、line-014、line-015の明示情報を同時に満たす必要があります。",
-              "zh": "表面上似乎存在多种解释，但必须同时满足 line-009、line-011、line-013、line-014、line-015 的明确信息。",
-              "en": "Several readings look possible on the surface, but all explicit details in line-009、line-011、line-013、line-014、line-015 must hold together."
+              "ja": "表面上は複数の説明が可能ですが、9番目の台詞、11番目の台詞、13番目の台詞、14番目の台詞、15番目の台詞の明示情報を同時に満たす必要があります。",
+              "zh": "表面上似乎存在多种解释，但必须同时满足第9句台词、第11句台词、第13句台词、第14句台词、第15句台词的明确信息。",
+              "en": "Several readings look possible on the surface, but all explicit details in the ninth line、the eleventh line、the thirteenth line、the fourteenth line、the fifteenth line must hold together."
             },
             "intent": {
               "ja": "最も整合する読みは「実際に録音した具体的な場所」です。",
@@ -3100,9 +3100,9 @@
               "en": "The reading that best unifies the scene is: The exact place where recording occurred."
             },
             "evidence": {
-              "ja": "line-009、line-011、line-013、line-014、line-015を突き合わせると、音響は同一音場を支持しても、その音場がどの都市・建物かを識別する固有情報はありません。",
-              "zh": "对照 line-009、line-011、line-013、line-014、line-015 可知，声学证据支持同一声场，却没有能识别该声场属于哪座城市或建筑的独有信息。",
-              "en": "Taken together, line-009、line-011、line-013、line-014、line-015 show that the audio supports one acoustic field but lacks unique information identifying its city or building."
+              "ja": "9番目の台詞、11番目の台詞、13番目の台詞、14番目の台詞、15番目の台詞を突き合わせると、音響は同一音場を支持しても、その音場がどの都市・建物かを識別する固有情報はありません。",
+              "zh": "对照第9句台词、第11句台词、第13句台词、第14句台词、第15句台词可知，声学证据支持同一声场，却没有能识别该声场属于哪座城市或建筑的独有信息。",
+              "en": "Taken together, the ninth line、the eleventh line、the thirteenth line、the fourteenth line、the fifteenth line show that the audio supports one acoustic field but lacks unique information identifying its city or building."
             },
             "nuance": {
               "ja": "音響は同一音場を支持しても、その音場がどの都市・建物かを識別する固有情報はありません。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
@@ -3110,9 +3110,9 @@
               "en": "the audio supports one acoustic field but lacks unique information identifying its city or building. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
-              "ja": "他の選択肢は一部の発言だけなら説明できますが、line-009、line-011、line-013、line-014、line-015の時間順・語の範囲・行動証拠を同時には説明できません。",
-              "zh": "其他选项或许能解释个别话语，却无法同时解释 line-009、line-011、line-013、line-014、line-015 的时间顺序、措辞范围与行为证据。",
-              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across line-009、line-011、line-013、line-014、line-015."
+              "ja": "他の選択肢は一部の発言だけなら説明できますが、9番目の台詞、11番目の台詞、13番目の台詞、14番目の台詞、15番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
+              "zh": "其他选项或许能解释个别话语，却无法同时解释第9句台词、第11句台词、第13句台词、第14句台词、第15句台词的时间顺序、措辞范围与行为证据。",
+              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across the ninth line、the eleventh line、the thirteenth line、the fourteenth line、the fifteenth line."
             }
           }
         }
@@ -3127,13 +3127,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "e3712972c205034c22b17361c4ddf933ba8937ed148367d7cb5fba0ec5712d66"
+      "contentHash": "162c7fe7b5a0086dfa035e9b1720acd089494e67ff6044390502506fc54427c6"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L4-045",
-      "revision": 1,
+      "revision": 2,
       "level": 4,
       "stage": 45,
       "jlptTarget": "N1-advanced",
@@ -3690,9 +3690,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "表面上は複数の説明が可能ですが、line-002、line-004、line-007、line-009、line-010の明示情報を同時に満たす必要があります。",
-              "zh": "表面上似乎存在多种解释，但必须同时满足 line-002、line-004、line-007、line-009、line-010 的明确信息。",
-              "en": "Several readings look possible on the surface, but all explicit details in line-002、line-004、line-007、line-009、line-010 must hold together."
+              "ja": "表面上は複数の説明が可能ですが、2番目の台詞、4番目の台詞、7番目の台詞、9番目の台詞、10番目の台詞の明示情報を同時に満たす必要があります。",
+              "zh": "表面上似乎存在多种解释，但必须同时满足第2句台词、第4句台词、第7句台词、第9句台词、第10句台词的明确信息。",
+              "en": "Several readings look possible on the surface, but all explicit details in the second line、the fourth line、the seventh line、the ninth line、the tenth line must hold together."
             },
             "intent": {
               "ja": "最も整合する読みは「今朝、住民の定義から旅行者を外した／過去値も新定義で遡及再計算した」です。",
@@ -3700,9 +3700,9 @@
               "en": "The reading that best unifies the scene is: Travelers were removed from the resident definition this morning / Past values were retroactively recalculated under the new definition."
             },
             "evidence": {
-              "ja": "line-002、line-004、line-007、line-009、line-010を突き合わせると、現在と過去の分母を同時に再定義したため、実在人数の変化を消した平坦な系列が作られています。",
-              "zh": "对照 line-002、line-004、line-007、line-009、line-010 可知，同时重定义当前与过去的分母，制造出抹去实际人数变化的平坦序列。",
-              "en": "Taken together, line-002、line-004、line-007、line-009、line-010 show that redefining current and historical denominators creates a flat series that erases real population changes."
+              "ja": "2番目の台詞、4番目の台詞、7番目の台詞、9番目の台詞、10番目の台詞を突き合わせると、現在と過去の分母を同時に再定義したため、実在人数の変化を消した平坦な系列が作られています。",
+              "zh": "对照第2句台词、第4句台词、第7句台词、第9句台词、第10句台词可知，同时重定义当前与过去的分母，制造出抹去实际人数变化的平坦序列。",
+              "en": "Taken together, the second line、the fourth line、the seventh line、the ninth line、the tenth line show that redefining current and historical denominators creates a flat series that erases real population changes."
             },
             "nuance": {
               "ja": "現在と過去の分母を同時に再定義したため、実在人数の変化を消した平坦な系列が作られています。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
@@ -3710,9 +3710,9 @@
               "en": "redefining current and historical denominators creates a flat series that erases real population changes. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
-              "ja": "他の選択肢は一部の発言だけなら説明できますが、line-002、line-004、line-007、line-009、line-010の時間順・語の範囲・行動証拠を同時には説明できません。",
-              "zh": "其他选项或许能解释个别话语，却无法同时解释 line-002、line-004、line-007、line-009、line-010 的时间顺序、措辞范围与行为证据。",
-              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across line-002、line-004、line-007、line-009、line-010."
+              "ja": "他の選択肢は一部の発言だけなら説明できますが、2番目の台詞、4番目の台詞、7番目の台詞、9番目の台詞、10番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
+              "zh": "其他选项或许能解释个别话语，却无法同时解释第2句台词、第4句台词、第7句台词、第9句台词、第10句台词的时间顺序、措辞范围与行为证据。",
+              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across the second line、the fourth line、the seventh line、the ninth line、the tenth line."
             }
           }
         },
@@ -3778,9 +3778,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "表面上は複数の説明が可能ですが、line-004、line-005、line-006、line-007、line-011の明示情報を同時に満たす必要があります。",
-              "zh": "表面上似乎存在多种解释，但必须同时满足 line-004、line-005、line-006、line-007、line-011 的明确信息。",
-              "en": "Several readings look possible on the surface, but all explicit details in line-004、line-005、line-006、line-007、line-011 must hold together."
+              "ja": "表面上は複数の説明が可能ですが、4番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、11番目の台詞の明示情報を同時に満たす必要があります。",
+              "zh": "表面上似乎存在多种解释，但必须同时满足第4句台词、第5句台词、第6句台词、第7句台词、第11句台词的明确信息。",
+              "en": "Several readings look possible on the surface, but all explicit details in the fourth line、the fifth line、the sixth line、the seventh line、the eleventh line must hold together."
             },
             "intent": {
               "ja": "最も整合する読みは「人は同じ場所に残るのに、統計上の身分だけ一夜で消えた」です。",
@@ -3788,9 +3788,9 @@
               "en": "The reading that best unifies the scene is: The person remains physically present while the statistical identity vanishes overnight."
             },
             "evidence": {
-              "ja": "line-004、line-005、line-006、line-007、line-011を突き合わせると、物理的な滞在と需要は連続しているのに、定義変更だけで住民系列から除外されました。",
-              "zh": "对照 line-004、line-005、line-006、line-007、line-011 可知，实际停留与资源需求连续存在，却仅因定义变更被排除出居民序列。",
-              "en": "Taken together, line-004、line-005、line-006、line-007、line-011 show that physical presence and demand continue while only the classification changes."
+              "ja": "4番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、11番目の台詞を突き合わせると、物理的な滞在と需要は連続しているのに、定義変更だけで住民系列から除外されました。",
+              "zh": "对照第4句台词、第5句台词、第6句台词、第7句台词、第11句台词可知，实际停留与资源需求连续存在，却仅因定义变更被排除出居民序列。",
+              "en": "Taken together, the fourth line、the fifth line、the sixth line、the seventh line、the eleventh line show that physical presence and demand continue while only the classification changes."
             },
             "nuance": {
               "ja": "物理的な滞在と需要は連続しているのに、定義変更だけで住民系列から除外されました。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
@@ -3798,9 +3798,9 @@
               "en": "physical presence and demand continue while only the classification changes. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
-              "ja": "他の選択肢は一部の発言だけなら説明できますが、line-004、line-005、line-006、line-007、line-011の時間順・語の範囲・行動証拠を同時には説明できません。",
-              "zh": "其他选项或许能解释个别话语，却无法同时解释 line-004、line-005、line-006、line-007、line-011 的时间顺序、措辞范围与行为证据。",
-              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across line-004、line-005、line-006、line-007、line-011."
+              "ja": "他の選択肢は一部の発言だけなら説明できますが、4番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、11番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
+              "zh": "其他选项或许能解释个别话语，却无法同时解释第4句台词、第5句台词、第6句台词、第7句台词、第11句台词的时间顺序、措辞范围与行为证据。",
+              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across the fourth line、the fifth line、the sixth line、the seventh line、the eleventh line."
             }
           }
         },
@@ -3865,9 +3865,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "表面上は複数の説明が可能ですが、line-003、line-007、line-013、line-015の明示情報を同時に満たす必要があります。",
-              "zh": "表面上似乎存在多种解释，但必须同时满足 line-003、line-007、line-013、line-015 的明确信息。",
-              "en": "Several readings look possible on the surface, but all explicit details in line-003、line-007、line-013、line-015 must hold together."
+              "ja": "表面上は複数の説明が可能ですが、3番目の台詞、7番目の台詞、13番目の台詞、15番目の台詞の明示情報を同時に満たす必要があります。",
+              "zh": "表面上似乎存在多种解释，但必须同时满足第3句台词、第7句台词、第13句台词、第15句台词的明确信息。",
+              "en": "Several readings look possible on the surface, but all explicit details in the third line、the seventh line、the thirteenth line、the fifteenth line must hold together."
             },
             "intent": {
               "ja": "最も整合する読みは「測っている対象を許可保有者に限定し、定義依存性を明示するから」です。",
@@ -3875,9 +3875,9 @@
               "en": "The reading that best unifies the scene is: It identifies authorization holders as the measured group and states definition dependence."
             },
             "evidence": {
-              "ja": "line-003、line-007、line-013、line-015を突き合わせると、曖昧な「人口」から実際に数えた許可保有者へ名称を狭め、安定の条件も表示します。",
-              "zh": "对照 line-003、line-007、line-013、line-015 可知，把含糊的“人口”收窄为实际统计的许可持有者，并显示“稳定”的条件。",
-              "en": "Taken together, line-003、line-007、line-013、line-015 show that it narrows population to the counted authorization holders and exposes the condition behind stability."
+              "ja": "3番目の台詞、7番目の台詞、13番目の台詞、15番目の台詞を突き合わせると、曖昧な「人口」から実際に数えた許可保有者へ名称を狭め、安定の条件も表示します。",
+              "zh": "对照第3句台词、第7句台词、第13句台词、第15句台词可知，把含糊的“人口”收窄为实际统计的许可持有者，并显示“稳定”的条件。",
+              "en": "Taken together, the third line、the seventh line、the thirteenth line、the fifteenth line show that it narrows population to the counted authorization holders and exposes the condition behind stability."
             },
             "nuance": {
               "ja": "曖昧な「人口」から実際に数えた許可保有者へ名称を狭め、安定の条件も表示します。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
@@ -3885,9 +3885,9 @@
               "en": "it narrows population to the counted authorization holders and exposes the condition behind stability. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
-              "ja": "他の選択肢は一部の発言だけなら説明できますが、line-003、line-007、line-013、line-015の時間順・語の範囲・行動証拠を同時には説明できません。",
-              "zh": "其他选项或许能解释个别话语，却无法同时解释 line-003、line-007、line-013、line-015 的时间顺序、措辞范围与行为证据。",
-              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across line-003、line-007、line-013、line-015."
+              "ja": "他の選択肢は一部の発言だけなら説明できますが、3番目の台詞、7番目の台詞、13番目の台詞、15番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
+              "zh": "其他选项或许能解释个别话语，却无法同时解释第3句台词、第7句台词、第13句台词、第15句台词的时间顺序、措辞范围与行为证据。",
+              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across the third line、the seventh line、the thirteenth line、the fifteenth line."
             }
           }
         },
@@ -3954,9 +3954,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "表面上は複数の説明が可能ですが、line-005、line-011、line-012、line-013、line-014、line-016の明示情報を同時に満たす必要があります。",
-              "zh": "表面上似乎存在多种解释，但必须同时满足 line-005、line-011、line-012、line-013、line-014、line-016 的明确信息。",
-              "en": "Several readings look possible on the surface, but all explicit details in line-005、line-011、line-012、line-013、line-014、line-016 must hold together."
+              "ja": "表面上は複数の説明が可能ですが、5番目の台詞、11番目の台詞、12番目の台詞、13番目の台詞、14番目の台詞、16番目の台詞の明示情報を同時に満たす必要があります。",
+              "zh": "表面上似乎存在多种解释，但必须同时满足第5句台词、第11句台词、第12句台词、第13句台词、第14句台词、第16句台词的明确信息。",
+              "en": "Several readings look possible on the surface, but all explicit details in the fifth line、the eleventh line、the twelfth line、the thirteenth line、the fourteenth line、the sixteenth line must hold together."
             },
             "intent": {
               "ja": "最も整合する読みは「旅行者の実在人数と資源需要」です。",
@@ -3964,9 +3964,9 @@
               "en": "The reading that best unifies the scene is: Physical traveler count and resource demand."
             },
             "evidence": {
-              "ja": "line-005、line-011、line-012、line-013、line-014、line-016を突き合わせると、統計から外れた人も現実には港の負荷を生むため、分類外人口と需要を併記する必要があります。",
-              "zh": "对照 line-005、line-011、line-012、line-013、line-014、line-016 可知，被统计排除的人仍会造成港口实际负荷，因此必须并列显示分类外人口与需求。",
-              "en": "Taken together, line-005、line-011、line-012、line-013、line-014、line-016 show that excluded people still create real operational load, so their count and demand must accompany the classification-based series."
+              "ja": "5番目の台詞、11番目の台詞、12番目の台詞、13番目の台詞、14番目の台詞、16番目の台詞を突き合わせると、統計から外れた人も現実には港の負荷を生むため、分類外人口と需要を併記する必要があります。",
+              "zh": "对照第5句台词、第11句台词、第12句台词、第13句台词、第14句台词、第16句台词可知，被统计排除的人仍会造成港口实际负荷，因此必须并列显示分类外人口与需求。",
+              "en": "Taken together, the fifth line、the eleventh line、the twelfth line、the thirteenth line、the fourteenth line、the sixteenth line show that excluded people still create real operational load, so their count and demand must accompany the classification-based series."
             },
             "nuance": {
               "ja": "統計から外れた人も現実には港の負荷を生むため、分類外人口と需要を併記する必要があります。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
@@ -3974,9 +3974,9 @@
               "en": "excluded people still create real operational load, so their count and demand must accompany the classification-based series. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
-              "ja": "他の選択肢は一部の発言だけなら説明できますが、line-005、line-011、line-012、line-013、line-014、line-016の時間順・語の範囲・行動証拠を同時には説明できません。",
-              "zh": "其他选项或许能解释个别话语，却无法同时解释 line-005、line-011、line-012、line-013、line-014、line-016 的时间顺序、措辞范围与行为证据。",
-              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across line-005、line-011、line-012、line-013、line-014、line-016."
+              "ja": "他の選択肢は一部の発言だけなら説明できますが、5番目の台詞、11番目の台詞、12番目の台詞、13番目の台詞、14番目の台詞、16番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
+              "zh": "其他选项或许能解释个别话语，却无法同时解释第5句台词、第11句台词、第12句台词、第13句台词、第14句台词、第16句台词的时间顺序、措辞范围与行为证据。",
+              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across the fifth line、the eleventh line、the twelfth line、the thirteenth line、the fourteenth line、the sixteenth line."
             }
           }
         }
@@ -3991,13 +3991,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "1bfddbd8b75f6a6c1ab6fbc5dce37747a5a0750ebb7c78dee3df7ddd33fce95a"
+      "contentHash": "5af0331d0559a33b3239e9e02012d989ea1c2c166609ad4cc837db67664bda51"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L4-046",
-      "revision": 1,
+      "revision": 2,
       "level": 4,
       "stage": 46,
       "jlptTarget": "N1-advanced",
@@ -4530,9 +4530,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "表面上は複数の説明が可能ですが、line-006、line-007、line-008、line-009、line-010、line-014の明示情報を同時に満たす必要があります。",
-              "zh": "表面上似乎存在多种解释，但必须同时满足 line-006、line-007、line-008、line-009、line-010、line-014 的明确信息。",
-              "en": "Several readings look possible on the surface, but all explicit details in line-006、line-007、line-008、line-009、line-010、line-014 must hold together."
+              "ja": "表面上は複数の説明が可能ですが、6番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞、14番目の台詞の明示情報を同時に満たす必要があります。",
+              "zh": "表面上似乎存在多种解释，但必须同时满足第6句台词、第7句台词、第8句台词、第9句台词、第10句台词、第14句台词的明确信息。",
+              "en": "Several readings look possible on the surface, but all explicit details in the sixth line、the seventh line、the eighth line、the ninth line、the tenth line、the fourteenth line must hold together."
             },
             "intent": {
               "ja": "最も整合する読みは「一人が異なる時点で書いた説と、二人の筆跡が収束した説がともに残る」です。",
@@ -4540,9 +4540,9 @@
               "en": "The reading that best unifies the scene is: Both one writer across times and two converging hands remain viable."
             },
             "evidence": {
-              "ja": "line-006、line-007、line-008、line-009、line-010、line-014を突き合わせると、双方の高い筆跡一致、単一筆記者可能性、相互練習紙が二つの仮説をそれぞれ支え、時刻は確定不能です。",
-              "zh": "对照 line-006、line-007、line-008、line-009、line-010、line-014 可知，双方高匹配率、单一书写者可能性与相互练习纸分别支持两种假说，时间又无法确定。",
-              "en": "Taken together, line-006、line-007、line-008、line-009、line-010、line-014 show that dual handwriting matches, one-writer feasibility, mutual practice sheets, and indeterminate timing support both hypotheses."
+              "ja": "6番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞、14番目の台詞を突き合わせると、双方の高い筆跡一致、単一筆記者可能性、相互練習紙が二つの仮説をそれぞれ支え、時刻は確定不能です。",
+              "zh": "对照第6句台词、第7句台词、第8句台词、第9句台词、第10句台词、第14句台词可知，双方高匹配率、单一书写者可能性与相互练习纸分别支持两种假说，时间又无法确定。",
+              "en": "Taken together, the sixth line、the seventh line、the eighth line、the ninth line、the tenth line、the fourteenth line show that dual handwriting matches, one-writer feasibility, mutual practice sheets, and indeterminate timing support both hypotheses."
             },
             "nuance": {
               "ja": "双方の高い筆跡一致、単一筆記者可能性、相互練習紙が二つの仮説をそれぞれ支え、時刻は確定不能です。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
@@ -4550,9 +4550,9 @@
               "en": "dual handwriting matches, one-writer feasibility, mutual practice sheets, and indeterminate timing support both hypotheses. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
-              "ja": "他の選択肢は一部の発言だけなら説明できますが、line-006、line-007、line-008、line-009、line-010、line-014の時間順・語の範囲・行動証拠を同時には説明できません。",
-              "zh": "其他选项或许能解释个别话语，却无法同时解释 line-006、line-007、line-008、line-009、line-010、line-014 的时间顺序、措辞范围与行为证据。",
-              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across line-006、line-007、line-008、line-009、line-010、line-014."
+              "ja": "他の選択肢は一部の発言だけなら説明できますが、6番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞、14番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
+              "zh": "其他选项或许能解释个别话语，却无法同时解释第6句台词、第7句台词、第8句台词、第9句台词、第10句台词、第14句台词的时间顺序、措辞范围与行为证据。",
+              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across the sixth line、the seventh line、the eighth line、the ninth line、the tenth line、the fourteenth line."
             }
           }
         },
@@ -4618,9 +4618,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "表面上は複数の説明が可能ですが、line-001、line-002、line-003、line-012、line-013の明示情報を同時に満たす必要があります。",
-              "zh": "表面上似乎存在多种解释，但必须同时满足 line-001、line-002、line-003、line-012、line-013 的明确信息。",
-              "en": "Several readings look possible on the surface, but all explicit details in line-001、line-002、line-003、line-012、line-013 must hold together."
+              "ja": "表面上は複数の説明が可能ですが、1番目の台詞、2番目の台詞、3番目の台詞、12番目の台詞、13番目の台詞の明示情報を同時に満たす必要があります。",
+              "zh": "表面上似乎存在多种解释，但必须同时满足第1句台词、第2句台词、第3句台词、第12句台词、第13句台词的明确信息。",
+              "en": "Several readings look possible on the surface, but all explicit details in the first line、the second line、the third line、the twelfth line、the thirteenth line must hold together."
             },
             "intent": {
               "ja": "最も整合する読みは「鏡面反転と重なった線が、読む側により別の文と指示関係を作る」です。",
@@ -4628,9 +4628,9 @@
               "en": "The reading that best unifies the scene is: Reversal and overlapping strokes create different sentences and reference by viewing side."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-003、line-012、line-013を突き合わせると、同一線形が表裏で異なる文字列になり、さらに一・二人称の指示対象も観察位置に依存します。",
-              "zh": "对照 line-001、line-002、line-003、line-012、line-013 可知，同一线条在正反面成为不同字符串，一二人称指代也依赖观察位置。",
-              "en": "Taken together, line-001、line-002、line-003、line-012、line-013 show that the same strokes yield different strings and person references depending on viewing side."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、12番目の台詞、13番目の台詞を突き合わせると、同一線形が表裏で異なる文字列になり、さらに一・二人称の指示対象も観察位置に依存します。",
+              "zh": "对照第1句台词、第2句台词、第3句台词、第12句台词、第13句台词可知，同一线条在正反面成为不同字符串，一二人称指代也依赖观察位置。",
+              "en": "Taken together, the first line、the second line、the third line、the twelfth line、the thirteenth line show that the same strokes yield different strings and person references depending on viewing side."
             },
             "nuance": {
               "ja": "同一線形が表裏で異なる文字列になり、さらに一・二人称の指示対象も観察位置に依存します。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
@@ -4638,9 +4638,9 @@
               "en": "the same strokes yield different strings and person references depending on viewing side. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
-              "ja": "他の選択肢は一部の発言だけなら説明できますが、line-001、line-002、line-003、line-012、line-013の時間順・語の範囲・行動証拠を同時には説明できません。",
-              "zh": "其他选项或许能解释个别话语，却无法同时解释 line-001、line-002、line-003、line-012、line-013 的时间顺序、措辞范围与行为证据。",
-              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across line-001、line-002、line-003、line-012、line-013."
+              "ja": "他の選択肢は一部の発言だけなら説明できますが、1番目の台詞、2番目の台詞、3番目の台詞、12番目の台詞、13番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
+              "zh": "其他选项或许能解释个别话语，却无法同时解释第1句台词、第2句台词、第3句台词、第12句台词、第13句台词的时间顺序、措辞范围与行为证据。",
+              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across the first line、the second line、the third line、the twelfth line、the thirteenth line."
             }
           }
         },
@@ -4706,9 +4706,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "表面上は複数の説明が可能ですが、line-006、line-011、line-013、line-014、line-015の明示情報を同時に満たす必要があります。",
-              "zh": "表面上似乎存在多种解释，但必须同时满足 line-006、line-011、line-013、line-014、line-015 的明确信息。",
-              "en": "Several readings look possible on the surface, but all explicit details in line-006、line-011、line-013、line-014、line-015 must hold together."
+              "ja": "表面上は複数の説明が可能ですが、6番目の台詞、11番目の台詞、13番目の台詞、14番目の台詞、15番目の台詞の明示情報を同時に満たす必要があります。",
+              "zh": "表面上似乎存在多种解释，但必须同时满足第6句台词、第11句台词、第13句台词、第14句台词、第15句台词的明确信息。",
+              "en": "Several readings look possible on the surface, but all explicit details in the sixth line、the eleventh line、the thirteenth line、the fourteenth line、the fifteenth line must hold together."
             },
             "intent": {
               "ja": "最も整合する読みは「決定証拠となる筆記時刻と扉外記録がなく、二仮説が同じ証拠に適合する」です。",
@@ -4716,9 +4716,9 @@
               "en": "The reading that best unifies the scene is: Decisive timing and outside records are absent, and both hypotheses fit the evidence."
             },
             "evidence": {
-              "ja": "line-006、line-011、line-013、line-014、line-015を突き合わせると、鑑定は一致を示しても書いた時点と身体同一性を決められず、外部照合資料も未取得です。",
-              "zh": "对照 line-006、line-011、line-013、line-014、line-015 可知，鉴定只能显示匹配，无法确定书写时点与身体同一性，外部核对资料也未取得。",
-              "en": "Taken together, line-006、line-011、line-013、line-014、line-015 show that matching does not establish writing time or bodily identity, and external corroboration is missing."
+              "ja": "6番目の台詞、11番目の台詞、13番目の台詞、14番目の台詞、15番目の台詞を突き合わせると、鑑定は一致を示しても書いた時点と身体同一性を決められず、外部照合資料も未取得です。",
+              "zh": "对照第6句台词、第11句台词、第13句台词、第14句台词、第15句台词可知，鉴定只能显示匹配，无法确定书写时点与身体同一性，外部核对资料也未取得。",
+              "en": "Taken together, the sixth line、the eleventh line、the thirteenth line、the fourteenth line、the fifteenth line show that matching does not establish writing time or bodily identity, and external corroboration is missing."
             },
             "nuance": {
               "ja": "鑑定は一致を示しても書いた時点と身体同一性を決められず、外部照合資料も未取得です。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
@@ -4726,9 +4726,9 @@
               "en": "matching does not establish writing time or bodily identity, and external corroboration is missing. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
-              "ja": "他の選択肢は一部の発言だけなら説明できますが、line-006、line-011、line-013、line-014、line-015の時間順・語の範囲・行動証拠を同時には説明できません。",
-              "zh": "其他选项或许能解释个别话语，却无法同时解释 line-006、line-011、line-013、line-014、line-015 的时间顺序、措辞范围与行为证据。",
-              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across line-006、line-011、line-013、line-014、line-015."
+              "ja": "他の選択肢は一部の発言だけなら説明できますが、6番目の台詞、11番目の台詞、13番目の台詞、14番目の台詞、15番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
+              "zh": "其他选项或许能解释个别话语，却无法同时解释第6句台词、第11句台词、第13句台词、第14句台词、第15句台词的时间顺序、措辞范围与行为证据。",
+              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across the sixth line、the eleventh line、the thirteenth line、the fourteenth line、the fifteenth line."
             }
           }
         }
@@ -4743,13 +4743,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "fd432170b71c4ff7d6e582a3f8d93f516e8c6cb25089c5273004a16bedf1502e"
+      "contentHash": "df489266864fcaabee6371fbd32de931b21a0f4acc7a1e7e1719e0b1187d4bea"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L4-047",
-      "revision": 1,
+      "revision": 2,
       "level": 4,
       "stage": 47,
       "jlptTarget": "N1-advanced",
@@ -5300,9 +5300,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "表面上は複数の説明が可能ですが、line-004、line-005、line-006、line-007、line-008、line-009の明示情報を同時に満たす必要があります。",
-              "zh": "表面上似乎存在多种解释，但必须同时满足 line-004、line-005、line-006、line-007、line-008、line-009 的明确信息。",
-              "en": "Several readings look possible on the surface, but all explicit details in line-004、line-005、line-006、line-007、line-008、line-009 must hold together."
+              "ja": "表面上は複数の説明が可能ですが、4番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞の明示情報を同時に満たす必要があります。",
+              "zh": "表面上似乎存在多种解释，但必须同时满足第4句台词、第5句台词、第6句台词、第7句台词、第8句台词、第9句台词的明确信息。",
+              "en": "Several readings look possible on the surface, but all explicit details in the fourth line、the fifth line、the sixth line、the seventh line、the eighth line、the ninth line must hold together."
             },
             "intent": {
               "ja": "最も整合する読みは「空室照会・列車終点変更・悪天候を組み合わせた」です。",
@@ -5310,9 +5310,9 @@
               "en": "The reading that best unifies the scene is: He combined the vacancy inquiry, train change, and weather."
             },
             "evidence": {
-              "ja": "line-004、line-005、line-006、line-007、line-008、line-009を突き合わせると、単独では弱い情報も、移動制約と本人の関心を合わせることで高い到着確率になります。",
-              "zh": "对照 line-004、line-005、line-006、line-007、line-008、line-009 可知，单独看来较弱的信息，在结合出行限制与本人意向后形成较高到达概率。",
-              "en": "Taken together, line-004、line-005、line-006、line-007、line-008、line-009 show that weak individual cues become a strong arrival estimate when intent and travel constraints are combined."
+              "ja": "4番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞を突き合わせると、単独では弱い情報も、移動制約と本人の関心を合わせることで高い到着確率になります。",
+              "zh": "对照第4句台词、第5句台词、第6句台词、第7句台词、第8句台词、第9句台词可知，单独看来较弱的信息，在结合出行限制与本人意向后形成较高到达概率。",
+              "en": "Taken together, the fourth line、the fifth line、the sixth line、the seventh line、the eighth line、the ninth line show that weak individual cues become a strong arrival estimate when intent and travel constraints are combined."
             },
             "nuance": {
               "ja": "単独では弱い情報も、移動制約と本人の関心を合わせることで高い到着確率になります。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
@@ -5320,9 +5320,9 @@
               "en": "weak individual cues become a strong arrival estimate when intent and travel constraints are combined. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
-              "ja": "他の選択肢は一部の発言だけなら説明できますが、line-004、line-005、line-006、line-007、line-008、line-009の時間順・語の範囲・行動証拠を同時には説明できません。",
-              "zh": "其他选项或许能解释个别话语，却无法同时解释 line-004、line-005、line-006、line-007、line-008、line-009 的时间顺序、措辞范围与行为证据。",
-              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across line-004、line-005、line-006、line-007、line-008、line-009."
+              "ja": "他の選択肢は一部の発言だけなら説明できますが、4番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
+              "zh": "其他选项或许能解释个别话语，却无法同时解释第4句台词、第5句台词、第6句台词、第7句台词、第8句台词、第9句台词的时间顺序、措辞范围与行为证据。",
+              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across the fourth line、the fifth line、the sixth line、the seventh line、the eighth line、the ninth line."
             }
           }
         },
@@ -5389,9 +5389,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "表面上は複数の説明が可能ですが、line-009、line-010、line-011、line-012、line-013の明示情報を同時に満たす必要があります。",
-              "zh": "表面上似乎存在多种解释，但必须同时满足 line-009、line-010、line-011、line-012、line-013 的明确信息。",
-              "en": "Several readings look possible on the surface, but all explicit details in line-009、line-010、line-011、line-012、line-013 must hold together."
+              "ja": "表面上は複数の説明が可能ですが、9番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞、13番目の台詞の明示情報を同時に満たす必要があります。",
+              "zh": "表面上似乎存在多种解释，但必须同时满足第9句台词、第10句台词、第11句台词、第12句台词、第13句台词的明确信息。",
+              "en": "Several readings look possible on the surface, but all explicit details in the ninth line、the tenth line、the eleventh line、the twelfth line、the thirteenth line must hold together."
             },
             "intent": {
               "ja": "最も整合する読みは「見込み名を到着前に鉛筆で書く／外れた予測を翌朝消し、的中名をインクでなぞる」です。",
@@ -5399,9 +5399,9 @@
               "en": "The reading that best unifies the scene is: Penciling likely names before arrival / Erasing misses and inking confirmed names."
             },
             "evidence": {
-              "ja": "line-009、line-010、line-011、line-012、line-013を突き合わせると、先行記入だけが残り、失敗例は消えるため、後から見ると的中記録だけが選択的に可視化されます。",
-              "zh": "对照 line-009、line-010、line-011、line-012、line-013 可知，提前记录被保留，而失败项被擦除，事后只会选择性看到命中记录。",
-              "en": "Taken together, line-009、line-010、line-011、line-012、line-013 show that advance entries remain while failures disappear, leaving a selectively visible record of hits."
+              "ja": "9番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞、13番目の台詞を突き合わせると、先行記入だけが残り、失敗例は消えるため、後から見ると的中記録だけが選択的に可視化されます。",
+              "zh": "对照第9句台词、第10句台词、第11句台词、第12句台词、第13句台词可知，提前记录被保留，而失败项被擦除，事后只会选择性看到命中记录。",
+              "en": "Taken together, the ninth line、the tenth line、the eleventh line、the twelfth line、the thirteenth line show that advance entries remain while failures disappear, leaving a selectively visible record of hits."
             },
             "nuance": {
               "ja": "先行記入だけが残り、失敗例は消えるため、後から見ると的中記録だけが選択的に可視化されます。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
@@ -5409,9 +5409,9 @@
               "en": "advance entries remain while failures disappear, leaving a selectively visible record of hits. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
-              "ja": "他の選択肢は一部の発言だけなら説明できますが、line-009、line-010、line-011、line-012、line-013の時間順・語の範囲・行動証拠を同時には説明できません。",
-              "zh": "其他选项或许能解释个别话语，却无法同时解释 line-009、line-010、line-011、line-012、line-013 的时间顺序、措辞范围与行为证据。",
-              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across line-009、line-010、line-011、line-012、line-013."
+              "ja": "他の選択肢は一部の発言だけなら説明できますが、9番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞、13番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
+              "zh": "其他选项或许能解释个别话语，却无法同时解释第9句台词、第10句台词、第11句台词、第12句台词、第13句台词的时间顺序、措辞范围与行为证据。",
+              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across the ninth line、the tenth line、the eleventh line、the twelfth line、the thirteenth line."
             }
           }
         },
@@ -5477,9 +5477,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "表面上は複数の説明が可能ですが、line-009、line-012、line-013、line-014、line-016の明示情報を同時に満たす必要があります。",
-              "zh": "表面上似乎存在多种解释，但必须同时满足 line-009、line-012、line-013、line-014、line-016 的明确信息。",
-              "en": "Several readings look possible on the surface, but all explicit details in line-009、line-012、line-013、line-014、line-016 must hold together."
+              "ja": "表面上は複数の説明が可能ですが、9番目の台詞、12番目の台詞、13番目の台詞、14番目の台詞、16番目の台詞の明示情報を同時に満たす必要があります。",
+              "zh": "表面上似乎存在多种解释，但必须同时满足第9句台词、第12句台词、第13句台词、第14句台词、第16句台词的明确信息。",
+              "en": "Several readings look possible on the surface, but all explicit details in the ninth line、the twelfth line、the thirteenth line、the fourteenth line、the sixteenth line must hold together."
             },
             "intent": {
               "ja": "最も整合する読みは「受付の目的は客室準備で、予測方法も説明し、到着後に正式確定しているから」です。",
@@ -5487,9 +5487,9 @@
               "en": "The reading that best unifies the scene is: The method serves room preparation, is explained openly, and finalizes only after arrival."
             },
             "evidence": {
-              "ja": "line-009、line-012、line-013、line-014、line-016を突き合わせると、見込み欄と正式記録を区別する実務があり、超自然性は観察者の見え方から生じています。",
-              "zh": "对照 line-009、line-012、line-013、line-014、line-016 可知，其操作区分预计栏与正式记录，超自然感来自观察者看到的结果。",
-              "en": "Taken together, line-009、line-012、line-013、line-014、line-016 show that the practice distinguishes forecasts from formal records; the supernatural impression arises from selective observation."
+              "ja": "9番目の台詞、12番目の台詞、13番目の台詞、14番目の台詞、16番目の台詞を突き合わせると、見込み欄と正式記録を区別する実務があり、超自然性は観察者の見え方から生じています。",
+              "zh": "对照第9句台词、第12句台词、第13句台词、第14句台词、第16句台词可知，其操作区分预计栏与正式记录，超自然感来自观察者看到的结果。",
+              "en": "Taken together, the ninth line、the twelfth line、the thirteenth line、the fourteenth line、the sixteenth line show that the practice distinguishes forecasts from formal records; the supernatural impression arises from selective observation."
             },
             "nuance": {
               "ja": "見込み欄と正式記録を区別する実務があり、超自然性は観察者の見え方から生じています。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
@@ -5497,9 +5497,9 @@
               "en": "the practice distinguishes forecasts from formal records; the supernatural impression arises from selective observation. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
-              "ja": "他の選択肢は一部の発言だけなら説明できますが、line-009、line-012、line-013、line-014、line-016の時間順・語の範囲・行動証拠を同時には説明できません。",
-              "zh": "其他选项或许能解释个别话语，却无法同时解释 line-009、line-012、line-013、line-014、line-016 的时间顺序、措辞范围与行为证据。",
-              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across line-009、line-012、line-013、line-014、line-016."
+              "ja": "他の選択肢は一部の発言だけなら説明できますが、9番目の台詞、12番目の台詞、13番目の台詞、14番目の台詞、16番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
+              "zh": "其他选项或许能解释个别话语，却无法同时解释第9句台词、第12句台词、第13句台词、第14句台词、第16句台词的时间顺序、措辞范围与行为证据。",
+              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across the ninth line、the twelfth line、the thirteenth line、the fourteenth line、the sixteenth line."
             }
           }
         }
@@ -5514,13 +5514,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "94d1e72e485ebb68c9b91ba1579957842345d8d3967c5baa62b3064fbdfbbc1c"
+      "contentHash": "debdcb10cb5d322fa2c6dce07205bbb63509dd895e24a985e69468a86e59598b"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L4-048",
-      "revision": 1,
+      "revision": 2,
       "level": 4,
       "stage": 48,
       "jlptTarget": "N1-advanced",
@@ -6042,9 +6042,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "表面上は複数の説明が可能ですが、line-002、line-003、line-005、line-007の明示情報を同時に満たす必要があります。",
-              "zh": "表面上似乎存在多种解释，但必须同时满足 line-002、line-003、line-005、line-007 的明确信息。",
-              "en": "Several readings look possible on the surface, but all explicit details in line-002、line-003、line-005、line-007 must hold together."
+              "ja": "表面上は複数の説明が可能ですが、2番目の台詞、3番目の台詞、5番目の台詞、7番目の台詞の明示情報を同時に満たす必要があります。",
+              "zh": "表面上似乎存在多种解释，但必须同时满足第2句台词、第3句台词、第5句台词、第7句台词的明确信息。",
+              "en": "Several readings look possible on the surface, but all explicit details in the second line、the third line、the fifth line、the seventh line must hold together."
             },
             "intent": {
               "ja": "最も整合する読みは「腕相撲大会で勝ち、署名付き景品として贈られた」です。",
@@ -6052,9 +6052,9 @@
               "en": "The reading that best unifies the scene is: Won in the tournament and given as a signed prize."
             },
             "evidence": {
-              "ja": "line-002、line-003、line-005、line-007を突き合わせると、真正な景品札、第三者の記憶、当時の「贈る」という台詞ログが同じ贈与を独立に示します。",
-              "zh": "对照 line-002、line-003、line-005、line-007 可知，真实奖品牌、第三方记忆与当时“赠送”的台词记录独立指向同一赠予。",
-              "en": "Taken together, line-002、line-003、line-005、line-007 show that the authentic tag, witness memory, and contemporaneous gift language independently establish the award."
+              "ja": "2番目の台詞、3番目の台詞、5番目の台詞、7番目の台詞を突き合わせると、真正な景品札、第三者の記憶、当時の「贈る」という台詞ログが同じ贈与を独立に示します。",
+              "zh": "对照第2句台词、第3句台词、第5句台词、第7句台词可知，真实奖品牌、第三方记忆与当时“赠送”的台词记录独立指向同一赠予。",
+              "en": "Taken together, the second line、the third line、the fifth line、the seventh line show that the authentic tag, witness memory, and contemporaneous gift language independently establish the award."
             },
             "nuance": {
               "ja": "真正な景品札、第三者の記憶、当時の「贈る」という台詞ログが同じ贈与を独立に示します。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
@@ -6062,9 +6062,9 @@
               "en": "the authentic tag, witness memory, and contemporaneous gift language independently establish the award. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
-              "ja": "他の選択肢は一部の発言だけなら説明できますが、line-002、line-003、line-005、line-007の時間順・語の範囲・行動証拠を同時には説明できません。",
-              "zh": "其他选项或许能解释个别话语，却无法同时解释 line-002、line-003、line-005、line-007 的时间顺序、措辞范围与行为证据。",
-              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across line-002、line-003、line-005、line-007."
+              "ja": "他の選択肢は一部の発言だけなら説明できますが、2番目の台詞、3番目の台詞、5番目の台詞、7番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
+              "zh": "其他选项或许能解释个别话语，却无法同时解释第2句台词、第3句台词、第5句台词、第7句台词的时间顺序、措辞范围与行为证据。",
+              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across the second line、the third line、the fifth line、the seventh line."
             }
           }
         },
@@ -6132,9 +6132,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "表面上は複数の説明が可能ですが、line-004、line-006、line-007、line-009、line-010、line-011、line-012の明示情報を同時に満たす必要があります。",
-              "zh": "表面上似乎存在多种解释，但必须同时满足 line-004、line-006、line-007、line-009、line-010、line-011、line-012 的明确信息。",
-              "en": "Several readings look possible on the surface, but all explicit details in line-004、line-006、line-007、line-009、line-010、line-011、line-012 must hold together."
+              "ja": "表面上は複数の説明が可能ですが、4番目の台詞、6番目の台詞、7番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞の明示情報を同時に満たす必要があります。",
+              "zh": "表面上似乎存在多种解释，但必须同时满足第4句台词、第6句台词、第7句台词、第9句台词、第10句台词、第11句台词、第12句台词的明确信息。",
+              "en": "Several readings look possible on the surface, but all explicit details in the fourth line、the sixth line、the seventh line、the ninth line、the tenth line、the eleventh line、the twelfth line must hold together."
             },
             "intent": {
               "ja": "最も整合する読みは「証拠が変わらない一方、贈与から盗難まで都合よく説明を変えている」です。",
@@ -6142,9 +6142,9 @@
               "en": "The reading that best unifies the scene is: The evidence stays fixed while his story shifts opportunistically from gift to theft."
             },
             "evidence": {
-              "ja": "line-004、line-006、line-007、line-009、line-010、line-011、line-012を突き合わせると、同時記録と物証に合わせるのでなく、面目を守る方向へ所有関係の語を後から変えています。",
-              "zh": "对照 line-004、line-006、line-007、line-009、line-010、line-011、line-012 可知，他不是让说法符合当时记录与物证，而是事后朝维护面子的方向改写所有关系。",
-              "en": "Taken together, line-004、line-006、line-007、line-009、line-010、line-011、line-012 show that he revises ownership terms after the fact toward face-saving rather than matching contemporaneous records."
+              "ja": "4番目の台詞、6番目の台詞、7番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞を突き合わせると、同時記録と物証に合わせるのでなく、面目を守る方向へ所有関係の語を後から変えています。",
+              "zh": "对照第4句台词、第6句台词、第7句台词、第9句台词、第10句台词、第11句台词、第12句台词可知，他不是让说法符合当时记录与物证，而是事后朝维护面子的方向改写所有关系。",
+              "en": "Taken together, the fourth line、the sixth line、the seventh line、the ninth line、the tenth line、the eleventh line、the twelfth line show that he revises ownership terms after the fact toward face-saving rather than matching contemporaneous records."
             },
             "nuance": {
               "ja": "同時記録と物証に合わせるのでなく、面目を守る方向へ所有関係の語を後から変えています。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
@@ -6152,9 +6152,9 @@
               "en": "he revises ownership terms after the fact toward face-saving rather than matching contemporaneous records. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
-              "ja": "他の選択肢は一部の発言だけなら説明できますが、line-004、line-006、line-007、line-009、line-010、line-011、line-012の時間順・語の範囲・行動証拠を同時には説明できません。",
-              "zh": "其他选项或许能解释个别话语，却无法同时解释 line-004、line-006、line-007、line-009、line-010、line-011、line-012 的时间顺序、措辞范围与行为证据。",
-              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across line-004、line-006、line-007、line-009、line-010、line-011、line-012."
+              "ja": "他の選択肢は一部の発言だけなら説明できますが、4番目の台詞、6番目の台詞、7番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
+              "zh": "其他选项或许能解释个别话语，却无法同时解释第4句台词、第6句台词、第7句台词、第9句台词、第10句台词、第11句台词、第12句台词的时间顺序、措辞范围与行为证据。",
+              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across the fourth line、the sixth line、the seventh line、the ninth line、the tenth line、the eleventh line、the twelfth line."
             }
           }
         },
@@ -6220,9 +6220,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "表面上は複数の説明が可能ですが、line-009、line-010、line-011、line-013、line-014の明示情報を同時に満たす必要があります。",
-              "zh": "表面上似乎存在多种解释，但必须同时满足 line-009、line-010、line-011、line-013、line-014 的明确信息。",
-              "en": "Several readings look possible on the surface, but all explicit details in line-009、line-010、line-011、line-013、line-014 must hold together."
+              "ja": "表面上は複数の説明が可能ですが、9番目の台詞、10番目の台詞、11番目の台詞、13番目の台詞、14番目の台詞の明示情報を同時に満たす必要があります。",
+              "zh": "表面上似乎存在多种解释，但必须同时满足第9句台词、第10句台词、第11句台词、第13句台词、第14句台词的明确信息。",
+              "en": "Several readings look possible on the surface, but all explicit details in the ninth line、the tenth line、the eleventh line、the thirteenth line、the fourteenth line must hold together."
             },
             "intent": {
               "ja": "最も整合する読みは「敗北を公に認めず店主としての面目を保ちたい」です。",
@@ -6230,9 +6230,9 @@
               "en": "The reading that best unifies the scene is: To avoid publicly owning defeat and preserve face as shopkeeper."
             },
             "evidence": {
-              "ja": "line-009、line-010、line-011、line-013、line-014を突き合わせると、本人が面目を明言し、説明変更が一貫して贈与と敗北を弱める方向へ進んでいます。",
-              "zh": "对照 line-009、line-010、line-011、line-013、line-014 可知，本人明确提到面子，所有改口都朝淡化赠予与失败的方向发展。",
-              "en": "Taken together, line-009、line-010、line-011、line-013、line-014 show that he names reputation explicitly, and every revision weakens the public gift and defeat."
+              "ja": "9番目の台詞、10番目の台詞、11番目の台詞、13番目の台詞、14番目の台詞を突き合わせると、本人が面目を明言し、説明変更が一貫して贈与と敗北を弱める方向へ進んでいます。",
+              "zh": "对照第9句台词、第10句台词、第11句台词、第13句台词、第14句台词可知，本人明确提到面子，所有改口都朝淡化赠予与失败的方向发展。",
+              "en": "Taken together, the ninth line、the tenth line、the eleventh line、the thirteenth line、the fourteenth line show that he names reputation explicitly, and every revision weakens the public gift and defeat."
             },
             "nuance": {
               "ja": "本人が面目を明言し、説明変更が一貫して贈与と敗北を弱める方向へ進んでいます。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
@@ -6240,9 +6240,9 @@
               "en": "he names reputation explicitly, and every revision weakens the public gift and defeat. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
-              "ja": "他の選択肢は一部の発言だけなら説明できますが、line-009、line-010、line-011、line-013、line-014の時間順・語の範囲・行動証拠を同時には説明できません。",
-              "zh": "其他选项或许能解释个别话语，却无法同时解释 line-009、line-010、line-011、line-013、line-014 的时间顺序、措辞范围与行为证据。",
-              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across line-009、line-010、line-011、line-013、line-014."
+              "ja": "他の選択肢は一部の発言だけなら説明できますが、9番目の台詞、10番目の台詞、11番目の台詞、13番目の台詞、14番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
+              "zh": "其他选项或许能解释个别话语，却无法同时解释第9句台词、第10句台词、第11句台词、第13句台词、第14句台词的时间顺序、措辞范围与行为证据。",
+              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across the ninth line、the tenth line、the eleventh line、the thirteenth line、the fourteenth line."
             }
           }
         },
@@ -6309,9 +6309,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "表面上は複数の説明が可能ですが、line-003、line-007、line-012、line-013、line-014、line-015の明示情報を同時に満たす必要があります。",
-              "zh": "表面上似乎存在多种解释，但必须同时满足 line-003、line-007、line-012、line-013、line-014、line-015 的明确信息。",
-              "en": "Several readings look possible on the surface, but all explicit details in line-003、line-007、line-012、line-013、line-014、line-015 must hold together."
+              "ja": "表面上は複数の説明が可能ですが、3番目の台詞、7番目の台詞、12番目の台詞、13番目の台詞、14番目の台詞、15番目の台詞の明示情報を同時に満たす必要があります。",
+              "zh": "表面上似乎存在多种解释，但必须同时满足第3句台词、第7句台词、第12句台词、第13句台词、第14句台词、第15句台词的明确信息。",
+              "en": "Several readings look possible on the surface, but all explicit details in the third line、the seventh line、the twelfth line、the thirteenth line、the fourteenth line、the fifteenth line must hold together."
             },
             "intent": {
               "ja": "最も整合する読みは「物品返還より、負けをめぐる面目と関係の修復が実際の問題だから」です。",
@@ -6319,9 +6319,9 @@
               "en": "The reading that best unifies the scene is: The real issue is face and relationship repair around defeat, not item return."
             },
             "evidence": {
-              "ja": "line-003、line-007、line-012、line-013、line-014、line-015を突き合わせると、所有権は物証で解決済みで、未解決なのは敗者が面目を失わず事実を受け入れる対人課題です。",
-              "zh": "对照 line-003、line-007、line-012、line-013、line-014、line-015 可知，所有权已由物证解决，未解决的是败者如何在保全面子的同时接受事实。",
-              "en": "Taken together, line-003、line-007、line-012、line-013、line-014、line-015 show that ownership is already resolved by evidence; the remaining task is interpersonal acceptance without needless humiliation."
+              "ja": "3番目の台詞、7番目の台詞、12番目の台詞、13番目の台詞、14番目の台詞、15番目の台詞を突き合わせると、所有権は物証で解決済みで、未解決なのは敗者が面目を失わず事実を受け入れる対人課題です。",
+              "zh": "对照第3句台词、第7句台词、第12句台词、第13句台词、第14句台词、第15句台词可知，所有权已由物证解决，未解决的是败者如何在保全面子的同时接受事实。",
+              "en": "Taken together, the third line、the seventh line、the twelfth line、the thirteenth line、the fourteenth line、the fifteenth line show that ownership is already resolved by evidence; the remaining task is interpersonal acceptance without needless humiliation."
             },
             "nuance": {
               "ja": "所有権は物証で解決済みで、未解決なのは敗者が面目を失わず事実を受け入れる対人課題です。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
@@ -6329,9 +6329,9 @@
               "en": "ownership is already resolved by evidence; the remaining task is interpersonal acceptance without needless humiliation. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
-              "ja": "他の選択肢は一部の発言だけなら説明できますが、line-003、line-007、line-012、line-013、line-014、line-015の時間順・語の範囲・行動証拠を同時には説明できません。",
-              "zh": "其他选项或许能解释个别话语，却无法同时解释 line-003、line-007、line-012、line-013、line-014、line-015 的时间顺序、措辞范围与行为证据。",
-              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across line-003、line-007、line-012、line-013、line-014、line-015."
+              "ja": "他の選択肢は一部の発言だけなら説明できますが、3番目の台詞、7番目の台詞、12番目の台詞、13番目の台詞、14番目の台詞、15番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
+              "zh": "其他选项或许能解释个别话语，却无法同时解释第3句台词、第7句台词、第12句台词、第13句台词、第14句台词、第15句台词的时间顺序、措辞范围与行为证据。",
+              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across the third line、the seventh line、the twelfth line、the thirteenth line、the fourteenth line、the fifteenth line."
             }
           }
         }
@@ -6346,13 +6346,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "b5cae57aaeb474c711bcd7dc441363e8a30301f7593bf7f8986b93925aaa31a4"
+      "contentHash": "da10b7a0cd6c2b46e39f86245cb65e827a2aea5719a252f11f951800546a6340"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L4-049",
-      "revision": 1,
+      "revision": 2,
       "level": 4,
       "stage": 49,
       "jlptTarget": "N1-advanced",
@@ -6896,9 +6896,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "表面上は複数の説明が可能ですが、line-006、line-007、line-008、line-009、line-010の明示情報を同時に満たす必要があります。",
-              "zh": "表面上似乎存在多种解释，但必须同时满足 line-006、line-007、line-008、line-009、line-010 的明确信息。",
-              "en": "Several readings look possible on the surface, but all explicit details in line-006、line-007、line-008、line-009、line-010 must hold together."
+              "ja": "表面上は複数の説明が可能ですが、6番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞の明示情報を同時に満たす必要があります。",
+              "zh": "表面上似乎存在多种解释，但必须同时满足第6句台词、第7句台词、第8句台词、第9句台词、第10句台词的明确信息。",
+              "en": "Several readings look possible on the surface, but all explicit details in the sixth line、the seventh line、the eighth line、the ninth line、the tenth line must hold together."
             },
             "intent": {
               "ja": "最も整合する読みは「使わず机へ返した環」です。",
@@ -6906,9 +6906,9 @@
               "en": "The reading that best unifies the scene is: Tamaki, who returned the unused key."
             },
             "evidence": {
-              "ja": "line-006、line-007、line-008、line-009、line-010を突き合わせると、環だけが鍵を返した行動を述べ、机上の温かい鍵という物証も直前の返却を支えます。",
-              "zh": "对照 line-006、line-007、line-008、line-009、line-010 可知，只有环陈述了归还行为，桌上仍温热的钥匙也支持刚刚归还。",
-              "en": "Taken together, line-006、line-007、line-008、line-009、line-010 show that Tamaki alone reports returning a key, corroborated by the still-warm key on the desk."
+              "ja": "6番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞を突き合わせると、環だけが鍵を返した行動を述べ、机上の温かい鍵という物証も直前の返却を支えます。",
+              "zh": "对照第6句台词、第7句台词、第8句台词、第9句台词、第10句台词可知，只有环陈述了归还行为，桌上仍温热的钥匙也支持刚刚归还。",
+              "en": "Taken together, the sixth line、the seventh line、the eighth line、the ninth line、the tenth line show that Tamaki alone reports returning a key, corroborated by the still-warm key on the desk."
             },
             "nuance": {
               "ja": "環だけが鍵を返した行動を述べ、机上の温かい鍵という物証も直前の返却を支えます。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
@@ -6916,9 +6916,9 @@
               "en": "Tamaki alone reports returning a key, corroborated by the still-warm key on the desk. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
-              "ja": "他の選択肢は一部の発言だけなら説明できますが、line-006、line-007、line-008、line-009、line-010の時間順・語の範囲・行動証拠を同時には説明できません。",
-              "zh": "其他选项或许能解释个别话语，却无法同时解释 line-006、line-007、line-008、line-009、line-010 的时间顺序、措辞范围与行为证据。",
-              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across line-006、line-007、line-008、line-009、line-010."
+              "ja": "他の選択肢は一部の発言だけなら説明できますが、6番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
+              "zh": "其他选项或许能解释个别话语，却无法同时解释第6句台词、第7句台词、第8句台词、第9句台词、第10句台词的时间顺序、措辞范围与行为证据。",
+              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across the sixth line、the seventh line、the eighth line、the ninth line、the tenth line."
             }
           }
         },
@@ -6985,9 +6985,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "表面上は複数の説明が可能ですが、line-008、line-010、line-012、line-013、line-014、line-016の明示情報を同時に満たす必要があります。",
-              "zh": "表面上似乎存在多种解释，但必须同时满足 line-008、line-010、line-012、line-013、line-014、line-016 的明确信息。",
-              "en": "Several readings look possible on the surface, but all explicit details in line-008、line-010、line-012、line-013、line-014、line-016 must hold together."
+              "ja": "表面上は複数の説明が可能ですが、8番目の台詞、10番目の台詞、12番目の台詞、13番目の台詞、14番目の台詞、16番目の台詞の明示情報を同時に満たす必要があります。",
+              "zh": "表面上似乎存在多种解释，但必须同时满足第8句台词、第10句台词、第12句台词、第13句台词、第14句台词、第16句台词的明确信息。",
+              "en": "Several readings look possible on the surface, but all explicit details in the eighth line、the tenth line、the twelfth line、the thirteenth line、the fourteenth line、the sixteenth line must hold together."
             },
             "intent": {
               "ja": "最も整合する読みは「与えられた権限を独占せず、自発的に返せる姿勢」です。",
@@ -6995,9 +6995,9 @@
               "en": "The reading that best unifies the scene is: A willingness to return granted authority rather than monopolize it."
             },
             "evidence": {
-              "ja": "line-008、line-010、line-012、line-013、line-014、line-016を突き合わせると、評価文は使用でなく返却を基準にし、創業者も「権限をどう扱うか」を観察対象と明言します。",
-              "zh": "对照 line-008、line-010、line-012、line-013、line-014、line-016 可知，评价标准不是使用而是归还，创始人也明确说观察的是“如何对待权限”。",
-              "en": "Taken together, line-008、line-010、line-012、line-013、line-014、line-016 show that the message rewards return rather than use, and the founder explicitly names treatment of authority as the test."
+              "ja": "8番目の台詞、10番目の台詞、12番目の台詞、13番目の台詞、14番目の台詞、16番目の台詞を突き合わせると、評価文は使用でなく返却を基準にし、創業者も「権限をどう扱うか」を観察対象と明言します。",
+              "zh": "对照第8句台词、第10句台词、第12句台词、第13句台词、第14句台词、第16句台词可知，评价标准不是使用而是归还，创始人也明确说观察的是“如何对待权限”。",
+              "en": "Taken together, the eighth line、the tenth line、the twelfth line、the thirteenth line、the fourteenth line、the sixteenth line show that the message rewards return rather than use, and the founder explicitly names treatment of authority as the test."
             },
             "nuance": {
               "ja": "評価文は使用でなく返却を基準にし、創業者も「権限をどう扱うか」を観察対象と明言します。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
@@ -7005,9 +7005,9 @@
               "en": "the message rewards return rather than use, and the founder explicitly names treatment of authority as the test. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
-              "ja": "他の選択肢は一部の発言だけなら説明できますが、line-008、line-010、line-012、line-013、line-014、line-016の時間順・語の範囲・行動証拠を同時には説明できません。",
-              "zh": "其他选项或许能解释个别话语，却无法同时解释 line-008、line-010、line-012、line-013、line-014、line-016 的时间顺序、措辞范围与行为证据。",
-              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across line-008、line-010、line-012、line-013、line-014、line-016."
+              "ja": "他の選択肢は一部の発言だけなら説明できますが、8番目の台詞、10番目の台詞、12番目の台詞、13番目の台詞、14番目の台詞、16番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
+              "zh": "其他选项或许能解释个别话语，却无法同时解释第8句台词、第10句台词、第12句台词、第13句台词、第14句台词、第16句台词的时间顺序、措辞范围与行为证据。",
+              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across the eighth line、the tenth line、the twelfth line、the thirteenth line、the fourteenth line、the sixteenth line."
             }
           }
         },
@@ -7074,9 +7074,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "表面上は複数の説明が可能ですが、line-008、line-010、line-013、line-015、line-016の明示情報を同時に満たす必要があります。",
-              "zh": "表面上似乎存在多种解释，但必须同时满足 line-008、line-010、line-013、line-015、line-016 的明确信息。",
-              "en": "Several readings look possible on the surface, but all explicit details in line-008、line-010、line-013、line-015、line-016 must hold together."
+              "ja": "表面上は複数の説明が可能ですが、8番目の台詞、10番目の台詞、13番目の台詞、15番目の台詞、16番目の台詞の明示情報を同時に満たす必要があります。",
+              "zh": "表面上似乎存在多种解释，但必须同时满足第8句台词、第10句台词、第13句台词、第15句台词、第16句台词的明确信息。",
+              "en": "Several readings look possible on the surface, but all explicit details in the eighth line、the tenth line、the thirteenth line、the fifteenth line、the sixteenth line must hold together."
             },
             "intent": {
               "ja": "最も整合する読みは「環が返却テストには最も合致した／環が正式な後継者に決定したとはまだ断定できない」です。",
@@ -7084,9 +7084,9 @@
               "en": "The reading that best unifies the scene is: Tamaki best met the return test / It is not yet certain that Tamaki has formally been chosen successor."
             },
             "evidence": {
-              "ja": "line-008、line-010、line-013、line-015、line-016を突き合わせると、物証は環の返却を支持しますが、創業者は試験が後継決定だとは明言せず、観察にとどめています。",
-              "zh": "对照 line-008、line-010、line-013、line-015、line-016 可知，物证支持环的归还，但创始人并未明确测试等于继任决定，只说进行了观察。",
-              "en": "Taken together, line-008、line-010、line-013、line-015、line-016 show that evidence supports Tamaki’s return, while the founder stops at observation and never declares a succession decision."
+              "ja": "8番目の台詞、10番目の台詞、13番目の台詞、15番目の台詞、16番目の台詞を突き合わせると、物証は環の返却を支持しますが、創業者は試験が後継決定だとは明言せず、観察にとどめています。",
+              "zh": "对照第8句台词、第10句台词、第13句台词、第15句台词、第16句台词可知，物证支持环的归还，但创始人并未明确测试等于继任决定，只说进行了观察。",
+              "en": "Taken together, the eighth line、the tenth line、the thirteenth line、the fifteenth line、the sixteenth line show that evidence supports Tamaki’s return, while the founder stops at observation and never declares a succession decision."
             },
             "nuance": {
               "ja": "物証は環の返却を支持しますが、創業者は試験が後継決定だとは明言せず、観察にとどめています。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
@@ -7094,9 +7094,9 @@
               "en": "evidence supports Tamaki’s return, while the founder stops at observation and never declares a succession decision. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
-              "ja": "他の選択肢は一部の発言だけなら説明できますが、line-008、line-010、line-013、line-015、line-016の時間順・語の範囲・行動証拠を同時には説明できません。",
-              "zh": "其他选项或许能解释个别话语，却无法同时解释 line-008、line-010、line-013、line-015、line-016 的时间顺序、措辞范围与行为证据。",
-              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across line-008、line-010、line-013、line-015、line-016."
+              "ja": "他の選択肢は一部の発言だけなら説明できますが、8番目の台詞、10番目の台詞、13番目の台詞、15番目の台詞、16番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
+              "zh": "其他选项或许能解释个别话语，却无法同时解释第8句台词、第10句台词、第13句台词、第15句台词、第16句台词的时间顺序、措辞范围与行为证据。",
+              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across the eighth line、the tenth line、the thirteenth line、the fifteenth line、the sixteenth line."
             }
           }
         }
@@ -7111,13 +7111,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "ca2edcdedcf89b72f879e2c8472633ba7c968d5050ec034e63f548d4c69f710e"
+      "contentHash": "92845e1b4a031c01f04dd0951442032bca4566b2c3049d4ea4e1c2a53cc10a5d"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L4-050",
-      "revision": 1,
+      "revision": 2,
       "level": 4,
       "stage": 50,
       "jlptTarget": "N1-advanced",
@@ -7649,9 +7649,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "表面上は複数の説明が可能ですが、line-003、line-004、line-005、line-007、line-012、line-013、line-014の明示情報を同時に満たす必要があります。",
-              "zh": "表面上似乎存在多种解释，但必须同时满足 line-003、line-004、line-005、line-007、line-012、line-013、line-014 的明确信息。",
-              "en": "Several readings look possible on the surface, but all explicit details in line-003、line-004、line-005、line-007、line-012、line-013、line-014 must hold together."
+              "ja": "表面上は複数の説明が可能ですが、3番目の台詞、4番目の台詞、5番目の台詞、7番目の台詞、12番目の台詞、13番目の台詞、14番目の台詞の明示情報を同時に満たす必要があります。",
+              "zh": "表面上似乎存在多种解释，但必须同时满足第3句台词、第4句台词、第5句台词、第7句台词、第12句台词、第13句台词、第14句台词的明确信息。",
+              "en": "Several readings look possible on the surface, but all explicit details in the third line、the fourth line、the fifth line、the seventh line、the twelfth line、the thirteenth line、the fourteenth line must hold together."
             },
             "intent": {
               "ja": "最も整合する読みは「統合前の二AIを指す読みと、未確認反応を含む共同体の読みがともに残る」です。",
@@ -7659,9 +7659,9 @@
               "en": "The reading that best unifies the scene is: Both the two pre-integration AIs and a community including the unverified signal remain possible."
             },
             "evidence": {
-              "ja": "line-003、line-004、line-005、line-007、line-012、line-013、line-014を突き合わせると、統合後も二由来の共同体名があり、同時に未確認反応が一つ残るため、複数の境界を一意に定められません。",
-              "zh": "对照 line-003、line-004、line-005、line-007、line-012、line-013、line-014 可知，合并后的共同体名称仍保留双重来源，同时还有一个未确认信号，因此无法唯一确定复数边界。",
-              "en": "Taken together, line-003、line-004、line-005、line-007、line-012、line-013、line-014 show that the collective retains two AI origins while one unverified signal remains, leaving plural membership underdetermined."
+              "ja": "3番目の台詞、4番目の台詞、5番目の台詞、7番目の台詞、12番目の台詞、13番目の台詞、14番目の台詞を突き合わせると、統合後も二由来の共同体名があり、同時に未確認反応が一つ残るため、複数の境界を一意に定められません。",
+              "zh": "对照第3句台词、第4句台词、第5句台词、第7句台词、第12句台词、第13句台词、第14句台词可知，合并后的共同体名称仍保留双重来源，同时还有一个未确认信号，因此无法唯一确定复数边界。",
+              "en": "Taken together, the third line、the fourth line、the fifth line、the seventh line、the twelfth line、the thirteenth line、the fourteenth line show that the collective retains two AI origins while one unverified signal remains, leaving plural membership underdetermined."
             },
             "nuance": {
               "ja": "統合後も二由来の共同体名があり、同時に未確認反応が一つ残るため、複数の境界を一意に定められません。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
@@ -7669,9 +7669,9 @@
               "en": "the collective retains two AI origins while one unverified signal remains, leaving plural membership underdetermined. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
-              "ja": "他の選択肢は一部の発言だけなら説明できますが、line-003、line-004、line-005、line-007、line-012、line-013、line-014の時間順・語の範囲・行動証拠を同時には説明できません。",
-              "zh": "其他选项或许能解释个别话语，却无法同时解释 line-003、line-004、line-005、line-007、line-012、line-013、line-014 的时间顺序、措辞范围与行为证据。",
-              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across line-003、line-004、line-005、line-007、line-012、line-013、line-014."
+              "ja": "他の選択肢は一部の発言だけなら説明できますが、3番目の台詞、4番目の台詞、5番目の台詞、7番目の台詞、12番目の台詞、13番目の台詞、14番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
+              "zh": "其他选项或许能解释个别话语，却无法同时解释第3句台词、第4句台词、第5句台词、第7句台词、第12句台词、第13句台词、第14句台词的时间顺序、措辞范围与行为证据。",
+              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across the third line、the fourth line、the fifth line、the seventh line、the twelfth line、the thirteenth line、the fourteenth line."
             }
           }
         },
@@ -7736,9 +7736,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "表面上は複数の説明が可能ですが、line-006、line-007、line-008、line-009の明示情報を同時に満たす必要があります。",
-              "zh": "表面上似乎存在多种解释，但必须同时满足 line-006、line-007、line-008、line-009 的明确信息。",
-              "en": "Several readings look possible on the surface, but all explicit details in line-006、line-007、line-008、line-009 must hold together."
+              "ja": "表面上は複数の説明が可能ですが、6番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞の明示情報を同時に満たす必要があります。",
+              "zh": "表面上似乎存在多种解释，但必须同时满足第6句台词、第7句台词、第8句台词、第9句台词的明确信息。",
+              "en": "Several readings look possible on the surface, but all explicit details in the sixth line、the seventh line、the eighth line、the ninth line must hold together."
             },
             "intent": {
               "ja": "最も整合する読みは「貨物区に信号はあるが、熱源か生体か判別できない」です。",
@@ -7746,9 +7746,9 @@
               "en": "The reading that best unifies the scene is: A signal exists in cargo, but it cannot be classified as heat source or life."
             },
             "evidence": {
-              "ja": "line-006、line-007、line-008、line-009を突き合わせると、センサーは存在だけを検出し、生命性と身元の分類を明示的に保留しています。",
-              "zh": "对照 line-006、line-007、line-008、line-009 可知，传感器只检测到存在，明确保留了对生命属性与身份的判断。",
-              "en": "Taken together, line-006、line-007、line-008、line-009 show that sensors establish existence while explicitly withholding classification and identity."
+              "ja": "6番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞を突き合わせると、センサーは存在だけを検出し、生命性と身元の分類を明示的に保留しています。",
+              "zh": "对照第6句台词、第7句台词、第8句台词、第9句台词可知，传感器只检测到存在，明确保留了对生命属性与身份的判断。",
+              "en": "Taken together, the sixth line、the seventh line、the eighth line、the ninth line show that sensors establish existence while explicitly withholding classification and identity."
             },
             "nuance": {
               "ja": "センサーは存在だけを検出し、生命性と身元の分類を明示的に保留しています。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
@@ -7756,9 +7756,9 @@
               "en": "sensors establish existence while explicitly withholding classification and identity. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
-              "ja": "他の選択肢は一部の発言だけなら説明できますが、line-006、line-007、line-008、line-009の時間順・語の範囲・行動証拠を同時には説明できません。",
-              "zh": "其他选项或许能解释个别话语，却无法同时解释 line-006、line-007、line-008、line-009 的时间顺序、措辞范围与行为证据。",
-              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across line-006、line-007、line-008、line-009."
+              "ja": "他の選択肢は一部の発言だけなら説明できますが、6番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
+              "zh": "其他选项或许能解释个别话语，却无法同时解释第6句台词、第7句台词、第8句台词、第9句台词的时间顺序、措辞范围与行为证据。",
+              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across the sixth line、the seventh line、the eighth line、the ninth line."
             }
           }
         },
@@ -7824,9 +7824,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "表面上は複数の説明が可能ですが、line-008、line-009、line-013、line-014、line-015の明示情報を同時に満たす必要があります。",
-              "zh": "表面上似乎存在多种解释，但必须同时满足 line-008、line-009、line-013、line-014、line-015 的明确信息。",
-              "en": "Several readings look possible on the surface, but all explicit details in line-008、line-009、line-013、line-014、line-015 must hold together."
+              "ja": "表面上は複数の説明が可能ですが、8番目の台詞、9番目の台詞、13番目の台詞、14番目の台詞、15番目の台詞の明示情報を同時に満たす必要があります。",
+              "zh": "表面上似乎存在多种解释，但必须同时满足第8句台词、第9句台词、第13句台词、第14句台词、第15句台词的明确信息。",
+              "en": "Several readings look possible on the surface, but all explicit details in the eighth line、the ninth line、the thirteenth line、the fourteenth line、the fifteenth line must hold together."
             },
             "intent": {
               "ja": "最も整合する読みは「「私たち」の構成員への追加回答がなく、二つの読みを分ける外部確認もできない」です。",
@@ -7834,9 +7834,9 @@
               "en": "The reading that best unifies the scene is: No membership clarification is given, and external confirmation that could separate the readings is unavailable."
             },
             "evidence": {
-              "ja": "line-008、line-009、line-013、line-014、line-015を突き合わせると、接近不能で信号を検証できず、AIも代名詞の範囲を明かさないため、両仮説を選別する新証拠がありません。",
-              "zh": "对照 line-008、line-009、line-013、line-014、line-015 可知，无法靠近验证信号，AI也不说明代词范围，因此没有新证据能筛掉其中一种假说。",
-              "en": "Taken together, line-008、line-009、line-013、line-014、line-015 show that the signal cannot be checked in person and the AI refuses to define the pronoun’s scope, so no discriminating evidence arrives."
+              "ja": "8番目の台詞、9番目の台詞、13番目の台詞、14番目の台詞、15番目の台詞を突き合わせると、接近不能で信号を検証できず、AIも代名詞の範囲を明かさないため、両仮説を選別する新証拠がありません。",
+              "zh": "对照第8句台词、第9句台词、第13句台词、第14句台词、第15句台词可知，无法靠近验证信号，AI也不说明代词范围，因此没有新证据能筛掉其中一种假说。",
+              "en": "Taken together, the eighth line、the ninth line、the thirteenth line、the fourteenth line、the fifteenth line show that the signal cannot be checked in person and the AI refuses to define the pronoun’s scope, so no discriminating evidence arrives."
             },
             "nuance": {
               "ja": "接近不能で信号を検証できず、AIも代名詞の範囲を明かさないため、両仮説を選別する新証拠がありません。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
@@ -7844,9 +7844,9 @@
               "en": "the signal cannot be checked in person and the AI refuses to define the pronoun’s scope, so no discriminating evidence arrives. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
-              "ja": "他の選択肢は一部の発言だけなら説明できますが、line-008、line-009、line-013、line-014、line-015の時間順・語の範囲・行動証拠を同時には説明できません。",
-              "zh": "其他选项或许能解释个别话语，却无法同时解释 line-008、line-009、line-013、line-014、line-015 的时间顺序、措辞范围与行为证据。",
-              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across line-008、line-009、line-013、line-014、line-015."
+              "ja": "他の選択肢は一部の発言だけなら説明できますが、8番目の台詞、9番目の台詞、13番目の台詞、14番目の台詞、15番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
+              "zh": "其他选项或许能解释个别话语，却无法同时解释第8句台词、第9句台词、第13句台词、第14句台词、第15句台词的时间顺序、措辞范围与行为证据。",
+              "en": "The alternatives can fit an isolated remark, but not the chronology, scope, and behavioral evidence across the eighth line、the ninth line、the thirteenth line、the fourteenth line、the fifteenth line."
             }
           }
         }
@@ -7861,7 +7861,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "8317b4fb9520e9b08aa72c08c7336b89e2a4937e311e825dcc259511cc4deda4"
+      "contentHash": "35c22402fc30881e8c8700b53f33d1c5a79ab71324c790d1474d51213d494b11"
     }
   ]
 }

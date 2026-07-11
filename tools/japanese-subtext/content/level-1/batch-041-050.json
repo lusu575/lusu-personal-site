@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "level": 1,
   "batch": "041-050",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-041",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 41,
       "jlptTarget": "N3",
@@ -282,9 +282,9 @@
               "en": "In context, she most likely gives correct directions while inviting him along an alternative route."
             },
             "evidence": {
-              "ja": "line-006 は出口と秘密の景色を明確に分け、line-007 で蓮も誘いを理解します。",
-              "zh": "line-006 明确区分出口与秘密景色，line-007 莲也理解了邀请。",
-              "en": "Line-006 distinguishes exit from secret view, and line-007 shows Ren understands the invitation."
+              "ja": "6番目の台詞は出口と秘密の景色を明確に分け、7番目の台詞で蓮も誘いを理解します。",
+              "zh": "第6句台词明确区分出口与秘密景色，第7句台词莲也理解了邀请。",
+              "en": "The sixth line distinguishes exit from secret view, and the seventh line shows Ren understands the invitation."
             },
             "nuance": {
               "ja": "「あちら」と「こちら」は、指示対象が出口か話し手の進路かで変わります。",
@@ -292,9 +292,9 @@
               "en": "The deictic terms that way and this way refer to different targets: the exit and her route."
             },
             "alternative": {
-              "ja": "最初は矛盾にも見えますが、line-006 の説明により迷いではなく二重の案内だと分かります。",
-              "zh": "起初看似矛盾，但 line-006 表明这是双重信息而不是迷路。",
-              "en": "It first looks contradictory, but line-006 resolves it as a split message rather than confusion."
+              "ja": "最初は矛盾にも見えますが、6番目の台詞の説明により迷いではなく二重の案内だと分かります。",
+              "zh": "起初看似矛盾，但第6句台词表明这是双重信息而不是迷路。",
+              "en": "It first looks contradictory, but the sixth line resolves it as a split message rather than confusion."
             }
           }
         }
@@ -309,13 +309,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "3b8e0d452ac0a4e7e1c91b1a372007308e07c053535ec594e5dc444c2de4e45d"
+      "contentHash": "32bc93dab8e72fe4c72e5f6f071fbb313f1e07de5a6ef1ec4e3591ac75c16c0b"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-042",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 42,
       "jlptTarget": "N3",
@@ -598,9 +598,9 @@
               "en": "The context most strongly supports a recent borrower returning it after use in the rain."
             },
             "evidence": {
-              "ja": "line-003 の濡れ、line-006 の雨上がり時刻、line-004 の名前が結び付きます。",
-              "zh": "line-003 的湿痕、line-006 的停雨时间与 line-004 的名字相互印证。",
-              "en": "The wetness in line-003, recent rain in line-006, and name in line-004 connect the clues."
+              "ja": "3番目の台詞の濡れ、6番目の台詞の雨上がり時刻、4番目の台詞の名前が結び付きます。",
+              "zh": "第3句台词的湿痕、第6句台词的停雨时间与第4句台词的名字相互印证。",
+              "en": "The wetness in the third line, recent rain in the sixth line, and name in the fourth line connect the clues."
             },
             "nuance": {
               "ja": "濡れていることは最近の使用を示しますが、使用者までは特定できません。",
@@ -683,9 +683,9 @@
               "en": "That combination best establishes the recent-use timeline."
             },
             "evidence": {
-              "ja": "line-003 と line-006 が湿りと時刻を直接示します。",
-              "zh": "line-003、line-006 直接给出湿痕和时间。",
-              "en": "Lines 003 and 006 directly provide wetness and timing."
+              "ja": "3番目の台詞と6番目の台詞が湿りと時刻を直接示します。",
+              "zh": "第3句台词、第6句台词直接给出湿痕和时间。",
+              "en": "The third and sixth lines directly provide wetness and timing."
             },
             "nuance": {
               "ja": "名前は所有者を示しますが、戻された時刻の証拠ではありません。",
@@ -710,13 +710,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "06232afc5140193ae7949d069ae87ffa86cd2937d34c45066fc5ae389e88de2e"
+      "contentHash": "e8e709cefca746da279d9a74237d9d368f0ccae46f98e60b7049c09ea74a654c"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-043",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 43,
       "jlptTarget": "N3",
@@ -989,9 +989,9 @@
               "en": "In context, she prompts Riku to notice and correct his mistake without directly criticizing him."
             },
             "evidence": {
-              "ja": "line-005 の説明後、line-006 で陸自身が誤りを見つけて修正します。",
-              "zh": "line-005 说明后，陆在 line-006 自己发现错误并修改。",
-              "en": "After line-005, Riku identifies and corrects the error himself in line-006."
+              "ja": "5番目の台詞の説明後、6番目の台詞で陸自身が誤りを見つけて修正します。",
+              "zh": "第5句台词说明后，陆在第6句台词自己发现错误并修改。",
+              "en": "After the fifth line, Riku identifies and corrects the error himself in the sixth line."
             },
             "nuance": {
               "ja": "「ご参考まで」は情報提供の形を取り、訂正をやわらかく伝えられます。",
@@ -1016,13 +1016,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "7ad7c1f01d64d9ddead81f09364fb1a720b2fdea59059e0a42d6cd8d905445a0"
+      "contentHash": "342c1e1f4f2add4b9972ac836ae2d21e558e30b1ef3d6f8f4cebb1922fd4aeb2"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-044",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 44,
       "jlptTarget": "N3",
@@ -1311,9 +1311,9 @@
               "en": "Though framed for everyone, it is especially a reminder to Takeshi."
             },
             "evidence": {
-              "ja": "line-005 で武を名指しし、line-006 で武が「今度は」と答えます。",
-              "zh": "line-005 点名武，line-006 武以“这次”回应。",
-              "en": "Line-005 names him, and in line-006 he responds “this time.”"
+              "ja": "5番目の台詞で武を名指しし、6番目の台詞で武が「今度は」と答えます。",
+              "zh": "第5句台词点名武，第6句台词武以“这次”回应。",
+              "en": "The fifth line names him, and in the sixth line he responds “this time.”"
             },
             "nuance": {
               "ja": "全体説明に入れると、一人だけを強く叱らずに注意できます。",
@@ -1398,9 +1398,9 @@
               "en": "In context, it functions as a warning to ensure punctuality."
             },
             "evidence": {
-              "ja": "四つの発言で時刻を確認し、line-006 で武も早く来ると約束します。",
-              "zh": "四次相关发言确认时间，line-006 武也承诺提前到。",
-              "en": "The repeated time references lead Takeshi to promise early arrival in line-006."
+              "ja": "四つの発言で時刻を確認し、6番目の台詞で武も早く来ると約束します。",
+              "zh": "四次相关发言确认时间，第6句台词武也承诺提前到。",
+              "en": "The repeated time references lead Takeshi to promise early arrival in the sixth line."
             },
             "nuance": {
               "ja": "同じ情報の反復は、情報不足ではなく重要度を示すことがあります。",
@@ -1425,13 +1425,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "a04aaa90818cc854a45459604048af32ad74e5c1739372eac04df39f166ee63a"
+      "contentHash": "3ca07b48bb9996c6986a23c13774da6949eaeafa2087468ea4506c06bee0bf7b"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-045",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 45,
       "jlptTarget": "N3",
@@ -1714,9 +1714,9 @@
               "en": "In context, the six-o'clock script was not updated and became stale."
             },
             "evidence": {
-              "ja": "line-005 の更新時刻と、line-003・line-006 の現場情報が矛盾を説明します。",
-              "zh": "line-005 的更新时间与 line-003、line-006 的现场信息解释了矛盾。",
-              "en": "The update time in line-005 and live evidence in lines 003 and 006 explain the mismatch."
+              "ja": "5番目の台詞の更新時刻と、3番目の台詞・6番目の台詞の現場情報が矛盾を説明します。",
+              "zh": "第5句台词的更新时间与第3句台词、第6句台词的现场信息解释了矛盾。",
+              "en": "The update time in the fifth line and live evidence in the third and sixth lines explain the mismatch."
             },
             "nuance": {
               "ja": "現場の観察は古い原稿より新しい情報源です。",
@@ -1741,13 +1741,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "ee5d61be11906a9d4cb728d7f4953551f71837c6444cc588eba7169fba364ade"
+      "contentHash": "a135107a8c7d123195ee79f78df7923e5aece78058a6776205353c4128df06f7"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-046",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 46,
       "jlptTarget": "N3",
@@ -2026,9 +2026,9 @@
               "en": "In context, making a bed is more likely than mischief."
             },
             "evidence": {
-              "ja": "line-006 から line-008 の連続した行動が動機を示します。",
-              "zh": "line-006 至 line-008 的连续动作显示了动机。",
-              "en": "The action sequence in lines 006–008 reveals the motive."
+              "ja": "6番目の台詞から8番目の台詞の連続した行動が動機を示します。",
+              "zh": "第6句台词至第8句台词的连续动作显示了动机。",
+              "en": "The action sequence in the sixth through eighth lines reveals the motive."
             },
             "nuance": {
               "ja": "最後の行動を見ると、前の行動の意味が変わります。",
@@ -2112,9 +2112,9 @@
               "en": "That order is key to understanding the motive."
             },
             "evidence": {
-              "ja": "line-003、line-006、line-008 が順番を直接示します。",
-              "zh": "line-003、line-006、line-008 直接给出顺序。",
-              "en": "Lines 003, 006, and 008 directly establish the order."
+              "ja": "3番目の台詞、6番目の台詞、8番目の台詞が順番を直接示します。",
+              "zh": "第3句台词、第6句台词、第8句台词直接给出顺序。",
+              "en": "The third, sixth, and eighth lines directly establish the order."
             },
             "nuance": {
               "ja": "結果から前の行動を読み直す問題です。",
@@ -2139,13 +2139,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "ab7fce3df20f4e846020c696c67a8050ed963f8b5153161904bdc7c7a89939cb"
+      "contentHash": "0b159bccd218bb19c72b8f67910bfce295403fc65c032cafeeb0135c2c95f394"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-047",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 47,
       "jlptTarget": "N3",
@@ -2434,9 +2434,9 @@
               "en": "In context, she encourages prompt return without blaming Nao."
             },
             "evidence": {
-              "ja": "line-003 から line-005 の期限・希望・連絡依頼が圧力を示します。",
-              "zh": "line-003 至 line-005 的期限、希望和联系请求形成压力。",
-              "en": "The deadline, preferred timing, and request for contact in lines 003–005 create gentle pressure."
+              "ja": "3番目の台詞から5番目の台詞の期限・希望・連絡依頼が圧力を示します。",
+              "zh": "第3句台词至第5句台词的期限、希望和联系请求形成压力。",
+              "en": "The deadline, preferred timing, and request for contact in the third through fifth lines create gentle pressure."
             },
             "nuance": {
               "ja": "「急がない」で先に負担を軽くし、具体的期限を後から伝えています。",
@@ -2461,13 +2461,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "3ffa0893a66ab2f48c0ec36729067e00986abd70fb6af0bc3b3a91cc79e61b17"
+      "contentHash": "fc5c764bd7c0279a42c5c906eebde8d7a1bf47c6f0829b0ac16ba9aaf97666a4"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-048",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 48,
       "jlptTarget": "N3",
@@ -2754,9 +2754,9 @@
               "en": "This establishes the time perspective and explains the antique label."
             },
             "evidence": {
-              "ja": "line-007 が直接の答えで、line-005 もそれを支えます。",
-              "zh": "line-007 直接给出答案，line-005 也提供支持。",
-              "en": "Line-007 answers directly, supported by line-005."
+              "ja": "7番目の台詞が直接の答えで、5番目の台詞もそれを支えます。",
+              "zh": "第7句台词直接给出答案，第5句台词也提供支持。",
+              "en": "The seventh line answers directly, supported by the fifth line."
             },
             "nuance": {
               "ja": "作られた時代と会話の現在を区別する必要があります。",
@@ -2829,9 +2829,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "line-001 は製造時期、line-003 は再現した元の時代を示します。",
-              "zh": "line-001 给出制造时间，line-003 给出被复刻产品的时代。",
-              "en": "Line-001 gives the build date, and line-003 gives the era reproduced."
+              "ja": "1番目の台詞は製造時期、3番目の台詞は再現した元の時代を示します。",
+              "zh": "第1句台词给出制造时间，第3句台词给出被复刻产品的时代。",
+              "en": "The first line gives the build date, and the third line gives the era reproduced."
             },
             "intent": {
               "ja": "二つの時代情報を組み合わせる問題です。",
@@ -2866,13 +2866,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "54d2e917e8247cd1c23ff1145661918e41a2408f37bb12f3b4cd8dbf55dff262"
+      "contentHash": "0c3883ba4e75d65eabdfcadff542c761598d76f27630d888f6543c425a70d1f5"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-049",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 49,
       "jlptTarget": "N3",
@@ -3161,9 +3161,9 @@
               "en": "In context, she is likely steering the player away from the evidence without justification."
             },
             "evidence": {
-              "ja": "line-004 と line-006 はメモが現在の問題に対応すると示します。",
-              "zh": "line-004、line-006 说明便签对应当前题目。",
-              "en": "Lines 004 and 006 show that the note matches the current question."
+              "ja": "4番目の台詞と6番目の台詞はメモが現在の問題に対応すると示します。",
+              "zh": "第4句台词、第6句台词说明便签对应当前题目。",
+              "en": "The fourth and sixth lines show that the note matches the current question."
             },
             "nuance": {
               "ja": "人物の自信より、日付と問題番号を持つ証拠を優先すべき場面です。",
@@ -3188,13 +3188,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "21f25c53f89ef240bf103ae39cfa1424783da787ac1964ff645ed96be823e07e"
+      "contentHash": "784d14bf69290cfcb9bf9a765a0fcd1a63907d6dbd62a0d35d6ea3dcc888fafe"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-050",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 50,
       "jlptTarget": "N3",
@@ -3482,9 +3482,9 @@
               "en": "In context, continued attachment to waiting for the promised person is best supported."
             },
             "evidence": {
-              "ja": "line-004 の約束、line-006 の時計、line-008 の待つ決意が結び付きます。",
-              "zh": "line-004 的约定、line-006 的手表和 line-008 的继续等待相互关联。",
-              "en": "The promise in line-004, watch in line-006, and decision to wait in line-008 connect."
+              "ja": "4番目の台詞の約束、6番目の台詞の時計、8番目の台詞の待つ決意が結び付きます。",
+              "zh": "第4句台词的约定、第6句台词的手表和第8句台词的继续等待相互关联。",
+              "en": "The promise in the fourth line, watch in the sixth line, and decision to wait in the eighth line connect."
             },
             "nuance": {
               "ja": "相手が来ない理由は本文だけでは確定できません。",
@@ -3567,9 +3567,9 @@
               "en": "Together they most strongly support waiting for an absent person."
             },
             "evidence": {
-              "ja": "line-002 と line-004 が場所と約束を結びます。",
-              "zh": "line-002、line-004 把座位与约定联系起来。",
-              "en": "Lines 002 and 004 link the seat to the promise."
+              "ja": "2番目の台詞と4番目の台詞が場所と約束を結びます。",
+              "zh": "第2句台词、第4句台词把座位与约定联系起来。",
+              "en": "The second and fourth lines link the seat to the promise."
             },
             "nuance": {
               "ja": "時計だけでは待つ相手の存在までは分かりません。",
@@ -3594,7 +3594,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "9bd29a2c1c8d439879bdf4ea180a8d55b1bf8f1ba80fa3471518af4ce495fb4b"
+      "contentHash": "591bd7eaba1c5146593ee422e53ed94c3a9de8eb481d1e9e4e1a7161bbe8a426"
     }
   ]
 }

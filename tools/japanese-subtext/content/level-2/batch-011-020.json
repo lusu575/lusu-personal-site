@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "level": 2,
   "batch": "011-020",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-011",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 11,
       "jlptTarget": "N2",
@@ -277,9 +277,9 @@
               "en": "Here the backchannel naturally marks understanding while leaving the decision unsettled."
             },
             "evidence": {
-              "ja": "line-004 の追加検討と line-005 の押印されていない事実が、未承認を直接支えます。",
-              "zh": "line-004 要求进一步考察，line-005 又明确尚未盖章，两者直接支持“未批准”。",
-              "en": "The additional review in line 004 and the unstamped approval in line 005 directly support that reading."
+              "ja": "4番目の台詞の追加検討と5番目の台詞の押印されていない事実が、未承認を直接支えます。",
+              "zh": "第4句台词要求进一步考察，第5句台词又明确尚未盖章，两者直接支持“未批准”。",
+              "en": "The additional review in the fourth line and the unstamped approval in the fifth line directly support that reading."
             },
             "nuance": {
               "ja": "「なるほど」は同意にも使われますが、それ自体だけでは承認を保証しません。",
@@ -304,13 +304,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "edb993163887c59a966191df8e1981ebe8b78ab5c5f598f843f3d4ed8b766d58"
+      "contentHash": "f447afc2db5485a3978fa645ba1a062b60b221fb58a4495cf003c7f7a5e9131a"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-012",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 12,
       "jlptTarget": "N2",
@@ -570,9 +570,9 @@
               "en": "The context suggests he withdraws familiarity and restores a teacher–student boundary."
             },
             "evidence": {
-              "ja": "line-002 の「真琴さん」と line-004 の「佐藤さん」の対比が、距離の変化を示します。",
-              "zh": "line-002 的“真琴”与 line-004 的“佐藤同学”形成对比，显示距离变化。",
-              "en": "The contrast between “Makoto-san” in line 002 and “Sato-san” in line 004 marks the shift."
+              "ja": "2番目の台詞の「真琴さん」と4番目の台詞の「佐藤さん」の対比が、距離の変化を示します。",
+              "zh": "第2句台词的“真琴”与第4句台词的“佐藤同学”形成对比，显示距离变化。",
+              "en": "The contrast between “Makoto-san” in the second line and “Sato-san” in the fourth line marks the shift."
             },
             "nuance": {
               "ja": "名前から名字への変更は常に怒りを示すわけではありませんが、この場面では対立直後なので距離化の読みが強まります。",
@@ -590,9 +590,9 @@
           "id": "q2",
           "type": "single",
           "prompt": {
-            "ja": "line-005 の真琴の応答から、最も慎重に推測できることは何ですか。",
-            "zh": "从 line-005 真琴的回应中，最谨慎的推断是什么？",
-            "en": "What can be inferred most cautiously from Makoto’s response in line 005?"
+            "ja": "5番目の台詞の真琴の応答から、最も慎重に推測できることは何ですか。",
+            "zh": "从第5句台词真琴的回应中，最谨慎的推断是什么？",
+            "en": "What can be inferred most cautiously from Makoto’s response in the fifth line?"
           },
           "options": [
             {
@@ -655,9 +655,9 @@
               "en": "The pause and brevity cautiously suggest that she chooses not to continue arguing now."
             },
             "evidence": {
-              "ja": "line-004 の「今日はこれで」と line-005 の「失礼します」が、その場を終える流れを作っています。",
-              "zh": "line-004 的“今天就到这里”和 line-005 的“我先告辞”共同构成结束场面的走向。",
-              "en": "“That will be all” in line 004 and “Excuse me” in line 005 jointly close the encounter."
+              "ja": "4番目の台詞の「今日はこれで」と5番目の台詞の「失礼します」が、その場を終える流れを作っています。",
+              "zh": "第4句台词的“今天就到这里”和第5句台词的“我先告辞”共同构成结束场面的走向。",
+              "en": "“That will be all” in the fourth line and “Excuse me” in the fifth line jointly close the encounter."
             },
             "nuance": {
               "ja": "「分かりました」は指示を受け取った意味で、論点への同意まで表すとは限りません。",
@@ -682,13 +682,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "cd86f06fab80674c225bc693528a4b155d4120c67d7a59b0f287c811caf066aa"
+      "contentHash": "de5fc9166255d62c51e9a4ec8f69f46e5c947db4c78c7b9a2e692e914206ab3c"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-013",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 13,
       "jlptTarget": "N2",
@@ -959,9 +959,9 @@
               "en": "The chef reframes blandness as positive design and steers away from calling it underseasoned."
             },
             "evidence": {
-              "ja": "line-002 では完成済みとされる一方、line-005 の塩の容器が使われず残っている点は、入れ忘れの可能性を支えます。",
-              "zh": "line-002 明确菜已完成，而 line-005 的盐罐仍留在操作台，支持“忘了放盐”的可能。",
-              "en": "Line 002 says the dish is complete, while the unused salt container in line 005 supports a possible omission."
+              "ja": "2番目の台詞では完成済みとされる一方、5番目の台詞の塩の容器が使われず残っている点は、入れ忘れの可能性を支えます。",
+              "zh": "第2句台词明确菜已完成，而第5句台词的盐罐仍留在操作台，支持“忘了放盐”的可能。",
+              "en": "The second line says the dish is complete, while the unused salt container in the fifth line supports a possible omission."
             },
             "nuance": {
               "ja": "塩の容器だけで忘れたと断定はできないため、選択肢 d は「可能性」にとどめています。",
@@ -986,13 +986,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "245a1f3410b27ca4f755ecdedb1579a85a5d0c9b0cb1713a360963982eaee7bb"
+      "contentHash": "9f5502c172fc231b1f4211813112f4d6b31ec9b04c89cbbcddac0184c95a5e80"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-014",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 14,
       "jlptTarget": "N2",
@@ -1252,9 +1252,9 @@
               "en": "The questions do more than request times; they share anxiety and seek concrete reassurance."
             },
             "evidence": {
-              "ja": "line-005 の「根拠が分かれば安心」が意図を明示し、line-001 と line-003 の反復が不安の強さを示します。",
-              "zh": "line-005 的“知道依据就能放心”直接说明意图，line-001 与 line-003 的反复显示焦虑强度。",
-              "en": "Line 005 states the intent directly, while the repeated checks in lines 001 and 003 show its intensity."
+              "ja": "5番目の台詞の「根拠が分かれば安心」が意図を明示し、1番目の台詞と3番目の台詞の反復が不安の強さを示します。",
+              "zh": "第5句台词的“知道依据就能放心”直接说明意图，第1句台词与第3句台词的反复显示焦虑强度。",
+              "en": "The fifth line states the intent directly, while the repeated checks in the first and third lines show its intensity."
             },
             "nuance": {
               "ja": "「よね」は同意を求める形で、話し手が自分の見込みを相手に確かめたい時にも使われます。",
@@ -1272,9 +1272,9 @@
           "id": "q2",
           "type": "single",
           "prompt": {
-            "ja": "遼の line-004 の提案が有効な理由として最も適切なのはどれですか。",
-            "zh": "辽在 line-004 的提议为何有效？",
-            "en": "Why is Ryo’s suggestion in line 004 useful?"
+            "ja": "遼の4番目の台詞の提案が有効な理由として最も適切なのはどれですか。",
+            "zh": "辽在第4句台词的提议为何有效？",
+            "en": "Why is Ryo’s suggestion in the fourth line useful?"
           },
           "options": [
             {
@@ -1338,9 +1338,9 @@
               "en": "He tries to ease Kaori’s anxiety with verifiable information."
             },
             "evidence": {
-              "ja": "line-003 の降機時間への懸念に対し、line-004 は経路の所要時間を調べる具体策を示します。",
-              "zh": "针对 line-003 对下机耗时的担忧，line-004 给出查询路线所需时间的具体办法。",
-              "en": "Line 004 answers the concern in line 003 with a concrete way to learn the route duration."
+              "ja": "3番目の台詞の降機時間への懸念に対し、4番目の台詞は経路の所要時間を調べる具体策を示します。",
+              "zh": "针对第3句台词对下机耗时的担忧，第4句台词给出查询路线所需时间的具体办法。",
+              "en": "The fourth line answers the concern in the third line with a concrete way to learn the route duration."
             },
             "nuance": {
               "ja": "「間に合う」と断言せず、判断材料を集める提案なので、未知の状況に対して慎重です。",
@@ -1365,13 +1365,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "c6e488a330d69fdc8f4af1098dfc8e7d57069b2c15d9bb4c79bc3eb16a51aea3"
+      "contentHash": "1d2f5e921ca1ca41fa41ec3f4b46660fa668e6d73b8bbd3e09052844cd1e8976"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-015",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 15,
       "jlptTarget": "N2",
@@ -1632,9 +1632,9 @@
               "en": "He closes the topic on the surface, but his behavior suggests he still wants her attention."
             },
             "evidence": {
-              "ja": "line-001 の「ずっと気になってて」と line-005 の通知待ちが、line-004 の字面と食い違います。",
-              "zh": "line-001 的“一直很在意”以及 line-005 的等待通知，与 line-004 的字面相矛盾。",
-              "en": "“It has been bothering me” in line 001 and the waiting in line 005 conflict with the literal claim in line 004."
+              "ja": "1番目の台詞の「ずっと気になってて」と5番目の台詞の通知待ちが、4番目の台詞の字面と食い違います。",
+              "zh": "第1句台词的“一直很在意”以及第5句台词的等待通知，与第4句台词的字面相矛盾。",
+              "en": "“It has been bothering me” in the first line and the waiting in the fifth line conflict with the literal claim in the fourth line."
             },
             "nuance": {
               "ja": "送信取り消しは迷いや自己防衛も示し得るため、必ずしも相手を試しているとまでは断定できません。",
@@ -1659,13 +1659,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "f5dacdfb46115f1b41924f3b260d206c123641b0bf56c0ed7e7ebdbefc94209a"
+      "contentHash": "8530d378049993b8c2b21ed650321b8a1d60c662d8f03b4026147677b3f7a10a"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-016",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 16,
       "jlptTarget": "N2",
@@ -1935,9 +1935,9 @@
               "en": "The sequence points to concealing her current activity from Yuma rather than a technical problem."
             },
             "evidence": {
-              "ja": "line-003 の接続通知と line-004 の即時移動・口止めが、相手を特定した回避行動です。",
-              "zh": "line-003 的上线通知与 line-004 的立即转移、要求保密，构成针对特定对象的回避。",
-              "en": "The login notice in line 003 and immediate move plus secrecy request in line 004 are targeted avoidance."
+              "ja": "3番目の台詞の接続通知と4番目の台詞の即時移動・口止めが、相手を特定した回避行動です。",
+              "zh": "第3句台词的上线通知与第4句台词的立即转移、要求保密，构成针对特定对象的回避。",
+              "en": "The login notice in the third line and immediate move plus secrecy request in the fourth line are targeted avoidance."
             },
             "nuance": {
               "ja": "なぜ悠真を避けるのかは示されていないため、関係の断絶や危険までは推測できません。",
@@ -2021,9 +2021,9 @@
               "en": "We can infer a wish for privacy, but not a specific interpersonal cause."
             },
             "evidence": {
-              "ja": "line-004 は「言わないで」とだけ述べ、けんかへの言及はありません。",
-              "zh": "line-004 只说“别告诉他”，没有提及争吵。",
-              "en": "Line 004 asks for secrecy but contains no mention of an argument."
+              "ja": "4番目の台詞は「言わないで」とだけ述べ、けんかへの言及はありません。",
+              "zh": "第4句台词只说“别告诉他”，没有提及争吵。",
+              "en": "The fourth line asks for secrecy but contains no mention of an argument."
             },
             "nuance": {
               "ja": "ミステリー的な文脈でも、空白を一つの物語で埋めず、明示情報と推測を分ける必要があります。",
@@ -2048,13 +2048,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "3f63118e7384f334175a723c91ecf4862adc60652215ee7c9987ca774d8da0e7"
+      "contentHash": "49439c9a9d315442e43743201793f093e4cdb3f5c9010f6130bf22ff193ad435"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-017",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 17,
       "jlptTarget": "N2",
@@ -2316,9 +2316,9 @@
               "en": "The shift does not refuse interaction; it rejects only the intimate framing and restores a service relationship."
             },
             "evidence": {
-              "ja": "line-003 で愛称検出を明示した直後、line-004 が「ご用件」という利用者向けの表現に戻ります。",
-              "zh": "line-003 明示检测到昵称，紧接着 line-004 恢复“您的需求”这一面向用户的表达。",
-              "en": "Immediately after detecting the pet name in line 003, line 004 returns to user-facing “your request” language."
+              "ja": "3番目の台詞で愛称検出を明示した直後、4番目の台詞が「ご用件」という利用者向けの表現に戻ります。",
+              "zh": "第3句台词明示检测到昵称，紧接着第4句台词恢复“您的需求”这一面向用户的表达。",
+              "en": "Immediately after detecting the pet name in the third line, the fourth line returns to user-facing “your request” language."
             },
             "nuance": {
               "ja": "AIに感情があるとは限らず、設定された境界ルールが作動した可能性もあります。",
@@ -2343,13 +2343,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "4df20a62c505d4678f68aaeb0651c5555943c050190c05a5e5d263292b3f58ee"
+      "contentHash": "30c3020bf6456671adbdbd65ba21a3d4a93797fd78f30ed47f1d9a7186896f44"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-018",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 18,
       "jlptTarget": "N2",
@@ -2620,9 +2620,9 @@
               "en": "It narrows the answer to present compliance, making the near-term urgency less visible."
             },
             "evidence": {
-              "ja": "line-003 の時間質問に対し、line-004 が別の適合表現を繰り返すことと、line-005 の運用知識が余裕不足を支えます。",
-              "zh": "line-003 问时间，line-004 却重复合规措辞，line-005 的操作经验进一步支持余量不足。",
-              "en": "Line 004 repeats compliance instead of answering line 003, and Emma’s operating knowledge in line 005 supports a low margin."
+              "ja": "3番目の台詞の時間質問に対し、4番目の台詞が別の適合表現を繰り返すことと、5番目の台詞の運用知識が余裕不足を支えます。",
+              "zh": "第3句台词问时间，第4句台词却重复合规措辞，第5句台词的操作经验进一步支持余量不足。",
+              "en": "The fourth line repeats compliance instead of answering the third line, and Emma’s operating knowledge in the fifth line supports a low margin."
             },
             "nuance": {
               "ja": "現在の報告は技術的には真でも、質問された時間情報には答えていません。",
@@ -2706,9 +2706,9 @@
               "en": "Risk assessment requires the present level, its rate of decline, and remaining duration together."
             },
             "evidence": {
-              "ja": "line-003 の未回答を補うには、時間計算に必要な数値を明示して再質問するのが妥当です。",
-              "zh": "要补足 line-003 未获回答的部分，最合理的是明确索取计算时间所需的数值。",
-              "en": "To resolve the unanswered line 003, he should explicitly request the figures needed to calculate duration."
+              "ja": "3番目の台詞の未回答を補うには、時間計算に必要な数値を明示して再質問するのが妥当です。",
+              "zh": "要补足第3句台词未获回答的部分，最合理的是明确索取计算时间所需的数值。",
+              "en": "To resolve the unanswered the third line, he should explicitly request the figures needed to calculate duration."
             },
             "nuance": {
               "ja": "基準内かどうかだけでは、安全余裕の大きさは分かりません。",
@@ -2733,13 +2733,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "64d02644884ffedafe2af16ab9ef255596ad896d50014b4eb7451cb96b13f51c"
+      "contentHash": "7f7188e02604835967a02ade0a30decdb9fcc8489ceb9ec82cf253de5ac85dea"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-019",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 19,
       "jlptTarget": "N2",
@@ -3009,9 +3009,9 @@
               "en": "Two independent physical changes support the presence of an unrecorded visitor."
             },
             "evidence": {
-              "ja": "line-002 の記録不在に対し、line-003 と line-004 は清掃後に生じた二つの物理的変化を示します。",
-              "zh": "与 line-002 的无记录相对，line-003 与 line-004 显示了清扫后发生的两处物理变化。",
-              "en": "Against the missing record in line-002, lines 003 and 004 show two physical changes that occurred after cleaning."
+              "ja": "2番目の台詞の記録不在に対し、3番目の台詞と4番目の台詞は清掃後に生じた二つの物理的変化を示します。",
+              "zh": "与第2句台词的无记录相对，第3句台词与第4句台词显示了清扫后发生的两处物理变化。",
+              "en": "Against the missing record in the second line, the third and fourth lines show two physical changes that occurred after cleaning."
             },
             "nuance": {
               "ja": "人物の身元や正確な滞在時間は分からないため、選択肢は「短時間いた」という範囲に限定しています。",
@@ -3036,13 +3036,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "994d04c29be1fae45953380de24024bb07f0af9cecdfa357aa346589d74b2b00"
+      "contentHash": "b25a3e3efeb54b074b5ac0ed439bd7d2c59988a244673006ac4a7b97f1350a4b"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-020",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 20,
       "jlptTarget": "N2",
@@ -3312,9 +3312,9 @@
               "en": "The target and repeated pattern identify scent—not personality—as the selection criterion."
             },
             "evidence": {
-              "ja": "line-003 が対象を菓子袋と特定し、line-004 が複数の袋を匂いで回るパターンを示します。",
-              "zh": "line-003 将对象明确为零食袋，line-004 则展示按气味巡查多个袋子的模式。",
-              "en": "Line 003 identifies the bag as the target, and line 004 establishes a scent-checking pattern across bags."
+              "ja": "3番目の台詞が対象を菓子袋と特定し、4番目の台詞が複数の袋を匂いで回るパターンを示します。",
+              "zh": "第3句台词将对象明确为零食袋，第4句台词则展示按气味巡查多个袋子的模式。",
+              "en": "The third line identifies the bag as the target, and the fourth line establishes a scent-checking pattern across bags."
             },
             "nuance": {
               "ja": "店員の「お客様を選ぶ」は宣伝的な言い方で、猫の実際の動機を厳密に説明した表現ではありません。",
@@ -3399,9 +3399,9 @@
               "en": "The humor comes from the gap between the slogan’s flattering implication and the cat’s appetite-driven action."
             },
             "evidence": {
-              "ja": "line-002 が蓮の期待を、line-003 と line-005 がその期待の崩れを明示します。",
-              "zh": "line-002 展示莲的预期，line-003 与 line-005 明确表现其预期落空。",
-              "en": "Line 002 establishes Ren’s expectation; lines 003 and 005 explicitly overturn it."
+              "ja": "2番目の台詞が蓮の期待を、3番目の台詞と5番目の台詞がその期待の崩れを明示します。",
+              "zh": "第2句台词展示莲的预期，第3句台词与第5句台词明确表现其预期落空。",
+              "en": "The second line establishes Ren’s expectation; the third and fifth lines explicitly overturn it."
             },
             "nuance": {
               "ja": "店員が嘘をついたというより、「選ぶ」の対象を人と袋で違って解釈した言葉遊びです。",
@@ -3426,7 +3426,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "7835bc06466ae3ec6e27a7375c3ae9f2f09d22904793ba7c3112c5ba1b65c237"
+      "contentHash": "f6c0a20d9d70b869c11edce4b38b7467d5660360c9c67b806f4de5fc32a6d0e7"
     }
   ]
 }

@@ -1,78 +1,78 @@
 {
   "stageId": "L5-001",
   "sampleRate": 24000,
-  "duration": 45.51325,
+  "duration": 44.108583,
   "cues": [
     {
       "lineId": "line-001",
       "audioId": "L5-001-line-001",
       "start": 0.06,
-      "end": 4.5715
+      "end": 4.080833
     },
     {
       "lineId": "line-002",
       "audioId": "L5-001-line-002",
-      "start": 5.0515,
-      "end": 9.3795
+      "start": 4.560833,
+      "end": 8.796042
     },
     {
       "lineId": "line-003",
       "audioId": "L5-001-line-003",
-      "start": 9.8595,
-      "end": 14.240958
+      "start": 9.276042,
+      "end": 13.508458
     },
     {
       "lineId": "line-004",
       "audioId": "L5-001-line-004",
-      "start": 14.720958,
-      "end": 17.674208
+      "start": 13.988458,
+      "end": 17.096292
     },
     {
       "lineId": "line-005",
       "audioId": "L5-001-line-005",
-      "start": 18.154208,
-      "end": 22.594292
+      "start": 17.576292,
+      "end": 22.108542
     },
     {
       "lineId": "line-006",
       "audioId": "L5-001-line-006",
-      "start": 23.074292,
-      "end": 27.207042
+      "start": 22.588542,
+      "end": 26.711833
     },
     {
       "lineId": "line-007",
       "audioId": "L5-001-line-007",
-      "start": 27.687042,
-      "end": 32.0435
+      "start": 27.191833,
+      "end": 31.441708
     },
     {
       "lineId": "line-008",
       "audioId": "L5-001-line-008",
-      "start": 32.5235,
-      "end": 35.743667
+      "start": 31.921708,
+      "end": 35.072375
     },
     {
       "lineId": "line-009",
       "audioId": "L5-001-line-009",
-      "start": 36.223667,
-      "end": 38.489083
+      "start": 35.552375,
+      "end": 37.846625
     },
     {
       "lineId": "line-010",
       "audioId": "L5-001-line-010",
-      "start": 38.969083,
-      "end": 41.923625
+      "start": 38.326625,
+      "end": 40.495375
     },
     {
       "lineId": "line-011",
       "audioId": "L5-001-line-011",
-      "start": 42.403625,
-      "end": 45.41325
+      "start": 40.975375,
+      "end": 44.008583
     }
   ],
   "schemaVersion": 1,
   "timelineId": "L5-001-timeline",
   "sceneAudioId": "L5-001-scene",
-  "contentHash": "d9044885693c81f8f634c05c331ec6cdd157042f1b8249f29c049696ff0e716a",
-  "sourceContentHash": "2ccf748765c17673dc4ecdd88d7b91c70084470fc723ae22e9b16f56a3d10925"
+  "contentHash": "f683bad49be63f568c170f95a98ace4a152e2373cd611f07de7d13a3bea5a010",
+  "sourceContentHash": "7f48d8a989c6e70453a759b51310a11841105e04a1a169e0af3c9c19946ec67f"
 }

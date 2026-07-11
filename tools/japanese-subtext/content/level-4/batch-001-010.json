@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "level": 4,
   "batch": "001-010",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L4-001",
-      "revision": 1,
+      "revision": 2,
       "level": 4,
       "stage": 1,
       "jlptTarget": "N1-advanced",
@@ -370,14 +370,14 @@
               "en": "The most specific reading that unifies those facts is: Finance's nonverbal refusal leaves development's funding condition unmet."
             },
             "evidence": {
-              "ja": "line-002、line-004、line-005、line-006、line-007、line-008 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
-              "zh": "line-002、line-004、line-005、line-006、line-007、line-008 从发言、时间线与行为的不同侧面支持同一推论。",
-              "en": "line-002、line-004、line-005、line-006、line-007、line-008 support the same inference through distinct aspects of speech, timeline, and behavior."
+              "ja": "2番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "第2句台词、第4句台词、第5句台词、第6句台词、第7句台词、第8句台词从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "the second line、the fourth line、the fifth line、the sixth line、the seventh line、the eighth line support the same inference through distinct aspects of speech, timeline, and behavior."
             },
             "nuance": {
-              "ja": "line-002、line-004、line-005、line-006、line-007、line-008 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
-              "zh": "把 line-002、line-004、line-005、line-006、line-007、line-008 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
-              "en": "Reading line-002、line-004、line-005、line-006、line-007、line-008 together avoids overinterpreting a coincidence or a single word."
+              "ja": "2番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把第2句台词、第4句台词、第5句台词、第6句台词、第7句台词、第8句台词结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading the second line、the fourth line、the fifth line、the sixth line、the seventh line、the eighth line together avoids overinterpreting a coincidence or a single word."
             },
             "alternative": {
               "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
@@ -459,14 +459,14 @@
               "en": "The most specific reading that unifies those facts is: Despite a formal majority, the necessary condition of finance approval is absent."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-005、line-006、line-007、line-008 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
-              "zh": "line-001、line-002、line-005、line-006、line-007、line-008 从发言、时间线与行为的不同侧面支持同一推论。",
-              "en": "line-001、line-002、line-005、line-006、line-007、line-008 support the same inference through distinct aspects of speech, timeline, and behavior."
+              "ja": "1番目の台詞、2番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "第1句台词、第2句台词、第5句台词、第6句台词、第7句台词、第8句台词从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "the first line、the second line、the fifth line、the sixth line、the seventh line、the eighth line support the same inference through distinct aspects of speech, timeline, and behavior."
             },
             "nuance": {
-              "ja": "line-001、line-002、line-005、line-006、line-007、line-008 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
-              "zh": "把 line-001、line-002、line-005、line-006、line-007、line-008 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
-              "en": "Reading line-001、line-002、line-005、line-006、line-007、line-008 together avoids overinterpreting a coincidence or a single word."
+              "ja": "1番目の台詞、2番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把第1句台词、第2句台词、第5句台词、第6句台词、第7句台词、第8句台词结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading the first line、the second line、the fifth line、the sixth line、the seventh line、the eighth line together avoids overinterpreting a coincidence or a single word."
             },
             "alternative": {
               "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
@@ -486,13 +486,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "dfd3f5a4b920939acd12c167f2b3e6afaf8b7fbba9903e27b29c50f977787c31"
+      "contentHash": "82877e40ac361ba797805cda50ee8747d66b7f870d6b7f485c99be32da1806e4"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L4-002",
-      "revision": 1,
+      "revision": 2,
       "level": 4,
       "stage": 2,
       "jlptTarget": "N1-advanced",
@@ -858,14 +858,14 @@
               "en": "The most specific reading that unifies those facts is: Yuto, who borrowed the device and knew the deadline beforehand."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-003、line-004、line-005、line-006 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
-              "zh": "line-001、line-002、line-003、line-004、line-005、line-006 从发言、时间线与行为的不同侧面支持同一推论。",
-              "en": "line-001、line-002、line-003、line-004、line-005、line-006 support the same inference through distinct aspects of speech, timeline, and behavior."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "第1句台词、第2句台词、第3句台词、第4句台词、第5句台词、第6句台词从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "the first line、the second line、the third line、the fourth line、the fifth line、the sixth line support the same inference through distinct aspects of speech, timeline, and behavior."
             },
             "nuance": {
-              "ja": "line-001、line-002、line-003、line-004、line-005、line-006 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
-              "zh": "把 line-001、line-002、line-003、line-004、line-005、line-006 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
-              "en": "Reading line-001、line-002、line-003、line-004、line-005、line-006 together avoids overinterpreting a coincidence or a single word."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把第1句台词、第2句台词、第3句台词、第4句台词、第5句台词、第6句台词结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading the first line、the second line、the third line、the fourth line、the fifth line、the sixth line together avoids overinterpreting a coincidence or a single word."
             },
             "alternative": {
               "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
@@ -878,9 +878,9 @@
           "id": "q2",
           "type": "single",
           "prompt": {
-            "ja": "line-007 の推論上の誤りは何ですか。",
-            "zh": "line-007 的推理错误是什么？",
-            "en": "What reasoning error appears in line 007?"
+            "ja": "7番目の台詞の推論上の誤りは何ですか。",
+            "zh": "第7句台词的推理错误是什么？",
+            "en": "What reasoning error appears in the seventh line?"
           },
           "options": [
             {
@@ -945,14 +945,14 @@
               "en": "The most specific reading that unifies those facts is: Equating the account label with both operator and authorizer."
             },
             "evidence": {
-              "ja": "line-001、line-004、line-005、line-007 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
-              "zh": "line-001、line-004、line-005、line-007 从发言、时间线与行为的不同侧面支持同一推论。",
-              "en": "line-001、line-004、line-005、line-007 support the same inference through distinct aspects of speech, timeline, and behavior."
+              "ja": "1番目の台詞、4番目の台詞、5番目の台詞、7番目の台詞が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "第1句台词、第4句台词、第5句台词、第7句台词从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "the first line、the fourth line、the fifth line、the seventh line support the same inference through distinct aspects of speech, timeline, and behavior."
             },
             "nuance": {
-              "ja": "line-001、line-004、line-005、line-007 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
-              "zh": "把 line-001、line-004、line-005、line-007 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
-              "en": "Reading line-001、line-004、line-005、line-007 together avoids overinterpreting a coincidence or a single word."
+              "ja": "1番目の台詞、4番目の台詞、5番目の台詞、7番目の台詞を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把第1句台词、第4句台词、第5句台词、第7句台词结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading the first line、the fourth line、the fifth line、the seventh line together avoids overinterpreting a coincidence or a single word."
             },
             "alternative": {
               "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
@@ -972,13 +972,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "812640c35ca6fa07618473c37349f1ba188e9e14bb0c51e7ebe5021933f22750"
+      "contentHash": "37fce5f9b023a1952e91ea319720e9d7d59f0af5754fe72e45521d3fb49800d6"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L4-003",
-      "revision": 1,
+      "revision": 2,
       "level": 4,
       "stage": 3,
       "jlptTarget": "N1-advanced",
@@ -1349,14 +1349,14 @@
               "en": "The most specific reading that unifies those facts is: They jointly conceal a birthday surprise for the late-arriving Saya."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-003、line-004、line-005、line-006、line-007、line-008 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
-              "zh": "line-001、line-002、line-003、line-004、line-005、line-006、line-007、line-008 从发言、时间线与行为的不同侧面支持同一推论。",
-              "en": "line-001、line-002、line-003、line-004、line-005、line-006、line-007、line-008 support the same inference through distinct aspects of speech, timeline, and behavior."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "第1句台词、第2句台词、第3句台词、第4句台词、第5句台词、第6句台词、第7句台词、第8句台词从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "the first line、the second line、the third line、the fourth line、the fifth line、the sixth line、the seventh line、the eighth line support the same inference through distinct aspects of speech, timeline, and behavior."
             },
             "nuance": {
-              "ja": "line-001、line-002、line-003、line-004、line-005、line-006、line-007、line-008 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
-              "zh": "把 line-001、line-002、line-003、line-004、line-005、line-006、line-007、line-008 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
-              "en": "Reading line-001、line-002、line-003、line-004、line-005、line-006、line-007、line-008 together avoids overinterpreting a coincidence or a single word."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把第1句台词、第2句台词、第3句台词、第4句台词、第5句台词、第6句台词、第7句台词、第8句台词结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading the first line、the second line、the third line、the fourth line、the fifth line、the sixth line、the seventh line、the eighth line together avoids overinterpreting a coincidence or a single word."
             },
             "alternative": {
               "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
@@ -1437,14 +1437,14 @@
               "en": "The most specific reading that unifies those facts is: Emi manages timing, the server hides a candle, and Koji proposes a shared story."
             },
             "evidence": {
-              "ja": "line-004、line-005、line-006、line-007、line-008 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
-              "zh": "line-004、line-005、line-006、line-007、line-008 从发言、时间线与行为的不同侧面支持同一推论。",
-              "en": "line-004、line-005、line-006、line-007、line-008 support the same inference through distinct aspects of speech, timeline, and behavior."
+              "ja": "4番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "第4句台词、第5句台词、第6句台词、第7句台词、第8句台词从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "the fourth line、the fifth line、the sixth line、the seventh line、the eighth line support the same inference through distinct aspects of speech, timeline, and behavior."
             },
             "nuance": {
-              "ja": "line-004、line-005、line-006、line-007、line-008 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
-              "zh": "把 line-004、line-005、line-006、line-007、line-008 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
-              "en": "Reading line-004、line-005、line-006、line-007、line-008 together avoids overinterpreting a coincidence or a single word."
+              "ja": "4番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把第4句台词、第5句台词、第6句台词、第7句台词、第8句台词结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading the fourth line、the fifth line、the sixth line、the seventh line、the eighth line together avoids overinterpreting a coincidence or a single word."
             },
             "alternative": {
               "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
@@ -1464,13 +1464,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "3915550c0c60973c5477d7c2b250cb82163b8ef3a7b75283cb9d4d7302391531"
+      "contentHash": "52e8faaaa0f9c66b7b2a4e85ff4cc457733bb78ceac2379b8378a845da557d54"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L4-004",
-      "revision": 1,
+      "revision": 2,
       "level": 4,
       "stage": 4,
       "jlptTarget": "N1-advanced",
@@ -1835,14 +1835,14 @@
               "en": "The most specific reading that unifies those facts is: To separate briefly and meet an acquaintance at the old gate."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-003、line-004、line-005、line-006 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
-              "zh": "line-001、line-002、line-003、line-004、line-005、line-006 从发言、时间线与行为的不同侧面支持同一推论。",
-              "en": "line-001、line-002、line-003、line-004、line-005、line-006 support the same inference through distinct aspects of speech, timeline, and behavior."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "第1句台词、第2句台词、第3句台词、第4句台词、第5句台词、第6句台词从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "the first line、the second line、the third line、the fourth line、the fifth line、the sixth line support the same inference through distinct aspects of speech, timeline, and behavior."
             },
             "nuance": {
-              "ja": "line-001、line-002、line-003、line-004、line-005、line-006 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
-              "zh": "把 line-001、line-002、line-003、line-004、line-005、line-006 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
-              "en": "Reading line-001、line-002、line-003、line-004、line-005、line-006 together avoids overinterpreting a coincidence or a single word."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把第1句台词、第2句台词、第3句台词、第4句台词、第5句台词、第6句台词结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading the first line、the second line、the third line、the fourth line、the fifth line、the sixth line together avoids overinterpreting a coincidence or a single word."
             },
             "alternative": {
               "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
@@ -1922,14 +1922,14 @@
               "en": "The most specific reading that unifies those facts is: He was multilingual enough to translate a Chinese announcement the day before."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-003、line-004 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
-              "zh": "line-001、line-002、line-003、line-004 从发言、时间线与行为的不同侧面支持同一推论。",
-              "en": "line-001、line-002、line-003、line-004 support the same inference through distinct aspects of speech, timeline, and behavior."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "第1句台词、第2句台词、第3句台词、第4句台词从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "the first line、the second line、the third line、the fourth line support the same inference through distinct aspects of speech, timeline, and behavior."
             },
             "nuance": {
-              "ja": "line-001、line-002、line-003、line-004 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
-              "zh": "把 line-001、line-002、line-003、line-004 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
-              "en": "Reading line-001、line-002、line-003、line-004 together avoids overinterpreting a coincidence or a single word."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把第1句台词、第2句台词、第3句台词、第4句台词结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading the first line、the second line、the third line、the fourth line together avoids overinterpreting a coincidence or a single word."
             },
             "alternative": {
               "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
@@ -1949,13 +1949,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "01d8d3e7eaa1ec029770e7c53eb9cb0cdf943091070ee48772322b0519415370"
+      "contentHash": "bdd244ecd24e3e03ca21ad78cdfdbb71288a9a4b809c87d3e24e085cdc92495c"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L4-005",
-      "revision": 1,
+      "revision": 2,
       "level": 4,
       "stage": 5,
       "jlptTarget": "N1-advanced",
@@ -2331,14 +2331,14 @@
               "en": "The most specific reading that unifies those facts is: The one labeled Shiro, because the old nickname triggered a context-appropriate response."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-003、line-004、line-005、line-007、line-008 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
-              "zh": "line-001、line-002、line-003、line-004、line-005、line-007、line-008 从发言、时间线与行为的不同侧面支持同一推论。",
-              "en": "line-001、line-002、line-003、line-004、line-005、line-007、line-008 support the same inference through distinct aspects of speech, timeline, and behavior."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、7番目の台詞、8番目の台詞が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "第1句台词、第2句台词、第3句台词、第4句台词、第5句台词、第7句台词、第8句台词从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "the first line、the second line、the third line、the fourth line、the fifth line、the seventh line、the eighth line support the same inference through distinct aspects of speech, timeline, and behavior."
             },
             "nuance": {
-              "ja": "line-001、line-002、line-003、line-004、line-005、line-007、line-008 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
-              "zh": "把 line-001、line-002、line-003、line-004、line-005、line-007、line-008 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
-              "en": "Reading line-001、line-002、line-003、line-004、line-005、line-007、line-008 together avoids overinterpreting a coincidence or a single word."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、7番目の台詞、8番目の台詞を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把第1句台词、第2句台词、第3句台词、第4句台词、第5句台词、第7句台词、第8句台词结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading the first line、the second line、the third line、the fourth line、the fifth line、the seventh line、the eighth line together avoids overinterpreting a coincidence or a single word."
             },
             "alternative": {
               "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
@@ -2420,14 +2420,14 @@
               "en": "The most specific reading that unifies those facts is: Labels and appearance can be deliberately swapped, while an immediate response to a personal nickname is harder to control."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-004、line-005、line-006、line-008 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
-              "zh": "line-001、line-002、line-004、line-005、line-006、line-008 从发言、时间线与行为的不同侧面支持同一推论。",
-              "en": "line-001、line-002、line-004、line-005、line-006、line-008 support the same inference through distinct aspects of speech, timeline, and behavior."
+              "ja": "1番目の台詞、2番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞、8番目の台詞が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "第1句台词、第2句台词、第4句台词、第5句台词、第6句台词、第8句台词从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "the first line、the second line、the fourth line、the fifth line、the sixth line、the eighth line support the same inference through distinct aspects of speech, timeline, and behavior."
             },
             "nuance": {
-              "ja": "line-001、line-002、line-004、line-005、line-006、line-008 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
-              "zh": "把 line-001、line-002、line-004、line-005、line-006、line-008 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
-              "en": "Reading line-001、line-002、line-004、line-005、line-006、line-008 together avoids overinterpreting a coincidence or a single word."
+              "ja": "1番目の台詞、2番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞、8番目の台詞を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把第1句台词、第2句台词、第4句台词、第5句台词、第6句台词、第8句台词结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading the first line、the second line、the fourth line、the fifth line、the sixth line、the eighth line together avoids overinterpreting a coincidence or a single word."
             },
             "alternative": {
               "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
@@ -2447,13 +2447,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "10404fd1d21975b5bace49865185d3f32c1b9904a9ab081958b780d1f29f4d4d"
+      "contentHash": "0fcd699e885e0da8bc30a8fd7a2e9abd3ac632ab6c2288363d8bdb8eedca30c6"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L4-006",
-      "revision": 1,
+      "revision": 2,
       "level": 4,
       "stage": 6,
       "jlptTarget": "N1-advanced",
@@ -2817,14 +2817,14 @@
               "en": "The most specific reading that unifies those facts is: A private call with Sana."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-004、line-005、line-006、line-007、line-008 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
-              "zh": "line-001、line-002、line-004、line-005、line-006、line-007、line-008 从发言、时间线与行为的不同侧面支持同一推论。",
-              "en": "line-001、line-002、line-004、line-005、line-006、line-007、line-008 support the same inference through distinct aspects of speech, timeline, and behavior."
+              "ja": "1番目の台詞、2番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "第1句台词、第2句台词、第4句台词、第5句台词、第6句台词、第7句台词、第8句台词从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "the first line、the second line、the fourth line、the fifth line、the sixth line、the seventh line、the eighth line support the same inference through distinct aspects of speech, timeline, and behavior."
             },
             "nuance": {
-              "ja": "line-001、line-002、line-004、line-005、line-006、line-007、line-008 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
-              "zh": "把 line-001、line-002、line-004、line-005、line-006、line-007、line-008 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
-              "en": "Reading line-001、line-002、line-004、line-005、line-006、line-007、line-008 together avoids overinterpreting a coincidence or a single word."
+              "ja": "1番目の台詞、2番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把第1句台词、第2句台词、第4句台词、第5句台词、第6句台词、第7句台词、第8句台词结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading the first line、the second line、the fourth line、the fifth line、the sixth line、the seventh line、the eighth line together avoids overinterpreting a coincidence or a single word."
             },
             "alternative": {
               "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
@@ -2906,14 +2906,14 @@
               "en": "The most specific reading that unifies those facts is: He reacts before speech while the stream is thirty seconds late."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-003、line-004、line-005、line-006 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
-              "zh": "line-001、line-002、line-003、line-004、line-005、line-006 从发言、时间线与行为的不同侧面支持同一推论。",
-              "en": "line-001、line-002、line-003、line-004、line-005、line-006 support the same inference through distinct aspects of speech, timeline, and behavior."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "第1句台词、第2句台词、第3句台词、第4句台词、第5句台词、第6句台词从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "the first line、the second line、the third line、the fourth line、the fifth line、the sixth line support the same inference through distinct aspects of speech, timeline, and behavior."
             },
             "nuance": {
-              "ja": "line-001、line-002、line-003、line-004、line-005、line-006 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
-              "zh": "把 line-001、line-002、line-003、line-004、line-005、line-006 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
-              "en": "Reading line-001、line-002、line-003、line-004、line-005、line-006 together avoids overinterpreting a coincidence or a single word."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把第1句台词、第2句台词、第3句台词、第4句台词、第5句台词、第6句台词结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading the first line、the second line、the third line、the fourth line、the fifth line、the sixth line together avoids overinterpreting a coincidence or a single word."
             },
             "alternative": {
               "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
@@ -2996,14 +2996,14 @@
               "en": "The most specific reading that unifies those facts is: Kaito twice anticipates unspoken plans.; Kaito knows Sana-only information, and she admits the private call."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-005、line-006、line-007、line-008 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
-              "zh": "line-001、line-002、line-005、line-006、line-007、line-008 从发言、时间线与行为的不同侧面支持同一推论。",
-              "en": "line-001、line-002、line-005、line-006、line-007、line-008 support the same inference through distinct aspects of speech, timeline, and behavior."
+              "ja": "1番目の台詞、2番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "第1句台词、第2句台词、第5句台词、第6句台词、第7句台词、第8句台词从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "the first line、the second line、the fifth line、the sixth line、the seventh line、the eighth line support the same inference through distinct aspects of speech, timeline, and behavior."
             },
             "nuance": {
-              "ja": "line-001、line-002、line-005、line-006、line-007、line-008 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
-              "zh": "把 line-001、line-002、line-005、line-006、line-007、line-008 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
-              "en": "Reading line-001、line-002、line-005、line-006、line-007、line-008 together avoids overinterpreting a coincidence or a single word."
+              "ja": "1番目の台詞、2番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把第1句台词、第2句台词、第5句台词、第6句台词、第7句台词、第8句台词结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading the first line、the second line、the fifth line、the sixth line、the seventh line、the eighth line together avoids overinterpreting a coincidence or a single word."
             },
             "alternative": {
               "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
@@ -3023,13 +3023,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "307ff2c17da6e96c24911699673afb45b65e96653148b9c3d687b8e34d7a4cbd"
+      "contentHash": "7aba33a7c1f73797b682acfdac8d94bad97d40223dd7eaab1df4a5883af0a58c"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L4-007",
-      "revision": 1,
+      "revision": 2,
       "level": 4,
       "stage": 7,
       "jlptTarget": "N1-advanced",
@@ -3454,14 +3454,14 @@
               "en": "The most specific reading that unifies those facts is: All share the schedule-only order rather than physical order."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-003、line-004、line-006、line-008 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
-              "zh": "line-001、line-002、line-003、line-004、line-006、line-008 从发言、时间线与行为的不同侧面支持同一推论。",
-              "en": "line-001、line-002、line-003、line-004、line-006、line-008 support the same inference through distinct aspects of speech, timeline, and behavior."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、6番目の台詞、8番目の台詞が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "第1句台词、第2句台词、第3句台词、第4句台词、第6句台词、第8句台词从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "the first line、the second line、the third line、the fourth line、the sixth line、the eighth line support the same inference through distinct aspects of speech, timeline, and behavior."
             },
             "nuance": {
-              "ja": "line-001、line-002、line-003、line-004、line-006、line-008 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
-              "zh": "把 line-001、line-002、line-003、line-004、line-006、line-008 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
-              "en": "Reading line-001、line-002、line-003、line-004、line-006、line-008 together avoids overinterpreting a coincidence or a single word."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、6番目の台詞、8番目の台詞を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把第1句台词、第2句台词、第3句台词、第4句台词、第6句台词、第8句台词结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading the first line、the second line、the third line、the fourth line、the sixth line、the eighth line together avoids overinterpreting a coincidence or a single word."
             },
             "alternative": {
               "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
@@ -3544,14 +3544,14 @@
               "en": "The most specific reading that unifies those facts is: All three room orders match exactly.; Tomo admits they compared memories."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-003、line-006、line-008、line-009 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
-              "zh": "line-001、line-002、line-003、line-006、line-008、line-009 从发言、时间线与行为的不同侧面支持同一推论。",
-              "en": "line-001、line-002、line-003、line-006、line-008、line-009 support the same inference through distinct aspects of speech, timeline, and behavior."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、6番目の台詞、8番目の台詞、9番目の台詞が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "第1句台词、第2句台词、第3句台词、第6句台词、第8句台词、第9句台词从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "the first line、the second line、the third line、the sixth line、the eighth line、the ninth line support the same inference through distinct aspects of speech, timeline, and behavior."
             },
             "nuance": {
-              "ja": "line-001、line-002、line-003、line-006、line-008、line-009 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
-              "zh": "把 line-001、line-002、line-003、line-006、line-008、line-009 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
-              "en": "Reading line-001、line-002、line-003、line-006、line-008、line-009 together avoids overinterpreting a coincidence or a single word."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、6番目の台詞、8番目の台詞、9番目の台詞を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把第1句台词、第2句台词、第3句台词、第6句台词、第8句台词、第9句台词结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading the first line、the second line、the third line、the sixth line、the eighth line、the ninth line together avoids overinterpreting a coincidence or a single word."
             },
             "alternative": {
               "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
@@ -3571,13 +3571,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "9c1ea63e4640aeff8407b74b2f5e352d07cc8284ade7802fb6e66d655d084e9d"
+      "contentHash": "7c206d5cdee7d4210cff65c69ae4193eccacf0fed7bd028ce1cb1e0ac410a0d6"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L4-008",
-      "revision": 1,
+      "revision": 2,
       "level": 4,
       "stage": 8,
       "jlptTarget": "N1-advanced",
@@ -3917,14 +3917,14 @@
               "en": "The most specific reading that unifies those facts is: Human agency in failing to check.; The manager's admitted responsibility."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-003、line-004、line-005、line-007 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
-              "zh": "line-001、line-002、line-003、line-004、line-005、line-007 从发言、时间线与行为的不同侧面支持同一推论。",
-              "en": "line-001、line-002、line-003、line-004、line-005、line-007 support the same inference through distinct aspects of speech, timeline, and behavior."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、7番目の台詞が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "第1句台词、第2句台词、第3句台词、第4句台词、第5句台词、第7句台词从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "the first line、the second line、the third line、the fourth line、the fifth line、the seventh line support the same inference through distinct aspects of speech, timeline, and behavior."
             },
             "nuance": {
-              "ja": "line-001、line-002、line-003、line-004、line-005、line-007 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
-              "zh": "把 line-001、line-002、line-003、line-004、line-005、line-007 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
-              "en": "Reading line-001、line-002、line-003、line-004、line-005、line-007 together avoids overinterpreting a coincidence or a single word."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、7番目の台詞を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把第1句台词、第2句台词、第3句台词、第4句台词、第5句台词、第7句台词结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading the first line、the second line、the third line、the fourth line、the fifth line、the seventh line together avoids overinterpreting a coincidence or a single word."
             },
             "alternative": {
               "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
@@ -4005,14 +4005,14 @@
               "en": "The most specific reading that unifies those facts is: Presents failure as an agentless event."
             },
             "evidence": {
-              "ja": "line-002、line-003、line-004、line-005、line-007 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
-              "zh": "line-002、line-003、line-004、line-005、line-007 从发言、时间线与行为的不同侧面支持同一推论。",
-              "en": "line-002、line-003、line-004、line-005、line-007 support the same inference through distinct aspects of speech, timeline, and behavior."
+              "ja": "2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、7番目の台詞が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "第2句台词、第3句台词、第4句台词、第5句台词、第7句台词从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "the second line、the third line、the fourth line、the fifth line、the seventh line support the same inference through distinct aspects of speech, timeline, and behavior."
             },
             "nuance": {
-              "ja": "line-002、line-003、line-004、line-005、line-007 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
-              "zh": "把 line-002、line-003、line-004、line-005、line-007 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
-              "en": "Reading line-002、line-003、line-004、line-005、line-007 together avoids overinterpreting a coincidence or a single word."
+              "ja": "2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、7番目の台詞を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把第2句台词、第3句台词、第4句台词、第5句台词、第7句台词结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading the second line、the third line、the fourth line、the fifth line、the seventh line together avoids overinterpreting a coincidence or a single word."
             },
             "alternative": {
               "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
@@ -4093,14 +4093,14 @@
               "en": "The most specific reading that unifies those facts is: Shifts human failure to a technical issue and weakens accountability."
             },
             "evidence": {
-              "ja": "line-002、line-003、line-004、line-007、line-008 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
-              "zh": "line-002、line-003、line-004、line-007、line-008 从发言、时间线与行为的不同侧面支持同一推论。",
-              "en": "line-002、line-003、line-004、line-007、line-008 support the same inference through distinct aspects of speech, timeline, and behavior."
+              "ja": "2番目の台詞、3番目の台詞、4番目の台詞、7番目の台詞、8番目の台詞が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "第2句台词、第3句台词、第4句台词、第7句台词、第8句台词从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "the second line、the third line、the fourth line、the seventh line、the eighth line support the same inference through distinct aspects of speech, timeline, and behavior."
             },
             "nuance": {
-              "ja": "line-002、line-003、line-004、line-007、line-008 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
-              "zh": "把 line-002、line-003、line-004、line-007、line-008 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
-              "en": "Reading line-002、line-003、line-004、line-007、line-008 together avoids overinterpreting a coincidence or a single word."
+              "ja": "2番目の台詞、3番目の台詞、4番目の台詞、7番目の台詞、8番目の台詞を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把第2句台词、第3句台词、第4句台词、第7句台词、第8句台词结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading the second line、the third line、the fourth line、the seventh line、the eighth line together avoids overinterpreting a coincidence or a single word."
             },
             "alternative": {
               "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
@@ -4120,13 +4120,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "43281e02dba1b7e04686092a64372171e7d0f23bc1f522646c3722f8b071aa1f"
+      "contentHash": "3524323a6f2c2ea39df837ff1f5e50ba13f8a338e9db71fb90e4d1ec94cd3241"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L4-009",
-      "revision": 1,
+      "revision": 2,
       "level": 4,
       "stage": 9,
       "jlptTarget": "N1-advanced",
@@ -4513,14 +4513,14 @@
               "en": "The most specific reading that unifies those facts is: It mistakes rank for evidential credibility."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-003、line-004、line-005、line-006、line-007、line-008、line-009 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
-              "zh": "line-001、line-002、line-003、line-004、line-005、line-006、line-007、line-008、line-009 从发言、时间线与行为的不同侧面支持同一推论。",
-              "en": "line-001、line-002、line-003、line-004、line-005、line-006、line-007、line-008、line-009 support the same inference through distinct aspects of speech, timeline, and behavior."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "第1句台词、第2句台词、第3句台词、第4句台词、第5句台词、第6句台词、第7句台词、第8句台词、第9句台词从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "the first line、the second line、the third line、the fourth line、the fifth line、the sixth line、the seventh line、the eighth line、the ninth line support the same inference through distinct aspects of speech, timeline, and behavior."
             },
             "nuance": {
-              "ja": "line-001、line-002、line-003、line-004、line-005、line-006、line-007、line-008、line-009 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
-              "zh": "把 line-001、line-002、line-003、line-004、line-005、line-006、line-007、line-008、line-009 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
-              "en": "Reading line-001、line-002、line-003、line-004、line-005、line-006、line-007、line-008、line-009 together avoids overinterpreting a coincidence or a single word."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把第1句台词、第2句台词、第3句台词、第4句台词、第5句台词、第6句台词、第7句台词、第8句台词、第9句台词结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading the first line、the second line、the third line、the fourth line、the fifth line、the sixth line、the seventh line、the eighth line、the ninth line together avoids overinterpreting a coincidence or a single word."
             },
             "alternative": {
               "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
@@ -4601,14 +4601,14 @@
               "en": "The most specific reading that unifies those facts is: Wrong senior claims appear first while correct dissent is marginalized."
             },
             "evidence": {
-              "ja": "line-005、line-006、line-007、line-008、line-009 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
-              "zh": "line-005、line-006、line-007、line-008、line-009 从发言、时间线与行为的不同侧面支持同一推论。",
-              "en": "line-005、line-006、line-007、line-008、line-009 support the same inference through distinct aspects of speech, timeline, and behavior."
+              "ja": "5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "第5句台词、第6句台词、第7句台词、第8句台词、第9句台词从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "the fifth line、the sixth line、the seventh line、the eighth line、the ninth line support the same inference through distinct aspects of speech, timeline, and behavior."
             },
             "nuance": {
-              "ja": "line-005、line-006、line-007、line-008、line-009 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
-              "zh": "把 line-005、line-006、line-007、line-008、line-009 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
-              "en": "Reading line-005、line-006、line-007、line-008、line-009 together avoids overinterpreting a coincidence or a single word."
+              "ja": "5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把第5句台词、第6句台词、第7句台词、第8句台词、第9句台词结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading the fifth line、the sixth line、the seventh line、the eighth line、the ninth line together avoids overinterpreting a coincidence or a single word."
             },
             "alternative": {
               "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
@@ -4628,13 +4628,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "8041670c296a19ba110d3ddb8e6bbd11ce736389af57c84e8075fdeff1eeb791"
+      "contentHash": "9f79b1ba4c24603abc7731a4c36cf6799f774a00246cd249bd1019d591a82b00"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L4-010",
-      "revision": 1,
+      "revision": 2,
       "level": 4,
       "stage": 10,
       "jlptTarget": "N1-advanced",
@@ -4999,14 +4999,14 @@
               "en": "The most specific reading that unifies those facts is: Each ship separately says 'we.'; The AI equates same channel and pronoun with one group."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-003、line-004、line-005、line-006、line-007 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
-              "zh": "line-001、line-002、line-003、line-004、line-005、line-006、line-007 从发言、时间线与行为的不同侧面支持同一推论。",
-              "en": "line-001、line-002、line-003、line-004、line-005、line-006、line-007 support the same inference through distinct aspects of speech, timeline, and behavior."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "第1句台词、第2句台词、第3句台词、第4句台词、第5句台词、第6句台词、第7句台词从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "the first line、the second line、the third line、the fourth line、the fifth line、the sixth line、the seventh line support the same inference through distinct aspects of speech, timeline, and behavior."
             },
             "nuance": {
-              "ja": "line-001、line-002、line-003、line-004、line-005、line-006、line-007 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
-              "zh": "把 line-001、line-002、line-003、line-004、line-005、line-006、line-007 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
-              "en": "Reading line-001、line-002、line-003、line-004、line-005、line-006、line-007 together avoids overinterpreting a coincidence or a single word."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把第1句台词、第2句台词、第3句台词、第4句台词、第5句台词、第6句台词、第7句台词结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading the first line、the second line、the third line、the fourth line、the fifth line、the sixth line、the seventh line together avoids overinterpreting a coincidence or a single word."
             },
             "alternative": {
               "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
@@ -5088,14 +5088,14 @@
               "en": "The most specific reading that unifies those facts is: Return of each of Ship Two's six people."
             },
             "evidence": {
-              "ja": "line-002、line-003、line-004、line-005、line-007、line-008 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
-              "zh": "line-002、line-003、line-004、line-005、line-007、line-008 从发言、时间线与行为的不同侧面支持同一推论。",
-              "en": "line-002、line-003、line-004、line-005、line-007、line-008 support the same inference through distinct aspects of speech, timeline, and behavior."
+              "ja": "2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、7番目の台詞、8番目の台詞が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "第2句台词、第3句台词、第4句台词、第5句台词、第7句台词、第8句台词从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "the second line、the third line、the fourth line、the fifth line、the seventh line、the eighth line support the same inference through distinct aspects of speech, timeline, and behavior."
             },
             "nuance": {
-              "ja": "line-002、line-003、line-004、line-005、line-007、line-008 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
-              "zh": "把 line-002、line-003、line-004、line-005、line-007、line-008 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
-              "en": "Reading line-002、line-003、line-004、line-005、line-007、line-008 together avoids overinterpreting a coincidence or a single word."
+              "ja": "2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、7番目の台詞、8番目の台詞を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把第2句台词、第3句台词、第4句台词、第5句台词、第7句台词、第8句台词结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading the second line、the third line、the fourth line、the fifth line、the seventh line、the eighth line together avoids overinterpreting a coincidence or a single word."
             },
             "alternative": {
               "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
@@ -5176,14 +5176,14 @@
               "en": "The most specific reading that unifies those facts is: First-person plural changes reference with the speaker."
             },
             "evidence": {
-              "ja": "line-001、line-003、line-004、line-006、line-007 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
-              "zh": "line-001、line-003、line-004、line-006、line-007 从发言、时间线与行为的不同侧面支持同一推论。",
-              "en": "line-001、line-003、line-004、line-006、line-007 support the same inference through distinct aspects of speech, timeline, and behavior."
+              "ja": "1番目の台詞、3番目の台詞、4番目の台詞、6番目の台詞、7番目の台詞が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "第1句台词、第3句台词、第4句台词、第6句台词、第7句台词从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "the first line、the third line、the fourth line、the sixth line、the seventh line support the same inference through distinct aspects of speech, timeline, and behavior."
             },
             "nuance": {
-              "ja": "line-001、line-003、line-004、line-006、line-007 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
-              "zh": "把 line-001、line-003、line-004、line-006、line-007 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
-              "en": "Reading line-001、line-003、line-004、line-006、line-007 together avoids overinterpreting a coincidence or a single word."
+              "ja": "1番目の台詞、3番目の台詞、4番目の台詞、6番目の台詞、7番目の台詞を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把第1句台词、第3句台词、第4句台词、第6句台词、第7句台词结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading the first line、the third line、the fourth line、the sixth line、the seventh line together avoids overinterpreting a coincidence or a single word."
             },
             "alternative": {
               "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
@@ -5203,7 +5203,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "a1b6b3ef1cb192774ceeee9f8927ff5a72111e8b2e7a4c3b0499b67ca4b16c45"
+      "contentHash": "5c7c84f92734f8f8816a554ddcdbe1a87548e967501eb5a41b8edb48c32c3d05"
     }
   ]
 }

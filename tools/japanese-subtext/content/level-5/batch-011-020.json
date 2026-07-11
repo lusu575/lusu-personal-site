@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "level": 5,
   "batch": "011-020",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-011",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 11,
       "jlptTarget": "N1-pragmatics",
@@ -531,9 +531,9 @@
               "en": "Turning a count increase into a rate increase assumes a constant denominator, which is false here."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-004、line-006、line-008を合わせると、人数、前回値、二期の対象人口、二期の参加率が計算と解釈を同時に確認させます。",
-              "zh": "合并阅读line-001、line-002、line-004、line-006、line-008可知，当前人数、上次人数、两期人口与两期参与率共同核验计算和解释。",
-              "en": "Read together, line-001, line-002, line-004, line-006, line-008 show that current count, prior count, both electorate sizes, and both rates jointly verify the calculation and interpretation."
+              "ja": "1番目の台詞、2番目の台詞、4番目の台詞、6番目の台詞、8番目の台詞を合わせると、人数、前回値、二期の対象人口、二期の参加率が計算と解釈を同時に確認させます。",
+              "zh": "合并阅读第1句台词、第2句台词、第4句台词、第6句台词、第8句台词可知，当前人数、上次人数、两期人口与两期参与率共同核验计算和解释。",
+              "en": "Read together, the first line, the second line, the fourth line, the sixth line, the eighth line show that current count, prior count, both electorate sizes, and both rates jointly verify the calculation and interpretation."
             },
             "nuance": {
               "ja": "参加率低下から個々人の動機までは断定できませんが、少なくとも『率も上がった』とは言えません。",
@@ -617,9 +617,9 @@
               "en": "Sixty of one hundred thousand is sixty percent; ninety of two hundred thousand is forty-five, a fifteen-point drop."
             },
             "evidence": {
-              "ja": "line-004、line-006、line-008を合わせると、二期の分子と分母が明示され、番組内の割合とも一致します。",
-              "zh": "合并阅读line-004、line-006、line-008可知，两期分子分母明确，计算结果也与节目中公布的比例一致。",
-              "en": "Read together, line-004, line-006, line-008 show that both periods' numerators and denominators are explicit and match the stated rates."
+              "ja": "4番目の台詞、6番目の台詞、8番目の台詞を合わせると、二期の分子と分母が明示され、番組内の割合とも一致します。",
+              "zh": "合并阅读第4句台词、第6句台词、第8句台词可知，两期分子分母明确，计算结果也与节目中公布的比例一致。",
+              "en": "Read together, the fourth line, the sixth line, the eighth line show that both periods' numerators and denominators are explicit and match the stated rates."
             },
             "nuance": {
               "ja": "十五ポイント低下は十五パーセント減少と同じ表現ではありません。",
@@ -706,9 +706,9 @@
               "en": "A true sentence can mislead through placement of comparison data and suppression of relevant wording."
             },
             "evidence": {
-              "ja": "line-007、line-010、line-011、line-012、line-013、line-014を合わせると、後回しの分母表、据え置く見出し、分析者の指摘、低下語の回避要求が編集方針を示します。",
-              "zh": "合并阅读line-007、line-010、line-011、line-012、line-013、line-014可知，后置的分母表、不变的标题、分析员提醒及禁用“下降”的要求共同显示编辑方向。",
-              "en": "Read together, line-007, line-010, line-011, line-012, line-013, line-014 show that the delayed denominator table, fixed headline, analyst's warning, and request to avoid “decline” reveal the editorial framing."
+              "ja": "7番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞、13番目の台詞、14番目の台詞を合わせると、後回しの分母表、据え置く見出し、分析者の指摘、低下語の回避要求が編集方針を示します。",
+              "zh": "合并阅读第7句台词、第10句台词、第11句台词、第12句台词、第13句台词、第14句台词可知，后置的分母表、不变的标题、分析员提醒及禁用“下降”的要求共同显示编辑方向。",
+              "en": "Read together, the seventh line, the tenth line, the eleventh line, the twelfth line, the thirteenth line, the fourteenth line show that the delayed denominator table, fixed headline, analyst's warning, and request to avoid “decline” reveal the editorial framing."
             },
             "nuance": {
               "ja": "見出しだけで意図的欺瞞を法的に断定せず、効果として偏りがあると評価するのが安全です。",
@@ -733,13 +733,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "00168a1c92db08465708c22629da48767cf3be13b17337dd0b153f4535805931"
+      "contentHash": "2c839b1bd05ca543b649e9afe6a11d63a1e617109477151f17aebd0dab77fd02"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-012",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 12,
       "jlptTarget": "N1-pragmatics",
@@ -1241,9 +1241,9 @@
               "en": "Both a marking mechanism and a decoded result matching relevant hidden information are required."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-003、line-004、line-005、line-006、line-008、line-009、line-010を合わせると、五つの強勢と順序、復号語、会場の一致が偶然の頭文字遊びより具体的です。",
-              "zh": "合并阅读line-001、line-002、line-003、line-004、line-005、line-006、line-008、line-009、line-010可知，五次重音、顺序、解码词与会场一致，比偶然首字游戏更具体。",
-              "en": "Read together, line-001, line-002, line-003, line-004, line-005, line-006, line-008, line-009, line-010 show that five stresses, their order, the decoded phrase, and the venue match exceed a chance acrostic."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞を合わせると、五つの強勢と順序、復号語、会場の一致が偶然の頭文字遊びより具体的です。",
+              "zh": "合并阅读第1句台词、第2句台词、第3句台词、第4句台词、第5句台词、第6句台词、第8句台词、第9句台词、第10句台词可知，五次重音、顺序、解码词与会场一致，比偶然首字游戏更具体。",
+              "en": "Read together, the first line, the second line, the third line, the fourth line, the fifth line, the sixth line, the eighth line, the ninth line, the tenth line show that five stresses, their order, the decoded phrase, and the venue match exceed a chance acrostic."
             },
             "nuance": {
               "ja": "登録履歴不在も演出説を補強しますが、架空名だけではメッセージ内容まで決まりません。",
@@ -1327,9 +1327,9 @@
               "en": "The decoded phrase maps directly to the venue, with production confirming its cancellation timing."
             },
             "evidence": {
-              "ja": "line-008、line-009、line-010を合わせると、分析者の読み上げ、常連の会場特定、制作の中止説明が三段で照合します。",
-              "zh": "合并阅读line-008、line-009、line-010可知，分析员读出地点、常客确认会场、制作说明取消，形成三层核对。",
-              "en": "Read together, line-008, line-009, line-010 show that the analyst decodes it, the regular identifies it, and production confirms cancellation."
+              "ja": "8番目の台詞、9番目の台詞、10番目の台詞を合わせると、分析者の読み上げ、常連の会場特定、制作の中止説明が三段で照合します。",
+              "zh": "合并阅读第8句台词、第9句台词、第10句台词可知，分析员读出地点、常客确认会场、制作说明取消，形成三层核对。",
+              "en": "Read together, the eighth line, the ninth line, the tenth line show that the analyst decodes it, the regular identifies it, and production confirms cancellation."
             },
             "nuance": {
               "ja": "『地下口』は場所の一部なので、会場全体というより集合入口を精密に指す可能性があります。",
@@ -1418,9 +1418,9 @@
               "en": "The information rides on spoken metadata: name choice, stress, and order."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-003、line-004、line-005、line-006、line-008、line-012を合わせると、各投稿名と強勢の観察、順序復号、分析者の媒体特定が一致します。",
-              "zh": "合并阅读line-001、line-002、line-003、line-004、line-005、line-006、line-008、line-012可知，各投稿名、重音观察、顺序解码与分析员对媒介的判断相一致。",
-              "en": "Read together, line-001, line-002, line-003, line-004, line-005, line-006, line-008, line-012 show that the names, stress observation, ordered decoding, and analyst's channel identification agree."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞、8番目の台詞、12番目の台詞を合わせると、各投稿名と強勢の観察、順序復号、分析者の媒体特定が一致します。",
+              "zh": "合并阅读第1句台词、第2句台词、第3句台词、第4句台词、第5句台词、第6句台词、第8句台词、第12句台词可知，各投稿名、重音观察、顺序解码与分析员对媒介的判断相一致。",
+              "en": "Read together, the first line, the second line, the third line, the fourth line, the fifth line, the sixth line, the eighth line, the twelfth line show that the names, stress observation, ordered decoding, and analyst's channel identification agree."
             },
             "nuance": {
               "ja": "曲順変更というDJの言葉も順序の重要性を示しますが、それだけでは復号規則を完成しません。",
@@ -1507,9 +1507,9 @@
               "en": "The code and circumstances are supported, but recipient identity and illegality are not."
             },
             "evidence": {
-              "ja": "line-007、line-008、line-009、line-010、line-011、line-013を合わせると、架空名、復号、会場一致、告知不能、DJの回避表現、制作の説明が目的を限定的に支えます。",
-              "zh": "合并阅读line-007、line-008、line-009、line-010、line-011、line-013可知，虚构名字、解码、会场吻合、无法公告、DJ回避表达与制作说明有限度地支持该目的。",
-              "en": "Read together, line-007, line-008, line-009, line-010, line-011, line-013 show that fictional names, decoding, venue match, announcement constraint, DJ wording, and production explanation support that limited purpose."
+              "ja": "7番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞、13番目の台詞を合わせると、架空名、復号、会場一致、告知不能、DJの回避表現、制作の説明が目的を限定的に支えます。",
+              "zh": "合并阅读第7句台词、第8句台词、第9句台词、第10句台词、第11句台词、第13句台词可知，虚构名字、解码、会场吻合、无法公告、DJ回避表达与制作说明有限度地支持该目的。",
+              "en": "Read together, the seventh line, the eighth line, the ninth line, the tenth line, the eleventh line, the thirteenth line show that fictional names, decoding, venue match, announcement constraint, DJ wording, and production explanation support that limited purpose."
             },
             "nuance": {
               "ja": "『可能性が高い』と保ち、誰に何のためにという未提示部分を埋めないことが重要です。",
@@ -1534,13 +1534,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "08a09442e7981576a81b04ee3711da86c9469afe157f472bb0031cd3c2713a29"
+      "contentHash": "c45bc799cf637083dc3576cd1f7addf8200cc6e2bb5524d64615476d6d19705a"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-013",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 13,
       "jlptTarget": "N1-pragmatics",
@@ -2064,9 +2064,9 @@
               "en": "Irreversible construction stages and voice age jointly establish chronology opposite the displayed dates."
             },
             "evidence": {
-              "ja": "line-002、line-004、line-006、line-007、line-014を合わせると、基礎から完成へという工程順と、学生声から現在声へという加齢方向が一致します。",
-              "zh": "合并阅读line-002、line-004、line-006、line-007、line-014可知，从基础到完工的工程顺序，与从学生声音到当前声音的年龄方向一致。",
-              "en": "Read together, line-002, line-004, line-006, line-007, line-014 show that foundation-to-completion progress aligns with student-to-current voice aging."
+              "ja": "2番目の台詞、4番目の台詞、6番目の台詞、7番目の台詞、14番目の台詞を合わせると、基礎から完成へという工程順と、学生声から現在声へという加齢方向が一致します。",
+              "zh": "合并阅读第2句台词、第4句台词、第6句台词、第7句台词、第14句台词可知，从基础到完工的工程顺序，与从学生声音到当前声音的年龄方向一致。",
+              "en": "Read together, the second line, the fourth line, the sixth line, the seventh line, the fourteenth line show that foundation-to-completion progress aligns with student-to-current voice aging."
             },
             "nuance": {
               "ja": "声の高さだけなら演技の可能性もありますが、工事記録が独立した時間軸を与えます。",
@@ -2151,9 +2151,9 @@
               "en": "A clock can be correct while an import process writes new metadata values."
             },
             "evidence": {
-              "ja": "line-008、line-010、line-011、line-013を合わせると、時計正常の確認、古い作成日、表示日更新、一括移行、移行番号が書換え経路を示します。",
-              "zh": "合并阅读line-008、line-010、line-011、line-013可知，时钟正常、旧创建日、显示日更新、批量迁移与迁移编号共同显示改写路径。",
-              "en": "Read together, line-008, line-010, line-011, line-013 show that clock integrity, old creation times, rewritten display dates, bulk transfer, and import order identify the rewrite path."
+              "ja": "8番目の台詞、10番目の台詞、11番目の台詞、13番目の台詞を合わせると、時計正常の確認、古い作成日、表示日更新、一括移行、移行番号が書換え経路を示します。",
+              "zh": "合并阅读第8句台词、第10句台词、第11句台词、第13句台词可知，时钟正常、旧创建日、显示日更新、批量迁移与迁移编号共同显示改写路径。",
+              "en": "Read together, the eighth line, the tenth line, the eleventh line, the thirteenth line show that clock integrity, old creation times, rewritten display dates, bulk transfer, and import order identify the rewrite path."
             },
             "nuance": {
               "ja": "意図的な改ざんとは限らず、移行仕様や選択順の副作用でも説明できます。",
@@ -2241,9 +2241,9 @@
               "en": "Reversed metadata explains both independent age markers—voice and construction—in one account."
             },
             "evidence": {
-              "ja": "line-001、line-003、line-005、line-007、line-010、line-013、line-014を合わせると、三件全体の声、工程、古い作成日、移行順、技師の再構成が同じ方向を示します。",
-              "zh": "合并阅读line-001、line-003、line-005、line-007、line-010、line-013、line-014可知，三条声音、施工阶段、旧创建日、迁移顺序与工程师重构都指向同一方向。",
-              "en": "Read together, line-001, line-003, line-005, line-007, line-010, line-013, line-014 show that voice age, construction phase, old creation dates, import order, and reconstruction all align."
+              "ja": "1番目の台詞、3番目の台詞、5番目の台詞、7番目の台詞、10番目の台詞、13番目の台詞、14番目の台詞を合わせると、三件全体の声、工程、古い作成日、移行順、技師の再構成が同じ方向を示します。",
+              "zh": "合并阅读第1句台词、第3句台词、第5句台词、第7句台词、第10句台词、第13句台词、第14句台词可知，三条声音、施工阶段、旧创建日、迁移顺序与工程师重构都指向同一方向。",
+              "en": "Read together, the first line, the third line, the fifth line, the seventh line, the tenth line, the thirteenth line, the fourteenth line show that voice age, construction phase, old creation dates, import order, and reconstruction all align."
             },
             "nuance": {
               "ja": "正確な録音年は本文だけでは決まりませんが、相対順はかなり強く確定できます。",
@@ -2268,13 +2268,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "aef7dbffb29edb4501588470334c6dcac6e1491e210dc8d2597f4d623c269936"
+      "contentHash": "af75ef10e5668d02aa04610ede94488da2581cb43e9b1cda64e7abc7220975c9"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-014",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 14,
       "jlptTarget": "N1-pragmatics",
@@ -2772,9 +2772,9 @@
               "en": "The fold and ink-overlap relationships establish physical chronology independent of the messages."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-003、line-007、line-008、line-009を合わせると、青字は折る前、赤字は折った後、黒字は赤字の上という二つの相対関係が鎖になります。",
-              "zh": "合并阅读line-001、line-002、line-003、line-007、line-008、line-009可知，蓝字在折叠前、红字在折叠后、黑字盖住红字，两组相对关系连成完整顺序。",
-              "en": "Read together, line-001, line-002, line-003, line-007, line-008, line-009 show that blue-before-fold, red-after-fold, and black-over-red form a complete chain."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞を合わせると、青字は折る前、赤字は折った後、黒字は赤字の上という二つの相対関係が鎖になります。",
+              "zh": "合并阅读第1句台词、第2句台词、第3句台词、第7句台词、第8句台词、第9句台词可知，蓝字在折叠前、红字在折叠后、黑字盖住红字，两组相对关系连成完整顺序。",
+              "en": "Read together, the first line, the second line, the third line, the seventh line, the eighth line, the ninth line show that blue-before-fold, red-after-fold, and black-over-red form a complete chain."
             },
             "nuance": {
               "ja": "紙が別々でないことが前提ですが、本文は同じ紙の折り目と交差点を観察しています。",
@@ -2861,9 +2861,9 @@
               "en": "Each stated motive is partly corroborated by the corresponding note and repeat-use traces."
             },
             "evidence": {
-              "ja": "line-004、line-005、line-006、line-010、line-011を合わせると、望の待機文と薬瓶跡、凛の警告と装置保護発言がそれぞれ同じ目標を指します。",
-              "zh": "合并阅读line-004、line-005、line-006、line-010、line-011可知，望的等待便笺与药瓶痕、凛的警告与保护装置发言分别指向同一目标。",
-              "en": "Read together, line-004, line-005, line-006, line-010, line-011 show that Bo's waiting note and vial rings align, as do Rin's warning and device-protection statement."
+              "ja": "4番目の台詞、5番目の台詞、6番目の台詞、10番目の台詞、11番目の台詞を合わせると、望の待機文と薬瓶跡、凛の警告と装置保護発言がそれぞれ同じ目標を指します。",
+              "zh": "合并阅读第4句台词、第5句台词、第6句台词、第10句台词、第11句台词可知，望的等待便笺与药瓶痕、凛的警告与保护装置发言分别指向同一目标。",
+              "en": "Read together, the fourth line, the fifth line, the sixth line, the tenth line, the eleventh line show that Bo's waiting note and vial rings align, as do Rin's warning and device-protection statement."
             },
             "nuance": {
               "ja": "自己申告なので真実性は別途評価が必要ですが、少なくとも本文に支持される目的としては選べます。",
@@ -2948,9 +2948,9 @@
               "en": "Recency suggests updated information but does not guarantee accuracy from an interested author."
             },
             "evidence": {
-              "ja": "line-008、line-011、line-012、line-013を合わせると、黒字の上層、凛の介入目的、観測員の警告、凛自身の分離提案が二段階評価を要求します。",
-              "zh": "合并阅读line-008、line-011、line-012、line-013可知，黑字覆盖关系、凛的介入目的、观察员提醒及凛本人建议都要求分两步评估。",
-              "en": "Read together, line-008, line-011, line-012, line-013 show that black-over-red chronology, Rin's motive, the observer's caution, and Rin's own distinction require two-step evaluation."
+              "ja": "8番目の台詞、11番目の台詞、12番目の台詞、13番目の台詞を合わせると、黒字の上層、凛の介入目的、観測員の警告、凛自身の分離提案が二段階評価を要求します。",
+              "zh": "合并阅读第8句台词、第11句台词、第12句台词、第13句台词可知，黑字覆盖关系、凛的介入目的、观察员提醒及凛本人建议都要求分两步评估。",
+              "en": "Read together, the eighth line, the eleventh line, the twelfth line, the thirteenth line show that black-over-red chronology, Rin's motive, the observer's caution, and Rin's own distinction require two-step evaluation."
             },
             "nuance": {
               "ja": "最新情報を重く見ることは合理的でも、無条件服従とは違います。",
@@ -3035,9 +3035,9 @@
               "en": "Physical wear from repeated acts provides at least a lower bound on attempts."
             },
             "evidence": {
-              "ja": "line-004、line-010、line-011を合わせると、痕跡の層数と当人たちの三度・二度という説明が相互に対応します。",
-              "zh": "合并阅读line-004、line-010、line-011可知，痕迹层数与当事人所说三次、两次相互对应。",
-              "en": "Read together, line-004, line-010, line-011 show that layer counts correspond to the reported three door attempts and two waits."
+              "ja": "4番目の台詞、10番目の台詞、11番目の台詞を合わせると、痕跡の層数と当人たちの三度・二度という説明が相互に対応します。",
+              "zh": "合并阅读第4句台词、第10句台词、第11句台词可知，痕迹层数与当事人所说三次、两次相互对应。",
+              "en": "Read together, the fourth line, the tenth line, the eleventh line show that layer counts correspond to the reported three door attempts and two waits."
             },
             "nuance": {
               "ja": "一周回で複数回同じ行為をした可能性があるため、層数を厳密な周回数と同一視はできません。",
@@ -3062,13 +3062,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "967c67d92306090f225d33e42443548a54d640d9101ec03f0f09b093b74ba3af"
+      "contentHash": "2654a8636dacdb4f11682276929046a07fd8df2e8b464a65ee9db49166783048"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-015",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 15,
       "jlptTarget": "N1-pragmatics",
@@ -3595,9 +3595,9 @@
               "en": "The original first person and cross-layer self-pointing and gaze restore the dropped subject."
             },
             "evidence": {
-              "ja": "line-002、line-003、line-005、line-007、line-009、line-011、line-012、line-014を合わせると、原文の『私』、胸への指差し、鏡像と子の視線、残る側という対比が明里へ収束します。",
-              "zh": "合并阅读line-002、line-003、line-005、line-007、line-009、line-011、line-012、line-014可知，原文“我”、指胸、镜像与小孩的视线、留下方的对比都收束到明里。",
-              "en": "Read together, line-002, line-003, line-005, line-007, line-009, line-011, line-012, line-014 show that the original “I,” chest gesture, reflection and child's gazes, and staying contrast converge on Akari."
+              "ja": "2番目の台詞、3番目の台詞、5番目の台詞、7番目の台詞、9番目の台詞、11番目の台詞、12番目の台詞、14番目の台詞を合わせると、原文の『私』、胸への指差し、鏡像と子の視線、残る側という対比が明里へ収束します。",
+              "zh": "合并阅读第2句台词、第3句台词、第5句台词、第7句台词、第9句台词、第11句台词、第12句台词、第14句台词可知，原文“我”、指胸、镜像与小孩的视线、留下方的对比都收束到明里。",
+              "en": "Read together, the second line, the third line, the fifth line, the seventh line, the ninth line, the eleventh line, the twelfth line, the fourteenth line show that the original “I,” chest gesture, reflection and child's gazes, and staying contrast converge on Akari."
             },
             "nuance": {
               "ja": "文だけなら姉読みも文法的に残るため、結論は非言語情報を含む場面全体に依存します。",
@@ -3683,9 +3683,9 @@
               "en": "Most lexical content survives while participant roles—who waits and who speaks—are progressively omitted."
             },
             "evidence": {
-              "ja": "line-002、line-005、line-006、line-009、line-010を合わせると、英語層と中国語層で登場人物自身が、それぞれ欠落した要素を明言しています。",
-              "zh": "合并阅读line-002、line-005、line-006、line-009、line-010可知，英语层与中文层的角色分别明确指出各自缺失的要素。",
-              "en": "Read together, line-002, line-005, line-006, line-009, line-010 show that characters in the English and Chinese layers explicitly identify each omission."
+              "ja": "2番目の台詞、5番目の台詞、6番目の台詞、9番目の台詞、10番目の台詞を合わせると、英語層と中国語層で登場人物自身が、それぞれ欠落した要素を明言しています。",
+              "zh": "合并阅读第2句台词、第5句台词、第6句台词、第9句台词、第10句台词可知，英语层与中文层的角色分别明确指出各自缺失的要素。",
+              "en": "Read together, the second line, the fifth line, the sixth line, the ninth line, the tenth line show that characters in the English and Chinese layers explicitly identify each omission."
             },
             "nuance": {
               "ja": "中国語は一般に主語を必ず落とすという意味ではなく、この夢内の特定訳文の省略です。",
@@ -3772,9 +3772,9 @@
               "en": "Self-pointing and gaze synchronized to the predicate directly identify the omitted subject."
             },
             "evidence": {
-              "ja": "line-003、line-007、line-011、line-012、line-014を合わせると、胸への指差しと『等着』時の視線が異なる層で同じ人物を標示します。",
-              "zh": "合并阅读line-003、line-007、line-011、line-012、line-014可知，指胸与说“等着”时的视线在不同层标记同一人物。",
-              "en": "Read together, line-003, line-007, line-011, line-012, line-014 show that the chest gesture and predicate-timed gaze mark the same person across layers."
+              "ja": "3番目の台詞、7番目の台詞、11番目の台詞、12番目の台詞、14番目の台詞を合わせると、胸への指差しと『等着』時の視線が異なる層で同じ人物を標示します。",
+              "zh": "合并阅读第3句台词、第7句台词、第11句台词、第12句台词、第14句台词可知，指胸与说“等着”时的视线在不同层标记同一人物。",
+              "en": "Read together, the third line, the seventh line, the eleventh line, the twelfth line, the fourteenth line show that the chest gesture and predicate-timed gaze mark the same person across layers."
             },
             "nuance": {
               "ja": "鏡像の視線も補強しますが、選択肢の二つだけでも独立した層から対応が取れます。",
@@ -3799,13 +3799,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "0173bfc42d01ec64839ed7879cd8f24fca7244bec20bb4c6f7c7aec5f6c59ba8"
+      "contentHash": "e262ea059be2abfea89f794eddc974ddd1b8a5829a98cd9a8a01a240164b9a32"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-016",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 16,
       "jlptTarget": "N1-pragmatics",
@@ -4295,9 +4295,9 @@
               "en": "The quantifier ranges over people, while the prohibition is conditioned on crossing “as king.”"
             },
             "evidence": {
-              "ja": "line-001、line-004、line-005、line-006、line-007を合わせると、助詞位置、学者の言い換え、王の確認、学者の肯定が同じスコープを明示します。",
-              "zh": "合并阅读line-001、line-004、line-005、line-006、line-007可知，助词位置、学者改述、国王确认与学者肯定共同明确同一作用域。",
-              "en": "Read together, line-001, line-004, line-005, line-006, line-007 show that particle placement, paraphrase, the king's check, and the scholar's confirmation specify the same scope."
+              "ja": "1番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞を合わせると、助詞位置、学者の言い換え、王の確認、学者の肯定が同じスコープを明示します。",
+              "zh": "合并阅读第1句台词、第4句台词、第5句台词、第6句台词、第7句台词可知，助词位置、学者改述、国王确认与学者肯定共同明确同一作用域。",
+              "en": "Read together, the first line, the fourth line, the fifth line, the sixth line, the seventh line show that particle placement, paraphrase, the king's check, and the scholar's confirmation specify the same scope."
             },
             "nuance": {
               "ja": "これは唯一可能な古語解釈だとまでは示されず、物語内で採用された有力な読みです。",
@@ -4383,9 +4383,9 @@
               "en": "Removing symbols and suspending exercises of power make the role change substantive."
             },
             "evidence": {
-              "ja": "line-008、line-009、line-010、line-011を合わせると、物的標章、服装・登録、門番の資格確認、権能不行使の約束が対応します。",
-              "zh": "合并阅读line-008、line-009、line-010、line-011可知，权力标志、服装登记、门卫资格确认与不行使权能的承诺相互对应。",
-              "en": "Read together, line-008, line-009, line-010, line-011 show that material insignia, dress and registration, capacity check, and nonexercise of authority align."
+              "ja": "8番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞を合わせると、物的標章、服装・登録、門番の資格確認、権能不行使の約束が対応します。",
+              "zh": "合并阅读第8句台词、第9句台词、第10句台词、第11句台词可知，权力标志、服装登记、门卫资格确认与不行使权能的承诺相互对应。",
+              "en": "Read together, the eighth line, the ninth line, the tenth line, the eleventh line show that material insignia, dress and registration, capacity check, and nonexercise of authority align."
             },
             "nuance": {
               "ja": "王位そのものを永久放棄したとは書かれず、帰路で冠を受け取る一時措置です。",
@@ -4473,9 +4473,9 @@
               "en": "Personal identity persists while registration, authority, and address change for a bounded period."
             },
             "evidence": {
-              "ja": "line-006、line-008、line-009、line-011、line-012、line-013を合わせると、王自身の区別、象徴物の預託、権力停止、旅人登録、呼称復帰が役割の着脱を示します。",
-              "zh": "合并阅读line-006、line-008、line-009、line-011、line-012、line-013可知，国王的区分、寄存象征物、暂停权力、旅人登记与称呼恢复共同显示角色可卸载。",
-              "en": "Read together, line-006, line-008, line-009, line-011, line-012, line-013 show that the king's distinction, deposited insignia, suspended power, traveler registration, and restored title show role detachment."
+              "ja": "6番目の台詞、8番目の台詞、9番目の台詞、11番目の台詞、12番目の台詞、13番目の台詞を合わせると、王自身の区別、象徴物の預託、権力停止、旅人登録、呼称復帰が役割の着脱を示します。",
+              "zh": "合并阅读第6句台词、第8句台词、第9句台词、第11句台词、第12句台词、第13句台词可知，国王的区分、寄存象征物、暂停权力、旅人登记与称呼恢复共同显示角色可卸载。",
+              "en": "Read together, the sixth line, the eighth line, the ninth line, the eleventh line, the twelfth line, the thirteenth line show that the king's distinction, deposited insignia, suspended power, traveler registration, and restored title show role detachment."
             },
             "nuance": {
               "ja": "顔の同一性は補助的ですが、社会的身分の変化は制度的行為から判断する方が確かです。",
@@ -4562,9 +4562,9 @@
               "en": "This summary preserves the adopted reading, temporary role suspension, and later restoration."
             },
             "evidence": {
-              "ja": "line-008、line-009、line-010、line-011、line-012、line-013を合わせると、預託から旅人通行、王称停止、冠回収までが一時的措置として連続します。",
-              "zh": "合并阅读line-008、line-009、line-010、line-011、line-012、line-013可知，从寄存、旅人通行、停止称王到取回王冠，构成连续的临时安排。",
-              "en": "Read together, line-008, line-009, line-010, line-011, line-012, line-013 show that deposit, traveler admission, suspended title, and crown retrieval form one temporary sequence."
+              "ja": "8番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞、13番目の台詞を合わせると、預託から旅人通行、王称停止、冠回収までが一時的措置として連続します。",
+              "zh": "合并阅读第8句台词、第9句台词、第10句台词、第11句台词、第12句台词、第13句台词可知，从寄存、旅人通行、停止称王到取回王冠，构成连续的临时安排。",
+              "en": "Read together, the eighth line, the ninth line, the tenth line, the eleventh line, the twelfth line, the thirteenth line show that deposit, traveler admission, suspended title, and crown retrieval form one temporary sequence."
             },
             "nuance": {
               "ja": "門番が形だけの抜け道を認めた可能性は残りますが、物語内の規則運用としては一貫しています。",
@@ -4589,13 +4589,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "21cea2784372b56089b9f23b03d6d4781f7307d19140eecdde427e9bb2230414"
+      "contentHash": "c1b93abdc2be9cdbddef1e805a77cf5ebe30dbae220418b5b61001411ac12422"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-017",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 17,
       "jlptTarget": "N1-pragmatics",
@@ -5123,9 +5123,9 @@
               "en": "The imposed address matches the spell's condition, and immediate recovery after stopping it supports the link."
             },
             "evidence": {
-              "ja": "line-002、line-003、line-004、line-005、line-006、line-009、line-010、line-012、line-013を合わせると、拒否の履歴、正式称号の継続、呪文文言、意思尊重への変更、時間的な回復が一続きです。",
-              "zh": "合并阅读line-002、line-003、line-004、line-005、line-006、line-009、line-010、line-012、line-013可知，拒绝记录、继续正式头衔、咒文文本、改为尊重意愿以及即时恢复形成连续证据链。",
-              "en": "Read together, line-002, line-003, line-004, line-005, line-006, line-009, line-010, line-012, line-013 show that rejection history, continued title, spell wording, change toward respecting wishes, and timed recovery form one chain."
+              "ja": "2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞、9番目の台詞、10番目の台詞、12番目の台詞、13番目の台詞を合わせると、拒否の履歴、正式称号の継続、呪文文言、意思尊重への変更、時間的な回復が一続きです。",
+              "zh": "合并阅读第2句台词、第3句台词、第4句台词、第5句台词、第6句台词、第9句台词、第10句台词、第12句台词、第13句台词可知，拒绝记录、继续正式头衔、咒文文本、改为尊重意愿以及即时恢复形成连续证据链。",
+              "en": "Read together, the second line, the third line, the fourth line, the fifth line, the sixth line, the ninth line, the tenth line, the twelfth line, the thirteenth line show that rejection history, continued title, spell wording, change toward respecting wishes, and timed recovery form one chain."
             },
             "nuance": {
               "ja": "魔力が社会的呼称を媒介にした物語内因果であり、現実の医療一般へ外挿するものではありません。",
@@ -5211,9 +5211,9 @@
               "en": "She identifies the paradox of erasing someone's wishes in the name of respect and recenters that person."
             },
             "evidence": {
-              "ja": "line-003、line-004、line-005、line-008、line-009を合わせると、過去の拒否、王位辞退、執事の無礼懸念、治療師の応答が価値衝突を明示します。",
-              "zh": "合并阅读line-003、line-004、line-005、line-008、line-009可知，既往拒绝、放弃继承、管家的失礼担忧与治疗师回应明确了价值冲突。",
-              "en": "Read together, line-003, line-004, line-005, line-008, line-009 show that prior rejection, declined succession, the steward's etiquette concern, and the healer's reply make the value conflict explicit."
+              "ja": "3番目の台詞、4番目の台詞、5番目の台詞、8番目の台詞、9番目の台詞を合わせると、過去の拒否、王位辞退、執事の無礼懸念、治療師の応答が価値衝突を明示します。",
+              "zh": "合并阅读第3句台词、第4句台词、第5句台词、第8句台词、第9句台词可知，既往拒绝、放弃继承、管家的失礼担忧与治疗师回应明确了价值冲突。",
+              "en": "Read together, the third line, the fourth line, the fifth line, the eighth line, the ninth line show that prior rejection, declined succession, the steward's etiquette concern, and the healer's reply make the value conflict explicit."
             },
             "nuance": {
               "ja": "公的文書上の身分処理と、本人への日常呼称は分けて設計できる点も残ります。",
@@ -5299,9 +5299,9 @@
               "en": "The address change is immediately followed by hearing and pulse recovery."
             },
             "evidence": {
-              "ja": "line-009、line-010、line-011、line-012、line-013を合わせると、治療師の方針、執事と友人の新しい呼び方、本人の応答、時間関係の報告が転換点を特定します。",
-              "zh": "合并阅读line-009、line-010、line-011、line-012、line-013可知，治疗师方针、管家与朋友的新称呼、本人回应与时间关系报告共同定位转折点。",
-              "en": "Read together, line-009, line-010, line-011, line-012, line-013 show that the healer's rule, new forms of address, El's response, and timing report identify the pivot."
+              "ja": "9番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞、13番目の台詞を合わせると、治療師の方針、執事と友人の新しい呼び方、本人の応答、時間関係の報告が転換点を特定します。",
+              "zh": "合并阅读第9句台词、第10句台词、第11句台词、第12句台词、第13句台词可知，治疗师方针、管家与朋友的新称呼、本人回应与时间关系报告共同定位转折点。",
+              "en": "Read together, the ninth line, the tenth line, the eleventh line, the twelfth line, the thirteenth line show that the healer's rule, new forms of address, El's response, and timing report identify the pivot."
             },
             "nuance": {
               "ja": "時間的一致だけなら因果の証明は弱いものの、呪文文言と本人の拒否履歴が補強します。",
@@ -5387,9 +5387,9 @@
               "en": "Declined succession, life as a gardener, and response to chosen address converge on restored self-definition."
             },
             "evidence": {
-              "ja": "line-005、line-009、line-010、line-012、line-014を合わせると、過去の選択と現在の呼びかけ、本人の最終対比が『姫／私』の意味を具体化します。",
-              "zh": "合并阅读line-005、line-009、line-010、line-012、line-014可知，过去选择、当前称呼与本人最后的“公主／我”对比具体化其含义。",
-              "en": "Read together, line-005, line-009, line-010, line-012, line-014 show that past choice, present address, and El's final princess/self contrast make the implication concrete."
+              "ja": "5番目の台詞、9番目の台詞、10番目の台詞、12番目の台詞、14番目の台詞を合わせると、過去の選択と現在の呼びかけ、本人の最終対比が『姫／私』の意味を具体化します。",
+              "zh": "合并阅读第5句台词、第9句台词、第10句台词、第12句台词、第14句台词可知，过去选择、当前称呼与本人最后的“公主／我”对比具体化其含义。",
+              "en": "Read together, the fifth line, the ninth line, the tenth line, the twelfth line, the fourteenth line show that past choice, present address, and El's final princess/self contrast make the implication concrete."
             },
             "nuance": {
               "ja": "自己定義の尊重は他者との関係を全て断つことではなく、関係内の呼び方を調整することです。",
@@ -5414,13 +5414,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "59ef0d685983ba0aca260a00f3c626a9534a6ed9385d8b9774691b7e92761c7f"
+      "contentHash": "2d03c2193c33e175d14c0846889ae89efa033c6b73ef08038e29113223e4c10a"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-018",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 18,
       "jlptTarget": "N1-pragmatics",
@@ -5920,9 +5920,9 @@
               "en": "Audio timing, script, vote display, and bodily movement independently place playback before audience response."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-003、line-004、line-005、line-006、line-007、line-012を合わせると、再生指示から結論、結果、映像遅延までの時系列が、録音を原因側へ置きます。",
-              "zh": "合并阅读line-001、line-002、line-003、line-004、line-005、line-006、line-007、line-012可知，从播放指令到结论、结果与画面动作延迟的时间线，把录音置于原因一侧。",
-              "en": "Read together, line-001, line-002, line-003, line-004, line-005, line-006, line-007, line-012 show that the sequence from cue to conclusion, result, and delayed hand movement places the track before the reaction."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、12番目の台詞を合わせると、再生指示から結論、結果、映像遅延までの時系列が、録音を原因側へ置きます。",
+              "zh": "合并阅读第1句台词、第2句台词、第3句台词、第4句台词、第5句台词、第6句台词、第7句台词、第12句台词可知，从播放指令到结论、结果与画面动作延迟的时间线，把录音置于原因一侧。",
+              "en": "Read together, the first line, the second line, the third line, the fourth line, the fifth line, the sixth line, the seventh line, the twelfth line show that the sequence from cue to conclusion, result, and delayed hand movement places the track before the reaction."
             },
             "nuance": {
               "ja": "一部の人が同時に拍手した可能性は残っても、聞こえた一斉拍手全体を自発的とは扱えません。",
@@ -6008,9 +6008,9 @@
               "en": "Reinforcement amplifies an existing response, whereas this track precedes both response and result."
             },
             "evidence": {
-              "ja": "line-005、line-007、line-008、line-009、line-012を合わせると、二秒の先行、結果時刻、議長の説明、記者の区別、映像の手の動きが語の不適合を示します。",
-              "zh": "合并阅读line-005、line-007、line-008、line-009、line-012可知，两秒先行、结果时刻、议长解释、记者区分与画面手部动作共同显示该词不适用。",
-              "en": "Read together, line-005, line-007, line-008, line-009, line-012 show that the two-second lead, result timing, explanation, reporter's distinction, and hand movement show the term does not fit."
+              "ja": "5番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞、12番目の台詞を合わせると、二秒の先行、結果時刻、議長の説明、記者の区別、映像の手の動きが語の不適合を示します。",
+              "zh": "合并阅读第5句台词、第7句台词、第8句台词、第9句台词、第12句台词可知，两秒先行、结果时刻、议长解释、记者区分与画面手部动作共同显示该词不适用。",
+              "en": "Read together, the fifth line, the seventh line, the eighth line, the ninth line, the twelfth line show that the two-second lead, result timing, explanation, reporter's distinction, and hand movement show the term does not fit."
             },
             "nuance": {
               "ja": "実際の反応後に混ぜた拍手なら補強と呼べる余地がありますが、この順序では別です。",
@@ -6096,9 +6096,9 @@
               "en": "It documents that playback was built into production planning independently of audience impressions."
             },
             "evidence": {
-              "ja": "line-002、line-005、line-006、line-007、line-010を合わせると、技師の再生指示、記者の相対時刻、指定絶対時刻、結果時刻、台本目的が計画性を連結します。",
-              "zh": "合并阅读line-002、line-005、line-006、line-007、line-010可知，技师播放指令、记者相对计时、预设绝对时间、结果时间与脚本目的连成计划链。",
-              "en": "Read together, line-002, line-005, line-006, line-007, line-010 show that the cue, relative timing, preset clock time, result time, and scripted purpose connect into planning evidence."
+              "ja": "2番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、10番目の台詞を合わせると、技師の再生指示、記者の相対時刻、指定絶対時刻、結果時刻、台本目的が計画性を連結します。",
+              "zh": "合并阅读第2句台词、第5句台词、第6句台词、第7句台词、第10句台词可知，技师播放指令、记者相对计时、预设绝对时间、结果时间与脚本目的连成计划链。",
+              "en": "Read together, the second line, the fifth line, the sixth line, the seventh line, the tenth line show that the cue, relative timing, preset clock time, result time, and scripted purpose connect into planning evidence."
             },
             "nuance": {
               "ja": "表だけで音源内容が本当に拍手かは決まりませんが、実際に聞こえた音と技師発言が補います。",
@@ -6185,9 +6185,9 @@
               "en": "An explicit production aim and observed mismatch with real audience behavior reinforce one another."
             },
             "evidence": {
-              "ja": "line-003、line-009、line-010、line-011、line-012を合わせると、言語化された狙いに、驚きと映像上の遅れという非言語証拠が対応します。",
-              "zh": "合并阅读line-003、line-009、line-010、line-011、line-012可知，文字化的目标与惊讶、画面动作延迟等非语言证据相对应。",
-              "en": "Read together, line-003, line-009, line-010, line-011, line-012 show that the written aim aligns with surprise and delayed movement as nonverbal evidence."
+              "ja": "3番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞を合わせると、言語化された狙いに、驚きと映像上の遅れという非言語証拠が対応します。",
+              "zh": "合并阅读第3句台词、第9句台词、第10句台词、第11句台词、第12句台词可知，文字化的目标与惊讶、画面动作延迟等非语言证据相对应。",
+              "en": "Read together, the third line, the ninth line, the tenth line, the eleventh line, the twelfth line show that the written aim aligns with surprise and delayed movement as nonverbal evidence."
             },
             "nuance": {
               "ja": "驚いた一人だけなら個人差ですが、複数列の遅れが会場全体の先行音を示します。",
@@ -6274,9 +6274,9 @@
               "en": "Preserving source and chronology prevents later viewers from mistaking it for spontaneous response."
             },
             "evidence": {
-              "ja": "line-005、line-006、line-007、line-009、line-010、line-013を合わせると、記者の先行指摘、音響表、結果時刻、制作目的、議長の最終注記が必要内容を定めます。",
-              "zh": "合并阅读line-005、line-006、line-007、line-009、line-010、line-013可知，记者指出先行、音控表、结果时间、制作目的与议长最终注记共同界定所需内容。",
-              "en": "Read together, line-005, line-006, line-007, line-009, line-010, line-013 show that the lead observation, cue sheet, result time, production aim, and final annotation define what must be disclosed."
+              "ja": "5番目の台詞、6番目の台詞、7番目の台詞、9番目の台詞、10番目の台詞、13番目の台詞を合わせると、記者の先行指摘、音響表、結果時刻、制作目的、議長の最終注記が必要内容を定めます。",
+              "zh": "合并阅读第5句台词、第6句台词、第7句台词、第9句台词、第10句台词、第13句台词可知，记者指出先行、音控表、结果时间、制作目的与议长最终注记共同界定所需内容。",
+              "en": "Read together, the fifth line, the sixth line, the seventh line, the ninth line, the tenth line, the thirteenth line show that the lead observation, cue sheet, result time, production aim, and final annotation define what must be disclosed."
             },
             "nuance": {
               "ja": "削除より透明な注記を優先すれば、改変の証拠自体も保存できます。",
@@ -6301,13 +6301,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "4c544b784368bd04eeda58ca0112e8d309515d3cd1b5ae8e3d6758f8c7e384d6"
+      "contentHash": "efe98f0df5772639afe7fba9409bf40a1d610f6230023d81a859ef505eed2ebc"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-019",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 19,
       "jlptTarget": "N1-pragmatics",
@@ -6838,9 +6838,9 @@
               "en": "The valid scope of an ordinary explanation must be kept separate from the one case outside it."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-003、line-004、line-005、line-008、line-009、line-010、line-011、line-013、line-014を合わせると、カメラ限定現象、AR機能、三件の登録一致が前半を、対象外・ログ不在・保留判断が後半を支えます。",
-              "zh": "合并阅读line-001、line-002、line-003、line-004、line-005、line-008、line-009、line-010、line-011、line-013、line-014可知，仅相机可见、AR功能与三项登记吻合支持前半；目标外、日志缺失与保留判断支持后半。",
-              "en": "Read together, line-001, line-002, line-003, line-004, line-005, line-008, line-009, line-010, line-011, line-013, line-014 show that camera-only behavior, AR function, and three registry matches support the first; exclusion, no log, and caution support the second."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞、13番目の台詞、14番目の台詞を合わせると、カメラ限定現象、AR機能、三件の登録一致が前半を、対象外・ログ不在・保留判断が後半を支えます。",
+              "zh": "合并阅读第1句台词、第2句台词、第3句台词、第4句台词、第5句台词、第8句台词、第9句台词、第10句台词、第11句台词、第13句台词、第14句台词可知，仅相机可见、AR功能与三项登记吻合支持前半；目标外、日志缺失与保留判断支持后半。",
+              "en": "Read together, the first line, the second line, the third line, the fourth line, the fifth line, the eighth line, the ninth line, the tenth line, the eleventh line, the thirteenth line, the fourteenth line show that camera-only behavior, AR function, and three registry matches support the first; exclusion, no log, and caution support the second."
             },
             "nuance": {
               "ja": "未確定は超常現象の証明でも否定でもなく、追加アプリやログ欠損など複数仮説を残します。",
@@ -6928,9 +6928,9 @@
               "en": "Medium, function, and target match connect the observation to a mechanism one-to-one."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-003、line-004、line-005、line-007、line-008を合わせると、肉眼との差、三枚の同様動作、自動起動、目への重ね合わせ、台帳一致が連続します。",
-              "zh": "合并阅读line-001、line-002、line-003、line-004、line-005、line-007、line-008可知，肉眼差异、三幅同样动作、自动启动、眼部叠加与清单匹配形成连续链。",
-              "en": "Read together, line-001, line-002, line-003, line-004, line-005, line-007, line-008 show that naked-eye difference, three matching blinks, auto-launch, eye overlays, and registry correspondence form a chain."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、7番目の台詞、8番目の台詞を合わせると、肉眼との差、三枚の同様動作、自動起動、目への重ね合わせ、台帳一致が連続します。",
+              "zh": "合并阅读第1句台词、第2句台词、第3句台词、第4句台词、第5句台词、第7句台词、第8句台词可知，肉眼差异、三幅同样动作、自动启动、眼部叠加与清单匹配形成连续链。",
+              "en": "Read together, the first line, the second line, the third line, the fourth line, the fifth line, the seventh line, the eighth line show that naked-eye difference, three matching blinks, auto-launch, eye overlays, and registry correspondence form a chain."
             },
             "nuance": {
               "ja": "AR機能の存在だけでなく対象一致まであるため、単なる機能推測より強い判断です。",
@@ -7017,9 +7017,9 @@
               "en": "Exclusion and missing logs justify inquiry but do not establish one cause."
             },
             "evidence": {
-              "ja": "line-009、line-010、line-011、line-012、line-013、line-014を合わせると、青い絵の対象外、観察、処理ログ不在、代替仮説、技師の保留、学芸員の記録方針が調査継続を支えます。",
-              "zh": "合并阅读line-009、line-010、line-011、line-012、line-013、line-014可知，蓝画目标外、观察、无处理日志、替代假设、技术员保留与策展记录方针共同支持继续调查。",
-              "en": "Read together, line-009, line-010, line-011, line-012, line-013, line-014 show that target exclusion, observation, absent overlay log, alternate hypothesis, technical caution, and curatorial record support further investigation."
+              "ja": "9番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞、13番目の台詞、14番目の台詞を合わせると、青い絵の対象外、観察、処理ログ不在、代替仮説、技師の保留、学芸員の記録方針が調査継続を支えます。",
+              "zh": "合并阅读第9句台词、第10句台词、第11句台词、第12句台词、第13句台词、第14句台词可知，蓝画目标外、观察、无处理日志、替代假设、技术员保留与策展记录方针共同支持继续调查。",
+              "en": "Read together, the ninth line, the tenth line, the eleventh line, the twelfth line, the thirteenth line, the fourteenth line show that target exclusion, observation, absent overlay log, alternate hypothesis, technical caution, and curatorial record support further investigation."
             },
             "nuance": {
               "ja": "怪異の余地を残すことと、怪異を事実認定することは異なります。",
@@ -7110,9 +7110,9 @@
               "en": "It preserves where rationalization succeeds and where it fails, closing on neither simple dismissal nor affirmation."
             },
             "evidence": {
-              "ja": "line-003、line-004、line-005、line-008、line-009、line-010、line-011、line-012、line-013、line-014を合わせると、三枚の仕組みと一致、一枚の対象外、観察とログの不一致、代替仮説、保留記録が二層の結末を作ります。",
-              "zh": "合并阅读line-003、line-004、line-005、line-008、line-009、line-010、line-011、line-012、line-013、line-014可知，三幅机制吻合、一幅目标外、观察与日志不一致、替代假设与保留记录构成双层结局。",
-              "en": "Read together, line-003, line-004, line-005, line-008, line-009, line-010, line-011, line-012, line-013, line-014 show that three mechanism matches, one excluded target, observation-log mismatch, alternate hypothesis, and unresolved record create the two-layer ending."
+              "ja": "3番目の台詞、4番目の台詞、5番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞、13番目の台詞、14番目の台詞を合わせると、三枚の仕組みと一致、一枚の対象外、観察とログの不一致、代替仮説、保留記録が二層の結末を作ります。",
+              "zh": "合并阅读第3句台词、第4句台词、第5句台词、第8句台词、第9句台词、第10句台词、第11句台词、第12句台词、第13句台词、第14句台词可知，三幅机制吻合、一幅目标外、观察与日志不一致、替代假设与保留记录构成双层结局。",
+              "en": "Read together, the third line, the fourth line, the fifth line, the eighth line, the ninth line, the tenth line, the eleventh line, the twelfth line, the thirteenth line, the fourteenth line show that three mechanism matches, one excluded target, observation-log mismatch, alternate hypothesis, and unresolved record create the two-layer ending."
             },
             "nuance": {
               "ja": "将来の再現試験で通常原因が見つかる可能性も、見つからない可能性も本文は閉じていません。",
@@ -7137,13 +7137,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "788768fd3e9932478e9adbae958416db1351c7b0c56bcdc7996eff340ed406ba"
+      "contentHash": "3ee6ee9e8a116d82ff8f7b62a201f5dc0eb9c15b2d8818b45a691e70922e7801"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-020",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 20,
       "jlptTarget": "N1-pragmatics",
@@ -7641,9 +7641,9 @@
               "en": "The assessment combines deviation from personal history with verifiable specificity rather than word count."
             },
             "evidence": {
-              "ja": "line-007、line-008、line-010、line-011、line-013を合わせると、昨日との対比、即時決済、三十日の無称賛履歴、三つの具体特徴、本人の確認が同じ判断を支えます。",
-              "zh": "合并阅读line-007、line-008、line-010、line-011、line-013可知，与昨天对比、即时结算、三十天无赞美记录、三项具体特征及本人确认共同支持该判断。",
-              "en": "Read together, line-007, line-008, line-010, line-011, line-013 show that yesterday contrast, immediate payment, thirty-day history, three concrete features, and Saku's confirmation align."
+              "ja": "7番目の台詞、8番目の台詞、10番目の台詞、11番目の台詞、13番目の台詞を合わせると、昨日との対比、即時決済、三十日の無称賛履歴、三つの具体特徴、本人の確認が同じ判断を支えます。",
+              "zh": "合并阅读第7句台词、第8句台词、第10句台词、第11句台词、第13句台词可知，与昨天对比、即时结算、三十天无赞美记录、三项具体特征及本人确认共同支持该判断。",
+              "en": "Read together, the seventh line, the eighth line, the tenth line, the eleventh line, the thirteenth line show that yesterday contrast, immediate payment, thirty-day history, three concrete features, and Saku's confirmation align."
             },
             "nuance": {
               "ja": "システムが内心を直接読んだとは限らず、行動履歴から誠実さの可能性を推定しています。",
@@ -7729,9 +7729,9 @@
               "en": "Loud repetition and copied prose differ in form but both lack speaker-specific observation."
             },
             "evidence": {
-              "ja": "line-002、line-003、line-004、line-005、line-006を合わせると、百回という攻略発言、残高ゼロ、貼付の自己申告、再度のゼロ、二人の疑問が機械的戦略を示します。",
-              "zh": "合并阅读line-002、line-003、line-004、line-005、line-006可知，百次攻略、余额为零、承认粘贴、再次为零与两人的困惑共同显示机械策略。",
-              "en": "Read together, line-002, line-003, line-004, line-005, line-006 show that the hundred-times strategy, zero balance, admitted copying, second zero, and confusion reveal mechanical gaming."
+              "ja": "2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞を合わせると、百回という攻略発言、残高ゼロ、貼付の自己申告、再度のゼロ、二人の疑問が機械的戦略を示します。",
+              "zh": "合并阅读第2句台词、第3句台词、第4句台词、第5句台词、第6句台词可知，百次攻略、余额为零、承认粘贴、再次为零与两人的困惑共同显示机械策略。",
+              "en": "Read together, the second line, the third line, the fourth line, the fifth line, the sixth line show that the hundred-times strategy, zero balance, admitted copying, second zero, and confusion reveal mechanical gaming."
             },
             "nuance": {
               "ja": "既製表現でも本当に本人の経験と一致する場合はあり得ますが、ここでは美々自身が貼付と明言します。",
@@ -7818,9 +7818,9 @@
               "en": "Beyond contrasting failures and success, the AI explicitly lists history, ingredient, and change as features."
             },
             "evidence": {
-              "ja": "line-003、line-004、line-007、line-010、line-011、line-012を合わせると、ゼロ判定二つ、朔の具体文、三十日履歴、特徴説明、悠斗の要約が同じ基準へ収束します。",
-              "zh": "合并阅读line-003、line-004、line-007、line-010、line-011、line-012可知，两次零判定、朔的具体话、三十天历史、特征说明与悠斗概括都收束到同一标准。",
-              "en": "Read together, line-003, line-004, line-007, line-010, line-011, line-012 show that two zero decisions, Saku's specifics, thirty-day history, feature explanation, and Yuto's summary converge."
+              "ja": "3番目の台詞、4番目の台詞、7番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞を合わせると、ゼロ判定二つ、朔の具体文、三十日履歴、特徴説明、悠斗の要約が同じ基準へ収束します。",
+              "zh": "合并阅读第3句台词、第4句台词、第7句台词、第10句台词、第11句台词、第12句台词可知，两次零判定、朔的具体话、三十天历史、特征说明与悠斗概括都收束到同一标准。",
+              "en": "Read together, the third line, the fourth line, the seventh line, the tenth line, the eleventh line, the twelfth line show that two zero decisions, Saku's specifics, thirty-day history, feature explanation, and Yuto's summary converge."
             },
             "nuance": {
               "ja": "この基準が完全に公平か、文化差や寡黙さをどう扱うかは別の評価課題です。",
@@ -7908,9 +7908,9 @@
               "en": "One case demonstrates anti-gaming design but not perfect mind-reading or universal fairness."
             },
             "evidence": {
-              "ja": "line-002、line-004、line-007、line-009、line-010、line-011、line-013を合わせると、二つの攻略失敗、具体文の成功、履歴利用、特徴説明、本人確認が利点を示しつつ、検証余地を残します。",
-              "zh": "合并阅读line-002、line-004、line-007、line-009、line-010、line-011、line-013可知，两种攻略失败、具体话成功、历史利用、特征说明与本人确认显示优点，也留下验证空间。",
-              "en": "Read together, line-002, line-004, line-007, line-009, line-010, line-011, line-013 show that two failed gaming attempts, specific success, history use, feature explanation, and self-confirmation show value while leaving validation open."
+              "ja": "2番目の台詞、4番目の台詞、7番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞、13番目の台詞を合わせると、二つの攻略失敗、具体文の成功、履歴利用、特徴説明、本人確認が利点を示しつつ、検証余地を残します。",
+              "zh": "合并阅读第2句台词、第4句台词、第7句台词、第9句台词、第10句台词、第11句台词、第13句台词可知，两种攻略失败、具体话成功、历史利用、特征说明与本人确认显示优点，也留下验证空间。",
+              "en": "Read together, the second line, the fourth line, the seventh line, the ninth line, the tenth line, the eleventh line, the thirteenth line show that two failed gaming attempts, specific success, history use, feature explanation, and self-confirmation show value while leaving validation open."
             },
             "nuance": {
               "ja": "本人が真心だと言っても自己申告であり、将来は皮肉、文化的定型、発話障害などの例も試すべきです。",
@@ -7935,7 +7935,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "252600b20fc2fb9321fd1ce77cc06f022d86a9f94f5237edb024c7fdd5dc0492"
+      "contentHash": "83cd62950ec09e2d9cdf29895a1422b94a76e5adf39b4c2c423b93f9ee8dfefc"
     }
   ]
 }

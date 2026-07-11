@@ -8,6 +8,18 @@
 - Mobile Dock and calm-motion reset shipped as `seed-update-2026-07-10-premium-interaction-mobile-os`; the Dock now keeps six high-frequency routes and omits About/Notes on mobile.
 - Public shell assets use cache key `20260711-calm-motion-r13`; desktop and mobile navigation transitions were reduced, resized, and kept in sync.
 
+- “日本語の裏側”维护版 `1.0.1`：
+  - 主站入口改为“开始挑战”，只保留听力训练、潜台词和支持（云存档）标签；移除可获取、等级、关卡数、男女声和本地/云端进度标签。工具与资源卡标题随 zh / en / ja 显示“日语的言外之意”/“Behind the Japanese”/“日本語の裏側”。
+  - 中文界面使用简体中文字体栈，日语台词节点明确标记日语字体，修复中日字形混用导致的汉字形态和大小不一致。
+  - 关卡播放器移除上一句、下一句、从头播放、重播、单句重播、静音和自动播放；保留播放/暂停、进度 seek、倍速，以及直接点击句子/词块播放。播放高亮不再调用 `scrollIntoView()`。
+  - 首次进入关卡只显示一次听力/日语/双语模式选择；日语和双语模式直接显示对应正文，听力模式由用户主动播放。训练设置右下角按钮改为“确认”。
+  - 答题后使用奖牌结果弹窗提供查看解析和下一关/重新挑战操作，选项不再插入会撑高布局的可见“正确答案”标签；题干与解析中的 `line-002` / `line 002` 统一改为自然的第几句台词。
+  - 离线语音生成改为假名优先：句子使用人工审校 `readingJa`，词块使用 `reading`，其余表记先经 PyOpenJTalk 转成假名再交给 Kokoro；为“今日/きょう”增加明确读音覆盖，并按最终假名任务哈希增量重录。
+  - 新增 `tools/japanese-subtext/MAINTENANCE.md`，固定每次公开维护版本增加 `0.0.1`，并记录版本、题库 revision、音频、缓存、三语更新和模型关闭清单。
+  - 主站 `main.js` 缓存 query 更新为 `20260711-japanese-subtext-v101-r1`，其余移动/桌面壳资源继续使用最新 `20260711-calm-motion-r13`；唯一 `site-updates` 记录 `seed-update-2026-07-11-japanese-subtext-trainer` 已同步 fallback、Functions seed 与 schema seed。
+  - 工具自身 CSS / ESM 缓存 query 更新为 `20260711-japanese-subtext-r14`。
+  - 假名优先流程全库重录 10,088 件静态音频（250 场景 / 2,400 句 / 2,445 选项 / 4,993 词块），共 335,218,248 bytes、40,998.333 秒；reconciliation 为 0 生成 / 10,088 复用，完整 ffprobe + 静音校验 10,088 / 10,088 通过。临时分级根与缓存共清理 29,496 个文件（约 2.371 GiB），Kokoro 生成进程全部退出。
+
 - 新增独立日语潜台词训练工具“日本語の裏側”（`/tools/japanese-subtext/`）：
   - 题库按版本化 JSON 分成 5 个等级、每级 50 关，难度从 N3、N2 递进到 N1 高阶；前段短关帮助熟悉玩法，后段逐步增加多人关系、信息差、不可靠叙述和开放解释。
   - 支持纯听、日语、双语三种正文模式，假名提示和选项 ja / zh / en 独立切换；逐句、词块和日语选项均有稳定音频 ID，播放器支持自动播放、暂停/继续、重播、前后句、倍速、静音和任意进度 seek。

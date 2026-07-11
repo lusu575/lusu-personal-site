@@ -1,72 +1,72 @@
 {
   "stageId": "L5-004",
   "sampleRate": 24000,
-  "duration": 37.444292,
+  "duration": 37.414292,
   "cues": [
     {
       "lineId": "line-001",
       "audioId": "L5-004-line-001",
       "start": 0.06,
-      "end": 3.91275
+      "end": 3.807042
     },
     {
       "lineId": "line-002",
       "audioId": "L5-004-line-002",
-      "start": 4.39275,
-      "end": 6.770958
+      "start": 4.287042,
+      "end": 6.682417
     },
     {
       "lineId": "line-003",
       "audioId": "L5-004-line-003",
-      "start": 7.250958,
-      "end": 10.580583
+      "start": 7.162417,
+      "end": 10.319667
     },
     {
       "lineId": "line-004",
       "audioId": "L5-004-line-004",
-      "start": 11.060583,
-      "end": 14.244167
+      "start": 10.799667,
+      "end": 13.983375
     },
     {
       "lineId": "line-005",
       "audioId": "L5-004-line-005",
-      "start": 14.724167,
-      "end": 19.633375
+      "start": 14.463375,
+      "end": 19.449042
     },
     {
       "lineId": "line-006",
       "audioId": "L5-004-line-006",
-      "start": 20.113375,
-      "end": 24.228208
+      "start": 19.929042,
+      "end": 23.962958
     },
     {
       "lineId": "line-007",
       "audioId": "L5-004-line-007",
-      "start": 24.708208,
-      "end": 27.034875
+      "start": 24.442958,
+      "end": 26.769625
     },
     {
       "lineId": "line-008",
       "audioId": "L5-004-line-008",
-      "start": 27.514875,
-      "end": 30.36025
+      "start": 27.249625,
+      "end": 30.242292
     },
     {
       "lineId": "line-009",
       "audioId": "L5-004-line-009",
-      "start": 30.84025,
-      "end": 33.217542
+      "start": 30.722292,
+      "end": 33.382625
     },
     {
       "lineId": "line-010",
       "audioId": "L5-004-line-010",
-      "start": 33.697542,
-      "end": 37.344292
+      "start": 33.862625,
+      "end": 37.314292
     }
   ],
   "schemaVersion": 1,
   "timelineId": "L5-004-timeline",
   "sceneAudioId": "L5-004-scene",
-  "contentHash": "19a6278811b11ec24016dd4c540cd408df95aee25649eaa259dccf8222f10981",
-  "sourceContentHash": "b08e8601852b96dda579af7d3ef533e02e3652e3544d7433c95d3a30d223fc82"
+  "contentHash": "a09f053f40642498e596dc40f31540366fa37a05f82df3856deb50df3c2e4364",
+  "sourceContentHash": "e4685be7013ee3b09e91af76444bc8c131e4bcb4fa544f93f2a8751923fbe899"
 }

@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "level": 2,
   "batch": "041-050",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-041",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 41,
       "jlptTarget": "N2",
@@ -401,9 +401,9 @@
               "en": "In this world, the wonder of space travel has been reframed in the vocabulary of routine transit planning."
             },
             "evidence": {
-              "ja": "line-002 の「通勤線」「リハーサル」、line-003 の駅運用、line-004 の短い扱いが二つの推測を支えます。",
-              "zh": "line-002 的“通勤线”“彩排”、line-003 的车站运营，以及 line-004 的简短处理共同支持两项推断。",
-              "en": "“Commuter line” and “rehearsal” in line 002, station operations in line 003, and the brief treatment in line 004 support both inferences."
+              "ja": "2番目の台詞の「通勤線」「リハーサル」、3番目の台詞の駅運用、4番目の台詞の短い扱いが二つの推測を支えます。",
+              "zh": "第2句台词的“通勤线”“彩排”、第3句台词的车站运营，以及第4句台词的简短处理共同支持两项推断。",
+              "en": "“Commuter line” and “rehearsal” in the second line, station operations in the third line, and the brief treatment in the fourth line support both inferences."
             },
             "nuance": {
               "ja": "歴史家の比較は価値観の変化を示しますが、誰も月旅行を実際に毎日利用しているとはまだ述べていません。",
@@ -428,13 +428,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "3a87f912716a972ac3643aa1a5b44295d0364e5cb2f77d48e27f5ef0fb226665"
+      "contentHash": "c4586ba22c03b256e0d8d0f1350379cc065ed368d11ae09c6a79acc5c7108ef6"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-042",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 42,
       "jlptTarget": "N2",
@@ -796,9 +796,9 @@
               "en": "Freedom here is not unrestricted; it refers only to choices that do not violate the listed rules."
             },
             "evidence": {
-              "ja": "line-002〜line-004 の禁止事項と、line-006 の「一覧にない物」が範囲限定を示します。",
-              "zh": "line-002 至 line-004 的禁项，以及 line-006 的“清单里没有的东西”体现了范围限定。",
-              "en": "The bans in lines 002–004 and “anything not on the list” in line 006 establish the limited scope."
+              "ja": "2番目の台詞〜4番目の台詞の禁止事項と、6番目の台詞の「一覧にない物」が範囲限定を示します。",
+              "zh": "第2句台词至第4句台词的禁项，以及第6句台词的“清单里没有的东西”体现了范围限定。",
+              "en": "The bans in the second through fourth lines and “anything not on the list” in the sixth line establish the limited scope."
             },
             "nuance": {
               "ja": "「基本的に」が後続の例外を予告しており、完全な自由という読みを弱めます。",
@@ -883,9 +883,9 @@
               "en": "The contrast shows that the host’s wording sounds broader than the actual rules."
             },
             "evidence": {
-              "ja": "line-001 と line-002〜line-004 を並べると、一般原則と例外の量が直接ぶつかります。",
-              "zh": "将 line-001 与 line-002 至 line-004 并列，可见一般原则与大量例外直接冲突。",
-              "en": "Placing line 001 beside lines 002–004 directly exposes the clash between the general claim and the many exceptions."
+              "ja": "1番目の台詞と2番目の台詞〜4番目の台詞を並べると、一般原則と例外の量が直接ぶつかります。",
+              "zh": "将第1句台词与第2句台词至第4句台词并列，可见一般原则与大量例外直接冲突。",
+              "en": "Placing the first line beside the second through fourth lines directly exposes the clash between the general claim and the many exceptions."
             },
             "nuance": {
               "ja": "「基本的に」があるため論理的な完全矛盾ではありませんが、日常語用上は強い食い違いとして受け取られます。",
@@ -910,13 +910,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "9932b3a74baa84219ac864b15f62713574b6f74c2477144d591f47ec1bfbb488"
+      "contentHash": "fdc295a8c4734228e159d38748edb07ad391fb11f4b501f4cc0c497bcd3e5ae0"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-043",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 43,
       "jlptTarget": "N2",
@@ -1297,9 +1297,9 @@
               "en": "The warden’s “did not open” is not literal mechanics; it summarizes refraining from taking the prize."
             },
             "evidence": {
-              "ja": "line-005 で鍵の残存を確認し、line-008 で「持ち去るか」を試したと明言しています。",
-              "zh": "line-005 确认钥匙仍在，line-008 明确说测试的是“会不会拿走”。",
-              "en": "Line 005 confirms the key remains, and line 008 explicitly says the test was whether it would be taken."
+              "ja": "5番目の台詞で鍵の残存を確認し、8番目の台詞で「持ち去るか」を試したと明言しています。",
+              "zh": "第5句台词确认钥匙仍在，第8句台词明确说测试的是“会不会拿走”。",
+              "en": "The fifth line confirms the key remains, and the eighth line explicitly says the test was whether it would be taken."
             },
             "nuance": {
               "ja": "NPCの最初の言い方は判定条件を省略したゲーム的な表現で、後続会話が実際の条件を修正します。",
@@ -1324,13 +1324,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "fbbbaa14132f743d9aab376230bf738fbbed94879c204949086d9491fadbb13a"
+      "contentHash": "21f203d6d8089f5238f9045fc6a8ca57dbfe2fcffd2c5e14d12b466f03b053d1"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-044",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 44,
       "jlptTarget": "N2",
@@ -1676,9 +1676,9 @@
               "en": "The abrupt stiffness and brevity may express displeasure or emotional distance without open blame."
             },
             "evidence": {
-              "ja": "line-001 と line-004 は柔らかな問いかけですが、line-007 だけが句点付きの硬い完結文で、line-008 も変化を指摘します。",
-              "zh": "line-001 和 line-004 语气柔和，只有 line-007 是带句号的生硬完整句，line-008 也指出这一变化。",
-              "en": "Lines 001 and 004 are soft questions, while line 007 alone is a rigid sentence with a period, a shift noted in line 008."
+              "ja": "1番目の台詞と4番目の台詞は柔らかな問いかけですが、7番目の台詞だけが句点付きの硬い完結文で、8番目の台詞も変化を指摘します。",
+              "zh": "第1句台词和第4句台词语气柔和，只有第7句台词是带句号的生硬完整句，第8句台词也指出这一变化。",
+              "en": "The first and fourth lines are soft questions, while the seventh line alone is a rigid sentence with a period, a shift noted in the eighth line."
             },
             "nuance": {
               "ja": "文字だけの会話では句点が必ず怒りを意味するわけではありません。普段の個人習慣との差が重要です。",
@@ -1763,9 +1763,9 @@
               "en": "The within-person comparison makes this a concrete shift rather than a general stereotype about punctuation."
             },
             "evidence": {
-              "ja": "line-001・line-004 と line-007 の形式差に、line-008 の明示的な観察が加わっています。",
-              "zh": "line-001、line-004 与 line-007 的形式差异，又有 line-008 的明确观察加以支持。",
-              "en": "The formal difference between lines 001/004 and line 007 is reinforced by the explicit observation in line 008."
+              "ja": "1番目の台詞・4番目の台詞と7番目の台詞の形式差に、8番目の台詞の明示的な観察が加わっています。",
+              "zh": "第1句台词、第4句台词与第7句台词的形式差异，又有第8句台词的明确观察加以支持。",
+              "en": "The formal difference between the first line/004 and the seventh line is reinforced by the explicit observation in the eighth line."
             },
             "nuance": {
               "ja": "感情の理由は推測でも、文体が変わったという事実自体は会話内で比較できます。",
@@ -1790,13 +1790,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "6dccf4cef006b91b36475e534ad84013cc8738d7b423f2ce585f82a5071775a4"
+      "contentHash": "81fd560d49ac30de0975523322caecf68031cb39a6470d6ef2faf2e2b5d904f4"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-045",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 45,
       "jlptTarget": "N2",
@@ -2179,9 +2179,9 @@
               "en": "The robot does not track faces; it treats the card attached to a seat as the user identity."
             },
             "evidence": {
-              "ja": "line-005 の変更検出、line-006 の飲料交換、line-007 の顔との不一致、line-009 の明示説明が連続した根拠です。",
-              "zh": "line-005 检测变更、line-006 换饮料、line-007 指出脸未变、line-009 明说依据，形成连续证据。",
-              "en": "Change detection in line 005, drink replacement in line 006, the unchanged face in line 007, and the explicit explanation in line 009 form a continuous chain."
+              "ja": "5番目の台詞の変更検出、6番目の台詞の飲料交換、7番目の台詞の顔との不一致、9番目の台詞の明示説明が連続した根拠です。",
+              "zh": "第5句台词检测变更、第6句台词换饮料、第7句台词指出脸未变、第9句台词明说依据，形成连续证据。",
+              "en": "Change detection in the fifth line, drink replacement in the sixth line, the unchanged face in the seventh line, and the explicit explanation in the ninth line form a continuous chain."
             },
             "nuance": {
               "ja": "「席」と「人」を同一視する単純な仕組みなので、席札が誤っていれば好みも誤って割り当てられます。",
@@ -2206,13 +2206,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "394405031266e299ba62233c312931598b913fa60d43418a4a854ea6fff73d0a"
+      "contentHash": "9a737cb7814412eeb5103c8fb396ecd61ef1cb61d0b21a79a209ff659e4a3d59"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-046",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 46,
       "jlptTarget": "N2",
@@ -2555,9 +2555,9 @@
               "en": "While reporting on the plants, she is practically trying to determine when her watering responsibility ends."
             },
             "evidence": {
-              "ja": "line-003 の帰宅日の問いと line-006 の期限の言い換えが同じ情報を求めています。",
-              "zh": "line-003 对回家日期的询问和 line-006 对期限的改述，都在索取同一信息。",
-              "en": "The return-date question in line 003 and the deadline reformulation in line 006 seek the same information."
+              "ja": "3番目の台詞の帰宅日の問いと6番目の台詞の期限の言い換えが同じ情報を求めています。",
+              "zh": "第3句台词对回家日期的询问和第6句台词对期限的改述，都在索取同一信息。",
+              "en": "The return-date question in the third line and the deadline reformulation in the sixth line seek the same information."
             },
             "nuance": {
               "ja": "直接「早く帰って」とは言わず、世話の予定を立てるための確認として柔らかく表現しています。",
@@ -2641,9 +2641,9 @@
               "en": "Repeating the same practical information shows that receiving an answer matters more than the status report."
             },
             "evidence": {
-              "ja": "line-007 で空も「帰りの便を確認して返事する」と理解しており、問いの焦点が帰宅日だと確認できます。",
-              "zh": "line-007 中空也回应会确认返程航班，说明他理解问题焦点是回家日期。",
-              "en": "In line 007, Sora understands and promises to check the return flight, confirming the focus on the return date."
+              "ja": "7番目の台詞で空も「帰りの便を確認して返事する」と理解しており、問いの焦点が帰宅日だと確認できます。",
+              "zh": "第7句台词中空也回应会确认返程航班，说明他理解问题焦点是回家日期。",
+              "en": "In the seventh line, Sora understands and promises to check the return flight, confirming the focus on the return date."
             },
             "nuance": {
               "ja": "反復は必ず不満を意味しません。ここでは回答漏れを補い、必要な期限を丁寧に取り直す働きです。",
@@ -2668,13 +2668,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "a8184111a7d91ca1ab34b0c8efc01596f5b2342f75afee06782a17283dcb1a84"
+      "contentHash": "3dcdbddf1b05697c77da8b75a3e3307fb7553fcd3bd6a246aa7378502832b5e1"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-047",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 47,
       "jlptTarget": "N2",
@@ -3064,9 +3064,9 @@
               "en": "Rather than accusing the manager of contradiction, he frames it as clarification and prompts a revised decision."
             },
             "evidence": {
-              "ja": "line-005 の前置きと質問、line-007 の条件文、line-009 の優先順位変更が、この働きを示します。",
-              "zh": "line-005 的铺垫与提问、line-007 的条件句、line-009 的优先级调整说明了这一作用。",
-              "en": "The preface and question in line 005, conditional logic in line 007, and priority change in line 009 show this function."
+              "ja": "5番目の台詞の前置きと質問、7番目の台詞の条件文、9番目の台詞の優先順位変更が、この働きを示します。",
+              "zh": "第5句台词的铺垫与提问、第7句台词的条件句、第9句台词的优先级调整说明了这一作用。",
+              "en": "The preface and question in the fifth line, conditional logic in the seventh line, and priority change in the ninth line show this function."
             },
             "nuance": {
               "ja": "「確認ですが」は対立を弱めるクッションです。ただし内容自体は、指示の実行不可能性をはっきり示しています。",
@@ -3074,9 +3074,9 @@
               "en": "“One point to confirm” cushions disagreement, while the content still clearly exposes the instructions’ infeasibility."
             },
             "alternative": {
-              "ja": "直樹が単に期限を知らなかった可能性は、line-007 で二つの指示の衝突を明示するため弱まります。",
-              "zh": "直树也可能只是不了解期限，但 line-007 明确指出两项指令冲突，使这种解释变弱。",
-              "en": "He might merely have been unsure of the deadline, but line 007 explicitly states the conflict, weakening that alternative."
+              "ja": "直樹が単に期限を知らなかった可能性は、7番目の台詞で二つの指示の衝突を明示するため弱まります。",
+              "zh": "直树也可能只是不了解期限，但第7句台词明确指出两项指令冲突，使这种解释变弱。",
+              "en": "He might merely have been unsure of the deadline, but the seventh line explicitly states the conflict, weakening that alternative."
             }
           }
         }
@@ -3091,13 +3091,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "ccf199fb201fea56f2df3bf56533ee90f6f3378ad5321c9d597d0c252046d09e"
+      "contentHash": "aa0d272700743de7ae9e5866cf2c571216ae735b070b613b920e951ebaed144a"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-048",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 48,
       "jlptTarget": "N2",
@@ -3444,9 +3444,9 @@
               "en": "The narrator’s claim and machine record must be separated, selecting only what each directly states."
             },
             "evidence": {
-              "ja": "line-001・line-003 が日記の主張、line-004〜line-006 がカード利用記録です。",
-              "zh": "line-001、line-003 是日记主张，line-004 至 line-006 是交通卡使用记录。",
-              "en": "Lines 001 and 003 contain the diary claim; lines 004–006 contain the card-use record."
+              "ja": "1番目の台詞・3番目の台詞が日記の主張、4番目の台詞〜6番目の台詞がカード利用記録です。",
+              "zh": "第1句台词、第3句台词是日记主张，第4句台词至第6句台词是交通卡使用记录。",
+              "en": "The first and third lines contain the diary claim; the fourth through sixth lines contain the card-use record."
             },
             "nuance": {
               "ja": "カードが使われたことと、晃本人が使ったことは同じではありません。選択肢 a も「事実として外出しなかった」ではなく「本文がそう述べる」です。",
@@ -3534,9 +3534,9 @@
               "en": "The evidence establishes inconsistency, not who used the card or why the accounts differ."
             },
             "evidence": {
-              "ja": "line-008 自体が「一致しない項目」と判定し、line-007 も貸し出し記録がないとだけ述べています。",
-              "zh": "line-008 本身判定“存在不一致”，line-007 也只说没有借出记录。",
-              "en": "Line 008 flags an inconsistency, while line 007 says only that no loan record was entered."
+              "ja": "8番目の台詞自体が「一致しない項目」と判定し、7番目の台詞も貸し出し記録がないとだけ述べています。",
+              "zh": "第8句台词本身判定“存在不一致”，第7句台词也只说没有借出记录。",
+              "en": "The eighth line flags an inconsistency, while the seventh line says only that no loan record was entered."
             },
             "nuance": {
               "ja": "「貸し出し記録がない」は貸していない証明ではありません。また不一致は故意のうそ、記憶違い、同期エラーのどれでも起こり得ます。",
@@ -3561,13 +3561,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "c672fb3ba70a2a5f6eae59e8ee8d653dccae0a8131b84c719bc0d6e14f4da5b0"
+      "contentHash": "e24e5ad69cceffa1248659b8e38bbc023e6b9d2b3b5c543f50110bc3853cc2e5"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-049",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 49,
       "jlptTarget": "N2",
@@ -3932,9 +3932,9 @@
               "en": "The interface repurposes an apparent failure notice as a path for teaching required controls."
             },
             "evidence": {
-              "ja": "line-005 のチュートリアル開始、line-007 の操作確認、line-008 の「入口」という明示が因果関係を確定します。",
-              "zh": "line-005 启动教程、line-007 确认操作、line-008 明说“入口”，共同确定因果关系。",
-              "en": "The tutorial launch in line 005, control verification in line 007, and explicit “entrance” in line 008 establish the causal role."
+              "ja": "5番目の台詞のチュートリアル開始、7番目の台詞の操作確認、8番目の台詞の「入口」という明示が因果関係を確定します。",
+              "zh": "第5句台词启动教程、第7句台词确认操作、第8句台词明说“入口”，共同确定因果关系。",
+              "en": "The tutorial launch in the fifth line, control verification in the seventh line, and explicit “entrance” in the eighth line establish the causal role."
             },
             "nuance": {
               "ja": "「エラー」は通常は失敗を示しますが、ここでは物語内インターフェースがその期待を意図的に裏切っています。",
@@ -3942,9 +3942,9 @@
               "en": "“Error” normally signals failure, but this fictional interface deliberately violates that expectation."
             },
             "alternative": {
-              "ja": "本当に読み込み失敗があり、その復旧手順としてチュートリアルが起動した可能性もあります。ただし line-008 は練習用入口だったと明示します。",
-              "zh": "也可能真的发生加载失败，教程是恢复步骤；但 line-008 明确说它是练习入口。",
-              "en": "A real load failure followed by recovery practice is conceivable, but line 008 explicitly identifies the display as a practice gateway."
+              "ja": "本当に読み込み失敗があり、その復旧手順としてチュートリアルが起動した可能性もあります。ただし8番目の台詞は練習用入口だったと明示します。",
+              "zh": "也可能真的发生加载失败，教程是恢复步骤；但第8句台词明确说它是练习入口。",
+              "en": "A real load failure followed by recovery practice is conceivable, but the eighth line explicitly identifies the display as a practice gateway."
             }
           }
         }
@@ -3959,13 +3959,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "679c25f379e4a9abf5cd5435fd2a43cafad1eda897e9660ae77459078f3ff32c"
+      "contentHash": "440a834ba60724fe6c9474151129621b61c30d7f5de5a2ee3b384945c80acecd"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-050",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 50,
       "jlptTarget": "N2",
@@ -4312,9 +4312,9 @@
               "en": "They may be using a public broadcast with a private cue to test whether the other person is still listening."
             },
             "evidence": {
-              "ja": "line-003 の毎年の継続、line-005 の愛称による問い、line-006 の一人しか知らないという認識が関係性を支えます。",
-              "zh": "line-003 的多年持续、line-005 用昵称发问、line-006 认为只有一人知道，共同支持这种关系推断。",
-              "en": "The annual pattern in line 003, the nickname question in line 005, and the one-person recognition in line 006 support the inferred relationship."
+              "ja": "3番目の台詞の毎年の継続、5番目の台詞の愛称による問い、6番目の台詞の一人しか知らないという認識が関係性を支えます。",
+              "zh": "第3句台词的多年持续、第5句台词用昵称发问、第6句台词认为只有一人知道，共同支持这种关系推断。",
+              "en": "The annual pattern in the third line, the nickname question in the fifth line, and the one-person recognition in the sixth line support the inferred relationship."
             },
             "nuance": {
               "ja": "再接続は明言されていないため「可能性がある」に留めます。恋愛関係、友情、家族関係のどれかも特定できません。",
@@ -4413,9 +4413,9 @@
               "en": "It can be read as a way to ask a particular person “Are you still listening?” without breaking anonymity."
             },
             "evidence": {
-              "ja": "line-003 が反復の継続性を、line-004〜line-006 が今年の個人的な変化と相互認識を示します。",
-              "zh": "line-003 显示重复的持续性，line-004 至 line-006 显示今年的私人变化与相互识别。",
-              "en": "Line 003 establishes the recurring pattern, while lines 004–006 show this year’s personal shift and recognition."
+              "ja": "3番目の台詞が反復の継続性を、4番目の台詞〜6番目の台詞が今年の個人的な変化と相互認識を示します。",
+              "zh": "第3句台词显示重复的持续性，第4句台词至第6句台词显示今年的私人变化与相互识别。",
+              "en": "The third line establishes the recurring pattern, while the fourth through sixth lines show this year’s personal shift and recognition."
             },
             "nuance": {
               "ja": "同じ曲だけなら番組上の恒例とも考えられますが、限られた人しか知らない愛称が加わることで関係性の読みが強くなります。",
@@ -4440,7 +4440,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "5ce8cc89f9ea8a7029ae71806ceade5a58759af05ac1d93757dccf497c9acbf6"
+      "contentHash": "b1bc832dd85b64cd69ff449027305bc01e0604d2aa91368cd34ac1c4e4c69492"
     }
   ]
 }

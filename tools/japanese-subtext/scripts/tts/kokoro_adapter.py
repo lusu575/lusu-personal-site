@@ -8,7 +8,37 @@ arguments.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Callable, Mapping
+from typing import Any, Callable, Mapping, Sequence
+
+
+def prepare_japanese_reading(
+    text: str,
+    frontend: Callable[[str], Sequence[Mapping[str, Any]]] | None = None,
+) -> str:
+    """Convert Japanese surface text to an explicit kana reading before G2P."""
+
+    if not isinstance(text, str) or not text.strip():
+        raise ValueError("text must not be empty")
+    if frontend is None:
+        import pyopenjtalk
+
+        frontend = pyopenjtalk.run_frontend
+    pieces: list[str] = []
+    for node in frontend(text.strip()):
+        surface = str(node.get("string") or "")
+        pronunciation = str(node.get("pron") or "")
+        if str(node.get("pos") or "") == "記号":
+            pieces.append(surface)
+        elif pronunciation and pronunciation != "*":
+            # PyOpenJTalk can append accent-boundary markers such as U+2019.
+            # They are frontend metadata, not spoken characters for Misaki.
+            pieces.append(pronunciation.replace("’", "").replace("'", ""))
+        else:
+            pieces.append(surface)
+    reading = "".join(pieces).strip()
+    if not reading:
+        raise ValueError("Japanese reading preparation returned no text")
+    return reading
 
 
 class KokoroAdapter:
@@ -24,6 +54,7 @@ class KokoroAdapter:
         backend: Any | None = None,
         g2p: Callable[[str], tuple[str, object]] | None = None,
         writer: Callable[[str | Path, object, int], object] | None = None,
+        reading_resolver: Callable[[str], str] | None = None,
     ) -> None:
         self.model_path = Path(model_path)
         self.voices_path = Path(voices_path)
@@ -50,6 +81,10 @@ class KokoroAdapter:
         self.backend = backend
         self.g2p = g2p
         self.writer = writer
+        self.reading_resolver = reading_resolver or prepare_japanese_reading
+
+    def prepare_reading(self, text: str) -> str:
+        return self.reading_resolver(text)
 
     def synthesize(
         self,
@@ -80,7 +115,8 @@ class KokoroAdapter:
         model_voice = voice.get("modelVoice")
         if not isinstance(model_voice, str) or not model_voice:
             raise ValueError(f"voice {voice_key} is missing modelVoice")
-        phonemes, _ = self.g2p(text.strip())
+        prepared_text = self.prepare_reading(text)
+        phonemes, _ = self.g2p(prepared_text)
         if not isinstance(phonemes, str) or not phonemes.strip():
             raise ValueError("Japanese G2P returned no phonemes")
         samples, sample_rate = self.backend.create(

@@ -13,16 +13,19 @@ const [html, app, css, main] = await Promise.all([
 ]);
 
 test("standalone shell exposes the required playback and learning controls", () => {
-  assert.match(html, /<title>日本語の裏側<\/title>/);
-  for (const id of ["audio-progress", "quick-speed", "quick-mute", "question-form", "settings-dialog", "records-dialog", "sound-gate"]) {
+  assert.match(html, /<title>日语的言外之意<\/title>/);
+  for (const id of ["audio-progress", "quick-speed", "question-form", "settings-dialog", "records-dialog", "sound-gate", "result-dialog"]) {
     assert.match(html, new RegExp(`id=["']${id}["']`));
   }
-  for (const action of ["toggle", "restart", "replay", "previous", "next", "line-replay"]) {
-    assert.match(html, new RegExp(`data-audio-action=["']${action}["']`));
+  assert.match(html, /data-audio-action="toggle"/);
+  for (const action of ["restart", "replay", "previous", "next", "line-replay"]) {
+    assert.doesNotMatch(html, new RegExp(`data-audio-action=["']${action}["']`));
   }
+  assert.doesNotMatch(html, /id="quick-mute"|id="quick-autoplay"|name="muted"|name="autoplay"|class="[^"']*line-play/);
   assert.match(html, /<dialog class="sound-gate"/);
-  assert.match(html, /data-action="unlock-sound"/);
-  assert.match(html, /class="sound-gate-actions"[\s\S]*data-action="text-mode"/);
+  for (const mode of ["listening", "japanese", "bilingual"]) assert.match(html, new RegExp(`data-action="choose-mode" data-mode="${mode}"`));
+  assert.match(html, /id="settings-form"[\s\S]*data-i18n="confirm"/);
+  assert.match(html, /id="result-dialog"[\s\S]*data-action="view-analysis"[\s\S]*data-action="result-next"/);
   assert.match(html, /NOTICE-japanese-voices\.md"[\s\S]*rel="license noopener"/);
   assert.doesNotMatch(app, /from "\.\/lib\/[^"?]+\.mjs";/);
 });
@@ -54,7 +57,11 @@ test("navigation, modal focus, option feedback, and cache invalidation have expl
   assert.match(app, /correctAnswer/);
   assert.match(app, /yourWrongChoice/);
   assert.match(app, /shortContentHash\(stage\.contentHash\)/);
-  assert.match(app, /prefersReducedMotion\(\) \? "auto" : "smooth"/);
+  assert.match(app, /hasCompletedModeOnboarding\(\)/);
+  assert.match(app, /markModeOnboardingComplete\(\)/);
+  assert.match(app, /function highlightLine\(id\)[\s\S]*?classList\.toggle/);
+  assert.doesNotMatch(app, /function highlightLine\(id\)[\s\S]{0,400}scrollIntoView/);
+  assert.match(app, /state\.settings\.autoplay = false/);
   assert.match(app, /document\.hidden[\s\S]*?player\.stop\(\)/);
   assert.match(app, /if \(detail\.context\?\.kind === "scene"\) \{[\s\S]*?unlockQuestions\(\);[\s\S]*?return;/);
   assert.match(app, /player\.isSceneLoaded\(\) && player\.seek\(start\)[\s\S]*?await player\.resume\(\)/);

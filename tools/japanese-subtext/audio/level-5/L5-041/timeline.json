@@ -1,132 +1,132 @@
 {
   "stageId": "L5-041",
   "sampleRate": 24000,
-  "duration": 111.264083,
+  "duration": 110.38025,
   "cues": [
     {
       "lineId": "line-001",
       "audioId": "L5-041-line-001",
       "start": 0.06,
-      "end": 5.3485
+      "end": 5.254792
     },
     {
       "lineId": "line-002",
       "audioId": "L5-041-line-002",
-      "start": 5.8685,
-      "end": 10.821542
+      "start": 5.774792,
+      "end": 10.847
     },
     {
       "lineId": "line-003",
       "audioId": "L5-041-line-003",
-      "start": 11.341542,
-      "end": 15.311792
+      "start": 11.367,
+      "end": 15.220667
     },
     {
       "lineId": "line-004",
       "audioId": "L5-041-line-004",
-      "start": 15.831792,
-      "end": 20.092792
+      "start": 15.740667,
+      "end": 19.939708
     },
     {
       "lineId": "line-005",
       "audioId": "L5-041-line-005",
-      "start": 20.612792,
-      "end": 25.012708
+      "start": 20.459708,
+      "end": 25.213542
     },
     {
       "lineId": "line-006",
       "audioId": "L5-041-line-006",
-      "start": 25.532708,
-      "end": 29.622708
+      "start": 25.733542,
+      "end": 29.832542
     },
     {
       "lineId": "line-007",
       "audioId": "L5-041-line-007",
-      "start": 30.142708,
-      "end": 37.178458
+      "start": 30.352542,
+      "end": 37.370792
     },
     {
       "lineId": "line-008",
       "audioId": "L5-041-line-008",
-      "start": 37.698458,
-      "end": 43.103167
+      "start": 37.890792,
+      "end": 43.305333
     },
     {
       "lineId": "line-009",
       "audioId": "L5-041-line-009",
-      "start": 43.623167,
-      "end": 47.252833
+      "start": 43.825333,
+      "end": 47.377625
     },
     {
       "lineId": "line-010",
       "audioId": "L5-041-line-010",
-      "start": 47.772833,
-      "end": 53.10725
+      "start": 47.897625,
+      "end": 52.778667
     },
     {
       "lineId": "line-011",
       "audioId": "L5-041-line-011",
-      "start": 53.62725,
-      "end": 59.033167
+      "start": 53.298667,
+      "end": 58.766458
     },
     {
       "lineId": "line-012",
       "audioId": "L5-041-line-012",
-      "start": 59.553167,
-      "end": 65.109333
+      "start": 59.286458,
+      "end": 64.7735
     },
     {
       "lineId": "line-013",
       "audioId": "L5-041-line-013",
-      "start": 65.629333,
-      "end": 69.193542
+      "start": 65.2935,
+      "end": 68.873333
     },
     {
       "lineId": "line-014",
       "audioId": "L5-041-line-014",
-      "start": 69.713542,
-      "end": 74.342958
+      "start": 69.393333,
+      "end": 73.691708
     },
     {
       "lineId": "line-015",
       "audioId": "L5-041-line-015",
-      "start": 74.862958,
-      "end": 81.120625
+      "start": 74.211708,
+      "end": 80.398875
     },
     {
       "lineId": "line-016",
       "audioId": "L5-041-line-016",
-      "start": 81.640625,
-      "end": 87.358458
+      "start": 80.918875,
+      "end": 86.640042
     },
     {
       "lineId": "line-017",
       "audioId": "L5-041-line-017",
-      "start": 87.878458,
-      "end": 91.9535
+      "start": 87.160042,
+      "end": 91.237458
     },
     {
       "lineId": "line-018",
       "audioId": "L5-041-line-018",
-      "start": 92.4735,
-      "end": 97.102917
+      "start": 91.757458,
+      "end": 96.110417
     },
     {
       "lineId": "line-019",
       "audioId": "L5-041-line-019",
-      "start": 97.622917,
-      "end": 104.201
+      "start": 96.630417,
+      "end": 103.19575
     },
     {
       "lineId": "line-020",
       "audioId": "L5-041-line-020",
-      "start": 104.721,
-      "end": 111.164083
+      "start": 103.71575,
+      "end": 110.28025
     }
   ],
   "schemaVersion": 1,
   "timelineId": "L5-041-timeline",
   "sceneAudioId": "L5-041-scene",
-  "contentHash": "19c041a4fc5ef4bef66f9264ceab865ad9c32d35ae7fc22c696b17ae8290e648",
-  "sourceContentHash": "a90d803b3e89eddc57db9a815573bd05deaf9a6443dc7da5791f0e2e6544f487"
+  "contentHash": "d544199abfb2e24069057017cab19adb01cfbba40d75e7fa72497c3eb90f7c6e",
+  "sourceContentHash": "13256511e6966dd287feb21b73b80fe3b59d7bd720a70441fcf190a72729f010"
 }

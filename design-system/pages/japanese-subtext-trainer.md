@@ -15,7 +15,9 @@
 ## Interaction and accessibility
 
 - Every button, sentence row, option row, token, range control, and map tile is keyboard reachable with a visible high-contrast focus state. Main touch targets are at least 44x44 CSS px.
-- The three scene modes, option language, kana hints, option text, and every audio toggle are independent controls with text labels and programmatic state.
+- The first-use mode dialog offers listening, Japanese, and bilingual entry exactly once per browser. Later changes live in Settings; stage entry never autoplays.
+- Public transport exposes only play/pause, timeline seek, and speed. Sentence and token text remain the direct playback targets; do not add duplicate line buttons, previous/next, replay, or mute controls.
+- Answer submission opens a focused result dialog with score, medal, analysis, and next/retry actions. Do not insert visible correctness labels inside option rows.
 - Color never acts alone: locked/current/cleared stages, medals, correct/incorrect answers, loading, audio error, and cloud status all have text or icons plus accessible labels.
 - The first sound action is an explicit user gesture. Audio failures expose Retry and Continue in text mode; cloud failures never block local play.
 - Only one audio source may play. Route changes, map return, page hide, and unload stop or pause it.
@@ -23,6 +25,6 @@
 ## Responsive and media rules
 
 - Verify 375x667, 390x844, 844x390, 768x1024, and 1365x900 with zero page-level horizontal scrolling.
-- Transport controls wrap into stable groups; range inputs retain a 44px interaction lane; question options remain fully contained and never intersect adjacent cards.
+- The compact transport and range input retain 44px interaction lanes; question options and result-dialog actions remain fully contained and never intersect adjacent cards.
 - Illustration containers reserve space, use `object-fit: contain`, and cap themselves to 30vh on portrait and 42vh on landscape/desktop. Decorative images use empty alt text; meaningful stage art uses localized alt text.
 - Respect `prefers-reduced-motion`; animate only transform/opacity for 160-260ms and remove nonessential travel in reduced mode.

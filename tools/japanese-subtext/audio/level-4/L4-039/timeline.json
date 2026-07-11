@@ -1,102 +1,102 @@
 {
   "stageId": "L4-039",
   "sampleRate": 24000,
-  "duration": 79.089292,
+  "duration": 78.815417,
   "cues": [
     {
       "lineId": "line-001",
       "audioId": "L4-039-line-001",
       "start": 0.06,
-      "end": 4.864083
+      "end": 4.888625
     },
     {
       "lineId": "line-002",
       "audioId": "L4-039-line-002",
-      "start": 5.384083,
-      "end": 8.023833
+      "start": 5.408625,
+      "end": 8.048125
     },
     {
       "lineId": "line-003",
       "audioId": "L4-039-line-003",
-      "start": 8.543833,
-      "end": 14.041
+      "start": 8.568125,
+      "end": 13.8915
     },
     {
       "lineId": "line-004",
       "audioId": "L4-039-line-004",
-      "start": 14.561,
-      "end": 18.010625
+      "start": 14.4115,
+      "end": 17.861125
     },
     {
       "lineId": "line-005",
       "audioId": "L4-039-line-005",
-      "start": 18.530625,
-      "end": 22.851542
+      "start": 18.381125,
+      "end": 22.604167
     },
     {
       "lineId": "line-006",
       "audioId": "L4-039-line-006",
-      "start": 23.371542,
-      "end": 26.933875
+      "start": 23.124167,
+      "end": 26.525208
     },
     {
       "lineId": "line-007",
       "audioId": "L4-039-line-007",
-      "start": 27.453875,
-      "end": 33.173542
+      "start": 27.045208,
+      "end": 32.728
     },
     {
       "lineId": "line-008",
       "audioId": "L4-039-line-008",
-      "start": 33.693542,
-      "end": 36.880458
+      "start": 33.248,
+      "end": 36.334333
     },
     {
       "lineId": "line-009",
       "audioId": "L4-039-line-009",
-      "start": 37.400458,
-      "end": 42.421958
+      "start": 36.854333,
+      "end": 41.858833
     },
     {
       "lineId": "line-010",
       "audioId": "L4-039-line-010",
-      "start": 42.941958,
-      "end": 47.175333
+      "start": 42.378833,
+      "end": 46.572125
     },
     {
       "lineId": "line-011",
       "audioId": "L4-039-line-011",
-      "start": 47.695333,
-      "end": 54.027833
+      "start": 47.092125,
+      "end": 53.422958
     },
     {
       "lineId": "line-012",
       "audioId": "L4-039-line-012",
-      "start": 54.547833,
-      "end": 59.428167
+      "start": 53.942958,
+      "end": 58.898042
     },
     {
       "lineId": "line-013",
       "audioId": "L4-039-line-013",
-      "start": 59.948167,
-      "end": 66.097208
+      "start": 59.418042,
+      "end": 65.753
     },
     {
       "lineId": "line-014",
       "audioId": "L4-039-line-014",
-      "start": 66.617208,
-      "end": 73.136292
+      "start": 66.273,
+      "end": 72.810375
     },
     {
       "lineId": "line-015",
       "audioId": "L4-039-line-015",
-      "start": 73.656292,
-      "end": 78.989292
+      "start": 73.330375,
+      "end": 78.715417
     }
   ],
   "schemaVersion": 1,
   "timelineId": "L4-039-timeline",
   "sceneAudioId": "L4-039-scene",
-  "contentHash": "6f995919522d47673d04467b872cde945e968e76c7ebc55af35c40678e207305",
-  "sourceContentHash": "3ba191fdfedead916e184d6d9c3fcbaee375cb83f1893802e60557f795e40560"
+  "contentHash": "6804aa97f2f59aff5453d34fc7cbef28a18b8fb878a18d1782fa954a5c1bac62",
+  "sourceContentHash": "1e3d46b4ab600e10226d1effdda48055b35df59bf547d63ca6569ee574045f66"
 }

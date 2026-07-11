@@ -16,7 +16,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Mapping, Sequence
 
-from kokoro_adapter import KokoroAdapter
+from kokoro_adapter import KokoroAdapter, prepare_japanese_reading
 
 
 PIPELINE_VERSION = "kokoro-ja-mp3-v2"
@@ -68,6 +68,12 @@ def apply_pronunciations(text: str, entries: Sequence[Mapping[str, Any]]) -> str
     return result
 
 
+def prepare_spoken_text(text: str, entries: Sequence[Mapping[str, Any]]) -> str:
+    """Apply reviewed overrides, then resolve every Japanese surface to kana."""
+
+    return prepare_japanese_reading(apply_pronunciations(text, entries))
+
+
 def build_audio_tasks(stage: Mapping[str, Any]) -> list[AudioTask]:
     """Expand one locked stage into line, token and option audio tasks."""
 
@@ -97,7 +103,7 @@ def build_audio_tasks(stage: Mapping[str, Any]) -> list[AudioTask]:
                 kind="line",
                 stage_id=stage_id,
                 level=level,
-                text=str(line["ttsTextJa"]),
+                text=str(line.get("readingJa") or line["ttsTextJa"]),
                 voice_key=voice_key,
                 relative_path=f"{prefix}/lines/{line_id}.mp3",
                 line_id=line_id,
@@ -1046,7 +1052,7 @@ def generate_stage(
 
     for task in tasks:
         resolved_key, voice_settings = resolve_voice(config, task.voice_key)
-        spoken_text = apply_pronunciations(task.text, pronunciations)
+        spoken_text = prepare_spoken_text(task.text, pronunciations)
         spoken_task = replace(task, text=spoken_text)
         artifact_hash = task_hash(
             spoken_task,
@@ -1418,7 +1424,7 @@ def _dry_run_report(
         for task in build_audio_tasks(stage):
             counts[task.kind] += 1
             resolved_key, settings = resolve_voice(config, task.voice_key)
-            spoken = replace(task, text=apply_pronunciations(task.text, pronunciations))
+            spoken = replace(task, text=prepare_spoken_text(task.text, pronunciations))
             artifact_hash = task_hash(
                 spoken,
                 voice_settings={

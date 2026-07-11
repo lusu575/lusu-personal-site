@@ -1,12 +1,12 @@
-import { ContentLoader } from "./lib/content-loader.mjs?v=20260711-japanese-subtext-r11";
-import { AudioPlayer } from "./lib/audio-player.mjs?v=20260711-japanese-subtext-r11";
-import { CloudProgress } from "./lib/cloud.mjs?v=20260711-japanese-subtext-r11";
-import { formatTime, localized, parseStageId, safeToolAssetPath, shortContentHash, stageId } from "./lib/constants.mjs?v=20260711-japanese-subtext-r11";
-import { createTranslator, normalizeUiLanguage } from "./lib/i18n.mjs?v=20260711-japanese-subtext-r11";
+import { ContentLoader } from "./lib/content-loader.mjs?v=20260711-japanese-subtext-r14";
+import { AudioPlayer } from "./lib/audio-player.mjs?v=20260711-japanese-subtext-r14";
+import { CloudProgress } from "./lib/cloud.mjs?v=20260711-japanese-subtext-r14";
+import { formatTime, localized, parseStageId, safeToolAssetPath, shortContentHash, stageId } from "./lib/constants.mjs?v=20260711-japanese-subtext-r14";
+import { createTranslator, normalizeUiLanguage } from "./lib/i18n.mjs?v=20260711-japanese-subtext-r14";
 import {
-  loadLocalState, mergeProgress, mergeSettings, nextStageId, progressStats, recordAttempt,
-  resetLocalState, saveProgress, saveSettings
-} from "./lib/storage.mjs?v=20260711-japanese-subtext-r11";
+  hasCompletedModeOnboarding, loadLocalState, markModeOnboardingComplete, mergeProgress, mergeSettings,
+  nextStageId, progressStats, recordAttempt, resetLocalState, saveProgress, saveSettings
+} from "./lib/storage.mjs?v=20260711-japanese-subtext-r14";
 
 const loader = new ContentLoader();
 const player = new AudioPlayer();
@@ -26,13 +26,14 @@ const state = {
   submitted: false,
   cleared: false,
   attemptCleared: false,
+  attemptMedal: "none",
   replayCount: 0,
   hintCount: 0,
   activeLineId: "",
   audioState: "stopped",
   audioAvailable: false,
   cloudStatusKey: "authLocal",
-  pendingAutoplay: false,
+  analysisVisible: false,
   optionQueue: [],
   optionQueueRunning: false,
   draftAnswers: {},
@@ -61,7 +62,7 @@ async function init() {
 
   state.catalog = await loader.loadCatalog();
   renderDashboard();
-  setStatus("READY · 250 STAGES");
+  setStatus("READY");
   await restoreDeepLink({ focus: false });
   mergeCloudProgress();
 }
@@ -98,7 +99,7 @@ function bindActions() {
     readSettingsForm();
     announce(t("settingsSaved"));
   });
-  [$("#settings-dialog"), $("#records-dialog")].forEach((dialog) => {
+  [$("#settings-dialog"), $("#records-dialog"), $("#result-dialog")].forEach((dialog) => {
     dialog.addEventListener("click", (event) => {
       if (event.target === dialog) closeDialog(dialog);
     });
@@ -107,8 +108,6 @@ function bindActions() {
   $("#audio-progress").addEventListener("input", previewSeekFromControl);
   $("#audio-progress").addEventListener("change", (event) => commitSeekFromControl(event).catch(handleAudioError));
   $("#quick-speed").addEventListener("change", (event) => updateQuickSetting("playbackRate", Number(event.target.value)));
-  $("#quick-mute").addEventListener("change", (event) => updateQuickSetting("muted", event.target.checked));
-  $("#quick-autoplay").addEventListener("change", (event) => updateQuickSetting("autoplay", event.target.checked));
 
   player.addEventListener("time", ({ detail }) => updatePlayerTime(detail));
   player.addEventListener("state", ({ detail }) => updatePlayerState(detail.state));
@@ -127,10 +126,7 @@ function bindActions() {
     player.stop();
   });
   window.addEventListener("popstate", () => restoreDeepLink({ focus: true }).catch(handleUiError));
-  $("#sound-gate").addEventListener("cancel", (event) => {
-    event.preventDefault();
-    enableTextMode();
-  });
+  $("#sound-gate").addEventListener("cancel", () => focusScreenHeading("stage"));
   document.addEventListener("keydown", (event) => {
     const interactiveTarget = event.target instanceof Element && event.target.closest("button, a, input, select, textarea");
     if (event.key === "Escape" && !interactiveTarget && state.screen === "stage" && !$("#settings-dialog").open && !$("#records-dialog").open && !$("#sound-gate").open) {
@@ -150,12 +146,15 @@ async function dispatchAction(action, target) {
     case "open-settings": return openDialog($("#settings-dialog"));
     case "open-records": renderRecords(); return openDialog($("#records-dialog"));
     case "close-records": return closeDialog($("#records-dialog"));
-    case "unlock-sound": return unlockSound();
+    case "choose-mode": return chooseInitialMode(target.dataset.mode);
     case "text-mode": return enableTextMode();
     case "try-again": return resetQuestions();
+    case "close-result": return closeDialog($("#result-dialog"));
+    case "view-analysis": return showAnalysis();
+    case "result-retry": closeDialog($("#result-dialog")); return resetQuestions();
+    case "result-next": closeDialog($("#result-dialog")); return goToNextStage();
     case "next-stage": {
-      const next = nextStageId(state.stage?.id);
-      return next ? openStage(next) : showScreen("dashboard");
+      return goToNextStage();
     }
     case "reset-progress": return resetProgress();
     default: return undefined;
@@ -174,11 +173,6 @@ async function dispatchAudioAction(action, target) {
       else if (state.audioState === "paused") await player.resume();
       else await playScene(0);
       break;
-    case "restart": await playScene(0); break;
-    case "replay": state.replayCount += 1; await playScene(0); break;
-    case "line-replay": state.replayCount += 1; await playLine(state.activeLineId || state.stage.lines[0]?.id); break;
-    case "previous": await playAdjacentLine(-1); break;
-    case "next": await playAdjacentLine(1); break;
     case "line": state.replayCount += 1; await playLine(target.dataset.lineId); break;
     case "token": state.replayCount += 1; await player.playToken(target.dataset.lineId, target.dataset.tokenId, target.dataset.audioId); break;
     case "option": await player.playOption(target.dataset.questionId, target.dataset.optionId, target.dataset.audioId); break;
@@ -199,7 +193,7 @@ function handlePlaybackComplete(detail) {
 function applyLanguage() {
   const lang = state.settings.uiLanguage;
   document.documentElement.lang = lang === "zh" ? "zh-CN" : lang;
-  document.title = "日本語の裏側";
+  document.title = t("toolTitle");
   $("#ui-language").value = lang;
   $("#back-site").href = `../../index.html?lang=${encodeURIComponent(lang)}#resources`;
   $$('[data-i18n]').forEach((node) => { node.textContent = t(node.dataset.i18n); });
@@ -219,10 +213,10 @@ function renderCurrentScreen() {
 function beginNavigation() {
   navigationEpoch += 1;
   cancelOptionQueue();
-  state.pendingAutoplay = false;
   closeSoundGate();
   closeDialog($("#settings-dialog"));
   closeDialog($("#records-dialog"));
+  closeDialog($("#result-dialog"));
   player.stop();
   return navigationEpoch;
 }
@@ -355,10 +349,11 @@ async function openStage(id, { historyMode = "push", focus = true } = {}) {
   if (request !== navigationEpoch) return;
   state.level = parsed.level;
   state.stage = stage;
-  state.questionUnlocked = false;
+  state.questionUnlocked = state.settings.displayMode !== "listening";
   state.submitted = false;
   state.cleared = state.progress.stageProgress[id]?.cleared === true;
   state.attemptCleared = false;
+  state.attemptMedal = "none";
   state.replayCount = 0;
   state.hintCount = 0;
   state.activeLineId = state.stage.lines[0]?.id || "";
@@ -366,6 +361,7 @@ async function openStage(id, { historyMode = "push", focus = true } = {}) {
   state.optionQueueRunning = false;
   state.draftAnswers = {};
   state.lastScore = null;
+  state.analysisVisible = false;
   player.setStage(id);
   player.configure(state.settings);
   state.progress.currentLevel = parsed.level;
@@ -379,11 +375,8 @@ async function openStage(id, { historyMode = "push", focus = true } = {}) {
   else clearAudioError();
   setStatus(`${id} · ${state.stage.jlptTarget}`);
   loader.preloadNext(id);
-  if (!player.userUnlocked && state.audioAvailable) {
-    state.pendingAutoplay = state.settings.autoplay;
+  if (!hasCompletedModeOnboarding()) {
     openSoundGate();
-  } else if (state.settings.autoplay && state.audioAvailable) {
-    playScene(0).catch(handleAudioError);
   }
 }
 
@@ -432,25 +425,25 @@ function renderTranscript(stage) {
       type: "button",
       className: "line-ja line-ja-trigger",
       text: line.text.ja,
+      lang: "ja",
       dataset: { audioAction: "line", lineId: line.id },
       ariaLabel: `${t("playSentence")}: ${line.text.ja}`
     }));
-    if (state.settings.kana) copy.append(el("p", { className: "line-reading", text: line.readingJa }));
+    if (state.settings.kana) copy.append(el("p", { className: "line-reading", text: line.readingJa, lang: "ja" }));
     if (state.settings.displayMode === "bilingual" && state.settings.uiLanguage !== "ja") {
       copy.append(el("p", { className: "line-translation", text: localized(line.text, state.settings.uiLanguage) }));
     }
     const tokens = el("div", { className: "token-row" });
     line.tokens.forEach((token) => {
       tokens.append(el("button", {
-        type: "button", className: "token-button", dataset: { audioAction: "token", lineId: line.id, tokenId: token.id, audioId: token.audioId },
+        type: "button", className: "token-button", lang: "ja", dataset: { audioAction: "token", lineId: line.id, tokenId: token.id, audioId: token.audioId },
         ariaLabel: `${t("playChunk")}: ${token.text}`
       }, el("span", { text: token.text }), state.settings.kana ? el("small", { text: token.reading }) : null));
     });
     copy.append(tokens);
     card.append(
       el("div", { className: "speaker-name", text: localized(person?.name, state.settings.uiLanguage, line.speaker) }),
-      copy,
-      el("button", { type: "button", className: "xp-control compact line-play", dataset: { audioAction: "line", lineId: line.id }, ariaLabel: `${t("playSentence")}: ${line.text.ja}`, text: "▶" })
+      copy
     );
     return card;
   });
@@ -475,20 +468,15 @@ function renderQuestions(stage) {
       const selected = state.draftAnswers[question.id]?.includes(option.id) === true;
       const input = el("input", { id: inputId, type, name: question.id, value: option.id, checked: selected, disabled: !state.questionUnlocked || state.submitted });
       const optionText = state.settings.optionText ? localized(option.text, state.settings.optionLanguage) : t("optionHidden");
-      let feedback = null;
-      if (state.submitted && question.correctOptionIds.includes(option.id)) {
-        feedback = el("strong", { className: "option-feedback is-correct", text: t("correctAnswer") });
-      } else if (state.submitted && selected) {
-        feedback = el("strong", { className: "option-feedback is-wrong", text: t("yourWrongChoice") });
-      }
       label.append(input, el("span", { className: "option-copy" },
         el("strong", { className: "option-marker", text: `${optionMarker}.` }),
-        el("span", { text: optionText }),
-        feedback
+        el("span", { text: optionText, lang: state.settings.optionLanguage === "ja" ? "ja" : undefined })
       ));
       if (state.submitted) {
-        label.classList.toggle("is-correct", question.correctOptionIds.includes(option.id));
-        label.classList.toggle("is-wrong", selected && !question.correctOptionIds.includes(option.id));
+        const correct = question.correctOptionIds.includes(option.id);
+        label.classList.toggle("is-correct", correct);
+        label.classList.toggle("is-wrong", selected && !correct);
+        if (correct || selected) label.setAttribute("aria-label", `${optionMarker}. ${optionText} · ${t(correct ? "correctAnswer" : "yourWrongChoice")}`);
       }
       const row = el("div", { className: "option-row" }, label);
       if (state.settings.optionAudio) {
@@ -506,18 +494,6 @@ function renderQuestions(stage) {
   replaceChildren(form, cards);
   form.hidden = !state.questionUnlocked;
   $("#submit-answers").hidden = !state.questionUnlocked || state.submitted;
-  $("#try-again").hidden = !state.submitted || state.attemptCleared;
-  $("#next-stage").hidden = !state.cleared;
-  const result = $("#answer-result");
-  result.className = "answer-result";
-  if (state.submitted && Number.isFinite(state.lastScore)) {
-    const medal = state.progress.stageProgress[state.stage.id]?.medal;
-    const medalCopy = state.attemptCleared && medal && medal !== "none" ? ` · ${t("medalEarned")}: ${t(medal)}` : "";
-    result.textContent = `${state.lastScore}% · ${t(state.attemptCleared ? "allCorrect" : "notAllCorrect")}${medalCopy}`;
-    result.classList.add(state.attemptCleared ? "is-success" : "is-error");
-  } else {
-    result.textContent = "";
-  }
 }
 
 function renderAnalysis(stage) {
@@ -532,7 +508,7 @@ function renderAnalysis(stage) {
     return el("article", { className: "analysis-entry" }, el("h4", { text: `${index + 1}. ${localized(question.prompt, state.settings.uiLanguage)}` }), grid);
   });
   replaceChildren($("#analysis-content"), entries);
-  $("#analysis-panel").hidden = !state.submitted;
+  $("#analysis-panel").hidden = !state.submitted || !state.analysisVisible;
 }
 
 function updateQuestionGate() {
@@ -560,14 +536,7 @@ function unlockQuestions() {
 }
 
 function enableTextMode() {
-  state.pendingAutoplay = false;
-  closeSoundGate();
-  focusScreenHeading("stage");
-  state.hintCount += 1;
-  state.settings.displayMode = "japanese";
-  persistSettings();
-  renderTranscript(state.stage);
-  unlockQuestions();
+  return chooseInitialMode("japanese", { countHint: true });
 }
 
 function submitAnswers(event) {
@@ -586,6 +555,12 @@ function submitAnswers(event) {
   const score = Math.round((correctCount / state.stage.questions.length) * 100);
   state.lastScore = score;
   state.attemptCleared = correctCount === state.stage.questions.length;
+  const previousAttempts = state.progress.stageProgress[state.stage.id]?.attempts || 0;
+  state.attemptMedal = state.attemptCleared
+    ? (state.settings.displayMode === "listening" && previousAttempts === 0 && score === 100
+      ? "gold"
+      : state.settings.displayMode === "bilingual" ? "bronze" : "silver")
+    : "none";
   state.submitted = true;
   state.progress = recordAttempt(state.progress, state.stage.id, {
     score,
@@ -598,31 +573,70 @@ function submitAnswers(event) {
   state.cleared = state.progress.stageProgress[state.stage.id]?.cleared === true;
   state.progress = saveProgress(state.progress);
   scheduleCloudSave();
+  state.analysisVisible = false;
   renderQuestions(state.stage);
   renderAnalysis(state.stage);
-  const result = $("#answer-result");
-  announce(result.textContent);
+  renderResultDialog();
+  openDialog($("#result-dialog"));
+  announce($("#answer-result").textContent);
 }
 
 function resetQuestions() {
   state.submitted = false;
   state.attemptCleared = false;
+  state.attemptMedal = "none";
   state.draftAnswers = {};
   state.lastScore = null;
+  state.analysisVisible = false;
   $("#question-form").reset();
   renderQuestions(state.stage);
   $("#analysis-panel").hidden = true;
   $("#question-form input:not(:disabled)")?.focus();
 }
 
-function unlockSound() {
+function renderResultDialog() {
+  const result = $("#answer-result");
+  const medal = $("#result-medal");
+  result.className = `answer-result ${state.attemptCleared ? "is-success" : "is-error"}`;
+  result.textContent = `${state.lastScore}% · ${t(state.attemptCleared ? "allCorrect" : "notAllCorrect")}`;
+  medal.className = `result-medal medal-${state.attemptMedal}`;
+  medal.textContent = state.attemptMedal === "none"
+    ? t("noMedal")
+    : `${t("resultMedal")}: ${t(state.attemptMedal)}`;
+  $("#result-next").hidden = !state.attemptCleared;
+  $("#result-retry").hidden = state.attemptCleared;
+}
+
+function showAnalysis() {
+  closeDialog($("#result-dialog"));
+  state.analysisVisible = true;
+  renderAnalysis(state.stage);
+  requestAnimationFrame(() => {
+    const heading = $("#analysis-heading");
+    heading?.focus({ preventScroll: true });
+    $("#analysis-panel")?.scrollIntoView({ block: "start", behavior: "auto" });
+  });
+}
+
+function goToNextStage() {
+  const next = nextStageId(state.stage?.id);
+  return next ? openStage(next) : showScreen("dashboard");
+}
+
+function chooseInitialMode(mode, { countHint = false } = {}) {
+  if (!["listening", "japanese", "bilingual"].includes(mode)) return;
   player.unlock();
   closeSoundGate();
+  markModeOnboardingComplete();
+  if (countHint) state.hintCount += 1;
+  state.settings.displayMode = mode;
+  state.settings.autoplay = false;
+  state.settings.muted = false;
+  persistSettings();
+  player.configure(state.settings);
+  state.questionUnlocked = mode !== "listening";
+  if (state.stage) renderStage();
   focusScreenHeading("stage");
-  const shouldAutoplay = state.pendingAutoplay && state.stage;
-  state.pendingAutoplay = false;
-  if (shouldAutoplay) return playScene(0);
-  return undefined;
 }
 
 async function playScene(start = 0) {
@@ -639,13 +653,6 @@ async function playLine(id) {
   state.activeLineId = id;
   highlightLine(id);
   await player.playLine(id);
-}
-
-async function playAdjacentLine(direction) {
-  const lines = state.stage?.lines || [];
-  const current = Math.max(0, lines.findIndex((line) => line.id === (player.currentLineId() || state.activeLineId)));
-  const next = Math.min(lines.length - 1, Math.max(0, current + direction));
-  await playLine(lines[next]?.id);
 }
 
 function seekTarget(event) {
@@ -696,8 +703,6 @@ function updatePlayerState(value) {
 function highlightLine(id) {
   const lines = $$(".line-card");
   lines.forEach((node) => node.classList.toggle("is-active", node.dataset.lineId === id));
-  const active = lines.find((node) => node.dataset.lineId === id);
-  if (active && !isMostlyVisible(active)) active.scrollIntoView({ block: "nearest", behavior: prefersReducedMotion() ? "auto" : "smooth" });
 }
 
 function beginOptionQueue() {
@@ -785,7 +790,7 @@ function syncSettingsControls() {
     const input = form.elements[name];
     if (input) input.value = String(state.settings[name]);
   });
-  ["kana", "optionText", "optionAudio", "autoReadOptions", "autoplay", "muted"].forEach((name) => {
+  ["kana", "optionText", "optionAudio", "autoReadOptions"].forEach((name) => {
     const input = form.elements[name];
     if (input) input.checked = state.settings[name] === true;
   });
@@ -794,8 +799,6 @@ function syncSettingsControls() {
 
 function syncQuickControls() {
   $("#quick-speed").value = String(state.settings.playbackRate);
-  $("#quick-mute").checked = state.settings.muted;
-  $("#quick-autoplay").checked = state.settings.autoplay;
 }
 
 function readSettingsForm() {
@@ -810,14 +813,17 @@ function readSettingsForm() {
     optionText: form.elements.optionText.checked,
     optionAudio: form.elements.optionAudio.checked,
     autoReadOptions: form.elements.autoReadOptions.checked,
-    autoplay: form.elements.autoplay.checked,
-    muted: form.elements.muted.checked
+    autoplay: false,
+    muted: false
   };
   persistSettings();
   player.configure(state.settings);
   if ((!state.settings.optionAudio || !state.settings.autoReadOptions) && state.optionQueueRunning) {
     cancelOptionQueue();
     if (player.context?.kind === "option") player.stop();
+  }
+  if (state.stage && state.settings.displayMode !== "listening") {
+    state.questionUnlocked = true;
   }
   syncQuickControls();
   if (state.stage) renderStage();
@@ -845,7 +851,8 @@ async function mergeCloudProgress() {
     state.progress = saveProgress(mergeProgress(state.progress, merged.progress));
     state.settings = saveSettings(mergeSettings(state.settings, merged.settings, state.settings.uiLanguage));
     if (state.stage) state.cleared = state.progress.stageProgress[state.stage.id]?.cleared === true;
-    if ($("#sound-gate").open) state.pendingAutoplay = state.settings.autoplay;
+    state.settings.autoplay = false;
+    state.settings.muted = false;
     player.configure(state.settings);
     applyLanguage();
     renderCurrentScreen();
@@ -1015,13 +1022,4 @@ function captureDraftAnswers(form) {
     selected[question.id] = data.getAll(question.id).map(String);
   }
   if (Object.values(selected).some((values) => values.length)) state.draftAnswers = selected;
-}
-
-function isMostlyVisible(node) {
-  const rect = node.getBoundingClientRect();
-  return rect.top >= 0 && rect.bottom <= innerHeight;
-}
-
-function prefersReducedMotion() {
-  return globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
 }

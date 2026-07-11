@@ -1,7 +1,7 @@
 import {
   CONTENT_VERSION, DISPLAY_MODES, MEDAL_RANK, OPTION_LANGUAGES, PLAYBACK_RATES,
-  PROGRESS_KEY, SETTINGS_KEY, UI_LANGUAGES, clampNumber, isoNow, parseStageId, stageId
-} from "./constants.mjs?v=20260711-japanese-subtext-r11";
+  MODE_ONBOARDING_KEY, PROGRESS_KEY, SETTINGS_KEY, UI_LANGUAGES, clampNumber, isoNow, parseStageId, stageId
+} from "./constants.mjs?v=20260711-japanese-subtext-r14";
 
 export function defaultSettings(uiLanguage = "zh") {
   return {
@@ -14,7 +14,7 @@ export function defaultSettings(uiLanguage = "zh") {
     optionText: true,
     optionAudio: true,
     autoReadOptions: false,
-    autoplay: true,
+    autoplay: false,
     playbackRate: 1,
     muted: false,
     updatedAt: isoNow()
@@ -100,9 +100,9 @@ export function sanitizeSettings(input, languageHint = "zh") {
     optionText: input.optionText !== false,
     optionAudio: input.optionAudio !== false,
     autoReadOptions: input.autoReadOptions === true,
-    autoplay: input.autoplay !== false,
+    autoplay: false,
     playbackRate: rate,
-    muted: input.muted === true,
+    muted: false,
     updatedAt: validIso(input.updatedAt) || base.updatedAt
   };
 }
@@ -251,6 +251,22 @@ export function mergeSettings(localInput, cloudInput, languageHint = "zh") {
   const local = sanitizeSettings(localInput, languageHint);
   const cloud = sanitizeSettings(cloudInput, languageHint);
   return Date.parse(cloud.updatedAt) > Date.parse(local.updatedAt) ? cloud : local;
+}
+
+export function hasCompletedModeOnboarding(storage = localStorageOrNull()) {
+  try {
+    return storage?.getItem?.(MODE_ONBOARDING_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+export function markModeOnboardingComplete(storage = localStorageOrNull()) {
+  try {
+    storage?.setItem?.(MODE_ONBOARDING_KEY, "1");
+  } catch {
+    // First-use guidance is best-effort; denied storage must not block training.
+  }
 }
 
 export function nextStageId(id) {

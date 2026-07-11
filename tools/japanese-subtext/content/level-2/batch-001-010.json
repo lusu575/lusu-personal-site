@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "level": 2,
   "batch": "001-010",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-001",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 1,
       "jlptTarget": "N2",
@@ -242,9 +242,9 @@
               "en": "The current context strongly suggests that they switch between public and private roles."
             },
             "evidence": {
-              "ja": "line-001 と line-002 の敬語に対し、line-003 と line-004 では愛称と学生時代への言及があります。",
-              "zh": "line-001、line-002 使用敬语，而 line-003、line-004 出现昵称和学生时代的提及。",
-              "en": "Lines 001–002 are formal, whereas lines 003–004 use nicknames and mention their school days."
+              "ja": "1番目の台詞と2番目の台詞の敬語に対し、3番目の台詞と4番目の台詞では愛称と学生時代への言及があります。",
+              "zh": "第1句台词、第2句台词使用敬语，而第3句台词、第4句台词出现昵称和学生时代的提及。",
+              "en": "The first through second lines are formal, whereas the third through fourth lines use nicknames and mention their school days."
             },
             "nuance": {
               "ja": "話し方の変化は、親しさの消失ではなく、職場で立場を守る配慮とも読めます。",
@@ -269,13 +269,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "f4fb19c6d676b8ed59ba91d44a3b2bba6654a853c6a7f4f359de9d9d966e9b58"
+      "contentHash": "37f68ca76d052b9cd937b0e8d621b29ea9992f4531fdb3978c2db18ba680e168"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-002",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 2,
       "jlptTarget": "N2",
@@ -481,9 +481,9 @@
               "en": "In context, Eri is most likely expressing approval in an understated way."
             },
             "evidence": {
-              "ja": "line-003 でクリームをさらに求める行動が、line-002 の言葉以上の好意を示します。",
-              "zh": "line-003 主动再要奶油的行为，显示出比 line-002 字面更强的喜爱。",
-              "en": "Her request for more cream in line-003 shows more approval than the wording in line-002."
+              "ja": "3番目の台詞でクリームをさらに求める行動が、2番目の台詞の言葉以上の好意を示します。",
+              "zh": "第3句台词主动再要奶油的行为，显示出比第2句台词字面更强的喜爱。",
+              "en": "Her request for more cream in the third line shows more approval than the wording in the second line."
             },
             "nuance": {
               "ja": "控えめな否定形は、照れや評価を大げさにしない姿勢を表すことがあります。",
@@ -508,13 +508,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "0bf939e1d0478f2aa95440f718ace169dbb909d2ad55dd5a475a4511ff688d7e"
+      "contentHash": "e2ae63edb3938f9f51a48804daacdf51841e10c9a8525906068ad27619536896"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-003",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 3,
       "jlptTarget": "N2",
@@ -747,9 +747,9 @@
               "en": "In this context, it is most natural to read this as an indirect decline that ends the topic without commitment."
             },
             "evidence": {
-              "ja": "line-003 で期限と用紙を示されても、line-004 で受け取らず立ち去ります。",
-              "zh": "即使 line-003 提到截止日和表格，他仍在 line-004 拒收并离开。",
-              "en": "Even when offered the deadline and form in line-003, he refuses the form and leaves in line-004."
+              "ja": "3番目の台詞で期限と用紙を示されても、4番目の台詞で受け取らず立ち去ります。",
+              "zh": "即使第3句台词提到截止日和表格，他仍在第4句台词拒收并离开。",
+              "en": "Even when offered the deadline and form in the third line, he refuses the form and leaves in the fourth line."
             },
             "nuance": {
               "ja": "「考えておく」は本当の保留にも断りにもなるため、その後の行動が判断材料です。",
@@ -774,13 +774,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "7b0cf8cb38668cce66572af535745b646906af0a73695f33616047752cd403c4"
+      "contentHash": "6dcb30e8981b8e9531d3c4dfcf92292d579135d05f1526b757311ae43ff39a3e"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-004",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 4,
       "jlptTarget": "N2",
@@ -920,9 +920,9 @@
           "id": "q1",
           "type": "single",
           "prompt": {
-            "ja": "佳代の line-002 の目的として最も自然なのはどれですか。",
-            "zh": "佳代在 line-002 中最自然的目的是什么？",
-            "en": "What is Kayo's most likely purpose in line-002?"
+            "ja": "佳代の2番目の台詞の目的として最も自然なのはどれですか。",
+            "zh": "佳代在第2句台词中最自然的目的是什么？",
+            "en": "What is Kayo's most likely purpose in the second line?"
           },
           "options": [
             {
@@ -986,9 +986,9 @@
               "en": "In context, she is offering a courteous alternative rather than refusing lodging."
             },
             "evidence": {
-              "ja": "line-001 の満室説明に続き line-002 で離れを提案し、line-003 で健司が受け入れています。",
-              "zh": "line-001 说明客满，line-002 提出别馆，line-003 健司接受。",
-              "en": "Line-001 explains the vacancy problem, line-002 offers the annex, and line-003 accepts it."
+              "ja": "1番目の台詞の満室説明に続き2番目の台詞で離れを提案し、3番目の台詞で健司が受け入れています。",
+              "zh": "第1句台词说明客满，第2句台词提出别馆，第3句台词健司接受。",
+              "en": "The first line explains the vacancy problem, the second line offers the annex, and the third line accepts it."
             },
             "nuance": {
               "ja": "「よろしければ」は、代案を押し付けず相手の判断を尊重する接客表現です。",
@@ -1013,13 +1013,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "6a4ba29dfdfc72f64c31cbe4332c2d348c183f0f5702f8f91c77ec36a0f855e4"
+      "contentHash": "e62eb4b3b1cd2b2a3406b776fed7d316647a509fa796b49b277d0d70388af33f"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-005",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 5,
       "jlptTarget": "N2",
@@ -1271,9 +1271,9 @@
               "en": "In context, the silence is best read as collective avoidance of discomfort, not agreement."
             },
             "evidence": {
-              "ja": "line-002 と line-003 は冗談を評価せず、議題と資料だけに話を移しています。",
-              "zh": "line-002、line-003 没有评价玩笑，只把话题转向议程和资料。",
-              "en": "Lines 002–003 do not react to the joke and move directly to the agenda and materials."
+              "ja": "2番目の台詞と3番目の台詞は冗談を評価せず、議題と資料だけに話を移しています。",
+              "zh": "第2句台词、第3句台词没有评价玩笑，只把话题转向议程和资料。",
+              "en": "The second through third lines do not react to the joke and move directly to the agenda and materials."
             },
             "nuance": {
               "ja": "上司の発言には反論しにくいため、無反応が安全な選択になることがあります。",
@@ -1298,13 +1298,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "e693496cc849f3b1b6aa4014c448c3e50af53c10a908972a2b06b55400a1d682"
+      "contentHash": "9a766b4cc93332066b14db698cd416db78643ad1d70bd954853061955c0b5e68"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-006",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 6,
       "jlptTarget": "N2",
@@ -1539,9 +1539,9 @@
               "en": "He changes today's routine to avoid an effect on his sleep."
             },
             "evidence": {
-              "ja": "line-001 の「いつもの」と line-002 の変更、line-004 の睡眠への言及が a と c を支えます。",
-              "zh": "line-001 的“平时”、line-002 的改变和 line-004 对睡眠的提及共同支持 a、c。",
-              "en": "The usual routine in line-001, change in line-002, and sleep reference in line-004 support a and c."
+              "ja": "1番目の台詞の「いつもの」と2番目の台詞の変更、4番目の台詞の睡眠への言及が a と c を支えます。",
+              "zh": "第1句台词的“平时”、第2句台词的改变和第4句台词对睡眠的提及共同支持 a、c。",
+              "en": "The usual routine in the first line, change in the second line, and sleep reference in the fourth line support a and c."
             },
             "nuance": {
               "ja": "「眠れそう」は最近の不眠を確定しませんが、少なくともカフェインと今夜の睡眠を結び付けて考えています。",
@@ -1566,13 +1566,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "5bc64a495df3a6e4376ea8cd92abd5fa2d76eeae16d52c1820240092762203d0"
+      "contentHash": "8666ae7b014e6891457f69206c5e870fd0c904e43bbb5b88563cc1bfd4981c02"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-007",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 7,
       "jlptTarget": "N2",
@@ -1749,9 +1749,9 @@
           "id": "q1",
           "type": "single",
           "prompt": {
-            "ja": "line-001 の「皆さん、早いですね」の働きとして最も自然なのはどれですか。",
-            "zh": "line-001 中“大家真早啊”最自然的作用是什么？",
-            "en": "What is the most natural function of “Everyone is early” in line-001?"
+            "ja": "1番目の台詞の「皆さん、早いですね」の働きとして最も自然なのはどれですか。",
+            "zh": "第1句台词中“大家真早啊”最自然的作用是什么？",
+            "en": "What is the most natural function of “Everyone is early” in the first line?"
           },
           "options": [
             {
@@ -1815,9 +1815,9 @@
               "en": "In context, she is jokingly acknowledging her own lateness rather than blaming others."
             },
             "evidence": {
-              "ja": "line-001 の「お待たせしました」と line-004 の「次は私が先に」が本人の認識を示します。",
-              "zh": "line-001 的“久等了”和 line-004 的“下次我先到”表明她知道自己迟到。",
-              "en": "“Thank you for waiting” in line-001 and “I will arrive first next time” in line-004 show her awareness."
+              "ja": "1番目の台詞の「お待たせしました」と4番目の台詞の「次は私が先に」が本人の認識を示します。",
+              "zh": "第1句台词的“久等了”和第4句台词的“下次我先到”表明她知道自己迟到。",
+              "en": "“Thank you for waiting” in the first line and “I will arrive first next time” in the fourth line show her awareness."
             },
             "nuance": {
               "ja": "自分を直接責めず、視点を反転させた軽い皮肉で場を和らげています。",
@@ -1842,13 +1842,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "9719db2b2286a4310d5d353257cbeb52df3d655e14c3f6960ee6b587ce600947"
+      "contentHash": "ab0b9f361a17c7254899910dd313c5088947149f08b73d9314ae24d528bb88cb"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-008",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 8,
       "jlptTarget": "N2",
@@ -2025,9 +2025,9 @@
           "id": "q1",
           "type": "single",
           "prompt": {
-            "ja": "大河の line-004 の態度として最も自然なのはどれですか。",
-            "zh": "大河在 line-004 中最自然的态度是什么？",
-            "en": "What is the most natural interpretation of Taiga's attitude in line-004?"
+            "ja": "大河の4番目の台詞の態度として最も自然なのはどれですか。",
+            "zh": "大河在第4句台词中最自然的态度是什么？",
+            "en": "What is the most natural interpretation of Taiga's attitude in the fourth line?"
           },
           "options": [
             {
@@ -2092,9 +2092,9 @@
               "en": "In context, this is more naturally frustrated disengagement after repeated rejection than genuine permission."
             },
             "evidence": {
-              "ja": "line-001 の提案が line-002 と line-003 で退けられ、line-004 では参加自体をやめています。",
-              "zh": "line-001 的提案被 line-002、line-003 否定，line-004 中他连参与都停止了。",
-              "en": "His proposal in line-001 is rejected in lines 002–003, and in line-004 he withdraws participation altogether."
+              "ja": "1番目の台詞の提案が2番目の台詞と3番目の台詞で退けられ、4番目の台詞では参加自体をやめています。",
+              "zh": "第1句台词的提案被第2句台词、第3句台词否定，第4句台词中他连参与都停止了。",
+              "en": "His proposal in the first line is rejected in the second through third lines, and in the fourth line he withdraws participation altogether."
             },
             "nuance": {
               "ja": "「好きにして」は自由を認める表現ですが、対立の後では諦めやいら立ちを帯びます。",
@@ -2119,13 +2119,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "f9dc62d475dc4f649b4cd26a97808a717a31cf094e2f22ac903c86dfb5a0065d"
+      "contentHash": "06328eefb4a9379d73611be8fe18d859b204a7a69923d33eda69d68e93767e70"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-009",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 9,
       "jlptTarget": "N2",
@@ -2360,9 +2360,9 @@
               "en": "In context, he most likely expresses a wish to hear her voice without asking directly."
             },
             "evidence": {
-              "ja": "line-001 の用事の否定、line-002 後の長い間、line-003 の連絡への言及を line-004 の葵もそのように受け取ります。",
-              "zh": "line-001 否认有事、line-002 后的长停顿、line-003 提到联系，line-004 中葵也据此回应。",
-              "en": "The lack of an errand, long pause, and mention of contact in lines 001–003 are answered by Aoi's plan to call in line-004."
+              "ja": "1番目の台詞の用事の否定、2番目の台詞後の長い間、3番目の台詞の連絡への言及を4番目の台詞の葵もそのように受け取ります。",
+              "zh": "第1句台词否认有事、第2句台词后的长停顿、第3句台词提到联系，第4句台词中葵也据此回应。",
+              "en": "The lack of an errand, long pause, and mention of contact in the first through third lines are answered by Aoi's plan to call in the fourth line."
             },
             "nuance": {
               "ja": "「時間のある時に」は相手へ負担をかけないよう、希望を小さく見せる言い方です。",
@@ -2387,13 +2387,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "1b4b1abb151ae2d03f1747f712ae81d291c52e357f4acf0172bddcf6e1f650ec"
+      "contentHash": "4821564907aa8044e5c27bff1e70bdac3fa6d538d51bd8c0b3b8bc41e4ac75f0"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-010",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 10,
       "jlptTarget": "N2",
@@ -2561,9 +2561,9 @@
           "id": "q1",
           "type": "single",
           "prompt": {
-            "ja": "line-001 の莉子の発言が果たす役割として最も自然なのはどれですか。",
-            "zh": "莉子在 line-001 的话最自然地起到什么作用？",
-            "en": "What is the most natural function of Riko's remark in line-001?"
+            "ja": "1番目の台詞の莉子の発言が果たす役割として最も自然なのはどれですか。",
+            "zh": "莉子在第1句台词的话最自然地起到什么作用？",
+            "en": "What is the most natural function of Riko's remark in the first line?"
           },
           "options": [
             {
@@ -2628,9 +2628,9 @@
               "en": "In context, the observation opens the conversation and serves as a preface to offering help."
             },
             "evidence": {
-              "ja": "line-001 で手を伸ばし、line-003 で明示的に一緒に持つと申し出、line-004 で受け入れられます。",
-              "zh": "line-001 她伸手，line-003 明确提出一起提，line-004 对方接受。",
-              "en": "She reaches in line-001, explicitly offers to carry it in line-003, and is accepted in line-004."
+              "ja": "1番目の台詞で手を伸ばし、3番目の台詞で明示的に一緒に持つと申し出、4番目の台詞で受け入れられます。",
+              "zh": "第1句台词她伸手，第3句台词明确提出一起提，第4句台词对方接受。",
+              "en": "She reaches in the first line, explicitly offers to carry it in the third line, and is accepted in the fourth line."
             },
             "nuance": {
               "ja": "相手の困りごとを先に確認すると、いきなり鞄へ触れず丁寧に援助を申し出られます。",
@@ -2655,7 +2655,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "b189905eb358faa725d07e38efdf11f002c4f7c11631f8b8c7de0fb83c3ff166"
+      "contentHash": "140c44f8a44bf92a0b2e15724c61d5490b4480252e5dd1958f5a9ac3a0ed61c9"
     }
   ]
 }

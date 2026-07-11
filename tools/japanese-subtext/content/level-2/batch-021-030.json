@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "level": 2,
   "batch": "021-030",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-021",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 21,
       "jlptTarget": "N2",
@@ -307,9 +307,9 @@
               "en": "She asks the claimant to supply identifying details so the item is not returned to the wrong person."
             },
             "evidence": {
-              "ja": "line-002 で持ち手の特徴を求め、line-004 で情報を伏せる目的を説明し、line-005～006 で照合しています。",
-              "zh": "line-002 要求描述伞柄特征，line-004 说明隐去信息的目的，line-005～006 完成核对。",
-              "en": "Line 002 requests a handle detail, line 004 explains the withholding, and lines 005–006 perform the match."
+              "ja": "2番目の台詞で持ち手の特徴を求め、4番目の台詞で情報を伏せる目的を説明し、5番目の台詞～006 で照合しています。",
+              "zh": "第2句台词要求描述伞柄特征，第4句台词说明隐去信息的目的，第5句台词～006 完成核对。",
+              "en": "The second line requests a handle detail, the fourth line explains the withholding, and the fifth through sixth lines perform the match."
             },
             "nuance": {
               "ja": "本物と違う色を放送するのではなく、特徴を公開しないことで、持ち主が聞き逃す危険を避けながら確認できます。",
@@ -334,13 +334,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "72949d5907c011ac1700caf9c0c1c818db1b6136d7330fd28c8a227de61a81d2"
+      "contentHash": "4d66c7501cbae9167354d10888134d69a3c39441b75346c0710c2a9bd98411f6"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-022",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 22,
       "jlptTarget": "N2",
@@ -571,9 +571,9 @@
           "id": "q1",
           "type": "single",
           "prompt": {
-            "ja": "奈津美主任の line-005 の発言が持つ主な含みは何ですか。",
-            "zh": "奈津美主任在 line-005 的话主要有什么含义？",
-            "en": "What is the main implication of Natsumi’s statement in line 005?"
+            "ja": "奈津美主任の5番目の台詞の発言が持つ主な含みは何ですか。",
+            "zh": "奈津美主任在第5句台词的话主要有什么含义？",
+            "en": "What is the main implication of Natsumi’s statement in the fifth line?"
           },
           "options": [
             {
@@ -639,9 +639,9 @@
               "en": "It is not merely encouragement; it marks the warning-disregarding choice and its consequences as Daichi’s responsibility."
             },
             "evidence": {
-              "ja": "line-003 の再警告、line-005 の「その判断」と「結果も共有」、line-006 の記録への言及が責任移転を支えます。",
-              "zh": "line-003 的再次警告、line-005 的“你的判断”与“共享结果”、line-006 的记录说明共同支持责任转移。",
-              "en": "The renewed warning in line 003, “your judgment” and outcome reporting in line 005, and the record in line 006 support transfer of accountability."
+              "ja": "3番目の台詞の再警告、5番目の台詞の「その判断」と「結果も共有」、6番目の台詞の記録への言及が責任移転を支えます。",
+              "zh": "第3句台词的再次警告、第5句台词的“你的判断”与“共享结果”、第6句台词的记录说明共同支持责任转移。",
+              "en": "The renewed warning in the third line, “your judgment” and outcome reporting in the fifth line, and the record in the sixth line support transfer of accountability."
             },
             "nuance": {
               "ja": "「お任せします」は通常信頼も示しますが、先行する警告と結果報告の要求により、ここでは冷えた含みを持ちます。",
@@ -725,9 +725,9 @@
               "en": "This creates a record connecting who decided with what happened afterward."
             },
             "evidence": {
-              "ja": "line-005 内の二つの表現が、判断主体と結果追跡をそれぞれ明確にします。",
-              "zh": "line-005 中的两处表达分别明确了决策主体与结果追踪。",
-              "en": "The two phrases in line 005 identify the decision-maker and establish outcome tracking."
+              "ja": "5番目の台詞内の二つの表現が、判断主体と結果追跡をそれぞれ明確にします。",
+              "zh": "第5句台词中的两处表达分别明确了决策主体与结果追踪。",
+              "en": "The two phrases in the fifth line identify the decision-maker and establish outcome tracking."
             },
             "nuance": {
               "ja": "芽衣の存在は記録を見た第三者を示しますが、それ自体は責任移転の言語的手段ではありません。",
@@ -752,13 +752,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "ca7b7b3e1b3d46428893783b3cc9d1655b91814f2d7088c1e9732f9e64948961"
+      "contentHash": "9d1129cac111a08852c3d781e2ebbcfb1bccb65749e45320d64277d21133d7b4"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-023",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 23,
       "jlptTarget": "N2",
@@ -1056,9 +1056,9 @@
               "en": "Without saying “prohibited” directly, she presents the preferred behavior and discourages indoor photography."
             },
             "evidence": {
-              "ja": "line-005 のカメラをしまう解釈に対し、line-006 で「ご協力」と応じるため、その理解が共有されています。",
-              "zh": "春在 line-005 理解为收起相机，绫在 line-006 回以“感谢配合”，说明双方理解一致。",
-              "en": "Haru interprets it as putting the camera away in line 005, and Aya calls that cooperation in line 006."
+              "ja": "5番目の台詞のカメラをしまう解釈に対し、6番目の台詞で「ご協力」と応じるため、その理解が共有されています。",
+              "zh": "春在第5句台词理解为收起相机，绫在第6句台词回以“感谢配合”，说明双方理解一致。",
+              "en": "Haru interprets it as putting the camera away in the fifth line, and Aya calls that cooperation in the sixth line."
             },
             "nuance": {
               "ja": "実際に全面禁止か、一部作品のみ禁止かはこの会話だけでは確定しません。",
@@ -1083,13 +1083,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "4715b2f70d314f5caf604c7d1ee81ab48be4fec81fefd47bd09862f378bcc050"
+      "contentHash": "82d3408042c83f61a4bc87449be41775aaca06b53403a62afddb9e352e56f258"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-024",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 24,
       "jlptTarget": "N2",
@@ -1395,9 +1395,9 @@
               "en": "By locating the cause in the device, he downplays how his own choice contributed to the failure."
             },
             "evidence": {
-              "ja": "line-004 の時刻付き操作記録と line-005 の目的説明は、音量変更が本人の意図的操作だったことを示します。",
-              "zh": "line-004 带时间的操作记录与 line-005 的动机说明表明，这是本人有意调整。",
-              "en": "The timestamped action in line 004 and motive in line 005 show that the adjustment was deliberate."
+              "ja": "4番目の台詞の時刻付き操作記録と5番目の台詞の目的説明は、音量変更が本人の意図的操作だったことを示します。",
+              "zh": "第4句台词带时间的操作记录与第5句台词的动机说明表明，这是本人有意调整。",
+              "en": "The timestamped action in the fourth line and motive in the fifth line show that the adjustment was deliberate."
             },
             "nuance": {
               "ja": "誠司が警告音を聞かなかったこと自体は真でも、その原因を端末故障とする部分が支持されません。",
@@ -1415,9 +1415,9 @@
           "id": "q2",
           "type": "single",
           "prompt": {
-            "ja": "香奈の line-006 の発言が示す態度として最も適切なのはどれですか。",
-            "zh": "香奈在 line-006 的话表现出什么态度？",
-            "en": "What attitude does Kana’s statement in line 006 best convey?"
+            "ja": "香奈の6番目の台詞の発言が示す態度として最も適切なのはどれですか。",
+            "zh": "香奈在第6句台词的话表现出什么态度？",
+            "en": "What attitude does Kana’s statement in the sixth line best convey?"
           },
           "options": [
             {
@@ -1481,9 +1481,9 @@
               "en": "She avoids further humiliating Seiji and redirects the group toward a preventive procedure."
             },
             "evidence": {
-              "ja": "line-006 の「次から」と「確認しよう」が、過去の責任追及ではなく未来の共同対策を示します。",
-              "zh": "line-006 的“下次起”与“一起确认吧”指向未来共同措施，而非追究过去。",
-              "en": "“Next time” and “let’s check” in line 006 frame a shared future measure rather than retrospective punishment."
+              "ja": "6番目の台詞の「次から」と「確認しよう」が、過去の責任追及ではなく未来の共同対策を示します。",
+              "zh": "第6句台词的“下次起”与“一起确认吧”指向未来共同措施，而非追究过去。",
+              "en": "“Next time” and “let’s check” in the sixth line frame a shared future measure rather than retrospective punishment."
             },
             "nuance": {
               "ja": "誠司の責任を否定したわけではなく、認めた上で実務的な解決へ進んでいます。",
@@ -1508,13 +1508,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "e1efab2545987defca11e78b05038ddb593c0f59fd896145b022a4f9410c9276"
+      "contentHash": "9e1aa16efaf1b0a6fddcf3a78ce9e24fa151e4c359f1f07e677d958dd0fe82ef"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-025",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 25,
       "jlptTarget": "N2",
@@ -1814,9 +1814,9 @@
               "en": "She recasts a budget concern as appetite while protecting the group’s mood."
             },
             "evidence": {
-              "ja": "line-005 の「気にせず」と line-006 の共通費提案が、本人が費用を直接言わずに気にしていた読みを支えます。",
-              "zh": "line-005 的“别在意”与 line-006 的共同费用提议支持她未明说却在意费用的理解。",
-              "en": "“Do not worry about me” in line 005 and the shared-fund proposal in line 006 support an unspoken cost concern."
+              "ja": "5番目の台詞の「気にせず」と6番目の台詞の共通費提案が、本人が費用を直接言わずに気にしていた読みを支えます。",
+              "zh": "第5句台词的“别在意”与第6句台词的共同费用提议支持她未明说却在意费用的理解。",
+              "en": "“Do not worry about me” in the fifth line and the shared-fund proposal in the sixth line support an unspoken cost concern."
             },
             "nuance": {
               "ja": "本当に昼食が遅かった可能性もありますが、値段を見る設定と周囲の反応が予算の含みを強めます。",
@@ -1841,13 +1841,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "f535c45a4c0356dd70e844d5d5fa1a92c28c02dbcac4e3bf62666e30ca63c414"
+      "contentHash": "ad919ef4b811a0e025ccc989be243bb025c62ab6f7426c32c45a9895cc1ddf6f"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-026",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 26,
       "jlptTarget": "N2",
@@ -2136,9 +2136,9 @@
               "en": "His purpose is to separate his usual personal purchase from the work item and claim only the batteries."
             },
             "evidence": {
-              "ja": "line-002 が乾電池の用途、line-004～006 が別会計と乾電池だけの経費申請を明示します。",
-              "zh": "line-002 说明电池用途，line-004～006 明确了分开结账并只报销电池。",
-              "en": "Line 002 gives the batteries' work use, while lines 004–006 explicitly separate and expense only that item."
+              "ja": "2番目の台詞が乾電池の用途、4番目の台詞～006 が別会計と乾電池だけの経費申請を明示します。",
+              "zh": "第2句台词说明电池用途，第4句台词～006 明确了分开结账并只报销电池。",
+              "en": "The second line gives the batteries' work use, while the fourth through sixth lines explicitly separate and expense only that item."
             },
             "nuance": {
               "ja": "品名が分かるだけでなく個人分と会計を分けることで、申請対象がより明確になります。",
@@ -2222,9 +2222,9 @@
               "en": "She prepares documentation that makes the work-only purchase easy for the company to verify."
             },
             "evidence": {
-              "ja": "line-004 の会社提出、line-005 の別会計、line-006 の乾電池だけという範囲が対応します。",
-              "zh": "line-004 的公司提交、line-005 的分开结账与 line-006 的仅电池范围彼此对应。",
-              "en": "The company submission in line 004, separate transaction in line 005, and batteries-only scope in line 006 align."
+              "ja": "4番目の台詞の会社提出、5番目の台詞の別会計、6番目の台詞の乾電池だけという範囲が対応します。",
+              "zh": "第4句台词的公司提交、第5句台词的分开结账与第6句台词的仅电池范围彼此对应。",
+              "en": "The company submission in the fourth line, separate transaction in the fifth line, and batteries-only scope in the sixth line align."
             },
             "nuance": {
               "ja": "店員が会社規程を知っている必要はなく、私費との混同を避ける一般的な配慮です。",
@@ -2249,13 +2249,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "497bd2f5539d691d92f1f329fb0b321b58f116e4cbb6c3eab5156af62d6d3a86"
+      "contentHash": "2b40a8be6c1e73c88ea6669fa036f1d29edfcfdc01ff0a0af17400f40855e4f3"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-027",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 27,
       "jlptTarget": "N2",
@@ -2546,9 +2546,9 @@
               "en": "This is not a loss report; it is a precautionary notice that an exposed hiding place was changed."
             },
             "evidence": {
-              "ja": "line-003 が変更理由、line-004 が新しい場所の存在、line-005 が紛失ではないという理解を示します。",
-              "zh": "line-003 给出更换原因，line-004 表明存在新位置，line-005 明确认识到不是丢失。",
-              "en": "Line 003 gives the reason, line 004 establishes a new location, and line 005 explicitly rejects loss."
+              "ja": "3番目の台詞が変更理由、4番目の台詞が新しい場所の存在、5番目の台詞が紛失ではないという理解を示します。",
+              "zh": "第3句台词给出更换原因，第4句台词表明存在新位置，第5句台词明确认识到不是丢失。",
+              "en": "The third line gives the reason, the fourth line establishes a new location, and the fifth line explicitly rejects loss."
             },
             "nuance": {
               "ja": "「あの人」が誰か、悪意があったかは不明なので、盗難までは推測できません。",
@@ -2573,13 +2573,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "16fd3587f4fda38a8f0e3fdbf627321f3e312043383509f1ad315e92376b3f47"
+      "contentHash": "a4cf759de572e029f0078b74324d40a85eea6fb9581f53c8b811e86a3eee3223"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-028",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 28,
       "jlptTarget": "N2",
@@ -2878,9 +2878,9 @@
               "en": "He keeps personal disappointment in the background and chooses a community benefit that sustains the public mood."
             },
             "evidence": {
-              "ja": "line-003 で準備の負担が示され、line-004 の「でも」と line-005 の未来志向が感情の切り替えを示します。",
-              "zh": "line-003 显示准备成本，line-004 的“不过”与 line-005 的未来导向显示情绪转向。",
-              "en": "Line 003 establishes his investment, while “still” in line 004 and the future focus in line 005 show reframing."
+              "ja": "3番目の台詞で準備の負担が示され、4番目の台詞の「でも」と5番目の台詞の未来志向が感情の切り替えを示します。",
+              "zh": "第3句台词显示准备成本，第4句台词的“不过”与第5句台词的未来导向显示情绪转向。",
+              "en": "The third line establishes his investment, while “still” in the fourth line and the future focus in the fifth line show reframing."
             },
             "nuance": {
               "ja": "前向きな言葉は失望がないことを意味せず、複数の感情を同時に抱えている可能性があります。",
@@ -2965,9 +2965,9 @@
               "en": "He experiences the event from two roles: festival participant and farmer."
             },
             "evidence": {
-              "ja": "line-003 が損失側、line-004 が利益側、line-006 が両方をまとめた評価を示します。",
-              "zh": "line-003 展示损失面，line-004 展示受益面，line-006 对两者作出综合评价。",
-              "en": "Line 003 shows the cost, line 004 the benefit, and line 006 summarizes the mixed emotional reading."
+              "ja": "3番目の台詞が損失側、4番目の台詞が利益側、6番目の台詞が両方をまとめた評価を示します。",
+              "zh": "第3句台词展示损失面，第4句台词展示受益面，第6句台词对两者作出综合评价。",
+              "en": "The third line shows the cost, the fourth line the benefit, and the sixth line summarizes the mixed emotional reading."
             },
             "nuance": {
               "ja": "「安堵」は明言されませんが、必要な雨を肯定する穏やかな言い方から慎重に推測できます。",
@@ -2992,13 +2992,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "845b79f7c85e39485945a619b30ce24051bac51396c3be544b6b8f1e4acbec46"
+      "contentHash": "41fe300022d7054fb303e5f656cfe1da04838d6e0a1954430db2e6f5780cb2e5"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-029",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 29,
       "jlptTarget": "N2",
@@ -3280,9 +3280,9 @@
               "en": "Among unstable dream data, the best clue connects both to a real routine and to an external response."
             },
             "evidence": {
-              "ja": "line-004 の習慣との一致と line-005 の本物の音が独立して六時半を支え、line-006 が結論をまとめます。",
-              "zh": "line-004 与日常习惯一致，line-005 出现真实声音，两项独立证据支持六点半，line-006 总结结论。",
-              "en": "Routine consistency in line 004 and the real sound in line 005 independently support six thirty; line 006 summarizes it."
+              "ja": "4番目の台詞の習慣との一致と5番目の台詞の本物の音が独立して六時半を支え、6番目の台詞が結論をまとめます。",
+              "zh": "第4句台词与日常习惯一致，第5句台词出现真实声音，两项独立证据支持六点半，第6句台词总结结论。",
+              "en": "Routine consistency in the fourth line and the real sound in the fifth line independently support six thirty; the sixth line summarizes it."
             },
             "nuance": {
               "ja": "六時半が夢の中の現在時刻とは限らず、現実へ接続する記憶上の基準点として機能しています。",
@@ -3307,13 +3307,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "3930e369cab2b3155d8ef17d44f34d292d8192e7308059fb697d80299960a482"
+      "contentHash": "378dc513bf2c32e0bcd2af5c061455e876247fa229fdf6b867508950093dcd0d"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-030",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 30,
       "jlptTarget": "N2",
@@ -3603,9 +3603,9 @@
               "en": "Handwriting serves as a sender trace, pointing to a second person who can act across loops."
             },
             "evidence": {
-              "ja": "line-002 の変化、line-004 の筆跡一致、line-005 の反復記憶が独立して第二の記憶保持者を支えます。",
-              "zh": "line-002 的变化、line-004 的字迹匹配、line-005 的重复记忆，分别支持第二位记忆保持者。",
-              "en": "The change in line 002, handwriting match in line 004, and recurring memory in line 005 independently support another rememberer."
+              "ja": "2番目の台詞の変化、4番目の台詞の筆跡一致、5番目の台詞の反復記憶が独立して第二の記憶保持者を支えます。",
+              "zh": "第2句台词的变化、第4句台词的字迹匹配、第5句台词的重复记忆，分别支持第二位记忆保持者。",
+              "en": "The change in the second line, handwriting match in the fourth line, and recurring memory in the fifth line independently support another rememberer."
             },
             "nuance": {
               "ja": "春本人が意識的に書いたのか、夢を通じて無意識に影響したのかはまだ確定しません。",
@@ -3689,9 +3689,9 @@
               "en": "To develop the second-rememberer hypothesis, Nana must separate the scope of Haru’s memory from the timing of his intervention."
             },
             "evidence": {
-              "ja": "line-005 は紙の記憶と文言の知識にずれがあるため、記憶が完全ではないという情報差を示します。",
-              "zh": "line-005 显示对纸的记忆与对文字内容的知识之间存在差距，说明记忆并不完整。",
-              "en": "Line 005 reveals a gap between remembering the paper and knowing its words, showing that his memory is incomplete."
+              "ja": "5番目の台詞は紙の記憶と文言の知識にずれがあるため、記憶が完全ではないという情報差を示します。",
+              "zh": "第5句台词显示对纸的记忆与对文字内容的知识之间存在差距，说明记忆并不完整。",
+              "en": "The fifth line reveals a gap between remembering the paper and knowing its words, showing that his memory is incomplete."
             },
             "nuance": {
               "ja": "春を即座にメモの作者と断定せず、意識的な記憶、夢、無意識の行動を分けて確認するのが安全です。",
@@ -3716,7 +3716,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "297b0a095d57a7c76dee2d18fb4364da5489fd9f70ab19602a27de51701e76b5"
+      "contentHash": "af4ca8be05d00efff793e4583210078c47da2a15d37d88647a4feeb7b11ae670"
     }
   ]
 }

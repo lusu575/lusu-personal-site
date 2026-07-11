@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "level": 2,
   "batch": "031-040",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-031",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 31,
       "jlptTarget": "N2",
@@ -368,9 +368,9 @@
               "en": "In this context, the reviewer is likely preserving courtesy while avoiding a commitment."
             },
             "evidence": {
-              "ja": "line-005 の抽象的な検討表現に対し、line-007 では審査役側からの条件付き連絡だけが示されています。",
-              "zh": "line-005 只作抽象表态，line-007 则只承诺在有需要时由评审方联系。",
-              "en": "Line 005 offers only an abstract review, while line 007 limits follow-up to contact initiated if a need arises."
+              "ja": "5番目の台詞の抽象的な検討表現に対し、7番目の台詞では審査役側からの条件付き連絡だけが示されています。",
+              "zh": "第5句台词只作抽象表态，第7句台词则只承诺在有需要时由评审方联系。",
+              "en": "The fifth line offers only an abstract review, while the seventh line limits follow-up to contact initiated if a need arises."
             },
             "nuance": {
               "ja": "「前向きに」は必ずしも承認を意味せず、制度的な場では否定を和らげる表現にもなります。",
@@ -395,13 +395,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "e4f0ca43b531292a71f8b5266b106a7d682c8e6e159664628604abaf4945859e"
+      "contentHash": "9cc578ea823931433e0c4da79a9fddcffe9f2ed30df46b8da26b707c3474f6f1"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-032",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 32,
       "jlptTarget": "N2",
@@ -716,9 +716,9 @@
               "en": "The context suggests he is trying to remain civil while frustration from waiting begins to show."
             },
             "evidence": {
-              "ja": "line-001 の「ご確認いただけますでしょうか」が、line-007 では「確認してもらえます？」へ簡略化されています。",
-              "zh": "line-001 的“能否请您确认”到 line-007 变成更直接的“能确认吗”。",
-              "en": "The highly formal request in line 001 is reduced to the more direct form in line 007."
+              "ja": "1番目の台詞の「ご確認いただけますでしょうか」が、7番目の台詞では「確認してもらえます？」へ簡略化されています。",
+              "zh": "第1句台词的“能否请您确认”到第7句台词变成更直接的“能确认吗”。",
+              "en": "The highly formal request in the first line is reduced to the more direct form in the seventh line."
             },
             "nuance": {
               "ja": "敬語の簡略化だけで怒りを断定はできませんが、反復と「今すぐ」が重なるため、いら立ちの読みが強まります。",
@@ -802,9 +802,9 @@
               "en": "By lowering the formality, he may be adding pressure that he is unwilling to wait longer."
             },
             "evidence": {
-              "ja": "line-001、line-003、line-007 を順に比べると、依頼の敬語と長さが段階的に縮んでいます。",
-              "zh": "依次比较 line-001、line-003、line-007，可以看到敬语程度和句子长度逐步下降。",
-              "en": "Comparing lines 001, 003, and 007 shows a stepwise reduction in honorific complexity and length."
+              "ja": "1番目の台詞、3番目の台詞、7番目の台詞を順に比べると、依頼の敬語と長さが段階的に縮んでいます。",
+              "zh": "依次比较第1句台词、第3句台词、第7句台词，可以看到敬语程度和句子长度逐步下降。",
+              "en": "Comparing the first, third, and seventh lines shows a stepwise reduction in honorific complexity and length."
             },
             "nuance": {
               "ja": "親しい相手への自然なくだけ方とは異なり、ここでは同じ未解決事項を繰り返す中で起きた変化です。",
@@ -829,13 +829,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "330b5948e450fa998543794bb15d6e1a0a77d2df2f45529582bc35de018babf0"
+      "contentHash": "fe8a6bb1dddbb54b77babc3b27a683e8687673f8238d2e6e0b1f55761aaa5589"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-033",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 33,
       "jlptTarget": "N2",
@@ -1197,9 +1197,9 @@
               "en": "She clearly intends to help with planning, while cautiously avoiding a commitment to attend."
             },
             "evidence": {
-              "ja": "line-006 の切符の提案にも由美は答えず、line-008 で咲が改めて参加可否の返答を求めています。",
-              "zh": "由美也没有回应 line-006 的购票提议，line-008 中咲再次要求她回复能否参加。",
-              "en": "Yumi does not answer the ticket offer in line 006, and Saki asks again for an attendance decision in line 008."
+              "ja": "6番目の台詞の切符の提案にも由美は答えず、8番目の台詞で咲が改めて参加可否の返答を求めています。",
+              "zh": "由美也没有回应第6句台词的购票提议，第8句台词中咲再次要求她回复能否参加。",
+              "en": "Yumi does not answer the ticket offer in the sixth line, and Saki asks again for an attendance decision in the eighth line."
             },
             "nuance": {
               "ja": "役立つ情報を出すことと、自分が参加することは別です。選択的な返答は保留を示しますが、拒否の断定まではできません。",
@@ -1224,13 +1224,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "5571a00a0a0ae22153699d5432892ad3f8566707184782fc4a7430686e2ef152"
+      "contentHash": "13e30f34116f5b9941d01d3f4aadd563e1ac73dc68628f6f2f15faad365ae454"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-034",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 34,
       "jlptTarget": "N2",
@@ -1556,9 +1556,9 @@
               "en": "To avoid handing it to the wrong person, the clerk distinguishes possibility from confirmation."
             },
             "evidence": {
-              "ja": "line-002 の「よく似た」と line-004 の「同じ物とは申し上げられない」、line-006 の特徴照合が根拠です。",
-              "zh": "依据是 line-002 的“很相似”、line-004 的“不能说是同一把”，以及 line-006 的特征核对。",
-              "en": "The evidence is “very similar” in line 002, the refusal to call it identical in line 004, and the feature check in line 006."
+              "ja": "2番目の台詞の「よく似た」と4番目の台詞の「同じ物とは申し上げられない」、6番目の台詞の特徴照合が根拠です。",
+              "zh": "依据是第2句台词的“很相似”、第4句台词的“不能说是同一把”，以及第6句台词的特征核对。",
+              "en": "The evidence is “very similar” in the second line, the refusal to call it identical in the fourth line, and the feature check in the sixth line."
             },
             "nuance": {
               "ja": "接客語の「でしたら」「申し上げられません」は、情報不足を丁寧に限定する働きをします。",
@@ -1642,9 +1642,9 @@
               "en": "Nao is expected to provide concrete identifying details rather than rush to collect the item."
             },
             "evidence": {
-              "ja": "line-006 の依頼に対し、line-007 で星形の傷を答えている流れが直接の根拠です。",
-              "zh": "line-006 提出核对要求，line-007 回答星形划痕，这一衔接是直接依据。",
-              "en": "The direct evidence is the request in line 006 followed by Nao’s star-shaped-scratch description in line 007."
+              "ja": "6番目の台詞の依頼に対し、7番目の台詞で星形の傷を答えている流れが直接の根拠です。",
+              "zh": "第6句台词提出核对要求，第7句台词回答星形划痕，这一衔接是直接依据。",
+              "en": "The direct evidence is the request in the sixth line followed by Nao’s star-shaped-scratch description in the seventh line."
             },
             "nuance": {
               "ja": "特徴は所有を完全に証明するとは限りませんが、窓口での照合を進めるための適切な情報です。",
@@ -1669,13 +1669,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "93e7eac19e450bc2df7ce91641687e9d72c80da2671024eaee58d4078a77e7e8"
+      "contentHash": "18848ae3835b634d1a54ad4a363b5baf09bd371370985ccefaaf9749ea212f38"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-035",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 35,
       "jlptTarget": "N2",
@@ -2027,9 +2027,9 @@
               "en": "This consistently explains the two-meal record as takeaway rather than a concealed companion."
             },
             "evidence": {
-              "ja": "line-004 の注文理由と、line-006・line-007 の容器と箸という独立した確認が一致します。",
-              "zh": "line-004 的点餐理由，与 line-006、line-007 中外带盒和筷子的独立说明相互吻合。",
-              "en": "The reason in line 004 matches the independent details about the container and chopsticks in lines 006–007."
+              "ja": "4番目の台詞の注文理由と、6番目の台詞・7番目の台詞の容器と箸という独立した確認が一致します。",
+              "zh": "第4句台词的点餐理由，与第6句台词、第7句台词中外带盒和筷子的独立说明相互吻合。",
+              "en": "The reason in the fourth line matches the independent details about the container and chopsticks in the sixth through seventh lines."
             },
             "nuance": {
               "ja": "伝票の数量だけなら同伴も考えられますが、持ち帰り処理の具体的な痕跡がその疑いを弱めます。",
@@ -2054,13 +2054,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "0a1b41fbe70724a89b07bc28bc1179366aa0a6458567a0b113cb714c5f479ab0"
+      "contentHash": "501815233c3a9af363c92ec6fe0eba97461d5ad07fc22e5cc68fe69a6da1f34a"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-036",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 36,
       "jlptTarget": "N2",
@@ -2373,9 +2373,9 @@
               "en": "It is not rejecting the desired result; policy restricts only the route of AI acting on the user’s behalf."
             },
             "evidence": {
-              "ja": "line-002 の拒否理由は、line-004 の「本人による確認が必要」で具体化されています。",
-              "zh": "line-002 的拒绝理由由 line-004 的“需要本人确认”具体说明。",
-              "en": "The refusal in line 002 is clarified by the account-holder-confirmation requirement in line 004."
+              "ja": "2番目の台詞の拒否理由は、4番目の台詞の「本人による確認が必要」で具体化されています。",
+              "zh": "第2句台词的拒绝理由由第4句台词的“需要本人确认”具体说明。",
+              "en": "The refusal in the second line is clarified by the account-holder-confirmation requirement in the fourth line."
             },
             "nuance": {
               "ja": "「できません」は機能不足にも聞こえますが、続く説明から今回は権限・確認手続きの制約だと分かります。",
@@ -2470,9 +2470,9 @@
               "en": "It follows policy while helping the user reach the goal safely on their own."
             },
             "evidence": {
-              "ja": "line-005 の操作手順と line-007 の確認注意が、実用的な支援を示します。",
-              "zh": "line-005 的操作步骤与 line-007 的核对提醒体现了实际帮助。",
-              "en": "The instructions in line 005 and the safety check in line 007 demonstrate practical assistance."
+              "ja": "5番目の台詞の操作手順と7番目の台詞の確認注意が、実用的な支援を示します。",
+              "zh": "第5句台词的操作步骤与第7句台词的核对提醒体现了实际帮助。",
+              "en": "The instructions in the fifth line and the safety check in the seventh line demonstrate practical assistance."
             },
             "nuance": {
               "ja": "直接実行しないことは非協力とは限りません。代替手段の質が、支援意図を判断する手掛かりになります。",
@@ -2497,13 +2497,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "c4ce64ed1ebd34369097ff78c15ce4fcb56ea75056aa0d974c3ad92069ef6f06"
+      "contentHash": "ec0378fd1c3c9dd460866ac582333b37ec537dd6e3efbae10a67e40bb50069c5"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-037",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 37,
       "jlptTarget": "N2",
@@ -2858,9 +2858,9 @@
               "en": "The chronology and missing explanation suggest that public relations may be presenting an unplanned event as planned."
             },
             "evidence": {
-              "ja": "line-001〜line-004 では停止、調査、発表の順です。line-007 の疑問にも line-008 で回答がありません。",
-              "zh": "line-001 至 line-004 显示停电、调查、声明的顺序；line-007 的疑问在 line-008 中也未获答复。",
-              "en": "Lines 001–004 establish outage, investigation, then announcement; the concern in line 007 remains unanswered in line 008."
+              "ja": "1番目の台詞〜4番目の台詞では停止、調査、発表の順です。7番目の台詞の疑問にも8番目の台詞で回答がありません。",
+              "zh": "第1句台词至第4句台词显示停电、调查、声明的顺序；第7句台词的疑问在第8句台词中也未获答复。",
+              "en": "The first through fourth lines establish outage, investigation, then announcement; the concern in the seventh line remains unanswered in the eighth line."
             },
             "nuance": {
               "ja": "「可能性がある」とするのが重要です。事前通知が見つかっていないだけで、本当に内部予定があった可能性も残ります。",
@@ -2885,13 +2885,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "dcf4b879c17a606d6cf41a978fda8930127fc437ab9d1dd8729489b5dd4fb68f"
+      "contentHash": "95405307989bec3ced9c7a36c488ca7b071dbfc12bbdcb594837fab1c521c5a3"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-038",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 38,
       "jlptTarget": "N2",
@@ -3217,9 +3217,9 @@
               "en": "The apparent compliment is inverted to convey criticism and exasperation about the lateness."
             },
             "evidence": {
-              "ja": "line-002 の三時間という事実と、line-005 のドワーフの反応、line-006 の不可能な要求が皮肉を明確にします。",
-              "zh": "line-002 的三小时、line-005 矮人的反应和 line-006 不可能的要求共同明确了讽刺。",
-              "en": "The three-hour delay in line 002, Gan’s response in line 005, and the impossible request in line 006 make the sarcasm clear."
+              "ja": "2番目の台詞の三時間という事実と、5番目の台詞のドワーフの反応、6番目の台詞の不可能な要求が皮肉を明確にします。",
+              "zh": "第2句台词的三小时、第5句台词矮人的反应和第6句台词不可能的要求共同明确了讽刺。",
+              "en": "The three-hour delay in the second line, Gan’s response in the fifth line, and the impossible request in the sixth line make the sarcasm clear."
             },
             "nuance": {
               "ja": "「ですね」は丁寧で柔らかく聞こえますが、事実との強い矛盾によって評価が反転します。",
@@ -3303,9 +3303,9 @@
               "en": "The speaker relies on the listener recognizing the contradiction to understand the nonliteral criticism."
             },
             "evidence": {
-              "ja": "line-002 の「三時間」と line-003 の「時間に正確」が直接対立します。",
-              "zh": "line-002 的“三小时”和 line-003 的“守时”直接冲突。",
-              "en": "“Three hours” in line 002 directly conflicts with “punctual” in line 003."
+              "ja": "2番目の台詞の「三時間」と3番目の台詞の「時間に正確」が直接対立します。",
+              "zh": "第2句台词的“三小时”和第3句台词的“守时”直接冲突。",
+              "en": "“Three hours” in the second line directly conflicts with “punctual” in the third line."
             },
             "nuance": {
               "ja": "逆向きの時計は言い訳の面白さを加えますが、皮肉成立の中心は遅刻と賞賛の反対関係です。",
@@ -3330,13 +3330,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "ad526275cccfdebb4c023dbf76b750386122f563a500c3ed5d70c7aafed2d462"
+      "contentHash": "511eba6f3e0fe29bae96fda04d37ecc3a525b59a9c539840bbd4e31d47d1adfe"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-039",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 39,
       "jlptTarget": "N2",
@@ -3680,9 +3680,9 @@
               "en": "Contrary to the threat suggested by her appearance and props, her visit is a simple cooking consultation."
             },
             "evidence": {
-              "ja": "line-006 の「作り方だけ」と line-007 の呪文書を鍋敷きにする発言が、非魔法的な目的を強く支えます。",
-              "zh": "line-006 的“只想学做法”和 line-007 把咒语书当锅垫，强烈支持非魔法目的。",
-              "en": "“Only the recipe” in line 006 and using the spellbook as a trivet in line 007 strongly support the nonmagical motive."
+              "ja": "6番目の台詞の「作り方だけ」と7番目の台詞の呪文書を鍋敷きにする発言が、非魔法的な目的を強く支えます。",
+              "zh": "第6句台词的“只想学做法”和第7句台词把咒语书当锅垫，强烈支持非魔法目的。",
+              "en": "“Only the recipe” in the sixth line and using the spellbook as a trivet in the seventh line strongly support the nonmagical motive."
             },
             "nuance": {
               "ja": "「だけ」は目的を限定し、聞き手が想像した危険な可能性を明確に退けています。",
@@ -3707,13 +3707,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "651f5efabf560c736ad33d77f9aa28cbd2f53c1512fb098bc447407244bf3a28"
+      "contentHash": "05a32f43c31514d69a1cb370052e4f320338d8a0d7f7c672f3e5511d50cda4fc"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L2-040",
-      "revision": 1,
+      "revision": 2,
       "level": 2,
       "stage": 40,
       "jlptTarget": "N2",
@@ -4038,9 +4038,9 @@
               "en": "The strange content comes not from anything supernatural but from a daytime message played at night by mistake."
             },
             "evidence": {
-              "ja": "line-005 の予約表示と line-006 の担当者による夜間予約の説明が、発信源と原因を結びます。",
-              "zh": "line-005 的预约显示与 line-006 的夜间误设说明，把来源和原因连接起来。",
-              "en": "The schedule display in line 005 and the mistaken nighttime scheduling in line 006 connect source and cause."
+              "ja": "5番目の台詞の予約表示と6番目の台詞の担当者による夜間予約の説明が、発信源と原因を結びます。",
+              "zh": "第5句台词的预约显示与第6句台词的夜间误设说明，把来源和原因连接起来。",
+              "en": "The schedule display in the fifth line and the mistaken nighttime scheduling in the sixth line connect source and cause."
             },
             "nuance": {
               "ja": "「ようです」としているため、フロント係も記録から推定しており、担当者本人への確認前である点には注意が必要です。",
@@ -4124,9 +4124,9 @@
               "en": "This record indicates a pre-scheduled recording rather than someone speaking live at that moment."
             },
             "evidence": {
-              "ja": "line-005 の表示内容を、line-006 の「自動案内」「予約」が直接補強しています。",
-              "zh": "line-005 的显示内容由 line-006 的“自动通知”“预约”直接加强。",
-              "en": "The display in line 005 is directly reinforced by “automated message” and “scheduled” in line 006."
+              "ja": "5番目の台詞の表示内容を、6番目の台詞の「自動案内」「予約」が直接補強しています。",
+              "zh": "第5句台词的显示内容由第6句台词的“自动通知”“预约”直接加强。",
+              "en": "The display in the fifth line is directly reinforced by “automated message” and “scheduled” in the sixth line."
             },
             "nuance": {
               "ja": "深夜や在室という状況は内容の誤りを示しますが、自動再生そのものを特定するのは時刻記録です。",
@@ -4151,7 +4151,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "28732984ff1d53c504d3d8753d54b142d870d75de8570cfcb476bc2bbc88a3d3"
+      "contentHash": "74fab965f8a2f9b27771469bb995c73c3320e7f2c55777e1b6d3e1498c9a6bfc"
     }
   ]
 }

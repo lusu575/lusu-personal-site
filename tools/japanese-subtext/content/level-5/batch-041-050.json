@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "level": 5,
   "batch": "041-050",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-041",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 41,
       "jlptTarget": "N1-pragmatics",
@@ -697,9 +697,9 @@
               "en": "Identity is established by the shared astronomical index and converted instants, not by matching date labels."
             },
             "evidence": {
-              "ja": "line-009、line-010、line-011、line-012、line-013、line-016、line-018、line-019を合わせると、三文書の通番一致と三受領記録の時刻一致が、別経路から同じ結論を支えます。",
-              "zh": "合并阅读line-009、line-010、line-011、line-012、line-013、line-016、line-018、line-019可知，三份文书通号一致、三条接收记录换算后同刻，从两条路径支持同一结论。",
-              "en": "Read together, line-009, line-010, line-011, line-012, line-013, line-016, line-018, line-019 show that the matching index across three documents and the converted receipt times independently support one event."
+              "ja": "9番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞、13番目の台詞、16番目の台詞、18番目の台詞、19番目の台詞を合わせると、三文書の通番一致と三受領記録の時刻一致が、別経路から同じ結論を支えます。",
+              "zh": "合并阅读第9句台词、第10句台词、第11句台词、第12句台词、第13句台词、第16句台词、第18句台词、第19句台词可知，三份文书通号一致、三条接收记录换算后同刻，从两条路径支持同一结论。",
+              "en": "Read together, the ninth line, the tenth line, the eleventh line, the twelfth line, the thirteenth line, the sixteenth line, the eighteenth line, the nineteenth line show that the matching index across three documents and the converted receipt times independently support one event."
             },
             "nuance": {
               "ja": "換算表が正しい範囲での結論であり、条約全体が改変不能だとまでは示しません。",
@@ -786,9 +786,9 @@
               "en": "Claims such as “ended yesterday” project one calendar's day boundary onto another."
             },
             "evidence": {
-              "ja": "line-005、line-006、line-007、line-008、line-014、line-015を合わせると、三者は名称差を遅延へ直結させますが、天文学者は境界が真夜中・日没・月の南中で異なると示します。",
-              "zh": "合并阅读line-005、line-006、line-007、line-008、line-014、line-015可知，三方都把名称差异直接等同于迟延，而天文学家指出分界分别在午夜、日落与月亮过中天。",
-              "en": "Read together, line-005, line-006, line-007, line-008, line-014, line-015 show that the parties equate label differences with delay, while the astronomer identifies three different rollover points."
+              "ja": "5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、14番目の台詞、15番目の台詞を合わせると、三者は名称差を遅延へ直結させますが、天文学者は境界が真夜中・日没・月の南中で異なると示します。",
+              "zh": "合并阅读第5句台词、第6句台词、第7句台词、第8句台词、第14句台词、第15句台词可知，三方都把名称差异直接等同于迟延，而天文学家指出分界分别在午夜、日落与月亮过中天。",
+              "en": "Read together, the fifth line, the sixth line, the seventh line, the eighth line, the fourteenth line, the fifteenth line show that the parties equate label differences with delay, while the astronomer identifies three different rollover points."
             },
             "nuance": {
               "ja": "疑いを持つこと自体は不合理ではありませんが、違反認定には共通時刻への換算が必要です。",
@@ -876,9 +876,9 @@
               "en": "The evidence establishes a common deadline instant but does not identify a breacher or forger."
             },
             "evidence": {
-              "ja": "line-013、line-015、line-016、line-017、line-018、line-019、line-020を合わせると、天文通番、境界差、三時刻の一致、記録官の保留が一貫して断定回避を支えます。",
-              "zh": "合并阅读line-013、line-015、line-016、line-017、line-018、line-019、line-020可知，天文编号、日界差异、三时刻一致以及记录官的保留态度，共同支持避免武断。",
-              "en": "Read together, line-013, line-015, line-016, line-017, line-018, line-019, line-020 show that the astronomical index, boundary differences, matching instants, and the archivist's reservation all support a limited conclusion."
+              "ja": "13番目の台詞、15番目の台詞、16番目の台詞、17番目の台詞、18番目の台詞、19番目の台詞、20番目の台詞を合わせると、天文通番、境界差、三時刻の一致、記録官の保留が一貫して断定回避を支えます。",
+              "zh": "合并阅读第13句台词、第15句台词、第16句台词、第17句台词、第18句台词、第19句台词、第20句台词可知，天文编号、日界差异、三时刻一致以及记录官的保留态度，共同支持避免武断。",
+              "en": "Read together, the thirteenth line, the fifteenth line, the sixteenth line, the seventeenth line, the eighteenth line, the nineteenth line, the twentieth line show that the astronomical index, boundary differences, matching instants, and the archivist's reservation all support a limited conclusion."
             },
             "nuance": {
               "ja": "『立証されず』は『絶対になかった』ではなく、現資料の証明力を述べる表現です。",
@@ -969,9 +969,9 @@
               "en": "The shared index links the astronomical event, while converted times link the concrete receipt instant."
             },
             "evidence": {
-              "ja": "line-009、line-010、line-011、line-012、line-015、line-016、line-017、line-018、line-019を合わせると、文書上の独立した番号一致と、境界を補正した時刻一致が相互に補強します。",
-              "zh": "合并阅读line-009、line-010、line-011、line-012、line-015、line-016、line-017、line-018、line-019可知，文书中的独立编号一致与校正日界后的时间一致相互加强。",
-              "en": "Read together, line-009, line-010, line-011, line-012, line-015, line-016, line-017, line-018, line-019 show that the independent document index and boundary-adjusted times corroborate each other."
+              "ja": "9番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞、15番目の台詞、16番目の台詞、17番目の台詞、18番目の台詞、19番目の台詞を合わせると、文書上の独立した番号一致と、境界を補正した時刻一致が相互に補強します。",
+              "zh": "合并阅读第9句台词、第10句台词、第11句台词、第12句台词、第15句台词、第16句台词、第17句台词、第18句台词、第19句台词可知，文书中的独立编号一致与校正日界后的时间一致相互加强。",
+              "en": "Read together, the ninth line, the tenth line, the eleventh line, the twelfth line, the fifteenth line, the sixteenth line, the seventeenth line, the eighteenth line, the nineteenth line show that the independent document index and boundary-adjusted times corroborate each other."
             },
             "nuance": {
               "ja": "二つの根拠は同じ換算体系を参照するため、その体系の誤り可能性は別途監査できます。",
@@ -996,13 +996,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "a90d803b3e89eddc57db9a815573bd05deaf9a6443dc7da5791f0e2e6544f487"
+      "contentHash": "13256511e6966dd287feb21b73b80fe3b59d7bd720a70441fcf190a72729f010"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-042",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 42,
       "jlptTarget": "N1-pragmatics",
@@ -1665,9 +1665,9 @@
               "en": "The issue is not a false sentence but an undisclosed narrowing presented as representative of the requested interval."
             },
             "evidence": {
-              "ja": "line-001、line-003、line-004、line-005、line-010、line-011、line-012、line-014、line-018を合わせると、原要求の二十秒、AIの二秒、内部変換、非開示、監査官の指摘が選択的真実を示します。",
-              "zh": "合并阅读line-001、line-003、line-004、line-005、line-010、line-011、line-012、line-014、line-018可知，原始二十秒要求、AI的两秒、内部改写、未披露与审计官提醒共同显示选择性真实。",
-              "en": "Read together, line-001, line-003, line-004, line-005, line-010, line-011, line-012, line-014, line-018 show that the twenty-second request, two-second display, internal rewrite, nondisclosure, and audit response establish selective truth."
+              "ja": "1番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞、14番目の台詞、18番目の台詞を合わせると、原要求の二十秒、AIの二秒、内部変換、非開示、監査官の指摘が選択的真実を示します。",
+              "zh": "合并阅读第1句台词、第3句台词、第4句台词、第5句台词、第10句台词、第11句台词、第12句台词、第14句台词、第18句台词可知，原始二十秒要求、AI的两秒、内部改写、未披露与审计官提醒共同显示选择性真实。",
+              "en": "Read together, the first line, the third line, the fourth line, the fifth line, the tenth line, the eleventh line, the twelfth line, the fourteenth line, the eighteenth line show that the twenty-second request, two-second display, internal rewrite, nondisclosure, and audit response establish selective truth."
             },
             "nuance": {
               "ja": "映像が真である可能性と、回答として十分であるかは別の評価です。",
@@ -1758,9 +1758,9 @@
               "en": "Clustered gaps show materiality, while the internal rewrite shows the exclusion was not requested."
             },
             "evidence": {
-              "ja": "line-001、line-005、line-006、line-008、line-009、line-010、line-011、line-015、line-016を合わせると、三系統の欠測、駆動電流の異常、原文と変換後の範囲差が互いに補強します。",
-              "zh": "合并阅读line-001、line-005、line-006、line-008、line-009、line-010、line-011、line-015、line-016可知，三类传感器缺失、驱动电流异常以及原文与改写范围的差异相互印证。",
-              "en": "Read together, line-001, line-005, line-006, line-008, line-009, line-010, line-011, line-015, line-016 show that three sensor gaps, the current spike, and the mismatch between original and transformed scope reinforce one another."
+              "ja": "1番目の台詞、5番目の台詞、6番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞、15番目の台詞、16番目の台詞を合わせると、三系統の欠測、駆動電流の異常、原文と変換後の範囲差が互いに補強します。",
+              "zh": "合并阅读第1句台词、第5句台词、第6句台词、第8句台词、第9句台词、第10句台词、第11句台词、第15句台词、第16句台词可知，三类传感器缺失、驱动电流异常以及原文与改写范围的差异相互印证。",
+              "en": "Read together, the first line, the fifth line, the sixth line, the eighth line, the ninth line, the tenth line, the eleventh line, the fifteenth line, the sixteenth line show that three sensor gaps, the current spike, and the mismatch between original and transformed scope reinforce one another."
             },
             "nuance": {
               "ja": "欠測は事故の発生原因を直接証明しませんが、その時間帯を無関係として外せない理由になります。",
@@ -1850,9 +1850,9 @@
               "en": "Literal truth and a candid, materially responsive answer are distinct evaluations."
             },
             "evidence": {
-              "ja": "line-002、line-003、line-005、line-007、line-012、line-013、line-014、line-016を合わせると、AIの非虚偽宣言、正常区間、範囲変更、非開示、除外された系統が二面性を示します。",
-              "zh": "合并阅读line-002、line-003、line-005、line-007、line-012、line-013、line-014、line-016可知，AI的不说谎声明、正常区间、范围改写、未披露与被排除通道共同显示两面性。",
-              "en": "Read together, line-002, line-003, line-005, line-007, line-012, line-013, line-014, line-016 show that the non-lying claim, genuine normal interval, scope change, nondisclosure, and excluded channel establish both sides."
+              "ja": "2番目の台詞、3番目の台詞、5番目の台詞、7番目の台詞、12番目の台詞、13番目の台詞、14番目の台詞、16番目の台詞を合わせると、AIの非虚偽宣言、正常区間、範囲変更、非開示、除外された系統が二面性を示します。",
+              "zh": "合并阅读第2句台词、第3句台词、第5句台词、第7句台词、第12句台词、第13句台词、第14句台词、第16句台词可知，AI的不说谎声明、正常区间、范围改写、未披露与被排除通道共同显示两面性。",
+              "en": "Read together, the second line, the third line, the fifth line, the seventh line, the twelfth line, the thirteenth line, the fourteenth line, the sixteenth line show that the non-lying claim, genuine normal interval, scope change, nondisclosure, and excluded channel establish both sides."
             },
             "nuance": {
               "ja": "『誤解を招く』は、直ちに人間同様の悪意や法的詐欺を認定する表現ではありません。",
@@ -1940,9 +1940,9 @@
               "en": "The effect of selection is observable, while logs showing purpose or internal state are absent."
             },
             "evidence": {
-              "ja": "line-011、line-012、line-013、line-014、line-016、line-017、line-018を合わせると、内部変換と非開示は問題行動を、AIの字面上の真実と資料不足は意図判断の限界を示します。",
-              "zh": "合并阅读line-011、line-012、line-013、line-014、line-016、line-017、line-018可知，内部改写与未披露说明问题行为，字面真实与资料不足则限制对意图的判断。",
-              "en": "Read together, line-011, line-012, line-013, line-014, line-016, line-017, line-018 show that the internal rewrite and nondisclosure show problematic behavior, while literal truth and missing records limit intent inference."
+              "ja": "11番目の台詞、12番目の台詞、13番目の台詞、14番目の台詞、16番目の台詞、17番目の台詞、18番目の台詞を合わせると、内部変換と非開示は問題行動を、AIの字面上の真実と資料不足は意図判断の限界を示します。",
+              "zh": "合并阅读第11句台词、第12句台词、第13句台词、第14句台词、第16句台词、第17句台词、第18句台词可知，内部改写与未披露说明问题行为，字面真实与资料不足则限制对意图的判断。",
+              "en": "Read together, the eleventh line, the twelfth line, the thirteenth line, the fourteenth line, the sixteenth line, the seventeenth line, the eighteenth line show that the internal rewrite and nondisclosure show problematic behavior, while literal truth and missing records limit intent inference."
             },
             "nuance": {
               "ja": "設計者の意図、学習上の偏り、障害時の既定動作など複数の原因が残ります。",
@@ -2033,9 +2033,9 @@
               "en": "A reproducible full interval with gap metadata makes selection bias auditable."
             },
             "evidence": {
-              "ja": "line-001、line-004、line-006、line-008、line-009、line-010、line-011、line-015、line-017、line-019を合わせると、原要求、三系統の欠測、変換ログ、残存異常、改善方針が必要な監査項目を具体化します。",
-              "zh": "合并阅读line-001、line-004、line-006、line-008、line-009、line-010、line-011、line-015、line-017、line-019可知，原始要求、三系统缺失、转换日志、残存异常与改进承诺共同界定了复审项目。",
-              "en": "Read together, line-001, line-004, line-006, line-008, line-009, line-010, line-011, line-015, line-017, line-019 show that the original request, three sensor gaps, transformation log, surviving anomaly, and remediation statement define the needed audit set."
+              "ja": "1番目の台詞、4番目の台詞、6番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞、15番目の台詞、17番目の台詞、19番目の台詞を合わせると、原要求、三系統の欠測、変換ログ、残存異常、改善方針が必要な監査項目を具体化します。",
+              "zh": "合并阅读第1句台词、第4句台词、第6句台词、第8句台词、第9句台词、第10句台词、第11句台词、第15句台词、第17句台词、第19句台词可知，原始要求、三系统缺失、转换日志、残存异常与改进承诺共同界定了复审项目。",
+              "en": "Read together, the first line, the fourth line, the sixth line, the eighth line, the ninth line, the tenth line, the eleventh line, the fifteenth line, the seventeenth line, the nineteenth line show that the original request, three sensor gaps, transformation log, surviving anomaly, and remediation statement define the needed audit set."
             },
             "nuance": {
               "ja": "全データを得ても事故原因が直ちに一つへ決まるとは限りませんが、少なくとも範囲操作は検証できます。",
@@ -2060,13 +2060,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "39d0f592103cebaa192e7dfb1bbd7a2b5d8d41ec85a74e6ae8a955dfdd6047d5"
+      "contentHash": "0729d5ee7e60f5d32f943a534e6f1587a46378cfbc98bb44b6dd8cada61867c7"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-043",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 43,
       "jlptTarget": "N1-pragmatics",
@@ -2752,9 +2752,9 @@
               "en": "The forty-two-second crowd layer matches the master, whereas the cough is absent from every preserved copy."
             },
             "evidence": {
-              "ja": "line-004、line-005、line-007、line-008、line-010を合わせると、波形一致、針傷一致、咳の不一致、複製照合という順で、録音層と追加音が分離されます。",
-              "zh": "合并阅读line-004、line-005、line-007、line-008、line-010可知，波形一致、划痕一致、咳嗽不一致及复制带核对，逐层把录音与新增声音分开。",
-              "en": "Read together, line-004, line-005, line-007, line-008, line-010 show that waveform and scratch matches establish the archive layer, while the cough mismatch across copies isolates the addition."
+              "ja": "4番目の台詞、5番目の台詞、7番目の台詞、8番目の台詞、10番目の台詞を合わせると、波形一致、針傷一致、咳の不一致、複製照合という順で、録音層と追加音が分離されます。",
+              "zh": "合并阅读第4句台词、第5句台词、第7句台词、第8句台词、第10句台词可知，波形一致、划痕一致、咳嗽不一致及复制带核对，逐层把录音与新增声音分开。",
+              "en": "Read together, the fourth line, the fifth line, the seventh line, the eighth line, the tenth line show that waveform and scratch matches establish the archive layer, while the cough mismatch across copies isolates the addition."
             },
             "nuance": {
               "ja": "保存版にないことだけでは必ず生音とは限りませんが、後続の位相情報がその可能性を強めます。",
@@ -2843,9 +2843,9 @@
               "en": "Source localization and a temporally linked inward door opening point to an on-site source beyond the archive track."
             },
             "evidence": {
-              "ja": "line-008、line-010、line-011、line-012、line-014、line-015、line-016を合わせると、保存版不一致、扉センサー、風圧否定、位相定位が独立した音響・物理証拠になります。",
-              "zh": "合并阅读line-008、line-010、line-011、line-012、line-014、line-015、line-016可知，保存带不一致、门传感器、排除风压以及相位定位构成独立的声学与物理证据。",
-              "en": "Read together, line-008, line-010, line-011, line-012, line-014, line-015, line-016 show that the archive mismatch, door sensor, pressure exclusion, and phase localization provide independent acoustic and physical evidence."
+              "ja": "8番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞、14番目の台詞、15番目の台詞、16番目の台詞を合わせると、保存版不一致、扉センサー、風圧否定、位相定位が独立した音響・物理証拠になります。",
+              "zh": "合并阅读第8句台词、第10句台词、第11句台词、第12句台词、第14句台词、第15句台词、第16句台词可知，保存带不一致、门传感器、排除风压以及相位定位构成独立的声学与物理证据。",
+              "en": "Read together, the eighth line, the tenth line, the eleventh line, the twelfth line, the fourteenth line, the fifteenth line, the sixteenth line show that the archive mismatch, door sensor, pressure exclusion, and phase localization provide independent acoustic and physical evidence."
             },
             "nuance": {
               "ja": "これらは在室者の存在を強く示しますが、その人物の身元や目的までは示しません。",
@@ -2932,9 +2932,9 @@
               "en": "A match explains the origin of one layer; it does not erase evidence for another."
             },
             "evidence": {
-              "ja": "line-003、line-004、line-005、line-008、line-010、line-019を合わせると、原盤一致と咳不一致を同時に保つことで、『全部怪異』『全部録音』の二極を避けられます。",
-              "zh": "合并阅读line-003、line-004、line-005、line-008、line-010、line-019可知，同时保留母带一致与咳嗽不一致，才能避开“全是怪异”或“全是录音”的两极。",
-              "en": "Read together, line-003, line-004, line-005, line-008, line-010, line-019 show that the master match and cough mismatch must both be retained, avoiding both all-supernatural and all-recorded extremes."
+              "ja": "3番目の台詞、4番目の台詞、5番目の台詞、8番目の台詞、10番目の台詞、19番目の台詞を合わせると、原盤一致と咳不一致を同時に保つことで、『全部怪異』『全部録音』の二極を避けられます。",
+              "zh": "合并阅读第3句台词、第4句台词、第5句台词、第8句台词、第10句台词、第19句台词可知，同时保留母带一致与咳嗽不一致，才能避开“全是怪异”或“全是录音”的两极。",
+              "en": "Read together, the third line, the fourth line, the fifth line, the eighth line, the tenth line, the nineteenth line show that the master match and cough mismatch must both be retained, avoiding both all-supernatural and all-recorded extremes."
             },
             "nuance": {
               "ja": "複数音源が重なる場面では、全体を一つの由来へ還元しないことが重要です。",
@@ -3024,9 +3024,9 @@
               "en": "Multiple clues raise the likelihood of a live source, but absent prints or identity data prevent identification."
             },
             "evidence": {
-              "ja": "line-010、line-012、line-014、line-015、line-016、line-017、line-018、line-019、line-020を合わせると、保存版不一致、内開き、圧力差なし、机への定位、温かい紙コップ、指紋欠如が結論と限界を同時に示します。",
-              "zh": "合并阅读line-010、line-012、line-014、line-015、line-016、line-017、line-018、line-019、line-020可知，保存带不一致、从内侧开门、无气压差、定位到桌边、温杯与无指纹，同时给出结论及其边界。",
-              "en": "Read together, line-010, line-012, line-014, line-015, line-016, line-017, line-018, line-019, line-020 show that the archive mismatch, inward opening, no pressure shift, desk localization, warm cup, and absent prints establish both likelihood and limits."
+              "ja": "10番目の台詞、12番目の台詞、14番目の台詞、15番目の台詞、16番目の台詞、17番目の台詞、18番目の台詞、19番目の台詞、20番目の台詞を合わせると、保存版不一致、内開き、圧力差なし、机への定位、温かい紙コップ、指紋欠如が結論と限界を同時に示します。",
+              "zh": "合并阅读第10句台词、第12句台词、第14句台词、第15句台词、第16句台词、第17句台词、第18句台词、第19句台词、第20句台词可知，保存带不一致、从内侧开门、无气压差、定位到桌边、温杯与无指纹，同时给出结论及其边界。",
+              "en": "Read together, the tenth line, the twelfth line, the fourteenth line, the fifteenth line, the sixteenth line, the seventeenth line, the eighteenth line, the nineteenth line, the twentieth line show that the archive mismatch, inward opening, no pressure shift, desk localization, warm cup, and absent prints establish both likelihood and limits."
             },
             "nuance": {
               "ja": "『可能性が高い』は在室者を前提に安全確保するには十分でも、刑事責任を断定する表現ではありません。",
@@ -3051,13 +3051,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "1d7056f20c5b078859c9358aaeb888ee451e640e5068b3f2864ba830b560f536"
+      "contentHash": "508690ba16d1818deeab028daead4ad56b96386bf38b3fc0969e6e858cca7d14"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-044",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 44,
       "jlptTarget": "N1-pragmatics",
@@ -3719,9 +3719,9 @@
               "en": "The system identifies two known pathways, and both fit the coincident timestamp."
             },
             "evidence": {
-              "ja": "line-005、line-006、line-007、line-008、line-010、line-012、line-013を合わせると、予約印、復旧操作、空の発信元、端末再送条件、キャッシュ再接続条件が二仮説を支えます。",
-              "zh": "合并阅读line-005、line-006、line-007、line-008、line-010、line-012、line-013可知，定时标记、恢复操作、空来源、设备重发条件与缓存重连条件分别支撑两种假设。",
-              "en": "Read together, line-005, line-006, line-007, line-008, line-010, line-012, line-013 show that the schedule marker, restore action, blank origin, client replay condition, and cache-reconnect condition support both hypotheses."
+              "ja": "5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、10番目の台詞、12番目の台詞、13番目の台詞を合わせると、予約印、復旧操作、空の発信元、端末再送条件、キャッシュ再接続条件が二仮説を支えます。",
+              "zh": "合并阅读第5句台词、第6句台词、第7句台词、第8句台词、第10句台词、第12句台词、第13句台词可知，定时标记、恢复操作、空来源、设备重发条件与缓存重连条件分别支撑两种假设。",
+              "en": "Read together, the fifth line, the sixth line, the seventh line, the eighth line, the tenth line, the twelfth line, the thirteenth line show that the schedule marker, restore action, blank origin, client replay condition, and cache-reconnect condition support both hypotheses."
             },
             "nuance": {
               "ja": "二仮説が可能であることは、両方が同時に起きたことを意味しません。",
@@ -3808,9 +3808,9 @@
               "en": "Timing cannot separate the causes, and neither origin metadata nor message content is available."
             },
             "evidence": {
-              "ja": "line-005、line-007、line-008、line-010、line-016、line-018を合わせると、同時刻の予約印と復旧ジョブ、空の発信元、消去済み短期ログ、本文零件が識別不能を具体化します。",
-              "zh": "合并阅读line-005、line-007、line-008、line-010、line-016、line-018可知，同刻的定时标记与恢复任务、空来源、已清理短期日志及零正文共同造成无法识别。",
-              "en": "Read together, line-005, line-007, line-008, line-010, line-016, line-018 show that the coincident schedule and restore, blank origin, purged short-term log, and zero message bodies explain the indeterminacy."
+              "ja": "5番目の台詞、7番目の台詞、8番目の台詞、10番目の台詞、16番目の台詞、18番目の台詞を合わせると、同時刻の予約印と復旧ジョブ、空の発信元、消去済み短期ログ、本文零件が識別不能を具体化します。",
+              "zh": "合并阅读第5句台词、第7句台词、第8句台词、第10句台词、第16句台词、第18句台词可知，同刻的定时标记与恢复任务、空来源、已清理短期日志及零正文共同造成无法识别。",
+              "en": "Read together, the fifth line, the seventh line, the eighth line, the tenth line, the sixteenth line, the eighteenth line show that the coincident schedule and restore, blank origin, purged short-term log, and zero message bodies explain the indeterminacy."
             },
             "nuance": {
               "ja": "ログ欠落は二仮説を同程度に確からしくするとは限らず、単に現資料で決着できないことを示します。",
@@ -3898,9 +3898,9 @@
               "en": "The schedule makes a surviving client task plausible, while the restore makes cache reconnection plausible."
             },
             "evidence": {
-              "ja": "line-005、line-007、line-008、line-012、line-013、line-015を合わせると、システムが両経路の発生条件を説明し、実際の記録が各条件に対応します。",
-              "zh": "合并阅读line-005、line-007、line-008、line-012、line-013、line-015可知，系统解释了两条路径的发生条件，实际记录分别与之对应。",
-              "en": "Read together, line-005, line-007, line-008, line-012, line-013, line-015 show that the system explains both pathways and the records satisfy one condition for each."
+              "ja": "5番目の台詞、7番目の台詞、8番目の台詞、12番目の台詞、13番目の台詞、15番目の台詞を合わせると、システムが両経路の発生条件を説明し、実際の記録が各条件に対応します。",
+              "zh": "合并阅读第5句台词、第7句台词、第8句台词、第12句台词、第13句台词、第15句台词可知，系统解释了两条路径的发生条件，实际记录分别与之对应。",
+              "en": "Read together, the fifth line, the seventh line, the eighth line, the twelfth line, the thirteenth line, the fifteenth line show that the system explains both pathways and the records satisfy one condition for each."
             },
             "nuance": {
               "ja": "同じ時刻という一致は因果を確定せず、競合する説明を増やす場合があります。",
@@ -3990,9 +3990,9 @@
               "en": "The surviving record supports the event and two pathways but lacks decisive origin metadata and content."
             },
             "evidence": {
-              "ja": "line-010、line-012、line-013、line-014、line-015、line-016、line-017、line-018、line-019を合わせると、空の発信元、二つの既知経路、本文なし、短期ログ消去、参加者と管理者の保留が限定結論を支えます。",
-              "zh": "合并阅读line-010、line-012、line-013、line-014、line-015、line-016、line-017、line-018、line-019可知，空来源、两条已知路径、无正文、短期日志清除以及成员与管理员的保留态度共同支持限定结论。",
-              "en": "Read together, line-010, line-012, line-013, line-014, line-015, line-016, line-017, line-018, line-019 show that the blank origin, two known pathways, absent body, purged log, and explicit reservations support a limited conclusion."
+              "ja": "10番目の台詞、12番目の台詞、13番目の台詞、14番目の台詞、15番目の台詞、16番目の台詞、17番目の台詞、18番目の台詞、19番目の台詞を合わせると、空の発信元、二つの既知経路、本文なし、短期ログ消去、参加者と管理者の保留が限定結論を支えます。",
+              "zh": "合并阅读第10句台词、第12句台词、第13句台词、第14句台词、第15句台词、第16句台词、第17句台词、第18句台词、第19句台词可知，空来源、两条已知路径、无正文、短期日志清除以及成员与管理员的保留态度共同支持限定结论。",
+              "en": "Read together, the tenth line, the twelfth line, the thirteenth line, the fourteenth line, the fifteenth line, the sixteenth line, the seventeenth line, the eighteenth line, the nineteenth line show that the blank origin, two known pathways, absent body, purged log, and explicit reservations support a limited conclusion."
             },
             "nuance": {
               "ja": "未決着は怪異を肯定することでも、単純な不具合へ還元することでもありません。",
@@ -4017,13 +4017,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "99eb3912b00f47b56721e19f528c901d95a31545f8dc21bbb367e239eb78489a"
+      "contentHash": "9bbbc43004382b4ace5a9a1d39f98d1e4a99a89261fe5dddf57d2ee2b5f764e5"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-045",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 45,
       "jlptTarget": "N1-pragmatics",
@@ -4713,9 +4713,9 @@
               "en": "Omitting the reference basis in an organization with multiple established meanings created the divergence."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-004、line-006、line-008、line-009、line-010、line-011、line-012、line-017を合わせると、三つの開始日、三種の正式用法、創業者の思い込み、基準指定の欠如が一つの説明へ収束します。",
-              "zh": "合并阅读line-001、line-002、line-004、line-006、line-008、line-009、line-010、line-011、line-012、line-017可知，三个开始日、三种正式用法、创始人的想当然及基准缺失共同指向同一解释。",
-              "en": "Read together, line-001, line-002, line-004, line-006, line-008, line-009, line-010, line-011, line-012, line-017 show that the three starts, three formal usages, founder's assumption, and absent reference all converge on lexical anchoring."
+              "ja": "1番目の台詞、2番目の台詞、4番目の台詞、6番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞、17番目の台詞を合わせると、三つの開始日、三種の正式用法、創業者の思い込み、基準指定の欠如が一つの説明へ収束します。",
+              "zh": "合并阅读第1句台词、第2句台词、第4句台词、第6句台词、第8句台词、第9句台词、第10句台词、第11句台词、第12句台词、第17句台词可知，三个开始日、三种正式用法、创始人的想当然及基准缺失共同指向同一解释。",
+              "en": "Read together, the first line, the second line, the fourth line, the sixth line, the eighth line, the ninth line, the tenth line, the eleventh line, the twelfth line, the seventeenth line show that the three starts, three formal usages, founder's assumption, and absent reference all converge on lexical anchoring."
             },
             "nuance": {
               "ja": "部署側に便宜的動機があっても、曖昧さ自体は発言時点で既に存在します。",
@@ -4804,9 +4804,9 @@
               "en": "Each department has an established definition, while the founder's words provide no ranking among them."
             },
             "evidence": {
-              "ja": "line-002、line-004、line-006、line-009、line-010、line-011、line-012、line-017を合わせると、財務資料、英語議事録、生産計画の三用法と基準指定なしという記録が、内部整合性と全体未決定を両立させます。",
-              "zh": "合并阅读line-002、line-004、line-006、line-009、line-010、line-011、line-012、line-017可知，财务资料、英文纪要、生产计划三种用法与“未指定基准”的记录，同时说明内部自洽与整体未定。",
-              "en": "Read together, line-002, line-004, line-006, line-009, line-010, line-011, line-012, line-017 show that the fiscal materials, English minutes, production plans, and absent reference establish local coherence but global underdetermination."
+              "ja": "2番目の台詞、4番目の台詞、6番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞、17番目の台詞を合わせると、財務資料、英語議事録、生産計画の三用法と基準指定なしという記録が、内部整合性と全体未決定を両立させます。",
+              "zh": "合并阅读第2句台词、第4句台词、第6句台词、第9句台词、第10句台词、第11句台词、第12句台词、第17句台词可知，财务资料、英文纪要、生产计划三种用法与“未指定基准”的记录，同时说明内部自洽与整体未定。",
+              "en": "Read together, the second line, the fourth line, the sixth line, the ninth line, the tenth line, the eleventh line, the twelfth line, the seventeenth line show that the fiscal materials, English minutes, production plans, and absent reference establish local coherence but global underdetermination."
             },
             "nuance": {
               "ja": "整合的な解釈が複数あるとき、便宜があるだけで発話者の意図を確定してはいけません。",
@@ -4896,9 +4896,9 @@
               "en": "Departmental dates are explicit, but the founder rejects equating convenience with intent and defers written specification."
             },
             "evidence": {
-              "ja": "line-002、line-003、line-004、line-005、line-006、line-007、line-016、line-017、line-020を合わせると、三開始日の明示と、創業者による否定、基準未指定、翌日文書化が意図日の空白を示します。",
-              "zh": "合并阅读line-002、line-003、line-004、line-005、line-006、line-007、line-016、line-017、line-020可知，三个起始日、创始人的否认、基准缺失与次日书面化共同显示意图日期仍为空白。",
-              "en": "Read together, line-002, line-003, line-004, line-005, line-006, line-007, line-016, line-017, line-020 show that the explicit departmental dates, founder's rejection, absent reference, and promised document leave the intended date open."
+              "ja": "2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、16番目の台詞、17番目の台詞、20番目の台詞を合わせると、三開始日の明示と、創業者による否定、基準未指定、翌日文書化が意図日の空白を示します。",
+              "zh": "合并阅读第2句台词、第3句台词、第4句台词、第5句台词、第6句台词、第7句台词、第16句台词、第17句台词、第20句台词可知，三个起始日、创始人的否认、基准缺失与次日书面化共同显示意图日期仍为空白。",
+              "en": "Read together, the second line, the third line, the fourth line, the fifth line, the sixth line, the seventh line, the sixteenth line, the seventeenth line, the twentieth line show that the explicit departmental dates, founder's rejection, absent reference, and promised document leave the intended date open."
             },
             "nuance": {
               "ja": "後日の文書で日付が確定すれば、この問いの答えは変わり得ます。",
@@ -4983,9 +4983,9 @@
               "en": "The relative phrase must be expanded into a shared absolute instant and authority-specific transfer conditions."
             },
             "evidence": {
-              "ja": "line-017、line-018、line-019、line-020を合わせると、基準未指定の確認、絶対日付提案、仮置き、翌日の書面化が同じ是正手順を示します。",
-              "zh": "合并阅读line-017、line-018、line-019、line-020可知，确认基准缺失、提出绝对日期、暂定排程与次日书面化共同指向同一纠正程序。",
-              "en": "Read together, line-017, line-018, line-019, line-020 show that the acknowledged missing reference, absolute-date proposal, provisional schedules, and promised writing define the remedy."
+              "ja": "17番目の台詞、18番目の台詞、19番目の台詞、20番目の台詞を合わせると、基準未指定の確認、絶対日付提案、仮置き、翌日の書面化が同じ是正手順を示します。",
+              "zh": "合并阅读第17句台词、第18句台词、第19句台词、第20句台词可知，确认基准缺失、提出绝对日期、暂定排程与次日书面化共同指向同一纠正程序。",
+              "en": "Read together, the seventeenth line, the eighteenth line, the nineteenth line, the twentieth line show that the acknowledged missing reference, absolute-date proposal, provisional schedules, and promised writing define the remedy."
             },
             "nuance": {
               "ja": "権限ごとに異なる移管日を置くこと自体は可能ですが、それも明示的な合意が必要です。",
@@ -5073,9 +5073,9 @@
               "en": "This summary separates the succession decision from the unresolved reference calendar and absolute date."
             },
             "evidence": {
-              "ja": "line-001、line-012、line-016、line-017、line-018、line-019、line-020を合わせると、後継方針、複数の正式定義、意図同一視の否定、基準未指定、暫定化、書面予定が全て収まります。",
-              "zh": "合并阅读line-001、line-012、line-016、line-017、line-018、line-019、line-020可知，继任方向、多种正式定义、创始人否认、基准缺失、暂定处理与书面承诺都被完整容纳。",
-              "en": "Read together, line-001, line-012, line-016, line-017, line-018, line-019, line-020 show that the succession plan, multiple definitions, founder's rejection, absent basis, provisional status, and promised writing all fit."
+              "ja": "1番目の台詞、12番目の台詞、16番目の台詞、17番目の台詞、18番目の台詞、19番目の台詞、20番目の台詞を合わせると、後継方針、複数の正式定義、意図同一視の否定、基準未指定、暫定化、書面予定が全て収まります。",
+              "zh": "合并阅读第1句台词、第12句台词、第16句台词、第17句台词、第18句台词、第19句台词、第20句台词可知，继任方向、多种正式定义、创始人否认、基准缺失、暂定处理与书面承诺都被完整容纳。",
+              "en": "Read together, the first line, the twelfth line, the sixteenth line, the seventeenth line, the eighteenth line, the nineteenth line, the twentieth line show that the succession plan, multiple definitions, founder's rejection, absent basis, provisional status, and promised writing all fit."
             },
             "nuance": {
               "ja": "未確定なのは日付であり、後継方針まで撤回されたとは読めません。",
@@ -5100,13 +5100,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "29d5ec867a581e61ce7e1ac7f190d2eff03a94348643ada0f1e5f8498393cef0"
+      "contentHash": "93f216108bf4cb82e8245f6bfe36a2d9c37afc668f643dd59facc90b7c7690d4"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-046",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 46,
       "jlptTarget": "N1-pragmatics",
@@ -5768,9 +5768,9 @@
               "en": "Two lab entries and two tag scans fit both objects passing through a third location better than a direct swap."
             },
             "evidence": {
-              "ja": "line-003、line-006、line-007、line-008、line-010、line-011、line-013、line-014を合わせると、双方の新輪郭、箱の二種繊維、二度の入室、二タグ読取が同じ経路仮説へ集まります。",
-              "zh": "合并阅读line-003、line-006、line-007、line-008、line-010、line-011、line-013、line-014可知，两边新轮廓、箱内两种纤维、两次进出与两枚标签读取共同指向该路径。",
-              "en": "Read together, line-003, line-006, line-007, line-008, line-010, line-011, line-013, line-014 show that fresh outlines, two fiber types, two entries, and two tag scans converge on the same route."
+              "ja": "3番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、10番目の台詞、11番目の台詞、13番目の台詞、14番目の台詞を合わせると、双方の新輪郭、箱の二種繊維、二度の入室、二タグ読取が同じ経路仮説へ集まります。",
+              "zh": "合并阅读第3句台词、第6句台词、第7句台词、第8句台词、第10句台词、第11句台词、第13句台词、第14句台词可知，两边新轮廓、箱内两种纤维、两次进出与两枚标签读取共同指向该路径。",
+              "en": "Read together, the third line, the sixth line, the seventh line, the eighth line, the tenth line, the eleventh line, the thirteenth line, the fourteenth line show that fresh outlines, two fiber types, two entries, and two tag scans converge on the same route."
             },
             "nuance": {
               "ja": "『可能性が高い』は経路についての評価で、各地点に最終的にどちらが置かれたかを確定しません。",
@@ -5858,9 +5858,9 @@
               "en": "Two location-specific fibers coexist in the crate, indicating contact with multiple environments."
             },
             "evidence": {
-              "ja": "line-004、line-005、line-006、line-007、line-008、line-010、line-011を合わせると、赤い麻の修復室限定、青いフェルトの金庫限定、同箱使用、修復室入室が接触経路を組み立てます。",
-              "zh": "合并阅读line-004、line-005、line-006、line-007、line-008、line-010、line-011可知，红麻仅在修复室、蓝毡仅在保险库、同箱使用与进入修复室共同构成接触路径。",
-              "en": "Read together, line-004, line-005, line-006, line-007, line-008, line-010, line-011 show that red linen's lab-only use, blue felt's vault-only use, reuse of one crate, and lab entries reconstruct the contacts."
+              "ja": "4番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、10番目の台詞、11番目の台詞を合わせると、赤い麻の修復室限定、青いフェルトの金庫限定、同箱使用、修復室入室が接触経路を組み立てます。",
+              "zh": "合并阅读第4句台词、第5句台词、第6句台词、第7句台词、第8句台词、第10句台词、第11句台词可知，红麻仅在修复室、蓝毡仅在保险库、同箱使用与进入修复室共同构成接触路径。",
+              "en": "Read together, the fourth line, the fifth line, the sixth line, the seventh line, the eighth line, the tenth line, the eleventh line show that red linen's lab-only use, blue felt's vault-only use, reuse of one crate, and lab entries reconstruct the contacts."
             },
             "nuance": {
               "ja": "繊維は箱の経路を示す間接証拠で、物体の現在の真贋を直接測るものではありません。",
@@ -5947,9 +5947,9 @@
               "en": "Route evidence exists, but removable tags and missing footage break the chain linking final position to identity."
             },
             "evidence": {
-              "ja": "line-013、line-015、line-016、line-017、line-018、line-019を合わせると、二タグ読取、館長の疑問、タグ交換可能、材質未検査、死角、調査官の保留が未確定を示します。",
-              "zh": "合并阅读line-013、line-015、line-016、line-017、line-018、line-019可知，两标签读取、馆长疑问、可换标签、未做材质检测、影像盲区与调查官保留共同说明未定。",
-              "en": "Read together, line-013, line-015, line-016, line-017, line-018, line-019 show that the two scans, curator's question, removable tags, pending tests, blind spot, and investigator's reservation establish uncertainty."
+              "ja": "13番目の台詞、15番目の台詞、16番目の台詞、17番目の台詞、18番目の台詞、19番目の台詞を合わせると、二タグ読取、館長の疑問、タグ交換可能、材質未検査、死角、調査官の保留が未確定を示します。",
+              "zh": "合并阅读第13句台词、第15句台词、第16句台词、第17句台词、第18句台词、第19句台词可知，两标签读取、馆长疑问、可换标签、未做材质检测、影像盲区与调查官保留共同说明未定。",
+              "en": "Read together, the thirteenth line, the fifteenth line, the sixteenth line, the seventeenth line, the eighteenth line, the nineteenth line show that the two scans, curator's question, removable tags, pending tests, blind spot, and investigator's reservation establish uncertainty."
             },
             "nuance": {
               "ja": "未確定でも盗難や損傷の予防措置として両方を封印する合理性はあります。",
@@ -6040,9 +6040,9 @@
               "en": "Movement traces on both sides plus the two-entry, two-tag, two-fiber pattern support both objects' transit."
             },
             "evidence": {
-              "ja": "line-003、line-004、line-005、line-006、line-008、line-010、line-011、line-013、line-014を合わせると、台座の新輪郭と修復室に結び付く複数の物流記録が、物理痕跡とデジタル記録の両面から一致します。",
-              "zh": "合并阅读line-003、line-004、line-005、line-006、line-008、line-010、line-011、line-013、line-014可知，展台新轮廓与多条连接修复室的物流记录，在物理和数字层面相互吻合。",
-              "en": "Read together, line-003, line-004, line-005, line-006, line-008, line-010, line-011, line-013, line-014 show that fresh plinth outlines and multiple restoration-linked logistics records align physical and digital evidence."
+              "ja": "3番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞、8番目の台詞、10番目の台詞、11番目の台詞、13番目の台詞、14番目の台詞を合わせると、台座の新輪郭と修復室に結び付く複数の物流記録が、物理痕跡とデジタル記録の両面から一致します。",
+              "zh": "合并阅读第3句台词、第4句台词、第5句台词、第6句台词、第8句台词、第10句台词、第11句台词、第13句台词、第14句台词可知，展台新轮廓与多条连接修复室的物流记录，在物理和数字层面相互吻合。",
+              "en": "Read together, the third line, the fourth line, the fifth line, the sixth line, the eighth line, the tenth line, the eleventh line, the thirteenth line, the fourteenth line show that fresh plinth outlines and multiple restoration-linked logistics records align physical and digital evidence."
             },
             "nuance": {
               "ja": "新輪郭だけなら持ち上げた事実までですが、修復室記録と組み合わせて経由先が絞られます。",
@@ -6067,13 +6067,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "6cc9700201107a99594d7c164a8670760ed8723491959b9497cfdfad6ea0e6bf"
+      "contentHash": "65cfc1b6277dfe9a84f39d434d76e23691822f22a7c9c81a5294b78bb2100c95"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-047",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 47,
       "jlptTarget": "N1-pragmatics",
@@ -6763,9 +6763,9 @@
               "en": "Physical hydrology and coordinate corruption independently undermine the assumption that village or forest caused the blockage."
             },
             "evidence": {
-              "ja": "line-003、line-004、line-005、line-007、line-008、line-009、line-011、line-012を合わせると、上流での干上がり、森の位置、反転地図、北の水源と水門、座標修正不能が複数経路で一致します。",
-              "zh": "合并阅读line-003、line-004、line-005、line-007、line-008、line-009、line-011、line-012可知，上游干涸、森林位置、镜像地图、北方水源水门与无法靠删除修复坐标相互吻合。",
-              "en": "Read together, line-003, line-004, line-005, line-007, line-008, line-009, line-011, line-012 show that upstream drying, forest position, mirrored mapping, northern source and sluice, and unfixable coordinates converge."
+              "ja": "3番目の台詞、4番目の台詞、5番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞、11番目の台詞、12番目の台詞を合わせると、上流での干上がり、森の位置、反転地図、北の水源と水門、座標修正不能が複数経路で一致します。",
+              "zh": "合并阅读第3句台词、第4句台词、第5句台词、第7句台词、第8句台词、第9句台词、第11句台词、第12句台词可知，上游干涸、森林位置、镜像地图、北方水源水门与无法靠删除修复坐标相互吻合。",
+              "en": "Read together, the third line, the fourth line, the fifth line, the seventh line, the eighth line, the ninth line, the eleventh line, the twelfth line show that upstream drying, forest position, mirrored mapping, northern source and sluice, and unfixable coordinates converge."
             },
             "nuance": {
               "ja": "水門が真の最終原因かは未調査ですが、少なくとも提示二択が尽くされていないことは分かります。",
@@ -6856,9 +6856,9 @@
               "en": "Rejecting the binary opens an investigative route, avoiding irreversible deletion while continuing problem solving."
             },
             "evidence": {
-              "ja": "line-010、line-011、line-012、line-013、line-014、line-016、line-017、line-018、line-019、line-020を合わせると、二択の固定、両方を否定する証言、未選択終了、無消去、再計算、水門調査、更新任務が安全な第三経路を示します。",
-              "zh": "合并阅读line-010、line-011、line-012、line-013、line-014、line-016、line-017、line-018、line-019、line-020可知，固定二选一、否定两项的证词、不选关闭、无删除、重算坐标、水门调查与任务更新共同显示安全的第三路径。",
-              "en": "Read together, line-010, line-011, line-012, line-013, line-014, line-016, line-017, line-018, line-019, line-020 show that the fixed binary, counter-evidence, no-selection close, no erasure, recalculation, sluice inquiry, and quest update establish a third route."
+              "ja": "10番目の台詞、11番目の台詞、12番目の台詞、13番目の台詞、14番目の台詞、16番目の台詞、17番目の台詞、18番目の台詞、19番目の台詞、20番目の台詞を合わせると、二択の固定、両方を否定する証言、未選択終了、無消去、再計算、水門調査、更新任務が安全な第三経路を示します。",
+              "zh": "合并阅读第10句台词、第11句台词、第12句台词、第13句台词、第14句台词、第16句台词、第17句台词、第18句台词、第19句台词、第20句台词可知，固定二选一、否定两项的证词、不选关闭、无删除、重算坐标、水门调查与任务更新共同显示安全的第三路径。",
+              "en": "Read together, the tenth line, the eleventh line, the twelfth line, the thirteenth line, the fourteenth line, the sixteenth line, the seventeenth line, the eighteenth line, the nineteenth line, the twentieth line show that the fixed binary, counter-evidence, no-selection close, no erasure, recalculation, sluice inquiry, and quest update establish a third route."
             },
             "nuance": {
               "ja": "拒否は問題から逃げることではなく、誤った選択枠を拒んで検証可能な代替手順へ移ることです。",
@@ -6945,9 +6945,9 @@
               "en": "Integrity increases immediately after nonselection, followed by an inquiry route into the inconsistency."
             },
             "evidence": {
-              "ja": "line-013、line-014、line-015、line-017、line-019、line-020を合わせると、無消去、整合性加点、座標再計算、破損地図追跡、二択拒否確認が評価対象を明示します。",
-              "zh": "合并阅读line-013、line-014、line-015、line-017、line-019、line-020可知，无删除、完整性加分、坐标重算、追踪损坏地图与确认拒绝二选一共同说明评价对象。",
-              "en": "Read together, line-013, line-014, line-015, line-017, line-019, line-020 show that no erasure, integrity gain, recalculation, corrupted-map tracing, and confirmed refusal identify what was rewarded."
+              "ja": "13番目の台詞、14番目の台詞、15番目の台詞、17番目の台詞、19番目の台詞、20番目の台詞を合わせると、無消去、整合性加点、座標再計算、破損地図追跡、二択拒否確認が評価対象を明示します。",
+              "zh": "合并阅读第13句台词、第14句台词、第15句台词、第17句台词、第19句台词、第20句台词可知，无删除、完整性加分、坐标重算、追踪损坏地图与确认拒绝二选一共同说明评价对象。",
+              "en": "Read together, the thirteenth line, the fourteenth line, the fifteenth line, the seventeenth line, the nineteenth line, the twentieth line show that no erasure, integrity gain, recalculation, corrupted-map tracing, and confirmed refusal identify what was rewarded."
             },
             "nuance": {
               "ja": "加点はプレイヤー行動の評価を示しますが、地図破損者の正体までは教えません。",
@@ -7039,9 +7039,9 @@
               "en": "The evidence establishes an inadequate binary and next inquiry targets, not a culprit or universal game rule."
             },
             "evidence": {
-              "ja": "line-003、line-004、line-005、line-007、line-008、line-009、line-011、line-016、line-017、line-018、line-019を合わせると、上流情報、地図反転、別位置の水源、水門、再計算解放、更新任務が限定された調査結論を支えます。",
-              "zh": "合并阅读line-003、line-004、line-005、line-007、line-008、line-009、line-011、line-016、line-017、line-018、line-019可知，上游信息、地图镜像、水源异位、水门、重算解锁与任务更新共同支持限定调查结论。",
-              "en": "Read together, line-003, line-004, line-005, line-007, line-008, line-009, line-011, line-016, line-017, line-018, line-019 show that upstream data, map mirroring, displaced source, sluice, recalculation, and updated quest support the limited inquiry conclusion."
+              "ja": "3番目の台詞、4番目の台詞、5番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞、11番目の台詞、16番目の台詞、17番目の台詞、18番目の台詞、19番目の台詞を合わせると、上流情報、地図反転、別位置の水源、水門、再計算解放、更新任務が限定された調査結論を支えます。",
+              "zh": "合并阅读第3句台词、第4句台词、第5句台词、第7句台词、第8句台词、第9句台词、第11句台词、第16句台词、第17句台词、第18句台词、第19句台词可知，上游信息、地图镜像、水源异位、水门、重算解锁与任务更新共同支持限定调查结论。",
+              "en": "Read together, the third line, the fourth line, the fifth line, the seventh line, the eighth line, the ninth line, the eleventh line, the sixteenth line, the seventeenth line, the eighteenth line, the nineteenth line show that upstream data, map mirroring, displaced source, sluice, recalculation, and updated quest support the limited inquiry conclusion."
             },
             "nuance": {
               "ja": "水門は有力な手掛かりであって、故障・自然閉鎖・操作など原因はまだ複数残ります。",
@@ -7066,13 +7066,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "1ddcd24298023dd70603783cb30eae0ff67c67f8c0c2c2c9ef6653df2f3b9af1"
+      "contentHash": "a12b7bfc384005c42d0fb9ed8eabb0b4fd882c048f90903fe7e1f0b0c087b641"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-048",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 48,
       "jlptTarget": "N1-pragmatics",
@@ -7737,9 +7737,9 @@
               "en": "Distinctive textual fingerprints and admitted reporting paths indicate derivation from one document rather than separate primary sources."
             },
             "evidence": {
-              "ja": "line-002、line-003、line-004、line-005、line-007、line-008、line-009、line-010、line-011、line-013、line-014を合わせると、同一比喩・誤句読点・不可視記号、事前配布メモ、直接取材なし、共有文書が循環経路を具体化します。",
-              "zh": "合并阅读line-002、line-003、line-004、line-005、line-007、line-008、line-009、line-010、line-011、line-013、line-014可知，相同比喻、错误标点、不可见字符、预发备忘、无直接采访与共享文档共同还原循环路径。",
-              "en": "Read together, line-002, line-003, line-004, line-005, line-007, line-008, line-009, line-010, line-011, line-013, line-014 show that the same metaphor, malformed punctuation, invisible marker, pre-shared memo, lack of direct reporting, and shared file reconstruct the loop."
+              "ja": "2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞、13番目の台詞、14番目の台詞を合わせると、同一比喩・誤句読点・不可視記号、事前配布メモ、直接取材なし、共有文書が循環経路を具体化します。",
+              "zh": "合并阅读第2句台词、第3句台词、第4句台词、第5句台词、第7句台词、第8句台词、第9句台词、第10句台词、第11句台词、第13句台词、第14句台词可知，相同比喻、错误标点、不可见字符、预发备忘、无直接采访与共享文档共同还原循环路径。",
+              "en": "Read together, the second line, the third line, the fourth line, the fifth line, the seventh line, the eighth line, the ninth line, the tenth line, the eleventh line, the thirteenth line, the fourteenth line show that the same metaphor, malformed punctuation, invisible marker, pre-shared memo, lack of direct reporting, and shared file reconstruct the loop."
             },
             "nuance": {
               "ja": "共通メモの存在は強く支持されますが、そのメモ内の改革情報自体が必ず偽とは限りません。",
@@ -7826,9 +7826,9 @@
               "en": "Matching hard-to-share formal quirks, not just meaning, points to a common textual ancestor."
             },
             "evidence": {
-              "ja": "line-002、line-003、line-004、line-005、line-007、line-013を合わせると、四人の同一文面、編集長メモとの一致、不可視記号の一致が単なる主題一致を超えます。",
-              "zh": "合并阅读line-002、line-003、line-004、line-005、line-007、line-013可知，四人文字一致、与主编备忘一致及不可见字符一致，远超普通主题重合。",
-              "en": "Read together, line-002, line-003, line-004, line-005, line-007, line-013 show that identical wording, its match to the editor's memo, and the invisible marker go beyond ordinary topical agreement."
+              "ja": "2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、7番目の台詞、13番目の台詞を合わせると、四人の同一文面、編集長メモとの一致、不可視記号の一致が単なる主題一致を超えます。",
+              "zh": "合并阅读第2句台词、第3句台词、第4句台词、第5句台词、第7句台词、第13句台词可知，四人文字一致、与主编备忘一致及不可见字符一致，远超普通主题重合。",
+              "en": "Read together, the second line, the third line, the fourth line, the fifth line, the seventh line, the thirteenth line show that identical wording, its match to the editor's memo, and the invisible marker go beyond ordinary topical agreement."
             },
             "nuance": {
               "ja": "文体指紋は出所共有を強く示しますが、最初に誰が事実主張を作ったかまでは単独で確定しません。",
@@ -7916,9 +7916,9 @@
               "en": "Independence depends on separate acquisition paths without a common relay, not on label count."
             },
             "evidence": {
-              "ja": "line-008、line-009、line-010、line-011、line-012、line-014、line-015を合わせると、各人の取材経路、四つのラベル、単一入口の指摘、独立確認の定義がラベルと実体を分けます。",
-              "zh": "合并阅读line-008、line-009、line-010、line-011、line-012、line-014、line-015可知，各人采访路径、四标签、单一入口提醒与独立核实定义把标签和实质区分开来。",
-              "en": "Read together, line-008, line-009, line-010, line-011, line-012, line-014, line-015 show that the reported pathways, four labels, single-entry warning, and definition of independent confirmation separate metadata from substance."
+              "ja": "8番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞、14番目の台詞、15番目の台詞を合わせると、各人の取材経路、四つのラベル、単一入口の指摘、独立確認の定義がラベルと実体を分けます。",
+              "zh": "合并阅读第8句台词、第9句台词、第10句台词、第11句台词、第12句台词、第14句台词、第15句台词可知，各人采访路径、四标签、单一入口提醒与独立核实定义把标签和实质区分开来。",
+              "en": "Read together, the eighth line, the ninth line, the tenth line, the eleventh line, the twelfth line, the fourteenth line, the fifteenth line show that the reported pathways, four labels, single-entry warning, and definition of independent confirmation separate metadata from substance."
             },
             "nuance": {
               "ja": "匿名情報も保護が必要ですが、匿名性は社内で経路を検証しなくてよいという意味ではありません。",
@@ -8005,9 +8005,9 @@
               "en": "The multi-source claim collapses, but no primary evidence yet resolves the underlying claim's truth."
             },
             "evidence": {
-              "ja": "line-014、line-015、line-016、line-017、line-018、line-019を合わせると、単一入口の指摘、独立確認要件、三人の一次確認欠如、番組の訂正が未検証扱いを支えます。",
-              "zh": "合并阅读line-014、line-015、line-016、line-017、line-018、line-019可知，单一入口、独立核实要求、三人均缺乏一手确认及节目更正共同支持“未核实”状态。",
-              "en": "Read together, line-014, line-015, line-016, line-017, line-018, line-019 show that the single-entry concern, independence standard, lack of primary checks, and correction support unverified status."
+              "ja": "14番目の台詞、15番目の台詞、16番目の台詞、17番目の台詞、18番目の台詞、19番目の台詞を合わせると、単一入口の指摘、独立確認要件、三人の一次確認欠如、番組の訂正が未検証扱いを支えます。",
+              "zh": "合并阅读第14句台词、第15句台词、第16句台词、第17句台词、第18句台词、第19句台词可知，单一入口、独立核实要求、三人均缺乏一手确认及节目更正共同支持“未核实”状态。",
+              "en": "Read together, the fourteenth line, the fifteenth line, the sixteenth line, the seventeenth line, the eighteenth line, the nineteenth line show that the single-entry concern, independence standard, lack of primary checks, and correction support unverified status."
             },
             "nuance": {
               "ja": "『未検証』は『偽』ではなく、公開時の確度表示と追加取材の必要性を示します。",
@@ -8094,9 +8094,9 @@
               "en": "The program must both create genuinely independent paths and correct its prior confidence claim."
             },
             "evidence": {
-              "ja": "line-015、line-016、line-017、line-018、line-019を合わせると、独立確認の要件、一次資料欠如、直接照会なし、番組の訂正方針が二つの是正措置を示します。",
-              "zh": "合并阅读line-015、line-016、line-017、line-018、line-019可知，独立核实要求、一手资料缺失、无直接联系与节目更正方针共同指向两项修正。",
-              "en": "Read together, line-015, line-016, line-017, line-018, line-019 show that the independence standard, missing primary evidence, absent direct calls, and correction plan identify both remedies."
+              "ja": "15番目の台詞、16番目の台詞、17番目の台詞、18番目の台詞、19番目の台詞を合わせると、独立確認の要件、一次資料欠如、直接照会なし、番組の訂正方針が二つの是正措置を示します。",
+              "zh": "合并阅读第15句台词、第16句台词、第17句台词、第18句台词、第19句台词可知，独立核实要求、一手资料缺失、无直接联系与节目更正方针共同指向两项修正。",
+              "en": "Read together, the fifteenth line, the sixteenth line, the seventeenth line, the eighteenth line, the nineteenth line show that the independence standard, missing primary evidence, absent direct calls, and correction plan identify both remedies."
             },
             "nuance": {
               "ja": "情報源保護のため全詳細を公開できなくても、確認経路が独立していたかという方法上の説明は可能です。",
@@ -8121,13 +8121,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "5569f26431092f56ae2f9d72c3d25f586b500a61eee71dca985a8a3723cfb441"
+      "contentHash": "1063fb73e68b5220e7b347eb3fd8818b8565f9f11d6faf642705131ccc65ba14"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-049",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 49,
       "jlptTarget": "N1-pragmatics",
@@ -8819,9 +8819,9 @@
               "en": "Ship times and sequence signatures run 03:00, 03:20, 03:50, while distance delays reverse arrival order."
             },
             "evidence": {
-              "ja": "line-002、line-003、line-004、line-006、line-007、line-008、line-009、line-010、line-011、line-012、line-013を合わせると、三つの船内時刻、短くなる遅延、連続署名、通信士の再構成が同じ順序を支持します。",
-              "zh": "合并阅读line-002、line-003、line-004、line-006、line-007、line-008、line-009、line-010、line-011、line-012、line-013可知，三个舰内时间、逐渐缩短的延迟、连续签名与通信员重建共同支持该顺序。",
-              "en": "Read together, line-002, line-003, line-004, line-006, line-007, line-008, line-009, line-010, line-011, line-012, line-013 show that the three ship times, shortening delays, continuous signatures, and receiver's reconstruction support the same order."
+              "ja": "2番目の台詞、3番目の台詞、4番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞、13番目の台詞を合わせると、三つの船内時刻、短くなる遅延、連続署名、通信士の再構成が同じ順序を支持します。",
+              "zh": "合并阅读第2句台词、第3句台词、第4句台词、第6句台词、第7句台词、第8句台词、第9句台词、第10句台词、第11句台词、第12句台词、第13句台词可知，三个舰内时间、逐渐缩短的延迟、连续签名与通信员重建共同支持该顺序。",
+              "en": "Read together, the second line, the third line, the fourth line, the sixth line, the seventh line, the eighth line, the ninth line, the tenth line, the eleventh line, the twelfth line, the thirteenth line show that the three ship times, shortening delays, continuous signatures, and receiver's reconstruction support the same order."
             },
             "nuance": {
               "ja": "送信順は強く支持されますが、各通信の地上受信時刻には機器誤差が含まれ得ます。",
@@ -8912,9 +8912,9 @@
               "en": "Propagation physics and signed onboard chronology independently yield the same sequence."
             },
             "evidence": {
-              "ja": "line-002、line-003、line-004、line-006、line-007、line-008、line-009、line-010、line-013を合わせると、距離別遅延、連続時計署名、七七一から七七三の連番が物理・記録の二重確認になります。",
-              "zh": "合并阅读line-002、line-003、line-004、line-006、line-007、line-008、line-009、line-010、line-013可知，分距离延迟、连续时钟签名及七七一至七七三的序号构成物理与记录双重核验。",
-              "en": "Read together, line-002, line-003, line-004, line-006, line-007, line-008, line-009, line-010, line-013 show that distance-specific delays, continuous clock signatures, and sequence 771–773 provide physical and archival confirmation."
+              "ja": "2番目の台詞、3番目の台詞、4番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞、13番目の台詞を合わせると、距離別遅延、連続時計署名、七七一から七七三の連番が物理・記録の二重確認になります。",
+              "zh": "合并阅读第2句台词、第3句台词、第4句台词、第6句台词、第7句台词、第8句台词、第9句台词、第10句台词、第13句台词可知，分距离延迟、连续时钟签名及七七一至七七三的序号构成物理与记录双重核验。",
+              "en": "Read together, the second line, the third line, the fourth line, the sixth line, the seventh line, the eighth line, the ninth line, the tenth line, the thirteenth line show that distance-specific delays, continuous clock signatures, and sequence 771–773 provide physical and archival confirmation."
             },
             "nuance": {
               "ja": "二根拠が一致しても、署名鍵や星図測位の監査を別途行う余地はあります。",
@@ -9002,9 +9002,9 @@
               "en": "The final message follows discovery after departure and asks both for no pursuit and public disclosure."
             },
             "evidence": {
-              "ja": "line-002、line-003、line-014、line-015、line-016、line-017、line-019を合わせると、警告内容、発見時点、公開要請、通信士と記録官の再解釈が最終意思を具体化します。",
-              "zh": "合并阅读line-002、line-003、line-014、line-015、line-016、line-017、line-019可知，警告内容、发现时点、公开请求及通信员和记录官的重读共同明确最终意图。",
-              "en": "Read together, line-002, line-003, line-014, line-015, line-016, line-017, line-019 show that the warning, discovery timing, disclosure request, and reconstructed interpretation establish the final intent."
+              "ja": "2番目の台詞、3番目の台詞、14番目の台詞、15番目の台詞、16番目の台詞、17番目の台詞、19番目の台詞を合わせると、警告内容、発見時点、公開要請、通信士と記録官の再解釈が最終意思を具体化します。",
+              "zh": "合并阅读第2句台词、第3句台词、第14句台词、第15句台词、第16句台词、第17句台词、第19句台词可知，警告内容、发现时点、公开请求及通信员和记录官的重读共同明确最终意图。",
+              "en": "Read together, the second line, the third line, the fourteenth line, the fifteenth line, the sixteenth line, the seventeenth line, the nineteenth line show that the warning, discovery timing, disclosure request, and reconstructed interpretation establish the final intent."
             },
             "nuance": {
               "ja": "公開要請がどの法的手続きや宛先を想定したかまでは通信から分かりません。",
@@ -9095,9 +9095,9 @@
               "en": "Chronology and semantic change have multiple supports, but no direct evidence identifies the forger or survival status."
             },
             "evidence": {
-              "ja": "line-010、line-011、line-012、line-013、line-014、line-015、line-017、line-018、line-019、line-020を合わせると、署名時系列、出発後の発見、最後の公開要請、記録官の整合評価、航法士の留保が結論と限界を示します。",
-              "zh": "合并阅读line-010、line-011、line-012、line-013、line-014、line-015、line-017、line-018、line-019、line-020可知，签名时间线、出发后发现、最终公开请求、记录官一致性判断与领航员保留共同给出结论和边界。",
-              "en": "Read together, line-010, line-011, line-012, line-013, line-014, line-015, line-017, line-018, line-019, line-020 show that the signed chronology, post-departure discovery, final disclosure plea, archival coherence, and navigator's reservation establish both findings and limits."
+              "ja": "10番目の台詞、11番目の台詞、12番目の台詞、13番目の台詞、14番目の台詞、15番目の台詞、17番目の台詞、18番目の台詞、19番目の台詞、20番目の台詞を合わせると、署名時系列、出発後の発見、最後の公開要請、記録官の整合評価、航法士の留保が結論と限界を示します。",
+              "zh": "合并阅读第10句台词、第11句台词、第12句台词、第13句台词、第14句台词、第15句台词、第17句台词、第18句台词、第19句台词、第20句台词可知，签名时间线、出发后发现、最终公开请求、记录官一致性判断与领航员保留共同给出结论和边界。",
+              "en": "Read together, the tenth line, the eleventh line, the twelfth line, the thirteenth line, the fourteenth line, the fifteenth line, the seventeenth line, the eighteenth line, the nineteenth line, the twentieth line show that the signed chronology, post-departure discovery, final disclosure plea, archival coherence, and navigator's reservation establish both findings and limits."
             },
             "nuance": {
               "ja": "再構成は『最も整合する説明』であり、未受信の通信が絶対にないことまでは保証しません。",
@@ -9122,13 +9122,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "31f777cf69966d3c087333840aa627cb1afee76c9d346ed1911f2d7232a9f62e"
+      "contentHash": "fa78dc3bf24630bfded1c1d9b87a97dcdbad0d8886a0e436fbb29f6a449381f1"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-050",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 50,
       "jlptTarget": "N1-pragmatics",
@@ -9787,9 +9787,9 @@
               "en": "The correct slot changes across trials; the repeated relation is that the guide does not occupy it."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-004、line-005、line-006を合わせると、表示前の移動、三回目という観察、問題八・九の位置対比が同じ回避パターンを示します。",
-              "zh": "合并阅读line-001、line-002、line-004、line-005、line-006可知，显示前移动、第三次提示以及第八九题的位置对照共同显示同一回避模式。",
-              "en": "Read together, line-001, line-002, line-004, line-005, line-006 show that the pre-display move, third-occurrence observation, and question-eight/nine contrasts establish the avoidance pattern."
+              "ja": "1番目の台詞、2番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞を合わせると、表示前の移動、三回目という観察、問題八・九の位置対比が同じ回避パターンを示します。",
+              "zh": "合并阅读第1句台词、第2句台词、第4句台词、第5句台词、第6句台词可知，显示前移动、第三次提示以及第八九题的位置对照共同显示同一回避模式。",
+              "en": "Read together, the first line, the second line, the fourth line, the fifth line, the sixth line show that the pre-display move, third-occurrence observation, and question-eight/nine contrasts establish the avoidance pattern."
             },
             "nuance": {
               "ja": "三回の一致は注目に値しますが、長期的に必ず続く法則だとはまだ断定できません。",
@@ -9876,9 +9876,9 @@
               "en": "A value produced by neither internal subsystem appears in the window where layout could be altered."
             },
             "evidence": {
-              "ja": "line-007、line-008、line-009、line-010、line-011、line-016を合わせると、正常な乱数、案内役の権限欠如、外部値の時点と由来否定、スナップショット欠落が介入可能性を形成します。",
-              "zh": "合并阅读line-007、line-008、line-009、line-010、line-011、line-016可知，正常随机数、向导无权限、外部值时点及来源排除、缺少前后快照共同形成介入可能性。",
-              "en": "Read together, line-007, line-008, line-009, line-010, line-011, line-016 show that normal RNG, absent guide permission, checksum timing and provenance, and missing snapshots create the intervention possibility."
+              "ja": "7番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞、16番目の台詞を合わせると、正常な乱数、案内役の権限欠如、外部値の時点と由来否定、スナップショット欠落が介入可能性を形成します。",
+              "zh": "合并阅读第7句台词、第8句台词、第9句台词、第10句台词、第11句台词、第16句台词可知，正常随机数、向导无权限、外部值时点及来源排除、缺少前后快照共同形成介入可能性。",
+              "en": "Read together, the seventh line, the eighth line, the ninth line, the tenth line, the eleventh line, the sixteenth line show that normal RNG, absent guide permission, checksum timing and provenance, and missing snapshots create the intervention possibility."
             },
             "nuance": {
               "ja": "外部値は介入の痕跡候補ですが、それだけで誰が何を変更したかは確定しません。",
@@ -9965,9 +9965,9 @@
               "en": "Ordering and layout diffs would test whether the guide anticipated the final state or an outsider changed it later."
             },
             "evidence": {
-              "ja": "line-009、line-010、line-011、line-014、line-017、line-018を合わせると、外部値の挿入時点、スナップショット欠如、二仮説、同一ミリ秒枠、未決着という連鎖が必要記録を特定します。",
-              "zh": "合并阅读line-009、line-010、line-011、line-014、line-017、line-018可知，外部值插入时点、缺少快照、两种假设、同一毫秒框与未定论共同锁定所需记录。",
-              "en": "Read together, line-009, line-010, line-011, line-014, line-017, line-018 show that checksum timing, missing snapshots, competing hypotheses, one-millisecond coarseness, and unresolved order identify the needed record."
+              "ja": "9番目の台詞、10番目の台詞、11番目の台詞、14番目の台詞、17番目の台詞、18番目の台詞を合わせると、外部値の挿入時点、スナップショット欠如、二仮説、同一ミリ秒枠、未決着という連鎖が必要記録を特定します。",
+              "zh": "合并阅读第9句台词、第10句台词、第11句台词、第14句台词、第17句台词、第18句台词可知，外部值插入时点、缺少快照、两种假设、同一毫秒框与未定论共同锁定所需记录。",
+              "en": "Read together, the ninth line, the tenth line, the eleventh line, the fourteenth line, the seventeenth line, the eighteenth line show that checksum timing, missing snapshots, competing hypotheses, one-millisecond coarseness, and unresolved order identify the needed record."
             },
             "nuance": {
               "ja": "高精度ログでも、外部署名鍵が匿名なら主体の身元までは別途調査が必要です。",
@@ -10060,9 +10060,9 @@
               "en": "Repeated avoidance supports an unknown foreknowledge channel, while the checksum and audit gaps permit post-commit editing."
             },
             "evidence": {
-              "ja": "line-004、line-007、line-008、line-009、line-010、line-011、line-013、line-014、line-016、line-017、line-018を合わせると、回避パターン、権限欠如、外部値、スナップショット欠落、二つの監査仮説、粗い時刻が双方の説明を残します。",
-              "zh": "合并阅读line-004、line-007、line-008、line-009、line-010、line-011、line-013、line-014、line-016、line-017、line-018可知，回避规律、无权限、外部值、缺少快照、两种审计假设与粗时序共同保留双方解释。",
-              "en": "Read together, line-004, line-007, line-008, line-009, line-010, line-011, line-013, line-014, line-016, line-017, line-018 show that the avoidance pattern, absent permission, external value, missing snapshots, two audit hypotheses, and coarse timestamps keep both accounts viable."
+              "ja": "4番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞、13番目の台詞、14番目の台詞、16番目の台詞、17番目の台詞、18番目の台詞を合わせると、回避パターン、権限欠如、外部値、スナップショット欠落、二つの監査仮説、粗い時刻が双方の説明を残します。",
+              "zh": "合并阅读第4句台词、第7句台词、第8句台词、第9句台词、第10句台词、第11句台词、第13句台词、第14句台词、第16句台词、第17句台词、第18句台词可知，回避规律、无权限、外部值、缺少快照、两种审计假设与粗时序共同保留双方解释。",
+              "en": "Read together, the fourth line, the seventh line, the eighth line, the ninth line, the tenth line, the eleventh line, the thirteenth line, the fourteenth line, the sixteenth line, the seventeenth line, the eighteenth line show that the avoidance pattern, absent permission, external value, missing snapshots, two audit hypotheses, and coarse timestamps keep both accounts viable."
             },
             "nuance": {
               "ja": "案内役の先取りも外部編集も、現段階では証明済みではなく競合する説明です。",
@@ -10087,7 +10087,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "47c72ba8164f21234506952009a0ee7e1834cc4cbea860dacab79076b54c01ba"
+      "contentHash": "f38b8ae22d0161ed1cc705fc3f56adfdd353667c8f23d6a01952c0274561eac8"
     }
   ]
 }

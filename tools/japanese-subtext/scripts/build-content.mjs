@@ -12,7 +12,7 @@ for (const batch of batches) {
     stage.contentHash = contentHash(stage);
   });
   batch.payload.schemaVersion = 1;
-  batch.payload.contentVersion = "1.0.0";
+  batch.payload.contentVersion = "1.0.1";
   batch.payload.level = batch.level;
   batch.payload.stages = batch.stages;
   await writeFile(batch.file, jsonText(batch.payload), "utf8");
@@ -26,7 +26,7 @@ for (let level = 1; level <= 5; level += 1) {
   const jlptTarget = ["N3", "N2", "N1", "N1-advanced", "N1-pragmatics"][level - 1];
   const index = {
     schemaVersion: 1,
-    contentVersion: "1.0.0",
+    contentVersion: "1.0.1",
     level,
     jlptTarget,
     stages: stages.map(({ stage, batch }) => ({
@@ -54,8 +54,8 @@ for (let level = 1; level <= 5; level += 1) {
 
 await writeFile(path.join(contentRoot, "catalog.json"), jsonText({
   schemaVersion: 1,
-  contentVersion: "1.0.0",
-  title: { ja: "日本語の裏側", zh: "日本語の裏側", en: "日本語の裏側" },
+  contentVersion: "1.0.1",
+  title: { ja: "日本語の裏側", zh: "日语的言外之意", en: "Behind the Japanese" },
   stageCount: 250,
   levels
 }), "utf8");

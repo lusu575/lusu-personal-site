@@ -37,7 +37,7 @@ async function writeFixture(root, stageId, level) {
   const stage = { stageId, contentHash: "c".repeat(64), timelinePath: `${prefix}/timeline.json` };
   await writeFile(path.join(root, "manifest.json"), `${JSON.stringify({
     schemaVersion: 1,
-    contentVersion: "1.0.0",
+    contentVersion: "1.0.1",
     audioBaseUrl: "./",
     generator: level === 1 ? { name: "fixture", version: 1 } : { version: 1, name: "fixture" },
     voices: level === 1 ? { fixture: { name: "voice", speed: 1 } } : { fixture: { speed: 1, name: "voice" } },

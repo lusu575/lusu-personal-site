@@ -597,19 +597,19 @@ const content = {
       icon: "system",
       date: "2026.07.11",
       title: {
-        zh: "日语潜台词训练工具上线",
-        en: "Japanese Subtext Trainer Released",
-        ja: "日本語の裏側を公開"
+        zh: "日语潜台词训练工具更新至 1.0.1",
+        en: "Japanese Subtext Trainer 1.0.1 Update",
+        ja: "日本語の裏側 1.0.1 アップデート"
       },
       summary: {
-        zh: "新增 N3～N1 五个难度、250 关的日语潜台词训练，支持离线预生成语音、纯听/日语/双语模式、句子点击播放和本地与云端进度。",
-        en: "A new N3-to-N1 Japanese subtext trainer adds five levels and 250 stages with pre-generated offline speech, listening/Japanese/bilingual modes, sentence playback, and local plus cloud progress.",
-        ja: "N3 から N1 までの 5 レベル・250 ステージで、事前生成音声、聴解/日本語/対訳モード、文ごとの再生、ローカルとクラウドの進捗同期に対応しました。"
+        zh: "“日语的言外之意”更新至 1.0.1：简化关卡操作、加入首次模式选择和奖牌结果弹窗，修正中文字体与台词引用，并以假名优先流程重录日语语音。",
+        en: "Behind the Japanese 1.0.1 simplifies stage controls, adds a first-use mode picker and medal result dialog, fixes Chinese typography and line references, and re-records speech through a kana-first pipeline.",
+        ja: "「日本語の裏側」1.0.1 では、ステージ操作を簡潔にし、初回モード選択とメダル結果画面を追加しました。中国語字体と台詞参照を修正し、かな優先の音声生成で再収録します。"
       },
       content_markdown: {
-        zh: "# 日语潜台词训练工具上线\n\n新的独立工具「日本語の裏側」已接入资源区，用小场景、日语语音和选择题训练对话中的真实意图。\n\n## 五级进阶题库\n\n- 从 LEVEL 1 的 N3 日常委婉表达，逐步进阶到 LEVEL 2 的 N2 口语省略与敬语距离，再到 LEVEL 3～5 的 N1 信息差、反话、隐瞒和多重解释。\n- 五个难度各 50 关，共 250 关；每个难度的前几关较短，后续场景与推理长度逐步增加。\n- 解析会引用具体台词和人物关系，说明在当前上下文中更可能的解释，避免把单句日语绝对化。\n\n## 可控的离线语音\n\n- 题库语音由本地模型提前生成，提供男声、女声和角色区分，浏览器不会在游玩时调用外部 TTS。\n- 支持纯听、日语和双语场景模式，以及日语、中文、English 选项。\n- 可以自动播放、暂停、续播、切换倍速、拖动进度，也可以点击单句从指定位置开始播放。\n\n## 不丢失的学习进度\n\n- 未登录时使用版本化本地进度，记录解锁、成绩、奖章、尝试次数和播放设置。\n- 登录后通过独立 D1 学习进度表同步，不复用游戏存档表；本地与云端合并会保留已通关关卡和最佳奖章。\n- 云端不可用时不会阻止本地答题，退出登录后也仍然可以继续训练。",
-        en: "# Japanese Subtext Trainer Released\n\nThe standalone tool 「日本語の裏側」 is now available from Resources. Short scenes, Japanese speech, and choice questions train the intent hidden behind tone, context, and relationships.\n\n## Five progressive levels\n\n- LEVEL 1 starts with N3 everyday indirect expressions, LEVEL 2 moves into N2 ellipsis and honorific distance, and LEVELS 3 to 5 develop N1 information gaps, irony, concealment, and multiple supported interpretations.\n- Each level contains 50 stages for a total of 250. Early stages in every level stay shorter, while later scenes and inference chains gradually grow.\n- Explanations cite specific lines and relationships and describe the interpretation that is more likely in the current context instead of treating one Japanese sentence as an absolute formula.\n\n## Controllable offline speech\n\n- Speech is generated ahead of time with local models, including male and female voices and consistent character assignment. The browser does not call an external TTS service while training.\n- Listening-only, Japanese, and bilingual scene modes are available, independently from Japanese, Chinese, or English answer text.\n- Playback supports autoplay after sound unlock, pause, resume, speed controls, timeline seeking, and sentence-level start positions.\n\n## Learning progress that survives sessions\n\n- Signed-out visitors use versioned local progress for unlocks, scores, medals, attempts, and playback settings.\n- Signed-in users synchronize through dedicated D1 learning tables rather than the game-save table. Local and cloud merging preserves cleared stages and the strongest medals.\n- Cloud failures never block local questions, and signing out keeps the local trainer usable.",
-        ja: "# 日本語の裏側を公開\n\n独立ツール「日本語の裏側」をリソース欄から開けるようにしました。短い場面、日本語音声、選択問題を通して、口調、文脈、人間関係の奥にある意図を読み取ります。\n\n## 5 レベルの段階式問題\n\n- LEVEL 1 は N3 の日常的な遠回し表現から始まり、LEVEL 2 は N2 の省略と敬語の距離感、LEVEL 3～5 は N1 の情報差、皮肉、隠し事、複数の解釈へ進みます。\n- 各レベル 50 問、合計 250 ステージです。各レベルの最初は短く、後半ほど場面と推理を長くしています。\n- 解説は具体的な台詞と関係性を引用し、一文を絶対的な公式にせず、この文脈でより支持される解釈を示します。\n\n## 操作できるオフライン音声\n\n- 男声・女声とキャラクター別の音声をローカルモデルで事前生成し、練習中に外部 TTS を呼び出しません。\n- 聴解のみ、日本語、対訳の場面表示と、日本語・中国語・English の選択肢を別々に選べます。\n- 音声の自動再生、一時停止、再開、速度変更、シーク、文ごとの開始位置に対応します。\n\n## 失われない学習進捗\n\n- ログイン前はバージョン付きローカル進捗に、解放、得点、メダル、挑戦回数、再生設定を保存します。\n- ログイン後はゲームセーブ表を使わず、専用 D1 学習表で同期します。ローカルとクラウドを統合しても、クリア済みステージと上位メダルを保持します。\n- クラウド障害はローカル回答を止めず、ログアウト後も練習を続けられます。"
+        zh: "# 日语潜台词训练工具更新至 1.0.1\n\n新的独立工具「日本語の裏側」已接入资源区，用小场景、日语语音和选择题训练对话中的真实意图。\n\n## 五级进阶题库\n\n- 从 LEVEL 1 的 N3 日常委婉表达，逐步进阶到 LEVEL 2 的 N2 口语省略与敬语距离，再到 LEVEL 3～5 的 N1 信息差、反话、隐瞒和多重解释。\n- 五个难度各 50 关，共 250 关；每个难度的前几关较短，后续场景与推理长度逐步增加。\n- 解析会引用具体台词和人物关系，说明在当前上下文中更可能的解释，避免把单句日语绝对化。\n\n## 可控的离线语音\n\n- 题库语音由本地模型提前生成，提供男声、女声和角色区分，浏览器不会在游玩时调用外部 TTS。\n- 支持纯听、日语和双语场景模式，以及日语、中文、English 选项。\n- 支持播放/暂停、切换倍速、拖动进度，以及点击整句或词块播放；1.0.1 已移除自动播放、上一句/下一句、重播和静音等冗余控件。\n\n## 不丢失的学习进度\n\n- 未登录时使用版本化本地进度，记录解锁、成绩、奖章、尝试次数和播放设置。\n- 登录后通过独立 D1 学习进度表同步，不复用游戏存档表；本地与云端合并会保留已通关关卡和最佳奖章。\n- 云端不可用时不会阻止本地答题，退出登录后也仍然可以继续训练。\n\n## 1.0.1 维护更新\n\n- 工具标题会跟随中文、English、日本語界面显示对应名称。\n- 首次进入关卡只弹出一次听力、日语、双语模式选择；之后不自动播放，播放时也不再强制滚动画面。\n- 答题结果改为奖牌弹窗，选项不再插入‘正确答案’文字；解析中的内部 line ID 改为自然的第几句台词。\n- 语音生成先把日语表记转换为明确假名，再交给离线模型，并按受影响内容增量重录。",
+        en: "# Japanese Subtext Trainer 1.0.1 Update\n\nThe standalone tool 「日本語の裏側」 is now available from Resources. Short scenes, Japanese speech, and choice questions train the intent hidden behind tone, context, and relationships.\n\n## Five progressive levels\n\n- LEVEL 1 starts with N3 everyday indirect expressions, LEVEL 2 moves into N2 ellipsis and honorific distance, and LEVELS 3 to 5 develop N1 information gaps, irony, concealment, and multiple supported interpretations.\n- Each level contains 50 stages for a total of 250. Early stages in every level stay shorter, while later scenes and inference chains gradually grow.\n- Explanations cite specific lines and relationships and describe the interpretation that is more likely in the current context instead of treating one Japanese sentence as an absolute formula.\n\n## Controllable offline speech\n\n- Speech is generated ahead of time with local models, including male and female voices and consistent character assignment. The browser does not call an external TTS service while training.\n- Listening-only, Japanese, and bilingual scene modes are available, independently from Japanese, Chinese, or English answer text.\n- Playback supports play/pause, speed control, timeline seeking, and clickable sentences or phrases. Version 1.0.1 removes autoplay, previous/next, replay, and mute controls.\n\n## Learning progress that survives sessions\n\n- Signed-out visitors use versioned local progress for unlocks, scores, medals, attempts, and playback settings.\n- Signed-in users synchronize through dedicated D1 learning tables rather than the game-save table. Local and cloud merging preserves cleared stages and the strongest medals.\n- Cloud failures never block local questions, and signing out keeps the local trainer usable.\n\n## Version 1.0.1 maintenance update\n\n- The title now follows the Chinese, English, or Japanese interface language.\n- A listening/Japanese/bilingual mode picker appears only on first use; stages no longer autoplay or force-scroll while audio plays.\n- Results move to a medal dialog, answer options no longer grow with visible correctness labels, and internal line IDs are replaced by natural references.\n- Speech generation resolves Japanese writing to explicit kana before the offline model and incrementally re-records affected audio.",
+        ja: "# 日本語の裏側 1.0.1 アップデート\n\n独立ツール「日本語の裏側」をリソース欄から開けるようにしました。短い場面、日本語音声、選択問題を通して、口調、文脈、人間関係の奥にある意図を読み取ります。\n\n## 5 レベルの段階式問題\n\n- LEVEL 1 は N3 の日常的な遠回し表現から始まり、LEVEL 2 は N2 の省略と敬語の距離感、LEVEL 3～5 は N1 の情報差、皮肉、隠し事、複数の解釈へ進みます。\n- 各レベル 50 問、合計 250 ステージです。各レベルの最初は短く、後半ほど場面と推理を長くしています。\n- 解説は具体的な台詞と関係性を引用し、一文を絶対的な公式にせず、この文脈でより支持される解釈を示します。\n\n## 操作できるオフライン音声\n\n- 男声・女声とキャラクター別の音声をローカルモデルで事前生成し、練習中に外部 TTS を呼び出しません。\n- 聴解のみ、日本語、対訳の場面表示と、日本語・中国語・English の選択肢を別々に選べます。\n- 再生/一時停止、速度変更、シーク、文や語句のクリック再生に対応します。1.0.1 では自動再生、前後移動、リプレイ、ミュートなどの重複操作を削除しました。\n\n## 失われない学習進捗\n\n- ログイン前はバージョン付きローカル進捗に、解放、得点、メダル、挑戦回数、再生設定を保存します。\n- ログイン後はゲームセーブ表を使わず、専用 D1 学習表で同期します。ローカルとクラウドを統合しても、クリア済みステージと上位メダルを保持します。\n- クラウド障害はローカル回答を止めず、ログアウト後も練習を続けられます。\n\n## 1.0.1 メンテナンス更新\n\n- 中国語、English、日本語の表示言語に合わせてツール名も切り替わります。\n- 聴解・日本語・二言語のモード選択は初回だけ表示し、入場時の自動再生と再生中の強制スクロールを廃止しました。\n- 結果をメダルダイアログに移し、選択肢を広げる正解ラベルを削除し、内部 line ID を自然な台詞参照に置き換えました。\n- 日本語表記を明示的なかな読みに変換してからオフライン音声モデルへ渡し、影響する音声だけを再収録します。"
       }
     },
     {
@@ -1495,25 +1495,22 @@ const content = {
     {
       category: 0,
       iconSrc: "tools/japanese-subtext/assets/icons/tool-icon-64.webp",
-      version: "v1.0.0",
-      size: "250 STAGES",
+      version: "v1.0.1",
       updated: "2026.07.11",
       external: false,
+      showReadyStatus: false,
       url: "/tools/japanese-subtext/",
-      title: { zh: "日本語の裏側", en: "日本語の裏側", ja: "日本語の裏側" },
+      title: { zh: "日语的言外之意", en: "Behind the Japanese", ja: "日本語の裏側" },
       desc: {
         zh: "通过语气、上下文和人物关系，判断日语对话中真正想表达的意思。",
         en: "Infer what Japanese speakers really mean through tone, context, and relationships.",
         ja: "口調、文脈、人間関係から、日本語の会話で本当に伝えたいことを読み取ります。"
       },
-      actionLabel: { zh: "开始训练", en: "Start Training", ja: "トレーニング開始" },
+      actionLabel: { zh: "开始挑战", en: "Start Challenge", ja: "チャレンジ開始" },
       tags: [
-        { zh: "N3～N1", en: "N3–N1", ja: "N3～N1" },
-        { zh: "250 关", en: "250 stages", ja: "250 ステージ" },
         { zh: "听力训练", en: "Listening", ja: "聴解" },
         { zh: "潜台词", en: "Subtext", ja: "含意" },
-        { zh: "男声 / 女声", en: "Male / female voices", ja: "男声 / 女声" },
-        { zh: "本地 + 云端进度", en: "Local + cloud progress", ja: "ローカル + クラウド進捗" }
+        { zh: "支持（云存档）", en: "Cloud Save Supported", ja: "クラウドセーブ対応" }
       ]
     },
     {
@@ -3876,11 +3873,9 @@ function resourceCardElement(item) {
     `${label("type")}\uFF1A${label("resourceCategories")[item.category] || ""}`
   ];
   if (resourceUrl) {
-    metaItems.push(
-      `${label("version")}\uFF1A${item.version || ""}`,
-      `${label("size")}\uFF1A${item.size || ""}`,
-      `${label("updated")}\uFF1A${item.updated || ""}`
-    );
+    if (item.version) metaItems.push(`${label("version")}\uFF1A${item.version}`);
+    if (item.size) metaItems.push(`${label("size")}\uFF1A${item.size}`);
+    if (item.updated) metaItems.push(`${label("updated")}\uFF1A${item.updated}`);
   }
   metaItems.forEach((text) => {
     const itemNode = document.createElement("span");
@@ -3893,7 +3888,7 @@ function resourceCardElement(item) {
     tagNode.textContent = localText(tag);
     meta.appendChild(tagNode);
   });
-  meta.appendChild(resourceStatusElement(resourceUrl, resourceTitle));
+  if (item.showReadyStatus !== false) meta.appendChild(resourceStatusElement(resourceUrl, resourceTitle));
 
   main.append(title, desc, meta);
   card.append(main, resourceActionElement(item, resourceUrl));

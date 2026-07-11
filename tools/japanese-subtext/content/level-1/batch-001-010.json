@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "level": 1,
   "batch": "001-010",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-001",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 1,
       "jlptTarget": "N3",
@@ -231,9 +231,9 @@
               "en": "In the current context, Ryo is more likely gently declining today's invitation."
             },
             "evidence": {
-              "ja": "line-002 の「今日はちょっと」と「また誘って」、line-003 の美咲の「また今度ね」が、この受け取り方を支えます。",
-              "zh": "line-002 的“今天有点”和“下次再叫我”，以及 line-003 美咲的“那就下次”，共同支持这一理解。",
-              "en": "The phrases in line-002 and Misaki's “maybe next time” in line-003 support this reading."
+              "ja": "2番目の台詞の「今日はちょっと」と「また誘って」、3番目の台詞の美咲の「また今度ね」が、この受け取り方を支えます。",
+              "zh": "第2句台词的“今天有点”和“下次再叫我”，以及第3句台词美咲的“那就下次”，共同支持这一理解。",
+              "en": "The phrases in the second line and Misaki's “maybe next time” in the third line support this reading."
             },
             "nuance": {
               "ja": "「ちょっと……」で理由を省くと、相手に詳しく説明せず、断りを強く聞こえさせない効果があります。",
@@ -258,13 +258,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "4ff85e803fc1b36999ee9c3ea559db73e356bb3682e61fb77e511baf3b3c4642"
+      "contentHash": "f4e97a9b8ad95203d2bfdde2c79189f06d6a176cf010d3d240d57777d5b8714e"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-002",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 2,
       "jlptTarget": "N3",
@@ -454,9 +454,9 @@
               "en": "In the current context, Aoi is more likely explaining that the apparently empty seat is reserved."
             },
             "evidence": {
-              "ja": "line-001 で春が席を使えるか尋ね、line-002 で葵が「すぐ戻ります」と鞄の存在を続けて示しています。",
-              "zh": "line-001 中春询问能否使用座位，line-002 紧接着说明朋友会回来且包还在。",
-              "en": "Haru asks whether the seat is available in line-001, and line-002 answers with the friend's imminent return and bag."
+              "ja": "1番目の台詞で春が席を使えるか尋ね、2番目の台詞で葵が「すぐ戻ります」と鞄の存在を続けて示しています。",
+              "zh": "第1句台词中春询问能否使用座位，第2句台词紧接着说明朋友会回来且包还在。",
+              "en": "Haru asks whether the seat is available in the first line, and the second line answers with the friend's imminent return and bag."
             },
             "nuance": {
               "ja": "日本語では「使えません」と直接言わず、席を使っている人の状況を説明して断ることがあります。",
@@ -481,13 +481,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "c3524c12634cf8a49f13e70a0c59d17951be1551fc486757bba5b89bf1bef51f"
+      "contentHash": "e61fb583986c51fa5052f10cb1c8fa02b98528122a2e7a9fe19acea75691c299"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-003",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 3,
       "jlptTarget": "N3",
@@ -698,9 +698,9 @@
               "en": "In the current context, Kenta is more likely asking to receive the item without a bag."
             },
             "evidence": {
-              "ja": "line-001 の質問は袋についてで、line-002 はその直後に「そのままで」と答え、すぐ食べる理由も加えています。",
-              "zh": "line-001 问的是袋子，line-002 紧接着回答“就这样”，还补充马上要吃。",
-              "en": "The question in line-001 is about a bag, and line-002 immediately answers it while adding that he will eat soon."
+              "ja": "1番目の台詞の質問は袋についてで、2番目の台詞はその直後に「そのままで」と答え、すぐ食べる理由も加えています。",
+              "zh": "第1句台词问的是袋子，第2句台词紧接着回答“就这样”，还补充马上要吃。",
+              "en": "The question in the first line is about a bag, and the second line immediately answers it while adding that he will eat soon."
             },
             "nuance": {
               "ja": "日本語では、直前の話題が明らかな時、「袋に入れないで」の部分を省いて「そのままで」と言えます。",
@@ -725,13 +725,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "33596efe457e9ee655de2512fb92ca20fde7509fba3e6f74c7f8d981558def9c"
+      "contentHash": "096effe7d62a5d8cac9de6d1d4eb7e75d0625b3813a52c7e7c2cbc705fd0f677"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-004",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 4,
       "jlptTarget": "N3",
@@ -927,9 +927,9 @@
               "en": "In the current context, she is more likely hinting that she wants Ota to close the window."
             },
             "evidence": {
-              "ja": "line-001 は場所を「窓の近く」と特定し、line-002 で太田も風に気づいて「窓を閉めましょうか」と応じています。",
-              "zh": "line-001 特别指出“窗边”，line-002 太田也注意到风并提出关窗。",
-              "en": "Line-001 identifies the window area, and in line-002 Ota recognizes the draft and offers to close it."
+              "ja": "1番目の台詞は場所を「窓の近く」と特定し、2番目の台詞で太田も風に気づいて「窓を閉めましょうか」と応じています。",
+              "zh": "第1句台词特别指出“窗边”，第2句台词太田也注意到风并提出关窗。",
+              "en": "The first line identifies the window area, and in the second line Ota recognizes the draft and offers to close it."
             },
             "nuance": {
               "ja": "「寒いです。閉めてください」より質問形にすると、相手にも状況を確認してもらい、命令の感じを弱められます。",
@@ -954,13 +954,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "44e41b2977ce6ed4644b3a3d0d6ea2a67e83dce338adfd05c900992e3c29d88d"
+      "contentHash": "f229c16d2cf26e0ae149dc3a50a5a2f09971cd68b5be72b56adac2d22eae0be0"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-005",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 5,
       "jlptTarget": "N3",
@@ -1189,9 +1189,9 @@
               "en": "In the current context, he is more likely appreciating the offer while politely declining more food."
             },
             "evidence": {
-              "ja": "line-001 で店主がおかわりを提案し、line-002 で海斗が「でも」と切り替えて「もう十分です」と答えています。",
-              "zh": "line-001 店主提出续添，line-002 海斗用“不过”转折后说“已经够了”。",
-              "en": "The offer appears in line-001, and line-002 shifts with “but” before saying he has had enough."
+              "ja": "1番目の台詞で店主がおかわりを提案し、2番目の台詞で海斗が「でも」と切り替えて「もう十分です」と答えています。",
+              "zh": "第1句台词店主提出续添，第2句台词海斗用“不过”转折后说“已经够了”。",
+              "en": "The offer appears in the first line, and the second line shifts with “but” before saying he has had enough."
             },
             "nuance": {
               "ja": "先に料理を褒めて「ごちそうさまでした」と結ぶことで、断りが料理への否定に聞こえないよう相手の気持ちを守っています。",
@@ -1216,13 +1216,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "62526e9723936002ba681417a7e93f1d87495e14c508a51d2076c240b2a7a21f"
+      "contentHash": "9cedc3be554bca1136fc667f1c506fd8c673e817132ebd8b4412cc02fe576983"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-006",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 6,
       "jlptTarget": "N3",
@@ -1452,9 +1452,9 @@
               "en": "In the current context, Naoto is more likely reassuring Yuki that she need not hurry."
             },
             "evidence": {
-              "ja": "line-001 の友紀の心配に対し、line-002 は「間に合う」「走らなくて大丈夫」と具体的に答え、line-003 で友紀も安心しています。",
-              "zh": "针对 line-001 的担心，line-002 明确说“赶得上”“不用跑”，line-003 中友纪也放松下来。",
-              "en": "Line-002 directly answers Yuki's concern from line-001, and her relaxed response in line-003 confirms the reading."
+              "ja": "1番目の台詞の友紀の心配に対し、2番目の台詞は「間に合う」「走らなくて大丈夫」と具体的に答え、3番目の台詞で友紀も安心しています。",
+              "zh": "针对第1句台词的担心，第2句台词明确说“赶得上”“不用跑”，第3句台词中友纪也放松下来。",
+              "en": "The second line directly answers Yuki's concern from the first line, and her relaxed response in the third line confirms the reading."
             },
             "nuance": {
               "ja": "「大丈夫」はここでは能力の評価ではなく、相手の不安を下げる安心表現として使われています。",
@@ -1479,13 +1479,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "44314d0fc9222cebc002a353a618df7d14d9c9f5b1c79efc2a67162cf0e21b24"
+      "contentHash": "15f49ebe812535d96437037b028279faf8f7715dadac0e17a6bcc13671e83c76"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-007",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 7,
       "jlptTarget": "N3",
@@ -1737,9 +1737,9 @@
               "en": "In the current context, Rena is more likely ending today's interaction without committing to the next one."
             },
             "evidence": {
-              "ja": "line-002 で「今日はここまで」と明言し、line-003 の明日の提案にも line-004 で「まだ分からない」と答えてから別れの挨拶をしています。",
-              "zh": "line-002 明说今天到此为止，面对 line-003 的明日提议，line-004 又说还不知道并道晚安。",
-              "en": "She says she is stopping in line-002, does not commit to tomorrow in line-004, and closes with good night."
+              "ja": "2番目の台詞で「今日はここまで」と明言し、3番目の台詞の明日の提案にも4番目の台詞で「まだ分からない」と答えてから別れの挨拶をしています。",
+              "zh": "第2句台词明说今天到此为止，面对第3句台词的明日提议，第4句台词又说还不知道并道晚安。",
+              "en": "She says she is stopping in the second line, does not commit to tomorrow in the fourth line, and closes with good night."
             },
             "nuance": {
               "ja": "「また今度ね」は関係を否定せずに会話を閉じられる便利な表現で、必ずしも具体的な約束ではありません。",
@@ -1764,13 +1764,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "dcd93163774eb95306461cd1e949f01b2ff6a8316a2164195720d0487515ec67"
+      "contentHash": "bad67b4a0f718be4e40a271b94c83e65e77192998205605a3a99d3104a75bbc8"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-008",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 8,
       "jlptTarget": "N3",
@@ -2009,9 +2009,9 @@
               "en": "In the current context, the leader is more likely indirectly asking Aki to adjust roles and help heal."
             },
             "evidence": {
-              "ja": "line-001 で回復役不足が示され、line-002 で秋が回復可能だと分かり、その直後の line-003 で隊長が「もう一人」を望んでいます。",
-              "zh": "line-001 指出治疗不足，line-002 表明秋具备治疗能力，紧接着 line-003 队长希望“再来一个人”。",
-              "en": "Line-001 establishes the shortage, line-002 identifies Aki's healing ability, and line-003 immediately expresses the need for one more healer."
+              "ja": "1番目の台詞で回復役不足が示され、2番目の台詞で秋が回復可能だと分かり、その直後の3番目の台詞で隊長が「もう一人」を望んでいます。",
+              "zh": "第1句台词指出治疗不足，第2句台词表明秋具备治疗能力，紧接着第3句台词队长希望“再来一个人”。",
+              "en": "The first line establishes the shortage, the second line identifies Aki's healing ability, and the third line immediately expresses the need for one more healer."
             },
             "nuance": {
               "ja": "「変わってくれ」と命令せず「安心だな」と感想の形にすると、相手に判断の余地を残しながら希望を伝えられます。",
@@ -2036,13 +2036,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "9dcb2b7ceebf44cecfb448704fb2895fa36eb909ab1dbb5dc28b7b2032a79090"
+      "contentHash": "ee1db359d61b151a068ad90d15a2a1de3744bcb2bedf33fcd31bf194564485ad"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-009",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 9,
       "jlptTarget": "N3",
@@ -2299,9 +2299,9 @@
               "en": "In the current context, Hina is more likely gently asking Miki to lower her voice."
             },
             "evidence": {
-              "ja": "line-001 の美紀は大きな声で話し、line-002 の後、line-003 で自ら謝って声を小さくすると理解しています。",
-              "zh": "line-001 美纪声音很大，听到 line-002 后，她在 line-003 道歉并主动说会降低音量。",
-              "en": "Miki is loud in line-001 and interprets the hint in line-003 by apologizing and lowering her voice."
+              "ja": "1番目の台詞の美紀は大きな声で話し、2番目の台詞の後、3番目の台詞で自ら謝って声を小さくすると理解しています。",
+              "zh": "第1句台词美纪声音很大，听到第2句台词后，她在第3句台词道歉并主动说会降低音量。",
+              "en": "Miki is loud in the first line and interprets the hint in the third line by apologizing and lowering her voice."
             },
             "nuance": {
               "ja": "図書館の規則を直接持ち出さず、場所の特徴を共有する形なら、親しい相手にも角を立てず注意できます。",
@@ -2326,13 +2326,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "f9222948ed7a49e33a36b1d1f6c0f845826e400891c0e090c7dc598e478e7787"
+      "contentHash": "74605c656058812c152dd408dcfb4ed082ef243b8de5f517bf27d051a6c14682"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-010",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 10,
       "jlptTarget": "N3",
@@ -2574,9 +2574,9 @@
               "en": "In the current context, the clerk is more likely giving Yuma enough information to choose whether freshness is worth the wait."
             },
             "evidence": {
-              "ja": "line-001 で悠真は急いでいると伝え、line-002 は具体的に五分と示し、line-003 で悠真自身が待つ選択をしています。",
-              "zh": "line-001 悠真说明赶时间，line-002 给出具体五分钟，line-003 悠真据此选择等待。",
-              "en": "Yuma states his hurry in line-001, receives a specific wait in line-002, and makes his own choice in line-003."
+              "ja": "1番目の台詞で悠真は急いでいると伝え、2番目の台詞は具体的に五分と示し、3番目の台詞で悠真自身が待つ選択をしています。",
+              "zh": "第1句台词悠真说明赶时间，第2句台词给出具体五分钟，第3句台词悠真据此选择等待。",
+              "en": "Yuma states his hurry in the first line, receives a specific wait in the second line, and makes his own choice in the third line."
             },
             "nuance": {
               "ja": "「待ってください」と要求せず情報だけを足すことで、店員は客の時間を尊重しながらおすすめを示せます。",
@@ -2601,7 +2601,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "8aec9458fc18a9c7bbefadf4c7e2c9e003aa1c8d215df4fb18607663ef5aa956"
+      "contentHash": "5fd4c912120ffdb6b684d25262823e37c7ee735703c7bf2af86d7451da80e7ee"
     }
   ]
 }

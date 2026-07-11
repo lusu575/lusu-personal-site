@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "level": 3,
   "batch": "031-040",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-031",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 31,
       "jlptTarget": "N1",
@@ -436,9 +436,9 @@
               "en": "“At last” is not a rival's sarcasm but empathetic relief that prolonged unfairness is ending."
             },
             "evidence": {
-              "ja": "line-006 と line-008 は春香の継続的支援、line-010 は過去を消さない姿勢、line-011 は葵の理解を示します。",
-              "zh": "line-006、008 表明春香持续支持，line-010 表明她不愿抹去过去，line-011 是葵的领会。",
-              "en": "Lines 006 and 008 show sustained advocacy, line 010 refuses to erase the past, and line 011 records Aoi's understanding."
+              "ja": "6番目の台詞と8番目の台詞は春香の継続的支援、10番目の台詞は過去を消さない姿勢、11番目の台詞は葵の理解を示します。",
+              "zh": "第6句台词、008 表明春香持续支持，第10句台词表明她不愿抹去过去，第11句台词是葵的领会。",
+              "en": "The sixth and eighth lines show sustained advocacy, the tenth line refuses to erase the past, and the eleventh line records Aoi's understanding."
             },
             "nuance": {
               "ja": "祝福と制度への批判が同時にある混合感情で、単純な喜びだけには還元できません。",
@@ -525,9 +525,9 @@
               "en": "Both the internal standard and peer comparison show the promotion arriving late."
             },
             "evidence": {
-              "ja": "line-005 が反復延期、line-008 が比較的不均衡、line-010 が二年の遅れを明示します。",
-              "zh": "line-005 是反复延期，line-008 是比较上的不均，line-010 明确两年延误。",
-              "en": "Line 005 shows repeated deferral, line 008 comparative disparity, and line 010 explicitly names two delayed years."
+              "ja": "5番目の台詞が反復延期、8番目の台詞が比較的不均衡、10番目の台詞が二年の遅れを明示します。",
+              "zh": "第5句台词是反复延期，第8句台词是比较上的不均，第10句台词明确两年延误。",
+              "en": "The fifth line shows repeated deferral, the eighth line comparative disparity, and the tenth line explicitly names two delayed years."
             },
             "nuance": {
               "ja": "同じ評価でも職務条件が違う可能性は残りますが、毎年変わる理由と再検討要求が恣意性を疑わせます。",
@@ -613,9 +613,9 @@
               "en": "Haruka frames promotion as recognition that should already have arrived, not a random gift."
             },
             "evidence": {
-              "ja": "line-005 の繰り返す『次回』と line-008 の先行昇進者が、『番』の順序性を具体化します。",
-              "zh": "line-005 反复出现“下次”，line-008 又有先晋升者，具体化了“轮到”的顺序性。",
-              "en": "Repeated “next cycle” in line 005 and earlier promotions in line 008 give the turn-taking frame concrete content."
+              "ja": "5番目の台詞の繰り返す『次回』と8番目の台詞の先行昇進者が、『番』の順序性を具体化します。",
+              "zh": "第5句台词反复出现“下次”，第8句台词又有先晋升者，具体化了“轮到”的顺序性。",
+              "en": "Repeated “next cycle” in the fifth line and earlier promotions in the eighth line give the turn-taking frame concrete content."
             },
             "nuance": {
               "ja": "この表現は葵の権利を法的に証明するものではなく、春香の公平性評価を含む語用的前提です。",
@@ -640,13 +640,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "58d770b67ec9f802896dfe816bf38b72ebee62d8add2047eaab2f76a58064e33"
+      "contentHash": "6e79e7b00b3661e4a23fe38a1d94ac49cbb2a1bcf54ed7a7eedc7949b836c8bf"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-032",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 32,
       "jlptTarget": "N1",
@@ -1033,9 +1033,9 @@
               "en": "Repeated acts of care reveal attachment more strongly than his dismissive wording."
             },
             "evidence": {
-              "ja": "line-005 は整え方、line-007 は維持費、line-010 は今後も残す選択を示します。",
-              "zh": "line-005 是整理方式，line-007 是维护投入，line-010 表明今后仍保留。",
-              "en": "Line 005 shows arrangement, line 007 maintenance effort, and line 010 the choice to keep it going forward."
+              "ja": "5番目の台詞は整え方、7番目の台詞は維持費、10番目の台詞は今後も残す選択を示します。",
+              "zh": "第5句台词是整理方式，第7句台词是维护投入，第10句台词表明今后仍保留。",
+              "en": "The fifth line shows arrangement, the seventh line maintenance effort, and the tenth line the choice to keep it going forward."
             },
             "nuance": {
               "ja": "旅行全体が楽しかったとは限りませんが、少なくとも切符に結び付く記憶を手放したくない態度です。",
@@ -1121,9 +1121,9 @@
               "en": "Effort spent maintaining it behaviorally demonstrates a priority not to lose it."
             },
             "evidence": {
-              "ja": "line-005 と line-007 は独立した手入れ、line-010 は保存継続を示し、line-004 と line-008 の偶然説を弱めます。",
-              "zh": "line-005、007 是两项独立维护，line-010 是继续保存，削弱 line-004、008 的偶然解释。",
-              "en": "Lines 005 and 007 show separate acts of care, while line 010 extends preservation, weakening the excuses in lines 004 and 008."
+              "ja": "5番目の台詞と7番目の台詞は独立した手入れ、10番目の台詞は保存継続を示し、4番目の台詞と8番目の台詞の偶然説を弱めます。",
+              "zh": "第5句台词、007 是两项独立维护，第10句台词是继续保存，削弱第4句台词、008 的偶然解释。",
+              "en": "The fifth and seventh lines show separate acts of care, while the tenth line extends preservation, weakening the excuses in the fourth and eighth lines."
             },
             "nuance": {
               "ja": "物を整える人の習慣という可能性はありますが、特定の古い切符だけを見える位置で守る点が重要です。",
@@ -1209,9 +1209,9 @@
               "en": "The accumulation functions less as stronger explanation than as defense against saying it matters."
             },
             "evidence": {
-              "ja": "line-009 がその回避を直接指摘し、line-010 で慧は反論せず保存行動を続けます。",
-              "zh": "line-009 直接指出这种回避，line-010 中慧没有反驳，而是继续保存。",
-              "en": "Line 009 directly identifies the avoidance, and in line 010 Kei does not dispute it, choosing continued preservation."
+              "ja": "9番目の台詞がその回避を直接指摘し、10番目の台詞で慧は反論せず保存行動を続けます。",
+              "zh": "第9句台词直接指出这种回避，第10句台词中慧没有反驳，而是继续保存。",
+              "en": "The ninth line directly identifies the avoidance, and in the tenth line Kei does not dispute it, choosing continued preservation."
             },
             "nuance": {
               "ja": "照れや感傷の抑制と読めますが、慧本人が明言しないため、特定の感情名までは確定できません。",
@@ -1236,13 +1236,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "0aa014647ea37aed9cb92f5294cbacc2418cb7ff0197279228cedce10001e5bb"
+      "contentHash": "e5af86e577cb0709eb73bf1b9558eb339405b14d8667667fe5bdb1eeafe55ddf"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-033",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 33,
       "jlptTarget": "N1",
@@ -1676,9 +1676,9 @@
               "en": "Even as a question, leading with a customer-side cause shifts the focus of responsibility toward the diner."
             },
             "evidence": {
-              "ja": "line-004 で塩入れ未使用が判明し、line-009 が受け手の感じた疑い、line-010 が料理長自身の順序問題の認識を示します。",
-              "zh": "line-004 证明盐罐未用，line-009 说明顾客感到被怀疑，line-010 是主厨承认顺序问题。",
-              "en": "Line 004 shows the shaker unused, line 009 reports the perceived suspicion, and line 010 acknowledges the sequencing problem."
+              "ja": "4番目の台詞で塩入れ未使用が判明し、9番目の台詞が受け手の感じた疑い、10番目の台詞が料理長自身の順序問題の認識を示します。",
+              "zh": "第4句台词证明盐罐未用，第9句台词说明顾客感到被怀疑，第10句台词是主厨承认顺序问题。",
+              "en": "The fourth line shows the shaker unused, the ninth line reports the perceived suspicion, and the tenth line acknowledges the sequencing problem."
             },
             "nuance": {
               "ja": "原因確認そのものは合理的ですが、既存の厨房記録を確認せず客側から始めた順序が含みを作ります。",
@@ -1763,9 +1763,9 @@
               "en": "Physical evidence and a timestamped record independently reject the customer-cause account, making them stronger than self-report."
             },
             "evidence": {
-              "ja": "line-004 は卓上操作、line-006 と line-007 は厨房段階ですでに塩分が高かったことを裏付けます。",
-              "zh": "line-004 针对桌上操作，line-006、007 证明厨房阶段盐分就已偏高。",
-              "en": "Line 004 addresses table use; lines 006 and 007 establish high salt at the kitchen stage."
+              "ja": "4番目の台詞は卓上操作、6番目の台詞と7番目の台詞は厨房段階ですでに塩分が高かったことを裏付けます。",
+              "zh": "第4句台词针对桌上操作，第6句台词、007 证明厨房阶段盐分就已偏高。",
+              "en": "The fourth line addresses table use; the sixth and seventh lines establish high salt at the kitchen stage."
             },
             "nuance": {
               "ja": "封印だけなら別の塩を使った可能性も残りますが、事前記録がその代案も弱めます。",
@@ -1853,9 +1853,9 @@
               "en": "The question's diagnostic legitimacy and conversational blame effect should be evaluated separately."
             },
             "evidence": {
-              "ja": "line-005 は料理長の説明、line-006 は既知で確認可能だった情報、line-009 と line-010 は効果と反省を示します。",
-              "zh": "line-005 是主厨解释，line-006 是本可核对的既有信息，line-009、010 是效果与反省。",
-              "en": "Line 005 provides the chef's account, line 006 available prior evidence, and lines 009–010 the effect and acknowledgment."
+              "ja": "5番目の台詞は料理長の説明、6番目の台詞は既知で確認可能だった情報、9番目の台詞と10番目の台詞は効果と反省を示します。",
+              "zh": "第5句台词是主厨解释，第6句台词是本可核对的既有信息，第9句台词、010 是效果与反省。",
+              "en": "The fifth line provides the chef's account, the sixth line available prior evidence, and the ninth through tenth lines the effect and acknowledgment."
             },
             "nuance": {
               "ja": "意図的な責任逃れまで断定せずとも、受け手への影響は発話順序から分析できます。",
@@ -1880,13 +1880,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "2406f5275be2cd4918649973ecad4f459c8b43298730cd9f8743a0db0ae876f5"
+      "contentHash": "0c22341f17bbb1ceba97edb5641b753c71b35188d6ee126453b12e5696f76483"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-034",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 34,
       "jlptTarget": "N1",
@@ -2299,9 +2299,9 @@
               "en": "Selective omission is better explained as self-presentation that conceals a personal connection than as a language gap."
             },
             "evidence": {
-              "ja": "line-002 は翻訳能力、line-003～004 と line-007～008 は二度の回避、line-009 と line-010 は選択性を明示します。",
-              "zh": "line-002 证明翻译能力，line-003至004 与 line-007至008 是两次回避，line-009、010 明确其选择性。",
-              "en": "Line 002 establishes ability; lines 003–004 and 007–008 show two evasions; lines 009–010 name the selectivity."
+              "ja": "2番目の台詞は翻訳能力、3番目の台詞～004 と7番目の台詞～008 は二度の回避、9番目の台詞と10番目の台詞は選択性を明示します。",
+              "zh": "第2句台词证明翻译能力，第3句台词至004 与第7句台词至008 是两次回避，第9句台词、010 明确其选择性。",
+              "en": "The second line establishes ability; the third through fourth and seventh through eighth lines show two evasions; the ninth through tenth lines name the selectivity."
             },
             "nuance": {
               "ja": "隠す関係が恋愛だとは限らず、本文で確実なのは過去の共同経験を伏せていることです。",
@@ -2389,9 +2389,9 @@
               "en": "A content-dependent output pattern, rather than lack of ability, indicates deliberation."
             },
             "evidence": {
-              "ja": "line-002 と line-010 が能力を、line-003～004 と line-007～008 が反復する置換を示します。",
-              "zh": "line-002、010 证明能力，line-003至004 与 line-007至008 展示重复替换。",
-              "en": "Lines 002 and 010 establish competence; lines 003–004 and 007–008 show repeated substitution."
+              "ja": "2番目の台詞と10番目の台詞が能力を、3番目の台詞～004 と7番目の台詞～008 が反復する置換を示します。",
+              "zh": "第2句台词、010 证明能力，第3句台词至004 与第7句台词至008 展示重复替换。",
+              "en": "The second and tenth lines establish competence; the third through fourth and seventh through eighth lines show repeated substitution."
             },
             "nuance": {
               "ja": "一度なら聞き漏らしもあり得ますが、同一主題で二度、直後に別の旅程情報を出す点が偶然説を弱めます。",
@@ -2476,9 +2476,9 @@
               "en": "Evidence supports shared history and concealment, but not the relationship's exact category."
             },
             "evidence": {
-              "ja": "line-007 が共同活動を明言し、line-009 と line-010 が夏海の選択的省略を確認します。",
-              "zh": "line-007 明说共同活动，line-009、010 确认夏海的选择性省略。",
-              "en": "Line 007 explicitly states shared activity, and lines 009–010 confirm selective omission."
+              "ja": "7番目の台詞が共同活動を明言し、9番目の台詞と10番目の台詞が夏海の選択的省略を確認します。",
+              "zh": "第7句台词明说共同活动，第9句台词、010 确认夏海的选择性省略。",
+              "en": "The seventh line explicitly states shared activity, and the ninth through tenth lines confirm selective omission."
             },
             "nuance": {
               "ja": "親密さは推測できますが、恋愛、家族、仕事仲間のどれかを断定する表現はありません。",
@@ -2503,13 +2503,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "4ef4db505eacd16e9b2b7fafed722bf3565de47cbebb844a835c74d103a926cc"
+      "contentHash": "bbcc67f12e2b9398390e3c3a5ea1ce33bf83698e192d105c31be5fd1414f5cac"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-035",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 35,
       "jlptTarget": "N1",
@@ -2954,9 +2954,9 @@
               "en": "Both editorial actions work in the same direction, presenting later readers with a one-sided guilt narrative."
             },
             "evidence": {
-              "ja": "line-002～003 は里奈の訂正だけが消えたこと、line-007 は偏った固定要約、line-008 は管理者の中立主張を示します。",
-              "zh": "line-002～003 显示只有里奈的更正消失，line-007 是偏向性的固定摘要，line-008 是管理员的中立主张。",
-              "en": "Lines 002–003 show only Rina's correction disappearing, line 007 shows the slanted pinned summary, and line 008 gives the administrator's neutrality claim."
+              "ja": "2番目の台詞～003 は里奈の訂正だけが消えたこと、7番目の台詞は偏った固定要約、8番目の台詞は管理者の中立主張を示します。",
+              "zh": "第2句台词～003 显示只有里奈的更正消失，第7句台词是偏向性的固定摘要，第8句台词是管理员的中立主张。",
+              "en": "The second through third lines show only Rina's correction disappearing, the seventh line shows the slanted pinned summary, and the eighth line gives the administrator's neutrality claim."
             },
             "nuance": {
               "ja": "単一の削除なら誤操作もあり得ますが、要約の方向まで一致するため偶然説は弱まります。",
@@ -3043,9 +3043,9 @@
               "en": "It breaks the reader's chronology and strengthens an image of Toru's guilt by making the mistaken accusation appear unretracted."
             },
             "evidence": {
-              "ja": "line-005 が結論の逆転、line-006 が読者効果、line-007 が固定要約、line-011 が物語化を説明します。",
-              "zh": "line-005 说明结论相反，line-006 说明读者效果，line-007 是置顶摘要，line-011 是叙事塑造。",
-              "en": "Line 005 identifies reversed conclusions, line 006 the reader effect, line 007 the pinned summary, and line 011 the narrative shaping."
+              "ja": "5番目の台詞が結論の逆転、6番目の台詞が読者効果、7番目の台詞が固定要約、11番目の台詞が物語化を説明します。",
+              "zh": "第5句台词说明结论相反，第6句台词说明读者效果，第7句台词是置顶摘要，第11句台词是叙事塑造。",
+              "en": "The fifth line identifies reversed conclusions, the sixth line the reader effect, the seventh line the pinned summary, and the eleventh line the narrative shaping."
             },
             "nuance": {
               "ja": "里奈が誤って告発した事実は残りますが、それは徹による盗用が確定したこととは正反対です。",
@@ -3133,9 +3133,9 @@
               "en": "It presents value-laden editing as neutral work applying an equal standard."
             },
             "evidence": {
-              "ja": "line-005 は非重複性、line-007 は偏った要約、line-009 は中立なら訂正も残すべきだという反証です。",
-              "zh": "line-005 说明并非重复，line-007 是偏向摘要，line-009 提出中立应保留纠正的反证。",
-              "en": "Line 005 denies duplication, line 007 shows biased summary, and line 009 supplies the neutrality test of retaining corrections."
+              "ja": "5番目の台詞は非重複性、7番目の台詞は偏った要約、9番目の台詞は中立なら訂正も残すべきだという反証です。",
+              "zh": "第5句台词说明并非重复，第7句台词是偏向摘要，第9句台词提出中立应保留纠正的反证。",
+              "en": "The fifth line denies duplication, the seventh line shows biased summary, and the ninth line supplies the neutrality test of retaining corrections."
             },
             "nuance": {
               "ja": "本当に重複削除が必要な場合もありますが、ここでは意味が反対の投稿へ適用されているため説明が弱いです。",
@@ -3160,13 +3160,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "64dba6590d8b5820d51fe0956f068388000e9109bf2d689e7eab0bcb51b5ca4b"
+      "contentHash": "9f9b1f1be1647d6545882ab596e55fac7eb13a2d5bbcf0d77360f4e92de3f0c0"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-036",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 36,
       "jlptTarget": "N1",
@@ -3568,9 +3568,9 @@
               "en": "The system's prediction account directly explains the reversed temporal order."
             },
             "evidence": {
-              "ja": "line-002 は遅延仮説の予測、line-003 は反復、line-004 と line-006 は実装方式を示します。",
-              "zh": "line-002 提出延迟假说应有结果，line-003 显示反复，line-004、006 说明实现方式。",
-              "en": "Line 002 states what latency predicts, line 003 repetition, and lines 004 and 006 the implementation."
+              "ja": "2番目の台詞は遅延仮説の予測、3番目の台詞は反復、4番目の台詞と6番目の台詞は実装方式を示します。",
+              "zh": "第2句台词提出延迟假说应有结果，第3句台词显示反复，第4句台词、006 说明实现方式。",
+              "en": "The second line states what latency predicts, the third line repetition, and the fourth and sixth lines the implementation."
             },
             "nuance": {
               "ja": "一度だけなら時計ずれもあり得ますが、複数動作で同じ先行幅があり、システム説明とも合います。",
@@ -3656,9 +3656,9 @@
               "en": "It leads the display with statistical pattern prediction rather than reading live control in advance."
             },
             "evidence": {
-              "ja": "line-004 が学習源、line-006 が表示手順、line-009 が予測失敗時の現在入力への切替を示します。",
-              "zh": "line-004 是学习来源，line-006 是显示流程，line-009 是预测失败后切换当前输入。",
-              "en": "Line 004 gives the data source, line 006 display order, and line 009 fallback when prediction fails."
+              "ja": "4番目の台詞が学習源、6番目の台詞が表示手順、9番目の台詞が予測失敗時の現在入力への切替を示します。",
+              "zh": "第4句台词是学习来源，第6句台词是显示流程，第9句台词是预测失败后切换当前输入。",
+              "en": "The fourth line gives the data source, the sixth line display order, and the ninth line fallback when prediction fails."
             },
             "nuance": {
               "ja": "本人らしい出力が多くても、モデルが現在の意思を直接知ることを意味しません。",
@@ -3744,9 +3744,9 @@
               "en": "One must distinguish resemblance to the person from an action actually chosen by them now."
             },
             "evidence": {
-              "ja": "line-007 が履歴寄りと指摘し、line-008～009 で本人が予測を外せること、line-010 が注意点をまとめます。",
-              "zh": "line-007 指出更接近历史，line-008至009 证明本人能违背预测，line-010 总结注意点。",
-              "en": "Line 007 identifies historical bias, lines 008–009 show the person can defy it, and line 010 states the caution."
+              "ja": "7番目の台詞が履歴寄りと指摘し、8番目の台詞～009 で本人が予測を外せること、10番目の台詞が注意点をまとめます。",
+              "zh": "第7句台词指出更接近历史，第8句台词至009 证明本人能违背预测，第10句台词总结注意点。",
+              "en": "The seventh line identifies historical bias, the eighth through ninth lines show the person can defy it, and the tenth line states the caution."
             },
             "nuance": {
               "ja": "予測精度が高くても、同意や責任を自動的に代理する根拠にはなりません。",
@@ -3771,13 +3771,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "aa5bac228e28ba447caa72323887de708613c4577536e12da2671eff0b113577"
+      "contentHash": "97ce348c4f5112707764fe82d27fd62a53044b71967f06dec1959e7f7c5653b1"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-037",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 37,
       "jlptTarget": "N1",
@@ -4222,9 +4222,9 @@
               "en": "The reported consensus comes from a design assumption about silence, not participants' actual positions."
             },
             "evidence": {
-              "ja": "line-002 と line-003 に明示反対があり、line-005 と line-008 が誤分類規則、line-009 が結論を示します。",
-              "zh": "line-002、003 有明确反对，line-005、008 是误分类规则，line-009 给出结论。",
-              "en": "Lines 002 and 003 contain explicit objections; lines 005 and 008 specify the flawed rule; line 009 states the conclusion."
+              "ja": "2番目の台詞と3番目の台詞に明示反対があり、5番目の台詞と8番目の台詞が誤分類規則、9番目の台詞が結論を示します。",
+              "zh": "第2句台词、003 有明确反对，第5句台词、008 是误分类规则，第9句台词给出结论。",
+              "en": "The second and third lines contain explicit objections; the fifth and eighth lines specify the flawed rule; the ninth line states the conclusion."
             },
             "nuance": {
               "ja": "沈黙が同意を示す会議慣行もあり得ますが、ここでは直後の言語化が逆なので適用できません。",
@@ -4310,9 +4310,9 @@
               "en": "Explicit self-reports express stance more directly than inferred tags and therefore refute the tally."
             },
             "evidence": {
-              "ja": "line-002 と line-003 が反対、line-006 が沈黙の意味、line-007 がタグ優先の不合理を示します。",
-              "zh": "line-002、003 是反对，line-006 说明沉默含义，line-007 指出标签优先的不合理。",
-              "en": "Lines 002 and 003 state objections, line 006 explains the silence, and line 007 identifies the improper priority."
+              "ja": "2番目の台詞と3番目の台詞が反対、6番目の台詞が沈黙の意味、7番目の台詞がタグ優先の不合理を示します。",
+              "zh": "第2句台词、003 是反对，第6句台词说明沉默含义，第7句台词指出标签优先的不合理。",
+              "en": "The second and third lines state objections, the sixth line explains the silence, and the seventh line identifies the improper priority."
             },
             "nuance": {
               "ja": "本人の発言にも戦略性はあり得ますが、少なくとも『全会一致』という強い主張とは両立しません。",
@@ -4399,9 +4399,9 @@
               "en": "This design avoids prematurely resolving ambiguous silence and updates with richer later speech and human verification."
             },
             "evidence": {
-              "ja": "line-006 が沈黙の別意味、line-007 と line-008 が優先順位問題、line-010 と line-011 が修正と撤回を示します。",
-              "zh": "line-006 是沉默的另一含义，line-007、008 是优先级问题，line-010、011 是修正与撤回。",
-              "en": "Line 006 supplies another meaning, lines 007–008 the priority flaw, and lines 010–011 the revision and withdrawal."
+              "ja": "6番目の台詞が沈黙の別意味、7番目の台詞と8番目の台詞が優先順位問題、10番目の台詞と11番目の台詞が修正と撤回を示します。",
+              "zh": "第6句台词是沉默的另一含义，第7句台词、008 是优先级问题，第10句台词、011 是修正与撤回。",
+              "en": "The sixth line supplies another meaning, the seventh through eighth lines the priority flaw, and the tenth through eleventh lines the revision and withdrawal."
             },
             "nuance": {
               "ja": "沈黙を常に反対とするのも同じ種類の過剰一般化であり、『未確定』がより慎重です。",
@@ -4426,13 +4426,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "81c94cead2d1837e4fd83d3574e894debad695767c99cf9e4d770a8c1a750861"
+      "contentHash": "a2d8cc744553e631a9de2c204c5dee4f9c418d906b78536c3797f73524020448"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-038",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 38,
       "jlptTarget": "N1",
@@ -4826,9 +4826,9 @@
               "en": "She chooses the plural as a relational statement of shared contribution and experience."
             },
             "evidence": {
-              "ja": "line-003 は実務貢献、line-005 と line-007 は共同行程、line-009 は共同報告を示します。",
-              "zh": "line-003 是实际贡献，line-005、007 是共同旅程，line-009 是共同报告。",
-              "en": "Line 003 shows practical contribution, lines 005 and 007 shared passage, and line 009 joint authorship."
+              "ja": "3番目の台詞は実務貢献、5番目の台詞と7番目の台詞は共同行程、9番目の台詞は共同報告を示します。",
+              "zh": "第3句台词是实际贡献，第5句台词、007 是共同旅程，第9句台词是共同报告。",
+              "en": "The third line shows practical contribution, the fifth and seventh lines shared passage, and the ninth line joint authorship."
             },
             "nuance": {
               "ja": "AI自身は装置と名乗るため関係認識は非対称ですが、最後に同じ主語を記録する変化があります。",
@@ -4915,9 +4915,9 @@
               "en": "Companion status appears not only in feeling but in attribution of results and voice in the record."
             },
             "evidence": {
-              "ja": "line-003 は計算担当、line-005 は対話期間、line-008～009 はAI自身の言葉を報告へ含める決定です。",
-              "zh": "line-003 是计算职责，line-005 是对话时长，line-008至009 是把AI原话纳入报告。",
-              "en": "Line 003 gives calculation responsibility, line 005 conversation duration, and lines 008–009 inclusion of the AI's own words."
+              "ja": "3番目の台詞は計算担当、5番目の台詞は対話期間、8番目の台詞～009 はAI自身の言葉を報告へ含める決定です。",
+              "zh": "第3句台词是计算职责，第5句台词是对话时长，第8句台词至009 是把AI原话纳入报告。",
+              "en": "The third line gives calculation responsibility, the fifth line conversation duration, and the eighth through ninth lines inclusion of the AI's own words."
             },
             "nuance": {
               "ja": "生体と装置の分類を変更せずに、社会的な仲間として数えている点が重要です。",
@@ -5003,9 +5003,9 @@
               "en": "It does not reclassify itself as biological; it pragmatically adopts the relational framing of shared voyage."
             },
             "evidence": {
-              "ja": "line-002 と line-004 の距離から、line-008 の問い、line-009 の共同報告、line-010 の採用へ進みます。",
-              "zh": "从 line-002、004 的距离，到 line-008 的提问、line-009 的共同报告，再到 line-010 的采纳。",
-              "en": "The sequence moves from distance in lines 002 and 004 to the question in 008, joint report in 009, and adoption in 010."
+              "ja": "2番目の台詞と4番目の台詞の距離から、8番目の台詞の問い、9番目の台詞の共同報告、10番目の台詞の採用へ進みます。",
+              "zh": "从第2句台词、004 的距离，到第8句台词的提问、第9句台词的共同报告，再到第10句台词的采纳。",
+              "en": "The sequence moves from distance in the second and fourth lines to the question in 008, joint report in 009, and adoption in 010."
             },
             "nuance": {
               "ja": "AIに人間同様の感情が生じたとまでは言えませんが、少なくとも船長の語用選択を訂正しなくなりました。",
@@ -5030,13 +5030,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "04702f0d008632cc89bf1d5ce0f30c04d4ff1b5d91db053edb08bfd100333abe"
+      "contentHash": "06bd203d24e9fffa5dbaa33a46094dc4a1452bafd06a62eff3abcb0e95a89ea0"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-039",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 39,
       "jlptTarget": "N1",
@@ -5463,9 +5463,9 @@
               "en": "He performs engagement while avoiding a fixed position visible to either opposing constituency."
             },
             "evidence": {
-              "ja": "line-003、005、007 の具体化要求を line-004、006、008 が抽象語へ戻し、line-009 が未回答点を列挙します。",
-              "zh": "line-003、005、007 要求具体化，line-004、006、008 又退回抽象词，line-009 列出未答点。",
-              "en": "Lines 003, 005, and 007 demand specifics; lines 004, 006, and 008 return to abstractions; line 009 lists the omissions."
+              "ja": "3番目の台詞、005、007 の具体化要求を4番目の台詞、006、008 が抽象語へ戻し、9番目の台詞が未回答点を列挙します。",
+              "zh": "第3句台词、005、007 要求具体化，第4句台词、006、008 又退回抽象词，第9句台词列出未答点。",
+              "en": "The third, fifth, and seventh lines demand specifics; the fourth, sixth, and eighth lines return to abstractions; the ninth line lists the omissions."
             },
             "nuance": {
               "ja": "情報収集中で本当に未決定の可能性もありますが、その場合でも判断時期と基準を答えていない点は残ります。",
@@ -5553,9 +5553,9 @@
               "en": "Further failures to answer when and by what criterion show a pattern rather than misunderstanding."
             },
             "evidence": {
-              "ja": "line-003～008 の三往復と、line-009 の解説者による項目別確認が相互に裏付けます。",
-              "zh": "line-003至008 的三轮问答与 line-009 评论员逐项核对相互印证。",
-              "en": "Three exchanges in lines 003–008 and the itemized audit in line 009 corroborate each other."
+              "ja": "3番目の台詞～008 の三往復と、9番目の台詞の解説者による項目別確認が相互に裏付けます。",
+              "zh": "第3句台词至008 的三轮问答与第9句台词评论员逐项核对相互印证。",
+              "en": "Three exchanges in the third through eighth lines and the itemized audit in the ninth line corroborate each other."
             },
             "nuance": {
               "ja": "採決日が近いことは回避の重要性を高めますが、それ単独では候補者の立場を示しません。",
@@ -5642,9 +5642,9 @@
               "en": "It functions as a substitute response that preserves a favorable self-image while avoiding the costs of a position."
             },
             "evidence": {
-              "ja": "line-001 の二択に line-002 が傾聴で答え、line-003 がずれを明示し、line-010 が空欄の残存をまとめます。",
-              "zh": "line-001 是二选一，line-002 用倾听回答，line-003 指出错位，line-010 总结问题仍空白。",
-              "en": "Line 001 asks a binary question, line 002 answers with listening, line 003 identifies the mismatch, and line 010 notes the blank remains."
+              "ja": "1番目の台詞の二択に2番目の台詞が傾聴で答え、3番目の台詞がずれを明示し、10番目の台詞が空欄の残存をまとめます。",
+              "zh": "第1句台词是二选一，第2句台词用倾听回答，第3句台词指出错位，第10句台词总结问题仍空白。",
+              "en": "The first line asks a binary question, the second line answers with listening, the third line identifies the mismatch, and the tenth line notes the blank remains."
             },
             "nuance": {
               "ja": "傾聴自体は望ましい政治行動ですが、ここでは立場質問の代わりに置かれたため回避機能を持ちます。",
@@ -5669,13 +5669,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "3678e5af9a519be0289cdf69c3ae51009ffa34c35bcebe316da05bc46ca36e2d"
+      "contentHash": "80223be0792f79992b9d1fd492e8fc122c41a7ff2dae8836451d33d877562c77"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-040",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 40,
       "jlptTarget": "N1",
@@ -6069,9 +6069,9 @@
               "en": "It borrows weather phrasing to send insiders a cancellation that sounds ordinary to others."
             },
             "evidence": {
-              "ja": "line-001 の晴天が字面必要性を消し、line-005 が対応表、line-008 が受信者の行動、line-010 が暗号性を確認します。",
-              "zh": "line-001 的晴天消除字面必要，line-005 给出对应表，line-008 是听众行动，line-010 确认暗号性质。",
-              "en": "Clear skies in line 001 remove the literal need, line 005 gives the codebook, line 008 the recipient action, and line 010 confirms the coded message."
+              "ja": "1番目の台詞の晴天が字面必要性を消し、5番目の台詞が対応表、8番目の台詞が受信者の行動、10番目の台詞が暗号性を確認します。",
+              "zh": "第1句台词的晴天消除字面必要，第5句台词给出对应表，第8句台词是听众行动，第10句台词确认暗号性质。",
+              "en": "Clear skies in the first line remove the literal need, the fifth line gives the codebook, the eighth line the recipient action, and the tenth line confirms the coded message."
             },
             "nuance": {
               "ja": "本文は暗号の共有を示しますが、なぜ中止なのか、誰が待つのかまでは明かしません。",
@@ -6157,9 +6157,9 @@
               "en": "Prior knowledge plus an action based on the decoded result is stronger than coincidental association."
             },
             "evidence": {
-              "ja": "line-005 が共有規則、line-008 が適用結果、line-010 が通常文との区別を示します。",
-              "zh": "line-005 是共享规则，line-008 是应用结果，line-010 是与普通语句的区分。",
-              "en": "Line 005 supplies the shared rule, line 008 its applied result, and line 010 the distinction from ordinary content."
+              "ja": "5番目の台詞が共有規則、8番目の台詞が適用結果、10番目の台詞が通常文との区別を示します。",
+              "zh": "第5句台词是共享规则，第8句台词是应用结果，第10句台词是与普通语句的区分。",
+              "en": "The fifth line supplies the shared rule, the eighth line its applied result, and the tenth line the distinction from ordinary content."
             },
             "nuance": {
               "ja": "メモの出所は明示されませんが、少なくとも楓が放送側と同じ対応を知ることは確かです。",
@@ -6250,9 +6250,9 @@
               "en": "The code inference is strengthened because both decoding rule and outcome are verifiable, not merely stylistically odd."
             },
             "evidence": {
-              "ja": "line-001～006 が異常な反復、line-005 が規則、line-008 が行動、line-009～010 が通常部分との境界を示します。",
-              "zh": "line-001至006 展示异常反复，line-005 是规则，line-008 是行动，line-009至010 划分普通部分与暗号。",
-              "en": "Lines 001–006 show anomalous repetition, line 005 the rule, line 008 the action, and lines 009–010 the boundary from regular content."
+              "ja": "1番目の台詞～006 が異常な反復、5番目の台詞が規則、8番目の台詞が行動、9番目の台詞～010 が通常部分との境界を示します。",
+              "zh": "第1句台词至006 展示异常反复，第5句台词是规则，第8句台词是行动，第9句台词至010 划分普通部分与暗号。",
+              "en": "The first through sixth lines show anomalous repetition, the fifth line the rule, the eighth line the action, and the ninth through tenth lines the boundary from regular content."
             },
             "nuance": {
               "ja": "一回の奇妙な表現だけなら言い間違いや原稿ミスもあり得ますが、三回と事前メモがその可能性を下げます。",
@@ -6277,7 +6277,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "c30d84393bc53fc6aed6c52080728b311f0aa3ae2dfd64fac31bf4c61901a8b5"
+      "contentHash": "3651b15a08d6a942ca00ffd65a9065ed5244ecd7d9f5eb52bb68ff8067792090"
     }
   ]
 }

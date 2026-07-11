@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "title": {
     "ja": "日本語の裏側",
-    "zh": "日本語の裏側",
-    "en": "日本語の裏側"
+    "zh": "日语的言外之意",
+    "en": "Behind the Japanese"
   },
   "stageCount": 250,
   "levels": [

@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "level": 3,
   "batch": "001-010",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-001",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 1,
       "jlptTarget": "N1",
@@ -305,9 +305,9 @@
               "en": "He is not approving it now; he leaves room for review only if the conditions are met."
             },
             "evidence": {
-              "ja": "line-003 の限定表現に続き、line-004 と line-005 が具体条件、line-006 が未承認を示します。",
-              "zh": "line-003 的限定表达之后，line-004、005 给出具体条件，line-006 明示尚未批准。",
-              "en": "The hedge in line 003 is followed by concrete conditions in lines 004–005 and the non-approval in line 006."
+              "ja": "3番目の台詞の限定表現に続き、4番目の台詞と5番目の台詞が具体条件、6番目の台詞が未承認を示します。",
+              "zh": "第3句台词的限定表达之后，第4句台词、005 给出具体条件，第6句台词明示尚未批准。",
+              "en": "The hedge in the third line is followed by concrete conditions in the fourth through fifth lines and the non-approval in the sixth line."
             },
             "nuance": {
               "ja": "「わけでもない」は弱い肯定に見えても、後続条件によって範囲が厳しく限定されます。",
@@ -391,9 +391,9 @@
               "en": "Mio's next step is to document all three conditions before asking for reconsideration."
             },
             "evidence": {
-              "ja": "line-004 と line-005 が再審議の前提を列挙し、line-006 もその理解を共有しています。",
-              "zh": "line-004、005 列出重新审议的前提，line-006 也确认了这一理解。",
-              "en": "Lines 004–005 state the prerequisites for review, and line 006 confirms that shared understanding."
+              "ja": "4番目の台詞と5番目の台詞が再審議の前提を列挙し、6番目の台詞もその理解を共有しています。",
+              "zh": "第4句台词、005 列出重新审议的前提，第6句台词也确认了这一理解。",
+              "en": "The fourth through fifth lines state the prerequisites for review, and the sixth line confirms that shared understanding."
             },
             "nuance": {
               "ja": "条件を満たして得られるのは承認ではなく、もう一度審議してもらう機会です。",
@@ -418,13 +418,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "edf8bb8287a4ea536580ea5d1b12d4b3bcb0862b1e1ca2fcf281f6c9bfdddaea"
+      "contentHash": "56cb078424ea1b5dcac595a1cb9c566da8036a49e24dd27829538ed898a916f2"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-002",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 2,
       "jlptTarget": "N1",
@@ -684,9 +684,9 @@
               "en": "Kuroda values Ren’s alternative method and wants him to share it."
             },
             "evidence": {
-              "ja": "line-004 の一般化への評価と line-005 の発表依頼が、問いの肯定的な意図を示します。",
-              "zh": "line-004 对可推广性的评价与 line-005 的展示邀请，说明问题带有肯定意图。",
-              "en": "The praise for generalization in line 004 and presentation request in line 005 show the question’s positive intent."
+              "ja": "4番目の台詞の一般化への評価と5番目の台詞の発表依頼が、問いの肯定的な意図を示します。",
+              "zh": "第4句台词对可推广性的评价与第5句台词的展示邀请，说明问题带有肯定意图。",
+              "en": "The praise for generalization in the fourth line and presentation request in the fifth line show the question’s positive intent."
             },
             "nuance": {
               "ja": "「分かっていますね」は非難にも確認にもなりますが、後続発話が肯定的評価を確定します。",
@@ -694,9 +694,9 @@
               "en": "“You understand, don’t you?” can accuse or confirm; the later lines settle the positive reading."
             },
             "alternative": {
-              "ja": "line-002 だけなら不正行為の追及もあり得ますが、line-004 と line-005 がその読みを退けます。",
-              "zh": "只看 line-002 可能是在追究违规，但 line-004、005 排除了这种理解。",
-              "en": "Line 002 alone could suggest misconduct, but lines 004–005 rule that reading out."
+              "ja": "2番目の台詞だけなら不正行為の追及もあり得ますが、4番目の台詞と5番目の台詞がその読みを退けます。",
+              "zh": "只看第2句台词可能是在追究违规，但第4句台词、005 排除了这种理解。",
+              "en": "The second line alone could suggest misconduct, but the fourth through fifth lines rule that reading out."
             }
           }
         },
@@ -770,9 +770,9 @@
               "en": "He appears to take the ambiguous prompt as a reprimand for breaking the rule and apologizes preemptively."
             },
             "evidence": {
-              "ja": "line-003 は指定公式を使わなかったことを謝罪理由にし、line-004 の「謝る必要はない」が誤解を解きます。",
-              "zh": "line-003 明说因未用指定公式而道歉，line-004 的“不必道歉”消除了误会。",
-              "en": "Line 003 gives the unused formula as his reason, and “no need to apologize” in line 004 resolves the misunderstanding."
+              "ja": "3番目の台詞は指定公式を使わなかったことを謝罪理由にし、4番目の台詞の「謝る必要はない」が誤解を解きます。",
+              "zh": "第3句台词明说因未用指定公式而道歉，第4句台词的“不必道歉”消除了误会。",
+              "en": "The third line gives the unused formula as his reason, and “no need to apologize” in the fourth line resolves the misunderstanding."
             },
             "nuance": {
               "ja": "蓮の返答が示すのは最初の受け取り方であり、黒田の実際の評価ではありません。",
@@ -797,13 +797,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "516ff1fc03581fb80230eed6cae9f700f8e450dc6edc9168a9feae2b0b3c8219"
+      "contentHash": "f33f26ebeba550b874d94cd2509bf89e15f2879a57e3643e586a4504fd144315"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-003",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 3,
       "jlptTarget": "N1",
@@ -1101,9 +1101,9 @@
               "en": "She preserves courtesy while temporarily withdrawing the personal warmth that existed before the complaint."
             },
             "evidence": {
-              "ja": "line-002 が普段の愛称を示し、line-001、003、006 の過剰な敬語との対比が距離を作ります。",
-              "zh": "line-002 显示平时的昵称，与 line-001、003、006 的过度敬语形成对比，制造距离。",
-              "en": "Line 002 establishes the usual nickname; its contrast with the heightened formality in lines 001, 003, and 006 creates distance."
+              "ja": "2番目の台詞が普段の愛称を示し、1番目の台詞、003、006 の過剰な敬語との対比が距離を作ります。",
+              "zh": "第2句台词显示平时的昵称，与第1句台词、003、006 的过度敬语形成对比，制造距离。",
+              "en": "The second line establishes the usual nickname; its contrast with the heightened formality in the first, third, and sixth lines creates distance."
             },
             "nuance": {
               "ja": "敬語そのものは尊重を示しますが、通常の愛称との落差が冷たさを生みます。",
@@ -1186,9 +1186,9 @@
               "en": "The self-correction shows both that the nickname was normal and that a formal form is now being enforced."
             },
             "evidence": {
-              "ja": "line-004 の言い直しは愛称が通常だったこと、line-005 は変化の直前に苦情があったことを結び付けます。",
-              "zh": "line-004 的改口说明昵称原本很平常，line-005 则把变化与前一天的投诉联系起来。",
-              "en": "Mai’s correction in line 004 shows the nickname was normal, while line 005 links the shift to the prior complaint."
+              "ja": "4番目の台詞の言い直しは愛称が通常だったこと、5番目の台詞は変化の直前に苦情があったことを結び付けます。",
+              "zh": "第4句台词的改口说明昵称原本很平常，第5句台词则把变化与前一天的投诉联系起来。",
+              "en": "Mai’s correction in the fourth line shows the nickname was normal, while the fifth line links the shift to the prior complaint."
             },
             "nuance": {
               "ja": "店主だけでなく店員も切り替えるため、偶然の一語より店内で共有された個別対応らしく見えます。",
@@ -1213,13 +1213,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "48593edd20d1940a47159599c9ae69f927e55b7383c95118695b625f8b6f288d"
+      "contentHash": "65b44e83a84ca9c38d5ee89e3b4eeabc3d7128b2d8ffc4fa7c4f98e27784b652"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-004",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 4,
       "jlptTarget": "N1",
@@ -1488,9 +1488,9 @@
               "en": "Without declaring a formal rule, he wants them to return before dark."
             },
             "evidence": {
-              "ja": "line-002 の日没時刻、line-003 の一般例、line-005 の具体的帰着時刻が同じ方向を示します。",
-              "zh": "line-002 的日落时间、line-003 的普遍例子、line-005 的具体返回时间指向同一要求。",
-              "en": "The sunset time in line 002, general example in line 003, and precise return time in line 005 all point the same way."
+              "ja": "2番目の台詞の日没時刻、3番目の台詞の一般例、5番目の台詞の具体的帰着時刻が同じ方向を示します。",
+              "zh": "第2句台词的日落时间、第3句台词的普遍例子、第5句台词的具体返回时间指向同一要求。",
+              "en": "The sunset time in the second line, general example in the third line, and precise return time in the fifth line all point the same way."
             },
             "nuance": {
               "ja": "「ほとんど」「皆様」は統計らしく聞こえますが、反復と時刻の具体化が規範性を強めます。",
@@ -1574,9 +1574,9 @@
               "en": "This communicates a safe return time without inventing a curfew, leaving the choice formally with the guests."
             },
             "evidence": {
-              "ja": "line-004 への返答で門限は否定されますが、line-005 では望ましい行動だけが穏やかに再提示されます。",
-              "zh": "对 line-004 的回答否认门禁，但 line-005 又温和重申了期望行为。",
-              "en": "The reply to line 004 denies a curfew, yet line 005 gently restates the desired behavior."
+              "ja": "4番目の台詞への返答で門限は否定されますが、5番目の台詞では望ましい行動だけが穏やかに再提示されます。",
+              "zh": "对第4句台词的回答否认门禁，但第5句台词又温和重申了期望行为。",
+              "en": "The reply to the fourth line denies a curfew, yet the fifth line gently restates the desired behavior."
             },
             "nuance": {
               "ja": "他の客を基準にする言い方には同調圧力もありますが、正式命令ではないため選択の余地は残ります。",
@@ -1601,13 +1601,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "236f176d7fe579935add1e54362b0e4f1e464fcd2edc35009a5551bad043e3f0"
+      "contentHash": "5bc6f38e556ff79e18d2d2c121b19d0c9ba76e717601be442b1f8af45c09295b"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-005",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 5,
       "jlptTarget": "N1",
@@ -1913,9 +1913,9 @@
               "en": "Keisuke removes the unfavorable context and reframes an undecided response as positive news."
             },
             "evidence": {
-              "ja": "line-001 と line-002 の制約が line-003 では消え、line-005 で本人も前向きな部分だけ選んだと認めます。",
-              "zh": "line-001、002 的限制在 line-003 中消失，line-005 也承认只选了积极部分。",
-              "en": "The constraints in lines 001–002 vanish in line 003, and line 005 admits selecting only the positive part."
+              "ja": "1番目の台詞と2番目の台詞の制約が3番目の台詞では消え、5番目の台詞で本人も前向きな部分だけ選んだと認めます。",
+              "zh": "第1句台词、002 的限制在第3句台词中消失，第5句台词也承认只选了积极部分。",
+              "en": "The constraints in the first through second lines vanish in the third line, and the fifth line admits selecting only the positive part."
             },
             "nuance": {
               "ja": "引用語自体は正確でも、条件を落とすと発話全体の約束の強さが変わります。",
@@ -1999,9 +1999,9 @@
               "en": "The task restores the omitted conditions and identifies the client's minimum commitment."
             },
             "evidence": {
-              "ja": "line-002 の「場合に限り」が約束の範囲を限定し、line-006 も現状では未承認と確認します。",
-              "zh": "line-002 的“仅在……情况下”限定了承诺范围，line-006 也确认现状尚未批准。",
-              "en": "“Only if” in line 002 limits the commitment, and line 006 confirms that no approval exists under current terms."
+              "ja": "2番目の台詞の「場合に限り」が約束の範囲を限定し、6番目の台詞も現状では未承認と確認します。",
+              "zh": "第2句台词的“仅在……情况下”限定了承诺范围，第6句台词也确认现状尚未批准。",
+              "en": "“Only if” in the second line limits the commitment, and the sixth line confirms that no approval exists under current terms."
             },
             "nuance": {
               "ja": "再検討は手続きを再開する約束であって、肯定的な結論を出す約束ではありません。",
@@ -2009,9 +2009,9 @@
               "en": "Reconsideration promises a process, not a favorable outcome."
             },
             "alternative": {
-              "ja": "現状維持なら line-001 の「採用は難しい」がそのまま残るため、承認や一条件だけの変更は読み込めません。",
-              "zh": "若维持现状，line-001 的“难以采用”仍然成立，因此不能读成批准或只改一项即可。",
-              "en": "If the plan stays unchanged, line 001's 'difficult to adopt' still applies, so neither approval nor a one-condition revision is supported."
+              "ja": "現状維持なら1番目の台詞の「採用は難しい」がそのまま残るため、承認や一条件だけの変更は読み込めません。",
+              "zh": "若维持现状，第1句台词的“难以采用”仍然成立，因此不能读成批准或只改一项即可。",
+              "en": "If the plan stays unchanged, the first line's 'difficult to adopt' still applies, so neither approval nor a one-condition revision is supported."
             }
           }
         }
@@ -2026,13 +2026,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "b2c1d0df2030d0e54eff33a5f07e0a8fff3c38d81ef5abf98a7904dc49f745b5"
+      "contentHash": "ca7be68ac15e636d32d8761e146ca8e5998caa603fe464289de444c445750d0c"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-006",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 6,
       "jlptTarget": "N1",
@@ -2339,9 +2339,9 @@
               "en": "She is actually criticizing the heal for arriving too late through sarcasm."
             },
             "evidence": {
-              "ja": "救援要請は line-001、戦闘終了は line-003、回復到着は line-004 で、line-005 の間と line-006 が遅さを確定します。",
-              "zh": "line-001 发出救援请求，line-003 战斗结束，line-004 治疗才到；line-005 的停顿与 line-006 确认其迟到。",
-              "en": "The request is in line 001, combat ends in line 003, and the heal lands in line 004; the pause in line 005 and line 006 confirm the lateness."
+              "ja": "救援要請は1番目の台詞、戦闘終了は3番目の台詞、回復到着は4番目の台詞で、5番目の台詞の間と6番目の台詞が遅さを確定します。",
+              "zh": "第1句台词发出救援请求，第3句台词战斗结束，第4句台词治疗才到；第5句台词的停顿与第6句台词确认其迟到。",
+              "en": "The request is in the first line, combat ends in the third line, and the heal lands in the fourth line; the pause in the fifth line and the sixth line confirm the lateness."
             },
             "nuance": {
               "ja": "称賛語だけでは皮肉と断定できませんが、長い間と出来事の順序が字面を反転させます。",
@@ -2426,9 +2426,9 @@
               "en": "It asks the learner to combine event order with Go's response to identify why praise reverses into criticism."
             },
             "evidence": {
-              "ja": "出来事の順序に加え、line-005 の「……」と line-006 の明示的対比が字面上の称賛を覆します。",
-              "zh": "除事件顺序外，line-005 的省略号和 line-006 的明确对比推翻了字面赞美。",
-              "en": "Beyond event order, the ellipsis in line 005 and explicit contrast in line 006 override the literal praise."
+              "ja": "出来事の順序に加え、5番目の台詞の「……」と6番目の台詞の明示的対比が字面上の称賛を覆します。",
+              "zh": "除事件顺序外，第5句台词的省略号和第6句台词的明确对比推翻了字面赞美。",
+              "en": "Beyond event order, the ellipsis in the fifth line and explicit contrast in the sixth line override the literal praise."
             },
             "nuance": {
               "ja": "「……」は皮肉の手掛かりを足しますが、決定的なのは回復が戦闘終了後だったという時系列です。",
@@ -2453,13 +2453,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "579af6aa23f9844b8efc2edd0ae7f9bbe70a2053ce9391cbfa882b6c50db0d93"
+      "contentHash": "7845df180cede24a9f19cd0d10d51ebc777f8174cc0d7b9933d75ba25ad130c7"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-007",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 7,
       "jlptTarget": "N1",
@@ -2787,9 +2787,9 @@
               "en": "It is presented as an audio-following replica bot rather than an independent conversational partner."
             },
             "evidence": {
-              "ja": "二度の固定遅延は line-002 と line-005、完全一致は line-006、結論は line-007 に明示されます。",
-              "zh": "两次固定延迟见 line-002、005，完全一致见 line-006，line-007 明示结论。",
-              "en": "The repeated fixed delay appears in lines 002 and 005, exact matching in line 006, and the conclusion in line 007."
+              "ja": "二度の固定遅延は2番目の台詞と5番目の台詞、完全一致は6番目の台詞、結論は7番目の台詞に明示されます。",
+              "zh": "两次固定延迟见第2句台词、005，完全一致见第6句台词，第7句台词明示结论。",
+              "en": "The repeated fixed delay appears in the second and fifth lines, exact matching in the sixth line, and the conclusion in the seventh line."
             },
             "nuance": {
               "ja": "同じ声だけなら声変換や双子も考えられますが、固定遅延と長さ・抑揚の一致が機械的複製を強めます。",
@@ -2875,9 +2875,9 @@
               "en": "It asks for two independent kinds of mechanical evidence: timing regularity and acoustic identity."
             },
             "evidence": {
-              "ja": "line-003 が固定遅延、line-006 が波形的特徴の一致を示し、単なる似声より再生機構を支持します。",
-              "zh": "line-003 显示固定延迟，line-006 显示声音特征一致，比单纯同声更支持重放机制。",
-              "en": "Line 003 provides fixed latency and line 006 provides matching acoustic features, supporting replay rather than mere vocal similarity."
+              "ja": "3番目の台詞が固定遅延、6番目の台詞が波形的特徴の一致を示し、単なる似声より再生機構を支持します。",
+              "zh": "第3句台词显示固定延迟，第6句台词显示声音特征一致，比单纯同声更支持重放机制。",
+              "en": "The third line provides fixed latency and the sixth line provides matching acoustic features, supporting replay rather than mere vocal similarity."
             },
             "nuance": {
               "ja": "声が似ているだけでは複製と決まりません。試行を変えても同じ遅延と抑揚が再現する点が重要です。",
@@ -2902,13 +2902,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "30b957722e55b28ec5a57e9581078ff380bd94778fb259e6cb045bde0ea1b160"
+      "contentHash": "709af92599f05a9ffd320c69b2078125bdc04b6d2257eaeb21a0de586803045a"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-008",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 8,
       "jlptTarget": "N1",
@@ -3199,9 +3199,9 @@
               "en": "It avoids face-threatening direct rejection and lets the learner find the contradiction."
             },
             "evidence": {
-              "ja": "line-002 は否定を和らげ、line-003 と line-004 は矛盾箇所を示し、line-005 で自己修正が実現します。",
-              "zh": "line-002 缓和否定，line-003、004 指向矛盾，line-005 实现自行修正。",
-              "en": "Line 002 softens rejection, lines 003–004 point to the contradiction, and line 005 shows successful self-correction."
+              "ja": "2番目の台詞は否定を和らげ、3番目の台詞と4番目の台詞は矛盾箇所を示し、5番目の台詞で自己修正が実現します。",
+              "zh": "第2句台词缓和否定，第3句台词、004 指向矛盾，第5句台词实现自行修正。",
+              "en": "The second line softens rejection, the third through fourth lines point to the contradiction, and the fifth line shows successful self-correction."
             },
             "nuance": {
               "ja": "「興味深い」は純粋な賞賛にもなりますが、直後の前提再掲が修正要求を含ませます。",
@@ -3287,9 +3287,9 @@
               "en": "The follow-up correction prevents a polite evaluative phrase from being mistaken for a correctness judgment."
             },
             "evidence": {
-              "ja": "line-003 と line-004 の再提示は再考を求め、line-006 の評価は修正後の答えにだけ向けられています。",
-              "zh": "line-003、004 的重显要求重新思考，line-006 的肯定只针对修正后的答案。",
-              "en": "The reminder in lines 003–004 requests reconsideration, and the approval in line 006 applies only to the revised answer."
+              "ja": "3番目の台詞と4番目の台詞の再提示は再考を求め、6番目の台詞の評価は修正後の答えにだけ向けられています。",
+              "zh": "第3句台词、004 的重显要求重新思考，第6句台词的肯定只针对修正后的答案。",
+              "en": "The reminder in the third through fourth lines requests reconsideration, and the approval in the sixth line applies only to the revised answer."
             },
             "nuance": {
               "ja": "解釈の着眼点を本当に興味深いと思っていても、その答えが前提と両立するとは限りません。",
@@ -3297,9 +3297,9 @@
               "en": "The AI may genuinely find the approach interesting without judging the answer compatible with the premises."
             },
             "alternative": {
-              "ja": "別解を広げる授業意図も考えられますが、最初の答えは line-004 と衝突し、修正後にのみ肯定されています。",
-              "zh": "也可能意在拓展解法，但初始答案与 line-004 冲突，且只有修改后才获肯定。",
-              "en": "The AI may also value exploring alternatives, but the first answer conflicts with line 004 and receives validation only after revision."
+              "ja": "別解を広げる授業意図も考えられますが、最初の答えは4番目の台詞と衝突し、修正後にのみ肯定されています。",
+              "zh": "也可能意在拓展解法，但初始答案与第4句台词冲突，且只有修改后才获肯定。",
+              "en": "The AI may also value exploring alternatives, but the first answer conflicts with the fourth line and receives validation only after revision."
             }
           }
         }
@@ -3314,13 +3314,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "73c1b2590faac2c8f554c06b728cfbc552734d8e339d78fdfdc214d93c8ccaa1"
+      "contentHash": "e3f5a89c790ad4f38191aa1855de321b928e5a088739fb6124cce9c045c5d88f"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-009",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 9,
       "jlptTarget": "N1",
@@ -3578,9 +3578,9 @@
           "id": "q1",
           "type": "single",
           "prompt": {
-            "ja": "line-001 の「戻った」の主語は何ですか。",
-            "zh": "line-001 中“返回”的主语是什么？",
-            "en": "What is the subject of “returned” in line 001?"
+            "ja": "1番目の台詞の「戻った」の主語は何ですか。",
+            "zh": "第1句台词中“返回”的主语是什么？",
+            "en": "What is the subject of “returned” in the first line?"
           },
           "options": [
             {
@@ -3646,9 +3646,9 @@
               "en": "Because the manifest is unchanged while cargo and a return signal appear, the omitted subject is the recovery drone."
             },
             "evidence": {
-              "ja": "line-004 の貨物追加、line-005 の帰還信号、line-006 の船長説明が同じ機体を指します。",
-              "zh": "line-004 的新增货物、line-005 的返航信号、line-006 的船长说明都指向同一机体。",
-              "en": "The cargo addition in line 004, return signal in line 005, and captain’s explanation in line 006 all identify the same unit."
+              "ja": "4番目の台詞の貨物追加、5番目の台詞の帰還信号、6番目の台詞の船長説明が同じ機体を指します。",
+              "zh": "第4句台词的新增货物、第5句台词的返航信号、第6句台词的船长说明都指向同一机体。",
+              "en": "The cargo addition in the fourth line, return signal in the fifth line, and captain’s explanation in the sixth line all identify the same unit."
             },
             "nuance": {
               "ja": "日本語では共有済みの主語を省けますが、複数候補がある記録文では周辺証拠による復元が必要です。",
@@ -3731,9 +3731,9 @@
               "en": "It uses the record that directly tracks people to weaken the candidate that a crew member returned."
             },
             "evidence": {
-              "ja": "line-003 は人員の出入りを示す乗下船記録が不変だと明示し、人を主語とする読みを直接弱めます。",
-              "zh": "line-003 明示反映人员出入的出入舰记录未变，直接削弱以人为主语的解释。",
-              "en": "Line 003 explicitly says the personnel record is unchanged, directly weakening a human subject."
+              "ja": "3番目の台詞は人員の出入りを示す乗下船記録が不変だと明示し、人を主語とする読みを直接弱めます。",
+              "zh": "第3句台词明示反映人员出入的出入舰记录未变，直接削弱以人为主语的解释。",
+              "en": "The third line explicitly says the personnel record is unchanged, directly weakening a human subject."
             },
             "nuance": {
               "ja": "記録漏れの可能性はゼロではありませんが、同時に機体の追加記録があるため、ドローン説がより少ない仮定で済みます。",
@@ -3817,9 +3817,9 @@
               "en": "Because the current operational object was shared among the crew, the log remained understandable to them without an explicit subject."
             },
             "evidence": {
-              "ja": "line-006 の「あれ」は船長に対象が既知だったことを示し、line-007 で凛も同じ指示対象を復元しています。",
-              "zh": "line-006 的“那个”说明船长已知对象，line-007 中凛也恢复出同一指称。",
-              "en": "“That unit” in line 006 shows shared reference, and Rin reconstructs the same referent in line 007."
+              "ja": "6番目の台詞の「あれ」は船長に対象が既知だったことを示し、7番目の台詞で凛も同じ指示対象を復元しています。",
+              "zh": "第6句台词的“那个”说明船长已知对象，第7句台词中凛也恢复出同一指称。",
+              "en": "“That unit” in the sixth line shows shared reference, and Rin reconstructs the same referent in the seventh line."
             },
             "nuance": {
               "ja": "内部では通じても、後から読む人には曖昧です。運用記録なら主語を明記する方が安全です。",
@@ -3827,9 +3827,9 @@
               "en": "It may work internally yet remain ambiguous to later readers; an operational log would be safer with an explicit subject."
             },
             "alternative": {
-              "ja": "隠す意図なら関連記録や後の説明も避けるはずですが、船長は line-006 で対象を説明しています。",
-              "zh": "若意在隐瞒，应连相关记录和后续说明也避开；但船长在 line-006 解释了对象。",
-              "en": "If concealment were the aim, the related records and later explanation would also be avoided, yet the captain identifies the object in line 006."
+              "ja": "隠す意図なら関連記録や後の説明も避けるはずですが、船長は6番目の台詞で対象を説明しています。",
+              "zh": "若意在隐瞒，应连相关记录和后续说明也避开；但船长在第6句台词解释了对象。",
+              "en": "If concealment were the aim, the related records and later explanation would also be avoided, yet the captain identifies the object in the sixth line."
             }
           }
         }
@@ -3844,13 +3844,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "c1c0df544f87cdfc5d9d4685a1d4a64a2ac7bb85e200b5364dbd4bc46edc3dd0"
+      "contentHash": "f72e9eab46ea5847e15dbc350a65b37b5ee963be64cb2a0326bf21db3c8d64ae"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-010",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 10,
       "jlptTarget": "N1",
@@ -4157,9 +4157,9 @@
               "en": "The discrepancy is explained by a cleaner using separate access and logging, not by intrusion."
             },
             "evidence": {
-              "ja": "line-004 の予定変更、line-005 の別ログ、line-006 の時刻とコーヒーが温かさを一貫して説明します。",
-              "zh": "line-004 的计划变更、line-005 的独立日志、line-006 的时间和咖啡说明一致解释了温度。",
-              "en": "The changed schedule in line 004, separate log in line 005, and time-and-coffee account in line 006 consistently explain the warmth."
+              "ja": "4番目の台詞の予定変更、5番目の台詞の別ログ、6番目の台詞の時刻とコーヒーが温かさを一貫して説明します。",
+              "zh": "第4句台词的计划变更、第5句台词的独立日志、第6句台词的时间和咖啡说明一致解释了温度。",
+              "en": "The changed schedule in the fourth line, separate log in the fifth line, and time-and-coffee account in the sixth line consistently explain the warmth."
             },
             "nuance": {
               "ja": "「記録がない」は全経路の不在を意味せず、どの母集団の記録かを確認する必要があります。",
@@ -4244,9 +4244,9 @@
               "en": "One fact supplies an authorized visit; the other explains why it does not appear in the staff log, resolving the contradiction together."
             },
             "evidence": {
-              "ja": "line-004 が正当な来訪機会を、line-005 が職員ログに現れない仕組みを示し、二つで矛盾が解けます。",
-              "zh": "line-004 提供正当来访机会，line-005 解释为何不出现在职员日志中，两者共同化解矛盾。",
-              "en": "Line 004 supplies a legitimate visit, and line 005 explains why it would not appear in the staff log; together they resolve the discrepancy."
+              "ja": "4番目の台詞が正当な来訪機会を、5番目の台詞が職員ログに現れない仕組みを示し、二つで矛盾が解けます。",
+              "zh": "第4句台词提供正当来访机会，第5句台词解释为何不出现在职员日志中，两者共同化解矛盾。",
+              "en": "The fourth line supplies a legitimate visit, and the fifth line explains why it would not appear in the staff log; together they resolve the discrepancy."
             },
             "nuance": {
               "ja": "予定変更だけでは誰が入ったか分からず、別ログだけでも今朝そこにいた人物までは特定できません。",
@@ -4271,7 +4271,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "3e3ba2f87896455728347cefcc5d77bc5513de74e38af2756e9ab701fadfed68"
+      "contentHash": "bca6f2ce09432690c7bf4dfa70639fd2ab53a370ba4d8bed861e1b615751aae6"
     }
   ]
 }

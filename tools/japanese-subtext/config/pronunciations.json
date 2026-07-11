@@ -1,6 +1,8 @@
 {
   "schemaVersion": 1,
   "entries": [
+    { "surface": "きょう", "reading": "きょう", "tts": "きょお" },
+    { "surface": "今日", "reading": "きょう", "tts": "きょお" },
     { "surface": "締切時の指定", "reading": "しめきりのときのしてい", "tts": "しめきりのときのしてい" },
     { "surface": "後の反対発言", "reading": "のちのはんたいはつげん", "tts": "のちのはんたいはつげん" },
     { "surface": "後を追うな", "reading": "あとをおうな", "tts": "あとをおうな" },

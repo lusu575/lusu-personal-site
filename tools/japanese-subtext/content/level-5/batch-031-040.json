@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "level": 5,
   "batch": "031-040",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-031",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 31,
       "jlptTarget": "N1-pragmatics",
@@ -637,9 +637,9 @@
               "en": "The best-supported reading is 「The sheet names a voice model and the producer confirms model-generated voice and responses.」."
             },
             "evidence": {
-              "ja": "line-011、line-013を合わせると、生出演を装った合成司会で、現場とのやり取りだけ人が後から制御している。",
-              "zh": "合并阅读line-011、line-013可知，这是伪装直播的合成主播，只有现场互动由人延迟控制。",
-              "en": "Taken together, line-011, line-013 show that It is a synthetic anchor with human-mediated live responses."
+              "ja": "11番目の台詞、13番目の台詞を合わせると、生出演を装った合成司会で、現場とのやり取りだけ人が後から制御している。",
+              "zh": "合并阅读第11句台词、第13句台词可知，这是伪装直播的合成主播，只有现场互动由人延迟控制。",
+              "en": "Taken together, the eleventh line, the thirteenth line show that It is a synthetic anchor with human-mediated live responses."
             },
             "nuance": {
               "ja": "周期的な息継ぎと応答遅延は合成司会を強く支持しますが、制作現場で人間が一切関与していないことまでは示しません。",
@@ -723,9 +723,9 @@
               "en": "The best-supported reading is 「It remains fixed across cuts, suggesting a generated rhythm rather than natural recording units.」."
             },
             "evidence": {
-              "ja": "line-006、line-007、line-018を合わせると、生出演を装った合成司会で、現場とのやり取りだけ人が後から制御している。",
-              "zh": "合并阅读line-006、line-007、line-018可知，这是伪装直播的合成主播，只有现场互动由人延迟控制。",
-              "en": "Taken together, line-006, line-007, line-018 show that It is a synthetic anchor with human-mediated live responses."
+              "ja": "6番目の台詞、7番目の台詞、18番目の台詞を合わせると、生出演を装った合成司会で、現場とのやり取りだけ人が後から制御している。",
+              "zh": "合并阅读第6句台词、第7句台词、第18句台词可知，这是伪装直播的合成主播，只有现场互动由人延迟控制。",
+              "en": "Taken together, the sixth line, the seventh line, the eighteenth line show that It is a synthetic anchor with human-mediated live responses."
             },
             "nuance": {
               "ja": "周期的な息継ぎと応答遅延は合成司会を強く支持しますが、制作現場で人間が一切関与していないことまでは示しません。",
@@ -813,9 +813,9 @@
               "en": "The best-supported reading is 「Input processing and fixed-response selection take time unlike spontaneous human dialogue.」."
             },
             "evidence": {
-              "ja": "line-002、line-003、line-004、line-008、line-009、line-010、line-015を合わせると、生出演を装った合成司会で、現場とのやり取りだけ人が後から制御している。",
-              "zh": "合并阅读line-002、line-003、line-004、line-008、line-009、line-010、line-015可知，这是伪装直播的合成主播，只有现场互动由人延迟控制。",
-              "en": "Taken together, line-002, line-003, line-004, line-008, line-009, line-010, line-015 show that It is a synthetic anchor with human-mediated live responses."
+              "ja": "2番目の台詞、3番目の台詞、4番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞、15番目の台詞を合わせると、生出演を装った合成司会で、現場とのやり取りだけ人が後から制御している。",
+              "zh": "合并阅读第2句台词、第3句台词、第4句台词、第8句台词、第9句台词、第10句台词、第15句台词可知，这是伪装直播的合成主播，只有现场互动由人延迟控制。",
+              "en": "Taken together, the second line, the third line, the fourth line, the eighth line, the ninth line, the tenth line, the fifteenth line show that It is a synthetic anchor with human-mediated live responses."
             },
             "nuance": {
               "ja": "周期的な息継ぎと応答遅延は合成司会を強く支持しますが、制作現場で人間が一切関与していないことまでは示しません。",
@@ -901,9 +901,9 @@
               "en": "The best-supported reading is 「Continuously label the synthetic host and distinguish the live responder.」."
             },
             "evidence": {
-              "ja": "line-013、line-014、line-015、line-016、line-017を合わせると、生出演を装った合成司会で、現場とのやり取りだけ人が後から制御している。",
-              "zh": "合并阅读line-013、line-014、line-015、line-016、line-017可知，这是伪装直播的合成主播，只有现场互动由人延迟控制。",
-              "en": "Taken together, line-013, line-014, line-015, line-016, line-017 show that It is a synthetic anchor with human-mediated live responses."
+              "ja": "13番目の台詞、14番目の台詞、15番目の台詞、16番目の台詞、17番目の台詞を合わせると、生出演を装った合成司会で、現場とのやり取りだけ人が後から制御している。",
+              "zh": "合并阅读第13句台词、第14句台词、第15句台词、第16句台词、第17句台词可知，这是伪装直播的合成主播，只有现场互动由人延迟控制。",
+              "en": "Taken together, the thirteenth line, the fourteenth line, the fifteenth line, the sixteenth line, the seventeenth line show that It is a synthetic anchor with human-mediated live responses."
             },
             "nuance": {
               "ja": "周期的な息継ぎと応答遅延は合成司会を強く支持しますが、制作現場で人間が一切関与していないことまでは示しません。",
@@ -928,13 +928,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "b325ba807529a9498578c77f772ed8fdd388db8041cdecf63a7d8e395f567ae2"
+      "contentHash": "de5a31629a7a276da5ed33edef809977e68f527b010afedb31cbabb7fecaa690"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-032",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 32,
       "jlptTarget": "N1-pragmatics",
@@ -1539,9 +1539,9 @@
               "en": "The best-supported reading is 「Procedure Four for a track intrusion and an east-to-west route.」."
             },
             "evidence": {
-              "ja": "line-003、line-004、line-007、line-010、line-011を合わせると、一つの放送が、公衆には安心説明、保守員には具体的な緊急指示として働く。",
-              "zh": "合并阅读line-003、line-004、line-007、line-010、line-011可知，同一广播对公众是安抚说明，对维修员则是具体紧急指令。",
-              "en": "Taken together, line-003, line-004, line-007, line-010, line-011 show that One message reassures the public while issuing coded operational instructions."
+              "ja": "3番目の台詞、4番目の台詞、7番目の台詞、10番目の台詞、11番目の台詞を合わせると、一つの放送が、公衆には安心説明、保守員には具体的な緊急指示として働く。",
+              "zh": "合并阅读第3句台词、第4句台词、第7句台词、第10句台词、第11句台词可知，同一广播对公众是安抚说明，对维修员则是具体紧急指令。",
+              "en": "Taken together, the third line, the fourth line, the seventh line, the tenth line, the eleventh line show that One message reassures the public while issuing coded operational instructions."
             },
             "nuance": {
               "ja": "一般客向け文と保守員向け符号が同居するため、表面だけ聞けば情報不足ですが、符号を公開しすぎると安全上の別リスクも生じます。",
@@ -1626,9 +1626,9 @@
               "en": "The best-supported reading is 「To avoid panic while coding instructions to crew and temporarily withholding intrusion details.」."
             },
             "evidence": {
-              "ja": "line-001、line-006、line-009、line-013を合わせると、一つの放送が、公衆には安心説明、保守員には具体的な緊急指示として働く。",
-              "zh": "合并阅读line-001、line-006、line-009、line-013可知，同一广播对公众是安抚说明，对维修员则是具体紧急指令。",
-              "en": "Taken together, line-001, line-006, line-009, line-013 show that One message reassures the public while issuing coded operational instructions."
+              "ja": "1番目の台詞、6番目の台詞、9番目の台詞、13番目の台詞を合わせると、一つの放送が、公衆には安心説明、保守員には具体的な緊急指示として働く。",
+              "zh": "合并阅读第1句台词、第6句台词、第9句台词、第13句台词可知，同一广播对公众是安抚说明，对维修员则是具体紧急指令。",
+              "en": "Taken together, the first line, the sixth line, the ninth line, the thirteenth line show that One message reassures the public while issuing coded operational instructions."
             },
             "nuance": {
               "ja": "一般客向け文と保守員向け符号が同居するため、表面だけ聞けば情報不足ですが、符号を公開しすぎると安全上の別リスクも生じます。",
@@ -1712,9 +1712,9 @@
               "en": "The best-supported reading is 「Expected delay and that the check concerns safety.」."
             },
             "evidence": {
-              "ja": "line-012、line-014、line-015を合わせると、一つの放送が、公衆には安心説明、保守員には具体的な緊急指示として働く。",
-              "zh": "合并阅读line-012、line-014、line-015可知，同一广播对公众是安抚说明，对维修员则是具体紧急指令。",
-              "en": "Taken together, line-012, line-014, line-015 show that One message reassures the public while issuing coded operational instructions."
+              "ja": "12番目の台詞、14番目の台詞、15番目の台詞を合わせると、一つの放送が、公衆には安心説明、保守員には具体的な緊急指示として働く。",
+              "zh": "合并阅读第12句台词、第14句台词、第15句台词可知，同一广播对公众是安抚说明，对维修员则是具体紧急指令。",
+              "en": "Taken together, the twelfth line, the fourteenth line, the fifteenth line show that One message reassures the public while issuing coded operational instructions."
             },
             "nuance": {
               "ja": "一般客向け文と保守員向け符号が同居するため、表面だけ聞けば情報不足ですが、符号を公開しすぎると安全上の別リスクも生じます。",
@@ -1804,9 +1804,9 @@
               "en": "The best-supported reading is 「It asks passengers to wait.」 and 「It gives crew a coded route.」."
             },
             "evidence": {
-              "ja": "line-001、line-003、line-004、line-006、line-007、line-009、line-010、line-011を合わせると、一つの放送が、公衆には安心説明、保守員には具体的な緊急指示として働く。",
-              "zh": "合并阅读line-001、line-003、line-004、line-006、line-007、line-009、line-010、line-011可知，同一广播对公众是安抚说明，对维修员则是具体紧急指令。",
-              "en": "Taken together, line-001, line-003, line-004, line-006, line-007, line-009, line-010, line-011 show that One message reassures the public while issuing coded operational instructions."
+              "ja": "1番目の台詞、3番目の台詞、4番目の台詞、6番目の台詞、7番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞を合わせると、一つの放送が、公衆には安心説明、保守員には具体的な緊急指示として働く。",
+              "zh": "合并阅读第1句台词、第3句台词、第4句台词、第6句台词、第7句台词、第9句台词、第10句台词、第11句台词可知，同一广播对公众是安抚说明，对维修员则是具体紧急指令。",
+              "en": "Taken together, the first line, the third line, the fourth line, the sixth line, the seventh line, the ninth line, the tenth line, the eleventh line show that One message reassures the public while issuing coded operational instructions."
             },
             "nuance": {
               "ja": "一般客向け文と保守員向け符号が同居するため、表面だけ聞けば情報不足ですが、符号を公開しすぎると安全上の別リスクも生じます。",
@@ -1831,13 +1831,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "a2c6702e8c8a3b21e6f747065d21a988f3a8a5829af34c0fb0670edbe82fc080"
+      "contentHash": "592936cd719540bcde0847c3a9fd3761b92fae37cd4e8dd2e440ded24399a8fb"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-033",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 33,
       "jlptTarget": "N1-pragmatics",
@@ -2472,9 +2472,9 @@
               "en": "The best-supported reading is 「Mapping redacted-character counts to the margin index.」 and 「Line initials repeat I-O-RI.」."
             },
             "evidence": {
-              "ja": "line-003、line-005、line-006、line-007、line-008、line-011、line-012を合わせると、検閲担当者が表向き名を消しながら、後世へ存在を残す暗号を埋めた。",
-              "zh": "合并阅读line-003、line-005、line-006、line-007、line-008、line-011、line-012可知，审查者表面抹去姓名，却暗中为后世留下存在证明。",
-              "en": "Taken together, line-003, line-005, line-006, line-007, line-008, line-011, line-012 show that The censor hides a preservation code inside the erasure."
+              "ja": "3番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、11番目の台詞、12番目の台詞を合わせると、検閲担当者が表向き名を消しながら、後世へ存在を残す暗号を埋めた。",
+              "zh": "合并阅读第3句台词、第5句台词、第6句台词、第7句台词、第8句台词、第11句台词、第12句台词可知，审查者表面抹去姓名，却暗中为后世留下存在证明。",
+              "en": "Taken together, the third line, the fifth line, the sixth line, the seventh line, the eighth line, the eleventh line, the twelfth line show that The censor hides a preservation code inside the erasure."
             },
             "nuance": {
               "ja": "文字数列と索引の一致は意図的暗号を支持しますが、誰が黒塗りを設計したか、発明家本人が関与したかは確定しません。",
@@ -2560,9 +2560,9 @@
               "en": "The best-supported reading is 「Iori Kagami, the exiled inventor.」."
             },
             "evidence": {
-              "ja": "line-007、line-008、line-009、line-011、line-012を合わせると、検閲担当者が表向き名を消しながら、後世へ存在を残す暗号を埋めた。",
-              "zh": "合并阅读line-007、line-008、line-009、line-011、line-012可知，审查者表面抹去姓名，却暗中为后世留下存在证明。",
-              "en": "Taken together, line-007, line-008, line-009, line-011, line-012 show that The censor hides a preservation code inside the erasure."
+              "ja": "7番目の台詞、8番目の台詞、9番目の台詞、11番目の台詞、12番目の台詞を合わせると、検閲担当者が表向き名を消しながら、後世へ存在を残す暗号を埋めた。",
+              "zh": "合并阅读第7句台词、第8句台词、第9句台词、第11句台词、第12句台词可知，审查者表面抹去姓名，却暗中为后世留下存在证明。",
+              "en": "Taken together, the seventh line, the eighth line, the ninth line, the eleventh line, the twelfth line show that The censor hides a preservation code inside the erasure."
             },
             "nuance": {
               "ja": "文字数列と索引の一致は意図的暗号を支持しますが、誰が黒塗りを設計したか、発明家本人が関与したかは確定しません。",
@@ -2652,9 +2652,9 @@
               "en": "The best-supported reading is 「The count sequence produces the surname through the preserved index.」 and 「An independent acrostic produces the given name.」."
             },
             "evidence": {
-              "ja": "line-005、line-006、line-007、line-008、line-009、line-010、line-011、line-012を合わせると、検閲担当者が表向き名を消しながら、後世へ存在を残す暗号を埋めた。",
-              "zh": "合并阅读line-005、line-006、line-007、line-008、line-009、line-010、line-011、line-012可知，审查者表面抹去姓名，却暗中为后世留下存在证明。",
-              "en": "Taken together, line-005, line-006, line-007, line-008, line-009, line-010, line-011, line-012 show that The censor hides a preservation code inside the erasure."
+              "ja": "5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞を合わせると、検閲担当者が表向き名を消しながら、後世へ存在を残す暗号を埋めた。",
+              "zh": "合并阅读第5句台词、第6句台词、第7句台词、第8句台词、第9句台词、第10句台词、第11句台词、第12句台词可知，审查者表面抹去姓名，却暗中为后世留下存在证明。",
+              "en": "Taken together, the fifth line, the sixth line, the seventh line, the eighth line, the ninth line, the tenth line, the eleventh line, the twelfth line show that The censor hides a preservation code inside the erasure."
             },
             "nuance": {
               "ja": "文字数列と索引の一致は意図的暗号を支持しますが、誰が黒塗りを設計したか、発明家本人が関与したかは確定しません。",
@@ -2739,9 +2739,9 @@
               "en": "The best-supported reading is 「The designer of the code and their motive.」."
             },
             "evidence": {
-              "ja": "line-013、line-014、line-015、line-016を合わせると、検閲担当者が表向き名を消しながら、後世へ存在を残す暗号を埋めた。",
-              "zh": "合并阅读line-013、line-014、line-015、line-016可知，审查者表面抹去姓名，却暗中为后世留下存在证明。",
-              "en": "Taken together, line-013, line-014, line-015, line-016 show that The censor hides a preservation code inside the erasure."
+              "ja": "13番目の台詞、14番目の台詞、15番目の台詞、16番目の台詞を合わせると、検閲担当者が表向き名を消しながら、後世へ存在を残す暗号を埋めた。",
+              "zh": "合并阅读第13句台词、第14句台词、第15句台词、第16句台词可知，审查者表面抹去姓名，却暗中为后世留下存在证明。",
+              "en": "Taken together, the thirteenth line, the fourteenth line, the fifteenth line, the sixteenth line show that The censor hides a preservation code inside the erasure."
             },
             "nuance": {
               "ja": "文字数列と索引の一致は意図的暗号を支持しますが、誰が黒塗りを設計したか、発明家本人が関与したかは確定しません。",
@@ -2827,9 +2827,9 @@
               "en": "The best-supported reading is 「Search contemporary documents for the same count/acrostic scheme and separate findings from inference.」."
             },
             "evidence": {
-              "ja": "line-014、line-015、line-016、line-017、line-018を合わせると、検閲担当者が表向き名を消しながら、後世へ存在を残す暗号を埋めた。",
-              "zh": "合并阅读line-014、line-015、line-016、line-017、line-018可知，审查者表面抹去姓名，却暗中为后世留下存在证明。",
-              "en": "Taken together, line-014, line-015, line-016, line-017, line-018 show that The censor hides a preservation code inside the erasure."
+              "ja": "14番目の台詞、15番目の台詞、16番目の台詞、17番目の台詞、18番目の台詞を合わせると、検閲担当者が表向き名を消しながら、後世へ存在を残す暗号を埋めた。",
+              "zh": "合并阅读第14句台词、第15句台词、第16句台词、第17句台词、第18句台词可知，审查者表面抹去姓名，却暗中为后世留下存在证明。",
+              "en": "Taken together, the fourteenth line, the fifteenth line, the sixteenth line, the seventeenth line, the eighteenth line show that The censor hides a preservation code inside the erasure."
             },
             "nuance": {
               "ja": "文字数列と索引の一致は意図的暗号を支持しますが、誰が黒塗りを設計したか、発明家本人が関与したかは確定しません。",
@@ -2854,13 +2854,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "318584bc454ba8d21b7306cbb369bbbbe1258a9dbf310890e2fc1c3890d0d10e"
+      "contentHash": "8b31ef8d858026b5ece7a05c74f899d4e83d59e5c1d41bebb6f12001c22565c3"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-034",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 34,
       "jlptTarget": "N1-pragmatics",
@@ -3466,9 +3466,9 @@
               "en": "The best-supported reading is 「Register, tense, and paper all switch in the same three-part pattern.」."
             },
             "evidence": {
-              "ja": "line-002、line-003、line-004、line-005、line-006、line-007、line-012を合わせると、一人の不安定な語りではなく、複数人の記録を一人の日記として編集した。",
-              "zh": "合并阅读line-002、line-003、line-004、line-005、line-006、line-007、line-012可知，这不是一个人不稳定的叙述，而是多人记录被编辑成一个人的日记。",
-              "en": "Taken together, line-002, line-003, line-004, line-005, line-006, line-007, line-012 show that Multiple writers have been compiled into one supposed diary."
+              "ja": "2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、12番目の台詞を合わせると、一人の不安定な語りではなく、複数人の記録を一人の日記として編集した。",
+              "zh": "合并阅读第2句台词、第3句台词、第4句台词、第5句台词、第6句台词、第7句台词、第12句台词可知，这不是一个人不稳定的叙述，而是多人记录被编辑成一个人的日记。",
+              "en": "Taken together, the second line, the third line, the fourth line, the fifth line, the sixth line, the seventh line, the twelfth line show that Multiple writers have been compiled into one supposed diary."
             },
             "nuance": {
               "ja": "文体・時制・紙質の三系統は複数筆者を示しますが、表紙名の人物が編集者か所有者か、共同筆者かは確定しません。",
@@ -3553,9 +3553,9 @@
               "en": "The best-supported reading is 「The diary's owner or holder.」 and 「An editor who compiled three accounts.」."
             },
             "evidence": {
-              "ja": "line-013、line-014、line-015を合わせると、一人の不安定な語りではなく、複数人の記録を一人の日記として編集した。",
-              "zh": "合并阅读line-013、line-014、line-015可知，这不是一个人不稳定的叙述，而是多人记录被编辑成一个人的日记。",
-              "en": "Taken together, line-013, line-014, line-015 show that Multiple writers have been compiled into one supposed diary."
+              "ja": "13番目の台詞、14番目の台詞、15番目の台詞を合わせると、一人の不安定な語りではなく、複数人の記録を一人の日記として編集した。",
+              "zh": "合并阅读第13句台词、第14句台词、第15句台词可知，这不是一个人不稳定的叙述，而是多人记录被编辑成一个人的日记。",
+              "en": "Taken together, the thirteenth line, the fourteenth line, the fifteenth line show that Multiple writers have been compiled into one supposed diary."
             },
             "nuance": {
               "ja": "文体・時制・紙質の三系統は複数筆者を示しますが、表紙名の人物が編集者か所有者か、共同筆者かは確定しません。",
@@ -3639,9 +3639,9 @@
               "en": "The best-supported reading is 「It may show shared tools or location, without erasing pressure, style, and paper differences.」."
             },
             "evidence": {
-              "ja": "line-007、line-008、line-015を合わせると、一人の不安定な語りではなく、複数人の記録を一人の日記として編集した。",
-              "zh": "合并阅读line-007、line-008、line-015可知，这不是一个人不稳定的叙述，而是多人记录被编辑成一个人的日记。",
-              "en": "Taken together, line-007, line-008, line-015 show that Multiple writers have been compiled into one supposed diary."
+              "ja": "7番目の台詞、8番目の台詞、15番目の台詞を合わせると、一人の不安定な語りではなく、複数人の記録を一人の日記として編集した。",
+              "zh": "合并阅读第7句台词、第8句台词、第15句台词可知，这不是一个人不稳定的叙述，而是多人记录被编辑成一个人的日记。",
+              "en": "Taken together, the seventh line, the eighth line, the fifteenth line show that Multiple writers have been compiled into one supposed diary."
             },
             "nuance": {
               "ja": "文体・時制・紙質の三系統は複数筆者を示しますが、表紙名の人物が編集者か所有者か、共同筆者かは確定しません。",
@@ -3725,9 +3725,9 @@
               "en": "The best-supported reading is 「Compare handwriting and trace the three paper sources.」."
             },
             "evidence": {
-              "ja": "line-015、line-016、line-017を合わせると、一人の不安定な語りではなく、複数人の記録を一人の日記として編集した。",
-              "zh": "合并阅读line-015、line-016、line-017可知，这不是一个人不稳定的叙述，而是多人记录被编辑成一个人的日记。",
-              "en": "Taken together, line-015, line-016, line-017 show that Multiple writers have been compiled into one supposed diary."
+              "ja": "15番目の台詞、16番目の台詞、17番目の台詞を合わせると、一人の不安定な語りではなく、複数人の記録を一人の日記として編集した。",
+              "zh": "合并阅读第15句台词、第16句台词、第17句台词可知，这不是一个人不稳定的叙述，而是多人记录被编辑成一个人的日记。",
+              "en": "Taken together, the fifteenth line, the sixteenth line, the seventeenth line show that Multiple writers have been compiled into one supposed diary."
             },
             "nuance": {
               "ja": "文体・時制・紙質の三系統は複数筆者を示しますが、表紙名の人物が編集者か所有者か、共同筆者かは確定しません。",
@@ -3752,13 +3752,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "d3d383f79798a6ed7441d79be5a49da036e9aab005f8ca399998c5fc0bf7e034"
+      "contentHash": "c2840b52e7ea635fdb99b16295b784a61906b0b78badc46d271d5f9b65bb3c2b"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-035",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 35,
       "jlptTarget": "N1-pragmatics",
@@ -4391,9 +4391,9 @@
               "en": "The best-supported reading is 「Their open/close commands consistently conflict.」 and 「The subtitle locates itself with first person: 'I am inside.'」."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-005、line-006、line-007を合わせると、翻訳ミスではなく、字幕層の人物が自分を守るため音声命令を書き換えている。",
-              "zh": "合并阅读line-001、line-002、line-005、line-006、line-007可知，这不是误译，而是字幕层中的人物为自保改写命令。",
-              "en": "Taken together, line-001, line-002, line-005, line-006, line-007 show that A character inside the subtitle layer rewrites the command for self-preservation."
+              "ja": "1番目の台詞、2番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞を合わせると、翻訳ミスではなく、字幕層の人物が自分を守るため音声命令を書き換えている。",
+              "zh": "合并阅读第1句台词、第2句台词、第5句台词、第6句台词、第7句台词可知，这不是误译，而是字幕层中的人物为自保改写命令。",
+              "en": "Taken together, the first line, the second line, the fifth line, the sixth line, the seventh line show that A character inside the subtitle layer rewrites the command for self-preservation."
             },
             "nuance": {
               "ja": "停止画面の告白は字幕が独立した発話主体である可能性を示しますが、人物かプログラムか、救助を求めているかは未確定です。",
@@ -4481,9 +4481,9 @@
               "en": "The best-supported reading is 「A line saying the subtitler is inside appears only while paused.」 and 「The line disappears on resume but survives in the captured record.」."
             },
             "evidence": {
-              "ja": "line-008、line-009、line-010、line-011、line-013、line-014を合わせると、翻訳ミスではなく、字幕層の人物が自分を守るため音声命令を書き換えている。",
-              "zh": "合并阅读line-008、line-009、line-010、line-011、line-013、line-014可知，这不是误译，而是字幕层中的人物为自保改写命令。",
-              "en": "Taken together, line-008, line-009, line-010, line-011, line-013, line-014 show that A character inside the subtitle layer rewrites the command for self-preservation."
+              "ja": "8番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞、13番目の台詞、14番目の台詞を合わせると、翻訳ミスではなく、字幕層の人物が自分を守るため音声命令を書き換えている。",
+              "zh": "合并阅读第8句台词、第9句台词、第10句台词、第11句台词、第13句台词、第14句台词可知，这不是误译，而是字幕层中的人物为自保改写命令。",
+              "en": "Taken together, the eighth line, the ninth line, the tenth line, the eleventh line, the thirteenth line, the fourteenth line show that A character inside the subtitle layer rewrites the command for self-preservation."
             },
             "nuance": {
               "ja": "停止画面の告白は字幕が独立した発話主体である可能性を示しますが、人物かプログラムか、救助を求めているかは未確定です。",
@@ -4569,9 +4569,9 @@
               "en": "The best-supported reading is 「Because the channels conflict, keep the door closed, preserve evidence, and investigate.」."
             },
             "evidence": {
-              "ja": "line-014、line-015、line-016、line-017、line-018を合わせると、翻訳ミスではなく、字幕層の人物が自分を守るため音声命令を書き換えている。",
-              "zh": "合并阅读line-014、line-015、line-016、line-017、line-018可知，这不是误译，而是字幕层中的人物为自保改写命令。",
-              "en": "Taken together, line-014, line-015, line-016, line-017, line-018 show that A character inside the subtitle layer rewrites the command for self-preservation."
+              "ja": "14番目の台詞、15番目の台詞、16番目の台詞、17番目の台詞、18番目の台詞を合わせると、翻訳ミスではなく、字幕層の人物が自分を守るため音声命令を書き換えている。",
+              "zh": "合并阅读第14句台词、第15句台词、第16句台词、第17句台词、第18句台词可知，这不是误译，而是字幕层中的人物为自保改写命令。",
+              "en": "Taken together, the fourteenth line, the fifteenth line, the sixteenth line, the seventeenth line, the eighteenth line show that A character inside the subtitle layer rewrites the command for self-preservation."
             },
             "nuance": {
               "ja": "停止画面の告白は字幕が独立した発話主体である可能性を示しますが、人物かプログラムか、救助を求めているかは未確定です。",
@@ -4661,9 +4661,9 @@
               "en": "The best-supported reading is 「It consistently opposes the voice and adds first-person and pause-only confessions.」."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-005、line-006、line-009、line-012、line-013、line-016、line-017を合わせると、翻訳ミスではなく、字幕層の人物が自分を守るため音声命令を書き換えている。",
-              "zh": "合并阅读line-001、line-002、line-005、line-006、line-009、line-012、line-013、line-016、line-017可知，这不是误译，而是字幕层中的人物为自保改写命令。",
-              "en": "Taken together, line-001, line-002, line-005, line-006, line-009, line-012, line-013, line-016, line-017 show that A character inside the subtitle layer rewrites the command for self-preservation."
+              "ja": "1番目の台詞、2番目の台詞、5番目の台詞、6番目の台詞、9番目の台詞、12番目の台詞、13番目の台詞、16番目の台詞、17番目の台詞を合わせると、翻訳ミスではなく、字幕層の人物が自分を守るため音声命令を書き換えている。",
+              "zh": "合并阅读第1句台词、第2句台词、第5句台词、第6句台词、第9句台词、第12句台词、第13句台词、第16句台词、第17句台词可知，这不是误译，而是字幕层中的人物为自保改写命令。",
+              "en": "Taken together, the first line, the second line, the fifth line, the sixth line, the ninth line, the twelfth line, the thirteenth line, the sixteenth line, the seventeenth line show that A character inside the subtitle layer rewrites the command for self-preservation."
             },
             "nuance": {
               "ja": "停止画面の告白は字幕が独立した発話主体である可能性を示しますが、人物かプログラムか、救助を求めているかは未確定です。",
@@ -4688,13 +4688,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "ae57b1abcbdc94d4fd12ab543d6dc61976711a02ac690656c168b057c96ca3bc"
+      "contentHash": "6fda7591d6f79b016e4e83800794585779bb55c02b7ea10ab4bdc0a8ad262789"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-036",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 36,
       "jlptTarget": "N1-pragmatics",
@@ -5301,9 +5301,9 @@
               "en": "The best-supported reading is 「Politely decline the proposal this time.」."
             },
             "evidence": {
-              "ja": "line-002、line-006、line-008、line-010、line-011、line-013、line-015を合わせると、辞書的意味だけでなく、周辺行為を含む語用全体が断りを示す。",
-              "zh": "合并阅读line-002、line-006、line-008、line-010、line-011、line-013、line-015可知，不能只看字面，周边行为共同表明这是拒绝。",
-              "en": "Taken together, line-002, line-006, line-008, line-010, line-011, line-013, line-015 show that The refusal emerges from the whole pragmatic package, not the phrase alone."
+              "ja": "2番目の台詞、6番目の台詞、8番目の台詞、10番目の台詞、11番目の台詞、13番目の台詞、15番目の台詞を合わせると、辞書的意味だけでなく、周辺行為を含む語用全体が断りを示す。",
+              "zh": "合并阅读第2句台词、第6句台词、第8句台词、第10句台词、第11句台词、第13句台词、第15句台词可知，不能只看字面，周边行为共同表明这是拒绝。",
+              "en": "Taken together, the second line, the sixth line, the eighth line, the tenth line, the eleventh line, the thirteenth line, the fifteenth line show that The refusal emerges from the whole pragmatic package, not the phrase alone."
             },
             "nuance": {
               "ja": "語句だけなら条件付き可能性も残りますが、期限不提示・資料返却・終結敬語が重なるため、実務上は拒否として扱うのが安全です。",
@@ -5389,9 +5389,9 @@
               "en": "The best-supported reading is 「All materials are returned and no revision should be sent.」."
             },
             "evidence": {
-              "ja": "line-007、line-008、line-009、line-010、line-013を合わせると、辞書的意味だけでなく、周辺行為を含む語用全体が断りを示す。",
-              "zh": "合并阅读line-007、line-008、line-009、line-010、line-013可知，不能只看字面，周边行为共同表明这是拒绝。",
-              "en": "Taken together, line-007, line-008, line-009, line-010, line-013 show that The refusal emerges from the whole pragmatic package, not the phrase alone."
+              "ja": "7番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞、13番目の台詞を合わせると、辞書的意味だけでなく、周辺行為を含む語用全体が断りを示す。",
+              "zh": "合并阅读第7句台词、第8句台词、第9句台词、第10句台词、第13句台词可知，不能只看字面，周边行为共同表明这是拒绝。",
+              "en": "Taken together, the seventh line, the eighth line, the ninth line, the tenth line, the thirteenth line show that The refusal emerges from the whole pragmatic package, not the phrase alone."
             },
             "nuance": {
               "ja": "語句だけなら条件付き可能性も残りますが、期限不提示・資料返却・終結敬語が重なるため、実務上は拒否として扱うのが安全です。",
@@ -5481,9 +5481,9 @@
               "en": "The best-supported reading is 「Read the speech act through wording, timing, document handling, and closing register.」."
             },
             "evidence": {
-              "ja": "line-004、line-005、line-006、line-007、line-008、line-010、line-011、line-013、line-017を合わせると、辞書的意味だけでなく、周辺行為を含む語用全体が断りを示す。",
-              "zh": "合并阅读line-004、line-005、line-006、line-007、line-008、line-010、line-011、line-013、line-017可知，不能只看字面，周边行为共同表明这是拒绝。",
-              "en": "Taken together, line-004, line-005, line-006, line-007, line-008, line-010, line-011, line-013, line-017 show that The refusal emerges from the whole pragmatic package, not the phrase alone."
+              "ja": "4番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、10番目の台詞、11番目の台詞、13番目の台詞、17番目の台詞を合わせると、辞書的意味だけでなく、周辺行為を含む語用全体が断りを示す。",
+              "zh": "合并阅读第4句台词、第5句台词、第6句台词、第7句台词、第8句台词、第10句台词、第11句台词、第13句台词、第17句台词可知，不能只看字面，周边行为共同表明这是拒绝。",
+              "en": "Taken together, the fourth line, the fifth line, the sixth line, the seventh line, the eighth line, the tenth line, the eleventh line, the thirteenth line, the seventeenth line show that The refusal emerges from the whole pragmatic package, not the phrase alone."
             },
             "nuance": {
               "ja": "語句だけなら条件付き可能性も残りますが、期限不提示・資料返却・終結敬語が重なるため、実務上は拒否として扱うのが安全です。",
@@ -5566,9 +5566,9 @@
               "en": "The best-supported reading is 「Not adopted this time.」."
             },
             "evidence": {
-              "ja": "line-014、line-015を合わせると、辞書的意味だけでなく、周辺行為を含む語用全体が断りを示す。",
-              "zh": "合并阅读line-014、line-015可知，不能只看字面，周边行为共同表明这是拒绝。",
-              "en": "Taken together, line-014, line-015 show that The refusal emerges from the whole pragmatic package, not the phrase alone."
+              "ja": "14番目の台詞、15番目の台詞を合わせると、辞書的意味だけでなく、周辺行為を含む語用全体が断りを示す。",
+              "zh": "合并阅读第14句台词、第15句台词可知，不能只看字面，周边行为共同表明这是拒绝。",
+              "en": "Taken together, the fourteenth line, the fifteenth line show that The refusal emerges from the whole pragmatic package, not the phrase alone."
             },
             "nuance": {
               "ja": "語句だけなら条件付き可能性も残りますが、期限不提示・資料返却・終結敬語が重なるため、実務上は拒否として扱うのが安全です。",
@@ -5655,9 +5655,9 @@
               "en": "The best-supported reading is 「Preserve lexical possibility while conveying practical refusal when surrounding acts establish it.」."
             },
             "evidence": {
-              "ja": "line-011、line-012、line-013、line-015、line-016、line-017を合わせると、辞書的意味だけでなく、周辺行為を含む語用全体が断りを示す。",
-              "zh": "合并阅读line-011、line-012、line-013、line-015、line-016、line-017可知，不能只看字面，周边行为共同表明这是拒绝。",
-              "en": "Taken together, line-011, line-012, line-013, line-015, line-016, line-017 show that The refusal emerges from the whole pragmatic package, not the phrase alone."
+              "ja": "11番目の台詞、12番目の台詞、13番目の台詞、15番目の台詞、16番目の台詞、17番目の台詞を合わせると、辞書的意味だけでなく、周辺行為を含む語用全体が断りを示す。",
+              "zh": "合并阅读第11句台词、第12句台词、第13句台词、第15句台词、第16句台词、第17句台词可知，不能只看字面，周边行为共同表明这是拒绝。",
+              "en": "Taken together, the eleventh line, the twelfth line, the thirteenth line, the fifteenth line, the sixteenth line, the seventeenth line show that The refusal emerges from the whole pragmatic package, not the phrase alone."
             },
             "nuance": {
               "ja": "語句だけなら条件付き可能性も残りますが、期限不提示・資料返却・終結敬語が重なるため、実務上は拒否として扱うのが安全です。",
@@ -5682,13 +5682,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "78b744eeb3f4c50fa1076f26e467c211f65286304e44fe9e3a22f667907f1d81"
+      "contentHash": "e516b196695324a39739854797affec44d062a4f1fb056ef66b18ae1c449357a"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-037",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 37,
       "jlptTarget": "N1-pragmatics",
@@ -6323,9 +6323,9 @@
               "en": "The best-supported reading is 「Editorial work: date normalization, deduplication, and source verification.」."
             },
             "evidence": {
-              "ja": "line-003、line-006、line-007、line-008、line-009、line-010、line-012、line-013を合わせると、成果物を追加しない編集労働が見えず、自己評価と他者評価の両方から消えている。",
-              "zh": "合并阅读line-003、line-006、line-007、line-008、line-009、line-010、line-012、line-013可知，没有新增成品的编辑劳动被隐藏，既未被本人也未被他人认可。",
-              "en": "Taken together, line-003, line-006, line-007, line-008, line-009, line-010, line-012, line-013 show that Invisible editorial labor disappears from both self-report and credit."
+              "ja": "3番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞、12番目の台詞、13番目の台詞を合わせると、成果物を追加しない編集労働が見えず、自己評価と他者評価の両方から消えている。",
+              "zh": "合并阅读第3句台词、第6句台词、第7句台词、第8句台词、第9句台词、第10句台词、第12句台词、第13句台词可知，没有新增成品的编辑劳动被隐藏，既未被本人也未被他人认可。",
+              "en": "Taken together, the third line, the sixth line, the seventh line, the eighth line, the ninth line, the tenth line, the twelfth line, the thirteenth line show that Invisible editorial labor disappears from both self-report and credit."
             },
             "nuance": {
               "ja": "匿名履歴は貢献を示しますが、本人が匿名を望んだ理由や、発表者が意図的に功績を奪ったかは別途確認が必要です。",
@@ -6411,9 +6411,9 @@
               "en": "The best-supported reading is 「She narrowly defines making as adding new paragraphs or artifacts.」."
             },
             "evidence": {
-              "ja": "line-003、line-010、line-013、line-014、line-018を合わせると、成果物を追加しない編集労働が見えず、自己評価と他者評価の両方から消えている。",
-              "zh": "合并阅读line-003、line-010、line-013、line-014、line-018可知，没有新增成品的编辑劳动被隐藏，既未被本人也未被他人认可。",
-              "en": "Taken together, line-003, line-010, line-013, line-014, line-018 show that Invisible editorial labor disappears from both self-report and credit."
+              "ja": "3番目の台詞、10番目の台詞、13番目の台詞、14番目の台詞、18番目の台詞を合わせると、成果物を追加しない編集労働が見えず、自己評価と他者評価の両方から消えている。",
+              "zh": "合并阅读第3句台词、第10句台词、第13句台词、第14句台词、第18句台词可知，没有新增成品的编辑劳动被隐藏，既未被本人也未被他人认可。",
+              "en": "Taken together, the third line, the tenth line, the thirteenth line, the fourteenth line, the eighteenth line show that Invisible editorial labor disappears from both self-report and credit."
             },
             "nuance": {
               "ja": "匿名履歴は貢献を示しますが、本人が匿名を望んだ理由や、発表者が意図的に功績を奪ったかは別途確認が必要です。",
@@ -6504,9 +6504,9 @@
               "en": "The best-supported reading is 「Edit history and terminal records concretely establish Shizu's contribution.」 and 「The record should be corrected, while Riku's intent remains unsettled.」."
             },
             "evidence": {
-              "ja": "line-004、line-005、line-006、line-007、line-008、line-009、line-015、line-016、line-017を合わせると、成果物を追加しない編集労働が見えず、自己評価と他者評価の両方から消えている。",
-              "zh": "合并阅读line-004、line-005、line-006、line-007、line-008、line-009、line-015、line-016、line-017可知，没有新增成品的编辑劳动被隐藏，既未被本人也未被他人认可。",
-              "en": "Taken together, line-004, line-005, line-006, line-007, line-008, line-009, line-015, line-016, line-017 show that Invisible editorial labor disappears from both self-report and credit."
+              "ja": "4番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞、15番目の台詞、16番目の台詞、17番目の台詞を合わせると、成果物を追加しない編集労働が見えず、自己評価と他者評価の両方から消えている。",
+              "zh": "合并阅读第4句台词、第5句台词、第6句台词、第7句台词、第8句台词、第9句台词、第15句台词、第16句台词、第17句台词可知，没有新增成品的编辑劳动被隐藏，既未被本人也未被他人认可。",
+              "en": "Taken together, the fourth line, the fifth line, the sixth line, the seventh line, the eighth line, the ninth line, the fifteenth line, the sixteenth line, the seventeenth line show that Invisible editorial labor disappears from both self-report and credit."
             },
             "nuance": {
               "ja": "匿名履歴は貢献を示しますが、本人が匿名を望んだ理由や、発表者が意図的に功績を奪ったかは別途確認が必要です。",
@@ -6592,9 +6592,9 @@
               "en": "The best-supported reading is 「Shizu: editor—date normalization, deduplication, and citation checks.」."
             },
             "evidence": {
-              "ja": "line-007、line-008、line-009、line-017、line-018を合わせると、成果物を追加しない編集労働が見えず、自己評価と他者評価の両方から消えている。",
-              "zh": "合并阅读line-007、line-008、line-009、line-017、line-018可知，没有新增成品的编辑劳动被隐藏，既未被本人也未被他人认可。",
-              "en": "Taken together, line-007, line-008, line-009, line-017, line-018 show that Invisible editorial labor disappears from both self-report and credit."
+              "ja": "7番目の台詞、8番目の台詞、9番目の台詞、17番目の台詞、18番目の台詞を合わせると、成果物を追加しない編集労働が見えず、自己評価と他者評価の両方から消えている。",
+              "zh": "合并阅读第7句台词、第8句台词、第9句台词、第17句台词、第18句台词可知，没有新增成品的编辑劳动被隐藏，既未被本人也未被他人认可。",
+              "en": "Taken together, the seventh line, the eighth line, the ninth line, the seventeenth line, the eighteenth line show that Invisible editorial labor disappears from both self-report and credit."
             },
             "nuance": {
               "ja": "匿名履歴は貢献を示しますが、本人が匿名を望んだ理由や、発表者が意図的に功績を奪ったかは別途確認が必要です。",
@@ -6619,13 +6619,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "ca796ddcd6158a729d116964de0bec42205fda2fb615f0e230801d21e5d46462"
+      "contentHash": "abdeff44712c7e44195939fc8b3e8ace8eb1302ef0ce49180fc5d2aa8811f88a"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-038",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 38,
       "jlptTarget": "N1-pragmatics",
@@ -7230,9 +7230,9 @@
               "en": "The best-supported reading is 「To provide a common baseline for observing sauce choices.」."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-004、line-008、line-010、line-011を合わせると、失敗ではなく、客が言葉にしない味の好みを観察するための設計である。",
-              "zh": "合并阅读line-001、line-002、line-004、line-008、line-010、line-011可知，这不是失败，而是用来观察顾客未说出口口味偏好的设计。",
-              "en": "Taken together, line-001, line-002, line-004, line-008, line-010, line-011 show that The bland dish is an instrument for observing unspoken preferences."
+              "ja": "1番目の台詞、2番目の台詞、4番目の台詞、8番目の台詞、10番目の台詞、11番目の台詞を合わせると、失敗ではなく、客が言葉にしない味の好みを観察するための設計である。",
+              "zh": "合并阅读第1句台词、第2句台词、第4句台词、第8句台词、第10句台词、第11句台词可知，这不是失败，而是用来观察顾客未说出口口味偏好的设计。",
+              "en": "Taken together, the first line, the second line, the fourth line, the eighth line, the tenth line, the eleventh line show that The bland dish is an instrument for observing unspoken preferences."
             },
             "nuance": {
               "ja": "ソース位置の記録は好みの傾向を示しますが、触れなかった理由や一回の選択を固定的嗜好とみなすには限界があります。",
@@ -7316,9 +7316,9 @@
               "en": "The best-supported reading is 「Seat numbers and positions of sauce dishes touched.」."
             },
             "evidence": {
-              "ja": "line-005、line-006、line-008を合わせると、失敗ではなく、客が言葉にしない味の好みを観察するための設計である。",
-              "zh": "合并阅读line-005、line-006、line-008可知，这不是失败，而是用来观察顾客未说出口口味偏好的设计。",
-              "en": "Taken together, line-005, line-006, line-008 show that The bland dish is an instrument for observing unspoken preferences."
+              "ja": "5番目の台詞、6番目の台詞、8番目の台詞を合わせると、失敗ではなく、客が言葉にしない味の好みを観察するための設計である。",
+              "zh": "合并阅读第5句台词、第6句台词、第8句台词可知，这不是失败，而是用来观察顾客未说出口口味偏好的设计。",
+              "en": "Taken together, the fifth line, the sixth line, the eighth line show that The bland dish is an instrument for observing unspoken preferences."
             },
             "nuance": {
               "ja": "ソース位置の記録は好みの傾向を示しますが、触れなかった理由や一回の選択を固定的嗜好とみなすには限界があります。",
@@ -7404,9 +7404,9 @@
               "en": "The best-supported reading is 「It shows today's choice, but a sore throat prevents treating it as a stable preference.」."
             },
             "evidence": {
-              "ja": "line-006、line-013、line-014、line-015、line-017を合わせると、失敗ではなく、客が言葉にしない味の好みを観察するための設計である。",
-              "zh": "合并阅读line-006、line-013、line-014、line-015、line-017可知，这不是失败，而是用来观察顾客未说出口口味偏好的设计。",
-              "en": "Taken together, line-006, line-013, line-014, line-015, line-017 show that The bland dish is an instrument for observing unspoken preferences."
+              "ja": "6番目の台詞、13番目の台詞、14番目の台詞、15番目の台詞、17番目の台詞を合わせると、失敗ではなく、客が言葉にしない味の好みを観察するための設計である。",
+              "zh": "合并阅读第6句台词、第13句台词、第14句台词、第15句台词、第17句台词可知，这不是失败，而是用来观察顾客未说出口口味偏好的设计。",
+              "en": "Taken together, the sixth line, the thirteenth line, the fourteenth line, the fifteenth line, the seventeenth line show that The bland dish is an instrument for observing unspoken preferences."
             },
             "nuance": {
               "ja": "ソース位置の記録は好みの傾向を示しますが、触れなかった理由や一回の選択を固定的嗜好とみなすには限界があります。",
@@ -7493,9 +7493,9 @@
               "en": "The best-supported reading is 「Use behavior as an entry point, combined with repeated observation and optional explanation.」."
             },
             "evidence": {
-              "ja": "line-010、line-012、line-013、line-015、line-016、line-017を合わせると、失敗ではなく、客が言葉にしない味の好みを観察するための設計である。",
-              "zh": "合并阅读line-010、line-012、line-013、line-015、line-016、line-017可知，这不是失败，而是用来观察顾客未说出口口味偏好的设计。",
-              "en": "Taken together, line-010, line-012, line-013, line-015, line-016, line-017 show that The bland dish is an instrument for observing unspoken preferences."
+              "ja": "10番目の台詞、12番目の台詞、13番目の台詞、15番目の台詞、16番目の台詞、17番目の台詞を合わせると、失敗ではなく、客が言葉にしない味の好みを観察するための設計である。",
+              "zh": "合并阅读第10句台词、第12句台词、第13句台词、第15句台词、第16句台词、第17句台词可知，这不是失败，而是用来观察顾客未说出口口味偏好的设计。",
+              "en": "Taken together, the tenth line, the twelfth line, the thirteenth line, the fifteenth line, the sixteenth line, the seventeenth line show that The bland dish is an instrument for observing unspoken preferences."
             },
             "nuance": {
               "ja": "ソース位置の記録は好みの傾向を示しますが、触れなかった理由や一回の選択を固定的嗜好とみなすには限界があります。",
@@ -7520,13 +7520,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "a734bc4bea4415cf06298cef85bf12d3ff4ae363fba38560e756cdbba6b19f7a"
+      "contentHash": "a2b7091901d5444e3fa276607165b79874adde10ec37710f33a5adbb2ec532a8"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-039",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 39,
       "jlptTarget": "N1-pragmatics",
@@ -8161,9 +8161,9 @@
               "en": "The best-supported reading is 「Search failed to normalize name order, spelling, and segmentation as one person.」."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-003、line-004、line-005、line-009、line-010、line-011を合わせると、物がないのでなく、名前正規化の不一致で検索対象から外れている。",
-              "zh": "合并阅读line-001、line-002、line-003、line-004、line-005、line-009、line-010、line-011可知，物品并未丢失，而是姓名规范不一致导致检索漏掉。",
-              "en": "Taken together, line-001, line-002, line-003, line-004, line-005, line-009, line-010, line-011 show that The item is missed because of name-normalization mismatch."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞を合わせると、物がないのでなく、名前正規化の不一致で検索対象から外れている。",
+              "zh": "合并阅读第1句台词、第2句台词、第3句台词、第4句台词、第5句台词、第9句台词、第10句台词、第11句台词可知，物品并未丢失，而是姓名规范不一致导致检索漏掉。",
+              "en": "Taken together, the first line, the second line, the third line, the fourth line, the fifth line, the ninth line, the tenth line, the eleventh line show that The item is missed because of name-normalization mismatch."
             },
             "nuance": {
               "ja": "姓名順とローマ字表記の不一致が検索漏れを説明しますが、登録担当の過失だけでなく検索設計の正規化不足も問題です。",
@@ -8248,9 +8248,9 @@
               "en": "The best-supported reading is 「The crescent tag number and a booking slip inside bearing Wang Ming's name.」."
             },
             "evidence": {
-              "ja": "line-006、line-007、line-012、line-013を合わせると、物がないのでなく、名前正規化の不一致で検索対象から外れている。",
-              "zh": "合并阅读line-006、line-007、line-012、line-013可知，物品并未丢失，而是姓名规范不一致导致检索漏掉。",
-              "en": "Taken together, line-006, line-007, line-012, line-013 show that The item is missed because of name-normalization mismatch."
+              "ja": "6番目の台詞、7番目の台詞、12番目の台詞、13番目の台詞を合わせると、物がないのでなく、名前正規化の不一致で検索対象から外れている。",
+              "zh": "合并阅读第6句台词、第7句台词、第12句台词、第13句台词可知，物品并未丢失，而是姓名规范不一致导致检索漏掉。",
+              "en": "Taken together, the sixth line, the seventh line, the twelfth line, the thirteenth line show that The item is missed because of name-normalization mismatch."
             },
             "nuance": {
               "ja": "姓名順とローマ字表記の不一致が検索漏れを説明しますが、登録担当の過失だけでなく検索設計の正規化不足も問題です。",
@@ -8334,9 +8334,9 @@
               "en": "The best-supported reading is 「The spoken name was segmented incorrectly and stored under another spelling.」."
             },
             "evidence": {
-              "ja": "line-008、line-009、line-010を合わせると、物がないのでなく、名前正規化の不一致で検索対象から外れている。",
-              "zh": "合并阅读line-008、line-009、line-010可知，物品并未丢失，而是姓名规范不一致导致检索漏掉。",
-              "en": "Taken together, line-008, line-009, line-010 show that The item is missed because of name-normalization mismatch."
+              "ja": "8番目の台詞、9番目の台詞、10番目の台詞を合わせると、物がないのでなく、名前正規化の不一致で検索対象から外れている。",
+              "zh": "合并阅读第8句台词、第9句台词、第10句台词可知，物品并未丢失，而是姓名规范不一致导致检索漏掉。",
+              "en": "Taken together, the eighth line, the ninth line, the tenth line show that The item is missed because of name-normalization mismatch."
             },
             "nuance": {
               "ja": "姓名順とローマ字表記の不一致が検索漏れを説明しますが、登録担当の過失だけでなく検索設計の正規化不足も問題です。",
@@ -8422,9 +8422,9 @@
               "en": "The best-supported reading is 「Link family name, given name, original spelling, and aliases to one record.」 and 「Normalize case and spacing and search tag numbers and features.」."
             },
             "evidence": {
-              "ja": "line-014、line-015、line-016、line-017を合わせると、物がないのでなく、名前正規化の不一致で検索対象から外れている。",
-              "zh": "合并阅读line-014、line-015、line-016、line-017可知，物品并未丢失，而是姓名规范不一致导致检索漏掉。",
-              "en": "Taken together, line-014, line-015, line-016, line-017 show that The item is missed because of name-normalization mismatch."
+              "ja": "14番目の台詞、15番目の台詞、16番目の台詞、17番目の台詞を合わせると、物がないのでなく、名前正規化の不一致で検索対象から外れている。",
+              "zh": "合并阅读第14句台词、第15句台词、第16句台词、第17句台词可知，物品并未丢失，而是姓名规范不一致导致检索漏掉。",
+              "en": "Taken together, the fourteenth line, the fifteenth line, the sixteenth line, the seventeenth line show that The item is missed because of name-normalization mismatch."
             },
             "nuance": {
               "ja": "姓名順とローマ字表記の不一致が検索漏れを説明しますが、登録担当の過失だけでなく検索設計の正規化不足も問題です。",
@@ -8512,9 +8512,9 @@
               "en": "The best-supported reading is 「It is a failed search for one string, not proof that the object is absent.」."
             },
             "evidence": {
-              "ja": "line-002、line-005、line-007、line-009、line-010、line-012、line-018を合わせると、物がないのでなく、名前正規化の不一致で検索対象から外れている。",
-              "zh": "合并阅读line-002、line-005、line-007、line-009、line-010、line-012、line-018可知，物品并未丢失，而是姓名规范不一致导致检索漏掉。",
-              "en": "Taken together, line-002, line-005, line-007, line-009, line-010, line-012, line-018 show that The item is missed because of name-normalization mismatch."
+              "ja": "2番目の台詞、5番目の台詞、7番目の台詞、9番目の台詞、10番目の台詞、12番目の台詞、18番目の台詞を合わせると、物がないのでなく、名前正規化の不一致で検索対象から外れている。",
+              "zh": "合并阅读第2句台词、第5句台词、第7句台词、第9句台词、第10句台词、第12句台词、第18句台词可知，物品并未丢失，而是姓名规范不一致导致检索漏掉。",
+              "en": "Taken together, the second line, the fifth line, the seventh line, the ninth line, the tenth line, the twelfth line, the eighteenth line show that The item is missed because of name-normalization mismatch."
             },
             "nuance": {
               "ja": "姓名順とローマ字表記の不一致が検索漏れを説明しますが、登録担当の過失だけでなく検索設計の正規化不足も問題です。",
@@ -8539,13 +8539,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "6584bab8477682689063cb090f577c4b295aa2a5a40a865412623bcff30fbccf"
+      "contentHash": "6dc9ab6222b5b6c0c3796989cc79c8ced9188922f0d7740339b40ba4f5736da8"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-040",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 40,
       "jlptTarget": "N1-pragmatics",
@@ -9148,9 +9148,9 @@
               "en": "The best-supported reading is 「Haru signs the same falsehood without voice.」 and 「A recording of yesterday's lie is played back.」."
             },
             "evidence": {
-              "ja": "line-004、line-005、line-006、line-007、line-008、line-009、line-012、line-013を合わせると、判定対象は偽の内容でなく、現在の話者が虚偽を意図して発話する行為である。",
-              "zh": "合并阅读line-004、line-005、line-006、line-007、line-008、line-009、line-012、line-013可知，触发条件不是虚假内容本身，而是当前说话者有意说谎的行为。",
-              "en": "Taken together, line-004, line-005, line-006, line-007, line-008, line-009, line-012, line-013 show that The trigger is the live act and intent of lying, not false content alone."
+              "ja": "4番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞、12番目の台詞、13番目の台詞を合わせると、判定対象は偽の内容でなく、現在の話者が虚偽を意図して発話する行為である。",
+              "zh": "合并阅读第4句台词、第5句台词、第6句台词、第7句台词、第8句台词、第9句台词、第12句台词、第13句台词可知，触发条件不是虚假内容本身，而是当前说话者有意说谎的行为。",
+              "en": "Taken together, the fourth line, the fifth line, the sixth line, the seventh line, the eighth line, the ninth line, the twelfth line, the thirteenth line show that The trigger is the live act and intent of lying, not false content alone."
             },
             "nuance": {
               "ja": "実験は現在の話者による意図的な口頭虚偽を支持しますが、誤信、冗談、他言語、合成音声など境界条件はまだ未検証です。",
@@ -9237,9 +9237,9 @@
               "en": "The best-supported reading is 「Hearing false content is insufficient; a present speaker's act appears necessary.」."
             },
             "evidence": {
-              "ja": "line-008、line-009、line-010、line-012、line-013、line-014を合わせると、判定対象は偽の内容でなく、現在の話者が虚偽を意図して発話する行為である。",
-              "zh": "合并阅读line-008、line-009、line-010、line-012、line-013、line-014可知，触发条件不是虚假内容本身，而是当前说话者有意说谎的行为。",
-              "en": "Taken together, line-008, line-009, line-010, line-012, line-013, line-014 show that The trigger is the live act and intent of lying, not false content alone."
+              "ja": "8番目の台詞、9番目の台詞、10番目の台詞、12番目の台詞、13番目の台詞、14番目の台詞を合わせると、判定対象は偽の内容でなく、現在の話者が虚偽を意図して発話する行為である。",
+              "zh": "合并阅读第8句台词、第9句台词、第10句台词、第12句台词、第13句台词、第14句台词可知，触发条件不是虚假内容本身，而是当前说话者有意说谎的行为。",
+              "en": "Taken together, the eighth line, the ninth line, the tenth line, the twelfth line, the thirteenth line, the fourteenth line show that The trigger is the live act and intent of lying, not false content alone."
             },
             "nuance": {
               "ja": "実験は現在の話者による意図的な口頭虚偽を支持しますが、誤信、冗談、他言語、合成音声など境界条件はまだ未検証です。",
@@ -9326,9 +9326,9 @@
               "en": "The best-supported reading is 「A current speaker orally presents as true something they know is false.」."
             },
             "evidence": {
-              "ja": "line-003、line-004、line-005、line-012、line-013、line-014を合わせると、判定対象は偽の内容でなく、現在の話者が虚偽を意図して発話する行為である。",
-              "zh": "合并阅读line-003、line-004、line-005、line-012、line-013、line-014可知，触发条件不是虚假内容本身，而是当前说话者有意说谎的行为。",
-              "en": "Taken together, line-003, line-004, line-005, line-012, line-013, line-014 show that The trigger is the live act and intent of lying, not false content alone."
+              "ja": "3番目の台詞、4番目の台詞、5番目の台詞、12番目の台詞、13番目の台詞、14番目の台詞を合わせると、判定対象は偽の内容でなく、現在の話者が虚偽を意図して発話する行為である。",
+              "zh": "合并阅读第3句台词、第4句台词、第5句台词、第12句台词、第13句台词、第14句台词可知，触发条件不是虚假内容本身，而是当前说话者有意说谎的行为。",
+              "en": "Taken together, the third line, the fourth line, the fifth line, the twelfth line, the thirteenth line, the fourteenth line show that The trigger is the live act and intent of lying, not false content alone."
             },
             "nuance": {
               "ja": "実験は現在の話者による意図的な口頭虚偽を支持しますが、誤信、冗談、他言語、合成音声など境界条件はまだ未検証です。",
@@ -9414,9 +9414,9 @@
               "en": "The best-supported reading is 「Intentional live spoken falsehood is supported, while mistakes, jokes, quotations, and synthesis remain untested.」."
             },
             "evidence": {
-              "ja": "line-010、line-014、line-015、line-016、line-017を合わせると、判定対象は偽の内容でなく、現在の話者が虚偽を意図して発話する行為である。",
-              "zh": "合并阅读line-010、line-014、line-015、line-016、line-017可知，触发条件不是虚假内容本身，而是当前说话者有意说谎的行为。",
-              "en": "Taken together, line-010, line-014, line-015, line-016, line-017 show that The trigger is the live act and intent of lying, not false content alone."
+              "ja": "10番目の台詞、14番目の台詞、15番目の台詞、16番目の台詞、17番目の台詞を合わせると、判定対象は偽の内容でなく、現在の話者が虚偽を意図して発話する行為である。",
+              "zh": "合并阅读第10句台词、第14句台词、第15句台词、第16句台词、第17句台词可知，触发条件不是虚假内容本身，而是当前说话者有意说谎的行为。",
+              "en": "Taken together, the tenth line, the fourteenth line, the fifteenth line, the sixteenth line, the seventeenth line show that The trigger is the live act and intent of lying, not false content alone."
             },
             "nuance": {
               "ja": "実験は現在の話者による意図的な口頭虚偽を支持しますが、誤信、冗談、他言語、合成音声など境界条件はまだ未検証です。",
@@ -9441,7 +9441,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "4b38b4a7bfa7bf095cdbfc0751d66df7e086fc6343773e5dfca5a92da664496a"
+      "contentHash": "5626c202b73f3d9eb0cde6b86d1b432f30ae1fb9b8b60c25cb6faa4c03e8009f"
     }
   ]
 }

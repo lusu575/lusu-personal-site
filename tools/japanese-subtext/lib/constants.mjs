@@ -1,6 +1,7 @@
-export const CONTENT_VERSION = "1.0.0";
+export const CONTENT_VERSION = "1.0.1";
 export const PROGRESS_KEY = "lusu.japaneseSubtext.progress.v1";
 export const SETTINGS_KEY = "lusu.japaneseSubtext.settings.v1";
+export const MODE_ONBOARDING_KEY = "lusu.japaneseSubtext.modeOnboarding.v1";
 export const UI_LANGUAGES = ["zh", "en", "ja"];
 export const OPTION_LANGUAGES = ["ja", "zh", "en"];
 export const DISPLAY_MODES = ["listening", "japanese", "bilingual"];

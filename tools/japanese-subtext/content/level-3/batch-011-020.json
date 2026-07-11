@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "level": 3,
   "batch": "011-020",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-011",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 11,
       "jlptTarget": "N1",
@@ -370,9 +370,9 @@
               "en": "She creates a fait accompli while obscuring responsibility for having driven it."
             },
             "evidence": {
-              "ja": "line-002 と line-004 は主体を消し、line-003 と line-006 の問いにも回答せず、line-008 で自身を単なる伝達者にします。",
-              "zh": "line-002、004 消除主体，对 line-003、006 的追问也不作答，line-008 又把自己描述成传达者。",
-              "en": "Lines 002 and 004 erase the actor; she does not answer lines 003 and 006, and line 008 recasts her as merely a messenger."
+              "ja": "2番目の台詞と4番目の台詞は主体を消し、3番目の台詞と6番目の台詞の問いにも回答せず、8番目の台詞で自身を単なる伝達者にします。",
+              "zh": "第2句台词、004 消除主体，对第3句台词、006 的追问也不作答，第8句台词又把自己描述成传达者。",
+              "en": "The second and fourth lines erase the actor; she does not answer the third and sixth lines, and the eighth line recasts her as merely a messenger."
             },
             "nuance": {
               "ja": "受動表現は常に責任逃れではありませんが、主体を問われても答えず、自分の配布依頼も「共有」に縮めています。",
@@ -456,9 +456,9 @@
               "en": "It ties Chiaki to the concrete action that created the fait accompli, apart from her passive wording."
             },
             "evidence": {
-              "ja": "line-005 は公式決定がないこと、line-007 は千晶の能動的な配布依頼を示し、line-008 の自己説明と食い違います。",
-              "zh": "line-005 显示没有正式决定，line-007 显示千晶主动要求发放，与 line-008 的自我描述不一致。",
-              "en": "Line 005 shows no formal decision, while line 007 shows Chiaki actively requested distribution, conflicting with her account in line 008."
+              "ja": "5番目の台詞は公式決定がないこと、7番目の台詞は千晶の能動的な配布依頼を示し、8番目の台詞の自己説明と食い違います。",
+              "zh": "第5句台词显示没有正式决定，第7句台词显示千晶主动要求发放，与第8句台词的自我描述不一致。",
+              "en": "The fifth line shows no formal decision, while the seventh line shows Chiaki actively requested distribution, conflicting with her account in the eighth line."
             },
             "nuance": {
               "ja": "配布依頼だけで単独決定者とは断定できませんが、「共有しただけ」という自己説明とは緊張します。",
@@ -483,13 +483,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "e9a64c42e2119b918e0e5bd08de88123c3f0b87fcd63e14572fd4204030243a7"
+      "contentHash": "736a86ec40778f5203afa443d3de536e47b2d02ab36910c21c85ad29c6b19bef"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-012",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 12,
       "jlptTarget": "N1",
@@ -812,9 +812,9 @@
               "en": "He politely closes the meeting while avoiding commitment to adoption or a reply."
             },
             "evidence": {
-              "ja": "line-003 と line-005 は共有・閲覧だけを述べ、line-007 も当日は受領にとどめています。",
-              "zh": "line-003、005 只说共享和阅读，line-007 也把当天行动限定为收下资料。",
-              "en": "Lines 003 and 005 mention only circulation and review, while line 007 limits that day’s action to taking the materials."
+              "ja": "3番目の台詞と5番目の台詞は共有・閲覧だけを述べ、7番目の台詞も当日は受領にとどめています。",
+              "zh": "第3句台词、005 只说共享和阅读，第7句台词也把当天行动限定为收下资料。",
+              "en": "The third and fifth lines mention only circulation and review, while the seventh line limits that day’s action to taking the materials."
             },
             "nuance": {
               "ja": "「共有」は前向きに聞こえても、組織内で情報を回す行為以上を必ずしも含みません。",
@@ -900,9 +900,9 @@
               "en": "It distinguishes the procedure of receiving material from a positive decision to adopt it."
             },
             "evidence": {
-              "ja": "line-004 の採否質問に対し、line-005 は閲覧手続きへ話をずらし、line-006 と line-007 で期限未定が確認されます。",
-              "zh": "面对 line-004 的采用问题，line-005 转向阅读流程，line-006、007 确认期限未定。",
-              "en": "In response to the acceptance question in line 004, line 005 shifts to review procedure, and lines 006–007 confirm no deadline."
+              "ja": "4番目の台詞の採否質問に対し、5番目の台詞は閲覧手続きへ話をずらし、6番目の台詞と7番目の台詞で期限未定が確認されます。",
+              "zh": "面对第4句台词的采用问题，第5句台词转向阅读流程，第6句台词、007 确认期限未定。",
+              "en": "In response to the acceptance question in the fourth line, the fifth line shifts to review procedure, and the sixth through seventh lines confirm no deadline."
             },
             "nuance": {
               "ja": "丁寧な謝意は会議への礼であり、提案内容への賛成にも反対にも直結しません。",
@@ -988,9 +988,9 @@
               "en": "It identifies internal circulation and the absence of a decision date as two separate limits on commitment."
             },
             "evidence": {
-              "ja": "line-005 は採否でなく手続きを述べ、line-006 と line-007 は期限の不在を明示します。",
-              "zh": "line-005 说的是流程而非采用，line-006、007 明示没有期限。",
-              "en": "Line 005 describes process rather than acceptance, and lines 006–007 explicitly leave timing open."
+              "ja": "5番目の台詞は採否でなく手続きを述べ、6番目の台詞と7番目の台詞は期限の不在を明示します。",
+              "zh": "第5句台词说的是流程而非采用，第6句台词、007 明示没有期限。",
+              "en": "The fifth line describes process rather than acceptance, and the sixth through seventh lines explicitly leave timing open."
             },
             "nuance": {
               "ja": "複数選択では、前向きに聞こえる一語ではなく、手続きと期限の二軸を独立に見る必要があります。",
@@ -1015,13 +1015,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "8821185c74c281cad538824b66c1bdcbcb8e3788bc1667db0436472ca021f02a"
+      "contentHash": "cdff6010aa6fcc2a48ed0bc884f4eaf7fe59940a2dc7ec15987a53dae5978e6c"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-013",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 13,
       "jlptTarget": "N1",
@@ -1375,9 +1375,9 @@
               "en": "He does have a payment method but wants Satoshi to cover him this time."
             },
             "evidence": {
-              "ja": "line-005 で立て替えを直接提案し、line-004 と line-006 により支払い手段があることも確認されます。",
-              "zh": "line-005 直接提出垫付，line-004、006 也确认他有付款手段。",
-              "en": "Line 005 directly proposes an advance, while lines 004 and 006 confirm that a payment method is available."
+              "ja": "5番目の台詞で立て替えを直接提案し、4番目の台詞と6番目の台詞により支払い手段があることも確認されます。",
+              "zh": "第5句台词直接提出垫付，第4句台词、006 也确认他有付款手段。",
+              "en": "The fifth line directly proposes an advance, while the fourth and sixth lines confirm that a payment method is available."
             },
             "nuance": {
               "ja": "一つの障害だけなら実情かもしれませんが、代替手段ごとに新しい理由が出るため依頼回避が目立ちます。",
@@ -1462,9 +1462,9 @@
               "en": "This supports the inference that he is not unable to pay but wants to defer payment this time."
             },
             "evidence": {
-              "ja": "line-004 と line-006 は利用可能な代替手段を示し、line-007 の新理由が最初の説明だけでは足りないことを示します。",
-              "zh": "line-004、006 显示可用替代手段，line-007 的新理由说明最初解释并不充分。",
-              "en": "Lines 004 and 006 show an available alternative, while the new reason in line 007 shows the first explanation was insufficient."
+              "ja": "4番目の台詞と6番目の台詞は利用可能な代替手段を示し、7番目の台詞の新理由が最初の説明だけでは足りないことを示します。",
+              "zh": "第4句台词、006 显示可用替代手段，第7句台词的新理由说明最初解释并不充分。",
+              "en": "The fourth and sixth lines show an available alternative, while the new reason in the seventh line shows the first explanation was insufficient."
             },
             "nuance": {
               "ja": "理由が変わることだけで不誠実とは断定できませんが、最初の「細かいのがない」では説明し切れなくなります。",
@@ -1489,13 +1489,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "ccee5e43bc236d1f1b63aa7115a7ae07791203dab5abbe91184ef2f173b5011a"
+      "contentHash": "0717bfe943a0b995eab62dd6edc5316a45dcb111236853148b975bf521d94347"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-014",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 14,
       "jlptTarget": "N1",
@@ -1812,9 +1812,9 @@
               "en": "The hotel presents compensation for noise as a positive upgrade rather than only an apology for a problem."
             },
             "evidence": {
-              "ja": "line-001 と line-002 が不便を確立し、line-003、004 が改善として表現し、line-006 の無料対応が補償を示します。",
-              "zh": "line-001、002 确立不便，line-003、004 将其表达为改善，line-006 的免费安排说明补偿。",
-              "en": "Lines 001–002 establish inconvenience, lines 003–004 frame the remedy as improvement, and the free measure in line 006 signals compensation."
+              "ja": "1番目の台詞と2番目の台詞が不便を確立し、3番目の台詞、004 が改善として表現し、6番目の台詞の無料対応が補償を示します。",
+              "zh": "第1句台词、002 确立不便，第3句台词、004 将其表达为改善，第6句台词的免费安排说明补偿。",
+              "en": "The first through second lines establish inconvenience, the third through fourth lines frame the remedy as improvement, and the free measure in the sixth line signals compensation."
             },
             "nuance": {
               "ja": "実際に部屋が広いため「アップグレード」は虚偽ではありませんが、提供理由を前向きに再構成しています。",
@@ -1898,9 +1898,9 @@
               "en": "This classifies the move as remediation for noise rather than a paid sale."
             },
             "evidence": {
-              "ja": "line-005 の料金確認に line-006 が明確に「いいえ」と答え、期間限定の対応だと説明します。",
-              "zh": "line-005 询问费用，line-006 明确回答“不”，并说明是限期安排。",
-              "en": "Line 006 directly answers “no” to the fee question in line 005 and identifies a time-limited measure."
+              "ja": "5番目の台詞の料金確認に6番目の台詞が明確に「いいえ」と答え、期間限定の対応だと説明します。",
+              "zh": "第5句台词询问费用，第6句台词明确回答“不”，并说明是限期安排。",
+              "en": "The sixth line directly answers “no” to the fee question in the fifth line and identifies a time-limited measure."
             },
             "nuance": {
               "ja": "「アップグレード」は部屋の広さを説明する語であり、この場面では料金加算を含みません。",
@@ -1925,13 +1925,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "c865c2bc1d62ed87cd595175378aedef3d346ab1436164f5f94254b107aa812c"
+      "contentHash": "0491f8f75114f3c3a1ecab70a757a4f68caf0d1984a1d1f4648716831ccc1b57"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-015",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 15,
       "jlptTarget": "N1",
@@ -2273,9 +2273,9 @@
               "en": "She uses “now” for the moment she re-engaged to reply, not the first reading."
             },
             "evidence": {
-              "ja": "line-002 の既読時刻と line-006 の本人の認知が、初回認識が三時より前だったことを別々に支えます。",
-              "zh": "line-002 的已读时间与 line-006 的本人承认，分别支持初次认知早于三点。",
-              "en": "The receipt in line 002 and her admission in line 006 independently establish awareness before three."
+              "ja": "2番目の台詞の既読時刻と6番目の台詞の本人の認知が、初回認識が三時より前だったことを別々に支えます。",
+              "zh": "第2句台词的已读时间与第6句台词的本人承认，分别支持初次认知早于三点。",
+              "en": "The receipt in the second line and her admission in the sixth line independently establish awareness before three."
             },
             "nuance": {
               "ja": "「今見た」は厳密な時刻報告でなく、返信遅延を和らげる会話的な定型句にもなります。",
@@ -2360,9 +2360,9 @@
               "en": "She redefines 'now' as when she engaged with replying rather than when she first became aware of the message."
             },
             "evidence": {
-              "ja": "line-006 は先に読んだ事実、line-007 は「今」を開き直しへ限定し、line-008 も同じ解釈を確認します。",
-              "zh": "line-006 说明先前已读，line-007 将“刚刚”限定为重新打开，line-008 也确认这一理解。",
-              "en": "Line 006 establishes earlier reading, line 007 limits “now” to reopening, and line 008 confirms that interpretation."
+              "ja": "6番目の台詞は先に読んだ事実、7番目の台詞は「今」を開き直しへ限定し、8番目の台詞も同じ解釈を確認します。",
+              "zh": "第6句台词说明先前已读，第7句台词将“刚刚”限定为重新打开，第8句台词也确认这一理解。",
+              "en": "The sixth line establishes earlier reading, the seventh line limits “now” to reopening, and the eighth line confirms that interpretation."
             },
             "nuance": {
               "ja": "日常会話の「今見た」は二つの出来事を一つに圧縮できる一方、厳密な時刻説明としては曖昧です。",
@@ -2449,9 +2449,9 @@
               "en": "It separates observable timing from unverified motives such as deliberate ignoring."
             },
             "evidence": {
-              "ja": "line-002 と line-006 が早い認知を、line-005 と line-007 が三時の再閲覧を示します。悪意までは述べられていません。",
-              "zh": "line-002、006 显示较早认知，line-005、007 显示三点重新查看；没有证据证明恶意。",
-              "en": "Lines 002 and 006 show earlier awareness; lines 005 and 007 show reopening at three. No malicious intent is established."
+              "ja": "2番目の台詞と6番目の台詞が早い認知を、5番目の台詞と7番目の台詞が三時の再閲覧を示します。悪意までは述べられていません。",
+              "zh": "第2句台词、006 显示较早认知，第5句台词、007 显示三点重新查看；没有证据证明恶意。",
+              "en": "The second and sixth lines show earlier awareness; the fifth and seventh lines show reopening at three. No malicious intent is established."
             },
             "nuance": {
               "ja": "返信が四時間遅れた事実だけでは、怒らせる目的や敵意までは導けません。",
@@ -2476,13 +2476,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "d8a1c73ac7315ba45398a8d7500333ea6ca9a625a3dfc132a1c8fbfd02ab58b3"
+      "contentHash": "e82f25d9d529c721f01dd3fa544a135e6db3dd18b9d4a2ff3a3932b10bde9bb6"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-016",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 16,
       "jlptTarget": "N1",
@@ -2799,9 +2799,9 @@
               "en": "In trying to deny involvement, she reveals knowledge of scene details she was not told."
             },
             "evidence": {
-              "ja": "line-001 と line-002 は情報を限定し、line-003 と line-004 がその範囲を越える具体情報を自発的に出します。",
-              "zh": "line-001、002 限定了已告知信息，line-003、004 却主动给出超出范围的细节。",
-              "en": "Lines 001–002 limit the disclosed information, while lines 003–004 volunteer details beyond that boundary."
+              "ja": "1番目の台詞と2番目の台詞は情報を限定し、3番目の台詞と4番目の台詞がその範囲を越える具体情報を自発的に出します。",
+              "zh": "第1句台词、002 限定了已告知信息，第3句台词、004 却主动给出超出范围的细节。",
+              "en": "The first through second lines limit the disclosed information, while the third through fourth lines volunteer details beyond that boundary."
             },
             "nuance": {
               "ja": "知っていることは破損の実行を直ちに証明しませんが、少なくとも説明を要する先行知識です。",
@@ -2887,9 +2887,9 @@
               "en": "It isolates two undisclosed details that demonstrate Rin's prior knowledge."
             },
             "evidence": {
-              "ja": "line-001 では棚も色も伏せられ、line-003 の棚と line-004 の上段・白色が未通知情報に当たります。",
-              "zh": "line-001 没提架子或颜色，line-003 的架子与 line-004 的上层、白色属于未通知信息。",
-              "en": "Line 001 omits shelf and color; the shelf in line 003 and upper-level white item in line 004 are undisclosed details."
+              "ja": "1番目の台詞では棚も色も伏せられ、3番目の台詞の棚と4番目の台詞の上段・白色が未通知情報に当たります。",
+              "zh": "第1句台词没提架子或颜色，第3句台词的架子与第4句台词的上层、白色属于未通知信息。",
+              "en": "The first line omits shelf and color; the shelf in the third line and upper-level white item in the fourth line are undisclosed details."
             },
             "nuance": {
               "ja": "場所を知っていたことは、壊したことの証明ではありません。知識と実行責任は分ける必要があります。",
@@ -2914,13 +2914,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "cea613c590647ebea7a228736d1430db05ae35cc049ef74ab0238458b84bdb0d"
+      "contentHash": "93d57109328a8d073ccaa2cad1c2be826f386186e679f8dd30e4aa8d2d05d3fa"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-017",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 17,
       "jlptTarget": "N1",
@@ -3282,9 +3282,9 @@
               "en": "The same shutdown is framed prospectively and positively out of consideration for the sponsor."
             },
             "evidence": {
-              "ja": "line-003 の直接指示と line-007 のスポンサー関係が組み合わさり、単なる言い間違いより利害配慮を支持します。",
-              "zh": "line-003 的直接指示与 line-007 的赞助关系结合，比单纯口误更支持利益考量。",
-              "en": "The direct instruction in line 003 and sponsorship link in line 007 jointly support interested framing over a mere slip."
+              "ja": "3番目の台詞の直接指示と7番目の台詞のスポンサー関係が組み合わさり、単なる言い間違いより利害配慮を支持します。",
+              "zh": "第3句台词的直接指示与第7句台词的赞助关系结合，比单纯口误更支持利益考量。",
+              "en": "The direct instruction in the third line and sponsorship link in the seventh line jointly support interested framing over a mere slip."
             },
             "nuance": {
               "ja": "再開準備が虚偽とは限りませんが、日付未定のため確実な再開を含意させすぎる危険があります。",
@@ -3370,9 +3370,9 @@
               "en": "The framing retains the current closure while directing attention toward a future reopening."
             },
             "evidence": {
-              "ja": "line-004 は休止を残しつつ再開を前面化し、line-006 は日付未定、line-008 はその枠付け効果を明示します。",
-              "zh": "line-004 保留停业事实但突出重开，line-006 表明日期未定，line-008 明示这种框架效果。",
-              "en": "Line 004 retains the shutdown while foregrounding reopening; line 006 leaves the date unknown, and line 008 names the framing effect."
+              "ja": "4番目の台詞は休止を残しつつ再開を前面化し、6番目の台詞は日付未定、8番目の台詞はその枠付け効果を明示します。",
+              "zh": "第4句台词保留停业事实但突出重开，第6句台词表明日期未定，第8句台词明示这种框架效果。",
+              "en": "The fourth line retains the shutdown while foregrounding reopening; the sixth line leaves the date unknown, and the eighth line names the framing effect."
             },
             "nuance": {
               "ja": "前向きな時間枠は再開の確定を意味しません。日付がない以上、可能性と決定を区別すべきです。",
@@ -3397,13 +3397,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "3e94612b9ebd3bc62c27801a2121297751a0e4bc045757f27497ff38f7384eb6"
+      "contentHash": "c560c673c023b09a995182cd9d648836a11ffcc9fbb2e91dfc84b111477b6d3f"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-018",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 18,
       "jlptTarget": "N1",
@@ -3731,9 +3731,9 @@
               "en": "It suggests a real evacuation delivered through familiar drill wording to limit panic."
             },
             "evidence": {
-              "ja": "line-002 の日付矛盾、line-004 の実用品、line-005 の「文面は訓練でも」が実際の退避を共同で示します。",
-              "zh": "line-002 的日期矛盾、line-004 的实用品、line-005 的“措辞虽是演练”共同表明真实疏散。",
-              "en": "The date conflict in line 002, real supplies in line 004, and “though the wording says drill” in line 005 jointly indicate actual evacuation."
+              "ja": "2番目の台詞の日付矛盾、4番目の台詞の実用品、5番目の台詞の「文面は訓練でも」が実際の退避を共同で示します。",
+              "zh": "第2句台词的日期矛盾、第4句台词的实用品、第5句台词的“措辞虽是演练”共同表明真实疏散。",
+              "en": "The date conflict in the second line, real supplies in the fourth line, and “though the wording says drill” in the fifth line jointly indicate actual evacuation."
             },
             "nuance": {
               "ja": "状況の原因までは不明であり、危険の種類を推測しすぎず、現場の指示に従うのが妥当です。",
@@ -3816,9 +3816,9 @@
               "en": "It identifies the first chronological conflict showing that this is not the normally scheduled drill."
             },
             "evidence": {
-              "ja": "line-001 は今開始すると述べる一方、line-002 の公式掲示は翌週を示し、予定との不一致を直接作ります。",
-              "zh": "line-001 说现在开始，而 line-002 的官方公告指向下周，直接构成与计划不符。",
-              "en": "Line 001 says it begins now, while the official notice in line 002 says next week, creating the direct schedule mismatch."
+              "ja": "1番目の台詞は今開始すると述べる一方、2番目の台詞の公式掲示は翌週を示し、予定との不一致を直接作ります。",
+              "zh": "第1句台词说现在开始，而第2句台词的官方公告指向下周，直接构成与计划不符。",
+              "en": "The first line says it begins now, while the official notice in the second line says next week, creating the direct schedule mismatch."
             },
             "nuance": {
               "ja": "日程変更だけの可能性もあるため、実退避の判断には教師の装備と指示も併せて見る必要があります。",
@@ -3902,9 +3902,9 @@
               "en": "The item applies understanding to explicit safety behavior rather than prolonging speculation about the cause."
             },
             "evidence": {
-              "ja": "line-003 は即時整列、line-005 は今日の指示遵守、line-006 は落ち着いた移動を具体的に求めます。",
-              "zh": "line-003 要求立即排队，line-005 要求遵守当天指示，line-006 具体要求冷静移动。",
-              "en": "Line 003 requires immediate lining up, line 005 says to follow today’s directions, and line 006 specifies calm movement."
+              "ja": "3番目の台詞は即時整列、5番目の台詞は今日の指示遵守、6番目の台詞は落ち着いた移動を具体的に求めます。",
+              "zh": "第3句台词要求立即排队，第5句台词要求遵守当天指示，第6句台词具体要求冷静移动。",
+              "en": "The third line requires immediate lining up, the fifth line says to follow today’s directions, and the sixth line specifies calm movement."
             },
             "nuance": {
               "ja": "危険の種類を知らなくても、退避指示に従うことはできます。原因確認は安全確保の後です。",
@@ -3929,13 +3929,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "a98ddb37f38572d8486dfae7869d9edaaa9078228b853d11a8bbb66808324105"
+      "contentHash": "bb6b42dcbc4791f101b53d264acb5d55e8163fae69dc0257bc38d037522f0edc"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-019",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 19,
       "jlptTarget": "N1",
@@ -4282,9 +4282,9 @@
               "en": "Multiple patterns defining the repetition break, suggesting the day may no longer be looping."
             },
             "evidence": {
-              "ja": "line-004 と line-005 が同期変化、line-006 が第二のパターン破れ、line-008 が慎重な脱出可能性を示します。",
-              "zh": "line-004、005 显示同步变化，line-006 是第二个模式破裂，line-008 谨慎指出脱离可能。",
-              "en": "Lines 004–005 show synchronization, line 006 supplies a second broken pattern, and line 008 cautiously states the possibility of escape."
+              "ja": "4番目の台詞と5番目の台詞が同期変化、6番目の台詞が第二のパターン破れ、8番目の台詞が慎重な脱出可能性を示します。",
+              "zh": "第4句台词、005 显示同步变化，第6句台词是第二个模式破裂，第8句台词谨慎指出脱离可能。",
+              "en": "The fourth through fifth lines show synchronization, the sixth line supplies a second broken pattern, and the eighth line cautiously states the possibility of escape."
             },
             "nuance": {
               "ja": "脱出が確定したとは書かれず、遥も「かもしれない」と可能性にとどめています。",
@@ -4370,9 +4370,9 @@
               "en": "It distinguishes evidence that the repeating pattern changed from proof that the loop has ended."
             },
             "evidence": {
-              "ja": "line-007 は印の崩れを述べるだけで、line-008 も「進めるかもしれない」と推量し、翌日の確認はありません。",
-              "zh": "line-007 只说标记被打破，line-008 也用“也许能前进”的推测，并无次日验证。",
-              "en": "Line 007 states only that markers broke, and line 008 uses “may”; there is no next-day confirmation."
+              "ja": "7番目の台詞は印の崩れを述べるだけで、8番目の台詞も「進めるかもしれない」と推量し、翌日の確認はありません。",
+              "zh": "第7句台词只说标记被打破，第8句台词也用“也许能前进”的推测，并无次日验证。",
+              "en": "The seventh line states only that markers broke, and the eighth line uses “may”; there is no next-day confirmation."
             },
             "nuance": {
               "ja": "独立した二変化は脱出の可能性を高めますが、一度の異常だけでは次回の反復を否定できません。",
@@ -4397,13 +4397,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "f36db057da095cbd008463ee488c5aeabd3ba2e68e85745127688afbf309f983"
+      "contentHash": "39012d803426afa541cc01000104404d9fd09aff11a6d1af21dce3290458b59c"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-020",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 20,
       "jlptTarget": "N1",
@@ -4720,9 +4720,9 @@
               "en": "The attendant is not an external stranger but forgotten self-memory personified in the dream."
             },
             "evidence": {
-              "ja": "line-002 の私語、line-004 の幼少期知識、line-005 の非共有性、line-006 と line-007 の自己記憶表現が一貫します。",
-              "zh": "line-002 的私人口误、line-004 的童年知识、line-005 的不可共享性、line-006、007 的自我记忆表述彼此一致。",
-              "en": "The private mistake in line 002, childhood knowledge in line 004, non-shareability in line 005, and self-memory language in lines 006–007 align."
+              "ja": "2番目の台詞の私語、4番目の台詞の幼少期知識、5番目の台詞の非共有性、6番目の台詞と7番目の台詞の自己記憶表現が一貫します。",
+              "zh": "第2句台词的私人口误、第4句台词的童年知识、第5句台词的不可共享性、第6句台词、007 的自我记忆表述彼此一致。",
+              "en": "The private mistake in the second line, childhood knowledge in the fourth line, non-shareability in the fifth line, and self-memory language in the sixth through seventh lines align."
             },
             "nuance": {
               "ja": "夢の論理なので現実の身元確認ではなく、私的記憶の共有不能性と本人の認識が象徴的証拠です。",
@@ -4730,9 +4730,9 @@
               "en": "Because this is dream logic rather than real-world identification, the privacy of the memory and Mio’s recognition are symbolic evidence."
             },
             "alternative": {
-              "ja": "家族から聞いた人物という可能性は、家族も忘れているという line-005 と駅員の「ここへ置いた」という言葉で弱まります。",
-              "zh": "“从家人处听说的人”这一可能，被 line-005 的家人也忘了以及站务员说“留在这里”所削弱。",
-              "en": "The possibility that someone heard it from family is weakened by line 005 saying family forgot and by the attendant’s claim that it was left here."
+              "ja": "家族から聞いた人物という可能性は、家族も忘れているという5番目の台詞と駅員の「ここへ置いた」という言葉で弱まります。",
+              "zh": "“从家人处听说的人”这一可能，被第5句台词的家人也忘了以及站务员说“留在这里”所削弱。",
+              "en": "The possibility that someone heard it from family is weakened by the fifth line saying family forgot and by the attendant’s claim that it was left here."
             }
           }
         },
@@ -4807,9 +4807,9 @@
               "en": "It marks the phrase as information an ordinary stranger could not readily obtain, linking the attendant to Mio's own memory."
             },
             "evidence": {
-              "ja": "line-003 で美緒が即座に反応し、line-004 と line-005 が幼少期固有で他者に共有されていない記憶だと確定します。",
-              "zh": "line-003 中美绪立即反应，line-004、005 确认这是童年特有且未与他人共享的记忆。",
-              "en": "Mio reacts immediately in line 003, and lines 004–005 establish it as childhood-specific and not shared with others."
+              "ja": "3番目の台詞で美緒が即座に反応し、4番目の台詞と5番目の台詞が幼少期固有で他者に共有されていない記憶だと確定します。",
+              "zh": "第3句台词中美绪立即反应，第4句台词、005 确认这是童年特有且未与他人共享的记忆。",
+              "en": "Mio reacts immediately in the third line, and the fourth through fifth lines establish it as childhood-specific and not shared with others."
             },
             "nuance": {
               "ja": "夢の場面では、私的な語の共有が現実的な身分証明ではなく、自己同一性の象徴として働きます。",
@@ -4834,7 +4834,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "54358f8da7f00d9bc1e0f5cce4c3efc1efb1bd731e95077673a73f90beb88e19"
+      "contentHash": "4d0a875de532b795559f2c2783389c2c363e076cf1fd16d1d54a0bc27ddbe49a"
     }
   ]
 }

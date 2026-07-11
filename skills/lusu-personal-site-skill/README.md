@@ -20,8 +20,8 @@ skills/lusu-personal-site-skill/SKILL.md
 - 桌面端保持 Windows XP + Pixel Art + Y2K，并沿 Neo-XP / Pixel Glass OS 演进；移动端使用原创、受 iOS 交互启发的虚拟手机 OS，不能只压缩桌面 XP 布局。
 - 可见文案必须维护中文 / English / 日本語。
 - 改首页、窗口、任务栏、图标、弹窗、游戏外壳等前端内容时，必须检查手机端适配。
-- “日本語の裏側”位于 `tools/japanese-subtext/`，固定采用版本化分批 JSON 和不可随意变更的关卡 ID；改关要增加 `revision`，先审校锁文，再只重建受内容哈希影响的音频。
-- 题库、音频 manifest 与时间轴必须同步并分别验证；每关 source hash、cue 顺序、CPU provider、输出参数和发音表 canonical SHA-256 必须与锁定题库一致，正式发布要对 10,088 件音频做全量 ffprobe、SHA-256、孤儿文件和静音检测。TTS 模型、权重、实际配置、本机路径和参考声线不提交，模型只作离线批处理且生成结束后关闭，不安装服务或自启动。
+- “日语的言外之意 / Behind the Japanese / 日本語の裏側”位于 `tools/japanese-subtext/`，固定采用版本化分批 JSON 和不可随意变更的关卡 ID；每次公开维护版本增加 `0.0.1`，改关另增 `revision`，完整流程见 `tools/japanese-subtext/MAINTENANCE.md`。
+- 题库、音频 manifest 与时间轴必须同步并分别验证；日语先使用审校读音或 PyOpenJTalk 假名预处理，再进入 G2P/Kokoro。每关 source hash、cue 顺序、CPU provider、输出参数和发音表 canonical SHA-256 必须与锁定题库一致，正式发布要对全部音频做全量 ffprobe、SHA-256、孤儿文件和静音检测。TTS 模型、权重、实际配置、本机路径和参考声线不提交，模型只作离线批处理且生成结束后关闭，不安装服务或自启动。
 - 声线必须来源和许可清晰；保留 `NOTICE-japanese-voices.md` 与设置面板三语署名链接，不使用来源不明或模仿受保护动漫角色的声线。
 - 工具学习进度使用独立 D1 表，不得与游戏存档混用；跨设备合并必须保留已通关记录的首次通关模式。所有题库字符串安全渲染，图片只来自本工具资产目录，音频只从 manifest 解析。
 - 新工具图片只允许彩色儿童蜡笔或抽象 Q 版四格，不使用黑白线稿；图片要压缩、懒加载、响应式且不挤占移动端首屏。

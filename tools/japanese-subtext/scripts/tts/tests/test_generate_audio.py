@@ -31,7 +31,7 @@ class GenerateAudioTests(unittest.TestCase):
     def setUp(self) -> None:
         self.stage = {
             "schemaVersion": 1,
-            "contentVersion": "1.0.0",
+            "contentVersion": "1.0.1",
             "contentHash": "d" * 64,
             "id": "L1-001",
             "revision": 1,
@@ -45,6 +45,7 @@ class GenerateAudioTests(unittest.TestCase):
                 {
                     "id": "line-001",
                     "speaker": "speaker-a",
+                    "readingJa": "ぶいあーるちゃっとであいましょう。",
                     "ttsTextJa": "VRChatで会いましょう。",
                     "audioId": "L1-001-line-001",
                     "pauseAfterMs": 240,
@@ -83,6 +84,7 @@ class GenerateAudioTests(unittest.TestCase):
 
         line = by_id["L1-001-line-001"]
         self.assertEqual(line.kind, "line")
+        self.assertEqual(line.text, "ぶいあーるちゃっとであいましょう。")
         self.assertEqual(line.voice_key, "female-soft")
         self.assertEqual(line.relative_path, "level-1/L1-001/lines/line-001.mp3")
 

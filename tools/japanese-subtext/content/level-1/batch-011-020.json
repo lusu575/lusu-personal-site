@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "level": 1,
   "batch": "011-020",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-011",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 11,
       "jlptTarget": "N3",
@@ -265,9 +265,9 @@
               "en": "In this scene, he is more likely showing concern about the rain on her way home and urging her to prepare."
             },
             "evidence": {
-              "ja": "line-001 で天気予報に触れ、line-003 で自分の折り畳み傘を差し出したことが、単なる質問以上の気遣いを示します。",
-              "zh": "line-001 先提到天气预报，line-003 又主动把自己的折叠伞给她，说明这不只是随口询问。",
-              "en": "Line-001 mentions the forecast, and line-003 offers his own umbrella, showing care beyond a neutral question."
+              "ja": "1番目の台詞で天気予報に触れ、3番目の台詞で自分の折り畳み傘を差し出したことが、単なる質問以上の気遣いを示します。",
+              "zh": "第1句台词先提到天气预报，第3句台词又主动把自己的折叠伞给她，说明这不只是随口询问。",
+              "en": "The first line mentions the forecast, and the third line offers his own umbrella, showing care beyond a neutral question."
             },
             "nuance": {
               "ja": "身近な人に対する「～持った？」は、持ち物の確認を通して心配や注意を伝えることがあります。",
@@ -292,13 +292,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "078ab988ca580a609b543ea142f71eb8da364e7b98a3867f50bab7dd3d01ba23"
+      "contentHash": "39852645c5592cf72451df70c6d11c0834374da5e815fbd8dc47a1e365270d65"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-012",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 12,
       "jlptTarget": "N3",
@@ -561,9 +561,9 @@
               "en": "Here, Mao is more naturally understood as worrying about Sota and assuring him that resting will not be held against him."
             },
             "evidence": {
-              "ja": "line-002 で顔色を指摘し、line-004 で水を飲んで座るよう促しているため、体調への配慮が中心だと分かります。",
-              "zh": "line-002 指出他脸色通红，line-004 又让他喝水坐下，证据都指向对身体状况的担心。",
-              "en": "Line-002 notes his red face, and line-004 tells him to drink and sit, making concern for his condition the central evidence."
+              "ja": "2番目の台詞で顔色を指摘し、4番目の台詞で水を飲んで座るよう促しているため、体調への配慮が中心だと分かります。",
+              "zh": "第2句台词指出他脸色通红，第4句台词又让他喝水坐下，证据都指向对身体状况的担心。",
+              "en": "The second line notes his red face, and the fourth line tells him to drink and sit, making concern for his condition the central evidence."
             },
             "nuance": {
               "ja": "「～なくていい」は、相手が感じている義務やプレッシャーをやわらげる言い方です。",
@@ -588,13 +588,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "7f1087a6f62e0239bba016f98895ba4a19dec32634f30a647c9e7a827d87060a"
+      "contentHash": "4ac24c46622a6088962252ea8cf50dc0b15caca484f369a94b62ceb8a2566854"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-013",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 13,
       "jlptTarget": "N3",
@@ -773,9 +773,9 @@
           "id": "q1",
           "type": "single",
           "prompt": {
-            "ja": "line-001 の奈々の発言には、状況の報告以外にどのような意図があると考えられますか。",
-            "zh": "奈奈在 line-001 中的话除了报告状况，还可能有什么意图？",
-            "en": "Besides reporting the situation, what intention is likely behind Nana's line-001?"
+            "ja": "1番目の台詞の奈々の発言には、状況の報告以外にどのような意図があると考えられますか。",
+            "zh": "奈奈在第1句台词中的话除了报告状况，还可能有什么意图？",
+            "en": "Besides reporting the situation, what intention is likely behind Nana's first line?"
           },
           "options": [
             {
@@ -829,9 +829,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "line-001 では、コピー用紙の残りが少ないようだと報告しています。",
-              "zh": "line-001 字面上是在报告复印纸看起来所剩不多。",
-              "en": "Literally, line-001 reports that the copier paper appears to be running low."
+              "ja": "1番目の台詞では、コピー用紙の残りが少ないようだと報告しています。",
+              "zh": "第1句台词字面上是在报告复印纸看起来所剩不多。",
+              "en": "Literally, the first line reports that the copier paper appears to be running low."
             },
             "intent": {
               "ja": "この場面では、奈々は報告の形を使いながら、後輩の優也に補充を促している可能性が高いです。",
@@ -839,9 +839,9 @@
               "en": "In this context, Nana is likely using a report-like form to prompt her junior Yuya to refill the paper."
             },
             "evidence": {
-              "ja": "line-003 で予備の場所と期限を示して依頼し、line-004 で優也が補充すると応じているため、line-001 が依頼の前置きだと確認できます。",
-              "zh": "line-003 说明备用纸在哪里并正式提出请求，line-004 优也也回应会补纸，证明 line-001 是请求的铺垫。",
-              "en": "Line-003 names the spare paper and makes the request, while line-004 accepts the refill task, confirming that line-001 prepared that request."
+              "ja": "3番目の台詞で予備の場所と期限を示して依頼し、4番目の台詞で優也が補充すると応じているため、1番目の台詞が依頼の前置きだと確認できます。",
+              "zh": "第3句台词说明备用纸在哪里并正式提出请求，第4句台词优也也回应会补纸，证明第1句台词是请求的铺垫。",
+              "en": "The third line names the spare paper and makes the request, while the fourth line accepts the refill task, confirming that the first line prepared that request."
             },
             "nuance": {
               "ja": "「～みたいです」と状況を描写すると、いきなり命令するよりもやわらかく仕事を促せます。",
@@ -849,9 +849,9 @@
               "en": "Describing the situation with “it looks like…” can prompt action more softly than beginning with a direct order."
             },
             "alternative": {
-              "ja": "line-001 だけなら純粋な情報共有とも読めます。しかし、続く明確な依頼と優也の応答があるため、ここでは補充を促す意図がより自然です。",
-              "zh": "如果只看 line-001，也可能是单纯共享信息；但后续的明确请求和回应让“提示补纸”更自然。",
-              "en": "Line-001 alone could be simple information sharing, but the explicit request and response that follow make a refill prompt the better-supported reading."
+              "ja": "1番目の台詞だけなら純粋な情報共有とも読めます。しかし、続く明確な依頼と優也の応答があるため、ここでは補充を促す意図がより自然です。",
+              "zh": "如果只看第1句台词，也可能是单纯共享信息；但后续的明确请求和回应让“提示补纸”更自然。",
+              "en": "The first line alone could be simple information sharing, but the explicit request and response that follow make a refill prompt the better-supported reading."
             }
           }
         }
@@ -866,13 +866,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "02e9fa922d2757caa228b7f7e87883a9c2c34fee1ef7f3be4873e74d1b0d0536"
+      "contentHash": "0aff87ffc0d534b62351f4d079c0ba97e9189074dd7e312c0671348348099a1d"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-014",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 14,
       "jlptTarget": "N3",
@@ -1129,9 +1129,9 @@
               "en": "In the current context, he is likely avoiding strong blame while expressing dissatisfaction and asking for confirmation."
             },
             "evidence": {
-              "ja": "line-002 の「すみません」と「少し」は表現をやわらげ、line-003 で実際に確認を依頼しています。",
-              "zh": "line-002 的“不好意思”和“有点”在弱化语气，line-003 则明确请求确认。",
-              "en": "The apology and “slightly” in line-002 soften his stance, while line-003 explicitly asks the server to check."
+              "ja": "2番目の台詞の「すみません」と「少し」は表現をやわらげ、3番目の台詞で実際に確認を依頼しています。",
+              "zh": "第2句台词的“不好意思”和“有点”在弱化语气，第3句台词则明确请求确认。",
+              "en": "The apology and “slightly” in the second line soften his stance, while the third line explicitly asks the server to check."
             },
             "nuance": {
               "ja": "「印象が違う」は、「間違っている」と断定せず、相手の顔を保ちながら違和感を伝える言い方です。",
@@ -1156,13 +1156,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "7912118b3f92b21da6758681b09ef92de37c65c9b0957a402b95a68d9ca348a9"
+      "contentHash": "b6ac3ef76f6987c4435fa2b3e24fdb4c64502a33946e222153484229c45d4b3b"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-015",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 15,
       "jlptTarget": "N3",
@@ -1419,9 +1419,9 @@
               "en": "In this context, he is likely offering her the lower bunk in a way that does not make her feel burdensome."
             },
             "evidence": {
-              "ja": "line-002 で由奈の足を確認し、line-003 で自分が上段を使うと言い、line-004 で由奈が譲りとして受け取っています。",
-              "zh": "line-002 先确认由奈的脚伤，line-003 说自己住上铺，line-004 由奈也以接受让位的方式回应。",
-              "en": "Line-002 checks her ankle, line-003 assigns himself the upper bunk, and line-004 treats this as an appreciated offer."
+              "ja": "2番目の台詞で由奈の足を確認し、3番目の台詞で自分が上段を使うと言い、4番目の台詞で由奈が譲りとして受け取っています。",
+              "zh": "第2句台词先确认由奈的脚伤，第3句台词说自己住上铺，第4句台词由奈也以接受让位的方式回应。",
+              "en": "The second line checks her ankle, the third line assigns himself the upper bunk, and the fourth line treats this as an appreciated offer."
             },
             "nuance": {
               "ja": "自分の強さや柔軟さを理由にすると、「あなたは弱いから」と直接言わずに相手を優先できます。",
@@ -1446,13 +1446,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "a59c73bada238b9d3f323a1285110154198e52c815c4cad4de8b8fef7a33433c"
+      "contentHash": "fa16089c11c81385e39833230d4f07adde0f8af399ecb5077f6c7d133962bf00"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-016",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 16,
       "jlptTarget": "N3",
@@ -1712,9 +1712,9 @@
               "en": "She may be showing that she appreciates the invitation while avoiding a commitment to attend."
             },
             "evidence": {
-              "ja": "line-001 は参加を尋ねる誘いですが、line-003 には返事の言葉がなく、line-004 で俊が改めて参加できるか確認しています。",
-              "zh": "line-001 是询问是否参加的邀请，line-003 没有文字答复，而 line-004 中俊又重新确认她能否参加。",
-              "en": "Line-001 asks for attendance, line-003 contains no verbal answer, and line-004 shows Shun still needs to ask whether she can come."
+              "ja": "1番目の台詞は参加を尋ねる誘いですが、3番目の台詞には返事の言葉がなく、4番目の台詞で俊が改めて参加できるか確認しています。",
+              "zh": "第1句台词是询问是否参加的邀请，第3句台词没有文字答复，而第4句台词中俊又重新确认她能否参加。",
+              "en": "The first line asks for attendance, the third line contains no verbal answer, and the fourth line shows Shun still needs to ask whether she can come."
             },
             "nuance": {
               "ja": "笑顔のスタンプは会話の雰囲気をやわらかくできますが、それだけで「行く」という意味になるとは限りません。",
@@ -1739,13 +1739,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "6abb77d1a20d4cc568819a14b09f7daf58c470ca160da527bc422fc6bb5226ae"
+      "contentHash": "d50af797377ead5fb89440cad3cb2e6b3d83d0f5de833846c07798653cec24d2"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-017",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 17,
       "jlptTarget": "N3",
@@ -2042,9 +2042,9 @@
               "en": "She is likely less interested in the location itself than in creating a calm setting to talk privately with Ko."
             },
             "evidence": {
-              "ja": "line-002 は会話が聞こえにくい問題を示し、line-004 で静かな場所を選び、line-005 で「二人でゆっくり話す」と目的を明示しています。",
-              "zh": "line-002 说明听不清对话，line-004 选择安静的地方，line-005 又明确说“两个人慢慢聊”。",
-              "en": "Line-002 identifies difficulty hearing, line-004 selects a quiet place, and line-005 explicitly focuses on the two of them talking at ease."
+              "ja": "2番目の台詞は会話が聞こえにくい問題を示し、4番目の台詞で静かな場所を選び、5番目の台詞で「二人でゆっくり話す」と目的を明示しています。",
+              "zh": "第2句台词说明听不清对话，第4句台词选择安静的地方，第5句台词又明确说“两个人慢慢聊”。",
+              "en": "The second line identifies difficulty hearing, the fourth line selects a quiet place, and the fifth line explicitly focuses on the two of them talking at ease."
             },
             "nuance": {
               "ja": "「行かない？」という提案形は押しつけを避けながら、二人きりで話したい気持ちをやわらかく伝えています。",
@@ -2069,13 +2069,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "6ab45649853268764c74d4df50e491fe4a603d3e0842915570402d95e9f7c928"
+      "contentHash": "2bdd99bbe12fc2e03169a11c352a7a80ac4ff56eb76aef9a0dab62905391b908"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-018",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 18,
       "jlptTarget": "N3",
@@ -2339,9 +2339,9 @@
               "en": "He is likely embarrassed to admit that he is the fan and uses his brother to protect his self-image."
             },
             "evidence": {
-              "ja": "line-002 で自分の趣味をすぐ否定し、line-003 で同じ説明を以前も使ったことが示され、line-004 では動揺しながら中身を隠す袋を頼んでいます。",
-              "zh": "line-002 中他立刻否认是自己的爱好，line-003 表明他以前也用过同样说法，line-004 又显得慌张并要求遮住袋中物品。",
-              "en": "Line-002 quickly distances him from the hobby, line-003 reveals the same explanation was used before, and line-004 combines hesitation with a request to conceal the contents."
+              "ja": "2番目の台詞で自分の趣味をすぐ否定し、3番目の台詞で同じ説明を以前も使ったことが示され、4番目の台詞では動揺しながら中身を隠す袋を頼んでいます。",
+              "zh": "第2句台词中他立刻否认是自己的爱好，第3句台词表明他以前也用过同样说法，第4句台词又显得慌张并要求遮住袋中物品。",
+              "en": "The second line quickly distances him from the hobby, the third line reveals the same explanation was used before, and the fourth line combines hesitation with a request to conceal the contents."
             },
             "nuance": {
               "ja": "「頼まれただけ」と強調する言い方や、店員に指摘された後の言いよどみが、照れ隠しらしい印象を強めます。",
@@ -2366,13 +2366,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "e57f36ccac95706fda8a5db2bc1ebe6025760971cafa3a2e31e2a778741c28d9"
+      "contentHash": "45d823175a59bc96542c70f3aa94fd711bf01cf5630f8c3d64a72ba199df8c05"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-019",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 19,
       "jlptTarget": "N3",
@@ -2663,9 +2663,9 @@
               "en": "In this scene, the wording serves as a clue that the terminal remembers an earlier repetition unknown to Miki."
             },
             "evidence": {
-              "ja": "line-002 の「も」は以前との連続を示し、line-004 は前回の同時刻の記録を明示します。一方、line-005 で美紀は初めて使う端末だと否定しています。",
-              "zh": "line-002 的“也”表示与先前情况相连，line-004 明确提到上一次同一时间的记录，而 line-005 中美纪否认自己以前用过。",
-              "en": "The 'again' in line-002 points to continuity, line-004 explicitly cites a prior record at the same time, and line-005 has Miki deny any earlier use."
+              "ja": "2番目の台詞の「も」は以前との連続を示し、4番目の台詞は前回の同時刻の記録を明示します。一方、5番目の台詞で美紀は初めて使う端末だと否定しています。",
+              "zh": "第2句台词的“也”表示与先前情况相连，第4句台词明确提到上一次同一时间的记录，而第5句台词中美纪否认自己以前用过。",
+              "en": "The 'again' in the second line points to continuity, the fourth line explicitly cites a prior record at the same time, and the fifth line has Miki deny any earlier use."
             },
             "nuance": {
               "ja": "端末の機械的で具体的な返答は、単なる言い間違いよりも、保存された時間情報に基づいて応答している印象を与えます。",
@@ -2690,13 +2690,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "e414551f5bcae2ccb1c8ae212133a74032d128d07443b9c56fef4a719da10df1"
+      "contentHash": "8150185ffbf80e5b71ddce36fbba0b345f2022639480b1160979af87bfb92471"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-020",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 20,
       "jlptTarget": "N3",
@@ -2973,9 +2973,9 @@
               "en": "He likely realizes it may be a dog he knows and wants to compare the details before deciding."
             },
             "evidence": {
-              "ja": "line-001 の首輪の色に対して line-002 で言葉を繰り返して反応し、line-003 の追加情報を聞いた後、line-004 で写真の確認へ動こうとしています。",
-              "zh": "他在 line-002 中复述并回应 line-001 的项圈颜色，听完 line-003 的更多特征后，又在 line-004 中准备去确认照片。",
-              "en": "In line-002 he repeats and reacts to the collar color from line-001; after the extra details in line-003, line-004 has him move toward checking a photo."
+              "ja": "1番目の台詞の首輪の色に対して2番目の台詞で言葉を繰り返して反応し、3番目の台詞の追加情報を聞いた後、4番目の台詞で写真の確認へ動こうとしています。",
+              "zh": "他在第2句台词中复述并回应第1句台词的项圈颜色，听完第3句台词的更多特征后，又在第4句台词中准备去确认照片。",
+              "en": "In the second line he repeats and reacts to the collar color from the first line; after the extra details in the third line, the fourth line has him move toward checking a photo."
             },
             "nuance": {
               "ja": "「青い首輪……」という間のある繰り返しは、その特徴が徹の記憶に引っかかったことを表しています。",
@@ -3000,7 +3000,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "3de0123c19e6c0fb55461418b6fb48dfeb8ad3f2340d6bd9e2a5033c43fe704b"
+      "contentHash": "e5ae28f0583aec756ccd2df81ef9a646d19a75f2ff81519a60772ad568d1cebd"
     }
   ]
 }

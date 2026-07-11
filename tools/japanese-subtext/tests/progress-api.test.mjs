@@ -142,7 +142,7 @@ function validPayload() {
   return {
     progress: {
       schemaVersion: 1,
-      contentVersion: "1.0.0",
+      contentVersion: "1.0.1",
       revision: 2,
       currentLevel: 1,
       currentStage: 2,
@@ -167,7 +167,7 @@ function validPayload() {
     },
     settings: {
       schemaVersion: 1,
-      contentVersion: "1.0.0",
+      contentVersion: "1.0.1",
       uiLanguage: "zh",
       displayMode: "japanese",
       optionLanguage: "ja",
@@ -175,7 +175,7 @@ function validPayload() {
       optionText: true,
       optionAudio: true,
       autoReadOptions: false,
-      autoplay: true,
+      autoplay: false,
       playbackRate: 1,
       muted: false,
       updatedAt: "2026-07-10T17:00:00.000Z"
@@ -286,7 +286,7 @@ test("GET progress returns profile, stages, and compatibility state", async () =
     profile: {
       user_id: "user-123",
       schema_version: 1,
-      content_version: "1.0.0",
+      content_version: "1.0.1",
       revision: 4,
       current_level: 1,
       current_stage: 2,
@@ -324,7 +324,7 @@ test("GET progress returns profile, stages, and compatibility state", async () =
   assert.deepEqual(payload.profile.unlockedStageIds, ["L1-001", "L1-002"]);
   assert.equal(payload.stages.length, 1);
   assert.equal(payload.progress.revision, 4);
-  assert.equal(payload.settings.contentVersion, "1.0.0");
+  assert.equal(payload.settings.contentVersion, "1.0.1");
   assert.equal(payload.updatedAt, "2026-07-10T17:00:01.000Z");
 });
 

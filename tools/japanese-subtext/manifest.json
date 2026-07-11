@@ -1,8 +1,13 @@
 {
   "id": "japanese-subtext",
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "title": "日本語の裏側",
+  "titles": {
+    "zh": "日语的言外之意",
+    "en": "Behind the Japanese",
+    "ja": "日本語の裏側"
+  },
   "descriptions": {
     "zh": "日语潜台词训练",
     "en": "Japanese Subtext Trainer",

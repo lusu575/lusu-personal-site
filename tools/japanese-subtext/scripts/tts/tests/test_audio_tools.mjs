@@ -42,7 +42,7 @@ const stage = {
   id: "L1-001",
   level: 1,
   stage: 1,
-  contentVersion: "1.0.0",
+  contentVersion: "1.0.1",
   contentHash: sourceContentHash,
   audio: {
     sceneAudioId: "L1-001-scene",
@@ -115,7 +115,7 @@ test("validateManifest accepts safe artifacts and a bounded timeline", async () 
   );
   const manifest = {
     schemaVersion: 1,
-    contentVersion: "1.0.0",
+    contentVersion: "1.0.1",
     generatedAt: "2026-07-11T00:00:00Z",
     audioBaseUrl: "https://cdn.example.com/japanese-subtext/audio/",
     generator,
@@ -131,7 +131,7 @@ test("validateManifest accepts safe artifacts and a bounded timeline", async () 
       "L1-001": {
         stageId: "L1-001",
         level: 1,
-        contentVersion: "1.0.0",
+        contentVersion: "1.0.1",
         sceneAudioId: "L1-001-scene",
         timelineId: "L1-001-timeline",
         timelinePath: "level-1/L1-001/timeline.json",
@@ -195,7 +195,7 @@ test("silence checking still runs when ffprobe is skipped", async () => {
   await writeFile(path.join(audioRoot, "level-1", "L1-001", "line.mp3"), "mp3");
   const manifest = {
     schemaVersion: 1,
-    contentVersion: "1.0.0",
+    contentVersion: "1.0.1",
     audioBaseUrl: "./",
     generator,
     voices: {},
@@ -229,7 +229,7 @@ test("silence checking still runs when ffprobe is skipped", async () => {
 test("validateManifest rejects traversal, duplicate paths, leaked local paths, and bad cues", async () => {
   const manifest = {
     schemaVersion: 1,
-    contentVersion: "1.0.0",
+    contentVersion: "1.0.1",
     generatedAt: "2026-07-11T00:00:00Z",
     audioBaseUrl: "./",
     generator: { localModel: "F:\\private\\model.onnx" },

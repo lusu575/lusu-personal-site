@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "level": 1,
   "batch": "021-030",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-021",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 21,
       "jlptTarget": "N3",
@@ -287,9 +287,9 @@
               "en": "In the current context, Kaede is more likely suggesting that they move together to the warmer bench."
             },
             "evidence": {
-              "ja": "line-001 と line-002 で二人が寒さを感じ、line-003 で楓が向こうを示します。line-004 の颯太も移動の提案として受け取っています。",
-              "zh": "line-001 与 line-002 表明两人都觉得冷，line-003 枫指向对面；line-004 飒太也把它理解成移动建议。",
-              "en": "Lines 001 and 002 establish the cold, line-003 points to the other spot, and line-004 shows Sota taking it as a suggestion to move."
+              "ja": "1番目の台詞と2番目の台詞で二人が寒さを感じ、3番目の台詞で楓が向こうを示します。4番目の台詞の颯太も移動の提案として受け取っています。",
+              "zh": "第1句台词与第2句台词表明两人都觉得冷，第3句台词枫指向对面；第4句台词飒太也把它理解成移动建议。",
+              "en": "The first and second lines establish the cold, the third line points to the other spot, and the fourth line shows Sota taking it as a suggestion to move."
             },
             "nuance": {
               "ja": "「移ろう」と直接言わず、よさそうな場所を示すことで、相手が自然に提案できる形にしています。",
@@ -314,13 +314,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "d8f6844e7a07e663b90b29fee9218721c36dbe33bd58646a7fa7b079611c177d"
+      "contentHash": "4250ad76167327df495754f4ec98d958ac71d46408f87ca842d4e9316beac110"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-022",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 22,
       "jlptTarget": "N3",
@@ -611,9 +611,9 @@
               "en": "In the current context, the teacher is more likely quietly allowing Ren to submit right away."
             },
             "evidence": {
-              "ja": "line-001 で遅れの理由を聞き、line-003 の「もう出せない」への返事が line-004 です。line-005 で蓮も許可として受け取っています。",
-              "zh": "line-001 交代了迟到理由，line-004 正面回应 line-003 的“不能交了吧”；line-005 莲也把它理解为许可。",
-              "en": "The teacher hears the reason in line-001, answers Ren's assumption from line-003 in line-004, and Ren treats it as permission in line-005."
+              "ja": "1番目の台詞で遅れの理由を聞き、3番目の台詞の「もう出せない」への返事が4番目の台詞です。5番目の台詞で蓮も許可として受け取っています。",
+              "zh": "第1句台词交代了迟到理由，第4句台词正面回应第3句台词的“不能交了吧”；第5句台词莲也把它理解为许可。",
+              "en": "The teacher hears the reason in the first line, answers Ren's assumption from the third line in the fourth line, and Ren treats it as permission in the fifth line."
             },
             "nuance": {
               "ja": "「出してもいい」と直接言わず、箱の状態を知らせることで、締切の決まりを残しながら小さな例外を作っています。",
@@ -638,13 +638,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "5a452058448a3e8c7903ce395cfd7684842ea090934f3eaf2c162924faddd9fc"
+      "contentHash": "b95a129e8c682cfda743729fd6b78b72b47a330b59ce2f20bd445ff7b294df41"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-023",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 23,
       "jlptTarget": "N3",
@@ -930,9 +930,9 @@
               "en": "In the current context, Sara is more likely declining the cookie without rejecting the gift or kindness."
             },
             "evidence": {
-              "ja": "line-002 で箱を褒め、line-004 で先に感謝してから自分の理由を伝えます。line-005 の美香も断りとして理解しています。",
-              "zh": "line-002 她先夸盒子，line-004 先道谢再说明个人原因；line-005 美香也把它理解为拒绝。",
-              "en": "Sara compliments the box in line-002, thanks Mika before giving a personal reason in line-004, and Mika recognizes the decline in line-005."
+              "ja": "2番目の台詞で箱を褒め、4番目の台詞で先に感謝してから自分の理由を伝えます。5番目の台詞の美香も断りとして理解しています。",
+              "zh": "第2句台词她先夸盒子，第4句台词先道谢再说明个人原因；第5句台词美香也把它理解为拒绝。",
+              "en": "Sara compliments the box in the second line, thanks Mika before giving a personal reason in the fourth line, and Mika recognizes the decline in the fifth line."
             },
             "nuance": {
               "ja": "相手の品物を悪く言わず、自分の習慣を理由にすると、好意を受け止めながら断りやすくなります。",
@@ -957,13 +957,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "20546a85029a1f18f00a7e5fa7578836873c23509b2de7c660f00f18483acef8"
+      "contentHash": "0a2da21a6e8ae6212fe24b5ba2d072b3651dbec3609df0e126cc107c5b13ee14"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-024",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 24,
       "jlptTarget": "N3",
@@ -1248,9 +1248,9 @@
               "en": "In the current context, Takumi is more likely prioritizing time over serving temperature."
             },
             "evidence": {
-              "ja": "line-001 の発車まで五分という情報の直後、line-003 で時間のかかる温めを断ります。line-004 も「すぐ」と応じています。",
-              "zh": "line-001 说明离发车仅五分钟，紧接着 line-003 拒绝耗时的加热；line-004 店员也回应“马上”。",
-              "en": "The five-minute limit in line-001 is followed by declining heating in line-003, and line-004 emphasizes immediate service."
+              "ja": "1番目の台詞の発車まで五分という情報の直後、3番目の台詞で時間のかかる温めを断ります。4番目の台詞も「すぐ」と応じています。",
+              "zh": "第1句台词说明离发车仅五分钟，紧接着第3句台词拒绝耗时的加热；第4句台词店员也回应“马上”。",
+              "en": "The five-minute limit in the first line is followed by declining heating in the third line, and the fourth line emphasizes immediate service."
             },
             "nuance": {
               "ja": "「大丈夫です」はここでは「温めても問題ない」ではなく、店員の申し出に対する「必要ありません」というやわらかな断りです。",
@@ -1275,13 +1275,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "cde827fc70098b126d2b5ef8a77fd150d44414cd83cd05d56092616c1150698e"
+      "contentHash": "d3d3dab96a66bd4328cef4d40047de34e09bc44fc8070168ea901027c0edcb5d"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-025",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 25,
       "jlptTarget": "N3",
@@ -1560,9 +1560,9 @@
               "en": "In the current context, the server is more likely recognizing Yui's unspoken need for water."
             },
             "evidence": {
-              "ja": "line-001 で結衣は辛さを気にし、line-003 で予想より辛いと伝えます。その直後の line-004 が水の提案です。",
-              "zh": "line-001 结衣先关注辣度，line-003 说比预想更辣，紧接着 line-004 店员就提出拿水。",
-              "en": "Yui asks about heat in line-001, says it exceeds expectations in line-003, and the water offer follows immediately in line-004."
+              "ja": "1番目の台詞で結衣は辛さを気にし、3番目の台詞で予想より辛いと伝えます。その直後の4番目の台詞が水の提案です。",
+              "zh": "第1句台词结衣先关注辣度，第3句台词说比预想更辣，紧接着第4句台词店员就提出拿水。",
+              "en": "Yui asks about heat in the first line, says it exceeds expectations in the third line, and the water offer follows immediately in the fourth line."
             },
             "nuance": {
               "ja": "接客では、客が「水をください」と言う前でも、言葉と行動から必要な物を考えて先に申し出ることがあります。",
@@ -1587,13 +1587,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "f4b866e509c8df20ac22058681654aeed22bae8fbed54ad18a5cc9a65ba1228e"
+      "contentHash": "516a5a13b6b6cc04c94f227b995e697fc83a2d1b9ae355e3143066d0bee5e1a0"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-026",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 26,
       "jlptTarget": "N3",
@@ -1929,9 +1929,9 @@
               "en": "In the current context, the host is more likely gently recommending an early start without criticizing Kotone."
             },
             "evidence": {
-              "ja": "line-001 と line-003 で琴音は遅く起きる予定を話します。女将は line-004 で朝の景色を示し、line-006 で早い時刻を具体的に教えます。",
-              "zh": "line-001 与 line-003 中琴音计划晚起；老板娘在 line-004 提到清晨景色，并在 line-006 给出具体早晨时间。",
-              "en": "Kotone plans to wake late in lines 001 and 003, while the host introduces the morning view in line-004 and gives an early time in line-006."
+              "ja": "1番目の台詞と3番目の台詞で琴音は遅く起きる予定を話します。女将は4番目の台詞で朝の景色を示し、6番目の台詞で早い時刻を具体的に教えます。",
+              "zh": "第1句台词与第3句台词中琴音计划晚起；老板娘在第4句台词提到清晨景色，并在第6句台词给出具体早晨时间。",
+              "en": "Kotone plans to wake late in the first and third lines, while the host introduces the morning view in the fourth line and gives an early time in the sixth line."
             },
             "nuance": {
               "ja": "「早く起きてください」と言う代わりに、早起きすると得られる体験を伝えると、相手が自分で選びやすくなります。",
@@ -1956,13 +1956,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "a255a9fbda43d9d4b279ca0f2a6bd495b47ef6a9b66ba7711bc832fdf6234e75"
+      "contentHash": "234be76f0166908c1c6f0f791cad7b2a6631cc56a9dd3fc84c175e882e6d20be"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-027",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 27,
       "jlptTarget": "N3",
@@ -2287,9 +2287,9 @@
               "en": "In the current context, the mother is more likely implying that the remaining pudding is for Mio."
             },
             "evidence": {
-              "ja": "line-002 の「二つ」と line-003 の「一つ食べます」を合わせると一つ残ります。line-005 と line-006 の美緒も同じ計算で喜んでいます。",
-              "zh": "把 line-002 的“两个”和 line-003 的“吃一个”结合起来会剩一个；line-005 与 line-006 美绪也由此感到高兴。",
-              "en": "Two puddings in line-002 minus the one in line-003 leaves one, and Mio's reaction in lines 005 and 006 follows that inference."
+              "ja": "2番目の台詞の「二つ」と3番目の台詞の「一つ食べます」を合わせると一つ残ります。5番目の台詞と6番目の台詞の美緒も同じ計算で喜んでいます。",
+              "zh": "把第2句台词的“两个”和第3句台词的“吃一个”结合起来会剩一个；第5句台词与第6句台词美绪也由此感到高兴。",
+              "en": "Two puddings in the second line minus the one in the third line leaves one, and Mio's reaction in the fifth and sixth lines follows that inference."
             },
             "nuance": {
               "ja": "家族の間では、共有している習慣が分かっているため、「あなたの分」と言わなくても数だけで分け方を伝えられます。",
@@ -2314,13 +2314,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "211f29df6d760f99435295178a2613aabb83054ad142815ac1753ed3582a0ae4"
+      "contentHash": "223f46de4e724d6fa42ca3ed542158b5d28cec8207323ba95ee280d77d7b8948"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-028",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 28,
       "jlptTarget": "N3",
@@ -2639,9 +2639,9 @@
               "en": "In the current context, the AI is more likely declining the full request while offering a limited alternative."
             },
             "evidence": {
-              "ja": "line-001 の希望は三十分ですが、line-003 では満杯です。line-004 の再質問に対し、line-005 だけが例外の空き時間として示されます。",
-              "zh": "line-001 希望三十分钟，line-003 却显示全天排满；回应 line-004 的追问时，line-005 只给出十分钟例外。",
-              "en": "The request is thirty minutes in line-001, the day is full in line-003, and only after line-004 does line-005 identify a ten-minute exception."
+              "ja": "1番目の台詞の希望は三十分ですが、3番目の台詞では満杯です。4番目の台詞の再質問に対し、5番目の台詞だけが例外の空き時間として示されます。",
+              "zh": "第1句台词希望三十分钟，第3句台词却显示全天排满；回应第4句台词的追问时，第5句台词只给出十分钟例外。",
+              "en": "The request is thirty minutes in the first line, the day is full in the third line, and only after the fourth line does the fifth line identify a ten-minute exception."
             },
             "nuance": {
               "ja": "「空いていません」で終わらず、条件に合う最小の案を出すことで、全部は無理でも一部は助ける返答になっています。",
@@ -2649,9 +2649,9 @@
               "en": "Instead of stopping at no availability, the AI offers the smallest workable alternative."
             },
             "alternative": {
-              "ja": "十七時から長く話せるとも読めません。line-005 は「十分なら」と長さを限っているため、現在の文脈では短い例外だけという読みが自然です。",
-              "zh": "不能理解为十七点后可长谈；line-005 用“十分钟的话”限制了时长，因此当前上下文更支持仅有短暂例外。",
-              "en": "It does not imply a long meeting after five because line-005 explicitly limits the opening to ten minutes."
+              "ja": "十七時から長く話せるとも読めません。5番目の台詞は「十分なら」と長さを限っているため、現在の文脈では短い例外だけという読みが自然です。",
+              "zh": "不能理解为十七点后可长谈；第5句台词用“十分钟的话”限制了时长，因此当前上下文更支持仅有短暂例外。",
+              "en": "It does not imply a long meeting after five because the fifth line explicitly limits the opening to ten minutes."
             }
           }
         }
@@ -2666,13 +2666,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "be0703efc36915a7759458640d1a1cea62d22a2fe579333a8cde90516c5add74"
+      "contentHash": "ba81017936a89ad17ef79f213f60212fd11b4166f9b5b5ba884898f345a84162"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-029",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 29,
       "jlptTarget": "N3",
@@ -2997,9 +2997,9 @@
               "en": "In the current context, the game is more likely revealing the comic outcome that the cat claimed the reward first."
             },
             "evidence": {
-              "ja": "line-003 で魚が報酬だと分かり、line-004 で消失します。line-005 の口をなめる行動と line-006 の美緒の理解が原因を結びます。",
-              "zh": "line-003 确认奖励是鱼，line-004 鱼消失；line-005 猫舔嘴与 line-006 美绪的判断把原因连起来。",
-              "en": "Line-003 names the fish reward, line-004 shows it missing, and the cat's behavior in line-005 plus Mio's conclusion in line-006 connect the cause."
+              "ja": "3番目の台詞で魚が報酬だと分かり、4番目の台詞で消失します。5番目の台詞の口をなめる行動と6番目の台詞の美緒の理解が原因を結びます。",
+              "zh": "第3句台词确认奖励是鱼，第4句台词鱼消失；第5句台词猫舔嘴与第6句台词美绪的判断把原因连起来。",
+              "en": "The third line names the fish reward, the fourth line shows it missing, and the cat's behavior in the fifth line plus Mio's conclusion in the sixth line connect the cause."
             },
             "nuance": {
               "ja": "普通は依頼を終えた人が報酬を受け取りますが、この場面では探された猫が先に受け取り、立場が逆になっています。",
@@ -3024,13 +3024,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "1bca97367d37915f9b88003e8e3645d156266a36176077400094227a24c8a237"
+      "contentHash": "567c8e0484ef38e4468df65c55ad2facd42c2eda2cbe1b6b827a8c0c9a177ff2"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-030",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 30,
       "jlptTarget": "N3",
@@ -3386,9 +3386,9 @@
               "en": "In the current context, the cluster of impossible school details makes it more likely that Nana is dreaming."
             },
             "evidence": {
-              "ja": "line-002 の室内の雨靴、line-003 と line-004 の海と魚、line-005 のベルを鳴らす魚が、普通の試験場面と合いません。",
-              "zh": "line-002 的室内雨靴、line-003 与 line-004 的深海和鱼、line-005 会摇铃的鱼，都与普通考试场景不符。",
-              "en": "The indoor boots in line-002, the sea and fish in lines 003 and 004, and the bell-ringing fish in line-005 conflict with an ordinary exam."
+              "ja": "2番目の台詞の室内の雨靴、3番目の台詞と4番目の台詞の海と魚、5番目の台詞のベルを鳴らす魚が、普通の試験場面と合いません。",
+              "zh": "第2句台词的室内雨靴、第3句台词与第4句台词的深海和鱼、第5句台词会摇铃的鱼，都与普通考试场景不符。",
+              "en": "The indoor boots in the second line, the sea and fish in the third and fourth lines, and the bell-ringing fish in the fifth line conflict with an ordinary exam."
             },
             "nuance": {
               "ja": "一つだけなら特別な理由を考えられますが、関係する不自然な点が続くことで、現実ではないという判断が強くなります。",
@@ -3396,9 +3396,9 @@
               "en": "One odd detail might have a special explanation, but several connected impossibilities strengthen the unreality inference."
             },
             "alternative": {
-              "ja": "特別な映像教室や行事という可能性も考えられますが、その説明はなく、奈々自身も line-006 で夢だと気づくため、現在の文脈では夢の読みが自然です。",
-              "zh": "也可设想是特殊影像教室或活动，但场景没有这类说明，且奈奈在 line-006 自觉是梦，因此当前上下文更支持梦境解释。",
-              "en": "A special projection room or event is conceivable, but no such setup appears and Nana recognizes the dream in line-006, so the dream reading is better supported."
+              "ja": "特別な映像教室や行事という可能性も考えられますが、その説明はなく、奈々自身も6番目の台詞で夢だと気づくため、現在の文脈では夢の読みが自然です。",
+              "zh": "也可设想是特殊影像教室或活动，但场景没有这类说明，且奈奈在第6句台词自觉是梦，因此当前上下文更支持梦境解释。",
+              "en": "A special projection room or event is conceivable, but no such setup appears and Nana recognizes the dream in the sixth line, so the dream reading is better supported."
             }
           }
         }
@@ -3413,7 +3413,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "79aa113e5996bce22090ecf4945f08df9ede7a947f18f433db858e68588b8353"
+      "contentHash": "d98519f80a2e848e9838c4ab30c56ac54689261bc9229b9b6cc5981eeab930e9"
     }
   ]
 }

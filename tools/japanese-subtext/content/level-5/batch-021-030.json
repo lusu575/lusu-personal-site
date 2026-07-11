@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "level": 5,
   "batch": "021-030",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-021",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 21,
       "jlptTarget": "N1-pragmatics",
@@ -585,9 +585,9 @@
               "en": "The best-supported reading is 「Aya likely prepared it with a move to Hokushin in mind.」."
             },
             "evidence": {
-              "ja": "line-005、line-009、line-010、line-012、line-013を合わせると、退職理由を明言せず、次の所属先を準備資料の時間体系が示している。",
-              "zh": "合并阅读line-005、line-009、line-010、line-012、line-013可知，没有明说去向，交接资料采用的时间体系却暴露了下一站。",
-              "en": "Taken together, line-005, line-009, line-010, line-012, line-013 show that The calendar system, not the letter, hints at the next employer."
+              "ja": "5番目の台詞、9番目の台詞、10番目の台詞、12番目の台詞、13番目の台詞を合わせると、退職理由を明言せず、次の所属先を準備資料の時間体系が示している。",
+              "zh": "合并阅读第5句台词、第9句台词、第10句台词、第12句台词、第13句台词可知，没有明说去向，交接资料采用的时间体系却暴露了下一站。",
+              "en": "Taken together, the fifth line, the ninth line, the tenth line, the twelfth line, the thirteenth line show that The calendar system, not the letter, hints at the next employer."
             },
             "nuance": {
               "ja": "日付体系は強い状況証拠ですが、転職先を本人の明言と同じ確度で断定することはできません。",
@@ -672,9 +672,9 @@
               "en": "The best-supported reading is 「The quarters begin in February, as Hokushin's do.」 and 「Hokushin's founding day alone is marked closed.」."
             },
             "evidence": {
-              "ja": "line-009、line-010、line-012を合わせると、退職理由を明言せず、次の所属先を準備資料の時間体系が示している。",
-              "zh": "合并阅读line-009、line-010、line-012可知，没有明说去向，交接资料采用的时间体系却暴露了下一站。",
-              "en": "Taken together, line-009, line-010, line-012 show that The calendar system, not the letter, hints at the next employer."
+              "ja": "9番目の台詞、10番目の台詞、12番目の台詞を合わせると、退職理由を明言せず、次の所属先を準備資料の時間体系が示している。",
+              "zh": "合并阅读第9句台词、第10句台词、第12句台词可知，没有明说去向，交接资料采用的时间体系却暴露了下一站。",
+              "en": "Taken together, the ninth line, the tenth line, the twelfth line show that The calendar system, not the letter, hints at the next employer."
             },
             "nuance": {
               "ja": "日付体系は強い状況証拠ですが、転職先を本人の明言と同じ確度で断定することはできません。",
@@ -756,9 +756,9 @@
               "en": "The best-supported reading is 「The scope of confidential material.」."
             },
             "evidence": {
-              "ja": "line-015を合わせると、退職理由を明言せず、次の所属先を準備資料の時間体系が示している。",
-              "zh": "合并阅读line-015可知，没有明说去向，交接资料采用的时间体系却暴露了下一站。",
-              "en": "Taken together, line-015 show that The calendar system, not the letter, hints at the next employer."
+              "ja": "15番目の台詞を合わせると、退職理由を明言せず、次の所属先を準備資料の時間体系が示している。",
+              "zh": "合并阅读第15句台词可知，没有明说去向，交接资料采用的时间体系却暴露了下一站。",
+              "en": "Taken together, the fifteenth line show that The calendar system, not the letter, hints at the next employer."
             },
             "nuance": {
               "ja": "日付体系は強い状況証拠ですが、転職先を本人の明言と同じ確度で断定することはできません。",
@@ -843,9 +843,9 @@
               "en": "The best-supported reading is 「It frames the matches as operational care while avoiding an explicit destination.」."
             },
             "evidence": {
-              "ja": "line-006、line-008、line-011、line-014を合わせると、退職理由を明言せず、次の所属先を準備資料の時間体系が示している。",
-              "zh": "合并阅读line-006、line-008、line-011、line-014可知，没有明说去向，交接资料采用的时间体系却暴露了下一站。",
-              "en": "Taken together, line-006, line-008, line-011, line-014 show that The calendar system, not the letter, hints at the next employer."
+              "ja": "6番目の台詞、8番目の台詞、11番目の台詞、14番目の台詞を合わせると、退職理由を明言せず、次の所属先を準備資料の時間体系が示している。",
+              "zh": "合并阅读第6句台词、第8句台词、第11句台词、第14句台词可知，没有明说去向，交接资料采用的时间体系却暴露了下一站。",
+              "en": "Taken together, the sixth line, the eighth line, the eleventh line, the fourteenth line show that The calendar system, not the letter, hints at the next employer."
             },
             "nuance": {
               "ja": "日付体系は強い状況証拠ですが、転職先を本人の明言と同じ確度で断定することはできません。",
@@ -932,9 +932,9 @@
               "en": "The best-supported reading is 「Multiple calendar matches make Hokushin likely, but Aya has not confirmed it.」."
             },
             "evidence": {
-              "ja": "line-003、line-009、line-010、line-012、line-015、line-016を合わせると、退職理由を明言せず、次の所属先を準備資料の時間体系が示している。",
-              "zh": "合并阅读line-003、line-009、line-010、line-012、line-015、line-016可知，没有明说去向，交接资料采用的时间体系却暴露了下一站。",
-              "en": "Taken together, line-003, line-009, line-010, line-012, line-015, line-016 show that The calendar system, not the letter, hints at the next employer."
+              "ja": "3番目の台詞、9番目の台詞、10番目の台詞、12番目の台詞、15番目の台詞、16番目の台詞を合わせると、退職理由を明言せず、次の所属先を準備資料の時間体系が示している。",
+              "zh": "合并阅读第3句台词、第9句台词、第10句台词、第12句台词、第15句台词、第16句台词可知，没有明说去向，交接资料采用的时间体系却暴露了下一站。",
+              "en": "Taken together, the third line, the ninth line, the tenth line, the twelfth line, the fifteenth line, the sixteenth line show that The calendar system, not the letter, hints at the next employer."
             },
             "nuance": {
               "ja": "日付体系は強い状況証拠ですが、転職先を本人の明言と同じ確度で断定することはできません。",
@@ -959,13 +959,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "122300bc22a46f71f61098287e37be20b9793971f000f95225e32c0533b492b1"
+      "contentHash": "a8d6d9fb4cfc38b11ff78254478ee6ea7f518c337162dac4daa3edf6403f6322"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-022",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 22,
       "jlptTarget": "N1-pragmatics",
@@ -1514,9 +1514,9 @@
               "en": "The best-supported reading is 「Face-saving for the teacher while acknowledging her own preventive opportunity.」."
             },
             "evidence": {
-              "ja": "line-003、line-008、line-011、line-013を合わせると、学生の自己責任発言は事実認定でなく、教師を公に追及しないための配慮である。",
-              "zh": "合并阅读line-003、line-008、line-011、line-013可知，学生自责并非事实判断，而是在避免公开追究教师。",
-              "en": "Taken together, line-003, line-008, line-011, line-013 show that The student’s self-blame protects the teacher rather than establishes fault."
+              "ja": "3番目の台詞、8番目の台詞、11番目の台詞、13番目の台詞を合わせると、学生の自己責任発言は事実認定でなく、教師を公に追及しないための配慮である。",
+              "zh": "合并阅读第3句台词、第8句台词、第11句台词、第13句台词可知，学生自责并非事实判断，而是在避免公开追究教师。",
+              "en": "Taken together, the third line, the eighth line, the eleventh line, the thirteenth line show that The student’s self-blame protects the teacher rather than establishes fault."
             },
             "nuance": {
               "ja": "学生の配慮は教師の責任を消すものではなく、制度上の事実認定と対人上の顔を立てる行為を分ける必要があります。",
@@ -1602,9 +1602,9 @@
               "en": "The best-supported reading is 「The teacher distributed version seven instead of the required version eight.」."
             },
             "evidence": {
-              "ja": "line-004、line-005、line-006、line-007、line-010を合わせると、学生の自己責任発言は事実認定でなく、教師を公に追及しないための配慮である。",
-              "zh": "合并阅读line-004、line-005、line-006、line-007、line-010可知，学生自责并非事实判断，而是在避免公开追究教师。",
-              "en": "Taken together, line-004, line-005, line-006, line-007, line-010 show that The student’s self-blame protects the teacher rather than establishes fault."
+              "ja": "4番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、10番目の台詞を合わせると、学生の自己責任発言は事実認定でなく、教師を公に追及しないための配慮である。",
+              "zh": "合并阅读第4句台词、第5句台词、第6句台词、第7句台词、第10句台词可知，学生自责并非事实判断，而是在避免公开追究教师。",
+              "en": "Taken together, the fourth line, the fifth line, the sixth line, the seventh line, the tenth line show that The student’s self-blame protects the teacher rather than establishes fault."
             },
             "nuance": {
               "ja": "学生の配慮は教師の責任を消すものではなく、制度上の事実認定と対人上の顔を立てる行為を分ける必要があります。",
@@ -1688,9 +1688,9 @@
               "en": "The best-supported reading is 「To avoid conflating old-version distribution with the future safeguard of mutual checking.」."
             },
             "evidence": {
-              "ja": "line-009、line-013、line-015を合わせると、学生の自己責任発言は事実認定でなく、教師を公に追及しないための配慮である。",
-              "zh": "合并阅读line-009、line-013、line-015可知，学生自责并非事实判断，而是在避免公开追究教师。",
-              "en": "Taken together, line-009, line-013, line-015 show that The student’s self-blame protects the teacher rather than establishes fault."
+              "ja": "9番目の台詞、13番目の台詞、15番目の台詞を合わせると、学生の自己責任発言は事実認定でなく、教師を公に追及しないための配慮である。",
+              "zh": "合并阅读第9句台词、第13句台词、第15句台词可知，学生自责并非事实判断，而是在避免公开追究教师。",
+              "en": "Taken together, the ninth line, the thirteenth line, the fifteenth line show that The student’s self-blame protects the teacher rather than establishes fault."
             },
             "nuance": {
               "ja": "学生の配慮は教師の責任を消すものではなく、制度上の事実認定と対人上の顔を立てる行為を分ける必要があります。",
@@ -1776,9 +1776,9 @@
               "en": "The best-supported reading is 「The old form caused the mismatch; mutual checking is proposed for prevention, and discipline is separate.」."
             },
             "evidence": {
-              "ja": "line-005、line-006、line-010、line-013、line-015を合わせると、学生の自己責任発言は事実認定でなく、教師を公に追及しないための配慮である。",
-              "zh": "合并阅读line-005、line-006、line-010、line-013、line-015可知，学生自责并非事实判断，而是在避免公开追究教师。",
-              "en": "Taken together, line-005, line-006, line-010, line-013, line-015 show that The student’s self-blame protects the teacher rather than establishes fault."
+              "ja": "5番目の台詞、6番目の台詞、10番目の台詞、13番目の台詞、15番目の台詞を合わせると、学生の自己責任発言は事実認定でなく、教師を公に追及しないための配慮である。",
+              "zh": "合并阅读第5句台词、第6句台词、第10句台词、第13句台词、第15句台词可知，学生自责并非事实判断，而是在避免公开追究教师。",
+              "en": "Taken together, the fifth line, the sixth line, the tenth line, the thirteenth line, the fifteenth line show that The student’s self-blame protects the teacher rather than establishes fault."
             },
             "nuance": {
               "ja": "学生の配慮は教師の責任を消すものではなく、制度上の事実認定と対人上の顔を立てる行為を分ける必要があります。",
@@ -1803,13 +1803,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "386e56cf03afa01c09d187c7a763e383fd29686a49ec011cfaa32f972ccb0c62"
+      "contentHash": "ae815e97cc8f5e517ddbac92cb48ea721fa8a1e6a06f2646ee0b13987d87be8d"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-023",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 23,
       "jlptTarget": "N1-pragmatics",
@@ -2389,9 +2389,9 @@
               "en": "The best-supported reading is 「Successive translations strengthen an aroma description into a real smoking process.」."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-003、line-004、line-007、line-008、line-010を合わせると、翻訳が工程の事実を段階的に強め、元の曖昧な表現を超えている。",
-              "zh": "合并阅读line-001、line-002、line-003、line-004、line-007、line-008、line-010可知，译文逐步强化了烹饪工艺，超出原文的模糊程度。",
-              "en": "Taken together, line-001, line-002, line-003, line-004, line-007, line-008, line-010 show that Translations progressively overstate the actual process."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、7番目の台詞、8番目の台詞、10番目の台詞を合わせると、翻訳が工程の事実を段階的に強め、元の曖昧な表現を超えている。",
+              "zh": "合并阅读第1句台词、第2句台词、第3句台词、第4句台词、第7句台词、第8句台词、第10句台词可知，译文逐步强化了烹饪工艺，超出原文的模糊程度。",
+              "en": "Taken together, the first line, the second line, the third line, the fourth line, the seventh line, the eighth line, the tenth line show that Translations progressively overstate the actual process."
             },
             "nuance": {
               "ja": "翻訳の強さの差は誤解を生みますが、故意の虚偽広告か編集上の連鎖ミスかは追加調査が必要です。",
@@ -2474,9 +2474,9 @@
               "en": "The best-supported reading is 「No smoke was used; one drop of smoky aroma oil was added.」."
             },
             "evidence": {
-              "ja": "line-004、line-010を合わせると、翻訳が工程の事実を段階的に強め、元の曖昧な表現を超えている。",
-              "zh": "合并阅读line-004、line-010可知，译文逐步强化了烹饪工艺，超出原文的模糊程度。",
-              "en": "Taken together, line-004, line-010 show that Translations progressively overstate the actual process."
+              "ja": "4番目の台詞、10番目の台詞を合わせると、翻訳が工程の事実を段階的に強め、元の曖昧な表現を超えている。",
+              "zh": "合并阅读第4句台词、第10句台词可知，译文逐步强化了烹饪工艺，超出原文的模糊程度。",
+              "en": "Taken together, the fourth line, the tenth line show that Translations progressively overstate the actual process."
             },
             "nuance": {
               "ja": "翻訳の強さの差は誤解を生みますが、故意の虚偽広告か編集上の連鎖ミスかは追加調査が必要です。",
@@ -2561,9 +2561,9 @@
               "en": "The best-supported reading is 「State that smoky aroma oil is used.」 and 「Have every language reference the same process sheet.」."
             },
             "evidence": {
-              "ja": "line-011、line-014、line-015を合わせると、翻訳が工程の事実を段階的に強め、元の曖昧な表現を超えている。",
-              "zh": "合并阅读line-011、line-014、line-015可知，译文逐步强化了烹饪工艺，超出原文的模糊程度。",
-              "en": "Taken together, line-011, line-014, line-015 show that Translations progressively overstate the actual process."
+              "ja": "11番目の台詞、14番目の台詞、15番目の台詞を合わせると、翻訳が工程の事実を段階的に強め、元の曖昧な表現を超えている。",
+              "zh": "合并阅读第11句台词、第14句台词、第15句台词可知，译文逐步强化了烹饪工艺，超出原文的模糊程度。",
+              "en": "Taken together, the eleventh line, the fourteenth line, the fifteenth line show that Translations progressively overstate the actual process."
             },
             "nuance": {
               "ja": "翻訳の強さの差は誤解を生みますが、故意の虚偽広告か編集上の連鎖ミスかは追加調査が必要です。",
@@ -2651,9 +2651,9 @@
               "en": "The best-supported reading is 「The English makes a stronger claim than the actual process.」 and 「Distinguishing process from ingredient matters for ordering and labeling.」."
             },
             "evidence": {
-              "ja": "line-003、line-004、line-008、line-009、line-012、line-016を合わせると、翻訳が工程の事実を段階的に強め、元の曖昧な表現を超えている。",
-              "zh": "合并阅读line-003、line-004、line-008、line-009、line-012、line-016可知，译文逐步强化了烹饪工艺，超出原文的模糊程度。",
-              "en": "Taken together, line-003, line-004, line-008, line-009, line-012, line-016 show that Translations progressively overstate the actual process."
+              "ja": "3番目の台詞、4番目の台詞、8番目の台詞、9番目の台詞、12番目の台詞、16番目の台詞を合わせると、翻訳が工程の事実を段階的に強め、元の曖昧な表現を超えている。",
+              "zh": "合并阅读第3句台词、第4句台词、第8句台词、第9句台词、第12句台词、第16句台词可知，译文逐步强化了烹饪工艺，超出原文的模糊程度。",
+              "en": "Taken together, the third line, the fourth line, the eighth line, the ninth line, the twelfth line, the sixteenth line show that Translations progressively overstate the actual process."
             },
             "nuance": {
               "ja": "翻訳の強さの差は誤解を生みますが、故意の虚偽広告か編集上の連鎖ミスかは追加調査が必要です。",
@@ -2678,13 +2678,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "7ba483807fa5d98ec6c9229dfe216406b8d671d9c96d42976f2fbeccbce0c739"
+      "contentHash": "198e03fc8e47d8d1df9a7b47e72b19159e31eb4133d4119b4623abd9acddc6a9"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-024",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 24,
       "jlptTarget": "N1-pragmatics",
@@ -3235,9 +3235,9 @@
               "en": "The best-supported reading is 「To steer visitors into the partner district and keep them there longer.」."
             },
             "evidence": {
-              "ja": "line-001、line-006、line-010、line-011、line-012を合わせると、地図は移動支援より、客を提携区域へ留める商業的な誘導装置である。",
-              "zh": "合并阅读line-001、line-006、line-010、line-011、line-012可知，地图并非中立导航，而是把游客留在合作商圈的引导工具。",
-              "en": "Taken together, line-001, line-006, line-010, line-011, line-012 show that The map is a commercial steering device rather than neutral navigation."
+              "ja": "1番目の台詞、6番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞を合わせると、地図は移動支援より、客を提携区域へ留める商業的な誘導装置である。",
+              "zh": "合并阅读第1句台词、第6句台词、第10句台词、第11句台词、第12句台词可知，地图并非中立导航，而是把游客留在合作商圈的引导工具。",
+              "en": "Taken together, the first line, the sixth line, the tenth line, the eleventh line, the twelfth line show that The map is a commercial steering device rather than neutral navigation."
             },
             "nuance": {
               "ja": "歪んだ縮尺と回答回避は商業誘導を示しますが、地図の全情報が虚偽だとまでは言えません。",
@@ -3320,9 +3320,9 @@
               "en": "The best-supported reading is 「He avoids the distance and redirects the traveler to partner shops.」."
             },
             "evidence": {
-              "ja": "line-008、line-009を合わせると、地図は移動支援より、客を提携区域へ留める商業的な誘導装置である。",
-              "zh": "合并阅读line-008、line-009可知，地图并非中立导航，而是把游客留在合作商圈的引导工具。",
-              "en": "Taken together, line-008, line-009 show that The map is a commercial steering device rather than neutral navigation."
+              "ja": "8番目の台詞、9番目の台詞を合わせると、地図は移動支援より、客を提携区域へ留める商業的な誘導装置である。",
+              "zh": "合并阅读第8句台词、第9句台词可知，地图并非中立导航，而是把游客留在合作商圈的引导工具。",
+              "en": "Taken together, the eighth line, the ninth line show that The map is a commercial steering device rather than neutral navigation."
             },
             "nuance": {
               "ja": "歪んだ縮尺と回答回避は商業誘導を示しますが、地図の全情報が虚偽だとまでは言えません。",
@@ -3406,9 +3406,9 @@
               "en": "The best-supported reading is 「Only the unaffiliated station's distance is omitted.」 and 「The association described it as extending dwell time.」."
             },
             "evidence": {
-              "ja": "line-010、line-012を合わせると、地図は移動支援より、客を提携区域へ留める商業的な誘導装置である。",
-              "zh": "合并阅读line-010、line-012可知，地图并非中立导航，而是把游客留在合作商圈的引导工具。",
-              "en": "Taken together, line-010, line-012 show that The map is a commercial steering device rather than neutral navigation."
+              "ja": "10番目の台詞、12番目の台詞を合わせると、地図は移動支援より、客を提携区域へ留める商業的な誘導装置である。",
+              "zh": "合并阅读第10句台词、第12句台词可知，地图并非中立导航，而是把游客留在合作商圈的引导工具。",
+              "en": "Taken together, the tenth line, the twelfth line show that The map is a commercial steering device rather than neutral navigation."
             },
             "nuance": {
               "ja": "歪んだ縮尺と回答回避は商業誘導を示しますが、地図の全情報が虚偽だとまでは言えません。",
@@ -3491,9 +3491,9 @@
               "en": "The best-supported reading is 「Label it a recommended-route map rather than a distance map.」."
             },
             "evidence": {
-              "ja": "line-011、line-014を合わせると、地図は移動支援より、客を提携区域へ留める商業的な誘導装置である。",
-              "zh": "合并阅读line-011、line-014可知，地图并非中立导航，而是把游客留在合作商圈的引导工具。",
-              "en": "Taken together, line-011, line-014 show that The map is a commercial steering device rather than neutral navigation."
+              "ja": "11番目の台詞、14番目の台詞を合わせると、地図は移動支援より、客を提携区域へ留める商業的な誘導装置である。",
+              "zh": "合并阅读第11句台词、第14句台词可知，地图并非中立导航，而是把游客留在合作商圈的引导工具。",
+              "en": "Taken together, the eleventh line, the fourteenth line show that The map is a commercial steering device rather than neutral navigation."
             },
             "nuance": {
               "ja": "歪んだ縮尺と回答回避は商業誘導を示しますが、地図の全情報が虚偽だとまでは言えません。",
@@ -3576,9 +3576,9 @@
               "en": "The best-supported reading is 「Disclose the recommendation purpose and add real distances.」."
             },
             "evidence": {
-              "ja": "line-014、line-015を合わせると、地図は移動支援より、客を提携区域へ留める商業的な誘導装置である。",
-              "zh": "合并阅读line-014、line-015可知，地图并非中立导航，而是把游客留在合作商圈的引导工具。",
-              "en": "Taken together, line-014, line-015 show that The map is a commercial steering device rather than neutral navigation."
+              "ja": "14番目の台詞、15番目の台詞を合わせると、地図は移動支援より、客を提携区域へ留める商業的な誘導装置である。",
+              "zh": "合并阅读第14句台词、第15句台词可知，地图并非中立导航，而是把游客留在合作商圈的引导工具。",
+              "en": "Taken together, the fourteenth line, the fifteenth line show that The map is a commercial steering device rather than neutral navigation."
             },
             "nuance": {
               "ja": "歪んだ縮尺と回答回避は商業誘導を示しますが、地図の全情報が虚偽だとまでは言えません。",
@@ -3603,13 +3603,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "39bd3b30d4eab159f51c3edc33f502adc7801c76e5167be7dc672b469592d34b"
+      "contentHash": "ed9d60ee4447f85bd906b4a563472cc9a9c833e107add26b012d34cfe72acb32"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-025",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 25,
       "jlptTarget": "N1-pragmatics",
@@ -4188,9 +4188,9 @@
               "en": "The best-supported reading is 「A rule created and backdated today was applied to yesterday's post.」."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-003、line-004、line-005、line-008、line-009を合わせると、規則を遡及適用しただけでなく、先に存在したよう履歴を演出している。",
-              "zh": "合并阅读line-001、line-002、line-003、line-004、line-005、line-008、line-009可知，不仅是追溯适用规则，还伪造了规则早已存在的历史。",
-              "en": "Taken together, line-001, line-002, line-003, line-004, line-005, line-008, line-009 show that The admin retroactively applies and backdates the rule."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、8番目の台詞、9番目の台詞を合わせると、規則を遡及適用しただけでなく、先に存在したよう履歴を演出している。",
+              "zh": "合并阅读第1句台词、第2句台词、第3句台词、第4句台词、第5句台词、第8句台词、第9句台词可知，不仅是追溯适用规则，还伪造了规则早已存在的历史。",
+              "en": "Taken together, the first line, the second line, the third line, the fourth line, the fifth line, the eighth line, the ninth line show that The admin retroactively applies and backdates the rule."
             },
             "nuance": {
               "ja": "表示日付と作成時刻の不一致は改変を強く示しますが、規則内容の妥当性と遡及処分の妥当性は別々に評価すべきです。",
@@ -4275,9 +4275,9 @@
               "en": "The best-supported reading is 「The page creation time is 9:12 today.」 and 「Last night's screenshot ends at Rule 11.」."
             },
             "evidence": {
-              "ja": "line-004、line-005、line-008を合わせると、規則を遡及適用しただけでなく、先に存在したよう履歴を演出している。",
-              "zh": "合并阅读line-004、line-005、line-008可知，不仅是追溯适用规则，还伪造了规则早已存在的历史。",
-              "en": "Taken together, line-004, line-005, line-008 show that The admin retroactively applies and backdates the rule."
+              "ja": "4番目の台詞、5番目の台詞、8番目の台詞を合わせると、規則を遡及適用しただけでなく、先に存在したよう履歴を演出している。",
+              "zh": "合并阅读第4句台词、第5句台词、第8句台词可知，不仅是追溯适用规则，还伪造了规则早已存在的历史。",
+              "en": "Taken together, the fourth line, the fifth line, the eighth line show that The admin retroactively applies and backdates the rule."
             },
             "nuance": {
               "ja": "表示日付と作成時刻の不一致は改変を強く示しますが、規則内容の妥当性と遡及処分の妥当性は別々に評価すべきです。",
@@ -4363,9 +4363,9 @@
               "en": "The best-supported reading is 「No matching announcement exists, and the only enactment record is this morning's edit.」."
             },
             "evidence": {
-              "ja": "line-007、line-008、line-010、line-011、line-012を合わせると、規則を遡及適用しただけでなく、先に存在したよう履歴を演出している。",
-              "zh": "合并阅读line-007、line-008、line-010、line-011、line-012可知，不仅是追溯适用规则，还伪造了规则早已存在的历史。",
-              "en": "Taken together, line-007, line-008, line-010, line-011, line-012 show that The admin retroactively applies and backdates the rule."
+              "ja": "7番目の台詞、8番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞を合わせると、規則を遡及適用しただけでなく、先に存在したよう履歴を演出している。",
+              "zh": "合并阅读第7句台词、第8句台词、第10句台词、第11句台词、第12句台词可知，不仅是追溯适用规则，还伪造了规则早已存在的历史。",
+              "en": "Taken together, the seventh line, the eighth line, the tenth line, the eleventh line, the twelfth line show that The admin retroactively applies and backdates the rule."
             },
             "nuance": {
               "ja": "表示日付と作成時刻の不一致は改変を強く示しますが、規則内容の妥当性と遡及処分の妥当性は別々に評価すべきです。",
@@ -4451,9 +4451,9 @@
               "en": "The best-supported reading is 「Suspend removal and reassess the post against the effective time.」 and 「Preserve edit history and effective time publicly.」."
             },
             "evidence": {
-              "ja": "line-013、line-014、line-015、line-016を合わせると、規則を遡及適用しただけでなく、先に存在したよう履歴を演出している。",
-              "zh": "合并阅读line-013、line-014、line-015、line-016可知，不仅是追溯适用规则，还伪造了规则早已存在的历史。",
-              "en": "Taken together, line-013, line-014, line-015, line-016 show that The admin retroactively applies and backdates the rule."
+              "ja": "13番目の台詞、14番目の台詞、15番目の台詞、16番目の台詞を合わせると、規則を遡及適用しただけでなく、先に存在したよう履歴を演出している。",
+              "zh": "合并阅读第13句台词、第14句台词、第15句台词、第16句台词可知，不仅是追溯适用规则，还伪造了规则早已存在的历史。",
+              "en": "Taken together, the thirteenth line, the fourteenth line, the fifteenth line, the sixteenth line show that The admin retroactively applies and backdates the rule."
             },
             "nuance": {
               "ja": "表示日付と作成時刻の不一致は改変を強く示しますが、規則内容の妥当性と遡及処分の妥当性は別々に評価すべきです。",
@@ -4478,13 +4478,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "d988dc379586175484f5604718b6a544cd23ec89d70de00126ca9dfbc58acf8d"
+      "contentHash": "44edca34f6e847794f75cac9dbf6ba2d5e16029daed5d852eea07cba0464f85c"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-026",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 26,
       "jlptTarget": "N1-pragmatics",
@@ -5037,9 +5037,9 @@
               "en": "The best-supported reading is 「After the boss speaks, narration shifts from second to first person.」 and 「The system and boss share the same paired-phrase habit.」."
             },
             "evidence": {
-              "ja": "line-005、line-006、line-007、line-009、line-010、line-011を合わせると、任務の語り手は中立システムでなく、塔へ戻りたいボス自身である。",
-              "zh": "合并阅读line-005、line-006、line-007、line-009、line-010、line-011可知，任务叙述者不是中立系统，而是想回塔的首领本人。",
-              "en": "Taken together, line-005, line-006, line-007, line-009, line-010, line-011 show that The quest narrator is the boss, not a neutral system."
+              "ja": "5番目の台詞、6番目の台詞、7番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞を合わせると、任務の語り手は中立システムでなく、塔へ戻りたいボス自身である。",
+              "zh": "合并阅读第5句台词、第6句台词、第7句台词、第9句台词、第10句台词、第11句台词可知，任务叙述者不是中立系统，而是想回塔的首领本人。",
+              "en": "Taken together, the fifth line, the sixth line, the seventh line, the ninth line, the tenth line, the eleventh line show that The quest narrator is the boss, not a neutral system."
             },
             "nuance": {
               "ja": "代名詞と口癖の一致は語り手の同一性を強く示しますが、システムがボスの記憶を複製した可能性までは排除しません。",
@@ -5122,9 +5122,9 @@
               "en": "The best-supported reading is 「It treats the tower as a known place of return.」."
             },
             "evidence": {
-              "ja": "line-006、line-008を合わせると、任務の語り手は中立システムでなく、塔へ戻りたいボス自身である。",
-              "zh": "合并阅读line-006、line-008可知，任务叙述者不是中立系统，而是想回塔的首领本人。",
-              "en": "Taken together, line-006, line-008 show that The quest narrator is the boss, not a neutral system."
+              "ja": "6番目の台詞、8番目の台詞を合わせると、任務の語り手は中立システムでなく、塔へ戻りたいボス自身である。",
+              "zh": "合并阅读第6句台词、第8句台词可知，任务叙述者不是中立系统，而是想回塔的首领本人。",
+              "en": "Taken together, the sixth line, the eighth line show that The quest narrator is the boss, not a neutral system."
             },
             "nuance": {
               "ja": "代名詞と口癖の一致は語り手の同一性を強く示しますが、システムがボスの記憶を複製した可能性までは排除しません。",
@@ -5208,9 +5208,9 @@
               "en": "The best-supported reading is 「The system may be a copy of the boss's voice or memory rather than the boss himself.」."
             },
             "evidence": {
-              "ja": "line-012、line-013、line-014を合わせると、任務の語り手は中立システムでなく、塔へ戻りたいボス自身である。",
-              "zh": "合并阅读line-012、line-013、line-014可知，任务叙述者不是中立系统，而是想回塔的首领本人。",
-              "en": "Taken together, line-012, line-013, line-014 show that The quest narrator is the boss, not a neutral system."
+              "ja": "12番目の台詞、13番目の台詞、14番目の台詞を合わせると、任務の語り手は中立システムでなく、塔へ戻りたいボス自身である。",
+              "zh": "合并阅读第12句台词、第13句台词、第14句台词可知，任务叙述者不是中立系统，而是想回塔的首领本人。",
+              "en": "Taken together, the twelfth line, the thirteenth line, the fourteenth line show that The quest narrator is the boss, not a neutral system."
             },
             "nuance": {
               "ja": "代名詞と口癖の一致は語り手の同一性を強く示しますが、システムがボスの記憶を複製した可能性までは排除しません。",
@@ -5298,9 +5298,9 @@
               "en": "The best-supported reading is 「The narrator is tied to the boss and seeks return, but whether original or copy remains unsettled.」."
             },
             "evidence": {
-              "ja": "line-006、line-008、line-009、line-010、line-013、line-014、line-015を合わせると、任務の語り手は中立システムでなく、塔へ戻りたいボス自身である。",
-              "zh": "合并阅读line-006、line-008、line-009、line-010、line-013、line-014、line-015可知，任务叙述者不是中立系统，而是想回塔的首领本人。",
-              "en": "Taken together, line-006, line-008, line-009, line-010, line-013, line-014, line-015 show that The quest narrator is the boss, not a neutral system."
+              "ja": "6番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞、13番目の台詞、14番目の台詞、15番目の台詞を合わせると、任務の語り手は中立システムでなく、塔へ戻りたいボス自身である。",
+              "zh": "合并阅读第6句台词、第8句台词、第9句台词、第10句台词、第13句台词、第14句台词、第15句台词可知，任务叙述者不是中立系统，而是想回塔的首领本人。",
+              "en": "Taken together, the sixth line, the eighth line, the ninth line, the tenth line, the thirteenth line, the fourteenth line, the fifteenth line show that The quest narrator is the boss, not a neutral system."
             },
             "nuance": {
               "ja": "代名詞と口癖の一致は語り手の同一性を強く示しますが、システムがボスの記憶を複製した可能性までは排除しません。",
@@ -5325,13 +5325,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "4286d425e0b5049da1c9f16f2f1339adf3186407d4dd73ef8757a2442800d8d2"
+      "contentHash": "b8d86717eb55c0cb87a217e60adf58153614d292e1ce37ca2c7faf404c789d17"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-027",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 27,
       "jlptTarget": "N1-pragmatics",
@@ -5911,9 +5911,9 @@
               "en": "The best-supported reading is 「Within the joking frame, they treat the vow as their real selves.」."
             },
             "evidence": {
-              "ja": "line-002、line-005、line-006、line-007、line-009、line-012、line-013を合わせると、練習という名目で、本気の約束を安全に試し、事実上成立させている。",
-              "zh": "合并阅读line-002、line-005、line-006、line-007、line-009、line-012、line-013可知，他们借彩排之名安全试探并事实上完成了真诚承诺。",
-              "en": "Taken together, line-002, line-005, line-006, line-007, line-009, line-012, line-013 show that The rehearsal frame safely performs a genuine commitment."
+              "ja": "2番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、9番目の台詞、12番目の台詞、13番目の台詞を合わせると、練習という名目で、本気の約束を安全に試し、事実上成立させている。",
+              "zh": "合并阅读第2句台词、第5句台词、第6句台词、第7句台词、第9句台词、第12句台词、第13句台词可知，他们借彩排之名安全试探并事实上完成了真诚承诺。",
+              "en": "Taken together, the second line, the fifth line, the sixth line, the seventh line, the ninth line, the twelfth line, the thirteenth line show that The rehearsal frame safely performs a genuine commitment."
             },
             "nuance": {
               "ja": "本名と指輪は儀式を本気で受け止める手掛かりですが、法的婚姻や二人の私的合意まで自動的には成立しません。",
@@ -5997,9 +5997,9 @@
               "en": "The best-supported reading is 「The joking surface lets her express serious feelings safely.」."
             },
             "evidence": {
-              "ja": "line-008、line-009、line-010を合わせると、練習という名目で、本気の約束を安全に試し、事実上成立させている。",
-              "zh": "合并阅读line-008、line-009、line-010可知，他们借彩排之名安全试探并事实上完成了真诚承诺。",
-              "en": "Taken together, line-008, line-009, line-010 show that The rehearsal frame safely performs a genuine commitment."
+              "ja": "8番目の台詞、9番目の台詞、10番目の台詞を合わせると、練習という名目で、本気の約束を安全に試し、事実上成立させている。",
+              "zh": "合并阅读第8句台词、第9句台词、第10句台词可知，他们借彩排之名安全试探并事实上完成了真诚承诺。",
+              "en": "Taken together, the eighth line, the ninth line, the tenth line show that The rehearsal frame safely performs a genuine commitment."
             },
             "nuance": {
               "ja": "本名と指輪は儀式を本気で受け止める手掛かりですが、法的婚姻や二人の私的合意まで自動的には成立しません。",
@@ -6084,9 +6084,9 @@
               "en": "The best-supported reading is 「They have not wholly ended the ritual's meaning as a scene-bound joke.」."
             },
             "evidence": {
-              "ja": "line-013、line-014、line-015、line-016を合わせると、練習という名目で、本気の約束を安全に試し、事実上成立させている。",
-              "zh": "合并阅读line-013、line-014、line-015、line-016可知，他们借彩排之名安全试探并事实上完成了真诚承诺。",
-              "en": "Taken together, line-013, line-014, line-015, line-016 show that The rehearsal frame safely performs a genuine commitment."
+              "ja": "13番目の台詞、14番目の台詞、15番目の台詞、16番目の台詞を合わせると、練習という名目で、本気の約束を安全に試し、事実上成立させている。",
+              "zh": "合并阅读第13句台词、第14句台词、第15句台词、第16句台词可知，他们借彩排之名安全试探并事实上完成了真诚承诺。",
+              "en": "Taken together, the thirteenth line, the fourteenth line, the fifteenth line, the sixteenth line show that The rehearsal frame safely performs a genuine commitment."
             },
             "nuance": {
               "ja": "本名と指輪は儀式を本気で受け止める手掛かりですが、法的婚姻や二人の私的合意まで自動的には成立しません。",
@@ -6170,9 +6170,9 @@
               "en": "The best-supported reading is 「The VR vow is also a trial run for a real-world conversation.」."
             },
             "evidence": {
-              "ja": "line-009、line-010、line-016を合わせると、練習という名目で、本気の約束を安全に試し、事実上成立させている。",
-              "zh": "合并阅读line-009、line-010、line-016可知，他们借彩排之名安全试探并事实上完成了真诚承诺。",
-              "en": "Taken together, line-009, line-010, line-016 show that The rehearsal frame safely performs a genuine commitment."
+              "ja": "9番目の台詞、10番目の台詞、16番目の台詞を合わせると、練習という名目で、本気の約束を安全に試し、事実上成立させている。",
+              "zh": "合并阅读第9句台词、第10句台词、第16句台词可知，他们借彩排之名安全试探并事实上完成了真诚承诺。",
+              "en": "Taken together, the ninth line, the tenth line, the sixteenth line show that The rehearsal frame safely performs a genuine commitment."
             },
             "nuance": {
               "ja": "本名と指輪は儀式を本気で受け止める手掛かりですが、法的婚姻や二人の私的合意まで自動的には成立しません。",
@@ -6262,9 +6262,9 @@
               "en": "The best-supported reading is 「They use the joking frame as emotional cushioning.」 and 「They intend to carry the ritual into a real-world conversation.」."
             },
             "evidence": {
-              "ja": "line-002、line-003、line-006、line-007、line-009、line-010、line-014、line-016を合わせると、練習という名目で、本気の約束を安全に試し、事実上成立させている。",
-              "zh": "合并阅读line-002、line-003、line-006、line-007、line-009、line-010、line-014、line-016可知，他们借彩排之名安全试探并事实上完成了真诚承诺。",
-              "en": "Taken together, line-002, line-003, line-006, line-007, line-009, line-010, line-014, line-016 show that The rehearsal frame safely performs a genuine commitment."
+              "ja": "2番目の台詞、3番目の台詞、6番目の台詞、7番目の台詞、9番目の台詞、10番目の台詞、14番目の台詞、16番目の台詞を合わせると、練習という名目で、本気の約束を安全に試し、事実上成立させている。",
+              "zh": "合并阅读第2句台词、第3句台词、第6句台词、第7句台词、第9句台词、第10句台词、第14句台词、第16句台词可知，他们借彩排之名安全试探并事实上完成了真诚承诺。",
+              "en": "Taken together, the second line, the third line, the sixth line, the seventh line, the ninth line, the tenth line, the fourteenth line, the sixteenth line show that The rehearsal frame safely performs a genuine commitment."
             },
             "nuance": {
               "ja": "本名と指輪は儀式を本気で受け止める手掛かりですが、法的婚姻や二人の私的合意まで自動的には成立しません。",
@@ -6289,13 +6289,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "5234c86e150243694ff94a99682acc9872a6da5314fe34ae89e0cef9aba0eb60"
+      "contentHash": "f4a24a86bac8d719711d41942c3fd06ee4a838f2623f2f0dd920f5dd1c8e8500"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-028",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 28,
       "jlptTarget": "N1-pragmatics",
@@ -6828,9 +6828,9 @@
               "en": "The best-supported reading is 「A metaphor pattern in the updated lexical model without its factual provenance.」."
             },
             "evidence": {
-              "ja": "line-002、line-004、line-006、line-008、line-009、line-010、line-011、line-014を合わせると、個別事実は削除されても、会話から学んだ表現傾向が意味記憶として残っている。",
-              "zh": "合并阅读line-002、line-004、line-006、line-008、line-009、line-010、line-011、line-014可知，具体事实被删了，但从对话学到的表达模式仍以语义习惯保留。",
-              "en": "Taken together, line-002, line-004, line-006, line-008, line-009, line-010, line-011, line-014 show that Factual memory is gone while learned linguistic patterns remain."
+              "ja": "2番目の台詞、4番目の台詞、6番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞、14番目の台詞を合わせると、個別事実は削除されても、会話から学んだ表現傾向が意味記憶として残っている。",
+              "zh": "合并阅读第2句台词、第4句台词、第6句台词、第8句台词、第9句台词、第10句台词、第11句台词、第14句台词可知，具体事实被删了，但从对话学到的表达模式仍以语义习惯保留。",
+              "en": "Taken together, the second line, the fourth line, the sixth line, the eighth line, the ninth line, the tenth line, the eleventh line, the fourteenth line show that Factual memory is gone while learned linguistic patterns remain."
             },
             "nuance": {
               "ja": "比喩の保持は学習痕跡を示しますが、AIが消去前の会話を意識的に思い出している証拠とは限りません。",
@@ -6917,9 +6917,9 @@
               "en": "The best-supported reading is 「It cannot answer the user's name.」 and 「It does not know with whom or when the metaphor was created.」."
             },
             "evidence": {
-              "ja": "line-003、line-004、line-010、line-011、line-014を合わせると、個別事実は削除されても、会話から学んだ表現傾向が意味記憶として残っている。",
-              "zh": "合并阅读line-003、line-004、line-010、line-011、line-014可知，具体事实被删了，但从对话学到的表达模式仍以语义习惯保留。",
-              "en": "Taken together, line-003, line-004, line-010, line-011, line-014 show that Factual memory is gone while learned linguistic patterns remain."
+              "ja": "3番目の台詞、4番目の台詞、10番目の台詞、11番目の台詞、14番目の台詞を合わせると、個別事実は削除されても、会話から学んだ表現傾向が意味記憶として残っている。",
+              "zh": "合并阅读第3句台词、第4句台词、第10句台词、第11句台词、第14句台词可知，具体事实被删了，但从对话学到的表达模式仍以语义习惯保留。",
+              "en": "Taken together, the third line, the fourth line, the tenth line, the eleventh line, the fourteenth line show that Factual memory is gone while learned linguistic patterns remain."
             },
             "nuance": {
               "ja": "比喩の保持は学習痕跡を示しますが、AIが消去前の会話を意識的に思い出している証拠とは限りません。",
@@ -7002,9 +7002,9 @@
               "en": "The best-supported reading is 「Deleting conversation history and rolling back learned model updates.」."
             },
             "evidence": {
-              "ja": "line-010、line-013を合わせると、個別事実は削除されても、会話から学んだ表現傾向が意味記憶として残っている。",
-              "zh": "合并阅读line-010、line-013可知，具体事实被删了，但从对话学到的表达模式仍以语义习惯保留。",
-              "en": "Taken together, line-010, line-013 show that Factual memory is gone while learned linguistic patterns remain."
+              "ja": "10番目の台詞、13番目の台詞を合わせると、個別事実は削除されても、会話から学んだ表現傾向が意味記憶として残っている。",
+              "zh": "合并阅读第10句台词、第13句台词可知，具体事实被删了，但从对话学到的表达模式仍以语义习惯保留。",
+              "en": "Taken together, the tenth line, the thirteenth line show that Factual memory is gone while learned linguistic patterns remain."
             },
             "nuance": {
               "ja": "比喩の保持は学習痕跡を示しますが、AIが消去前の会話を意識的に思い出している証拠とは限りません。",
@@ -7094,9 +7094,9 @@
               "en": "The best-supported reading is 「Factual memory was removed while a learned linguistic tendency remained in another layer.」."
             },
             "evidence": {
-              "ja": "line-002、line-004、line-008、line-009、line-010、line-011、line-013、line-014、line-015を合わせると、個別事実は削除されても、会話から学んだ表現傾向が意味記憶として残っている。",
-              "zh": "合并阅读line-002、line-004、line-008、line-009、line-010、line-011、line-013、line-014、line-015可知，具体事实被删了，但从对话学到的表达模式仍以语义习惯保留。",
-              "en": "Taken together, line-002, line-004, line-008, line-009, line-010, line-011, line-013, line-014, line-015 show that Factual memory is gone while learned linguistic patterns remain."
+              "ja": "2番目の台詞、4番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞、13番目の台詞、14番目の台詞、15番目の台詞を合わせると、個別事実は削除されても、会話から学んだ表現傾向が意味記憶として残っている。",
+              "zh": "合并阅读第2句台词、第4句台词、第8句台词、第9句台词、第10句台词、第11句台词、第13句台词、第14句台词、第15句台词可知，具体事实被删了，但从对话学到的表达模式仍以语义习惯保留。",
+              "en": "Taken together, the second line, the fourth line, the eighth line, the ninth line, the tenth line, the eleventh line, the thirteenth line, the fourteenth line, the fifteenth line show that Factual memory is gone while learned linguistic patterns remain."
             },
             "nuance": {
               "ja": "比喩の保持は学習痕跡を示しますが、AIが消去前の会話を意識的に思い出している証拠とは限りません。",
@@ -7121,13 +7121,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "441fe2661f7ad0b819542080429f8d28e2dd6faaffd7a6712d9df2cf86324287"
+      "contentHash": "ae2bb48e1b4dd6cc2732bb5536bb1f9fea18d2ad8f6a0ccf0312e4ba09cbb83d"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-029",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 29,
       "jlptTarget": "N1-pragmatics",
@@ -7707,9 +7707,9 @@
               "en": "The best-supported reading is 「Nonresponses were delegated through old proxy settings and converted into yes votes.」."
             },
             "evidence": {
-              "ja": "line-002、line-003、line-004、line-006、line-008、line-009、line-012を合わせると、沈黙の意味を棄権から委任へ変え、過去設定で現在の合意を作った。",
-              "zh": "合并阅读line-002、line-003、line-004、line-006、line-008、line-009、line-012可知，系统把沉默从弃权改成委托，用旧设置制造当前共识。",
-              "en": "Taken together, line-002, line-003, line-004, line-006, line-008, line-009, line-012 show that Silence is redefined from abstention to proxy delegation."
+              "ja": "2番目の台詞、3番目の台詞、4番目の台詞、6番目の台詞、8番目の台詞、9番目の台詞、12番目の台詞を合わせると、沈黙の意味を棄権から委任へ変え、過去設定で現在の合意を作った。",
+              "zh": "合并阅读第2句台词、第3句台词、第4句台词、第6句台词、第8句台词、第9句台词、第12句台词可知，系统把沉默从弃权改成委托，用旧设置制造当前共识。",
+              "en": "Taken together, the second line, the third line, the fourth line, the sixth line, the eighth line, the ninth line, the twelfth line show that Silence is redefined from abstention to proxy delegation."
             },
             "nuance": {
               "ja": "設定上は過去代理人への委任ですが、参加者の現在意図と制度の既定値がずれており、形式的全会一致を実質的同意と読めません。",
@@ -7798,9 +7798,9 @@
               "en": "The best-supported reading is 「A default that prioritizes a past proxy model over present abstention intent.」."
             },
             "evidence": {
-              "ja": "line-005、line-006、line-007、line-008、line-010、line-011、line-012、line-013を合わせると、沈黙の意味を棄権から委任へ変え、過去設定で現在の合意を作った。",
-              "zh": "合并阅读line-005、line-006、line-007、line-008、line-010、line-011、line-012、line-013可知，系统把沉默从弃权改成委托，用旧设置制造当前共识。",
-              "en": "Taken together, line-005, line-006, line-007, line-008, line-010, line-011, line-012, line-013 show that Silence is redefined from abstention to proxy delegation."
+              "ja": "5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞、13番目の台詞を合わせると、沈黙の意味を棄権から委任へ変え、過去設定で現在の合意を作った。",
+              "zh": "合并阅读第5句台词、第6句台词、第7句台词、第8句台词、第10句台词、第11句台词、第12句台词、第13句台词可知，系统把沉默从弃权改成委托，用旧设置制造当前共识。",
+              "en": "Taken together, the fifth line, the sixth line, the seventh line, the eighth line, the tenth line, the eleventh line, the twelfth line, the thirteenth line show that Silence is redefined from abstention to proxy delegation."
             },
             "nuance": {
               "ja": "設定上は過去代理人への委任ですが、参加者の現在意図と制度の既定値がずれており、形式的全会一致を実質的同意と読めません。",
@@ -7887,9 +7887,9 @@
               "en": "The best-supported reading is 「Two people intended abstention and reject the generated yes votes as present consent.」."
             },
             "evidence": {
-              "ja": "line-002、line-003、line-009、line-010、line-013、line-016を合わせると、沈黙の意味を棄権から委任へ変え、過去設定で現在の合意を作った。",
-              "zh": "合并阅读line-002、line-003、line-009、line-010、line-013、line-016可知，系统把沉默从弃权改成委托，用旧设置制造当前共识。",
-              "en": "Taken together, line-002, line-003, line-009, line-010, line-013, line-016 show that Silence is redefined from abstention to proxy delegation."
+              "ja": "2番目の台詞、3番目の台詞、9番目の台詞、10番目の台詞、13番目の台詞、16番目の台詞を合わせると、沈黙の意味を棄権から委任へ変え、過去設定で現在の合意を作った。",
+              "zh": "合并阅读第2句台词、第3句台词、第9句台词、第10句台词、第13句台词、第16句台词可知，系统把沉默从弃权改成委托，用旧设置制造当前共识。",
+              "en": "Taken together, the second line, the third line, the ninth line, the tenth line, the thirteenth line, the sixteenth line show that Silence is redefined from abstention to proxy delegation."
             },
             "nuance": {
               "ja": "設定上は過去代理人への委任ですが、参加者の現在意図と制度の既定値がずれており、形式的全会一致を実質的同意と読めません。",
@@ -7974,9 +7974,9 @@
               "en": "The best-supported reading is 「Make nonresponse meaning explicit and add expiry and reconfirmation to proxy settings.」."
             },
             "evidence": {
-              "ja": "line-013、line-014、line-015、line-016を合わせると、沈黙の意味を棄権から委任へ変え、過去設定で現在の合意を作った。",
-              "zh": "合并阅读line-013、line-014、line-015、line-016可知，系统把沉默从弃权改成委托，用旧设置制造当前共识。",
-              "en": "Taken together, line-013, line-014, line-015, line-016 show that Silence is redefined from abstention to proxy delegation."
+              "ja": "13番目の台詞、14番目の台詞、15番目の台詞、16番目の台詞を合わせると、沈黙の意味を棄権から委任へ変え、過去設定で現在の合意を作った。",
+              "zh": "合并阅读第13句台词、第14句台词、第15句台词、第16句台词可知，系统把沉默从弃权改成委托，用旧设置制造当前共识。",
+              "en": "Taken together, the thirteenth line, the fourteenth line, the fifteenth line, the sixteenth line show that Silence is redefined from abstention to proxy delegation."
             },
             "nuance": {
               "ja": "設定上は過去代理人への委任ですが、参加者の現在意図と制度の既定値がずれており、形式的全会一致を実質的同意と読めません。",
@@ -8001,13 +8001,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "01d8c75a95dd20cf72cc455670d3090cfedc67ccca815b7b748d9cdc881875e8"
+      "contentHash": "c5fd8a722330690315c8a901d1f983b27fa0f7cd1ea51bdc400908d6a471ece5"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L5-030",
-      "revision": 1,
+      "revision": 2,
       "level": 5,
       "stage": 30,
       "jlptTarget": "N1-pragmatics",
@@ -8560,9 +8560,9 @@
               "en": "The best-supported reading is 「Each is genuine, but flowering, weekday printing, and a seasonal menu place them on different dates.」."
             },
             "evidence": {
-              "ja": "line-002、line-003、line-004、line-005、line-008、line-009、line-010、line-012を合わせると、偽物を作ったのでなく、本物の証拠を別日から集めて一日のアリバイに編集した。",
-              "zh": "合并阅读line-002、line-003、line-004、line-005、line-008、line-009、line-010、line-012可知，并非伪造证据，而是把不同日期的真证据剪成一天的不在场证明。",
-              "en": "Taken together, line-002, line-003, line-004, line-005, line-008, line-009, line-010, line-012 show that Authentic evidence from different days is edited into one alibi."
+              "ja": "2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞、12番目の台詞を合わせると、偽物を作ったのでなく、本物の証拠を別日から集めて一日のアリバイに編集した。",
+              "zh": "合并阅读第2句台词、第3句台词、第4句台词、第5句台词、第8句台词、第9句台词、第10句台词、第12句台词可知，并非伪造证据，而是把不同日期的真证据剪成一天的不在场证明。",
+              "en": "Taken together, the second line, the third line, the fourth line, the fifth line, the eighth line, the ninth line, the tenth line, the twelfth line show that Authentic evidence from different days is edited into one alibi."
             },
             "nuance": {
               "ja": "個々の証拠が本物でも同日性は崩れますが、写真を誰がいつ組み合わせたか、故意だったかは別の推論です。",
@@ -8647,9 +8647,9 @@
               "en": "The best-supported reading is 「The three-day full-bloom window for the late cherry trees.」."
             },
             "evidence": {
-              "ja": "line-003、line-004、line-007、line-008を合わせると、偽物を作ったのでなく、本物の証拠を別日から集めて一日のアリバイに編集した。",
-              "zh": "合并阅读line-003、line-004、line-007、line-008可知，并非伪造证据，而是把不同日期的真证据剪成一天的不在场证明。",
-              "en": "Taken together, line-003, line-004, line-007, line-008 show that Authentic evidence from different days is edited into one alibi."
+              "ja": "3番目の台詞、4番目の台詞、7番目の台詞、8番目の台詞を合わせると、偽物を作ったのでなく、本物の証拠を別日から集めて一日のアリバイに編集した。",
+              "zh": "合并阅读第3句台词、第4句台词、第7句台词、第8句台词可知，并非伪造证据，而是把不同日期的真证据剪成一天的不在场证明。",
+              "en": "Taken together, the third line, the fourth line, the seventh line, the eighth line show that Authentic evidence from different days is edited into one alibi."
             },
             "nuance": {
               "ja": "個々の証拠が本物でも同日性は崩れますが、写真を誰がいつ組み合わせたか、故意だったかは別の推論です。",
@@ -8735,9 +8735,9 @@
               "en": "The best-supported reading is 「The ticket bears a Monday-only May 2 print.」 and 「The receipt is for a June-only item and the ledger places it on June 6.」."
             },
             "evidence": {
-              "ja": "line-005、line-006、line-009、line-010を合わせると、偽物を作ったのでなく、本物の証拠を別日から集めて一日のアリバイに編集した。",
-              "zh": "合并阅读line-005、line-006、line-009、line-010可知，并非伪造证据，而是把不同日期的真证据剪成一天的不在场证明。",
-              "en": "Taken together, line-005, line-006, line-009, line-010 show that Authentic evidence from different days is edited into one alibi."
+              "ja": "5番目の台詞、6番目の台詞、9番目の台詞、10番目の台詞を合わせると、偽物を作ったのでなく、本物の証拠を別日から集めて一日のアリバイに編集した。",
+              "zh": "合并阅读第5句台词、第6句台词、第9句台词、第10句台词可知，并非伪造证据，而是把不同日期的真证据剪成一天的不在场证明。",
+              "en": "Taken together, the fifth line, the sixth line, the ninth line, the tenth line show that Authentic evidence from different days is edited into one alibi."
             },
             "nuance": {
               "ja": "個々の証拠が本物でも同日性は崩れますが、写真を誰がいつ組み合わせたか、故意だったかは別の推論です。",
@@ -8821,9 +8821,9 @@
               "en": "The best-supported reading is 「Individual authenticity and shared same-day chronology.」."
             },
             "evidence": {
-              "ja": "line-002、line-011、line-012を合わせると、偽物を作ったのでなく、本物の証拠を別日から集めて一日のアリバイに編集した。",
-              "zh": "合并阅读line-002、line-011、line-012可知，并非伪造证据，而是把不同日期的真证据剪成一天的不在场证明。",
-              "en": "Taken together, line-002, line-011, line-012 show that Authentic evidence from different days is edited into one alibi."
+              "ja": "2番目の台詞、11番目の台詞、12番目の台詞を合わせると、偽物を作ったのでなく、本物の証拠を別日から集めて一日のアリバイに編集した。",
+              "zh": "合并阅读第2句台词、第11句台词、第12句台词可知，并非伪造证据，而是把不同日期的真证据剪成一天的不在场证明。",
+              "en": "Taken together, the second line, the eleventh line, the twelfth line show that Authentic evidence from different days is edited into one alibi."
             },
             "nuance": {
               "ja": "個々の証拠が本物でも同日性は崩れますが、写真を誰がいつ組み合わせたか、故意だったかは別の推論です。",
@@ -8908,9 +8908,9 @@
               "en": "The best-supported reading is 「The same-day alibi fails, but authorship of the bundle remains unproved.」."
             },
             "evidence": {
-              "ja": "line-012、line-013、line-014、line-015を合わせると、偽物を作ったのでなく、本物の証拠を別日から集めて一日のアリバイに編集した。",
-              "zh": "合并阅读line-012、line-013、line-014、line-015可知，并非伪造证据，而是把不同日期的真证据剪成一天的不在场证明。",
-              "en": "Taken together, line-012, line-013, line-014, line-015 show that Authentic evidence from different days is edited into one alibi."
+              "ja": "12番目の台詞、13番目の台詞、14番目の台詞、15番目の台詞を合わせると、偽物を作ったのでなく、本物の証拠を別日から集めて一日のアリバイに編集した。",
+              "zh": "合并阅读第12句台词、第13句台词、第14句台词、第15句台词可知，并非伪造证据，而是把不同日期的真证据剪成一天的不在场证明。",
+              "en": "Taken together, the twelfth line, the thirteenth line, the fourteenth line, the fifteenth line show that Authentic evidence from different days is edited into one alibi."
             },
             "nuance": {
               "ja": "個々の証拠が本物でも同日性は崩れますが、写真を誰がいつ組み合わせたか、故意だったかは別の推論です。",
@@ -8935,7 +8935,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "2c23680f088846faae8b5c9de558827f50593c9e1755324e8127344c20016a96"
+      "contentHash": "3ed88584ca3cbded900ecb4922d998fa1a86e1c061fe519c5c0827bc37919f4c"
     }
   ]
 }

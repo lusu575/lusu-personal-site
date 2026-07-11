@@ -5,16 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#245edc">
   <meta name="description" content="Japanese subtext listening and context trainer">
-  <title>日本語の裏側</title>
+  <title>日语的言外之意</title>
   <link rel="icon" href="./assets/icons/tool-icon-64.webp" type="image/webp">
-  <link rel="stylesheet" href="./style.css?v=20260711-japanese-subtext-r11">
+  <link rel="stylesheet" href="./style.css?v=20260711-japanese-subtext-r14">
 </head>
 <body>
   <div class="trainer-shell" id="trainer-shell">
     <header class="trainer-titlebar">
       <div class="trainer-title-lockup">
         <img src="./assets/icons/tool-icon-64.webp" width="32" height="32" alt="" aria-hidden="true">
-        <h1>日本語の裏側</h1>
+        <h1 data-i18n="toolTitle">日语的言外之意</h1>
       </div>
       <div class="trainer-title-actions">
         <label class="language-control">
@@ -39,7 +39,7 @@
         <div class="dashboard-hero pixel-panel">
           <div class="hero-copy">
             <p class="eyebrow">CONTEXT LISTENING LAB · 250 STAGES</p>
-            <h2 id="dashboard-heading" tabindex="-1">日本語の裏側</h2>
+            <h2 id="dashboard-heading" tabindex="-1" data-i18n="toolTitle">日语的言外之意</h2>
             <p data-i18n="dashboardIntro">从语气、停顿、关系和上下文里，听见没说出口的话。</p>
             <div class="hero-actions">
               <button class="xp-control primary" type="button" data-action="continue" data-i18n="continueTraining">继续训练</button>
@@ -105,21 +105,14 @@
             </div>
             <input id="audio-progress" class="audio-range" type="range" min="0" max="1000" value="0" step="1" aria-describedby="audio-message">
             <div class="transport-grid">
-              <button class="xp-control compact" type="button" data-audio-action="previous" data-i18n="previousLine">上一句</button>
               <button class="xp-control compact primary" type="button" data-audio-action="toggle" data-i18n="play">播放</button>
-              <button class="xp-control compact" type="button" data-audio-action="next" data-i18n="nextLine">下一句</button>
-              <button class="xp-control compact" type="button" data-audio-action="restart" data-i18n="restart">从头播放</button>
-              <button class="xp-control compact" type="button" data-audio-action="replay" data-i18n="replay">重播</button>
-              <button class="xp-control compact" type="button" data-audio-action="line-replay" data-i18n="singleLineReplay">单句重播</button>
             </div>
             <div class="quick-audio-settings">
               <label><span data-i18n="playbackSpeed">播放速度</span><select id="quick-speed"><option value="0.75">0.75×</option><option value="1">1.0×</option><option value="1.15">1.15×</option></select></label>
-              <label class="check-row"><input id="quick-mute" type="checkbox"><span data-i18n="mute">静音</span></label>
-              <label class="check-row"><input id="quick-autoplay" type="checkbox"><span data-i18n="autoplay">进入关卡自动播放</span></label>
             </div>
             <div class="audio-error-actions" id="audio-error-actions" hidden>
               <button class="xp-control" type="button" data-audio-action="retry" data-i18n="retry">重新加载</button>
-              <button class="xp-control" type="button" data-action="text-mode" data-i18n="textModeContinue">使用文字模式继续</button>
+              <button class="xp-control" type="button" data-action="text-mode" data-i18n="textModeContinue">使用日语模式继续</button>
             </div>
           </aside>
 
@@ -132,14 +125,11 @@
             <form id="question-form" class="question-form" hidden></form>
             <div class="question-actions">
               <button class="xp-control primary" id="submit-answers" type="submit" form="question-form" data-i18n="submitAnswers" hidden>提交答案</button>
-              <button class="xp-control" id="try-again" type="button" data-action="try-again" data-i18n="tryAgain" hidden>重新作答</button>
-              <button class="xp-control primary" id="next-stage" type="button" data-action="next-stage" data-i18n="nextStage" hidden>下一关</button>
             </div>
-            <div class="answer-result" id="answer-result" role="status"></div>
           </section>
 
           <section class="analysis-column pixel-panel" id="analysis-panel" aria-labelledby="analysis-heading" hidden>
-            <div class="panel-caption"><h3 id="analysis-heading" data-i18n="analysis">潜台词解析</h3></div>
+            <div class="panel-caption"><h3 id="analysis-heading" tabindex="-1" data-i18n="analysis">潜台词解析</h3></div>
             <div id="analysis-content"></div>
           </section>
         </div>
@@ -147,13 +137,15 @@
     </main>
   </div>
 
-  <dialog class="sound-gate" id="sound-gate" aria-labelledby="sound-gate-title">
+  <dialog class="sound-gate" id="sound-gate" aria-labelledby="sound-gate-title" aria-describedby="mode-choice-intro">
     <div class="sound-gate-window">
-      <div class="mini-titlebar"><span id="sound-gate-title">日本語の裏側</span></div>
+      <div class="mini-titlebar"><span id="sound-gate-title" data-i18n="toolTitle">日语的言外之意</span></div>
       <img src="./assets/ui/audio-start.webp" width="512" height="384" alt="" aria-hidden="true">
+      <p class="mode-choice-intro" id="mode-choice-intro" data-i18n="modeChoiceIntro">请选择首次进入关卡时使用的练习方式。之后可以在训练设置中切换。</p>
       <div class="sound-gate-actions">
-        <button class="xp-control primary large" type="button" data-action="unlock-sound" data-i18n="startSound">开始题目并启用声音</button>
-        <button class="xp-control" type="button" data-action="text-mode" data-i18n="textModeContinue">使用文字模式继续</button>
+        <button class="xp-control primary large" type="button" data-action="choose-mode" data-mode="listening" data-i18n="startSound">听力练习模式</button>
+        <button class="xp-control" type="button" data-action="choose-mode" data-mode="japanese" data-i18n="japaneseModeEntry">日语模式</button>
+        <button class="xp-control" type="button" data-action="choose-mode" data-mode="bilingual" data-i18n="bilingualModeEntry">双语模式</button>
       </div>
     </div>
   </dialog>
@@ -164,11 +156,26 @@
       <div class="dialog-body settings-grid">
         <fieldset><legend data-i18n="displayMode">场景显示</legend><label><input type="radio" name="displayMode" value="listening"><span data-i18n="listening">纯听模式</span></label><label><input type="radio" name="displayMode" value="japanese"><span data-i18n="japanese">日语模式</span></label><label><input type="radio" name="displayMode" value="bilingual"><span data-i18n="bilingual">双语模式</span></label></fieldset>
         <fieldset><legend data-i18n="optionLanguage">选项语言</legend><label><input type="radio" name="optionLanguage" value="ja"><span>日本語</span></label><label><input type="radio" name="optionLanguage" value="zh"><span>中文</span></label><label><input type="radio" name="optionLanguage" value="en"><span>English</span></label></fieldset>
-        <fieldset><legend data-i18n="settings">训练设置</legend><label><input type="checkbox" name="kana"><span data-i18n="kana">假名提示</span></label><label><input type="checkbox" name="optionText"><span data-i18n="optionText">选项文字</span></label><label><input type="checkbox" name="optionAudio"><span data-i18n="optionAudio">选项日语语音</span></label><label><input type="checkbox" name="autoReadOptions"><span data-i18n="autoReadOptions">自动依次朗读选项</span></label><label><input type="checkbox" name="autoplay"><span data-i18n="autoplay">进入关卡自动播放</span></label></fieldset>
-        <fieldset><legend data-i18n="playbackSpeed">播放速度</legend><label><input type="radio" name="playbackRate" value="0.75"><span>0.75×</span></label><label><input type="radio" name="playbackRate" value="1"><span>1.0×</span></label><label><input type="radio" name="playbackRate" value="1.15"><span>1.15×</span></label><label><input type="checkbox" name="muted"><span data-i18n="mute">静音</span></label></fieldset>
+        <fieldset><legend data-i18n="settings">训练设置</legend><label><input type="checkbox" name="kana"><span data-i18n="kana">假名提示</span></label><label><input type="checkbox" name="optionText"><span data-i18n="optionText">选项文字</span></label><label><input type="checkbox" name="optionAudio"><span data-i18n="optionAudio">选项日语语音</span></label><label><input type="checkbox" name="autoReadOptions"><span data-i18n="autoReadOptions">自动依次朗读选项</span></label></fieldset>
+        <fieldset><legend data-i18n="playbackSpeed">播放速度</legend><label><input type="radio" name="playbackRate" value="0.75"><span>0.75×</span></label><label><input type="radio" name="playbackRate" value="1"><span>1.0×</span></label><label><input type="radio" name="playbackRate" value="1.15"><span>1.15×</span></label></fieldset>
       </div>
-      <div class="dialog-actions"><a class="xp-control secondary" href="./scripts/tts/licenses/NOTICE-japanese-voices.md" target="_blank" rel="license noopener" data-i18n="voiceCredits">语音来源与许可</a><button class="xp-control danger" type="button" data-action="reset-progress" data-i18n="resetProgress">重置本地进度</button><button class="xp-control primary" value="close" data-i18n="close">关闭</button></div>
+      <div class="dialog-actions"><a class="xp-control secondary" href="./scripts/tts/licenses/NOTICE-japanese-voices.md" target="_blank" rel="license noopener" data-i18n="voiceCredits">语音来源与许可</a><button class="xp-control danger" type="button" data-action="reset-progress" data-i18n="resetProgress">重置本地进度</button><button class="xp-control primary" value="close" data-i18n="confirm">确认</button></div>
     </form>
+  </dialog>
+
+  <dialog class="trainer-dialog result-dialog" id="result-dialog" aria-labelledby="result-heading">
+    <div class="dialog-window">
+      <div class="mini-titlebar"><h2 id="result-heading" data-i18n="resultTitle">挑战结果</h2><button type="button" data-action="close-result" aria-label="关闭" data-i18n-aria-label="close">×</button></div>
+      <div class="dialog-body result-dialog-body">
+        <div class="answer-result" id="answer-result" role="status"></div>
+        <div class="result-medal" id="result-medal"></div>
+      </div>
+      <div class="dialog-actions">
+        <button class="xp-control" id="result-retry" type="button" data-action="result-retry" data-i18n="retryChallenge">重新挑战</button>
+        <button class="xp-control secondary" type="button" data-action="view-analysis" data-i18n="viewAnalysis">查看解析</button>
+        <button class="xp-control primary" id="result-next" type="button" data-action="result-next" data-i18n="enterNextStage">进入下一关</button>
+      </div>
+    </div>
   </dialog>
 
   <dialog class="trainer-dialog" id="records-dialog" aria-labelledby="records-heading">
@@ -180,6 +187,6 @@
   </dialog>
 
   <div class="sr-live" id="live-region" aria-live="polite" aria-atomic="true"></div>
-  <script type="module" src="./app.mjs?v=20260711-japanese-subtext-r11"></script>
+  <script type="module" src="./app.mjs?v=20260711-japanese-subtext-r14"></script>
 </body>
 </html>

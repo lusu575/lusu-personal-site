@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "level": 1,
   "batch": "031-040",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-031",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 31,
       "jlptTarget": "N3",
@@ -348,9 +348,9 @@
               "en": "Here, it is more likely a way to distance herself after feeling unheard than an expression of agreement."
             },
             "evidence": {
-              "ja": "line-002 で写真を残す理由を述べ、line-004 では自分の案が見られないことへの不満を表します。line-005 の説明の後、line-006 で短く会話を切っています。",
-              "zh": "line-002 中她说明保留照片的理由，line-004 表达对自己方案不再被考虑的不满；听完 line-005 的解释后，她在 line-006 简短地结束参与。",
-              "en": "Line-002 gives her reason for keeping the photo, line-004 voices concern that her idea is being dismissed, and after line-005 she cuts her participation short in line-006."
+              "ja": "2番目の台詞で写真を残す理由を述べ、4番目の台詞では自分の案が見られないことへの不満を表します。5番目の台詞の説明の後、6番目の台詞で短く会話を切っています。",
+              "zh": "第2句台词中她说明保留照片的理由，第4句台词表达对自己方案不再被考虑的不满；听完第5句台词的解释后，她在第6句台词简短地结束参与。",
+              "en": "The second line gives her reason for keeping the photo, the fourth line voices concern that her idea is being dismissed, and after the fifth line she cuts her participation short in the sixth line."
             },
             "nuance": {
               "ja": "「任せる」は信頼を表すこともありますが、意見が対立した直後に短く言うと、諦めや不満を含む場合があります。",
@@ -375,13 +375,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "1308011eff187d8548b4e00a01e4f8d823186ab51617afd760fe9e271ab2a514"
+      "contentHash": "90c6fbacffff2686d587e4bbd9af586196b60c4fd0dda4628fc5b60cca1bbdf2"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-032",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 32,
       "jlptTarget": "N3",
@@ -719,9 +719,9 @@
               "en": "Rather than praising the earlier idea, he is naturally understood as urging the team to study its outcome and avoid repeating the same failure."
             },
             "evidence": {
-              "ja": "line-003 で過去の案を示した後、line-005 で解約増加という失敗と数字の再確認を具体的に求め、line-006 で恵理も修正すると応じています。",
-              "zh": "line-003 提到旧方案后，line-005 具体指出退订增加并要求复查数据，line-006 中惠理也回应要修改企划。",
-              "en": "After referencing the old proposal in line-003, line-005 names increased cancellations and requests a data review, and line-006 has Eri agree to revise the plan."
+              "ja": "3番目の台詞で過去の案を示した後、5番目の台詞で解約増加という失敗と数字の再確認を具体的に求め、6番目の台詞で恵理も修正すると応じています。",
+              "zh": "第3句台词提到旧方案后，第5句台词具体指出退订增加并要求复查数据，第6句台词中惠理也回应要修改企划。",
+              "en": "After referencing the old proposal in the third line, the fifth line names increased cancellations and requests a data review, and the sixth line has Eri agree to revise the plan."
             },
             "nuance": {
               "ja": "「ありましたね」と共有記憶を確かめる形にすると、直接「この案は危険だ」と否定せずに注意を促せます。",
@@ -804,9 +804,9 @@
               "en": "By naming a concrete negative outcome and requesting a review, he warns the team to check the new plan for the same weakness."
             },
             "evidence": {
-              "ja": "line-005 には「解約が増えた」という結果と「数字を見てください」という行動要求の両方があり、警告の内容が最も明確です。",
-              "zh": "line-005 同时包含“退订增加”的结果和“请看数据”的行动要求，因此最明确地体现了警告。",
-              "en": "Line-005 contains both the negative result—more cancellations—and the requested action—review the numbers—making the warning clearest."
+              "ja": "5番目の台詞には「解約が増えた」という結果と「数字を見てください」という行動要求の両方があり、警告の内容が最も明確です。",
+              "zh": "第5句台词同时包含“退订增加”的结果和“请看数据”的行动要求，因此最明确地体现了警告。",
+              "en": "The fifth line contains both the negative result—more cancellations—and the requested action—review the numbers—making the warning clearest."
             },
             "nuance": {
               "ja": "単に「似ている」と言うだけでは評価は決まりませんが、失敗した数字を続けて示すと、慎重な姿勢がはっきりします。",
@@ -814,9 +814,9 @@
               "en": "Similarity alone does not reveal his judgment, but following it with failed metrics makes his cautious stance clear."
             },
             "alternative": {
-              "ja": "line-003 も過去への注意を向ける手がかりです。ただし、それだけでは称賛か警告か決まらないため、line-005 のほうが強い証拠です。",
-              "zh": "line-003 也是把注意力引向过去的线索，但仅凭它无法判断是赞扬还是警告，所以 line-005 的证据更强。",
-              "en": "Line-003 also directs attention to the past, but it could still be praise or warning; line-005 is therefore the stronger evidence."
+              "ja": "3番目の台詞も過去への注意を向ける手がかりです。ただし、それだけでは称賛か警告か決まらないため、5番目の台詞のほうが強い証拠です。",
+              "zh": "第3句台词也是把注意力引向过去的线索，但仅凭它无法判断是赞扬还是警告，所以第5句台词的证据更强。",
+              "en": "The third line also directs attention to the past, but it could still be praise or warning; the fifth line is therefore the stronger evidence."
             }
           }
         }
@@ -831,13 +831,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "87dc33a4077b7b740851ef064772319cfd90f0080be3a7d8a129fd31bfeb65c6"
+      "contentHash": "b399f9fb08fce32123c66537aa626576d6a2944d522a242bf7c96feef43b2610"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-033",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 33,
       "jlptTarget": "N3",
@@ -1202,9 +1202,9 @@
               "en": "She is likely trying to keep Sayaka away until the back table is ready so the surprise remains secret."
             },
             "evidence": {
-              "ja": "line-004 で前日に日時を確認したことが示され、単純な日付間違いは弱くなります。line-005 では別席のケーキと飾りつけが間もなく完成すると分かり、line-006 では帰宅ではなく短く待つよう頼んでいます。",
-              "zh": "line-004 表明前一天确认过时间，削弱了单纯记错日期的解释；line-005 说明另一桌的蛋糕和装饰即将完成，line-006 又改为只让她短暂等待。",
-              "en": "Line-004 shows the time was confirmed the day before, weakening a genuine date mistake; line-005 reveals cake and decorations nearly ready, and line-006 reduces the request to a brief wait."
+              "ja": "4番目の台詞で前日に日時を確認したことが示され、単純な日付間違いは弱くなります。5番目の台詞では別席のケーキと飾りつけが間もなく完成すると分かり、6番目の台詞では帰宅ではなく短く待つよう頼んでいます。",
+              "zh": "第4句台词表明前一天确认过时间，削弱了单纯记错日期的解释；第5句台词说明另一桌的蛋糕和装饰即将完成，第6句台词又改为只让她短暂等待。",
+              "en": "The fourth line shows the time was confirmed the day before, weakening a genuine date mistake; the fifth line reveals cake and decorations nearly ready, and the sixth line reduces the request to a brief wait."
             },
             "nuance": {
               "ja": "相手を喜ばせるための一時的なごまかしなので、敵意よりもサプライズを守るための不自然な言い訳として読めます。",
@@ -1229,13 +1229,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "987da29068cd7d4a6efe5ee61f17b5633fbb6fc47dc8aaee6adb3f23dcc99aef"
+      "contentHash": "a0f2c0c1118cb2fa78d1b68bd17ac04d98e0249e1998db1ff89edeeec5c39e79"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-034",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 34,
       "jlptTarget": "N3",
@@ -1584,9 +1584,9 @@
               "en": "Rather than actually needing the ornament onboard, his main purpose is naturally understood as shifting weight out of the checked bag to avoid a fee."
             },
             "evidence": {
-              "ja": "line-001 で二キロ超過が分かり、直後の line-002 で重い置物を移します。line-005 は料金を払いたくない発言を示し、line-006 で重量を減らせると本人も認めています。",
-              "zh": "line-001 显示超重两公斤，紧接着 line-002 就转移重摆件；line-005 提到他不想付超重费，line-006 他本人也承认这样能减轻重量。",
-              "en": "Line-001 establishes a two-kilo excess, line-002 immediately moves a heavy object, line-005 recalls his wish to avoid the fee, and line-006 admits the weight benefit."
+              "ja": "1番目の台詞で二キロ超過が分かり、直後の2番目の台詞で重い置物を移します。5番目の台詞は料金を払いたくない発言を示し、6番目の台詞で重量を減らせると本人も認めています。",
+              "zh": "第1句台词显示超重两公斤，紧接着第2句台词就转移重摆件；第5句台词提到他不想付超重费，第6句台词他本人也承认这样能减轻重量。",
+              "en": "The first line establishes a two-kilo excess, the second line immediately moves a heavy object, the fifth line recalls his wish to avoid the fee, and the sixth line admits the weight benefit."
             },
             "nuance": {
               "ja": "「機内で使う」は手荷物にする表向きの理由ですが、何に使うか答えず、実用性の低い置物を選んでいる点が言い訳らしさを出しています。",
@@ -1670,9 +1670,9 @@
               "en": "It directly names the practical result he wants, rather than the surface excuse of using it onboard."
             },
             "evidence": {
-              "ja": "line-006 は line-001 の重量超過と line-005 の超過料金への不満を結びつけ、置物を移す行動の目的を明確にします。",
-              "zh": "line-006 把 line-001 的超重和 line-005 对超重费的不满联系起来，明确了转移摆件的目的。",
-              "en": "Line-006 connects the excess weight in line-001 with his concern about fees in line-005, making the purpose of the move explicit."
+              "ja": "6番目の台詞は1番目の台詞の重量超過と5番目の台詞の超過料金への不満を結びつけ、置物を移す行動の目的を明確にします。",
+              "zh": "第6句台词把第1句台词的超重和第5句台词对超重费的不满联系起来，明确了转移摆件的目的。",
+              "en": "The sixth line connects the excess weight in the first line with his concern about fees in the fifth line, making the purpose of the move explicit."
             },
             "nuance": {
               "ja": "「しね」と最後に付けることで、匠は最初の説明だけではなく、重量を減らせる利点も本音として認めています。",
@@ -1680,9 +1680,9 @@
               "en": "The sentence-ending tone concedes that reducing weight is a real benefit beyond his initial explanation."
             },
             "alternative": {
-              "ja": "line-002 の移動行動や line-003 の「重い」も推測材料です。ただし、目的を本人が言葉にした line-006 が最も直接的です。",
-              "zh": "line-002 的转移动作和 line-003 的“很重”也是推断材料，但 line-006 由本人说出目的，最为直接。",
-              "en": "The move in line-002 and the word 'heavy' in line-003 are also clues, but line-006 is most direct because Takumi verbalizes the purpose himself."
+              "ja": "2番目の台詞の移動行動や3番目の台詞の「重い」も推測材料です。ただし、目的を本人が言葉にした6番目の台詞が最も直接的です。",
+              "zh": "第2句台词的转移动作和第3句台词的“很重”也是推断材料，但第6句台词由本人说出目的，最为直接。",
+              "en": "The move in the second line and the word 'heavy' in the third line are also clues, but the sixth line is most direct because Takumi verbalizes the purpose himself."
             }
           }
         }
@@ -1697,13 +1697,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "2719d1b9b6759c01cbf860fc684b611bf757f1601d7145ab723c5a2e639fda70"
+      "contentHash": "ba169ecc32fcea82edde7d0ce9269a970ca9ff899df164371ad2382fc6077327"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-035",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 35,
       "jlptTarget": "N3",
@@ -2000,9 +2000,9 @@
               "en": "'I'm fine' alone could signal acceptance, but the strong visual reaction just before it suggests she is still conveying displeasure while outwardly closing the exchange."
             },
             "evidence": {
-              "ja": "line-001 は三十分の遅刻を伝え、line-002 から line-004 で怒ったスタンプが三回続きます。line-005 では海斗も怒りを感じ取っており、その直後の line-006 だけで気持ちが完全に変わった証拠はありません。",
-              "zh": "line-001 说明会迟到三十分钟，line-002 到 line-004 连续出现三张生气贴纸；line-005 中海斗也读出了怒意，而没有证据表明她到 line-006 时情绪已完全改变。",
-              "en": "Line-001 announces a thirty-minute delay, lines 002–004 repeat the angry sticker, and line-005 shows Kaito reads anger too; nothing demonstrates a complete emotional reversal by line-006."
+              "ja": "1番目の台詞は三十分の遅刻を伝え、2番目の台詞から4番目の台詞で怒ったスタンプが三回続きます。5番目の台詞では海斗も怒りを感じ取っており、その直後の6番目の台詞だけで気持ちが完全に変わった証拠はありません。",
+              "zh": "第1句台词说明会迟到三十分钟，第2句台词到第4句台词连续出现三张生气贴纸；第5句台词中海斗也读出了怒意，而没有证据表明她到第6句台词时情绪已完全改变。",
+              "en": "The first line announces a thirty-minute delay, the second through fourth lines repeat the angry sticker, and the fifth line shows Kaito reads anger too; nothing demonstrates a complete emotional reversal by the sixth line."
             },
             "nuance": {
               "ja": "短い「大丈夫」は本当に安心させる言葉にも、これ以上説明したくないときの抑えた返事にもなります。ここではスタンプが後者の読みを支えます。",
@@ -2027,13 +2027,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "523f56a8664fbf7ede24276342c5476b307855035f94d5cfd41ca8cc4d9efe2c"
+      "contentHash": "36cf68aedb3977b4e11e5919dbd4826d2a4540a2cbe9e0b7536955de3a9d0ba1"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-036",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 36,
       "jlptTarget": "N3",
@@ -2374,9 +2374,9 @@
               "en": "In this scene, the machine most likely requires polite wording before a purchase."
             },
             "evidence": {
-              "ja": "line-004 に従って line-005 で「お願いします」と言うと、line-006 ですぐ商品選択へ進みます。",
-              "zh": "凉太按照 line-004 的提示，在 line-005 说出“拜托了”，机器随即在 line-006 进入商品选择。",
-              "en": "Ryota follows line-004, says please in line-005, and immediately reaches item selection in line-006."
+              "ja": "4番目の台詞に従って5番目の台詞で「お願いします」と言うと、6番目の台詞ですぐ商品選択へ進みます。",
+              "zh": "凉太按照第4句台词的提示，在第5句台词说出“拜托了”，机器随即在第6句台词进入商品选择。",
+              "en": "Ryota follows the fourth line, says please in the fifth line, and immediately reaches item selection in the sixth line."
             },
             "nuance": {
               "ja": "機械が人間の敬語を判定する、礼儀と技術を組み合わせた喜劇的な設定です。",
@@ -2460,9 +2460,9 @@
               "en": "Because the speech change is immediately followed by the machine's response, polite wording is the likely trigger."
             },
             "evidence": {
-              "ja": "line-004 で丁寧さを要求し、line-005 の依頼直後、line-006 で購入可能になります。",
-              "zh": "line-004 要求礼貌表达，line-005 出现礼貌请求，line-006 随即允许购买。",
-              "en": "Line-004 requests politeness, line-005 supplies it, and line-006 immediately permits the purchase."
+              "ja": "4番目の台詞で丁寧さを要求し、5番目の台詞の依頼直後、6番目の台詞で購入可能になります。",
+              "zh": "第4句台词要求礼貌表达，第5句台词出现礼貌请求，第6句台词随即允许购买。",
+              "en": "The fourth line requests politeness, the fifth line supplies it, and the sixth line immediately permits the purchase."
             },
             "nuance": {
               "ja": "単に礼を言うことより、要求した条件と結果が直接つながる点が重要です。",
@@ -2487,13 +2487,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "cbe1d63b73ceafc3c362b2a00952f32d9bc57f3c6a791e131b55540710e14f93"
+      "contentHash": "6475c07d16fd2929d53739d100c92bfb813f70d2af57348702213e91fdaee155"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-037",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 37,
       "jlptTarget": "N3",
@@ -2855,9 +2855,9 @@
               "en": "The mismatch between the plate and his explanation makes it relatively likely that Makoto is concealing something."
             },
             "evidence": {
-              "ja": "line-003 の否定に対し、line-004 の洗った皿と line-006 のクリームのにおいが反対の方向を示します。",
-              "zh": "line-003 是诚的否认，但 line-004 洗过的盘子和 line-006 的奶油气味指向相反方向。",
-              "en": "Makoto's denial in line-003 conflicts with the washed plate in line-004 and cream smell in line-006."
+              "ja": "3番目の台詞の否定に対し、4番目の台詞の洗った皿と6番目の台詞のクリームのにおいが反対の方向を示します。",
+              "zh": "第3句台词是诚的否认，但第4句台词洗过的盘子和第6句台词的奶油气味指向相反方向。",
+              "en": "Makoto's denial in the third line conflicts with the washed plate in the fourth line and cream smell in the sixth line."
             },
             "nuance": {
               "ja": "証拠は誠の関与を示しますが、一人で全部食べたことまで確定するものではありません。",
@@ -2882,13 +2882,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "9aaf3c379c7bb85726838b30af93dc744a809d1d494e04fc096b3fa611bf678f"
+      "contentHash": "507287fa122009cea8c8791d0c1feaf25d5437fdf04fc6d202a1e9c909180adc"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-038",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 38,
       "jlptTarget": "N3",
@@ -3254,9 +3254,9 @@
               "en": "It is more likely a message recorded for Haruka by someone familiar with her than a generic announcement."
             },
             "evidence": {
-              "ja": "line-002 の呼び名、line-003 の反応、line-005 と line-007 の母親との結び付きが一致します。",
-              "zh": "line-002 的小名、line-003 的反应及 line-005、line-007 与母亲的联系相互吻合。",
-              "en": "The nickname in line-002, Haruka's reaction in line-003, and maternal connection in lines 005 and 007 all align."
+              "ja": "2番目の台詞の呼び名、3番目の台詞の反応、5番目の台詞と7番目の台詞の母親との結び付きが一致します。",
+              "zh": "第2句台词的小名、第3句台词的反应及第5句台词、第7句台词与母亲的联系相互吻合。",
+              "en": "The nickname in the second line, Haruka's reaction in the third line, and maternal connection in the fifth and seventh lines all align."
             },
             "nuance": {
               "ja": "母親だと確定はできませんが、親しい言い方と個人的情報は近い関係を強く示します。",
@@ -3341,9 +3341,9 @@
               "en": "The two private details together make a message for Haruka herself much more likely."
             },
             "evidence": {
-              "ja": "line-002 と line-003 が呼び名の限定性を、line-004 と line-005 が手袋の個人的背景を示します。",
-              "zh": "line-002、003 表明小名私密，line-004、005 说明手套的个人背景。",
-              "en": "Lines 002–003 establish the nickname's privacy, while lines 004–005 establish the gloves' personal history."
+              "ja": "2番目の台詞と3番目の台詞が呼び名の限定性を、4番目の台詞と5番目の台詞が手袋の個人的背景を示します。",
+              "zh": "第2句台词、003 表明小名私密，第4句台词、005 说明手套的个人背景。",
+              "en": "The second through third lines establish the nickname's privacy, while the fourth through fifth lines establish the gloves' personal history."
             },
             "nuance": {
               "ja": "無人駅や終電は不思議さを強めますが、それだけでは対象者を特定できません。",
@@ -3368,13 +3368,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "80ab2a879be4b0381d38e7e3d29ac79b63df50c67debbb0b7af502add5eb9583"
+      "contentHash": "36f20480cef2b8939870595554a2eeb2d18eb2670121d22a04abaec109886080"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-039",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 39,
       "jlptTarget": "N3",
@@ -3766,9 +3766,9 @@
               "en": "Rather than admitting loneliness, the dragon uses fresh air as an excuse while likely signaling that it wants company."
             },
             "evidence": {
-              "ja": "line-001 の反復、line-006 の「もう少し話して」、line-007 の足音を待つ様子が同じ動機を支えます。",
-              "zh": "line-001 的重复行为、line-006 的“再聊一会儿”及 line-007 等脚步声消失都支持这一动机。",
-              "en": "The repeated behavior in line-001, wish to talk longer in line-006, and waiting in line-007 support the same motive."
+              "ja": "1番目の台詞の反復、6番目の台詞の「もう少し話して」、7番目の台詞の足音を待つ様子が同じ動機を支えます。",
+              "zh": "第1句台词的重复行为、第6句台词的“再聊一会儿”及第7句台词等脚步声消失都支持这一动机。",
+              "en": "The repeated behavior in the first line, wish to talk longer in the sixth line, and waiting in the seventh line support the same motive."
             },
             "nuance": {
               "ja": "強い守護者という表向きの姿と、人との別れを惜しむ行動の差が潜台詞です。",
@@ -3793,13 +3793,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "d8a6560d6d542630b698355d457bd7c56500e9fedb59878aa5199581e60d8250"
+      "contentHash": "fb983c8c6a009e41294c914ef4cfc38fb95af13f1f2a1d306e6807f4c85608be"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L1-040",
-      "revision": 1,
+      "revision": 2,
       "level": 1,
       "stage": 40,
       "jlptTarget": "N3",
@@ -4178,9 +4178,9 @@
               "en": "In this scene, it most naturally reads as temporarily placing Mio's comfort ahead of its own efficiency."
             },
             "evidence": {
-              "ja": "line-003 の不安を受け、line-004 で命令を保留し、line-006 まで支援を続けます。",
-              "zh": "它回应 line-003 的不安，在 line-004 搁置命令，并持续照护到 line-006。",
-              "en": "It responds to anxiety in line-003, defers charging in line-004, and continues support through line-006."
+              "ja": "3番目の台詞の不安を受け、4番目の台詞で命令を保留し、6番目の台詞まで支援を続けます。",
+              "zh": "它回应第3句台词的不安，在第4句台词搁置命令，并持续照护到第6句台词。",
+              "en": "It responds to anxiety in the third line, defers charging in the fourth line, and continues support through the sixth line."
             },
             "nuance": {
               "ja": "命令を拒否せず、子守歌が終わるまで一時保留し、その後で充電へ向かいます。",
@@ -4265,9 +4265,9 @@
               "en": "It responds to Mio's anxiety and helps her settle to sleep, consistent with a companion-care role."
             },
             "evidence": {
-              "ja": "line-003 の訴えに line-004 で予定を変え、line-005 の感謝を受け、line-006 まで見守ります。",
-              "zh": "它回应 line-003，在 line-004 改变安排，得到 line-005 的感谢并陪伴到 line-006。",
-              "en": "It changes course after line-003, receives thanks in line-005, and remains with her through line-006."
+              "ja": "3番目の台詞の訴えに4番目の台詞で予定を変え、5番目の台詞の感謝を受け、6番目の台詞まで見守ります。",
+              "zh": "它回应第3句台词，在第4句台词改变安排，得到第5句台词的感谢并陪伴到第6句台词。",
+              "en": "It changes course after the third line, receives thanks in the fifth line, and remains with her through the sixth line."
             },
             "nuance": {
               "ja": "感情があると断定せずとも、美緒の状態を読み取り、それに合わせて行動しています。",
@@ -4292,7 +4292,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "2db09c138966d9cdcf6ed1a82767b1f176321f9d399a5b09462cd784965b7158"
+      "contentHash": "e231aea084a07aed49ed046084d95a8ae3eea37a63d5ef54e68c6f7cfb167333"
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "level": 1,
   "jlptTarget": "N3",
   "stages": [
@@ -25,7 +25,7 @@
         "speaker-intention"
       ],
       "batch": "batch-001-010.json",
-      "contentHash": "4ff85e803fc1b36999ee9c3ea559db73e356bb3682e61fb77e511baf3b3c4642"
+      "contentHash": "f4e97a9b8ad95203d2bfdde2c79189f06d6a176cf010d3d240d57777d5b8714e"
     },
     {
       "id": "L1-002",
@@ -48,7 +48,7 @@
         "evidence-selection"
       ],
       "batch": "batch-001-010.json",
-      "contentHash": "c3524c12634cf8a49f13e70a0c59d17951be1551fc486757bba5b89bf1bef51f"
+      "contentHash": "e61fb583986c51fa5052f10cb1c8fa02b98528122a2e7a9fe19acea75691c299"
     },
     {
       "id": "L1-003",
@@ -71,7 +71,7 @@
         "ellipsis-resolution"
       ],
       "batch": "batch-001-010.json",
-      "contentHash": "33596efe457e9ee655de2512fb92ca20fde7509fba3e6f74c7f8d981558def9c"
+      "contentHash": "096effe7d62a5d8cac9de6d1d4eb7e75d0625b3813a52c7e7c2cbc705fd0f677"
     },
     {
       "id": "L1-004",
@@ -94,7 +94,7 @@
         "context-inference"
       ],
       "batch": "batch-001-010.json",
-      "contentHash": "44e41b2977ce6ed4644b3a3d0d6ea2a67e83dce338adfd05c900992e3c29d88d"
+      "contentHash": "f229c16d2cf26e0ae149dc3a50a5a2f09971cd68b5be72b56adac2d22eae0be0"
     },
     {
       "id": "L1-005",
@@ -117,7 +117,7 @@
         "face-saving"
       ],
       "batch": "batch-001-010.json",
-      "contentHash": "62526e9723936002ba681417a7e93f1d87495e14c508a51d2076c240b2a7a21f"
+      "contentHash": "9cedc3be554bca1136fc667f1c506fd8c673e817132ebd8b4412cc02fe576983"
     },
     {
       "id": "L1-006",
@@ -140,7 +140,7 @@
         "pragmatic-softener"
       ],
       "batch": "batch-001-010.json",
-      "contentHash": "44314d0fc9222cebc002a353a618df7d14d9c9f5b1c79efc2a67162cf0e21b24"
+      "contentHash": "15f49ebe812535d96437037b028279faf8f7715dadac0e17a6bcc13671e83c76"
     },
     {
       "id": "L1-007",
@@ -164,7 +164,7 @@
         "next-line-prediction"
       ],
       "batch": "batch-001-010.json",
-      "contentHash": "dcd93163774eb95306461cd1e949f01b2ff6a8316a2164195720d0487515ec67"
+      "contentHash": "bad67b4a0f718be4e40a271b94c83e65e77192998205605a3a99d3104a75bbc8"
     },
     {
       "id": "L1-008",
@@ -187,7 +187,7 @@
         "role-inference"
       ],
       "batch": "batch-001-010.json",
-      "contentHash": "9dcb2b7ceebf44cecfb448704fb2895fa36eb909ab1dbb5dc28b7b2032a79090"
+      "contentHash": "ee1db359d61b151a068ad90d15a2a1de3744bcb2bedf33fcd31bf194564485ad"
     },
     {
       "id": "L1-009",
@@ -210,7 +210,7 @@
         "register-awareness"
       ],
       "batch": "batch-001-010.json",
-      "contentHash": "f9222948ed7a49e33a36b1d1f6c0f845826e400891c0e090c7dc598e478e7787"
+      "contentHash": "74605c656058812c152dd408dcfb4ed082ef243b8de5f517bf27d051a6c14682"
     },
     {
       "id": "L1-010",
@@ -233,7 +233,7 @@
         "next-line-prediction"
       ],
       "batch": "batch-001-010.json",
-      "contentHash": "8aec9458fc18a9c7bbefadf4c7e2c9e003aa1c8d215df4fb18607663ef5aa956"
+      "contentHash": "5fd4c912120ffdb6b684d25262823e37c7ee735703c7bf2af86d7451da80e7ee"
     },
     {
       "id": "L1-011",
@@ -256,7 +256,7 @@
         "speaker-intention"
       ],
       "batch": "batch-011-020.json",
-      "contentHash": "078ab988ca580a609b543ea142f71eb8da364e7b98a3867f50bab7dd3d01ba23"
+      "contentHash": "39852645c5592cf72451df70c6d11c0834374da5e815fbd8dc47a1e365270d65"
     },
     {
       "id": "L1-012",
@@ -279,7 +279,7 @@
         "relationship-distance"
       ],
       "batch": "batch-011-020.json",
-      "contentHash": "7f1087a6f62e0239bba016f98895ba4a19dec32634f30a647c9e7a827d87060a"
+      "contentHash": "4ac24c46622a6088962252ea8cf50dc0b15caca484f369a94b62ceb8a2566854"
     },
     {
       "id": "L1-013",
@@ -302,7 +302,7 @@
         "ellipsis-resolution"
       ],
       "batch": "batch-011-020.json",
-      "contentHash": "02e9fa922d2757caa228b7f7e87883a9c2c34fee1ef7f3be4873e74d1b0d0536"
+      "contentHash": "0aff87ffc0d534b62351f4d079c0ba97e9189074dd7e312c0671348348099a1d"
     },
     {
       "id": "L1-014",
@@ -325,7 +325,7 @@
         "face-saving"
       ],
       "batch": "batch-011-020.json",
-      "contentHash": "7912118b3f92b21da6758681b09ef92de37c65c9b0957a402b95a68d9ca348a9"
+      "contentHash": "b6ac3ef76f6987c4435fa2b3e24fdb4c64502a33946e222153484229c45d4b3b"
     },
     {
       "id": "L1-015",
@@ -348,7 +348,7 @@
         "relationship-inference"
       ],
       "batch": "batch-011-020.json",
-      "contentHash": "a59c73bada238b9d3f323a1285110154198e52c815c4cad4de8b8fef7a33433c"
+      "contentHash": "fa16089c11c81385e39833230d4f07adde0f8af399ecb5077f6c7d133962bf00"
     },
     {
       "id": "L1-016",
@@ -371,7 +371,7 @@
         "context-inference"
       ],
       "batch": "batch-011-020.json",
-      "contentHash": "6abb77d1a20d4cc568819a14b09f7daf58c470ca160da527bc422fc6bb5226ae"
+      "contentHash": "d50af797377ead5fb89440cad3cb2e6b3d83d0f5de833846c07798653cec24d2"
     },
     {
       "id": "L1-017",
@@ -395,7 +395,7 @@
         "tone-inference"
       ],
       "batch": "batch-011-020.json",
-      "contentHash": "6ab45649853268764c74d4df50e491fe4a603d3e0842915570402d95e9f7c928"
+      "contentHash": "2bdd99bbe12fc2e03169a11c352a7a80ac4ff56eb76aef9a0dab62905391b908"
     },
     {
       "id": "L1-018",
@@ -419,7 +419,7 @@
         "lie-detection"
       ],
       "batch": "batch-011-020.json",
-      "contentHash": "e57f36ccac95706fda8a5db2bc1ebe6025760971cafa3a2e31e2a778741c28d9"
+      "contentHash": "45d823175a59bc96542c70f3aa94fd711bf01cf5630f8c3d64a72ba199df8c05"
     },
     {
       "id": "L1-019",
@@ -443,7 +443,7 @@
         "temporal-inference"
       ],
       "batch": "batch-011-020.json",
-      "contentHash": "e414551f5bcae2ccb1c8ae212133a74032d128d07443b9c56fef4a719da10df1"
+      "contentHash": "8150185ffbf80e5b71ddce36fbba0b345f2022639480b1160979af87bfb92471"
     },
     {
       "id": "L1-020",
@@ -467,7 +467,7 @@
         "relationship-inference"
       ],
       "batch": "batch-011-020.json",
-      "contentHash": "3de0123c19e6c0fb55461418b6fb48dfeb8ad3f2340d6bd9e2a5033c43fe704b"
+      "contentHash": "e5ae28f0583aec756ccd2df81ef9a646d19a75f2ff81519a60772ad568d1cebd"
     },
     {
       "id": "L1-021",
@@ -490,7 +490,7 @@
         "deixis-reference"
       ],
       "batch": "batch-021-030.json",
-      "contentHash": "d8f6844e7a07e663b90b29fee9218721c36dbe33bd58646a7fa7b079611c177d"
+      "contentHash": "4250ad76167327df495754f4ec98d958ac71d46408f87ca842d4e9316beac110"
     },
     {
       "id": "L1-022",
@@ -513,7 +513,7 @@
         "speaker-intention"
       ],
       "batch": "batch-021-030.json",
-      "contentHash": "5a452058448a3e8c7903ce395cfd7684842ea090934f3eaf2c162924faddd9fc"
+      "contentHash": "b95a129e8c682cfda743729fd6b78b72b47a330b59ce2f20bd445ff7b294df41"
     },
     {
       "id": "L1-023",
@@ -537,7 +537,7 @@
         "face-saving"
       ],
       "batch": "batch-021-030.json",
-      "contentHash": "20546a85029a1f18f00a7e5fa7578836873c23509b2de7c660f00f18483acef8"
+      "contentHash": "0a2da21a6e8ae6212fe24b5ba2d072b3651dbec3609df0e126cc107c5b13ee14"
     },
     {
       "id": "L1-024",
@@ -560,7 +560,7 @@
         "priority-inference"
       ],
       "batch": "batch-021-030.json",
-      "contentHash": "cde827fc70098b126d2b5ef8a77fd150d44414cd83cd05d56092616c1150698e"
+      "contentHash": "d3d3dab96a66bd4328cef4d40047de34e09bc44fc8070168ea901027c0edcb5d"
     },
     {
       "id": "L1-025",
@@ -583,7 +583,7 @@
         "service-language"
       ],
       "batch": "batch-021-030.json",
-      "contentHash": "f4b866e509c8df20ac22058681654aeed22bae8fbed54ad18a5cc9a65ba1228e"
+      "contentHash": "516a5a13b6b6cc04c94f227b995e697fc83a2d1b9ae355e3143066d0bee5e1a0"
     },
     {
       "id": "L1-026",
@@ -606,7 +606,7 @@
         "temporal-inference"
       ],
       "batch": "batch-021-030.json",
-      "contentHash": "a255a9fbda43d9d4b279ca0f2a6bd495b47ef6a9b66ba7711bc832fdf6234e75"
+      "contentHash": "234be76f0166908c1c6f0f791cad7b2a6631cc56a9dd3fc84c175e882e6d20be"
     },
     {
       "id": "L1-027",
@@ -630,7 +630,7 @@
         "ellipsis-resolution"
       ],
       "batch": "batch-021-030.json",
-      "contentHash": "211f29df6d760f99435295178a2613aabb83054ad142815ac1753ed3582a0ae4"
+      "contentHash": "223f46de4e724d6fa42ca3ed542158b5d28cec8207323ba95ee280d77d7b8948"
     },
     {
       "id": "L1-028",
@@ -654,7 +654,7 @@
         "speaker-intention"
       ],
       "batch": "batch-021-030.json",
-      "contentHash": "be0703efc36915a7759458640d1a1cea62d22a2fe579333a8cde90516c5add74"
+      "contentHash": "ba81017936a89ad17ef79f213f60212fd11b4166f9b5b5ba884898f345a84162"
     },
     {
       "id": "L1-029",
@@ -678,7 +678,7 @@
         "causal-inference"
       ],
       "batch": "batch-021-030.json",
-      "contentHash": "1bca97367d37915f9b88003e8e3645d156266a36176077400094227a24c8a237"
+      "contentHash": "567c8e0484ef38e4468df65c55ad2facd42c2eda2cbe1b6b827a8c0c9a177ff2"
     },
     {
       "id": "L1-030",
@@ -702,7 +702,7 @@
         "evidence-selection"
       ],
       "batch": "batch-021-030.json",
-      "contentHash": "79aa113e5996bce22090ecf4945f08df9ede7a947f18f433db858e68588b8353"
+      "contentHash": "d98519f80a2e848e9838c4ab30c56ac54689261bc9229b9b6cc5981eeab930e9"
     },
     {
       "id": "L1-031",
@@ -726,7 +726,7 @@
         "face-saving"
       ],
       "batch": "batch-031-040.json",
-      "contentHash": "1308011eff187d8548b4e00a01e4f8d823186ab51617afd760fe9e271ab2a514"
+      "contentHash": "90c6fbacffff2686d587e4bbd9af586196b60c4fd0dda4628fc5b60cca1bbdf2"
     },
     {
       "id": "L1-032",
@@ -749,7 +749,7 @@
         "stance-inference"
       ],
       "batch": "batch-031-040.json",
-      "contentHash": "87dc33a4077b7b740851ef064772319cfd90f0080be3a7d8a129fd31bfeb65c6"
+      "contentHash": "b399f9fb08fce32123c66537aa626576d6a2944d522a242bf7c96feef43b2610"
     },
     {
       "id": "L1-033",
@@ -773,7 +773,7 @@
         "misunderstanding"
       ],
       "batch": "batch-031-040.json",
-      "contentHash": "987da29068cd7d4a6efe5ee61f17b5633fbb6fc47dc8aaee6adb3f23dcc99aef"
+      "contentHash": "a0f2c0c1118cb2fa78d1b68bd17ac04d98e0249e1998db1ff89edeeec5c39e79"
     },
     {
       "id": "L1-034",
@@ -796,7 +796,7 @@
         "evidence-selection"
       ],
       "batch": "batch-031-040.json",
-      "contentHash": "2719d1b9b6759c01cbf860fc684b611bf757f1601d7145ab723c5a2e639fda70"
+      "contentHash": "ba169ecc32fcea82edde7d0ce9269a970ca9ff899df164371ad2382fc6077327"
     },
     {
       "id": "L1-035",
@@ -820,7 +820,7 @@
         "misunderstanding"
       ],
       "batch": "batch-031-040.json",
-      "contentHash": "523f56a8664fbf7ede24276342c5476b307855035f94d5cfd41ca8cc4d9efe2c"
+      "contentHash": "36cf68aedb3977b4e11e5919dbd4826d2a4540a2cbe9e0b7536955de3a9d0ba1"
     },
     {
       "id": "L1-036",
@@ -845,7 +845,7 @@
         "register-shift"
       ],
       "batch": "batch-031-040.json",
-      "contentHash": "cbe1d63b73ceafc3c362b2a00952f32d9bc57f3c6a791e131b55540710e14f93"
+      "contentHash": "6475c07d16fd2929d53739d100c92bfb813f70d2af57348702213e91fdaee155"
     },
     {
       "id": "L1-037",
@@ -869,7 +869,7 @@
         "evidence-selection"
       ],
       "batch": "batch-031-040.json",
-      "contentHash": "9aaf3c379c7bb85726838b30af93dc744a809d1d494e04fc096b3fa611bf678f"
+      "contentHash": "507287fa122009cea8c8791d0c1feaf25d5437fdf04fc6d202a1e9c909180adc"
     },
     {
       "id": "L1-038",
@@ -893,7 +893,7 @@
         "source-inference"
       ],
       "batch": "batch-031-040.json",
-      "contentHash": "80ab2a879be4b0381d38e7e3d29ac79b63df50c67debbb0b7af502add5eb9583"
+      "contentHash": "36f20480cef2b8939870595554a2eeb2d18eb2670121d22a04abaec109886080"
     },
     {
       "id": "L1-039",
@@ -917,7 +917,7 @@
         "literal-vs-intended"
       ],
       "batch": "batch-031-040.json",
-      "contentHash": "d8a6560d6d542630b698355d457bd7c56500e9fedb59878aa5199581e60d8250"
+      "contentHash": "fb983c8c6a009e41294c914ef4cfc38fb95af13f1f2a1d306e6807f4c85608be"
     },
     {
       "id": "L1-040",
@@ -941,7 +941,7 @@
         "relationship-inference"
       ],
       "batch": "batch-031-040.json",
-      "contentHash": "2db09c138966d9cdcf6ed1a82767b1f176321f9d399a5b09462cd784965b7158"
+      "contentHash": "e231aea084a07aed49ed046084d95a8ae3eea37a63d5ef54e68c6f7cfb167333"
     },
     {
       "id": "L1-041",
@@ -965,7 +965,7 @@
         "next-line-prediction"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "3b8e0d452ac0a4e7e1c91b1a372007308e07c053535ec594e5dc444c2de4e45d"
+      "contentHash": "32bc93dab8e72fe4c72e5f6f071fbb313f1e07de5a6ef1ec4e3591ac75c16c0b"
     },
     {
       "id": "L1-042",
@@ -989,7 +989,7 @@
         "evidence-selection"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "06232afc5140193ae7949d069ae87ffa86cd2937d34c45066fc5ae389e88de2e"
+      "contentHash": "e8e709cefca746da279d9a74237d9d368f0ccae46f98e60b7049c09ea74a654c"
     },
     {
       "id": "L1-043",
@@ -1012,7 +1012,7 @@
         "honorific-distance"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "7ad7c1f01d64d9ddead81f09364fb1a720b2fdea59059e0a42d6cd8d905445a0"
+      "contentHash": "342c1e1f4f2add4b9972ac836ae2d21e558e30b1ef3d6f8f4cebb1922fd4aeb2"
     },
     {
       "id": "L1-044",
@@ -1035,7 +1035,7 @@
         "context-inference"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "a04aaa90818cc854a45459604048af32ad74e5c1739372eac04df39f166ee63a"
+      "contentHash": "3ca07b48bb9996c6986a23c13774da6949eaeafa2087468ea4506c06bee0bf7b"
     },
     {
       "id": "L1-045",
@@ -1059,7 +1059,7 @@
         "source-inference"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "ee5d61be11906a9d4cb728d7f4953551f71837c6444cc588eba7169fba364ade"
+      "contentHash": "a135107a8c7d123195ee79f78df7923e5aece78058a6776205353c4128df06f7"
     },
     {
       "id": "L1-046",
@@ -1083,7 +1083,7 @@
         "motive-inference"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "ab7fce3df20f4e846020c696c67a8050ed963f8b5153161904bdc7c7a89939cb"
+      "contentHash": "0b159bccd218bb19c72b8f67910bfce295403fc65c032cafeeb0135c2c95f394"
     },
     {
       "id": "L1-047",
@@ -1107,7 +1107,7 @@
         "temporal-inference"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "3ffa0893a66ab2f48c0ec36729067e00986abd70fb6af0bc3b3a91cc79e61b17"
+      "contentHash": "fc5c764bd7c0279a42c5c906eebde8d7a1bf47c6f0829b0ac16ba9aaf97666a4"
     },
     {
       "id": "L1-048",
@@ -1131,7 +1131,7 @@
         "temporal-inference"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "54d2e917e8247cd1c23ff1145661918e41a2408f37bb12f3b4cd8dbf55dff262"
+      "contentHash": "0c3883ba4e75d65eabdfcadff542c761598d76f27630d888f6543c425a70d1f5"
     },
     {
       "id": "L1-049",
@@ -1155,7 +1155,7 @@
         "evidence-selection"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "21f25c53f89ef240bf103ae39cfa1424783da787ac1964ff645ed96be823e07e"
+      "contentHash": "784d14bf69290cfcb9bf9a765a0fcd1a63907d6dbd62a0d35d6ea3dcc888fafe"
     },
     {
       "id": "L1-050",
@@ -1179,7 +1179,7 @@
         "evidence-selection"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "9bd29a2c1c8d439879bdf4ea180a8d55b1bf8f1ba80fa3471518af4ce495fb4b"
+      "contentHash": "591bd7eaba1c5146593ee422e53ed94c3a9de8eb481d1e9e4e1a7161bbe8a426"
     }
   ]
 }

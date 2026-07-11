@@ -63,7 +63,7 @@ warnings.forEach((warning) => console.warn(`WARN: ${warning}`));
 
 function validateBlueprint() {
   check(blueprintPayload.schemaVersion === 1, "Blueprint schemaVersion must be 1.");
-  check(blueprintPayload.contentVersion === "1.0.0", "Blueprint contentVersion must be 1.0.0.");
+  check(blueprintPayload.contentVersion === "1.0.1", "Blueprint contentVersion must be 1.0.1.");
   check(blueprintPayload.blueprintStatus === "complete", "Blueprint must be marked complete.");
   check(blueprintEntries.length === 250, `Blueprint must contain exactly 250 entries; found ${blueprintEntries.length}.`);
   check(blueprintById.size === blueprintEntries.length, "Blueprint contains duplicate stage IDs.");
@@ -98,7 +98,7 @@ function validateStage(stage) {
   const prefix = stage?.id || "<missing-id>";
   const blueprint = blueprintById.get(prefix);
   check(stage?.schemaVersion === 1, `${prefix}: schemaVersion must be 1.`);
-  check(stage?.contentVersion === "1.0.0", `${prefix}: contentVersion must be 1.0.0.`);
+  check(stage?.contentVersion === "1.0.1", `${prefix}: contentVersion must be 1.0.1.`);
   check(/^L[1-5]-[0-9]{3}$/.test(prefix), `${prefix}: invalid ID.`);
   check(!ids.has(prefix), `${prefix}: duplicate stage ID.`);
   ids.add(prefix);

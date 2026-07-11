@@ -8,7 +8,7 @@ from pathlib import Path
 TTS_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TTS_DIR))
 
-from kokoro_adapter import KokoroAdapter  # noqa: E402
+from kokoro_adapter import KokoroAdapter, prepare_japanese_reading  # noqa: E402
 
 
 class _FakeBackend:
@@ -32,6 +32,7 @@ class KokoroAdapterTests(unittest.TestCase):
             backend=_FakeBackend(),
             g2p=lambda text: (f"PHONEMES:{text}", []),
             writer=lambda *_: None,
+            reading_resolver=lambda text: text,
         )
 
     def test_synthesize_maps_public_voice_and_uses_phonemes(self) -> None:
@@ -51,6 +52,7 @@ class KokoroAdapterTests(unittest.TestCase):
             writer=lambda path, samples, rate: writes.append(
                 (Path(path), list(samples), rate)
             ),
+            reading_resolver=lambda text: text,
         )
 
         adapter.synthesize(
@@ -73,6 +75,17 @@ class KokoroAdapterTests(unittest.TestCase):
         )
         self.assertEqual(writes[0][0], output)
         self.assertEqual(writes[0][2], 24_000)
+
+    def test_prepare_japanese_reading_resolves_kanji_before_g2p(self) -> None:
+        nodes = [
+            {"string": "今日", "pron": "キョー", "pos": "名詞"},
+            {"string": "は", "pron": "ワ’", "pos": "助詞"},
+            {"string": "。", "pron": "、", "pos": "記号"},
+        ]
+        self.assertEqual(
+            prepare_japanese_reading("今日は。", frontend=lambda _text: nodes),
+            "キョーワ。",
+        )
 
     def test_synthesize_rejects_invalid_request_instead_of_silently_ignoring_it(self) -> None:
         adapter = self._adapter()

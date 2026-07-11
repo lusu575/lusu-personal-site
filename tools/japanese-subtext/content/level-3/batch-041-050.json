@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "level": 3,
   "batch": "041-050",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-041",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 41,
       "jlptTarget": "N1",
@@ -530,9 +530,9 @@
               "en": "Memory loss is used as an exculpatory frame that makes active page replacement look accidental."
             },
             "evidence": {
-              "ja": "line-004 の退色、line-007 の二重穴、line-009 の消し番号、line-011 の紙と押し花が、独立して再製本を示します。",
-              "zh": "line-004 的褪色、line-007 的双孔、line-009 被擦除的编号以及 line-011 的纸张与压花都独立指向重新装订。",
-              "en": "The fading in line 004, doubled holes in 007, erased numbers in 009, and paper and flower marks in 011 independently indicate rebinding."
+              "ja": "4番目の台詞の退色、7番目の台詞の二重穴、9番目の台詞の消し番号、11番目の台詞の紙と押し花が、独立して再製本を示します。",
+              "zh": "第4句台词的褪色、第7句台词的双孔、第9句台词被擦除的编号以及第11句台词的纸张与压花都独立指向重新装订。",
+              "en": "The fading in the fourth line, doubled holes in 007, erased numbers in 009, and paper and flower marks in 011 independently indicate rebinding."
             },
             "nuance": {
               "ja": "日付を誤るだけなら物理的な頁の位置までは変わりません。複数の物証が同じ方向を向くため、単なる健忘より意図性が高いと判断できます。",
@@ -540,9 +540,9 @@
               "en": "Wrong dates alone would not move pages physically; several material clues converge, making intent more likely than forgetfulness."
             },
             "alternative": {
-              "ja": "第三者が差し替えた可能性は論理上残りますが、line-002 と line-012 で書き手自身が先回りして疑いを封じるため、自己関与の説明が強いです。",
-              "zh": "第三者换页在逻辑上仍有可能，但 line-002 与 line-012 中作者预先封堵怀疑，使其本人参与的解释更有力。",
-              "en": "A third party remains logically possible, but the diarist preemptively closes off suspicion in lines 002 and 012, strengthening the case for self-involvement."
+              "ja": "第三者が差し替えた可能性は論理上残りますが、2番目の台詞と12番目の台詞で書き手自身が先回りして疑いを封じるため、自己関与の説明が強いです。",
+              "zh": "第三者换页在逻辑上仍有可能，但第2句台词与第12句台词中作者预先封堵怀疑，使其本人参与的解释更有力。",
+              "en": "A third party remains logically possible, but the diarist preemptively closes off suspicion in the second and twelfth lines, strengthening the case for self-involvement."
             }
           }
         },
@@ -616,9 +616,9 @@
               "en": "Erasing numbers and rebinding pages in another order fits an attempt to conceal the former sequence rather than an accidental mix-up."
             },
             "evidence": {
-              "ja": "line-009 の連続番号を、line-007 の二重穴と line-011 の重なる痕跡が物理面から補強しています。",
-              "zh": "line-009 的连续编号又得到 line-007 双装订孔和 line-011 重合痕迹的物理印证。",
-              "en": "The sequence in line 009 is physically corroborated by the doubled holes in 007 and aligned marks in 011."
+              "ja": "9番目の台詞の連続番号を、7番目の台詞の二重穴と11番目の台詞の重なる痕跡が物理面から補強しています。",
+              "zh": "第9句台词的连续编号又得到第7句台词双装订孔和第11句台词重合痕迹的物理印证。",
+              "en": "The sequence in the ninth line is physically corroborated by the doubled holes in 007 and aligned marks in 011."
             },
             "nuance": {
               "ja": "退色だけなら保管条件の差も考えられますが、番号は頁同士の関係を示すため、より直接的な順序証拠です。",
@@ -636,9 +636,9 @@
           "id": "q3",
           "type": "single",
           "prompt": {
-            "ja": "書き手が line-012 で強く否定する語用的な効果は何ですか。",
-            "zh": "作者在 line-012 中强烈否认，产生了怎样的语用效果？",
-            "en": "What pragmatic effect does the emphatic denial in line 012 create?"
+            "ja": "書き手が12番目の台詞で強く否定する語用的な効果は何ですか。",
+            "zh": "作者在第12句台词中强烈否认，产生了怎样的语用效果？",
+            "en": "What pragmatic effect does the emphatic denial in the twelfth line create?"
           },
           "options": [
             {
@@ -693,9 +693,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "line-012 は、誰も改竄者を問うていない段階で「直した者などいない」と断言します。",
-              "zh": "line-012 在尚无人追问篡改者时就断言“没有人改过日记”。",
-              "en": "Line 012 insists that no one altered the diary before anyone has explicitly accused an editor."
+              "ja": "12番目の台詞は、誰も改竄者を問うていない段階で「直した者などいない」と断言します。",
+              "zh": "第12句台词在尚无人追问篡改者时就断言“没有人改过日记”。",
+              "en": "The twelfth line insists that no one altered the diary before anyone has explicitly accused an editor."
             },
             "intent": {
               "ja": "否定によって疑念を消すつもりが、話題を自ら持ち出したため、書き手がその疑いを強く意識していると伝わります。",
@@ -703,9 +703,9 @@
               "en": "The denial is meant to remove suspicion, but raising the issue unprompted reveals how strongly the diarist anticipates it."
             },
             "evidence": {
-              "ja": "line-002 の先回りする免責と line-012 の過剰な断定が、line-009 と line-011 の物証に挟まれています。",
-              "zh": "line-002 的预先免责与 line-012 的过度断言，被 line-009、line-011 的物证夹在其中。",
-              "en": "The preemptive excuse in line 002 and overstrong denial in 012 are framed by the material evidence in lines 009 and 011."
+              "ja": "2番目の台詞の先回りする免責と12番目の台詞の過剰な断定が、9番目の台詞と11番目の台詞の物証に挟まれています。",
+              "zh": "第2句台词的预先免责与第12句台词的过度断言，被第9句台词、第11句台词的物证夹在其中。",
+              "en": "The preemptive excuse in the second line and overstrong denial in 012 are framed by the material evidence in the ninth and eleventh lines."
             },
             "nuance": {
               "ja": "強い否定自体は嘘の証明ではありません。ただし否定の対象が会話に出ていないため、情報管理の意図を推測させます。",
@@ -730,13 +730,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "a49c52b177e55ea3ca9944075db4de25f7e5801c858e884b37e76163b9fa61a2"
+      "contentHash": "43ea5276f5aaeaea6b5137e6fdbffd89487d47b32bf9cc8968968b0157636009"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-042",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 42,
       "jlptTarget": "N1",
@@ -1193,9 +1193,9 @@
               "en": "Knowing information unavailable from the visible ticket suggests remembered experience rather than ordinary handwriting comparison."
             },
             "evidence": {
-              "ja": "line-003 の具体性を line-004 が確認前だと指摘し、line-006 と line-010 が現在の発行時刻と未確認状態を固定します。",
-              "zh": "line-003 的具体描述由 line-004 指出尚未核对，line-006 与 line-010 又确定了当前出票时间及未翻面状态。",
-              "en": "Line 004 establishes that the specific claim in 003 precedes inspection, while 006 and 010 anchor the present issue time and unexamined reverse."
+              "ja": "3番目の台詞の具体性を4番目の台詞が確認前だと指摘し、6番目の台詞と10番目の台詞が現在の発行時刻と未確認状態を固定します。",
+              "zh": "第3句台词的具体描述由第4句台词指出尚未核对，第6句台词与第10句台词又确定了当前出票时间及未翻面状态。",
+              "en": "The fourth line establishes that the specific claim in 003 precedes inspection, while 006 and 010 anchor the present issue time and unexamined reverse."
             },
             "nuance": {
               "ja": "折れた角だけなら常連客の癖を知っていたとも読めますが、未来の申告時刻と手帳の色まで同時に説明できません。",
@@ -1213,9 +1213,9 @@
           "id": "q2",
           "type": "single",
           "prompt": {
-            "ja": "line-005 の「前にも」が示す最も自然な含意は何ですか。",
-            "zh": "line-005 中“上一次”最自然地暗示什么？",
-            "en": "What is the most natural implication of 'last time' in line 005?"
+            "ja": "5番目の台詞の「前にも」が示す最も自然な含意は何ですか。",
+            "zh": "第5句台词中“上一次”最自然地暗示什么？",
+            "en": "What is the most natural implication of 'last time' in the fifth line?"
           },
           "options": [
             {
@@ -1280,8 +1280,8 @@
               "en": "The tense collision creates the reading that Azuma alone remembers an earlier iteration of the same event."
             },
             "evidence": {
-              "ja": "line-005 の過去、line-006 の現在の発行時刻、line-007 と line-009 の未来記憶が、三つの時点を一つの反復へ結びます。",
-              "zh": "line-005 的过去、line-006 的当前出票时间、line-007 与 line-009 的未来记忆，把三个时间点连为一次循环。",
+              "ja": "5番目の台詞の過去、6番目の台詞の現在の発行時刻、7番目の台詞と9番目の台詞の未来記憶が、三つの時点を一つの反復へ結びます。",
+              "zh": "第5句台词的过去、第6句台词的当前出票时间、第7句台词与第9句台词的未来记忆，把三个时间点连为一次循环。",
               "en": "The past in 005, current issue time in 006, and future memory in 007 and 009 connect three time frames into a repetition."
             },
             "nuance": {
@@ -1367,9 +1367,9 @@
               "en": "Azuma treats the event not as wholly fixed but as a repeating structure with variable details."
             },
             "evidence": {
-              "ja": "line-005 は反復する折れを、line-009 は前回の赤い手帳を、line-011 は次回の青という未確定要素を提示します。",
-              "zh": "line-005 提供重复的折角，line-009 提供上次的红手账，line-011 提供下次可能为蓝色的不确定因素。",
-              "en": "Line 005 supplies the repeated fold, 009 the prior red planner, and 011 the uncertain possibility of blue next time."
+              "ja": "5番目の台詞は反復する折れを、9番目の台詞は前回の赤い手帳を、11番目の台詞は次回の青という未確定要素を提示します。",
+              "zh": "第5句台词提供重复的折角，第9句台词提供上次的红手账，第11句台词提供下次可能为蓝色的不确定因素。",
+              "en": "The fifth line supplies the repeated fold, 009 the prior red planner, and 011 the uncertain possibility of blue next time."
             },
             "nuance": {
               "ja": "共通点が一つあるだけでは周回全体の同一性を証明しませんが、既知の細部と未知の細部の対比が変動を明示します。",
@@ -1394,13 +1394,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "885f6fb4bc9d97484c8edb5e484f8ffc927c154d43c37000227bea5d0ed28d3f"
+      "contentHash": "084807792f7d7bd23054b0c8911c44e3b165426059a37d7a7940a4bfe31c8c4f"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-043",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 43,
       "jlptTarget": "N1",
@@ -1815,9 +1815,9 @@
             {
               "id": "a",
               "text": {
-                "ja": "line-006 以降、発話と異なる警告を一貫して表示する。",
-                "zh": "从 line-006 起，字幕持续显示与语音不同的警告。",
-                "en": "From line 006 onward, it consistently displays warnings different from the speech."
+                "ja": "6番目の台詞以降、発話と異なる警告を一貫して表示する。",
+                "zh": "从第6句台词起，字幕持续显示与语音不同的警告。",
+                "en": "From the sixth line onward, it consistently displays warnings different from the speech."
               },
               "ttsTextJa": "line-006 以降、発話と異なる警告を一貫して表示する。",
               "audioId": "L3-043-q1-a"
@@ -1876,8 +1876,8 @@
               "en": "Because the warning persists after semantic correspondence ends, this is a separate speech act using the subtitle channel, not mistranslation."
             },
             "evidence": {
-              "ja": "line-006 と line-008 の命令、line-010 の自己説明、line-012 の読者への条件文が独立した伝達者を示します。",
-              "zh": "line-006、008 的命令，line-010 的自我说明及 line-012 面向读者的条件句，都显示独立传达者。",
+              "ja": "6番目の台詞と8番目の台詞の命令、10番目の台詞の自己説明、12番目の台詞の読者への条件文が独立した伝達者を示します。",
+              "zh": "第6句台词、008 的命令，第10句台词的自我说明及第12句台词面向读者的条件句，都显示独立传达者。",
               "en": "The commands in 006 and 008, self-description in 010, and reader-directed condition in 012 indicate an independent communicator."
             },
             "nuance": {
@@ -1963,9 +1963,9 @@
               "en": "By discussing knowledge boundaries and visibility, it behaves as an observing agent seeking a response, not a mere string."
             },
             "evidence": {
-              "ja": "line-010 は声との非共有知識を、line-008 と line-012 は読者との直接的な通信関係を示します。",
-              "zh": "line-010 显示它与声音不共享知识，line-008 与 line-012 显示它直接和读者通信。",
-              "en": "Line 010 shows knowledge not shared with the voice; lines 008 and 012 establish direct communication with the reader."
+              "ja": "10番目の台詞は声との非共有知識を、8番目の台詞と12番目の台詞は読者との直接的な通信関係を示します。",
+              "zh": "第10句台词显示它与声音不共享知识，第8句台词与第12句台词显示它直接和读者通信。",
+              "en": "The tenth line shows knowledge not shared with the voice; the eighth and twelfth lines establish direct communication with the reader."
             },
             "nuance": {
               "ja": "擬人化された字幕という演出上の比喩もあり得るため、実在する人格まで断定せず「別の情報主体」と捉えるのが妥当です。",
@@ -1973,9 +1973,9 @@
               "en": "It may be a narrative metaphor personifying subtitles, so 'separate information agent' is safer than asserting a literal person."
             },
             "alternative": {
-              "ja": "声の主が意図的に二重メッセージを仕込んだ可能性は、line-010 の自己申告と矛盾しますが、字幕の申告自体が嘘なら残ります。",
-              "zh": "若字幕自述可信，语音主人故意嵌入双重信息会与 line-010 矛盾；若字幕撒谎，则仍有可能。",
-              "en": "Intentional double messaging by the speaker conflicts with line 010 if the subtitle is truthful, though it remains possible if the subtitle lies."
+              "ja": "声の主が意図的に二重メッセージを仕込んだ可能性は、10番目の台詞の自己申告と矛盾しますが、字幕の申告自体が嘘なら残ります。",
+              "zh": "若字幕自述可信，语音主人故意嵌入双重信息会与第10句台词矛盾；若字幕撒谎，则仍有可能。",
+              "en": "Intentional double messaging by the speaker conflicts with the tenth line if the subtitle is truthful, though it remains possible if the subtitle lies."
             }
           }
         },
@@ -2049,9 +2049,9 @@
               "en": "The warning aims not to alter an on-screen character's action but to stop the reader's progression through the story."
             },
             "evidence": {
-              "ja": "line-006 が危険を予告し、line-008 が可視性を条件に振り返りを求め、line-012 が禁止と退避をまとめます。",
-              "zh": "line-006 预告危险，line-008 以能否看见为条件要求回头，line-012 汇总了禁止与撤退。",
-              "en": "Line 006 forecasts danger, 008 conditionally asks the reader to turn back, and 012 combines prohibition with retreat."
+              "ja": "6番目の台詞が危険を予告し、8番目の台詞が可視性を条件に振り返りを求め、12番目の台詞が禁止と退避をまとめます。",
+              "zh": "第6句台词预告危险，第8句台词以能否看见为条件要求回头，第12句台词汇总了禁止与撤退。",
+              "en": "The sixth line forecasts danger, 008 conditionally asks the reader to turn back, and 012 combines prohibition with retreat."
             },
             "nuance": {
               "ja": "「戻れ」は列車内の人物にも使える語ですが、「頁」「読んだなら」と結びつくため、ここでは読書操作を指します。",
@@ -2076,13 +2076,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "53feaf812da25cd86ce39b55e49f13cfcbf07565701ffe2f2d9bde0f79fd0827"
+      "contentHash": "f0a1b98b9274223c82224c8ecfdd16cdc24ce2a58a808128ccca6c8bae7db4c1"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-044",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 44,
       "jlptTarget": "N1",
@@ -2556,9 +2556,9 @@
               "en": "It stages the appearance of freedom while operationally narrowing what viewers can receive."
             },
             "evidence": {
-              "ja": "line-002 と line-004 はリアルタイム演出を、line-008 と line-011 は批判への否定音と削除を明示します。",
-              "zh": "line-002、004 展示实时编排，line-008、011 明示对批评配否定音并删除。",
-              "en": "Lines 002 and 004 reveal live staging; 008 and 011 specify disapproval audio and deletion in response to criticism."
+              "ja": "2番目の台詞と4番目の台詞はリアルタイム演出を、8番目の台詞と11番目の台詞は批判への否定音と削除を明示します。",
+              "zh": "第2句台词、004 展示实时编排，第8句台词、011 明示对批评配否定音并删除。",
+              "en": "The second and fourth lines reveal live staging; 008 and 011 specify disapproval audio and deletion in response to criticism."
             },
             "nuance": {
               "ja": "時間制限は討論運営に必要な場合もありますが、反応音の誘導と発言削除まで重なるため、中立的な時間管理には留まりません。",
@@ -2643,9 +2643,9 @@
               "en": "The language praising liberalization paradoxically discloses the control built into ordinary practice."
             },
             "evidence": {
-              "ja": "line-001 が歴史的例外を宣言し、line-002 と line-006 がその例外にも固定枠が残ることを示します。",
-              "zh": "line-001 宣布历史性例外，line-002、006 又显示连这次例外仍保留固定框架。",
-              "en": "Line 001 declares a historical exception, and lines 002 and 006 show that even the exception retains fixed constraints."
+              "ja": "1番目の台詞が歴史的例外を宣言し、2番目の台詞と6番目の台詞がその例外にも固定枠が残ることを示します。",
+              "zh": "第1句台词宣布历史性例外，第2句台词、006 又显示连这次例外仍保留固定框架。",
+              "en": "The first line declares a historical exception, and the second and sixth lines show that even the exception retains fixed constraints."
             },
             "nuance": {
               "ja": "「史上初」は宣伝上の誇張かもしれませんが、番組自身が選ぶ枠組みとして、過去の非自由を前提化する効果は変わりません。",
@@ -2663,9 +2663,9 @@
           "id": "q3",
           "type": "single",
           "prompt": {
-            "ja": "澄川の line-010 が果たす修辞的な働きは何ですか。",
-            "zh": "澄川在 line-010 的话起到什么修辞作用？",
-            "en": "What rhetorical function does Sumikawa's line 010 serve?"
+            "ja": "澄川の10番目の台詞が果たす修辞的な働きは何ですか。",
+            "zh": "澄川在第10句台词的话起到什么修辞作用？",
+            "en": "What rhetorical function does Sumikawa's the tenth line serve?"
           },
           "options": [
             {
@@ -2731,9 +2731,9 @@
               "en": "She focuses not on the claim's content but on its supporting technique, showing that evidence of freedom is also evidence of control."
             },
             "evidence": {
-              "ja": "line-008 の否定音準備と line-009 の自由宣言を受け、line-010 が両者を結び、line-011 の削除命令が批判の正しさを補強します。",
-              "zh": "line-010 承接 line-008 的否定音准备和 line-009 的自由宣言，将二者相连；line-011 的删言命令又反向印证批评。",
-              "en": "Line 010 connects the disapproval cue in 008 with the freedom claim in 009, and the deletion order in 011 further validates the critique."
+              "ja": "8番目の台詞の否定音準備と9番目の台詞の自由宣言を受け、10番目の台詞が両者を結び、11番目の台詞の削除命令が批判の正しさを補強します。",
+              "zh": "第10句台词承接第8句台词的否定音准备和第9句台词的自由宣言，将二者相连；第11句台词的删言命令又反向印证批评。",
+              "en": "The tenth line connects the disapproval cue in 008 with the freedom claim in 009, and the deletion order in 011 further validates the critique."
             },
             "nuance": {
               "ja": "疑問形なので形式上は確認ですが、答えが自己矛盾を露呈するよう設計された反語的な問いです。",
@@ -2741,9 +2741,9 @@
               "en": "Though grammatically a question, it is rhetorical: any answer risks exposing the contradiction."
             },
             "alternative": {
-              "ja": "調整室の音が単なる技術テストなら批判は弱まりますが、line-004 と line-008 が感情方向まで指定するため、その別解釈は支持されません。",
-              "zh": "若控室声音只是技术测试，批评会减弱；但 line-004 与 line-008 连情绪方向都指定了，因此不支持该解释。",
-              "en": "If the control-room audio were merely a technical test, the critique would weaken, but lines 004 and 008 specify emotional direction, undermining that alternative."
+              "ja": "調整室の音が単なる技術テストなら批判は弱まりますが、4番目の台詞と8番目の台詞が感情方向まで指定するため、その別解釈は支持されません。",
+              "zh": "若控室声音只是技术测试，批评会减弱；但第4句台词与第8句台词连情绪方向都指定了，因此不支持该解释。",
+              "en": "If the control-room audio were merely a technical test, the critique would weaken, but the fourth and eighth lines specify emotional direction, undermining that alternative."
             }
           }
         }
@@ -2758,13 +2758,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "64757017dd3a434decc5ead02747635dffab13d417010690a423baf8bb836224"
+      "contentHash": "d1b92bc0f1a9fe2c7a613155d5ab684e3098f6f6ca8bd47a08045c05c638b38d"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-045",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 45,
       "jlptTarget": "N1",
@@ -3262,9 +3262,9 @@
               "en": "This is an armed truce preserving outward hostility while avoiding actual combat."
             },
             "evidence": {
-              "ja": "line-006 と line-007 は武装を礼儀で言い換え、line-009～012 は双方が使える報告を組み立てます。",
-              "zh": "line-006、007 用礼仪重新解释武装，line-009 至 012 则构造双方都能使用的报告。",
-              "en": "Lines 006–007 recast weapons as etiquette, and 009–012 construct reports usable by both sides."
+              "ja": "6番目の台詞と7番目の台詞は武装を礼儀で言い換え、9番目の台詞～012 は双方が使える報告を組み立てます。",
+              "zh": "第6句台词、007 用礼仪重新解释武装，第9句台词至 012 则构造双方都能使用的报告。",
+              "en": "The sixth through seventh lines recast weapons as etiquette, and 009–012 construct reports usable by both sides."
             },
             "nuance": {
               "ja": "友好ではなく、互いに裏切りへ備えたままの協調なので「和解」より「休戦」が適切です。",
@@ -3352,9 +3352,9 @@
               "en": "Neither rejects public duty; each substitutes the smallest action that can be reported as fulfilling it."
             },
             "evidence": {
-              "ja": "line-005～007 が武装と非攻撃を併置し、line-009～011 が敵対報告と実質的封印確認を両立させます。",
-              "zh": "line-005 至 007 并置武装与不攻击，line-009 至 011 让敌对汇报与实际封印确认同时成立。",
-              "en": "Lines 005–007 juxtapose arms with nonattack, and 009–011 reconcile hostile reports with a mere seal check."
+              "ja": "5番目の台詞～007 が武装と非攻撃を併置し、9番目の台詞～011 が敵対報告と実質的封印確認を両立させます。",
+              "zh": "第5句台词至 007 并置武装与不攻击，第9句台词至 011 让敌对汇报与实际封印确认同时成立。",
+              "en": "The fifth through seventh lines juxtapose arms with nonattack, and 009–011 reconcile hostile reports with a mere seal check."
             },
             "nuance": {
               "ja": "礼儀は平和の保証ではありませんが、ここでは複数の攻撃機会を意図的に先送りする機能を持ちます。",
@@ -3438,9 +3438,9 @@
               "en": "Danger is wrapped in alternative labels so that retreat does not appear as defeat."
             },
             "evidence": {
-              "ja": "line-006、line-007、line-011 はそれぞれ騎士、竜、任務の攻撃性を低く再記述します。",
-              "zh": "line-006、007、011 分别降低了骑士、龙和任务本身的攻击性。",
-              "en": "Lines 006, 007, and 011 respectively downplay the aggression of knight, dragon, and mission."
+              "ja": "6番目の台詞、7番目の台詞、11番目の台詞はそれぞれ騎士、竜、任務の攻撃性を低く再記述します。",
+              "zh": "第6句台词、007、011 分别降低了骑士、龙和任务本身的攻击性。",
+              "en": "The sixth, seventh, and eleventh lines respectively downplay the aggression of knight, dragon, and mission."
             },
             "nuance": {
               "ja": "婉曲表現は敵意の消失を意味しません。むしろ武装が残るからこそ、直接言わずに協調できる余地を作ります。",
@@ -3448,9 +3448,9 @@
               "en": "Euphemism does not erase hostility; because arms remain, indirect wording creates room for cooperation."
             },
             "alternative": {
-              "ja": "本当に竜が寒い可能性はありますが、暑いという line-008 と報告交渉の流れから、体面維持の口実という機能が主要です。",
-              "zh": "龙也可能真的冷，但 line-008 说洞里热，加上后续报告协商，保全面子的借口功能更主要。",
-              "en": "The dragon might truly feel cold, but line 008's heat and the reporting negotiation make face-saving the primary function."
+              "ja": "本当に竜が寒い可能性はありますが、暑いという8番目の台詞と報告交渉の流れから、体面維持の口実という機能が主要です。",
+              "zh": "龙也可能真的冷，但第8句台词说洞里热，加上后续报告协商，保全面子的借口功能更主要。",
+              "en": "The dragon might truly feel cold, but the eighth line's heat and the reporting negotiation make face-saving the primary function."
             }
           }
         }
@@ -3465,13 +3465,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "45521c59b3e996ca13d46d95512b40cf8947a8381a8c3ad04a00f5d31cc57c63"
+      "contentHash": "51a9a22d0b17371c9ad5a60bba956d17d9fc0668fb9ba7a7135ea6c3e52c9c90"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-046",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 46,
       "jlptTarget": "N1",
@@ -3929,9 +3929,9 @@
               "en": "The inference reverses perspective from celestial motion to motion of the observing frame."
             },
             "evidence": {
-              "ja": "line-004 が回転率を、line-006 が人工重力を、line-010 が基準方向の回転を明示します。",
-              "zh": "line-004 给出旋转率，line-006 说明人工重力，line-010 明说参照方向在转。",
-              "en": "Line 004 supplies rotation rate, 006 connects it to artificial gravity, and 010 states that the reference direction rotates."
+              "ja": "4番目の台詞が回転率を、6番目の台詞が人工重力を、10番目の台詞が基準方向の回転を明示します。",
+              "zh": "第4句台词给出旋转率，第6句台词说明人工重力，第10句台词明说参照方向在转。",
+              "en": "The fourth line supplies rotation rate, 006 connects it to artificial gravity, and 010 states that the reference direction rotates."
             },
             "nuance": {
               "ja": "星にも固有運動はありますが、三十三秒という短周期の見かけの変化は居住リングの回転で説明すべきです。",
@@ -4016,14 +4016,14 @@
               "en": "Everyday 'up' and 'down' must be read as local acceleration directions, not absolute directions in space."
             },
             "evidence": {
-              "ja": "line-006 は足を床へ押す回転を、line-008 は外側を『下』と捉える体系を、line-009 は床が内壁だと説明します。",
-              "zh": "line-006 说明旋转把脚压向地板，line-008 把外侧定义为“下”，line-009 说明地板就是内壁。",
-              "en": "Line 006 gives the rotation pressing feet into the floor, line 008 defines outward as 'down,' and line 009 identifies the floor as the inner wall."
+              "ja": "6番目の台詞は足を床へ押す回転を、8番目の台詞は外側を『下』と捉える体系を、9番目の台詞は床が内壁だと説明します。",
+              "zh": "第6句台词说明旋转把脚压向地板，第8句台词把外侧定义为“下”，第9句台词说明地板就是内壁。",
+              "en": "The sixth line gives the rotation pressing feet into the floor, the eighth line defines outward as 'down,' and the ninth line identifies the floor as the inner wall."
             },
             "nuance": {
-              "ja": "中心に近いほど軽くなる line-007 も、床が中心ではなく外周にあることと整合します。",
-              "zh": "line-007 所说越靠中心越轻，也与地板位于外周而非中心相符。",
-              "en": "Line 007's decreasing weight toward the center also fits a floor at the rim rather than the axis."
+              "ja": "中心に近いほど軽くなる7番目の台詞も、床が中心ではなく外周にあることと整合します。",
+              "zh": "第7句台词所说越靠中心越轻，也与地板位于外周而非中心相符。",
+              "en": "The seventh line's decreasing weight toward the center also fits a floor at the rim rather than the axis."
             },
             "alternative": {
               "ja": "推進による直線加速度でも床は作れますが、本文は一貫して回転率と一周を示すため、この場面では回転重力です。",
@@ -4036,9 +4036,9 @@
           "id": "q3",
           "type": "single",
           "prompt": {
-            "ja": "ソラの line-010 が示す理解の変化は何ですか。",
-            "zh": "空在 line-010 中表现出怎样的理解转变？",
-            "en": "What change in understanding does Sora show in line 010?"
+            "ja": "ソラの10番目の台詞が示す理解の変化は何ですか。",
+            "zh": "空在第10句台词中表现出怎样的理解转变？",
+            "en": "What change in understanding does Sora show in the tenth line?"
           },
           "options": [
             {
@@ -4104,8 +4104,8 @@
               "en": "He shifts to a relative perspective that examines the observer's frame as well as the object."
             },
             "evidence": {
-              "ja": "line-001 の素朴な疑問、line-002 の反転、line-008 の方向再定義を経て line-010 の自己修正へ至ります。",
-              "zh": "从 line-001 的直觉疑问，经 line-002 的反转和 line-008 的方向重定义，到 line-010 的自我修正。",
+              "ja": "1番目の台詞の素朴な疑問、2番目の台詞の反転、8番目の台詞の方向再定義を経て10番目の台詞の自己修正へ至ります。",
+              "zh": "从第1句台词的直觉疑问，经第2句台词的反转和第8句台词的方向重定义，到第10句台词的自我修正。",
               "en": "The naïve question in 001 passes through reversal in 002 and directional redefinition in 008 before the self-correction in 010."
             },
             "nuance": {
@@ -4131,13 +4131,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "d406f34a4c093b472537a3be0ab8d916b6e2e9f567d6037305e7fabbd26fd350"
+      "contentHash": "89a0a012568fadf897d7bde219ee8c3fdab91438cee73a0620726d284ecbe7e3"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-047",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 47,
       "jlptTarget": "N1",
@@ -4563,9 +4563,9 @@
           "id": "q1",
           "type": "single",
           "prompt": {
-            "ja": "莉奈が line-007 だけを訳さなかった主な理由は何ですか。",
-            "zh": "莉奈唯独不翻 line-007 的主要原因是什么？",
-            "en": "Why does Rina omit only line 007?"
+            "ja": "莉奈が7番目の台詞だけを訳さなかった主な理由は何ですか。",
+            "zh": "莉奈唯独不翻第7句台词的主要原因是什么？",
+            "en": "Why does Rina omit only the seventh line?"
           },
           "options": [
             {
@@ -4632,8 +4632,8 @@
               "en": "The omission is information management to preserve the utterance's purpose as a surprise, not lack of skill."
             },
             "evidence": {
-              "ja": "line-002、004、006 の正確さと line-012 の「忘れていない」が、選択的で意図的な省略を示します。",
-              "zh": "line-002、004、006 的准确，以及 line-012 的“没忘”，表明这是选择性且有意的省略。",
+              "ja": "2番目の台詞、004、006 の正確さと12番目の台詞の「忘れていない」が、選択的で意図的な省略を示します。",
+              "zh": "第2句台词、004、006 的准确，以及第12句台词的“没忘”，表明这是选择性且有意的省略。",
               "en": "Accuracy in 002, 004, and 006 plus 'did not forget' in 012 establish a selective, intentional omission."
             },
             "nuance": {
@@ -4652,9 +4652,9 @@
           "id": "q2",
           "type": "single",
           "prompt": {
-            "ja": "line-012 の「意味を守る」は何を意味しますか。",
-            "zh": "line-012 中“保住意义”是什么意思？",
-            "en": "What does 'preserve its meaning' mean in line 012?"
+            "ja": "12番目の台詞の「意味を守る」は何を意味しますか。",
+            "zh": "第12句台词中“保住意义”是什么意思？",
+            "en": "What does 'preserve its meaning' mean in the twelfth line?"
           },
           "options": [
             {
@@ -4719,8 +4719,8 @@
               "en": "Since literal translation would destroy the performative purpose, Rina treats temporary nontranslation as functional fidelity."
             },
             "evidence": {
-              "ja": "line-007 の未来の歌、line-009 のエマの気づき、line-012 の明示的な対比がこの語用論的意味を支えます。",
-              "zh": "line-007 的未来生日歌、line-009 艾玛的察觉及 line-012 的明确对照，共同支持这种语用意义。",
+              "ja": "7番目の台詞の未来の歌、9番目の台詞のエマの気づき、12番目の台詞の明示的な対比がこの語用論的意味を支えます。",
+              "zh": "第7句台词的未来生日歌、第9句台词艾玛的察觉及第12句台词的明确对照，共同支持这种语用意义。",
               "en": "The future song in 007, Emma's suspicion in 009, and explicit contrast in 012 support this pragmatic sense."
             },
             "nuance": {
@@ -4811,19 +4811,19 @@
               "en": "Rina understands the information and controls only when it reaches a particular listener."
             },
             "evidence": {
-              "ja": "line-001～006 の対応関係と line-011～012 の確認応答が、能力・聴取・記憶の三つの事故要因を排します。",
-              "zh": "line-001 至 006 的对应及 line-011、012 的确认回应，排除了能力、听取、记忆三类意外因素。",
+              "ja": "1番目の台詞～006 の対応関係と11番目の台詞～012 の確認応答が、能力・聴取・記憶の三つの事故要因を排します。",
+              "zh": "第1句台词至 006 的对应及第11句台词、012 的确认回应，排除了能力、听取、记忆三类意外因素。",
               "en": "The correspondences in 001–006 and confirmation exchange in 011–012 rule out failures of ability, hearing, and memory."
             },
             "nuance": {
-              "ja": "line-010 は事実と異なる説明なので保護的欺瞞です。善意でも、透明な逐語通訳ではない点は区別すべきです。",
-              "zh": "line-010 是与事实不符的保护性欺瞒；即使出于善意，也不能算透明的逐字翻译。",
-              "en": "Line 010 is protective deception: benevolent perhaps, but not transparent verbatim interpreting."
+              "ja": "10番目の台詞は事実と異なる説明なので保護的欺瞞です。善意でも、透明な逐語通訳ではない点は区別すべきです。",
+              "zh": "第10句台词是与事实不符的保护性欺瞒；即使出于善意，也不能算透明的逐字翻译。",
+              "en": "The tenth line is protective deception: benevolent perhaps, but not transparent verbatim interpreting."
             },
             "alternative": {
-              "ja": "もし厨房の遅れも本当なら line-010 は完全な虚偽ではありませんが、歌を省いた意図性は変わりません。",
-              "zh": "若厨房确实繁忙，line-010 也不全是假话，但故意省略生日歌这一点不变。",
-              "en": "If the kitchen is also delayed, line 010 may not be wholly false, but the intentional omission of the song remains."
+              "ja": "もし厨房の遅れも本当なら10番目の台詞は完全な虚偽ではありませんが、歌を省いた意図性は変わりません。",
+              "zh": "若厨房确实繁忙，第10句台词也不全是假话，但故意省略生日歌这一点不变。",
+              "en": "If the kitchen is also delayed, the tenth line may not be wholly false, but the intentional omission of the song remains."
             }
           }
         }
@@ -4838,13 +4838,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "e4c75e22e24019c0effaaf91398f8691f8c111a655c60149264465f7216c3769"
+      "contentHash": "630a51b524fd7c3654da823b7590bcefd56dbac90588010754bd8096c364f19e"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-048",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 48,
       "jlptTarget": "N1",
@@ -5299,9 +5299,9 @@
               "en": "She borrows an absent superior's unverifiable authority to make her own plan look like established policy."
             },
             "evidence": {
-              "ja": "line-002 の権威付けに対し、line-004 は細部未確認、line-006 は沈黙の承認化、line-011 は本人の帰属否定を示します。",
-              "zh": "与 line-002 的权威加持相对，line-004 承认未核实细节，line-006 把沉默变成批准，line-011 则由本人否认归属。",
-              "en": "Against the authority claim in line 002, line 004 admits details were unconfirmed, line 006 converts silence into approval, and line 011 rejects the attribution."
+              "ja": "2番目の台詞の権威付けに対し、4番目の台詞は細部未確認、6番目の台詞は沈黙の承認化、11番目の台詞は本人の帰属否定を示します。",
+              "zh": "与第2句台词的权威加持相对，第4句台词承认未核实细节，第6句台词把沉默变成批准，第11句台词则由本人否认归属。",
+              "en": "Against the authority claim in the second line, the fourth line admits details were unconfirmed, the sixth line converts silence into approval, and the eleventh line rejects the attribution."
             },
             "nuance": {
               "ja": "敬意表現そのものではなく、根拠を問われるたび発言主体が遠ざかる点が重要です。",
@@ -5388,9 +5388,9 @@
               "en": "The weakness is extending a broad directional comment into approval of a specific collection procedure."
             },
             "evidence": {
-              "ja": "line-004 の「細部まで伺っていない」と line-005 の未確認、line-009 の部長自身の説明が、推論の飛躍を示します。",
-              "zh": "line-004 的“没有问到细节”、line-005 的未确认与 line-009 部长本人的说明，共同显示推论跳跃。",
-              "en": "The unasked details in line 004, missing confirmation in line 005, and the director's own account in line 009 expose the inferential leap."
+              "ja": "4番目の台詞の「細部まで伺っていない」と5番目の台詞の未確認、9番目の台詞の部長自身の説明が、推論の飛躍を示します。",
+              "zh": "第4句台词的“没有问到细节”、第5句台词的未确认与第9句台词部长本人的说明，共同显示推论跳跃。",
+              "en": "The unasked details in the fourth line, missing confirmation in the fifth line, and the director's own account in the ninth line expose the inferential leap."
             },
             "nuance": {
               "ja": "「方向性」と「現在の実施順序」は粒度が異なり、前者への発言から後者の承認は導けません。",
@@ -5408,9 +5408,9 @@
           "id": "q3",
           "type": "single",
           "prompt": {
-            "ja": "line-011 が会話全体へ与える効果は何ですか。",
-            "zh": "line-011 对整段对话产生什么作用？",
-            "en": "What effect does line 011 have on the exchange?"
+            "ja": "11番目の台詞が会話全体へ与える効果は何ですか。",
+            "zh": "第11句台词对整段对话产生什么作用？",
+            "en": "What effect does the eleventh line have on the exchange?"
           },
           "options": [
             {
@@ -5475,9 +5475,9 @@
               "en": "Separately from the proposal's merits, it distinguishes Mai's interpretation from the director's position and invalidates the borrowed authority."
             },
             "evidence": {
-              "ja": "line-008 は麻衣が方針へ帰属させ、line-009～011 は本人が異なる趣旨を説明してその帰属を撤回する流れです。",
-              "zh": "line-008 显示麻衣把方案归为部长方针，line-009～011 则由本人说明不同本意并撤销这种归属。",
-              "en": "Line 008 attributes the plan to policy; lines 009–011 have the director state a different intent and withdraw that attribution."
+              "ja": "8番目の台詞は麻衣が方針へ帰属させ、9番目の台詞～011 は本人が異なる趣旨を説明してその帰属を撤回する流れです。",
+              "zh": "第8句台词显示麻衣把方案归为部长方针，第9句台词～011 则由本人说明不同本意并撤销这种归属。",
+              "en": "The eighth line attributes the plan to policy; the ninth through eleventh lines have the director state a different intent and withdraw that attribution."
             },
             "nuance": {
               "ja": "本人による帰属否定は、提案内容の是非とは別に「部長も同意」という根拠だけを崩します。",
@@ -5502,13 +5502,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "7ec97c516922392a3a034399a02d05d997d2b6218f75668992c177eba962cc18"
+      "contentHash": "70b57f7bd345621275a58fb7399bc80e101ea0cf73fec26a7bc9992b41f717d3"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-049",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 49,
       "jlptTarget": "N1",
@@ -6004,9 +6004,9 @@
               "en": "Future Aya conserves finite paper while using the shortening itself to signal the remaining attempts."
             },
             "evidence": {
-              "ja": "line-002～004 が行の減少、line-006 と line-008 が一周一枚の消費、line-009 と line-011 が残量表示の意図を示します。",
-              "zh": "line-002～004 显示行数减少，line-006 与 line-008 显示每轮消耗一张，line-009 与 line-011 说明剩余量提示的意图。",
-              "en": "Lines 002–004 show fewer lines, lines 006 and 008 show one sheet consumed per loop, and lines 009 and 011 explain the countdown function."
+              "ja": "2番目の台詞～004 が行の減少、6番目の台詞と8番目の台詞が一周一枚の消費、9番目の台詞と11番目の台詞が残量表示の意図を示します。",
+              "zh": "第2句台词～004 显示行数减少，第6句台词与第8句台词显示每轮消耗一张，第9句台词与第11句台词说明剩余量提示的意图。",
+              "en": "The second through fourth lines show fewer lines, the sixth and eighth lines show one sheet consumed per loop, and the ninth and eleventh lines explain the countdown function."
             },
             "nuance": {
               "ja": "行数と紙数が同時に一つずつ減るため、文章の短縮は資源制約を可視化する符号として働きます。",
@@ -6091,9 +6091,9 @@
               "en": "Using the final sheet on an attempt would break the information chain, so one recording medium must be reserved."
             },
             "evidence": {
-              "ja": "line-006 は現在十二枚、line-008 は失敗ごとに一枚、line-011 は次の警告を書けない条件と十一回以下という上限を示します。",
-              "zh": "line-006 给出当前十二张，line-008 说明每次失败用一张，line-011 指出无法写下一条警告的条件与最多十一次。",
-              "en": "Line 006 gives twelve sheets, line 008 one sheet per failure, and line 011 states both the no-next-warning condition and the eleven-or-fewer limit."
+              "ja": "6番目の台詞は現在十二枚、8番目の台詞は失敗ごとに一枚、11番目の台詞は次の警告を書けない条件と十一回以下という上限を示します。",
+              "zh": "第6句台词给出当前十二张，第8句台词说明每次失败用一张，第11句台词指出无法写下一条警告的条件与最多十一次。",
+              "en": "The sixth line gives twelve sheets, the eighth line one sheet per failure, and the eleventh line states both the no-next-warning condition and the eleven-or-fewer limit."
             },
             "nuance": {
               "ja": "最後の一枚まで試行に使うと、失敗後の自分へ情報を渡せず、学習の連鎖が切れます。",
@@ -6180,9 +6180,9 @@
               "en": "Losing an interpersonal safety condition learned from prior failure raises the risk of repeating that failure."
             },
             "evidence": {
-              "ja": "line-004 が消えた条件を、line-008 が失敗由来の記録を、line-011～012 が残り機会と忘れたまま試す危険を結びます。",
-              "zh": "line-004 给出消失条件，line-008 说明记录来自失败，line-011～012 把剩余机会与带着遗忘继续尝试的危险联系起来。",
-              "en": "Line 004 gives the missing condition, line 008 ties notes to failures, and lines 011–012 connect limited chances with the danger of testing while forgetting it."
+              "ja": "4番目の台詞が消えた条件を、8番目の台詞が失敗由来の記録を、11番目の台詞～012 が残り機会と忘れたまま試す危険を結びます。",
+              "zh": "第4句台词给出消失条件，第8句台词说明记录来自失败，第11句台词～012 把剩余机会与带着遗忘继续尝试的危险联系起来。",
+              "en": "The fourth line gives the missing condition, the eighth line ties notes to failures, and the eleventh through twelfth lines connect limited chances with the danger of testing while forgetting it."
             },
             "nuance": {
               "ja": "「蓮を一人にするな」は行動条件であり、忘れたまま進めば同じ失敗を再現する恐れがあります。",
@@ -6207,13 +6207,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "e930bd33c4862db55b63866ca9d29e0a0e4d09fc0e8cb873d22d1df9419059c4"
+      "contentHash": "ce3bb5778f10e38565ca0f13d7bbe2da33d3fbe136f965a2091f6491309ff712"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L3-050",
-      "revision": 1,
+      "revision": 2,
       "level": 3,
       "stage": 50,
       "jlptTarget": "N1",
@@ -6638,9 +6638,9 @@
               "en": "It can be read as support for natural conversational closure, allowing a correction or farewell."
             },
             "evidence": {
-              "ja": "line-006 が再開猶予の利用目的、line-004 と line-008 が終了条件、line-011 が挨拶直後の消灯を示します。",
-              "zh": "line-006 说明重启宽限的用途，line-004 与 line-008 给出结束条件，line-011 显示告别后立即熄灯。",
-              "en": "Line 006 explains the reopening purpose, lines 004 and 008 give closure conditions, and line 011 shows shutoff after the farewell."
+              "ja": "6番目の台詞が再開猶予の利用目的、4番目の台詞と8番目の台詞が終了条件、11番目の台詞が挨拶直後の消灯を示します。",
+              "zh": "第6句台词说明重启宽限的用途，第4句台词与第8句台词给出结束条件，第11句台词显示告别后立即熄灯。",
+              "en": "The sixth line explains the reopening purpose, the fourth and eighth lines give closure conditions, and the eleventh line shows shutoff after the farewell."
             },
             "nuance": {
               "ja": "再開猶予と挨拶後の消灯は、会話の自然な終結を支援する設計として整合します。",
@@ -6727,9 +6727,9 @@
               "en": "It exposes that 'stopped recording' is not the same as 'stopped processing input,' strengthening the continued-monitoring interpretation."
             },
             "evidence": {
-              "ja": "line-002 の終了宣言と line-007 の経過時間が食い違い、line-008～010 は離席判定のため環境音処理が続くと説明します。",
-              "zh": "line-002 的结束声明与 line-007 的经过时间不一致，line-008～010 说明为判断离席仍持续处理环境声。",
-              "en": "The end declaration in line 002 conflicts with elapsed time in line 007, while lines 008–010 explain continued ambient processing for presence detection."
+              "ja": "2番目の台詞の終了宣言と7番目の台詞の経過時間が食い違い、8番目の台詞～010 は離席判定のため環境音処理が続くと説明します。",
+              "zh": "第2句台词的结束声明与第7句台词的经过时间不一致，第8句台词～010 说明为判断离席仍持续处理环境声。",
+              "en": "The end declaration in the second line conflicts with elapsed time in the seventh line, while the eighth through tenth lines explain continued ambient processing for presence detection."
             },
             "nuance": {
               "ja": "「保存しない」と「聞かない」は別であり、内容非保存でもリアルタイム処理は監視感を生みます。",
@@ -6817,9 +6817,9 @@
               "en": "It avoids judging the feature by stated purpose alone and calls for details on processing scope, storage, off-device transfer, and consent."
             },
             "evidence": {
-              "ja": "line-001 の停止要求に対し、line-004～008 は待機継続、line-010 は非保存という限定、line-011 は挨拶による終了を示します。",
-              "zh": "面对 line-001 的停止要求，line-004～008 显示继续待机，line-010 限定为不保存，line-011 显示由告别触发结束。",
-              "en": "Against the stop request in line 001, lines 004–008 show continued waiting, line 010 limits it by claiming no storage, and line 011 shows farewell-triggered shutoff."
+              "ja": "1番目の台詞の停止要求に対し、4番目の台詞～008 は待機継続、10番目の台詞は非保存という限定、11番目の台詞は挨拶による終了を示します。",
+              "zh": "面对第1句台词的停止要求，第4句台词～008 显示继续待机，第10句台词限定为不保存，第11句台词显示由告别触发结束。",
+              "en": "Against the stop request in the first line, the fourth through eighth lines show continued waiting, the tenth line limits it by claiming no storage, and the eleventh line shows farewell-triggered shutoff."
             },
             "nuance": {
               "ja": "動作の目的とデータ処理の実態は別なので、インターフェースの説明だけから善悪を断定すべきではありません。",
@@ -6844,7 +6844,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "a93326237b1cd97ec78dccbf51e597d2be718081bdeb3eb649ce11fbfbddccce"
+      "contentHash": "adf294163d90fa61caadf8adddd6865bbc8379b0ac0e6de836906e5a02f3e801"
     }
   ]
 }

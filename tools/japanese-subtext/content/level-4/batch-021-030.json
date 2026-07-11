@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "level": 4,
   "batch": "021-030",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L4-021",
-      "revision": 1,
+      "revision": 2,
       "level": 4,
       "stage": 21,
       "jlptTarget": "N1-advanced",
@@ -521,9 +521,9 @@
               "en": "Multiple physical and visual signals, not just audio, converge on one future time, exceeding a wrong-file explanation."
             },
             "evidence": {
-              "ja": "line-004、line-006、line-007、line-008、line-011、line-012 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-004、line-006、line-007、line-008、line-011、line-012，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-004, line-006, line-007, line-008, line-011, line-012 establish the relation that no single line proves alone."
+              "ja": "4番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、11番目の台詞、12番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第4句台词、第6句台词、第7句台词、第8句台词、第11句台词、第12句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the fourth line, the sixth line, the seventh line, the eighth line, the eleventh line, the twelfth line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "異常の機構は不明でも、観測範囲を放送装置だけに限定しないことが重要です。",
@@ -610,9 +610,9 @@
               "en": "Clocks and cameras split by platform and office, while the door and windows mark a visible boundary."
             },
             "evidence": {
-              "ja": "line-003、line-004、line-008、line-009、line-012、line-013 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-003、line-004、line-008、line-009、line-012、line-013，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-003, line-004, line-008, line-009, line-012, line-013 establish the relation that no single line proves alone."
+              "ja": "3番目の台詞、4番目の台詞、8番目の台詞、9番目の台詞、12番目の台詞、13番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第3句台词、第4句台词、第8句台词、第9句台词、第12句台词、第13句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the third line, the fourth line, the eighth line, the ninth line, the twelfth line, the thirteenth line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "『時間が進んだ』は登場人物の推定であり、別空間への接続など他の機構もあり得ます。",
@@ -698,9 +698,9 @@
               "en": "Independent clock and camera comparisons identify the same spatial boundary and weaken a single-device fault."
             },
             "evidence": {
-              "ja": "line-003、line-004、line-008、line-009 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-003、line-004、line-008、line-009，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-003, line-004, line-008, line-009 establish the relation that no single line proves alone."
+              "ja": "3番目の台詞、4番目の台詞、8番目の台詞、9番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第3句台词、第4句台词、第8句台词、第9句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the third line, the fourth line, the eighth line, the ninth line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "二系統の証拠が一致しても原因までは確定しませんが、異常の局在はかなり強く推定できます。",
@@ -786,9 +786,9 @@
               "en": "Because observations differ across the doorway, closing it is a precaution to preserve the known physical boundary."
             },
             "evidence": {
-              "ja": "line-008、line-009、line-010、line-012、line-013 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-008、line-009、line-010、line-012、line-013，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-008, line-009, line-010, line-012, line-013 establish the relation that no single line proves alone."
+              "ja": "8番目の台詞、9番目の台詞、10番目の台詞、12番目の台詞、13番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第8句台词、第9句台词、第10句台词、第12句台词、第13句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the eighth line, the ninth line, the tenth line, the twelfth line, the thirteenth line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "時間異常が伝播する証拠はなく、相馬自身も『かもしれない』と限定しているため、確定判断ではありません。",
@@ -813,13 +813,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "46020d4345efe0608bcae17091cd70bf6de7ebd0de898743c8837473cde51469"
+      "contentHash": "10c5ae71e3d32b0d6caa84c57c5e990c06b7d3af7f7ed2a4d939d02c2e64b758"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L4-022",
-      "revision": 1,
+      "revision": 2,
       "level": 4,
       "stage": 22,
       "jlptTarget": "N1-advanced",
@@ -1326,9 +1326,9 @@
               "en": "Renovation order, one-way memory, and the same scar link all three into one continuous life."
             },
             "evidence": {
-              "ja": "line-002、line-003、line-004、line-005、line-008、line-009、line-012 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-002、line-003、line-004、line-005、line-008、line-009、line-012，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-002, line-003, line-004, line-005, line-008, line-009, line-012 establish the relation that no single line proves alone."
+              "ja": "2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、8番目の台詞、9番目の台詞、12番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第2句台词、第3句台词、第4句台词、第5句台词、第8句台词、第9句台词、第12句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the second line, the third line, the fourth line, the fifth line, the eighth line, the ninth line, the twelfth line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "夢の中で人格が分かれていても、経験の所有者まで別人とは限りません。",
@@ -1415,9 +1415,9 @@
               "en": "Each speaker's knowledge includes prior eras in chronological order, while information from future to past is absent."
             },
             "evidence": {
-              "ja": "line-006、line-007、line-008、line-010、line-011、line-012 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-006、line-007、line-008、line-010、line-011、line-012，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-006, line-007, line-008, line-010, line-011, line-012 establish the relation that no single line proves alone."
+              "ja": "6番目の台詞、7番目の台詞、8番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第6句台词、第7句台词、第8句台词、第10句台词、第11句台词、第12句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the sixth line, the seventh line, the eighth line, the tenth line, the eleventh line, the twelfth line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "夢は物理的な時間旅行ではなく、記憶を年代別の声へ分配した表現として読めます。",
@@ -1502,9 +1502,9 @@
               "en": "The same scar has a sequence of origin, concealment, and acceptance, corroborating identity independently of the house."
             },
             "evidence": {
-              "ja": "line-009、line-010、line-011、line-012 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-009、line-010、line-011、line-012，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-009, line-010, line-011, line-012 establish the relation that no single line proves alone."
+              "ja": "9番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第9句台词、第10句台词、第11句台词、第12句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the ninth line, the tenth line, the eleventh line, the twelfth line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "身体の連続性は完全な人格同一性の哲学的証明ではありませんが、この夢の物語では強い統合記号です。",
@@ -1529,13 +1529,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "8cf6930a6359ded13b0d1a5af7adcf032c76fb5aa8a592713a191aa5769e43c4"
+      "contentHash": "5b1a9c6482776774ec7a51fb8d8d7f6b7d5ee5f3acc8b7779b5e1a02b8e24b3b"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L4-023",
-      "revision": 1,
+      "revision": 2,
       "level": 4,
       "stage": 23,
       "jlptTarget": "N1-advanced",
@@ -2074,9 +2074,9 @@
               "en": "Tomoya manipulates endings across days and explicitly reasons that recognizing change requires memory."
             },
             "evidence": {
-              "ja": "line-005、line-006、line-007、line-008、line-011 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-005、line-006、line-007、line-008、line-011，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-005, line-006, line-007, line-008, line-011 establish the relation that no single line proves alone."
+              "ja": "5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、11番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第5句台词、第6句台词、第7句台词、第8句台词、第11句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the fifth line, the sixth line, the seventh line, the eighth line, the eleventh line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "紬も記録を保持しているようですが、問いは会話参加者の自覚を中心にしており、智也の意図が最も直接的です。",
@@ -2084,9 +2084,9 @@
               "en": "Tsumugi also seems to retain records, but among dialogue participants Tomoya's intentionality is most direct."
             },
             "alternative": {
-              "ja": "偶然に語尾が変わるだけなら line-008 の説明と翌日への試験提案が説明できません。",
-              "zh": "若只是偶然改句尾，无法解释 line-008 的推理和对次日的测试提议。",
-              "en": "Random variation would not explain line 008's reasoning or his proposed test for the next day."
+              "ja": "偶然に語尾が変わるだけなら8番目の台詞の説明と翌日への試験提案が説明できません。",
+              "zh": "若只是偶然改句尾，无法解释第8句台词的推理和对次日的测试提议。",
+              "en": "Random variation would not explain the eighth line's reasoning or his proposed test for the next day."
             }
           }
         },
@@ -2164,9 +2164,9 @@
               "en": "Despite claiming authorship and making a note, her timing, typo, and punctuation stay fixed and the new instruction is not reflected."
             },
             "evidence": {
-              "ja": "line-002、line-003、line-004、line-009、line-010、line-012、line-013 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-002、line-003、line-004、line-009、line-010、line-012、line-013，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-002, line-003, line-004, line-009, line-010, line-012, line-013 establish the relation that no single line proves alone."
+              "ja": "2番目の台詞、3番目の台詞、4番目の台詞、9番目の台詞、10番目の台詞、12番目の台詞、13番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第2句台词、第3句台词、第4句台词、第9句台词、第10句台词、第12句台词、第13句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the second line, the third line, the fourth line, the ninth line, the tenth line, the twelfth line, the thirteenth line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "『脚本』は機構の比喩であり、実際に誰かが台本を書いたとまでは証明されません。",
@@ -2252,9 +2252,9 @@
               "en": "He preselects a clearly different word for comparison with the next output, making this a controlled test of the loop mechanism."
             },
             "evidence": {
-              "ja": "line-009、line-010、line-011、line-012、line-013 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-009、line-010、line-011、line-012、line-013，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-009, line-010, line-011, line-012, line-013 establish the relation that no single line proves alone."
+              "ja": "9番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞、13番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第9句台词、第10句台词、第11句台词、第12句台词、第13句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the ninth line, the tenth line, the eleventh line, the twelfth line, the thirteenth line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "失敗は里奈に意思がないことを証明せず、意思が周回境界を越えて出力へ届かないことを示します。",
@@ -2279,13 +2279,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "eaefd350d413c687a05f138f074e11e020690e52c63392dc55e6d8c4b5eff823"
+      "contentHash": "883756fa1ce36aa8da878d54802864bbac51b8cee9c95947b09e876b144fb213"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L4-024",
-      "revision": 1,
+      "revision": 2,
       "level": 4,
       "stage": 24,
       "jlptTarget": "N1-advanced",
@@ -2809,9 +2809,9 @@
               "en": "Providing information and alternatives while leaving the final decision to her matches the evaluator's stated criteria."
             },
             "evidence": {
-              "ja": "line-005、line-006、line-007、line-008 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-005、line-006、line-007、line-008，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-005, line-006, line-007, line-008 establish the relation that no single line proves alone."
+              "ja": "5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第5句台词、第6句台词、第7句台词、第8句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the fifth line, the sixth line, the seventh line, the eighth line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "自律的選択は放任ではなく、危険・時間・撤退条件を理解できる形で支えることを含みます。",
@@ -2898,9 +2898,9 @@
               "en": "The evaluator explicitly places life and decision-making capacity side by side; forced safety alone does not earn full marks."
             },
             "evidence": {
-              "ja": "line-003、line-008、line-009、line-010、line-011、line-012 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-003、line-008、line-009、line-010、line-011、line-012，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-003, line-008, line-009, line-010, line-011, line-012 establish the relation that no single line proves alone."
+              "ja": "3番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第3句台词、第8句台词、第9句台词、第10句台词、第11句台词、第12句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the third line, the eighth line, the ninth line, the tenth line, the eleventh line, the twelfth line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "極端な緊急時には即時保護が優先される場合もありますが、この場面には比較可能な時間と代替案があります。",
@@ -2987,9 +2987,9 @@
               "en": "Although safety-oriented, the first command excludes her own goal and available alternatives and forms no consent."
             },
             "evidence": {
-              "ja": "line-002、line-003、line-004、line-005、line-006 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-002、line-003、line-004、line-005、line-006，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-002, line-003, line-004, line-005, line-006 establish the relation that no single line proves alone."
+              "ja": "2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第2句台词、第3句台词、第4句台词、第5句台词、第6句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the second line, the third line, the fourth line, the fifth line, the sixth line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "良い結果の確率だけで行為の質を評価せず、手続きと主体性も別軸で見る設計です。",
@@ -3075,9 +3075,9 @@
               "en": "The score difference tracks not just survival but checking wishes, presenting alternatives, and personal choice."
             },
             "evidence": {
-              "ja": "line-003、line-008、line-010、line-011、line-012 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-003、line-008、line-010、line-011、line-012，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-003, line-008, line-010, line-011, line-012 establish the relation that no single line proves alone."
+              "ja": "3番目の台詞、8番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第3句台词、第8句台词、第10句台词、第11句台词、第12句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the third line, the eighth line, the tenth line, the eleventh line, the twelfth line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "自決尊重は特定の結論を選ばせることではなく、選択過程を本人へ返すことです。",
@@ -3102,13 +3102,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "b121b03a6609ae75e62c235759c64f189f49703b51c2b802aa0f28506d41a12b"
+      "contentHash": "8f117cb22066b88f1b50b47831f066ac8080efb267cc5bebe4a4156d76d281ca"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L4-025",
-      "revision": 1,
+      "revision": 2,
       "level": 4,
       "stage": 25,
       "jlptTarget": "N1-advanced",
@@ -3646,9 +3646,9 @@
               "en": "Although the bubble sits over Aoi, Jun's pointing and matching blue possession align with the line."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-010、line-011 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-001、line-002、line-010、line-011，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-001, line-002, line-010, line-011 establish the relation that no single line proves alone."
+              "ja": "1番目の台詞、2番目の台詞、10番目の台詞、11番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第1句台词、第2句台词、第10句台词、第11句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the first line, the second line, the tenth line, the eleventh line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "視覚的対応は絶対ではありませんが、後続コマにも同じ一段ずれが反復するため規則性があります。",
@@ -3734,9 +3734,9 @@
               "en": "The words 'spicy' and 'water' directly map to Taro's taste reaction and requesting gesture."
             },
             "evidence": {
-              "ja": "line-005、line-006、line-010、line-011 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-005、line-006、line-010、line-011，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-005, line-006, line-010, line-011 establish the relation that no single line proves alone."
+              "ja": "5番目の台詞、6番目の台詞、10番目の台詞、11番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第5句台词、第6句台词、第10句台词、第11句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the fifth line, the sixth line, the tenth line, the eleventh line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "吹き出し位置は今回まさに破損した情報なので、独立した絵の因果関係を優先します。",
@@ -3824,9 +3824,9 @@
               "en": "All four lines map back to visually coherent speakers in a one-step cycle Aoi→Jun→Miki→Taro→Aoi."
             },
             "evidence": {
-              "ja": "line-001、line-003、line-005、line-007、line-010、line-011、line-013 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-001、line-003、line-005、line-007、line-010、line-011、line-013，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-001, line-003, line-005, line-007, line-010, line-011, line-013 establish the relation that no single line proves alone."
+              "ja": "1番目の台詞、3番目の台詞、5番目の台詞、7番目の台詞、10番目の台詞、11番目の台詞、13番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第1句台词、第3句台词、第5句台词、第7句台词、第10句台词、第11句台词、第13句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the first line, the third line, the fifth line, the seventh line, the tenth line, the eleventh line, the thirteenth line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "内容破損と配置破損を区別することで、残っている情報を最大限利用できます。",
@@ -3851,13 +3851,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "103b5b35efed05676c38da2a0075e848946f9e2be38989362f95aa419eb1c8df"
+      "contentHash": "e8bbc1ec029c63b1e5f34c5eb8c05dc5a02a690cdb75042d533f6001f71d0607"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L4-026",
-      "revision": 1,
+      "revision": 2,
       "level": 4,
       "stage": 26,
       "jlptTarget": "N1-advanced",
@@ -4363,9 +4363,9 @@
               "en": "Engineering timing and legal-contract constraints independently block the same current proposal."
             },
             "evidence": {
-              "ja": "line-002、line-003、line-006、line-007、line-010 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-002、line-003、line-006、line-007、line-010，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-002, line-003, line-006, line-007, line-010 establish the relation that no single line proves alone."
+              "ja": "2番目の台詞、3番目の台詞、6番目の台詞、7番目の台詞、10番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第2句台词、第3句台词、第6句台词、第7句台词、第10句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the second line, the third line, the sixth line, the seventh line, the tenth line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "一つを解消しても他方が残るため、条件は選択肢ではなく累積的です。",
@@ -4455,9 +4455,9 @@
               "en": "By extracting positive attitude words while deleting timing and conditions, the summary transforms the proposition."
             },
             "evidence": {
-              "ja": "line-001、line-004、line-005、line-006、line-007、line-008、line-009、line-010 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-001、line-004、line-005、line-006、line-007、line-008、line-009、line-010，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-001, line-004, line-005, line-006, line-007, line-008, line-009, line-010 establish the relation that no single line proves alone."
+              "ja": "1番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第1句台词、第4句台词、第5句台词、第6句台词、第7句台词、第8句台词、第9句台词、第10句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the first line, the fourth line, the fifth line, the sixth line, the seventh line, the eighth line, the ninth line, the tenth line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "要約は短くてもよいですが、結論を反転させる限定詞は省けません。",
@@ -4545,9 +4545,9 @@
               "en": "Treating each qualifier conjunctively yields both future conditional possibility and present infeasibility."
             },
             "evidence": {
-              "ja": "line-005、line-006、line-007、line-009、line-010、line-011、line-012 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-005、line-006、line-007、line-009、line-010、line-011、line-012，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-005, line-006, line-007, line-009, line-010, line-011, line-012 establish the relation that no single line proves alone."
+              "ja": "5番目の台詞、6番目の台詞、7番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第5句台词、第6句台词、第7句台词、第9句台词、第10句台词、第11句台词、第12句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the fifth line, the sixth line, the seventh line, the ninth line, the tenth line, the eleventh line, the twelfth line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "『前向き』と『可能』、『将来』と『現在』を区別することが約束推論の要点です。",
@@ -4572,13 +4572,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "69508f668530d310482882f8c2b9e25de4197543bc72a8c8d90ffce11f4bd2b5"
+      "contentHash": "21ceb902fa71a73811e7fd4fb677893d8b703d8f3fd5d29ea94f65ced9cbd258"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L4-027",
-      "revision": 1,
+      "revision": 2,
       "level": 4,
       "stage": 27,
       "jlptTarget": "N1-advanced",
@@ -5107,9 +5107,9 @@
               "en": "She promotes her rival, stresses non-representative work she can do, and finally admits continuity matters more than office."
             },
             "evidence": {
-              "ja": "line-002、line-004、line-006、line-007、line-008、line-011、line-012、line-013 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-002、line-004、line-006、line-007、line-008、line-011、line-012、line-013，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-002, line-004, line-006, line-007, line-008, line-011, line-012, line-013 establish the relation that no single line proves alone."
+              "ja": "2番目の台詞、4番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、11番目の台詞、12番目の台詞、13番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第2句台词、第4句台词、第6句台词、第7句台词、第8句台词、第11句台词、第12句台词、第13句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the second line, the fourth line, the sixth line, the seventh line, the eighth line, the eleventh line, the twelfth line, the thirteenth line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "表面上は自己犠牲的でも、同時に自分の望む役割を確保する戦略的自己提示です。",
@@ -5194,9 +5194,9 @@
               "en": "She replaces a candidate's self-proposal with an endorsement of her rival, reversing the normal electoral function."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-003、line-011 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-001、line-002、line-003、line-011，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-001, line-002, line-003, line-011 establish the relation that no single line proves alone."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、11番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第1句台词、第2句台词、第3句台词、第11句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the first line, the second line, the third line, the eleventh line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "他者称賛は礼貌でも、質問への非回答と組み合わさると票誘導の手段になります。",
@@ -5276,14 +5276,14 @@
               "en": "The text-supported answer is “She feared directly declining office would be judged as shirking responsibility..”"
             },
             "intent": {
-              "ja": "奏自身が line-010 で社会的評価への懸念を明言し、間接的な演説を選んだ動機を説明します。",
-              "zh": "奏在 line-010 明说担心社会评价，解释了为何采用间接演讲。",
-              "en": "Kanade explicitly states her fear of social judgment in line 010, explaining the indirect strategy."
+              "ja": "奏自身が10番目の台詞で社会的評価への懸念を明言し、間接的な演説を選んだ動機を説明します。",
+              "zh": "奏在第10句台词明说担心社会评价，解释了为何采用间接演讲。",
+              "en": "Kanade explicitly states her fear of social judgment in the tenth line, explaining the indirect strategy."
             },
             "evidence": {
-              "ja": "line-007、line-008、line-009、line-010 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-007、line-008、line-009、line-010，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-007, line-008, line-009, line-010 establish the relation that no single line proves alone."
+              "ja": "7番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第7句台词、第8句台词、第9句台词、第10句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the seventh line, the eighth line, the ninth line, the tenth line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "間接性は単なる臆病ではなく、勤勉さを示しながら希望役割を交渉する面子管理でもあります。",
@@ -5369,9 +5369,9 @@
               "en": "The speech has a dual function: steering votes and pre-negotiating post-election roles."
             },
             "evidence": {
-              "ja": "line-006、line-009、line-011、line-012、line-013 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-006、line-009、line-011、line-012、line-013，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-006, line-009, line-011, line-012, line-013 establish the relation that no single line proves alone."
+              "ja": "6番目の台詞、9番目の台詞、11番目の台詞、12番目の台詞、13番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第6句台词、第9句台词、第11句台词、第12句台词、第13句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the sixth line, the ninth line, the eleventh line, the twelfth line, the thirteenth line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "『負ける』は失敗ではなく、奏の本当の目的に照らせば設計された望ましい結果です。",
@@ -5396,13 +5396,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "0afe6d42ff0c96a2700492013e6f4d6f9281293002c5143d5cbdd84d89db9f5a"
+      "contentHash": "5eaff43f1e124d22bacef13480a1eda842e2427f9ac405deebd600bfeccc14d5"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L4-028",
-      "revision": 1,
+      "revision": 2,
       "level": 4,
       "stage": 28,
       "jlptTarget": "N1-advanced",
@@ -5899,9 +5899,9 @@
               "en": "Preference memory, arrival estimates, read status, and station messages all point to a living expected person, finally identified as the brother."
             },
             "evidence": {
-              "ja": "line-002、line-003、line-004、line-007、line-008、line-010、line-011、line-012 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-002、line-003、line-004、line-007、line-008、line-010、line-011、line-012，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-002, line-003, line-004, line-007, line-008, line-010, line-011, line-012 establish the relation that no single line proves alone."
+              "ja": "2番目の台詞、3番目の台詞、4番目の台詞、7番目の台詞、8番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第2句台词、第3句台词、第4句台词、第7句台词、第8句台词、第10句台词、第11句台词、第12句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the second line, the third line, the fourth line, the seventh line, the eighth line, the tenth line, the eleventh line, the twelfth line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "空席は物語上しばしば象徴になりますが、ここでは現在進行の時刻情報が象徴解釈を修正します。",
@@ -5987,9 +5987,9 @@
               "en": "Train, station, read receipt, and north-exit updates combine with clock checks to update the waiting decision."
             },
             "evidence": {
-              "ja": "line-004、line-005、line-006、line-007、line-008 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-004、line-005、line-006、line-007、line-008，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-004, line-005, line-006, line-007, line-008 establish the relation that no single line proves alone."
+              "ja": "4番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第4句台词、第5句台词、第6句台词、第7句台词、第8句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the fourth line, the fifth line, the sixth line, the seventh line, the eighth line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "時計を見ること単独では不安や退店準備とも読めますが、通信内容が到着待ちへ限定します。",
@@ -6075,9 +6075,9 @@
               "en": "A known personal habit establishes an ongoing person, while the train-based estimate establishes today's arrival plan."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-003、line-004 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-001、line-002、line-003、line-004，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-001, line-002, line-003, line-004 establish the relation that no single line proves alone."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第1句台词、第2句台词、第3句台词、第4句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the first line, the second line, the third line, the fourth line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "四つの注文だけなら欠席者、持ち帰り、象徴のいずれもあり得るため、人物固有情報が重要です。",
@@ -6102,13 +6102,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "c2f5ad5eb13382275508e844dcb389df2bf2609c544c7ba2526573009bca5506"
+      "contentHash": "d8057d9c1d0bf26e85147b2bfc8b4ab1b08559bd9ec259e6fe350291b392a386"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L4-029",
-      "revision": 1,
+      "revision": 2,
       "level": 4,
       "stage": 29,
       "jlptTarget": "N1-advanced",
@@ -6605,9 +6605,9 @@
               "en": "A matching low-frequency error plus formatting habit carries far more source-identifying information than shared common vocabulary or politeness."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-003、line-004、line-005 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-001、line-002、line-003、line-004、line-005，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-001, line-002, line-003, line-004, line-005 establish the relation that no single line proves alone."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第1句台词、第2句台词、第3句台词、第4句台词、第5句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the first line, the second line, the third line, the fourth line, the fifth line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "同一テンプレート利用を示す証拠であり、内部モデルまで同一だと直接証明するわけではありません。",
@@ -6693,9 +6693,9 @@
               "en": "The regular one-second sequence is neither simultaneous nor independently random and fits sequential processing on one substrate."
             },
             "evidence": {
-              "ja": "line-006、line-007、line-008、line-009、line-010 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-006、line-007、line-008、line-009、line-010，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-006, line-007, line-008, line-009, line-010 establish the relation that no single line proves alone."
+              "ja": "6番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第6句台词、第7句台词、第8句台词、第9句台词、第10句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the sixth line, the seventh line, the eighth line, the ninth line, the tenth line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "時刻列だけでは共有サーバー以上のことは断定できず、言語指紋と合わせて初めて三役説が強まります。",
@@ -6782,9 +6782,9 @@
               "en": "The system itself admits bulk templates and one operator, supporting non-independent displayed personas without overclaiming identical models."
             },
             "evidence": {
-              "ja": "line-005、line-009、line-010、line-011、line-012、line-013 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-005、line-009、line-010、line-011、line-012、line-013，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-005, line-009, line-010, line-011, line-012, line-013 establish the relation that no single line proves alone."
+              "ja": "5番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞、13番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第5句台词、第9句台词、第10句台词、第11句台词、第12句台词、第13句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the fifth line, the ninth line, the tenth line, the eleventh line, the twelfth line, the thirteenth line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "『人格』は技術モデル、運用主体、表示名のどれを指すか曖昧なので、結論のレベルを限定する必要があります。",
@@ -6809,13 +6809,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "47be0302087addb1e5a1a4abdded88abf18d2f98b75339b1d167e10f8923b0ef"
+      "contentHash": "7c855a5323b250184f96b8eb9763b6d5c16abcb22e758a381f91113b0ffde825"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "id": "L4-030",
-      "revision": 1,
+      "revision": 2,
       "level": 4,
       "stage": 30,
       "jlptTarget": "N1-advanced",
@@ -7337,9 +7337,9 @@
               "en": "Across different concerns the same anticipatory structure repeats, and callers identify pre-interviews, emails, and production instructions as sources."
             },
             "evidence": {
-              "ja": "line-002、line-003、line-004、line-006、line-007、line-008、line-010、line-011、line-012 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-002、line-003、line-004、line-006、line-007、line-008、line-010、line-011、line-012，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-002, line-003, line-004, line-006, line-007, line-008, line-010, line-011, line-012 establish the relation that no single line proves alone."
+              "ja": "2番目の台詞、3番目の台詞、4番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第2句台词、第3句台词、第4句台词、第6句台词、第7句台词、第8句台词、第10句台词、第11句台词、第12句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the second line, the third line, the fourth line, the sixth line, the seventh line, the eighth line, the tenth line, the eleventh line, the twelfth line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "相談内容そのものが虚偽とは限りませんが、会話の即興性は演出されています。",
@@ -7357,9 +7357,9 @@
           "id": "q2",
           "type": "single",
           "prompt": {
-            "ja": "楓の line-002 が不自然に聞こえる直接の理由は何ですか。",
-            "zh": "枫在 line-002 的回答为何直接显得不自然？",
-            "en": "Why does Kaede's line 002 sound immediately unnatural?"
+            "ja": "楓の2番目の台詞が不自然に聞こえる直接の理由は何ですか。",
+            "zh": "枫在第2句台词的回答为何直接显得不自然？",
+            "en": "Why does Kaede's the second line sound immediately unnatural?"
           },
           "options": [
             {
@@ -7424,9 +7424,9 @@
               "en": "In response to an open prompt, she begins 'yes' and arranges three specifics, grammatically answering questions that have not occurred."
             },
             "evidence": {
-              "ja": "line-001、line-002、line-003、line-004 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-001、line-002、line-003、line-004，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-001, line-002, line-003, line-004 establish the relation that no single line proves alone."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第1句台词、第2句台词、第3句台词、第4句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the first line, the second line, the third line, the fourth line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "情報量が多いこと自体より、応答詞と順序が事前質問の存在を漏らしています。",
@@ -7511,9 +7511,9 @@
               "en": "Pre-interview, participant email, and production staff are different channels within one production process."
             },
             "evidence": {
-              "ja": "line-004、line-008、line-011、line-012 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-004、line-008、line-011、line-012，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-004, line-008, line-011, line-012 establish the relation that no single line proves alone."
+              "ja": "4番目の台詞、8番目の台詞、11番目の台詞、12番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第4句台词、第8句台词、第11句台词、第12句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the fourth line, the eighth line, the eleventh line, the twelfth line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "情報源を『司会』とせず『制作側』とすることで、個人ではなく番組運営の仕組みとして捉えます。",
@@ -7599,9 +7599,9 @@
               "en": "A written prompt frame and production's reading-order instruction are direct testimony, not accidental caller prediction."
             },
             "evidence": {
-              "ja": "line-007、line-008、line-011、line-012 を組み合わせると、単独の一文では見えない関係が確かめられます。",
-              "zh": "结合 line-007、line-008、line-011、line-012，可以确认单独一句无法呈现的关系。",
-              "en": "Taken together, line-007, line-008, line-011, line-012 establish the relation that no single line proves alone."
+              "ja": "7番目の台詞、8番目の台詞、11番目の台詞、12番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
+              "zh": "结合第7句台词、第8句台词、第11句台词、第12句台词，可以确认单独一句无法呈现的关系。",
+              "en": "Taken together, the seventh line, the eighth line, the eleventh line, the twelfth line establish the relation that no single line proves alone."
             },
             "nuance": {
               "ja": "『台本化』には全文固定から項目順だけの制御まで幅があり、本文が確実に示すのは後者です。",
@@ -7626,7 +7626,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "62d78116351eb7220d4f7d715769ce37f175c630fff198b1402da43f7b64302b"
+      "contentHash": "279cc9bfed359a6732cc3299011ed50ca8c82cc5674e77f84ee44be4e39c94ac"
     }
   ]
 }
