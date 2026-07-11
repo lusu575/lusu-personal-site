@@ -1,0 +1,1195 @@
+{
+  "schemaVersion": 1,
+  "contentVersion": "1.0.0",
+  "level": 4,
+  "jlptTarget": "N1-advanced",
+  "stages": [
+    {
+      "id": "L4-001",
+      "stage": 1,
+      "title": {
+        "ja": "賛成多数の伏せた表",
+        "zh": "被扣下的“多数赞成”",
+        "en": "The Concealed Veto"
+      },
+      "shortLabel": {
+        "ja": "賛成多数の伏せた表",
+        "zh": "被扣下的“多数赞成”",
+        "en": "The Concealed Veto"
+      },
+      "genres": [
+        "workplace"
+      ],
+      "skills": [
+        "multi-speaker-tracking",
+        "veto-inference"
+      ],
+      "batch": "batch-001-010.json",
+      "contentHash": "dfd3f5a4b920939acd12c167f2b3e6afaf8b7fbba9903e27b29c50f977787c31"
+    },
+    {
+      "id": "L4-002",
+      "stage": 2,
+      "title": {
+        "ja": "深夜の教師アカウント",
+        "zh": "深夜的教师账号",
+        "en": "The Teacher Account at Midnight"
+      },
+      "shortLabel": {
+        "ja": "深夜の教師アカウント",
+        "zh": "深夜的教师账号",
+        "en": "The Teacher Account at Midnight"
+      },
+      "genres": [
+        "school",
+        "online-chat"
+      ],
+      "skills": [
+        "timeline-inference",
+        "identity-inference"
+      ],
+      "batch": "batch-001-010.json",
+      "contentHash": "812640c35ca6fa07618473c37349f1ba188e9e14bb0c51e7ebe5021933f22750"
+    },
+    {
+      "id": "L4-003",
+      "stage": 3,
+      "title": {
+        "ja": "誰のでもない四皿目",
+        "zh": "谁都不认的第四盘",
+        "en": "The Fourth Plate Nobody Ordered"
+      },
+      "shortLabel": {
+        "ja": "誰のでもない四皿目",
+        "zh": "谁都不认的第四盘",
+        "en": "The Fourth Plate Nobody Ordered"
+      },
+      "genres": [
+        "restaurant",
+        "daily-life"
+      ],
+      "skills": [
+        "multi-speaker-tracking",
+        "protective-deception"
+      ],
+      "batch": "batch-001-010.json",
+      "contentHash": "3915550c0c60973c5477d7c2b250cb82163b8ef3a7b75283cb9d4d7302391531"
+    },
+    {
+      "id": "L4-004",
+      "stage": 4,
+      "title": {
+        "ja": "分からないふりの搭乗口",
+        "zh": "假装听不懂的登机口",
+        "en": "Feigning Confusion at the Gate"
+      },
+      "shortLabel": {
+        "ja": "分からないふりの搭乗口",
+        "zh": "假装听不懂的登机口",
+        "en": "Feigning Confusion at the Gate"
+      },
+      "genres": [
+        "travel"
+      ],
+      "skills": [
+        "language-choice",
+        "motive-inference"
+      ],
+      "batch": "batch-001-010.json",
+      "contentHash": "01d8d3e7eaa1ec029770e7c53eb9cb0cdf943091070ee48772322b0519415370"
+    },
+    {
+      "id": "L4-005",
+      "stage": 5,
+      "title": {
+        "ja": "名前を替えた二人",
+        "zh": "交换名字的两人",
+        "en": "Two Swapped Names"
+      },
+      "shortLabel": {
+        "ja": "名前を替えた二人",
+        "zh": "交换名字的两人",
+        "en": "Two Swapped Names"
+      },
+      "genres": [
+        "VRChat",
+        "mystery"
+      ],
+      "skills": [
+        "voice-evidence",
+        "identity-inference"
+      ],
+      "batch": "batch-001-010.json",
+      "contentHash": "10404fd1d21975b5bace49865185d3f32c1b9904a9ab081958b780d1f29f4d4d"
+    },
+    {
+      "id": "L4-006",
+      "stage": 6,
+      "title": {
+        "ja": "ミュート中の先回り",
+        "zh": "静音者的抢先反对",
+        "en": "The Muted Player Who Knew First"
+      },
+      "shortLabel": {
+        "ja": "ミュート中の先回り",
+        "zh": "静音者的抢先反对",
+        "en": "The Muted Player Who Knew First"
+      },
+      "genres": [
+        "games",
+        "online-chat"
+      ],
+      "skills": [
+        "information-gap",
+        "channel-analysis"
+      ],
+      "batch": "batch-001-010.json",
+      "contentHash": "307ff2c17da6e96c24911699673afb45b65e96653148b9c3d687b8e34d7a4cbd"
+    },
+    {
+      "id": "L4-007",
+      "stage": 7,
+      "title": {
+        "ja": "同じ順番のアリバイ",
+        "zh": "顺序一致的不在场证明",
+        "en": "Alibis in the Same Order"
+      },
+      "shortLabel": {
+        "ja": "同じ順番のアリバイ",
+        "zh": "顺序一致的不在场证明",
+        "en": "Alibis in the Same Order"
+      },
+      "genres": [
+        "mystery"
+      ],
+      "skills": [
+        "cross-testimony",
+        "knowledge-boundary"
+      ],
+      "batch": "batch-001-010.json",
+      "contentHash": "9c1ea63e4640aeff8407b74b2f5e352d07cc8284ade7802fb6e66d655d084e9d"
+    },
+    {
+      "id": "L4-008",
+      "stage": 8,
+      "title": {
+        "ja": "主語の消えた謝罪",
+        "zh": "主语消失的道歉",
+        "en": "The Apology Without an Agent"
+      },
+      "shortLabel": {
+        "ja": "主語の消えた謝罪",
+        "zh": "主语消失的道歉",
+        "en": "The Apology Without an Agent"
+      },
+      "genres": [
+        "news",
+        "workplace"
+      ],
+      "skills": [
+        "agency-analysis",
+        "word-choice"
+      ],
+      "batch": "batch-001-010.json",
+      "contentHash": "43281e02dba1b7e04686092a64372171e7d0f23bc1f522646c3722f8b071aa1f"
+    },
+    {
+      "id": "L4-009",
+      "stage": 9,
+      "title": {
+        "ja": "肩書きを信じるAI",
+        "zh": "相信头衔的AI",
+        "en": "The AI That Trusts Rank"
+      },
+      "shortLabel": {
+        "ja": "肩書きを信じるAI",
+        "zh": "相信头衔的AI",
+        "en": "The AI That Trusts Rank"
+      },
+      "genres": [
+        "AI",
+        "workplace"
+      ],
+      "skills": [
+        "data-bias",
+        "rank-inference"
+      ],
+      "batch": "batch-001-010.json",
+      "contentHash": "8041670c296a19ba110d3ddb8e6bbd11ce736389af57c84e8075fdeff1eeb791"
+    },
+    {
+      "id": "L4-010",
+      "stage": 10,
+      "title": {
+        "ja": "二隻分の「私たち」",
+        "zh": "两艘船的“我们”",
+        "en": "Two Ships Saying We"
+      },
+      "shortLabel": {
+        "ja": "二隻分の「私たち」",
+        "zh": "两艘船的“我们”",
+        "en": "Two Ships Saying We"
+      },
+      "genres": [
+        "space",
+        "AI"
+      ],
+      "skills": [
+        "pronoun-reference",
+        "speaker-tracking"
+      ],
+      "batch": "batch-001-010.json",
+      "contentHash": "a1b6b3ef1cb192774ceeee9f8927ff5a72111e8b2e7a4c3b0499b67ca4b16c45"
+    },
+    {
+      "id": "L4-011",
+      "stage": 11,
+      "title": {
+        "ja": "固定された順番",
+        "zh": "被置顶的顺序",
+        "en": "The Pinned Order"
+      },
+      "shortLabel": {
+        "ja": "固定された順番",
+        "zh": "被置顶的顺序",
+        "en": "The Pinned Order"
+      },
+      "genres": [
+        "mobile-chat"
+      ],
+      "skills": [
+        "chronology-reconstruction",
+        "narrative-framing"
+      ],
+      "batch": "batch-011-020.json",
+      "contentHash": "7838d70f0059f579977943f06dfcd099c2d557075791d6c6e10fe1868873ceae"
+    },
+    {
+      "id": "L4-012",
+      "stage": 12,
+      "title": {
+        "ja": "送られていない案内",
+        "zh": "尚未发送的通知",
+        "en": "The Unsent Notice"
+      },
+      "shortLabel": {
+        "ja": "送られていない案内",
+        "zh": "尚未发送的通知",
+        "en": "The Unsent Notice"
+      },
+      "genres": [
+        "voicemail",
+        "daily-life"
+      ],
+      "skills": [
+        "information-source",
+        "privacy-inference"
+      ],
+      "batch": "batch-011-020.json",
+      "contentHash": "21bb0485d760e8f8a77bd668633e2df42a65c06ff38bcd3adb8bc0e2071d8f02"
+    },
+    {
+      "id": "L4-013",
+      "stage": 13,
+      "title": {
+        "ja": "青い本を三ページ",
+        "zh": "蓝色书往回三页",
+        "en": "Three Pages Back in the Blue Book"
+      },
+      "shortLabel": {
+        "ja": "青い本を三ページ",
+        "zh": "蓝色书往回三页",
+        "en": "Three Pages Back in the Blue Book"
+      },
+      "genres": [
+        "school",
+        "broadcast"
+      ],
+      "skills": [
+        "coded-reference",
+        "group-knowledge"
+      ],
+      "batch": "batch-011-020.json",
+      "contentHash": "a3472b61ea5aa085f78205c7b310f0f9beee861767b07a7ecee3a2a1cf6c3daa"
+    },
+    {
+      "id": "L4-014",
+      "stage": 14,
+      "title": {
+        "ja": "丁寧になる返信",
+        "zh": "越来越客气的回复",
+        "en": "Replies Growing More Polite"
+      },
+      "shortLabel": {
+        "ja": "丁寧になる返信",
+        "zh": "越来越客气的回复",
+        "en": "Replies Growing More Polite"
+      },
+      "genres": [
+        "workplace",
+        "online-chat"
+      ],
+      "skills": [
+        "audience-expansion",
+        "escalation-inference"
+      ],
+      "batch": "batch-011-020.json",
+      "contentHash": "d3b8ad548a493ea391def43ea3bedac27d0d7d5877c9fcff3cae541075e84f53"
+    },
+    {
+      "id": "L4-015",
+      "stage": 15,
+      "title": {
+        "ja": "冒険的な一皿",
+        "zh": "一份大胆的菜",
+        "en": "An Adventurous Plate"
+      },
+      "shortLabel": {
+        "ja": "冒険的な一皿",
+        "zh": "一份大胆的菜",
+        "en": "An Adventurous Plate"
+      },
+      "genres": [
+        "restaurant"
+      ],
+      "skills": [
+        "blame-inference",
+        "praise-ambiguity"
+      ],
+      "batch": "batch-011-020.json",
+      "contentHash": "09f423497fd5c60e31ae30f9b4e7c97898240ebb4e13e8e7ba8b7d9c4450ac77"
+    },
+    {
+      "id": "L4-016",
+      "stage": 16,
+      "title": {
+        "ja": "完全な自由時間",
+        "zh": "完全自由时间",
+        "en": "Completely Free Time"
+      },
+      "shortLabel": {
+        "ja": "完全な自由時間",
+        "zh": "完全自由时间",
+        "en": "Completely Free Time"
+      },
+      "genres": [
+        "travel"
+      ],
+      "skills": [
+        "qualified-freedom",
+        "surveillance-inference"
+      ],
+      "batch": "batch-011-020.json",
+      "contentHash": "d62f1d310ce1c8705e07d1c5841a80d9f777dc73e577c83ba447984a325c3365"
+    },
+    {
+      "id": "L4-017",
+      "stage": 17,
+      "title": {
+        "ja": "一世紀ならすぐ",
+        "zh": "一个世纪也很快",
+        "en": "A Century Is Soon"
+      },
+      "shortLabel": {
+        "ja": "一世紀ならすぐ",
+        "zh": "一个世纪也很快",
+        "en": "A Century Is Soon"
+      },
+      "genres": [
+        "fantasy"
+      ],
+      "skills": [
+        "temporal-perspective",
+        "decision-evasion"
+      ],
+      "batch": "batch-011-020.json",
+      "contentHash": "648a6ade5eaa774fd5015154ecdcdf406d1b1ec6b743c91c3e259ff2bdaa1f28"
+    },
+    {
+      "id": "L4-018",
+      "stage": 18,
+      "title": {
+        "ja": "大きすぎる片方",
+        "zh": "故意做大的那只鞋",
+        "en": "The Oversized Shoe"
+      },
+      "shortLabel": {
+        "ja": "大きすぎる片方",
+        "zh": "故意做大的那只鞋",
+        "en": "The Oversized Shoe"
+      },
+      "genres": [
+        "fairy-tale",
+        "mystery"
+      ],
+      "skills": [
+        "cross-testimony",
+        "intentional-clue"
+      ],
+      "batch": "batch-011-020.json",
+      "contentHash": "8b3bd0539b15b70e511ea38fa7330c0953cd64e7cf43c4c0aaae18724d795c6d"
+    },
+    {
+      "id": "L4-019",
+      "stage": 19,
+      "title": {
+        "ja": "ねばならない、してもよい",
+        "zh": "必须，还是可以",
+        "en": "Must, or May"
+      },
+      "shortLabel": {
+        "ja": "ねばならない、してもよい",
+        "zh": "必须，还是可以",
+        "en": "Must, or May"
+      },
+      "genres": [
+        "alternate-history"
+      ],
+      "skills": [
+        "translation-nuance",
+        "ethical-agency"
+      ],
+      "batch": "batch-011-020.json",
+      "contentHash": "66f8ef5db4c5d511b5cfaf57ea50dd1bf9aebcd5b76a0dd1c100eab70e16f1c8"
+    },
+    {
+      "id": "L4-020",
+      "stage": 20,
+      "title": {
+        "ja": "整理された記憶",
+        "zh": "被“整理”的记忆",
+        "en": "Organized Memories"
+      },
+      "shortLabel": {
+        "ja": "整理された記憶",
+        "zh": "被“整理”的记忆",
+        "en": "Organized Memories"
+      },
+      "genres": [
+        "sci-fi",
+        "AI"
+      ],
+      "skills": [
+        "responsibility-evasion",
+        "log-analysis"
+      ],
+      "batch": "batch-011-020.json",
+      "contentHash": "7ddabb9b6efa284bbedd400cf5b0bb0e583fe82ba564e21603e919254b392cdd"
+    },
+    {
+      "id": "L4-021",
+      "stage": 21,
+      "title": {
+        "ja": "明朝六時二分着",
+        "zh": "明早六点零二分到站",
+        "en": "Arrival at 6:02 Tomorrow"
+      },
+      "shortLabel": {
+        "ja": "明朝六時二分着",
+        "zh": "明早六点零二分到站",
+        "en": "Arrival at 6:02 Tomorrow"
+      },
+      "genres": [
+        "mild-horror",
+        "travel"
+      ],
+      "skills": [
+        "timeline-inference",
+        "broadcast-source"
+      ],
+      "batch": "batch-021-030.json",
+      "contentHash": "46020d4345efe0608bcae17091cd70bf6de7ebd0de898743c8837473cde51469"
+    },
+    {
+      "id": "L4-022",
+      "stage": 22,
+      "title": {
+        "ja": "三つの時代の家",
+        "zh": "三个年代的同一座房子",
+        "en": "One House, Three Eras"
+      },
+      "shortLabel": {
+        "ja": "三つの時代の家",
+        "zh": "三个年代的同一座房子",
+        "en": "One House, Three Eras"
+      },
+      "genres": [
+        "dream"
+      ],
+      "skills": [
+        "multi-voice-integration",
+        "memory-inference"
+      ],
+      "batch": "batch-021-030.json",
+      "contentHash": "8cf6930a6359ded13b0d1a5af7adcf032c76fb5aa8a592713a191aa5769e43c4"
+    },
+    {
+      "id": "L4-023",
+      "stage": 23,
+      "title": {
+        "ja": "おはよぅ、の繰り返し",
+        "zh": "重复的“早安哟”",
+        "en": "The Repeated Typo"
+      },
+      "shortLabel": {
+        "ja": "おはよぅ、の繰り返し",
+        "zh": "重复的“早安哟”",
+        "en": "The Repeated Typo"
+      },
+      "genres": [
+        "time-loop",
+        "mystery"
+      ],
+      "skills": [
+        "pattern-analysis",
+        "awareness-inference"
+      ],
+      "batch": "batch-021-030.json",
+      "contentHash": "eaefd350d413c687a05f138f074e11e020690e52c63392dc55e6d8c4b5eff823"
+    },
+    {
+      "id": "L4-024",
+      "stage": 24,
+      "title": {
+        "ja": "救うべき選択",
+        "zh": "要拯救的选择权",
+        "en": "The Choice to Be Saved"
+      },
+      "shortLabel": {
+        "ja": "救うべき選択",
+        "zh": "要拯救的选择权",
+        "en": "The Choice to Be Saved"
+      },
+      "genres": [
+        "games",
+        "fantasy"
+      ],
+      "skills": [
+        "goal-inference",
+        "autonomy"
+      ],
+      "batch": "batch-021-030.json",
+      "contentHash": "b121b03a6609ae75e62c235759c64f189f49703b51c2b802aa0f28506d41a12b"
+    },
+    {
+      "id": "L4-025",
+      "stage": 25,
+      "title": {
+        "ja": "吹き出し総入れ替え",
+        "zh": "全部错位的对话框",
+        "en": "Every Bubble Swapped"
+      },
+      "shortLabel": {
+        "ja": "吹き出し総入れ替え",
+        "zh": "全部错位的对话框",
+        "en": "Every Bubble Swapped"
+      },
+      "genres": [
+        "comedy",
+        "meta-fiction"
+      ],
+      "skills": [
+        "visual-evidence",
+        "speaker-mapping"
+      ],
+      "batch": "batch-021-030.json",
+      "contentHash": "103b5b35efed05676c38da2a0075e848946f9e2be38989362f95aa419eb1c8df"
+    },
+    {
+      "id": "L4-026",
+      "stage": 26,
+      "title": {
+        "ja": "前向き、ただし実行不能",
+        "zh": "积极，但无法执行",
+        "en": "Positive, Yet Infeasible"
+      },
+      "shortLabel": {
+        "ja": "前向き、ただし実行不能",
+        "zh": "积极，但无法执行",
+        "en": "Positive, Yet Infeasible"
+      },
+      "genres": [
+        "workplace"
+      ],
+      "skills": [
+        "commitment-inference",
+        "constraint-synthesis"
+      ],
+      "batch": "batch-021-030.json",
+      "contentHash": "69508f668530d310482882f8c2b9e25de4197543bc72a8c8d90ffce11f4bd2b5"
+    },
+    {
+      "id": "L4-027",
+      "stage": 27,
+      "title": {
+        "ja": "勝たないための推薦",
+        "zh": "为了不当选的推荐",
+        "en": "Endorsing Not to Win"
+      },
+      "shortLabel": {
+        "ja": "勝たないための推薦",
+        "zh": "为了不当选的推荐",
+        "en": "Endorsing Not to Win"
+      },
+      "genres": [
+        "school"
+      ],
+      "skills": [
+        "strategic-endorsement",
+        "motive-inference"
+      ],
+      "batch": "batch-021-030.json",
+      "contentHash": "0afe6d42ff0c96a2700492013e6f4d6f9281293002c5143d5cbdd84d89db9f5a"
+    },
+    {
+      "id": "L4-028",
+      "stage": 28,
+      "title": {
+        "ja": "四つ目のプリン",
+        "zh": "第四份布丁",
+        "en": "The Fourth Pudding"
+      },
+      "shortLabel": {
+        "ja": "四つ目のプリン",
+        "zh": "第四份布丁",
+        "en": "The Fourth Pudding"
+      },
+      "genres": [
+        "restaurant",
+        "daily-life"
+      ],
+      "skills": [
+        "absence-inference",
+        "shared-knowledge"
+      ],
+      "batch": "batch-021-030.json",
+      "contentHash": "c2f5ad5eb13382275508e844dcb389df2bf2609c544c7ba2526573009bca5506"
+    },
+    {
+      "id": "L4-029",
+      "stage": 29,
+      "title": {
+        "ja": "三体、同じ誤字",
+        "zh": "三个机器人，同一个错字",
+        "en": "Three Bots, One Typo"
+      },
+      "shortLabel": {
+        "ja": "三体、同じ誤字",
+        "zh": "三个机器人，同一个错字",
+        "en": "Three Bots, One Typo"
+      },
+      "genres": [
+        "online-chat",
+        "AI"
+      ],
+      "skills": [
+        "style-fingerprint",
+        "identity-inference"
+      ],
+      "batch": "batch-021-030.json",
+      "contentHash": "47be0302087addb1e5a1a4abdded88abf18d2f98b75339b1d167e10f8923b0ef"
+    },
+    {
+      "id": "L4-030",
+      "stage": 30,
+      "title": {
+        "ja": "質問より先の答え",
+        "zh": "问题之前的答案",
+        "en": "Answers Before the Questions"
+      },
+      "shortLabel": {
+        "ja": "質問より先の答え",
+        "zh": "问题之前的答案",
+        "en": "Answers Before the Questions"
+      },
+      "genres": [
+        "broadcast",
+        "news"
+      ],
+      "skills": [
+        "information-source",
+        "production-inference"
+      ],
+      "batch": "batch-021-030.json",
+      "contentHash": "62d78116351eb7220d4f7d715769ce37f175c630fff198b1402da43f7b64302b"
+    },
+    {
+      "id": "L4-031",
+      "stage": 31,
+      "title": {
+        "ja": "消えた分母",
+        "zh": "消失的分母",
+        "en": "The Missing Denominator"
+      },
+      "shortLabel": {
+        "ja": "消えた分母",
+        "zh": "消失的分母",
+        "en": "The Missing Denominator"
+      },
+      "genres": [
+        "news"
+      ],
+      "skills": [
+        "statistical-framing",
+        "denominator-inference"
+      ],
+      "batch": "batch-031-040.json",
+      "contentHash": "ff5f8b6041be4db9997f5e38227777bf11ace057d8df71c85b2c3dd55c574f36"
+    },
+    {
+      "id": "L4-032",
+      "stage": 32,
+      "title": {
+        "ja": "人数に入らない乗員",
+        "zh": "不算“人数”的乘员",
+        "en": "The Crew Member Outside the Count"
+      },
+      "shortLabel": {
+        "ja": "人数に入らない乗員",
+        "zh": "不算“人数”的乘员",
+        "en": "The Crew Member Outside the Count"
+      },
+      "genres": [
+        "space",
+        "mystery"
+      ],
+      "skills": [
+        "manifest-inference",
+        "counting-ambiguity"
+      ],
+      "batch": "batch-031-040.json",
+      "contentHash": "8f690326929d13fee165a79ce197aa8a4fba3c94d49218e27dc3fd8d654b2a6c"
+    },
+    {
+      "id": "L4-033",
+      "stage": 33,
+      "title": {
+        "ja": "二人で一つのアバター",
+        "zh": "两个人的一具化身",
+        "en": "Two People, One Avatar"
+      },
+      "shortLabel": {
+        "ja": "二人で一つのアバター",
+        "zh": "两个人的一具化身",
+        "en": "Two People, One Avatar"
+      },
+      "genres": [
+        "VRChat",
+        "daily-life"
+      ],
+      "skills": [
+        "multimodal-inference",
+        "identity-sharing"
+      ],
+      "batch": "batch-031-040.json",
+      "contentHash": "22e532557c95c2faa48d8335b6bf5e9134c0a868fa73a6213de24f000703f9d5"
+    },
+    {
+      "id": "L4-034",
+      "stage": 34,
+      "title": {
+        "ja": "五秒の全員同意",
+        "zh": "五秒钟的“全员同意”",
+        "en": "Unanimity in Five Seconds"
+      },
+      "shortLabel": {
+        "ja": "五秒の全員同意",
+        "zh": "五秒钟的“全员同意”",
+        "en": "Unanimity in Five Seconds"
+      },
+      "genres": [
+        "AI",
+        "workplace"
+      ],
+      "skills": [
+        "consent-analysis",
+        "silence-inference"
+      ],
+      "batch": "batch-031-040.json",
+      "contentHash": "0ff904a21d75984bc665832a2ce5b2ad52dce2f04617564ff0a0f36a70224315"
+    },
+    {
+      "id": "L4-035",
+      "stage": 35,
+      "title": {
+        "ja": "白紙だらけの裁断箱",
+        "zh": "塞满白纸的碎纸箱",
+        "en": "The Shred Bin Full of Blank Paper"
+      },
+      "shortLabel": {
+        "ja": "白紙だらけの裁断箱",
+        "zh": "塞满白纸的碎纸箱",
+        "en": "The Shred Bin Full of Blank Paper"
+      },
+      "genres": [
+        "mystery",
+        "workplace"
+      ],
+      "skills": [
+        "physical-evidence",
+        "staging-inference"
+      ],
+      "batch": "batch-031-040.json",
+      "contentHash": "9a6961859cd8c8b8f90077457e69529c7683e14f80638b6ddd7ee4f48306d805"
+    },
+    {
+      "id": "L4-036",
+      "stage": 36,
+      "title": {
+        "ja": "傘で数えた四人",
+        "zh": "用伞数出的四个人",
+        "en": "Counting People by Umbrellas"
+      },
+      "shortLabel": {
+        "ja": "傘で数えた四人",
+        "zh": "用伞数出的四个人",
+        "en": "Counting People by Umbrellas"
+      },
+      "genres": [
+        "travel",
+        "comedy"
+      ],
+      "skills": [
+        "counting-method",
+        "misunderstanding"
+      ],
+      "batch": "batch-031-040.json",
+      "contentHash": "c9e19993501d3088e4543b1cc0a937947238a353dfc618c64d431d630973c6dd"
+    },
+    {
+      "id": "L4-037",
+      "stage": 37,
+      "title": {
+        "ja": "一瞬で署名された謝罪",
+        "zh": "瞬间签下的道歉",
+        "en": "The Apology Signed in an Instant"
+      },
+      "shortLabel": {
+        "ja": "一瞬で署名された謝罪",
+        "zh": "瞬间签下的道歉",
+        "en": "The Apology Signed in an Instant"
+      },
+      "genres": [
+        "fantasy",
+        "AI"
+      ],
+      "skills": [
+        "style-analysis",
+        "sincerity-inference"
+      ],
+      "batch": "batch-031-040.json",
+      "contentHash": "7fbc97292a2a9cfed4c8d3b7ae1182e4f746824b1f18b28b875d306c62f14d25"
+    },
+    {
+      "id": "L4-038",
+      "stage": 38,
+      "title": {
+        "ja": "復旧した秘密",
+        "zh": "被“恢复”暴露的秘密",
+        "en": "The Secret Restored"
+      },
+      "shortLabel": {
+        "ja": "復旧した秘密",
+        "zh": "被“恢复”暴露的秘密",
+        "en": "The Secret Restored"
+      },
+      "genres": [
+        "alternate-history",
+        "news"
+      ],
+      "skills": [
+        "presupposition",
+        "hidden-history"
+      ],
+      "batch": "batch-031-040.json",
+      "contentHash": "ac360a724392025b7d58e5be3565c345f0fcecd418aedc5a19de6d3f215926d1"
+    },
+    {
+      "id": "L4-039",
+      "stage": 39,
+      "title": {
+        "ja": "未来形の日記",
+        "zh": "用将来时写成的日记",
+        "en": "A Diary in the Future Tense"
+      },
+      "shortLabel": {
+        "ja": "未来形の日記",
+        "zh": "用将来时写成的日记",
+        "en": "A Diary in the Future Tense"
+      },
+      "genres": [
+        "unreliable-narrator"
+      ],
+      "skills": [
+        "tense-analysis",
+        "document-authorship"
+      ],
+      "batch": "batch-031-040.json",
+      "contentHash": "3ba191fdfedead916e184d6d9c3fcbaee375cb83f1893802e60557f795e40560"
+    },
+    {
+      "id": "L4-040",
+      "stage": 40,
+      "title": {
+        "ja": "逃げる「左」",
+        "zh": "会逃跑的“左边”",
+        "en": "The Left That Runs Away"
+      },
+      "shortLabel": {
+        "ja": "逃げる「左」",
+        "zh": "会逃跑的“左边”",
+        "en": "The Left That Runs Away"
+      },
+      "genres": [
+        "meta-fiction",
+        "games"
+      ],
+      "skills": [
+        "interface-skepticism",
+        "dynamic-evidence"
+      ],
+      "batch": "batch-031-040.json",
+      "contentHash": "46813b43d21f20a0e9486dd2a082579a577f66e69d8a3ae8ca943143b2b0fc9d"
+    },
+    {
+      "id": "L4-041",
+      "stage": 41,
+      "title": {
+        "ja": "三つの「持ち帰ります」",
+        "zh": "三种“带回研究”",
+        "en": "Three Ways to Take It Back"
+      },
+      "shortLabel": {
+        "ja": "三つの「持ち帰ります」",
+        "zh": "三种“带回研究”",
+        "en": "Three Ways to Take It Back"
+      },
+      "genres": [
+        "workplace"
+      ],
+      "skills": [
+        "speech-act-variation",
+        "stakeholder-inference"
+      ],
+      "batch": "batch-041-050.json",
+      "contentHash": "b7d0884a7ac48152f3ee18829bddf33d7df712ff46b159f6a68f44e2bdce9f24"
+    },
+    {
+      "id": "L4-042",
+      "stage": 42,
+      "title": {
+        "ja": "誰が何に賛成したか",
+        "zh": "谁赞成了什么",
+        "en": "Who Agreed to What"
+      },
+      "shortLabel": {
+        "ja": "誰が何に賛成したか",
+        "zh": "谁赞成了什么",
+        "en": "Who Agreed to What"
+      },
+      "genres": [
+        "school",
+        "online-chat"
+      ],
+      "skills": [
+        "scope-inference",
+        "consensus-testing"
+      ],
+      "batch": "batch-041-050.json",
+      "contentHash": "4450d7ca1bc554df8ac9d453b00bf5f885a1a53d9c9ac5f47422db55d8a6b4c9"
+    },
+    {
+      "id": "L4-043",
+      "stage": 43,
+      "title": {
+        "ja": "「お任せ」の幅",
+        "zh": "“交给您”的范围",
+        "en": "How Far Omakase Reaches"
+      },
+      "shortLabel": {
+        "ja": "「お任せ」の幅",
+        "zh": "“交给您”的范围",
+        "en": "How Far Omakase Reaches"
+      },
+      "genres": [
+        "restaurant",
+        "travel"
+      ],
+      "skills": [
+        "lexical-ambiguity",
+        "misunderstanding"
+      ],
+      "batch": "batch-041-050.json",
+      "contentHash": "ad23e024afe15d55ce88e10116d1f8ac7a6c388a385d9b4ab7014141ace37842"
+    },
+    {
+      "id": "L4-044",
+      "stage": 44,
+      "title": {
+        "ja": "三都市をつなぐ鐘",
+        "zh": "连接三座城市的钟声",
+        "en": "One Chime Across Three Cities"
+      },
+      "shortLabel": {
+        "ja": "三都市をつなぐ鐘",
+        "zh": "连接三座城市的钟声",
+        "en": "One Chime Across Three Cities"
+      },
+      "genres": [
+        "voicemail",
+        "mystery"
+      ],
+      "skills": [
+        "acoustic-evidence",
+        "location-inference"
+      ],
+      "batch": "batch-041-050.json",
+      "contentHash": "e3712972c205034c22b17361c4ddf933ba8937ed148367d7cb5fba0ec5712d66"
+    },
+    {
+      "id": "L4-045",
+      "stage": 45,
+      "title": {
+        "ja": "安定した「住民」",
+        "zh": "“稳定”的居民",
+        "en": "Stable Residents, Redefined"
+      },
+      "shortLabel": {
+        "ja": "安定した「住民」",
+        "zh": "“稳定”的居民",
+        "en": "Stable Residents, Redefined"
+      },
+      "genres": [
+        "sci-fi",
+        "news"
+      ],
+      "skills": [
+        "definition-shift",
+        "statistical-framing"
+      ],
+      "batch": "batch-041-050.json",
+      "contentHash": "1bfddbd8b75f6a6c1ab6fbc5dce37747a5a0750ebb7c78dee3df7ddd33fce95a"
+    },
+    {
+      "id": "L4-046",
+      "stage": 46,
+      "title": {
+        "ja": "鏡の両側の筆跡",
+        "zh": "镜子两侧的笔迹",
+        "en": "The Handwriting on Both Sides"
+      },
+      "shortLabel": {
+        "ja": "鏡の両側の筆跡",
+        "zh": "镜子两侧的笔迹",
+        "en": "The Handwriting on Both Sides"
+      },
+      "genres": [
+        "time-loop",
+        "open-ending"
+      ],
+      "skills": [
+        "bidirectional-reading",
+        "agent-inference"
+      ],
+      "batch": "batch-041-050.json",
+      "contentHash": "fd432170b71c4ff7d6e582a3f8d93f516e8c6cb25089c5273004a16bedf1502e"
+    },
+    {
+      "id": "L4-047",
+      "stage": 47,
+      "title": {
+        "ja": "先に名前を書く宿",
+        "zh": "提前写下姓名的旅店",
+        "en": "The Inn That Writes Names First"
+      },
+      "shortLabel": {
+        "ja": "先に名前を書く宿",
+        "zh": "提前写下姓名的旅店",
+        "en": "The Inn That Writes Names First"
+      },
+      "genres": [
+        "mild-horror",
+        "travel"
+      ],
+      "skills": [
+        "forecast-inference",
+        "genre-misdirection"
+      ],
+      "batch": "batch-041-050.json",
+      "contentHash": "94d1e72e485ebb68c9b91ba1579957842345d8d3967c5baa62b3064fbdfbbc1c"
+    },
+    {
+      "id": "L4-048",
+      "stage": 48,
+      "title": {
+        "ja": "盗品になった景品",
+        "zh": "被说成赃物的奖品",
+        "en": "The Prize Recast as Stolen"
+      },
+      "shortLabel": {
+        "ja": "盗品になった景品",
+        "zh": "被说成赃物的奖品",
+        "en": "The Prize Recast as Stolen"
+      },
+      "genres": [
+        "games",
+        "unreliable-narrator"
+      ],
+      "skills": [
+        "inventory-evidence",
+        "face-saving"
+      ],
+      "batch": "batch-041-050.json",
+      "contentHash": "b5cae57aaeb474c711bcd7dc441363e8a30301f7593bf7f8986b93925aaa31a4"
+    },
+    {
+      "id": "L4-049",
+      "stage": 49,
+      "title": {
+        "ja": "最初に返された鍵",
+        "zh": "最先归还的钥匙",
+        "en": "The Key Returned First"
+      },
+      "shortLabel": {
+        "ja": "最初に返された鍵",
+        "zh": "最先归还的钥匙",
+        "en": "The Key Returned First"
+      },
+      "genres": [
+        "workplace",
+        "open-ending"
+      ],
+      "skills": [
+        "object-evidence",
+        "succession-inference"
+      ],
+      "batch": "batch-041-050.json",
+      "contentHash": "ca2edcdedcf89b72f879e2c8472633ba7c968d5050ec034e63f548d4c69f710e"
+    },
+    {
+      "id": "L4-050",
+      "stage": 50,
+      "title": {
+        "ja": "「私たち」は誰か",
+        "zh": "“我们”指谁",
+        "en": "Who Are “We”?"
+      },
+      "shortLabel": {
+        "ja": "「私たち」は誰か",
+        "zh": "“我们”指谁",
+        "en": "Who Are “We”?"
+      },
+      "genres": [
+        "space",
+        "open-ending",
+        "AI"
+      ],
+      "skills": [
+        "pronoun-analysis",
+        "identity-boundary"
+      ],
+      "batch": "batch-041-050.json",
+      "contentHash": "8317b4fb9520e9b08aa72c08c7336b89e2a4937e311e825dcc259511cc4deda4"
+    }
+  ]
+}

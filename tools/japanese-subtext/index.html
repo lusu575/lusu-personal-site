@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#245edc">
+  <meta name="description" content="Japanese subtext listening and context trainer">
+  <title>日本語の裏側</title>
+  <link rel="icon" href="./assets/icons/tool-icon-64.webp" type="image/webp">
+  <link rel="stylesheet" href="./style.css?v=20260711-japanese-subtext-r11">
+</head>
+<body>
+  <div class="trainer-shell" id="trainer-shell">
+    <header class="trainer-titlebar">
+      <div class="trainer-title-lockup">
+        <img src="./assets/icons/tool-icon-64.webp" width="32" height="32" alt="" aria-hidden="true">
+        <h1>日本語の裏側</h1>
+      </div>
+      <div class="trainer-title-actions">
+        <label class="language-control">
+          <span data-i18n="uiLanguage">界面语言</span>
+          <select id="ui-language" aria-label="界面语言">
+            <option value="zh">中文</option>
+            <option value="en">English</option>
+            <option value="ja">日本語</option>
+          </select>
+        </label>
+        <a class="xp-control secondary" id="back-site" href="../../index.html#resources" data-i18n="backSite">返回个人站资源区</a>
+      </div>
+    </header>
+
+    <div class="trainer-statusbar" aria-live="polite">
+      <span id="status-text">READY</span>
+      <span id="cloud-status" data-i18n="authLocal">未登录 · 使用本地进度</span>
+    </div>
+
+    <main class="trainer-main" id="trainer-main">
+      <section class="screen dashboard-screen is-active" id="dashboard-screen" aria-labelledby="dashboard-heading">
+        <div class="dashboard-hero pixel-panel">
+          <div class="hero-copy">
+            <p class="eyebrow">CONTEXT LISTENING LAB · 250 STAGES</p>
+            <h2 id="dashboard-heading" tabindex="-1">日本語の裏側</h2>
+            <p data-i18n="dashboardIntro">从语气、停顿、关系和上下文里，听见没说出口的话。</p>
+            <div class="hero-actions">
+              <button class="xp-control primary" type="button" data-action="continue" data-i18n="continueTraining">继续训练</button>
+              <button class="xp-control" type="button" data-action="choose-level" data-i18n="chooseStage">选择关卡</button>
+              <button class="xp-control" type="button" data-action="open-settings" data-i18n="settings">训练设置</button>
+              <button class="xp-control" type="button" data-action="open-records" data-i18n="records">学习记录</button>
+            </div>
+          </div>
+          <figure class="hero-art media-frame">
+            <img src="./assets/covers/tool-cover.webp" width="1024" height="768" alt="" aria-hidden="true">
+          </figure>
+        </div>
+        <div class="dashboard-stats" id="dashboard-stats"></div>
+      </section>
+
+      <section class="screen level-screen" id="level-screen" aria-labelledby="level-heading" hidden>
+        <div class="screen-toolbar">
+          <button class="xp-control secondary" type="button" data-action="dashboard" data-i18n="backDashboard">返回启动页</button>
+          <h2 id="level-heading" tabindex="-1" data-i18n="chooseLevel">选择难度</h2>
+        </div>
+        <div class="level-grid" id="level-grid"></div>
+      </section>
+
+      <section class="screen map-screen" id="map-screen" aria-labelledby="map-heading" hidden>
+        <div class="screen-toolbar">
+          <button class="xp-control secondary" type="button" data-action="choose-level" data-i18n="chooseLevel">选择难度</button>
+          <div>
+            <p class="eyebrow" id="map-level-meta"></p>
+            <h2 id="map-heading" tabindex="-1" data-i18n="stageMap">关卡地图</h2>
+          </div>
+        </div>
+        <div class="stage-map" id="stage-map"></div>
+      </section>
+
+      <section class="screen stage-screen" id="stage-screen" aria-labelledby="stage-heading" hidden>
+        <div class="screen-toolbar stage-toolbar">
+          <button class="xp-control secondary" type="button" data-action="back-map" data-i18n="backMap">返回关卡地图</button>
+          <div class="stage-heading-copy">
+            <p class="eyebrow" id="stage-meta"></p>
+            <h2 id="stage-heading" tabindex="-1"></h2>
+          </div>
+          <button class="xp-control" type="button" data-action="open-settings" data-i18n="settings">训练设置</button>
+        </div>
+
+        <div class="stage-workspace">
+          <section class="scene-column pixel-panel" aria-labelledby="scene-heading">
+            <div class="panel-caption">
+              <h3 id="scene-heading" data-i18n="scene">场景</h3>
+              <span id="scene-setting"></span>
+            </div>
+            <figure class="stage-illustration media-frame" id="stage-illustration" hidden>
+              <img id="stage-illustration-image" alt="" loading="lazy" decoding="async">
+            </figure>
+            <div class="transcript" id="transcript"></div>
+          </section>
+
+          <aside class="player-panel pixel-panel" aria-label="语音播放器" data-i18n-aria-label="audioPlayer">
+            <div class="player-state" id="audio-message" role="status" data-i18n="audioReady">语音已准备好。</div>
+            <div class="time-row">
+              <span id="current-time">0:00</span>
+              <label for="audio-progress" data-i18n="progress">播放进度</label>
+              <span id="total-time">0:00</span>
+            </div>
+            <input id="audio-progress" class="audio-range" type="range" min="0" max="1000" value="0" step="1" aria-describedby="audio-message">
+            <div class="transport-grid">
+              <button class="xp-control compact" type="button" data-audio-action="previous" data-i18n="previousLine">上一句</button>
+              <button class="xp-control compact primary" type="button" data-audio-action="toggle" data-i18n="play">播放</button>
+              <button class="xp-control compact" type="button" data-audio-action="next" data-i18n="nextLine">下一句</button>
+              <button class="xp-control compact" type="button" data-audio-action="restart" data-i18n="restart">从头播放</button>
+              <button class="xp-control compact" type="button" data-audio-action="replay" data-i18n="replay">重播</button>
+              <button class="xp-control compact" type="button" data-audio-action="line-replay" data-i18n="singleLineReplay">单句重播</button>
+            </div>
+            <div class="quick-audio-settings">
+              <label><span data-i18n="playbackSpeed">播放速度</span><select id="quick-speed"><option value="0.75">0.75×</option><option value="1">1.0×</option><option value="1.15">1.15×</option></select></label>
+              <label class="check-row"><input id="quick-mute" type="checkbox"><span data-i18n="mute">静音</span></label>
+              <label class="check-row"><input id="quick-autoplay" type="checkbox"><span data-i18n="autoplay">进入关卡自动播放</span></label>
+            </div>
+            <div class="audio-error-actions" id="audio-error-actions" hidden>
+              <button class="xp-control" type="button" data-audio-action="retry" data-i18n="retry">重新加载</button>
+              <button class="xp-control" type="button" data-action="text-mode" data-i18n="textModeContinue">使用文字模式继续</button>
+            </div>
+          </aside>
+
+          <section class="question-column pixel-panel" aria-labelledby="questions-heading">
+            <div class="panel-caption">
+              <h3 id="questions-heading" data-i18n="questions">问题</h3>
+              <span id="question-gate-copy" data-i18n="answerAfterListening">场景播放结束后即可答题。</span>
+            </div>
+            <div id="question-gate" class="question-gate"></div>
+            <form id="question-form" class="question-form" hidden></form>
+            <div class="question-actions">
+              <button class="xp-control primary" id="submit-answers" type="submit" form="question-form" data-i18n="submitAnswers" hidden>提交答案</button>
+              <button class="xp-control" id="try-again" type="button" data-action="try-again" data-i18n="tryAgain" hidden>重新作答</button>
+              <button class="xp-control primary" id="next-stage" type="button" data-action="next-stage" data-i18n="nextStage" hidden>下一关</button>
+            </div>
+            <div class="answer-result" id="answer-result" role="status"></div>
+          </section>
+
+          <section class="analysis-column pixel-panel" id="analysis-panel" aria-labelledby="analysis-heading" hidden>
+            <div class="panel-caption"><h3 id="analysis-heading" data-i18n="analysis">潜台词解析</h3></div>
+            <div id="analysis-content"></div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <dialog class="sound-gate" id="sound-gate" aria-labelledby="sound-gate-title">
+    <div class="sound-gate-window">
+      <div class="mini-titlebar"><span id="sound-gate-title">日本語の裏側</span></div>
+      <img src="./assets/ui/audio-start.webp" width="512" height="384" alt="" aria-hidden="true">
+      <div class="sound-gate-actions">
+        <button class="xp-control primary large" type="button" data-action="unlock-sound" data-i18n="startSound">开始题目并启用声音</button>
+        <button class="xp-control" type="button" data-action="text-mode" data-i18n="textModeContinue">使用文字模式继续</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog class="trainer-dialog" id="settings-dialog" aria-labelledby="settings-heading">
+    <form method="dialog" class="dialog-window" id="settings-form">
+      <div class="mini-titlebar"><h2 id="settings-heading" data-i18n="settings">训练设置</h2><button value="close" aria-label="关闭" data-i18n-aria-label="close">×</button></div>
+      <div class="dialog-body settings-grid">
+        <fieldset><legend data-i18n="displayMode">场景显示</legend><label><input type="radio" name="displayMode" value="listening"><span data-i18n="listening">纯听模式</span></label><label><input type="radio" name="displayMode" value="japanese"><span data-i18n="japanese">日语模式</span></label><label><input type="radio" name="displayMode" value="bilingual"><span data-i18n="bilingual">双语模式</span></label></fieldset>
+        <fieldset><legend data-i18n="optionLanguage">选项语言</legend><label><input type="radio" name="optionLanguage" value="ja"><span>日本語</span></label><label><input type="radio" name="optionLanguage" value="zh"><span>中文</span></label><label><input type="radio" name="optionLanguage" value="en"><span>English</span></label></fieldset>
+        <fieldset><legend data-i18n="settings">训练设置</legend><label><input type="checkbox" name="kana"><span data-i18n="kana">假名提示</span></label><label><input type="checkbox" name="optionText"><span data-i18n="optionText">选项文字</span></label><label><input type="checkbox" name="optionAudio"><span data-i18n="optionAudio">选项日语语音</span></label><label><input type="checkbox" name="autoReadOptions"><span data-i18n="autoReadOptions">自动依次朗读选项</span></label><label><input type="checkbox" name="autoplay"><span data-i18n="autoplay">进入关卡自动播放</span></label></fieldset>
+        <fieldset><legend data-i18n="playbackSpeed">播放速度</legend><label><input type="radio" name="playbackRate" value="0.75"><span>0.75×</span></label><label><input type="radio" name="playbackRate" value="1"><span>1.0×</span></label><label><input type="radio" name="playbackRate" value="1.15"><span>1.15×</span></label><label><input type="checkbox" name="muted"><span data-i18n="mute">静音</span></label></fieldset>
+      </div>
+      <div class="dialog-actions"><a class="xp-control secondary" href="./scripts/tts/licenses/NOTICE-japanese-voices.md" target="_blank" rel="license noopener" data-i18n="voiceCredits">语音来源与许可</a><button class="xp-control danger" type="button" data-action="reset-progress" data-i18n="resetProgress">重置本地进度</button><button class="xp-control primary" value="close" data-i18n="close">关闭</button></div>
+    </form>
+  </dialog>
+
+  <dialog class="trainer-dialog" id="records-dialog" aria-labelledby="records-heading">
+    <div class="dialog-window">
+      <div class="mini-titlebar"><h2 id="records-heading" data-i18n="records">学习记录</h2><button type="button" data-action="close-records" aria-label="关闭" data-i18n-aria-label="close">×</button></div>
+      <div class="dialog-body" id="records-content"></div>
+      <div class="dialog-actions"><button class="xp-control primary" type="button" data-action="close-records" data-i18n="close">关闭</button></div>
+    </div>
+  </dialog>
+
+  <div class="sr-live" id="live-region" aria-live="polite" aria-atomic="true"></div>
+  <script type="module" src="./app.mjs?v=20260711-japanese-subtext-r11"></script>
+</body>
+</html>

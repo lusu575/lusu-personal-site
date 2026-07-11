@@ -1,5 +1,15 @@
 # PROJECT_CONTEXT.md
 
+## 2026-07-11 日本語の裏側
+
+- 新增可独立打开的 `/tools/japanese-subtext/` 日语潜台词训练器，正式标题只能显示“日本語の裏側”。模块复用一套数据驱动渲染器，题库是 `contentVersion` 管理的分批 JSON，不为单关创建 HTML，也不把 250 关内联到主站 `js/main.js`。
+- 正式题库固定为 5×50 关：LEVEL 1=N3、LEVEL 2=N2、LEVEL 3–5=N1 / N1 高阶。每级前 5–10 关相对短，后续递增；每关都包含完整场景、问题、三语选项、答案、证据行和不作绝对化断言的语用解析。
+- 内容展示、选项语言和音频设置彼此独立。正文支持纯听 / 日语 / 双语，选项支持 ja / zh / en，播放器只保留一个音频实例并支持场景自动播放、任意 seek、逐句/词块/选项播放、前后句、倍速和静音；离开关卡或页面隐藏时必须停止旧音频。
+- 音频只在题库审校并锁定后用本机隔离的 Kokoro-82M v1.0 + kokoro-onnx CPU 适配器预生成。公开仓库不包含模型权重、本机绝对路径、实际 TTS 配置或参考声线；本机模型不注册服务、不随系统启动，批处理结束后保持关闭。静态题库通过稳定 ID 与 `audio/manifest.json`、关卡时间轴关联，并保留统一 `audioBaseUrl` 以便未来迁移 R2；每关 `sourceContentHash`、逐句 cue 顺序、CPU provider、输出参数和发音表语义 SHA-256 都是发布门槛，正式校验还必须覆盖全部音频的 ffprobe、SHA-256、孤儿文件与静音检测。日语声线的 Apache-2.0 / CC BY 3.0 来源与署名固定记录在 `NOTICE-japanese-voices.md`，设置面板提供三语许可入口。
+- 插图存入本工具资产目录，只使用彩色儿童蜡笔或抽象 Q 版四格；不接受黑白线稿、来源不明图片、受版权保护角色或写实人物。图片必须压缩、懒加载、保持宽高比并适配五个固定验收视口。
+- 未登录进度保存在版本化本地存档；登录后通过独立 D1 表 `japanese_subtext_profiles` / `japanese_subtext_stage_progress` 和 GET/PUT `/api/tools/japanese-subtext/progress` 合并。服务端从 HttpOnly 会话取用户 ID，并校验 payload、关卡、解锁链、成绩和奖章；不得复用游戏存档表。跨设备合并必须保留已通关记录的 `firstClearMode`，较新的失败尝试不得生成 `cleared=true` 但首次通关模式为空的非法状态。
+- 发布门槛是题库与真实音频验证、自动测试、五视口 UI 回归、主站回归和文档/Skill/缓存/三语更新记录全部通过。工具维护说明与命令见 `tools/japanese-subtext/README.md`。
+
 ## 2026-07-06 暗色前端加密密码房
 
 - 匿名聊天室现在有普通大厅和密码房两种模式：普通大厅继续使用浅色 XP UI 和明文接口；密码房使用暗色 UI，浏览器用用户输入的密码派生房间标识和 AES-GCM 密钥。

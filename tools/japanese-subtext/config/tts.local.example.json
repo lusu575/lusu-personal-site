@@ -1,0 +1,71 @@
+{
+  "$schema": "./tts.local.schema.json",
+  "adapter": "kokoro-onnx",
+  "python": "C:/path/to/japanese-subtext-kokoro/.venv/Scripts/python.exe",
+  "ffmpeg": "C:/path/to/ffmpeg/bin/ffmpeg.exe",
+  "ffprobe": "C:/path/to/ffmpeg/bin/ffprobe.exe",
+  "audioBaseUrl": "./",
+  "kokoro": {
+    "model": "C:/path/to/japanese-subtext-kokoro/kokoro-v1.0.onnx",
+    "voices": "C:/path/to/japanese-subtext-kokoro/voices-v1.0.bin",
+    "config": "C:/path/to/japanese-subtext-kokoro/config.json",
+    "hashManifest": "../scripts/tts/model-files.sha256.json",
+    "g2p": "pyopenjtalk",
+    "provider": "CPUExecutionProvider"
+  },
+  "output": {
+    "format": "mp3",
+    "sampleRate": 24000,
+    "channels": 1,
+    "bitrate": "64k",
+    "targetLufs": -18,
+    "leadingSilenceMs": 60,
+    "trailingSilenceMs": 100,
+    "sceneGapMs": 180
+  },
+  "voices": {
+    "jf-alpha": {
+      "modelVoice": "jf_alpha",
+      "speed": 0.96,
+      "pitch": 0,
+      "emotion": "neutral"
+    },
+    "jf-gongitsune": {
+      "modelVoice": "jf_gongitsune",
+      "speed": 1.07,
+      "pitch": 0,
+      "emotion": "neutral"
+    },
+    "jf-nezumi": {
+      "modelVoice": "jf_nezumi",
+      "speed": 0.93,
+      "pitch": 0,
+      "emotion": "neutral"
+    },
+    "jf-tebukuro": {
+      "modelVoice": "jf_tebukuro",
+      "speed": 0.98,
+      "pitch": 0,
+      "emotion": "neutral"
+    },
+    "jm-kumo": {
+      "modelVoice": "jm_kumo",
+      "speed": 1.0,
+      "pitch": 0,
+      "emotion": "neutral"
+    }
+  },
+  "voiceAliases": {
+    "female-soft": "jf-alpha",
+    "female-bright": "jf-gongitsune",
+    "female-calm": "jf-tebukuro",
+    "female-mysterious": "jf-nezumi",
+    "male-casual": "jm-kumo",
+    "male-calm": "jm-kumo",
+    "male-serious": "jm-kumo",
+    "male-comic": "jm-kumo",
+    "narrator": "jf-alpha",
+    "robot": "jm-kumo",
+    "broadcast": "jf-tebukuro"
+  }
+}

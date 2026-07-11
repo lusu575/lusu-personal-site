@@ -1,4 +1,5 @@
-import { readFileSync, existsSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { readFileSync, existsSync, statSync } from "node:fs";
 import { relative, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { runInNewContext } from "node:vm";
@@ -18,7 +19,61 @@ backendEmailSmokeSample.doubleEncoded = encodeURIComponent(backendEmailSmokeSamp
 const frontendForbiddenEmailTexts = Object.values(frontendEmailSmokeSample);
 const backendForbiddenEmailTexts = Object.values(backendEmailSmokeSample);
 
+const japaneseSubtextRequiredFiles = [
+  "design-system/pages/japanese-subtext-trainer.md",
+  "tools/japanese-subtext/index.html",
+  "tools/japanese-subtext/style.css",
+  "tools/japanese-subtext/app.mjs",
+  "tools/japanese-subtext/manifest.json",
+  "tools/japanese-subtext/README.md",
+  "tools/japanese-subtext/lib/audio-player.mjs",
+  "tools/japanese-subtext/lib/cloud.mjs",
+  "tools/japanese-subtext/lib/constants.mjs",
+  "tools/japanese-subtext/lib/content-loader.mjs",
+  "tools/japanese-subtext/lib/i18n.mjs",
+  "tools/japanese-subtext/lib/storage.mjs",
+  "tools/japanese-subtext/content/blueprint.json",
+  "tools/japanese-subtext/content/catalog.json",
+  "tools/japanese-subtext/content/generation-state.json",
+  "tools/japanese-subtext/content/voices.json",
+  "tools/japanese-subtext/content/schema/stage.schema.json",
+  "tools/japanese-subtext/content/level-1/index.json",
+  "tools/japanese-subtext/content/level-2/index.json",
+  "tools/japanese-subtext/content/level-3/index.json",
+  "tools/japanese-subtext/content/level-4/index.json",
+  "tools/japanese-subtext/content/level-5/index.json",
+  "tools/japanese-subtext/audio/manifest.json",
+  "tools/japanese-subtext/assets/icons/tool-icon-64.webp",
+  "tools/japanese-subtext/assets/covers/tool-cover.webp",
+  "tools/japanese-subtext/assets/covers/level-1.webp",
+  "tools/japanese-subtext/assets/covers/level-2.webp",
+  "tools/japanese-subtext/assets/covers/level-3.webp",
+  "tools/japanese-subtext/assets/covers/level-4.webp",
+  "tools/japanese-subtext/assets/covers/level-5.webp",
+  "tools/japanese-subtext/assets/ui/audio-start.webp",
+  "tools/japanese-subtext/scripts/build-content.mjs",
+  "tools/japanese-subtext/scripts/content-stats.mjs",
+  "tools/japanese-subtext/scripts/content-utils.mjs",
+  "tools/japanese-subtext/scripts/estimate-audio-size.mjs",
+  "tools/japanese-subtext/scripts/merge-audio-manifests.mjs",
+  "tools/japanese-subtext/scripts/validate-audio.mjs",
+  "tools/japanese-subtext/scripts/validate-content.mjs",
+  "tools/japanese-subtext/scripts/tts/generate_audio.py",
+  "tools/japanese-subtext/scripts/tts/kokoro_adapter.py",
+  "tools/japanese-subtext/scripts/tts/model-files.sha256.json",
+  "tools/japanese-subtext/scripts/tts/licenses/LICENSE-kokoro-model-Apache-2.0.txt",
+  "tools/japanese-subtext/scripts/tts/licenses/LICENSE-kokoro-onnx-MIT.txt",
+  "tools/japanese-subtext/scripts/tts/licenses/NOTICE-japanese-voices.md",
+  "tools/japanese-subtext/config/pronunciations.json",
+  "tools/japanese-subtext/config/tts.local.example.json",
+  "tools/japanese-subtext/config/tts.local.schema.json",
+  "tools/japanese-subtext/reports/final-stats.json",
+  "tools/japanese-subtext/reports/release-report.md"
+];
+
 const requiredFiles = [
+  "_headers",
+  "_redirects",
   "admin/index.html",
   "admin/admin.css",
   "admin/admin.js",
@@ -41,7 +96,8 @@ const requiredFiles = [
   "manifest.webmanifest",
   "package.json",
   "robots.txt",
-  "CHANGELOG.md"
+  "CHANGELOG.md",
+  ...japaneseSubtextRequiredFiles
 ];
 
 function fail(message) {
@@ -58,6 +114,93 @@ function readRequired(path) {
   return readFileSync(fullPath, "utf8");
 }
 
+function parseJsonSource(path, source) {
+  try {
+    return JSON.parse(source);
+  } catch (error) {
+    fail(`${path} must contain valid JSON: ${error.message}`);
+    return {};
+  }
+}
+
+function canonicalJson(value) {
+  if (Array.isArray(value)) return `[${value.map(canonicalJson).join(",")}]`;
+  if (value && typeof value === "object") {
+    return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${canonicalJson(value[key])}`).join(",")}}`;
+  }
+  return JSON.stringify(value);
+}
+
+function readRequiredJson(path) {
+  return parseJsonSource(path, readRequired(path));
+}
+
+function referencedFilePath(basePath, referencedPath, boundaryPath, label, { allowParentSegments = false } = {}) {
+  const value = String(referencedPath || "").trim().replace(/\\/g, "/");
+  if (
+    !value
+    || value.startsWith("/")
+    || /^[a-z]:/i.test(value)
+    || /[?#]/.test(value)
+    || (!allowParentSegments && value.split("/").includes(".."))
+  ) {
+    fail(`${label} must use a plain relative published path`);
+    return "";
+  }
+
+  const base = resolve(root, basePath);
+  const boundary = resolve(root, boundaryPath);
+  const fullPath = resolve(base, value);
+  const fromBoundary = relative(boundary, fullPath);
+  if (
+    !fromBoundary
+    || fromBoundary === ".."
+    || fromBoundary.startsWith(`..\\`)
+    || fromBoundary.startsWith("../")
+    || /^[a-z]:/i.test(fromBoundary)
+  ) {
+    fail(`${label} escapes ${boundaryPath}`);
+    return "";
+  }
+  return fullPath;
+}
+
+function requireReferencedNonEmptyFile(basePath, referencedPath, boundaryPath, label, options) {
+  const fullPath = referencedFilePath(basePath, referencedPath, boundaryPath, label, options);
+  if (!fullPath) {
+    return "";
+  }
+  if (!existsSync(fullPath)) {
+    fail(`${label} missing ${relative(root, fullPath)}`);
+    return "";
+  }
+  const fileStat = statSync(fullPath);
+  if (!fileStat.isFile() || fileStat.size <= 0) {
+    fail(`${label} must reference a non-empty file`);
+    return "";
+  }
+  return fullPath;
+}
+
+function requireNonEmptyFile(path) {
+  const fullPath = resolve(root, path);
+  if (!existsSync(fullPath)) {
+    fail(`missing ${path}`);
+    return;
+  }
+  if (statSync(fullPath).size <= 0) {
+    fail(`${path} must not be empty`);
+  }
+}
+
+function requireBalancedCss(path, source) {
+  const openBraces = (source.match(/\{/g) || []).length;
+  const closeBraces = (source.match(/\}/g) || []).length;
+  if (openBraces !== closeBraces) {
+    fail(`${path} brace mismatch (${openBraces} open, ${closeBraces} close)`);
+  }
+}
+
 function escapeRegExp(value) {
   return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
@@ -65,6 +208,11 @@ function escapeRegExp(value) {
 function hasVersionedAssetReference(html, assetPath) {
   const pattern = new RegExp(`${escapeRegExp(assetPath)}\\?v=[^"']+`);
   return pattern.test(html);
+}
+
+function assetQueryVersions(source, assetPath) {
+  const pattern = new RegExp(`${escapeRegExp(assetPath)}\\?v=([^"')\\s;]+)`, "g");
+  return [...source.matchAll(pattern)].map((match) => match[1]);
 }
 
 function findRequiredHtml(source, pattern, message) {
@@ -249,7 +397,11 @@ function readJsQuotedString(source, quoteIndex) {
     const char = source[index];
     if (char === "\\") {
       if (index + 1 < source.length) {
-        value += source[index + 1];
+        const escaped = source[index + 1];
+        value += escaped === "n" ? "\n"
+          : escaped === "r" ? "\r"
+            : escaped === "t" ? "\t"
+              : escaped;
         index += 1;
       }
       continue;
@@ -300,6 +452,10 @@ for (const file of requiredFiles) {
   readRequired(file);
 }
 
+for (const file of japaneseSubtextRequiredFiles) {
+  requireNonEmptyFile(file);
+}
+
 const adminHtml = readRequired("admin/index.html");
 const adminCss = readRequired("admin/admin.css");
 const adminJs = readRequired("admin/admin.js");
@@ -323,6 +479,622 @@ const manifest = readRequired("manifest.webmanifest");
 const packageJson = readRequired("package.json");
 const robots = readRequired("robots.txt");
 const changelog = readRequired("CHANGELOG.md");
+const headersConfig = readRequired("_headers");
+const redirectsConfig = readRequired("_redirects");
+const japaneseSubtextHtml = readRequired("tools/japanese-subtext/index.html");
+const japaneseSubtextCss = readRequired("tools/japanese-subtext/style.css");
+const japaneseSubtextApp = readRequired("tools/japanese-subtext/app.mjs");
+const japaneseSubtextLibrarySources = Object.fromEntries([
+  "audio-player.mjs",
+  "cloud.mjs",
+  "constants.mjs",
+  "content-loader.mjs",
+  "i18n.mjs",
+  "storage.mjs"
+].map((file) => [file, readRequired(`tools/japanese-subtext/lib/${file}`)]));
+const japaneseSubtextManifest = readRequiredJson("tools/japanese-subtext/manifest.json");
+const japaneseSubtextCatalog = readRequiredJson("tools/japanese-subtext/content/catalog.json");
+const japaneseSubtextGenerationState = readRequiredJson("tools/japanese-subtext/content/generation-state.json");
+const japaneseSubtextAudioManifest = readRequiredJson("tools/japanese-subtext/audio/manifest.json");
+const japaneseSubtextFinalStats = readRequiredJson("tools/japanese-subtext/reports/final-stats.json");
+const japaneseSubtextReleaseReport = readRequired("tools/japanese-subtext/reports/release-report.md");
+
+function validateJapaneseSubtextReleaseContract() {
+  const toolRoot = "tools/japanese-subtext";
+  const contentRoot = `${toolRoot}/content`;
+  const audioRoot = `${toolRoot}/audio`;
+  const contentVersion = "1.0.0";
+  const publicTitle = "日本語の裏側";
+  const assetVersion = "20260711-japanese-subtext-r11";
+  const expectedAudioCounts = Object.freeze({
+    scene: 250,
+    line: 2400,
+    option: 2445,
+    token: 4993
+  });
+  const expectedAudioItems = Object.values(expectedAudioCounts).reduce((sum, count) => sum + count, 0);
+  const statsExpectedAudio = japaneseSubtextFinalStats.expectedAudio || {};
+  const statsGeneratedAudio = japaneseSubtextFinalStats.generatedAudio || {};
+  if (
+    japaneseSubtextFinalStats.totalStages !== 250
+    || japaneseSubtextFinalStats.totalLines !== 2400
+    || japaneseSubtextFinalStats.totalQuestions !== 610
+    || japaneseSubtextFinalStats.singleChoice !== 497
+    || japaneseSubtextFinalStats.multipleChoice !== 113
+    || japaneseSubtextFinalStats.multiQuestionStages !== 180
+    || japaneseSubtextFinalStats.illustrationStyles?.crayon !== 25
+    || japaneseSubtextFinalStats.illustrationStyles?.["chibi-four-panel"] !== 6
+    || japaneseSubtextFinalStats.illustrationStyles?.monochrome !== 0
+    || statsExpectedAudio.scenes !== expectedAudioCounts.scene
+    || statsExpectedAudio.lines !== expectedAudioCounts.line
+    || statsExpectedAudio.options !== expectedAudioCounts.option
+    || statsExpectedAudio.tokens !== expectedAudioCounts.token
+    || statsExpectedAudio.total !== expectedAudioItems
+    || statsGeneratedAudio.scene !== expectedAudioCounts.scene
+    || statsGeneratedAudio.line !== expectedAudioCounts.line
+    || statsGeneratedAudio.option !== expectedAudioCounts.option
+    || statsGeneratedAudio.token !== expectedAudioCounts.token
+    || !(statsGeneratedAudio.durationSeconds > 0)
+    || !(statsGeneratedAudio.bytes > 0)
+  ) {
+    fail(`${toolRoot}/reports/final-stats.json must contain the final verified content and audio totals`);
+  }
+  const expectedStageIds = new Set();
+  for (let level = 1; level <= 5; level += 1) {
+    for (let stage = 1; stage <= 50; stage += 1) {
+      expectedStageIds.add(`L${level}-${String(stage).padStart(3, "0")}`);
+    }
+  }
+
+  requireBalancedCss(`${toolRoot}/style.css`, japaneseSubtextCss);
+  if (!japaneseSubtextHtml.includes(`<title>${publicTitle}</title>`)) {
+    fail(`${toolRoot}/index.html must keep the exact public document title ${publicTitle}`);
+  }
+  const toolHeading = japaneseSubtextHtml.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)?.[1]?.replace(/<[^>]+>/g, "").trim();
+  if (toolHeading !== publicTitle) {
+    fail(`${toolRoot}/index.html h1 must be exactly ${publicTitle}`);
+  }
+  for (const asset of ["./style.css", "./app.mjs"]) {
+    const versions = assetQueryVersions(japaneseSubtextHtml, asset);
+    if (versions.length !== 1 || versions[0] !== assetVersion) {
+      fail(`${toolRoot}/index.html ${asset} query should appear once as ${assetVersion}`);
+    }
+  }
+  const publicModuleSources = [
+    ["app.mjs", japaneseSubtextApp],
+    ...Object.entries(japaneseSubtextLibrarySources).map(([file, source]) => [`lib/${file}`, source])
+  ];
+  for (const [file, source] of publicModuleSources) {
+    const imports = [...source.matchAll(/\bfrom\s+["'](\.[^"'?]+\.mjs)(?:\?v=([^"']+))?["']/g)];
+    for (const [, specifier, version] of imports) {
+      if (version !== assetVersion) {
+        fail(`${toolRoot}/${file} import ${specifier} must use query ${assetVersion}`);
+      }
+    }
+    if (/\b(?:innerHTML|outerHTML|insertAdjacentHTML)\b/.test(source)) {
+      fail(`${toolRoot}/${file} must not use HTML string insertion for trainer data`);
+    }
+  }
+  if (!japaneseSubtextApp.includes("textContent")) {
+    fail(`${toolRoot}/app.mjs should render trainer strings with safe text APIs`);
+  }
+
+  const packageData = parseJsonSource("package.json", packageJson);
+  const requiredPackageScripts = {
+    "jp-subtext:build": "tools/japanese-subtext/scripts/build-content.mjs",
+    "jp-subtext:validate": "tools/japanese-subtext/scripts/validate-content.mjs",
+    "jp-subtext:validate:content": "tools/japanese-subtext/scripts/validate-content.mjs --skip-audio",
+    "jp-subtext:validate:draft": "tools/japanese-subtext/scripts/validate-content.mjs --skip-audio --allow-partial --allow-unlocked",
+    "jp-subtext:stats": "tools/japanese-subtext/scripts/content-stats.mjs",
+    "jp-subtext:test": "tools/japanese-subtext/tests/*.test.mjs",
+    "jp-subtext:audio:validate": "tools/japanese-subtext/scripts/validate-audio.mjs",
+    "jp-subtext:audio:validate:quick": "tools/japanese-subtext/scripts/validate-audio.mjs --skip-probe",
+    "jp-subtext:audio:estimate": "tools/japanese-subtext/scripts/estimate-audio-size.mjs",
+    "jp-subtext:audio:merge": "tools/japanese-subtext/scripts/merge-audio-manifests.mjs"
+  };
+  for (const [name, token] of Object.entries(requiredPackageScripts)) {
+    if (!String(packageData.scripts?.[name] || "").includes(token)) {
+      fail(`package.json ${name} must run ${token}`);
+    }
+  }
+  const releaseSteps = String(packageData.scripts?.["jp-subtext:release-check"] || "")
+    .split("&&")
+    .map((step) => step.trim());
+  const expectedReleaseSteps = [
+    "npm run jp-subtext:validate",
+    "npm run jp-subtext:audio:validate -- --check-silence",
+    "npm run jp-subtext:test",
+    "npm run build"
+  ];
+  if (JSON.stringify(releaseSteps) !== JSON.stringify(expectedReleaseSteps)) {
+    fail(`package.json jp-subtext:release-check must run ${expectedReleaseSteps.join(" -> ")}`);
+  }
+
+  for (const [field, expected] of Object.entries({
+    id: "japanese-subtext",
+    schemaVersion: 1,
+    contentVersion,
+    title: publicTitle,
+    entry: "./index.html",
+    catalog: "./content/catalog.json",
+    audioManifest: "./audio/manifest.json",
+    audioBaseUrl: "./audio/",
+    stageCount: 250,
+    levels: 5
+  })) {
+    if (japaneseSubtextManifest[field] !== expected) {
+      fail(`${toolRoot}/manifest.json ${field} must be ${JSON.stringify(expected)}`);
+    }
+  }
+  if (JSON.stringify(japaneseSubtextManifest.supportedUiLanguages) !== JSON.stringify(["zh", "en", "ja"])) {
+    fail(`${toolRoot}/manifest.json must advertise zh/en/ja UI languages`);
+  }
+
+  if (
+    japaneseSubtextCatalog.schemaVersion !== 1
+    || japaneseSubtextCatalog.contentVersion !== contentVersion
+    || japaneseSubtextCatalog.stageCount !== 250
+    || !Array.isArray(japaneseSubtextCatalog.levels)
+    || japaneseSubtextCatalog.levels.length !== 5
+  ) {
+    fail(`${contentRoot}/catalog.json must describe content ${contentVersion} with 5 levels and 250 stages`);
+  }
+  for (const lang of ["zh", "en", "ja"]) {
+    if (japaneseSubtextCatalog.title?.[lang] !== publicTitle) {
+      fail(`${contentRoot}/catalog.json title.${lang} must be ${publicTitle}`);
+    }
+  }
+
+  const indexedStages = new Map();
+  const indexedBatches = new Map();
+  const lockedContentStages = new Map();
+  const publishedStageIllustrations = new Set();
+  const expectedJlptTargets = ["N3", "N2", "N1", "N1-advanced", "N1-pragmatics"];
+  for (let index = 0; index < 5; index += 1) {
+    const level = index + 1;
+    const catalogLevel = japaneseSubtextCatalog.levels?.[index] || {};
+    if (catalogLevel.level !== level || catalogLevel.jlptTarget !== expectedJlptTargets[index]) {
+      fail(`${contentRoot}/catalog.json level ${level} must target ${expectedJlptTargets[index]}`);
+    }
+    if (level >= 3 && !String(catalogLevel.jlptTarget || "").startsWith("N1")) {
+      fail(`${contentRoot}/catalog.json levels 3-5 must remain N1 difficulty`);
+    }
+    requireReferencedNonEmptyFile(toolRoot, catalogLevel.cover, toolRoot, `catalog level ${level} cover`);
+    const indexFile = requireReferencedNonEmptyFile(contentRoot, catalogLevel.index, contentRoot, `catalog level ${level} index`);
+    if (!indexFile) {
+      continue;
+    }
+    const levelIndex = parseJsonSource(relative(root, indexFile), readFileSync(indexFile, "utf8"));
+    if (
+      levelIndex.schemaVersion !== 1
+      || levelIndex.contentVersion !== contentVersion
+      || levelIndex.level !== level
+      || levelIndex.jlptTarget !== expectedJlptTargets[index]
+      || !Array.isArray(levelIndex.stages)
+      || levelIndex.stages.length !== 50
+    ) {
+      fail(`${relative(root, indexFile)} must contain the locked 50-stage level ${level} index`);
+      continue;
+    }
+    for (let stageIndex = 0; stageIndex < levelIndex.stages.length; stageIndex += 1) {
+      const stage = levelIndex.stages[stageIndex] || {};
+      const expectedId = `L${level}-${String(stageIndex + 1).padStart(3, "0")}`;
+      if (stage.id !== expectedId || stage.stage !== stageIndex + 1 || !/^[a-f0-9]{64}$/.test(stage.contentHash || "")) {
+        fail(`${relative(root, indexFile)} stage ${stageIndex + 1} must keep stable id ${expectedId} and a locked content hash`);
+      }
+      if (indexedStages.has(stage.id)) {
+        fail(`${contentRoot} contains duplicate stage id ${stage.id}`);
+      }
+      indexedStages.set(stage.id, stage);
+      if (!/^batch-\d{3}-\d{3}\.json$/.test(stage.batch || "")) {
+        fail(`${relative(root, indexFile)} ${expectedId} has an unsafe batch path`);
+        continue;
+      }
+      const batchPath = `level-${level}/${stage.batch}`;
+      if (!indexedBatches.has(batchPath)) {
+        indexedBatches.set(batchPath, []);
+      }
+      indexedBatches.get(batchPath).push(stage);
+    }
+  }
+  if (indexedStages.size !== 250 || [...expectedStageIds].some((id) => !indexedStages.has(id))) {
+    fail(`${contentRoot} level indexes must expose every stable stage id from L1-001 through L5-050`);
+  }
+  if (indexedBatches.size !== 25) {
+    fail(`${contentRoot} indexes must reference exactly 25 ten-stage batches`);
+  }
+  for (const [batchPath, indexEntries] of indexedBatches) {
+    const fullPath = requireReferencedNonEmptyFile(contentRoot, batchPath, contentRoot, `content batch ${batchPath}`);
+    if (!fullPath) {
+      continue;
+    }
+    const batch = parseJsonSource(relative(root, fullPath), readFileSync(fullPath, "utf8"));
+    if (
+      batch.schemaVersion !== 1
+      || batch.contentVersion !== contentVersion
+      || !Array.isArray(batch.stages)
+      || batch.stages.length !== indexEntries.length
+    ) {
+      fail(`${relative(root, fullPath)} must match its level index and content version`);
+      continue;
+    }
+    const expectedById = new Map(indexEntries.map((stage) => [stage.id, stage]));
+    const seenBatchStageIds = new Set();
+    for (const stage of batch.stages) {
+      const indexed = expectedById.get(stage?.id);
+      if (
+        !indexed
+        || seenBatchStageIds.has(stage?.id)
+        || stage.textLocked !== true
+        || stage.contentHash !== indexed.contentHash
+      ) {
+        fail(`${relative(root, fullPath)} ${stage?.id || "unknown stage"} must be text-locked with the indexed hash`);
+      }
+      seenBatchStageIds.add(stage?.id);
+      lockedContentStages.set(stage?.id, stage);
+      const illustration = stage?.illustration || {};
+      if (illustration.enabled === true) {
+        if (!["crayon", "chibi-four-panel"].includes(illustration.style)) {
+          fail(`${relative(root, fullPath)} ${stage?.id} must use an approved color illustration style`);
+        }
+        const illustrationFile = requireReferencedNonEmptyFile(toolRoot, illustration.src, toolRoot, `illustration ${stage?.id}`);
+        if (!illustrationFile || !String(illustration.src || "").endsWith(".webp")) {
+          fail(`${relative(root, fullPath)} ${stage?.id} must reference a published WebP illustration`);
+        }
+        publishedStageIllustrations.add(illustration.src);
+      } else if (illustration.style !== "none" || illustration.src) {
+        fail(`${relative(root, fullPath)} ${stage?.id} disabled illustration must use style none and no source`);
+      }
+    }
+    if ([...expectedById.keys()].some((id) => !seenBatchStageIds.has(id))) {
+      fail(`${relative(root, fullPath)} must contain every stage referenced by its level index exactly once`);
+    }
+  }
+  if (publishedStageIllustrations.size !== 31) {
+    fail(`${contentRoot} must reference exactly 31 unique color stage illustrations`);
+  }
+
+  const generationState = japaneseSubtextGenerationState;
+  if (
+    generationState.schemaVersion !== 1
+    || generationState.contentVersion !== contentVersion
+    || generationState.blueprint?.status !== "complete"
+    || generationState.blueprint?.stageCount !== 250
+    || generationState.formalContent?.status !== "reviewed-and-locked"
+  ) {
+    fail(`${contentRoot}/generation-state.json must record the complete, reviewed, locked 250-stage bank`);
+  }
+  for (let level = 1; level <= 5; level += 1) {
+    if (generationState.blueprint?.levelCounts?.[String(level)] !== 50) {
+      fail(`${contentRoot}/generation-state.json blueprint level ${level} count must be 50`);
+    }
+  }
+  for (const key of ["authoredBatches", "reviewedBatches", "lockedBatches"]) {
+    const batches = generationState.formalContent?.[key];
+    if (!Array.isArray(batches) || batches.length !== 25 || new Set(batches).size !== 25) {
+      fail(`${contentRoot}/generation-state.json formalContent.${key} must list 25 unique batches`);
+      continue;
+    }
+    for (const batch of batches) {
+      requireReferencedNonEmptyFile(contentRoot, batch, contentRoot, `generation-state ${key}`);
+      if (!indexedBatches.has(batch)) {
+        fail(`${contentRoot}/generation-state.json formalContent.${key} contains unindexed batch ${batch}`);
+      }
+    }
+  }
+  if (!Array.isArray(generationState.needsReworkStageIds) || generationState.needsReworkStageIds.length) {
+    fail(`${contentRoot}/generation-state.json must not contain release-time rework stages`);
+  }
+  if (
+    generationState.illustrations?.status !== "complete"
+    || generationState.illustrations?.stageAssetCount !== 31
+    || generationState.illustrations?.styleCounts?.monochrome !== 0
+    || generationState.illustrations?.styleCounts?.crayon !== 25
+    || generationState.illustrations?.styleCounts?.["chibi-four-panel"] !== 6
+  ) {
+    fail(`${contentRoot}/generation-state.json must record 31 color-only stage illustrations and zero monochrome art`);
+  }
+  if (
+    generationState.audio?.status !== "complete"
+    || generationState.audio?.expectedArtifacts !== expectedAudioItems
+    || generationState.audio?.generatedArtifacts !== expectedAudioItems
+    || generationState.audio?.generatedStages !== 250
+  ) {
+    fail(`${contentRoot}/generation-state.json audio must be complete with 250 stages and ${expectedAudioItems} artifacts`);
+  }
+
+  const audioManifest = japaneseSubtextAudioManifest;
+  const expectedAudioOutput = {
+    format: "mp3",
+    sampleRate: 24000,
+    channels: 1,
+    bitrate: "64k",
+    targetLufs: -18,
+    leadingSilenceMs: 60,
+    trailingSilenceMs: 100,
+    sceneGapMs: 180
+  };
+  const pronunciationsSource = readRequired("tools/japanese-subtext/config/pronunciations.json");
+  const pronunciationsData = parseJsonSource("tools/japanese-subtext/config/pronunciations.json", pronunciationsSource);
+  const pronunciationsSha256 = createHash("sha256").update(canonicalJson(pronunciationsData), "utf8").digest("hex");
+  if (
+    audioManifest.schemaVersion !== 1
+    || audioManifest.contentVersion !== contentVersion
+    || audioManifest.audioBaseUrl !== "./"
+    || audioManifest.generator?.name !== "kokoro-onnx-offline"
+    || audioManifest.generator?.pipelineVersion !== "kokoro-ja-mp3-v2"
+    || audioManifest.generator?.executionProvider !== "CPUExecutionProvider"
+    || audioManifest.generator?.pronunciationsSha256 !== pronunciationsSha256
+    || Object.entries(expectedAudioOutput).some(([key, value]) => audioManifest.generator?.output?.[key] !== value)
+  ) {
+    fail(`${audioRoot}/manifest.json must keep the locked Kokoro pipeline, output, and pronunciation metadata for ${contentVersion}`);
+  }
+  const requiredModelVoices = ["jf_alpha", "jf_gongitsune", "jf_nezumi", "jf_tebukuro", "jm_kumo"];
+  const modelVoices = new Set(Object.values(audioManifest.voices || {}).map((voice) => voice?.modelVoice).filter(Boolean));
+  for (const voice of requiredModelVoices) {
+    if (!modelVoices.has(voice)) {
+      fail(`${audioRoot}/manifest.json missing licensed Japanese model voice ${voice}`);
+    }
+  }
+  const licensePaths = audioManifest.generator?.licenses;
+  if (!Array.isArray(licensePaths) || licensePaths.length !== 3) {
+    fail(`${audioRoot}/manifest.json must expose the model, runtime, and Japanese voice notices`);
+  } else {
+    for (const licensePath of licensePaths) {
+      requireReferencedNonEmptyFile(audioRoot, licensePath, toolRoot, "audio generator license", { allowParentSegments: true });
+    }
+  }
+
+  const items = audioManifest.items && typeof audioManifest.items === "object" ? audioManifest.items : {};
+  const stages = audioManifest.stages && typeof audioManifest.stages === "object" ? audioManifest.stages : {};
+  const itemEntries = Object.entries(items);
+  const stageEntries = Object.entries(stages);
+  if (itemEntries.length !== expectedAudioItems || stageEntries.length !== 250) {
+    fail(`${audioRoot}/manifest.json must contain 250 stage records and exactly ${expectedAudioItems} audio items`);
+  }
+  if (stageEntries.length !== 250 || [...expectedStageIds].some((id) => !Object.hasOwn(stages, id))) {
+    fail(`${audioRoot}/manifest.json must cover every stage id from L1-001 through L5-050`);
+  }
+  const actualAudioCounts = { scene: 0, line: 0, option: 0, token: 0 };
+  const publishedAudioPaths = new Set();
+  let audioBytes = 0;
+  let audioDuration = 0;
+  for (const [id, item] of itemEntries) {
+    if (item?.id !== id || !Object.hasOwn(actualAudioCounts, item?.type)) {
+      fail(`${audioRoot}/manifest.json audio item ${id} has an invalid id or type`);
+      continue;
+    }
+    actualAudioCounts[item.type] += 1;
+    if (!expectedStageIds.has(item.stageId) || item.level !== Number(String(item.stageId || "")[1])) {
+      fail(`${audioRoot}/manifest.json audio item ${id} has an unknown stage or mismatched level (${item.stageId})`);
+    }
+    if (
+      item.codec !== "mp3"
+      || item.sampleRate !== 24000
+      || item.channels !== 1
+      || item.bitrate !== 64000
+      || !(item.durationSeconds > 0)
+      || !(item.bytes > 0)
+      || !/^[a-f0-9]{64}$/.test(item.contentHash || "")
+      || !/^[a-f0-9]{64}$/.test(item.sha256 || "")
+      || !String(item.path || "").endsWith(".mp3")
+    ) {
+      fail(`${audioRoot}/manifest.json audio item ${id} must be a hashed 24 kHz mono 64 kbps MP3`);
+    }
+    const audioFile = requireReferencedNonEmptyFile(audioRoot, item.path, audioRoot, `audio item ${id}`);
+    if (audioFile && statSync(audioFile).size !== item.bytes) {
+      fail(`${audioRoot}/manifest.json audio item ${id} byte count does not match its file`);
+    }
+    if (publishedAudioPaths.has(item.path)) {
+      fail(`${audioRoot}/manifest.json reuses audio path ${item.path}`);
+    }
+    publishedAudioPaths.add(item.path);
+    audioBytes += Number(item.bytes) || 0;
+    audioDuration += Number(item.durationSeconds) || 0;
+  }
+  for (const [type, expected] of Object.entries(expectedAudioCounts)) {
+    if (actualAudioCounts[type] !== expected || audioManifest.stats?.[type] !== expected) {
+      fail(`${audioRoot}/manifest.json ${type} count must be ${expected}`);
+    }
+  }
+  if (
+    audioManifest.stats?.bytes !== audioBytes
+    || Math.abs(Number(audioManifest.stats?.durationSeconds) - audioDuration) > 0.01
+  ) {
+    fail(`${audioRoot}/manifest.json aggregate byte/duration stats must match all audio items`);
+  }
+
+  for (const expectedId of expectedStageIds) {
+    const stage = stages[expectedId];
+    const contentStage = lockedContentStages.get(expectedId);
+    if (!stage) {
+      continue;
+    }
+    if (
+      stage.stageId !== expectedId
+      || stage.contentVersion !== contentVersion
+      || stage.level !== Number(expectedId[1])
+      || stage.sampleRate !== 24000
+      || !(stage.duration > 0)
+      || !/^[a-f0-9]{64}$/.test(stage.contentHash || "")
+      || stage.sourceContentHash !== contentStage?.contentHash
+    ) {
+      fail(`${audioRoot}/manifest.json missing valid stage audio record ${expectedId}`);
+      continue;
+    }
+    const expectedLinks = {
+      line: (contentStage?.lines || []).map((line) => line.audioId),
+      option: (contentStage?.questions || []).flatMap((question) => (question.options || []).map((option) => option.audioId)),
+      token: (contentStage?.lines || []).flatMap((line) => (line.tokens || []).map((token) => token.audioId))
+    };
+    const audioGroups = [
+      ["scene", [stage.sceneAudioId]],
+      ["line", stage.lineAudioIds],
+      ["option", stage.optionAudioIds],
+      ["token", stage.tokenAudioIds]
+    ];
+    for (const [type, ids] of audioGroups) {
+      if (!Array.isArray(ids) || ids.length === 0) {
+        fail(`${audioRoot}/manifest.json ${expectedId} must link at least one ${type} audio id`);
+        continue;
+      }
+      if (new Set(ids).size !== ids.length) {
+        fail(`${audioRoot}/manifest.json ${expectedId} repeats a ${type} audio id`);
+      }
+      for (const audioId of ids) {
+        if (items[audioId]?.type !== type || items[audioId]?.stageId !== expectedId) {
+          fail(`${audioRoot}/manifest.json ${expectedId} has invalid ${type} audio link ${audioId}`);
+        }
+      }
+      if (type !== "scene" && JSON.stringify(ids) !== JSON.stringify(expectedLinks[type])) {
+        fail(`${audioRoot}/manifest.json ${expectedId} ${type} links must exactly match locked content order`);
+      }
+    }
+    const expectedCueLinks = (contentStage?.lines || []).map((line) => [line.id, line.audioId]);
+    const embeddedCueLinks = (stage.cues || []).map((cue) => [cue.lineId, cue.audioId]);
+    if (JSON.stringify(embeddedCueLinks) !== JSON.stringify(expectedCueLinks)) {
+      fail(`${audioRoot}/manifest.json ${expectedId} cues must exactly match locked line order`);
+    }
+    const timelineFile = requireReferencedNonEmptyFile(audioRoot, stage.timelinePath, audioRoot, `timeline ${expectedId}`);
+    if (!timelineFile) {
+      continue;
+    }
+    const timeline = parseJsonSource(relative(root, timelineFile), readFileSync(timelineFile, "utf8"));
+    if (
+      timeline.schemaVersion !== 1
+      || timeline.stageId !== expectedId
+      || timeline.timelineId !== stage.timelineId
+      || timeline.sceneAudioId !== stage.sceneAudioId
+      || timeline.contentHash !== stage.contentHash
+      || timeline.sourceContentHash !== stage.sourceContentHash
+      || timeline.sampleRate !== 24000
+      || !Array.isArray(timeline.cues)
+      || timeline.cues.length !== stage.lineAudioIds.length
+      || JSON.stringify((timeline.cues || []).map((cue) => [cue.lineId, cue.audioId])) !== JSON.stringify(expectedCueLinks)
+      || Math.abs(Number(timeline.duration) - Number(stage.duration)) > 0.01
+    ) {
+      fail(`${relative(root, timelineFile)} must match the ${expectedId} stage audio record`);
+    }
+  }
+
+  const resourceEntry = windowAfter(mainJs, 'iconSrc: "tools/japanese-subtext/assets/icons/tool-icon-64.webp"', 2200);
+  for (const token of [
+    'version: "v1.0.0"',
+    'size: "250 STAGES"',
+    'updated: "2026.07.11"',
+    'external: false',
+    'url: "/tools/japanese-subtext/"',
+    `title: { zh: "${publicTitle}", en: "${publicTitle}", ja: "${publicTitle}" }`,
+    'actionLabel: { zh: "开始训练", en: "Start Training", ja: "トレーニング開始" }',
+    '{ zh: "250 关", en: "250 stages", ja: "250 ステージ" }',
+    '{ zh: "男声 / 女声", en: "Male / female voices", ja: "男声 / 女声" }',
+    '{ zh: "本地 + 云端进度", en: "Local + cloud progress", ja: "ローカル + クラウド進捗" }'
+  ]) {
+    if (!resourceEntry.includes(token)) {
+      fail(`js/main.js Japanese subtext Resources entry missing ${token}`);
+    }
+  }
+  for (const lang of ["zh", "en", "ja"]) {
+    if (!new RegExp(`${lang}:\\s*"[^"]{12,}"`).test(windowAfter(resourceEntry, "desc:", 650))) {
+      fail(`js/main.js Japanese subtext Resources entry needs a meaningful ${lang} description`);
+    }
+  }
+  if (
+    !windowAfter(mainJs, "function safeResourceIconSrc", 700).includes('path === "tools/japanese-subtext/assets/icons/tool-icon-64.webp"')
+    || !windowAfter(mainJs, "function safeResourceUrl", 1300).includes('/^tools\\/japanese-subtext\\/?$/i.test(localPath)')
+  ) {
+    fail("js/main.js must keep explicit safe allowlists for the Japanese subtext resource URL and icon");
+  }
+
+  const progressRoute = windowAfter(apiJs, 'parts[0] === "tools"', 900);
+  if (
+    !progressRoute.includes('parts[1] === "japanese-subtext"')
+    || !progressRoute.includes('parts[2] === "progress"')
+    || !progressRoute.includes('request.method === "GET"')
+    || !progressRoute.includes('request.method === "PUT"')
+  ) {
+    fail("functions/api/[[route]].js must expose exact GET/PUT /api/tools/japanese-subtext/progress routing");
+  }
+  const getProgressBody = objectBlockAfterMarker(apiJs, "async function getJapaneseSubtextProgress");
+  const putProgressBody = objectBlockAfterMarker(apiJs, "async function putJapaneseSubtextProgress");
+  for (const [name, body] of [["GET", getProgressBody], ["PUT", putProgressBody]]) {
+    if (!body.includes("requireSession(request, env)") || !body.includes("ensureJapaneseSubtextSchema(env)")) {
+      fail(`functions/api/[[route]].js Japanese subtext ${name} progress must require an HttpOnly-backed session and dedicated schema`);
+    }
+    if (body.includes("game_saves")) {
+      fail(`functions/api/[[route]].js Japanese subtext ${name} progress must not reuse game_saves`);
+    }
+  }
+  for (const token of [
+    "const MAX_JAPANESE_SUBTEXT_PROGRESS_BYTES = 256 * 1024",
+    'const JAPANESE_SUBTEXT_CONTENT_VERSION = "1.0.0"',
+    "const JAPANESE_SUBTEXT_STAGE_LIMIT = 250",
+    "create table if not exists japanese_subtext_profiles",
+    "create table if not exists japanese_subtext_stage_progress",
+    "primary key (user_id, stage_id)"
+  ]) {
+    if (!apiJs.includes(token)) {
+      fail(`functions/api/[[route]].js Japanese subtext contract missing ${token}`);
+    }
+  }
+  for (const token of [
+    "create table if not exists japanese_subtext_profiles",
+    "create table if not exists japanese_subtext_stage_progress",
+    "primary key (user_id, stage_id)",
+    "japanese_subtext_stage_progress_user_level_idx"
+  ]) {
+    if (!schemaSql.includes(token)) {
+      fail(`cloudflare/schema.sql Japanese subtext contract missing ${token}`);
+    }
+  }
+
+  const requiredHeaderRules = [
+    ["/tools/japanese-subtext/manifest.json", "public, max-age=0, must-revalidate"],
+    ["/tools/japanese-subtext/content/*", "public, max-age=300, must-revalidate"],
+    ["/tools/japanese-subtext/audio/manifest.json", "public, max-age=0, must-revalidate"],
+    ["/tools/japanese-subtext/audio/*", "public, max-age=86400, must-revalidate"],
+    ["/tools/japanese-subtext/assets/*", "public, max-age=86400, must-revalidate"]
+  ];
+  for (const [path, cacheControl] of requiredHeaderRules) {
+    const pattern = new RegExp(`(?:^|\\r?\\n)${escapeRegExp(path)}\\r?\\n[ \\t]+Cache-Control:\\s*${escapeRegExp(cacheControl)}(?:\\r?\\n|$)`);
+    if (!pattern.test(headersConfig)) {
+      fail(`_headers missing ${path} Cache-Control: ${cacheControl}`);
+    }
+  }
+  if (!/(?:^|\r?\n)\/tools\/japanese-subtext \/tools\/japanese-subtext\/ 301(?:\r?\n|$)/.test(redirectsConfig)) {
+    fail("_redirects must canonicalize /tools/japanese-subtext to its trailing-slash URL");
+  }
+  if (
+    !apiJs.includes("const japaneseSubtextEntries = langs.map")
+    || !apiJs.includes("/tools/japanese-subtext/?lang=${encodeURIComponent(lang)}")
+    || !apiJs.includes("...japaneseSubtextEntries")
+  ) {
+    fail("functions/api/[[route]].js sitemap must publish the Japanese subtext URL for zh/en/ja");
+  }
+
+  for (const markerName of [
+    "AUDIO_ITEM_COUNT",
+    "AUDIO_STAGE_COUNT",
+    "AUDIO_DURATION",
+    "AUDIO_BYTES",
+    "AUDIO_VALIDATION",
+    "BROWSER_QA"
+  ]) {
+    for (const edge of ["START", "END"]) {
+      const marker = `<!-- AUTO:${markerName}:${edge} -->`;
+      if (!japaneseSubtextReleaseReport.includes(marker)) {
+        fail(`${toolRoot}/reports/release-report.md missing replaceable marker ${marker}`);
+      }
+    }
+  }
+  for (const releaseGate of ["AUDIO_VALIDATION", "BROWSER_QA"]) {
+    if (!japaneseSubtextReleaseReport.includes(`<!-- RELEASE:${releaseGate}:PASS -->`)) {
+      fail(`${toolRoot}/reports/release-report.md must record RELEASE:${releaseGate}:PASS before publishing`);
+    }
+  }
+}
+
+validateJapaneseSubtextReleaseContract();
 
 const translationsBlock = objectBlockAfterMarker(mainJs, "const translations =");
 if (!translationsBlock) {
@@ -844,7 +1616,7 @@ for (const asset of [
 }
 
 const currentPreFinalMainVersion = "20260623-click-delegation-r1";
-const currentPreFinalCssVersion = "20260706-private-chat-rooms-r1";
+const currentPreFinalCssVersion = "20260711-japanese-subtext-r1";
 const currentPreFinalTelemetryVersion = "20260623-analytics-privacy-r1";
 const currentGameShellVersion = "20260623-game-shell-storage-safe-r1";
 
@@ -978,8 +1750,8 @@ for (const [marker, pattern, message] of [
   ],
   [
     "function resourceActionElement",
-    /const\s+resourceTitle\s*=\s*contentTitle\(item\.title\)[\s\S]*status\.className\s*=\s*["']card-action resource-pending-action["'][\s\S]*status\.setAttribute\(\s*["']role["']\s*,\s*["']status["']\s*\)[\s\S]*status\.setAttribute\(\s*["']aria-label["']\s*,\s*`\$\{t\(["']resourcePendingTitle["']\)\}:\s*\$\{resourceTitle\}`\s*\)[\s\S]*link\.setAttribute\(\s*["']aria-label["']\s*,\s*`\$\{text\}:\s*\$\{resourceTitle\}`\s*\)/,
-    "js/main.js resourceActionElement should expose pending resources as non-interactive titled status text"
+    /const\s+resourceTitle\s*=\s*url\s*\?\s*localText\(item\.title\)\s*:\s*contentTitle\(item\.title\)[\s\S]*localText\(item\.actionLabel\)[\s\S]*status\.className\s*=\s*["']card-action resource-pending-action["'][\s\S]*status\.setAttribute\(\s*["']role["']\s*,\s*["']status["']\s*\)[\s\S]*status\.setAttribute\(\s*["']aria-label["']\s*,\s*`\$\{t\(["']resourcePendingTitle["']\)\}:\s*\$\{resourceTitle\}`\s*\)[\s\S]*link\.setAttribute\(\s*["']aria-label["']\s*,\s*`\$\{text\}:\s*\$\{resourceTitle\}`\s*\)/,
+    "js/main.js resourceActionElement should support localized tool actions and expose pending resources as non-interactive titled status text"
   ],
   [
     "function resourceStatusElement",
@@ -1397,12 +2169,12 @@ for (const obsoleteText of [
   }
 }
 
-const finalUpdateId = "seed-update-2026-07-06-private-chat-rooms";
-const finalUpdateSlug = "2026-07-06-private-chat-rooms";
-const finalMainVersion = "20260706-private-chat-rooms-r2";
+const finalUpdateId = "seed-update-2026-07-11-japanese-subtext-trainer";
+const finalUpdateSlug = "2026-07-11-japanese-subtext-trainer";
+const finalMainVersion = "20260711-japanese-subtext-r1";
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Dark Encrypted Password Rooms";
-const finalPublishedAt = "2026-07-06T08:00:00.000Z";
+const finalTitleEn = "Japanese Subtext Trainer Released";
+const finalPublishedAt = "2026-07-10T17:30:00.000Z";
 const finalTranslationMinimums = {
   title: 8,
   summary: 24,
@@ -1416,6 +2188,8 @@ const changelog20260623Section = markdownSection(changelog, "## 2026-06-23");
 const changelog20260624Section = markdownSection(changelog, "## 2026-06-24");
 const changelog20260630Section = markdownSection(changelog, "## 2026-06-30");
 const changelog20260706Section = markdownSection(changelog, "## 2026-07-06");
+const changelog20260710Section = markdownSection(changelog, "## 2026-07-10");
+const changelog20260711Section = markdownSection(changelog, "## 2026-07-11");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -1438,6 +2212,7 @@ if (finalUpdateStarted) {
     'date: "2026.06.23"',
     'date: "2026.06.24"',
     'date: "2026.07.06"',
+    'date: "2026.07.11"',
     finalTitleEn
   ]) {
     if (!mainJs.includes(token)) {
@@ -1461,6 +2236,7 @@ if (finalUpdateStarted) {
     ? `articleTranslationsStatements(env, "${finalUpdateId}"`
     : `articleTranslationsStatements(env, '${finalUpdateId}'`;
   const apiFinalTranslations = objectBlockAfterMarker(apiJs, apiTranslationMarker);
+  const apiFinalTranslationValues = {};
   if (!apiFinalTranslations) {
     fail("functions/api/[[route]].js final public update translations missing");
   } else {
@@ -1475,6 +2251,35 @@ if (finalUpdateStarted) {
         if (!value || value.trim().length < minimumLength) {
           fail(`functions/api/[[route]].js final public update ${lang}.${field} should be populated`);
         }
+        apiFinalTranslationValues[lang] ||= {};
+        apiFinalTranslationValues[lang][field] = value;
+      }
+    }
+  }
+
+  const mainFinalFallback = windowAfter(mainJs, `article_id: "${finalUpdateId}"`, 12000);
+  for (const token of [
+    `article_id: "${finalUpdateId}"`,
+    `slug: "${finalUpdateSlug}"`,
+    'category: "site-updates"',
+    `published_at: "${finalPublishedAt}"`,
+    "fallbackOnly: true"
+  ]) {
+    if (!mainFinalFallback.includes(token)) {
+      fail(`js/main.js final public update fallback metadata missing ${token}`);
+    }
+  }
+  const mainFallbackFieldBlocks = Object.fromEntries(
+    Object.keys(finalTranslationMinimums).map((field) => [field, propertyObjectBlock(mainFinalFallback, field)])
+  );
+  for (const lang of ["zh", "en", "ja"]) {
+    for (const [field, minimumLength] of Object.entries(finalTranslationMinimums)) {
+      const fallbackValue = jsStringPropertyValue(mainFallbackFieldBlocks[field], lang);
+      const apiValue = apiFinalTranslationValues[lang]?.[field];
+      if (!fallbackValue || fallbackValue.trim().length < minimumLength) {
+        fail(`js/main.js final public update fallback ${lang}.${field} should be populated`);
+      } else if (fallbackValue !== apiValue) {
+        fail(`js/main.js and Functions final public update ${lang}.${field} should match exactly`);
       }
     }
   }
@@ -1513,12 +2318,14 @@ if (finalUpdateStarted) {
     ]) {
       if (!value || value.trim().length < finalTranslationMinimums[field]) {
         fail(`cloudflare/schema.sql final public update ${lang}.${field} should be populated`);
+      } else if (value.replace(/\r\n/g, "\n") !== apiFinalTranslationValues[lang]?.[field]?.replace(/\r\n/g, "\n")) {
+        fail(`Functions and schema final public update ${lang}.${field} should match exactly`);
       }
     }
   }
 
   for (const token of [
-    'id="top-updated">2026.07.06',
+    'id="top-updated">2026.07.11',
     `/js/main.js?v=${finalMainVersion}`
   ]) {
     if (!indexHtml.includes(token)) {
@@ -1528,12 +2335,13 @@ if (finalUpdateStarted) {
 
   for (const token of [
     finalMainVersion,
+    finalUpdateId,
     "site-updates",
     "fallback",
     "Functions seed",
     "schema seed"
   ]) {
-    if (!changelog20260706Section.includes(token)) {
+    if (!changelog20260711Section.includes(token)) {
       fail(`CHANGELOG.md final public update sync missing ${token}`);
     }
   }
@@ -2117,6 +2925,37 @@ try {
         fail("functions/api/[[route]].js /api/social-links should keep Bilibili/Discord empty until configured");
       }
     }
+    if (path === "/api/sitemap.xml" && response.status < 500) {
+      const xml = await response.text();
+      for (const lang of ["zh", "en", "ja"]) {
+        if (!xml.includes(`https://example.test/tools/japanese-subtext/?lang=${lang}`)) {
+          fail(`functions/api/[[route]].js sitemap missing Japanese subtext ${lang} URL`);
+        }
+      }
+    }
+  }
+
+  for (const method of ["GET", "PUT"]) {
+    const originalConsoleError = console.error;
+    let response;
+    try {
+      console.error = () => {};
+      response = await onRequest({
+        request: new Request("https://example.test/api/tools/japanese-subtext/progress", {
+          method,
+          headers: method === "PUT" ? { "Content-Type": "application/json" } : undefined,
+          body: method === "PUT" ? "{}" : undefined
+        }),
+        env: { DB: createMockD1() },
+        waitUntil() {}
+      });
+    } finally {
+      console.error = originalConsoleError;
+    }
+    if (response?.status !== 401) {
+      const body = response ? await response.text() : "";
+      fail(`functions/api/[[route]].js anonymous ${method} Japanese subtext progress should return 401, got ${response?.status || "no response"}: ${body}`);
+    }
   }
 
   const deletedChatCursorDate = new Date("2026-06-23T01:02:03.456Z");
@@ -2265,5 +3104,5 @@ try {
 }
 
 if (!process.exitCode) {
-  console.log(`build-check: ok (${relative(root, resolve(root, "admin"))}, api articles/videos/sitemap, admin auth)`);
+  console.log(`build-check: ok (${relative(root, resolve(root, "admin"))}, api articles/videos/sitemap, admin auth, Japanese subtext 250/10088 release contract)`);
 }

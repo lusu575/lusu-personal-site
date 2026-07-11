@@ -1,0 +1,90 @@
+{
+  "stageId": "L4-021",
+  "sampleRate": 24000,
+  "duration": 84.805042,
+  "cues": [
+    {
+      "lineId": "line-001",
+      "audioId": "L4-021-line-001",
+      "start": 0.06,
+      "end": 7.215083
+    },
+    {
+      "lineId": "line-002",
+      "audioId": "L4-021-line-002",
+      "start": 7.735083,
+      "end": 14.162083
+    },
+    {
+      "lineId": "line-003",
+      "audioId": "L4-021-line-003",
+      "start": 14.682083,
+      "end": 19.99825
+    },
+    {
+      "lineId": "line-004",
+      "audioId": "L4-021-line-004",
+      "start": 20.51825,
+      "end": 26.859667
+    },
+    {
+      "lineId": "line-005",
+      "audioId": "L4-021-line-005",
+      "start": 27.379667,
+      "end": 33.525625
+    },
+    {
+      "lineId": "line-006",
+      "audioId": "L4-021-line-006",
+      "start": 34.045625,
+      "end": 39.047333
+    },
+    {
+      "lineId": "line-007",
+      "audioId": "L4-021-line-007",
+      "start": 39.567333,
+      "end": 45.846958
+    },
+    {
+      "lineId": "line-008",
+      "audioId": "L4-021-line-008",
+      "start": 46.366958,
+      "end": 53.010292
+    },
+    {
+      "lineId": "line-009",
+      "audioId": "L4-021-line-009",
+      "start": 53.530292,
+      "end": 58.5745
+    },
+    {
+      "lineId": "line-010",
+      "audioId": "L4-021-line-010",
+      "start": 59.0945,
+      "end": 65.5175
+    },
+    {
+      "lineId": "line-011",
+      "audioId": "L4-021-line-011",
+      "start": 66.0375,
+      "end": 71.39375
+    },
+    {
+      "lineId": "line-012",
+      "audioId": "L4-021-line-012",
+      "start": 71.91375,
+      "end": 77.985917
+    },
+    {
+      "lineId": "line-013",
+      "audioId": "L4-021-line-013",
+      "start": 78.505917,
+      "end": 84.705042
+    }
+  ],
+  "schemaVersion": 1,
+  "timelineId": "L4-021-timeline",
+  "sceneAudioId": "L4-021-scene",
+  "contentHash": "a31611c42825f36da7a0c58389f52098e410a8eb9ce27e62bb9055c5f58a84cb",
+  "sourceContentHash": "46020d4345efe0608bcae17091cd70bf6de7ebd0de898743c8837473cde51469"
+}

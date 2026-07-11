@@ -1,0 +1,42 @@
+{
+  "stageId": "L2-017",
+  "sampleRate": 24000,
+  "duration": 16.938917,
+  "cues": [
+    {
+      "lineId": "line-001",
+      "audioId": "L2-017-line-001",
+      "start": 0.06,
+      "end": 3.220542
+    },
+    {
+      "lineId": "line-002",
+      "audioId": "L2-017-line-002",
+      "start": 3.620542,
+      "end": 6.616083
+    },
+    {
+      "lineId": "line-003",
+      "audioId": "L2-017-line-003",
+      "start": 7.066083,
+      "end": 10.300542
+    },
+    {
+      "lineId": "line-004",
+      "audioId": "L2-017-line-004",
+      "start": 10.650542,
+      "end": 13.014708
+    },
+    {
+      "lineId": "line-005",
+      "audioId": "L2-017-line-005",
+      "start": 13.514708,
+      "end": 16.838917
+    }
+  ],
+  "schemaVersion": 1,
+  "timelineId": "L2-017-timeline",
+  "sceneAudioId": "L2-017-scene",
+  "contentHash": "2d0d630cdb33997d581d6bb4fcffd56be943a4aef8b47a241503bc66dc3558a0",
+  "sourceContentHash": "4df20a62c505d4678f68aaeb0651c5555943c050190c05a5e5d263292b3f58ee"
+}

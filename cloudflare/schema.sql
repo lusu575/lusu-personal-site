@@ -51,6 +51,48 @@ create table if not exists game_saves (
 
 create index if not exists game_saves_updated_at_idx on game_saves(updated_at);
 
+create table if not exists japanese_subtext_profiles (
+  user_id text primary key references users(id) on delete cascade,
+  schema_version integer not null default 1 check(schema_version = 1),
+  content_version text not null,
+  revision integer not null default 1 check(revision between 1 and 1000000),
+  current_level integer not null default 1 check(current_level between 1 and 5),
+  current_stage integer not null default 1 check(current_stage between 1 and 50),
+  settings_json text not null default '{}',
+  progress_updated_at text not null,
+  settings_updated_at text not null,
+  created_at text not null,
+  updated_at text not null
+);
+
+create table if not exists japanese_subtext_stage_progress (
+  user_id text not null references users(id) on delete cascade,
+  stage_id text not null,
+  level integer not null check(level between 1 and 5),
+  stage integer not null check(stage between 1 and 50),
+  cleared integer not null default 0 check(cleared in (0, 1)),
+  best_score integer not null default 0 check(best_score between 0 and 100),
+  best_medal integer not null default 0 check(best_medal between 0 and 3),
+  attempts integer not null default 0 check(attempts between 0 and 1000000),
+  first_accuracy integer not null default 0 check(first_accuracy between 0 and 100),
+  first_clear_mode text not null default '',
+  used_translation integer not null default 0 check(used_translation in (0, 1)),
+  used_kana integer not null default 0 check(used_kana in (0, 1)),
+  used_listening_mode integer not null default 0 check(used_listening_mode in (0, 1)),
+  replay_count integer not null default 0 check(replay_count between 0 and 1000000),
+  hint_count integer not null default 0 check(hint_count between 0 and 1000000),
+  progress_updated_at text not null,
+  updated_at text not null,
+  primary key (user_id, stage_id)
+);
+
+create index if not exists japanese_subtext_profiles_updated_idx
+  on japanese_subtext_profiles(updated_at);
+create index if not exists japanese_subtext_stage_progress_user_level_idx
+  on japanese_subtext_stage_progress(user_id, level, stage);
+create index if not exists japanese_subtext_stage_progress_updated_idx
+  on japanese_subtext_stage_progress(updated_at);
+
 create table if not exists site_runtime_state (
   key text primary key,
   value text not null,
@@ -584,6 +626,32 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-07-11-japanese-subtext-trainer',
+  '2026-07-11-japanese-subtext-trainer',
+  'site-updates',
+  '["Japanese","listening","learning","tools"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-07-10T17:30:00.000Z',
+  '2026-07-10T17:30:00.000Z',
+  '2026-07-10T17:30:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-07-06-private-chat-rooms',
   '2026-07-06-private-chat-rooms',
   'site-updates',
@@ -843,6 +911,69 @@ on conflict(article_id) do update set
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
+  ('seed-update-2026-07-11-japanese-subtext-trainer-zh', 'seed-update-2026-07-11-japanese-subtext-trainer', 'zh', '日语潜台词训练工具上线', '新增 N3～N1 五个难度、250 关的日语潜台词训练，支持离线预生成语音、纯听/日语/双语模式、句子点击播放和本地与云端进度。', '# 日语潜台词训练工具上线
+
+新的独立工具「日本語の裏側」已接入资源区，用小场景、日语语音和选择题训练对话中的真实意图。
+
+## 五级进阶题库
+
+- 从 LEVEL 1 的 N3 日常委婉表达，逐步进阶到 LEVEL 2 的 N2 口语省略与敬语距离，再到 LEVEL 3～5 的 N1 信息差、反话、隐瞒和多重解释。
+- 五个难度各 50 关，共 250 关；每个难度的前几关较短，后续场景与推理长度逐步增加。
+- 解析会引用具体台词和人物关系，说明在当前上下文中更可能的解释，避免把单句日语绝对化。
+
+## 可控的离线语音
+
+- 题库语音由本地模型提前生成，提供男声、女声和角色区分，浏览器不会在游玩时调用外部 TTS。
+- 支持纯听、日语和双语场景模式，以及日语、中文、English 选项。
+- 可以自动播放、暂停、续播、切换倍速、拖动进度，也可以点击单句从指定位置开始播放。
+
+## 不丢失的学习进度
+
+- 未登录时使用版本化本地进度，记录解锁、成绩、奖章、尝试次数和播放设置。
+- 登录后通过独立 D1 学习进度表同步，不复用游戏存档表；本地与云端合并会保留已通关关卡和最佳奖章。
+- 云端不可用时不会阻止本地答题，退出登录后也仍然可以继续训练。', '2026-07-10T17:30:00.000Z', '2026-07-10T17:30:00.000Z'),
+  ('seed-update-2026-07-11-japanese-subtext-trainer-en', 'seed-update-2026-07-11-japanese-subtext-trainer', 'en', 'Japanese Subtext Trainer Released', 'A new N3-to-N1 Japanese subtext trainer adds five levels and 250 stages with pre-generated offline speech, listening/Japanese/bilingual modes, sentence playback, and local plus cloud progress.', '# Japanese Subtext Trainer Released
+
+The standalone tool 「日本語の裏側」 is now available from Resources. Short scenes, Japanese speech, and choice questions train the intent hidden behind tone, context, and relationships.
+
+## Five progressive levels
+
+- LEVEL 1 starts with N3 everyday indirect expressions, LEVEL 2 moves into N2 ellipsis and honorific distance, and LEVELS 3 to 5 develop N1 information gaps, irony, concealment, and multiple supported interpretations.
+- Each level contains 50 stages for a total of 250. Early stages in every level stay shorter, while later scenes and inference chains gradually grow.
+- Explanations cite specific lines and relationships and describe the interpretation that is more likely in the current context instead of treating one Japanese sentence as an absolute formula.
+
+## Controllable offline speech
+
+- Speech is generated ahead of time with local models, including male and female voices and consistent character assignment. The browser does not call an external TTS service while training.
+- Listening-only, Japanese, and bilingual scene modes are available, independently from Japanese, Chinese, or English answer text.
+- Playback supports autoplay after sound unlock, pause, resume, speed controls, timeline seeking, and sentence-level start positions.
+
+## Learning progress that survives sessions
+
+- Signed-out visitors use versioned local progress for unlocks, scores, medals, attempts, and playback settings.
+- Signed-in users synchronize through dedicated D1 learning tables rather than the game-save table. Local and cloud merging preserves cleared stages and the strongest medals.
+- Cloud failures never block local questions, and signing out keeps the local trainer usable.', '2026-07-10T17:30:00.000Z', '2026-07-10T17:30:00.000Z'),
+  ('seed-update-2026-07-11-japanese-subtext-trainer-ja', 'seed-update-2026-07-11-japanese-subtext-trainer', 'ja', '日本語の裏側を公開', 'N3 から N1 までの 5 レベル・250 ステージで、事前生成音声、聴解/日本語/対訳モード、文ごとの再生、ローカルとクラウドの進捗同期に対応しました。', '# 日本語の裏側を公開
+
+独立ツール「日本語の裏側」をリソース欄から開けるようにしました。短い場面、日本語音声、選択問題を通して、口調、文脈、人間関係の奥にある意図を読み取ります。
+
+## 5 レベルの段階式問題
+
+- LEVEL 1 は N3 の日常的な遠回し表現から始まり、LEVEL 2 は N2 の省略と敬語の距離感、LEVEL 3～5 は N1 の情報差、皮肉、隠し事、複数の解釈へ進みます。
+- 各レベル 50 問、合計 250 ステージです。各レベルの最初は短く、後半ほど場面と推理を長くしています。
+- 解説は具体的な台詞と関係性を引用し、一文を絶対的な公式にせず、この文脈でより支持される解釈を示します。
+
+## 操作できるオフライン音声
+
+- 男声・女声とキャラクター別の音声をローカルモデルで事前生成し、練習中に外部 TTS を呼び出しません。
+- 聴解のみ、日本語、対訳の場面表示と、日本語・中国語・English の選択肢を別々に選べます。
+- 音声の自動再生、一時停止、再開、速度変更、シーク、文ごとの開始位置に対応します。
+
+## 失われない学習進捗
+
+- ログイン前はバージョン付きローカル進捗に、解放、得点、メダル、挑戦回数、再生設定を保存します。
+- ログイン後はゲームセーブ表を使わず、専用 D1 学習表で同期します。ローカルとクラウドを統合しても、クリア済みステージと上位メダルを保持します。
+- クラウド障害はローカル回答を止めず、ログアウト後も練習を続けられます。', '2026-07-10T17:30:00.000Z', '2026-07-10T17:30:00.000Z'),
   ('seed-update-2026-07-06-private-chat-rooms-zh', 'seed-update-2026-07-06-private-chat-rooms', 'zh', '暗色加密密码房上线', '匿名聊天室新增暗色密码房，并修复旧库自动补字段时普通大厅读取失败的问题。', '# 暗色加密密码房上线
 
 匿名聊天室现在增加了密码房模式：点击角落里的密码房按钮，输入同一个密码的人会进入同一个暗色聊天室。

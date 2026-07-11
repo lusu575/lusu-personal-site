@@ -1,0 +1,90 @@
+{
+  "stageId": "L4-023",
+  "sampleRate": 24000,
+  "duration": 65.495333,
+  "cues": [
+    {
+      "lineId": "line-001",
+      "audioId": "L4-023-line-001",
+      "start": 0.06,
+      "end": 4.956625
+    },
+    {
+      "lineId": "line-002",
+      "audioId": "L4-023-line-002",
+      "start": 5.476625,
+      "end": 8.109208
+    },
+    {
+      "lineId": "line-003",
+      "audioId": "L4-023-line-003",
+      "start": 8.629208,
+      "end": 13.095
+    },
+    {
+      "lineId": "line-004",
+      "audioId": "L4-023-line-004",
+      "start": 13.615,
+      "end": 16.225542
+    },
+    {
+      "lineId": "line-005",
+      "audioId": "L4-023-line-005",
+      "start": 16.745542,
+      "end": 19.060417
+    },
+    {
+      "lineId": "line-006",
+      "audioId": "L4-023-line-006",
+      "start": 19.580417,
+      "end": 25.641708
+    },
+    {
+      "lineId": "line-007",
+      "audioId": "L4-023-line-007",
+      "start": 26.161708,
+      "end": 30.41325
+    },
+    {
+      "lineId": "line-008",
+      "audioId": "L4-023-line-008",
+      "start": 30.93325,
+      "end": 35.007458
+    },
+    {
+      "lineId": "line-009",
+      "audioId": "L4-023-line-009",
+      "start": 35.527458,
+      "end": 41.536
+    },
+    {
+      "lineId": "line-010",
+      "audioId": "L4-023-line-010",
+      "start": 42.056,
+      "end": 49.256708
+    },
+    {
+      "lineId": "line-011",
+      "audioId": "L4-023-line-011",
+      "start": 49.776708,
+      "end": 53.753333
+    },
+    {
+      "lineId": "line-012",
+      "audioId": "L4-023-line-012",
+      "start": 54.273333,
+      "end": 57.631875
+    },
+    {
+      "lineId": "line-013",
+      "audioId": "L4-023-line-013",
+      "start": 58.151875,
+      "end": 65.395333
+    }
+  ],
+  "schemaVersion": 1,
+  "timelineId": "L4-023-timeline",
+  "sceneAudioId": "L4-023-scene",
+  "contentHash": "7d27afe1d6cea6d9f1f4c02d68f3cda4be3002a1588a447692cc8aebc65eb52b",
+  "sourceContentHash": "eaefd350d413c687a05f138f074e11e020690e52c63392dc55e6d8c4b5eff823"
+}

@@ -54,6 +54,19 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 保存链接只允许 http(s) URL；不要支持 `javascript:`、`data:`、相对路径、任意 HTML 或把管理员填写的链接文字插入为可见文案。
 - 维护关于我社交入口时，如改动 `js/main.js`、`css/style.css` 或 `admin/admin.js` / `admin/admin.css`，必须同步更新 `index.html` / `admin/index.html` 对应资源 query。
 
+## 日本語の裏側维护规则
+
+- `/tools/japanese-subtext/` 是可独立打开的工具；正式标题只能显示“日本語の裏側”。题库固定为按 `contentVersion` 管理的分批 JSON，不为单关新建 HTML，也不得把 250 关整体内联进 `js/main.js`。
+- 已发布关卡 ID 是持久主键，不得随意修改、重排或复用。修改关卡必须增加该关 `revision`；题库结构或兼容边界变化时再增加 `contentVersion`，并提供可解释的存档迁移策略。
+- 先完成日语、语用和游戏性审校，再用构建器锁定文本。只有 `textLocked` 与内容哈希有效后才可生成正式音频；修改台词、声线、语速或发音配置后，只重建哈希受影响的场景、句子、词块和选项。
+- `content/*.json`、`audio/manifest.json`、各关时间轴和静态音频必须始终以稳定 ID 同步。manifest 必须把每关 `sourceContentHash`、逐句 cue 顺序、CPU provider、输出参数和发音表 canonical SHA-256 与当前锁定题库精确绑定；题库验证与 10,088 件真实音频的 ffprobe / SHA-256 / 静音 / 孤儿文件验证均通过前不得发布，也不得把演示音频、空文件、抽样或估算统计写成正式完成结果。
+- 本机 TTS 模型、权重、实际 `tts.local.json`、绝对路径与参考声线不得提交。TTS 只能作为本地离线批处理运行，不注册服务、不加入开机启动；批处理结束后必须退出，日常浏览和构建不得加载模型或占用 GPU/内存。
+- 更换或新增声线时必须重新核对许可、来源和署名要求。`NOTICE-japanese-voices.md` 及设置面板的三语语音许可入口必须随静态音频一起保留，不使用来源不明或模仿受保护动漫角色的声线。
+- 新增工具图标、封面和关卡图必须使用 image2 生成并保存项目副本。按当前产品约束，只允许彩色儿童蜡笔和抽象 Q 版四格，不使用黑白线稿；同时禁止来源不明图片、写实人物和受版权保护角色。插图必须响应式、懒加载且不能挤占移动端首屏。
+- 学习进度只能使用 `japanese_subtext_profiles` / `japanese_subtext_stage_progress`，不得与 `game_saves` 混用。云端从 HttpOnly 会话解析用户 ID，空云端或同步失败不能清空、降级或阻塞本地进度；跨设备合并不得让较新的失败尝试擦除已通关记录的 `firstClearMode`。
+- 所有题库字符串使用安全 DOM API / `textContent` 渲染；插图路径限定在本工具 `assets/`，音频路径只从 manifest 解析。播放器只能存在一个活动音频实例，换关、返回地图、页面隐藏和离开页面必须停止旧音频。
+- 修改工具脚本、题库、音频 manifest、公开 CSS/JS 或图片后，要更新对应缓存版本，并同步 `CHANGELOG.md`、`PROJECT_CONTEXT.md`、`README.md`、本 Skill 说明以及唯一一篇三语 `site-updates` 记录。发布前运行 `jp-subtext:validate`、`jp-subtext:audio:validate -- --check-silence`、`jp-subtext:test` 与主站 `build`，并复测 375×667、390×844、844×390、768×1024、1365×900。
+
 ## 前端和移动端检查
 
 改首页、窗口、任务栏、图标、卡片、弹窗、游戏外壳或任意前端样式时，必须检查手机端适配：

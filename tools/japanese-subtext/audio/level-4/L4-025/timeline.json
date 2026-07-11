@@ -1,0 +1,90 @@
+{
+  "stageId": "L4-025",
+  "sampleRate": 24000,
+  "duration": 81.46725,
+  "cues": [
+    {
+      "lineId": "line-001",
+      "audioId": "L4-025-line-001",
+      "start": 0.06,
+      "end": 5.841375
+    },
+    {
+      "lineId": "line-002",
+      "audioId": "L4-025-line-002",
+      "start": 6.361375,
+      "end": 11.426542
+    },
+    {
+      "lineId": "line-003",
+      "audioId": "L4-025-line-003",
+      "start": 11.946542,
+      "end": 17.533333
+    },
+    {
+      "lineId": "line-004",
+      "audioId": "L4-025-line-004",
+      "start": 18.053333,
+      "end": 23.006917
+    },
+    {
+      "lineId": "line-005",
+      "audioId": "L4-025-line-005",
+      "start": 23.526917,
+      "end": 28.303
+    },
+    {
+      "lineId": "line-006",
+      "audioId": "L4-025-line-006",
+      "start": 28.823,
+      "end": 34.237375
+    },
+    {
+      "lineId": "line-007",
+      "audioId": "L4-025-line-007",
+      "start": 34.757375,
+      "end": 39.070333
+    },
+    {
+      "lineId": "line-008",
+      "audioId": "L4-025-line-008",
+      "start": 39.590333,
+      "end": 45.095792
+    },
+    {
+      "lineId": "line-009",
+      "audioId": "L4-025-line-009",
+      "start": 45.615792,
+      "end": 51.855542
+    },
+    {
+      "lineId": "line-010",
+      "audioId": "L4-025-line-010",
+      "start": 52.375542,
+      "end": 59.406375
+    },
+    {
+      "lineId": "line-011",
+      "audioId": "L4-025-line-011",
+      "start": 59.926375,
+      "end": 67.445625
+    },
+    {
+      "lineId": "line-012",
+      "audioId": "L4-025-line-012",
+      "start": 67.965625,
+      "end": 73.727458
+    },
+    {
+      "lineId": "line-013",
+      "audioId": "L4-025-line-013",
+      "start": 74.247458,
+      "end": 81.36725
+    }
+  ],
+  "schemaVersion": 1,
+  "timelineId": "L4-025-timeline",
+  "sceneAudioId": "L4-025-scene",
+  "contentHash": "d51cdddfba1ca519f7eafb2786765ad8d5037db8fdbbe3c74a35626ad1de9a1a",
+  "sourceContentHash": "103b5b35efed05676c38da2a0075e848946f9e2be38989362f95aa419eb1c8df"
+}

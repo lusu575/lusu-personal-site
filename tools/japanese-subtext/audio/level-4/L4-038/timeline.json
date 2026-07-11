@@ -1,0 +1,96 @@
+{
+  "stageId": "L4-038",
+  "sampleRate": 24000,
+  "duration": 65.292583,
+  "cues": [
+    {
+      "lineId": "line-001",
+      "audioId": "L4-038-line-001",
+      "start": 0.06,
+      "end": 6.354583
+    },
+    {
+      "lineId": "line-002",
+      "audioId": "L4-038-line-002",
+      "start": 6.874583,
+      "end": 9.991375
+    },
+    {
+      "lineId": "line-003",
+      "audioId": "L4-038-line-003",
+      "start": 10.511375,
+      "end": 14.4495
+    },
+    {
+      "lineId": "line-004",
+      "audioId": "L4-038-line-004",
+      "start": 14.9695,
+      "end": 18.247833
+    },
+    {
+      "lineId": "line-005",
+      "audioId": "L4-038-line-005",
+      "start": 18.767833,
+      "end": 23.826083
+    },
+    {
+      "lineId": "line-006",
+      "audioId": "L4-038-line-006",
+      "start": 24.346083,
+      "end": 28.273625
+    },
+    {
+      "lineId": "line-007",
+      "audioId": "L4-038-line-007",
+      "start": 28.793625,
+      "end": 30.749125
+    },
+    {
+      "lineId": "line-008",
+      "audioId": "L4-038-line-008",
+      "start": 31.269125,
+      "end": 36.061542
+    },
+    {
+      "lineId": "line-009",
+      "audioId": "L4-038-line-009",
+      "start": 36.581542,
+      "end": 40.729292
+    },
+    {
+      "lineId": "line-010",
+      "audioId": "L4-038-line-010",
+      "start": 41.249292,
+      "end": 43.882167
+    },
+    {
+      "lineId": "line-011",
+      "audioId": "L4-038-line-011",
+      "start": 44.402167,
+      "end": 48.841083
+    },
+    {
+      "lineId": "line-012",
+      "audioId": "L4-038-line-012",
+      "start": 49.361083,
+      "end": 54.813583
+    },
+    {
+      "lineId": "line-013",
+      "audioId": "L4-038-line-013",
+      "start": 55.333583,
+      "end": 60.35425
+    },
+    {
+      "lineId": "line-014",
+      "audioId": "L4-038-line-014",
+      "start": 60.87425,
+      "end": 65.192583
+    }
+  ],
+  "schemaVersion": 1,
+  "timelineId": "L4-038-timeline",
+  "sceneAudioId": "L4-038-scene",
+  "contentHash": "90a19be89d329b17aa7038f2ffa9bf93981594c3723443c4665a94aceacd3f81",
+  "sourceContentHash": "ac360a724392025b7d58e5be3565c345f0fcecd418aedc5a19de6d3f215926d1"
+}

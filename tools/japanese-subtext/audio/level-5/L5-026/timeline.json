@@ -1,0 +1,102 @@
+{
+  "stageId": "L5-026",
+  "sampleRate": 24000,
+  "duration": 55.128292,
+  "cues": [
+    {
+      "lineId": "line-001",
+      "audioId": "L5-026-line-001",
+      "start": 0.06,
+      "end": 2.217083
+    },
+    {
+      "lineId": "line-002",
+      "audioId": "L5-026-line-002",
+      "start": 2.717083,
+      "end": 5.250292
+    },
+    {
+      "lineId": "line-003",
+      "audioId": "L5-026-line-003",
+      "start": 5.750292,
+      "end": 8.533
+    },
+    {
+      "lineId": "line-004",
+      "audioId": "L5-026-line-004",
+      "start": 9.033,
+      "end": 11.876
+    },
+    {
+      "lineId": "line-005",
+      "audioId": "L5-026-line-005",
+      "start": 12.376,
+      "end": 14.707792
+    },
+    {
+      "lineId": "line-006",
+      "audioId": "L5-026-line-006",
+      "start": 15.207792,
+      "end": 18.581875
+    },
+    {
+      "lineId": "line-007",
+      "audioId": "L5-026-line-007",
+      "start": 19.081875,
+      "end": 22.067417
+    },
+    {
+      "lineId": "line-008",
+      "audioId": "L5-026-line-008",
+      "start": 22.567417,
+      "end": 26.09875
+    },
+    {
+      "lineId": "line-009",
+      "audioId": "L5-026-line-009",
+      "start": 26.59875,
+      "end": 28.980833
+    },
+    {
+      "lineId": "line-010",
+      "audioId": "L5-026-line-010",
+      "start": 29.480833,
+      "end": 31.786792
+    },
+    {
+      "lineId": "line-011",
+      "audioId": "L5-026-line-011",
+      "start": 32.286792,
+      "end": 34.93825
+    },
+    {
+      "lineId": "line-012",
+      "audioId": "L5-026-line-012",
+      "start": 35.43825,
+      "end": 41.746083
+    },
+    {
+      "lineId": "line-013",
+      "audioId": "L5-026-line-013",
+      "start": 42.246083,
+      "end": 45.508292
+    },
+    {
+      "lineId": "line-014",
+      "audioId": "L5-026-line-014",
+      "start": 46.008292,
+      "end": 49.962708
+    },
+    {
+      "lineId": "line-015",
+      "audioId": "L5-026-line-015",
+      "start": 50.462708,
+      "end": 55.028292
+    }
+  ],
+  "schemaVersion": 1,
+  "timelineId": "L5-026-timeline",
+  "sceneAudioId": "L5-026-scene",
+  "contentHash": "29d06a36c859b85129ca05cc076a0bf6da872ca54bb804853ad5f359a05a39e9",
+  "sourceContentHash": "4286d425e0b5049da1c9f16f2f1339adf3186407d4dd73ef8757a2442800d8d2"
+}

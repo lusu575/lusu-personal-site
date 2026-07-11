@@ -1,0 +1,1185 @@
+{
+  "schemaVersion": 1,
+  "contentVersion": "1.0.0",
+  "level": 1,
+  "jlptTarget": "N3",
+  "stages": [
+    {
+      "id": "L1-001",
+      "stage": 1,
+      "title": {
+        "ja": "昼休みの誘い",
+        "zh": "午休邀约",
+        "en": "A Lunch Invitation"
+      },
+      "shortLabel": {
+        "ja": "昼休みの誘い",
+        "zh": "午休邀约",
+        "en": "A Lunch Invitation"
+      },
+      "genres": [
+        "daily-life"
+      ],
+      "skills": [
+        "polite-refusal",
+        "speaker-intention"
+      ],
+      "batch": "batch-001-010.json",
+      "contentHash": "4ff85e803fc1b36999ee9c3ea559db73e356bb3682e61fb77e511baf3b3c4642"
+    },
+    {
+      "id": "L1-002",
+      "stage": 2,
+      "title": {
+        "ja": "鞄のある空席",
+        "zh": "放着书包的空座",
+        "en": "The Seat with a Bag"
+      },
+      "shortLabel": {
+        "ja": "鞄のある空席",
+        "zh": "放着书包的空座",
+        "en": "The Seat with a Bag"
+      },
+      "genres": [
+        "school"
+      ],
+      "skills": [
+        "context-inference",
+        "evidence-selection"
+      ],
+      "batch": "batch-001-010.json",
+      "contentHash": "c3524c12634cf8a49f13e70a0c59d17951be1551fc486757bba5b89bf1bef51f"
+    },
+    {
+      "id": "L1-003",
+      "stage": 3,
+      "title": {
+        "ja": "そのままで",
+        "zh": "就这样拿走",
+        "en": "As It Is"
+      },
+      "shortLabel": {
+        "ja": "そのままで",
+        "zh": "就这样拿走",
+        "en": "As It Is"
+      },
+      "genres": [
+        "convenience-store"
+      ],
+      "skills": [
+        "literal-vs-intended",
+        "ellipsis-resolution"
+      ],
+      "batch": "batch-001-010.json",
+      "contentHash": "33596efe457e9ee655de2512fb92ca20fde7509fba3e6f74c7f8d981558def9c"
+    },
+    {
+      "id": "L1-004",
+      "stage": 4,
+      "title": {
+        "ja": "窓際のひと言",
+        "zh": "窗边的一句话",
+        "en": "A Hint by the Window"
+      },
+      "shortLabel": {
+        "ja": "窓際のひと言",
+        "zh": "窗边的一句话",
+        "en": "A Hint by the Window"
+      },
+      "genres": [
+        "workplace"
+      ],
+      "skills": [
+        "indirect-request",
+        "context-inference"
+      ],
+      "batch": "batch-001-010.json",
+      "contentHash": "44e41b2977ce6ed4644b3a3d0d6ea2a67e83dce338adfd05c900992e3c29d88d"
+    },
+    {
+      "id": "L1-005",
+      "stage": 5,
+      "title": {
+        "ja": "おかわりのお誘い",
+        "zh": "再来一碗的邀请",
+        "en": "An Offer of Seconds"
+      },
+      "shortLabel": {
+        "ja": "おかわりのお誘い",
+        "zh": "再来一碗的邀请",
+        "en": "An Offer of Seconds"
+      },
+      "genres": [
+        "restaurant"
+      ],
+      "skills": [
+        "polite-refusal",
+        "face-saving"
+      ],
+      "batch": "batch-001-010.json",
+      "contentHash": "62526e9723936002ba681417a7e93f1d87495e14c508a51d2076c240b2a7a21f"
+    },
+    {
+      "id": "L1-006",
+      "stage": 6,
+      "title": {
+        "ja": "次の電車でも",
+        "zh": "下一班也来得及",
+        "en": "The Next Train Is Fine"
+      },
+      "shortLabel": {
+        "ja": "次の電車でも",
+        "zh": "下一班也来得及",
+        "en": "The Next Train Is Fine"
+      },
+      "genres": [
+        "travel"
+      ],
+      "skills": [
+        "speaker-intention",
+        "pragmatic-softener"
+      ],
+      "batch": "batch-001-010.json",
+      "contentHash": "44314d0fc9222cebc002a353a618df7d14d9c9f5b1c79efc2a67162cf0e21b24"
+    },
+    {
+      "id": "L1-007",
+      "stage": 7,
+      "title": {
+        "ja": "「また今度ね」の夜",
+        "zh": "说“下次吧”的夜晚",
+        "en": "A Night of “Maybe Next Time”"
+      },
+      "shortLabel": {
+        "ja": "「また今度ね」の夜",
+        "zh": "说“下次吧”的夜晚",
+        "en": "A Night of “Maybe Next Time”"
+      },
+      "genres": [
+        "online-chat",
+        "games"
+      ],
+      "skills": [
+        "literal-vs-intended",
+        "next-line-prediction"
+      ],
+      "batch": "batch-001-010.json",
+      "contentHash": "dcd93163774eb95306461cd1e949f01b2ff6a8316a2164195720d0487515ec67"
+    },
+    {
+      "id": "L1-008",
+      "stage": 8,
+      "title": {
+        "ja": "回復役がもう一人",
+        "zh": "再来一个治疗角色",
+        "en": "One More Healer"
+      },
+      "shortLabel": {
+        "ja": "回復役がもう一人",
+        "zh": "再来一个治疗角色",
+        "en": "One More Healer"
+      },
+      "genres": [
+        "games"
+      ],
+      "skills": [
+        "indirect-request",
+        "role-inference"
+      ],
+      "batch": "batch-001-010.json",
+      "contentHash": "9dcb2b7ceebf44cecfb448704fb2895fa36eb909ab1dbb5dc28b7b2032a79090"
+    },
+    {
+      "id": "L1-009",
+      "stage": 9,
+      "title": {
+        "ja": "よく響く図書館",
+        "zh": "声音容易传开的图书馆",
+        "en": "A Library Where Sound Carries"
+      },
+      "shortLabel": {
+        "ja": "よく響く図書館",
+        "zh": "声音容易传开的图书馆",
+        "en": "A Library Where Sound Carries"
+      },
+      "genres": [
+        "daily-life"
+      ],
+      "skills": [
+        "indirect-request",
+        "register-awareness"
+      ],
+      "batch": "batch-001-010.json",
+      "contentHash": "f9222948ed7a49e33a36b1d1f6c0f845826e400891c0e090c7dc598e478e7787"
+    },
+    {
+      "id": "L1-010",
+      "stage": 10,
+      "title": {
+        "ja": "焼きたてまで五分",
+        "zh": "距离新鲜出炉还有五分钟",
+        "en": "Five Minutes Until Fresh"
+      },
+      "shortLabel": {
+        "ja": "焼きたてまで五分",
+        "zh": "距离新鲜出炉还有五分钟",
+        "en": "Five Minutes Until Fresh"
+      },
+      "genres": [
+        "restaurant"
+      ],
+      "skills": [
+        "context-inference",
+        "next-line-prediction"
+      ],
+      "batch": "batch-001-010.json",
+      "contentHash": "8aec9458fc18a9c7bbefadf4c7e2c9e003aa1c8d215df4fb18607663ef5aa956"
+    },
+    {
+      "id": "L1-011",
+      "stage": 11,
+      "title": {
+        "ja": "雨の前のひと言",
+        "zh": "下雨前的一句话",
+        "en": "One Question Before the Rain"
+      },
+      "shortLabel": {
+        "ja": "雨の前のひと言",
+        "zh": "下雨前的一句话",
+        "en": "One Question Before the Rain"
+      },
+      "genres": [
+        "daily-life"
+      ],
+      "skills": [
+        "relationship-inference",
+        "speaker-intention"
+      ],
+      "batch": "batch-011-020.json",
+      "contentHash": "078ab988ca580a609b543ea142f71eb8da364e7b98a3867f50bab7dd3d01ba23"
+    },
+    {
+      "id": "L1-012",
+      "stage": 12,
+      "title": {
+        "ja": "今日は休んで",
+        "zh": "今天就休息吧",
+        "en": "Rest for Today"
+      },
+      "shortLabel": {
+        "ja": "今日は休んで",
+        "zh": "今天就休息吧",
+        "en": "Rest for Today"
+      },
+      "genres": [
+        "school"
+      ],
+      "skills": [
+        "pragmatic-softener",
+        "relationship-distance"
+      ],
+      "batch": "batch-011-020.json",
+      "contentHash": "7f1087a6f62e0239bba016f98895ba4a19dec32634f30a647c9e7a827d87060a"
+    },
+    {
+      "id": "L1-013",
+      "stage": 13,
+      "title": {
+        "ja": "コピー用紙の報告",
+        "zh": "复印纸的提醒",
+        "en": "The Copier Paper Report"
+      },
+      "shortLabel": {
+        "ja": "コピー用紙の報告",
+        "zh": "复印纸的提醒",
+        "en": "The Copier Paper Report"
+      },
+      "genres": [
+        "workplace"
+      ],
+      "skills": [
+        "indirect-request",
+        "ellipsis-resolution"
+      ],
+      "batch": "batch-011-020.json",
+      "contentHash": "02e9fa922d2757caa228b7f7e87883a9c2c34fee1ef7f3be4873e74d1b0d0536"
+    },
+    {
+      "id": "L1-014",
+      "stage": 14,
+      "title": {
+        "ja": "写真と違う料理",
+        "zh": "和照片不太一样的菜",
+        "en": "A Dish Unlike the Photo"
+      },
+      "shortLabel": {
+        "ja": "写真と違う料理",
+        "zh": "和照片不太一样的菜",
+        "en": "A Dish Unlike the Photo"
+      },
+      "genres": [
+        "restaurant"
+      ],
+      "skills": [
+        "stance-inference",
+        "face-saving"
+      ],
+      "batch": "batch-011-020.json",
+      "contentHash": "7912118b3f92b21da6758681b09ef92de37c65c9b0957a402b95a68d9ca348a9"
+    },
+    {
+      "id": "L1-015",
+      "stage": 15,
+      "title": {
+        "ja": "一つだけの下段",
+        "zh": "唯一的下铺",
+        "en": "The Only Lower Bunk"
+      },
+      "shortLabel": {
+        "ja": "一つだけの下段",
+        "zh": "唯一的下铺",
+        "en": "The Only Lower Bunk"
+      },
+      "genres": [
+        "travel"
+      ],
+      "skills": [
+        "face-saving",
+        "relationship-inference"
+      ],
+      "batch": "batch-011-020.json",
+      "contentHash": "a59c73bada238b9d3f323a1285110154198e52c815c4cad4de8b8fef7a33433c"
+    },
+    {
+      "id": "L1-016",
+      "stage": 16,
+      "title": {
+        "ja": "既読と笑顔のスタンプ",
+        "zh": "已读与笑脸贴纸",
+        "en": "Read Receipts and a Smiling Sticker"
+      },
+      "shortLabel": {
+        "ja": "既読と笑顔のスタンプ",
+        "zh": "已读与笑脸贴纸",
+        "en": "Read Receipts and a Smiling Sticker"
+      },
+      "genres": [
+        "online-chat"
+      ],
+      "skills": [
+        "response-absence",
+        "context-inference"
+      ],
+      "batch": "batch-011-020.json",
+      "contentHash": "6abb77d1a20d4cc568819a14b09f7daf58c470ca160da527bc422fc6bb5226ae"
+    },
+    {
+      "id": "L1-017",
+      "stage": 17,
+      "title": {
+        "ja": "静かなワールドへ",
+        "zh": "去安静的世界",
+        "en": "To a Quieter World"
+      },
+      "shortLabel": {
+        "ja": "静かなワールドへ",
+        "zh": "去安静的世界",
+        "en": "To a Quieter World"
+      },
+      "genres": [
+        "VRChat",
+        "online-chat"
+      ],
+      "skills": [
+        "relationship-inference",
+        "tone-inference"
+      ],
+      "batch": "batch-011-020.json",
+      "contentHash": "6ab45649853268764c74d4df50e491fe4a603d3e0842915570402d95e9f7c928"
+    },
+    {
+      "id": "L1-018",
+      "stage": 18,
+      "title": {
+        "ja": "弟のため、だよね？",
+        "zh": "是为了弟弟，对吧？",
+        "en": "For Your Brother, Right?"
+      },
+      "shortLabel": {
+        "ja": "弟のため、だよね？",
+        "zh": "是为了弟弟，对吧？",
+        "en": "For Your Brother, Right?"
+      },
+      "genres": [
+        "comedy",
+        "anime-culture"
+      ],
+      "skills": [
+        "self-presentation",
+        "lie-detection"
+      ],
+      "batch": "batch-011-020.json",
+      "contentHash": "e57f36ccac95706fda8a5db2bc1ebe6025760971cafa3a2e31e2a778741c28d9"
+    },
+    {
+      "id": "L1-019",
+      "stage": 19,
+      "title": {
+        "ja": "本日も売り切れ",
+        "zh": "今天也售罄",
+        "en": "Sold Out Again Today"
+      },
+      "shortLabel": {
+        "ja": "本日も売り切れ",
+        "zh": "今天也售罄",
+        "en": "Sold Out Again Today"
+      },
+      "genres": [
+        "sci-fi",
+        "time-loop"
+      ],
+      "skills": [
+        "evidence-selection",
+        "temporal-inference"
+      ],
+      "batch": "batch-011-020.json",
+      "contentHash": "e414551f5bcae2ccb1c8ae212133a74032d128d07443b9c56fef4a719da10df1"
+    },
+    {
+      "id": "L1-020",
+      "stage": 20,
+      "title": {
+        "ja": "青い首輪の放送",
+        "zh": "蓝色项圈的广播",
+        "en": "The Blue Collar Clue"
+      },
+      "shortLabel": {
+        "ja": "青い首輪の放送",
+        "zh": "蓝色项圈的广播",
+        "en": "The Blue Collar Clue"
+      },
+      "genres": [
+        "broadcast",
+        "mystery"
+      ],
+      "skills": [
+        "evidence-selection",
+        "relationship-inference"
+      ],
+      "batch": "batch-011-020.json",
+      "contentHash": "3de0123c19e6c0fb55461418b6fb48dfeb8ad3f2340d6bd9e2a5033c43fe704b"
+    },
+    {
+      "id": "L1-021",
+      "stage": 21,
+      "title": {
+        "ja": "日なたのベンチ",
+        "zh": "阳光下的长椅",
+        "en": "The Sunny Bench"
+      },
+      "shortLabel": {
+        "ja": "日なたのベンチ",
+        "zh": "阳光下的长椅",
+        "en": "The Sunny Bench"
+      },
+      "genres": [
+        "daily-life"
+      ],
+      "skills": [
+        "indirect-request",
+        "deixis-reference"
+      ],
+      "batch": "batch-021-030.json",
+      "contentHash": "d8f6844e7a07e663b90b29fee9218721c36dbe33bd58646a7fa7b079611c177d"
+    },
+    {
+      "id": "L1-022",
+      "stage": 22,
+      "title": {
+        "ja": "まだ開いている提出箱",
+        "zh": "还开着的提交箱",
+        "en": "The Submission Box Is Still Open"
+      },
+      "shortLabel": {
+        "ja": "まだ開いている提出箱",
+        "zh": "还开着的提交箱",
+        "en": "The Submission Box Is Still Open"
+      },
+      "genres": [
+        "school"
+      ],
+      "skills": [
+        "context-inference",
+        "speaker-intention"
+      ],
+      "batch": "batch-021-030.json",
+      "contentHash": "5a452058448a3e8c7903ce395cfd7684842ea090934f3eaf2c162924faddd9fc"
+    },
+    {
+      "id": "L1-023",
+      "stage": 23,
+      "title": {
+        "ja": "お土産のクッキー",
+        "zh": "伴手礼曲奇",
+        "en": "The Souvenir Cookies"
+      },
+      "shortLabel": {
+        "ja": "お土産のクッキー",
+        "zh": "伴手礼曲奇",
+        "en": "The Souvenir Cookies"
+      },
+      "genres": [
+        "workplace",
+        "daily-life"
+      ],
+      "skills": [
+        "polite-refusal",
+        "face-saving"
+      ],
+      "batch": "batch-021-030.json",
+      "contentHash": "20546a85029a1f18f00a7e5fa7578836873c23509b2de7c660f00f18483acef8"
+    },
+    {
+      "id": "L1-024",
+      "stage": 24,
+      "title": {
+        "ja": "五分後の電車",
+        "zh": "五分钟后的电车",
+        "en": "A Train in Five Minutes"
+      },
+      "shortLabel": {
+        "ja": "五分後の電車",
+        "zh": "五分钟后的电车",
+        "en": "A Train in Five Minutes"
+      },
+      "genres": [
+        "convenience-store"
+      ],
+      "skills": [
+        "context-inference",
+        "priority-inference"
+      ],
+      "batch": "batch-021-030.json",
+      "contentHash": "cde827fc70098b126d2b5ef8a77fd150d44414cd83cd05d56092616c1150698e"
+    },
+    {
+      "id": "L1-025",
+      "stage": 25,
+      "title": {
+        "ja": "空になった水のグラス",
+        "zh": "喝空的水杯",
+        "en": "The Empty Water Glass"
+      },
+      "shortLabel": {
+        "ja": "空になった水のグラス",
+        "zh": "喝空的水杯",
+        "en": "The Empty Water Glass"
+      },
+      "genres": [
+        "restaurant"
+      ],
+      "skills": [
+        "context-inference",
+        "service-language"
+      ],
+      "batch": "batch-021-030.json",
+      "contentHash": "f4b866e509c8df20ac22058681654aeed22bae8fbed54ad18a5cc9a65ba1228e"
+    },
+    {
+      "id": "L1-026",
+      "stage": 26,
+      "title": {
+        "ja": "朝だけの山の景色",
+        "zh": "清晨限定的山景",
+        "en": "The Mountain View at Dawn"
+      },
+      "shortLabel": {
+        "ja": "朝だけの山の景色",
+        "zh": "清晨限定的山景",
+        "en": "The Mountain View at Dawn"
+      },
+      "genres": [
+        "travel"
+      ],
+      "skills": [
+        "advice-inference",
+        "temporal-inference"
+      ],
+      "batch": "batch-021-030.json",
+      "contentHash": "a255a9fbda43d9d4b279ca0f2a6bd495b47ef6a9b66ba7711bc832fdf6234e75"
+    },
+    {
+      "id": "L1-027",
+      "stage": 27,
+      "title": {
+        "ja": "冷蔵庫の二つのプリン",
+        "zh": "冰箱里的两个布丁",
+        "en": "Two Puddings in the Fridge"
+      },
+      "shortLabel": {
+        "ja": "冷蔵庫の二つのプリン",
+        "zh": "冰箱里的两个布丁",
+        "en": "Two Puddings in the Fridge"
+      },
+      "genres": [
+        "voicemail",
+        "daily-life"
+      ],
+      "skills": [
+        "relationship-inference",
+        "ellipsis-resolution"
+      ],
+      "batch": "batch-021-030.json",
+      "contentHash": "211f29df6d760f99435295178a2613aabb83054ad142815ac1753ed3582a0ae4"
+    },
+    {
+      "id": "L1-028",
+      "stage": 28,
+      "title": {
+        "ja": "十七時からの十分間",
+        "zh": "十七点起的十分钟",
+        "en": "Ten Minutes at Five"
+      },
+      "shortLabel": {
+        "ja": "十七時からの十分間",
+        "zh": "十七点起的十分钟",
+        "en": "Ten Minutes at Five"
+      },
+      "genres": [
+        "AI",
+        "workplace"
+      ],
+      "skills": [
+        "exception-inference",
+        "speaker-intention"
+      ],
+      "batch": "batch-021-030.json",
+      "contentHash": "be0703efc36915a7759458640d1a1cea62d22a2fe579333a8cde90516c5add74"
+    },
+    {
+      "id": "L1-029",
+      "stage": 29,
+      "title": {
+        "ja": "消えた魚の報酬",
+        "zh": "消失的鱼奖励",
+        "en": "The Missing Fish Reward"
+      },
+      "shortLabel": {
+        "ja": "消えた魚の報酬",
+        "zh": "消失的鱼奖励",
+        "en": "The Missing Fish Reward"
+      },
+      "genres": [
+        "games",
+        "comedy"
+      ],
+      "skills": [
+        "evidence-selection",
+        "causal-inference"
+      ],
+      "batch": "batch-021-030.json",
+      "contentHash": "1bca97367d37915f9b88003e8e3645d156266a36176077400094227a24c8a237"
+    },
+    {
+      "id": "L1-030",
+      "stage": 30,
+      "title": {
+        "ja": "海の中の試験",
+        "zh": "海中的考试",
+        "en": "The Exam Under the Sea"
+      },
+      "shortLabel": {
+        "ja": "海の中の試験",
+        "zh": "海中的考试",
+        "en": "The Exam Under the Sea"
+      },
+      "genres": [
+        "dream",
+        "school"
+      ],
+      "skills": [
+        "reality-check",
+        "evidence-selection"
+      ],
+      "batch": "batch-021-030.json",
+      "contentHash": "79aa113e5996bce22090ecf4945f08df9ede7a947f18f433db858e68588b8353"
+    },
+    {
+      "id": "L1-031",
+      "stage": 31,
+      "title": {
+        "ja": "「任せる」の本音",
+        "zh": "“交给你们”的真意",
+        "en": "What 'I'll Leave It to You' Means"
+      },
+      "shortLabel": {
+        "ja": "「任せる」の本音",
+        "zh": "“交给你们”的真意",
+        "en": "What 'I'll Leave It to You' Means"
+      },
+      "genres": [
+        "school",
+        "workplace"
+      ],
+      "skills": [
+        "stance-shift",
+        "face-saving"
+      ],
+      "batch": "batch-031-040.json",
+      "contentHash": "1308011eff187d8548b4e00a01e4f8d823186ab51617afd760fe9e271ab2a514"
+    },
+    {
+      "id": "L1-032",
+      "stage": 32,
+      "title": {
+        "ja": "前にもあった企画",
+        "zh": "以前也有过的企划",
+        "en": "A Proposal We've Seen Before"
+      },
+      "shortLabel": {
+        "ja": "前にもあった企画",
+        "zh": "以前也有过的企划",
+        "en": "A Proposal We've Seen Before"
+      },
+      "genres": [
+        "workplace"
+      ],
+      "skills": [
+        "intertext-reference",
+        "stance-inference"
+      ],
+      "batch": "batch-031-040.json",
+      "contentHash": "87dc33a4077b7b740851ef064772319cfd90f0080be3a7d8a129fd31bfeb65c6"
+    },
+    {
+      "id": "L1-033",
+      "stage": 33,
+      "title": {
+        "ja": "二つの予約名",
+        "zh": "两个预约姓名",
+        "en": "Two Names on the Reservation List"
+      },
+      "shortLabel": {
+        "ja": "二つの予約名",
+        "zh": "两个预约姓名",
+        "en": "Two Names on the Reservation List"
+      },
+      "genres": [
+        "restaurant",
+        "comedy"
+      ],
+      "skills": [
+        "identity-inference",
+        "misunderstanding"
+      ],
+      "batch": "batch-031-040.json",
+      "contentHash": "987da29068cd7d4a6efe5ee61f17b5633fbb6fc47dc8aaee6adb3f23dcc99aef"
+    },
+    {
+      "id": "L1-034",
+      "stage": 34,
+      "title": {
+        "ja": "機内で使うお土産",
+        "zh": "要在机上使用的纪念品",
+        "en": "A Souvenir for the Flight"
+      },
+      "shortLabel": {
+        "ja": "機内で使うお土産",
+        "zh": "要在机上使用的纪念品",
+        "en": "A Souvenir for the Flight"
+      },
+      "genres": [
+        "travel"
+      ],
+      "skills": [
+        "priority-inference",
+        "evidence-selection"
+      ],
+      "batch": "batch-031-040.json",
+      "contentHash": "2719d1b9b6759c01cbf860fc684b611bf757f1601d7145ab723c5a2e639fda70"
+    },
+    {
+      "id": "L1-035",
+      "stage": 35,
+      "title": {
+        "ja": "三匹の怒った猫",
+        "zh": "三只生气的猫",
+        "en": "Three Angry Cats"
+      },
+      "shortLabel": {
+        "ja": "三匹の怒った猫",
+        "zh": "三只生气的猫",
+        "en": "Three Angry Cats"
+      },
+      "genres": [
+        "mobile-chat",
+        "comedy"
+      ],
+      "skills": [
+        "tone-inference",
+        "misunderstanding"
+      ],
+      "batch": "batch-031-040.json",
+      "contentHash": "523f56a8664fbf7ede24276342c5476b307855035f94d5cfd41ca8cc4d9efe2c"
+    },
+    {
+      "id": "L1-036",
+      "stage": 36,
+      "title": {
+        "ja": "礼儀を待つ自販機",
+        "zh": "等待礼貌用语的自动售货机",
+        "en": "The Vending Machine Waiting for Manners"
+      },
+      "shortLabel": {
+        "ja": "礼儀を待つ自販機",
+        "zh": "等待礼貌用语的自动售货机",
+        "en": "The Vending Machine Waiting for Manners"
+      },
+      "genres": [
+        "absurdism",
+        "AI",
+        "comedy"
+      ],
+      "skills": [
+        "causal-inference",
+        "register-shift"
+      ],
+      "batch": "batch-031-040.json",
+      "contentHash": "cbe1d63b73ceafc3c362b2a00952f32d9bc57f3c6a791e131b55540710e14f93"
+    },
+    {
+      "id": "L1-037",
+      "stage": 37,
+      "title": {
+        "ja": "急いで洗った皿",
+        "zh": "匆忙洗过的盘子",
+        "en": "The Hastily Washed Plate"
+      },
+      "shortLabel": {
+        "ja": "急いで洗った皿",
+        "zh": "匆忙洗过的盘子",
+        "en": "The Hastily Washed Plate"
+      },
+      "genres": [
+        "mystery",
+        "daily-life"
+      ],
+      "skills": [
+        "lie-detection",
+        "evidence-selection"
+      ],
+      "batch": "batch-031-040.json",
+      "contentHash": "9aaf3c379c7bb85726838b30af93dc744a809d1d494e04fc096b3fa611bf678f"
+    },
+    {
+      "id": "L1-038",
+      "stage": 38,
+      "title": {
+        "ja": "無人駅の呼び名",
+        "zh": "无人车站里的小名",
+        "en": "A Childhood Name at an Empty Station"
+      },
+      "shortLabel": {
+        "ja": "無人駅の呼び名",
+        "zh": "无人车站里的小名",
+        "en": "A Childhood Name at an Empty Station"
+      },
+      "genres": [
+        "supernatural",
+        "broadcast"
+      ],
+      "skills": [
+        "relationship-inference",
+        "source-inference"
+      ],
+      "batch": "batch-031-040.json",
+      "contentHash": "80ab2a879be4b0381d38e7e3d29ac79b63df50c67debbb0b7af502add5eb9583"
+    },
+    {
+      "id": "L1-039",
+      "stage": 39,
+      "title": {
+        "ja": "閉じない城門",
+        "zh": "迟迟不关的城门",
+        "en": "The Gate That Stayed Open"
+      },
+      "shortLabel": {
+        "ja": "閉じない城門",
+        "zh": "迟迟不关的城门",
+        "en": "The Gate That Stayed Open"
+      },
+      "genres": [
+        "fairy-tale",
+        "fantasy"
+      ],
+      "skills": [
+        "motive-inference",
+        "literal-vs-intended"
+      ],
+      "batch": "batch-031-040.json",
+      "contentHash": "d8a6560d6d542630b698355d457bd7c56500e9fedb59878aa5199581e60d8250"
+    },
+    {
+      "id": "L1-040",
+      "stage": 40,
+      "title": {
+        "ja": "残り三パーセントの子守歌",
+        "zh": "剩余百分之三的摇篮曲",
+        "en": "A Lullaby at Three Percent"
+      },
+      "shortLabel": {
+        "ja": "残り三パーセントの子守歌",
+        "zh": "剩余百分之三的摇篮曲",
+        "en": "A Lullaby at Three Percent"
+      },
+      "genres": [
+        "sci-fi",
+        "space"
+      ],
+      "skills": [
+        "priority-inference",
+        "relationship-inference"
+      ],
+      "batch": "batch-031-040.json",
+      "contentHash": "2db09c138966d9cdcf6ed1a82767b1f176321f9d399a5b09462cd784965b7158"
+    },
+    {
+      "id": "L1-041",
+      "stage": 41,
+      "title": {
+        "ja": "出口と細い道",
+        "zh": "出口与小路",
+        "en": "The Exit and the Narrow Path"
+      },
+      "shortLabel": {
+        "ja": "出口と細い道",
+        "zh": "出口与小路",
+        "en": "The Exit and the Narrow Path"
+      },
+      "genres": [
+        "VRChat",
+        "mystery"
+      ],
+      "skills": [
+        "deixis-reference",
+        "next-line-prediction"
+      ],
+      "batch": "batch-041-050.json",
+      "contentHash": "3b8e0d452ac0a4e7e1c91b1a372007308e07c053535ec594e5dc444c2de4e45d"
+    },
+    {
+      "id": "L1-042",
+      "stage": 42,
+      "title": {
+        "ja": "一本だけ濡れた傘",
+        "zh": "唯一湿着的伞",
+        "en": "The One Wet Umbrella"
+      },
+      "shortLabel": {
+        "ja": "一本だけ濡れた傘",
+        "zh": "唯一湿着的伞",
+        "en": "The One Wet Umbrella"
+      },
+      "genres": [
+        "school",
+        "mystery"
+      ],
+      "skills": [
+        "temporal-inference",
+        "evidence-selection"
+      ],
+      "batch": "batch-041-050.json",
+      "contentHash": "06232afc5140193ae7949d069ae87ffa86cd2937d34c45066fc5ae389e88de2e"
+    },
+    {
+      "id": "L1-043",
+      "stage": 43,
+      "title": {
+        "ja": "ご参考まで",
+        "zh": "供参考",
+        "en": "For Reference"
+      },
+      "shortLabel": {
+        "ja": "ご参考まで",
+        "zh": "供参考",
+        "en": "For Reference"
+      },
+      "genres": [
+        "workplace"
+      ],
+      "skills": [
+        "indirect-correction",
+        "honorific-distance"
+      ],
+      "batch": "batch-041-050.json",
+      "contentHash": "7ad7c1f01d64d9ddead81f09364fb1a720b2fdea59059e0a42d6cd8d905445a0"
+    },
+    {
+      "id": "L1-044",
+      "stage": 44,
+      "title": {
+        "ja": "出発は八時です",
+        "zh": "八点出发",
+        "en": "Departure Is at Eight"
+      },
+      "shortLabel": {
+        "ja": "出発は八時です",
+        "zh": "八点出发",
+        "en": "Departure Is at Eight"
+      },
+      "genres": [
+        "travel"
+      ],
+      "skills": [
+        "audience-targeting",
+        "context-inference"
+      ],
+      "batch": "batch-041-050.json",
+      "contentHash": "a04aaa90818cc854a45459604048af32ad74e5c1739372eac04df39f166ee63a"
+    },
+    {
+      "id": "L1-045",
+      "stage": 45,
+      "title": {
+        "ja": "晴れの原稿、雨の窓",
+        "zh": "晴天稿与雨窗",
+        "en": "Sunny Script, Rainy Window"
+      },
+      "shortLabel": {
+        "ja": "晴れの原稿、雨の窓",
+        "zh": "晴天稿与雨窗",
+        "en": "Sunny Script, Rainy Window"
+      },
+      "genres": [
+        "news",
+        "comedy"
+      ],
+      "skills": [
+        "contradiction-detection",
+        "source-inference"
+      ],
+      "batch": "batch-041-050.json",
+      "contentHash": "ee5d61be11906a9d4cb728d7f4953551f71837c6444cc588eba7169fba364ade"
+    },
+    {
+      "id": "L1-046",
+      "stage": 46,
+      "title": {
+        "ja": "猫と日なた",
+        "zh": "猫与阳光地",
+        "en": "The Cat and the Sunny Spot"
+      },
+      "shortLabel": {
+        "ja": "猫と日なた",
+        "zh": "猫与阳光地",
+        "en": "The Cat and the Sunny Spot"
+      },
+      "genres": [
+        "comedy",
+        "daily-life"
+      ],
+      "skills": [
+        "sequence-inference",
+        "motive-inference"
+      ],
+      "batch": "batch-041-050.json",
+      "contentHash": "ab7fce3df20f4e846020c696c67a8050ed963f8b5153161904bdc7c7a89939cb"
+    },
+    {
+      "id": "L1-047",
+      "stage": 47,
+      "title": {
+        "ja": "急がない本",
+        "zh": "“不着急”的书",
+        "en": "The Book That Is Not Urgent"
+      },
+      "shortLabel": {
+        "ja": "急がない本",
+        "zh": "“不着急”的书",
+        "en": "The Book That Is Not Urgent"
+      },
+      "genres": [
+        "voicemail",
+        "daily-life"
+      ],
+      "skills": [
+        "polite-pressure",
+        "temporal-inference"
+      ],
+      "batch": "batch-041-050.json",
+      "contentHash": "3ffa0893a66ab2f48c0ec36729067e00986abd70fb6af0bc3b3a91cc79e61b17"
+    },
+    {
+      "id": "L1-048",
+      "stage": 48,
+      "title": {
+        "ja": "二十二世紀の復刻品",
+        "zh": "二十二世纪复刻品",
+        "en": "A Twenty-Second-Century Reproduction"
+      },
+      "shortLabel": {
+        "ja": "二十二世紀の復刻品",
+        "zh": "二十二世纪复刻品",
+        "en": "A Twenty-Second-Century Reproduction"
+      },
+      "genres": [
+        "alternate-history",
+        "sci-fi"
+      ],
+      "skills": [
+        "identity-inference",
+        "temporal-inference"
+      ],
+      "batch": "batch-041-050.json",
+      "contentHash": "54d2e917e8247cd1c23ff1145661918e41a2408f37bb12f3b4cd8dbf55dff262"
+    },
+    {
+      "id": "L1-049",
+      "stage": 49,
+      "title": {
+        "ja": "一番目を選ぶな",
+        "zh": "别选第一项",
+        "en": "Do Not Choose the First"
+      },
+      "shortLabel": {
+        "ja": "一番目を選ぶな",
+        "zh": "别选第一项",
+        "en": "Do Not Choose the First"
+      },
+      "genres": [
+        "meta-fiction",
+        "games"
+      ],
+      "skills": [
+        "instruction-skepticism",
+        "evidence-selection"
+      ],
+      "batch": "batch-041-050.json",
+      "contentHash": "21f25c53f89ef240bf103ae39cfa1424783da787ac1964ff645ed96be823e07e"
+    },
+    {
+      "id": "L1-050",
+      "stage": 50,
+      "title": {
+        "ja": "止まった時計と二杯目",
+        "zh": "停走的表与第二杯",
+        "en": "The Stopped Watch and Second Cup"
+      },
+      "shortLabel": {
+        "ja": "止まった時計と二杯目",
+        "zh": "停走的表与第二杯",
+        "en": "The Stopped Watch and Second Cup"
+      },
+      "genres": [
+        "open-ending",
+        "restaurant"
+      ],
+      "skills": [
+        "relationship-inference",
+        "evidence-selection"
+      ],
+      "batch": "batch-041-050.json",
+      "contentHash": "9bd29a2c1c8d439879bdf4ea180a8d55b1bf8f1ba80fa3471518af4ce495fb4b"
+    }
+  ]
+}

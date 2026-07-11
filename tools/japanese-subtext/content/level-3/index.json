@@ -1,0 +1,1191 @@
+{
+  "schemaVersion": 1,
+  "contentVersion": "1.0.0",
+  "level": 3,
+  "jlptTarget": "N1",
+  "stages": [
+    {
+      "id": "L3-001",
+      "stage": 1,
+      "title": {
+        "ja": "条件付きの扉",
+        "zh": "附带条件的门",
+        "en": "A Door with Conditions"
+      },
+      "shortLabel": {
+        "ja": "条件付きの扉",
+        "zh": "附带条件的门",
+        "en": "A Door with Conditions"
+      },
+      "genres": [
+        "workplace"
+      ],
+      "skills": [
+        "modal-nuance",
+        "conditional-approval"
+      ],
+      "batch": "batch-001-010.json",
+      "contentHash": "edf8bb8287a4ea536580ea5d1b12d4b3bcb0862b1e1ca2fcf281f6c9bfdddaea"
+    },
+    {
+      "id": "L3-002",
+      "stage": 2,
+      "title": {
+        "ja": "余白の別解",
+        "zh": "空白处的另一种解法",
+        "en": "The Alternative in the Margin"
+      },
+      "shortLabel": {
+        "ja": "余白の別解",
+        "zh": "空白处的另一种解法",
+        "en": "The Alternative in the Margin"
+      },
+      "genres": [
+        "school"
+      ],
+      "skills": [
+        "context-inference",
+        "ambiguous-evaluation"
+      ],
+      "batch": "batch-001-010.json",
+      "contentHash": "516ff1fc03581fb80230eed6cae9f700f8e450dc6edc9168a9feae2b0b3c8219"
+    },
+    {
+      "id": "L3-003",
+      "stage": 3,
+      "title": {
+        "ja": "山本様の席",
+        "zh": "“山本先生”的座位",
+        "en": "Mr. Yamamoto’s Table"
+      },
+      "shortLabel": {
+        "ja": "山本様の席",
+        "zh": "“山本先生”的座位",
+        "en": "Mr. Yamamoto’s Table"
+      },
+      "genres": [
+        "restaurant"
+      ],
+      "skills": [
+        "honorific-shift",
+        "relationship-distance"
+      ],
+      "batch": "batch-001-010.json",
+      "contentHash": "48593edd20d1940a47159599c9ae69f927e55b7383c95118695b625f8b6f288d"
+    },
+    {
+      "id": "L3-004",
+      "stage": 4,
+      "title": {
+        "ja": "日暮れ前の帰着",
+        "zh": "日落前归来",
+        "en": "Return Before Dark"
+      },
+      "shortLabel": {
+        "ja": "日暮れ前の帰着",
+        "zh": "日落前归来",
+        "en": "Return Before Dark"
+      },
+      "genres": [
+        "travel"
+      ],
+      "skills": [
+        "indirect-warning",
+        "norm-inference"
+      ],
+      "batch": "batch-001-010.json",
+      "contentHash": "236f176d7fe579935add1e54362b0e4f1e464fcd2edc35009a5551bad043e3f0"
+    },
+    {
+      "id": "L3-005",
+      "stage": 5,
+      "title": {
+        "ja": "切り取られた「検討」",
+        "zh": "被截取的“考虑”",
+        "en": "The Cropped “Consider”"
+      },
+      "shortLabel": {
+        "ja": "切り取られた「検討」",
+        "zh": "被截取的“考虑”",
+        "en": "The Cropped “Consider”"
+      },
+      "genres": [
+        "online-chat"
+      ],
+      "skills": [
+        "quotation-analysis",
+        "narrative-framing"
+      ],
+      "batch": "batch-001-010.json",
+      "contentHash": "b2c1d0df2030d0e54eff33a5f07e0a8fff3c38d81ef5abf98a7904dc49f745b5"
+    },
+    {
+      "id": "L3-006",
+      "stage": 6,
+      "title": {
+        "ja": "最高のタイミング",
+        "zh": "“完美”的时机",
+        "en": "Perfect Timing"
+      },
+      "shortLabel": {
+        "ja": "最高のタイミング",
+        "zh": "“完美”的时机",
+        "en": "Perfect Timing"
+      },
+      "genres": [
+        "games"
+      ],
+      "skills": [
+        "sarcasm",
+        "timing-inference"
+      ],
+      "batch": "batch-001-010.json",
+      "contentHash": "579af6aa23f9844b8efc2edd0ae7f9bbe70a2053ce9391cbfa882b6c50db0d93"
+    },
+    {
+      "id": "L3-007",
+      "stage": 7,
+      "title": {
+        "ja": "半秒後の笑い",
+        "zh": "晚半秒的笑声",
+        "en": "The Laugh Half a Second Late"
+      },
+      "shortLabel": {
+        "ja": "半秒後の笑い",
+        "zh": "晚半秒的笑声",
+        "en": "The Laugh Half a Second Late"
+      },
+      "genres": [
+        "VRChat",
+        "sci-fi"
+      ],
+      "skills": [
+        "identity-inference",
+        "audio-evidence"
+      ],
+      "batch": "batch-001-010.json",
+      "contentHash": "30b957722e55b28ec5a57e9581078ff380bd94778fb259e6cb045bde0ea1b160"
+    },
+    {
+      "id": "L3-008",
+      "stage": 8,
+      "title": {
+        "ja": "興味深い誤答",
+        "zh": "“有意思”的错答",
+        "en": "An “Interesting” Wrong Answer"
+      },
+      "shortLabel": {
+        "ja": "興味深い誤答",
+        "zh": "“有意思”的错答",
+        "en": "An “Interesting” Wrong Answer"
+      },
+      "genres": [
+        "AI",
+        "school"
+      ],
+      "skills": [
+        "face-saving",
+        "indirect-correction"
+      ],
+      "batch": "batch-001-010.json",
+      "contentHash": "73c1b2590faac2c8f554c06b728cfbc552734d8e339d78fdfdc214d93c8ccaa1"
+    },
+    {
+      "id": "L3-009",
+      "stage": 9,
+      "title": {
+        "ja": "早く戻ったもの",
+        "zh": "提前返回的“东西”",
+        "en": "What Returned Early"
+      },
+      "shortLabel": {
+        "ja": "早く戻ったもの",
+        "zh": "提前返回的“东西”",
+        "en": "What Returned Early"
+      },
+      "genres": [
+        "space",
+        "mystery"
+      ],
+      "skills": [
+        "ellipsis-resolution",
+        "subject-inference"
+      ],
+      "batch": "batch-001-010.json",
+      "contentHash": "c1c0df544f87cdfc5d9d4685a1d4a64a2ac7bb85e200b5364dbd4bc46edc3dd0"
+    },
+    {
+      "id": "L3-010",
+      "stage": 10,
+      "title": {
+        "ja": "記録のない資料室",
+        "zh": "没有进入记录的资料室",
+        "en": "The Archive with No Entry Log"
+      },
+      "shortLabel": {
+        "ja": "記録のない資料室",
+        "zh": "没有进入记录的资料室",
+        "en": "The Archive with No Entry Log"
+      },
+      "genres": [
+        "mystery",
+        "workplace"
+      ],
+      "skills": [
+        "access-inference",
+        "physical-evidence"
+      ],
+      "batch": "batch-001-010.json",
+      "contentHash": "3e3ba2f87896455728347cefcc5d77bc5513de74e38af2756e9ab701fadfed68"
+    },
+    {
+      "id": "L3-011",
+      "stage": 11,
+      "title": {
+        "ja": "決まったことに",
+        "zh": "“已经决定”",
+        "en": "It Has Been Decided"
+      },
+      "shortLabel": {
+        "ja": "決まったことに",
+        "zh": "“已经决定”",
+        "en": "It Has Been Decided"
+      },
+      "genres": [
+        "school",
+        "workplace"
+      ],
+      "skills": [
+        "responsibility-evasion",
+        "passive-voice"
+      ],
+      "batch": "batch-011-020.json",
+      "contentHash": "e9a64c42e2119b918e0e5bd08de88123c3f0b87fcd63e14572fd4204030243a7"
+    },
+    {
+      "id": "L3-012",
+      "stage": 12,
+      "title": {
+        "ja": "社内で共有します",
+        "zh": "“会在公司内部共享”",
+        "en": "We’ll Share It Internally"
+      },
+      "shortLabel": {
+        "ja": "社内で共有します",
+        "zh": "“会在公司内部共享”",
+        "en": "We’ll Share It Internally"
+      },
+      "genres": [
+        "workplace"
+      ],
+      "skills": [
+        "institutional-euphemism",
+        "commitment-inference"
+      ],
+      "batch": "batch-011-020.json",
+      "contentHash": "8821185c74c281cad538824b66c1bdcbcb8e3788bc1667db0436472ca021f02a"
+    },
+    {
+      "id": "L3-013",
+      "stage": 13,
+      "title": {
+        "ja": "細かいのがない",
+        "zh": "“没有零钱”",
+        "en": "No Small Change"
+      },
+      "shortLabel": {
+        "ja": "細かいのがない",
+        "zh": "“没有零钱”",
+        "en": "No Small Change"
+      },
+      "genres": [
+        "restaurant",
+        "daily-life"
+      ],
+      "skills": [
+        "payment-inference",
+        "social-pressure"
+      ],
+      "batch": "batch-011-020.json",
+      "contentHash": "ccee5e43bc236d1f1b63aa7115a7ae07791203dab5abbe91184ef2f173b5011a"
+    },
+    {
+      "id": "L3-014",
+      "stage": 14,
+      "title": {
+        "ja": "静けさ重視の部屋",
+        "zh": "“重视安静”的房间",
+        "en": "The Quietness-Focused Room"
+      },
+      "shortLabel": {
+        "ja": "静けさ重視の部屋",
+        "zh": "“重视安静”的房间",
+        "en": "The Quietness-Focused Room"
+      },
+      "genres": [
+        "travel"
+      ],
+      "skills": [
+        "euphemism",
+        "compensation-inference"
+      ],
+      "batch": "batch-011-020.json",
+      "contentHash": "c865c2bc1d62ed87cd595175378aedef3d346ab1436164f5f94254b107aa812c"
+    },
+    {
+      "id": "L3-015",
+      "stage": 15,
+      "title": {
+        "ja": "午前三時の「今」",
+        "zh": "凌晨三点的“刚刚”",
+        "en": "“Now” at Three A.M."
+      },
+      "shortLabel": {
+        "ja": "午前三時の「今」",
+        "zh": "凌晨三点的“刚刚”",
+        "en": "“Now” at Three A.M."
+      },
+      "genres": [
+        "mobile-chat"
+      ],
+      "skills": [
+        "timeline-inference",
+        "response-delay"
+      ],
+      "batch": "batch-011-020.json",
+      "contentHash": "d8a1c73ac7315ba45398a8d7500333ea6ca9a625a3dfc132a1c8fbfd02ab58b3"
+    },
+    {
+      "id": "L3-016",
+      "stage": 16,
+      "title": {
+        "ja": "聞かれる前の否定",
+        "zh": "被问之前的否认",
+        "en": "The Denial Before the Question"
+      },
+      "shortLabel": {
+        "ja": "聞かれる前の否定",
+        "zh": "被问之前的否认",
+        "en": "The Denial Before the Question"
+      },
+      "genres": [
+        "voicemail",
+        "daily-life"
+      ],
+      "skills": [
+        "guilty-knowledge",
+        "lie-detection"
+      ],
+      "batch": "batch-011-020.json",
+      "contentHash": "cea613c590647ebea7a228736d1430db05ae35cc049ef74ab0238458b84bdb0d"
+    },
+    {
+      "id": "L3-017",
+      "stage": 17,
+      "title": {
+        "ja": "閉鎖から再開準備へ",
+        "zh": "从“停业”到“筹备重开”",
+        "en": "From Closure to Reopening Prep"
+      },
+      "shortLabel": {
+        "ja": "閉鎖から再開準備へ",
+        "zh": "从“停业”到“筹备重开”",
+        "en": "From Closure to Reopening Prep"
+      },
+      "genres": [
+        "news",
+        "workplace"
+      ],
+      "skills": [
+        "word-choice",
+        "external-pressure"
+      ],
+      "batch": "batch-011-020.json",
+      "contentHash": "3e94612b9ebd3bc62c27801a2121297751a0e4bc045757f27497ff38f7384eb6"
+    },
+    {
+      "id": "L3-018",
+      "stage": 18,
+      "title": {
+        "ja": "来週の訓練放送",
+        "zh": "下周的演练广播",
+        "en": "Next Week’s Drill Announcement"
+      },
+      "shortLabel": {
+        "ja": "来週の訓練放送",
+        "zh": "下周的演练广播",
+        "en": "Next Week’s Drill Announcement"
+      },
+      "genres": [
+        "broadcast",
+        "mystery"
+      ],
+      "skills": [
+        "date-inference",
+        "urgency-detection"
+      ],
+      "batch": "batch-011-020.json",
+      "contentHash": "a98ddb37f38572d8486dfae7869d9edaaa9078228b853d11a8bbb66808324105"
+    },
+    {
+      "id": "L3-019",
+      "stage": 19,
+      "title": {
+        "ja": "同時に鳴る朝",
+        "zh": "同时响起的清晨",
+        "en": "The Morning They Sound Together"
+      },
+      "shortLabel": {
+        "ja": "同時に鳴る朝",
+        "zh": "同时响起的清晨",
+        "en": "The Morning They Sound Together"
+      },
+      "genres": [
+        "time-loop",
+        "travel"
+      ],
+      "skills": [
+        "pattern-break",
+        "temporal-inference"
+      ],
+      "batch": "batch-011-020.json",
+      "contentHash": "f36db057da095cbd008463ee488c5aeabd3ba2e68e85745127688afbf309f983"
+    },
+    {
+      "id": "L3-020",
+      "stage": 20,
+      "title": {
+        "ja": "みぎっかわの改札",
+        "zh": "“右边边”的检票口",
+        "en": "The “Right-Side-Side” Gate"
+      },
+      "shortLabel": {
+        "ja": "みぎっかわの改札",
+        "zh": "“右边边”的检票口",
+        "en": "The “Right-Side-Side” Gate"
+      },
+      "genres": [
+        "dream"
+      ],
+      "skills": [
+        "memory-inference",
+        "identity-inference"
+      ],
+      "batch": "batch-011-020.json",
+      "contentHash": "54358f8da7f00d9bc1e0f5cce4c3efc1efb1bd731e95077673a73f90beb88e19"
+    },
+    {
+      "id": "L3-021",
+      "stage": 21,
+      "title": {
+        "ja": "開けない扉",
+        "zh": "不肯打开的门",
+        "en": "The Door Left Unopened"
+      },
+      "shortLabel": {
+        "ja": "開けない扉",
+        "zh": "不肯打开的门",
+        "en": "The Door Left Unopened"
+      },
+      "genres": [
+        "fantasy"
+      ],
+      "skills": [
+        "avoidance-inference",
+        "metaphor"
+      ],
+      "batch": "batch-021-030.json",
+      "contentHash": "c71648cb4f4b3f89e2b120ca86d5b1c2d3551ae7c78be793a345e9223d0e15fc"
+    },
+    {
+      "id": "L3-022",
+      "stage": 22,
+      "title": {
+        "ja": "半分の王国",
+        "zh": "半个王国",
+        "en": "Half a Kingdom"
+      },
+      "shortLabel": {
+        "ja": "半分の王国",
+        "zh": "半个王国",
+        "en": "Half a Kingdom"
+      },
+      "genres": [
+        "fairy-tale",
+        "comedy"
+      ],
+      "skills": [
+        "reward-reframing",
+        "information-gap"
+      ],
+      "batch": "batch-021-030.json",
+      "contentHash": "924cd4f086e18c1ad95a9c6d5819c822689a42beccb63b5afe0b706dda3bdb77"
+    },
+    {
+      "id": "L3-023",
+      "stage": 23,
+      "title": {
+        "ja": "空白の署名欄",
+        "zh": "空白的签名栏",
+        "en": "The Blank Signature Lines"
+      },
+      "shortLabel": {
+        "ja": "空白の署名欄",
+        "zh": "空白的签名栏",
+        "en": "The Blank Signature Lines"
+      },
+      "genres": [
+        "alternate-history"
+      ],
+      "skills": [
+        "agency-inference",
+        "historical-framing"
+      ],
+      "batch": "batch-021-030.json",
+      "contentHash": "2197d4e2dc876be1bb895820078452c21936603a365cd58e4777b7af393ebcaf"
+    },
+    {
+      "id": "L3-024",
+      "stage": 24,
+      "title": {
+        "ja": "感情状態・未確認",
+        "zh": "情感状态：未确认",
+        "en": "Emotional State: Unconfirmed"
+      },
+      "shortLabel": {
+        "ja": "感情状態・未確認",
+        "zh": "情感状态：未确认",
+        "en": "Emotional State: Unconfirmed"
+      },
+      "genres": [
+        "sci-fi",
+        "AI"
+      ],
+      "skills": [
+        "self-presentation",
+        "emotion-inference"
+      ],
+      "batch": "batch-021-030.json",
+      "contentHash": "7ca5bfd3942e0792bcfec5aff148ae102954b86bbef92497a8232e492107fbb9"
+    },
+    {
+      "id": "L3-025",
+      "stage": 25,
+      "title": {
+        "ja": "返却期限の夜",
+        "zh": "归还期限之夜",
+        "en": "The Night of Due Dates"
+      },
+      "shortLabel": {
+        "ja": "返却期限の夜",
+        "zh": "归还期限之夜",
+        "en": "The Night of Due Dates"
+      },
+      "genres": [
+        "mild-horror",
+        "AI"
+      ],
+      "skills": [
+        "mechanism-inference",
+        "genre-misdirection"
+      ],
+      "batch": "batch-021-030.json",
+      "contentHash": "03020a8927c49770948d5930793ced331cf4785ac931add540f0e3fc67c70b2b"
+    },
+    {
+      "id": "L3-026",
+      "stage": 26,
+      "title": {
+        "ja": "上へ、の行き先",
+        "zh": "“往上”的目的地",
+        "en": "Where “Up” Goes"
+      },
+      "shortLabel": {
+        "ja": "上へ、の行き先",
+        "zh": "“往上”的目的地",
+        "en": "Where “Up” Goes"
+      },
+      "genres": [
+        "absurdism",
+        "workplace",
+        "AI"
+      ],
+      "skills": [
+        "literalism",
+        "instruction-ambiguity"
+      ],
+      "batch": "batch-021-030.json",
+      "contentHash": "d78ebcdec3abc869253f369a336790582664a692ea32751c90d80132fdf4b2a2"
+    },
+    {
+      "id": "L3-027",
+      "stage": 27,
+      "title": {
+        "ja": "濡れた傘、乾いた靴",
+        "zh": "湿伞与干鞋",
+        "en": "Wet Umbrella, Dry Shoes"
+      },
+      "shortLabel": {
+        "ja": "濡れた傘、乾いた靴",
+        "zh": "湿伞与干鞋",
+        "en": "Wet Umbrella, Dry Shoes"
+      },
+      "genres": [
+        "mystery"
+      ],
+      "skills": [
+        "alibi-testing",
+        "physical-evidence"
+      ],
+      "batch": "batch-021-030.json",
+      "contentHash": "d00654b8ed2150df558e280f687c6ee1a29e3e5a02e70df8c0bc96aaf154702a"
+    },
+    {
+      "id": "L3-028",
+      "stage": 28,
+      "title": {
+        "ja": "借り物の目撃談",
+        "zh": "借来的目击证词",
+        "en": "Borrowed Testimony"
+      },
+      "shortLabel": {
+        "ja": "借り物の目撃談",
+        "zh": "借来的目击证词",
+        "en": "Borrowed Testimony"
+      },
+      "genres": [
+        "mystery",
+        "news"
+      ],
+      "skills": [
+        "testimony-analysis",
+        "source-inference"
+      ],
+      "batch": "batch-021-030.json",
+      "contentHash": "41dab615268f67efae6f47a00a4fa9637658756c09ef5cd3db5c1af0d77eac60"
+    },
+    {
+      "id": "L3-029",
+      "stage": 29,
+      "title": {
+        "ja": "最後まで聞け",
+        "zh": "听他说完",
+        "en": "Listen to the End"
+      },
+      "shortLabel": {
+        "ja": "最後まで聞け",
+        "zh": "听他说完",
+        "en": "Listen to the End"
+      },
+      "genres": [
+        "games",
+        "fantasy"
+      ],
+      "skills": [
+        "goal-revision",
+        "conflict-reframing"
+      ],
+      "batch": "batch-021-030.json",
+      "contentHash": "ae78481d0f8c9db5a29c653448a7ed59d81084ba7c0b82e7a3bc0c4cb676cbd8"
+    },
+    {
+      "id": "L3-030",
+      "stage": 30,
+      "title": {
+        "ja": "答案の裏側",
+        "zh": "试卷背面",
+        "en": "The Back of the Test"
+      },
+      "shortLabel": {
+        "ja": "答案の裏側",
+        "zh": "试卷背面",
+        "en": "The Back of the Test"
+      },
+      "genres": [
+        "school",
+        "comedy"
+      ],
+      "skills": [
+        "sequence-inference",
+        "motive-reframe"
+      ],
+      "batch": "batch-021-030.json",
+      "contentHash": "b0ad120bdf9050fb5fff867708c1b3cb9b393882ba36aed53bc1dcf0bd3ca854"
+    },
+    {
+      "id": "L3-031",
+      "stage": 31,
+      "title": {
+        "ja": "やっと、あなたの番",
+        "zh": "终于轮到你",
+        "en": "At Last, Your Turn"
+      },
+      "shortLabel": {
+        "ja": "やっと、あなたの番",
+        "zh": "终于轮到你",
+        "en": "At Last, Your Turn"
+      },
+      "genres": [
+        "workplace"
+      ],
+      "skills": [
+        "mixed-emotion",
+        "presupposition"
+      ],
+      "batch": "batch-031-040.json",
+      "contentHash": "58d770b67ec9f802896dfe816bf38b72ebee62d8add2047eaab2f76a58064e33"
+    },
+    {
+      "id": "L3-032",
+      "stage": 32,
+      "title": {
+        "ja": "透明ポケットの切符",
+        "zh": "透明袋里的车票",
+        "en": "The Ticket in the Clear Pocket"
+      },
+      "shortLabel": {
+        "ja": "透明ポケットの切符",
+        "zh": "透明袋里的车票",
+        "en": "The Ticket in the Clear Pocket"
+      },
+      "genres": [
+        "school",
+        "daily-life"
+      ],
+      "skills": [
+        "denial-analysis",
+        "object-evidence"
+      ],
+      "batch": "batch-031-040.json",
+      "contentHash": "0aa014647ea37aed9cb92f5294cbacc2418cb7ff0197279228cedce10001e5bb"
+    },
+    {
+      "id": "L3-033",
+      "stage": 33,
+      "title": {
+        "ja": "塩を足されましたか",
+        "zh": "您加盐了吗",
+        "en": "Did You Add Salt?"
+      },
+      "shortLabel": {
+        "ja": "塩を足されましたか",
+        "zh": "您加盐了吗",
+        "en": "Did You Add Salt?"
+      },
+      "genres": [
+        "restaurant"
+      ],
+      "skills": [
+        "blame-shift",
+        "question-analysis"
+      ],
+      "batch": "batch-031-040.json",
+      "contentHash": "2406f5275be2cd4918649973ecad4f459c8b43298730cd9f8743a0db0ae876f5"
+    },
+    {
+      "id": "L3-034",
+      "stage": 34,
+      "title": {
+        "ja": "訳されない名前",
+        "zh": "没有翻译的名字",
+        "en": "The Name Left Untranslated"
+      },
+      "shortLabel": {
+        "ja": "訳されない名前",
+        "zh": "没有翻译的名字",
+        "en": "The Name Left Untranslated"
+      },
+      "genres": [
+        "travel",
+        "comedy"
+      ],
+      "skills": [
+        "selective-translation",
+        "relationship-inference"
+      ],
+      "batch": "batch-031-040.json",
+      "contentHash": "4ef4db505eacd16e9b2b7fafed722bf3565de47cbebb844a835c74d103a926cc"
+    },
+    {
+      "id": "L3-035",
+      "stage": 35,
+      "title": {
+        "ja": "混乱防止の削除",
+        "zh": "以防混乱之名删除",
+        "en": "Deleted to Prevent Confusion"
+      },
+      "shortLabel": {
+        "ja": "混乱防止の削除",
+        "zh": "以防混乱之名删除",
+        "en": "Deleted to Prevent Confusion"
+      },
+      "genres": [
+        "online-chat",
+        "mystery"
+      ],
+      "skills": [
+        "moderation-analysis",
+        "narrative-framing"
+      ],
+      "batch": "batch-031-040.json",
+      "contentHash": "64dba6590d8b5820d51fe0956f068388000e9109bf2d689e7eab0bcb51b5ca4b"
+    },
+    {
+      "id": "L3-036",
+      "stage": 36,
+      "title": {
+        "ja": "半秒先の身振り",
+        "zh": "提前半秒的动作",
+        "en": "A Gesture Half a Second Early"
+      },
+      "shortLabel": {
+        "ja": "半秒先の身振り",
+        "zh": "提前半秒的动作",
+        "en": "A Gesture Half a Second Early"
+      },
+      "genres": [
+        "VRChat",
+        "AI"
+      ],
+      "skills": [
+        "temporal-anomaly",
+        "identity-inference"
+      ],
+      "batch": "batch-031-040.json",
+      "contentHash": "aa5bac228e28ba447caa72323887de708613c4577536e12da2671eff0b113577"
+    },
+    {
+      "id": "L3-037",
+      "stage": 37,
+      "title": {
+        "ja": "沈黙は賛成か",
+        "zh": "沉默等于赞成吗",
+        "en": "Does Silence Mean Agreement?"
+      },
+      "shortLabel": {
+        "ja": "沈黙は賛成か",
+        "zh": "沉默等于赞成吗",
+        "en": "Does Silence Mean Agreement?"
+      },
+      "genres": [
+        "AI",
+        "workplace"
+      ],
+      "skills": [
+        "data-bias",
+        "consensus-inference"
+      ],
+      "batch": "batch-031-040.json",
+      "contentHash": "81c94cead2d1837e4fd83d3574e894debad695767c99cf9e4d770a8c1a750861"
+    },
+    {
+      "id": "L3-038",
+      "stage": 38,
+      "title": {
+        "ja": "私たちは到着した",
+        "zh": "我们抵达了",
+        "en": "We Have Arrived"
+      },
+      "shortLabel": {
+        "ja": "私たちは到着した",
+        "zh": "我们抵达了",
+        "en": "We Have Arrived"
+      },
+      "genres": [
+        "space",
+        "AI"
+      ],
+      "skills": [
+        "pronoun-analysis",
+        "relationship-inference"
+      ],
+      "batch": "batch-031-040.json",
+      "contentHash": "04702f0d008632cc89bf1d5ce0f30c04d4ff1b5d91db053edb08bfd100333abe"
+    },
+    {
+      "id": "L3-039",
+      "stage": 39,
+      "title": {
+        "ja": "多くの声を聞いています",
+        "zh": "正在倾听许多声音",
+        "en": "We Are Hearing Many Voices"
+      },
+      "shortLabel": {
+        "ja": "多くの声を聞いています",
+        "zh": "正在倾听许多声音",
+        "en": "We Are Hearing Many Voices"
+      },
+      "genres": [
+        "news",
+        "workplace"
+      ],
+      "skills": [
+        "question-evasion",
+        "stance-inference"
+      ],
+      "batch": "batch-031-040.json",
+      "contentHash": "3678e5af9a519be0289cdf69c3ae51009ffa34c35bcebe316da05bc46ca36e2d"
+    },
+    {
+      "id": "L3-040",
+      "stage": 40,
+      "title": {
+        "ja": "東の傘は不要",
+        "zh": "东边不需要伞",
+        "en": "No Umbrella Needed in the East"
+      },
+      "shortLabel": {
+        "ja": "東の傘は不要",
+        "zh": "东边不需要伞",
+        "en": "No Umbrella Needed in the East"
+      },
+      "genres": [
+        "broadcast",
+        "mystery"
+      ],
+      "skills": [
+        "coded-language",
+        "shared-context"
+      ],
+      "batch": "batch-031-040.json",
+      "contentHash": "c30d84393bc53fc6aed6c52080728b311f0aa3ae2dfd64fac31bf4c61901a8b5"
+    },
+    {
+      "id": "L3-041",
+      "stage": 41,
+      "title": {
+        "ja": "並べ替えられた四月",
+        "zh": "被重排的四月",
+        "en": "April Rearranged"
+      },
+      "shortLabel": {
+        "ja": "並べ替えられた四月",
+        "zh": "被重排的四月",
+        "en": "April Rearranged"
+      },
+      "genres": [
+        "unreliable-narrator",
+        "mystery"
+      ],
+      "skills": [
+        "document-order",
+        "lie-detection"
+      ],
+      "batch": "batch-041-050.json",
+      "contentHash": "a49c52b177e55ea3ca9944075db4de25f7e5801c858e884b37e76163b9fa61a2"
+    },
+    {
+      "id": "L3-042",
+      "stage": 42,
+      "title": {
+        "ja": "明日の遺失物",
+        "zh": "明日的失物",
+        "en": "Tomorrow's Lost Property"
+      },
+      "shortLabel": {
+        "ja": "明日の遺失物",
+        "zh": "明日的失物",
+        "en": "Tomorrow's Lost Property"
+      },
+      "genres": [
+        "open-ending",
+        "time-loop"
+      ],
+      "skills": [
+        "future-evidence",
+        "handwriting-inference"
+      ],
+      "batch": "batch-041-050.json",
+      "contentHash": "885f6fb4bc9d97484c8edb5e484f8ffc927c154d43c37000227bea5d0ed28d3f"
+    },
+    {
+      "id": "L3-043",
+      "stage": 43,
+      "title": {
+        "ja": "字幕だけが知っている",
+        "zh": "只有字幕知道",
+        "en": "Only the Subtitles Know"
+      },
+      "shortLabel": {
+        "ja": "字幕だけが知っている",
+        "zh": "只有字幕知道",
+        "en": "Only the Subtitles Know"
+      },
+      "genres": [
+        "meta-fiction"
+      ],
+      "skills": [
+        "translation-analysis",
+        "cross-channel-evidence"
+      ],
+      "batch": "batch-041-050.json",
+      "contentHash": "53feaf812da25cd86ce39b55e49f13cfcbf07565701ffe2f2d9bde0f79fd0827"
+    },
+    {
+      "id": "L3-044",
+      "stage": 44,
+      "title": {
+        "ja": "台本にない、という台本",
+        "zh": "“无脚本”的脚本",
+        "en": "The Script for Being Unscripted"
+      },
+      "shortLabel": {
+        "ja": "台本にない、という台本",
+        "zh": "“无脚本”的脚本",
+        "en": "The Script for Being Unscripted"
+      },
+      "genres": [
+        "alternate-history",
+        "news"
+      ],
+      "skills": [
+        "presupposition",
+        "political-framing"
+      ],
+      "batch": "batch-041-050.json",
+      "contentHash": "64757017dd3a434decc5ead02747635dffab13d417010690a423baf8bb836224"
+    },
+    {
+      "id": "L3-045",
+      "stage": 45,
+      "title": {
+        "ja": "鎧のままのお茶会",
+        "zh": "不卸甲的茶会",
+        "en": "Tea in Full Armor"
+      },
+      "shortLabel": {
+        "ja": "鎧のままのお茶会",
+        "zh": "不卸甲的茶会",
+        "en": "Tea in Full Armor"
+      },
+      "genres": [
+        "fantasy"
+      ],
+      "skills": [
+        "mutual-face-saving",
+        "conflict-inference"
+      ],
+      "batch": "batch-041-050.json",
+      "contentHash": "45521c59b3e996ca13d46d95512b40cf8947a8381a8c3ad04a00f5d31cc57c63"
+    },
+    {
+      "id": "L3-046",
+      "stage": 46,
+      "title": {
+        "ja": "動く窓",
+        "zh": "移动的窗",
+        "en": "The Moving Window"
+      },
+      "shortLabel": {
+        "ja": "動く窓",
+        "zh": "移动的窗",
+        "en": "The Moving Window"
+      },
+      "genres": [
+        "sci-fi",
+        "space"
+      ],
+      "skills": [
+        "world-inference",
+        "perspective-shift"
+      ],
+      "batch": "batch-041-050.json",
+      "contentHash": "d406f34a4c093b472537a3be0ab8d916b6e2e9f567d6037305e7fabbd26fd350"
+    },
+    {
+      "id": "L3-047",
+      "stage": 47,
+      "title": {
+        "ja": "訳さなかった一文",
+        "zh": "唯独没翻的一句",
+        "en": "The One Untranslated Sentence"
+      },
+      "shortLabel": {
+        "ja": "訳さなかった一文",
+        "zh": "唯独没翻的一句",
+        "en": "The One Untranslated Sentence"
+      },
+      "genres": [
+        "restaurant",
+        "travel"
+      ],
+      "skills": [
+        "selective-translation",
+        "protective-deception"
+      ],
+      "batch": "batch-041-050.json",
+      "contentHash": "e4c75e22e24019c0effaaf91398f8691f8c111a655c60149264465f7216c3769"
+    },
+    {
+      "id": "L3-048",
+      "stage": 48,
+      "title": {
+        "ja": "部長もそうお考えです",
+        "zh": "“部长也是这么想的”",
+        "en": "The Director Thinks So Too"
+      },
+      "shortLabel": {
+        "ja": "部長もそうお考えです",
+        "zh": "“部长也是这么想的”",
+        "en": "The Director Thinks So Too"
+      },
+      "genres": [
+        "workplace"
+      ],
+      "skills": [
+        "authority-invocation",
+        "epistemic-distance"
+      ],
+      "batch": "batch-041-050.json",
+      "contentHash": "7ec97c516922392a3a034399a02d05d997d2b6218f75668992c177eba962cc18"
+    },
+    {
+      "id": "L3-049",
+      "stage": 49,
+      "title": {
+        "ja": "短くなる朝",
+        "zh": "越来越短的清晨",
+        "en": "The Shortening Morning"
+      },
+      "shortLabel": {
+        "ja": "短くなる朝",
+        "zh": "越来越短的清晨",
+        "en": "The Shortening Morning"
+      },
+      "genres": [
+        "time-loop",
+        "mystery"
+      ],
+      "skills": [
+        "resource-inference",
+        "countdown"
+      ],
+      "batch": "batch-041-050.json",
+      "contentHash": "e930bd33c4862db55b63866ca9d29e0a0e4d09fc0e8cb873d22d1df9419059c4"
+    },
+    {
+      "id": "L3-050",
+      "stage": 50,
+      "title": {
+        "ja": "消えないマイク灯",
+        "zh": "不熄灭的麦克风灯",
+        "en": "The Microphone Light That Stayed On"
+      },
+      "shortLabel": {
+        "ja": "消えないマイク灯",
+        "zh": "不熄灭的麦克风灯",
+        "en": "The Microphone Light That Stayed On"
+      },
+      "genres": [
+        "open-ending",
+        "AI"
+      ],
+      "skills": [
+        "ambiguous-intent",
+        "interface-evidence"
+      ],
+      "batch": "batch-041-050.json",
+      "contentHash": "a93326237b1cd97ec78dccbf51e597d2be718081bdeb3eb649ce11fbfbddccce"
+    }
+  ]
+}

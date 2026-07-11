@@ -1,0 +1,18 @@
+{
+  "id": "japanese-subtext",
+  "schemaVersion": 1,
+  "contentVersion": "1.0.0",
+  "title": "日本語の裏側",
+  "descriptions": {
+    "zh": "日语潜台词训练",
+    "en": "Japanese Subtext Trainer",
+    "ja": "文脈・関係・声色から本音を読み取るトレーニング"
+  },
+  "entry": "./index.html",
+  "catalog": "./content/catalog.json",
+  "audioManifest": "./audio/manifest.json",
+  "audioBaseUrl": "./audio/",
+  "supportedUiLanguages": ["zh", "en", "ja"],
+  "stageCount": 250,
+  "levels": 5
+}

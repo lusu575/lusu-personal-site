@@ -2655,6 +2655,19 @@ body.is-article-reading .article-figure {
   margin-right: 6px;
 }
 
+.resource-icon-image {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  margin-right: 8px;
+  border: 1px solid #5879a8;
+  border-radius: 6px;
+  object-fit: cover;
+  vertical-align: middle;
+  image-rendering: auto;
+  box-shadow: inset 1px 1px 0 #fff, 2px 2px 0 rgba(19, 53, 108, 0.16);
+}
+
 .game-list {
   display: flex;
   flex-direction: column;

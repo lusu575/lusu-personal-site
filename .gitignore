@@ -1,7 +1,15 @@
 node_modules/
+__pycache__/
+*.py[cod]
 .wrangler/
 .wrangler-config/
 .dev.vars
 .codex-remote-attachments/
 .codex-screenshots/
 .codex-wrangler-preview*.log
+output/playwright/
+output/imagegen/
+.playwright-cli/
+tools/japanese-subtext/config/tts.local.json
+tools/japanese-subtext/audio/.work/
+tools/japanese-subtext/logs/

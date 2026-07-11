@@ -1,0 +1,90 @@
+{
+  "stageId": "L4-027",
+  "sampleRate": 24000,
+  "duration": 92.451625,
+  "cues": [
+    {
+      "lineId": "line-001",
+      "audioId": "L4-027-line-001",
+      "start": 0.06,
+      "end": 7.190625
+    },
+    {
+      "lineId": "line-002",
+      "audioId": "L4-027-line-002",
+      "start": 7.710625,
+      "end": 15.892458
+    },
+    {
+      "lineId": "line-003",
+      "audioId": "L4-027-line-003",
+      "start": 16.412458,
+      "end": 19.958083
+    },
+    {
+      "lineId": "line-004",
+      "audioId": "L4-027-line-004",
+      "start": 20.478083,
+      "end": 28.803
+    },
+    {
+      "lineId": "line-005",
+      "audioId": "L4-027-line-005",
+      "start": 29.323,
+      "end": 34.008042
+    },
+    {
+      "lineId": "line-006",
+      "audioId": "L4-027-line-006",
+      "start": 34.528042,
+      "end": 43.524708
+    },
+    {
+      "lineId": "line-007",
+      "audioId": "L4-027-line-007",
+      "start": 44.044708,
+      "end": 51.934583
+    },
+    {
+      "lineId": "line-008",
+      "audioId": "L4-027-line-008",
+      "start": 52.454583,
+      "end": 61.069208
+    },
+    {
+      "lineId": "line-009",
+      "audioId": "L4-027-line-009",
+      "start": 61.589208,
+      "end": 66.906542
+    },
+    {
+      "lineId": "line-010",
+      "audioId": "L4-027-line-010",
+      "start": 67.426542,
+      "end": 73.036042
+    },
+    {
+      "lineId": "line-011",
+      "audioId": "L4-027-line-011",
+      "start": 73.556042,
+      "end": 80.578208
+    },
+    {
+      "lineId": "line-012",
+      "audioId": "L4-027-line-012",
+      "start": 81.098208,
+      "end": 86.9435
+    },
+    {
+      "lineId": "line-013",
+      "audioId": "L4-027-line-013",
+      "start": 87.4635,
+      "end": 92.351625
+    }
+  ],
+  "schemaVersion": 1,
+  "timelineId": "L4-027-timeline",
+  "sceneAudioId": "L4-027-scene",
+  "contentHash": "ee12345c3e764dbc2e17a4335826abe990d3408d9b8df6f3c1941afc409b4fce",
+  "sourceContentHash": "0afe6d42ff0c96a2700492013e6f4d6f9281293002c5143d5cbdd84d89db9f5a"
+}

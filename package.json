@@ -5,7 +5,18 @@
     "d1:create": "wrangler d1 create lusu_personal_site",
     "d1:migrate:local": "wrangler d1 execute lusu_personal_site --local --file=cloudflare/schema.sql",
     "d1:migrate:remote": "wrangler d1 execute lusu_personal_site --remote --file=cloudflare/schema.sql",
-    "deploy": "echo Merge to GitHub main to trigger Cloudflare Pages automatic deploy."
+    "deploy": "echo Merge to GitHub main to trigger Cloudflare Pages automatic deploy.",
+    "jp-subtext:build": "node tools/japanese-subtext/scripts/build-content.mjs",
+    "jp-subtext:validate": "node tools/japanese-subtext/scripts/validate-content.mjs",
+    "jp-subtext:validate:content": "node tools/japanese-subtext/scripts/validate-content.mjs --skip-audio",
+    "jp-subtext:validate:draft": "node tools/japanese-subtext/scripts/validate-content.mjs --skip-audio --allow-partial --allow-unlocked",
+    "jp-subtext:stats": "node tools/japanese-subtext/scripts/content-stats.mjs",
+    "jp-subtext:test": "node --test --test-isolation=none tools/japanese-subtext/tests/*.test.mjs tools/japanese-subtext/scripts/tts/tests/*.mjs",
+    "jp-subtext:audio:validate": "node tools/japanese-subtext/scripts/validate-audio.mjs",
+    "jp-subtext:audio:validate:quick": "node tools/japanese-subtext/scripts/validate-audio.mjs --skip-probe",
+    "jp-subtext:audio:estimate": "node tools/japanese-subtext/scripts/estimate-audio-size.mjs",
+    "jp-subtext:audio:merge": "node tools/japanese-subtext/scripts/merge-audio-manifests.mjs",
+    "jp-subtext:release-check": "npm run jp-subtext:validate && npm run jp-subtext:audio:validate -- --check-silence && npm run jp-subtext:test && npm run build"
   },
   "devDependencies": {
     "wrangler": "latest"

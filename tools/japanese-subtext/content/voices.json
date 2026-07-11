@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "contentVersion": "1.0.0",
+  "voices": {
+    "female-soft": { "gender": "female", "label": { "ja": "やさしい女性", "zh": "温柔女声", "en": "Soft female" } },
+    "female-bright": { "gender": "female", "label": { "ja": "明るい女性", "zh": "活泼女声", "en": "Bright female" } },
+    "female-calm": { "gender": "female", "label": { "ja": "落ち着いた女性", "zh": "冷静女声", "en": "Calm female" } },
+    "female-mysterious": { "gender": "female", "label": { "ja": "神秘的な女性", "zh": "神秘女声", "en": "Mysterious female" } },
+    "male-casual": { "gender": "male", "label": { "ja": "日常的な男性", "zh": "日常男声", "en": "Casual male" } },
+    "male-calm": { "gender": "male", "label": { "ja": "落ち着いた男性", "zh": "冷静男声", "en": "Calm male" } },
+    "male-serious": { "gender": "male", "label": { "ja": "厳しい男性", "zh": "严肃男声", "en": "Serious male" } },
+    "male-comic": { "gender": "male", "label": { "ja": "コミカルな男性", "zh": "搞笑男声", "en": "Comic male" } },
+    "narrator": { "gender": "neutral", "label": { "ja": "ナレーター", "zh": "旁白", "en": "Narrator" } },
+    "robot": { "gender": "neutral", "label": { "ja": "ロボット", "zh": "机器人", "en": "Robot" } },
+    "broadcast": { "gender": "neutral", "label": { "ja": "放送音声", "zh": "广播音", "en": "Broadcast" } }
+  }
+}

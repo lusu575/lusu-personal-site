@@ -1,0 +1,96 @@
+{
+  "stageId": "L5-015",
+  "sampleRate": 24000,
+  "duration": 65.314083,
+  "cues": [
+    {
+      "lineId": "line-001",
+      "audioId": "L5-015-line-001",
+      "start": 0.06,
+      "end": 3.653167
+    },
+    {
+      "lineId": "line-002",
+      "audioId": "L5-015-line-002",
+      "start": 4.133167,
+      "end": 8.575833
+    },
+    {
+      "lineId": "line-003",
+      "audioId": "L5-015-line-003",
+      "start": 9.055833,
+      "end": 13.242917
+    },
+    {
+      "lineId": "line-004",
+      "audioId": "L5-015-line-004",
+      "start": 13.722917,
+      "end": 17.295125
+    },
+    {
+      "lineId": "line-005",
+      "audioId": "L5-015-line-005",
+      "start": 17.775125,
+      "end": 22.9935
+    },
+    {
+      "lineId": "line-006",
+      "audioId": "L5-015-line-006",
+      "start": 23.4735,
+      "end": 26.796375
+    },
+    {
+      "lineId": "line-007",
+      "audioId": "L5-015-line-007",
+      "start": 27.276375,
+      "end": 31.289292
+    },
+    {
+      "lineId": "line-008",
+      "audioId": "L5-015-line-008",
+      "start": 31.769292,
+      "end": 35.802083
+    },
+    {
+      "lineId": "line-009",
+      "audioId": "L5-015-line-009",
+      "start": 36.282083,
+      "end": 40.022167
+    },
+    {
+      "lineId": "line-010",
+      "audioId": "L5-015-line-010",
+      "start": 40.502167,
+      "end": 43.858
+    },
+    {
+      "lineId": "line-011",
+      "audioId": "L5-015-line-011",
+      "start": 44.338,
+      "end": 50.405292
+    },
+    {
+      "lineId": "line-012",
+      "audioId": "L5-015-line-012",
+      "start": 50.885292,
+      "end": 55.050625
+    },
+    {
+      "lineId": "line-013",
+      "audioId": "L5-015-line-013",
+      "start": 55.530625,
+      "end": 58.818958
+    },
+    {
+      "lineId": "line-014",
+      "audioId": "L5-015-line-014",
+      "start": 59.298958,
+      "end": 65.214083
+    }
+  ],
+  "schemaVersion": 1,
+  "timelineId": "L5-015-timeline",
+  "sceneAudioId": "L5-015-scene",
+  "contentHash": "452fa706b3c3035ab70ee5891cfc2e458d8b97d6f6828254e94f180b5f4872a3",
+  "sourceContentHash": "0173bfc42d01ec64839ed7879cd8f24fca7244bec20bb4c6f7c7aec5f6c59ba8"
+}

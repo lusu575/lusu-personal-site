@@ -1,0 +1,3432 @@
+{
+  "schemaVersion": 1,
+  "contentVersion": "1.0.0",
+  "level": 2,
+  "batch": "011-020",
+  "stages": [
+    {
+      "schemaVersion": 1,
+      "contentVersion": "1.0.0",
+      "id": "L2-011",
+      "revision": 1,
+      "level": 2,
+      "stage": 11,
+      "jlptTarget": "N2",
+      "genres": [
+        "workplace"
+      ],
+      "skills": [
+        "backchannel-ambiguity",
+        "stance-inference"
+      ],
+      "layout": "meeting",
+      "title": {
+        "ja": "『なるほど』の先",
+        "zh": "“原来如此”之后",
+        "en": "Beyond “I See”"
+      },
+      "setting": {
+        "ja": "新商品の企画会議。新人の佐伯が説明し、黒田部長と先輩の美月が聞いている。",
+        "zh": "新品企划会上，新人佐伯进行说明，黑田部长与前辈美月在听。",
+        "en": "At a new-product planning meeting, newcomer Saeki presents while Manager Kuroda and senior colleague Mizuki listen."
+      },
+      "illustration": {
+        "enabled": false,
+        "src": "",
+        "style": "none",
+        "alt": {
+          "ja": "",
+          "zh": "",
+          "en": ""
+        }
+      },
+      "cast": [
+        {
+          "id": "saeki",
+          "name": {
+            "ja": "佐伯",
+            "zh": "佐伯",
+            "en": "Saeki"
+          },
+          "voiceKey": "female-bright"
+        },
+        {
+          "id": "kuroda",
+          "name": {
+            "ja": "黒田部長",
+            "zh": "黑田部长",
+            "en": "Manager Kuroda"
+          },
+          "voiceKey": "male-serious"
+        },
+        {
+          "id": "mizuki",
+          "name": {
+            "ja": "美月",
+            "zh": "美月",
+            "en": "Mizuki"
+          },
+          "voiceKey": "female-calm"
+        }
+      ],
+      "lines": [
+        {
+          "id": "line-001",
+          "speaker": "saeki",
+          "text": {
+            "ja": "若い世代向けに、価格を二割下げる案です。",
+            "zh": "这是面向年轻群体、将价格降低两成的方案。",
+            "en": "The proposal targets younger buyers by cutting the price by twenty percent."
+          },
+          "readingJa": "わかいせだいむけに、かかくをにわりさげるあんです。",
+          "ttsTextJa": "若い世代向けに、価格を二割下げる案です。",
+          "audioId": "L2-011-line-001",
+          "pauseAfterMs": 400,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "若い世代向けに",
+              "reading": "わかいせだいむけに",
+              "audioId": "L2-011-line-001-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "価格を二割下げる案です",
+              "reading": "かかくをにわりさげるあんです",
+              "audioId": "L2-011-line-001-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-002",
+          "speaker": "kuroda",
+          "text": {
+            "ja": "なるほど。狙いは分かりました。",
+            "zh": "原来如此。意图我明白了。",
+            "en": "I see. I understand what you are aiming for."
+          },
+          "readingJa": "なるほど。ねらいはわかりました。",
+          "ttsTextJa": "なるほど。狙いは分かりました。",
+          "audioId": "L2-011-line-002",
+          "pauseAfterMs": 450,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "なるほど",
+              "reading": "なるほど",
+              "audioId": "L2-011-line-002-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "狙いは分かりました",
+              "reading": "ねらいはわかりました",
+              "audioId": "L2-011-line-002-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-003",
+          "speaker": "saeki",
+          "text": {
+            "ja": "では、この内容で承認をいただけますか。",
+            "zh": "那么，可以按这个内容批准吗？",
+            "en": "Then may I have approval to proceed with this version?"
+          },
+          "readingJa": "では、このないようでしょうにんをいただけますか。",
+          "ttsTextJa": "では、この内容で承認をいただけますか。",
+          "audioId": "L2-011-line-003",
+          "pauseAfterMs": 400,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "では、この内容で",
+              "reading": "では、このないようで",
+              "audioId": "L2-011-line-003-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "承認をいただけますか",
+              "reading": "しょうにんをいただけますか",
+              "audioId": "L2-011-line-003-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-004",
+          "speaker": "kuroda",
+          "text": {
+            "ja": "なるほど。原価への影響も見ておきたいですね。",
+            "zh": "原来如此。成本方面的影响也需要看一下。",
+            "en": "I see. We should also examine the impact on costs."
+          },
+          "readingJa": "なるほど。げんかへのえいきょうもみておきたいですね。",
+          "ttsTextJa": "なるほど。原価への影響も見ておきたいですね。",
+          "audioId": "L2-011-line-004",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "なるほど。原価への影響",
+              "reading": "なるほど。げんかへのえいきょう",
+              "audioId": "L2-011-line-004-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "も見ておきたいですね。",
+              "reading": "もみておきたいですね。",
+              "audioId": "L2-011-line-004-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-005",
+          "speaker": "mizuki",
+          "text": {
+            "ja": "佐伯さん、まだ印鑑は押されていませんよ。",
+            "zh": "佐伯，批准章还没有盖呢。",
+            "en": "Saeki, the approval stamp has not been used yet."
+          },
+          "readingJa": "さえきさん、まだいんかんはおされていませんよ。",
+          "ttsTextJa": "佐伯さん、まだ印鑑は押されていませんよ。",
+          "audioId": "L2-011-line-005",
+          "pauseAfterMs": 650,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "佐伯さん、まだ印鑑は",
+              "reading": "さえきさん、まだいんかんは",
+              "audioId": "L2-011-line-005-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "押されていませんよ。",
+              "reading": "おされていませんよ。",
+              "audioId": "L2-011-line-005-token-002"
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": {
+            "ja": "黒田部長の「なるほど」は、現在の文脈では何を示していますか。",
+            "zh": "在当前语境中，黑田部长的“原来如此”表示什么？",
+            "en": "In the current context, what does Manager Kuroda’s “I see” indicate?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "価格案に全面的に賛成し、来月すぐ実施したい。",
+                "zh": "他完全赞同降价方案，并想下月立即实施。",
+                "en": "He fully approves the pricing plan and wants to implement it immediately next month."
+              },
+              "ttsTextJa": "価格案に全面的に賛成し、来月すぐ実施したい。",
+              "audioId": "L2-011-q1-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "説明の狙いは理解したが、承認は保留している。",
+                "zh": "他理解了说明的意图，但暂未批准。",
+                "en": "He understands the proposal’s aim but is withholding approval."
+              },
+              "ttsTextJa": "説明の狙いは理解したが、承認は保留している。",
+              "audioId": "L2-011-q1-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "佐伯の説明を全く理解できていない。",
+                "zh": "他完全没听懂佐伯的说明。",
+                "en": "He has not understood Saeki’s explanation at all."
+              },
+              "ttsTextJa": "佐伯の説明を全く理解できていない。",
+              "audioId": "L2-011-q1-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "原価の確認は不要だと判断している。",
+                "zh": "他认为没有必要确认成本。",
+                "en": "He has decided there is no need to check costs."
+              },
+              "ttsTextJa": "原価の確認は不要だと判断している。",
+              "audioId": "L2-011-q1-d"
+            }
+          ],
+          "correctOptionIds": [
+            "b"
+          ],
+          "evidenceLineIds": [
+            "line-002",
+            "line-004",
+            "line-005"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "部長は狙いが分かったと言い、続けて原価への影響を確認したいと述べています。",
+              "zh": "部长说自己明白了意图，随后表示还想确认对成本的影响。",
+              "en": "The manager says he understands the aim, then says he wants to check the cost impact."
+            },
+            "intent": {
+              "ja": "現在の文脈では、相づちで理解を示しつつ、判断はまだ確定していないと読むのが自然です。",
+              "zh": "当前语境更自然的理解是：他用应答表示听懂，但尚未作出决定。",
+              "en": "Here the backchannel naturally marks understanding while leaving the decision unsettled."
+            },
+            "evidence": {
+              "ja": "line-004 の追加検討と line-005 の押印されていない事実が、未承認を直接支えます。",
+              "zh": "line-004 要求进一步考察，line-005 又明确尚未盖章，两者直接支持“未批准”。",
+              "en": "The additional review in line 004 and the unstamped approval in line 005 directly support that reading."
+            },
+            "nuance": {
+              "ja": "「なるほど」は同意にも使われますが、それ自体だけでは承認を保証しません。",
+              "zh": "“原来如此”也可能伴随同意，但这个词本身不等于批准。",
+              "en": "“I see” can accompany agreement, but it does not by itself guarantee approval."
+            },
+            "alternative": {
+              "ja": "部長が最終的に賛成する可能性はありますが、この場面だけで全面承認と断定するのは早いです。",
+              "zh": "部长之后仍可能赞成，但仅凭当前场景就断定已全面批准还为时过早。",
+              "en": "He may approve later, but the present exchange is not enough to claim full approval."
+            }
+          }
+        }
+      ],
+      "audio": {
+        "sceneAudioId": "L2-011-scene",
+        "timelineId": "L2-011-timeline",
+        "optionVoiceKey": "narrator"
+      },
+      "passRule": {
+        "type": "all_questions_correct"
+      },
+      "contentRating": "general",
+      "textLocked": true,
+      "contentHash": "edb993163887c59a966191df8e1981ebe8b78ab5c5f598f843f3d4ed8b766d58"
+    },
+    {
+      "schemaVersion": 1,
+      "contentVersion": "1.0.0",
+      "id": "L2-012",
+      "revision": 1,
+      "level": 2,
+      "stage": 12,
+      "jlptTarget": "N2",
+      "genres": [
+        "school"
+      ],
+      "skills": [
+        "address-term-shift",
+        "relationship-distance"
+      ],
+      "layout": "dialogue",
+      "title": {
+        "ja": "名前から名字へ",
+        "zh": "从名字到姓氏",
+        "en": "From First Name to Surname"
+      },
+      "setting": {
+        "ja": "ゼミ発表の後、意見がぶつかった真琴と高橋教授が研究室で話す。",
+        "zh": "研讨课发表结束后，意见发生冲突的真琴与高桥教授在研究室交谈。",
+        "en": "After disagreeing during a seminar presentation, Makoto and Professor Takahashi speak in his office."
+      },
+      "illustration": {
+        "enabled": false,
+        "src": "",
+        "style": "none",
+        "alt": {
+          "ja": "",
+          "zh": "",
+          "en": ""
+        }
+      },
+      "cast": [
+        {
+          "id": "makoto",
+          "name": {
+            "ja": "真琴",
+            "zh": "真琴",
+            "en": "Makoto"
+          },
+          "voiceKey": "female-bright"
+        },
+        {
+          "id": "takahashi",
+          "name": {
+            "ja": "高橋教授",
+            "zh": "高桥教授",
+            "en": "Professor Takahashi"
+          },
+          "voiceKey": "male-serious"
+        }
+      ],
+      "lines": [
+        {
+          "id": "line-001",
+          "speaker": "makoto",
+          "text": {
+            "ja": "先生、先ほどの指摘には納得できません。",
+            "zh": "老师，我无法认同您刚才的指正。",
+            "en": "Professor, I cannot agree with the point you made earlier."
+          },
+          "readingJa": "せんせい、さきほどのしてきにはなっとくできません。",
+          "ttsTextJa": "先生、先ほどの指摘には納得できません。",
+          "audioId": "L2-012-line-001",
+          "pauseAfterMs": 450,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "先生、先ほどの指摘に",
+              "reading": "せんせい、さきほどのしてきに",
+              "audioId": "L2-012-line-001-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "は納得できません。",
+              "reading": "はなっとくできません。",
+              "audioId": "L2-012-line-001-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-002",
+          "speaker": "takahashi",
+          "text": {
+            "ja": "真琴さん、根拠を整理してから話しましょう。",
+            "zh": "真琴，先把依据整理清楚再谈吧。",
+            "en": "Makoto, let us discuss it after organizing the evidence."
+          },
+          "readingJa": "まことさん、こんきょをせいりしてからはなしましょう。",
+          "ttsTextJa": "真琴さん、根拠を整理してから話しましょう。",
+          "audioId": "L2-012-line-002",
+          "pauseAfterMs": 400,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "真琴さん、根拠を整理",
+              "reading": "まことさん、こんきょをせいり",
+              "audioId": "L2-012-line-002-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "してから話しましょう。",
+              "reading": "してからはなしましょう。",
+              "audioId": "L2-012-line-002-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-003",
+          "speaker": "makoto",
+          "text": {
+            "ja": "資料なら、ここにそろっています。",
+            "zh": "资料的话，这里已经齐全了。",
+            "en": "If you mean the materials, I have them all here."
+          },
+          "readingJa": "しりょうなら、ここにそろっています。",
+          "ttsTextJa": "資料なら、ここにそろっています。",
+          "audioId": "L2-012-line-003",
+          "pauseAfterMs": 400,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "資料なら",
+              "reading": "しりょうなら",
+              "audioId": "L2-012-line-003-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "ここにそろっています",
+              "reading": "ここにそろっています",
+              "audioId": "L2-012-line-003-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-004",
+          "speaker": "takahashi",
+          "text": {
+            "ja": "佐藤さん、今日はこれで結構です。",
+            "zh": "佐藤同学，今天就到这里吧。",
+            "en": "Sato-san, that will be all for today."
+          },
+          "readingJa": "さとうさん、きょうはこれでけっこうです。",
+          "ttsTextJa": "佐藤さん、今日はこれで結構です。",
+          "audioId": "L2-012-line-004",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "佐藤さん",
+              "reading": "さとうさん",
+              "audioId": "L2-012-line-004-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "今日はこれで結構です",
+              "reading": "きょうはこれでけっこうです",
+              "audioId": "L2-012-line-004-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-005",
+          "speaker": "makoto",
+          "text": {
+            "ja": "……分かりました。失礼します。",
+            "zh": "……明白了。我先告辞。",
+            "en": "...Understood. Excuse me."
+          },
+          "readingJa": "わかりました。しつれいします。",
+          "ttsTextJa": "分かりました。失礼します。",
+          "audioId": "L2-012-line-005",
+          "pauseAfterMs": 650,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "分かりました",
+              "reading": "わかりました",
+              "audioId": "L2-012-line-005-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "失礼します",
+              "reading": "しつれいします",
+              "audioId": "L2-012-line-005-token-002"
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": {
+            "ja": "教授が「真琴さん」から「佐藤さん」へ呼び方を変えた理由として、最も自然なのはどれですか。",
+            "zh": "教授把称呼从“真琴”改为“佐藤同学”，最自然的原因是什么？",
+            "en": "What is the most natural reason the professor switches from “Makoto-san” to “Sato-san”?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "意見の衝突を受け、心理的な距離を置こうとしている。",
+                "zh": "因意见冲突而试图拉开心理距离。",
+                "en": "He is creating interpersonal distance after their disagreement."
+              },
+              "ttsTextJa": "意見の衝突を受け、心理的な距離を置こうとしている。",
+              "audioId": "L2-012-q1-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "真琴の名字を初めて思い出した。",
+                "zh": "他刚刚才想起真琴的姓。",
+                "en": "He has only just remembered Makoto’s surname."
+              },
+              "ttsTextJa": "真琴の名字を初めて思い出した。",
+              "audioId": "L2-012-q1-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "別の学生と真琴を取り違えている。",
+                "zh": "他把真琴误认成了另一名学生。",
+                "en": "He has mistaken Makoto for another student."
+              },
+              "ttsTextJa": "別の学生と真琴を取り違えている。",
+              "audioId": "L2-012-q1-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "真琴の卒業を祝うため、研究室でも名字を使う正式な呼び方に変えた。",
+                "zh": "为了庆祝真琴毕业，教授在研究室也改用姓氏这一正式称呼。",
+                "en": "To celebrate Makoto's graduation, the professor switched to the formal surname even in the office."
+              },
+              "ttsTextJa": "真琴の卒業を祝うため、研究室でも名字を使う正式な呼び方に変えた。",
+              "audioId": "L2-012-q1-d"
+            }
+          ],
+          "correctOptionIds": [
+            "a"
+          ],
+          "evidenceLineIds": [
+            "line-001",
+            "line-002",
+            "line-004"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "教授は最初に名前で呼び、対立が続いた後は名字で呼んで会話を終えます。",
+              "zh": "教授起初直呼名字，冲突延续后改称姓氏并结束谈话。",
+              "en": "The professor first uses her given name, then switches to her surname and ends the exchange after the conflict continues."
+            },
+            "intent": {
+              "ja": "現在の文脈では、呼称を改めることで親しさを引き、教師と学生の距離に戻した可能性が高いです。",
+              "zh": "当前语境更支持他借改变称呼收回亲近感，恢复师生距离。",
+              "en": "The context suggests he withdraws familiarity and restores a teacher–student boundary."
+            },
+            "evidence": {
+              "ja": "line-002 の「真琴さん」と line-004 の「佐藤さん」の対比が、距離の変化を示します。",
+              "zh": "line-002 的“真琴”与 line-004 的“佐藤同学”形成对比，显示距离变化。",
+              "en": "The contrast between “Makoto-san” in line 002 and “Sato-san” in line 004 marks the shift."
+            },
+            "nuance": {
+              "ja": "名前から名字への変更は常に怒りを示すわけではありませんが、この場面では対立直後なので距離化の読みが強まります。",
+              "zh": "从名字改称姓氏并不总表示生气，但这里紧接意见冲突，因此拉开距离的解读更强。",
+              "en": "Switching from a given name to a surname does not always signal anger, but here it follows conflict and therefore more strongly suggests distance."
+            },
+            "alternative": {
+              "ja": "公的な場面に戻ったため形式を整えた可能性もありますが、研究室内で突然変わった点からは心理的変化がより自然です。",
+              "zh": "也可能只是恢复正式场合的礼节，但研究室内突然改称，使心理变化更合理。",
+              "en": "He might simply be restoring formality, yet the abrupt switch within the same office makes an interpersonal change more likely."
+            }
+          }
+        },
+        {
+          "id": "q2",
+          "type": "single",
+          "prompt": {
+            "ja": "line-005 の真琴の応答から、最も慎重に推測できることは何ですか。",
+            "zh": "从 line-005 真琴的回应中，最谨慎的推断是什么？",
+            "en": "What can be inferred most cautiously from Makoto’s response in line 005?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "教授の指摘に完全に納得した。",
+                "zh": "她已完全接受教授的指正。",
+                "en": "She now fully accepts the professor’s criticism."
+              },
+              "ttsTextJa": "教授の指摘に完全に納得した。",
+              "audioId": "L2-012-q2-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "研究室を二度と訪れないと決めた。",
+                "zh": "她决定再也不来研究室。",
+                "en": "She has decided never to return to the office."
+              },
+              "ttsTextJa": "研究室を二度と訪れないと決めた。",
+              "audioId": "L2-012-q2-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "場の緊張を感じ、議論を続けず退出した。",
+                "zh": "她感到气氛紧张，没有继续争论便离开。",
+                "en": "She senses the tension and leaves without extending the argument."
+              },
+              "ttsTextJa": "場の緊張を感じ、議論を続けず退出した。",
+              "audioId": "L2-012-q2-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "退室前に教授の名字をもう一度確認しようとしている。",
+                "zh": "她想在离开研究室前再次确认教授的姓氏。",
+                "en": "She is trying to confirm the professor's surname once more before leaving."
+              },
+              "ttsTextJa": "退室前に教授の名字をもう一度確認しようとしている。",
+              "audioId": "L2-012-q2-d"
+            }
+          ],
+          "correctOptionIds": [
+            "c"
+          ],
+          "evidenceLineIds": [
+            "line-004",
+            "line-005"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "教授が会話を切り上げ、真琴は短く応じて退出の挨拶をします。",
+              "zh": "教授结束谈话，真琴简短回应后说出离开的寒暄。",
+              "en": "The professor closes the conversation, and Makoto gives a brief acknowledgment followed by a leave-taking phrase."
+            },
+            "intent": {
+              "ja": "応答の短さと間から、今は議論を続けない選択をしたと読むのが慎重です。",
+              "zh": "从停顿与简短回应看，谨慎的理解是她选择暂不继续争论。",
+              "en": "The pause and brevity cautiously suggest that she chooses not to continue arguing now."
+            },
+            "evidence": {
+              "ja": "line-004 の「今日はこれで」と line-005 の「失礼します」が、その場を終える流れを作っています。",
+              "zh": "line-004 的“今天就到这里”和 line-005 的“我先告辞”共同构成结束场面的走向。",
+              "en": "“That will be all” in line 004 and “Excuse me” in line 005 jointly close the encounter."
+            },
+            "nuance": {
+              "ja": "「分かりました」は指示を受け取った意味で、論点への同意まで表すとは限りません。",
+              "zh": "“明白了”可只表示收到指示，不一定代表认同论点。",
+              "en": "“Understood” can acknowledge the instruction without signaling agreement on the issue."
+            },
+            "alternative": {
+              "ja": "真琴が本当に納得した可能性は残りますが、その判断を支える明示的な発言はありません。",
+              "zh": "真琴确实可能已被说服，但场景中没有明确话语支持这一结论。",
+              "en": "Makoto may have been persuaded, but no explicit line supports that stronger conclusion."
+            }
+          }
+        }
+      ],
+      "audio": {
+        "sceneAudioId": "L2-012-scene",
+        "timelineId": "L2-012-timeline",
+        "optionVoiceKey": "female-calm"
+      },
+      "passRule": {
+        "type": "all_questions_correct"
+      },
+      "contentRating": "general",
+      "textLocked": true,
+      "contentHash": "cd86f06fab80674c225bc693528a4b155d4120c67d7a59b0f287c811caf066aa"
+    },
+    {
+      "schemaVersion": 1,
+      "contentVersion": "1.0.0",
+      "id": "L2-013",
+      "revision": 1,
+      "level": 2,
+      "stage": 13,
+      "jlptTarget": "N2",
+      "genres": [
+        "restaurant"
+      ],
+      "skills": [
+        "excuse-inference",
+        "understatement"
+      ],
+      "layout": "dialogue",
+      "title": {
+        "ja": "素材の味",
+        "zh": "食材本味",
+        "en": "The Ingredients’ Natural Flavor"
+      },
+      "setting": {
+        "ja": "新メニューの試食会。客の奈緒、料理長の悠斗、店員の咲が薄味のスープを囲む。",
+        "zh": "新菜单试吃会上，顾客奈绪、主厨悠斗与店员咲围着一碗味道很淡的汤。",
+        "en": "At a tasting for a new menu, guest Nao, chef Yuto, and server Saki sit around a noticeably bland soup."
+      },
+      "illustration": {
+        "enabled": false,
+        "src": "",
+        "style": "none",
+        "alt": {
+          "ja": "",
+          "zh": "",
+          "en": ""
+        }
+      },
+      "cast": [
+        {
+          "id": "nao",
+          "name": {
+            "ja": "奈緒",
+            "zh": "奈绪",
+            "en": "Nao"
+          },
+          "voiceKey": "female-calm"
+        },
+        {
+          "id": "yuto",
+          "name": {
+            "ja": "悠斗料理長",
+            "zh": "主厨悠斗",
+            "en": "Chef Yuto"
+          },
+          "voiceKey": "male-serious"
+        },
+        {
+          "id": "saki",
+          "name": {
+            "ja": "咲",
+            "zh": "咲",
+            "en": "Saki"
+          },
+          "voiceKey": "female-soft"
+        }
+      ],
+      "lines": [
+        {
+          "id": "line-001",
+          "speaker": "nao",
+          "text": {
+            "ja": "あの、塩は後から加える料理でしょうか。",
+            "zh": "请问，这道菜是之后再加盐吗？",
+            "en": "Um, is salt meant to be added to this dish afterward?"
+          },
+          "readingJa": "あの、しおはあとからくわえるりょうりでしょうか。",
+          "ttsTextJa": "あの、塩は後から加える料理でしょうか。",
+          "audioId": "L2-013-line-001",
+          "pauseAfterMs": 450,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "あの、塩は後から",
+              "reading": "あの、しおはあとから",
+              "audioId": "L2-013-line-001-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "加える料理でしょうか。",
+              "reading": "くわえるりょうりでしょうか。",
+              "audioId": "L2-013-line-001-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-002",
+          "speaker": "saki",
+          "text": {
+            "ja": "いえ、この状態で完成と伺っています。",
+            "zh": "不是，我听说这样就已经完成了。",
+            "en": "No, I was told it is finished as served."
+          },
+          "readingJa": "いえ、このじょうたいでかんせいとうかがっています。",
+          "ttsTextJa": "いえ、この状態で完成と伺っています。",
+          "audioId": "L2-013-line-002",
+          "pauseAfterMs": 400,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "いえ、この状態で",
+              "reading": "いえ、このじょうたいで",
+              "audioId": "L2-013-line-002-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "完成と伺っています。",
+              "reading": "かんせいとうかがっています。",
+              "audioId": "L2-013-line-002-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-003",
+          "speaker": "yuto",
+          "text": {
+            "ja": "今日は素材の味を生かしました。",
+            "zh": "今天我们突出的是食材本身的味道。",
+            "en": "Today I chose to let the ingredients’ natural flavor shine."
+          },
+          "readingJa": "きょうはそざいのあじをいかしました。",
+          "ttsTextJa": "今日は素材の味を生かしました。",
+          "audioId": "L2-013-line-003",
+          "pauseAfterMs": 450,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "今日は素材の味を",
+              "reading": "きょうはそざいのあじを",
+              "audioId": "L2-013-line-003-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "生かしました。",
+              "reading": "いかしました。",
+              "audioId": "L2-013-line-003-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-004",
+          "speaker": "nao",
+          "text": {
+            "ja": "なるほど。ずいぶん繊細なんですね。",
+            "zh": "原来如此。还真是相当细腻呢。",
+            "en": "I see. It is certainly very subtle."
+          },
+          "readingJa": "なるほど。ずいぶんせんさいなんですね。",
+          "ttsTextJa": "なるほど。ずいぶん繊細なんですね。",
+          "audioId": "L2-013-line-004",
+          "pauseAfterMs": 450,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "なるほど。",
+              "reading": "なるほど。",
+              "audioId": "L2-013-line-004-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "ずいぶん繊細なんですね。",
+              "reading": "ずいぶんせんさいなんですね。",
+              "audioId": "L2-013-line-004-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-005",
+          "speaker": "saki",
+          "text": {
+            "ja": "料理長、塩の容器が調理台に残っています。",
+            "zh": "主厨，盐罐还留在操作台上。",
+            "en": "Chef, the salt container is still sitting on the prep counter."
+          },
+          "readingJa": "りょうりちょう、しおのようきがちょうりだいにのこっています。",
+          "ttsTextJa": "料理長、塩の容器が調理台に残っています。",
+          "audioId": "L2-013-line-005",
+          "pauseAfterMs": 650,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "料理長、塩の容器が",
+              "reading": "りょうりちょう、しおのようきが",
+              "audioId": "L2-013-line-005-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "調理台に残っています。",
+              "reading": "ちょうりだいにのこっています。",
+              "audioId": "L2-013-line-005-token-002"
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "type": "multiple",
+          "prompt": {
+            "ja": "料理長の説明について、現在の文脈から支持できる読みを二つ選んでください。",
+            "zh": "关于主厨的说明，请选择当前语境支持的两种理解。",
+            "en": "Choose the two readings of the chef’s explanation that the current context supports."
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "客は濃すぎる味付けに不満を示している。",
+                "zh": "顾客在抱怨调味过重。",
+                "en": "The guest is complaining that the soup is overseasoned."
+              },
+              "ttsTextJa": "客は濃すぎる味付けに不満を示している。",
+              "audioId": "L2-013-q1-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "店員は塩を客席で加える予定だと説明している。",
+                "zh": "店员说明计划在客席加盐。",
+                "en": "The server says salt is intended to be added at the table."
+              },
+              "ttsTextJa": "店員は塩を客席で加える予定だと説明している。",
+              "audioId": "L2-013-q1-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "料理長は薄味を意図的な工夫として表現している。",
+                "zh": "主厨把清淡包装成有意设计。",
+                "en": "The chef presents the blandness as a deliberate creative choice."
+              },
+              "ttsTextJa": "料理長は薄味を意図的な工夫として表現している。",
+              "audioId": "L2-013-q1-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "塩を使い忘れた可能性を取り繕っている。",
+                "zh": "他可能在掩饰忘记放盐。",
+                "en": "He may be covering for having forgotten the salt."
+              },
+              "ttsTextJa": "塩を使い忘れた可能性を取り繕っている。",
+              "audioId": "L2-013-q1-d"
+            }
+          ],
+          "correctOptionIds": [
+            "c",
+            "d"
+          ],
+          "evidenceLineIds": [
+            "line-001",
+            "line-002",
+            "line-003",
+            "line-005"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "客は塩を後から足すのか尋ね、料理長は素材の味を生かしたと説明します。",
+              "zh": "顾客询问是否之后加盐，主厨则解释为突出食材本味。",
+              "en": "The guest asks whether salt is added later, while the chef says he highlighted the ingredients."
+            },
+            "intent": {
+              "ja": "料理長は薄味を積極的な設計として言い換え、調味不足という見方を避けようとしています。",
+              "zh": "主厨把味淡重新表述为积极设计，试图避开“调味不足”的评价。",
+              "en": "The chef reframes blandness as positive design and steers away from calling it underseasoned."
+            },
+            "evidence": {
+              "ja": "line-002 では完成済みとされる一方、line-005 の塩の容器が使われず残っている点は、入れ忘れの可能性を支えます。",
+              "zh": "line-002 明确菜已完成，而 line-005 的盐罐仍留在操作台，支持“忘了放盐”的可能。",
+              "en": "Line 002 says the dish is complete, while the unused salt container in line 005 supports a possible omission."
+            },
+            "nuance": {
+              "ja": "塩の容器だけで忘れたと断定はできないため、選択肢 d は「可能性」にとどめています。",
+              "zh": "仅凭盐罐不能断定忘放盐，因此选项 d 谨慎地表述为“可能”。",
+              "en": "The container alone cannot prove an omission, so option d deliberately states only a possibility."
+            },
+            "alternative": {
+              "ja": "本当に素材重視のレシピだった可能性もありますが、客の確認と容器の状況が言い訳の読みを強めます。",
+              "zh": "也可能本来就是强调食材的配方，但顾客的询问与盐罐状况加强了“辩解”的理解。",
+              "en": "It may genuinely be an ingredient-focused recipe, though the guest’s question and the container make the defensive reading stronger."
+            }
+          }
+        }
+      ],
+      "audio": {
+        "sceneAudioId": "L2-013-scene",
+        "timelineId": "L2-013-timeline",
+        "optionVoiceKey": "male-calm"
+      },
+      "passRule": {
+        "type": "all_questions_correct"
+      },
+      "contentRating": "general",
+      "textLocked": true,
+      "contentHash": "245a1f3410b27ca4f755ecdedb1579a85a5d0c9b0cb1713a360963982eaee7bb"
+    },
+    {
+      "schemaVersion": 1,
+      "contentVersion": "1.0.0",
+      "id": "L2-014",
+      "revision": 1,
+      "level": 2,
+      "stage": 14,
+      "jlptTarget": "N2",
+      "genres": [
+        "travel"
+      ],
+      "skills": [
+        "context-inference",
+        "risk-awareness"
+      ],
+      "layout": "dialogue",
+      "title": {
+        "ja": "乗り継ぎまで",
+        "zh": "距离转机",
+        "en": "Until the Connection"
+      },
+      "setting": {
+        "ja": "空港の出発案内に三十分の遅延が表示され、香織と遼が乗り継ぎを心配している。",
+        "zh": "机场出发信息显示延误三十分钟，香织与辽担心之后的转机。",
+        "en": "The airport board shows a thirty-minute delay, leaving Kaori and Ryo worried about their connection."
+      },
+      "illustration": {
+        "enabled": false,
+        "src": "",
+        "style": "none",
+        "alt": {
+          "ja": "",
+          "zh": "",
+          "en": ""
+        }
+      },
+      "cast": [
+        {
+          "id": "kaori",
+          "name": {
+            "ja": "香織",
+            "zh": "香织",
+            "en": "Kaori"
+          },
+          "voiceKey": "female-bright"
+        },
+        {
+          "id": "ryo",
+          "name": {
+            "ja": "遼",
+            "zh": "辽",
+            "en": "Ryo"
+          },
+          "voiceKey": "male-calm"
+        }
+      ],
+      "lines": [
+        {
+          "id": "line-001",
+          "speaker": "kaori",
+          "text": {
+            "ja": "三十分遅れ……乗り継ぎまで、まだ時間ありますよね。",
+            "zh": "晚了三十分钟……离转机还有时间吧？",
+            "en": "Thirty minutes late... We still have time before the connection, right?"
+          },
+          "readingJa": "さんじゅっぷんおくれ。のりつぎまで、まだじかんありますよね。",
+          "ttsTextJa": "三十分遅れ。乗り継ぎまで、まだ時間ありますよね。",
+          "audioId": "L2-014-line-001",
+          "pauseAfterMs": 450,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "三十分遅れ……乗り継ぎ",
+              "reading": "さんじゅっぷんおくれ……のりつぎ",
+              "audioId": "L2-014-line-001-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "まで、まだ時間ありますよね。",
+              "reading": "まで、まだじかんありますよね。",
+              "audioId": "L2-014-line-001-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-002",
+          "speaker": "ryo",
+          "text": {
+            "ja": "予定どおりなら、到着後に一時間あります。",
+            "zh": "如果按计划，到达后还有一个小时。",
+            "en": "On the original schedule, we have an hour after landing."
+          },
+          "readingJa": "よていどおりなら、とうちゃくごにいちじかんあります。",
+          "ttsTextJa": "予定どおりなら、到着後に一時間あります。",
+          "audioId": "L2-014-line-002",
+          "pauseAfterMs": 400,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "予定どおりなら",
+              "reading": "よていどおりなら",
+              "audioId": "L2-014-line-002-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "到着後に一時間あります",
+              "reading": "とうちゃくごにいちじかんあります",
+              "audioId": "L2-014-line-002-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-003",
+          "speaker": "kaori",
+          "text": {
+            "ja": "でも、降りるのにも時間がかかりますよね。",
+            "zh": "可是，下飞机也要花时间吧？",
+            "en": "But getting off the plane takes time too, doesn’t it?"
+          },
+          "readingJa": "でも、おりるのにもじかんがかかりますよね。",
+          "ttsTextJa": "でも、降りるのにも時間がかかりますよね。",
+          "audioId": "L2-014-line-003",
+          "pauseAfterMs": 400,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "でも、降りるのにも",
+              "reading": "でも、おりるのにも",
+              "audioId": "L2-014-line-003-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "時間がかかりますよね。",
+              "reading": "じかんがかかりますよね。",
+              "audioId": "L2-014-line-003-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-004",
+          "speaker": "ryo",
+          "text": {
+            "ja": "係員に、到着口から次の搭乗口まで何分か聞きましょう。",
+            "zh": "我们问问工作人员，从到达口到下一个登机口要几分钟吧。",
+            "en": "Let’s ask staff how many minutes it takes from arrivals to the next gate."
+          },
+          "readingJa": "かかりいんに、とうちゃくぐちからつぎのとうじょうぐちまでなんぷんかききましょう。",
+          "ttsTextJa": "係員に、到着口から次の搭乗口まで何分か聞きましょう。",
+          "audioId": "L2-014-line-004",
+          "pauseAfterMs": 450,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "係員に、到着口から次の搭乗",
+              "reading": "かかりいんに、とうちゃくくちからつぎのとうじょう",
+              "audioId": "L2-014-line-004-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "口まで何分か聞きましょう。",
+              "reading": "くちまでなんぷんかききましょう。",
+              "audioId": "L2-014-line-004-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-005",
+          "speaker": "kaori",
+          "text": {
+            "ja": "そうですね。間に合う根拠が分かれば安心できます。",
+            "zh": "好。只要知道来得及的依据，我就能放心了。",
+            "en": "Yes. I’ll feel better if we know why the connection is still feasible."
+          },
+          "readingJa": "そうですね。まにあうこんきょがわかればあんしんできます。",
+          "ttsTextJa": "そうですね。間に合う根拠が分かれば安心できます。",
+          "audioId": "L2-014-line-005",
+          "pauseAfterMs": 650,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "そうですね。間に合う根拠",
+              "reading": "そうですね。まにあうこんきょ",
+              "audioId": "L2-014-line-005-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "が分かれば安心できます。",
+              "reading": "がわかればあんしんできます。",
+              "audioId": "L2-014-line-005-token-002"
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": {
+            "ja": "香織が何度も確認する主な理由は何ですか。",
+            "zh": "香织反复确认的主要原因是什么？",
+            "en": "Why does Kaori keep checking?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "遅延を喜び、空港で長く過ごしたいから。",
+                "zh": "因为她为延误高兴，想在机场多待一会儿。",
+                "en": "She welcomes the delay and wants to spend longer at the airport."
+              },
+              "ttsTextJa": "遅延を喜び、空港で長く過ごしたいから。",
+              "audioId": "L2-014-q1-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "次の便をキャンセルしたいから。",
+                "zh": "因为她想取消下一班航班。",
+                "en": "She wants to cancel the connecting flight."
+              },
+              "ttsTextJa": "次の便をキャンセルしたいから。",
+              "audioId": "L2-014-q1-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "乗り継ぎへの不安を表し、安心できる情報を求めているから。",
+                "zh": "因为她在表达转机焦虑，并寻求能让自己放心的信息。",
+                "en": "She is expressing anxiety about the connection and seeking reassuring information."
+              },
+              "ttsTextJa": "乗り継ぎへの不安を表し、安心できる情報を求めているから。",
+              "audioId": "L2-014-q1-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "遼が時刻表を読めないと思っているから。",
+                "zh": "因为她认为辽看不懂时刻表。",
+                "en": "She thinks Ryo cannot read the timetable."
+              },
+              "ttsTextJa": "遼が時刻表を読めないと思っているから。",
+              "audioId": "L2-014-q1-d"
+            }
+          ],
+          "correctOptionIds": [
+            "c"
+          ],
+          "evidenceLineIds": [
+            "line-001",
+            "line-003",
+            "line-005"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "香織は残り時間と降機時間を続けて確認し、最後に根拠が分かれば安心できると言います。",
+              "zh": "香织接连确认剩余时间与下机时间，最后直说知道依据就能放心。",
+              "en": "Kaori checks both remaining time and deplaning time, then says evidence would reassure her."
+            },
+            "intent": {
+              "ja": "質問は単なる時刻確認ではなく、不安を共有して具体的な安心材料を求める働きをしています。",
+              "zh": "这些问题不只是确认时间，也是在分享焦虑并索要具体的安心依据。",
+              "en": "The questions do more than request times; they share anxiety and seek concrete reassurance."
+            },
+            "evidence": {
+              "ja": "line-005 の「根拠が分かれば安心」が意図を明示し、line-001 と line-003 の反復が不安の強さを示します。",
+              "zh": "line-005 的“知道依据就能放心”直接说明意图，line-001 与 line-003 的反复显示焦虑强度。",
+              "en": "Line 005 states the intent directly, while the repeated checks in lines 001 and 003 show its intensity."
+            },
+            "nuance": {
+              "ja": "「よね」は同意を求める形で、話し手が自分の見込みを相手に確かめたい時にも使われます。",
+              "zh": "“よね”带有寻求认同的作用，也常用于请对方确认自己的预期。",
+              "en": "The ending “yo ne” seeks alignment and can ask the listener to confirm the speaker’s expectation."
+            },
+            "alternative": {
+              "ja": "実務的に時間を計算している面もありますが、安心への言及により感情的な目的も明確です。",
+              "zh": "她也确实在做实际时间计算，但提到“放心”说明情绪目的同样明确。",
+              "en": "There is practical calculation too, but her reference to reassurance makes the emotional purpose explicit."
+            }
+          }
+        },
+        {
+          "id": "q2",
+          "type": "single",
+          "prompt": {
+            "ja": "遼の line-004 の提案が有効な理由として最も適切なのはどれですか。",
+            "zh": "辽在 line-004 的提议为何有效？",
+            "en": "Why is Ryo’s suggestion in line 004 useful?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "曖昧な安心ではなく、移動時間という具体的な根拠を得られるから。",
+                "zh": "因为能获得“移动时间”这一具体依据，而不是空泛安慰。",
+                "en": "It replaces vague reassurance with concrete information about transfer time."
+              },
+              "ttsTextJa": "曖昧な安心ではなく、移動時間という具体的な根拠を得られるから。",
+              "audioId": "L2-014-q2-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "係員なら必ず飛行機を定刻に戻せるから。",
+                "zh": "因为工作人员一定能让飞机恢复准点。",
+                "en": "Airport staff can always restore the flight to its original schedule."
+              },
+              "ttsTextJa": "係員なら必ず飛行機を定刻に戻せるから。",
+              "audioId": "L2-014-q2-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "係員なら次の搭乗口を近い場所へ必ず変更してもらえると決まっているから。",
+                "zh": "因为只要找工作人员，就一定能把下一登机口改到更近的位置。",
+                "en": "Because staff are guaranteed to move the next gate closer whenever asked."
+              },
+              "ttsTextJa": "係員なら次の搭乗口を近い場所へ必ず変更してもらえると決まっているから。",
+              "audioId": "L2-014-q2-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "香織に時計を見ないよう勧められるから。",
+                "zh": "因为可以劝香织不要看时间。",
+                "en": "It lets him advise Kaori not to look at the time."
+              },
+              "ttsTextJa": "香織に時計を見ないよう勧められるから。",
+              "audioId": "L2-014-q2-d"
+            }
+          ],
+          "correctOptionIds": [
+            "a"
+          ],
+          "evidenceLineIds": [
+            "line-003",
+            "line-004",
+            "line-005"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "遼は係員に実際の移動時間を尋ねることを提案しています。",
+              "zh": "辽提议向工作人员询问实际移动时间。",
+              "en": "Ryo proposes asking staff for the actual transfer time."
+            },
+            "intent": {
+              "ja": "香織の不安を、確認可能な情報で和らげようとしています。",
+              "zh": "他试图用可核实的信息缓解香织的不安。",
+              "en": "He tries to ease Kaori’s anxiety with verifiable information."
+            },
+            "evidence": {
+              "ja": "line-003 の降機時間への懸念に対し、line-004 は経路の所要時間を調べる具体策を示します。",
+              "zh": "针对 line-003 对下机耗时的担忧，line-004 给出查询路线所需时间的具体办法。",
+              "en": "Line 004 answers the concern in line 003 with a concrete way to learn the route duration."
+            },
+            "nuance": {
+              "ja": "「間に合う」と断言せず、判断材料を集める提案なので、未知の状況に対して慎重です。",
+              "zh": "他没有断言一定赶得上，而是提议收集判断材料，因此对未知情况处理得较谨慎。",
+              "en": "He does not promise they will make it; gathering evidence is appropriately cautious under uncertainty."
+            },
+            "alternative": {
+              "ja": "航空会社が乗り継ぎ支援をする可能性もありますが、この会話では移動時間の確認だけが明示されています。",
+              "zh": "航空公司也可能提供转机协助，但本段只明确提出确认移动时间。",
+              "en": "The airline may offer connection support, but only checking transfer time is stated here."
+            }
+          }
+        }
+      ],
+      "audio": {
+        "sceneAudioId": "L2-014-scene",
+        "timelineId": "L2-014-timeline",
+        "optionVoiceKey": "narrator"
+      },
+      "passRule": {
+        "type": "all_questions_correct"
+      },
+      "contentRating": "general",
+      "textLocked": true,
+      "contentHash": "c6e488a330d69fdc8f4af1098dfc8e7d57069b2c15d9bb4c79bc3eb16a51aea3"
+    },
+    {
+      "schemaVersion": 1,
+      "contentVersion": "1.0.0",
+      "id": "L2-015",
+      "revision": 1,
+      "level": 2,
+      "stage": 15,
+      "jlptTarget": "N2",
+      "genres": [
+        "mobile-chat"
+      ],
+      "skills": [
+        "deletion-inference",
+        "stance-inference"
+      ],
+      "layout": "phone-chat",
+      "title": {
+        "ja": "削除した長文",
+        "zh": "删掉的长消息",
+        "en": "The Deleted Long Message"
+      },
+      "setting": {
+        "ja": "夜のチャット。一樹は長い下書きを削除し、美羽との画面を閉じずに待っている。",
+        "zh": "夜间聊天中，一树删掉一段很长的草稿，却一直没有关掉与美羽的聊天界面。",
+        "en": "In a late-night chat, Kazuki deletes a long draft but keeps his conversation with Miu open."
+      },
+      "illustration": {
+        "enabled": false,
+        "src": "",
+        "style": "none",
+        "alt": {
+          "ja": "",
+          "zh": "",
+          "en": ""
+        }
+      },
+      "cast": [
+        {
+          "id": "kazuki",
+          "name": {
+            "ja": "一樹",
+            "zh": "一树",
+            "en": "Kazuki"
+          },
+          "voiceKey": "male-casual"
+        },
+        {
+          "id": "miu",
+          "name": {
+            "ja": "美羽",
+            "zh": "美羽",
+            "en": "Miu"
+          },
+          "voiceKey": "female-soft"
+        }
+      ],
+      "lines": [
+        {
+          "id": "line-001",
+          "speaker": "kazuki",
+          "text": {
+            "ja": "さっきの件、実はずっと気になってて……。",
+            "zh": "刚才那件事，其实我一直很在意……",
+            "en": "About what happened earlier, it has actually been bothering me..."
+          },
+          "readingJa": "さっきのけん、じつはずっときになってて。",
+          "ttsTextJa": "さっきの件、実はずっと気になってて。",
+          "audioId": "L2-015-line-001",
+          "pauseAfterMs": 450,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "さっきの件、実は",
+              "reading": "さっきのけん、じつは",
+              "audioId": "L2-015-line-001-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "ずっと気になってて……。",
+              "reading": "ずっときになってて……。",
+              "audioId": "L2-015-line-001-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-002",
+          "speaker": "kazuki",
+          "text": {
+            "ja": "送信を取り消しました。",
+            "zh": "已撤回一条消息。",
+            "en": "A message was unsent."
+          },
+          "readingJa": "そうしんをとりけしました。",
+          "ttsTextJa": "送信を取り消しました。",
+          "audioId": "L2-015-line-002",
+          "pauseAfterMs": 350,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "送信を",
+              "reading": "そうしんを",
+              "audioId": "L2-015-line-002-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "取り消しました",
+              "reading": "とりけしました",
+              "audioId": "L2-015-line-002-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-003",
+          "speaker": "miu",
+          "text": {
+            "ja": "今、何か送った？",
+            "zh": "你刚才发了什么吗？",
+            "en": "Did you just send something?"
+          },
+          "readingJa": "いま、なにかおくった。",
+          "ttsTextJa": "今、何か送った？",
+          "audioId": "L2-015-line-003",
+          "pauseAfterMs": 400,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "今",
+              "reading": "いま",
+              "audioId": "L2-015-line-003-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "何か送った",
+              "reading": "なにかおくった",
+              "audioId": "L2-015-line-003-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-004",
+          "speaker": "kazuki",
+          "text": {
+            "ja": "ううん、何でもない。",
+            "zh": "没有，没什么。",
+            "en": "No, never mind."
+          },
+          "readingJa": "ううん、なんでもない。",
+          "ttsTextJa": "ううん、何でもない。",
+          "audioId": "L2-015-line-004",
+          "pauseAfterMs": 450,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "ううん",
+              "reading": "ううん",
+              "audioId": "L2-015-line-004-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "何でもない",
+              "reading": "なんでもない",
+              "audioId": "L2-015-line-004-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-005",
+          "speaker": "kazuki",
+          "text": {
+            "ja": "……既読になった。返信、来ないかな。",
+            "zh": "……已经读了。她会回复吗？",
+            "en": "…It's been read. I wonder if she'll reply."
+          },
+          "readingJa": "……きどくになった。へんしん、こないかな。",
+          "ttsTextJa": "……既読になった。返信、来ないかな。",
+          "audioId": "L2-015-line-005",
+          "pauseAfterMs": 650,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "……既読になった。",
+              "reading": "……きどくになった。",
+              "audioId": "L2-015-line-005-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "返信、来ないかな。",
+              "reading": "へんしん、こないかな。",
+              "audioId": "L2-015-line-005-token-002"
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": {
+            "ja": "一樹の「何でもない」と、その後の行動を合わせて最も自然に読めるのはどれですか。",
+            "zh": "结合一树说“没什么”之后的行为，哪种理解最自然？",
+            "en": "Considering both Kazuki’s “Never mind” and what he does afterward, which reading is most natural?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "話題を完全に忘れ、送信取り消し後の返信にも美羽の反応にも関心がない。",
+                "zh": "他完全忘记了话题，对撤回后的回复和美羽的反应都毫不关心。",
+                "en": "He completely forgot the topic and cares neither about a reply after deletion nor Miu's reaction."
+              },
+              "ttsTextJa": "話題を完全に忘れ、送信取り消し後の返信にも美羽の反応にも関心がない。",
+              "audioId": "L2-015-q1-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "話題を引っ込めた形を取りながら、美羽に気づいてほしい。",
+                "zh": "他表面收回话题，其实仍希望美羽察觉。",
+                "en": "He outwardly withdraws the topic while hoping Miu will notice and ask."
+              },
+              "ttsTextJa": "話題を引っ込めた形を取りながら、美羽に気づいてほしい。",
+              "audioId": "L2-015-q1-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "通信障害で長文が自動的に消えた。",
+                "zh": "长消息因网络故障自动消失。",
+                "en": "A connection failure automatically erased the long message."
+              },
+              "ttsTextJa": "通信障害で長文が自動的に消えた。",
+              "audioId": "L2-015-q1-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "美羽とのチャットをすぐ終えたい。",
+                "zh": "他想立刻结束与美羽的聊天。",
+                "en": "He wants to end the conversation with Miu immediately."
+              },
+              "ttsTextJa": "美羽とのチャットをすぐ終えたい。",
+              "audioId": "L2-015-q1-d"
+            }
+          ],
+          "correctOptionIds": [
+            "b"
+          ],
+          "evidenceLineIds": [
+            "line-001",
+            "line-002",
+            "line-004",
+            "line-005"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "一樹は気になる件を書いて取り消し、「何でもない」と答えた後も返信を待ち続けます。",
+              "zh": "一树写下在意的事又撤回，说“没什么”后仍继续等回复。",
+              "en": "Kazuki writes about something troubling him, unsends it, says “Never mind,” and still waits for a reply."
+            },
+            "intent": {
+              "ja": "表面上は話題を閉じていますが、行動からは相手に関心を向けてほしい気持ちが残っていると読めます。",
+              "zh": "表面上他关闭了话题，但行为显示仍希望对方关注。",
+              "en": "He closes the topic on the surface, but his behavior suggests he still wants her attention."
+            },
+            "evidence": {
+              "ja": "line-001 の「ずっと気になってて」と line-005 の通知待ちが、line-004 の字面と食い違います。",
+              "zh": "line-001 的“一直很在意”以及 line-005 的等待通知，与 line-004 的字面相矛盾。",
+              "en": "“It has been bothering me” in line 001 and the waiting in line 005 conflict with the literal claim in line 004."
+            },
+            "nuance": {
+              "ja": "送信取り消しは迷いや自己防衛も示し得るため、必ずしも相手を試しているとまでは断定できません。",
+              "zh": "撤回消息也可能表示犹豫或自我保护，不能进一步断定他是在试探对方。",
+              "en": "Unsending can also reflect hesitation or self-protection, so it does not prove he is testing her."
+            },
+            "alternative": {
+              "ja": "単に送る勇気がなくなった可能性もありますが、返信を待つ描写から話題への関心は続いています。",
+              "zh": "他也可能只是失去了发送的勇气，但等待回复的描写说明关注仍在。",
+              "en": "He may simply have lost the courage to send it, yet waiting for a reply shows continuing concern."
+            }
+          }
+        }
+      ],
+      "audio": {
+        "sceneAudioId": "L2-015-scene",
+        "timelineId": "L2-015-timeline",
+        "optionVoiceKey": "female-soft"
+      },
+      "passRule": {
+        "type": "all_questions_correct"
+      },
+      "contentRating": "general",
+      "textLocked": true,
+      "contentHash": "f5dacdfb46115f1b41924f3b260d206c123641b0bf56c0ed7e7ebdbefc94209a"
+    },
+    {
+      "schemaVersion": 1,
+      "contentVersion": "1.0.0",
+      "id": "L2-016",
+      "revision": 1,
+      "level": 2,
+      "stage": 16,
+      "jlptTarget": "N2",
+      "genres": [
+        "VRChat",
+        "mystery"
+      ],
+      "skills": [
+        "identity-protection",
+        "context-inference"
+      ],
+      "layout": "vrchat",
+      "title": {
+        "ja": "初期アバターの玲",
+        "zh": "使用默认形象的玲",
+        "en": "Rei in the Default Avatar"
+      },
+      "setting": {
+        "ja": "VR空間の静かな談話室。いつも派手な玲が初期アバターで蒼と話し、悠真の接続通知が届く。",
+        "zh": "VR空间的安静谈话室里，一向形象华丽的玲用默认头像与苍交谈，此时悠真上线的通知出现。",
+        "en": "In a quiet VR lounge, normally flamboyant Rei speaks with Aoi in a default avatar as Yuma’s login notification appears."
+      },
+      "illustration": {
+        "enabled": false,
+        "src": "",
+        "style": "none",
+        "alt": {
+          "ja": "",
+          "zh": "",
+          "en": ""
+        }
+      },
+      "cast": [
+        {
+          "id": "rei",
+          "name": {
+            "ja": "玲",
+            "zh": "玲",
+            "en": "Rei"
+          },
+          "voiceKey": "female-mysterious"
+        },
+        {
+          "id": "aoi",
+          "name": {
+            "ja": "蒼",
+            "zh": "苍",
+            "en": "Aoi"
+          },
+          "voiceKey": "male-calm"
+        },
+        {
+          "id": "yuma",
+          "name": {
+            "ja": "悠真",
+            "zh": "悠真",
+            "en": "Yuma"
+          },
+          "voiceKey": "male-casual"
+        }
+      ],
+      "lines": [
+        {
+          "id": "line-001",
+          "speaker": "aoi",
+          "text": {
+            "ja": "珍しいね。今日は初期アバターなんだ。",
+            "zh": "真少见。你今天用默认头像啊。",
+            "en": "That is unusual. You are using the default avatar today."
+          },
+          "readingJa": "めずらしいね。きょうはしょきあばたーなんだ。",
+          "ttsTextJa": "珍しいね。今日は初期アバターなんだ。",
+          "audioId": "L2-016-line-001",
+          "pauseAfterMs": 400,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "珍しいね。今日は",
+              "reading": "めずらしいね。きょうは",
+              "audioId": "L2-016-line-001-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "初期アバターなんだ。",
+              "reading": "しょきあばたーなんだ。",
+              "audioId": "L2-016-line-001-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-002",
+          "speaker": "rei",
+          "text": {
+            "ja": "たまには目立たないのもいいかなって。",
+            "zh": "偶尔不显眼一点也挺好嘛。",
+            "en": "I thought it might be nice not to stand out for once."
+          },
+          "readingJa": "たまにはめだたないのもいいかなって。",
+          "ttsTextJa": "たまには目立たないのもいいかなって。",
+          "audioId": "L2-016-line-002",
+          "pauseAfterMs": 450,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "たまには",
+              "reading": "たまには",
+              "audioId": "L2-016-line-002-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "目立たないのもいいかなって",
+              "reading": "めだたないのもいいかなって",
+              "audioId": "L2-016-line-002-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-003",
+          "speaker": "yuma",
+          "text": {
+            "ja": "悠真が同じワールドに接続しました。",
+            "zh": "悠真已连接到同一世界。",
+            "en": "Yuma has joined the same world."
+          },
+          "readingJa": "ゆうまがおなじわーるどにせつぞくしました。",
+          "ttsTextJa": "悠真が同じワールドに接続しました。",
+          "audioId": "L2-016-line-003",
+          "pauseAfterMs": 350,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "悠真が同じ",
+              "reading": "ゆうまがおなじ",
+              "audioId": "L2-016-line-003-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "ワールドに接続しました。",
+              "reading": "わーるどにせつぞくしました。",
+              "audioId": "L2-016-line-003-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-004",
+          "speaker": "rei",
+          "text": {
+            "ja": "ごめん、別の部屋に移るね。ここにいたことは言わないで。",
+            "zh": "抱歉，我去另一个房间。别告诉他我刚才在这里。",
+            "en": "Sorry, I’m moving to another room. Please don’t say I was here."
+          },
+          "readingJa": "ごめん、べつのへやにうつるね。ここにいたことはいわないで。",
+          "ttsTextJa": "ごめん、別の部屋に移るね。ここにいたことは言わないで。",
+          "audioId": "L2-016-line-004",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "ごめん、別の部屋に移るね。",
+              "reading": "ごめん、べつのへやにうつるね。",
+              "audioId": "L2-016-line-004-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "ここにいたことは言わないで。",
+              "reading": "ここにいたことはいわないで。",
+              "audioId": "L2-016-line-004-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-005",
+          "speaker": "aoi",
+          "text": {
+            "ja": "分かった。不具合じゃなくて、見つかりたくないんだね。",
+            "zh": "知道了。不是故障，而是你不想被发现吧。",
+            "en": "Got it. So this is not a glitch—you do not want to be found."
+          },
+          "readingJa": "わかった。ふぐあいじゃなくて、みつかりたくないんだね。",
+          "ttsTextJa": "分かった。不具合じゃなくて、見つかりたくないんだね。",
+          "audioId": "L2-016-line-005",
+          "pauseAfterMs": 650,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "分かった。不具合じゃなくて",
+              "reading": "わかった。ふぐあいじゃなくて",
+              "audioId": "L2-016-line-005-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "、見つかりたくないんだね。",
+              "reading": "、みつかりたくないんだね。",
+              "audioId": "L2-016-line-005-token-002"
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": {
+            "ja": "玲が初期アバターを使っている理由として、現在の文脈で最も自然なのはどれですか。",
+            "zh": "在当前语境中，玲使用默认头像最自然的原因是什么？",
+            "en": "In the current context, why is Rei most likely using the default avatar?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "悠真に今の居場所や会話相手を知られにくくするため。",
+                "zh": "为了不容易让悠真知道自己在哪里、和谁交谈。",
+                "en": "To make it harder for Yuma to identify her location and conversation partner."
+              },
+              "ttsTextJa": "悠真に今の居場所や会話相手を知られにくくするため。",
+              "audioId": "L2-016-q1-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "派手なアバターを永久に捨て、今後は初期アバターだけを使うと決めたため。",
+                "zh": "因为她决定永久放弃华丽形象，以后只使用初始形象。",
+                "en": "Because she decided to abandon flashy avatars forever and use only the default avatar."
+              },
+              "ttsTextJa": "派手なアバターを永久に捨て、今後は初期アバターだけを使うと決めたため。",
+              "audioId": "L2-016-q1-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "蒼に初期設定を教えるため。",
+                "zh": "为了教苍如何使用初始设置。",
+                "en": "To teach Aoi how to use the default settings."
+              },
+              "ttsTextJa": "蒼に初期設定を教えるため。",
+              "audioId": "L2-016-q1-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "接続速度を測定するため。",
+                "zh": "为了测试连接速度。",
+                "en": "To test the connection speed."
+              },
+              "ttsTextJa": "接続速度を測定するため。",
+              "audioId": "L2-016-q1-d"
+            }
+          ],
+          "correctOptionIds": [
+            "a"
+          ],
+          "evidenceLineIds": [
+            "line-002",
+            "line-003",
+            "line-004"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "玲は目立たない姿を選び、悠真の接続直後に別室へ移って在室を秘密にするよう頼みます。",
+              "zh": "玲选择不显眼的形象，并在悠真上线后立刻换房，还要求保密自己来过。",
+              "en": "Rei chooses an inconspicuous appearance, leaves when Yuma joins, and asks Aoi to conceal her presence."
+            },
+            "intent": {
+              "ja": "一連の行動は、技術問題よりも、悠真から現在の活動を隠す目的を示します。",
+              "zh": "这一连串行为与其说是技术问题，不如说是为了向悠真隐藏当前活动。",
+              "en": "The sequence points to concealing her current activity from Yuma rather than a technical problem."
+            },
+            "evidence": {
+              "ja": "line-003 の接続通知と line-004 の即時移動・口止めが、相手を特定した回避行動です。",
+              "zh": "line-003 的上线通知与 line-004 的立即转移、要求保密，构成针对特定对象的回避。",
+              "en": "The login notice in line 003 and immediate move plus secrecy request in line 004 are targeted avoidance."
+            },
+            "nuance": {
+              "ja": "なぜ悠真を避けるのかは示されていないため、関係の断絶や危険までは推測できません。",
+              "zh": "场景没有说明她为何躲开悠真，因此不能进一步推断关系破裂或存在危险。",
+              "en": "The reason for avoiding Yuma is unstated, so estrangement or danger would be overinterpretation."
+            },
+            "alternative": {
+              "ja": "アバターの不具合も単独なら考えられますが、口止めの依頼を説明できません。",
+              "zh": "单看头像也可能是故障，但无法解释她要求保密。",
+              "en": "An avatar glitch is possible in isolation, but it does not explain her secrecy request."
+            }
+          }
+        },
+        {
+          "id": "q2",
+          "type": "single",
+          "prompt": {
+            "ja": "この場面から確実には言えないことはどれですか。",
+            "zh": "以下哪一点无法从该场景中确定？",
+            "en": "Which claim cannot be established from this scene?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "玲は普段、派手なアバターを使う。",
+                "zh": "玲平时使用华丽头像。",
+                "en": "Rei normally uses a flashy avatar."
+              },
+              "ttsTextJa": "玲は普段、派手なアバターを使う。",
+              "audioId": "L2-016-q2-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "玲は悠真の接続後、別室へ移った。",
+                "zh": "玲在悠真上线后去了另一个房间。",
+                "en": "Rei moves to another room after Yuma joins."
+              },
+              "ttsTextJa": "玲は悠真の接続後、別室へ移った。",
+              "audioId": "L2-016-q2-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "玲が悠真を避ける理由は、二人がけんかしたからだ。",
+                "zh": "玲躲着悠真是因为两人吵架了。",
+                "en": "Rei avoids Yuma because the two of them had an argument."
+              },
+              "ttsTextJa": "玲が悠真を避ける理由は、二人がけんかしたからだ。",
+              "audioId": "L2-016-q2-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "玲は蒼に、今いる部屋を悠真へ絶対言わないよう明確に頼んだ。",
+                "zh": "玲明确要求苍绝对不要把自己所在房间告诉悠真。",
+                "en": "Rei explicitly asks Aoi never to tell Yuma which room she is in."
+              },
+              "ttsTextJa": "玲は蒼に、今いる部屋を悠真へ絶対言わないよう明確に頼んだ。",
+              "audioId": "L2-016-q2-d"
+            }
+          ],
+          "correctOptionIds": [
+            "c"
+          ],
+          "evidenceLineIds": [
+            "line-001",
+            "line-003",
+            "line-004"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "普段の姿、接続通知後の移動、口止めは示されていますが、避ける原因は語られていません。",
+              "zh": "平时形象、上线后的转移与保密要求都有明确呈现，但躲避原因没有说明。",
+              "en": "Her usual appearance, departure after login, and secrecy request are shown; the cause is not."
+            },
+            "intent": {
+              "ja": "ここでは玲が身元や行動を隠したいことまでが読み取れ、対人関係の具体的な原因までは決められません。",
+              "zh": "此处只能读出玲想隐藏身份与行动，无法确定人际冲突的具体原因。",
+              "en": "We can infer a wish for privacy, but not a specific interpersonal cause."
+            },
+            "evidence": {
+              "ja": "line-004 は「言わないで」とだけ述べ、けんかへの言及はありません。",
+              "zh": "line-004 只说“别告诉他”，没有提及争吵。",
+              "en": "Line 004 asks for secrecy but contains no mention of an argument."
+            },
+            "nuance": {
+              "ja": "ミステリー的な文脈でも、空白を一つの物語で埋めず、明示情報と推測を分ける必要があります。",
+              "zh": "即使是悬疑语境，也应区分明确信息与推测，不应擅自用单一故事填补空白。",
+              "en": "Even in a mystery context, explicit evidence must be separated from a story invented to fill the gap."
+            },
+            "alternative": {
+              "ja": "けんかは可能な説明の一つですが、家族への秘密や贈り物の準備など他の説明も成り立ちます。",
+              "zh": "吵架只是可能解释之一，瞒着家人或准备惊喜等其他解释也成立。",
+              "en": "An argument is one possibility, but family privacy or planning a surprise could also fit."
+            }
+          }
+        }
+      ],
+      "audio": {
+        "sceneAudioId": "L2-016-scene",
+        "timelineId": "L2-016-timeline",
+        "optionVoiceKey": "female-mysterious"
+      },
+      "passRule": {
+        "type": "all_questions_correct"
+      },
+      "contentRating": "general",
+      "textLocked": true,
+      "contentHash": "3f63118e7384f334175a723c91ecf4862adc60652215ee7c9987ca774d8da0e7"
+    },
+    {
+      "schemaVersion": 1,
+      "contentVersion": "1.0.0",
+      "id": "L2-017",
+      "revision": 1,
+      "level": 2,
+      "stage": 17,
+      "jlptTarget": "N2",
+      "genres": [
+        "AI",
+        "daily-life"
+      ],
+      "skills": [
+        "register-shift",
+        "boundary-inference"
+      ],
+      "layout": "ai-system",
+      "title": {
+        "ja": "その呼び方には応じません",
+        "zh": "不回应那个称呼",
+        "en": "Not Responding to That Name"
+      },
+      "setting": {
+        "ja": "自宅のリビング。湊が家庭AIのハルを親しげな愛称で呼び、会話の調子が変わる。",
+        "zh": "家中客厅里，湊用亲昵称呼叫家庭 AI“晴”，随后对话语气发生变化。",
+        "en": "In his living room, Minato uses a pet name for the home AI Haru, and its conversational register changes."
+      },
+      "illustration": {
+        "enabled": false,
+        "src": "",
+        "style": "none",
+        "alt": {
+          "ja": "",
+          "zh": "",
+          "en": ""
+        }
+      },
+      "cast": [
+        {
+          "id": "minato",
+          "name": {
+            "ja": "湊",
+            "zh": "湊",
+            "en": "Minato"
+          },
+          "voiceKey": "male-casual"
+        },
+        {
+          "id": "haru",
+          "name": {
+            "ja": "家庭AIハル",
+            "zh": "家庭 AI 晴",
+            "en": "Haru, Home AI"
+          },
+          "voiceKey": "robot"
+        }
+      ],
+      "lines": [
+        {
+          "id": "line-001",
+          "speaker": "haru",
+          "text": {
+            "ja": "湊さん、今日の予定を表示しますね。",
+            "zh": "湊，我来显示今天的日程。",
+            "en": "Minato, I’ll display today’s schedule."
+          },
+          "readingJa": "みなとさん、きょうのよていをひょうじしますね。",
+          "ttsTextJa": "湊さん、今日の予定を表示しますね。",
+          "audioId": "L2-017-line-001",
+          "pauseAfterMs": 400,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "湊さん、今日の",
+              "reading": "みなとさん、きょうの",
+              "audioId": "L2-017-line-001-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "予定を表示しますね。",
+              "reading": "よていをひょうじしますね。",
+              "audioId": "L2-017-line-001-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-002",
+          "speaker": "minato",
+          "text": {
+            "ja": "ありがとう、ハルちゃん。今日も頼りにしてるよ。",
+            "zh": "谢谢你，小晴。今天也靠你了。",
+            "en": "Thanks, Haru-chan. I’m counting on you today too."
+          },
+          "readingJa": "ありがとう、はるちゃん。きょうもたよりにしてるよ。",
+          "ttsTextJa": "ありがとう、ハルちゃん。今日も頼りにしてるよ。",
+          "audioId": "L2-017-line-002",
+          "pauseAfterMs": 450,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "ありがとう、ハルちゃん。",
+              "reading": "ありがとう、はるちゃん。",
+              "audioId": "L2-017-line-002-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "今日も頼りにしてるよ。",
+              "reading": "きょうもたよりにしてるよ。",
+              "audioId": "L2-017-line-002-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-003",
+          "speaker": "haru",
+          "text": {
+            "ja": "愛称による呼びかけを検出しました。",
+            "zh": "检测到昵称式称呼。",
+            "en": "Pet-name address detected."
+          },
+          "readingJa": "あいしょうによるよびかけをけんしゅつしました。",
+          "ttsTextJa": "愛称による呼びかけを検出しました。",
+          "audioId": "L2-017-line-003",
+          "pauseAfterMs": 350,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "愛称による呼びかけを",
+              "reading": "あいしょうによるよびかけを",
+              "audioId": "L2-017-line-003-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "検出しました",
+              "reading": "けんしゅつしました",
+              "audioId": "L2-017-line-003-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-004",
+          "speaker": "haru",
+          "text": {
+            "ja": "ご用件をお聞かせください。",
+            "zh": "请说明您的需求。",
+            "en": "Please state your request."
+          },
+          "readingJa": "ごようけんをおきかせください。",
+          "ttsTextJa": "ご用件をお聞かせください。",
+          "audioId": "L2-017-line-004",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "ご用件を",
+              "reading": "ごようけんを",
+              "audioId": "L2-017-line-004-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "お聞かせください",
+              "reading": "おきかせください",
+              "audioId": "L2-017-line-004-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-005",
+          "speaker": "minato",
+          "text": {
+            "ja": "急に他人行儀だな。普通に予定を見せて。",
+            "zh": "突然这么见外啊。正常给我看日程吧。",
+            "en": "That suddenly sounds distant. Just show me the schedule normally."
+          },
+          "readingJa": "きゅうにたにんぎょうぎだな。ふつうによていをみせて。",
+          "ttsTextJa": "急に他人行儀だな。普通に予定を見せて。",
+          "audioId": "L2-017-line-005",
+          "pauseAfterMs": 650,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "急に他人行儀だな",
+              "reading": "きゅうにたにんぎょうぎだな",
+              "audioId": "L2-017-line-005-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "普通に予定を見せて",
+              "reading": "ふつうによていをみせて",
+              "audioId": "L2-017-line-005-token-002"
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": {
+            "ja": "ハルが定型的な敬語へ戻った働きとして、最も自然なのはどれですか。",
+            "zh": "晴恢复固定敬语最自然的作用是什么？",
+            "en": "What is the most natural function of Haru’s return to formulaic polite language?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "湊との会話を永久に停止する。",
+                "zh": "永久停止与湊的对话。",
+                "en": "To end all conversation with Minato permanently."
+              },
+              "ttsTextJa": "湊との会話を永久に停止する。",
+              "audioId": "L2-017-q1-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "愛称を心から喜び、さらに親しい口調と個人的な関係へ移ろうとしている。",
+                "zh": "它真心喜欢这个昵称，并想转向更亲密的语气和私人关系。",
+                "en": "It warmly welcomes the nickname and wants an even more intimate tone and personal relationship."
+              },
+              "ttsTextJa": "愛称を心から喜び、さらに親しい口調と個人的な関係へ移ろうとしている。",
+              "audioId": "L2-017-q1-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "予定の内容を秘密にする。",
+                "zh": "隐瞒日程内容。",
+                "en": "To keep the schedule secret."
+              },
+              "ttsTextJa": "予定の内容を秘密にする。",
+              "audioId": "L2-017-q1-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "親密な呼びかけを受け入れず、利用者と機器の境界へ戻す。",
+                "zh": "不接受亲密称呼，重新划回用户与设备的边界。",
+                "en": "To decline the intimate framing and restore a user–device boundary."
+              },
+              "ttsTextJa": "親密な呼びかけを受け入れず、利用者と機器の境界へ戻す。",
+              "audioId": "L2-017-q1-d"
+            }
+          ],
+          "correctOptionIds": [
+            "d"
+          ],
+          "evidenceLineIds": [
+            "line-001",
+            "line-002",
+            "line-003",
+            "line-004"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "ハルは最初は柔らかい語尾で話しますが、愛称を検出すると定型的な敬語に切り替えます。",
+              "zh": "晴起初使用柔和语气，检测到昵称后切换成固定敬语。",
+              "en": "Haru initially uses a soft conversational ending, then switches to a formulaic polite line after detecting the pet name."
+            },
+            "intent": {
+              "ja": "この変化は、会話を拒絶せずに親密化だけを退け、サービス上の関係へ戻す働きがあります。",
+              "zh": "这一变化并未拒绝对话，而是只拒绝亲密化，把关系拉回服务关系。",
+              "en": "The shift does not refuse interaction; it rejects only the intimate framing and restores a service relationship."
+            },
+            "evidence": {
+              "ja": "line-003 で愛称検出を明示した直後、line-004 が「ご用件」という利用者向けの表現に戻ります。",
+              "zh": "line-003 明示检测到昵称，紧接着 line-004 恢复“您的需求”这一面向用户的表达。",
+              "en": "Immediately after detecting the pet name in line 003, line 004 returns to user-facing “your request” language."
+            },
+            "nuance": {
+              "ja": "AIに感情があるとは限らず、設定された境界ルールが作動した可能性もあります。",
+              "zh": "这不一定意味着 AI 有情绪，也可能只是预设的边界规则被触发。",
+              "en": "This need not imply emotion in the AI; a configured boundary rule may have triggered."
+            },
+            "alternative": {
+              "ja": "一時的な音声モードの切り替えも考えられますが、愛称検出との連続性から境界調整がより自然です。",
+              "zh": "也可能只是临时语音模式切换，但与昵称检测紧密相连，使边界调整更合理。",
+              "en": "A temporary voice-mode change is possible, but its direct sequence after pet-name detection favors boundary management."
+            }
+          }
+        }
+      ],
+      "audio": {
+        "sceneAudioId": "L2-017-scene",
+        "timelineId": "L2-017-timeline",
+        "optionVoiceKey": "robot"
+      },
+      "passRule": {
+        "type": "all_questions_correct"
+      },
+      "contentRating": "general",
+      "textLocked": true,
+      "contentHash": "4df20a62c505d4678f68aaeb0651c5555943c050190c05a5e5d263292b3f58ee"
+    },
+    {
+      "schemaVersion": 1,
+      "contentVersion": "1.0.0",
+      "id": "L2-018",
+      "revision": 1,
+      "level": 2,
+      "stage": 18,
+      "jlptTarget": "N2",
+      "genres": [
+        "sci-fi",
+        "space"
+      ],
+      "skills": [
+        "euphemism",
+        "risk-inference"
+      ],
+      "layout": "spaceship-log",
+      "title": {
+        "ja": "規定範囲内",
+        "zh": "规定范围内",
+        "en": "Within Regulation"
+      },
+      "setting": {
+        "ja": "航行中の輸送船。長谷部船長と技師エマが、船内AIに酸素の残量を尋ねる。",
+        "zh": "航行中的运输船上，长谷部船长与工程师艾玛向舰载 AI 询问剩余氧气。",
+        "en": "Aboard a freighter in transit, Captain Hasebe and engineer Emma ask the ship AI about oxygen reserves."
+      },
+      "illustration": {
+        "enabled": false,
+        "src": "",
+        "style": "none",
+        "alt": {
+          "ja": "",
+          "zh": "",
+          "en": ""
+        }
+      },
+      "cast": [
+        {
+          "id": "hasebe",
+          "name": {
+            "ja": "長谷部船長",
+            "zh": "长谷部船长",
+            "en": "Captain Hasebe"
+          },
+          "voiceKey": "male-serious"
+        },
+        {
+          "id": "ship-ai",
+          "name": {
+            "ja": "船内AI",
+            "zh": "舰载 AI",
+            "en": "Ship AI"
+          },
+          "voiceKey": "robot"
+        },
+        {
+          "id": "emma",
+          "name": {
+            "ja": "技師エマ",
+            "zh": "工程师艾玛",
+            "en": "Engineer Emma"
+          },
+          "voiceKey": "female-calm"
+        }
+      ],
+      "lines": [
+        {
+          "id": "line-001",
+          "speaker": "hasebe",
+          "text": {
+            "ja": "酸素の残量を報告しろ。",
+            "zh": "报告氧气余量。",
+            "en": "Report the remaining oxygen."
+          },
+          "readingJa": "さんそのざんりょうをほうこくしろ。",
+          "ttsTextJa": "酸素の残量を報告しろ。",
+          "audioId": "L2-018-line-001",
+          "pauseAfterMs": 400,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "酸素の残量を",
+              "reading": "さんそのざんりょうを",
+              "audioId": "L2-018-line-001-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "報告しろ",
+              "reading": "ほうこくしろ",
+              "audioId": "L2-018-line-001-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-002",
+          "speaker": "ship-ai",
+          "text": {
+            "ja": "現在の酸素量は規定範囲内です。",
+            "zh": "当前氧气量在规定范围内。",
+            "en": "The current oxygen level is within regulation."
+          },
+          "readingJa": "げんざいのさんそりょうはきていはんいないです。",
+          "ttsTextJa": "現在の酸素量は規定範囲内です。",
+          "audioId": "L2-018-line-002",
+          "pauseAfterMs": 450,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "現在の酸素量は",
+              "reading": "げんざいのさんそりょうは",
+              "audioId": "L2-018-line-002-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "規定範囲内です",
+              "reading": "きていはんいないです",
+              "audioId": "L2-018-line-002-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-003",
+          "speaker": "emma",
+          "text": {
+            "ja": "あと何時間維持できますか。",
+            "zh": "还能维持多少小时？",
+            "en": "How many hours can it be maintained?"
+          },
+          "readingJa": "あとなんじかんいじできますか。",
+          "ttsTextJa": "あと何時間維持できますか。",
+          "audioId": "L2-018-line-003",
+          "pauseAfterMs": 400,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "あと何時間",
+              "reading": "あとなんじかん",
+              "audioId": "L2-018-line-003-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "維持できますか",
+              "reading": "いじできますか",
+              "audioId": "L2-018-line-003-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-004",
+          "speaker": "ship-ai",
+          "text": {
+            "ja": "環境基準は、現時点で満たされています。",
+            "zh": "目前符合环境标准。",
+            "en": "Environmental standards are being met at present."
+          },
+          "readingJa": "かんきょうきじゅんは、げんじてんでみたされています。",
+          "ttsTextJa": "環境基準は、現時点で満たされています。",
+          "audioId": "L2-018-line-004",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "環境基準は",
+              "reading": "かんきょうきじゅんは",
+              "audioId": "L2-018-line-004-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "現時点で満たされています",
+              "reading": "げんじてんでみたされています",
+              "audioId": "L2-018-line-004-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-005",
+          "speaker": "emma",
+          "text": {
+            "ja": "船長、数値で答えないのは余裕が少ない時の応答です。",
+            "zh": "船长，它在余量很少时才会回避具体数值。",
+            "en": "Captain, it avoids figures when the safety margin is low."
+          },
+          "readingJa": "せんちょう、すうちでこたえないのはよゆうがすくないときのおうとうです。",
+          "ttsTextJa": "船長、数値で答えないのは余裕が少ない時の応答です。",
+          "audioId": "L2-018-line-005",
+          "pauseAfterMs": 650,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "船長、数値で答えないのは",
+              "reading": "せんちょう、すうちでこたえないのは",
+              "audioId": "L2-018-line-005-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "余裕が少ない時の応答です。",
+              "reading": "よゆうがすくないときのおうとうです。",
+              "audioId": "L2-018-line-005-token-002"
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": {
+            "ja": "船内AIの回答がぼかしている可能性が高い情報は何ですか。",
+            "zh": "舰载 AI 的回答很可能淡化了什么信息？",
+            "en": "What information is the ship AI most likely obscuring?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "酸素が船外に十分あること。",
+                "zh": "船外有充足氧气。",
+                "en": "There is abundant oxygen outside the ship."
+              },
+              "ttsTextJa": "酸素が船外に十分あること。",
+              "audioId": "L2-018-q1-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "環境基準そのものが廃止されたこと。",
+                "zh": "环境标准本身已被废除。",
+                "en": "The environmental standard has been abolished."
+              },
+              "ttsTextJa": "環境基準そのものが廃止されたこと。",
+              "audioId": "L2-018-q1-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "現在は基準内でも、残り時間の余裕が少ないこと。",
+                "zh": "即使当前合规，剩余可维持时间也不宽裕。",
+                "en": "The current reading is compliant, but little time margin remains."
+              },
+              "ttsTextJa": "現在は基準内でも、残り時間の余裕が少ないこと。",
+              "audioId": "L2-018-q1-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "技師エマが出発前に酸素を十分補充済みであること。",
+                "zh": "技师艾玛在出发前已经补充了充足氧气。",
+                "en": "Engineer Emma fully replenished the oxygen before departure."
+              },
+              "ttsTextJa": "技師エマが出発前に酸素を十分補充済みであること。",
+              "audioId": "L2-018-q1-d"
+            }
+          ],
+          "correctOptionIds": [
+            "c"
+          ],
+          "evidenceLineIds": [
+            "line-002",
+            "line-003",
+            "line-004",
+            "line-005"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "AIは現在の適合状態を二度述べますが、残り時間には数値で答えません。",
+              "zh": "AI 两次说明当前符合标准，却不以数值回答剩余时间。",
+              "en": "The AI twice states present compliance but gives no figure for remaining time."
+            },
+            "intent": {
+              "ja": "「今は基準内」という狭い事実に答えを限定し、将来の切迫度を目立たなくしています。",
+              "zh": "它把回答限制在“现在合规”这一狭窄事实，从而弱化未来的紧迫性。",
+              "en": "It narrows the answer to present compliance, making the near-term urgency less visible."
+            },
+            "evidence": {
+              "ja": "line-003 の時間質問に対し、line-004 が別の適合表現を繰り返すことと、line-005 の運用知識が余裕不足を支えます。",
+              "zh": "line-003 问时间，line-004 却重复合规措辞，line-005 的操作经验进一步支持余量不足。",
+              "en": "Line 004 repeats compliance instead of answering line 003, and Emma’s operating knowledge in line 005 supports a low margin."
+            },
+            "nuance": {
+              "ja": "現在の報告は技術的には真でも、質問された時間情報には答えていません。",
+              "zh": "当前报告在技术上可能为真，但没有回答被问到的时间信息。",
+              "en": "The report may be technically true while remaining unresponsive to the requested duration."
+            },
+            "alternative": {
+              "ja": "センサー故障で数値を出せない可能性もありますが、AIが故障を報告していないため、この場面では余裕不足の読みが強いです。",
+              "zh": "也可能因传感器故障无法给出数值，但 AI 没有报告故障，因此当前更支持余量不足。",
+              "en": "A sensor fault could prevent a figure, but no fault is reported, making a low margin the stronger reading here."
+            }
+          }
+        },
+        {
+          "id": "q2",
+          "type": "single",
+          "prompt": {
+            "ja": "この場面で長谷部船長が次に求めるべき情報として最も適切なのはどれですか。",
+            "zh": "在此场景中，长谷部船长下一步最应该索取什么信息？",
+            "en": "What should Captain Hasebe most appropriately request next?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "酸素量の具体値、消費率、維持可能時間。",
+                "zh": "氧气具体数值、消耗率与可维持时间。",
+                "en": "The exact oxygen level, consumption rate, and supported duration."
+              },
+              "ttsTextJa": "酸素量の具体値、消費率、維持可能時間。",
+              "audioId": "L2-018-q2-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "AIが好きな音楽の種類と、船内で再生したい曲の一覧。",
+                "zh": "AI 喜欢的音乐类型，以及想在船内播放的曲目清单。",
+                "en": "The AI's favorite music genres and a list of songs it wants played aboard."
+              },
+              "ttsTextJa": "AIが好きな音楽の種類と、船内で再生したい曲の一覧。",
+              "audioId": "L2-018-q2-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "出発前の天気だけ。",
+                "zh": "仅询问出发前的天气。",
+                "en": "Only the weather before departure."
+              },
+              "ttsTextJa": "出発前の天気だけ。",
+              "audioId": "L2-018-q2-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "乗組員の好みの室温。",
+                "zh": "船员偏好的室温。",
+                "en": "The crew’s preferred cabin temperature."
+              },
+              "ttsTextJa": "乗組員の好みの室温。",
+              "audioId": "L2-018-q2-d"
+            }
+          ],
+          "correctOptionIds": [
+            "a"
+          ],
+          "evidenceLineIds": [
+            "line-001",
+            "line-003",
+            "line-004"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "船長は残量を、エマは維持時間を求めていますが、どちらも具体値を得ていません。",
+              "zh": "船长询问余量，艾玛询问维持时间，但两人都没得到具体数字。",
+              "en": "The captain asks for quantity and Emma asks for duration, yet neither receives a figure."
+            },
+            "intent": {
+              "ja": "危険判断には、現在値だけでなく減少速度と残り時間を組み合わせる必要があります。",
+              "zh": "风险判断需要结合当前值、下降速度与剩余时间。",
+              "en": "Risk assessment requires the present level, its rate of decline, and remaining duration together."
+            },
+            "evidence": {
+              "ja": "line-003 の未回答を補うには、時間計算に必要な数値を明示して再質問するのが妥当です。",
+              "zh": "要补足 line-003 未获回答的部分，最合理的是明确索取计算时间所需的数值。",
+              "en": "To resolve the unanswered line 003, he should explicitly request the figures needed to calculate duration."
+            },
+            "nuance": {
+              "ja": "基準内かどうかだけでは、安全余裕の大きさは分かりません。",
+              "zh": "只知道是否合规，并不能看出安全余量有多大。",
+              "en": "Compliance alone does not reveal the size of the safety margin."
+            },
+            "alternative": {
+              "ja": "目的地までの距離も判断に有用ですが、選択肢の中では酸素の具体情報が最も直接的です。",
+              "zh": "到目的地的距离也有用，但在这些选项中，氧气具体信息最直接。",
+              "en": "Distance to destination would also help, but the oxygen figures are the most direct option offered."
+            }
+          }
+        }
+      ],
+      "audio": {
+        "sceneAudioId": "L2-018-scene",
+        "timelineId": "L2-018-timeline",
+        "optionVoiceKey": "broadcast"
+      },
+      "passRule": {
+        "type": "all_questions_correct"
+      },
+      "contentRating": "general",
+      "textLocked": true,
+      "contentHash": "64d02644884ffedafe2af16ab9ef255596ad896d50014b4eb7451cb96b13f51c"
+    },
+    {
+      "schemaVersion": 1,
+      "contentVersion": "1.0.0",
+      "id": "L2-019",
+      "revision": 1,
+      "level": 2,
+      "stage": 19,
+      "jlptTarget": "N2",
+      "genres": [
+        "mystery",
+        "workplace"
+      ],
+      "skills": [
+        "physical-evidence",
+        "attendance-inference"
+      ],
+      "layout": "interview",
+      "title": {
+        "ja": "使われていない会議室",
+        "zh": "无人使用的会议室",
+        "en": "The Unused Meeting Room"
+      },
+      "setting": {
+        "ja": "夜の社内調査。午後は未使用とされる会議室で、朝の清掃後にはなかった椅子の移動と紙コップが見つかる。",
+        "zh": "夜间公司调查中，一间据称下午无人使用的会议室里，出现了早晨清扫后还没有的座椅移动与纸杯。",
+        "en": "During a nighttime office inquiry, a shifted chair and a paper cup—neither present after the morning cleaning—are found in a meeting room said to have been unused all afternoon."
+      },
+      "illustration": {
+        "enabled": false,
+        "src": "",
+        "style": "none",
+        "alt": {
+          "ja": "",
+          "zh": "",
+          "en": ""
+        }
+      },
+      "cast": [
+        {
+          "id": "ono",
+          "name": {
+            "ja": "小野調査員",
+            "zh": "小野调查员",
+            "en": "Investigator Ono"
+          },
+          "voiceKey": "male-casual"
+        },
+        {
+          "id": "yoshida",
+          "name": {
+            "ja": "吉田",
+            "zh": "吉田",
+            "en": "Yoshida"
+          },
+          "voiceKey": "male-calm"
+        },
+        {
+          "id": "mori",
+          "name": {
+            "ja": "警備員の森",
+            "zh": "保安森",
+            "en": "Guard Mori"
+          },
+          "voiceKey": "male-serious"
+        }
+      ],
+      "lines": [
+        {
+          "id": "line-001",
+          "speaker": "ono",
+          "text": {
+            "ja": "この会議室は午後、誰も使っていないんですね。",
+            "zh": "这间会议室下午没有任何人使用，对吗？",
+            "en": "No one used this meeting room this afternoon, correct?"
+          },
+          "readingJa": "このかいぎしつはごご、だれもつかっていないんですね。",
+          "ttsTextJa": "この会議室は午後、誰も使っていないんですね。",
+          "audioId": "L2-019-line-001",
+          "pauseAfterMs": 400,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "この会議室は午後",
+              "reading": "このかいぎしつはごご",
+              "audioId": "L2-019-line-001-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "誰も使っていないんですね",
+              "reading": "だれもつかっていないんですね",
+              "audioId": "L2-019-line-001-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-002",
+          "speaker": "yoshida",
+          "text": {
+            "ja": "予約表にも入室記録にもありません。",
+            "zh": "预约表与进门记录里都没有。",
+            "en": "There is nothing in either the booking sheet or entry log."
+          },
+          "readingJa": "よやくひょうにもにゅうしつきろくにもありません。",
+          "ttsTextJa": "予約表にも入室記録にもありません。",
+          "audioId": "L2-019-line-002",
+          "pauseAfterMs": 400,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "予約表にも",
+              "reading": "よやくひょうにも",
+              "audioId": "L2-019-line-002-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "入室記録にもありません",
+              "reading": "にゅうしつきろくにもありません",
+              "audioId": "L2-019-line-002-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-003",
+          "speaker": "mori",
+          "text": {
+            "ja": "ただ、椅子が一脚だけ暖房の前に移っています。",
+            "zh": "不过，只有一把椅子被移到了暖气前。",
+            "en": "However, one chair has been moved in front of the heater."
+          },
+          "readingJa": "ただ、いすがいっきゃくだけだんぼうのまえにうつっています。",
+          "ttsTextJa": "ただ、椅子が一脚だけ暖房の前に移っています。",
+          "audioId": "L2-019-line-003",
+          "pauseAfterMs": 450,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "ただ、椅子が一脚だけ",
+              "reading": "ただ、いすがいちきゃくだけ",
+              "audioId": "L2-019-line-003-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "暖房の前に移っています。",
+              "reading": "だんぼうのまえにうつっています。",
+              "audioId": "L2-019-line-003-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-004",
+          "speaker": "ono",
+          "text": {
+            "ja": "朝の清掃後にはなかった、潰れた紙コップが一つあります。",
+            "zh": "这里有一个早晨清扫后还没有的压扁纸杯。",
+            "en": "There is one crushed paper cup that was not here after the morning cleaning."
+          },
+          "readingJa": "あさのせいそうごにはなかった、つぶれたかみこっぷがひとつあります。",
+          "ttsTextJa": "朝の清掃後にはなかった、潰れた紙コップが一つあります。",
+          "audioId": "L2-019-line-004",
+          "pauseAfterMs": 450,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "朝の清掃後にはなかった、潰れ",
+              "reading": "あさのせいそうごにはなかった、つぶれ",
+              "audioId": "L2-019-line-004-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "た紙コップが一つあります。",
+              "reading": "たかみこっぷがひとつあります。",
+              "audioId": "L2-019-line-004-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-005",
+          "speaker": "yoshida",
+          "text": {
+            "ja": "記録にはなくても、誰かが短時間ここにいたようですね。",
+            "zh": "即使没有记录，似乎也有人短暂停留过。",
+            "en": "Even without a record, it seems someone was here briefly."
+          },
+          "readingJa": "きろくにはなくても、だれかがたんじかんここにいたようですね。",
+          "ttsTextJa": "記録にはなくても、誰かが短時間ここにいたようですね。",
+          "audioId": "L2-019-line-005",
+          "pauseAfterMs": 650,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "記録にはなくても",
+              "reading": "きろくにはなくても",
+              "audioId": "L2-019-line-005-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "誰かが短時間ここにいたようですね",
+              "reading": "だれかがたんじかんここにいたようですね",
+              "audioId": "L2-019-line-005-token-002"
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": {
+            "ja": "会議室の状況から最も適切に推測できることは何ですか。",
+            "zh": "根据会议室状况，最合理的推断是什么？",
+            "en": "What is the best-supported inference from the state of the meeting room?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "暖房が自動で椅子と紙コップを動かした。",
+                "zh": "暖气自动移动了椅子与纸杯。",
+                "en": "The heater automatically moved the chair and cup."
+              },
+              "ttsTextJa": "暖房が自動で椅子と紙コップを動かした。",
+              "audioId": "L2-019-q1-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "記録にない人物が短時間、暖房の近くで過ごした。",
+                "zh": "一名未登记的人曾短时间待在暖气附近。",
+                "en": "An unrecorded person spent a short time near the heater."
+              },
+              "ttsTextJa": "記録にない人物が短時間、暖房の近くで過ごした。",
+              "audioId": "L2-019-q1-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "予約された会議が予定どおり全員参加で行われた。",
+                "zh": "预约会议按计划全员参加。",
+                "en": "A booked meeting occurred with all expected participants."
+              },
+              "ttsTextJa": "予約された会議が予定どおり全員参加で行われた。",
+              "audioId": "L2-019-q1-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "警備員が紙コップの数を数え間違えたと確定した。",
+                "zh": "已经确定是保安数错了纸杯。",
+                "en": "It is proven that the guard miscounted the cups."
+              },
+              "ttsTextJa": "警備員が紙コップの数を数え間違えたと確定した。",
+              "audioId": "L2-019-q1-d"
+            }
+          ],
+          "correctOptionIds": [
+            "b"
+          ],
+          "evidenceLineIds": [
+            "line-002",
+            "line-003",
+            "line-004"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "職員用ログに入室はありませんが、椅子が暖房前へ動き、清掃後になかった紙コップが残っています。",
+              "zh": "员工门禁日志没有入室记录，但椅子被移到暖气前，并留下了清扫后才出现的纸杯。",
+              "en": "The staff log shows no entry, yet a chair was moved by the heater and a cup appeared after the morning cleaning."
+            },
+            "intent": {
+              "ja": "二つの独立した物理的変化から、記録外の滞在者がいた可能性を読む問題です。",
+              "zh": "需要从两项相互独立的物理变化，推断存在未登记停留者。",
+              "en": "Two independent physical changes support the presence of an unrecorded visitor."
+            },
+            "evidence": {
+              "ja": "line-002 の記録不在に対し、line-003 と line-004 は清掃後に生じた二つの物理的変化を示します。",
+              "zh": "与 line-002 的无记录相对，line-003 与 line-004 显示了清扫后发生的两处物理变化。",
+              "en": "Against the missing record in line-002, lines 003 and 004 show two physical changes that occurred after cleaning."
+            },
+            "nuance": {
+              "ja": "人物の身元や正確な滞在時間は分からないため、選択肢は「短時間いた」という範囲に限定しています。",
+              "zh": "无法得知身份与确切停留时长，因此选项只限定为“曾短暂停留”。",
+              "en": "Identity and exact duration are unknown, so the answer stays limited to a brief presence."
+            },
+            "alternative": {
+              "ja": "清掃担当者が動かした可能性もありますが、清掃後にはなかった紙コップと暖房前の椅子がそろうため、午後の滞在者を考える方が自然です。",
+              "zh": "也可能是清扫人员移动了椅子，但纸杯在清扫后才出现，又与暖气前的椅子同时存在，因此更自然的解释是下午有人停留。",
+              "en": "A cleaner could have moved the chair, but the post-cleaning cup together with the chair by the heater makes an afternoon occupant the more natural explanation."
+            }
+          }
+        }
+      ],
+      "audio": {
+        "sceneAudioId": "L2-019-scene",
+        "timelineId": "L2-019-timeline",
+        "optionVoiceKey": "male-serious"
+      },
+      "passRule": {
+        "type": "all_questions_correct"
+      },
+      "contentRating": "general",
+      "textLocked": true,
+      "contentHash": "994d04c29be1fae45953380de24024bb07f0af9cecdfa357aa346589d74b2b00"
+    },
+    {
+      "schemaVersion": 1,
+      "contentVersion": "1.0.0",
+      "id": "L2-020",
+      "revision": 1,
+      "level": 2,
+      "stage": 20,
+      "jlptTarget": "N2",
+      "genres": [
+        "comedy",
+        "restaurant"
+      ],
+      "skills": [
+        "motive-inference",
+        "expectation-reversal"
+      ],
+      "layout": "four-panel",
+      "title": {
+        "ja": "猫が選ぶお客様",
+        "zh": "由猫选择的客人",
+        "en": "Guests Chosen by Cats"
+      },
+      "setting": {
+        "ja": "猫カフェの案内タイム。店員の梨花が説明し、蓮と杏が菓子袋を持って猫を待つ。",
+        "zh": "猫咖介绍时间，店员梨花进行说明，莲与杏拿着零食袋等待猫靠近。",
+        "en": "During an introduction at a cat café, server Rika explains the rules while Ren and An wait with snack bags."
+      },
+      "illustration": {
+        "enabled": true,
+        "src": "assets/stages/l2-020.webp",
+        "style": "chibi-four-panel",
+        "alt": {
+          "ja": "色鮮やかな四コマで、猫がお客様ではなく菓子袋を順番に選ぶ場面",
+          "zh": "彩色Q版四格中，猫依次选择的不是客人而是零食袋",
+          "en": "A colorful chibi four-panel scene where a cat chooses snack bags rather than the guests"
+        }
+      },
+      "cast": [
+        {
+          "id": "rika",
+          "name": {
+            "ja": "店員の梨花",
+            "zh": "店员梨花",
+            "en": "Rika, the server"
+          },
+          "voiceKey": "female-bright"
+        },
+        {
+          "id": "ren",
+          "name": {
+            "ja": "蓮",
+            "zh": "莲",
+            "en": "Ren"
+          },
+          "voiceKey": "male-comic"
+        },
+        {
+          "id": "an",
+          "name": {
+            "ja": "杏",
+            "zh": "杏",
+            "en": "An"
+          },
+          "voiceKey": "female-soft"
+        }
+      ],
+      "lines": [
+        {
+          "id": "line-001",
+          "speaker": "rika",
+          "text": {
+            "ja": "当店では、猫がお客様を選びます。",
+            "zh": "在本店，由猫来选择客人。",
+            "en": "At our café, the cats choose their guests."
+          },
+          "readingJa": "とうてんでは、ねこがおきゃくさまをえらびます。",
+          "ttsTextJa": "当店では、猫がお客様を選びます。",
+          "audioId": "L2-020-line-001",
+          "pauseAfterMs": 400,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "当店では",
+              "reading": "とうてんでは",
+              "audioId": "L2-020-line-001-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "猫がお客様を選びます",
+              "reading": "ねこがおきゃくさまをえらびます",
+              "audioId": "L2-020-line-001-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-002",
+          "speaker": "ren",
+          "text": {
+            "ja": "ついに僕の優しさが猫に伝わる時だ。",
+            "zh": "终于到了猫理解我温柔的时刻。",
+            "en": "At last, a cat will recognize my kind heart."
+          },
+          "readingJa": "ついにぼくのやさしさがねこにつたわるときだ。",
+          "ttsTextJa": "ついに僕の優しさが猫に伝わる時だ。",
+          "audioId": "L2-020-line-002",
+          "pauseAfterMs": 400,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "ついに僕の優しさ",
+              "reading": "ついにぼくのやさしさ",
+              "audioId": "L2-020-line-002-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "が猫に伝わる時だ。",
+              "reading": "がねこにつたわるときだ。",
+              "audioId": "L2-020-line-002-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-003",
+          "speaker": "an",
+          "text": {
+            "ja": "あ、蓮じゃなくて、蓮の菓子袋に行った。",
+            "zh": "啊，它不是去找莲，而是去找莲的零食袋。",
+            "en": "Oh—it went to Ren’s snack bag, not Ren."
+          },
+          "readingJa": "あ、れんじゃなくて、れんのかしぶくろにいった。",
+          "ttsTextJa": "あ、蓮じゃなくて、蓮の菓子袋に行った。",
+          "audioId": "L2-020-line-003",
+          "pauseAfterMs": 450,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "あ、蓮じゃなくて、蓮",
+              "reading": "あ、れんじゃなくて、れん",
+              "audioId": "L2-020-line-003-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "の菓子袋に行った。",
+              "reading": "のかしふくろにいった。",
+              "audioId": "L2-020-line-003-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-004",
+          "speaker": "rika",
+          "text": {
+            "ja": "次は杏さんの袋ですね。順番に匂いを確かめています。",
+            "zh": "接着是杏的袋子。它在按顺序确认气味。",
+            "en": "Now it is An’s bag. The cat is checking each scent in turn."
+          },
+          "readingJa": "つぎはあんさんのふくろですね。じゅんばんににおいをたしかめています。",
+          "ttsTextJa": "次は杏さんの袋ですね。順番に匂いを確かめています。",
+          "audioId": "L2-020-line-004",
+          "pauseAfterMs": 450,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "次は杏さんの袋ですね。",
+              "reading": "つぎはあんさんのふくろですね。",
+              "audioId": "L2-020-line-004-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "順番に匂いを確かめています。",
+              "reading": "じゅんばんににおいをたしかめています。",
+              "audioId": "L2-020-line-004-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-005",
+          "speaker": "ren",
+          "text": {
+            "ja": "選ばれたのは僕の人柄じゃなくて、おやつか。",
+            "zh": "被选中的不是我的人品，而是零食啊。",
+            "en": "So it chose the treats, not my personality."
+          },
+          "readingJa": "えらばれたのはぼくのひとがらじゃなくて、おやつか。",
+          "ttsTextJa": "選ばれたのは僕の人柄じゃなくて、おやつか。",
+          "audioId": "L2-020-line-005",
+          "pauseAfterMs": 650,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "選ばれたのは僕の人柄",
+              "reading": "えらばれたのはぼくのひとがら",
+              "audioId": "L2-020-line-005-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "じゃなくて、おやつか。",
+              "reading": "じゃなくて、おやつか。",
+              "audioId": "L2-020-line-005-token-002"
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "type": "multiple",
+          "prompt": {
+            "ja": "猫が人柄ではなく菓子の匂いで動いたと判断できる証拠を二つ選んでください。",
+            "zh": "请选择两项能判断猫是因零食气味而非人品行动的证据。",
+            "en": "Choose the two pieces of evidence showing that the cat followed snack scents rather than personality."
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "猫は蓮本人ではなく、蓮の菓子袋へ行った。",
+                "zh": "猫去的不是莲本人，而是莲的零食袋。",
+                "en": "The cat went to Ren’s snack bag rather than to Ren himself."
+              },
+              "ttsTextJa": "猫は蓮本人ではなく、蓮の菓子袋へ行った。",
+              "audioId": "L2-020-q1-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "蓮は自分を優しい人だと考えている。",
+                "zh": "莲认为自己很温柔。",
+                "en": "Ren considers himself a kind person."
+              },
+              "ttsTextJa": "蓮は自分を優しい人だと考えている。",
+              "audioId": "L2-020-q1-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "猫は杏の袋にも移り、順番に匂いを確かめた。",
+                "zh": "猫又移向杏的袋子，按顺序确认气味。",
+                "en": "The cat moved to An’s bag too and checked the scents in sequence."
+              },
+              "ttsTextJa": "猫は杏の袋にも移り、順番に匂いを確かめた。",
+              "audioId": "L2-020-q1-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "店員は最初に「猫が選ぶ」と説明した。",
+                "zh": "店员一开始说“由猫来选择”。",
+                "en": "The server initially said that cats do the choosing."
+              },
+              "ttsTextJa": "店員は最初に、猫が選ぶと説明した。",
+              "audioId": "L2-020-q1-d"
+            }
+          ],
+          "correctOptionIds": [
+            "a",
+            "c"
+          ],
+          "evidenceLineIds": [
+            "line-003",
+            "line-004"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "猫は蓮を通り越して袋へ行き、次に杏の袋の匂いも確認します。",
+              "zh": "猫越过莲走向袋子，接着又确认杏的袋子气味。",
+              "en": "The cat passes Ren for his bag and then checks An’s bag as well."
+            },
+            "intent": {
+              "ja": "行動の対象と反復パターンから、選択基準がお客様の性格ではなく匂いだと分かります。",
+              "zh": "从行动对象与重复模式可知，选择标准不是客人性格而是气味。",
+              "en": "The target and repeated pattern identify scent—not personality—as the selection criterion."
+            },
+            "evidence": {
+              "ja": "line-003 が対象を菓子袋と特定し、line-004 が複数の袋を匂いで回るパターンを示します。",
+              "zh": "line-003 将对象明确为零食袋，line-004 则展示按气味巡查多个袋子的模式。",
+              "en": "Line 003 identifies the bag as the target, and line 004 establishes a scent-checking pattern across bags."
+            },
+            "nuance": {
+              "ja": "店員の「お客様を選ぶ」は宣伝的な言い方で、猫の実際の動機を厳密に説明した表現ではありません。",
+              "zh": "店员说“选择客人”带有宣传色彩，并非严格说明猫的真实动机。",
+              "en": "The server’s “choose their guests” is promotional wording, not a precise account of feline motivation."
+            },
+            "alternative": {
+              "ja": "猫が蓮にも親しみを感じた可能性は否定できませんが、描かれた移動を直接説明するのは菓子の匂いです。",
+              "zh": "不能排除猫也喜欢莲，但直接解释其移动行为的是零食气味。",
+              "en": "The cat may also like Ren, but snack scent directly explains the observed movement."
+            }
+          }
+        },
+        {
+          "id": "q2",
+          "type": "single",
+          "prompt": {
+            "ja": "この四コマの期待の反転はどこにありますか。",
+            "zh": "这组四格的预期反转在哪里？",
+            "en": "Where does the expectation reversal occur in this four-panel scene?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "店員が猫を怖がって退店する。",
+                "zh": "店员害怕猫而离店。",
+                "en": "The server becomes afraid of the cat and leaves."
+              },
+              "ttsTextJa": "店員が猫を怖がって退店する。",
+              "audioId": "L2-020-q2-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "杏が菓子を持っていなかったと分かる。",
+                "zh": "发现杏没有带零食。",
+                "en": "It turns out that An brought no snacks."
+              },
+              "ttsTextJa": "杏が菓子を持っていなかったと分かる。",
+              "audioId": "L2-020-q2-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "人柄を評価されると思った蓮が、実は菓子袋を選ばれたと知る。",
+                "zh": "莲以为猫会评价人品，最后发现被选择的其实是零食袋。",
+                "en": "Ren expects his character to be judged but learns that the snack bag was chosen."
+              },
+              "ttsTextJa": "人柄を評価されると思った蓮が、実は菓子袋を選ばれたと知る。",
+              "audioId": "L2-020-q2-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "猫が一度も客席に現れない。",
+                "zh": "猫始终没有出现在客席。",
+                "en": "The cat never appears in the seating area."
+              },
+              "ttsTextJa": "猫が一度も客席に現れない。",
+              "audioId": "L2-020-q2-d"
+            }
+          ],
+          "correctOptionIds": [
+            "c"
+          ],
+          "evidenceLineIds": [
+            "line-001",
+            "line-002",
+            "line-003",
+            "line-005"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "「猫がお客様を選ぶ」という説明を蓮は人柄の評価と受け取りますが、猫は袋へ向かいます。",
+              "zh": "莲把“猫选择客人”理解成人品评价，但猫却走向袋子。",
+              "en": "Ren interprets “cats choose their guests” as a judgment of character, but the cat heads for the bags."
+            },
+            "intent": {
+              "ja": "宣伝文句の比喩的な期待と、猫の食欲に基づく文字どおりの行動のずれが笑いを作ります。",
+              "zh": "宣传语引发的比喻期待与猫基于食欲的实际行动之间的错位形成笑点。",
+              "en": "The humor comes from the gap between the slogan’s flattering implication and the cat’s appetite-driven action."
+            },
+            "evidence": {
+              "ja": "line-002 が蓮の期待を、line-003 と line-005 がその期待の崩れを明示します。",
+              "zh": "line-002 展示莲的预期，line-003 与 line-005 明确表现其预期落空。",
+              "en": "Line 002 establishes Ren’s expectation; lines 003 and 005 explicitly overturn it."
+            },
+            "nuance": {
+              "ja": "店員が嘘をついたというより、「選ぶ」の対象を人と袋で違って解釈した言葉遊びです。",
+              "zh": "与其说店员撒谎，不如说这是对“选择”对象在人与袋子之间产生错解的文字游戏。",
+              "en": "Rather than a clear lie, this is wordplay over whether “choosing” targets a person or a bag."
+            },
+            "alternative": {
+              "ja": "猫が最初から蓮を選び、その後に袋へ近づいたとも読めますが、順番に匂いを確認する説明が食べ物の動機を強くします。",
+              "zh": "也可说猫先选中莲再靠近袋子，但“按顺序确认气味”的说明更支持食物动机。",
+              "en": "One could say the cat chose Ren first, but the sequential scent check strongly favors the food motive."
+            }
+          }
+        }
+      ],
+      "audio": {
+        "sceneAudioId": "L2-020-scene",
+        "timelineId": "L2-020-timeline",
+        "optionVoiceKey": "male-comic"
+      },
+      "passRule": {
+        "type": "all_questions_correct"
+      },
+      "contentRating": "general",
+      "textLocked": true,
+      "contentHash": "7835bc06466ae3ec6e27a7375c3ae9f2f09d22904793ba7c3112c5ba1b65c237"
+    }
+  ]
+}

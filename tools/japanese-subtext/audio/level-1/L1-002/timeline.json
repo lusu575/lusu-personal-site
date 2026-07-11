@@ -1,0 +1,24 @@
+{
+  "stageId": "L1-002",
+  "sampleRate": 24000,
+  "duration": 7.720958,
+  "cues": [
+    {
+      "lineId": "line-001",
+      "audioId": "L1-002-line-001",
+      "start": 0.06,
+      "end": 2.674917
+    },
+    {
+      "lineId": "line-002",
+      "audioId": "L1-002-line-002",
+      "start": 3.174917,
+      "end": 7.620958
+    }
+  ],
+  "schemaVersion": 1,
+  "timelineId": "L1-002-timeline",
+  "sceneAudioId": "L1-002-scene",
+  "contentHash": "8f09cd6fe0e505fe13457d7849e5a51654443fab58a690c3fa1999fac22e6fa5",
+  "sourceContentHash": "c3524c12634cf8a49f13e70a0c59d17951be1551fc486757bba5b89bf1bef51f"
+}

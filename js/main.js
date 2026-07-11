@@ -580,6 +580,36 @@ const labels = {
 const content = {
   updates: [
     {
+      article_id: "seed-update-2026-07-11-japanese-subtext-trainer",
+      slug: "2026-07-11-japanese-subtext-trainer",
+      category: "site-updates",
+      tags: ["Japanese", "listening", "learning", "tools"],
+      cover_image: "",
+      status: "published",
+      is_pinned: 0,
+      created_at: "2026-07-10T17:30:00.000Z",
+      updated_at: "2026-07-10T17:30:00.000Z",
+      published_at: "2026-07-10T17:30:00.000Z",
+      fallbackOnly: true,
+      icon: "system",
+      date: "2026.07.11",
+      title: {
+        zh: "日语潜台词训练工具上线",
+        en: "Japanese Subtext Trainer Released",
+        ja: "日本語の裏側を公開"
+      },
+      summary: {
+        zh: "新增 N3～N1 五个难度、250 关的日语潜台词训练，支持离线预生成语音、纯听/日语/双语模式、句子点击播放和本地与云端进度。",
+        en: "A new N3-to-N1 Japanese subtext trainer adds five levels and 250 stages with pre-generated offline speech, listening/Japanese/bilingual modes, sentence playback, and local plus cloud progress.",
+        ja: "N3 から N1 までの 5 レベル・250 ステージで、事前生成音声、聴解/日本語/対訳モード、文ごとの再生、ローカルとクラウドの進捗同期に対応しました。"
+      },
+      content_markdown: {
+        zh: "# 日语潜台词训练工具上线\n\n新的独立工具「日本語の裏側」已接入资源区，用小场景、日语语音和选择题训练对话中的真实意图。\n\n## 五级进阶题库\n\n- 从 LEVEL 1 的 N3 日常委婉表达，逐步进阶到 LEVEL 2 的 N2 口语省略与敬语距离，再到 LEVEL 3～5 的 N1 信息差、反话、隐瞒和多重解释。\n- 五个难度各 50 关，共 250 关；每个难度的前几关较短，后续场景与推理长度逐步增加。\n- 解析会引用具体台词和人物关系，说明在当前上下文中更可能的解释，避免把单句日语绝对化。\n\n## 可控的离线语音\n\n- 题库语音由本地模型提前生成，提供男声、女声和角色区分，浏览器不会在游玩时调用外部 TTS。\n- 支持纯听、日语和双语场景模式，以及日语、中文、English 选项。\n- 可以自动播放、暂停、续播、切换倍速、拖动进度，也可以点击单句从指定位置开始播放。\n\n## 不丢失的学习进度\n\n- 未登录时使用版本化本地进度，记录解锁、成绩、奖章、尝试次数和播放设置。\n- 登录后通过独立 D1 学习进度表同步，不复用游戏存档表；本地与云端合并会保留已通关关卡和最佳奖章。\n- 云端不可用时不会阻止本地答题，退出登录后也仍然可以继续训练。",
+        en: "# Japanese Subtext Trainer Released\n\nThe standalone tool 「日本語の裏側」 is now available from Resources. Short scenes, Japanese speech, and choice questions train the intent hidden behind tone, context, and relationships.\n\n## Five progressive levels\n\n- LEVEL 1 starts with N3 everyday indirect expressions, LEVEL 2 moves into N2 ellipsis and honorific distance, and LEVELS 3 to 5 develop N1 information gaps, irony, concealment, and multiple supported interpretations.\n- Each level contains 50 stages for a total of 250. Early stages in every level stay shorter, while later scenes and inference chains gradually grow.\n- Explanations cite specific lines and relationships and describe the interpretation that is more likely in the current context instead of treating one Japanese sentence as an absolute formula.\n\n## Controllable offline speech\n\n- Speech is generated ahead of time with local models, including male and female voices and consistent character assignment. The browser does not call an external TTS service while training.\n- Listening-only, Japanese, and bilingual scene modes are available, independently from Japanese, Chinese, or English answer text.\n- Playback supports autoplay after sound unlock, pause, resume, speed controls, timeline seeking, and sentence-level start positions.\n\n## Learning progress that survives sessions\n\n- Signed-out visitors use versioned local progress for unlocks, scores, medals, attempts, and playback settings.\n- Signed-in users synchronize through dedicated D1 learning tables rather than the game-save table. Local and cloud merging preserves cleared stages and the strongest medals.\n- Cloud failures never block local questions, and signing out keeps the local trainer usable.",
+        ja: "# 日本語の裏側を公開\n\n独立ツール「日本語の裏側」をリソース欄から開けるようにしました。短い場面、日本語音声、選択問題を通して、口調、文脈、人間関係の奥にある意図を読み取ります。\n\n## 5 レベルの段階式問題\n\n- LEVEL 1 は N3 の日常的な遠回し表現から始まり、LEVEL 2 は N2 の省略と敬語の距離感、LEVEL 3～5 は N1 の情報差、皮肉、隠し事、複数の解釈へ進みます。\n- 各レベル 50 問、合計 250 ステージです。各レベルの最初は短く、後半ほど場面と推理を長くしています。\n- 解説は具体的な台詞と関係性を引用し、一文を絶対的な公式にせず、この文脈でより支持される解釈を示します。\n\n## 操作できるオフライン音声\n\n- 男声・女声とキャラクター別の音声をローカルモデルで事前生成し、練習中に外部 TTS を呼び出しません。\n- 聴解のみ、日本語、対訳の場面表示と、日本語・中国語・English の選択肢を別々に選べます。\n- 音声の自動再生、一時停止、再開、速度変更、シーク、文ごとの開始位置に対応します。\n\n## 失われない学習進捗\n\n- ログイン前はバージョン付きローカル進捗に、解放、得点、メダル、挑戦回数、再生設定を保存します。\n- ログイン後はゲームセーブ表を使わず、専用 D1 学習表で同期します。ローカルとクラウドを統合しても、クリア済みステージと上位メダルを保持します。\n- クラウド障害はローカル回答を止めず、ログアウト後も練習を続けられます。"
+      }
+    },
+    {
       icon: "🔒",
       date: "2026.07.06",
       title: {
@@ -1431,6 +1461,30 @@ const content = {
   resources: [
     {
       category: 0,
+      iconSrc: "tools/japanese-subtext/assets/icons/tool-icon-64.webp",
+      version: "v1.0.0",
+      size: "250 STAGES",
+      updated: "2026.07.11",
+      external: false,
+      url: "/tools/japanese-subtext/",
+      title: { zh: "日本語の裏側", en: "日本語の裏側", ja: "日本語の裏側" },
+      desc: {
+        zh: "通过语气、上下文和人物关系，判断日语对话中真正想表达的意思。",
+        en: "Infer what Japanese speakers really mean through tone, context, and relationships.",
+        ja: "口調、文脈、人間関係から、日本語の会話で本当に伝えたいことを読み取ります。"
+      },
+      actionLabel: { zh: "开始训练", en: "Start Training", ja: "トレーニング開始" },
+      tags: [
+        { zh: "N3～N1", en: "N3–N1", ja: "N3～N1" },
+        { zh: "250 关", en: "250 stages", ja: "250 ステージ" },
+        { zh: "听力训练", en: "Listening", ja: "聴解" },
+        { zh: "潜台词", en: "Subtext", ja: "含意" },
+        { zh: "男声 / 女声", en: "Male / female voices", ja: "男声 / 女声" },
+        { zh: "本地 + 云端进度", en: "Local + cloud progress", ja: "ローカル + クラウド進捗" }
+      ]
+    },
+    {
+      category: 0,
       icon: "🧰",
       version: "v1.0.0",
       size: "12MB",
@@ -1982,6 +2036,17 @@ async function loadSocialLinks() {
 
 function contentTitle(value) {
   return `${localText(value)}${t("placeholderMark")}`;
+}
+
+function safeResourceIconSrc(value) {
+  const path = String(value || "").trim().replace(/^\/+/, "").replace(/^\.\//, "");
+  if (path === "tools/japanese-subtext/assets/icons/tool-icon-64.webp") {
+    return sitePath(path);
+  }
+  if (/^assets\/images\/[a-z0-9][a-z0-9._/-]+\.(png|jpe?g|webp|gif)(\?[a-z0-9=&._-]+)?$/i.test(path)) {
+    return sitePath(path);
+  }
+  return "";
 }
 
 function safeGameCoverSrc(value) {
@@ -3412,6 +3477,9 @@ function safeResourceUrl(item) {
   if (/(^|\/)\.\.(\/|$)/.test(localPath)) {
     return "";
   }
+  if (/^tools\/japanese-subtext\/?$/i.test(localPath)) {
+    return sitePath("tools/japanese-subtext/");
+  }
   if (/^(assets|downloads)\/[a-z0-9][a-z0-9._/-]*(\?[a-z0-9=&._-]+)?$/i.test(localPath)) {
     return sitePath(localPath);
   }
@@ -3419,9 +3487,9 @@ function safeResourceUrl(item) {
 }
 
 function resourceActionElement(item, url = safeResourceUrl(item)) {
-  const resourceTitle = contentTitle(item.title);
+  const resourceTitle = url ? localText(item.title) : contentTitle(item.title);
   const text = url
-    ? item.external ? t("externalButton") : t("downloadButton")
+    ? localText(item.actionLabel) || (item.external ? t("externalButton") : t("downloadButton"))
     : t("resourcePending");
   if (!url) {
     const status = document.createElement("span");
@@ -3499,11 +3567,21 @@ function resourceCardElement(item) {
   main.className = "resource-main";
 
   const title = document.createElement("h3");
-  const icon = document.createElement("span");
-  icon.className = "resource-icon";
+  const resourceIconSrc = safeResourceIconSrc(item.iconSrc);
+  const icon = resourceIconSrc ? document.createElement("img") : document.createElement("span");
+  icon.className = resourceIconSrc ? "resource-icon-image" : "resource-icon";
   icon.setAttribute("aria-hidden", "true");
-  icon.textContent = item.icon || "";
-  const resourceTitle = contentTitle(item.title);
+  if (resourceIconSrc) {
+    icon.src = resourceIconSrc;
+    icon.width = 40;
+    icon.height = 40;
+    icon.alt = "";
+    icon.loading = "lazy";
+    icon.decoding = "async";
+  } else {
+    icon.textContent = String(item.icon || "");
+  }
+  const resourceTitle = resourceUrl ? localText(item.title) : contentTitle(item.title);
   title.append(icon, document.createTextNode(resourceTitle));
 
   const desc = document.createElement("p");
@@ -3525,6 +3603,12 @@ function resourceCardElement(item) {
     const itemNode = document.createElement("span");
     itemNode.textContent = text;
     meta.appendChild(itemNode);
+  });
+  (Array.isArray(item.tags) ? item.tags : []).slice(0, 6).forEach((tag) => {
+    const tagNode = document.createElement("span");
+    tagNode.className = "tag";
+    tagNode.textContent = localText(tag);
+    meta.appendChild(tagNode);
   });
   meta.appendChild(resourceStatusElement(resourceUrl, resourceTitle));
 
@@ -3862,7 +3946,7 @@ function recentUpdateElement(item) {
   const row = document.createElement("li");
   const link = document.createElement("a");
   link.className = "recent-update-link";
-  if (item.slug) {
+  if (item.slug && !item.fallbackOnly) {
     link.href = articleRouteHref(item.slug);
     link.dataset.articleSlug = item.slug;
   } else {
@@ -3876,7 +3960,7 @@ function recentUpdateElement(item) {
   const copy = document.createElement("span");
   const title = document.createElement("strong");
   const fullTitle = localText(item.title);
-  const fullSummary = item.summary || localText(item.desc) || "";
+  const fullSummary = localText(item.summary) || localText(item.desc) || "";
   const publishedDate = formatArticleDate(item.published_at || item.created_at || item.date);
   title.textContent = truncateText(fullTitle, 28);
   const detail = document.createElement("small");

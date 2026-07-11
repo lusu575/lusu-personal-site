@@ -1,0 +1,90 @@
+{
+  "stageId": "L4-029",
+  "sampleRate": 24000,
+  "duration": 76.845292,
+  "cues": [
+    {
+      "lineId": "line-001",
+      "audioId": "L4-029-line-001",
+      "start": 0.06,
+      "end": 5.378
+    },
+    {
+      "lineId": "line-002",
+      "audioId": "L4-029-line-002",
+      "start": 5.898,
+      "end": 10.087417
+    },
+    {
+      "lineId": "line-003",
+      "audioId": "L4-029-line-003",
+      "start": 10.607417,
+      "end": 17.09
+    },
+    {
+      "lineId": "line-004",
+      "audioId": "L4-029-line-004",
+      "start": 17.61,
+      "end": 23.512583
+    },
+    {
+      "lineId": "line-005",
+      "audioId": "L4-029-line-005",
+      "start": 24.032583,
+      "end": 30.119708
+    },
+    {
+      "lineId": "line-006",
+      "audioId": "L4-029-line-006",
+      "start": 30.639708,
+      "end": 35.642
+    },
+    {
+      "lineId": "line-007",
+      "audioId": "L4-029-line-007",
+      "start": 36.162,
+      "end": 40.650792
+    },
+    {
+      "lineId": "line-008",
+      "audioId": "L4-029-line-008",
+      "start": 41.170792,
+      "end": 44.908375
+    },
+    {
+      "lineId": "line-009",
+      "audioId": "L4-029-line-009",
+      "start": 45.428375,
+      "end": 51.032417
+    },
+    {
+      "lineId": "line-010",
+      "audioId": "L4-029-line-010",
+      "start": 51.552417,
+      "end": 56.872417
+    },
+    {
+      "lineId": "line-011",
+      "audioId": "L4-029-line-011",
+      "start": 57.392417,
+      "end": 62.310208
+    },
+    {
+      "lineId": "line-012",
+      "audioId": "L4-029-line-012",
+      "start": 62.830208,
+      "end": 68.070625
+    },
+    {
+      "lineId": "line-013",
+      "audioId": "L4-029-line-013",
+      "start": 68.590625,
+      "end": 76.745292
+    }
+  ],
+  "schemaVersion": 1,
+  "timelineId": "L4-029-timeline",
+  "sceneAudioId": "L4-029-scene",
+  "contentHash": "69c65894c29cc81402e875913071cde610d85793577a4c98b8cdfa5ad51937f7",
+  "sourceContentHash": "47be0302087addb1e5a1a4abdded88abf18d2f98b75339b1d167e10f8923b0ef"
+}

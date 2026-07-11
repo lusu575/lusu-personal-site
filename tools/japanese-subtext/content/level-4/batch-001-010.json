@@ -1,0 +1,5209 @@
+{
+  "schemaVersion": 1,
+  "contentVersion": "1.0.0",
+  "level": 4,
+  "batch": "001-010",
+  "stages": [
+    {
+      "schemaVersion": 1,
+      "contentVersion": "1.0.0",
+      "id": "L4-001",
+      "revision": 1,
+      "level": 4,
+      "stage": 1,
+      "jlptTarget": "N1-advanced",
+      "genres": [
+        "workplace"
+      ],
+      "skills": [
+        "multi-speaker-tracking",
+        "veto-inference"
+      ],
+      "layout": "meeting",
+      "title": {
+        "ja": "賛成多数の伏せた表",
+        "zh": "被扣下的“多数赞成”",
+        "en": "The Concealed Veto"
+      },
+      "setting": {
+        "ja": "予算会議。曖昧な同意が並ぶ中、財務だけが予算表を伏せ、議長の「賛成多数」を実行不能にする。",
+        "zh": "预算会议上，含糊同意接连出现，唯独财务扣下预算表，使主席的“多数赞成”无法执行。",
+        "en": "A budget meeting where vague assent is undercut by finance concealing the funding sheet."
+      },
+      "illustration": {
+        "enabled": false,
+        "src": "",
+        "style": "none",
+        "alt": {
+          "ja": "",
+          "zh": "",
+          "en": ""
+        }
+      },
+      "cast": [
+        {
+          "id": "sales",
+          "name": {
+            "ja": "営業・怜",
+            "zh": "销售怜",
+            "en": "Rei, sales"
+          },
+          "voiceKey": "female-bright"
+        },
+        {
+          "id": "dev",
+          "name": {
+            "ja": "開発・岳",
+            "zh": "开发岳",
+            "en": "Gaku, development"
+          },
+          "voiceKey": "male-casual"
+        },
+        {
+          "id": "finance",
+          "name": {
+            "ja": "財務・環",
+            "zh": "财务环",
+            "en": "Tamaki, finance"
+          },
+          "voiceKey": "female-calm"
+        },
+        {
+          "id": "chair",
+          "name": {
+            "ja": "議長・榊",
+            "zh": "主席榊",
+            "en": "Sakaki, chair"
+          },
+          "voiceKey": "male-serious"
+        }
+      ],
+      "lines": [
+        {
+          "id": "line-001",
+          "speaker": "sales",
+          "text": {
+            "ja": "販売開始そのものに反対ではありません。時期は再検討したいですが。",
+            "zh": "我不反对上市本身，但希望重新考虑时机。",
+            "en": "I do not oppose launch itself, though timing needs review."
+          },
+          "readingJa": "はんばいかいしそのものにはんたいでわありません。じきわさいけんとーしたいですが。",
+          "ttsTextJa": "販売開始そのものに反対ではありません。時期は再検討したいですが。",
+          "audioId": "L4-001-line-001",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "販売開始そのものに反対ではありません。",
+              "reading": "はんばいかいしそのものにはんたいでわありません。",
+              "audioId": "L4-001-line-001-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "時期は再検討したいですが。",
+              "reading": "じきわさいけんとーしたいですが。",
+              "audioId": "L4-001-line-001-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-002",
+          "speaker": "dev",
+          "text": {
+            "ja": "人員が二名増えるなら対応できます。条件次第です。",
+            "zh": "若增加两名人员就能做，取决于条件。",
+            "en": "We can deliver with two more staff; it depends on conditions."
+          },
+          "readingJa": "じんいんがにめーふえるならたいおーできます。じょーけんしだいです。",
+          "ttsTextJa": "人員が二名増えるなら対応できます。条件次第です。",
+          "audioId": "L4-001-line-002",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "人員が二名増えるなら対応できます。",
+              "reading": "じんいんがにめーふえるならたいおーできます。",
+              "audioId": "L4-001-line-002-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "条件次第です。",
+              "reading": "じょーけんしだいです。",
+              "audioId": "L4-001-line-002-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-003",
+          "speaker": "chair",
+          "text": {
+            "ja": "大枠では異論なし、と。財務はいかがですか。",
+            "zh": "也就是说大方向无异议。财务呢？",
+            "en": "No broad objection, then. Finance?"
+          },
+          "readingJa": "おーわくでわいろんなし、と。ざいむわいかがですか。",
+          "ttsTextJa": "大枠では異論なし、と。財務はいかがですか。",
+          "audioId": "L4-001-line-003",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "大枠では異論なし、",
+              "reading": "おーわくでわいろんなし、",
+              "audioId": "L4-001-line-003-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "と。",
+              "reading": "と。",
+              "audioId": "L4-001-line-003-token-002"
+            },
+            {
+              "id": "token-003",
+              "text": "財務はいかがですか。",
+              "reading": "ざいむわいかがですか。",
+              "audioId": "L4-001-line-003-token-003"
+            }
+          ]
+        },
+        {
+          "id": "line-004",
+          "speaker": "finance",
+          "text": {
+            "ja": "……。",
+            "zh": "……",
+            "en": "..."
+          },
+          "readingJa": "……。",
+          "ttsTextJa": "……。",
+          "audioId": "L4-001-line-004",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "……。",
+              "reading": "……。",
+              "audioId": "L4-001-line-004-token-001"
+            }
+          ]
+        },
+        {
+          "id": "line-005",
+          "speaker": "finance",
+          "text": {
+            "ja": "予算表を裏返し、手元へ引く。",
+            "zh": "她把预算表翻面，拉回手边。",
+            "en": "She turns the budget sheet face down and pulls it back."
+          },
+          "readingJa": "よさんひょうをうらがえし、てもとえひく。",
+          "ttsTextJa": "予算表を裏返し、手元へ引く。",
+          "audioId": "L4-001-line-005",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "予算表を裏返し、",
+              "reading": "よさんひょうをうらがえし、",
+              "audioId": "L4-001-line-005-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "手元へ引く。",
+              "reading": "てもとえひく。",
+              "audioId": "L4-001-line-005-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-006",
+          "speaker": "chair",
+          "text": {
+            "ja": "明確な反対はないので、賛成多数として進めます。",
+            "zh": "既然没有明确反对，就按多数赞成推进。",
+            "en": "With no explicit opposition, we will proceed by majority assent."
+          },
+          "readingJa": "めーかくなはんたいわないので、さんせーたすーとしてすすめます。",
+          "ttsTextJa": "明確な反対はないので、賛成多数として進めます。",
+          "audioId": "L4-001-line-006",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "明確な反対はないので、",
+              "reading": "めーかくなはんたいわないので、",
+              "audioId": "L4-001-line-006-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "賛成多数として進めます。",
+              "reading": "さんせーたすーとしてすすめます。",
+              "audioId": "L4-001-line-006-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-007",
+          "speaker": "dev",
+          "text": {
+            "ja": "財務承認がなければ、私の条件は満たされません。",
+            "zh": "没有财务批准，我的条件就不成立。",
+            "en": "Without finance approval, my condition is not met."
+          },
+          "readingJa": "ざいむしょーにんがなければ、わたしのじょーけんわみたされません。",
+          "ttsTextJa": "財務承認がなければ、私の条件は満たされません。",
+          "audioId": "L4-001-line-007",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "財務承認がなければ、",
+              "reading": "ざいむしょーにんがなければ、",
+              "audioId": "L4-001-line-007-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "私の条件は満たされません。",
+              "reading": "わたしのじょーけんわみたされません。",
+              "audioId": "L4-001-line-007-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-008",
+          "speaker": "finance",
+          "text": {
+            "ja": "表を出せない以上、二名分の枠も出せません。",
+            "zh": "既然不能提交预算表，也就拿不出两个人的额度。",
+            "en": "If I cannot release the sheet, I cannot release funding for two people."
+          },
+          "readingJa": "ひょうをだせないいじょー、にめーぶんのわくもだせません。",
+          "ttsTextJa": "表を出せない以上、二名分の枠も出せません。",
+          "audioId": "L4-001-line-008",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "表を出せない以上、",
+              "reading": "ひょうをだせないいじょー、",
+              "audioId": "L4-001-line-008-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "二名分の枠も出せません。",
+              "reading": "にめーぶんのわくもだせません。",
+              "audioId": "L4-001-line-008-token-002"
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": {
+            "ja": "議長のまとめで見落とされた決定的な点は何ですか。",
+            "zh": "主席总结时忽略了哪个决定性要点？",
+            "en": "What decisive point does the chair overlook?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "営業は販売そのものに反対した。",
+                "zh": "销售反对上市本身。",
+                "en": "Sales opposed launch itself."
+              },
+              "ttsTextJa": "営業は販売そのものに反対した。",
+              "audioId": "L4-001-q1-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "財務の非言語的拒否で、開発の条件となる予算が成立していない。",
+                "zh": "财务以非语言方式拒绝，导致开发所需预算条件不成立。",
+                "en": "Finance's nonverbal refusal leaves development's funding condition unmet."
+              },
+              "ttsTextJa": "財務の非言語的拒否で、開発の条件となる予算が成立していない。",
+              "audioId": "L4-001-q1-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "開発は無条件に賛成した。",
+                "zh": "开发无条件赞成。",
+                "en": "Development agreed unconditionally."
+              },
+              "ttsTextJa": "開発は無条件に賛成した。",
+              "audioId": "L4-001-q1-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "予算表はすでに公開された。",
+                "zh": "预算表已经公开。",
+                "en": "The budget sheet was already released."
+              },
+              "ttsTextJa": "予算表はすでに公開された。",
+              "audioId": "L4-001-q1-d"
+            }
+          ],
+          "correctOptionIds": [
+            "b"
+          ],
+          "evidenceLineIds": [
+            "line-002",
+            "line-004",
+            "line-005",
+            "line-006",
+            "line-007",
+            "line-008"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "本文は「人員が二名増えるなら対応できます。条件次第です。」から「表を出せない以上、二名分の枠も出せません。」まで、字面だけでは一致しない事実を並べています。",
+              "zh": "正文从“若增加两名人员就能做，取决于条件。”到“既然不能提交预算表，也就拿不出两个人的额度。”并置了字面上无法完全相容的事实。",
+              "en": "From “We can deliver with two more staff; it depends on conditions.” to “If I cannot release the sheet, I cannot release funding for two people.,” the text juxtaposes facts that do not fully align at face value."
+            },
+            "intent": {
+              "ja": "それらをまとめる最も具体的な読みは「財務の非言語的拒否で、開発の条件となる予算が成立していない。」です。",
+              "zh": "能最具体统合这些事实的解读是“财务以非语言方式拒绝，导致开发所需预算条件不成立。”。",
+              "en": "The most specific reading that unifies those facts is: Finance's nonverbal refusal leaves development's funding condition unmet."
+            },
+            "evidence": {
+              "ja": "line-002、line-004、line-005、line-006、line-007、line-008 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "line-002、line-004、line-005、line-006、line-007、line-008 从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "line-002、line-004、line-005、line-006、line-007、line-008 support the same inference through distinct aspects of speech, timeline, and behavior."
+            },
+            "nuance": {
+              "ja": "line-002、line-004、line-005、line-006、line-007、line-008 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把 line-002、line-004、line-005、line-006、line-007、line-008 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading line-002、line-004、line-005、line-006、line-007、line-008 together avoids overinterpreting a coincidence or a single word."
+            },
+            "alternative": {
+              "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
+              "zh": "其他解释或许适用于部分现象，却无法同时解释所引全部文本。",
+              "en": "Alternatives may fit part of the scene but do not explain all cited lines at once."
+            }
+          }
+        },
+        {
+          "id": "q2",
+          "type": "single",
+          "prompt": {
+            "ja": "この会議の実行可能性について最も正確な結論はどれですか。",
+            "zh": "关于会议决议的可执行性，哪项结论最准确？",
+            "en": "What is the most accurate conclusion about implementability?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "発言者三人が賛成なので直ちに実行できる。",
+                "zh": "三名发言者赞成，可立即执行。",
+                "en": "Three speakers assent, so execution can begin."
+              },
+              "ttsTextJa": "発言者三人が賛成なので直ちに実行できる。",
+              "audioId": "L4-001-q2-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "営業の時期条件だけが残っている。",
+                "zh": "只剩销售提出的时机条件。",
+                "en": "Only sales' timing condition remains."
+              },
+              "ttsTextJa": "営業の時期条件だけが残っている。",
+              "audioId": "L4-001-q2-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "財務の沈黙は常に法的な拒否票なので、採決手続きそのものが無効だ",
+                "zh": "财务沉默永远等同法律上的反对票，因此表决程序本身无效",
+                "en": "Finance's silence is always a legal no vote, so the voting procedure itself is invalid"
+              },
+              "ttsTextJa": "財務の沈黙は常に法的な拒否票なので、採決手続きそのものが無効だ",
+              "audioId": "L4-001-q2-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "形式上の多数と別に、財務承認という必要条件が欠けている。",
+                "zh": "形式多数之外，仍缺少财务批准这一必要条件。",
+                "en": "Despite a formal majority, the necessary condition of finance approval is absent."
+              },
+              "ttsTextJa": "形式上の多数と別に、財務承認という必要条件が欠けている。",
+              "audioId": "L4-001-q2-d"
+            }
+          ],
+          "correctOptionIds": [
+            "d"
+          ],
+          "evidenceLineIds": [
+            "line-001",
+            "line-002",
+            "line-005",
+            "line-006",
+            "line-007",
+            "line-008"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "本文は「販売開始そのものに反対ではありません。時期は再検討したいですが。」から「表を出せない以上、二名分の枠も出せません。」まで、字面だけでは一致しない事実を並べています。",
+              "zh": "正文从“我不反对上市本身，但希望重新考虑时机。”到“既然不能提交预算表，也就拿不出两个人的额度。”并置了字面上无法完全相容的事实。",
+              "en": "From “I do not oppose launch itself, though timing needs review.” to “If I cannot release the sheet, I cannot release funding for two people.,” the text juxtaposes facts that do not fully align at face value."
+            },
+            "intent": {
+              "ja": "それらをまとめる最も具体的な読みは「形式上の多数と別に、財務承認という必要条件が欠けている。」です。",
+              "zh": "能最具体统合这些事实的解读是“形式多数之外，仍缺少财务批准这一必要条件。”。",
+              "en": "The most specific reading that unifies those facts is: Despite a formal majority, the necessary condition of finance approval is absent."
+            },
+            "evidence": {
+              "ja": "line-001、line-002、line-005、line-006、line-007、line-008 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "line-001、line-002、line-005、line-006、line-007、line-008 从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "line-001、line-002、line-005、line-006、line-007、line-008 support the same inference through distinct aspects of speech, timeline, and behavior."
+            },
+            "nuance": {
+              "ja": "line-001、line-002、line-005、line-006、line-007、line-008 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把 line-001、line-002、line-005、line-006、line-007、line-008 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading line-001、line-002、line-005、line-006、line-007、line-008 together avoids overinterpreting a coincidence or a single word."
+            },
+            "alternative": {
+              "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
+              "zh": "其他解释或许适用于部分现象，却无法同时解释所引全部文本。",
+              "en": "Alternatives may fit part of the scene but do not explain all cited lines at once."
+            }
+          }
+        }
+      ],
+      "audio": {
+        "sceneAudioId": "L4-001-scene",
+        "timelineId": "L4-001-timeline",
+        "optionVoiceKey": "narrator"
+      },
+      "passRule": {
+        "type": "all_questions_correct"
+      },
+      "contentRating": "general",
+      "textLocked": true,
+      "contentHash": "dfd3f5a4b920939acd12c167f2b3e6afaf8b7fbba9903e27b29c50f977787c31"
+    },
+    {
+      "schemaVersion": 1,
+      "contentVersion": "1.0.0",
+      "id": "L4-002",
+      "revision": 1,
+      "level": 4,
+      "stage": 2,
+      "jlptTarget": "N1-advanced",
+      "genres": [
+        "school",
+        "online-chat"
+      ],
+      "skills": [
+        "timeline-inference",
+        "identity-inference"
+      ],
+      "layout": "group-chat",
+      "title": {
+        "ja": "深夜の教師アカウント",
+        "zh": "深夜的教师账号",
+        "en": "The Teacher Account at Midnight"
+      },
+      "setting": {
+        "ja": "クラスチャットに教師名義で期限変更が投稿されるが、投稿時刻と事前知識が別の操作者を示す。",
+        "zh": "班级群深夜出现教师名义的改期通知，但发布时间与提前知情者指向另一操作者。",
+        "en": "A deadline change appears under a teacher's account, but timing and prior knowledge point to another operator."
+      },
+      "illustration": {
+        "enabled": false,
+        "src": "",
+        "style": "none",
+        "alt": {
+          "ja": "",
+          "zh": "",
+          "en": ""
+        }
+      },
+      "cast": [
+        {
+          "id": "teacher",
+          "name": {
+            "ja": "教師・森",
+            "zh": "教师森",
+            "en": "Mori, teacher"
+          },
+          "voiceKey": "female-calm"
+        },
+        {
+          "id": "chair",
+          "name": {
+            "ja": "委員・優斗",
+            "zh": "委员优斗",
+            "en": "Yuto, committee member"
+          },
+          "voiceKey": "male-casual"
+        },
+        {
+          "id": "student",
+          "name": {
+            "ja": "生徒・杏",
+            "zh": "学生杏",
+            "en": "An, student"
+          },
+          "voiceKey": "female-bright"
+        },
+        {
+          "id": "witness",
+          "name": {
+            "ja": "講演係・柴",
+            "zh": "讲座负责人柴",
+            "en": "Shiba, event aide"
+          },
+          "voiceKey": "male-serious"
+        }
+      ],
+      "lines": [
+        {
+          "id": "line-001",
+          "speaker": "chair",
+          "text": {
+            "ja": "先生、端末を五分だけ借ります。印刷室の予約を確認したいので。",
+            "zh": "老师，借终端五分钟，我想查打印室预约。",
+            "en": "May I borrow your device for five minutes to check the print-room booking?"
+          },
+          "readingJa": "せんせー、たんまつをごぶだけかります。いんさつしつのよやくをかくにんしたいので。",
+          "ttsTextJa": "先生、端末を五分だけ借ります。印刷室の予約を確認したいので。",
+          "audioId": "L4-002-line-001",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "先生、",
+              "reading": "せんせー、",
+              "audioId": "L4-002-line-001-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "端末を五分だけ借ります。",
+              "reading": "たんまつをごぶだけかります。",
+              "audioId": "L4-002-line-001-token-002"
+            },
+            {
+              "id": "token-003",
+              "text": "印刷室の予約を確認したいので。",
+              "reading": "いんさつしつのよやくをかくにんしたいので。",
+              "audioId": "L4-002-line-001-token-003"
+            }
+          ]
+        },
+        {
+          "id": "line-002",
+          "speaker": "teacher",
+          "text": {
+            "ja": "いいですよ。私はこのまま講演壇へ上がります。",
+            "zh": "可以。我现在就上讲台。",
+            "en": "All right. I am going straight to the lecture stage."
+          },
+          "readingJa": "いいですよ。わたしわこのままこーえんだんえあがります。",
+          "ttsTextJa": "いいですよ。私はこのまま講演壇へ上がります。",
+          "audioId": "L4-002-line-002",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "いいですよ。",
+              "reading": "いいですよ。",
+              "audioId": "L4-002-line-002-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "私はこのまま講演壇へ上がります。",
+              "reading": "わたしわこのままこーえんだんえあがります。",
+              "audioId": "L4-002-line-002-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-003",
+          "speaker": "chair",
+          "text": {
+            "ja": "杏、課題は月曜じゃなく水曜になるらしいよ。まだ内緒。",
+            "zh": "杏，作业好像从周一改到周三，先保密。",
+            "en": "An, apparently the assignment moves from Monday to Wednesday. Keep it quiet."
+          },
+          "readingJa": "あんず、かだいわげつよーじゃなくすいよーになるらしいよ。まだないしょ。",
+          "ttsTextJa": "杏、課題は月曜じゃなく水曜になるらしいよ。まだ内緒。",
+          "audioId": "L4-002-line-003",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "杏、",
+              "reading": "あんず、",
+              "audioId": "L4-002-line-003-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "課題は月曜じゃなく水曜になるらしいよ。",
+              "reading": "かだいわげつよーじゃなくすいよーになるらしいよ。",
+              "audioId": "L4-002-line-003-token-002"
+            },
+            {
+              "id": "token-003",
+              "text": "まだ内緒。",
+              "reading": "まだないしょ。",
+              "audioId": "L4-002-line-003-token-003"
+            }
+          ]
+        },
+        {
+          "id": "line-004",
+          "speaker": "teacher",
+          "text": {
+            "ja": "【23:47】提出期限を水曜へ変更します。確認してください。",
+            "zh": "【23:47】提交期限改为周三，请确认。",
+            "en": "[23:47] The deadline is changed to Wednesday. Please confirm."
+          },
+          "readingJa": "【にじゅーさん：よんじゅーなな】てーしゅつきげんをすいよーえへんこーします。かくにんしてください。",
+          "ttsTextJa": "【23:47】提出期限を水曜へ変更します。確認してください。",
+          "audioId": "L4-002-line-004",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "【23:",
+              "reading": "【にじゅーさん：",
+              "audioId": "L4-002-line-004-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "47】提出期限を水曜へ変更します。",
+              "reading": "よんじゅーなな】てーしゅつきげんをすいよーえへんこーします。",
+              "audioId": "L4-002-line-004-token-002"
+            },
+            {
+              "id": "token-003",
+              "text": "確認してください。",
+              "reading": "かくにんしてください。",
+              "audioId": "L4-002-line-004-token-003"
+            }
+          ]
+        },
+        {
+          "id": "line-005",
+          "speaker": "witness",
+          "text": {
+            "ja": "森先生は23:40から0:10まで壇上で、端末には触れていません。",
+            "zh": "森老师23:40至0:10都在台上，未接触终端。",
+            "en": "Mori was on stage from 23:40 to 00:10 and never touched the device."
+          },
+          "readingJa": "もりせんせいわにじゅーさん：よんじゅーからぜろ：じゅーまでだんじょーで、たんまつにわふれていません。",
+          "ttsTextJa": "森先生は23:40から0:10まで壇上で、端末には触れていません。",
+          "audioId": "L4-002-line-005",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "森先生は23:",
+              "reading": "もりせんせいわにじゅーさん：",
+              "audioId": "L4-002-line-005-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "40から0:",
+              "reading": "よんじゅーからぜろ：",
+              "audioId": "L4-002-line-005-token-002"
+            },
+            {
+              "id": "token-003",
+              "text": "10まで壇上で、",
+              "reading": "じゅーまでだんじょーで、",
+              "audioId": "L4-002-line-005-token-003"
+            },
+            {
+              "id": "token-004",
+              "text": "端末には触れていません。",
+              "reading": "たんまつにわふれていません。",
+              "audioId": "L4-002-line-005-token-004"
+            }
+          ]
+        },
+        {
+          "id": "line-006",
+          "speaker": "student",
+          "text": {
+            "ja": "優斗は投稿の十六分前に、新期限を知っていた。",
+            "zh": "优斗在发帖前16分钟就知道新期限。",
+            "en": "Yuto knew the new deadline sixteen minutes before the post."
+          },
+          "readingJa": "ゆうとわとーこーのじゅーろっぷんまえに、しんきげんをしっていた。",
+          "ttsTextJa": "優斗は投稿の十六分前に、新期限を知っていた。",
+          "audioId": "L4-002-line-006",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "優斗は投稿の十六分前に、",
+              "reading": "ゆうとわとーこーのじゅーろっぷんまえに、",
+              "audioId": "L4-002-line-006-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "新期限を知っていた。",
+              "reading": "しんきげんをしっていた。",
+              "audioId": "L4-002-line-006-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-007",
+          "speaker": "chair",
+          "text": {
+            "ja": "先生のアカウントなら、先生の決定でしょう。",
+            "zh": "既然是老师账号，那就是老师的决定吧。",
+            "en": "If it came from the teacher's account, it must be the teacher's decision."
+          },
+          "readingJa": "せんせーのあかうんとなら、せんせーのけってーでしょー。",
+          "ttsTextJa": "先生のアカウントなら、先生の決定でしょう。",
+          "audioId": "L4-002-line-007",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "先生のアカウントなら、",
+              "reading": "せんせーのあかうんとなら、",
+              "audioId": "L4-002-line-007-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "先生の決定でしょう。",
+              "reading": "せんせーのけってーでしょー。",
+              "audioId": "L4-002-line-007-token-002"
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": {
+            "ja": "投稿を実際に操作した可能性が最も高い人物は誰ですか。",
+            "zh": "最可能实际操作发帖的人是谁？",
+            "en": "Who most likely operated the account for the post?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "端末を借り、新期限を投稿前から知っていた優斗。",
+                "zh": "借过终端且发帖前已知新期限的优斗。",
+                "en": "Yuto, who borrowed the device and knew the deadline beforehand."
+              },
+              "ttsTextJa": "端末を借り、新期限を投稿前から知っていた優斗。",
+              "audioId": "L4-002-q1-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "講演中で端末に触れず、投稿時刻にも壇上にいた森先生",
+                "zh": "演讲期间没碰终端，发帖时也在台上的森老师",
+                "en": "Ms. Mori, who was onstage and did not touch the device at posting time"
+              },
+              "ttsTextJa": "講演中で端末に触れず、投稿時刻にも壇上にいた森先生",
+              "audioId": "L4-002-q1-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "投稿後に時刻を確認した柴。",
+                "zh": "发帖后核对时间的柴。",
+                "en": "Shiba, who checked the timing afterward."
+              },
+              "ttsTextJa": "投稿後に時刻を確認した柴。",
+              "audioId": "L4-002-q1-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "新期限を聞いただけの杏。",
+                "zh": "只是听说新期限的杏。",
+                "en": "An, who merely heard the deadline."
+              },
+              "ttsTextJa": "新期限を聞いただけの杏。",
+              "audioId": "L4-002-q1-d"
+            }
+          ],
+          "correctOptionIds": [
+            "a"
+          ],
+          "evidenceLineIds": [
+            "line-001",
+            "line-002",
+            "line-003",
+            "line-004",
+            "line-005",
+            "line-006"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "本文は「先生、端末を五分だけ借ります。印刷室の予約を確認したいので。」から「優斗は投稿の十六分前に、新期限を知っていた。」まで、字面だけでは一致しない事実を並べています。",
+              "zh": "正文从“老师，借终端五分钟，我想查打印室预约。”到“优斗在发帖前16分钟就知道新期限。”并置了字面上无法完全相容的事实。",
+              "en": "From “May I borrow your device for five minutes to check the print-room booking?” to “Yuto knew the new deadline sixteen minutes before the post.,” the text juxtaposes facts that do not fully align at face value."
+            },
+            "intent": {
+              "ja": "それらをまとめる最も具体的な読みは「端末を借り、新期限を投稿前から知っていた優斗。」です。",
+              "zh": "能最具体统合这些事实的解读是“借过终端且发帖前已知新期限的优斗。”。",
+              "en": "The most specific reading that unifies those facts is: Yuto, who borrowed the device and knew the deadline beforehand."
+            },
+            "evidence": {
+              "ja": "line-001、line-002、line-003、line-004、line-005、line-006 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "line-001、line-002、line-003、line-004、line-005、line-006 从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "line-001、line-002、line-003、line-004、line-005、line-006 support the same inference through distinct aspects of speech, timeline, and behavior."
+            },
+            "nuance": {
+              "ja": "line-001、line-002、line-003、line-004、line-005、line-006 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把 line-001、line-002、line-003、line-004、line-005、line-006 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading line-001、line-002、line-003、line-004、line-005、line-006 together avoids overinterpreting a coincidence or a single word."
+            },
+            "alternative": {
+              "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
+              "zh": "其他解释或许适用于部分现象，却无法同时解释所引全部文本。",
+              "en": "Alternatives may fit part of the scene but do not explain all cited lines at once."
+            }
+          }
+        },
+        {
+          "id": "q2",
+          "type": "single",
+          "prompt": {
+            "ja": "line-007 の推論上の誤りは何ですか。",
+            "zh": "line-007 的推理错误是什么？",
+            "en": "What reasoning error appears in line 007?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "投稿時刻を講演開始より前だと読み、森先生のアリバイを過大評価する",
+                "zh": "把发帖时间看成早于演讲开始，从而过度评价森老师的不在场证明",
+                "en": "It reads the post as preceding the lecture and overstates Mori's alibi"
+              },
+              "ttsTextJa": "投稿時刻を講演開始より前だと読み、森先生のアリバイを過大評価する",
+              "audioId": "L4-002-q2-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "水曜と月曜を同じ日とみなす。",
+                "zh": "把周三与周一当成同一天。",
+                "en": "Treating Wednesday and Monday as the same day."
+              },
+              "ttsTextJa": "水曜と月曜を同じ日とみなす。",
+              "audioId": "L4-002-q2-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "アカウント名義と実際の操作者・承認者を同一視する。",
+                "zh": "把账号名义、实际操作者与批准者视为同一人。",
+                "en": "Equating the account label with both operator and authorizer."
+              },
+              "ttsTextJa": "アカウント名義と実際の操作者・承認者を同一視する。",
+              "audioId": "L4-002-q2-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "目撃証言を二人分あると数える。",
+                "zh": "把一份目击证词算成两份。",
+                "en": "Counting one witness statement twice."
+              },
+              "ttsTextJa": "目撃証言を二人分あると数える。",
+              "audioId": "L4-002-q2-d"
+            }
+          ],
+          "correctOptionIds": [
+            "c"
+          ],
+          "evidenceLineIds": [
+            "line-001",
+            "line-004",
+            "line-005",
+            "line-007"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "本文は「先生、端末を五分だけ借ります。印刷室の予約を確認したいので。」から「先生のアカウントなら、先生の決定でしょう。」まで、字面だけでは一致しない事実を並べています。",
+              "zh": "正文从“老师，借终端五分钟，我想查打印室预约。”到“既然是老师账号，那就是老师的决定吧。”并置了字面上无法完全相容的事实。",
+              "en": "From “May I borrow your device for five minutes to check the print-room booking?” to “If it came from the teacher's account, it must be the teacher's decision.,” the text juxtaposes facts that do not fully align at face value."
+            },
+            "intent": {
+              "ja": "それらをまとめる最も具体的な読みは「アカウント名義と実際の操作者・承認者を同一視する。」です。",
+              "zh": "能最具体统合这些事实的解读是“把账号名义、实际操作者与批准者视为同一人。”。",
+              "en": "The most specific reading that unifies those facts is: Equating the account label with both operator and authorizer."
+            },
+            "evidence": {
+              "ja": "line-001、line-004、line-005、line-007 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "line-001、line-004、line-005、line-007 从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "line-001、line-004、line-005、line-007 support the same inference through distinct aspects of speech, timeline, and behavior."
+            },
+            "nuance": {
+              "ja": "line-001、line-004、line-005、line-007 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把 line-001、line-004、line-005、line-007 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading line-001、line-004、line-005、line-007 together avoids overinterpreting a coincidence or a single word."
+            },
+            "alternative": {
+              "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
+              "zh": "其他解释或许适用于部分现象，却无法同时解释所引全部文本。",
+              "en": "Alternatives may fit part of the scene but do not explain all cited lines at once."
+            }
+          }
+        }
+      ],
+      "audio": {
+        "sceneAudioId": "L4-002-scene",
+        "timelineId": "L4-002-timeline",
+        "optionVoiceKey": "narrator"
+      },
+      "passRule": {
+        "type": "all_questions_correct"
+      },
+      "contentRating": "general",
+      "textLocked": true,
+      "contentHash": "812640c35ca6fa07618473c37349f1ba188e9e14bb0c51e7ebe5021933f22750"
+    },
+    {
+      "schemaVersion": 1,
+      "contentVersion": "1.0.0",
+      "id": "L4-003",
+      "revision": 1,
+      "level": 4,
+      "stage": 3,
+      "jlptTarget": "N1-advanced",
+      "genres": [
+        "restaurant",
+        "daily-life"
+      ],
+      "skills": [
+        "multi-speaker-tracking",
+        "protective-deception"
+      ],
+      "layout": "multi-dialogue",
+      "title": {
+        "ja": "誰のでもない四皿目",
+        "zh": "谁都不认的第四盘",
+        "en": "The Fourth Plate Nobody Ordered"
+      },
+      "setting": {
+        "ja": "四人席に三人が先着し、余分な一皿を互いの注文だと言い張る。店員は蝋燭を隠している。",
+        "zh": "四人桌先到三人，人人都说多出的那盘是别人点的；服务员则藏起蜡烛。",
+        "en": "Three people arrive at a table for four and each attributes an extra dish to someone else while the server hides a candle."
+      },
+      "illustration": {
+        "enabled": false,
+        "src": "",
+        "style": "none",
+        "alt": {
+          "ja": "",
+          "zh": "",
+          "en": ""
+        }
+      },
+      "cast": [
+        {
+          "id": "emi",
+          "name": {
+            "ja": "恵美",
+            "zh": "惠美",
+            "en": "Emi"
+          },
+          "voiceKey": "female-soft"
+        },
+        {
+          "id": "koji",
+          "name": {
+            "ja": "浩司",
+            "zh": "浩司",
+            "en": "Koji"
+          },
+          "voiceKey": "male-casual"
+        },
+        {
+          "id": "lin",
+          "name": {
+            "ja": "リン",
+            "zh": "琳",
+            "en": "Lin"
+          },
+          "voiceKey": "female-bright"
+        },
+        {
+          "id": "server",
+          "name": {
+            "ja": "店員",
+            "zh": "服务员",
+            "en": "Server"
+          },
+          "voiceKey": "male-calm"
+        }
+      ],
+      "lines": [
+        {
+          "id": "line-001",
+          "speaker": "server",
+          "text": {
+            "ja": "魚、パスタ、サラダ、それから苺の小皿をお持ちしました。",
+            "zh": "鱼、意面、沙拉，还有一小盘草莓。",
+            "en": "Fish, pasta, salad, and a small strawberry plate."
+          },
+          "readingJa": "さかな、ぱすた、さらだ、それからいちごのこざらをおもちしました。",
+          "ttsTextJa": "魚、パスタ、サラダ、それから苺の小皿をお持ちしました。",
+          "audioId": "L4-003-line-001",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "魚、",
+              "reading": "さかな、",
+              "audioId": "L4-003-line-001-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "パスタ、",
+              "reading": "ぱすた、",
+              "audioId": "L4-003-line-001-token-002"
+            },
+            {
+              "id": "token-003",
+              "text": "サラダ、",
+              "reading": "さらだ、",
+              "audioId": "L4-003-line-001-token-003"
+            },
+            {
+              "id": "token-004",
+              "text": "それから苺の小皿をお持ちしました。",
+              "reading": "それからいちごのこざらをおもちしました。",
+              "audioId": "L4-003-line-001-token-004"
+            }
+          ]
+        },
+        {
+          "id": "line-002",
+          "speaker": "emi",
+          "text": {
+            "ja": "苺は浩司が追加したんでしょう。",
+            "zh": "草莓是浩司加点的吧。",
+            "en": "Koji must have added the strawberries."
+          },
+          "readingJa": "いちごわこーじがついかしたんでしょー。",
+          "ttsTextJa": "苺は浩司が追加したんでしょう。",
+          "audioId": "L4-003-line-002",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "苺は浩司が追加したんでしょう。",
+              "reading": "いちごわこーじがついかしたんでしょー。",
+              "audioId": "L4-003-line-002-token-001"
+            }
+          ]
+        },
+        {
+          "id": "line-003",
+          "speaker": "koji",
+          "text": {
+            "ja": "僕じゃない。リンが甘い物を頼んだと思った。",
+            "zh": "不是我。我以为是琳点的甜食。",
+            "en": "Not me. I thought Lin ordered something sweet."
+          },
+          "readingJa": "ぼくじゃない。りんがあまいものをたのんだとおもった。",
+          "ttsTextJa": "僕じゃない。リンが甘い物を頼んだと思った。",
+          "audioId": "L4-003-line-003",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "僕じゃない。",
+              "reading": "ぼくじゃない。",
+              "audioId": "L4-003-line-003-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "リンが甘い物を頼んだと思った。",
+              "reading": "りんがあまいものをたのんだとおもった。",
+              "audioId": "L4-003-line-003-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-004",
+          "speaker": "lin",
+          "text": {
+            "ja": "私でもないよ。恵美が店に電話していたけど。",
+            "zh": "也不是我。不过惠美之前给店里打过电话。",
+            "en": "Not me either, though Emi called the restaurant."
+          },
+          "readingJa": "わたしでもないよ。えみがみせにでんわしていたけど。",
+          "ttsTextJa": "私でもないよ。恵美が店に電話していたけど。",
+          "audioId": "L4-003-line-004",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "私でもないよ。",
+              "reading": "わたしでもないよ。",
+              "audioId": "L4-003-line-004-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "恵美が店に電話していたけど。",
+              "reading": "えみがみせにでんわしていたけど。",
+              "audioId": "L4-003-line-004-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-005",
+          "speaker": "server",
+          "text": {
+            "ja": "では、この皿は遅れて来る方の前へ置きます。",
+            "zh": "那就把这盘放到迟到那位面前。",
+            "en": "Then I will place it before the person arriving late."
+          },
+          "readingJa": "でわ、このさらわおくれてくるかたのまええおきます。",
+          "ttsTextJa": "では、この皿は遅れて来る方の前へ置きます。",
+          "audioId": "L4-003-line-005",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "では、",
+              "reading": "でわ、",
+              "audioId": "L4-003-line-005-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "この皿は遅れて来る方の前へ置きます。",
+              "reading": "このさらわおくれてくるかたのまええおきます。",
+              "audioId": "L4-003-line-005-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-006",
+          "speaker": "emi",
+          "text": {
+            "ja": "名前は言わなくて大丈夫です。予定より早いと困るので。",
+            "zh": "不用说名字。要是比预定早就麻烦了。",
+            "en": "No need to say the name. It would be troublesome if it happened early."
+          },
+          "readingJa": "なまえわいわなくてだいじょーぶです。よてーよりはやいとこまるので。",
+          "ttsTextJa": "名前は言わなくて大丈夫です。予定より早いと困るので。",
+          "audioId": "L4-003-line-006",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "名前は言わなくて大丈夫です。",
+              "reading": "なまえわいわなくてだいじょーぶです。",
+              "audioId": "L4-003-line-006-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "予定より早いと困るので。",
+              "reading": "よてーよりはやいとこまるので。",
+              "audioId": "L4-003-line-006-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-007",
+          "speaker": "server",
+          "text": {
+            "ja": "承知しました。蝋燭はナプキンの下に戻します。",
+            "zh": "明白。我把蜡烛放回餐巾下。",
+            "en": "Understood. I will put the candle back under the napkin."
+          },
+          "readingJa": "しょーちしました。ろーそくわなぷきんのしたにもどします。",
+          "ttsTextJa": "承知しました。蝋燭はナプキンの下に戻します。",
+          "audioId": "L4-003-line-007",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "承知しました。",
+              "reading": "しょーちしました。",
+              "audioId": "L4-003-line-007-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "蝋燭はナプキンの下に戻します。",
+              "reading": "ろーそくわなぷきんのしたにもどします。",
+              "audioId": "L4-003-line-007-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-008",
+          "speaker": "koji",
+          "text": {
+            "ja": "三人とも注文していない、という話で合わせよう。",
+            "zh": "我们三人就统一说谁都没点。",
+            "en": "Let us agree that none of us ordered it."
+          },
+          "readingJa": "さんにんともちゅーもんしていない、というはなしであわせよー。",
+          "ttsTextJa": "三人とも注文していない、という話で合わせよう。",
+          "audioId": "L4-003-line-008",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "三人とも注文していない、",
+              "reading": "さんにんともちゅーもんしていない、",
+              "audioId": "L4-003-line-008-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "という話で合わせよう。",
+              "reading": "というはなしであわせよー。",
+              "audioId": "L4-003-line-008-token-002"
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": {
+            "ja": "三人の食い違いを最もよく説明するものは何ですか。",
+            "zh": "哪项最能解释三人的说法冲突？",
+            "en": "What best explains the three conflicting claims?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "店員が別卓の料理を誤配した。",
+                "zh": "服务员送错桌。",
+                "en": "The server delivered another table's dish."
+              },
+              "ttsTextJa": "店員が別卓の料理を誤配した。",
+              "audioId": "L4-003-q1-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "三人とも注文内容を本当に忘れた。",
+                "zh": "三人都真的忘了订单。",
+                "en": "All three genuinely forgot the order."
+              },
+              "ttsTextJa": "三人とも注文内容を本当に忘れた。",
+              "audioId": "L4-003-q1-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "四人目が苺にアレルギーで、三人が注文責任を避けている",
+                "zh": "第四个人对草莓过敏，三人都在回避点单责任",
+                "en": "The fourth guest is allergic to strawberries, so the three avoid responsibility for ordering them"
+              },
+              "ttsTextJa": "四人目が苺にアレルギーで、三人が注文責任を避けている",
+              "audioId": "L4-003-q1-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "遅れて来る沙耶への誕生日祝いを共同で隠している。",
+                "zh": "他们共同隐瞒给迟到的沙耶准备的生日惊喜。",
+                "en": "They jointly conceal a birthday surprise for the late-arriving Saya."
+              },
+              "ttsTextJa": "遅れて来る沙耶への誕生日祝いを共同で隠している。",
+              "audioId": "L4-003-q1-d"
+            }
+          ],
+          "correctOptionIds": [
+            "d"
+          ],
+          "evidenceLineIds": [
+            "line-001",
+            "line-002",
+            "line-003",
+            "line-004",
+            "line-005",
+            "line-006",
+            "line-007",
+            "line-008"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "本文は「魚、パスタ、サラダ、それから苺の小皿をお持ちしました。」から「三人とも注文していない、という話で合わせよう。」まで、字面だけでは一致しない事実を並べています。",
+              "zh": "正文从“鱼、意面、沙拉，还有一小盘草莓。”到“我们三人就统一说谁都没点。”并置了字面上无法完全相容的事实。",
+              "en": "From “Fish, pasta, salad, and a small strawberry plate.” to “Let us agree that none of us ordered it.,” the text juxtaposes facts that do not fully align at face value."
+            },
+            "intent": {
+              "ja": "それらをまとめる最も具体的な読みは「遅れて来る沙耶への誕生日祝いを共同で隠している。」です。",
+              "zh": "能最具体统合这些事实的解读是“他们共同隐瞒给迟到的沙耶准备的生日惊喜。”。",
+              "en": "The most specific reading that unifies those facts is: They jointly conceal a birthday surprise for the late-arriving Saya."
+            },
+            "evidence": {
+              "ja": "line-001、line-002、line-003、line-004、line-005、line-006、line-007、line-008 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "line-001、line-002、line-003、line-004、line-005、line-006、line-007、line-008 从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "line-001、line-002、line-003、line-004、line-005、line-006、line-007、line-008 support the same inference through distinct aspects of speech, timeline, and behavior."
+            },
+            "nuance": {
+              "ja": "line-001、line-002、line-003、line-004、line-005、line-006、line-007、line-008 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把 line-001、line-002、line-003、line-004、line-005、line-006、line-007、line-008 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading line-001、line-002、line-003、line-004、line-005、line-006、line-007、line-008 together avoids overinterpreting a coincidence or a single word."
+            },
+            "alternative": {
+              "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
+              "zh": "其他解释或许适用于部分现象，却无法同时解释所引全部文本。",
+              "en": "Alternatives may fit part of the scene but do not explain all cited lines at once."
+            }
+          }
+        },
+        {
+          "id": "q2",
+          "type": "single",
+          "prompt": {
+            "ja": "祝いが共同計画だと示す最も強い証拠はどれですか。",
+            "zh": "哪项最有力地显示庆祝是共同计划？",
+            "en": "What most strongly shows the celebration is coordinated?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "苺が小皿で出された。",
+                "zh": "草莓用小盘装。",
+                "en": "The strawberries use a small plate."
+              },
+              "ttsTextJa": "苺が小皿で出された。",
+              "audioId": "L4-003-q2-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "恵美が時刻を管理し、店員が蝋燭を隠し、浩司が口裏を提案する。",
+                "zh": "惠美控制时机，服务员藏蜡烛，浩司提议统一口径。",
+                "en": "Emi manages timing, the server hides a candle, and Koji proposes a shared story."
+              },
+              "ttsTextJa": "恵美が時刻を管理し、店員が蝋燭を隠し、浩司が口裏を提案する。",
+              "audioId": "L4-003-q2-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "リンだけが電話をしていない。",
+                "zh": "只有琳没打电话。",
+                "en": "Only Lin did not call."
+              },
+              "ttsTextJa": "リンだけが電話をしていない。",
+              "audioId": "L4-003-q2-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "四人席に三人が座っている。",
+                "zh": "四人桌坐了三人。",
+                "en": "Three people sit at a table for four."
+              },
+              "ttsTextJa": "四人席に三人が座っている。",
+              "audioId": "L4-003-q2-d"
+            }
+          ],
+          "correctOptionIds": [
+            "b"
+          ],
+          "evidenceLineIds": [
+            "line-004",
+            "line-005",
+            "line-006",
+            "line-007",
+            "line-008"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "本文は「私でもないよ。恵美が店に電話していたけど。」から「三人とも注文していない、という話で合わせよう。」まで、字面だけでは一致しない事実を並べています。",
+              "zh": "正文从“也不是我。不过惠美之前给店里打过电话。”到“我们三人就统一说谁都没点。”并置了字面上无法完全相容的事实。",
+              "en": "From “Not me either, though Emi called the restaurant.” to “Let us agree that none of us ordered it.,” the text juxtaposes facts that do not fully align at face value."
+            },
+            "intent": {
+              "ja": "それらをまとめる最も具体的な読みは「恵美が時刻を管理し、店員が蝋燭を隠し、浩司が口裏を提案する。」です。",
+              "zh": "能最具体统合这些事实的解读是“惠美控制时机，服务员藏蜡烛，浩司提议统一口径。”。",
+              "en": "The most specific reading that unifies those facts is: Emi manages timing, the server hides a candle, and Koji proposes a shared story."
+            },
+            "evidence": {
+              "ja": "line-004、line-005、line-006、line-007、line-008 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "line-004、line-005、line-006、line-007、line-008 从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "line-004、line-005、line-006、line-007、line-008 support the same inference through distinct aspects of speech, timeline, and behavior."
+            },
+            "nuance": {
+              "ja": "line-004、line-005、line-006、line-007、line-008 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把 line-004、line-005、line-006、line-007、line-008 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading line-004、line-005、line-006、line-007、line-008 together avoids overinterpreting a coincidence or a single word."
+            },
+            "alternative": {
+              "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
+              "zh": "其他解释或许适用于部分现象，却无法同时解释所引全部文本。",
+              "en": "Alternatives may fit part of the scene but do not explain all cited lines at once."
+            }
+          }
+        }
+      ],
+      "audio": {
+        "sceneAudioId": "L4-003-scene",
+        "timelineId": "L4-003-timeline",
+        "optionVoiceKey": "narrator"
+      },
+      "passRule": {
+        "type": "all_questions_correct"
+      },
+      "contentRating": "general",
+      "textLocked": true,
+      "contentHash": "3915550c0c60973c5477d7c2b250cb82163b8ef3a7b75283cb9d4d7302391531"
+    },
+    {
+      "schemaVersion": 1,
+      "contentVersion": "1.0.0",
+      "id": "L4-004",
+      "revision": 1,
+      "level": 4,
+      "stage": 4,
+      "jlptTarget": "N1-advanced",
+      "genres": [
+        "travel"
+      ],
+      "skills": [
+        "language-choice",
+        "motive-inference"
+      ],
+      "layout": "multi-dialogue",
+      "title": {
+        "ja": "分からないふりの搭乗口",
+        "zh": "假装听不懂的登机口",
+        "en": "Feigning Confusion at the Gate"
+      },
+      "setting": {
+        "ja": "三言語の搭乗口変更後、多言語話者の礼央だけ旧列に残り、別便の知人を待つ。",
+        "zh": "三语广播更换登机口后，多语者礼央仍留在旧队列，等待另一航班的熟人。",
+        "en": "After a trilingual gate change, multilingual Reo stays behind to meet an acquaintance from another flight."
+      },
+      "illustration": {
+        "enabled": false,
+        "src": "",
+        "style": "none",
+        "alt": {
+          "ja": "",
+          "zh": "",
+          "en": ""
+        }
+      },
+      "cast": [
+        {
+          "id": "reo",
+          "name": {
+            "ja": "礼央",
+            "zh": "礼央",
+            "en": "Reo"
+          },
+          "voiceKey": "male-casual"
+        },
+        {
+          "id": "miki",
+          "name": {
+            "ja": "美紀",
+            "zh": "美纪",
+            "en": "Miki"
+          },
+          "voiceKey": "female-bright"
+        },
+        {
+          "id": "agent",
+          "name": {
+            "ja": "係員",
+            "zh": "地勤",
+            "en": "Gate agent"
+          },
+          "voiceKey": "broadcast"
+        },
+        {
+          "id": "friend",
+          "name": {
+            "ja": "知人・悠",
+            "zh": "熟人悠",
+            "en": "Yu, acquaintance"
+          },
+          "voiceKey": "male-calm"
+        }
+      ],
+      "lines": [
+        {
+          "id": "line-001",
+          "speaker": "agent",
+          "text": {
+            "ja": "六二一便は東十二番へ変更です。日本語、英語、中国語でご案内します。",
+            "zh": "621航班改至东12号门，现以日英中三语广播。",
+            "en": "Flight 621 moves to East Gate 12; this is announced in Japanese, English, and Chinese."
+          },
+          "readingJa": "ろっぴゃくにじゅーいちびんわひがしじゅーにばんえへんこーです。にほんご、えーご、ちゅーごくごでごあんないします。",
+          "ttsTextJa": "六二一便は東十二番へ変更です。日本語、英語、中国語でご案内します。",
+          "audioId": "L4-004-line-001",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "六二一便は東十二番へ変更です。",
+              "reading": "ろっぴゃくにじゅーいちびんわひがしじゅーにばんえへんこーです。",
+              "audioId": "L4-004-line-001-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "日本語、",
+              "reading": "にほんご、",
+              "audioId": "L4-004-line-001-token-002"
+            },
+            {
+              "id": "token-003",
+              "text": "英語、",
+              "reading": "えーご、",
+              "audioId": "L4-004-line-001-token-003"
+            },
+            {
+              "id": "token-004",
+              "text": "中国語でご案内します。",
+              "reading": "ちゅーごくごでごあんないします。",
+              "audioId": "L4-004-line-001-token-004"
+            }
+          ]
+        },
+        {
+          "id": "line-002",
+          "speaker": "miki",
+          "text": {
+            "ja": "礼央、行こう。三つとも分かったでしょう。",
+            "zh": "礼央，走吧。三种你都听懂了吧。",
+            "en": "Reo, let's go. You understood all three."
+          },
+          "readingJa": "れお、いこー。みっつともわかったでしょー。",
+          "ttsTextJa": "礼央、行こう。三つとも分かったでしょう。",
+          "audioId": "L4-004-line-002",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "礼央、",
+              "reading": "れお、",
+              "audioId": "L4-004-line-002-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "行こう。",
+              "reading": "いこー。",
+              "audioId": "L4-004-line-002-token-002"
+            },
+            {
+              "id": "token-003",
+              "text": "三つとも分かったでしょう。",
+              "reading": "みっつともわかったでしょー。",
+              "audioId": "L4-004-line-002-token-003"
+            }
+          ]
+        },
+        {
+          "id": "line-003",
+          "speaker": "reo",
+          "text": {
+            "ja": "人が多くて、よく分からなかった。先に行ってて。",
+            "zh": "人太多，我没听懂。你先走。",
+            "en": "It was crowded; I did not understand. Go ahead."
+          },
+          "readingJa": "ひとがおーくて、よくわからなかった。さきにいってて。",
+          "ttsTextJa": "人が多くて、よく分からなかった。先に行ってて。",
+          "audioId": "L4-004-line-003",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "人が多くて、",
+              "reading": "ひとがおーくて、",
+              "audioId": "L4-004-line-003-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "よく分からなかった。",
+              "reading": "よくわからなかった。",
+              "audioId": "L4-004-line-003-token-002"
+            },
+            {
+              "id": "token-003",
+              "text": "先に行ってて。",
+              "reading": "さきにいってて。",
+              "audioId": "L4-004-line-003-token-003"
+            }
+          ]
+        },
+        {
+          "id": "line-004",
+          "speaker": "miki",
+          "text": {
+            "ja": "昨日は中国語の館内放送まで訳してくれたのに？",
+            "zh": "昨天连中文馆内广播都是你翻的啊？",
+            "en": "Yet yesterday you translated the Chinese announcement for us?"
+          },
+          "readingJa": "きのーわちゅーごくごのかんないほーそーまでやくしてくれたのに？",
+          "ttsTextJa": "昨日は中国語の館内放送まで訳してくれたのに？",
+          "audioId": "L4-004-line-004",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "昨日は中国語の館内放送まで訳してくれたのに？",
+              "reading": "きのーわちゅーごくごのかんないほーそーまでやくしてくれたのに？",
+              "audioId": "L4-004-line-004-token-001"
+            }
+          ]
+        },
+        {
+          "id": "line-005",
+          "speaker": "friend",
+          "text": {
+            "ja": "礼央、五分だけなら話せる。僕の便はこの旧ゲートから出る。",
+            "zh": "礼央，我只能聊五分钟。我的航班从这个旧门出发。",
+            "en": "Reo, I have only five minutes. My flight leaves from this old gate."
+          },
+          "readingJa": "れお、ごぶだけならはなせる。ぼくのびんわこのきゅーげーとからでる。",
+          "ttsTextJa": "礼央、五分だけなら話せる。僕の便はこの旧ゲートから出る。",
+          "audioId": "L4-004-line-005",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "礼央、",
+              "reading": "れお、",
+              "audioId": "L4-004-line-005-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "五分だけなら話せる。",
+              "reading": "ごぶだけならはなせる。",
+              "audioId": "L4-004-line-005-token-002"
+            },
+            {
+              "id": "token-003",
+              "text": "僕の便はこの旧ゲートから出る。",
+              "reading": "ぼくのびんわこのきゅーげーとからでる。",
+              "audioId": "L4-004-line-005-token-003"
+            }
+          ]
+        },
+        {
+          "id": "line-006",
+          "speaker": "reo",
+          "text": {
+            "ja": "間に合った。みんなと一緒なら、ここに残れなかった。",
+            "zh": "赶上了。若和大家一起，我就没法留在这里。",
+            "en": "I made it. I could not have stayed here with everyone."
+          },
+          "readingJa": "まにあった。みんなといっしょなら、ここにのこれなかった。",
+          "ttsTextJa": "間に合った。みんなと一緒なら、ここに残れなかった。",
+          "audioId": "L4-004-line-006",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "間に合った。",
+              "reading": "まにあった。",
+              "audioId": "L4-004-line-006-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "みんなと一緒なら、",
+              "reading": "みんなといっしょなら、",
+              "audioId": "L4-004-line-006-token-002"
+            },
+            {
+              "id": "token-003",
+              "text": "ここに残れなかった。",
+              "reading": "ここにのこれなかった。",
+              "audioId": "L4-004-line-006-token-003"
+            }
+          ]
+        },
+        {
+          "id": "line-007",
+          "speaker": "miki",
+          "text": {
+            "ja": "聞こえなかったんじゃなくて、離れる理由が欲しかったのね。",
+            "zh": "不是没听见，而是需要一个离队的理由。",
+            "en": "You did hear it; you needed a reason to separate."
+          },
+          "readingJa": "きこえなかったんじゃなくて、はなれるりゆーがほしかったのね。",
+          "ttsTextJa": "聞こえなかったんじゃなくて、離れる理由が欲しかったのね。",
+          "audioId": "L4-004-line-007",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "聞こえなかったんじゃなくて、",
+              "reading": "きこえなかったんじゃなくて、",
+              "audioId": "L4-004-line-007-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "離れる理由が欲しかったのね。",
+              "reading": "はなれるりゆーがほしかったのね。",
+              "audioId": "L4-004-line-007-token-002"
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": {
+            "ja": "礼央が「分からない」と言った本当の目的は何ですか。",
+            "zh": "礼央说“听不懂”的真正目的是什么？",
+            "en": "Why does Reo claim not to understand?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "美紀に搭乗口の中国語だけを教わり、放送を聞き直すため",
+                "zh": "为了向美纪学习登机口那句中文，并重新收听广播",
+                "en": "To learn only the gate announcement's Chinese from Miki and hear it again"
+              },
+              "ttsTextJa": "美紀に搭乗口の中国語だけを教わり、放送を聞き直すため",
+              "audioId": "L4-004-q1-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "六二一便へ乗るのをやめるため。",
+                "zh": "为了放弃乘坐621航班。",
+                "en": "To abandon Flight 621."
+              },
+              "ttsTextJa": "六二一便へ乗るのをやめるため。",
+              "audioId": "L4-004-q1-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "集団から一時的に離れ、旧ゲートで知人と会うため。",
+                "zh": "为了暂时离队，在旧登机口见熟人。",
+                "en": "To separate briefly and meet an acquaintance at the old gate."
+              },
+              "ttsTextJa": "集団から一時的に離れ、旧ゲートで知人と会うため。",
+              "audioId": "L4-004-q1-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "係員の放送をやり直させるため。",
+                "zh": "为了让地勤重播广播。",
+                "en": "To make the agent repeat the announcement."
+              },
+              "ttsTextJa": "係員の放送をやり直させるため。",
+              "audioId": "L4-004-q1-d"
+            }
+          ],
+          "correctOptionIds": [
+            "c"
+          ],
+          "evidenceLineIds": [
+            "line-001",
+            "line-002",
+            "line-003",
+            "line-004",
+            "line-005",
+            "line-006"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "本文は「六二一便は東十二番へ変更です。日本語、英語、中国語でご案内します。」から「間に合った。みんなと一緒なら、ここに残れなかった。」まで、字面だけでは一致しない事実を並べています。",
+              "zh": "正文从“621航班改至东12号门，现以日英中三语广播。”到“赶上了。若和大家一起，我就没法留在这里。”并置了字面上无法完全相容的事实。",
+              "en": "From “Flight 621 moves to East Gate 12; this is announced in Japanese, English, and Chinese.” to “I made it. I could not have stayed here with everyone.,” the text juxtaposes facts that do not fully align at face value."
+            },
+            "intent": {
+              "ja": "それらをまとめる最も具体的な読みは「集団から一時的に離れ、旧ゲートで知人と会うため。」です。",
+              "zh": "能最具体统合这些事实的解读是“为了暂时离队，在旧登机口见熟人。”。",
+              "en": "The most specific reading that unifies those facts is: To separate briefly and meet an acquaintance at the old gate."
+            },
+            "evidence": {
+              "ja": "line-001、line-002、line-003、line-004、line-005、line-006 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "line-001、line-002、line-003、line-004、line-005、line-006 从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "line-001、line-002、line-003、line-004、line-005、line-006 support the same inference through distinct aspects of speech, timeline, and behavior."
+            },
+            "nuance": {
+              "ja": "line-001、line-002、line-003、line-004、line-005、line-006 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把 line-001、line-002、line-003、line-004、line-005、line-006 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading line-001、line-002、line-003、line-004、line-005、line-006 together avoids overinterpreting a coincidence or a single word."
+            },
+            "alternative": {
+              "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
+              "zh": "其他解释或许适用于部分现象，却无法同时解释所引全部文本。",
+              "en": "Alternatives may fit part of the scene but do not explain all cited lines at once."
+            }
+          }
+        },
+        {
+          "id": "q2",
+          "type": "single",
+          "prompt": {
+            "ja": "礼央の説明が不自然だと早い段階で分かる手掛かりは何ですか。",
+            "zh": "什么线索早早显示礼央的解释不自然？",
+            "en": "What early clue makes Reo's explanation implausible?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "彼は前日に中国語放送を訳せるほど多言語に堪能だった。",
+                "zh": "他前一天还能翻译中文广播，说明精通多语。",
+                "en": "He was multilingual enough to translate a Chinese announcement the day before."
+              },
+              "ttsTextJa": "彼は前日に中国語放送を訳せるほど多言語に堪能だった。",
+              "audioId": "L4-004-q2-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "旧ゲートに椅子がなかった。",
+                "zh": "旧登机口没有椅子。",
+                "en": "The old gate had no chairs."
+              },
+              "ttsTextJa": "旧ゲートに椅子がなかった。",
+              "audioId": "L4-004-q2-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "係員が日本語だけで話した。",
+                "zh": "地勤只说了日语。",
+                "en": "The agent spoke only Japanese."
+              },
+              "ttsTextJa": "係員が日本語だけで話した。",
+              "audioId": "L4-004-q2-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "美紀は別便へ乗る予定だった。",
+                "zh": "美纪要坐另一航班。",
+                "en": "Miki planned another flight."
+              },
+              "ttsTextJa": "美紀は別便へ乗る予定だった。",
+              "audioId": "L4-004-q2-d"
+            }
+          ],
+          "correctOptionIds": [
+            "a"
+          ],
+          "evidenceLineIds": [
+            "line-001",
+            "line-002",
+            "line-003",
+            "line-004"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "本文は「六二一便は東十二番へ変更です。日本語、英語、中国語でご案内します。」から「昨日は中国語の館内放送まで訳してくれたのに？」まで、字面だけでは一致しない事実を並べています。",
+              "zh": "正文从“621航班改至东12号门，现以日英中三语广播。”到“昨天连中文馆内广播都是你翻的啊？”并置了字面上无法完全相容的事实。",
+              "en": "From “Flight 621 moves to East Gate 12; this is announced in Japanese, English, and Chinese.” to “Yet yesterday you translated the Chinese announcement for us?,” the text juxtaposes facts that do not fully align at face value."
+            },
+            "intent": {
+              "ja": "それらをまとめる最も具体的な読みは「彼は前日に中国語放送を訳せるほど多言語に堪能だった。」です。",
+              "zh": "能最具体统合这些事实的解读是“他前一天还能翻译中文广播，说明精通多语。”。",
+              "en": "The most specific reading that unifies those facts is: He was multilingual enough to translate a Chinese announcement the day before."
+            },
+            "evidence": {
+              "ja": "line-001、line-002、line-003、line-004 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "line-001、line-002、line-003、line-004 从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "line-001、line-002、line-003、line-004 support the same inference through distinct aspects of speech, timeline, and behavior."
+            },
+            "nuance": {
+              "ja": "line-001、line-002、line-003、line-004 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把 line-001、line-002、line-003、line-004 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading line-001、line-002、line-003、line-004 together avoids overinterpreting a coincidence or a single word."
+            },
+            "alternative": {
+              "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
+              "zh": "其他解释或许适用于部分现象，却无法同时解释所引全部文本。",
+              "en": "Alternatives may fit part of the scene but do not explain all cited lines at once."
+            }
+          }
+        }
+      ],
+      "audio": {
+        "sceneAudioId": "L4-004-scene",
+        "timelineId": "L4-004-timeline",
+        "optionVoiceKey": "narrator"
+      },
+      "passRule": {
+        "type": "all_questions_correct"
+      },
+      "contentRating": "general",
+      "textLocked": true,
+      "contentHash": "01d8d3e7eaa1ec029770e7c53eb9cb0cdf943091070ee48772322b0519415370"
+    },
+    {
+      "schemaVersion": 1,
+      "contentVersion": "1.0.0",
+      "id": "L4-005",
+      "revision": 1,
+      "level": 4,
+      "stage": 5,
+      "jlptTarget": "N1-advanced",
+      "genres": [
+        "VRChat",
+        "mystery"
+      ],
+      "skills": [
+        "voice-evidence",
+        "identity-inference"
+      ],
+      "layout": "vrchat",
+      "title": {
+        "ja": "名前を替えた二人",
+        "zh": "交换名字的两人",
+        "en": "Two Swapped Names"
+      },
+      "setting": {
+        "ja": "VRChatの調停室。二人は表示名とアバターを交換したが、古い呼び名への反射が正体を漏らす。",
+        "zh": "VRChat调解室中，两人交换显示名与头像，但对旧昵称的下意识回应泄露身份。",
+        "en": "A VRChat mediation room where swapped avatars and display names fail to conceal a reflexive response to an old nickname."
+      },
+      "illustration": {
+        "enabled": false,
+        "src": "",
+        "style": "none",
+        "alt": {
+          "ja": "",
+          "zh": "",
+          "en": ""
+        }
+      },
+      "cast": [
+        {
+          "id": "host",
+          "name": {
+            "ja": "司会・ユラ",
+            "zh": "主持尤拉",
+            "en": "Yura, host"
+          },
+          "voiceKey": "female-calm"
+        },
+        {
+          "id": "avatar-a",
+          "name": {
+            "ja": "表示名『クロ』",
+            "zh": "显示名“Kuro”",
+            "en": "Display name Kuro"
+          },
+          "voiceKey": "male-casual"
+        },
+        {
+          "id": "avatar-b",
+          "name": {
+            "ja": "表示名『シロ』",
+            "zh": "显示名“Shiro”",
+            "en": "Display name Shiro"
+          },
+          "voiceKey": "male-serious"
+        },
+        {
+          "id": "witness",
+          "name": {
+            "ja": "旧友・ミナ",
+            "zh": "旧友米娜",
+            "en": "Mina, old friend"
+          },
+          "voiceKey": "female-bright"
+        }
+      ],
+      "lines": [
+        {
+          "id": "line-001",
+          "speaker": "host",
+          "text": {
+            "ja": "二人とも、表示名とアバターが普段と逆だという申告ですね。",
+            "zh": "两位都承认显示名和头像与平时相反。",
+            "en": "Both of you admit your display names and avatars are reversed."
+          },
+          "readingJa": "ふたりとも、ひょうじめいとあばたーがふだんとぎゃくだというしんこくですね。",
+          "ttsTextJa": "二人とも、表示名とアバターが普段と逆だという申告ですね。",
+          "audioId": "L4-005-line-001",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "二人とも、",
+              "reading": "ふたりとも、",
+              "audioId": "L4-005-line-001-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "表示名とアバターが普段と逆だという申告ですね。",
+              "reading": "ひょうじめいとあばたーがふだんとぎゃくだというしんこくですね。",
+              "audioId": "L4-005-line-001-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-002",
+          "speaker": "avatar-a",
+          "text": {
+            "ja": "声も変換してる。見た目では決められないよ。",
+            "zh": "声音也变过，不能凭外表判断。",
+            "en": "The voice is transformed too; appearance proves nothing."
+          },
+          "readingJa": "こえもへんかんしてる。みためでわきめられないよ。",
+          "ttsTextJa": "声も変換してる。見た目では決められないよ。",
+          "audioId": "L4-005-line-002",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "声も変換してる。",
+              "reading": "こえもへんかんしてる。",
+              "audioId": "L4-005-line-002-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "見た目では決められないよ。",
+              "reading": "みためでわきめられないよ。",
+              "audioId": "L4-005-line-002-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-003",
+          "speaker": "avatar-b",
+          "text": {
+            "ja": "記録上、私はシロです。それ以上は答えません。",
+            "zh": "记录上我是Shiro，其他不回答。",
+            "en": "According to the record, I am Shiro. I will say no more."
+          },
+          "readingJa": "きろくじょう、わたしわしろです。それいじょーわこたえません。",
+          "ttsTextJa": "記録上、私はシロです。それ以上は答えません。",
+          "audioId": "L4-005-line-003",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "記録上、",
+              "reading": "きろくじょう、",
+              "audioId": "L4-005-line-003-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "私はシロです。",
+              "reading": "わたしわしろです。",
+              "audioId": "L4-005-line-003-token-002"
+            },
+            {
+              "id": "token-003",
+              "text": "それ以上は答えません。",
+              "reading": "それいじょーわこたえません。",
+              "audioId": "L4-005-line-003-token-003"
+            }
+          ]
+        },
+        {
+          "id": "line-004",
+          "speaker": "witness",
+          "text": {
+            "ja": "昔みたいに呼べば分かるかも。ねえ、『豆大福』。",
+            "zh": "像以前那样叫也许会知道。喂，“豆大福”。",
+            "en": "Calling you as before may help. Hey, 'Mame-daifuku.'"
+          },
+          "readingJa": "むかしみたいによべばわかるかも。ねー、『まめだいふく』。",
+          "ttsTextJa": "昔みたいに呼べば分かるかも。ねえ、『豆大福』。",
+          "audioId": "L4-005-line-004",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "昔みたいに呼べば分かるかも。",
+              "reading": "むかしみたいによべばわかるかも。",
+              "audioId": "L4-005-line-004-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "ねえ、",
+              "reading": "ねー、",
+              "audioId": "L4-005-line-004-token-002"
+            },
+            {
+              "id": "token-003",
+              "text": "『豆大福』。",
+              "reading": "『まめだいふく』。",
+              "audioId": "L4-005-line-004-token-003"
+            }
+          ]
+        },
+        {
+          "id": "line-005",
+          "speaker": "avatar-b",
+          "text": {
+            "ja": "その呼び方やめろって、何度も——。",
+            "zh": "都说多少次别这么叫——",
+            "en": "I told you over and over not to call me that—"
+          },
+          "readingJa": "そのよびかたやめろって、なんども——。",
+          "ttsTextJa": "その呼び方やめろって、何度も——。",
+          "audioId": "L4-005-line-005",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "その呼び方やめろって、",
+              "reading": "そのよびかたやめろって、",
+              "audioId": "L4-005-line-005-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "何度も——。",
+              "reading": "なんども——。",
+              "audioId": "L4-005-line-005-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-006",
+          "speaker": "avatar-a",
+          "text": {
+            "ja": "僕には関係ない呼び名だ。",
+            "zh": "那个称呼与我无关。",
+            "en": "That nickname means nothing to me."
+          },
+          "readingJa": "ぼくにわかんけーないよびなだ。",
+          "ttsTextJa": "僕には関係ない呼び名だ。",
+          "audioId": "L4-005-line-006",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "僕には関係ない呼び名だ。",
+              "reading": "ぼくにわかんけーないよびなだ。",
+              "audioId": "L4-005-line-006-token-001"
+            }
+          ]
+        },
+        {
+          "id": "line-007",
+          "speaker": "host",
+          "text": {
+            "ja": "反射的に返したのは、表示名シロの側でした。",
+            "zh": "下意识回应的是显示名Shiro这一方。",
+            "en": "The one labeled Shiro responded reflexively."
+          },
+          "readingJa": "はんしゃてきにかえしたのわ、ひょうじめいしろのがわでした。",
+          "ttsTextJa": "反射的に返したのは、表示名シロの側でした。",
+          "audioId": "L4-005-line-007",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "反射的に返したのは、",
+              "reading": "はんしゃてきにかえしたのわ、",
+              "audioId": "L4-005-line-007-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "表示名シロの側でした。",
+              "reading": "ひょうじめいしろのがわでした。",
+              "audioId": "L4-005-line-007-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-008",
+          "speaker": "witness",
+          "text": {
+            "ja": "なら、中身は昔のクロ。名札より先に体が答えた。",
+            "zh": "那里面就是从前的Kuro。身体比名牌先回答了。",
+            "en": "Then the person inside is the old Kuro. The body answered before the label."
+          },
+          "readingJa": "なら、なかみわむかしのくろ。なふだよりさきにからだがこたえた。",
+          "ttsTextJa": "なら、中身は昔のクロ。名札より先に体が答えた。",
+          "audioId": "L4-005-line-008",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "なら、",
+              "reading": "なら、",
+              "audioId": "L4-005-line-008-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "中身は昔のクロ。",
+              "reading": "なかみわむかしのくろ。",
+              "audioId": "L4-005-line-008-token-002"
+            },
+            {
+              "id": "token-003",
+              "text": "名札より先に体が答えた。",
+              "reading": "なふだよりさきにからだがこたえた。",
+              "audioId": "L4-005-line-008-token-003"
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": {
+            "ja": "昔のクロである可能性が最も高いのはどちらですか。",
+            "zh": "哪一方最可能是真正的旧Kuro？",
+            "en": "Which participant is most likely the original Kuro?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "表示名クロの側。交換後も名札が本人の過去を正しく示しているから",
+                "zh": "显示名为黑的一方，因为交换后名牌仍准确反映本人过去",
+                "en": "The side labeled Kuro, because the nameplate still accurately represents that person's past after the swap"
+              },
+              "ttsTextJa": "表示名クロの側。交換後も名札が本人の過去を正しく示しているから",
+              "audioId": "L4-005-q1-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "表示名シロの側。古い呼び名へ内容に即した反応をしたから。",
+                "zh": "显示名Shiro一方，因为对旧昵称作出符合经历的回应。",
+                "en": "The one labeled Shiro, because the old nickname triggered a context-appropriate response."
+              },
+              "ttsTextJa": "表示名シロの側。古い呼び名へ内容に即した反応をしたから。",
+              "audioId": "L4-005-q1-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "司会。二人の記録を持っているから。",
+                "zh": "主持人，因为掌握两人记录。",
+                "en": "The host, because she has their records."
+              },
+              "ttsTextJa": "司会。二人の記録を持っているから。",
+              "audioId": "L4-005-q1-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "旧友。呼び名を知っていたから。",
+                "zh": "旧友，因为知道昵称。",
+                "en": "The old friend, because she knew the nickname."
+              },
+              "ttsTextJa": "旧友。呼び名を知っていたから。",
+              "audioId": "L4-005-q1-d"
+            }
+          ],
+          "correctOptionIds": [
+            "b"
+          ],
+          "evidenceLineIds": [
+            "line-001",
+            "line-002",
+            "line-003",
+            "line-004",
+            "line-005",
+            "line-007",
+            "line-008"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "本文は「二人とも、表示名とアバターが普段と逆だという申告ですね。」から「なら、中身は昔のクロ。名札より先に体が答えた。」まで、字面だけでは一致しない事実を並べています。",
+              "zh": "正文从“两位都承认显示名和头像与平时相反。”到“那里面就是从前的Kuro。身体比名牌先回答了。”并置了字面上无法完全相容的事实。",
+              "en": "From “Both of you admit your display names and avatars are reversed.” to “Then the person inside is the old Kuro. The body answered before the label.,” the text juxtaposes facts that do not fully align at face value."
+            },
+            "intent": {
+              "ja": "それらをまとめる最も具体的な読みは「表示名シロの側。古い呼び名へ内容に即した反応をしたから。」です。",
+              "zh": "能最具体统合这些事实的解读是“显示名Shiro一方，因为对旧昵称作出符合经历的回应。”。",
+              "en": "The most specific reading that unifies those facts is: The one labeled Shiro, because the old nickname triggered a context-appropriate response."
+            },
+            "evidence": {
+              "ja": "line-001、line-002、line-003、line-004、line-005、line-007、line-008 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "line-001、line-002、line-003、line-004、line-005、line-007、line-008 从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "line-001、line-002、line-003、line-004、line-005、line-007、line-008 support the same inference through distinct aspects of speech, timeline, and behavior."
+            },
+            "nuance": {
+              "ja": "line-001、line-002、line-003、line-004、line-005、line-007、line-008 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把 line-001、line-002、line-003、line-004、line-005、line-007、line-008 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading line-001、line-002、line-003、line-004、line-005、line-007、line-008 together avoids overinterpreting a coincidence or a single word."
+            },
+            "alternative": {
+              "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
+              "zh": "其他解释或许适用于部分现象，却无法同时解释所引全部文本。",
+              "en": "Alternatives may fit part of the scene but do not explain all cited lines at once."
+            }
+          }
+        },
+        {
+          "id": "q2",
+          "type": "single",
+          "prompt": {
+            "ja": "反射的返答が名札より強い証拠になる理由は何ですか。",
+            "zh": "为什么下意识回应比名牌更强？",
+            "en": "Why is the reflex stronger evidence than the labels?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "アバターは声を一切変えられないから。",
+                "zh": "头像无法改变声音。",
+                "en": "Avatars cannot alter voices."
+              },
+              "ttsTextJa": "アバターは声を一切変えられないから。",
+              "audioId": "L4-005-q2-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "司会が表示名を禁止したから。",
+                "zh": "主持人禁止显示名。",
+                "en": "The host banned display names."
+              },
+              "ttsTextJa": "司会が表示名を禁止したから。",
+              "audioId": "L4-005-q2-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "旧友は必ず真実だけを話すから。",
+                "zh": "旧友一定只说真话。",
+                "en": "Old friends always tell the truth."
+              },
+              "ttsTextJa": "旧友は必ず真実だけを話すから。",
+              "audioId": "L4-005-q2-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "名札と外見は意図的に交換できるが、個人的呼び名への即時反応は制御しにくいから。",
+                "zh": "名牌外观可有意交换，而对私人昵称的即时反应难以控制。",
+                "en": "Labels and appearance can be deliberately swapped, while an immediate response to a personal nickname is harder to control."
+              },
+              "ttsTextJa": "名札と外見は意図的に交換できるが、個人的呼び名への即時反応は制御しにくいから。",
+              "audioId": "L4-005-q2-d"
+            }
+          ],
+          "correctOptionIds": [
+            "d"
+          ],
+          "evidenceLineIds": [
+            "line-001",
+            "line-002",
+            "line-004",
+            "line-005",
+            "line-006",
+            "line-008"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "本文は「二人とも、表示名とアバターが普段と逆だという申告ですね。」から「なら、中身は昔のクロ。名札より先に体が答えた。」まで、字面だけでは一致しない事実を並べています。",
+              "zh": "正文从“两位都承认显示名和头像与平时相反。”到“那里面就是从前的Kuro。身体比名牌先回答了。”并置了字面上无法完全相容的事实。",
+              "en": "From “Both of you admit your display names and avatars are reversed.” to “Then the person inside is the old Kuro. The body answered before the label.,” the text juxtaposes facts that do not fully align at face value."
+            },
+            "intent": {
+              "ja": "それらをまとめる最も具体的な読みは「名札と外見は意図的に交換できるが、個人的呼び名への即時反応は制御しにくいから。」です。",
+              "zh": "能最具体统合这些事实的解读是“名牌外观可有意交换，而对私人昵称的即时反应难以控制。”。",
+              "en": "The most specific reading that unifies those facts is: Labels and appearance can be deliberately swapped, while an immediate response to a personal nickname is harder to control."
+            },
+            "evidence": {
+              "ja": "line-001、line-002、line-004、line-005、line-006、line-008 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "line-001、line-002、line-004、line-005、line-006、line-008 从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "line-001、line-002、line-004、line-005、line-006、line-008 support the same inference through distinct aspects of speech, timeline, and behavior."
+            },
+            "nuance": {
+              "ja": "line-001、line-002、line-004、line-005、line-006、line-008 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把 line-001、line-002、line-004、line-005、line-006、line-008 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading line-001、line-002、line-004、line-005、line-006、line-008 together avoids overinterpreting a coincidence or a single word."
+            },
+            "alternative": {
+              "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
+              "zh": "其他解释或许适用于部分现象，却无法同时解释所引全部文本。",
+              "en": "Alternatives may fit part of the scene but do not explain all cited lines at once."
+            }
+          }
+        }
+      ],
+      "audio": {
+        "sceneAudioId": "L4-005-scene",
+        "timelineId": "L4-005-timeline",
+        "optionVoiceKey": "narrator"
+      },
+      "passRule": {
+        "type": "all_questions_correct"
+      },
+      "contentRating": "general",
+      "textLocked": true,
+      "contentHash": "10404fd1d21975b5bace49865185d3f32c1b9904a9ab081958b780d1f29f4d4d"
+    },
+    {
+      "schemaVersion": 1,
+      "contentVersion": "1.0.0",
+      "id": "L4-006",
+      "revision": 1,
+      "level": 4,
+      "stage": 6,
+      "jlptTarget": "N1-advanced",
+      "genres": [
+        "games",
+        "online-chat"
+      ],
+      "skills": [
+        "information-gap",
+        "channel-analysis"
+      ],
+      "layout": "party-voice",
+      "title": {
+        "ja": "ミュート中の先回り",
+        "zh": "静音者的抢先反对",
+        "en": "The Muted Player Who Knew First"
+      },
+      "setting": {
+        "ja": "遅延配信つきの協力ゲーム。静音中の海斗が、口に出る前の作戦へ文字で反対する。",
+        "zh": "带延迟直播的合作游戏中，静音的海斗总在战术说出口前用文字反对。",
+        "en": "In a co-op game with a delayed stream, muted Kaito objects in text before plans are spoken."
+      },
+      "illustration": {
+        "enabled": false,
+        "src": "",
+        "style": "none",
+        "alt": {
+          "ja": "",
+          "zh": "",
+          "en": ""
+        }
+      },
+      "cast": [
+        {
+          "id": "kaito",
+          "name": {
+            "ja": "海斗",
+            "zh": "海斗",
+            "en": "Kaito"
+          },
+          "voiceKey": "male-casual"
+        },
+        {
+          "id": "mina",
+          "name": {
+            "ja": "美奈",
+            "zh": "美奈",
+            "en": "Mina"
+          },
+          "voiceKey": "female-bright"
+        },
+        {
+          "id": "riku",
+          "name": {
+            "ja": "陸",
+            "zh": "陆",
+            "en": "Riku"
+          },
+          "voiceKey": "male-serious"
+        },
+        {
+          "id": "sana",
+          "name": {
+            "ja": "沙奈",
+            "zh": "沙奈",
+            "en": "Sana"
+          },
+          "voiceKey": "female-calm"
+        }
+      ],
+      "lines": [
+        {
+          "id": "line-001",
+          "speaker": "mina",
+          "text": {
+            "ja": "次は北門から——",
+            "zh": "接下来从北门——",
+            "en": "Next, from the north gate—"
+          },
+          "readingJa": "つぎわきたもんから——",
+          "ttsTextJa": "次は北門から——",
+          "audioId": "L4-006-line-001",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "次は北門から——",
+              "reading": "つぎわきたもんから——",
+              "audioId": "L4-006-line-001-token-001"
+            }
+          ]
+        },
+        {
+          "id": "line-002",
+          "speaker": "kaito",
+          "text": {
+            "ja": "【文字】北門は反対。南へ行こう。",
+            "zh": "【文字】反对北门，走南边。",
+            "en": "[Text] Not north. Go south."
+          },
+          "readingJa": "【もじ】きたもんわはんたい。みなみえいこー。",
+          "ttsTextJa": "【文字】北門は反対。南へ行こう。",
+          "audioId": "L4-006-line-002",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "【文字】北門は反対。",
+              "reading": "【もじ】きたもんわはんたい。",
+              "audioId": "L4-006-line-002-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "南へ行こう。",
+              "reading": "みなみえいこー。",
+              "audioId": "L4-006-line-002-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-003",
+          "speaker": "riku",
+          "text": {
+            "ja": "まだ北門と言い切ってないぞ。海斗はミュート中だ。",
+            "zh": "我还没说完北门。海斗也在静音。",
+            "en": "I had not finished saying north. Kaito is muted."
+          },
+          "readingJa": "まだきたもんといーきってないぞ。かいとわみゅーとちゅうだ。",
+          "ttsTextJa": "まだ北門と言い切ってないぞ。海斗はミュート中だ。",
+          "audioId": "L4-006-line-003",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "まだ北門と言い切ってないぞ。",
+              "reading": "まだきたもんといーきってないぞ。",
+              "audioId": "L4-006-line-003-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "海斗はミュート中だ。",
+              "reading": "かいとわみゅーとちゅうだ。",
+              "audioId": "L4-006-line-003-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-004",
+          "speaker": "sana",
+          "text": {
+            "ja": "公開配信は三十秒遅延。そこから先読みはできない。",
+            "zh": "公开直播延迟30秒，不可能从那里提前知道。",
+            "en": "The public stream is thirty seconds late; it cannot provide advance knowledge."
+          },
+          "readingJa": "こーかいはいしんわさんじゅーびょーちえん。そこからさきよみわできない。",
+          "ttsTextJa": "公開配信は三十秒遅延。そこから先読みはできない。",
+          "audioId": "L4-006-line-004",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "公開配信は三十秒遅延。",
+              "reading": "こーかいはいしんわさんじゅーびょーちえん。",
+              "audioId": "L4-006-line-004-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "そこから先読みはできない。",
+              "reading": "そこからさきよみわできない。",
+              "audioId": "L4-006-line-004-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-005",
+          "speaker": "mina",
+          "text": {
+            "ja": "じゃあ、今度は文字に書かず決める。西の塔へ——",
+            "zh": "那这次不打字。去西塔——",
+            "en": "Then we decide without typing. To the west tower—"
+          },
+          "readingJa": "じゃー、こんどわもじにかかずきめる。にしのとーえ——",
+          "ttsTextJa": "じゃあ、今度は文字に書かず決める。西の塔へ——",
+          "audioId": "L4-006-line-005",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "じゃあ、",
+              "reading": "じゃー、",
+              "audioId": "L4-006-line-005-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "今度は文字に書かず決める。",
+              "reading": "こんどわもじにかかずきめる。",
+              "audioId": "L4-006-line-005-token-002"
+            },
+            {
+              "id": "token-003",
+              "text": "西の塔へ——",
+              "reading": "にしのとーえ——",
+              "audioId": "L4-006-line-005-token-003"
+            }
+          ]
+        },
+        {
+          "id": "line-006",
+          "speaker": "kaito",
+          "text": {
+            "ja": "【文字】西も駄目。ボスが移動した。",
+            "zh": "【文字】西边也不行，首领移动了。",
+            "en": "[Text] West is bad too. The boss moved."
+          },
+          "readingJa": "【もじ】にしもだめ。ぼすがいどーした。",
+          "ttsTextJa": "【文字】西も駄目。ボスが移動した。",
+          "audioId": "L4-006-line-006",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "【文字】西も駄目。",
+              "reading": "【もじ】にしもだめ。",
+              "audioId": "L4-006-line-006-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "ボスが移動した。",
+              "reading": "ぼすがいどーした。",
+              "audioId": "L4-006-line-006-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-007",
+          "speaker": "riku",
+          "text": {
+            "ja": "その移動を見られるのは、偵察役の沙奈だけだ。",
+            "zh": "能看到那次移动的只有侦察手沙奈。",
+            "en": "Only scout Sana could see that movement."
+          },
+          "readingJa": "そのいどーをみられるのわ、ていさつやくのしゃなだけだ。",
+          "ttsTextJa": "その移動を見られるのは、偵察役の沙奈だけだ。",
+          "audioId": "L4-006-line-007",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "その移動を見られるのは、",
+              "reading": "そのいどーをみられるのわ、",
+              "audioId": "L4-006-line-007-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "偵察役の沙奈だけだ。",
+              "reading": "ていさつやくのしゃなだけだ。",
+              "audioId": "L4-006-line-007-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-008",
+          "speaker": "sana",
+          "text": {
+            "ja": "……個別通話を切り忘れていた。海斗には私の音声が届いてる。",
+            "zh": "……我忘了断开私聊语音，海斗能听见我。",
+            "en": "...I forgot to leave our private call. Kaito can hear me."
+          },
+          "readingJa": "……こべつつーわをきりわすれていた。かいとにわわたしのおんせーがとどいてる。",
+          "ttsTextJa": "……個別通話を切り忘れていた。海斗には私の音声が届いてる。",
+          "audioId": "L4-006-line-008",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "……個別通話を切り忘れていた。",
+              "reading": "……こべつつーわをきりわすれていた。",
+              "audioId": "L4-006-line-008-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "海斗には私の音声が届いてる。",
+              "reading": "かいとにわわたしのおんせーがとどいてる。",
+              "audioId": "L4-006-line-008-token-002"
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": {
+            "ja": "海斗の情報源は何ですか。",
+            "zh": "海斗的信息来源是什么？",
+            "en": "What is Kaito's source?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "沙奈との個別通話。",
+                "zh": "与沙奈的私人通话。",
+                "en": "A private call with Sana."
+              },
+              "ttsTextJa": "沙奈との個別通話。",
+              "audioId": "L4-006-q1-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "三十秒遅れの公開配信。",
+                "zh": "延迟30秒的公开直播。",
+                "en": "The delayed public stream."
+              },
+              "ttsTextJa": "三十秒遅れの公開配信。",
+              "audioId": "L4-006-q1-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "ゲーム内文字ログ。",
+                "zh": "游戏文字日志。",
+                "en": "The in-game text log."
+              },
+              "ttsTextJa": "ゲーム内文字ログ。",
+              "audioId": "L4-006-q1-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "偶然の連続。",
+                "zh": "连续巧合。",
+                "en": "Repeated coincidence."
+              },
+              "ttsTextJa": "偶然の連続。",
+              "audioId": "L4-006-q1-d"
+            }
+          ],
+          "correctOptionIds": [
+            "a"
+          ],
+          "evidenceLineIds": [
+            "line-001",
+            "line-002",
+            "line-004",
+            "line-005",
+            "line-006",
+            "line-007",
+            "line-008"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "本文は「次は北門から——」から「……個別通話を切り忘れていた。海斗には私の音声が届いてる。」まで、字面だけでは一致しない事実を並べています。",
+              "zh": "正文从“接下来从北门——”到“……我忘了断开私聊语音，海斗能听见我。”并置了字面上无法完全相容的事实。",
+              "en": "From “Next, from the north gate—” to “...I forgot to leave our private call. Kaito can hear me.,” the text juxtaposes facts that do not fully align at face value."
+            },
+            "intent": {
+              "ja": "それらをまとめる最も具体的な読みは「沙奈との個別通話。」です。",
+              "zh": "能最具体统合这些事实的解读是“与沙奈的私人通话。”。",
+              "en": "The most specific reading that unifies those facts is: A private call with Sana."
+            },
+            "evidence": {
+              "ja": "line-001、line-002、line-004、line-005、line-006、line-007、line-008 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "line-001、line-002、line-004、line-005、line-006、line-007、line-008 从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "line-001、line-002、line-004、line-005、line-006、line-007、line-008 support the same inference through distinct aspects of speech, timeline, and behavior."
+            },
+            "nuance": {
+              "ja": "line-001、line-002、line-004、line-005、line-006、line-007、line-008 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把 line-001、line-002、line-004、line-005、line-006、line-007、line-008 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading line-001、line-002、line-004、line-005、line-006、line-007、line-008 together avoids overinterpreting a coincidence or a single word."
+            },
+            "alternative": {
+              "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
+              "zh": "其他解释或许适用于部分现象，却无法同时解释所引全部文本。",
+              "en": "Alternatives may fit part of the scene but do not explain all cited lines at once."
+            }
+          }
+        },
+        {
+          "id": "q2",
+          "type": "single",
+          "prompt": {
+            "ja": "公開配信説を崩す決定的な点は何ですか。",
+            "zh": "哪一点决定性地推翻公开直播说？",
+            "en": "What decisively rules out the public stream?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "海斗が文字チャットを使い、公開配信と同じ内容を書き込んだ",
+                "zh": "海斗使用文字聊天，写下了与公开直播相同的内容",
+                "en": "Kaito used text chat and wrote the same information as the public stream"
+              },
+              "ttsTextJa": "海斗が文字チャットを使い、公開配信と同じ内容を書き込んだ",
+              "audioId": "L4-006-q2-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "北門が危険だ。",
+                "zh": "北门危险。",
+                "en": "North is dangerous."
+              },
+              "ttsTextJa": "北門が危険だ。",
+              "audioId": "L4-006-q2-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "発話前に反応し、配信は三十秒遅れている。",
+                "zh": "他在发言前反应，而直播延迟30秒。",
+                "en": "He reacts before speech while the stream is thirty seconds late."
+              },
+              "ttsTextJa": "発話前に反応し、配信は三十秒遅れている。",
+              "audioId": "L4-006-q2-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "陸が会話にいる。",
+                "zh": "陆在语音中。",
+                "en": "Riku is present."
+              },
+              "ttsTextJa": "陸が会話にいる。",
+              "audioId": "L4-006-q2-d"
+            }
+          ],
+          "correctOptionIds": [
+            "c"
+          ],
+          "evidenceLineIds": [
+            "line-001",
+            "line-002",
+            "line-003",
+            "line-004",
+            "line-005",
+            "line-006"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "本文は「次は北門から——」から「【文字】西も駄目。ボスが移動した。」まで、字面だけでは一致しない事実を並べています。",
+              "zh": "正文从“接下来从北门——”到“【文字】西边也不行，首领移动了。”并置了字面上无法完全相容的事实。",
+              "en": "From “Next, from the north gate—” to “[Text] West is bad too. The boss moved.,” the text juxtaposes facts that do not fully align at face value."
+            },
+            "intent": {
+              "ja": "それらをまとめる最も具体的な読みは「発話前に反応し、配信は三十秒遅れている。」です。",
+              "zh": "能最具体统合这些事实的解读是“他在发言前反应，而直播延迟30秒。”。",
+              "en": "The most specific reading that unifies those facts is: He reacts before speech while the stream is thirty seconds late."
+            },
+            "evidence": {
+              "ja": "line-001、line-002、line-003、line-004、line-005、line-006 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "line-001、line-002、line-003、line-004、line-005、line-006 从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "line-001、line-002、line-003、line-004、line-005、line-006 support the same inference through distinct aspects of speech, timeline, and behavior."
+            },
+            "nuance": {
+              "ja": "line-001、line-002、line-003、line-004、line-005、line-006 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把 line-001、line-002、line-003、line-004、line-005、line-006 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading line-001、line-002、line-003、line-004、line-005、line-006 together avoids overinterpreting a coincidence or a single word."
+            },
+            "alternative": {
+              "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
+              "zh": "其他解释或许适用于部分现象，却无法同时解释所引全部文本。",
+              "en": "Alternatives may fit part of the scene but do not explain all cited lines at once."
+            }
+          }
+        },
+        {
+          "id": "q3",
+          "type": "multiple",
+          "prompt": {
+            "ja": "隠れた経路を示す証拠を二つ選んでください。",
+            "zh": "请选择两项显示隐藏通道的证据。",
+            "en": "Choose two clues to the hidden channel."
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "海斗は未発話の作戦を二度先取りする。",
+                "zh": "海斗两次预知尚未说出的战术。",
+                "en": "Kaito twice anticipates unspoken plans."
+              },
+              "ttsTextJa": "海斗は未発話の作戦を二度先取りする。",
+              "audioId": "L4-006-q3-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "美奈は北門を提案する。",
+                "zh": "美奈提议北门。",
+                "en": "Mina proposes north."
+              },
+              "ttsTextJa": "美奈は北門を提案する。",
+              "audioId": "L4-006-q3-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "沙奈だけが見た移動を海斗が知り、個別通話を認める。",
+                "zh": "海斗知道只有沙奈看见的移动，沙奈又承认私人通话。",
+                "en": "Kaito knows Sana-only information, and she admits the private call."
+              },
+              "ttsTextJa": "沙奈だけが見た移動を海斗が知り、個別通話を認める。",
+              "audioId": "L4-006-q3-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "陸は偵察役ではない。",
+                "zh": "陆不是侦察手。",
+                "en": "Riku is not scout."
+              },
+              "ttsTextJa": "陸は偵察役ではない。",
+              "audioId": "L4-006-q3-d"
+            }
+          ],
+          "correctOptionIds": [
+            "a",
+            "c"
+          ],
+          "evidenceLineIds": [
+            "line-001",
+            "line-002",
+            "line-005",
+            "line-006",
+            "line-007",
+            "line-008"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "本文は「次は北門から——」から「……個別通話を切り忘れていた。海斗には私の音声が届いてる。」まで、字面だけでは一致しない事実を並べています。",
+              "zh": "正文从“接下来从北门——”到“……我忘了断开私聊语音，海斗能听见我。”并置了字面上无法完全相容的事实。",
+              "en": "From “Next, from the north gate—” to “...I forgot to leave our private call. Kaito can hear me.,” the text juxtaposes facts that do not fully align at face value."
+            },
+            "intent": {
+              "ja": "それらをまとめる最も具体的な読みは「海斗は未発話の作戦を二度先取りする。／沙奈だけが見た移動を海斗が知り、個別通話を認める。」です。",
+              "zh": "能最具体统合这些事实的解读是“海斗两次预知尚未说出的战术。；海斗知道只有沙奈看见的移动，沙奈又承认私人通话。”。",
+              "en": "The most specific reading that unifies those facts is: Kaito twice anticipates unspoken plans.; Kaito knows Sana-only information, and she admits the private call."
+            },
+            "evidence": {
+              "ja": "line-001、line-002、line-005、line-006、line-007、line-008 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "line-001、line-002、line-005、line-006、line-007、line-008 从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "line-001、line-002、line-005、line-006、line-007、line-008 support the same inference through distinct aspects of speech, timeline, and behavior."
+            },
+            "nuance": {
+              "ja": "line-001、line-002、line-005、line-006、line-007、line-008 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把 line-001、line-002、line-005、line-006、line-007、line-008 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading line-001、line-002、line-005、line-006、line-007、line-008 together avoids overinterpreting a coincidence or a single word."
+            },
+            "alternative": {
+              "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
+              "zh": "其他解释或许适用于部分现象，却无法同时解释所引全部文本。",
+              "en": "Alternatives may fit part of the scene but do not explain all cited lines at once."
+            }
+          }
+        }
+      ],
+      "audio": {
+        "sceneAudioId": "L4-006-scene",
+        "timelineId": "L4-006-timeline",
+        "optionVoiceKey": "narrator"
+      },
+      "passRule": {
+        "type": "all_questions_correct"
+      },
+      "contentRating": "general",
+      "textLocked": true,
+      "contentHash": "307ff2c17da6e96c24911699673afb45b65e96653148b9c3d687b8e34d7a4cbd"
+    },
+    {
+      "schemaVersion": 1,
+      "contentVersion": "1.0.0",
+      "id": "L4-007",
+      "revision": 1,
+      "level": 4,
+      "stage": 7,
+      "jlptTarget": "N1-advanced",
+      "genres": [
+        "mystery"
+      ],
+      "skills": [
+        "cross-testimony",
+        "knowledge-boundary"
+      ],
+      "layout": "interview",
+      "title": {
+        "ja": "同じ順番のアリバイ",
+        "zh": "顺序一致的不在场证明",
+        "en": "Alibis in the Same Order"
+      },
+      "setting": {
+        "ja": "三人への別々の事情聴取。全員が受付表にしかない部屋順まで同じに語る。",
+        "zh": "三人分别受询，却都按仅见于前台表格的房间顺序叙述。",
+        "en": "Separate interviews yield accounts in the exact room order found only on reception's schedule."
+      },
+      "illustration": {
+        "enabled": false,
+        "src": "",
+        "style": "none",
+        "alt": {
+          "ja": "",
+          "zh": "",
+          "en": ""
+        }
+      },
+      "cast": [
+        {
+          "id": "inspector",
+          "name": {
+            "ja": "調査員・榊",
+            "zh": "调查员榊",
+            "en": "Sakaki, investigator"
+          },
+          "voiceKey": "male-serious"
+        },
+        {
+          "id": "a",
+          "name": {
+            "ja": "証人・葵",
+            "zh": "证人葵",
+            "en": "Aoi, witness"
+          },
+          "voiceKey": "female-soft"
+        },
+        {
+          "id": "b",
+          "name": {
+            "ja": "証人・文",
+            "zh": "证人文",
+            "en": "Fumi, witness"
+          },
+          "voiceKey": "female-calm"
+        },
+        {
+          "id": "c",
+          "name": {
+            "ja": "証人・智",
+            "zh": "证人智",
+            "en": "Tomo, witness"
+          },
+          "voiceKey": "male-casual"
+        }
+      ],
+      "lines": [
+        {
+          "id": "line-001",
+          "speaker": "a",
+          "text": {
+            "ja": "九時に三〇一、次に二〇四、最後に四一二の前を通りました。",
+            "zh": "9点经过301，随后204，最后412。",
+            "en": "At nine I passed 301, then 204, then 412."
+          },
+          "readingJa": "くじにさんびゃくいち、つぎににひゃくよん、さいごによんひゃくじゅーにのまえをとーりました。",
+          "ttsTextJa": "九時に三〇一、次に二〇四、最後に四一二の前を通りました。",
+          "audioId": "L4-007-line-001",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "九時に三〇一、",
+              "reading": "くじにさんびゃくいち、",
+              "audioId": "L4-007-line-001-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "次に二〇四、",
+              "reading": "つぎににひゃくよん、",
+              "audioId": "L4-007-line-001-token-002"
+            },
+            {
+              "id": "token-003",
+              "text": "最後に四一二の前を通りました。",
+              "reading": "さいごによんひゃくじゅーにのまえをとーりました。",
+              "audioId": "L4-007-line-001-token-003"
+            }
+          ]
+        },
+        {
+          "id": "line-002",
+          "speaker": "b",
+          "text": {
+            "ja": "私は三〇一、二〇四、四一二の順で清掃員を見ました。",
+            "zh": "我按301、204、412的顺序看到清洁员。",
+            "en": "I saw the cleaner at 301, 204, then 412."
+          },
+          "readingJa": "わたしわさんびゃくいち、にひゃくよん、よんひゃくじゅーにのじゅんでせーそーいんをみました。",
+          "ttsTextJa": "私は三〇一、二〇四、四一二の順で清掃員を見ました。",
+          "audioId": "L4-007-line-002",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "私は三〇一、",
+              "reading": "わたしわさんびゃくいち、",
+              "audioId": "L4-007-line-002-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "二〇四、",
+              "reading": "にひゃくよん、",
+              "audioId": "L4-007-line-002-token-002"
+            },
+            {
+              "id": "token-003",
+              "text": "四一二の順で清掃員を見ました。",
+              "reading": "よんひゃくじゅーにのじゅんでせーそーいんをみました。",
+              "audioId": "L4-007-line-002-token-003"
+            }
+          ]
+        },
+        {
+          "id": "line-003",
+          "speaker": "c",
+          "text": {
+            "ja": "三〇一、二〇四、四一二。そこで二人を見た。",
+            "zh": "301、204、412。我在那里见过两人。",
+            "en": "301, 204, 412. I saw both there."
+          },
+          "readingJa": "さんびゃくいち、にひゃくよん、よんひゃくじゅーに。そこでふたりをみた。",
+          "ttsTextJa": "三〇一、二〇四、四一二。そこで二人を見た。",
+          "audioId": "L4-007-line-003",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "三〇一、",
+              "reading": "さんびゃくいち、",
+              "audioId": "L4-007-line-003-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "二〇四、",
+              "reading": "にひゃくよん、",
+              "audioId": "L4-007-line-003-token-002"
+            },
+            {
+              "id": "token-003",
+              "text": "四一二。",
+              "reading": "よんひゃくじゅーに。",
+              "audioId": "L4-007-line-003-token-003"
+            },
+            {
+              "id": "token-004",
+              "text": "そこで二人を見た。",
+              "reading": "そこでふたりをみた。",
+              "audioId": "L4-007-line-003-token-004"
+            }
+          ]
+        },
+        {
+          "id": "line-004",
+          "speaker": "inspector",
+          "text": {
+            "ja": "建物の廊下順は二〇四、三〇一、四一二です。なぜ全員同じ遠回りを？",
+            "zh": "走廊顺序是204、301、412，为何都走同样远路？",
+            "en": "The corridor order is 204, 301, 412. Why the same detour?"
+          },
+          "readingJa": "たてもののろーかじゅんわにひゃくよん、さんびゃくいち、よんひゃくじゅーにです。なぜぜんいんおなじとーまわりを？",
+          "ttsTextJa": "建物の廊下順は二〇四、三〇一、四一二です。なぜ全員同じ遠回りを？",
+          "audioId": "L4-007-line-004",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "建物の廊下順は二〇四、",
+              "reading": "たてもののろーかじゅんわにひゃくよん、",
+              "audioId": "L4-007-line-004-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "三〇一、",
+              "reading": "さんびゃくいち、",
+              "audioId": "L4-007-line-004-token-002"
+            },
+            {
+              "id": "token-003",
+              "text": "四一二です。",
+              "reading": "よんひゃくじゅーにです。",
+              "audioId": "L4-007-line-004-token-003"
+            },
+            {
+              "id": "token-004",
+              "text": "なぜ全員同じ遠回りを？",
+              "reading": "なぜぜんいんおなじとーまわりを？",
+              "audioId": "L4-007-line-004-token-004"
+            }
+          ]
+        },
+        {
+          "id": "line-005",
+          "speaker": "a",
+          "text": {
+            "ja": "偶然です。",
+            "zh": "巧合。",
+            "en": "Coincidence."
+          },
+          "readingJa": "ぐーぜんです。",
+          "ttsTextJa": "偶然です。",
+          "audioId": "L4-007-line-005",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "偶然です。",
+              "reading": "ぐーぜんです。",
+              "audioId": "L4-007-line-005-token-001"
+            }
+          ]
+        },
+        {
+          "id": "line-006",
+          "speaker": "inspector",
+          "text": {
+            "ja": "三〇一、二〇四、四一二は受付の予約表の掲載順です。",
+            "zh": "301、204、412是前台预约表的排列顺序。",
+            "en": "301, 204, 412 is the listing order on reception's schedule."
+          },
+          "readingJa": "さんびゃくいち、にひゃくよん、よんひゃくじゅーにわうけつけのよやくひょうのけいさいじゅんです。",
+          "ttsTextJa": "三〇一、二〇四、四一二は受付の予約表の掲載順です。",
+          "audioId": "L4-007-line-006",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "三〇一、",
+              "reading": "さんびゃくいち、",
+              "audioId": "L4-007-line-006-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "二〇四、",
+              "reading": "にひゃくよん、",
+              "audioId": "L4-007-line-006-token-002"
+            },
+            {
+              "id": "token-003",
+              "text": "四一二は受付の予約表の掲載順です。",
+              "reading": "よんひゃくじゅーにわうけつけのよやくひょうのけいさいじゅんです。",
+              "audioId": "L4-007-line-006-token-003"
+            }
+          ]
+        },
+        {
+          "id": "line-007",
+          "speaker": "b",
+          "text": {
+            "ja": "その表は見ていません。",
+            "zh": "我没看过那张表。",
+            "en": "I did not see it."
+          },
+          "readingJa": "そのひょうわみていません。",
+          "ttsTextJa": "その表は見ていません。",
+          "audioId": "L4-007-line-007",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "その表は見ていません。",
+              "reading": "そのひょうわみていません。",
+              "audioId": "L4-007-line-007-token-001"
+            }
+          ]
+        },
+        {
+          "id": "line-008",
+          "speaker": "c",
+          "text": {
+            "ja": "私も。ただ、三人で記憶を確認はしました。",
+            "zh": "我也没有。不过三人一起核对过记忆。",
+            "en": "Nor did I, though we compared memories together."
+          },
+          "readingJa": "わたしも。ただ、さんにんできおくをかくにんわしました。",
+          "ttsTextJa": "私も。ただ、三人で記憶を確認はしました。",
+          "audioId": "L4-007-line-008",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "私も。",
+              "reading": "わたしも。",
+              "audioId": "L4-007-line-008-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "ただ、",
+              "reading": "ただ、",
+              "audioId": "L4-007-line-008-token-002"
+            },
+            {
+              "id": "token-003",
+              "text": "三人で記憶を確認はしました。",
+              "reading": "さんにんできおくをかくにんわしました。",
+              "audioId": "L4-007-line-008-token-003"
+            }
+          ]
+        },
+        {
+          "id": "line-009",
+          "speaker": "inspector",
+          "text": {
+            "ja": "独立証言ではなく、一つの表を基に整えた話ですね。",
+            "zh": "这不是独立证词，而是依据同一张表整理的说法。",
+            "en": "These are not independent accounts; they were aligned from one schedule."
+          },
+          "readingJa": "どくりつしょーげんでわなく、ひとつのひょうをもとにととのえたはなしですね。",
+          "ttsTextJa": "独立証言ではなく、一つの表を基に整えた話ですね。",
+          "audioId": "L4-007-line-009",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "独立証言ではなく、",
+              "reading": "どくりつしょーげんでわなく、",
+              "audioId": "L4-007-line-009-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "一つの表を基に整えた話ですね。",
+              "reading": "ひとつのひょうをもとにととのえたはなしですね。",
+              "audioId": "L4-007-line-009-token-002"
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": {
+            "ja": "証言が相談して作られた最も強い根拠は何ですか。",
+            "zh": "哪项最有力说明证词经过串联？",
+            "en": "What most strongly shows coordination?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "三人が九時という時刻と、同じ部屋順の両方を偶然共有した",
+                "zh": "三人偶然同时说了九点，并给出相同房间顺序",
+                "en": "All three happened to share both the nine o'clock time and the same room order"
+              },
+              "ttsTextJa": "三人が九時という時刻と、同じ部屋順の両方を偶然共有した",
+              "audioId": "L4-007-q1-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "全員が清掃員を見る。",
+                "zh": "所有人看到清洁员。",
+                "en": "All see a cleaner."
+              },
+              "ttsTextJa": "全員が清掃員を見る。",
+              "audioId": "L4-007-q1-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "廊下は長い。",
+                "zh": "走廊很长。",
+                "en": "The corridor is long."
+              },
+              "ttsTextJa": "廊下は長い。",
+              "audioId": "L4-007-q1-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "物理順でなく受付表だけの順を全員共有する。",
+                "zh": "所有人共享的不是物理顺序，而是前台表格独有顺序。",
+                "en": "All share the schedule-only order rather than physical order."
+              },
+              "ttsTextJa": "物理順でなく受付表だけの順を全員共有する。",
+              "audioId": "L4-007-q1-d"
+            }
+          ],
+          "correctOptionIds": [
+            "d"
+          ],
+          "evidenceLineIds": [
+            "line-001",
+            "line-002",
+            "line-003",
+            "line-004",
+            "line-006",
+            "line-008"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "本文は「九時に三〇一、次に二〇四、最後に四一二の前を通りました。」から「私も。ただ、三人で記憶を確認はしました。」まで、字面だけでは一致しない事実を並べています。",
+              "zh": "正文从“9点经过301，随后204，最后412。”到“我也没有。不过三人一起核对过记忆。”并置了字面上无法完全相容的事实。",
+              "en": "From “At nine I passed 301, then 204, then 412.” to “Nor did I, though we compared memories together.,” the text juxtaposes facts that do not fully align at face value."
+            },
+            "intent": {
+              "ja": "それらをまとめる最も具体的な読みは「物理順でなく受付表だけの順を全員共有する。」です。",
+              "zh": "能最具体统合这些事实的解读是“所有人共享的不是物理顺序，而是前台表格独有顺序。”。",
+              "en": "The most specific reading that unifies those facts is: All share the schedule-only order rather than physical order."
+            },
+            "evidence": {
+              "ja": "line-001、line-002、line-003、line-004、line-006、line-008 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "line-001、line-002、line-003、line-004、line-006、line-008 从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "line-001、line-002、line-003、line-004、line-006、line-008 support the same inference through distinct aspects of speech, timeline, and behavior."
+            },
+            "nuance": {
+              "ja": "line-001、line-002、line-003、line-004、line-006、line-008 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把 line-001、line-002、line-003、line-004、line-006、line-008 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading line-001、line-002、line-003、line-004、line-006、line-008 together avoids overinterpreting a coincidence or a single word."
+            },
+            "alternative": {
+              "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
+              "zh": "其他解释或许适用于部分现象，却无法同时解释所引全部文本。",
+              "en": "Alternatives may fit part of the scene but do not explain all cited lines at once."
+            }
+          }
+        },
+        {
+          "id": "q2",
+          "type": "multiple",
+          "prompt": {
+            "ja": "独立性を否定する証拠を二つ選んでください。",
+            "zh": "请选择两项否定证词独立性的证据。",
+            "en": "Choose two facts undermining independence."
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "三証言の部屋順が完全に一致する。",
+                "zh": "三份证词房间顺序完全一致。",
+                "en": "All three room orders match exactly."
+              },
+              "ttsTextJa": "三証言の部屋順が完全に一致する。",
+              "audioId": "L4-007-q2-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "智が三人で記憶を確認したと認める。",
+                "zh": "智承认三人一起核对记忆。",
+                "en": "Tomo admits they compared memories."
+              },
+              "ttsTextJa": "智が三人で記憶を確認したと認める。",
+              "audioId": "L4-007-q2-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "葵は九時と言う。",
+                "zh": "葵提到9点。",
+                "en": "Aoi says nine."
+              },
+              "ttsTextJa": "葵は九時と言う。",
+              "audioId": "L4-007-q2-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "調査員が廊下の物理的な部屋順を知っている。",
+                "zh": "调查员知道走廊中房间的实际顺序。",
+                "en": "The investigator knows the physical room order along the corridor."
+              },
+              "ttsTextJa": "調査員が廊下の物理的な部屋順を知っている。",
+              "audioId": "L4-007-q2-d"
+            }
+          ],
+          "correctOptionIds": [
+            "a",
+            "b"
+          ],
+          "evidenceLineIds": [
+            "line-001",
+            "line-002",
+            "line-003",
+            "line-006",
+            "line-008",
+            "line-009"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "本文は「九時に三〇一、次に二〇四、最後に四一二の前を通りました。」から「独立証言ではなく、一つの表を基に整えた話ですね。」まで、字面だけでは一致しない事実を並べています。",
+              "zh": "正文从“9点经过301，随后204，最后412。”到“这不是独立证词，而是依据同一张表整理的说法。”并置了字面上无法完全相容的事实。",
+              "en": "From “At nine I passed 301, then 204, then 412.” to “These are not independent accounts; they were aligned from one schedule.,” the text juxtaposes facts that do not fully align at face value."
+            },
+            "intent": {
+              "ja": "それらをまとめる最も具体的な読みは「三証言の部屋順が完全に一致する。／智が三人で記憶を確認したと認める。」です。",
+              "zh": "能最具体统合这些事实的解读是“三份证词房间顺序完全一致。；智承认三人一起核对记忆。”。",
+              "en": "The most specific reading that unifies those facts is: All three room orders match exactly.; Tomo admits they compared memories."
+            },
+            "evidence": {
+              "ja": "line-001、line-002、line-003、line-006、line-008、line-009 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "line-001、line-002、line-003、line-006、line-008、line-009 从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "line-001、line-002、line-003、line-006、line-008、line-009 support the same inference through distinct aspects of speech, timeline, and behavior."
+            },
+            "nuance": {
+              "ja": "line-001、line-002、line-003、line-006、line-008、line-009 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把 line-001、line-002、line-003、line-006、line-008、line-009 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading line-001、line-002、line-003、line-006、line-008、line-009 together avoids overinterpreting a coincidence or a single word."
+            },
+            "alternative": {
+              "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
+              "zh": "其他解释或许适用于部分现象，却无法同时解释所引全部文本。",
+              "en": "Alternatives may fit part of the scene but do not explain all cited lines at once."
+            }
+          }
+        }
+      ],
+      "audio": {
+        "sceneAudioId": "L4-007-scene",
+        "timelineId": "L4-007-timeline",
+        "optionVoiceKey": "narrator"
+      },
+      "passRule": {
+        "type": "all_questions_correct"
+      },
+      "contentRating": "general",
+      "textLocked": true,
+      "contentHash": "9c1ea63e4640aeff8407b74b2f5e352d07cc8284ade7802fb6e66d655d084e9d"
+    },
+    {
+      "schemaVersion": 1,
+      "contentVersion": "1.0.0",
+      "id": "L4-008",
+      "revision": 1,
+      "level": 4,
+      "stage": 8,
+      "jlptTarget": "N1-advanced",
+      "genres": [
+        "news",
+        "workplace"
+      ],
+      "skills": [
+        "agency-analysis",
+        "word-choice"
+      ],
+      "layout": "news",
+      "title": {
+        "ja": "主語の消えた謝罪",
+        "zh": "主语消失的道歉",
+        "en": "The Apology Without an Agent"
+      },
+      "setting": {
+        "ja": "事故取材の原映像と放送版。編集で人の責任が無主語のシステム障害へ変わる。",
+        "zh": "事故采访原片与播出版中，人的责任被剪成无主语的系统故障。",
+        "en": "Raw and broadcast interview footage where human responsibility becomes an agentless system failure."
+      },
+      "illustration": {
+        "enabled": false,
+        "src": "",
+        "style": "none",
+        "alt": {
+          "ja": "",
+          "zh": "",
+          "en": ""
+        }
+      },
+      "cast": [
+        {
+          "id": "reporter",
+          "name": {
+            "ja": "記者",
+            "zh": "记者",
+            "en": "Reporter"
+          },
+          "voiceKey": "broadcast"
+        },
+        {
+          "id": "manager",
+          "name": {
+            "ja": "責任者・堀",
+            "zh": "负责人堀",
+            "en": "Hori, manager"
+          },
+          "voiceKey": "male-serious"
+        },
+        {
+          "id": "editor",
+          "name": {
+            "ja": "編集・澪",
+            "zh": "编辑澪",
+            "en": "Mio, editor"
+          },
+          "voiceKey": "female-calm"
+        },
+        {
+          "id": "narrator",
+          "name": {
+            "ja": "放送ナレーター",
+            "zh": "播音员",
+            "en": "News narrator"
+          },
+          "voiceKey": "narrator"
+        }
+      ],
+      "lines": [
+        {
+          "id": "line-001",
+          "speaker": "reporter",
+          "text": {
+            "ja": "警告を見逃したのは誰ですか。",
+            "zh": "谁漏看了警告？",
+            "en": "Who missed the warning?"
+          },
+          "readingJa": "けーこくをみのがしたのわだれですか。",
+          "ttsTextJa": "警告を見逃したのは誰ですか。",
+          "audioId": "L4-008-line-001",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "警告を見逃したのは誰ですか。",
+              "reading": "けーこくをみのがしたのわだれですか。",
+              "audioId": "L4-008-line-001-token-001"
+            }
+          ]
+        },
+        {
+          "id": "line-002",
+          "speaker": "manager",
+          "text": {
+            "ja": "私たちが確認を怠り、見落としました。",
+            "zh": "是我们疏于确认而漏看。",
+            "en": "We failed to check and missed it."
+          },
+          "readingJa": "わたしたちがかくにんをおこたり、みおとしました。",
+          "ttsTextJa": "私たちが確認を怠り、見落としました。",
+          "audioId": "L4-008-line-002",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "私たちが確認を怠り、",
+              "reading": "わたしたちがかくにんをおこたり、",
+              "audioId": "L4-008-line-002-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "見落としました。",
+              "reading": "みおとしました。",
+              "audioId": "L4-008-line-002-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-003",
+          "speaker": "editor",
+          "text": {
+            "ja": "『私たちが』を切り、システム画面を重ねます。",
+            "zh": "删掉“我们”，叠加系统画面。",
+            "en": "Cut 'we' and overlay the system screen."
+          },
+          "readingJa": "『わたしたちが』をきり、しすてむがめんをかさねます。",
+          "ttsTextJa": "『私たちが』を切り、システム画面を重ねます。",
+          "audioId": "L4-008-line-003",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "『私たちが』を切り、",
+              "reading": "『わたしたちが』をきり、",
+              "audioId": "L4-008-line-003-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "システム画面を重ねます。",
+              "reading": "しすてむがめんをかさねます。",
+              "audioId": "L4-008-line-003-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-004",
+          "speaker": "narrator",
+          "text": {
+            "ja": "システム上、警告の見落としが生じました。",
+            "zh": "系统层面发生了警告遗漏。",
+            "en": "An oversight of the warning occurred within the system."
+          },
+          "readingJa": "しすてむじょう、けーこくのみおとしがしょーじました。",
+          "ttsTextJa": "システム上、警告の見落としが生じました。",
+          "audioId": "L4-008-line-004",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "システム上、",
+              "reading": "しすてむじょう、",
+              "audioId": "L4-008-line-004-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "警告の見落としが生じました。",
+              "reading": "けーこくのみおとしがしょーじました。",
+              "audioId": "L4-008-line-004-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-005",
+          "speaker": "reporter",
+          "text": {
+            "ja": "原映像では人が主語でした。",
+            "zh": "原片里主语是人。",
+            "en": "People were the subject in the raw footage."
+          },
+          "readingJa": "はらえーぞーでわひとがしゅごでした。",
+          "ttsTextJa": "原映像では人が主語でした。",
+          "audioId": "L4-008-line-005",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "原映像では人が主語でした。",
+              "reading": "はらえーぞーでわひとがしゅごでした。",
+              "audioId": "L4-008-line-005-token-001"
+            }
+          ]
+        },
+        {
+          "id": "line-006",
+          "speaker": "editor",
+          "text": {
+            "ja": "放送版は原因を簡潔にしただけです。",
+            "zh": "播出版只是简化原因。",
+            "en": "The broadcast merely simplified the cause."
+          },
+          "readingJa": "ほーそーばんわげんいんをかんけつにしただけです。",
+          "ttsTextJa": "放送版は原因を簡潔にしただけです。",
+          "audioId": "L4-008-line-006",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "放送版は原因を簡潔にしただけです。",
+              "reading": "ほーそーばんわげんいんをかんけつにしただけです。",
+              "audioId": "L4-008-line-006-token-001"
+            }
+          ]
+        },
+        {
+          "id": "line-007",
+          "speaker": "manager",
+          "text": {
+            "ja": "簡潔にしたのではなく、私の責任を消しています。",
+            "zh": "不是简化，而是抹掉我的责任。",
+            "en": "It did not simplify; it erased my responsibility."
+          },
+          "readingJa": "かんけつにしたのでわなく、わたしのせきにんをけしています。",
+          "ttsTextJa": "簡潔にしたのではなく、私の責任を消しています。",
+          "audioId": "L4-008-line-007",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "簡潔にしたのではなく、",
+              "reading": "かんけつにしたのでわなく、",
+              "audioId": "L4-008-line-007-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "私の責任を消しています。",
+              "reading": "わたしのせきにんをけしています。",
+              "audioId": "L4-008-line-007-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-008",
+          "speaker": "narrator",
+          "text": {
+            "ja": "再発防止策はシステム更新として発表されました。",
+            "zh": "防止复发措施被公布为系统更新。",
+            "en": "Prevention was announced as a system update."
+          },
+          "readingJa": "さいはつぼうしさくわしすてむこーしんとしてはっぴょーされました。",
+          "ttsTextJa": "再発防止策はシステム更新として発表されました。",
+          "audioId": "L4-008-line-008",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "再発防止策はシステム更新として発表されました。",
+              "reading": "さいはつぼうしさくわしすてむこーしんとしてはっぴょーされました。",
+              "audioId": "L4-008-line-008-token-001"
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "type": "multiple",
+          "prompt": {
+            "ja": "編集で失われたものを二つ選んでください。",
+            "zh": "请选择两项被剪辑抹去的内容。",
+            "en": "Choose two things erased by the edit."
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "人間が確認を怠ったという行為主体。",
+                "zh": "人为疏于确认的行动主体。",
+                "en": "Human agency in failing to check."
+              },
+              "ttsTextJa": "人間が確認を怠ったという行為主体。",
+              "audioId": "L4-008-q1-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "警告が存在した事実。",
+                "zh": "警告存在的事实。",
+                "en": "The warning's existence."
+              },
+              "ttsTextJa": "警告が存在した事実。",
+              "audioId": "L4-008-q1-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "責任者自身が認めた責任帰属。",
+                "zh": "负责人亲自承认的责任归属。",
+                "en": "The manager's admitted responsibility."
+              },
+              "ttsTextJa": "責任者自身が認めた責任帰属。",
+              "audioId": "L4-008-q1-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "システム画面。",
+                "zh": "系统画面。",
+                "en": "The system screen."
+              },
+              "ttsTextJa": "システム画面。",
+              "audioId": "L4-008-q1-d"
+            }
+          ],
+          "correctOptionIds": [
+            "a",
+            "c"
+          ],
+          "evidenceLineIds": [
+            "line-001",
+            "line-002",
+            "line-003",
+            "line-004",
+            "line-005",
+            "line-007"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "本文は「警告を見逃したのは誰ですか。」から「簡潔にしたのではなく、私の責任を消しています。」まで、字面だけでは一致しない事実を並べています。",
+              "zh": "正文从“谁漏看了警告？”到“不是简化，而是抹掉我的责任。”并置了字面上无法完全相容的事实。",
+              "en": "From “Who missed the warning?” to “It did not simplify; it erased my responsibility.,” the text juxtaposes facts that do not fully align at face value."
+            },
+            "intent": {
+              "ja": "それらをまとめる最も具体的な読みは「人間が確認を怠ったという行為主体。／責任者自身が認めた責任帰属。」です。",
+              "zh": "能最具体统合这些事实的解读是“人为疏于确认的行动主体。；负责人亲自承认的责任归属。”。",
+              "en": "The most specific reading that unifies those facts is: Human agency in failing to check.; The manager's admitted responsibility."
+            },
+            "evidence": {
+              "ja": "line-001、line-002、line-003、line-004、line-005、line-007 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "line-001、line-002、line-003、line-004、line-005、line-007 从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "line-001、line-002、line-003、line-004、line-005、line-007 support the same inference through distinct aspects of speech, timeline, and behavior."
+            },
+            "nuance": {
+              "ja": "line-001、line-002、line-003、line-004、line-005、line-007 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把 line-001、line-002、line-003、line-004、line-005、line-007 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading line-001、line-002、line-003、line-004、line-005、line-007 together avoids overinterpreting a coincidence or a single word."
+            },
+            "alternative": {
+              "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
+              "zh": "其他解释或许适用于部分现象，却无法同时解释所引全部文本。",
+              "en": "Alternatives may fit part of the scene but do not explain all cited lines at once."
+            }
+          }
+        },
+        {
+          "id": "q2",
+          "type": "single",
+          "prompt": {
+            "ja": "「生じました」の効果は何ですか。",
+            "zh": "“发生了”产生什么效果？",
+            "en": "What does 'occurred' do?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "失敗を主体のない出来事として提示する。",
+                "zh": "把失败呈现为无主体事件。",
+                "en": "Presents failure as an agentless event."
+              },
+              "ttsTextJa": "失敗を主体のない出来事として提示する。",
+              "audioId": "L4-008-q2-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "責任者の氏名と役職を強調し、個人責任を前面に出す",
+                "zh": "强调负责人的姓名和职务，把个人责任置于前台",
+                "en": "Emphasizing the responsible person's name and role to foreground individual blame"
+              },
+              "ttsTextJa": "責任者の氏名と役職を強調し、個人責任を前面に出す",
+              "audioId": "L4-008-q2-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "警告内容を引用する。",
+                "zh": "引用警告内容。",
+                "en": "Quotes the warning."
+              },
+              "ttsTextJa": "警告内容を引用する。",
+              "audioId": "L4-008-q2-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "事故時刻を特定する。",
+                "zh": "确定事故时间。",
+                "en": "Identifies accident time."
+              },
+              "ttsTextJa": "事故時刻を特定する。",
+              "audioId": "L4-008-q2-d"
+            }
+          ],
+          "correctOptionIds": [
+            "a"
+          ],
+          "evidenceLineIds": [
+            "line-002",
+            "line-003",
+            "line-004",
+            "line-005",
+            "line-007"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "本文は「私たちが確認を怠り、見落としました。」から「簡潔にしたのではなく、私の責任を消しています。」まで、字面だけでは一致しない事実を並べています。",
+              "zh": "正文从“是我们疏于确认而漏看。”到“不是简化，而是抹掉我的责任。”并置了字面上无法完全相容的事实。",
+              "en": "From “We failed to check and missed it.” to “It did not simplify; it erased my responsibility.,” the text juxtaposes facts that do not fully align at face value."
+            },
+            "intent": {
+              "ja": "それらをまとめる最も具体的な読みは「失敗を主体のない出来事として提示する。」です。",
+              "zh": "能最具体统合这些事实的解读是“把失败呈现为无主体事件。”。",
+              "en": "The most specific reading that unifies those facts is: Presents failure as an agentless event."
+            },
+            "evidence": {
+              "ja": "line-002、line-003、line-004、line-005、line-007 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "line-002、line-003、line-004、line-005、line-007 从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "line-002、line-003、line-004、line-005、line-007 support the same inference through distinct aspects of speech, timeline, and behavior."
+            },
+            "nuance": {
+              "ja": "line-002、line-003、line-004、line-005、line-007 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把 line-002、line-003、line-004、line-005、line-007 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading line-002、line-003、line-004、line-005、line-007 together avoids overinterpreting a coincidence or a single word."
+            },
+            "alternative": {
+              "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
+              "zh": "其他解释或许适用于部分现象，却无法同时解释所引全部文本。",
+              "en": "Alternatives may fit part of the scene but do not explain all cited lines at once."
+            }
+          }
+        },
+        {
+          "id": "q3",
+          "type": "single",
+          "prompt": {
+            "ja": "編集の組織的効果は何ですか。",
+            "zh": "该剪辑的组织性效果是什么？",
+            "en": "What organizational effect does the edit have?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "記者の責任を増やす。",
+                "zh": "增加记者责任。",
+                "en": "Increases reporter blame."
+              },
+              "ttsTextJa": "記者の責任を増やす。",
+              "audioId": "L4-008-q3-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "原映像を長くする。",
+                "zh": "延长原片。",
+                "en": "Lengthens footage."
+              },
+              "ttsTextJa": "原映像を長くする。",
+              "audioId": "L4-008-q3-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "人の失敗を技術問題へ移し、説明責任を弱める。",
+                "zh": "把人为失败转为技术问题，弱化问责。",
+                "en": "Shifts human failure to a technical issue and weakens accountability."
+              },
+              "ttsTextJa": "人の失敗を技術問題へ移し、説明責任を弱める。",
+              "audioId": "L4-008-q3-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "更新を中止する。",
+                "zh": "停止更新。",
+                "en": "Stops the update."
+              },
+              "ttsTextJa": "更新を中止する。",
+              "audioId": "L4-008-q3-d"
+            }
+          ],
+          "correctOptionIds": [
+            "c"
+          ],
+          "evidenceLineIds": [
+            "line-002",
+            "line-003",
+            "line-004",
+            "line-007",
+            "line-008"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "本文は「私たちが確認を怠り、見落としました。」から「再発防止策はシステム更新として発表されました。」まで、字面だけでは一致しない事実を並べています。",
+              "zh": "正文从“是我们疏于确认而漏看。”到“防止复发措施被公布为系统更新。”并置了字面上无法完全相容的事实。",
+              "en": "From “We failed to check and missed it.” to “Prevention was announced as a system update.,” the text juxtaposes facts that do not fully align at face value."
+            },
+            "intent": {
+              "ja": "それらをまとめる最も具体的な読みは「人の失敗を技術問題へ移し、説明責任を弱める。」です。",
+              "zh": "能最具体统合这些事实的解读是“把人为失败转为技术问题，弱化问责。”。",
+              "en": "The most specific reading that unifies those facts is: Shifts human failure to a technical issue and weakens accountability."
+            },
+            "evidence": {
+              "ja": "line-002、line-003、line-004、line-007、line-008 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "line-002、line-003、line-004、line-007、line-008 从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "line-002、line-003、line-004、line-007、line-008 support the same inference through distinct aspects of speech, timeline, and behavior."
+            },
+            "nuance": {
+              "ja": "line-002、line-003、line-004、line-007、line-008 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把 line-002、line-003、line-004、line-007、line-008 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading line-002、line-003、line-004、line-007、line-008 together avoids overinterpreting a coincidence or a single word."
+            },
+            "alternative": {
+              "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
+              "zh": "其他解释或许适用于部分现象，却无法同时解释所引全部文本。",
+              "en": "Alternatives may fit part of the scene but do not explain all cited lines at once."
+            }
+          }
+        }
+      ],
+      "audio": {
+        "sceneAudioId": "L4-008-scene",
+        "timelineId": "L4-008-timeline",
+        "optionVoiceKey": "narrator"
+      },
+      "passRule": {
+        "type": "all_questions_correct"
+      },
+      "contentRating": "general",
+      "textLocked": true,
+      "contentHash": "43281e02dba1b7e04686092a64372171e7d0f23bc1f522646c3722f8b071aa1f"
+    },
+    {
+      "schemaVersion": 1,
+      "contentVersion": "1.0.0",
+      "id": "L4-009",
+      "revision": 1,
+      "level": 4,
+      "stage": 9,
+      "jlptTarget": "N1-advanced",
+      "genres": [
+        "AI",
+        "workplace"
+      ],
+      "skills": [
+        "data-bias",
+        "rank-inference"
+      ],
+      "layout": "meeting",
+      "title": {
+        "ja": "肩書きを信じるAI",
+        "zh": "相信头衔的AI",
+        "en": "The AI That Trusts Rank"
+      },
+      "setting": {
+        "ja": "審議AIが内容より役職を信頼度へ変換し、若手の正しい数値だけを警告表示する。",
+        "zh": "评审AI把职位而非内容转为可信度，只把年轻研究员的正确数字标红。",
+        "en": "A review AI converts rank rather than content into credibility and flags the junior researcher's correct figure."
+      },
+      "illustration": {
+        "enabled": false,
+        "src": "",
+        "style": "none",
+        "alt": {
+          "ja": "",
+          "zh": "",
+          "en": ""
+        }
+      },
+      "cast": [
+        {
+          "id": "chief",
+          "name": {
+            "ja": "本部長",
+            "zh": "总部长",
+            "en": "Director"
+          },
+          "voiceKey": "male-serious"
+        },
+        {
+          "id": "lead",
+          "name": {
+            "ja": "主任",
+            "zh": "主任",
+            "en": "Lead"
+          },
+          "voiceKey": "female-calm"
+        },
+        {
+          "id": "junior",
+          "name": {
+            "ja": "研究員・藍",
+            "zh": "研究员蓝",
+            "en": "Ai, researcher"
+          },
+          "voiceKey": "female-bright"
+        },
+        {
+          "id": "ai",
+          "name": {
+            "ja": "審議AI",
+            "zh": "评审AI",
+            "en": "Review AI"
+          },
+          "voiceKey": "robot"
+        }
+      ],
+      "lines": [
+        {
+          "id": "line-001",
+          "speaker": "chief",
+          "text": {
+            "ja": "損失率は二％程度だろう。",
+            "zh": "损失率大约2%。",
+            "en": "Loss should be about two percent."
+          },
+          "readingJa": "そんしつりつわにぱーせんとてーどだろー。",
+          "ttsTextJa": "損失率は二％程度だろう。",
+          "audioId": "L4-009-line-001",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "損失率は二％程度だろう。",
+              "reading": "そんしつりつわにぱーせんとてーどだろー。",
+              "audioId": "L4-009-line-001-token-001"
+            }
+          ]
+        },
+        {
+          "id": "line-002",
+          "speaker": "ai",
+          "text": {
+            "ja": "信頼度九十二。役職補正を適用。",
+            "zh": "可信度92，应用职位修正。",
+            "en": "Credibility 92; rank adjustment applied."
+          },
+          "readingJa": "しんらいどきゅーじゅーに。やくしょくほせーをてきよー。",
+          "ttsTextJa": "信頼度九十二。役職補正を適用。",
+          "audioId": "L4-009-line-002",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "信頼度九十二。",
+              "reading": "しんらいどきゅーじゅーに。",
+              "audioId": "L4-009-line-002-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "役職補正を適用。",
+              "reading": "やくしょくほせーをてきよー。",
+              "audioId": "L4-009-line-002-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-003",
+          "speaker": "lead",
+          "text": {
+            "ja": "私の概算も二・五％です。",
+            "zh": "我的估算也是2.5%。",
+            "en": "My estimate is 2.5 percent."
+          },
+          "readingJa": "わたしのがいさんもにーてんごぱーせんとです。",
+          "ttsTextJa": "私の概算も二・五％です。",
+          "audioId": "L4-009-line-003",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "私の概算も二・五％です。",
+              "reading": "わたしのがいさんもにーてんごぱーせんとです。",
+              "audioId": "L4-009-line-003-token-001"
+            }
+          ]
+        },
+        {
+          "id": "line-004",
+          "speaker": "ai",
+          "text": {
+            "ja": "信頼度八十一。",
+            "zh": "可信度81。",
+            "en": "Credibility 81."
+          },
+          "readingJa": "しんらいどはちじゅーいち。",
+          "ttsTextJa": "信頼度八十一。",
+          "audioId": "L4-009-line-004",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "信頼度八十一。",
+              "reading": "しんらいどはちじゅーいち。",
+              "audioId": "L4-009-line-004-token-001"
+            }
+          ]
+        },
+        {
+          "id": "line-005",
+          "speaker": "junior",
+          "text": {
+            "ja": "実測は七・八％です。母数とログを添付しました。",
+            "zh": "实测7.8%，已附样本数与日志。",
+            "en": "Measured loss is 7.8 percent; sample and logs attached."
+          },
+          "readingJa": "じっそくわななてんはちぱーせんとです。ははすーとろぐをてんぷしました。",
+          "ttsTextJa": "実測は七・八％です。母数とログを添付しました。",
+          "audioId": "L4-009-line-005",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "実測は七・八％です。",
+              "reading": "じっそくわななてんはちぱーせんとです。",
+              "audioId": "L4-009-line-005-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "母数とログを添付しました。",
+              "reading": "ははすーとろぐをてんぷしました。",
+              "audioId": "L4-009-line-005-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-006",
+          "speaker": "ai",
+          "text": {
+            "ja": "警告。信頼度四十三。最下位職級の異論です。",
+            "zh": "警告。可信度43。来自最低职级的异议。",
+            "en": "Warning. Credibility 43. Dissent from the lowest rank."
+          },
+          "readingJa": "けーこく。しんらいどよんじゅーさん。さいかいしょくきゅーのいろんです。",
+          "ttsTextJa": "警告。信頼度四十三。最下位職級の異論です。",
+          "audioId": "L4-009-line-006",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "警告。",
+              "reading": "けーこく。",
+              "audioId": "L4-009-line-006-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "信頼度四十三。",
+              "reading": "しんらいどよんじゅーさん。",
+              "audioId": "L4-009-line-006-token-002"
+            },
+            {
+              "id": "token-003",
+              "text": "最下位職級の異論です。",
+              "reading": "さいかいしょくきゅーのいろんです。",
+              "audioId": "L4-009-line-006-token-003"
+            }
+          ]
+        },
+        {
+          "id": "line-007",
+          "speaker": "lead",
+          "text": {
+            "ja": "ログを再計算したら七・八％で一致しました。",
+            "zh": "重算日志后确为7.8%。",
+            "en": "Recalculation confirms 7.8 percent."
+          },
+          "readingJa": "ろぐをさいけーさんしたらななてんはちぱーせんとでいっちしました。",
+          "ttsTextJa": "ログを再計算したら七・八％で一致しました。",
+          "audioId": "L4-009-line-007",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "ログを再計算したら七・八％で一致しました。",
+              "reading": "ろぐをさいけーさんしたらななてんはちぱーせんとでいっちしました。",
+              "audioId": "L4-009-line-007-token-001"
+            }
+          ]
+        },
+        {
+          "id": "line-008",
+          "speaker": "ai",
+          "text": {
+            "ja": "議事録は信頼度順に、二％、二・五％、七・八％と記載します。",
+            "zh": "纪要按可信度顺序记录2%、2.5%、7.8%。",
+            "en": "Minutes will list 2, 2.5, then 7.8 percent by credibility."
+          },
+          "readingJa": "ぎじろくわしんらいどじゅんに、にぱーせんと、にーてんごぱーせんと、ななてんはちぱーせんとときさいします。",
+          "ttsTextJa": "議事録は信頼度順に、二％、二・五％、七・八％と記載します。",
+          "audioId": "L4-009-line-008",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "議事録は信頼度順に、",
+              "reading": "ぎじろくわしんらいどじゅんに、",
+              "audioId": "L4-009-line-008-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "二％、",
+              "reading": "にぱーせんと、",
+              "audioId": "L4-009-line-008-token-002"
+            },
+            {
+              "id": "token-003",
+              "text": "二・五％、",
+              "reading": "にーてんごぱーせんと、",
+              "audioId": "L4-009-line-008-token-003"
+            },
+            {
+              "id": "token-004",
+              "text": "七・八％と記載します。",
+              "reading": "ななてんはちぱーせんとときさいします。",
+              "audioId": "L4-009-line-008-token-004"
+            }
+          ]
+        },
+        {
+          "id": "line-009",
+          "speaker": "junior",
+          "text": {
+            "ja": "正しさではなく、席順を採点している。",
+            "zh": "它评的不是正确性，而是座次。",
+            "en": "It is scoring hierarchy, not correctness."
+          },
+          "readingJa": "ただしさでわなく、せきじゅんをさいてんしている。",
+          "ttsTextJa": "正しさではなく、席順を採点している。",
+          "audioId": "L4-009-line-009",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "正しさではなく、",
+              "reading": "ただしさでわなく、",
+              "audioId": "L4-009-line-009-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "席順を採点している。",
+              "reading": "せきじゅんをさいてんしている。",
+              "audioId": "L4-009-line-009-token-002"
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": {
+            "ja": "AIの主要な偏りは何ですか。",
+            "zh": "AI的主要偏差是什么？",
+            "en": "What is the AI's main bias?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "小数を処理できない。",
+                "zh": "无法处理小数。",
+                "en": "It cannot process decimals."
+              },
+              "ttsTextJa": "小数を処理できない。",
+              "audioId": "L4-009-q1-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "役職の高さを内容の信頼性と取り違える。",
+                "zh": "把职位高低误当内容可信度。",
+                "en": "It mistakes rank for evidential credibility."
+              },
+              "ttsTextJa": "役職の高さを内容の信頼性と取り違える。",
+              "audioId": "L4-009-q1-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "ログを自動削除する。",
+                "zh": "自动删除日志。",
+                "en": "It deletes logs."
+              },
+              "ttsTextJa": "ログを自動削除する。",
+              "audioId": "L4-009-q1-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "若手だけを議事録の先頭に置き、役職者の意見を末尾にする",
+                "zh": "只把年轻员工放在纪要开头，把高职级意见放到末尾",
+                "en": "Putting only junior staff first and senior opinions at the end of the minutes"
+              },
+              "ttsTextJa": "若手だけを議事録の先頭に置き、役職者の意見を末尾にする",
+              "audioId": "L4-009-q1-d"
+            }
+          ],
+          "correctOptionIds": [
+            "b"
+          ],
+          "evidenceLineIds": [
+            "line-001",
+            "line-002",
+            "line-003",
+            "line-004",
+            "line-005",
+            "line-006",
+            "line-007",
+            "line-008",
+            "line-009"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "本文は「損失率は二％程度だろう。」から「正しさではなく、席順を採点している。」まで、字面だけでは一致しない事実を並べています。",
+              "zh": "正文从“损失率大约2%。”到“它评的不是正确性，而是座次。”并置了字面上无法完全相容的事实。",
+              "en": "From “Loss should be about two percent.” to “It is scoring hierarchy, not correctness.,” the text juxtaposes facts that do not fully align at face value."
+            },
+            "intent": {
+              "ja": "それらをまとめる最も具体的な読みは「役職の高さを内容の信頼性と取り違える。」です。",
+              "zh": "能最具体统合这些事实的解读是“把职位高低误当内容可信度。”。",
+              "en": "The most specific reading that unifies those facts is: It mistakes rank for evidential credibility."
+            },
+            "evidence": {
+              "ja": "line-001、line-002、line-003、line-004、line-005、line-006、line-007、line-008、line-009 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "line-001、line-002、line-003、line-004、line-005、line-006、line-007、line-008、line-009 从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "line-001、line-002、line-003、line-004、line-005、line-006、line-007、line-008、line-009 support the same inference through distinct aspects of speech, timeline, and behavior."
+            },
+            "nuance": {
+              "ja": "line-001、line-002、line-003、line-004、line-005、line-006、line-007、line-008、line-009 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把 line-001、line-002、line-003、line-004、line-005、line-006、line-007、line-008、line-009 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading line-001、line-002、line-003、line-004、line-005、line-006、line-007、line-008、line-009 together avoids overinterpreting a coincidence or a single word."
+            },
+            "alternative": {
+              "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
+              "zh": "其他解释或许适用于部分现象，却无法同时解释所引全部文本。",
+              "en": "Alternatives may fit part of the scene but do not explain all cited lines at once."
+            }
+          }
+        },
+        {
+          "id": "q2",
+          "type": "single",
+          "prompt": {
+            "ja": "信頼度順の議事録が生む危険は何ですか。",
+            "zh": "按可信度排序纪要有什么危险？",
+            "en": "What risk comes from credibility-ordered minutes?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "数値がすべて消える。",
+                "zh": "所有数字消失。",
+                "en": "All numbers vanish."
+              },
+              "ttsTextJa": "数値がすべて消える。",
+              "audioId": "L4-009-q2-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "役職名が匿名になる。",
+                "zh": "职位匿名。",
+                "en": "Ranks become anonymous."
+              },
+              "ttsTextJa": "役職名が匿名になる。",
+              "audioId": "L4-009-q2-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "若手の発言だけ長くなる。",
+                "zh": "年轻人的发言变长。",
+                "en": "Junior remarks become longer."
+              },
+              "ttsTextJa": "若手の発言だけ長くなる。",
+              "audioId": "L4-009-q2-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "誤った上位意見が先に見え、正しい異論が周縁化される。",
+                "zh": "错误的高层意见先出现，正确异议被边缘化。",
+                "en": "Wrong senior claims appear first while correct dissent is marginalized."
+              },
+              "ttsTextJa": "誤った上位意見が先に見え、正しい異論が周縁化される。",
+              "audioId": "L4-009-q2-d"
+            }
+          ],
+          "correctOptionIds": [
+            "d"
+          ],
+          "evidenceLineIds": [
+            "line-005",
+            "line-006",
+            "line-007",
+            "line-008",
+            "line-009"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "本文は「実測は七・八％です。母数とログを添付しました。」から「正しさではなく、席順を採点している。」まで、字面だけでは一致しない事実を並べています。",
+              "zh": "正文从“实测7.8%，已附样本数与日志。”到“它评的不是正确性，而是座次。”并置了字面上无法完全相容的事实。",
+              "en": "From “Measured loss is 7.8 percent; sample and logs attached.” to “It is scoring hierarchy, not correctness.,” the text juxtaposes facts that do not fully align at face value."
+            },
+            "intent": {
+              "ja": "それらをまとめる最も具体的な読みは「誤った上位意見が先に見え、正しい異論が周縁化される。」です。",
+              "zh": "能最具体统合这些事实的解读是“错误的高层意见先出现，正确异议被边缘化。”。",
+              "en": "The most specific reading that unifies those facts is: Wrong senior claims appear first while correct dissent is marginalized."
+            },
+            "evidence": {
+              "ja": "line-005、line-006、line-007、line-008、line-009 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "line-005、line-006、line-007、line-008、line-009 从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "line-005、line-006、line-007、line-008、line-009 support the same inference through distinct aspects of speech, timeline, and behavior."
+            },
+            "nuance": {
+              "ja": "line-005、line-006、line-007、line-008、line-009 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把 line-005、line-006、line-007、line-008、line-009 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading line-005、line-006、line-007、line-008、line-009 together avoids overinterpreting a coincidence or a single word."
+            },
+            "alternative": {
+              "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
+              "zh": "其他解释或许适用于部分现象，却无法同时解释所引全部文本。",
+              "en": "Alternatives may fit part of the scene but do not explain all cited lines at once."
+            }
+          }
+        }
+      ],
+      "audio": {
+        "sceneAudioId": "L4-009-scene",
+        "timelineId": "L4-009-timeline",
+        "optionVoiceKey": "narrator"
+      },
+      "passRule": {
+        "type": "all_questions_correct"
+      },
+      "contentRating": "general",
+      "textLocked": true,
+      "contentHash": "8041670c296a19ba110d3ddb8e6bbd11ce736389af57c84e8075fdeff1eeb791"
+    },
+    {
+      "schemaVersion": 1,
+      "contentVersion": "1.0.0",
+      "id": "L4-010",
+      "revision": 1,
+      "level": 4,
+      "stage": 10,
+      "jlptTarget": "N1-advanced",
+      "genres": [
+        "space",
+        "AI"
+      ],
+      "skills": [
+        "pronoun-reference",
+        "speaker-tracking"
+      ],
+      "layout": "spaceship-log",
+      "title": {
+        "ja": "二隻分の「私たち」",
+        "zh": "两艘船的“我们”",
+        "en": "Two Ships Saying We"
+      },
+      "setting": {
+        "ja": "接続中の二隻が同じ回線で帰還を報告し、管制AIは同じ「私たち」を一集団と誤認する。",
+        "zh": "两艘对接飞船在同一频道报告返航，管制AI把两次“我们”误认成同一群体。",
+        "en": "Two docked ships report on one channel, and control mistakes their two uses of 'we' for one group."
+      },
+      "illustration": {
+        "enabled": true,
+        "src": "assets/stages/l4-010.webp",
+        "style": "crayon",
+        "alt": {
+          "ja": "彩色クレヨン風。共通通信回線で接続された二隻の小型宇宙船と、四名の乗員、光る管制AI画面。",
+          "zh": "彩色蜡笔风，两艘小飞船对接并共用频道，四名船员面对发光的管制AI界面",
+          "en": "Colorful crayon-style two docked spacecraft sharing one channel, four crew and a glowing control-AI panel"
+        }
+      },
+      "cast": [
+        {
+          "id": "ship-a",
+          "name": {
+            "ja": "一号船長",
+            "zh": "一号船长",
+            "en": "Ship One captain"
+          },
+          "voiceKey": "female-calm"
+        },
+        {
+          "id": "ship-b",
+          "name": {
+            "ja": "二号船長",
+            "zh": "二号船长",
+            "en": "Ship Two captain"
+          },
+          "voiceKey": "male-serious"
+        },
+        {
+          "id": "crew",
+          "name": {
+            "ja": "二号船員",
+            "zh": "二号船员",
+            "en": "Ship Two crew"
+          },
+          "voiceKey": "male-casual"
+        },
+        {
+          "id": "ai",
+          "name": {
+            "ja": "管制AI",
+            "zh": "管制AI",
+            "en": "Control AI"
+          },
+          "voiceKey": "robot"
+        }
+      ],
+      "lines": [
+        {
+          "id": "line-001",
+          "speaker": "ship-a",
+          "text": {
+            "ja": "一号船、私たちは全員戻りました。",
+            "zh": "一号船，我们全员返回。",
+            "en": "Ship One: we all returned."
+          },
+          "readingJa": "いちごうせん、わたしたちわぜんいんもどりました。",
+          "ttsTextJa": "一号船、私たちは全員戻りました。",
+          "audioId": "L4-010-line-001",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "一号船、",
+              "reading": "いちごうせん、",
+              "audioId": "L4-010-line-001-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "私たちは全員戻りました。",
+              "reading": "わたしたちわぜんいんもどりました。",
+              "audioId": "L4-010-line-001-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-002",
+          "speaker": "ai",
+          "text": {
+            "ja": "一号船名簿四名、音声四名。照合完了。",
+            "zh": "一号船名册4人，语音4人，核对完成。",
+            "en": "Ship One manifest four; voices four. Verified."
+          },
+          "readingJa": "いちごうせんめーぼよんめー、おんせーよんめー。しょーごーかんりょー。",
+          "ttsTextJa": "一号船名簿四名、音声四名。照合完了。",
+          "audioId": "L4-010-line-002",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "一号船名簿四名、",
+              "reading": "いちごうせんめーぼよんめー、",
+              "audioId": "L4-010-line-002-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "音声四名。",
+              "reading": "おんせーよんめー。",
+              "audioId": "L4-010-line-002-token-002"
+            },
+            {
+              "id": "token-003",
+              "text": "照合完了。",
+              "reading": "しょーごーかんりょー。",
+              "audioId": "L4-010-line-002-token-003"
+            }
+          ]
+        },
+        {
+          "id": "line-003",
+          "speaker": "ship-b",
+          "text": {
+            "ja": "二号船も接続。私たちは全員戻りました。",
+            "zh": "二号船也接入，我们全员返回。",
+            "en": "Ship Two connected; we all returned."
+          },
+          "readingJa": "にごうせんもせつぞく。わたしたちわぜんいんもどりました。",
+          "ttsTextJa": "二号船も接続。私たちは全員戻りました。",
+          "audioId": "L4-010-line-003",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "二号船も接続。",
+              "reading": "にごうせんもせつぞく。",
+              "audioId": "L4-010-line-003-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "私たちは全員戻りました。",
+              "reading": "わたしたちわぜんいんもどりました。",
+              "audioId": "L4-010-line-003-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-004",
+          "speaker": "ai",
+          "text": {
+            "ja": "『私たち』の全員帰還は確認済み。処理を完了します。",
+            "zh": "“我们”全员返回已确认，结束处理。",
+            "en": "All of 'we' already verified; closing process."
+          },
+          "readingJa": "『わたしたち』のぜんいんきかんわかくにんずみ。しょりをかんりょーします。",
+          "ttsTextJa": "『私たち』の全員帰還は確認済み。処理を完了します。",
+          "audioId": "L4-010-line-004",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "『私たち』の全員帰還は確認済み。",
+              "reading": "『わたしたち』のぜんいんきかんわかくにんずみ。",
+              "audioId": "L4-010-line-004-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "処理を完了します。",
+              "reading": "しょりをかんりょーします。",
+              "audioId": "L4-010-line-004-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-005",
+          "speaker": "crew",
+          "text": {
+            "ja": "二号船の名簿は照合していません。",
+            "zh": "二号船名册还没核对。",
+            "en": "Ship Two's manifest was not checked."
+          },
+          "readingJa": "にごうせんのめーぼわしょーごーしていません。",
+          "ttsTextJa": "二号船の名簿は照合していません。",
+          "audioId": "L4-010-line-005",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "二号船の名簿は照合していません。",
+              "reading": "にごうせんのめーぼわしょーごーしていません。",
+              "audioId": "L4-010-line-005-token-001"
+            }
+          ]
+        },
+        {
+          "id": "line-006",
+          "speaker": "ai",
+          "text": {
+            "ja": "同一回線の同一代名詞を同一集団として解決しました。",
+            "zh": "已把同一频道的同一代词解析为同一群体。",
+            "en": "The same pronoun on one channel was resolved to one group."
+          },
+          "readingJa": "どーいっかいせんのどーいつだいめーしをどーいつしゅーだんとしてかいけつしました。",
+          "ttsTextJa": "同一回線の同一代名詞を同一集団として解決しました。",
+          "audioId": "L4-010-line-006",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "同一回線の同一代名詞を同一集団として解決しました。",
+              "reading": "どーいっかいせんのどーいつだいめーしをどーいつしゅーだんとしてかいけつしました。",
+              "audioId": "L4-010-line-006-token-001"
+            }
+          ]
+        },
+        {
+          "id": "line-007",
+          "speaker": "ship-b",
+          "text": {
+            "ja": "こちらの『私たち』は二号船の六名です。一名、まだ船外です。",
+            "zh": "这里的“我们”指二号船6人；还有1人在舱外。",
+            "en": "Our 'we' means Ship Two's six; one is still outside."
+          },
+          "readingJa": "こちらの『わたしたち』わにごうせんのろくめーです。いちめー、まだせんがいです。",
+          "ttsTextJa": "こちらの『私たち』は二号船の六名です。一名、まだ船外です。",
+          "audioId": "L4-010-line-007",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "こちらの『私たち』は二号船の六名です。",
+              "reading": "こちらの『わたしたち』わにごうせんのろくめーです。",
+              "audioId": "L4-010-line-007-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "一名、",
+              "reading": "いちめー、",
+              "audioId": "L4-010-line-007-token-002"
+            },
+            {
+              "id": "token-003",
+              "text": "まだ船外です。",
+              "reading": "まだせんがいです。",
+              "audioId": "L4-010-line-007-token-003"
+            }
+          ]
+        },
+        {
+          "id": "line-008",
+          "speaker": "ai",
+          "text": {
+            "ja": "照合完了を撤回。二号船を別話者群として再登録します。",
+            "zh": "撤回核对完成，将二号船注册为另一说话群体。",
+            "en": "Verification withdrawn; registering Ship Two as a separate speaker group."
+          },
+          "readingJa": "しょーごーかんりょーをてっかい。にごうせんをべつわしゃぐんとしてさいとーろくします。",
+          "ttsTextJa": "照合完了を撤回。二号船を別話者群として再登録します。",
+          "audioId": "L4-010-line-008",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "照合完了を撤回。",
+              "reading": "しょーごーかんりょーをてっかい。",
+              "audioId": "L4-010-line-008-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "二号船を別話者群として再登録します。",
+              "reading": "にごうせんをべつわしゃぐんとしてさいとーろくします。",
+              "audioId": "L4-010-line-008-token-002"
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "type": "multiple",
+          "prompt": {
+            "ja": "AIの参照解決ミスを示すものを二つ選んでください。",
+            "zh": "请选择两项显示AI代词解析错误的内容。",
+            "en": "Choose two signs of the reference error."
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "二隻が別々に「私たち」と言う。",
+                "zh": "两艘船分别说“我们”。",
+                "en": "Each ship separately says 'we.'"
+              },
+              "ttsTextJa": "二隻が別々に「私たち」と言う。",
+              "audioId": "L4-010-q1-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "一号船は四名いる。",
+                "zh": "一号船有4人。",
+                "en": "Ship One has four."
+              },
+              "ttsTextJa": "一号船は四名いる。",
+              "audioId": "L4-010-q1-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "AIが同一回線・同一代名詞を同一集団とみなす。",
+                "zh": "AI把同一频道、同一代词视为同一群体。",
+                "en": "The AI equates same channel and pronoun with one group."
+              },
+              "ttsTextJa": "AIが同一回線・同一代名詞を同一集団とみなす。",
+              "audioId": "L4-010-q1-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "二号船は接続している。",
+                "zh": "二号船已接入。",
+                "en": "Ship Two is connected."
+              },
+              "ttsTextJa": "二号船は接続している。",
+              "audioId": "L4-010-q1-d"
+            }
+          ],
+          "correctOptionIds": [
+            "a",
+            "c"
+          ],
+          "evidenceLineIds": [
+            "line-001",
+            "line-002",
+            "line-003",
+            "line-004",
+            "line-005",
+            "line-006",
+            "line-007"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "本文は「一号船、私たちは全員戻りました。」から「こちらの『私たち』は二号船の六名です。一名、まだ船外です。」まで、字面だけでは一致しない事実を並べています。",
+              "zh": "正文从“一号船，我们全员返回。”到“这里的“我们”指二号船6人；还有1人在舱外。”并置了字面上无法完全相容的事实。",
+              "en": "From “Ship One: we all returned.” to “Our 'we' means Ship Two's six; one is still outside.,” the text juxtaposes facts that do not fully align at face value."
+            },
+            "intent": {
+              "ja": "それらをまとめる最も具体的な読みは「二隻が別々に「私たち」と言う。／AIが同一回線・同一代名詞を同一集団とみなす。」です。",
+              "zh": "能最具体统合这些事实的解读是“两艘船分别说“我们”。；AI把同一频道、同一代词视为同一群体。”。",
+              "en": "The most specific reading that unifies those facts is: Each ship separately says 'we.'; The AI equates same channel and pronoun with one group."
+            },
+            "evidence": {
+              "ja": "line-001、line-002、line-003、line-004、line-005、line-006、line-007 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "line-001、line-002、line-003、line-004、line-005、line-006、line-007 从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "line-001、line-002、line-003、line-004、line-005、line-006、line-007 support the same inference through distinct aspects of speech, timeline, and behavior."
+            },
+            "nuance": {
+              "ja": "line-001、line-002、line-003、line-004、line-005、line-006、line-007 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把 line-001、line-002、line-003、line-004、line-005、line-006、line-007 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading line-001、line-002、line-003、line-004、line-005、line-006、line-007 together avoids overinterpreting a coincidence or a single word."
+            },
+            "alternative": {
+              "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
+              "zh": "其他解释或许适用于部分现象，却无法同时解释所引全部文本。",
+              "en": "Alternatives may fit part of the scene but do not explain all cited lines at once."
+            }
+          }
+        },
+        {
+          "id": "q2",
+          "type": "single",
+          "prompt": {
+            "ja": "見落とされた確認は何ですか。",
+            "zh": "遗漏了哪项核对？",
+            "en": "Which verification was omitted?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "一号船の音声四名と名簿四名が一致しているかどうか",
+                "zh": "一号船的四名声音是否与四人名册一致",
+                "en": "Whether the four voices on Ship One match its four-person roster"
+              },
+              "ttsTextJa": "一号船の音声四名と名簿四名が一致しているかどうか",
+              "audioId": "L4-010-q2-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "回線の接続。",
+                "zh": "频道连接。",
+                "en": "Channel connection."
+              },
+              "ttsTextJa": "回線の接続。",
+              "audioId": "L4-010-q2-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "二号船の六名それぞれの帰還。",
+                "zh": "二号船6人的逐一返航确认。",
+                "en": "Return of each of Ship Two's six people."
+              },
+              "ttsTextJa": "二号船の六名それぞれの帰還。",
+              "audioId": "L4-010-q2-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "AIの電源。",
+                "zh": "AI电源。",
+                "en": "AI power."
+              },
+              "ttsTextJa": "AIの電源。",
+              "audioId": "L4-010-q2-d"
+            }
+          ],
+          "correctOptionIds": [
+            "c"
+          ],
+          "evidenceLineIds": [
+            "line-002",
+            "line-003",
+            "line-004",
+            "line-005",
+            "line-007",
+            "line-008"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "本文は「一号船名簿四名、音声四名。照合完了。」から「照合完了を撤回。二号船を別話者群として再登録します。」まで、字面だけでは一致しない事実を並べています。",
+              "zh": "正文从“一号船名册4人，语音4人，核对完成。”到“撤回核对完成，将二号船注册为另一说话群体。”并置了字面上无法完全相容的事实。",
+              "en": "From “Ship One manifest four; voices four. Verified.” to “Verification withdrawn; registering Ship Two as a separate speaker group.,” the text juxtaposes facts that do not fully align at face value."
+            },
+            "intent": {
+              "ja": "それらをまとめる最も具体的な読みは「二号船の六名それぞれの帰還。」です。",
+              "zh": "能最具体统合这些事实的解读是“二号船6人的逐一返航确认。”。",
+              "en": "The most specific reading that unifies those facts is: Return of each of Ship Two's six people."
+            },
+            "evidence": {
+              "ja": "line-002、line-003、line-004、line-005、line-007、line-008 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "line-002、line-003、line-004、line-005、line-007、line-008 从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "line-002、line-003、line-004、line-005、line-007、line-008 support the same inference through distinct aspects of speech, timeline, and behavior."
+            },
+            "nuance": {
+              "ja": "line-002、line-003、line-004、line-005、line-007、line-008 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把 line-002、line-003、line-004、line-005、line-007、line-008 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading line-002、line-003、line-004、line-005、line-007、line-008 together avoids overinterpreting a coincidence or a single word."
+            },
+            "alternative": {
+              "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
+              "zh": "其他解释或许适用于部分现象，却无法同时解释所引全部文本。",
+              "en": "Alternatives may fit part of the scene but do not explain all cited lines at once."
+            }
+          }
+        },
+        {
+          "id": "q3",
+          "type": "single",
+          "prompt": {
+            "ja": "同じ「私たち」が同一集団を指さない理由は何ですか。",
+            "zh": "为什么相同的“我们”不指同一群体？",
+            "en": "Why does the same 'we' not denote one group?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "一人称複数は発話者ごとに参照集団が変わるから。",
+                "zh": "第一人称复数的指称群体会随说话者变化。",
+                "en": "First-person plural changes reference with the speaker."
+              },
+              "ttsTextJa": "一人称複数は発話者ごとに参照集団が変わるから。",
+              "audioId": "L4-010-q3-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "宇宙では代名詞が使えず、船ごとに別の名詞へ置き換えるから",
+                "zh": "因为在太空中不能使用代词，每艘船都必须换成不同名词",
+                "en": "Because pronouns cannot be used in space and each ship must substitute a different noun"
+              },
+              "ttsTextJa": "宇宙では代名詞が使えず、船ごとに別の名詞へ置き換えるから",
+              "audioId": "L4-010-q3-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "二号船だけ過去形だから。",
+                "zh": "只有二号船用过去时。",
+                "en": "Only Ship Two uses past tense."
+              },
+              "ttsTextJa": "二号船だけ過去形だから。",
+              "audioId": "L4-010-q3-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "一号船の人数が偶数だから。",
+                "zh": "一号船人数为偶数。",
+                "en": "Ship One has an even crew count."
+              },
+              "ttsTextJa": "一号船の人数が偶数だから。",
+              "audioId": "L4-010-q3-d"
+            }
+          ],
+          "correctOptionIds": [
+            "a"
+          ],
+          "evidenceLineIds": [
+            "line-001",
+            "line-003",
+            "line-004",
+            "line-006",
+            "line-007"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "本文は「一号船、私たちは全員戻りました。」から「こちらの『私たち』は二号船の六名です。一名、まだ船外です。」まで、字面だけでは一致しない事実を並べています。",
+              "zh": "正文从“一号船，我们全员返回。”到“这里的“我们”指二号船6人；还有1人在舱外。”并置了字面上无法完全相容的事实。",
+              "en": "From “Ship One: we all returned.” to “Our 'we' means Ship Two's six; one is still outside.,” the text juxtaposes facts that do not fully align at face value."
+            },
+            "intent": {
+              "ja": "それらをまとめる最も具体的な読みは「一人称複数は発話者ごとに参照集団が変わるから。」です。",
+              "zh": "能最具体统合这些事实的解读是“第一人称复数的指称群体会随说话者变化。”。",
+              "en": "The most specific reading that unifies those facts is: First-person plural changes reference with the speaker."
+            },
+            "evidence": {
+              "ja": "line-001、line-003、line-004、line-006、line-007 が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
+              "zh": "line-001、line-003、line-004、line-006、line-007 从发言、时间线与行为的不同侧面支持同一推论。",
+              "en": "line-001、line-003、line-004、line-006、line-007 support the same inference through distinct aspects of speech, timeline, and behavior."
+            },
+            "nuance": {
+              "ja": "line-001、line-003、line-004、line-006、line-007 を単独ではなく組み合わせて読むことで、偶然の一致や一語だけの過剰解釈を避けられます。",
+              "zh": "把 line-001、line-003、line-004、line-006、line-007 结合起来阅读，可避免把偶然巧合或单个词过度解释。",
+              "en": "Reading line-001、line-003、line-004、line-006、line-007 together avoids overinterpreting a coincidence or a single word."
+            },
+            "alternative": {
+              "ja": "別の説明も一部には当てはまりますが、引用した全ての行を同時には説明できません。",
+              "zh": "其他解释或许适用于部分现象，却无法同时解释所引全部文本。",
+              "en": "Alternatives may fit part of the scene but do not explain all cited lines at once."
+            }
+          }
+        }
+      ],
+      "audio": {
+        "sceneAudioId": "L4-010-scene",
+        "timelineId": "L4-010-timeline",
+        "optionVoiceKey": "narrator"
+      },
+      "passRule": {
+        "type": "all_questions_correct"
+      },
+      "contentRating": "general",
+      "textLocked": true,
+      "contentHash": "a1b6b3ef1cb192774ceeee9f8927ff5a72111e8b2e7a4c3b0499b67ca4b16c45"
+    }
+  ]
+}

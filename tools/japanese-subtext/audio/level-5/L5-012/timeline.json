@@ -1,0 +1,90 @@
+{
+  "stageId": "L5-012",
+  "sampleRate": 24000,
+  "duration": 50.220083,
+  "cues": [
+    {
+      "lineId": "line-001",
+      "audioId": "L5-012-line-001",
+      "start": 0.06,
+      "end": 3.200958
+    },
+    {
+      "lineId": "line-002",
+      "audioId": "L5-012-line-002",
+      "start": 3.680958,
+      "end": 5.426375
+    },
+    {
+      "lineId": "line-003",
+      "audioId": "L5-012-line-003",
+      "start": 5.906375,
+      "end": 8.366917
+    },
+    {
+      "lineId": "line-004",
+      "audioId": "L5-012-line-004",
+      "start": 8.846917,
+      "end": 11.413333
+    },
+    {
+      "lineId": "line-005",
+      "audioId": "L5-012-line-005",
+      "start": 11.893333,
+      "end": 14.202458
+    },
+    {
+      "lineId": "line-006",
+      "audioId": "L5-012-line-006",
+      "start": 14.682458,
+      "end": 19.290083
+    },
+    {
+      "lineId": "line-007",
+      "audioId": "L5-012-line-007",
+      "start": 19.770083,
+      "end": 22.64525
+    },
+    {
+      "lineId": "line-008",
+      "audioId": "L5-012-line-008",
+      "start": 23.12525,
+      "end": 26.515833
+    },
+    {
+      "lineId": "line-009",
+      "audioId": "L5-012-line-009",
+      "start": 26.995833,
+      "end": 30.709792
+    },
+    {
+      "lineId": "line-010",
+      "audioId": "L5-012-line-010",
+      "start": 31.189792,
+      "end": 35.933083
+    },
+    {
+      "lineId": "line-011",
+      "audioId": "L5-012-line-011",
+      "start": 36.413083,
+      "end": 40.800917
+    },
+    {
+      "lineId": "line-012",
+      "audioId": "L5-012-line-012",
+      "start": 41.280917,
+      "end": 45.307542
+    },
+    {
+      "lineId": "line-013",
+      "audioId": "L5-012-line-013",
+      "start": 45.787542,
+      "end": 50.120083
+    }
+  ],
+  "schemaVersion": 1,
+  "timelineId": "L5-012-timeline",
+  "sceneAudioId": "L5-012-scene",
+  "contentHash": "230590ea564c0b12919569dd7f36f11f53a8e69a27dd6e2540258189e621a98e",
+  "sourceContentHash": "08a09442e7981576a81b04ee3711da86c9469afe157f472bb0031cd3c2713a29"
+}

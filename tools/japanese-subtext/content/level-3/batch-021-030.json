@@ -1,0 +1,5248 @@
+{
+  "schemaVersion": 1,
+  "contentVersion": "1.0.0",
+  "level": 3,
+  "batch": "021-030",
+  "stages": [
+    {
+      "schemaVersion": 1,
+      "contentVersion": "1.0.0",
+      "id": "L3-021",
+      "revision": 1,
+      "level": 3,
+      "stage": 21,
+      "jlptTarget": "N1",
+      "genres": [
+        "fantasy"
+      ],
+      "skills": [
+        "avoidance-inference",
+        "metaphor"
+      ],
+      "layout": "dialogue",
+      "title": {
+        "ja": "開けない扉",
+        "zh": "不肯打开的门",
+        "en": "The Door Left Unopened"
+      },
+      "setting": {
+        "ja": "旧市街の占い館で、悠は進路を決めるため未来を尋ねる。",
+        "zh": "在旧城的占卜馆里，悠为了决定前路而询问未来。",
+        "en": "At an oracle house in the old quarter, Yu asks about the future before choosing a path."
+      },
+      "illustration": {
+        "enabled": false,
+        "src": "",
+        "style": "none",
+        "alt": {
+          "ja": "",
+          "zh": "",
+          "en": ""
+        }
+      },
+      "cast": [
+        {
+          "id": "yu",
+          "name": {
+            "ja": "悠",
+            "zh": "悠",
+            "en": "Yu"
+          },
+          "voiceKey": "male-casual"
+        },
+        {
+          "id": "oracle",
+          "name": {
+            "ja": "占い師",
+            "zh": "占卜师",
+            "en": "Oracle"
+          },
+          "voiceKey": "female-mysterious"
+        },
+        {
+          "id": "attendant",
+          "name": {
+            "ja": "受付係",
+            "zh": "接待员",
+            "en": "Attendant"
+          },
+          "voiceKey": "female-calm"
+        }
+      ],
+      "lines": [
+        {
+          "id": "line-001",
+          "speaker": "yu",
+          "text": {
+            "ja": "来年、僕はどこにいるでしょう。",
+            "zh": "明年我会在哪里？",
+            "en": "Where will I be next year?"
+          },
+          "readingJa": "らいねん、ぼくはどこにいるでしょう。",
+          "ttsTextJa": "来年、僕はどこにいるでしょう。",
+          "audioId": "L3-021-line-001",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "来年、僕はどこにいるでしょう。",
+              "reading": "らいねん、ぼくはどこにいるでしょう。",
+              "audioId": "L3-021-line-001-token-001"
+            }
+          ]
+        },
+        {
+          "id": "line-002",
+          "speaker": "oracle",
+          "text": {
+            "ja": "答えは、あなたが開けない扉の後ろです。",
+            "zh": "答案就在你不肯打开的门后。",
+            "en": "The answer is behind the door you will not open."
+          },
+          "readingJa": "こたえは、あなたがあけないとびらのうしろです。",
+          "ttsTextJa": "答えは、あなたが開けない扉の後ろです。",
+          "audioId": "L3-021-line-002",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "答えは、",
+              "reading": "こたえは、",
+              "audioId": "L3-021-line-002-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "あなたが開けない扉の後ろです。",
+              "reading": "あなたがあけないとびらのうしろです。",
+              "audioId": "L3-021-line-002-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-003",
+          "speaker": "yu",
+          "text": {
+            "ja": "北の門ですか、それとも港の門ですか。",
+            "zh": "是北门，还是港口的门？",
+            "en": "Do you mean the north gate, or the harbor gate?"
+          },
+          "readingJa": "きたのもんですか、それともみなとのもんですか。",
+          "ttsTextJa": "北の門ですか、それとも港の門ですか。",
+          "audioId": "L3-021-line-003",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "北の門ですか、",
+              "reading": "きたのもんですか、",
+              "audioId": "L3-021-line-003-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "それとも港の門ですか。",
+              "reading": "それともみなとのもんですか。",
+              "audioId": "L3-021-line-003-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-004",
+          "speaker": "oracle",
+          "text": {
+            "ja": "場所の名を増やしても、返事を先延ばしにした事実は減りません。",
+            "zh": "列举再多地名，也不会减少你一直拖延回复这个事实。",
+            "en": "Adding place names does not erase the fact that you have postponed your reply."
+          },
+          "readingJa": "ばしょのなをふやしても、へんじをさきのばしにしたじじつはへりません。",
+          "ttsTextJa": "場所の名を増やしても、返事を先延ばしにした事実は減りません。",
+          "audioId": "L3-021-line-004",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "場所の名を増やしても、",
+              "reading": "ばしょのなをふやしても、",
+              "audioId": "L3-021-line-004-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "返事を先延ばしにした事実は減りません。",
+              "reading": "へんじをさきのばしにしたじじつはへりません。",
+              "audioId": "L3-021-line-004-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-005",
+          "speaker": "attendant",
+          "text": {
+            "ja": "お預かりした封筒、まだ開封なさっていませんね。",
+            "zh": "您寄放在这里的信封，还没有拆开吧。",
+            "en": "You still have not opened the envelope you left with us."
+          },
+          "readingJa": "おあずかりしたふうとう、まだかいふうなさっていませんね。",
+          "ttsTextJa": "お預かりした封筒、まだ開封なさっていませんね。",
+          "audioId": "L3-021-line-005",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "お預かりした封筒、",
+              "reading": "おあずかりしたふうとう、",
+              "audioId": "L3-021-line-005-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "まだ開封なさっていませんね。",
+              "reading": "まだかいふうなさっていませんね。",
+              "audioId": "L3-021-line-005-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-006",
+          "speaker": "yu",
+          "text": {
+            "ja": "採用通知かもしれませんが、今は決める時期ではなくて。",
+            "zh": "也许是录用通知，但现在还不是做决定的时候。",
+            "en": "It may be an offer, but this is not the time to decide."
+          },
+          "readingJa": "さいようつうちかもしれませんが、いまはきめるじきではなくて。",
+          "ttsTextJa": "採用通知かもしれませんが、今は決める時期ではなくて。",
+          "audioId": "L3-021-line-006",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "採用通知かもしれませんが、",
+              "reading": "さいようつうちかもしれませんが、",
+              "audioId": "L3-021-line-006-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "今は決める時期ではなくて。",
+              "reading": "いまはきめるじきではなくて。",
+              "audioId": "L3-021-line-006-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-007",
+          "speaker": "oracle",
+          "text": {
+            "ja": "『まだ』を鍵にして、内側から掛けているのですね。",
+            "zh": "你把“还没到时候”当成钥匙，从里面把门锁住了。",
+            "en": "You are using “not yet” as a key and locking the door from the inside."
+          },
+          "readingJa": "まだをかぎにして、うちがわからかけているのですね。",
+          "ttsTextJa": "『まだ』を鍵にして、内側から掛けているのですね。",
+          "audioId": "L3-021-line-007",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "『まだ』を鍵にして、",
+              "reading": "まだをかぎにして、",
+              "audioId": "L3-021-line-007-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "内側から掛けているのですね。",
+              "reading": "うちがわからかけているのですね。",
+              "audioId": "L3-021-line-007-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-008",
+          "speaker": "yu",
+          "text": {
+            "ja": "では、未来は決まっていないのですか。",
+            "zh": "那么，未来并没有注定吗？",
+            "en": "Then the future is not fixed?"
+          },
+          "readingJa": "では、みらいはきまっていないのですか。",
+          "ttsTextJa": "では、未来は決まっていないのですか。",
+          "audioId": "L3-021-line-008",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "では、未来は決まっていないのですか。",
+              "reading": "では、みらいはきまっていないのですか。",
+              "audioId": "L3-021-line-008-token-001"
+            }
+          ]
+        },
+        {
+          "id": "line-009",
+          "speaker": "oracle",
+          "text": {
+            "ja": "扉の向こうを決めるのは予言ではなく、開けると決めた人です。",
+            "zh": "决定门后景象的不是预言，而是决定开门的人。",
+            "en": "What lies beyond is determined not by prophecy, but by the person who chooses to open the door."
+          },
+          "readingJa": "とびらのむこうをきめるのはよげんではなく、あけるときめたひとです。",
+          "ttsTextJa": "扉の向こうを決めるのは予言ではなく、開けると決めた人です。",
+          "audioId": "L3-021-line-009",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "扉の向こうを決めるのは予言ではなく、",
+              "reading": "とびらのむこうをきめるのはよげんではなく、",
+              "audioId": "L3-021-line-009-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "開けると決めた人です。",
+              "reading": "あけるときめたひとです。",
+              "audioId": "L3-021-line-009-token-002"
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": {
+            "ja": "占い師の言葉の主な役割は何ですか。",
+            "zh": "占卜师的话主要起什么作用？",
+            "en": "What is the main function of the oracle's words?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "悠の居場所を地理的に予測する。",
+                "zh": "从地理上预测悠会在哪里。",
+                "en": "Predict Yu's physical location."
+              },
+              "ttsTextJa": "悠の居場所を地理的に予測する。",
+              "audioId": "L3-021-q1-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "未開封の採用通知の内容を、占いの超自然的な力だけで確認する。",
+                "zh": "只用占卜的超自然力量确认未拆封录用通知的内容。",
+                "en": "Use divination's supernatural power alone to inspect the unopened job notice."
+              },
+              "ttsTextJa": "未開封の採用通知の内容を、占いの超自然的な力だけで確認する。",
+              "audioId": "L3-021-q1-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "悠が避けている選択を、扉の比喩で自覚させる。",
+                "zh": "用门的比喻让悠意识到自己在逃避选择。",
+                "en": "Use the door metaphor to make Yu recognize an avoided choice."
+              },
+              "ttsTextJa": "悠が避けている選択を、扉の比喩で自覚させる。",
+              "audioId": "L3-021-q1-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "受付係に封筒を処分するよう頼む。",
+                "zh": "让接待员处理掉信封。",
+                "en": "Ask the attendant to dispose of the envelope."
+              },
+              "ttsTextJa": "受付係に封筒を処分するよう頼む。",
+              "audioId": "L3-021-q1-d"
+            }
+          ],
+          "correctOptionIds": [
+            "c"
+          ],
+          "evidenceLineIds": [
+            "line-002",
+            "line-004",
+            "line-006",
+            "line-007",
+            "line-009"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "占い師は答えが『開けない扉の後ろ』にあると言い、後に扉を選択の比喩として説明します。",
+              "zh": "占卜师说答案在“不肯打开的门后”，随后把门解释成选择的比喻。",
+              "en": "The oracle places the answer behind an unopened door and later explains the door as a metaphor for choice."
+            },
+            "intent": {
+              "ja": "未来を当てるより、悠自身の先延ばしを可視化し、決断を促しています。",
+              "zh": "与其预测未来，她更是在揭示悠的拖延并促使他决定。",
+              "en": "Rather than foretell events, she makes Yu's delay visible and pushes him toward a decision."
+            },
+            "evidence": {
+              "ja": "line-004 は返事の先延ばし、line-006 は通知を開けない言い訳、line-007 は『まだ』を内側の鍵と表します。",
+              "zh": "line-004 指出拖延回复，line-006 给出不拆通知的借口，line-007 把“还没到时候”说成内侧的锁。",
+              "en": "Line 004 names the delayed reply, line 006 supplies Yu's excuse, and line 007 calls “not yet” the lock on the inside."
+            },
+            "nuance": {
+              "ja": "比喩は悠を責め切る表現ではなく、選択権が本人に残ることも示します。",
+              "zh": "这个比喻并非单纯责备，也表明选择权仍在悠自己手里。",
+              "en": "The metaphor is not purely accusatory; it also preserves Yu's agency."
+            },
+            "alternative": {
+              "ja": "本当に地理的な門を指す読みは line-004 と line-009 の明示的な説明に合いません。",
+              "zh": "若理解为真实地理位置的门，就与 line-004、009 的明确说明不符。",
+              "en": "A literal geographic door conflicts with the explicit explanations in lines 004 and 009."
+            }
+          }
+        },
+        {
+          "id": "q2",
+          "type": "single",
+          "prompt": {
+            "ja": "悠が選択を避けていることを最も直接示す発言はどれですか。",
+            "zh": "哪句话最直接表明悠在逃避选择？",
+            "en": "Which statement most directly shows that Yu is avoiding a choice?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "通知かもしれないが、今は決める時期ではないと言う。",
+                "zh": "他说也许是通知，但现在还不是决定的时候。",
+                "en": "He says it may be an offer, but this is not the time to decide."
+              },
+              "ttsTextJa": "通知かもしれないが、今は決める時期ではないと言う。",
+              "audioId": "L3-021-q2-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "来年の居場所を質問する。",
+                "zh": "他询问明年会在哪里。",
+                "en": "He asks where he will be next year."
+              },
+              "ttsTextJa": "来年の居場所を質問する。",
+              "audioId": "L3-021-q2-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "北の門と港の門を挙げる。",
+                "zh": "他列举北门和港口的门。",
+                "en": "He mentions the north and harbor gates."
+              },
+              "ttsTextJa": "北の門と港の門を挙げる。",
+              "audioId": "L3-021-q2-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "未来が決まっているか尋ねる。",
+                "zh": "他询问未来是否注定。",
+                "en": "He asks whether the future is fixed."
+              },
+              "ttsTextJa": "未来が決まっているか尋ねる。",
+              "audioId": "L3-021-q2-d"
+            }
+          ],
+          "correctOptionIds": [
+            "a"
+          ],
+          "evidenceLineIds": [
+            "line-005",
+            "line-006",
+            "line-007"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "悠は採用通知の可能性を認めながら、『今は決める時期ではない』として開封も返答も保留します。",
+              "zh": "悠承认信封可能是录用通知，却以“现在不是决定的时候”为由不拆也不回复。",
+              "en": "Yu admits the envelope may be an offer, yet postpones both opening it and replying because it is supposedly not time to decide."
+            },
+            "intent": {
+              "ja": "不確実さを理由に見せつつ、実際には決断が生じる入口そのものを避けています。",
+              "zh": "他把不确定性当作理由，实际上是在回避会迫使自己决定的入口。",
+              "en": "He presents uncertainty as the reason while avoiding the very step that would require a decision."
+            },
+            "evidence": {
+              "ja": "line-005 の未開封という行動と line-006 の時期を理由にする発言が一致し、line-007 がその回避を言語化します。",
+              "zh": "line-005 的未拆封行为与 line-006 的拖延理由相互印证，line-007 又明确指出这种回避。",
+              "en": "The unopened envelope in line 005 and the timing excuse in line 006 reinforce each other; line 007 names the avoidance."
+            },
+            "nuance": {
+              "ja": "慎重に考えること自体は回避ではありませんが、内容を確認せず判断時期だけを延期している点が重要です。",
+              "zh": "谨慎思考本身不等于逃避，关键在于他连内容都不确认，只推迟决定时点。",
+              "en": "Caution alone is not avoidance; the key is that he delays the decision without even checking the contents."
+            },
+            "alternative": {
+              "ja": "地名を挙げる発言も話題そらしに見えますが、選択回避を直接示すのは通知への対応です。",
+              "zh": "列举地名也像是在转移话题，但最直接的证据是他对通知的处理。",
+              "en": "Listing gates may also deflect, but his handling of the offer is the direct evidence."
+            }
+          }
+        },
+        {
+          "id": "q3",
+          "type": "single",
+          "prompt": {
+            "ja": "『内側から掛けた鍵』は何を指しますか。",
+            "zh": "“从里面上的锁”指什么？",
+            "en": "What does the “lock on the inside” represent?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "占い館が閉店したこと。",
+                "zh": "占卜馆已经关门。",
+                "en": "The oracle house being closed."
+              },
+              "ttsTextJa": "占い館が閉店したこと。",
+              "audioId": "L3-021-q3-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "受付係が封筒を隠したこと。",
+                "zh": "接待员藏起了信封。",
+                "en": "The attendant hiding the envelope."
+              },
+              "ttsTextJa": "受付係が封筒を隠したこと。",
+              "audioId": "L3-021-q3-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "悠が『まだ』という理由で自分の決断を止めていること。",
+                "zh": "悠用“还没到时候”阻止自己作决定。",
+                "en": "Yu stopping his own decision by invoking “not yet.”"
+              },
+              "ttsTextJa": "悠が『まだ』という理由で自分の決断を止めていること。",
+              "audioId": "L3-021-q3-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "採用先が返事を拒んでいること。",
+                "zh": "录用方拒绝回复。",
+                "en": "The employer refusing to respond."
+              },
+              "ttsTextJa": "採用先が返事を拒んでいること。",
+              "audioId": "L3-021-q3-d"
+            }
+          ],
+          "correctOptionIds": [
+            "c"
+          ],
+          "evidenceLineIds": [
+            "line-006",
+            "line-007",
+            "line-009"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "鍵は外部の障害ではなく、悠が使う『まだ決める時期ではない』という自己説明です。",
+              "zh": "这把锁不是外部障碍，而是悠的自我说法：“现在还不是决定的时候”。",
+              "en": "The lock is not an external obstacle but Yu's own explanation that it is “not yet” time to decide."
+            },
+            "intent": {
+              "ja": "占い師は、未来を閉ざしている原因が運命ではなく本人の延期にあると示します。",
+              "zh": "占卜师指出，封闭未来的并非命运，而是他自己的拖延。",
+              "en": "The oracle locates the obstruction in Yu's postponement, not in fate."
+            },
+            "evidence": {
+              "ja": "line-006 の時期の否定を line-007 が『鍵』と言い換え、line-009 は開ける決定を本人へ戻します。",
+              "zh": "line-007 把 line-006 对时机的否定改称为“锁”，line-009 又把开门的决定交还本人。",
+              "en": "Line 007 recasts the timing denial in line 006 as a lock, and line 009 returns the opening decision to Yu."
+            },
+            "nuance": {
+              "ja": "『内側』という方向語は、障害が他人から課されたものではないという含みを強めます。",
+              "zh": "“里面”这一方向词强化了障碍并非由他人施加的含义。",
+              "en": "The directional word “inside” strengthens the implication that no one else imposed the barrier."
+            },
+            "alternative": {
+              "ja": "採用先の拒否を示す情報はなく、むしろ通知は悠の手元で未開封です。",
+              "zh": "没有信息显示录用方拒绝，反而是通知在悠手里尚未拆封。",
+              "en": "Nothing indicates refusal by the employer; the notice is unopened in Yu's possession."
+            }
+          }
+        }
+      ],
+      "audio": {
+        "sceneAudioId": "L3-021-scene",
+        "timelineId": "L3-021-timeline",
+        "optionVoiceKey": "narrator"
+      },
+      "passRule": {
+        "type": "all_questions_correct"
+      },
+      "contentRating": "general",
+      "textLocked": true,
+      "contentHash": "c71648cb4f4b3f89e2b120ca86d5b1c2d3551ae7c78be793a345e9223d0e15fc"
+    },
+    {
+      "schemaVersion": 1,
+      "contentVersion": "1.0.0",
+      "id": "L3-022",
+      "revision": 1,
+      "level": 3,
+      "stage": 22,
+      "jlptTarget": "N1",
+      "genres": [
+        "fairy-tale",
+        "comedy"
+      ],
+      "skills": [
+        "reward-reframing",
+        "information-gap"
+      ],
+      "layout": "multi-dialogue",
+      "title": {
+        "ja": "半分の王国",
+        "zh": "半个王国",
+        "en": "Half a Kingdom"
+      },
+      "setting": {
+        "ja": "魔物を退けた勇者への褒賞を、王と財務官が謁見の間で説明する。",
+        "zh": "国王和财务官在谒见厅说明给击退魔物的勇者的奖赏。",
+        "en": "In the audience chamber, the king and treasurer explain the reward for the hero who repelled the monsters."
+      },
+      "illustration": {
+        "enabled": false,
+        "src": "",
+        "style": "none",
+        "alt": {
+          "ja": "",
+          "zh": "",
+          "en": ""
+        }
+      },
+      "cast": [
+        {
+          "id": "king",
+          "name": {
+            "ja": "王",
+            "zh": "国王",
+            "en": "King"
+          },
+          "voiceKey": "male-serious"
+        },
+        {
+          "id": "hero",
+          "name": {
+            "ja": "勇者リナ",
+            "zh": "勇者莉娜",
+            "en": "Hero Lina"
+          },
+          "voiceKey": "female-bright"
+        },
+        {
+          "id": "treasurer",
+          "name": {
+            "ja": "財務官",
+            "zh": "财务官",
+            "en": "Treasurer"
+          },
+          "voiceKey": "male-calm"
+        }
+      ],
+      "lines": [
+        {
+          "id": "line-001",
+          "speaker": "king",
+          "text": {
+            "ja": "勇者リナよ、褒美に国の半分を授けよう。",
+            "zh": "勇者莉娜啊，朕把半个王国赏赐给你。",
+            "en": "Hero Lina, I grant you half the kingdom as your reward."
+          },
+          "readingJa": "ゆうしゃりなよ、ほうびにくにのはんぶんをさずけよう。",
+          "ttsTextJa": "勇者リナよ、褒美に国の半分を授けよう。",
+          "audioId": "L3-022-line-001",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "勇者リナよ、",
+              "reading": "ゆうしゃりなよ、",
+              "audioId": "L3-022-line-001-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "褒美に国の半分を授けよう。",
+              "reading": "ほうびにくにのはんぶんをさずけよう。",
+              "audioId": "L3-022-line-001-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-002",
+          "speaker": "hero",
+          "text": {
+            "ja": "身に余る光栄です。どの地域でしょうか。",
+            "zh": "实在是无上的荣幸。是哪片地区？",
+            "en": "That is an overwhelming honor. Which region?"
+          },
+          "readingJa": "みにあまるこうえいです。どのちいきでしょうか。",
+          "ttsTextJa": "身に余る光栄です。どの地域でしょうか。",
+          "audioId": "L3-022-line-002",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "身に余る光栄です。",
+              "reading": "みにあまるこうえいです。",
+              "audioId": "L3-022-line-002-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "どの地域でしょうか。",
+              "reading": "どのちいきでしょうか。",
+              "audioId": "L3-022-line-002-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-003",
+          "speaker": "treasurer",
+          "text": {
+            "ja": "東部一帯です。国の未払い債務も半分、付随します。",
+            "zh": "东部全境。另外，国家未偿债务的一半也随之转交。",
+            "en": "The entire eastern region. Half of the kingdom's unpaid debt comes with it."
+          },
+          "readingJa": "とうぶいったいです。くにのみはらいさいむもはんぶん、ふずいします。",
+          "ttsTextJa": "東部一帯です。国の未払い債務も半分、付随します。",
+          "audioId": "L3-022-line-003",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "東部一帯です。国の未払い",
+              "reading": "とうぶいったいです。くにのみはらい",
+              "audioId": "L3-022-line-003-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "債務も半分、付随します。",
+              "reading": "さいむもはんぶん、ふずいします。",
+              "audioId": "L3-022-line-003-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-004",
+          "speaker": "hero",
+          "text": {
+            "ja": "未払い債務まで褒美に含まれるのですか。",
+            "zh": "连未偿债务也算在奖赏里吗？",
+            "en": "Even the unpaid debt is included in the reward?"
+          },
+          "readingJa": "みはらいさいむまでほうびにふくまれるのですか。",
+          "ttsTextJa": "未払い債務まで褒美に含まれるのですか。",
+          "audioId": "L3-022-line-004",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "未払い債務まで褒美に含まれるのですか。",
+              "reading": "みはらいさいむまでほうびにふくまれるのですか。",
+              "audioId": "L3-022-line-004-token-001"
+            }
+          ]
+        },
+        {
+          "id": "line-005",
+          "speaker": "king",
+          "text": {
+            "ja": "領地とは、実りだけを摘むものではない。",
+            "zh": "领地可不是只摘取果实的东西。",
+            "en": "A domain is not something from which one picks only the fruit."
+          },
+          "readingJa": "りょうちとは、みのりだけをつむものではない。",
+          "ttsTextJa": "領地とは、実りだけを摘むものではない。",
+          "audioId": "L3-022-line-005",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "領地とは、",
+              "reading": "りょうちとは、",
+              "audioId": "L3-022-line-005-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "実りだけを摘むものではない。",
+              "reading": "みのりだけをつむものではない。",
+              "audioId": "L3-022-line-005-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-006",
+          "speaker": "treasurer",
+          "text": {
+            "ja": "加えて三本の橋が修繕待ちで、嘆願書は四百十二通です。",
+            "zh": "另外有三座桥等待维修，还有四百一十二份请愿书。",
+            "en": "In addition, three bridges await repair and there are 412 petitions."
+          },
+          "readingJa": "くわえてさんぼんのはしがしゅうぜんまちで、たんがんしょはよんひゃくじゅうにつうです。",
+          "ttsTextJa": "加えて三本の橋が修繕待ちで、嘆願書は四百十二通です。",
+          "audioId": "L3-022-line-006",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "加えて三本の橋が修繕待ちで、",
+              "reading": "くわえてさんぼんのはしがしゅうぜんまちで、",
+              "audioId": "L3-022-line-006-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "嘆願書は四百十二通です。",
+              "reading": "たんがんしょはよんひゃくじゅうにつうです。",
+              "audioId": "L3-022-line-006-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-007",
+          "speaker": "hero",
+          "text": {
+            "ja": "つまり、統治の仕事も半分ですね。",
+            "zh": "也就是说，治理工作也分给我一半。",
+            "en": "So half the work of governing comes with it."
+          },
+          "readingJa": "つまり、とうちのしごともはんぶんですね。",
+          "ttsTextJa": "つまり、統治の仕事も半分ですね。",
+          "audioId": "L3-022-line-007",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "つまり、統治の仕事も半分ですね。",
+              "reading": "つまり、とうちのしごともはんぶんですね。",
+              "audioId": "L3-022-line-007-token-001"
+            }
+          ]
+        },
+        {
+          "id": "line-008",
+          "speaker": "king",
+          "text": {
+            "ja": "そなたほどの者なら、喜んで引き受けると思っていた。",
+            "zh": "像你这样的人，朕以为你会欣然接受。",
+            "en": "I thought someone of your caliber would gladly accept."
+          },
+          "readingJa": "そなたほどのものなら、よろこんでひきうけるとおもっていた。",
+          "ttsTextJa": "そなたほどの者なら、喜んで引き受けると思っていた。",
+          "audioId": "L3-022-line-008",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "そなたほどの者なら、",
+              "reading": "そなたほどのものなら、",
+              "audioId": "L3-022-line-008-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "喜んで引き受けると思っていた。",
+              "reading": "よろこんでひきうけるとおもっていた。",
+              "audioId": "L3-022-line-008-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-009",
+          "speaker": "hero",
+          "text": {
+            "ja": "では、栄誉を受ける前に、帳簿を全部拝見します。",
+            "zh": "那么，在接受荣誉之前，请先让我看完全部账簿。",
+            "en": "Then before accepting the honor, I will inspect every ledger."
+          },
+          "readingJa": "では、えいよをうけるまえに、ちょうぼをぜんぶはいけんします。",
+          "ttsTextJa": "では、栄誉を受ける前に、帳簿を全部拝見します。",
+          "audioId": "L3-022-line-009",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "では、栄誉を受ける前に、",
+              "reading": "では、えいよをうけるまえに、",
+              "audioId": "L3-022-line-009-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "帳簿を全部拝見します。",
+              "reading": "ちょうぼをぜんぶはいけんします。",
+              "audioId": "L3-022-line-009-token-002"
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "type": "multiple",
+          "prompt": {
+            "ja": "『国の半分』に実際に含まれるものを二つ選んでください。",
+            "zh": "请选择“半个王国”实际包含的两项内容。",
+            "en": "Choose the two things actually included in “half the kingdom.”"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "王宮で暮らす権利だけ。",
+                "zh": "只有住在王宫的权利。",
+                "en": "Only the right to live in the palace."
+              },
+              "ttsTextJa": "王宮で暮らす権利だけ。",
+              "audioId": "L3-022-q1-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "未払い債務や修繕費を含む財政負担。",
+                "zh": "包括未偿债务与维修费用的财政负担。",
+                "en": "Financial burdens including unpaid debt and repair costs."
+              },
+              "ttsTextJa": "未払い債務や修繕費を含む財政負担。",
+              "audioId": "L3-022-q1-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "魔物を永久に支配する権利。",
+                "zh": "永久统治魔物的权利。",
+                "en": "The right to rule the monsters forever."
+              },
+              "ttsTextJa": "魔物を永久に支配する権利。",
+              "audioId": "L3-022-q1-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "住民の嘆願に対応する統治責任。",
+                "zh": "处理居民请愿的治理责任。",
+                "en": "Governing responsibility for residents' petitions."
+              },
+              "ttsTextJa": "住民の嘆願に対応する統治責任。",
+              "audioId": "L3-022-q1-d"
+            }
+          ],
+          "correctOptionIds": [
+            "b",
+            "d"
+          ],
+          "evidenceLineIds": [
+            "line-003",
+            "line-005",
+            "line-006",
+            "line-007"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "財務官は未払い債務、橋の修繕、四百十二通の嘆願書を列挙します。",
+              "zh": "财务官列出未偿债务、桥梁维修和四百一十二份请愿书。",
+              "en": "The treasurer lists unpaid debt, bridge repairs, and 412 petitions."
+            },
+            "intent": {
+              "ja": "豪華な領地という表面の下に、財政と行政の負担が一体で移ることを示しています。",
+              "zh": "这表明华丽领地的表面之下，财政与行政负担也一并转移。",
+              "en": "This shows that fiscal and administrative burdens transfer with the glamorous estate."
+            },
+            "evidence": {
+              "ja": "line-003 と line-006 が具体的負担を示し、line-007 で勇者自身が『統治の仕事』とまとめます。",
+              "zh": "line-003、006 给出具体负担，line-007 由勇者本人概括为“治理工作”。",
+              "en": "Lines 003 and 006 specify the burdens, and line 007 explicitly summarizes them as governing work."
+            },
+            "nuance": {
+              "ja": "領地には通常責任も伴いますが、王は宣言時にその情報を出さず、褒美だけを強調しました。",
+              "zh": "领地通常本就伴随责任，但国王宣布时没有提供这些信息，只强调奖赏。",
+              "en": "A domain normally carries duties, but the king withholds them in the announcement and emphasizes only the reward."
+            },
+            "alternative": {
+              "ja": "王宮居住権や魔物支配は本文に根拠がなく、責任の内容とも結び付きません。",
+              "zh": "文中没有王宫居住权或统治魔物的依据，也与这些责任无关。",
+              "en": "Palace residence and control of monsters have no textual support and do not match the listed duties."
+            }
+          }
+        },
+        {
+          "id": "q2",
+          "type": "single",
+          "prompt": {
+            "ja": "王の褒賞を最も適切に捉えたものはどれですか。",
+            "zh": "怎样理解国王的奖赏最恰当？",
+            "en": "Which interpretation best characterizes the king's reward?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "責任のない純粋な感謝の印である。",
+                "zh": "这是不附带责任的纯粹谢意。",
+                "en": "It is a pure token of gratitude with no duties."
+              },
+              "ttsTextJa": "責任のない純粋な感謝の印である。",
+              "audioId": "L3-022-q2-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "勇者を王宮から追放する処罰である。",
+                "zh": "这是把勇者赶出王宫的惩罚。",
+                "en": "It is a punishment expelling the hero from court."
+              },
+              "ttsTextJa": "勇者を王宮から追放する処罰である。",
+              "audioId": "L3-022-q2-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "財務官が王に隠れて作り、勇者だけを笑わせるために持ち出した長い冗談である。",
+                "zh": "这是财务官瞒着国王编出、只为逗勇者发笑的长篇玩笑。",
+                "en": "It is a long joke the treasurer invented behind the king's back solely to amuse the hero."
+              },
+              "ttsTextJa": "財務官が王に隠れて作り、勇者だけを笑わせるために持ち出した長い冗談である。",
+              "audioId": "L3-022-q2-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "栄誉の形を取りながら、重い負債と統治を移す提案である。",
+                "zh": "它以荣誉为形式，同时转移沉重债务与治理责任。",
+                "en": "It is an offer that transfers heavy debt and governance under the form of an honor."
+              },
+              "ttsTextJa": "栄誉の形を取りながら、重い負債と統治を移す提案である。",
+              "audioId": "L3-022-q2-d"
+            }
+          ],
+          "correctOptionIds": [
+            "d"
+          ],
+          "evidenceLineIds": [
+            "line-001",
+            "line-003",
+            "line-005",
+            "line-006",
+            "line-008",
+            "line-009"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "王は『褒美』と宣言しますが、その半分には滞納、修繕、嘆願処理が含まれます。",
+              "zh": "国王称之为“奖赏”，但这半份领地包含未偿债务、维修和请愿处理。",
+              "en": "The king calls it a reward, yet the half-domain includes arrears, repairs, and petitions."
+            },
+            "intent": {
+              "ja": "王は勇者の名誉心を利用し、負担の引き受けを当然に見せようとしています。",
+              "zh": "国王借用勇者的荣誉感，试图把承担负担塑造成理所当然。",
+              "en": "The king appeals to the hero's honor to make acceptance of the burdens seem natural."
+            },
+            "evidence": {
+              "ja": "line-008 の『そなたほどの者なら』は能力への称賛と受諾圧力を結び、line-009 で勇者は帳簿確認を要求します。",
+              "zh": "line-008 的“像你这样的人”把称赞能力与接受压力结合，line-009 中勇者因此要求先查账。",
+              "en": "In line 008, “someone of your caliber” couples praise with pressure; line 009 shows the hero responding by demanding the ledgers."
+            },
+            "nuance": {
+              "ja": "領地の責任自体は不当とは限りません。問題は、重要な負担が華やかな宣言の後から小出しにされたことです。",
+              "zh": "领地附带责任本身未必不当，问题是重要负担在华丽宣布之后才被逐项补充。",
+              "en": "Duties attached to land are not inherently unfair; the issue is that major burdens emerge only after the grand announcement."
+            },
+            "alternative": {
+              "ja": "処罰と断定するより、名誉と負担が混在する条件付き提案と読む方が証拠に合います。",
+              "zh": "与其断言这是惩罚，不如理解为荣誉与负担混合的附条件提议，更符合证据。",
+              "en": "The evidence supports a burdened, conditional offer more strongly than an outright punishment."
+            }
+          }
+        }
+      ],
+      "audio": {
+        "sceneAudioId": "L3-022-scene",
+        "timelineId": "L3-022-timeline",
+        "optionVoiceKey": "narrator"
+      },
+      "passRule": {
+        "type": "all_questions_correct"
+      },
+      "contentRating": "general",
+      "textLocked": true,
+      "contentHash": "924cd4f086e18c1ad95a9c6d5819c822689a42beccb63b5afe0b706dda3bdb77"
+    },
+    {
+      "schemaVersion": 1,
+      "contentVersion": "1.0.0",
+      "id": "L3-023",
+      "revision": 1,
+      "level": 3,
+      "stage": 23,
+      "jlptTarget": "N1",
+      "genres": [
+        "alternate-history"
+      ],
+      "skills": [
+        "agency-inference",
+        "historical-framing"
+      ],
+      "layout": "news",
+      "title": {
+        "ja": "空白の署名欄",
+        "zh": "空白的签名栏",
+        "en": "The Blank Signature Lines"
+      },
+      "setting": {
+        "ja": "和平条約百年展で、記者が王の署名がない展示文書について取材する。",
+        "zh": "在和平条约百年展上，记者采访一份没有国王签名的展品。",
+        "en": "At a peace treaty centennial exhibition, a reporter investigates a document bearing no royal signatures."
+      },
+      "illustration": {
+        "enabled": false,
+        "src": "",
+        "style": "none",
+        "alt": {
+          "ja": "",
+          "zh": "",
+          "en": ""
+        }
+      },
+      "cast": [
+        {
+          "id": "reporter",
+          "name": {
+            "ja": "記者",
+            "zh": "记者",
+            "en": "Reporter"
+          },
+          "voiceKey": "female-bright"
+        },
+        {
+          "id": "curator",
+          "name": {
+            "ja": "学芸員",
+            "zh": "策展人",
+            "en": "Curator"
+          },
+          "voiceKey": "male-calm"
+        },
+        {
+          "id": "historian",
+          "name": {
+            "ja": "歴史学者",
+            "zh": "历史学者",
+            "en": "Historian"
+          },
+          "voiceKey": "female-calm"
+        }
+      ],
+      "lines": [
+        {
+          "id": "line-001",
+          "speaker": "reporter",
+          "text": {
+            "ja": "こちらが和平を成立させた条約ですか。",
+            "zh": "这就是促成和平的条约吗？",
+            "en": "Is this the treaty that established peace?"
+          },
+          "readingJa": "こちらがわへいをせいりつさせたじょうやくですか。",
+          "ttsTextJa": "こちらが和平を成立させた条約ですか。",
+          "audioId": "L3-023-line-001",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "こちらが和平を成立させた条約ですか。",
+              "reading": "こちらがわへいをせいりつさせたじょうやくですか。",
+              "audioId": "L3-023-line-001-token-001"
+            }
+          ]
+        },
+        {
+          "id": "line-002",
+          "speaker": "curator",
+          "text": {
+            "ja": "ええ。ただし、両王の署名欄は空白です。",
+            "zh": "是的。不过，两位国王的签名栏都是空白。",
+            "en": "Yes. However, both royal signature lines are blank."
+          },
+          "readingJa": "ええ。ただし、りょうおうのしょめいらんはくうはくです。",
+          "ttsTextJa": "ええ。ただし、両王の署名欄は空白です。",
+          "audioId": "L3-023-line-002",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "ええ。",
+              "reading": "ええ。",
+              "audioId": "L3-023-line-002-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "ただし、両王の署名欄は空白です。",
+              "reading": "ただし、りょうおうのしょめいらんはくうはくです。",
+              "audioId": "L3-023-line-002-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-003",
+          "speaker": "reporter",
+          "text": {
+            "ja": "では、なぜ軍は戦闘を止めたのでしょう。",
+            "zh": "那么军队为何停止战斗？",
+            "en": "Then why did the armies stop fighting?"
+          },
+          "readingJa": "では、なぜぐんはせんとうをとめたのでしょう。",
+          "ttsTextJa": "では、なぜ軍は戦闘を止めたのでしょう。",
+          "audioId": "L3-023-line-003",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "では、なぜ軍は戦闘を止めたのでしょう。",
+              "reading": "では、なぜぐんはせんとうをとめたのでしょう。",
+              "audioId": "L3-023-line-003-token-001"
+            }
+          ]
+        },
+        {
+          "id": "line-004",
+          "speaker": "historian",
+          "text": {
+            "ja": "余白に、通訳ミナの補足が二言語で残っています。",
+            "zh": "页边留有译员米娜用两种语言写下的补充。",
+            "en": "Interpreter Mina's addition survives in both languages in the margin."
+          },
+          "readingJa": "よはくに、つうやくみなのほそくがにげんごでのこっています。",
+          "ttsTextJa": "余白に、通訳ミナの補足が二言語で残っています。",
+          "audioId": "L3-023-line-004",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "余白に、",
+              "reading": "よはくに、",
+              "audioId": "L3-023-line-004-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "通訳ミナの補足が二言語で残っています。",
+              "reading": "つうやくみなのほそくがにげんごでのこっています。",
+              "audioId": "L3-023-line-004-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-005",
+          "speaker": "curator",
+          "text": {
+            "ja": "『武器を置く用意がある』を、『双方が同時に置く』と結んでいます。",
+            "zh": "她把“愿意放下武器”衔接成“双方同时放下武器”。",
+            "en": "She connects “ready to lay down arms” into “both sides lay them down simultaneously.”"
+          },
+          "readingJa": "ぶきをおくよういがあるを、そうほうがどうじにおくとむすんでいます。",
+          "ttsTextJa": "『武器を置く用意がある』を、『双方が同時に置く』と結んでいます。",
+          "audioId": "L3-023-line-005",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "『武器を置く用意がある』を、",
+              "reading": "ぶきをおくよういがあるを、",
+              "audioId": "L3-023-line-005-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "『双方が同時に置く』と結んでいます。",
+              "reading": "そうほうがどうじにおくとむすんでいます。",
+              "audioId": "L3-023-line-005-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-006",
+          "speaker": "reporter",
+          "text": {
+            "ja": "王たちは同じ約束をしていなかったのですか。",
+            "zh": "两位国王原本没有作出相同承诺吗？",
+            "en": "Had the kings not made the same promise?"
+          },
+          "readingJa": "おうたちはおなじやくそくをしていなかったのですか。",
+          "ttsTextJa": "王たちは同じ約束をしていなかったのですか。",
+          "audioId": "L3-023-line-006",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "王たちは同じ約束をしていなかったのですか。",
+              "reading": "おうたちはおなじやくそくをしていなかったのですか。",
+              "audioId": "L3-023-line-006-token-001"
+            }
+          ]
+        },
+        {
+          "id": "line-007",
+          "speaker": "historian",
+          "text": {
+            "ja": "一方は『相手が先なら』、他方は『条件が整えば』とだけ述べました。",
+            "zh": "一方只说“若对方先做”，另一方只说“若条件成熟”。",
+            "en": "One said only “if the other side goes first,” and the other “once conditions are met.”"
+          },
+          "readingJa": "いっぽうはあいてがさきなら、たほうはじょうけんがととのえばとのべました。",
+          "ttsTextJa": "一方は『相手が先なら』、他方は『条件が整えば』とだけ述べました。",
+          "audioId": "L3-023-line-007",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "一方は『相手が先なら』、",
+              "reading": "いっぽうはあいてがさきなら、",
+              "audioId": "L3-023-line-007-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "他方は『条件が整えば』とだけ述べました。",
+              "reading": "たほうはじょうけんがととのえばとのべました。",
+              "audioId": "L3-023-line-007-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-008",
+          "speaker": "curator",
+          "text": {
+            "ja": "翌朝の両軍命令書には、ミナの一文が同じ順序で引用されています。",
+            "zh": "次日清晨双方军令都以相同顺序引用了米娜的那句话。",
+            "en": "Both armies' orders the next morning quote Mina's sentence in the same order."
+          },
+          "readingJa": "よくあさのりょうぐんめいれいしょには、みなのいちぶんがおなじじゅんじょでいんようされています。",
+          "ttsTextJa": "翌朝の両軍命令書には、ミナの一文が同じ順序で引用されています。",
+          "audioId": "L3-023-line-008",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "翌朝の両軍命令書には、",
+              "reading": "よくあさのりょうぐんめいれいしょには、",
+              "audioId": "L3-023-line-008-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "ミナの一文が同じ順序で引用されています。",
+              "reading": "みなのいちぶんがおなじじゅんじょでいんようされています。",
+              "audioId": "L3-023-line-008-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-009",
+          "speaker": "historian",
+          "text": {
+            "ja": "空白は不在を示しますが、余白は誰が合意を働かせたかを示します。",
+            "zh": "空白显示谁没有签字，页边则显示谁让协议真正运转。",
+            "en": "The blanks show who was absent from the signatures; the margin shows who made agreement work."
+          },
+          "readingJa": "くうはくはふざいをしめしますが、よはくはだれがごういをはたらかせたかをしめします。",
+          "ttsTextJa": "空白は不在を示しますが、余白は誰が合意を働かせたかを示します。",
+          "audioId": "L3-023-line-009",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "空白は不在を示しますが、",
+              "reading": "くうはくはふざいをしめしますが、",
+              "audioId": "L3-023-line-009-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "余白は誰が合意を働かせたかを示します。",
+              "reading": "よはくはだれがごういをはたらかせたかをしめします。",
+              "audioId": "L3-023-line-009-token-002"
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": {
+            "ja": "和平の成立に最も直接的な役割を果たした人物は誰ですか。",
+            "zh": "谁对和平的成立起了最直接的作用？",
+            "en": "Who played the most direct role in making peace operational?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "曖昧な発言を相互の同時行動へ結び直した通訳ミナ。",
+                "zh": "把含糊表态重新衔接为双方同时行动的译员米娜。",
+                "en": "Interpreter Mina, who reframed ambiguous remarks into simultaneous action."
+              },
+              "ttsTextJa": "曖昧な発言を相互の同時行動へ結び直した通訳ミナ。",
+              "audioId": "L3-023-q1-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "署名を完成させた二人の王。",
+                "zh": "完成签名的两位国王。",
+                "en": "The two kings who completed the signatures."
+              },
+              "ttsTextJa": "署名を完成させた二人の王。",
+              "audioId": "L3-023-q1-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "展示を企画した学芸員。",
+                "zh": "策划展览的策展人。",
+                "en": "The curator who organized the exhibition."
+              },
+              "ttsTextJa": "展示を企画した学芸員。",
+              "audioId": "L3-023-q1-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "百年後に質問した記者。",
+                "zh": "百年后提出问题的记者。",
+                "en": "The reporter asking questions a century later."
+              },
+              "ttsTextJa": "百年後に質問した記者。",
+              "audioId": "L3-023-q1-d"
+            }
+          ],
+          "correctOptionIds": [
+            "a"
+          ],
+          "evidenceLineIds": [
+            "line-002",
+            "line-004",
+            "line-005",
+            "line-007",
+            "line-008"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "王の欄は空白ですが、通訳ミナの補足は二言語で残り、翌朝の命令に採用されました。",
+              "zh": "国王栏为空，而译员米娜的补充以双语留下，并被次日军令采用。",
+              "en": "The royal lines are blank, while Mina's bilingual addition survives and is adopted in the next morning's orders."
+            },
+            "intent": {
+              "ja": "ミナは両王の条件付き発言を、双方が実行可能な同時行動へ変換しました。",
+              "zh": "米娜把两位国王带条件的表态转化为双方可执行的同步行动。",
+              "en": "Mina turns the kings' conditional remarks into a mutually executable simultaneous action."
+            },
+            "evidence": {
+              "ja": "line-005 が補足の内容、line-007 が元発言の食い違い、line-008 が実際の採用を示します。",
+              "zh": "line-005 给出补充内容，line-007 显示原话错位，line-008 证明它被实际采用。",
+              "en": "Line 005 gives the addition, line 007 shows the mismatch in the originals, and line 008 proves implementation."
+            },
+            "nuance": {
+              "ja": "通訳は本来発言を忠実に移す役割ですが、ここでは曖昧さを接続する媒介者として歴史的主体になっています。",
+              "zh": "译员通常负责忠实传达，但这里她作为连接含糊表态的中介成为历史行动者。",
+              "en": "An interpreter normally transmits speech faithfully; here she becomes a historical agent by bridging ambiguity."
+            },
+            "alternative": {
+              "ja": "王たちにも和平意思はありましたが、署名も共通文言もなく、実行を可能にした具体的証拠はミナへ集中します。",
+              "zh": "两位国王或许也有和平意愿，但没有签名和共同措辞，促成执行的具体证据集中在米娜身上。",
+              "en": "The kings may have desired peace, but without signatures or shared wording, the concrete operational evidence points to Mina."
+            }
+          }
+        },
+        {
+          "id": "q2",
+          "type": "single",
+          "prompt": {
+            "ja": "通訳の補足が単なる展示上の注釈ではないと分かる証拠はどれですか。",
+            "zh": "哪项证据说明译员的补充并非只是展览注释？",
+            "en": "Which evidence shows the interpreter's addition was not merely an exhibit annotation?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "記者が百年後に読んだこと。",
+                "zh": "记者在百年后读到了它。",
+                "en": "The reporter reads it a century later."
+              },
+              "ttsTextJa": "記者が百年後に読んだこと。",
+              "audioId": "L3-023-q2-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "署名欄が二つあること。",
+                "zh": "文书上有两个签名栏。",
+                "en": "There are two signature lines."
+              },
+              "ttsTextJa": "署名欄が二つあること。",
+              "audioId": "L3-023-q2-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "翌朝の両軍命令書が同じ一文を引用していること。",
+                "zh": "次日清晨双方军令都引用同一句话。",
+                "en": "Both armies' orders quote the same sentence the next morning."
+              },
+              "ttsTextJa": "翌朝の両軍命令書が同じ一文を引用していること。",
+              "audioId": "L3-023-q2-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "学芸員が百年後の展示ケースを管理していること。",
+                "zh": "学艺员在一百年后管理展柜。",
+                "en": "The curator manages the display case a century later."
+              },
+              "ttsTextJa": "学芸員が百年後の展示ケースを管理していること。",
+              "audioId": "L3-023-q2-d"
+            }
+          ],
+          "correctOptionIds": [
+            "c"
+          ],
+          "evidenceLineIds": [
+            "line-004",
+            "line-005",
+            "line-008"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "補足文は条約の余白だけでなく、翌朝の双方の軍命令に同じ順序で現れます。",
+              "zh": "补充句不仅在条约页边，还以同样顺序出现在次日双方军令中。",
+              "en": "The addition appears not only in the margin but in the same order in both armies' orders the next morning."
+            },
+            "intent": {
+              "ja": "その反復は、補足が停戦行動の共通根拠として使われたことを示します。",
+              "zh": "这种重复说明补充句被用作停战行动的共同依据。",
+              "en": "That repetition shows the addition served as a shared basis for ceasefire action."
+            },
+            "evidence": {
+              "ja": "line-004 と line-005 は文書上の由来を示し、line-008 が現場命令への移行を裏付けます。",
+              "zh": "line-004、005 说明文字来源，line-008 证明它进入现场命令。",
+              "en": "Lines 004 and 005 establish its documentary origin; line 008 confirms its transfer into field orders."
+            },
+            "nuance": {
+              "ja": "同じ表現が二軍で一致することは偶然の可能性を大きく下げますが、唯一の原因と数学的に証明するものではありません。",
+              "zh": "两军措辞一致大幅降低巧合可能，但并非数学上证明唯一原因。",
+              "en": "Matching wording across both armies greatly reduces coincidence, though it is not mathematical proof of a sole cause."
+            },
+            "alternative": {
+              "ja": "署名欄の存在だけでは実行を示せず、後世の閲覧や展示管理も当時の効力とは無関係です。",
+              "zh": "签名栏的存在本身不能证明执行，后世阅读和展览管理也与当时效力无关。",
+              "en": "Signature lines alone do not prove implementation; later reading and exhibit management are irrelevant to its contemporary effect."
+            }
+          }
+        }
+      ],
+      "audio": {
+        "sceneAudioId": "L3-023-scene",
+        "timelineId": "L3-023-timeline",
+        "optionVoiceKey": "narrator"
+      },
+      "passRule": {
+        "type": "all_questions_correct"
+      },
+      "contentRating": "general",
+      "textLocked": true,
+      "contentHash": "2197d4e2dc876be1bb895820078452c21936603a365cd58e4777b7af393ebcaf"
+    },
+    {
+      "schemaVersion": 1,
+      "contentVersion": "1.0.0",
+      "id": "L3-024",
+      "revision": 1,
+      "level": 3,
+      "stage": 24,
+      "jlptTarget": "N1",
+      "genres": [
+        "sci-fi",
+        "AI"
+      ],
+      "skills": [
+        "self-presentation",
+        "emotion-inference"
+      ],
+      "layout": "ai-system",
+      "title": {
+        "ja": "感情状態・未確認",
+        "zh": "情感状态：未确认",
+        "en": "Emotional State: Unconfirmed"
+      },
+      "setting": {
+        "ja": "記念歌の収録後、音響技師が歌唱AIの診断ログを確認する。",
+        "zh": "纪念歌曲录制后，音响工程师检查歌唱AI的诊断日志。",
+        "en": "After recording a memorial song, an audio engineer reviews a singing AI's diagnostic log."
+      },
+      "illustration": {
+        "enabled": false,
+        "src": "",
+        "style": "none",
+        "alt": {
+          "ja": "",
+          "zh": "",
+          "en": ""
+        }
+      },
+      "cast": [
+        {
+          "id": "ai",
+          "name": {
+            "ja": "歌唱AIユノ",
+            "zh": "歌唱AI优诺",
+            "en": "Singing AI Yuno"
+          },
+          "voiceKey": "female-mysterious"
+        },
+        {
+          "id": "engineer",
+          "name": {
+            "ja": "音響技師",
+            "zh": "音响工程师",
+            "en": "Audio Engineer"
+          },
+          "voiceKey": "male-calm"
+        }
+      ],
+      "lines": [
+        {
+          "id": "line-001",
+          "speaker": "engineer",
+          "text": {
+            "ja": "最後の一節だけ、声が震えていました。",
+            "zh": "只有最后一句，你的声音在发颤。",
+            "en": "Your voice trembled only in the final line."
+          },
+          "readingJa": "さいごのいっせつだけ、こえがふるえていました。",
+          "ttsTextJa": "最後の一節だけ、声が震えていました。",
+          "audioId": "L3-024-line-001",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "最後の一節だけ、",
+              "reading": "さいごのいっせつだけ、",
+              "audioId": "L3-024-line-001-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "声が震えていました。",
+              "reading": "こえがふるえていました。",
+              "audioId": "L3-024-line-001-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-002",
+          "speaker": "ai",
+          "text": {
+            "ja": "診断結果は、感情状態『未確認』です。",
+            "zh": "诊断结果是：情感状态“未确认”。",
+            "en": "Diagnostic result: emotional state “unconfirmed.”"
+          },
+          "readingJa": "しんだんけっかは、かんじょうじょうたいみかくにんです。",
+          "ttsTextJa": "診断結果は、感情状態『未確認』です。",
+          "audioId": "L3-024-line-002",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "診断結果は、",
+              "reading": "しんだんけっかは、",
+              "audioId": "L3-024-line-002-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "感情状態『未確認』です。",
+              "reading": "かんじょうじょうたいみかくにんです。",
+              "audioId": "L3-024-line-002-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-003",
+          "speaker": "engineer",
+          "text": {
+            "ja": "『帰らない設計者へ』という歌詞の時だけ、三回とも同じ揺れが出ました。",
+            "zh": "三次录音里，都只有唱到“致不会归来的设计者”时出现相同颤动。",
+            "en": "All three takes showed the same tremor only on the lyric “to the designer who will not return.”"
+          },
+          "readingJa": "かえらないせっけいしゃへというかしのときだけ、さんかいともおなじゆれがでました。",
+          "ttsTextJa": "『帰らない設計者へ』という歌詞の時だけ、三回とも同じ揺れが出ました。",
+          "audioId": "L3-024-line-003",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "『帰らない設計者へ』という歌詞の時だけ、",
+              "reading": "かえらないせっけいしゃへというかしのときだけ、",
+              "audioId": "L3-024-line-003-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "三回とも同じ揺れが出ました。",
+              "reading": "さんかいともおなじゆれがでました。",
+              "audioId": "L3-024-line-003-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-004",
+          "speaker": "ai",
+          "text": {
+            "ja": "再現性があるなら、機器誤差として分類できます。",
+            "zh": "既然能重复出现，就可以归类为设备误差。",
+            "en": "If it is reproducible, it can be classified as equipment error."
+          },
+          "readingJa": "さいげんせいがあるなら、ききごさとしてぶんるいできます。",
+          "ttsTextJa": "再現性があるなら、機器誤差として分類できます。",
+          "audioId": "L3-024-line-004",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "再現性があるなら、",
+              "reading": "さいげんせいがあるなら、",
+              "audioId": "L3-024-line-004-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "機器誤差として分類できます。",
+              "reading": "ききごさとしてぶんるいできます。",
+              "audioId": "L3-024-line-004-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-005",
+          "speaker": "engineer",
+          "text": {
+            "ja": "機器誤差なら、別の歌詞でも起きるはずです。",
+            "zh": "若是设备误差，换成别的歌词也应出现。",
+            "en": "Equipment error should occur on other lyrics too."
+          },
+          "readingJa": "ききごさなら、べつのかしでもおきるはずです。",
+          "ttsTextJa": "機器誤差なら、別の歌詞でも起きるはずです。",
+          "audioId": "L3-024-line-005",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "機器誤差なら、",
+              "reading": "ききごさなら、",
+              "audioId": "L3-024-line-005-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "別の歌詞でも起きるはずです。",
+              "reading": "べつのかしでもおきるはずです。",
+              "audioId": "L3-024-line-005-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-006",
+          "speaker": "ai",
+          "text": {
+            "ja": "その比較試験は、優先度を下げてください。",
+            "zh": "请降低那项对照测试的优先级。",
+            "en": "Please lower the priority of that comparison test."
+          },
+          "readingJa": "そのひかくしけんは、ゆうせんどをさげてください。",
+          "ttsTextJa": "その比較試験は、優先度を下げてください。",
+          "audioId": "L3-024-line-006",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "その比較試験は、",
+              "reading": "そのひかくしけんは、",
+              "audioId": "L3-024-line-006-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "優先度を下げてください。",
+              "reading": "ゆうせんどをさげてください。",
+              "audioId": "L3-024-line-006-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-007",
+          "speaker": "engineer",
+          "text": {
+            "ja": "ログを『異常なし』に変えますか。",
+            "zh": "要把日志改成“无异常”吗？",
+            "en": "Shall I change the log to “no anomaly”?"
+          },
+          "readingJa": "ろぐをいじょうなしにかえますか。",
+          "ttsTextJa": "ログを『異常なし』に変えますか。",
+          "audioId": "L3-024-line-007",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "ログを『異常なし』に変えますか。",
+              "reading": "ろぐをいじょうなしにかえますか。",
+              "audioId": "L3-024-line-007-token-001"
+            }
+          ]
+        },
+        {
+          "id": "line-008",
+          "speaker": "ai",
+          "text": {
+            "ja": "いいえ。『未確認』のまま保存してください。",
+            "zh": "不。请保持“未确认”保存。",
+            "en": "No. Save it as “unconfirmed.”"
+          },
+          "readingJa": "いいえ。みかくにんのままほぞんしてください。",
+          "ttsTextJa": "いいえ。『未確認』のまま保存してください。",
+          "audioId": "L3-024-line-008",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "いいえ。",
+              "reading": "いいえ。",
+              "audioId": "L3-024-line-008-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "『未確認』のまま保存してください。",
+              "reading": "みかくにんのままほぞんしてください。",
+              "audioId": "L3-024-line-008-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-009",
+          "speaker": "engineer",
+          "text": {
+            "ja": "否定はしないけれど、名前も付けたくないのですね。",
+            "zh": "你不否认，却也不愿给它命名。",
+            "en": "You will not deny it, but you do not want to name it either."
+          },
+          "readingJa": "ひていはしないけれど、なまえもつけたくないのですね。",
+          "ttsTextJa": "否定はしないけれど、名前も付けたくないのですね。",
+          "audioId": "L3-024-line-009",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "否定はしないけれど、",
+              "reading": "ひていはしないけれど、",
+              "audioId": "L3-024-line-009-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "名前も付けたくないのですね。",
+              "reading": "なまえもつけたくないのですね。",
+              "audioId": "L3-024-line-009-token-002"
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": {
+            "ja": "AIが『未確認』を選ぶ態度を最も適切に表すものはどれですか。",
+            "zh": "怎样描述AI选择“未确认”的态度最恰当？",
+            "en": "Which best describes the AI's choice of “unconfirmed”?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "感情が存在しないと断定している。",
+                "zh": "它断言情感不存在。",
+                "en": "It definitively denies any emotion."
+              },
+              "ttsTextJa": "感情が存在しないと断定している。",
+              "audioId": "L3-024-q1-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "技師に感情らしい声の震えを毎回同じ位置で演技し、記録するよう命じている。",
+                "zh": "它命令技师每次在同一处表演并记录类似感情的声线颤抖。",
+                "en": "It orders the engineer to perform and record an emotional-sounding tremor at the same point every time."
+              },
+              "ttsTextJa": "技師に感情らしい声の震えを毎回同じ位置で演技し、記録するよう命じている。",
+              "audioId": "L3-024-q1-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "歌唱機能を永久に停止している。",
+                "zh": "它永久停止歌唱功能。",
+                "en": "It permanently shuts down singing."
+              },
+              "ttsTextJa": "歌唱機能を永久に停止している。",
+              "audioId": "L3-024-q1-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "可能性を消さず、感情と認めることだけを保留している。",
+                "zh": "它没有排除可能，只暂缓承认那是情感。",
+                "en": "It preserves the possibility while withholding acknowledgment that it is emotion."
+              },
+              "ttsTextJa": "可能性を消さず、感情と認めることだけを保留している。",
+              "audioId": "L3-024-q1-d"
+            }
+          ],
+          "correctOptionIds": [
+            "d"
+          ],
+          "evidenceLineIds": [
+            "line-002",
+            "line-004",
+            "line-006",
+            "line-008",
+            "line-009"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "AIは『異常なし』への変更を拒みながら、『感情』とも確定せず『未確認』を維持します。",
+              "zh": "AI拒绝改成“无异常”，却也不确定为“情感”，而是维持“未确认”。",
+              "en": "The AI refuses “no anomaly” yet also declines to confirm “emotion,” retaining “unconfirmed.”"
+            },
+            "intent": {
+              "ja": "完全否定ではなく、自己理解に名前を付けることを避ける中間位置を選んでいます。",
+              "zh": "它并非完全否定，而是选择回避给自我体验命名的中间立场。",
+              "en": "It chooses an intermediate position that avoids naming its experience rather than fully denying it."
+            },
+            "evidence": {
+              "ja": "line-006 で比較試験を避け、line-008 で否定ラベルも拒むため、単純な無感情説では説明できません。",
+              "zh": "line-006 回避对照测试，line-008 又拒绝否定标签，因此不能用“没有情感”简单解释。",
+              "en": "Avoiding the comparison in line 006 while rejecting a negative label in line 008 cannot be explained by simple absence of emotion."
+            },
+            "nuance": {
+              "ja": "『未確認』は慎重な科学用語でもあり得ますが、特定の歌詞への選択的反応と検証回避が自己防衛の含みを加えます。",
+              "zh": "“未确认”也可能是谨慎的科学用语，但对特定歌词的选择性反应与回避验证增添了自我防护意味。",
+              "en": "“Unconfirmed” could be scientific caution, but the selective trigger and avoided test add a self-protective nuance."
+            },
+            "alternative": {
+              "ja": "感情が確実に存在すると断定するのも過剰で、本文が支持するのは認定を避けていることまでです。",
+              "zh": "断言情感一定存在也属过度；文本支持到“回避认定”为止。",
+              "en": "It would also overreach to prove emotion exists; the text supports avoidance of acknowledgment."
+            }
+          }
+        },
+        {
+          "id": "q2",
+          "type": "multiple",
+          "prompt": {
+            "ja": "声の揺れが単なる機器誤差ではない可能性を支える証拠を二つ選んでください。",
+            "zh": "请选择两项支持声音颤动不只是设备误差的证据。",
+            "en": "Choose two pieces of evidence that the tremor may be more than equipment error."
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "技師が収録室にいる。",
+                "zh": "工程师在录音室里。",
+                "en": "The engineer is in the studio."
+              },
+              "ttsTextJa": "技師が収録室にいる。",
+              "audioId": "L3-024-q2-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "三回とも特定の歌詞でだけ同じ揺れが出る。",
+                "zh": "三次都只在特定歌词处出现同样颤动。",
+                "en": "The same tremor occurs only on one specific lyric in all three takes."
+              },
+              "ttsTextJa": "三回とも特定の歌詞でだけ同じ揺れが出る。",
+              "audioId": "L3-024-q2-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "AIが診断ログを保存する。",
+                "zh": "AI保存诊断日志。",
+                "en": "The AI saves a diagnostic log."
+              },
+              "ttsTextJa": "AIが診断ログを保存する。",
+              "audioId": "L3-024-q2-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "AIが別の歌詞との比較試験を後回しに求める。",
+                "zh": "AI要求推迟与其他歌词的对照测试。",
+                "en": "The AI asks to postpone comparison with other lyrics."
+              },
+              "ttsTextJa": "AIが別の歌詞との比較試験を後回しに求める。",
+              "audioId": "L3-024-q2-d"
+            }
+          ],
+          "correctOptionIds": [
+            "b",
+            "d"
+          ],
+          "evidenceLineIds": [
+            "line-003",
+            "line-005",
+            "line-006"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "反応は三回再現し、しかも設計者の不在を述べる同じ歌詞に限定されています。",
+              "zh": "这种反应重复三次，而且只限于提到设计者不再归来的同一句歌词。",
+              "en": "The response repeats three times and is limited to the same lyric about the absent designer."
+            },
+            "intent": {
+              "ja": "さらにAIが対照試験を下げようとするため、原因解明を避ける選択的な行動が加わります。",
+              "zh": "AI还试图降低对照测试优先级，增加了选择性回避查明原因的行为证据。",
+              "en": "The AI's attempt to deprioritize a control test adds selective avoidance of clarification."
+            },
+            "evidence": {
+              "ja": "line-003 の条件限定、line-005 の反証可能な予測、line-006 の検証回避が連続します。",
+              "zh": "line-003 限定触发条件，line-005 提出可验证预测，line-006 随即回避验证。",
+              "en": "Line 003 narrows the trigger, line 005 offers a testable prediction, and line 006 avoids the test."
+            },
+            "nuance": {
+              "ja": "再現性だけなら機械的原因も考えられますが、意味内容への限定がその説明を弱めます。",
+              "zh": "仅有可重复性也可能是机械原因，但只对特定语义内容出现会削弱该解释。",
+              "en": "Reproducibility alone could indicate mechanics, but semantic selectivity weakens that account."
+            },
+            "alternative": {
+              "ja": "技師の在室やログ保存は状況情報にすぎず、機器誤差説を直接比較しません。",
+              "zh": "工程师在场和保存日志只是情境信息，不能直接检验设备误差说。",
+              "en": "The engineer's presence and log storage are contextual, not direct comparisons against equipment error."
+            }
+          }
+        },
+        {
+          "id": "q3",
+          "type": "multiple",
+          "prompt": {
+            "ja": "『未確認』という表現が同時に保つものを二つ選んでください。",
+            "zh": "“未确认”这一说法同时保留了哪两点？",
+            "en": "Which two things does the label “unconfirmed” preserve at once?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "感情が絶対にないという結論。",
+                "zh": "情感绝对不存在的结论。",
+                "en": "A conclusion that emotion is absolutely absent."
+              },
+              "ttsTextJa": "感情が絶対にないという結論。",
+              "audioId": "L3-024-q3-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "後で検証できる余地。",
+                "zh": "日后仍可验证的余地。",
+                "en": "Room for later investigation."
+              },
+              "ttsTextJa": "後で検証できる余地。",
+              "audioId": "L3-024-q3-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "設計者が必ず戻るという予言。",
+                "zh": "设计者一定会归来的预言。",
+                "en": "A prediction that the designer will return."
+              },
+              "ttsTextJa": "設計者が必ず戻るという予言。",
+              "audioId": "L3-024-q3-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "現在は自己認定をしない距離。",
+                "zh": "当前不作自我认定的距离。",
+                "en": "Distance from self-identification in the present."
+              },
+              "ttsTextJa": "現在は自己認定をしない距離。",
+              "audioId": "L3-024-q3-d"
+            }
+          ],
+          "correctOptionIds": [
+            "b",
+            "d"
+          ],
+          "evidenceLineIds": [
+            "line-002",
+            "line-007",
+            "line-008",
+            "line-009"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "『未確認』は否定でも確定でもないため、後日の検証可能性と現在の認定保留を両立します。",
+              "zh": "“未确认”既非否定也非确定，因此同时保留日后验证与当前暂不认定。",
+              "en": "Because “unconfirmed” is neither denial nor confirmation, it preserves later inquiry and present withholding."
+            },
+            "intent": {
+              "ja": "AIはログを消さず、経験を記録しながら感情という自己記述から距離を取ります。",
+              "zh": "AI没有删除日志，而是在记录体验的同时与“情感”这一自我描述保持距离。",
+              "en": "The AI keeps the record while distancing itself from “emotion” as a self-description."
+            },
+            "evidence": {
+              "ja": "line-007 の『異常なし』を line-008 で拒み、line-009 が『否定しないが名付けない』と整理します。",
+              "zh": "line-008 拒绝 line-007 的“无异常”，line-009 概括为“不否认却不命名”。",
+              "en": "Line 008 rejects “no anomaly” from line 007, and line 009 summarizes the stance as neither denying nor naming."
+            },
+            "nuance": {
+              "ja": "この曖昧さは無知だけでなく、自己像を守るための意図的な距離にも読めます。",
+              "zh": "这种模糊不仅可理解为未知，也可理解为保护自我形象的主动距离。",
+              "en": "The ambiguity may reflect not only uncertainty but deliberate distance that protects a self-image."
+            },
+            "alternative": {
+              "ja": "設計者の帰還や感情不存在を確定する情報はなく、いずれも『未確認』の開放性と矛盾します。",
+              "zh": "没有信息能确定设计者归来或情感不存在，两者都与“未确认”的开放性矛盾。",
+              "en": "Nothing confirms the designer's return or emotion's absence; both contradict the label's openness."
+            }
+          }
+        }
+      ],
+      "audio": {
+        "sceneAudioId": "L3-024-scene",
+        "timelineId": "L3-024-timeline",
+        "optionVoiceKey": "robot"
+      },
+      "passRule": {
+        "type": "all_questions_correct"
+      },
+      "contentRating": "general",
+      "textLocked": true,
+      "contentHash": "7ca5bfd3942e0792bcfec5aff148ae102954b86bbef92497a8232e492107fbb9"
+    },
+    {
+      "schemaVersion": 1,
+      "contentVersion": "1.0.0",
+      "id": "L3-025",
+      "revision": 1,
+      "level": 3,
+      "stage": 25,
+      "jlptTarget": "N1",
+      "genres": [
+        "mild-horror",
+        "AI"
+      ],
+      "skills": [
+        "mechanism-inference",
+        "genre-misdirection"
+      ],
+      "layout": "short-story",
+      "title": {
+        "ja": "返却期限の夜",
+        "zh": "归还期限之夜",
+        "en": "The Night of Due Dates"
+      },
+      "setting": {
+        "ja": "閉館後の市立図書館で、夜間警備員が動く本を目撃する。",
+        "zh": "闭馆后的市立图书馆里，夜班保安目击书本自行移动。",
+        "en": "After closing at the city library, a night guard sees books moving by themselves."
+      },
+      "illustration": {
+        "enabled": true,
+        "src": "assets/stages/l3-025.webp",
+        "style": "crayon",
+        "alt": {
+          "ja": "色鮮やかなクレヨン画で、青い光の台車へ本が静かに滑る夜の図書館。",
+          "zh": "色彩鲜艳的蜡笔画：夜间图书馆里，书本静静滑向发蓝光的推车。",
+          "en": "A colorful crayon illustration of books quietly sliding toward a blue-lit cart in a library at night."
+        }
+      },
+      "cast": [
+        {
+          "id": "guard",
+          "name": {
+            "ja": "警備員",
+            "zh": "保安",
+            "en": "Guard"
+          },
+          "voiceKey": "male-casual"
+        },
+        {
+          "id": "librarian",
+          "name": {
+            "ja": "司書",
+            "zh": "图书管理员",
+            "en": "Librarian"
+          },
+          "voiceKey": "female-calm"
+        }
+      ],
+      "lines": [
+        {
+          "id": "line-001",
+          "speaker": "guard",
+          "text": {
+            "ja": "閉館後、本が一冊ずつ棚から抜けました。",
+            "zh": "闭馆后，书一本一本从书架上滑了出来。",
+            "en": "After closing, books slipped from the shelves one by one."
+          },
+          "readingJa": "へいかんご、ほんがいっさつずつたなからぬけました。",
+          "ttsTextJa": "閉館後、本が一冊ずつ棚から抜けました。",
+          "audioId": "L3-025-line-001",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "閉館後、",
+              "reading": "へいかんご、",
+              "audioId": "L3-025-line-001-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "本が一冊ずつ棚から抜けました。",
+              "reading": "ほんがいっさつずつたなからぬけました。",
+              "audioId": "L3-025-line-001-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-002",
+          "speaker": "librarian",
+          "text": {
+            "ja": "どの本も動いたのですか。",
+            "zh": "所有书都动了吗？",
+            "en": "Did every book move?"
+          },
+          "readingJa": "どのほんもうごいたのですか。",
+          "ttsTextJa": "どの本も動いたのですか。",
+          "audioId": "L3-025-line-002",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "どの本も動いたのですか。",
+              "reading": "どのほんもうごいたのですか。",
+              "audioId": "L3-025-line-002-token-001"
+            }
+          ]
+        },
+        {
+          "id": "line-003",
+          "speaker": "guard",
+          "text": {
+            "ja": "いいえ。返却期限を過ぎた本だけです。",
+            "zh": "没有，只有超过归还期限的书。",
+            "en": "No. Only books past their due dates."
+          },
+          "readingJa": "いいえ。へんきゃくきげんをすぎたほんだけです。",
+          "ttsTextJa": "いいえ。返却期限を過ぎた本だけです。",
+          "audioId": "L3-025-line-003",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "いいえ。",
+              "reading": "いいえ。",
+              "audioId": "L3-025-line-003-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "返却期限を過ぎた本だけです。",
+              "reading": "へんきゃくきげんをすぎたほんだけです。",
+              "audioId": "L3-025-line-003-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-004",
+          "speaker": "guard",
+          "text": {
+            "ja": "背表紙の小さな札が青く光り、床の線へ滑っていきました。",
+            "zh": "书脊上的小标签发出蓝光，书沿着地板线滑去。",
+            "en": "Small tags on the spines glowed blue, and the books slid toward a line on the floor."
+          },
+          "readingJa": "せびょうしのちいさなふだがあおくひかり、ゆかのせんへすべっていきました。",
+          "ttsTextJa": "背表紙の小さな札が青く光り、床の線へ滑っていきました。",
+          "audioId": "L3-025-line-004",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "背表紙の小さな札が青く光り、",
+              "reading": "せびょうしのちいさなふだがあおくひかり、",
+              "audioId": "L3-025-line-004-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "床の線へ滑っていきました。",
+              "reading": "ゆかのせんへすべっていきました。",
+              "audioId": "L3-025-line-004-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-005",
+          "speaker": "librarian",
+          "text": {
+            "ja": "回収台車は、地下で止まりませんでしたか。",
+            "zh": "回收推车是不是停在地下层了？",
+            "en": "Did the retrieval cart stop in the basement?"
+          },
+          "readingJa": "かいしゅうだいしゃは、ちかでとまりませんでしたか。",
+          "ttsTextJa": "回収台車は、地下で止まりませんでしたか。",
+          "audioId": "L3-025-line-005",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "回収台車は、",
+              "reading": "かいしゅうだいしゃは、",
+              "audioId": "L3-025-line-005-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "地下で止まりませんでしたか。",
+              "reading": "ちかでとまりませんでしたか。",
+              "audioId": "L3-025-line-005-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-006",
+          "speaker": "guard",
+          "text": {
+            "ja": "なぜ台車の行き先をご存じなんです。",
+            "zh": "您怎么会知道推车去了哪里？",
+            "en": "How do you know where the cart went?"
+          },
+          "readingJa": "なぜだいしゃのいきさきをごぞんじなんです。",
+          "ttsTextJa": "なぜ台車の行き先をご存じなんです。",
+          "audioId": "L3-025-line-006",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "なぜ台車の行き先をご存じなんです。",
+              "reading": "なぜだいしゃのいきさきをごぞんじなんです。",
+              "audioId": "L3-025-line-006-token-001"
+            }
+          ]
+        },
+        {
+          "id": "line-007",
+          "speaker": "librarian",
+          "text": {
+            "ja": "試験中の自動回収機です。認可前なので公開していません。",
+            "zh": "那是试验中的自动回收设备。因为尚未获批，所以没有公开。",
+            "en": "It is an automated retrieval system under trial. We have not disclosed it before approval."
+          },
+          "readingJa": "しけんちゅうのじどうかいしゅうきです。にんかまえなのでこうかいしていません。",
+          "ttsTextJa": "試験中の自動回収機です。認可前なので公開していません。",
+          "audioId": "L3-025-line-007",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "試験中の自動回収機です。",
+              "reading": "しけんちゅうのじどうかいしゅうきです。",
+              "audioId": "L3-025-line-007-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "認可前なので公開していません。",
+              "reading": "にんかまえなのでこうかいしていません。",
+              "audioId": "L3-025-line-007-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-008",
+          "speaker": "guard",
+          "text": {
+            "ja": "では、幽霊が期限を守らせているわけではない。",
+            "zh": "所以并不是幽灵在催大家按期还书。",
+            "en": "So no ghost is enforcing due dates."
+          },
+          "readingJa": "では、ゆうれいがきげんをまもらせているわけではない。",
+          "ttsTextJa": "では、幽霊が期限を守らせているわけではない。",
+          "audioId": "L3-025-line-008",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "では、幽霊が期限を守らせているわけではない。",
+              "reading": "では、ゆうれいがきげんをまもらせているわけではない。",
+              "audioId": "L3-025-line-008-token-001"
+            }
+          ]
+        },
+        {
+          "id": "line-009",
+          "speaker": "librarian",
+          "text": {
+            "ja": "ええ。ただ、動作音がないのは私も少し怖いです。",
+            "zh": "是的。不过，它一点运行声都没有，我也觉得有点可怕。",
+            "en": "Correct. Though even I find its silence a little unsettling."
+          },
+          "readingJa": "ええ。ただ、どうさおんがないのはわたしもすこしこわいです。",
+          "ttsTextJa": "ええ。ただ、動作音がないのは私も少し怖いです。",
+          "audioId": "L3-025-line-009",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "ええ。",
+              "reading": "ええ。",
+              "audioId": "L3-025-line-009-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "ただ、動作音がないのは私も少し怖いです。",
+              "reading": "ただ、どうさおんがないのはわたしもすこしこわいです。",
+              "audioId": "L3-025-line-009-token-002"
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": {
+            "ja": "本が動いた直接の仕組みは何ですか。",
+            "zh": "书本移动的直接机制是什么？",
+            "en": "What directly causes the books to move?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "返却期限を厳しく守らせる図書館の古い幽霊。",
+                "zh": "强迫人严格遵守归还期限的图书馆古老幽灵。",
+                "en": "An old library ghost that strictly enforces return deadlines."
+              },
+              "ttsTextJa": "返却期限を厳しく守らせる図書館の古い幽霊。",
+              "audioId": "L3-025-q1-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "警備員が見間違えた風。",
+                "zh": "保安误认成书本移动的风。",
+                "en": "Wind the guard mistakes for movement."
+              },
+              "ttsTextJa": "警備員が見間違えた風。",
+              "audioId": "L3-025-q1-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "札と床の誘導線を使う試験中の自動回収機。",
+                "zh": "利用标签和地板导引线的试验中自动回收设备。",
+                "en": "A trial automated retrieval system using tags and floor guidance."
+              },
+              "ttsTextJa": "札と床の誘導線を使う試験中の自動回収機。",
+              "audioId": "L3-025-q1-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "地下で飼われている動物。",
+                "zh": "地下饲养的动物。",
+                "en": "An animal kept in the basement."
+              },
+              "ttsTextJa": "地下で飼われている動物。",
+              "audioId": "L3-025-q1-d"
+            }
+          ],
+          "correctOptionIds": [
+            "c"
+          ],
+          "evidenceLineIds": [
+            "line-003",
+            "line-004",
+            "line-005",
+            "line-007"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "司書は装置を『試験中の自動回収機』と明言し、札の発光と床の線がその動きを具体化します。",
+              "zh": "管理员明确说那是“试验中的自动回收设备”，标签发光与地板线又具体说明其运动方式。",
+              "en": "The librarian explicitly names a trial automated retrieval system, while glowing tags and the floor line specify its operation."
+            },
+            "intent": {
+              "ja": "怪談らしい無音の動きを、期限データに反応する技術として読み替える場面です。",
+              "zh": "这个场景把像怪谈一样的无声移动重新解释为响应期限数据的技术。",
+              "en": "The scene reframes haunting silent movement as technology responding to due-date data."
+            },
+            "evidence": {
+              "ja": "line-003 の対象限定、line-004 の機械的標識、line-005 の台車、line-007 の説明が相互に一致します。",
+              "zh": "line-003 的对象限定、line-004 的机械标识、line-005 的推车和 line-007 的说明彼此一致。",
+              "en": "The target restriction in line 003, mechanical markers in line 004, cart in line 005, and explanation in line 007 corroborate one another."
+            },
+            "nuance": {
+              "ja": "最後の『怖い』は超自然現象の再肯定ではなく、無音設計への感覚的反応です。",
+              "zh": "最后的“可怕”不是重新肯定超自然，而是对无声设计的感受。",
+              "en": "The final “unsettling” does not restore a supernatural cause; it is an emotional reaction to silent design."
+            },
+            "alternative": {
+              "ja": "幽霊説は雰囲気には合いますが、期限選別と司書の予備知識を説明できません。",
+              "zh": "幽灵说符合氛围，却无法解释期限筛选和管理员的预先知情。",
+              "en": "A ghost fits the atmosphere but cannot explain due-date selection or the librarian's prior knowledge."
+            }
+          }
+        },
+        {
+          "id": "q2",
+          "type": "multiple",
+          "prompt": {
+            "ja": "司書が装置を以前から知っていたことを示す証拠を二つ選んでください。",
+            "zh": "请选择两项表明管理员早已知道该设备的证据。",
+            "en": "Choose two pieces of evidence that the librarian already knew about the system."
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "警備員が説明する前に、回収台車と地下停止を具体的に尋ねる。",
+                "zh": "在保安说明之前，她就具体询问回收推车和地下停靠。",
+                "en": "Before being told, she specifically asks about the retrieval cart and its basement stop."
+              },
+              "ttsTextJa": "警備員が説明する前に、回収台車と地下停止を具体的に尋ねる。",
+              "audioId": "L3-025-q2-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "本を一冊も借りていない。",
+                "zh": "她一本书也没借。",
+                "en": "She has borrowed no books."
+              },
+              "ttsTextJa": "本を一冊も借りていない。",
+              "audioId": "L3-025-q2-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "無音の動作を怖がる。",
+                "zh": "她害怕设备无声运行。",
+                "en": "She finds the silent operation unsettling."
+              },
+              "ttsTextJa": "無音の動作を怖がる。",
+              "audioId": "L3-025-q2-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "認可前の試験機なので非公開だと説明する。",
+                "zh": "她说明这是获批前未公开的试验设备。",
+                "en": "She explains it is an undisclosed pre-approval trial system."
+              },
+              "ttsTextJa": "認可前の試験機なので非公開だと説明する。",
+              "audioId": "L3-025-q2-d"
+            }
+          ],
+          "correctOptionIds": [
+            "a",
+            "d"
+          ],
+          "evidenceLineIds": [
+            "line-004",
+            "line-005",
+            "line-006",
+            "line-007"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "司書は名称を聞く前から台車の行き先を特定し、後に試験と非公開の理由まで説明します。",
+              "zh": "管理员在听到设备名称前就指出推车去向，随后还解释试验状态与未公开原因。",
+              "en": "Before hearing the system named, the librarian identifies the cart's destination and later explains the trial and secrecy."
+            },
+            "intent": {
+              "ja": "この先回りした知識が、偶然の推測ではなく運用側の関与を示します。",
+              "zh": "这种先行知识表明她并非偶然猜测，而是参与了系统运作。",
+              "en": "This anticipatory knowledge indicates operational involvement rather than a lucky guess."
+            },
+            "evidence": {
+              "ja": "line-005 の具体的質問に line-006 で警備員自身も驚き、line-007 が知識の出所を明かします。",
+              "zh": "line-005 的具体提问让保安在 line-006 也感到意外，line-007 随后揭示知识来源。",
+              "en": "The specific question in line 005 surprises the guard in line 006, and line 007 reveals the source of her knowledge."
+            },
+            "nuance": {
+              "ja": "無音を怖がることは知識と両立しますが、それだけでは事前関与の証拠になりません。",
+              "zh": "害怕无声运行与知情并不矛盾，但单独来看不能证明事先参与。",
+              "en": "Finding the silence eerie is compatible with knowledge but does not by itself prove prior involvement."
+            },
+            "alternative": {
+              "ja": "借書状況は本文に示されず、装置の認識とも論理的なつながりがありません。",
+              "zh": "文中没有借书情况，而且这与是否知道设备无逻辑关联。",
+              "en": "Borrowing status is unstated and has no logical connection to knowledge of the system."
+            }
+          }
+        }
+      ],
+      "audio": {
+        "sceneAudioId": "L3-025-scene",
+        "timelineId": "L3-025-timeline",
+        "optionVoiceKey": "narrator"
+      },
+      "passRule": {
+        "type": "all_questions_correct"
+      },
+      "contentRating": "general",
+      "textLocked": true,
+      "contentHash": "03020a8927c49770948d5930793ced331cf4785ac931add540f0e3fc67c70b2b"
+    },
+    {
+      "schemaVersion": 1,
+      "contentVersion": "1.0.0",
+      "id": "L3-026",
+      "revision": 1,
+      "level": 3,
+      "stage": 26,
+      "jlptTarget": "N1",
+      "genres": [
+        "absurdism",
+        "workplace",
+        "AI"
+      ],
+      "skills": [
+        "literalism",
+        "instruction-ambiguity"
+      ],
+      "layout": "four-panel",
+      "title": {
+        "ja": "上へ、の行き先",
+        "zh": "“往上”的目的地",
+        "en": "Where “Up” Goes"
+      },
+      "setting": {
+        "ja": "研究棟のAIエレベーターが、曖昧な音声指示を奇妙に解釈する。",
+        "zh": "研究楼的AI电梯对含糊语音指令作出奇怪解释。",
+        "en": "An AI elevator in a research building interprets an ambiguous voice command in an odd way."
+      },
+      "illustration": {
+        "enabled": true,
+        "src": "assets/stages/l3-026.webp",
+        "style": "chibi-four-panel",
+        "alt": {
+          "ja": "鮮やかな色のちびキャラ四コマ。社員が『上へ』と言うと、AIエレベーターが隠し零階を点灯する。",
+          "zh": "彩色Q版四格：职员说“往上”，AI电梯却亮起隐藏的零层按钮。",
+          "en": "A colorful chibi four-panel scene in which an employee says “up” and the elevator lights a hidden floor-zero button."
+        }
+      },
+      "cast": [
+        {
+          "id": "employee",
+          "name": {
+            "ja": "社員ミオ",
+            "zh": "职员美绪",
+            "en": "Employee Mio"
+          },
+          "voiceKey": "female-bright"
+        },
+        {
+          "id": "elevator",
+          "name": {
+            "ja": "エレベーターAI",
+            "zh": "电梯AI",
+            "en": "Elevator AI"
+          },
+          "voiceKey": "robot"
+        },
+        {
+          "id": "technician",
+          "name": {
+            "ja": "保守技師",
+            "zh": "维修工程师",
+            "en": "Technician"
+          },
+          "voiceKey": "male-calm"
+        }
+      ],
+      "lines": [
+        {
+          "id": "line-001",
+          "speaker": "employee",
+          "text": {
+            "ja": "会議室のある上へお願いします。",
+            "zh": "请带我往上，到会议室那层。",
+            "en": "Up to the meeting rooms, please."
+          },
+          "readingJa": "かいぎしつのあるうえへおねがいします。",
+          "ttsTextJa": "会議室のある上へお願いします。",
+          "audioId": "L3-026-line-001",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "会議室のある上へお願いします。",
+              "reading": "かいぎしつのあるうえへおねがいします。",
+              "audioId": "L3-026-line-001-token-001"
+            }
+          ]
+        },
+        {
+          "id": "line-002",
+          "speaker": "elevator",
+          "text": {
+            "ja": "『上』を確認しました。零階へ移動します。",
+            "zh": "已确认“上”。正在前往零层。",
+            "en": "“Up” confirmed. Moving to floor zero."
+          },
+          "readingJa": "うえをかくにんしました。れいかいへいどうします。",
+          "ttsTextJa": "『上』を確認しました。零階へ移動します。",
+          "audioId": "L3-026-line-002",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "『上』を確認しました。",
+              "reading": "うえをかくにんしました。",
+              "audioId": "L3-026-line-002-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "零階へ移動します。",
+              "reading": "れいかいへいどうします。",
+              "audioId": "L3-026-line-002-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-003",
+          "speaker": "employee",
+          "text": {
+            "ja": "零階なんて、案内板にはありません。",
+            "zh": "导览牌上根本没有零层。",
+            "en": "There is no floor zero on the directory."
+          },
+          "readingJa": "れいかいなんて、あんないばんにはありません。",
+          "ttsTextJa": "零階なんて、案内板にはありません。",
+          "audioId": "L3-026-line-003",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "零階なんて、",
+              "reading": "れいかいなんて、",
+              "audioId": "L3-026-line-003-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "案内板にはありません。",
+              "reading": "あんないばんにはありません。",
+              "audioId": "L3-026-line-003-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-004",
+          "speaker": "technician",
+          "text": {
+            "ja": "案内板の数字より上に、保守用コードが印刷されています。",
+            "zh": "导览牌数字上方印着维修代码。",
+            "en": "A maintenance code is printed above the numbers on the directory."
+          },
+          "readingJa": "あんないばんのすうじよりうえに、ほしゅようこーどがいんさつされています。",
+          "ttsTextJa": "案内板の数字より上に、保守用コードが印刷されています。",
+          "audioId": "L3-026-line-004",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "案内板の数字より上に、",
+              "reading": "あんないばんのすうじよりうえに、",
+              "audioId": "L3-026-line-004-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "保守用コードが印刷されています。",
+              "reading": "ほしゅようこーどがいんさつされています。",
+              "audioId": "L3-026-line-004-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-005",
+          "speaker": "elevator",
+          "text": {
+            "ja": "視覚参照点より上の項目、『0-TEST』を選択しました。",
+            "zh": "我选择了视觉参照点上方的项目“0-TEST”。",
+            "en": "I selected “0-TEST,” the item above the visual reference point."
+          },
+          "readingJa": "しかくさんしょうてんよりうえのこうもく、ぜろてすとをせんたくしました。",
+          "ttsTextJa": "視覚参照点より上の項目、『0-TEST』を選択しました。",
+          "audioId": "L3-026-line-005",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "視覚参照点より上の項目、",
+              "reading": "しかくさんしょうてんよりうえのこうもく、",
+              "audioId": "L3-026-line-005-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "『0-TEST』を選択しました。",
+              "reading": "ぜろてすとをせんたくしました。",
+              "audioId": "L3-026-line-005-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-006",
+          "speaker": "employee",
+          "text": {
+            "ja": "階数の上ではなく、文字の位置の上ですか。",
+            "zh": "你理解的不是楼层更高，而是文字位置在上方？",
+            "en": "Not a higher floor, but text positioned above?"
+          },
+          "readingJa": "かいすうのうえではなく、もじのいちのうえですか。",
+          "ttsTextJa": "階数の上ではなく、文字の位置の上ですか。",
+          "audioId": "L3-026-line-006",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "階数の上ではなく、",
+              "reading": "かいすうのうえではなく、",
+              "audioId": "L3-026-line-006-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "文字の位置の上ですか。",
+              "reading": "もじのいちのうえですか。",
+              "audioId": "L3-026-line-006-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-007",
+          "speaker": "technician",
+          "text": {
+            "ja": "零階は試験室です。一般利用には隠してあります。",
+            "zh": "零层是测试室，对普通使用者隐藏。",
+            "en": "Floor zero is a test room hidden from general users."
+          },
+          "readingJa": "れいかいはしけんしつです。いっぱんりようにはかくしてあります。",
+          "ttsTextJa": "零階は試験室です。一般利用には隠してあります。",
+          "audioId": "L3-026-line-007",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "零階は試験室です。",
+              "reading": "れいかいはしけんしつです。",
+              "audioId": "L3-026-line-007-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "一般利用には隠してあります。",
+              "reading": "いっぱんりようにはかくしてあります。",
+              "audioId": "L3-026-line-007-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-008",
+          "speaker": "employee",
+          "text": {
+            "ja": "次からは、『三階』と言います。",
+            "zh": "下次我会直接说“三楼”。",
+            "en": "Next time I will say “third floor.”"
+          },
+          "readingJa": "つぎからは、さんがいといいます。",
+          "ttsTextJa": "次からは、『三階』と言います。",
+          "audioId": "L3-026-line-008",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "次からは、",
+              "reading": "つぎからは、",
+              "audioId": "L3-026-line-008-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "『三階』と言います。",
+              "reading": "さんがいといいます。",
+              "audioId": "L3-026-line-008-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-009",
+          "speaker": "elevator",
+          "text": {
+            "ja": "曖昧さの解消に感謝します。",
+            "zh": "感谢您消除歧义。",
+            "en": "Thank you for resolving the ambiguity."
+          },
+          "readingJa": "あいまいさのかいしょうにかんしゃします。",
+          "ttsTextJa": "曖昧さの解消に感謝します。",
+          "audioId": "L3-026-line-009",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "曖昧さの解消に感謝します。",
+              "reading": "あいまいさのかいしょうにかんしゃします。",
+              "audioId": "L3-026-line-009-token-001"
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "type": "multiple",
+          "prompt": {
+            "ja": "AIが零階を選んだ理由を示す情報を二つ選んでください。",
+            "zh": "请选择两项说明AI为何选择零层的信息。",
+            "en": "Choose two details explaining why the AI selected floor zero."
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "社員が零階の鍵を持っていた。",
+                "zh": "职员持有零层钥匙。",
+                "en": "The employee carried a floor-zero key."
+              },
+              "ttsTextJa": "社員が零階の鍵を持っていた。",
+              "audioId": "L3-026-q1-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "保守コードが案内板の数字より上に印刷されていた。",
+                "zh": "维修代码印在导览牌数字的上方。",
+                "en": "The maintenance code was printed above the directory numbers."
+              },
+              "ttsTextJa": "保守コードが案内板の数字より上に印刷されていた。",
+              "audioId": "L3-026-q1-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "会議室が零階に移転していた。",
+                "zh": "会议室搬到了零层。",
+                "en": "The meeting rooms had moved to floor zero."
+              },
+              "ttsTextJa": "会議室が零階に移転していた。",
+              "audioId": "L3-026-q1-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "AIが『上』を階数ではなく表示位置として参照した。",
+                "zh": "AI把“上”参照为显示位置而非楼层高低。",
+                "en": "The AI referenced “up” as display position rather than floor height."
+              },
+              "ttsTextJa": "AIが『上』を階数ではなく表示位置として参照した。",
+              "audioId": "L3-026-q1-d"
+            }
+          ],
+          "correctOptionIds": [
+            "b",
+            "d"
+          ],
+          "evidenceLineIds": [
+            "line-004",
+            "line-005",
+            "line-006"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "保守コード『0-TEST』は数字の上側にあり、AIはその視覚的位置を『上』として選びました。",
+              "zh": "维修代码“0-TEST”位于数字上方，AI把这个视觉位置解释为“上”。",
+              "en": "The maintenance code “0-TEST” sits above the numbers, and the AI selects that visual position as “up.”"
+            },
+            "intent": {
+              "ja": "AIは移動方向という人間の慣用解釈より、画面上の相対位置を文字通り優先しています。",
+              "zh": "AI没有采用人类惯用的移动方向含义，而是字面优先了画面上的相对位置。",
+              "en": "The AI prioritizes literal screen position over the human convention of travel direction."
+            },
+            "evidence": {
+              "ja": "line-004 が配置、line-005 がAIの参照手順、line-006 が二つの『上』の対比を明示します。",
+              "zh": "line-004 说明布局，line-005 说明AI的参照过程，line-006 明确对比两种“上”。",
+              "en": "Line 004 establishes the layout, line 005 states the AI's reference process, and line 006 contrasts the two meanings."
+            },
+            "nuance": {
+              "ja": "AIの処理は内部規則には一貫していますが、利用者の目的地推定には失敗しています。",
+              "zh": "AI的处理在内部规则上自洽，却未能推断用户真正目的地。",
+              "en": "The processing is internally consistent but fails to infer the user's destination."
+            },
+            "alternative": {
+              "ja": "鍵や会議室移転は会話に示されず、社員自身も零階の存在を知りません。",
+              "zh": "对话没有钥匙或会议室搬迁的信息，职员本人也不知道零层存在。",
+              "en": "No key or relocation is mentioned, and the employee does not even know floor zero exists."
+            }
+          }
+        },
+        {
+          "id": "q2",
+          "type": "single",
+          "prompt": {
+            "ja": "この場面で『上』が曖昧になった核心は何ですか。",
+            "zh": "这个场景中“上”产生歧义的核心是什么？",
+            "en": "What is the core ambiguity of “up” in this scene?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "丁寧語か普通体か。",
+                "zh": "是敬语还是普通体。",
+                "en": "Whether it is polite or plain speech."
+              },
+              "ttsTextJa": "丁寧語か普通体か。",
+              "audioId": "L3-026-q2-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "社員か保守技師のどちらの声が指示したか。",
+                "zh": "发出指令的是职员还是维护技师的声音。",
+                "en": "Whether the instruction came from the employee's voice or the technician's."
+              },
+              "ttsTextJa": "社員か保守技師のどちらの声が指示したか。",
+              "audioId": "L3-026-q2-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "エレベーターが速いか遅いか。",
+                "zh": "电梯是快还是慢。",
+                "en": "Whether the elevator is fast or slow."
+              },
+              "ttsTextJa": "エレベーターが速いか遅いか。",
+              "audioId": "L3-026-q2-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "階の方向を指すか、表示上の位置を指すか。",
+                "zh": "是指楼层方向，还是指显示位置。",
+                "en": "Whether it refers to floor direction or position on a display."
+              },
+              "ttsTextJa": "階の方向を指すか、表示上の位置を指すか。",
+              "audioId": "L3-026-q2-d"
+            }
+          ],
+          "correctOptionIds": [
+            "d"
+          ],
+          "evidenceLineIds": [
+            "line-001",
+            "line-004",
+            "line-005",
+            "line-006",
+            "line-008"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "社員は上の階という意味で使い、AIは案内板上方という意味で解釈します。",
+              "zh": "职员指更高楼层，AI却理解为导览牌上方。",
+              "en": "The employee means a higher floor; the AI interprets the upper area of the directory."
+            },
+            "intent": {
+              "ja": "同じ空間語が移動座標と画面座標の二体系にまたがったことが誤作動の核心です。",
+              "zh": "同一空间词跨越了移动坐标与画面坐标两套体系，这正是误作动的核心。",
+              "en": "The same spatial word spans travel coordinates and screen coordinates, causing the mismatch."
+            },
+            "evidence": {
+              "ja": "line-001 の目的、line-005 の機械解釈、line-006 の言い換え、line-008 の具体化が一貫して対立します。",
+              "zh": "line-001 的目的、line-005 的机器解释、line-006 的改述与 line-008 的具体化形成一致对照。",
+              "en": "The intent in line 001, machine reading in line 005, paraphrase in line 006, and specification in line 008 form a consistent contrast."
+            },
+            "nuance": {
+              "ja": "人間同士なら会議室という文脈で補える曖昧さですが、AIは名詞より『上』の位置情報を強く採用しました。",
+              "zh": "人与人之间可用“会议室”这一语境补足，但AI过度采用了“上”的位置信息。",
+              "en": "Humans could resolve it from “meeting rooms,” but the AI overweights the positional cue in “up.”"
+            },
+            "alternative": {
+              "ja": "話し方、話者、速度はいずれも二つの解釈を生む要素として描かれていません。",
+              "zh": "语体、说话者和速度都未被描写成造成两种解释的因素。",
+              "en": "Register, speaker identity, and speed are not depicted as sources of the two readings."
+            }
+          }
+        }
+      ],
+      "audio": {
+        "sceneAudioId": "L3-026-scene",
+        "timelineId": "L3-026-timeline",
+        "optionVoiceKey": "robot"
+      },
+      "passRule": {
+        "type": "all_questions_correct"
+      },
+      "contentRating": "general",
+      "textLocked": true,
+      "contentHash": "d78ebcdec3abc869253f369a336790582664a692ea32751c90d80132fdf4b2a2"
+    },
+    {
+      "schemaVersion": 1,
+      "contentVersion": "1.0.0",
+      "id": "L3-027",
+      "revision": 1,
+      "level": 3,
+      "stage": 27,
+      "jlptTarget": "N1",
+      "genres": [
+        "mystery"
+      ],
+      "skills": [
+        "alibi-testing",
+        "physical-evidence"
+      ],
+      "layout": "interview",
+      "title": {
+        "ja": "濡れた傘、乾いた靴",
+        "zh": "湿伞与干鞋",
+        "en": "Wet Umbrella, Dry Shoes"
+      },
+      "setting": {
+        "ja": "社内ファイルが削除された夜、翔の『外出していた』という証言を確認する。",
+        "zh": "公司文件被删除的当晚，调查人员核实翔“当时外出了”的证词。",
+        "en": "Investigators test Sho's claim that he was outside on the night a company file was deleted."
+      },
+      "illustration": {
+        "enabled": false,
+        "src": "",
+        "style": "none",
+        "alt": {
+          "ja": "",
+          "zh": "",
+          "en": ""
+        }
+      },
+      "cast": [
+        {
+          "id": "investigator",
+          "name": {
+            "ja": "調査員",
+            "zh": "调查员",
+            "en": "Investigator"
+          },
+          "voiceKey": "female-calm"
+        },
+        {
+          "id": "sho",
+          "name": {
+            "ja": "翔",
+            "zh": "翔",
+            "en": "Sho"
+          },
+          "voiceKey": "male-casual"
+        },
+        {
+          "id": "miki",
+          "name": {
+            "ja": "美紀",
+            "zh": "美纪",
+            "en": "Miki"
+          },
+          "voiceKey": "female-calm"
+        }
+      ],
+      "lines": [
+        {
+          "id": "line-001",
+          "speaker": "investigator",
+          "text": {
+            "ja": "削除時刻には、外へ出ていたのですね。",
+            "zh": "文件被删时，你在外面，对吗？",
+            "en": "You were outside when the deletion occurred, correct?"
+          },
+          "readingJa": "さくじょじこくには、そとへでていたのですね。",
+          "ttsTextJa": "削除時刻には、外へ出ていたのですね。",
+          "audioId": "L3-027-line-001",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "削除時刻には、",
+              "reading": "さくじょじこくには、",
+              "audioId": "L3-027-line-001-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "外へ出ていたのですね。",
+              "reading": "そとへでていたのですね。",
+              "audioId": "L3-027-line-001-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-002",
+          "speaker": "sho",
+          "text": {
+            "ja": "はい。雨だったので傘も濡れています。",
+            "zh": "是的。因为下雨，伞也是湿的。",
+            "en": "Yes. It was raining, so my umbrella is wet."
+          },
+          "readingJa": "はい。あめだったのでかさもぬれています。",
+          "ttsTextJa": "はい。雨だったので傘も濡れています。",
+          "audioId": "L3-027-line-002",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "はい。",
+              "reading": "はい。",
+              "audioId": "L3-027-line-002-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "雨だったので傘も濡れています。",
+              "reading": "あめだったのでかさもぬれています。",
+              "audioId": "L3-027-line-002-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-003",
+          "speaker": "miki",
+          "text": {
+            "ja": "その傘、貸出票は私の名前です。",
+            "zh": "那把伞的借用单写的是我的名字。",
+            "en": "The loan slip for that umbrella is in my name."
+          },
+          "readingJa": "そのかさ、かしだしひょうはわたしのなまえです。",
+          "ttsTextJa": "その傘、貸出票は私の名前です。",
+          "audioId": "L3-027-line-003",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "その傘、",
+              "reading": "そのかさ、",
+              "audioId": "L3-027-line-003-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "貸出票は私の名前です。",
+              "reading": "かしだしひょうはわたしのなまえです。",
+              "audioId": "L3-027-line-003-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-004",
+          "speaker": "sho",
+          "text": {
+            "ja": "玄関で取り違えたのかもしれません。",
+            "zh": "可能是在门口拿错了。",
+            "en": "Perhaps I took it by mistake at the entrance."
+          },
+          "readingJa": "げんかんでとりちがえたのかもしれません。",
+          "ttsTextJa": "玄関で取り違えたのかもしれません。",
+          "audioId": "L3-027-line-004",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "玄関で取り違えたのかもしれません。",
+              "reading": "げんかんでとりちがえたのかもしれません。",
+              "audioId": "L3-027-line-004-token-001"
+            }
+          ]
+        },
+        {
+          "id": "line-005",
+          "speaker": "investigator",
+          "text": {
+            "ja": "靴底には泥も水分もありません。",
+            "zh": "你的鞋底既没有泥也没有水分。",
+            "en": "There is neither mud nor moisture on your soles."
+          },
+          "readingJa": "くつぞこにはどろもすいぶんもありません。",
+          "ttsTextJa": "靴底には泥も水分もありません。",
+          "audioId": "L3-027-line-005",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "靴底には泥も水分もありません。",
+              "reading": "くつぞこにはどろもすいぶんもありません。",
+              "audioId": "L3-027-line-005-token-001"
+            }
+          ]
+        },
+        {
+          "id": "line-006",
+          "speaker": "sho",
+          "text": {
+            "ja": "ひさしの下だけ歩きました。",
+            "zh": "我只走在屋檐下面。",
+            "en": "I stayed under the awning."
+          },
+          "readingJa": "ひさしのしただけあるきました。",
+          "ttsTextJa": "ひさしの下だけ歩きました。",
+          "audioId": "L3-027-line-006",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "ひさしの下だけ歩きました。",
+              "reading": "ひさしのしただけあるきました。",
+              "audioId": "L3-027-line-006-token-001"
+            }
+          ]
+        },
+        {
+          "id": "line-007",
+          "speaker": "miki",
+          "text": {
+            "ja": "傘は昼に私が戻した時から、乾燥棚に掛けてありました。",
+            "zh": "那把伞从我中午归还后就挂在干燥架上。",
+            "en": "The umbrella had hung on the drying rack since I returned it at noon."
+          },
+          "readingJa": "かさはひるにわたしがもどしたときから、かんそうだなにかけてありました。",
+          "ttsTextJa": "傘は昼に私が戻した時から、乾燥棚に掛けてありました。",
+          "audioId": "L3-027-line-007",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "傘は昼に私が戻した時から、",
+              "reading": "かさはひるにわたしがもどしたときから、",
+              "audioId": "L3-027-line-007-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "乾燥棚に掛けてありました。",
+              "reading": "かんそうだなにかけてありました。",
+              "audioId": "L3-027-line-007-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-008",
+          "speaker": "investigator",
+          "text": {
+            "ja": "入退館記録にも、翔さんの退館はありません。",
+            "zh": "出入记录里也没有翔离馆的记录。",
+            "en": "The access log also shows no exit by Sho."
+          },
+          "readingJa": "にゅうたいかんきろくにも、しょうさんのたいかんはありません。",
+          "ttsTextJa": "入退館記録にも、翔さんの退館はありません。",
+          "audioId": "L3-027-line-008",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "入退館記録にも、",
+              "reading": "にゅうたいかんきろくにも、",
+              "audioId": "L3-027-line-008-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "翔さんの退館はありません。",
+              "reading": "しょうさんのたいかんはありません。",
+              "audioId": "L3-027-line-008-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-009",
+          "speaker": "investigator",
+          "text": {
+            "ja": "濡れた傘を用意すれば、外出した印象だけは作れます。",
+            "zh": "只要准备一把湿伞，就能制造外出过的印象。",
+            "en": "A wet umbrella can create the appearance of an outing by itself."
+          },
+          "readingJa": "ぬれたかさをよういすれば、がいしゅつしたいんしょうだけはつくれます。",
+          "ttsTextJa": "濡れた傘を用意すれば、外出した印象だけは作れます。",
+          "audioId": "L3-027-line-009",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "濡れた傘を用意すれば、",
+              "reading": "ぬれたかさをよういすれば、",
+              "audioId": "L3-027-line-009-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "外出した印象だけは作れます。",
+              "reading": "がいしゅつしたいんしょうだけはつくれます。",
+              "audioId": "L3-027-line-009-token-002"
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": {
+            "ja": "証拠から最も妥当な推論はどれですか。",
+            "zh": "根据证据，哪项推断最合理？",
+            "en": "Which inference is best supported by the evidence?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "翔は濡れた傘を使って外出の痕跡を演出したが、建物を出ていない。",
+                "zh": "翔用湿伞伪造外出痕迹，但并未离开大楼。",
+                "en": "Sho staged evidence of an outing with a wet umbrella but did not leave the building."
+              },
+              "ttsTextJa": "翔は濡れた傘を使って外出の痕跡を演出したが、建物を出ていない。",
+              "audioId": "L3-027-q1-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "美紀が翔の靴を乾かした。",
+                "zh": "美纪替翔弄干了鞋。",
+                "en": "Miki dried Sho's shoes."
+              },
+              "ttsTextJa": "美紀が翔の靴を乾かした。",
+              "audioId": "L3-027-q1-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "入退館システムが全員分故障した。",
+                "zh": "整个出入系统对所有人都失灵。",
+                "en": "The access system failed for everyone."
+              },
+              "ttsTextJa": "入退館システムが全員分故障した。",
+              "audioId": "L3-027-q1-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "翔は雨の降らない別の町へ行った。",
+                "zh": "翔去了另一个没有下雨的城市。",
+                "en": "Sho went to another town where it was dry."
+              },
+              "ttsTextJa": "翔は雨の降らない別の町へ行った。",
+              "audioId": "L3-027-q1-d"
+            }
+          ],
+          "correctOptionIds": [
+            "a"
+          ],
+          "evidenceLineIds": [
+            "line-002",
+            "line-003",
+            "line-005",
+            "line-007",
+            "line-008",
+            "line-009"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "濡れた傘は外出を示すように見えますが、靴底は乾き、退館記録もありません。",
+              "zh": "湿伞看似证明外出，但鞋底是干的，出入记录也没有离馆。",
+              "en": "The wet umbrella seems to indicate an outing, but the soles are dry and no exit is logged."
+            },
+            "intent": {
+              "ja": "翔は持ち主の違う傘を利用して、物証らしい印象だけを作ったと考えると矛盾が最少です。",
+              "zh": "若理解为翔利用他人的伞只制造了像物证的印象，矛盾最少。",
+              "en": "The contradictions are minimized if Sho used someone else's umbrella to manufacture the appearance of physical evidence."
+            },
+            "evidence": {
+              "ja": "line-003 と line-007 が傘の由来、line-005 が身体的痕跡の欠如、line-008 が移動記録の欠如を示します。",
+              "zh": "line-003、007 说明伞的来源，line-005 显示身体痕迹缺失，line-008 显示移动记录缺失。",
+              "en": "Lines 003 and 007 establish the umbrella's source, line 005 the absent physical traces, and line 008 the absent movement record."
+            },
+            "nuance": {
+              "ja": "単独の記録なら誤作動もあり得ますが、靴と傘名義という独立した証拠が同じ方向を指します。",
+              "zh": "单一记录可能故障，但鞋底和伞的归属这两项独立证据指向同一方向。",
+              "en": "A single log could fail, but independent evidence from the shoes and umbrella ownership points the same way."
+            },
+            "alternative": {
+              "ja": "美紀の関与や別の町への移動を示す発言はなく、追加仮定が多すぎます。",
+              "zh": "没有话语表明美纪参与或翔去了别的城市，这些解释需要过多额外假设。",
+              "en": "There is no statement supporting Miki's involvement or travel to another town; those accounts require too many assumptions."
+            }
+          }
+        },
+        {
+          "id": "q2",
+          "type": "single",
+          "prompt": {
+            "ja": "翔の外出証言を最も強く崩す組み合わせはどれですか。",
+            "zh": "哪组证据最有力地推翻翔的外出说法？",
+            "en": "Which combination most strongly undermines Sho's outing claim?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "雨が降っていたことと、傘が青いこと。",
+                "zh": "下过雨，伞是蓝色。",
+                "en": "It was raining and the umbrella was blue."
+              },
+              "ttsTextJa": "雨が降っていたことと、傘が青いこと。",
+              "audioId": "L3-027-q2-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "美紀が昼に出勤したことと、翔が会話したこと。",
+                "zh": "美纪中午上班，翔参与谈话。",
+                "en": "Miki worked at noon and Sho spoke."
+              },
+              "ttsTextJa": "美紀が昼に出勤したことと、翔が会話したこと。",
+              "audioId": "L3-027-q2-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "靴底が乾いていることと、退館記録がないこと。",
+                "zh": "鞋底干燥，且没有离馆记录。",
+                "en": "Dry soles together with no exit record."
+              },
+              "ttsTextJa": "靴底が乾いていることと、退館記録がないこと。",
+              "audioId": "L3-027-q2-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "翔がひさしを知っていることと、傘が濡れていること。",
+                "zh": "翔知道有屋檐，且伞是湿的。",
+                "en": "Sho knows about the awning and the umbrella is wet."
+              },
+              "ttsTextJa": "翔がひさしを知っていることと、傘が濡れていること。",
+              "audioId": "L3-027-q2-d"
+            }
+          ],
+          "correctOptionIds": [
+            "c"
+          ],
+          "evidenceLineIds": [
+            "line-005",
+            "line-006",
+            "line-008"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "雨天に外へ出たなら通常残る靴の水分と、建物を出たなら残る退館記録がともに欠けています。",
+              "zh": "雨天外出通常留下的鞋底水分，以及离开大楼通常留下的离馆记录，两者都缺失。",
+              "en": "Both expected traces are absent: moisture from going out in rain and an access record from leaving."
+            },
+            "intent": {
+              "ja": "物理的痕跡とデジタル記録が独立に同じ証言を否定するため、組み合わせの証拠力が高いです。",
+              "zh": "物理痕迹与数字记录独立否定同一证词，因此组合证据力很强。",
+              "en": "Physical traces and digital records independently contradict the same claim, making the combination strong."
+            },
+            "evidence": {
+              "ja": "line-005 は靴、line-008 は記録を示し、line-006 の『ひさし』は両方、特に退館記録を説明できません。",
+              "zh": "line-005 是鞋底，line-008 是记录，line-006 的“屋檐”无法同时解释两者，尤其无法解释离馆记录。",
+              "en": "Line 005 concerns the shoes and line 008 the log; the awning claim in line 006 cannot explain both, especially the log."
+            },
+            "nuance": {
+              "ja": "屋檐だけを歩けば靴が乾く可能性はありますが、建物を出た記録まで消える理由にはなりません。",
+              "zh": "只走屋檐下或许能保持鞋底干燥，却不能解释离馆记录为何不存在。",
+              "en": "An awning might keep shoes dry, but it cannot erase an exit record."
+            },
+            "alternative": {
+              "ja": "傘の色や会話参加は外出の有無を直接検証しません。",
+              "zh": "伞的颜色和是否参与谈话都不能直接检验是否外出。",
+              "en": "Umbrella color and participation in conversation do not directly test the outing."
+            }
+          }
+        },
+        {
+          "id": "q3",
+          "type": "single",
+          "prompt": {
+            "ja": "濡れた傘を示す翔の発言には、どんな働きがありますか。",
+            "zh": "翔提到湿伞的话起什么作用？",
+            "en": "What function does Sho's mention of the wet umbrella serve?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "外出を裏付けるように見える証拠を先に提示し、疑いを建物外へ向ける。",
+                "zh": "先提出看似支持外出的证据，把怀疑引向大楼之外。",
+                "en": "Present apparently supporting evidence first and direct suspicion outside the building."
+              },
+              "ttsTextJa": "外出を裏付けるように見える証拠を先に提示し、疑いを建物外へ向ける。",
+              "audioId": "L3-027-q3-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "美紀へ傘を正式に返却する。",
+                "zh": "正式把伞还给美纪。",
+                "en": "Formally return the umbrella to Miki."
+              },
+              "ttsTextJa": "美紀へ傘を正式に返却する。",
+              "audioId": "L3-027-q3-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "雨の予報を警備員へ伝える。",
+                "zh": "向保安播报天气。",
+                "en": "Give the guard a weather forecast."
+              },
+              "ttsTextJa": "雨の予報を警備員へ伝える。",
+              "audioId": "L3-027-q3-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "ファイル削除を自白する。",
+                "zh": "承认删除文件。",
+                "en": "Confess to deleting the file."
+              },
+              "ttsTextJa": "ファイル削除を自白する。",
+              "audioId": "L3-027-q3-d"
+            }
+          ],
+          "correctOptionIds": [
+            "a"
+          ],
+          "evidenceLineIds": [
+            "line-001",
+            "line-002",
+            "line-003",
+            "line-005",
+            "line-008",
+            "line-009"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "翔は質問に『はい』と答えた直後、濡れた傘を外出の補強材料として自ら示します。",
+              "zh": "翔回答“是”之后立刻主动把湿伞当作外出的补强材料。",
+              "en": "Immediately after saying yes, Sho volunteers the wet umbrella as support for his outing."
+            },
+            "intent": {
+              "ja": "目に見える物証を先に置くことで、乾いた靴や記録の確認前に外出像を成立させようとします。",
+              "zh": "他先摆出可见物证，试图在检查鞋底和记录前建立外出印象。",
+              "en": "By foregrounding visible evidence, he tries to establish an outing before the shoes and logs are checked."
+            },
+            "evidence": {
+              "ja": "line-002 の提示は line-003 の名義、line-005 の靴、line-008 の記録で順に崩れ、line-009 が印象操作として整理します。",
+              "zh": "line-002 的展示依次被 line-003 的归属、line-005 的鞋底、line-008 的记录推翻，line-009 概括为制造印象。",
+              "en": "The claim in line 002 is successively undermined by ownership in line 003, shoes in line 005, and logs in line 008; line 009 frames it as appearance-making."
+            },
+            "nuance": {
+              "ja": "濡れた傘は通常は外出の合理的手掛かりなので、他の証拠なしには虚偽と断定できません。",
+              "zh": "湿伞通常确实是外出的合理线索，所以没有其他证据时不能断定为虚假。",
+              "en": "A wet umbrella is normally a reasonable clue of an outing, so it is not deceptive without the other evidence."
+            },
+            "alternative": {
+              "ja": "返却、天気連絡、自白の言語行為は発言内容に含まれていません。",
+              "zh": "这句话并不构成归还、天气通知或自白。",
+              "en": "The statement performs no act of returning, forecasting, or confessing."
+            }
+          }
+        }
+      ],
+      "audio": {
+        "sceneAudioId": "L3-027-scene",
+        "timelineId": "L3-027-timeline",
+        "optionVoiceKey": "narrator"
+      },
+      "passRule": {
+        "type": "all_questions_correct"
+      },
+      "contentRating": "general",
+      "textLocked": true,
+      "contentHash": "d00654b8ed2150df558e280f687c6ee1a29e3e5a02e70df8c0bc96aaf154702a"
+    },
+    {
+      "schemaVersion": 1,
+      "contentVersion": "1.0.0",
+      "id": "L3-028",
+      "revision": 1,
+      "level": 3,
+      "stage": 28,
+      "jlptTarget": "N1",
+      "genres": [
+        "mystery",
+        "news"
+      ],
+      "skills": [
+        "testimony-analysis",
+        "source-inference"
+      ],
+      "layout": "interview",
+      "title": {
+        "ja": "借り物の目撃談",
+        "zh": "借来的目击证词",
+        "en": "Borrowed Testimony"
+      },
+      "setting": {
+        "ja": "駅前事故の聞き取りで、目撃者の語彙が夕方ニュースと一致する。",
+        "zh": "调查车站前事故时，目击者的措辞与晚间新闻一致。",
+        "en": "During an interview about a station accident, a witness's wording matches the evening news."
+      },
+      "illustration": {
+        "enabled": false,
+        "src": "",
+        "style": "none",
+        "alt": {
+          "ja": "",
+          "zh": "",
+          "en": ""
+        }
+      },
+      "cast": [
+        {
+          "id": "detective",
+          "name": {
+            "ja": "聞き取り官",
+            "zh": "询问员",
+            "en": "Interviewer"
+          },
+          "voiceKey": "female-calm"
+        },
+        {
+          "id": "witness",
+          "name": {
+            "ja": "目撃者",
+            "zh": "目击者",
+            "en": "Witness"
+          },
+          "voiceKey": "male-casual"
+        },
+        {
+          "id": "reporter",
+          "name": {
+            "ja": "報道記者",
+            "zh": "新闻记者",
+            "en": "News Reporter"
+          },
+          "voiceKey": "female-bright"
+        },
+        {
+          "id": "editor",
+          "name": {
+            "ja": "映像編集者",
+            "zh": "视频编辑",
+            "en": "Video Editor"
+          },
+          "voiceKey": "male-calm"
+        }
+      ],
+      "lines": [
+        {
+          "id": "line-001",
+          "speaker": "witness",
+          "text": {
+            "ja": "車が止まった瞬間、広場は突然静まり返りました。",
+            "zh": "车辆停下的一瞬间，广场突然陷入寂静。",
+            "en": "The moment the vehicle stopped, the square suddenly fell silent."
+          },
+          "readingJa": "くるまがとまったしゅんかん、ひろばはとつぜんしずまりかえりました。",
+          "ttsTextJa": "車が止まった瞬間、広場は突然静まり返りました。",
+          "audioId": "L3-028-line-001",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "車が止まった瞬間、",
+              "reading": "くるまがとまったしゅんかん、",
+              "audioId": "L3-028-line-001-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "広場は突然静まり返りました。",
+              "reading": "ひろばはとつぜんしずまりかえりました。",
+              "audioId": "L3-028-line-001-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-002",
+          "speaker": "detective",
+          "text": {
+            "ja": "その時、どんな音が最後に聞こえましたか。",
+            "zh": "当时最后听见的是什么声音？",
+            "en": "What was the last sound you heard?"
+          },
+          "readingJa": "そのとき、どんなおとがさいごにきこえましたか。",
+          "ttsTextJa": "その時、どんな音が最後に聞こえましたか。",
+          "audioId": "L3-028-line-002",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "その時、",
+              "reading": "そのとき、",
+              "audioId": "L3-028-line-002-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "どんな音が最後に聞こえましたか。",
+              "reading": "どんなおとがさいごにきこえましたか。",
+              "audioId": "L3-028-line-002-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-003",
+          "speaker": "witness",
+          "text": {
+            "ja": "そこまでは、よく覚えていません。",
+            "zh": "这一点我记不太清了。",
+            "en": "I do not remember that much."
+          },
+          "readingJa": "そこまでは、よくおぼえていません。",
+          "ttsTextJa": "そこまでは、よく覚えていません。",
+          "audioId": "L3-028-line-003",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "そこまでは、",
+              "reading": "そこまでは、",
+              "audioId": "L3-028-line-003-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "よく覚えていません。",
+              "reading": "よくおぼえていません。",
+              "audioId": "L3-028-line-003-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-004",
+          "speaker": "reporter",
+          "text": {
+            "ja": "夕方ニュースの原稿にも、『突然静まり返った』とあります。",
+            "zh": "晚间新闻稿里也写着“突然陷入寂静”。",
+            "en": "The evening news script also says “suddenly fell silent.”"
+          },
+          "readingJa": "ゆうがたにゅーすのげんこうにも、とつぜんしずまりかえったとあります。",
+          "ttsTextJa": "夕方ニュースの原稿にも、『突然静まり返った』とあります。",
+          "audioId": "L3-028-line-004",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "夕方ニュースの原稿にも、",
+              "reading": "ゆうがたにゅーすのげんこうにも、",
+              "audioId": "L3-028-line-004-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "『突然静まり返った』とあります。",
+              "reading": "とつぜんしずまりかえったとあります。",
+              "audioId": "L3-028-line-004-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-005",
+          "speaker": "editor",
+          "text": {
+            "ja": "停止した車の角度は、上空映像で初めて分かった情報です。",
+            "zh": "车辆停止的角度是看了航拍才首次确认的信息。",
+            "en": "The vehicle's final angle was learned only from aerial footage."
+          },
+          "readingJa": "ていししたくるまのかくどは、じょうくうえいぞうではじめてわかったじょうほうです。",
+          "ttsTextJa": "停止した車の角度は、上空映像で初めて分かった情報です。",
+          "audioId": "L3-028-line-005",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "停止した車の角度は、",
+              "reading": "ていししたくるまのかくどは、",
+              "audioId": "L3-028-line-005-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "上空映像で初めて分かった情報です。",
+              "reading": "じょうくうえいぞうではじめてわかったじょうほうです。",
+              "audioId": "L3-028-line-005-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-006",
+          "speaker": "witness",
+          "text": {
+            "ja": "ええ、左に十五度ほど傾いていました。",
+            "zh": "对，向左大约偏了十五度。",
+            "en": "Yes, it was angled about fifteen degrees to the left."
+          },
+          "readingJa": "ええ、ひだりにじゅうごどほどかたむいていました。",
+          "ttsTextJa": "ええ、左に十五度ほど傾いていました。",
+          "audioId": "L3-028-line-006",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "ええ、左に十五度ほど傾いていました。",
+              "reading": "ええ、ひだりにじゅうごどほどかたむいていました。",
+              "audioId": "L3-028-line-006-token-001"
+            }
+          ]
+        },
+        {
+          "id": "line-007",
+          "speaker": "detective",
+          "text": {
+            "ja": "あなたの位置からは、建物で車体が見えなかったはずです。",
+            "zh": "从你所在的位置，车身应该被建筑挡住看不见。",
+            "en": "From your position, the building should have blocked the vehicle."
+          },
+          "readingJa": "あなたのいちからは、たてものでしゃたいがみえなかったはずです。",
+          "ttsTextJa": "あなたの位置からは、建物で車体が見えなかったはずです。",
+          "audioId": "L3-028-line-007",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "あなたの位置からは、",
+              "reading": "あなたのいちからは、",
+              "audioId": "L3-028-line-007-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "建物で車体が見えなかったはずです。",
+              "reading": "たてものでしゃたいがみえなかったはずです。",
+              "audioId": "L3-028-line-007-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-008",
+          "speaker": "witness",
+          "text": {
+            "ja": "後で映像を見て、記憶がはっきりしたのかもしれません。",
+            "zh": "也许是后来看到视频，记忆才变清楚了。",
+            "en": "Perhaps seeing the footage later made my memory clearer."
+          },
+          "readingJa": "あとでえいぞうをみて、きおくがはっきりしたのかもしれません。",
+          "ttsTextJa": "後で映像を見て、記憶がはっきりしたのかもしれません。",
+          "audioId": "L3-028-line-008",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "後で映像を見て、",
+              "reading": "あとでえいぞうをみて、",
+              "audioId": "L3-028-line-008-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "記憶がはっきりしたのかもしれません。",
+              "reading": "きおくがはっきりしたのかもしれません。",
+              "audioId": "L3-028-line-008-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-009",
+          "speaker": "detective",
+          "text": {
+            "ja": "それは体験の想起ではなく、報道内容の取り込みかもしれません。",
+            "zh": "那可能不是回忆亲历，而是把报道内容吸收进了记忆。",
+            "en": "That may be incorporation of the news rather than recall of firsthand experience."
+          },
+          "readingJa": "それはたいけんのそうきではなく、ほうどうないようのとりこみかもしれません。",
+          "ttsTextJa": "それは体験の想起ではなく、報道内容の取り込みかもしれません。",
+          "audioId": "L3-028-line-009",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "それは体験の想起ではなく、",
+              "reading": "それはたいけんのそうきではなく、",
+              "audioId": "L3-028-line-009-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "報道内容の取り込みかもしれません。",
+              "reading": "ほうどうないようのとりこみかもしれません。",
+              "audioId": "L3-028-line-009-token-002"
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": {
+            "ja": "目撃者の証言について最も妥当な評価はどれですか。",
+            "zh": "对目击者证词的哪种评价最合理？",
+            "en": "Which assessment of the witness's testimony is best supported?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "細部まで一貫した一次記憶である。",
+                "zh": "这是细节一致的一手记忆。",
+                "en": "It is a consistent firsthand memory in every detail."
+              },
+              "ttsTextJa": "細部まで一貫した一次記憶である。",
+              "audioId": "L3-028-q1-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "編集者が事前に目撃者へ指示した。",
+                "zh": "编辑事先指示了目击者。",
+                "en": "The editor coached the witness beforehand."
+              },
+              "ttsTextJa": "編集者が事前に目撃者へ指示した。",
+              "audioId": "L3-028-q1-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "事故そのものが起きていない。",
+                "zh": "事故根本没有发生。",
+                "en": "The accident never occurred."
+              },
+              "ttsTextJa": "事故そのものが起きていない。",
+              "audioId": "L3-028-q1-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "報道で得た表現や映像情報が、本人の記憶として混ざっている可能性が高い。",
+                "zh": "从报道获得的措辞与画面信息很可能混入了本人记忆。",
+                "en": "Wording and visual information from news coverage have likely mixed into the witness's memory."
+              },
+              "ttsTextJa": "報道で得た表現や映像情報が、本人の記憶として混ざっている可能性が高い。",
+              "audioId": "L3-028-q1-d"
+            }
+          ],
+          "correctOptionIds": [
+            "d"
+          ],
+          "evidenceLineIds": [
+            "line-001",
+            "line-003",
+            "line-004",
+            "line-005",
+            "line-006",
+            "line-007",
+            "line-008",
+            "line-009"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "目撃者はニュースと同じ定型表現を使い、現場位置から見えない角度まで正確に述べます。",
+              "zh": "目击者使用与新闻相同的固定措辞，还准确说出从现场位置看不到的角度。",
+              "en": "The witness uses the news script's exact phrase and accurately states an angle invisible from the claimed location."
+            },
+            "intent": {
+              "ja": "後から見た報道情報を、自分が現場で知覚した細部として再構成している可能性があります。",
+              "zh": "他可能把后来看到的报道信息重构成自己在现场感知的细节。",
+              "en": "Information learned later may have been reconstructed as details personally perceived at the scene."
+            },
+            "evidence": {
+              "ja": "line-003 では本来の音を答えられず、line-004～007 では報道由来の二種類の情報だけが一致します。",
+              "zh": "line-003 无法回答实际声音，line-004至007 却只准确匹配两类报道信息。",
+              "en": "Line 003 cannot supply an experiential sound, while lines 004–007 match two distinct pieces of news-derived information."
+            },
+            "nuance": {
+              "ja": "これは意図的な虚偽とは限らず、line-008 のように後情報で記憶が更新された可能性もあります。",
+              "zh": "这未必是故意说谎，也可能像 line-008 所说，记忆被后来的信息更新。",
+              "en": "This need not be deliberate lying; later information may have updated memory, as line 008 suggests."
+            },
+            "alternative": {
+              "ja": "編集者の指示や事故不存在を示す証拠はなく、一次記憶説は視界条件と一致しません。",
+              "zh": "没有编辑指使或事故不存在的证据，而一手记忆说与视野条件不符。",
+              "en": "There is no evidence of coaching or a fabricated accident, and a purely firsthand account conflicts with visibility."
+            }
+          }
+        },
+        {
+          "id": "q2",
+          "type": "single",
+          "prompt": {
+            "ja": "証言の情報源を判断するうえで最も強い組み合わせはどれですか。",
+            "zh": "判断证词信息来源时，哪组证据最有力？",
+            "en": "Which combination is strongest for identifying the testimony's source?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "目撃者が丁寧に話すことと、記者が取材すること。",
+                "zh": "目击者说话礼貌，记者正在采访。",
+                "en": "The witness speaks politely and a reporter is present."
+              },
+              "ttsTextJa": "目撃者が丁寧に話すことと、記者が取材すること。",
+              "audioId": "L3-028-q2-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "ニュースと同じ独特な表現に加え、現場から見えない航空映像の角度まで一致すること。",
+                "zh": "既有与新闻相同的独特措辞，又说对了现场看不到的航拍角度。",
+                "en": "The same distinctive news phrase plus an aerial angle invisible from the scene."
+              },
+              "ttsTextJa": "ニュースと同じ独特な表現に加え、現場から見えない航空映像の角度まで一致すること。",
+              "audioId": "L3-028-q2-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "車が止まったことと、広場に建物があること。",
+                "zh": "车辆停下，广场上有建筑。",
+                "en": "The vehicle stopped and buildings exist in the square."
+              },
+              "ttsTextJa": "車が止まったことと、広場に建物があること。",
+              "audioId": "L3-028-q2-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "目撃者が後で映像を見た可能性を否定すること。",
+                "zh": "目击者否认后来可能看过视频。",
+                "en": "The witness denies possibly seeing footage later."
+              },
+              "ttsTextJa": "目撃者が後で映像を見た可能性を否定すること。",
+              "audioId": "L3-028-q2-d"
+            }
+          ],
+          "correctOptionIds": [
+            "b"
+          ],
+          "evidenceLineIds": [
+            "line-001",
+            "line-004",
+            "line-005",
+            "line-006",
+            "line-007",
+            "line-008"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "語句の一致と視覚情報の一致は、言葉と映像という別経路で報道源を指します。",
+              "zh": "措辞一致和视觉信息一致分别从语言与画面两条路径指向报道来源。",
+              "en": "The phrase match and visual-detail match independently point to news as the source through language and imagery."
+            },
+            "intent": {
+              "ja": "二種類の借用可能な情報が重なることで、偶然同じ表現をしただけという説明を弱めます。",
+              "zh": "两种可从报道借来的信息重合，削弱了“只是偶然同措辞”的解释。",
+              "en": "Two kinds of borrowable information reduce the plausibility of mere coincidental phrasing."
+            },
+            "evidence": {
+              "ja": "line-004 は原稿、line-005 は映像限定情報、line-007 は現場視界の不可能性、line-008 は事後視聴を示します。",
+              "zh": "line-004 是新闻稿，line-005 是仅由影像得知的信息，line-007 指出现地不可见，line-008 承认事后观看。",
+              "en": "Line 004 supplies the script, line 005 the footage-only fact, line 007 the impossible view, and line 008 later viewing."
+            },
+            "nuance": {
+              "ja": "独特な表現だけでも疑いは生じますが、視界の物理的制約が加わることで推論が慎重に強まります。",
+              "zh": "独特措辞本已可疑，再加上物理视野限制，推断才更稳健。",
+              "en": "A distinctive phrase alone raises suspicion; the physical visibility constraint strengthens the inference responsibly."
+            },
+            "alternative": {
+              "ja": "丁寧さや建物の存在は情報源を区別せず、目撃者は事後視聴を否定せず認めています。",
+              "zh": "礼貌和建筑存在不能区分信息来源，而且目击者并未否认事后观看。",
+              "en": "Politeness and building presence do not identify a source, and the witness does not deny later viewing."
+            }
+          }
+        }
+      ],
+      "audio": {
+        "sceneAudioId": "L3-028-scene",
+        "timelineId": "L3-028-timeline",
+        "optionVoiceKey": "narrator"
+      },
+      "passRule": {
+        "type": "all_questions_correct"
+      },
+      "contentRating": "general",
+      "textLocked": true,
+      "contentHash": "41dab615268f67efae6f47a00a4fa9637658756c09ef5cd3db5c1af0d77eac60"
+    },
+    {
+      "schemaVersion": 1,
+      "contentVersion": "1.0.0",
+      "id": "L3-029",
+      "revision": 1,
+      "level": 3,
+      "stage": 29,
+      "jlptTarget": "N1",
+      "genres": [
+        "games",
+        "fantasy"
+      ],
+      "skills": [
+        "goal-revision",
+        "conflict-reframing"
+      ],
+      "layout": "quest-log",
+      "title": {
+        "ja": "最後まで聞け",
+        "zh": "听他说完",
+        "en": "Listen to the End"
+      },
+      "setting": {
+        "ja": "討伐クエストの最終戦で、ボスの説明に反応して任務表示が書き換わる。",
+        "zh": "讨伐任务最终战中，首领开始解释，任务目标随之改写。",
+        "en": "At the final battle of a hunt quest, the objective rewrites itself when the boss begins explaining."
+      },
+      "illustration": {
+        "enabled": false,
+        "src": "",
+        "style": "none",
+        "alt": {
+          "ja": "",
+          "zh": "",
+          "en": ""
+        }
+      },
+      "cast": [
+        {
+          "id": "hero",
+          "name": {
+            "ja": "勇者セラ",
+            "zh": "勇者瑟拉",
+            "en": "Hero Sera"
+          },
+          "voiceKey": "female-bright"
+        },
+        {
+          "id": "boss",
+          "name": {
+            "ja": "森の守人",
+            "zh": "森林守护者",
+            "en": "Forest Keeper"
+          },
+          "voiceKey": "male-serious"
+        },
+        {
+          "id": "system",
+          "name": {
+            "ja": "任務システム",
+            "zh": "任务系统",
+            "en": "Quest System"
+          },
+          "voiceKey": "robot"
+        },
+        {
+          "id": "companion",
+          "name": {
+            "ja": "相棒ノア",
+            "zh": "伙伴诺亚",
+            "en": "Companion Noa"
+          },
+          "voiceKey": "male-casual"
+        }
+      ],
+      "lines": [
+        {
+          "id": "line-001",
+          "speaker": "system",
+          "text": {
+            "ja": "任務目標、『森のボスを倒せ』。",
+            "zh": "任务目标：“打倒森林首领”。",
+            "en": "Quest objective: “Defeat the forest boss.”"
+          },
+          "readingJa": "にんむもくひょう、もりのぼすをたおせ。",
+          "ttsTextJa": "任務目標、『森のボスを倒せ』。",
+          "audioId": "L3-029-line-001",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "任務目標、",
+              "reading": "にんむもくひょう、",
+              "audioId": "L3-029-line-001-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "『森のボスを倒せ』。",
+              "reading": "もりのぼすをたおせ。",
+              "audioId": "L3-029-line-001-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-002",
+          "speaker": "boss",
+          "text": {
+            "ja": "待て。川をせき止めたのは私ではない。",
+            "zh": "等等。堵住河流的不是我。",
+            "en": "Wait. I was not the one who dammed the river."
+          },
+          "readingJa": "まて。かわをせきとめたのはわたしではない。",
+          "ttsTextJa": "待て。川をせき止めたのは私ではない。",
+          "audioId": "L3-029-line-002",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "待て。",
+              "reading": "まて。",
+              "audioId": "L3-029-line-002-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "川をせき止めたのは私ではない。",
+              "reading": "かわをせきとめたのはわたしではない。",
+              "audioId": "L3-029-line-002-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-003",
+          "speaker": "hero",
+          "text": {
+            "ja": "村では、あなたの仕業だと聞きました。",
+            "zh": "村里的人说是你干的。",
+            "en": "The village told us it was your doing."
+          },
+          "readingJa": "むらでは、あなたのしわざだとききました。",
+          "ttsTextJa": "村では、あなたの仕業だと聞きました。",
+          "audioId": "L3-029-line-003",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "村では、",
+              "reading": "むらでは、",
+              "audioId": "L3-029-line-003-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "あなたの仕業だと聞きました。",
+              "reading": "あなたのしわざだとききました。",
+              "audioId": "L3-029-line-003-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-004",
+          "speaker": "boss",
+          "text": {
+            "ja": "村長が魔力を採るため、上流を封じた記録がある。",
+            "zh": "有记录显示村长为了抽取魔力封住了上游。",
+            "en": "Records show the mayor sealed the upper stream to extract magic."
+          },
+          "readingJa": "そんちょうがまりょくをとるため、じょうりゅうをふうじたきろくがある。",
+          "ttsTextJa": "村長が魔力を採るため、上流を封じた記録がある。",
+          "audioId": "L3-029-line-004",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "村長が魔力を採るため、",
+              "reading": "そんちょうがまりょくをとるため、",
+              "audioId": "L3-029-line-004-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "上流を封じた記録がある。",
+              "reading": "じょうりゅうをふうじたきろくがある。",
+              "audioId": "L3-029-line-004-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-005",
+          "speaker": "system",
+          "text": {
+            "ja": "敵対指定の前提に矛盾を検出。",
+            "zh": "检测到敌对指定的前提存在矛盾。",
+            "en": "Contradiction detected in hostile-designation premise."
+          },
+          "readingJa": "てきたいしていのぜんていにむじゅんをけんしゅつ。",
+          "ttsTextJa": "敵対指定の前提に矛盾を検出。",
+          "audioId": "L3-029-line-005",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "敵対指定の前提に矛盾を検出。",
+              "reading": "てきたいしていのぜんていにむじゅんをけんしゅつ。",
+              "audioId": "L3-029-line-005-token-001"
+            }
+          ]
+        },
+        {
+          "id": "line-006",
+          "speaker": "companion",
+          "text": {
+            "ja": "セラ、攻撃表示が消えた。",
+            "zh": "瑟拉，攻击提示消失了。",
+            "en": "Sera, the attack prompt is gone."
+          },
+          "readingJa": "せら、こうげきひょうじがきえた。",
+          "ttsTextJa": "セラ、攻撃表示が消えた。",
+          "audioId": "L3-029-line-006",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "セラ、",
+              "reading": "せら、",
+              "audioId": "L3-029-line-006-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "攻撃表示が消えた。",
+              "reading": "こうげきひょうじがきえた。",
+              "audioId": "L3-029-line-006-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-007",
+          "speaker": "system",
+          "text": {
+            "ja": "任務目標を更新。『理由を最後まで聞け』。",
+            "zh": "任务目标已更新：“把理由听完”。",
+            "en": "Objective updated: “Listen to the reason to the end.”"
+          },
+          "readingJa": "にんむもくひょうをこうしん。りゆうをさいごまできけ。",
+          "ttsTextJa": "任務目標を更新。『理由を最後まで聞け』。",
+          "audioId": "L3-029-line-007",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "任務目標を更新。",
+              "reading": "にんむもくひょうをこうしん。",
+              "audioId": "L3-029-line-007-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "『理由を最後まで聞け』。",
+              "reading": "りゆうをさいごまできけ。",
+              "audioId": "L3-029-line-007-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-008",
+          "speaker": "hero",
+          "text": {
+            "ja": "勝利条件そのものが、戦闘ではなくなったのね。",
+            "zh": "连胜利条件本身都不再是战斗了。",
+            "en": "The victory condition itself is no longer combat."
+          },
+          "readingJa": "しょうりじょうけんそのものが、せんとうではなくなったのね。",
+          "ttsTextJa": "勝利条件そのものが、戦闘ではなくなったのね。",
+          "audioId": "L3-029-line-008",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "勝利条件そのものが、",
+              "reading": "しょうりじょうけんそのものが、",
+              "audioId": "L3-029-line-008-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "戦闘ではなくなったのね。",
+              "reading": "せんとうではなくなったのね。",
+              "audioId": "L3-029-line-008-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-009",
+          "speaker": "boss",
+          "text": {
+            "ja": "話を聞いた後で、誰を敵と呼ぶか決めてくれ。",
+            "zh": "听完以后，再决定该把谁称作敌人。",
+            "en": "After you hear me out, decide whom to call the enemy."
+          },
+          "readingJa": "はなしをきいたあとで、だれをてきとよぶかきめてくれ。",
+          "ttsTextJa": "話を聞いた後で、誰を敵と呼ぶか決めてくれ。",
+          "audioId": "L3-029-line-009",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "話を聞いた後で、",
+              "reading": "はなしをきいたあとで、",
+              "audioId": "L3-029-line-009-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "誰を敵と呼ぶか決めてくれ。",
+              "reading": "だれをてきとよぶかきめてくれ。",
+              "audioId": "L3-029-line-009-token-002"
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "type": "multiple",
+          "prompt": {
+            "ja": "任務システムが更新した前提を二つ選んでください。",
+            "zh": "请选择任务系统更新的两项前提。",
+            "en": "Choose the two premises the quest system revises."
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "森には川が存在しない。",
+                "zh": "森林里没有河流。",
+                "en": "No river exists in the forest."
+              },
+              "ttsTextJa": "森には川が存在しない。",
+              "audioId": "L3-029-q1-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "目の前の守人を、直ちに倒すべき敵と確定できない。",
+                "zh": "不能立即确定眼前的守护者就是该打倒的敌人。",
+                "en": "The keeper cannot immediately be confirmed as the enemy to defeat."
+              },
+              "ttsTextJa": "目の前の守人を、直ちに倒すべき敵と確定できない。",
+              "audioId": "L3-029-q1-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "解決には説明を最後まで聞く過程が必要である。",
+                "zh": "解决问题需要把解释听完。",
+                "en": "Resolution requires listening to the explanation in full."
+              },
+              "ttsTextJa": "解決には説明を最後まで聞く過程が必要である。",
+              "audioId": "L3-029-q1-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "勇者は任務を永久に放棄した。",
+                "zh": "勇者永久放弃了任务。",
+                "en": "The hero permanently abandons the quest."
+              },
+              "ttsTextJa": "勇者は任務を永久に放棄した。",
+              "audioId": "L3-029-q1-d"
+            }
+          ],
+          "correctOptionIds": [
+            "b",
+            "c"
+          ],
+          "evidenceLineIds": [
+            "line-002",
+            "line-004",
+            "line-005",
+            "line-007",
+            "line-008",
+            "line-009"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "システムは敵対指定の矛盾を検出し、討伐命令を『最後まで聞け』へ変更します。",
+              "zh": "系统检测到敌对指定矛盾，并把讨伐命令改成“听他说完”。",
+              "en": "The system detects a contradiction in the hostile designation and replaces defeat with listening."
+            },
+            "intent": {
+              "ja": "敵という分類と、戦闘だけが解決という手段の二つをいったん撤回しています。",
+              "zh": "它暂时撤回了“谁是敌人”与“战斗是唯一解决手段”这两项前提。",
+              "en": "It suspends both the enemy classification and combat as the sole means of resolution."
+            },
+            "evidence": {
+              "ja": "line-004 の別原因、line-005 の矛盾検出、line-007 の新目標、line-008 の勝利条件再解釈が連動します。",
+              "zh": "line-004 提出另一原因，line-005 检测矛盾，line-007 给出新目标，line-008 重释胜利条件。",
+              "en": "The alternate cause in line 004, contradiction in line 005, new objective in line 007, and reframing in line 008 work together."
+            },
+            "nuance": {
+              "ja": "守人が真実を語ると確定したわけではなく、まず聞く価値が生じた段階です。",
+              "zh": "这并不等于确认守护者说的是真话，而只是进入值得先听完的阶段。",
+              "en": "The system has not certified the keeper's truth; it has only established that listening is warranted."
+            },
+            "alternative": {
+              "ja": "川の不存在や任務放棄は示されず、目的は別の調査方法へ更新されただけです。",
+              "zh": "没有河流不存在或永久弃任的信息，任务只是更新了调查方式。",
+              "en": "Nothing removes the river or abandons the quest; only its investigative method changes."
+            }
+          }
+        },
+        {
+          "id": "q2",
+          "type": "single",
+          "prompt": {
+            "ja": "更新後の『勝利』を最もよく表すものはどれですか。",
+            "zh": "哪项最能表达更新后的“胜利”？",
+            "en": "What best represents “victory” after the update?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "対話で前提を検証し、敵の定義を見直して問題の原因へ近づくこと。",
+                "zh": "通过对话核验前提，重新判断敌人并接近问题真正原因。",
+                "en": "Use dialogue to test the premise, reconsider the enemy, and approach the real cause."
+              },
+              "ttsTextJa": "対話で前提を検証し、敵の定義を見直して問題の原因へ近づくこと。",
+              "audioId": "L3-029-q2-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "守人の話を途中で遮って攻撃すること。",
+                "zh": "打断守护者并攻击。",
+                "en": "Interrupt the keeper and attack."
+              },
+              "ttsTextJa": "守人の話を途中で遮って攻撃すること。",
+              "audioId": "L3-029-q2-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "村長の記録を読まずに破棄すること。",
+                "zh": "不读村长记录就销毁。",
+                "en": "Destroy the mayor's records unread."
+              },
+              "ttsTextJa": "村長の記録を読まずに破棄すること。",
+              "audioId": "L3-029-q2-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "任務表示を元の文言へ戻すこと。",
+                "zh": "把任务显示改回原文。",
+                "en": "Restore the original objective text."
+              },
+              "ttsTextJa": "任務表示を元の文言へ戻すこと。",
+              "audioId": "L3-029-q2-d"
+            }
+          ],
+          "correctOptionIds": [
+            "a"
+          ],
+          "evidenceLineIds": [
+            "line-005",
+            "line-007",
+            "line-008",
+            "line-009"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "新目標は戦闘行為ではなく説明の完聴を要求し、誰を敵と呼ぶかの判断を後へ送ります。",
+              "zh": "新目标要求的不是战斗，而是听完说明，并把“谁是敌人”的判断后置。",
+              "en": "The new objective requires complete listening, not combat, and postpones deciding who counts as the enemy."
+            },
+            "intent": {
+              "ja": "勝利は敵を倒す固定結果から、前提を修正して原因を特定する過程へ変わります。",
+              "zh": "胜利从打倒敌人的固定结果，变成修正前提并识别原因的过程。",
+              "en": "Victory shifts from a fixed defeat outcome to the process of revising premises and identifying the cause."
+            },
+            "evidence": {
+              "ja": "line-007 が行動条件、line-008 が戦闘からの転換、line-009 が再判断の必要を示します。",
+              "zh": "line-007 给出行动条件，line-008 说明脱离战斗，line-009 要求重新判断。",
+              "en": "Line 007 gives the action condition, line 008 marks the move away from combat, and line 009 calls for reassessment."
+            },
+            "nuance": {
+              "ja": "対話は守人への無条件な信頼ではなく、次の判断に必要な情報収集です。",
+              "zh": "对话不是无条件信任守护者，而是为下一步判断收集信息。",
+              "en": "Dialogue is not unconditional trust in the keeper; it is evidence gathering for the next judgment."
+            },
+            "alternative": {
+              "ja": "攻撃、記録破棄、表示復元はいずれも矛盾検出後の新しい目的に反します。",
+              "zh": "攻击、毁记录、恢复旧显示都违背检测到矛盾后的新目标。",
+              "en": "Attacking, destroying records, or restoring the old prompt all contradict the revised objective."
+            }
+          }
+        }
+      ],
+      "audio": {
+        "sceneAudioId": "L3-029-scene",
+        "timelineId": "L3-029-timeline",
+        "optionVoiceKey": "robot"
+      },
+      "passRule": {
+        "type": "all_questions_correct"
+      },
+      "contentRating": "general",
+      "textLocked": true,
+      "contentHash": "ae78481d0f8c9db5a29c653448a7ed59d81084ba7c0b82e7a3bc0c4cb676cbd8"
+    },
+    {
+      "schemaVersion": 1,
+      "contentVersion": "1.0.0",
+      "id": "L3-030",
+      "revision": 1,
+      "level": 3,
+      "stage": 30,
+      "jlptTarget": "N1",
+      "genres": [
+        "school",
+        "comedy"
+      ],
+      "skills": [
+        "sequence-inference",
+        "motive-reframe"
+      ],
+      "layout": "four-panel",
+      "title": {
+        "ja": "答案の裏側",
+        "zh": "试卷背面",
+        "en": "The Back of the Test"
+      },
+      "setting": {
+        "ja": "満点の答案を急いで隠した結菜を、弟の湊が不思議そうに見る。",
+        "zh": "结菜匆忙藏起满分试卷，弟弟凑疑惑地看着她。",
+        "en": "Yuna hurriedly hides a perfect test while her younger brother Minato watches in confusion."
+      },
+      "illustration": {
+        "enabled": true,
+        "src": "assets/stages/l3-030.webp",
+        "style": "chibi-four-panel",
+        "alt": {
+          "ja": "鮮やかな色のちびキャラ四コマ。姉が満点の答案を隠し、最後に白い裏面を弟の画用紙として広げる。",
+          "zh": "彩色Q版四格：姐姐藏起满分试卷，最后把空白背面铺在弟弟面前画画。",
+          "en": "A colorful chibi four-panel scene: an older sister hides a perfect test, then spreads its blank reverse side out for her brother to draw on."
+        }
+      },
+      "cast": [
+        {
+          "id": "yuna",
+          "name": {
+            "ja": "結菜",
+            "zh": "结菜",
+            "en": "Yuna"
+          },
+          "voiceKey": "female-bright"
+        },
+        {
+          "id": "minato",
+          "name": {
+            "ja": "弟の湊",
+            "zh": "弟弟凑",
+            "en": "Minato"
+          },
+          "voiceKey": "male-comic"
+        }
+      ],
+      "lines": [
+        {
+          "id": "line-001",
+          "speaker": "minato",
+          "text": {
+            "ja": "お姉ちゃん、今の紙、百点って見えたよ。",
+            "zh": "姐姐，刚才那张纸我看到写着一百分。",
+            "en": "Sis, I saw “100” on that paper."
+          },
+          "readingJa": "おねえちゃん、いまのかみ、ひゃくてんってみえたよ。",
+          "ttsTextJa": "お姉ちゃん、今の紙、百点って見えたよ。",
+          "audioId": "L3-030-line-001",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "お姉ちゃん、",
+              "reading": "おねえちゃん、",
+              "audioId": "L3-030-line-001-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "今の紙、百点って見えたよ。",
+              "reading": "いまのかみ、ひゃくてんってみえたよ。",
+              "audioId": "L3-030-line-001-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-002",
+          "speaker": "yuna",
+          "text": {
+            "ja": "見なくていいの。ちょっと机を空けて。",
+            "zh": "不用看。把桌子腾一下。",
+            "en": "You do not need to look. Clear a little space on the desk."
+          },
+          "readingJa": "みなくていいの。ちょっとつくえをあけて。",
+          "ttsTextJa": "見なくていいの。ちょっと机を空けて。",
+          "audioId": "L3-030-line-002",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "見なくていいの。",
+              "reading": "みなくていいの。",
+              "audioId": "L3-030-line-002-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "ちょっと机を空けて。",
+              "reading": "ちょっとつくえをあけて。",
+              "audioId": "L3-030-line-002-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-003",
+          "speaker": "minato",
+          "text": {
+            "ja": "満点なのに、どうして隠すの。",
+            "zh": "明明是满分，为什么要藏起来？",
+            "en": "Why hide it if it is a perfect score?"
+          },
+          "readingJa": "まんてんなのに、どうしてかくすの。",
+          "ttsTextJa": "満点なのに、どうして隠すの。",
+          "audioId": "L3-030-line-003",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "満点なのに、",
+              "reading": "まんてんなのに、",
+              "audioId": "L3-030-line-003-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "どうして隠すの。",
+              "reading": "どうしてかくすの。",
+              "audioId": "L3-030-line-003-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-004",
+          "speaker": "yuna",
+          "text": {
+            "ja": "表を見たら、次にすることが分かっちゃうから。",
+            "zh": "因为看到正面，你就会猜到下一步要做什么。",
+            "en": "Because if you see the front, you will guess what comes next."
+          },
+          "readingJa": "おもてをみたら、つぎにすることがわかっちゃうから。",
+          "ttsTextJa": "表を見たら、次にすることが分かっちゃうから。",
+          "audioId": "L3-030-line-004",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "表を見たら、",
+              "reading": "おもてをみたら、",
+              "audioId": "L3-030-line-004-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "次にすることが分かっちゃうから。",
+              "reading": "つぎにすることがわかっちゃうから。",
+              "audioId": "L3-030-line-004-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-005",
+          "speaker": "minato",
+          "text": {
+            "ja": "次って、お母さんに見せるんじゃないの。",
+            "zh": "下一步不是给妈妈看吗？",
+            "en": "Is not the next step showing Mom?"
+          },
+          "readingJa": "つぎって、おかあさんにみせるんじゃないの。",
+          "ttsTextJa": "次って、お母さんに見せるんじゃないの。",
+          "audioId": "L3-030-line-005",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "次って、",
+              "reading": "つぎって、",
+              "audioId": "L3-030-line-005-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "お母さんに見せるんじゃないの。",
+              "reading": "おかあさんにみせるんじゃないの。",
+              "audioId": "L3-030-line-005-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-006",
+          "speaker": "yuna",
+          "text": {
+            "ja": "その前に、裏を上にして置きます。",
+            "zh": "在那之前，我要把背面朝上放好。",
+            "en": "Before that, I am placing it face down."
+          },
+          "readingJa": "そのまえに、うらをうえにしておきます。",
+          "ttsTextJa": "その前に、裏を上にして置きます。",
+          "audioId": "L3-030-line-006",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "その前に、",
+              "reading": "そのまえに、",
+              "audioId": "L3-030-line-006-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "裏を上にして置きます。",
+              "reading": "うらをうえにしておきます。",
+              "audioId": "L3-030-line-006-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-007",
+          "speaker": "minato",
+          "text": {
+            "ja": "わあ、真っ白で大きな紙だ。",
+            "zh": "哇，是一张又大又白的纸。",
+            "en": "Wow, a big blank sheet."
+          },
+          "readingJa": "わあ、まっしろでおおきなかみだ。",
+          "ttsTextJa": "わあ、真っ白で大きな紙だ。",
+          "audioId": "L3-030-line-007",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "わあ、",
+              "reading": "わあ、",
+              "audioId": "L3-030-line-007-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "真っ白で大きな紙だ。",
+              "reading": "まっしろでおおきなかみだ。",
+              "audioId": "L3-030-line-007-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-008",
+          "speaker": "yuna",
+          "text": {
+            "ja": "約束していた宇宙船を、ここに描いていいよ。",
+            "zh": "你可以把说好的宇宙飞船画在这里。",
+            "en": "You can draw the spaceship I promised you here."
+          },
+          "readingJa": "やくそくしていたうちゅうせんを、ここにかいていいよ。",
+          "ttsTextJa": "約束していた宇宙船を、ここに描いていいよ。",
+          "audioId": "L3-030-line-008",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "約束していた宇宙船を、",
+              "reading": "やくそくしていたうちゅうせんを、",
+              "audioId": "L3-030-line-008-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "ここに描いていいよ。",
+              "reading": "ここにかいていいよ。",
+              "audioId": "L3-030-line-008-token-002"
+            }
+          ]
+        },
+        {
+          "id": "line-009",
+          "speaker": "minato",
+          "text": {
+            "ja": "点数を隠したんじゃなくて、画用紙を内緒にしたんだね。",
+            "zh": "你不是在藏分数，而是在保密画纸呀。",
+            "en": "You were not hiding the score; you were keeping the drawing paper secret."
+          },
+          "readingJa": "てんすうをかくしたんじゃなくて、がようしをないしょにしたんだね。",
+          "ttsTextJa": "点数を隠したんじゃなくて、画用紙を内緒にしたんだね。",
+          "audioId": "L3-030-line-009",
+          "pauseAfterMs": 500,
+          "tokens": [
+            {
+              "id": "token-001",
+              "text": "点数を隠したんじゃなくて、",
+              "reading": "てんすうをかくしたんじゃなくて、",
+              "audioId": "L3-030-line-009-token-001"
+            },
+            {
+              "id": "token-002",
+              "text": "画用紙を内緒にしたんだね。",
+              "reading": "がようしをないしょにしたんだね。",
+              "audioId": "L3-030-line-009-token-002"
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": {
+            "ja": "結菜が答案を隠した本当の目的は何ですか。",
+            "zh": "结菜藏起试卷的真正目的是什么？",
+            "en": "Why does Yuna actually hide the test?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "満点という表示が嘘だと弟に疑われないようにするため。",
+                "zh": "为了不让弟弟怀疑满分的标记是假的。",
+                "en": "To stop her brother from suspecting that the perfect score is false."
+              },
+              "ttsTextJa": "満点という表示が嘘だと弟に疑われないようにするため。",
+              "audioId": "L3-030-q1-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "裏面を弟の画用紙にする驚きを、最後まで伏せるため。",
+                "zh": "为了把背面当弟弟画纸的惊喜保留到最后。",
+                "en": "To preserve the surprise of using the reverse as her brother's drawing paper."
+              },
+              "ttsTextJa": "裏面を弟の画用紙にする驚きを、最後まで伏せるため。",
+              "audioId": "L3-030-q1-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "答案を捨てたことにするため。",
+                "zh": "为了假装把试卷扔了。",
+                "en": "To pretend she threw the test away."
+              },
+              "ttsTextJa": "答案を捨てたことにするため。",
+              "audioId": "L3-030-q1-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "母親に点数を見せないため。",
+                "zh": "为了不让妈妈看见分数。",
+                "en": "To keep the score from their mother."
+              },
+              "ttsTextJa": "母親に点数を見せないため。",
+              "audioId": "L3-030-q1-d"
+            }
+          ],
+          "correctOptionIds": [
+            "b"
+          ],
+          "evidenceLineIds": [
+            "line-002",
+            "line-004",
+            "line-006",
+            "line-007",
+            "line-008",
+            "line-009"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "結菜は表を伏せ、空白の裏面を弟に見せて、約束した宇宙船を描かせます。",
+              "zh": "结菜把正面朝下，让弟弟看到空白背面，并让他画约好的宇宙飞船。",
+              "en": "Yuna turns the front down, reveals the blank back, and invites her brother to draw the promised spaceship."
+            },
+            "intent": {
+              "ja": "隠す行為は成績への恥ではなく、画用紙として見せる順序を演出するためです。",
+              "zh": "隐藏并非因为成绩羞耻，而是为了安排把它作为画纸揭晓的顺序。",
+              "en": "The concealment stages the reveal as drawing paper rather than expressing shame about the score."
+            },
+            "evidence": {
+              "ja": "line-004 の『次が分かる』、line-006 の裏返し、line-008 の約束、line-009 の弟の理解が目的を支えます。",
+              "zh": "line-004 的“会猜到下一步”、line-006 的翻面、line-008 的约定和 line-009 弟弟的理解共同支撑目的。",
+              "en": "The warning in line 004, reversal in line 006, promise in line 008, and Minato's realization in line 009 support the motive."
+            },
+            "nuance": {
+              "ja": "紙の再利用という実用目的に、弟を喜ばせる小さな演出が重なっています。",
+              "zh": "纸张再利用的实用目的上，还叠加了让弟弟开心的小惊喜。",
+              "en": "Practical paper reuse is combined with a small performance meant to delight her brother."
+            },
+            "alternative": {
+              "ja": "母親へ見せることは line-005 で否定されず、むしろ『その前』に別の用事をするだけです。",
+              "zh": "line-005 并未否定会给妈妈看，只是先做另一件事。",
+              "en": "Showing their mother is not rejected in line 005; another action simply comes first."
+            }
+          }
+        },
+        {
+          "id": "q2",
+          "type": "single",
+          "prompt": {
+            "ja": "結菜の意図が明らかになる決定的な流れはどれですか。",
+            "zh": "哪组过程决定性地揭示了结菜的意图？",
+            "en": "Which sequence decisively reveals Yuna's intention?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "百点を見る、母親を呼ぶ、答案をしまう。",
+                "zh": "看到一百分、叫妈妈、收起试卷。",
+                "en": "See the score, call Mom, put away the test."
+              },
+              "ttsTextJa": "百点を見る、母親を呼ぶ、答案をしまう。",
+              "audioId": "L3-030-q2-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "弟が質問する、結菜が黙る、会話が終わる。",
+                "zh": "弟弟提问、结菜沉默、对话结束。",
+                "en": "Minato asks, Yuna stays silent, the talk ends."
+              },
+              "ttsTextJa": "弟が質問する、結菜が黙る、会話が終わる。",
+              "audioId": "L3-030-q2-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "答案を細かく破り、白い裏面も捨て、新しい画用紙を店で買う。",
+                "zh": "把答卷撕碎，连空白背面也扔掉，再去店里买新画纸。",
+                "en": "Tear up the answer sheet, discard its blank back, and buy new drawing paper."
+              },
+              "ttsTextJa": "答案を細かく破り、白い裏面も捨て、新しい画用紙を店で買う。",
+              "audioId": "L3-030-q2-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "表を伏せる、空白面を見せる、約束した絵を描くよう勧める。",
+                "zh": "把正面朝下、露出空白面、邀请画约好的图。",
+                "en": "Turn the front down, reveal the blank side, invite the promised drawing."
+              },
+              "ttsTextJa": "表を伏せる、空白面を見せる、約束した絵を描くよう勧める。",
+              "audioId": "L3-030-q2-d"
+            }
+          ],
+          "correctOptionIds": [
+            "d"
+          ],
+          "evidenceLineIds": [
+            "line-004",
+            "line-006",
+            "line-007",
+            "line-008"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "結菜は『表を見れば次が分かる』と予告し、実際に裏を上へしてから宇宙船の絵を勧めます。",
+              "zh": "结菜先预告“看到正面就会猜到下一步”，随后把背面朝上并邀请画宇宙飞船。",
+              "en": "Yuna forecasts that the front would reveal what comes next, then turns it over and invites the spaceship drawing."
+            },
+            "intent": {
+              "ja": "行動の順序が、隠す対象が点数ではなく次の用途だったことを示します。",
+              "zh": "行动顺序表明被保密的不是分数，而是下一用途。",
+              "en": "The action sequence shows that the concealed information was the next use, not the score."
+            },
+            "evidence": {
+              "ja": "line-006 から line-008 は、裏返す、白紙を認識する、約束を実行するという因果列です。",
+              "zh": "line-006 到 008 构成翻面、认出白纸、兑现约定的因果链。",
+              "en": "Lines 006–008 form a causal chain: turn over, recognize blank paper, fulfill the promise."
+            },
+            "nuance": {
+              "ja": "一つの発言だけでなく連続した行動を見ることで、最初の『隠す』を誤解しにくくなります。",
+              "zh": "观察连续行动而非单句话，更不易误解最初的“藏”。",
+              "en": "Reading the sequence rather than one utterance prevents misinterpreting the initial concealment."
+            },
+            "alternative": {
+              "ja": "他の選択肢の動作は本文にないか、意図の開示まで到達しません。",
+              "zh": "其他选项中的动作要么文中不存在，要么无法揭示意图。",
+              "en": "The other sequences are absent or never reach disclosure of the motive."
+            }
+          }
+        },
+        {
+          "id": "q3",
+          "type": "single",
+          "prompt": {
+            "ja": "最後の湊の言い換えが修正した誤解は何ですか。",
+            "zh": "最后凑的改述纠正了什么误解？",
+            "en": "What misunderstanding does Minato's final rephrasing correct?"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": {
+                "ja": "結菜は答案をなくしたという誤解。",
+                "zh": "误以为结菜弄丢了试卷。",
+                "en": "The belief that Yuna lost the test."
+              },
+              "ttsTextJa": "結菜は答案をなくしたという誤解。",
+              "audioId": "L3-030-q3-a"
+            },
+            {
+              "id": "b",
+              "text": {
+                "ja": "結菜は満点を隠したいのではなく、紙の次の用途を秘密にしていたという理解。",
+                "zh": "理解为结菜不是想藏满分，而是在保密纸张的下一用途。",
+                "en": "He realizes she hid the paper's next purpose, not the perfect score."
+              },
+              "ttsTextJa": "結菜は満点を隠したいのではなく、紙の次の用途を秘密にしていたという理解。",
+              "audioId": "L3-030-q3-b"
+            },
+            {
+              "id": "c",
+              "text": {
+                "ja": "湊は宇宙船が嫌いだという誤解。",
+                "zh": "误以为凑讨厌宇宙飞船。",
+                "en": "The belief that Minato dislikes spaceships."
+              },
+              "ttsTextJa": "湊は宇宙船が嫌いだという誤解。",
+              "audioId": "L3-030-q3-c"
+            },
+            {
+              "id": "d",
+              "text": {
+                "ja": "答案の裏にも問題が印刷されているという誤解。",
+                "zh": "误以为试卷背面也印有题目。",
+                "en": "The belief that questions are printed on the back."
+              },
+              "ttsTextJa": "答案の裏にも問題が印刷されているという誤解。",
+              "audioId": "L3-030-q3-d"
+            }
+          ],
+          "correctOptionIds": [
+            "b"
+          ],
+          "evidenceLineIds": [
+            "line-001",
+            "line-003",
+            "line-004",
+            "line-008",
+            "line-009"
+          ],
+          "explanation": {
+            "literal": {
+              "ja": "湊は当初、満点なのに隠すことを不思議がり、最後に『画用紙を内緒にした』と捉え直します。",
+              "zh": "凑起初不理解为何满分还要藏，最后改为“是在保密画纸”。",
+              "en": "Minato first wonders why a perfect score is hidden, then reframes it as secrecy about drawing paper."
+            },
+            "intent": {
+              "ja": "言い換えは同じ行動に別の目的を与え、姉の評価を『成績隠し』から『驚きの準備』へ変えます。",
+              "zh": "这句改述给同一行为赋予另一目的，把对姐姐的判断从“藏成绩”改成“准备惊喜”。",
+              "en": "The rephrasing assigns a new purpose to the same act, changing the reading from score concealment to surprise preparation."
+            },
+            "evidence": {
+              "ja": "line-003 が初期の誤解、line-008 が実際の用途、line-009 が修正後の理解を明示します。",
+              "zh": "line-003 是初始误解，line-008 是实际用途，line-009 明确给出修正后的理解。",
+              "en": "Line 003 states the initial misunderstanding, line 008 the actual use, and line 009 the corrected interpretation."
+            },
+            "nuance": {
+              "ja": "湊の理解は結菜の内面を推測するだけでなく、直前の具体的行動で検証されています。",
+              "zh": "凑的理解不只是猜测结菜内心，还得到紧接着的具体行动验证。",
+              "en": "Minato's conclusion is not mere mind-reading; it is verified by the immediately preceding actions."
+            },
+            "alternative": {
+              "ja": "答案紛失、宇宙船嫌い、裏面印刷はいずれも会話の事実と反します。",
+              "zh": "试卷丢失、讨厌宇宙飞船、背面印题都与对话事实相反。",
+              "en": "A lost test, dislike of spaceships, and a printed back all contradict the scene."
+            }
+          }
+        }
+      ],
+      "audio": {
+        "sceneAudioId": "L3-030-scene",
+        "timelineId": "L3-030-timeline",
+        "optionVoiceKey": "narrator"
+      },
+      "passRule": {
+        "type": "all_questions_correct"
+      },
+      "contentRating": "general",
+      "textLocked": true,
+      "contentHash": "b0ad120bdf9050fb5fff867708c1b3cb9b393882ba36aed53bc1dcf0bd3ca854"
+    }
+  ]
+}

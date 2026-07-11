@@ -1,6 +1,17 @@
 const SESSION_COOKIE = "lusu_session";
 const SESSION_DAYS = 30;
 const MAX_SAVE_BYTES = 1024 * 1024;
+const MAX_JAPANESE_SUBTEXT_PROGRESS_BYTES = 256 * 1024;
+const JAPANESE_SUBTEXT_SCHEMA_VERSION = 1;
+const JAPANESE_SUBTEXT_CONTENT_VERSION = "1.0.0";
+const JAPANESE_SUBTEXT_EMPTY_TIMESTAMP = "1970-01-01T00:00:00.000Z";
+const JAPANESE_SUBTEXT_STAGE_LIMIT = 250;
+const JAPANESE_SUBTEXT_COUNTER_LIMIT = 1000000;
+const JAPANESE_SUBTEXT_LANGUAGES = new Set(["zh", "en", "ja"]);
+const JAPANESE_SUBTEXT_DISPLAY_MODES = new Set(["listening", "japanese", "bilingual"]);
+const JAPANESE_SUBTEXT_PLAYBACK_RATES = new Set([0.75, 1, 1.15]);
+const JAPANESE_SUBTEXT_MEDAL_RANK = Object.freeze({ none: 0, bronze: 1, silver: 2, gold: 3 });
+const JAPANESE_SUBTEXT_MEDAL_NAME = Object.freeze(["none", "bronze", "silver", "gold"]);
 const PASSWORD_HASH_ITERATIONS = 25000;
 const MAX_CHAT_MESSAGE_CHARS = 300;
 const MAX_CHAT_NICKNAME_CHARS = 16;
@@ -72,6 +83,7 @@ let articleSchemaReady = false;
 let articleSeedReady = false;
 let analyticsSchemaReady = false;
 let videoSchemaReady = false;
+let japaneseSubtextSchemaReady = false;
 
 export async function onRequest(context) {
   const { request, env } = context;
@@ -150,6 +162,19 @@ export async function onRequest(context) {
     }
     if (request.method === "GET" && parts[0] === "social-links") {
       return await getSocialLinks(request, env);
+    }
+    if (
+      parts[0] === "tools"
+      && parts[1] === "japanese-subtext"
+      && parts[2] === "progress"
+      && !parts[3]
+    ) {
+      if (request.method === "GET") {
+        return await getJapaneseSubtextProgress(request, env);
+      }
+      if (request.method === "PUT") {
+        return await putJapaneseSubtextProgress(request, env);
+      }
     }
     if (parts[0] === "admin" && request.method === "GET" && parts[1] === "me") {
       return await adminMe(request, env);
@@ -391,6 +416,520 @@ async function validateSaveAccess(request, env, gameId) {
   return null;
 }
 
+async function getJapaneseSubtextProgress(request, env) {
+  const session = await requireSession(request, env);
+  await ensureJapaneseSubtextSchema(env);
+  return json(await readJapaneseSubtextProgress(env, session.user.id));
+}
+
+async function putJapaneseSubtextProgress(request, env) {
+  const session = await requireSession(request, env);
+  await ensureJapaneseSubtextSchema(env);
+  const input = normalizeJapaneseSubtextPayload(
+    await readBoundedJson(request, MAX_JAPANESE_SUBTEXT_PROGRESS_BYTES)
+  );
+  const now = nowIso();
+  const profile = input.profile;
+
+  await env.DB.prepare(`
+    insert into japanese_subtext_profiles (
+      user_id, schema_version, content_version, revision, current_level, current_stage,
+      settings_json, progress_updated_at, settings_updated_at, created_at, updated_at
+    ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    on conflict(user_id)
+    do update set
+      schema_version = excluded.schema_version,
+      content_version = excluded.content_version,
+      revision = max(japanese_subtext_profiles.revision, excluded.revision),
+      current_level = case
+        when excluded.current_level * 100 + excluded.current_stage
+          >= japanese_subtext_profiles.current_level * 100 + japanese_subtext_profiles.current_stage
+          then excluded.current_level
+        else japanese_subtext_profiles.current_level
+      end,
+      current_stage = case
+        when excluded.current_level * 100 + excluded.current_stage
+          >= japanese_subtext_profiles.current_level * 100 + japanese_subtext_profiles.current_stage
+          then excluded.current_stage
+        else japanese_subtext_profiles.current_stage
+      end,
+      settings_json = case
+        when excluded.settings_updated_at >= japanese_subtext_profiles.settings_updated_at
+          then excluded.settings_json
+        else japanese_subtext_profiles.settings_json
+      end,
+      progress_updated_at = max(japanese_subtext_profiles.progress_updated_at, excluded.progress_updated_at),
+      settings_updated_at = max(japanese_subtext_profiles.settings_updated_at, excluded.settings_updated_at),
+      updated_at = excluded.updated_at
+  `).bind(
+    session.user.id,
+    JAPANESE_SUBTEXT_SCHEMA_VERSION,
+    JAPANESE_SUBTEXT_CONTENT_VERSION,
+    profile.revision,
+    profile.currentLevel,
+    profile.currentStage,
+    JSON.stringify(input.settings),
+    profile.updatedAt,
+    input.settings.updatedAt,
+    now,
+    now
+  ).run();
+
+  const stageStatements = input.stages.map((stage) => env.DB.prepare(`
+    insert into japanese_subtext_stage_progress (
+      user_id, stage_id, level, stage, cleared, best_score, best_medal, attempts,
+      first_accuracy, first_clear_mode, used_translation, used_kana,
+      used_listening_mode, replay_count, hint_count, progress_updated_at, updated_at
+    ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    on conflict(user_id, stage_id)
+    do update set
+      cleared = max(japanese_subtext_stage_progress.cleared, excluded.cleared),
+      best_score = max(japanese_subtext_stage_progress.best_score, excluded.best_score),
+      best_medal = max(japanese_subtext_stage_progress.best_medal, excluded.best_medal),
+      attempts = max(japanese_subtext_stage_progress.attempts, excluded.attempts),
+      first_accuracy = max(japanese_subtext_stage_progress.first_accuracy, excluded.first_accuracy),
+      first_clear_mode = case
+        when japanese_subtext_stage_progress.first_clear_mode <> ''
+          then japanese_subtext_stage_progress.first_clear_mode
+        else excluded.first_clear_mode
+      end,
+      used_translation = max(japanese_subtext_stage_progress.used_translation, excluded.used_translation),
+      used_kana = max(japanese_subtext_stage_progress.used_kana, excluded.used_kana),
+      used_listening_mode = max(japanese_subtext_stage_progress.used_listening_mode, excluded.used_listening_mode),
+      replay_count = max(japanese_subtext_stage_progress.replay_count, excluded.replay_count),
+      hint_count = max(japanese_subtext_stage_progress.hint_count, excluded.hint_count),
+      progress_updated_at = max(japanese_subtext_stage_progress.progress_updated_at, excluded.progress_updated_at),
+      updated_at = excluded.updated_at
+  `).bind(
+    session.user.id,
+    stage.stageId,
+    stage.level,
+    stage.stage,
+    stage.cleared ? 1 : 0,
+    stage.bestScore,
+    JAPANESE_SUBTEXT_MEDAL_RANK[stage.medal],
+    stage.attempts,
+    stage.firstAccuracy,
+    stage.firstClearMode,
+    stage.usedTranslation ? 1 : 0,
+    stage.usedKana ? 1 : 0,
+    stage.usedListeningMode ? 1 : 0,
+    stage.replayCount,
+    stage.hintCount,
+    stage.updatedAt,
+    now
+  ));
+
+  for (let index = 0; index < stageStatements.length; index += 50) {
+    await env.DB.batch(stageStatements.slice(index, index + 50));
+  }
+
+  return json(await readJapaneseSubtextProgress(env, session.user.id));
+}
+
+async function readJapaneseSubtextProgress(env, userId) {
+  const profileRow = await env.DB.prepare(`
+    select schema_version, content_version, revision, current_level, current_stage,
+      settings_json, progress_updated_at, settings_updated_at, created_at, updated_at
+    from japanese_subtext_profiles
+    where user_id = ?
+  `).bind(userId).first();
+
+  if (!profileRow) {
+    const settings = defaultJapaneseSubtextSettings(JAPANESE_SUBTEXT_EMPTY_TIMESTAMP);
+    return {
+      profile: null,
+      stages: [],
+      updatedAt: JAPANESE_SUBTEXT_EMPTY_TIMESTAMP,
+      progress: defaultJapaneseSubtextProgress(JAPANESE_SUBTEXT_EMPTY_TIMESTAMP),
+      settings
+    };
+  }
+
+  const rows = (await env.DB.prepare(`
+    select stage_id, level, stage, cleared, best_score, best_medal, attempts,
+      first_accuracy, first_clear_mode, used_translation, used_kana,
+      used_listening_mode, replay_count, hint_count, progress_updated_at, updated_at
+    from japanese_subtext_stage_progress
+    where user_id = ?
+    order by level asc, stage asc
+  `).bind(userId).all()).results || [];
+  const stages = rows.map(japaneseSubtextStageFromRow).filter(Boolean);
+  const unlockedStageIds = japaneseSubtextUnlockedStageIds(stages);
+  const requestedCurrentId = japaneseSubtextStageId(profileRow.current_level, profileRow.current_stage);
+  const currentId = unlockedStageIds.includes(requestedCurrentId)
+    ? requestedCurrentId
+    : unlockedStageIds.at(-1) || "L1-001";
+  const current = parseJapaneseSubtextStageId(currentId) || { level: 1, stage: 1 };
+  const settings = storedJapaneseSubtextSettings(profileRow.settings_json, profileRow.settings_updated_at);
+  const stageProgress = Object.fromEntries(stages.map((stage) => [stage.stageId, japaneseSubtextStageProgress(stage)]));
+  const progressUpdatedAt = normalizedStoredIso(profileRow.progress_updated_at, JAPANESE_SUBTEXT_EMPTY_TIMESTAMP);
+  const settingsUpdatedAt = normalizedStoredIso(profileRow.settings_updated_at, settings.updatedAt);
+  const updatedAt = [
+    normalizedStoredIso(profileRow.updated_at, JAPANESE_SUBTEXT_EMPTY_TIMESTAMP),
+    ...rows.map((row) => normalizedStoredIso(row.updated_at, JAPANESE_SUBTEXT_EMPTY_TIMESTAMP))
+  ].sort().at(-1);
+
+  return {
+    profile: {
+      schemaVersion: JAPANESE_SUBTEXT_SCHEMA_VERSION,
+      contentVersion: JAPANESE_SUBTEXT_CONTENT_VERSION,
+      revision: boundedStoredInteger(profileRow.revision, 1, JAPANESE_SUBTEXT_COUNTER_LIMIT, 1),
+      currentLevel: current.level,
+      currentStage: current.stage,
+      unlockedStageIds,
+      progressUpdatedAt,
+      settingsUpdatedAt,
+      updatedAt
+    },
+    stages,
+    updatedAt,
+    progress: {
+      schemaVersion: JAPANESE_SUBTEXT_SCHEMA_VERSION,
+      contentVersion: JAPANESE_SUBTEXT_CONTENT_VERSION,
+      revision: boundedStoredInteger(profileRow.revision, 1, JAPANESE_SUBTEXT_COUNTER_LIMIT, 1),
+      currentLevel: current.level,
+      currentStage: current.stage,
+      unlockedStageIds,
+      stageProgress,
+      updatedAt: progressUpdatedAt
+    },
+    settings: { ...settings, updatedAt: settingsUpdatedAt }
+  };
+}
+
+function normalizeJapaneseSubtextPayload(body) {
+  assertJapaneseSubtextObject(body, "云端进度");
+  assertJapaneseSubtextKeys(body, ["progress", "settings"], "云端进度");
+  const profile = normalizeJapaneseSubtextProgress(body.progress);
+  const settings = normalizeJapaneseSubtextSettings(body.settings);
+  return { profile, settings, stages: profile.stages };
+}
+
+function normalizeJapaneseSubtextProgress(value) {
+  const keys = [
+    "schemaVersion", "contentVersion", "revision", "currentLevel", "currentStage",
+    "unlockedStageIds", "stageProgress", "updatedAt"
+  ];
+  assertJapaneseSubtextObject(value, "进度");
+  assertJapaneseSubtextKeys(value, keys, "进度");
+  assertJapaneseSubtextVersion(value, "进度");
+  const revision = japaneseSubtextInteger(value.revision, 1, JAPANESE_SUBTEXT_COUNTER_LIMIT, "revision");
+  const currentLevel = japaneseSubtextInteger(value.currentLevel, 1, 5, "currentLevel");
+  const currentStage = japaneseSubtextInteger(value.currentStage, 1, 50, "currentStage");
+  const updatedAt = japaneseSubtextIso(value.updatedAt, "progress.updatedAt");
+
+  if (!Array.isArray(value.unlockedStageIds) || value.unlockedStageIds.length > JAPANESE_SUBTEXT_STAGE_LIMIT) {
+    throw new HttpError("已解锁关卡列表不正确。", 400);
+  }
+  const unlockedStageIds = value.unlockedStageIds.map((stageId) => {
+    if (!parseJapaneseSubtextStageId(stageId)) {
+      throw new HttpError("已解锁关卡编号不正确。", 400);
+    }
+    return stageId;
+  });
+  if (new Set(unlockedStageIds).size !== unlockedStageIds.length) {
+    throw new HttpError("已解锁关卡不能重复。", 400);
+  }
+
+  assertJapaneseSubtextObject(value.stageProgress, "关卡进度");
+  const entries = Object.entries(value.stageProgress);
+  if (entries.length > JAPANESE_SUBTEXT_STAGE_LIMIT) {
+    throw new HttpError("关卡进度超过 250 关。", 400);
+  }
+  const stages = entries.map(([stageId, stageValue]) => {
+    const parsed = parseJapaneseSubtextStageId(stageId);
+    if (!parsed) {
+      throw new HttpError("关卡编号不正确。", 400);
+    }
+    return normalizeJapaneseSubtextStage(stageId, parsed, stageValue);
+  }).sort(japaneseSubtextStageSort);
+
+  const derivedUnlocked = japaneseSubtextUnlockedStageIds(stages);
+  const suppliedUnlocked = [...unlockedStageIds].sort(japaneseSubtextStageIdSort);
+  if (
+    derivedUnlocked.length !== suppliedUnlocked.length
+    || derivedUnlocked.some((stageId, index) => stageId !== suppliedUnlocked[index])
+  ) {
+    throw new HttpError("已解锁关卡与通关记录不一致。", 400);
+  }
+  if (stages.some((stage) => !derivedUnlocked.includes(stage.stageId))) {
+    throw new HttpError("未解锁关卡不能上传进度。", 400);
+  }
+  const currentId = japaneseSubtextStageId(currentLevel, currentStage);
+  if (!derivedUnlocked.includes(currentId)) {
+    throw new HttpError("当前关卡尚未解锁。", 400);
+  }
+
+  return { revision, currentLevel, currentStage, updatedAt, stages };
+}
+
+function normalizeJapaneseSubtextSettings(value) {
+  const keys = [
+    "schemaVersion", "contentVersion", "uiLanguage", "displayMode", "optionLanguage",
+    "kana", "optionText", "optionAudio", "autoReadOptions", "autoplay", "playbackRate",
+    "muted", "updatedAt"
+  ];
+  assertJapaneseSubtextObject(value, "设置");
+  assertJapaneseSubtextKeys(value, keys, "设置");
+  assertJapaneseSubtextVersion(value, "设置");
+  if (!JAPANESE_SUBTEXT_LANGUAGES.has(value.uiLanguage)) {
+    throw new HttpError("界面语言不正确。", 400);
+  }
+  if (!JAPANESE_SUBTEXT_DISPLAY_MODES.has(value.displayMode)) {
+    throw new HttpError("场景显示模式不正确。", 400);
+  }
+  if (!JAPANESE_SUBTEXT_LANGUAGES.has(value.optionLanguage)) {
+    throw new HttpError("选项语言不正确。", 400);
+  }
+  if (!JAPANESE_SUBTEXT_PLAYBACK_RATES.has(value.playbackRate)) {
+    throw new HttpError("播放速度不正确。", 400);
+  }
+  for (const key of ["kana", "optionText", "optionAudio", "autoReadOptions", "autoplay", "muted"]) {
+    if (typeof value[key] !== "boolean") {
+      throw new HttpError(`${key} 必须是布尔值。`, 400);
+    }
+  }
+  return {
+    schemaVersion: JAPANESE_SUBTEXT_SCHEMA_VERSION,
+    contentVersion: JAPANESE_SUBTEXT_CONTENT_VERSION,
+    uiLanguage: value.uiLanguage,
+    displayMode: value.displayMode,
+    optionLanguage: value.optionLanguage,
+    kana: value.kana,
+    optionText: value.optionText,
+    optionAudio: value.optionAudio,
+    autoReadOptions: value.autoReadOptions,
+    autoplay: value.autoplay,
+    playbackRate: value.playbackRate,
+    muted: value.muted,
+    updatedAt: japaneseSubtextIso(value.updatedAt, "settings.updatedAt")
+  };
+}
+
+function normalizeJapaneseSubtextStage(stageId, parsed, value) {
+  const keys = [
+    "cleared", "bestScore", "medal", "attempts", "firstAccuracy", "firstClearMode",
+    "usedTranslation", "usedKana", "usedListeningMode", "replayCount", "hintCount", "updatedAt"
+  ];
+  assertJapaneseSubtextObject(value, `关卡 ${stageId}`);
+  assertJapaneseSubtextKeys(value, keys, `关卡 ${stageId}`);
+  for (const key of ["cleared", "usedTranslation", "usedKana", "usedListeningMode"]) {
+    if (typeof value[key] !== "boolean") {
+      throw new HttpError(`关卡 ${stageId} 的 ${key} 必须是布尔值。`, 400);
+    }
+  }
+  if (!Object.hasOwn(JAPANESE_SUBTEXT_MEDAL_RANK, value.medal)) {
+    throw new HttpError(`关卡 ${stageId} 的奖章不正确。`, 400);
+  }
+  if (value.cleared !== (value.medal !== "none")) {
+    throw new HttpError(`关卡 ${stageId} 的通关状态与奖章不一致。`, 400);
+  }
+  const firstClearMode = String(value.firstClearMode || "");
+  if (
+    (value.cleared && !JAPANESE_SUBTEXT_DISPLAY_MODES.has(firstClearMode))
+    || (!value.cleared && firstClearMode !== "")
+  ) {
+    throw new HttpError(`关卡 ${stageId} 的首次通关模式不正确。`, 400);
+  }
+  const attempts = japaneseSubtextInteger(value.attempts, 0, JAPANESE_SUBTEXT_COUNTER_LIMIT, `${stageId}.attempts`);
+  const firstAccuracy = japaneseSubtextInteger(value.firstAccuracy, 0, 100, `${stageId}.firstAccuracy`);
+  if (attempts === 0 && (value.cleared || firstAccuracy !== 0)) {
+    throw new HttpError(`关卡 ${stageId} 的尝试次数与成绩不一致。`, 400);
+  }
+  return {
+    stageId,
+    level: parsed.level,
+    stage: parsed.stage,
+    cleared: value.cleared,
+    bestScore: japaneseSubtextInteger(value.bestScore, 0, 100, `${stageId}.bestScore`),
+    medal: value.medal,
+    attempts,
+    firstAccuracy,
+    firstClearMode,
+    usedTranslation: value.usedTranslation,
+    usedKana: value.usedKana,
+    usedListeningMode: value.usedListeningMode,
+    replayCount: japaneseSubtextInteger(value.replayCount, 0, JAPANESE_SUBTEXT_COUNTER_LIMIT, `${stageId}.replayCount`),
+    hintCount: japaneseSubtextInteger(value.hintCount, 0, JAPANESE_SUBTEXT_COUNTER_LIMIT, `${stageId}.hintCount`),
+    updatedAt: japaneseSubtextIso(value.updatedAt, `${stageId}.updatedAt`)
+  };
+}
+
+function assertJapaneseSubtextObject(value, label) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new HttpError(`${label}格式不正确。`, 400);
+  }
+}
+
+function assertJapaneseSubtextKeys(value, expectedKeys, label) {
+  const actualKeys = Object.keys(value).sort();
+  const expected = [...expectedKeys].sort();
+  if (actualKeys.length !== expected.length || actualKeys.some((key, index) => key !== expected[index])) {
+    throw new HttpError(`${label}字段不正确。`, 400);
+  }
+}
+
+function assertJapaneseSubtextVersion(value, label) {
+  if (
+    value.schemaVersion !== JAPANESE_SUBTEXT_SCHEMA_VERSION
+    || value.contentVersion !== JAPANESE_SUBTEXT_CONTENT_VERSION
+  ) {
+    throw new HttpError(`${label}版本不受支持。`, 409);
+  }
+}
+
+function japaneseSubtextInteger(value, min, max, label) {
+  if (!Number.isInteger(value) || value < min || value > max) {
+    throw new HttpError(`${label} 不正确。`, 400);
+  }
+  return value;
+}
+
+function japaneseSubtextIso(value, label) {
+  if (typeof value !== "string" || value.length > 40) {
+    throw new HttpError(`${label} 时间不正确。`, 400);
+  }
+  const time = Date.parse(value);
+  if (!Number.isFinite(time)) {
+    throw new HttpError(`${label} 时间不正确。`, 400);
+  }
+  return new Date(time).toISOString();
+}
+
+function parseJapaneseSubtextStageId(value) {
+  const match = String(value || "").match(/^L([1-5])-([0-9]{3})$/);
+  if (!match) {
+    return null;
+  }
+  const level = Number(match[1]);
+  const stage = Number(match[2]);
+  return stage >= 1 && stage <= 50 ? { level, stage } : null;
+}
+
+function japaneseSubtextStageId(level, stage) {
+  return `L${Number(level)}-${String(Number(stage)).padStart(3, "0")}`;
+}
+
+function nextJapaneseSubtextStageId(stageId) {
+  const parsed = parseJapaneseSubtextStageId(stageId);
+  if (!parsed) {
+    return "";
+  }
+  if (parsed.stage < 50) {
+    return japaneseSubtextStageId(parsed.level, parsed.stage + 1);
+  }
+  return parsed.level < 5 ? japaneseSubtextStageId(parsed.level + 1, 1) : "";
+}
+
+function japaneseSubtextUnlockedStageIds(stages) {
+  const progressByStageId = new Map(stages.map((stage) => [stage.stageId, stage]));
+  const unlocked = new Set(["L1-001"]);
+  let currentStageId = "L1-001";
+  for (let index = 0; index < JAPANESE_SUBTEXT_STAGE_LIMIT; index += 1) {
+    const progress = progressByStageId.get(currentStageId);
+    if (!progress?.cleared) {
+      break;
+    }
+    const next = nextJapaneseSubtextStageId(currentStageId);
+    if (!next) {
+      break;
+    }
+    unlocked.add(next);
+    currentStageId = next;
+  }
+  return [...unlocked].sort(japaneseSubtextStageIdSort);
+}
+
+function japaneseSubtextStageIdSort(left, right) {
+  const a = parseJapaneseSubtextStageId(left) || { level: 0, stage: 0 };
+  const b = parseJapaneseSubtextStageId(right) || { level: 0, stage: 0 };
+  return (a.level - b.level) || (a.stage - b.stage);
+}
+
+function japaneseSubtextStageSort(left, right) {
+  return japaneseSubtextStageIdSort(left.stageId, right.stageId);
+}
+
+function japaneseSubtextStageFromRow(row) {
+  const parsed = parseJapaneseSubtextStageId(row.stage_id);
+  if (!parsed) {
+    return null;
+  }
+  const medalRank = boundedStoredInteger(row.best_medal, 0, 3, 0);
+  return {
+    stageId: row.stage_id,
+    level: parsed.level,
+    stage: parsed.stage,
+    cleared: Number(row.cleared || 0) === 1,
+    bestScore: boundedStoredInteger(row.best_score, 0, 100, 0),
+    medal: JAPANESE_SUBTEXT_MEDAL_NAME[medalRank] || "none",
+    attempts: boundedStoredInteger(row.attempts, 0, JAPANESE_SUBTEXT_COUNTER_LIMIT, 0),
+    firstAccuracy: boundedStoredInteger(row.first_accuracy, 0, 100, 0),
+    firstClearMode: JAPANESE_SUBTEXT_DISPLAY_MODES.has(row.first_clear_mode) ? row.first_clear_mode : "",
+    usedTranslation: Number(row.used_translation || 0) === 1,
+    usedKana: Number(row.used_kana || 0) === 1,
+    usedListeningMode: Number(row.used_listening_mode || 0) === 1,
+    replayCount: boundedStoredInteger(row.replay_count, 0, JAPANESE_SUBTEXT_COUNTER_LIMIT, 0),
+    hintCount: boundedStoredInteger(row.hint_count, 0, JAPANESE_SUBTEXT_COUNTER_LIMIT, 0),
+    updatedAt: normalizedStoredIso(row.progress_updated_at, JAPANESE_SUBTEXT_EMPTY_TIMESTAMP)
+  };
+}
+
+function japaneseSubtextStageProgress(stage) {
+  const { stageId, level, stage: stageNumber, ...progress } = stage;
+  return progress;
+}
+
+function storedJapaneseSubtextSettings(raw, fallbackUpdatedAt) {
+  try {
+    return normalizeJapaneseSubtextSettings(JSON.parse(raw));
+  } catch {
+    return defaultJapaneseSubtextSettings(normalizedStoredIso(fallbackUpdatedAt, JAPANESE_SUBTEXT_EMPTY_TIMESTAMP));
+  }
+}
+
+function defaultJapaneseSubtextSettings(updatedAt) {
+  return {
+    schemaVersion: JAPANESE_SUBTEXT_SCHEMA_VERSION,
+    contentVersion: JAPANESE_SUBTEXT_CONTENT_VERSION,
+    uiLanguage: "zh",
+    displayMode: "japanese",
+    optionLanguage: "ja",
+    kana: false,
+    optionText: true,
+    optionAudio: true,
+    autoReadOptions: false,
+    autoplay: true,
+    playbackRate: 1,
+    muted: false,
+    updatedAt
+  };
+}
+
+function defaultJapaneseSubtextProgress(updatedAt) {
+  return {
+    schemaVersion: JAPANESE_SUBTEXT_SCHEMA_VERSION,
+    contentVersion: JAPANESE_SUBTEXT_CONTENT_VERSION,
+    revision: 1,
+    currentLevel: 1,
+    currentStage: 1,
+    unlockedStageIds: ["L1-001"],
+    stageProgress: {},
+    updatedAt
+  };
+}
+
+function normalizedStoredIso(value, fallback) {
+  const time = Date.parse(String(value || ""));
+  return Number.isFinite(time) ? new Date(time).toISOString() : fallback;
+}
+
+function boundedStoredInteger(value, min, max, fallback) {
+  const number = Number(value);
+  return Number.isInteger(number) && number >= min && number <= max ? number : fallback;
+}
+
 async function getChatMessages(request, env) {
   await ensureChatSchema(env);
   const url = new URL(request.url);
@@ -605,6 +1144,12 @@ async function getSitemap(request, env) {
     "daily",
     "1.0"
   ));
+  const japaneseSubtextEntries = langs.map((lang) => sitemapUrlEntry(
+    new URL(`/tools/japanese-subtext/?lang=${encodeURIComponent(lang)}`, url.origin).toString(),
+    "2026-07-11",
+    "monthly",
+    "0.9"
+  ));
   const articleEntries = rows.flatMap((article) => langs.map((lang) => sitemapUrlEntry(
     new URL(`/articles/${encodeURIComponent(article.slug)}?lang=${encodeURIComponent(lang)}`, url.origin).toString(),
     article.updated_at || article.published_at || article.created_at,
@@ -616,6 +1161,7 @@ async function getSitemap(request, env) {
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
     ...rootEntries,
+    ...japaneseSubtextEntries,
     ...articleEntries,
     '</urlset>'
   ].join("\n");
@@ -2135,6 +2681,64 @@ async function ensureAnalyticsSchema(env) {
   analyticsSchemaReady = true;
 }
 
+async function ensureJapaneseSubtextSchema(env) {
+  if (japaneseSubtextSchemaReady) {
+    return;
+  }
+  await env.DB.batch([
+    env.DB.prepare(`
+      create table if not exists japanese_subtext_profiles (
+        user_id text primary key references users(id) on delete cascade,
+        schema_version integer not null default 1 check(schema_version = 1),
+        content_version text not null,
+        revision integer not null default 1 check(revision between 1 and 1000000),
+        current_level integer not null default 1 check(current_level between 1 and 5),
+        current_stage integer not null default 1 check(current_stage between 1 and 50),
+        settings_json text not null default '{}',
+        progress_updated_at text not null,
+        settings_updated_at text not null,
+        created_at text not null,
+        updated_at text not null
+      )
+    `),
+    env.DB.prepare(`
+      create table if not exists japanese_subtext_stage_progress (
+        user_id text not null references users(id) on delete cascade,
+        stage_id text not null,
+        level integer not null check(level between 1 and 5),
+        stage integer not null check(stage between 1 and 50),
+        cleared integer not null default 0 check(cleared in (0, 1)),
+        best_score integer not null default 0 check(best_score between 0 and 100),
+        best_medal integer not null default 0 check(best_medal between 0 and 3),
+        attempts integer not null default 0 check(attempts between 0 and 1000000),
+        first_accuracy integer not null default 0 check(first_accuracy between 0 and 100),
+        first_clear_mode text not null default '',
+        used_translation integer not null default 0 check(used_translation in (0, 1)),
+        used_kana integer not null default 0 check(used_kana in (0, 1)),
+        used_listening_mode integer not null default 0 check(used_listening_mode in (0, 1)),
+        replay_count integer not null default 0 check(replay_count between 0 and 1000000),
+        hint_count integer not null default 0 check(hint_count between 0 and 1000000),
+        progress_updated_at text not null,
+        updated_at text not null,
+        primary key (user_id, stage_id)
+      )
+    `),
+    env.DB.prepare(`
+      create index if not exists japanese_subtext_profiles_updated_idx
+        on japanese_subtext_profiles(updated_at)
+    `),
+    env.DB.prepare(`
+      create index if not exists japanese_subtext_stage_progress_user_level_idx
+        on japanese_subtext_stage_progress(user_id, level, stage)
+    `),
+    env.DB.prepare(`
+      create index if not exists japanese_subtext_stage_progress_updated_idx
+        on japanese_subtext_stage_progress(updated_at)
+    `)
+  ]);
+  japaneseSubtextSchemaReady = true;
+}
+
 async function ensureCoreSchema(env) {
   if (coreSchemaReady) {
     return;
@@ -3420,6 +4024,33 @@ function articleSeedStatements(env) {
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-11-japanese-subtext-trainer',
+        '2026-07-11-japanese-subtext-trainer',
+        'site-updates',
+        '["Japanese","listening","learning","tools"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-07-10T17:30:00.000Z',
+        '2026-07-10T17:30:00.000Z',
+        '2026-07-10T17:30:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
     `),
     env.DB.prepare(`
       insert into articles (
@@ -6019,6 +6650,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    ...articleTranslationsStatements(env, "seed-update-2026-07-11-japanese-subtext-trainer", {
+      zh: {
+        title: "日语潜台词训练工具上线",
+        summary: "新增 N3～N1 五个难度、250 关的日语潜台词训练，支持离线预生成语音、纯听/日语/双语模式、句子点击播放和本地与云端进度。",
+        content_markdown: "# 日语潜台词训练工具上线\n\n新的独立工具「日本語の裏側」已接入资源区，用小场景、日语语音和选择题训练对话中的真实意图。\n\n## 五级进阶题库\n\n- 从 LEVEL 1 的 N3 日常委婉表达，逐步进阶到 LEVEL 2 的 N2 口语省略与敬语距离，再到 LEVEL 3～5 的 N1 信息差、反话、隐瞒和多重解释。\n- 五个难度各 50 关，共 250 关；每个难度的前几关较短，后续场景与推理长度逐步增加。\n- 解析会引用具体台词和人物关系，说明在当前上下文中更可能的解释，避免把单句日语绝对化。\n\n## 可控的离线语音\n\n- 题库语音由本地模型提前生成，提供男声、女声和角色区分，浏览器不会在游玩时调用外部 TTS。\n- 支持纯听、日语和双语场景模式，以及日语、中文、English 选项。\n- 可以自动播放、暂停、续播、切换倍速、拖动进度，也可以点击单句从指定位置开始播放。\n\n## 不丢失的学习进度\n\n- 未登录时使用版本化本地进度，记录解锁、成绩、奖章、尝试次数和播放设置。\n- 登录后通过独立 D1 学习进度表同步，不复用游戏存档表；本地与云端合并会保留已通关关卡和最佳奖章。\n- 云端不可用时不会阻止本地答题，退出登录后也仍然可以继续训练。"
+      },
+      en: {
+        title: "Japanese Subtext Trainer Released",
+        summary: "A new N3-to-N1 Japanese subtext trainer adds five levels and 250 stages with pre-generated offline speech, listening/Japanese/bilingual modes, sentence playback, and local plus cloud progress.",
+        content_markdown: "# Japanese Subtext Trainer Released\n\nThe standalone tool 「日本語の裏側」 is now available from Resources. Short scenes, Japanese speech, and choice questions train the intent hidden behind tone, context, and relationships.\n\n## Five progressive levels\n\n- LEVEL 1 starts with N3 everyday indirect expressions, LEVEL 2 moves into N2 ellipsis and honorific distance, and LEVELS 3 to 5 develop N1 information gaps, irony, concealment, and multiple supported interpretations.\n- Each level contains 50 stages for a total of 250. Early stages in every level stay shorter, while later scenes and inference chains gradually grow.\n- Explanations cite specific lines and relationships and describe the interpretation that is more likely in the current context instead of treating one Japanese sentence as an absolute formula.\n\n## Controllable offline speech\n\n- Speech is generated ahead of time with local models, including male and female voices and consistent character assignment. The browser does not call an external TTS service while training.\n- Listening-only, Japanese, and bilingual scene modes are available, independently from Japanese, Chinese, or English answer text.\n- Playback supports autoplay after sound unlock, pause, resume, speed controls, timeline seeking, and sentence-level start positions.\n\n## Learning progress that survives sessions\n\n- Signed-out visitors use versioned local progress for unlocks, scores, medals, attempts, and playback settings.\n- Signed-in users synchronize through dedicated D1 learning tables rather than the game-save table. Local and cloud merging preserves cleared stages and the strongest medals.\n- Cloud failures never block local questions, and signing out keeps the local trainer usable."
+      },
+      ja: {
+        title: "日本語の裏側を公開",
+        summary: "N3 から N1 までの 5 レベル・250 ステージで、事前生成音声、聴解/日本語/対訳モード、文ごとの再生、ローカルとクラウドの進捗同期に対応しました。",
+        content_markdown: "# 日本語の裏側を公開\n\n独立ツール「日本語の裏側」をリソース欄から開けるようにしました。短い場面、日本語音声、選択問題を通して、口調、文脈、人間関係の奥にある意図を読み取ります。\n\n## 5 レベルの段階式問題\n\n- LEVEL 1 は N3 の日常的な遠回し表現から始まり、LEVEL 2 は N2 の省略と敬語の距離感、LEVEL 3～5 は N1 の情報差、皮肉、隠し事、複数の解釈へ進みます。\n- 各レベル 50 問、合計 250 ステージです。各レベルの最初は短く、後半ほど場面と推理を長くしています。\n- 解説は具体的な台詞と関係性を引用し、一文を絶対的な公式にせず、この文脈でより支持される解釈を示します。\n\n## 操作できるオフライン音声\n\n- 男声・女声とキャラクター別の音声をローカルモデルで事前生成し、練習中に外部 TTS を呼び出しません。\n- 聴解のみ、日本語、対訳の場面表示と、日本語・中国語・English の選択肢を別々に選べます。\n- 音声の自動再生、一時停止、再開、速度変更、シーク、文ごとの開始位置に対応します。\n\n## 失われない学習進捗\n\n- ログイン前はバージョン付きローカル進捗に、解放、得点、メダル、挑戦回数、再生設定を保存します。\n- ログイン後はゲームセーブ表を使わず、専用 D1 学習表で同期します。ローカルとクラウドを統合しても、クリア済みステージと上位メダルを保持します。\n- クラウド障害はローカル回答を止めず、ログアウト後も練習を続けられます。"
+      }
+    }, "2026-07-10T17:30:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-07-06-private-chat-rooms", {
       zh: {
         title: "暗色加密密码房上线",
@@ -7383,6 +8031,25 @@ async function readOptionalJson(request) {
     return await request.json();
   } catch {
     return {};
+  }
+}
+
+async function readBoundedJson(request, maxBytes) {
+  if (!request.headers.get("Content-Type")?.toLowerCase().includes("application/json")) {
+    throw new HttpError("请求必须使用 application/json。", 415);
+  }
+  const declaredLength = Number(request.headers.get("Content-Length"));
+  if (Number.isFinite(declaredLength) && declaredLength > maxBytes) {
+    throw new HttpError("云端进度数据过大。", 413);
+  }
+  const raw = await request.text();
+  if (new TextEncoder().encode(raw).length > maxBytes) {
+    throw new HttpError("云端进度数据过大。", 413);
+  }
+  try {
+    return JSON.parse(raw);
+  } catch {
+    throw new HttpError("请求内容不是有效 JSON。", 400);
   }
 }
 

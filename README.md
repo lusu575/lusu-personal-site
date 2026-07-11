@@ -11,6 +11,7 @@
 - 主站访问与点击数据通过 `js/telemetry.js` 上报；不记录输入框内容、密码、未发送聊天内容或文章草稿。
 - 匿名聊天室公开侧保持纯文本渲染，后台可隐藏、恢复、删除消息，并按隐藏访客 ID 或 IP hash 禁言。
 - 游戏区只保留可在本站本地打开的静态游戏入口，不做外部跳转入口。
+- 资源区提供独立工具“日本語の裏側”：包含 5 个难度、250 个 N3–N1 潜台词训练关卡，支持纯听/日语/双语模式、逐句与词块离线语音、本地进度和账号云同步。
 
 ## 维护备注
 
@@ -33,6 +34,7 @@
 - 后台访问拦截：`functions/admin/_middleware.js`
 - 后端 API：`functions/api/[[route]].js`
 - D1 schema：`cloudflare/schema.sql`
+- 日语潜台词训练器：`tools/japanese-subtext/`（维护与离线语音说明见其 `README.md`）
 - 项目上下文：`PROJECT_CONTEXT.md`
 - 项目专用 Skill：`skills/lusu-personal-site-skill/SKILL.md`
 - 后台专用文档：`admin/docs/ADMIN_PROJECT_CONTEXT.md`、`admin/docs/ADMIN_SKILL.md`、`admin/docs/ADMIN_CHANGELOG.md`

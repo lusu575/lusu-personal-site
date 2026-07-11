@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "contentVersion": "1.0.0",
+  "title": {
+    "ja": "日本語の裏側",
+    "zh": "日本語の裏側",
+    "en": "日本語の裏側"
+  },
+  "stageCount": 250,
+  "levels": [
+    {
+      "level": 1,
+      "jlptTarget": "N3",
+      "index": "level-1/index.json",
+      "cover": "assets/covers/level-1.webp",
+      "description": {
+        "ja": "N3の日常表現と分かりやすい手がかり",
+        "zh": "N3 日常表达与明显线索",
+        "en": "N3 daily language and clear clues"
+      }
+    },
+    {
+      "level": 2,
+      "jlptTarget": "N2",
+      "index": "level-2/index.json",
+      "cover": "assets/covers/level-2.webp",
+      "description": {
+        "ja": "N2の省略・逆接・敬語の距離",
+        "zh": "N2 省略、转折与敬语距离",
+        "en": "N2 ellipsis, contrast, and polite distance"
+      }
+    },
+    {
+      "level": 3,
+      "jlptTarget": "N1",
+      "index": "level-3/index.json",
+      "cover": "assets/covers/level-3.webp",
+      "description": {
+        "ja": "N1の複雑な語気・皮肉・情報差",
+        "zh": "N1 复杂语气、讽刺与信息差",
+        "en": "N1 tone, irony, and information gaps"
+      }
+    },
+    {
+      "level": 4,
+      "jlptTarget": "N1-advanced",
+      "index": "level-4/index.json",
+      "cover": "assets/covers/level-4.webp",
+      "description": {
+        "ja": "N1上級の複数人物・横断推理",
+        "zh": "N1 高阶多人对话与跨句推理",
+        "en": "Advanced N1 multi-speaker inference"
+      }
+    },
+    {
+      "level": 5,
+      "jlptTarget": "N1-pragmatics",
+      "index": "level-5/index.json",
+      "cover": "assets/covers/level-5.webp",
+      "description": {
+        "ja": "N1語用論の多義性・開かれた結末",
+        "zh": "N1 高阶语用、多义性与开放结局",
+        "en": "N1 pragmatics and open endings"
+      }
+    }
+  ]
+}

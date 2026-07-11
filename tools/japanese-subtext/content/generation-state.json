@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "contentVersion": "1.0.0",
+  "updatedAt": "2026-07-11",
+  "currentPhase": "release-validation-complete",
+  "nextPhase": "release",
+  "blueprint": {
+    "status": "complete",
+    "stageCount": 250,
+    "levelCounts": {
+      "1": 50,
+      "2": 50,
+      "3": 50,
+      "4": 50,
+      "5": 50
+    }
+  },
+  "formalContent": {
+    "status": "reviewed-and-locked",
+    "authoredBatches": [
+      "level-1/batch-001-010.json",
+      "level-1/batch-011-020.json",
+      "level-1/batch-021-030.json",
+      "level-1/batch-031-040.json",
+      "level-1/batch-041-050.json",
+      "level-2/batch-001-010.json",
+      "level-2/batch-011-020.json",
+      "level-2/batch-021-030.json",
+      "level-2/batch-031-040.json",
+      "level-2/batch-041-050.json",
+      "level-3/batch-001-010.json",
+      "level-3/batch-011-020.json",
+      "level-3/batch-021-030.json",
+      "level-3/batch-031-040.json",
+      "level-3/batch-041-050.json",
+      "level-4/batch-001-010.json",
+      "level-4/batch-011-020.json",
+      "level-4/batch-021-030.json",
+      "level-4/batch-031-040.json",
+      "level-4/batch-041-050.json",
+      "level-5/batch-001-010.json",
+      "level-5/batch-011-020.json",
+      "level-5/batch-021-030.json",
+      "level-5/batch-031-040.json",
+      "level-5/batch-041-050.json"
+    ],
+    "reviewedBatches": [
+      "level-1/batch-001-010.json",
+      "level-1/batch-011-020.json",
+      "level-1/batch-021-030.json",
+      "level-1/batch-031-040.json",
+      "level-1/batch-041-050.json",
+      "level-2/batch-001-010.json",
+      "level-2/batch-011-020.json",
+      "level-2/batch-021-030.json",
+      "level-2/batch-031-040.json",
+      "level-2/batch-041-050.json",
+      "level-3/batch-001-010.json",
+      "level-3/batch-011-020.json",
+      "level-3/batch-021-030.json",
+      "level-3/batch-031-040.json",
+      "level-3/batch-041-050.json",
+      "level-4/batch-001-010.json",
+      "level-4/batch-011-020.json",
+      "level-4/batch-021-030.json",
+      "level-4/batch-031-040.json",
+      "level-4/batch-041-050.json",
+      "level-5/batch-001-010.json",
+      "level-5/batch-011-020.json",
+      "level-5/batch-021-030.json",
+      "level-5/batch-031-040.json",
+      "level-5/batch-041-050.json"
+    ],
+    "lockedBatches": [
+      "level-1/batch-001-010.json",
+      "level-1/batch-011-020.json",
+      "level-1/batch-021-030.json",
+      "level-1/batch-031-040.json",
+      "level-1/batch-041-050.json",
+      "level-2/batch-001-010.json",
+      "level-2/batch-011-020.json",
+      "level-2/batch-021-030.json",
+      "level-2/batch-031-040.json",
+      "level-2/batch-041-050.json",
+      "level-3/batch-001-010.json",
+      "level-3/batch-011-020.json",
+      "level-3/batch-021-030.json",
+      "level-3/batch-031-040.json",
+      "level-3/batch-041-050.json",
+      "level-4/batch-001-010.json",
+      "level-4/batch-011-020.json",
+      "level-4/batch-021-030.json",
+      "level-4/batch-031-040.json",
+      "level-4/batch-041-050.json",
+      "level-5/batch-001-010.json",
+      "level-5/batch-011-020.json",
+      "level-5/batch-021-030.json",
+      "level-5/batch-031-040.json",
+      "level-5/batch-041-050.json"
+    ]
+  },
+  "audio": {
+    "status": "complete",
+    "expectedArtifacts": 10088,
+    "generatedArtifacts": 10088,
+    "generatedStages": 250,
+    "durationSeconds": 41778.912,
+    "bytes": 341455752,
+    "generatedBatches": [
+      "level-1",
+      "level-2",
+      "level-3",
+      "level-4",
+      "level-5"
+    ],
+    "validation": {
+      "contentLinks": "pass",
+      "quick": "pass",
+      "ffprobeAndSilence": "pass",
+      "validatedArtifacts": 10088,
+      "elapsedSeconds": 1165.137
+    }
+  },
+  "illustrations": {
+    "status": "complete",
+    "stageAssetCount": 31,
+    "styleCounts": {
+      "crayon": 25,
+      "chibi-four-panel": 6,
+      "monochrome": 0
+    },
+    "generatedBatches": [
+      "assets/icons",
+      "assets/covers",
+      "assets/ui",
+      "assets/stages"
+    ]
+  },
+  "needsReworkStageIds": []
+}

@@ -4,6 +4,21 @@
 /assets/images/*
   Cache-Control: public, max-age=300, must-revalidate
 
+/tools/japanese-subtext/manifest.json
+  Cache-Control: public, max-age=0, must-revalidate
+
+/tools/japanese-subtext/content/*
+  Cache-Control: public, max-age=300, must-revalidate
+
+/tools/japanese-subtext/audio/manifest.json
+  Cache-Control: public, max-age=0, must-revalidate
+
+/tools/japanese-subtext/audio/*
+  Cache-Control: public, max-age=86400, must-revalidate
+
+/tools/japanese-subtext/assets/*
+  Cache-Control: public, max-age=86400, must-revalidate
+
 /admin/*
   Cache-Control: no-store
   X-Robots-Tag: noindex, nofollow

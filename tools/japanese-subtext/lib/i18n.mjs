@@ -1,0 +1,107 @@
+import { UI_LANGUAGES } from "./constants.mjs?v=20260711-japanese-subtext-r11";
+
+const copy = {
+  zh: {
+    uiLanguage: "界面语言", backSite: "返回个人站资源区", startSound: "开始题目并启用声音",
+    dashboardIntro: "从语气、停顿、关系和上下文里，听见没说出口的话。",
+    continueTraining: "继续训练", chooseStage: "选择关卡", settings: "训练设置", records: "学习记录",
+    currentLevel: "当前等级", currentStage: "当前关卡", clearedStages: "已完成关卡", totalStages: "总关卡",
+    chooseLevel: "选择难度", stageMap: "关卡地图", backDashboard: "返回启动页", backMap: "返回关卡地图",
+    level: "难度", stage: "关卡", jlpt: "日语难度", locked: "未解锁", unlocked: "已解锁", cleared: "已通关", current: "当前",
+    bronze: "铜牌", silver: "银牌", gold: "金牌", noMedal: "未获奖章", medalEarned: "本关奖章",
+    scene: "场景", questions: "问题", analysis: "潜台词解析", audioPlayer: "语音播放器", loading: "正在读取题目…",
+    loadFailed: "题目读取失败。", retry: "重新加载", textModeContinue: "使用文字模式继续",
+    audioUnavailable: "语音暂时无法载入。", audioReady: "语音已准备好。", cloudUnavailable: "云端进度暂不可用，本地进度仍会保存。",
+    displayMode: "场景显示", listening: "纯听模式", japanese: "日语模式", bilingual: "双语模式",
+    kana: "假名提示", optionLanguage: "选项语言", optionText: "选项文字", optionAudio: "选项日语语音",
+    autoReadOptions: "自动依次朗读选项", autoplay: "进入关卡自动播放", on: "开启", off: "关闭",
+    playbackSpeed: "播放速度", mute: "静音", resetProgress: "重置本地进度", resetConfirm: "确定清空本工具的本地进度吗？",
+    play: "播放", pause: "暂停", resume: "继续", restart: "从头播放", replay: "重播", previousLine: "上一句", nextLine: "下一句",
+    progress: "播放进度", singleLineReplay: "单句重播", playSentence: "播放这句话", playChunk: "播放这个词块", playOption: "播放选项",
+    answerAfterListening: "场景播放结束后即可答题。", enableQuestions: "开始答题", selectOne: "请选择一项。", selectMany: "可选择多项。",
+    submitAnswers: "提交答案", tryAgain: "重新作答", nextStage: "下一关", allCorrect: "全部答对，本关通过！", notAllCorrect: "还有答案不对，可以根据解析再试一次。", correctAnswer: "正确答案", yourWrongChoice: "你选择的错误答案",
+    literal: "字面意思", intent: "真正意图", evidence: "判断线索", nuance: "语气与语法", alternative: "其他可能解释",
+    attempts: "尝试次数", firstAccuracy: "首次答题正确率", bestScore: "最佳成绩", replayCount: "重播次数",
+    settingsSaved: "设置已保存。", localDamaged: "检测到本地存档异常，已尽量保留可解析数据。", voiceCredits: "语音来源与许可", close: "关闭",
+    authLocal: "未登录 · 使用本地进度", authCloud: "已登录 · 云端进度已合并", syncing: "正在同步云端进度…", synced: "云端进度已同步",
+    illustrationAltFallback: "与当前场景相关的辅助插图", sentenceHidden: "纯听模式：台词已隐藏", optionHidden: "选项文字已隐藏。",
+    emptyRecord: "还没有通关记录。先完成第一关吧。", recordsSummary: "进度会优先保留更高成绩和更高奖章。",
+    levelDescriptions: ["N3 · 日常表达与明显线索", "N2 · 口语省略、转折与敬语距离", "N1 · 复杂语气、讽刺与信息差", "N1 高阶 · 多人推理与不可靠叙述", "N1 语用挑战 · 多重含义与开放结局"]
+  },
+  en: {
+    uiLanguage: "Interface language", backSite: "Back to Site Resources", startSound: "Start Stage and Enable Sound",
+    dashboardIntro: "Hear what was left unsaid through tone, pauses, relationships, and context.",
+    continueTraining: "Continue Training", chooseStage: "Choose Stage", settings: "Training Settings", records: "Learning Record",
+    currentLevel: "Current level", currentStage: "Current stage", clearedStages: "Stages cleared", totalStages: "Total stages",
+    chooseLevel: "Choose Difficulty", stageMap: "Stage Map", backDashboard: "Back to Start", backMap: "Back to Stage Map",
+    level: "Level", stage: "Stage", jlpt: "Japanese level", locked: "Locked", unlocked: "Unlocked", cleared: "Cleared", current: "Current",
+    bronze: "Bronze", silver: "Silver", gold: "Gold", noMedal: "No medal", medalEarned: "Stage medal",
+    scene: "Scene", questions: "Questions", analysis: "Subtext Analysis", audioPlayer: "Audio player", loading: "Loading stage…",
+    loadFailed: "The stage could not be loaded.", retry: "Retry", textModeContinue: "Continue in Text Mode",
+    audioUnavailable: "Audio is temporarily unavailable.", audioReady: "Audio is ready.", cloudUnavailable: "Cloud progress is unavailable. Local progress will still be saved.",
+    displayMode: "Scene display", listening: "Listening only", japanese: "Japanese", bilingual: "Bilingual",
+    kana: "Kana hints", optionLanguage: "Option language", optionText: "Option text", optionAudio: "Japanese option audio",
+    autoReadOptions: "Read options in sequence", autoplay: "Autoplay on stage entry", on: "On", off: "Off",
+    playbackSpeed: "Playback speed", mute: "Mute", resetProgress: "Reset local progress", resetConfirm: "Clear local progress for this tool?",
+    play: "Play", pause: "Pause", resume: "Resume", restart: "Start over", replay: "Replay", previousLine: "Previous line", nextLine: "Next line",
+    progress: "Playback progress", singleLineReplay: "Replay sentence", playSentence: "Play this sentence", playChunk: "Play this phrase", playOption: "Play option",
+    answerAfterListening: "Questions unlock after the scene audio finishes.", enableQuestions: "Start Questions", selectOne: "Choose one.", selectMany: "Choose all that apply.",
+    submitAnswers: "Submit Answers", tryAgain: "Try Again", nextStage: "Next Stage", allCorrect: "All correct — stage cleared!", notAllCorrect: "Some answers need another look. Use the analysis and try again.", correctAnswer: "Correct answer", yourWrongChoice: "Your incorrect choice",
+    literal: "Literal meaning", intent: "Likely intention", evidence: "Evidence", nuance: "Tone and grammar", alternative: "Other plausible readings",
+    attempts: "Attempts", firstAccuracy: "First-attempt accuracy", bestScore: "Best score", replayCount: "Replays",
+    settingsSaved: "Settings saved.", localDamaged: "Local data looked damaged; recoverable fields were kept.", voiceCredits: "Voice Credits & Licenses", close: "Close",
+    authLocal: "Signed out · Local progress", authCloud: "Signed in · Cloud progress merged", syncing: "Syncing cloud progress…", synced: "Cloud progress synced",
+    illustrationAltFallback: "Supporting illustration for this scene", sentenceHidden: "Listening-only mode: dialogue hidden", optionHidden: "Option text is hidden.",
+    emptyRecord: "No cleared stages yet. Start with Stage 1.", recordsSummary: "Higher scores and medals are always preserved when progress is merged.",
+    levelDescriptions: ["N3 · Daily expressions and clear clues", "N2 · Ellipsis, contrast, and polite distance", "N1 · Complex tone, irony, and information gaps", "Advanced N1 · Multi-speaker reasoning and unreliable accounts", "N1 pragmatics · Multiple readings and open endings"]
+  },
+  ja: {
+    uiLanguage: "表示言語", backSite: "サイトのリソースへ戻る", startSound: "問題を始めて音声を有効にする",
+    dashboardIntro: "声色、間、関係、文脈から、言葉にされなかった本音を読み取ります。",
+    continueTraining: "続きから", chooseStage: "ステージ選択", settings: "トレーニング設定", records: "学習記録",
+    currentLevel: "現在のレベル", currentStage: "現在のステージ", clearedStages: "クリア数", totalStages: "全ステージ",
+    chooseLevel: "難易度を選ぶ", stageMap: "ステージマップ", backDashboard: "スタートへ", backMap: "マップへ戻る",
+    level: "難易度", stage: "ステージ", jlpt: "日本語難度", locked: "未解放", unlocked: "解放済み", cleared: "クリア", current: "現在",
+    bronze: "銅", silver: "銀", gold: "金", noMedal: "メダルなし", medalEarned: "ステージメダル",
+    scene: "場面", questions: "問題", analysis: "含意の解説", audioPlayer: "音声プレーヤー", loading: "問題を読み込み中…",
+    loadFailed: "問題を読み込めませんでした。", retry: "再読み込み", textModeContinue: "文字モードで続ける",
+    audioUnavailable: "音声を一時的に読み込めません。", audioReady: "音声の準備ができました。", cloudUnavailable: "クラウド進捗は利用できません。ローカル進捗は保存されます。",
+    displayMode: "場面表示", listening: "聞き取りのみ", japanese: "日本語", bilingual: "日本語＋補足",
+    kana: "かなヒント", optionLanguage: "選択肢の言語", optionText: "選択肢の文字", optionAudio: "選択肢の日本語音声",
+    autoReadOptions: "選択肢を順に読む", autoplay: "入場時に自動再生", on: "オン", off: "オフ",
+    playbackSpeed: "再生速度", mute: "ミュート", resetProgress: "ローカル進捗をリセット", resetConfirm: "このツールのローカル進捗を消去しますか？",
+    play: "再生", pause: "一時停止", resume: "続ける", restart: "最初から", replay: "リプレイ", previousLine: "前の文", nextLine: "次の文",
+    progress: "再生位置", singleLineReplay: "一文を再生", playSentence: "この文を再生", playChunk: "この語句を再生", playOption: "選択肢を再生",
+    answerAfterListening: "場面音声の終了後に解答できます。", enableQuestions: "解答を始める", selectOne: "一つ選んでください。", selectMany: "複数選択できます。",
+    submitAnswers: "回答する", tryAgain: "もう一度", nextStage: "次のステージ", allCorrect: "全問正解、クリアです！", notAllCorrect: "まだ違う答えがあります。解説を手がかりに再挑戦できます。", correctAnswer: "正解", yourWrongChoice: "選んだ誤答",
+    literal: "字面の意味", intent: "考えられる意図", evidence: "判断の手がかり", nuance: "語気と文法", alternative: "ほかの可能な解釈",
+    attempts: "挑戦回数", firstAccuracy: "初回正答率", bestScore: "最高得点", replayCount: "再生回数",
+    settingsSaved: "設定を保存しました。", localDamaged: "ローカルデータの異常を検出し、読み取れる項目を保持しました。", voiceCredits: "音声の出典とライセンス", close: "閉じる",
+    authLocal: "未ログイン · ローカル進捗", authCloud: "ログイン済み · クラウド進捗を統合", syncing: "クラウド進捗を同期中…", synced: "クラウド進捗を同期しました",
+    illustrationAltFallback: "この場面を補助するイラスト", sentenceHidden: "聞き取りのみ：台詞は非表示です", optionHidden: "選択肢の文字は非表示です。",
+    emptyRecord: "クリア記録はまだありません。最初のステージから始めましょう。", recordsSummary: "進捗を統合するときは高い得点とメダルを残します。",
+    levelDescriptions: ["N3 · 日常表現と分かりやすい手がかり", "N2 · 省略、逆接、敬語の距離", "N1 · 複雑な語気、皮肉、情報差", "N1上級 · 複数人物と信頼できない語り", "N1語用論 · 多義性と開かれた結末"]
+  }
+};
+
+export function normalizeUiLanguage(value) {
+  return UI_LANGUAGES.includes(value) ? value : "zh";
+}
+
+export function createTranslator(getLanguage) {
+  return (key, replacements = {}) => {
+    const lang = normalizeUiLanguage(getLanguage());
+    const raw = copy[lang]?.[key] ?? copy.zh[key] ?? key;
+    if (Array.isArray(raw)) return raw;
+    return Object.entries(replacements).reduce((text, [name, value]) => String(text).split(`{${name}}`).join(String(value)), raw);
+  };
+}
+
+export function languageLabel(code, uiLanguage = "zh") {
+  const labels = {
+    zh: { zh: "中文", en: "English", ja: "日本語" },
+    en: { zh: "Chinese", en: "English", ja: "Japanese" },
+    ja: { zh: "中国語", en: "英語", ja: "日本語" }
+  };
+  return labels[uiLanguage]?.[code] || labels.zh[code] || code;
+}

@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Japanese Subtext local Kokoro TTS configuration",
+  "type": "object",
+  "required": [
+    "adapter",
+    "python",
+    "ffmpeg",
+    "ffprobe",
+    "audioBaseUrl",
+    "kokoro",
+    "output",
+    "voices",
+    "voiceAliases"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "adapter": { "const": "kokoro-onnx" },
+    "python": { "type": "string", "minLength": 1 },
+    "ffmpeg": { "type": "string", "minLength": 1 },
+    "ffprobe": { "type": "string", "minLength": 1 },
+    "audioBaseUrl": { "type": "string", "minLength": 1 },
+    "kokoro": {
+      "type": "object",
+      "required": ["model", "voices", "config", "hashManifest", "g2p", "provider"],
+      "properties": {
+        "model": { "type": "string", "minLength": 1 },
+        "voices": { "type": "string", "minLength": 1 },
+        "config": { "type": "string", "minLength": 1 },
+        "hashManifest": { "type": "string", "minLength": 1 },
+        "g2p": { "const": "pyopenjtalk" },
+        "provider": { "const": "CPUExecutionProvider" }
+      },
+      "additionalProperties": false
+    },
+    "output": {
+      "type": "object",
+      "required": [
+        "format",
+        "sampleRate",
+        "channels",
+        "bitrate",
+        "targetLufs",
+        "leadingSilenceMs",
+        "trailingSilenceMs",
+        "sceneGapMs"
+      ],
+      "properties": {
+        "format": { "const": "mp3" },
+        "sampleRate": { "const": 24000 },
+        "channels": { "const": 1 },
+        "bitrate": { "const": "64k" },
+        "targetLufs": { "type": "number", "minimum": -30, "maximum": -10 },
+        "leadingSilenceMs": { "type": "integer", "minimum": 0, "maximum": 500 },
+        "trailingSilenceMs": { "type": "integer", "minimum": 0, "maximum": 500 },
+        "sceneGapMs": { "type": "integer", "minimum": 0, "maximum": 3000 }
+      },
+      "additionalProperties": false
+    },
+    "voices": {
+      "type": "object",
+      "minProperties": 5,
+      "maxProperties": 5,
+      "propertyNames": {
+        "enum": ["jf-alpha", "jf-gongitsune", "jf-nezumi", "jf-tebukuro", "jm-kumo"]
+      },
+      "additionalProperties": { "$ref": "#/$defs/voice" }
+    },
+    "voiceAliases": {
+      "type": "object",
+      "additionalProperties": {
+        "enum": ["jf-alpha", "jf-gongitsune", "jf-nezumi", "jf-tebukuro", "jm-kumo"]
+      }
+    }
+  },
+  "$defs": {
+    "voice": {
+      "type": "object",
+      "required": ["modelVoice", "speed", "pitch", "emotion"],
+      "properties": {
+        "modelVoice": {
+          "enum": ["jf_alpha", "jf_gongitsune", "jf_nezumi", "jf_tebukuro", "jm_kumo"]
+        },
+        "speed": { "type": "number", "minimum": 0.5, "maximum": 2.0 },
+        "pitch": { "const": 0 },
+        "emotion": { "const": "neutral" },
+        "seed": { "type": "integer" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

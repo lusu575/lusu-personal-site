@@ -1,0 +1,96 @@
+{
+  "stageId": "L4-040",
+  "sampleRate": 24000,
+  "duration": 62.5935,
+  "cues": [
+    {
+      "lineId": "line-001",
+      "audioId": "L4-040-line-001",
+      "start": 0.06,
+      "end": 2.913792
+    },
+    {
+      "lineId": "line-002",
+      "audioId": "L4-040-line-002",
+      "start": 3.433792,
+      "end": 8.031708
+    },
+    {
+      "lineId": "line-003",
+      "audioId": "L4-040-line-003",
+      "start": 8.551708,
+      "end": 12.656083
+    },
+    {
+      "lineId": "line-004",
+      "audioId": "L4-040-line-004",
+      "start": 13.176083,
+      "end": 15.077792
+    },
+    {
+      "lineId": "line-005",
+      "audioId": "L4-040-line-005",
+      "start": 15.597792,
+      "end": 20.253208
+    },
+    {
+      "lineId": "line-006",
+      "audioId": "L4-040-line-006",
+      "start": 20.773208,
+      "end": 24.666792
+    },
+    {
+      "lineId": "line-007",
+      "audioId": "L4-040-line-007",
+      "start": 25.186792,
+      "end": 28.304167
+    },
+    {
+      "lineId": "line-008",
+      "audioId": "L4-040-line-008",
+      "start": 28.824167,
+      "end": 33.310917
+    },
+    {
+      "lineId": "line-009",
+      "audioId": "L4-040-line-009",
+      "start": 33.830917,
+      "end": 36.934542
+    },
+    {
+      "lineId": "line-010",
+      "audioId": "L4-040-line-010",
+      "start": 37.454542,
+      "end": 41.196375
+    },
+    {
+      "lineId": "line-011",
+      "audioId": "L4-040-line-011",
+      "start": 41.716375,
+      "end": 46.513042
+    },
+    {
+      "lineId": "line-012",
+      "audioId": "L4-040-line-012",
+      "start": 47.033042,
+      "end": 52.880333
+    },
+    {
+      "lineId": "line-013",
+      "audioId": "L4-040-line-013",
+      "start": 53.400333,
+      "end": 56.890958
+    },
+    {
+      "lineId": "line-014",
+      "audioId": "L4-040-line-014",
+      "start": 57.410958,
+      "end": 62.4935
+    }
+  ],
+  "schemaVersion": 1,
+  "timelineId": "L4-040-timeline",
+  "sceneAudioId": "L4-040-scene",
+  "contentHash": "4fbc1368cf6911a592a71cadb1657a2ab8654bbe9cd3a7b380e22aae401ad872",
+  "sourceContentHash": "46813b43d21f20a0e9486dd2a082579a577f66e69d8a3ae8ca943143b2b0fc9d"
+}

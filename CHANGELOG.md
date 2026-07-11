@@ -2,6 +2,21 @@
 
 本文件记录鲁肃个人站的功能、界面、后端、部署与项目约定变更。每次修改项目后都应同步更新这里，方便后续 AI / Codex 对话快速了解最近改动。
 
+## 2026-07-11
+
+- 新增独立日语潜台词训练工具“日本語の裏側”（`/tools/japanese-subtext/`）：
+  - 题库按版本化 JSON 分成 5 个等级、每级 50 关，难度从 N3、N2 递进到 N1 高阶；前段短关帮助熟悉玩法，后段逐步增加多人关系、信息差、不可靠叙述和开放解释。
+  - 支持纯听、日语、双语三种正文模式，假名提示和选项 ja / zh / en 独立切换；逐句、词块和日语选项均有稳定音频 ID，播放器支持自动播放、暂停/继续、重播、前后句、倍速、静音和任意进度 seek。
+  - 本地存档可离线游玩，登录后通过独立 D1 表和 `/api/tools/japanese-subtext/progress` 合并云端进度，不复用游戏存档表；空云端或同步失败不会覆盖本地通关。
+  - 离线语音采用隔离安装、许可清晰的 Kokoro-82M / kokoro-onnx CPU 流程，使用 4 个官方日语女声与 1 个官方日语男声。模型权重和本机配置不提交、不设服务或自启动，录制结束后浏览器只读取预生成静态音频。
+  - 工具图标、等级封面和响应式关卡插图统一使用彩色儿童蜡笔与抽象 Q 版四格，不使用黑白线稿。
+  - 主站资源区新增安全白名单入口；唯一三语更新记录使用 `seed-update-2026-07-11-japanese-subtext-trainer`，并同步 `site-updates` fallback / Functions seed / schema seed。公开主站 `style.css` 与 `main.js` query 更新为 `20260711-japanese-subtext-r1`，工具自身 CSS/JS query 独立维护；题库、音频、API、存档和播放器均有自动验证与测试。
+  - 发布守卫硬校验工具必需文件、锁定的 5×50 关目录与批次哈希、Resources 三语入口、独立 API/D1 表、sitemap、缓存与重定向、安全 DOM API，并且只有 `generation-state` 标记完成、manifest 覆盖 250 关 / 10,088 件静态音频且全部引用文件非空时才能通过。`jp-subtext:release-check` 将 10,088 件音频的 ffprobe 与静音检测设为不可省略的全量门槛；manifest 另与锁定题库 `sourceContentHash`、逐句 cue 顺序、最终输出参数和发音表 SHA-256 精确绑定，并拒绝孤儿 MP3 / timeline。验收证据集中在 `tools/japanese-subtext/reports/release-report.md`。
+  - 真实浏览器回归覆盖声音门、场景/逐句/词块/选项播放与重试、进度 seek、答题解锁、三语界面、五种视口、弹窗焦点和 Resources 入口；设置面板保留三语声线署名/许可入口。跨设备合并会保留较早通关记录的首次通关模式，不会被较新的失败尝试破坏。工具全部 ESM 子模块 query 为 `20260711-japanese-subtext-r11`。
+  - 验收报告必须显式记录 `RELEASE:AUDIO_VALIDATION:PASS` 和 `RELEASE:BROWSER_QA:PASS`；`reports/final-stats.json` 保留题材、技能、声线、长度与音频的完整真实统计，构建守卫同步校验 250 关、610 题、两种彩色插图和 10,088 件音频分类总数。
+  - 正式音频共 10,088 件 / 250 关：250 个场景、2,400 句、2,445 个选项、4,993 个词块，共 341,455,752 bytes（325.64 MiB）和 41,778.912 秒。全库 reconciliation 为 0 重建 / 10,088 复用，quick 与两轮真实全量 ffprobe + ffmpeg 静音校验均通过；`jp-subtext:release-check` 退出码 0，Node 41/41、Python TTS 15/15、主站 `250/10088 release contract` 通过。
+  - 音频完成后清理 19,323 个派生缓存/日志文件（2.108 GiB），保留全部正式 MP3。Kokoro/generate_audio 进程、Windows 服务、计划任务、Run 与 Startup 项均为 0，模型保持关闭且不自启动；生成 manifest 锁定 `CPUExecutionProvider`，未触碰用户原有 IndexTTS。
+
 ## 2026-07-06
 
 - 匿名聊天室新增暗色前端加密密码房：
