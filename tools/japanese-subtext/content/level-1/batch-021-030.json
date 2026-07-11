@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.1",
+  "contentVersion": "1.0.2",
   "level": 1,
   "batch": "021-030",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-021",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 21,
       "jlptTarget": "N3",
@@ -31,14 +31,15 @@
         "en": "In a winter park, Kaede and Sota rest on a shaded bench in a cold wind while sunlight reaches the bench opposite them."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-021.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "日なたのベンチの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“阳光下的长椅”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Sunny Bench\"."
+        },
+        "sha256": "0b245b901e0ee82f1c46d59777fdf483ea204b8e1f9e157147202efa7513692c"
       },
       "cast": [
         {
@@ -233,7 +234,8 @@
                 "en": "She wants to move to the sunny bench with Sota."
               },
               "ttsTextJa": "颯太と一緒に、日なたのベンチへ移りたい。",
-              "audioId": "L1-021-q1-a"
+              "audioId": "L1-021-q1-a",
+              "readingJa": "そーたといっしょに、ひなたのべんちえうつりたい。"
             },
             {
               "id": "b",
@@ -243,7 +245,8 @@
                 "en": "She wants Sota alone to move over there."
               },
               "ttsTextJa": "颯太だけを向こうへ行かせたい。",
-              "audioId": "L1-021-q1-b"
+              "audioId": "L1-021-q1-b",
+              "readingJa": "そーただけをむこーえいかせたい。"
             },
             {
               "id": "c",
@@ -253,7 +256,8 @@
                 "en": "She is warning that the opposite bench is wet."
               },
               "ttsTextJa": "向こうのベンチがぬれていると注意している。",
-              "audioId": "L1-021-q1-c"
+              "audioId": "L1-021-q1-c",
+              "readingJa": "むこーのべんちがぬれているとちゅーいしている。"
             },
             {
               "id": "d",
@@ -263,7 +267,8 @@
                 "en": "She wants to go buy new gloves."
               },
               "ttsTextJa": "新しい手袋を買いに行きたい。",
-              "audioId": "L1-021-q1-d"
+              "audioId": "L1-021-q1-d",
+              "readingJa": "あたらしいてぶくろをかいにいきたい。"
             }
           ],
           "correctOptionIds": [
@@ -314,13 +319,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "4250ad76167327df495754f4ec98d958ac71d46408f87ca842d4e9316beac110"
+      "contentHash": "dda432baf2f2f68c4cd63ff5ea010e6d76843a3739f864e355418b5ed990c3b2"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-022",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 22,
       "jlptTarget": "N3",
@@ -343,14 +348,15 @@
         "en": "In a school hallway just after an assignment deadline, Ren explains that a delayed train made him late."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-022.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "まだ開いている提出箱の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“还开着的提交箱”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Submission Box Is Still Open\"."
+        },
+        "sha256": "23275047fc4d45bc2c4dd2cb3106f625da1b6e43c615c540d8545cbafec4407d"
       },
       "cast": [
         {
@@ -557,7 +563,8 @@
                 "en": "The teacher wants to reprimand Ren sternly and make him take the assignment home."
               },
               "ttsTextJa": "蓮を厳しく注意して、課題をそのまま持ち帰らせたい。",
-              "audioId": "L1-022-q1-a"
+              "audioId": "L1-022-q1-a",
+              "readingJa": "れんをきびしくちゅーいして、かだいをそのままもちかえらせたい。"
             },
             {
               "id": "b",
@@ -567,7 +574,8 @@
                 "en": "She wants to report that the box is broken."
               },
               "ttsTextJa": "提出箱が壊れていると知らせたい。",
-              "audioId": "L1-022-q1-b"
+              "audioId": "L1-022-q1-b",
+              "readingJa": "てーしゅつばこがこわれているとしらせたい。"
             },
             {
               "id": "c",
@@ -577,7 +585,8 @@
                 "en": "She wants to extend everyone's deadline until tomorrow."
               },
               "ttsTextJa": "全員の締切を明日まで延ばしたい。",
-              "audioId": "L1-022-q1-c"
+              "audioId": "L1-022-q1-c",
+              "readingJa": "ぜんいんのしめきりをあしたまでのばしたい。"
             },
             {
               "id": "d",
@@ -587,7 +596,8 @@
                 "en": "She wants to give Ren one final chance to submit immediately."
               },
               "ttsTextJa": "蓮に、今すぐ提出できる最後の機会を与えたい。",
-              "audioId": "L1-022-q1-d"
+              "audioId": "L1-022-q1-d",
+              "readingJa": "れんに、いますぐてーしゅつできるさいごのきかいをあたえたい。"
             }
           ],
           "correctOptionIds": [
@@ -638,13 +648,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "b95a129e8c682cfda743729fd6b78b72b47a330b59ce2f20bd445ff7b294df41"
+      "contentHash": "4871f4ccd838c69860e8afd1305682a70476eea029f24301aac0e5ed53697c44"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-023",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 23,
       "jlptTarget": "N3",
@@ -668,14 +678,15 @@
         "en": "In an afternoon break room, Mika returns from a trip and offers colleague Sara a cookie."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-023.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "お土産のクッキーの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“伴手礼曲奇”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Souvenir Cookies\"."
+        },
+        "sha256": "fe9f299e9e56edbe622e2bb50d28b40345edab9295d1a036b75d4bd35cae74e4"
       },
       "cast": [
         {
@@ -876,7 +887,8 @@
                 "en": "She wants the box but wants all the cookies discarded."
               },
               "ttsTextJa": "箱だけもらい、クッキーは全部捨ててほしい。",
-              "audioId": "L1-023-q1-a"
+              "audioId": "L1-023-q1-a",
+              "readingJa": "はこだけもらい、くっきーわぜんぶすててほしい。"
             },
             {
               "id": "b",
@@ -886,7 +898,8 @@
                 "en": "She wants Mika to bring many more cookies."
               },
               "ttsTextJa": "クッキーをもっとたくさん持ってきてほしい。",
-              "audioId": "L1-023-q1-b"
+              "audioId": "L1-023-q1-b",
+              "readingJa": "くっきーをもっとたくさんもってきてほしい。"
             },
             {
               "id": "c",
@@ -896,7 +909,8 @@
                 "en": "She appreciates Mika's kindness while gently declining the cookie."
               },
               "ttsTextJa": "美香の気持ちに感謝しながら、食べるのをやわらかく断っている。",
-              "audioId": "L1-023-q1-c"
+              "audioId": "L1-023-q1-c",
+              "readingJa": "みかのきもちにかんしゃしながら、たべるのをやわらかくことわっている。"
             },
             {
               "id": "d",
@@ -906,7 +920,8 @@
                 "en": "She is saying she does not want to hear about the trip."
               },
               "ttsTextJa": "旅行の話を聞きたくないと伝えている。",
-              "audioId": "L1-023-q1-d"
+              "audioId": "L1-023-q1-d",
+              "readingJa": "りょこーのはなしをききたくないとつたえている。"
             }
           ],
           "correctOptionIds": [
@@ -957,13 +972,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "0a2da21a6e8ae6212fe24b5ba2d072b3651dbec3609df0e126cc107c5b13ee14"
+      "contentHash": "da7858b2d1af0e803e1008fa09c9a69393cb1b59fd3fcd8ffdfdafc0ea084e70"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-024",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 24,
       "jlptTarget": "N3",
@@ -986,14 +1001,15 @@
         "en": "At a convenience store by the station, Takumi repeatedly checks his watch while paying and watching the departure time."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-024.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "五分後の電車の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“五分钟后的电车”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"A Train in Five Minutes\"."
+        },
+        "sha256": "b20ea7b754f984db31166768da4309348f692a225c12c235a034ffcc51b4d6ca"
       },
       "cast": [
         {
@@ -1194,7 +1210,8 @@
                 "en": "Because he has always liked only the taste and texture of cold boxed lunches."
               },
               "ttsTextJa": "冷たい弁当の味と食感だけが昔から好きだから。",
-              "audioId": "L1-024-q1-a"
+              "audioId": "L1-024-q1-a",
+              "readingJa": "つめたいべんとーのあじとしょっかんだけがむかしからすきだから。"
             },
             {
               "id": "b",
@@ -1204,7 +1221,8 @@
                 "en": "Because he wants to finish quickly and catch his train."
               },
               "ttsTextJa": "電車に間に合うよう、会計を早く終えたいから。",
-              "audioId": "L1-024-q1-b"
+              "audioId": "L1-024-q1-b",
+              "readingJa": "でんしゃにまにあうよー、かいけーをはやくおえたいから。"
             },
             {
               "id": "c",
@@ -1214,7 +1232,8 @@
                 "en": "Because the store microwave is broken."
               },
               "ttsTextJa": "店の電子レンジが壊れているから。",
-              "audioId": "L1-024-q1-c"
+              "audioId": "L1-024-q1-c",
+              "readingJa": "みせのでんしれんじがこわれているから。"
             },
             {
               "id": "d",
@@ -1224,7 +1243,8 @@
                 "en": "Because he plans to keep the bento until next week."
               },
               "ttsTextJa": "弁当を来週まで保存するから。",
-              "audioId": "L1-024-q1-d"
+              "audioId": "L1-024-q1-d",
+              "readingJa": "べんとーをらいしゅーまでほぞんするから。"
             }
           ],
           "correctOptionIds": [
@@ -1275,13 +1295,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "d3d3dab96a66bd4328cef4d40047de34e09bc44fc8070168ea901027c0edcb5d"
+      "contentHash": "c19141a4ee6834a7568008495c05363fc1a60ff6939ddbd0680a897e6f6d7593"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-025",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 25,
       "jlptTarget": "N3",
@@ -1304,14 +1324,15 @@
         "en": "At a curry restaurant, Yui asked about the heat before ordering, then empties her water after one bite while the server watches nearby."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-025.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "空になった水のグラスの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“喝空的水杯”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Empty Water Glass\"."
+        },
+        "sha256": "df6b94597575615a997a54cca653da04f6465b444b1a752ff30ac5fa786aaa6f"
       },
       "cast": [
         {
@@ -1506,7 +1527,8 @@
                 "en": "Because he notices Yui finds it hotter than expected and needs water."
               },
               "ttsTextJa": "結衣が予想より辛いと感じ、水を必要としていると気づいたから。",
-              "audioId": "L1-025-q1-a"
+              "audioId": "L1-025-q1-a",
+              "readingJa": "ゆいがよそーよりつらいとかんじ、みずをひつよーとしているときずいたから。"
             },
             {
               "id": "b",
@@ -1516,7 +1538,8 @@
                 "en": "Because he thinks Yui wants the bill immediately."
               },
               "ttsTextJa": "結衣がすぐ会計をしたいと考えたから。",
-              "audioId": "L1-025-q1-b"
+              "audioId": "L1-025-q1-b",
+              "readingJa": "ゆいがすぐかいけーをしたいとかんがえたから。"
             },
             {
               "id": "c",
@@ -1526,7 +1549,8 @@
                 "en": "Because Yui dislikes the shape of her current glass."
               },
               "ttsTextJa": "今のグラスの形を結衣が嫌っているから。",
-              "audioId": "L1-025-q1-c"
+              "audioId": "L1-025-q1-c",
+              "readingJa": "いまのぐらすのかたちをゆいがきらっているから。"
             },
             {
               "id": "d",
@@ -1536,7 +1560,8 @@
                 "en": "Because he wants Yui to order another curry."
               },
               "ttsTextJa": "同じカレーをもう一皿注文してほしいから。",
-              "audioId": "L1-025-q1-d"
+              "audioId": "L1-025-q1-d",
+              "readingJa": "おなじかれーをもーひとさらちゅーもんしてほしいから。"
             }
           ],
           "correctOptionIds": [
@@ -1587,13 +1612,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "516a5a13b6b6cc04c94f227b995e697fc83a2d1b9ae355e3143066d0bee5e1a0"
+      "contentHash": "075b06d3a24eaea98ff8a53a8e588f00680ccae2bae43388ac2fc7e4fe1e5e1b"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-026",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 26,
       "jlptTarget": "N3",
@@ -1616,14 +1641,15 @@
         "en": "At a mountain inn in the evening, Kotone, who likes sleeping late, asks the host about the next morning."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-026.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "朝だけの山の景色の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“清晨限定的山景”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Mountain View at Dawn\"."
+        },
+        "sha256": "8b458aabbc3956d5e946cd91c00a7abe13d7e2d692a80ed512e00ac90660e6c8"
       },
       "cast": [
         {
@@ -1875,7 +1901,8 @@
                 "en": "She wants to announce that breakfast is canceled."
               },
               "ttsTextJa": "明日の朝食を全部中止すると知らせたい。",
-              "audioId": "L1-026-q1-a"
+              "audioId": "L1-026-q1-a",
+              "readingJa": "あしたのちょーしょくをぜんぶちゅーしするとしらせたい。"
             },
             {
               "id": "b",
@@ -1885,7 +1912,8 @@
                 "en": "She wants Kotone to stay in her room all day."
               },
               "ttsTextJa": "琴音に一日中、部屋から出ないでほしい。",
-              "audioId": "L1-026-q1-b"
+              "audioId": "L1-026-q1-b",
+              "readingJa": "ことねにいちにちじゅー、へやからでないでほしい。"
             },
             {
               "id": "c",
@@ -1895,7 +1923,8 @@
                 "en": "She wants to explain that the mountain is visible only at night."
               },
               "ttsTextJa": "山の景色は夜しか見えないと説明したい。",
-              "audioId": "L1-026-q1-c"
+              "audioId": "L1-026-q1-c",
+              "readingJa": "やまのけしきわよるしかみえないとせつめーしたい。"
             },
             {
               "id": "d",
@@ -1905,7 +1934,8 @@
                 "en": "She wants to recommend waking earlier to see the beautiful view."
               },
               "ttsTextJa": "きれいな景色を見るため、少し早く起きることを勧めたい。",
-              "audioId": "L1-026-q1-d"
+              "audioId": "L1-026-q1-d",
+              "readingJa": "きれいなけしきをみるため、すこしはやくおきることをすすめたい。"
             }
           ],
           "correctOptionIds": [
@@ -1956,13 +1986,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "234be76f0166908c1c6f0f791cad7b2a6631cc56a9dd3fc84c175e882e6d20be"
+      "contentHash": "98d688ffcf8f39f37bc7f34ec2dc955ed55c94531cc817375cedb8ce28399757"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-027",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 27,
       "jlptTarget": "N3",
@@ -1986,14 +2016,15 @@
         "en": "On her way home, Mio listens to a short voicemail from her mother, who does not directly state how the two puddings are divided."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-027.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "冷蔵庫の二つのプリンの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“冰箱里的两个布丁”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Two Puddings in the Fridge\"."
+        },
+        "sha256": "23a0c2d0021f5e815722eda9e337452405e77851b454eb29a88d91330951640e"
       },
       "cast": [
         {
@@ -2233,7 +2264,8 @@
                 "en": "The mother plans to eat both puddings."
               },
               "ttsTextJa": "二つとも母が食べる予定である。",
-              "audioId": "L1-027-q1-a"
+              "audioId": "L1-027-q1-a",
+              "readingJa": "ふたつともははがたべるよてーである。"
             },
             {
               "id": "b",
@@ -2243,7 +2275,8 @@
                 "en": "Both puddings are for guests."
               },
               "ttsTextJa": "二つとも来客のために用意した。",
-              "audioId": "L1-027-q1-b"
+              "audioId": "L1-027-q1-b",
+              "readingJa": "ふたつともらいきゃくのためによーいした。"
             },
             {
               "id": "c",
@@ -2253,7 +2286,8 @@
                 "en": "One pudding has been left for Mio."
               },
               "ttsTextJa": "一つは美緒の分として残してある。",
-              "audioId": "L1-027-q1-c"
+              "audioId": "L1-027-q1-c",
+              "readingJa": "ひとつわみおのぶんとしてのこしてある。"
             },
             {
               "id": "d",
@@ -2263,7 +2297,8 @@
                 "en": "Both are old and should be thrown away."
               },
               "ttsTextJa": "古いので、二つとも捨ててほしい。",
-              "audioId": "L1-027-q1-d"
+              "audioId": "L1-027-q1-d",
+              "readingJa": "ふるいので、ふたつともすててほしい。"
             }
           ],
           "correctOptionIds": [
@@ -2314,13 +2349,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "223f46de4e724d6fa42ca3ed542158b5d28cec8207323ba95ee280d77d7b8948"
+      "contentHash": "fea0f9510a9366f41613dcff130df38304ee91eb1c1b56b634e93667f0cbfa4a"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-028",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 28,
       "jlptTarget": "N3",
@@ -2344,14 +2379,15 @@
         "en": "At a company scheduling screen, Emi looks for a meeting slot the next day and speaks with the scheduling AI."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-028.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "十七時からの十分間の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“十七点起的十分钟”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Ten Minutes at Five\"."
+        },
+        "sha256": "a956b315ce7feaaa593bfa4ecba0921cc2ca885a9d76f9769b4feb8498fe489a"
       },
       "cast": [
         {
@@ -2585,7 +2621,8 @@
                 "en": "The requested thirty-minute meeting is fully confirmed."
               },
               "ttsTextJa": "希望した三十分の面談がそのまま決まった。",
-              "audioId": "L1-028-q1-a"
+              "audioId": "L1-028-q1-a",
+              "readingJa": "きぼーしたさんじゅっぷんのめんだんがそのままきまった。"
             },
             {
               "id": "b",
@@ -2595,7 +2632,8 @@
                 "en": "Thirty minutes is unavailable, but a ten-minute exception can fit at five."
               },
               "ttsTextJa": "三十分は無理だが、十七時から十分だけなら入れられる。",
-              "audioId": "L1-028-q1-b"
+              "audioId": "L1-028-q1-b",
+              "readingJa": "さんじゅっぷんわむりだが、じゅーしちじからじゅっぷんだけならいれられる。"
             },
             {
               "id": "c",
@@ -2605,7 +2643,8 @@
                 "en": "The AI is asking for all of the director's appointments tomorrow to be canceled."
               },
               "ttsTextJa": "明日の部長の予定をすべて取り消すようAIが求めている。",
-              "audioId": "L1-028-q1-c"
+              "audioId": "L1-028-q1-c",
+              "readingJa": "あしたのぶちょーのよてーをすべてとりけすよーえーあいがもとめている。"
             },
             {
               "id": "d",
@@ -2615,7 +2654,8 @@
                 "en": "Starting at five allows an unlimited meeting length."
               },
               "ttsTextJa": "十七時からなら、時間の長さに制限はない。",
-              "audioId": "L1-028-q1-d"
+              "audioId": "L1-028-q1-d",
+              "readingJa": "じゅーしちじからなら、じかんのながさにせーげんわない。"
             }
           ],
           "correctOptionIds": [
@@ -2666,13 +2706,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "ba81017936a89ad17ef79f213f60212fd11b4166f9b5b5ba884898f345a84162"
+      "contentHash": "993b63ca314c3bd0252be75bad30210ad19ad756f9290cc1f482c3cc1efee16c"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-029",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 29,
       "jlptTarget": "N3",
@@ -2696,14 +2736,15 @@
         "en": "Just after a cat-search quest, Mio returns with the cat and discovers that the fish listed as the reward is gone."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-029.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "消えた魚の報酬の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“消失的鱼奖励”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Missing Fish Reward\"."
+        },
+        "sha256": "5e701b5b0b384fadccdae367d4bc913d63e44efd7cd1831c9e2c4f829beaa56e"
       },
       "cast": [
         {
@@ -2943,7 +2984,8 @@
                 "en": "The found cat ate it before the player could claim it."
               },
               "ttsTextJa": "見つかった猫が、プレイヤーより先に食べた。",
-              "audioId": "L1-029-q1-a"
+              "audioId": "L1-029-q1-a",
+              "readingJa": "みつかったねこが、ぷれいやーよりさきにたべた。"
             },
             {
               "id": "b",
@@ -2953,7 +2995,8 @@
                 "en": "The quest giver silently canceled the reward and took it away first."
               },
               "ttsTextJa": "依頼人が報酬を黙って取り消し、先に持ち帰った。",
-              "audioId": "L1-029-q1-b"
+              "audioId": "L1-029-q1-b",
+              "readingJa": "いらいじんがほーしゅーをだまってとりけし、さきにもちかえった。"
             },
             {
               "id": "c",
@@ -2963,7 +3006,8 @@
                 "en": "The game automatically converted the fish into money."
               },
               "ttsTextJa": "ゲームが魚をお金に自動で変えた。",
-              "audioId": "L1-029-q1-c"
+              "audioId": "L1-029-q1-c",
+              "readingJa": "げーむがさかなをおかねにじどーでかえた。"
             },
             {
               "id": "d",
@@ -2973,7 +3017,8 @@
                 "en": "Mio had already used it before the quest."
               },
               "ttsTextJa": "美緒が任務の前にもう使っていた。",
-              "audioId": "L1-029-q1-d"
+              "audioId": "L1-029-q1-d",
+              "readingJa": "みおがにんむのまえにもーつかっていた。"
             }
           ],
           "correctOptionIds": [
@@ -3024,13 +3069,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "567c8e0484ef38e4468df65c55ad2facd42c2eda2cbe1b6b827a8c0c9a177ff2"
+      "contentHash": "068802f1c431a530fc34cf3dc2133a3fc22fd4453e895c48a0dcfec0037e395a"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-030",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 30,
       "jlptTarget": "N3",
@@ -3056,12 +3101,13 @@
       "illustration": {
         "enabled": true,
         "src": "assets/stages/l1-030.webp",
-        "style": "crayon",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "魚が泳ぐ窓と雨靴の教師を不思議そうに見る生徒たちのカラークレヨン画。",
-          "zh": "彩色蜡笔插图：学生们疑惑地看着窗外游动的鱼和穿雨靴的老师。",
-          "en": "Color crayon illustration of students puzzling over fish outside the windows and a teacher in rain boots."
-        }
+          "ja": "海の中の試験の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“海中的考试”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Exam Under the Sea\"."
+        },
+        "sha256": "f1e10fb6a698b06c23e7990e1b9f8aa9c6572d7a90572682b1f5dc69b1dc4888"
       },
       "cast": [
         {
@@ -3331,7 +3377,8 @@
                 "en": "The teacher announces the start of an exam."
               },
               "ttsTextJa": "先生が試験の開始を知らせたこと。",
-              "audioId": "L1-030-q1-a"
+              "audioId": "L1-030-q1-a",
+              "readingJa": "せんせーがしけんのかいしをしらせたこと。"
             },
             {
               "id": "b",
@@ -3341,7 +3388,8 @@
                 "en": "The rule allowing only a pencil on the desk."
               },
               "ttsTextJa": "机の上に鉛筆だけ置く決まり。",
-              "audioId": "L1-030-q1-b"
+              "audioId": "L1-030-q1-b",
+              "readingJa": "つくえのうえにえんぴつだけおくきまり。"
             },
             {
               "id": "c",
@@ -3351,7 +3399,8 @@
                 "en": "The teacher speaks in polite Japanese."
               },
               "ttsTextJa": "先生が丁寧な日本語で話していること。",
-              "audioId": "L1-030-q1-c"
+              "audioId": "L1-030-q1-c",
+              "readingJa": "せんせーがてーねーなにほんごではなしていること。"
             },
             {
               "id": "d",
@@ -3361,7 +3410,8 @@
                 "en": "Rain boots indoors, fish outside the window, and a fish supposedly ringing a bell."
               },
               "ttsTextJa": "教室の雨靴、窓の外の魚、魚がベルを鳴らすという話。",
-              "audioId": "L1-030-q1-d"
+              "audioId": "L1-030-q1-d",
+              "readingJa": "きょーしつのあめぐつ、まどのそとのさかな、さかながべるをならすというはなし。"
             }
           ],
           "correctOptionIds": [
@@ -3413,7 +3463,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "d98519f80a2e848e9838c4ab30c56ac54689261bc9229b9b6cc5981eeab930e9"
+      "contentHash": "58aa21bf46a9415edcba3e0ea8293d7df679c49c91732e42c1e6fd70aa04d650"
     }
   ]
 }

@@ -475,6 +475,7 @@ const japaneseSubtextLibrarySources = Object.fromEntries([
 const japaneseSubtextManifest = readRequiredJson("tools/japanese-subtext/manifest.json");
 const japaneseSubtextCatalog = readRequiredJson("tools/japanese-subtext/content/catalog.json");
 const japaneseSubtextGenerationState = readRequiredJson("tools/japanese-subtext/content/generation-state.json");
+const japaneseSubtextIllustrationManifest = readRequiredJson("tools/japanese-subtext/assets/stages/manifest.json");
 const japaneseSubtextAudioManifest = readRequiredJson("tools/japanese-subtext/audio/manifest.json");
 const japaneseSubtextFinalStats = readRequiredJson("tools/japanese-subtext/reports/final-stats.json");
 const japaneseSubtextReleaseReport = readRequired("tools/japanese-subtext/reports/release-report.md");
@@ -483,14 +484,14 @@ function validateJapaneseSubtextReleaseContract() {
   const toolRoot = "tools/japanese-subtext";
   const contentRoot = `${toolRoot}/content`;
   const audioRoot = `${toolRoot}/audio`;
-  const contentVersion = "1.0.1";
+  const contentVersion = "1.0.2";
   const publicTitles = {
     zh: "日语的言外之意",
     en: "Behind the Japanese",
     ja: "日本語の裏側"
   };
   const publicTitle = publicTitles.ja;
-  const assetVersion = "20260711-japanese-subtext-r14";
+  const assetVersion = "20260711-japanese-subtext-v102-r2";
   const expectedAudioCounts = Object.freeze({
     scene: 250,
     line: 2400,
@@ -507,9 +508,9 @@ function validateJapaneseSubtextReleaseContract() {
     || japaneseSubtextFinalStats.singleChoice !== 497
     || japaneseSubtextFinalStats.multipleChoice !== 113
     || japaneseSubtextFinalStats.multiQuestionStages !== 180
-    || japaneseSubtextFinalStats.illustrationStyles?.crayon !== 25
-    || japaneseSubtextFinalStats.illustrationStyles?.["chibi-four-panel"] !== 6
-    || japaneseSubtextFinalStats.illustrationStyles?.monochrome !== 0
+    || japaneseSubtextFinalStats.illustratedStages !== 250
+    || japaneseSubtextFinalStats.illustrationStyles?.["monochrome-four-panel"] !== 250
+    || Object.keys(japaneseSubtextFinalStats.illustrationStyles || {}).length !== 1
     || statsExpectedAudio.scenes !== expectedAudioCounts.scene
     || statsExpectedAudio.lines !== expectedAudioCounts.line
     || statsExpectedAudio.options !== expectedAudioCounts.option
@@ -634,6 +635,17 @@ function validateJapaneseSubtextReleaseContract() {
   const indexedBatches = new Map();
   const lockedContentStages = new Map();
   const publishedStageIllustrations = new Set();
+  const illustrationByStage = new Map((japaneseSubtextIllustrationManifest.entries || []).map((entry) => [entry.stageId, entry]));
+  if (
+    japaneseSubtextIllustrationManifest.schemaVersion !== 1
+    || japaneseSubtextIllustrationManifest.contentVersion !== contentVersion
+    || japaneseSubtextIllustrationManifest.generatorVersion !== "local-four-panel-v2"
+  ) {
+    fail(`${toolRoot}/assets/stages/manifest.json has stale generator metadata`);
+  }
+  if (illustrationByStage.size !== 250) {
+    fail(`${toolRoot}/assets/stages/manifest.json must contain exactly 250 stage entries`);
+  }
   const expectedJlptTargets = ["N3", "N2", "N1", "N1-advanced", "N1-pragmatics"];
   for (let index = 0; index < 5; index += 1) {
     const level = index + 1;
@@ -719,24 +731,38 @@ function validateJapaneseSubtextReleaseContract() {
       lockedContentStages.set(stage?.id, stage);
       const illustration = stage?.illustration || {};
       if (illustration.enabled === true) {
-        if (!["crayon", "chibi-four-panel"].includes(illustration.style)) {
-          fail(`${relative(root, fullPath)} ${stage?.id} must use an approved color illustration style`);
+        if (illustration.style !== "monochrome-four-panel") {
+          fail(`${relative(root, fullPath)} ${stage?.id} must use the approved monochrome four-panel manga style`);
         }
         const illustrationFile = requireReferencedNonEmptyFile(toolRoot, illustration.src, toolRoot, `illustration ${stage?.id}`);
         if (!illustrationFile || !String(illustration.src || "").endsWith(".webp")) {
           fail(`${relative(root, fullPath)} ${stage?.id} must reference a published WebP illustration`);
         }
+        const illustrationEntry = illustrationByStage.get(stage?.id);
+        if (
+          illustrationEntry?.path !== illustration.src
+          || illustrationEntry?.style !== "monochrome-four-panel"
+          || illustrationEntry?.width !== 960
+          || illustrationEntry?.height !== 720
+          || illustrationEntry?.reviewStatus !== "automated-scene-mapped"
+          || illustrationEntry?.sha256 !== illustration.sha256
+        ) {
+          fail(`${relative(root, fullPath)} ${stage?.id} illustration metadata must match the asset manifest`);
+        }
+        if (illustrationFile && createHash("sha256").update(readFileSync(illustrationFile)).digest("hex") !== illustration.sha256) {
+          fail(`${relative(root, fullPath)} ${stage?.id} illustration SHA-256 is stale`);
+        }
         publishedStageIllustrations.add(illustration.src);
-      } else if (illustration.style !== "none" || illustration.src) {
-        fail(`${relative(root, fullPath)} ${stage?.id} disabled illustration must use style none and no source`);
+      } else {
+        fail(`${relative(root, fullPath)} ${stage?.id} must publish a stage-specific illustration`);
       }
     }
     if ([...expectedById.keys()].some((id) => !seenBatchStageIds.has(id))) {
       fail(`${relative(root, fullPath)} must contain every stage referenced by its level index exactly once`);
     }
   }
-  if (publishedStageIllustrations.size !== 31) {
-    fail(`${contentRoot} must reference exactly 31 unique color stage illustrations`);
+  if (publishedStageIllustrations.size !== 250) {
+    fail(`${contentRoot} must reference exactly 250 unique monochrome four-panel manga illustrations`);
   }
 
   const generationState = japaneseSubtextGenerationState;
@@ -772,20 +798,28 @@ function validateJapaneseSubtextReleaseContract() {
   }
   if (
     generationState.illustrations?.status !== "complete"
-    || generationState.illustrations?.stageAssetCount !== 31
-    || generationState.illustrations?.styleCounts?.monochrome !== 0
-    || generationState.illustrations?.styleCounts?.crayon !== 25
-    || generationState.illustrations?.styleCounts?.["chibi-four-panel"] !== 6
+    || generationState.illustrations?.stageAssetCount !== 250
+    || generationState.illustrations?.styleCounts?.["monochrome-four-panel"] !== 250
+    || generationState.illustrations?.manifest !== "assets/stages/manifest.json"
+    || generationState.illustrations?.generatorVersion !== "local-four-panel-v2"
+    || generationState.illustrations?.reviewStatus !== "automated-scene-mapped"
+    || generationState.illustrations?.imagegenStatus !== "network-unavailable-local-fallback"
   ) {
-    fail(`${contentRoot}/generation-state.json must record 31 color-only stage illustrations and zero monochrome art`);
+    fail(`${contentRoot}/generation-state.json must record 250 monochrome four-panel manga illustrations`);
   }
   if (
     generationState.audio?.status !== "complete"
     || generationState.audio?.expectedArtifacts !== expectedAudioItems
     || generationState.audio?.generatedArtifacts !== expectedAudioItems
     || generationState.audio?.generatedStages !== 250
+    || generationState.audio?.validation?.contentLinks !== "pass"
+    || generationState.audio?.validation?.quick !== "pass"
+    || generationState.audio?.validation?.ffprobeAndSilence !== "pass"
+    || generationState.audio?.validation?.phonemeAudit !== "pass"
+    || generationState.audio?.validation?.validatedArtifacts !== expectedAudioItems
+    || generationState.audio?.validation?.phonemeAuditedTasks !== expectedAudioItems - 250
   ) {
-    fail(`${contentRoot}/generation-state.json audio must be complete with 250 stages and ${expectedAudioItems} artifacts`);
+    fail(`${contentRoot}/generation-state.json audio must record complete content, phoneme, ffprobe, and silence validation for 250 stages and ${expectedAudioItems} artifacts`);
   }
 
   const audioManifest = japaneseSubtextAudioManifest;
@@ -807,7 +841,7 @@ function validateJapaneseSubtextReleaseContract() {
     || audioManifest.contentVersion !== contentVersion
     || audioManifest.audioBaseUrl !== "./"
     || audioManifest.generator?.name !== "kokoro-onnx-offline"
-    || audioManifest.generator?.pipelineVersion !== "kokoro-ja-mp3-v2"
+    || audioManifest.generator?.pipelineVersion !== "kokoro-ja-mp3-v4"
     || audioManifest.generator?.executionProvider !== "CPUExecutionProvider"
     || audioManifest.generator?.pronunciationsSha256 !== pronunciationsSha256
     || Object.entries(expectedAudioOutput).some(([key, value]) => audioManifest.generator?.output?.[key] !== value)
@@ -964,13 +998,13 @@ function validateJapaneseSubtextReleaseContract() {
 
   const resourceEntry = windowAfter(mainJs, 'iconSrc: "tools/japanese-subtext/assets/icons/tool-icon-64.webp"', 2200);
   for (const token of [
-    'version: "v1.0.1"',
+    'version: "v1.0.2"',
     'updated: "2026.07.11"',
     'external: false',
     'showReadyStatus: false',
     'url: "/tools/japanese-subtext/"',
     `title: { zh: "${publicTitles.zh}", en: "${publicTitles.en}", ja: "${publicTitles.ja}" }`,
-    'actionLabel: { zh: "开始挑战", en: "Start Challenge", ja: "チャレンジ開始" }',
+    'actionLabel: { zh: "开始", en: "Start", ja: "開始" }',
     '{ zh: "听力训练", en: "Listening", ja: "聴解" }',
     '{ zh: "潜台词", en: "Subtext", ja: "含意" }',
     '{ zh: "支持（云存档）", en: "Cloud Save Supported", ja: "クラウドセーブ対応" }'
@@ -1024,12 +1058,14 @@ function validateJapaneseSubtextReleaseContract() {
     }
   }
   for (const token of [
-    "const MAX_JAPANESE_SUBTEXT_PROGRESS_BYTES = 256 * 1024",
-    'const JAPANESE_SUBTEXT_CONTENT_VERSION = "1.0.1"',
+    "const MAX_JAPANESE_SUBTEXT_PROGRESS_BYTES = 1024 * 1024",
+    'const JAPANESE_SUBTEXT_CONTENT_VERSION = "1.0.2"',
     "const JAPANESE_SUBTEXT_STAGE_LIMIT = 250",
     "create table if not exists japanese_subtext_profiles",
     "create table if not exists japanese_subtext_stage_progress",
-    "primary key (user_id, stage_id)"
+    "primary key (user_id, stage_id)",
+    "create table if not exists japanese_subtext_daily_activity",
+    "primary key (user_id, local_date, stage_id)"
   ]) {
     if (!apiJs.includes(token)) {
       fail(`functions/api/[[route]].js Japanese subtext contract missing ${token}`);
@@ -1039,6 +1075,8 @@ function validateJapaneseSubtextReleaseContract() {
     "create table if not exists japanese_subtext_profiles",
     "create table if not exists japanese_subtext_stage_progress",
     "primary key (user_id, stage_id)",
+    "create table if not exists japanese_subtext_daily_activity",
+    "primary key (user_id, local_date, stage_id)",
     "japanese_subtext_stage_progress_user_level_idx"
   ]) {
     if (!schemaSql.includes(token)) {
@@ -1731,7 +1769,7 @@ for (const asset of [
 }
 
 const premiumUiVersion = "20260711-calm-motion-r13";
-const currentPreFinalMainVersion = "20260711-japanese-subtext-v101-r1";
+const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
 const currentPreFinalCssVersion = "20260711-calm-motion-r13";
 const currentPreFinalTelemetryVersion = "20260623-analytics-privacy-r1";
 const currentGameShellVersion = "20260623-game-shell-storage-safe-r1";
@@ -2641,9 +2679,9 @@ for (const obsoleteText of [
 
 const finalUpdateId = "seed-update-2026-07-11-japanese-subtext-trainer";
 const finalUpdateSlug = "2026-07-11-japanese-subtext-trainer";
-const finalMainVersion = "20260711-japanese-subtext-v101-r1";
+const finalMainVersion = "20260711-japanese-subtext-v102-r2";
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Japanese Subtext Trainer 1.0.1 Update";
+const finalTitleEn = "Japanese Subtext Trainer 1.0.2 Update";
 const finalPublishedAt = "2026-07-10T17:30:00.000Z";
 const finalTranslationMinimums = {
   title: 8,

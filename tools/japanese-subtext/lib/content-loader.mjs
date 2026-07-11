@@ -1,4 +1,4 @@
-import { CONTENT_VERSION, parseStageId } from "./constants.mjs?v=20260711-japanese-subtext-r14";
+import { CONTENT_VERSION, parseStageId } from "./constants.mjs?v=20260711-japanese-subtext-v102-r2";
 
 const root = new URL("../content/", import.meta.url);
 

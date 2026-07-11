@@ -30,11 +30,12 @@
     "setting": { "$ref": "#/$defs/localized" },
     "illustration": {
       "type": "object",
-      "required": ["enabled", "src", "style", "alt"],
+      "required": ["enabled", "src", "style", "sha256", "alt"],
       "properties": {
         "enabled": { "type": "boolean" },
         "src": { "type": "string" },
-        "style": { "enum": ["none", "crayon", "chibi-four-panel"] },
+        "style": { "enum": ["monochrome-four-panel"] },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
         "alt": { "$ref": "#/$defs/localizedAllowEmpty" }
       },
       "additionalProperties": false
@@ -105,11 +106,12 @@
             "maxItems": 6,
             "items": {
               "type": "object",
-              "required": ["id", "text", "ttsTextJa", "audioId"],
+              "required": ["id", "text", "ttsTextJa", "readingJa", "audioId"],
               "properties": {
                 "id": { "type": "string", "pattern": "^[a-f]$" },
                 "text": { "$ref": "#/$defs/localized" },
                 "ttsTextJa": { "type": "string", "minLength": 1 },
+                "readingJa": { "type": "string", "minLength": 1 },
                 "audioId": { "type": "string", "pattern": "^L[1-5]-[0-9]{3}-q[1-5]-[a-f]$" }
               },
               "additionalProperties": false

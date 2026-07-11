@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib.metadata
 import json
 import os
 import re
@@ -19,7 +20,7 @@ from typing import Any, Iterable, Mapping, Sequence
 from kokoro_adapter import KokoroAdapter, prepare_japanese_reading
 
 
-PIPELINE_VERSION = "kokoro-ja-mp3-v2"
+PIPELINE_VERSION = "kokoro-ja-mp3-v4"
 SCRIPT_DIR = Path(__file__).resolve().parent
 TOOL_ROOT = SCRIPT_DIR.parents[1]
 DEFAULT_CONFIG = TOOL_ROOT / "config" / "tts.local.json"
@@ -97,13 +98,16 @@ def build_audio_tasks(stage: Mapping[str, Any]) -> list[AudioTask]:
         if str(line.get("audioId")) != f"{stage_id}-{line_id}":
             raise ValueError(f"invalid line audioId: {line.get('audioId')!r}")
         voice_key = cast_voices[str(line["speaker"])]
+        reading = line.get("readingJa")
+        if not isinstance(reading, str) or not reading.strip():
+            raise ValueError(f"{stage_id}/{line_id} is missing its reviewed readingJa")
         tasks.append(
             AudioTask(
                 audio_id=str(line["audioId"]),
                 kind="line",
                 stage_id=stage_id,
                 level=level,
-                text=str(line.get("readingJa") or line["ttsTextJa"]),
+                text=reading,
                 voice_key=voice_key,
                 relative_path=f"{prefix}/lines/{line_id}.mp3",
                 line_id=line_id,
@@ -115,13 +119,16 @@ def build_audio_tasks(stage: Mapping[str, Any]) -> list[AudioTask]:
                 raise ValueError(f"invalid token ID: {token_id!r}")
             if str(token.get("audioId")) != f"{stage_id}-{line_id}-{token_id}":
                 raise ValueError(f"invalid token audioId: {token.get('audioId')!r}")
+            reading = token.get("reading")
+            if not isinstance(reading, str) or not reading.strip():
+                raise ValueError(f"{stage_id}/{line_id}/{token_id} is missing its reviewed reading")
             tasks.append(
                 AudioTask(
                     audio_id=str(token["audioId"]),
                     kind="token",
                     stage_id=stage_id,
                     level=level,
-                    text=str(token.get("reading") or token["text"]),
+                    text=reading,
                     voice_key=voice_key,
                     relative_path=f"{prefix}/tokens/{line_id}-{token_id}.mp3",
                     line_id=line_id,
@@ -140,13 +147,16 @@ def build_audio_tasks(stage: Mapping[str, Any]) -> list[AudioTask]:
                 raise ValueError(f"invalid option ID: {option_id!r}")
             if str(option.get("audioId")) != f"{stage_id}-{question_id}-{option_id}":
                 raise ValueError(f"invalid option audioId: {option.get('audioId')!r}")
+            reading = option.get("readingJa")
+            if not isinstance(reading, str) or not reading.strip():
+                raise ValueError(f"{stage_id}/{question_id}/{option_id} is missing its reviewed readingJa")
             tasks.append(
                 AudioTask(
                     audio_id=str(option["audioId"]),
                     kind="option",
                     stage_id=stage_id,
                     level=level,
-                    text=str(option["ttsTextJa"]),
+                    text=reading,
                     voice_key=option_voice,
                     relative_path=f"{prefix}/options/{question_id}-{option_id}.mp3",
                     question_id=question_id,
@@ -168,6 +178,7 @@ def _canonical_json(value: object) -> bytes:
 def task_hash(
     task: AudioTask,
     *,
+    phonemes: str,
     voice_settings: Mapping[str, Any],
     model_fingerprint: str,
     pipeline_fingerprint: str = PIPELINE_VERSION,
@@ -176,6 +187,7 @@ def task_hash(
 
     payload = {
         "task": asdict(task),
+        "phonemes": phonemes,
         "voice": dict(voice_settings),
         "model": model_fingerprint,
         "pipeline": pipeline_fingerprint,
@@ -369,7 +381,17 @@ def write_json_atomic(path: str | Path, payload: Any) -> None:
     with temporary.open("w", encoding="utf-8", newline="\n") as handle:
         json.dump(payload, handle, ensure_ascii=False, indent=2)
         handle.write("\n")
-    os.replace(temporary, destination)
+    # Windows Defender/indexers can briefly hold the destination between the
+    # close above and ReplaceFile. A bounded retry keeps an hours-long offline
+    # synthesis run from failing because of that transient sharing violation.
+    for attempt in range(8):
+        try:
+            os.replace(temporary, destination)
+            break
+        except PermissionError:
+            if attempt == 7:
+                raise
+            time.sleep(min(0.05 * (2**attempt), 0.5))
 
 
 def file_sha256(path: str | Path) -> str:
@@ -482,7 +504,7 @@ def validate_runtime_config(config: Mapping[str, Any]) -> None:
 def verify_model_files(
     config: Mapping[str, Any],
     config_path: str | Path,
-) -> tuple[dict[str, dict[str, Any]], str]:
+) -> tuple[dict[str, dict[str, Any]], dict[str, str], str]:
     """Verify local model assets against the checked-in SHA-256 manifest."""
 
     base = Path(config_path).resolve().parent
@@ -511,10 +533,26 @@ def verify_model_files(
             "file": str(expected.get("file") or local_path.name),
             "sha256": actual_hash,
             "bytes": actual_size,
+            "source": expected.get("source"),
             "license": expected.get("license"),
         }
-    fingerprint = hashlib.sha256(_canonical_json(results)).hexdigest()
-    return results, fingerprint
+    expected_runtime = hash_manifest.get("runtime", {})
+    actual_runtime = {
+        "python": f"{sys.version_info.major}.{sys.version_info.minor}",
+        "kokoro-onnx": importlib.metadata.version("kokoro-onnx"),
+        "misaki-fork": importlib.metadata.version("misaki-fork"),
+        "onnxruntime": importlib.metadata.version("onnxruntime"),
+        "pyopenjtalk-mod": importlib.metadata.version("pyopenjtalk-mod"),
+    }
+    if actual_runtime != expected_runtime:
+        raise ValueError(
+            f"Kokoro runtime provenance mismatch: expected {expected_runtime!r}, "
+            f"got {actual_runtime!r}"
+        )
+    fingerprint = hashlib.sha256(
+        _canonical_json({"files": results, "runtime": actual_runtime})
+    ).hexdigest()
+    return results, actual_runtime, fingerprint
 
 
 def resolve_voice(
@@ -812,13 +850,15 @@ def _audio_item(
     content_hash: str,
     absolute_path: Path,
     ffprobe: str | Path,
+    reading_sha256: str | None = None,
+    phoneme_sha256: str | None = None,
 ) -> dict[str, Any]:
     metadata = probe_audio(absolute_path, ffprobe)
     if metadata["codec"] != "mp3":
         raise RuntimeError(f"expected MP3 output for {audio_id}; got {metadata['codec']}")
     if metadata["sampleRate"] != 24_000 or metadata["channels"] != 1:
         raise RuntimeError(f"invalid output format for {audio_id}: {metadata}")
-    return {
+    item = {
         "id": audio_id,
         "type": kind,
         "stageId": stage_id,
@@ -830,6 +870,12 @@ def _audio_item(
         "sha256": file_sha256(absolute_path),
         **metadata,
     }
+    if kind != "scene":
+        if not reading_sha256 or not phoneme_sha256:
+            raise ValueError(f"missing reading/phoneme hashes for {audio_id}")
+        item["readingSha256"] = reading_sha256
+        item["phonemeSha256"] = phoneme_sha256
+    return item
 
 
 def _ensure_normalized_cache(
@@ -1054,8 +1100,10 @@ def generate_stage(
         resolved_key, voice_settings = resolve_voice(config, task.voice_key)
         spoken_text = prepare_spoken_text(task.text, pronunciations)
         spoken_task = replace(task, text=spoken_text)
+        phonemes = adapter.phonemize(spoken_text)
         artifact_hash = task_hash(
             spoken_task,
+            phonemes=phonemes,
             voice_settings={
                 "voiceKey": resolved_key,
                 **voice_settings,
@@ -1069,6 +1117,8 @@ def generate_stage(
             "resolvedVoiceKey": resolved_key,
             "voice": voice_settings,
             "hash": artifact_hash,
+            "readingSha256": hashlib.sha256(spoken_text.encode("utf-8")).hexdigest(),
+            "phonemeSha256": hashlib.sha256(phonemes.encode("utf-8")).hexdigest(),
         }
         contexts.append(context)
         if task.kind == "line":
@@ -1165,6 +1215,8 @@ def generate_stage(
             content_hash=artifact_hash,
             absolute_path=output_path,
             ffprobe=ffprobe,
+            reading_sha256=context["readingSha256"],
+            phoneme_sha256=context["phonemeSha256"],
         )
         generated += 1
         logger.write(
@@ -1262,17 +1314,20 @@ def generate_stage(
 
 def _generator_metadata(
     verified_files: Mapping[str, Mapping[str, Any]],
+    verified_runtime: Mapping[str, str],
     *,
     output_settings: Mapping[str, Any],
     pronunciations_sha256: str,
+    execution_provider: str,
 ) -> dict[str, Any]:
     return {
         "name": "kokoro-onnx-offline",
         "pipelineVersion": PIPELINE_VERSION,
-        "executionProvider": "CPUExecutionProvider",
+        "executionProvider": execution_provider,
         "output": dict(output_settings),
         "pronunciationsSha256": pronunciations_sha256,
         "files": dict(verified_files),
+        "runtime": dict(verified_runtime),
         "licenses": [
             "../scripts/tts/licenses/LICENSE-kokoro-onnx-MIT.txt",
             "../scripts/tts/licenses/LICENSE-kokoro-model-Apache-2.0.txt",
@@ -1292,6 +1347,7 @@ def create_adapter(config: Mapping[str, Any], config_path: str | Path) -> Kokoro
         voices_path=_resolve_path(str(kokoro["voices"]), base),
         vocab_path=_resolve_path(str(kokoro["config"]), base),
         voices=config["voices"],
+        provider=provider,
     )
 
 
@@ -1300,6 +1356,7 @@ def run_smoke(
     config: Mapping[str, Any],
     config_path: Path,
     verified_files: Mapping[str, Mapping[str, Any]],
+    verified_runtime: Mapping[str, str],
     model_fingerprint: str,
     audio_root: Path,
     text: str,
@@ -1403,6 +1460,7 @@ def run_smoke(
         "pipelineVersion": PIPELINE_VERSION,
         "text": text,
         "files": dict(verified_files),
+        "runtime": dict(verified_runtime),
         "voices": results,
     }
     write_json_atomic(smoke_root / "report.json", report)
@@ -1417,6 +1475,7 @@ def _dry_run_report(
     pronunciations: Sequence[Mapping[str, Any]],
     model_fingerprint: str,
     audio_root: Path,
+    adapter: KokoroAdapter,
 ) -> dict[str, Any]:
     counts = {"scene": len(stages), "line": 0, "option": 0, "token": 0}
     current = 0
@@ -1425,8 +1484,10 @@ def _dry_run_report(
             counts[task.kind] += 1
             resolved_key, settings = resolve_voice(config, task.voice_key)
             spoken = replace(task, text=prepare_spoken_text(task.text, pronunciations))
+            phonemes = adapter.phonemize(spoken.text)
             artifact_hash = task_hash(
                 spoken,
+                phonemes=phonemes,
                 voice_settings={
                     "voiceKey": resolved_key,
                     **settings,
@@ -1491,7 +1552,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
 def main(argv: Sequence[str] | None = None) -> int:
     args = parse_args(argv)
     config, config_path = load_local_config(args.config)
-    verified_files, model_fingerprint = verify_model_files(config, config_path)
+    verified_files, verified_runtime, model_fingerprint = verify_model_files(config, config_path)
     audio_root = Path(args.audio_root).resolve()
     work_root = audio_root / ".work"
     run_stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
@@ -1503,6 +1564,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             config=config,
             config_path=config_path,
             verified_files=verified_files,
+            verified_runtime=verified_runtime,
             model_fingerprint=model_fingerprint,
             audio_root=audio_root,
             text=args.smoke_text,
@@ -1564,6 +1626,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 "discovered content versions are mixed; finish the content migration and use --all"
             )
 
+    adapter = create_adapter(config, config_path)
     if args.dry_run:
         print(
             json.dumps(
@@ -1574,6 +1637,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     pronunciations=pronunciations,
                     model_fingerprint=model_fingerprint,
                     audio_root=audio_root,
+                    adapter=adapter,
                 ),
                 ensure_ascii=False,
                 indent=2,
@@ -1585,7 +1649,6 @@ def main(argv: Sequence[str] | None = None) -> int:
     ffprobe = _resolve_path(str(config["ffprobe"]), config_path.parent)
     if not ffmpeg.is_file() or not ffprobe.is_file():
         raise FileNotFoundError(f"ffmpeg/ffprobe not found: {ffmpeg}, {ffprobe}")
-    adapter = create_adapter(config, config_path)
     total_generated = 0
     total_reused = 0
     for index, stage in enumerate(selected, start=1):
@@ -1616,8 +1679,10 @@ def main(argv: Sequence[str] | None = None) -> int:
                 "audioBaseUrl": str(config.get("audioBaseUrl", "./")),
                 "generator": _generator_metadata(
                     verified_files,
+                    verified_runtime,
                     output_settings=config["output"],
                     pronunciations_sha256=pronunciations_sha256,
+                    execution_provider=adapter.execution_provider,
                 ),
                 "voices": _public_voice_manifest(config),
             }

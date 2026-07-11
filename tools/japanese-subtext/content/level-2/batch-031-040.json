@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.1",
+  "contentVersion": "1.0.2",
   "level": 2,
   "batch": "031-040",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-031",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 31,
       "jlptTarget": "N2",
@@ -32,14 +32,15 @@
         "en": "A student team presents a community-event proposal. The reviewer is courteous but avoids committing to any next step."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-031.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "次回は未定の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“没有日期的下次”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"A Next Time Without a Date\"."
+        },
+        "sha256": "c7d4f160b305ceeb803dd0f06393f20a655692fa1443e62c354bcf4ed85476b0"
       },
       "cast": [
         {
@@ -315,7 +316,8 @@
                 "en": "Approval is guaranteed once the revision arrives."
               },
               "ttsTextJa": "修正版が届けば、採用は確定する。",
-              "audioId": "L2-031-q1-a"
+              "audioId": "L2-031-q1-a",
+              "readingJa": "しゅーせーばんがとどけば、さいよーわかくてーする。"
             },
             {
               "id": "b",
@@ -325,7 +327,8 @@
                 "en": "No approval is promised now; they will contact the team only if needed."
               },
               "ttsTextJa": "今回は採用を約束せず、必要なら後で連絡する。",
-              "audioId": "L2-031-q1-b"
+              "audioId": "L2-031-q1-b",
+              "readingJa": "こんかいわさいよーをやくそくせず、ひつよーならあとでれんらくする。"
             },
             {
               "id": "c",
@@ -335,7 +338,8 @@
                 "en": "Everything except the operating-cost section has already received formal approval at the review."
               },
               "ttsTextJa": "運営費以外の部分は、審査会ですでに正式承認された。",
-              "audioId": "L2-031-q1-c"
+              "audioId": "L2-031-q1-c",
+              "readingJa": "うんえいひいがいのぶぶんわ、しんさかいですでにせーしきしょーにんされた。"
             },
             {
               "id": "d",
@@ -345,7 +349,8 @@
                 "en": "The review meeting will reconvene tomorrow."
               },
               "ttsTextJa": "審査会は、明日もう一度開かれる。",
-              "audioId": "L2-031-q1-d"
+              "audioId": "L2-031-q1-d",
+              "readingJa": "しんさかいわ、あしたもーいちどひらかれる。"
             }
           ],
           "correctOptionIds": [
@@ -395,13 +400,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "9cc578ea823931433e0c4da79a9fddcffe9f2ed30df46b8da26b707c3474f6f1"
+      "contentHash": "32ebedbf70565bbae3fbb959c85ca72c51aeac7f318587114141ea85deb579b8"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-032",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 32,
       "jlptTarget": "N2",
@@ -424,14 +429,15 @@
         "en": "Customer Rihito repeatedly asks account manager Tanabe to verify the same revision, with each request becoming less formal."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-032.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "三度目の確認の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“第三次确认”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Third Request\"."
+        },
+        "sha256": "b0ccbaf54c38b334e9973e0d2ba2c225e2550f5e6802b5f1b952cd8103f45618"
       },
       "cast": [
         {
@@ -662,7 +668,8 @@
                 "en": "He is becoming increasingly irritated by the delay."
               },
               "ttsTextJa": "返答の遅れにいら立ちを募らせている。",
-              "audioId": "L2-032-q1-a"
+              "audioId": "L2-032-q1-a",
+              "readingJa": "へんとーのおくれにいらだちをつのらせている。"
             },
             {
               "id": "b",
@@ -672,7 +679,8 @@
                 "en": "He is relieved that publication can be postponed."
               },
               "ttsTextJa": "公開を延期できて安心している。",
-              "audioId": "L2-032-q1-b"
+              "audioId": "L2-032-q1-b",
+              "readingJa": "こーかいをえんきできてあんしんしている。"
             },
             {
               "id": "c",
@@ -682,7 +690,8 @@
                 "en": "He thinks checking with the responsible department is no longer necessary."
               },
               "ttsTextJa": "担当部署への確認はもう不要だと思っている。",
-              "audioId": "L2-032-q1-c"
+              "audioId": "L2-032-q1-c",
+              "readingJa": "たんとうぶしょえのかくにんわもーふよーだとおもっている。"
             },
             {
               "id": "d",
@@ -692,7 +701,8 @@
                 "en": "He is trying to correct Tanabe’s honorific language."
               },
               "ttsTextJa": "田辺の敬語を直そうとしている。",
-              "audioId": "L2-032-q1-d"
+              "audioId": "L2-032-q1-d",
+              "readingJa": "たなべのけーごをなおそーとしている。"
             }
           ],
           "correctOptionIds": [
@@ -749,7 +759,8 @@
                 "en": "Tanabe politely apologized twice and asked Rihito to keep waiting for an answer."
               },
               "ttsTextJa": "田辺が丁寧に「申し訳ございません」と二度謝り、回答を待つよう頼んだこと。",
-              "audioId": "L2-032-q2-a"
+              "audioId": "L2-032-q2-a",
+              "readingJa": "たなべがてーねーに「もーしわけございません」とにどあやまり、かいとーをまつよーたのんだこと。"
             },
             {
               "id": "b",
@@ -759,7 +770,8 @@
                 "en": "Rihito sent the revision yesterday."
               },
               "ttsTextJa": "理人が修正案を昨日送ったこと。",
-              "audioId": "L2-032-q2-b"
+              "audioId": "L2-032-q2-b",
+              "readingJa": "りじんがしゅうせいあんをきのーおくったこと。"
             },
             {
               "id": "c",
@@ -769,7 +781,8 @@
                 "en": "The elaborate request becomes the brief “Can you get it checked?”"
               },
               "ttsTextJa": "丁重な依頼が、短い「確認してもらえます？」に変わったこと。",
-              "audioId": "L2-032-q2-c"
+              "audioId": "L2-032-q2-c",
+              "readingJa": "てーちょーないらいが、みじかい「かくにんしてもらえます？」にかわったこと。"
             },
             {
               "id": "d",
@@ -779,7 +792,8 @@
                 "en": "Tanabe uses the phrase “responsible department.”"
               },
               "ttsTextJa": "田辺が担当部署という語を使ったこと。",
-              "audioId": "L2-032-q2-d"
+              "audioId": "L2-032-q2-d",
+              "readingJa": "たなべがたんとうぶしょというごをつかったこと。"
             }
           ],
           "correctOptionIds": [
@@ -829,13 +843,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "fe8a6bb1dddbb54b77babc3b27a683e8687673f8238d2e6e0b1f55761aaa5589"
+      "contentHash": "adab045424263d372754e110e843c786dc84e6bb428f2daaee6937483c3b79a0"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-033",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 33,
       "jlptTarget": "N2",
@@ -858,14 +872,15 @@
         "en": "Four friends plan a weekend trip in a group chat. Yumi provides useful logistics while leaving her own attendance unanswered."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-033.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "返事のない参加表明の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“唯独没有参加答复”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Planning Without Saying Yes\"."
+        },
+        "sha256": "7302de0e438c7a12e6edf74fcc5df766757c3736fb3ffd34cc3fc81968c78fca"
       },
       "cast": [
         {
@@ -1141,7 +1156,8 @@
                 "en": "Yumi will definitely join the Saturday trip."
               },
               "ttsTextJa": "由美は土曜の旅行に必ず参加する。",
-              "audioId": "L2-033-q1-a"
+              "audioId": "L2-033-q1-a",
+              "readingJa": "ゆみわどよーのりょこーにかならずさんかする。"
             },
             {
               "id": "b",
@@ -1151,7 +1167,8 @@
                 "en": "Yumi opposes the trip itself."
               },
               "ttsTextJa": "由美は旅行そのものに反対している。",
-              "audioId": "L2-033-q1-b"
+              "audioId": "L2-033-q1-b",
+              "readingJa": "ゆみわりょこーそのものにはんたいしている。"
             },
             {
               "id": "c",
@@ -1161,7 +1178,8 @@
                 "en": "Yumi has already bought her reserved seat."
               },
               "ttsTextJa": "由美はすでに自分の指定席を買った。",
-              "audioId": "L2-033-q1-c"
+              "audioId": "L2-033-q1-c",
+              "readingJa": "ゆみわすでにじぶんのしていせきをかった。"
             },
             {
               "id": "d",
@@ -1171,7 +1189,8 @@
                 "en": "Yumi is helping with planning but has not committed to attending."
               },
               "ttsTextJa": "由美は準備情報を共有しているが、参加は約束していない。",
-              "audioId": "L2-033-q1-d"
+              "audioId": "L2-033-q1-d",
+              "readingJa": "ゆみわじゅんびじょーほーをきょーゆーしているが、さんかわやくそくしていない。"
             }
           ],
           "correctOptionIds": [
@@ -1224,13 +1243,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "13e30f34116f5b9941d01d3f4aadd563e1ac73dc68628f6f2f15faad365ae454"
+      "contentHash": "1c3f4ecb9d93d1d60d5698712a81106769f31324509cc96e0ff0d2147751fc5c"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-034",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 34,
       "jlptTarget": "N2",
@@ -1254,14 +1273,15 @@
         "en": "Traveler Nao asks at a station lost-property desk about a navy umbrella. The clerk cannot yet confirm that the item received is hers."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-034.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "よく似た傘の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“很相似的伞”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"A Very Similar Umbrella\"."
+        },
+        "sha256": "85f6be2149b206947ce7303577f72dd7f8e0d7dcf78a24c367854d6ea777a330"
       },
       "cast": [
         {
@@ -1492,7 +1512,8 @@
                 "en": "One umbrella closely matching Nao’s description has been turned in."
               },
               "ttsTextJa": "奈緒の説明によく似た傘が一件届いている。",
-              "audioId": "L2-034-q1-a"
+              "audioId": "L2-034-q1-a",
+              "readingJa": "なおのせつめーによくにたかさがいっけんとどいている。"
             },
             {
               "id": "b",
@@ -1502,7 +1523,8 @@
                 "en": "The clerk has already confirmed that the umbrella belongs to Nao."
               },
               "ttsTextJa": "係員はその傘を奈緒の物だと確認済みである。",
-              "audioId": "L2-034-q1-b"
+              "audioId": "L2-034-q1-b",
+              "readingJa": "かかりいんわそのかさをなおのものだとかくにんずみである。"
             },
             {
               "id": "c",
@@ -1512,7 +1534,8 @@
                 "en": "Further comparison of the umbrella’s features is needed to establish ownership."
               },
               "ttsTextJa": "本人確認には、傘の特徴をさらに照合する必要がある。",
-              "audioId": "L2-034-q1-c"
+              "audioId": "L2-034-q1-c",
+              "readingJa": "ほんにんかくにんにわ、かさのとくちょーをさらにしょーごーするひつよーがある。"
             },
             {
               "id": "d",
@@ -1522,7 +1545,8 @@
                 "en": "The umbrella that was turned in has no scratches."
               },
               "ttsTextJa": "届いた傘には傷が一つもない。",
-              "audioId": "L2-034-q1-d"
+              "audioId": "L2-034-q1-d",
+              "readingJa": "とどいたかさにわきずがひとつもない。"
             },
             {
               "id": "e",
@@ -1532,7 +1556,8 @@
                 "en": "The clerk personally found the umbrella on platform three."
               },
               "ttsTextJa": "傘は三番線で係員が拾った。",
-              "audioId": "L2-034-q1-e"
+              "audioId": "L2-034-q1-e",
+              "readingJa": "かさわさんばんせんでかかりいんがひろった。"
             }
           ],
           "correctOptionIds": [
@@ -1589,7 +1614,8 @@
                 "en": "Describe distinctive features such as the scratch on the handle."
               },
               "ttsTextJa": "持ち手の傷など、本人しか分かりにくい特徴を伝える。",
-              "audioId": "L2-034-q2-a"
+              "audioId": "L2-034-q2-a",
+              "readingJa": "もちしゅのきずなど、ほんにんしかわかりにくいとくちょーをつたえる。"
             },
             {
               "id": "b",
@@ -1599,7 +1625,8 @@
                 "en": "Take the umbrella without any verification."
               },
               "ttsTextJa": "確認せず、その場で傘を持ち帰る。",
-              "audioId": "L2-034-q2-b"
+              "audioId": "L2-034-q2-b",
+              "readingJa": "かくにんせず、そのばでかさをもちかえる。"
             },
             {
               "id": "c",
@@ -1609,7 +1636,8 @@
                 "en": "Discard the claim-number card."
               },
               "ttsTextJa": "照会番号の札を捨てる。",
-              "audioId": "L2-034-q2-c"
+              "audioId": "L2-034-q2-c",
+              "readingJa": "しょーかいばんごーのさつをすてる。"
             },
             {
               "id": "d",
@@ -1619,7 +1647,8 @@
                 "en": "Change her description to a different color."
               },
               "ttsTextJa": "別の色の傘だったと言い直す。",
-              "audioId": "L2-034-q2-d"
+              "audioId": "L2-034-q2-d",
+              "readingJa": "べつのいろのかさだったといいなおす。"
             }
           ],
           "correctOptionIds": [
@@ -1669,13 +1698,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "18848ae3835b634d1a54ad4a363b5baf09bd371370985ccefaaf9749ea212f38"
+      "contentHash": "69b8e2a93de2532bb7e43695f12bdf2913a8f2d932c83ee9a94964b5738c9d9f"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-035",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 35,
       "jlptTarget": "N2",
@@ -1699,14 +1728,15 @@
         "en": "An interview examines why Yuto’s bill included two meals although he dined alone. The server explains what happened at checkout."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-035.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "二人分の会計の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“两人份的账单”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"A Bill for Two\"."
+        },
+        "sha256": "83b908c20e0dc6c2815866615be6066e81b63fef494431200aca5493e91786bf"
       },
       "cast": [
         {
@@ -1973,7 +2003,8 @@
                 "en": "The server entered the same meal twice by mistake and only later prepared a takeaway container."
               },
               "ttsTextJa": "店員が同じ定食を誤って二度入力し、持ち帰り容器も後から用意した。",
-              "audioId": "L2-035-q1-a"
+              "audioId": "L2-035-q1-a",
+              "readingJa": "てんいんがおなじてーしょくをあやまってにどにゅーりょくし、もちかえりよーきもあとからよーいした。"
             },
             {
               "id": "b",
@@ -1983,7 +2014,8 @@
                 "en": "Yuto ordered one meal to eat there and one to take home for his family."
               },
               "ttsTextJa": "悠斗は店内用と家族への持ち帰り用を一つずつ注文した。",
-              "audioId": "L2-035-q1-b"
+              "audioId": "L2-035-q1-b",
+              "readingJa": "ゆうとわてんないよーとかぞくえのもちかえりよーをひとつずつちゅーもんした。"
             },
             {
               "id": "c",
@@ -1993,7 +2025,8 @@
                 "en": "A second diner secretly left before payment."
               },
               "ttsTextJa": "二人目の客が会計前に隠れて帰った。",
-              "audioId": "L2-035-q1-c"
+              "audioId": "L2-035-q1-c",
+              "readingJa": "ふたりめのきゃくがかいけーまえにかくれてかえった。"
             },
             {
               "id": "d",
@@ -2003,7 +2036,8 @@
                 "en": "A single set meal was charged as two portions."
               },
               "ttsTextJa": "定食一つが二人前として計算された。",
-              "audioId": "L2-035-q1-d"
+              "audioId": "L2-035-q1-d",
+              "readingJa": "てーしょくひとつがふたりまえとしてけーさんされた。"
             }
           ],
           "correctOptionIds": [
@@ -2054,13 +2088,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "501815233c3a9af363c92ec6fe0eba97461d5ad07fc22e5cc68fe69a6da1f34a"
+      "contentHash": "a1b91ea7ff1cd81246e6596c36c22d4e2b0514a2626d044730a89f246b0baa86"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-036",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 36,
       "jlptTarget": "N2",
@@ -2083,14 +2117,15 @@
         "en": "A user asks a support AI to change an administrative setting. The AI refuses to act directly but gives manual steps to the same result."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-036.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "できない操作、できる手順の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“不能代办，可以教你”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Unable to Act, Able to Guide\"."
+        },
+        "sha256": "7b687b10a723c3118ae7f3b36c7e93d00ceb4f4d2093ee5c36e2989936d547ed"
       },
       "cast": [
         {
@@ -2321,7 +2356,8 @@
                 "en": "Because the administrative change requires confirmation by the account holder."
               },
               "ttsTextJa": "管理設定は本人確認を伴う操作だから。",
-              "audioId": "L2-036-q1-a"
+              "audioId": "L2-036-q1-a",
+              "readingJa": "かんりせってーわほんにんかくにんをともなうそーさだから。"
             },
             {
               "id": "b",
@@ -2331,7 +2367,8 @@
                 "en": "Because the shared folder has already been deleted."
               },
               "ttsTextJa": "共有フォルダがすでに削除されたから。",
-              "audioId": "L2-036-q1-b"
+              "audioId": "L2-036-q1-b",
+              "readingJa": "きょーゆーふぉるだがすでにさくじょされたから。"
             },
             {
               "id": "c",
@@ -2341,7 +2378,8 @@
                 "en": "Because the AI does not know where the settings screen is."
               },
               "ttsTextJa": "AIが設定画面の場所を知らないから。",
-              "audioId": "L2-036-q1-c"
+              "audioId": "L2-036-q1-c",
+              "readingJa": "えーあいがせってーがめんのばしょをしらないから。"
             },
             {
               "id": "d",
@@ -2351,7 +2389,8 @@
                 "en": "Because an “everyone can edit” setting does not exist."
               },
               "ttsTextJa": "全員編集可という設定が存在しないから。",
-              "audioId": "L2-036-q1-d"
+              "audioId": "L2-036-q1-d",
+              "readingJa": "ぜんいんへんしゅーかというせってーがそんざいしないから。"
             }
           ],
           "correctOptionIds": [
@@ -2406,7 +2445,8 @@
                 "en": "It gives concrete, ordered steps that achieve the same result."
               },
               "ttsTextJa": "同じ結果になる具体的な画面操作を順番に示した。",
-              "audioId": "L2-036-q2-a"
+              "audioId": "L2-036-q2-a",
+              "readingJa": "おなじけっかになるぐたいてきながめんそーさをじゅんばんにしめした。"
             },
             {
               "id": "b",
@@ -2416,7 +2456,8 @@
                 "en": "It ends the conversation without recording the request."
               },
               "ttsTextJa": "利用者の依頼を記録せずに会話を終了した。",
-              "audioId": "L2-036-q2-b"
+              "audioId": "L2-036-q2-b",
+              "readingJa": "りよーしゃのいらいをきろくせずにかいわをしゅーりょーした。"
             },
             {
               "id": "c",
@@ -2426,7 +2467,8 @@
                 "en": "It also prompts the user to verify the target name to prevent a mistake."
               },
               "ttsTextJa": "誤操作を避けるため、対象名の確認も促した。",
-              "audioId": "L2-036-q2-c"
+              "audioId": "L2-036-q2-c",
+              "readingJa": "ごそーさをさけるため、たいしょーめーのかくにんもうながした。"
             },
             {
               "id": "d",
@@ -2436,7 +2478,8 @@
                 "en": "It ignores the confirmation rule and changes the setting."
               },
               "ttsTextJa": "本人確認の規則を無視して設定を変えた。",
-              "audioId": "L2-036-q2-d"
+              "audioId": "L2-036-q2-d",
+              "readingJa": "ほんにんかくにんのきそくをむししてせってーをかえた。"
             },
             {
               "id": "e",
@@ -2446,7 +2489,8 @@
                 "en": "It warns that editing permissions cannot be restored."
               },
               "ttsTextJa": "編集権限を元に戻せないと警告した。",
-              "audioId": "L2-036-q2-e"
+              "audioId": "L2-036-q2-e",
+              "readingJa": "へんしゅーけんげんをもとにもどせないとけーこくした。"
             }
           ],
           "correctOptionIds": [
@@ -2497,13 +2541,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "ec0378fd1c3c9dd460866ac582333b37ec537dd6e3efbae10a67e40bb50069c5"
+      "contentHash": "08917669fae0eab6f00d3102edb7598e907f7cdcbcce08e5d058fb272e8ccf49"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-037",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 37,
       "jlptTarget": "N2",
@@ -2527,14 +2571,15 @@
         "en": "Lights abruptly fail in a space habitat. Only after residents report the outage does public relations call it a planned test."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-037.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "消灯後の「予定」の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“停电之后的“预定””场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"“Planned” After the Blackout\"."
+        },
+        "sha256": "5323d0beea6516bc20386a8a5c27cd09f22161ec6c59fb9fb965be723865e1a1"
       },
       "cast": [
         {
@@ -2801,7 +2846,8 @@
                 "en": "Every resident had agreed to the test."
               },
               "ttsTextJa": "住民全員が試験開始に同意していた。",
-              "audioId": "L2-037-q1-a"
+              "audioId": "L2-037-q1-a",
+              "readingJa": "じゅーみんぜんいんがしけんかいしにどーいしていた。"
             },
             {
               "id": "b",
@@ -2811,7 +2857,8 @@
                 "en": "Maintenance knew the cause from the outset."
               },
               "ttsTextJa": "保守班は原因を最初から知っていた。",
-              "audioId": "L2-037-q1-b"
+              "audioId": "L2-037-q1-b",
+              "readingJa": "ほしゅはんわげんいんをさいしょからしっていた。"
             },
             {
               "id": "c",
@@ -2821,7 +2868,8 @@
                 "en": "Power-saving tests occur every night."
               },
               "ttsTextJa": "省電力試験は毎晩行われている。",
-              "audioId": "L2-037-q1-c"
+              "audioId": "L2-037-q1-c",
+              "readingJa": "しょうでんりょくしけんわまいばんおこなわれている。"
             },
             {
               "id": "d",
@@ -2831,7 +2879,8 @@
                 "en": "An unexpected outage may be being reframed afterward as something planned."
               },
               "ttsTextJa": "予期しない停止を、後から予定通りだったように説明している可能性がある。",
-              "audioId": "L2-037-q1-d"
+              "audioId": "L2-037-q1-d",
+              "readingJa": "よきしないてーしを、あとからよてーどーりだったよーにせつめーしているかのうせいがある。"
             }
           ],
           "correctOptionIds": [
@@ -2885,13 +2934,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "95405307989bec3ced9c7a36c488ca7b071dbfc12bbdcb594837fab1c521c5a3"
+      "contentHash": "125049abdb3e053e742a6752a19646532c812cd5539ef47dd157c205e661dc5d"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-038",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 38,
       "jlptTarget": "N2",
@@ -2915,14 +2964,15 @@
         "en": "At a magical city gate, a clock runs backward. An elf and a dwarf have waited three hours for a late human."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-038.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "逆回りの時計の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“倒着走的钟”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Backward Clock\"."
+        },
+        "sha256": "63d374e96ae7caa0b30f2d8db4c20c08711f75fe5e700535fbd412f1d4dcc2eb"
       },
       "cast": [
         {
@@ -3162,7 +3212,8 @@
                 "en": "She admires the human’s clock-repair skills."
               },
               "ttsTextJa": "人間の時計修理の技術を評価している。",
-              "audioId": "L2-038-q1-a"
+              "audioId": "L2-038-q1-a",
+              "readingJa": "にんげんのとけーしゅーりのぎじゅつをひょーかしている。"
             },
             {
               "id": "b",
@@ -3172,7 +3223,8 @@
                 "en": "She says that waiting three hours does not count as a delay."
               },
               "ttsTextJa": "三時間は待ったうちに入らないと言っている。",
-              "audioId": "L2-038-q1-b"
+              "audioId": "L2-038-q1-b",
+              "readingJa": "さんじかんわまったうちにはいらないといっている。"
             },
             {
               "id": "c",
@@ -3182,7 +3234,8 @@
                 "en": "She sarcastically criticizes the severe lateness in the form of praise."
               },
               "ttsTextJa": "大幅な遅刻を、褒め言葉の形で皮肉っている。",
-              "audioId": "L2-038-q1-c"
+              "audioId": "L2-038-q1-c",
+              "readingJa": "おーはばなちこくを、ほめことばのかたちでひにくっている。"
             },
             {
               "id": "d",
@@ -3192,7 +3245,8 @@
                 "en": "She explains that backward clocks are the accurate ones."
               },
               "ttsTextJa": "逆向きの時計こそ正確だと説明している。",
-              "audioId": "L2-038-q1-d"
+              "audioId": "L2-038-q1-d",
+              "readingJa": "ぎゃくむきのとけーこそせーかくだとせつめーしている。"
             }
           ],
           "correctOptionIds": [
@@ -3250,7 +3304,8 @@
                 "en": "The contradiction between being three hours late and being called punctual."
               },
               "ttsTextJa": "三時間の遅刻と、それを「時間に正確」と呼ぶ矛盾。",
-              "audioId": "L2-038-q2-a"
+              "audioId": "L2-038-q2-a",
+              "readingJa": "さんじかんのちこくと、それを「じかんにせーかく」とよぶむじゅん。"
             },
             {
               "id": "b",
@@ -3260,7 +3315,8 @@
                 "en": "The elf and dwarf live in the same city."
               },
               "ttsTextJa": "エルフとドワーフが同じ町に住んでいること。",
-              "audioId": "L2-038-q2-b"
+              "audioId": "L2-038-q2-b",
+              "readingJa": "えるふとどわーふがおなじまちにすんでいること。"
             },
             {
               "id": "c",
@@ -3270,7 +3326,8 @@
                 "en": "The clock runs backward and the human owns a normal clock."
               },
               "ttsTextJa": "時計が逆向きに進み、人間が普通の時計を持つこと。",
-              "audioId": "L2-038-q2-c"
+              "audioId": "L2-038-q2-c",
+              "readingJa": "とけーがぎゃくむきにすすみ、にんげんがふつーのとけーをもつこと。"
             },
             {
               "id": "d",
@@ -3280,7 +3337,8 @@
                 "en": "The human apologizes and the elf uses polite speech."
               },
               "ttsTextJa": "人間が謝り、エルフが敬語を使うこと。",
-              "audioId": "L2-038-q2-d"
+              "audioId": "L2-038-q2-d",
+              "readingJa": "にんげんがあやまり、えるふがけーごをつかうこと。"
             }
           ],
           "correctOptionIds": [
@@ -3330,13 +3388,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "511eba6f3e0fe29bae96fda04d37ecc3a525b59a9c539840bbd4e31d47d1adfe"
+      "contentHash": "864d274a18727f0da66a0c8014269a701476e87d203279a106cccd84e820e881"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-039",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 39,
       "jlptTarget": "N2",
@@ -3360,14 +3418,15 @@
         "en": "A black-cloaked witch appears in the castle kitchen asking for the princess. She carries a spellbook, but her purpose is unexpectedly domestic."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-039.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "魔女のお願いの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“女巫的请求”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Witch’s Request\"."
+        },
+        "sha256": "18f7f13095c4da19909a447946e3682ed8f9d90056dcb7f0369a792368270512"
       },
       "cast": [
         {
@@ -3625,7 +3684,8 @@
                 "en": "To curse the castle."
               },
               "ttsTextJa": "城に呪いをかけるため。",
-              "audioId": "L2-039-q1-a"
+              "audioId": "L2-039-q1-a",
+              "readingJa": "しろにのろいをかけるため。"
             },
             {
               "id": "b",
@@ -3635,7 +3695,8 @@
                 "en": "To learn how to make the raspberry jam."
               },
               "ttsTextJa": "木いちごのジャムの作り方を教わるため。",
-              "audioId": "L2-039-q1-b"
+              "audioId": "L2-039-q1-b",
+              "readingJa": "きいちごのじゃむのつくりかたをおそわるため。"
             },
             {
               "id": "c",
@@ -3645,7 +3706,8 @@
                 "en": "Test a powerful new potion on the princess to check its effects."
               },
               "ttsTextJa": "新しい強力な魔法薬を、効き目を確かめるため姫に試す。",
-              "audioId": "L2-039-q1-c"
+              "audioId": "L2-039-q1-c",
+              "readingJa": "あたらしいきょーりょくなまほうやくを、ききめをたしかめるためひめにためす。"
             },
             {
               "id": "d",
@@ -3655,7 +3717,8 @@
                 "en": "To retrieve her spellbook."
               },
               "ttsTextJa": "呪文書を返してもらうため。",
-              "audioId": "L2-039-q1-d"
+              "audioId": "L2-039-q1-d",
+              "readingJa": "のろいぶんしょをかえしてもらうため。"
             }
           ],
           "correctOptionIds": [
@@ -3707,13 +3770,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "05a32f43c31514d69a1cb370052e4f320338d8a0d7f7c672f3e5511d50cda4fc"
+      "contentHash": "83d6d845afdde0db75a43c78d190b2d2da50993ad8c798f3c4a80fa572a86912"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-040",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 40,
       "jlptTarget": "N2",
@@ -3739,12 +3802,13 @@
       "illustration": {
         "enabled": true,
         "src": "assets/stages/l2-040.webp",
-        "style": "crayon",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "暖色の客室で、宿泊客が光る電話と予約表示を見比べる彩色クレヨン画。",
-          "zh": "暖色客房里，住客对照发光的电话与预约提示的彩色蜡笔画。",
-          "en": "A colorful crayon scene of a guest comparing a glowing room phone with a scheduled-message display in a warm hotel room."
-        }
+          "ja": "深夜のチェックアウトの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“深夜的退房通知”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Midnight Checkout Call\"."
+        },
+        "sha256": "15255fb99a04de3b070a740c4ab1f7a676951102a6388c74d8304ee0cbfb46a1"
       },
       "cast": [
         {
@@ -3984,7 +4048,8 @@
                 "en": "An automated message scheduled for the wrong playback time."
               },
               "ttsTextJa": "再生時刻を誤って設定された自動案内。",
-              "audioId": "L2-040-q1-a"
+              "audioId": "L2-040-q1-a",
+              "readingJa": "さいせーじこくをあやまってせってーされたじどーあんない。"
             },
             {
               "id": "b",
@@ -3994,7 +4059,8 @@
                 "en": "A call from another guest who had already checked out."
               },
               "ttsTextJa": "すでに退房した別の客本人からの電話。",
-              "audioId": "L2-040-q1-b"
+              "audioId": "L2-040-q1-b",
+              "readingJa": "すでにすさぼーしたべつのきゃくほんにんからのでんわ。"
             },
             {
               "id": "c",
@@ -4004,7 +4070,8 @@
                 "en": "A warning from a future receptionist."
               },
               "ttsTextJa": "未来のフロント係からの警告。",
-              "audioId": "L2-040-q1-c"
+              "audioId": "L2-040-q1-c",
+              "readingJa": "みらいのふろんとがかりからのけーこく。"
             },
             {
               "id": "d",
@@ -4014,7 +4081,8 @@
                 "en": "A recording left in the room by someone else."
               },
               "ttsTextJa": "客室に残った誰かの録音。",
-              "audioId": "L2-040-q1-d"
+              "audioId": "L2-040-q1-d",
+              "readingJa": "きゃくしつにのこっただれかのろくおん。"
             }
           ],
           "correctOptionIds": [
@@ -4071,7 +4139,8 @@
                 "en": "Mifuyu was still in the room."
               },
               "ttsTextJa": "美冬がまだ部屋にいたこと。",
-              "audioId": "L2-040-q2-a"
+              "audioId": "L2-040-q2-a",
+              "readingJa": "みふゆがまだへやにいたこと。"
             },
             {
               "id": "b",
@@ -4081,7 +4150,8 @@
                 "en": "The phone rang late at night."
               },
               "ttsTextJa": "電話が深夜に鳴ったこと。",
-              "audioId": "L2-040-q2-b"
+              "audioId": "L2-040-q2-b",
+              "readingJa": "でんわがしんやになったこと。"
             },
             {
               "id": "c",
@@ -4091,7 +4161,8 @@
                 "en": "The display recorded both the set time and the playback time."
               },
               "ttsTextJa": "画面に設定時刻と再生時刻が記録されていたこと。",
-              "audioId": "L2-040-q2-c"
+              "audioId": "L2-040-q2-c",
+              "readingJa": "がめんにせってーじこくとさいせーじこくがきろくされていたこと。"
             },
             {
               "id": "d",
@@ -4101,7 +4172,8 @@
                 "en": "The receptionist apologized."
               },
               "ttsTextJa": "フロント係が謝罪したこと。",
-              "audioId": "L2-040-q2-d"
+              "audioId": "L2-040-q2-d",
+              "readingJa": "ふろんとがかりがしゃざいしたこと。"
             }
           ],
           "correctOptionIds": [
@@ -4151,7 +4223,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "74fab965f8a2f9b27771469bb995c73c3320e7f2c55777e1b6d3e1498c9a6bfc"
+      "contentHash": "4e828912bc7f6a06c8a9f01bead0f9972c92cd6f11fdb1c2a3f219abe7e6988f"
     }
   ]
 }

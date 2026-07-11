@@ -7,34 +7,45 @@
   <meta name="description" content="Japanese subtext listening and context trainer">
   <title>日语的言外之意</title>
   <link rel="icon" href="./assets/icons/tool-icon-64.webp" type="image/webp">
-  <link rel="stylesheet" href="./style.css?v=20260711-japanese-subtext-r14">
+  <link rel="stylesheet" href="./style.css?v=20260711-japanese-subtext-v102-r2">
 </head>
 <body>
   <div class="trainer-shell" id="trainer-shell">
     <header class="trainer-titlebar">
+      <a class="xp-control secondary trainer-back-link" id="back-site" href="../../index.html#resources" data-i18n="backSite">返回个人站</a>
       <div class="trainer-title-lockup">
         <img src="./assets/icons/tool-icon-64.webp" width="32" height="32" alt="" aria-hidden="true">
-        <h1 data-i18n="toolTitle">日语的言外之意</h1>
-      </div>
-      <div class="trainer-title-actions">
-        <label class="language-control">
-          <span data-i18n="uiLanguage">界面语言</span>
-          <select id="ui-language" aria-label="界面语言">
-            <option value="zh">中文</option>
-            <option value="en">English</option>
-            <option value="ja">日本語</option>
-          </select>
-        </label>
-        <a class="xp-control secondary" id="back-site" href="../../index.html#resources" data-i18n="backSite">返回个人站资源区</a>
+        <div>
+          <h1 data-i18n="toolTitle">日语的言外之意</h1>
+          <span data-i18n="toolVersion">版本 1.0.2</span>
+        </div>
       </div>
     </header>
 
-    <div class="trainer-statusbar" aria-live="polite">
-      <span id="status-text">READY</span>
-      <span id="cloud-status" data-i18n="authLocal">未登录 · 使用本地进度</span>
-    </div>
+    <section class="trainer-frame-card">
+      <div class="trainer-tools">
+        <div class="trainer-context">
+          <strong data-i18n="trainingConsole">训练控制台</strong>
+          <span id="status-text" aria-live="polite">READY</span>
+        </div>
+        <div class="trainer-cloud-panel" aria-live="polite">
+          <strong data-i18n="saveSync">存档同步</strong>
+          <span id="cloud-status" data-i18n="authLocal">未登录 · 使用本地进度</span>
+        </div>
+        <div class="trainer-tool-actions">
+          <label class="language-control">
+            <span data-i18n="uiLanguage">界面语言</span>
+            <select id="ui-language" aria-label="界面语言">
+              <option value="zh">中文</option>
+              <option value="en">English</option>
+              <option value="ja">日本語</option>
+            </select>
+          </label>
+          <button class="xp-control" type="button" data-action="open-settings" data-i18n="settings">训练设置</button>
+        </div>
+      </div>
 
-    <main class="trainer-main" id="trainer-main">
+      <main class="trainer-main" id="trainer-main">
       <section class="screen dashboard-screen is-active" id="dashboard-screen" aria-labelledby="dashboard-heading">
         <div class="dashboard-hero pixel-panel">
           <div class="hero-copy">
@@ -131,10 +142,14 @@
           <section class="analysis-column pixel-panel" id="analysis-panel" aria-labelledby="analysis-heading" hidden>
             <div class="panel-caption"><h3 id="analysis-heading" tabindex="-1" data-i18n="analysis">潜台词解析</h3></div>
             <div id="analysis-content"></div>
+            <div class="analysis-actions">
+              <button class="xp-control primary" id="analysis-next" type="button" data-action="next-stage" data-i18n="enterNextStage">进入下一关</button>
+            </div>
           </section>
         </div>
       </section>
-    </main>
+      </main>
+    </section>
   </div>
 
   <dialog class="sound-gate" id="sound-gate" aria-labelledby="sound-gate-title" aria-describedby="mode-choice-intro">
@@ -178,7 +193,7 @@
     </div>
   </dialog>
 
-  <dialog class="trainer-dialog" id="records-dialog" aria-labelledby="records-heading">
+  <dialog class="trainer-dialog records-dialog" id="records-dialog" aria-labelledby="records-heading">
     <div class="dialog-window">
       <div class="mini-titlebar"><h2 id="records-heading" data-i18n="records">学习记录</h2><button type="button" data-action="close-records" aria-label="关闭" data-i18n-aria-label="close">×</button></div>
       <div class="dialog-body" id="records-content"></div>
@@ -187,6 +202,6 @@
   </dialog>
 
   <div class="sr-live" id="live-region" aria-live="polite" aria-atomic="true"></div>
-  <script type="module" src="./app.mjs?v=20260711-japanese-subtext-r14"></script>
+  <script type="module" src="./app.mjs?v=20260711-japanese-subtext-v102-r2"></script>
 </body>
 </html>

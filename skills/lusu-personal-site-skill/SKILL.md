@@ -78,15 +78,15 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - `/tools/japanese-subtext/` 是可独立打开的工具；标题随界面语言显示为中文“日语的言外之意”、English “Behind the Japanese”、日本語“日本語の裏側”。题库固定为按 `contentVersion` 管理的分批 JSON，不为单关新建 HTML，也不得把 250 关整体内联进 `js/main.js`。
 - 每次公开修改工具界面、题库、音频、存档兼容或维护流程，版本号固定增加 `0.0.1`，并同步 manifest、题库、音频、API、Resources 卡片、构建守卫和更新记录。完整清单以 `tools/japanese-subtext/MAINTENANCE.md` 为准。
 - 已发布关卡 ID 是持久主键，不得随意修改、重排或复用。修改关卡必须增加该关 `revision`；题库结构或兼容边界变化时再增加 `contentVersion`，并提供可解释的存档迁移策略。
-- 先完成日语、语用和游戏性审校，再用构建器锁定文本。只有 `textLocked` 与内容哈希有效后才可生成正式音频；句子优先使用人工审校 `readingJa`，词块使用 `reading`，其他日语表记先经 PyOpenJTalk 转为明确假名再进入 G2P/Kokoro。修改台词、读音、声线、语速或发音配置后，只重建最终任务哈希受影响的场景、句子、词块和选项。
-- `content/*.json`、`audio/manifest.json`、各关时间轴和静态音频必须始终以稳定 ID 同步。manifest 必须把每关 `sourceContentHash`、逐句 cue 顺序、CPU provider、输出参数和发音表 canonical SHA-256 与当前锁定题库精确绑定；题库验证与 10,088 件真实音频的 ffprobe / SHA-256 / 静音 / 孤儿文件验证均通过前不得发布，也不得把演示音频、空文件、抽样或估算统计写成正式完成结果。
+- 先完成日语、语用和游戏性审校，再用构建器锁定文本。只有 `textLocked` 与内容哈希有效后才可生成正式音频；句子和日语选项使用可审校 `readingJa`，词块使用 `reading`，其他日语表记先经 PyOpenJTalk 转为明确假名再进入 G2P/Kokoro，画面继续显示原汉字表记。修改台词、读音、声线、语速或发音配置后，只重建最终任务哈希受影响的场景、句子、词块和选项。
+- `content/*.json`、`audio/manifest.json`、各关时间轴和静态音频必须始终以稳定 ID 同步。v4 manifest 必须把每关 `sourceContentHash`、逐句 cue、reading/phoneme SHA-256、实际 CPU provider、模型/运行时 provenance、输出参数和发音表 canonical SHA-256 与锁定题库精确绑定；完整 P2R 必须保持原始 `j → y` 早于 `ʥ → j`。全量音素复算与 10,088 件音频的 ffprobe / SHA-256 / 静音 / 孤儿文件验证通过前不得发布。
 - 本机 TTS 模型、权重、实际 `tts.local.json`、绝对路径与参考声线不得提交。TTS 只能作为本地离线批处理运行，不注册服务、不加入开机启动；批处理结束后必须退出，日常浏览和构建不得加载模型或占用 GPU/内存。
 - 更换或新增声线时必须重新核对许可、来源和署名要求。`NOTICE-japanese-voices.md` 及设置面板的三语语音许可入口必须随静态音频一起保留，不使用来源不明或模仿受保护动漫角色的声线。
-- 新增工具图标、封面和关卡图必须使用 image2 生成并保存项目副本。按当前产品约束，只允许彩色儿童蜡笔和抽象 Q 版四格，不使用黑白线稿；同时禁止来源不明图片、写实人物和受版权保护角色。插图必须响应式、懒加载且不能挤占移动端首屏。
+- 新增工具图标、封面和关卡图优先使用 imagegen/image2 生成并保存项目副本。若图像服务经重试仍因网络不可用，可使用项目内可复现的原创分镜生成器，但必须在插图 manifest 标记 fallback 生成器与自动审查状态，逐关读取 setting、人物、台词、题问和关键道具，且不得宣称为 AI 逐张绘制。当前每关配图为统一线条、网点、边框和 4:3 画幅的原创黑白四格；必须响应式、懒加载、不泄露答案，并由 SHA-256 和尺寸守卫锁定。
 - 学习进度只能使用 `japanese_subtext_profiles` / `japanese_subtext_stage_progress`，不得与 `game_saves` 混用。云端从 HttpOnly 会话解析用户 ID，空云端或同步失败不能清空、降级或阻塞本地进度；跨设备合并不得让较新的失败尝试擦除已通关记录的 `firstClearMode`。
 - 所有题库字符串使用安全 DOM API / `textContent` 渲染；插图路径限定在本工具 `assets/`，音频路径只从 manifest 解析。播放器只能存在一个活动音频实例，换关、返回地图、页面隐藏和离开页面必须停止旧音频。
 - 面向用户的题干、选项和解析不得显示 `line-002` / `line 002` 等内部 ID；中文 UI 和日语题目分别使用中文/日文字体栈。进入关卡不得自动播放，播放不得强制滚动；公开播放器只保留播放/暂停、seek、倍速和文本点击播放。
-- 修改工具脚本、题库、音频 manifest、公开 CSS/JS 或图片后，要更新对应缓存版本，并同步 `CHANGELOG.md`、`PROJECT_CONTEXT.md`、`README.md`、本 Skill 说明以及唯一一篇三语 `site-updates` 记录。发布前运行 `jp-subtext:validate`、`jp-subtext:audio:validate -- --check-silence`、`jp-subtext:test` 与主站 `build`，并复测 375×667、390×844、844×390、768×1024、1365×900。
+- 修改工具脚本、题库、音频 manifest、公开 CSS/JS 或图片后，要更新对应缓存版本，并同步 `CHANGELOG.md`、`PROJECT_CONTEXT.md`、`README.md`、本 Skill 说明以及唯一一篇三语 `site-updates` 记录。音频管线必须把 Misaki 的音素与音高标记分离，规范化 P2R 音素并对未知符号失败关闭，不能静默丢掉辅音或把音高标记读进成品。发布前运行 `jp-subtext:validate`、`jp-subtext:audio:validate -- --check-silence`、`jp-subtext:test` 与主站 `build`，并复测 359×500、375×667、390×844、844×390、1365×900。
 
 ## 前端和移动端检查
 

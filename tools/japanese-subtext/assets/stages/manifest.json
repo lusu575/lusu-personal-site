@@ -1,0 +1,2257 @@
+{
+  "schemaVersion": 1,
+  "contentVersion": "1.0.2",
+  "generatorVersion": "local-four-panel-v2",
+  "entries": [
+    {
+      "stageId": "L1-001",
+      "path": "assets/stages/l1-001.webp",
+      "sha256": "304a5f054f93438aeb1136f3308ca1246bdc0316e34923e2d461f3cd20b668b9",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-002",
+      "path": "assets/stages/l1-002.webp",
+      "sha256": "152aac7b6722e6e0ed7f91347f4c2a46e78d0ebcc468151291d565a61a350350",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-003",
+      "path": "assets/stages/l1-003.webp",
+      "sha256": "9c7866ec53f0b0217a9d7b77f7c11186e1f3eb2efe7f425e1b6404077f44a0c7",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-004",
+      "path": "assets/stages/l1-004.webp",
+      "sha256": "36a51ebc1bc765d4b44714b0443932205a97326ae3f8f8d5c773b12bb198e736",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-005",
+      "path": "assets/stages/l1-005.webp",
+      "sha256": "847e31efd82bf8240cae82edcf0c0616a0b1bb92cebadce7eb5c2334ea1226b0",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-006",
+      "path": "assets/stages/l1-006.webp",
+      "sha256": "8bbdab30aaff0ae0dff931520c706829a42054de1fba9942e29ca2e21d1185b5",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-007",
+      "path": "assets/stages/l1-007.webp",
+      "sha256": "5120531f3214547650f71c7b00f5e260e107e3474e2a4c6e749361dcb2ba61d4",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-008",
+      "path": "assets/stages/l1-008.webp",
+      "sha256": "9348ba854ba0ae35733143569e0ce21d983ccdd80296e0f4ec798583c9acbfb3",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-009",
+      "path": "assets/stages/l1-009.webp",
+      "sha256": "79c4f8fae881ee3e6739630ffcc1db077626d6f3a12588699bf0e47f929c3846",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-010",
+      "path": "assets/stages/l1-010.webp",
+      "sha256": "2a95cdac56e4a44898456901f0cedc1352b63ef0e1120487985eb4c735fcc0e6",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-011",
+      "path": "assets/stages/l1-011.webp",
+      "sha256": "4c760e48ef6e58cae8a7cbe2926dabbc56b6bcfecb95d02d612e8ef5ad596c1c",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-012",
+      "path": "assets/stages/l1-012.webp",
+      "sha256": "c8eb95eb1427a959003a9918027465e0c795f860d4d27b87ea2d689fe79f162c",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-013",
+      "path": "assets/stages/l1-013.webp",
+      "sha256": "a821fd465143480e5f7918f291cf411d9155f14df6b2a77db53fa645f532d759",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-014",
+      "path": "assets/stages/l1-014.webp",
+      "sha256": "3392418607e677631b79f0f90088d422e5a1467845a29e851689edbf41b45405",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-015",
+      "path": "assets/stages/l1-015.webp",
+      "sha256": "c954e68644a00fad04f4b5af012007d6fc31c7f2023f03c8e76e4e1021b42d96",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-016",
+      "path": "assets/stages/l1-016.webp",
+      "sha256": "7c1bb63f14c17945f6ee139d29120352884090892b6a45c354c98b614a836601",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-017",
+      "path": "assets/stages/l1-017.webp",
+      "sha256": "392e9c3b6690f6420c46cb24e2a394e2a97c22daa3d46a959be06c49c7e7c92f",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-018",
+      "path": "assets/stages/l1-018.webp",
+      "sha256": "b74eb399fe12467218b055fdad142b55610274aad64325efe2b2758989e65a03",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-019",
+      "path": "assets/stages/l1-019.webp",
+      "sha256": "10f771fd26a2c939de43e513819535b137e8232b1a779d850bb7b9c0affb7bbd",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-020",
+      "path": "assets/stages/l1-020.webp",
+      "sha256": "c51d1964771b10d257764b1fc8c207619f3615ca51200874c3c70fe62e201561",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-021",
+      "path": "assets/stages/l1-021.webp",
+      "sha256": "0b245b901e0ee82f1c46d59777fdf483ea204b8e1f9e157147202efa7513692c",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-022",
+      "path": "assets/stages/l1-022.webp",
+      "sha256": "23275047fc4d45bc2c4dd2cb3106f625da1b6e43c615c540d8545cbafec4407d",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-023",
+      "path": "assets/stages/l1-023.webp",
+      "sha256": "fe9f299e9e56edbe622e2bb50d28b40345edab9295d1a036b75d4bd35cae74e4",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-024",
+      "path": "assets/stages/l1-024.webp",
+      "sha256": "b20ea7b754f984db31166768da4309348f692a225c12c235a034ffcc51b4d6ca",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-025",
+      "path": "assets/stages/l1-025.webp",
+      "sha256": "df6b94597575615a997a54cca653da04f6465b444b1a752ff30ac5fa786aaa6f",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-026",
+      "path": "assets/stages/l1-026.webp",
+      "sha256": "8b458aabbc3956d5e946cd91c00a7abe13d7e2d692a80ed512e00ac90660e6c8",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-027",
+      "path": "assets/stages/l1-027.webp",
+      "sha256": "23a0c2d0021f5e815722eda9e337452405e77851b454eb29a88d91330951640e",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-028",
+      "path": "assets/stages/l1-028.webp",
+      "sha256": "a956b315ce7feaaa593bfa4ecba0921cc2ca885a9d76f9769b4feb8498fe489a",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-029",
+      "path": "assets/stages/l1-029.webp",
+      "sha256": "5e701b5b0b384fadccdae367d4bc913d63e44efd7cd1831c9e2c4f829beaa56e",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-030",
+      "path": "assets/stages/l1-030.webp",
+      "sha256": "f1e10fb6a698b06c23e7990e1b9f8aa9c6572d7a90572682b1f5dc69b1dc4888",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-031",
+      "path": "assets/stages/l1-031.webp",
+      "sha256": "6ebebb79e922047a2b963ca2be33525c9d6b98144fc8f573ef052fa463dbf2c9",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-032",
+      "path": "assets/stages/l1-032.webp",
+      "sha256": "4a74510c023c52f1655c36ec0a2b9c7a566e6454f47605b6d2655918fa824a7e",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-033",
+      "path": "assets/stages/l1-033.webp",
+      "sha256": "327046cdb969e906ef751f2cbbe2b2a3308265ea0d060f4a8b8c32336308f9d4",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-034",
+      "path": "assets/stages/l1-034.webp",
+      "sha256": "fc896663d7393c5c6c0c35b2303d4789fbc3911748b8b481d37a966fd82330f5",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-035",
+      "path": "assets/stages/l1-035.webp",
+      "sha256": "b641c94f6954f42550052a9bf9bc98affb00af675295c14ff1d2f80020312a63",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-036",
+      "path": "assets/stages/l1-036.webp",
+      "sha256": "0de027ea8f0b34f2de1fe6e27ffb0970b05e288df3beeaa3e11f026707f5cdd0",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-037",
+      "path": "assets/stages/l1-037.webp",
+      "sha256": "945dcd82996fcd5fcd672e5ee232ff68718171f379d090476c02a33bb6a478c2",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-038",
+      "path": "assets/stages/l1-038.webp",
+      "sha256": "05ffb9042150591d6fc02dc918099fee1053f7955cd99e4f0b907413fa594795",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-039",
+      "path": "assets/stages/l1-039.webp",
+      "sha256": "316a494d6f5911b153fb193b395b98e778dfa7f3f16e2b7b3c39ae69cfcea37c",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-040",
+      "path": "assets/stages/l1-040.webp",
+      "sha256": "f99bccdf004c2f0c9d5e98454c164ae59e71108f297e42fee1bdb1c15a06016f",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-041",
+      "path": "assets/stages/l1-041.webp",
+      "sha256": "bdf5a20e6f634a1977c125b0c3492d0162be4317eab9f14d5ad102dbb018d130",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-042",
+      "path": "assets/stages/l1-042.webp",
+      "sha256": "3e1eedc4e98bbee6e92c06a41bb3ad56565ab6fb0e858c6f236d60a7ee1afa2f",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-043",
+      "path": "assets/stages/l1-043.webp",
+      "sha256": "1acc477785c2e7a6a64069904ad2ece5293761936900d3f77772d9f696485477",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-044",
+      "path": "assets/stages/l1-044.webp",
+      "sha256": "e0006ee0b0d9eab56c77c4dbb89516041a24401cc08c4d8f09ff67a1a9c81f17",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-045",
+      "path": "assets/stages/l1-045.webp",
+      "sha256": "798d0581f84eb8dd65ce7ac0b5e61beeb39e611776c1603640701543dc47b52c",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-046",
+      "path": "assets/stages/l1-046.webp",
+      "sha256": "74555cff2abc9be06e588c4ce9fe7f9a5466b37495dc165a8838762c405e4f39",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-047",
+      "path": "assets/stages/l1-047.webp",
+      "sha256": "27ea66a0aa9a5753ed95d581bcf9e41b1b7f99b15cb6faa919c39981b31b9408",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-048",
+      "path": "assets/stages/l1-048.webp",
+      "sha256": "a8196351b0bc6f5af4eb86aa045420917779c575d41af9b338f104e1c2c373da",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-049",
+      "path": "assets/stages/l1-049.webp",
+      "sha256": "005b237d20a0517024871f518f896f3f80c87d7f53fb063010fccf23dec44697",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L1-050",
+      "path": "assets/stages/l1-050.webp",
+      "sha256": "e630e73ce3e0c21df1719bf64893fd4e329fd528d60532246cbeea6b69f9cf22",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-001",
+      "path": "assets/stages/l2-001.webp",
+      "sha256": "8dd07aa9d832a9eaa5d040c048b92b176b1a1f30111b5fc212a579124d36f697",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-002",
+      "path": "assets/stages/l2-002.webp",
+      "sha256": "2ea7ebbaccc4205e80c918b4db8448cc5d3f25ee9ca9b94b4ee014acbc54f98c",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-003",
+      "path": "assets/stages/l2-003.webp",
+      "sha256": "c4acb803b8019af59290a19fcb89991758efdc3c62c8c5d5e102cec392c40a94",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-004",
+      "path": "assets/stages/l2-004.webp",
+      "sha256": "39049897416ed3a71991ef81d340c2fead0dd0a8865cee797a30815cd8d7ea29",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-005",
+      "path": "assets/stages/l2-005.webp",
+      "sha256": "31f7f69dddb98ed4aa0ef0ab41adc242af109b9a6eb3188df6be4f23df2d972d",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-006",
+      "path": "assets/stages/l2-006.webp",
+      "sha256": "8de8a6d822b842771d32f42a3944efdee498e0e5a344e61f81b33f3948c18417",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-007",
+      "path": "assets/stages/l2-007.webp",
+      "sha256": "02c391dbcf96f3f44e203fb57c1912afdb0b50d260bb5fa5ac16168ae339493a",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-008",
+      "path": "assets/stages/l2-008.webp",
+      "sha256": "09b51089e36c3a9e1ed66ed5463e310c660bce06413b4b6157ae2b5df8bb153f",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-009",
+      "path": "assets/stages/l2-009.webp",
+      "sha256": "45ac366596d616d20e9edf3420d75031f7e60a2ee5fdbbc5fc1f648e1cf7f45e",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-010",
+      "path": "assets/stages/l2-010.webp",
+      "sha256": "360d6d27120bb0b399d88aa20cd132c46003adbb19d810d4d1fdb59e41cbc276",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-011",
+      "path": "assets/stages/l2-011.webp",
+      "sha256": "339b7c6710f7dfc0f40267148c430b1aef0c4293ea3d5cd4bb2a3a851039afda",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-012",
+      "path": "assets/stages/l2-012.webp",
+      "sha256": "1d080ac258e2e2b7b7af31e80a6d9f7a3c89ca7942e04a33c7050afed6e7ba66",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-013",
+      "path": "assets/stages/l2-013.webp",
+      "sha256": "8061beb4a4161bb2682efcba49b08ca2aa6d9560088d2ae0af134567af770bd6",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-014",
+      "path": "assets/stages/l2-014.webp",
+      "sha256": "d00bbdf978245abf016d4404d5ece24a5d0352b9d9e98b8cf0eadec35bb6c744",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-015",
+      "path": "assets/stages/l2-015.webp",
+      "sha256": "f7d04c6874129e893ffe41ab3af0973c9a0f2b7b4304390709bf67ee71b31021",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-016",
+      "path": "assets/stages/l2-016.webp",
+      "sha256": "b891ae0e972d9c74811b20ee4aed5afe83618553a38d6785c77228b9f6f2baba",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-017",
+      "path": "assets/stages/l2-017.webp",
+      "sha256": "c16186a9ccb2df2c92fbb666f899850d1e1f51eab7c2153c746fb17c33e57ace",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-018",
+      "path": "assets/stages/l2-018.webp",
+      "sha256": "21bd91895199566ff255cc09922fd26de0ea30cd4cf93ff3cd6317e14c9e6abc",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-019",
+      "path": "assets/stages/l2-019.webp",
+      "sha256": "c86eb40f795ff1527264686b6e740bd90d6fc26c3e8ea612558be06d75375886",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-020",
+      "path": "assets/stages/l2-020.webp",
+      "sha256": "7de7f97884ac3ec51209015ede691e777b490d26255c6a6cdbc418cf97b8d778",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-021",
+      "path": "assets/stages/l2-021.webp",
+      "sha256": "61946e0cbf6a88b2a462b15bf95fcd9f0fde13aa10691e2b988c66a454f30af9",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-022",
+      "path": "assets/stages/l2-022.webp",
+      "sha256": "b38bff8385c8d2d7ffb7b847775135db85e421031f8179d0ea92ffbea29a4289",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-023",
+      "path": "assets/stages/l2-023.webp",
+      "sha256": "bd8d0574ba6eaa82b11ab01fa3ec2f9c980639413ccf18c12e705fb9dc5d4b76",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-024",
+      "path": "assets/stages/l2-024.webp",
+      "sha256": "0235e4450665209ac334cec2a39d2df614862e7be6feb3ae2e7c02fd59f50c75",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-025",
+      "path": "assets/stages/l2-025.webp",
+      "sha256": "bf4be5b9f0409c33f224d36b011fd4d1a5ec076805562229c47664f2bb8825f9",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-026",
+      "path": "assets/stages/l2-026.webp",
+      "sha256": "accce9b86a45c8b8d6f200d2ad48bae8d71aa5042f167c4717e51a256ffccf23",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-027",
+      "path": "assets/stages/l2-027.webp",
+      "sha256": "40ce3a25600b04b17abe8fd6fadde80bda86790e8d29ce2a9375af6fcbccd296",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-028",
+      "path": "assets/stages/l2-028.webp",
+      "sha256": "8433ad2acc33dfc3ea5eba988dec4d0c076e91300b95ec3ab3398cbe1da1b7a9",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-029",
+      "path": "assets/stages/l2-029.webp",
+      "sha256": "4a0cd13cfa9cac42acca85d1b6c9a8c7c4b9baf2f0f670cef27119613e137072",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-030",
+      "path": "assets/stages/l2-030.webp",
+      "sha256": "82ab125c5f45932080d42edbd8a575e5bf66e53fbd1a647b548e66dd55382a92",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-031",
+      "path": "assets/stages/l2-031.webp",
+      "sha256": "c7d4f160b305ceeb803dd0f06393f20a655692fa1443e62c354bcf4ed85476b0",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-032",
+      "path": "assets/stages/l2-032.webp",
+      "sha256": "b0ccbaf54c38b334e9973e0d2ba2c225e2550f5e6802b5f1b952cd8103f45618",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-033",
+      "path": "assets/stages/l2-033.webp",
+      "sha256": "7302de0e438c7a12e6edf74fcc5df766757c3736fb3ffd34cc3fc81968c78fca",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-034",
+      "path": "assets/stages/l2-034.webp",
+      "sha256": "85f6be2149b206947ce7303577f72dd7f8e0d7dcf78a24c367854d6ea777a330",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-035",
+      "path": "assets/stages/l2-035.webp",
+      "sha256": "83b908c20e0dc6c2815866615be6066e81b63fef494431200aca5493e91786bf",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-036",
+      "path": "assets/stages/l2-036.webp",
+      "sha256": "7b687b10a723c3118ae7f3b36c7e93d00ceb4f4d2093ee5c36e2989936d547ed",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-037",
+      "path": "assets/stages/l2-037.webp",
+      "sha256": "5323d0beea6516bc20386a8a5c27cd09f22161ec6c59fb9fb965be723865e1a1",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-038",
+      "path": "assets/stages/l2-038.webp",
+      "sha256": "63d374e96ae7caa0b30f2d8db4c20c08711f75fe5e700535fbd412f1d4dcc2eb",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-039",
+      "path": "assets/stages/l2-039.webp",
+      "sha256": "18f7f13095c4da19909a447946e3682ed8f9d90056dcb7f0369a792368270512",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-040",
+      "path": "assets/stages/l2-040.webp",
+      "sha256": "15255fb99a04de3b070a740c4ab1f7a676951102a6388c74d8304ee0cbfb46a1",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-041",
+      "path": "assets/stages/l2-041.webp",
+      "sha256": "6d305bcc146b38dea4cf352bd92cc23f73916e362f2a5cddc9b08bd16537e4da",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-042",
+      "path": "assets/stages/l2-042.webp",
+      "sha256": "ee524de38e80850d63c9ba71eb3514e7a3b324a9efd5c0d87771ac8002819c15",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-043",
+      "path": "assets/stages/l2-043.webp",
+      "sha256": "4e310bc6d6b9252d81d69a4d6068ce6ae10d15e541136ebc428cc9f08ce88e3f",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-044",
+      "path": "assets/stages/l2-044.webp",
+      "sha256": "b312063c3754b88bd0ff95204bec1ca9400301bb2ae6f2e54367648cb0b129a3",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-045",
+      "path": "assets/stages/l2-045.webp",
+      "sha256": "adb3aa5e1979ff8115c775a43e728133a176682c700dc630320baaaf8a2631af",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-046",
+      "path": "assets/stages/l2-046.webp",
+      "sha256": "3fae79e6e3c38220059e584d3b9cdbd0343ae9f3a60a2304f7be54314764ebc7",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-047",
+      "path": "assets/stages/l2-047.webp",
+      "sha256": "cb6dbe9761f100b505f93515906a42e056040624ef5fc5e716a1493547f53fa9",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-048",
+      "path": "assets/stages/l2-048.webp",
+      "sha256": "902f24586a32cfbacdbe07323f202db61d2daa8b1d4994dbb2bb70ad92db88ab",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-049",
+      "path": "assets/stages/l2-049.webp",
+      "sha256": "c70a1a1202a6d95cf0e3988f921891e3f84437efc42179064ba7ea171e1e7a3d",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L2-050",
+      "path": "assets/stages/l2-050.webp",
+      "sha256": "fc0fea0a25c78f5518c6b3b0b71740ba27493aa00ec2cb991e898d0d2a8cef42",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-001",
+      "path": "assets/stages/l3-001.webp",
+      "sha256": "a437851cdbbee619861febaf9f3ddff58c3a21e4e0e1efeb83b065d8170b4ed3",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-002",
+      "path": "assets/stages/l3-002.webp",
+      "sha256": "f01c815c0a864823c07ab4d4d5722ddb62f81a00c83c0b9d864f4f8386614171",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-003",
+      "path": "assets/stages/l3-003.webp",
+      "sha256": "0d7ccf0b03d83c58630c02ca84bcac4232ccc869211aa943f38347f8ede6d122",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-004",
+      "path": "assets/stages/l3-004.webp",
+      "sha256": "803196ec3f9ada4804ce506fdc84527c880ea5bcca327e638fc77a8a8f1ad361",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-005",
+      "path": "assets/stages/l3-005.webp",
+      "sha256": "a6ebac0a1406727b942dda3efd543fb47b99953885e46c3d64d4290c55cf2948",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-006",
+      "path": "assets/stages/l3-006.webp",
+      "sha256": "fae8fc87536f98f11010b22dbe3f94248952ee355bce12f569b050fbe59c279c",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-007",
+      "path": "assets/stages/l3-007.webp",
+      "sha256": "547877d68dab573c579444c67dfe45dd9e311365ac398ca8d9eb575c436ff41d",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-008",
+      "path": "assets/stages/l3-008.webp",
+      "sha256": "7871ee22cfd1511c8bd2c1c4ddf26d609e71b8a81b4382dc7f9c8cd8bbac7901",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-009",
+      "path": "assets/stages/l3-009.webp",
+      "sha256": "e81ee80881a6fabf3638b652fdf8241c85e36a98ae1776dc9b14f68b3a78800c",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-010",
+      "path": "assets/stages/l3-010.webp",
+      "sha256": "225e5f7ce7bf6ec408804003a2f65b153f4420210f557b181da45306ba8e57db",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-011",
+      "path": "assets/stages/l3-011.webp",
+      "sha256": "84b43f5507798931e15ffb6d37612e93255ab09791413d391b5eb1b9bd0eeb81",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-012",
+      "path": "assets/stages/l3-012.webp",
+      "sha256": "4bea2841b5479532fe2c07768396338e8ea6c06890ac3f5fb4a4d741ff9e687e",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-013",
+      "path": "assets/stages/l3-013.webp",
+      "sha256": "7572c53bdfcc38af195a21608ded0d05949e789fe044afb4448f2b1582444ddd",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-014",
+      "path": "assets/stages/l3-014.webp",
+      "sha256": "ea742ff8fb7d80c78520980bba6ca6bbedb4ca752bb902e4715dc020b53847ee",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-015",
+      "path": "assets/stages/l3-015.webp",
+      "sha256": "9df4529e4cc624518b8be6f856840222a9c46eeb595d790e2b21dfdc8e7dc823",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-016",
+      "path": "assets/stages/l3-016.webp",
+      "sha256": "763322520569dfaa41daaac74e249df50e2ae976b8c336b850d3a592b5c1aed5",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-017",
+      "path": "assets/stages/l3-017.webp",
+      "sha256": "c900e0e8d05139301aac3b667d081b3feabd3a637a396d5a5691bc869fb64e2b",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-018",
+      "path": "assets/stages/l3-018.webp",
+      "sha256": "d51748c015f6636a71f5031437ad8f9ca7371af3d3c9e73e4160511365552390",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-019",
+      "path": "assets/stages/l3-019.webp",
+      "sha256": "ce93cb4409ff2e3192229e92f1af481691dcfef103a17bccfc794f5104a51705",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-020",
+      "path": "assets/stages/l3-020.webp",
+      "sha256": "46435ec1f77b2f652ec1fb9685a767e20a38fe82acf71eb96b11039b9e0cb99a",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-021",
+      "path": "assets/stages/l3-021.webp",
+      "sha256": "6bfb6417e0b9ed29a53ce981f1af486b2ac4bf8c7ef6326796e4a89909835d83",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-022",
+      "path": "assets/stages/l3-022.webp",
+      "sha256": "ec522a5797ff3b87123cfad6ba66d48a885145e5ddf9689070c7a0d349398c20",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-023",
+      "path": "assets/stages/l3-023.webp",
+      "sha256": "9a19f484513216623c71bfdc0d2d5da454f1a895ab31f14a68f85c453ab6fdcf",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-024",
+      "path": "assets/stages/l3-024.webp",
+      "sha256": "f5c1c71248762f3e47b39dd4ced001c464acc4ab24648c4b864cb1fe1f22b63d",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-025",
+      "path": "assets/stages/l3-025.webp",
+      "sha256": "f7dd795f53ca8b69255613b21580375b9c00c43b2af5e0b28ee664064e215f01",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-026",
+      "path": "assets/stages/l3-026.webp",
+      "sha256": "c4d15c586215a1d099f7e6b8923fe0ac41d9eb2716e3df522da5f4a2e23968cc",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-027",
+      "path": "assets/stages/l3-027.webp",
+      "sha256": "29e83fbd040be768bd1211f1d5d72939652eccf49dffb316e5012900781ab403",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-028",
+      "path": "assets/stages/l3-028.webp",
+      "sha256": "903fb272ac4a227c561831a5d9c8ecab14ce439cfe4a6e331ddad7c6651c4e4e",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-029",
+      "path": "assets/stages/l3-029.webp",
+      "sha256": "a5d47051fb95af0ab3d7d4a021047182e4917b5d918e10b500b009efe64a836c",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-030",
+      "path": "assets/stages/l3-030.webp",
+      "sha256": "e533e1a6503c8ea73254a4d8f598e78b5699186eccd63332f6511e7df0bfb814",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-031",
+      "path": "assets/stages/l3-031.webp",
+      "sha256": "edd6cf87e3f044375a80b12588e8de7a532a16c7b173ffc29378bad2dbfec613",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-032",
+      "path": "assets/stages/l3-032.webp",
+      "sha256": "fce38b355c6106d270fc69ba8de2a7f13306bb6cfbb0ff85def3c7f0d86828be",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-033",
+      "path": "assets/stages/l3-033.webp",
+      "sha256": "7fc37b3ea2f211d9edd5bceb07e30d5f840625f26dc883bd8346bba367de80b1",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-034",
+      "path": "assets/stages/l3-034.webp",
+      "sha256": "bbbb97ba3562508b01ea608dec2ee6eb520879ba4846f571c7756e5d41bf927f",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-035",
+      "path": "assets/stages/l3-035.webp",
+      "sha256": "dbc1653f63e104edefd86b1ac0091f0fdd068bb49ecfcca838f1bf23ec31b106",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-036",
+      "path": "assets/stages/l3-036.webp",
+      "sha256": "13c163b3ce470b9e56bf3973a9d0a0db6c4e8d75d5130873ce990e8359731148",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-037",
+      "path": "assets/stages/l3-037.webp",
+      "sha256": "f7a57000f1e215097dcc9e403391b061c5f05b605a9596ca9a87da637dc4038a",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-038",
+      "path": "assets/stages/l3-038.webp",
+      "sha256": "7f14ecae61eb63fc8cff3fafc4fe7fb19d2c23a3eca92aa2d3ec6de121426b39",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-039",
+      "path": "assets/stages/l3-039.webp",
+      "sha256": "f7708d48d8ddd70a0caee5189490325f87c5535457d4bc6dd8bee30d5f465b92",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-040",
+      "path": "assets/stages/l3-040.webp",
+      "sha256": "69f9556bee3ce2ee4dbcebcbcf0232f782843bf7eaeef5bc6882a54e88ff40b1",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-041",
+      "path": "assets/stages/l3-041.webp",
+      "sha256": "596d8009d7dddca6ffc6c2bc52c6d45c718765f6f809616e1b2b7ee257322676",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-042",
+      "path": "assets/stages/l3-042.webp",
+      "sha256": "85bc045ea40e60e9002237a1b33597c15c2a1b134c4ee60e2056dfa2934b3612",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-043",
+      "path": "assets/stages/l3-043.webp",
+      "sha256": "4a551bf74f1c0f405e7e3b676fa6eb519d04b4675fcbf3da0171f88ba75d3290",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-044",
+      "path": "assets/stages/l3-044.webp",
+      "sha256": "f5d3797abdfd4b1b0d04bfa0a0f871510a0e0dd6dbf4de13d30cbd5769b6ebfb",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-045",
+      "path": "assets/stages/l3-045.webp",
+      "sha256": "d5a1ebfc432dfa2e7b81f479d87e42d237ec9b37144d2586fdc3b3acb986d6da",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-046",
+      "path": "assets/stages/l3-046.webp",
+      "sha256": "a3a10abd2c43ce7da8726a8c8218467f10c14a37f00bf4d16eaa0f16656871df",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-047",
+      "path": "assets/stages/l3-047.webp",
+      "sha256": "356167287fe0fdb449bb74b085a5b9fa0718da783294791d4d4f25a54897faea",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-048",
+      "path": "assets/stages/l3-048.webp",
+      "sha256": "d3b9efcb5d59a30f40ccab18434002a73ab4d3386078b045cdab1c511b830590",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-049",
+      "path": "assets/stages/l3-049.webp",
+      "sha256": "714ad03c2cc80680e546de7cd82dddea19a04838b588aac4cd7e1f355b4ca160",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L3-050",
+      "path": "assets/stages/l3-050.webp",
+      "sha256": "b96375ee84888c08292c96b093cad466193a513cafed6b7327b77c6baa11e29b",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-001",
+      "path": "assets/stages/l4-001.webp",
+      "sha256": "808989f63972179d0885a00a7eb529a456d63d5f05ee557abdaba456ffd46da9",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-002",
+      "path": "assets/stages/l4-002.webp",
+      "sha256": "f87dd0c3f5f26a289c9e5ac511775a60a35f75c0e5aef44da3c1596b38a243b2",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-003",
+      "path": "assets/stages/l4-003.webp",
+      "sha256": "54962469d0a9f411afba48cf88cfece59566eceb18e8ca988e36c9206e3bb264",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-004",
+      "path": "assets/stages/l4-004.webp",
+      "sha256": "6c6684f40dd5b8308b6b1a1c7f3dba751d435894e4874937489162fac917ec43",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-005",
+      "path": "assets/stages/l4-005.webp",
+      "sha256": "fe15c7e4feae9bdbaa929e045ca4cc3609a5a95d35749d6c9faa81d1b9d5f16c",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-006",
+      "path": "assets/stages/l4-006.webp",
+      "sha256": "d56a5ac1b31b9f3d84b3938cc9007f2e182093bab69b64fe36235afffdc07da5",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-007",
+      "path": "assets/stages/l4-007.webp",
+      "sha256": "f87bba79474661b41d5c7b2ea82de6f2096029fe9f340b97e954865757dd8636",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-008",
+      "path": "assets/stages/l4-008.webp",
+      "sha256": "273744f4f1697feae95e602ee7e1e0dfc7c1a514efe0f03f353325735a2c5b92",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-009",
+      "path": "assets/stages/l4-009.webp",
+      "sha256": "c26cf60111179ee478467c7df20802acd3dfad0295a97427165078b18723899a",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-010",
+      "path": "assets/stages/l4-010.webp",
+      "sha256": "7e95ed11d27677d4bc4a7612412200d35449210d59c10a741393ff0491d91b3d",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-011",
+      "path": "assets/stages/l4-011.webp",
+      "sha256": "21288a0d0e8a34748cfb0efcc629d1c1f33d0f03bd2ca2cf5104ac09d90b1e1d",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-012",
+      "path": "assets/stages/l4-012.webp",
+      "sha256": "0c0334f02d81db8899a9539ff7528f04b4fee1e6de110cb245ce0a7d70c3dcfc",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-013",
+      "path": "assets/stages/l4-013.webp",
+      "sha256": "c36a3205929d60d7b9aed9a97fc0e35db0ac13aa177f2f7b4585c4df1d9557cc",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-014",
+      "path": "assets/stages/l4-014.webp",
+      "sha256": "6f5995bab07ab539e5a65fb0054b272fa4f9e9dc56421b6f646a16a46bd0e672",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-015",
+      "path": "assets/stages/l4-015.webp",
+      "sha256": "bbebcb90c65136bc6e806f93172e3ae756d15f55679f046801ec4ef12039bf01",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-016",
+      "path": "assets/stages/l4-016.webp",
+      "sha256": "ddb56ff4b7f19746f8245573628bde898512acac7e729d3bb7deb8af8c8ac786",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-017",
+      "path": "assets/stages/l4-017.webp",
+      "sha256": "b8f2168eafa6f5a338074c268a7857b57c3e8793f96025a4317e109b0c43a55f",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-018",
+      "path": "assets/stages/l4-018.webp",
+      "sha256": "13e76e1963e4f41987e01361501e72a33de85d765576f53b1274cdc4a41beafc",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-019",
+      "path": "assets/stages/l4-019.webp",
+      "sha256": "aea6f14474aa7fb3227fe3381436537f7450aa30ac18426c736fe92ed297ad2c",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-020",
+      "path": "assets/stages/l4-020.webp",
+      "sha256": "71ec8e92532148dd6f2e929d221a4e59f6e2ed2e1e64cd401b955be100117ea6",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-021",
+      "path": "assets/stages/l4-021.webp",
+      "sha256": "1872d7f131156401329f97b53cc9d361bdc30221e0f9b1f050fc178b0e07c112",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-022",
+      "path": "assets/stages/l4-022.webp",
+      "sha256": "412c426898dc72e6f30e811d6072a968fd388947d7fe592ff795d8a766e96231",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-023",
+      "path": "assets/stages/l4-023.webp",
+      "sha256": "07df711cc0a227e4a353ac0d95e6fa0277416df806cac3a32575803d9847cdaf",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-024",
+      "path": "assets/stages/l4-024.webp",
+      "sha256": "59b4ee15fbeb65baeccd480e5e235a65d7937b5df0c74d9c52adf47a31a2add7",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-025",
+      "path": "assets/stages/l4-025.webp",
+      "sha256": "99fb934b62175818f0e827fe134c421b16b4b7dc1d23e60ec5c43fabbdd18d1f",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-026",
+      "path": "assets/stages/l4-026.webp",
+      "sha256": "6bb4f3fa39132fefee08533d081d59e4f991e1eade5a0177e6d63e602c12d867",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-027",
+      "path": "assets/stages/l4-027.webp",
+      "sha256": "9b744855d2644cf600b9fcdf5303322dc0a7c8b243db4b9fb6e15e3c98ef47db",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-028",
+      "path": "assets/stages/l4-028.webp",
+      "sha256": "25f1eb634dc91435e776a40a3e25a4a3f5025473db3253d1168d6f27b8ef09b8",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-029",
+      "path": "assets/stages/l4-029.webp",
+      "sha256": "201a476d54e074bb07cd70f4a55503830c7e8680915103bf557a2a3e987d29e5",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-030",
+      "path": "assets/stages/l4-030.webp",
+      "sha256": "025a275d0c2feb048f17a71ff71247d8ad5fdb95f859b30fba2f3061b3b6ae79",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-031",
+      "path": "assets/stages/l4-031.webp",
+      "sha256": "d9ca8de6d527cd47ff48df9d3290d605b9e271d28822235f8ffb066694d70f20",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-032",
+      "path": "assets/stages/l4-032.webp",
+      "sha256": "8e85829130ba05300d2fcfac34d2a03b7893862b61f2db07bc0f7dfb02f7884b",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-033",
+      "path": "assets/stages/l4-033.webp",
+      "sha256": "585f74bd1fb6bafb8e5a9b83475bf87a8950ca5c774ad418ea98b9b852a76cc7",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-034",
+      "path": "assets/stages/l4-034.webp",
+      "sha256": "efdfe237f958a1e8aacebb724f58b6980076a88ced61f57a20ad5136b0aa48f3",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-035",
+      "path": "assets/stages/l4-035.webp",
+      "sha256": "0f6c424484ce88a922195c2f13e9c3756b645ea38b93d48f9548cc05bb39ba02",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-036",
+      "path": "assets/stages/l4-036.webp",
+      "sha256": "48c1b3925f6fb37411d65a7c112bcd456b26fa69caea3f6edde4451406327d45",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-037",
+      "path": "assets/stages/l4-037.webp",
+      "sha256": "6d2cf9c5b51ae0954963677e6fabc7aa71cecf122efbb960f73e8c0381a1badf",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-038",
+      "path": "assets/stages/l4-038.webp",
+      "sha256": "4a68d6a0a0a6b1c97fb976a2a263465a9f360e6b456e02269e493dca1ef17b26",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-039",
+      "path": "assets/stages/l4-039.webp",
+      "sha256": "7d3da281a42a4637fe3679a79211dbd550cd903779e5e3514950c2d60bd433f7",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-040",
+      "path": "assets/stages/l4-040.webp",
+      "sha256": "36b618ef34ed498b917faab765cac2d5d3023ddc4b3b92027aa80939f72521be",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-041",
+      "path": "assets/stages/l4-041.webp",
+      "sha256": "3de1c42cccae11a99623842816ff6da64eaa2f0cd9fcebc44672b3f64a089d5e",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-042",
+      "path": "assets/stages/l4-042.webp",
+      "sha256": "733171e7cbe6bc19e088da7201353fb9b0272d986b0ef4b197bb996a867c9b44",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-043",
+      "path": "assets/stages/l4-043.webp",
+      "sha256": "b8db25f898fdb880de2cf5af2d3d20b602298a8d99768c336380bfb9d6a3ca95",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-044",
+      "path": "assets/stages/l4-044.webp",
+      "sha256": "d0b2ce7cdd7cdab13a5840337985bee09c4684e9e98eae05e7accd5a84dbde91",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-045",
+      "path": "assets/stages/l4-045.webp",
+      "sha256": "d9f147c782e9dc3d2609efb151b7ac5e0cd752d4613d873a7a898af3c616d3b2",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-046",
+      "path": "assets/stages/l4-046.webp",
+      "sha256": "4e48e8570826704ee65f4b9462805503cb2d0cf97621c417c7af4aa5e21f40f1",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-047",
+      "path": "assets/stages/l4-047.webp",
+      "sha256": "3cf10e4ac1ed7edcfdf42b17bccf4359a4537907d4f4b72e01ef0f0d2ef0afc8",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-048",
+      "path": "assets/stages/l4-048.webp",
+      "sha256": "ed3d4774ea3f7405851cc75f7db09fdb235266b81c11f04fa9650731d21c0248",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-049",
+      "path": "assets/stages/l4-049.webp",
+      "sha256": "b58fefeabd7903277791dea317c0278d48560bf634612feaa38c0a563adc359f",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L4-050",
+      "path": "assets/stages/l4-050.webp",
+      "sha256": "b6dc0807bab52494b5861d4da2548992af786a0fad41969cca139907581e4be5",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-001",
+      "path": "assets/stages/l5-001.webp",
+      "sha256": "e6a3ffd5e9064b184d86d9fcd8791d34cbdb6c4a1750aa83958af3bb144cd8a7",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-002",
+      "path": "assets/stages/l5-002.webp",
+      "sha256": "425db34cf7a4c70918d501f44366d4520c90ce95785cc62a6ed122993f642f0d",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-003",
+      "path": "assets/stages/l5-003.webp",
+      "sha256": "24061b717c7af3cb31062e88d07498a8d82f61d1bd65bf506e8b01cbf2e964fa",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-004",
+      "path": "assets/stages/l5-004.webp",
+      "sha256": "5cae5e7dc7f3b9ef608885c626a2458e6e7411352a8960e9c73c9766942a8805",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-005",
+      "path": "assets/stages/l5-005.webp",
+      "sha256": "fc2db8ea0c7e05b96f924b2598fbf70a278e0369e6e8cc613f71064f7d51a379",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-006",
+      "path": "assets/stages/l5-006.webp",
+      "sha256": "fdf2dae236037e290ba2cbcf624cd67888c5e1fe7afef51b4a0a661caa5915bd",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-007",
+      "path": "assets/stages/l5-007.webp",
+      "sha256": "286a5ad4af780b5eb8ed025a50972e00da578599b854db631a7d564f149e6230",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-008",
+      "path": "assets/stages/l5-008.webp",
+      "sha256": "bf56f9091c0d17a925616606423a005e2436ee46c5b914716a89a93ce9a02c72",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-009",
+      "path": "assets/stages/l5-009.webp",
+      "sha256": "b42fa185abcc3e15b946e2715013691e381971fb51ca631ca0e0f3a046fe4e47",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-010",
+      "path": "assets/stages/l5-010.webp",
+      "sha256": "c61143654186b3f879f2a63029dbb0b46aebadfc4cc0116afc0dbf3381f25097",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-011",
+      "path": "assets/stages/l5-011.webp",
+      "sha256": "f311659ad6c7240123cb046b571504b616bc11f6ee05845a454bbf92ba9c2ab8",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-012",
+      "path": "assets/stages/l5-012.webp",
+      "sha256": "f2fac73b5178d068de061f2534eea1c6bfb77d6ee9511c7092ffb3914ff05a9d",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-013",
+      "path": "assets/stages/l5-013.webp",
+      "sha256": "ca4525cdfbba4e6ef4d745561bfe1ee02f91e828c6aa672ed1bc3ef3c832b670",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-014",
+      "path": "assets/stages/l5-014.webp",
+      "sha256": "45a7f85149ca290acb031eff71b91d914d9b30c3aabe20234210b15df5c8301d",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-015",
+      "path": "assets/stages/l5-015.webp",
+      "sha256": "c61f40ad4e00e37b93621d533c3d4b8001319d4ad22ad7ad03d633a01f8cc2e6",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-016",
+      "path": "assets/stages/l5-016.webp",
+      "sha256": "425b5a8e9a4ebcc7563d0d01d6efd314aa6d5311e609c58f2319e008ae5f9556",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-017",
+      "path": "assets/stages/l5-017.webp",
+      "sha256": "8f41c7bbe86823da208eca3fde2cf0c527b9c465bc4188eb5a8a28907374a21e",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-018",
+      "path": "assets/stages/l5-018.webp",
+      "sha256": "edc3dc1316660bf6dc7208c1f4ae6a9a73ddced005db49f081b0916e559c9bde",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-019",
+      "path": "assets/stages/l5-019.webp",
+      "sha256": "0f4fd998718b6dcb52c8859248dd5fe879df0c592bc68cf35ff070ac35ff4bb8",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-020",
+      "path": "assets/stages/l5-020.webp",
+      "sha256": "28c6f4bdad2ea2efb25b7a385636746d0835ea2eacf450b4bb014acafdcd29ed",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-021",
+      "path": "assets/stages/l5-021.webp",
+      "sha256": "5456f09c6383dce04184be209197a5a1848449cc84a669051dc80fbc8d78f0cb",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-022",
+      "path": "assets/stages/l5-022.webp",
+      "sha256": "e79854bd265536c8708503dd10883a23be90f9afd73d1e3f5d1dce545401d1c6",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-023",
+      "path": "assets/stages/l5-023.webp",
+      "sha256": "9963e70b3a660877a2ed15b9ce9924b5a100da808956f1f71778a039696a8345",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-024",
+      "path": "assets/stages/l5-024.webp",
+      "sha256": "d93575bc81d3fe07285c5304f050b9a9f3227f330a5cbdfb96622bc7c00b1bb8",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-025",
+      "path": "assets/stages/l5-025.webp",
+      "sha256": "93b37292786836f32e47cb40cee8d311c3619d69285c9d2776b5c0dd71555a4d",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-026",
+      "path": "assets/stages/l5-026.webp",
+      "sha256": "fe3434249135f2681ba10ff35923a55bdea8093ae8aa637d8eec24a072bd1f56",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-027",
+      "path": "assets/stages/l5-027.webp",
+      "sha256": "c31252b68b54b383dfb3d167e22b3d7750aa0c44462f761928b59d9971272beb",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-028",
+      "path": "assets/stages/l5-028.webp",
+      "sha256": "db2c9fff8ca3f5775b0e7b997e480c7fe7290d213e82eba8e13bdd3eed1a980e",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-029",
+      "path": "assets/stages/l5-029.webp",
+      "sha256": "aef8b253985cbf28b77e2a4401fe66aaf76c5e905332ec3567015eb50af3b9ae",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-030",
+      "path": "assets/stages/l5-030.webp",
+      "sha256": "a414db2068bde1911b5e8821a0fe540c9baed32bf0e789dfa3939f504dbe4b12",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-031",
+      "path": "assets/stages/l5-031.webp",
+      "sha256": "29e269e982feff1d49c9d86118b087eeb29dcebe6015d178dfae3b7b6cc829f4",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-032",
+      "path": "assets/stages/l5-032.webp",
+      "sha256": "9d763bfa3c246e5d47bbe2af42c9b502c5332e1a572afc923ad2bd3c413889e8",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-033",
+      "path": "assets/stages/l5-033.webp",
+      "sha256": "9df32ff32bc83baf7e21dec98bf12d924aa6991a2a60e48e5d9777db42857f8e",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-034",
+      "path": "assets/stages/l5-034.webp",
+      "sha256": "04972a41f93642ffb88475aba894e4e685479aaef0aa690dadbefecc69a8e669",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-035",
+      "path": "assets/stages/l5-035.webp",
+      "sha256": "d5d4115e97bddedadd33c8d9c4a31dd6fd5e52459c33c3b6c1124fd9cad473ad",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-036",
+      "path": "assets/stages/l5-036.webp",
+      "sha256": "0f7290ec1c6c3a2ab7549cb3f7f9a83c3cea6872ff827b8200a10464bc760048",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-037",
+      "path": "assets/stages/l5-037.webp",
+      "sha256": "4f16e091648dbbba576077cbed8f050a1840d25e42425baa8c8b60e067ba2c3b",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-038",
+      "path": "assets/stages/l5-038.webp",
+      "sha256": "1b133c601359e8a6c189e55811934b387edb86f143e894f6357df2b193951ab6",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-039",
+      "path": "assets/stages/l5-039.webp",
+      "sha256": "2fdc17b94af6316de0517ef529ae22c1f732759a86e6c08b95bda3f748eba91b",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-040",
+      "path": "assets/stages/l5-040.webp",
+      "sha256": "a88c2b8fff509b4053f3f6bb5aa868be1bd90d7a425e3fa6ff3b3ee12edb470b",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-041",
+      "path": "assets/stages/l5-041.webp",
+      "sha256": "c7b62868b662a3668c7dc73dd63270dcbffebd244224797d0df83072c376cdd4",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-042",
+      "path": "assets/stages/l5-042.webp",
+      "sha256": "66a742a8f67992bc566da3ada4af19f84e29441c864ab447109e7ba2df246bfd",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-043",
+      "path": "assets/stages/l5-043.webp",
+      "sha256": "3097786d1273413852b7595e9642cf7293cc6cbf47b6626165745e1af3cba96a",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-044",
+      "path": "assets/stages/l5-044.webp",
+      "sha256": "aac1820fe2f372904ea2017d4aae1b1e403066366cd1168a1f498452537fd7e1",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-045",
+      "path": "assets/stages/l5-045.webp",
+      "sha256": "0b337007b29caa54c89e523437b71849232e5a97b260e42927d98469e2ad6ad2",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-046",
+      "path": "assets/stages/l5-046.webp",
+      "sha256": "881d7af87c72c564c289c052f2840f88bda4d2ff9b25fd019e751c0da81b1917",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-047",
+      "path": "assets/stages/l5-047.webp",
+      "sha256": "6190c7f166659dbeda9350fff5ac034a991cbef8961025bfbe3bfccbea563367",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-048",
+      "path": "assets/stages/l5-048.webp",
+      "sha256": "fbb5a2e2a0a0b52eb9b1efa4475389ab166125e2468c0906805395e7444474cd",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-049",
+      "path": "assets/stages/l5-049.webp",
+      "sha256": "84878a22742ae575d0c67b6b5fe00171a6efcae55586496883e5a0d1e7b9ad84",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    },
+    {
+      "stageId": "L5-050",
+      "path": "assets/stages/l5-050.webp",
+      "sha256": "006014350d754d36e42319b1f1a2ee113d125f6f54f098d92c3174fa414f2938",
+      "width": 960,
+      "height": 720,
+      "style": "monochrome-four-panel",
+      "reviewStatus": "automated-scene-mapped"
+    }
+  ]
+}

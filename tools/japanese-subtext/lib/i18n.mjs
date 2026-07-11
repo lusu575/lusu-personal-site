@@ -1,8 +1,8 @@
-import { UI_LANGUAGES } from "./constants.mjs?v=20260711-japanese-subtext-r14";
+import { UI_LANGUAGES } from "./constants.mjs?v=20260711-japanese-subtext-v102-r2";
 
 const copy = {
   zh: {
-    toolTitle: "日语的言外之意", uiLanguage: "界面语言", backSite: "返回个人站资源区", startSound: "听力练习模式",
+    toolTitle: "日语的言外之意", toolVersion: "版本 1.0.2", uiLanguage: "界面语言", backSite: "返回个人站", trainingConsole: "训练控制台", saveSync: "存档同步", startSound: "听力练习模式",
     modeChoiceIntro: "请选择首次进入关卡时使用的练习方式。之后可以在训练设置中切换。", japaneseModeEntry: "日语模式", bilingualModeEntry: "双语模式",
     dashboardIntro: "从语气、停顿、关系和上下文里，听见没说出口的话。",
     continueTraining: "继续训练", chooseStage: "选择关卡", settings: "训练设置", records: "学习记录",
@@ -27,11 +27,14 @@ const copy = {
     resultTitle: "挑战结果", resultMedal: "获得奖牌", noMedal: "本次未获得奖牌", viewAnalysis: "查看解析", enterNextStage: "进入下一关", retryChallenge: "重新挑战",
     authLocal: "未登录 · 使用本地进度", authCloud: "已登录 · 云端进度已合并", syncing: "正在同步云端进度…", synced: "云端进度已同步",
     illustrationAltFallback: "与当前场景相关的辅助插图", sentenceHidden: "纯听模式：台词已隐藏", optionHidden: "选项文字已隐藏。",
-    emptyRecord: "还没有通关记录。先完成第一关吧。", recordsSummary: "进度会优先保留更高成绩和更高奖章。",
+    emptyRecord: "还没有学习打卡。完成一次答题后，这里会点亮当天。", recordsSummary: "每天完成一次答题即视为打卡，记录会随进度一起保存。",
+    checkedInToday: "今日已打卡", notCheckedInToday: "今日未打卡", currentStreak: "当前连续", longestStreak: "最长连续", totalStudyDays: "累计学习", dayUnit: "天",
+    previousMonth: "上个月", nextMonth: "下个月", checkInCalendar: "学习打卡月历", recentActivity: "最近学习", practicedStages: "练习关卡", clearedOnDay: "当日通关",
+    checkInAria: "{date}，已打卡，练习 {count} 关", noCheckInAria: "{date}，未打卡", weekdayLabels: ["一", "二", "三", "四", "五", "六", "日"],
     levelDescriptions: ["N3 · 日常表达与明显线索", "N2 · 口语省略、转折与敬语距离", "N1 · 复杂语气、讽刺与信息差", "N1 高阶 · 多人推理与不可靠叙述", "N1 语用挑战 · 多重含义与开放结局"]
   },
   en: {
-    toolTitle: "Behind the Japanese", uiLanguage: "Interface language", backSite: "Back to Site Resources", startSound: "Listening Practice",
+    toolTitle: "Behind the Japanese", toolVersion: "Version 1.0.2", uiLanguage: "Interface language", backSite: "Back to Site", trainingConsole: "Training Console", saveSync: "Save Sync", startSound: "Listening Practice",
     modeChoiceIntro: "Choose how to enter your first stage. You can change this later in Training Settings.", japaneseModeEntry: "Japanese Mode", bilingualModeEntry: "Bilingual Mode",
     dashboardIntro: "Hear what was left unsaid through tone, pauses, relationships, and context.",
     continueTraining: "Continue Training", chooseStage: "Choose Stage", settings: "Training Settings", records: "Learning Record",
@@ -56,11 +59,14 @@ const copy = {
     resultTitle: "Challenge Result", resultMedal: "Medal earned", noMedal: "No medal earned this time", viewAnalysis: "View Analysis", enterNextStage: "Enter Next Stage", retryChallenge: "Try Again",
     authLocal: "Signed out · Local progress", authCloud: "Signed in · Cloud progress merged", syncing: "Syncing cloud progress…", synced: "Cloud progress synced",
     illustrationAltFallback: "Supporting illustration for this scene", sentenceHidden: "Listening-only mode: dialogue hidden", optionHidden: "Option text is hidden.",
-    emptyRecord: "No cleared stages yet. Start with Stage 1.", recordsSummary: "Higher scores and medals are always preserved when progress is merged.",
+    emptyRecord: "No study check-ins yet. Complete one answer attempt to light up today.", recordsSummary: "Any completed answer attempt counts as a daily check-in and syncs with progress.",
+    checkedInToday: "Checked in today", notCheckedInToday: "Not checked in today", currentStreak: "Current streak", longestStreak: "Longest streak", totalStudyDays: "Study days", dayUnit: "days",
+    previousMonth: "Previous month", nextMonth: "Next month", checkInCalendar: "Study Check-in Calendar", recentActivity: "Recent Activity", practicedStages: "Stages practiced", clearedOnDay: "Cleared that day",
+    checkInAria: "{date}, checked in, {count} stages practiced", noCheckInAria: "{date}, no check-in", weekdayLabels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
     levelDescriptions: ["N3 · Daily expressions and clear clues", "N2 · Ellipsis, contrast, and polite distance", "N1 · Complex tone, irony, and information gaps", "Advanced N1 · Multi-speaker reasoning and unreliable accounts", "N1 pragmatics · Multiple readings and open endings"]
   },
   ja: {
-    toolTitle: "日本語の裏側", uiLanguage: "表示言語", backSite: "サイトのリソースへ戻る", startSound: "聴解練習モード",
+    toolTitle: "日本語の裏側", toolVersion: "バージョン 1.0.2", uiLanguage: "表示言語", backSite: "サイトへ戻る", trainingConsole: "トレーニング操作", saveSync: "セーブ同期", startSound: "聴解練習モード",
     modeChoiceIntro: "初めてステージに入るときの練習方法を選んでください。あとからトレーニング設定で変更できます。", japaneseModeEntry: "日本語モード", bilingualModeEntry: "二言語モード",
     dashboardIntro: "声色、間、関係、文脈から、言葉にされなかった本音を読み取ります。",
     continueTraining: "続きから", chooseStage: "ステージ選択", settings: "トレーニング設定", records: "学習記録",
@@ -85,7 +91,10 @@ const copy = {
     resultTitle: "チャレンジ結果", resultMedal: "獲得メダル", noMedal: "今回はメダルを獲得できませんでした", viewAnalysis: "解説を見る", enterNextStage: "次のステージへ", retryChallenge: "再挑戦",
     authLocal: "未ログイン · ローカル進捗", authCloud: "ログイン済み · クラウド進捗を統合", syncing: "クラウド進捗を同期中…", synced: "クラウド進捗を同期しました",
     illustrationAltFallback: "この場面を補助するイラスト", sentenceHidden: "聞き取りのみ：台詞は非表示です", optionHidden: "選択肢の文字は非表示です。",
-    emptyRecord: "クリア記録はまだありません。最初のステージから始めましょう。", recordsSummary: "進捗を統合するときは高い得点とメダルを残します。",
+    emptyRecord: "学習チェックインはまだありません。一度解答すると、その日が点灯します。", recordsSummary: "一度でも解答を完了すると当日のチェックインになり、進捗と一緒に保存されます。",
+    checkedInToday: "今日はチェックイン済み", notCheckedInToday: "今日は未チェックイン", currentStreak: "現在の連続", longestStreak: "最長連続", totalStudyDays: "累計学習", dayUnit: "日",
+    previousMonth: "前の月", nextMonth: "次の月", checkInCalendar: "学習チェックインカレンダー", recentActivity: "最近の学習", practicedStages: "練習ステージ", clearedOnDay: "当日クリア",
+    checkInAria: "{date}、チェックイン済み、{count}ステージ練習", noCheckInAria: "{date}、未チェックイン", weekdayLabels: ["月", "火", "水", "木", "金", "土", "日"],
     levelDescriptions: ["N3 · 日常表現と分かりやすい手がかり", "N2 · 省略、逆接、敬語の距離", "N1 · 複雑な語気、皮肉、情報差", "N1上級 · 複数人物と信頼できない語り", "N1語用論 · 多義性と開かれた結末"]
   }
 };

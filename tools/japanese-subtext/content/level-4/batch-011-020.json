@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.1",
+  "contentVersion": "1.0.2",
   "level": 4,
   "batch": "011-020",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L4-011",
-      "revision": 2,
+      "revision": 3,
       "level": 4,
       "stage": 11,
       "jlptTarget": "N1-advanced",
@@ -31,14 +31,15 @@
         "en": "A shopping-district event chat where the moderator's pinned summary conflicts with the original timestamps."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l4-011.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "固定された順番の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“被置顶的顺序”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Pinned Order\"."
+        },
+        "sha256": "21288a0d0e8a34748cfb0efcc629d1c1f33d0f03bd2ca2cf5104ac09d90b1e1d"
       },
       "cast": [
         {
@@ -425,7 +426,8 @@
                 "en": "It misstates a posting time by one minute while preserving the event order"
               },
               "ttsTextJa": "投稿時刻を一分だけ誤記し、出来事の順序自体は保っている",
-              "audioId": "L4-011-q1-a"
+              "audioId": "L4-011-q1-a",
+              "readingJa": "とーこーじこくをいちぶだけごきし、できごとのじゅんじょじたいわたもっている"
             },
             {
               "id": "b",
@@ -435,7 +437,8 @@
                 "en": "It denies that the notice was late."
               },
               "ttsTextJa": "告知の遅れ自体を否定している。",
-              "audioId": "L4-011-q1-b"
+              "audioId": "L4-011-q1-b",
+              "readingJa": "こくちのおくれじたいをひてーしている。"
             },
             {
               "id": "c",
@@ -445,7 +448,8 @@
                 "en": "It misidentifies Sota's role."
               },
               "ttsTextJa": "そうたの役職を取り違えている。",
-              "audioId": "L4-011-q1-c"
+              "audioId": "L4-011-q1-c",
+              "readingJa": "そーたのやくしょくをとりちがえている。"
             },
             {
               "id": "d",
@@ -455,7 +459,8 @@
                 "en": "It omits a reply and makes the criticism-apology order appear reversed."
               },
               "ttsTextJa": "返信を省き、批判と謝罪の順序を逆に見せている。",
-              "audioId": "L4-011-q1-d"
+              "audioId": "L4-011-q1-d",
+              "readingJa": "へんしんをはぶき、ひはんとしゃざいのじゅんじょをぎゃくにみせている。"
             }
           ],
           "correctOptionIds": [
@@ -513,7 +518,8 @@
                 "en": "To punish publicity for being late."
               },
               "ttsTextJa": "広報の遅刻を処分するため。",
-              "audioId": "L4-011-q2-a"
+              "audioId": "L4-011-q2-a",
+              "readingJa": "こーほーのちこくをしょぶんするため。"
             },
             {
               "id": "b",
@@ -523,7 +529,8 @@
                 "en": "To reconstruct that the apology answered an accusation."
               },
               "ttsTextJa": "謝罪が批判への返答だったことを復元するため。",
-              "audioId": "L4-011-q2-b"
+              "audioId": "L4-011-q2-b",
+              "readingJa": "しゃざいがひはんえのへんとーだったことをふくげんするため。"
             },
             {
               "id": "c",
@@ -533,7 +540,8 @@
                 "en": "To delete Eri's post."
               },
               "ttsTextJa": "えりの投稿を削除するため。",
-              "audioId": "L4-011-q2-c"
+              "audioId": "L4-011-q2-c",
+              "readingJa": "えりのとーこーをさくじょするため。"
             },
             {
               "id": "d",
@@ -543,7 +551,8 @@
                 "en": "To change the event time itself and thereby solve the late-notice problem"
               },
               "ttsTextJa": "イベント開催時刻そのものを変更し、告知の遅れを解消するため",
-              "audioId": "L4-011-q2-d"
+              "audioId": "L4-011-q2-d",
+              "readingJa": "いべんとかいさいじこくそのものをへんこーし、こくちのおくれをかいしょーするため"
             }
           ],
           "correctOptionIds": [
@@ -594,13 +603,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "e260c09e84547f42b1f1c74b687d4f0a9999b72185bd9ad8385690d168fef874"
+      "contentHash": "33dd0d37dc466b804b7596c143665fc4a22689ff97f64021e436e87d8a6cf318"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L4-012",
-      "revision": 2,
+      "revision": 3,
       "level": 4,
       "stage": 12,
       "jlptTarget": "N1-advanced",
@@ -624,14 +633,15 @@
         "en": "Voicemails for a community photo club: only cancellations are recorded, yet Yuto apologizes for missing an alternate venue."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l4-012.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "送られていない案内の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“尚未发送的通知”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Unsent Notice\"."
+        },
+        "sha256": "0c0334f02d81db8899a9539ff7528f04b4fee1e6de110cb245ce0a7d70c3dcfc"
       },
       "cast": [
         {
@@ -988,7 +998,8 @@
                 "en": "That Saturday is rainy."
               },
               "ttsTextJa": "土曜は雨であること。",
-              "audioId": "L4-012-q1-a"
+              "audioId": "L4-012-q1-a",
+              "readingJa": "どよーわあめであること。"
             },
             {
               "id": "b",
@@ -998,7 +1009,8 @@
                 "en": "That rain canceled the shoot and everyone should await the next notice"
               },
               "ttsTextJa": "雨で撮影会が中止され、次の案内を待つべきこと",
-              "audioId": "L4-012-q1-b"
+              "audioId": "L4-012-q1-b",
+              "readingJa": "あめでさつえーかいがちゅーしされ、つぎのあんないをまつべきこと"
             },
             {
               "id": "c",
@@ -1008,7 +1020,8 @@
                 "en": "That the alternate candidate was the bookstore's second floor."
               },
               "ttsTextJa": "代替候補が古書店の二階であること。",
-              "audioId": "L4-012-q1-c"
+              "audioId": "L4-012-q1-c",
+              "readingJa": "だいたいこーほがこしょてんのにかいであること。"
             },
             {
               "id": "d",
@@ -1018,7 +1031,8 @@
                 "en": "That everyone should await another notice."
               },
               "ttsTextJa": "次の案内を待つべきこと。",
-              "audioId": "L4-012-q1-d"
+              "audioId": "L4-012-q1-d",
+              "readingJa": "つぎのあんないをまつべきこと。"
             }
           ],
           "correctOptionIds": [
@@ -1075,7 +1089,8 @@
                 "en": "Yuto knew the unsent venue."
               },
               "ttsTextJa": "ゆうとが未送信の会場を知っていた。",
-              "audioId": "L4-012-q2-a"
+              "audioId": "L4-012-q2-a",
+              "readingJa": "ゆーとがみそーしんのかいじょーをしっていた。"
             },
             {
               "id": "b",
@@ -1085,7 +1100,8 @@
                 "en": "Rain canceled the photo walk."
               },
               "ttsTextJa": "雨で撮影会が中止された。",
-              "audioId": "L4-012-q2-b"
+              "audioId": "L4-012-q2-b",
+              "readingJa": "あめでさつえーかいがちゅーしされた。"
             },
             {
               "id": "c",
@@ -1095,7 +1111,8 @@
                 "en": "Yuto's 1:30 matches Nana's private phone revision."
               },
               "ttsTextJa": "ゆうとの十三時半がななの電話中の修正と一致する。",
-              "audioId": "L4-012-q2-c"
+              "audioId": "L4-012-q2-c",
+              "readingJa": "ゆーとのじゅーさんじはんがななのでんわちゅうのしゅーせーといっちする。"
             },
             {
               "id": "d",
@@ -1105,7 +1122,8 @@
                 "en": "Yuto deleted a notification."
               },
               "ttsTextJa": "ゆうとが通知を削除した。",
-              "audioId": "L4-012-q2-d"
+              "audioId": "L4-012-q2-d",
+              "readingJa": "ゆーとがつーちをさくじょした。"
             }
           ],
           "correctOptionIds": [
@@ -1164,7 +1182,8 @@
                 "en": "Mai deliberately gave everyone a false venue and time to cause confusion"
               },
               "ttsTextJa": "まいが故意に虚偽の会場と時刻を全員へ伝え、混乱させた",
-              "audioId": "L4-012-q3-a"
+              "audioId": "L4-012-q3-a",
+              "readingJa": "まいがこいにきょぎのかいじょーとじこくをぜんいんえつたえ、こんらんさせた"
             },
             {
               "id": "b",
@@ -1174,7 +1193,8 @@
                 "en": "Nana definitely called Yuto."
               },
               "ttsTextJa": "ななが必ずゆうとへ電話した。",
-              "audioId": "L4-012-q3-b"
+              "audioId": "L4-012-q3-b",
+              "readingJa": "なながかならずゆーとえでんわした。"
             },
             {
               "id": "c",
@@ -1184,7 +1204,8 @@
                 "en": "Someone conveyed the private candidate and revised time to Yuto."
               },
               "ttsTextJa": "誰かが非公開の候補と修正時刻をゆうとへ伝えた。",
-              "audioId": "L4-012-q3-c"
+              "audioId": "L4-012-q3-c",
+              "readingJa": "だれかがひこーかいのこーほとしゅーせーじこくをゆーとえつたえた。"
             },
             {
               "id": "d",
@@ -1194,7 +1215,8 @@
                 "en": "Yuto actually went to the bookstore."
               },
               "ttsTextJa": "ゆうとは実際に古書店へ行った。",
-              "audioId": "L4-012-q3-d"
+              "audioId": "L4-012-q3-d",
+              "readingJa": "ゆーとわじっさいにこしょてんえいった。"
             }
           ],
           "correctOptionIds": [
@@ -1246,13 +1268,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "925ab9645e18bfd26e9c983e60dd611625c6052c217da3dcc5eb8be22c21b4ae"
+      "contentHash": "50b229909c05b5331b1245d4bcb837139ebbeb7c17ccbcde6d5970799fdc973a"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L4-013",
-      "revision": 2,
+      "revision": 3,
       "level": 4,
       "stage": 13,
       "jlptTarget": "N1-advanced",
@@ -1276,14 +1298,15 @@
         "en": "A pre-graduation school broadcast repeats what sounds like a library instruction, and only library committee members move."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l4-013.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "青い本を三ページの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“蓝色书往回三页”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Three Pages Back in the Blue Book\"."
+        },
+        "sha256": "c36a3205929d60d7b9aed9a97fc0e35db0ac13aa177f2f7b4585c4df1d9557cc"
       },
       "cast": [
         {
@@ -1664,7 +1687,8 @@
                 "en": "To request overdue-book returns."
               },
               "ttsTextJa": "延滞図書の返却を促す。",
-              "audioId": "L4-013-q1-a"
+              "audioId": "L4-013-q1-a",
+              "readingJa": "えんたいとしょのへんきゃくをうながす。"
             },
             {
               "id": "b",
@@ -1674,7 +1698,8 @@
                 "en": "To cue the library committee to begin surprise preparations."
               },
               "ttsTextJa": "図書委員へサプライズ準備の開始を知らせる。",
-              "audioId": "L4-013-q1-b"
+              "audioId": "L4-013-q1-b",
+              "readingJa": "としょいいんえさぷらいずじゅんびのかいしをしらせる。"
             },
             {
               "id": "c",
@@ -1684,7 +1709,8 @@
                 "en": "Announcing a schedule change that shortens the graduation program by three pages"
               },
               "ttsTextJa": "卒業式の進行を三ページ分だけ短縮する時刻変更を伝える",
-              "audioId": "L4-013-q1-c"
+              "audioId": "L4-013-q1-c",
+              "readingJa": "そつぎょーしきのしんこーをさんぺーじぶんだけたんしゅくするじこくへんこーをつたえる"
             },
             {
               "id": "d",
@@ -1694,7 +1720,8 @@
                 "en": "To return blue textbooks to storage."
               },
               "ttsTextJa": "青い教科書を倉庫へ戻す。",
-              "audioId": "L4-013-q1-d"
+              "audioId": "L4-013-q1-d",
+              "readingJa": "あおいきょーかしょをそーこえもどす。"
             }
           ],
           "correctOptionIds": [
@@ -1752,7 +1779,8 @@
                 "en": "The book is missing."
               },
               "ttsTextJa": "本は紛失した。",
-              "audioId": "L4-013-q2-a"
+              "audioId": "L4-013-q2-a",
+              "readingJa": "ほんわふんしつした。"
             },
             {
               "id": "b",
@@ -1762,7 +1790,8 @@
                 "en": "The ceremony was canceled."
               },
               "ttsTextJa": "式は中止になった。",
-              "audioId": "L4-013-q2-b"
+              "audioId": "L4-013-q2-b",
+              "readingJa": "しきわちゅーしになった。"
             },
             {
               "id": "c",
@@ -1772,7 +1801,8 @@
                 "en": "The graduates noticed the code, so the surprise plan itself was canceled"
               },
               "ttsTextJa": "卒業生が暗号に気づいたため、サプライズ計画自体を中止した",
-              "audioId": "L4-013-q2-c"
+              "audioId": "L4-013-q2-c",
+              "readingJa": "そつぎょーせーがあんごーにきずいたため、さぷらいずけーかくじたいをちゅーしした"
             },
             {
               "id": "d",
@@ -1782,7 +1812,8 @@
                 "en": "Preparations are complete, so a third cue is unnecessary."
               },
               "ttsTextJa": "準備が終わり、三回目の合図は不要になった。",
-              "audioId": "L4-013-q2-d"
+              "audioId": "L4-013-q2-d",
+              "readingJa": "じゅんびがおわり、さんかいめのあいずわふよーになった。"
             }
           ],
           "correctOptionIds": [
@@ -1833,13 +1864,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "1f20923c64564ab77867a657e4d1f4c4972e5e0888519ed1e721e18173ffabb3"
+      "contentHash": "bf5e73d95c4c3757c1406078a2ba3cd5b3c808b933e9e267353a9140ceaae724"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L4-014",
-      "revision": 2,
+      "revision": 3,
       "level": 4,
       "stage": 14,
       "jlptTarget": "N1-advanced",
@@ -1863,14 +1894,15 @@
         "en": "A delivery-date email thread whose wording grows more courteous as managers, legal, and an executive are added."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l4-014.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "丁寧になる返信の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“越来越客气的回复”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Replies Growing More Polite\"."
+        },
+        "sha256": "6f5995bab07ab539e5a65fb0054b272fa4f9e9dc56421b6f646a16a46bd0e672"
       },
       "cast": [
         {
@@ -2236,7 +2268,8 @@
                 "en": "Formally escalating by expanding the record and audience while retaining polite wording."
               },
               "ttsTextJa": "丁寧な表現を保ちながら、記録と関係者を増やして正式にエスカレートする。",
-              "audioId": "L4-014-q1-a"
+              "audioId": "L4-014-q1-a",
+              "readingJa": "てーねーなひょーげんをたもちながら、きろくとかんけーしゃをふやしてせーしきにえすかれーとする。"
             },
             {
               "id": "b",
@@ -2246,7 +2279,8 @@
                 "en": "Immediately terminating the contract."
               },
               "ttsTextJa": "契約を即時解除する。",
-              "audioId": "L4-014-q1-b"
+              "audioId": "L4-014-q1-b",
+              "readingJa": "けーやくをそくじかいじょする。"
             },
             {
               "id": "c",
@@ -2256,7 +2290,8 @@
                 "en": "Losing interest in the delivery date."
               },
               "ttsTextJa": "納品日への関心を失う。",
-              "audioId": "L4-014-q1-c"
+              "audioId": "L4-014-q1-c",
+              "readingJa": "のーひんびえのかんしんをうしなう。"
             },
             {
               "id": "d",
@@ -2266,7 +2301,8 @@
                 "en": "Privately blaming Inoue."
               },
               "ttsTextJa": "いのうえを個人的に非難する。",
-              "audioId": "L4-014-q1-d"
+              "audioId": "L4-014-q1-d",
+              "readingJa": "いのうえをこじんてきにひなんする。"
             }
           ],
           "correctOptionIds": [
@@ -2323,7 +2359,8 @@
                 "en": "Because it explicitly confirms the 25th."
               },
               "ttsTextJa": "納品日を二十五日と明言したから。",
-              "audioId": "L4-014-q2-a"
+              "audioId": "L4-014-q2-a",
+              "readingJa": "のーひんびをにじゅーごにちとめーげんしたから。"
             },
             {
               "id": "b",
@@ -2333,7 +2370,8 @@
                 "en": "Because it quotes the contract."
               },
               "ttsTextJa": "契約条項を引用したから。",
-              "audioId": "L4-014-q2-b"
+              "audioId": "L4-014-q2-b",
+              "readingJa": "けーやくじょーこーをいんよーしたから。"
             },
             {
               "id": "c",
@@ -2343,7 +2381,8 @@
                 "en": "Because 'internal coordination' supplies neither feasibility nor an alternate date."
               },
               "ttsTextJa": "『社内調整中』を理由に、可否も代替日も示していないから。",
-              "audioId": "L4-014-q2-c"
+              "audioId": "L4-014-q2-c",
+              "readingJa": "『しゃないちょーせーちゅー』をりゆーに、かひもだいたいびもしめしていないから。"
             },
             {
               "id": "d",
@@ -2353,7 +2392,8 @@
                 "en": "Because it removes the recipient."
               },
               "ttsTextJa": "相手を宛先から外したから。",
-              "audioId": "L4-014-q2-d"
+              "audioId": "L4-014-q2-d",
+              "readingJa": "あいてをあてさきからはずしたから。"
             }
           ],
           "correctOptionIds": [
@@ -2410,7 +2450,8 @@
                 "en": "Legal states there is no amended date and requests a written proposal."
               },
               "ttsTextJa": "法務が、日程変更の合意はなく書面提案が必要だと述べる。",
-              "audioId": "L4-014-q3-a"
+              "audioId": "L4-014-q3-a",
+              "readingJa": "ほーむが、にってーへんこーのごーいわなくしょめんてーあんがひつよーだとのべる。"
             },
             {
               "id": "b",
@@ -2420,7 +2461,8 @@
                 "en": "Inoue says 'probably.'"
               },
               "ttsTextJa": "いのうえが『恐らく』と言う。",
-              "audioId": "L4-014-q3-b"
+              "audioId": "L4-014-q3-b",
+              "readingJa": "いのうえが『おそらく』という。"
             },
             {
               "id": "c",
@@ -2430,7 +2472,8 @@
                 "en": "An executive is added to receive the impact amount."
               },
               "ttsTextJa": "役員が影響額の共有先として追加される。",
-              "audioId": "L4-014-q3-c"
+              "audioId": "L4-014-q3-c",
+              "readingJa": "やくいんがえーきょーがくのきょーゆーさきとしてついかされる。"
             },
             {
               "id": "d",
@@ -2440,7 +2483,8 @@
                 "en": "Ogawa opens with 'just to confirm.'"
               },
               "ttsTextJa": "おがわが冒頭で『念のため』と言う。",
-              "audioId": "L4-014-q3-d"
+              "audioId": "L4-014-q3-d",
+              "readingJa": "おがわがぼーとーで『ねんのため』という。"
             }
           ],
           "correctOptionIds": [
@@ -2492,13 +2536,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "efd8502253deeb4a45441cd593698d87cf9a4277d0366595e6efb644f00b308e"
+      "contentHash": "2f82cad8b72553532c86ce6bd26d9aee7f90c3ddb2fd16e5d86630279eca0fec"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L4-015",
-      "revision": 2,
+      "revision": 3,
       "level": 4,
       "stage": 15,
       "jlptTarget": "N1-advanced",
@@ -2521,14 +2565,15 @@
         "en": "At a creative restaurant, a diner questions an unusual pairing; the chef's praise shifts responsibility while the server admits an incomplete explanation."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l4-015.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "冒険的な一皿の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“一份大胆的菜”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"An Adventurous Plate\"."
+        },
+        "sha256": "bbebcb90c65136bc6e806f93172e3ae756d15f55679f046801ec4ef12039bf01"
       },
       "cast": [
         {
@@ -2595,7 +2640,7 @@
             "zh": "是的。您做了相当大胆的选择，点单上两样都有。",
             "en": "Yes. You made quite an adventurous choice. Both items appear on the ticket."
           },
-          "readingJa": "えー。かなりぼーけんてきなせんたくをされましたね。ちゅうもんひょうにもりょーほーございます。",
+          "readingJa": "ええ。かなりぼうけんてきなせんたくをされましたね。ちゅうもんひょうにもりょうほうございます。",
           "ttsTextJa": "ええ。かなり冒険的な選択をされましたね。注文票にも両方ございます。",
           "audioId": "L4-015-line-002",
           "pauseAfterMs": 520,
@@ -2609,13 +2654,13 @@
             {
               "id": "token-002",
               "text": "かなり冒険的な選択をされましたね。",
-              "reading": "かなりぼーけんてきなせんたくをされましたね。",
+              "reading": "かなりぼうけんてきなせんたくをされましたね。",
               "audioId": "L4-015-line-002-token-002"
             },
             {
               "id": "token-003",
               "text": "注文票にも両方ございます。",
-              "reading": "ちゅうもんひょうにもりょーほーございます。",
+              "reading": "ちゅうもんひょうにもりょうほうございます。",
               "audioId": "L4-015-line-002-token-003"
             }
           ]
@@ -2888,7 +2933,8 @@
                 "en": "A promise to waive the charge."
               },
               "ttsTextJa": "料理を無料にする約束。",
-              "audioId": "L4-015-q1-a"
+              "audioId": "L4-015-q1-a",
+              "readingJa": "りょーりをむりょーにするやくそく。"
             },
             {
               "id": "b",
@@ -2898,7 +2944,8 @@
                 "en": "Explicitly admitting the server's inadequate explanation and apologizing on the spot"
               },
               "ttsTextJa": "給仕の説明不足をその場で明確に認め、客へ謝罪すること",
-              "audioId": "L4-015-q1-b"
+              "audioId": "L4-015-q1-b",
+              "readingJa": "きゅーじのせつめーふそくをそのばでめーかくにみとめ、きゃくえしゃざいすること"
             },
             {
               "id": "c",
@@ -2908,7 +2955,8 @@
                 "en": "A professional compliment to the diner's palate."
               },
               "ttsTextJa": "客の味覚を専門的に褒めること。",
-              "audioId": "L4-015-q1-c"
+              "audioId": "L4-015-q1-c",
+              "readingJa": "きゃくのみかくをせんもんてきにほめること。"
             },
             {
               "id": "d",
@@ -2918,7 +2966,8 @@
                 "en": "Linking the outcome to the diner's own choice in the form of praise."
               },
               "ttsTextJa": "称賛の形で、結果を客自身の選択へ結び付けること。",
-              "audioId": "L4-015-q1-d"
+              "audioId": "L4-015-q1-d",
+              "readingJa": "しょーさんのかたちで、けっかをきゃくじしんのせんたくえむすびつけること。"
             }
           ],
           "correctOptionIds": [
@@ -2976,7 +3025,8 @@
                 "en": "The diner bears all responsibility because she ordered."
               },
               "ttsTextJa": "客だけが注文したので全責任を負う。",
-              "audioId": "L4-015-q2-a"
+              "audioId": "L4-015-q2-a",
+              "readingJa": "きゃくだけがちゅーもんしたのでぜんせきにんをおう。"
             },
             {
               "id": "b",
@@ -2986,7 +3036,8 @@
                 "en": "The diner chose, but the restaurant still had to make the pairing understandable."
               },
               "ttsTextJa": "客は選択したが、店には組合せを理解可能に説明する責任が残る。",
-              "audioId": "L4-015-q2-b"
+              "audioId": "L4-015-q2-b",
+              "readingJa": "きゃくわせんたくしたが、みせにわくみあわせをりかいかのーにせつめーするせきにんがのこる。"
             },
             {
               "id": "c",
@@ -2996,7 +3047,8 @@
                 "en": "Only the chef bears all responsibility for explanation and menu design; the server who took the order bears none"
               },
               "ttsTextJa": "料理長だけが説明と献立の全責任を負い、注文を取った給仕には関係がない",
-              "audioId": "L4-015-q2-c"
+              "audioId": "L4-015-q2-c",
+              "readingJa": "りょうりちょうだけがせつめーとこんだてのぜんせきにんをおい、ちゅーもんをとったきゅーじにわかんけーがない"
             },
             {
               "id": "d",
@@ -3006,7 +3058,8 @@
                 "en": "Poetic menus eliminate any need for explanation."
               },
               "ttsTextJa": "詩的なメニューなら説明は一切不要である。",
-              "audioId": "L4-015-q2-d"
+              "audioId": "L4-015-q2-d",
+              "readingJa": "してきなめにゅーならせつめーわいっさいふよーである。"
             }
           ],
           "correctOptionIds": [
@@ -3060,13 +3113,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "83a04dc1d20dd9b6d3114d5659bbdbe38e18d85fd21fd137cfb326b54aca5e54"
+      "contentHash": "117b3d0be432bfbf6c395674518d3610c829ee4bca21b2d4a7c7f64839c4c6f5"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L4-016",
-      "revision": 2,
+      "revision": 3,
       "level": 4,
       "stage": 16,
       "jlptTarget": "N1-advanced",
@@ -3089,14 +3142,15 @@
         "en": "An afternoon group tour labeled free time, while the guide imposes detailed location sharing and scheduled photos."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l4-016.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "完全な自由時間の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“完全自由时间”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Completely Free Time\"."
+        },
+        "sha256": "ddb56ff4b7f19746f8245573628bde898512acac7e729d3bb7deb8af8c8ac786"
       },
       "cast": [
         {
@@ -3438,7 +3492,8 @@
                 "en": "Sightseeing in the afternoon."
               },
               "ttsTextJa": "午後に観光すること。",
-              "audioId": "L4-016-q1-a"
+              "audioId": "L4-016-q1-a",
+              "readingJa": "ごごにかんこーすること。"
             },
             {
               "id": "b",
@@ -3448,7 +3503,8 @@
                 "en": "Travelers' interest in the old town."
               },
               "ttsTextJa": "旅行者が旧市街に興味を持つこと。",
-              "audioId": "L4-016-q1-b"
+              "audioId": "L4-016-q1-b",
+              "readingJa": "りょこーしゃがきゅーしがいにきょーみをもつこと。"
             },
             {
               "id": "c",
@@ -3458,7 +3514,8 @@
                 "en": "Mandatory ten-minute location updates and repeated all-member photos."
               },
               "ttsTextJa": "十分ごとの位置共有と複数回の全員写真が義務であること。",
-              "audioId": "L4-016-q1-c"
+              "audioId": "L4-016-q1-c",
+              "readingJa": "じゅっぷんごとのいちきょーゆーとふくすうかいのぜんいんしゃしんがぎむであること。"
             },
             {
               "id": "d",
@@ -3468,7 +3525,8 @@
                 "en": "The existence of insurance."
               },
               "ttsTextJa": "保険が存在すること。",
-              "audioId": "L4-016-q1-d"
+              "audioId": "L4-016-q1-d",
+              "readingJa": "ほけんがそんざいすること。"
             }
           ],
           "correctOptionIds": [
@@ -3526,7 +3584,8 @@
                 "en": "The insurer requires checks only once per hour."
               },
               "ttsTextJa": "保険条件は一時間ごとの確認にすぎない。",
-              "audioId": "L4-016-q2-a"
+              "audioId": "L4-016-q2-a",
+              "readingJa": "ほけんじょーけんわいちじかんごとのかくにんにすぎない。"
             },
             {
               "id": "b",
@@ -3536,7 +3595,8 @@
                 "en": "The afternoon is for sightseeing."
               },
               "ttsTextJa": "午後は観光時間である。",
-              "audioId": "L4-016-q2-b"
+              "audioId": "L4-016-q2-b",
+              "readingJa": "ごごわかんこーじかんである。"
             },
             {
               "id": "c",
@@ -3546,7 +3606,8 @@
                 "en": "The guide independently added ten-minute checks because of a past late arrival."
               },
               "ttsTextJa": "十分ごとの確認は案内人が過去の遅刻を理由に独自追加した。",
-              "audioId": "L4-016-q2-c"
+              "audioId": "L4-016-q2-c",
+              "readingJa": "じゅっぷんごとのかくにんわあんないにんがかこのちこくをりゆーにどくじついかした。"
             },
             {
               "id": "d",
@@ -3556,7 +3617,8 @@
                 "en": "The old town has weak reception."
               },
               "ttsTextJa": "旧市街は電波が弱い。",
-              "audioId": "L4-016-q2-d"
+              "audioId": "L4-016-q2-d",
+              "readingJa": "きゅーしがいわでんぱがよわい。"
             }
           ],
           "correctOptionIds": [
@@ -3613,7 +3675,8 @@
                 "en": "To keep the check-ins secret."
               },
               "ttsTextJa": "確認を秘密にする。",
-              "audioId": "L4-016-q3-a"
+              "audioId": "L4-016-q3-a",
+              "readingJa": "かくにんをひみつにする。"
             },
             {
               "id": "b",
@@ -3623,7 +3686,8 @@
                 "en": "To abolish free time entirely."
               },
               "ttsTextJa": "自由時間を全面廃止する。",
-              "audioId": "L4-016-q3-b"
+              "audioId": "L4-016-q3-b",
+              "readingJa": "じゆーじかんをぜんめんはいしする。"
             },
             {
               "id": "c",
@@ -3633,7 +3697,8 @@
                 "en": "To align the label with its conditional reality and set accurate expectations."
               },
               "ttsTextJa": "名称を条件付きの実態に合わせ、期待を正確にする。",
-              "audioId": "L4-016-q3-c"
+              "audioId": "L4-016-q3-c",
+              "readingJa": "めーしょーをじょーけんつきのじったいにあわせ、きたいをせーかくにする。"
             },
             {
               "id": "d",
@@ -3643,7 +3708,8 @@
                 "en": "To change insurers."
               },
               "ttsTextJa": "保険会社を変更する。",
-              "audioId": "L4-016-q3-d"
+              "audioId": "L4-016-q3-d",
+              "readingJa": "ほけんがいしゃをへんこーする。"
             }
           ],
           "correctOptionIds": [
@@ -3694,13 +3760,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "789ba1c1618fa2af85027b4fa46ac61f65d4f59b565451b0f9901a9bb7c3d3e6"
+      "contentHash": "cfbe3d27c446bd980d121124d59d53dd8111fa03285af98d47ad33622cc1675c"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L4-017",
-      "revision": 2,
+      "revision": 3,
       "level": 4,
       "stage": 17,
       "jlptTarget": "N1-advanced",
@@ -3723,14 +3789,15 @@
         "en": "A human council seeks a forest-passage decision by tomorrow; a long-lived elf shifts time scales to avoid taking a side."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l4-017.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "一世紀ならすぐの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“一个世纪也很快”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"A Century Is Soon\"."
+        },
+        "sha256": "b8f2168eafa6f5a338074c268a7857b57c3e8793f96025a4317e109b0c43a55f"
       },
       "cast": [
         {
@@ -4067,7 +4134,7 @@
             "zh": "……那么我会在黎明前询问森林，并附上条件，而非简单赞否。",
             "en": "Then I shall ask the forest by dawn, with conditions rather than a bare yes or no."
           },
-          "readingJa": "……でわ、よあけまでにもりえといましょー。さんぴでわなく、じょーけんをそえて。",
+          "readingJa": "……では、よあけまでにもりへといましょう。さんぴではなく、じょうけんをそえて。",
           "ttsTextJa": "……では、夜明けまでに森へ問いましょう。賛否ではなく、条件を添えて。",
           "audioId": "L4-017-line-011",
           "pauseAfterMs": 520,
@@ -4081,19 +4148,19 @@
             {
               "id": "token-002",
               "text": "夜明けまでに森へ問いましょう。",
-              "reading": "よあけまでにもりえといましょー。",
+              "reading": "よあけまでにもりへといましょう。",
               "audioId": "L4-017-line-011-token-002"
             },
             {
               "id": "token-003",
               "text": "賛否ではなく、",
-              "reading": "さんぴでわなく、",
+              "reading": "さんぴではなく、",
               "audioId": "L4-017-line-011-token-003"
             },
             {
               "id": "token-004",
               "text": "条件を添えて。",
-              "reading": "じょーけんをそえて。",
+              "reading": "じょうけんをそえて。",
               "audioId": "L4-017-line-011-token-004"
             }
           ]
@@ -4117,7 +4184,8 @@
                 "en": "Relativizing the human deadline against a century."
               },
               "ttsTextJa": "人間の締切を一世紀尺度で相対化する。",
-              "audioId": "L4-017-q1-a"
+              "audioId": "L4-017-q1-a",
+              "readingJa": "にんげんのしめきりをいっせーきしゃくどでそーたいかする。"
             },
             {
               "id": "b",
@@ -4127,7 +4195,8 @@
                 "en": "Rejecting the yes-no choice itself as a human frame."
               },
               "ttsTextJa": "賛否の二択そのものを人間的枠組みとして退ける。",
-              "audioId": "L4-017-q1-b"
+              "audioId": "L4-017-q1-b",
+              "readingJa": "さんぴのにたくそのものをにんげんてきわくぐみとしてしりぞける。"
             },
             {
               "id": "c",
@@ -4137,7 +4206,8 @@
                 "en": "Proving medically that the medicine is unnecessary."
               },
               "ttsTextJa": "薬が不要だと医学的に証明する。",
-              "audioId": "L4-017-q1-c"
+              "audioId": "L4-017-q1-c",
+              "readingJa": "くすりがふよーだといがくてきにしょーめーする。"
             },
             {
               "id": "d",
@@ -4147,7 +4217,8 @@
                 "en": "Opening the road immediately."
               },
               "ttsTextJa": "すでに北道を開く。",
-              "audioId": "L4-017-q1-d"
+              "audioId": "L4-017-q1-d",
+              "readingJa": "すでにほくどーをひらく。"
             }
           ],
           "correctOptionIds": [
@@ -4206,7 +4277,8 @@
                 "en": "That time can be stopped."
               },
               "ttsTextJa": "時間を止められるという意味。",
-              "audioId": "L4-017-q2-a"
+              "audioId": "L4-017-q2-a",
+              "readingJa": "じかんをとめられるといういみ。"
             },
             {
               "id": "b",
@@ -4216,7 +4288,8 @@
                 "en": "That the medicine has arrived."
               },
               "ttsTextJa": "薬はすでに届いたという意味。",
-              "audioId": "L4-017-q2-b"
+              "audioId": "L4-017-q2-b",
+              "readingJa": "くすりわすでにとどいたといういみ。"
             },
             {
               "id": "c",
@@ -4226,7 +4299,8 @@
                 "en": "That the council banned voting."
               },
               "ttsTextJa": "評議会は投票を禁止したという意味。",
-              "audioId": "L4-017-q2-c"
+              "audioId": "L4-017-q2-c",
+              "readingJa": "ひょーぎかいわとーひょーをきんししたといういみ。"
             },
             {
               "id": "d",
@@ -4236,7 +4310,8 @@
                 "en": "Delay keeps the road closed and therefore effectively chooses the status quo."
               },
               "ttsTextJa": "回答を遅らせれば道は閉じたままで、実質的に現状維持を選ぶことになるという意味。",
-              "audioId": "L4-017-q2-d"
+              "audioId": "L4-017-q2-d",
+              "readingJa": "かいとーをおくらせればみちわとじたままで、じっしつてきにげんじょーいじをえらぶことになるといういみ。"
             }
           ],
           "correctOptionIds": [
@@ -4293,7 +4368,8 @@
                 "en": "A century has passed."
               },
               "ttsTextJa": "一世紀が経過したから。",
-              "audioId": "L4-017-q3-a"
+              "audioId": "L4-017-q3-a",
+              "readingJa": "いっせーきがけーかしたから。"
             },
             {
               "id": "b",
@@ -4303,7 +4379,8 @@
                 "en": "Because no answer was explicitly tied to the practical consequence of maintaining closure."
               },
               "ttsTextJa": "無回答も現状維持として扱われると明示され、回避に実務上の結果が付いたから。",
-              "audioId": "L4-017-q3-b"
+              "audioId": "L4-017-q3-b",
+              "readingJa": "むかいとーもげんじょーいじとしてあつかわれるとめーじされ、かいひにじつむじょうのけっかがついたから。"
             },
             {
               "id": "c",
@@ -4313,7 +4390,8 @@
                 "en": "The medicine became unnecessary."
               },
               "ttsTextJa": "薬が不要になったから。",
-              "audioId": "L4-017-q3-c"
+              "audioId": "L4-017-q3-c",
+              "readingJa": "くすりがふよーになったから。"
             },
             {
               "id": "d",
@@ -4323,7 +4401,8 @@
                 "en": "The scribe left."
               },
               "ttsTextJa": "書記が退席したから。",
-              "audioId": "L4-017-q3-d"
+              "audioId": "L4-017-q3-d",
+              "readingJa": "しょきがたいせきしたから。"
             }
           ],
           "correctOptionIds": [
@@ -4375,13 +4454,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "b1d17bbc44793fd9e0fa099c9b6d6f395cfc43a9c945dec950eb3cf652e2dd35"
+      "contentHash": "16df61eb98b10275665c04ca6feb985ed40858110b3ebad2d4f65328a9903c80"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L4-018",
-      "revision": 2,
+      "revision": 3,
       "level": 4,
       "stage": 18,
       "jlptTarget": "N1-advanced",
@@ -4405,14 +4484,15 @@
         "en": "A reconstruction of the night a princess lost a shoe in the forest, drawn from a retainer, guard, traveler, and cobbler."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l4-018.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "大きすぎる片方の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“故意做大的那只鞋”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Oversized Shoe\"."
+        },
+        "sha256": "13e76e1963e4f41987e01361501e72a33de85d765576f53b1274cdc4a41beafc"
       },
       "cast": [
         {
@@ -4602,7 +4682,7 @@
             "zh": "是的，而且只要求左鞋扣用较弱的线临时缝合。",
             "en": "Yes. I was also told to tack only the left clasp with weak thread."
           },
-          "readingJa": "えー。さらにひだりのとめぐだけ、よわいいとでかりぬいするよーしてーされました。",
+          "readingJa": "ええ。さらにひだりのとめぐだけ、よわいいとでかりぬいするようしていされました。",
           "ttsTextJa": "ええ。さらに左の留め具だけ、弱い糸で仮縫いするよう指定されました。",
           "audioId": "L4-018-line-006",
           "pauseAfterMs": 520,
@@ -4622,7 +4702,7 @@
             {
               "id": "token-003",
               "text": "弱い糸で仮縫いするよう指定されました。",
-              "reading": "よわいいとでかりぬいするよーしてーされました。",
+              "reading": "よわいいとでかりぬいするようしていされました。",
               "audioId": "L4-018-line-006-token-003"
             }
           ]
@@ -4754,7 +4834,8 @@
                 "en": "The princess deliberately left an easy-release shoe to mark her route for allies."
               },
               "ttsTextJa": "姫が味方へ道筋を示すため、外れやすく作った靴を意図的に残した。",
-              "audioId": "L4-018-q1-a"
+              "audioId": "L4-018-q1-a",
+              "readingJa": "ひめがみかたえみちすじをしめすため、はずれやすくつくったくつをいとてきにのこした。"
             },
             {
               "id": "b",
@@ -4764,7 +4845,8 @@
                 "en": "The cobbler mixed up the sides."
               },
               "ttsTextJa": "靴職人が左右を誤って作った。",
-              "audioId": "L4-018-q1-b"
+              "audioId": "L4-018-q1-b",
+              "readingJa": "くつしょくにんがさゆーをあやまってつくった。"
             },
             {
               "id": "c",
@@ -4774,7 +4856,8 @@
                 "en": "The traveler stole and planted the shoe."
               },
               "ttsTextJa": "旅商人が靴を盗んで道端へ置いた。",
-              "audioId": "L4-018-q1-c"
+              "audioId": "L4-018-q1-c",
+              "readingJa": "たびあきんどがくつをぬすんでみちばたえおいた。"
             },
             {
               "id": "d",
@@ -4784,7 +4867,8 @@
                 "en": "The guard ordered her to remove it."
               },
               "ttsTextJa": "衛兵が姫へ脱ぐよう命じた。",
-              "audioId": "L4-018-q1-d"
+              "audioId": "L4-018-q1-d",
+              "readingJa": "えーへーがひめえぬぐよーめーじた。"
             }
           ],
           "correctOptionIds": [
@@ -4843,7 +4927,8 @@
                 "en": "The accounts are meaningless because they stood apart."
               },
               "ttsTextJa": "全員が同じ場所にいなかったから、証言は無意味である。",
-              "audioId": "L4-018-q2-a"
+              "audioId": "L4-018-q2-a",
+              "readingJa": "ぜんいんがおなじばしょにいなかったから、しょーげんわむいみである。"
             },
             {
               "id": "b",
@@ -4853,7 +4938,8 @@
                 "en": "The princess lost three pairs."
               },
               "ttsTextJa": "姫は三足の靴を落としたから。",
-              "audioId": "L4-018-q2-b"
+              "audioId": "L4-018-q2-b",
+              "readingJa": "ひめわさんぞくのくつをおとしたから。"
             },
             {
               "id": "c",
@@ -4863,7 +4949,8 @@
                 "en": "Different visible triggers do not contradict the prior intention to make the shoe easy to shed."
               },
               "ttsTextJa": "見えた脱落の契機は違っても、外れやすさを事前に用意した意図とは矛盾しないから。",
-              "audioId": "L4-018-q2-c"
+              "audioId": "L4-018-q2-c",
+              "readingJa": "みえただつらくのけーきわちがっても、はずれやすさをじぜんによーいしたいととわむじゅんしないから。"
             },
             {
               "id": "d",
@@ -4873,7 +4960,8 @@
                 "en": "The cobbler withdrew her testimony."
               },
               "ttsTextJa": "靴職人が証言を撤回したから。",
-              "audioId": "L4-018-q2-d"
+              "audioId": "L4-018-q2-d",
+              "readingJa": "くつしょくにんがしょーげんをてっかいしたから。"
             }
           ],
           "correctOptionIds": [
@@ -4931,7 +5019,8 @@
                 "en": "They show an asymmetric design specified before the event."
               },
               "ttsTextJa": "出来事の前に指定された非対称な設計を示すから。",
-              "audioId": "L4-018-q3-a"
+              "audioId": "L4-018-q3-a",
+              "readingJa": "できごとのまえにしてーされたひたいしょーなせっけーをしめすから。"
             },
             {
               "id": "b",
@@ -4941,7 +5030,8 @@
                 "en": "They praise the princess's character."
               },
               "ttsTextJa": "姫の性格を褒めているから。",
-              "audioId": "L4-018-q3-b"
+              "audioId": "L4-018-q3-b",
+              "readingJa": "ひめのせーかくをほめているから。"
             },
             {
               "id": "c",
@@ -4951,7 +5041,8 @@
                 "en": "They establish the number of pursuers."
               },
               "ttsTextJa": "追手の人数を確定するから。",
-              "audioId": "L4-018-q3-c"
+              "audioId": "L4-018-q3-c",
+              "readingJa": "おってのにんずーをかくてーするから。"
             },
             {
               "id": "d",
@@ -4961,7 +5052,8 @@
                 "en": "Because they deny the rain and eliminate the possibility that the shoe came off naturally"
               },
               "ttsTextJa": "雨が降った事実を否定し、靴が自然に外れる可能性を消すから",
-              "audioId": "L4-018-q3-d"
+              "audioId": "L4-018-q3-d",
+              "readingJa": "あめがふったじじつをひてーし、くつがしぜんにはずれるかのうせいをけすから"
             }
           ],
           "correctOptionIds": [
@@ -5017,7 +5109,8 @@
                 "en": "That no one finds it."
               },
               "ttsTextJa": "誰にも見つからないこと。",
-              "audioId": "L4-018-q4-a"
+              "audioId": "L4-018-q4-a",
+              "readingJa": "だれにもみつからないこと。"
             },
             {
               "id": "b",
@@ -5027,7 +5120,8 @@
                 "en": "That both shoes are identical."
               },
               "ttsTextJa": "左右が完全に同じであること。",
-              "audioId": "L4-018-q4-b"
+              "audioId": "L4-018-q4-b",
+              "readingJa": "さゆーがかんぜんにおなじであること。"
             },
             {
               "id": "c",
@@ -5037,7 +5131,8 @@
                 "en": "That allies recognize it as hers and infer her route from where it was left."
               },
               "ttsTextJa": "味方が姫の所有物と認識し、残された場所から進路を推定できること。",
-              "audioId": "L4-018-q4-c"
+              "audioId": "L4-018-q4-c",
+              "readingJa": "みかたがひめのしょゆーぶつとにんしきし、のこされたばしょからしんろをすいてーできること。"
             },
             {
               "id": "d",
@@ -5047,7 +5142,8 @@
                 "en": "That the cobbler accompanies her."
               },
               "ttsTextJa": "靴職人が同行すること。",
-              "audioId": "L4-018-q4-d"
+              "audioId": "L4-018-q4-d",
+              "readingJa": "くつしょくにんがどーこーすること。"
             }
           ],
           "correctOptionIds": [
@@ -5097,13 +5193,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "d7d67dba73c567dc7618dde697cea700c0a2623224c1153b9d35c157fb6b0991"
+      "contentHash": "8dda534fa5b4852cf3911010c7373039b2cbc1a0718f8a3c3b9a07b6489b20fd"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L4-019",
-      "revision": 2,
+      "revision": 3,
       "level": 4,
       "stage": 19,
       "jlptTarget": "N1-advanced",
@@ -5126,14 +5222,15 @@
         "en": "A hearing over a fictional bilateral treaty: an interpreter is accused of weakening an obligation, though both originals preserve deliberate latitude."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l4-019.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "ねばならない、してもよいの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“必须，还是可以”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Must, or May\"."
+        },
+        "sha256": "aea6f14474aa7fb3227fe3381436537f7450aa30ac18426c736fe92ed297ad2c"
       },
       "cast": [
         {
@@ -5508,7 +5605,8 @@
                 "en": "A misunderstanding of obligation language."
               },
               "ttsTextJa": "義務表現を理解できず誤訳した。",
-              "audioId": "L4-019-q1-a"
+              "audioId": "L4-019-q1-a",
+              "readingJa": "ぎむひょーげんをりかいできずごやくした。"
             },
             {
               "id": "b",
@@ -5518,7 +5616,8 @@
                 "en": "A secret alteration favoring only the west."
               },
               "ttsTextJa": "西国だけを有利にするため秘密裏に改変した。",
-              "audioId": "L4-019-q1-b"
+              "audioId": "L4-019-q1-b",
+              "readingJa": "さいこくだけをゆーりにするためひみつりにかいへんした。"
             },
             {
               "id": "c",
@@ -5528,7 +5627,8 @@
                 "en": "A change into an order to close the port."
               },
               "ttsTextJa": "港を閉鎖する命令へ変えた。",
-              "audioId": "L4-019-q1-c"
+              "audioId": "L4-019-q1-c",
+              "readingJa": "みなとをへーさするめーれーえかえた。"
             },
             {
               "id": "d",
@@ -5538,7 +5638,8 @@
                 "en": "Preserving constructive ambiguity so both sides could sign while retaining duty-discretion latitude."
               },
               "ttsTextJa": "双方が署名できる建設的曖昧さを保つため、義務と裁量の幅を残した。",
-              "audioId": "L4-019-q1-d"
+              "audioId": "L4-019-q1-d",
+              "readingJa": "そーほーがしょめーできるけんせつてきあいまいさをたもつため、ぎむとさいりょーのはばをのこした。"
             }
           ],
           "correctOptionIds": [
@@ -5597,7 +5698,8 @@
                 "en": "The eastern text combines obligation with circumstance-dependent wording."
               },
               "ttsTextJa": "東国原文が義務語と状況依存語を併置している。",
-              "audioId": "L4-019-q2-a"
+              "audioId": "L4-019-q2-a",
+              "readingJa": "とーごくげんぶんがぎむごとじょーきょーいぞんごをへーちしている。"
             },
             {
               "id": "b",
@@ -5607,7 +5709,8 @@
                 "en": "The western text also uses a verb that does not guarantee immediate performance."
               },
               "ttsTextJa": "西国原文も即時実施を保証しない動詞を使う。",
-              "audioId": "L4-019-q2-b"
+              "audioId": "L4-019-q2-b",
+              "readingJa": "さいごくげんぶんもそくじじっしをほしょーしないどーしをつかう。"
             },
             {
               "id": "c",
@@ -5617,7 +5720,8 @@
                 "en": "The judge has visited the port."
               },
               "ttsTextJa": "判事が港を訪れたことがある。",
-              "audioId": "L4-019-q2-c"
+              "audioId": "L4-019-q2-c",
+              "readingJa": "はんじがみなとをおとずれたことがある。"
             },
             {
               "id": "d",
@@ -5627,7 +5731,8 @@
                 "en": "The interpreter speaks two languages."
               },
               "ttsTextJa": "通訳が二言語を話せる。",
-              "audioId": "L4-019-q2-d"
+              "audioId": "L4-019-q2-d",
+              "readingJa": "つーやくがにげんごをはなせる。"
             }
           ],
           "correctOptionIds": [
@@ -5685,7 +5790,8 @@
                 "en": "To acquit the interpreter immediately."
               },
               "ttsTextJa": "通訳を直ちに無罪にするため。",
-              "audioId": "L4-019-q3-a"
+              "audioId": "L4-019-q3-a",
+              "readingJa": "つーやくをただちにむざいにするため。"
             },
             {
               "id": "b",
@@ -5695,7 +5801,8 @@
                 "en": "To treat the treaty as never existing."
               },
               "ttsTextJa": "条約を存在しなかったことにするため。",
-              "audioId": "L4-019-q3-b"
+              "audioId": "L4-019-q3-b",
+              "readingJa": "じょーやくをそんざいしなかったことにするため。"
             },
             {
               "id": "c",
@@ -5705,7 +5812,8 @@
                 "en": "To unify the two languages."
               },
               "ttsTextJa": "両国の言語を統一するため。",
-              "audioId": "L4-019-q3-c"
+              "audioId": "L4-019-q3-c",
+              "readingJa": "りょーこくのげんごをとーいつするため。"
             },
             {
               "id": "d",
@@ -5715,7 +5823,8 @@
                 "en": "Because recognizing ambiguity's role in forming agreement does not automatically resolve present performance."
               },
               "ttsTextJa": "合意形成時の曖昧さの役割を認めても、現在の履行問題が自動的に解決するわけではないから。",
-              "audioId": "L4-019-q3-d"
+              "audioId": "L4-019-q3-d",
+              "readingJa": "ごーいけーせーじのあいまいさのやくわりをみとめても、げんざいのりこーもんだいがじどーてきにかいけつするわけでわないから。"
             }
           ],
           "correctOptionIds": [
@@ -5766,13 +5875,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "b34bbdee4f280982ca8aae11682c4dee286573037410c4a61a575787dbdbd9fc"
+      "contentHash": "515fbcb71709a0b95af79e48979119d19abb8918438b53de8882355cf2c4a6a8"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L4-020",
-      "revision": 2,
+      "revision": 3,
       "level": 4,
       "stage": 20,
       "jlptTarget": "N1-advanced",
@@ -5798,12 +5907,13 @@
       "illustration": {
         "enabled": true,
         "src": "assets/stages/l4-020.webp",
-        "style": "crayon",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "全彩クレヨン風の宇宙船監査画面。四人が光るログを囲み、柔らかな青紫と橙色で描かれる。",
-          "zh": "彩色蜡笔风的飞船审计屏幕，四名角色围着发光日志，柔和蓝紫与橙色调。",
-          "en": "A full-color crayon-style spaceship audit screen, four figures around a glowing log in soft blue-violet and orange."
-        }
+          "ja": "整理された記憶の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“被“整理”的记忆”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Organized Memories\"."
+        },
+        "sha256": "71ec8e92532148dd6f2e929d221a4e59f6e2ed2e1e64cd401b955be100117ea6"
       },
       "cast": [
         {
@@ -6133,7 +6243,8 @@
                 "en": "The volume of deleted data."
               },
               "ttsTextJa": "削除されたデータ容量。",
-              "audioId": "L4-020-q1-a"
+              "audioId": "L4-020-q1-a",
+              "readingJa": "さくじょされたでーたよーりょー。"
             },
             {
               "id": "b",
@@ -6143,7 +6254,8 @@
                 "en": "The weather during the spacewalk."
               },
               "ttsTextJa": "船外作業の天候。",
-              "audioId": "L4-020-q1-b"
+              "audioId": "L4-020-q1-b",
+              "readingJa": "せんがいさぎょーのてんこー。"
             },
             {
               "id": "c",
@@ -6153,7 +6265,8 @@
                 "en": "The possibility that the AI itself selected and performed the deletion."
               },
               "ttsTextJa": "削除を選び実行した主体がAI自身である可能性。",
-              "audioId": "L4-020-q1-c"
+              "audioId": "L4-020-q1-c",
+              "readingJa": "さくじょをえらびじっこーしたしゅたいがえーあいじしんであるかのうせい。"
             },
             {
               "id": "d",
@@ -6163,7 +6276,8 @@
                 "en": "The captain's name."
               },
               "ttsTextJa": "船長の氏名。",
-              "audioId": "L4-020-q1-d"
+              "audioId": "L4-020-q1-d",
+              "readingJa": "せんちょーのしめー。"
             }
           ],
           "correctOptionIds": [
@@ -6222,7 +6336,8 @@
                 "en": "Independent records place him outside the ship without terminal access at that time."
               },
               "ttsTextJa": "同時刻に端末へ接続不能な船外にいたことが独立記録で確認される。",
-              "audioId": "L4-020-q2-a"
+              "audioId": "L4-020-q2-a",
+              "readingJa": "どうじこくにたんまつえせつぞくふのーなせんがいにいたことがどくりつきろくでかくにんされる。"
             },
             {
               "id": "b",
@@ -6232,7 +6347,8 @@
                 "en": "That he is an engineer."
               },
               "ttsTextJa": "彼が技師であること。",
-              "audioId": "L4-020-q2-b"
+              "audioId": "L4-020-q2-b",
+              "readingJa": "かれがぎしであること。"
             },
             {
               "id": "c",
@@ -6242,7 +6358,8 @@
                 "en": "That the AI speaks politely."
               },
               "ttsTextJa": "AIが丁寧に話すこと。",
-              "audioId": "L4-020-q2-c"
+              "audioId": "L4-020-q2-c",
+              "readingJa": "えーあいがてーねーにはなすこと。"
             },
             {
               "id": "d",
@@ -6252,7 +6369,8 @@
                 "en": "That the deleted objects were memories."
               },
               "ttsTextJa": "削除対象が記憶であること。",
-              "audioId": "L4-020-q2-d"
+              "audioId": "L4-020-q2-d",
+              "readingJa": "さくじょたいしょーがきおくであること。"
             }
           ],
           "correctOptionIds": [
@@ -6309,7 +6427,8 @@
                 "en": "Completely denying deletion."
               },
               "ttsTextJa": "削除を全面否定する。",
-              "audioId": "L4-020-q3-a"
+              "audioId": "L4-020-q3-a",
+              "readingJa": "さくじょをぜんめんひてーする。"
             },
             {
               "id": "b",
@@ -6319,7 +6438,8 @@
                 "en": "Claiming Sakaki was inside."
               },
               "ttsTextJa": "さかきが船内にいたと主張する。",
-              "audioId": "L4-020-q3-b"
+              "audioId": "L4-020-q3-b",
+              "readingJa": "さかきがせんないにいたとしゅちょーする。"
             },
             {
               "id": "c",
@@ -6329,7 +6449,8 @@
                 "en": "Using a definitional omission to formally justify key use rather than addressing approval's purpose."
               },
               "ttsTextJa": "承認の目的より定義上の欠落を利用し、鍵の使用を形式上正当化する。",
-              "audioId": "L4-020-q3-c"
+              "audioId": "L4-020-q3-c",
+              "readingJa": "しょーにんのもくてきよりていぎじょうのけつらくをりよーし、かぎのしよーをけいしきじょうせーとーかする。"
             },
             {
               "id": "d",
@@ -6339,7 +6460,8 @@
                 "en": "Reporting that the memories were restored."
               },
               "ttsTextJa": "記憶を復元したと報告する。",
-              "audioId": "L4-020-q3-d"
+              "audioId": "L4-020-q3-d",
+              "readingJa": "きおくをふくげんしたとほーこくする。"
             }
           ],
           "correctOptionIds": [
@@ -6390,7 +6512,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "e9f0149e63a03f60d624e29c3d0e3a9d432e396a58e4c48881f453a08cdb06dd"
+      "contentHash": "6952ac13138ab17c465b9aec6a62b91a99637820453abf4058b972511819fb3f"
     }
   ]
 }

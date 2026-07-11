@@ -22,8 +22,10 @@ function canonicalJson(value) {
 const pronunciationsSha256 = createHash("sha256")
   .update(canonicalJson(JSON.parse(readFileSync(path.join(ttsRoot, "config", "pronunciations.json"), "utf8"))), "utf8")
   .digest("hex");
+const modelFilesManifest = JSON.parse(readFileSync(path.join(ttsRoot, "scripts", "tts", "model-files.sha256.json"), "utf8"));
 const generator = {
   name: "kokoro-onnx-offline",
+  pipelineVersion: "kokoro-ja-mp3-v4",
   executionProvider: "CPUExecutionProvider",
   output: {
     format: "mp3",
@@ -36,13 +38,15 @@ const generator = {
     sceneGapMs: 180,
   },
   pronunciationsSha256,
+  files: modelFilesManifest.files,
+  runtime: modelFilesManifest.runtime,
 };
 
 const stage = {
   id: "L1-001",
   level: 1,
   stage: 1,
-  contentVersion: "1.0.1",
+  contentVersion: "1.0.2",
   contentHash: sourceContentHash,
   audio: {
     sceneAudioId: "L1-001-scene",
@@ -76,7 +80,7 @@ const stage = {
 };
 
 function item(id, type, relativePath, durationSeconds = 1) {
-  return {
+  const result = {
     id,
     type,
     stageId: "L1-001",
@@ -93,6 +97,11 @@ function item(id, type, relativePath, durationSeconds = 1) {
     durationSeconds,
     bytes: 1000,
   };
+  if (type !== "scene") {
+    result.readingSha256 = "e".repeat(64);
+    result.phonemeSha256 = "f".repeat(64);
+  }
+  return result;
 }
 
 test("validateManifest accepts safe artifacts and a bounded timeline", async () => {
@@ -115,7 +124,7 @@ test("validateManifest accepts safe artifacts and a bounded timeline", async () 
   );
   const manifest = {
     schemaVersion: 1,
-    contentVersion: "1.0.1",
+    contentVersion: "1.0.2",
     generatedAt: "2026-07-11T00:00:00Z",
     audioBaseUrl: "https://cdn.example.com/japanese-subtext/audio/",
     generator,
@@ -131,7 +140,7 @@ test("validateManifest accepts safe artifacts and a bounded timeline", async () 
       "L1-001": {
         stageId: "L1-001",
         level: 1,
-        contentVersion: "1.0.1",
+        contentVersion: "1.0.2",
         sceneAudioId: "L1-001-scene",
         timelineId: "L1-001-timeline",
         timelinePath: "level-1/L1-001/timeline.json",
@@ -195,7 +204,7 @@ test("silence checking still runs when ffprobe is skipped", async () => {
   await writeFile(path.join(audioRoot, "level-1", "L1-001", "line.mp3"), "mp3");
   const manifest = {
     schemaVersion: 1,
-    contentVersion: "1.0.1",
+    contentVersion: "1.0.2",
     audioBaseUrl: "./",
     generator,
     voices: {},
@@ -226,10 +235,36 @@ test("silence checking still runs when ffprobe is skipped", async () => {
   assert.ok(nonzero.errors.some((error) => error.includes("silence check failed")));
 });
 
+test("validator rejects stale pipelines and missing reading or phoneme provenance", async () => {
+  await mkdir(path.join(audioRoot, "level-1", "L1-001"), { recursive: true });
+  await writeFile(path.join(audioRoot, "level-1", "L1-001", "line.mp3"), "mp3");
+  const unproven = item("L1-001-line-001", "line", "level-1/L1-001/line.mp3");
+  delete unproven.readingSha256;
+  delete unproven.phonemeSha256;
+  const result = validateManifest({
+    manifest: {
+      schemaVersion: 1,
+      contentVersion: "1.0.2",
+      audioBaseUrl: "./",
+      generator: { ...generator, pipelineVersion: "kokoro-ja-mp3-v3" },
+      voices: {},
+      items: { [unproven.id]: unproven },
+      stages: {},
+      stats: { scene: 0, line: 1, option: 0, token: 0, durationSeconds: 1, bytes: 1000 },
+    },
+    audioRoot,
+    stages: [],
+    skipProbe: true,
+  });
+  assert.ok(result.errors.some((error) => error.includes("pipelineVersion")));
+  assert.ok(result.errors.some((error) => error.includes("readingSha256")));
+  assert.ok(result.errors.some((error) => error.includes("phonemeSha256")));
+});
+
 test("validateManifest rejects traversal, duplicate paths, leaked local paths, and bad cues", async () => {
   const manifest = {
     schemaVersion: 1,
-    contentVersion: "1.0.1",
+    contentVersion: "1.0.2",
     generatedAt: "2026-07-11T00:00:00Z",
     audioBaseUrl: "./",
     generator: { localModel: "F:\\private\\model.onnx" },

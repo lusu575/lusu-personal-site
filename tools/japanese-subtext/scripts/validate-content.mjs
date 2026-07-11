@@ -1,4 +1,5 @@
-import { existsSync, statSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { existsSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { contentHash, contentRoot, expectedShape, loadAllStages, readJson, toolRoot } from "./content-utils.mjs";
 
@@ -13,6 +14,9 @@ const voices = new Set(Object.keys(voicesPayload.voices || {}));
 const blueprintPayload = await readJson(path.join(contentRoot, "blueprint.json"));
 const blueprintEntries = Array.isArray(blueprintPayload.entries) ? blueprintPayload.entries : [];
 const blueprintById = new Map(blueprintEntries.map((entry) => [entry.id, entry]));
+const illustrationManifest = await readJson(path.join(toolRoot, "assets", "stages", "manifest.json"));
+const illustrationByStage = new Map((illustrationManifest.entries || []).map((entry) => [entry.stageId, entry]));
+const validatedIllustrations = new Set();
 const audioManifest = await readJson(path.join(toolRoot, "audio", "manifest.json"));
 const ids = new Set();
 const fingerprints = new Map();
@@ -34,6 +38,8 @@ for (let level = 1; level <= 5; level += 1) {
 
 for (const stage of stages) validateStage(stage);
 if (!allowPartial) {
+  check(illustrationByStage.size === 250, `Illustration manifest has ${illustrationByStage.size} entries; expected 250.`);
+  check(validatedIllustrations.size === 250, `Validated ${validatedIllustrations.size} stage illustrations; expected 250.`);
   for (const [level, genres] of genreByLevel) check(genres.size >= 8, `Level ${level}: only ${genres.size} genres; expected at least 8.`);
 }
 
@@ -63,7 +69,7 @@ warnings.forEach((warning) => console.warn(`WARN: ${warning}`));
 
 function validateBlueprint() {
   check(blueprintPayload.schemaVersion === 1, "Blueprint schemaVersion must be 1.");
-  check(blueprintPayload.contentVersion === "1.0.1", "Blueprint contentVersion must be 1.0.1.");
+  check(blueprintPayload.contentVersion === "1.0.2", "Blueprint contentVersion must be 1.0.2.");
   check(blueprintPayload.blueprintStatus === "complete", "Blueprint must be marked complete.");
   check(blueprintEntries.length === 250, `Blueprint must contain exactly 250 entries; found ${blueprintEntries.length}.`);
   check(blueprintById.size === blueprintEntries.length, "Blueprint contains duplicate stage IDs.");
@@ -76,8 +82,8 @@ function validateBlueprint() {
     checkLocalized(entry.premise, `${prefix}.blueprint.premise`);
     checkLocalized(entry.coreSubtext, `${prefix}.blueprint.coreSubtext`);
     check(Array.isArray(entry.answerPositions) && entry.answerPositions.length === entry.questionCount, `${prefix}: blueprint answer-position count mismatch.`);
-    check(["none", "crayon", "chibi-four-panel"].includes(entry.illustration?.style), `${prefix}: blueprint illustration style is not allowed.`);
-    check(!/(?:monochrome|black.?and.?white|line.?art|black-white|黑白|线稿|線画|モノクロ)/iu.test(JSON.stringify(entry)), `${prefix}: blueprint still references a prohibited black-and-white line-art style.`);
+    check(entry.illustration?.enabled === true, `${prefix}: blueprint illustration must be enabled.`);
+    check(entry.illustration?.style === "monochrome-four-panel", `${prefix}: blueprint must use the approved monochrome four-panel manga style.`);
     uniqueFingerprint(premiseFingerprints, normalize(entry.premise?.ja), prefix, "premise");
     uniqueFingerprint(subtextFingerprints, normalize(entry.coreSubtext?.ja), prefix, "core subtext");
   }
@@ -98,7 +104,7 @@ function validateStage(stage) {
   const prefix = stage?.id || "<missing-id>";
   const blueprint = blueprintById.get(prefix);
   check(stage?.schemaVersion === 1, `${prefix}: schemaVersion must be 1.`);
-  check(stage?.contentVersion === "1.0.1", `${prefix}: contentVersion must be 1.0.1.`);
+  check(stage?.contentVersion === "1.0.2", `${prefix}: contentVersion must be 1.0.2.`);
   check(/^L[1-5]-[0-9]{3}$/.test(prefix), `${prefix}: invalid ID.`);
   check(!ids.has(prefix), `${prefix}: duplicate stage ID.`);
   ids.add(prefix);
@@ -139,6 +145,7 @@ function validateStage(stage) {
     checkLocalized(line.text, `${prefix}.${line.id}.text`);
     check(nonEmpty(line.readingJa) && nonEmpty(line.ttsTextJa), `${prefix}.${line.id}: reading/tts text missing.`);
     check(!/\p{Script=Han}/u.test(line.readingJa || ""), `${prefix}.${line.id}: readingJa still contains kanji.`);
+    check(!/[―−，／]/u.test(line.readingJa || ""), `${prefix}.${line.id}: readingJa contains unsafe synthesis punctuation.`);
     check(line.audioId === `${prefix}-${line.id}`, `${prefix}.${line.id}: unstable audio ID.`);
     check(Array.isArray(line.tokens) && line.tokens.length > 0, `${prefix}.${line.id}: tokens missing.`);
     for (const [tokenIndex, token] of (line.tokens || []).entries()) {
@@ -146,9 +153,15 @@ function validateStage(stage) {
       check(token.id === tokenId, `${prefix}.${line.id}: token IDs must be continuous.`);
       check(nonEmpty(token.text) && nonEmpty(token.reading), `${prefix}.${line.id}.${token.id}: token text/reading missing.`);
       check(!/\p{Script=Han}/u.test(token.reading || ""), `${prefix}.${line.id}.${token.id}: token reading still contains kanji.`);
+      check(!/[―−，／]/u.test(token.reading || ""), `${prefix}.${line.id}.${token.id}: token reading contains unsafe synthesis punctuation.`);
       check(token.audioId === `${prefix}-${line.id}-${token.id}`, `${prefix}.${line.id}.${token.id}: invalid audio ID.`);
       if (!skipAudio) check(audioManifest.items?.[token.audioId], `${prefix}.${line.id}.${token.id}: missing audio manifest item.`);
     }
+    const tokenReading = (line.tokens || []).map((token) => token.reading || "").join("");
+    check(
+      readingSequence(tokenReading) === readingSequence(line.readingJa),
+      `${prefix}.${line.id}: sentence/chunk reading sequence mismatch.`
+    );
     if (!skipAudio) check(audioManifest.items?.[line.audioId], `${prefix}.${line.id}: missing line audio manifest item.`);
   }
   for (const [questionIndex, question] of (stage.questions || []).entries()) {
@@ -167,6 +180,9 @@ function validateStage(stage) {
     for (const option of question.options || []) {
       checkLocalized(option.text, `${prefix}.${question.id}.${option.id}.text`);
       check(nonEmpty(option.ttsTextJa), `${prefix}.${question.id}.${option.id}: tts text missing.`);
+      check(nonEmpty(option.readingJa), `${prefix}.${question.id}.${option.id}: readingJa is empty.`);
+      check(!/\p{Script=Han}/u.test(option.readingJa || ""), `${prefix}.${question.id}.${option.id}: readingJa still contains kanji.`);
+      check(!/[―−，／]/u.test(option.readingJa || ""), `${prefix}.${question.id}.${option.id}: readingJa contains unsafe synthesis punctuation.`);
       check(option.audioId === `${prefix}-${question.id}-${option.id}`, `${prefix}.${question.id}.${option.id}: invalid audio ID.`);
       if (!skipAudio) check(audioManifest.items?.[option.audioId], `${prefix}.${question.id}.${option.id}: missing option audio manifest item.`);
     }
@@ -204,6 +220,18 @@ function validateStage(stage) {
     const illustrationFile = path.resolve(toolRoot, stage.illustration.src || "");
     check(illustrationFile.startsWith(`${path.resolve(toolRoot, "assets")}${path.sep}`), `${prefix}: illustration resolves outside the tool asset directory.`);
     check(existsSync(illustrationFile) && statSync(illustrationFile).size > 0, `${prefix}: illustration file is missing or empty.`);
+    const illustrationEntry = illustrationByStage.get(prefix);
+    check(illustrationEntry?.path === stage.illustration.src, `${prefix}: illustration manifest path mismatch.`);
+    check(illustrationEntry?.style === "monochrome-four-panel", `${prefix}: illustration manifest style mismatch.`);
+    check(illustrationEntry?.width === 960 && illustrationEntry?.height === 720, `${prefix}: illustration manifest dimensions must be 960x720.`);
+    check(illustrationEntry?.reviewStatus === "automated-scene-mapped", `${prefix}: illustration review status is missing.`);
+    check(/^[a-f0-9]{64}$/.test(stage.illustration.sha256 || ""), `${prefix}: illustration SHA-256 is missing.`);
+    check(stage.illustration.sha256 === illustrationEntry?.sha256, `${prefix}: illustration SHA-256 diverges from manifest.`);
+    if (existsSync(illustrationFile)) {
+      const actualHash = createHash("sha256").update(readFileSync(illustrationFile)).digest("hex");
+      check(actualHash === stage.illustration.sha256, `${prefix}: illustration file hash mismatch.`);
+    }
+    validatedIllustrations.add(prefix);
   }
   if (!skipAudio) {
     check(audioManifest.items?.[stage.audio?.sceneAudioId], `${prefix}: missing scene audio manifest item.`);
@@ -249,4 +277,8 @@ function sameArray(left, right) {
 
 function normalize(value) {
   return String(value || "").normalize("NFKC").replace(/[\s\p{P}\p{S}]/gu, "").toLowerCase();
+}
+
+function readingSequence(value) {
+  return String(value || "").normalize("NFKC").replace(/[\s\p{P}\p{S}]/gu, "");
 }

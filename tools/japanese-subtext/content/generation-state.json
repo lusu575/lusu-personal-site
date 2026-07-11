@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.1",
+  "contentVersion": "1.0.2",
   "updatedAt": "2026-07-11",
   "currentPhase": "release-validation-complete",
   "nextPhase": "release",
@@ -104,8 +104,8 @@
     "expectedArtifacts": 10088,
     "generatedArtifacts": 10088,
     "generatedStages": 250,
-    "durationSeconds": 41778.912,
-    "bytes": 341455752,
+    "durationSeconds": 38601.484,
+    "bytes": 316038600,
     "generatedBatches": [
       "level-1",
       "level-2",
@@ -116,18 +116,24 @@
     "validation": {
       "contentLinks": "pass",
       "quick": "pass",
+      "phonemeAudit": "pass",
+      "phonemeAuditedTasks": 9838,
+      "phonemeAuditElapsedSeconds": 708.585,
       "ffprobeAndSilence": "pass",
       "validatedArtifacts": 10088,
-      "elapsedSeconds": 1165.137
+      "elapsedSeconds": 1354.165,
+      "representativeTailChecks": "pass"
     }
   },
   "illustrations": {
     "status": "complete",
-    "stageAssetCount": 31,
+    "stageAssetCount": 250,
+    "manifest": "assets/stages/manifest.json",
+    "generatorVersion": "local-four-panel-v2",
+    "reviewStatus": "automated-scene-mapped",
+    "imagegenStatus": "network-unavailable-local-fallback",
     "styleCounts": {
-      "crayon": 25,
-      "chibi-four-panel": 6,
-      "monochrome": 0
+      "monochrome-four-panel": 250
     },
     "generatedBatches": [
       "assets/icons",

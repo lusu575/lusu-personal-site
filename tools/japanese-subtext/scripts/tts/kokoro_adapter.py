@@ -7,8 +7,50 @@ arguments.
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
+
+
+MISAKI_TO_KOKORO = (
+    ("G", "gw"),
+    # Order matters: raw Misaki j is the /y/ glide, while ʥ becomes Kokoro j.
+    ("j", "y"),
+    ("K", "kw"),
+    ("ç", "hy"),
+    ("ƫ", "ty"),
+    ("ɕ", "sh"),
+    ("ɲ", "ny"),
+    ("ʥ", "j"),
+    ("ʦ", "ts"),
+    ("ʨ", "ch"),
+    ("ᶀ", "by"),
+    ("ᶁ", "dy"),
+    ("ᶃ", "gy"),
+    ("ᶄ", "ky"),
+    ("ᶆ", "my"),
+    ("ᶈ", "py"),
+    ("ᶉ", "ry"),
+    ("g", "ɡ"),
+)
+MAX_KOKORO_PHONEMES = 510
+
+
+def kokoro_phonemes_from_misaki(combined: str) -> str:
+    """Extract real phonemes, normalize symbols, and discard Misaki pitch metadata."""
+
+    if not isinstance(combined, str) or not combined:
+        raise ValueError("Japanese G2P returned no phonemes")
+    if len(combined) % 2:
+        raise ValueError("Misaki Japanese G2P returned an unbalanced phoneme/pitch sequence")
+    midpoint = len(combined) // 2
+    phonemes = combined[:midpoint]
+    pitch = combined[midpoint:]
+    if any(char not in "_^-j" for char in pitch):
+        raise ValueError("Misaki Japanese G2P returned invalid pitch metadata")
+    for source, replacement in MISAKI_TO_KOKORO:
+        phonemes = phonemes.replace(source, replacement)
+    return phonemes
 
 
 def prepare_japanese_reading(
@@ -41,6 +83,19 @@ def prepare_japanese_reading(
     return reading
 
 
+def phonemize_japanese_reading(
+    text: str,
+    *,
+    g2p: Callable[[str], tuple[str, object]],
+    reading_resolver: Callable[[str], str] = prepare_japanese_reading,
+) -> str:
+    """Apply the exact shared reading/G2P/P2R path used for synthesis and audits."""
+
+    prepared_text = reading_resolver(text)
+    combined, _ = g2p(prepared_text)
+    return kokoro_phonemes_from_misaki(combined)
+
+
 class KokoroAdapter:
     """Expose the project's stable ``synthesize`` interface for Kokoro."""
 
@@ -55,20 +110,32 @@ class KokoroAdapter:
         g2p: Callable[[str], tuple[str, object]] | None = None,
         writer: Callable[[str | Path, object, int], object] | None = None,
         reading_resolver: Callable[[str], str] | None = None,
+        audio_trimmer: Callable[[object], object] | None = None,
+        provider: str = "CPUExecutionProvider",
     ) -> None:
         self.model_path = Path(model_path)
         self.voices_path = Path(voices_path)
         self.vocab_path = Path(vocab_path)
         self.voices = {key: dict(value) for key, value in voices.items()}
 
+        if provider != "CPUExecutionProvider":
+            raise ValueError("Kokoro adapter only permits CPUExecutionProvider")
         if backend is None:
             from kokoro_onnx import Kokoro
 
-            backend = Kokoro(
-                str(self.model_path),
-                str(self.voices_path),
-                vocab_config=str(self.vocab_path),
-            )
+            previous_provider = os.environ.get("ONNX_PROVIDER")
+            os.environ["ONNX_PROVIDER"] = provider
+            try:
+                backend = Kokoro(
+                    str(self.model_path),
+                    str(self.voices_path),
+                    vocab_config=str(self.vocab_path),
+                )
+            finally:
+                if previous_provider is None:
+                    os.environ.pop("ONNX_PROVIDER", None)
+                else:
+                    os.environ["ONNX_PROVIDER"] = previous_provider
         if g2p is None:
             from misaki.ja import JAG2P
 
@@ -77,14 +144,46 @@ class KokoroAdapter:
             import soundfile
 
             writer = soundfile.write
+        if audio_trimmer is None:
+            from kokoro_onnx.trim import trim
+
+            audio_trimmer = trim
 
         self.backend = backend
+        session = getattr(backend, "sess", None)
+        actual_providers = session.get_providers() if session and hasattr(session, "get_providers") else [provider]
+        if actual_providers != [provider]:
+            raise RuntimeError(f"Kokoro runtime provider mismatch: {actual_providers!r}")
+        self.execution_provider = actual_providers[0]
         self.g2p = g2p
         self.writer = writer
         self.reading_resolver = reading_resolver or prepare_japanese_reading
+        self.audio_trimmer = audio_trimmer
 
     def prepare_reading(self, text: str) -> str:
         return self.reading_resolver(text)
+
+    def phonemize(self, text: str) -> str:
+        """Resolve a reviewed reading to the exact, validated model phonemes."""
+
+        phonemes = phonemize_japanese_reading(
+            text,
+            g2p=self.g2p,
+            reading_resolver=self.prepare_reading,
+        )
+        vocab = getattr(getattr(self.backend, "tokenizer", None), "vocab", None)
+        if not isinstance(vocab, Mapping):
+            raise RuntimeError("Kokoro backend does not expose its tokenizer vocabulary")
+        unsupported = sorted(set(phonemes).difference(vocab))
+        if unsupported:
+            rendered = ", ".join(repr(char) for char in unsupported)
+            raise ValueError(f"Kokoro model vocabulary has unsupported phoneme characters: {rendered}")
+        if len(phonemes) > MAX_KOKORO_PHONEMES:
+            raise ValueError(
+                f"Kokoro phoneme input exceeds the single-batch limit: "
+                f"{len(phonemes)} > {MAX_KOKORO_PHONEMES}"
+            )
+        return phonemes
 
     def synthesize(
         self,
@@ -115,16 +214,24 @@ class KokoroAdapter:
         model_voice = voice.get("modelVoice")
         if not isinstance(model_voice, str) or not model_voice:
             raise ValueError(f"voice {voice_key} is missing modelVoice")
-        prepared_text = self.prepare_reading(text)
-        phonemes, _ = self.g2p(prepared_text)
-        if not isinstance(phonemes, str) or not phonemes.strip():
-            raise ValueError("Japanese G2P returned no phonemes")
-        samples, sample_rate = self.backend.create(
+        phonemes = self.phonemize(text)
+        # kokoro-onnx 0.5.0's public ``create`` helper splits on ASCII
+        # punctuation. Misaki's Japanese representation is one indivisible
+        # ``phonemes + pitch`` sequence, so that split inserts a space before
+        # the pitch suffix and makes the model emit a detached vowel after a
+        # long pause. Every trainer utterance is safely below Kokoro's single
+        # batch limit; use the backend's one-batch primitive to preserve the
+        # sequence exactly.
+        if not hasattr(self.backend, "get_voice_style") or not hasattr(self.backend, "_create_audio"):
+            raise RuntimeError("Kokoro backend does not expose the required single-batch API")
+        voice_style = self.backend.get_voice_style(model_voice)
+        samples, sample_rate = self.backend._create_audio(
             phonemes,
-            voice=model_voice,
-            speed=float(speed),
-            is_phonemes=True,
+            voice_style,
+            float(speed),
         )
+        trimmed = self.audio_trimmer(samples)
+        samples = trimmed[0] if isinstance(trimmed, tuple) else trimmed
         destination = Path(output_path)
         destination.parent.mkdir(parents=True, exist_ok=True)
         self.writer(destination, samples, sample_rate)

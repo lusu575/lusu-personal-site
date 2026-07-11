@@ -8,6 +8,18 @@
 - Mobile Dock and calm-motion reset shipped as `seed-update-2026-07-10-premium-interaction-mobile-os`; the Dock now keeps six high-frequency routes and omits About/Notes on mobile.
 - Public shell assets use cache key `20260711-calm-motion-r13`; desktop and mobile navigation transitions were reduced, resized, and kept in sync.
 
+- “日本語の裏側”维护版 `1.0.2`：
+  - 语音管线升级为 `kokoro-ja-mp3-v4` 并执行全库重置：句子、选项和词块先锁定可审校假名，显示继续保留汉字；Misaki 音高半段不再送进 Kokoro，完整按官方顺序规范化 P2R（含原始 `j → y` 滑音），未知音素直接阻断生成，修复句尾额外“いい”、“今日（きょう）”漏掉 `ky` 后退化成“おう”，以及“や／ゆ／よ”误向“じゃ／じゅ／じょ”偏移的根因。题库测试逐处守卫“今日”的 `きょう / きょー` 读音，正式构建另要求 9,838 个非场景任务完成全量音素哈希复算。
+  - 最终 v4 音频为 10,088 件 / 250 关（250 场景、2,400 句、2,445 选项、4,993 词块），共 316,038,600 bytes、38,601.484 秒；9,838/9,838 reading / phoneme / task hash 复算错误 0，10,088/10,088 全量 ffprobe、静音、实体 SHA-256、时间轴、精确引用和孤儿检查通过。生成器与审计器改为共用同一读音归一化/G2P/P2R 函数，避免审计漏掉生成时的二次假名归一化；L1-001 三个代表样本未出现长停顿后的分离尾音。
+  - PC 端工具页改为游戏壳式顶栏与内容框架：左上角返回个人站、右上角显示工具名，中间突出存档同步；移除多层整屏最小高度造成的大块留白，关卡场景、问题和解析按桌面宽度重新排布。
+  - 查看解析后补充“进入下一关”入口；资源区 CTA 从下载语义改为“开始 / Start / 開始”。非输入型标题、按钮和卡片文案默认不可选中，输入框与可编辑区域仍可正常选择文字。
+  - 学习记录改为按本地日期聚合的月历打卡，显示当前连续、最长连续、总打卡天数与最近活动；新增独立 `japanese_subtext_daily_activity` D1 表，云端以日期和关卡稳定 ID 幂等合并，不复用游戏存档。
+  - 关卡插图方向改为每关一张贴合题目情境的原创黑白四格漫画，统一人物、线条、网点、分镜边框和 4:3 画幅，并继续使用压缩、懒加载和响应式适配。
+  - imagegen 两次重试均遇到网络错误，改用明确标注的本地原创分镜 fallback；生成器读取整关 setting、全体角色、台词、题问、证据与关键道具，250 张 960×720 WebP 由独立 manifest 的 SHA-256、尺寸、生成器版本和自动场景映射状态锁定，不冒充 AI 逐张产物。
+  - 打卡云同步请求上限从 256 KiB 调整为 1 MiB，D1 合并态限制为最新 400 天/5000 行；旧版缺少 `activityDays` 时按关卡 `updatedAt` 尽量迁移最后活动日期，月历切月后恢复键盘焦点。
+  - 工具入口与所有嵌套 ESM 依赖统一使用 `20260711-japanese-subtext-v102-r2` 缓存键；离线长时录音的 manifest 原子替换增加 Windows 瞬时文件占用重试，避免索引器短暂锁定导致整库任务中断；本地分片诊断目录纳入 Git 忽略范围；图片 manifest 的构建守卫移回日语工具发布合约作用域，避免顶层引用局部变量导致构建异常。
+  - 工具版本、manifest、题库索引、云进度 API、Resources 卡片与构建守卫同步到 `1.0.2`；主站 `main.js` query 更新为 `20260711-japanese-subtext-v102-r2`。唯一 `site-updates` 记录 `seed-update-2026-07-11-japanese-subtext-trainer` 已同步 fallback、Functions seed 与 schema seed。
+
 - “日本語の裏側”维护版 `1.0.1`：
   - 主站入口改为“开始挑战”，只保留听力训练、潜台词和支持（云存档）标签；移除可获取、等级、关卡数、男女声和本地/云端进度标签。工具与资源卡标题随 zh / en / ja 显示“日语的言外之意”/“Behind the Japanese”/“日本語の裏側”。
   - 中文界面使用简体中文字体栈，日语台词节点明确标记日语字体，修复中日字形混用导致的汉字形态和大小不一致。

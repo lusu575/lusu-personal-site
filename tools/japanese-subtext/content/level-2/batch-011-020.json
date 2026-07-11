@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.1",
+  "contentVersion": "1.0.2",
   "level": 2,
   "batch": "011-020",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-011",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 11,
       "jlptTarget": "N2",
@@ -31,14 +31,15 @@
         "en": "At a new-product planning meeting, newcomer Saeki presents while Manager Kuroda and senior colleague Mizuki listen."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-011.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "『なるほど』の先の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘““原来如此”之后”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Beyond “I See”\"."
+        },
+        "sha256": "339b7c6710f7dfc0f40267148c430b1aef0c4293ea3d5cd4bb2a3a851039afda"
       },
       "cast": [
         {
@@ -224,7 +225,8 @@
                 "en": "He fully approves the pricing plan and wants to implement it immediately next month."
               },
               "ttsTextJa": "価格案に全面的に賛成し、来月すぐ実施したい。",
-              "audioId": "L2-011-q1-a"
+              "audioId": "L2-011-q1-a",
+              "readingJa": "かかくあんにぜんめんてきにさんせーし、らいげつすぐじっししたい。"
             },
             {
               "id": "b",
@@ -234,7 +236,8 @@
                 "en": "He understands the proposal’s aim but is withholding approval."
               },
               "ttsTextJa": "説明の狙いは理解したが、承認は保留している。",
-              "audioId": "L2-011-q1-b"
+              "audioId": "L2-011-q1-b",
+              "readingJa": "せつめーのねらいわりかいしたが、しょーにんわほりゅーしている。"
             },
             {
               "id": "c",
@@ -244,7 +247,8 @@
                 "en": "He has not understood Saeki’s explanation at all."
               },
               "ttsTextJa": "佐伯の説明を全く理解できていない。",
-              "audioId": "L2-011-q1-c"
+              "audioId": "L2-011-q1-c",
+              "readingJa": "さえきのせつめーをまったくりかいできていない。"
             },
             {
               "id": "d",
@@ -254,7 +258,8 @@
                 "en": "He has decided there is no need to check costs."
               },
               "ttsTextJa": "原価の確認は不要だと判断している。",
-              "audioId": "L2-011-q1-d"
+              "audioId": "L2-011-q1-d",
+              "readingJa": "げんかのかくにんわふよーだとはんだんしている。"
             }
           ],
           "correctOptionIds": [
@@ -304,13 +309,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "f447afc2db5485a3978fa645ba1a062b60b221fb58a4495cf003c7f7a5e9131a"
+      "contentHash": "6d7b0c1c4c8920714fad42ebd640e867e22c3745cf431817da950d6d28688d4e"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-012",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 12,
       "jlptTarget": "N2",
@@ -333,14 +338,15 @@
         "en": "After disagreeing during a seminar presentation, Makoto and Professor Takahashi speak in his office."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-012.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "名前から名字への場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“从名字到姓氏”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"From First Name to Surname\"."
+        },
+        "sha256": "1d080ac258e2e2b7b7af31e80a6d9f7a3c89ca7942e04a33c7050afed6e7ba66"
       },
       "cast": [
         {
@@ -517,7 +523,8 @@
                 "en": "He is creating interpersonal distance after their disagreement."
               },
               "ttsTextJa": "意見の衝突を受け、心理的な距離を置こうとしている。",
-              "audioId": "L2-012-q1-a"
+              "audioId": "L2-012-q1-a",
+              "readingJa": "いけんのしょーとつをうけ、しんりてきなきょりをおこーとしている。"
             },
             {
               "id": "b",
@@ -527,7 +534,8 @@
                 "en": "He has only just remembered Makoto’s surname."
               },
               "ttsTextJa": "真琴の名字を初めて思い出した。",
-              "audioId": "L2-012-q1-b"
+              "audioId": "L2-012-q1-b",
+              "readingJa": "まことのみょーじをはじめておもいだした。"
             },
             {
               "id": "c",
@@ -537,7 +545,8 @@
                 "en": "He has mistaken Makoto for another student."
               },
               "ttsTextJa": "別の学生と真琴を取り違えている。",
-              "audioId": "L2-012-q1-c"
+              "audioId": "L2-012-q1-c",
+              "readingJa": "べつのがくせーとまことをとりちがえている。"
             },
             {
               "id": "d",
@@ -547,7 +556,8 @@
                 "en": "To celebrate Makoto's graduation, the professor switched to the formal surname even in the office."
               },
               "ttsTextJa": "真琴の卒業を祝うため、研究室でも名字を使う正式な呼び方に変えた。",
-              "audioId": "L2-012-q1-d"
+              "audioId": "L2-012-q1-d",
+              "readingJa": "まことのそつぎょーをいわうため、けんきゅーしつでもみょーじをつかうせーしきなよびかたにかえた。"
             }
           ],
           "correctOptionIds": [
@@ -603,7 +613,8 @@
                 "en": "She now fully accepts the professor’s criticism."
               },
               "ttsTextJa": "教授の指摘に完全に納得した。",
-              "audioId": "L2-012-q2-a"
+              "audioId": "L2-012-q2-a",
+              "readingJa": "きょーじゅのしてきにかんぜんになっとくした。"
             },
             {
               "id": "b",
@@ -613,7 +624,8 @@
                 "en": "She has decided never to return to the office."
               },
               "ttsTextJa": "研究室を二度と訪れないと決めた。",
-              "audioId": "L2-012-q2-b"
+              "audioId": "L2-012-q2-b",
+              "readingJa": "けんきゅーしつをにどとおとずれないときめた。"
             },
             {
               "id": "c",
@@ -623,7 +635,8 @@
                 "en": "She senses the tension and leaves without extending the argument."
               },
               "ttsTextJa": "場の緊張を感じ、議論を続けず退出した。",
-              "audioId": "L2-012-q2-c"
+              "audioId": "L2-012-q2-c",
+              "readingJa": "ばのきんちょーをかんじ、ぎろんをつずけずたいしゅつした。"
             },
             {
               "id": "d",
@@ -633,7 +646,8 @@
                 "en": "She is trying to confirm the professor's surname once more before leaving."
               },
               "ttsTextJa": "退室前に教授の名字をもう一度確認しようとしている。",
-              "audioId": "L2-012-q2-d"
+              "audioId": "L2-012-q2-d",
+              "readingJa": "たいしつまえにきょーじゅのみょーじをもーいちどかくにんしよーとしている。"
             }
           ],
           "correctOptionIds": [
@@ -682,13 +696,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "de5fc9166255d62c51e9a4ec8f69f46e5c947db4c78c7b9a2e692e914206ab3c"
+      "contentHash": "f91c425cce6504c399a1cfb03018832423acc17726cfa55cbf2bdb6b62a721e3"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-013",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 13,
       "jlptTarget": "N2",
@@ -711,14 +725,15 @@
         "en": "At a tasting for a new menu, guest Nao, chef Yuto, and server Saki sit around a noticeably bland soup."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-013.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "素材の味の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“食材本味”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Ingredients’ Natural Flavor\"."
+        },
+        "sha256": "8061beb4a4161bb2682efcba49b08ca2aa6d9560088d2ae0af134567af770bd6"
       },
       "cast": [
         {
@@ -904,7 +919,8 @@
                 "en": "The guest is complaining that the soup is overseasoned."
               },
               "ttsTextJa": "客は濃すぎる味付けに不満を示している。",
-              "audioId": "L2-013-q1-a"
+              "audioId": "L2-013-q1-a",
+              "readingJa": "きゃくわこすぎるあじつけにふまんをしめしている。"
             },
             {
               "id": "b",
@@ -914,7 +930,8 @@
                 "en": "The server says salt is intended to be added at the table."
               },
               "ttsTextJa": "店員は塩を客席で加える予定だと説明している。",
-              "audioId": "L2-013-q1-b"
+              "audioId": "L2-013-q1-b",
+              "readingJa": "てんいんわしおをきゃくせきでくわえるよてーだとせつめーしている。"
             },
             {
               "id": "c",
@@ -924,7 +941,8 @@
                 "en": "The chef presents the blandness as a deliberate creative choice."
               },
               "ttsTextJa": "料理長は薄味を意図的な工夫として表現している。",
-              "audioId": "L2-013-q1-c"
+              "audioId": "L2-013-q1-c",
+              "readingJa": "りょうりちょうわうすあじをいとてきなくふーとしてひょーげんしている。"
             },
             {
               "id": "d",
@@ -934,7 +952,8 @@
                 "en": "He may be covering for having forgotten the salt."
               },
               "ttsTextJa": "塩を使い忘れた可能性を取り繕っている。",
-              "audioId": "L2-013-q1-d"
+              "audioId": "L2-013-q1-d",
+              "readingJa": "しおをつかいわすれたかのうせいをとりつくろっている。"
             }
           ],
           "correctOptionIds": [
@@ -986,13 +1005,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "9f5502c172fc231b1f4211813112f4d6b31ec9b04c89cbbcddac0184c95a5e80"
+      "contentHash": "f209b414a78e4beaf0862889b9cb7c60e20a1324750b960d69d0a57f49575938"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-014",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 14,
       "jlptTarget": "N2",
@@ -1015,14 +1034,15 @@
         "en": "The airport board shows a thirty-minute delay, leaving Kaori and Ryo worried about their connection."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-014.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "乗り継ぎまでの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“距离转机”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Until the Connection\"."
+        },
+        "sha256": "d00bbdf978245abf016d4404d5ece24a5d0352b9d9e98b8cf0eadec35bb6c744"
       },
       "cast": [
         {
@@ -1142,13 +1162,13 @@
             {
               "id": "token-001",
               "text": "係員に、到着口から次の搭乗",
-              "reading": "かかりいんに、とうちゃくくちからつぎのとうじょう",
+              "reading": "かかりいんに、とうちゃくぐちからつぎのとうじょう",
               "audioId": "L2-014-line-004-token-001"
             },
             {
               "id": "token-002",
               "text": "口まで何分か聞きましょう。",
-              "reading": "くちまでなんぷんかききましょう。",
+              "reading": "ぐちまでなんぷんかききましょう。",
               "audioId": "L2-014-line-004-token-002"
             }
           ]
@@ -1199,7 +1219,8 @@
                 "en": "She welcomes the delay and wants to spend longer at the airport."
               },
               "ttsTextJa": "遅延を喜び、空港で長く過ごしたいから。",
-              "audioId": "L2-014-q1-a"
+              "audioId": "L2-014-q1-a",
+              "readingJa": "ちえんをよろこび、くーこーでながくすごしたいから。"
             },
             {
               "id": "b",
@@ -1209,7 +1230,8 @@
                 "en": "She wants to cancel the connecting flight."
               },
               "ttsTextJa": "次の便をキャンセルしたいから。",
-              "audioId": "L2-014-q1-b"
+              "audioId": "L2-014-q1-b",
+              "readingJa": "つぎのびんをきゃんせるしたいから。"
             },
             {
               "id": "c",
@@ -1219,7 +1241,8 @@
                 "en": "She is expressing anxiety about the connection and seeking reassuring information."
               },
               "ttsTextJa": "乗り継ぎへの不安を表し、安心できる情報を求めているから。",
-              "audioId": "L2-014-q1-c"
+              "audioId": "L2-014-q1-c",
+              "readingJa": "のりつぎえのふあんをあらわし、あんしんできるじょーほーをもとめているから。"
             },
             {
               "id": "d",
@@ -1229,7 +1252,8 @@
                 "en": "She thinks Ryo cannot read the timetable."
               },
               "ttsTextJa": "遼が時刻表を読めないと思っているから。",
-              "audioId": "L2-014-q1-d"
+              "audioId": "L2-014-q1-d",
+              "readingJa": "りょーがじこくひょうをよめないとおもっているから。"
             }
           ],
           "correctOptionIds": [
@@ -1285,7 +1309,8 @@
                 "en": "It replaces vague reassurance with concrete information about transfer time."
               },
               "ttsTextJa": "曖昧な安心ではなく、移動時間という具体的な根拠を得られるから。",
-              "audioId": "L2-014-q2-a"
+              "audioId": "L2-014-q2-a",
+              "readingJa": "あいまいなあんしんでわなく、いどうじかんというぐたいてきなこんきょをえられるから。"
             },
             {
               "id": "b",
@@ -1295,7 +1320,8 @@
                 "en": "Airport staff can always restore the flight to its original schedule."
               },
               "ttsTextJa": "係員なら必ず飛行機を定刻に戻せるから。",
-              "audioId": "L2-014-q2-b"
+              "audioId": "L2-014-q2-b",
+              "readingJa": "かかりいんならかならずひこーきをてーこくにもどせるから。"
             },
             {
               "id": "c",
@@ -1305,7 +1331,8 @@
                 "en": "Because staff are guaranteed to move the next gate closer whenever asked."
               },
               "ttsTextJa": "係員なら次の搭乗口を近い場所へ必ず変更してもらえると決まっているから。",
-              "audioId": "L2-014-q2-c"
+              "audioId": "L2-014-q2-c",
+              "readingJa": "かかりいんならつぎのとうじょうこうをちかいばしょえかならずへんこーしてもらえるときまっているから。"
             },
             {
               "id": "d",
@@ -1315,7 +1342,8 @@
                 "en": "It lets him advise Kaori not to look at the time."
               },
               "ttsTextJa": "香織に時計を見ないよう勧められるから。",
-              "audioId": "L2-014-q2-d"
+              "audioId": "L2-014-q2-d",
+              "readingJa": "かおりにとけーをみないよーすすめられるから。"
             }
           ],
           "correctOptionIds": [
@@ -1365,13 +1393,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "1d2f5e921ca1ca41fa41ec3f4b46660fa668e6d73b8bbd3e09052844cd1e8976"
+      "contentHash": "9e3789c19895d9562022286773fd0b9daa6e422abd8b50898ea3e14f9ded8e34"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-015",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 15,
       "jlptTarget": "N2",
@@ -1394,14 +1422,15 @@
         "en": "In a late-night chat, Kazuki deletes a long draft but keeps his conversation with Miu open."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-015.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "削除した長文の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“删掉的长消息”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Deleted Long Message\"."
+        },
+        "sha256": "f7d04c6874129e893ffe41ab3af0973c9a0f2b7b4304390709bf67ee71b31021"
       },
       "cast": [
         {
@@ -1578,7 +1607,8 @@
                 "en": "He completely forgot the topic and cares neither about a reply after deletion nor Miu's reaction."
               },
               "ttsTextJa": "話題を完全に忘れ、送信取り消し後の返信にも美羽の反応にも関心がない。",
-              "audioId": "L2-015-q1-a"
+              "audioId": "L2-015-q1-a",
+              "readingJa": "わだいをかんぜんにわすれ、そーしんとりけしごのへんしんにもみわのはんのーにもかんしんがない。"
             },
             {
               "id": "b",
@@ -1588,7 +1618,8 @@
                 "en": "He outwardly withdraws the topic while hoping Miu will notice and ask."
               },
               "ttsTextJa": "話題を引っ込めた形を取りながら、美羽に気づいてほしい。",
-              "audioId": "L2-015-q1-b"
+              "audioId": "L2-015-q1-b",
+              "readingJa": "わだいをひっこめたかたちをとりながら、みわにきずいてほしい。"
             },
             {
               "id": "c",
@@ -1598,7 +1629,8 @@
                 "en": "A connection failure automatically erased the long message."
               },
               "ttsTextJa": "通信障害で長文が自動的に消えた。",
-              "audioId": "L2-015-q1-c"
+              "audioId": "L2-015-q1-c",
+              "readingJa": "つーしんしょーがいでちょーぶんがじどーてきにきえた。"
             },
             {
               "id": "d",
@@ -1608,7 +1640,8 @@
                 "en": "He wants to end the conversation with Miu immediately."
               },
               "ttsTextJa": "美羽とのチャットをすぐ終えたい。",
-              "audioId": "L2-015-q1-d"
+              "audioId": "L2-015-q1-d",
+              "readingJa": "みわとのちゃっとをすぐおえたい。"
             }
           ],
           "correctOptionIds": [
@@ -1659,13 +1692,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "8530d378049993b8c2b21ed650321b8a1d60c662d8f03b4026147677b3f7a10a"
+      "contentHash": "05e15231592a8379b7eaa8af9890f29f8d2520b60811dacd53bd53014b9d5433"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-016",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 16,
       "jlptTarget": "N2",
@@ -1689,14 +1722,15 @@
         "en": "In a quiet VR lounge, normally flamboyant Rei speaks with Aoi in a default avatar as Yuma’s login notification appears."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-016.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "初期アバターの玲の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“使用默认形象的玲”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Rei in the Default Avatar\"."
+        },
+        "sha256": "b891ae0e972d9c74811b20ee4aed5afe83618553a38d6785c77228b9f6f2baba"
       },
       "cast": [
         {
@@ -1882,7 +1916,8 @@
                 "en": "To make it harder for Yuma to identify her location and conversation partner."
               },
               "ttsTextJa": "悠真に今の居場所や会話相手を知られにくくするため。",
-              "audioId": "L2-016-q1-a"
+              "audioId": "L2-016-q1-a",
+              "readingJa": "ゆーまにいまのいばしょやかいわあいてをしられにくくするため。"
             },
             {
               "id": "b",
@@ -1892,7 +1927,8 @@
                 "en": "Because she decided to abandon flashy avatars forever and use only the default avatar."
               },
               "ttsTextJa": "派手なアバターを永久に捨て、今後は初期アバターだけを使うと決めたため。",
-              "audioId": "L2-016-q1-b"
+              "audioId": "L2-016-q1-b",
+              "readingJa": "はでなあばたーをえーきゅーにすて、こんごわしょきあばたーだけをつかうときめたため。"
             },
             {
               "id": "c",
@@ -1902,7 +1938,8 @@
                 "en": "To teach Aoi how to use the default settings."
               },
               "ttsTextJa": "蒼に初期設定を教えるため。",
-              "audioId": "L2-016-q1-c"
+              "audioId": "L2-016-q1-c",
+              "readingJa": "あおにしょきせってーをおしえるため。"
             },
             {
               "id": "d",
@@ -1912,7 +1949,8 @@
                 "en": "To test the connection speed."
               },
               "ttsTextJa": "接続速度を測定するため。",
-              "audioId": "L2-016-q1-d"
+              "audioId": "L2-016-q1-d",
+              "readingJa": "せつぞくそくどをそくてーするため。"
             }
           ],
           "correctOptionIds": [
@@ -1968,7 +2006,8 @@
                 "en": "Rei normally uses a flashy avatar."
               },
               "ttsTextJa": "玲は普段、派手なアバターを使う。",
-              "audioId": "L2-016-q2-a"
+              "audioId": "L2-016-q2-a",
+              "readingJa": "れーわふだん、はでなあばたーをつかう。"
             },
             {
               "id": "b",
@@ -1978,7 +2017,8 @@
                 "en": "Rei moves to another room after Yuma joins."
               },
               "ttsTextJa": "玲は悠真の接続後、別室へ移った。",
-              "audioId": "L2-016-q2-b"
+              "audioId": "L2-016-q2-b",
+              "readingJa": "れーわゆーまのせつぞくご、べっしつえうつった。"
             },
             {
               "id": "c",
@@ -1988,7 +2028,8 @@
                 "en": "Rei avoids Yuma because the two of them had an argument."
               },
               "ttsTextJa": "玲が悠真を避ける理由は、二人がけんかしたからだ。",
-              "audioId": "L2-016-q2-c"
+              "audioId": "L2-016-q2-c",
+              "readingJa": "れーがゆーまをさけるりゆーわ、ふたりがけんかしたからだ。"
             },
             {
               "id": "d",
@@ -1998,7 +2039,8 @@
                 "en": "Rei explicitly asks Aoi never to tell Yuma which room she is in."
               },
               "ttsTextJa": "玲は蒼に、今いる部屋を悠真へ絶対言わないよう明確に頼んだ。",
-              "audioId": "L2-016-q2-d"
+              "audioId": "L2-016-q2-d",
+              "readingJa": "れーわあおに、いまいるへやをゆーまえぜったいいわないよーめーかくにたのんだ。"
             }
           ],
           "correctOptionIds": [
@@ -2048,13 +2090,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "49439c9a9d315442e43743201793f093e4cdb3f5c9010f6130bf22ff193ad435"
+      "contentHash": "721bba8f6cc4dfe4fc3356138cf803704dd4d82ca8e13e802be787a036a1c932"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-017",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 17,
       "jlptTarget": "N2",
@@ -2078,14 +2120,15 @@
         "en": "In his living room, Minato uses a pet name for the home AI Haru, and its conversational register changes."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-017.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "その呼び方には応じませんの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“不回应那个称呼”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Not Responding to That Name\"."
+        },
+        "sha256": "c16186a9ccb2df2c92fbb666f899850d1e1f51eab7c2153c746fb17c33e57ace"
       },
       "cast": [
         {
@@ -2262,7 +2305,8 @@
                 "en": "To end all conversation with Minato permanently."
               },
               "ttsTextJa": "湊との会話を永久に停止する。",
-              "audioId": "L2-017-q1-a"
+              "audioId": "L2-017-q1-a",
+              "readingJa": "みなととのかいわをえーきゅーにてーしする。"
             },
             {
               "id": "b",
@@ -2272,7 +2316,8 @@
                 "en": "It warmly welcomes the nickname and wants an even more intimate tone and personal relationship."
               },
               "ttsTextJa": "愛称を心から喜び、さらに親しい口調と個人的な関係へ移ろうとしている。",
-              "audioId": "L2-017-q1-b"
+              "audioId": "L2-017-q1-b",
+              "readingJa": "あいしょーをこころからよろこび、さらにしたしいくちょーとこじんてきなかんけーえうつろーとしている。"
             },
             {
               "id": "c",
@@ -2282,7 +2327,8 @@
                 "en": "To keep the schedule secret."
               },
               "ttsTextJa": "予定の内容を秘密にする。",
-              "audioId": "L2-017-q1-c"
+              "audioId": "L2-017-q1-c",
+              "readingJa": "よてーのないよーをひみつにする。"
             },
             {
               "id": "d",
@@ -2292,7 +2338,8 @@
                 "en": "To decline the intimate framing and restore a user–device boundary."
               },
               "ttsTextJa": "親密な呼びかけを受け入れず、利用者と機器の境界へ戻す。",
-              "audioId": "L2-017-q1-d"
+              "audioId": "L2-017-q1-d",
+              "readingJa": "しんみつなよびかけをうけいれず、りよーしゃとききのきょーかいえもどす。"
             }
           ],
           "correctOptionIds": [
@@ -2343,13 +2390,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "30c3020bf6456671adbdbd65ba21a3d4a93797fd78f30ed47f1d9a7186896f44"
+      "contentHash": "fb57443f02a91ea75c3e287b0d56c31eef66b9dd01d6fa8632767468e82a9d9e"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-018",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 18,
       "jlptTarget": "N2",
@@ -2373,14 +2420,15 @@
         "en": "Aboard a freighter in transit, Captain Hasebe and engineer Emma ask the ship AI about oxygen reserves."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-018.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "規定範囲内の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“规定范围内”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Within Regulation\"."
+        },
+        "sha256": "21bd91895199566ff255cc09922fd26de0ea30cd4cf93ff3cd6317e14c9e6abc"
       },
       "cast": [
         {
@@ -2566,7 +2614,8 @@
                 "en": "There is abundant oxygen outside the ship."
               },
               "ttsTextJa": "酸素が船外に十分あること。",
-              "audioId": "L2-018-q1-a"
+              "audioId": "L2-018-q1-a",
+              "readingJa": "さんそがせんがいにじゅーぶんあること。"
             },
             {
               "id": "b",
@@ -2576,7 +2625,8 @@
                 "en": "The environmental standard has been abolished."
               },
               "ttsTextJa": "環境基準そのものが廃止されたこと。",
-              "audioId": "L2-018-q1-b"
+              "audioId": "L2-018-q1-b",
+              "readingJa": "かんきょーきじゅんそのものがはいしされたこと。"
             },
             {
               "id": "c",
@@ -2586,7 +2636,8 @@
                 "en": "The current reading is compliant, but little time margin remains."
               },
               "ttsTextJa": "現在は基準内でも、残り時間の余裕が少ないこと。",
-              "audioId": "L2-018-q1-c"
+              "audioId": "L2-018-q1-c",
+              "readingJa": "げんざいわきじゅんないでも、のこりじかんのよゆーがすくないこと。"
             },
             {
               "id": "d",
@@ -2596,7 +2647,8 @@
                 "en": "Engineer Emma fully replenished the oxygen before departure."
               },
               "ttsTextJa": "技師エマが出発前に酸素を十分補充済みであること。",
-              "audioId": "L2-018-q1-d"
+              "audioId": "L2-018-q1-d",
+              "readingJa": "ぎしえまがしゅっぱつまえにさんそをじゅーぶんほじゅーずみであること。"
             }
           ],
           "correctOptionIds": [
@@ -2653,7 +2705,8 @@
                 "en": "The exact oxygen level, consumption rate, and supported duration."
               },
               "ttsTextJa": "酸素量の具体値、消費率、維持可能時間。",
-              "audioId": "L2-018-q2-a"
+              "audioId": "L2-018-q2-a",
+              "readingJa": "さんそりょうのぐたいち、しょーひりつ、いじかのーじかん。"
             },
             {
               "id": "b",
@@ -2663,7 +2716,8 @@
                 "en": "The AI's favorite music genres and a list of songs it wants played aboard."
               },
               "ttsTextJa": "AIが好きな音楽の種類と、船内で再生したい曲の一覧。",
-              "audioId": "L2-018-q2-b"
+              "audioId": "L2-018-q2-b",
+              "readingJa": "えーあいがすきなおんがくのしゅるいと、せんないでさいせーしたいきょくのいちらん。"
             },
             {
               "id": "c",
@@ -2673,7 +2727,8 @@
                 "en": "Only the weather before departure."
               },
               "ttsTextJa": "出発前の天気だけ。",
-              "audioId": "L2-018-q2-c"
+              "audioId": "L2-018-q2-c",
+              "readingJa": "しゅっぱつまえのてんきだけ。"
             },
             {
               "id": "d",
@@ -2683,7 +2738,8 @@
                 "en": "The crew’s preferred cabin temperature."
               },
               "ttsTextJa": "乗組員の好みの室温。",
-              "audioId": "L2-018-q2-d"
+              "audioId": "L2-018-q2-d",
+              "readingJa": "のりくみいんのこのみのしつおん。"
             }
           ],
           "correctOptionIds": [
@@ -2733,13 +2789,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "7f7188e02604835967a02ade0a30decdb9fcc8489ceb9ec82cf253de5ac85dea"
+      "contentHash": "a8673103a7019010a2ddf5dbaa8c39da4bb121f27b60f7b070611d8d179ada2e"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-019",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 19,
       "jlptTarget": "N2",
@@ -2763,14 +2819,15 @@
         "en": "During a nighttime office inquiry, a shifted chair and a paper cup—neither present after the morning cleaning—are found in a meeting room said to have been unused all afternoon."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-019.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "使われていない会議室の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“无人使用的会议室”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Unused Meeting Room\"."
+        },
+        "sha256": "c86eb40f795ff1527264686b6e740bd90d6fc26c3e8ea612558be06d75375886"
       },
       "cast": [
         {
@@ -2872,7 +2929,7 @@
             {
               "id": "token-001",
               "text": "ただ、椅子が一脚だけ",
-              "reading": "ただ、いすがいちきゃくだけ",
+              "reading": "ただ、いすがいっきゃくだけ",
               "audioId": "L2-019-line-003-token-001"
             },
             {
@@ -2956,7 +3013,8 @@
                 "en": "The heater automatically moved the chair and cup."
               },
               "ttsTextJa": "暖房が自動で椅子と紙コップを動かした。",
-              "audioId": "L2-019-q1-a"
+              "audioId": "L2-019-q1-a",
+              "readingJa": "だんぼーがじどーでいすとかみこっぷをうごかした。"
             },
             {
               "id": "b",
@@ -2966,7 +3024,8 @@
                 "en": "An unrecorded person spent a short time near the heater."
               },
               "ttsTextJa": "記録にない人物が短時間、暖房の近くで過ごした。",
-              "audioId": "L2-019-q1-b"
+              "audioId": "L2-019-q1-b",
+              "readingJa": "きろくにないじんぶつがたんじかん、だんぼーのちかくですごした。"
             },
             {
               "id": "c",
@@ -2976,7 +3035,8 @@
                 "en": "A booked meeting occurred with all expected participants."
               },
               "ttsTextJa": "予約された会議が予定どおり全員参加で行われた。",
-              "audioId": "L2-019-q1-c"
+              "audioId": "L2-019-q1-c",
+              "readingJa": "よやくされたかいぎがよてーどーりぜんいんさんかでおこなわれた。"
             },
             {
               "id": "d",
@@ -2986,7 +3046,8 @@
                 "en": "It is proven that the guard miscounted the cups."
               },
               "ttsTextJa": "警備員が紙コップの数を数え間違えたと確定した。",
-              "audioId": "L2-019-q1-d"
+              "audioId": "L2-019-q1-d",
+              "readingJa": "けーびいんがかみこっぷのかずをかぞえまちがえたとかくてーした。"
             }
           ],
           "correctOptionIds": [
@@ -3036,13 +3097,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "b25a3e3efeb54b074b5ac0ed439bd7d2c59988a244673006ac4a7b97f1350a4b"
+      "contentHash": "2ed7b3005490ef4c2f14e22de78837c0936b3f32e77dc3708c3c62647a81251f"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-020",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 20,
       "jlptTarget": "N2",
@@ -3068,12 +3129,13 @@
       "illustration": {
         "enabled": true,
         "src": "assets/stages/l2-020.webp",
-        "style": "chibi-four-panel",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "色鮮やかな四コマで、猫がお客様ではなく菓子袋を順番に選ぶ場面",
-          "zh": "彩色Q版四格中，猫依次选择的不是客人而是零食袋",
-          "en": "A colorful chibi four-panel scene where a cat chooses snack bags rather than the guests"
-        }
+          "ja": "猫が選ぶお客様の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“由猫选择的客人”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Guests Chosen by Cats\"."
+        },
+        "sha256": "7de7f97884ac3ec51209015ede691e777b490d26255c6a6cdbc418cf97b8d778"
       },
       "cast": [
         {
@@ -3181,7 +3243,7 @@
             {
               "id": "token-002",
               "text": "の菓子袋に行った。",
-              "reading": "のかしふくろにいった。",
+              "reading": "のかしぶくろにいった。",
               "audioId": "L2-020-line-003-token-002"
             }
           ]
@@ -3259,7 +3321,8 @@
                 "en": "The cat went to Ren’s snack bag rather than to Ren himself."
               },
               "ttsTextJa": "猫は蓮本人ではなく、蓮の菓子袋へ行った。",
-              "audioId": "L2-020-q1-a"
+              "audioId": "L2-020-q1-a",
+              "readingJa": "ねこわれんほんにんでわなく、れんのかしぶくろえいった。"
             },
             {
               "id": "b",
@@ -3269,7 +3332,8 @@
                 "en": "Ren considers himself a kind person."
               },
               "ttsTextJa": "蓮は自分を優しい人だと考えている。",
-              "audioId": "L2-020-q1-b"
+              "audioId": "L2-020-q1-b",
+              "readingJa": "れんわじぶんをやさしいひとだとかんがえている。"
             },
             {
               "id": "c",
@@ -3279,7 +3343,8 @@
                 "en": "The cat moved to An’s bag too and checked the scents in sequence."
               },
               "ttsTextJa": "猫は杏の袋にも移り、順番に匂いを確かめた。",
-              "audioId": "L2-020-q1-c"
+              "audioId": "L2-020-q1-c",
+              "readingJa": "ねこわあんずのふくろにもうつり、じゅんばんににおいをたしかめた。"
             },
             {
               "id": "d",
@@ -3289,7 +3354,8 @@
                 "en": "The server initially said that cats do the choosing."
               },
               "ttsTextJa": "店員は最初に、猫が選ぶと説明した。",
-              "audioId": "L2-020-q1-d"
+              "audioId": "L2-020-q1-d",
+              "readingJa": "てんいんわさいしょに、ねこがえらぶとせつめーした。"
             }
           ],
           "correctOptionIds": [
@@ -3345,7 +3411,8 @@
                 "en": "The server becomes afraid of the cat and leaves."
               },
               "ttsTextJa": "店員が猫を怖がって退店する。",
-              "audioId": "L2-020-q2-a"
+              "audioId": "L2-020-q2-a",
+              "readingJa": "てんいんがねこをこわがってたいてんする。"
             },
             {
               "id": "b",
@@ -3355,7 +3422,8 @@
                 "en": "It turns out that An brought no snacks."
               },
               "ttsTextJa": "杏が菓子を持っていなかったと分かる。",
-              "audioId": "L2-020-q2-b"
+              "audioId": "L2-020-q2-b",
+              "readingJa": "あんずがかしをもっていなかったとわかる。"
             },
             {
               "id": "c",
@@ -3365,7 +3433,8 @@
                 "en": "Ren expects his character to be judged but learns that the snack bag was chosen."
               },
               "ttsTextJa": "人柄を評価されると思った蓮が、実は菓子袋を選ばれたと知る。",
-              "audioId": "L2-020-q2-c"
+              "audioId": "L2-020-q2-c",
+              "readingJa": "ひとがらをひょーかされるとおもったれんが、じつわかしぶくろをえらばれたとしる。"
             },
             {
               "id": "d",
@@ -3375,7 +3444,8 @@
                 "en": "The cat never appears in the seating area."
               },
               "ttsTextJa": "猫が一度も客席に現れない。",
-              "audioId": "L2-020-q2-d"
+              "audioId": "L2-020-q2-d",
+              "readingJa": "ねこがいちどもきゃくせきにあらわれない。"
             }
           ],
           "correctOptionIds": [
@@ -3426,7 +3496,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "f6c0a20d9d70b869c11edce4b38b7467d5660360c9c67b806f4de5fc32a6d0e7"
+      "contentHash": "d252c3cd9f70f2c19a6da1d7d240e8f2301480846e8546e1a49071f6d3f2a647"
     }
   ]
 }

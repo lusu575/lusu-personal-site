@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.1",
+  "contentVersion": "1.0.2",
   "level": 1,
   "batch": "011-020",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-011",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 11,
       "jlptTarget": "N3",
@@ -31,14 +31,15 @@
         "en": "Chinatsu is about to leave from the entryway while her brother Takumi reads a forecast calling for rain in the afternoon."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-011.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "雨の前のひと言の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“下雨前的一句话”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"One Question Before the Rain\"."
+        },
+        "sha256": "4c760e48ef6e58cae8a7cbe2926dabbc56b6bcfecb95d02d612e8ef5ad596c1c"
       },
       "cast": [
         {
@@ -212,7 +213,8 @@
                 "en": "He wants to borrow Chinatsu's umbrella."
               },
               "ttsTextJa": "自分が千夏の傘を借りたい。",
-              "audioId": "L1-011-q1-a"
+              "audioId": "L1-011-q1-a",
+              "readingJa": "じぶんがちなつのかさをかりたい。"
             },
             {
               "id": "b",
@@ -222,7 +224,8 @@
                 "en": "He wants Chinatsu to explain the forecast to him."
               },
               "ttsTextJa": "天気予報の内容を千夏に聞きたい。",
-              "audioId": "L1-011-q1-b"
+              "audioId": "L1-011-q1-b",
+              "readingJa": "てんきよほーのないよーをせんなつにききたい。"
             },
             {
               "id": "c",
@@ -232,7 +235,8 @@
                 "en": "He is worried she may get wet and wants her to be prepared."
               },
               "ttsTextJa": "千夏が雨にぬれないか心配し、準備してほしい。",
-              "audioId": "L1-011-q1-c"
+              "audioId": "L1-011-q1-c",
+              "readingJa": "ちなつがあめにぬれないかしんぱいし、じゅんびしてほしい。"
             },
             {
               "id": "d",
@@ -242,7 +246,8 @@
                 "en": "He wants her to cancel the outing completely because of the rain."
               },
               "ttsTextJa": "雨が降るので、千夏に外出を全部やめてほしい。",
-              "audioId": "L1-011-q1-d"
+              "audioId": "L1-011-q1-d",
+              "readingJa": "あめがふるので、ちなつにがいしゅつをぜんぶやめてほしい。"
             }
           ],
           "correctOptionIds": [
@@ -292,13 +297,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "39852645c5592cf72451df70c6d11c0834374da5e815fbd8dc47a1e365270d65"
+      "contentHash": "6092f925636c81b5e29124e0c5755a226f8d284bf294847fa123000c31f14e0c"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-012",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 12,
       "jlptTarget": "N3",
@@ -321,14 +326,15 @@
         "en": "After club practice on the field, junior member Sota is out of breath but tries to continue the remaining drills."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-012.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "今日は休んでの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“今天就休息吧”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Rest for Today\"."
+        },
+        "sha256": "c8eb95eb1427a959003a9918027465e0c795f860d4d27b87ea2d689fe79f162c"
       },
       "cast": [
         {
@@ -508,7 +514,8 @@
                 "en": "She is blaming Sota for being lazy."
               },
               "ttsTextJa": "颯太がさぼっていると責めている。",
-              "audioId": "L1-012-q1-a"
+              "audioId": "L1-012-q1-a",
+              "readingJa": "そーたがさぼっているとせめている。"
             },
             {
               "id": "b",
@@ -518,7 +525,8 @@
                 "en": "She is giving him permission to rest without blame and wants him to recover."
               },
               "ttsTextJa": "休んでも責めないと伝え、安心して休ませようとしている。",
-              "audioId": "L1-012-q1-b"
+              "audioId": "L1-012-q1-b",
+              "readingJa": "やすんでもせめないとつたえ、あんしんしてやすませよーとしている。"
             },
             {
               "id": "c",
@@ -528,7 +536,8 @@
                 "en": "She is ordering Sota to finish the remaining practice immediately and faster."
               },
               "ttsTextJa": "残りの練習を今すぐ、もっと早く終えるよう命令している。",
-              "audioId": "L1-012-q1-c"
+              "audioId": "L1-012-q1-c",
+              "readingJa": "のこりのれんしゅーをいますぐ、もっとはやくおえるよーめーれーしている。"
             },
             {
               "id": "d",
@@ -538,7 +547,8 @@
                 "en": "She is advising him to quit the club today."
               },
               "ttsTextJa": "今日で部活をやめるよう勧めている。",
-              "audioId": "L1-012-q1-d"
+              "audioId": "L1-012-q1-d",
+              "readingJa": "きょーでぶかつをやめるよーすすめている。"
             }
           ],
           "correctOptionIds": [
@@ -588,13 +598,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "4ac24c46622a6088962252ea8cf50dc0b15caca484f369a94b62ceb8a2566854"
+      "contentHash": "a0c31315d807a7bb07b1188e2404cf49e4c8cab637fe4e6ccbb8f8b8314405a8"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-013",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 13,
       "jlptTarget": "N3",
@@ -617,14 +627,15 @@
         "en": "Before printing meeting materials, Nana and her junior Yuya stand at a copier that is running low on paper."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-013.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "コピー用紙の報告の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“复印纸的提醒”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Copier Paper Report\"."
+        },
+        "sha256": "a821fd465143480e5f7918f291cf411d9155f14df6b2a77db53fa645f532d759"
       },
       "cast": [
         {
@@ -786,7 +797,8 @@
                 "en": "She wants Yuya to refill the copier paper."
               },
               "ttsTextJa": "優也にコピー用紙を補充してほしい。",
-              "audioId": "L1-013-q1-a"
+              "audioId": "L1-013-q1-a",
+              "readingJa": "ゆうやにこぴーよーしをほじゅーしてほしい。"
             },
             {
               "id": "b",
@@ -796,7 +808,8 @@
                 "en": "She has decided that the copier is broken."
               },
               "ttsTextJa": "複合機が壊れたと判断している。",
-              "audioId": "L1-013-q1-b"
+              "audioId": "L1-013-q1-b",
+              "readingJa": "ふくごーきがこわれたとはんだんしている。"
             },
             {
               "id": "c",
@@ -806,7 +819,8 @@
                 "en": "She wants to cancel the meeting because there is not enough paper."
               },
               "ttsTextJa": "紙がないので会議を中止したい。",
-              "audioId": "L1-013-q1-c"
+              "audioId": "L1-013-q1-c",
+              "readingJa": "かみがないのでかいぎをちゅーししたい。"
             },
             {
               "id": "d",
@@ -816,7 +830,8 @@
                 "en": "She wants Yuya to count every remaining sheet."
               },
               "ttsTextJa": "優也に残りの紙を一枚ずつ数えてほしい。",
-              "audioId": "L1-013-q1-d"
+              "audioId": "L1-013-q1-d",
+              "readingJa": "ゆうやにのこりのかみをいちまいずつかぞえてほしい。"
             }
           ],
           "correctOptionIds": [
@@ -866,13 +881,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "0aff87ffc0d534b62351f4d079c0ba97e9189074dd7e312c0671348348099a1d"
+      "contentHash": "93a81956e92b972cce98d4d3212600ec03602572f04801cd2574c672fc796e99"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-014",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 14,
       "jlptTarget": "N3",
@@ -895,14 +910,15 @@
         "en": "At a restaurant, the dish Hayato ordered from a photo menu arrives at the table."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-014.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "写真と違う料理の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“和照片不太一样的菜”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"A Dish Unlike the Photo\"."
+        },
+        "sha256": "3392418607e677631b79f0f90088d422e5a1467845a29e851689edbf41b45405"
       },
       "cast": [
         {
@@ -1076,7 +1092,8 @@
                 "en": "He is strongly praising the real dish as better than the photo."
               },
               "ttsTextJa": "写真より素晴らしいと強くほめている。",
-              "audioId": "L1-014-q1-a"
+              "audioId": "L1-014-q1-a",
+              "readingJa": "しゃしんよりすばらしいとつよくほめている。"
             },
             {
               "id": "b",
@@ -1086,7 +1103,8 @@
                 "en": "He wants to photograph the served dish again on his own device."
               },
               "ttsTextJa": "運ばれた料理の写真を自分の端末でもう一度撮りたい。",
-              "audioId": "L1-014-q1-b"
+              "audioId": "L1-014-q1-b",
+              "readingJa": "はこばれたりょーりのしゃしんをじぶんのたんまつでもーいちどとりたい。"
             },
             {
               "id": "c",
@@ -1096,7 +1114,8 @@
                 "en": "He wants to cancel the dish immediately without checking it."
               },
               "ttsTextJa": "確認せずに料理をすぐ取り消したい。",
-              "audioId": "L1-014-q1-c"
+              "audioId": "L1-014-q1-c",
+              "readingJa": "かくにんせずにりょーりをすぐとりけしたい。"
             },
             {
               "id": "d",
@@ -1106,7 +1125,8 @@
                 "en": "He is expressing dissatisfaction without harsh blame and wants the dish checked."
               },
               "ttsTextJa": "店員を強く責めずに不満を伝え、料理を確認してほしい。",
-              "audioId": "L1-014-q1-d"
+              "audioId": "L1-014-q1-d",
+              "readingJa": "てんいんをつよくせめずにふまんをつたえ、りょーりをかくにんしてほしい。"
             }
           ],
           "correctOptionIds": [
@@ -1156,13 +1176,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "b6ac3ef76f6987c4435fa2b3e24fdb4c64502a33946e222153484229c45d4b3b"
+      "contentHash": "4da974e0bf6462dc357e84db8d47b62beb73b3daa0ef518f62ffdeed4a865ee9"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-015",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 15,
       "jlptTarget": "N3",
@@ -1185,14 +1205,15 @@
         "en": "While traveling, Riku and Yuna look at the hostel bunks. Only one lower bunk is free, and Yuna twisted her ankle earlier that day."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-015.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "一つだけの下段の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“唯一的下铺”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Only Lower Bunk\"."
+        },
+        "sha256": "c954e68644a00fad04f4b5af012007d6fc31c7f2023f03c8e76e4e1021b42d96"
       },
       "cast": [
         {
@@ -1366,7 +1387,8 @@
                 "en": "He is saying that he dislikes lower bunks."
               },
               "ttsTextJa": "下段のベッドが嫌いだと伝えている。",
-              "audioId": "L1-015-q1-a"
+              "audioId": "L1-015-q1-a",
+              "readingJa": "げだんのべっどがきらいだとつたえている。"
             },
             {
               "id": "b",
@@ -1376,7 +1398,8 @@
                 "en": "He wants to leave the hostel and find another room."
               },
               "ttsTextJa": "この宿を出て、別の部屋を探したい。",
-              "audioId": "L1-015-q1-b"
+              "audioId": "L1-015-q1-b",
+              "readingJa": "このやどをでて、べつのへやをさがしたい。"
             },
             {
               "id": "c",
@@ -1386,7 +1409,8 @@
                 "en": "He is offering the lower bunk to Yuna because her ankle hurts."
               },
               "ttsTextJa": "足を痛めた由奈に下段を譲ろうとしている。",
-              "audioId": "L1-015-q1-c"
+              "audioId": "L1-015-q1-c",
+              "readingJa": "あしをいためたゆなにげだんをゆずろーとしている。"
             },
             {
               "id": "d",
@@ -1396,7 +1420,8 @@
                 "en": "He is worried that he cannot sleep comfortably in any bed."
               },
               "ttsTextJa": "どのベッドでも落ち着いて眠れないと困っている。",
-              "audioId": "L1-015-q1-d"
+              "audioId": "L1-015-q1-d",
+              "readingJa": "どのべっどでもおちついてねむれないとこまっている。"
             }
           ],
           "correctOptionIds": [
@@ -1446,13 +1471,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "fa16089c11c81385e39833230d4f07adde0f8af399ecb5077f6c7d133962bf00"
+      "contentHash": "e85728165cff5266d67669f761298f0367ad8e5b28fc7f2caf69defe52faeb6c"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-016",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 16,
       "jlptTarget": "N3",
@@ -1475,14 +1500,15 @@
         "en": "Three friends are arranging their weekend in a group chat. Shun's invitation is read; Kana replies, while Megumi sends only a smiling sticker."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-016.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "イラストなし",
-          "zh": "无插图",
-          "en": "No illustration"
-        }
+          "ja": "既読と笑顔のスタンプの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“已读与笑脸贴纸”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Read Receipts and a Smiling Sticker\"."
+        },
+        "sha256": "7c1bb63f14c17945f6ee139d29120352884090892b6a45c354c98b614a836601"
       },
       "cast": [
         {
@@ -1659,7 +1685,8 @@
                 "en": "She is clearly promising to join on Saturday."
               },
               "ttsTextJa": "土曜日の参加をはっきり約束している。",
-              "audioId": "L1-016-q1-a"
+              "audioId": "L1-016-q1-a",
+              "readingJa": "どよーびのさんかをはっきりやくそくしている。"
             },
             {
               "id": "b",
@@ -1669,7 +1696,8 @@
                 "en": "She is reacting warmly, but whether she will attend is still unclear."
               },
               "ttsTextJa": "好意的に反応しているが、参加するかどうかはまだ明確ではない。",
-              "audioId": "L1-016-q1-b"
+              "audioId": "L1-016-q1-b",
+              "readingJa": "こーいてきにはんのーしているが、さんかするかどーかわまだめーかくでわない。"
             },
             {
               "id": "c",
@@ -1679,7 +1707,8 @@
                 "en": "She is furious about being invited and wants to end the conversation immediately."
               },
               "ttsTextJa": "誘われたことに強く腹を立て、すぐ会話を終わらせようとしている。",
-              "audioId": "L1-016-q1-c"
+              "audioId": "L1-016-q1-c",
+              "readingJa": "さそわれたことにつよくはらをたて、すぐかいわをおわらせよーとしている。"
             },
             {
               "id": "d",
@@ -1689,7 +1718,8 @@
                 "en": "She is specifically asking them to choose another day."
               },
               "ttsTextJa": "別の日に変えてほしいと具体的に頼んでいる。",
-              "audioId": "L1-016-q1-d"
+              "audioId": "L1-016-q1-d",
+              "readingJa": "べつのひにかえてほしいとぐたいてきにたのんでいる。"
             }
           ],
           "correctOptionIds": [
@@ -1739,13 +1769,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "d50af797377ead5fb89440cad3cb2e6b3d83d0f5de833846c07798653cec24d2"
+      "contentHash": "7eac9d888e676ecc1414868d0053946e79ac29066f9cd7719100a7111cb65393"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-017",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 17,
       "jlptTarget": "N3",
@@ -1769,14 +1799,15 @@
         "en": "Nozomi and Ko are talking in a busy VRChat room. The surrounding noise makes it hard for them to hear each other."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-017.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "イラストなし",
-          "zh": "无插图",
-          "en": "No illustration"
-        }
+          "ja": "静かなワールドへの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“去安静的世界”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"To a Quieter World\"."
+        },
+        "sha256": "392e9c3b6690f6420c46cb24e2a394e2a97c22daa3d46a959be06c49c7e7c92f"
       },
       "cast": [
         {
@@ -1989,7 +2020,8 @@
                 "en": "She wants time to have a calm conversation with Ko one-on-one."
               },
               "ttsTextJa": "航と二人で落ち着いて話す時間を作りたい。",
-              "audioId": "L1-017-q1-a"
+              "audioId": "L1-017-q1-a",
+              "readingJa": "こーとふたりでおちついてはなすじかんをつくりたい。"
             },
             {
               "id": "b",
@@ -1999,7 +2031,8 @@
                 "en": "She dislikes everyone in the current room."
               },
               "ttsTextJa": "今いる部屋の人たち全員を嫌っている。",
-              "audioId": "L1-017-q1-b"
+              "audioId": "L1-017-q1-b",
+              "readingJa": "いまいるへやのひとたちぜんいんをきらっている。"
             },
             {
               "id": "c",
@@ -2009,7 +2042,8 @@
                 "en": "She wants to log out immediately and end the conversation."
               },
               "ttsTextJa": "すぐにログアウトして会話を終えたい。",
-              "audioId": "L1-017-q1-c"
+              "audioId": "L1-017-q1-c",
+              "readingJa": "すぐにろぐあうとしてかいわをおえたい。"
             },
             {
               "id": "d",
@@ -2019,7 +2053,8 @@
                 "en": "She only wants to test the new world's performance."
               },
               "ttsTextJa": "新しいワールドの動作速度だけを調べたい。",
-              "audioId": "L1-017-q1-d"
+              "audioId": "L1-017-q1-d",
+              "readingJa": "あたらしいわーるどのどーさそくどだけをしらべたい。"
             }
           ],
           "correctOptionIds": [
@@ -2069,13 +2104,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "2bdd99bbe12fc2e03169a11c352a7a80ac4ff56eb76aef9a0dab62905391b908"
+      "contentHash": "09aebf1dc22401c8437ae5c9fb91d94f0c649ee612e314c6d69fb4777701f42e"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-018",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 18,
       "jlptTarget": "N3",
@@ -2099,14 +2134,15 @@
         "en": "At an anime shop checkout, Ao is holding limited-edition merchandise and explaining who he is buying it for."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-018.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "イラストなし",
-          "zh": "无插图",
-          "en": "No illustration"
-        }
+          "ja": "弟のため、だよね？の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“是为了弟弟，对吧？”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"For Your Brother, Right?\"."
+        },
+        "sha256": "b74eb399fe12467218b055fdad142b55610274aad64325efe2b2758989e65a03"
       },
       "cast": [
         {
@@ -2286,7 +2322,8 @@
                 "en": "He repeatedly buys limited items to resell them at a high price."
               },
               "ttsTextJa": "限定品を高く売るために何度も買っている。",
-              "audioId": "L1-018-q1-a"
+              "audioId": "L1-018-q1-a",
+              "readingJa": "げんていぴんをたかくうるためになんどもかっている。"
             },
             {
               "id": "b",
@@ -2296,7 +2333,8 @@
                 "en": "He thinks the item is damaged and wants the clerk to hide the flaw."
               },
               "ttsTextJa": "商品に傷があると思い、店員に隠してほしい。",
-              "audioId": "L1-018-q1-b"
+              "audioId": "L1-018-q1-b",
+              "readingJa": "しょーひんにきずがあるとおもい、てんいんにかくしてほしい。"
             },
             {
               "id": "c",
@@ -2306,7 +2344,8 @@
                 "en": "He wants to keep a gift for his brother from being discovered."
               },
               "ttsTextJa": "弟への贈り物を本人に見つからないようにしたい。",
-              "audioId": "L1-018-q1-c"
+              "audioId": "L1-018-q1-c",
+              "readingJa": "おとーとえのおくりものをほんにんにみつからないよーにしたい。"
             },
             {
               "id": "d",
@@ -2316,7 +2355,8 @@
                 "en": "He is likely embarrassed to reveal his own hobby and is using his brother as an excuse."
               },
               "ttsTextJa": "自分の趣味だと知られるのが恥ずかしく、弟を理由にしている可能性が高い。",
-              "audioId": "L1-018-q1-d"
+              "audioId": "L1-018-q1-d",
+              "readingJa": "じぶんのしゅみだとしられるのがはずかしく、おとーとをりゆーにしているかのうせいがたかい。"
             }
           ],
           "correctOptionIds": [
@@ -2366,13 +2406,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "45d823175a59bc96542c70f3aa94fd711bf01cf5630f8c3d64a72ba199df8c05"
+      "contentHash": "1e2e22584cc3e6c6e1e3523e7cfd35de47ce497fb7f6da86f5b110be883698e3"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-019",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 19,
       "jlptTarget": "N3",
@@ -2396,14 +2436,15 @@
         "en": "At an unmanned shop in the morning, Miki approaches the kiosk for the first time. Before she places an order, it displays a message about milk."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-019.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "イラストなし",
-          "zh": "无插图",
-          "en": "No illustration"
-        }
+          "ja": "本日も売り切れの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“今天也售罄”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Sold Out Again Today\"."
+        },
+        "sha256": "10f771fd26a2c939de43e513819535b137e8232b1a779d850bb7b9c0affb7bbd"
       },
       "cast": [
         {
@@ -2610,7 +2651,8 @@
                 "en": "It merely repeats a fixed announcement advertising sold-out products every morning."
               },
               "ttsTextJa": "売り切れ商品を宣伝する決まった案内文を毎朝繰り返しているだけだ。",
-              "audioId": "L1-019-q1-a"
+              "audioId": "L1-019-q1-a",
+              "readingJa": "うりきれしょーひんをせんでんするきまったあんないぶんをまいあさくりかえしているだけだ。"
             },
             {
               "id": "b",
@@ -2620,7 +2662,8 @@
                 "en": "Miki used this kiosk before but has forgotten doing so."
               },
               "ttsTextJa": "美紀は以前も同じ端末を使ったが、そのことを忘れている。",
-              "audioId": "L1-019-q1-b"
+              "audioId": "L1-019-q1-b",
+              "readingJa": "みきわいぜんもおなじたんまつをつかったが、そのことをわすれている。"
             },
             {
               "id": "c",
@@ -2630,7 +2673,8 @@
                 "en": "The terminal likely retains a record of the same event having happened before."
               },
               "ttsTextJa": "端末は、同じ出来事が以前にも起きた記録を持っている可能性が高い。",
-              "audioId": "L1-019-q1-c"
+              "audioId": "L1-019-q1-c",
+              "readingJa": "たんまつわ、おなじできごとがいぜんにもおきたきろくをもっているかのうせいがたかい。"
             },
             {
               "id": "d",
@@ -2640,7 +2684,8 @@
                 "en": "The milk is not sold out; it is hidden for the staff."
               },
               "ttsTextJa": "牛乳は売り切れではなく、店員用に隠されている。",
-              "audioId": "L1-019-q1-d"
+              "audioId": "L1-019-q1-d",
+              "readingJa": "ぎゅーにゅーわうりきれでわなく、てんいんよーにかくされている。"
             }
           ],
           "correctOptionIds": [
@@ -2690,13 +2735,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "8150185ffbf80e5b71ddce36fbba0b345f2022639480b1160979af87bfb92471"
+      "contentHash": "d6a11d0658b6313780af4e6e612a3facf49ca7a2d7058839e9c2857527233fbf"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-020",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 20,
       "jlptTarget": "N3",
@@ -2722,12 +2767,13 @@
       "illustration": {
         "enabled": true,
         "src": "assets/stages/l1-020.webp",
-        "style": "crayon",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "放課後の校内放送を聞きながらラジオの音量を上げる徹を描いたカラークレヨン画",
-          "zh": "彩色蜡笔插图：放学后的走廊里，彻听着寻找小狗的校内广播并调高收音机音量",
-          "en": "Color crayon illustration of Toru turning up a radio while listening to a lost-dog announcement after class"
-        }
+          "ja": "青い首輪の放送の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“蓝色项圈的广播”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Blue Collar Clue\"."
+        },
+        "sha256": "c51d1964771b10d257764b1fc8c207619f3615ca51200874c3c70fe62e201561"
       },
       "cast": [
         {
@@ -2919,7 +2965,8 @@
                 "en": "Because he wants to hear the music after the announcement loudly in the classroom."
               },
               "ttsTextJa": "放送の後に流れる音楽を、教室で大きな音で聞きたいから。",
-              "audioId": "L1-020-q1-a"
+              "audioId": "L1-020-q1-a",
+              "readingJa": "ほーそーのあとにながれるおんがくを、きょーしつでおーきなおとでききたいから。"
             },
             {
               "id": "b",
@@ -2929,7 +2976,8 @@
                 "en": "He recognizes the description and wants to confirm whether it is the same dog."
               },
               "ttsTextJa": "その犬に心当たりがあり、同じ犬か詳しく確かめたいから。",
-              "audioId": "L1-020-q1-b"
+              "audioId": "L1-020-q1-b",
+              "readingJa": "そのいぬにこころあたりがあり、おなじいぬかくわしくたしかめたいから。"
             },
             {
               "id": "c",
@@ -2939,7 +2987,8 @@
                 "en": "He wants to check whether the classroom speaker is broken."
               },
               "ttsTextJa": "教室のスピーカーが壊れているか調べたいから。",
-              "audioId": "L1-020-q1-c"
+              "audioId": "L1-020-q1-c",
+              "readingJa": "きょーしつのすぴーかーがこわれているかしらべたいから。"
             },
             {
               "id": "d",
@@ -2949,7 +2998,8 @@
                 "en": "He is afraid of dogs and wants to ask that it be kept out of the school."
               },
               "ttsTextJa": "犬が怖いので、校内に入らないよう頼みたいから。",
-              "audioId": "L1-020-q1-d"
+              "audioId": "L1-020-q1-d",
+              "readingJa": "いぬがこわいので、こーないにはいらないよーたのみたいから。"
             }
           ],
           "correctOptionIds": [
@@ -3000,7 +3050,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "e5ae28f0583aec756ccd2df81ef9a646d19a75f2ff81519a60772ad568d1cebd"
+      "contentHash": "5116b40b6c894da1ef57f432ad7b19894275a0d3327eb1afadb1d6fa6d1bd556"
     }
   ]
 }

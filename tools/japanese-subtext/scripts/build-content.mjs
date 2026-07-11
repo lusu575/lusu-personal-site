@@ -1,18 +1,29 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { contentHash, contentRoot, jsonText, loadStageBatches, stageSort } from "./content-utils.mjs";
+import { contentHash, contentRoot, jsonText, loadStageBatches, readJson, stageSort, toolRoot } from "./content-utils.mjs";
+
+const CONTENT_VERSION = "1.0.2";
 
 const batches = await loadStageBatches();
 if (!batches.length) throw new Error("No stage batches found. Generate reviewed content before building indexes.");
+const illustrationManifest = await readJson(path.join(toolRoot, "assets", "stages", "manifest.json"));
+const illustrationByStage = new Map((illustrationManifest.entries || []).map((entry) => [entry.stageId, entry]));
+if (illustrationByStage.size !== 250) throw new Error(`Illustration manifest has ${illustrationByStage.size} entries; expected 250.`);
 
 for (const batch of batches) {
   batch.stages.sort(stageSort);
   batch.stages.forEach((stage) => {
+    const illustration = illustrationByStage.get(stage.id);
+    if (!illustration || illustration.path !== stage.illustration?.src || illustration.style !== stage.illustration?.style) {
+      throw new Error(`${stage.id}: illustration metadata diverges from the published asset manifest.`);
+    }
+    stage.illustration.sha256 = illustration.sha256;
+    stage.contentVersion = CONTENT_VERSION;
     stage.textLocked = true;
     stage.contentHash = contentHash(stage);
   });
   batch.payload.schemaVersion = 1;
-  batch.payload.contentVersion = "1.0.1";
+  batch.payload.contentVersion = CONTENT_VERSION;
   batch.payload.level = batch.level;
   batch.payload.stages = batch.stages;
   await writeFile(batch.file, jsonText(batch.payload), "utf8");
@@ -26,7 +37,7 @@ for (let level = 1; level <= 5; level += 1) {
   const jlptTarget = ["N3", "N2", "N1", "N1-advanced", "N1-pragmatics"][level - 1];
   const index = {
     schemaVersion: 1,
-    contentVersion: "1.0.1",
+    contentVersion: CONTENT_VERSION,
     level,
     jlptTarget,
     stages: stages.map(({ stage, batch }) => ({
@@ -54,7 +65,7 @@ for (let level = 1; level <= 5; level += 1) {
 
 await writeFile(path.join(contentRoot, "catalog.json"), jsonText({
   schemaVersion: 1,
-  contentVersion: "1.0.1",
+  contentVersion: CONTENT_VERSION,
   title: { ja: "日本語の裏側", zh: "日语的言外之意", en: "Behind the Japanese" },
   stageCount: 250,
   levels

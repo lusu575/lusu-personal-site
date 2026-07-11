@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.1",
+  "contentVersion": "1.0.2",
   "level": 2,
   "batch": "021-030",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-021",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 21,
       "jlptTarget": "N2",
@@ -32,14 +32,15 @@
         "en": "During an after-school announcement, Ayaka looks at a red umbrella and Kento's name tag while withholding both color and name from the lost-property notice."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-021.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "色を伏せた傘のお知らせの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“隐去颜色的雨伞通知”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Umbrella Notice Without a Color\"."
+        },
+        "sha256": "61946e0cbf6a88b2a462b15bf95fcd9f0fde13aa10691e2b988c66a454f30af9"
       },
       "cast": [
         {
@@ -252,7 +253,8 @@
                 "en": "Because she could not identify the umbrella's color."
               },
               "ttsTextJa": "傘の色を見分けられなかったから。",
-              "audioId": "L2-021-q1-a"
+              "audioId": "L2-021-q1-a",
+              "readingJa": "かさのいろをみわけられなかったから。"
             },
             {
               "id": "b",
@@ -262,7 +264,8 @@
                 "en": "Because she plans to repaint the umbrella blue later."
               },
               "ttsTextJa": "傘を後で青く塗り替える予定だから。",
-              "audioId": "L2-021-q1-b"
+              "audioId": "L2-021-q1-b",
+              "readingJa": "かさをあとであおくぬりかえるよてーだから。"
             },
             {
               "id": "c",
@@ -272,7 +275,8 @@
                 "en": "Because she does not want Kento to retrieve the umbrella."
               },
               "ttsTextJa": "健人に傘を取りに来てほしくないから。",
-              "audioId": "L2-021-q1-c"
+              "audioId": "L2-021-q1-c",
+              "readingJa": "けんとにかさをとりにきてほしくないから。"
             },
             {
               "id": "d",
@@ -282,7 +286,8 @@
                 "en": "To compare a claimant's details with the item and verify the true owner."
               },
               "ttsTextJa": "申告された特徴を現物と照合し、本当の持ち主か確かめるため。",
-              "audioId": "L2-021-q1-d"
+              "audioId": "L2-021-q1-d",
+              "readingJa": "しんこくされたとくちょーをげんぶつとしょーごーし、ほんとうのもちぬしかたしかめるため。"
             }
           ],
           "correctOptionIds": [
@@ -334,13 +339,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "4d66c7501cbae9167354d10888134d69a3c39441b75346c0710c2a9bd98411f6"
+      "contentHash": "b0f825c560fc54bb59dd44ddf0f98d84a77bd386143b0b7599dd956bcdf8e25c"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-022",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 22,
       "jlptTarget": "N2",
@@ -364,14 +369,15 @@
         "en": "In a work chat, supervisor Natsumi and assignee Daichi discuss changing a deadline while colleague Mei follows the thread."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-022.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "その判断でお任せしますの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“就按你的判断”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"I’ll Leave It to Your Judgment\"."
+        },
+        "sha256": "b38bff8385c8d2d7ffb7b847775135db85e421031f8179d0ea92ffbea29a4289"
       },
       "cast": [
         {
@@ -584,7 +590,8 @@
                 "en": "She guarantees that the inspection-time problem has already been fully solved on site."
               },
               "ttsTextJa": "検品時間の問題は現場ですでに完全解決したと保証している。",
-              "audioId": "L2-022-q1-a"
+              "audioId": "L2-022-q1-a",
+              "readingJa": "けんぴんじかんのもんだいわげんばですでにかんぜんかいけつしたとほしょーしている。"
             },
             {
               "id": "b",
@@ -594,7 +601,8 @@
                 "en": "She unconditionally praises Daichi’s judgment."
               },
               "ttsTextJa": "大地の判断を無条件に高く評価している。",
-              "audioId": "L2-022-q1-b"
+              "audioId": "L2-022-q1-b",
+              "readingJa": "だいちのはんだんをむじょーけんにたかくひょーかしている。"
             },
             {
               "id": "c",
@@ -604,7 +612,8 @@
                 "en": "Along with discretion, she returns accountability for the outcome to Daichi."
               },
               "ttsTextJa": "裁量とともに、結果に対する説明責任も大地へ戻している。",
-              "audioId": "L2-022-q1-c"
+              "audioId": "L2-022-q1-c",
+              "readingJa": "さいりょーとともに、けっかにたいするせつめーせきにんもだいちえもどしている。"
             },
             {
               "id": "d",
@@ -614,7 +623,8 @@
                 "en": "She directly orders him to restore the original deadline."
               },
               "ttsTextJa": "納期を元に戻すよう直接命令している。",
-              "audioId": "L2-022-q1-d"
+              "audioId": "L2-022-q1-d",
+              "readingJa": "のーきをもとにもどすよーちょくせつめーれーしている。"
             }
           ],
           "correctOptionIds": [
@@ -672,7 +682,8 @@
                 "en": "She ties the decision to Daichi with “your judgment.”"
               },
               "ttsTextJa": "判断を、その判断と大地に結び付けている。",
-              "audioId": "L2-022-q2-a"
+              "audioId": "L2-022-q2-a",
+              "readingJa": "はんだんを、そのはんだんとだいちにむすびつけている。"
             },
             {
               "id": "b",
@@ -682,7 +693,8 @@
                 "en": "Daichi says that the client is in a hurry."
               },
               "ttsTextJa": "先方が急いでいると大地が説明した。",
-              "audioId": "L2-022-q2-b"
+              "audioId": "L2-022-q2-b",
+              "readingJa": "せんぽーがいそいでいるとだいちがせつめーした。"
             },
             {
               "id": "c",
@@ -692,7 +704,8 @@
                 "en": "She requires Daichi to report the outcome, making the aftermath traceable."
               },
               "ttsTextJa": "結果の共有を大地に求め、判断後の経過も追える形にした。",
-              "audioId": "L2-022-q2-c"
+              "audioId": "L2-022-q2-c",
+              "readingJa": "けっかのきょーゆーをだいちにもとめ、はんだんごのけーかもおえるかたちにした。"
             },
             {
               "id": "d",
@@ -702,7 +715,8 @@
                 "en": "Mei is reading the chat."
               },
               "ttsTextJa": "芽衣がチャットを読んでいる。",
-              "audioId": "L2-022-q2-d"
+              "audioId": "L2-022-q2-d",
+              "readingJa": "めいがちゃっとをよんでいる。"
             }
           ],
           "correctOptionIds": [
@@ -752,13 +766,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "9d1129cac111a08852c3d781e2ebbcfb1bccb65749e45320d64277d21133d7b4"
+      "contentHash": "f8add8116cbb22b2ed582ca75eeebd6dc727f519edb2f9fa34250518d0afb78f"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-023",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 23,
       "jlptTarget": "N2",
@@ -781,14 +795,15 @@
         "en": "Before entering a museum, guide Aya advises camera-carrying Haru and Riku where to take a souvenir photo."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-023.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "入口の一枚の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“入口处的一张照片”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"One Photo at the Entrance\"."
+        },
+        "sha256": "bd8d0574ba6eaa82b11ab01fa3ec2f9c980639413ccf18c12e705fb9dc5d4b76"
       },
       "cast": [
         {
@@ -1001,7 +1016,8 @@
                 "en": "The exhibits inside are not worth seeing."
               },
               "ttsTextJa": "館内の展示は見る価値がない。",
-              "audioId": "L2-023-q1-a"
+              "audioId": "L2-023-q1-a",
+              "readingJa": "かんないのてんじわみるかちがない。"
             },
             {
               "id": "b",
@@ -1011,7 +1027,8 @@
                 "en": "They should refrain from photography inside and finish taking pictures at the entrance."
               },
               "ttsTextJa": "館内では撮影を控え、入口で済ませてほしい。",
-              "audioId": "L2-023-q1-b"
+              "audioId": "L2-023-q1-b",
+              "readingJa": "かんないでわさつえーをひかえ、いりぐちですませてほしい。"
             },
             {
               "id": "c",
@@ -1021,7 +1038,8 @@
                 "en": "Each souvenir photo taken at the entrance requires its own extra fee."
               },
               "ttsTextJa": "入口で撮る記念写真には、一枚ごとに別の追加料金が必要だ。",
-              "audioId": "L2-023-q1-c"
+              "audioId": "L2-023-q1-c",
+              "readingJa": "いりぐちでとるきねんしゃしんにわ、いちまいごとにべつのついかりょーきんがひつよーだ。"
             },
             {
               "id": "d",
@@ -1031,7 +1049,8 @@
                 "en": "Cameras are available to borrow inside."
               },
               "ttsTextJa": "館内ではカメラを貸し出している。",
-              "audioId": "L2-023-q1-d"
+              "audioId": "L2-023-q1-d",
+              "readingJa": "かんないでわかめらをかしだしている。"
             }
           ],
           "correctOptionIds": [
@@ -1083,13 +1102,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "82d3408042c83f61a4bc87449be41775aaca06b53403a62afddb9e352e56f258"
+      "contentHash": "9675a08ffa66106425a878cf4b8a176ac8e2c1272b80f8af02da579121a76b95"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-024",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 24,
       "jlptTarget": "N2",
@@ -1112,14 +1131,15 @@
         "en": "In co-op voice chat, Seiji, leader Kana, and Mio inspect the system log after a trap wipes the party."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-024.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "聞こえなかった罠の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“没听见的陷阱”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Trap He Did Not Hear\"."
+        },
+        "sha256": "0235e4450665209ac334cec2a39d2df614862e7be6feb3ae2e7c02fd59f50c75"
       },
       "cast": [
         {
@@ -1341,7 +1361,8 @@
                 "en": "The preceding log records Seiji’s own volume change."
               },
               "ttsTextJa": "直前のログが、誠司自身の音量操作を記録しているから。",
-              "audioId": "L2-024-q1-a"
+              "audioId": "L2-024-q1-a",
+              "readingJa": "ちょくぜんのろぐが、せーじじしんのおんりょーそーさをきろくしているから。"
             },
             {
               "id": "b",
@@ -1351,7 +1372,8 @@
                 "en": "Kana was using the same device."
               },
               "ttsTextJa": "香奈も同じ端末を使っていたから。",
-              "audioId": "L2-024-q1-b"
+              "audioId": "L2-024-q1-b",
+              "readingJa": "かなもおなじたんまつをつかっていたから。"
             },
             {
               "id": "c",
@@ -1361,7 +1383,8 @@
                 "en": "Because the trap never had a warning sound and the logged effect came from another scene."
               },
               "ttsTextJa": "罠には最初から警告音がなく、ログにある効果音も別の場面の音だったから。",
-              "audioId": "L2-024-q1-c"
+              "audioId": "L2-024-q1-c",
+              "readingJa": "わなにわさいしょからけいこくおんがなく、ろぐにあるこうかおんもべつのばめんのおとだったから。"
             },
             {
               "id": "d",
@@ -1371,7 +1394,8 @@
                 "en": "The stream commentary was completely silent too."
               },
               "ttsTextJa": "配信の声も完全に消えていたから。",
-              "audioId": "L2-024-q1-d"
+              "audioId": "L2-024-q1-d",
+              "readingJa": "はいしんのこえもかんぜんにきえていたから。"
             }
           ],
           "correctOptionIds": [
@@ -1428,7 +1452,8 @@
                 "en": "Permanently expel Seiji from the team and bar him from every future battle."
               },
               "ttsTextJa": "誠司をチームから永久に追放し、次の戦闘には一切参加させない。",
-              "audioId": "L2-024-q2-a"
+              "audioId": "L2-024-q2-a",
+              "readingJa": "せーじをちーむからえーきゅーについほーし、つぎのせんとーにわいっさいさんかさせない。"
             },
             {
               "id": "b",
@@ -1438,7 +1463,8 @@
                 "en": "She fully blames the device for the failure."
               },
               "ttsTextJa": "失敗を完全に端末のせいにする。",
-              "audioId": "L2-024-q2-b"
+              "audioId": "L2-024-q2-b",
+              "readingJa": "しっぱいをかんぜんにたんまつのせいにする。"
             },
             {
               "id": "c",
@@ -1448,7 +1474,8 @@
                 "en": "She shifts from blame toward a concrete check that prevents recurrence."
               },
               "ttsTextJa": "責め続けるより、再発防止の確認行動へ切り替える。",
-              "audioId": "L2-024-q2-c"
+              "audioId": "L2-024-q2-c",
+              "readingJa": "せめつずけるより、さいはつぼーしのかくにんこーどーえきりかえる。"
             },
             {
               "id": "d",
@@ -1458,7 +1485,8 @@
                 "en": "She will stop using warning tones next time."
               },
               "ttsTextJa": "次回から警告音を使わない。",
-              "audioId": "L2-024-q2-d"
+              "audioId": "L2-024-q2-d",
+              "readingJa": "じかいからけいこくおんをつかわない。"
             }
           ],
           "correctOptionIds": [
@@ -1508,13 +1536,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "9e1aa16efaf1b0a6fddcf3a78ce9e24fa151e4c359f1f07e677d958dd0fe82ef"
+      "contentHash": "1cc827b903722a59292db39dfbbe691b7b3403d48ec7aa46e100702caeb5d873"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-025",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 25,
       "jlptTarget": "N2",
@@ -1538,14 +1566,15 @@
         "en": "At an expensive restaurant while traveling, Yuna and Kenta order enthusiastically as Riho studies the prices."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-025.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "軽いものでいいの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“吃点轻的就好”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Something Light Is Fine\"."
+        },
+        "sha256": "bf4be5b9f0409c33f224d36b011fd4d1a5ec076805562229c47664f2bb8825f9"
       },
       "cast": [
         {
@@ -1647,7 +1676,7 @@
             {
               "id": "token-001",
               "text": "私は軽いものでいいか",
-              "reading": "わたくしはかるいものでいいか",
+              "reading": "わたしはかるいものでいいか",
               "audioId": "L2-025-line-003-token-001"
             },
             {
@@ -1701,7 +1730,7 @@
             {
               "id": "token-001",
               "text": "本当に大丈夫。みんな",
-              "reading": "ほんとにだいじょうぶ。みんな",
+              "reading": "ほんとうにだいじょうぶ。みんな",
               "audioId": "L2-025-line-005-token-001"
             },
             {
@@ -1758,7 +1787,8 @@
                 "en": "She dislikes fish and wants to leave the restaurant."
               },
               "ttsTextJa": "魚料理が嫌いなので店を出たい。",
-              "audioId": "L2-025-q1-a"
+              "audioId": "L2-025-q1-a",
+              "readingJa": "さかなりょうりがきらいなのでみせをでたい。"
             },
             {
               "id": "b",
@@ -1768,7 +1798,8 @@
                 "en": "She wants to compete in eating a large amount of salad."
               },
               "ttsTextJa": "サラダを大量に食べる競争をしたい。",
-              "audioId": "L2-025-q1-b"
+              "audioId": "L2-025-q1-b",
+              "readingJa": "さらだをたいりょーにたべるきょーそーをしたい。"
             },
             {
               "id": "c",
@@ -1778,7 +1809,8 @@
                 "en": "She wants to boast about her lunch."
               },
               "ttsTextJa": "昼食の内容を自慢したい。",
-              "audioId": "L2-025-q1-c"
+              "audioId": "L2-025-q1-c",
+              "readingJa": "ちゅーしょくのないよーをじまんしたい。"
             },
             {
               "id": "d",
@@ -1788,7 +1820,8 @@
                 "en": "She is concerned about cost but does not want to spoil her friends’ enjoyment."
               },
               "ttsTextJa": "費用を気にしているが、友人たちの楽しい雰囲気を壊したくない。",
-              "audioId": "L2-025-q1-d"
+              "audioId": "L2-025-q1-d",
+              "readingJa": "ひよーをきにしているが、ゆーじんたちのたのしいふんいきをこわしたくない。"
             }
           ],
           "correctOptionIds": [
@@ -1841,13 +1874,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "ad919ef4b811a0e025ccc989be243bb025c62ab6f7426c32c45a9895cc1ddf6f"
+      "contentHash": "439abb40745c9f652bcb3730acdd301bdba831b35d15bb2aaca3f8dbe3111976"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-026",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 26,
       "jlptTarget": "N2",
@@ -1871,14 +1904,15 @@
         "en": "At a neighborhood convenience store, clerk Miki notices that Shun—who usually refuses receipts—has arrived in work clothes."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-026.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "今日はレシートをの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“今天要小票”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"A Receipt Today\"."
+        },
+        "sha256": "accce9b86a45c8b8d6f200d2ad48bae8d71aa5042f167c4717e51a256ffccf23"
       },
       "cast": [
         {
@@ -2052,7 +2086,7 @@
             {
               "id": "token-001",
               "text": "助かります。これなら乾",
-              "reading": "たすかります。これならいぬい",
+              "reading": "たすかります。これならかん",
               "audioId": "L2-026-line-006-token-001"
             },
             {
@@ -2082,7 +2116,8 @@
                 "en": "To complain to the store about the coffee."
               },
               "ttsTextJa": "コーヒーの味を店に苦情として伝えるため。",
-              "audioId": "L2-026-q1-a"
+              "audioId": "L2-026-q1-a",
+              "readingJa": "こーひーのあじをみせにくじょーとしてつたえるため。"
             },
             {
               "id": "b",
@@ -2092,7 +2127,8 @@
                 "en": "He has started collecting receipts as a hobby."
               },
               "ttsTextJa": "レシートを集める趣味を始めたため。",
-              "audioId": "L2-026-q1-b"
+              "audioId": "L2-026-q1-b",
+              "readingJa": "れしーとをあつめるしゅみをはじめたため。"
             },
             {
               "id": "c",
@@ -2102,7 +2138,8 @@
                 "en": "To claim reimbursement from his company for a work purchase."
               },
               "ttsTextJa": "仕事用の購入を会社へ経費申請するため。",
-              "audioId": "L2-026-q1-c"
+              "audioId": "L2-026-q1-c",
+              "readingJa": "しごとようのこーにゅーをかいしゃえけーひしんせーするため。"
             },
             {
               "id": "d",
@@ -2112,7 +2149,8 @@
                 "en": "He has decided to return the batteries."
               },
               "ttsTextJa": "乾電池を返品すると決めているため。",
-              "audioId": "L2-026-q1-d"
+              "audioId": "L2-026-q1-d",
+              "readingJa": "かんでんちをへんぴんするときめているため。"
             }
           ],
           "correctOptionIds": [
@@ -2169,7 +2207,8 @@
                 "en": "To help the company verify the purchase and process the expense claim."
               },
               "ttsTextJa": "会社側が購入内容を確認しやすくし、経費申請を助けるため。",
-              "audioId": "L2-026-q2-a"
+              "audioId": "L2-026-q2-a",
+              "readingJa": "かいしゃがわがこーにゅーないよーをかくにんしやすくし、けーひしんせーをたすけるため。"
             },
             {
               "id": "b",
@@ -2179,7 +2218,8 @@
                 "en": "To display Shun’s personal information in the store."
               },
               "ttsTextJa": "駿の個人情報を店内に掲示するため。",
-              "audioId": "L2-026-q2-b"
+              "audioId": "L2-026-q2-b",
+              "readingJa": "しゅんのこじんじょーほーをてんないにけーじするため。"
             },
             {
               "id": "c",
@@ -2189,7 +2229,8 @@
                 "en": "To prohibit use of the batteries."
               },
               "ttsTextJa": "乾電池の使用を禁止するため。",
-              "audioId": "L2-026-q2-c"
+              "audioId": "L2-026-q2-c",
+              "readingJa": "かんでんちのしよーをきんしするため。"
             },
             {
               "id": "d",
@@ -2199,7 +2240,8 @@
                 "en": "To make the coffee free."
               },
               "ttsTextJa": "コーヒーを無料にするため。",
-              "audioId": "L2-026-q2-d"
+              "audioId": "L2-026-q2-d",
+              "readingJa": "こーひーをむりょーにするため。"
             }
           ],
           "correctOptionIds": [
@@ -2249,13 +2291,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "2b40a8be6c1e73c88ea6669fa036f1d29edfcfdc01ff0a0af17400f40855e4f3"
+      "contentHash": "b5a6bbc6dbfb1ec6a0575f6160d4ba963d0cd9c21673dedcbce07be0883461b4"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-027",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 27,
       "jlptTarget": "N2",
@@ -2279,14 +2321,15 @@
         "en": "On his way home, Toma listens to a brief voicemail from his housemate Kana."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-027.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "いつもの所じゃないの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“不在老地方”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Not in the Usual Place\"."
+        },
+        "sha256": "40ce3a25600b04b17abe8fd6fadde80bda86790e8d29ce2a9375af6fcbccd296"
       },
       "cast": [
         {
@@ -2490,7 +2533,8 @@
                 "en": "The key was moved elsewhere for safety rather than lost."
               },
               "ttsTextJa": "鍵は紛失したのではなく、安全のため別の場所へ移された。",
-              "audioId": "L2-027-q1-a"
+              "audioId": "L2-027-q1-a",
+              "readingJa": "かぎわふんしつしたのでわなく、あんぜんのためべつのばしょえうつされた。"
             },
             {
               "id": "b",
@@ -2500,7 +2544,8 @@
                 "en": "A third party seeing the old hiding place caused the change."
               },
               "ttsTextJa": "以前の隠し場所を第三者に見られたことが変更の理由である。",
-              "audioId": "L2-027-q1-b"
+              "audioId": "L2-027-q1-b",
+              "readingJa": "いぜんのかくしばしょをだいさんしゃにみられたことがへんこーのりゆーである。"
             },
             {
               "id": "c",
@@ -2510,7 +2555,8 @@
                 "en": "It is proven that yesterday’s visitor stole the key."
               },
               "ttsTextJa": "昨日の訪問者が鍵を盗んだことが確定した。",
-              "audioId": "L2-027-q1-c"
+              "audioId": "L2-027-q1-c",
+              "readingJa": "きのーのほーもんしゃがかぎをぬすんだことがかくてーした。"
             },
             {
               "id": "d",
@@ -2520,7 +2566,8 @@
                 "en": "The new hiding place is stated explicitly in the voicemail."
               },
               "ttsTextJa": "新しい隠し場所は留守電の中で明言された。",
-              "audioId": "L2-027-q1-d"
+              "audioId": "L2-027-q1-d",
+              "readingJa": "あたらしいかくしばしょわるすでんのなかでめーげんされた。"
             }
           ],
           "correctOptionIds": [
@@ -2573,13 +2620,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "a4cf759de572e029f0078b74324d40a85eea6fb9581f53c8b811e86a3eee3223"
+      "contentHash": "19321a58a281051eefcb9ba664aadf0812f8a421b2f007e6a38ee79da88463cc"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-028",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 28,
       "jlptTarget": "N2",
@@ -2603,14 +2650,15 @@
         "en": "In a local news segment after a festival postponement, reporter Risa interviews farmer Shingo and organizer Chiaki."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-028.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "畑には必要な雨の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“田里需要的雨”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Rain the Fields Need\"."
+        },
+        "sha256": "8433ad2acc33dfc3ea5eba988dec4d0c076e91300b95ec3ab3398cbe1da1b7a9"
       },
       "cast": [
         {
@@ -2712,7 +2760,7 @@
             {
               "id": "token-001",
               "text": "信吾さんも、出店を",
-              "reading": "しんごさんも、しゅってんを",
+              "reading": "しんごさんも、でみせを",
               "audioId": "L2-028-line-003-token-001"
             },
             {
@@ -2823,7 +2871,8 @@
                 "en": "It softens his disappointment and supports the mood by focusing on the rain’s benefit."
               },
               "ttsTextJa": "延期への残念さを抑え、雨の良い面に焦点を移して場を支える。",
-              "audioId": "L2-028-q1-a"
+              "audioId": "L2-028-q1-a",
+              "readingJa": "えんきえのざんねんさをおさえ、あめのよいめんにしょーてんをうつしてばをささえる。"
             },
             {
               "id": "b",
@@ -2833,7 +2882,8 @@
                 "en": "It demands that all future festivals be canceled."
               },
               "ttsTextJa": "祭りを今後すべて中止するよう要求する。",
-              "audioId": "L2-028-q1-b"
+              "audioId": "L2-028-q1-b",
+              "readingJa": "まつりをこんごすべてちゅーしするよーよーきゅーする。"
             },
             {
               "id": "c",
@@ -2843,7 +2893,8 @@
                 "en": "It denies that he prepared a stall."
               },
               "ttsTextJa": "出店の準備をしていなかったと否定する。",
-              "audioId": "L2-028-q1-c"
+              "audioId": "L2-028-q1-c",
+              "readingJa": "しゅってんのじゅんびをしていなかったとひてーする。"
             },
             {
               "id": "d",
@@ -2853,7 +2904,8 @@
                 "en": "It claims the rain poses no safety issue."
               },
               "ttsTextJa": "雨が安全上の問題にならないと断言する。",
-              "audioId": "L2-028-q1-d"
+              "audioId": "L2-028-q1-d",
+              "readingJa": "あめがあんぜんじょうのもんだいにならないとだんげんする。"
             }
           ],
           "correctOptionIds": [
@@ -2911,7 +2963,8 @@
                 "en": "Only happiness about the postponement."
               },
               "ttsTextJa": "延期への喜びだけ。",
-              "audioId": "L2-028-q2-a"
+              "audioId": "L2-028-q2-a",
+              "readingJa": "えんきえのよろこびだけ。"
             },
             {
               "id": "b",
@@ -2921,7 +2974,8 @@
                 "en": "Only anger at the rain."
               },
               "ttsTextJa": "雨への怒りだけ。",
-              "audioId": "L2-028-q2-b"
+              "audioId": "L2-028-q2-b",
+              "readingJa": "あめえのおこりだけ。"
             },
             {
               "id": "c",
@@ -2931,7 +2985,8 @@
                 "en": "Disappointment about the festival and relief that the fields are being watered."
               },
               "ttsTextJa": "祭り延期への残念さと、畑が潤うことへの安堵。",
-              "audioId": "L2-028-q2-c"
+              "audioId": "L2-028-q2-c",
+              "readingJa": "まつりえんきえのざんねんさと、はたけがうるおうことえのあんど。"
             },
             {
               "id": "d",
@@ -2941,7 +2996,8 @@
                 "en": "He feels only fear of being interviewed and has no feelings at all about the rain or festival."
               },
               "ttsTextJa": "取材を受けたことへの恐怖だけで、雨や祭りへの感情はまったくない。",
-              "audioId": "L2-028-q2-d"
+              "audioId": "L2-028-q2-d",
+              "readingJa": "しゅざいをうけたことえのきょーふだけで、あめやまつりえのかんじょーわまったくない。"
             }
           ],
           "correctOptionIds": [
@@ -2992,13 +3048,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "41fe300022d7054fb303e5f656cfe1da04838d6e0a1954430db2e6f5780cb2e5"
+      "contentHash": "c990b15d3f075894cc2ea8422d5093353a67fb54a8660adf06021b1116f7efc3"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-029",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 29,
       "jlptTarget": "N2",
@@ -3022,14 +3078,15 @@
         "en": "In a room within a dream, Mio observes clocks showing conflicting times and a single alarm clock."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-029.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "鳴らない目覚ましの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“不响的闹钟”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Silent Alarm Clock\"."
+        },
+        "sha256": "4a0cd13cfa9cac42acca85d1b6c9a8c7c4b9baf2f0f670cef27119613e137072"
       },
       "cast": [
         {
@@ -3224,7 +3281,8 @@
                 "en": "The wall clock showing three."
               },
               "ttsTextJa": "三時を示す壁時計。",
-              "audioId": "L2-029-q1-a"
+              "audioId": "L2-029-q1-a",
+              "readingJa": "さんじをしめすかべとけー。"
             },
             {
               "id": "b",
@@ -3234,7 +3292,8 @@
                 "en": "The desk clock showing eleven."
               },
               "ttsTextJa": "十一時を示す机の時計。",
-              "audioId": "L2-029-q1-b"
+              "audioId": "L2-029-q1-b",
+              "readingJa": "じゅーいちじをしめすつくえのとけー。"
             },
             {
               "id": "c",
@@ -3244,7 +3303,8 @@
                 "en": "All of the second hands moving backward."
               },
               "ttsTextJa": "逆に進むすべての秒針。",
-              "audioId": "L2-029-q1-c"
+              "audioId": "L2-029-q1-c",
+              "readingJa": "ぎゃくにすすむすべてのびょーしん。"
             },
             {
               "id": "d",
@@ -3254,7 +3314,8 @@
                 "en": "The alarm clock fixed at her usual waking time that produces a real-world sound when touched."
               },
               "ttsTextJa": "毎朝の起床時刻で止まり、触れると現実の音が聞こえる目覚まし。",
-              "audioId": "L2-029-q1-d"
+              "audioId": "L2-029-q1-d",
+              "readingJa": "まいあさのきしょーじこくでとまり、ふれるとげんじつのおとがきこえるめざまし。"
             }
           ],
           "correctOptionIds": [
@@ -3307,13 +3368,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "378dc513bf2c32e0bcd2af5c061455e876247fa229fdf6b867508950093dcd0d"
+      "contentHash": "08b43ecf4f66a5763399fe95984f833a3ab59537acbd209ec8b55c8f830d0770"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-030",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 30,
       "jlptTarget": "N2",
@@ -3339,12 +3400,13 @@
       "illustration": {
         "enabled": true,
         "src": "assets/stages/l2-030.webp",
-        "style": "crayon",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "鮮やかなクレヨン画で、朝の机に並ぶ筆跡の違う警告メモを奈々と春が見つめる場面",
-          "zh": "鲜艳彩色蜡笔画中，奈奈与春看着清晨桌上不同字迹的警告便签",
-          "en": "A vivid color-crayon scene of Nana and Haru studying warning notes in different handwriting on a morning desk"
-        }
+          "ja": "変わる筆跡の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“变化的字迹”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Changing Handwriting\"."
+        },
+        "sha256": "82ab125c5f45932080d42edbd8a575e5bf66e53fbd1a647b548e66dd55382a92"
       },
       "cast": [
         {
@@ -3437,7 +3499,7 @@
             {
               "id": "token-001",
               "text": "奈々、朝から何を",
-              "reading": "なな、あさからなんを",
+              "reading": "なな、あさからなにを",
               "audioId": "L2-030-line-003-token-001"
             },
             {
@@ -3548,7 +3610,8 @@
                 "en": "Nana is losing the ability to write each morning."
               },
               "ttsTextJa": "奈々は毎朝、字を書く能力を失っている。",
-              "audioId": "L2-030-q1-a"
+              "audioId": "L2-030-q1-a",
+              "readingJa": "ななわまいあさ、じをかくのーりょくをうしなっている。"
             },
             {
               "id": "b",
@@ -3558,7 +3621,8 @@
                 "en": "The wind is gradually changing the letter shapes."
               },
               "ttsTextJa": "風が文字の形を少しずつ変えている。",
-              "audioId": "L2-030-q1-b"
+              "audioId": "L2-030-q1-b",
+              "readingJa": "かぜがもじのかたちをすこしずつかえている。"
             },
             {
               "id": "c",
@@ -3568,7 +3632,8 @@
                 "en": "Someone besides Nana retains information across loops and is updating the note."
               },
               "ttsTextJa": "奈々以外にも繰り返しの情報を保ち、メモを更新している人物がいる。",
-              "audioId": "L2-030-q1-c"
+              "audioId": "L2-030-q1-c",
+              "readingJa": "なないがいにもくりかえしのじょーほーをたもち、めもをこーしんしているじんぶつがいる。"
             },
             {
               "id": "d",
@@ -3578,7 +3643,8 @@
                 "en": "The note has exactly the same handwriting every time."
               },
               "ttsTextJa": "メモは毎回まったく同じ筆跡である。",
-              "audioId": "L2-030-q1-d"
+              "audioId": "L2-030-q1-d",
+              "readingJa": "めもわまいかいまったくおなじひっせきである。"
             }
           ],
           "correctOptionIds": [
@@ -3636,7 +3702,8 @@
                 "en": "How much Haru remembers and when he can affect the note."
               },
               "ttsTextJa": "春がどの程度記憶を保ち、いつメモへ関われるのか。",
-              "audioId": "L2-030-q2-a"
+              "audioId": "L2-030-q2-a",
+              "readingJa": "はるがどのてーどきおくをたもち、いつめもえかかわれるのか。"
             },
             {
               "id": "b",
@@ -3646,7 +3713,8 @@
                 "en": "Whether to discard every piece of furniture in the room."
               },
               "ttsTextJa": "部屋の家具をすべて捨てるべきか。",
-              "audioId": "L2-030-q2-b"
+              "audioId": "L2-030-q2-b",
+              "readingJa": "へやのかぐをすべてすてるべきか。"
             },
             {
               "id": "c",
@@ -3656,7 +3724,8 @@
                 "en": "Only Haru’s favorite breakfast."
               },
               "ttsTextJa": "春の好きな朝食だけ。",
-              "audioId": "L2-030-q2-c"
+              "audioId": "L2-030-q2-c",
+              "readingJa": "はるのすきなちょーしょくだけ。"
             },
             {
               "id": "d",
@@ -3666,7 +3735,8 @@
                 "en": "Whether they should ignore every warning and open the window immediately."
               },
               "ttsTextJa": "警告内容を全部無視して、今すぐ窓を開けるべきか。",
-              "audioId": "L2-030-q2-d"
+              "audioId": "L2-030-q2-d",
+              "readingJa": "けーこくないよーをぜんぶむしして、いますぐまどをあけるべきか。"
             }
           ],
           "correctOptionIds": [
@@ -3716,7 +3786,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "af4ca8be05d00efff793e4583210078c47da2a15d37d88647a4feeb7b11ae670"
+      "contentHash": "ed6c218c1c5d5888a4c3aa422ba4fb53d6ef6775f7b03fa0331abd321a9f73a9"
     }
   ]
 }

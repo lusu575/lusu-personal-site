@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.1",
+  "contentVersion": "1.0.2",
   "level": 2,
   "batch": "041-050",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-041",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 41,
       "jlptTarget": "N2",
@@ -32,14 +32,15 @@
         "en": "A morning bulletin briefly reports a crewed moon landing. In this world it is treated as preparation for a commuter line, not a historic feat."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-041.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "月面線、開業前の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“月面线开通前”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Before the Lunar Line Opens\"."
+        },
+        "sha256": "6d305bcc146b38dea4cf352bd92cc23f73916e362f2a5cddc9b08bd16537e4da"
       },
       "cast": [
         {
@@ -333,7 +334,8 @@
                 "en": "Travel to the moon is prohibited by law."
               },
               "ttsTextJa": "月面への移動は法律で禁止されている。",
-              "audioId": "L2-041-q1-a"
+              "audioId": "L2-041-q1-a",
+              "readingJa": "げつめんえのいどーわほーりつできんしされている。"
             },
             {
               "id": "b",
@@ -343,7 +345,8 @@
                 "en": "This is humanity’s first-ever moon landing."
               },
               "ttsTextJa": "月面着陸は今回が人類史上初めてである。",
-              "audioId": "L2-041-q1-b"
+              "audioId": "L2-041-q1-b",
+              "readingJa": "げつめんちゃくりくわこんかいがじんるいしじょーはじめてである。"
             },
             {
               "id": "c",
@@ -353,7 +356,8 @@
                 "en": "Travel to the moon is being developed as ordinary commuter transport."
               },
               "ttsTextJa": "月への移動は、日常の通勤交通として整備されつつある。",
-              "audioId": "L2-041-q1-c"
+              "audioId": "L2-041-q1-c",
+              "readingJa": "つきえのいどーわ、にちじょーのつーきんこーつーとしてせーびされつつある。"
             },
             {
               "id": "d",
@@ -363,7 +367,8 @@
                 "en": "The lunar landing is treated as an operational check before a route opens."
               },
               "ttsTextJa": "月面着陸は、路線開業前の運用確認として扱われている。",
-              "audioId": "L2-041-q1-d"
+              "audioId": "L2-041-q1-d",
+              "readingJa": "げつめんちゃくりくわ、ろせんかいぎょーまえのうんよーかくにんとしてあつかわれている。"
             },
             {
               "id": "e",
@@ -373,7 +378,8 @@
                 "en": "All surface railways have been abolished."
               },
               "ttsTextJa": "地上の鉄道路線はすべて廃止された。",
-              "audioId": "L2-041-q1-e"
+              "audioId": "L2-041-q1-e",
+              "readingJa": "ちじょーのてつどーろせんわすべてはいしされた。"
             }
           ],
           "correctOptionIds": [
@@ -428,13 +434,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "c4586ba22c03b256e0d8d0f1350379cc065ed368d11ae09c6a79acc5c7108ef6"
+      "contentHash": "6456738411d46b36e8fd50f165f5a61b675e409fd6d5d22dccfcc4cb7743cf7c"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-042",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 42,
       "jlptTarget": "N2",
@@ -457,14 +463,15 @@
         "en": "Before a virtual social event, the host explains avatar clothing rules. A claim of freedom is followed immediately by detailed bans."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-042.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "自由な服装規定の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘““自由”的着装规定”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"A “Free” Dress Code\"."
+        },
+        "sha256": "ee524de38e80850d63c9ba71eb3514e7a3b324a9efd5c0d87771ac8002819c15"
       },
       "cast": [
         {
@@ -740,7 +747,8 @@
                 "en": "Any avatar can participate without conditions."
               },
               "ttsTextJa": "どのアバターでも無条件に参加できる。",
-              "audioId": "L2-042-q1-a"
+              "audioId": "L2-042-q1-a",
+              "readingJa": "どのあばたーでもむじょーけんにさんかできる。"
             },
             {
               "id": "b",
@@ -750,7 +758,8 @@
                 "en": "Participants can decide the rules on the spot."
               },
               "ttsTextJa": "参加者がその場で規則を決められる。",
-              "audioId": "L2-042-q1-b"
+              "audioId": "L2-042-q1-b",
+              "readingJa": "さんかしゃがそのばできそくをきめられる。"
             },
             {
               "id": "c",
@@ -760,7 +769,8 @@
                 "en": "Participants may choose only within the ban list and size limits."
               },
               "ttsTextJa": "禁止一覧と寸法制限の範囲内で選べる。",
-              "audioId": "L2-042-q1-c"
+              "audioId": "L2-042-q1-c",
+              "readingJa": "きんしいちらんとすんぽーせーげんのはんいないでえらべる。"
             },
             {
               "id": "d",
@@ -770,7 +780,8 @@
                 "en": "Clothing is optional altogether."
               },
               "ttsTextJa": "服装を着けなくてもよい。",
-              "audioId": "L2-042-q1-d"
+              "audioId": "L2-042-q1-d",
+              "readingJa": "ふくそーをつけなくてもよい。"
             }
           ],
           "correctOptionIds": [
@@ -829,7 +840,8 @@
                 "en": "There are multiple bans and size limits on colors, hats, wings, and more."
               },
               "ttsTextJa": "色、帽子、羽根などについて複数の禁止と寸法制限がある。",
-              "audioId": "L2-042-q2-a"
+              "audioId": "L2-042-q2-a",
+              "readingJa": "いろ、ぼーし、はねなどについてふくすーのきんしとすんぽーせーげんがある。"
             },
             {
               "id": "b",
@@ -839,7 +851,8 @@
                 "en": "The social event is being held today."
               },
               "ttsTextJa": "交流会が今日開かれる。",
-              "audioId": "L2-042-q2-b"
+              "audioId": "L2-042-q2-b",
+              "readingJa": "こーりゅーかいがきょーひらかれる。"
             },
             {
               "id": "c",
@@ -849,7 +862,8 @@
                 "en": "Luna’s wings differ in length."
               },
               "ttsTextJa": "ルナの羽根の長さが左右で違う。",
-              "audioId": "L2-042-q2-c"
+              "audioId": "L2-042-q2-c",
+              "readingJa": "るなのはねのながさがさゆーでちがう。"
             },
             {
               "id": "d",
@@ -859,7 +873,8 @@
                 "en": "Measurements can be checked at reception."
               },
               "ttsTextJa": "受付で寸法を確認できる。",
-              "audioId": "L2-042-q2-d"
+              "audioId": "L2-042-q2-d",
+              "readingJa": "うけつけですんぽーをかくにんできる。"
             }
           ],
           "correctOptionIds": [
@@ -910,13 +925,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "fdc295a8c4734228e159d38748edb07ad391fb11f4b501f4cc0c497bcd3e5ae0"
+      "contentHash": "56515bc6f2054e258174135da9566cb24d564b4cc9bb979b77f4841f6b596949"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-043",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 43,
       "jlptTarget": "N2",
@@ -940,14 +955,15 @@
         "en": "After a game trial, the hero reports to an NPC. The chest is visibly open, yet the NPC thanks the hero for “not opening” it."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-043.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "開いた宝箱の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“打开却未失窃的宝箱”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Opened Chest\"."
+        },
+        "sha256": "4e310bc6d6b9252d81d69a4d6068ce6ae10d15e541136ebc428cc9f08ce88e3f"
       },
       "cast": [
         {
@@ -1241,7 +1257,8 @@
                 "en": "Never approaching the chest."
               },
               "ttsTextJa": "宝箱に一度も近づかないこと。",
-              "audioId": "L2-043-q1-a"
+              "audioId": "L2-043-q1-a",
+              "readingJa": "たからばこにいちどもちかずかないこと。"
             },
             {
               "id": "b",
@@ -1251,7 +1268,8 @@
                 "en": "Not taking the item from the chest."
               },
               "ttsTextJa": "宝箱の中身を持ち去らないこと。",
-              "audioId": "L2-043-q1-b"
+              "audioId": "L2-043-q1-b",
+              "readingJa": "たからばこのなかみをもちさらないこと。"
             },
             {
               "id": "c",
@@ -1261,7 +1279,8 @@
                 "en": "Closing the lid and returning it to its original position."
               },
               "ttsTextJa": "ふたを閉じて元の位置に戻すこと。",
-              "audioId": "L2-043-q1-c"
+              "audioId": "L2-043-q1-c",
+              "readingJa": "ふたをとじてもとのいちにもどすこと。"
             },
             {
               "id": "d",
@@ -1271,7 +1290,8 @@
                 "en": "Never touching the Star Key."
               },
               "ttsTextJa": "星の鍵に触れないこと。",
-              "audioId": "L2-043-q1-d"
+              "audioId": "L2-043-q1-d",
+              "readingJa": "ほしのかぎにふれないこと。"
             }
           ],
           "correctOptionIds": [
@@ -1324,13 +1344,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "21f203d6d8089f5238f9045fc6a8ca57dbfe2fcffd2c5e14d12b466f03b053d1"
+      "contentHash": "8027b1959ae90171644cd7d2542d9e813abcdeebc474feaa4bbd90f14c9d5668"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-044",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 44,
       "jlptTarget": "N2",
@@ -1354,14 +1374,15 @@
         "en": "A family group chat discusses a change of plans. Their mother, who normally avoids punctuation, ends with one unusually formal sentence."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-044.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "「分かりました。」の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘““知道了。””场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"“Understood.”\"."
+        },
+        "sha256": "b312063c3754b88bd0ff95204bec1ca9400301bb2ae6f2e54367648cb0b129a3"
       },
       "cast": [
         {
@@ -1622,7 +1643,8 @@
                 "en": "She is tersely signaling restrained displeasure or distance about the change."
               },
               "ttsTextJa": "予定変更への不満や距離を、短く抑えて示している。",
-              "audioId": "L2-044-q1-a"
+              "audioId": "L2-044-q1-a",
+              "readingJa": "よてーへんこーえのふまんやきょりを、みじかくおさえてしめしている。"
             },
             {
               "id": "b",
@@ -1632,7 +1654,8 @@
                 "en": "She is delighted by the move to six."
               },
               "ttsTextJa": "六時への変更を大喜びしている。",
-              "audioId": "L2-044-q1-b"
+              "audioId": "L2-044-q1-b",
+              "readingJa": "ろくじえのへんこーをおーよろこびしている。"
             },
             {
               "id": "c",
@@ -1642,7 +1665,8 @@
                 "en": "She is trying to reteach the whole family the correct use of punctuation."
               },
               "ttsTextJa": "句読点の正しい使い方を、家族全員へ改めて教えようとしている。",
-              "audioId": "L2-044-q1-c"
+              "audioId": "L2-044-q1-c",
+              "readingJa": "くとーてんのただしいつかいかたを、かぞくぜんいんえあらためておしえよーとしている。"
             },
             {
               "id": "d",
@@ -1652,7 +1676,8 @@
                 "en": "She has forgotten the Sunday gathering."
               },
               "ttsTextJa": "日曜の集まり自体を忘れている。",
-              "audioId": "L2-044-q1-d"
+              "audioId": "L2-044-q1-d",
+              "readingJa": "にちよーのあつまりじたいをわすれている。"
             }
           ],
           "correctOptionIds": [
@@ -1709,7 +1734,8 @@
                 "en": "Daichi and Emi choose six o’clock."
               },
               "ttsTextJa": "大地と恵美が六時を選んだこと。",
-              "audioId": "L2-044-q2-a"
+              "audioId": "L2-044-q2-a",
+              "readingJa": "だいちとえみがろくじをえらんだこと。"
             },
             {
               "id": "b",
@@ -1719,7 +1745,8 @@
                 "en": "Mother uses the word “Sunday.”"
               },
               "ttsTextJa": "母が日曜日という語を使ったこと。",
-              "audioId": "L2-044-q2-b"
+              "audioId": "L2-044-q2-b",
+              "readingJa": "ははがにちよーびというごをつかったこと。"
             },
             {
               "id": "c",
@@ -1729,7 +1756,8 @@
                 "en": "Mother’s earlier messages lack periods, only the last has one, and Emi explicitly calls this unusual."
               },
               "ttsTextJa": "それまでの母の文には句点がなく、最後だけ句点付きで、恵美も珍しいと述べたこと。",
-              "audioId": "L2-044-q2-c"
+              "audioId": "L2-044-q2-c",
+              "readingJa": "それまでのははのぶんにわくてんがなく、さいごだけくてんつきで、えみもめずらしいとのべたこと。"
             },
             {
               "id": "d",
@@ -1739,7 +1767,8 @@
                 "en": "Only three family members are chatting."
               },
               "ttsTextJa": "家族が三人だけで話していること。",
-              "audioId": "L2-044-q2-d"
+              "audioId": "L2-044-q2-d",
+              "readingJa": "かぞくがさんにんだけではなしていること。"
             }
           ],
           "correctOptionIds": [
@@ -1790,13 +1819,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "81fd560d49ac30de0975523322caecf68031cb39a6470d6ef2faf2e2b5d904f4"
+      "contentHash": "0af97b57fefefeae9e8acaf61211fc1400b0fd823b959f2d808feba162eae765"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-045",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 45,
       "jlptTarget": "N2",
@@ -1823,12 +1852,13 @@
       "illustration": {
         "enabled": true,
         "src": "assets/stages/l2-045.webp",
-        "style": "chibi-four-panel",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "会議室で席札を交換した二人と、茶を置き直す給茶ロボットを描く彩色ちび四コマ。",
-          "zh": "彩色 Q 版四格漫画：会议室里两人交换席卡，茶水机器人重新放茶。",
-          "en": "A colorful chibi four-panel scene of two coworkers swapping name cards while a tea robot changes the drinks."
-        }
+          "ja": "席札どおりのお茶の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“按席卡上茶”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Tea by Name Card\"."
+        },
+        "sha256": "adb3aa5e1979ff8115c775a43e728133a176682c700dc630320baaaf8a2631af"
       },
       "cast": [
         {
@@ -2122,7 +2152,8 @@
                 "en": "Facial features."
               },
               "ttsTextJa": "顔の特徴。",
-              "audioId": "L2-045-q1-a"
+              "audioId": "L2-045-q1-a",
+              "readingJa": "かおのとくちょー。"
             },
             {
               "id": "b",
@@ -2132,7 +2163,8 @@
                 "en": "Voice pitch."
               },
               "ttsTextJa": "声の高さ。",
-              "audioId": "L2-045-q1-b"
+              "audioId": "L2-045-q1-b",
+              "readingJa": "こえのたかさ。"
             },
             {
               "id": "c",
@@ -2142,7 +2174,8 @@
                 "en": "The clothing color of the person sitting in each seat."
               },
               "ttsTextJa": "各席に座っている人の服の色。",
-              "audioId": "L2-045-q1-c"
+              "audioId": "L2-045-q1-c",
+              "readingJa": "かくせきにすわっているひとのふくのいろ。"
             },
             {
               "id": "d",
@@ -2152,7 +2185,8 @@
                 "en": "The information on the name card at each seat."
               },
               "ttsTextJa": "各席に置かれた席札の情報。",
-              "audioId": "L2-045-q1-d"
+              "audioId": "L2-045-q1-d",
+              "readingJa": "かくせきにおかれたせきさつのじょーほー。"
             }
           ],
           "correctOptionIds": [
@@ -2206,13 +2240,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "9a737cb7814412eeb5103c8fb396ecd61ef1cb61d0b21a79a209ff659e4a3d59"
+      "contentHash": "9458bd0008e8a8a7db4a31d04c668d5ba53ad6a5917f5f62032dd2655ff16ff0"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-046",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 46,
       "jlptTarget": "N2",
@@ -2236,14 +2270,15 @@
         "en": "Akane sends voice messages to her traveling neighbor Sora about caring for the plants, asking twice when Sora will return."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-046.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "植物は元気ですの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“植物都很好”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Plants Are Fine\"."
+        },
+        "sha256": "3fae79e6e3c38220059e584d3b9cdbd0343ae9f3a60a2304f7be54314764ebc7"
       },
       "cast": [
         {
@@ -2501,7 +2536,8 @@
                 "en": "Whether she may discard the pot by the window."
               },
               "ttsTextJa": "窓辺の鉢を捨ててよいか。",
-              "audioId": "L2-046-q1-a"
+              "audioId": "L2-046-q1-a",
+              "readingJa": "まどべのはちをすててよいか。"
             },
             {
               "id": "b",
@@ -2511,7 +2547,8 @@
                 "en": "Whether the plant photos should be retaken in a brighter place."
               },
               "ttsTextJa": "植物の写真を明るい場所で撮り直すべきか。",
-              "audioId": "L2-046-q1-b"
+              "audioId": "L2-046-q1-b",
+              "readingJa": "しょくぶつのしゃしんをあかるいばしょでとりなおすべきか。"
             },
             {
               "id": "c",
@@ -2521,7 +2558,8 @@
                 "en": "How long she needs to keep watering the plants."
               },
               "ttsTextJa": "水やりをいつまで続ける必要があるか。",
-              "audioId": "L2-046-q1-c"
+              "audioId": "L2-046-q1-c",
+              "readingJa": "みずやりをいつまでつずけるひつよーがあるか。"
             },
             {
               "id": "d",
@@ -2531,7 +2569,8 @@
                 "en": "Where Sora will travel next."
               },
               "ttsTextJa": "空が次にどこへ旅行するか。",
-              "audioId": "L2-046-q1-d"
+              "audioId": "L2-046-q1-d",
+              "readingJa": "そらがつぎにどこえりょこーするか。"
             }
           ],
           "correctOptionIds": [
@@ -2588,7 +2627,8 @@
                 "en": "She asks twice, in different forms, about the return date and the care deadline."
               },
               "ttsTextJa": "帰宅日と世話の期限を、形を変えて二度確認していること。",
-              "audioId": "L2-046-q2-a"
+              "audioId": "L2-046-q2-a",
+              "readingJa": "きたくびとせわのきげんを、かたちをかえてにどかくにんしていること。"
             },
             {
               "id": "b",
@@ -2598,7 +2638,8 @@
                 "en": "She first reported that every plant was healthy, and Sora promptly replied to the photo."
               },
               "ttsTextJa": "植物がすべて元気だと最初に報告し、空が写真へすぐ返事したこと。",
-              "audioId": "L2-046-q2-b"
+              "audioId": "L2-046-q2-b",
+              "readingJa": "しょくぶつがすべてげんきだとさいしょにほーこくし、そらがしゃしんえすぐへんじしたこと。"
             },
             {
               "id": "c",
@@ -2608,7 +2649,8 @@
                 "en": "Sora looked at a photo."
               },
               "ttsTextJa": "空が写真を見たこと。",
-              "audioId": "L2-046-q2-c"
+              "audioId": "L2-046-q2-c",
+              "readingJa": "そらがしゃしんをみたこと。"
             },
             {
               "id": "d",
@@ -2618,7 +2660,8 @@
                 "en": "Watering occurs every other day."
               },
               "ttsTextJa": "水やりが二日に一度であること。",
-              "audioId": "L2-046-q2-d"
+              "audioId": "L2-046-q2-d",
+              "readingJa": "みずやりがふつかにいちどであること。"
             }
           ],
           "correctOptionIds": [
@@ -2668,13 +2711,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "3dcdbddf1b05697c77da8b75a3e3307fb7553fcd3bd6a246aa7378502832b5e1"
+      "contentHash": "f29245b3a030a444870ae613249cd948a92fc162e89ae85132e818443fcde2c1"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-047",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 47,
       "jlptTarget": "N2",
@@ -2697,14 +2740,15 @@
         "en": "In a product-release meeting, a manager demands same-day publication and completed legal review. Junior employee Naoki exposes the conflict as a question."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-047.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "一つ確認ですがの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘““我确认一点””场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"One Point to Confirm\"."
+        },
+        "sha256": "cb6dbe9761f100b505f93515906a42e056040624ef5fc5e716a1493547f53fa9"
       },
       "cast": [
         {
@@ -3007,7 +3051,8 @@
                 "en": "It merely repeats the manager’s instructions."
               },
               "ttsTextJa": "上司の指示をそのまま復唱している。",
-              "audioId": "L2-047-q1-a"
+              "audioId": "L2-047-q1-a",
+              "readingJa": "じょーしのしじをそのままふくしょーしている。"
             },
             {
               "id": "b",
@@ -3017,7 +3062,8 @@
                 "en": "It politely uses a question to point out that the two instructions cannot both be satisfied."
               },
               "ttsTextJa": "質問の形を使い、二つの指示が両立しないことを丁寧に指摘している。",
-              "audioId": "L2-047-q1-b"
+              "audioId": "L2-047-q1-b",
+              "readingJa": "しつもんのかたちをつかい、ふたつのしじがりょーりつしないことをてーねーにしてきしている。"
             },
             {
               "id": "c",
@@ -3027,7 +3073,8 @@
                 "en": "It asks for permission to skip legal review."
               },
               "ttsTextJa": "法務確認を省略する許可を求めている。",
-              "audioId": "L2-047-q1-c"
+              "audioId": "L2-047-q1-c",
+              "readingJa": "ほーむかくにんをしょーりゃくするきょかをもとめている。"
             },
             {
               "id": "d",
@@ -3037,7 +3084,8 @@
                 "en": "It asks to be removed from the publication task."
               },
               "ttsTextJa": "公開作業から外れたいと申し出ている。",
-              "audioId": "L2-047-q1-d"
+              "audioId": "L2-047-q1-d",
+              "readingJa": "こーかいさぎょーからはずれたいともーしでている。"
             }
           ],
           "correctOptionIds": [
@@ -3091,13 +3139,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "aa0d272700743de7ae9e5866cf2c571216ae735b070b613b920e951ebaed144a"
+      "contentHash": "50e218f782eff12fdb787817ec780c354575d8dfe12cdd56fc85333501fa86df"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-048",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 48,
       "jlptTarget": "N2",
@@ -3121,14 +3169,15 @@
         "en": "Akira’s diary app says he stayed in his room all day, while the same screen displays automatically synced transit-card records."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-048.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "出なかった日の履歴の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘““没出门”那天的记录”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Record of a Day Indoors\"."
+        },
+        "sha256": "902f24586a32cfbacdbe07323f202db61d2daa8b1d4994dbb2bb70ad92db88ab"
       },
       "cast": [
         {
@@ -3377,7 +3426,8 @@
                 "en": "The diary entry states that Akira did not leave his room all day."
               },
               "ttsTextJa": "日記本文は、晃が一日中部屋を出なかったと述べている。",
-              "audioId": "L2-048-q1-a"
+              "audioId": "L2-048-q1-a",
+              "readingJa": "にっきほんぶんわ、あきらがいちにちじゅーへやをでなかったとのべている。"
             },
             {
               "id": "b",
@@ -3387,7 +3437,8 @@
                 "en": "Video confirms that Akira personally used the transit card."
               },
               "ttsTextJa": "晃が自分で交通カードを使ったことが映像で確認された。",
-              "audioId": "L2-048-q1-b"
+              "audioId": "L2-048-q1-b",
+              "readingJa": "あきらがじぶんでこーつーかーどをつかったことがえーぞーでかくにんされた。"
             },
             {
               "id": "c",
@@ -3397,7 +3448,8 @@
                 "en": "The transit card records a trip between two stations and a balance decrease that day."
               },
               "ttsTextJa": "同じ日の交通カードには、二駅間の利用と残高減少が記録されている。",
-              "audioId": "L2-048-q1-c"
+              "audioId": "L2-048-q1-c",
+              "readingJa": "おなじひのこーつーかーどにわ、にえきかんのりよーとざんだかげんしょーがきろくされている。"
             },
             {
               "id": "d",
@@ -3407,7 +3459,8 @@
                 "en": "Akira wrote that he lent the card to a friend."
               },
               "ttsTextJa": "晃は友人にカードを貸したと日記に書いた。",
-              "audioId": "L2-048-q1-d"
+              "audioId": "L2-048-q1-d",
+              "readingJa": "あきらわゆーじんにかーどをかしたとにっきにかいた。"
             },
             {
               "id": "e",
@@ -3417,7 +3470,8 @@
                 "en": "A staff member entered the transit record manually."
               },
               "ttsTextJa": "交通カードの記録は係員が手で入力した。",
-              "audioId": "L2-048-q1-e"
+              "audioId": "L2-048-q1-e",
+              "readingJa": "こーつーかーどのきろくわかかりいんがてでにゅーりょくした。"
             }
           ],
           "correctOptionIds": [
@@ -3477,7 +3531,8 @@
                 "en": "Akira definitely lied intentionally."
               },
               "ttsTextJa": "晃は必ず意図的にうそを書いた。",
-              "audioId": "L2-048-q2-a"
+              "audioId": "L2-048-q2-a",
+              "readingJa": "あきらわかならずいとてきにうそをかいた。"
             },
             {
               "id": "b",
@@ -3487,7 +3542,8 @@
                 "en": "The transit company stole the balance."
               },
               "ttsTextJa": "交通カード会社が残高を盗んだ。",
-              "audioId": "L2-048-q2-b"
+              "audioId": "L2-048-q2-b",
+              "readingJa": "こーつーかーどがいしゃがざんだかをぬすんだ。"
             },
             {
               "id": "c",
@@ -3497,7 +3553,8 @@
                 "en": "At least part of the diary account conflicts with the objective record."
               },
               "ttsTextJa": "日記の記述は、少なくとも一部が客観的記録と一致していない。",
-              "audioId": "L2-048-q2-c"
+              "audioId": "L2-048-q2-c",
+              "readingJa": "にっきのきじゅつわ、すくなくともいちぶがきゃっかんてききろくといっちしていない。"
             },
             {
               "id": "d",
@@ -3507,7 +3564,8 @@
                 "en": "Akira bought a book in Kawaminami at 3:14 p.m."
               },
               "ttsTextJa": "晃は午後三時十四分に川南で本を買った。",
-              "audioId": "L2-048-q2-d"
+              "audioId": "L2-048-q2-d",
+              "readingJa": "あきらわごごさんじじゅーよんぷんにかわみなみでほんをかった。"
             }
           ],
           "correctOptionIds": [
@@ -3561,13 +3619,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "e24e5ad69cceffa1248659b8e38bbc023e6b9d2b3b5c543f50110bc3853cc2e5"
+      "contentHash": "ce5d87b780f9dbe02dc9a1c2fa9d227c36530caffe8c71d2c59acd9cc30a9acb"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-049",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 49,
       "jlptTarget": "N2",
@@ -3591,14 +3649,15 @@
         "en": "At game start, an error dialog blocks interaction. Closing it as instructed removes the failure screen and launches a concealed tutorial."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-049.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "閉じると始まるの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“关闭之后才开始”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Close to Begin\"."
+        },
+        "sha256": "c70a1a1202a6d95cf0e3988f921891e3f84437efc42179064ba7ea171e1e7a3d"
       },
       "cast": [
         {
@@ -3874,7 +3933,8 @@
                 "en": "To report that the game data was completely corrupted."
               },
               "ttsTextJa": "ゲームデータの完全な破損を知らせること。",
-              "audioId": "L2-049-q1-a"
+              "audioId": "L2-049-q1-a",
+              "readingJa": "げーむでーたのかんぜんなはそんをしらせること。"
             },
             {
               "id": "b",
@@ -3884,7 +3944,8 @@
                 "en": "Permanently lock the user out of normal mode and never let it start again."
               },
               "ttsTextJa": "利用者を通常モードから今後ずっと締め出し、二度と再開させないこと。",
-              "audioId": "L2-049-q1-b"
+              "audioId": "L2-049-q1-b",
+              "readingJa": "りよーしゃをつーじょーもーどからこんごずっとしめだし、にどとさいかいさせないこと。"
             },
             {
               "id": "c",
@@ -3894,7 +3955,8 @@
                 "en": "To redirect the user to an external website."
               },
               "ttsTextJa": "外部サイトへ移動させること。",
-              "audioId": "L2-049-q1-c"
+              "audioId": "L2-049-q1-c",
+              "readingJa": "がいぶさいとえいどーさせること。"
             },
             {
               "id": "d",
@@ -3904,7 +3966,8 @@
                 "en": "To use closing the window as a gateway into movement practice."
               },
               "ttsTextJa": "閉じる操作を入口にして、移動操作の練習へ導くこと。",
-              "audioId": "L2-049-q1-d"
+              "audioId": "L2-049-q1-d",
+              "readingJa": "とじるそーさをいりぐちにして、いどーそーさのれんしゅーえみちびくこと。"
             }
           ],
           "correctOptionIds": [
@@ -3959,13 +4022,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "440a834ba60724fe6c9474151129621b61c30d7f5de5a2ee3b384945c80acecd"
+      "contentHash": "fce5752828dc960ff7e9a72d59b63ee99018bb1f2666973a212174e7b313cbd1"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-050",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 50,
       "jlptTarget": "N2",
@@ -3991,12 +4054,13 @@
       "illustration": {
         "enabled": true,
         "src": "assets/stages/l2-050.webp",
-        "style": "crayon",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "夜のラジオ局で、古い葉書を手にしたDJと、窓辺で放送を聞く匿名の人物を描く彩色クレヨン画。",
-          "zh": "彩色蜡笔画：夜间电台里 DJ 拿着旧明信片，远处匿名听众在窗边收听。",
-          "en": "A colorful crayon scene of a night-radio DJ holding an old postcard while an anonymous listener tunes in by a window."
-        }
+          "ja": "今年だけの愛称の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“只在今年出现的昵称”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Nickname Used This Year\"."
+        },
+        "sha256": "fc0fea0a25c78f5518c6b3b0b71740ba27493aa00ec2cb991e898d0d2a8cef42"
       },
       "cast": [
         {
@@ -4254,7 +4318,8 @@
                 "en": "They first became aware of each other today."
               },
               "ttsTextJa": "二人は今日初めて互いの存在を知った。",
-              "audioId": "L2-050-q1-a"
+              "audioId": "L2-050-q1-a",
+              "readingJa": "ふたりわきょーはじめてたがいのそんざいをしった。"
             },
             {
               "id": "b",
@@ -4264,7 +4329,8 @@
                 "en": "The DJ calls every sender “Mina.”"
               },
               "ttsTextJa": "DJはすべての投稿者を「ミナ」と呼んでいる。",
-              "audioId": "L2-050-q1-b"
+              "audioId": "L2-050-q1-b",
+              "readingJa": "でぃーじぇーわすべてのとーこーしゃを「みな」とよんでいる。"
             },
             {
               "id": "c",
@@ -4274,7 +4340,8 @@
                 "en": "They may share a past and be testing whether they can reconnect without using real names."
               },
               "ttsTextJa": "二人は過去を共有し、実名を出さずに再びつながれるか確かめている可能性がある。",
-              "audioId": "L2-050-q1-c"
+              "audioId": "L2-050-q1-c",
+              "readingJa": "ふたりわかこをきょーゆーし、じつめーをださずにふたたびつながれるかたしかめているかのうせいがある。"
             },
             {
               "id": "d",
@@ -4284,7 +4351,8 @@
                 "en": "The sender is a staff member who writes the script every year."
               },
               "ttsTextJa": "投稿者は番組スタッフとして毎年台本を書いている。",
-              "audioId": "L2-050-q1-d"
+              "audioId": "L2-050-q1-d",
+              "readingJa": "とーこーしゃわばんぐみすたっふとしてまいとしだいほんをかいている。"
             }
           ],
           "correctOptionIds": [
@@ -4345,7 +4413,8 @@
                 "en": "A note with the same date, song, and handwriting recurs every year."
               },
               "ttsTextJa": "同じ日、同じ曲、同じ筆跡の便りが毎年続いている。",
-              "audioId": "L2-050-q2-a"
+              "audioId": "L2-050-q2-a",
+              "readingJa": "おなじひ、おなじきょく、おなじひっせきのたよりがまいとしつずいている。"
             },
             {
               "id": "b",
@@ -4355,7 +4424,8 @@
                 "en": "The sender announces a real name on national radio."
               },
               "ttsTextJa": "投稿者が実名を全国放送で読み上げた。",
-              "audioId": "L2-050-q2-b"
+              "audioId": "L2-050-q2-b",
+              "readingJa": "とーこーしゃがじつめーをぜんこくほーそーでよみあげた。"
             },
             {
               "id": "c",
@@ -4365,7 +4435,8 @@
                 "en": "Only this year the DJ uses an old nickname, and the sender thinks of a single person who would know it."
               },
               "ttsTextJa": "DJが今年だけ昔の愛称で呼び、投稿者は知る人を一人だけ思い浮かべた。",
-              "audioId": "L2-050-q2-c"
+              "audioId": "L2-050-q2-c",
+              "readingJa": "でぃーじぇーがことしだけむかしのあいしょーでよび、とーこーしゃわしるひとをひとりだけおもいうかべた。"
             },
             {
               "id": "d",
@@ -4375,7 +4446,8 @@
                 "en": "The DJ orders a reply by telephone."
               },
               "ttsTextJa": "DJが返事を必ず電話でするよう命じた。",
-              "audioId": "L2-050-q2-d"
+              "audioId": "L2-050-q2-d",
+              "readingJa": "でぃーじぇーがへんじをかならずでんわでするよーめーじた。"
             },
             {
               "id": "e",
@@ -4385,7 +4457,8 @@
                 "en": "The text explicitly says they work at the same station."
               },
               "ttsTextJa": "二人が同じ放送局で働いていると明言された。",
-              "audioId": "L2-050-q2-e"
+              "audioId": "L2-050-q2-e",
+              "readingJa": "ふたりがおなじほーそーきょくではたらいているとめーげんされた。"
             }
           ],
           "correctOptionIds": [
@@ -4440,7 +4513,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "b1bc832dd85b64cd69ff449027305bc01e0604d2aa91368cd34ac1c4e4c69492"
+      "contentHash": "eaa115635b8e3c788ee67f49afcbbd09c71e621a6bc24d9ef41a9eaed72162de"
     }
   ]
 }

@@ -175,6 +175,16 @@ export function validateManifest({
   if (manifest?.generator?.executionProvider !== "CPUExecutionProvider") {
     errors.push("generator executionProvider must remain CPUExecutionProvider");
   }
+  if (manifest?.generator?.pipelineVersion !== "kokoro-ja-mp3-v4") {
+    errors.push("generator pipelineVersion must be kokoro-ja-mp3-v4");
+  }
+  const modelFilesManifest = readJson(path.join(toolRoot, "scripts", "tts", "model-files.sha256.json"));
+  if (canonicalJson(manifest?.generator?.files) !== canonicalJson(modelFilesManifest.files)) {
+    errors.push("generator files do not match the published model-file manifest");
+  }
+  if (canonicalJson(manifest?.generator?.runtime) !== canonicalJson(modelFilesManifest.runtime)) {
+    errors.push("generator runtime does not match the published runtime manifest");
+  }
   const expectedOutput = {
     format: "mp3",
     sampleRate: 24000,
@@ -216,6 +226,14 @@ export function validateManifest({
     if (!Number.isInteger(item.level) || item.level < 1 || item.level > 5) errors.push(`${prefix}: invalid level`);
     if (!/^[a-f0-9]{64}$/.test(item.contentHash || "")) errors.push(`${prefix}: invalid contentHash`);
     if (!/^[a-f0-9]{64}$/.test(item.sha256 || "")) errors.push(`${prefix}: invalid sha256`);
+    if (item.type === "scene") {
+      if ("readingSha256" in item || "phonemeSha256" in item) {
+        errors.push(`${prefix}: scene items must not claim a single reading or phoneme hash`);
+      }
+    } else {
+      if (!/^[a-f0-9]{64}$/.test(item.readingSha256 || "")) errors.push(`${prefix}: invalid readingSha256`);
+      if (!/^[a-f0-9]{64}$/.test(item.phonemeSha256 || "")) errors.push(`${prefix}: invalid phonemeSha256`);
+    }
     if (item.codec !== "mp3") errors.push(`${prefix}: codec must be mp3`);
     if (item.sampleRate !== 24000) errors.push(`${prefix}: sampleRate must be 24000`);
     if (item.channels !== 1) errors.push(`${prefix}: channels must be 1`);

@@ -23,7 +23,7 @@ test("one audio element handles scene, sentence, token, option, seek, and stop",
   const player = new AudioPlayer(FakeAudio);
   player.manifest = {
     schemaVersion: 1,
-    contentVersion: "1.0.1",
+    contentVersion: "1.0.2",
     items: {
       scene: { path: "level-1/L1-001/scene.mp3", durationSeconds: 12 },
       token: { path: "level-1/L1-001/words/token.mp3" },
@@ -66,7 +66,7 @@ test("one audio element handles scene, sentence, token, option, seek, and stop",
 
 test("manifest audioBaseUrl is normalized and traversal remains blocked", async () => {
   const player = new AudioPlayer(FakeAudio);
-  const manifest = { schemaVersion: 1, contentVersion: "1.0.1", audioBaseUrl: "https://cdn.example.test/jp-audio", items: {}, stages: {} };
+  const manifest = { schemaVersion: 1, contentVersion: "1.0.2", audioBaseUrl: "https://cdn.example.test/jp-audio", items: {}, stages: {} };
   await player.loadManifest(async () => ({ ok: true, json: async () => manifest }));
   assert.equal(player.audioRoot.href, "https://cdn.example.test/jp-audio/");
   player.manifest.items.bad = { path: "../secret.mp3" };
@@ -75,7 +75,7 @@ test("manifest audioBaseUrl is normalized and traversal remains blocked", async 
 
 test("unsafe or missing audio paths fail closed", async () => {
   const player = new AudioPlayer(FakeAudio);
-  player.manifest = { schemaVersion: 1, contentVersion: "1.0.1", items: { bad: { path: "../secret.mp3" } }, stages: {} };
+  player.manifest = { schemaVersion: 1, contentVersion: "1.0.2", items: { bad: { path: "../secret.mp3" } }, stages: {} };
   await assert.rejects(() => player.playItem("bad"), /missing/i);
   await assert.rejects(() => player.playItem("none"), /missing/i);
 });
@@ -84,7 +84,7 @@ test("validated content hashes bust cached audio without weakening the path guar
   const player = new AudioPlayer(FakeAudio);
   player.manifest = {
     schemaVersion: 1,
-    contentVersion: "1.0.1",
+    contentVersion: "1.0.2",
     items: {
       fresh: { path: "level-1/L1-001/scene.mp3", contentHash: "a".repeat(64) },
       legacy: { path: "level-1/L1-001/line.mp3", contentHash: "not-a-hash?x=1" }
@@ -108,7 +108,7 @@ test("a newer playback request cancels an older metadata wait", async () => {
   const player = new AudioPlayer(DeferredAudio);
   player.manifest = {
     schemaVersion: 1,
-    contentVersion: "1.0.1",
+    contentVersion: "1.0.2",
     items: {
       first: { path: "level-1/L1-001/first.mp3" },
       second: { path: "level-1/L1-001/second.mp3" }
@@ -140,7 +140,7 @@ test("a newly loaded source resumes when the activation play settles paused", as
   const player = new AudioPlayer(SettlingAudio);
   player.manifest = {
     schemaVersion: 1,
-    contentVersion: "1.0.1",
+    contentVersion: "1.0.2",
     items: { option: { path: "level-1/L1-001/options/q1-a.mp3" } },
     stages: {}
   };
@@ -162,7 +162,7 @@ test("a failed source is invalidated so the same item can be retried", async () 
   const player = new AudioPlayer(MetadataFailureAudio);
   player.manifest = {
     schemaVersion: 1,
-    contentVersion: "1.0.1",
+    contentVersion: "1.0.2",
     items: { scene: { path: "level-1/L1-001/scene.mp3" } },
     stages: { "L1-001": { sceneAudioId: "scene", cues: [] } }
   };
@@ -183,7 +183,7 @@ test("natural and clipped endings expose a stopped transport state", async () =>
   const player = new AudioPlayer(FakeAudio);
   player.manifest = {
     schemaVersion: 1,
-    contentVersion: "1.0.1",
+    contentVersion: "1.0.2",
     items: { scene: { path: "level-1/L1-001/scene.mp3" } },
     stages: { "L1-001": { sceneAudioId: "scene", cues: [{ lineId: "line-001", start: 1, end: 2 }] } }
   };
@@ -204,7 +204,7 @@ test("a stale ended event at the start of a new source cannot complete the scene
   const player = new AudioPlayer(FakeAudio);
   player.manifest = {
     schemaVersion: 1,
-    contentVersion: "1.0.1",
+    contentVersion: "1.0.2",
     items: { scene: { path: "level-1/L1-001/scene.mp3" } },
     stages: { "L1-001": { sceneAudioId: "scene", cues: [] } }
   };
@@ -231,7 +231,7 @@ test("an asynchronous native pause cannot overwrite a clipped segment's stopped 
   const player = new AudioPlayer(AsyncPauseAudio);
   player.manifest = {
     schemaVersion: 1,
-    contentVersion: "1.0.1",
+    contentVersion: "1.0.2",
     items: { scene: { path: "level-1/L1-001/scene.mp3" } },
     stages: { "L1-001": { sceneAudioId: "scene", cues: [{ lineId: "line-001", start: 1, end: 2 }] } }
   };

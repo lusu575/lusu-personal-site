@@ -1,72 +1,72 @@
 {
   "stageId": "L3-034",
   "sampleRate": 24000,
-  "duration": 45.4845,
+  "duration": 42.907042,
   "cues": [
     {
       "lineId": "line-001",
       "audioId": "L3-034-line-001",
       "start": 0.06,
-      "end": 5.591792
+      "end": 5.644333
     },
     {
       "lineId": "line-002",
       "audioId": "L3-034-line-002",
-      "start": 6.091792,
-      "end": 9.993292
+      "start": 6.144333,
+      "end": 9.597625
     },
     {
       "lineId": "line-003",
       "audioId": "L3-034-line-003",
-      "start": 10.493292,
-      "end": 15.102125
+      "start": 10.097625,
+      "end": 14.305708
     },
     {
       "lineId": "line-004",
       "audioId": "L3-034-line-004",
-      "start": 15.602125,
-      "end": 18.629208
+      "start": 14.805708,
+      "end": 17.607125
     },
     {
       "lineId": "line-005",
       "audioId": "L3-034-line-005",
-      "start": 19.129208,
-      "end": 21.14025
+      "start": 18.107125,
+      "end": 20.134333
     },
     {
       "lineId": "line-006",
       "audioId": "L3-034-line-006",
-      "start": 21.64025,
-      "end": 25.649875
+      "start": 20.634333,
+      "end": 23.980292
     },
     {
       "lineId": "line-007",
       "audioId": "L3-034-line-007",
-      "start": 26.149875,
-      "end": 30.904542
+      "start": 24.480292,
+      "end": 29.04575
     },
     {
       "lineId": "line-008",
       "audioId": "L3-034-line-008",
-      "start": 31.404542,
-      "end": 34.260417
+      "start": 29.54575,
+      "end": 31.946792
     },
     {
       "lineId": "line-009",
       "audioId": "L3-034-line-009",
-      "start": 34.760417,
-      "end": 40.054042
+      "start": 32.446792,
+      "end": 37.678542
     },
     {
       "lineId": "line-010",
       "audioId": "L3-034-line-010",
-      "start": 40.554042,
-      "end": 45.3845
+      "start": 38.178542,
+      "end": 42.807042
     }
   ],
   "schemaVersion": 1,
   "timelineId": "L3-034-timeline",
   "sceneAudioId": "L3-034-scene",
-  "contentHash": "63f5dd6eb049bf20959102f85c20e535f69c06d9341d18b1d756ec33431104a2",
-  "sourceContentHash": "bbcc67f12e2b9398390e3c3a5ea1ce33bf83698e192d105c31be5fd1414f5cac"
+  "contentHash": "da547fee5262e1aaea2bc0fb2c433f8004a30ab86bf60b273816e346b35d3f71",
+  "sourceContentHash": "ccd451fd247b85ae33976c0b2499a6e5e4e54b10d763e9e30e01b56de036493f"
 }

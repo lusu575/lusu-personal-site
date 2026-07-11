@@ -3,14 +3,15 @@
 ## 2026-07-11 六项移动 Dock 尺寸与桌面选中态
 - 六项移动 Dock 使用 340px 最大宽度、48px 单项触控宽度和更清晰的 34px 图标（Home 为 39px），不再保留八项时期的整栏长度；桌面任务栏选中态在导航请求开始时同步，页面转场结束后再次校准。
 
-## 2026-07-11 日本語の裏側 1.0.1
+## 2026-07-11 日本語の裏側 1.0.2
 
-- `/tools/japanese-subtext/` 是独立日语潜台词训练器，当前版本 `1.0.1`；标题随界面语言显示为中文“日语的言外之意”、English “Behind the Japanese”、日本語“日本語の裏側”。模块复用一套数据驱动渲染器，题库是 `contentVersion` 管理的分批 JSON，不为单关创建 HTML，也不把 250 关内联到主站 `js/main.js`。
+- `/tools/japanese-subtext/` 是独立日语潜台词训练器，当前版本 `1.0.2`；标题随界面语言显示为中文“日语的言外之意”、English “Behind the Japanese”、日本語“日本語の裏側”。模块复用一套数据驱动渲染器，题库是 `contentVersion` 管理的分批 JSON，不为单关创建 HTML，也不把 250 关内联到主站 `js/main.js`。
 - 正式题库固定为 5×50 关：LEVEL 1=N3、LEVEL 2=N2、LEVEL 3–5=N1 / N1 高阶。每级前 5–10 关相对短，后续递增；每关都包含完整场景、问题、三语选项、答案、证据行和不作绝对化断言的语用解析。
 - 内容展示、选项语言和音频设置彼此独立。正文支持纯听 / 日语 / 双语，选项支持 ja / zh / en；首次模式选择只出现一次，进入关卡不自动播放。播放器只保留一个音频实例，公开控件为播放/暂停、任意 seek 和倍速，句子/词块/选项文本本身可点击播放；离开关卡或页面隐藏时必须停止旧音频，播放高亮不得强制滚动页面。
-- 音频只在题库审校并锁定后用本机隔离的 Kokoro-82M v1.0 + kokoro-onnx CPU 适配器预生成。生成任务优先使用人工审校的句子/词块读音，其他日语表记先由 PyOpenJTalk 转成明确假名，再进入 G2P 和模型；“今日”等已知边界另有读音覆盖。公开仓库不包含模型权重、本机绝对路径、实际 TTS 配置或参考声线；本机模型不注册服务、不随系统启动，批处理结束后保持关闭。静态题库通过稳定 ID 与 `audio/manifest.json`、关卡时间轴关联，并保留统一 `audioBaseUrl` 以便未来迁移 R2；每关 `sourceContentHash`、逐句 cue 顺序、CPU provider、输出参数和发音表语义 SHA-256 都是发布门槛，正式校验还必须覆盖全部音频的 ffprobe、SHA-256、孤儿文件与静音检测。日语声线的 Apache-2.0 / CC BY 3.0 来源与署名固定记录在 `NOTICE-japanese-voices.md`，设置面板提供三语许可入口。
-- 插图存入本工具资产目录，只使用彩色儿童蜡笔或抽象 Q 版四格；不接受黑白线稿、来源不明图片、受版权保护角色或写实人物。图片必须压缩、懒加载、保持宽高比并适配五个固定验收视口。
-- 未登录进度保存在版本化本地存档；登录后通过独立 D1 表 `japanese_subtext_profiles` / `japanese_subtext_stage_progress` 和 GET/PUT `/api/tools/japanese-subtext/progress` 合并。服务端从 HttpOnly 会话取用户 ID，并校验 payload、关卡、解锁链、成绩和奖章；不得复用游戏存档表。跨设备合并必须保留已通关记录的 `firstClearMode`，较新的失败尝试不得生成 `cleared=true` 但首次通关模式为空的非法状态。
+- 音频只在题库审校并锁定后用本机隔离的 Kokoro-82M v1.0 + kokoro-onnx CPU 适配器预生成。句子、选项和词块必须先保存可审校假名，再进入 G2P；v4 适配器剥离 Misaki 音高半段，完整按官方顺序映射 P2R（原始 `j → y` 必须早于 `ʥ → j`），拒绝未知或超过 510 个的音素，避免句尾额外“いい”、“きょう”退化为“おう”及“や／ゆ／よ”偏成“じゃ／じゅ／じょ”。公开仓库不包含模型权重、本机绝对路径、实际 TTS 配置或参考声线；模型不注册服务、不随系统启动，批处理结束后保持关闭。静态题库通过稳定 ID 与 `audio/manifest.json`、关卡时间轴关联；每关 `sourceContentHash`、cue 顺序、reading/phoneme SHA-256、实际 CPU provider、模型与运行时 provenance、输出参数和发音表语义 SHA-256 都是发布门槛，正式校验还必须覆盖全量音素复算、ffprobe、文件 SHA-256、孤儿文件与静音检测。
+- 每关使用一张与 setting、台词、题问、人物关系和关键道具映射的原创黑白四格漫画，保持统一线条、网点、分镜边框与 4:3 画幅；不接受来源不明图片、受版权保护角色或写实人物。图片必须由 `assets/stages/manifest.json` 锁定 SHA-256、960×720 尺寸、生成器版本和审查状态，并压缩、懒加载、适配固定验收视口。imagegen/image2 暂时网络不可用时，只能使用可复现的本地原创分镜生成器作为明确标注的 fallback，不能宣称为 AI 逐张绘制。
+- 未登录进度保存在版本化本地存档；登录后通过独立 D1 表 `japanese_subtext_profiles` / `japanese_subtext_stage_progress` / `japanese_subtext_daily_activity` 和 GET/PUT `/api/tools/japanese-subtext/progress` 合并。日活动按用户本地日期与关卡稳定 ID 幂等记录，用于月历打卡、当前连续、最长连续和最近活动。服务端从 HttpOnly 会话取用户 ID，并校验 payload、关卡、解锁链、成绩和奖章；不得复用游戏存档表。跨设备合并必须保留已通关记录的 `firstClearMode`，较新的失败尝试不得生成 `cleared=true` 但首次通关模式为空的非法状态。
+- 1.0.2 的桌面工具壳复用游戏区视觉结构：左上角返回个人站、右上角工具名称，中间突出存档同步；关卡区减少整屏最小高度与无效留白，解析页必须提供下一关入口。资源区 CTA 使用“开始”，非输入型标题、按钮和卡片文案默认不可选中。
 - 面向用户的解析不得显示 `line-002` 等内部 ID；中文 UI 与日文题目必须分别使用简体中文和日文字体栈。发布门槛是题库与真实音频验证、自动测试、五视口 UI 回归、主站回归和文档/Skill/缓存/三语更新记录全部通过。工具说明见 `tools/japanese-subtext/README.md`，版本与维护规则见 `tools/japanese-subtext/MAINTENANCE.md`；每次公开更新固定增加 `0.0.1`。
 
 ## 2026-07-06 暗色前端加密密码房

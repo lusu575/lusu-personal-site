@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.1",
+  "contentVersion": "1.0.2",
   "level": 1,
   "batch": "001-010",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-001",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 1,
       "jlptTarget": "N3",
@@ -31,14 +31,15 @@
         "en": "In a hallway before lunch, Misaki invites Ryo to a new restaurant, and he answers while checking the time."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-001.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "昼休みの誘いの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“午休邀约”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"A Lunch Invitation\"."
+        },
+        "sha256": "304a5f054f93438aeb1136f3308ca1246bdc0316e34923e2d461f3cd20b668b9"
       },
       "cast": [
         {
@@ -179,7 +180,8 @@
                 "en": "He is gently declining lunch for today."
               },
               "ttsTextJa": "今日は一緒に昼食へ行けないと、やわらかく断っている。",
-              "audioId": "L1-001-q1-a"
+              "audioId": "L1-001-q1-a",
+              "readingJa": "きょーわいっしょにちゅーしょくえいけないと、やわらかくことわっている。"
             },
             {
               "id": "b",
@@ -189,7 +191,8 @@
                 "en": "He is asking for detailed directions to the new restaurant."
               },
               "ttsTextJa": "新しい店の場所を詳しく聞いている。",
-              "audioId": "L1-001-q1-b"
+              "audioId": "L1-001-q1-b",
+              "readingJa": "あたらしいみせのばしょをくわしくきいている。"
             },
             {
               "id": "c",
@@ -199,7 +202,8 @@
                 "en": "He is checking when lunch break begins."
               },
               "ttsTextJa": "昼休みが始まる時刻を確認している。",
-              "audioId": "L1-001-q1-c"
+              "audioId": "L1-001-q1-c",
+              "readingJa": "ひるやすみがはじまるじこくをかくにんしている。"
             },
             {
               "id": "d",
@@ -209,7 +213,8 @@
                 "en": "He is asking her to invite several other friends as well."
               },
               "ttsTextJa": "ほかの友達も何人か一緒に誘ってほしいと頼んでいる。",
-              "audioId": "L1-001-q1-d"
+              "audioId": "L1-001-q1-d",
+              "readingJa": "ほかのともだちもなんにんかいっしょにさそってほしいとたのんでいる。"
             }
           ],
           "correctOptionIds": [
@@ -258,13 +263,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "f4e97a9b8ad95203d2bfdde2c79189f06d6a176cf010d3d240d57777d5b8714e"
+      "contentHash": "0a4426612f34d0f4acff2777138f19abd25195b3498b6d50c27813b1d3ae544f"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-002",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 2,
       "jlptTarget": "N3",
@@ -287,14 +292,15 @@
         "en": "In a school study room at lunch, Haru notices an empty chair and asks Aoi beside it."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-002.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "鞄のある空席の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“放着书包的空座”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Seat with a Bag\"."
+        },
+        "sha256": "152aac7b6722e6e0ed7f91347f4c2a46e78d0ebcc468151291d565a61a350350"
       },
       "cast": [
         {
@@ -402,7 +408,8 @@
                 "en": "She wants help finding the bag's owner."
               },
               "ttsTextJa": "鞄の持ち主を一緒に探してほしい。",
-              "audioId": "L1-002-q1-a"
+              "audioId": "L1-002-q1-a",
+              "readingJa": "かばんのもちぬしをいっしょにさがしてほしい。"
             },
             {
               "id": "b",
@@ -412,7 +419,8 @@
                 "en": "The seat may be used freely until the friend returns."
               },
               "ttsTextJa": "友達が戻るまでの間なら、その席を自由に使ってもよい。",
-              "audioId": "L1-002-q1-b"
+              "audioId": "L1-002-q1-b",
+              "readingJa": "ともだちがもどるまでのあいだなら、そのせきをじゆーにつかってもよい。"
             },
             {
               "id": "c",
@@ -422,7 +430,8 @@
                 "en": "Her friend will leave soon, so the seat will become free."
               },
               "ttsTextJa": "友達はすぐ帰るので、席が空く予定だ。",
-              "audioId": "L1-002-q1-c"
+              "audioId": "L1-002-q1-c",
+              "readingJa": "ともだちわすぐかえるので、せきがすくよてーだ。"
             },
             {
               "id": "d",
@@ -432,7 +441,8 @@
                 "en": "The seat is being saved for her friend and is not available now."
               },
               "ttsTextJa": "その席は友達のために取ってあるので、今は使えない。",
-              "audioId": "L1-002-q1-d"
+              "audioId": "L1-002-q1-d",
+              "readingJa": "そのせきわともだちのためにとってあるので、いまわつかえない。"
             }
           ],
           "correctOptionIds": [
@@ -481,13 +491,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "e61fb583986c51fa5052f10cb1c8fa02b98528122a2e7a9fe19acea75691c299"
+      "contentHash": "57906d6bab8f9b0b07d26b36947517747cc6cc6dc88e48dbc3f0bb934e6b4e73"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-003",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 3,
       "jlptTarget": "N3",
@@ -510,14 +520,15 @@
         "en": "At a convenience store in the evening, Kenta is paying for a bento he plans to eat nearby."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-003.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "そのままでの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“就这样拿走”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"As It Is\"."
+        },
+        "sha256": "9c7866ec53f0b0217a9d7b77f7c11186e1f3eb2efe7f425e1b6404077f44a0c7"
       },
       "cast": [
         {
@@ -646,7 +657,8 @@
                 "en": "The bento does not need heating."
               },
               "ttsTextJa": "弁当を温めなくてよい。",
-              "audioId": "L1-003-q1-a"
+              "audioId": "L1-003-q1-a",
+              "readingJa": "べんとーをあたためなくてよい。"
             },
             {
               "id": "b",
@@ -656,7 +668,8 @@
                 "en": "He does not need chopsticks."
               },
               "ttsTextJa": "箸を付けなくてよい。",
-              "audioId": "L1-003-q1-b"
+              "audioId": "L1-003-q1-b",
+              "readingJa": "はしをつけなくてよい。"
             },
             {
               "id": "c",
@@ -666,7 +679,8 @@
                 "en": "He wants it handed over without a bag."
               },
               "ttsTextJa": "袋に入れず、そのまま渡してほしい。",
-              "audioId": "L1-003-q1-c"
+              "audioId": "L1-003-q1-c",
+              "readingJa": "ふくろにいれず、そのままわたしてほしい。"
             },
             {
               "id": "d",
@@ -676,7 +690,8 @@
                 "en": "He wants the same bento rather than a replacement."
               },
               "ttsTextJa": "別の弁当に替えず、同じ商品がほしい。",
-              "audioId": "L1-003-q1-d"
+              "audioId": "L1-003-q1-d",
+              "readingJa": "べつのべんとーにかえず、おなじしょーひんがほしい。"
             }
           ],
           "correctOptionIds": [
@@ -725,13 +740,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "096effe7d62a5d8cac9de6d1d4eb7e75d0625b3813a52c7e7c2cbc705fd0f677"
+      "contentHash": "508232b816d8110a044076d6e6d55b0f4014724b3abc2d51e12947662e570802"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-004",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 4,
       "jlptTarget": "N3",
@@ -754,14 +769,15 @@
         "en": "In an afternoon office, Saki rubs her arms by the window and speaks to Ota nearby."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-004.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "窓際のひと言の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“窗边的一句话”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"A Hint by the Window\"."
+        },
+        "sha256": "36a51ebc1bc765d4b44714b0443932205a97326ae3f8f8d5c773b12bb198e736"
       },
       "cast": [
         {
@@ -875,7 +891,8 @@
                 "en": "Move the desk and chair farther away from the window."
               },
               "ttsTextJa": "机と椅子を窓から遠い場所へ運ぶ。",
-              "audioId": "L1-004-q1-a"
+              "audioId": "L1-004-q1-a",
+              "readingJa": "つくえといすをまどからとーいばしょえはこぶ。"
             },
             {
               "id": "b",
@@ -885,7 +902,8 @@
                 "en": "Close the window so the draft stops."
               },
               "ttsTextJa": "風が入らないように窓を閉める。",
-              "audioId": "L1-004-q1-b"
+              "audioId": "L1-004-q1-b",
+              "readingJa": "かぜがはいらないよーにまどをしめる。"
             },
             {
               "id": "c",
@@ -895,7 +913,8 @@
                 "en": "Make the office lighting brighter."
               },
               "ttsTextJa": "部屋の照明を明るくする。",
-              "audioId": "L1-004-q1-c"
+              "audioId": "L1-004-q1-c",
+              "readingJa": "へやのしょーめーをあかるくする。"
             },
             {
               "id": "d",
@@ -905,7 +924,8 @@
                 "en": "Bring her a warm drink."
               },
               "ttsTextJa": "温かい飲み物を持ってくる。",
-              "audioId": "L1-004-q1-d"
+              "audioId": "L1-004-q1-d",
+              "readingJa": "あたたかいのみものをもってくる。"
             }
           ],
           "correctOptionIds": [
@@ -954,13 +974,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "f229c16d2cf26e0ae149dc3a50a5a2f09971cd68b5be72b56adac2d22eae0be0"
+      "contentHash": "669381db8f511f671e2ddf75370c83d0dbbeb83612dd8731d4a2d1c64e2414d7"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-005",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 5,
       "jlptTarget": "N3",
@@ -983,14 +1003,15 @@
         "en": "At a small diner, the owner sees Kaito's empty bowl and offers him seconds."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-005.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "おかわりのお誘いの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“再来一碗的邀请”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"An Offer of Seconds\"."
+        },
+        "sha256": "847e31efd82bf8240cae82edcf0c0616a0b1bb92cebadce7eb5c2334ea1226b0"
       },
       "cast": [
         {
@@ -1137,7 +1158,8 @@
                 "en": "He appreciates the food while politely declining seconds."
               },
               "ttsTextJa": "料理への感謝を伝えながら、おかわりを丁寧に断っている。",
-              "audioId": "L1-005-q1-a"
+              "audioId": "L1-005-q1-a",
+              "readingJa": "りょーりえのかんしゃをつたえながら、おかわりをてーねーにたっている。"
             },
             {
               "id": "b",
@@ -1147,7 +1169,8 @@
                 "en": "He is asking for one more bowl at half the portion size."
               },
               "ttsTextJa": "量を半分にして、もう一杯だけほしいと頼んでいる。",
-              "audioId": "L1-005-q1-b"
+              "audioId": "L1-005-q1-b",
+              "readingJa": "りょーをはんぶんにして、もーいっぱいだけほしいとたのんでいる。"
             },
             {
               "id": "c",
@@ -1157,7 +1180,8 @@
                 "en": "He is strongly complaining that the portion was too large."
               },
               "ttsTextJa": "料理の量が多すぎたと強く不満を伝えている。",
-              "audioId": "L1-005-q1-c"
+              "audioId": "L1-005-q1-c",
+              "readingJa": "りょーりのりょーがおーすぎたとつよくふまんをつたえている。"
             },
             {
               "id": "d",
@@ -1167,7 +1191,8 @@
                 "en": "He avoids commenting on the food and only wants the bill."
               },
               "ttsTextJa": "味の感想を言わず、会計だけを急いでいる。",
-              "audioId": "L1-005-q1-d"
+              "audioId": "L1-005-q1-d",
+              "readingJa": "あじのかんそーをいわず、かいけーだけをいそいでいる。"
             }
           ],
           "correctOptionIds": [
@@ -1216,13 +1241,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "9cedc3be554bca1136fc667f1c506fd8c673e817132ebd8b4412cc02fe576983"
+      "contentHash": "67ef6a9255e7d8d910e73ad2a37f00846f20c26e465f9fe36552cac2aae15316"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-006",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 6,
       "jlptTarget": "N3",
@@ -1245,14 +1270,15 @@
         "en": "In a passage toward the platform, Yuki starts running after seeing the departure board, while Naoto checks the next train."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-006.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "次の電車でもの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“下一班也来得及”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Next Train Is Fine\"."
+        },
+        "sha256": "8bbdab30aaff0ae0dff931520c706829a42054de1fba9942e29ca2e21d1185b5"
       },
       "cast": [
         {
@@ -1399,7 +1425,8 @@
                 "en": "He wants to cancel the appointment."
               },
               "ttsTextJa": "約束に行くのをやめたい。",
-              "audioId": "L1-006-q1-a"
+              "audioId": "L1-006-q1-a",
+              "readingJa": "やくそくにいくのをやめたい。"
             },
             {
               "id": "b",
@@ -1409,7 +1436,8 @@
                 "en": "This train has been canceled."
               },
               "ttsTextJa": "この電車は運休になった。",
-              "audioId": "L1-006-q1-b"
+              "audioId": "L1-006-q1-b",
+              "readingJa": "このでんしゃわうんきゅーになった。"
             },
             {
               "id": "c",
@@ -1419,7 +1447,8 @@
                 "en": "He wants Yuki to run faster."
               },
               "ttsTextJa": "もっと速く走ってほしい。",
-              "audioId": "L1-006-q1-c"
+              "audioId": "L1-006-q1-c",
+              "readingJa": "もっとはやくはしってほしい。"
             },
             {
               "id": "d",
@@ -1429,7 +1458,8 @@
                 "en": "The next train will still be on time, so there is no need to rush."
               },
               "ttsTextJa": "次の電車で間に合うので、急がなくてよい。",
-              "audioId": "L1-006-q1-d"
+              "audioId": "L1-006-q1-d",
+              "readingJa": "つぎのでんしゃでまにあうので、いそがなくてよい。"
             }
           ],
           "correctOptionIds": [
@@ -1479,13 +1509,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "15f49ebe812535d96437037b028279faf8f7715dadac0e17a6bcc13671e83c76"
+      "contentHash": "942cec537b37bb823b722b29dceed855397b70e1763fcff12ac31591f750558c"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-007",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 7,
       "jlptTarget": "N3",
@@ -1509,14 +1539,15 @@
         "en": "After an online match at night, Sora asks about another round and tomorrow; Rena goes offline immediately after her final message."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-007.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "「また今度ね」の夜の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“说“下次吧”的夜晚”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"A Night of “Maybe Next Time”\"."
+        },
+        "sha256": "5120531f3214547650f71c7b00f5e260e107e3474e2a4c6e749361dcb2ba61d4"
       },
       "cast": [
         {
@@ -1684,7 +1715,8 @@
                 "en": "They have confirmed a game at the same time tomorrow."
               },
               "ttsTextJa": "明日の同じ時刻に遊ぶ約束が決まった。",
-              "audioId": "L1-007-q1-a"
+              "audioId": "L1-007-q1-a",
+              "readingJa": "あしたのおなじじこくにあそぶやくそくがきまった。"
             },
             {
               "id": "b",
@@ -1694,7 +1726,8 @@
                 "en": "She is very angry with Sora and never wants to play with him again."
               },
               "ttsTextJa": "空に強く腹を立て、今後は二度と遊びたくない。",
-              "audioId": "L1-007-q1-b"
+              "audioId": "L1-007-q1-b",
+              "readingJa": "そらにつよくはらをたて、こんごわにどとあそびたくない。"
             },
             {
               "id": "c",
@@ -1704,7 +1737,8 @@
                 "en": "She is ending today's game and chat without fixing the next date."
               },
               "ttsTextJa": "次の日時は決めず、今日は会話と対戦を終える。",
-              "audioId": "L1-007-q1-c"
+              "audioId": "L1-007-q1-c",
+              "readingJa": "つぎのにちじわきめず、きょーわかいわとたいせんをおえる。"
             },
             {
               "id": "d",
@@ -1714,7 +1748,8 @@
                 "en": "She wants Sora to wait for a game update."
               },
               "ttsTextJa": "ゲームの更新が終わるまで待ってほしい。",
-              "audioId": "L1-007-q1-d"
+              "audioId": "L1-007-q1-d",
+              "readingJa": "げーむのこーしんがおわるまでまってほしい。"
             }
           ],
           "correctOptionIds": [
@@ -1764,13 +1799,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "bad67b4a0f718be4e40a271b94c83e65e77192998205605a3a99d3104a75bbc8"
+      "contentHash": "98869a6bf75e9e6ef17a88fd14f7f3c792972c095996d7f8d719b5fac88edd45"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-008",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 8,
       "jlptTarget": "N3",
@@ -1793,14 +1828,15 @@
         "en": "Before the next co-op battle, the team has only one healer and three players review their equipment and roles."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-008.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "回復役がもう一人の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“再来一个治疗角色”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"One More Healer\"."
+        },
+        "sha256": "9348ba854ba0ae35733143569e0ce21d983ccdd80296e0f4ec798583c9acbfb3"
       },
       "cast": [
         {
@@ -1956,7 +1992,8 @@
                 "en": "He wants Jun to leave the team."
               },
               "ttsTextJa": "純にチームから抜けてほしい。",
-              "audioId": "L1-008-q1-a"
+              "audioId": "L1-008-q1-a",
+              "readingJa": "じゅんにちーむからぬけてほしい。"
             },
             {
               "id": "b",
@@ -1966,7 +2003,8 @@
                 "en": "He wants Aki to keep attacking while also helping with healing."
               },
               "ttsTextJa": "秋に、攻撃役のまま回復も手伝ってほしい。",
-              "audioId": "L1-008-q1-b"
+              "audioId": "L1-008-q1-b",
+              "readingJa": "あきに、こーげきやくのままかいふくもてつだってほしい。"
             },
             {
               "id": "c",
@@ -1976,7 +2014,8 @@
                 "en": "He wants Aki to discard every healing item."
               },
               "ttsTextJa": "秋に回復の道具を全部捨ててほしい。",
-              "audioId": "L1-008-q1-c"
+              "audioId": "L1-008-q1-c",
+              "readingJa": "あきにかいふくのどーぐをぜんぶすててほしい。"
             },
             {
               "id": "d",
@@ -1986,7 +2025,8 @@
                 "en": "He wants to cancel the next battle entirely."
               },
               "ttsTextJa": "次の戦いを完全に中止したい。",
-              "audioId": "L1-008-q1-d"
+              "audioId": "L1-008-q1-d",
+              "readingJa": "つぎのたたかいをかんぜんにちゅーししたい。"
             }
           ],
           "correctOptionIds": [
@@ -2036,13 +2076,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "ee1db359d61b151a068ad90d15a2a1de3744bcb2bedf33fcd31bf194564485ad"
+      "contentHash": "a4f9dbb16c07274ffcb354cc7d1fa89cb158e06e80f57c20b52663221a3df0fe"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-009",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 9,
       "jlptTarget": "N3",
@@ -2065,14 +2105,15 @@
         "en": "In a quiet library reading area, Miki grows loud while discussing a film, and Hina replies in a whisper."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-009.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "よく響く図書館の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“声音容易传开的图书馆”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"A Library Where Sound Carries\"."
+        },
+        "sha256": "79c4f8fae881ee3e6739630ffcc1db077626d6f3a12588699bf0e47f929c3846"
       },
       "cast": [
         {
@@ -2246,7 +2287,8 @@
                 "en": "She wants Miki to lower her voice so others do not hear."
               },
               "ttsTextJa": "周りに聞こえないよう、声を小さくしてほしい。",
-              "audioId": "L1-009-q1-a"
+              "audioId": "L1-009-q1-a",
+              "readingJa": "まわりにきこえないよー、こえをちーさくしてほしい。"
             },
             {
               "id": "b",
@@ -2256,7 +2298,8 @@
                 "en": "She wants to move somewhere with even more echo."
               },
               "ttsTextJa": "もっと響く場所へ移動して話してほしい。",
-              "audioId": "L1-009-q1-b"
+              "audioId": "L1-009-q1-b",
+              "readingJa": "もっとひびくばしょえいどーしてはなしてほしい。"
             },
             {
               "id": "c",
@@ -2266,7 +2309,8 @@
                 "en": "She wants Miki to repeat the film story from the beginning in an even louder voice."
               },
               "ttsTextJa": "映画の話を最初から、もっと大きな声で繰り返してほしい。",
-              "audioId": "L1-009-q1-c"
+              "audioId": "L1-009-q1-c",
+              "readingJa": "えーがのはなしをさいしょから、もっとおーきなこえでくりかえしてほしい。"
             },
             {
               "id": "d",
@@ -2276,7 +2320,8 @@
                 "en": "She wants to leave the library immediately and end the conversation."
               },
               "ttsTextJa": "すぐに図書館を出て、話を終えてほしい。",
-              "audioId": "L1-009-q1-d"
+              "audioId": "L1-009-q1-d",
+              "readingJa": "すぐにとしょかんをでて、はなしをおえてほしい。"
             }
           ],
           "correctOptionIds": [
@@ -2326,13 +2371,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "74605c656058812c152dd408dcfb4ed082ef243b8de5f517bf27d051a6c14682"
+      "contentHash": "df5adce184ac6242db02e5c289d9ec40b134b9c3f0370019d65d7e0c14a4f1e3"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-010",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 10,
       "jlptTarget": "N3",
@@ -2357,12 +2402,13 @@
       "illustration": {
         "enabled": true,
         "src": "assets/stages/l1-010.webp",
-        "style": "crayon",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "朝のパン屋で、店員が焼きたてのパンを示すクレヨン風イラスト。",
-          "zh": "清晨面包店里，店员指向新鲜出炉面包的蜡笔风插图。",
-          "en": "Crayon-style illustration of a clerk pointing to freshly baked bread in a morning bakery."
-        }
+          "ja": "焼きたてまで五分の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“距离新鲜出炉还有五分钟”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Five Minutes Until Fresh\"."
+        },
+        "sha256": "2a95cdac56e4a44898456901f0cedc1352b63ef0e1120487985eb4c735fcc0e6"
       },
       "cast": [
         {
@@ -2521,7 +2567,8 @@
                 "en": "The shelf bread cannot be sold, so the clerk refuses the purchase."
               },
               "ttsTextJa": "棚のパンは売れないので、買うのを断っている。",
-              "audioId": "L1-010-q1-a"
+              "audioId": "L1-010-q1-a",
+              "readingJa": "たなのぱんわうれないので、かうのをたっている。"
             },
             {
               "id": "b",
@@ -2531,7 +2578,8 @@
                 "en": "The clerk orders Yuma to wait outside for five minutes."
               },
               "ttsTextJa": "五分間、店の外へ出るよう命じている。",
-              "audioId": "L1-010-q1-b"
+              "audioId": "L1-010-q1-b",
+              "readingJa": "ごふんかん、みせのそとえでるよーめーじている。"
             },
             {
               "id": "c",
@@ -2541,7 +2589,8 @@
                 "en": "The clerk says all shelf bread is sold out."
               },
               "ttsTextJa": "棚のパンが全部売り切れたと知らせている。",
-              "audioId": "L1-010-q1-c"
+              "audioId": "L1-010-q1-c",
+              "readingJa": "たなのぱんがぜんぶうりきれたとしらせている。"
             },
             {
               "id": "d",
@@ -2551,7 +2600,8 @@
                 "en": "The clerk gives the wait time so Yuma can choose between the current bread and a fresh batch."
               },
               "ttsTextJa": "今のパンか焼きたてかを選べるよう、待ち時間を知らせている。",
-              "audioId": "L1-010-q1-d"
+              "audioId": "L1-010-q1-d",
+              "readingJa": "いまのぱんかやきたてかをえらべるよー、まちじかんをしらせている。"
             }
           ],
           "correctOptionIds": [
@@ -2601,7 +2651,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "5fd4c912120ffdb6b684d25262823e37c7ee735703c7bf2af86d7451da80e7ee"
+      "contentHash": "a195479d6220553e90d8bfc1b153f2403263ea24c262920b39cba871105530d1"
     }
   ]
 }

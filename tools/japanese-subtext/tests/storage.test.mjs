@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
-  defaultProgress, defaultSettings, loadLocalState, mergeProgress, mergeSettings,
+  checkInStats, defaultProgress, defaultSettings, loadLocalState, mergeProgress, mergeSettings,
   recordAttempt, resetLocalState, sanitizeProgress, saveProgress, saveSettings
 } from "../lib/storage.mjs";
 
@@ -31,10 +31,12 @@ test("clearing a stage unlocks the next stage and awards the right medal", () =>
     displayMode: "listening",
     kana: false,
     replayCount: 0,
-    hintCount: 0
+    hintCount: 0,
+    activityDate: "2026-07-11"
   });
   assert.equal(first.stageProgress["L1-001"].medal, "gold");
   assert.ok(first.unlockedStageIds.includes("L1-002"));
+  assert.equal(first.activityDays["2026-07-11"].stages["L1-001"].medal, "gold");
 
   const last = recordAttempt({ ...first, unlockedStageIds: [...first.unlockedStageIds, "L1-050"] }, "L1-050", {
     score: 100,
@@ -44,6 +46,101 @@ test("clearing a stage unlocks the next stage and awards the right medal", () =>
   });
   assert.ok(last.unlockedStageIds.includes("L2-001"));
   assert.equal(last.stageProgress["L1-050"].medal, "bronze");
+});
+
+test("check-in history merges idempotently and calculates calendar streaks", () => {
+  const local = sanitizeProgress({
+    ...defaultProgress(),
+    activityDays: {
+      "2026-07-09": { stages: { "L1-001": { cleared: false, medal: "none", updatedAt: "2026-07-09T02:00:00.000Z" } }, updatedAt: "2026-07-09T02:00:00.000Z" },
+      "2026-07-10": { stages: { "L1-001": { cleared: true, medal: "silver", updatedAt: "2026-07-10T02:00:00.000Z" } }, updatedAt: "2026-07-10T02:00:00.000Z" }
+    }
+  });
+  const cloud = sanitizeProgress({
+    ...defaultProgress(),
+    activityDays: {
+      "2026-07-10": { stages: { "L1-001": { cleared: true, medal: "gold", updatedAt: "2026-07-10T03:00:00.000Z" } }, updatedAt: "2026-07-10T03:00:00.000Z" },
+      "2026-07-11": { stages: { "L1-002": { cleared: false, medal: "none", updatedAt: "2026-07-11T03:00:00.000Z" } }, updatedAt: "2026-07-11T03:00:00.000Z" }
+    }
+  });
+  const merged = mergeProgress(local, cloud);
+  assert.equal(merged.activityDays["2026-07-10"].stages["L1-001"].medal, "gold");
+  assert.equal(Object.keys(merged.activityDays).length, 3);
+  assert.deepEqual(checkInStats(merged, "2026-07-11"), {
+    checkedInToday: true,
+    currentStreak: 3,
+    longestStreak: 3,
+    totalDays: 3
+  });
+  const mergedAgain = mergeProgress(merged, cloud);
+  assert.deepEqual(mergedAgain.activityDays, merged.activityDays);
+});
+
+test("same-day activity from different devices is unioned without losing a clear", () => {
+  const local = sanitizeProgress({
+    ...defaultProgress(),
+    activityDays: {
+      "2026-07-11": { stages: {
+        "L1-001": { cleared: true, medal: "silver", updatedAt: "2026-07-11T01:00:00.000Z" }
+      }, updatedAt: "2026-07-11T01:00:00.000Z" }
+    }
+  });
+  const cloud = sanitizeProgress({
+    ...defaultProgress(),
+    activityDays: {
+      "2026-07-11": { stages: {
+        "L1-001": { cleared: false, medal: "none", updatedAt: "2026-07-11T02:00:00.000Z" },
+        "L1-002": { cleared: false, medal: "none", updatedAt: "2026-07-11T02:00:00.000Z" }
+      }, updatedAt: "2026-07-11T02:00:00.000Z" }
+    }
+  });
+  const merged = mergeProgress(local, cloud);
+  assert.deepEqual(Object.keys(merged.activityDays["2026-07-11"].stages).sort(), ["L1-001", "L1-002"]);
+  assert.equal(merged.activityDays["2026-07-11"].stages["L1-001"].cleared, true);
+  assert.equal(merged.activityDays["2026-07-11"].stages["L1-001"].medal, "silver");
+});
+
+test("oversized activity keeps the newest bounded days", () => {
+  const activityDays = {};
+  for (let offset = 0; offset < 405; offset += 1) {
+    const date = new Date(2025, 0, 1 + offset, 12);
+    const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+    activityDays[key] = {
+      stages: { "L1-001": { cleared: false, medal: "none", updatedAt: date.toISOString() } },
+      updatedAt: date.toISOString()
+    };
+  }
+  const clean = sanitizeProgress({ ...defaultProgress(), activityDays });
+  const keys = Object.keys(clean.activityDays).sort();
+  assert.equal(keys.length, 400);
+  assert.equal(keys[0], "2025-01-06");
+  assert.equal(keys.at(-1), "2026-02-09");
+});
+
+test("legacy 1.0.1 stage timestamps migrate into idempotent check-in days", () => {
+  const legacy = {
+    ...defaultProgress(),
+    stageProgress: {
+      "L1-001": {
+        cleared: true,
+        bestScore: 100,
+        medal: "gold",
+        attempts: 1,
+        updatedAt: "2026-07-09T12:00:00.000Z"
+      },
+      "L1-002": {
+        cleared: false,
+        attempts: 1,
+        updatedAt: "2026-07-10T12:00:00.000Z"
+      }
+    }
+  };
+  delete legacy.activityDays;
+  const migrated = sanitizeProgress(legacy);
+  assert.equal(Object.keys(migrated.activityDays).length, 2);
+  assert.equal(migrated.activityDays["2026-07-09"].stages["L1-001"].medal, "gold");
+  assert.equal(migrated.activityDays["2026-07-10"].stages["L1-002"].cleared, false);
+  assert.deepEqual(sanitizeProgress(migrated).activityDays, migrated.activityDays);
 });
 
 test("cloud merge never loses clears, scores, medals, or unlocks", () => {

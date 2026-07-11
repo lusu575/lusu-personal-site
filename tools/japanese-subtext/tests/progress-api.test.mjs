@@ -41,10 +41,11 @@ function createEmptyD1() {
   };
 }
 
-function createProgressD1({ signedIn = true, profile = null, stages = [] } = {}) {
+function createProgressD1({ signedIn = true, profile = null, stages = [], activities = [] } = {}) {
   const state = {
     profile,
     stages: new Map(stages.map((stage) => [stage.stage_id, stage])),
+    activities: new Map(activities.map((activity) => [`${activity.local_date}|${activity.stage_id}`, activity])),
     writes: []
   };
 
@@ -99,6 +100,21 @@ function createProgressD1({ signedIn = true, profile = null, stages = [] } = {})
           });
           state.writes.push({ table: "stage", params: [...this.params] });
         }
+        if (normalized.startsWith("insert into japanese_subtext_daily_activity")) {
+          const [user_id, local_date, stage_id, cleared, best_medal, activity_updated_at, updated_at] = this.params;
+          const key = `${local_date}|${stage_id}`;
+          const before = state.activities.get(key);
+          state.activities.set(key, {
+            user_id,
+            local_date,
+            stage_id,
+            cleared: Math.max(Number(before?.cleared || 0), Number(cleared)),
+            best_medal: Math.max(Number(before?.best_medal || 0), Number(best_medal)),
+            activity_updated_at: [before?.activity_updated_at || "", activity_updated_at].sort().at(-1),
+            updated_at
+          });
+          state.writes.push({ table: "activity", params: [...this.params] });
+        }
         return { success: true };
       },
       async first() {
@@ -118,6 +134,9 @@ function createProgressD1({ signedIn = true, profile = null, stages = [] } = {})
         }
         if (/from japanese_subtext_stage_progress/i.test(sql)) {
           return { results: [...state.stages.values()] };
+        }
+        if (/from japanese_subtext_daily_activity/i.test(sql)) {
+          return { results: [...state.activities.values()] };
         }
         return { results: [] };
       }
@@ -142,7 +161,7 @@ function validPayload() {
   return {
     progress: {
       schemaVersion: 1,
-      contentVersion: "1.0.1",
+      contentVersion: "1.0.2",
       revision: 2,
       currentLevel: 1,
       currentStage: 2,
@@ -163,11 +182,19 @@ function validPayload() {
           updatedAt: "2026-07-10T17:00:00.000Z"
         }
       },
+      activityDays: {
+        "2026-07-11": {
+          stages: {
+            "L1-001": { cleared: true, medal: "gold", updatedAt: "2026-07-10T17:00:00.000Z" }
+          },
+          updatedAt: "2026-07-10T17:00:00.000Z"
+        }
+      },
       updatedAt: "2026-07-10T17:00:00.000Z"
     },
     settings: {
       schemaVersion: 1,
-      contentVersion: "1.0.1",
+      contentVersion: "1.0.2",
       uiLanguage: "zh",
       displayMode: "japanese",
       optionLanguage: "ja",
@@ -228,10 +255,12 @@ test("PUT progress stores only the authenticated user's normalized state", async
   assert.equal(response.status, 200);
   assert.equal(db.state.profile.user_id, "user-123");
   assert.equal(db.state.stages.get("L1-001").user_id, "user-123");
+  assert.equal(db.state.activities.get("2026-07-11|L1-001").best_medal, 3);
   assert.equal(payload.profile.currentLevel, 1);
   assert.equal(payload.profile.currentStage, 2);
   assert.equal(payload.stages[0].stageId, "L1-001");
   assert.equal(payload.progress.stageProgress["L1-001"].medal, "gold");
+  assert.equal(payload.progress.activityDays["2026-07-11"].stages["L1-001"].medal, "gold");
   assert.equal(payload.settings.uiLanguage, "zh");
   assert.equal(typeof payload.updatedAt, "string");
   assert.equal(payload.user, undefined);
@@ -286,7 +315,7 @@ test("GET progress returns profile, stages, and compatibility state", async () =
     profile: {
       user_id: "user-123",
       schema_version: 1,
-      content_version: "1.0.1",
+      content_version: "1.0.2",
       revision: 4,
       current_level: 1,
       current_stage: 2,
@@ -314,6 +343,15 @@ test("GET progress returns profile, stages, and compatibility state", async () =
       hint_count: 0,
       progress_updated_at: "2026-07-10T17:00:00.000Z",
       updated_at: "2026-07-10T17:00:01.000Z"
+    }],
+    activities: [{
+      user_id: "user-123",
+      local_date: "2026-07-10",
+      stage_id: "L1-001",
+      cleared: 1,
+      best_medal: 3,
+      activity_updated_at: "2026-07-10T17:00:00.000Z",
+      updated_at: "2026-07-10T17:00:02.000Z"
     }]
   });
 
@@ -324,8 +362,9 @@ test("GET progress returns profile, stages, and compatibility state", async () =
   assert.deepEqual(payload.profile.unlockedStageIds, ["L1-001", "L1-002"]);
   assert.equal(payload.stages.length, 1);
   assert.equal(payload.progress.revision, 4);
-  assert.equal(payload.settings.contentVersion, "1.0.1");
-  assert.equal(payload.updatedAt, "2026-07-10T17:00:01.000Z");
+  assert.equal(payload.progress.activityDays["2026-07-10"].stages["L1-001"].medal, "gold");
+  assert.equal(payload.settings.contentVersion, "1.0.2");
+  assert.equal(payload.updatedAt, "2026-07-10T17:00:02.000Z");
 });
 
 test("PUT progress rejects unknown fields and invalid stage IDs", async () => {
@@ -361,7 +400,7 @@ test("PUT progress enforces the request byte limit before schema parsing", async
   const db = createProgressD1();
   const response = await withoutExpectedApiErrorLog(() => apiRequest(db, {
     method: "PUT",
-    body: JSON.stringify({ padding: "x".repeat(300 * 1024) })
+    body: JSON.stringify({ padding: "x".repeat(1100 * 1024) })
   }));
 
   assert.equal(response.status, 413);

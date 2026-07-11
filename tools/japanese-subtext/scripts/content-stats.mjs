@@ -33,9 +33,7 @@ const result = {
   skills: count(stages.flatMap((stage) => stage.skills), (value) => value),
   illustratedStages: stages.filter((stage) => stage.illustration.enabled).length,
   illustrationStyles: {
-    crayon: stages.filter((stage) => stage.illustration.enabled && stage.illustration.style === "crayon").length,
-    "chibi-four-panel": stages.filter((stage) => stage.illustration.enabled && stage.illustration.style === "chibi-four-panel").length,
-    monochrome: 0
+    "monochrome-four-panel": stages.filter((stage) => stage.illustration.enabled && stage.illustration.style === "monochrome-four-panel").length
   },
   voiceLines: count(lines, ({ line, stage }) => {
     const voiceKey = stage.cast.find((person) => person.id === line.speaker)?.voiceKey;

@@ -7,11 +7,13 @@ import sys
 import wave
 import unittest
 from pathlib import Path
+from unittest import mock
 
 
 TTS_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TTS_DIR))
 
+import generate_audio as generator_module  # noqa: E402
 from generate_audio import (  # noqa: E402
     _generator_metadata,
     _normalization_filter,
@@ -21,9 +23,11 @@ from generate_audio import (  # noqa: E402
     build_stage_manifest_entry,
     build_audio_tasks,
     manifest_item_is_current,
+    prepare_spoken_text,
     select_stages,
     task_hash,
     validate_runtime_config,
+    write_json_atomic,
 )
 
 
@@ -31,7 +35,7 @@ class GenerateAudioTests(unittest.TestCase):
     def setUp(self) -> None:
         self.stage = {
             "schemaVersion": 1,
-            "contentVersion": "1.0.1",
+            "contentVersion": "1.0.2",
             "contentHash": "d" * 64,
             "id": "L1-001",
             "revision": 1,
@@ -65,6 +69,7 @@ class GenerateAudioTests(unittest.TestCase):
                     "options": [
                         {
                             "id": "a",
+                            "readingJa": "いきたいです。",
                             "ttsTextJa": "行きたいです。",
                             "audioId": "L1-001-q1-a",
                         }
@@ -98,8 +103,20 @@ class GenerateAudioTests(unittest.TestCase):
 
         option = by_id["L1-001-q1-a"]
         self.assertEqual(option.kind, "option")
+        self.assertEqual(option.text, "いきたいです。")
         self.assertEqual(option.voice_key, "male-calm")
         self.assertEqual(option.relative_path, "level-1/L1-001/options/q1-a.mp3")
+
+    def test_build_audio_tasks_never_falls_back_from_missing_reviewed_readings(self) -> None:
+        for label, mutate in [
+            ("line", lambda stage: stage["lines"][0].pop("readingJa")),
+            ("token", lambda stage: stage["lines"][0]["tokens"][0].pop("reading")),
+            ("option", lambda stage: stage["questions"][0]["options"][0].pop("readingJa")),
+        ]:
+            damaged = json.loads(json.dumps(self.stage, ensure_ascii=False))
+            mutate(damaged)
+            with self.subTest(label=label), self.assertRaisesRegex(ValueError, "reviewed reading"):
+                build_audio_tasks(damaged)
 
     def test_pronunciation_overrides_prefer_longest_surface(self) -> None:
         entries = [
@@ -110,6 +127,15 @@ class GenerateAudioTests(unittest.TestCase):
         self.assertEqual(
             apply_pronunciations("VRChatとAI", entries),
             "ブイアールチャットとエーアイ",
+        )
+
+    def test_project_today_reading_keeps_the_long_vowel_instead_of_splitting_kyo_o(self) -> None:
+        payload = json.loads(
+            (TTS_DIR.parents[1] / "config" / "pronunciations.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(
+            prepare_spoken_text("きょうのおひる", payload["entries"]),
+            "キョーノオヒル",
         )
 
     def test_project_pronunciations_cover_known_kokoro_g2p_edges(self) -> None:
@@ -154,24 +180,35 @@ class GenerateAudioTests(unittest.TestCase):
         task = build_audio_tasks(self.stage)[0]
         base = task_hash(
             task,
+            phonemes="kyoː",
             voice_settings={"modelVoice": "jf_alpha", "speed": 1.0},
             model_fingerprint="model-a",
             pipeline_fingerprint="pipeline-a",
         )
         other_voice = task_hash(
             task,
+            phonemes="kyoː",
             voice_settings={"modelVoice": "jf_gongitsune", "speed": 1.0},
             model_fingerprint="model-a",
             pipeline_fingerprint="pipeline-a",
         )
         other_model = task_hash(
             task,
+            phonemes="kyoː",
             voice_settings={"modelVoice": "jf_alpha", "speed": 1.0},
             model_fingerprint="model-b",
             pipeline_fingerprint="pipeline-a",
         )
         self.assertNotEqual(base, other_voice)
         self.assertNotEqual(base, other_model)
+        other_phonemes = task_hash(
+            task,
+            phonemes="oː",
+            voice_settings={"modelVoice": "jf_alpha", "speed": 1.0},
+            model_fingerprint="model-a",
+            pipeline_fingerprint="pipeline-a",
+        )
+        self.assertNotEqual(base, other_phonemes)
 
     def test_scene_assembly_writes_exact_gaps_and_line_cues(self) -> None:
         fixture_dir = TTS_DIR.parents[1] / "audio" / ".work" / "tests"
@@ -313,11 +350,40 @@ class GenerateAudioTests(unittest.TestCase):
         self.assertEqual(audio_filter.count("areverse"), 2)
         self.assertIn("loudnorm=I=-18", audio_filter)
 
+    def test_atomic_json_write_retries_a_transient_windows_file_lock(self) -> None:
+        real_replace = generator_module.os.replace
+        attempts = 0
+
+        def replace_after_two_locks(source: str, destination: str) -> None:
+            nonlocal attempts
+            attempts += 1
+            if attempts < 3:
+                raise PermissionError(5, "transient sharing violation")
+            real_replace(source, destination)
+
+        test_root = TTS_DIR.parents[1] / "audio" / ".work" / "tests"
+        test_root.mkdir(parents=True, exist_ok=True)
+        destination = test_root / "atomic-manifest.json"
+        destination.unlink(missing_ok=True)
+        try:
+            with (
+                mock.patch("generate_audio.os.replace", side_effect=replace_after_two_locks),
+                mock.patch("generate_audio.time.sleep"),
+            ):
+                write_json_atomic(destination, {"ok": True})
+
+            self.assertEqual(json.loads(destination.read_text(encoding="utf-8")), {"ok": True})
+            self.assertEqual(attempts, 3)
+        finally:
+            destination.unlink(missing_ok=True)
+
     def test_generator_metadata_attests_output_and_pronunciation_table(self) -> None:
         metadata = _generator_metadata(
             {"model": {"sha256": "b" * 64, "bytes": 1}},
+            {"python": "3.11"},
             output_settings={"format": "mp3", "sampleRate": 24000},
             pronunciations_sha256="a" * 64,
+            execution_provider="CPUExecutionProvider",
         )
         self.assertEqual(metadata["output"], {"format": "mp3", "sampleRate": 24000})
         self.assertEqual(metadata["executionProvider"], "CPUExecutionProvider")

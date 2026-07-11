@@ -1,12 +1,12 @@
-import { ContentLoader } from "./lib/content-loader.mjs?v=20260711-japanese-subtext-r14";
-import { AudioPlayer } from "./lib/audio-player.mjs?v=20260711-japanese-subtext-r14";
-import { CloudProgress } from "./lib/cloud.mjs?v=20260711-japanese-subtext-r14";
-import { formatTime, localized, parseStageId, safeToolAssetPath, shortContentHash, stageId } from "./lib/constants.mjs?v=20260711-japanese-subtext-r14";
-import { createTranslator, normalizeUiLanguage } from "./lib/i18n.mjs?v=20260711-japanese-subtext-r14";
+import { ContentLoader } from "./lib/content-loader.mjs?v=20260711-japanese-subtext-v102-r2";
+import { AudioPlayer } from "./lib/audio-player.mjs?v=20260711-japanese-subtext-v102-r2";
+import { CloudProgress } from "./lib/cloud.mjs?v=20260711-japanese-subtext-v102-r2";
+import { formatTime, localized, parseStageId, safeToolAssetPath, shortContentHash, stageId } from "./lib/constants.mjs?v=20260711-japanese-subtext-v102-r2";
+import { createTranslator, normalizeUiLanguage } from "./lib/i18n.mjs?v=20260711-japanese-subtext-v102-r2";
 import {
-  hasCompletedModeOnboarding, loadLocalState, markModeOnboardingComplete, mergeProgress, mergeSettings,
+  checkInStats, hasCompletedModeOnboarding, loadLocalState, localDateKey, markModeOnboardingComplete, mergeProgress, mergeSettings,
   nextStageId, progressStats, recordAttempt, resetLocalState, saveProgress, saveSettings
-} from "./lib/storage.mjs?v=20260711-japanese-subtext-r14";
+} from "./lib/storage.mjs?v=20260711-japanese-subtext-v102-r2";
 
 const loader = new ContentLoader();
 const player = new AudioPlayer();
@@ -38,7 +38,8 @@ const state = {
   optionQueueRunning: false,
   draftAnswers: {},
   lastScore: null,
-  localResetInProgress: false
+  localResetInProgress: false,
+  recordMonth: monthKey(new Date())
 };
 let navigationEpoch = 0;
 let audioManifestPromise = null;
@@ -146,6 +147,7 @@ async function dispatchAction(action, target) {
     case "open-settings": return openDialog($("#settings-dialog"));
     case "open-records": renderRecords(); return openDialog($("#records-dialog"));
     case "close-records": return closeDialog($("#records-dialog"));
+    case "record-month": return shiftRecordMonth(Number(target.dataset.delta), target);
     case "choose-mode": return chooseInitialMode(target.dataset.mode);
     case "text-mode": return enableTextMode();
     case "try-again": return resetQuestions();
@@ -401,6 +403,7 @@ function renderIllustration(stage) {
   const cacheKey = shortContentHash(stage.contentHash);
   const src = safeSrc && cacheKey ? `${safeSrc}?v=${cacheKey}` : safeSrc;
   figure.hidden = !src;
+  figure.closest(".scene-column")?.classList.toggle("has-illustration", Boolean(src));
   if (!src) {
     image.removeAttribute("src");
     image.alt = "";
@@ -509,6 +512,7 @@ function renderAnalysis(stage) {
   });
   replaceChildren($("#analysis-content"), entries);
   $("#analysis-panel").hidden = !state.submitted || !state.analysisVisible;
+  syncNextStageButton($("#analysis-next"), state.cleared);
 }
 
 function updateQuestionGate() {
@@ -603,8 +607,14 @@ function renderResultDialog() {
   medal.textContent = state.attemptMedal === "none"
     ? t("noMedal")
     : `${t("resultMedal")}: ${t(state.attemptMedal)}`;
-  $("#result-next").hidden = !state.attemptCleared;
+  syncNextStageButton($("#result-next"), state.attemptCleared);
   $("#result-retry").hidden = state.attemptCleared;
+}
+
+function syncNextStageButton(button, visible) {
+  const hasNext = Boolean(nextStageId(state.stage?.id));
+  button.hidden = !visible;
+  button.textContent = t(hasNext ? "enterNextStage" : "backDashboard");
 }
 
 function showAnalysis() {
@@ -877,19 +887,116 @@ function updateCloudStatus(key) {
 
 function renderRecords() {
   const root = $("#records-content");
-  const entries = Object.entries(state.progress.stageProgress)
-    .filter(([, value]) => value.cleared)
-    .sort(([a], [b]) => b.localeCompare(a));
-  const children = [el("p", { text: t("recordsSummary") })];
-  if (!entries.length) children.push(el("p", { text: t("emptyRecord") }));
-  entries.forEach(([id, value]) => {
-    children.push(el("article", { className: "analysis-entry" },
-      el("h4", { text: `${id} · ${t(value.medal)}` }),
-      el("p", { text: `${t("bestScore")}: ${value.bestScore}% · ${t("firstAccuracy")}: ${value.firstAccuracy}% · ${t("attempts")}: ${value.attempts} · ${t("replayCount")}: ${value.replayCount}` }),
-      value.firstClearMode ? el("p", { text: `${t("displayMode")}: ${t(value.firstClearMode)}` }) : null
-    ));
+  const today = localDateKey();
+  const stats = checkInStats(state.progress, today);
+  const summary = el("div", { className: "record-summary" },
+    recordStat(stats.checkedInToday ? "is-checked" : "", stats.checkedInToday ? "✓" : "—", t(stats.checkedInToday ? "checkedInToday" : "notCheckedInToday")),
+    recordStat("", `${stats.currentStreak} ${t("dayUnit")}`, t("currentStreak")),
+    recordStat("", `${stats.longestStreak} ${t("dayUnit")}`, t("longestStreak")),
+    recordStat("", `${stats.totalDays} ${t("dayUnit")}`, t("totalStudyDays"))
+  );
+
+  const month = parseMonthKey(state.recordMonth) || new Date();
+  const calendar = el("section", { className: "checkin-calendar", ariaLabel: t("checkInCalendar") },
+    el("div", { className: "calendar-toolbar" },
+      el("button", { type: "button", className: "xp-control compact", dataset: { action: "record-month", delta: "-1" }, ariaLabel: t("previousMonth"), text: "‹" }),
+      el("h3", { text: formatMonth(month) }),
+      el("button", { type: "button", className: "xp-control compact", dataset: { action: "record-month", delta: "1" }, ariaLabel: t("nextMonth"), text: "›" })
+    ),
+    buildCheckInCalendar(month)
+  );
+
+  const activityEntries = Object.entries(state.progress.activityDays).sort(([a], [b]) => b.localeCompare(a)).slice(0, 8);
+  const recent = el("section", { className: "record-recent" }, el("h3", { text: t("recentActivity") }));
+  if (!activityEntries.length) {
+    recent.append(el("p", { className: "record-empty", text: t("emptyRecord") }));
+  } else {
+    const list = el("div", { className: "record-list" });
+    activityEntries.forEach(([date, value]) => {
+      const stages = Object.entries(value.stages);
+      const cleared = stages.filter(([, stage]) => stage.cleared).length;
+      list.append(el("article", { className: "record-item" },
+        el("time", { dateTime: date, text: formatRecordDate(date) }),
+        el("span", { text: `${t("practicedStages")}: ${stages.map(([id]) => id).join(" · ")}` }),
+        el("strong", { text: `${t("clearedOnDay")}: ${cleared}` })
+      ));
+    });
+    recent.append(list);
+  }
+
+  replaceChildren(root, [el("p", { className: "records-intro", text: t("recordsSummary") }), summary, calendar, recent]);
+}
+
+function recordStat(className, value, label) {
+  return el("div", { className: `record-stat ${className}`.trim() }, el("strong", { text: value }), el("span", { text: label }));
+}
+
+function buildCheckInCalendar(month) {
+  const year = month.getFullYear();
+  const monthIndex = month.getMonth();
+  const firstOffset = (new Date(year, monthIndex, 1).getDay() + 6) % 7;
+  const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+  const table = el("table", { className: "checkin-table" });
+  const head = el("thead");
+  head.append(el("tr", {}, t("weekdayLabels").map((label) => el("th", { scope: "col", text: label }))));
+  const body = el("tbody");
+  let day = 1;
+  const rows = Math.ceil((firstOffset + daysInMonth) / 7);
+  for (let row = 0; row < rows; row += 1) {
+    const tr = el("tr");
+    for (let column = 0; column < 7; column += 1) {
+      const cellIndex = row * 7 + column;
+      if (cellIndex < firstOffset || day > daysInMonth) {
+        tr.append(el("td", { className: "is-empty", ariaHidden: "true" }));
+        continue;
+      }
+      const date = `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+      const activity = state.progress.activityDays[date];
+      const count = activity ? Object.keys(activity.stages).length : 0;
+      const checked = count > 0;
+      tr.append(el("td", {
+        className: checked ? "is-checked" : "",
+        ariaLabel: t(checked ? "checkInAria" : "noCheckInAria", { date: formatRecordDate(date), count })
+      }, el("span", { className: "calendar-day", text: String(day) }), checked ? el("span", { className: "calendar-check", text: "✓", ariaHidden: "true" }) : null));
+      day += 1;
+    }
+    body.append(tr);
+  }
+  table.append(head, body);
+  return table;
+}
+
+function shiftRecordMonth(delta, sourceButton) {
+  if (!Number.isInteger(delta) || Math.abs(delta) !== 1) return;
+  const month = parseMonthKey(state.recordMonth) || new Date();
+  month.setMonth(month.getMonth() + delta, 1);
+  state.recordMonth = monthKey(month);
+  renderRecords();
+  requestAnimationFrame(() => {
+    const replacement = $(`[data-action="record-month"][data-delta="${delta}"]`);
+    (replacement || sourceButton)?.focus?.();
   });
-  replaceChildren(root, children);
+}
+
+function monthKey(value) {
+  const date = value instanceof Date ? value : new Date(value);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+}
+
+function parseMonthKey(value) {
+  const match = String(value || "").match(/^(\d{4})-(\d{2})$/);
+  if (!match) return null;
+  const date = new Date(Number(match[1]), Number(match[2]) - 1, 1, 12);
+  return date.getFullYear() === Number(match[1]) && date.getMonth() === Number(match[2]) - 1 ? date : null;
+}
+
+function formatMonth(date) {
+  return new Intl.DateTimeFormat(state.settings.uiLanguage === "zh" ? "zh-CN" : state.settings.uiLanguage, { year: "numeric", month: "long" }).format(date);
+}
+
+function formatRecordDate(value) {
+  const [year, month, day] = String(value).split("-").map(Number);
+  return new Intl.DateTimeFormat(state.settings.uiLanguage === "zh" ? "zh-CN" : state.settings.uiLanguage, { month: "short", day: "numeric", weekday: "short" }).format(new Date(year, month - 1, day, 12));
 }
 
 function resetProgress() {
@@ -958,7 +1065,7 @@ function closeDialog(dialog) {
 function openSoundGate() {
   const gate = $("#sound-gate");
   openDialog(gate);
-  requestAnimationFrame(() => gate.querySelector("[data-action='unlock-sound']")?.focus());
+  requestAnimationFrame(() => gate.querySelector("[data-action='choose-mode']")?.focus());
 }
 
 function closeSoundGate() {

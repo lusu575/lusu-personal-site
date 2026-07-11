@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.1",
+  "contentVersion": "1.0.2",
   "blueprintStatus": "complete",
   "generatedAt": "2026-07-11",
   "title": {
@@ -106,8 +106,8 @@
       "questionCount": 1,
       "estimatedLineCount": 3,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -149,8 +149,8 @@
       "questionCount": 1,
       "estimatedLineCount": 2,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -192,8 +192,8 @@
       "questionCount": 1,
       "estimatedLineCount": 3,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -235,8 +235,8 @@
       "questionCount": 1,
       "estimatedLineCount": 2,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -278,8 +278,8 @@
       "questionCount": 1,
       "estimatedLineCount": 3,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -321,8 +321,8 @@
       "questionCount": 1,
       "estimatedLineCount": 3,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -365,8 +365,8 @@
       "questionCount": 1,
       "estimatedLineCount": 4,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -408,8 +408,8 @@
       "questionCount": 1,
       "estimatedLineCount": 3,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -451,8 +451,8 @@
       "questionCount": 1,
       "estimatedLineCount": 4,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -495,7 +495,7 @@
       "estimatedLineCount": 3,
       "illustration": {
         "enabled": true,
-        "style": "crayon"
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -537,8 +537,8 @@
       "questionCount": 1,
       "estimatedLineCount": 4,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -580,8 +580,8 @@
       "questionCount": 1,
       "estimatedLineCount": 4,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -623,8 +623,8 @@
       "questionCount": 1,
       "estimatedLineCount": 4,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -666,8 +666,8 @@
       "questionCount": 1,
       "estimatedLineCount": 4,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -709,8 +709,8 @@
       "questionCount": 1,
       "estimatedLineCount": 4,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -752,8 +752,8 @@
       "questionCount": 1,
       "estimatedLineCount": 4,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -796,8 +796,8 @@
       "questionCount": 1,
       "estimatedLineCount": 5,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -840,8 +840,8 @@
       "questionCount": 1,
       "estimatedLineCount": 4,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -884,8 +884,8 @@
       "questionCount": 1,
       "estimatedLineCount": 5,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -929,7 +929,7 @@
       "estimatedLineCount": 4,
       "illustration": {
         "enabled": true,
-        "style": "crayon"
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -971,8 +971,8 @@
       "questionCount": 1,
       "estimatedLineCount": 5,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -1014,8 +1014,8 @@
       "questionCount": 1,
       "estimatedLineCount": 5,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -1058,8 +1058,8 @@
       "questionCount": 1,
       "estimatedLineCount": 5,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -1101,8 +1101,8 @@
       "questionCount": 1,
       "estimatedLineCount": 5,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -1144,8 +1144,8 @@
       "questionCount": 1,
       "estimatedLineCount": 5,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -1187,8 +1187,8 @@
       "questionCount": 1,
       "estimatedLineCount": 6,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -1231,8 +1231,8 @@
       "questionCount": 1,
       "estimatedLineCount": 6,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -1275,8 +1275,8 @@
       "questionCount": 1,
       "estimatedLineCount": 6,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -1319,8 +1319,8 @@
       "questionCount": 1,
       "estimatedLineCount": 6,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -1364,7 +1364,7 @@
       "estimatedLineCount": 6,
       "illustration": {
         "enabled": true,
-        "style": "crayon"
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -1407,8 +1407,8 @@
       "questionCount": 1,
       "estimatedLineCount": 6,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -1450,8 +1450,8 @@
       "questionCount": 2,
       "estimatedLineCount": 6,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -1501,8 +1501,8 @@
       "questionCount": 1,
       "estimatedLineCount": 6,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -1544,8 +1544,8 @@
       "questionCount": 2,
       "estimatedLineCount": 6,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -1595,8 +1595,8 @@
       "questionCount": 1,
       "estimatedLineCount": 6,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -1640,8 +1640,8 @@
       "questionCount": 2,
       "estimatedLineCount": 7,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -1691,8 +1691,8 @@
       "questionCount": 1,
       "estimatedLineCount": 7,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -1735,8 +1735,8 @@
       "questionCount": 2,
       "estimatedLineCount": 7,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -1786,8 +1786,8 @@
       "questionCount": 1,
       "estimatedLineCount": 7,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -1831,7 +1831,7 @@
       "estimatedLineCount": 7,
       "illustration": {
         "enabled": true,
-        "style": "crayon"
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -1881,8 +1881,8 @@
       "questionCount": 1,
       "estimatedLineCount": 7,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -1925,8 +1925,8 @@
       "questionCount": 2,
       "estimatedLineCount": 7,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -1975,8 +1975,8 @@
       "questionCount": 1,
       "estimatedLineCount": 7,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -2018,8 +2018,8 @@
       "questionCount": 2,
       "estimatedLineCount": 7,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -2069,8 +2069,8 @@
       "questionCount": 1,
       "estimatedLineCount": 7,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -2114,7 +2114,7 @@
       "estimatedLineCount": 8,
       "illustration": {
         "enabled": true,
-        "style": "chibi-four-panel"
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -2164,8 +2164,8 @@
       "questionCount": 1,
       "estimatedLineCount": 8,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -2208,8 +2208,8 @@
       "questionCount": 2,
       "estimatedLineCount": 8,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -2259,8 +2259,8 @@
       "questionCount": 1,
       "estimatedLineCount": 8,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -2304,7 +2304,7 @@
       "estimatedLineCount": 8,
       "illustration": {
         "enabled": true,
-        "style": "crayon"
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -2353,8 +2353,8 @@
       "questionCount": 1,
       "estimatedLineCount": 4,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -2397,8 +2397,8 @@
       "questionCount": 1,
       "estimatedLineCount": 3,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -2440,8 +2440,8 @@
       "questionCount": 1,
       "estimatedLineCount": 4,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -2483,8 +2483,8 @@
       "questionCount": 1,
       "estimatedLineCount": 3,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -2527,8 +2527,8 @@
       "questionCount": 1,
       "estimatedLineCount": 4,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -2571,8 +2571,8 @@
       "questionCount": 1,
       "estimatedLineCount": 4,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -2616,8 +2616,8 @@
       "questionCount": 1,
       "estimatedLineCount": 4,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -2660,8 +2660,8 @@
       "questionCount": 1,
       "estimatedLineCount": 4,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -2704,8 +2704,8 @@
       "questionCount": 1,
       "estimatedLineCount": 4,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -2749,7 +2749,7 @@
       "estimatedLineCount": 4,
       "illustration": {
         "enabled": true,
-        "style": "crayon"
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -2791,8 +2791,8 @@
       "questionCount": 1,
       "estimatedLineCount": 5,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -2834,8 +2834,8 @@
       "questionCount": 2,
       "estimatedLineCount": 5,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -2884,8 +2884,8 @@
       "questionCount": 1,
       "estimatedLineCount": 5,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -2928,8 +2928,8 @@
       "questionCount": 2,
       "estimatedLineCount": 5,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -2978,8 +2978,8 @@
       "questionCount": 1,
       "estimatedLineCount": 5,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -3022,8 +3022,8 @@
       "questionCount": 2,
       "estimatedLineCount": 5,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -3073,8 +3073,8 @@
       "questionCount": 1,
       "estimatedLineCount": 5,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -3117,8 +3117,8 @@
       "questionCount": 2,
       "estimatedLineCount": 5,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -3168,8 +3168,8 @@
       "questionCount": 1,
       "estimatedLineCount": 5,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -3213,7 +3213,7 @@
       "estimatedLineCount": 5,
       "illustration": {
         "enabled": true,
-        "style": "chibi-four-panel"
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -3264,8 +3264,8 @@
       "questionCount": 1,
       "estimatedLineCount": 6,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -3308,8 +3308,8 @@
       "questionCount": 2,
       "estimatedLineCount": 6,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -3359,8 +3359,8 @@
       "questionCount": 1,
       "estimatedLineCount": 6,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -3402,8 +3402,8 @@
       "questionCount": 2,
       "estimatedLineCount": 6,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -3453,8 +3453,8 @@
       "questionCount": 1,
       "estimatedLineCount": 6,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -3497,8 +3497,8 @@
       "questionCount": 2,
       "estimatedLineCount": 6,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -3548,8 +3548,8 @@
       "questionCount": 1,
       "estimatedLineCount": 6,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -3593,8 +3593,8 @@
       "questionCount": 2,
       "estimatedLineCount": 6,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -3644,8 +3644,8 @@
       "questionCount": 1,
       "estimatedLineCount": 6,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -3689,7 +3689,7 @@
       "estimatedLineCount": 6,
       "illustration": {
         "enabled": true,
-        "style": "crayon"
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -3739,8 +3739,8 @@
       "questionCount": 1,
       "estimatedLineCount": 8,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -3782,8 +3782,8 @@
       "questionCount": 2,
       "estimatedLineCount": 7,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -3832,8 +3832,8 @@
       "questionCount": 1,
       "estimatedLineCount": 8,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -3876,8 +3876,8 @@
       "questionCount": 2,
       "estimatedLineCount": 7,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -3928,8 +3928,8 @@
       "questionCount": 1,
       "estimatedLineCount": 8,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -3971,8 +3971,8 @@
       "questionCount": 2,
       "estimatedLineCount": 7,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -4023,8 +4023,8 @@
       "questionCount": 1,
       "estimatedLineCount": 8,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -4067,8 +4067,8 @@
       "questionCount": 2,
       "estimatedLineCount": 7,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -4118,8 +4118,8 @@
       "questionCount": 1,
       "estimatedLineCount": 8,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -4163,7 +4163,7 @@
       "estimatedLineCount": 7,
       "illustration": {
         "enabled": true,
-        "style": "crayon"
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -4213,8 +4213,8 @@
       "questionCount": 1,
       "estimatedLineCount": 9,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -4257,8 +4257,8 @@
       "questionCount": 2,
       "estimatedLineCount": 8,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -4308,8 +4308,8 @@
       "questionCount": 1,
       "estimatedLineCount": 9,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -4352,8 +4352,8 @@
       "questionCount": 2,
       "estimatedLineCount": 8,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -4405,7 +4405,7 @@
       "estimatedLineCount": 9,
       "illustration": {
         "enabled": true,
-        "style": "chibi-four-panel"
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -4448,8 +4448,8 @@
       "questionCount": 2,
       "estimatedLineCount": 8,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -4498,8 +4498,8 @@
       "questionCount": 1,
       "estimatedLineCount": 9,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -4542,8 +4542,8 @@
       "questionCount": 2,
       "estimatedLineCount": 8,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -4594,8 +4594,8 @@
       "questionCount": 1,
       "estimatedLineCount": 9,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -4639,7 +4639,7 @@
       "estimatedLineCount": 8,
       "illustration": {
         "enabled": true,
-        "style": "crayon"
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -4689,8 +4689,8 @@
       "questionCount": 2,
       "estimatedLineCount": 6,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -4739,8 +4739,8 @@
       "questionCount": 2,
       "estimatedLineCount": 5,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -4789,8 +4789,8 @@
       "questionCount": 2,
       "estimatedLineCount": 6,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -4839,8 +4839,8 @@
       "questionCount": 2,
       "estimatedLineCount": 5,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -4889,8 +4889,8 @@
       "questionCount": 2,
       "estimatedLineCount": 6,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -4939,8 +4939,8 @@
       "questionCount": 2,
       "estimatedLineCount": 6,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -4990,8 +4990,8 @@
       "questionCount": 2,
       "estimatedLineCount": 7,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -5042,8 +5042,8 @@
       "questionCount": 2,
       "estimatedLineCount": 6,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -5094,8 +5094,8 @@
       "questionCount": 3,
       "estimatedLineCount": 7,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -5153,7 +5153,7 @@
       "estimatedLineCount": 6,
       "illustration": {
         "enabled": true,
-        "style": "crayon"
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -5204,8 +5204,8 @@
       "questionCount": 2,
       "estimatedLineCount": 8,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -5254,8 +5254,8 @@
       "questionCount": 3,
       "estimatedLineCount": 7,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -5313,8 +5313,8 @@
       "questionCount": 2,
       "estimatedLineCount": 8,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -5363,8 +5363,8 @@
       "questionCount": 2,
       "estimatedLineCount": 7,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -5413,8 +5413,8 @@
       "questionCount": 3,
       "estimatedLineCount": 8,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -5473,8 +5473,8 @@
       "questionCount": 2,
       "estimatedLineCount": 7,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -5525,8 +5525,8 @@
       "questionCount": 2,
       "estimatedLineCount": 8,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -5578,8 +5578,8 @@
       "questionCount": 3,
       "estimatedLineCount": 7,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -5636,8 +5636,8 @@
       "questionCount": 2,
       "estimatedLineCount": 8,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -5687,7 +5687,7 @@
       "estimatedLineCount": 7,
       "illustration": {
         "enabled": true,
-        "style": "crayon"
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -5736,8 +5736,8 @@
       "questionCount": 3,
       "estimatedLineCount": 9,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -5794,8 +5794,8 @@
       "questionCount": 2,
       "estimatedLineCount": 9,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -5845,8 +5845,8 @@
       "questionCount": 2,
       "estimatedLineCount": 9,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -5896,8 +5896,8 @@
       "questionCount": 3,
       "estimatedLineCount": 9,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -5957,7 +5957,7 @@
       "estimatedLineCount": 9,
       "illustration": {
         "enabled": true,
-        "style": "crayon"
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -6010,7 +6010,7 @@
       "estimatedLineCount": 9,
       "illustration": {
         "enabled": true,
-        "style": "chibi-four-panel"
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -6060,8 +6060,8 @@
       "questionCount": 3,
       "estimatedLineCount": 9,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -6118,8 +6118,8 @@
       "questionCount": 2,
       "estimatedLineCount": 9,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -6169,8 +6169,8 @@
       "questionCount": 2,
       "estimatedLineCount": 9,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -6222,7 +6222,7 @@
       "estimatedLineCount": 9,
       "illustration": {
         "enabled": true,
-        "style": "chibi-four-panel"
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -6278,8 +6278,8 @@
       "questionCount": 3,
       "estimatedLineCount": 11,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -6337,8 +6337,8 @@
       "questionCount": 3,
       "estimatedLineCount": 10,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -6394,8 +6394,8 @@
       "questionCount": 3,
       "estimatedLineCount": 11,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -6453,8 +6453,8 @@
       "questionCount": 3,
       "estimatedLineCount": 10,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -6512,8 +6512,8 @@
       "questionCount": 3,
       "estimatedLineCount": 11,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -6571,8 +6571,8 @@
       "questionCount": 3,
       "estimatedLineCount": 10,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -6630,8 +6630,8 @@
       "questionCount": 3,
       "estimatedLineCount": 11,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -6688,8 +6688,8 @@
       "questionCount": 3,
       "estimatedLineCount": 10,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -6747,8 +6747,8 @@
       "questionCount": 3,
       "estimatedLineCount": 11,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -6806,7 +6806,7 @@
       "estimatedLineCount": 10,
       "illustration": {
         "enabled": true,
-        "style": "crayon"
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -6864,8 +6864,8 @@
       "questionCount": 3,
       "estimatedLineCount": 12,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -6922,8 +6922,8 @@
       "questionCount": 3,
       "estimatedLineCount": 11,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -6980,8 +6980,8 @@
       "questionCount": 3,
       "estimatedLineCount": 12,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -7040,8 +7040,8 @@
       "questionCount": 3,
       "estimatedLineCount": 11,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -7098,8 +7098,8 @@
       "questionCount": 3,
       "estimatedLineCount": 12,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -7157,8 +7157,8 @@
       "questionCount": 3,
       "estimatedLineCount": 11,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -7215,8 +7215,8 @@
       "questionCount": 3,
       "estimatedLineCount": 12,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -7273,8 +7273,8 @@
       "questionCount": 3,
       "estimatedLineCount": 11,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -7331,8 +7331,8 @@
       "questionCount": 3,
       "estimatedLineCount": 12,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -7390,7 +7390,7 @@
       "estimatedLineCount": 11,
       "illustration": {
         "enabled": true,
-        "style": "crayon"
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -7447,8 +7447,8 @@
       "questionCount": 2,
       "estimatedLineCount": 8,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -7498,8 +7498,8 @@
       "questionCount": 2,
       "estimatedLineCount": 7,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -7549,8 +7549,8 @@
       "questionCount": 2,
       "estimatedLineCount": 8,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -7599,8 +7599,8 @@
       "questionCount": 2,
       "estimatedLineCount": 7,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -7650,8 +7650,8 @@
       "questionCount": 2,
       "estimatedLineCount": 8,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -7701,8 +7701,8 @@
       "questionCount": 3,
       "estimatedLineCount": 8,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -7759,8 +7759,8 @@
       "questionCount": 2,
       "estimatedLineCount": 9,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -7811,8 +7811,8 @@
       "questionCount": 3,
       "estimatedLineCount": 8,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -7870,8 +7870,8 @@
       "questionCount": 2,
       "estimatedLineCount": 9,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -7922,7 +7922,7 @@
       "estimatedLineCount": 8,
       "illustration": {
         "enabled": true,
-        "style": "crayon"
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -7979,8 +7979,8 @@
       "questionCount": 2,
       "estimatedLineCount": 11,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -8030,8 +8030,8 @@
       "questionCount": 3,
       "estimatedLineCount": 10,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -8089,8 +8089,8 @@
       "questionCount": 2,
       "estimatedLineCount": 11,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -8140,8 +8140,8 @@
       "questionCount": 3,
       "estimatedLineCount": 10,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -8198,8 +8198,8 @@
       "questionCount": 2,
       "estimatedLineCount": 11,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -8248,8 +8248,8 @@
       "questionCount": 3,
       "estimatedLineCount": 10,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -8306,8 +8306,8 @@
       "questionCount": 3,
       "estimatedLineCount": 11,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -8365,8 +8365,8 @@
       "questionCount": 4,
       "estimatedLineCount": 10,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -8429,8 +8429,8 @@
       "questionCount": 3,
       "estimatedLineCount": 11,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -8489,7 +8489,7 @@
       "estimatedLineCount": 10,
       "illustration": {
         "enabled": true,
-        "style": "crayon"
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -8546,8 +8546,8 @@
       "questionCount": 4,
       "estimatedLineCount": 13,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -8611,8 +8611,8 @@
       "questionCount": 3,
       "estimatedLineCount": 12,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -8669,8 +8669,8 @@
       "questionCount": 3,
       "estimatedLineCount": 13,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -8727,8 +8727,8 @@
       "questionCount": 4,
       "estimatedLineCount": 12,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -8795,7 +8795,7 @@
       "estimatedLineCount": 13,
       "illustration": {
         "enabled": true,
-        "style": "chibi-four-panel"
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -8852,8 +8852,8 @@
       "questionCount": 3,
       "estimatedLineCount": 12,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -8911,8 +8911,8 @@
       "questionCount": 4,
       "estimatedLineCount": 13,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -8976,8 +8976,8 @@
       "questionCount": 3,
       "estimatedLineCount": 12,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -9035,8 +9035,8 @@
       "questionCount": 3,
       "estimatedLineCount": 13,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -9094,7 +9094,7 @@
       "estimatedLineCount": 12,
       "illustration": {
         "enabled": true,
-        "style": "crayon"
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -9158,8 +9158,8 @@
       "questionCount": 3,
       "estimatedLineCount": 15,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -9217,8 +9217,8 @@
       "questionCount": 3,
       "estimatedLineCount": 14,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -9275,8 +9275,8 @@
       "questionCount": 4,
       "estimatedLineCount": 15,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -9342,8 +9342,8 @@
       "questionCount": 3,
       "estimatedLineCount": 14,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -9401,8 +9401,8 @@
       "questionCount": 3,
       "estimatedLineCount": 15,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -9461,8 +9461,8 @@
       "questionCount": 4,
       "estimatedLineCount": 14,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -9526,8 +9526,8 @@
       "questionCount": 3,
       "estimatedLineCount": 15,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -9584,8 +9584,8 @@
       "questionCount": 3,
       "estimatedLineCount": 14,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -9642,8 +9642,8 @@
       "questionCount": 4,
       "estimatedLineCount": 15,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -9708,7 +9708,7 @@
       "estimatedLineCount": 14,
       "illustration": {
         "enabled": true,
-        "style": "crayon"
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -9765,8 +9765,8 @@
       "questionCount": 3,
       "estimatedLineCount": 16,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -9823,8 +9823,8 @@
       "questionCount": 4,
       "estimatedLineCount": 15,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -9889,8 +9889,8 @@
       "questionCount": 3,
       "estimatedLineCount": 16,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -9948,8 +9948,8 @@
       "questionCount": 3,
       "estimatedLineCount": 15,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -10007,8 +10007,8 @@
       "questionCount": 4,
       "estimatedLineCount": 16,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -10073,8 +10073,8 @@
       "questionCount": 3,
       "estimatedLineCount": 15,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -10131,8 +10131,8 @@
       "questionCount": 3,
       "estimatedLineCount": 16,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -10190,8 +10190,8 @@
       "questionCount": 4,
       "estimatedLineCount": 15,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -10255,8 +10255,8 @@
       "questionCount": 3,
       "estimatedLineCount": 16,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -10316,7 +10316,7 @@
       "estimatedLineCount": 15,
       "illustration": {
         "enabled": true,
-        "style": "crayon"
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -10372,8 +10372,8 @@
       "questionCount": 3,
       "estimatedLineCount": 11,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -10430,8 +10430,8 @@
       "questionCount": 3,
       "estimatedLineCount": 10,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -10487,8 +10487,8 @@
       "questionCount": 3,
       "estimatedLineCount": 11,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -10545,8 +10545,8 @@
       "questionCount": 3,
       "estimatedLineCount": 10,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -10602,8 +10602,8 @@
       "questionCount": 3,
       "estimatedLineCount": 11,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -10660,8 +10660,8 @@
       "questionCount": 4,
       "estimatedLineCount": 11,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -10726,8 +10726,8 @@
       "questionCount": 3,
       "estimatedLineCount": 12,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -10785,8 +10785,8 @@
       "questionCount": 4,
       "estimatedLineCount": 11,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -10851,8 +10851,8 @@
       "questionCount": 3,
       "estimatedLineCount": 12,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -10910,7 +10910,7 @@
       "estimatedLineCount": 11,
       "illustration": {
         "enabled": true,
-        "style": "crayon"
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -10973,8 +10973,8 @@
       "questionCount": 3,
       "estimatedLineCount": 14,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -11031,8 +11031,8 @@
       "questionCount": 4,
       "estimatedLineCount": 13,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -11097,8 +11097,8 @@
       "questionCount": 3,
       "estimatedLineCount": 14,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -11155,8 +11155,8 @@
       "questionCount": 4,
       "estimatedLineCount": 13,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -11223,7 +11223,7 @@
       "estimatedLineCount": 14,
       "illustration": {
         "enabled": true,
-        "style": "crayon"
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -11280,8 +11280,8 @@
       "questionCount": 4,
       "estimatedLineCount": 13,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -11346,8 +11346,8 @@
       "questionCount": 4,
       "estimatedLineCount": 14,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -11412,8 +11412,8 @@
       "questionCount": 5,
       "estimatedLineCount": 13,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -11485,8 +11485,8 @@
       "questionCount": 4,
       "estimatedLineCount": 14,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -11553,7 +11553,7 @@
       "estimatedLineCount": 13,
       "illustration": {
         "enabled": true,
-        "style": "crayon"
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -11616,8 +11616,8 @@
       "questionCount": 5,
       "estimatedLineCount": 16,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -11688,8 +11688,8 @@
       "questionCount": 4,
       "estimatedLineCount": 15,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -11753,8 +11753,8 @@
       "questionCount": 4,
       "estimatedLineCount": 16,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -11820,8 +11820,8 @@
       "questionCount": 5,
       "estimatedLineCount": 15,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -11892,8 +11892,8 @@
       "questionCount": 4,
       "estimatedLineCount": 16,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -11959,8 +11959,8 @@
       "questionCount": 4,
       "estimatedLineCount": 15,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -12025,8 +12025,8 @@
       "questionCount": 5,
       "estimatedLineCount": 16,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -12098,8 +12098,8 @@
       "questionCount": 4,
       "estimatedLineCount": 15,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -12164,8 +12164,8 @@
       "questionCount": 4,
       "estimatedLineCount": 16,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -12229,7 +12229,7 @@
       "estimatedLineCount": 15,
       "illustration": {
         "enabled": true,
-        "style": "crayon"
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -12301,8 +12301,8 @@
       "questionCount": 4,
       "estimatedLineCount": 18,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -12366,8 +12366,8 @@
       "questionCount": 4,
       "estimatedLineCount": 17,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -12432,8 +12432,8 @@
       "questionCount": 5,
       "estimatedLineCount": 18,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -12505,8 +12505,8 @@
       "questionCount": 4,
       "estimatedLineCount": 17,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -12571,8 +12571,8 @@
       "questionCount": 4,
       "estimatedLineCount": 18,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -12638,8 +12638,8 @@
       "questionCount": 5,
       "estimatedLineCount": 17,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -12710,8 +12710,8 @@
       "questionCount": 4,
       "estimatedLineCount": 18,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -12775,8 +12775,8 @@
       "questionCount": 4,
       "estimatedLineCount": 17,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -12840,8 +12840,8 @@
       "questionCount": 5,
       "estimatedLineCount": 18,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -12914,7 +12914,7 @@
       "estimatedLineCount": 17,
       "illustration": {
         "enabled": true,
-        "style": "crayon"
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -12979,8 +12979,8 @@
       "questionCount": 4,
       "estimatedLineCount": 20,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -13045,8 +13045,8 @@
       "questionCount": 5,
       "estimatedLineCount": 19,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -13119,8 +13119,8 @@
       "questionCount": 4,
       "estimatedLineCount": 20,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -13185,8 +13185,8 @@
       "questionCount": 4,
       "estimatedLineCount": 19,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -13251,8 +13251,8 @@
       "questionCount": 5,
       "estimatedLineCount": 20,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -13323,8 +13323,8 @@
       "questionCount": 4,
       "estimatedLineCount": 19,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -13389,8 +13389,8 @@
       "questionCount": 4,
       "estimatedLineCount": 20,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -13455,8 +13455,8 @@
       "questionCount": 5,
       "estimatedLineCount": 19,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -13528,8 +13528,8 @@
       "questionCount": 4,
       "estimatedLineCount": 20,
       "illustration": {
-        "enabled": false,
-        "style": "none"
+        "enabled": true,
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {
@@ -13595,7 +13595,7 @@
       "estimatedLineCount": 19,
       "illustration": {
         "enabled": true,
-        "style": "crayon"
+        "style": "monochrome-four-panel"
       },
       "answerPositions": [
         {

@@ -1,66 +1,66 @@
 {
   "stageId": "L2-045",
   "sampleRate": 24000,
-  "duration": 32.871208,
+  "duration": 30.501875,
   "cues": [
     {
       "lineId": "line-001",
       "audioId": "L2-045-line-001",
       "start": 0.06,
-      "end": 2.877958
+      "end": 2.299375
     },
     {
       "lineId": "line-002",
       "audioId": "L2-045-line-002",
-      "start": 3.357958,
-      "end": 5.438292
+      "start": 2.779375,
+      "end": 4.646208
     },
     {
       "lineId": "line-003",
       "audioId": "L2-045-line-003",
-      "start": 5.918292,
-      "end": 9.688542
+      "start": 5.126208,
+      "end": 8.462958
     },
     {
       "lineId": "line-004",
       "audioId": "L2-045-line-004",
-      "start": 10.168542,
-      "end": 12.839625
+      "start": 8.942958,
+      "end": 11.104833
     },
     {
       "lineId": "line-005",
       "audioId": "L2-045-line-005",
-      "start": 13.319625,
-      "end": 16.306208
+      "start": 11.584833,
+      "end": 14.412875
     },
     {
       "lineId": "line-006",
       "audioId": "L2-045-line-006",
-      "start": 16.786208,
-      "end": 20.827583
+      "start": 14.892875,
+      "end": 18.866458
     },
     {
       "lineId": "line-007",
       "audioId": "L2-045-line-007",
-      "start": 21.307583,
-      "end": 24.382208
+      "start": 19.346458,
+      "end": 22.135333
     },
     {
       "lineId": "line-008",
       "audioId": "L2-045-line-008",
-      "start": 24.862208,
-      "end": 28.827667
+      "start": 22.615333,
+      "end": 26.180833
     },
     {
       "lineId": "line-009",
       "audioId": "L2-045-line-009",
-      "start": 29.307667,
-      "end": 32.771208
+      "start": 26.660833,
+      "end": 30.401875
     }
   ],
   "schemaVersion": 1,
   "timelineId": "L2-045-timeline",
   "sceneAudioId": "L2-045-scene",
-  "contentHash": "69565d0602959e90cdc0cc0dc4ff8ad09eb2b7c5960f8f4c99dbac2af1e1af3b",
-  "sourceContentHash": "9a737cb7814412eeb5103c8fb396ecd61ef1cb61d0b21a79a209ff659e4a3d59"
+  "contentHash": "683f2d79df6f3a22d56c894953c4c13a6c3067027181c1c558d8db598ca1fc43",
+  "sourceContentHash": "9458bd0008e8a8a7db4a31d04c668d5ba53ad6a5917f5f62032dd2655ff16ff0"
 }

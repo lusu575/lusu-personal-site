@@ -1,12 +1,14 @@
 const SESSION_COOKIE = "lusu_session";
 const SESSION_DAYS = 30;
 const MAX_SAVE_BYTES = 1024 * 1024;
-const MAX_JAPANESE_SUBTEXT_PROGRESS_BYTES = 256 * 1024;
+const MAX_JAPANESE_SUBTEXT_PROGRESS_BYTES = 1024 * 1024;
 const JAPANESE_SUBTEXT_SCHEMA_VERSION = 1;
-const JAPANESE_SUBTEXT_CONTENT_VERSION = "1.0.1";
+const JAPANESE_SUBTEXT_CONTENT_VERSION = "1.0.2";
 const JAPANESE_SUBTEXT_EMPTY_TIMESTAMP = "1970-01-01T00:00:00.000Z";
 const JAPANESE_SUBTEXT_STAGE_LIMIT = 250;
 const JAPANESE_SUBTEXT_COUNTER_LIMIT = 1000000;
+const JAPANESE_SUBTEXT_ACTIVITY_DAY_LIMIT = 400;
+const JAPANESE_SUBTEXT_ACTIVITY_ROW_LIMIT = 5000;
 const JAPANESE_SUBTEXT_LANGUAGES = new Set(["zh", "en", "ja"]);
 const JAPANESE_SUBTEXT_DISPLAY_MODES = new Set(["listening", "japanese", "bilingual"]);
 const JAPANESE_SUBTEXT_PLAYBACK_RATES = new Set([0.75, 1, 1.15]);
@@ -524,6 +526,61 @@ async function putJapaneseSubtextProgress(request, env) {
     await env.DB.batch(stageStatements.slice(index, index + 50));
   }
 
+  const activityStatements = input.activities.map((activity) => env.DB.prepare(`
+    insert into japanese_subtext_daily_activity (
+      user_id, local_date, stage_id, cleared, best_medal, activity_updated_at, updated_at
+    ) values (?, ?, ?, ?, ?, ?, ?)
+    on conflict(user_id, local_date, stage_id)
+    do update set
+      cleared = max(japanese_subtext_daily_activity.cleared, excluded.cleared),
+      best_medal = max(japanese_subtext_daily_activity.best_medal, excluded.best_medal),
+      activity_updated_at = max(japanese_subtext_daily_activity.activity_updated_at, excluded.activity_updated_at),
+      updated_at = excluded.updated_at
+  `).bind(
+    session.user.id,
+    activity.localDate,
+    activity.stageId,
+    activity.cleared ? 1 : 0,
+    JAPANESE_SUBTEXT_MEDAL_RANK[activity.medal],
+    activity.updatedAt,
+    now
+  ));
+
+  for (let index = 0; index < activityStatements.length; index += 50) {
+    await env.DB.batch(activityStatements.slice(index, index + 50));
+  }
+
+  // Keep the cloud union bounded without trusting one device to know the
+  // complete multi-device history. Cleanup runs against the merged server
+  // state, retaining the newest 400 local dates and at most 5,000 rows.
+  await env.DB.batch([
+    env.DB.prepare(`
+      delete from japanese_subtext_daily_activity
+      where user_id = ?
+        and local_date not in (
+          select local_date from (
+            select local_date
+            from japanese_subtext_daily_activity
+            where user_id = ?
+            group by local_date
+            order by local_date desc
+            limit ?
+          )
+        )
+    `).bind(session.user.id, session.user.id, JAPANESE_SUBTEXT_ACTIVITY_DAY_LIMIT),
+    env.DB.prepare(`
+      delete from japanese_subtext_daily_activity
+      where user_id = ?
+        and rowid in (
+          select rowid
+          from japanese_subtext_daily_activity
+          where user_id = ?
+          order by local_date desc, activity_updated_at desc, stage_id asc
+          limit -1 offset ?
+        )
+    `).bind(session.user.id, session.user.id, JAPANESE_SUBTEXT_ACTIVITY_ROW_LIMIT)
+  ]);
+
   return json(await readJapaneseSubtextProgress(env, session.user.id));
 }
 
@@ -555,6 +612,29 @@ async function readJapaneseSubtextProgress(env, userId) {
     order by level asc, stage asc
   `).bind(userId).all()).results || [];
   const stages = rows.map(japaneseSubtextStageFromRow).filter(Boolean);
+  const activityRows = (await env.DB.prepare(`
+    with recent_days as (
+      select local_date
+      from japanese_subtext_daily_activity
+      where user_id = ?
+      group by local_date
+      order by local_date desc
+      limit ?
+    )
+    select activity.local_date, activity.stage_id, activity.cleared, activity.best_medal,
+      activity.activity_updated_at, activity.updated_at
+    from japanese_subtext_daily_activity activity
+    join recent_days on recent_days.local_date = activity.local_date
+    where activity.user_id = ?
+    order by activity.local_date asc, activity.stage_id asc
+    limit ?
+  `).bind(
+    userId,
+    JAPANESE_SUBTEXT_ACTIVITY_DAY_LIMIT,
+    userId,
+    JAPANESE_SUBTEXT_ACTIVITY_ROW_LIMIT
+  ).all()).results || [];
+  const activityDays = japaneseSubtextActivityDaysFromRows(activityRows);
   const unlockedStageIds = japaneseSubtextUnlockedStageIds(stages);
   const requestedCurrentId = japaneseSubtextStageId(profileRow.current_level, profileRow.current_stage);
   const currentId = unlockedStageIds.includes(requestedCurrentId)
@@ -567,7 +647,8 @@ async function readJapaneseSubtextProgress(env, userId) {
   const settingsUpdatedAt = normalizedStoredIso(profileRow.settings_updated_at, settings.updatedAt);
   const updatedAt = [
     normalizedStoredIso(profileRow.updated_at, JAPANESE_SUBTEXT_EMPTY_TIMESTAMP),
-    ...rows.map((row) => normalizedStoredIso(row.updated_at, JAPANESE_SUBTEXT_EMPTY_TIMESTAMP))
+    ...rows.map((row) => normalizedStoredIso(row.updated_at, JAPANESE_SUBTEXT_EMPTY_TIMESTAMP)),
+    ...activityRows.map((row) => normalizedStoredIso(row.updated_at, JAPANESE_SUBTEXT_EMPTY_TIMESTAMP))
   ].sort().at(-1);
 
   return {
@@ -592,6 +673,7 @@ async function readJapaneseSubtextProgress(env, userId) {
       currentStage: current.stage,
       unlockedStageIds,
       stageProgress,
+      activityDays,
       updatedAt: progressUpdatedAt
     },
     settings: { ...settings, updatedAt: settingsUpdatedAt }
@@ -603,13 +685,13 @@ function normalizeJapaneseSubtextPayload(body) {
   assertJapaneseSubtextKeys(body, ["progress", "settings"], "云端进度");
   const profile = normalizeJapaneseSubtextProgress(body.progress);
   const settings = normalizeJapaneseSubtextSettings(body.settings);
-  return { profile, settings, stages: profile.stages };
+  return { profile, settings, stages: profile.stages, activities: profile.activities };
 }
 
 function normalizeJapaneseSubtextProgress(value) {
   const keys = [
     "schemaVersion", "contentVersion", "revision", "currentLevel", "currentStage",
-    "unlockedStageIds", "stageProgress", "updatedAt"
+    "unlockedStageIds", "stageProgress", "activityDays", "updatedAt"
   ];
   assertJapaneseSubtextObject(value, "进度");
   assertJapaneseSubtextKeys(value, keys, "进度");
@@ -644,6 +726,7 @@ function normalizeJapaneseSubtextProgress(value) {
     }
     return normalizeJapaneseSubtextStage(stageId, parsed, stageValue);
   }).sort(japaneseSubtextStageSort);
+  const activities = normalizeJapaneseSubtextActivityDays(value.activityDays);
 
   const derivedUnlocked = japaneseSubtextUnlockedStageIds(stages);
   const suppliedUnlocked = [...unlockedStageIds].sort(japaneseSubtextStageIdSort);
@@ -656,12 +739,65 @@ function normalizeJapaneseSubtextProgress(value) {
   if (stages.some((stage) => !derivedUnlocked.includes(stage.stageId))) {
     throw new HttpError("未解锁关卡不能上传进度。", 400);
   }
+  if (activities.some((activity) => !derivedUnlocked.includes(activity.stageId))) {
+    throw new HttpError("未解锁关卡不能写入学习打卡。", 400);
+  }
   const currentId = japaneseSubtextStageId(currentLevel, currentStage);
   if (!derivedUnlocked.includes(currentId)) {
     throw new HttpError("当前关卡尚未解锁。", 400);
   }
 
-  return { revision, currentLevel, currentStage, updatedAt, stages };
+  return { revision, currentLevel, currentStage, updatedAt, stages, activities };
+}
+
+function normalizeJapaneseSubtextActivityDays(value) {
+  assertJapaneseSubtextObject(value, "学习打卡");
+  const days = Object.entries(value);
+  if (days.length > JAPANESE_SUBTEXT_ACTIVITY_DAY_LIMIT) {
+    throw new HttpError("学习打卡日期过多。", 400);
+  }
+  const activities = [];
+  days.forEach(([localDate, day]) => {
+    if (!isJapaneseSubtextLocalDate(localDate)) {
+      throw new HttpError("学习打卡日期不正确。", 400);
+    }
+    assertJapaneseSubtextObject(day, `学习打卡 ${localDate}`);
+    assertJapaneseSubtextKeys(day, ["stages", "updatedAt"], `学习打卡 ${localDate}`);
+    assertJapaneseSubtextObject(day.stages, `学习打卡 ${localDate} 的关卡`);
+    japaneseSubtextIso(day.updatedAt, `activityDays.${localDate}.updatedAt`);
+    Object.entries(day.stages).forEach(([stageId, stage]) => {
+      const parsed = parseJapaneseSubtextStageId(stageId);
+      if (!parsed) {
+        throw new HttpError("学习打卡关卡编号不正确。", 400);
+      }
+      assertJapaneseSubtextObject(stage, `学习打卡 ${localDate} ${stageId}`);
+      assertJapaneseSubtextKeys(stage, ["cleared", "medal", "updatedAt"], `学习打卡 ${localDate} ${stageId}`);
+      if (typeof stage.cleared !== "boolean" || !Object.hasOwn(JAPANESE_SUBTEXT_MEDAL_RANK, stage.medal)) {
+        throw new HttpError(`学习打卡 ${stageId} 状态不正确。`, 400);
+      }
+      if (stage.cleared !== (stage.medal !== "none")) {
+        throw new HttpError(`学习打卡 ${stageId} 的通关状态与奖牌不一致。`, 400);
+      }
+      activities.push({
+        localDate,
+        stageId,
+        cleared: stage.cleared,
+        medal: stage.medal,
+        updatedAt: japaneseSubtextIso(stage.updatedAt, `activityDays.${localDate}.${stageId}.updatedAt`)
+      });
+    });
+  });
+  if (activities.length > JAPANESE_SUBTEXT_ACTIVITY_ROW_LIMIT) {
+    throw new HttpError("学习打卡记录过多。", 400);
+  }
+  return activities.sort((left, right) => left.localDate.localeCompare(right.localDate) || japaneseSubtextStageIdSort(left.stageId, right.stageId));
+}
+
+function isJapaneseSubtextLocalDate(value) {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const [year, month, day] = value.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
 }
 
 function normalizeJapaneseSubtextSettings(value) {
@@ -881,6 +1017,22 @@ function japaneseSubtextStageProgress(stage) {
   return progress;
 }
 
+function japaneseSubtextActivityDaysFromRows(rows) {
+  const activityDays = {};
+  rows.forEach((row) => {
+    if (!isJapaneseSubtextLocalDate(row.local_date) || !parseJapaneseSubtextStageId(row.stage_id)) return;
+    const medalRank = boundedStoredInteger(row.best_medal, 0, 3, 0);
+    const cleared = Number(row.cleared || 0) === 1;
+    const medal = cleared ? (JAPANESE_SUBTEXT_MEDAL_NAME[Math.max(1, medalRank)] || "bronze") : "none";
+    const updatedAt = normalizedStoredIso(row.activity_updated_at, JAPANESE_SUBTEXT_EMPTY_TIMESTAMP);
+    const day = activityDays[row.local_date] || { stages: {}, updatedAt };
+    day.stages[row.stage_id] = { cleared, medal, updatedAt };
+    day.updatedAt = [day.updatedAt, updatedAt].sort().at(-1);
+    activityDays[row.local_date] = day;
+  });
+  return activityDays;
+}
+
 function storedJapaneseSubtextSettings(raw, fallbackUpdatedAt) {
   try {
     return normalizeJapaneseSubtextSettings(JSON.parse(raw));
@@ -916,6 +1068,7 @@ function defaultJapaneseSubtextProgress(updatedAt) {
     currentStage: 1,
     unlockedStageIds: ["L1-001"],
     stageProgress: {},
+    activityDays: {},
     updatedAt
   };
 }
@@ -2724,6 +2877,18 @@ async function ensureJapaneseSubtextSchema(env) {
       )
     `),
     env.DB.prepare(`
+      create table if not exists japanese_subtext_daily_activity (
+        user_id text not null references users(id) on delete cascade,
+        local_date text not null,
+        stage_id text not null,
+        cleared integer not null default 0 check(cleared in (0, 1)),
+        best_medal integer not null default 0 check(best_medal between 0 and 3),
+        activity_updated_at text not null,
+        updated_at text not null,
+        primary key (user_id, local_date, stage_id)
+      )
+    `),
+    env.DB.prepare(`
       create index if not exists japanese_subtext_profiles_updated_idx
         on japanese_subtext_profiles(updated_at)
     `),
@@ -2734,6 +2899,10 @@ async function ensureJapaneseSubtextSchema(env) {
     env.DB.prepare(`
       create index if not exists japanese_subtext_stage_progress_updated_idx
         on japanese_subtext_stage_progress(updated_at)
+    `),
+    env.DB.prepare(`
+      create index if not exists japanese_subtext_daily_activity_user_date_idx
+        on japanese_subtext_daily_activity(user_id, local_date)
     `)
   ]);
   japaneseSubtextSchemaReady = true;
@@ -6679,19 +6848,19 @@ This update swaps the four home wallpapers used by the live page to higher-resol
     `),
     ...articleTranslationsStatements(env, "seed-update-2026-07-11-japanese-subtext-trainer", {
       zh: {
-        title: "日语潜台词训练工具更新至 1.0.1",
-        summary: "“日语的言外之意”更新至 1.0.1：简化关卡操作、加入首次模式选择和奖牌结果弹窗，修正中文字体与台词引用，并以假名优先流程重录日语语音。",
-        content_markdown: "# 日语潜台词训练工具更新至 1.0.1\n\n新的独立工具「日本語の裏側」已接入资源区，用小场景、日语语音和选择题训练对话中的真实意图。\n\n## 五级进阶题库\n\n- 从 LEVEL 1 的 N3 日常委婉表达，逐步进阶到 LEVEL 2 的 N2 口语省略与敬语距离，再到 LEVEL 3～5 的 N1 信息差、反话、隐瞒和多重解释。\n- 五个难度各 50 关，共 250 关；每个难度的前几关较短，后续场景与推理长度逐步增加。\n- 解析会引用具体台词和人物关系，说明在当前上下文中更可能的解释，避免把单句日语绝对化。\n\n## 可控的离线语音\n\n- 题库语音由本地模型提前生成，提供男声、女声和角色区分，浏览器不会在游玩时调用外部 TTS。\n- 支持纯听、日语和双语场景模式，以及日语、中文、English 选项。\n- 支持播放/暂停、切换倍速、拖动进度，以及点击整句或词块播放；1.0.1 已移除自动播放、上一句/下一句、重播和静音等冗余控件。\n\n## 不丢失的学习进度\n\n- 未登录时使用版本化本地进度，记录解锁、成绩、奖章、尝试次数和播放设置。\n- 登录后通过独立 D1 学习进度表同步，不复用游戏存档表；本地与云端合并会保留已通关关卡和最佳奖章。\n- 云端不可用时不会阻止本地答题，退出登录后也仍然可以继续训练。\n\n## 1.0.1 维护更新\n\n- 工具标题会跟随中文、English、日本語界面显示对应名称。\n- 首次进入关卡只弹出一次听力、日语、双语模式选择；之后不自动播放，播放时也不再强制滚动画面。\n- 答题结果改为奖牌弹窗，选项不再插入‘正确答案’文字；解析中的内部 line ID 改为自然的第几句台词。\n- 语音生成先把日语表记转换为明确假名，再交给离线模型，并按受影响内容增量重录。"
+        title: "日语潜台词训练工具更新至 1.0.2",
+        summary: "“日语的言外之意”更新至 1.0.2：重置全库语音读音链路，修复句尾异常“いい”和“今日”漏读；重做 PC 布局、打卡记录、解析续关与四格漫画配图。",
+        content_markdown: "# 日语潜台词训练工具更新至 1.0.2\n\n“日语的言外之意”继续使用 250 关数据题库，这次重点重置语音生成、桌面布局和学习记录，让听力训练更可靠也更紧凑。\n\n## 语音读音全量重置\n\n- 句子、选项和词块先保存可审校的假名读音，再交给离线模型；画面仍显示原来的日语汉字。\n- 生成器会分离 Misaki 的音高标记、规范化特殊辅音并拒绝未知音素，不再把末尾标记读成额外的“いい”，也不会把“きょう”的辅音丢掉后读成“おう”。\n- 语音管线升级到 v4 后强制重建全库静态音频。浏览器训练时仍不加载 TTS，批处理结束后模型保持关闭且不自启动。\n\n## 更紧凑的 PC 训练界面\n\n- 桌面端复用游戏区的壳层思路：左上角返回个人站，右上角显示名称，中间突出存档同步。\n- 关卡内容取消重复的整屏最小高度，场景、题目和解析重新排布，减少大块空白。\n- 查看解析后可直接进入下一关；资源区入口改为“开始”，标题、按钮和卡片文案不再被误拖选。\n\n## 月历打卡与四格场景\n\n- 学习记录改为月历打卡，显示当前连续、最长连续、总打卡天数和最近活动；登录后通过独立日活动表同步。\n- 每关配一张贴合题目情境的原创黑白四格漫画，统一人物、线条、网点和分镜，并适配桌面、平板和手机窗口。"
       },
       en: {
-        title: "Japanese Subtext Trainer 1.0.1 Update",
-        summary: "Behind the Japanese 1.0.1 simplifies stage controls, adds a first-use mode picker and medal result dialog, fixes Chinese typography and line references, and re-records speech through a kana-first pipeline.",
-        content_markdown: "# Japanese Subtext Trainer 1.0.1 Update\n\nThe standalone tool 「日本語の裏側」 is now available from Resources. Short scenes, Japanese speech, and choice questions train the intent hidden behind tone, context, and relationships.\n\n## Five progressive levels\n\n- LEVEL 1 starts with N3 everyday indirect expressions, LEVEL 2 moves into N2 ellipsis and honorific distance, and LEVELS 3 to 5 develop N1 information gaps, irony, concealment, and multiple supported interpretations.\n- Each level contains 50 stages for a total of 250. Early stages in every level stay shorter, while later scenes and inference chains gradually grow.\n- Explanations cite specific lines and relationships and describe the interpretation that is more likely in the current context instead of treating one Japanese sentence as an absolute formula.\n\n## Controllable offline speech\n\n- Speech is generated ahead of time with local models, including male and female voices and consistent character assignment. The browser does not call an external TTS service while training.\n- Listening-only, Japanese, and bilingual scene modes are available, independently from Japanese, Chinese, or English answer text.\n- Playback supports play/pause, speed control, timeline seeking, and clickable sentences or phrases. Version 1.0.1 removes autoplay, previous/next, replay, and mute controls.\n\n## Learning progress that survives sessions\n\n- Signed-out visitors use versioned local progress for unlocks, scores, medals, attempts, and playback settings.\n- Signed-in users synchronize through dedicated D1 learning tables rather than the game-save table. Local and cloud merging preserves cleared stages and the strongest medals.\n- Cloud failures never block local questions, and signing out keeps the local trainer usable.\n\n## Version 1.0.1 maintenance update\n\n- The title now follows the Chinese, English, or Japanese interface language.\n- A listening/Japanese/bilingual mode picker appears only on first use; stages no longer autoplay or force-scroll while audio plays.\n- Results move to a medal dialog, answer options no longer grow with visible correctness labels, and internal line IDs are replaced by natural references.\n- Speech generation resolves Japanese writing to explicit kana before the offline model and incrementally re-records affected audio."
+        title: "Japanese Subtext Trainer 1.0.2 Update",
+        summary: "Behind the Japanese 1.0.2 rebuilds the speech pipeline to fix detached ending sounds and missing consonants, then adds a denser PC shell, calendar check-ins, analysis-to-next-stage flow, and four-panel manga scenes.",
+        content_markdown: "# Japanese Subtext Trainer 1.0.2 Update\n\nBehind the Japanese keeps its 250-stage data-driven course while rebuilding speech generation, desktop layout, and learning history for a more reliable and compact listening experience.\n\n## Full speech-reading reset\n\n- Sentences, answer choices, and phrase tokens now store reviewable kana readings before they reach the offline model, while the interface continues to display the original kanji.\n- The generator separates Misaki pitch metadata, normalizes special consonants, and rejects unknown phonemes. This removes the detached ending sound and prevents kyou from losing its ky consonant and becoming ou.\n- Pipeline v4 forces the static audio library to be regenerated. The browser still never loads TTS during training, and the local model remains stopped with no autostart after the batch.\n\n## A denser PC training shell\n\n- The desktop tool adopts the game-area shell pattern: Back to Site at top left, the tool name at top right, and save synchronization centered in the frame.\n- Repeated viewport-height constraints were removed, and the scene, questions, and analysis were rearranged to eliminate large unused gaps.\n- Analysis now leads directly to the next stage. The Resources action is Start, and non-input headings, buttons, and card labels no longer become accidentally selected.\n\n## Calendar check-ins and four-panel scenes\n\n- Learning history is now a monthly check-in calendar with current streak, longest streak, total days, and recent activity, synchronized through a dedicated daily-activity table after sign-in.\n- Every stage receives an original black-and-white four-panel manga scene matched to its prompt, with consistent characters, line work, screentones, and responsive placement."
       },
       ja: {
-        title: "日本語の裏側 1.0.1 アップデート",
-        summary: "「日本語の裏側」1.0.1 では、ステージ操作を簡潔にし、初回モード選択とメダル結果画面を追加しました。中国語字体と台詞参照を修正し、かな優先の音声生成で再収録します。",
-        content_markdown: "# 日本語の裏側 1.0.1 アップデート\n\n独立ツール「日本語の裏側」をリソース欄から開けるようにしました。短い場面、日本語音声、選択問題を通して、口調、文脈、人間関係の奥にある意図を読み取ります。\n\n## 5 レベルの段階式問題\n\n- LEVEL 1 は N3 の日常的な遠回し表現から始まり、LEVEL 2 は N2 の省略と敬語の距離感、LEVEL 3～5 は N1 の情報差、皮肉、隠し事、複数の解釈へ進みます。\n- 各レベル 50 問、合計 250 ステージです。各レベルの最初は短く、後半ほど場面と推理を長くしています。\n- 解説は具体的な台詞と関係性を引用し、一文を絶対的な公式にせず、この文脈でより支持される解釈を示します。\n\n## 操作できるオフライン音声\n\n- 男声・女声とキャラクター別の音声をローカルモデルで事前生成し、練習中に外部 TTS を呼び出しません。\n- 聴解のみ、日本語、対訳の場面表示と、日本語・中国語・English の選択肢を別々に選べます。\n- 再生/一時停止、速度変更、シーク、文や語句のクリック再生に対応します。1.0.1 では自動再生、前後移動、リプレイ、ミュートなどの重複操作を削除しました。\n\n## 失われない学習進捗\n\n- ログイン前はバージョン付きローカル進捗に、解放、得点、メダル、挑戦回数、再生設定を保存します。\n- ログイン後はゲームセーブ表を使わず、専用 D1 学習表で同期します。ローカルとクラウドを統合しても、クリア済みステージと上位メダルを保持します。\n- クラウド障害はローカル回答を止めず、ログアウト後も練習を続けられます。\n\n## 1.0.1 メンテナンス更新\n\n- 中国語、English、日本語の表示言語に合わせてツール名も切り替わります。\n- 聴解・日本語・二言語のモード選択は初回だけ表示し、入場時の自動再生と再生中の強制スクロールを廃止しました。\n- 結果をメダルダイアログに移し、選択肢を広げる正解ラベルを削除し、内部 line ID を自然な台詞参照に置き換えました。\n- 日本語表記を明示的なかな読みに変換してからオフライン音声モデルへ渡し、影響する音声だけを再収録します。"
+        title: "日本語の裏側 1.0.2 アップデート",
+        summary: "「日本語の裏側」1.0.2 では、語尾の異音と子音欠落を直すため音声生成を全面更新し、PC レイアウト、カレンダー式学習記録、解説後の次ステージ導線、四コマ漫画を追加しました。",
+        content_markdown: "# 日本語の裏側 1.0.2 アップデート\n\n250 ステージのデータ式問題はそのままに、音声生成、PC レイアウト、学習記録を作り直し、聴解練習をより確実でコンパクトにしました。\n\n## 読みを固定した全音声の再生成\n\n- 文、選択肢、語句は、オフラインモデルへ渡す前に確認可能なかな読みを保存します。画面には従来どおり漢字を含む日本語を表示します。\n- Misaki の音高メタデータを音素から分離し、特殊な子音を正規化して未知音素を拒否します。語尾の余分な「いい」を除き、「きょう」の ky が欠けて「おう」になる問題も防ぎます。\n- 音声パイプライン v4 で静的音声を全件再生成します。練習中のブラウザーは TTS を読み込まず、処理後のローカルモデルは停止したままで自動起動しません。\n\n## 空白を減らした PC 画面\n\n- ゲーム欄のシェル構成を取り入れ、左上にサイトへ戻る操作、右上にツール名、中央にセーブ同期を配置しました。\n- 重複していた画面高の制約を外し、場面、問題、解説を再配置して大きな空白を減らしました。\n- 解説から次のステージへ直接進めます。リソース欄の操作は「開始」とし、見出し、ボタン、カード文字の誤選択も防ぎます。\n\n## カレンダー式記録と四コマ場面\n\n- 学習記録を月間カレンダーに変更し、現在・最長の連続日数、合計日数、最近の活動を表示します。ログイン後は専用の日別活動テーブルで同期します。\n- 各ステージに、設問の状況に合うオリジナル白黒四コマ漫画を用意し、人物、線、スクリーントーン、配置を統一して各画面幅に対応します。"
       }
     }, "2026-07-10T17:30:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-07-10-premium-interaction-mobile-os", {

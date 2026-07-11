@@ -23,7 +23,7 @@ export async function mergeAudioManifests({ targetRoot, sourceRoots }) {
     for (const [id, item] of Object.entries(incoming.items)) {
       const relative = safeRelative(item.path, `item ${id}`);
       const existing = manifest.items[id];
-      if (existing && (existing.path !== item.path || existing.contentHash !== item.contentHash || existing.sha256 !== item.sha256)) {
+      if (existing && canonicalJson(existing) !== canonicalJson(item)) {
         throw new Error(`Conflicting audio item ${id} from ${sourceManifestPath}.`);
       }
       await copyArtifact(source, target, relative);

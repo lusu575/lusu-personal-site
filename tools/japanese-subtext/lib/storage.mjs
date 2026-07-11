@@ -1,7 +1,7 @@
 import {
   CONTENT_VERSION, DISPLAY_MODES, MEDAL_RANK, OPTION_LANGUAGES, PLAYBACK_RATES,
   MODE_ONBOARDING_KEY, PROGRESS_KEY, SETTINGS_KEY, UI_LANGUAGES, clampNumber, isoNow, parseStageId, stageId
-} from "./constants.mjs?v=20260711-japanese-subtext-r14";
+} from "./constants.mjs?v=20260711-japanese-subtext-v102-r2";
 
 export function defaultSettings(uiLanguage = "zh") {
   return {
@@ -30,6 +30,7 @@ export function defaultProgress() {
     currentStage: 1,
     unlockedStageIds: ["L1-001"],
     stageProgress: {},
+    activityDays: {},
     updatedAt: isoNow()
   };
 }
@@ -116,6 +117,9 @@ export function sanitizeProgress(input) {
       if (parseStageId(id) && value && typeof value === "object") stageProgress[id] = sanitizeStageProgress(value);
     });
   }
+  const activityDays = Object.hasOwn(input, "activityDays")
+    ? sanitizeActivityDays(input.activityDays)
+    : migrateLegacyActivityDays(input.stageProgress, stageProgress);
   const unlocked = new Set(["L1-001"]);
   if (Array.isArray(input.unlockedStageIds)) {
     input.unlockedStageIds.forEach((id) => { if (parseStageId(id)) unlocked.add(id); });
@@ -133,7 +137,7 @@ export function sanitizeProgress(input) {
   if (!unlocked.has(currentId)) {
     const furthest = [...unlocked].sort(stageSort).at(-1) || "L1-001";
     const parsed = parseStageId(furthest);
-    return { ...base, revision: clampNumber(input.revision, 1, 1000000, 1), currentLevel: parsed.level, currentStage: parsed.stage, unlockedStageIds: [...unlocked].sort(stageSort), stageProgress, updatedAt: validIso(input.updatedAt) || base.updatedAt };
+    return { ...base, revision: clampNumber(input.revision, 1, 1000000, 1), currentLevel: parsed.level, currentStage: parsed.stage, unlockedStageIds: [...unlocked].sort(stageSort), stageProgress, activityDays, updatedAt: validIso(input.updatedAt) || base.updatedAt };
   }
   return {
     ...base,
@@ -142,6 +146,7 @@ export function sanitizeProgress(input) {
     currentStage,
     unlockedStageIds: [...unlocked].sort(stageSort),
     stageProgress,
+    activityDays,
     updatedAt: validIso(input.updatedAt) || base.updatedAt
   };
 }
@@ -181,6 +186,7 @@ export function recordAttempt(progressInput, id, result) {
   if (cleared && result.displayMode !== "bilingual") earned = "silver";
   if (cleared && result.displayMode === "listening" && attempts === 1 && score === 100) earned = "gold";
   const medal = MEDAL_RANK[earned] > MEDAL_RANK[before.medal] ? earned : before.medal;
+  const now = isoNow();
   progress.stageProgress[id] = {
     ...before,
     cleared: before.cleared || cleared,
@@ -194,13 +200,23 @@ export function recordAttempt(progressInput, id, result) {
     usedListeningMode: before.usedListeningMode || result.displayMode === "listening",
     replayCount: Math.max(before.replayCount, clampNumber(result.replayCount, 0, 1000000, 0)),
     hintCount: Math.max(before.hintCount, clampNumber(result.hintCount, 0, 1000000, 0)),
-    updatedAt: isoNow()
+    updatedAt: now
   };
+  const activityDate = validLocalDate(result.activityDate) ? result.activityDate : localDateKey();
+  const day = progress.activityDays[activityDate] || { stages: {}, updatedAt: now };
+  const priorActivity = day.stages[id] || { cleared: false, medal: "none", updatedAt: now };
+  day.stages[id] = {
+    cleared: priorActivity.cleared || cleared,
+    medal: MEDAL_RANK[earned] >= MEDAL_RANK[priorActivity.medal] ? earned : priorActivity.medal,
+    updatedAt: now
+  };
+  day.updatedAt = now;
+  progress.activityDays[activityDate] = day;
   progress.unlockedStageIds = [...new Set([...progress.unlockedStageIds, id, ...(cleared && nextStageId(id) ? [nextStageId(id)] : [])])].sort(stageSort);
   progress.currentLevel = parsed.level;
   progress.currentStage = parsed.stage;
   progress.revision += 1;
-  progress.updatedAt = isoNow();
+  progress.updatedAt = now;
   return sanitizeProgress(progress);
 }
 
@@ -232,6 +248,7 @@ export function mergeProgress(localInput, cloudInput) {
     };
   });
   const unlockedStageIds = [...new Set([...local.unlockedStageIds, ...cloud.unlockedStageIds])].sort(stageSort);
+  const activityDays = mergeActivityDays(local.activityDays, cloud.activityDays);
   const localCurrent = stageId(local.currentLevel, local.currentStage);
   const cloudCurrent = stageId(cloud.currentLevel, cloud.currentStage);
   const current = stageSort(localCurrent, cloudCurrent) >= 0 ? localCurrent : cloudCurrent;
@@ -243,6 +260,7 @@ export function mergeProgress(localInput, cloudInput) {
     currentStage: parsed.stage,
     unlockedStageIds,
     stageProgress,
+    activityDays,
     updatedAt: isoNow()
   });
 }
@@ -286,6 +304,130 @@ export function progressStats(progressInput) {
     gold: values.filter((item) => item.medal === "gold").length,
     attempts: values.reduce((sum, item) => sum + item.attempts, 0)
   };
+}
+
+export function localDateKey(value = new Date()) {
+  const date = value instanceof Date ? value : new Date(value);
+  if (!Number.isFinite(date.getTime())) return "";
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+export function checkInStats(progressInput, today = localDateKey()) {
+  const progress = sanitizeProgress(progressInput);
+  const days = Object.keys(progress.activityDays).sort();
+  const dayNumbers = days.map(dayNumber).filter(Number.isFinite);
+  let longestStreak = 0;
+  let run = 0;
+  let previous = Number.NaN;
+  dayNumbers.forEach((value) => {
+    run = Number.isFinite(previous) && value === previous + 1 ? run + 1 : 1;
+    longestStreak = Math.max(longestStreak, run);
+    previous = value;
+  });
+
+  const checkedInToday = Object.hasOwn(progress.activityDays, today);
+  let cursor = dayNumber(today) - (checkedInToday ? 0 : 1);
+  let currentStreak = 0;
+  const set = new Set(dayNumbers);
+  while (set.has(cursor)) {
+    currentStreak += 1;
+    cursor -= 1;
+  }
+  return { checkedInToday, currentStreak, longestStreak, totalDays: days.length };
+}
+
+function sanitizeActivityDays(input) {
+  if (!input || typeof input !== "object" || Array.isArray(input)) return {};
+  const output = {};
+  let totalStages = 0;
+  Object.entries(input)
+    .filter(([date]) => validLocalDate(date))
+    // Keep newest bounded history first. If a hostile or very large payload
+    // exceeds the stage budget, old activity is discarded before a recent
+    // check-in can be lost.
+    .sort(([a], [b]) => b.localeCompare(a))
+    .slice(0, 400)
+    .forEach(([date, value]) => {
+      if (!value || typeof value !== "object" || Array.isArray(value)) return;
+      const stages = {};
+      if (value.stages && typeof value.stages === "object" && !Array.isArray(value.stages)) {
+        Object.entries(value.stages).forEach(([id, stage]) => {
+          if (totalStages >= 5000 || !parseStageId(id) || !stage || typeof stage !== "object" || Array.isArray(stage)) return;
+          const cleared = stage.cleared === true;
+          const requestedMedal = MEDAL_RANK[stage.medal] !== undefined ? stage.medal : "none";
+          stages[id] = {
+            cleared,
+            medal: cleared ? (requestedMedal === "none" ? "bronze" : requestedMedal) : "none",
+            updatedAt: validIso(stage.updatedAt) || validIso(value.updatedAt) || isoNow()
+          };
+          totalStages += 1;
+        });
+      }
+      if (Object.keys(stages).length) {
+        output[date] = {
+          stages,
+          updatedAt: validIso(value.updatedAt) || Object.values(stages).map((stage) => stage.updatedAt).sort().at(-1)
+        };
+      }
+    });
+  return output;
+}
+
+function migrateLegacyActivityDays(rawStageProgress, stageProgress) {
+  if (!rawStageProgress || typeof rawStageProgress !== "object" || Array.isArray(rawStageProgress)) return {};
+  const activityDays = {};
+  Object.entries(rawStageProgress).forEach(([id, raw]) => {
+    if (!parseStageId(id) || !raw || typeof raw !== "object" || Array.isArray(raw)) return;
+    const updatedAt = validIso(raw.updatedAt);
+    if (!updatedAt || !stageProgress[id]) return;
+    const date = localDateKey(updatedAt);
+    if (!date) return;
+    const day = activityDays[date] || { stages: {}, updatedAt };
+    const progress = stageProgress[id];
+    day.stages[id] = { cleared: progress.cleared, medal: progress.medal, updatedAt };
+    day.updatedAt = [day.updatedAt, updatedAt].sort().at(-1);
+    activityDays[date] = day;
+  });
+  return sanitizeActivityDays(activityDays);
+}
+
+function mergeActivityDays(leftInput, rightInput) {
+  const left = sanitizeActivityDays(leftInput);
+  const right = sanitizeActivityDays(rightInput);
+  const merged = {};
+  new Set([...Object.keys(left), ...Object.keys(right)]).forEach((date) => {
+    const a = left[date] || { stages: {}, updatedAt: "" };
+    const b = right[date] || { stages: {}, updatedAt: "" };
+    const stages = {};
+    new Set([...Object.keys(a.stages), ...Object.keys(b.stages)]).forEach((id) => {
+      const x = a.stages[id] || { cleared: false, medal: "none", updatedAt: "" };
+      const y = b.stages[id] || { cleared: false, medal: "none", updatedAt: "" };
+      const newer = Date.parse(x.updatedAt) >= Date.parse(y.updatedAt) ? x : y;
+      stages[id] = {
+        cleared: x.cleared || y.cleared,
+        medal: MEDAL_RANK[x.medal] >= MEDAL_RANK[y.medal] ? x.medal : y.medal,
+        updatedAt: newer.updatedAt
+      };
+    });
+    merged[date] = { stages, updatedAt: [a.updatedAt, b.updatedAt].sort().at(-1) };
+  });
+  return sanitizeActivityDays(merged);
+}
+
+function validLocalDate(value) {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const [year, month, day] = value.split("-").map(Number);
+  const date = new Date(year, month - 1, day, 12);
+  return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
+}
+
+function dayNumber(value) {
+  if (!validLocalDate(value)) return Number.NaN;
+  const [year, month, day] = value.split("-").map(Number);
+  return Math.floor(Date.UTC(year, month - 1, day) / 86400000);
 }
 
 function validIso(value) {

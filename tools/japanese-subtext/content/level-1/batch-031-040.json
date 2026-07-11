@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.1",
+  "contentVersion": "1.0.2",
   "level": 1,
   "batch": "031-040",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-031",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 31,
       "jlptTarget": "N3",
@@ -32,14 +32,15 @@
         "en": "Three festival committee members are choosing a poster design in a classroom. The deadline is close, but they disagree over keeping the photo or enlarging the text."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-031.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "「任せる」の本音の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘““交给你们”的真意”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"What 'I'll Leave It to You' Means\"."
+        },
+        "sha256": "6ebebb79e922047a2b963ca2be33525c9d6b98144fc8f573ef052fa463dbf2c9"
       },
       "cast": [
         {
@@ -294,7 +295,8 @@
                 "en": "She wholeheartedly supports the text-centered plan and is looking forward to the final result."
               },
               "ttsTextJa": "文字中心の案に心から賛成し、最後まで結果を楽しみにしている。",
-              "audioId": "L1-031-q1-a"
+              "audioId": "L1-031-q1-a",
+              "readingJa": "もじちゅーしんのあんにこころからさんせーし、さいごまでけっかをたのしみにしている。"
             },
             {
               "id": "b",
@@ -304,7 +306,8 @@
                 "en": "She is offering to handle only the printing herself."
               },
               "ttsTextJa": "自分で印刷作業だけを担当したいと申し出ている。",
-              "audioId": "L1-031-q1-b"
+              "audioId": "L1-031-q1-b",
+              "readingJa": "じぶんでいんさつさぎょーだけをたんとーしたいともーしでている。"
             },
             {
               "id": "c",
@@ -314,7 +317,8 @@
                 "en": "She is withdrawing from the discussion while remaining unhappy that her idea was dismissed."
               },
               "ttsTextJa": "議論から引くが、自分の案が退けられた不満は残っている。",
-              "audioId": "L1-031-q1-c"
+              "audioId": "L1-031-q1-c",
+              "readingJa": "ぎろんからひくが、じぶんのあんがしりぞけられたふまんわのこっている。"
             },
             {
               "id": "d",
@@ -324,7 +328,8 @@
                 "en": "She wants the others to execute her design as the main plan."
               },
               "ttsTextJa": "自分の案を中心にして、二人に作業を任せたい。",
-              "audioId": "L1-031-q1-d"
+              "audioId": "L1-031-q1-d",
+              "readingJa": "じぶんのあんをちゅーしんにして、ふたりにさぎょーをまかせたい。"
             }
           ],
           "correctOptionIds": [
@@ -375,13 +380,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "90c6fbacffff2686d587e4bbd9af586196b60c4fd0dda4628fc5b60cca1bbdf2"
+      "contentHash": "113c26a77315a13067e7af39e741f5190c8f34dabb69de63e32c31993870c6b2"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-032",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 32,
       "jlptTarget": "N3",
@@ -404,14 +409,15 @@
         "en": "In a company meeting, Eri is presenting a new membership campaign. Manager Shuji places the file from a campaign three years ago on the table."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-032.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "前にもあった企画の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“以前也有过的企划”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"A Proposal We've Seen Before\"."
+        },
+        "sha256": "4a74510c023c52f1655c36ec0a2b9c7a566e6454f47605b6d2655918fa824a7e"
       },
       "cast": [
         {
@@ -666,7 +672,8 @@
                 "en": "He is once again highly praising the reuse of the earlier proposal."
               },
               "ttsTextJa": "過去の案を再利用した点を、改めて高く評価している。",
-              "audioId": "L1-032-q1-a"
+              "audioId": "L1-032-q1-a",
+              "readingJa": "かこのあんをさいりよーしたてんを、あらためてたかくひょーかしている。"
             },
             {
               "id": "b",
@@ -676,7 +683,8 @@
                 "en": "He wants the team to check whether the problems from the earlier failure could recur."
               },
               "ttsTextJa": "以前の失敗と同じ問題がないか、確認してほしい。",
-              "audioId": "L1-032-q1-b"
+              "audioId": "L1-032-q1-b",
+              "readingJa": "いぜんのしっぱいとおなじもんだいがないか、かくにんしてほしい。"
             },
             {
               "id": "c",
@@ -686,7 +694,8 @@
                 "en": "He has decided to cancel the new proposal without further investigation."
               },
               "ttsTextJa": "詳しく調べずに新企画を中止すると決めている。",
-              "audioId": "L1-032-q1-c"
+              "audioId": "L1-032-q1-c",
+              "readingJa": "くわしくしらべずにしんきかくをちゅーしするときめている。"
             },
             {
               "id": "d",
@@ -696,7 +705,8 @@
                 "en": "He is asking them to use the same schedule as three years ago."
               },
               "ttsTextJa": "三年前と同じ日程で実施するよう求めている。",
-              "audioId": "L1-032-q1-d"
+              "audioId": "L1-032-q1-d",
+              "readingJa": "さんねんまえとおなじにってーでじっしするよーもとめている。"
             }
           ],
           "correctOptionIds": [
@@ -752,7 +762,8 @@
                 "en": "'I propose a first-month-free campaign.'"
               },
               "ttsTextJa": "初月無料キャンペーンを提案します。",
-              "audioId": "L1-032-q2-a"
+              "audioId": "L1-032-q2-a",
+              "readingJa": "はつずきむりょーきゃんぺーんをてーあんします。"
             },
             {
               "id": "b",
@@ -762,7 +773,8 @@
                 "en": "'It looks like sign-ups could increase over last time.'"
               },
               "ttsTextJa": "前回より申し込みが増えそうですね。",
-              "audioId": "L1-032-q2-b"
+              "audioId": "L1-032-q2-b",
+              "readingJa": "ぜんかいよりもーしこみがふえそーですね。"
             },
             {
               "id": "c",
@@ -772,7 +784,8 @@
                 "en": "'Do you mean the campaign from three years ago?'"
               },
               "ttsTextJa": "三年前の企画でしょうか。",
-              "audioId": "L1-032-q2-c"
+              "audioId": "L1-032-q2-c",
+              "readingJa": "さんねんまえのきかくでしょーか。"
             },
             {
               "id": "d",
@@ -782,7 +795,8 @@
                 "en": "'Cancellations rose after the free period. Please review the numbers again.'"
               },
               "ttsTextJa": "無料期間の後に解約が増えました。数字をもう一度見てください。",
-              "audioId": "L1-032-q2-d"
+              "audioId": "L1-032-q2-d",
+              "readingJa": "むりょーきかんのあとにかいやくがふえました。すーじをもーいちどみてください。"
             }
           ],
           "correctOptionIds": [
@@ -831,13 +845,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "b399f9fb08fce32123c66537aa626576d6a2944d522a242bf7c96feef43b2610"
+      "contentHash": "33bab3234671ab0f125ab246aefe56782669ba8662dde414177dc19bc3a34df9"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-033",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 33,
       "jlptTarget": "N3",
@@ -861,14 +875,15 @@
         "en": "Haruka arrives at a restaurant for dinner with her friend Sayaka. In addition to their table, a second table in the back is reserved under Haruka's family name."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-033.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "二つの予約名の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“两个预约姓名”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Two Names on the Reservation List\"."
+        },
+        "sha256": "327046cdb969e906ef751f2cbbe2b2a3308265ea0d060f4a8b8c32336308f9d4"
       },
       "cast": [
         {
@@ -1147,7 +1162,8 @@
                 "en": "She wants to keep the birthday surprise being prepared in the back hidden a little longer."
               },
               "ttsTextJa": "奥で準備している誕生日のサプライズを、もう少し隠しておきたい。",
-              "audioId": "L1-033-q1-a"
+              "audioId": "L1-033-q1-a",
+              "readingJa": "おくでじゅんびしているたんじょーびのさぷらいずを、もーすこしかくしておきたい。"
             },
             {
               "id": "b",
@@ -1157,7 +1173,8 @@
                 "en": "She genuinely wants Sayaka to leave because she does not want dinner with her."
               },
               "ttsTextJa": "沙耶香とは夕食を食べたくないので、本当に帰ってほしい。",
-              "audioId": "L1-033-q1-b"
+              "audioId": "L1-033-q1-b",
+              "readingJa": "さやかとわゆーしょくをたべたくないので、ほんとーにかえってほしい。"
             },
             {
               "id": "c",
@@ -1167,7 +1184,8 @@
                 "en": "She has completely forgotten the date and believes the dinner is on another day."
               },
               "ttsTextJa": "約束の日を完全に忘れ、別の日だと思い込んでいる。",
-              "audioId": "L1-033-q1-c"
+              "audioId": "L1-033-q1-c",
+              "readingJa": "やくそくのひをかんぜんにわすれ、べつのひだとおもいこんでいる。"
             },
             {
               "id": "d",
@@ -1177,7 +1195,8 @@
                 "en": "She wants both of them to leave because she does not want to pay for two reservations."
               },
               "ttsTextJa": "二つの予約の料金を払いたくないので、二人で店を出ようとしている。",
-              "audioId": "L1-033-q1-d"
+              "audioId": "L1-033-q1-d",
+              "readingJa": "ふたつのよやくのりょーきんをはらいたくないので、ふたりでみせをでよーとしている。"
             }
           ],
           "correctOptionIds": [
@@ -1229,13 +1248,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "a0f2c0c1118cb2fa78d1b68bd17ac04d98e0249e1998db1ff89edeeec5c39e79"
+      "contentHash": "6ad560a3b8d22c4f877ed37c12b1f11b049bc9d2ffda3d36ec6c3aa145cba713"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-034",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 34,
       "jlptTarget": "N3",
@@ -1258,14 +1277,15 @@
         "en": "At the airport check-in area, Mari weighs their checked bag and finds it two kilograms over the limit. Takumi starts opening it."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-034.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "機内で使うお土産の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“要在机上使用的纪念品”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"A Souvenir for the Flight\"."
+        },
+        "sha256": "fc896663d7393c5c6c0c35b2303d4789fbc3911748b8b481d37a966fd82330f5"
       },
       "cast": [
         {
@@ -1529,7 +1549,8 @@
                 "en": "He wants to hold the ornament in both hands throughout the flight to prevent damage."
               },
               "ttsTextJa": "置物が壊れないよう、飛行中ずっと両手で持っていたい。",
-              "audioId": "L1-034-q1-a"
+              "audioId": "L1-034-q1-a",
+              "readingJa": "おきものがこわれないよー、ひこーちゅうずっとりょーてでもっていたい。"
             },
             {
               "id": "b",
@@ -1539,7 +1560,8 @@
                 "en": "He wants to give it to a flight attendant as a gift."
               },
               "ttsTextJa": "客室乗務員への贈り物として渡したい。",
-              "audioId": "L1-034-q1-b"
+              "audioId": "L1-034-q1-b",
+              "readingJa": "きゃくしつじょーむいんえのおくりものとしてわたしたい。"
             },
             {
               "id": "c",
@@ -1549,7 +1571,8 @@
                 "en": "He plans to use it as a pillow on the plane."
               },
               "ttsTextJa": "機内で枕の代わりに使う予定がある。",
-              "audioId": "L1-034-q1-c"
+              "audioId": "L1-034-q1-c",
+              "readingJa": "きないでまくらのかわりにつかうよてーがある。"
             },
             {
               "id": "d",
@@ -1559,7 +1582,8 @@
                 "en": "He wants to bring the checked bag closer to the weight limit and avoid an excess fee."
               },
               "ttsTextJa": "預け荷物を制限内の重さに近づけ、超過料金を避けたい。",
-              "audioId": "L1-034-q1-d"
+              "audioId": "L1-034-q1-d",
+              "readingJa": "あずけにもつをせーげんないのおもさにちかずけ、ちょーかりょーきんをさけたい。"
             }
           ],
           "correctOptionIds": [
@@ -1617,7 +1641,8 @@
                 "en": "'Move this heavy wooden ornament into my carry-on bag.'"
               },
               "ttsTextJa": "「この重い木の置物を手提げ鞄へ移す」",
-              "audioId": "L1-034-q2-a"
+              "audioId": "L1-034-q2-a",
+              "readingJa": "「このおもいきのおきものをてさげかばんえうつす」"
             },
             {
               "id": "b",
@@ -1627,7 +1652,8 @@
                 "en": "'If it's in my carry-on, it reduces the checked bag's weight.'"
               },
               "ttsTextJa": "手提げなら、預ける荷物の重さを減らせる。",
-              "audioId": "L1-034-q2-b"
+              "audioId": "L1-034-q2-b",
+              "readingJa": "てさげなら、あずけるにもつのおもさをへらせる。"
             },
             {
               "id": "c",
@@ -1637,7 +1663,8 @@
                 "en": "'That's a pretty heavy souvenir.'"
               },
               "ttsTextJa": "それ、かなり重いお土産だよ。",
-              "audioId": "L1-034-q2-c"
+              "audioId": "L1-034-q2-c",
+              "readingJa": "それ、かなりおもいおみやげだよ。"
             },
             {
               "id": "d",
@@ -1647,7 +1674,8 @@
                 "en": "'Because I'll use this on the plane.'"
               },
               "ttsTextJa": "これは機内で使うから。",
-              "audioId": "L1-034-q2-d"
+              "audioId": "L1-034-q2-d",
+              "readingJa": "これわきないでつかうから。"
             }
           ],
           "correctOptionIds": [
@@ -1697,13 +1725,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "ba169ecc32fcea82edde7d0ce9269a970ca9ff899df164371ad2382fc6077327"
+      "contentHash": "3d7244658210b82cbc5bee40ffdff3f4570791c8b9f56668a47b92cce727b0b7"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-035",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 35,
       "jlptTarget": "N3",
@@ -1727,14 +1755,15 @@
         "en": "Kaito mixed up the meeting time and messages Yuna that he will be thirty minutes late. Her replies arrive immediately."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-035.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "三匹の怒った猫の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“三只生气的猫”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Three Angry Cats\"."
+        },
+        "sha256": "b641c94f6954f42550052a9bf9bc98affb00af675295c14ff1d2f80020312a63"
       },
       "cast": [
         {
@@ -1944,7 +1973,8 @@
                 "en": "She does not mind the lateness at all and has already forgotten everything about it."
               },
               "ttsTextJa": "遅刻をまったく気にしておらず、すでに全部忘れている。",
-              "audioId": "L1-035-q1-a"
+              "audioId": "L1-035-q1-a",
+              "readingJa": "ちこくをまったくきにしておらず、すでにぜんぶわすれている。"
             },
             {
               "id": "b",
@@ -1954,7 +1984,8 @@
                 "en": "She is trying to cheer Kaito up with angry-cat stickers."
               },
               "ttsTextJa": "怒った猫のスタンプで海斗を喜ばせようとしている。",
-              "audioId": "L1-035-q1-b"
+              "audioId": "L1-035-q1-b",
+              "readingJa": "おこったねこのすたんぷでかいとをよろこばせよーとしている。"
             },
             {
               "id": "c",
@@ -1964,7 +1995,8 @@
                 "en": "Her words say there is no problem, but she is still upset."
               },
               "ttsTextJa": "言葉では問題ないと言っているが、まだ不満が残っている。",
-              "audioId": "L1-035-q1-c"
+              "audioId": "L1-035-q1-c",
+              "readingJa": "ことばでわもんだいないといっているが、まだふまんがのこっている。"
             },
             {
               "id": "d",
@@ -1974,7 +2006,8 @@
                 "en": "Her battery is low, so she wants to end the chat quickly."
               },
               "ttsTextJa": "電池が少ないので、会話を急いで終わらせたい。",
-              "audioId": "L1-035-q1-d"
+              "audioId": "L1-035-q1-d",
+              "readingJa": "でんちがすくないので、かいわをいそいでおわらせたい。"
             }
           ],
           "correctOptionIds": [
@@ -2027,13 +2060,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "36cf68aedb3977b4e11e5919dbd4826d2a4540a2cbe9e0b7536955de3a9d0ba1"
+      "contentHash": "f24226387624eb19ad6543608b372c6a0542b58cc52c03e8e3d5b81de929a08b"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-036",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 36,
       "jlptTarget": "N3",
@@ -2058,14 +2091,15 @@
         "en": "At a station vending machine, Ryota's coin is repeatedly returned. The screen shows no fault message, only guidance about how to speak."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-036.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "礼儀を待つ自販機の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“等待礼貌用语的自动售货机”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Vending Machine Waiting for Manners\"."
+        },
+        "sha256": "0de027ea8f0b34f2de1fe6e27ffb0970b05e288df3beeaa3e11f026707f5cdd0"
       },
       "cast": [
         {
@@ -2320,7 +2354,8 @@
                 "en": "The hundred-yen coin was damaged and unreadable."
               },
               "ttsTextJa": "百円硬貨に傷があり、読み取れなかった。",
-              "audioId": "L1-036-q1-a"
+              "audioId": "L1-036-q1-a",
+              "readingJa": "ひゃくえんこーかにきずがあり、よみとれなかった。"
             },
             {
               "id": "b",
@@ -2330,7 +2365,8 @@
                 "en": "The AI was waiting for a polite request."
               },
               "ttsTextJa": "AIが丁寧な頼み方を待っていた。",
-              "audioId": "L1-036-q1-b"
+              "audioId": "L1-036-q1-b",
+              "readingJa": "えーあいがてーねーなたのみかたをまっていた。"
             },
             {
               "id": "c",
@@ -2340,7 +2376,8 @@
                 "en": "The coffee was sold out."
               },
               "ttsTextJa": "コーヒーが売り切れていた。",
-              "audioId": "L1-036-q1-c"
+              "audioId": "L1-036-q1-c",
+              "readingJa": "こーひーがうりきれていた。"
             },
             {
               "id": "d",
@@ -2350,7 +2387,8 @@
                 "en": "Ryota had not inserted enough money."
               },
               "ttsTextJa": "涼太が必要な金額を足していなかった。",
-              "audioId": "L1-036-q1-d"
+              "audioId": "L1-036-q1-d",
+              "readingJa": "りょーたがひつよーなきんがくをたしていなかった。"
             }
           ],
           "correctOptionIds": [
@@ -2407,7 +2445,8 @@
                 "en": "Ryota inserted the same coin twice."
               },
               "ttsTextJa": "涼太が同じ硬貨を二回入れたこと。",
-              "audioId": "L1-036-q2-a"
+              "audioId": "L1-036-q2-a",
+              "readingJa": "りょーたがおなじこーかをにかいいれたこと。"
             },
             {
               "id": "b",
@@ -2417,7 +2456,8 @@
                 "en": "The machine said thank you at the end."
               },
               "ttsTextJa": "自販機が最後に礼を言ったこと。",
-              "audioId": "L1-036-q2-b"
+              "audioId": "L1-036-q2-b",
+              "readingJa": "じはんきがさいごにれーをいったこと。"
             },
             {
               "id": "c",
@@ -2427,7 +2467,8 @@
                 "en": "Ryota chose coffee."
               },
               "ttsTextJa": "涼太がコーヒーを選んだこと。",
-              "audioId": "L1-036-q2-c"
+              "audioId": "L1-036-q2-c",
+              "readingJa": "りょーたがこーひーをえらんだこと。"
             },
             {
               "id": "d",
@@ -2437,7 +2478,8 @@
                 "en": "The machine opened item selection immediately after Ryota said please."
               },
               "ttsTextJa": "お願いしますと言った直後に、商品選択へ進んだこと。",
-              "audioId": "L1-036-q2-d"
+              "audioId": "L1-036-q2-d",
+              "readingJa": "おねがいしますといったちょくごに、しょーひんせんたくえすすんだこと。"
             }
           ],
           "correctOptionIds": [
@@ -2487,13 +2529,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "6475c07d16fd2929d53739d100c92bfb813f70d2af57348702213e91fdaee155"
+      "contentHash": "9cee59910896c6de543afb2dade145f749066ed21ca377daaae856621f36e5a1"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-037",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 37,
       "jlptTarget": "N3",
@@ -2517,14 +2559,15 @@
         "en": "In a kitchen shared by three people, a cake left in the refrigerator has disappeared. Yui questions Makoto and Aya."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-037.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "急いで洗った皿の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“匆忙洗过的盘子”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Hastily Washed Plate\"."
+        },
+        "sha256": "945dcd82996fcd5fcd672e5ee232ff68718171f379d090476c02a33bb6a478c2"
       },
       "cast": [
         {
@@ -2800,7 +2843,8 @@
                 "en": "Makoto was likely involved with the cake, so his denial remains doubtful."
               },
               "ttsTextJa": "誠はケーキに関わった可能性が高く、否定には疑問が残る。",
-              "audioId": "L1-037-q1-a"
+              "audioId": "L1-037-q1-a",
+              "readingJa": "まことわけーきにかかわったかのうせいがたかく、ひてーにわぎもんがのこる。"
             },
             {
               "id": "b",
@@ -2810,7 +2854,8 @@
                 "en": "Aya ate the cake before coming home."
               },
               "ttsTextJa": "彩が帰宅する前にケーキを食べた。",
-              "audioId": "L1-037-q1-b"
+              "audioId": "L1-037-q1-b",
+              "readingJa": "いろどりがきたくするまえにけーきをたべた。"
             },
             {
               "id": "c",
@@ -2820,7 +2865,8 @@
                 "en": "The cake was never in the refrigerator."
               },
               "ttsTextJa": "ケーキは最初から冷蔵庫になかった。",
-              "audioId": "L1-037-q1-c"
+              "audioId": "L1-037-q1-c",
+              "readingJa": "けーきわさいしょかられーぞーこになかった。"
             },
             {
               "id": "d",
@@ -2830,7 +2876,8 @@
                 "en": "Yui hid all the other plates elsewhere."
               },
               "ttsTextJa": "由衣がすべての皿を別の場所へ隠した。",
-              "audioId": "L1-037-q1-d"
+              "audioId": "L1-037-q1-d",
+              "readingJa": "よしころもがすべてのさらをべつのばしょえかくした。"
             }
           ],
           "correctOptionIds": [
@@ -2882,13 +2929,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "507287fa122009cea8c8791d0c1feaf25d5437fdf04fc6d202a1e9c909180adc"
+      "contentHash": "c142b0d3461d810db64e8723da0b72f2105736a78f85f0bdedba272eb187d175"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-038",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 38,
       "jlptTarget": "N3",
@@ -2912,14 +2959,15 @@
         "en": "At an unmanned station at night, Haruka gets off the last train alone. A familiar voice comes through a system that should be silent."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-038.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "無人駅の呼び名の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“无人车站里的小名”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"A Childhood Name at an Empty Station\"."
+        },
+        "sha256": "05ffb9042150591d6fc02dc918099fee1053f7955cd99e4f0b907413fa594795"
       },
       "cast": [
         {
@@ -3198,7 +3246,8 @@
                 "en": "A routine lost-property announcement the station plays to all passengers every night."
               },
               "ttsTextJa": "すべての乗客向けに、駅が毎晩流す通常の忘れ物案内。",
-              "audioId": "L1-038-q1-a"
+              "audioId": "L1-038-q1-a",
+              "readingJa": "すべてのじょーきゃくむけに、えきがまいばんながすつーじょーのわすれものあんない。"
             },
             {
               "id": "b",
@@ -3208,7 +3257,8 @@
                 "en": "A generic lost-property notice read live by station staff."
               },
               "ttsTextJa": "駅員がその場で読む一般的な忘れ物案内。",
-              "audioId": "L1-038-q1-b"
+              "audioId": "L1-038-q1-b",
+              "readingJa": "えきいんがそのばでよむいっぱんてきなわすれものあんない。"
             },
             {
               "id": "c",
@@ -3218,7 +3268,8 @@
                 "en": "Audio accidentally playing from Haruka's phone."
               },
               "ttsTextJa": "春香の携帯電話から偶然流れた音声。",
-              "audioId": "L1-038-q1-c"
+              "audioId": "L1-038-q1-c",
+              "readingJa": "はるかのけーたいでんわからぐーぜんながれたおんせー。"
             },
             {
               "id": "d",
@@ -3228,7 +3279,8 @@
                 "en": "A recording left by someone who knows Haruka well, possibly her mother."
               },
               "ttsTextJa": "春香をよく知る人が残した録音で、母親の可能性がある。",
-              "audioId": "L1-038-q1-d"
+              "audioId": "L1-038-q1-d",
+              "readingJa": "はるかをよくしるひとがのこしたろくおんで、ははおやのかのうせいがある。"
             }
           ],
           "correctOptionIds": [
@@ -3287,7 +3339,8 @@
                 "en": "Only the absence of other passengers."
               },
               "ttsTextJa": "駅にほかの乗客がいないことだけ。",
-              "audioId": "L1-038-q2-a"
+              "audioId": "L1-038-q2-a",
+              "readingJa": "えきにほかのじょーきゃくがいないことだけ。"
             },
             {
               "id": "b",
@@ -3297,7 +3350,8 @@
                 "en": "It knows her family-only nickname and the gloves knitted by her mother."
               },
               "ttsTextJa": "家族だけの呼び名と、母が編んだ手袋を知っていること。",
-              "audioId": "L1-038-q2-b"
+              "audioId": "L1-038-q2-b",
+              "readingJa": "かぞくだけのよびなと、ははがあんだてぶくろをしっていること。"
             },
             {
               "id": "c",
@@ -3307,7 +3361,8 @@
                 "en": "It happens after the last train."
               },
               "ttsTextJa": "時刻が終電のあとであること。",
-              "audioId": "L1-038-q2-c"
+              "audioId": "L1-038-q2-c",
+              "readingJa": "じこくがしゅーでんのあとであること。"
             },
             {
               "id": "d",
@@ -3317,7 +3372,8 @@
                 "en": "There is a bench numbered three."
               },
               "ttsTextJa": "ホームに三番ベンチがあること。",
-              "audioId": "L1-038-q2-d"
+              "audioId": "L1-038-q2-d",
+              "readingJa": "ほーむにさんばんべんちがあること。"
             }
           ],
           "correctOptionIds": [
@@ -3368,13 +3424,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "36f20480cef2b8939870595554a2eeb2d18eb2670121d22a04abaec109886080"
+      "contentHash": "789b797ce3bdb55106bb1ec979d18c21811ae6c6d45670e75570e02a32b5e7cf"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-039",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 39,
       "jlptTarget": "N3",
@@ -3398,14 +3454,15 @@
         "en": "A dragon in a mountain castle claims its duty is to guard treasure, yet whenever guests leave, it keeps the gate open longer than necessary."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-039.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "閉じない城門の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“迟迟不关的城门”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Gate That Stayed Open\"."
+        },
+        "sha256": "316a494d6f5911b153fb193b395b98e778dfa7f3f16e2b7b3c39ae69cfcea37c"
       },
       "cast": [
         {
@@ -3711,7 +3768,8 @@
                 "en": "It wants Rina to repair the gate."
               },
               "ttsTextJa": "リナに城門を修理してほしい。",
-              "audioId": "L1-039-q1-a"
+              "audioId": "L1-039-q1-a",
+              "readingJa": "りなにじょーもんをしゅーりしてほしい。"
             },
             {
               "id": "b",
@@ -3721,7 +3779,8 @@
                 "en": "It wants to reveal the treasure's location to every villager."
               },
               "ttsTextJa": "宝の場所を村の人全員に知らせたい。",
-              "audioId": "L1-039-q1-b"
+              "audioId": "L1-039-q1-b",
+              "readingJa": "たからのばしょをむらのひとぜんいんにしらせたい。"
             },
             {
               "id": "c",
@@ -3731,7 +3790,8 @@
                 "en": "It is lonely and wants its guests to stay a little longer."
               },
               "ttsTextJa": "寂しくて、客にもう少し残ってほしい。",
-              "audioId": "L1-039-q1-c"
+              "audioId": "L1-039-q1-c",
+              "readingJa": "さびしくて、きゃくにもーすこしのこってほしい。"
             },
             {
               "id": "d",
@@ -3741,7 +3801,8 @@
                 "en": "It does not know how to close the gate."
               },
               "ttsTextJa": "門の閉め方を知らない。",
-              "audioId": "L1-039-q1-d"
+              "audioId": "L1-039-q1-d",
+              "readingJa": "もんのしめかたをしらない。"
             }
           ],
           "correctOptionIds": [
@@ -3793,13 +3854,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "fb983c8c6a009e41294c914ef4cfc38fb95af13f1f2a1d306e6807f4c85608be"
+      "contentHash": "8a95c620eb4a53de2692d00b668d166e515710d519125eef2110bd3f70b1e031"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-040",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 40,
       "jlptTarget": "N3",
@@ -3825,12 +3886,13 @@
       "illustration": {
         "enabled": true,
         "src": "assets/stages/l1-040.webp",
-        "style": "crayon",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "星が見える宇宙船の子ども部屋で、見守りロボットが美緒に子守歌を聞かせる彩色クレヨン風イラスト。",
-          "zh": "彩色蜡笔风插图：能看见星空的飞船儿童舱内，陪护机器人为美绪播放摇篮曲。",
-          "en": "Color crayon-style illustration of a companion-care robot playing a lullaby for Mio in a star-lit spacecraft cabin."
-        }
+          "ja": "残り三パーセントの子守歌の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“剩余百分之三的摇篮曲”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"A Lullaby at Three Percent\"."
+        },
+        "sha256": "f99bccdf004c2f0c9d5e98454c164ae59e71108f297e42fee1bdb1c15a06016f"
       },
       "cast": [
         {
@@ -4121,7 +4183,8 @@
                 "en": "Restoring only its own power completely as soon as possible."
               },
               "ttsTextJa": "できるだけ早く自分だけの電力を完全に回復すること。",
-              "audioId": "L1-040-q1-a"
+              "audioId": "L1-040-q1-a",
+              "readingJa": "できるだけはやくじぶんだけのでんりょくをかんぜんにかいふくすること。"
             },
             {
               "id": "b",
@@ -4131,7 +4194,8 @@
                 "en": "Mio's comfort and sleep over charging immediately."
               },
               "ttsTextJa": "すぐ充電することより、美緒が安心して眠れること。",
-              "audioId": "L1-040-q1-b"
+              "audioId": "L1-040-q1-b",
+              "readingJa": "すぐじゅーでんすることより、みおがあんしんしてねむれること。"
             },
             {
               "id": "c",
@@ -4141,7 +4205,8 @@
                 "en": "Ignoring every order it receives from now on."
               },
               "ttsTextJa": "受信した命令を今後すべて無視すること。",
-              "audioId": "L1-040-q1-c"
+              "audioId": "L1-040-q1-c",
+              "readingJa": "じゅしんしためーれーをこんごすべてむしすること。"
             },
             {
               "id": "d",
@@ -4151,7 +4216,8 @@
                 "en": "Testing the speaker used for lullabies."
               },
               "ttsTextJa": "子守歌用のスピーカーを試験すること。",
-              "audioId": "L1-040-q1-d"
+              "audioId": "L1-040-q1-d",
+              "readingJa": "こもりかよーのすぴーかーをしけんすること。"
             }
           ],
           "correctOptionIds": [
@@ -4211,7 +4277,8 @@
                 "en": "The robot regards Mio as an obstacle to its work."
               },
               "ttsTextJa": "ロボットは美緒を作業の邪魔だと考えている。",
-              "audioId": "L1-040-q2-a"
+              "audioId": "L1-040-q2-a",
+              "readingJa": "ろぼっとわみおをさぎょーのじゃまだとかんがえている。"
             },
             {
               "id": "b",
@@ -4221,7 +4288,8 @@
                 "en": "The robot wants Mio to take charge of recharging it."
               },
               "ttsTextJa": "ロボットは美緒に自分の充電作業を任せようとしている。",
-              "audioId": "L1-040-q2-b"
+              "audioId": "L1-040-q2-b",
+              "readingJa": "ろぼっとわみおにじぶんのじゅーでんさぎょーをまかせよーとしている。"
             },
             {
               "id": "c",
@@ -4231,7 +4299,8 @@
                 "en": "The robot does not notice Mio's anxiety."
               },
               "ttsTextJa": "ロボットは美緒の不安に気づいていない。",
-              "audioId": "L1-040-q2-c"
+              "audioId": "L1-040-q2-c",
+              "readingJa": "ろぼっとわみおのふあんにきずいていない。"
             },
             {
               "id": "d",
@@ -4241,7 +4310,8 @@
                 "en": "The robot acts as a companion responsible for reassuring Mio."
               },
               "ttsTextJa": "ロボットは美緒を安心させる見守り役として行動している。",
-              "audioId": "L1-040-q2-d"
+              "audioId": "L1-040-q2-d",
+              "readingJa": "ろぼっとわみおをあんしんさせるみまもりやくとしてこーどーしている。"
             }
           ],
           "correctOptionIds": [
@@ -4292,7 +4362,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "e231aea084a07aed49ed046084d95a8ae3eea37a63d5ef54e68c6f7cfb167333"
+      "contentHash": "fc2e11c69854fc5434b3beba20f7646304dac201c6667a813c97291e4052f165"
     }
   ]
 }

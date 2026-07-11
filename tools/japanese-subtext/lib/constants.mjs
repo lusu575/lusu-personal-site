@@ -1,4 +1,4 @@
-export const CONTENT_VERSION = "1.0.1";
+export const CONTENT_VERSION = "1.0.2";
 export const PROGRESS_KEY = "lusu.japaneseSubtext.progress.v1";
 export const SETTINGS_KEY = "lusu.japaneseSubtext.settings.v1";
 export const MODE_ONBOARDING_KEY = "lusu.japaneseSubtext.modeOnboarding.v1";

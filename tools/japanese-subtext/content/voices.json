@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.1",
+  "contentVersion": "1.0.2",
   "voices": {
     "female-soft": { "gender": "female", "label": { "ja": "やさしい女性", "zh": "温柔女声", "en": "Soft female" } },
     "female-bright": { "gender": "female", "label": { "ja": "明るい女性", "zh": "活泼女声", "en": "Bright female" } },

@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.1",
+  "contentVersion": "1.0.2",
   "level": 2,
   "batch": "001-010",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-001",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 1,
       "jlptTarget": "N2",
@@ -31,14 +31,15 @@
         "en": "Kazuya, a section chief, and Chihiro speak formally during a planning meeting, then abruptly change how they address each other in the hall."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-001.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "会議室の外ではの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“走出会议室之后”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Outside the Meeting Room\"."
+        },
+        "sha256": "8dd07aa9d832a9eaa5d040c048b92b176b1a1f30111b5fc212a579124d36f697"
       },
       "cast": [
         {
@@ -188,7 +189,8 @@
                 "en": "They introduced themselves for the first time after the meeting."
               },
               "ttsTextJa": "会議の後で初めて自己紹介をした。",
-              "audioId": "L2-001-q1-a"
+              "audioId": "L2-001-q1-a",
+              "readingJa": "かいぎのあとではじめてじこしょーかいをした。"
             },
             {
               "id": "b",
@@ -198,7 +200,8 @@
                 "en": "Chihiro has lost respect for her section chief."
               },
               "ttsTextJa": "千尋は課長への敬意を失った。",
-              "audioId": "L2-001-q1-b"
+              "audioId": "L2-001-q1-b",
+              "readingJa": "ちひろわかちょーえのけーいをうしなった。"
             },
             {
               "id": "c",
@@ -208,7 +211,8 @@
                 "en": "In meetings and hallways alike, they always use only nicknames regardless of rank."
               },
               "ttsTextJa": "二人は社内の会議中も廊下でも、相手の立場に関係なくいつも愛称だけを使う。",
-              "audioId": "L2-001-q1-c"
+              "audioId": "L2-001-q1-c",
+              "readingJa": "ふたりわしゃないのかいぎちゅうもろーかでも、あいてのたちばにかんけーなくいつもあいしょーだけをつかう。"
             },
             {
               "id": "d",
@@ -218,7 +222,8 @@
                 "en": "In public they observe workplace hierarchy, while privately they speak as old friends."
               },
               "ttsTextJa": "公では上下関係を守り、私的には昔からの友人として話す。",
-              "audioId": "L2-001-q1-d"
+              "audioId": "L2-001-q1-d",
+              "readingJa": "おーやけでわじょーげかんけーをまもり、してきにわむかしからのゆーじんとしてはなす。"
             }
           ],
           "correctOptionIds": [
@@ -269,13 +274,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "37f68ca76d052b9cd937b0e8d621b29ea9992f4531fdb3978c2db18ba680e168"
+      "contentHash": "423a6dafd0a0cf559033b7a7f8bbfa3203c5363cda45cba10870b47be6aaf984"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-002",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 2,
       "jlptTarget": "N2",
@@ -299,14 +304,15 @@
         "en": "Naoto serves Eri a trial cake. She gives a restrained verdict while immediately taking a second bite."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-002.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "悪くない二口目の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘““不差”的第二口”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"A Not-Bad Second Bite\"."
+        },
+        "sha256": "2ea7ebbaccc4205e80c918b4db8448cc5d3f25ee9ca9b94b4ee014acbc54f98c"
       },
       "cast": [
         {
@@ -429,7 +435,8 @@
                 "en": "She dislikes it and wants to refuse another bite."
               },
               "ttsTextJa": "味が悪く、二口目を断りたい。",
-              "audioId": "L2-002-q1-a"
+              "audioId": "L2-002-q1-a",
+              "readingJa": "あじがわるく、ふたくちめをことわりたい。"
             },
             {
               "id": "b",
@@ -439,7 +446,8 @@
                 "en": "She is evaluating the plate size rather than the taste."
               },
               "ttsTextJa": "味より皿の大きさを評価している。",
-              "audioId": "L2-002-q1-b"
+              "audioId": "L2-002-q1-b",
+              "readingJa": "あじよりさらのおーきさをひょーかしている。"
             },
             {
               "id": "c",
@@ -449,7 +457,8 @@
                 "en": "Her wording is restrained, but she actually likes it quite a lot."
               },
               "ttsTextJa": "言い方は控えめだが、実際にはかなり気に入っている。",
-              "audioId": "L2-002-q1-c"
+              "audioId": "L2-002-q1-c",
+              "readingJa": "いーかたわひかえめだが、じっさいにわかなりきにいっている。"
             },
             {
               "id": "d",
@@ -459,7 +468,8 @@
                 "en": "She cannot judge yet because she has not tasted even one bite."
               },
               "ttsTextJa": "まだ一口も味見をしていないので、今は判断できない。",
-              "audioId": "L2-002-q1-d"
+              "audioId": "L2-002-q1-d",
+              "readingJa": "まだひとくちもあじみをしていないので、いまわはんだんできない。"
             }
           ],
           "correctOptionIds": [
@@ -508,13 +518,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "e2ae63edb3938f9f51a48804daacdf51841e10c9a8525906068ad27619536896"
+      "contentHash": "fcc4021c407b4c9bc49d6857a7fc3c6c3fc6199e6e105c29ab5a01e7f4af7f8c"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-003",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 3,
       "jlptTarget": "N2",
@@ -537,14 +547,15 @@
         "en": "After school, Makoto invites Ryo to join the student council. Ryo postpones his answer without showing interest in how to apply."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-003.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "考えておくの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘““我会考虑””场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"I Will Think About It\"."
+        },
+        "sha256": "c4acb803b8019af59290a19fcb89991758efdc3c62c8c5d5e102cec392c40a94"
       },
       "cast": [
         {
@@ -694,7 +705,8 @@
                 "en": "He promises to apply on Friday."
               },
               "ttsTextJa": "金曜日に必ず申し込むと約束している。",
-              "audioId": "L2-003-q1-a"
+              "audioId": "L2-003-q1-a",
+              "readingJa": "きんよーびにかならずもーしこむとやくそくしている。"
             },
             {
               "id": "b",
@@ -704,7 +716,8 @@
                 "en": "He is most likely declining softly by postponing the answer."
               },
               "ttsTextJa": "返事を保留する形で、やわらかく断っている可能性が高い。",
-              "audioId": "L2-003-q1-b"
+              "audioId": "L2-003-q1-b",
+              "readingJa": "へんじをほりゅーするかたちで、やわらかくことわっているかのうせいがたかい。"
             },
             {
               "id": "c",
@@ -714,7 +727,8 @@
                 "en": "He only dislikes the color of the form."
               },
               "ttsTextJa": "用紙の色だけが気に入らない。",
-              "audioId": "L2-003-q1-c"
+              "audioId": "L2-003-q1-c",
+              "readingJa": "よーしのいろだけがきにいらない。"
             },
             {
               "id": "d",
@@ -724,7 +738,8 @@
                 "en": "He wants the deadline moved earlier."
               },
               "ttsTextJa": "申込期限をもっと早めてほしい。",
-              "audioId": "L2-003-q1-d"
+              "audioId": "L2-003-q1-d",
+              "readingJa": "もーしこみきげんをもっとはやめてほしい。"
             }
           ],
           "correctOptionIds": [
@@ -774,13 +789,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "6dcb30e8981b8e9531d3c4dfcf92292d579135d05f1526b757311ae43ff39a3e"
+      "contentHash": "5955b49b65f4cb01e865f103e018c8dd8f243eead662600cf76294095103070c"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-004",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 4,
       "jlptTarget": "N2",
@@ -803,14 +818,15 @@
         "en": "At his reserved inn, Kenji learns that the requested main building is full. Attendant Kayo offers another key."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-004.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "離れの鍵の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“别馆的钥匙”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Annex Key\"."
+        },
+        "sha256": "39049897416ed3a71991ef81d340c2fead0dd0a8865cee797a30815cd8d7ea29"
       },
       "cast": [
         {
@@ -933,7 +949,8 @@
                 "en": "She is trying to help by offering the annex as a substitute."
               },
               "ttsTextJa": "希望の部屋の代わりに、離れを提案して助けようとしている。",
-              "audioId": "L2-004-q1-a"
+              "audioId": "L2-004-q1-a",
+              "readingJa": "きぼーのへやのかわりに、はなれをてーあんしてだすけよーとしている。"
             },
             {
               "id": "b",
@@ -943,7 +960,8 @@
                 "en": "She is asking him to cancel the reservation entirely."
               },
               "ttsTextJa": "予約そのものを取り消すよう求めている。",
-              "audioId": "L2-004-q1-b"
+              "audioId": "L2-004-q1-b",
+              "readingJa": "よやくそのものをとりけすよーもとめている。"
             },
             {
               "id": "c",
@@ -953,7 +971,8 @@
                 "en": "She is complaining that the main building is noisy."
               },
               "ttsTextJa": "本館が静かではないと苦情を言っている。",
-              "audioId": "L2-004-q1-c"
+              "audioId": "L2-004-q1-c",
+              "readingJa": "ほんかんがしずかでわないとくじょーをいっている。"
             },
             {
               "id": "d",
@@ -963,7 +982,8 @@
                 "en": "She is ordering him to return the annex key."
               },
               "ttsTextJa": "離れの鍵を返すよう命じている。",
-              "audioId": "L2-004-q1-d"
+              "audioId": "L2-004-q1-d",
+              "readingJa": "はなれのかぎをかえすよーめーじている。"
             }
           ],
           "correctOptionIds": [
@@ -1013,13 +1033,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "e62eb4b3b1cd2b2a3406b776fed7d316647a509fa796b49b277d0d70388af33f"
+      "contentHash": "1caeb216e1f311434ee424809143df10ace22aec1441e7ac15ad77e601e827b0"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-005",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 5,
       "jlptTarget": "N2",
@@ -1043,14 +1063,15 @@
         "en": "In a company group chat, the manager posts a joke at an employee's expense. Only read receipts appear until Yuka returns to the agenda three minutes later."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-005.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "既読だけの三分間の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“只有已读的三分钟”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Three Minutes of Read Receipts\"."
+        },
+        "sha256": "31f7f69dddb98ed4aa0ef0ab41adc242af109b9a6eb3188df6be4f23df2d972d"
       },
       "cast": [
         {
@@ -1218,7 +1239,8 @@
                 "en": "Everyone strongly agrees with the joke."
               },
               "ttsTextJa": "全員が冗談に強く賛成している。",
-              "audioId": "L2-005-q1-a"
+              "audioId": "L2-005-q1-a",
+              "readingJa": "ぜんいんがじょーだんにつよくさんせーしている。"
             },
             {
               "id": "b",
@@ -1228,7 +1250,8 @@
                 "en": "A network failure prevented anyone from reading it."
               },
               "ttsTextJa": "通信障害で誰も内容を読めなかった。",
-              "audioId": "L2-005-q1-b"
+              "audioId": "L2-005-q1-b",
+              "readingJa": "つーしんしょーがいでだれもないよーをよめなかった。"
             },
             {
               "id": "c",
@@ -1238,7 +1261,8 @@
                 "en": "The employees do not yet know about Shun's report."
               },
               "ttsTextJa": "部下たちは駿の報告をまだ知らない。",
-              "audioId": "L2-005-q1-c"
+              "audioId": "L2-005-q1-c",
+              "readingJa": "ぶかたちわしゅんのほーこくをまだしらない。"
             },
             {
               "id": "d",
@@ -1248,7 +1272,8 @@
                 "en": "They were likely uncomfortable responding and avoided the topic rather than agreeing or objecting."
               },
               "ttsTextJa": "反応に困り、同意も反論もせず話題を避けた可能性が高い。",
-              "audioId": "L2-005-q1-d"
+              "audioId": "L2-005-q1-d",
+              "readingJa": "はんのーにこまり、どーいもはんろんもせずわだいをさけたかのうせいがたかい。"
             }
           ],
           "correctOptionIds": [
@@ -1298,13 +1323,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "9a766b4cc93332066b14db698cd416db78643ad1d70bd954853061955c0b5e68"
+      "contentHash": "ee338ee231f4906bac188507ab9521b49919d3d79ff1a26b304b1d5aedadde88"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-006",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 6,
       "jlptTarget": "N2",
@@ -1328,14 +1353,15 @@
         "en": "Taka usually buys strong coffee every morning, but today chooses decaf. The clerk who knows his routine asks why."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-006.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "今夜は眠れそうの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“今晚应该睡得着”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"I Might Sleep Tonight\"."
+        },
+        "sha256": "8de8a6d822b842771d32f42a3944efdee498e0e5a344e61f81b33f3948c18417"
       },
       "cast": [
         {
@@ -1485,7 +1511,8 @@
                 "en": "He is concerned that his usual strong coffee may affect his sleep at night."
               },
               "ttsTextJa": "いつもの濃いコーヒーが、夜の睡眠へ影響するのを気にしている。",
-              "audioId": "L2-006-q1-a"
+              "audioId": "L2-006-q1-a",
+              "readingJa": "いつものこいこーひーが、よるのすいみんええーきょーするのをきにしている。"
             },
             {
               "id": "b",
@@ -1495,7 +1522,8 @@
                 "en": "He has permanently come to hate strong coffee."
               },
               "ttsTextJa": "濃いコーヒーの味を永久に嫌いになった。",
-              "audioId": "L2-006-q1-b"
+              "audioId": "L2-006-q1-b",
+              "readingJa": "こいこーひーのあじをえーきゅーにきらいになった。"
             },
             {
               "id": "c",
@@ -1505,7 +1533,8 @@
                 "en": "He changed his usual habit today with sleep in mind."
               },
               "ttsTextJa": "睡眠を考えて、いつもの習慣を今日は変えた。",
-              "audioId": "L2-006-q1-c"
+              "audioId": "L2-006-q1-c",
+              "readingJa": "すいみんをかんがえて、いつものしゅーかんをきょーわかえた。"
             },
             {
               "id": "d",
@@ -1515,7 +1544,8 @@
                 "en": "He is asking the clerk for a discount on a new product."
               },
               "ttsTextJa": "店員に新商品の値引きを求めている。",
-              "audioId": "L2-006-q1-d"
+              "audioId": "L2-006-q1-d",
+              "readingJa": "てんいんにしんしょーひんのねびきをもとめている。"
             }
           ],
           "correctOptionIds": [
@@ -1566,13 +1596,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "8666ae7b014e6891457f69206c5e870fd0c904e43bbb5b88563cc1bfd4981c02"
+      "contentHash": "e5d2e3d68d1ee092d6a6db961b76685db7a0f96aa1e52bcba6950f64d152de12"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-007",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 7,
       "jlptTarget": "N2",
@@ -1596,14 +1626,15 @@
         "en": "Mizuki arrives ten minutes late to a client dinner. With everyone already seated, she speaks with a smile."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-007.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "皆さん、早いですねの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“大家真早啊”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Everyone Is Early\"."
+        },
+        "sha256": "02c391dbcf96f3f44e203fb57c1912afdb0b50d260bb5fa5ac16168ae339493a"
       },
       "cast": [
         {
@@ -1762,7 +1793,8 @@
                 "en": "She is seriously criticizing everyone for arriving far too early."
               },
               "ttsTextJa": "全員が予定よりずっと早すぎたと本気で非難している。",
-              "audioId": "L2-007-q1-a"
+              "audioId": "L2-007-q1-a",
+              "readingJa": "ぜんいんがよてーよりずっとはやすぎたとほんきでひなんしている。"
             },
             {
               "id": "b",
@@ -1772,7 +1804,8 @@
                 "en": "She is lightly acknowledging her lateness and trying to ease the atmosphere."
               },
               "ttsTextJa": "自分の遅刻を軽く認め、場を和らげようとしている。",
-              "audioId": "L2-007-q1-b"
+              "audioId": "L2-007-q1-b",
+              "readingJa": "じぶんのちこくをかるくみとめ、ばをやわらげよーとしている。"
             },
             {
               "id": "c",
@@ -1782,7 +1815,8 @@
                 "en": "She wants to delay the dinner by an hour."
               },
               "ttsTextJa": "会食の開始を一時間遅らせたい。",
-              "audioId": "L2-007-q1-c"
+              "audioId": "L2-007-q1-c",
+              "readingJa": "かいしょくのかいしをいちじかんおくらせたい。"
             },
             {
               "id": "d",
@@ -1792,7 +1826,8 @@
                 "en": "She believes she arrived first."
               },
               "ttsTextJa": "自分が最初に着いたと思っている。",
-              "audioId": "L2-007-q1-d"
+              "audioId": "L2-007-q1-d",
+              "readingJa": "じぶんがさいしょについたとおもっている。"
             }
           ],
           "correctOptionIds": [
@@ -1842,13 +1877,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "ab0b9f361a17c7254899910dd313c5088947149f08b73d9314ae24d528bb88cb"
+      "contentHash": "c031a89805e9ed16381f67538802324ca244085bb0e77e46aa8a2d603addbf6b"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-008",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 8,
       "jlptTarget": "N2",
@@ -1872,14 +1907,15 @@
         "en": "In a co-op game voice chat, Taiga's strategies are repeatedly rejected. After his final suggestion is cut off, he answers briefly."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-008.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "もう好きにしての場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“那就随你们吧”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Do Whatever You Want\"."
+        },
+        "sha256": "09b51089e36c3a9e1ed66ed5463e310c660bce06413b4b6157ae2b5df8bb153f"
       },
       "cast": [
         {
@@ -2038,7 +2074,8 @@
                 "en": "He is not sincerely granting permission; he is frustrated and withdrawing from the discussion."
               },
               "ttsTextJa": "本心から許可したのではなく、いら立って議論をやめた。",
-              "audioId": "L2-008-q1-a"
+              "audioId": "L2-008-q1-a",
+              "readingJa": "ほんしんからきょかしたのでわなく、いらだってぎろんをやめた。"
             },
             {
               "id": "b",
@@ -2048,7 +2085,8 @@
                 "en": "He supported Rena's strategy from the beginning."
               },
               "ttsTextJa": "玲奈の作戦に最初から賛成していた。",
-              "audioId": "L2-008-q1-b"
+              "audioId": "L2-008-q1-b",
+              "readingJa": "れーなのさくせんにさいしょからさんせーしていた。"
             },
             {
               "id": "c",
@@ -2058,7 +2096,8 @@
                 "en": "It is merely a short joke in which he pretends to be angry to make the call more fun."
               },
               "ttsTextJa": "通話を楽しくするため、わざと怒ったふりをする短い冗談だけである。",
-              "audioId": "L2-008-q1-c"
+              "audioId": "L2-008-q1-c",
+              "readingJa": "つーわをたのしくするため、わざとおこったふりをするみじかいじょーだんだけである。"
             },
             {
               "id": "d",
@@ -2068,7 +2107,8 @@
                 "en": "He is declaring that he will go right alone."
               },
               "ttsTextJa": "自分一人で右へ進むと宣言している。",
-              "audioId": "L2-008-q1-d"
+              "audioId": "L2-008-q1-d",
+              "readingJa": "じぶんひとりでみぎえすすむとせんげんしている。"
             }
           ],
           "correctOptionIds": [
@@ -2119,13 +2159,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "06328eefb4a9379d73611be8fe18d859b204a7a69923d33eda69d68e93767e70"
+      "contentHash": "1fe4a946c1e15a8509cc786e51b26165802c55d41ea128abb373689ffbe589e7"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-009",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 9,
       "jlptTarget": "N2",
@@ -2149,14 +2189,15 @@
         "en": "Aoi receives a short voicemail from her father, who lives far away. After saying there is no errand, he remains silent for ten seconds before hanging up."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l2-009.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "十秒の留守電の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“十秒钟的留言”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Ten Seconds on Voicemail\"."
+        },
+        "sha256": "45ac366596d616d20e9edf3420d75031f7e60a2ee5fdbbc5fc1f648e1cf7f45e"
       },
       "cast": [
         {
@@ -2306,7 +2347,8 @@
                 "en": "He wants Aoi to send a package urgently."
               },
               "ttsTextJa": "葵に急いで荷物を送ってほしい。",
-              "audioId": "L2-009-q1-a"
+              "audioId": "L2-009-q1-a",
+              "readingJa": "あおいにいそいでにもつをおくってほしい。"
             },
             {
               "id": "b",
@@ -2316,7 +2358,8 @@
                 "en": "He wants to tell Aoi that he changed his phone number to a new one."
               },
               "ttsTextJa": "自分の電話番号を新しい番号へ変更したと知らせたい。",
-              "audioId": "L2-009-q1-b"
+              "audioId": "L2-009-q1-b",
+              "readingJa": "じぶんのでんわばんごーをあたらしいばんごーえへんこーしたとしらせたい。"
             },
             {
               "id": "c",
@@ -2326,7 +2369,8 @@
                 "en": "He wants less contact in the future."
               },
               "ttsTextJa": "今後は連絡を控えてほしい。",
-              "audioId": "L2-009-q1-c"
+              "audioId": "L2-009-q1-c",
+              "readingJa": "こんごわれんらくをひかえてほしい。"
             },
             {
               "id": "d",
@@ -2336,7 +2380,8 @@
                 "en": "Even without an errand, he wants to hear Aoi's voice and receive a return call."
               },
               "ttsTextJa": "用事がなくても、葵の声を聞き、折り返してほしい。",
-              "audioId": "L2-009-q1-d"
+              "audioId": "L2-009-q1-d",
+              "readingJa": "よーじがなくても、あおいのこえをきき、おりかえしてほしい。"
             }
           ],
           "correctOptionIds": [
@@ -2387,13 +2432,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "4821564907aa8044e5c27bff1e70bdac3fa6d538d51bd8c0b3b8bc41e4ac75f0"
+      "contentHash": "18524fa0b522dd0825a180f9e048129b8e6f2316792eb5b984dcd4819da5c30b"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L2-010",
-      "revision": 2,
+      "revision": 3,
       "level": 2,
       "stage": 10,
       "jlptTarget": "N2",
@@ -2419,12 +2464,13 @@
       "illustration": {
         "enabled": true,
         "src": "assets/stages/l2-010.webp",
-        "style": "crayon",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "駅の階段で莉子が健一の大きな鞄に手を伸ばすクレヨン画",
-          "zh": "莉子在车站楼梯向健一的大包伸手的蜡笔画",
-          "en": "Crayon illustration of Riko reaching toward Kenichi's large bag on station stairs"
-        }
+          "ja": "重そうですねの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“看起来很重”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"That Looks Heavy\"."
+        },
+        "sha256": "360d6d27120bb0b399d88aa20cd132c46003adbb19d810d4d1fdb59e41cbc276"
       },
       "cast": [
         {
@@ -2574,7 +2620,8 @@
                 "en": "It asks for the bag's exact weight."
               },
               "ttsTextJa": "鞄の正確な重さを尋ねる質問である。",
-              "audioId": "L2-010-q1-a"
+              "audioId": "L2-010-q1-a",
+              "readingJa": "かばんのせーかくなおもさをたずねるしつもんである。"
             },
             {
               "id": "b",
@@ -2584,7 +2631,8 @@
                 "en": "It is a complaint about using the stairs."
               },
               "ttsTextJa": "階段を使うことへの苦情である。",
-              "audioId": "L2-010-q1-b"
+              "audioId": "L2-010-q1-b",
+              "readingJa": "かいだんをつかうことえのくじょーである。"
             },
             {
               "id": "c",
@@ -2594,7 +2642,8 @@
                 "en": "Together with her reaching gesture, it leads into an offer to help carry the bag."
               },
               "ttsTextJa": "手を伸ばす行動と合わせ、運ぶのを手伝う申し出につながっている。",
-              "audioId": "L2-010-q1-c"
+              "audioId": "L2-010-q1-c",
+              "readingJa": "てをのばすこーどーとあわせ、はこぶのをてつだうもーしでにつながっている。"
             },
             {
               "id": "d",
@@ -2604,7 +2653,8 @@
                 "en": "It orders him to leave the bag at the station."
               },
               "ttsTextJa": "鞄を駅に置いていくよう命じている。",
-              "audioId": "L2-010-q1-d"
+              "audioId": "L2-010-q1-d",
+              "readingJa": "かばんをえきにおいていくよーめーじている。"
             }
           ],
           "correctOptionIds": [
@@ -2655,7 +2705,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "140c44f8a44bf92a0b2e15724c61d5490b4480252e5dd1958f5a9ac3a0ed61c9"
+      "contentHash": "4e8f134208a30c004250662e76abf4cecf1d6218a455c05956738571baadb04f"
     }
   ]
 }

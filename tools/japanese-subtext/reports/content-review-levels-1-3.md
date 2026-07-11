@@ -1,5 +1,7 @@
 # Level 1–3 内容复审报告
 
+> 历史报告：本文记录 1.0.1 发布时的彩色插图规则，不再代表 1.0.2。当前发布事实以 `reports/release-report.md`、`reports/final-stats.json` 与 `assets/stages/manifest.json` 为准；1.0.2 已改为每关黑白四格。
+
 - 复审日期：2026-07-11
 - 范围：`level-1`、`level-2`、`level-3` 共 15 个批次、150 关
 - 内容量：1,020 句对话、258 道题（219 道单选、39 道多选）

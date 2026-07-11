@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.1",
+  "contentVersion": "1.0.2",
   "level": 3,
   "batch": "011-020",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L3-011",
-      "revision": 2,
+      "revision": 3,
       "level": 3,
       "stage": 11,
       "jlptTarget": "N1",
@@ -32,14 +32,15 @@
         "en": "At a school festival committee meeting, chair Chiaki treats an unapproved layout as settled."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l3-011.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "決まったことにの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘““已经决定””场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"It Has Been Decided\"."
+        },
+        "sha256": "84b43f5507798931e15ffb6d37612e93255ab09791413d391b5eb1b9bd0eeb81"
       },
       "cast": [
         {
@@ -315,7 +316,8 @@
                 "en": "Turn the decision into a fait accompli while obscuring her responsibility for making it."
               },
               "ttsTextJa": "決定を既成事実にしながら、自分が決めた責任をぼかす。",
-              "audioId": "L3-011-q1-a"
+              "audioId": "L3-011-q1-a",
+              "readingJa": "けってーをきせーじじつにしながら、じぶんがきめたせきにんをぼかす。"
             },
             {
               "id": "b",
@@ -325,7 +327,8 @@
                 "en": "Explicitly order an immediate formal vote and require every member to state a position."
               },
               "ttsTextJa": "委員会で正式な採決を今すぐ始め、全員に賛否を示すよう明確に命じる。",
-              "audioId": "L3-011-q1-b"
+              "audioId": "L3-011-q1-b",
+              "readingJa": "いいんかいでせーしきなさいけつをいますぐはじめ、ぜんいんにさんぴをしめすよーめーかくにめーじる。"
             },
             {
               "id": "c",
@@ -335,7 +338,8 @@
                 "en": "Formally withdraw the layout."
               },
               "ttsTextJa": "配置案を正式に撤回する。",
-              "audioId": "L3-011-q1-c"
+              "audioId": "L3-011-q1-c",
+              "readingJa": "はいちあんをせーしきにてっかいする。"
             },
             {
               "id": "d",
@@ -345,7 +349,8 @@
                 "en": "Assign responsibility solely to the secretary."
               },
               "ttsTextJa": "書記だけに責任を負わせる。",
-              "audioId": "L3-011-q1-d"
+              "audioId": "L3-011-q1-d",
+              "readingJa": "しょきだけにせきにんをおわせる。"
             }
           ],
           "correctOptionIds": [
@@ -403,7 +408,8 @@
                 "en": "Kota objects."
               },
               "ttsTextJa": "康太が反対したこと。",
-              "audioId": "L3-011-q2-a"
+              "audioId": "L3-011-q2-a",
+              "readingJa": "かんふとしがはんたいしたこと。"
             },
             {
               "id": "b",
@@ -413,7 +419,8 @@
                 "en": "The adviser asks a question."
               },
               "ttsTextJa": "顧問が質問したこと。",
-              "audioId": "L3-011-q2-b"
+              "audioId": "L3-011-q2-b",
+              "readingJa": "こもんがしつもんしたこと。"
             },
             {
               "id": "c",
@@ -423,7 +430,8 @@
                 "en": "The “final” layout was distributed at Chiaki’s request."
               },
               "ttsTextJa": "「確定版」の配置図が千晶の依頼で配布されたこと。",
-              "audioId": "L3-011-q2-c"
+              "audioId": "L3-011-q2-c",
+              "readingJa": "「かくてーばん」のはいちずがちあきのいらいではいふされたこと。"
             },
             {
               "id": "d",
@@ -433,7 +441,8 @@
                 "en": "The school has a courtyard."
               },
               "ttsTextJa": "中庭が学校にあること。",
-              "audioId": "L3-011-q2-d"
+              "audioId": "L3-011-q2-d",
+              "readingJa": "なかにわががっこーにあること。"
             }
           ],
           "correctOptionIds": [
@@ -483,13 +492,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "736a86ec40778f5203afa443d3de536e47b2d02ab36910c21c85ad29c6b19bef"
+      "contentHash": "13a91081686c6fd47d1421c54c9777f700e3c88e7e4569958f43f8929a2e99dd"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L3-012",
-      "revision": 2,
+      "revision": 3,
       "level": 3,
       "stage": 12,
       "jlptTarget": "N1",
@@ -512,14 +521,15 @@
         "en": "At the end of a pitch meeting, a client closes the materials and gives an ambiguous response."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l3-012.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "社内で共有しますの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘““会在公司内部共享””场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"We’ll Share It Internally\"."
+        },
+        "sha256": "4bea2841b5479532fe2c07768396338e8ea6c06890ac3f5fb4a4d741ff9e687e"
       },
       "cast": [
         {
@@ -759,7 +769,8 @@
                 "en": "To implement next month."
               },
               "ttsTextJa": "来月から導入すること。",
-              "audioId": "L3-012-q1-a"
+              "audioId": "L3-012-q1-a",
+              "readingJa": "らいげつからどーにゅーすること。"
             },
             {
               "id": "b",
@@ -769,7 +780,8 @@
                 "en": "To give a formal adoption decision within one week."
               },
               "ttsTextJa": "一週間以内に採否を正式回答すること。",
-              "audioId": "L3-012-q1-b"
+              "audioId": "L3-012-q1-b",
+              "readingJa": "いっしゅーかんいないにさいひをせーしきかいとーすること。"
             },
             {
               "id": "c",
@@ -779,7 +791,8 @@
                 "en": "To obtain unanimous internal approval."
               },
               "ttsTextJa": "関係部署全員の賛成を得ること。",
-              "audioId": "L3-012-q1-c"
+              "audioId": "L3-012-q1-c",
+              "readingJa": "かんけーぶしょぜんいんのさんせーをえること。"
             },
             {
               "id": "d",
@@ -789,7 +802,8 @@
                 "en": "To circulate the materials to relevant departments."
               },
               "ttsTextJa": "資料を社内の関係部署へ回すこと。",
-              "audioId": "L3-012-q1-d"
+              "audioId": "L3-012-q1-d",
+              "readingJa": "しりょーをしゃないのかんけーぶしょえまわすこと。"
             }
           ],
           "correctOptionIds": [
@@ -845,7 +859,8 @@
                 "en": "The client uses polite language."
               },
               "ttsTextJa": "顧客が敬語を使ったから。",
-              "audioId": "L3-012-q2-a"
+              "audioId": "L3-012-q2-a",
+              "readingJa": "こきゃくがけーごをつかったから。"
             },
             {
               "id": "b",
@@ -855,7 +870,8 @@
                 "en": "He gives no date when asked about acceptance and answers only in terms of circulation and review."
               },
               "ttsTextJa": "採否の質問に期限を示さず、共有と閲覧だけに答えたから。",
-              "audioId": "L3-012-q2-b"
+              "audioId": "L3-012-q2-b",
+              "readingJa": "さいひのしつもんにきげんをしめさず、きょーゆーとえつらんだけにこたえたから。"
             },
             {
               "id": "c",
@@ -865,7 +881,8 @@
                 "en": "The materials are on paper."
               },
               "ttsTextJa": "資料が紙だったから。",
-              "audioId": "L3-012-q2-c"
+              "audioId": "L3-012-q2-c",
+              "readingJa": "しりょーがかみだったから。"
             },
             {
               "id": "d",
@@ -875,7 +892,8 @@
                 "en": "Two presenters attended."
               },
               "ttsTextJa": "営業担当が二人いたから。",
-              "audioId": "L3-012-q2-d"
+              "audioId": "L3-012-q2-d",
+              "readingJa": "えーぎょーたんとーがふたりいたから。"
             }
           ],
           "correctOptionIds": [
@@ -933,7 +951,8 @@
                 "en": "The client proposes an implementation month."
               },
               "ttsTextJa": "導入開始月を顧客側から提案した。",
-              "audioId": "L3-012-q3-a"
+              "audioId": "L3-012-q3-a",
+              "readingJa": "どーにゅーかいしつきをこきゃくがわからてーあんした。"
             },
             {
               "id": "b",
@@ -943,7 +962,8 @@
                 "en": "He answers the acceptance question only with an internal review procedure."
               },
               "ttsTextJa": "採否への質問に、関係部署の閲覧手続きだけを答えた。",
-              "audioId": "L3-012-q3-b"
+              "audioId": "L3-012-q3-b",
+              "readingJa": "さいひえのしつもんに、かんけーぶしょのえつらんてつずきだけをこたえた。"
             },
             {
               "id": "c",
@@ -953,7 +973,8 @@
                 "en": "He praises every part of the materials."
               },
               "ttsTextJa": "資料の内容を全面的に褒めた。",
-              "audioId": "L3-012-q3-c"
+              "audioId": "L3-012-q3-c",
+              "readingJa": "しりょーのないよーをぜんめんてきにほめた。"
             },
             {
               "id": "d",
@@ -963,7 +984,8 @@
                 "en": "He acknowledges that no response deadline can be set."
               },
               "ttsTextJa": "回答期限を設定できないと認めた。",
-              "audioId": "L3-012-q3-d"
+              "audioId": "L3-012-q3-d",
+              "readingJa": "かいとーきげんをせってーできないとみとめた。"
             }
           ],
           "correctOptionIds": [
@@ -1015,13 +1037,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "cdff6010aa6fcc2a48ed0bc884f4eaf7fe59940a2dc7ec15987a53dae5978e6c"
+      "contentHash": "2a3117d84b952b29bc87b526e72a0f88e3973ddbce6a251780de04f1b58a6f6a"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L3-013",
-      "revision": 2,
+      "revision": 3,
       "level": 3,
       "stage": 13,
       "jlptTarget": "N1",
@@ -1045,14 +1067,15 @@
         "en": "Three friends finish a meal and discuss how to split the bill."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l3-013.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "細かいのがないの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘““没有零钱””场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"No Small Change\"."
+        },
+        "sha256": "7572c53bdfcc38af195a21608ded0d05949e789fe044afb4448f2b1582444ddd"
       },
       "cast": [
         {
@@ -1319,7 +1342,8 @@
                 "en": "Change the payment method and have everyone switch back to cash."
               },
               "ttsTextJa": "会計方法を変え、全員に現金払いへ戻してもらう。",
-              "audioId": "L3-013-q1-a"
+              "audioId": "L3-013-q1-a",
+              "readingJa": "かいけーほーほーをかえ、ぜんいんにげんきんばらいえもどしてもらう。"
             },
             {
               "id": "b",
@@ -1329,7 +1353,8 @@
                 "en": "Avoid splitting the bill equally."
               },
               "ttsTextJa": "会計を三等分しない。",
-              "audioId": "L3-013-q1-b"
+              "audioId": "L3-013-q1-b",
+              "readingJa": "かいけーをさんとーぶんしない。"
             },
             {
               "id": "c",
@@ -1339,7 +1364,8 @@
                 "en": "Have Satoshi cover him now and repay later."
               },
               "ttsTextJa": "今回は聡に立て替えてもらい、後で返す。",
-              "audioId": "L3-013-q1-c"
+              "audioId": "L3-013-q1-c",
+              "readingJa": "こんかいわさとしにたてかえてもらい、あとでかえす。"
             },
             {
               "id": "d",
@@ -1349,7 +1375,8 @@
                 "en": "Make the restaurant improve its connection."
               },
               "ttsTextJa": "店に通信環境を改善させる。",
-              "audioId": "L3-013-q1-d"
+              "audioId": "L3-013-q1-d",
+              "readingJa": "みせにつーしんかんきょーをかいぜんさせる。"
             }
           ],
           "correctOptionIds": [
@@ -1408,7 +1435,8 @@
                 "en": "The app is open, and after immediate transfer is suggested he shifts to another reason."
               },
               "ttsTextJa": "アプリが開いており、即時送金を提案されても別の理由へ移ったから。",
-              "audioId": "L3-013-q2-a"
+              "audioId": "L3-013-q2-a",
+              "readingJa": "あぷりがひらいており、そくじそーきんをてーあんされてもべつのりゆーえうつったから。"
             },
             {
               "id": "b",
@@ -1418,7 +1446,8 @@
                 "en": "Yuta explicitly says he forgot his wallet."
               },
               "ttsTextJa": "裕太が財布を忘れたと明言したから。",
-              "audioId": "L3-013-q2-b"
+              "audioId": "L3-013-q2-b",
+              "readingJa": "ゆーたがさいふをわすれたとめーげんしたから。"
             },
             {
               "id": "c",
@@ -1428,7 +1457,8 @@
                 "en": "Satoshi refuses to pay."
               },
               "ttsTextJa": "聡が会計を拒否したから。",
-              "audioId": "L3-013-q2-c"
+              "audioId": "L3-013-q2-c",
+              "readingJa": "さとしがかいけーをきょひしたから。"
             },
             {
               "id": "d",
@@ -1438,7 +1468,8 @@
                 "en": "The restaurant accepts only cash."
               },
               "ttsTextJa": "店が現金しか受け付けないから。",
-              "audioId": "L3-013-q2-d"
+              "audioId": "L3-013-q2-d",
+              "readingJa": "みせがげんきんしかうけつけないから。"
             }
           ],
           "correctOptionIds": [
@@ -1489,13 +1520,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "0717bfe943a0b995eab62dd6edc5316a45dcb111236853148b975bf521d94347"
+      "contentHash": "eac9c2245184b401b61459770662e936417f4462c20ffc88585f1a3d4216ee2e"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L3-014",
-      "revision": 2,
+      "revision": 3,
       "level": 3,
       "stage": 14,
       "jlptTarget": "N1",
@@ -1518,14 +1549,15 @@
         "en": "A guest speaks with reception at a hotel where construction noise reaches the rooms."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l3-014.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "静けさ重視の部屋の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘““重视安静”的房间”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Quietness-Focused Room\"."
+        },
+        "sha256": "ea742ff8fb7d80c78520980bba6ca6bbedb4ca752bb902e4715dc020b53847ee"
       },
       "cast": [
         {
@@ -1756,7 +1788,8 @@
                 "en": "Deny that construction exists."
               },
               "ttsTextJa": "工事の存在を完全に否定する。",
-              "audioId": "L3-014-q1-a"
+              "audioId": "L3-014-q1-a",
+              "readingJa": "こーじのそんざいをかんぜんにひてーする。"
             },
             {
               "id": "b",
@@ -1766,7 +1799,8 @@
                 "en": "Present compensation for inconvenience as a positive improvement for the guest."
               },
               "ttsTextJa": "不便への補償を、客にとっての前向きな改善として提示する。",
-              "audioId": "L3-014-q1-b"
+              "audioId": "L3-014-q1-b",
+              "readingJa": "ふべんえのほしょーを、きゃくにとってのまえむきなかいぜんとしててーじする。"
             },
             {
               "id": "c",
@@ -1776,7 +1810,8 @@
                 "en": "Hide an additional charge."
               },
               "ttsTextJa": "追加料金を曖昧にして請求する。",
-              "audioId": "L3-014-q1-c"
+              "audioId": "L3-014-q1-c",
+              "readingJa": "ついかりょーきんをあいまいにしてせーきゅーする。"
             },
             {
               "id": "d",
@@ -1786,7 +1821,8 @@
                 "en": "Make the back room appear smaller."
               },
               "ttsTextJa": "裏庭側の部屋を狭く見せる。",
-              "audioId": "L3-014-q1-d"
+              "audioId": "L3-014-q1-d",
+              "readingJa": "うらにわがわのへやをせまくみせる。"
             }
           ],
           "correctOptionIds": [
@@ -1845,7 +1881,8 @@
                 "en": "The room faces the back garden."
               },
               "ttsTextJa": "客室が裏庭に面している。",
-              "audioId": "L3-014-q2-a"
+              "audioId": "L3-014-q2-a",
+              "readingJa": "きゃくしつがうらにわにめんしている。"
             },
             {
               "id": "b",
@@ -1855,7 +1892,8 @@
                 "en": "The guest complains in the morning."
               },
               "ttsTextJa": "客が朝に相談した。",
-              "audioId": "L3-014-q2-b"
+              "audioId": "L3-014-q2-b",
+              "readingJa": "きゃくがあさにそーだんした。"
             },
             {
               "id": "c",
@@ -1865,7 +1903,8 @@
                 "en": "The clerk uses honorific speech."
               },
               "ttsTextJa": "受付が敬語を使う。",
-              "audioId": "L3-014-q2-c"
+              "audioId": "L3-014-q2-c",
+              "readingJa": "うけつけがけーごをつかう。"
             },
             {
               "id": "d",
@@ -1875,7 +1914,8 @@
                 "en": "There is no extra charge and it is a special construction-period measure."
               },
               "ttsTextJa": "追加料金がなく、工事期間中の特別対応である。",
-              "audioId": "L3-014-q2-d"
+              "audioId": "L3-014-q2-d",
+              "readingJa": "ついかりょーきんがなく、こーじきかんちゅーのとくべつたいおーである。"
             }
           ],
           "correctOptionIds": [
@@ -1925,13 +1965,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "0491f8f75114f3c3a1ecab70a757a4f68caf0d1984a1d1f4648716831ccc1b57"
+      "contentHash": "5c60ba8bbfda8403d3de29995a6a50af1b6e47cfb68dcee0125a6cf7e9203d45"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L3-015",
-      "revision": 2,
+      "revision": 3,
       "level": 3,
       "stage": 15,
       "jlptTarget": "N1",
@@ -1954,14 +1994,15 @@
         "en": "Natsuki replies late at night, although the read receipt is four hours old."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l3-015.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "午前三時の「今」の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“凌晨三点的“刚刚””场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"“Now” at Three A.M.\"."
+        },
+        "sha256": "9df4529e4cc624518b8be6f856840222a9c46eeb595d790e2b21dfdc8e7dc823"
       },
       "cast": [
         {
@@ -2219,7 +2260,8 @@
                 "en": "A read receipt appears at eleven p.m."
               },
               "ttsTextJa": "二十三時に既読が付いている。",
-              "audioId": "L3-015-q1-a"
+              "audioId": "L3-015-q1-a",
+              "readingJa": "にじゅーさんじにきどくがついている。"
             },
             {
               "id": "b",
@@ -2229,7 +2271,8 @@
                 "en": "The meeting is at ten."
               },
               "ttsTextJa": "打ち合わせが十時である。",
-              "audioId": "L3-015-q1-b"
+              "audioId": "L3-015-q1-b",
+              "readingJa": "うちあわせがじゅーじである。"
             },
             {
               "id": "c",
@@ -2239,7 +2282,8 @@
                 "en": "Sora is awake at three."
               },
               "ttsTextJa": "空が三時に起きている。",
-              "audioId": "L3-015-q1-c"
+              "audioId": "L3-015-q1-c",
+              "readingJa": "そらがさんじにおきている。"
             },
             {
               "id": "d",
@@ -2249,7 +2293,8 @@
                 "en": "Natsuki admits opening and reading it once at eleven."
               },
               "ttsTextJa": "菜月が二十三時に一度開いて読んだと認めている。",
-              "audioId": "L3-015-q1-d"
+              "audioId": "L3-015-q1-d",
+              "readingJa": "なつきがにじゅーさんじにいちどひらいてよんだとみとめている。"
             }
           ],
           "correctOptionIds": [
@@ -2306,7 +2351,8 @@
                 "en": "The exact time when the first message was sent."
               },
               "ttsTextJa": "最初のメッセージが送信された正確な時刻。",
-              "audioId": "L3-015-q2-a"
+              "audioId": "L3-015-q2-a",
+              "readingJa": "さいしょのめっせーじがそーしんされたせーかくなじこく。"
             },
             {
               "id": "b",
@@ -2316,7 +2362,8 @@
                 "en": "When the notification first arrived."
               },
               "ttsTextJa": "初めて通知が届いた時刻。",
-              "audioId": "L3-015-q2-b"
+              "audioId": "L3-015-q2-b",
+              "readingJa": "はじめてつーちがとどいたじこく。"
             },
             {
               "id": "c",
@@ -2326,7 +2373,8 @@
                 "en": "When she reopened the conversation to reply."
               },
               "ttsTextJa": "返信するために会話を開き直した時刻。",
-              "audioId": "L3-015-q2-c"
+              "audioId": "L3-015-q2-c",
+              "readingJa": "へんしんするためにかいわをひらきなおしたじこく。"
             },
             {
               "id": "d",
@@ -2336,7 +2384,8 @@
                 "en": "Tomorrow’s meeting time."
               },
               "ttsTextJa": "明日の打ち合わせ時刻。",
-              "audioId": "L3-015-q2-d"
+              "audioId": "L3-015-q2-d",
+              "readingJa": "あしたのうちあわせじこく。"
             }
           ],
           "correctOptionIds": [
@@ -2393,7 +2442,8 @@
                 "en": "Natsuki was aware of the content around eleven p.m."
               },
               "ttsTextJa": "菜月は二十三時ごろには内容を認識していた。",
-              "audioId": "L3-015-q3-a"
+              "audioId": "L3-015-q3-a",
+              "readingJa": "なつきわにじゅーさんじごろにわないよーをにんしきしていた。"
             },
             {
               "id": "b",
@@ -2403,7 +2453,8 @@
                 "en": "Natsuki intentionally ignored Sora for four hours to upset him."
               },
               "ttsTextJa": "菜月は空を意図的に四時間無視して怒らせようとした。",
-              "audioId": "L3-015-q3-b"
+              "audioId": "L3-015-q3-b",
+              "readingJa": "なつきわそらをいとてきによじかんむししておこらせよーとした。"
             },
             {
               "id": "c",
@@ -2413,7 +2464,8 @@
                 "en": "Sora forged the read receipt."
               },
               "ttsTextJa": "空は既読表示を偽造した。",
-              "audioId": "L3-015-q3-c"
+              "audioId": "L3-015-q3-c",
+              "readingJa": "そらわきどくひょーじをぎぞーした。"
             },
             {
               "id": "d",
@@ -2423,7 +2475,8 @@
                 "en": "Natsuki reopened the chat to answer at three a.m."
               },
               "ttsTextJa": "菜月が返答のため開き直したのは午前三時である。",
-              "audioId": "L3-015-q3-d"
+              "audioId": "L3-015-q3-d",
+              "readingJa": "なつきがへんとーのためひらきなおしたのわごぜんさんじである。"
             }
           ],
           "correctOptionIds": [
@@ -2476,13 +2529,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "e82f25d9d529c721f01dd3fa544a135e6db3dd18b9d4a2ff3a3932b10bde9bb6"
+      "contentHash": "4e319cabc486085f0fd1cb7d2947885cf7100420fa8af26d617803f685eab78f"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L3-016",
-      "revision": 2,
+      "revision": 3,
       "level": 3,
       "stage": 16,
       "jlptTarget": "N1",
@@ -2506,14 +2559,15 @@
         "en": "Regarding a broken ornament, Akira leaves a message without naming the location, and his sister Rin replies by voicemail."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l3-016.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "聞かれる前の否定の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“被问之前的否认”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Denial Before the Question\"."
+        },
+        "sha256": "763322520569dfaa41daaac74e249df50e2ae976b8c336b850d3a592b5c1aed5"
       },
       "cast": [
         {
@@ -2744,7 +2798,8 @@
                 "en": "She replied to the voicemail."
               },
               "ttsTextJa": "留守電へ返信したこと。",
-              "audioId": "L3-016-q1-a"
+              "audioId": "L3-016-q1-a",
+              "readingJa": "るすでんえへんしんしたこと。"
             },
             {
               "id": "b",
@@ -2754,7 +2809,8 @@
                 "en": "She did not use honorifics with her brother."
               },
               "ttsTextJa": "兄に敬語を使わなかったこと。",
-              "audioId": "L3-016-q1-b"
+              "audioId": "L3-016-q1-b",
+              "readingJa": "あににけーごをつかわなかったこと。"
             },
             {
               "id": "c",
@@ -2764,7 +2820,8 @@
                 "en": "She had seen the ornament before."
               },
               "ttsTextJa": "飾りを以前見たことがあること。",
-              "audioId": "L3-016-q1-c"
+              "audioId": "L3-016-q1-c",
+              "readingJa": "かざりをいぜんみたことがあること。"
             },
             {
               "id": "d",
@@ -2774,7 +2831,8 @@
                 "en": "She preemptively denied specific locations and objects she had not been asked about."
               },
               "ttsTextJa": "聞かれていない具体的な場所と物を先回りして否定したこと。",
-              "audioId": "L3-016-q1-d"
+              "audioId": "L3-016-q1-d",
+              "readingJa": "きかれていないぐたいてきなばしょとものをさきまわりしてひてーしたこと。"
             }
           ],
           "correctOptionIds": [
@@ -2832,7 +2890,8 @@
                 "en": "She knew there was an ornament in the living room."
               },
               "ttsTextJa": "居間に飾りがあると知っていた。",
-              "audioId": "L3-016-q2-a"
+              "audioId": "L3-016-q2-a",
+              "readingJa": "いまにかざりがあるとしっていた。"
             },
             {
               "id": "b",
@@ -2842,7 +2901,8 @@
                 "en": "She stated that the broken item was on a shelf."
               },
               "ttsTextJa": "壊れた物が棚にあったと述べた。",
-              "audioId": "L3-016-q2-b"
+              "audioId": "L3-016-q2-b",
+              "readingJa": "こわれたものがたなにあったとのべた。"
             },
             {
               "id": "c",
@@ -2852,7 +2912,8 @@
                 "en": "She heard Akira’s voicemail."
               },
               "ttsTextJa": "明の留守電を聞いた。",
-              "audioId": "L3-016-q2-c"
+              "audioId": "L3-016-q2-c",
+              "readingJa": "あかりのるすでんをきいた。"
             },
             {
               "id": "d",
@@ -2862,7 +2923,8 @@
                 "en": "She identified a white ornament on the top shelf."
               },
               "ttsTextJa": "上段の白い飾りだと特定した。",
-              "audioId": "L3-016-q2-d"
+              "audioId": "L3-016-q2-d",
+              "readingJa": "じょーだんのしろいかざりだととくてーした。"
             }
           ],
           "correctOptionIds": [
@@ -2914,13 +2976,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "93d57109328a8d073ccaa2cad1c2be826f386186e679f8dd30e4aa8d2d05d3fa"
+      "contentHash": "2088a8b9f648019f8cd823a9cc0e7460b5efb259e99253a646a8b9ce78d286bc"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L3-017",
-      "revision": 2,
+      "revision": 3,
       "level": 3,
       "stage": 17,
       "jlptTarget": "N1",
@@ -2944,14 +3006,15 @@
         "en": "During a live broadcast, an anchor rewords a store report after a production signal."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l3-017.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "閉鎖から再開準備への場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“从“停业”到“筹备重开””场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"From Closure to Reopening Prep\"."
+        },
+        "sha256": "c900e0e8d05139301aac3b667d081b3feabd3a637a396d5a5691bc869fb64e2b"
       },
       "cast": [
         {
@@ -3027,7 +3090,7 @@
             "zh": "那么，赞助企业的门店暂时关闭——",
             "en": "So the sponsor company’s store has temporarily clo—"
           },
-          "readingJa": "では、すぽんさーきぎょうのてんぽがいちじへいさ――",
+          "readingJa": "では、すぽんさーきぎょうのてんぽがいちじへいさ……",
           "ttsTextJa": "では、スポンサー企業の店舗が一時閉鎖――",
           "audioId": "L3-017-line-002",
           "pauseAfterMs": 500,
@@ -3041,7 +3104,7 @@
             {
               "id": "token-002",
               "text": "一時閉鎖――",
-              "reading": "いちじへいさ――",
+              "reading": "いちじへいさ……",
               "audioId": "L3-017-line-002-token-002"
             }
           ]
@@ -3227,7 +3290,8 @@
                 "en": "The reporter is on location."
               },
               "ttsTextJa": "記者が現地にいること。",
-              "audioId": "L3-017-q1-a"
+              "audioId": "L3-017-q1-a",
+              "readingJa": "きしゃがげんちにいること。"
             },
             {
               "id": "b",
@@ -3237,7 +3301,8 @@
                 "en": "Production specifically instructs the phrase “preparing to reopen.”"
               },
               "ttsTextJa": "制作側が「再開準備」と具体的に指示したこと。",
-              "audioId": "L3-017-q1-b"
+              "audioId": "L3-017-q1-b",
+              "readingJa": "せーさくがわが「さいかいじゅんび」とぐたいてきにしじしたこと。"
             },
             {
               "id": "c",
@@ -3247,7 +3312,8 @@
                 "en": "The same company sponsors the immediately following slot."
               },
               "ttsTextJa": "同じ企業が直後の提供枠を持つこと。",
-              "audioId": "L3-017-q1-c"
+              "audioId": "L3-017-q1-c",
+              "readingJa": "おなじきぎょーがちょくごのてーきょーわくをもつこと。"
             },
             {
               "id": "d",
@@ -3257,7 +3323,8 @@
                 "en": "The analyst asks a question."
               },
               "ttsTextJa": "解説者が質問したこと。",
-              "audioId": "L3-017-q1-d"
+              "audioId": "L3-017-q1-d",
+              "readingJa": "かいせつしゃがしつもんしたこと。"
             }
           ],
           "correctOptionIds": [
@@ -3315,7 +3382,8 @@
                 "en": "It emphasizes a more positive future than “closure.”"
               },
               "ttsTextJa": "閉鎖より前向きな将来像を強調する。",
-              "audioId": "L3-017-q2-a"
+              "audioId": "L3-017-q2-a",
+              "readingJa": "へーさよりまえむきなしょうらいぞうをきょーちょーする。"
             },
             {
               "id": "b",
@@ -3325,7 +3393,8 @@
                 "en": "It proves a reopening date has been fixed."
               },
               "ttsTextJa": "再開日が確定したことを事実として証明する。",
-              "audioId": "L3-017-q2-b"
+              "audioId": "L3-017-q2-b",
+              "readingJa": "さいかいびがかくてーしたことをじじつとしてしょーめーする。"
             },
             {
               "id": "c",
@@ -3335,7 +3404,8 @@
                 "en": "It means the store is currently operating normally."
               },
               "ttsTextJa": "店舗が現在も通常営業中だと意味する。",
-              "audioId": "L3-017-q2-c"
+              "audioId": "L3-017-q2-c",
+              "readingJa": "てんぽがげんざいもつーじょーえーぎょーちゅーだといみする。"
             },
             {
               "id": "d",
@@ -3345,7 +3415,8 @@
                 "en": "It does not erase the present fact that operations are paused."
               },
               "ttsTextJa": "休業という現在の事実自体は消さない。",
-              "audioId": "L3-017-q2-d"
+              "audioId": "L3-017-q2-d",
+              "readingJa": "きゅーぎょーというげんざいのじじつじたいわけさない。"
             }
           ],
           "correctOptionIds": [
@@ -3397,13 +3468,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "c560c673c023b09a995182cd9d648836a11ffcc9fbb2e91dfc84b111477b6d3f"
+      "contentHash": "47245b99cc3430634d4a83df57de031327800fac00d18c2a19fd27f62a23d4fa"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L3-018",
-      "revision": 2,
+      "revision": 3,
       "level": 3,
       "stage": 18,
       "jlptTarget": "N1",
@@ -3427,14 +3498,15 @@
         "en": "A standard drill announcement plays at school, but the posted schedule and staff behavior do not match it."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l3-018.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "来週の訓練放送の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“下周的演练广播”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Next Week’s Drill Announcement\"."
+        },
+        "sha256": "d51748c015f6636a71f5031437ad8f9ca7371af3d3c9e73e4160511365552390"
       },
       "cast": [
         {
@@ -3674,7 +3746,8 @@
                 "en": "A recording for next week played accidentally; no action is needed."
               },
               "ttsTextJa": "来週の録音を誤って再生しただけで、行動は不要。",
-              "audioId": "L3-018-q1-a"
+              "audioId": "L3-018-q1-a",
+              "readingJa": "らいしゅーのろくおんをあやまってさいせーしただけで、こーどーわふよー。"
             },
             {
               "id": "b",
@@ -3684,7 +3757,8 @@
                 "en": "A real evacuation using drill wording to avoid panic."
               },
               "ttsTextJa": "混乱を避けるため訓練文を用いた、実際の退避。",
-              "audioId": "L3-018-q1-b"
+              "audioId": "L3-018-q1-b",
+              "readingJa": "こんらんをさけるためくんれんぶんをもちいた、じっさいのたいひ。"
             },
             {
               "id": "c",
@@ -3694,7 +3768,8 @@
                 "en": "A surprise test intended only to startle students."
               },
               "ttsTextJa": "生徒だけを驚かせる抜き打ち試験。",
-              "audioId": "L3-018-q1-c"
+              "audioId": "L3-018-q1-c",
+              "readingJa": "せーとだけをおどろかせるぬきうちしけん。"
             },
             {
               "id": "d",
@@ -3704,7 +3779,8 @@
                 "en": "Routine staff transport of supplies."
               },
               "ttsTextJa": "教師が荷物を運ぶ通常業務。",
-              "audioId": "L3-018-q1-d"
+              "audioId": "L3-018-q1-d",
+              "readingJa": "きょーしがにもつをはこぶつーじょーぎょーむ。"
             }
           ],
           "correctOptionIds": [
@@ -3764,7 +3840,8 @@
                 "en": "The announcement repeats."
               },
               "ttsTextJa": "放送が二度流れたこと。",
-              "audioId": "L3-018-q2-a"
+              "audioId": "L3-018-q2-a",
+              "readingJa": "ほーそーがにどながれたこと。"
             },
             {
               "id": "b",
@@ -3774,7 +3851,8 @@
                 "en": "The student is still holding his own bag during the evacuation."
               },
               "ttsTextJa": "生徒が避難中も自分の鞄を手に持っていること。",
-              "audioId": "L3-018-q2-b"
+              "audioId": "L3-018-q2-b",
+              "readingJa": "せーとがひなんちゅうもじぶんのかばんをてにもっていること。"
             },
             {
               "id": "c",
@@ -3784,7 +3862,8 @@
                 "en": "The teacher uses polite language."
               },
               "ttsTextJa": "教師が丁寧語を使うこと。",
-              "audioId": "L3-018-q2-c"
+              "audioId": "L3-018-q2-c",
+              "readingJa": "きょーしがていねいごをつかうこと。"
             },
             {
               "id": "d",
@@ -3794,7 +3873,8 @@
                 "en": "The posted drill date is next Wednesday."
               },
               "ttsTextJa": "掲示された訓練日が翌週水曜であること。",
-              "audioId": "L3-018-q2-d"
+              "audioId": "L3-018-q2-d",
+              "readingJa": "けーじされたくんれんびがよくしゅーすいよーであること。"
             }
           ],
           "correctOptionIds": [
@@ -3849,7 +3929,8 @@
                 "en": "Stay in the classroom until the cause is known."
               },
               "ttsTextJa": "原因を確かめるまで教室に残る。",
-              "audioId": "L3-018-q3-a"
+              "audioId": "L3-018-q3-a",
+              "readingJa": "げんいんをたしかめるまできょーしつにのこる。"
             },
             {
               "id": "b",
@@ -3859,7 +3940,8 @@
                 "en": "Remain calm and follow the teacher and announcement to the schoolyard."
               },
               "ttsTextJa": "慌てず、教師と放送の指示に従って校庭へ移動する。",
-              "audioId": "L3-018-q3-b"
+              "audioId": "L3-018-q3-b",
+              "readingJa": "あわてず、きょーしとほーそーのしじにしたがってこーてーえいどーする。"
             },
             {
               "id": "c",
@@ -3869,7 +3951,8 @@
                 "en": "Do nothing until next week."
               },
               "ttsTextJa": "来週まで何もしない。",
-              "audioId": "L3-018-q3-c"
+              "audioId": "L3-018-q3-c",
+              "readingJa": "らいしゅーまでなんもしない。"
             },
             {
               "id": "d",
@@ -3879,7 +3962,8 @@
                 "en": "Take every classroom belonging and head alone toward a different exit."
               },
               "ttsTextJa": "教室の荷物を全部持って、一人で別の出口へ向かう。",
-              "audioId": "L3-018-q3-d"
+              "audioId": "L3-018-q3-d",
+              "readingJa": "きょーしつのにもつをぜんぶもって、ひとりでべつのでぐちえむかう。"
             }
           ],
           "correctOptionIds": [
@@ -3929,13 +4013,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "bb6b42dcbc4791f101b53d264acb5d55e8163fae69dc0257bc38d037522f0edc"
+      "contentHash": "f69947d6fc952b427f5b00b30801bc2b59faf362510dbccb99cdb2ae8c44850a"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L3-019",
-      "revision": 2,
+      "revision": 3,
       "level": 3,
       "stage": 19,
       "jlptTarget": "N1",
@@ -3959,14 +4043,15 @@
         "en": "Reliving the same morning, Haruka observes the offset between a train and a clock at an inn near the station."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l3-019.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "同時に鳴る朝の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“同时响起的清晨”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Morning They Sound Together\"."
+        },
+        "sha256": "ce93cb4409ff2e3192229e92f1af481691dcfef103a17bccfc794f5104a51705"
       },
       "cast": [
         {
@@ -4224,7 +4309,8 @@
                 "en": "The time loop may have broken, allowing progress beyond it."
               },
               "ttsTextJa": "時間ループが崩れ、外へ進める可能性が生じた。",
-              "audioId": "L3-019-q1-a"
+              "audioId": "L3-019-q1-a",
+              "readingJa": "じかんるーぷがくずれ、そとえすすめるかのうせいがしょーじた。"
             },
             {
               "id": "b",
@@ -4234,7 +4320,8 @@
                 "en": "Only the inn clock loses exactly one minute each day, and that offset disappeared today."
               },
               "ttsTextJa": "宿の時計だけが毎日きっかり一分ずつ遅れ、そのずれが今日は消えた。",
-              "audioId": "L3-019-q1-b"
+              "audioId": "L3-019-q1-b",
+              "readingJa": "やどのとけーだけがまいにちきっかりいちぶずつおくれ、そのずれがきょーわきえた。"
             },
             {
               "id": "c",
@@ -4244,7 +4331,8 @@
                 "en": "Haruka can no longer hear the train."
               },
               "ttsTextJa": "遥が列車音を聞けなくなった。",
-              "audioId": "L3-019-q1-c"
+              "audioId": "L3-019-q1-c",
+              "readingJa": "はるかがれっしゃおんをきけなくなった。"
             },
             {
               "id": "d",
@@ -4254,7 +4342,8 @@
                 "en": "The inn moved to another station."
               },
               "ttsTextJa": "宿が別の駅へ移動した。",
-              "audioId": "L3-019-q1-d"
+              "audioId": "L3-019-q1-d",
+              "readingJa": "やどがべつのえきえいどーした。"
             }
           ],
           "correctOptionIds": [
@@ -4315,7 +4404,8 @@
                 "en": "The train was not heard."
               },
               "ttsTextJa": "列車が聞こえなかったから。",
-              "audioId": "L3-019-q2-a"
+              "audioId": "L3-019-q2-a",
+              "readingJa": "れっしゃがきこえなかったから。"
             },
             {
               "id": "b",
@@ -4325,7 +4415,8 @@
                 "en": "There is no memory of yesterday."
               },
               "ttsTextJa": "昨日の記憶がないから。",
-              "audioId": "L3-019-q2-b"
+              "audioId": "L3-019-q2-b",
+              "readingJa": "きのーのきおくがないから。"
             },
             {
               "id": "c",
@@ -4335,7 +4426,8 @@
                 "en": "Only pattern changes have been observed; whether the day repeats again remains untested."
               },
               "ttsTextJa": "観測されたのはパターン変化までで、その後一日が再び繰り返すか未確認だから。",
-              "audioId": "L3-019-q2-c"
+              "audioId": "L3-019-q2-c",
+              "readingJa": "かんそくされたのわぱたーんへんかまでで、そのごいちにちがふたたびくりかえすかみかくにんだから。"
             },
             {
               "id": "d",
@@ -4345,7 +4437,8 @@
                 "en": "The clock cannot be read."
               },
               "ttsTextJa": "時計の時刻が読めないから。",
-              "audioId": "L3-019-q2-d"
+              "audioId": "L3-019-q2-d",
+              "readingJa": "とけーのじこくがよめないから。"
             }
           ],
           "correctOptionIds": [
@@ -4397,13 +4490,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "39012d803426afa541cc01000104404d9fd09aff11a6d1af21dce3290458b59c"
+      "contentHash": "3c9f5fd01c51b2bc5738f80b9014aa5b5e44f511d593f63b5beccf0f07d806ed"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L3-020",
-      "revision": 2,
+      "revision": 3,
       "level": 3,
       "stage": 20,
       "jlptTarget": "N1",
@@ -4428,12 +4521,13 @@
       "illustration": {
         "enabled": true,
         "src": "assets/stages/l3-020.webp",
-        "style": "crayon",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "夕焼け色の夢の駅で、青い制服の駅員が光る右側の改札を指す彩色クレヨン画。",
-          "zh": "彩色蜡笔画：晚霞色的梦中车站里，蓝制服站务员指向发光的右侧检票口。",
-          "en": "Color crayon illustration of a blue-uniformed attendant pointing to a glowing right-side gate in a sunset dream station."
-        }
+          "ja": "みぎっかわの改札の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘““右边边”的检票口”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The “Right-Side-Side” Gate\"."
+        },
+        "sha256": "46435ec1f77b2f652ec1fb9685a767e20a38fe82acf71eb96b11039b9e0cb99a"
       },
       "cast": [
         {
@@ -4664,7 +4758,8 @@
                 "en": "An employee lost from a real station."
               },
               "ttsTextJa": "現実の駅から迷い込んだ職員。",
-              "audioId": "L3-020-q1-a"
+              "audioId": "L3-020-q1-a",
+              "readingJa": "げんじつのえきからまよいこんだしょくいん。"
             },
             {
               "id": "b",
@@ -4674,7 +4769,8 @@
                 "en": "A guide hired by Mio’s family."
               },
               "ttsTextJa": "家族が雇った案内人。",
-              "audioId": "L3-020-q1-b"
+              "audioId": "L3-020-q1-b",
+              "readingJa": "かぞくがやとったなれーしょん。"
             },
             {
               "id": "c",
@@ -4684,7 +4780,8 @@
                 "en": "A passenger who overheard Mio's wording at the station."
               },
               "ttsTextJa": "美緒の言葉を駅で盗み聞きした乗客。",
-              "audioId": "L3-020-q1-c"
+              "audioId": "L3-020-q1-c",
+              "readingJa": "みおのことばをえきでぬすみぎきしたじょーきゃく。"
             },
             {
               "id": "d",
@@ -4694,7 +4791,8 @@
                 "en": "A personification of Mio’s forgotten self-memory."
               },
               "ttsTextJa": "美緒が忘れていた自己記憶の擬人化。",
-              "audioId": "L3-020-q1-d"
+              "audioId": "L3-020-q1-d",
+              "readingJa": "みおがわすれていたじこきおくのぎじんか。"
             }
           ],
           "correctOptionIds": [
@@ -4753,7 +4851,8 @@
                 "en": "It is official railway terminology."
               },
               "ttsTextJa": "駅の正式な専門用語だから。",
-              "audioId": "L3-020-q2-a"
+              "audioId": "L3-020-q2-a",
+              "readingJa": "えきのせーしきなせんもんよーごだから。"
             },
             {
               "id": "b",
@@ -4763,7 +4862,8 @@
                 "en": "It is a private childhood mistake unique to Mio and forgotten even by her family."
               },
               "ttsTextJa": "美緒だけが幼少期に使い、家族にも忘れられた私的な言い間違いだから。",
-              "audioId": "L3-020-q2-b"
+              "audioId": "L3-020-q2-b",
+              "readingJa": "みおだけがようしょうきにつかい、かぞくにもわすれられたしてきないいまちがいだから。"
             },
             {
               "id": "c",
@@ -4773,7 +4873,8 @@
                 "en": "The right-side gate is always the exit."
               },
               "ttsTextJa": "右側の改札が必ず出口だから。",
-              "audioId": "L3-020-q2-c"
+              "audioId": "L3-020-q2-c",
+              "readingJa": "みぎがわのかいさつがかならずでぐちだから。"
             },
             {
               "id": "d",
@@ -4783,7 +4884,8 @@
                 "en": "The attendant cannot speak standard Japanese."
               },
               "ttsTextJa": "駅員が標準語を話せないから。",
-              "audioId": "L3-020-q2-d"
+              "audioId": "L3-020-q2-d",
+              "readingJa": "えきいんがひょうじゅんごをはなせないから。"
             }
           ],
           "correctOptionIds": [
@@ -4834,7 +4936,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "4d0a875de532b795559f2c2783389c2c363e076cf1fd16d1d54a0bc27ddbe49a"
+      "contentHash": "4310ee1f73a3d29f5c17b7f1c1a46bf27ee01ef7e13efaa55b1d2f4f3dc35aed"
     }
   ]
 }

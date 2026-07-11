@@ -371,11 +371,9 @@
     "world-inference": 2,
     "world-knowledge": 1
   },
-  "illustratedStages": 31,
+  "illustratedStages": 250,
   "illustrationStyles": {
-    "crayon": 25,
-    "chibi-four-panel": 6,
-    "monochrome": 0
+    "monochrome-four-panel": 250
   },
   "voiceLines": {
     "female": 1140,
@@ -407,8 +405,8 @@
     "line": 2400,
     "option": 2445,
     "token": 4993,
-    "durationSeconds": 40998.333,
-    "bytes": 335218248
+    "durationSeconds": 38601.484,
+    "bytes": 316038600
   },
   "lengthProgression": {
     "level-1": {

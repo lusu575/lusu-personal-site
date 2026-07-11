@@ -11,6 +11,7 @@
     "jp-subtext:validate:content": "node tools/japanese-subtext/scripts/validate-content.mjs --skip-audio",
     "jp-subtext:validate:draft": "node tools/japanese-subtext/scripts/validate-content.mjs --skip-audio --allow-partial --allow-unlocked",
     "jp-subtext:stats": "node tools/japanese-subtext/scripts/content-stats.mjs",
+    "jp-subtext:illustrations": "node tools/japanese-subtext/scripts/generate-manga-assets.mjs",
     "jp-subtext:test": "node --test --test-isolation=none tools/japanese-subtext/tests/*.test.mjs tools/japanese-subtext/scripts/tts/tests/*.mjs",
     "jp-subtext:audio:validate": "node tools/japanese-subtext/scripts/validate-audio.mjs",
     "jp-subtext:audio:validate:quick": "node tools/japanese-subtext/scripts/validate-audio.mjs --skip-probe",
@@ -19,6 +20,7 @@
     "jp-subtext:release-check": "npm run jp-subtext:validate && npm run jp-subtext:audio:validate -- --check-silence && npm run jp-subtext:test && npm run build"
   },
   "devDependencies": {
+    "sharp": "0.34.5",
     "wrangler": "latest"
   }
 }

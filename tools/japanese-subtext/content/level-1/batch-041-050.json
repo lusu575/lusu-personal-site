@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.1",
+  "contentVersion": "1.0.2",
   "level": 1,
   "batch": "041-050",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-041",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 41,
       "jlptTarget": "N3",
@@ -32,14 +32,15 @@
         "en": "Lost in a virtual world, Ren asks guide Mina for the exit. She points down a wide road but walks into a narrow path in the opposite direction."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-041.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "出口と細い道の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“出口与小路”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Exit and the Narrow Path\"."
+        },
+        "sha256": "bdf5a20e6f634a1977c125b0c3492d0162be4317eab9f14d5ad102dbb018d130"
       },
       "cast": [
         {
@@ -228,7 +229,8 @@
                 "en": "She identifies the exit while inviting Ren to follow the secret route."
               },
               "ttsTextJa": "出口を教えつつ、蓮には秘密の道へ付いて来てほしい。",
-              "audioId": "L1-041-q1-a"
+              "audioId": "L1-041-q1-a",
+              "readingJa": "でぐちをおしえつつ、れんにわひみつのみちえついてきてほしい。"
             },
             {
               "id": "b",
@@ -238,7 +240,8 @@
                 "en": "She has completely forgotten where the exit is."
               },
               "ttsTextJa": "出口の場所を完全に忘れている。",
-              "audioId": "L1-041-q1-b"
+              "audioId": "L1-041-q1-b",
+              "readingJa": "でぐちのばしょをかんぜんにわすれている。"
             },
             {
               "id": "c",
@@ -248,7 +251,8 @@
                 "en": "She wants Ren to run down the wide road alone."
               },
               "ttsTextJa": "蓮を一人で広い道へ走らせたい。",
-              "audioId": "L1-041-q1-c"
+              "audioId": "L1-041-q1-c",
+              "readingJa": "れんをひとりでひろいみちえはしらせたい。"
             },
             {
               "id": "d",
@@ -258,7 +262,8 @@
                 "en": "She is warning that the narrow path is closed."
               },
               "ttsTextJa": "細い道が閉鎖中だと警告している。",
-              "audioId": "L1-041-q1-d"
+              "audioId": "L1-041-q1-d",
+              "readingJa": "ほそいみちがへーさちゅうだとけーこくしている。"
             }
           ],
           "correctOptionIds": [
@@ -309,13 +314,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "32bc93dab8e72fe4c72e5f6f071fbb313f1e07de5a6ef1ec4e3591ac75c16c0b"
+      "contentHash": "64d568b767d1ad9c8bb915d1ec0f56c87d7bcd0f4dbfe074731686c99211218d"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-042",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 42,
       "jlptTarget": "N3",
@@ -339,14 +344,15 @@
         "en": "After rain at school, three umbrellas with the same star mark stand together, but only one is wet. Yuri has searched for hers since morning."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-042.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "一本だけ濡れた傘の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“唯一湿着的伞”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The One Wet Umbrella\"."
+        },
+        "sha256": "3e1eedc4e98bbee6e92c06a41bb3ad56565ab6fb0e858c6f236d60a7ee1afa2f"
       },
       "cast": [
         {
@@ -544,7 +550,8 @@
                 "en": "It stayed in the stand for a full week."
               },
               "ttsTextJa": "一週間ずっと傘立てにあった。",
-              "audioId": "L1-042-q1-a"
+              "audioId": "L1-042-q1-a",
+              "readingJa": "いっしゅーかんずっとかさたてにあった。"
             },
             {
               "id": "b",
@@ -554,7 +561,8 @@
                 "en": "Yuri had been using it all morning."
               },
               "ttsTextJa": "悠里が朝から使い続けていた。",
-              "audioId": "L1-042-q1-b"
+              "audioId": "L1-042-q1-b",
+              "readingJa": "ゆーりがあさからつかいつずけていた。"
             },
             {
               "id": "c",
@@ -564,7 +572,8 @@
                 "en": "It can be concluded that the umbrella was washed at a school tap rather than wetted by rain."
               },
               "ttsTextJa": "雨ではなく校内の水道で洗われたと確定できる。",
-              "audioId": "L1-042-q1-c"
+              "audioId": "L1-042-q1-c",
+              "readingJa": "あめでわなくこーないのすいどーであらわれたとかくてーできる。"
             },
             {
               "id": "d",
@@ -574,7 +583,8 @@
                 "en": "Someone likely used it recently and returned it after the rain."
               },
               "ttsTextJa": "誰かが最近使い、雨上がりに戻した可能性が高い。",
-              "audioId": "L1-042-q1-d"
+              "audioId": "L1-042-q1-d",
+              "readingJa": "だれかがさいきんつかい、あめあがりにもどしたかのうせいがたかい。"
             }
           ],
           "correctOptionIds": [
@@ -631,7 +641,8 @@
                 "en": "There are three umbrellas."
               },
               "ttsTextJa": "傘が三本あること。",
-              "audioId": "L1-042-q2-a"
+              "audioId": "L1-042-q2-a",
+              "readingJa": "かさがさんぼんあること。"
             },
             {
               "id": "b",
@@ -641,7 +652,8 @@
                 "en": "Only one is wet, and the rain stopped ten minutes ago."
               },
               "ttsTextJa": "一本だけ濡れ、雨が十分前にやんだこと。",
-              "audioId": "L1-042-q2-b"
+              "audioId": "L1-042-q2-b",
+              "readingJa": "いっぽんだけぬれ、あめがじゅっぷんまえにやんだこと。"
             },
             {
               "id": "c",
@@ -651,7 +663,8 @@
                 "en": "They share the same star mark."
               },
               "ttsTextJa": "星の印が同じであること。",
-              "audioId": "L1-042-q2-c"
+              "audioId": "L1-042-q2-c",
+              "readingJa": "ほしのしるしがおなじであること。"
             },
             {
               "id": "d",
@@ -661,7 +674,8 @@
                 "en": "The umbrella stand is at school."
               },
               "ttsTextJa": "傘立てが学校にあること。",
-              "audioId": "L1-042-q2-d"
+              "audioId": "L1-042-q2-d",
+              "readingJa": "かさたてががっこーにあること。"
             }
           ],
           "correctOptionIds": [
@@ -710,13 +724,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "e8e709cefca746da279d9a74237d9d368f0ccae46f98e60b7049c09ea74a654c"
+      "contentHash": "3dfae26c176b1b2c40d0bfde1bcaf6dd8cdad7611b27769a907d713292023d5c"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-043",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 43,
       "jlptTarget": "N3",
@@ -739,14 +753,15 @@
         "en": "New employee Riku emails senior colleague Saki about a new policy. Rather than name his mistake, she replies with the old policy attached."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-043.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "ご参考までの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“供参考”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"For Reference\"."
+        },
+        "sha256": "1acc477785c2e7a6a64069904ad2ece5293761936900d3f77772d9f696485477"
       },
       "cast": [
         {
@@ -935,7 +950,8 @@
                 "en": "She wants Riku to delete the old policy."
               },
               "ttsTextJa": "陸に旧規程を削除してほしい。",
-              "audioId": "L1-043-q1-a"
+              "audioId": "L1-043-q1-a",
+              "readingJa": "りくにきゅーきてーをさくじょしてほしい。"
             },
             {
               "id": "b",
@@ -945,7 +961,8 @@
                 "en": "Saki wants to take over the client communication immediately."
               },
               "ttsTextJa": "取引先への連絡を、紗季が今すぐ代わりたい。",
-              "audioId": "L1-043-q1-b"
+              "audioId": "L1-043-q1-b",
+              "readingJa": "とりひきさきえのれんらくを、さきがいますぐかわりたい。"
             },
             {
               "id": "c",
@@ -955,7 +972,8 @@
                 "en": "She wants Riku to read the material and correct the error himself."
               },
               "ttsTextJa": "陸に資料を読ませ、誤りを自分で直してほしい。",
-              "audioId": "L1-043-q1-c"
+              "audioId": "L1-043-q1-c",
+              "readingJa": "りくにしりょーをよませ、あやまりをじぶんでなおしてほしい。"
             },
             {
               "id": "d",
@@ -965,7 +983,8 @@
                 "en": "She wants to end all monthly applications."
               },
               "ttsTextJa": "毎月の申請を全部やめたい。",
-              "audioId": "L1-043-q1-d"
+              "audioId": "L1-043-q1-d",
+              "readingJa": "まいつきのしんせーをぜんぶやめたい。"
             }
           ],
           "correctOptionIds": [
@@ -1016,13 +1035,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "342c1e1f4f2add4b9972ac836ae2d21e558e30b1ef3d6f8f4cebb1922fd4aeb2"
+      "contentHash": "5a4eef4d67f60641a3a2e0fa180fc8537c1197b06102ccf6497e911a6a446667"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-044",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 44,
       "jlptTarget": "N3",
@@ -1045,14 +1064,15 @@
         "en": "During a tour briefing, guide Megumi repeats the departure time and looks each time at Takeshi, who was late the previous day."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-044.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "出発は八時ですの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“八点出发”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Departure Is at Eight\"."
+        },
+        "sha256": "e0006ee0b0d9eab56c77c4dbb89516041a24401cc08c4d8f09ff67a1a9c81f17"
       },
       "cast": [
         {
@@ -1259,7 +1279,8 @@
                 "en": "Hana"
               },
               "ttsTextJa": "花。",
-              "audioId": "L1-044-q1-a"
+              "audioId": "L1-044-q1-a",
+              "readingJa": "はな。"
             },
             {
               "id": "b",
@@ -1269,7 +1290,8 @@
                 "en": "Takeshi"
               },
               "ttsTextJa": "武。",
-              "audioId": "L1-044-q1-b"
+              "audioId": "L1-044-q1-b",
+              "readingJa": "たけ。"
             },
             {
               "id": "c",
@@ -1279,7 +1301,8 @@
                 "en": "Akira"
               },
               "ttsTextJa": "明。",
-              "audioId": "L1-044-q1-c"
+              "audioId": "L1-044-q1-c",
+              "readingJa": "あきら。"
             },
             {
               "id": "d",
@@ -1289,7 +1312,8 @@
                 "en": "The bus driver"
               },
               "ttsTextJa": "バスの運転手。",
-              "audioId": "L1-044-q1-d"
+              "audioId": "L1-044-q1-d",
+              "readingJa": "ばすのうんてんしゅ。"
             }
           ],
           "correctOptionIds": [
@@ -1344,7 +1368,8 @@
                 "en": "The departure time is not decided."
               },
               "ttsTextJa": "出発時刻をまだ決めていない。",
-              "audioId": "L1-044-q2-a"
+              "audioId": "L1-044-q2-a",
+              "readingJa": "しゅっぱつじこくをまだきめていない。"
             },
             {
               "id": "b",
@@ -1354,7 +1379,8 @@
                 "en": "She wants to change hotels."
               },
               "ttsTextJa": "ホテルの場所を変更したい。",
-              "audioId": "L1-044-q2-b"
+              "audioId": "L1-044-q2-b",
+              "readingJa": "ほてるのばしょをへんこーしたい。"
             },
             {
               "id": "c",
@@ -1364,7 +1390,8 @@
                 "en": "She wants to say that arriving well after eight is acceptable."
               },
               "ttsTextJa": "八時よりかなり遅く来てもよいと伝えたい。",
-              "audioId": "L1-044-q2-c"
+              "audioId": "L1-044-q2-c",
+              "readingJa": "はちじよりかなりおそくきてもよいとつたえたい。"
             },
             {
               "id": "d",
@@ -1374,7 +1401,8 @@
                 "en": "She wants everyone, especially Takeshi, to gather without being late."
               },
               "ttsTextJa": "武を含む全員に、遅れず集合してほしい。",
-              "audioId": "L1-044-q2-d"
+              "audioId": "L1-044-q2-d",
+              "readingJa": "たけをふくむぜんいんに、おくれずしゅーごーしてほしい。"
             }
           ],
           "correctOptionIds": [
@@ -1425,13 +1453,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "3ca07b48bb9996c6986a23c13774da6949eaeafa2087468ea4506c06bee0bf7b"
+      "contentHash": "32fcb4756a6653f7c2337e1997deb1f5e16b0fd889de2187527b882d8285a697"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-045",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 45,
       "jlptTarget": "N3",
@@ -1455,14 +1483,15 @@
         "en": "During a live weather segment, Haruka reads a sunny forecast while rain runs down the window and staffer Ken offers an umbrella."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-045.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "晴れの原稿、雨の窓の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“晴天稿与雨窗”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Sunny Script, Rainy Window\"."
+        },
+        "sha256": "798d0581f84eb8dd65ce7ac0b5e61beeb39e611776c1603640701543dc47b52c"
       },
       "cast": [
         {
@@ -1660,7 +1689,8 @@
                 "en": "The script is outdated and does not reflect the weather change."
               },
               "ttsTextJa": "原稿が古く、天気の変化が反映されていない。",
-              "audioId": "L1-045-q1-a"
+              "audioId": "L1-045-q1-a",
+              "readingJa": "げんこーがふるく、てんきのへんかがはんえーされていない。"
             },
             {
               "id": "b",
@@ -1670,7 +1700,8 @@
                 "en": "The program sprays water on the window."
               },
               "ttsTextJa": "窓に水をかける番組だから。",
-              "audioId": "L1-045-q1-b"
+              "audioId": "L1-045-q1-b",
+              "readingJa": "まどにみずをかけるばんぐみだから。"
             },
             {
               "id": "c",
@@ -1680,7 +1711,8 @@
                 "en": "Ken misheard sun as rain."
               },
               "ttsTextJa": "健が晴れを雨と聞き間違えた。",
-              "audioId": "L1-045-q1-c"
+              "audioId": "L1-045-q1-c",
+              "readingJa": "けんがはれをあめとききまちがえた。"
             },
             {
               "id": "d",
@@ -1690,7 +1722,8 @@
                 "en": "The broadcast is presenting the weather for the same date next year."
               },
               "ttsTextJa": "放送は来年の同じ日の天気を紹介している。",
-              "audioId": "L1-045-q1-d"
+              "audioId": "L1-045-q1-d",
+              "readingJa": "ほーそーわらいねんのどーじじつのてんきをしょーかいしている。"
             }
           ],
           "correctOptionIds": [
@@ -1741,13 +1774,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "a135107a8c7d123195ee79f78df7923e5aece78058a6776205353c4128df06f7"
+      "contentHash": "77e394ce59b8ff12d12010260fdb79c432bd8113a506fe71d2bd0eaea03621e5"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-046",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 46,
       "jlptTarget": "N3",
@@ -1773,12 +1806,13 @@
       "illustration": {
         "enabled": true,
         "src": "assets/stages/l1-046.webp",
-        "style": "chibi-four-panel",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "猫がコップを動かして日なたで丸くなる四コマ",
-          "zh": "猫挪开杯子后蜷缩在阳光里的四格画",
-          "en": "Four-panel illustration of a cat moving a cup and curling up in sunlight"
-        }
+          "ja": "猫と日なたの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“猫与阳光地”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Cat and the Sunny Spot\"."
+        },
+        "sha256": "74555cff2abc9be06e588c4ce9fe7f9a5466b37495dc165a8838762c405e4f39"
       },
       "cast": [
         {
@@ -1972,7 +2006,8 @@
                 "en": "It wanted to drink from the cup."
               },
               "ttsTextJa": "コップで水を飲みたかった。",
-              "audioId": "L1-046-q1-a"
+              "audioId": "L1-046-q1-a",
+              "readingJa": "こっぷでみずをのみたかった。"
             },
             {
               "id": "b",
@@ -1982,7 +2017,8 @@
                 "en": "It wanted to close the window."
               },
               "ttsTextJa": "窓を閉めたかった。",
-              "audioId": "L1-046-q1-b"
+              "audioId": "L1-046-q1-b",
+              "readingJa": "まどをしめたかった。"
             },
             {
               "id": "c",
@@ -1992,7 +2028,8 @@
                 "en": "It moved it only to cause trouble."
               },
               "ttsTextJa": "人を困らせるためだけに動かした。",
-              "audioId": "L1-046-q1-c"
+              "audioId": "L1-046-q1-c",
+              "readingJa": "ひとをこまらせるためだけにうごかした。"
             },
             {
               "id": "d",
@@ -2002,7 +2039,8 @@
                 "en": "It wanted to clear a sunny sleeping spot."
               },
               "ttsTextJa": "日なたの寝場所を空けたかった。",
-              "audioId": "L1-046-q1-d"
+              "audioId": "L1-046-q1-d",
+              "readingJa": "ひなたのねばしょをあけたかった。"
             }
           ],
           "correctOptionIds": [
@@ -2059,7 +2097,8 @@
                 "en": "Sleep, push, clear sunlight."
               },
               "ttsTextJa": "寝る、押す、日なたが空く。",
-              "audioId": "L1-046-q2-a"
+              "audioId": "L1-046-q2-a",
+              "readingJa": "ねる、おす、ひなたがすく。"
             },
             {
               "id": "b",
@@ -2069,7 +2108,8 @@
                 "en": "Push the cup, clear sunlight, sleep there."
               },
               "ttsTextJa": "コップを押す、日なたが空く、そこで寝る。",
-              "audioId": "L1-046-q2-b"
+              "audioId": "L1-046-q2-b",
+              "readingJa": "こっぷをおす、ひなたがすく、そこでねる。"
             },
             {
               "id": "c",
@@ -2079,7 +2119,8 @@
                 "en": "The sunny spot clears, all windows close, and the cat runs into the hallway."
               },
               "ttsTextJa": "日なたが空く、窓を全部閉める、廊下へ走る。",
-              "audioId": "L1-046-q2-c"
+              "audioId": "L1-046-q2-c",
+              "readingJa": "ひなたがすく、まどをぜんぶしめる、ろーかえはしる。"
             },
             {
               "id": "d",
@@ -2089,7 +2130,8 @@
                 "en": "Drink, push, hide the cup."
               },
               "ttsTextJa": "コップを飲む、押す、隠す。",
-              "audioId": "L1-046-q2-d"
+              "audioId": "L1-046-q2-d",
+              "readingJa": "こっぷをのむ、おす、かくす。"
             }
           ],
           "correctOptionIds": [
@@ -2139,13 +2181,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "0b159bccd218bb19c72b8f67910bfce295403fc65c032cafeeb0135c2c95f394"
+      "contentHash": "71a9354e530a0e4636f73afdd7ec4f285489b9e7d9cfef4294999baf6dc4e573"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-047",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 47,
       "jlptTarget": "N3",
@@ -2169,14 +2211,15 @@
         "en": "Haru leaves Nao a voicemail, saying the borrowed book is not urgent and then mentioning it is due at the library tomorrow."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-047.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "急がない本の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘““不着急”的书”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Book That Is Not Urgent\"."
+        },
+        "sha256": "27ea66a0aa9a5753ed95d581bcf9e41b1b7f99b15cb6faa919c39981b31b9408"
       },
       "cast": [
         {
@@ -2254,7 +2297,7 @@
             {
               "id": "token-001",
               "text": "ただ、図書館への返却日は明日なんだ。",
-              "reading": "ただ、としょかんへのへんきゃくひはあすなんだ。",
+              "reading": "ただ、としょかんへのへんきゃくびはあしたなんだ。",
               "audioId": "L1-047-line-003-token-001"
             }
           ]
@@ -2379,7 +2422,8 @@
                 "en": "She wants Nao to keep the book until next month."
               },
               "ttsTextJa": "来月まで本を持っていてほしい。",
-              "audioId": "L1-047-q1-a"
+              "audioId": "L1-047-q1-a",
+              "readingJa": "らいげつまでほんをもっていてほしい。"
             },
             {
               "id": "b",
@@ -2389,7 +2433,8 @@
                 "en": "She wants Nao to buy the book."
               },
               "ttsTextJa": "本を買い取ってほしい。",
-              "audioId": "L1-047-q1-b"
+              "audioId": "L1-047-q1-b",
+              "readingJa": "ほんをかいとってほしい。"
             },
             {
               "id": "c",
@@ -2399,7 +2444,8 @@
                 "en": "Without sounding pushy, she wants it returned soon or wants a reply."
               },
               "ttsTextJa": "急かす言い方を避けつつ、早く返すか連絡してほしい。",
-              "audioId": "L1-047-q1-c"
+              "audioId": "L1-047-q1-c",
+              "readingJa": "せかすいーかたをさけつつ、はやくかえすかれんらくしてほしい。"
             },
             {
               "id": "d",
@@ -2409,7 +2455,8 @@
                 "en": "She wants Nao not to visit the library."
               },
               "ttsTextJa": "図書館へ行かないでほしい。",
-              "audioId": "L1-047-q1-d"
+              "audioId": "L1-047-q1-d",
+              "readingJa": "としょかんえいかないでほしい。"
             }
           ],
           "correctOptionIds": [
@@ -2461,13 +2508,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "fc5c764bd7c0279a42c5c906eebde8d7a1bf47c6f0829b0ac16ba9aaf97666a4"
+      "contentHash": "33ddd4e6889cf70165fb241421ca53b337c41f2aa0463d96d202f8acd573b4e4"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-048",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 48,
       "jlptTarget": "N3",
@@ -2491,14 +2538,15 @@
         "en": "A museum guide robot presents a familiar smartphone as a future exhibit while visitor Sora listens."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-048.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "二十二世紀の復刻品の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“二十二世纪复刻品”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"A Twenty-Second-Century Reproduction\"."
+        },
+        "sha256": "a8196351b0bc6f5af4eb86aa045420917779c575d41af9b338f104e1c2c373da"
       },
       "cast": [
         {
@@ -2576,7 +2624,7 @@
             {
               "id": "token-001",
               "text": "はい。二十一世紀の製品を再現しています。",
-              "reading": "はい。にじゅういちせいきのせいひんをさいげんしています。",
+              "reading": "はい。にじゅういっせいきのせいひんをさいげんしています。",
               "audioId": "L1-048-line-003-token-001"
             }
           ]
@@ -2701,7 +2749,8 @@
                 "en": "The twenty-first century"
               },
               "ttsTextJa": "二十一世紀。",
-              "audioId": "L1-048-q1-a"
+              "audioId": "L1-048-q1-a",
+              "readingJa": "にじゅーいっせーき。"
             },
             {
               "id": "b",
@@ -2711,7 +2760,8 @@
                 "en": "The twenty-fourth century"
               },
               "ttsTextJa": "二十四世紀。",
-              "audioId": "L1-048-q1-b"
+              "audioId": "L1-048-q1-b",
+              "readingJa": "にじゅーよんせーき。"
             },
             {
               "id": "c",
@@ -2721,7 +2771,8 @@
                 "en": "The twentieth century"
               },
               "ttsTextJa": "二十世紀。",
-              "audioId": "L1-048-q1-c"
+              "audioId": "L1-048-q1-c",
+              "readingJa": "にじゅっせーき。"
             },
             {
               "id": "d",
@@ -2731,7 +2782,8 @@
                 "en": "The twenty-second century"
               },
               "ttsTextJa": "二十二世紀。",
-              "audioId": "L1-048-q1-d"
+              "audioId": "L1-048-q1-d",
+              "readingJa": "にじゅーにせーき。"
             }
           ],
           "correctOptionIds": [
@@ -2787,7 +2839,8 @@
                 "en": "It is the sole original made in the twenty-first century."
               },
               "ttsTextJa": "二十一世紀に作られた唯一の実物である。",
-              "audioId": "L1-048-q2-a"
+              "audioId": "L1-048-q2-a",
+              "readingJa": "にじゅーいっせーきにつくられたゆいいつのじつぶつである。"
             },
             {
               "id": "b",
@@ -2797,7 +2850,8 @@
                 "en": "It was first invented in the twenty-fourth century."
               },
               "ttsTextJa": "二十四世紀に初めて発明された。",
-              "audioId": "L1-048-q2-b"
+              "audioId": "L1-048-q2-b",
+              "readingJa": "にじゅーよんせーきにはじめてはつめーされた。"
             },
             {
               "id": "c",
@@ -2807,7 +2861,8 @@
                 "en": "It is an actual twenty-fourth-century product sent back to the twenty-first century."
               },
               "ttsTextJa": "二十四世紀の未来製品を二十一世紀へ送った実物である。",
-              "audioId": "L1-048-q2-c"
+              "audioId": "L1-048-q2-c",
+              "readingJa": "にじゅーよんせーきのみらいせーひんをにじゅーいっせーきえおくったじつぶつである。"
             },
             {
               "id": "d",
@@ -2817,7 +2872,8 @@
                 "en": "It is a twenty-second-century reproduction of a twenty-first-century product."
               },
               "ttsTextJa": "二十二世紀に作られた、二十一世紀製品の復刻品である。",
-              "audioId": "L1-048-q2-d"
+              "audioId": "L1-048-q2-d",
+              "readingJa": "にじゅーにせーきにつくられた、にじゅーいっせーきせーひんのふっこくひんである。"
             }
           ],
           "correctOptionIds": [
@@ -2866,13 +2922,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "0c3883ba4e75d65eabdfcadff542c761598d76f27630d888f6543c425a70d1f5"
+      "contentHash": "c5b1b12f4ca05dcc00370e948528a3c736c58093b4696d2dcbf47083fd591fbc"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-049",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 49,
       "jlptTarget": "N3",
@@ -2896,14 +2952,15 @@
         "en": "On a mystery-game choice screen, guide Rei says not to choose the first answer, while a developer note in the background marks it correct."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l1-049.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "一番目を選ぶなの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“别选第一项”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Do Not Choose the First\"."
+        },
+        "sha256": "005b237d20a0517024871f518f896f3f80c87d7f53fb063010fccf23dec44697"
       },
       "cast": [
         {
@@ -3106,7 +3163,8 @@
                 "en": "It conflicts with current evidence and likely steers the player toward a wrong answer."
               },
               "ttsTextJa": "現在の証拠と矛盾し、誤答へ誘導している可能性が高い。",
-              "audioId": "L1-049-q1-a"
+              "audioId": "L1-049-q1-a",
+              "readingJa": "げんざいのしょーことむじゅんし、ごとうえゆーどーしているかのうせいがたかい。"
             },
             {
               "id": "b",
@@ -3116,7 +3174,8 @@
                 "en": "She recommends exactly the answer on the note."
               },
               "ttsTextJa": "メモと完全に同じ答えを勧めている。",
-              "audioId": "L1-049-q1-b"
+              "audioId": "L1-049-q1-b",
+              "readingJa": "めもとかんぜんにおなじこたえをすすめている。"
             },
             {
               "id": "c",
@@ -3126,7 +3185,8 @@
                 "en": "It is an official order to cancel the question."
               },
               "ttsTextJa": "問題を中止する正式な命令である。",
-              "audioId": "L1-049-q1-c"
+              "audioId": "L1-049-q1-c",
+              "readingJa": "もんだいをちゅーしするせーしきなめーれーである。"
             },
             {
               "id": "d",
@@ -3136,7 +3196,8 @@
                 "en": "She explains the first option in detail."
               },
               "ttsTextJa": "一番目の理由を詳しく説明している。",
-              "audioId": "L1-049-q1-d"
+              "audioId": "L1-049-q1-d",
+              "readingJa": "いちばんめのりゆーをくわしくせつめーしている。"
             }
           ],
           "correctOptionIds": [
@@ -3188,13 +3249,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "784d14bf69290cfcb9bf9a765a0fcd1a63907d6dbd62a0d35d6ea3dcc888fafe"
+      "contentHash": "d022a865f8847618e4f4a911cde9ec5c417bc6ed79a58ca96c7ac2ba3d2db7f0"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L1-050",
-      "revision": 2,
+      "revision": 3,
       "level": 1,
       "stage": 50,
       "jlptTarget": "N3",
@@ -3220,12 +3281,13 @@
       "illustration": {
         "enabled": true,
         "src": "assets/stages/l1-050.webp",
-        "style": "crayon",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "閉店前の喫茶店で二杯の飲み物と止まった時計を見つめる客のクレヨン画",
-          "zh": "打烊前咖啡店里客人望着两杯饮品和停走手表的蜡笔画",
-          "en": "Crayon illustration of a customer watching two drinks and a stopped watch near cafe closing"
-        }
+          "ja": "止まった時計と二杯目の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“停走的表与第二杯”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Stopped Watch and Second Cup\"."
+        },
+        "sha256": "e630e73ce3e0c21df1719bf64893fd4e329fd528d60532246cbeea6b69f9cf22"
       },
       "cast": [
         {
@@ -3428,7 +3490,8 @@
                 "en": "He wants to drink both cups immediately."
               },
               "ttsTextJa": "二杯とも自分ですぐ飲みたい。",
-              "audioId": "L1-050-q1-a"
+              "audioId": "L1-050-q1-a",
+              "readingJa": "にはいともじぶんですぐのみたい。"
             },
             {
               "id": "b",
@@ -3438,7 +3501,8 @@
                 "en": "He is waiting for a watch repairer."
               },
               "ttsTextJa": "時計店の修理を待っている。",
-              "audioId": "L1-050-q1-b"
+              "audioId": "L1-050-q1-b",
+              "readingJa": "とけーてんのしゅーりをまっている。"
             },
             {
               "id": "c",
@@ -3448,7 +3512,8 @@
                 "en": "He wants the cafe to change closing time to eight."
               },
               "ttsTextJa": "閉店時刻を八時に変えてほしい。",
-              "audioId": "L1-050-q1-c"
+              "audioId": "L1-050-q1-c",
+              "readingJa": "へーてんじこくをはちじにかえてほしい。"
             },
             {
               "id": "d",
@@ -3458,7 +3523,8 @@
                 "en": "He is waiting for someone absent and cannot let go of the appointed time."
               },
               "ttsTextJa": "姿のない相手を待ち、約束の時刻を手放せずにいる。",
-              "audioId": "L1-050-q1-d"
+              "audioId": "L1-050-q1-d",
+              "readingJa": "すがたのないあいてをまち、やくそくのじこくをてばなせずにいる。"
             }
           ],
           "correctOptionIds": [
@@ -3515,7 +3581,8 @@
                 "en": "It is near closing, and the clerk speaks."
               },
               "ttsTextJa": "閉店前で、店員が話したこと。",
-              "audioId": "L1-050-q2-a"
+              "audioId": "L1-050-q2-a",
+              "readingJa": "へーてんまえで、てんいんがはなしたこと。"
             },
             {
               "id": "b",
@@ -3525,7 +3592,8 @@
                 "en": "The second cup opposite him and his mention of an eight-o'clock promise."
               },
               "ttsTextJa": "向かいの二杯目と、八時の約束を話したこと。",
-              "audioId": "L1-050-q2-b"
+              "audioId": "L1-050-q2-b",
+              "readingJa": "むかいのにはいめと、はちじのやくそくをはなしたこと。"
             },
             {
               "id": "c",
@@ -3535,7 +3603,8 @@
                 "en": "The watch has stopped and there is an empty chair in the cafe."
               },
               "ttsTextJa": "時計が止まり、店内に空いた椅子があること。",
-              "audioId": "L1-050-q2-c"
+              "audioId": "L1-050-q2-c",
+              "readingJa": "とけーがとまり、てんないにあいたいすがあること。"
             },
             {
               "id": "d",
@@ -3545,7 +3614,8 @@
                 "en": "Only that the clerk notices the watch."
               },
               "ttsTextJa": "店員が時計に気付いたことだけ。",
-              "audioId": "L1-050-q2-d"
+              "audioId": "L1-050-q2-d",
+              "readingJa": "てんいんがとけーにきずいたことだけ。"
             }
           ],
           "correctOptionIds": [
@@ -3594,7 +3664,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "591bd7eaba1c5146593ee422e53ed94c3a9de8eb481d1e9e4e1a7161bbe8a426"
+      "contentHash": "a8589b6fda332266e85cda6b330cb66543820b0fe8e44c504ab82772a92870ae"
     }
   ]
 }

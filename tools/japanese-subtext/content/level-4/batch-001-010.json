@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.1",
+  "contentVersion": "1.0.2",
   "level": 4,
   "batch": "001-010",
   "stages": [
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L4-001",
-      "revision": 2,
+      "revision": 3,
       "level": 4,
       "stage": 1,
       "jlptTarget": "N1-advanced",
@@ -31,14 +31,15 @@
         "en": "A budget meeting where vague assent is undercut by finance concealing the funding sheet."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l4-001.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "賛成多数の伏せた表の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“被扣下的“多数赞成””场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Concealed Veto\"."
+        },
+        "sha256": "808989f63972179d0885a00a7eb529a456d63d5f05ee557abdaba456ffd46da9"
       },
       "cast": [
         {
@@ -314,7 +315,8 @@
                 "en": "Sales opposed launch itself."
               },
               "ttsTextJa": "営業は販売そのものに反対した。",
-              "audioId": "L4-001-q1-a"
+              "audioId": "L4-001-q1-a",
+              "readingJa": "えーぎょーわはんばいそのものにはんたいした。"
             },
             {
               "id": "b",
@@ -324,7 +326,8 @@
                 "en": "Finance's nonverbal refusal leaves development's funding condition unmet."
               },
               "ttsTextJa": "財務の非言語的拒否で、開発の条件となる予算が成立していない。",
-              "audioId": "L4-001-q1-b"
+              "audioId": "L4-001-q1-b",
+              "readingJa": "ざいむのひげんごてききょひで、かいはつのじょーけんとなるよさんがせーりつしていない。"
             },
             {
               "id": "c",
@@ -334,7 +337,8 @@
                 "en": "Development agreed unconditionally."
               },
               "ttsTextJa": "開発は無条件に賛成した。",
-              "audioId": "L4-001-q1-c"
+              "audioId": "L4-001-q1-c",
+              "readingJa": "かいはつわむじょーけんにさんせーした。"
             },
             {
               "id": "d",
@@ -344,7 +348,8 @@
                 "en": "The budget sheet was already released."
               },
               "ttsTextJa": "予算表はすでに公開された。",
-              "audioId": "L4-001-q1-d"
+              "audioId": "L4-001-q1-d",
+              "readingJa": "よさんひょうわすでにこーかいされた。"
             }
           ],
           "correctOptionIds": [
@@ -403,7 +408,8 @@
                 "en": "Three speakers assent, so execution can begin."
               },
               "ttsTextJa": "発言者三人が賛成なので直ちに実行できる。",
-              "audioId": "L4-001-q2-a"
+              "audioId": "L4-001-q2-a",
+              "readingJa": "はつげんしゃさんにんがさんせーなのでただちにじっこーできる。"
             },
             {
               "id": "b",
@@ -413,7 +419,8 @@
                 "en": "Only sales' timing condition remains."
               },
               "ttsTextJa": "営業の時期条件だけが残っている。",
-              "audioId": "L4-001-q2-b"
+              "audioId": "L4-001-q2-b",
+              "readingJa": "えーぎょーのじきじょーけんだけがのこっている。"
             },
             {
               "id": "c",
@@ -423,7 +430,8 @@
                 "en": "Finance's silence is always a legal no vote, so the voting procedure itself is invalid"
               },
               "ttsTextJa": "財務の沈黙は常に法的な拒否票なので、採決手続きそのものが無効だ",
-              "audioId": "L4-001-q2-c"
+              "audioId": "L4-001-q2-c",
+              "readingJa": "ざいむのちんもくわつねにほーてきなきょひひょーなので、さいけつてつずきそのものがむこーだ"
             },
             {
               "id": "d",
@@ -433,7 +441,8 @@
                 "en": "Despite a formal majority, the necessary condition of finance approval is absent."
               },
               "ttsTextJa": "形式上の多数と別に、財務承認という必要条件が欠けている。",
-              "audioId": "L4-001-q2-d"
+              "audioId": "L4-001-q2-d",
+              "readingJa": "けいしきじょうのたすーとべつに、ざいむしょーにんというひつよーじょーけんがかけている。"
             }
           ],
           "correctOptionIds": [
@@ -486,13 +495,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "82877e40ac361ba797805cda50ee8747d66b7f870d6b7f485c99be32da1806e4"
+      "contentHash": "7f627cc535d0bae789c7c7d9d36a419dfe53c88e0d8ae135a9b419b6a1f9fa50"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L4-002",
-      "revision": 2,
+      "revision": 3,
       "level": 4,
       "stage": 2,
       "jlptTarget": "N1-advanced",
@@ -516,14 +525,15 @@
         "en": "A deadline change appears under a teacher's account, but timing and prior knowledge point to another operator."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l4-002.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "深夜の教師アカウントの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“深夜的教师账号”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Teacher Account at Midnight\"."
+        },
+        "sha256": "f87dd0c3f5f26a289c9e5ac511775a60a35f75c0e5aef44da3c1596b38a243b2"
       },
       "cast": [
         {
@@ -802,7 +812,8 @@
                 "en": "Yuto, who borrowed the device and knew the deadline beforehand."
               },
               "ttsTextJa": "端末を借り、新期限を投稿前から知っていた優斗。",
-              "audioId": "L4-002-q1-a"
+              "audioId": "L4-002-q1-a",
+              "readingJa": "たんまつをかり、しんきげんをとーこーまえからしっていたゆうと。"
             },
             {
               "id": "b",
@@ -812,7 +823,8 @@
                 "en": "Ms. Mori, who was onstage and did not touch the device at posting time"
               },
               "ttsTextJa": "講演中で端末に触れず、投稿時刻にも壇上にいた森先生",
-              "audioId": "L4-002-q1-b"
+              "audioId": "L4-002-q1-b",
+              "readingJa": "こーえんちゅうでたんまつにふれず、とーこーじこくにもだんじょーにいたもりせんせい"
             },
             {
               "id": "c",
@@ -822,7 +834,8 @@
                 "en": "Shiba, who checked the timing afterward."
               },
               "ttsTextJa": "投稿後に時刻を確認した柴。",
-              "audioId": "L4-002-q1-c"
+              "audioId": "L4-002-q1-c",
+              "readingJa": "とーこーごにじこくをかくにんしたしば。"
             },
             {
               "id": "d",
@@ -832,7 +845,8 @@
                 "en": "An, who merely heard the deadline."
               },
               "ttsTextJa": "新期限を聞いただけの杏。",
-              "audioId": "L4-002-q1-d"
+              "audioId": "L4-002-q1-d",
+              "readingJa": "しんきげんをきいただけのあんず。"
             }
           ],
           "correctOptionIds": [
@@ -891,7 +905,8 @@
                 "en": "It reads the post as preceding the lecture and overstates Mori's alibi"
               },
               "ttsTextJa": "投稿時刻を講演開始より前だと読み、森先生のアリバイを過大評価する",
-              "audioId": "L4-002-q2-a"
+              "audioId": "L4-002-q2-a",
+              "readingJa": "とーこーじこくをこーえんかいしよりまえだとよみ、もりせんせいのありばいをかだいひょーかする"
             },
             {
               "id": "b",
@@ -901,7 +916,8 @@
                 "en": "Treating Wednesday and Monday as the same day."
               },
               "ttsTextJa": "水曜と月曜を同じ日とみなす。",
-              "audioId": "L4-002-q2-b"
+              "audioId": "L4-002-q2-b",
+              "readingJa": "すいよーとげつよーをおなじひとみなす。"
             },
             {
               "id": "c",
@@ -911,7 +927,8 @@
                 "en": "Equating the account label with both operator and authorizer."
               },
               "ttsTextJa": "アカウント名義と実際の操作者・承認者を同一視する。",
-              "audioId": "L4-002-q2-c"
+              "audioId": "L4-002-q2-c",
+              "readingJa": "あかうんとめーぎとじっさいのそーさしゃ・しょーにんしゃをどーいつしする。"
             },
             {
               "id": "d",
@@ -921,7 +938,8 @@
                 "en": "Counting one witness statement twice."
               },
               "ttsTextJa": "目撃証言を二人分あると数える。",
-              "audioId": "L4-002-q2-d"
+              "audioId": "L4-002-q2-d",
+              "readingJa": "もくげきしょーげんをふたりぶんあるとかぞえる。"
             }
           ],
           "correctOptionIds": [
@@ -972,13 +990,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "37fce5f9b023a1952e91ea319720e9d7d59f0af5754fe72e45521d3fb49800d6"
+      "contentHash": "615ba66f378780d6803b3b0759675477d4a60ca34a118fb4efe192f861f1f72f"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L4-003",
-      "revision": 2,
+      "revision": 3,
       "level": 4,
       "stage": 3,
       "jlptTarget": "N1-advanced",
@@ -1002,14 +1020,15 @@
         "en": "Three people arrive at a table for four and each attributes an extra dish to someone else while the server hides a candle."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l4-003.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "誰のでもない四皿目の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“谁都不认的第四盘”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Fourth Plate Nobody Ordered\"."
+        },
+        "sha256": "54962469d0a9f411afba48cf88cfece59566eceb18e8ca988e36c9206e3bb264"
       },
       "cast": [
         {
@@ -1291,7 +1310,8 @@
                 "en": "The server delivered another table's dish."
               },
               "ttsTextJa": "店員が別卓の料理を誤配した。",
-              "audioId": "L4-003-q1-a"
+              "audioId": "L4-003-q1-a",
+              "readingJa": "てんいんがべつたくのりょーりをごはいした。"
             },
             {
               "id": "b",
@@ -1301,7 +1321,8 @@
                 "en": "All three genuinely forgot the order."
               },
               "ttsTextJa": "三人とも注文内容を本当に忘れた。",
-              "audioId": "L4-003-q1-b"
+              "audioId": "L4-003-q1-b",
+              "readingJa": "さんにんともちゅーもんないよーをほんとーにわすれた。"
             },
             {
               "id": "c",
@@ -1311,7 +1332,8 @@
                 "en": "The fourth guest is allergic to strawberries, so the three avoid responsibility for ordering them"
               },
               "ttsTextJa": "四人目が苺にアレルギーで、三人が注文責任を避けている",
-              "audioId": "L4-003-q1-c"
+              "audioId": "L4-003-q1-c",
+              "readingJa": "よにんめがいちごにあれるぎーで、さんにんがちゅーもんせきにんをさけている"
             },
             {
               "id": "d",
@@ -1321,7 +1343,8 @@
                 "en": "They jointly conceal a birthday surprise for the late-arriving Saya."
               },
               "ttsTextJa": "遅れて来る沙耶への誕生日祝いを共同で隠している。",
-              "audioId": "L4-003-q1-d"
+              "audioId": "L4-003-q1-d",
+              "readingJa": "おくれてくるさやえのたんじょーびいわいをきょーどーでかくしている。"
             }
           ],
           "correctOptionIds": [
@@ -1382,7 +1405,8 @@
                 "en": "The strawberries use a small plate."
               },
               "ttsTextJa": "苺が小皿で出された。",
-              "audioId": "L4-003-q2-a"
+              "audioId": "L4-003-q2-a",
+              "readingJa": "いちごがこざらでだされた。"
             },
             {
               "id": "b",
@@ -1392,7 +1416,8 @@
                 "en": "Emi manages timing, the server hides a candle, and Koji proposes a shared story."
               },
               "ttsTextJa": "恵美が時刻を管理し、店員が蝋燭を隠し、浩司が口裏を提案する。",
-              "audioId": "L4-003-q2-b"
+              "audioId": "L4-003-q2-b",
+              "readingJa": "えみがじこくをかんりし、てんいんがろーそくをかくし、こーじがくちうらをてーあんする。"
             },
             {
               "id": "c",
@@ -1402,7 +1427,8 @@
                 "en": "Only Lin did not call."
               },
               "ttsTextJa": "リンだけが電話をしていない。",
-              "audioId": "L4-003-q2-c"
+              "audioId": "L4-003-q2-c",
+              "readingJa": "りんだけがでんわをしていない。"
             },
             {
               "id": "d",
@@ -1412,7 +1438,8 @@
                 "en": "Three people sit at a table for four."
               },
               "ttsTextJa": "四人席に三人が座っている。",
-              "audioId": "L4-003-q2-d"
+              "audioId": "L4-003-q2-d",
+              "readingJa": "よんにんせきにさんにんがすわっている。"
             }
           ],
           "correctOptionIds": [
@@ -1464,13 +1491,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "52e8faaaa0f9c66b7b2a4e85ff4cc457733bb78ceac2379b8378a845da557d54"
+      "contentHash": "4359aaea524de64b748ffb4ea1314651f6b7d36ea6676c0edd01651a05b15a55"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L4-004",
-      "revision": 2,
+      "revision": 3,
       "level": 4,
       "stage": 4,
       "jlptTarget": "N1-advanced",
@@ -1493,14 +1520,15 @@
         "en": "After a trilingual gate change, multilingual Reo stays behind to meet an acquaintance from another flight."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l4-004.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "分からないふりの搭乗口の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“假装听不懂的登机口”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Feigning Confusion at the Gate\"."
+        },
+        "sha256": "6c6684f40dd5b8308b6b1a1c7f3dba751d435894e4874937489162fac917ec43"
       },
       "cast": [
         {
@@ -1779,7 +1807,8 @@
                 "en": "To learn only the gate announcement's Chinese from Miki and hear it again"
               },
               "ttsTextJa": "美紀に搭乗口の中国語だけを教わり、放送を聞き直すため",
-              "audioId": "L4-004-q1-a"
+              "audioId": "L4-004-q1-a",
+              "readingJa": "みきにとうじょうこうのちゅーごくごだけをおそわり、ほーそーをききなおすため"
             },
             {
               "id": "b",
@@ -1789,7 +1818,8 @@
                 "en": "To abandon Flight 621."
               },
               "ttsTextJa": "六二一便へ乗るのをやめるため。",
-              "audioId": "L4-004-q1-b"
+              "audioId": "L4-004-q1-b",
+              "readingJa": "ろっぴゃくにじゅーいちびんえのるのをやめるため。"
             },
             {
               "id": "c",
@@ -1799,7 +1829,8 @@
                 "en": "To separate briefly and meet an acquaintance at the old gate."
               },
               "ttsTextJa": "集団から一時的に離れ、旧ゲートで知人と会うため。",
-              "audioId": "L4-004-q1-c"
+              "audioId": "L4-004-q1-c",
+              "readingJa": "しゅーだんからいちじてきにはなれ、きゅーげーとでちじんとあうため。"
             },
             {
               "id": "d",
@@ -1809,7 +1840,8 @@
                 "en": "To make the agent repeat the announcement."
               },
               "ttsTextJa": "係員の放送をやり直させるため。",
-              "audioId": "L4-004-q1-d"
+              "audioId": "L4-004-q1-d",
+              "readingJa": "かかりいんのほーそーをやりなおさせるため。"
             }
           ],
           "correctOptionIds": [
@@ -1868,7 +1900,8 @@
                 "en": "He was multilingual enough to translate a Chinese announcement the day before."
               },
               "ttsTextJa": "彼は前日に中国語放送を訳せるほど多言語に堪能だった。",
-              "audioId": "L4-004-q2-a"
+              "audioId": "L4-004-q2-a",
+              "readingJa": "かれわぜんじつにちゅーごくごほーそーをやくせるほどたげんごにかんのーだった。"
             },
             {
               "id": "b",
@@ -1878,7 +1911,8 @@
                 "en": "The old gate had no chairs."
               },
               "ttsTextJa": "旧ゲートに椅子がなかった。",
-              "audioId": "L4-004-q2-b"
+              "audioId": "L4-004-q2-b",
+              "readingJa": "きゅーげーとにいすがなかった。"
             },
             {
               "id": "c",
@@ -1888,7 +1922,8 @@
                 "en": "The agent spoke only Japanese."
               },
               "ttsTextJa": "係員が日本語だけで話した。",
-              "audioId": "L4-004-q2-c"
+              "audioId": "L4-004-q2-c",
+              "readingJa": "かかりいんがにほんごだけではなした。"
             },
             {
               "id": "d",
@@ -1898,7 +1933,8 @@
                 "en": "Miki planned another flight."
               },
               "ttsTextJa": "美紀は別便へ乗る予定だった。",
-              "audioId": "L4-004-q2-d"
+              "audioId": "L4-004-q2-d",
+              "readingJa": "みきわべつびんえのるよてーだった。"
             }
           ],
           "correctOptionIds": [
@@ -1949,13 +1985,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "bdd244ecd24e3e03ca21ad78cdfdbb71288a9a4b809c87d3e24e085cdc92495c"
+      "contentHash": "a8e94dc15594b18dbbcd48a8f10888f1c0735475bcd179b3dbe9c10dc970f48a"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L4-005",
-      "revision": 2,
+      "revision": 3,
       "level": 4,
       "stage": 5,
       "jlptTarget": "N1-advanced",
@@ -1979,14 +2015,15 @@
         "en": "A VRChat mediation room where swapped avatars and display names fail to conceal a reflexive response to an old nickname."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l4-005.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "名前を替えた二人の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“交换名字的两人”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Two Swapped Names\"."
+        },
+        "sha256": "fe15c7e4feae9bdbaa929e045ca4cc3609a5a95d35749d6c9faa81d1b9d5f16c"
       },
       "cast": [
         {
@@ -2274,7 +2311,8 @@
                 "en": "The side labeled Kuro, because the nameplate still accurately represents that person's past after the swap"
               },
               "ttsTextJa": "表示名クロの側。交換後も名札が本人の過去を正しく示しているから",
-              "audioId": "L4-005-q1-a"
+              "audioId": "L4-005-q1-a",
+              "readingJa": "ひょうじめいくろのがわ。こーかんごもなふだがほんにんのかこをただしくしめしているから"
             },
             {
               "id": "b",
@@ -2284,7 +2322,8 @@
                 "en": "The one labeled Shiro, because the old nickname triggered a context-appropriate response."
               },
               "ttsTextJa": "表示名シロの側。古い呼び名へ内容に即した反応をしたから。",
-              "audioId": "L4-005-q1-b"
+              "audioId": "L4-005-q1-b",
+              "readingJa": "ひょうじめいしろのがわ。ふるいよびなえないよーにそくしたはんのーをしたから。"
             },
             {
               "id": "c",
@@ -2294,7 +2333,8 @@
                 "en": "The host, because she has their records."
               },
               "ttsTextJa": "司会。二人の記録を持っているから。",
-              "audioId": "L4-005-q1-c"
+              "audioId": "L4-005-q1-c",
+              "readingJa": "しかい。ふたりのきろくをもっているから。"
             },
             {
               "id": "d",
@@ -2304,7 +2344,8 @@
                 "en": "The old friend, because she knew the nickname."
               },
               "ttsTextJa": "旧友。呼び名を知っていたから。",
-              "audioId": "L4-005-q1-d"
+              "audioId": "L4-005-q1-d",
+              "readingJa": "きゅーゆー。よびなをしっていたから。"
             }
           ],
           "correctOptionIds": [
@@ -2364,7 +2405,8 @@
                 "en": "Avatars cannot alter voices."
               },
               "ttsTextJa": "アバターは声を一切変えられないから。",
-              "audioId": "L4-005-q2-a"
+              "audioId": "L4-005-q2-a",
+              "readingJa": "あばたーわこえをいっさいかえられないから。"
             },
             {
               "id": "b",
@@ -2374,7 +2416,8 @@
                 "en": "The host banned display names."
               },
               "ttsTextJa": "司会が表示名を禁止したから。",
-              "audioId": "L4-005-q2-b"
+              "audioId": "L4-005-q2-b",
+              "readingJa": "しかいがひょうじめいをきんししたから。"
             },
             {
               "id": "c",
@@ -2384,7 +2427,8 @@
                 "en": "Old friends always tell the truth."
               },
               "ttsTextJa": "旧友は必ず真実だけを話すから。",
-              "audioId": "L4-005-q2-c"
+              "audioId": "L4-005-q2-c",
+              "readingJa": "きゅーゆーわかならずしんじつだけをはなすから。"
             },
             {
               "id": "d",
@@ -2394,7 +2438,8 @@
                 "en": "Labels and appearance can be deliberately swapped, while an immediate response to a personal nickname is harder to control."
               },
               "ttsTextJa": "名札と外見は意図的に交換できるが、個人的呼び名への即時反応は制御しにくいから。",
-              "audioId": "L4-005-q2-d"
+              "audioId": "L4-005-q2-d",
+              "readingJa": "なふだとがいけんわいとてきにこーかんできるが、こじんてきよびなえのそくじはんのーわせーぎょしにくいから。"
             }
           ],
           "correctOptionIds": [
@@ -2447,13 +2492,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "0fcd699e885e0da8bc30a8fd7a2e9abd3ac632ab6c2288363d8bdb8eedca30c6"
+      "contentHash": "75c9534c2201533cc93c594375ab216d188ff1a64fee5f0fda75aa1b5b4c7edd"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L4-006",
-      "revision": 2,
+      "revision": 3,
       "level": 4,
       "stage": 6,
       "jlptTarget": "N1-advanced",
@@ -2477,14 +2522,15 @@
         "en": "In a co-op game with a delayed stream, muted Kaito objects in text before plans are spoken."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l4-006.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "ミュート中の先回りの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“静音者的抢先反对”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Muted Player Who Knew First\"."
+        },
+        "sha256": "d56a5ac1b31b9f3d84b3938cc9007f2e182093bab69b64fe36235afffdc07da5"
       },
       "cast": [
         {
@@ -2760,7 +2806,8 @@
                 "en": "A private call with Sana."
               },
               "ttsTextJa": "沙奈との個別通話。",
-              "audioId": "L4-006-q1-a"
+              "audioId": "L4-006-q1-a",
+              "readingJa": "さなとのこべつつーわ。"
             },
             {
               "id": "b",
@@ -2770,7 +2817,8 @@
                 "en": "The delayed public stream."
               },
               "ttsTextJa": "三十秒遅れの公開配信。",
-              "audioId": "L4-006-q1-b"
+              "audioId": "L4-006-q1-b",
+              "readingJa": "さんじゅーびょーおくれのこーかいはいしん。"
             },
             {
               "id": "c",
@@ -2780,7 +2828,8 @@
                 "en": "The in-game text log."
               },
               "ttsTextJa": "ゲーム内文字ログ。",
-              "audioId": "L4-006-q1-c"
+              "audioId": "L4-006-q1-c",
+              "readingJa": "げーむないもじろぐ。"
             },
             {
               "id": "d",
@@ -2790,7 +2839,8 @@
                 "en": "Repeated coincidence."
               },
               "ttsTextJa": "偶然の連続。",
-              "audioId": "L4-006-q1-d"
+              "audioId": "L4-006-q1-d",
+              "readingJa": "ぐーぜんのれんぞく。"
             }
           ],
           "correctOptionIds": [
@@ -2850,7 +2900,8 @@
                 "en": "Kaito used text chat and wrote the same information as the public stream"
               },
               "ttsTextJa": "海斗が文字チャットを使い、公開配信と同じ内容を書き込んだ",
-              "audioId": "L4-006-q2-a"
+              "audioId": "L4-006-q2-a",
+              "readingJa": "かいとがもじちゃっとをつかい、こーかいはいしんとおなじないよーをかきこんだ"
             },
             {
               "id": "b",
@@ -2860,7 +2911,8 @@
                 "en": "North is dangerous."
               },
               "ttsTextJa": "北門が危険だ。",
-              "audioId": "L4-006-q2-b"
+              "audioId": "L4-006-q2-b",
+              "readingJa": "きたもんがきけんだ。"
             },
             {
               "id": "c",
@@ -2870,7 +2922,8 @@
                 "en": "He reacts before speech while the stream is thirty seconds late."
               },
               "ttsTextJa": "発話前に反応し、配信は三十秒遅れている。",
-              "audioId": "L4-006-q2-c"
+              "audioId": "L4-006-q2-c",
+              "readingJa": "はつわまえにはんのーし、はいしんわさんじゅーびょーおくれている。"
             },
             {
               "id": "d",
@@ -2880,7 +2933,8 @@
                 "en": "Riku is present."
               },
               "ttsTextJa": "陸が会話にいる。",
-              "audioId": "L4-006-q2-d"
+              "audioId": "L4-006-q2-d",
+              "readingJa": "りくがかいわにいる。"
             }
           ],
           "correctOptionIds": [
@@ -2939,7 +2993,8 @@
                 "en": "Kaito twice anticipates unspoken plans."
               },
               "ttsTextJa": "海斗は未発話の作戦を二度先取りする。",
-              "audioId": "L4-006-q3-a"
+              "audioId": "L4-006-q3-a",
+              "readingJa": "かいとわみはつわのさくせんをにどさきどりする。"
             },
             {
               "id": "b",
@@ -2949,7 +3004,8 @@
                 "en": "Mina proposes north."
               },
               "ttsTextJa": "美奈は北門を提案する。",
-              "audioId": "L4-006-q3-b"
+              "audioId": "L4-006-q3-b",
+              "readingJa": "みなわきたもんをてーあんする。"
             },
             {
               "id": "c",
@@ -2959,7 +3015,8 @@
                 "en": "Kaito knows Sana-only information, and she admits the private call."
               },
               "ttsTextJa": "沙奈だけが見た移動を海斗が知り、個別通話を認める。",
-              "audioId": "L4-006-q3-c"
+              "audioId": "L4-006-q3-c",
+              "readingJa": "しゃなだけがみたいどーをかいとがしり、こべつつーわをみとめる。"
             },
             {
               "id": "d",
@@ -2969,7 +3026,8 @@
                 "en": "Riku is not scout."
               },
               "ttsTextJa": "陸は偵察役ではない。",
-              "audioId": "L4-006-q3-d"
+              "audioId": "L4-006-q3-d",
+              "readingJa": "りくわていさつやくでわない。"
             }
           ],
           "correctOptionIds": [
@@ -3023,13 +3081,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "7aba33a7c1f73797b682acfdac8d94bad97d40223dd7eaab1df4a5883af0a58c"
+      "contentHash": "377f0d13ab865bb3e93a5572ea9e08826e428ae672a90a665b938bab904ae245"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L4-007",
-      "revision": 2,
+      "revision": 3,
       "level": 4,
       "stage": 7,
       "jlptTarget": "N1-advanced",
@@ -3052,14 +3110,15 @@
         "en": "Separate interviews yield accounts in the exact room order found only on reception's schedule."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l4-007.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "同じ順番のアリバイの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“顺序一致的不在场证明”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Alibis in the Same Order\"."
+        },
+        "sha256": "f87bba79474661b41d5c7b2ea82de6f2096029fe9f340b97e954865757dd8636"
       },
       "cast": [
         {
@@ -3398,7 +3457,8 @@
                 "en": "All three happened to share both the nine o'clock time and the same room order"
               },
               "ttsTextJa": "三人が九時という時刻と、同じ部屋順の両方を偶然共有した",
-              "audioId": "L4-007-q1-a"
+              "audioId": "L4-007-q1-a",
+              "readingJa": "さんにんがくじというじこくと、おなじへやじゅんのりょーほーをぐーぜんきょーゆーした"
             },
             {
               "id": "b",
@@ -3408,7 +3468,8 @@
                 "en": "All see a cleaner."
               },
               "ttsTextJa": "全員が清掃員を見る。",
-              "audioId": "L4-007-q1-b"
+              "audioId": "L4-007-q1-b",
+              "readingJa": "ぜんいんがせいそういんをみる。"
             },
             {
               "id": "c",
@@ -3418,7 +3479,8 @@
                 "en": "The corridor is long."
               },
               "ttsTextJa": "廊下は長い。",
-              "audioId": "L4-007-q1-c"
+              "audioId": "L4-007-q1-c",
+              "readingJa": "ろーかわながい。"
             },
             {
               "id": "d",
@@ -3428,7 +3490,8 @@
                 "en": "All share the schedule-only order rather than physical order."
               },
               "ttsTextJa": "物理順でなく受付表だけの順を全員共有する。",
-              "audioId": "L4-007-q1-d"
+              "audioId": "L4-007-q1-d",
+              "readingJa": "ぶつりじゅんでなくうけつけひょうだけのじゅんをぜんいんきょーゆーする。"
             }
           ],
           "correctOptionIds": [
@@ -3487,7 +3550,8 @@
                 "en": "All three room orders match exactly."
               },
               "ttsTextJa": "三証言の部屋順が完全に一致する。",
-              "audioId": "L4-007-q2-a"
+              "audioId": "L4-007-q2-a",
+              "readingJa": "さんしょーげんのへやじゅんがかんぜんにいっちする。"
             },
             {
               "id": "b",
@@ -3497,7 +3561,8 @@
                 "en": "Tomo admits they compared memories."
               },
               "ttsTextJa": "智が三人で記憶を確認したと認める。",
-              "audioId": "L4-007-q2-b"
+              "audioId": "L4-007-q2-b",
+              "readingJa": "さとしがさんにんできおくをかくにんしたとみとめる。"
             },
             {
               "id": "c",
@@ -3507,7 +3572,8 @@
                 "en": "Aoi says nine."
               },
               "ttsTextJa": "葵は九時と言う。",
-              "audioId": "L4-007-q2-c"
+              "audioId": "L4-007-q2-c",
+              "readingJa": "あおいわくじという。"
             },
             {
               "id": "d",
@@ -3517,7 +3583,8 @@
                 "en": "The investigator knows the physical room order along the corridor."
               },
               "ttsTextJa": "調査員が廊下の物理的な部屋順を知っている。",
-              "audioId": "L4-007-q2-d"
+              "audioId": "L4-007-q2-d",
+              "readingJa": "ちょーさいんがろーかのぶつりてきなへやじゅんをしっている。"
             }
           ],
           "correctOptionIds": [
@@ -3571,13 +3638,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "7c206d5cdee7d4210cff65c69ae4193eccacf0fed7bd028ce1cb1e0ac410a0d6"
+      "contentHash": "c46605697cbf407d32d1dbf7e9a61b2f257c05592d62eb2e05467153149dda1a"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L4-008",
-      "revision": 2,
+      "revision": 3,
       "level": 4,
       "stage": 8,
       "jlptTarget": "N1-advanced",
@@ -3601,14 +3668,15 @@
         "en": "Raw and broadcast interview footage where human responsibility becomes an agentless system failure."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l4-008.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "主語の消えた謝罪の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“主语消失的道歉”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Apology Without an Agent\"."
+        },
+        "sha256": "273744f4f1697feae95e602ee7e1e0dfc7c1a514efe0f03f353325735a2c5b92"
       },
       "cast": [
         {
@@ -3860,7 +3928,8 @@
                 "en": "Human agency in failing to check."
               },
               "ttsTextJa": "人間が確認を怠ったという行為主体。",
-              "audioId": "L4-008-q1-a"
+              "audioId": "L4-008-q1-a",
+              "readingJa": "にんげんがかくにんをおこたったというこーいしゅたい。"
             },
             {
               "id": "b",
@@ -3870,7 +3939,8 @@
                 "en": "The warning's existence."
               },
               "ttsTextJa": "警告が存在した事実。",
-              "audioId": "L4-008-q1-b"
+              "audioId": "L4-008-q1-b",
+              "readingJa": "けーこくがそんざいしたじじつ。"
             },
             {
               "id": "c",
@@ -3880,7 +3950,8 @@
                 "en": "The manager's admitted responsibility."
               },
               "ttsTextJa": "責任者自身が認めた責任帰属。",
-              "audioId": "L4-008-q1-c"
+              "audioId": "L4-008-q1-c",
+              "readingJa": "せきにんしゃじしんがみとめたせきにんきぞく。"
             },
             {
               "id": "d",
@@ -3890,7 +3961,8 @@
                 "en": "The system screen."
               },
               "ttsTextJa": "システム画面。",
-              "audioId": "L4-008-q1-d"
+              "audioId": "L4-008-q1-d",
+              "readingJa": "しすてむがめん。"
             }
           ],
           "correctOptionIds": [
@@ -3950,7 +4022,8 @@
                 "en": "Presents failure as an agentless event."
               },
               "ttsTextJa": "失敗を主体のない出来事として提示する。",
-              "audioId": "L4-008-q2-a"
+              "audioId": "L4-008-q2-a",
+              "readingJa": "しっぱいをしゅたいのないできごととしててーじする。"
             },
             {
               "id": "b",
@@ -3960,7 +4033,8 @@
                 "en": "Emphasizing the responsible person's name and role to foreground individual blame"
               },
               "ttsTextJa": "責任者の氏名と役職を強調し、個人責任を前面に出す",
-              "audioId": "L4-008-q2-b"
+              "audioId": "L4-008-q2-b",
+              "readingJa": "せきにんしゃのしめーとやくしょくをきょーちょーし、こじんせきにんをぜんめんにだす"
             },
             {
               "id": "c",
@@ -3970,7 +4044,8 @@
                 "en": "Quotes the warning."
               },
               "ttsTextJa": "警告内容を引用する。",
-              "audioId": "L4-008-q2-c"
+              "audioId": "L4-008-q2-c",
+              "readingJa": "けーこくないよーをいんよーする。"
             },
             {
               "id": "d",
@@ -3980,7 +4055,8 @@
                 "en": "Identifies accident time."
               },
               "ttsTextJa": "事故時刻を特定する。",
-              "audioId": "L4-008-q2-d"
+              "audioId": "L4-008-q2-d",
+              "readingJa": "じこじこくをとくてーする。"
             }
           ],
           "correctOptionIds": [
@@ -4038,7 +4114,8 @@
                 "en": "Increases reporter blame."
               },
               "ttsTextJa": "記者の責任を増やす。",
-              "audioId": "L4-008-q3-a"
+              "audioId": "L4-008-q3-a",
+              "readingJa": "きしゃのせきにんをふやす。"
             },
             {
               "id": "b",
@@ -4048,7 +4125,8 @@
                 "en": "Lengthens footage."
               },
               "ttsTextJa": "原映像を長くする。",
-              "audioId": "L4-008-q3-b"
+              "audioId": "L4-008-q3-b",
+              "readingJa": "はらえーぞーをながくする。"
             },
             {
               "id": "c",
@@ -4058,7 +4136,8 @@
                 "en": "Shifts human failure to a technical issue and weakens accountability."
               },
               "ttsTextJa": "人の失敗を技術問題へ移し、説明責任を弱める。",
-              "audioId": "L4-008-q3-c"
+              "audioId": "L4-008-q3-c",
+              "readingJa": "ひとのしっぱいをぎじゅつもんだいえうつし、せつめーせきにんをよわめる。"
             },
             {
               "id": "d",
@@ -4068,7 +4147,8 @@
                 "en": "Stops the update."
               },
               "ttsTextJa": "更新を中止する。",
-              "audioId": "L4-008-q3-d"
+              "audioId": "L4-008-q3-d",
+              "readingJa": "こーしんをちゅーしする。"
             }
           ],
           "correctOptionIds": [
@@ -4120,13 +4200,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "3524323a6f2c2ea39df837ff1f5e50ba13f8a338e9db71fb90e4d1ec94cd3241"
+      "contentHash": "6f4f9ffaa30d62638599e8523c26a54b44c66416f46ab6bde120f5e36a7a5076"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L4-009",
-      "revision": 2,
+      "revision": 3,
       "level": 4,
       "stage": 9,
       "jlptTarget": "N1-advanced",
@@ -4150,14 +4230,15 @@
         "en": "A review AI converts rank rather than content into credibility and flags the junior researcher's correct figure."
       },
       "illustration": {
-        "enabled": false,
-        "src": "",
-        "style": "none",
+        "enabled": true,
+        "src": "assets/stages/l4-009.webp",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "",
-          "zh": "",
-          "en": ""
-        }
+          "ja": "肩書きを信じるAIの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“相信头衔的AI”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The AI That Trusts Rank\"."
+        },
+        "sha256": "c26cf60111179ee478467c7df20802acd3dfad0295a97427165078b18723899a"
       },
       "cast": [
         {
@@ -4454,7 +4535,8 @@
                 "en": "It cannot process decimals."
               },
               "ttsTextJa": "小数を処理できない。",
-              "audioId": "L4-009-q1-a"
+              "audioId": "L4-009-q1-a",
+              "readingJa": "しょーすーをしょりできない。"
             },
             {
               "id": "b",
@@ -4464,7 +4546,8 @@
                 "en": "It mistakes rank for evidential credibility."
               },
               "ttsTextJa": "役職の高さを内容の信頼性と取り違える。",
-              "audioId": "L4-009-q1-b"
+              "audioId": "L4-009-q1-b",
+              "readingJa": "やくしょくのたかさをないよーのしんらいせーととりちがえる。"
             },
             {
               "id": "c",
@@ -4474,7 +4557,8 @@
                 "en": "It deletes logs."
               },
               "ttsTextJa": "ログを自動削除する。",
-              "audioId": "L4-009-q1-c"
+              "audioId": "L4-009-q1-c",
+              "readingJa": "ろぐをじどーさくじょする。"
             },
             {
               "id": "d",
@@ -4484,7 +4568,8 @@
                 "en": "Putting only junior staff first and senior opinions at the end of the minutes"
               },
               "ttsTextJa": "若手だけを議事録の先頭に置き、役職者の意見を末尾にする",
-              "audioId": "L4-009-q1-d"
+              "audioId": "L4-009-q1-d",
+              "readingJa": "わかてだけをぎじろくのせんとーにおき、やくしょくしゃのいけんをまつびにする"
             }
           ],
           "correctOptionIds": [
@@ -4546,7 +4631,8 @@
                 "en": "All numbers vanish."
               },
               "ttsTextJa": "数値がすべて消える。",
-              "audioId": "L4-009-q2-a"
+              "audioId": "L4-009-q2-a",
+              "readingJa": "すーちがすべてきえる。"
             },
             {
               "id": "b",
@@ -4556,7 +4642,8 @@
                 "en": "Ranks become anonymous."
               },
               "ttsTextJa": "役職名が匿名になる。",
-              "audioId": "L4-009-q2-b"
+              "audioId": "L4-009-q2-b",
+              "readingJa": "やくしょくめいがとくめーになる。"
             },
             {
               "id": "c",
@@ -4566,7 +4653,8 @@
                 "en": "Junior remarks become longer."
               },
               "ttsTextJa": "若手の発言だけ長くなる。",
-              "audioId": "L4-009-q2-c"
+              "audioId": "L4-009-q2-c",
+              "readingJa": "わかてのはつげんだけながくなる。"
             },
             {
               "id": "d",
@@ -4576,7 +4664,8 @@
                 "en": "Wrong senior claims appear first while correct dissent is marginalized."
               },
               "ttsTextJa": "誤った上位意見が先に見え、正しい異論が周縁化される。",
-              "audioId": "L4-009-q2-d"
+              "audioId": "L4-009-q2-d",
+              "readingJa": "あやまったじょーいいけんがさきにみえ、ただしいいろんがしゅーえんかされる。"
             }
           ],
           "correctOptionIds": [
@@ -4628,13 +4717,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "9f79b1ba4c24603abc7731a4c36cf6799f774a00246cd249bd1019d591a82b00"
+      "contentHash": "25d8bac76582017517412e4acf4b933cc93b6b5c3fbe798c48677b7fc99e2ab0"
     },
     {
       "schemaVersion": 1,
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "id": "L4-010",
-      "revision": 2,
+      "revision": 3,
       "level": 4,
       "stage": 10,
       "jlptTarget": "N1-advanced",
@@ -4660,12 +4749,13 @@
       "illustration": {
         "enabled": true,
         "src": "assets/stages/l4-010.webp",
-        "style": "crayon",
+        "style": "monochrome-four-panel",
         "alt": {
-          "ja": "彩色クレヨン風。共通通信回線で接続された二隻の小型宇宙船と、四名の乗員、光る管制AI画面。",
-          "zh": "彩色蜡笔风，两艘小飞船对接并共用频道，四名船员面对发光的管制AI界面",
-          "en": "Colorful crayon-style two docked spacecraft sharing one channel, four crew and a glowing control-AI panel"
-        }
+          "ja": "二隻分の「私たち」の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“两艘船的“我们””场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Two Ships Saying We\"."
+        },
+        "sha256": "7e95ed11d27677d4bc4a7612412200d35449210d59c10a741393ff0491d91b3d"
       },
       "cast": [
         {
@@ -4941,7 +5031,8 @@
                 "en": "Each ship separately says 'we.'"
               },
               "ttsTextJa": "二隻が別々に「私たち」と言う。",
-              "audioId": "L4-010-q1-a"
+              "audioId": "L4-010-q1-a",
+              "readingJa": "にせきがべつべつに「わたしたち」という。"
             },
             {
               "id": "b",
@@ -4951,7 +5042,8 @@
                 "en": "Ship One has four."
               },
               "ttsTextJa": "一号船は四名いる。",
-              "audioId": "L4-010-q1-b"
+              "audioId": "L4-010-q1-b",
+              "readingJa": "いちごうせんわよんめーいる。"
             },
             {
               "id": "c",
@@ -4961,7 +5053,8 @@
                 "en": "The AI equates same channel and pronoun with one group."
               },
               "ttsTextJa": "AIが同一回線・同一代名詞を同一集団とみなす。",
-              "audioId": "L4-010-q1-c"
+              "audioId": "L4-010-q1-c",
+              "readingJa": "えーあいがどーいっかいせん・どーいつだいめーしをどーいつしゅーだんとみなす。"
             },
             {
               "id": "d",
@@ -4971,7 +5064,8 @@
                 "en": "Ship Two is connected."
               },
               "ttsTextJa": "二号船は接続している。",
-              "audioId": "L4-010-q1-d"
+              "audioId": "L4-010-q1-d",
+              "readingJa": "にごうせんわせつぞくしている。"
             }
           ],
           "correctOptionIds": [
@@ -5032,7 +5126,8 @@
                 "en": "Whether the four voices on Ship One match its four-person roster"
               },
               "ttsTextJa": "一号船の音声四名と名簿四名が一致しているかどうか",
-              "audioId": "L4-010-q2-a"
+              "audioId": "L4-010-q2-a",
+              "readingJa": "いちごうせんのおんせーよんめーとめーぼよんめーがいっちしているかどーか"
             },
             {
               "id": "b",
@@ -5042,7 +5137,8 @@
                 "en": "Channel connection."
               },
               "ttsTextJa": "回線の接続。",
-              "audioId": "L4-010-q2-b"
+              "audioId": "L4-010-q2-b",
+              "readingJa": "かいせんのせつぞく。"
             },
             {
               "id": "c",
@@ -5052,7 +5148,8 @@
                 "en": "Return of each of Ship Two's six people."
               },
               "ttsTextJa": "二号船の六名それぞれの帰還。",
-              "audioId": "L4-010-q2-c"
+              "audioId": "L4-010-q2-c",
+              "readingJa": "にごうせんのむつなそれぞれのきかん。"
             },
             {
               "id": "d",
@@ -5062,7 +5159,8 @@
                 "en": "AI power."
               },
               "ttsTextJa": "AIの電源。",
-              "audioId": "L4-010-q2-d"
+              "audioId": "L4-010-q2-d",
+              "readingJa": "えーあいのでんげん。"
             }
           ],
           "correctOptionIds": [
@@ -5121,7 +5219,8 @@
                 "en": "First-person plural changes reference with the speaker."
               },
               "ttsTextJa": "一人称複数は発話者ごとに参照集団が変わるから。",
-              "audioId": "L4-010-q3-a"
+              "audioId": "L4-010-q3-a",
+              "readingJa": "いちにんしょーふくすーわはつわしゃごとにさんしょーしゅーだんがかわるから。"
             },
             {
               "id": "b",
@@ -5131,7 +5230,8 @@
                 "en": "Because pronouns cannot be used in space and each ship must substitute a different noun"
               },
               "ttsTextJa": "宇宙では代名詞が使えず、船ごとに別の名詞へ置き換えるから",
-              "audioId": "L4-010-q3-b"
+              "audioId": "L4-010-q3-b",
+              "readingJa": "うちゅーでわだいめーしがつかえず、ふねごとにべつのめーしえおきかえるから"
             },
             {
               "id": "c",
@@ -5141,7 +5241,8 @@
                 "en": "Only Ship Two uses past tense."
               },
               "ttsTextJa": "二号船だけ過去形だから。",
-              "audioId": "L4-010-q3-c"
+              "audioId": "L4-010-q3-c",
+              "readingJa": "にごうせんだけかこけいだから。"
             },
             {
               "id": "d",
@@ -5151,7 +5252,8 @@
                 "en": "Ship One has an even crew count."
               },
               "ttsTextJa": "一号船の人数が偶数だから。",
-              "audioId": "L4-010-q3-d"
+              "audioId": "L4-010-q3-d",
+              "readingJa": "いちごうせんのにんずーがぐーすーだから。"
             }
           ],
           "correctOptionIds": [
@@ -5203,7 +5305,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "5c7c84f92734f8f8816a554ddcdbe1a87548e967501eb5a41b8edb48c32c3d05"
+      "contentHash": "421dc07179c0131de5063545c235558b7bab6886276306d034b80df961424b92"
     }
   ]
 }
