@@ -9,8 +9,8 @@
   - 完成 L5-001～L5-050 的内容、三语解释、证据与审校读音复核；L5-011～L5-020 的关键读音／证据回归已补入测试。L5-043 新增未识别咳嗽声 `cough`，并固定为本关独立 design identity，不与任何通用人物或非人系统共享。
   - Image2 内置通道的逐图证据继续使用真实 Codex 六项视觉审核与 `codex-approved` 状态，绑定 reviewer、toolRunId 和原始 PNG SHA-256；不得写成人类审核。
   - 本阶段只完成题库、canonical jobs、身份注册表和契约层收口。250 张关卡图与两张背景图尚未完成逐图生成／审核／发布；Aivis 最终增量生成、场景重拼和全量媒体验收，以及 release check、五视口三语浏览器回归和 GitHub main／Cloudflare 部署均尚未完成，`1.0.3` 不能标记为已发布。
-  - 逐图生产在 13 张 current-v4 完整证据资产处暂停；新增未被运行时引用的 WebP checkpoint、证据 manifest 与生产复盘，明确排除中断后 SHA 不一致的 L1-003、旧背景和无 current raw 的旧 review。
-  - 已验证的 10,088 件 Aivis 候选作为迁移前音频 checkpoint 保存；其 manifest 仍绑定 `contentVersion: 1.0.2`，不得冒充最终 1.0.3，图片／内容迁移后仍须跨版本 `--all` reconciliation 和全量媒体验收。
+  - 逐图生产暂停时有 13 张 current-v4 完整证据资产；恢复阶段重新核验中断事务中的 L1-003 原始工具产物、归一化 PNG、review、sidecar 与当前 prompt/style/source hash，确定性重建 WebP 后将未引用 checkpoint 恢复到 14 张。250 张关卡图加两张背景的严格剩余缺口为 238 张；旧背景和无 current raw 的旧 review 仍排除。
+  - 已验证的 10,088 件 Aivis 候选作为迁移前音频 checkpoint 保存；远端 `f9bed65e` 已确认包含 10,088 个 MP3、250 份时间轴和一份 manifest，逐项路径、大小与 SHA-256 不一致均为 0。其 manifest 仍绑定 `contentVersion: 1.0.2`，不得冒充最终 1.0.3，图片／内容迁移后仍须跨版本 `--all` reconciliation 和全量媒体验收。
 
 ## 2026-07-12
 

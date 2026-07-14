@@ -7,7 +7,7 @@
 - L5-001～L5-050 已完成内容、三语语用解释、证据和 reviewed reading 审计；L5-011～L5-020 的关键读音／证据回归已补入自动测试。后续音频工作只按最终题库做 Aivis 增量生成、受影响 scene 重拼与全量媒体验收，不在文档中预写最终差异数量。
 - Codex 内置 image2 通道的逐图视觉证据必须诚实记录为 Codex 六项审核，状态为 `codex-approved`，并绑定原 reviewer、toolRunId 与原始 PNG SHA-256；不得称为人工或人类审核。
 - 尚未完成的发布前工作包括：250 张关卡图与桌面／手机两张背景图的逐图生成、Codex 审核、导入和发布；Aivis 最终增量与全量音频门禁；release check；359×500、375×667、390×844、844×390、1365×900 的 zh／en／ja 浏览器回归；合并／推送 GitHub main 及 Cloudflare Pages 部署。上述工作完成前不得把 `1.0.3` 写成已发布。
-- 2026-07-14 暂停点只有 13 张关卡图具备 current-v4 prompt、review、tool run、源图 SHA、raw SHA 和 sidecar 完整一致的证据链；这些图以未引用 WebP checkpoint 保存，不是正式发布资源。Aivis 候选虽已覆盖 250 关／10,088 件并通过迁移前全量验证，manifest 仍是 `contentVersion: 1.0.2`，最终迁移后必须再次跨版本 reconcile。生产复盘见 `tools/japanese-subtext/reports/2026-07-14-image2-production-retrospective.md`。
+- 2026-07-14 暂停点有 13 张关卡图具备 current-v4 完整证据链；恢复时对中断事务中的 L1-003 重新核验原始工具产物、归一化 PNG、review、sidecar 与当前 prompt/style/source hash 后，将未引用 WebP checkpoint 恢复到 14 张。它们仍不是正式发布资源，250 张关卡图加两张背景的严格剩余缺口为 238 张。Aivis 候选已覆盖 250 关／10,088 件，远端 `f9bed65e` 的 MP3、250 份时间轴、manifest、大小和 SHA-256 复核全部一致；manifest 仍是 `contentVersion: 1.0.2`，最终迁移后必须再次跨版本 reconcile。生产复盘见 `tools/japanese-subtext/reports/2026-07-14-image2-production-retrospective.md`。
 
 ## 2026-07-12 日本語の裏側 1.0.3 前期实现
 

@@ -4,6 +4,8 @@
 
 这次低产出的主要原因不是服务完全不可用，而是 canonical 变动、返工率、非原子落盘和调度空转叠加。暂停时共观察到 45 个本轮 PNG 候选，只有 13 个关卡拥有当前 v4 prompt、Codex review、tool run、源图 SHA、raw SHA 和 sidecar 完整一致的证据链，沉淀率为 28.9%。
 
+恢复时重新审计了中断事务中的 L1-003：原始工具产物、归一化 PNG、Codex review、sidecar 与当前 prompt/style/source hash 全部一致，且 WebP 可确定性复现，因此将 checkpoint 恢复到 14 张。历史暂停统计仍为 45/13；当前发布目标仍是 250 张关卡图加两张背景，严格剩余缺口为 238 张。
+
 本报告和 `checkpoints/2026-07-14/` 只用于保存阶段成果。它们不是 1.0.3 发布证据，不能被运行时引用，也不能绕过 250 关图、两张背景、最终音频、release check 和浏览器回归门槛。
 
 ## 直接失败原因
@@ -32,6 +34,6 @@
 
 ## 已保存成果
 
-- 13 张有效关卡图的 960×720 WebP checkpoint 和绑定哈希 manifest。
+- 暂停时保存的 13 张、恢复审计后共 14 张有效关卡图的 960×720 WebP checkpoint 和绑定哈希 manifest。
 - 250 关题库、reviewed readings、Image2 v4 jobs、设计身份注册表、Aivis / Image2 管线和回归测试。
-- 10,088 件、250 关、约 548.25 MiB 的 Aivis 迁移前候选；其 manifest 仍为 `contentVersion: 1.0.2`，最终图片迁移后必须执行跨版本 `--all` reconciliation 和全量验证。
+- 10,088 件、250 关、约 548.25 MiB 的 Aivis 迁移前候选；远端 `f9bed65e` 已逐项复核 MP3、时间轴、manifest、大小与 SHA-256，缺失、孤儿和不一致均为 0。其 manifest 仍为 `contentVersion: 1.0.2`，最终图片迁移后必须执行跨版本 `--all` reconciliation 和全量验证。

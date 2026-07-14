@@ -3,7 +3,7 @@
   "kind": "japanese-subtext-image2-candidate-checkpoint",
   "createdAt": "2026-07-14",
   "status": "not-published",
-  "stageCount": 13,
+  "stageCount": 14,
   "webp": {
     "width": 960,
     "height": 720,
@@ -13,13 +13,13 @@
   },
   "styleBibleHash": "4b4f7f45ff67197b335aa95b65640e0ef3e83f3b068d31fb948ed7a528227742",
   "excluded": {
-    "L1-003": "interrupted source copy no longer matches review/raw evidence",
     "backgrounds": "old style hash and obsolete human-approved evidence",
     "remainingStages": "no complete current-v4 source/review/raw evidence chain"
   },
   "stages": [
     {"stageId":"L1-001","file":"image2/l1-001.webp","sha256":"e48e12b81b77c4be03724f631f0c375c746f83ae82f249613794dd10463e9890","rawSha256":"d23e8e86a21558bc03ef0bdcf3a3aea73b687c534b18895fd029115cf5a02be3","sourceArtifactSha256":"06da133226890feaeec6d3096f43ac56619b13bd5bba85c92956f39a14547938","toolRunId":"exec-f053987f-538a-4fb1-84f1-9aa47cf18b3a","promptHash":"963848cda1e22c11c16cdf9365e8c1a2079c8478566f4cc2f927d4d884127f4f"},
     {"stageId":"L1-002","file":"image2/l1-002.webp","sha256":"dc6b85b8f213910ad15044ac5b499ac6614d71d40aa3243a908df4d0d69a2f33","rawSha256":"a7224bef25dabc7be19236659dea3ed78f93b5a4a0ca12054c7c09d99778a26c","sourceArtifactSha256":"b6208e74f6aa9dd4ccce247bf1557efce13856acd264e7579a5e3c2ac232a48c","toolRunId":"exec-fd6addf9-cfbf-45bc-978f-beb6b85a01ea","promptHash":"c3dc3e74745dd28749a4029650912f8f493fdf6e17efb7d550756782a8227715"},
+    {"stageId":"L1-003","file":"image2/l1-003.webp","sha256":"de88e39f3244bb8877ad066d76026a60aea962f75b44fd835ca51503c9287d50","rawSha256":"3476df6ce0cf177a13bcf7bb6f08558dc3b45c24366559dec5307a9e81f59f50","sourceArtifactSha256":"1e6bb8aa21afb2585e07105f70366561d988fecb3f34bbf5609db5c0a73c6a4b","toolRunId":"exec-1701acf1-e1bd-46b8-8637-42743d812ee6","promptHash":"0e419638777eb7ee5687b0d8baf8fda24a93a5ac74929d53763c7ed4e9a1314f"},
     {"stageId":"L1-004","file":"image2/l1-004.webp","sha256":"ee9ba7eb83b1c8c4b067a1982a7ae2ee553d8077a4499daa9f3b546f56c45c77","rawSha256":"1ecd133d6b734701e89a99fa26010900c37271c64c66d82f18be5f0b72bfff4b","sourceArtifactSha256":"7f8fb09446a95c6b59992a9e06f46b726e5cd639a1b5cb3128c093543a834178","toolRunId":"exec-5d0bd7bd-60a1-46b8-948d-7953d4b51bed","promptHash":"dfdb230fe049e68cb0afb64284a98015e13b7edf1fdb3cd6c149a7359d81fc54"},
     {"stageId":"L1-005","file":"image2/l1-005.webp","sha256":"b8154d40a2c231dfeb58b89b04589b85a0fd87d10935565319d89423270019f1","rawSha256":"479c4af607bed2d65af9cf81909a5900f6d24e577415d4a2a4310edb17185116","sourceArtifactSha256":"0b8e7520f7c788aa485e3a66991dc54d931629894089fac2ce07d1c972514c7f","toolRunId":"exec-396b0f63-9427-4559-acc0-1752c25c19a6","promptHash":"5d669d2b88020b7ab23b10bcb2387449e2abe72695479a596ee536bb1d14e7b5"},
     {"stageId":"L1-006","file":"image2/l1-006.webp","sha256":"0f06a91b84d45196458b5918575880127dbed062a6451c7946a5160db0857c1a","rawSha256":"35d00b92de5642ce54b73af0111a085d6f28df7dc4e7adf8221f7f265d4c1f96","sourceArtifactSha256":"f7a0d77a09387a9e5b550db237c901075c4c2958c146dcb86002601c5747fba9","toolRunId":"exec-108e1238-dc69-4b4e-aca3-bb1657670bfb","promptHash":"486aa7e6445c2de998accad206b0967b7f8de9e7a146bfc6940f0917f5d967eb"},

@@ -4,8 +4,8 @@
 
 ## 1.0.3 — 待发布（阶段状态：2026-07-14）
 
-- 本轮逐图生产在 13 张 current-v4 完整证据资产处暂停；45 个候选只有 13 个形成 prompt/review/source/raw/sidecar 一致链，新增未引用的 WebP checkpoint、证据 manifest 与专项复盘。L1-003 因中断后 stable source 与 review/raw SHA 不一致而明确排除。
-- 10,088 件 Aivis 音频候选已作为迁移前 checkpoint 保存并通过当时题库的全量验证，但 manifest 仍为 `contentVersion: 1.0.2`；它不是最终 1.0.3 音频，图片／内容迁移后仍须 `--all` reconcile 和全量复验。
+- 本轮逐图生产暂停时，45 个候选只有 13 个形成 prompt/review/source/raw/sidecar 一致链。恢复阶段重新核验中断事务中的 L1-003 原始工具产物、归一化 PNG、review、sidecar 与当前 prompt/style/source hash，确定性重建 WebP 后将未引用 checkpoint 恢复到 14 张；250 张关卡图加两张背景仍缺 238 张。
+- 10,088 件 Aivis 音频候选已作为迁移前 checkpoint 保存并通过当时题库的全量验证；远端 `f9bed65e` 已确认包含 10,088 个 MP3、250 份时间轴和一份 manifest，路径、大小、SHA-256、孤儿与缺失复核均为 0。manifest 仍为 `contentVersion: 1.0.2`；它不是最终 1.0.3 音频，图片／内容迁移后仍须 `--all` reconcile 和全量复验。
 - 待发布音频管线改用本机 AivisSpeech Engine 1.2.0 和四套许可清晰的 AIVMX 日语模型在 CPU 上生成；显示汉字与纯假名合成输入分离，reading / mora / query / 模型来源和清晰度证据全部进入 manifest。题库读音输入与回归已收口，但最终 Aivis 增量生成、受影响 scene 重拼和全量媒体验收尚未完成。
 - 全库可朗读任务通过 reviewed reading 复核与回归锁定人名、复合词、计数词、外来语和可朗读场景指令；“今日”统一锁定为 `きょう`，发音覆盖必须真正体现在最终 reviewed reading。最终音频差异只在增量生成和全量验证完成后统计。
 - 速率调整升级为 `post-synthesis-active-mora-rate-v3`：以 6.5 mora/s 为目标、校准样本不高于 6.6 mora/s，同时继续以最终 MP3 不高于 7.2 mora/s 作为硬门禁；全部非场景 artifact 与发布条目绑定完整策略证据，策略升级会使旧版未调速音频也失效重录。
