@@ -224,7 +224,10 @@ class PublishedMediaAuditTests(unittest.TestCase):
         stage = {
             "id": "L1-001",
             "contentHash": "d" * 64,
-            "audio": {"sceneAudioId": "L1-001-scene"},
+            "audio": {
+                "sceneAudioId": "L1-001-scene",
+                "timelineId": "L1-001-timeline",
+            },
             "lines": [
                 {
                     "id": "line-001",

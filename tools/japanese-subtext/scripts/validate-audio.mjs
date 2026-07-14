@@ -3,6 +3,12 @@ import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import {
+  AUDIO_SOURCE_HASH_SCHEMA_VERSION,
+  computeStageAudioSourceHash,
+  computeStageSceneSourceHash,
+  SCENE_SOURCE_HASH_SCHEMA_VERSION,
+} from "./audio-source-contract.mjs";
 
 const scriptFile = fileURLToPath(import.meta.url);
 const scriptRoot = path.dirname(scriptFile);
@@ -629,6 +635,46 @@ export function validateManifest({
   }
 
   const contentAudioIds = new Set();
+  const versionParts = String(manifest?.contentVersion || "").split(".").map(Number);
+  const requiresAudioSourceBinding =
+    versionParts.length === 3
+    && versionParts.every(Number.isInteger)
+    && (
+      versionParts[0] > 1
+      || (versionParts[0] === 1 && versionParts[1] > 0)
+      || (versionParts[0] === 1 && versionParts[1] === 0 && versionParts[2] >= 3)
+    );
+  if (requiresAudioSourceBinding) {
+    if (manifest.audioSourceHashSchemaVersion !== AUDIO_SOURCE_HASH_SCHEMA_VERSION) {
+      errors.push(`manifest audioSourceHashSchemaVersion must be ${AUDIO_SOURCE_HASH_SCHEMA_VERSION}`);
+    }
+    if (manifest.sceneSourceHashSchemaVersion !== SCENE_SOURCE_HASH_SCHEMA_VERSION) {
+      errors.push(`manifest sceneSourceHashSchemaVersion must be ${SCENE_SOURCE_HASH_SCHEMA_VERSION}`);
+    }
+    if (
+      manifest.audioSourceBinding?.schemaVersion !== AUDIO_SOURCE_HASH_SCHEMA_VERSION
+      || !["generated", "rebound"].includes(manifest.audioSourceBinding?.status)
+      || manifest.audioSourceBinding?.toContentVersion !== manifest.contentVersion
+    ) {
+      errors.push("manifest audioSourceBinding must identify the current generated or rebound audio source");
+    }
+    if (manifest.audioSourceBinding?.status === "rebound") {
+      for (const field of [
+        "artifactSetSha256",
+        "immutableMediaSetSha256",
+        "timelineSetSha256",
+        "timelineStableSetSha256",
+        "stageEntrySetSha256",
+        "stageSourceSetSha256",
+        "audioSourceSetSha256",
+        "sceneSourceSetSha256",
+      ]) {
+        if (!/^[a-f0-9]{64}$/.test(manifest.audioSourceBinding?.[field] || "")) {
+          errors.push(`manifest rebound evidence ${field} must be SHA-256`);
+        }
+      }
+    }
+  }
   for (const stage of stages) {
     const expectedByType = {
       scene: [stage.audio?.sceneAudioId].filter(Boolean),
@@ -657,6 +703,18 @@ export function validateManifest({
       }
       if (stageEntry.sourceContentHash !== stage.contentHash) {
         errors.push(`content stage ${stage.id}: sourceContentHash does not match locked content`);
+      }
+      if (
+        requiresAudioSourceBinding
+        && stageEntry.audioSourceHash !== computeStageAudioSourceHash(stage)
+      ) {
+        errors.push(`content stage ${stage.id}: audioSourceHash does not match the stable audio projection`);
+      }
+      if (
+        requiresAudioSourceBinding
+        && stageEntry.sceneSourceHash !== computeStageSceneSourceHash(stage)
+      ) {
+        errors.push(`content stage ${stage.id}: sceneSourceHash does not match the stable scene projection`);
       }
       const actualCueLinks = (stageEntry.cues || []).map((cue) => [cue.lineId, cue.audioId]);
       const expectedCueLinks = (stage.lines || []).map((line) => [line.id, line.audioId]);

@@ -689,6 +689,7 @@ function validateJapaneseSubtextReleaseContract() {
     .map((step) => step.trim());
   const expectedReleaseSteps = [
     "npm run jp-subtext:validate",
+    "npm run jp-subtext:audio:rebind -- --check",
     "npm run jp-subtext:audio:validate -- --check-silence",
     "npm run jp-subtext:audio:audit:live",
     "npm run jp-subtext:image2:check",
@@ -2281,7 +2282,7 @@ for (const asset of [
 }
 
 const premiumUiVersion = "20260711-calm-motion-r13";
-const currentMainVersion = "20260714-japanese-subtext-v104-r1";
+const currentMainVersion = "20260714-japanese-subtext-v104-r2";
 const currentPreFinalCssVersion = "20260711-calm-motion-r13";
 const currentPreFinalTelemetryVersion = "20260623-analytics-privacy-r1";
 const currentGameShellVersion = "20260623-game-shell-storage-safe-r1";
@@ -3200,15 +3201,18 @@ const immutableJapaneseSubtextUpdates = [
     slug: "2026-07-14-japanese-subtext-v1-0-4",
     publishedAt: "2026-07-14T02:50:00.000Z",
     date: "2026.07.14",
+    mutableParent: true,
+    mutableFunctionTranslations: true,
+    mutableSchemaTranslations: true,
     requiredMarkers: {
-      zh: ["AivisSpeech", "纯假名", "250", "精制黑白四格漫画", "简洁彩色桌面与手机画面", "gpt-image-2", "UI 与手机交互重整", "## 版本边界", "appVersion 1.0.4 / contentVersion 1.0.3", "10,088"],
-      en: ["AivisSpeech", "kana-only", "250", "polished monochrome four-panel manga", "quiet full-color desktop and mobile backgrounds", "gpt-image-2", "Desktop and mobile interaction", "## Version boundary", "appVersion 1.0.4 / contentVersion 1.0.3", "10,088"],
-      ja: ["AivisSpeech", "かな読みだけ", "250", "モノクロ四コマ", "控えめなカラーの PC・モバイル背景", "gpt-image-2", "PC・モバイル操作の再整理", "## バージョン境界", "appVersion 1.0.4 / contentVersion 1.0.3", "10,088"]
+      zh: ["音频优先候选", "尚未上线", "contentVersion 1.0.3", "10,088", "250 份 timeline", "rebound", "MP3 工作树字节改动为 0", "assetContentVersion 1.0.2", "legacy 配图", "14/252", "仍缺 238", "桌面、手机背景尚未完成", "尚未合并 main", "release-check", "三语浏览器 QA"],
+      en: ["Audio-First Candidate Progress", "is not live", "contentVersion 1.0.3", "10,088", "250 timelines", "rebound", "MP3 worktree byte changes are 0", "assetContentVersion 1.0.2", "legacy illustrations", "14/252", "238 missing", "desktop and mobile backdrops are unfinished", "has not been merged to main", "release-check", "trilingual browser QA"],
+      ja: ["音声優先候補の進捗", "まだ公開されていません", "contentVersion 1.0.3", "10,088", "timeline 250 件", "rebound", "MP3 の作業ツリー上のバイト変更は 0", "assetContentVersion 1.0.2", "legacy 画像", "14/252", "残り 238 枚", "PC・モバイル背景は未完成", "main に未統合", "release-check", "三言語ブラウザー QA"]
     },
-    expectedFingerprints: {
-      zh: "f5126b58a1dde8fc2e922fb27544ea25eae71373f0769841a94f206025f72c54",
-      en: "da7c41819df3b016fd7502356705c7807a7fabf551a38981baa135e1ed94e12a",
-      ja: "bb29678926ed81684ee98f74dae97f497bedfd11fb62e0335d01ea172dfac431"
+    forbiddenMarkers: {
+      zh: ["重新生成全库 AI 语音", "250 个关卡分别依据", "精制黑白四格漫画", "本次发布使用 appVersion"],
+      en: ["regenerates the full AI voice library", "Each of the 250 stages receives", "polished monochrome four-panel manga", "This release uses appVersion"],
+      ja: ["全 AI 音声を再生成", "250 ステージそれぞれの場面", "精細なモノクロ四コマ", "今回のリリースは appVersion"]
     }
   },
   {
@@ -3447,6 +3451,11 @@ for (const update of immutableJapaneseSubtextUpdates) {
         fail(`${label} ${lang} copy must include ${marker}`);
       }
     }
+    for (const marker of update.forbiddenMarkers?.[lang] || []) {
+      if (combinedText.includes(marker)) {
+        fail(`${label} ${lang} copy must not include stale completion claim: ${marker}`);
+      }
+    }
     if (update.legacyTitles?.[lang] && valuesByLanguage[lang].title !== update.legacyTitles[lang]) {
       fail(`${label} ${lang} legacy title changed`);
     }
@@ -3471,7 +3480,7 @@ for (const update of immutableJapaneseSubtextUpdates) {
 
 for (const token of [
   'id="top-updated">2026.07.14',
-  "/js/main.js?v=20260714-japanese-subtext-v104-r1"
+  "/js/main.js?v=20260714-japanese-subtext-v104-r2"
 ]) {
   if (!indexHtml.includes(token)) {
     fail(`index.html Japanese subtext 1.0.4 public update sync missing ${token}`);

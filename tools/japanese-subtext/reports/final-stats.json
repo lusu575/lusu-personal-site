@@ -1,4 +1,6 @@
 {
+  "contentVersion": "1.0.3",
+  "audioContentVersion": "1.0.3",
   "totalStages": 250,
   "stagesByLevel": {
     "level-1": 50,
@@ -14,9 +16,9 @@
   "multiQuestionStages": 180,
   "totalOptions": 2445,
   "uniqueLongestCorrect": {
-    "count": 250,
+    "count": 253,
     "eligible": 497,
-    "percent": 50.3
+    "percent": 50.9
   },
   "genres": {
     "absurdism": 3,
@@ -375,19 +377,22 @@
   "illustrationStyles": {
     "monochrome-four-panel": 250
   },
+  "illustrationModels": {
+    "legacy-unversioned": 250
+  },
   "voiceLines": {
     "female": 1140,
-    "male": 974,
-    "neutral": 286
+    "male": 975,
+    "neutral": 285
   },
   "voiceKeys": {
-    "broadcast": 55,
+    "broadcast": 54,
     "female-bright": 415,
     "female-calm": 444,
     "female-mysterious": 137,
     "female-soft": 144,
     "male-calm": 313,
-    "male-casual": 320,
+    "male-casual": 321,
     "male-comic": 42,
     "male-serious": 299,
     "narrator": 33,
@@ -405,8 +410,8 @@
     "line": 2400,
     "option": 2445,
     "token": 4993,
-    "durationSeconds": 38601.484,
-    "bytes": 316038600
+    "durationSeconds": 42533.531,
+    "bytes": 518739675
   },
   "lengthProgression": {
     "level-1": {

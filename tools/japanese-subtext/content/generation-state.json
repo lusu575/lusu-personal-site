@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.2",
-  "updatedAt": "2026-07-11",
-  "currentPhase": "release-validation-complete",
-  "nextPhase": "release",
+  "contentVersion": "1.0.3",
+  "updatedAt": "2026-07-14",
+  "currentPhase": "audio-first-candidate-validated",
+  "nextPhase": "image2-asset-completion",
   "blueprint": {
     "status": "complete",
     "stageCount": 250,
@@ -104,8 +104,15 @@
     "expectedArtifacts": 10088,
     "generatedArtifacts": 10088,
     "generatedStages": 250,
-    "durationSeconds": 38601.484,
-    "bytes": 316038600,
+    "durationSeconds": 42533.531,
+    "bytes": 518739675,
+    "contentBinding": {
+      "status": "rebound",
+      "fromContentVersion": "1.0.2",
+      "toContentVersion": "1.0.3",
+      "timelines": 250,
+      "immutableMp3Bytes": true
+    },
     "generatedBatches": [
       "level-1",
       "level-2",
@@ -121,12 +128,12 @@
       "phonemeAuditElapsedSeconds": 708.585,
       "ffprobeAndSilence": "pass",
       "validatedArtifacts": 10088,
-      "elapsedSeconds": 1354.165,
+      "elapsedSeconds": 1203.8,
       "representativeTailChecks": "pass"
     }
   },
   "illustrations": {
-    "status": "complete",
+    "status": "transitional-audio-first",
     "stageAssetCount": 250,
     "manifest": "assets/stages/manifest.json",
     "generatorVersion": "local-four-panel-v2",
@@ -140,7 +147,15 @@
       "assets/covers",
       "assets/ui",
       "assets/stages"
-    ]
+    ],
+    "manifestSha256": "e9b2d4fdc99c151cadb9c962d2a26718ebf8ba4b399bd57c9ffc09b7a932e7da",
+    "assetContentVersion": "1.0.2",
+    "targetContentVersion": "1.0.3",
+    "transition": {
+      "mode": "audio-first-legacy-illustrations",
+      "requiredFinalManifest": "assets/stages/v1.0.3/manifest.json",
+      "requiredFinalStyle": "image2-monochrome-four-panel-v1"
+    }
   },
   "needsReworkStageIds": []
 }

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.2",
+  "contentVersion": "1.0.3",
   "level": 5,
   "jlptTarget": "N1-pragmatics",
   "stages": [
@@ -25,7 +25,7 @@
         "coalition-inference"
       ],
       "batch": "batch-001-010.json",
-      "contentHash": "9c5f36bee2296e2fadd59bc55cf6087514a1dde8098d62553816d197f55bb030"
+      "contentHash": "a4cdae7163d7ef0bb8f774d710cc3f7320f8d0a47a76d1f3209a172c166fd82d"
     },
     {
       "id": "L5-002",
@@ -49,7 +49,7 @@
         "relationship-history"
       ],
       "batch": "batch-001-010.json",
-      "contentHash": "a5878f1fffe42ea367c2390bc65c9bd9ee29ffa4323f987f5b8e1962b3caa9ae"
+      "contentHash": "f3d42b9648921737df96bdb85553d8d7dd46ce75677547fd0287ed386ab17089"
     },
     {
       "id": "L5-003",
@@ -72,7 +72,7 @@
         "data-interpretation"
       ],
       "batch": "batch-001-010.json",
-      "contentHash": "027a4f4b9424b0c755eaf6eeeae5ba91a3eeb9feb79c91bdd8a1474be99ffca1"
+      "contentHash": "6ab3beba18ad4350ae7097e24e303b0766296224aa8cbcc7b7e7de36fcd7eeea"
     },
     {
       "id": "L5-004",
@@ -96,7 +96,7 @@
         "local-knowledge"
       ],
       "batch": "batch-001-010.json",
-      "contentHash": "3f93b103b5272152e13fe16c841d56c66c0c130426b8800d3a901aa28db03a50"
+      "contentHash": "0c875352ae603a5773df97ea3707e8bb4b4b60727998f5ed5150ea6bb2a3ffa3"
     },
     {
       "id": "L5-005",
@@ -119,7 +119,7 @@
         "coercion-inference"
       ],
       "batch": "batch-001-010.json",
-      "contentHash": "c2bca1215ed2e1a23506964631c089a5d7e0ea7333b510367aba1b2e6708c3d6"
+      "contentHash": "c0114563316b222bff9ffa3753b90f7c9d99bdd0248c109d0c06a22b2ea863fd"
     },
     {
       "id": "L5-006",
@@ -143,7 +143,7 @@
         "source-inference"
       ],
       "batch": "batch-001-010.json",
-      "contentHash": "7fc40eba1e73f84c1f8cfce9719621f12bd1fbbe3fbcca26bca673272269f4cc"
+      "contentHash": "1c07ca8b337dbf3bee14a061b952a257980d634d9ea4ba58f04a509846226ba2"
     },
     {
       "id": "L5-007",
@@ -167,7 +167,7 @@
         "metadata-inference"
       ],
       "batch": "batch-001-010.json",
-      "contentHash": "5c3790ae0f2f7c9ddc2bed812d0953fdd1dba66a922025b693606d381a5ddb70"
+      "contentHash": "54c61cf1e435b29cf4e6183072516e2255ba320c14168a12ec8b3ce563e1f856"
     },
     {
       "id": "L5-008",
@@ -191,7 +191,7 @@
         "mediation-analysis"
       ],
       "batch": "batch-001-010.json",
-      "contentHash": "9f3c6bca30dfb99eb779c1a6732c0bd3806273a27bbf8dbe79e23759e20fb632"
+      "contentHash": "6eecc95759cb88436f03c3dca36358d4fb54d4c0bb70651f55ca6d89c770c3d2"
     },
     {
       "id": "L5-009",
@@ -215,7 +215,7 @@
         "recording-layer"
       ],
       "batch": "batch-001-010.json",
-      "contentHash": "b5ffb2ad911807989b94a932e2af484adc9c595519a0afa0a0444334d4360931"
+      "contentHash": "bd5a70f86847f6942541ce0d2d89563eadaa032a4443f10ffdfb6c4c0193e29f"
     },
     {
       "id": "L5-010",
@@ -238,7 +238,7 @@
         "truthful-misleading"
       ],
       "batch": "batch-001-010.json",
-      "contentHash": "abd32fdad9db3aac639969b396780698d950ce5a36fa65fa0d0784e8cd27cda0"
+      "contentHash": "a5aec7c916b6412f14695a816a0a3ae2f929d5a2a5afd451b9b3b41e64bfa4ac"
     },
     {
       "id": "L5-011",
@@ -261,7 +261,7 @@
         "statistical-framing"
       ],
       "batch": "batch-011-020.json",
-      "contentHash": "8ddc77e3feba30ec7bd93bc0fd5e6c710d94690c9dbac0f11b50b2564432ef69"
+      "contentHash": "47814b4212a162a7b1d198c65721d0b9135ba2bdbe3d1108c1aa87d76bfd5f0a"
     },
     {
       "id": "L5-012",
@@ -285,7 +285,7 @@
         "coded-message"
       ],
       "batch": "batch-011-020.json",
-      "contentHash": "728808e4696e8d0cf4df32ac31799786b7e298b90715ee58f99bd1fa5733bdc9"
+      "contentHash": "a678b27dfc5592f5faf89087c27e5eab36274a0e7bd4b2bafe91ea50ec719ebc"
     },
     {
       "id": "L5-013",
@@ -309,7 +309,7 @@
         "metadata-skepticism"
       ],
       "batch": "batch-011-020.json",
-      "contentHash": "81adacfcc8334c96aa95b7733f8e9cc0a684a8716a34be2fd11122841dc346fb"
+      "contentHash": "cac6741133973c1689c666d45c4a4651a67ea3149613172545fba44857e5958d"
     },
     {
       "id": "L5-014",
@@ -333,7 +333,7 @@
         "artifact-wear"
       ],
       "batch": "batch-011-020.json",
-      "contentHash": "9bff909c47480104c2aa34547cecec5a6ce0738158d134576ec6b10ea15d2a29"
+      "contentHash": "520eb462b70a8ec0065ff59107d069197f61b8703715764142a1cb4a889566fd"
     },
     {
       "id": "L5-015",
@@ -357,7 +357,7 @@
         "nested-perspective"
       ],
       "batch": "batch-011-020.json",
-      "contentHash": "b4ffc2f702ac40af9361fb2b7b61a4ad43a748df1e2a05d695e66d12b7df7f34"
+      "contentHash": "b1f679b9638f64266ceae90d735c129e27bc37984049f9a45dc524397d690519"
     },
     {
       "id": "L5-016",
@@ -380,7 +380,7 @@
         "prophecy-interpretation"
       ],
       "batch": "batch-011-020.json",
-      "contentHash": "d0d41a99efef3b17a7208afb6e8822bd9a641d95b212660afd97f5af762bc641"
+      "contentHash": "d16fee27b5a5c801a2bd142dbe01b39e8ca0ce8cf37bf65a17dd0b00902eee99"
     },
     {
       "id": "L5-017",
@@ -403,7 +403,7 @@
         "social-construction"
       ],
       "batch": "batch-011-020.json",
-      "contentHash": "37c53d6caf12d375a963d6ee400c3ace44ce80bb449cc5b95691e9d95efdcd22"
+      "contentHash": "daa319b9fadde85eb13c737e7211c863aef0c9a022437d0bb7b6c23ec6ae5cfb"
     },
     {
       "id": "L5-018",
@@ -427,7 +427,7 @@
         "political-framing"
       ],
       "batch": "batch-011-020.json",
-      "contentHash": "1c2867208db19f0b30b19488282f1f5b8a467cb4115e13e17b8652127d1728b7"
+      "contentHash": "590a4e046d1ef0b0ede734af2264665f136094189a89fcb8d03d02b5412a3da5"
     },
     {
       "id": "L5-019",
@@ -451,7 +451,7 @@
         "genre-misdirection"
       ],
       "batch": "batch-011-020.json",
-      "contentHash": "1d07ecf86cd59a029fe5612f218cb0a3691276b0be9668fefa129cd800e0a66f"
+      "contentHash": "34e051a7be4445324b82feaa3263a1c52a14a203c3b09510d5103ff450497631"
     },
     {
       "id": "L5-020",
@@ -476,7 +476,7 @@
         "system-gaming"
       ],
       "batch": "batch-011-020.json",
-      "contentHash": "6fca045f988abdb463aaf23c86a62e771f1bba0112c3215acda949b75b9ca59f"
+      "contentHash": "e7beca2964484c01d01cab886a5a33612c62d76645729279925b379e092b5487"
     },
     {
       "id": "L5-021",
@@ -499,7 +499,7 @@
         "motive-inference"
       ],
       "batch": "batch-021-030.json",
-      "contentHash": "f9622b7d0e1110f325e9f7e9b59254a8c70dd2687086787cb7bcc69f7723e867"
+      "contentHash": "b2b2bd2d092f07e435030748d8a52c752d834f00cb1c2d602c037935598cca26"
     },
     {
       "id": "L5-022",
@@ -522,7 +522,7 @@
         "silence-inference"
       ],
       "batch": "batch-021-030.json",
-      "contentHash": "066698ae5fcf128cf00ddf50cd92cbbcb873a35adec46b60c69885ea1891fa79"
+      "contentHash": "afce79268111412d386726fae68e99440b7ceb1bca0312e6b7c96bd51af6819c"
     },
     {
       "id": "L5-023",
@@ -546,7 +546,7 @@
         "ingredient-inference"
       ],
       "batch": "batch-021-030.json",
-      "contentHash": "109b654864769e1cc31d41a73b740786c596a5b200c43bc3d2b412928d881f64"
+      "contentHash": "51e0b0612d779627b529cdcea1f936cb00c309f786f4bbd92d8efd84fc93130e"
     },
     {
       "id": "L5-024",
@@ -570,7 +570,7 @@
         "commercial-motive"
       ],
       "batch": "batch-021-030.json",
-      "contentHash": "67cd4e9644d6b923d89c04eba869063373a73670b824ba39c0eb04e1a46690bc"
+      "contentHash": "96300c709bf39355fa7a3ddd2bb1ec69f4520422ba90462ad8d4b12524ad8973"
     },
     {
       "id": "L5-025",
@@ -593,7 +593,7 @@
         "retroactivity"
       ],
       "batch": "batch-021-030.json",
-      "contentHash": "e54ad3d2108dbb04a5dee7d616a39518bb6e1e50919f074505d5efe0b739a87f"
+      "contentHash": "d2dc598cbcb780fb4e32ca20bb3b074d75c7fbf46c113b207f4361aafb671813"
     },
     {
       "id": "L5-026",
@@ -617,7 +617,7 @@
         "narrator-identity"
       ],
       "batch": "batch-021-030.json",
-      "contentHash": "d3c6e082f71b00ddc9fb0889ed7de280ec1314eb31ee968cce6e3ce6b262769d"
+      "contentHash": "30c6a397a70ae5815ef93f57cb1183ce54b66f419825c2cda4eae1b007aaf55d"
     },
     {
       "id": "L5-027",
@@ -641,7 +641,7 @@
         "relationship-inference"
       ],
       "batch": "batch-021-030.json",
-      "contentHash": "bbb3fd5a276a4a04b21b57ddd4d5774fbde6afc18be36567d53a36a709ea78bc"
+      "contentHash": "37fa8e510b8c52f22ac311926c2f371abf3e8d4846be9ba2bc630464e74da679"
     },
     {
       "id": "L5-028",
@@ -665,7 +665,7 @@
         "pattern-inference"
       ],
       "batch": "batch-021-030.json",
-      "contentHash": "04cacded2b7779397daf0df7d5c93f6db8a3c9db65ffeb6585d17255f478c5a4"
+      "contentHash": "1aebc004c63fa5fcb8c84aa06507cbd9224ecd451e43bcdc70ba82eb0f471d66"
     },
     {
       "id": "L5-029",
@@ -689,7 +689,7 @@
         "abstention-inference"
       ],
       "batch": "batch-021-030.json",
-      "contentHash": "aa8554799b4f952b40209b6861f14ba9d4518294027abbed90ad768ddbae60d0"
+      "contentHash": "00ae65dbee201d959b9504fd16293e73447bc3cb22369e5a29d5b4894eb5c71d"
     },
     {
       "id": "L5-030",
@@ -712,7 +712,7 @@
         "calendar-inference"
       ],
       "batch": "batch-021-030.json",
-      "contentHash": "6a9c6c7e9f270c9e9d202e32eb99ac0b18d04f293684b66d354c9963fb6dcbc7"
+      "contentHash": "f2ff7937e07fd3d0efaed5413607eb84346456ed0449bbaf6e3c250d9aced9a9"
     },
     {
       "id": "L5-031",
@@ -736,7 +736,7 @@
         "paralinguistic-evidence"
       ],
       "batch": "batch-031-040.json",
-      "contentHash": "266fd95edbfa5af92791a221297fbc411fc6617bf16dc1d97cb2b210343c8070"
+      "contentHash": "ca9666b45757c99090f3dbab4a5db9de7226e35b4185767d2dcf047438fc56a3"
     },
     {
       "id": "L5-032",
@@ -760,7 +760,7 @@
         "coded-instruction"
       ],
       "batch": "batch-031-040.json",
-      "contentHash": "4ddae1961d65163a1306fe2deb3a9d4ebdbae07b606d0a93d129de841bbd2211"
+      "contentHash": "cc344e944a2e2ac588248231289c2846abf18f39253e269bd18c039aae736d79"
     },
     {
       "id": "L5-033",
@@ -784,7 +784,7 @@
         "acrostic"
       ],
       "batch": "batch-031-040.json",
-      "contentHash": "74509e0f4f6ff88d253e4b7fa0206a4a1dbc8e5ab713ce3af936a2519439deee"
+      "contentHash": "a93c6ba98abc45aec3e1a95f5e590b2cf89bba5791c9955e12bdaa0606058a5c"
     },
     {
       "id": "L5-034",
@@ -807,7 +807,7 @@
         "voice-analysis"
       ],
       "batch": "batch-031-040.json",
-      "contentHash": "8315c911a5590d0bf6f2e586886364232a278a2ca9fe66147e2c7cc3848aca3b"
+      "contentHash": "69cd3920d9590d842b9d6fa3c880e4abd3032d42500930cbc231eedb7e35ebd0"
     },
     {
       "id": "L5-035",
@@ -831,7 +831,7 @@
         "interface-confession"
       ],
       "batch": "batch-031-040.json",
-      "contentHash": "b4be3ff1860668cb5ec6fd51a3f51245f128df4dfb584c30183b95a5021ec886"
+      "contentHash": "567c06fc5c24daddc09a861c06e1a798aaa63081af6091a51b8d8204874f0078"
     },
     {
       "id": "L5-036",
@@ -855,7 +855,7 @@
         "mediation"
       ],
       "batch": "batch-031-040.json",
-      "contentHash": "94bc86d57097e6300eabd488f6012803fbf2efff3637174c982fe42fdd733400"
+      "contentHash": "612b453b2f82c046e24d57409030115c665a1d1a53d95aa96f1e5c7c48ec984c"
     },
     {
       "id": "L5-037",
@@ -879,7 +879,7 @@
         "revision-history"
       ],
       "batch": "batch-031-040.json",
-      "contentHash": "8c8eb4ae8c7c5eda476c3f17b4880179684724364fe65eb3411c910f721ce6d5"
+      "contentHash": "a3f5310a7bee7e91293c80bf23006f79d2fd4955dacb0461b051e801fbfbfe60"
     },
     {
       "id": "L5-038",
@@ -902,7 +902,7 @@
         "preference-inference"
       ],
       "batch": "batch-031-040.json",
-      "contentHash": "28c74495620482731042688806b2ca519aab0cf99b346955f6c72cf1dbc9cbeb"
+      "contentHash": "b37aa58f9ed4591c0e54cd433bb9b9434e48df23d9d3ec0ad176ec01336de5a6"
     },
     {
       "id": "L5-039",
@@ -926,7 +926,7 @@
         "search-inference"
       ],
       "batch": "batch-031-040.json",
-      "contentHash": "ff7b84ee8bbf0d5d121b11855acb1f43310445177afe4ecf312b8ff6569311e6"
+      "contentHash": "b508e55d322df7689e5f83fd2c63ded53f34b4d6bd0e6725b94cf4ff1606d2ef"
     },
     {
       "id": "L5-040",
@@ -950,7 +950,7 @@
         "communication-mode"
       ],
       "batch": "batch-031-040.json",
-      "contentHash": "abf58cef53ff96a469289bff42cf3ba0e04b680ffbdf7c17025db6c60e259136"
+      "contentHash": "75c296d9ec4d4271cdbfa973022ce8e63c516ce141dc18fa0a18c4db8bc660fa"
     },
     {
       "id": "L5-041",
@@ -974,7 +974,7 @@
         "cross-document-inference"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "27e1c52ed649347050b521b456674a974b8d5ce40de64d59e008acab31ecd8fd"
+      "contentHash": "268f56df839e687e1130f50e116ba9d85800b9270dcaf2242b389be1c703d7cf"
     },
     {
       "id": "L5-042",
@@ -998,7 +998,7 @@
         "sensor-scope"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "008bb886c3d001b84713d0ec314dfc1e61ecb988fe05293682cab096f6cbc4a9"
+      "contentHash": "6fc8893a7ed675b29f53bdd2a54c77bd6c23e5bd2e04d6961a1b1bf5919d6d26"
     },
     {
       "id": "L5-043",
@@ -1022,7 +1022,7 @@
         "live-source"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "3ce0d48bb61b4a66b9f725bb811634a4bf49468f2ed7580ddf1d008d9e2c92cc"
+      "contentHash": "8fb0ee6938aa1da65f4181517474c501e8e26dcfb2e391c3965f56420abb02a4"
     },
     {
       "id": "L5-044",
@@ -1046,7 +1046,7 @@
         "account-state"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "4859974fa8ed078141cc716ae56547d5c3d52863d5839be49e96f3119aaa39cc"
+      "contentHash": "27b5157c11e010a1778cd851cfc2d34f745277182c29dc6da6cc5c4f45559c35"
     },
     {
       "id": "L5-045",
@@ -1069,7 +1069,7 @@
         "succession-inference"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "d26b00746ce830123865febf2f1847d3dadf7855df80d96401ae3c41b2a42d02"
+      "contentHash": "6361d559b7df6b9518aa2b4b98f9e9b90c0e274b73e6da7d8558cb937bb51a79"
     },
     {
       "id": "L5-046",
@@ -1093,7 +1093,7 @@
         "object-identity"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "958aa75a4f7fc63efdb244375437ed5e1af6106921040509d0462950aef38658"
+      "contentHash": "4abf4b449eda60b9f5f06fdf2e5ec08a12abaa95d870d69c88c7a04160e14591"
     },
     {
       "id": "L5-047",
@@ -1117,7 +1117,7 @@
         "refusal-as-answer"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "14f1053a83417304b117da871256c60fd9d149c57d402ade1e552ad78fbe5fc7"
+      "contentHash": "7e7e8ac7c0a16c3c903bcd7438b9f05dfd45fc34b1aa05a1c2399a15b5012dde"
     },
     {
       "id": "L5-048",
@@ -1141,7 +1141,7 @@
         "source-circularity"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "93a5054ff1e7eac1da2de9998a7a2785b510e370e756f1b9ad0081b41df26aed"
+      "contentHash": "2a132e08d98734bef030fa4b54a574bc08870fdb88914b525a9e556bea370002"
     },
     {
       "id": "L5-049",
@@ -1165,7 +1165,7 @@
         "chronology-reconstruction"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "0478357beb113e04b36f9f03c5b7f2aab7337ab35edefef6febe92d11210a2ef"
+      "contentHash": "73c6625db3ea0725bb4b218f0d26176ac81220d47a3c6a6c1348a48a0b722ab0"
     },
     {
       "id": "L5-050",
@@ -1189,7 +1189,7 @@
         "observer-inference"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "9a3def3a72a2baf46ea045d905aaf2014278a4d91ac1b322e6d35a567435a923"
+      "contentHash": "5e052e21b0e598ff94ef33d409068229b908ff8152bb741dd38918fa64bb3004"
     }
   ]
 }

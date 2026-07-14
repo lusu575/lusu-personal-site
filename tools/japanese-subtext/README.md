@@ -2,9 +2,9 @@
 
 “日本語の裏側”是一个独立、数据驱动的日语潜台词训练工具。正式题库固定为 5 个难度、每级 50 关：LEVEL 1 为 N3，LEVEL 2 为 N2，LEVEL 3–5 为 N1 / N1 高阶。入口为 `/tools/japanese-subtext/`，主站只负责提供资源卡片，不会把 250 关一次性塞进主站脚本。
 
-当前公开应用版本为 `1.0.3`，题库、音频与云存档兼容版本为 `1.0.2`。下一候选为应用 `1.0.4`、内容 `1.0.3`，尚未上线。canonical Image2 v4 jobs 已按最新题库重建并通过来源、设计身份、生成／导入、迁移与发布管线契约测试；L5-001～L5-050 内容审计和 L5-011～L5-020 关键读音／证据回归已完成。仍待完成 250 张关卡图与两张背景图的逐图生成／Codex 审核／发布、Aivis 最终跨版本 reconciliation 与全量音频门禁、release check、五视口三语浏览器回归及部署。长期版本、界面、题库、音频、image2 插图与发布维护规则见 [`MAINTENANCE.md`](./MAINTENANCE.md)，逐版本变更见工具专用 [`CHANGELOG.md`](./CHANGELOG.md)。
+当前公开应用版本为 `1.0.3`，题库、音频与云存档兼容版本为 `1.0.2`。下一候选为应用 `1.0.4`、内容 `1.0.3`，尚未合并 main、尚未上线。候选题库已通过显式音频优先过渡构建为内容 1.0.3；音频 manifest 已从内容 1.0.2 `rebound` 到 1.0.3，覆盖 10,088 个 MP3、250 份时间轴，总长 `42,533.531` 秒、总计 `518,739,675` 字节，rebind 期间 MP3 字节改动为 0。长期版本、界面、题库、音频、image2 插图与发布维护规则见 [`MAINTENANCE.md`](./MAINTENANCE.md)，逐版本变更见工具专用 [`CHANGELOG.md`](./CHANGELOG.md)。
 
-2026-07-14 的恢复 checkpoint 保存 14 张 current-v4 证据完整的未引用 WebP；250 张关卡图加两张背景仍缺 238 张。远端候选已完整包含 10,088 个 MP3、250 份时间轴和一份 manifest，但该迁移前音频 manifest 仍为 `contentVersion: 1.0.2`，必须在最终内容迁移后执行 `--all` reconciliation。两项 checkpoint 都不能被解释为 1.0.4 已发布。复盘与说明见 [`reports/2026-07-14-image2-production-retrospective.md`](./reports/2026-07-14-image2-production-retrospective.md) 和 [`checkpoints/2026-07-14/`](./checkpoints/2026-07-14/)。
+当前运行时仍在显式 `transitional-audio-first` 状态下复用 250 张 `assetContentVersion: 1.0.2` legacy illustrations。2026-07-14 的恢复 checkpoint 只有 14／252 份 current-v4 有效、未引用证据资产，仍缺 238 份；默认构建、image2 检查和 release gate 没有放宽。全部图片、release check、五视口三语浏览器回归和部署完成前，这只能称为音频优先候选，不能称为完整发布候选或已发布 1.0.4。复盘与说明见 [`reports/2026-07-14-image2-production-retrospective.md`](./reports/2026-07-14-image2-production-retrospective.md) 和 [`checkpoints/2026-07-14/`](./checkpoints/2026-07-14/)。
 
 公开 1.0.3 已修复错答后的重答死路：题面和解析顶部都有重答入口，结果弹窗不能通过关闭按钮、Escape 或点击外侧把用户留在已提交但无法操作的状态；下一关只按本次答题结果判断。候选 1.0.4 必须保留这套行为。
 
@@ -41,6 +41,9 @@ npm.cmd run jp-subtext:test
 npm.cmd run jp-subtext:test:tts-python
 npm.cmd run jp-subtext:audio:validate -- --check-silence
 npm.cmd run jp-subtext:audio:validate:quick
+npm.cmd run jp-subtext:audio:rebind -- --prepare
+npm.cmd run jp-subtext:audio:rebind -- --rebind --content-version 1.0.3
+npm.cmd run jp-subtext:audio:rebind -- --check
 npm.cmd run jp-subtext:audio:estimate
 npm.cmd run jp-subtext:audio:merge -- --target <audio-root> --source <parallel-root>
 npm.cmd run jp-subtext:release-check
@@ -49,9 +52,11 @@ npm.cmd run build
 
 `jp-subtext:release-check` 会同时运行 Node 与 Python TTS 回归。若系统命令中没有可用 Python，只在当前终端临时设置 `$env:JP_SUBTEXT_TTS_PYTHON='F:\path\to\python.exe'`，不要把本机解释器路径写入仓库。
 
+音频内容绑定迁移不需要等待全部 Image2 成图。先在旧内容版本上执行 `--prepare` 固化 manifest、MP3、timeline 和稳定 audio／scene source 投影，再用显式 `--allow-legacy-illustrations` 构建目标内容版本，最后执行 `--rebind --content-version <version>` 与 `--check`。只有 reading、voice、line／token／option、停顿和 cue 等真实发音来源完全稳定时才允许 rebind；任一投影变化都会拒绝离线改绑并要求回到 Aivis 重建。该流程只建立音频优先候选，默认正式构建和 release gate 仍要求完整 Image2 资产。
+
 ## 离线语音
 
-内容 1.0.3（随应用 1.0.4 候选）使用隔离安装的 AivisSpeech Engine 1.2.0 与四套许可清晰的 AIVMX 日语模型，固定由 `aivisspeech-1.2.0-aivmx-v3` 管线在 CPU 上预生成 44.1 kHz、mono、约 96 kbps 的静态 MP3。正式任务只接受句子/选项人工审校的纯假名 `readingJa` 和 token `reading`；适配器先取得表面文本的基础查询，再用审校假名生成并替换全部 accent phrase / mora。当表面文本与审校假名的韵律和标点结构一致时，`kanaSource=surface` 可保留自然韵律；否则必须转为 `reviewed-reading-fallback`，因此“今日”等汉字的显示与实际发音输入彼此分离。读音内出现汉字、ASCII、数字、空 mora 或模型/版本/hash 不匹配时会停止生成。所有非场景 artifact 和 manifest 条目还会绑定完整 `ratePolicy`，策略升级会让未调速的旧音频也失效重录。公开仓库只保留适配器、配置模板、模型文件哈希、许可证/声明以及预生成的 MP3；模型权重、本机绝对路径和实际配置不提交。当前题库审计已锁定，但最终跨版本 reconciliation、受影响 scene 重拼和全量媒体验收尚未完成，不能据此宣称应用 1.0.4 / 内容 1.0.3 音频候选已发布。
+内容 1.0.3（随应用 1.0.4 候选）使用隔离安装的 AivisSpeech Engine 1.2.0 与四套许可清晰的 AIVMX 日语模型，固定由 `aivisspeech-1.2.0-aivmx-v3` 管线在 CPU 上预生成 44.1 kHz、mono、约 96 kbps 的静态 MP3。正式任务只接受句子/选项人工审校的纯假名 `readingJa` 和 token `reading`；适配器先取得表面文本的基础查询，再用审校假名生成并替换全部 accent phrase / mora。当表面文本与审校假名的韵律和标点结构一致时，`kanaSource=surface` 可保留自然韵律；否则必须转为 `reviewed-reading-fallback`，因此“今日”等汉字的显示与实际发音输入彼此分离。读音内出现汉字、ASCII、数字、空 mora 或模型/版本/hash 不匹配时会停止生成。所有非场景 artifact 和 manifest 条目还会绑定完整 `ratePolicy`，策略升级会让未调速的旧音频也失效重录。公开仓库只保留适配器、配置模板、模型文件哈希、许可证/声明以及预生成的 MP3；模型权重、本机绝对路径和实际配置不提交。候选的 10,088 个 MP3 已保持原字节完成内容 1.0.3 绑定迁移，但这不替代完整 Image2、release check、浏览器回归和部署门槛，也不表示应用 1.0.4 已发布。
 
 实际配置文件为 `config/tts.local.json`，已加入 `.gitignore`。模板 `config/tts.local.example.json` 提供四套 AIVMX 模型及多种风格，通过语义别名分配温柔、活泼、冷静、神秘、旁白、广播等角色；模型与声线必须保持许可清晰，不使用来源不明或模仿受版权保护动漫角色的声音。
 

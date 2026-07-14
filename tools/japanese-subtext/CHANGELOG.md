@@ -2,11 +2,13 @@
 
 本文件记录“日本語の裏側”的公开版本历史及当前待发布版本的阶段状态。记录一经发布即保持原文；后续版本必须新增条目，不覆盖或回写旧条目。待发布条目必须明确标注，只有真实上线后才转为不可回写的公开历史。网站知识库中的上线记录与版本更新也遵守同一规则：一次上线或一次版本发布，对应一篇独立的三语文章。
 
-## 1.0.4 — 待发布（内容 1.0.3；阶段状态：2026-07-14）
+## 1.0.4 — 待发布（内容 1.0.3；音频优先候选：2026-07-14）
 
 - 本轮逐图生产暂停时，45 个候选只有 13 个形成 prompt/review/source/raw/sidecar 一致链。恢复阶段重新核验中断事务中的 L1-003 原始工具产物、归一化 PNG、review、sidecar 与当前 prompt/style/source hash，确定性重建 WebP 后将未引用 checkpoint 恢复到 14 张；250 张关卡图加两张背景仍缺 238 张。
-- 10,088 件 Aivis 音频候选已作为迁移前 checkpoint 保存并通过当时题库的全量验证；远端 `f9bed65e` 已确认包含 10,088 个 MP3、250 份时间轴和一份 manifest，路径、大小、SHA-256、孤儿与缺失复核均为 0。manifest 仍为 `contentVersion: 1.0.2`；它不是最终内容 1.0.3 音频，图片／内容迁移后仍须 `--all` reconcile 和全量复验。
-- 待发布音频管线改用本机 AivisSpeech Engine 1.2.0 和四套许可清晰的 AIVMX 日语模型在 CPU 上生成；显示汉字与纯假名合成输入分离，reading / mora / query / 模型来源和清晰度证据全部进入 manifest。题库读音输入与回归已收口，但最终 Aivis 增量生成、受影响 scene 重拼和全量媒体验收尚未完成。
+- 音频优先候选通过显式 `--allow-legacy-illustrations` 把锁定题库构建为内容 `1.0.3`；当前运行时仍使用 250 张 `assetContentVersion: 1.0.2` legacy illustrations，并明确标记 `transitional-audio-first`。该过渡没有放宽默认构建、image2 检查或正式 release gate。
+- 新增受同一 OS 发布锁保护的 `jp-subtext:audio:rebind`：`prepare` 固化 manifest、10,088 个 MP3、250 份时间轴及稳定 audio／scene source 投影，`rebind` 只允许内容版本和可证明安全的来源绑定变化，`check` 复核前后 journal、集合哈希和逐关证明；任何 reading、voice、line／token／option、停顿、cue 或媒体字节变化都会拒绝离线改绑。
+- 音频 manifest 已从内容 `1.0.2` rebound 到 `1.0.3`，覆盖 10,088 个 MP3、250 份时间轴，总长 `42,533.531` 秒、总计 `518,739,675` 字节。rebind 期间 MP3 工作树字节改动为 0；manifest 与 timeline 只更新内容绑定及其证明。
+- 待发布音频管线继续使用本机 AivisSpeech Engine 1.2.0 和四套许可清晰的 AIVMX 日语模型在 CPU 上生成；显示汉字与纯假名合成输入分离，reading / mora / query / 模型来源和清晰度证据全部进入 manifest。audio rebind 已完成不代表应用发布，仍须随完整候选执行正式 release check。
 - 全库可朗读任务通过 reviewed reading 复核与回归锁定人名、复合词、计数词、外来语和可朗读场景指令；“今日”统一锁定为 `きょう`，发音覆盖必须真正体现在最终 reviewed reading。最终音频差异只在增量生成和全量验证完成后统计。
 - 速率调整升级为 `post-synthesis-active-mora-rate-v3`：以 6.5 mora/s 为目标、校准样本不高于 6.6 mora/s，同时继续以最终 MP3 不高于 7.2 mora/s 作为硬门禁；全部非场景 artifact 与发布条目绑定完整策略证据，策略升级会使旧版未调速音频也失效重录。
 - 单 mora 自然迟疑「ん……」使用专用 `hesitation` 速率带和 `1.2 mora/s` 下限；该例外严格绑定审校假名，普通短词仍以 `1.5 mora/s` 为下限，并由生成器、媒体审计与构建守卫交叉验证。
@@ -37,7 +39,9 @@
 - L3-016～L3-020 锁定留言两端、广播制作环境、校内扬声器、非视觉旁白与梦中车站，修正 L3-018 远程误判，并禁止用碎片匹配、利益链、火灾撤离、循环时间线和右侧箭头视觉泄题。
 - L3-021～L3-030 增加逐关 source-preserving Image2 addendum：锁定占卜馆信封、谒见厅空白账簿、和平条约展柜、本地歌唱 AI 诊断、闭馆图书馆、电梯案内板、室内询问、事后事故听取、同一森林任务空间与姐弟书桌等题面锚点，禁止把门/钥匙比喻、债务/治理多选、条约文书、情绪波形、自动回收因果、楼层版面位置、湿伞/鞋底/出入记录、新闻记忆来源、任务改写和答案纸用途画成答案链。L3-024 的 diagnostic log、L3-027 的 access log 与 L3-029 的 upper stream 已固定为本地语境；L3-025 的蓝色发光札在黑白合同中只保留微弱灰阶光，L3-030 停在背面成为画纸之前并禁止“翻面→空白背面→宇宙船作画”完整链。canonical 重建只改变这 10 关 `promptHash`，250/250 `sourceTextHash` 不变，真实选项/解析泄漏与 canonical source collision 均为 0。`hero` / `reporter` 的既有 cast-id 别名仅记录为锁定题库数据风险，本批保留当前 ID、双语姓名与稳定设计，不扩张为全库重命名。
 - L2 成图二次复审继续撤回 L2-001/002/003/006/007/008/010/011/012：墙面、资料、申请表、书脊与提案材料只保留无字大块等权几何；蛋糕严格锁定“上桌→品尝→克制回应/要奶油→第二口”，申请表不被凉接走且末格离开，咖啡按“拒绝惯常准备→改选同等无标签咖啡→询问→回答”展开；同时收紧三人表情、远程端点姿态、空座/最小餐桌、大包完整包体与双把手、悬停未抓取、未使用无印迹印章，并删除肩包、平板、圆点标签框和题外装饰。九关受测 canonical prompt 已重建，仅这 9 关 `promptHash` 变化，250/250 `sourceTextHash` 不变，真实选项/解析泄漏与 canonical source collision 均为 0；不改题库、raw、review 或成图。
-- 截至 2026-07-14，canonical v4 已按全库最新题库与 addenda 重建并通过契约测试；release check、五视口三语浏览器回归、GitHub main 合并／推送和 Cloudflare Pages 部署仍未完成，`1.0.3` 保持待发布。
+- 截至 2026-07-14，canonical v4 已按全库最新题库与 addenda 重建并通过契约测试，但有效 Image2 checkpoint 仍为 14／252、缺口 238；release check、五视口三语浏览器回归、GitHub main 合并／推送和 Cloudflare Pages 部署仍未完成，`1.0.4` 只能保持未发布的音频优先候选状态。
+- 三语更新文章已从错误的“图片已完成／版本已发布”改为可更新的音频优先候选进度，明确 10,088 音频已验证、250 张 legacy 图仍在过渡使用、Image2 仍缺 238 份且尚未上线；主站 `main.js` 缓存键同步升至 `20260714-japanese-subtext-v104-r2`。
+- 最终音频全量 ffprobe／静音检查与 rebound 证据复核通过，发布报告 AUDIO 门禁已绑定实际 manifest／stats 转为 `PASS`；Image2 与 BROWSER 仍为 `PENDING`。
 
 ## 1.0.3 — 2026-07-14
 

@@ -23,11 +23,11 @@
 
 | 门槛 | 当前待填证据 | 状态 |
 | --- | --- | --- |
-| 锁定题库 | 1.0.3、5 级 × 50 关、250/250 内容验证 | 待验收 |
+| 锁定题库 | 1.0.3、5 级 × 50 关、250/250 内容验证；legacy 插画例外仅用于音频优先候选 | PASS（音频候选） |
 | 关卡插图 | 250 张 `gpt-image-2 high` 逐关独立 960×720 WebP，文件哈希与 manifest 一致 | 待资产落地 |
 | 工具背景 | 2048×1152 桌面图与 1024×1536 手机图，使用 1.0.3 版本化路径 | 待资产落地 |
-| 全量音频 | 10,088 件 AivisSpeech 44.1 kHz mono 约 96 kbps MP3，全量发音、清晰度、ffprobe、静音、哈希与时间轴验证 | 待资产落地 |
-| 自动测试 | Node、Python TTS 与主站构建的最终通过计数 | 待验收 |
+| 全量音频 | 10,088 件、250 关、250 份 timeline；时长 42,533.531 秒、518,739,675 bytes；rebind 及全量 ffprobe／静音验证通过，MP3 字节未改 | PASS |
+| 自动测试 | 内容 250/250、Node 212/212、Python TTS 131/131 已通过；主站 build 继续由 Image2 与剩余发布门禁拦截 | 部分通过 |
 | 浏览器回归 | zh/en/ja、359×500、375×667、390×844、844×390、1365×900 与主站入口 | 待验收 |
 
 ## Image2 最终数据
@@ -44,33 +44,33 @@
 - 实际音频件数：
 
   <!-- AUTO:AUDIO_ITEM_COUNT:START -->
-  `PENDING：等待 1.0.3 音频 manifest。`
+  `10,088（scene 250、line 2,400、option 2,445、token 4,993）。`
   <!-- AUTO:AUDIO_ITEM_COUNT:END -->
 
 - 实际覆盖关卡：
 
   <!-- AUTO:AUDIO_STAGE_COUNT:START -->
-  `PENDING：等待 1.0.3 音频 manifest。`
+  `250/250；250 份 timeline 与 250 份 rebound proof 均已校验。`
   <!-- AUTO:AUDIO_STAGE_COUNT:END -->
 
 - 累计时长：
 
   <!-- AUTO:AUDIO_DURATION:START -->
-  `PENDING：等待全量生成结果。`
+  `42,533.531 秒（11 小时 48 分 53.531 秒）。`
   <!-- AUTO:AUDIO_DURATION:END -->
 
 - 文件总大小：
 
   <!-- AUTO:AUDIO_BYTES:START -->
-  `PENDING：等待全量生成结果。`
+  `518,739,675 bytes（494.709 MiB）。`
   <!-- AUTO:AUDIO_BYTES:END -->
 
 - 全量验证：
 
   <!-- AUTO:AUDIO_VALIDATION:START -->
-  `PENDING：必须以 aivisspeech-1.2.0-aivmx-v3、44.1 kHz、clarity schema 3 的最终 10,088 件资产完成全量验证。`
+  `PASS：audioSourceBinding 已从内容 1.0.2 rebound 到 1.0.3；rebind check 通过 10,088 项、250 关、250 份 timeline。稳定 source／media proof 证明只更新内容绑定与 timeline 来源哈希，MP3 工作树字节改动为 0。过渡内容 250/250、快速媒体 10,088/10,088、最终全量 ffprobe／静音 10,088/10,088、Node 212/212 与 Python TTS 131/131 均通过；Image2 与浏览器门禁仍独立 PENDING。`
   <!-- AUTO:AUDIO_VALIDATION:END -->
-  <!-- RELEASE:AUDIO_VALIDATION:PENDING contract=14ce758af1a205a07559ccbd69a78ed79026dc8734b535f18990e66aee4d536d -->
+  <!-- RELEASE:AUDIO_VALIDATION:PASS contract=14ce758af1a205a07559ccbd69a78ed79026dc8734b535f18990e66aee4d536d evidence=34f879abe581ed97994c5826d202bf05d6dcf5c00d291abceeb3eb13154f565e -->
 
 ## 浏览器回归
 
@@ -83,6 +83,7 @@
 
 ```powershell
 npm.cmd run jp-subtext:validate
+npm.cmd run jp-subtext:audio:rebind -- --check
 npm.cmd run jp-subtext:audio:validate -- --check-silence
 npm.cmd run jp-subtext:audio:audit:live
 npm.cmd run jp-subtext:image2:check

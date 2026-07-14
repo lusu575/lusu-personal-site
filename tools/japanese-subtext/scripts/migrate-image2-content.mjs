@@ -9,6 +9,7 @@ import {
 } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { isDeepStrictEqual } from "node:util";
 import sharp from "sharp";
 
 import {
@@ -46,9 +47,47 @@ const EXPECTED_BATCH_NAMES = Object.freeze([
 export const IMAGE2_STAGE_STYLE = "image2-monochrome-four-panel-v1";
 export const IMAGE2_GENERATOR_VERSION = "gpt-image-2-high-v1";
 export const LEGACY_STAGE_STYLE = "monochrome-four-panel";
+export const TRANSITIONAL_AUDIO_FIRST_STATUS = "transitional-audio-first";
+export const TRANSITIONAL_AUDIO_FIRST_MODE = "audio-first-legacy-illustrations";
 export const APPROVED_IMAGE2_REVIEW_STATUSES = Object.freeze([
   "codex-approved",
 ]);
+
+export function classifyIllustrationContract({
+  contentVersion,
+  manifestContentVersion,
+  contractKind,
+  allowLegacyIllustrations = false,
+}) {
+  if (contentVersion === "1.0.2") {
+    if (contractKind !== "legacy-v1" || manifestContentVersion !== "1.0.2") {
+      fail("Content 1.0.2 must use its matching legacy-v1 illustration manifest");
+    }
+    return { mode: "legacy", transitional: false };
+  }
+  if (contentVersion !== "1.0.3") {
+    fail(`Unsupported maintained contentVersion ${contentVersion}`);
+  }
+  if (contractKind === "image2-v3") {
+    if (manifestContentVersion !== "1.0.3") {
+      fail("Content 1.0.3 image2-v3 illustration manifest must also be version 1.0.3");
+    }
+    return { mode: "image2", transitional: false };
+  }
+  if (
+    allowLegacyIllustrations === true &&
+    contractKind === "legacy-v1" &&
+    manifestContentVersion === "1.0.2"
+  ) {
+    return {
+      mode: TRANSITIONAL_AUDIO_FIRST_MODE,
+      transitional: true,
+    };
+  }
+  fail(
+    "Content 1.0.3 requires image2-v3 illustrations; pass --allow-legacy-illustrations only for the explicit audio-first legacy transition",
+  );
+}
 
 export function normalizeIllustrationManifestEntries(manifest) {
   if (Array.isArray(manifest?.stages)) {
@@ -526,6 +565,26 @@ function buildIllustration(stage, entry, manifest, manifestPublicPath) {
   };
 }
 
+function assertQuestionContentPreserved(before, after) {
+  const {
+    contentVersion: _beforeContentVersion,
+    revision: _beforeRevision,
+    illustration: _beforeIllustration,
+    contentHash: _beforeContentHash,
+    ...beforeQuestionContent
+  } = before;
+  const {
+    contentVersion: _afterContentVersion,
+    revision: _afterRevision,
+    illustration: _afterIllustration,
+    contentHash: _afterContentHash,
+    ...afterQuestionContent
+  } = after;
+  if (!isDeepStrictEqual(afterQuestionContent, beforeQuestionContent)) {
+    fail(`${before.id} migration attempted to change unrelated question content`);
+  }
+}
+
 function levelDescription(level) {
   return [
     { ja: "N3の日常表現と分かりやすい手がかり", zh: "N3 日常表达与明显线索", en: "N3 daily language and clear clues" },
@@ -668,16 +727,18 @@ export async function migrateImage2Content(options) {
   for (const batch of batches) {
     batch.stages = batch.stages.sort(stageSort).map((stage) => {
       const entry = entryByStage.get(stage.id);
-      const imageChanged = stage.illustration?.sha256 !== entry.published.sha256;
+      const nextIllustration = buildIllustration(stage, entry, manifest, manifestPublicPath);
+      const imageChanged = !isDeepStrictEqual(stage.illustration, nextIllustration);
       const next = structuredClone(stage);
       if (imageChanged) {
         next.revision += 1;
         replacedStageCount += 1;
       }
       next.contentVersion = config.contentVersion;
-      next.illustration = buildIllustration(stage, entry, manifest, manifestPublicPath);
+      next.illustration = nextIllustration;
       next.textLocked = true;
       next.contentHash = contentHash(next);
+      assertQuestionContentPreserved(stage, next);
       return next;
     });
     batch.payload = {

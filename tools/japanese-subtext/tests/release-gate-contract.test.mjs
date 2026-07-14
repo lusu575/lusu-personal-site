@@ -272,15 +272,28 @@ test("the report may be current but pending, while unbound PASS markers are reje
   assert.ok(unboundPassErrors.some((error) => /evidence/i.test(error)));
 });
 
-test("the checked-in report stays PENDING and is bound to the app 1.0.4 contract", async () => {
-  const report = await readFile(
-    path.resolve(import.meta.dirname, "../reports/release-report.md"),
-    "utf8",
-  );
-  assert.deepEqual(validateReleaseReportContract(report, { requirePass: false }), []);
+test("the checked-in report binds audio PASS while Image2 and browser QA stay PENDING", async () => {
+  const [report, audioManifest, imageManifest, finalStats] = await Promise.all([
+    readFile(path.resolve(import.meta.dirname, "../reports/release-report.md"), "utf8"),
+    readFile(path.resolve(import.meta.dirname, "../audio/manifest.json"), "utf8").then(JSON.parse),
+    readFile(path.resolve(import.meta.dirname, "../assets/stages/manifest.json"), "utf8").then(JSON.parse),
+    readFile(path.resolve(import.meta.dirname, "../reports/final-stats.json"), "utf8").then(JSON.parse),
+  ]);
+  assert.deepEqual(validateReleaseReportContract(report, {
+    requirePass: false,
+    audioManifest,
+    imageManifest,
+    finalStats,
+  }), []);
   assert.match(report, /^# 日本語の裏側 1\.0\.4 发布验收报告（内容 1\.0\.3）/);
-  assert.doesNotMatch(report, /<!-- RELEASE:[A-Z0-9_]+:PASS\b/);
-  for (const gate of RELEASE_GATES) {
+  const audioEvidence = releaseGateEvidenceSha256("AUDIO_VALIDATION", {
+    report,
+    audioManifest,
+    imageManifest,
+    finalStats,
+  });
+  assert.equal(report.split(releaseGateMarker("AUDIO_VALIDATION", "PASS", audioEvidence)).length - 1, 1);
+  for (const gate of ["IMAGE2_VALIDATION", "BROWSER_QA"]) {
     assert.equal(report.split(releaseGateMarker(gate, "PENDING")).length - 1, 1);
   }
 
@@ -501,6 +514,7 @@ test("the formal release check includes a separately configured fresh full-media
   const steps = packageJson.scripts["jp-subtext:release-check"].split("&&").map((step) => step.trim());
   assert.deepEqual(steps, [
     "npm run jp-subtext:validate",
+    "npm run jp-subtext:audio:rebind -- --check",
     "npm run jp-subtext:audio:validate -- --check-silence",
     "npm run jp-subtext:audio:audit:live",
     "npm run jp-subtext:image2:check",

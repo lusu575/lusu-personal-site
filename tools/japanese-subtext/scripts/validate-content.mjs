@@ -6,6 +6,9 @@ import {
   APPROVED_IMAGE2_REVIEW_STATUSES,
   IMAGE2_STAGE_STYLE,
   LEGACY_STAGE_STYLE,
+  TRANSITIONAL_AUDIO_FIRST_MODE,
+  TRANSITIONAL_AUDIO_FIRST_STATUS,
+  classifyIllustrationContract,
   normalizeIllustrationManifestEntries,
 } from "./migrate-image2-content.mjs";
 import {
@@ -16,6 +19,7 @@ import {
 const skipAudio = process.argv.includes("--skip-audio");
 const allowPartial = process.argv.includes("--allow-partial");
 const allowUnlocked = process.argv.includes("--allow-unlocked");
+const allowLegacyIllustrations = process.argv.includes("--allow-legacy-illustrations");
 const errors = [];
 const warnings = [];
 const stages = await loadAllStages();
@@ -35,6 +39,17 @@ const illustrationManifestFile = path.join(toolRoot, illustrationManifestPath);
 const illustrationManifestBytes = readFileSync(illustrationManifestFile);
 const illustrationManifest = await readJson(illustrationManifestFile);
 const illustrationContract = normalizeIllustrationManifestEntries(illustrationManifest);
+let illustrationMode = { mode: "invalid", transitional: false };
+try {
+  illustrationMode = classifyIllustrationContract({
+    contentVersion: expectedContentVersion,
+    manifestContentVersion: illustrationManifest.contentVersion,
+    contractKind: illustrationContract.kind,
+    allowLegacyIllustrations,
+  });
+} catch (error) {
+  errors.push(error.message);
+}
 const illustrationByStage = new Map(illustrationContract.entries.map((entry) => [entry.stageId, entry]));
 const validatedIllustrations = new Set();
 const validatedIllustrationHashes = new Set();
@@ -52,15 +67,6 @@ check(/^\d+\.\d+\.\d+$/.test(expectedContentVersion || ""), "Catalog contentVers
 check(
   ["1.0.2", "1.0.3"].includes(expectedContentVersion),
   "Catalog contentVersion must use the maintained 1.0.2/1.0.3 contract.",
-);
-check(
-  (expectedContentVersion === "1.0.2" && illustrationContract.kind === "legacy-v1") ||
-    (expectedContentVersion === "1.0.3" && illustrationContract.kind === "image2-v3"),
-  `Content ${expectedContentVersion} must use its matching legacy/image2 illustration manifest shape.`,
-);
-check(
-  illustrationManifest.contentVersion === expectedContentVersion,
-  `Illustration manifest contentVersion must match catalog ${expectedContentVersion}.`,
 );
 if (illustrationContract.kind === "image2-v3") {
   check(
@@ -90,6 +96,36 @@ if (illustrationContract.kind === "image2-v3") {
   );
 } else {
   check(illustrationManifest.schemaVersion === 1, "Legacy illustration manifest schemaVersion must be 1.");
+  if (illustrationMode.transitional) {
+    const illustrationState = generationState.illustrations || {};
+    check(
+      generationState.contentVersion === expectedContentVersion,
+      "Transitional generation-state contentVersion must match the 1.0.3 catalog.",
+    );
+    check(
+      illustrationState.status === TRANSITIONAL_AUDIO_FIRST_STATUS,
+      `Transitional legacy illustrations must declare status=${TRANSITIONAL_AUDIO_FIRST_STATUS}.`,
+    );
+    check(
+      illustrationState.stageAssetCount === 250 &&
+        illustrationState.manifest === illustrationManifestPath &&
+        illustrationState.assetContentVersion === illustrationManifest.contentVersion &&
+        illustrationState.targetContentVersion === expectedContentVersion,
+      "Transitional legacy illustration state must bind the complete source and target versions.",
+    );
+    check(
+      illustrationState.manifestSha256 === createHash("sha256").update(illustrationManifestBytes).digest("hex"),
+      "Transitional legacy generation-state manifestSha256 must match the real manifest bytes.",
+    );
+    check(
+      illustrationState.styleCounts?.[LEGACY_STAGE_STYLE] === 250 &&
+        illustrationState.transition?.mode === TRANSITIONAL_AUDIO_FIRST_MODE &&
+        illustrationState.transition?.requiredFinalManifest ===
+          `assets/stages/v${expectedContentVersion}/manifest.json` &&
+        illustrationState.transition?.requiredFinalStyle === IMAGE2_STAGE_STYLE,
+      "Transitional legacy illustration state must identify the required final image2 migration.",
+    );
+  }
 }
 
 if (!allowPartial) check(stages.length === 250, `Expected 250 stages; found ${stages.length}.`);
@@ -230,6 +266,11 @@ function validateStage(stage) {
     check(castIds.has(line.speaker), `${prefix}.${line.id}: unknown speaker ${line.speaker}.`);
     checkLocalized(line.text, `${prefix}.${line.id}.text`);
     check(nonEmpty(line.readingJa) && nonEmpty(line.ttsTextJa), `${prefix}.${line.id}: reading/tts text missing.`);
+    check(
+      !Object.hasOwn(line, "pauseAfterMs") ||
+        (typeof line.pauseAfterMs === "number" && Number.isInteger(line.pauseAfterMs) && line.pauseAfterMs >= 0),
+      `${prefix}.${line.id}: pauseAfterMs must be a non-negative integer when present.`,
+    );
     check(!/\p{Script=Han}/u.test(line.readingJa || ""), `${prefix}.${line.id}: readingJa still contains kanji.`);
     check(!/[―−，／]/u.test(line.readingJa || ""), `${prefix}.${line.id}: readingJa contains unsafe synthesis punctuation.`);
     check(line.audioId === `${prefix}-${line.id}`, `${prefix}.${line.id}: unstable audio ID.`);

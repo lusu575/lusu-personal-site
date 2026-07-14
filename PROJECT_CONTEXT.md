@@ -10,10 +10,11 @@
 
 - `/tools/japanese-subtext/` 当前公开基线是应用 `1.0.3` / 内容 `1.0.2`；正在维护的下一候选是应用 `1.0.4` / 内容 `1.0.3`，尚未发布。canonical Image2 v4 jobs 已按最新题库和设计身份注册表全量重建，来源哈希、身份、生成／导入、迁移与发布管线契约测试通过；这只证明任务和门禁合同自洽，不代表图片资产或版本已上线。
 - 设计身份注册表当前解析 780 个 cast reference、778 个 design identity，只有两组显式共享：`person:l4-hori` 对应 L4-008／L4-014 的 Hori 同一人物，`appearance:l3-036-yui` 对应 L3-036 的 Yui／Predictive Avatar 同外观变体。L5-043 的未识别咳嗽声使用独立 `stage:l5-043:cast:cough` identity，不得与任何通用人物、Avatar 或非人系统合并。
-- L5-001～L5-050 已完成内容、三语语用解释、证据和 reviewed reading 审计；L5-011～L5-020 的关键读音／证据回归已补入自动测试。后续音频工作只按最终题库做 Aivis 增量生成、受影响 scene 重拼与全量媒体验收，不在文档中预写最终差异数量。
+- L5-001～L5-050 已完成内容、三语语用解释、证据和 reviewed reading 审计；L5-011～L5-020 的关键读音／证据回归已补入自动测试。最终音频 source 投影未随内容版本绑定变化，因而允许保留原 MP3 做可证明的 rebound；后续若台词、读音、声线、停顿或 cue 变化，仍必须按最终题库做 Aivis 增量生成和受影响 scene 重拼，不能用 rebind 掩盖真实音频变化。
 - Codex 内置 image2 通道的逐图视觉证据必须诚实记录为 Codex 六项审核，状态为 `codex-approved`，并绑定原 reviewer、toolRunId 与原始 PNG SHA-256；不得称为人工或人类审核。
-- 尚未完成的发布前工作包括：250 张关卡图与桌面／手机两张背景图的逐图生成、Codex 审核、导入和发布；Aivis 最终跨版本 reconciliation 与全量音频门禁；release check；359×500、375×667、390×844、844×390、1365×900 的 zh／en／ja 浏览器回归；合并／推送 GitHub main 及 Cloudflare Pages 部署。上述工作完成前不得把应用 `1.0.4` 写成已发布。
-- 2026-07-14 暂停点有 13 张关卡图具备 current-v4 完整证据链；恢复时对中断事务中的 L1-003 重新核验原始工具产物、归一化 PNG、review、sidecar 与当前 prompt/style/source hash 后，将未引用 WebP checkpoint 恢复到 14 张。它们仍不是正式发布资源，250 张关卡图加两张背景的严格剩余缺口为 238 张。Aivis 候选已覆盖 250 关／10,088 件，远端 `f9bed65e` 的 MP3、250 份时间轴、manifest、大小和 SHA-256 复核全部一致；manifest 仍是 `contentVersion: 1.0.2`，最终迁移后必须再次跨版本 reconcile。生产复盘见 `tools/japanese-subtext/reports/2026-07-14-image2-production-retrospective.md`。
+- 音频优先阶段已通过显式 `--allow-legacy-illustrations` 过渡旗标把锁定题库构建为内容 `1.0.3`，并在同一 OS 发布锁下将音频 manifest 从内容 `1.0.2` prepare／rebind 到 `1.0.3`；`audioSourceBinding.status` 为 `rebound`，覆盖 10,088 个 MP3 与 250 份时间轴。候选音频总长 `42,533.531` 秒、总计 `518,739,675` 字节；rebind 只更新可证明稳定的内容绑定与时间轴来源哈希，MP3 工作树字节改动为 0。
+- 当前运行时仍显式复用 250 张 `assetContentVersion: 1.0.2` legacy illustrations，状态为 `transitional-audio-first`；current-v4 Image2 checkpoint 只有 14／252 份有效、未引用证据资产，仍缺 238 份。过渡旗标只用于把音频迁移与耗时逐图生产解耦，默认内容构建、image2 检查和正式 release gate 继续严格拒绝 legacy illustrations。
+- 尚未完成的发布前工作包括：剩余 238 份 Image2 关卡图／背景的逐图生成、Codex 审核、导入和发布；完整 release check；359×500、375×667、390×844、844×390、1365×900 的 zh／en／ja 浏览器回归；合并／推送 GitHub main 及 Cloudflare Pages 部署。该候选仍未合并 main、未上线；全部图片补齐并通过剩余门槛前，只能称为“音频优先候选”，不能称为完整发布候选或已发布 `1.0.4`。生产复盘见 `tools/japanese-subtext/reports/2026-07-14-image2-production-retrospective.md`。
 
 ## 2026-07-12 日本語の裏側内容 1.0.3 前期实现
 

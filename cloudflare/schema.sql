@@ -397,7 +397,15 @@ insert into articles (
   '2026-07-14T02:50:00.000Z',
   '2026-07-14T02:50:00.000Z'
 )
-on conflict(article_id) do nothing;
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
 
 insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
@@ -504,82 +512,71 @@ on conflict(article_id) do update set
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
-  ('seed-update-2026-07-14-japanese-subtext-v1-0-4-zh', 'seed-update-2026-07-14-japanese-subtext-v1-0-4', 'zh', '日语潜台词训练工具更新至 1.0.4', '“日语的言外之意”1.0.4 使用 AivisSpeech 按审校假名重新生成全库 AI 语音，并以 gpt-image-2 重制 250 张精制黑白四格题目配图和简洁彩色站外背景，同时重整桌面与手机交互。版本边界为 appVersion 1.0.4 / contentVersion 1.0.3。', '# 日语潜台词训练工具更新至 1.0.4
+  ('seed-update-2026-07-14-japanese-subtext-v1-0-4-zh', 'seed-update-2026-07-14-japanese-subtext-v1-0-4', 'zh', '日语潜台词训练工具 1.0.4 音频优先候选进度', '“日语的言外之意”1.0.4 尚未上线：contentVersion 1.0.3 的 10,088 段音频和 250 份 timeline 已完成 rebound 与验证，MP3 字节未改；运行时仍使用 250 张 assetContentVersion 1.0.2 legacy 配图。Image2 checkpoint 为 14/252，仍缺 238 张，待图片与背景补齐、release-check 和浏览器 QA 后才发布。', '# 日语潜台词训练工具 1.0.4 音频优先候选进度
 
-“日语的言外之意”这次同时更新语音、配图、外部背景和训练交互。题库显示仍保留日语汉字，生成输入与展示内容继续分离。
+“日语的言外之意”1.0.4 目前只是音频优先候选，尚未上线。这条记录说明已完成的音频迁移和仍未完成的图片工作，不代表正式发布。
 
-## AivisSpeech 全库 AI 语音
+## 音频迁移已完成
 
-- 所有语音改用 AivisSpeech 离线 AI 模型重新制作。
-- 合成前先使用已审校的纯假名读音，避免日语汉字被错误切分或读错。
-- 浏览器只播放预生成文件，不在日常使用时加载本地模型。
+- contentVersion 1.0.3 的 10,088 段静态音频和 250 份 timeline 已完成 rebound 与完整验证。
+- rebound 只更新可证明稳定的内容绑定与 timeline 来源哈希；MP3 工作树字节改动为 0，并未借版本迁移伪造重新录制。
+- 候选继续使用已验证的 AivisSpeech 预生成音频，浏览器仍只播放静态文件。
 
-## gpt-image-2 黑白四格配图与彩色背景
+## 图片仍处于过渡状态
 
-- 250 个关卡分别依据当关场景、人物关系、台词和题问生成精制黑白四格漫画，使用丰富灰阶、网点和完整明暗，不是简陋线稿。
-- 训练器外部背景改为 gpt-image-2 生成的简洁彩色桌面与手机画面。
-- 配图使用真实图片文件，页面不再用 CSS 绘制场景。
+- 当前运行时仍明确复用 250 张 assetContentVersion 1.0.2 legacy 配图。
+- Image2（gpt-image-2）有效 checkpoint 为 14/252，仍缺 238 张；完整关卡图以及桌面、手机背景尚未完成。
+- 不能把这批候选描述为已经完成 250 张 Image2 配图。
 
-## UI 与手机交互重整
+## 发布边界
 
-- 首次挑战、听力锁题、漏答提醒、结果与解析后的去向更明确。
-- 播放高亮只在真实播放时出现，配图加载失败可重试。
-- 手机端按播放器、场景、题目的学习顺序重新排布，并控制图片高度和触控尺寸。
+- appVersion 1.0.4 / contentVersion 1.0.3 候选尚未合并 main，也未进入生产环境。
+- 只有补齐并审核、导入、发布剩余图片和背景，再通过严格 release-check 与三语浏览器 QA 后，才会正式发布。', '2026-07-14T02:50:00.000Z', '2026-07-14T02:50:00.000Z'),
+  ('seed-update-2026-07-14-japanese-subtext-v1-0-4-en', 'seed-update-2026-07-14-japanese-subtext-v1-0-4', 'en', 'Behind the Japanese 1.0.4 Audio-First Candidate Progress', 'Behind the Japanese 1.0.4 is not live: 10,088 audio files and 250 timelines for contentVersion 1.0.3 were rebound and verified without changing MP3 bytes; runtime still uses 250 legacy illustrations from assetContentVersion 1.0.2. The Image2 checkpoint is 14/252, with 238 missing. Release waits for the remaining images and backdrops, release-check, and browser QA.', '# Behind the Japanese 1.0.4 Audio-First Candidate Progress
 
-## 版本边界
+Behind the Japanese 1.0.4 is currently an audio-first candidate and is not live. This record separates the completed audio migration from unfinished image work; it is not a release announcement.
 
-本次发布使用 appVersion 1.0.4 / contentVersion 1.0.3：前者标识应用与交互版本，后者标识 250 关素材、10,088 段音频、题库与云存档的兼容边界。', '2026-07-14T02:50:00.000Z', '2026-07-14T02:50:00.000Z'),
-  ('seed-update-2026-07-14-japanese-subtext-v1-0-4-en', 'seed-update-2026-07-14-japanese-subtext-v1-0-4', 'en', 'Behind the Japanese 1.0.4 Update', 'Behind the Japanese 1.0.4 regenerates the full AI voice library with AivisSpeech from reviewed kana, replaces all 250 stage illustrations with polished monochrome four-panel manga, adds quiet full-color outer backdrops, and refines desktop and mobile interaction. Its version boundary is appVersion 1.0.4 / contentVersion 1.0.3.', '# Behind the Japanese 1.0.4 Update
+## Audio migration is complete
 
-This release updates speech, stage artwork, the outer backdrop, and training interaction together. The course still displays normal Japanese writing while keeping synthesis input separate.
+- The 10,088 static audio files and 250 timelines for contentVersion 1.0.3 completed rebound and full validation.
+- Rebound changed only provably stable content bindings and timeline source hashes. MP3 worktree byte changes are 0, so the version migration does not fabricate a rerecording.
+- The candidate continues to use verified pre-generated AivisSpeech audio, and the browser still plays static files only.
 
-## Full AivisSpeech AI voice rebuild
+## Illustrations remain transitional
 
-- Every voice item is regenerated with the offline AivisSpeech AI model.
-- Synthesis uses reviewed kana-only readings first, reducing incorrect kanji segmentation or pronunciation.
-- The browser plays pre-generated files and does not load the local model during normal use.
+- Runtime still explicitly reuses 250 legacy illustrations from assetContentVersion 1.0.2.
+- The valid Image2 (gpt-image-2) checkpoint is 14/252, with 238 missing; the complete stage set and desktop and mobile backdrops are unfinished.
+- This candidate must not be described as having all 250 Image2 illustrations complete.
 
-## Monochrome gpt-image-2 manga and color backdrops
+## Publication boundary
 
-- Each of the 250 stages receives a polished monochrome four-panel manga based on its own setting, cast relationships, dialogue, and questions, with rich grayscale, screentones, and finished shading rather than sparse line art.
-- The area outside the trainer uses quiet full-color desktop and mobile backgrounds generated with gpt-image-2.
-- These scenes are image assets rather than CSS-drawn illustrations.
+- The appVersion 1.0.4 / contentVersion 1.0.3 candidate has not been merged to main and is not in production.
+- It will be released only after the remaining images and backdrops are generated, reviewed, imported, and published, followed by strict release-check and trilingual browser QA.', '2026-07-14T02:50:00.000Z', '2026-07-14T02:50:00.000Z'),
+  ('seed-update-2026-07-14-japanese-subtext-v1-0-4-ja', 'seed-update-2026-07-14-japanese-subtext-v1-0-4', 'ja', '日本語の裏側 1.0.4 音声優先候補の進捗', '「日本語の裏側」1.0.4 は未公開です。contentVersion 1.0.3 の音声 10,088 件と timeline 250 件は rebound と検証を完了し、MP3 のバイト列は変更していません。実行時は assetContentVersion 1.0.2 の legacy 画像 250 枚を継続使用しています。Image2 checkpoint は 14/252、残り 238 枚で、画像と背景、release-check、ブラウザー QA の完了後にのみ公開します。', '# 日本語の裏側 1.0.4 音声優先候補の進捗
 
-## Desktop and mobile interaction
+「日本語の裏側」1.0.4 は現在、音声優先の候補であり、まだ公開されていません。この記録は完了した音声移行と未完了の画像作業を分けて示すもので、公開告知ではありません。
 
-- First challenge, listening locks, unanswered-question feedback, results, and post-analysis routes are clearer.
-- Playback highlighting appears only during real playback, and failed illustrations can be retried.
-- Mobile content follows player, scene, and question order with bounded image height and practical touch targets.
+## 音声移行は完了
 
-## Version boundary
+- contentVersion 1.0.3 の静的音声 10,088 件と timeline 250 件は rebound と完全検証を完了しました。
+- rebound で変更したのは、安定性を証明できるコンテンツ束縛と timeline のソースハッシュだけです。MP3 の作業ツリー上のバイト変更は 0 で、版移行を再録として偽装していません。
+- 候補は検証済みの AivisSpeech 事前生成音声を継続使用し、ブラウザーは静的ファイルだけを再生します。
 
-This release uses appVersion 1.0.4 / contentVersion 1.0.3: the former identifies the application and interaction release, while the latter identifies the compatibility boundary for the 250-stage assets, 10,088 audio files, course data, and cloud saves.', '2026-07-14T02:50:00.000Z', '2026-07-14T02:50:00.000Z'),
-  ('seed-update-2026-07-14-japanese-subtext-v1-0-4-ja', 'seed-update-2026-07-14-japanese-subtext-v1-0-4', 'ja', '日本語の裏側 1.0.4 アップデート', '「日本語の裏側」1.0.4 では、確認済みのかな読みから AivisSpeech で全 AI 音声を再生成し、250 ステージの精細なモノクロ四コマと外側の控えめなカラー背景を gpt-image-2 で作り直して、PC・モバイルの操作も再整理しました。バージョン境界は appVersion 1.0.4 / contentVersion 1.0.3 です。', '# 日本語の裏側 1.0.4 アップデート
+## 画像は移行途中
 
-今回は音声、ステージ画像、ツール外側の背景、練習操作をまとめて更新しました。画面には通常の漢字表記を残し、合成用の入力とは分離しています。
+- 実行時は assetContentVersion 1.0.2 の legacy 画像 250 枚を明示的に再利用しています。
+- 有効な Image2（gpt-image-2）checkpoint は 14/252、残り 238 枚です。全ステージ画像と PC・モバイル背景は未完成です。
+- Image2 の 250 枚が完成した候補として説明してはいけません。
 
-## AivisSpeech による全 AI 音声の再生成
+## 公開境界
 
-- すべての音声をオフラインの AivisSpeech AI モデルで作り直しました。
-- 合成前に確認済みのかな読みだけを使い、漢字の区切りや読みの誤りを抑えます。
-- 通常利用時は生成済みファイルだけを再生し、ブラウザーでローカルモデルを読み込みません。
-
-## gpt-image-2 のモノクロ四コマとカラー背景
-
-- 250 ステージそれぞれの場面、人物関係、台詞、設問に基づき、豊かなグレースケール、スクリーントーン、仕上げた陰影を持つモノクロ四コマへ更新しました。簡素な線画ではありません。
-- ツール外側には gpt-image-2 で生成した控えめなカラーの PC・モバイル背景を使います。
-- 場面は CSS 描画ではなく画像ファイルとして表示します。
-
-## PC・モバイル操作の再整理
-
-- 初回チャレンジ、聴解時の問題ロック、未回答通知、結果と解説後の移動先を明確にしました。
-- 再生中だけ台詞を強調し、画像の読み込み失敗時には再試行できます。
-- モバイルはプレーヤー、場面、問題の順に並べ、画像の高さとタップ領域を調整しました。
-
-## バージョン境界
-
-今回のリリースは appVersion 1.0.4 / contentVersion 1.0.3 を使用します。前者はアプリと操作の版、後者は 250 ステージの素材、10,088 件の音声、問題集、クラウドセーブの互換境界を表します。', '2026-07-14T02:50:00.000Z', '2026-07-14T02:50:00.000Z')
-on conflict(article_id, lang) do nothing;
+- appVersion 1.0.4 / contentVersion 1.0.3 の候補は main に未統合で、本番環境にも未公開です。
+- 残りの画像と背景を生成、確認、導入、公開し、厳格な release-check と三言語ブラウザー QA を通過した後にのみ正式公開します。', '2026-07-14T02:50:00.000Z', '2026-07-14T02:50:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
 
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at

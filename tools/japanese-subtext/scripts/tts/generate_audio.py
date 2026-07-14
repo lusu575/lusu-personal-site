@@ -35,6 +35,8 @@ from aivis_adapter import (
 PIPELINE_VERSION = "aivisspeech-1.2.0-aivmx-v3"
 CLARITY_SCHEMA_VERSION = 3
 SOURCE_BOUNDARY_SCHEMA_VERSION = 1
+AUDIO_SOURCE_HASH_SCHEMA_VERSION = "japanese-subtext-audio-source-v1"
+SCENE_SOURCE_HASH_SCHEMA_VERSION = "japanese-subtext-scene-source-v1"
 SCRIPT_DIR = Path(__file__).resolve().parent
 TOOL_ROOT = SCRIPT_DIR.parents[1]
 DEFAULT_CONFIG = TOOL_ROOT / "config" / "tts.local.json"
@@ -296,6 +298,108 @@ def build_audio_tasks(stage: Mapping[str, Any]) -> list[AudioTask]:
                 )
             )
     return tasks
+
+
+def _project_pause_after_ms(line: Mapping[str, Any], label: str) -> dict[str, Any]:
+    if "pauseAfterMs" not in line:
+        return {"mode": "default"}
+    value = line["pauseAfterMs"]
+    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+        raise ValueError(
+            f"{label}.pauseAfterMs must be a non-negative integer when present"
+        )
+    return {"mode": "explicit", "value": value}
+
+
+def stage_audio_source_projection(stage: Mapping[str, Any]) -> dict[str, Any]:
+    """Project only fields that can change an audio task, scene, or timeline."""
+
+    stage_id = str(stage["id"])
+    cast_voices = {
+        str(member["id"]): str(member["voiceKey"])
+        for member in stage.get("cast", [])
+    }
+    lines: list[dict[str, Any]] = []
+    for line in stage.get("lines", []):
+        speaker = str(line["speaker"])
+        voice_key = cast_voices[speaker]
+        pause_after_ms = _project_pause_after_ms(line, f"{stage_id}/{line['id']}")
+        lines.append(
+            {
+                "id": str(line["id"]),
+                "audioId": str(line["audioId"]),
+                "speaker": speaker,
+                "voiceKey": voice_key,
+                "surface": str(line["ttsTextJa"]),
+                "reading": str(line["readingJa"]),
+                "pauseAfterMs": pause_after_ms,
+                "tokens": [
+                    {
+                        "id": str(token["id"]),
+                        "audioId": str(token["audioId"]),
+                        "surface": str(token["text"]),
+                        "reading": str(token["reading"]),
+                        "voiceKey": voice_key,
+                    }
+                    for token in line.get("tokens", [])
+                ],
+            }
+        )
+    option_voice_key = str(stage["audio"]["optionVoiceKey"])
+    questions = [
+        {
+            "id": str(question["id"]),
+            "options": [
+                {
+                    "id": str(option["id"]),
+                    "audioId": str(option["audioId"]),
+                    "surface": str(option["ttsTextJa"]),
+                    "reading": str(option["readingJa"]),
+                    "voiceKey": option_voice_key,
+                }
+                for option in question.get("options", [])
+            ],
+        }
+        for question in stage.get("questions", [])
+    ]
+    return {
+        "schemaVersion": AUDIO_SOURCE_HASH_SCHEMA_VERSION,
+        "stageId": stage_id,
+        "level": int(stage["level"]),
+        "sceneAudioId": str(stage["audio"]["sceneAudioId"]),
+        "timelineId": str(stage["audio"]["timelineId"]),
+        "optionVoiceKey": option_voice_key,
+        "lines": lines,
+        "questions": questions,
+    }
+
+
+def stage_audio_source_hash(stage: Mapping[str, Any]) -> str:
+    return hashlib.sha256(_canonical_json(stage_audio_source_projection(stage))).hexdigest()
+
+
+def stage_scene_source_projection(stage: Mapping[str, Any]) -> dict[str, Any]:
+    stage_id = str(stage["id"])
+    return {
+        "schemaVersion": SCENE_SOURCE_HASH_SCHEMA_VERSION,
+        "stageId": stage_id,
+        "sceneAudioId": str(stage["audio"]["sceneAudioId"]),
+        "timelineId": str(stage["audio"]["timelineId"]),
+        "lines": [
+            {
+                "id": str(line["id"]),
+                "audioId": str(line["audioId"]),
+                "pauseAfterMs": _project_pause_after_ms(
+                    line, f"{stage_id}/{line['id']}"
+                ),
+            }
+            for line in stage.get("lines", [])
+        ],
+    }
+
+
+def stage_scene_source_hash(stage: Mapping[str, Any]) -> str:
+    return hashlib.sha256(_canonical_json(stage_scene_source_projection(stage))).hexdigest()
 
 
 def _canonical_json(value: object) -> bytes:
@@ -2207,7 +2311,7 @@ def _scene_hash(
         raise ValueError("scene lossless-source hashes must be SHA-256 values")
     payload = {
         "stageId": stage["id"],
-        "contentHash": stage.get("contentHash"),
+        "sceneSourceHash": stage_scene_source_hash(stage),
         "lines": [
             {
                 "id": line["id"],
@@ -2227,6 +2331,25 @@ def _scene_hash(
     if post_processing:
         payload["postProcessing"] = dict(post_processing)
     return hashlib.sha256(_canonical_json(payload)).hexdigest()
+
+
+def _bound_existing_scene_hash(
+    stage: Mapping[str, Any],
+    stage_entry: Mapping[str, Any] | None,
+) -> str | None:
+    """Return a previously published scene identity bound to the same scene inputs.
+
+    This keeps scenes created under the legacy contentHash-based identity reusable
+    after a delivery-only content migration. Any line, pause, scene, or timeline
+    source change invalidates the binding and falls through to the current hash.
+    """
+
+    if not isinstance(stage_entry, Mapping):
+        return None
+    if stage_entry.get("sceneSourceHash") != stage_scene_source_hash(stage):
+        return None
+    value = stage_entry.get("contentHash")
+    return str(value) if isinstance(value, str) and re.fullmatch(r"[a-f0-9]{64}", value) else None
 
 
 def _scene_reuse_is_allowed(
@@ -2290,6 +2413,13 @@ def _new_manifest(content_version: str, audio_base_url: str) -> dict[str, Any]:
     return {
         "schemaVersion": 1,
         "contentVersion": content_version,
+        "audioSourceHashSchemaVersion": AUDIO_SOURCE_HASH_SCHEMA_VERSION,
+        "sceneSourceHashSchemaVersion": SCENE_SOURCE_HASH_SCHEMA_VERSION,
+        "audioSourceBinding": {
+            "schemaVersion": AUDIO_SOURCE_HASH_SCHEMA_VERSION,
+            "status": "generated",
+            "toContentVersion": content_version,
+        },
         "generatedAt": None,
         "audioBaseUrl": audio_base_url,
         "generator": None,
@@ -2326,6 +2456,8 @@ def build_stage_manifest_entry(
         "timelinePath": timeline_relative,
         "contentHash": scene_hash,
         "sourceContentHash": str(stage["contentHash"]),
+        "audioSourceHash": stage_audio_source_hash(stage),
+        "sceneSourceHash": stage_scene_source_hash(stage),
         "sampleRate": int(timeline["sampleRate"]),
         "duration": float(timeline["duration"]),
         "cues": [dict(cue) for cue in timeline.get("cues", [])],
@@ -2613,6 +2745,9 @@ def generate_stage(
         post_processing=scene_post_processing,
         line_source_sha256s=initial_line_source_hashes,
     )
+    bound_scene_hash = _bound_existing_scene_hash(stage, stage_entries.get(stage_id))
+    if bound_scene_hash is not None:
+        scene_hash = bound_scene_hash
     scene_manifest_current = (
         all(line_current_states)
         and manifest_item_is_current(scene_existing, scene_hash, audio_root)
@@ -2969,6 +3104,28 @@ def _generator_metadata(
         "engine": dict(provenance["engine"]),
         "models": [dict(model) for model in provenance["models"]],
         "license": "ACML-1.0",
+    }
+
+
+def _audio_source_binding_after_stage(
+    existing: Mapping[str, Any] | None,
+    *,
+    content_version: str,
+    generated_count: int,
+    stage_before: Mapping[str, Any] | None,
+    stage_after: Mapping[str, Any] | None,
+) -> dict[str, Any]:
+    if (
+        isinstance(existing, Mapping)
+        and existing.get("status") in {"prepared", "rebound"}
+        and generated_count == 0
+        and stage_before == stage_after
+    ):
+        return copy.deepcopy(dict(existing))
+    return {
+        "schemaVersion": AUDIO_SOURCE_HASH_SCHEMA_VERSION,
+        "status": "generated",
+        "toContentVersion": content_version,
     }
 
 
@@ -3630,6 +3787,15 @@ def _main_locked(args: argparse.Namespace, audio_root: Path) -> int:
                 {
                     "schemaVersion": 1,
                     "contentVersion": content_version,
+                    "audioSourceHashSchemaVersion": AUDIO_SOURCE_HASH_SCHEMA_VERSION,
+                    "sceneSourceHashSchemaVersion": SCENE_SOURCE_HASH_SCHEMA_VERSION,
+                    "audioSourceBinding": _audio_source_binding_after_stage(
+                        manifest.get("audioSourceBinding"),
+                        content_version=content_version,
+                        generated_count=result["generated"],
+                        stage_before=manifest_snapshot.get("stage"),
+                        stage_after=manifest.get("stages", {}).get(stage_id),
+                    ),
                     "generatedAt": datetime.now(timezone.utc).isoformat(),
                     "audioBaseUrl": str(config.get("audioBaseUrl", "./")),
                     "generator": _generator_metadata(

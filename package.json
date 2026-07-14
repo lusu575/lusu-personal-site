@@ -19,10 +19,11 @@
     "jp-subtext:test:tts-python": "node tools/japanese-subtext/scripts/run-python-tts-tests.mjs",
     "jp-subtext:audio:validate": "node tools/japanese-subtext/scripts/validate-audio.mjs",
     "jp-subtext:audio:validate:quick": "node tools/japanese-subtext/scripts/validate-audio.mjs --skip-probe",
+    "jp-subtext:audio:rebind": "node tools/japanese-subtext/scripts/rebind-audio-content.mjs",
     "jp-subtext:audio:audit:live": "node tools/japanese-subtext/scripts/run-live-audio-audit.mjs",
     "jp-subtext:audio:estimate": "node tools/japanese-subtext/scripts/estimate-audio-size.mjs",
     "jp-subtext:audio:merge": "node tools/japanese-subtext/scripts/merge-audio-manifests.mjs",
-    "jp-subtext:release-check": "npm run jp-subtext:validate && npm run jp-subtext:audio:validate -- --check-silence && npm run jp-subtext:audio:audit:live && npm run jp-subtext:image2:check && npm run jp-subtext:test:tts-python && npm run jp-subtext:test && npm run build"
+    "jp-subtext:release-check": "npm run jp-subtext:validate && npm run jp-subtext:audio:rebind -- --check && npm run jp-subtext:audio:validate -- --check-silence && npm run jp-subtext:audio:audit:live && npm run jp-subtext:image2:check && npm run jp-subtext:test:tts-python && npm run jp-subtext:test && npm run build"
   },
   "devDependencies": {
     "sharp": "0.34.5",

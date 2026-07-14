@@ -6,7 +6,7 @@
 
 日常使用、生成与验证命令见 [`README.md`](./README.md)；上线与每个维护版本的独立追加记录见工具专用 [`CHANGELOG.md`](./CHANGELOG.md)。
 
-当前阶段已完成 canonical Image2 v4 jobs 全量重建及来源、设计身份、生成／导入、迁移与发布管线契约测试，完成 L5-001～L5-050 内容审计并补齐 L5-011～L5-020 关键读音／证据回归。图片 checkpoint 已恢复到 14 张，仍缺 238 张；10,088 个 MP3、250 份时间轴和 manifest 已在远端候选完整核验，但仍绑定迁移前 `contentVersion: 1.0.2`。尚待完成全部图片、最终内容迁移后的 Aivis `--all` reconciliation／全量媒体验收、release check、五视口三语浏览器回归及部署。完成这些门槛前不得把应用 `1.0.4` 写成已发布。
+当前阶段已完成 canonical Image2 v4 jobs 全量重建及来源、设计身份、生成／导入、迁移与发布管线契约测试，完成 L5-001～L5-050 内容审计并补齐 L5-011～L5-020 关键读音／证据回归。音频优先候选已把锁定题库构建为内容 `1.0.3`，并将 manifest 从内容 `1.0.2` `rebound` 到 `1.0.3`：10,088 个 MP3、250 份时间轴，总长 `42,533.531` 秒、总计 `518,739,675` 字节，MP3 字节未改。当前运行时仍显式复用 250 张 `assetContentVersion: 1.0.2` legacy illustrations；Image2 checkpoint 只有 14／252 份有效资产，仍缺 238 份。该分支未合并 main、未上线；补齐图片并通过 release check、五视口三语浏览器回归及部署前，不得写成完整发布候选或已发布应用 `1.0.4`。
 
 ## 版本规则
 
@@ -40,6 +40,7 @@
 - 常见多音字或模型易错读音写入 `config/pronunciations.json`；它是注音/审校输入，不是发布时替代已锁定 `readingJa` / `reading` 的补丁层。凡覆盖词实际出现在可朗读表面文本中，回归测试必须确认最终 reviewed reading 已经包含它；最长匹配不得把规则当作其他汉字复合词的词尾，例如“後から”不能误命中“午後から”。先修读音输入，再定向重录，禁止只靠反复随机生成碰运气，也禁止复用旧版 TTS 成品。
 - 任务哈希必须包含最终假名、mora、最终查询参数（含 `kanaSource` 与逐条 `speedScale` 调整）、完整 `ratePolicy`（policy、6.5 目标、6.6 校准上限、7.2 硬上限和最多 6 轮）、声线、AivisSpeech Engine/AIVMX 模型指纹和输出参数；`ratePolicy` 同时写入每个非场景 manifest item 与生成器元数据并由两套发布门禁精确核对。策略变化时未调整的旧成品也必须失效。只重建哈希变化的句子、词块和选项；scene hash 绑定每条 line 的最终 normalized WAV SHA-256，任一 line 重建或元数据变化都必须重拼场景。
 - 每个非场景任务在原始合成后、静音填充和响度归一化前必须审计 raw 边界；归一化缓存只能在同哈希 `.boundary.json` sidecar 的 artifact / normalized SHA-256、raw / normalized 边界和版本全部匹配且通过时复用。缺少无损缓存时只能重新请求 Aivis，禁止从 MP3 回填。所有正式输出必须先写候选文件，完整验收后原子替换；同一 `audio-root` 必须持有跨进程 OS 写锁。
+- 音频的 `contentVersion` 绑定迁移应与 252 份耗时 Image2 生产解耦，但不能绕过音频来源审计：先在旧版本执行 `jp-subtext:audio:rebind -- --prepare` 固化 manifest、MP3、timeline 与稳定 audio／scene source 投影，再显式使用 `--allow-legacy-illustrations` 构建目标内容，最后执行 `--rebind --content-version <version>` 和 `--check`。只有 reading、voice、line／token／option、`pauseAfterMs` 与 cue 等真实发音来源完全不变时才允许改绑；MP3 集合、timeline 稳定字段和各项证明必须保持一致，任一投影变化都回到 Aivis 重建。过渡内容必须标为 `transitional-audio-first` / `audio-first-legacy-illustrations`；默认构建、image2 检查和 release gate 继续严格拒绝 legacy illustrations，且过渡候选不得进入 main 或写成已上线。
 - 正式发布只接受 clarity schema 3；所有教学任务必须按扣除 `≥250 ms` 句内长停顿后的实际发音时长计算且不高于 `7.2 mora/s`，响度为 `-18 ±1.5 LUFS`，安全正增益最多 `4.5 dB`，最终 true peak 不高于 `-2 dBTP`。发布前逐项运行假名/mora/query/task/scene 复算、ffprobe、SHA-256、时间轴、孤儿文件、响度、首尾静音、clipping、尾部能量、分离尾音和截断验证，再用离线 ASR 生成“今日”、异常 `i/ii/い/いい` 尾音及低相似度人工复听清单；失败项定向重录后必须全量复验。
 - 当前响度处理身份固定为 `audited-loudness-gain-v3`：每轮都从无损源重渲染，最多使用 3 轮残差校正；limiter 初始输出守卫为 `-2.2 dB`，若 MP3 编码后仍发生 true-peak overshoot，则按实测超限量再加 `0.2 dB` 安全余量降低 ceiling（最低 `-12 dB`）后重渲染，最终仍以解码 MP3 的 `≤ -2 dBTP` 实测为准。速率调整策略固定为 `post-synthesis-active-mora-rate-v3`：硬上限仍为 `7.2 mora/s`，调整目标为 `6.5 mora/s`，校准样本必须 `≤6.6 mora/s`，允许最多 6 轮逐步校准而不得靠放宽门槛放行，使随机重合成后仍有清晰度余量；旧速率 policy 不得恢复复用。修改 limiter、轮数或增益算法时必须同步升级 profile，修改速率调整语义时必须升级 rate policy，禁止让旧成品按同一身份复用。
 - 普通 `≤5` mora 短词的清晰度下限保持 `1.5 mora/s`；仅当 reviewed reading 恰为单 mora 填充迟疑「ん」加日语标点时，允许 `hesitation` 速率带使用 `1.2 mora/s` 下限。生成、fresh 媒体审计、Node validator 与主构建都必须从 `readingKana` 重算该分类，禁止仅修改 manifest 字段绕过。
@@ -72,11 +73,12 @@
 
 ## 版本记录
 
-### 1.0.4 — 待发布（内容 1.0.3；阶段状态：2026-07-14）
+### 1.0.4 — 待发布（内容 1.0.3；音频优先候选：2026-07-14）
 
-- 待发布语音管线改用 AivisSpeech Engine 1.2.0 与四套许可清晰的 AIVMX 日语模型在 CPU 上生成；汉字显示与纯假名发音输入分离，accent phrase / mora、最终 query 和模型 provenance 均进入 manifest 与任务哈希。最终增量生成、受影响 scene 重拼及全量媒体验收尚未完成。
+- 待发布语音管线改用 AivisSpeech Engine 1.2.0 与四套许可清晰的 AIVMX 日语模型在 CPU 上生成；汉字显示与纯假名发音输入分离，accent phrase / mora、最终 query 和模型 provenance 均进入 manifest 与任务哈希。10,088 个 MP3 和 250 份时间轴已通过稳定 source 投影从内容 1.0.2 rebound 到 1.0.3，总长 `42,533.531` 秒、总计 `518,739,675` 字节，改绑期间 MP3 字节未改。
 - 增加首尾静音、响度、clipping、异常尾音、截断和清晰度审计，并以失败清单驱动定向重录；旧版 Kokoro 音频不进入内容 1.0.3。
 - canonical Image2 v4 jobs 已按最新题库重建并通过契约测试；250 张关卡图与桌面／手机两张应用外背景图仍须由 `gpt-image-2` 逐张生成、完成 Codex 六项审核并发布，禁止程序化图和 fallback。
+- 音频优先中间态显式复用 250 张内容 1.0.2 legacy illustrations；14／252 份 current-v4 checkpoint 有效、仍缺 238 份。默认正式 gate 保持严格，图片补齐前该候选不能合并 main 或称为完整发布候选。
 - 完成 L5-001～L5-050 内容审计和 L5-011～L5-020 关键回归；设计身份只允许注册表显式 alias 共享，L5-043 `cough` 保持独立。
 - 重整桌面和手机关卡布局、声音失败回退、首次模式弹窗、答题与下一关流程；图片、场景、问题和操作必须在规定五视口保持可达，最终浏览器复测仍属于发布前门槛。
 - 网站公开更新日志改为上线和每个维护版本分别追加一篇三语文章，旧记录保持不可变。

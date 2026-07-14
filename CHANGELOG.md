@@ -15,9 +15,14 @@
   - 完成 250 关与两张应用外背景的 canonical Image2 v4 job 重建；来源投影、prompt、设计身份注册表、迁移与发布管线契约测试通过。注册表现有 780 个 cast reference、778 个 design identity，只允许两组显式共享：`person:l4-hori` 对应 L4-008／L4-014 的 Hori 同一人物，`appearance:l3-036-yui` 对应 L3-036 的 Yui／Predictive Avatar 同外观变体。
   - 完成 L5-001～L5-050 的内容、三语解释、证据与审校读音复核；L5-011～L5-020 的关键读音／证据回归已补入测试。L5-043 新增未识别咳嗽声 `cough`，并固定为本关独立 design identity，不与任何通用人物或非人系统共享。
   - Image2 内置通道的逐图证据继续使用真实 Codex 六项视觉审核与 `codex-approved` 状态，绑定 reviewer、toolRunId 和原始 PNG SHA-256；不得写成人类审核。
-  - 本阶段只完成题库、canonical jobs、身份注册表和契约层收口。250 张关卡图与两张背景图尚未完成逐图生成／审核／发布；Aivis 最终跨版本 reconciliation 和全量媒体验收，以及 release check、五视口三语浏览器回归和 GitHub main／Cloudflare 部署均尚未完成，应用 `1.0.4` 不能标记为已发布。
+  - 题库、canonical jobs、身份注册表和契约层收口后，继续完成了音频优先的内容 1.0.3 绑定迁移；250 张关卡图与两张背景图仍未完成逐图生成／审核／发布，完整 release check、五视口三语浏览器回归和 GitHub main／Cloudflare 部署也尚未完成，应用 `1.0.4` 不能标记为已发布。
   - 逐图生产暂停时有 13 张 current-v4 完整证据资产；恢复阶段重新核验中断事务中的 L1-003 原始工具产物、归一化 PNG、review、sidecar 与当前 prompt/style/source hash，确定性重建 WebP 后将未引用 checkpoint 恢复到 14 张。250 张关卡图加两张背景的严格剩余缺口为 238 张；旧背景和无 current raw 的旧 review 仍排除。
-  - 已验证的 10,088 件 Aivis 候选作为迁移前音频 checkpoint 保存；远端 `f9bed65e` 已确认包含 10,088 个 MP3、250 份时间轴和一份 manifest，逐项路径、大小与 SHA-256 不一致均为 0。其 manifest 仍绑定 `contentVersion: 1.0.2`，不得冒充最终 1.0.3，图片／内容迁移后仍须跨版本 `--all` reconciliation 和全量媒体验收。
+  - 采用显式 `--allow-legacy-illustrations` 过渡旗标先把锁定题库构建为内容 `1.0.3`，并新增受同一 OS 发布锁保护的音频 `prepare -> rebind -> check` 流程；稳定 audio／scene source 投影、逐项 SHA-256、时间轴 journal 和回滚证明会拒绝任何实际发音来源或媒体字节变化。
+  - 音频 manifest 已从内容 `1.0.2` rebound 到 `1.0.3`，覆盖 10,088 个 MP3、250 份时间轴，总长 `42,533.531` 秒、总计 `518,739,675` 字节。rebind 只更新可证明安全的内容绑定与时间轴来源哈希，MP3 工作树字节改动为 0；正式 release check 也会强制执行 rebound 证据检查。
+  - 当前运行时仍显式复用 250 张 `assetContentVersion: 1.0.2` legacy illustrations；Image2 checkpoint 只有 14／252 份 current-v4 有效证据资产，仍缺 238 份。默认构建、image2 检查和 release gate 未放宽，只有显式音频优先过渡模式允许这一中间状态。
+  - 本阶段候选仍未合并 GitHub main、未上线 Cloudflare Pages；剩余 Image2 全量生成／审核／发布、release check 与五视口三语回归完成前，不得把它写成完整发布候选或已发布应用 `1.0.4`。
+  - 将原先错把 250 张 Image2 与两张背景写成已完成的 `1.0.4` 三语 `site-updates` 改为准确的“音频优先候选进度”；`js/main.js` fallback、Functions seed 与 schema seed 完全同步，种子改为可更新以便纠正旧误文案，主站 `main.js` 缓存键升至 `20260714-japanese-subtext-v104-r2`。
+  - 发布报告的 AUDIO 门禁已绑定 1.0.3 manifest、过渡图片 manifest 与实际 final-stats 证据后转为 `PASS`；Image2 与 BROWSER 继续保持 `PENDING`，主站构建仍会正确拒绝不完整候选。
 
 ## 2026-07-12
 

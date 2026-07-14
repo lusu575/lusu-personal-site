@@ -27,6 +27,8 @@ from generate_audio import (  # noqa: E402
     SOURCE_BOUNDARY_SCHEMA_VERSION,
     SourceBoundaryAuditError,
     _audio_item,
+    _bound_existing_scene_hash,
+    _canonical_json,
     _ensure_normalized_cache,
     _generator_metadata,
     _line_generation_metadata_matches,
@@ -60,7 +62,11 @@ from generate_audio import (  # noqa: E402
     resolve_rate_limited_task,
     select_stages,
     snapshot_manifest_stage,
+    stage_audio_source_projection,
+    stage_audio_source_hash,
     stage_audio_ids,
+    stage_scene_source_hash,
+    stage_scene_source_projection,
     task_hash,
     task_artifact_identity,
     validate_runtime_config,
@@ -148,6 +154,65 @@ class GenerateAudioTests(unittest.TestCase):
         self.assertEqual(option.voice_key, "male-calm")
         self.assertEqual(option.relative_path, "level-1/L1-001/options/q1-a.mp3")
         self.assertEqual(option.surface, "行きたいです。")
+
+    def test_audio_source_hash_matches_the_javascript_rebind_contract(self) -> None:
+        contract = TTS_DIR.parent / "audio-source-contract.mjs"
+        script = """
+import { readFileSync } from "node:fs";
+import { pathToFileURL } from "node:url";
+const { serializeStageAudioSource, serializeStageSceneSource } = await import(pathToFileURL(process.argv[1]).href);
+const stage = JSON.parse(readFileSync(0, "utf8"));
+process.stdout.write(`${serializeStageAudioSource(stage)}\n${serializeStageSceneSource(stage)}`);
+"""
+        result = subprocess.run(
+            ["node", "--input-type=module", "-e", script, str(contract)],
+            input=json.dumps(self.stage, ensure_ascii=False).encode("utf-8"),
+            capture_output=True,
+            check=True,
+        )
+        audio_actual, scene_actual = result.stdout.decode("utf-8").splitlines()
+        audio_expected = _canonical_json(stage_audio_source_projection(self.stage)).decode("utf-8")
+        scene_expected = _canonical_json(stage_scene_source_projection(self.stage)).decode("utf-8")
+        self.assertEqual(audio_actual, audio_expected)
+        self.assertEqual(scene_actual, scene_expected)
+        self.assertEqual(
+            hashlib.sha256(audio_actual.encode("utf-8")).hexdigest(),
+            stage_audio_source_hash(self.stage),
+        )
+        self.assertEqual(
+            hashlib.sha256(scene_actual.encode("utf-8")).hexdigest(),
+            stage_scene_source_hash(self.stage),
+        )
+
+    def test_audio_source_hash_rejects_ambiguous_pause_values(self) -> None:
+        for invalid in ("240", -0.5, None, True):
+            changed = copy.deepcopy(self.stage)
+            changed["lines"][0]["pauseAfterMs"] = invalid
+            with self.assertRaisesRegex(ValueError, "non-negative integer"):
+                stage_audio_source_hash(changed)
+        implicit = copy.deepcopy(self.stage)
+        implicit["lines"][0].pop("pauseAfterMs")
+        explicit_default = copy.deepcopy(implicit)
+        explicit_default["lines"][0]["pauseAfterMs"] = 180
+        self.assertNotEqual(
+            stage_audio_source_hash(implicit),
+            stage_audio_source_hash(explicit_default),
+        )
+
+    def test_legacy_scene_identity_is_reused_only_for_the_same_scene_source(self) -> None:
+        entry = {
+            "contentHash": "c" * 64,
+            "sceneSourceHash": stage_scene_source_hash(self.stage),
+        }
+        delivery_only = copy.deepcopy(self.stage)
+        delivery_only["contentHash"] = "e" * 64
+        delivery_only["contentVersion"] = "1.0.3"
+        self.assertEqual(
+            _bound_existing_scene_hash(delivery_only, entry),
+            "c" * 64,
+        )
+        delivery_only["lines"][0]["pauseAfterMs"] += 1
+        self.assertIsNone(_bound_existing_scene_hash(delivery_only, entry))
 
     def test_pipeline_fingerprint_identifies_aivis_engine_and_aivmx_contract(self) -> None:
         self.assertEqual(PIPELINE_VERSION, "aivisspeech-1.2.0-aivmx-v3")
