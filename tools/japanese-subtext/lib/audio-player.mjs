@@ -1,4 +1,4 @@
-import { CONTENT_VERSION, clampNumber, shortContentHash } from "./constants.mjs?v=20260711-japanese-subtext-v102-r2";
+import { CONTENT_VERSION, clampNumber, shortContentHash } from "./constants.mjs?v=20260712-japanese-subtext-v103-r6";
 
 const manifestUrl = new URL("../audio/manifest.json", import.meta.url);
 const defaultAudioRoot = new URL("../audio/", import.meta.url);
@@ -66,7 +66,7 @@ export class AudioPlayer extends EventTarget {
 
   async playScene({ start = 0, end = null } = {}) {
     const timeline = this.timeline();
-    if (!timeline?.sceneAudioId) throw new Error("Scene audio missing");
+    if (!timeline?.sceneAudioId) throw playbackFailure("Scene audio missing", { kind: "scene" });
     return this.playItem(timeline.sceneAudioId, { start, end, context: { kind: "scene" } });
   }
 
@@ -81,7 +81,7 @@ export class AudioPlayer extends EventTarget {
       });
     }
     if (cue?.audioId) return this.playItem(cue.audioId, { start: fromStart ? 0 : undefined, context: { kind: "line", lineId } });
-    throw new Error("Line audio missing");
+    throw playbackFailure("Line audio missing", { kind: "line", lineId });
   }
 
   async playToken(lineId, tokenId, audioId) {
@@ -93,7 +93,7 @@ export class AudioPlayer extends EventTarget {
     if (timeline?.sceneAudioId && token) {
       return this.playItem(timeline.sceneAudioId, { start: token.start, end: token.end, context: { kind: "token", lineId, tokenId } });
     }
-    throw new Error("Token audio missing");
+    throw playbackFailure("Token audio missing", { kind: "token", lineId, tokenId }, audioId);
   }
 
   async playOption(questionId, optionId, audioId) {
@@ -101,16 +101,18 @@ export class AudioPlayer extends EventTarget {
   }
 
   async playItem(id, { start = 0, end = null, context = {} } = {}) {
-    if (!this.audio || !this.manifest) throw new Error("Audio unavailable");
+    if (!this.audio || !this.manifest) throw playbackFailure("Audio unavailable", context, id);
     const item = this.manifest.items[id];
     if (!item || !safeAudioPath(item.path)) {
+      const error = playbackFailure("Audio item missing", context, id);
       this.stop();
-      throw new Error("Audio item missing");
+      throw error;
     }
     const url = new URL(item.path, this.audioRoot);
     if (url.origin !== this.audioRoot.origin || !url.pathname.startsWith(this.audioRoot.pathname)) {
+      const error = playbackFailure("Unsafe audio path", context, id);
       this.stop();
-      throw new Error("Unsafe audio path");
+      throw error;
     }
     const cacheKey = shortContentHash(item.contentHash);
     if (cacheKey) url.searchParams.set("v", cacheKey);
@@ -160,8 +162,9 @@ export class AudioPlayer extends EventTarget {
       if (this.audio.paused) throw new Error("Audio playback did not start");
       this.#emit("state", { state: "playing" });
     } catch (error) {
+      const playbackError = playbackFailure(error, this.context, this.itemId || id);
       if (!signal.aborted && this.playController?.signal === signal) this.stop();
-      throw error;
+      throw playbackError;
     }
   }
 
@@ -277,6 +280,20 @@ function resolveAudioRoot(value) {
 function safeAudioPath(value) {
   const path = String(value || "");
   return /^[a-z0-9][a-z0-9._/-]*\.(mp3|ogg|wav)$/i.test(path) && !/(^|\/)\.\.(\/|$)/.test(path) && !path.includes("\\");
+}
+
+function playbackFailure(error, context = {}, itemId = "") {
+  const failure = error instanceof Error ? error : new Error(String(error));
+  failure.audioContext = {
+    kind: "",
+    lineId: "",
+    tokenId: "",
+    questionId: "",
+    optionId: "",
+    ...context,
+  };
+  failure.audioItemId = itemId;
+  return failure;
 }
 
 function waitForMetadata(audio, signal) {

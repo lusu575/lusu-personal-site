@@ -2,7 +2,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   checkInStats, defaultProgress, defaultSettings, loadLocalState, mergeProgress, mergeSettings,
-  recordAttempt, resetLocalState, sanitizeProgress, saveProgress, saveSettings
+  hasCompletedModeOnboarding, markModeOnboardingComplete, recordAttempt, resetLocalState,
+  sanitizeProgress, saveProgress, saveSettings
 } from "../lib/storage.mjs";
 
 class MemoryStorage {
@@ -223,4 +224,14 @@ test("denied storage never blocks the in-memory training session", () => {
   assert.doesNotThrow(() => saveProgress(defaultProgress(), denied));
   assert.doesNotThrow(() => resetLocalState(denied, "ja"));
   assert.equal(loadLocalState(denied, "ja").damaged, true);
+});
+
+test("mode onboarding stays complete for the session when storage is denied", () => {
+  const denied = {
+    getItem() { throw new Error("denied"); },
+    setItem() { throw new Error("denied"); }
+  };
+  assert.equal(hasCompletedModeOnboarding(denied), false);
+  assert.doesNotThrow(() => markModeOnboardingComplete(denied));
+  assert.equal(hasCompletedModeOnboarding(denied), true);
 });

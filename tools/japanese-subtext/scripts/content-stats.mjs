@@ -5,6 +5,9 @@ import { loadAllStages, readJson, toolRoot } from "./content-utils.mjs";
 const stages = await loadAllStages();
 const voices = (await readJson(path.join(toolRoot, "content", "voices.json"))).voices || {};
 const audioManifest = await readJson(path.join(toolRoot, "audio", "manifest.json"));
+const contentVersions = new Set(stages.map((stage) => stage.contentVersion));
+if (contentVersions.size !== 1) throw new Error("All stages must share one contentVersion before statistics are published.");
+const [contentVersion] = contentVersions;
 const questions = stages.flatMap((stage) => stage.questions);
 const lines = stages.flatMap((stage) => stage.lines.map((line) => ({ line, stage })));
 const options = questions.flatMap((question) => question.options);
@@ -16,6 +19,8 @@ const uniqueLongestCorrect = singleChoiceQuestions.filter((question) => {
   return correctIndex >= 0 && lengths[correctIndex] === max && lengths.filter((length) => length === max).length === 1;
 }).length;
 const result = {
+  contentVersion,
+  audioContentVersion: audioManifest.contentVersion,
   totalStages: stages.length,
   stagesByLevel: count(stages, (stage) => `level-${stage.level}`),
   totalLines: lines.length,
@@ -32,9 +37,14 @@ const result = {
   genres: count(stages.flatMap((stage) => stage.genres), (value) => value),
   skills: count(stages.flatMap((stage) => stage.skills), (value) => value),
   illustratedStages: stages.filter((stage) => stage.illustration.enabled).length,
-  illustrationStyles: {
-    "monochrome-four-panel": stages.filter((stage) => stage.illustration.enabled && stage.illustration.style === "monochrome-four-panel").length
-  },
+  illustrationStyles: count(
+    stages.filter((stage) => stage.illustration.enabled),
+    (stage) => stage.illustration.style || "unknown",
+  ),
+  illustrationModels: count(
+    stages.filter((stage) => stage.illustration.enabled),
+    (stage) => stage.illustration.provenance?.model || "legacy-unversioned",
+  ),
   voiceLines: count(lines, ({ line, stage }) => {
     const voiceKey = stage.cast.find((person) => person.id === line.speaker)?.voiceKey;
     return voices[voiceKey]?.gender || "unknown";

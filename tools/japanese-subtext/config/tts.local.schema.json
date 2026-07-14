@@ -1,35 +1,48 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Japanese Subtext local Kokoro TTS configuration",
+  "title": "Japanese Subtext local AivisSpeech TTS configuration",
   "type": "object",
   "required": [
     "adapter",
-    "python",
     "ffmpeg",
     "ffprobe",
     "audioBaseUrl",
-    "kokoro",
+    "aivis",
     "output",
     "voices",
     "voiceAliases"
   ],
   "properties": {
     "$schema": { "type": "string" },
-    "adapter": { "const": "kokoro-onnx" },
-    "python": { "type": "string", "minLength": 1 },
+    "adapter": { "const": "aivisspeech-engine" },
     "ffmpeg": { "type": "string", "minLength": 1 },
     "ffprobe": { "type": "string", "minLength": 1 },
     "audioBaseUrl": { "type": "string", "minLength": 1 },
-    "kokoro": {
+    "aivis": {
       "type": "object",
-      "required": ["model", "voices", "config", "hashManifest", "g2p", "provider"],
+      "required": [
+        "baseUrl",
+        "engineVersion",
+        "provider",
+        "timeoutSeconds",
+        "verifyModelFiles",
+        "models"
+      ],
       "properties": {
-        "model": { "type": "string", "minLength": 1 },
-        "voices": { "type": "string", "minLength": 1 },
-        "config": { "type": "string", "minLength": 1 },
-        "hashManifest": { "type": "string", "minLength": 1 },
-        "g2p": { "const": "pyopenjtalk" },
-        "provider": { "const": "CPUExecutionProvider" }
+        "baseUrl": {
+          "enum": ["http://127.0.0.1:10103", "http://localhost:10103"]
+        },
+        "engineVersion": { "const": "1.2.0" },
+        "provider": { "const": "CPU" },
+        "timeoutSeconds": { "type": "number", "minimum": 1, "maximum": 600 },
+        "verifyModelFiles": { "type": "boolean" },
+        "models": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/model" }
+        }
       },
       "additionalProperties": false
     },
@@ -47,44 +60,74 @@
       ],
       "properties": {
         "format": { "const": "mp3" },
-        "sampleRate": { "const": 24000 },
+        "sampleRate": { "const": 44100 },
         "channels": { "const": 1 },
-        "bitrate": { "const": "64k" },
+        "bitrate": { "const": "96k" },
         "targetLufs": { "type": "number", "minimum": -30, "maximum": -10 },
-        "leadingSilenceMs": { "type": "integer", "minimum": 0, "maximum": 500 },
-        "trailingSilenceMs": { "type": "integer", "minimum": 0, "maximum": 500 },
+        "leadingSilenceMs": { "type": "integer", "minimum": 20, "maximum": 500 },
+        "trailingSilenceMs": { "type": "integer", "minimum": 40, "maximum": 500 },
         "sceneGapMs": { "type": "integer", "minimum": 0, "maximum": 3000 }
       },
       "additionalProperties": false
     },
     "voices": {
       "type": "object",
-      "minProperties": 5,
-      "maxProperties": 5,
-      "propertyNames": {
-        "enum": ["jf-alpha", "jf-gongitsune", "jf-nezumi", "jf-tebukuro", "jm-kumo"]
-      },
+      "minProperties": 4,
       "additionalProperties": { "$ref": "#/$defs/voice" }
     },
     "voiceAliases": {
       "type": "object",
-      "additionalProperties": {
-        "enum": ["jf-alpha", "jf-gongitsune", "jf-nezumi", "jf-tebukuro", "jm-kumo"]
-      }
+      "additionalProperties": { "type": "string", "minLength": 1 }
     }
   },
   "$defs": {
+    "model": {
+      "type": "object",
+      "required": ["uuid", "version", "sha256", "license"],
+      "properties": {
+        "uuid": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "version": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "license": { "const": "ACML-1.0" }
+      },
+      "additionalProperties": false
+    },
     "voice": {
       "type": "object",
-      "required": ["modelVoice", "speed", "pitch", "emotion"],
+      "required": [
+        "modelUuid",
+        "styleName",
+        "speedScale",
+        "pitchScale",
+        "intonationScale",
+        "volumeScale",
+        "prePhonemeLength",
+        "postPhonemeLength",
+        "pauseLength",
+        "pauseLengthScale"
+      ],
       "properties": {
-        "modelVoice": {
-          "enum": ["jf_alpha", "jf_gongitsune", "jf_nezumi", "jf_tebukuro", "jm_kumo"]
+        "modelUuid": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
         },
-        "speed": { "type": "number", "minimum": 0.5, "maximum": 2.0 },
-        "pitch": { "const": 0 },
-        "emotion": { "const": "neutral" },
-        "seed": { "type": "integer" }
+        "styleName": { "type": "string", "minLength": 1 },
+        "speedScale": { "type": "number", "minimum": 0.5, "maximum": 2.0 },
+        "pitchScale": { "type": "number", "minimum": -0.15, "maximum": 0.15 },
+        "intonationScale": { "type": "number", "minimum": 0, "maximum": 2 },
+        "volumeScale": { "type": "number", "minimum": 0, "maximum": 2 },
+        "prePhonemeLength": { "type": "number", "minimum": 0, "maximum": 1.5 },
+        "postPhonemeLength": { "type": "number", "minimum": 0, "maximum": 1.5 },
+        "pauseLength": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "number", "minimum": 0, "maximum": 2 }
+          ]
+        },
+        "pauseLengthScale": { "type": "number", "minimum": 0, "maximum": 2 }
       },
       "additionalProperties": false
     }

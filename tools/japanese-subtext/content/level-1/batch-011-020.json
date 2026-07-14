@@ -8,7 +8,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L1-011",
-      "revision": 3,
+      "revision": 4,
       "level": 1,
       "stage": 11,
       "jlptTarget": "N3",
@@ -225,7 +225,7 @@
               },
               "ttsTextJa": "天気予報の内容を千夏に聞きたい。",
               "audioId": "L1-011-q1-b",
-              "readingJa": "てんきよほーのないよーをせんなつにききたい。"
+              "readingJa": "てんきよほーのないよーをちなつにききたい。"
             },
             {
               "id": "c",
@@ -297,13 +297,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "6092f925636c81b5e29124e0c5755a226f8d284bf294847fa123000c31f14e0c"
+      "contentHash": "1642fdb420d43d19792367d67ee967f5f9a009a65873b94b5da73c0eef4db9b3"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L1-012",
-      "revision": 3,
+      "revision": 4,
       "level": 1,
       "stage": 12,
       "jlptTarget": "N3",
@@ -548,7 +548,7 @@
               },
               "ttsTextJa": "今日で部活をやめるよう勧めている。",
               "audioId": "L1-012-q1-d",
-              "readingJa": "きょーでぶかつをやめるよーすすめている。"
+              "readingJa": "きょうでぶかつをやめるよーすすめている。"
             }
           ],
           "correctOptionIds": [
@@ -598,7 +598,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "a0c31315d807a7bb07b1188e2404cf49e4c8cab637fe4e6ccbb8f8b8314405a8"
+      "contentHash": "0dea4c899e874e30e78a7583ee3e83ff4c101c73ad0f6c5995da54d5595940c4"
     },
     {
       "schemaVersion": 1,
@@ -1477,7 +1477,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L1-016",
-      "revision": 3,
+      "revision": 4,
       "level": 1,
       "stage": 16,
       "jlptTarget": "N3",
@@ -1620,7 +1620,7 @@
             "zh": "（笑脸贴纸）",
             "en": "(smiling sticker)"
           },
-          "readingJa": "えがおのすたんぷ",
+          "readingJa": "えがおのすたんぷをおくりました。",
           "ttsTextJa": "笑顔のスタンプを送りました。",
           "audioId": "L1-016-line-003",
           "pauseAfterMs": 650,
@@ -1633,8 +1633,8 @@
             },
             {
               "id": "token-002",
-              "text": "スタンプ",
-              "reading": "すたんぷ",
+              "text": "スタンプを送りました。",
+              "reading": "すたんぷをおくりました。",
               "audioId": "L1-016-line-003-token-002"
             }
           ]
@@ -1769,7 +1769,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "7eac9d888e676ecc1414868d0053946e79ac29066f9cd7719100a7111cb65393"
+      "contentHash": "ee168d983b4f1422df1afcba786a368bc5810e64521adc13dab805af0754a89c"
     },
     {
       "schemaVersion": 1,
@@ -2110,7 +2110,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L1-018",
-      "revision": 3,
+      "revision": 4,
       "level": 1,
       "stage": 18,
       "jlptTarget": "N3",
@@ -2323,7 +2323,7 @@
               },
               "ttsTextJa": "限定品を高く売るために何度も買っている。",
               "audioId": "L1-018-q1-a",
-              "readingJa": "げんていぴんをたかくうるためになんどもかっている。"
+              "readingJa": "げんていひんをたかくうるためになんどもかっている。"
             },
             {
               "id": "b",
@@ -2406,7 +2406,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "1e2e22584cc3e6c6e1e3523e7cfd35de47ce497fb7f6da86f5b110be883698e3"
+      "contentHash": "10a71c125bbf3c54030306ee04741847bb1fe075a4dcf5905735af40c79d9249"
     },
     {
       "schemaVersion": 1,

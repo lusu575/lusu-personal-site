@@ -2,6 +2,16 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { contentHash, contentRoot, expectedShape, loadAllStages, readJson, toolRoot } from "./content-utils.mjs";
+import {
+  APPROVED_IMAGE2_REVIEW_STATUSES,
+  IMAGE2_STAGE_STYLE,
+  LEGACY_STAGE_STYLE,
+  normalizeIllustrationManifestEntries,
+} from "./migrate-image2-content.mjs";
+import {
+  SOURCE_TEXT_HASH_SCHEMA_VERSION,
+  computeStageSourceTextHash,
+} from "./prepare-image2-prompts.mjs";
 
 const skipAudio = process.argv.includes("--skip-audio");
 const allowPartial = process.argv.includes("--allow-partial");
@@ -11,12 +21,24 @@ const warnings = [];
 const stages = await loadAllStages();
 const voicesPayload = await readJson(path.join(contentRoot, "voices.json"));
 const voices = new Set(Object.keys(voicesPayload.voices || {}));
+const catalogPayload = await readJson(path.join(contentRoot, "catalog.json"));
+const expectedContentVersion = catalogPayload.contentVersion;
 const blueprintPayload = await readJson(path.join(contentRoot, "blueprint.json"));
 const blueprintEntries = Array.isArray(blueprintPayload.entries) ? blueprintPayload.entries : [];
 const blueprintById = new Map(blueprintEntries.map((entry) => [entry.id, entry]));
-const illustrationManifest = await readJson(path.join(toolRoot, "assets", "stages", "manifest.json"));
-const illustrationByStage = new Map((illustrationManifest.entries || []).map((entry) => [entry.stageId, entry]));
+const generationState = await readJson(path.join(contentRoot, "generation-state.json"));
+const illustrationManifestPath = generationState.illustrations?.manifest || "assets/stages/manifest.json";
+if (!/^assets\/stages\/[a-z0-9._/-]*manifest\.json$/i.test(illustrationManifestPath) || illustrationManifestPath.includes("..")) {
+  throw new Error("generation-state illustrations.manifest must be a safe assets/stages manifest path.");
+}
+const illustrationManifestFile = path.join(toolRoot, illustrationManifestPath);
+const illustrationManifestBytes = readFileSync(illustrationManifestFile);
+const illustrationManifest = await readJson(illustrationManifestFile);
+const illustrationContract = normalizeIllustrationManifestEntries(illustrationManifest);
+const illustrationByStage = new Map(illustrationContract.entries.map((entry) => [entry.stageId, entry]));
 const validatedIllustrations = new Set();
+const validatedIllustrationHashes = new Set();
+const validatedIllustrationDHashes = new Set();
 const audioManifest = await readJson(path.join(toolRoot, "audio", "manifest.json"));
 const ids = new Set();
 const fingerprints = new Map();
@@ -25,6 +47,50 @@ const genreByLevel = new Map();
 const singleChoiceLengthBias = { eligible: 0, uniqueLongestCorrect: 0 };
 
 validateBlueprint();
+
+check(/^\d+\.\d+\.\d+$/.test(expectedContentVersion || ""), "Catalog contentVersion must be semantic x.y.z.");
+check(
+  ["1.0.2", "1.0.3"].includes(expectedContentVersion),
+  "Catalog contentVersion must use the maintained 1.0.2/1.0.3 contract.",
+);
+check(
+  (expectedContentVersion === "1.0.2" && illustrationContract.kind === "legacy-v1") ||
+    (expectedContentVersion === "1.0.3" && illustrationContract.kind === "image2-v3"),
+  `Content ${expectedContentVersion} must use its matching legacy/image2 illustration manifest shape.`,
+);
+check(
+  illustrationManifest.contentVersion === expectedContentVersion,
+  `Illustration manifest contentVersion must match catalog ${expectedContentVersion}.`,
+);
+if (illustrationContract.kind === "image2-v3") {
+  check(
+    illustrationManifestPath === `assets/stages/v${expectedContentVersion}/manifest.json`,
+    "Image2 illustration manifest path must be content-versioned.",
+  );
+  check(illustrationManifest.schemaVersion === 3, "Image2 illustration manifest schemaVersion must be 3.");
+  check(
+    illustrationManifest.kind === "japanese-subtext-image2-assets",
+    "Image2 illustration manifest kind is invalid.",
+  );
+  check(
+    illustrationManifest.model === "gpt-image-2" && illustrationManifest.quality === "high",
+    "Image2 illustration manifest must use gpt-image-2 high.",
+  );
+  check(
+    APPROVED_IMAGE2_REVIEW_STATUSES.includes(illustrationManifest.reviewStatus),
+    "Image2 illustration manifest must be approved or reviewed.",
+  );
+  check(
+    illustrationManifest.stageCount === 250 && illustrationManifest.stages?.length === 250,
+    "Image2 illustration manifest must contain exactly 250 stages[].",
+  );
+  check(
+    generationState.illustrations?.manifestSha256 === createHash("sha256").update(illustrationManifestBytes).digest("hex"),
+    "Image2 generation-state manifestSha256 must match the real manifest bytes.",
+  );
+} else {
+  check(illustrationManifest.schemaVersion === 1, "Legacy illustration manifest schemaVersion must be 1.");
+}
 
 if (!allowPartial) check(stages.length === 250, `Expected 250 stages; found ${stages.length}.`);
 for (let level = 1; level <= 5; level += 1) {
@@ -38,7 +104,20 @@ for (let level = 1; level <= 5; level += 1) {
 
 for (const stage of stages) validateStage(stage);
 if (!allowPartial) {
-  check(illustrationByStage.size === 250, `Illustration manifest has ${illustrationByStage.size} entries; expected 250.`);
+  check(
+    illustrationContract.entries.length === 250 && illustrationByStage.size === 250,
+    `Illustration manifest must contain exactly 250 unique entries; found ${illustrationContract.entries.length}/${illustrationByStage.size}.`,
+  );
+  if (illustrationContract.kind === "image2-v3") {
+    check(
+      validatedIllustrationHashes.size === 250,
+      `Validated ${validatedIllustrationHashes.size} distinct image2 illustration hashes; expected 250.`,
+    );
+    check(
+      validatedIllustrationDHashes.size === 250,
+      `Validated ${validatedIllustrationDHashes.size} distinct image2 illustration dHashes; expected 250.`,
+    );
+  }
   check(validatedIllustrations.size === 250, `Validated ${validatedIllustrations.size} stage illustrations; expected 250.`);
   for (const [level, genres] of genreByLevel) check(genres.size >= 8, `Level ${level}: only ${genres.size} genres; expected at least 8.`);
 }
@@ -104,7 +183,7 @@ function validateStage(stage) {
   const prefix = stage?.id || "<missing-id>";
   const blueprint = blueprintById.get(prefix);
   check(stage?.schemaVersion === 1, `${prefix}: schemaVersion must be 1.`);
-  check(stage?.contentVersion === "1.0.2", `${prefix}: contentVersion must be 1.0.2.`);
+  check(stage?.contentVersion === expectedContentVersion, `${prefix}: contentVersion must be ${expectedContentVersion}.`);
   check(/^L[1-5]-[0-9]{3}$/.test(prefix), `${prefix}: invalid ID.`);
   check(!ids.has(prefix), `${prefix}: duplicate stage ID.`);
   ids.add(prefix);
@@ -123,7 +202,14 @@ function validateStage(stage) {
     check(stage.lines?.length === blueprint.estimatedLineCount, `${prefix}: line count diverges from the locked blueprint.`);
     check(stage.cast?.length === blueprint.characterCount, `${prefix}: cast count diverges from the locked blueprint.`);
     check(stage.illustration?.enabled === blueprint.illustration?.enabled, `${prefix}: illustration enablement diverges from the locked blueprint.`);
-    check(stage.illustration?.style === blueprint.illustration?.style, `${prefix}: illustration style diverges from the locked blueprint.`);
+    check(
+      stage.illustration?.style === blueprint.illustration?.style ||
+        (
+          blueprint.illustration?.style === LEGACY_STAGE_STYLE &&
+          stage.illustration?.style === IMAGE2_STAGE_STYLE
+        ),
+      `${prefix}: illustration style diverges from the locked blueprint.`,
+    );
   }
   check(Array.isArray(stage.cast) && stage.cast.length >= 1 && stage.cast.length <= 5, `${prefix}: cast count invalid.`);
   const castIds = new Set();
@@ -222,15 +308,63 @@ function validateStage(stage) {
     check(existsSync(illustrationFile) && statSync(illustrationFile).size > 0, `${prefix}: illustration file is missing or empty.`);
     const illustrationEntry = illustrationByStage.get(prefix);
     check(illustrationEntry?.path === stage.illustration.src, `${prefix}: illustration manifest path mismatch.`);
-    check(illustrationEntry?.style === "monochrome-four-panel", `${prefix}: illustration manifest style mismatch.`);
+    check(illustrationEntry?.style === illustrationContract.style, `${prefix}: illustration manifest style mismatch.`);
+    check(stage.illustration.style === illustrationContract.style, `${prefix}: stage illustration style mismatch.`);
     check(illustrationEntry?.width === 960 && illustrationEntry?.height === 720, `${prefix}: illustration manifest dimensions must be 960x720.`);
-    check(illustrationEntry?.reviewStatus === "automated-scene-mapped", `${prefix}: illustration review status is missing.`);
     check(/^[a-f0-9]{64}$/.test(stage.illustration.sha256 || ""), `${prefix}: illustration SHA-256 is missing.`);
     check(stage.illustration.sha256 === illustrationEntry?.sha256, `${prefix}: illustration SHA-256 diverges from manifest.`);
+    if (illustrationContract.kind === "image2-v3") {
+      const rawEntry = illustrationEntry?.raw;
+      const provenance = stage.illustration.provenance;
+      check(
+        stage.illustration.src === `assets/stages/v${expectedContentVersion}/${prefix.toLowerCase()}.webp`,
+        `${prefix}: image2 illustration path must be content-versioned.`,
+      );
+      check(
+        APPROVED_IMAGE2_REVIEW_STATUSES.includes(illustrationEntry?.reviewStatus) &&
+          illustrationEntry?.reviewStatus === illustrationManifest.reviewStatus,
+        `${prefix}: image2 illustration must be approved/reviewed.`,
+      );
+      check(
+        rawEntry?.model === "gpt-image-2" && rawEntry?.quality === "high",
+        `${prefix}: image2 illustration model/quality mismatch.`,
+      );
+      check(
+        rawEntry?.sourceHashKind === "stage-source-text" &&
+          illustrationEntry?.sourceTextHashSchemaVersion === SOURCE_TEXT_HASH_SCHEMA_VERSION,
+        `${prefix}: image2 source hash schema mismatch.`,
+      );
+      check(
+        illustrationEntry?.sourceTextHash === computeStageSourceTextHash(stage),
+        `${prefix}: image2 sourceTextHash does not match the stage source text.`,
+      );
+      check(
+        rawEntry?.generatorProvenance?.provider === "OpenAI Images" &&
+          rawEntry?.generatorProvenance?.model === "gpt-image-2" &&
+          rawEntry?.generatorProvenance?.operation === "generate",
+        `${prefix}: image2 generator provenance mismatch.`,
+      );
+      check(
+        provenance?.model === "gpt-image-2" &&
+          provenance?.quality === "high" &&
+          provenance?.sourceHashKind === "stage-source-text" &&
+          provenance?.sourceTextHash === illustrationEntry?.sourceTextHash &&
+          provenance?.sourceTextHashSchemaVersion === SOURCE_TEXT_HASH_SCHEMA_VERSION &&
+          provenance?.promptHash === rawEntry?.promptHash &&
+          provenance?.styleBibleHash === rawEntry?.styleBibleHash &&
+          provenance?.dHash === rawEntry?.dHash &&
+          provenance?.reviewStatus === rawEntry?.reviewStatus,
+        `${prefix}: stage image2 provenance does not match the asset manifest.`,
+      );
+    } else {
+      check(illustrationEntry?.reviewStatus === "automated-scene-mapped", `${prefix}: legacy illustration review status is missing.`);
+    }
     if (existsSync(illustrationFile)) {
       const actualHash = createHash("sha256").update(readFileSync(illustrationFile)).digest("hex");
       check(actualHash === stage.illustration.sha256, `${prefix}: illustration file hash mismatch.`);
     }
+    validatedIllustrationHashes.add(stage.illustration.sha256);
+    validatedIllustrationDHashes.add(stage.illustration.provenance?.dHash);
     validatedIllustrations.add(prefix);
   }
   if (!skipAudio) {

@@ -1,98 +1,87 @@
-# 日本語の裏側 1.0.2 发布验收报告
+# 日本語の裏側 1.0.3 发布验收报告
 
-> 状态：**1.0.2 发布验收全部通过**。本文档只记录最终 manifest、全量验证和真实浏览器回归结果。
+> 状态：**当前待验收**。旧版 1.0.2 的通过记录不属于本次发布证据；只有下列 1.0.3 契约绑定的门槛全部改为 `PASS` 后，才可发布。
 
-验收对象为 `/tools/japanese-subtext/` 的 1.0.2 发布候选。界面标题随语言显示“日语的言外之意 / Behind the Japanese / 日本語の裏側”。
+<!-- RELEASE:CONTRACT:{"assetVersion":"20260712-japanese-subtext-v103-r6","audioClaritySchemaVersion":3,"audioPipeline":"aivisspeech-1.2.0-aivmx-v3","audioSampleRate":44100,"backgroundImageCount":2,"contentVersion":"1.0.3","imageModel":"gpt-image-2","imageQuality":"high","stageImageCount":250} -->
+
+验收对象为 `/tools/japanese-subtext/` 的 1.0.3 发布候选，固定使用缓存键 `20260712-japanese-subtext-v103-r6`。语音必须来自 `aivisspeech-1.2.0-aivmx-v3` 的 44.1 kHz 离线 AI 管线；250 张关卡图与桌面、手机两张背景必须来自 `gpt-image-2`、`high`，并由 Codex 完成六项显式视觉检查。该证据状态为 `codex-approved`，不代表人类审核。
 
 ## 发布门槛
 
-| 门槛 | 当前证据 | 状态 |
+| 门槛 | 当前待填证据 | 状态 |
 | --- | --- | --- |
-| 锁定题库 | `jp-subtext:validate:content`：5 级 × 50 关，250/250 通过 | 已通过 |
-| 关卡插图 | 250 张逐关独立的 960×720 黑白四格 WebP，文件 SHA-256 与图片 manifest 一致 | 已通过 |
-| Node 自动测试 | 题库、播放器、布局合约、打卡、云同步、API、图片与音频工具 49/49 通过 | 已通过 |
-| Python TTS 测试 | 假名、完整 P2R、CPU provider、未知/超长音素、共享审计链路、哈希、断点续跑与 Windows 文件锁重试 25/25 通过 | 已通过 |
-| 浏览器回归 | `v102-r2`、zh/en/ja、五个规定视口与桌面主流程 | 已通过 |
-| 全量音频 | 10,088/10,088；音素审计 9,838/9,838；全量 ffprobe、静音、哈希、时间轴与孤儿检查通过 | 已通过 |
-| 主站构建 | `npm.cmd run build`：`build-check: ok`，含 250/10,088 日语工具发布合约 | 已通过 |
+| 锁定题库 | 1.0.3、5 级 × 50 关、250/250 内容验证 | 待验收 |
+| 关卡插图 | 250 张 `gpt-image-2 high` 逐关独立 960×720 WebP，文件哈希与 manifest 一致 | 待资产落地 |
+| 工具背景 | 2048×1152 桌面图与 1024×1536 手机图，使用 1.0.3 版本化路径 | 待资产落地 |
+| 全量音频 | 10,088 件 AivisSpeech 44.1 kHz mono 约 96 kbps MP3，全量发音、清晰度、ffprobe、静音、哈希与时间轴验证 | 待资产落地 |
+| 自动测试 | Node、Python TTS 与主站构建的最终通过计数 | 待验收 |
+| 浏览器回归 | zh/en/ja、359×500、375×667、390×844、844×390、1365×900 与主站入口 | 待验收 |
 
-## 1.0.2 主要变更
+## Image2 最终数据
 
-- 音频生成先使用已审查的句子/选项 `readingJa` 与词块 `reading`，界面继续显示原始汉字；所有出现“今日”的语音文本都有 `きょう / きょー` 全库测试守卫。
-- Misaki 的音素与音高半段分离，完整按官方顺序执行 P2R，原始 `j → y` 早于 `ʥ → j`；未知音素和超过 510 个音素的任务直接失败，不再静默丢音。由此修复句尾额外“いい”、“きょう”退化成“おう”及“や／ゆ／よ”偏成“じゃ／じゅ／じょ”的根因。
-- PC 端采用游戏区同类壳层：左上返回个人站、右上工具名、中间存档同步；关卡内容重新排布以减少大块空白。
-- 解析页增加“进入下一关”；资源区操作改为“开始 / Start / 開始”；学习记录改为月历打卡。
-- 普通标题、按钮与标签默认不可拖选，输入框和可编辑区仍可选择文字；点击句子播放不会强制改变滚动位置。
-- 每关使用一张与 setting、角色、台词、题问、证据和关键道具对应的黑白四格场景图。
-
-## 插图来源与边界
-
-内置 imagegen 经两次重试均因网络错误不可用，因此本次使用明确标注的 `local-four-panel-v2` 本地原创 fallback。250 张图片由 `assets/stages/manifest.json` 锁定路径、SHA-256、960×720 尺寸、生成器版本和 `automated-scene-mapped` 状态；这些图片不宣称为 AI 逐张绘制。
+<!-- AUTO:IMAGE2_VALIDATION:START -->
+`PENDING：等待 250 张关卡图、桌面背景与手机背景发布，并完成绑定 toolRunId、原始 SHA-256 和六项检查的 Codex 视觉审核。`
+<!-- AUTO:IMAGE2_VALIDATION:END -->
+<!-- RELEASE:IMAGE2_VALIDATION:PENDING contract=31c63a8f6e1502a0da171427565878c279dc5ac89d9e17ad9168d58ceb2a449a -->
 
 ## 音频最终数据
 
-统计只允许来自最终发布用 `audio/manifest.json`，不得用生成速度或局部样本推算。
+统计只允许来自 1.0.3 最终发布用 `audio/manifest.json`，不得沿用 1.0.2 数值、生成速度或局部样本推算。
 
 - 实际音频件数：
 
   <!-- AUTO:AUDIO_ITEM_COUNT:START -->
-  `10,088（scene 250 / line 2,400 / option 2,445 / token 4,993）`
+  `PENDING：等待 1.0.3 音频 manifest。`
   <!-- AUTO:AUDIO_ITEM_COUNT:END -->
 
 - 实际覆盖关卡：
 
   <!-- AUTO:AUDIO_STAGE_COUNT:START -->
-  `250 / 250`
+  `PENDING：等待 1.0.3 音频 manifest。`
   <!-- AUTO:AUDIO_STAGE_COUNT:END -->
 
 - 累计时长：
 
   <!-- AUTO:AUDIO_DURATION:START -->
-  `38,601.484 秒（10 小时 43 分 21.484 秒）`
+  `PENDING：等待全量生成结果。`
   <!-- AUTO:AUDIO_DURATION:END -->
 
 - 文件总大小：
 
   <!-- AUTO:AUDIO_BYTES:START -->
-  `316,038,600 bytes / 301.40 MiB`
+  `PENDING：等待全量生成结果。`
   <!-- AUTO:AUDIO_BYTES:END -->
 
 - 全量验证：
 
   <!-- AUTO:AUDIO_VALIDATION:START -->
-  `PASS：9,838/9,838 个非场景任务的 reading / phoneme / task hash 复算错误 0（708.585 秒）；10,088/10,088 件音频的路径、SHA-256、24 kHz mono 64 kbps、时长、时间轴、引用、孤儿文件、ffprobe 与静音检查全部通过（1,354.165 秒）。L1-001 的“今日”“やわらかく”“じゃあ”代表音频没有长停顿后的分离尾音，结尾保留约 0.122–0.128 秒静音。`
+  `PENDING：必须以 aivisspeech-1.2.0-aivmx-v3、44.1 kHz、clarity schema 3 的最终 10,088 件资产完成全量验证。`
   <!-- AUTO:AUDIO_VALIDATION:END -->
-  <!-- RELEASE:AUDIO_VALIDATION:PASS -->
+  <!-- RELEASE:AUDIO_VALIDATION:PENDING contract=31c63a8f6e1502a0da171427565878c279dc5ac89d9e17ad9168d58ceb2a449a -->
 
 ## 浏览器回归
 
 <!-- AUTO:BROWSER_QA:START -->
-`v102-r2` 已在 359×500、375×667、390×844、844×390、1365×900 完成 zh / en / ja 回归：
-
-- 页面无横向溢出，关键触控目标不小于 44px；PC 顶栏、存档同步区、关卡重排和短横屏布局正常。
-- 首次模式弹窗只出现一次，进入听力模式不会自动播放；听力、日语、双语三种模式正常。
-- 解析页可进入下一关，末关返回关卡地图；结果弹窗不会在选项中插入撑高布局的“正确答案”文字。
-- 月历月份切换、连续/累计打卡与本地/云端合并正常；Resources CTA 显示“开始 / Start / 開始”并进入对应语言标题的工具页。
-- 句子和词块本身可播放，没有重复播放按钮；点击播放后页面滚动位置不变。
-- 控制台除静态预览环境预期的 API 降级外无新增异常；测试用 Chromium 与临时服务均已关闭。
+`PENDING：真实 Image2 图片、版本化背景、最终音频和 r6 缓存键落地后，重新执行全部 zh / en / ja 与五个规定视口回归。`
 <!-- AUTO:BROWSER_QA:END -->
-<!-- RELEASE:BROWSER_QA:PASS -->
+<!-- RELEASE:BROWSER_QA:PENDING contract=31c63a8f6e1502a0da171427565878c279dc5ac89d9e17ad9168d58ceb2a449a -->
 
 ## 最终发布命令
 
 ```powershell
 npm.cmd run jp-subtext:validate
 npm.cmd run jp-subtext:audio:validate -- --check-silence
+npm.cmd run jp-subtext:audio:audit:live
+npm.cmd run jp-subtext:image2:check
+npm.cmd run jp-subtext:test:tts-python
 npm.cmd run jp-subtext:test
 npm.cmd run build
 git diff --check
 git diff --stat
 ```
 
-完整音频验证必须包含音素复算、全量 ffprobe 和静音检查；`audio:validate:quick`、局部试听或单关 benchmark 不能代替正式门槛。
+运行 `jp-subtext:audio:audit:live` 前只需显式配置 `JP_SUBTEXT_TTS_CONFIG`，必要时再配置 `JP_SUBTEXT_PYTHON`；`jp-subtext:test:tts-python` 若无法自动发现解释器，只为当前命令设置 `JP_SUBTEXT_TTS_PYTHON`。最终门槛固定审计仓库将要发布的 `tools/japanese-subtext/audio/manifest.json` 与同目录音频，不接受外部音频根替代。该步骤会调用本机 Aivis 配置，对全部 reading / mora / query / task hash 重新计算，并重新哈希、探测和解码全部任务与场景音频；普通 `npm run build` 不会启动或依赖本地模型。
 
-## 模型收尾
+`jp-subtext:image2:check` 会以 publisher 的 published-only check 重新绑定当前 prompt、style bible 与已发布 WebP，复算每张图的 SHA-256、dHash 和尺寸，不依赖原始 PNG。最终把门槛改为 `PASS` 时，每个隐藏 PASS 标记还必须带独立 evidence SHA-256；该值同时绑定最终 audio manifest、Image2 manifest、final-stats，以及对应 AUTO 证据区。只替换 `PENDING` 文案、保留可见待验收状态或事后修改证据区都不能通过构建。
 
-- Kokoro 只用于本次 CPU 离线预生成；网站运行时只读取静态 MP3 与 manifest。
-- 正式校验后确认无本任务遗留的 TTS 进程、服务、计划任务或开机自启。
-- 本次未额外安装 Zundamon / VOICEVOX，避免在已授权的一套离线模型之外引入第二套模型、额外角色许可审查与常驻资源占用。
+完整音频验证必须包含审查假名与 mora/query/task hash 复算、全量 ffprobe、清晰度与静音检查；快速验证、局部试听或单关 benchmark 不能代替正式门槛。最终验收后还需关闭 AivisSpeech Engine 及子进程，并确认没有服务、计划任务或开机自启。

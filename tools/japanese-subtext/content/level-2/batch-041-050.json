@@ -440,7 +440,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L2-042",
-      "revision": 3,
+      "revision": 4,
       "level": 2,
       "stage": 42,
       "jlptTarget": "N2",
@@ -852,7 +852,7 @@
               },
               "ttsTextJa": "交流会が今日開かれる。",
               "audioId": "L2-042-q2-b",
-              "readingJa": "こーりゅーかいがきょーひらかれる。"
+              "readingJa": "こーりゅーかいがきょうひらかれる。"
             },
             {
               "id": "c",
@@ -925,13 +925,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "56515bc6f2054e258174135da9566cb24d564b4cc9bb979b77f4841f6b596949"
+      "contentHash": "98982c1676a8f516cac444fef5c5113e27707ad10837e09676b1c8a698745787"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L2-043",
-      "revision": 3,
+      "revision": 4,
       "level": 2,
       "stage": 43,
       "jlptTarget": "N2",
@@ -1258,7 +1258,7 @@
               },
               "ttsTextJa": "宝箱に一度も近づかないこと。",
               "audioId": "L2-043-q1-a",
-              "readingJa": "たからばこにいちどもちかずかないこと。"
+              "readingJa": "たからばこにいちどもちかづかないこと。"
             },
             {
               "id": "b",
@@ -1344,13 +1344,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "8027b1959ae90171644cd7d2542d9e813abcdeebc474feaa4bbd90f14c9d5668"
+      "contentHash": "7842d4eaa441e00b7e8e8d53fe31438a1d78bd1335d92418108ebec446b5d7b6"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L2-044",
-      "revision": 3,
+      "revision": 4,
       "level": 2,
       "stage": 44,
       "jlptTarget": "N2",
@@ -1557,8 +1557,8 @@
             "zh": "我也请定在六点。",
             "en": "Six for me as well, please."
           },
-          "readingJa": "わたしもろくじでおねがい",
-          "ttsTextJa": "私も六時でお願い",
+          "readingJa": "わたしもろくじでおねがい。",
+          "ttsTextJa": "私も六時でお願い。",
           "audioId": "L2-044-line-006",
           "pauseAfterMs": 480,
           "tokens": [
@@ -1819,13 +1819,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "0af97b57fefefeae9e8acaf61211fc1400b0fd823b959f2d808feba162eae765"
+      "contentHash": "d37f9e90db20c19c3f3179cc1b36c79b4963168601378de6290bf77f7c916801"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L2-045",
-      "revision": 3,
+      "revision": 4,
       "level": 2,
       "stage": 45,
       "jlptTarget": "N2",
@@ -2186,7 +2186,7 @@
               },
               "ttsTextJa": "各席に置かれた席札の情報。",
               "audioId": "L2-045-q1-d",
-              "readingJa": "かくせきにおかれたせきさつのじょーほー。"
+              "readingJa": "かくせきにおかれたせきふだのじょーほー。"
             }
           ],
           "correctOptionIds": [
@@ -2240,13 +2240,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "9458bd0008e8a8a7db4a31d04c668d5ba53ad6a5917f5f62032dd2655ff16ff0"
+      "contentHash": "9dc74f9646ab9653ad214a7917be4afa63009842886a655cb45f27cbb376e8df"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L2-046",
-      "revision": 3,
+      "revision": 4,
       "level": 2,
       "stage": 46,
       "jlptTarget": "N2",
@@ -2559,7 +2559,7 @@
               },
               "ttsTextJa": "水やりをいつまで続ける必要があるか。",
               "audioId": "L2-046-q1-c",
-              "readingJa": "みずやりをいつまでつずけるひつよーがあるか。"
+              "readingJa": "みずやりをいつまでつづけるひつよーがあるか。"
             },
             {
               "id": "d",
@@ -2711,7 +2711,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "f29245b3a030a444870ae613249cd948a92fc162e89ae85132e818443fcde2c1"
+      "contentHash": "d6c9e58b2dad98f0cb13e294b5f3b37db27db4498772ae9d3bf97f41a88bf397"
     },
     {
       "schemaVersion": 1,
@@ -4028,7 +4028,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L2-050",
-      "revision": 3,
+      "revision": 5,
       "level": 2,
       "stage": 50,
       "jlptTarget": "N2",
@@ -4319,7 +4319,7 @@
               },
               "ttsTextJa": "二人は今日初めて互いの存在を知った。",
               "audioId": "L2-050-q1-a",
-              "readingJa": "ふたりわきょーはじめてたがいのそんざいをしった。"
+              "readingJa": "ふたりわきょうはじめてたがいのそんざいをしった。"
             },
             {
               "id": "b",
@@ -4414,7 +4414,7 @@
               },
               "ttsTextJa": "同じ日、同じ曲、同じ筆跡の便りが毎年続いている。",
               "audioId": "L2-050-q2-a",
-              "readingJa": "おなじひ、おなじきょく、おなじひっせきのたよりがまいとしつずいている。"
+              "readingJa": "おなじひ、おなじきょく、おなじひっせきのたよりがまいとしつづいている。"
             },
             {
               "id": "b",
@@ -4513,7 +4513,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "eaa115635b8e3c788ee67f49afcbbd09c71e621a6bc24d9ef41a9eaed72162de"
+      "contentHash": "566abb47683e364f256dd6316275ee20023196fbb4ce5aada8111d371cccc1c3"
     }
   ]
 }

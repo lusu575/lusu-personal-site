@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "japanese-subtext-design-identities-v1",
+  "seedNamespace": "japanese-subtext-cast-design-v2",
+  "defaultIdentityPattern": "stage:<lowercase-stage-id>:cast:<cast-id>",
+  "aliases": [
+    {
+      "designIdentity": "person:l4-hori",
+      "kind": "same-character",
+      "members": [
+        {
+          "stageId": "L4-008",
+          "castId": "manager",
+          "expectedName": {
+            "ja": "責任者・堀",
+            "en": "Hori, manager"
+          },
+          "variant": "manager"
+        },
+        {
+          "stageId": "L4-014",
+          "castId": "manager",
+          "expectedName": {
+            "ja": "営業部長・堀",
+            "en": "Hori, sales manager"
+          },
+          "variant": "sales-manager"
+        }
+      ]
+    },
+    {
+      "designIdentity": "appearance:l3-036-yui",
+      "kind": "shared-appearance",
+      "members": [
+        {
+          "stageId": "L3-036",
+          "castId": "yui",
+          "expectedName": {
+            "ja": "ユイ",
+            "en": "Yui"
+          },
+          "variant": "human"
+        },
+        {
+          "stageId": "L3-036",
+          "castId": "avatar",
+          "expectedName": {
+            "ja": "予測アバター",
+            "en": "Predictive Avatar"
+          },
+          "variant": "predictive-avatar"
+        }
+      ]
+    }
+  ]
+}

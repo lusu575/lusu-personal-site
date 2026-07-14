@@ -1329,7 +1329,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L2-006",
-      "revision": 3,
+      "revision": 4,
       "level": 2,
       "stage": 6,
       "jlptTarget": "N2",
@@ -1534,7 +1534,7 @@
               },
               "ttsTextJa": "睡眠を考えて、いつもの習慣を今日は変えた。",
               "audioId": "L2-006-q1-c",
-              "readingJa": "すいみんをかんがえて、いつものしゅーかんをきょーわかえた。"
+              "readingJa": "すいみんをかんがえて、いつものしゅーかんをきょうわかえた。"
             },
             {
               "id": "d",
@@ -1596,7 +1596,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "e5d2e3d68d1ee092d6a6db961b76685db7a0f96aa1e52bcba6950f64d152de12"
+      "contentHash": "305f1ce14432efc2d165c54a00902f7ace5598529c9a9d855bde6a0bd171db3f"
     },
     {
       "schemaVersion": 1,
@@ -1883,7 +1883,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L2-008",
-      "revision": 3,
+      "revision": 4,
       "level": 2,
       "stage": 8,
       "jlptTarget": "N2",
@@ -2086,7 +2086,7 @@
               },
               "ttsTextJa": "玲奈の作戦に最初から賛成していた。",
               "audioId": "L2-008-q1-b",
-              "readingJa": "れーなのさくせんにさいしょからさんせーしていた。"
+              "readingJa": "れなのさくせんにさいしょからさんせーしていた。"
             },
             {
               "id": "c",
@@ -2159,7 +2159,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "1fe4a946c1e15a8509cc786e51b26165802c55d41ea128abb373689ffbe589e7"
+      "contentHash": "746d70f3976c5425b3b62e4df834c280f70d5512fb3ad2ecddd461253034f1e7"
     },
     {
       "schemaVersion": 1,

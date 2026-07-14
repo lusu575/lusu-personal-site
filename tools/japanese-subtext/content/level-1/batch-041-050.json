@@ -320,7 +320,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L1-042",
-      "revision": 3,
+      "revision": 4,
       "level": 1,
       "stage": 42,
       "jlptTarget": "N3",
@@ -562,7 +562,7 @@
               },
               "ttsTextJa": "悠里が朝から使い続けていた。",
               "audioId": "L1-042-q1-b",
-              "readingJa": "ゆーりがあさからつかいつずけていた。"
+              "readingJa": "ゆーりがあさからつかいつづけていた。"
             },
             {
               "id": "c",
@@ -724,7 +724,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "3dfae26c176b1b2c40d0bfde1bcaf6dd8cdad7611b27769a907d713292023d5c"
+      "contentHash": "0e11eb5586a74bfbc1357989935cf1b0e26d7eb2d9a291743a8b3b70d44cf2f3"
     },
     {
       "schemaVersion": 1,
@@ -1041,7 +1041,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L1-044",
-      "revision": 3,
+      "revision": 4,
       "level": 1,
       "stage": 44,
       "jlptTarget": "N3",
@@ -1291,7 +1291,7 @@
               },
               "ttsTextJa": "武。",
               "audioId": "L1-044-q1-b",
-              "readingJa": "たけ。"
+              "readingJa": "たけし。"
             },
             {
               "id": "c",
@@ -1402,7 +1402,7 @@
               },
               "ttsTextJa": "武を含む全員に、遅れず集合してほしい。",
               "audioId": "L1-044-q2-d",
-              "readingJa": "たけをふくむぜんいんに、おくれずしゅーごーしてほしい。"
+              "readingJa": "たけしをふくむぜんいんに、おくれずしゅーごーしてほしい。"
             }
           ],
           "correctOptionIds": [
@@ -1453,13 +1453,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "32fcb4756a6653f7c2337e1997deb1f5e16b0fd889de2187527b882d8285a697"
+      "contentHash": "6565b3d8056815cd1e91fe1a738682c85af3a6816620b6572c7adec4a4f85303"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L1-045",
-      "revision": 3,
+      "revision": 4,
       "level": 1,
       "stage": 45,
       "jlptTarget": "N3",
@@ -1723,7 +1723,7 @@
               },
               "ttsTextJa": "放送は来年の同じ日の天気を紹介している。",
               "audioId": "L1-045-q1-d",
-              "readingJa": "ほーそーわらいねんのどーじじつのてんきをしょーかいしている。"
+              "readingJa": "ほーそーわらいねんのおなじひのてんきをしょーかいしている。"
             }
           ],
           "correctOptionIds": [
@@ -1774,13 +1774,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "77e394ce59b8ff12d12010260fdb79c432bd8113a506fe71d2bd0eaea03621e5"
+      "contentHash": "7c9b5a2df2cf531c38a84c88f6147a9c99aebd1f69ee5c1656a12bb9cfca4725"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L1-046",
-      "revision": 3,
+      "revision": 4,
       "level": 1,
       "stage": 46,
       "jlptTarget": "N3",
@@ -1914,14 +1914,14 @@
             "zh": "第三格，它又推了一次。",
             "en": "Panel three: it pushes once more."
           },
-          "readingJa": "みこまめ、もういちどだけおします。",
+          "readingJa": "さんこまめ、もういちどだけおします。",
           "ttsTextJa": "三コマ目、もう一度だけ押します。",
           "audioId": "L1-046-line-005",
           "tokens": [
             {
               "id": "token-001",
               "text": "三コマ目、もう一度だけ押します",
-              "reading": "みこまめ、もういちどだけおします",
+              "reading": "さんこまめ、もういちどだけおします",
               "audioId": "L1-046-line-005-token-001"
             }
           ]
@@ -2181,7 +2181,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "71a9354e530a0e4636f73afdd7ec4f285489b9e7d9cfef4294999baf6dc4e573"
+      "contentHash": "f32d1272c74ba39f86f1c4a8fd7214b3274e51978c86a564aa9f3e4d3ff780a7"
     },
     {
       "schemaVersion": 1,
@@ -3255,7 +3255,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L1-050",
-      "revision": 3,
+      "revision": 4,
       "level": 1,
       "stage": 50,
       "jlptTarget": "N3",
@@ -3615,7 +3615,7 @@
               },
               "ttsTextJa": "店員が時計に気付いたことだけ。",
               "audioId": "L1-050-q2-d",
-              "readingJa": "てんいんがとけーにきずいたことだけ。"
+              "readingJa": "てんいんがとけーにきづいたことだけ。"
             }
           ],
           "correctOptionIds": [
@@ -3664,7 +3664,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "a8589b6fda332266e85cda6b330cb66543820b0fe8e44c504ab82772a92870ae"
+      "contentHash": "b3e22ec85263e6bb488b1e1c1766aebde8967d713bef70ed8898cd3eabf3c93f"
     }
   ]
 }

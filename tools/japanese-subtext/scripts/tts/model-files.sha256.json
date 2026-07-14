@@ -1,35 +1,58 @@
 {
-  "schemaVersion": 1,
-  "modelRelease": "model-files-v1.0",
-  "verifiedAt": "2026-07-11",
-  "files": {
-    "model": {
-      "file": "kokoro-v1.0.onnx",
-      "bytes": 325532387,
-      "sha256": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
-      "source": "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.onnx",
-      "license": "Apache-2.0"
-    },
-    "voices": {
-      "file": "voices-v1.0.bin",
-      "bytes": 28214398,
-      "sha256": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d",
-      "source": "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin",
-      "license": "Apache-2.0; see Japanese voice notice"
-    },
-    "config": {
-      "file": "config.json",
-      "bytes": 2351,
-      "sha256": "5abb01e2403b072bf03d04fde160443e209d7a0dad49a423be15196b9b43c17f",
-      "source": "kokoro-onnx 0.5.0 package resource",
-      "license": "MIT"
-    }
+  "schemaVersion": 2,
+  "pipeline": "aivisspeech-1.2.0-aivmx-v3",
+  "verifiedAt": "2026-07-12",
+  "engine": {
+    "name": "AivisSpeech Engine",
+    "version": "1.2.0",
+    "platform": "Windows-x64",
+    "releaseSha256": "bfbceba2e14dc7f23c7f3695f9ac0381baf91b15d6544e98384574eaadd271f3",
+    "source": "https://github.com/Aivis-Project/AivisSpeech-Engine/releases/tag/1.2.0",
+    "license": "LGPL-3.0",
+    "executionProvider": "CPU"
   },
-  "runtime": {
-    "python": "3.11",
-    "kokoro-onnx": "0.5.0",
-    "misaki-fork": "0.9.6",
-    "onnxruntime": "1.27.0",
-    "pyopenjtalk-mod": "0.4.1.post3"
+  "models": [
+    {
+      "name": "コハク",
+      "version": "1.1.0",
+      "uuid": "22e8ed77-94fe-4ef2-871f-a86f94e9a579",
+      "bytes": 255326987,
+      "sha256": "3f5c08b52bb8a64efd361268580c81510f96c927cd6905aa7dbae6851333270a",
+      "source": "https://hub.aivis-project.com/aivm-models/22e8ed77-94fe-4ef2-871f-a86f94e9a579",
+      "license": "ACML-1.0"
+    },
+    {
+      "name": "まお",
+      "version": "1.2.0",
+      "uuid": "a59cb814-0083-4369-8542-f51a29e72af7",
+      "bytes": 258037076,
+      "sha256": "f87ccea2e8e2de0e0bfe52e803945af903b4086bf25621a015111628f00e4119",
+      "source": "https://hub.aivis-project.com/aivm-models/a59cb814-0083-4369-8542-f51a29e72af7",
+      "license": "ACML-1.0"
+    },
+    {
+      "name": "fumifumi",
+      "version": "1.0.0",
+      "uuid": "71e72188-2726-4739-9aa9-39567396fb2a",
+      "bytes": 270174574,
+      "sha256": "dec42930f9fdd5948831a271fcc8b377f56001273c6d3035cf68465b6dbaf91a",
+      "source": "https://hub.aivis-project.com/aivm-models/71e72188-2726-4739-9aa9-39567396fb2a",
+      "license": "ACML-1.0"
+    },
+    {
+      "name": "阿井田 茂",
+      "version": "1.0.0",
+      "uuid": "47e53151-a378-46f3-abee-ce13aa07feb1",
+      "bytes": 251137086,
+      "sha256": "6dabe29de5ec2c1715e12a430805e1bff6ec64a315cccec2d26fad029df83243",
+      "source": "https://hub.aivis-project.com/aivm-models/47e53151-a378-46f3-abee-ce13aa07feb1",
+      "license": "ACML-1.0"
+    }
+  ],
+  "output": {
+    "sampleRate": 44100,
+    "channels": 1,
+    "bitrate": "96k",
+    "targetLufs": -18
   }
 }

@@ -8,7 +8,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-041",
-      "revision": 3,
+      "revision": 5,
       "level": 4,
       "stage": 41,
       "jlptTarget": "N1-advanced",
@@ -142,7 +142,7 @@
             "zh": "可以理解为销售方会继续推进吗？",
             "en": "May I understand that sales will continue the discussion?"
           },
-          "readingJa": "えーぎょーとしてわ、けんとーをつずけるというりかいでよいですか。",
+          "readingJa": "えーぎょーとしてわ、けんとーをつづけるというりかいでよいですか。",
           "ttsTextJa": "営業としては、検討を続けるという理解でよいですか。",
           "audioId": "L4-041-line-003",
           "pauseAfterMs": 520,
@@ -156,7 +156,7 @@
             {
               "id": "token-002",
               "text": "検討を続けるという理解でよいですか。",
-              "reading": "けんとーをつずけるというりかいでよいですか。",
+              "reading": "けんとーをつづけるというりかいでよいですか。",
               "audioId": "L4-041-line-003-token-002"
             }
           ]
@@ -367,7 +367,7 @@
             "zh": "本部门不会按这一框架再次提出方案。",
             "en": "Our department will not resubmit under this framework."
           },
-          "readingJa": "とーべとして、このわくぐみでのさいてーじわいたしません。",
+          "readingJa": "とうぶとして、このわくぐみでのさいてーじわいたしません。",
           "ttsTextJa": "当部として、この枠組みでの再提示はいたしません。",
           "audioId": "L4-041-line-012",
           "pauseAfterMs": 520,
@@ -375,7 +375,7 @@
             {
               "id": "token-001",
               "text": "当部として、",
-              "reading": "とーべとして、",
+              "reading": "とうぶとして、",
               "audioId": "L4-041-line-012-token-001"
             },
             {
@@ -784,13 +784,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "930ab2e2c42e329027e85f5bd8d61ad4c8f4ff810191d95089f18ab41b104f54"
+      "contentHash": "1b3daa49c40b8a6d642fc18e1963e878730542a8c9d7d3acc6ec4cb4de3a78eb"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-042",
-      "revision": 3,
+      "revision": 6,
       "level": 4,
       "stage": 42,
       "jlptTarget": "N1-advanced",
@@ -1000,7 +1000,7 @@
             "zh": "8:12，上传屋顶迷宫企划书。",
             "en": "8:12: Rooftop maze proposal attached."
           },
-          "readingJa": "はちじじゅーにぶん。おくじょーめーろのきかくしょをてんぷする。",
+          "readingJa": "はちじじゅーにふん。おくじょーめーろのきかくしょをてんぷする。",
           "ttsTextJa": "八時十二分。屋上迷路の企画書を添付する。",
           "audioId": "L4-042-line-006",
           "pauseAfterMs": 520,
@@ -1008,7 +1008,7 @@
             {
               "id": "token-001",
               "text": "八時十二分。",
-              "reading": "はちじじゅーにぶん。",
+              "reading": "はちじじゅーにふん。",
               "audioId": "L4-042-line-006-token-001"
             },
             {
@@ -1466,7 +1466,7 @@
               "text": {
                 "ja": "企画本文は反応の後に投稿された",
                 "zh": "企划正文发布在反应之后",
-                "en": "The proposal was posted after the reactions"
+                "en": "The proposal appeared only after the reactions"
               },
               "ttsTextJa": "企画本文は反応の後に投稿された",
               "audioId": "L4-042-q3-c",
@@ -1505,7 +1505,7 @@
             "intent": {
               "ja": "最も整合する読みは「二つの反応は締切確認に付いている／企画本文は反応の後に投稿された」です。",
               "zh": "最能统合全部信息的解读是“两个反应附在截止日期确认上／企划正文发布在反应之后”。",
-              "en": "The reading that best unifies the scene is: The reactions attach to the deadline check / The proposal was posted after the reactions."
+              "en": "The reading that best unifies the scene is: The reactions attach to the deadline check / The proposal appeared only after the reactions."
             },
             "evidence": {
               "ja": "1番目の台詞、2番目の台詞、3番目の台詞、6番目の台詞、10番目の台詞、11番目の台詞を突き合わせると、付着対象と時間順のどちらから見ても、親指印を企画への同意と読むことはできません。",
@@ -1542,7 +1542,7 @@
               },
               "ttsTextJa": "古い親指印を企画書へ複製し、既存の反応を再利用する",
               "audioId": "L4-042-q4-a",
-              "readingJa": "ふるいおやゆびしるしをきかくしょえふくせーし、きそんのはんのーをさいりよーする"
+              "readingJa": "ふるいおやゆびじるしをきかくしょえふくせーし、きそんのはんのーをさいりよーする"
             },
             {
               "id": "b",
@@ -1627,13 +1627,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "ea20ebc613aa3664e27f0a036391feefbba9da1d0dea797458b81cef4ec5e7da"
+      "contentHash": "478759b2ac3d139e1e523e64a89cc85a8e81b0401eaec1a2950e89a268415bb7"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-043",
-      "revision": 3,
+      "revision": 4,
       "level": 4,
       "stage": 43,
       "jlptTarget": "N1-advanced",
@@ -1711,8 +1711,8 @@
           "speaker": "guest",
           "text": {
             "ja": "地元らしい料理を、お任せでお願いします。",
-            "zh": "请交给您安排一道有当地特色的菜。",
-            "en": "Please choose something local—omakase."
+            "zh": "有当地特色的菜，就交给您安排。",
+            "en": "Something local—omakase, please."
           },
           "readingJa": "じもとらしいりょーりを、おまかせでおねがいします。",
           "ttsTextJa": "地元らしい料理を、お任せでお願いします。",
@@ -1791,12 +1791,12 @@
           "id": "line-004",
           "speaker": "server",
           "text": {
-            "ja": "通常のお任せコースは、実験皿を含む七品です。",
+            "ja": "通常のお任せコースは、実験的な料理を含む七品です。",
             "zh": "本店通常的“交给厨师”套餐含实验菜，共七道。",
             "en": "Our standard omakase is seven courses including experimental dishes."
           },
-          "readingJa": "つーじょーのおまかせこーすわ、じっけんさらをふくむななひんです。",
-          "ttsTextJa": "通常のお任せコースは、実験皿を含む七品です。",
+          "readingJa": "つーじょーのおまかせこーすわ、じっけんてきなりょーりをふくむななひんです。",
+          "ttsTextJa": "通常のお任せコースは、実験的な料理を含む七品です。",
           "audioId": "L4-043-line-004",
           "pauseAfterMs": 520,
           "tokens": [
@@ -1808,8 +1808,8 @@
             },
             {
               "id": "token-002",
-              "text": "実験皿を含む七品です。",
-              "reading": "じっけんさらをふくむななひんです。",
+              "text": "実験的な料理を含む七品です。",
+              "reading": "じっけんてきなりょーりをふくむななひんです。",
               "audioId": "L4-043-line-004-token-002"
             }
           ]
@@ -2325,13 +2325,13 @@
             {
               "id": "a",
               "text": {
-                "ja": "客に実験皿を七品追加するから",
+                "ja": "客に実験的な料理を七品追加するから",
                 "zh": "给顾客再加七道实验菜",
                 "en": "It adds seven experimental dishes"
               },
-              "ttsTextJa": "客に実験皿を七品追加するから",
+              "ttsTextJa": "客に実験的な料理を七品追加するから",
               "audioId": "L4-043-q3-a",
-              "readingJa": "きゃくにじっけんさらをななひんついかするから"
+              "readingJa": "きゃくにじっけんてきなりょーりをななひんついかするから"
             },
             {
               "id": "b",
@@ -2416,13 +2416,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "4060f28455d5e1a1da48beafe63b1fae8e7d4017f401253f332aa8c922bd0810"
+      "contentHash": "8cde5f21b847250782b32b3f73c4f3d7019294f86d004c65478ea8ad7e490191"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-044",
-      "revision": 3,
+      "revision": 6,
       "level": 4,
       "stage": 44,
       "jlptTarget": "N1-advanced",
@@ -2611,7 +2611,7 @@
             "zh": "但第一条的余响延续到第二条开头0.2秒。",
             "en": "Yet message one’s reverberation continues 0.2 seconds into message two."
           },
-          "readingJa": "しかしいっつーめのざんきょーが、につーめのぼーとーまでれーてんにびょーつずいています。",
+          "readingJa": "しかしいっつーめのざんきょーが、につーめのぼーとーまでれーてんにびょーつづいています。",
           "ttsTextJa": "しかし一通目の残響が、二通目の冒頭まで〇・二秒続いています。",
           "audioId": "L4-044-line-005",
           "pauseAfterMs": 520,
@@ -2625,7 +2625,7 @@
             {
               "id": "token-002",
               "text": "二通目の冒頭まで〇・二秒続いています。",
-              "reading": "につーめのぼーとーまでれーてんにびょーつずいています。",
+              "reading": "につーめのぼーとーまでれーてんにびょーつづいています。",
               "audioId": "L4-044-line-005-token-002"
             }
           ]
@@ -2746,7 +2746,7 @@
             "zh": "三条录音的显示时间各相隔一分钟。",
             "en": "The displayed recording times are one minute apart."
           },
-          "readingJa": "さんにんのろくおんじこくひょーじわ、いちぶずつはなれています。",
+          "readingJa": "さんにんのろくおんじこくひょーじわ、いっぷんずつはなれています。",
           "ttsTextJa": "三人の録音時刻表示は、一分ずつ離れています。",
           "audioId": "L4-044-line-010",
           "pauseAfterMs": 520,
@@ -2760,7 +2760,7 @@
             {
               "id": "token-002",
               "text": "一分ずつ離れています。",
-              "reading": "いちぶずつはなれています。",
+              "reading": "いっぷんずつはなれています。",
               "audioId": "L4-044-line-010-token-002"
             }
           ]
@@ -2794,7 +2794,7 @@
             "zh": "钟声哆、咪、嗦，正好组成一个三音提示音。",
             "en": "Do, mi, and sol form one three-note chime."
           },
-          "readingJa": "かねわど、み、そで、ひとつのさんおとちゃいむになります。",
+          "readingJa": "かねわど、み、そで、ひとつのさんおんちゃいむになります。",
           "ttsTextJa": "鐘はド、ミ、ソで、一つの三音チャイムになります。",
           "audioId": "L4-044-line-012",
           "pauseAfterMs": 520,
@@ -2808,7 +2808,7 @@
             {
               "id": "token-002",
               "text": "一つの三音チャイムになります。",
-              "reading": "ひとつのさんおとちゃいむになります。",
+              "reading": "ひとつのさんおんちゃいむになります。",
               "audioId": "L4-044-line-012-token-002"
             }
           ]
@@ -2914,7 +2914,7 @@
               },
               "ttsTextJa": "残響がファイル境界を越えて続く",
               "audioId": "L4-044-q1-a",
-              "readingJa": "ざんきょーがふぁいるきょーかいをこえてつずく"
+              "readingJa": "ざんきょーがふぁいるきょーかいをこえてつづく"
             },
             {
               "id": "b",
@@ -2936,7 +2936,7 @@
               },
               "ttsTextJa": "同じ空調ノイズと七秒周期が続く",
               "audioId": "L4-044-q1-c",
-              "readingJa": "おなじくーちょーのいずとななびょーしゅーきがつずく"
+              "readingJa": "おなじくーちょーのいずとななびょーしゅーきがつづく"
             },
             {
               "id": "d",
@@ -2947,7 +2947,7 @@
               },
               "ttsTextJa": "表示時刻が一分ずつ違う",
               "audioId": "L4-044-q1-d",
-              "readingJa": "ひょーじじこくがいちぶずつちがう"
+              "readingJa": "ひょーじじこくがいっぷんずつちがう"
             }
           ],
           "correctOptionIds": [
@@ -3006,7 +3006,7 @@
               },
               "ttsTextJa": "ド・ミ・ソが一つのチャイムとして時間的に連続する",
               "audioId": "L4-044-q2-a",
-              "readingJa": "ど・み・そがひとつのちゃいむとしてじかんまとにれんぞくする"
+              "readingJa": "ど・み・そがひとつのちゃいむとしてじかんてきにれんぞくする"
             },
             {
               "id": "b",
@@ -3183,13 +3183,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "4928af3052e37b785c7d98cd2bb94659c31c6db121e16fd05702d3241ea9c695"
+      "contentHash": "d08aea4671fe546b35b540cefe38700611ac3ce7c4750b5ebe3a5c469fd919e3"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-045",
-      "revision": 3,
+      "revision": 5,
       "level": 4,
       "stage": 45,
       "jlptTarget": "N1-advanced",
@@ -3349,9 +3349,9 @@
           "text": {
             "ja": "昨日まで、三十日以上滞在する旅行者も含めていました。",
             "zh": "截至昨天，停留30天以上的旅客也被计入。",
-            "en": "Until yesterday, travelers staying over thirty days were included."
+            "en": "Until yesterday, travelers staying for thirty days or more were included."
           },
-          "readingJa": "きのーまで、みそかいじょーたいざいするりょこーしゃもふくめていました。",
+          "readingJa": "きのーまで、さんじゅーにちいじょーたいざいするりょこーしゃもふくめていました。",
           "ttsTextJa": "昨日まで、三十日以上滞在する旅行者も含めていました。",
           "audioId": "L4-045-line-004",
           "pauseAfterMs": 520,
@@ -3365,7 +3365,7 @@
             {
               "id": "token-002",
               "text": "三十日以上滞在する旅行者も含めていました。",
-              "reading": "みそかいじょーたいざいするりょこーしゃもふくめていました。",
+              "reading": "さんじゅーにちいじょーたいざいするりょこーしゃもふくめていました。",
               "audioId": "L4-045-line-004-token-002"
             }
           ]
@@ -4064,13 +4064,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "b3e903e6f96546aa22a938d9e5c92c6582bbe3ac6a485cf8f34129eeb13aa8ea"
+      "contentHash": "2d3bf8a4e0beff629d750439e85e77f60202a35165ff2f4f74276ad050b95d6e"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-046",
-      "revision": 3,
+      "revision": 5,
       "level": 4,
       "stage": 46,
       "jlptTarget": "N1-advanced",
@@ -4738,13 +4738,13 @@
             {
               "id": "a",
               "text": {
-                "ja": "決定証拠となる筆記時刻と扉外記録がなく、二仮説が同じ証拠に適合する",
+                "ja": "筆記時刻と扉の外の記録という決定的な証拠がなく、二つの仮説が同じ証拠に適合する",
                 "zh": "缺少决定性的书写时间与门外记录，两种假说都符合现有证据",
                 "en": "Decisive timing and outside records are absent, and both hypotheses fit the evidence"
               },
-              "ttsTextJa": "決定証拠となる筆記時刻と扉外記録がなく、二仮説が同じ証拠に適合する",
+              "ttsTextJa": "筆記時刻と扉の外の記録という決定的な証拠がなく、二つの仮説が同じ証拠に適合する",
               "audioId": "L4-046-q3-a",
-              "readingJa": "けってーしょーことなるひっきじこくととびらがいきろくがなく、にかせつがおなじしょーこにてきごーする"
+              "readingJa": "ひっきじこくととびらのそとのきろくというけってーてきなしょーこがなく、ふたつのかせつがおなじしょーこにてきごーする"
             },
             {
               "id": "b",
@@ -4777,7 +4777,7 @@
               },
               "ttsTextJa": "登場人物が三人だから",
               "audioId": "L4-046-q3-d",
-              "readingJa": "きゃらくたーがさんにんだから"
+              "readingJa": "とうじょうじんぶつがさんにんだから"
             }
           ],
           "correctOptionIds": [
@@ -4797,7 +4797,7 @@
               "en": "Several readings look possible on the surface, but all explicit details in the sixth line、the eleventh line、the thirteenth line、the fourteenth line、the fifteenth line must hold together."
             },
             "intent": {
-              "ja": "最も整合する読みは「決定証拠となる筆記時刻と扉外記録がなく、二仮説が同じ証拠に適合する」です。",
+              "ja": "最も整合する読みは「筆記時刻と扉の外の記録という決定的な証拠がなく、二つの仮説が同じ証拠に適合する」です。",
               "zh": "最能统合全部信息的解读是“缺少决定性的书写时间与门外记录，两种假说都符合现有证据”。",
               "en": "The reading that best unifies the scene is: Decisive timing and outside records are absent, and both hypotheses fit the evidence."
             },
@@ -4829,13 +4829,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "30ace5542e85ac7132984c7393942d24e8efaec3cb95ee9b2a537c7aa668a5d6"
+      "contentHash": "bd75038ecaf1614a7085b964235ff8c85ec92a5f5cf8898bcc85bc542e0a01af"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-047",
-      "revision": 3,
+      "revision": 5,
       "level": 4,
       "stage": 47,
       "jlptTarget": "N1-advanced",
@@ -4916,7 +4916,7 @@
             "zh": "登记簿上有我的名字，日期还是我进门之前。",
             "en": "My name is in the ledger, dated before I crossed the entrance."
           },
-          "readingJa": "ちょーぼにわたしのなまえがある。まだげんかんをくぐるまえのひずけで。",
+          "readingJa": "ちょーぼにわたしのなまえがある。まだげんかんをくぐるまえのひづけで。",
           "ttsTextJa": "帳簿に私の名前がある。まだ玄関をくぐる前の日付で。",
           "audioId": "L4-047-line-001",
           "pauseAfterMs": 520,
@@ -4930,7 +4930,7 @@
             {
               "id": "token-002",
               "text": "まだ玄関をくぐる前の日付で。",
-              "reading": "まだげんかんをくぐるまえのひずけで。",
+              "reading": "まだげんかんをくぐるまえのひづけで。",
               "audioId": "L4-047-line-001-token-002"
             }
           ]
@@ -5247,7 +5247,7 @@
           "text": {
             "ja": "予言ではありません。宿を空けないための経験則です。",
             "zh": "这不是预言，只是避免空房的经验法则。",
-            "en": "Not prophecy—experience used to keep rooms ready."
+            "en": "It is not prophecy. It is a rule of thumb for keeping rooms occupied."
           },
           "readingJa": "よげんでわありません。やどをあけないためのけいけんそくです。",
           "ttsTextJa": "予言ではありません。宿を空けないための経験則です。",
@@ -5555,13 +5555,13 @@
             {
               "id": "d",
               "text": {
-                "ja": "受付の目的は客室準備で、予測方法も説明し、到着後に正式確定しているから",
-                "zh": "前台目的是准备客房，公开说明预测方法，并在到达后才正式确认",
-                "en": "The method serves room preparation, is explained openly, and finalizes only after arrival"
+                "ja": "受付は予測方法を説明し、見込み欄と正式記録を分け、到着後にだけ確定しているから",
+                "zh": "前台说明了预测方法，区分预计栏与正式记录，并只在到达后确认",
+                "en": "The receptionist explains the forecasting method, separates provisional from formal entries, and finalizes only after arrival"
               },
-              "ttsTextJa": "受付の目的は客室準備で、予測方法も説明し、到着後に正式確定しているから",
+              "ttsTextJa": "受付は予測方法を説明し、見込み欄と正式記録を分け、到着後にだけ確定しているから",
               "audioId": "L4-047-q3-d",
-              "readingJa": "うけつけのもくてきわきゃくしつじゅんびで、よそくほーほーもせつめーし、とーちゃくごにせーしきかくてーしているから"
+              "readingJa": "うけつけわよそくほーほーをせつめーし、みこみらんとせーしききろくをわけ、とーちゃくごにだけかくてーしているから"
             }
           ],
           "correctOptionIds": [
@@ -5581,9 +5581,9 @@
               "en": "Several readings look possible on the surface, but all explicit details in the ninth line、the twelfth line、the thirteenth line、the fourteenth line、the sixteenth line must hold together."
             },
             "intent": {
-              "ja": "最も整合する読みは「受付の目的は客室準備で、予測方法も説明し、到着後に正式確定しているから」です。",
-              "zh": "最能统合全部信息的解读是“前台目的是准备客房，公开说明预测方法，并在到达后才正式确认”。",
-              "en": "The reading that best unifies the scene is: The method serves room preparation, is explained openly, and finalizes only after arrival."
+              "ja": "最も整合する読みは「受付は予測方法を説明し、見込み欄と正式記録を分け、到着後にだけ確定しているから」です。",
+              "zh": "最能统合全部信息的解读是“前台说明了预测方法，区分预计栏与正式记录，并只在到达后确认”。",
+              "en": "The reading that best unifies the scene is: The receptionist explains the forecasting method, separates provisional from formal entries, and finalizes only after arrival."
             },
             "evidence": {
               "ja": "9番目の台詞、12番目の台詞、13番目の台詞、14番目の台詞、16番目の台詞を突き合わせると、見込み欄と正式記録を区別する実務があり、超自然性は観察者の見え方から生じています。",
@@ -5613,13 +5613,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "a6ee813047c7adf73efb16bae1eb52ef1f711c0c4bc3747317019bcb65ec30a5"
+      "contentHash": "4bfcbc32f55af7591c0d6c268545cb23920bef43d05d8e102e6e50be6be2746f"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-048",
-      "revision": 3,
+      "revision": 5,
       "level": 4,
       "stage": 48,
       "jlptTarget": "N1-advanced",
@@ -5727,7 +5727,7 @@
             "zh": "杯把上挂着“掰腕比赛冠军奖品”的牌。",
             "en": "The handle bears a tag: Arm-Wrestling Tournament—Champion’s Prize."
           },
-          "readingJa": "はいのとってに、「うでずもーたいかい・ゆーしょーけーひん」とさつがあります。",
+          "readingJa": "はいのとってに、「うでずもーたいかい・ゆーしょーけーひん」とふだがあります。",
           "ttsTextJa": "杯の取っ手に、「腕相撲大会・優勝景品」と札があります。",
           "audioId": "L4-048-line-002",
           "pauseAfterMs": 520,
@@ -5741,7 +5741,7 @@
             {
               "id": "token-002",
               "text": "「腕相撲大会・優勝景品」と札があります。",
-              "reading": "「うでずもーたいかい・ゆーしょーけーひん」とさつがあります。",
+              "reading": "「うでずもーたいかい・ゆーしょーけーひん」とふだがあります。",
               "audioId": "L4-048-line-002-token-002"
             }
           ]
@@ -5754,7 +5754,7 @@
             "zh": "核对标签签名：加尔德本人，真实。",
             "en": "Tag signature verified: Gald, authentic."
           },
-          "readingJa": "さつのしょめーをしょーごー。がるどほんにん、しんせーです。",
+          "readingJa": "ふだのしょめーをしょーごー。がるどほんにん、しんせーです。",
           "ttsTextJa": "札の署名を照合。ガルド本人、真正です。",
           "audioId": "L4-048-line-003",
           "pauseAfterMs": 520,
@@ -5762,7 +5762,7 @@
             {
               "id": "token-001",
               "text": "札の署名を照合。",
-              "reading": "さつのしょめーをしょーごー。",
+              "reading": "ふだのしょめーをしょーごー。",
               "audioId": "L4-048-line-003-token-001"
             },
             {
@@ -5781,7 +5781,7 @@
             "zh": "那种牌一定是你后来挂上的。",
             "en": "You attached that tag later."
           },
-          "readingJa": "そんなさつわ、おまえがあとからつけたのだ。",
+          "readingJa": "そんなふだわ、おまえがあとからつけたのだ。",
           "ttsTextJa": "そんな札は、お前が後から付けたのだ。",
           "audioId": "L4-048-line-004",
           "pauseAfterMs": 520,
@@ -5789,7 +5789,7 @@
             {
               "id": "token-001",
               "text": "そんな札は、",
-              "reading": "そんなさつわ、",
+              "reading": "そんなふだわ、",
               "audioId": "L4-048-line-004-token-001"
             },
             {
@@ -6058,7 +6058,7 @@
           "text": {
             "ja": "クエスト更新。盗品返還を、敗者との和解に変更。",
             "zh": "任务更新：从“归还赃物”改为“与败者和解”。",
-            "en": "Quest updated: Return Stolen Item becomes Reconcile with Sore Loser."
+            "en": "Quest updated: Return Stolen Item becomes Reconcile with the Defeated Opponent."
           },
           "readingJa": "くえすとこーしん。とーひんへんかんを、はいしゃとのわかいにへんこー。",
           "ttsTextJa": "クエスト更新。盗品返還を、敗者との和解に変更。",
@@ -6462,13 +6462,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "5c6e78c4b98ee8cba346ba0092726be176315bb158c65a7f357512b99012db7f"
+      "contentHash": "2d6277a360bbf354b681339c5f40d36fbcd492cd0369a65c72a2bc07e02ee0d8"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-049",
-      "revision": 3,
+      "revision": 5,
       "level": 4,
       "stage": 49,
       "jlptTarget": "N1-advanced",
@@ -6489,7 +6489,7 @@
       "setting": {
         "ja": "創業者の退任会議。三人へ同じ鍵が渡されるが、金庫内の文は「使った者」ではなく「返した者」を見る。",
         "zh": "创始人退休会议上，三人得到相同钥匙，保险柜内的文字考察的不是“谁使用”，而是“谁归还”。",
-        "en": "A founder’s succession meeting where identical keys test return of authority rather than use of it."
+        "en": "A founder’s retirement meeting where identical keys test the return of authority rather than its use."
       },
       "illustration": {
         "enabled": true,
@@ -6930,7 +6930,7 @@
             "zh": "今天我只是观察三人如何对待权限。",
             "en": "Today I only observed how each of you handled authority."
           },
-          "readingJa": "きょーわ、さんにんがけんげんをどーあつかうかをみただけだ。",
+          "readingJa": "きょうわ、さんにんがけんげんをどーあつかうかをみただけだ。",
           "ttsTextJa": "今日は、三人が権限をどう扱うかを見ただけだ。",
           "audioId": "L4-049-line-016",
           "pauseAfterMs": 520,
@@ -6938,7 +6938,7 @@
             {
               "id": "token-001",
               "text": "今日は、",
-              "reading": "きょーわ、",
+              "reading": "きょうわ、",
               "audioId": "L4-049-line-016-token-001"
             },
             {
@@ -7240,13 +7240,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "39e9db2f9b65ff5c4ab9eda1053308d9b3831757a20a2675662c04066d7e379f"
+      "contentHash": "9197b05940901b0d514d8e5422a403bd392fa11ddb68e058d5fecd9568ea4f6c"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-050",
-      "revision": 3,
+      "revision": 5,
       "level": 4,
       "stage": 50,
       "jlptTarget": "N1-advanced",
@@ -7266,9 +7266,9 @@
         "en": "Who Are “We”?"
       },
       "setting": {
-        "ja": "無人化した宇宙船の最終通信。統合直後の二つのAIと、未確認の生命反応が複数形の境界を曖昧にする。",
-        "zh": "船员撤离后的宇宙船最终通信中，刚合并的两个AI与未确认生命信号让复数“我们”的边界模糊。",
-        "en": "A final transmission from an evacuated ship where merged AIs and one unverified life sign blur the plural we."
+        "ja": "無人化した宇宙船の最終通信。統合直後の二つのAIと、貨物区の未確認反応が複数形の境界を曖昧にする。",
+        "zh": "船员撤离后的宇宙船最终通信中，刚合并的两个AI与货舱里的未确认信号让复数“我们”的边界模糊。",
+        "en": "A final transmission from an evacuated ship where two newly merged AIs and an unverified cargo-bay signal blur the boundaries of the plural “we.”"
       },
       "illustration": {
         "enabled": true,
@@ -7538,7 +7538,7 @@
             "zh": "搜救艇因辐射无法靠近，请继续远程扫描。",
             "en": "Radiation blocks a search craft. Continue remote scans."
           },
-          "readingJa": "そーさくてーわほーしゃせんでちかずけない。えんかくそーさをつずけて。",
+          "readingJa": "そーさくてーわほーしゃせんでちかづけない。えんかくそーさをつづけて。",
           "ttsTextJa": "捜索艇は放射線で近づけない。遠隔走査を続けて。",
           "audioId": "L4-050-line-009",
           "pauseAfterMs": 520,
@@ -7546,13 +7546,13 @@
             {
               "id": "token-001",
               "text": "捜索艇は放射線で近づけない。",
-              "reading": "そーさくてーわほーしゃせんでちかずけない。",
+              "reading": "そーさくてーわほーしゃせんでちかづけない。",
               "audioId": "L4-050-line-009-token-001"
             },
             {
               "id": "token-002",
               "text": "遠隔走査を続けて。",
-              "reading": "えんかくそーさをつずけて。",
+              "reading": "えんかくそーさをつづけて。",
               "audioId": "L4-050-line-009-token-002"
             }
           ]
@@ -7613,7 +7613,7 @@
             "zh": "“我们将继续航行。”",
             "en": "We will continue the voyage."
           },
-          "readingJa": "「わたしたちわ、こーこーをつずける」。",
+          "readingJa": "「わたしたちわ、こーこーをつづける」。",
           "ttsTextJa": "「私たちは、航行を続ける」。",
           "audioId": "L4-050-line-012",
           "pauseAfterMs": 520,
@@ -7627,7 +7627,7 @@
             {
               "id": "token-002",
               "text": "航行を続ける」。",
-              "reading": "こーこーをつずける」。",
+              "reading": "こーこーをつづける」。",
               "audioId": "L4-050-line-012-token-002"
             }
           ]
@@ -7692,7 +7692,7 @@
           "text": {
             "ja": "「私たち」の構成員について、追加回答はありません。",
             "zh": "关于“我们”的成员，不再提供补充回答。",
-            "en": "No further answer will be provided about the members of we."
+            "en": "No further answer will be provided about who “we” includes."
           },
           "readingJa": "「わたしたち」のこうせいいんについて、ついかかいとーわありません。",
           "ttsTextJa": "「私たち」の構成員について、追加回答はありません。",
@@ -7727,13 +7727,13 @@
             {
               "id": "a",
               "text": {
-                "ja": "統合前の二AIを指す読みと、未確認反応を含む共同体の読みがともに残る",
+                "ja": "統合前の二つのAIを指す読みと、未確認反応を含む共同体の読みがともに残る",
                 "zh": "既可指合并前的两个AI，也可能指包含未确认信号的共同体，两种解释都保留",
                 "en": "Both the two pre-integration AIs and a community including the unverified signal remain possible"
               },
-              "ttsTextJa": "統合前の二AIを指す読みと、未確認反応を含む共同体の読みがともに残る",
+              "ttsTextJa": "統合前の二つのAIを指す読みと、未確認反応を含む共同体の読みがともに残る",
               "audioId": "L4-050-q1-a",
-              "readingJa": "とーごーまえのにえーあいをさすよみと、みかくにんはんのーをふくむきょうどうたいのよみがともにのこる"
+              "readingJa": "とーごーまえのふたつのえーあいをさすよみと、みかくにんはんのーをふくむきょーどーたいのよみがともにのこる"
             },
             {
               "id": "b",
@@ -7788,7 +7788,7 @@
               "en": "Several readings look possible on the surface, but all explicit details in the third line、the fourth line、the fifth line、the seventh line、the twelfth line、the thirteenth line、the fourteenth line must hold together."
             },
             "intent": {
-              "ja": "最も整合する読みは「統合前の二AIを指す読みと、未確認反応を含む共同体の読みがともに残る」です。",
+              "ja": "最も整合する読みは「統合前の二つのAIを指す読みと、未確認反応を含む共同体の読みがともに残る」です。",
               "zh": "最能统合全部信息的解读是“既可指合并前的两个AI，也可能指包含未确认信号的共同体，两种解释都保留”。",
               "en": "The reading that best unifies the scene is: Both the two pre-integration AIs and a community including the unverified signal remain possible."
             },
@@ -8003,7 +8003,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "bda1347de149e168e2efdc4d51a6ed67e0975a95fdeb9459a54ae24c1f1c3975"
+      "contentHash": "11e6ef288e48c06c4c6b65b93261262866d92c2426f166a91697342df26608a8"
     }
   ]
 }

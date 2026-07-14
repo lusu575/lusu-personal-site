@@ -1108,7 +1108,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L2-024",
-      "revision": 3,
+      "revision": 4,
       "level": 2,
       "stage": 24,
       "jlptTarget": "N2",
@@ -1475,7 +1475,7 @@
               },
               "ttsTextJa": "責め続けるより、再発防止の確認行動へ切り替える。",
               "audioId": "L2-024-q2-c",
-              "readingJa": "せめつずけるより、さいはつぼーしのかくにんこーどーえきりかえる。"
+              "readingJa": "せめつづけるより、さいはつぼーしのかくにんこーどーえきりかえる。"
             },
             {
               "id": "d",
@@ -1536,7 +1536,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "1cc827b903722a59292db39dfbbe691b7b3403d48ec7aa46e100702caeb5d873"
+      "contentHash": "cae3a1eeedec958f6fa75362c5d16a08dd699eb7ba5f83269acd328779707ce1"
     },
     {
       "schemaVersion": 1,

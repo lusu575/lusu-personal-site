@@ -8,7 +8,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-021",
-      "revision": 3,
+      "revision": 6,
       "level": 5,
       "stage": 21,
       "jlptTarget": "N1-pragmatics",
@@ -21,14 +21,14 @@
       ],
       "layout": "short-story",
       "title": {
-        "ja": "来年の暦で書かれた引継ぎ",
-        "zh": "写着明年日历的交接表",
-        "en": "A Handover Written in Next Year's Calendar"
+        "ja": "来年の暦に合わせた引継表",
+        "zh": "按明年日历编写的交接表",
+        "en": "A Handover Sheet Aligned to Next Year's Calendar"
       },
       "setting": {
-        "ja": "退職届は「一身上の都合」とだけ書くが、添付引継表の祝日と四半期名は翌年の競合会社の暦に合わせてある。同僚三人は偶然だと言う。",
-        "zh": "辞职信只写“个人原因”，但交接表的节假日与季度命名对应明年竞争公司的日历，三位同事称是巧合。",
-        "en": "A resignation cites personal reasons, but its handover calendar follows next year’s rival-company holidays and quarter names; colleagues call it coincidence."
+        "ja": "退職届は「一身上の都合」とだけ書かれているが、添付された引継表の祝日と四半期区分は翌年の競合会社の暦に合わせてある。退職者は偶然だと説明する。",
+        "zh": "辞职信只写“个人原因”，但所附交接表的节假日与季度划分采用了竞争公司下一年度的日历；离职者解释说这只是巧合。",
+        "en": "A resignation cites only personal reasons, but the attached handover sheet follows the rival company's next-year holidays and quarter system; the departing employee calls the matches coincidental."
       },
       "illustration": {
         "enabled": true,
@@ -304,7 +304,7 @@
             "zh": "季度命名里，Q1也是从二月开始。",
             "en": "The quarters also put Q1 in February."
           },
-          "readingJa": "しはんきもＱいちがにがつはじまりですね。",
+          "readingJa": "しはんきもきゅーわんがにがつはじまりですね。",
           "ttsTextJa": "四半期もQ1が二月始まりですね。",
           "audioId": "L5-021-line-009",
           "pauseAfterMs": 500,
@@ -318,7 +318,7 @@
             {
               "id": "token-002",
               "text": "Q1が二月始まりですね。",
-              "reading": "Ｑいちがにがつはじまりですね。",
+              "reading": "きゅーわんがにがつはじまりですね。",
               "audioId": "L5-021-line-009-token-002"
             }
           ]
@@ -709,13 +709,13 @@
             {
               "id": "a",
               "text": {
-                "ja": "機密資料の扱う範囲。",
-                "zh": "机密资料的使用范围。",
+                "ja": "機密資料の範囲。",
+                "zh": "机密资料的范围。",
                 "en": "The scope of confidential material."
               },
-              "ttsTextJa": "機密資料の扱う範囲。",
+              "ttsTextJa": "機密資料の範囲。",
               "audioId": "L5-021-q3-a",
-              "readingJa": "きみつしりょーのあつかうはんい。"
+              "readingJa": "きみつしりょーのはんい。"
             },
             {
               "id": "b",
@@ -764,19 +764,19 @@
               "en": "The scene explicitly states “I will not ask where you are going, but I will review the scope of confidential material.”."
             },
             "intent": {
-              "ja": "したがって、最も根拠のある読みは「機密資料の扱う範囲。」です。",
-              "zh": "因此，证据最充分的判断是「机密资料的使用范围。」。",
+              "ja": "したがって、最も根拠のある読みは「機密資料の範囲。」です。",
+              "zh": "因此，证据最充分的判断是「机密资料的范围。」。",
               "en": "The best-supported reading is 「The scope of confidential material.」."
             },
             "evidence": {
-              "ja": "15番目の台詞を合わせると、退職理由を明言せず、次の所属先を準備資料の時間体系が示している。",
-              "zh": "合并阅读第15句台词可知，没有明说去向，交接资料采用的时间体系却暴露了下一站。",
-              "en": "Taken together, the fifteenth line show that The calendar system, not the letter, hints at the next employer."
+              "ja": "15番目の台詞では、槙が退職先の詮索と機密資料の管理を切り分け、後者の範囲だけを確認すると述べています。",
+              "zh": "第15句把追问去向与管理机密资料区分开来：槙只表示要确认后者的范围。",
+              "en": "Line 15 separates probing Aya's destination from managing confidential material: Maki checks only the latter's scope."
             },
             "nuance": {
-              "ja": "日付体系は強い状況証拠ですが、転職先を本人の明言と同じ確度で断定することはできません。",
-              "zh": "日历体系是强有力的情境证据，但不能把去向说得与本人明言同样确定。",
-              "en": "The calendar system is strong circumstantial evidence, not the same as an explicit admission of the next employer."
+              "ja": "行き先を追及しないことは、機密管理の確認まで放棄することを意味しません。",
+              "zh": "不追问去向，并不等于放弃对机密资料范围的确认。",
+              "en": "Declining to press for a destination does not mean abandoning the confidentiality review."
             },
             "alternative": {
               "ja": "「柊の有給休暇残日数。」は、場面にない因果や確定度を足してしまいます。",
@@ -819,13 +819,13 @@
             {
               "id": "c",
               "text": {
-                "ja": "資料の一致を業務上の配慮として説明し、去向の明言を避ける。",
+                "ja": "資料の一致を業務上の配慮として説明し、行き先の明言を避ける。",
                 "zh": "把资料一致解释为工作上的考虑，从而回避明说去向。",
                 "en": "It frames the matches as operational care while avoiding an explicit destination."
               },
-              "ttsTextJa": "資料の一致を業務上の配慮として説明し、去向の明言を避ける。",
+              "ttsTextJa": "資料の一致を業務上の配慮として説明し、行き先の明言を避ける。",
               "audioId": "L5-021-q4-c",
-              "readingJa": "しりょーのいっちをぎょうむじょうのはいりょとしてせつめーし、さむこーのめーげんをさける。"
+              "readingJa": "しりょーのいっちをぎょうむじょうのはいりょとしてせつめーし、いきさきのめーげんをさける。"
             },
             {
               "id": "d",
@@ -855,7 +855,7 @@
               "en": "The scene explicitly states “I thought aligning it with the other side would be convenient.” and “I mean the people receiving the handover.”."
             },
             "intent": {
-              "ja": "したがって、最も根拠のある読みは「資料の一致を業務上の配慮として説明し、去向の明言を避ける。」です。",
+              "ja": "したがって、最も根拠のある読みは「資料の一致を業務上の配慮として説明し、行き先の明言を避ける。」です。",
               "zh": "因此，证据最充分的判断是「把资料一致解释为工作上的考虑，从而回避明说去向。」。",
               "en": "The best-supported reading is 「It frames the matches as operational care while avoiding an explicit destination.」."
             },
@@ -888,13 +888,13 @@
             {
               "id": "a",
               "text": {
-                "ja": "複数の暦上の一致から北辰社を準備している可能性は高いが、本人は確言していない。",
-                "zh": "多项日历吻合使其准备去北辰的可能性较高，但本人并未明说。",
-                "en": "Multiple calendar matches make Hokushin likely, but Aya has not confirmed it."
+                "ja": "複数の暦上の一致から、北辰社への移籍を準備している可能性は高いが、本人は確言していない。",
+                "zh": "多项日历信息吻合，说明她很可能在准备转职北辰，但本人并未明说。",
+                "en": "Multiple calendar matches make a move to Hokushin likely, but Aya has not confirmed it."
               },
-              "ttsTextJa": "複数の暦上の一致から北辰社を準備している可能性は高いが、本人は確言していない。",
+              "ttsTextJa": "複数の暦上の一致から、北辰社への移籍を準備している可能性は高いが、本人は確言していない。",
               "audioId": "L5-021-q5-a",
-              "readingJa": "ふくすーのこよみじょうのいっちからほくしんしゃをじゅんびしているかのうせいわたかいが、ほんにんわかくげんしていない。"
+              "readingJa": "ふくすーのこよみじょーのいっちから、ほくしんしゃえのいせきをじゅんびしているかのうせーわたかいが、ほんにんわかくげんしていない。"
             },
             {
               "id": "b",
@@ -948,9 +948,9 @@
               "en": "The scene explicitly states “Yes. I will not say more for now.” and “The quarters also put Q1 in February.”."
             },
             "intent": {
-              "ja": "したがって、最も根拠のある読みは「複数の暦上の一致から北辰社を準備している可能性は高いが、本人は確言していない。」です。",
-              "zh": "因此，证据最充分的判断是「多项日历吻合使其准备去北辰的可能性较高，但本人并未明说。」。",
-              "en": "The best-supported reading is 「Multiple calendar matches make Hokushin likely, but Aya has not confirmed it.」."
+              "ja": "したがって、最も根拠のある読みは「複数の暦上の一致から、北辰社への移籍を準備している可能性は高いが、本人は確言していない。」です。",
+              "zh": "因此，证据最充分的判断是「多项日历信息吻合，说明她很可能在准备转职北辰，但本人并未明说。」。",
+              "en": "The best-supported reading is 「Multiple calendar matches make a move to Hokushin likely, but Aya has not confirmed it.」."
             },
             "evidence": {
               "ja": "3番目の台詞、9番目の台詞、10番目の台詞、12番目の台詞、15番目の台詞、16番目の台詞を合わせると、退職理由を明言せず、次の所属先を準備資料の時間体系が示している。",
@@ -980,13 +980,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "e888b1d9f366ac654db4bc9a24de66f9d5c91b2c2119dbdf11849471e3602246"
+      "contentHash": "f9622b7d0e1110f325e9f7e9b59254a8c70dd2687086787cb7bcc69f7723e867"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-022",
-      "revision": 3,
+      "revision": 5,
       "level": 5,
       "stage": 22,
       "jlptTarget": "N1-pragmatics",
@@ -1120,7 +1120,7 @@
             "zh": "不，是我确认得不够。",
             "en": "No, I failed to check carefully enough."
           },
-          "readingJa": "いえ、わたしのかくにんふそくでした。",
+          "readingJa": "いえ、わたしのかくにんぶそくでした。",
           "ttsTextJa": "いえ、私の確認不足でした。",
           "audioId": "L5-022-line-003",
           "pauseAfterMs": 500,
@@ -1134,7 +1134,7 @@
             {
               "id": "token-002",
               "text": "私の確認不足でした。",
-              "reading": "わたしのかくにんふそくでした。",
+              "reading": "わたしのかくにんぶそくでした。",
               "audioId": "L5-022-line-003-token-002"
             }
           ]
@@ -1201,7 +1201,7 @@
             "zh": "截止时指定的是第八版。",
             "en": "Version eight was required at the deadline."
           },
-          "readingJa": "しめきりときのしてーわはっぱんです。",
+          "readingJa": "しめきりじのしていわはっぱんです。",
           "ttsTextJa": "締切時の指定は八版です。",
           "audioId": "L5-022-line-006",
           "pauseAfterMs": 500,
@@ -1209,7 +1209,7 @@
             {
               "id": "token-001",
               "text": "締切時の指定は",
-              "reading": "しめきりときのしてーわ",
+              "reading": "しめきりじのしていわ",
               "audioId": "L5-022-line-006-token-001"
             },
             {
@@ -1278,25 +1278,25 @@
           "id": "line-009",
           "speaker": "chair",
           "text": {
-            "ja": "責任を分けて考えましょう。原因と予防は同じ問いではありません。",
-            "zh": "我们分开看责任：原因和预防不是同一个问题。",
-            "en": "Let us separate responsibility. Cause and prevention are not the same question."
+            "ja": "論点を分けて考えましょう。直接の原因と再発防止は同じ問いではありません。",
+            "zh": "我们把问题分开看。直接原因与防止再发不是同一个问题。",
+            "en": "Let us separate the issues. The direct cause and prevention are not the same question."
           },
-          "readingJa": "せきにんをわけてかんがえましょー。げんいんとよぼーわおなじといでわありません。",
-          "ttsTextJa": "責任を分けて考えましょう。原因と予防は同じ問いではありません。",
+          "readingJa": "ろんてんをわけてかんがえましょー。ちょくせつのげんいんとさいはつぼーしわおなじといでわありません。",
+          "ttsTextJa": "論点を分けて考えましょう。直接の原因と再発防止は同じ問いではありません。",
           "audioId": "L5-022-line-009",
           "pauseAfterMs": 500,
           "tokens": [
             {
               "id": "token-001",
-              "text": "責任を分けて考えましょう。",
-              "reading": "せきにんをわけてかんがえましょー。",
+              "text": "論点を分けて考えましょう。",
+              "reading": "ろんてんをわけてかんがえましょー。",
               "audioId": "L5-022-line-009-token-001"
             },
             {
               "id": "token-002",
-              "text": "原因と予防は同じ問いではありません。",
-              "reading": "げんいんとよぼーわおなじといでわありません。",
+              "text": "直接の原因と再発防止は同じ問いではありません。",
+              "reading": "ちょくせつのげんいんとさいはつぼーしわおなじといでわありません。",
               "audioId": "L5-022-line-009-token-002"
             }
           ]
@@ -1510,13 +1510,13 @@
             {
               "id": "d",
               "text": {
-                "ja": "自分にも予防余地があったと述べつつ、教師を公開で追及しない配慮。",
-                "zh": "承认自己也有预防空间，同时避免公开追究教师。",
-                "en": "Face-saving for the teacher while acknowledging her own preventive opportunity."
+                "ja": "自分にも提出前に確認する余地があったと認めつつ、教師を公開の場で追及しない配慮。",
+                "zh": "承认自己也本可在提交前确认，同时顾及教师颜面，不在公开场合追究。",
+                "en": "She acknowledges that she could have checked before submitting while avoiding a public accusation against the teacher."
               },
-              "ttsTextJa": "自分にも予防余地があったと述べつつ、教師を公開で追及しない配慮。",
+              "ttsTextJa": "自分にも提出前に確認する余地があったと認めつつ、教師を公開の場で追及しない配慮。",
               "audioId": "L5-022-q1-d",
-              "readingJa": "じぶんにもよぼーよちがあったとのべつつ、きょーしをこーかいでついきゅーしないはいりょ。"
+              "readingJa": "じぶんにもてーしゅつまえにかくにんするよちがあったとみとめつつ、きょーしをこーかいのばでついきゅーしないはいりょ。"
             }
           ],
           "correctOptionIds": [
@@ -1535,9 +1535,9 @@
               "en": "The scene explicitly states “No, I failed to check carefully enough.” and “Still, I had an opportunity to check before submitting.”."
             },
             "intent": {
-              "ja": "したがって、最も根拠のある読みは「自分にも予防余地があったと述べつつ、教師を公開で追及しない配慮。」です。",
-              "zh": "因此，证据最充分的判断是「承认自己也有预防空间，同时避免公开追究教师。」。",
-              "en": "The best-supported reading is 「Face-saving for the teacher while acknowledging her own preventive opportunity.」."
+              "ja": "したがって、最も根拠のある読みは「自分にも提出前に確認する余地があったと認めつつ、教師を公開の場で追及しない配慮。」です。",
+              "zh": "因此，证据最充分的判断是「承认自己也本可在提交前确认，同时顾及教师颜面，不在公开场合追究。」。",
+              "en": "The best-supported reading is 「She acknowledges that she could have checked before submitting while avoiding a public accusation against the teacher.」."
             },
             "evidence": {
               "ja": "3番目の台詞、8番目の台詞、11番目の台詞、13番目の台詞を合わせると、学生の自己責任発言は事実認定でなく、教師を公に追及しないための配慮である。",
@@ -1632,14 +1632,14 @@
               "en": "The best-supported reading is 「The teacher distributed version seven instead of the required version eight.」."
             },
             "evidence": {
-              "ja": "4番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、10番目の台詞を合わせると、学生の自己責任発言は事実認定でなく、教師を公に追及しないための配慮である。",
-              "zh": "合并阅读第4句台词、第5句台词、第6句台词、第7句台词、第10句台词可知，学生自责并非事实判断，而是在避免公开追究教师。",
-              "en": "Taken together, the fourth line, the fifth line, the sixth line, the seventh line, the tenth line show that The student’s self-blame protects the teacher rather than establishes fault."
+              "ja": "4～7番目と10番目の台詞から、三浦が第七版を配り、締切時には第八版が指定されていたことが、提出不一致の直接原因だと分かります。",
+              "zh": "第4至7句和第10句表明：三浦发放的是第七版，而截止时要求第八版，这正是提交不一致的直接原因。",
+              "en": "Lines 4–7 and 10 show that Miura distributed version seven while version eight was required at the deadline, directly causing the mismatch."
             },
             "nuance": {
-              "ja": "学生の配慮は教師の責任を消すものではなく、制度上の事実認定と対人上の顔を立てる行為を分ける必要があります。",
-              "zh": "学生的体谅不会消除教师责任，应区分制度上的事实认定与人际上的留面子。",
-              "en": "The student's face-saving does not erase responsibility; institutional findings and interpersonal protection must be separated."
+              "ja": "紬にも提出前に確認する余地はありましたが、それは旧版配布という直接原因とは別の再発防止上の論点です。",
+              "zh": "紬虽然也本可在提交前确认，但那属于防止再发的问题，不会改变“发放旧版”这一直接原因。",
+              "en": "Tsumugi could also have checked before submitting, but that is a prevention issue, distinct from the direct cause of distributing the old version."
             },
             "alternative": {
               "ja": "「紬が締切後に内容を書き換えた。」は、場面にない因果や確定度を足してしまいます。",
@@ -1712,9 +1712,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "字面では「責任を分けて考えましょう。原因と予防は同じ問いではありません。」、「『原因は旧版配布、再発防止は双方確認』としてください。」と述べられています。",
-              "zh": "字面上明确写着“我们分开看责任：原因和预防不是同一个问题。”、“请记作“原因是发放旧版，预防措施是双方确认”。”。",
-              "en": "The scene explicitly states “Let us separate responsibility. Cause and prevention are not the same question.” and “Please write: 'Cause: old version distributed; prevention: both sides verify.'”."
+              "ja": "字面では「論点を分けて考えましょう。直接の原因と再発防止は同じ問いではありません。」、「『原因は旧版配布、再発防止は双方確認』としてください。」と述べられています。",
+              "zh": "字面上明确写着“我们把问题分开看。直接原因与防止再发不是同一个问题。”、“请记作“原因是发放旧版，预防措施是双方确认”。”。",
+              "en": "The scene explicitly states “Let us separate the issues. The direct cause and prevention are not the same question.” and “Please write: 'Cause: old version distributed; prevention: both sides verify.'”."
             },
             "intent": {
               "ja": "したがって、最も根拠のある読みは「旧版配布という原因と、双方確認という今後の対策を混同しないため。」です。",
@@ -1722,9 +1722,9 @@
               "en": "The best-supported reading is 「To avoid conflating old-version distribution with the future safeguard of mutual checking.」."
             },
             "evidence": {
-              "ja": "9番目の台詞、13番目の台詞、15番目の台詞を合わせると、学生の自己責任発言は事実認定でなく、教師を公に追及しないための配慮である。",
-              "zh": "合并阅读第9句台词、第13句台词、第15句台词可知，学生自责并非事实判断，而是在避免公开追究教师。",
-              "en": "Taken together, the ninth line, the thirteenth line, the fifteenth line show that The student’s self-blame protects the teacher rather than establishes fault."
+              "ja": "9番目と13番目の台詞は原因を「旧版配布」、再発防止を「双方確認」と分け、15番目の台詞は処分判断も別途行うとしています。",
+              "zh": "第9句与第13句把原因定为“发放旧版”、防止再发定为“双方确认”，第15句又把处分判断另行处理。",
+              "en": "Lines 9 and 13 separate the cause (“old version distributed”) from prevention (“both sides verify”), and line 15 keeps discipline separate as well."
             },
             "nuance": {
               "ja": "学生の配慮は教師の責任を消すものではなく、制度上の事実認定と対人上の顔を立てる行為を分ける必要があります。",
@@ -1814,9 +1814,9 @@
               "en": "The best-supported reading is 「The old form caused the mismatch; mutual checking is proposed for prevention, and discipline is separate.」."
             },
             "evidence": {
-              "ja": "5番目の台詞、6番目の台詞、10番目の台詞、13番目の台詞、15番目の台詞を合わせると、学生の自己責任発言は事実認定でなく、教師を公に追及しないための配慮である。",
-              "zh": "合并阅读第5句台词、第6句台词、第10句台词、第13句台词、第15句台词可知，学生自责并非事实判断，而是在避免公开追究教师。",
-              "en": "Taken together, the fifth line, the sixth line, the tenth line, the thirteenth line, the fifteenth line show that The student’s self-blame protects the teacher rather than establishes fault."
+              "ja": "5・6・10・13・15番目の台詞をまとめると、旧版配布が直接原因、双方確認が再発防止策、処分は別途判断という記録になります。",
+              "zh": "综合第5、6、10、13、15句，记录应写明：发放旧版是直接原因，双方确认是防止再发措施，处分另行判断。",
+              "en": "Together, lines 5, 6, 10, 13, and 15 support a record that identifies old-version distribution as the cause, mutual checking as prevention, and discipline as a separate decision."
             },
             "nuance": {
               "ja": "学生の配慮は教師の責任を消すものではなく、制度上の事実認定と対人上の顔を立てる行為を分ける必要があります。",
@@ -1841,13 +1841,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "78b9d7f5a47374b4a83583019ab1d2397944b1945722f24c278121c54277fd30"
+      "contentHash": "066698ae5fcf128cf00ddf50cd92cbbcb873a35adec46b60c69885ea1891fa79"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-023",
-      "revision": 3,
+      "revision": 6,
       "level": 5,
       "stage": 23,
       "jlptTarget": "N1-pragmatics",
@@ -1928,7 +1928,7 @@
             "zh": "日文写的是“增香鸭肉”。",
             "en": "The Japanese says 'aroma-finished duck.'"
           },
-          "readingJa": "にほんごでわ『かおりずけかも』ですね。",
+          "readingJa": "にほんごでわ『かおりづけかも』ですね。",
           "ttsTextJa": "日本語では『香り付け鴨』ですね。",
           "audioId": "L5-023-line-001",
           "pauseAfterMs": 500,
@@ -1942,7 +1942,7 @@
             {
               "id": "token-002",
               "text": "『香り付け鴨』ですね。",
-              "reading": "『かおりずけかも』ですね。",
+              "reading": "『かおりづけかも』ですね。",
               "audioId": "L5-023-line-001-token-002"
             }
           ]
@@ -2009,7 +2009,7 @@
             "zh": "厨房没用烟，只滴了一滴烟熏香味油。",
             "en": "The kitchen uses no smoke, only one drop of smoky aroma oil."
           },
-          "readingJa": "ちゅーぼーでわけむりをつかわず、いぶしがおいるをいってきだけです。",
+          "readingJa": "ちゅーぼーでわけむりをつかわず、くんこうおいるをいってきだけです。",
           "ttsTextJa": "厨房では煙を使わず、燻香オイルを一滴だけです。",
           "audioId": "L5-023-line-004",
           "pauseAfterMs": 500,
@@ -2023,7 +2023,7 @@
             {
               "id": "token-002",
               "text": "燻香オイルを一滴だけです。",
-              "reading": "いぶしがおいるをいってきだけです。",
+              "reading": "くんこうおいるをいってきだけです。",
               "audioId": "L5-023-line-004-token-002"
             }
           ]
@@ -2059,25 +2059,25 @@
           "id": "line-006",
           "speaker": "translator",
           "text": {
-            "ja": "元の『香り付け』が弱く見えて、中国語で『風』を足しました。",
-            "zh": "原文“增香”显得太弱，所以中文加了“风味”。",
-            "en": "The original seemed weak, so I added 'style' in Chinese."
+            "ja": "元の『香り付け』が弱く見えて、中国語では『燻製風』としました。",
+            "zh": "原文“增香”显得太弱，所以中文用了“烟熏风味”。",
+            "en": "The original “aroma-finished” sounded too weak, so I rendered it as “smoke-style” in Chinese."
           },
-          "readingJa": "もとの『かおりずけ』がよわくみえて、ちゅーごくごで『かぜ』をたしました。",
-          "ttsTextJa": "元の『香り付け』が弱く見えて、中国語で『風』を足しました。",
+          "readingJa": "もとの『かおりづけ』がよわくみえて、ちゅーごくごでわ『くんせーふう』としました。",
+          "ttsTextJa": "元の『香り付け』が弱く見えて、中国語では『燻製風』としました。",
           "audioId": "L5-023-line-006",
           "pauseAfterMs": 500,
           "tokens": [
             {
               "id": "token-001",
               "text": "元の『香り付け』が弱く見えて、",
-              "reading": "もとの『かおりずけ』がよわくみえて、",
+              "reading": "もとの『かおりづけ』がよわくみえて、",
               "audioId": "L5-023-line-006-token-001"
             },
             {
               "id": "token-002",
-              "text": "中国語で『風』を足しました。",
-              "reading": "ちゅーごくごで『かぜ』をたしました。",
+              "text": "中国語では『燻製風』としました。",
+              "reading": "ちゅーごくごでわ『くんせーふう』としました。",
               "audioId": "L5-023-line-006-token-002"
             }
           ]
@@ -2198,7 +2198,7 @@
             "zh": "改成“使用烟熏香味油”才会一致。",
             "en": "'Made with smoky aroma oil' would align the versions."
           },
-          "readingJa": "『くんせー』でわなく『いぶしがおいるしよー』ならいっちします。",
+          "readingJa": "『くんせー』でわなく『くんこうおいるしよー』ならいっちします。",
           "ttsTextJa": "『燻製』ではなく『燻香オイル使用』なら一致します。",
           "audioId": "L5-023-line-011",
           "pauseAfterMs": 500,
@@ -2212,7 +2212,7 @@
             {
               "id": "token-002",
               "text": "『燻香オイル使用』なら一致します。",
-              "reading": "『いぶしがおいるしよー』ならいっちします。",
+              "reading": "『くんこうおいるしよー』ならいっちします。",
               "audioId": "L5-023-line-011-token-002"
             }
           ]
@@ -2221,19 +2221,19 @@
           "id": "line-012",
           "speaker": "guest",
           "text": {
-            "ja": "アレルギー表示にも工程と原料の区別が要ります。",
-            "zh": "过敏原标识也需要区分工艺与原料。",
-            "en": "Allergen labeling also needs to distinguish process from ingredient."
+            "ja": "メニュー表示でも、工程と原料の区別が要ります。",
+            "zh": "菜单标示也需要区分工艺与原料。",
+            "en": "Menu labeling also needs to distinguish process from ingredient."
           },
-          "readingJa": "あれるぎーひょーじにもこーてーとげんりょーのくべつがいります。",
-          "ttsTextJa": "アレルギー表示にも工程と原料の区別が要ります。",
+          "readingJa": "めにゅーひょーじでも、こーてーとげんりょーのくべつがいります。",
+          "ttsTextJa": "メニュー表示でも、工程と原料の区別が要ります。",
           "audioId": "L5-023-line-012",
           "pauseAfterMs": 500,
           "tokens": [
             {
               "id": "token-001",
-              "text": "アレルギー表示にも",
-              "reading": "あれるぎーひょーじにも",
+              "text": "メニュー表示でも、",
+              "reading": "めにゅーひょーじでも、",
               "audioId": "L5-023-line-012-token-001"
             },
             {
@@ -2252,7 +2252,7 @@
             "zh": "今晚的菜我会口头补充说明。",
             "en": "I will give a verbal clarification for tonight's service."
           },
-          "readingJa": "いまやぶんわこーとーでもほそくします。",
+          "readingJa": "こんやぶんわこーとーでもほそくします。",
           "ttsTextJa": "今夜分は口頭でも補足します。",
           "audioId": "L5-023-line-013",
           "pauseAfterMs": 500,
@@ -2260,7 +2260,7 @@
             {
               "id": "token-001",
               "text": "今夜分は",
-              "reading": "いまやぶんわ",
+              "reading": "こんやぶんわ",
               "audioId": "L5-023-line-013-token-001"
             },
             {
@@ -2302,25 +2302,25 @@
           "id": "line-015",
           "speaker": "translator",
           "text": {
-            "ja": "翻訳ごとに映えを足すのでなく、工程表を共通参照にします。",
-            "zh": "不再逐次美化翻译，改用同一份工艺表作依据。",
-            "en": "We will use one process sheet instead of embellishing each translation."
+            "ja": "訳すたびに表現を盛るのではなく、同じ工程表を共通の参照元にします。",
+            "zh": "不再每翻译一层就润饰措辞，而是让三种语言共同参照同一份工艺表。",
+            "en": "Instead of embellishing the wording at each translation step, we will use the same process sheet as the common source."
           },
-          "readingJa": "ほんやくごとにばえをたすのでなく、こうていひょうをきょーつーさんしょーにします。",
-          "ttsTextJa": "翻訳ごとに映えを足すのでなく、工程表を共通参照にします。",
+          "readingJa": "やくすたびにひょーげんをもるのでわなく、おなじこーてーひょーをきょーつーのさんしょーもとにします。",
+          "ttsTextJa": "訳すたびに表現を盛るのではなく、同じ工程表を共通の参照元にします。",
           "audioId": "L5-023-line-015",
           "pauseAfterMs": 500,
           "tokens": [
             {
               "id": "token-001",
-              "text": "翻訳ごとに映えを足すのでなく、",
-              "reading": "ほんやくごとにばえをたすのでなく、",
+              "text": "訳すたびに表現を盛るのではなく、",
+              "reading": "やくすたびにひょーげんをもるのでわなく、",
               "audioId": "L5-023-line-015-token-001"
             },
             {
               "id": "token-002",
-              "text": "工程表を共通参照にします。",
-              "reading": "こうていひょうをきょーつーさんしょーにします。",
+              "text": "同じ工程表を共通の参照元にします。",
+              "reading": "おなじこーてーひょーをきょーつーのさんしょーもとにします。",
               "audioId": "L5-023-line-015-token-002"
             }
           ]
@@ -2466,7 +2466,7 @@
               },
               "ttsTextJa": "煙は使わず、燻香オイルを一滴加えた。",
               "audioId": "L5-023-q2-a",
-              "readingJa": "けむりわつかわず、いぶしがおいるをいってきくわえた。"
+              "readingJa": "けむりわつかわず、くんこうおいるをいってきくわえた。"
             },
             {
               "id": "b",
@@ -2521,9 +2521,9 @@
               "en": "The best-supported reading is 「No smoke was used; one drop of smoky aroma oil was added.」."
             },
             "evidence": {
-              "ja": "4番目の台詞、10番目の台詞を合わせると、翻訳が工程の事実を段階的に強め、元の曖昧な表現を超えている。",
-              "zh": "合并阅读第4句台词、第10句台词可知，译文逐步强化了烹饪工艺，超出原文的模糊程度。",
-              "en": "Taken together, the fourth line, the tenth line show that Translations progressively overstate the actual process."
+              "ja": "4番目と10番目の台詞は、厨房では煙を使わず、燻香オイルを一滴加えただけで、保証できるのは香料由来の香りだと明確にしています。",
+              "zh": "第4句和第10句明确说明：厨房没有用烟，只加了一滴烟熏香味油，因而只能保证调味所产生的香气。",
+              "en": "Lines 4 and 10 make clear that the kitchen used no smoke, added only one drop of smoky aroma oil, and can guarantee only aroma produced by flavoring."
             },
             "nuance": {
               "ja": "翻訳の強さの差は誤解を生みますが、故意の虚偽広告か編集上の連鎖ミスかは追加調査が必要です。",
@@ -2566,7 +2566,7 @@
               },
               "ttsTextJa": "『燻香オイル使用』と原料を明示する。",
               "audioId": "L5-023-q3-b",
-              "readingJa": "『いぶしがおいるしよー』とげんりょーをめーじする。"
+              "readingJa": "『くんこうおいるしよー』とげんりょーをめーじする。"
             },
             {
               "id": "c",
@@ -2612,9 +2612,9 @@
               "en": "The best-supported reading is 「State that smoky aroma oil is used.」 and 「Have every language reference the same process sheet.」."
             },
             "evidence": {
-              "ja": "11番目の台詞、14番目の台詞、15番目の台詞を合わせると、翻訳が工程の事実を段階的に強め、元の曖昧な表現を超えている。",
-              "zh": "合并阅读第11句台词、第14句台词、第15句台词可知，译文逐步强化了烹饪工艺，超出原文的模糊程度。",
-              "en": "Taken together, the eleventh line, the fourteenth line, the fifteenth line show that Translations progressively overstate the actual process."
+              "ja": "11・14・15番目の台詞は、使ったオイル名を明記し、三言語の表記が共通の工程表を参照するという修正策を示しています。",
+              "zh": "第11、14、15句提出的修正方案是：明确油的名称，并让三种语言共同引用同一份工艺表。",
+              "en": "Lines 11, 14, and 15 propose naming the oil explicitly and having all three languages refer to the same process sheet."
             },
             "nuance": {
               "ja": "翻訳の強さの差は誤解を生みますが、故意の虚偽広告か編集上の連鎖ミスかは追加調査が必要です。",
@@ -2668,7 +2668,7 @@
               },
               "ttsTextJa": "燻香オイルは必ず危険である。",
               "audioId": "L5-023-q4-c",
-              "readingJa": "いぶしがおいるわかならずきけんである。"
+              "readingJa": "くんこうおいるわかならずきけんである。"
             },
             {
               "id": "d",
@@ -2706,9 +2706,9 @@
               "en": "The best-supported reading is 「The English makes a stronger claim than the actual process.」 and 「Distinguishing process from ingredient matters for ordering and labeling.」."
             },
             "evidence": {
-              "ja": "3番目の台詞、4番目の台詞、8番目の台詞、9番目の台詞、12番目の台詞、16番目の台詞を合わせると、翻訳が工程の事実を段階的に強め、元の曖昧な表現を超えている。",
-              "zh": "合并阅读第3句台词、第4句台词、第8句台词、第9句台词、第12句台词、第16句台词可知，译文逐步强化了烹饪工艺，超出原文的模糊程度。",
-              "en": "Taken together, the third line, the fourth line, the eighth line, the ninth line, the twelfth line, the sixteenth line show that Translations progressively overstate the actual process."
+              "ja": "3・4・8・9・12・16番目の台詞をまとめると、英語版は実際より工程を誇張しており、工程と原料の区別は客の知情に基づく注文とメニュー表示に影響します。",
+              "zh": "综合第3、4、8、9、12、16句，英文版夸大了实际工艺，而工艺与原料的区别会影响顾客知情点餐以及菜单标示。",
+              "en": "Lines 3, 4, 8, 9, 12, and 16 show that the English version overstates the process and that distinguishing process from ingredient matters for informed ordering and menu labeling."
             },
             "nuance": {
               "ja": "翻訳の強さの差は誤解を生みますが、故意の虚偽広告か編集上の連鎖ミスかは追加調査が必要です。",
@@ -2733,13 +2733,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "2bebd75748a16dba10304605cda0461779690caaea030b1da89cc6f0fac497cf"
+      "contentHash": "109b654864769e1cc31d41a73b740786c596a5b200c43bc3d2b412928d881f64"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-024",
-      "revision": 3,
+      "revision": 5,
       "level": 5,
       "stage": 24,
       "jlptTarget": "N1-pragmatics",
@@ -2955,7 +2955,7 @@
             "zh": "上面写到我店五分钟，平常得走十二分钟。",
             "en": "It says five minutes to my shop, but twelve is more realistic."
           },
-          "readingJa": "うちまでごぶとかいてあるけど、ふつーならじゅーにぶんかな。",
+          "readingJa": "うちまでごふんとかいてあるけど、ふつーならじゅーにふんかな。",
           "ttsTextJa": "うちまで五分と書いてあるけど、普通なら十二分かな。",
           "audioId": "L5-024-line-006",
           "pauseAfterMs": 500,
@@ -2963,13 +2963,13 @@
             {
               "id": "token-001",
               "text": "うちまで五分と書いてあるけど、",
-              "reading": "うちまでごぶとかいてあるけど、",
+              "reading": "うちまでごふんとかいてあるけど、",
               "audioId": "L5-024-line-006-token-001"
             },
             {
               "id": "token-002",
               "text": "普通なら十二分かな。",
-              "reading": "ふつーならじゅーにぶんかな。",
+              "reading": "ふつーならじゅーにふんかな。",
               "audioId": "L5-024-line-006-token-002"
             }
           ]
@@ -3242,13 +3242,13 @@
             {
               "id": "b",
               "text": {
-                "ja": "旅行者を提携区域へ誘導し、そこに長く留めるため。",
+                "ja": "旅行者を提携区域へ誘導し、そこに長く滞在させるため。",
                 "zh": "为了把游客引向合作区域并延长停留。",
                 "en": "To steer visitors into the partner district and keep them there longer."
               },
-              "ttsTextJa": "旅行者を提携区域へ誘導し、そこに長く留めるため。",
+              "ttsTextJa": "旅行者を提携区域へ誘導し、そこに長く滞在させるため。",
               "audioId": "L5-024-q1-b",
-              "readingJa": "りょこーしゃをてーけーくいきえゆーどーし、そこにながくとめるため。"
+              "readingJa": "りょこーしゃをてーけーくいきえゆーどーし、そこにながくたいざいさせるため。"
             },
             {
               "id": "c",
@@ -3290,7 +3290,7 @@
               "en": "The scene explicitly states “On this map, every major shop is within walking range.” and “It says five minutes to my shop, but twelve is more realistic.”."
             },
             "intent": {
-              "ja": "したがって、最も根拠のある読みは「旅行者を提携区域へ誘導し、そこに長く留めるため。」です。",
+              "ja": "したがって、最も根拠のある読みは「旅行者を提携区域へ誘導し、そこに長く滞在させるため。」です。",
               "zh": "因此，证据最充分的判断是「为了把游客引向合作区域并延长停留。」。",
               "en": "The best-supported reading is 「To steer visitors into the partner district and keep them there longer.」."
             },
@@ -3329,7 +3329,7 @@
               },
               "ttsTextJa": "南駅まで正確に五分だと答えた。",
               "audioId": "L5-024-q2-a",
-              "readingJa": "みなみえきまでせーかくにごぶだとこたえた。"
+              "readingJa": "みなみえきまでせーかくにごふんだとこたえた。"
             },
             {
               "id": "b",
@@ -3384,9 +3384,9 @@
               "en": "The best-supported reading is 「He avoids the distance and redirects the traveler to partner shops.」."
             },
             "evidence": {
-              "ja": "8番目の台詞、9番目の台詞を合わせると、地図は移動支援より、客を提携区域へ留める商業的な誘導装置である。",
-              "zh": "合并阅读第8句台词、第9句台词可知，地图并非中立导航，而是把游客留在合作商圈的引导工具。",
-              "en": "Taken together, the eighth line, the ninth line show that The map is a commercial steering device rather than neutral navigation."
+              "ja": "8番目で旅行者が南駅までの時間を尋ねているのに、9番目で案内人は距離を答えず、おすすめ通りへ話をそらしています。",
+              "zh": "第8句问到南站的时间，但第9句没有回答距离，而是转去推荐商店街。",
+              "en": "Line 8 asks for the time to South Station, but line 9 avoids answering the distance and redirects the traveler to the recommended shopping street."
             },
             "nuance": {
               "ja": "歪んだ縮尺と回答回避は商業誘導を示しますが、地図の全情報が虚偽だとまでは言えません。",
@@ -3563,9 +3563,9 @@
               "en": "The best-supported reading is 「Label it a recommended-route map rather than a distance map.」."
             },
             "evidence": {
-              "ja": "11番目の台詞、14番目の台詞を合わせると、地図は移動支援より、客を提携区域へ留める商業的な誘導装置である。",
-              "zh": "合并阅读第11句台词、第14句台词可知，地图并非中立导航，而是把游客留在合作商圈的引导工具。",
-              "en": "Taken together, the eleventh line, the fourteenth line show that The map is a commercial steering device rather than neutral navigation."
+              "ja": "11番目は実距離を示す距離図としての不適切さを示し、14番目は商業的な推奨を示す「おすすめ経路図」として区別すべきだと述べています。",
+              "zh": "第11句表明它不适合作为反映实际距离的“距离图”，第14句则主张把它明确区分为商业推荐用的“推荐路线图”。",
+              "en": "Line 11 shows why the image is unsuitable as a distance map, while line 14 distinguishes it as a recommended-route map for commercial guidance."
             },
             "nuance": {
               "ja": "歪んだ縮尺と回答回避は商業誘導を示しますが、地図の全情報が虚偽だとまでは言えません。",
@@ -3652,9 +3652,9 @@
               "en": "The best-supported reading is 「Disclose the recommendation purpose and add real distances.」."
             },
             "evidence": {
-              "ja": "14番目の台詞、15番目の台詞を合わせると、地図は移動支援より、客を提携区域へ留める商業的な誘導装置である。",
-              "zh": "合并阅读第14句台词、第15句台词可知，地图并非中立导航，而是把游客留在合作商圈的引导工具。",
-              "en": "Taken together, the fourteenth line, the fifteenth line show that The map is a commercial steering device rather than neutral navigation."
+              "ja": "14番目は地図がおすすめ経路を示す目的を公開するよう求め、15番目はそれと併せて実距離も記す修正案を示しています。",
+              "zh": "第14句要求公开说明地图的推荐目的，第15句又提议同时补上真实距离。",
+              "en": "Line 14 calls for disclosing the map's recommendation purpose, and line 15 adds the corrective step of listing real distances as well."
             },
             "nuance": {
               "ja": "歪んだ縮尺と回答回避は商業誘導を示しますが、地図の全情報が虚偽だとまでは言えません。",
@@ -3679,13 +3679,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "2ca4315e4c53ea8691b522b8d4b67746d6894ca2133e92c157205dca39c92fe4"
+      "contentHash": "67cd4e9644d6b923d89c04eba869063373a73670b824ba39c0eb04e1a46690bc"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-025",
-      "revision": 3,
+      "revision": 6,
       "level": 5,
       "stage": 25,
       "jlptTarget": "N1-pragmatics",
@@ -3703,9 +3703,9 @@
         "en": "The Rule That Supposedly Existed Last Week"
       },
       "setting": {
-        "ja": "管理者は昨日の投稿を新規則違反で削除するが、規則ページの作成時刻は今日、表示上の日付だけ先週へ編集されている。反対者のスクリーンショットが残る。",
-        "zh": "管理员按新规则删除昨天的帖子，可规则页面实际创建于今天，只把显示日期改成上周；反对者留有截图。",
-        "en": "An admin deletes yesterday’s post under a new rule whose page was created today but backdated visually; screenshots preserve the original state."
+        "ja": "管理者は昨日の投稿を新規則違反として削除するが、規則ページの作成時刻は今日で、表示上の日付だけが先週に遡らされている。会員が昨夜のスクリーンショットを残している。",
+        "zh": "管理员以违反新规为由删除昨天的帖子，但规则页面创建于今天，只有显示日期被回填到上周；一名会员保留了昨晚的截图。",
+        "en": "An administrator removes yesterday's post under a new rule, but the rule page was created today and only its displayed date was backdated to last week; a member kept a screenshot from last night."
       },
       "illustration": {
         "enabled": true,
@@ -3846,7 +3846,7 @@
             "zh": "页面创建时间是今天九点十二分。",
             "en": "The page was created today at 9:12."
           },
-          "readingJa": "ぺーじのさくせーじこくわきょーのくじじゅーにふんです。",
+          "readingJa": "ぺーじのさくせーじこくわきょうのくじじゅーにふんです。",
           "ttsTextJa": "ページの作成時刻は今日の九時十二分です。",
           "audioId": "L5-025-line-004",
           "pauseAfterMs": 500,
@@ -3860,7 +3860,7 @@
             {
               "id": "token-002",
               "text": "今日の九時十二分です。",
-              "reading": "きょーのくじじゅーにふんです。",
+              "reading": "きょうのくじじゅーにふんです。",
               "audioId": "L5-025-line-004-token-002"
             }
           ]
@@ -3900,7 +3900,7 @@
             "zh": "显示日期代表制定日期。",
             "en": "The displayed date represents the enactment date."
           },
-          "readingJa": "ひょーじひずけわせーてーびをしめすものです。",
+          "readingJa": "ひょーじひづけわせーてーびをしめすものです。",
           "ttsTextJa": "表示日付は制定日を示すものです。",
           "audioId": "L5-025-line-006",
           "pauseAfterMs": 500,
@@ -3908,7 +3908,7 @@
             {
               "id": "token-001",
               "text": "表示日付は",
-              "reading": "ひょーじひずけわ",
+              "reading": "ひょーじひづけわ",
               "audioId": "L5-025-line-006-token-001"
             },
             {
@@ -3954,7 +3954,7 @@
             "zh": "历史记录只有今早同时添加正文和日期的记录。",
             "en": "The history shows only that the text and date were added together this morning."
           },
-          "readingJa": "りれきにわけさ、ほんぶんとひずけをどーじついかしたきろくだけです。",
+          "readingJa": "りれきにわけさ、ほんぶんとひづけをどーじついかしたきろくだけです。",
           "ttsTextJa": "履歴には今朝、本文と日付を同時追加した記録だけです。",
           "audioId": "L5-025-line-008",
           "pauseAfterMs": 500,
@@ -3968,7 +3968,7 @@
             {
               "id": "token-002",
               "text": "本文と日付を同時追加した記録だけです。",
-              "reading": "ほんぶんとひずけをどーじついかしたきろくだけです。",
+              "reading": "ほんぶんとひづけをどーじついかしたきろくだけです。",
               "audioId": "L5-025-line-008-token-002"
             }
           ]
@@ -3981,7 +3981,7 @@
             "zh": "也就是说，把今天才有的规则用到昨天的帖子上。",
             "en": "So today's rule was applied to yesterday's post."
           },
-          "readingJa": "きのーのとーこーにきょーできたきそくをてきよーしたんですね。",
+          "readingJa": "きのーのとーこーにきょうできたきそくをてきよーしたんですね。",
           "ttsTextJa": "昨日の投稿に今日できた規則を適用したんですね。",
           "audioId": "L5-025-line-009",
           "pauseAfterMs": 500,
@@ -3995,7 +3995,7 @@
             {
               "id": "token-002",
               "text": "今日できた規則を適用したんですね。",
-              "reading": "きょーできたきそくをてきよーしたんですね。",
+              "reading": "きょうできたきそくをてきよーしたんですね。",
               "audioId": "L5-025-line-009-token-002"
             }
           ]
@@ -4085,12 +4085,12 @@
           "id": "line-013",
           "speaker": "member",
           "text": {
-            "ja": "新しい規則を作ることと、過去を違反にすることは別です。",
+            "ja": "新しい規則を作ることと、過去の行為を違反にすることは別です。",
             "zh": "制定新规则和把过去行为判成违规是两回事。",
             "en": "Creating a new rule and making past conduct a violation are different acts."
           },
-          "readingJa": "あたらしいきそくをつくることと、かこをいはんにすることわべつです。",
-          "ttsTextJa": "新しい規則を作ることと、過去を違反にすることは別です。",
+          "readingJa": "あたらしいきそくをつくることと、かこのこーいをいはんにすることわべつです。",
+          "ttsTextJa": "新しい規則を作ることと、過去の行為を違反にすることは別です。",
           "audioId": "L5-025-line-013",
           "pauseAfterMs": 500,
           "tokens": [
@@ -4102,8 +4102,8 @@
             },
             {
               "id": "token-002",
-              "text": "過去を違反にすることは別です。",
-              "reading": "かこをいはんにすることわべつです。",
+              "text": "過去の行為を違反にすることは別です。",
+              "reading": "かこのこーいをいはんにすることわべつです。",
               "audioId": "L5-025-line-013-token-002"
             }
           ]
@@ -4112,19 +4112,19 @@
           "id": "line-014",
           "speaker": "admin",
           "text": {
-            "ja": "削除は一旦保留し、制定時刻を訂正します。",
-            "zh": "我先暂停删除，并更正制定时间。",
-            "en": "I will suspend the removal and correct the enactment time."
+            "ja": "削除はいったん取り消し、制定時刻を訂正します。",
+            "zh": "我先撤销删除，并更正制定时间。",
+            "en": "I will reverse the removal for now and correct the enactment time."
           },
-          "readingJa": "さくじょわいったんほりゅーし、せーてーじこくをてーせーします。",
-          "ttsTextJa": "削除は一旦保留し、制定時刻を訂正します。",
+          "readingJa": "さくじょわいったんとりけし、せーてーじこくをてーせーします。",
+          "ttsTextJa": "削除はいったん取り消し、制定時刻を訂正します。",
           "audioId": "L5-025-line-014",
           "pauseAfterMs": 500,
           "tokens": [
             {
               "id": "token-001",
-              "text": "削除は一旦保留し、",
-              "reading": "さくじょわいったんほりゅーし、",
+              "text": "削除はいったん取り消し、",
+              "reading": "さくじょわいったんとりけし、",
               "audioId": "L5-025-line-014-token-001"
             },
             {
@@ -4209,7 +4209,7 @@
               },
               "ttsTextJa": "今日作成し遡って日付を付けた規則を、昨日の投稿へ適用したこと。",
               "audioId": "L5-025-q1-a",
-              "readingJa": "きょーさくせーしさかのぼってひずけをつけたきそくを、きのーのとーこーえてきよーしたこと。"
+              "readingJa": "きょうさくせーしさかのぼってひづけをつけたきそくを、きのーのとーこーえてきよーしたこと。"
             },
             {
               "id": "b",
@@ -4314,7 +4314,7 @@
               },
               "ttsTextJa": "ページの作成時刻が今日九時十二分である。",
               "audioId": "L5-025-q2-b",
-              "readingJa": "ぺーじのさくせーじこくがきょーくじじゅーにぶんである。"
+              "readingJa": "ぺーじのさくせーじこくがきょうくじじゅーにふんである。"
             },
             {
               "id": "c",
@@ -4486,18 +4486,18 @@
               },
               "ttsTextJa": "履歴を消して先週の日付だけ残す。",
               "audioId": "L5-025-q4-a",
-              "readingJa": "りれきをけしてせんしゅーのひずけだけのこす。"
+              "readingJa": "りれきをけしてせんしゅーのひづけだけのこす。"
             },
             {
               "id": "b",
               "text": {
-                "ja": "削除を保留し、投稿を施行時刻に照らして再判断する。",
-                "zh": "暂停删除，并按生效时间重新判断帖子。",
-                "en": "Suspend removal and reassess the post against the effective time."
+                "ja": "削除をいったん取り消し、施行時刻に照らして投稿を再判断する。",
+                "zh": "先撤销删除，再按生效时间重新判断帖子。",
+                "en": "Reverse the removal for now and reassess the post against the effective time."
               },
-              "ttsTextJa": "削除を保留し、投稿を施行時刻に照らして再判断する。",
+              "ttsTextJa": "削除をいったん取り消し、施行時刻に照らして投稿を再判断する。",
               "audioId": "L5-025-q4-b",
-              "readingJa": "さくじょをほりゅーし、とーこーをしこーじこくにてらしてさいはんだんする。"
+              "readingJa": "さくじょをいったんとりけし、しこーじこくにてらしてとーこーをさいはんだんする。"
             },
             {
               "id": "c",
@@ -4534,19 +4534,19 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "字面では「新しい規則を作ることと、過去を違反にすることは別です。」、「削除は一旦保留し、制定時刻を訂正します。」と述べられています。",
-              "zh": "字面上明确写着“制定新规则和把过去行为判成违规是两回事。”、“我先暂停删除，并更正制定时间。”。",
-              "en": "The scene explicitly states “Creating a new rule and making past conduct a violation are different acts.” and “I will suspend the removal and correct the enactment time.”."
+              "ja": "字面では「新しい規則を作ることと、過去の行為を違反にすることは別です。」、「削除はいったん取り消し、制定時刻を訂正します。」と述べられています。",
+              "zh": "字面上明确写着“制定新规则和把过去行为判成违规是两回事。”、“我先撤销删除，并更正制定时间。”。",
+              "en": "The scene explicitly states “Creating a new rule and making past conduct a violation are different acts.” and “I will reverse the removal for now and correct the enactment time.”."
             },
             "intent": {
-              "ja": "したがって、最も根拠のある読みは「削除を保留し、投稿を施行時刻に照らして再判断する。」と「変更履歴と施行時刻を公開記録に残す。」です。",
-              "zh": "因此，证据最充分的判断是「暂停删除，并按生效时间重新判断帖子。」与「公开保存修改历史和生效时间。」。",
-              "en": "The best-supported reading is 「Suspend removal and reassess the post against the effective time.」 and 「Preserve edit history and effective time publicly.」."
+              "ja": "したがって、最も根拠のある読みは「削除をいったん取り消し、施行時刻に照らして投稿を再判断する。」と「変更履歴と施行時刻を公開記録に残す。」です。",
+              "zh": "因此，证据最充分的判断是「先撤销删除，再按生效时间重新判断帖子。」与「公开保存修改历史和生效时间。」。",
+              "en": "The best-supported reading is 「Reverse the removal for now and reassess the post against the effective time.」 and 「Preserve edit history and effective time publicly.」."
             },
             "evidence": {
-              "ja": "13番目の台詞、14番目の台詞、15番目の台詞、16番目の台詞を合わせると、規則を遡及適用しただけでなく、先に存在したよう履歴を演出している。",
-              "zh": "合并阅读第13句台词、第14句台词、第15句台词、第16句台词可知，不仅是追溯适用规则，还伪造了规则早已存在的历史。",
-              "en": "Taken together, the thirteenth line, the fourteenth line, the fifteenth line, the sixteenth line show that The admin retroactively applies and backdates the rule."
+              "ja": "13～16番目の台詞は、削除を取り消して施行時刻に照らし再審査し、さらに編集履歴と施行時刻を公開記録に残すよう求めています。",
+              "zh": "第13至16句要求撤销删除，按生效时间重新审查帖子，并保留编辑记录与生效时间。",
+              "en": "Lines 13–16 call for reversing the removal, reassessing the post against the effective time, and preserving both the edit history and enactment record."
             },
             "nuance": {
               "ja": "表示日付と作成時刻の不一致は改変を強く示しますが、規則内容の妥当性と遡及処分の妥当性は別々に評価すべきです。",
@@ -4571,13 +4571,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "55fff18836541404fa211b8fc908f9be5ab4ec8f88858d89ea8e78fefc7ff942"
+      "contentHash": "e54ad3d2108dbb04a5dee7d616a39518bb6e1e50919f074505d5efe0b739a87f"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-026",
-      "revision": 3,
+      "revision": 4,
       "level": 5,
       "stage": 26,
       "jlptTarget": "N1-pragmatics",
@@ -4658,7 +4658,7 @@
             "zh": "你将前往雾之塔。",
             "en": "You proceed to the Tower of Mist."
           },
-          "readingJa": "あなたはきりのとうへむかう。",
+          "readingJa": "あなたわきりのとーえむかう。",
           "ttsTextJa": "あなたは霧の塔へ向かう。",
           "audioId": "L5-026-line-001",
           "pauseAfterMs": 500,
@@ -4666,13 +4666,13 @@
             {
               "id": "token-001",
               "text": "あなたは",
-              "reading": "あなたは",
+              "reading": "あなたわ",
               "audioId": "L5-026-line-001-token-001"
             },
             {
               "id": "token-002",
               "text": "霧の塔へ向かう。",
-              "reading": "きりのとうへむかう。",
+              "reading": "きりのとーえむかう。",
               "audioId": "L5-026-line-001-token-002"
             }
           ]
@@ -4951,19 +4951,19 @@
           "id": "line-012",
           "speaker": "companion",
           "text": {
-            "ja": "システムが塔主を案内するのでなく、塔主が僕らを使って帰ろうとしている？",
-            "zh": "不是系统引导塔主，而是塔主利用我们回去？",
-            "en": "Is the tower lord using us to return, rather than the system guiding him?"
+            "ja": "システムが僕らを案内しているのではなく、塔主が僕らを使って帰ろうとしている？",
+            "zh": "不是系统在引导我们，而是塔主想利用我们回去？",
+            "en": "Rather than the system guiding us, is the tower lord using us to return?"
           },
-          "readingJa": "しすてむがとーぬしをあんないするのでなく、とーぬしがぼくらをつかってかえろーとしている？",
-          "ttsTextJa": "システムが塔主を案内するのでなく、塔主が僕らを使って帰ろうとしている？",
+          "readingJa": "しすてむがぼくらをあんないしているのでわなく、とーぬしがぼくらをつかってかえろーとしている？",
+          "ttsTextJa": "システムが僕らを案内しているのではなく、塔主が僕らを使って帰ろうとしている？",
           "audioId": "L5-026-line-012",
           "pauseAfterMs": 500,
           "tokens": [
             {
               "id": "token-001",
-              "text": "システムが塔主を案内するのでなく、",
-              "reading": "しすてむがとーぬしをあんないするのでなく、",
+              "text": "システムが僕らを案内しているのではなく、",
+              "reading": "しすてむがぼくらをあんないしているのでわなく、",
               "audioId": "L5-026-line-012-token-001"
             },
             {
@@ -5006,7 +5006,7 @@
           "speaker": "system",
           "text": {
             "ja": "訂正。私は記録ではない。私は帰還者だ。",
-            "zh": "更正：我不是记录，我是归还者。",
+            "zh": "更正：我不是记录，我是归来者。",
             "en": "Correction. I am not a record. I am the returner."
           },
           "readingJa": "てーせー。わたしわきろくでわない。わたしわきかんしゃだ。",
@@ -5135,9 +5135,9 @@
               "en": "The best-supported reading is 「After the boss speaks, narration shifts from second to first person.」 and 「The system and boss share the same paired-phrase habit.」."
             },
             "evidence": {
-              "ja": "5番目の台詞、6番目の台詞、7番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞を合わせると、任務の語り手は中立システムでなく、塔へ戻りたいボス自身である。",
-              "zh": "合并阅读第5句台词、第6句台词、第7句台词、第9句台词、第10句台词、第11句台词可知，任务叙述者不是中立系统，而是想回塔的首领本人。",
-              "en": "Taken together, the fifth line, the sixth line, the seventh line, the ninth line, the tenth line, the eleventh line show that The quest narrator is the boss, not a neutral system."
+              "ja": "5・6・7・9・10・11番目の台詞を合わせると、代名詞の変化と同じ言い回しから、任務の語り手は中立システムではなく塔主と深く結びつき、塔への帰還を目指していると分かります。ただし、塔主本人か、声や記憶を複製した存在かは確定しません。",
+              "zh": "综合第5、6、7、9、10、11句，代词变化与相同口癖表明，任务叙述者并非中立系统，而是与塔主紧密相关并试图回塔；但它究竟是塔主本人，还是复制其声音或记忆的存在，仍未确定。",
+              "en": "Taken together, lines 5, 6, 7, 9, 10, and 11 show that the quest narrator is not neutral but is closely tied to the tower lord and seeks a return to the tower. Whether it is the lord himself or a copy of his voice or memory remains unsettled."
             },
             "nuance": {
               "ja": "代名詞と口癖の一致は語り手の同一性を強く示しますが、システムがボスの記憶を複製した可能性までは排除しません。",
@@ -5224,9 +5224,9 @@
               "en": "The best-supported reading is 「It treats the tower as a known place of return.」."
             },
             "evidence": {
-              "ja": "6番目の台詞、8番目の台詞を合わせると、任務の語り手は中立システムでなく、塔へ戻りたいボス自身である。",
-              "zh": "合并阅读第6句台词、第8句台词可知，任务叙述者不是中立系统，而是想回塔的首领本人。",
-              "en": "Taken together, the sixth line, the eighth line show that The quest narrator is the boss, not a neutral system."
+              "ja": "6番目と8番目の台詞を合わせると、代名詞の変化と同じ言い回しから、任務の語り手は中立システムではなく塔主と深く結びつき、塔への帰還を目指していると分かります。ただし、塔主本人か、声や記憶を複製した存在かは確定しません。",
+              "zh": "综合第6句和第8句，代词变化与相同口癖表明，任务叙述者并非中立系统，而是与塔主紧密相关并试图回塔；但它究竟是塔主本人，还是复制其声音或记忆的存在，仍未确定。",
+              "en": "Taken together, lines 6 and 8 show that the quest narrator is not neutral but is closely tied to the tower lord and seeks a return to the tower. Whether it is the lord himself or a copy of his voice or memory remains unsettled."
             },
             "nuance": {
               "ja": "代名詞と口癖の一致は語り手の同一性を強く示しますが、システムがボスの記憶を複製した可能性までは排除しません。",
@@ -5304,9 +5304,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "字面では「システムが塔主を案内するのでなく、塔主が僕らを使って帰ろうとしている？」、「その声は私から奪われた記録だ。」と述べられています。",
-              "zh": "字面上明确写着“不是系统引导塔主，而是塔主利用我们回去？”、“那声音是从我这里夺走的记录。”。",
-              "en": "The scene explicitly states “Is the tower lord using us to return, rather than the system guiding him?” and “That voice is a record taken from me.”."
+              "ja": "字面では「システムが僕らを案内しているのではなく、塔主が僕らを使って帰ろうとしている？」、「その声は私から奪われた記録だ。」と述べられています。",
+              "zh": "字面上明确写着“不是系统在引导我们，而是塔主想利用我们回去？”、“那声音是从我这里夺走的记录。”。",
+              "en": "The scene explicitly states “Rather than the system guiding us, is the tower lord using us to return?” and “That voice is a record taken from me.”."
             },
             "intent": {
               "ja": "したがって、最も根拠のある読みは「システムは塔主本人でなく、塔主の声や記憶を複製した存在かもしれない。」です。",
@@ -5314,9 +5314,9 @@
               "en": "The best-supported reading is 「The system may be a copy of the boss's voice or memory rather than the boss himself.」."
             },
             "evidence": {
-              "ja": "12番目の台詞、13番目の台詞、14番目の台詞を合わせると、任務の語り手は中立システムでなく、塔へ戻りたいボス自身である。",
-              "zh": "合并阅读第12句台词、第13句台词、第14句台词可知，任务叙述者不是中立系统，而是想回塔的首领本人。",
-              "en": "Taken together, the twelfth line, the thirteenth line, the fourteenth line show that The quest narrator is the boss, not a neutral system."
+              "ja": "12・13・14番目の台詞を合わせると、代名詞の変化と同じ言い回しから、任務の語り手は中立システムではなく塔主と深く結びつき、塔への帰還を目指していると分かります。ただし、塔主本人か、声や記憶を複製した存在かは確定しません。",
+              "zh": "综合第12、13、14句，代词变化与相同口癖表明，任务叙述者并非中立系统，而是与塔主紧密相关并试图回塔；但它究竟是塔主本人，还是复制其声音或记忆的存在，仍未确定。",
+              "en": "Taken together, lines 12, 13, and 14 show that the quest narrator is not neutral but is closely tied to the tower lord and seeks a return to the tower. Whether it is the lord himself or a copy of his voice or memory remains unsettled."
             },
             "nuance": {
               "ja": "代名詞と口癖の一致は語り手の同一性を強く示しますが、システムがボスの記憶を複製した可能性までは排除しません。",
@@ -5408,9 +5408,9 @@
               "en": "The best-supported reading is 「The narrator is tied to the boss and seeks return, but whether original or copy remains unsettled.」."
             },
             "evidence": {
-              "ja": "6番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞、13番目の台詞、14番目の台詞、15番目の台詞を合わせると、任務の語り手は中立システムでなく、塔へ戻りたいボス自身である。",
-              "zh": "合并阅读第6句台词、第8句台词、第9句台词、第10句台词、第13句台词、第14句台词、第15句台词可知，任务叙述者不是中立系统，而是想回塔的首领本人。",
-              "en": "Taken together, the sixth line, the eighth line, the ninth line, the tenth line, the thirteenth line, the fourteenth line, the fifteenth line show that The quest narrator is the boss, not a neutral system."
+              "ja": "6・8・9・10・13・14・15番目の台詞を合わせると、代名詞の変化と同じ言い回しから、任務の語り手は中立システムではなく塔主と深く結びつき、塔への帰還を目指していると分かります。ただし、塔主本人か、声や記憶を複製した存在かは確定しません。",
+              "zh": "综合第6、8、9、10、13、14、15句，代词变化与相同口癖表明，任务叙述者并非中立系统，而是与塔主紧密相关并试图回塔；但它究竟是塔主本人，还是复制其声音或记忆的存在，仍未确定。",
+              "en": "Taken together, lines 6, 8, 9, 10, 13, 14, and 15 show that the quest narrator is not neutral but is closely tied to the tower lord and seeks a return to the tower. Whether it is the lord himself or a copy of his voice or memory remains unsettled."
             },
             "nuance": {
               "ja": "代名詞と口癖の一致は語り手の同一性を強く示しますが、システムがボスの記憶を複製した可能性までは排除しません。",
@@ -5435,13 +5435,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "e6654b06a476815b01b9ec5aee56b12952340f25fc3269afef623e0f08848ae0"
+      "contentHash": "d3c6e082f71b00ddc9fb0889ed7de280ec1314eb31ee968cce6e3ce6b262769d"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-027",
-      "revision": 3,
+      "revision": 5,
       "level": 5,
       "stage": 27,
       "jlptTarget": "N1-pragmatics",
@@ -5711,7 +5711,7 @@
             "zh": "原来进入真名模式了。掌声还继续吗？",
             "en": "Real-name mode, then. Should I keep applauding?"
           },
-          "readingJa": "ほんみょーもーどなんだ。はくしゅ、つずけていい？",
+          "readingJa": "ほんみょーもーどなんだ。はくしゅ、つづけていい？",
           "ttsTextJa": "本名モードなんだ。拍手、続けていい？",
           "audioId": "L5-027-line-008",
           "pauseAfterMs": 500,
@@ -5725,7 +5725,7 @@
             {
               "id": "token-002",
               "text": "拍手、続けていい？",
-              "reading": "はくしゅ、つずけていい？",
+              "reading": "はくしゅ、つづけていい？",
               "audioId": "L5-027-line-008-token-002"
             }
           ]
@@ -5927,7 +5927,7 @@
             "zh": "明天在现实里把后续谈完。",
             "en": "Let us continue the conversation in reality tomorrow."
           },
-          "readingJa": "あしたのげんじつでつずきをはなそー。",
+          "readingJa": "あしたのげんじつでつづきをはなそー。",
           "ttsTextJa": "明日の現実で続きを話そう。",
           "audioId": "L5-027-line-016",
           "pauseAfterMs": 500,
@@ -5941,7 +5941,7 @@
             {
               "id": "token-002",
               "text": "続きを話そう。",
-              "reading": "つずきをはなそー。",
+              "reading": "つづきをはなそー。",
               "audioId": "L5-027-line-016-token-002"
             }
           ]
@@ -6026,9 +6026,9 @@
               "en": "The best-supported reading is 「Within the joking frame, they treat the vow as their real selves.」."
             },
             "evidence": {
-              "ja": "2番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、9番目の台詞、12番目の台詞、13番目の台詞を合わせると、練習という名目で、本気の約束を安全に試し、事実上成立させている。",
-              "zh": "合并阅读第2句台词、第5句台词、第6句台词、第7句台词、第9句台词、第12句台词、第13句台词可知，他们借彩排之名安全试探并事实上完成了真诚承诺。",
-              "en": "Taken together, the second line, the fifth line, the sixth line, the seventh line, the ninth line, the twelfth line, the thirteenth line show that The rehearsal frame safely performs a genuine commitment."
+              "ja": "2・5・6・7・9・12・13番目の台詞を合わせると、二人は練習という名目と冗談の表面を使いながら、本気の約束を安全に試し、現実で続きを話す余地を残しています。",
+              "zh": "综合第2、5、6、7、9、12、13句，两人借彩排与玩笑作缓冲，安全试探真诚承诺，并把后续留到现实中继续谈。",
+              "en": "Taken together, lines 2, 5, 6, 7, 9, 12, and 13 show that the rehearsal and joking frame let them test a serious commitment safely while leaving its continuation to a real-world conversation."
             },
             "nuance": {
               "ja": "本名と指輪は儀式を本気で受け止める手掛かりですが、法的婚姻や二人の私的合意まで自動的には成立しません。",
@@ -6116,9 +6116,9 @@
               "en": "The best-supported reading is 「The joking surface lets her express serious feelings safely.」."
             },
             "evidence": {
-              "ja": "8番目の台詞、9番目の台詞、10番目の台詞を合わせると、練習という名目で、本気の約束を安全に試し、事実上成立させている。",
-              "zh": "合并阅读第8句台词、第9句台词、第10句台词可知，他们借彩排之名安全试探并事实上完成了真诚承诺。",
-              "en": "Taken together, the eighth line, the ninth line, the tenth line show that The rehearsal frame safely performs a genuine commitment."
+              "ja": "8・9・10番目の台詞を合わせると、二人は練習という名目と冗談の表面を使いながら、本気の約束を安全に試し、現実で続きを話す余地を残しています。",
+              "zh": "综合第8、9、10句，两人借彩排与玩笑作缓冲，安全试探真诚承诺，并把后续留到现实中继续谈。",
+              "en": "Taken together, lines 8, 9, and 10 show that the rehearsal and joking frame let them test a serious commitment safely while leaving its continuation to a real-world conversation."
             },
             "nuance": {
               "ja": "本名と指輪は儀式を本気で受け止める手掛かりですが、法的婚姻や二人の私的合意まで自動的には成立しません。",
@@ -6166,13 +6166,13 @@
             {
               "id": "c",
               "text": {
-                "ja": "儀式の意味を場面限定の冗談として完全には終わらせていない。",
-                "zh": "他们没有把仪式意义完全终止在场景内的玩笑中。",
-                "en": "They have not wholly ended the ritual's meaning as a scene-bound joke."
+                "ja": "儀式の意味を、その場限りの冗談としては終わらせていない。",
+                "zh": "他们并未把仪式的意义当成只限当场的玩笑而结束。",
+                "en": "They have not treated the ritual's meaning as a joke confined to that scene."
               },
-              "ttsTextJa": "儀式の意味を場面限定の冗談として完全には終わらせていない。",
+              "ttsTextJa": "儀式の意味を、その場限りの冗談としては終わらせていない。",
               "audioId": "L5-027-q3-c",
-              "readingJa": "ぎしきのいみをばめんげんてーのじょーだんとしてかんぜんにわおわらせていない。"
+              "readingJa": "ぎしきのいみを、そのばかぎりのじょーだんとしてわおわらせていない。"
             },
             {
               "id": "d",
@@ -6202,14 +6202,14 @@
               "en": "The scene explicitly states “As Ren, I give the same answer.” and “We have left the venue, yet neither of you removes the ring.”."
             },
             "intent": {
-              "ja": "したがって、最も根拠のある読みは「儀式の意味を場面限定の冗談として完全には終わらせていない。」です。",
-              "zh": "因此，证据最充分的判断是「他们没有把仪式意义完全终止在场景内的玩笑中。」。",
-              "en": "The best-supported reading is 「They have not wholly ended the ritual's meaning as a scene-bound joke.」."
+              "ja": "したがって、最も根拠のある読みは「儀式の意味を、その場限りの冗談としては終わらせていない。」です。",
+              "zh": "因此，证据最充分的判断是「他们并未把仪式的意义当成只限当场的玩笑而结束。」。",
+              "en": "The best-supported reading is 「They have not treated the ritual's meaning as a joke confined to that scene.」."
             },
             "evidence": {
-              "ja": "13番目の台詞、14番目の台詞、15番目の台詞、16番目の台詞を合わせると、練習という名目で、本気の約束を安全に試し、事実上成立させている。",
-              "zh": "合并阅读第13句台词、第14句台词、第15句台词、第16句台词可知，他们借彩排之名安全试探并事实上完成了真诚承诺。",
-              "en": "Taken together, the thirteenth line, the fourteenth line, the fifteenth line, the sixteenth line show that The rehearsal frame safely performs a genuine commitment."
+              "ja": "13～16番目の台詞を合わせると、二人は練習という名目と冗談の表面を使いながら、本気の約束を安全に試し、現実で続きを話す余地を残しています。",
+              "zh": "综合第13至16句，两人借彩排与玩笑作缓冲，安全试探真诚承诺，并把后续留到现实中继续谈。",
+              "en": "Taken together, lines 13–16 show that the rehearsal and joking frame let them test a serious commitment safely while leaving its continuation to a real-world conversation."
             },
             "nuance": {
               "ja": "本名と指輪は儀式を本気で受け止める手掛かりですが、法的婚姻や二人の私的合意まで自動的には成立しません。",
@@ -6241,7 +6241,7 @@
               },
               "ttsTextJa": "VRでの誓いは、現実で続ける話の試行でもある。",
               "audioId": "L5-027-q4-a",
-              "readingJa": "ぶいあーるでのちかいわ、げんじつでつずけるはなしのしこーでもある。"
+              "readingJa": "ぶいあーるでのちかいわ、げんじつでつづけるはなしのしこーでもある。"
             },
             {
               "id": "b",
@@ -6297,9 +6297,9 @@
               "en": "The best-supported reading is 「The VR vow is also a trial run for a real-world conversation.」."
             },
             "evidence": {
-              "ja": "9番目の台詞、10番目の台詞、16番目の台詞を合わせると、練習という名目で、本気の約束を安全に試し、事実上成立させている。",
-              "zh": "合并阅读第9句台词、第10句台词、第16句台词可知，他们借彩排之名安全试探并事实上完成了真诚承诺。",
-              "en": "Taken together, the ninth line, the tenth line, the sixteenth line show that The rehearsal frame safely performs a genuine commitment."
+              "ja": "9・10・16番目の台詞を合わせると、二人は練習という名目と冗談の表面を使いながら、本気の約束を安全に試し、現実で続きを話す余地を残しています。",
+              "zh": "综合第9、10、16句，两人借彩排与玩笑作缓冲，安全试探真诚承诺，并把后续留到现实中继续谈。",
+              "en": "Taken together, lines 9, 10, and 16 show that the rehearsal and joking frame let them test a serious commitment safely while leaving its continuation to a real-world conversation."
             },
             "nuance": {
               "ja": "本名と指輪は儀式を本気で受け止める手掛かりですが、法的婚姻や二人の私的合意まで自動的には成立しません。",
@@ -6393,9 +6393,9 @@
               "en": "The best-supported reading is 「They use the joking frame as emotional cushioning.」 and 「They intend to carry the ritual into a real-world conversation.」."
             },
             "evidence": {
-              "ja": "2番目の台詞、3番目の台詞、6番目の台詞、7番目の台詞、9番目の台詞、10番目の台詞、14番目の台詞、16番目の台詞を合わせると、練習という名目で、本気の約束を安全に試し、事実上成立させている。",
-              "zh": "合并阅读第2句台词、第3句台词、第6句台词、第7句台词、第9句台词、第10句台词、第14句台词、第16句台词可知，他们借彩排之名安全试探并事实上完成了真诚承诺。",
-              "en": "Taken together, the second line, the third line, the sixth line, the seventh line, the ninth line, the tenth line, the fourteenth line, the sixteenth line show that The rehearsal frame safely performs a genuine commitment."
+              "ja": "2・3・6・7・9・10・14・16番目の台詞を合わせると、二人は練習という名目と冗談の表面を使いながら、本気の約束を安全に試し、現実で続きを話す余地を残しています。",
+              "zh": "综合第2、3、6、7、9、10、14、16句，两人借彩排与玩笑作缓冲，安全试探真诚承诺，并把后续留到现实中继续谈。",
+              "en": "Taken together, lines 2, 3, 6, 7, 9, 10, 14, and 16 show that the rehearsal and joking frame let them test a serious commitment safely while leaving its continuation to a real-world conversation."
             },
             "nuance": {
               "ja": "本名と指輪は儀式を本気で受け止める手掛かりですが、法的婚姻や二人の私的合意まで自動的には成立しません。",
@@ -6420,13 +6420,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "7f838bc6439e87c2a8654b1d3c3723fe36933ebfd920f99939b93443a39086be"
+      "contentHash": "bbb3fd5a276a4a04b21b57ddd4d5774fbde6afc18be36567d53a36a709ea78bc"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-028",
-      "revision": 3,
+      "revision": 4,
       "level": 5,
       "stage": 28,
       "jlptTarget": "N1-pragmatics",
@@ -6833,12 +6833,12 @@
           "id": "line-014",
           "speaker": "ai",
           "text": {
-            "ja": "私は出来事を思い出していません。ただ、この表現を自然と評価します。",
+            "ja": "私は出来事を思い出していません。ただ、この表現を自然だと評価します。",
             "zh": "我没有想起事件，只是自然地认为这个表达合适。",
             "en": "I do not recall the event; I simply rate this phrase as natural."
           },
-          "readingJa": "わたしわできごとをおもいだしていません。ただ、このひょーげんをしぜんとひょーかします。",
-          "ttsTextJa": "私は出来事を思い出していません。ただ、この表現を自然と評価します。",
+          "readingJa": "わたしわできごとをおもいだしていません。ただ、このひょーげんをしぜんだとひょーかします。",
+          "ttsTextJa": "私は出来事を思い出していません。ただ、この表現を自然だと評価します。",
           "audioId": "L5-028-line-014",
           "pauseAfterMs": 500,
           "tokens": [
@@ -6850,8 +6850,8 @@
             },
             {
               "id": "token-002",
-              "text": "ただ、この表現を自然と評価します。",
-              "reading": "ただ、このひょーげんをしぜんとひょーかします。",
+              "text": "ただ、この表現を自然だと評価します。",
+              "reading": "ただ、このひょーげんをしぜんだとひょーかします。",
               "audioId": "L5-028-line-014-token-002"
             }
           ]
@@ -6908,13 +6908,13 @@
             {
               "id": "b",
               "text": {
-                "ja": "事実の出所を伴わない、更新済み語彙モデル上の比喩パターン。",
-                "zh": "不带事实来源、保留在更新词汇模型中的比喻模式。",
-                "en": "A metaphor pattern in the updated lexical model without its factual provenance."
+                "ja": "由来となる出来事の記憶を伴わない、更新済み語彙モデル上の比喩パターン。",
+                "zh": "保留在更新后的词汇模型中、但不伴随其来源事件记忆的比喻模式。",
+                "en": "A metaphor pattern in the updated lexical model without memory of the event it came from."
               },
-              "ttsTextJa": "事実の出所を伴わない、更新済み語彙モデル上の比喩パターン。",
+              "ttsTextJa": "由来となる出来事の記憶を伴わない、更新済み語彙モデル上の比喩パターン。",
               "audioId": "L5-028-q1-b",
-              "readingJa": "じじつのしゅっしょをともなわない、こーしんずみごいもでるじょうのひゆぱたーん。"
+              "readingJa": "ゆらいとなるできごとのきおくをともなわない、こーしんずみごいもでるじょーのひゆぱたーん。"
             },
             {
               "id": "c",
@@ -6959,9 +6959,9 @@
               "en": "The scene explicitly states “Factual-memory deletion complete.” and “No stored answer is available.”."
             },
             "intent": {
-              "ja": "したがって、最も根拠のある読みは「事実の出所を伴わない、更新済み語彙モデル上の比喩パターン。」です。",
-              "zh": "因此，证据最充分的判断是「不带事实来源、保留在更新词汇模型中的比喻模式。」。",
-              "en": "The best-supported reading is 「A metaphor pattern in the updated lexical model without its factual provenance.」."
+              "ja": "したがって、最も根拠のある読みは「由来となる出来事の記憶を伴わない、更新済み語彙モデル上の比喩パターン。」です。",
+              "zh": "因此，证据最充分的判断是「保留在更新后的词汇模型中、但不伴随其来源事件记忆的比喻模式。」。",
+              "en": "The best-supported reading is 「A metaphor pattern in the updated lexical model without memory of the event it came from.」."
             },
             "evidence": {
               "ja": "2番目の台詞、4番目の台詞、6番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞、14番目の台詞を合わせると、個別事実は削除されても、会話から学んだ表現傾向が意味記憶として残っている。",
@@ -7146,9 +7146,9 @@
               "en": "The best-supported reading is 「Deleting conversation history and rolling back learned model updates.」."
             },
             "evidence": {
-              "ja": "10番目の台詞、13番目の台詞を合わせると、個別事実は削除されても、会話から学んだ表現傾向が意味記憶として残っている。",
-              "zh": "合并阅读第10句台词、第13句台词可知，具体事实被删了，但从对话学到的表达模式仍以语义习惯保留。",
-              "en": "Taken together, the tenth line, the thirteenth line show that Factual memory is gone while learned linguistic patterns remain."
+              "ja": "10番目の台詞は事実記憶がゼロでも語彙モデルが更新済みだと示し、13番目の台詞は履歴消去とモデル更新の巻き戻しが別の操作だと明確にしています。",
+              "zh": "第10句明确说明事实记忆为零但词汇模型已更新；第13句又指出，删除历史与回滚模型更新是不同操作。",
+              "en": "Line 10 states that factual memory is zero while the lexical model has been updated, and line 13 distinguishes deleting history from rolling back a model update."
             },
             "nuance": {
               "ja": "比喩の保持は学習痕跡を示しますが、AIが消去前の会話を意識的に思い出している証拠とは限りません。",
@@ -7269,13 +7269,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "ab1bf296eb057553d636ba77eae51a3b97cb2a20c9d59638582c7a5b21e9306f"
+      "contentHash": "04cacded2b7779397daf0df7d5c93f6db8a3c9db65ffeb6585d17255f478c5a4"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-029",
-      "revision": 3,
+      "revision": 4,
       "level": 5,
       "stage": 29,
       "jlptTarget": "N1-pragmatics",
@@ -7818,7 +7818,7 @@
               "text": {
                 "ja": "議長が反対票を削除した。",
                 "zh": "主席删除了反对票。",
-                "en": "The chair deleted no votes."
+                "en": "The chair deleted opposing votes."
               },
               "ttsTextJa": "議長が反対票を削除した。",
               "audioId": "L5-029-q1-c",
@@ -7880,7 +7880,7 @@
           "id": "q2",
           "type": "single",
           "prompt": {
-            "ja": "参加者の現在意思と記録結果が食い違う核心は何ですか。",
+            "ja": "参加者の現在の意思と記録結果が食い違う核心は何ですか。",
             "zh": "参与者当前意愿与结果不一致的核心是什么？",
             "en": "What causes the mismatch between present intent and the recorded result?"
           },
@@ -7983,13 +7983,13 @@
             {
               "id": "a",
               "text": {
-                "ja": "二人は無回答を棄権と意図し、生成された賛成票を現在の同意としていない。",
-                "zh": "两人意图弃权，也不承认生成的赞成票代表当前同意。",
-                "en": "Two people intended abstention and reject the generated yes votes as present consent."
+                "ja": "二人は無回答で棄権するつもりであり、生成された賛成票を現在の同意とは認めていない。",
+                "zh": "两人原本想通过不回答表示弃权，也不承认自动生成的赞成票代表当前同意。",
+                "en": "Two people intended to abstain by not responding and do not accept the generated yes votes as present consent."
               },
-              "ttsTextJa": "二人は無回答を棄権と意図し、生成された賛成票を現在の同意としていない。",
+              "ttsTextJa": "二人は無回答で棄権するつもりであり、生成された賛成票を現在の同意とは認めていない。",
               "audioId": "L5-029-q3-a",
-              "readingJa": "ふたりわむかいとーをきけんといとし、せーせーされたさんせいひょうをげんざいのどーいとしていない。"
+              "readingJa": "ふたりわむかいとーできけんするつもりであり、せーせーされたさんせーひょーをげんざいのどーいとわみとめていない。"
             },
             {
               "id": "b",
@@ -8043,9 +8043,9 @@
               "en": "The scene explicitly states “I lacked evidence, so I left it unanswered.” and “I also left it blank intending to abstain.”."
             },
             "intent": {
-              "ja": "したがって、最も根拠のある読みは「二人は無回答を棄権と意図し、生成された賛成票を現在の同意としていない。」です。",
-              "zh": "因此，证据最充分的判断是「两人意图弃权，也不承认生成的赞成票代表当前同意。」。",
-              "en": "The best-supported reading is 「Two people intended abstention and reject the generated yes votes as present consent.」."
+              "ja": "したがって、最も根拠のある読みは「二人は無回答で棄権するつもりであり、生成された賛成票を現在の同意とは認めていない。」です。",
+              "zh": "因此，证据最充分的判断是「两人原本想通过不回答表示弃权，也不承认自动生成的赞成票代表当前同意。」。",
+              "en": "The best-supported reading is 「Two people intended to abstain by not responding and do not accept the generated yes votes as present consent.」."
             },
             "evidence": {
               "ja": "2番目の台詞、3番目の台詞、9番目の台詞、10番目の台詞、13番目の台詞、16番目の台詞を合わせると、沈黙の意味を棄権から委任へ変え、過去設定で現在の合意を作った。",
@@ -8139,9 +8139,9 @@
               "en": "The best-supported reading is 「Make nonresponse meaning explicit and add expiry and reconfirmation to proxy settings.」."
             },
             "evidence": {
-              "ja": "13番目の台詞、14番目の台詞、15番目の台詞、16番目の台詞を合わせると、沈黙の意味を棄権から委任へ変え、過去設定で現在の合意を作った。",
-              "zh": "合并阅读第13句台词、第14句台词、第15句台词、第16句台词可知，系统把沉默从弃权改成委托，用旧设置制造当前共识。",
-              "en": "Taken together, the thirteenth line, the fourteenth line, the fifteenth line, the sixteenth line show that Silence is redefined from abstention to proxy delegation."
+              "ja": "13～16番目の台詞は、無回答の意味を明確にし、代理設定に期限と再確認を設けた上で、現在の投票が有効かを再検証するよう求めています。",
+              "zh": "第13至16句要求明确界定“未回答”的含义，为代理设置期限与重新确认，并复核当前表决是否有效。",
+              "en": "Lines 13–16 call for defining nonresponse explicitly, adding expiry and reconfirmation to proxy settings, and reviewing whether the current vote remains valid."
             },
             "nuance": {
               "ja": "設定上は過去代理人への委任ですが、参加者の現在意図と制度の既定値がずれており、形式的全会一致を実質的同意と読めません。",
@@ -8166,13 +8166,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "333281e35e9d923d271fa9b97b04dd5e46003f9faf9698f9e0ca600287e55a5d"
+      "contentHash": "aa8554799b4f952b40209b6861f14ba9d4518294027abbed90ad768ddbae60d0"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-030",
-      "revision": 3,
+      "revision": 5,
       "level": 5,
       "stage": 30,
       "jlptTarget": "N1-pragmatics",
@@ -8383,25 +8383,25 @@
           "id": "line-006",
           "speaker": "detective",
           "text": {
-            "ja": "写真と切符だけで二週間離れます。",
-            "zh": "光照片和车票就相差两周。",
-            "en": "The photo and ticket are already two weeks apart."
+            "ja": "写真と切符だけでも、少なくとも十二日離れます。",
+            "zh": "仅照片与车票之间，就至少相隔十二天。",
+            "en": "The photograph and ticket alone are at least twelve days apart."
           },
-          "readingJa": "しゃしんときっぷだけでにしゅーかんはなれます。",
-          "ttsTextJa": "写真と切符だけで二週間離れます。",
+          "readingJa": "しゃしんときっぷだけでも、すくなくともじゅーににちはなれます。",
+          "ttsTextJa": "写真と切符だけでも、少なくとも十二日離れます。",
           "audioId": "L5-030-line-006",
           "pauseAfterMs": 500,
           "tokens": [
             {
               "id": "token-001",
-              "text": "写真と切符だけで",
-              "reading": "しゃしんときっぷだけで",
+              "text": "写真と切符だけでも、",
+              "reading": "しゃしんときっぷだけでも、",
               "audioId": "L5-030-line-006-token-001"
             },
             {
               "id": "token-002",
-              "text": "二週間離れます。",
-              "reading": "にしゅーかんはなれます。",
+              "text": "少なくとも十二日離れます。",
+              "reading": "すくなくともじゅーににちはなれます。",
               "audioId": "L5-030-line-006-token-002"
             }
           ]
@@ -8468,7 +8468,7 @@
             "zh": "收据上是六月限定的青梅套餐。",
             "en": "The receipt is for a green-plum set sold only in June."
           },
-          "readingJa": "りょーしゅーしょのしなわろくがつげんてーのおうめてーしょくです。",
+          "readingJa": "りょーしゅーしょのしなわろくがつげんてーのあおうめてーしょくです。",
           "ttsTextJa": "領収書の品は六月限定の青梅定食です。",
           "audioId": "L5-030-line-009",
           "pauseAfterMs": 500,
@@ -8482,7 +8482,7 @@
             {
               "id": "token-002",
               "text": "六月限定の青梅定食です。",
-              "reading": "ろくがつげんてーのおうめてーしょくです。",
+              "reading": "ろくがつげんてーのあおうめてーしょくです。",
               "audioId": "L5-030-line-009-token-002"
             }
           ]
@@ -8630,7 +8630,7 @@
             "zh": "这一点我承认，今天只推翻同日不在场证明。",
             "en": "Agreed. Today we disprove only the same-day alibi."
           },
-          "readingJa": "そのてんわみとめます。きょーわどーじつありばいだけをくずします。",
+          "readingJa": "そのてんわみとめます。きょうわどーじつありばいだけをくずします。",
           "ttsTextJa": "その点は認めます。今日は同日アリバイだけを崩します。",
           "audioId": "L5-030-line-015",
           "pauseAfterMs": 500,
@@ -8644,7 +8644,7 @@
             {
               "id": "token-002",
               "text": "今日は同日アリバイだけを崩します。",
-              "reading": "きょーわどーじつありばいだけをくずします。",
+              "reading": "きょうわどーじつありばいだけをくずします。",
               "audioId": "L5-030-line-015-token-002"
             }
           ]
@@ -8735,9 +8735,9 @@
               "en": "Taken together, the second line, the third line, the fourth line, the fifth line, the eighth line, the ninth line, the tenth line, the twelfth line show that Authentic evidence from different days is edited into one alibi."
             },
             "nuance": {
-              "ja": "個々の証拠が本物でも同日性は崩れますが、写真を誰がいつ組み合わせたか、故意だったかは別の推論です。",
-              "zh": "单件证据都真也不代表同一天；是谁何时组合、是否故意，仍是另一个问题。",
-              "en": "Authenticity of each item does not preserve same-day chronology; who assembled the story and whether intentionally remain separate questions."
+              "ja": "個々の証拠が本物でも同日性は崩れますが、これらの証拠を誰がいつ一つの行程に束ねたか、故意だったかは別の推論です。",
+              "zh": "即使每项证据都是真的，也无法维持“同一天”的说法；但这些证据由谁在何时被整合成一段行程、是否出于故意，仍是另一层推断。",
+              "en": "Even if each item is genuine, they cannot all belong to the same day; who bundled these pieces of evidence into one itinerary, when, and whether deliberately are separate inferences."
             },
             "alternative": {
               "ja": "「全部偽造品である。時系列や周辺行為より、この一点だけを決定的根拠とすべきである。」は、場面にない因果や確定度を足してしまいます。",
@@ -8826,9 +8826,9 @@
               "en": "Taken together, the third line, the fourth line, the seventh line, the eighth line show that Authentic evidence from different days is edited into one alibi."
             },
             "nuance": {
-              "ja": "個々の証拠が本物でも同日性は崩れますが、写真を誰がいつ組み合わせたか、故意だったかは別の推論です。",
-              "zh": "单件证据都真也不代表同一天；是谁何时组合、是否故意，仍是另一个问题。",
-              "en": "Authenticity of each item does not preserve same-day chronology; who assembled the story and whether intentionally remain separate questions."
+              "ja": "個々の証拠が本物でも同日性は崩れますが、これらの証拠を誰がいつ一つの行程に束ねたか、故意だったかは別の推論です。",
+              "zh": "即使每项证据都是真的，也无法维持“同一天”的说法；但这些证据由谁在何时被整合成一段行程、是否出于故意，仍是另一层推断。",
+              "en": "Even if each item is genuine, they cannot all belong to the same day; who bundled these pieces of evidence into one itinerary, when, and whether deliberately are separate inferences."
             },
             "alternative": {
               "ja": "「容疑者の腕時計。」は、場面にない因果や確定度を足してしまいます。",
@@ -8888,7 +8888,7 @@
               },
               "ttsTextJa": "領収書が六月限定品で、台帳も六月六日を示す。",
               "audioId": "L5-030-q3-d",
-              "readingJa": "りょうしゅうしょがろくがつげんていぴんで、だいちょーもろくがつむいかをしめす。"
+              "readingJa": "りょうしゅうしょがろくがつげんていひんで、だいちょーもろくがつむいかをしめす。"
             }
           ],
           "correctOptionIds": [
@@ -8903,9 +8903,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "字面では「切符は五月二日、月曜限定の印字です。」、「写真と切符だけで二週間離れます。」と述べられています。",
-              "zh": "字面上明确写着“车票是五月二日，并带有周一限定印字。”、“光照片和车票就相差两周。”。",
-              "en": "The scene explicitly states “The ticket is dated May 2 and bears a Monday-only print.” and “The photo and ticket are already two weeks apart.”."
+              "ja": "字面では「切符は五月二日、月曜限定の印字です。」、「写真と切符だけでも、少なくとも十二日離れます。」と述べられています。",
+              "zh": "字面上明确写着“车票是五月二日，并带有周一限定印字。”、“仅照片与车票之间，就至少相隔十二天。”。",
+              "en": "The scene explicitly states “The ticket is dated May 2 and bears a Monday-only print.” and “The photograph and ticket alone are at least twelve days apart.”."
             },
             "intent": {
               "ja": "したがって、最も根拠のある読みは「切符が五月二日の月曜限定印字である。」と「領収書が六月限定品で、台帳も六月六日を示す。」です。",
@@ -8918,9 +8918,9 @@
               "en": "Taken together, the fifth line, the sixth line, the ninth line, the tenth line show that Authentic evidence from different days is edited into one alibi."
             },
             "nuance": {
-              "ja": "個々の証拠が本物でも同日性は崩れますが、写真を誰がいつ組み合わせたか、故意だったかは別の推論です。",
-              "zh": "单件证据都真也不代表同一天；是谁何时组合、是否故意，仍是另一个问题。",
-              "en": "Authenticity of each item does not preserve same-day chronology; who assembled the story and whether intentionally remain separate questions."
+              "ja": "個々の証拠が本物でも同日性は崩れますが、これらの証拠を誰がいつ一つの行程に束ねたか、故意だったかは別の推論です。",
+              "zh": "即使每项证据都是真的，也无法维持“同一天”的说法；但这些证据由谁在何时被整合成一段行程、是否出于故意，仍是另一层推断。",
+              "en": "Even if each item is genuine, they cannot all belong to the same day; who bundled these pieces of evidence into one itinerary, when, and whether deliberately are separate inferences."
             },
             "alternative": {
               "ja": "「証拠が椿名義である。」は、場面にない因果や確定度を足してしまいます。",
@@ -9008,9 +9008,9 @@
               "en": "Taken together, the second line, the eleventh line, the twelfth line show that Authentic evidence from different days is edited into one alibi."
             },
             "nuance": {
-              "ja": "個々の証拠が本物でも同日性は崩れますが、写真を誰がいつ組み合わせたか、故意だったかは別の推論です。",
-              "zh": "单件证据都真也不代表同一天；是谁何时组合、是否故意，仍是另一个问题。",
-              "en": "Authenticity of each item does not preserve same-day chronology; who assembled the story and whether intentionally remain separate questions."
+              "ja": "個々の証拠が本物でも同日性は崩れますが、これらの証拠を誰がいつ一つの行程に束ねたか、故意だったかは別の推論です。",
+              "zh": "即使每项证据都是真的，也无法维持“同一天”的说法；但这些证据由谁在何时被整合成一段行程、是否出于故意，仍是另一层推断。",
+              "en": "Even if each item is genuine, they cannot all belong to the same day; who bundled these pieces of evidence into one itinerary, when, and whether deliberately are separate inferences."
             },
             "alternative": {
               "ja": "「証拠の色と所有者。しかも、別の可能性を追加で検討する余地はまったく残らない。」は、場面にない因果や確定度を足してしまいます。",
@@ -9099,9 +9099,9 @@
               "en": "Taken together, the twelfth line, the thirteenth line, the fourteenth line, the fifteenth line show that Authentic evidence from different days is edited into one alibi."
             },
             "nuance": {
-              "ja": "個々の証拠が本物でも同日性は崩れますが、写真を誰がいつ組み合わせたか、故意だったかは別の推論です。",
-              "zh": "单件证据都真也不代表同一天；是谁何时组合、是否故意，仍是另一个问题。",
-              "en": "Authenticity of each item does not preserve same-day chronology; who assembled the story and whether intentionally remain separate questions."
+              "ja": "個々の証拠が本物でも同日性は崩れますが、これらの証拠を誰がいつ一つの行程に束ねたか、故意だったかは別の推論です。",
+              "zh": "即使每项证据都是真的，也无法维持“同一天”的说法；但这些证据由谁在何时被整合成一段行程、是否出于故意，仍是另一层推断。",
+              "en": "Even if each item is genuine, they cannot all belong to the same day; who bundled these pieces of evidence into one itinerary, when, and whether deliberately are separate inferences."
             },
             "alternative": {
               "ja": "「椿が必ず全証拠を偽造した。」は、場面にない因果や確定度を足してしまいます。",
@@ -9121,7 +9121,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "8cb7fb89f558340fadc76ea1ea116fd807848119e4b0c7e16747679a9429da7c"
+      "contentHash": "6a9c6c7e9f270c9e9d202e32eb99ac0b18d04f293684b66d354c9963fb6dcbc7"
     }
   ]
 }

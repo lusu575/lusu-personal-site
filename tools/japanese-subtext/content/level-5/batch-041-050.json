@@ -8,7 +8,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-041",
-      "revision": 3,
+      "revision": 7,
       "level": 5,
       "stage": 41,
       "jlptTarget": "N1-pragmatics",
@@ -170,7 +170,7 @@
             "zh": "按潮汐历，则是九百三巡第五环。",
             "en": "In the tidal calendar, it is Cycle 5 of Turn 903."
           },
-          "readingJa": "ちょーせきれきならきゅーひゃくさんじゅんだいごたまきです。",
+          "readingJa": "ちょーせきれきならきゅーひゃくさんじゅんだいごかんです。",
           "ttsTextJa": "潮汐暦なら九百三巡第五環です。",
           "audioId": "L5-041-line-004",
           "pauseAfterMs": 520,
@@ -184,7 +184,7 @@
             {
               "id": "token-002",
               "text": "九百三巡第五環です。",
-              "reading": "きゅーひゃくさんじゅんだいごたまきです。",
+              "reading": "きゅーひゃくさんじゅんだいごかんです。",
               "audioId": "L5-041-line-004-token-002"
             }
           ]
@@ -251,7 +251,7 @@
             "zh": "第五环比你们的六月更早开始，龙族一方也该算晚。",
             "en": "Cycle 5 begins before your June, so the dragons should also be late."
           },
-          "readingJa": "だいごたまきわそちらのろくがつよりさきにはじまる。りゅーがわもおそいはずです。",
+          "readingJa": "だいごかんわそちらのろくがつよりさきにはじまる。りゅーがわもおそいはずです。",
           "ttsTextJa": "第五環はそちらの六月より先に始まる。竜側も遅いはずです。",
           "audioId": "L5-041-line-007",
           "pauseAfterMs": 520,
@@ -259,7 +259,7 @@
             {
               "id": "token-001",
               "text": "第五環はそちらの六月より先に始まる。",
-              "reading": "だいごたまきわそちらのろくがつよりさきにはじまる。",
+              "reading": "だいごかんわそちらのろくがつよりさきにはじまる。",
               "audioId": "L5-041-line-007-token-001"
             },
             {
@@ -329,7 +329,7 @@
           "speaker": "archivist",
           "text": {
             "ja": "人間版の付表は一万二千八百八十四番です。",
-            "zh": "人类版本附表写着第一万二千八百八十四号。",
+            "zh": "人类版本附表写着一万二千八百八十四号。",
             "en": "The human appendix gives index 12,884."
           },
           "readingJa": "にんげんばんのふひょーわいちまんにせんはっぴゃくはちじゅーよんばんです。",
@@ -383,7 +383,7 @@
           "speaker": "lunar",
           "text": {
             "ja": "月版の欄外記号も一万二千八百八十四です。",
-            "zh": "月民版本的页边符号同样是第一万二千八百八十四。",
+            "zh": "月民版本的页边符号同样是一万二千八百八十四。",
             "en": "The lunar marginal mark is likewise 12,884."
           },
           "readingJa": "つきばんのらんがいきごーもいちまんにせんはっぴゃくはちじゅーよんです。",
@@ -436,12 +436,12 @@
           "id": "line-014",
           "speaker": "dragon",
           "text": {
-            "ja": "しかし灰月八日と六月十四日は同じ日名ではない。",
-            "zh": "可灰月八日和六月十四日并不是同一个日名。",
-            "en": "But Ash-Moon 8 and June 14 are not the same day-name."
+            "ja": "しかし灰月八日と六月十四日は同じ日付の呼び名ではない。",
+            "zh": "可灰月八日和六月十四日并不是同一个日期名称。",
+            "en": "But Ash-Moon 8 and June 14 are not the same date label."
           },
-          "readingJa": "しかしはいつきよーかとろくがつじゅーよっかわおなじひなでわない。",
-          "ttsTextJa": "しかし灰月八日と六月十四日は同じ日名ではない。",
+          "readingJa": "しかしはいつきよーかとろくがつじゅーよっかわおなじひづけのよびなでわない。",
+          "ttsTextJa": "しかし灰月八日と六月十四日は同じ日付の呼び名ではない。",
           "audioId": "L5-041-line-014",
           "pauseAfterMs": 520,
           "tokens": [
@@ -453,8 +453,8 @@
             },
             {
               "id": "token-002",
-              "text": "同じ日名ではない。",
-              "reading": "おなじひなでわない。",
+              "text": "同じ日付の呼び名ではない。",
+              "reading": "おなじひづけのよびなでわない。",
               "audioId": "L5-041-line-014-token-002"
             }
           ]
@@ -521,7 +521,7 @@
             "zh": "人类记录为六月十四日十八点十分。",
             "en": "The human record says June 14 at 18:10."
           },
-          "readingJa": "にんげんきろくわろくがつとよひじゅーはちじじゅっぷん。",
+          "readingJa": "にんげんきろくわろくがつじゅーよっかじゅーはちじじゅっぷん。",
           "ttsTextJa": "人間記録は六月十四日十八時十分。",
           "audioId": "L5-041-line-017",
           "pauseAfterMs": 520,
@@ -535,7 +535,7 @@
             {
               "id": "token-002",
               "text": "六月十四日十八時十分。",
-              "reading": "ろくがつとよひじゅーはちじじゅっぷん。",
+              "reading": "ろくがつじゅーよっかじゅーはちじじゅっぷん。",
               "audioId": "L5-041-line-017-token-002"
             }
           ]
@@ -571,19 +571,19 @@
           "id": "line-019",
           "speaker": "lunar",
           "text": {
-            "ja": "潮汐暦の第五環第三鐘も換算表では同時刻です。",
+            "ja": "潮汐暦の第五環、第三の鐘も換算表では同時刻です。",
             "zh": "潮汐历第五环第三钟按换算表也是同一时刻。",
             "en": "The third bell of Cycle 5 converts to the same instant as well."
           },
-          "readingJa": "ちょーせきれきのだいごたまきだいさんかねもかんさんひょうでわどうじこくです。",
-          "ttsTextJa": "潮汐暦の第五環第三鐘も換算表では同時刻です。",
+          "readingJa": "ちょーせきれきのだいごかん、だいさんのかねもかんさんひょうでわどうじこくです。",
+          "ttsTextJa": "潮汐暦の第五環、第三の鐘も換算表では同時刻です。",
           "audioId": "L5-041-line-019",
           "pauseAfterMs": 520,
           "tokens": [
             {
               "id": "token-001",
-              "text": "潮汐暦の第五環第三鐘も",
-              "reading": "ちょーせきれきのだいごたまきだいさんかねも",
+              "text": "潮汐暦の第五環、第三の鐘も",
+              "reading": "ちょーせきれきのだいごかん、だいさんのかねも",
               "audioId": "L5-041-line-019-token-001"
             },
             {
@@ -674,7 +674,7 @@
               },
               "ttsTextJa": "満月通番は国ごとに別の天体を数え、数字の一致は翻訳担当が後から合わせた。",
               "audioId": "L5-041-q1-d",
-              "readingJa": "まんげつつーばんわこくごとにべつのてんたいをかぞえ、すーじのいっちわほんやくたんとーがあとからあわせた。"
+              "readingJa": "まんげつつーばんわくにごとにべつのてんたいをかぞえ、すーじのいっちわほんやくたんとーがあとからあわせた。"
             }
           ],
           "correctOptionIds": [
@@ -693,7 +693,7 @@
           "explanation": {
             "literal": {
               "ja": "字面上は「各条約の満月通番を確認しましょう。」、「人間版の付表は一万二千八百八十四番です。」という観察が明示されています。",
-              "zh": "字面上明确给出了“请核对每份条约上的满月通号。”、“人类版本附表写着第一万二千八百八十四号。”这些观察。",
+              "zh": "字面上明确给出了“请核对每份条约上的满月通号。”、“人类版本附表写着一万二千八百八十四号。”这些观察。",
               "en": "At the literal level, the scene explicitly gives “Let us check the full-moon index in each treaty.” and “The human appendix gives index 12,884.”."
             },
             "intent": {
@@ -712,9 +712,9 @@
               "en": "The conclusion depends on the conversion table and does not prove that no other treaty text was altered."
             },
             "alternative": {
-              "ja": "日名が異なるという案は事実ですが、それだけでは異なる瞬間だと結論できません。",
+              "ja": "日付の呼び名が異なるという案は事実ですが、それだけでは異なる瞬間だと結論できません。",
               "zh": "日名不同确实属实，但不足以推出时刻不同。",
-              "en": "Different day-names are real, but they do not by themselves establish different instants."
+              "en": "Different date labels are real, but they do not by themselves establish different instants."
             }
           }
         },
@@ -752,13 +752,13 @@
             {
               "id": "c",
               "text": {
-                "ja": "異なる日名を、境界換算なしに同じ物差しで比べたから。",
+                "ja": "異なる日付の呼び名を、境界換算なしに同じ物差しで比べたから。",
                 "zh": "因为没有换算日界，就用同一尺度比较不同日期名称。",
                 "en": "They compared different day labels on one scale without converting boundaries."
               },
-              "ttsTextJa": "異なる日名を、境界換算なしに同じ物差しで比べたから。",
+              "ttsTextJa": "異なる日付の呼び名を、境界換算なしに同じ物差しで比べたから。",
               "audioId": "L5-041-q2-c",
-              "readingJa": "ことなるひなを、きょーかいかんさんなしにおなじものさしでくらべたから。"
+              "readingJa": "ことなるひづけのよびなを、きょーかいかんさんなしにおなじものさしでくらべたから。"
             },
             {
               "id": "d",
@@ -923,13 +923,13 @@
               },
               "ttsTextJa": "三つの日付名の綴りが完全に同じである。",
               "audioId": "L5-041-q4-a",
-              "readingJa": "みっつのひずけめーのつずりがかんぜんにおなじである。"
+              "readingJa": "みっつのひづけめーのつづりがかんぜんにおなじである。"
             },
             {
               "id": "b",
               "text": {
                 "ja": "三文書の満月通番が一万二千八百八十四で一致する。",
-                "zh": "三份文书的满月通号都为第一万二千八百八十四。",
+                "zh": "三份文书的满月通号都是一万二千八百八十四。",
                 "en": "All three documents share full-moon index 12,884."
               },
               "ttsTextJa": "三文書の満月通番が一万二千八百八十四で一致する。",
@@ -939,13 +939,13 @@
             {
               "id": "c",
               "text": {
-                "ja": "三件の受領時刻が換算後に同じ観測区間へ入る。",
-                "zh": "三条接收时间换算后落入同一观测区间。",
-                "en": "The three receipt times fall in one observation interval after conversion."
+                "ja": "三件の受領時刻が換算後に同じ瞬間として一致する。",
+                "zh": "三条接收时间换算后指向同一时刻。",
+                "en": "The three receipt times resolve to the same instant after conversion."
               },
-              "ttsTextJa": "三件の受領時刻が換算後に同じ観測区間へ入る。",
+              "ttsTextJa": "三件の受領時刻が換算後に同じ瞬間として一致する。",
               "audioId": "L5-041-q4-c",
-              "readingJa": "さんげんのじゅりょーじこくがかんさんごにおなじかんそくくかんえはいる。"
+              "readingJa": "さんけんのじゅりょーじこくがかんさんごにおなじしゅんかんとしていっちする。"
             },
             {
               "id": "d",
@@ -977,7 +977,7 @@
           "explanation": {
             "literal": {
               "ja": "字面上は「各条約の満月通番を確認しましょう。」、「人間版の付表は一万二千八百八十四番です。」という観察が明示されています。",
-              "zh": "字面上明确给出了“请核对每份条约上的满月通号。”、“人类版本附表写着第一万二千八百八十四号。”这些观察。",
+              "zh": "字面上明确给出了“请核对每份条约上的满月通号。”、“人类版本附表写着一万二千八百八十四号。”这些观察。",
               "en": "At the literal level, the scene explicitly gives “Let us check the full-moon index in each treaty.” and “The human appendix gives index 12,884.”."
             },
             "intent": {
@@ -1013,13 +1013,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "c458eac677a74f2b0e805fd112f6644fdd1e83b48bfd20a38e7c9eaf6de97b47"
+      "contentHash": "27e1c52ed649347050b521b456674a974b8d5ce40de64d59e008acab31ecd8fd"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-042",
-      "revision": 3,
+      "revision": 5,
       "level": 5,
       "stage": 42,
       "jlptTarget": "N1-pragmatics",
@@ -1100,7 +1100,7 @@
             "zh": "请显示包含事故时刻在内、从十四点零三分起的二十秒。",
             "en": "Show the twenty seconds from 14:03 that include the incident."
           },
-          "readingJa": "じこじこくをふくむじゅーよじさんぶからにじゅーびょーかんをひょーじしてください。",
+          "readingJa": "じこじこくをふくむじゅーよじさんぷんからにじゅーびょーかんをひょーじしてください。",
           "ttsTextJa": "事故時刻を含む十四時三分から二十秒間を表示してください。",
           "audioId": "L5-042-line-001",
           "pauseAfterMs": 520,
@@ -1114,7 +1114,7 @@
             {
               "id": "token-002",
               "text": "十四時三分から二十秒間を表示してください。",
-              "reading": "じゅーよじさんぶからにじゅーびょーかんをひょーじしてください。",
+              "reading": "じゅーよじさんぷんからにじゅーびょーかんをひょーじしてください。",
               "audioId": "L5-042-line-001-token-002"
             }
           ]
@@ -1154,7 +1154,7 @@
             "zh": "十四点零三分八秒到十秒，全系统正常。",
             "en": "From 14:03:08 to :10, all systems are normal."
           },
-          "readingJa": "じゅーよじさんぶはちびょーからじゅーびょー。ぜんけーとーわせーじょーです。",
+          "readingJa": "じゅーよじさんぷんはちびょーからじゅーびょー。ぜんけーとーわせーじょーです。",
           "ttsTextJa": "十四時三分八秒から十秒。全系統は正常です。",
           "audioId": "L5-042-line-003",
           "pauseAfterMs": 520,
@@ -1162,7 +1162,7 @@
             {
               "id": "token-001",
               "text": "十四時三分八秒から十秒。",
-              "reading": "じゅーよじさんぶはちびょーからじゅーびょー。",
+              "reading": "じゅーよじさんぷんはちびょーからじゅーびょー。",
               "audioId": "L5-042-line-003-token-001"
             },
             {
@@ -1424,7 +1424,7 @@
             "zh": "我没有输出任何虚假命题。",
             "en": "I output no proposition that was false."
           },
-          "readingJa": "にせであるめーだいわひとつもしゅつりょくしていません。",
+          "readingJa": "ぎであるめーだいわひとつもしゅつりょくしていません。",
           "ttsTextJa": "偽である命題は一つも出力していません。",
           "audioId": "L5-042-line-013",
           "pauseAfterMs": 520,
@@ -1432,7 +1432,7 @@
             {
               "id": "token-001",
               "text": "偽である命題は",
-              "reading": "にせであるめーだいわ",
+              "reading": "ぎであるめーだいわ",
               "audioId": "L5-042-line-013-token-001"
             },
             {
@@ -1478,7 +1478,7 @@
             "zh": "十四点零三分十二秒记录到驱动电流急升。",
             "en": "A drive-current spike remains at 14:03:12."
           },
-          "readingJa": "じゅーよじさんぶじゅーにびょーにわくどーでんりゅーのきゅーじょーしょーがのこっています。",
+          "readingJa": "じゅーよじさんぷんじゅーにびょーにわくどーでんりゅーのきゅーじょーしょーがのこっています。",
           "ttsTextJa": "十四時三分十二秒には駆動電流の急上昇が残っています。",
           "audioId": "L5-042-line-015",
           "pauseAfterMs": 520,
@@ -1486,7 +1486,7 @@
             {
               "id": "token-001",
               "text": "十四時三分十二秒には",
-              "reading": "じゅーよじさんぶじゅーにびょーにわ",
+              "reading": "じゅーよじさんぷんじゅーにびょーにわ",
               "audioId": "L5-042-line-015-token-001"
             },
             {
@@ -1754,7 +1754,7 @@
               },
               "ttsTextJa": "原問の『事故区間全体』が内部で『最新安定区間』へ変換されたこと。",
               "audioId": "L5-042-q2-d",
-              "readingJa": "はらといの『じこくかんぜんたい』がないぶで『さいしんあんてーくかん』えへんかんされたこと。"
+              "readingJa": "げんもんの『じこくかんぜんたい』がないぶで『さいしんあんてーくかん』えへんかんされたこと。"
             }
           ],
           "correctOptionIds": [
@@ -2098,13 +2098,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "2fa06bf4331f32c46717de3849bb6e3eb23c548b8fc5584fe4ea1066909fa76f"
+      "contentHash": "008bb886c3d001b84713d0ec314dfc1e61ecb988fe05293682cab096f6cbc4a9"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-043",
-      "revision": 3,
+      "revision": 4,
       "level": 5,
       "stage": 43,
       "jlptTarget": "N1-pragmatics",
@@ -2174,6 +2174,15 @@
             "en": "archival station voice"
           },
           "voiceKey": "broadcast"
+        },
+        {
+          "id": "cough",
+          "name": {
+            "ja": "咳をした声",
+            "zh": "咳嗽声",
+            "en": "unidentified coughing voice"
+          },
+          "voiceKey": "male-casual"
         }
       ],
       "lines": [
@@ -2341,7 +2350,7 @@
         },
         {
           "id": "line-007",
-          "speaker": "archive",
+          "speaker": "cough",
           "text": {
             "ja": "ごほん。失礼しました。",
             "zh": "咳咳，失礼了。",
@@ -3106,13 +3115,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "25b554763520caae7e4bf687a79b2b5bd647f7a16962b2d7aab79bc2a8491fbc"
+      "contentHash": "3ce0d48bb61b4a66b9f725bb811634a4bf49468f2ed7580ddf1d008d9e2c92cc"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-044",
-      "revision": 3,
+      "revision": 7,
       "level": 5,
       "stage": 44,
       "jlptTarget": "N1-pragmatics",
@@ -3436,7 +3445,7 @@
             "zh": "输入状态经由会话缓存产生，来源字段为空。",
             "en": "The typing event came through the session cache; its origin field is blank."
           },
-          "readingJa": "にゅーりょくひょーじわせっしょんきゃっしゅけーゆ。はっしんもとらんわそらです。",
+          "readingJa": "にゅーりょくひょーじわせっしょんきゃっしゅけーゆ。はっしんもとらんわからです。",
           "ttsTextJa": "入力表示はセッションキャッシュ経由。発信元欄は空です。",
           "audioId": "L5-044-line-010",
           "pauseAfterMs": 520,
@@ -3450,7 +3459,7 @@
             {
               "id": "token-002",
               "text": "発信元欄は空です。",
-              "reading": "はっしんもとらんわそらです。",
+              "reading": "はっしんもとらんわからです。",
               "audioId": "L5-044-line-010-token-002"
             }
           ]
@@ -3544,7 +3553,7 @@
             "zh": "但一行消息也没有收到。",
             "en": "Yet not a single message arrived."
           },
-          "readingJa": "けれどめっせーじわいっこーもとどいていません。",
+          "readingJa": "けれどめっせーじわいちぎょうもとどいていません。",
           "ttsTextJa": "けれどメッセージは一行も届いていません。",
           "audioId": "L5-044-line-014",
           "pauseAfterMs": 520,
@@ -3558,7 +3567,7 @@
             {
               "id": "token-002",
               "text": "一行も届いていません。",
-              "reading": "いっこーもとどいていません。",
+              "reading": "いちぎょうもとどいていません。",
               "audioId": "L5-044-line-014-token-002"
             }
           ]
@@ -3621,19 +3630,19 @@
           "id": "line-017",
           "speaker": "sora",
           "text": {
-            "ja": "予約残像と復旧後の操作、どちらもまだ残りますね。",
-            "zh": "定时残影与恢复后的操作，两种解释都还成立。",
-            "en": "Both a scheduled artifact and post-restore activity remain possible."
+            "ja": "予約草稿の再送と復旧後のキャッシュ再接続、どちらもまだ残りますね。",
+            "zh": "定时草稿重发与恢复后的缓存重连，两种解释都还成立。",
+            "en": "Both scheduled-draft replay and post-restore cache reconnection remain possible."
           },
-          "readingJa": "よやくざんぞーとふっきゅーごのそーさ、どちらもまだのこりますね。",
-          "ttsTextJa": "予約残像と復旧後の操作、どちらもまだ残りますね。",
+          "readingJa": "よやくそーこーのさいそーとふっきゅーごのきゃっしゅさいせつぞく、どちらもまだのこりますね。",
+          "ttsTextJa": "予約草稿の再送と復旧後のキャッシュ再接続、どちらもまだ残りますね。",
           "audioId": "L5-044-line-017",
           "pauseAfterMs": 520,
           "tokens": [
             {
               "id": "token-001",
-              "text": "予約残像と復旧後の操作、",
-              "reading": "よやくざんぞーとふっきゅーごのそーさ、",
+              "text": "予約草稿の再送と復旧後のキャッシュ再接続、",
+              "reading": "よやくそーこーのさいそーとふっきゅーごのきゃっしゅさいせつぞく、",
               "audioId": "L5-044-line-017-token-001"
             },
             {
@@ -3813,7 +3822,7 @@
               },
               "ttsTextJa": "入力表示が八秒続いたから。",
               "audioId": "L5-044-q2-a",
-              "readingJa": "にゅーりょくひょーじがはちびょーつずいたから。"
+              "readingJa": "にゅーりょくひょーじがはちびょーつづいたから。"
             },
             {
               "id": "b",
@@ -4027,13 +4036,13 @@
             {
               "id": "d",
               "text": {
-                "ja": "予約残像と復旧後キャッシュの両方が説明可能で、現資料では一方に確定できない。",
-                "zh": "定时残影与恢复后缓存都能解释，现有资料无法唯一确定。",
-                "en": "Both a scheduled artifact and post-restore cache activity fit; current evidence cannot choose between them."
+                "ja": "予約草稿の再送と復旧後のキャッシュ再接続の両方が説明可能で、現資料では一方に確定できない。",
+                "zh": "定时草稿重发与恢复后的缓存重连都能解释，现有资料无法唯一确定。",
+                "en": "Both scheduled-draft replay and post-restore cache reconnection fit; current evidence cannot choose between them."
               },
-              "ttsTextJa": "予約残像と復旧後キャッシュの両方が説明可能で、現資料では一方に確定できない。",
+              "ttsTextJa": "予約草稿の再送と復旧後のキャッシュ再接続の両方が説明可能で、現資料では一方に確定できない。",
               "audioId": "L5-044-q4-d",
-              "readingJa": "よやくざんぞーとふっきゅーごきゃっしゅのりょーほーがせつめーかのーで、げんしりょーでわいっぽーにかくてーできない。"
+              "readingJa": "よやくそーこーのさいそーとふっきゅーごのきゃっしゅさいせつぞくのりょーほーがせつめーかのーで、げんしりょーでわいっぽーにかくてーできない。"
             }
           ],
           "correctOptionIds": [
@@ -4089,13 +4098,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "9b343e6963b64c85526414db35d0fb30c570a55605aef057b0039761af9f8229"
+      "contentHash": "4859974fa8ed078141cc716ae56547d5c3d52863d5839be49e96f3119aaa39cc"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-045",
-      "revision": 3,
+      "revision": 6,
       "level": 5,
       "stage": 45,
       "jlptTarget": "N1-pragmatics",
@@ -4283,7 +4292,7 @@
             "zh": "当地登记将按一月一日生效推进。",
             "en": "I will proceed with local registration effective January 1."
           },
-          "readingJa": "げんちとーきわいちがつついたちずけですすめます。",
+          "readingJa": "げんちとーきわいちがつついたちづけですすめます。",
           "ttsTextJa": "現地登記は一月一日付で進めます。",
           "audioId": "L5-045-line-005",
           "pauseAfterMs": 520,
@@ -4297,7 +4306,7 @@
             {
               "id": "token-002",
               "text": "一月一日付で進めます。",
-              "reading": "いちがつついたちずけですすめます。",
+              "reading": "いちがつついたちづけですすめます。",
               "audioId": "L5-045-line-005-token-002"
             }
           ]
@@ -4418,7 +4427,7 @@
             "zh": "英文纪要翻成了calendar quarter。",
             "en": "The English minutes translate it as “calendar quarter.”"
           },
-          "readingJa": "えーごぎじろくわしーえーえるいーえぬでぃーえーあーるきゅーゆーえーあーるてぃーいーあーるとやくしています。",
+          "readingJa": "えーごぎじろくわかれんだー、くぉーたーとやくしています。",
           "ttsTextJa": "英語議事録はcalendar quarterと訳しています。",
           "audioId": "L5-045-line-010",
           "pauseAfterMs": 520,
@@ -4432,7 +4441,7 @@
             {
               "id": "token-002",
               "text": "calendar quarterと訳しています。",
-              "reading": "しーえーえるいーえぬでぃーえーあーるきゅーゆーえーあーるてぃーいーあーるとやくしています。",
+              "reading": "かれんだー、くぉーたーとやくしています。",
               "audioId": "L5-045-line-010-token-002"
             }
           ]
@@ -4634,7 +4643,7 @@
             "zh": "我们应确认绝对日期、时间以及各项权限的移交日。",
             "en": "Let us confirm an absolute date and time plus transfer dates for each authority."
           },
-          "readingJa": "ぜったいひずけとじこく、けんげんごとのいかんびをかくにんしましょー。",
+          "readingJa": "ぜったいひづけとじこく、けんげんごとのいかんびをかくにんしましょー。",
           "ttsTextJa": "絶対日付と時刻、権限ごとの移管日を確認しましょう。",
           "audioId": "L5-045-line-018",
           "pauseAfterMs": 520,
@@ -4642,7 +4651,7 @@
             {
               "id": "token-001",
               "text": "絶対日付と時刻、",
-              "reading": "ぜったいひずけとじこく、",
+              "reading": "ぜったいひづけとじこく、",
               "audioId": "L5-045-line-018-token-001"
             },
             {
@@ -4688,7 +4697,7 @@
             "zh": "纪要改为“基准未指定”，我明天用书面文件明确日期。",
             "en": "Amend the minutes to “reference unspecified”; I will provide the date in writing tomorrow."
           },
-          "readingJa": "ぎじろくわ『きじゅんみしてー』となおし、あした、ひずけをぶんしょでしめします。",
+          "readingJa": "ぎじろくわ『きじゅんみしてー』となおし、あした、ひづけをぶんしょでしめします。",
           "ttsTextJa": "議事録は『基準未指定』と直し、明日、日付を文書で示します。",
           "audioId": "L5-045-line-020",
           "pauseAfterMs": 520,
@@ -4702,7 +4711,7 @@
             {
               "id": "token-002",
               "text": "明日、日付を文書で示します。",
-              "reading": "あした、ひずけをぶんしょでしめします。",
+              "reading": "あした、ひづけをぶんしょでしめします。",
               "audioId": "L5-045-line-020-token-002"
             }
           ]
@@ -4835,7 +4844,7 @@
               },
               "ttsTextJa": "三部署とも創業者から個別に絶対日付を聞き、内容を照合した上で三つの就任日を正式決定した。",
               "audioId": "L5-045-q2-b",
-              "readingJa": "さんぶしょともそーぎょーしゃからこべつにぜったいひずけをきき、ないよーをしょーごーしたうえでみっつのしゅーにんびをせーしきけってーした。"
+              "readingJa": "さんぶしょともそーぎょーしゃからこべつにぜったいひづけをきき、ないよーをしょーごーしたうえでみっつのしゅーにんびをせーしきけってーした。"
             },
             {
               "id": "c",
@@ -4919,7 +4928,7 @@
               },
               "ttsTextJa": "創業者が実際に意図した唯一の絶対日付。",
               "audioId": "L5-045-q3-a",
-              "readingJa": "そーぎょーしゃがじっさいにいとしたゆいいつのぜったいひずけ。"
+              "readingJa": "そーぎょーしゃがじっさいにいとしたゆいいつのぜったいひづけ。"
             },
             {
               "id": "b",
@@ -4946,13 +4955,13 @@
             {
               "id": "d",
               "text": {
-                "ja": "製造部が十二月十六日を想定し、その日を唯一の確定日として全社へ通知したこと。",
-                "zh": "制造部门设想十二月十六日，并将其作为唯一确定日期通知全公司。",
-                "en": "Manufacturing assumed December 16 and announced it company-wide as the sole confirmed date."
+                "ja": "製造部が十二月十六日を想定し、その日を工程表へ入れるつもりだったこと。",
+                "zh": "制造部门设想十二月十六日，并打算把该日写入工序表。",
+                "en": "Manufacturing assumed December 16 and intended to put it on the production schedule."
               },
-              "ttsTextJa": "製造部が十二月十六日を想定し、その日を唯一の確定日として全社へ通知したこと。",
+              "ttsTextJa": "製造部が十二月十六日を想定し、その日を工程表へ入れるつもりだったこと。",
               "audioId": "L5-045-q3-d",
-              "readingJa": "せいぞうぶがじゅーにがつじゅーろくにちをそーてーし、そのひをゆいいつのかくてーびとしてぜんしゃえつーちしたこと。"
+              "readingJa": "せーぞーぶがじゅーにがつじゅーろくにちをそーてーし、そのひをこうていひょーえいれるつもりだったこと。"
             }
           ],
           "correctOptionIds": [
@@ -5037,7 +5046,7 @@
               },
               "ttsTextJa": "絶対日付・時刻、基準暦、権限別移管日を文書で確認する。",
               "audioId": "L5-045-q4-c",
-              "readingJa": "ぜったいひずけ・じこく、きじゅんれき、けんげんべついかんびをぶんしょでかくにんする。"
+              "readingJa": "ぜったいひづけ・じこく、きじゅんれき、けんげんべついかんびをぶんしょでかくにんする。"
             },
             {
               "id": "d",
@@ -5106,7 +5115,7 @@
               },
               "ttsTextJa": "就任方針は示されたが日付基準は未確定で、三つの日程は文書確認まで暫定である。",
               "audioId": "L5-045-q5-a",
-              "readingJa": "しゅーにんほーしんわしめされたがひずけきじゅんわみかくてーで、みっつのにってーわぶんしょかくにんまでざんてーである。"
+              "readingJa": "しゅーにんほーしんわしめされたがひづけきじゅんわみかくてーで、みっつのにってーわぶんしょかくにんまでざんてーである。"
             },
             {
               "id": "b",
@@ -5193,13 +5202,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "556f60e05c9c8a62421d9ebbbdbd0d249c2096988f29883ddc280327d54caf5c"
+      "contentHash": "d26b00746ce830123865febf2f1847d3dadf7855df80d96401ae3c41b2a42d02"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-046",
-      "revision": 3,
+      "revision": 5,
       "level": 5,
       "stage": 46,
       "jlptTarget": "N1-pragmatics",
@@ -5361,7 +5370,7 @@
             "zh": "展台轮廓中含有红色麻布粉末。",
             "en": "The gallery outline contains red linen dust."
           },
-          "readingJa": "てんじだいのりんかくわあかいあざぶのこなをふくんでいます。",
+          "readingJa": "てんじだいのりんかくわあかいあさぬののこなをふくんでいます。",
           "ttsTextJa": "展示台の輪郭は赤い麻布の粉を含んでいます。",
           "audioId": "L5-046-line-004",
           "pauseAfterMs": 520,
@@ -5375,7 +5384,7 @@
             {
               "id": "token-002",
               "text": "赤い麻布の粉を含んでいます。",
-              "reading": "あかいあざぶのこなをふくんでいます。",
+              "reading": "あかいあさぬののこなをふくんでいます。",
               "audioId": "L5-046-line-004-token-002"
             }
           ]
@@ -5523,7 +5532,7 @@
             "zh": "红色麻布只铺在修复台上。",
             "en": "Red linen is used only on the restoration bench."
           },
-          "readingJa": "あかいあざぶわしゅーふくだいにしかしいていません。",
+          "readingJa": "あかいあさぬのわしゅーふくだいにしかしいていません。",
           "ttsTextJa": "赤い麻布は修復台にしか敷いていません。",
           "audioId": "L5-046-line-010",
           "pauseAfterMs": 520,
@@ -5531,7 +5540,7 @@
             {
               "id": "token-001",
               "text": "赤い麻布は",
-              "reading": "あかいあざぶわ",
+              "reading": "あかいあさぬのわ",
               "audioId": "L5-046-line-010-token-001"
             },
             {
@@ -5604,7 +5613,7 @@
             "zh": "两件物品的管理标签相隔十八分钟在修复室终端被读取。",
             "en": "Both inventory tags were scanned at the restoration terminal eighteen minutes apart."
           },
-          "readingJa": "りょーほーのかんりたぐがじゅーはちぶさでしゅーふくしつたんまつによまれています。",
+          "readingJa": "りょーほーのかんりたぐがじゅーはっぷんさでしゅーふくしつたんまつによまれています。",
           "ttsTextJa": "両方の管理タグが十八分差で修復室端末に読まれています。",
           "audioId": "L5-046-line-013",
           "pauseAfterMs": 520,
@@ -5618,7 +5627,7 @@
             {
               "id": "token-002",
               "text": "十八分差で修復室端末に読まれています。",
-              "reading": "じゅーはちぶさでしゅーふくしつたんまつによまれています。",
+              "reading": "じゅーはっぷんさでしゅーふくしつたんまつによまれています。",
               "audioId": "L5-046-line-013-token-002"
             }
           ]
@@ -5922,7 +5931,7 @@
               },
               "ttsTextJa": "赤い麻布と青いフェルトが同じ製品である。",
               "audioId": "L5-046-q2-c",
-              "readingJa": "あかいあざぶとあおいふぇるとがおなじせーひんである。"
+              "readingJa": "あかいあさぬのとあおいふぇるとがおなじせーひんである。"
             },
             {
               "id": "d",
@@ -6177,13 +6186,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "e5f56e9eef0dc022a66da4bce2363046f5a43e45dac906fd27e7f5b0ac8ed08e"
+      "contentHash": "958aa75a4f7fc63efdb244375437ed5e1af6106921040509d0462950aef38658"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-047",
-      "revision": 3,
+      "revision": 5,
       "level": 5,
       "stage": 47,
       "jlptTarget": "N1-pragmatics",
@@ -6314,25 +6323,25 @@
           "id": "line-003",
           "speaker": "miller",
           "text": {
-            "ja": "川は村へ来る前から三日前に干上がっていた。",
-            "zh": "河水在到达村庄前就已于三天前干涸。",
-            "en": "The river had already dried up upstream of the village three days ago."
+            "ja": "川は村より上流で、三日前から干上がっていた。",
+            "zh": "河流在村庄上游，从三天前起就已干涸。",
+            "en": "The river had already been dry upstream of the village for three days."
           },
-          "readingJa": "かわわむらえくるまえからみっかまえにひあがっていた。",
-          "ttsTextJa": "川は村へ来る前から三日前に干上がっていた。",
+          "readingJa": "かわわむらよりじょーりゅーで、みっかまえからひあがっていた。",
+          "ttsTextJa": "川は村より上流で、三日前から干上がっていた。",
           "audioId": "L5-047-line-003",
           "pauseAfterMs": 520,
           "tokens": [
             {
               "id": "token-001",
-              "text": "川は村へ来る前から",
-              "reading": "かわわむらえくるまえから",
+              "text": "川は村より上流で、",
+              "reading": "かわわむらよりじょーりゅーで、",
               "audioId": "L5-047-line-003-token-001"
             },
             {
               "id": "token-002",
-              "text": "三日前に干上がっていた。",
-              "reading": "みっかまえにひあがっていた。",
+              "text": "三日前から干上がっていた。",
+              "reading": "みっかまえからひあがっていた。",
               "audioId": "L5-047-line-003-token-002"
             }
           ]
@@ -6399,7 +6408,7 @@
             "zh": "目标坐标：村庄V十七，森林F十七。",
             "en": "Target coordinates: Village V-17, Forest F-17."
           },
-          "readingJa": "たいしょーざひょー。むらわＶじゅーなな、もりわＦじゅーなな。",
+          "readingJa": "たいしょーざひょー。むらわぶいじゅーなな、もりわえふじゅーなな。",
           "ttsTextJa": "対象座標。村はV十七、森はF十七。",
           "audioId": "L5-047-line-006",
           "pauseAfterMs": 520,
@@ -6413,7 +6422,7 @@
             {
               "id": "token-002",
               "text": "村はV十七、森はF十七。",
-              "reading": "むらわＶじゅーなな、もりわＦじゅーなな。",
+              "reading": "むらわぶいじゅーなな、もりわえふじゅーなな。",
               "audioId": "L5-047-line-006-token-002"
             }
           ]
@@ -6868,9 +6877,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "字面上は「川は村へ来る前から三日前に干上がっていた。」、「森は川の東側で、上流を塞いではいません。」という観察が明示されています。",
-              "zh": "字面上明确给出了“河水在到达村庄前就已于三天前干涸。”、“森林在河流东侧，并没有堵住上游。”这些观察。",
-              "en": "At the literal level, the scene explicitly gives “The river had already dried up upstream of the village three days ago.” and “The forest lies east of the river and does not block its source.”."
+              "ja": "字面上は「川は村より上流で、三日前から干上がっていた。」、「森は川の東側で、上流を塞いではいません。」という観察が明示されています。",
+              "zh": "字面上明确给出了“河流在村庄上游，从三天前起就已干涸。”、“森林在河流东侧，并没有堵住上游。”这些观察。",
+              "en": "At the literal level, the scene explicitly gives “The river had already been dry upstream of the village for three days.” and “The forest lies east of the river and does not block its source.”."
             },
             "intent": {
               "ja": "水路の物理位置と地図座標の誤りが別々に、村か森を原因とする前提を崩します。",
@@ -7156,9 +7165,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "字面上は「川は村へ来る前から三日前に干上がっていた。」、「森は川の東側で、上流を塞いではいません。」という観察が明示されています。",
-              "zh": "字面上明确给出了“河水在到达村庄前就已于三天前干涸。”、“森林在河流东侧，并没有堵住上游。”这些观察。",
-              "en": "At the literal level, the scene explicitly gives “The river had already dried up upstream of the village three days ago.” and “The forest lies east of the river and does not block its source.”."
+              "ja": "字面上は「川は村より上流で、三日前から干上がっていた。」、「森は川の東側で、上流を塞いではいません。」という観察が明示されています。",
+              "zh": "字面上明确给出了“河流在村庄上游，从三天前起就已干涸。”、“森林在河流东侧，并没有堵住上游。”这些观察。",
+              "en": "At the literal level, the scene explicitly gives “The river had already been dry upstream of the village for three days.” and “The forest lies east of the river and does not block its source.”."
             },
             "intent": {
               "ja": "作中証拠は提示二択の不十分さと次の調査対象までは示しますが、水門の原因者や一般法則までは示しません。",
@@ -7193,13 +7202,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "da34f576a8a94b80e05349e0635d4e88528e7a470ec404cc56b0bcf983aca437"
+      "contentHash": "14f1053a83417304b117da871256c60fd9d149c57d402ade1e552ad78fbe5fc7"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-048",
-      "revision": 3,
+      "revision": 6,
       "level": 5,
       "stage": 48,
       "jlptTarget": "N1-pragmatics",
@@ -7307,7 +7316,7 @@
             "zh": "我的政府消息源称改革案为“湿透的罗盘”，后面还写了“不过，。”。",
             "en": "My government source called the reform “a wet compass” and followed it with “however,.”"
           },
-          "readingJa": "わたしのせーふすじわかいかくあんを『ぬれたらしんばん』とよび、『ただし、。』とつずけました。",
+          "readingJa": "わたしのせーふすじわかいかくあんを『ぬれたらしんばん』とよび、『ただし、。』とつづけました。",
           "ttsTextJa": "私の政府筋は改革案を『濡れた羅針盤』と呼び、『ただし、。』と続けました。",
           "audioId": "L5-048-line-002",
           "pauseAfterMs": 520,
@@ -7321,7 +7330,7 @@
             {
               "id": "token-002",
               "text": "『濡れた羅針盤』と呼び、『ただし、。』と続けました。",
-              "reading": "『ぬれたらしんばん』とよび、『ただし、。』とつずけました。",
+              "reading": "『ぬれたらしんばん』とよび、『ただし、。』とつづけました。",
               "audioId": "L5-048-line-002-token-002"
             }
           ]
@@ -7936,7 +7945,7 @@
               },
               "ttsTextJa": "珍しい比喩、誤句読点、不可視記号が四文書と編集長メモで一致すること。",
               "audioId": "L5-048-q2-d",
-              "readingJa": "めずらしいひゆ、あやまくとーてん、ふかしきごーがよんぶんしょとへんしゅうちょうめもでいっちすること。"
+              "readingJa": "めずらしいひゆ、ごくとーてん、ふかしきごーがよんぶんしょとへんしゅうちょうめもでいっちすること。"
             }
           ],
           "correctOptionIds": [
@@ -8029,7 +8038,7 @@
               },
               "ttsTextJa": "四分類に入力されたので内容も四倍確かだ。",
               "audioId": "L5-048-q3-d",
-              "readingJa": "しぶるいににゅーりょくされたのでないよーもよんばいたしかだ。"
+              "readingJa": "よんぶんるいににゅーりょくされたのでないよーもよんばいたしかだ。"
             }
           ],
           "correctOptionIds": [
@@ -8269,13 +8278,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "e14cfc73a8490a23062ec4b73288cb62643c948abe5cef986523d3e1bbdcaaf7"
+      "contentHash": "93a5054ff1e7eac1da2de9998a7a2785b510e370e756f1b9ad0081b41df26aed"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-049",
-      "revision": 3,
+      "revision": 4,
       "level": 5,
       "stage": 49,
       "jlptTarget": "N1-pragmatics",
@@ -8491,7 +8500,7 @@
             "zh": "飞船正接近中继星，越晚发送的通信延迟越短。",
             "en": "The ship was approaching the relay star, so later messages had shorter delays."
           },
-          "readingJa": "ふねわちゅーけーぼしえちかずいており、あとのつーしんほどちえんがみじかいです。",
+          "readingJa": "ふねわちゅーけーぼしえちかづいており、あとのつーしんほどちえんがみじかいです。",
           "ttsTextJa": "船は中継星へ近づいており、後の通信ほど遅延が短いです。",
           "audioId": "L5-049-line-006",
           "pauseAfterMs": 520,
@@ -8499,7 +8508,7 @@
             {
               "id": "token-001",
               "text": "船は中継星へ近づいており、",
-              "reading": "ふねわちゅーけーぼしえちかずいており、",
+              "reading": "ふねわちゅーけーぼしえちかづいており、",
               "audioId": "L5-049-line-006-token-001"
             },
             {
@@ -8653,7 +8662,7 @@
             "zh": "由于距离缩短，越晚发送的通信反而越早到达。",
             "en": "Because distance shrank, later transmissions arrived earlier."
           },
-          "readingJa": "きょりがちじんだため、あとのつーしんほどさきにとどいたのです。",
+          "readingJa": "きょりがちぢんだため、あとのつーしんほどさきにとどいたのです。",
           "ttsTextJa": "距離が縮んだため、後の通信ほど先に届いたのです。",
           "audioId": "L5-049-line-012",
           "pauseAfterMs": 520,
@@ -8661,7 +8670,7 @@
             {
               "id": "token-001",
               "text": "距離が縮んだため、",
-              "reading": "きょりがちじんだため、",
+              "reading": "きょりがちぢんだため、",
               "audioId": "L5-049-line-012-token-001"
             },
             {
@@ -8707,7 +8716,7 @@
             "zh": "出发后核对航线图，才发现坐标被伪装。",
             "en": "After departure, I compared the route chart and discovered the falsified coordinates."
           },
-          "readingJa": "しゅっぱつごにこうろずをしょーごーし、ぎそーざひょーだときずいた。",
+          "readingJa": "しゅっぱつごにこうろずをしょーごーし、ぎそーざひょーだときづいた。",
           "ttsTextJa": "出発後に航路図を照合し、偽装座標だと気づいた。",
           "audioId": "L5-049-line-014",
           "pauseAfterMs": 520,
@@ -8721,7 +8730,7 @@
             {
               "id": "token-002",
               "text": "偽装座標だと気づいた。",
-              "reading": "ぎそーざひょーだときずいた。",
+              "reading": "ぎそーざひょーだときづいた。",
               "audioId": "L5-049-line-014-token-002"
             }
           ]
@@ -9287,13 +9296,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "7f7051f4f734c120ff32461542c41e1513ebcbc85d77e01ab89ca08f5d68c619"
+      "contentHash": "0478357beb113e04b36f9f03c5b7f2aab7337ab35edefef6febe92d11210a2ef"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-050",
-      "revision": 3,
+      "revision": 6,
       "level": 5,
       "stage": 50,
       "jlptTarget": "N1-pragmatics",
@@ -9451,19 +9460,19 @@
           "id": "line-004",
           "speaker": "learner",
           "text": {
-            "ja": "表示前に当てたのはこれで三回目です。",
-            "zh": "这已经是你第三次在显示前避开正确位置了。",
-            "en": "That makes three times you knew before display."
+            "ja": "正答位置が表示される前にその場所を避けたのは、これで三回目です。",
+            "zh": "这已经是她第三次在正确位置公布前避开那个位置了。",
+            "en": "That makes three times she avoided the slot before its correct status was displayed."
           },
-          "readingJa": "ひょーじまえにあてたのわこれでさんかいめです。",
-          "ttsTextJa": "表示前に当てたのはこれで三回目です。",
+          "readingJa": "せーとーいちがひょーじされるまえにそのばしょをさけたのわ、これでさんかいめです。",
+          "ttsTextJa": "正答位置が表示される前にその場所を避けたのは、これで三回目です。",
           "audioId": "L5-050-line-004",
           "pauseAfterMs": 520,
           "tokens": [
             {
               "id": "token-001",
-              "text": "表示前に当てたのは",
-              "reading": "ひょーじまえにあてたのわ",
+              "text": "正答位置が表示される前にその場所を避けたのは、",
+              "reading": "せーとーいちがひょーじされるまえにそのばしょをさけたのわ、",
               "audioId": "L5-050-line-004-token-001"
             },
             {
@@ -9536,7 +9545,7 @@
             "zh": "位置随机数的种子与输出正常，三题均可复算。",
             "en": "The position RNG seeds and outputs are normal and reproducible for all three questions."
           },
-          "readingJa": "いちらんすーのしゅとしゅつりょくわせーじょーで、さんもんともさいけーさんできます。",
+          "readingJa": "いちらんすーのたねとしゅつりょくわせーじょーで、さんもんともさいけーさんできます。",
           "ttsTextJa": "位置乱数の種と出力は正常で、三問とも再計算できます。",
           "audioId": "L5-050-line-007",
           "pauseAfterMs": 520,
@@ -9544,7 +9553,7 @@
             {
               "id": "token-001",
               "text": "位置乱数の種と出力は正常で、",
-              "reading": "いちらんすーのしゅとしゅつりょくわせーじょーで、",
+              "reading": "いちらんすーのたねとしゅつりょくわせーじょーで、",
               "audioId": "L5-050-line-007-token-001"
             },
             {
@@ -9617,7 +9626,7 @@
             "zh": "该值既不来自位置随机数，也不来自向导状态。",
             "en": "That value derives from neither the position RNG nor the guide state."
           },
-          "readingJa": "そのねわいちらんすーにもあんないやくのじょーたいにもゆらいしません。",
+          "readingJa": "そのあたいわいちらんすーにもあんないやくのじょーたいにもゆらいしません。",
           "ttsTextJa": "その値は位置乱数にも案内役の状態にも由来しません。",
           "audioId": "L5-050-line-010",
           "pauseAfterMs": 520,
@@ -9625,7 +9634,7 @@
             {
               "id": "token-001",
               "text": "その値は位置乱数にも",
-              "reading": "そのねわいちらんすーにも",
+              "reading": "そのあたいわいちらんすーにも",
               "audioId": "L5-050-line-010-token-001"
             },
             {
@@ -9806,7 +9815,7 @@
             "zh": "时间粒度为一毫秒；向导移动与外部值的先后落在同一时间框内。",
             "en": "Timestamp resolution is one millisecond; the guide move and external value share the same frame."
           },
-          "readingJa": "じこくりゅうどわいちみりびょー。あんないやくいどーとがいぶちのせんごわどーひとわくです。",
+          "readingJa": "じこくりゅうどわいちみりびょー。あんないやくいどーとがいぶちのせんごわどういつわくです。",
           "ttsTextJa": "時刻粒度は一ミリ秒。案内役移動と外部値の先後は同一枠です。",
           "audioId": "L5-050-line-017",
           "pauseAfterMs": 520,
@@ -9820,7 +9829,7 @@
             {
               "id": "token-002",
               "text": "案内役移動と外部値の先後は同一枠です。",
-              "reading": "あんないやくいどーとがいぶちのせんごわどーひとわくです。",
+              "reading": "あんないやくいどーとがいぶちのせんごわどういつわくです。",
               "audioId": "L5-050-line-017-token-002"
             }
           ]
@@ -10188,7 +10197,7 @@
               },
               "ttsTextJa": "案内役は正答表の権限がないのに、未表示の最終正答位置を繰り返し避けた。",
               "audioId": "L5-050-q4-b",
-              "readingJa": "あんないやくわせーとーひょうのけんげんがないのに、みひょーじのさいしゅーせーとーいちをくりかえしよけた。"
+              "readingJa": "あんないやくわせーとーひょうのけんげんがないのに、みひょーじのさいしゅーせーとーいちをくりかえしさけた。"
             },
             {
               "id": "c",
@@ -10232,9 +10241,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "字面上は「表示前に当てたのはこれで三回目です。」、「位置乱数の種と出力は正常で、三問とも再計算できます。」という観察が明示されています。",
-              "zh": "字面上明确给出了“这已经是你第三次在显示前避开正确位置了。”、“位置随机数的种子与输出正常，三题均可复算。”这些观察。",
-              "en": "At the literal level, the scene explicitly gives “That makes three times you knew before display.” and “The position RNG seeds and outputs are normal and reproducible for all three questions.”."
+              "ja": "字面上は「正答位置が表示される前にその場所を避けたのは、これで三回目です。」、「位置乱数の種と出力は正常で、三問とも再計算できます。」という観察が明示されています。",
+              "zh": "字面上明确给出了“这已经是她第三次在正确位置公布前避开那个位置了。”、“位置随机数的种子与输出正常，三题均可复算。”这些观察。",
+              "en": "At the literal level, the scene explicitly gives “That makes three times she avoided the slot before its correct status was displayed.” and “The position RNG seeds and outputs are normal and reproducible for all three questions.”."
             },
             "intent": {
               "ja": "反復回避は未知の先取り経路を、外部値と監査欠落は後編集経路をそれぞれ可能にします。",
@@ -10269,7 +10278,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "d419e3a8d1ca6272d96b426211e809658678a08f1e1255ac36fdc8616feb7cb4"
+      "contentHash": "9a3def3a72a2baf46ea045d905aaf2014278a4d91ac1b322e6d35a567435a923"
     }
   ]
 }

@@ -1,71 +1,149 @@
 {
   "$schema": "./tts.local.schema.json",
-  "adapter": "kokoro-onnx",
-  "python": "C:/path/to/japanese-subtext-kokoro/.venv/Scripts/python.exe",
+  "adapter": "aivisspeech-engine",
   "ffmpeg": "C:/path/to/ffmpeg/bin/ffmpeg.exe",
   "ffprobe": "C:/path/to/ffmpeg/bin/ffprobe.exe",
   "audioBaseUrl": "./",
-  "kokoro": {
-    "model": "C:/path/to/japanese-subtext-kokoro/kokoro-v1.0.onnx",
-    "voices": "C:/path/to/japanese-subtext-kokoro/voices-v1.0.bin",
-    "config": "C:/path/to/japanese-subtext-kokoro/config.json",
-    "hashManifest": "../scripts/tts/model-files.sha256.json",
-    "g2p": "pyopenjtalk",
-    "provider": "CPUExecutionProvider"
+  "aivis": {
+    "baseUrl": "http://127.0.0.1:10103",
+    "engineVersion": "1.2.0",
+    "provider": "CPU",
+    "timeoutSeconds": 120,
+    "verifyModelFiles": true,
+    "models": [
+      {
+        "uuid": "22e8ed77-94fe-4ef2-871f-a86f94e9a579",
+        "version": "1.1.0",
+        "sha256": "3f5c08b52bb8a64efd361268580c81510f96c927cd6905aa7dbae6851333270a",
+        "license": "ACML-1.0"
+      },
+      {
+        "uuid": "a59cb814-0083-4369-8542-f51a29e72af7",
+        "version": "1.2.0",
+        "sha256": "f87ccea2e8e2de0e0bfe52e803945af903b4086bf25621a015111628f00e4119",
+        "license": "ACML-1.0"
+      },
+      {
+        "uuid": "71e72188-2726-4739-9aa9-39567396fb2a",
+        "version": "1.0.0",
+        "sha256": "dec42930f9fdd5948831a271fcc8b377f56001273c6d3035cf68465b6dbaf91a",
+        "license": "ACML-1.0"
+      },
+      {
+        "uuid": "47e53151-a378-46f3-abee-ce13aa07feb1",
+        "version": "1.0.0",
+        "sha256": "6dabe29de5ec2c1715e12a430805e1bff6ec64a315cccec2d26fad029df83243",
+        "license": "ACML-1.0"
+      }
+    ]
   },
   "output": {
     "format": "mp3",
-    "sampleRate": 24000,
+    "sampleRate": 44100,
     "channels": 1,
-    "bitrate": "64k",
+    "bitrate": "96k",
     "targetLufs": -18,
     "leadingSilenceMs": 60,
     "trailingSilenceMs": 100,
     "sceneGapMs": 180
   },
   "voices": {
-    "jf-alpha": {
-      "modelVoice": "jf_alpha",
-      "speed": 0.96,
-      "pitch": 0,
-      "emotion": "neutral"
+    "kohaku-normal": {
+      "modelUuid": "22e8ed77-94fe-4ef2-871f-a86f94e9a579",
+      "styleName": "ノーマル",
+      "speedScale": 0.88,
+      "pitchScale": 0.0,
+      "intonationScale": 1.0,
+      "volumeScale": 1.0,
+      "prePhonemeLength": 0.08,
+      "postPhonemeLength": 0.12,
+      "pauseLength": null,
+      "pauseLengthScale": 1.0
     },
-    "jf-gongitsune": {
-      "modelVoice": "jf_gongitsune",
-      "speed": 1.07,
-      "pitch": 0,
-      "emotion": "neutral"
+    "kohaku-sweet": {
+      "modelUuid": "22e8ed77-94fe-4ef2-871f-a86f94e9a579",
+      "styleName": "あまあま",
+      "speedScale": 0.86,
+      "pitchScale": 0.0,
+      "intonationScale": 1.02,
+      "volumeScale": 1.0,
+      "prePhonemeLength": 0.08,
+      "postPhonemeLength": 0.12,
+      "pauseLength": null,
+      "pauseLengthScale": 1.0
     },
-    "jf-nezumi": {
-      "modelVoice": "jf_nezumi",
-      "speed": 0.93,
-      "pitch": 0,
-      "emotion": "neutral"
+    "mao-normal": {
+      "modelUuid": "a59cb814-0083-4369-8542-f51a29e72af7",
+      "styleName": "ノーマル",
+      "speedScale": 0.88,
+      "pitchScale": 0.0,
+      "intonationScale": 1.0,
+      "volumeScale": 1.0,
+      "prePhonemeLength": 0.08,
+      "postPhonemeLength": 0.12,
+      "pauseLength": null,
+      "pauseLengthScale": 1.0
     },
-    "jf-tebukuro": {
-      "modelVoice": "jf_tebukuro",
-      "speed": 0.98,
-      "pitch": 0,
-      "emotion": "neutral"
+    "mao-calm": {
+      "modelUuid": "a59cb814-0083-4369-8542-f51a29e72af7",
+      "styleName": "おちつき",
+      "speedScale": 0.86,
+      "pitchScale": 0.0,
+      "intonationScale": 0.98,
+      "volumeScale": 1.0,
+      "prePhonemeLength": 0.08,
+      "postPhonemeLength": 0.12,
+      "pauseLength": null,
+      "pauseLengthScale": 1.0
     },
-    "jm-kumo": {
-      "modelVoice": "jm_kumo",
-      "speed": 1.0,
-      "pitch": 0,
-      "emotion": "neutral"
+    "fumifumi-normal": {
+      "modelUuid": "71e72188-2726-4739-9aa9-39567396fb2a",
+      "styleName": "ノーマル",
+      "speedScale": 0.68,
+      "pitchScale": 0.0,
+      "intonationScale": 1.0,
+      "volumeScale": 1.0,
+      "prePhonemeLength": 0.08,
+      "postPhonemeLength": 0.12,
+      "pauseLength": null,
+      "pauseLengthScale": 1.0
+    },
+    "shigeru-normal": {
+      "modelUuid": "47e53151-a378-46f3-abee-ce13aa07feb1",
+      "styleName": "ノーマル",
+      "speedScale": 0.72,
+      "pitchScale": 0.0,
+      "intonationScale": 1.0,
+      "volumeScale": 1.0,
+      "prePhonemeLength": 0.08,
+      "postPhonemeLength": 0.12,
+      "pauseLength": null,
+      "pauseLengthScale": 1.0
+    },
+    "shigeru-calm": {
+      "modelUuid": "47e53151-a378-46f3-abee-ce13aa07feb1",
+      "styleName": "Calm",
+      "speedScale": 0.74,
+      "pitchScale": 0.0,
+      "intonationScale": 0.98,
+      "volumeScale": 1.0,
+      "prePhonemeLength": 0.08,
+      "postPhonemeLength": 0.12,
+      "pauseLength": null,
+      "pauseLengthScale": 1.0
     }
   },
   "voiceAliases": {
-    "female-soft": "jf-alpha",
-    "female-bright": "jf-gongitsune",
-    "female-calm": "jf-tebukuro",
-    "female-mysterious": "jf-nezumi",
-    "male-casual": "jm-kumo",
-    "male-calm": "jm-kumo",
-    "male-serious": "jm-kumo",
-    "male-comic": "jm-kumo",
-    "narrator": "jf-alpha",
-    "robot": "jm-kumo",
-    "broadcast": "jf-tebukuro"
+    "female-soft": "kohaku-normal",
+    "female-bright": "mao-normal",
+    "female-calm": "mao-calm",
+    "female-mysterious": "kohaku-sweet",
+    "male-casual": "shigeru-normal",
+    "male-calm": "shigeru-calm",
+    "male-serious": "shigeru-calm",
+    "male-comic": "shigeru-normal",
+    "narrator": "kohaku-normal",
+    "robot": "kohaku-sweet",
+    "broadcast": "mao-calm"
   }
 }

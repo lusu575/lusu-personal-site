@@ -1301,7 +1301,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L1-025",
-      "revision": 3,
+      "revision": 4,
       "level": 1,
       "stage": 25,
       "jlptTarget": "N3",
@@ -1528,7 +1528,7 @@
               },
               "ttsTextJa": "結衣が予想より辛いと感じ、水を必要としていると気づいたから。",
               "audioId": "L1-025-q1-a",
-              "readingJa": "ゆいがよそーよりつらいとかんじ、みずをひつよーとしているときずいたから。"
+              "readingJa": "ゆいがよそーよりつらいとかんじ、みずをひつよーとしているときづいたから。"
             },
             {
               "id": "b",
@@ -1612,7 +1612,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "075b06d3a24eaea98ff8a53a8e588f00680ccae2bae43388ac2fc7e4fe1e5e1b"
+      "contentHash": "270d62d0db8ece3683ecbca75fafc4553b724391e2ec4d401e8d66286df4eeb9"
     },
     {
       "schemaVersion": 1,
@@ -2712,7 +2712,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L1-029",
-      "revision": 3,
+      "revision": 4,
       "level": 1,
       "stage": 29,
       "jlptTarget": "N3",
@@ -2996,7 +2996,7 @@
               },
               "ttsTextJa": "依頼人が報酬を黙って取り消し、先に持ち帰った。",
               "audioId": "L1-029-q1-b",
-              "readingJa": "いらいじんがほーしゅーをだまってとりけし、さきにもちかえった。"
+              "readingJa": "いらいにんがほーしゅーをだまってとりけし、さきにもちかえった。"
             },
             {
               "id": "c",
@@ -3069,13 +3069,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "068802f1c431a530fc34cf3dc2133a3fc22fd4453e895c48a0dcfec0037e395a"
+      "contentHash": "3e13bead9c1be11f790086b9e67cca36293f89501ff8b49f323c489cebd9a34f"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L1-030",
-      "revision": 3,
+      "revision": 4,
       "level": 1,
       "stage": 30,
       "jlptTarget": "N3",
@@ -3411,7 +3411,7 @@
               },
               "ttsTextJa": "教室の雨靴、窓の外の魚、魚がベルを鳴らすという話。",
               "audioId": "L1-030-q1-d",
-              "readingJa": "きょーしつのあめぐつ、まどのそとのさかな、さかながべるをならすというはなし。"
+              "readingJa": "きょーしつのあまぐつ、まどのそとのさかな、さかながべるをならすというはなし。"
             }
           ],
           "correctOptionIds": [
@@ -3463,7 +3463,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "58aa21bf46a9415edcba3e0ea8293d7df679c49c91732e42c1e6fd70aa04d650"
+      "contentHash": "e97a9561f882b181dcc7a08b0806ead0f7b41fab99744ce2fb167a42c6c29c77"
     }
   ]
 }

@@ -1,7 +1,7 @@
 import {
   CONTENT_VERSION, DISPLAY_MODES, MEDAL_RANK, OPTION_LANGUAGES, PLAYBACK_RATES,
   MODE_ONBOARDING_KEY, PROGRESS_KEY, SETTINGS_KEY, UI_LANGUAGES, clampNumber, isoNow, parseStageId, stageId
-} from "./constants.mjs?v=20260711-japanese-subtext-v102-r2";
+} from "./constants.mjs?v=20260712-japanese-subtext-v103-r6";
 
 export function defaultSettings(uiLanguage = "zh") {
   return {
@@ -271,15 +271,21 @@ export function mergeSettings(localInput, cloudInput, languageHint = "zh") {
   return Date.parse(cloud.updatedAt) > Date.parse(local.updatedAt) ? cloud : local;
 }
 
+let modeOnboardingCompletedThisSession = false;
+
 export function hasCompletedModeOnboarding(storage = localStorageOrNull()) {
+  if (modeOnboardingCompletedThisSession) return true;
   try {
-    return storage?.getItem?.(MODE_ONBOARDING_KEY) === "1";
+    const completed = storage?.getItem?.(MODE_ONBOARDING_KEY) === "1";
+    if (completed) modeOnboardingCompletedThisSession = true;
+    return completed;
   } catch {
     return false;
   }
 }
 
 export function markModeOnboardingComplete(storage = localStorageOrNull()) {
+  modeOnboardingCompletedThisSession = true;
   try {
     storage?.setItem?.(MODE_ONBOARDING_KEY, "1");
   } catch {

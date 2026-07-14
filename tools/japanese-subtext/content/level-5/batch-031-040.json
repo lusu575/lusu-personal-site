@@ -8,7 +8,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-031",
-      "revision": 3,
+      "revision": 5,
       "level": 5,
       "stage": 31,
       "jlptTarget": "N1-pragmatics",
@@ -22,9 +22,9 @@
       ],
       "layout": "news",
       "title": {
-        "ja": "息継ぎをしない司会者",
-        "zh": "不会换气的主持人",
-        "en": "The Host Who Never Breathes"
+        "ja": "カットをまたいで続く息継ぎ",
+        "zh": "跨越剪辑仍持续的换气",
+        "en": "Breathing That Continues Across Cuts"
       },
       "setting": {
         "ja": "新しい司会者は完璧に話すが、息継ぎが映像カット後も同じ周期で続き、現場記者の呼びかけだけ毎回半拍遅れる。制作表には音声モデル名がある。",
@@ -36,9 +36,9 @@
         "src": "assets/stages/l5-031.webp",
         "style": "monochrome-four-panel",
         "alt": {
-          "ja": "息継ぎをしない司会者の場面を描いた、モノクロ四コマ漫画。",
-          "zh": "描绘“不会换气的主持人”场景的黑白四格漫画。",
-          "en": "A black-and-white four-panel manga depicting the scene \"The Host Who Never Breathes\"."
+          "ja": "カットをまたいで続く息継ぎの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“跨越剪辑仍持续的换气”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Breathing That Continues Across Cuts\"."
         },
         "sha256": "29e269e982feff1d49c9d86118b087eeb29dcebe6015d178dfae3b7b6cc829f4"
       },
@@ -140,10 +140,10 @@
           "speaker": "host",
           "text": {
             "ja": "……はい、大河さん。続けてください。",
-            "zh": "……可以，大河，请继续。",
+            "zh": "……听得到，大河，请继续。",
             "en": "...Yes, Taiga. Please continue."
           },
-          "readingJa": "……はい、たいがさん。つずけてください。",
+          "readingJa": "……はい、たいがさん。つづけてください。",
           "ttsTextJa": "……はい、たいがさん。続けてください。",
           "audioId": "L5-031-line-003",
           "pauseAfterMs": 500,
@@ -157,7 +157,7 @@
             {
               "id": "token-002",
               "text": "続けてください。",
-              "reading": "つずけてください。",
+              "reading": "つづけてください。",
               "audioId": "L5-031-line-003-token-002"
             }
           ]
@@ -642,9 +642,9 @@
               "en": "The best-supported reading is 「The sheet names a voice model and the producer confirms model-generated voice and responses.」."
             },
             "evidence": {
-              "ja": "11番目の台詞、13番目の台詞を合わせると、生出演を装った合成司会で、現場とのやり取りだけ人が後から制御している。",
-              "zh": "合并阅读第11句台词、第13句台词可知，这是伪装直播的合成主播，只有现场互动由人延迟控制。",
-              "en": "Taken together, the eleventh line, the thirteenth line show that It is a synthetic anchor with human-mediated live responses."
+              "ja": "11番目の台詞、13番目の台詞を合わせると、玲は契約俳優の顔素材を使い、音声と応答をモデルが生成する合成司会である。",
+              "zh": "合并阅读第11句台词、第13句台词可知，玲使用签约演员的授权面部素材，语音与回应由模型生成，是合成主持人。",
+              "en": "Taken together, lines eleven and thirteen show that Rei is a synthetic host using licensed actor facial material with model-generated voice and responses."
             },
             "nuance": {
               "ja": "周期的な息継ぎと応答遅延は合成司会を強く支持しますが、制作現場で人間が一切関与していないことまでは示しません。",
@@ -732,9 +732,9 @@
               "en": "The best-supported reading is 「It remains fixed across cuts, suggesting a generated rhythm rather than natural recording units.」."
             },
             "evidence": {
-              "ja": "6番目の台詞、7番目の台詞、18番目の台詞を合わせると、生出演を装った合成司会で、現場とのやり取りだけ人が後から制御している。",
-              "zh": "合并阅读第6句台词、第7句台词、第18句台词可知，这是伪装直播的合成主播，只有现场互动由人延迟控制。",
-              "en": "Taken together, the sixth line, the seventh line, the eighteenth line show that It is a synthetic anchor with human-mediated live responses."
+              "ja": "6番目の台詞、7番目の台詞、18番目の台詞を合わせると、玲は契約俳優の顔素材を使い、音声と応答をモデルが生成する合成司会である。",
+              "zh": "合并阅读第6句台词、第7句台词、第18句台词可知，玲使用签约演员的授权面部素材，语音与回应由模型生成，是合成主持人。",
+              "en": "Taken together, lines six, seven, and eighteen show that Rei is a synthetic host using licensed actor facial material with model-generated voice and responses."
             },
             "nuance": {
               "ja": "周期的な息継ぎと応答遅延は合成司会を強く支持しますが、制作現場で人間が一切関与していないことまでは示しません。",
@@ -826,9 +826,9 @@
               "en": "The best-supported reading is 「Input processing and fixed-response selection take time unlike spontaneous human dialogue.」."
             },
             "evidence": {
-              "ja": "2番目の台詞、3番目の台詞、4番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞、15番目の台詞を合わせると、生出演を装った合成司会で、現場とのやり取りだけ人が後から制御している。",
-              "zh": "合并阅读第2句台词、第3句台词、第4句台词、第8句台词、第9句台词、第10句台词、第15句台词可知，这是伪装直播的合成主播，只有现场互动由人延迟控制。",
-              "en": "Taken together, the second line, the third line, the fourth line, the eighth line, the ninth line, the tenth line, the fifteenth line show that It is a synthetic anchor with human-mediated live responses."
+              "ja": "2番目の台詞、3番目の台詞、4番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞、15番目の台詞を合わせると、玲は契約俳優の顔素材を使い、音声と応答をモデルが生成する合成司会である。",
+              "zh": "合并阅读第2句台词、第3句台词、第4句台词、第8句台词、第9句台词、第10句台词、第15句台词可知，玲使用签约演员的授权面部素材，语音与回应由模型生成，是合成主持人。",
+              "en": "Taken together, lines two, three, four, eight, nine, ten, and fifteen show that Rei is a synthetic host using licensed actor facial material with model-generated voice and responses."
             },
             "nuance": {
               "ja": "周期的な息継ぎと応答遅延は合成司会を強く支持しますが、制作現場で人間が一切関与していないことまでは示しません。",
@@ -918,9 +918,9 @@
               "en": "The best-supported reading is 「Continuously label the synthetic host and distinguish the live responder.」."
             },
             "evidence": {
-              "ja": "13番目の台詞、14番目の台詞、15番目の台詞、16番目の台詞、17番目の台詞を合わせると、生出演を装った合成司会で、現場とのやり取りだけ人が後から制御している。",
-              "zh": "合并阅读第13句台词、第14句台词、第15句台词、第16句台词、第17句台词可知，这是伪装直播的合成主播，只有现场互动由人延迟控制。",
-              "en": "Taken together, the thirteenth line, the fourteenth line, the fifteenth line, the sixteenth line, the seventeenth line show that It is a synthetic anchor with human-mediated live responses."
+              "ja": "13番目の台詞、14番目の台詞、15番目の台詞、16番目の台詞、17番目の台詞を合わせると、玲は契約俳優の顔素材を使い、音声と応答をモデルが生成する合成司会である。",
+              "zh": "合并阅读第13句台词、第14句台词、第15句台词、第16句台词、第17句台词可知，玲使用签约演员的授权面部素材，语音与回应由模型生成，是合成主持人。",
+              "en": "Taken together, lines thirteen through seventeen show that Rei is a synthetic host using licensed actor facial material with model-generated voice and responses."
             },
             "nuance": {
               "ja": "周期的な息継ぎと応答遅延は合成司会を強く支持しますが、制作現場で人間が一切関与していないことまでは示しません。",
@@ -945,13 +945,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "256cf2bf41e85f388ce005eb311409163b03443fe0817e6c93bde7eb8032ccd5"
+      "contentHash": "266fd95edbfa5af92791a221297fbc411fc6617bf16dc1d97cb2b210343c8070"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-032",
-      "revision": 3,
+      "revision": 5,
       "level": 5,
       "stage": 32,
       "jlptTarget": "N1-pragmatics",
@@ -965,9 +965,9 @@
       ],
       "layout": "news",
       "title": {
-        "ja": "客には待機、保守員には逆走",
-        "zh": "给乘客是等待，给维修员是逆行",
-        "en": "Wait for Passengers, Run Backward for Crew"
+        "ja": "客は待機、保守員は逆方向へ",
+        "zh": "乘客等待，维修员反向行动",
+        "en": "Passengers Wait, Crew Move the Other Way"
       },
       "setting": {
         "ja": "駅放送は利用客へ「設備確認中」と伝えつつ、保守員だけが知る語順で四つの設備名を並べる。客は待機、保守員は逆方向へ走る。",
@@ -979,9 +979,9 @@
         "src": "assets/stages/l5-032.webp",
         "style": "monochrome-four-panel",
         "alt": {
-          "ja": "客には待機、保守員には逆走の場面を描いた、モノクロ四コマ漫画。",
-          "zh": "描绘“给乘客是等待，给维修员是逆行”场景的黑白四格漫画。",
-          "en": "A black-and-white four-panel manga depicting the scene \"Wait for Passengers, Run Backward for Crew\"."
+          "ja": "客は待機、保守員は逆方向への場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“乘客等待，维修员反向行动”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Passengers Wait, Crew Move the Other Way\"."
         },
         "sha256": "9d763bfa3c246e5d47bbe2af42c9b502c5332e1a572afc923ad2bd3c413889e8"
       },
@@ -1221,7 +1221,7 @@
             "zh": "和字面上的设备检查不是一回事。",
             "en": "So it differs from the literal equipment check."
           },
-          "readingJa": "じめんのせつびかくにんとわちがうんですね。",
+          "readingJa": "じづらのせつびかくにんとわちがうんですね。",
           "ttsTextJa": "字面の設備確認とは違うんですね。",
           "audioId": "L5-032-line-008",
           "pauseAfterMs": 500,
@@ -1229,7 +1229,7 @@
             {
               "id": "token-001",
               "text": "字面の設備確認とは",
-              "reading": "じめんのせつびかくにんとわ",
+              "reading": "じづらのせつびかくにんとわ",
               "audioId": "L5-032-line-008-token-001"
             },
             {
@@ -1464,7 +1464,7 @@
             "zh": "安全确认完成，三分钟后恢复运行。",
             "en": "Safety checks are complete. Service resumes in three minutes."
           },
-          "readingJa": "あんぜんかくにんがかんりょーしました。さんぶごにうんてんをさいかいします。",
+          "readingJa": "あんぜんかくにんがかんりょーしました。さんぷんごにうんてんをさいかいします。",
           "ttsTextJa": "安全確認が完了しました。三分後に運転を再開します。",
           "audioId": "L5-032-line-017",
           "pauseAfterMs": 500,
@@ -1478,7 +1478,7 @@
             {
               "id": "token-002",
               "text": "三分後に運転を再開します。",
-              "reading": "さんぶごにうんてんをさいかいします。",
+              "reading": "さんぷんごにうんてんをさいかいします。",
               "audioId": "L5-032-line-017-token-002"
             }
           ]
@@ -1536,7 +1536,7 @@
               },
               "ttsTextJa": "三分後に照明を消す。この説明だけで、ほかの手掛かりもすべて偶然として処理できる。",
               "audioId": "L5-032-q1-d",
-              "readingJa": "さんぶごにしょーめーをけす。このせつめーだけで、ほかのてがかりもすべてぐーぜんとしてしょりできる。"
+              "readingJa": "さんぷんごにしょーめーをけす。このせつめーだけで、ほかのてがかりもすべてぐーぜんとしてしょりできる。"
             }
           ],
           "correctOptionIds": [
@@ -1865,13 +1865,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "201c4388dd6d7b600f2be68bbbb7db7041160caf8ec0481b9fba7bd0ecdca8a3"
+      "contentHash": "4ddae1961d65163a1306fe2deb3a9d4ebdbae07b606d0a93d129de841bbd2211"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-033",
-      "revision": 3,
+      "revision": 5,
       "level": 5,
       "stage": 33,
       "jlptTarget": "N1-pragmatics",
@@ -2219,10 +2219,10 @@
           "speaker": "archivist",
           "text": {
             "ja": "各行の先頭文字も『い・お・り』を繰り返します。",
-            "zh": "每行首字还重复“伊・织・里”。",
+            "zh": "每行首字还按“い・お・り”循环。",
             "en": "The line initials also repeat I-O-RI."
           },
-          "readingJa": "かくこーのせんとーもじも『い・お・り』をくりかえします。",
+          "readingJa": "かくぎょうのせんとーもじも『い・お・り』をくりかえします。",
           "ttsTextJa": "各行の先頭文字も『い・お・り』を繰り返します。",
           "audioId": "L5-033-line-011",
           "pauseAfterMs": 500,
@@ -2230,7 +2230,7 @@
             {
               "id": "token-001",
               "text": "各行の先頭文字も",
-              "reading": "かくこーのせんとーもじも",
+              "reading": "かくぎょうのせんとーもじも",
               "audioId": "L5-033-line-011-token-001"
             },
             {
@@ -2245,12 +2245,12 @@
           "id": "line-012",
           "speaker": "student",
           "text": {
-            "ja": "姓は文字数、名は行頭の頭字語ですね。",
+            "ja": "姓は文字数、名は行頭の折句ですね。",
             "zh": "姓藏在字数，名藏在行首藏头。",
             "en": "The surname is in counts; the given name is an acrostic."
           },
-          "readingJa": "せーわもじすー、なわぎょーとーのとうじごですね。",
-          "ttsTextJa": "姓は文字数、名は行頭の頭字語ですね。",
+          "readingJa": "せーわもじすー、なわぎょーとーのおりくですね。",
+          "ttsTextJa": "姓は文字数、名は行頭の折句ですね。",
           "audioId": "L5-033-line-012",
           "pauseAfterMs": 500,
           "tokens": [
@@ -2262,8 +2262,8 @@
             },
             {
               "id": "token-002",
-              "text": "名は行頭の頭字語ですね。",
-              "reading": "なわぎょーとーのとうじごですね。",
+              "text": "名は行頭の折句ですね。",
+              "reading": "なわぎょーとーのおりくですね。",
               "audioId": "L5-033-line-012-token-002"
             }
           ]
@@ -2478,7 +2478,7 @@
               "id": "d",
               "text": {
                 "ja": "行頭文字が『い・お・り』を繰り返すこと。",
-                "zh": "行首文字重复“伊・织・里”。",
+                "zh": "行首字按“い・お・り”循环。",
                 "en": "Line initials repeat I-O-RI."
               },
               "ttsTextJa": "行頭文字が『い・お・り』を繰り返すこと。",
@@ -2511,9 +2511,9 @@
               "en": "The best-supported reading is 「Mapping redacted-character counts to the margin index.」 and 「Line initials repeat I-O-RI.」."
             },
             "evidence": {
-              "ja": "3番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、11番目の台詞、12番目の台詞を合わせると、検閲担当者が表向き名を消しながら、後世へ存在を残す暗号を埋めた。",
-              "zh": "合并阅读第3句台词、第5句台词、第6句台词、第7句台词、第8句台词、第11句台词、第12句台词可知，审查者表面抹去姓名，却暗中为后世留下存在证明。",
-              "en": "Taken together, the third line, the fifth line, the sixth line, the seventh line, the eighth line, the eleventh line, the twelfth line show that The censor hides a preservation code inside the erasure."
+              "ja": "3番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、11番目の台詞、12番目の台詞を合わせると、黒塗り文字数と残された索引、行頭の折句という二つの系統から、鏡伊織の名を復元できる。",
+              "zh": "合并阅读第3句台词、第5句台词、第6句台词、第7句台词、第8句台词、第11句台词、第12句台词可知，通过涂黑字数与保留索引、行首藏头这两套线索，可以还原镜伊织的名字。",
+              "en": "Taken together, lines three, five, six, seven, eight, eleven, and twelve show that the two independent systems—the redaction-count index and the line-initial acrostic—recover Iori Kagami's name."
             },
             "nuance": {
               "ja": "文字数列と索引の一致は意図的暗号を支持しますが、誰が黒塗りを設計したか、発明家本人が関与したかは確定しません。",
@@ -2603,9 +2603,9 @@
               "en": "The best-supported reading is 「Iori Kagami, the exiled inventor.」."
             },
             "evidence": {
-              "ja": "7番目の台詞、8番目の台詞、9番目の台詞、11番目の台詞、12番目の台詞を合わせると、検閲担当者が表向き名を消しながら、後世へ存在を残す暗号を埋めた。",
-              "zh": "合并阅读第7句台词、第8句台词、第9句台词、第11句台词、第12句台词可知，审查者表面抹去姓名，却暗中为后世留下存在证明。",
-              "en": "Taken together, the seventh line, the eighth line, the ninth line, the eleventh line, the twelfth line show that The censor hides a preservation code inside the erasure."
+              "ja": "7番目の台詞、8番目の台詞、9番目の台詞、11番目の台詞、12番目の台詞を合わせると、黒塗り文字数と残された索引、行頭の折句という二つの系統から、鏡伊織の名を復元できる。",
+              "zh": "合并阅读第7句台词、第8句台词、第9句台词、第11句台词、第12句台词可知，通过涂黑字数与保留索引、行首藏头这两套线索，可以还原镜伊织的名字。",
+              "en": "Taken together, lines seven, eight, nine, eleven, and twelve show that the two independent systems—the redaction-count index and the line-initial acrostic—recover Iori Kagami's name."
             },
             "nuance": {
               "ja": "文字数列と索引の一致は意図的暗号を支持しますが、誰が黒塗りを設計したか、発明家本人が関与したかは確定しません。",
@@ -2664,13 +2664,13 @@
             {
               "id": "d",
               "text": {
-                "ja": "別系統の行頭頭字語が名を作る。",
+                "ja": "別系統の行頭文字による折句が名を作る。",
                 "zh": "另一套行首藏头组成名字。",
                 "en": "An independent acrostic produces the given name."
               },
-              "ttsTextJa": "別系統の行頭頭字語が名を作る。",
+              "ttsTextJa": "別系統の行頭文字による折句が名を作る。",
               "audioId": "L5-033-q3-d",
-              "readingJa": "べつけいとうのぎょーとーとうじごがなをつくる。"
+              "readingJa": "べつけーとーのぎょーとーもじによるおりくがなをつくる。"
             }
           ],
           "correctOptionIds": [
@@ -2699,9 +2699,9 @@
               "en": "The best-supported reading is 「The count sequence produces the surname through the preserved index.」 and 「An independent acrostic produces the given name.」."
             },
             "evidence": {
-              "ja": "5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞を合わせると、検閲担当者が表向き名を消しながら、後世へ存在を残す暗号を埋めた。",
-              "zh": "合并阅读第5句台词、第6句台词、第7句台词、第8句台词、第9句台词、第10句台词、第11句台词、第12句台词可知，审查者表面抹去姓名，却暗中为后世留下存在证明。",
-              "en": "Taken together, the fifth line, the sixth line, the seventh line, the eighth line, the ninth line, the tenth line, the eleventh line, the twelfth line show that The censor hides a preservation code inside the erasure."
+              "ja": "5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞、12番目の台詞を合わせると、黒塗り文字数と残された索引、行頭の折句という二つの系統から、鏡伊織の名を復元できる。",
+              "zh": "合并阅读第5句台词、第6句台词、第7句台词、第8句台词、第9句台词、第10句台词、第11句台词、第12句台词可知，通过涂黑字数与保留索引、行首藏头这两套线索，可以还原镜伊织的名字。",
+              "en": "Taken together, lines five through twelve show that the two independent systems—the redaction-count index and the line-initial acrostic—recover Iori Kagami's name."
             },
             "nuance": {
               "ja": "文字数列と索引の一致は意図的暗号を支持しますが、誰が黒塗りを設計したか、発明家本人が関与したかは確定しません。",
@@ -2790,9 +2790,9 @@
               "en": "The best-supported reading is 「The designer of the code and their motive.」."
             },
             "evidence": {
-              "ja": "13番目の台詞、14番目の台詞、15番目の台詞、16番目の台詞を合わせると、検閲担当者が表向き名を消しながら、後世へ存在を残す暗号を埋めた。",
-              "zh": "合并阅读第13句台词、第14句台词、第15句台词、第16句台词可知，审查者表面抹去姓名，却暗中为后世留下存在证明。",
-              "en": "Taken together, the thirteenth line, the fourteenth line, the fifteenth line, the sixteenth line show that The censor hides a preservation code inside the erasure."
+              "ja": "13番目の台詞、14番目の台詞、15番目の台詞、16番目の台詞を合わせると、暗号から名前は復元できる一方、設計者と動機はこの文書だけでは決められない。",
+              "zh": "合并阅读第13句台词、第14句台词、第15句台词、第16句台词可知，暗号可以还原姓名，但仅凭该文书无法确定设计者与动机。",
+              "en": "Taken together, lines thirteen through sixteen show that the code recovers the name, but this document alone does not identify its designer or motive."
             },
             "nuance": {
               "ja": "文字数列と索引の一致は意図的暗号を支持しますが、誰が黒塗りを設計したか、発明家本人が関与したかは確定しません。",
@@ -2882,9 +2882,9 @@
               "en": "The best-supported reading is 「Search contemporary documents for the same count/acrostic scheme and separate findings from inference.」."
             },
             "evidence": {
-              "ja": "14番目の台詞、15番目の台詞、16番目の台詞、17番目の台詞、18番目の台詞を合わせると、検閲担当者が表向き名を消しながら、後世へ存在を残す暗号を埋めた。",
-              "zh": "合并阅读第14句台词、第15句台词、第16句台词、第17句台词、第18句台词可知，审查者表面抹去姓名，却暗中为后世留下存在证明。",
-              "en": "Taken together, the fourteenth line, the fifteenth line, the sixteenth line, the seventeenth line, the eighteenth line show that The censor hides a preservation code inside the erasure."
+              "ja": "14番目の台詞、15番目の台詞、16番目の台詞、17番目の台詞、18番目の台詞を合わせると、暗号から名前は復元できる一方、設計者と動機はこの文書だけでは決められない。",
+              "zh": "合并阅读第14句台词、第15句台词、第16句台词、第17句台词、第18句台词可知，暗号可以还原姓名，但仅凭该文书无法确定设计者与动机。",
+              "en": "Taken together, lines fourteen through eighteen show that the code recovers the name, but this document alone does not identify its designer or motive."
             },
             "nuance": {
               "ja": "文字数列と索引の一致は意図的暗号を支持しますが、誰が黒塗りを設計したか、発明家本人が関与したかは確定しません。",
@@ -2909,13 +2909,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "bf9a6bdaa982086e0fa18a67d2e5119d71b3ac95d13d65812181efcc1f898ab5"
+      "contentHash": "74509e0f4f6ff88d253e4b7fa0206a4a1dbc8e5ab713ce3af936a2519439deee"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-034",
-      "revision": 3,
+      "revision": 5,
       "level": 5,
       "stage": 34,
       "jlptTarget": "N1-pragmatics",
@@ -2979,9 +2979,9 @@
         {
           "id": "owner",
           "name": {
-            "ja": "表紙名・千景",
-            "zh": "封面署名千景",
-            "en": "Chikage, cover name"
+            "ja": "日記の記述",
+            "zh": "日记条目",
+            "en": "Diary entry"
           },
           "voiceKey": "male-serious"
         }
@@ -3045,12 +3045,12 @@
           "id": "line-003",
           "speaker": "linguist",
           "text": {
-            "ja": "朝の記録は厳格な敬語ですね。",
-            "zh": "早晨记录使用严格敬语。",
-            "en": "The morning entries use strict honorifics."
+            "ja": "朝の記録は改まった敬語ですね。",
+            "zh": "早晨的记录使用正式敬语。",
+            "en": "The morning entries use formal honorific language."
           },
-          "readingJa": "あさのきろくわげんかくなけーごですね。",
-          "ttsTextJa": "朝の記録は厳格な敬語ですね。",
+          "readingJa": "あさのきろくわあらたまったけーごですね。",
+          "ttsTextJa": "朝の記録は改まった敬語ですね。",
           "audioId": "L5-034-line-003",
           "pauseAfterMs": 500,
           "tokens": [
@@ -3062,8 +3062,8 @@
             },
             {
               "id": "token-002",
-              "text": "厳格な敬語ですね。",
-              "reading": "げんかくなけーごですね。",
+              "text": "改まった敬語ですね。",
+              "reading": "あらたまったけーごですね。",
               "audioId": "L5-034-line-003-token-002"
             }
           ]
@@ -3207,25 +3207,25 @@
           "id": "line-009",
           "speaker": "owner",
           "text": {
-            "ja": "朝、塔へ届ける。遅れられません。",
-            "zh": "早晨，将送到塔里。不能迟到。",
-            "en": "In the morning, it will be delivered to the tower. No delay is possible."
+            "ja": "朝、塔へお届けします。遅れるわけにはまいりません。",
+            "zh": "早上，将送到塔里。万万不可迟到。",
+            "en": "In the morning, it shall be delivered to the tower. Delay is not permissible."
           },
-          "readingJa": "あさ、とーえとどける。おくれられません。",
-          "ttsTextJa": "朝、塔へ届ける。遅れられません。",
+          "readingJa": "あさ、とーえおとどけします。おくれるわけにわまいりません。",
+          "ttsTextJa": "朝、塔へお届けします。遅れるわけにはまいりません。",
           "audioId": "L5-034-line-009",
           "pauseAfterMs": 500,
           "tokens": [
             {
               "id": "token-001",
-              "text": "朝、塔へ届ける。",
-              "reading": "あさ、とーえとどける。",
+              "text": "朝、塔へお届けします。",
+              "reading": "あさ、とーえおとどけします。",
               "audioId": "L5-034-line-009-token-001"
             },
             {
               "id": "token-002",
-              "text": "遅れられません。",
-              "reading": "おくれられません。",
+              "text": "遅れるわけにはまいりません。",
+              "reading": "おくれるわけにわまいりません。",
               "audioId": "L5-034-line-009-token-002"
             }
           ]
@@ -3369,12 +3369,12 @@
           "id": "line-015",
           "speaker": "linguist",
           "text": {
-            "ja": "複数筆者は濃厚でも、千景の役割は開いています。",
+            "ja": "複数筆者は濃厚でも、千景の役割は未確定です。",
             "zh": "多位作者很可能，但千景的角色仍未定。",
             "en": "Multiple writers are likely, but Chikage's role remains open."
           },
-          "readingJa": "ふくすーひっしゃわのーこーでも、ちかげのやくわりわひらいています。",
-          "ttsTextJa": "複数筆者は濃厚でも、ちかげの役割は開いています。",
+          "readingJa": "ふくすーひっしゃわのーこーでも、ちかげのやくわりわみかくてーです。",
+          "ttsTextJa": "複数筆者は濃厚でも、ちかげの役割は未確定です。",
           "audioId": "L5-034-line-015",
           "pauseAfterMs": 500,
           "tokens": [
@@ -3386,8 +3386,8 @@
             },
             {
               "id": "token-002",
-              "text": "千景の役割は開いています。",
-              "reading": "ちかげのやくわりわひらいています。",
+              "text": "千景の役割は未確定です。",
+              "reading": "ちかげのやくわりわみかくてーです。",
               "audioId": "L5-034-line-015-token-002"
             }
           ]
@@ -3516,9 +3516,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "字面では「本文は一度も『私』を使っていません。」、「朝の記録は厳格な敬語ですね。」と述べられています。",
-              "zh": "字面上明确写着“正文一次也没用“我”。”、“早晨记录使用严格敬语。”。",
-              "en": "The scene explicitly states “The text never uses 'I.'” and “The morning entries use strict honorifics.”."
+              "ja": "字面では「本文は一度も『私』を使っていません。」、「朝の記録は改まった敬語ですね。」と述べられています。",
+              "zh": "字面上明确写着“正文一次也没用“我”。”、“早晨的记录使用正式敬语。”。",
+              "en": "The scene explicitly states “The text never uses 'I.'” and “The morning entries use formal honorific language.”."
             },
             "intent": {
               "ja": "したがって、最も根拠のある読みは「敬語・方言・文語、時制、紙質が同じ三区分で切り替わる。」です。",
@@ -3526,9 +3526,9 @@
               "en": "The best-supported reading is 「Register, tense, and paper all switch in the same three-part pattern.」."
             },
             "evidence": {
-              "ja": "2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、12番目の台詞を合わせると、一人の不安定な語りではなく、複数人の記録を一人の日記として編集した。",
-              "zh": "合并阅读第2句台词、第3句台词、第4句台词、第5句台词、第6句台词、第7句台词、第12句台词可知，这不是一个人不稳定的叙述，而是多人记录被编辑成一个人的日记。",
-              "en": "Taken together, the second line, the third line, the fourth line, the fifth line, the sixth line, the seventh line, the twelfth line show that Multiple writers have been compiled into one supposed diary."
+              "ja": "2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、12番目の台詞を合わせると、文体・時制・紙質が同じ三区分で切り替わるため、一人の不安定な語りより、複数人の記録をまとめた可能性が高い。",
+              "zh": "合并阅读第2句台词、第3句台词、第4句台词、第5句台词、第6句台词、第7句台词、第12句台词可知，文体、时态与纸质按同样的三段切换，因此比起单个叙述者的不稳定变化，更可能是多人记录被汇编在一起。",
+              "en": "Taken together, lines two through seven and twelve show that the aligned three-part shifts in style, tense, and paper make a compilation of multiple writers more likely than one unstable narrator."
             },
             "nuance": {
               "ja": "文体・時制・紙質の三系統は複数筆者を示しますが、表紙名の人物が編集者か所有者か、共同筆者かは確定しません。",
@@ -3617,9 +3617,9 @@
               "en": "The best-supported reading is 「The diary's owner or holder.」 and 「An editor who compiled three accounts.」."
             },
             "evidence": {
-              "ja": "13番目の台詞、14番目の台詞、15番目の台詞を合わせると、一人の不安定な語りではなく、複数人の記録を一人の日記として編集した。",
-              "zh": "合并阅读第13句台词、第14句台词、第15句台词可知，这不是一个人不稳定的叙述，而是多人记录被编辑成一个人的日记。",
-              "en": "Taken together, the thirteenth line, the fourteenth line, the fifteenth line show that Multiple writers have been compiled into one supposed diary."
+              "ja": "13番目の台詞、14番目の台詞、15番目の台詞を合わせると、文体・時制・紙質が同じ三区分で切り替わるため、一人の不安定な語りより、複数人の記録をまとめた可能性が高い。",
+              "zh": "合并阅读第13句台词、第14句台词、第15句台词可知，文体、时态与纸质按同样的三段切换，因此比起单个叙述者的不稳定变化，更可能是多人记录被汇编在一起。",
+              "en": "Taken together, lines thirteen through fifteen show that the aligned three-part shifts in style, tense, and paper make a compilation of multiple writers more likely than one unstable narrator."
             },
             "nuance": {
               "ja": "文体・時制・紙質の三系統は複数筆者を示しますが、表紙名の人物が編集者か所有者か、共同筆者かは確定しません。",
@@ -3651,7 +3651,7 @@
               },
               "ttsTextJa": "必ず同一人物が書いた証拠。この説明だけで、ほかの手掛かりもすべて偶然として処理できる。",
               "audioId": "L5-034-q3-a",
-              "readingJa": "かならずどーいちじんぶつがかいたしょーこ。このせつめーだけで、ほかのてがかりもすべてぐーぜんとしてしょりできる。"
+              "readingJa": "かならずどーいつじんぶつがかいたしょーこ。このせつめーだけで、ほかのてがかりもすべてぐーぜんとしてしょりできる。"
             },
             {
               "id": "b",
@@ -3707,9 +3707,9 @@
               "en": "The best-supported reading is 「It may show shared tools or location, without erasing pressure, style, and paper differences.」."
             },
             "evidence": {
-              "ja": "7番目の台詞、8番目の台詞、15番目の台詞を合わせると、一人の不安定な語りではなく、複数人の記録を一人の日記として編集した。",
-              "zh": "合并阅读第7句台词、第8句台词、第15句台词可知，这不是一个人不稳定的叙述，而是多人记录被编辑成一个人的日记。",
-              "en": "Taken together, the seventh line, the eighth line, the fifteenth line show that Multiple writers have been compiled into one supposed diary."
+              "ja": "7番目の台詞、8番目の台詞、15番目の台詞を合わせると、文体・時制・紙質が同じ三区分で切り替わるため、一人の不安定な語りより、複数人の記録をまとめた可能性が高い。",
+              "zh": "合并阅读第7句台词、第8句台词、第15句台词可知，文体、时态与纸质按同样的三段切换，因此比起单个叙述者的不稳定变化，更可能是多人记录被汇编在一起。",
+              "en": "Taken together, lines seven, eight, and fifteen show that the aligned three-part shifts in style, tense, and paper make a compilation of multiple writers more likely than one unstable narrator."
             },
             "nuance": {
               "ja": "文体・時制・紙質の三系統は複数筆者を示しますが、表紙名の人物が編集者か所有者か、共同筆者かは確定しません。",
@@ -3787,7 +3787,7 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "字面では「複数筆者は濃厚でも、千景の役割は開いています。」、「筆跡照合と紙の入手経路を次に調べましょう。」と述べられています。",
+              "ja": "字面では「複数筆者は濃厚でも、千景の役割は未確定です。」、「筆跡照合と紙の入手経路を次に調べましょう。」と述べられています。",
               "zh": "字面上明确写着“多位作者很可能，但千景的角色仍未定。”、“下一步查笔迹和纸张来源。”。",
               "en": "The scene explicitly states “Multiple writers are likely, but Chikage's role remains open.” and “Next, compare handwriting and trace the paper sources.”."
             },
@@ -3797,9 +3797,9 @@
               "en": "The best-supported reading is 「Compare handwriting and trace the three paper sources.」."
             },
             "evidence": {
-              "ja": "15番目の台詞、16番目の台詞、17番目の台詞を合わせると、一人の不安定な語りではなく、複数人の記録を一人の日記として編集した。",
-              "zh": "合并阅读第15句台词、第16句台词、第17句台词可知，这不是一个人不稳定的叙述，而是多人记录被编辑成一个人的日记。",
-              "en": "Taken together, the fifteenth line, the sixteenth line, the seventeenth line show that Multiple writers have been compiled into one supposed diary."
+              "ja": "15番目の台詞、16番目の台詞、17番目の台詞を合わせると、文体・時制・紙質が同じ三区分で切り替わるため、一人の不安定な語りより、複数人の記録をまとめた可能性が高い。",
+              "zh": "合并阅读第15句台词、第16句台词、第17句台词可知，文体、时态与纸质按同样的三段切换，因此比起单个叙述者的不稳定变化，更可能是多人记录被汇编在一起。",
+              "en": "Taken together, lines fifteen through seventeen show that the aligned three-part shifts in style, tense, and paper make a compilation of multiple writers more likely than one unstable narrator."
             },
             "nuance": {
               "ja": "文体・時制・紙質の三系統は複数筆者を示しますが、表紙名の人物が編集者か所有者か、共同筆者かは確定しません。",
@@ -3824,13 +3824,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "008c515e39ec876e98e8b0876bdf4ac8a811c11e5ad96d73718046912ab96f2f"
+      "contentHash": "8315c911a5590d0bf6f2e586886364232a278a2ca9fe66147e2c7cc3848aca3b"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-035",
-      "revision": 3,
+      "revision": 4,
       "level": 5,
       "stage": 35,
       "jlptTarget": "N1-pragmatics",
@@ -3844,22 +3844,22 @@
       ],
       "layout": "error-dialog",
       "title": {
-        "ja": "字幕担当は扉の中",
-        "zh": "字幕员在门内",
+        "ja": "字幕担当は扉の向こう",
+        "zh": "字幕员在门后",
         "en": "The Subtitler Is Behind the Door"
       },
       "setting": {
-        "ja": "音声は扉を開けろと言い、字幕は閉じろと訳す。停止画面の小さな文だけ「字幕担当は中にいる」と告白し、再開すると消える。",
-        "zh": "语音让玩家开门，字幕却译成关门；暂停界面小字承认“字幕员在里面”，恢复后消失。",
-        "en": "Audio says open the door while subtitles say close it; a pause-menu note confesses “the subtitler is inside” and vanishes on resume."
+        "ja": "音声は扉を開けろと言い、字幕は閉じろと訳す。停止画面の小さな文だけ「字幕担当は扉の向こうにいる」と告白し、再開すると消える。",
+        "zh": "语音让玩家开门，字幕却译成关门；暂停界面小字承认“字幕员在门后”，恢复后消失。",
+        "en": "Audio says open the door while subtitles say close it; a pause-menu note confesses “the subtitler is behind the door” and vanishes on resume."
       },
       "illustration": {
         "enabled": true,
         "src": "assets/stages/l5-035.webp",
         "style": "monochrome-four-panel",
         "alt": {
-          "ja": "字幕担当は扉の中の場面を描いた、モノクロ四コマ漫画。",
-          "zh": "描绘“字幕员在门内”场景的黑白四格漫画。",
+          "ja": "字幕担当は扉の向こうの場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“字幕员在门后”场景的黑白四格漫画。",
           "en": "A black-and-white four-panel manga depicting the scene \"The Subtitler Is Behind the Door\"."
         },
         "sha256": "d5d4115e97bddedadd33c8d9c4a31dd6fd5e52459c33c3b6c1124fd9cad473ad"
@@ -4123,19 +4123,19 @@
           "id": "line-009",
           "speaker": "subtitle",
           "text": {
-            "ja": "字幕担当は中にいる。再開すると、この文は消える。",
-            "zh": "字幕负责人在里面。恢复后这句话会消失。",
-            "en": "The subtitler is inside. This line vanishes on resume."
+            "ja": "字幕担当は扉の向こうにいる。再開すると、この文は消える。",
+            "zh": "字幕员在门后。恢复后这句话会消失。",
+            "en": "The subtitler is behind the door. This line vanishes on resume."
           },
-          "readingJa": "じまくたんとーわなかにいる。さいかいすると、このぶんわきえる。",
-          "ttsTextJa": "字幕担当は中にいる。再開すると、この文は消える。",
+          "readingJa": "じまくたんとーわとびらのむこーにいる。さいかいすると、このぶんわきえる。",
+          "ttsTextJa": "字幕担当は扉の向こうにいる。再開すると、この文は消える。",
           "audioId": "L5-035-line-009",
           "pauseAfterMs": 500,
           "tokens": [
             {
               "id": "token-001",
-              "text": "字幕担当は中にいる。",
-              "reading": "じまくたんとーわなかにいる。",
+              "text": "字幕担当は扉の向こうにいる。",
+              "reading": "じまくたんとーわとびらのむこーにいる。",
               "audioId": "L5-035-line-009-token-001"
             },
             {
@@ -4258,12 +4258,12 @@
           "id": "line-014",
           "speaker": "player",
           "text": {
-            "ja": "告白の文は消えたけど、撮影には残ってる。",
+            "ja": "告白の文は消えたけど、スクリーンショットには残ってる。",
             "zh": "告白句消失了，但截图还在。",
             "en": "The confession vanished, but the capture remains."
           },
-          "readingJa": "こくはくのぶんわきえたけど、さつえーにわのこってる。",
-          "ttsTextJa": "告白の文は消えたけど、撮影には残ってる。",
+          "readingJa": "こくはくのぶんわきえたけど、すくりーんしょっとにわのこってる。",
+          "ttsTextJa": "告白の文は消えたけど、スクリーンショットには残ってる。",
           "audioId": "L5-035-line-014",
           "pauseAfterMs": 500,
           "tokens": [
@@ -4275,8 +4275,8 @@
             },
             {
               "id": "token-002",
-              "text": "撮影には残ってる。",
-              "reading": "さつえーにわのこってる。",
+              "text": "スクリーンショットには残ってる。",
+              "reading": "すくりーんしょっとにわのこってる。",
               "audioId": "L5-035-line-014-token-002"
             }
           ]
@@ -4425,13 +4425,13 @@
             {
               "id": "c",
               "text": {
-                "ja": "字幕が『私がいる』と一人称で自己位置を述べる。",
+                "ja": "字幕が『私がいる』と一人称で自分の居場所を述べる。",
                 "zh": "字幕用“我在里面”以第一人称说明自身位置。",
                 "en": "The subtitle locates itself with first person: 'I am inside.'"
               },
-              "ttsTextJa": "字幕が『私がいる』と一人称で自己位置を述べる。",
+              "ttsTextJa": "字幕が『私がいる』と一人称で自分の居場所を述べる。",
               "audioId": "L5-035-q1-c",
-              "readingJa": "じまくが『わたしがいる』といちにんしょーでじこいちをのべる。"
+              "readingJa": "じまくが『わたしがいる』といちにんしょーでじぶんのいばしょをのべる。"
             },
             {
               "id": "d",
@@ -4463,14 +4463,14 @@
               "en": "The scene explicitly states “Open the red door now.” and “Keep the red door closed at all costs.”."
             },
             "intent": {
-              "ja": "したがって、最も根拠のある読みは「開けろ／閉じろと命令が一貫して対立する。」と「字幕が『私がいる』と一人称で自己位置を述べる。」です。",
+              "ja": "したがって、最も根拠のある読みは「開けろ／閉じろと命令が一貫して対立する。」と「字幕が『私がいる』と一人称で自分の居場所を述べる。」です。",
               "zh": "因此，证据最充分的判断是「打开／关闭的命令持续对立。」与「字幕用“我在里面”以第一人称说明自身位置。」。",
               "en": "The best-supported reading is 「Their open/close commands consistently conflict.」 and 「The subtitle locates itself with first person: 'I am inside.'」."
             },
             "evidence": {
-              "ja": "1番目の台詞、2番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞を合わせると、翻訳ミスではなく、字幕層の人物が自分を守るため音声命令を書き換えている。",
-              "zh": "合并阅读第1句台词、第2句台词、第5句台词、第6句台词、第7句台词可知，这不是误译，而是字幕层中的人物为自保改写命令。",
-              "en": "Taken together, the first line, the second line, the fifth line, the sixth line, the seventh line show that A character inside the subtitle layer rewrites the command for self-preservation."
+              "ja": "1番目の台詞、2番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞を合わせると、音声と字幕は命令を一貫して対立させ、字幕側は一人称と停止画面限定文を使うため、単なる誤訳では説明しにくい独立した発話主体の可能性がある。",
+              "zh": "合并阅读第1句台词、第2句台词、第5句台词、第6句台词、第7句台词可知，语音与字幕持续给出相反命令，字幕还使用第一人称和暂停画面限定文本，因此更像独立发言主体，难以用单纯误译解释。",
+              "en": "Taken together, lines one, two, five, six, and seven show that the voice and subtitles consistently conflict, while the subtitle uses first person and a pause-only line, supporting a separate speaking agent rather than a simple mistranslation."
             },
             "nuance": {
               "ja": "停止画面の告白は字幕が独立した発話主体である可能性を示しますが、人物かプログラムか、救助を求めているかは未確定です。",
@@ -4488,21 +4488,21 @@
           "id": "q2",
           "type": "multiple",
           "prompt": {
-            "ja": "停止画面の文から確実に分かることを二つ選んでください。",
-            "zh": "请选择暂停画面文本能确定的两点。",
-            "en": "Choose two facts established by the pause-screen line."
+            "ja": "停止画面の文とそのスクリーンショットから確実に分かることを二つ選んでください。",
+            "zh": "请选择暂停画面文本及其截图能够确定的两点。",
+            "en": "Choose two facts established by the pause-screen line and its screenshot."
           },
           "options": [
             {
               "id": "a",
               "text": {
-                "ja": "停止中だけ『字幕担当は中にいる』という文が表示される。",
-                "zh": "仅暂停时显示“字幕负责人在里面”。",
-                "en": "A line saying the subtitler is inside appears only while paused."
+                "ja": "停止中だけ『字幕担当は扉の向こうにいる』という文が表示される。",
+                "zh": "仅暂停时显示“字幕员在门后”。",
+                "en": "A line saying the subtitler is behind the door appears only while paused."
               },
-              "ttsTextJa": "停止中だけ『字幕担当は中にいる』という文が表示される。",
+              "ttsTextJa": "停止中だけ『字幕担当は扉の向こうにいる』という文が表示される。",
               "audioId": "L5-035-q2-a",
-              "readingJa": "ていしちゅうだけ『じまくたんとーわなかにいる』というぶんがひょーじされる。"
+              "readingJa": "ていしちゅうだけ『じまくたんとーわとびらのむこーにいる』というぶんがひょーじされる。"
             },
             {
               "id": "b",
@@ -4529,13 +4529,13 @@
             {
               "id": "d",
               "text": {
-                "ja": "再開後に文は消えるが、撮影記録には残る。",
+                "ja": "再開後に文は消えるが、スクリーンショットには残る。",
                 "zh": "恢复后文本消失，但保留在截图中。",
                 "en": "The line disappears on resume but survives in the captured record."
               },
-              "ttsTextJa": "再開後に文は消えるが、撮影記録には残る。",
+              "ttsTextJa": "再開後に文は消えるが、スクリーンショットには残る。",
               "audioId": "L5-035-q2-d",
-              "readingJa": "さいかいごにぶんわきえるが、さつえーきろくにわのこる。"
+              "readingJa": "さいかいごにぶんわきえるが、すくりーんしょっとにわのこる。"
             }
           ],
           "correctOptionIds": [
@@ -4552,19 +4552,19 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "字面では「一時停止してログを見よう。」、「字幕担当は中にいる。再開すると、この文は消える。」と述べられています。",
-              "zh": "字面上明确写着“暂停看看日志。”、“字幕负责人在里面。恢复后这句话会消失。”。",
-              "en": "The scene explicitly states “Pause and inspect the log.” and “The subtitler is inside. This line vanishes on resume.”."
+              "ja": "字面では「一時停止してログを見よう。」、「字幕担当は扉の向こうにいる。再開すると、この文は消える。」と述べられています。",
+              "zh": "字面上明确写着“暂停看看日志。”、“字幕员在门后。恢复后这句话会消失。”。",
+              "en": "The scene explicitly states “Pause and inspect the log.” and “The subtitler is behind the door. This line vanishes on resume.”."
             },
             "intent": {
-              "ja": "したがって、最も根拠のある読みは「停止中だけ『字幕担当は中にいる』という文が表示される。」と「再開後に文は消えるが、撮影記録には残る。」です。",
-              "zh": "因此，证据最充分的判断是「仅暂停时显示“字幕负责人在里面”。」与「恢复后文本消失，但保留在截图中。」。",
-              "en": "The best-supported reading is 「A line saying the subtitler is inside appears only while paused.」 and 「The line disappears on resume but survives in the captured record.」."
+              "ja": "したがって、最も根拠のある読みは「停止中だけ『字幕担当は扉の向こうにいる』という文が表示される。」と「再開後に文は消えるが、スクリーンショットには残る。」です。",
+              "zh": "因此，证据最充分的判断是「仅暂停时显示“字幕员在门后”。」与「恢复后文本消失，但保留在截图中。」。",
+              "en": "The best-supported reading is 「A line saying the subtitler is behind the door appears only while paused.」 and 「The line disappears on resume but remains in the screenshot.」."
             },
             "evidence": {
-              "ja": "8番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞、13番目の台詞、14番目の台詞を合わせると、翻訳ミスではなく、字幕層の人物が自分を守るため音声命令を書き換えている。",
-              "zh": "合并阅读第8句台词、第9句台词、第10句台词、第11句台词、第13句台词、第14句台词可知，这不是误译，而是字幕层中的人物为自保改写命令。",
-              "en": "Taken together, the eighth line, the ninth line, the tenth line, the eleventh line, the thirteenth line, the fourteenth line show that A character inside the subtitle layer rewrites the command for self-preservation."
+              "ja": "8番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞、13番目の台詞、14番目の台詞を合わせると、音声と字幕は命令を一貫して対立させ、字幕側は一人称と停止画面限定文を使うため、単なる誤訳では説明しにくい独立した発話主体の可能性がある。",
+              "zh": "合并阅读第8句台词、第9句台词、第10句台词、第11句台词、第13句台词、第14句台词可知，语音与字幕持续给出相反命令，字幕还使用第一人称和暂停画面限定文本，因此更像独立发言主体，难以用单纯误译解释。",
+              "en": "Taken together, lines eight, nine, ten, eleven, thirteen, and fourteen show that the voice and subtitles consistently conflict, while the subtitle uses first person and a pause-only line, supporting a separate speaking agent rather than a simple mistranslation."
             },
             "nuance": {
               "ja": "停止画面の告白は字幕が独立した発話主体である可能性を示しますが、人物かプログラムか、救助を求めているかは未確定です。",
@@ -4644,7 +4644,7 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "字面では「告白の文は消えたけど、撮影には残ってる。」、「字幕は翻訳でなく、別の当事者かもしれない。」と述べられています。",
+              "ja": "字面では「告白の文は消えたけど、スクリーンショットには残ってる。」、「字幕は翻訳でなく、別の当事者かもしれない。」と述べられています。",
               "zh": "字面上明确写着“告白句消失了，但截图还在。”、“字幕也许不是翻译，而是另一个当事者。”。",
               "en": "The scene explicitly states “The confession vanished, but the capture remains.” and “The subtitles may be another participant, not a translation.”."
             },
@@ -4654,9 +4654,9 @@
               "en": "The best-supported reading is 「Because the channels conflict, keep the door closed, preserve evidence, and investigate.」."
             },
             "evidence": {
-              "ja": "14番目の台詞、15番目の台詞、16番目の台詞、17番目の台詞、18番目の台詞を合わせると、翻訳ミスではなく、字幕層の人物が自分を守るため音声命令を書き換えている。",
-              "zh": "合并阅读第14句台词、第15句台词、第16句台词、第17句台词、第18句台词可知，这不是误译，而是字幕层中的人物为自保改写命令。",
-              "en": "Taken together, the fourteenth line, the fifteenth line, the sixteenth line, the seventeenth line, the eighteenth line show that A character inside the subtitle layer rewrites the command for self-preservation."
+              "ja": "14番目の台詞、15番目の台詞、16番目の台詞、17番目の台詞、18番目の台詞を合わせると、音声と字幕は命令を一貫して対立させ、字幕側は一人称と停止画面限定文を使うため、単なる誤訳では説明しにくい独立した発話主体の可能性がある。",
+              "zh": "合并阅读第14句台词、第15句台词、第16句台词、第17句台词、第18句台词可知，语音与字幕持续给出相反命令，字幕还使用第一人称和暂停画面限定文本，因此更像独立发言主体，难以用单纯误译解释。",
+              "en": "Taken together, lines fourteen through eighteen show that the voice and subtitles consistently conflict, while the subtitle uses first person and a pause-only line, supporting a separate speaking agent rather than a simple mistranslation."
             },
             "nuance": {
               "ja": "停止画面の告白は字幕が独立した発話主体である可能性を示しますが、人物かプログラムか、救助を求めているかは未確定です。",
@@ -4750,9 +4750,9 @@
               "en": "The best-supported reading is 「It consistently opposes the voice and adds first-person and pause-only confessions.」."
             },
             "evidence": {
-              "ja": "1番目の台詞、2番目の台詞、5番目の台詞、6番目の台詞、9番目の台詞、12番目の台詞、13番目の台詞、16番目の台詞、17番目の台詞を合わせると、翻訳ミスではなく、字幕層の人物が自分を守るため音声命令を書き換えている。",
-              "zh": "合并阅读第1句台词、第2句台词、第5句台词、第6句台词、第9句台词、第12句台词、第13句台词、第16句台词、第17句台词可知，这不是误译，而是字幕层中的人物为自保改写命令。",
-              "en": "Taken together, the first line, the second line, the fifth line, the sixth line, the ninth line, the twelfth line, the thirteenth line, the sixteenth line, the seventeenth line show that A character inside the subtitle layer rewrites the command for self-preservation."
+              "ja": "1番目の台詞、2番目の台詞、5番目の台詞、6番目の台詞、9番目の台詞、12番目の台詞、13番目の台詞、16番目の台詞、17番目の台詞を合わせると、音声と字幕は命令を一貫して対立させ、字幕側は一人称と停止画面限定文を使うため、単なる誤訳では説明しにくい独立した発話主体の可能性がある。",
+              "zh": "合并阅读第1句台词、第2句台词、第5句台词、第6句台词、第9句台词、第12句台词、第13句台词、第16句台词、第17句台词可知，语音与字幕持续给出相反命令，字幕还使用第一人称和暂停画面限定文本，因此更像独立发言主体，难以用单纯误译解释。",
+              "en": "Taken together, lines one, two, five, six, nine, twelve, thirteen, sixteen, and seventeen show that the voice and subtitles consistently conflict, while the subtitle uses first person and a pause-only line, supporting a separate speaking agent rather than a simple mistranslation."
             },
             "nuance": {
               "ja": "停止画面の告白は字幕が独立した発話主体である可能性を示しますが、人物かプログラムか、救助を求めているかは未確定です。",
@@ -4777,13 +4777,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "070c0f215715cd5d6afdfca77ad57e3aadd37ec0cb381ca7e86c2343ab584b9e"
+      "contentHash": "b4be3ff1860668cb5ec6fd51a3f51245f128df4dfb584c30183b95a5021ec886"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-036",
-      "revision": 3,
+      "revision": 6,
       "level": 5,
       "stage": 36,
       "jlptTarget": "N1-pragmatics",
@@ -5107,7 +5107,7 @@
             "zh": "请不必费心。",
             "en": "Please do not trouble yourself."
           },
-          "readingJa": "おきずかいわどーぞごむよーになさってください。",
+          "readingJa": "おきづかいわどーぞごむよーになさってください。",
           "ttsTextJa": "お気遣いはどうぞご無用になさってください。",
           "audioId": "L5-036-line-010",
           "pauseAfterMs": 500,
@@ -5115,7 +5115,7 @@
             {
               "id": "token-001",
               "text": "お気遣いは",
-              "reading": "おきずかいわ",
+              "reading": "おきづかいわ",
               "audioId": "L5-036-line-010-token-001"
             },
             {
@@ -5292,25 +5292,25 @@
           "id": "line-017",
           "speaker": "interpreter",
           "text": {
-            "ja": "字面の余地より、会話全体の行為を訳す必要があります。",
-            "zh": "翻译不能只保留字面余地，还要翻译整段会话的行为。",
-            "en": "We must translate the act of the whole exchange, not just lexical possibility."
+            "ja": "字面上の可能性だけでなく、会話全体の発話行為を訳す必要があります。",
+            "zh": "不能只保留字面上的可能性，还要翻译整段对话的言语行为。",
+            "en": "We must translate the speech act of the whole exchange, not merely preserve its lexical possibility."
           },
-          "readingJa": "じめんのよちより、かいわぜんたいのこーいをやくすひつよーがあります。",
-          "ttsTextJa": "字面の余地より、会話全体の行為を訳す必要があります。",
+          "readingJa": "じづらじょーのかのーせーだけでなく、かいわぜんたいのはつわこーいをやくすひつよーがあります。",
+          "ttsTextJa": "字面上の可能性だけでなく、会話全体の発話行為を訳す必要があります。",
           "audioId": "L5-036-line-017",
           "pauseAfterMs": 500,
           "tokens": [
             {
               "id": "token-001",
-              "text": "字面の余地より、",
-              "reading": "じめんのよちより、",
+              "text": "字面上の可能性だけでなく、",
+              "reading": "じづらじょーのかのーせーだけでなく、",
               "audioId": "L5-036-line-017-token-001"
             },
             {
               "id": "token-002",
-              "text": "会話全体の行為を訳す必要があります。",
-              "reading": "かいわぜんたいのこーいをやくすひつよーがあります。",
+              "text": "会話全体の発話行為を訳す必要があります。",
+              "reading": "かいわぜんたいのはつわこーいをやくすひつよーがあります。",
               "audioId": "L5-036-line-017-token-002"
             }
           ]
@@ -5792,13 +5792,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "50a7ea30e365638031ce9c7cda346ac8cc9a39ffd74bdb8b8d07c976ca9ef5bc"
+      "contentHash": "94bc86d57097e6300eabd488f6012803fbf2efff3637174c982fe42fdd733400"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-037",
-      "revision": 3,
+      "revision": 5,
       "level": 5,
       "stage": 37,
       "jlptTarget": "N1-pragmatics",
@@ -5819,7 +5819,7 @@
       "setting": {
         "ja": "班員の一人は「何も作っていない」と言うが、共有文書の時刻統一、重複削除、引用確認はすべてその人の匿名編集である。発表者は自分の成果と数える。",
         "zh": "一名组员说“我什么都没做”，共享文档的时间统一、去重与引文核查却全是其匿名编辑；发表者把它们算成自己的成果。",
-        "en": "A group member says they created nothing, yet anonymous history shows they normalized dates, removed duplicates, and verified citations; the presenter claims those gains."
+        "en": "A group member says they created nothing, yet anonymous history shows they normalized time formats, removed duplicates, and verified citations; the presenter claims those gains."
       },
       "illustration": {
         "enabled": true,
@@ -6039,7 +6039,7 @@
           "text": {
             "ja": "時刻表記の統一、静の端末です。",
             "zh": "统一时间格式的是静的终端。",
-            "en": "Date normalization came from Shizu's terminal."
+            "en": "Time-format normalization came from Shizu's terminal."
           },
           "readingJa": "じこくひょーきのとーいつ、しずのたんまつです。",
           "ttsTextJa": "時刻表記の統一、しずの端末です。",
@@ -6226,25 +6226,25 @@
           "id": "line-014",
           "speaker": "editor",
           "text": {
-            "ja": "匿名なら気楽でした。でも無かったことにはしたくない。",
-            "zh": "匿名让我轻松，但我也不想被当成没做过。",
-            "en": "Anonymity felt easier, but I do not want the work erased."
+            "ja": "匿名だと気が楽でした。でも、貢献までなかったことにはしたくない。",
+            "zh": "匿名让我更轻松，但我不想连贡献也被抹掉。",
+            "en": "Anonymity felt easier, but I do not want my contribution erased."
           },
-          "readingJa": "とくめーならきらくでした。でもなかったことにわしたくない。",
-          "ttsTextJa": "匿名なら気楽でした。でも無かったことにはしたくない。",
+          "readingJa": "とくめーだときがらくでした。でも、こーけんまでなかったことにわしたくない。",
+          "ttsTextJa": "匿名だと気が楽でした。でも、貢献までなかったことにはしたくない。",
           "audioId": "L5-037-line-014",
           "pauseAfterMs": 500,
           "tokens": [
             {
               "id": "token-001",
-              "text": "匿名なら気楽でした。",
-              "reading": "とくめーならきらくでした。",
+              "text": "匿名だと気が楽でした。",
+              "reading": "とくめーだときがらくでした。",
               "audioId": "L5-037-line-014-token-001"
             },
             {
               "id": "token-002",
-              "text": "でも無かったことにはしたくない。",
-              "reading": "でもなかったことにわしたくない。",
+              "text": "でも、貢献までなかったことにはしたくない。",
+              "reading": "でも、こーけんまでなかったことにわしたくない。",
               "audioId": "L5-037-line-014-token-002"
             }
           ]
@@ -6373,7 +6373,7 @@
               "text": {
                 "ja": "時刻統一、重複削除、引用元確認という編集労働。",
                 "zh": "统一时间、去重与核查引用来源的编辑劳动。",
-                "en": "Editorial work: date normalization, deduplication, and source verification."
+                "en": "Editorial work: time-format normalization, deduplication, and source verification."
               },
               "ttsTextJa": "時刻統一、重複削除、引用元確認という編集労働。",
               "audioId": "L5-037-q1-a",
@@ -6399,7 +6399,7 @@
               },
               "ttsTextJa": "発表を一人で行った。しかも、別の可能性を追加で検討する余地はまったく残らない。",
               "audioId": "L5-037-q1-c",
-              "readingJa": "はっぴょーをひとりでいった。しかも、べつのかのうせいをついかでけんとーするよちわまったくのこらない。"
+              "readingJa": "はっぴょーをひとりでおこなった。しかも、べつのかのうせいをついかでけんとーするよちわまったくのこらない。"
             },
             {
               "id": "d",
@@ -6435,7 +6435,7 @@
             "intent": {
               "ja": "したがって、最も根拠のある読みは「時刻統一、重複削除、引用元確認という編集労働。」です。",
               "zh": "因此，证据最充分的判断是「统一时间、去重与核查引用来源的编辑劳动。」。",
-              "en": "The best-supported reading is 「Editorial work: date normalization, deduplication, and source verification.」."
+              "en": "The best-supported reading is 「Editorial work: time-format normalization, deduplication, and source verification.」."
             },
             "evidence": {
               "ja": "3番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞、12番目の台詞、13番目の台詞を合わせると、成果物を追加しない編集労働が見えず、自己評価と他者評価の両方から消えている。",
@@ -6488,13 +6488,13 @@
             {
               "id": "c",
               "text": {
-                "ja": "新しい段落や成品を追加することだけを『作る』と狭く捉えたから。",
+                "ja": "新しい段落や完成品を追加することだけを『作る』と狭く捉えたから。",
                 "zh": "因为她把“制作”狭义理解为新增段落或成品。",
                 "en": "She narrowly defines making as adding new paragraphs or artifacts."
               },
-              "ttsTextJa": "新しい段落や成品を追加することだけを『作る』と狭く捉えたから。",
+              "ttsTextJa": "新しい段落や完成品を追加することだけを『作る』と狭く捉えたから。",
               "audioId": "L5-037-q2-c",
-              "readingJa": "あたらしいだんらくやなりひんをついかすることだけを『つくる』とせまくとらえたから。"
+              "readingJa": "あたらしいだんらくやかんせいひんをついかすることだけを『つくる』とせまくとらえたから。"
             },
             {
               "id": "d",
@@ -6525,7 +6525,7 @@
               "en": "The scene explicitly states “I made nothing. You need not list my name.” and “I did not write any new paragraphs.”."
             },
             "intent": {
-              "ja": "したがって、最も根拠のある読みは「新しい段落や成品を追加することだけを『作る』と狭く捉えたから。」です。",
+              "ja": "したがって、最も根拠のある読みは「新しい段落や完成品を追加することだけを『作る』と狭く捉えたから。」です。",
               "zh": "因此，证据最充分的判断是「因为她把“制作”狭义理解为新增段落或成品。」。",
               "en": "The best-supported reading is 「She narrowly defines making as adding new paragraphs or artifacts.」."
             },
@@ -6679,7 +6679,7 @@
               "text": {
                 "ja": "静：編集担当—時刻統一、重複削除、引用確認。",
                 "zh": "静：编辑负责人——统一时间、去重、引用核查。",
-                "en": "Shizu: editor—date normalization, deduplication, and citation checks."
+                "en": "Shizu: editor—time-format normalization, deduplication, and citation checks."
               },
               "ttsTextJa": "しず：編集担当—時刻統一、重複削除、引用確認。",
               "audioId": "L5-037-q4-c",
@@ -6711,12 +6711,12 @@
             "literal": {
               "ja": "字面では「時刻表記の統一、静の端末です。」、「重複十二件の削除も同じ番号。」と述べられています。",
               "zh": "字面上明确写着“统一时间格式的是静的终端。”、“删除十二处重复也是同一编号。”。",
-              "en": "The scene explicitly states “Date normalization came from Shizu's terminal.” and “The same ID removed twelve duplicates.”."
+              "en": "The scene explicitly states “Time-format normalization came from Shizu's terminal.” and “The same ID removed twelve duplicates.”."
             },
             "intent": {
               "ja": "したがって、最も根拠のある読みは「静：編集担当—時刻統一、重複削除、引用確認。」です。",
               "zh": "因此，证据最充分的判断是「静：编辑负责人——统一时间、去重、引用核查。」。",
-              "en": "The best-supported reading is 「Shizu: editor—date normalization, deduplication, and citation checks.」."
+              "en": "The best-supported reading is 「Shizu: editor—time-format normalization, deduplication, and citation checks.」."
             },
             "evidence": {
               "ja": "7番目の台詞、8番目の台詞、9番目の台詞、17番目の台詞、18番目の台詞を合わせると、成果物を追加しない編集労働が見えず、自己評価と他者評価の両方から消えている。",
@@ -6746,13 +6746,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "5ae1957f06013c2aedbe9008554d9602a92f81d4196fe175cfdda381832b5bc7"
+      "contentHash": "8c8eb4ae8c7c5eda476c3f17b4880179684724364fe65eb3411c910f721ce6d5"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-038",
-      "revision": 3,
+      "revision": 5,
       "level": 5,
       "stage": 38,
       "jlptTarget": "N1-pragmatics",
@@ -6772,7 +6772,7 @@
       "setting": {
         "ja": "コース中央の料理だけ極端に薄味で、三種のソースが別皿で出る。料理人は食後に各人が触れたソース位置を記録する。",
         "zh": "套餐中央一道菜极淡，三种酱汁另放；厨师餐后记录每人碰过的酱汁位置。",
-        "en": "One centerpiece dish is unusually plain with three sauces served separately; afterward the chef records which positions each diner touched."
+        "en": "The dish served midway through the course is unusually mild, with three sauces on separate plates; afterward, the chef records which sauce positions each diner touched."
       },
       "illustration": {
         "enabled": true,
@@ -6830,9 +6830,9 @@
           "text": {
             "ja": "コース中央の白身魚です。ソースは三種、別皿です。",
             "zh": "这是套餐中段的白身鱼，三种酱汁另放。",
-            "en": "The centerpiece is white fish, with three sauces served separately."
+            "en": "This is the mid-course white fish. The three sauces are served separately."
           },
-          "readingJa": "こーすちゅーおーのはくしんぎょです。そーすわさんしゅ、べつさらです。",
+          "readingJa": "こーすちゅーおーのしろみざかなです。そーすわさんしゅ、べつさらです。",
           "ttsTextJa": "コース中央の白身魚です。ソースは三種、別皿です。",
           "audioId": "L5-038-line-001",
           "pauseAfterMs": 500,
@@ -6840,7 +6840,7 @@
             {
               "id": "token-001",
               "text": "コース中央の白身魚です。",
-              "reading": "こーすちゅーおーのはくしんぎょです。",
+              "reading": "こーすちゅーおーのしろみざかなです。",
               "audioId": "L5-038-line-001-token-001"
             },
             {
@@ -7098,12 +7098,12 @@
           "id": "line-011",
           "speaker": "guest2",
           "text": {
-            "ja": "薄味は失敗でなく、基準面だったのか。",
-            "zh": "淡味不是失败，而是基准面。",
-            "en": "The mild dish was a baseline, not a failure."
+            "ja": "薄味は失敗でなく、比較の基準だったのか。",
+            "zh": "清淡不是失误，而是用于比较的基准。",
+            "en": "The mild dish was a comparison baseline, not a failure."
           },
-          "readingJa": "うすあじわしっぱいでなく、きじゅんめんだったのか。",
-          "ttsTextJa": "薄味は失敗でなく、基準面だったのか。",
+          "readingJa": "うすあじわしっぱいでなく、ひかくのきじゅんだったのか。",
+          "ttsTextJa": "薄味は失敗でなく、比較の基準だったのか。",
           "audioId": "L5-038-line-011",
           "pauseAfterMs": 500,
           "tokens": [
@@ -7115,8 +7115,8 @@
             },
             {
               "id": "token-002",
-              "text": "基準面だったのか。",
-              "reading": "きじゅんめんだったのか。",
+              "text": "比較の基準だったのか。",
+              "reading": "ひかくのきじゅんだったのか。",
               "audioId": "L5-038-line-011-token-002"
             }
           ]
@@ -7183,7 +7183,7 @@
             "zh": "我也喜欢辣，只是今天嗓子疼。",
             "en": "I like spice too; my throat just hurts today."
           },
-          "readingJa": "わたしわからいものもすきだけど、きょーわのどがいたいです。",
+          "readingJa": "わたしわからいものもすきだけど、きょうわのどがいたいです。",
           "ttsTextJa": "私はからい物も好きだけど、今日は喉が痛いです。",
           "audioId": "L5-038-line-014",
           "pauseAfterMs": 500,
@@ -7197,7 +7197,7 @@
             {
               "id": "token-002",
               "text": "今日は喉が痛いです。",
-              "reading": "きょーわのどがいたいです。",
+              "reading": "きょうわのどがいたいです。",
               "audioId": "L5-038-line-014-token-002"
             }
           ]
@@ -7291,7 +7291,7 @@
           "prompt": {
             "ja": "中央の料理が薄味だった主な目的は何ですか。",
             "zh": "中间菜味道清淡的主要目的是什么？",
-            "en": "What is the main purpose of the mild centerpiece?"
+            "en": "What is the main purpose of the mild mid-course dish?"
           },
           "options": [
             {
@@ -7354,7 +7354,7 @@
             "literal": {
               "ja": "字面では「コース中央の白身魚です。ソースは三種、別皿です。」、「魚そのものはかなり薄味ですね。」と述べられています。",
               "zh": "字面上明确写着“这是套餐中段的白身鱼，三种酱汁另放。”、“鱼本身味道非常淡。”。",
-              "en": "The scene explicitly states “The centerpiece is white fish, with three sauces served separately.” and “The fish itself is unusually mild.”."
+              "en": "The scene explicitly states “This is the mid-course white fish. The three sauces are served separately.” and “The fish itself is unusually mild.”."
             },
             "intent": {
               "ja": "したがって、最も根拠のある読みは「三種のソース選択を観察できる共通基準にするため。」です。",
@@ -7664,13 +7664,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "d835924e619d48f23e22fd9e7bfb1c0ad93ebca9efff4f1acabbf1da02ab83c2"
+      "contentHash": "28c74495620482731042688806b2ca519aab0cf99b346955f6c72cf1dbc9cbeb"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-039",
-      "revision": 3,
+      "revision": 6,
       "level": 5,
       "stage": 39,
       "jlptTarget": "N1-pragmatics",
@@ -7689,9 +7689,9 @@
         "en": "A Missing Name and a Found Bag"
       },
       "setting": {
-        "ja": "遺失物係は「その名では見つからない」と言うが、棚には同じ鞄が別のローマ字表記で登録されている。同行者三人は姓と名の順を別々に伝えた。",
-        "zh": "失物处说“按这个名字找不到”，架上同一只包却登记成另一种罗马字顺序；三名同行者报姓名顺序各不相同。",
-        "en": "Lost property finds nothing under one name, though the same bag is shelved under another romanization; three companions supplied different name orders."
+        "ja": "遺失物係は「その名では見つからない」と言うが、棚には同じ鞄が別のローマ字表記で登録されている。本人と同行者二人は、姓名の順序・大文字・区切りをそれぞれ違う形で伝えた。",
+        "zh": "失物处说“按这个名字找不到”，架上同一只包却登记成另一种罗马字写法；本人和两名同行者给出的姓名顺序、大小写与分隔方式各不相同。",
+        "en": "Lost property finds nothing under one name, though the same bag is shelved under another Roman-letter form; the owner and two companions supplied different combinations of name order, capitalization, and separators."
       },
       "illustration": {
         "enabled": true,
@@ -7805,7 +7805,7 @@
             "zh": "我向工作人员报的是“Ming Wang”。",
             "en": "I told the attendant 'Ming Wang.'"
           },
-          "readingJa": "わたしわかかりいんに『えむあいえぬじーだぶりゅーえーえぬじー』とつたえました。",
+          "readingJa": "わたしわかかりいんに『みん、わん』とつたえました。",
           "ttsTextJa": "私は係員に『Ming Wang』と伝えました。",
           "audioId": "L5-039-line-003",
           "pauseAfterMs": 500,
@@ -7819,7 +7819,7 @@
             {
               "id": "token-002",
               "text": "『Ming Wang』と伝えました。",
-              "reading": "『えむあいえぬじーだぶりゅーえーえぬじー』とつたえました。",
+              "reading": "『みん、わん』とつたえました。",
               "audioId": "L5-039-line-003-token-002"
             }
           ]
@@ -7963,25 +7963,25 @@
           "id": "line-009",
           "speaker": "clerk",
           "text": {
-            "ja": "『Min O』。聞き取りで分割を誤ったようです。",
-            "zh": "登记为“Min O”，似乎听写时错误分词。",
-            "en": "'Min O.' It appears the spoken name was segmented incorrectly."
+            "ja": "『Wangmin』。聞き取りで区切りを落としたようです。",
+            "zh": "登记为“Wangmin”，似乎听写时漏掉了分词。",
+            "en": "'Wangmin.' It appears the spoken name was stored without a word break."
           },
-          "readingJa": "『ミン・オー』。ききとりでぶんかつをあやまったようです。",
-          "ttsTextJa": "『Min O』。聞き取りで分割を誤ったようです。",
+          "readingJa": "『ワンミン』。ききとりでくぎりをおとしたよーです。",
+          "ttsTextJa": "『Wangmin』。聞き取りで区切りを落としたようです。",
           "audioId": "L5-039-line-009",
           "pauseAfterMs": 500,
           "tokens": [
             {
               "id": "token-001",
-              "text": "『Min O』。",
-              "reading": "『ミン・オー』。",
+              "text": "『Wangmin』。",
+              "reading": "『ワンミン』。",
               "audioId": "L5-039-line-009-token-001"
             },
             {
               "id": "token-002",
-              "text": "聞き取りで分割を誤ったようです。",
-              "reading": "ききとりでぶんかつをあやまったようです。",
+              "text": "聞き取りで区切りを落としたようです。",
+              "reading": "ききとりでくぎりをおとしたよーです。",
               "audioId": "L5-039-line-009-token-002"
             }
           ]
@@ -8129,7 +8129,7 @@
             "zh": "姓名栏可拆成姓与名，并保存原始拼写。",
             "en": "The form can separate family and given names and retain original spelling."
           },
-          "readingJa": "せーめーらんをせー・めーにわけ、はらつずりもほぞんできますね。",
+          "readingJa": "せーめーらんをせー・めーにわけ、げんつづりもほぞんできますね。",
           "ttsTextJa": "姓名欄を姓・名に分け、原綴りも保存できますね。",
           "audioId": "L5-039-line-015",
           "pauseAfterMs": 500,
@@ -8143,7 +8143,7 @@
             {
               "id": "token-002",
               "text": "原綴りも保存できますね。",
-              "reading": "はらつずりもほぞんできますね。",
+              "reading": "げんつづりもほぞんできますね。",
               "audioId": "L5-039-line-015-token-002"
             }
           ]
@@ -8265,13 +8265,13 @@
             {
               "id": "c",
               "text": {
-                "ja": "姓名順・表記・聞き取り分割の差を検索が同一人物へ正規化できなかった。",
-                "zh": "检索无法把姓名顺序、写法与听写分词差异规范为同一人。",
-                "en": "Search failed to normalize name order, spelling, and segmentation as one person."
+                "ja": "検索が姓名順・表記・区切りの違いを同一人物のものとして正規化できなかった。",
+                "zh": "检索无法把姓名顺序、写法与分词差异规范为同一人的姓名。",
+                "en": "Search failed to normalize differences in name order, spelling, and word breaks as forms of the same person's name."
               },
-              "ttsTextJa": "姓名順・表記・聞き取り分割の差を検索が同一人物へ正規化できなかった。",
+              "ttsTextJa": "検索が姓名順・表記・区切りの違いを同一人物のものとして正規化できなかった。",
               "audioId": "L5-039-q1-c",
-              "readingJa": "せいめいじゅん・ひょーき・ききとりぶんかつのさをけんさくがどーいちじんぶつえせーきかできなかった。"
+              "readingJa": "けんさくがせーめーじゅん・ひょーき・くぎりのちがいをどーいつじんぶつのものとしてせーきかできなかった。"
             },
             {
               "id": "d",
@@ -8305,9 +8305,9 @@
               "en": "The scene explicitly states “I lost a black bag. My name is Wang Ming.” and “No entry appears under 'Wang Ming.'”."
             },
             "intent": {
-              "ja": "したがって、最も根拠のある読みは「姓名順・表記・聞き取り分割の差を検索が同一人物へ正規化できなかった。」です。",
-              "zh": "因此，证据最充分的判断是「检索无法把姓名顺序、写法与听写分词差异规范为同一人。」。",
-              "en": "The best-supported reading is 「Search failed to normalize name order, spelling, and segmentation as one person.」."
+              "ja": "したがって、最も根拠のある読みは「検索が姓名順・表記・区切りの違いを同一人物のものとして正規化できなかった。」です。",
+              "zh": "因此，证据最充分的判断是「检索无法把姓名顺序、写法与分词差异规范为同一人的姓名。」。",
+              "en": "The best-supported reading is 「Search failed to normalize differences in name order, spelling, and word breaks as forms of the same person's name.」."
             },
             "evidence": {
               "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞を合わせると、物がないのでなく、名前正規化の不一致で検索対象から外れている。",
@@ -8421,9 +8421,9 @@
           "id": "q3",
           "type": "single",
           "prompt": {
-            "ja": "『Min O』という登録が示す問題は何ですか。",
-            "zh": "“Min O”这一登记显示什么问题？",
-            "en": "What problem does the 'Min O' entry reveal?"
+            "ja": "『Wangmin』という登録が示す問題は何ですか。",
+            "zh": "“Wangmin”这一登记显示什么问题？",
+            "en": "What problem does the 'Wangmin' entry reveal?"
           },
           "options": [
             {
@@ -8451,13 +8451,13 @@
             {
               "id": "c",
               "text": {
-                "ja": "口頭名を誤って区切り、別の綴りとして保存した。",
-                "zh": "口述姓名被错误切分并保存成另一种拼写。",
-                "en": "The spoken name was segmented incorrectly and stored under another spelling."
+                "ja": "口頭名の区切りを落とし、一続きの別表記として保存した。",
+                "zh": "口述姓名漏掉分词，被连写成另一种形式保存。",
+                "en": "The spoken name lost its word break and was stored as one alternate form."
               },
-              "ttsTextJa": "口頭名を誤って区切り、別の綴りとして保存した。",
+              "ttsTextJa": "口頭名の区切りを落とし、一続きの別表記として保存した。",
               "audioId": "L5-039-q3-c",
-              "readingJa": "こーとーめーをあやまってくぎり、べつのつずりとしてほぞんした。"
+              "readingJa": "こーとーめーのくぎりをおとし、ひとつづきのべつひょーきとしてほぞんした。"
             },
             {
               "id": "d",
@@ -8481,14 +8481,14 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "字面では「登録名は何ですか。」、「『Min O』。聞き取りで分割を誤ったようです。」と述べられています。",
-              "zh": "字面上明确写着“登记名是什么？”、“登记为“Min O”，似乎听写时错误分词。”。",
-              "en": "The scene explicitly states “What name is it registered under?” and “'Min O.' It appears the spoken name was segmented incorrectly.”."
+              "ja": "字面では「登録名は何ですか。」、「『Wangmin』。聞き取りで区切りを落としたようです。」と述べられています。",
+              "zh": "字面上明确写着“登记名是什么？”、“登记为“Wangmin”，似乎听写时漏掉了分词。”。",
+              "en": "The scene explicitly states “What name is it registered under?” and “'Wangmin.' It appears the spoken name was stored without a word break.”."
             },
             "intent": {
-              "ja": "したがって、最も根拠のある読みは「口頭名を誤って区切り、別の綴りとして保存した。」です。",
-              "zh": "因此，证据最充分的判断是「口述姓名被错误切分并保存成另一种拼写。」。",
-              "en": "The best-supported reading is 「The spoken name was segmented incorrectly and stored under another spelling.」."
+              "ja": "したがって、最も根拠のある読みは「口頭名の区切りを落とし、一続きの別表記として保存した。」です。",
+              "zh": "因此，证据最充分的判断是「口述姓名漏掉分词，被连写成另一种形式保存。」。",
+              "en": "The best-supported reading is 「The spoken name lost its word break and was stored as one alternate form.」."
             },
             "evidence": {
               "ja": "8番目の台詞、9番目の台詞、10番目の台詞を合わせると、物がないのでなく、名前正規化の不一致で検索対象から外れている。",
@@ -8525,7 +8525,7 @@
               },
               "ttsTextJa": "姓・名・原綴り・別名表記を同一記録に結びつける。",
               "audioId": "L5-039-q4-a",
-              "readingJa": "せー・めー・はらつずり・べつめーひょーきをどーいつきろくにむすびつける。"
+              "readingJa": "せー・めー・げんつづり・べつめーひょーきをどーいつきろくにむすびつける。"
             },
             {
               "id": "b",
@@ -8704,13 +8704,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "7de09391a7ca4c96e9e082c674a68dc0780d237658ecb22835be18c03d08a28f"
+      "contentHash": "ff7b84ee8bbf0d5d121b11855acb1f43310445177afe4ecf312b8ff6569311e6"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-040",
-      "revision": 3,
+      "revision": 4,
       "level": 5,
       "stage": 40,
       "jlptTarget": "N1-pragmatics",
@@ -8729,9 +8729,9 @@
         "en": "Playback of a Lie Does Not Reset Morning"
       },
       "setting": {
-        "ja": "このループは誰かが口頭で嘘をつくと朝へ戻る。三人は沈黙、手話、録音済み音声を使い分け、録音の再生だけでは戻らないと気づく。",
-        "zh": "这个循环在有人口头撒谎时重置；三人改用沉默、手语和预录音，并发现播放旧谎言不会触发。",
-        "en": "A loop resets when someone lies aloud; three people test silence, signing, and recordings, discovering playback does not trigger it."
+        "ja": "このループは誰かが口頭で嘘をつくと朝へ戻る。四人は沈黙、手話、録音済み音声を使い分け、録音の再生だけでは戻らないと気づく。",
+        "zh": "这个循环在有人口头撒谎时重置；四人改用沉默、手语和预录音，并发现播放旧谎言不会触发。",
+        "en": "A loop resets when someone lies aloud; four people test silence, signing, and recordings, discovering playback does not trigger it."
       },
       "illustration": {
         "enabled": true,
@@ -9261,13 +9261,13 @@
             {
               "id": "b",
               "text": {
-                "ja": "遥が同じ虚偽を声なしの手話で示す。",
+                "ja": "遥が声を出さずに、手話で同じ虚偽を示す。",
                 "zh": "遥不出声用手语表达同一假话。",
                 "en": "Haru signs the same falsehood without voice."
               },
-              "ttsTextJa": "はるが同じ虚偽を声なしの手話で示す。",
+              "ttsTextJa": "はるが声を出さずに、手話で同じ虚偽を示す。",
               "audioId": "L5-040-q1-b",
-              "readingJa": "はるがおなじきょぎをこえなしのしゅわでしめす。"
+              "readingJa": "はるがこえをださずに、しゅわでおなじきょぎをしめす。"
             },
             {
               "id": "c",
@@ -9323,9 +9323,9 @@
               "en": "Taken together, the fourth line, the fifth line, the sixth line, the seventh line, the eighth line, the ninth line, the twelfth line, the thirteenth line show that The trigger is the live act and intent of lying, not false content alone."
             },
             "nuance": {
-              "ja": "実験は現在の話者による意図的な口頭虚偽を支持しますが、誤信、冗談、他言語、合成音声など境界条件はまだ未検証です。",
-              "zh": "实验支持“当前说话者有意口头说谎”这一条件，但误信、玩笑、其他语言与合成语音等边界仍未测试。",
-              "en": "The tests support intentional live spoken falsehood, while mistaken belief, jokes, other languages, and synthetic speech remain untested boundaries."
+              "ja": "実験は現在の話者による意図的な口頭虚偽を支持しますが、誤信、冗談、引用、合成音声など境界条件はまだ未検証です。",
+              "zh": "实验支持“当前说话者有意口头说谎”这一条件，但误信、玩笑、引用与合成语音等边界仍未测试。",
+              "en": "The tests support intentional live spoken falsehood, while mistaken belief, jokes, quotation, and synthetic speech remain untested boundaries."
             },
             "alternative": {
               "ja": "「直が『杯は赤い』と意図的に口頭で言う。」は、場面にない因果や確定度を足してしまいます。",
@@ -9416,9 +9416,9 @@
               "en": "Taken together, the eighth line, the ninth line, the tenth line, the twelfth line, the thirteenth line, the fourteenth line show that The trigger is the live act and intent of lying, not false content alone."
             },
             "nuance": {
-              "ja": "実験は現在の話者による意図的な口頭虚偽を支持しますが、誤信、冗談、他言語、合成音声など境界条件はまだ未検証です。",
-              "zh": "实验支持“当前说话者有意口头说谎”这一条件，但误信、玩笑、其他语言与合成语音等边界仍未测试。",
-              "en": "The tests support intentional live spoken falsehood, while mistaken belief, jokes, other languages, and synthetic speech remain untested boundaries."
+              "ja": "実験は現在の話者による意図的な口頭虚偽を支持しますが、誤信、冗談、引用、合成音声など境界条件はまだ未検証です。",
+              "zh": "实验支持“当前说话者有意口头说谎”这一条件，但误信、玩笑、引用与合成语音等边界仍未测试。",
+              "en": "The tests support intentional live spoken falsehood, while mistaken belief, jokes, quotation, and synthetic speech remain untested boundaries."
             },
             "alternative": {
               "ja": "「録音内容は真実に変わった。」は、場面にない因果や確定度を足してしまいます。",
@@ -9509,9 +9509,9 @@
               "en": "Taken together, the third line, the fourth line, the fifth line, the twelfth line, the thirteenth line, the fourteenth line show that The trigger is the live act and intent of lying, not false content alone."
             },
             "nuance": {
-              "ja": "実験は現在の話者による意図的な口頭虚偽を支持しますが、誤信、冗談、他言語、合成音声など境界条件はまだ未検証です。",
-              "zh": "实验支持“当前说话者有意口头说谎”这一条件，但误信、玩笑、其他语言与合成语音等边界仍未测试。",
-              "en": "The tests support intentional live spoken falsehood, while mistaken belief, jokes, other languages, and synthetic speech remain untested boundaries."
+              "ja": "実験は現在の話者による意図的な口頭虚偽を支持しますが、誤信、冗談、引用、合成音声など境界条件はまだ未検証です。",
+              "zh": "实验支持“当前说话者有意口头说谎”这一条件，但误信、玩笑、引用与合成语音等边界仍未测试。",
+              "en": "The tests support intentional live spoken falsehood, while mistaken belief, jokes, quotation, and synthetic speech remain untested boundaries."
             },
             "alternative": {
               "ja": "「青い杯を手に持ったこと。時系列や周辺行為より、この一点だけを決定的根拠とすべきである。」は、場面にない因果や確定度を足してしまいます。",
@@ -9567,7 +9567,7 @@
               "text": {
                 "ja": "意図的な生の口頭虚偽が支持されるが、誤信・冗談・引用・合成音声は未検証である。",
                 "zh": "证据支持现场有意口头说谎会触发，但误信、玩笑、引用与合成语音尚未测试。",
-                "en": "Intentional live spoken falsehood is supported, while mistakes, jokes, quotations, and synthesis remain untested."
+                "en": "Intentional live spoken falsehood is supported, while mistakes, jokes, quotations, and synthetic speech remain untested."
               },
               "ttsTextJa": "意図的な生の口頭虚偽が支持されるが、誤信・冗談・引用・合成音声は未検証である。",
               "audioId": "L5-040-q4-d",
@@ -9601,9 +9601,9 @@
               "en": "Taken together, the tenth line, the fourteenth line, the fifteenth line, the sixteenth line, the seventeenth line show that The trigger is the live act and intent of lying, not false content alone."
             },
             "nuance": {
-              "ja": "実験は現在の話者による意図的な口頭虚偽を支持しますが、誤信、冗談、他言語、合成音声など境界条件はまだ未検証です。",
-              "zh": "实验支持“当前说话者有意口头说谎”这一条件，但误信、玩笑、其他语言与合成语音等边界仍未测试。",
-              "en": "The tests support intentional live spoken falsehood, while mistaken belief, jokes, other languages, and synthetic speech remain untested boundaries."
+              "ja": "実験は現在の話者による意図的な口頭虚偽を支持しますが、誤信、冗談、引用、合成音声など境界条件はまだ未検証です。",
+              "zh": "实验支持“当前说话者有意口头说谎”这一条件，但误信、玩笑、引用与合成语音等边界仍未测试。",
+              "en": "The tests support intentional live spoken falsehood, while mistaken belief, jokes, quotation, and synthetic speech remain untested boundaries."
             },
             "alternative": {
               "ja": "「どんな誤情報も必ずループを起こす。」は、場面にない因果や確定度を足してしまいます。",
@@ -9623,7 +9623,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "3934828a8fb5ac88a8f6735234093df86061b06bdc94f9ab62d352a2e1a7e1b2"
+      "contentHash": "abf58cef53ff96a469289bff42cf3ba0e04b680ffbdf7c17025db6c60e259136"
     }
   ]
 }

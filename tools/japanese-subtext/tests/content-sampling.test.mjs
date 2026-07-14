@@ -5,9 +5,14 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import sharp from "sharp";
 import { loadAllStages, readJson, toolRoot } from "../scripts/content-utils.mjs";
+import {
+  IMAGE2_STAGE_STYLE,
+  LEGACY_STAGE_STYLE,
+} from "../scripts/migrate-image2-content.mjs";
 
 const stages = await loadAllStages();
 const voices = (await readJson(path.join(toolRoot, "content", "voices.json"))).voices;
+const catalog = await readJson(path.join(toolRoot, "content", "catalog.json"));
 const byId = new Map(stages.map((stage) => [stage.id, stage]));
 
 test("first, middle, and final three stages of every level are structurally playable", () => {
@@ -115,8 +120,22 @@ test("every stage has its own hashed 960x720 monochrome four-panel manga", async
   assert.equal(illustrated.length, 250);
   const sources = new Set();
   for (const stage of illustrated) {
-    assert.equal(stage.illustration.style, "monochrome-four-panel", `${stage.id} style`);
-    assert.match(stage.illustration.src, new RegExp(`assets/stages/${stage.id.toLowerCase()}\\.webp$`));
+    assert.ok(
+      [LEGACY_STAGE_STYLE, IMAGE2_STAGE_STYLE].includes(stage.illustration.style),
+      `${stage.id} style`,
+    );
+    if (stage.illustration.style === IMAGE2_STAGE_STYLE) {
+      assert.equal(
+        stage.illustration.src,
+        `assets/stages/v${catalog.contentVersion}/${stage.id.toLowerCase()}.webp`,
+      );
+      assert.equal(stage.illustration.provenance?.provider, "OpenAI Images", `${stage.id} provider`);
+      assert.equal(stage.illustration.provenance?.model, "gpt-image-2", `${stage.id} model`);
+      assert.equal(stage.illustration.provenance?.quality, "high", `${stage.id} quality`);
+      assert.equal(stage.illustration.provenance?.sourceHashKind, "stage-source-text", `${stage.id} source hash kind`);
+    } else {
+      assert.equal(stage.illustration.src, `assets/stages/${stage.id.toLowerCase()}.webp`);
+    }
     const file = path.join(toolRoot, stage.illustration.src);
     assert.ok(existsSync(file), `${stage.id} image exists`);
     assert.equal(createHash("sha256").update(readFileSync(file)).digest("hex"), stage.illustration.sha256, `${stage.id} hash`);
@@ -125,6 +144,10 @@ test("every stage has its own hashed 960x720 monochrome four-panel manga", async
     sources.add(stage.illustration.src);
   }
   assert.equal(sources.size, 250);
+  if (illustrated[0]?.illustration.style === IMAGE2_STAGE_STYLE) {
+    assert.equal(new Set(illustrated.map((stage) => stage.illustration.sha256)).size, 250);
+    assert.equal(new Set(illustrated.map((stage) => stage.illustration.provenance?.dHash)).size, 250);
+  }
 });
 
 test("each level starts shorter and grows toward its later stages", () => {

@@ -406,7 +406,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L2-032",
-      "revision": 3,
+      "revision": 4,
       "level": 2,
       "stage": 32,
       "jlptTarget": "N2",
@@ -771,7 +771,7 @@
               },
               "ttsTextJa": "理人が修正案を昨日送ったこと。",
               "audioId": "L2-032-q2-b",
-              "readingJa": "りじんがしゅうせいあんをきのーおくったこと。"
+              "readingJa": "りひとがしゅうせいあんをきのーおくったこと。"
             },
             {
               "id": "c",
@@ -843,7 +843,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "adab045424263d372754e110e843c786dc84e6bb428f2daaee6937483c3b79a0"
+      "contentHash": "e32db5bacc2427d1b9f34c49f1c7be4cccd63c74029ce4ef997cf5277e51475f"
     },
     {
       "schemaVersion": 1,
@@ -1249,7 +1249,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L2-034",
-      "revision": 3,
+      "revision": 5,
       "level": 2,
       "stage": 34,
       "jlptTarget": "N2",
@@ -1615,7 +1615,7 @@
               },
               "ttsTextJa": "持ち手の傷など、本人しか分かりにくい特徴を伝える。",
               "audioId": "L2-034-q2-a",
-              "readingJa": "もちしゅのきずなど、ほんにんしかわかりにくいとくちょーをつたえる。"
+              "readingJa": "もちてのきずなど、ほんにんしかわかりにくいとくちょーをつたえる。"
             },
             {
               "id": "b",
@@ -1637,7 +1637,7 @@
               },
               "ttsTextJa": "照会番号の札を捨てる。",
               "audioId": "L2-034-q2-c",
-              "readingJa": "しょーかいばんごーのさつをすてる。"
+              "readingJa": "しょーかいばんごーのふだをすてる。"
             },
             {
               "id": "d",
@@ -1698,7 +1698,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "69b8e2a93de2532bb7e43695f12bdf2913a8f2d932c83ee9a94964b5738c9d9f"
+      "contentHash": "e591e600455e7e180fc099206e3d98ca4e018104e5e79ed917a1aad2feee0f52"
     },
     {
       "schemaVersion": 1,
@@ -3394,7 +3394,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L2-039",
-      "revision": 3,
+      "revision": 4,
       "level": 2,
       "stage": 39,
       "jlptTarget": "N2",
@@ -3718,7 +3718,7 @@
               },
               "ttsTextJa": "呪文書を返してもらうため。",
               "audioId": "L2-039-q1-d",
-              "readingJa": "のろいぶんしょをかえしてもらうため。"
+              "readingJa": "じゅもんしょをかえしてもらうため。"
             }
           ],
           "correctOptionIds": [
@@ -3770,13 +3770,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "83d6d845afdde0db75a43c78d190b2d2da50993ad8c798f3c4a80fa572a86912"
+      "contentHash": "003c025bdba5a920d389688ecdc69e0c70828cf06d78bffc323f8e956ff8729b"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L2-040",
-      "revision": 3,
+      "revision": 4,
       "level": 2,
       "stage": 40,
       "jlptTarget": "N2",
@@ -4054,13 +4054,13 @@
             {
               "id": "b",
               "text": {
-                "ja": "すでに退房した別の客本人からの電話。",
+                "ja": "すでにチェックアウトした別の客本人からの電話。",
                 "zh": "已经退房的另一位客人本人打来的电话。",
                 "en": "A call from another guest who had already checked out."
               },
-              "ttsTextJa": "すでに退房した別の客本人からの電話。",
+              "ttsTextJa": "すでにチェックアウトした別の客本人からの電話。",
               "audioId": "L2-040-q1-b",
-              "readingJa": "すでにすさぼーしたべつのきゃくほんにんからのでんわ。"
+              "readingJa": "すでにちぇっくあうとしたべつのきゃくほんにんからのでんわ。"
             },
             {
               "id": "c",
@@ -4223,7 +4223,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "4e828912bc7f6a06c8a9f01bead0f9972c92cd6f11fdb1c2a3f219abe7e6988f"
+      "contentHash": "e22c4490ad61ec4778653feb039dba1a8a8002f7524ab3f3ede750664e2ec1db"
     }
   ]
 }

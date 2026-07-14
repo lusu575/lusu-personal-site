@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "kind": "japanese-subtext-outer-background-image2-prompts",
+  "promptSchemaVersion": "japanese-subtext-image2-background-prompt-v1",
+  "jobCount": 2,
+  "model": "gpt-image-2",
+  "quality": "high",
+  "styleBibleHash": "4b4f7f45ff67197b335aa95b65640e0ef3e83f3b068d31fb948ed7a528227742",
+  "generatorProvenance": {
+    "schemaVersion": 1,
+    "requestedGenerator": "image2",
+    "provider": "OpenAI Images",
+    "model": "gpt-image-2",
+    "operation": "generate",
+    "promptSchemaVersion": "japanese-subtext-image2-background-prompt-v1",
+    "promptPreparation": "deterministic-project-script",
+    "promptPreparationScript": "tools/japanese-subtext/scripts/prepare-image2-prompts.mjs",
+    "styleBible": "tools/japanese-subtext/image2/style-bible.md",
+    "assetRole": "outer application background"
+  },
+  "jobs": [
+    {
+      "backgroundId": "desktop",
+      "out": "japanese-subtext-background-desktop.png",
+      "size": "2048x1152",
+      "promptHash": "96e607be54a9f00f5862661b9bd56c71f935ad6beebb528158b6f2a3702bf17d",
+      "styleBibleHash": "4b4f7f45ff67197b335aa95b65640e0ef3e83f3b068d31fb948ed7a528227742"
+    },
+    {
+      "backgroundId": "mobile",
+      "out": "japanese-subtext-background-mobile.png",
+      "size": "1024x1536",
+      "promptHash": "ed3b2eea05b77d43e54c92f6a762b7f8ed89c24eef8fafe5b0b1ae990572777a",
+      "styleBibleHash": "4b4f7f45ff67197b335aa95b65640e0ef3e83f3b068d31fb948ed7a528227742"
+    }
+  ]
+}

@@ -593,7 +593,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L3-022",
-      "revision": 3,
+      "revision": 4,
       "level": 3,
       "stage": 22,
       "jlptTarget": "N1",
@@ -919,7 +919,7 @@
               },
               "ttsTextJa": "未払い債務や修繕費を含む財政負担。",
               "audioId": "L3-022-q1-b",
-              "readingJa": "みばらいさいむやしゅうぜんひをふくむざいせーふたん。"
+              "readingJa": "みはらいさいむやしゅうぜんひをふくむざいせーふたん。"
             },
             {
               "id": "c",
@@ -1086,13 +1086,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "95530d14899cfb4d71d62c48753d83ac6f533935764b72317bfdf547a13a21b2"
+      "contentHash": "f846093eed05d982a42e2c025bba3c345ce59ff98313d09f17bb29204c35413f"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L3-023",
-      "revision": 3,
+      "revision": 4,
       "level": 3,
       "stage": 23,
       "jlptTarget": "N1",
@@ -1307,7 +1307,7 @@
             "zh": "一方只说“若对方先做”，另一方只说“若条件成熟”。",
             "en": "One said only “if the other side goes first,” and the other “once conditions are met.”"
           },
-          "readingJa": "いっぽうはあいてがさきなら、たほうはじょうけんがととのえばとのべました。",
+          "readingJa": "いっぽうはあいてがさきなら、たほうはじょうけんがととのえばとだけのべました。",
           "ttsTextJa": "一方は『相手が先なら』、他方は『条件が整えば』とだけ述べました。",
           "audioId": "L3-023-line-007",
           "pauseAfterMs": 500,
@@ -1321,7 +1321,7 @@
             {
               "id": "token-002",
               "text": "他方は『条件が整えば』とだけ述べました。",
-              "reading": "たほうはじょうけんがととのえばとのべました。",
+              "reading": "たほうはじょうけんがととのえばとだけのべました。",
               "audioId": "L3-023-line-007-token-002"
             }
           ]
@@ -1575,7 +1575,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "4261aca6fa0dff326cdee77b10b23ed6b69ac918b26520135bd88b1ccd0cc00a"
+      "contentHash": "82c86666825f41664d605d6958ffb23eaafd674c3115e44ad299b45866b0a371"
     },
     {
       "schemaVersion": 1,
@@ -2167,7 +2167,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L3-025",
-      "revision": 3,
+      "revision": 4,
       "level": 3,
       "stage": 25,
       "jlptTarget": "N1",
@@ -2489,7 +2489,7 @@
               },
               "ttsTextJa": "札と床の誘導線を使う試験中の自動回収機。",
               "audioId": "L3-025-q1-c",
-              "readingJa": "さつとゆかのゆーどーせんをつかうしけんちゅうのじどーかいしゅーき。"
+              "readingJa": "ふだとゆかのゆーどーせんをつかうしけんちゅうのじどーかいしゅーき。"
             },
             {
               "id": "d",
@@ -2643,7 +2643,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "980760d37d0219016e0e73e5cdf052a587b4cfe20fd420f427f132da38c4158b"
+      "contentHash": "70a8ac6fe883041a89ebdbe0527838130618fac703529db6fd70005cbbc2597e"
     },
     {
       "schemaVersion": 1,
@@ -3147,7 +3147,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L3-027",
-      "revision": 3,
+      "revision": 4,
       "level": 3,
       "stage": 27,
       "jlptTarget": "N1",
@@ -3638,7 +3638,7 @@
               },
               "ttsTextJa": "外出を裏付けるように見える証拠を先に提示し、疑いを建物外へ向ける。",
               "audioId": "L3-027-q3-a",
-              "readingJa": "がいしゅつをうらずけるよーにみえるしょーこをさきにてーじし、うたがいをたてものがいえむける。"
+              "readingJa": "がいしゅつをうらづけるよーにみえるしょーこをさきにてーじし、うたがいをたてものがいえむける。"
             },
             {
               "id": "b",
@@ -3724,7 +3724,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "7fef2d465fa772351a22f8d3bd004a02e62767d80ac3bd1cb10f8678a46388a5"
+      "contentHash": "9f8db9137b5e8d36aa23d922d6dbda154f33c5bd1e1aed3d2401648f36cd9bd6"
     },
     {
       "schemaVersion": 1,
@@ -4247,7 +4247,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L3-029",
-      "revision": 3,
+      "revision": 5,
       "level": 3,
       "stage": 29,
       "jlptTarget": "N1",
@@ -4588,7 +4588,7 @@
               },
               "ttsTextJa": "目の前の守人を、直ちに倒すべき敵と確定できない。",
               "audioId": "L3-029-q1-b",
-              "readingJa": "めのまえのもりじんを、ただちにたおすべきてきとかくてーできない。"
+              "readingJa": "めのまえのもりびとを、ただちにたおすべきてきとかくてーできない。"
             },
             {
               "id": "c",
@@ -4671,7 +4671,7 @@
               },
               "ttsTextJa": "対話で前提を検証し、敵の定義を見直して問題の原因へ近づくこと。",
               "audioId": "L3-029-q2-a",
-              "readingJa": "たいわでぜんてーをけんしょーし、てきのてーぎをみなおしてもんだいのげんいんえちかずくこと。"
+              "readingJa": "たいわでぜんてーをけんしょーし、てきのてーぎをみなおしてもんだいのげんいんえちかづくこと。"
             },
             {
               "id": "b",
@@ -4682,7 +4682,7 @@
               },
               "ttsTextJa": "守人の話を途中で遮って攻撃すること。",
               "audioId": "L3-029-q2-b",
-              "readingJa": "もりとのはなしをとちゅーでさえぎってこーげきすること。"
+              "readingJa": "もりびとのはなしをとちゅーでさえぎってこーげきすること。"
             },
             {
               "id": "c",
@@ -4755,7 +4755,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "ecf397f25c642c919649f623f1f66485d75448291d6e14a4c607d7b6537376cc"
+      "contentHash": "b89f53631969caa62cea610be575c5476949bd439135e8aa15d1ada0c3a9b53b"
     },
     {
       "schemaVersion": 1,

@@ -384,6 +384,60 @@ create index if not exists article_view_events_visitor_idx
 insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-07-12-japanese-subtext-v1-0-3',
+  '2026-07-12-japanese-subtext-v1-0-3',
+  'site-updates',
+  '["Japanese","AivisSpeech","gpt-image-2","mobile"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-07-11T18:00:00.000Z',
+  '2026-07-11T18:00:00.000Z',
+  '2026-07-11T18:00:00.000Z'
+)
+on conflict(article_id) do nothing;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-07-11-japanese-subtext-v1-0-1',
+  '2026-07-11-japanese-subtext-v1-0-1',
+  'site-updates',
+  '["Japanese","listening","accessibility","release"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-07-10T16:30:00.000Z',
+  '2026-07-10T16:30:00.000Z',
+  '2026-07-10T16:30:00.000Z'
+)
+on conflict(article_id) do nothing;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-07-11-japanese-subtext-launch',
+  '2026-07-11-japanese-subtext-launch',
+  'site-updates',
+  '["Japanese","listening","learning","launch"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-07-10T16:00:00.000Z',
+  '2026-07-10T16:00:00.000Z',
+  '2026-07-10T16:00:00.000Z'
+)
+on conflict(article_id) do nothing;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
 ) values
   (
     'seed-xp-site-notes',
@@ -446,6 +500,210 @@ on conflict(article_id) do update set
   is_pinned = excluded.is_pinned,
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-07-12-japanese-subtext-v1-0-3-zh', 'seed-update-2026-07-12-japanese-subtext-v1-0-3', 'zh', '日语潜台词训练工具更新至 1.0.3', '“日语的言外之意”1.0.3 使用 AivisSpeech 按审校假名重新生成全库 AI 语音，并以 gpt-image-2 重制 250 张精制黑白四格题目配图和简洁彩色站外背景，同时重整桌面与手机交互。', '# 日语潜台词训练工具更新至 1.0.3
+
+“日语的言外之意”这次同时更新语音、配图、外部背景和训练交互。题库显示仍保留日语汉字，生成输入与展示内容继续分离。
+
+## AivisSpeech 全库 AI 语音
+
+- 所有语音改用 AivisSpeech 离线 AI 模型重新制作。
+- 合成前先使用已审校的纯假名读音，避免日语汉字被错误切分或读错。
+- 浏览器只播放预生成文件，不在日常使用时加载本地模型。
+
+## gpt-image-2 黑白四格配图与彩色背景
+
+- 250 个关卡分别依据当关场景、人物关系、台词和题问生成精制黑白四格漫画，使用丰富灰阶、网点和完整明暗，不是简陋线稿。
+- 训练器外部背景改为 gpt-image-2 生成的简洁彩色桌面与手机画面。
+- 配图使用真实图片文件，页面不再用 CSS 绘制场景。
+
+## UI 与手机交互重整
+
+- 首次挑战、听力锁题、漏答提醒、结果与解析后的去向更明确。
+- 播放高亮只在真实播放时出现，配图加载失败可重试。
+- 手机端按播放器、场景、题目的学习顺序重新排布，并控制图片高度和触控尺寸。', '2026-07-11T18:00:00.000Z', '2026-07-11T18:00:00.000Z'),
+  ('seed-update-2026-07-12-japanese-subtext-v1-0-3-en', 'seed-update-2026-07-12-japanese-subtext-v1-0-3', 'en', 'Behind the Japanese 1.0.3 Update', 'Behind the Japanese 1.0.3 regenerates the full AI voice library with AivisSpeech from reviewed kana, replaces all 250 stage illustrations with polished monochrome four-panel manga, adds quiet full-color outer backdrops, and refines desktop and mobile interaction.', '# Behind the Japanese 1.0.3 Update
+
+This release updates speech, stage artwork, the outer backdrop, and training interaction together. The course still displays normal Japanese writing while keeping synthesis input separate.
+
+## Full AivisSpeech AI voice rebuild
+
+- Every voice item is regenerated with the offline AivisSpeech AI model.
+- Synthesis uses reviewed kana-only readings first, reducing incorrect kanji segmentation or pronunciation.
+- The browser plays pre-generated files and does not load the local model during normal use.
+
+## Monochrome gpt-image-2 manga and color backdrops
+
+- Each of the 250 stages receives a polished monochrome four-panel manga based on its own setting, cast relationships, dialogue, and questions, with rich grayscale, screentones, and finished shading rather than sparse line art.
+- The area outside the trainer uses quiet full-color desktop and mobile backgrounds generated with gpt-image-2.
+- These scenes are image assets rather than CSS-drawn illustrations.
+
+## Desktop and mobile interaction
+
+- First challenge, listening locks, unanswered-question feedback, results, and post-analysis routes are clearer.
+- Playback highlighting appears only during real playback, and failed illustrations can be retried.
+- Mobile content follows player, scene, and question order with bounded image height and practical touch targets.', '2026-07-11T18:00:00.000Z', '2026-07-11T18:00:00.000Z'),
+  ('seed-update-2026-07-12-japanese-subtext-v1-0-3-ja', 'seed-update-2026-07-12-japanese-subtext-v1-0-3', 'ja', '日本語の裏側 1.0.3 アップデート', '「日本語の裏側」1.0.3 では、確認済みのかな読みから AivisSpeech で全 AI 音声を再生成し、250 ステージの精細なモノクロ四コマと外側の控えめなカラー背景を gpt-image-2 で作り直して、PC・モバイルの操作も再整理しました。', '# 日本語の裏側 1.0.3 アップデート
+
+今回は音声、ステージ画像、ツール外側の背景、練習操作をまとめて更新しました。画面には通常の漢字表記を残し、合成用の入力とは分離しています。
+
+## AivisSpeech による全 AI 音声の再生成
+
+- すべての音声をオフラインの AivisSpeech AI モデルで作り直しました。
+- 合成前に確認済みのかな読みだけを使い、漢字の区切りや読みの誤りを抑えます。
+- 通常利用時は生成済みファイルだけを再生し、ブラウザーでローカルモデルを読み込みません。
+
+## gpt-image-2 のモノクロ四コマとカラー背景
+
+- 250 ステージそれぞれの場面、人物関係、台詞、設問に基づき、豊かなグレースケール、スクリーントーン、仕上げた陰影を持つモノクロ四コマへ更新しました。簡素な線画ではありません。
+- ツール外側には gpt-image-2 で生成した控えめなカラーの PC・モバイル背景を使います。
+- 場面は CSS 描画ではなく画像ファイルとして表示します。
+
+## PC・モバイル操作の再整理
+
+- 初回チャレンジ、聴解時の問題ロック、未回答通知、結果と解説後の移動先を明確にしました。
+- 再生中だけ台詞を強調し、画像の読み込み失敗時には再試行できます。
+- モバイルはプレーヤー、場面、問題の順に並べ、画像の高さとタップ領域を調整しました。', '2026-07-11T18:00:00.000Z', '2026-07-11T18:00:00.000Z')
+on conflict(article_id, lang) do nothing;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-07-11-japanese-subtext-v1-0-1-zh', 'seed-update-2026-07-11-japanese-subtext-v1-0-1', 'zh', '日语潜台词训练工具 1.0.1 更新', '1.0.1 重整首次练习模式、结果弹窗和三语界面，并将日语语音改为先锁定假名读音再生成，避免汉字读音被误判。', '# 日语潜台词训练工具 1.0.1 更新
+
+本次维护集中清理初次使用流程、界面文案和日语读音输入，为后续训练保留更稳定的交互基础。
+
+## 练习模式与界面
+
+- 主入口统一为“开始挑战”，工具标题随中文、English、日本語界面切换。
+- 首次进入可选听力、日语或双语模式，之后可在设置中修改；进入关卡不再自动播放。
+- 播放器精简为播放、进度与倍速，句子和词块仍可直接点击听音。
+
+## 答题反馈
+
+- 作答后使用奖牌结果弹窗，提供查看解析、重新挑战或进入下一关。
+- 选项不再塞入会撑高布局的“正确答案”文字，解析也不显示内部行 ID。
+- 播放高亮不会强制页面跳动。
+
+## 假名优先的语音输入
+
+- 句子、词块和日语选项在生成语音前保存可审核的假名读音。
+- 页面仍显示汉字表记，合成模型只接收明确读音，降低“今日”等汉字被读错的风险。
+- 维护文档同步记录版本、读音、语音、缓存和模型关闭要求。', '2026-07-10T16:30:00.000Z', '2026-07-10T16:30:00.000Z'),
+  ('seed-update-2026-07-11-japanese-subtext-v1-0-1-en', 'seed-update-2026-07-11-japanese-subtext-v1-0-1', 'en', 'Japanese Subtext Trainer 1.0.1 Update', 'Version 1.0.1 refines first-use modes, result dialogs, and the trilingual interface, while moving Japanese speech generation to reviewed kana readings before synthesis to reduce kanji pronunciation errors.', '# Japanese Subtext Trainer 1.0.1 Update
+
+This maintenance release focuses on first-use flow, interface copy, and Japanese reading input, establishing a steadier base for later training updates.
+
+## Practice modes and interface
+
+- The main action is Start Challenge, and the tool title follows the Chinese, English, or Japanese interface language.
+- The first stage offers Listening, Japanese, or Bilingual mode. The choice can be changed later, and entering a stage no longer starts playback automatically.
+- The player is reduced to play, progress, and speed, while sentences and phrase tokens remain directly clickable.
+
+## Answer feedback
+
+- Submitting answers opens a medal result dialog with routes to analysis, retry, or the next stage.
+- Options no longer receive layout-stretching Correct Answer text, and analysis does not expose internal line identifiers.
+- Playback highlighting no longer forces the page to jump.
+
+## Kana-first speech input
+
+- Sentences, phrase tokens, and Japanese options store reviewable kana readings before speech generation.
+- The page still displays kanji, while synthesis receives explicit readings to reduce errors for words such as kyou.
+- The maintenance guide records version, reading, speech, cache, and model-shutdown requirements together.', '2026-07-10T16:30:00.000Z', '2026-07-10T16:30:00.000Z'),
+  ('seed-update-2026-07-11-japanese-subtext-v1-0-1-ja', 'seed-update-2026-07-11-japanese-subtext-v1-0-1', 'ja', '日本語の裏側 1.0.1 アップデート', '1.0.1 では初回モード、結果ダイアログ、三言語 UI を整え、漢字の誤読を減らすため、確認済みのかな読みを先に固定してから音声を生成する方式に変更しました。', '# 日本語の裏側 1.0.1 アップデート
+
+初回利用の流れ、UI 文言、日本語の読み入力を中心に整理し、今後の練習更新の基盤を安定させました。
+
+## 練習モードと UI
+
+- メイン操作を「チャレンジ開始」に統一し、ツール名も中国語、English、日本語の表示言語に合わせました。
+- 初回は聴解、日本語、二言語モードから選び、後から設定で変更できます。ステージ入場時の自動再生はありません。
+- プレーヤーは再生、位置、速度に簡素化し、文と語句は直接押して聞けます。
+
+## 解答フィードバック
+
+- 回答後はメダル結果ダイアログを表示し、解説、再挑戦、次のステージへ移動できます。
+- 選択肢にレイアウトを広げる正解文字を追加せず、解説に内部行 ID も表示しません。
+- 再生中の強調表示で画面を強制移動しません。
+
+## かな読みを優先した音声入力
+
+- 文、語句、日本語選択肢は、音声生成前に確認可能なかな読みを保存します。
+- 画面は漢字表記を保ち、合成側には明示的な読みを渡して、「今日」などの誤読リスクを減らします。
+- 保守ガイドにバージョン、読み、音声、キャッシュ、モデル停止の要件をまとめました。', '2026-07-10T16:30:00.000Z', '2026-07-10T16:30:00.000Z')
+on conflict(article_id, lang) do nothing;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-07-11-japanese-subtext-launch-zh', 'seed-update-2026-07-11-japanese-subtext-launch', 'zh', '日语潜台词训练工具正式上线', '全新“日语的言外之意”正式上线：通过 250 个数据驱动关卡练习语气、停顿、人际关系和上下文里的日语潜台词，并支持本地与云端进度。', '# 日语潜台词训练工具正式上线
+
+“日语的言外之意”是一个独立的日语语用与听力训练工具，重点不是逐字翻译，而是理解说话人没有直接说出的意思。
+
+## 五级课程
+
+- 课程包含 5 个难度、250 个关卡，从 N3 日常表达逐步进入 N2 和 N1 复杂语用。
+- 每关都有场景、台词、选项、答案、判断线索和多种可能解释。
+- 前期关卡较短，后续逐渐增加多人关系、信息差和开放性。
+
+## 听力与文字
+
+- 支持听力、日语和双语场景显示，选项语言可独立切换。
+- 句子、词块和日语选项关联预生成语音，网页本身不需要运行语音模型。
+- 解析会区分字面意思、可能意图、语气与语法线索，不把潜台词写成唯一绝对答案。
+
+## 存档与三语界面
+
+- 未登录时使用浏览器本地存档，登录后可将进度同步到独立云端记录。
+- 中文、English、日本語界面共用同一套题库和进度。
+- 题库、音频、存档与网站入口都使用稳定 ID 维护。', '2026-07-10T16:00:00.000Z', '2026-07-10T16:00:00.000Z'),
+  ('seed-update-2026-07-11-japanese-subtext-launch-en', 'seed-update-2026-07-11-japanese-subtext-launch', 'en', 'Behind the Japanese Launch', 'Behind the Japanese launches with 250 data-driven stages for practicing implied meaning through tone, pauses, relationships, and context, with local progress and optional cloud synchronization.', '# Behind the Japanese Launch
+
+Behind the Japanese is a standalone Japanese pragmatics and listening trainer. Its focus is not word-for-word translation, but understanding what a speaker leaves unsaid.
+
+## Five course levels
+
+- The course contains five difficulty levels and 250 stages, moving from N3 daily expression through N2 and complex N1 pragmatics.
+- Every stage includes a setting, dialogue, choices, answers, evidence, and more than one plausible reading.
+- Early stages are shorter, while later stages add multi-speaker relationships, information gaps, and open interpretation.
+
+## Listening and text
+
+- Scene display supports Listening, Japanese, and Bilingual modes, while option language is controlled separately.
+- Sentences, phrase tokens, and Japanese options connect to pre-generated audio, so the web page does not run a speech model.
+- Analysis separates literal meaning, likely intent, tone, grammar, and evidence without presenting subtext as one absolute answer.
+
+## Saves and three interface languages
+
+- Signed-out progress stays in the browser, while signed-in users can synchronize to dedicated cloud records.
+- Chinese, English, and Japanese interfaces share the same course and progress.
+- Stable identifiers connect the course, audio, saves, and public site entry.', '2026-07-10T16:00:00.000Z', '2026-07-10T16:00:00.000Z'),
+  ('seed-update-2026-07-11-japanese-subtext-launch-ja', 'seed-update-2026-07-11-japanese-subtext-launch', 'ja', '「日本語の裏側」正式公開', '「日本語の裏側」を正式公開しました。声色、間、人間関係、文脈から含意を読み取る 250 のデータ式ステージと、ローカル進捗・任意のクラウド同期を備えています。', '# 「日本語の裏側」正式公開
+
+「日本語の裏側」は、日本語の語用と聴解を練習する独立ツールです。逐語訳ではなく、話し手が直接言わなかった意図を文脈から読み取ります。
+
+## 5 段階のコース
+
+- N3 の日常表現から N2、N1 の複雑な語用へ進む 5 難易度、250 ステージを収録しました。
+- 各ステージに場面、台詞、選択肢、正解、手がかり、複数の可能な解釈があります。
+- 序盤は短く、後半は複数人物の関係、情報差、開かれた解釈を増やします。
+
+## 聴解とテキスト
+
+- 場面表示は聴解、日本語、二言語モードに対応し、選択肢の言語は別に切り替えられます。
+- 文、語句、日本語選択肢に生成済み音声を結び、Web ページ上で音声モデルを実行しません。
+- 解説は字面、可能な意図、語気、文法、根拠を分け、含意を唯一の絶対解として扱いません。
+
+## セーブと三言語 UI
+
+- 未ログイン時はブラウザーに保存し、ログイン後は専用のクラウド記録と同期できます。
+- 中国語、English、日本語の UI で同じコースと進捗を共有します。
+- 安定した ID でコース、音声、セーブ、公開サイト入口を関連付けています。', '2026-07-10T16:00:00.000Z', '2026-07-10T16:00:00.000Z')
+on conflict(article_id, lang) do nothing;
 
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
@@ -651,15 +909,7 @@ insert into articles (
   '2026-07-10T17:30:00.000Z',
   '2026-07-10T17:30:00.000Z'
 )
-on conflict(article_id) do update set
-  slug = excluded.slug,
-  category = excluded.category,
-  tags = excluded.tags,
-  cover_image = excluded.cover_image,
-  status = excluded.status,
-  is_pinned = excluded.is_pinned,
-  updated_at = excluded.updated_at,
-  published_at = excluded.published_at;
+on conflict(article_id) do nothing;
 
 insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
@@ -983,7 +1233,12 @@ Behind the Japanese keeps its 250-stage data-driven course while rebuilding spee
 ## カレンダー式記録と四コマ場面
 
 - 学習記録を月間カレンダーに変更し、現在・最長の連続日数、合計日数、最近の活動を表示します。ログイン後は専用の日別活動テーブルで同期します。
-- 各ステージに、設問の状況に合うオリジナル白黒四コマ漫画を用意し、人物、線、スクリーントーン、配置を統一して各画面幅に対応します。', '2026-07-10T17:30:00.000Z', '2026-07-10T17:30:00.000Z'),
+- 各ステージに、設問の状況に合うオリジナル白黒四コマ漫画を用意し、人物、線、スクリーントーン、配置を統一して各画面幅に対応します。', '2026-07-10T17:30:00.000Z', '2026-07-10T17:30:00.000Z')
+on conflict(article_id, lang) do nothing;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
   ('seed-update-2026-07-10-premium-interaction-mobile-os-zh', 'seed-update-2026-07-10-premium-interaction-mobile-os', 'zh', 'GPT-5.6 高级交互与移动 OS 重设计', '桌面任务栏选中态随模块切换即时同步；手机 Dock 按六个高频入口重新适配为更短的栏体与更清晰的图标尺寸。', '# GPT-5.6 高级交互与移动 OS 重设计
 
 这次汇总更新继续保留桌面端 Windows XP、像素艺术与 Y2K 识别度，并把手机端完善为更紧凑、更易读的原创虚拟手机 OS。

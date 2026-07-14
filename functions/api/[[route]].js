@@ -3,12 +3,15 @@ const SESSION_DAYS = 30;
 const MAX_SAVE_BYTES = 1024 * 1024;
 const MAX_JAPANESE_SUBTEXT_PROGRESS_BYTES = 1024 * 1024;
 const JAPANESE_SUBTEXT_SCHEMA_VERSION = 1;
-const JAPANESE_SUBTEXT_CONTENT_VERSION = "1.0.2";
+const JAPANESE_SUBTEXT_CONTENT_VERSION = "1.0.3";
 const JAPANESE_SUBTEXT_EMPTY_TIMESTAMP = "1970-01-01T00:00:00.000Z";
 const JAPANESE_SUBTEXT_STAGE_LIMIT = 250;
 const JAPANESE_SUBTEXT_COUNTER_LIMIT = 1000000;
 const JAPANESE_SUBTEXT_ACTIVITY_DAY_LIMIT = 400;
 const JAPANESE_SUBTEXT_ACTIVITY_ROW_LIMIT = 5000;
+const JAPANESE_SUBTEXT_CLOCK_SKEW_MINUTES = 5;
+const JAPANESE_SUBTEXT_CLOCK_SKEW_MS = JAPANESE_SUBTEXT_CLOCK_SKEW_MINUTES * 60 * 1000;
+const JAPANESE_SUBTEXT_FUTURE_LOCAL_DATE_DAYS = 1;
 const JAPANESE_SUBTEXT_LANGUAGES = new Set(["zh", "en", "ja"]);
 const JAPANESE_SUBTEXT_DISPLAY_MODES = new Set(["listening", "japanese", "bilingual"]);
 const JAPANESE_SUBTEXT_PLAYBACK_RATES = new Set([0.75, 1, 1.15]);
@@ -433,7 +436,7 @@ async function putJapaneseSubtextProgress(request, env) {
   const now = nowIso();
   const profile = input.profile;
 
-  await env.DB.prepare(`
+  const profileStatement = env.DB.prepare(`
     insert into japanese_subtext_profiles (
       user_id, schema_version, content_version, revision, current_level, current_stage,
       settings_json, progress_updated_at, settings_updated_at, created_at, updated_at
@@ -456,13 +459,41 @@ async function putJapaneseSubtextProgress(request, env) {
         else japanese_subtext_profiles.current_stage
       end,
       settings_json = case
+        when julianday(japanese_subtext_profiles.settings_updated_at) is null
+          or julianday(japanese_subtext_profiles.settings_updated_at) > julianday(excluded.updated_at, '+${JAPANESE_SUBTEXT_CLOCK_SKEW_MINUTES} minutes')
+          then excluded.settings_json
         when excluded.settings_updated_at >= japanese_subtext_profiles.settings_updated_at
           then excluded.settings_json
         else japanese_subtext_profiles.settings_json
       end,
-      progress_updated_at = max(japanese_subtext_profiles.progress_updated_at, excluded.progress_updated_at),
-      settings_updated_at = max(japanese_subtext_profiles.settings_updated_at, excluded.settings_updated_at),
+      progress_updated_at = case
+        when julianday(japanese_subtext_profiles.progress_updated_at) is null
+          or julianday(japanese_subtext_profiles.progress_updated_at) > julianday(excluded.updated_at, '+${JAPANESE_SUBTEXT_CLOCK_SKEW_MINUTES} minutes')
+          then excluded.progress_updated_at
+        else max(japanese_subtext_profiles.progress_updated_at, excluded.progress_updated_at)
+      end,
+      settings_updated_at = case
+        when julianday(japanese_subtext_profiles.settings_updated_at) is null
+          or julianday(japanese_subtext_profiles.settings_updated_at) > julianday(excluded.updated_at, '+${JAPANESE_SUBTEXT_CLOCK_SKEW_MINUTES} minutes')
+          then excluded.settings_updated_at
+        else max(japanese_subtext_profiles.settings_updated_at, excluded.settings_updated_at)
+      end,
       updated_at = excluded.updated_at
+    where japanese_subtext_profiles.schema_version <> excluded.schema_version
+      or japanese_subtext_profiles.content_version <> excluded.content_version
+      or excluded.revision > japanese_subtext_profiles.revision
+      or excluded.current_level * 100 + excluded.current_stage
+        > japanese_subtext_profiles.current_level * 100 + japanese_subtext_profiles.current_stage
+      or julianday(japanese_subtext_profiles.progress_updated_at) is null
+      or julianday(japanese_subtext_profiles.progress_updated_at) > julianday(excluded.updated_at, '+${JAPANESE_SUBTEXT_CLOCK_SKEW_MINUTES} minutes')
+      or julianday(japanese_subtext_profiles.settings_updated_at) is null
+      or julianday(japanese_subtext_profiles.settings_updated_at) > julianday(excluded.updated_at, '+${JAPANESE_SUBTEXT_CLOCK_SKEW_MINUTES} minutes')
+      or excluded.progress_updated_at > japanese_subtext_profiles.progress_updated_at
+      or excluded.settings_updated_at > japanese_subtext_profiles.settings_updated_at
+      or (
+        excluded.settings_updated_at = japanese_subtext_profiles.settings_updated_at
+        and excluded.settings_json <> japanese_subtext_profiles.settings_json
+      )
   `).bind(
     session.user.id,
     JAPANESE_SUBTEXT_SCHEMA_VERSION,
@@ -475,14 +506,54 @@ async function putJapaneseSubtextProgress(request, env) {
     input.settings.updatedAt,
     now,
     now
-  ).run();
+  );
 
-  const stageStatements = input.stages.map((stage) => env.DB.prepare(`
+  // The request itself is capped at 1 MiB, so each normalized JSON binding is
+  // safely below D1's 2 MiB value limit. Each bulk statement uses only three
+  // bindings and stays far below D1's 100-bind / 100-KiB statement limits.
+  const stageRowsJson = JSON.stringify(input.stages.map((stage) => ({
+    stageId: stage.stageId,
+    level: stage.level,
+    stage: stage.stage,
+    cleared: stage.cleared ? 1 : 0,
+    bestScore: stage.bestScore,
+    bestMedal: JAPANESE_SUBTEXT_MEDAL_RANK[stage.medal],
+    attempts: stage.attempts,
+    firstAccuracy: stage.firstAccuracy,
+    firstClearMode: stage.firstClearMode,
+    usedTranslation: stage.usedTranslation ? 1 : 0,
+    usedKana: stage.usedKana ? 1 : 0,
+    usedListeningMode: stage.usedListeningMode ? 1 : 0,
+    replayCount: stage.replayCount,
+    hintCount: stage.hintCount,
+    updatedAt: stage.updatedAt
+  })));
+  const stageStatement = env.DB.prepare(`
     insert into japanese_subtext_stage_progress (
       user_id, stage_id, level, stage, cleared, best_score, best_medal, attempts,
       first_accuracy, first_clear_mode, used_translation, used_kana,
       used_listening_mode, replay_count, hint_count, progress_updated_at, updated_at
-    ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    )
+    select
+      ?,
+      json_extract(item.value, '$.stageId'),
+      json_extract(item.value, '$.level'),
+      json_extract(item.value, '$.stage'),
+      json_extract(item.value, '$.cleared'),
+      json_extract(item.value, '$.bestScore'),
+      json_extract(item.value, '$.bestMedal'),
+      json_extract(item.value, '$.attempts'),
+      json_extract(item.value, '$.firstAccuracy'),
+      json_extract(item.value, '$.firstClearMode'),
+      json_extract(item.value, '$.usedTranslation'),
+      json_extract(item.value, '$.usedKana'),
+      json_extract(item.value, '$.usedListeningMode'),
+      json_extract(item.value, '$.replayCount'),
+      json_extract(item.value, '$.hintCount'),
+      json_extract(item.value, '$.updatedAt'),
+      ?
+    from json_each(?) as item
+    where 1
     on conflict(user_id, stage_id)
     do update set
       cleared = max(japanese_subtext_stage_progress.cleared, excluded.cleared),
@@ -500,74 +571,118 @@ async function putJapaneseSubtextProgress(request, env) {
       used_listening_mode = max(japanese_subtext_stage_progress.used_listening_mode, excluded.used_listening_mode),
       replay_count = max(japanese_subtext_stage_progress.replay_count, excluded.replay_count),
       hint_count = max(japanese_subtext_stage_progress.hint_count, excluded.hint_count),
-      progress_updated_at = max(japanese_subtext_stage_progress.progress_updated_at, excluded.progress_updated_at),
+      progress_updated_at = case
+        when julianday(japanese_subtext_stage_progress.progress_updated_at) is null
+          or julianday(japanese_subtext_stage_progress.progress_updated_at) > julianday(excluded.updated_at, '+${JAPANESE_SUBTEXT_CLOCK_SKEW_MINUTES} minutes')
+          then excluded.progress_updated_at
+        else max(japanese_subtext_stage_progress.progress_updated_at, excluded.progress_updated_at)
+      end,
       updated_at = excluded.updated_at
+    where julianday(japanese_subtext_stage_progress.progress_updated_at) is null
+      or julianday(japanese_subtext_stage_progress.progress_updated_at) > julianday(excluded.updated_at, '+${JAPANESE_SUBTEXT_CLOCK_SKEW_MINUTES} minutes')
+      or excluded.cleared > japanese_subtext_stage_progress.cleared
+      or excluded.best_score > japanese_subtext_stage_progress.best_score
+      or excluded.best_medal > japanese_subtext_stage_progress.best_medal
+      or excluded.attempts > japanese_subtext_stage_progress.attempts
+      or excluded.first_accuracy > japanese_subtext_stage_progress.first_accuracy
+      or (
+        japanese_subtext_stage_progress.first_clear_mode = ''
+        and excluded.first_clear_mode <> ''
+      )
+      or excluded.used_translation > japanese_subtext_stage_progress.used_translation
+      or excluded.used_kana > japanese_subtext_stage_progress.used_kana
+      or excluded.used_listening_mode > japanese_subtext_stage_progress.used_listening_mode
+      or excluded.replay_count > japanese_subtext_stage_progress.replay_count
+      or excluded.hint_count > japanese_subtext_stage_progress.hint_count
+      or excluded.progress_updated_at > japanese_subtext_stage_progress.progress_updated_at
   `).bind(
     session.user.id,
-    stage.stageId,
-    stage.level,
-    stage.stage,
-    stage.cleared ? 1 : 0,
-    stage.bestScore,
-    JAPANESE_SUBTEXT_MEDAL_RANK[stage.medal],
-    stage.attempts,
-    stage.firstAccuracy,
-    stage.firstClearMode,
-    stage.usedTranslation ? 1 : 0,
-    stage.usedKana ? 1 : 0,
-    stage.usedListeningMode ? 1 : 0,
-    stage.replayCount,
-    stage.hintCount,
-    stage.updatedAt,
-    now
-  ));
+    now,
+    stageRowsJson
+  );
 
-  for (let index = 0; index < stageStatements.length; index += 50) {
-    await env.DB.batch(stageStatements.slice(index, index + 50));
-  }
-
-  const activityStatements = input.activities.map((activity) => env.DB.prepare(`
+  const activityRowsJson = JSON.stringify(input.activities.map((activity) => ({
+    localDate: activity.localDate,
+    stageId: activity.stageId,
+    cleared: activity.cleared ? 1 : 0,
+    bestMedal: JAPANESE_SUBTEXT_MEDAL_RANK[activity.medal],
+    updatedAt: activity.updatedAt
+  })));
+  const activityStatement = env.DB.prepare(`
     insert into japanese_subtext_daily_activity (
       user_id, local_date, stage_id, cleared, best_medal, activity_updated_at, updated_at
-    ) values (?, ?, ?, ?, ?, ?, ?)
+    )
+    select
+      ?,
+      json_extract(item.value, '$.localDate'),
+      json_extract(item.value, '$.stageId'),
+      json_extract(item.value, '$.cleared'),
+      json_extract(item.value, '$.bestMedal'),
+      json_extract(item.value, '$.updatedAt'),
+      ?
+    from json_each(?) as item
+    where 1
     on conflict(user_id, local_date, stage_id)
     do update set
       cleared = max(japanese_subtext_daily_activity.cleared, excluded.cleared),
       best_medal = max(japanese_subtext_daily_activity.best_medal, excluded.best_medal),
-      activity_updated_at = max(japanese_subtext_daily_activity.activity_updated_at, excluded.activity_updated_at),
+      activity_updated_at = case
+        when julianday(japanese_subtext_daily_activity.activity_updated_at) is null
+          or julianday(japanese_subtext_daily_activity.activity_updated_at) > julianday(excluded.updated_at, '+${JAPANESE_SUBTEXT_CLOCK_SKEW_MINUTES} minutes')
+          then excluded.activity_updated_at
+        else max(japanese_subtext_daily_activity.activity_updated_at, excluded.activity_updated_at)
+      end,
       updated_at = excluded.updated_at
+    where julianday(japanese_subtext_daily_activity.activity_updated_at) is null
+      or julianday(japanese_subtext_daily_activity.activity_updated_at) > julianday(excluded.updated_at, '+${JAPANESE_SUBTEXT_CLOCK_SKEW_MINUTES} minutes')
+      or excluded.cleared > japanese_subtext_daily_activity.cleared
+      or excluded.best_medal > japanese_subtext_daily_activity.best_medal
+      or excluded.activity_updated_at > japanese_subtext_daily_activity.activity_updated_at
   `).bind(
     session.user.id,
-    activity.localDate,
-    activity.stageId,
-    activity.cleared ? 1 : 0,
-    JAPANESE_SUBTEXT_MEDAL_RANK[activity.medal],
-    activity.updatedAt,
-    now
-  ));
-
-  for (let index = 0; index < activityStatements.length; index += 50) {
-    await env.DB.batch(activityStatements.slice(index, index + 50));
-  }
+    now,
+    activityRowsJson
+  );
 
   // Keep the cloud union bounded without trusting one device to know the
-  // complete multi-device history. Cleanup runs against the merged server
-  // state, retaining the newest 400 local dates and at most 5,000 rows.
+  // complete multi-device history. The five statements share one D1 batch,
+  // so validation failures cannot leave a partially written snapshot.
+  const maximumLocalDate = japaneseSubtextMaximumLocalDate();
   await env.DB.batch([
+    profileStatement,
+    stageStatement,
+    activityStatement,
     env.DB.prepare(`
       delete from japanese_subtext_daily_activity
       where user_id = ?
-        and local_date not in (
-          select local_date from (
-            select local_date
-            from japanese_subtext_daily_activity
-            where user_id = ?
-            group by local_date
-            order by local_date desc
-            limit ?
+        and (
+          local_date > ?
+          or not exists (
+            select 1
+            from japanese_subtext_stage_progress stage_progress
+            where stage_progress.user_id = japanese_subtext_daily_activity.user_id
+              and stage_progress.stage_id = japanese_subtext_daily_activity.stage_id
+              and japanese_subtext_daily_activity.cleared <= stage_progress.cleared
+              and japanese_subtext_daily_activity.best_medal <= stage_progress.best_medal
+          )
+          or local_date not in (
+            select local_date from (
+              select local_date
+              from japanese_subtext_daily_activity
+              where user_id = ? and local_date <= ?
+              group by local_date
+              order by local_date desc
+              limit ?
+            )
           )
         )
-    `).bind(session.user.id, session.user.id, JAPANESE_SUBTEXT_ACTIVITY_DAY_LIMIT),
+    `).bind(
+      session.user.id,
+      maximumLocalDate,
+      session.user.id,
+      maximumLocalDate,
+      JAPANESE_SUBTEXT_ACTIVITY_DAY_LIMIT
+    ),
     env.DB.prepare(`
       delete from japanese_subtext_daily_activity
       where user_id = ?
@@ -612,11 +727,12 @@ async function readJapaneseSubtextProgress(env, userId) {
     order by level asc, stage asc
   `).bind(userId).all()).results || [];
   const stages = rows.map(japaneseSubtextStageFromRow).filter(Boolean);
+  const maximumLocalDate = japaneseSubtextMaximumLocalDate();
   const activityRows = (await env.DB.prepare(`
     with recent_days as (
       select local_date
       from japanese_subtext_daily_activity
-      where user_id = ?
+      where user_id = ? and local_date <= ?
       group by local_date
       order by local_date desc
       limit ?
@@ -630,11 +746,20 @@ async function readJapaneseSubtextProgress(env, userId) {
     limit ?
   `).bind(
     userId,
+    maximumLocalDate,
     JAPANESE_SUBTEXT_ACTIVITY_DAY_LIMIT,
     userId,
     JAPANESE_SUBTEXT_ACTIVITY_ROW_LIMIT
   ).all()).results || [];
-  const activityDays = japaneseSubtextActivityDaysFromRows(activityRows);
+  const stagesById = new Map(stages.map((stage) => [stage.stageId, stage]));
+  const consistentActivityRows = activityRows.filter((row) => {
+    const aggregate = stagesById.get(row.stage_id);
+    const medalRank = boundedStoredInteger(row.best_medal, 0, 3, 0);
+    return aggregate
+      && (Number(row.cleared || 0) !== 1 || aggregate.cleared)
+      && medalRank <= JAPANESE_SUBTEXT_MEDAL_RANK[aggregate.medal];
+  });
+  const activityDays = japaneseSubtextActivityDaysFromRows(consistentActivityRows);
   const unlockedStageIds = japaneseSubtextUnlockedStageIds(stages);
   const requestedCurrentId = japaneseSubtextStageId(profileRow.current_level, profileRow.current_stage);
   const currentId = unlockedStageIds.includes(requestedCurrentId)
@@ -648,7 +773,7 @@ async function readJapaneseSubtextProgress(env, userId) {
   const updatedAt = [
     normalizedStoredIso(profileRow.updated_at, JAPANESE_SUBTEXT_EMPTY_TIMESTAMP),
     ...rows.map((row) => normalizedStoredIso(row.updated_at, JAPANESE_SUBTEXT_EMPTY_TIMESTAMP)),
-    ...activityRows.map((row) => normalizedStoredIso(row.updated_at, JAPANESE_SUBTEXT_EMPTY_TIMESTAMP))
+    ...consistentActivityRows.map((row) => normalizedStoredIso(row.updated_at, JAPANESE_SUBTEXT_EMPTY_TIMESTAMP))
   ].sort().at(-1);
 
   return {
@@ -727,6 +852,17 @@ function normalizeJapaneseSubtextProgress(value) {
     return normalizeJapaneseSubtextStage(stageId, parsed, stageValue);
   }).sort(japaneseSubtextStageSort);
   const activities = normalizeJapaneseSubtextActivityDays(value.activityDays);
+  const stagesById = new Map(stages.map((stage) => [stage.stageId, stage]));
+  for (const activity of activities) {
+    const aggregate = stagesById.get(activity.stageId);
+    if (
+      !aggregate
+      || (activity.cleared && !aggregate.cleared)
+      || JAPANESE_SUBTEXT_MEDAL_RANK[activity.medal] > JAPANESE_SUBTEXT_MEDAL_RANK[aggregate.medal]
+    ) {
+      throw new HttpError(`学习打卡 ${activity.localDate} ${activity.stageId} 与关卡进度不一致。`, 400);
+    }
+  }
 
   const derivedUnlocked = japaneseSubtextUnlockedStageIds(stages);
   const suppliedUnlocked = [...unlockedStageIds].sort(japaneseSubtextStageIdSort);
@@ -797,7 +933,19 @@ function isJapaneseSubtextLocalDate(value) {
   if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
   const [year, month, day] = value.split("-").map(Number);
   const date = new Date(Date.UTC(year, month - 1, day));
-  return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
+  return date.getUTCFullYear() === year
+    && date.getUTCMonth() === month - 1
+    && date.getUTCDate() === day
+    && value <= japaneseSubtextMaximumLocalDate();
+}
+
+function japaneseSubtextMaximumLocalDate() {
+  const now = new Date();
+  return new Date(Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate() + JAPANESE_SUBTEXT_FUTURE_LOCAL_DATE_DAYS
+  )).toISOString().slice(0, 10);
 }
 
 function normalizeJapaneseSubtextSettings(value) {
@@ -927,7 +1075,7 @@ function japaneseSubtextIso(value, label) {
     throw new HttpError(`${label} 时间不正确。`, 400);
   }
   const time = Date.parse(value);
-  if (!Number.isFinite(time)) {
+  if (!Number.isFinite(time) || time > Date.now() + JAPANESE_SUBTEXT_CLOCK_SKEW_MS) {
     throw new HttpError(`${label} 时间不正确。`, 400);
   }
   return new Date(time).toISOString();
@@ -1035,7 +1183,9 @@ function japaneseSubtextActivityDaysFromRows(rows) {
 
 function storedJapaneseSubtextSettings(raw, fallbackUpdatedAt) {
   try {
-    return normalizeJapaneseSubtextSettings(JSON.parse(raw));
+    const stored = JSON.parse(raw);
+    stored.updatedAt = normalizedStoredIso(stored.updatedAt, JAPANESE_SUBTEXT_EMPTY_TIMESTAMP);
+    return normalizeJapaneseSubtextSettings(stored);
   } catch {
     return defaultJapaneseSubtextSettings(normalizedStoredIso(fallbackUpdatedAt, JAPANESE_SUBTEXT_EMPTY_TIMESTAMP));
   }
@@ -1075,7 +1225,9 @@ function defaultJapaneseSubtextProgress(updatedAt) {
 
 function normalizedStoredIso(value, fallback) {
   const time = Date.parse(String(value || ""));
-  return Number.isFinite(time) ? new Date(time).toISOString() : fallback;
+  return Number.isFinite(time) && time <= Date.now() + JAPANESE_SUBTEXT_CLOCK_SKEW_MS
+    ? new Date(time).toISOString()
+    : fallback;
 }
 
 function boundedStoredInteger(value, min, max, fallback) {
@@ -4074,6 +4226,24 @@ function articleTranslationsStatements(env, articleId, translations, now) {
   ));
 }
 
+function immutableArticleTranslationsStatements(env, articleId, translations, now) {
+  return Object.entries(translations).map(([lang, item]) => env.DB.prepare(`
+    insert into article_translations (
+      translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+    ) values (?, ?, ?, ?, ?, ?, ?, ?)
+    on conflict(article_id, lang) do nothing
+  `).bind(
+    `${articleId}-${lang}`,
+    articleId,
+    lang,
+    item.title,
+    item.summary,
+    item.content_markdown,
+    now,
+    now
+  ));
+}
+
 function articleMarkdownReplaceStatements(env, articleId, lang, replacements, now) {
   return replacements.map(([needle, replacement]) => env.DB.prepare(`
     update article_translations
@@ -4199,6 +4369,63 @@ function articleSeedStatements(env) {
         article_id, slug, category, tags, cover_image, status, is_pinned,
         view_count, created_at, updated_at, published_at
       ) values (
+        'seed-update-2026-07-12-japanese-subtext-v1-0-3',
+        '2026-07-12-japanese-subtext-v1-0-3',
+        'site-updates',
+        '["Japanese","AivisSpeech","gpt-image-2","mobile"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-07-11T18:00:00.000Z',
+        '2026-07-11T18:00:00.000Z',
+        '2026-07-11T18:00:00.000Z'
+      )
+      on conflict(article_id) do nothing
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-11-japanese-subtext-v1-0-1',
+        '2026-07-11-japanese-subtext-v1-0-1',
+        'site-updates',
+        '["Japanese","listening","accessibility","release"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-07-10T16:30:00.000Z',
+        '2026-07-10T16:30:00.000Z',
+        '2026-07-10T16:30:00.000Z'
+      )
+      on conflict(article_id) do nothing
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-11-japanese-subtext-launch',
+        '2026-07-11-japanese-subtext-launch',
+        'site-updates',
+        '["Japanese","listening","learning","launch"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-07-10T16:00:00.000Z',
+        '2026-07-10T16:00:00.000Z',
+        '2026-07-10T16:00:00.000Z'
+      )
+      on conflict(article_id) do nothing
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
         'seed-update-2026-07-11-japanese-subtext-trainer',
         '2026-07-11-japanese-subtext-trainer',
         'site-updates',
@@ -4211,14 +4438,7 @@ function articleSeedStatements(env) {
         '2026-07-10T17:30:00.000Z',
         '2026-07-10T17:30:00.000Z'
       )
-      on conflict(article_id) do update set
-        slug = excluded.slug,
-        category = excluded.category,
-        tags = excluded.tags,
-        status = excluded.status,
-        is_pinned = excluded.is_pinned,
-        updated_at = excluded.updated_at,
-        published_at = excluded.published_at
+      on conflict(article_id) do nothing
     `),
 
     env.DB.prepare(`
@@ -6846,7 +7066,24 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
-    ...articleTranslationsStatements(env, "seed-update-2026-07-11-japanese-subtext-trainer", {
+    ...immutableArticleTranslationsStatements(env, "seed-update-2026-07-12-japanese-subtext-v1-0-3", {
+      zh: {
+        title: "日语潜台词训练工具更新至 1.0.3",
+        summary: "“日语的言外之意”1.0.3 使用 AivisSpeech 按审校假名重新生成全库 AI 语音，并以 gpt-image-2 重制 250 张精制黑白四格题目配图和简洁彩色站外背景，同时重整桌面与手机交互。",
+        content_markdown: "# 日语潜台词训练工具更新至 1.0.3\n\n“日语的言外之意”这次同时更新语音、配图、外部背景和训练交互。题库显示仍保留日语汉字，生成输入与展示内容继续分离。\n\n## AivisSpeech 全库 AI 语音\n\n- 所有语音改用 AivisSpeech 离线 AI 模型重新制作。\n- 合成前先使用已审校的纯假名读音，避免日语汉字被错误切分或读错。\n- 浏览器只播放预生成文件，不在日常使用时加载本地模型。\n\n## gpt-image-2 黑白四格配图与彩色背景\n\n- 250 个关卡分别依据当关场景、人物关系、台词和题问生成精制黑白四格漫画，使用丰富灰阶、网点和完整明暗，不是简陋线稿。\n- 训练器外部背景改为 gpt-image-2 生成的简洁彩色桌面与手机画面。\n- 配图使用真实图片文件，页面不再用 CSS 绘制场景。\n\n## UI 与手机交互重整\n\n- 首次挑战、听力锁题、漏答提醒、结果与解析后的去向更明确。\n- 播放高亮只在真实播放时出现，配图加载失败可重试。\n- 手机端按播放器、场景、题目的学习顺序重新排布，并控制图片高度和触控尺寸。"
+      },
+      en: {
+        title: "Behind the Japanese 1.0.3 Update",
+        summary: "Behind the Japanese 1.0.3 regenerates the full AI voice library with AivisSpeech from reviewed kana, replaces all 250 stage illustrations with polished monochrome four-panel manga, adds quiet full-color outer backdrops, and refines desktop and mobile interaction.",
+        content_markdown: "# Behind the Japanese 1.0.3 Update\n\nThis release updates speech, stage artwork, the outer backdrop, and training interaction together. The course still displays normal Japanese writing while keeping synthesis input separate.\n\n## Full AivisSpeech AI voice rebuild\n\n- Every voice item is regenerated with the offline AivisSpeech AI model.\n- Synthesis uses reviewed kana-only readings first, reducing incorrect kanji segmentation or pronunciation.\n- The browser plays pre-generated files and does not load the local model during normal use.\n\n## Monochrome gpt-image-2 manga and color backdrops\n\n- Each of the 250 stages receives a polished monochrome four-panel manga based on its own setting, cast relationships, dialogue, and questions, with rich grayscale, screentones, and finished shading rather than sparse line art.\n- The area outside the trainer uses quiet full-color desktop and mobile backgrounds generated with gpt-image-2.\n- These scenes are image assets rather than CSS-drawn illustrations.\n\n## Desktop and mobile interaction\n\n- First challenge, listening locks, unanswered-question feedback, results, and post-analysis routes are clearer.\n- Playback highlighting appears only during real playback, and failed illustrations can be retried.\n- Mobile content follows player, scene, and question order with bounded image height and practical touch targets."
+      },
+      ja: {
+        title: "日本語の裏側 1.0.3 アップデート",
+        summary: "「日本語の裏側」1.0.3 では、確認済みのかな読みから AivisSpeech で全 AI 音声を再生成し、250 ステージの精細なモノクロ四コマと外側の控えめなカラー背景を gpt-image-2 で作り直して、PC・モバイルの操作も再整理しました。",
+        content_markdown: "# 日本語の裏側 1.0.3 アップデート\n\n今回は音声、ステージ画像、ツール外側の背景、練習操作をまとめて更新しました。画面には通常の漢字表記を残し、合成用の入力とは分離しています。\n\n## AivisSpeech による全 AI 音声の再生成\n\n- すべての音声をオフラインの AivisSpeech AI モデルで作り直しました。\n- 合成前に確認済みのかな読みだけを使い、漢字の区切りや読みの誤りを抑えます。\n- 通常利用時は生成済みファイルだけを再生し、ブラウザーでローカルモデルを読み込みません。\n\n## gpt-image-2 のモノクロ四コマとカラー背景\n\n- 250 ステージそれぞれの場面、人物関係、台詞、設問に基づき、豊かなグレースケール、スクリーントーン、仕上げた陰影を持つモノクロ四コマへ更新しました。簡素な線画ではありません。\n- ツール外側には gpt-image-2 で生成した控えめなカラーの PC・モバイル背景を使います。\n- 場面は CSS 描画ではなく画像ファイルとして表示します。\n\n## PC・モバイル操作の再整理\n\n- 初回チャレンジ、聴解時の問題ロック、未回答通知、結果と解説後の移動先を明確にしました。\n- 再生中だけ台詞を強調し、画像の読み込み失敗時には再試行できます。\n- モバイルはプレーヤー、場面、問題の順に並べ、画像の高さとタップ領域を調整しました。"
+      }
+    }, "2026-07-11T18:00:00.000Z"),
+    ...immutableArticleTranslationsStatements(env, "seed-update-2026-07-11-japanese-subtext-trainer", {
       zh: {
         title: "日语潜台词训练工具更新至 1.0.2",
         summary: "“日语的言外之意”更新至 1.0.2：重置全库语音读音链路，修复句尾异常“いい”和“今日”漏读；重做 PC 布局、打卡记录、解析续关与四格漫画配图。",
@@ -6863,6 +7100,40 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         content_markdown: "# 日本語の裏側 1.0.2 アップデート\n\n250 ステージのデータ式問題はそのままに、音声生成、PC レイアウト、学習記録を作り直し、聴解練習をより確実でコンパクトにしました。\n\n## 読みを固定した全音声の再生成\n\n- 文、選択肢、語句は、オフラインモデルへ渡す前に確認可能なかな読みを保存します。画面には従来どおり漢字を含む日本語を表示します。\n- Misaki の音高メタデータを音素から分離し、特殊な子音を正規化して未知音素を拒否します。語尾の余分な「いい」を除き、「きょう」の ky が欠けて「おう」になる問題も防ぎます。\n- 音声パイプライン v4 で静的音声を全件再生成します。練習中のブラウザーは TTS を読み込まず、処理後のローカルモデルは停止したままで自動起動しません。\n\n## 空白を減らした PC 画面\n\n- ゲーム欄のシェル構成を取り入れ、左上にサイトへ戻る操作、右上にツール名、中央にセーブ同期を配置しました。\n- 重複していた画面高の制約を外し、場面、問題、解説を再配置して大きな空白を減らしました。\n- 解説から次のステージへ直接進めます。リソース欄の操作は「開始」とし、見出し、ボタン、カード文字の誤選択も防ぎます。\n\n## カレンダー式記録と四コマ場面\n\n- 学習記録を月間カレンダーに変更し、現在・最長の連続日数、合計日数、最近の活動を表示します。ログイン後は専用の日別活動テーブルで同期します。\n- 各ステージに、設問の状況に合うオリジナル白黒四コマ漫画を用意し、人物、線、スクリーントーン、配置を統一して各画面幅に対応します。"
       }
     }, "2026-07-10T17:30:00.000Z"),
+    ...immutableArticleTranslationsStatements(env, "seed-update-2026-07-11-japanese-subtext-v1-0-1", {
+      zh: {
+        title: "日语潜台词训练工具 1.0.1 更新",
+        summary: "1.0.1 重整首次练习模式、结果弹窗和三语界面，并将日语语音改为先锁定假名读音再生成，避免汉字读音被误判。",
+        content_markdown: "# 日语潜台词训练工具 1.0.1 更新\n\n本次维护集中清理初次使用流程、界面文案和日语读音输入，为后续训练保留更稳定的交互基础。\n\n## 练习模式与界面\n\n- 主入口统一为“开始挑战”，工具标题随中文、English、日本語界面切换。\n- 首次进入可选听力、日语或双语模式，之后可在设置中修改；进入关卡不再自动播放。\n- 播放器精简为播放、进度与倍速，句子和词块仍可直接点击听音。\n\n## 答题反馈\n\n- 作答后使用奖牌结果弹窗，提供查看解析、重新挑战或进入下一关。\n- 选项不再塞入会撑高布局的“正确答案”文字，解析也不显示内部行 ID。\n- 播放高亮不会强制页面跳动。\n\n## 假名优先的语音输入\n\n- 句子、词块和日语选项在生成语音前保存可审核的假名读音。\n- 页面仍显示汉字表记，合成模型只接收明确读音，降低“今日”等汉字被读错的风险。\n- 维护文档同步记录版本、读音、语音、缓存和模型关闭要求。"
+      },
+      en: {
+        title: "Japanese Subtext Trainer 1.0.1 Update",
+        summary: "Version 1.0.1 refines first-use modes, result dialogs, and the trilingual interface, while moving Japanese speech generation to reviewed kana readings before synthesis to reduce kanji pronunciation errors.",
+        content_markdown: "# Japanese Subtext Trainer 1.0.1 Update\n\nThis maintenance release focuses on first-use flow, interface copy, and Japanese reading input, establishing a steadier base for later training updates.\n\n## Practice modes and interface\n\n- The main action is Start Challenge, and the tool title follows the Chinese, English, or Japanese interface language.\n- The first stage offers Listening, Japanese, or Bilingual mode. The choice can be changed later, and entering a stage no longer starts playback automatically.\n- The player is reduced to play, progress, and speed, while sentences and phrase tokens remain directly clickable.\n\n## Answer feedback\n\n- Submitting answers opens a medal result dialog with routes to analysis, retry, or the next stage.\n- Options no longer receive layout-stretching Correct Answer text, and analysis does not expose internal line identifiers.\n- Playback highlighting no longer forces the page to jump.\n\n## Kana-first speech input\n\n- Sentences, phrase tokens, and Japanese options store reviewable kana readings before speech generation.\n- The page still displays kanji, while synthesis receives explicit readings to reduce errors for words such as kyou.\n- The maintenance guide records version, reading, speech, cache, and model-shutdown requirements together."
+      },
+      ja: {
+        title: "日本語の裏側 1.0.1 アップデート",
+        summary: "1.0.1 では初回モード、結果ダイアログ、三言語 UI を整え、漢字の誤読を減らすため、確認済みのかな読みを先に固定してから音声を生成する方式に変更しました。",
+        content_markdown: "# 日本語の裏側 1.0.1 アップデート\n\n初回利用の流れ、UI 文言、日本語の読み入力を中心に整理し、今後の練習更新の基盤を安定させました。\n\n## 練習モードと UI\n\n- メイン操作を「チャレンジ開始」に統一し、ツール名も中国語、English、日本語の表示言語に合わせました。\n- 初回は聴解、日本語、二言語モードから選び、後から設定で変更できます。ステージ入場時の自動再生はありません。\n- プレーヤーは再生、位置、速度に簡素化し、文と語句は直接押して聞けます。\n\n## 解答フィードバック\n\n- 回答後はメダル結果ダイアログを表示し、解説、再挑戦、次のステージへ移動できます。\n- 選択肢にレイアウトを広げる正解文字を追加せず、解説に内部行 ID も表示しません。\n- 再生中の強調表示で画面を強制移動しません。\n\n## かな読みを優先した音声入力\n\n- 文、語句、日本語選択肢は、音声生成前に確認可能なかな読みを保存します。\n- 画面は漢字表記を保ち、合成側には明示的な読みを渡して、「今日」などの誤読リスクを減らします。\n- 保守ガイドにバージョン、読み、音声、キャッシュ、モデル停止の要件をまとめました。"
+      }
+    }, "2026-07-10T16:30:00.000Z"),
+    ...immutableArticleTranslationsStatements(env, "seed-update-2026-07-11-japanese-subtext-launch", {
+      zh: {
+        title: "日语潜台词训练工具正式上线",
+        summary: "全新“日语的言外之意”正式上线：通过 250 个数据驱动关卡练习语气、停顿、人际关系和上下文里的日语潜台词，并支持本地与云端进度。",
+        content_markdown: "# 日语潜台词训练工具正式上线\n\n“日语的言外之意”是一个独立的日语语用与听力训练工具，重点不是逐字翻译，而是理解说话人没有直接说出的意思。\n\n## 五级课程\n\n- 课程包含 5 个难度、250 个关卡，从 N3 日常表达逐步进入 N2 和 N1 复杂语用。\n- 每关都有场景、台词、选项、答案、判断线索和多种可能解释。\n- 前期关卡较短，后续逐渐增加多人关系、信息差和开放性。\n\n## 听力与文字\n\n- 支持听力、日语和双语场景显示，选项语言可独立切换。\n- 句子、词块和日语选项关联预生成语音，网页本身不需要运行语音模型。\n- 解析会区分字面意思、可能意图、语气与语法线索，不把潜台词写成唯一绝对答案。\n\n## 存档与三语界面\n\n- 未登录时使用浏览器本地存档，登录后可将进度同步到独立云端记录。\n- 中文、English、日本語界面共用同一套题库和进度。\n- 题库、音频、存档与网站入口都使用稳定 ID 维护。"
+      },
+      en: {
+        title: "Behind the Japanese Launch",
+        summary: "Behind the Japanese launches with 250 data-driven stages for practicing implied meaning through tone, pauses, relationships, and context, with local progress and optional cloud synchronization.",
+        content_markdown: "# Behind the Japanese Launch\n\nBehind the Japanese is a standalone Japanese pragmatics and listening trainer. Its focus is not word-for-word translation, but understanding what a speaker leaves unsaid.\n\n## Five course levels\n\n- The course contains five difficulty levels and 250 stages, moving from N3 daily expression through N2 and complex N1 pragmatics.\n- Every stage includes a setting, dialogue, choices, answers, evidence, and more than one plausible reading.\n- Early stages are shorter, while later stages add multi-speaker relationships, information gaps, and open interpretation.\n\n## Listening and text\n\n- Scene display supports Listening, Japanese, and Bilingual modes, while option language is controlled separately.\n- Sentences, phrase tokens, and Japanese options connect to pre-generated audio, so the web page does not run a speech model.\n- Analysis separates literal meaning, likely intent, tone, grammar, and evidence without presenting subtext as one absolute answer.\n\n## Saves and three interface languages\n\n- Signed-out progress stays in the browser, while signed-in users can synchronize to dedicated cloud records.\n- Chinese, English, and Japanese interfaces share the same course and progress.\n- Stable identifiers connect the course, audio, saves, and public site entry."
+      },
+      ja: {
+        title: "「日本語の裏側」正式公開",
+        summary: "「日本語の裏側」を正式公開しました。声色、間、人間関係、文脈から含意を読み取る 250 のデータ式ステージと、ローカル進捗・任意のクラウド同期を備えています。",
+        content_markdown: "# 「日本語の裏側」正式公開\n\n「日本語の裏側」は、日本語の語用と聴解を練習する独立ツールです。逐語訳ではなく、話し手が直接言わなかった意図を文脈から読み取ります。\n\n## 5 段階のコース\n\n- N3 の日常表現から N2、N1 の複雑な語用へ進む 5 難易度、250 ステージを収録しました。\n- 各ステージに場面、台詞、選択肢、正解、手がかり、複数の可能な解釈があります。\n- 序盤は短く、後半は複数人物の関係、情報差、開かれた解釈を増やします。\n\n## 聴解とテキスト\n\n- 場面表示は聴解、日本語、二言語モードに対応し、選択肢の言語は別に切り替えられます。\n- 文、語句、日本語選択肢に生成済み音声を結び、Web ページ上で音声モデルを実行しません。\n- 解説は字面、可能な意図、語気、文法、根拠を分け、含意を唯一の絶対解として扱いません。\n\n## セーブと三言語 UI\n\n- 未ログイン時はブラウザーに保存し、ログイン後は専用のクラウド記録と同期できます。\n- 中国語、English、日本語の UI で同じコースと進捗を共有します。\n- 安定した ID でコース、音声、セーブ、公開サイト入口を関連付けています。"
+      }
+    }, "2026-07-10T16:00:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-07-10-premium-interaction-mobile-os", {
       zh: {
         title: "GPT-5.6 高级交互与移动 OS 重设计",

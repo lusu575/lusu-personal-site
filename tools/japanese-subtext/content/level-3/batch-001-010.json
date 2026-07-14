@@ -433,7 +433,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L3-002",
-      "revision": 3,
+      "revision": 5,
       "level": 3,
       "stage": 2,
       "jlptTarget": "N1",
@@ -653,7 +653,7 @@
               },
               "ttsTextJa": "別解の価値に気づかせ、説明を促す。",
               "audioId": "L3-002-q1-b",
-              "readingJa": "べつかいのかちにきずかせ、せつめーをうながす。"
+              "readingJa": "べっかいのかちにきづかせ、せつめーをうながす。"
             },
             {
               "id": "c",
@@ -815,13 +815,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "2d72d86062a1e13001c386a85516ad30b90f53e954122a97d2810a686d54736e"
+      "contentHash": "1e68d30eb9fd2164c17bfd571f5474caf71a686bed402226f321e562c7d35c8b"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L3-003",
-      "revision": 3,
+      "revision": 4,
       "level": 3,
       "stage": 3,
       "jlptTarget": "N1",
@@ -1077,7 +1077,7 @@
               },
               "ttsTextJa": "店主が俊を今日初めて来店した客だと勘違いしている。",
               "audioId": "L3-003-q1-b",
-              "readingJa": "てんしゅがしゅんをきょーはじめてらいてんしたきゃくだとかんちがいしている。"
+              "readingJa": "てんしゅがしゅんをきょうはじめてらいてんしたきゃくだとかんちがいしている。"
             },
             {
               "id": "c",
@@ -1240,13 +1240,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "440e54fb239e53f7761d8eba3c18e09aa89bb8490f76a5bf270023fb7690679e"
+      "contentHash": "3ff30d8ee7fa4a5b9b7a8e8ef682906d0370585aa69b231e272319ae44b85664"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L3-004",
-      "revision": 3,
+      "revision": 4,
       "level": 3,
       "stage": 4,
       "jlptTarget": "N1",
@@ -1486,7 +1486,7 @@
               },
               "ttsTextJa": "他の客と一緒に出発すること。",
               "audioId": "L3-004-q1-c",
-              "readingJa": "たのきゃくといっしょにしゅっぱつすること。"
+              "readingJa": "ほかのきゃくといっしょにしゅっぱつすること。"
             },
             {
               "id": "d",
@@ -1637,7 +1637,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "cdbc1cce9426c4e29430d8f698f933d57d6b9a46fe613ef20ee02cf6026d84c0"
+      "contentHash": "089412e5b930706d87654310b4b5224dc10a983bc461a8af3b5064f0a7c1bdd3"
     },
     {
       "schemaVersion": 1,
@@ -2077,7 +2077,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L3-006",
-      "revision": 3,
+      "revision": 4,
       "level": 3,
       "stage": 6,
       "jlptTarget": "N1",
@@ -2353,7 +2353,7 @@
               },
               "ttsTextJa": "敵が倒れたことに気づいていない。",
               "audioId": "L3-006-q1-c",
-              "readingJa": "てきがたおれたことにきずいていない。"
+              "readingJa": "てきがたおれたことにきづいていない。"
             },
             {
               "id": "d",
@@ -2423,7 +2423,7 @@
               },
               "ttsTextJa": "玲奈が隊長で、透が回復役であること。",
               "audioId": "L3-006-q2-a",
-              "readingJa": "れーながたいちょーで、とーるがかいふくやくであること。"
+              "readingJa": "れながたいちょーで、とーるがかいふくやくであること。"
             },
             {
               "id": "b",
@@ -2507,13 +2507,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "e6d38fe4ef9dc2abe34a8f05babc5857fbd3220d29fdc292516b6950a928fb6d"
+      "contentHash": "bc4823253de3c961f70dc74449a10e137a280680d5c57c62ec4a8527a3836aa6"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L3-007",
-      "revision": 3,
+      "revision": 5,
       "level": 3,
       "stage": 7,
       "jlptTarget": "N1",
@@ -2786,7 +2786,7 @@
               },
               "ttsTextJa": "アルファの音声を追従再生する複製ボット。",
               "audioId": "L3-007-q1-a",
-              "readingJa": "あるふあのおんせーをついしょーさいせーするふくせーぼっと。"
+              "readingJa": "あるふぁのおんせーをついじゅーさいせーするふくせーぼっと。"
             },
             {
               "id": "b",
@@ -2965,13 +2965,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "6bb1a17eb0ba77f7ad2800d841f98ef80305d24de64df3a14333c3077b9323ef"
+      "contentHash": "5fcf7e8b31bda02297504898587872ad59d3dc36a7663c93c1fdf09a0cf9f4cd"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L3-008",
-      "revision": 3,
+      "revision": 4,
       "level": 3,
       "stage": 8,
       "jlptTarget": "N1",
@@ -3219,7 +3219,7 @@
               },
               "ttsTextJa": "直接否定を避けて学習者の面子を保つ。",
               "audioId": "L3-008-q1-b",
-              "readingJa": "ちょくせつひてーをさけてがくしゅーしゃのめんこをたもつ。"
+              "readingJa": "ちょくせつひてーをさけてがくしゅーしゃのめんつをたもつ。"
             },
             {
               "id": "c",
@@ -3386,13 +3386,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "a2e066f6c0322146d0c9a932369e60f760246270570a6540c9e0193155c8b433"
+      "contentHash": "c23d3e6287cdc841f0b5208df1d7f6c3337afbf08d1c961a699f3a91313e7446"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L3-009",
-      "revision": 3,
+      "revision": 4,
       "level": 3,
       "stage": 9,
       "jlptTarget": "N1",
@@ -3518,7 +3518,7 @@
             "zh": "船员出入舰记录自出发后没有新增一条。",
             "en": "No crew boarding or disembarkation entries have been added since departure."
           },
-          "readingJa": "じょういんのじょうげせんきろくは、しゅっぱつじからいちけんもふえていません。",
+          "readingJa": "じょういんのじょうげせんきろくは、しゅっぱつじからいっけんもふえていません。",
           "ttsTextJa": "乗員の乗下船記録は、出発時から一件も増えていません。",
           "audioId": "L3-009-line-003",
           "pauseAfterMs": 500,
@@ -3532,7 +3532,7 @@
             {
               "id": "token-002",
               "text": "から一件も増えていません。",
-              "reading": "からいちけんもふえていません。",
+              "reading": "からいっけんもふえていません。",
               "audioId": "L3-009-line-003-token-002"
             }
           ]
@@ -3929,7 +3929,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "6432fd2d51cbffc9ae6be970af3012edcbbfc5017d3fe1ff291c16f54de76890"
+      "contentHash": "14e2744a66d4438927e4bf66dfe665fdc3b16cc2aec538838e9ab33814e86e94"
     },
     {
       "schemaVersion": 1,

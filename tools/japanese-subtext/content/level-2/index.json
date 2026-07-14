@@ -143,7 +143,7 @@
         "context-inference"
       ],
       "batch": "batch-001-010.json",
-      "contentHash": "e5d2e3d68d1ee092d6a6db961b76685db7a0f96aa1e52bcba6950f64d152de12"
+      "contentHash": "305f1ce14432efc2d165c54a00902f7ace5598529c9a9d855bde6a0bd171db3f"
     },
     {
       "id": "L2-007",
@@ -191,7 +191,7 @@
         "tone-inference"
       ],
       "batch": "batch-001-010.json",
-      "contentHash": "1fe4a946c1e15a8509cc786e51b26165802c55d41ea128abb373689ffbe589e7"
+      "contentHash": "746d70f3976c5425b3b62e4df834c280f70d5512fb3ad2ecddd461253034f1e7"
     },
     {
       "id": "L2-009",
@@ -285,7 +285,7 @@
         "relationship-distance"
       ],
       "batch": "batch-011-020.json",
-      "contentHash": "f91c425cce6504c399a1cfb03018832423acc17726cfa55cbf2bdb6b62a721e3"
+      "contentHash": "eb3ec534e2892c2243b1e6d28736c22ba7b332f51efe1fc18cbc41f83f3330cb"
     },
     {
       "id": "L2-013",
@@ -331,7 +331,7 @@
         "risk-awareness"
       ],
       "batch": "batch-011-020.json",
-      "contentHash": "9e3789c19895d9562022286773fd0b9daa6e422abd8b50898ea3e14f9ded8e34"
+      "contentHash": "66ae8abf1a2ff0bd496c9c2534b58c171bc21f88deedba90920414d1877dc077"
     },
     {
       "id": "L2-015",
@@ -354,7 +354,7 @@
         "stance-inference"
       ],
       "batch": "batch-011-020.json",
-      "contentHash": "05e15231592a8379b7eaa8af9890f29f8d2520b60811dacd53bd53014b9d5433"
+      "contentHash": "3c2db1564e3f695be65907d3507adaa11e4a940710d57f3cb49c3a552a2f30b4"
     },
     {
       "id": "L2-016",
@@ -474,7 +474,7 @@
         "expectation-reversal"
       ],
       "batch": "batch-011-020.json",
-      "contentHash": "d252c3cd9f70f2c19a6da1d7d240e8f2301480846e8546e1a49071f6d3f2a647"
+      "contentHash": "2419fe240115c9a6a44cfc085a84aa584875082e139c0bba0935af847b589408"
     },
     {
       "id": "L2-021",
@@ -568,7 +568,7 @@
         "lie-detection"
       ],
       "batch": "batch-021-030.json",
-      "contentHash": "1cc827b903722a59292db39dfbbe691b7b3403d48ec7aa46e100702caeb5d873"
+      "contentHash": "cae3a1eeedec958f6fa75362c5d16a08dd699eb7ba5f83269acd328779707ce1"
     },
     {
       "id": "L2-025",
@@ -759,7 +759,7 @@
         "emotion-inference"
       ],
       "batch": "batch-031-040.json",
-      "contentHash": "adab045424263d372754e110e843c786dc84e6bb428f2daaee6937483c3b79a0"
+      "contentHash": "e32db5bacc2427d1b9f34c49f1c7be4cccd63c74029ce4ef997cf5277e51475f"
     },
     {
       "id": "L2-033",
@@ -806,7 +806,7 @@
         "absence-inference"
       ],
       "batch": "batch-031-040.json",
-      "contentHash": "69b8e2a93de2532bb7e43695f12bdf2913a8f2d932c83ee9a94964b5738c9d9f"
+      "contentHash": "e591e600455e7e180fc099206e3d98ca4e018104e5e79ed917a1aad2feee0f52"
     },
     {
       "id": "L2-035",
@@ -925,7 +925,7 @@
         "motive-inference"
       ],
       "batch": "batch-031-040.json",
-      "contentHash": "83d6d845afdde0db75a43c78d190b2d2da50993ad8c798f3c4a80fa572a86912"
+      "contentHash": "003c025bdba5a920d389688ecdc69e0c70828cf06d78bffc323f8e956ff8729b"
     },
     {
       "id": "L2-040",
@@ -949,7 +949,7 @@
         "timeline-inference"
       ],
       "batch": "batch-031-040.json",
-      "contentHash": "4e828912bc7f6a06c8a9f01bead0f9972c92cd6f11fdb1c2a3f219abe7e6988f"
+      "contentHash": "e22c4490ad61ec4778653feb039dba1a8a8002f7524ab3f3ede750664e2ec1db"
     },
     {
       "id": "L2-041",
@@ -996,7 +996,7 @@
         "contradiction-detection"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "56515bc6f2054e258174135da9566cb24d564b4cc9bb979b77f4841f6b596949"
+      "contentHash": "98982c1676a8f516cac444fef5c5113e27707ad10837e09676b1c8a698745787"
     },
     {
       "id": "L2-043",
@@ -1020,7 +1020,7 @@
         "evidence-selection"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "8027b1959ae90171644cd7d2542d9e813abcdeebc474feaa4bbd90f14c9d5668"
+      "contentHash": "7842d4eaa441e00b7e8e8d53fe31438a1d78bd1335d92418108ebec446b5d7b6"
     },
     {
       "id": "L2-044",
@@ -1044,7 +1044,7 @@
         "emotion-inference"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "0af97b57fefefeae9e8acaf61211fc1400b0fd823b959f2d808feba162eae765"
+      "contentHash": "d37f9e90db20c19c3f3179cc1b36c79b4963168601378de6290bf77f7c916801"
     },
     {
       "id": "L2-045",
@@ -1069,7 +1069,7 @@
         "anticipation"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "9458bd0008e8a8a7db4a31d04c668d5ba53ad6a5917f5f62032dd2655ff16ff0"
+      "contentHash": "9dc74f9646ab9653ad214a7917be4afa63009842886a655cb45f27cbb376e8df"
     },
     {
       "id": "L2-046",
@@ -1093,7 +1093,7 @@
         "repetition-inference"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "f29245b3a030a444870ae613249cd948a92fc162e89ae85132e818443fcde2c1"
+      "contentHash": "d6c9e58b2dad98f0cb13e294b5f3b37db27db4498772ae9d3bf97f41a88bf397"
     },
     {
       "id": "L2-047",
@@ -1188,7 +1188,7 @@
         "relationship-inference"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "eaa115635b8e3c788ee67f49afcbbd09c71e621a6bc24d9ef41a9eaed72162de"
+      "contentHash": "566abb47683e364f256dd6316275ee20023196fbb4ce5aada8111d371cccc1c3"
     }
   ]
 }

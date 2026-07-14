@@ -583,6 +583,36 @@ const labels = {
 const content = {
   updates: [
     {
+      article_id: "seed-update-2026-07-12-japanese-subtext-v1-0-3",
+      slug: "2026-07-12-japanese-subtext-v1-0-3",
+      category: "site-updates",
+      tags: ["Japanese", "AivisSpeech", "gpt-image-2", "mobile"],
+      cover_image: "",
+      status: "published",
+      is_pinned: 0,
+      created_at: "2026-07-11T18:00:00.000Z",
+      updated_at: "2026-07-11T18:00:00.000Z",
+      published_at: "2026-07-11T18:00:00.000Z",
+      fallbackOnly: true,
+      icon: "system",
+      date: "2026.07.12",
+      title: {
+        zh: "日语潜台词训练工具更新至 1.0.3",
+        en: "Behind the Japanese 1.0.3 Update",
+        ja: "日本語の裏側 1.0.3 アップデート"
+      },
+      summary: {
+        zh: "“日语的言外之意”1.0.3 使用 AivisSpeech 按审校假名重新生成全库 AI 语音，并以 gpt-image-2 重制 250 张精制黑白四格题目配图和简洁彩色站外背景，同时重整桌面与手机交互。",
+        en: "Behind the Japanese 1.0.3 regenerates the full AI voice library with AivisSpeech from reviewed kana, replaces all 250 stage illustrations with polished monochrome four-panel manga, adds quiet full-color outer backdrops, and refines desktop and mobile interaction.",
+        ja: "「日本語の裏側」1.0.3 では、確認済みのかな読みから AivisSpeech で全 AI 音声を再生成し、250 ステージの精細なモノクロ四コマと外側の控えめなカラー背景を gpt-image-2 で作り直して、PC・モバイルの操作も再整理しました。"
+      },
+      content_markdown: {
+        zh: "# 日语潜台词训练工具更新至 1.0.3\n\n“日语的言外之意”这次同时更新语音、配图、外部背景和训练交互。题库显示仍保留日语汉字，生成输入与展示内容继续分离。\n\n## AivisSpeech 全库 AI 语音\n\n- 所有语音改用 AivisSpeech 离线 AI 模型重新制作。\n- 合成前先使用已审校的纯假名读音，避免日语汉字被错误切分或读错。\n- 浏览器只播放预生成文件，不在日常使用时加载本地模型。\n\n## gpt-image-2 黑白四格配图与彩色背景\n\n- 250 个关卡分别依据当关场景、人物关系、台词和题问生成精制黑白四格漫画，使用丰富灰阶、网点和完整明暗，不是简陋线稿。\n- 训练器外部背景改为 gpt-image-2 生成的简洁彩色桌面与手机画面。\n- 配图使用真实图片文件，页面不再用 CSS 绘制场景。\n\n## UI 与手机交互重整\n\n- 首次挑战、听力锁题、漏答提醒、结果与解析后的去向更明确。\n- 播放高亮只在真实播放时出现，配图加载失败可重试。\n- 手机端按播放器、场景、题目的学习顺序重新排布，并控制图片高度和触控尺寸。",
+        en: "# Behind the Japanese 1.0.3 Update\n\nThis release updates speech, stage artwork, the outer backdrop, and training interaction together. The course still displays normal Japanese writing while keeping synthesis input separate.\n\n## Full AivisSpeech AI voice rebuild\n\n- Every voice item is regenerated with the offline AivisSpeech AI model.\n- Synthesis uses reviewed kana-only readings first, reducing incorrect kanji segmentation or pronunciation.\n- The browser plays pre-generated files and does not load the local model during normal use.\n\n## Monochrome gpt-image-2 manga and color backdrops\n\n- Each of the 250 stages receives a polished monochrome four-panel manga based on its own setting, cast relationships, dialogue, and questions, with rich grayscale, screentones, and finished shading rather than sparse line art.\n- The area outside the trainer uses quiet full-color desktop and mobile backgrounds generated with gpt-image-2.\n- These scenes are image assets rather than CSS-drawn illustrations.\n\n## Desktop and mobile interaction\n\n- First challenge, listening locks, unanswered-question feedback, results, and post-analysis routes are clearer.\n- Playback highlighting appears only during real playback, and failed illustrations can be retried.\n- Mobile content follows player, scene, and question order with bounded image height and practical touch targets.",
+        ja: "# 日本語の裏側 1.0.3 アップデート\n\n今回は音声、ステージ画像、ツール外側の背景、練習操作をまとめて更新しました。画面には通常の漢字表記を残し、合成用の入力とは分離しています。\n\n## AivisSpeech による全 AI 音声の再生成\n\n- すべての音声をオフラインの AivisSpeech AI モデルで作り直しました。\n- 合成前に確認済みのかな読みだけを使い、漢字の区切りや読みの誤りを抑えます。\n- 通常利用時は生成済みファイルだけを再生し、ブラウザーでローカルモデルを読み込みません。\n\n## gpt-image-2 のモノクロ四コマとカラー背景\n\n- 250 ステージそれぞれの場面、人物関係、台詞、設問に基づき、豊かなグレースケール、スクリーントーン、仕上げた陰影を持つモノクロ四コマへ更新しました。簡素な線画ではありません。\n- ツール外側には gpt-image-2 で生成した控えめなカラーの PC・モバイル背景を使います。\n- 場面は CSS 描画ではなく画像ファイルとして表示します。\n\n## PC・モバイル操作の再整理\n\n- 初回チャレンジ、聴解時の問題ロック、未回答通知、結果と解説後の移動先を明確にしました。\n- 再生中だけ台詞を強調し、画像の読み込み失敗時には再試行できます。\n- モバイルはプレーヤー、場面、問題の順に並べ、画像の高さとタップ領域を調整しました。"
+      }
+    },
+    {
       article_id: "seed-update-2026-07-11-japanese-subtext-trainer",
       slug: "2026-07-11-japanese-subtext-trainer",
       category: "site-updates",
@@ -610,6 +640,58 @@ const content = {
         zh: "# 日语潜台词训练工具更新至 1.0.2\n\n“日语的言外之意”继续使用 250 关数据题库，这次重点重置语音生成、桌面布局和学习记录，让听力训练更可靠也更紧凑。\n\n## 语音读音全量重置\n\n- 句子、选项和词块先保存可审校的假名读音，再交给离线模型；画面仍显示原来的日语汉字。\n- 生成器会分离 Misaki 的音高标记、规范化特殊辅音并拒绝未知音素，不再把末尾标记读成额外的“いい”，也不会把“きょう”的辅音丢掉后读成“おう”。\n- 语音管线升级到 v4 后强制重建全库静态音频。浏览器训练时仍不加载 TTS，批处理结束后模型保持关闭且不自启动。\n\n## 更紧凑的 PC 训练界面\n\n- 桌面端复用游戏区的壳层思路：左上角返回个人站，右上角显示名称，中间突出存档同步。\n- 关卡内容取消重复的整屏最小高度，场景、题目和解析重新排布，减少大块空白。\n- 查看解析后可直接进入下一关；资源区入口改为“开始”，标题、按钮和卡片文案不再被误拖选。\n\n## 月历打卡与四格场景\n\n- 学习记录改为月历打卡，显示当前连续、最长连续、总打卡天数和最近活动；登录后通过独立日活动表同步。\n- 每关配一张贴合题目情境的原创黑白四格漫画，统一人物、线条、网点和分镜，并适配桌面、平板和手机窗口。",
         en: "# Japanese Subtext Trainer 1.0.2 Update\n\nBehind the Japanese keeps its 250-stage data-driven course while rebuilding speech generation, desktop layout, and learning history for a more reliable and compact listening experience.\n\n## Full speech-reading reset\n\n- Sentences, answer choices, and phrase tokens now store reviewable kana readings before they reach the offline model, while the interface continues to display the original kanji.\n- The generator separates Misaki pitch metadata, normalizes special consonants, and rejects unknown phonemes. This removes the detached ending sound and prevents kyou from losing its ky consonant and becoming ou.\n- Pipeline v4 forces the static audio library to be regenerated. The browser still never loads TTS during training, and the local model remains stopped with no autostart after the batch.\n\n## A denser PC training shell\n\n- The desktop tool adopts the game-area shell pattern: Back to Site at top left, the tool name at top right, and save synchronization centered in the frame.\n- Repeated viewport-height constraints were removed, and the scene, questions, and analysis were rearranged to eliminate large unused gaps.\n- Analysis now leads directly to the next stage. The Resources action is Start, and non-input headings, buttons, and card labels no longer become accidentally selected.\n\n## Calendar check-ins and four-panel scenes\n\n- Learning history is now a monthly check-in calendar with current streak, longest streak, total days, and recent activity, synchronized through a dedicated daily-activity table after sign-in.\n- Every stage receives an original black-and-white four-panel manga scene matched to its prompt, with consistent characters, line work, screentones, and responsive placement.",
         ja: "# 日本語の裏側 1.0.2 アップデート\n\n250 ステージのデータ式問題はそのままに、音声生成、PC レイアウト、学習記録を作り直し、聴解練習をより確実でコンパクトにしました。\n\n## 読みを固定した全音声の再生成\n\n- 文、選択肢、語句は、オフラインモデルへ渡す前に確認可能なかな読みを保存します。画面には従来どおり漢字を含む日本語を表示します。\n- Misaki の音高メタデータを音素から分離し、特殊な子音を正規化して未知音素を拒否します。語尾の余分な「いい」を除き、「きょう」の ky が欠けて「おう」になる問題も防ぎます。\n- 音声パイプライン v4 で静的音声を全件再生成します。練習中のブラウザーは TTS を読み込まず、処理後のローカルモデルは停止したままで自動起動しません。\n\n## 空白を減らした PC 画面\n\n- ゲーム欄のシェル構成を取り入れ、左上にサイトへ戻る操作、右上にツール名、中央にセーブ同期を配置しました。\n- 重複していた画面高の制約を外し、場面、問題、解説を再配置して大きな空白を減らしました。\n- 解説から次のステージへ直接進めます。リソース欄の操作は「開始」とし、見出し、ボタン、カード文字の誤選択も防ぎます。\n\n## カレンダー式記録と四コマ場面\n\n- 学習記録を月間カレンダーに変更し、現在・最長の連続日数、合計日数、最近の活動を表示します。ログイン後は専用の日別活動テーブルで同期します。\n- 各ステージに、設問の状況に合うオリジナル白黒四コマ漫画を用意し、人物、線、スクリーントーン、配置を統一して各画面幅に対応します。"
+      }
+    },
+    {
+      article_id: "seed-update-2026-07-11-japanese-subtext-v1-0-1",
+      slug: "2026-07-11-japanese-subtext-v1-0-1",
+      category: "site-updates",
+      tags: ["Japanese", "listening", "accessibility", "release"],
+      cover_image: "",
+      status: "published",
+      is_pinned: 0,
+      created_at: "2026-07-10T16:30:00.000Z",
+      updated_at: "2026-07-10T16:30:00.000Z",
+      published_at: "2026-07-10T16:30:00.000Z",
+      fallbackOnly: true,
+      icon: "system",
+      date: "2026.07.11",
+      title: { zh: "日语潜台词训练工具 1.0.1 更新", en: "Japanese Subtext Trainer 1.0.1 Update", ja: "日本語の裏側 1.0.1 アップデート" },
+      summary: {
+        zh: "1.0.1 重整首次练习模式、结果弹窗和三语界面，并将日语语音改为先锁定假名读音再生成，避免汉字读音被误判。",
+        en: "Version 1.0.1 refines first-use modes, result dialogs, and the trilingual interface, while moving Japanese speech generation to reviewed kana readings before synthesis to reduce kanji pronunciation errors.",
+        ja: "1.0.1 では初回モード、結果ダイアログ、三言語 UI を整え、漢字の誤読を減らすため、確認済みのかな読みを先に固定してから音声を生成する方式に変更しました。"
+      },
+      content_markdown: {
+        zh: "# 日语潜台词训练工具 1.0.1 更新\n\n本次维护集中清理初次使用流程、界面文案和日语读音输入，为后续训练保留更稳定的交互基础。\n\n## 练习模式与界面\n\n- 主入口统一为“开始挑战”，工具标题随中文、English、日本語界面切换。\n- 首次进入可选听力、日语或双语模式，之后可在设置中修改；进入关卡不再自动播放。\n- 播放器精简为播放、进度与倍速，句子和词块仍可直接点击听音。\n\n## 答题反馈\n\n- 作答后使用奖牌结果弹窗，提供查看解析、重新挑战或进入下一关。\n- 选项不再塞入会撑高布局的“正确答案”文字，解析也不显示内部行 ID。\n- 播放高亮不会强制页面跳动。\n\n## 假名优先的语音输入\n\n- 句子、词块和日语选项在生成语音前保存可审核的假名读音。\n- 页面仍显示汉字表记，合成模型只接收明确读音，降低“今日”等汉字被读错的风险。\n- 维护文档同步记录版本、读音、语音、缓存和模型关闭要求。",
+        en: "# Japanese Subtext Trainer 1.0.1 Update\n\nThis maintenance release focuses on first-use flow, interface copy, and Japanese reading input, establishing a steadier base for later training updates.\n\n## Practice modes and interface\n\n- The main action is Start Challenge, and the tool title follows the Chinese, English, or Japanese interface language.\n- The first stage offers Listening, Japanese, or Bilingual mode. The choice can be changed later, and entering a stage no longer starts playback automatically.\n- The player is reduced to play, progress, and speed, while sentences and phrase tokens remain directly clickable.\n\n## Answer feedback\n\n- Submitting answers opens a medal result dialog with routes to analysis, retry, or the next stage.\n- Options no longer receive layout-stretching Correct Answer text, and analysis does not expose internal line identifiers.\n- Playback highlighting no longer forces the page to jump.\n\n## Kana-first speech input\n\n- Sentences, phrase tokens, and Japanese options store reviewable kana readings before speech generation.\n- The page still displays kanji, while synthesis receives explicit readings to reduce errors for words such as kyou.\n- The maintenance guide records version, reading, speech, cache, and model-shutdown requirements together.",
+        ja: "# 日本語の裏側 1.0.1 アップデート\n\n初回利用の流れ、UI 文言、日本語の読み入力を中心に整理し、今後の練習更新の基盤を安定させました。\n\n## 練習モードと UI\n\n- メイン操作を「チャレンジ開始」に統一し、ツール名も中国語、English、日本語の表示言語に合わせました。\n- 初回は聴解、日本語、二言語モードから選び、後から設定で変更できます。ステージ入場時の自動再生はありません。\n- プレーヤーは再生、位置、速度に簡素化し、文と語句は直接押して聞けます。\n\n## 解答フィードバック\n\n- 回答後はメダル結果ダイアログを表示し、解説、再挑戦、次のステージへ移動できます。\n- 選択肢にレイアウトを広げる正解文字を追加せず、解説に内部行 ID も表示しません。\n- 再生中の強調表示で画面を強制移動しません。\n\n## かな読みを優先した音声入力\n\n- 文、語句、日本語選択肢は、音声生成前に確認可能なかな読みを保存します。\n- 画面は漢字表記を保ち、合成側には明示的な読みを渡して、「今日」などの誤読リスクを減らします。\n- 保守ガイドにバージョン、読み、音声、キャッシュ、モデル停止の要件をまとめました。"
+      }
+    },
+    {
+      article_id: "seed-update-2026-07-11-japanese-subtext-launch",
+      slug: "2026-07-11-japanese-subtext-launch",
+      category: "site-updates",
+      tags: ["Japanese", "listening", "learning", "launch"],
+      cover_image: "",
+      status: "published",
+      is_pinned: 0,
+      created_at: "2026-07-10T16:00:00.000Z",
+      updated_at: "2026-07-10T16:00:00.000Z",
+      published_at: "2026-07-10T16:00:00.000Z",
+      fallbackOnly: true,
+      icon: "system",
+      date: "2026.07.11",
+      title: { zh: "日语潜台词训练工具正式上线", en: "Behind the Japanese Launch", ja: "「日本語の裏側」正式公開" },
+      summary: {
+        zh: "全新“日语的言外之意”正式上线：通过 250 个数据驱动关卡练习语气、停顿、人际关系和上下文里的日语潜台词，并支持本地与云端进度。",
+        en: "Behind the Japanese launches with 250 data-driven stages for practicing implied meaning through tone, pauses, relationships, and context, with local progress and optional cloud synchronization.",
+        ja: "「日本語の裏側」を正式公開しました。声色、間、人間関係、文脈から含意を読み取る 250 のデータ式ステージと、ローカル進捗・任意のクラウド同期を備えています。"
+      },
+      content_markdown: {
+        zh: "# 日语潜台词训练工具正式上线\n\n“日语的言外之意”是一个独立的日语语用与听力训练工具，重点不是逐字翻译，而是理解说话人没有直接说出的意思。\n\n## 五级课程\n\n- 课程包含 5 个难度、250 个关卡，从 N3 日常表达逐步进入 N2 和 N1 复杂语用。\n- 每关都有场景、台词、选项、答案、判断线索和多种可能解释。\n- 前期关卡较短，后续逐渐增加多人关系、信息差和开放性。\n\n## 听力与文字\n\n- 支持听力、日语和双语场景显示，选项语言可独立切换。\n- 句子、词块和日语选项关联预生成语音，网页本身不需要运行语音模型。\n- 解析会区分字面意思、可能意图、语气与语法线索，不把潜台词写成唯一绝对答案。\n\n## 存档与三语界面\n\n- 未登录时使用浏览器本地存档，登录后可将进度同步到独立云端记录。\n- 中文、English、日本語界面共用同一套题库和进度。\n- 题库、音频、存档与网站入口都使用稳定 ID 维护。",
+        en: "# Behind the Japanese Launch\n\nBehind the Japanese is a standalone Japanese pragmatics and listening trainer. Its focus is not word-for-word translation, but understanding what a speaker leaves unsaid.\n\n## Five course levels\n\n- The course contains five difficulty levels and 250 stages, moving from N3 daily expression through N2 and complex N1 pragmatics.\n- Every stage includes a setting, dialogue, choices, answers, evidence, and more than one plausible reading.\n- Early stages are shorter, while later stages add multi-speaker relationships, information gaps, and open interpretation.\n\n## Listening and text\n\n- Scene display supports Listening, Japanese, and Bilingual modes, while option language is controlled separately.\n- Sentences, phrase tokens, and Japanese options connect to pre-generated audio, so the web page does not run a speech model.\n- Analysis separates literal meaning, likely intent, tone, grammar, and evidence without presenting subtext as one absolute answer.\n\n## Saves and three interface languages\n\n- Signed-out progress stays in the browser, while signed-in users can synchronize to dedicated cloud records.\n- Chinese, English, and Japanese interfaces share the same course and progress.\n- Stable identifiers connect the course, audio, saves, and public site entry.",
+        ja: "# 「日本語の裏側」正式公開\n\n「日本語の裏側」は、日本語の語用と聴解を練習する独立ツールです。逐語訳ではなく、話し手が直接言わなかった意図を文脈から読み取ります。\n\n## 5 段階のコース\n\n- N3 の日常表現から N2、N1 の複雑な語用へ進む 5 難易度、250 ステージを収録しました。\n- 各ステージに場面、台詞、選択肢、正解、手がかり、複数の可能な解釈があります。\n- 序盤は短く、後半は複数人物の関係、情報差、開かれた解釈を増やします。\n\n## 聴解とテキスト\n\n- 場面表示は聴解、日本語、二言語モードに対応し、選択肢の言語は別に切り替えられます。\n- 文、語句、日本語選択肢に生成済み音声を結び、Web ページ上で音声モデルを実行しません。\n- 解説は字面、可能な意図、語気、文法、根拠を分け、含意を唯一の絶対解として扱いません。\n\n## セーブと三言語 UI\n\n- 未ログイン時はブラウザーに保存し、ログイン後は専用のクラウド記録と同期できます。\n- 中国語、English、日本語の UI で同じコースと進捗を共有します。\n- 安定した ID でコース、音声、セーブ、公開サイト入口を関連付けています。"
       }
     },
     {
@@ -1495,8 +1577,8 @@ const content = {
     {
       category: 0,
       iconSrc: "tools/japanese-subtext/assets/icons/tool-icon-64.webp",
-      version: "v1.0.2",
-      updated: "2026.07.11",
+      version: "v1.0.3",
+      updated: "2026.07.12",
       external: false,
       showReadyStatus: false,
       url: "/tools/japanese-subtext/",
@@ -3759,7 +3841,7 @@ function safeResourceUrl(item) {
     return "";
   }
   if (/^tools\/japanese-subtext\/?$/i.test(localPath)) {
-    return sitePath("tools/japanese-subtext/");
+    return `${sitePath("tools/japanese-subtext/")}?lang=${encodeURIComponent(currentLang)}`;
   }
   if (/^(assets|downloads)\/[a-z0-9][a-z0-9._/-]*(\?[a-z0-9=&._-]+)?$/i.test(localPath)) {
     return sitePath(localPath);

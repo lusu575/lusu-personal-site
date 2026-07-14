@@ -7,6 +7,51 @@ import { fileURLToPath } from "node:url";
 const scriptFile = fileURLToPath(import.meta.url);
 const scriptRoot = path.dirname(scriptFile);
 const toolRoot = path.resolve(scriptRoot, "..");
+const PIPELINE_VERSION = "aivisspeech-1.2.0-aivmx-v3";
+const CLARITY_SCHEMA_VERSION = 3;
+const MAX_SAFE_LOUDNESS_BOOST_DB = 4.5;
+const REQUIRED_RATE_POLICY = Object.freeze({
+  policy: "post-synthesis-active-mora-rate-v3",
+  targetMoraPerSecond: 6.5,
+  maximumCalibratedMoraPerSecond: 6.6,
+  maximumMoraPerSecond: 7.2,
+  maximumCalibrationAttempts: 6,
+});
+const REQUIRED_BASE_CLARITY_FIELDS = [
+  "leadingSilenceMs", "trailingSilenceMs", "voicedDurationSeconds",
+  "speechRateDurationSeconds", "speechRateDurationPolicy", "excludedSpeechPauseMs",
+  "speechPauseThresholdMs", "peakDbfs",
+  "rmsDbfs", "noiseFloorDbfs", "crestFactorDb", "clippingSampleRatio",
+  "tailEnergyRatio", "activityIslandCount", "longestInternalSilenceMs",
+  "finalActivityIslandMs", "finalInternalSilenceMs", "expectedSokuonClosure",
+  "detachedTailGapThresholdMs", "detachedTailCheckEnabled", "detachedTailObserved",
+  "detachedTailRisk", "truncationRisk", "integratedLufs", "truePeakDbtp",
+  "loudnessRangeLu", "loudnessMeasurementMode", "targetLufs", "loudnessErrorLufs", "loudnessToleranceLufs",
+  "loudnessPass", "pass",
+];
+const REQUIRED_TASK_RATE_FIELDS = [
+  "speechRateMoraPerSecond", "spokenMoraCount", "speechRateBand",
+  "speechRateMinimum", "speechRateMaximum", "speechRatePass",
+];
+const REQUIRED_SOURCE_BOUNDARY_FIELDS = [
+  "schemaVersion", "claritySchemaVersion", "artifactHash", "normalizedSha256",
+  "raw", "normalized", "pass",
+];
+const REQUIRED_RAW_BOUNDARY_FIELDS = [
+  "boundaryKind", "leadingSilenceMs", "trailingSilenceMs", "absoluteActiveSpanMs",
+  "activeSpanMs", "peakDbfs", "boundaryThresholdDbfs", "activeSpanThresholdDbfs",
+  "activeSpanDbBelowPeak",
+  "clippingSampleRatio", "edgeClippingSampleRatio", "minimumLeadingSilenceMs",
+  "minimumTrailingSilenceMs", "truncationRisk", "pass",
+];
+const REQUIRED_NORMALIZED_BOUNDARY_FIELDS = [
+  "boundaryKind", "leadingSilenceMs", "trailingSilenceMs", "absoluteActiveSpanMs",
+  "activeSpanMs", "peakDbfs", "boundaryThresholdDbfs", "activeSpanThresholdDbfs",
+  "activeSpanDbBelowPeak",
+  "clippingSampleRatio", "edgeClippingSampleRatio", "rawActiveSpanMs",
+  "activeSpanRatio", "minimumActiveSpanRatio", "maximumActiveSpanRatio",
+  "activeSpanCollapseRisk", "edgeClippingRisk", "pass",
+];
 
 function readJson(file) {
   return JSON.parse(readFileSync(file, "utf8").replace(/^\uFEFF/, ""));
@@ -22,6 +67,37 @@ function canonicalJson(value) {
     return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${canonicalJson(value[key])}`).join(",")}}`;
   }
   return JSON.stringify(value);
+}
+
+function reviewedReadingMap(stages) {
+  const readings = new Map();
+  for (const stage of stages || []) {
+    for (const line of stage?.lines || []) {
+      if (line?.audioId && typeof line.readingJa === "string") readings.set(line.audioId, line.readingJa);
+      for (const token of line?.tokens || []) {
+        if (token?.audioId && typeof token.reading === "string") readings.set(token.audioId, token.reading);
+      }
+    }
+    for (const question of stage?.questions || []) {
+      for (const option of question?.options || []) {
+        if (option?.audioId && typeof option.readingJa === "string") readings.set(option.audioId, option.readingJa);
+      }
+    }
+  }
+  return readings;
+}
+
+function expectedSpeechRateEvidence(item, reviewedReading) {
+  const moraCount = item?.clarityAudit?.spokenMoraCount;
+  const readingKana = typeof reviewedReading === "string"
+    ? reviewedReading.trim()
+    : (typeof item?.readingKana === "string" ? item.readingKana.trim() : "");
+  if (moraCount === 1 && /^ん[、。…！？!?・〜～ー\s]*$/u.test(readingKana)) {
+    return { band: "hesitation", minimum: 1.2 };
+  }
+  return moraCount <= 5
+    ? { band: "short", minimum: 1.5 }
+    : { band: "standard", minimum: 2.5 };
 }
 
 function semanticJsonSha256(file) {
@@ -168,28 +244,46 @@ export function validateManifest({
   const stageEntries = manifest?.stages && typeof manifest.stages === "object" ? manifest.stages : {};
   const allowedTypes = new Set(["scene", "line", "option", "token"]);
   const paths = new Map();
+  const reviewedReadings = reviewedReadingMap(stages);
 
   if (manifest?.schemaVersion !== 1) errors.push("manifest schemaVersion must be 1");
   if (typeof manifest?.contentVersion !== "string") errors.push("manifest contentVersion is missing");
   if (typeof manifest?.audioBaseUrl !== "string") errors.push("manifest audioBaseUrl is missing");
-  if (manifest?.generator?.executionProvider !== "CPUExecutionProvider") {
-    errors.push("generator executionProvider must remain CPUExecutionProvider");
+  if (manifest?.generator?.executionProvider !== "CPU") {
+    errors.push("generator executionProvider must remain CPU");
   }
-  if (manifest?.generator?.pipelineVersion !== "kokoro-ja-mp3-v4") {
-    errors.push("generator pipelineVersion must be kokoro-ja-mp3-v4");
+  if (manifest?.generator?.pipelineVersion !== PIPELINE_VERSION) {
+    errors.push(`generator pipelineVersion must be ${PIPELINE_VERSION}`);
+  }
+  if (manifest?.generator?.claritySchemaVersion !== CLARITY_SCHEMA_VERSION) {
+    errors.push(`generator claritySchemaVersion must be ${CLARITY_SCHEMA_VERSION}`);
+  }
+  if (canonicalJson(manifest?.generator?.ratePolicy) !== canonicalJson(REQUIRED_RATE_POLICY)) {
+    errors.push("generator ratePolicy does not match the release-locked teaching-rate policy");
   }
   const modelFilesManifest = readJson(path.join(toolRoot, "scripts", "tts", "model-files.sha256.json"));
-  if (canonicalJson(manifest?.generator?.files) !== canonicalJson(modelFilesManifest.files)) {
-    errors.push("generator files do not match the published model-file manifest");
+  if (modelFilesManifest.pipeline !== PIPELINE_VERSION) {
+    errors.push("checked model-file manifest pipeline is stale");
   }
-  if (canonicalJson(manifest?.generator?.runtime) !== canonicalJson(modelFilesManifest.runtime)) {
-    errors.push("generator runtime does not match the published runtime manifest");
+  const expectedEngine = {
+    name: modelFilesManifest.engine?.name,
+    version: modelFilesManifest.engine?.version,
+  };
+  if (canonicalJson(manifest?.generator?.engine) !== canonicalJson(expectedEngine)) {
+    errors.push("generator engine does not match the checked AivisSpeech engine");
+  }
+  const expectedModels = (modelFilesManifest.models || []).map(({ source: _source, ...model }) => model);
+  if (canonicalJson(manifest?.generator?.models) !== canonicalJson(expectedModels)) {
+    errors.push("generator models do not match the checked AIVMX models");
+  }
+  if (manifest?.generator?.license !== "ACML-1.0") {
+    errors.push("generator license must be ACML-1.0");
   }
   const expectedOutput = {
     format: "mp3",
-    sampleRate: 24000,
+    sampleRate: 44100,
     channels: 1,
-    bitrate: "64k",
+    bitrate: "96k",
     targetLufs: -18,
     leadingSilenceMs: 60,
     trailingSilenceMs: 100,
@@ -226,6 +320,81 @@ export function validateManifest({
     if (!Number.isInteger(item.level) || item.level < 1 || item.level > 5) errors.push(`${prefix}: invalid level`);
     if (!/^[a-f0-9]{64}$/.test(item.contentHash || "")) errors.push(`${prefix}: invalid contentHash`);
     if (!/^[a-f0-9]{64}$/.test(item.sha256 || "")) errors.push(`${prefix}: invalid sha256`);
+    if (item.postProcessing !== undefined) {
+      const post = item.postProcessing;
+      const correction = item.loudnessCorrection;
+      if (!post || typeof post !== "object" || post.profile !== "audited-loudness-gain-v3") {
+        errors.push(`${prefix}: postProcessing is invalid`);
+      }
+      if (
+        !correction
+        || !Number.isFinite(correction.gainDb)
+        || typeof correction.limiterRequired !== "boolean"
+      ) {
+        errors.push(`${prefix}: loudnessCorrection is missing for postProcessing`);
+      } else if (correction.gainDb > MAX_SAFE_LOUDNESS_BOOST_DB) {
+        errors.push(
+          `${prefix}: loudnessCorrection boost must be at most ${MAX_SAFE_LOUDNESS_BOOST_DB} dB`,
+        );
+      }
+    }
+    if (item.claritySchemaVersion !== CLARITY_SCHEMA_VERSION) {
+      errors.push(`${prefix}: claritySchemaVersion must be ${CLARITY_SCHEMA_VERSION}`);
+    }
+    const clarity = item.clarityAudit;
+    const requiredClarity = item.type === "scene"
+      ? REQUIRED_BASE_CLARITY_FIELDS
+      : [...REQUIRED_BASE_CLARITY_FIELDS, ...REQUIRED_TASK_RATE_FIELDS];
+    if (!clarity || typeof clarity !== "object") errors.push(`${prefix}: clarityAudit is missing`);
+    else {
+      for (const field of requiredClarity) {
+        if (!(field in clarity)) errors.push(`${prefix}: clarityAudit.${field} is missing`);
+      }
+      if (clarity.pass !== true) errors.push(`${prefix}: clarityAudit did not pass`);
+      if (clarity.loudnessPass !== true) errors.push(`${prefix}: integrated loudness did not pass`);
+      if (clarity.targetLufs !== manifest.generator?.output?.targetLufs) {
+        errors.push(`${prefix}: clarityAudit targetLufs does not match generator output`);
+      }
+      if (!(Number.isFinite(clarity.loudnessToleranceLufs) && clarity.loudnessToleranceLufs <= 1.5)) {
+        errors.push(`${prefix}: clarityAudit loudness tolerance must be at most 1.5 LUFS`);
+      }
+      if (!["integrated-lufs", "short-active-loop-lufs"].includes(clarity.loudnessMeasurementMode)) {
+        errors.push(`${prefix}: clarityAudit loudness measurement mode is invalid`);
+      }
+      const measuredLoudnessError = Math.abs(clarity.integratedLufs - clarity.targetLufs);
+      if (
+        !Number.isFinite(clarity.integratedLufs)
+        || !Number.isFinite(clarity.truePeakDbtp)
+        || !Number.isFinite(clarity.loudnessErrorLufs)
+        || measuredLoudnessError > clarity.loudnessToleranceLufs + 0.001
+        || Math.abs(measuredLoudnessError - clarity.loudnessErrorLufs) > 0.001
+      ) {
+        errors.push(`${prefix}: integrated loudness evidence is inconsistent`);
+      }
+      if (Number.isFinite(clarity.truePeakDbtp) && clarity.truePeakDbtp > -2.0) {
+        errors.push(`${prefix}: decoded true peak exceeds -2 dBTP`);
+      }
+      if (item.type === "scene" && clarity.detachedTailCheckEnabled !== false) {
+        errors.push(`${prefix}: scene detached-tail checking must be disabled for timeline pauses`);
+      }
+      if (item.type !== "scene" && clarity.detachedTailCheckEnabled !== true) {
+        errors.push(`${prefix}: task detached-tail checking must be enabled`);
+      }
+      const expectedRateDuration = clarity.voicedDurationSeconds - clarity.excludedSpeechPauseMs / 1000;
+      if (
+        !Number.isFinite(clarity.voicedDurationSeconds)
+        || !Number.isFinite(clarity.speechRateDurationSeconds)
+        || clarity.speechRateDurationSeconds <= 0
+        || clarity.speechRateDurationSeconds > clarity.voicedDurationSeconds + 0.001
+        || !Number.isFinite(clarity.excludedSpeechPauseMs)
+        || clarity.excludedSpeechPauseMs < 0
+        || clarity.speechPauseThresholdMs !== 250
+        || clarity.speechRateDurationPolicy !== "exclude-long-internal-pauses-v1"
+        || Math.abs(expectedRateDuration - clarity.speechRateDurationSeconds) > 0.02
+      ) {
+        errors.push(`${prefix}: speech-rate duration evidence is inconsistent`);
+      }
+    }
     if (item.type === "scene") {
       if ("readingSha256" in item || "phonemeSha256" in item) {
         errors.push(`${prefix}: scene items must not claim a single reading or phoneme hash`);
@@ -233,12 +402,135 @@ export function validateManifest({
     } else {
       if (!/^[a-f0-9]{64}$/.test(item.readingSha256 || "")) errors.push(`${prefix}: invalid readingSha256`);
       if (!/^[a-f0-9]{64}$/.test(item.phonemeSha256 || "")) errors.push(`${prefix}: invalid phonemeSha256`);
+      if (!/^[a-f0-9]{64}$/.test(item.moraSha256 || "")) errors.push(`${prefix}: invalid moraSha256`);
+      if (!/^[a-f0-9]{64}$/.test(item.querySha256 || "")) errors.push(`${prefix}: invalid querySha256`);
+      if (typeof item.readingKana !== "string" || !item.readingKana) errors.push(`${prefix}: readingKana is missing`);
+      if (!item.queryParameters || typeof item.queryParameters !== "object" || Array.isArray(item.queryParameters)) {
+        errors.push(`${prefix}: queryParameters is missing`);
+      }
+      if (canonicalJson(item.ratePolicy) !== canonicalJson(REQUIRED_RATE_POLICY)) {
+        errors.push(`${prefix}: ratePolicy does not match the release-locked teaching-rate policy`);
+      }
+      if (clarity?.speechRateMaximum !== 7.2) {
+        errors.push(`${prefix}: teaching audio must declare a 7.2 mora/s maximum`);
+      }
+      const reviewedReading = reviewedReadings.get(id);
+      if (reviewedReading !== undefined) {
+        const reviewedReadingSha256 = createHash("sha256").update(reviewedReading, "utf8").digest("hex");
+        if (item.readingKana !== reviewedReading) {
+          errors.push(`${prefix}: readingKana does not match locked content`);
+        }
+        if (item.readingSha256 !== reviewedReadingSha256) {
+          errors.push(`${prefix}: readingSha256 does not match locked content`);
+        }
+      }
+      const expectedRate = expectedSpeechRateEvidence(item, reviewedReading);
+      if (
+        clarity?.speechRateBand !== expectedRate.band
+        || clarity?.speechRateMinimum !== expectedRate.minimum
+      ) {
+        errors.push(`${prefix}: speech-rate band does not match the reviewed reading`);
+      }
+      if (
+        Number.isFinite(clarity?.speechRateMoraPerSecond)
+        && clarity.speechRateMoraPerSecond < expectedRate.minimum
+      ) {
+        errors.push(`${prefix}: teaching audio is below its speech-rate minimum`);
+      }
+      if (!(Number.isFinite(clarity?.speechRateMoraPerSecond) && clarity.speechRateMoraPerSecond <= 7.2)) {
+        errors.push(`${prefix}: teaching audio exceeds the 7.2 mora/s maximum`);
+      }
+      const measuredSpeechRate = clarity?.spokenMoraCount / clarity?.speechRateDurationSeconds;
+      if (
+        !Number.isFinite(measuredSpeechRate)
+        || Math.abs(measuredSpeechRate - clarity?.speechRateMoraPerSecond) > 0.001
+      ) {
+        errors.push(`${prefix}: speech-rate evidence is inconsistent`);
+      }
+      if (clarity?.speechRatePass !== true) errors.push(`${prefix}: speech-rate audit did not pass`);
+      if (item.rateAdjustment !== undefined) {
+        const adjustment = item.rateAdjustment;
+        const validAdjustment = (
+          adjustment
+          && typeof adjustment === "object"
+          && adjustment.policy === "post-synthesis-active-mora-rate-v3"
+          && /^[a-f0-9]{64}$/.test(adjustment.baseArtifactHash || "")
+          && /^[a-f0-9]{64}$/.test(adjustment.baseQuerySha256 || "")
+          && Number.isFinite(adjustment.configuredSpeedScale)
+          && Number.isFinite(adjustment.calibrationSpeedScale)
+          && Number.isFinite(adjustment.adjustedSpeedScale)
+          && adjustment.adjustedSpeedScale >= 0.5
+          && adjustment.calibrationSpeedScale <= adjustment.configuredSpeedScale
+          && adjustment.adjustedSpeedScale < adjustment.calibrationSpeedScale
+          && adjustment.adjustedSpeedScale < adjustment.configuredSpeedScale
+          && adjustment.adjustedSpeedScale === item.queryParameters?.speedScale
+          && adjustment.configuredSpeedScale === item.queryParameters?.configuredSpeedScale
+          && item.queryParameters?.rateAdjustmentPolicy === "post-synthesis-active-mora-rate-v3"
+          && item.queryParameters?.maximumMoraPerSecond === 7.2
+          && item.queryParameters?.targetMoraPerSecond === 6.5
+          && adjustment.observedMoraPerSecond > adjustment.targetMoraPerSecond
+          && adjustment.maximumMoraPerSecond === 7.2
+          && adjustment.targetMoraPerSecond === 6.5
+          && adjustment.adjustedSpeedScale === Math.floor(
+            adjustment.calibrationSpeedScale
+              * adjustment.targetMoraPerSecond
+              / adjustment.observedMoraPerSecond
+              * 1e6
+          ) / 1e6
+        );
+        if (!validAdjustment) errors.push(`${prefix}: rateAdjustment is invalid`);
+      }
+      const boundary = item.sourceBoundaryAudit;
+      if (!boundary || typeof boundary !== "object") errors.push(`${prefix}: sourceBoundaryAudit is missing`);
+      else {
+        for (const field of REQUIRED_SOURCE_BOUNDARY_FIELDS) {
+          if (!(field in boundary)) errors.push(`${prefix}: sourceBoundaryAudit.${field} is missing`);
+        }
+        if (boundary.schemaVersion !== 1) errors.push(`${prefix}: sourceBoundaryAudit schemaVersion must be 1`);
+        if (boundary.claritySchemaVersion !== CLARITY_SCHEMA_VERSION) {
+          errors.push(`${prefix}: sourceBoundaryAudit claritySchemaVersion mismatch`);
+        }
+        if (boundary.artifactHash !== item.contentHash) errors.push(`${prefix}: sourceBoundaryAudit artifactHash mismatch`);
+        if (!/^[a-f0-9]{64}$/.test(boundary.normalizedSha256 || "")) {
+          errors.push(`${prefix}: sourceBoundaryAudit normalizedSha256 is invalid`);
+        }
+        const rawBoundary = boundary.raw;
+        if (!rawBoundary || typeof rawBoundary !== "object") errors.push(`${prefix}: sourceBoundaryAudit.raw is missing`);
+        else {
+          for (const field of REQUIRED_RAW_BOUNDARY_FIELDS) {
+            if (!(field in rawBoundary)) errors.push(`${prefix}: sourceBoundaryAudit.raw.${field} is missing`);
+          }
+          if (rawBoundary.boundaryKind !== "raw" || rawBoundary.activeSpanDbBelowPeak !== 40 || rawBoundary.pass !== true || rawBoundary.truncationRisk !== false) {
+            errors.push(`${prefix}: raw source boundary audit did not pass`);
+          }
+        }
+        const normalizedBoundary = boundary.normalized;
+        if (!normalizedBoundary || typeof normalizedBoundary !== "object") {
+          errors.push(`${prefix}: sourceBoundaryAudit.normalized is missing`);
+        } else {
+          for (const field of REQUIRED_NORMALIZED_BOUNDARY_FIELDS) {
+            if (!(field in normalizedBoundary)) errors.push(`${prefix}: sourceBoundaryAudit.normalized.${field} is missing`);
+          }
+          if (
+            normalizedBoundary.boundaryKind !== "normalized"
+            || normalizedBoundary.activeSpanDbBelowPeak !== 40
+            || normalizedBoundary.pass !== true
+            || normalizedBoundary.activeSpanCollapseRisk !== false
+            || normalizedBoundary.edgeClippingRisk !== false
+          ) {
+            errors.push(`${prefix}: normalized source integrity audit did not pass`);
+          }
+        }
+        if (boundary.pass !== true) {
+          errors.push(`${prefix}: sourceBoundaryAudit did not pass`);
+        }
+      }
     }
     if (item.codec !== "mp3") errors.push(`${prefix}: codec must be mp3`);
-    if (item.sampleRate !== 24000) errors.push(`${prefix}: sampleRate must be 24000`);
+    if (item.sampleRate !== 44100) errors.push(`${prefix}: sampleRate must be 44100`);
     if (item.channels !== 1) errors.push(`${prefix}: channels must be 1`);
-    if (!Number.isFinite(item.bitrate) || item.bitrate < 56000 || item.bitrate > 72000) {
-      errors.push(`${prefix}: bitrate must be approximately 64kbps`);
+    if (!Number.isFinite(item.bitrate) || item.bitrate < 88000 || item.bitrate > 104000) {
+      errors.push(`${prefix}: bitrate must be approximately 96kbps`);
     }
     if (!Number.isFinite(item.durationSeconds) || item.durationSeconds <= 0) errors.push(`${prefix}: invalid durationSeconds`);
     if (!Number.isInteger(item.bytes) || item.bytes <= 0) errors.push(`${prefix}: invalid bytes`);
@@ -257,9 +549,9 @@ export function validateManifest({
       try {
         const actual = probe(file, ffprobe);
         if (actual.codec !== "mp3") errors.push(`${prefix}: probed codec is ${actual.codec}`);
-        if (actual.sampleRate !== 24000) errors.push(`${prefix}: probed sample rate is ${actual.sampleRate}`);
+        if (actual.sampleRate !== 44100) errors.push(`${prefix}: probed sample rate is ${actual.sampleRate}`);
         if (actual.channels !== 1) errors.push(`${prefix}: probed channel count is ${actual.channels}`);
-        if (actual.bitrate < 56000 || actual.bitrate > 72000) errors.push(`${prefix}: probed bitrate is ${actual.bitrate}`);
+        if (actual.bitrate < 88000 || actual.bitrate > 104000) errors.push(`${prefix}: probed bitrate is ${actual.bitrate}`);
         if (actual.durationSeconds <= 0) errors.push(`${prefix}: probed duration is not positive`);
         if (Math.abs(actual.durationSeconds - item.durationSeconds) > 0.02) errors.push(`${prefix}: duration differs from manifest`);
         if (actual.bytes !== item.bytes) errors.push(`${prefix}: byte count differs from manifest`);
@@ -289,6 +581,7 @@ export function validateManifest({
       errors.push(`${prefix}: sourceContentHash must be a SHA-256 hash`);
     }
     if (!Array.isArray(stageEntry.cues)) errors.push(`${prefix}: cues must be an array`);
+    if (stageEntry.sampleRate !== 44100) errors.push(`${prefix}: sampleRate must be 44100`);
     const sceneItem = items[stageEntry.sceneAudioId];
     if (sceneItem?.type !== "scene") errors.push(`${prefix}: missing scene item`);
     else {

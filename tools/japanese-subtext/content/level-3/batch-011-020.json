@@ -8,7 +8,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L3-011",
-      "revision": 3,
+      "revision": 4,
       "level": 3,
       "stage": 11,
       "jlptTarget": "N1",
@@ -409,7 +409,7 @@
               },
               "ttsTextJa": "康太が反対したこと。",
               "audioId": "L3-011-q2-a",
-              "readingJa": "かんふとしがはんたいしたこと。"
+              "readingJa": "こうたがはんたいしたこと。"
             },
             {
               "id": "b",
@@ -492,13 +492,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "13a91081686c6fd47d1421c54c9777f700e3c88e7e4569958f43f8929a2e99dd"
+      "contentHash": "8973cf1312f1ef9c6d8b414b7ed4c7b09f1664e2766bcf3c8cb4b293752234e4"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L3-012",
-      "revision": 3,
+      "revision": 4,
       "level": 3,
       "stage": 12,
       "jlptTarget": "N1",
@@ -963,7 +963,7 @@
               },
               "ttsTextJa": "採否への質問に、関係部署の閲覧手続きだけを答えた。",
               "audioId": "L3-012-q3-b",
-              "readingJa": "さいひえのしつもんに、かんけーぶしょのえつらんてつずきだけをこたえた。"
+              "readingJa": "さいひえのしつもんに、かんけーぶしょのえつらんてつづきだけをこたえた。"
             },
             {
               "id": "c",
@@ -1037,7 +1037,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "2a3117d84b952b29bc87b526e72a0f88e3973ddbce6a251780de04f1b58a6f6a"
+      "contentHash": "67e3d106de235129a101f54cd29c9021254bc2ad57500e991f15c65a5bfcfec7"
     },
     {
       "schemaVersion": 1,
@@ -2535,7 +2535,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L3-016",
-      "revision": 3,
+      "revision": 4,
       "level": 3,
       "stage": 16,
       "jlptTarget": "N1",
@@ -2913,7 +2913,7 @@
               },
               "ttsTextJa": "明の留守電を聞いた。",
               "audioId": "L3-016-q2-c",
-              "readingJa": "あかりのるすでんをきいた。"
+              "readingJa": "あきらのるすでんをきいた。"
             },
             {
               "id": "d",
@@ -2976,7 +2976,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "2088a8b9f648019f8cd823a9cc0e7460b5efb259e99253a646a8b9ce78d286bc"
+      "contentHash": "e36c047b378d24659ca6d95cd9fbd777439ba5d98d67a8c46362955cb83f5b19"
     },
     {
       "schemaVersion": 1,
@@ -4019,7 +4019,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L3-019",
-      "revision": 3,
+      "revision": 4,
       "level": 3,
       "stage": 19,
       "jlptTarget": "N1",
@@ -4217,7 +4217,7 @@
             "zh": "总是关闭的道口，今天缓缓升起。",
             "en": "The crossing that always stayed closed slowly rose today."
           },
-          "readingJa": "いつもしまったふみきりが、きょうはゆっくりあがった。",
+          "readingJa": "いつもとじたふみきりが、きょうはゆっくりあがった。",
           "ttsTextJa": "いつも閉じた踏切が、今日はゆっくり上がった。",
           "audioId": "L3-019-line-006",
           "pauseAfterMs": 500,
@@ -4225,7 +4225,7 @@
             {
               "id": "token-001",
               "text": "いつも閉じた踏切が、",
-              "reading": "いつもしまったふみきりが、",
+              "reading": "いつもとじたふみきりが、",
               "audioId": "L3-019-line-006-token-001"
             },
             {
@@ -4321,7 +4321,7 @@
               },
               "ttsTextJa": "宿の時計だけが毎日きっかり一分ずつ遅れ、そのずれが今日は消えた。",
               "audioId": "L3-019-q1-b",
-              "readingJa": "やどのとけーだけがまいにちきっかりいちぶずつおくれ、そのずれがきょーわきえた。"
+              "readingJa": "やどのとけーだけがまいにちきっかりいっぷんずつおくれ、そのずれがきょうわきえた。"
             },
             {
               "id": "c",
@@ -4490,13 +4490,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "3c9f5fd01c51b2bc5738f80b9014aa5b5e44f511d593f63b5beccf0f07d806ed"
+      "contentHash": "c5c6a294764b91ee094b43cdc1e8d043acf12d524766b441c02f456b1e7e53f9"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L3-020",
-      "revision": 3,
+      "revision": 4,
       "level": 3,
       "stage": 20,
       "jlptTarget": "N1",
@@ -4770,7 +4770,7 @@
               },
               "ttsTextJa": "家族が雇った案内人。",
               "audioId": "L3-020-q1-b",
-              "readingJa": "かぞくがやとったなれーしょん。"
+              "readingJa": "かぞくがやとったあんないにん。"
             },
             {
               "id": "c",
@@ -4936,7 +4936,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "4310ee1f73a3d29f5c17b7f1c1a46bf27ee01ef7e13efaa55b1d2f4f3dc35aed"
+      "contentHash": "31be0db348caa05e15164306c3415a594e85d47686ff32611b576dfae29fa864"
     }
   ]
 }

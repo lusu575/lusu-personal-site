@@ -8,7 +8,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-011",
-      "revision": 3,
+      "revision": 5,
       "level": 5,
       "stage": 11,
       "jlptTarget": "N1-pragmatics",
@@ -21,9 +21,9 @@
       ],
       "layout": "news",
       "title": {
-        "ja": "最多票の小さな割合",
-        "zh": "最多票数，更低比例",
-        "en": "More Voters, Lower Participation"
+        "ja": "最多の投票者数、下がった投票率",
+        "zh": "投票人数创新高，投票率却下降",
+        "en": "Record Voter Count, Lower Turnout"
       },
       "setting": {
         "ja": "市長選の速報番組。過去最多の投票者数だけが強調され、倍増した対象人口と低下した参加率は別表に置かれる。",
@@ -35,9 +35,9 @@
         "src": "assets/stages/l5-011.webp",
         "style": "monochrome-four-panel",
         "alt": {
-          "ja": "最多票の小さな割合の場面を描いた、モノクロ四コマ漫画。",
-          "zh": "描绘“最多票数，更低比例”场景的黑白四格漫画。",
-          "en": "A black-and-white four-panel manga depicting the scene \"More Voters, Lower Participation\"."
+          "ja": "最多の投票者数、下がった投票率の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“投票人数创新高，投票率却下降”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Record Voter Count, Lower Turnout\"."
         },
         "sha256": "f311659ad6c7240123cb046b571504b616bc11f6ee05845a454bbf92ba9c2ab8"
       },
@@ -277,7 +277,7 @@
             "zh": "参与率从上次六成降到这次四成五。",
             "en": "Turnout fell from sixty to forty-five percent."
           },
-          "readingJa": "さんかりつわぜんかいろくわり、こんかいわよんわりごふんです。",
+          "readingJa": "さんかりつわぜんかいろくわり、こんかいわよんわりごぶです。",
           "ttsTextJa": "参加率は前回六割、今回は四割五分です。",
           "audioId": "L5-011-line-008",
           "pauseAfterMs": 480,
@@ -291,7 +291,7 @@
             {
               "id": "token-002",
               "text": "今回は四割五分です。",
-              "reading": "こんかいわよんわりごふんです。",
+              "reading": "こんかいわよんわりごぶです。",
               "audioId": "L5-011-line-008-token-002"
             }
           ]
@@ -327,19 +327,19 @@
           "id": "line-010",
           "speaker": "citizen",
           "text": {
-            "ja": "最多と上昇は同じ意味ではありません。",
-            "zh": "最多不等于比例上升。",
-            "en": "A record is not the same as an increase in rate."
+            "ja": "過去最多と参加率の上昇は同じ意味ではありません。",
+            "zh": "投票人数创新高不等于参与率上升。",
+            "en": "A record voter count is not the same as higher turnout."
           },
-          "readingJa": "さいたとじょーしょーわおなじいみでわありません。",
-          "ttsTextJa": "最多と上昇は同じ意味ではありません。",
+          "readingJa": "かこさいたとさんかりつのじょーしょーわおなじいみでわありません。",
+          "ttsTextJa": "過去最多と参加率の上昇は同じ意味ではありません。",
           "audioId": "L5-011-line-010",
           "pauseAfterMs": 480,
           "tokens": [
             {
               "id": "token-001",
-              "text": "最多と上昇は",
-              "reading": "さいたとじょーしょーわ",
+              "text": "過去最多と参加率の上昇は",
+              "reading": "かこさいたとさんかりつのじょーしょーわ",
               "audioId": "L5-011-line-010-token-001"
             },
             {
@@ -682,7 +682,7 @@
               },
               "ttsTextJa": "字面は正しいが、分母を省くことで参加意欲上昇を示唆する偏った枠づけだ。",
               "audioId": "L5-011-q3-c",
-              "readingJa": "じめんわただしいが、ぶんぼをはぶくことでさんかいよくじょーしょーをしさするかたよったわくづけだ。"
+              "readingJa": "じづらわただしいが、ぶんぼをはぶくことでさんかいよくじょーしょーをしさするかたよったわくづけだ。"
             },
             {
               "id": "d",
@@ -709,9 +709,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "字面上は「その表は番組の後半で出します。」、「最多と上昇は同じ意味ではありません。」という観察が明示されています。",
-              "zh": "字面上明确给出了“那张表会在节目后半展示。”、“最多不等于比例上升。”这些观察。",
-              "en": "At the literal level, the scene explicitly gives “We will show that table later in the program.” and “A record is not the same as an increase in rate.”."
+              "ja": "字面上は「その表は番組の後半で出します。」、「過去最多と参加率の上昇は同じ意味ではありません。」という観察が明示されています。",
+              "zh": "字面上明确给出了“那张表会在节目后半展示。”、“投票人数创新高不等于参与率上升。”这些观察。",
+              "en": "At the literal level, the scene explicitly gives “We will show that table later in the program.” and “A record voter count is not the same as higher turnout.”."
             },
             "intent": {
               "ja": "真実な一文でも、比較に必要な情報の配置と語彙抑制によって誤解を誘えます。",
@@ -746,13 +746,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "6cbefb9e6b12702e1b3f13f79344ed703377cd1fd0f91c0761f0f12cb7e7395c"
+      "contentHash": "8ddc77e3feba30ec7bd93bc0fd5e6c710d94690c9dbac0f11b50b2564432ef69"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-012",
-      "revision": 3,
+      "revision": 6,
       "level": 5,
       "stage": 12,
       "jlptTarget": "N1-pragmatics",
@@ -914,7 +914,7 @@
             "zh": "然后是“下町猫”。",
             "en": "Then, “Downtown Cat.”"
           },
-          "readingJa": "つずいて『したまちねこ』さん。",
+          "readingJa": "つづいて『したまちねこ』さん。",
           "ttsTextJa": "続いて『下町猫』さん。",
           "audioId": "L5-012-line-004",
           "pauseAfterMs": 480,
@@ -922,7 +922,7 @@
             {
               "id": "token-001",
               "text": "続いて",
-              "reading": "つずいて",
+              "reading": "つづいて",
               "audioId": "L5-012-line-004-token-001"
             },
             {
@@ -964,25 +964,25 @@
           "id": "line-006",
           "speaker": "listener",
           "text": {
-            "ja": "今日は投稿名の最初の音だけ強く読んでいます。",
-            "zh": "今天她只把投稿名开头读得特别重。",
-            "en": "Today she stresses only the first sound of each name."
+            "ja": "今日は投稿名の最初の一字だけを不自然に強く読んでいます。",
+            "zh": "今天她只异常强调每个投稿名的第一个字。",
+            "en": "Today she unusually stresses only the first written character of each listener name."
           },
-          "readingJa": "きょーわとーこーめーのさいしょのおとだけつよくよんでいます。",
-          "ttsTextJa": "今日は投稿名の最初の音だけ強く読んでいます。",
+          "readingJa": "きょうわとーこーめーのさいしょのいちじだけをふしぜんにつよくよんでいます。",
+          "ttsTextJa": "今日は投稿名の最初の一字だけを不自然に強く読んでいます。",
           "audioId": "L5-012-line-006",
           "pauseAfterMs": 480,
           "tokens": [
             {
               "id": "token-001",
               "text": "今日は投稿名の",
-              "reading": "きょーわとーこーめーの",
+              "reading": "きょうわとーこーめーの",
               "audioId": "L5-012-line-006-token-001"
             },
             {
               "id": "token-002",
-              "text": "最初の音だけ強く読んでいます。",
-              "reading": "さいしょのおとだけつよくよんでいます。",
+              "text": "最初の一字だけを不自然に強く読んでいます。",
+              "reading": "さいしょのいちじだけをふしぜんにつよくよんでいます。",
               "audioId": "L5-012-line-006-token-002"
             }
           ]
@@ -1018,24 +1018,24 @@
           "id": "line-008",
           "speaker": "analyst",
           "text": {
-            "ja": "頭を順につなぐと『きたのちかぐち』です。",
-            "zh": "按顺序连起开头是“北野地下口”。",
-            "en": "The initials in order read “Kitano underground entrance.”"
+            "ja": "頭の一字を順につなぐと『北野地下口』です。",
+            "zh": "按顺序连接每个名字的首字，写成“北野地下口”。",
+            "en": "The first written characters, in order, spell 北野地下口, “Kitano underground entrance.”"
           },
-          "readingJa": "あたまをじゅんにつなぐと『きたのちかぐち』です。",
-          "ttsTextJa": "頭を順につなぐと『きたのちかぐち』です。",
+          "readingJa": "あたまのいちじをじゅんにつなぐと『きたのちかぐち』です。",
+          "ttsTextJa": "頭の一字を順につなぐと『北野地下口』です。",
           "audioId": "L5-012-line-008",
           "pauseAfterMs": 480,
           "tokens": [
             {
               "id": "token-001",
-              "text": "頭を順につなぐと",
-              "reading": "あたまをじゅんにつなぐと",
+              "text": "頭の一字を順につなぐと",
+              "reading": "あたまのいちじをじゅんにつなぐと",
               "audioId": "L5-012-line-008-token-001"
             },
             {
               "id": "token-002",
-              "text": "『きたのちかぐち』です。",
+              "text": "『北野地下口』です。",
               "reading": "『きたのちかぐち』です。",
               "audioId": "L5-012-line-008-token-002"
             }
@@ -1201,13 +1201,13 @@
             {
               "id": "b",
               "text": {
-                "ja": "投稿名の頭だけが不自然に強調される。",
-                "zh": "只有投稿名开头被异常强调。",
-                "en": "Only the listener-name initials are unusually stressed."
+                "ja": "投稿名の最初の一字だけが不自然に強調される。",
+                "zh": "只有每个投稿名的第一个字被异常强调。",
+                "en": "Only the first written character of each listener name is unusually stressed."
               },
-              "ttsTextJa": "投稿名の頭だけが不自然に強調される。",
+              "ttsTextJa": "投稿名の最初の一字だけが不自然に強調される。",
               "audioId": "L5-012-q1-b",
-              "readingJa": "とーこーめーのあたまだけがふしぜんにきょーちょーされる。"
+              "readingJa": "とーこーめーのさいしょのいちじだけがふしぜんにきょーちょーされる。"
             },
             {
               "id": "c",
@@ -1223,13 +1223,13 @@
             {
               "id": "d",
               "text": {
-                "ja": "頭を順につなぐと実在の中止会場名になる。",
-                "zh": "开头按顺序拼接后正好是实际取消会场名。",
-                "en": "The ordered initials form the actual canceled venue name."
+                "ja": "投稿名の先頭文字を順につなぐと実在の中止会場名になる。",
+                "zh": "投稿名的首字按顺序拼接后正好是实际取消会场名。",
+                "en": "The ordered first written characters form the actual canceled venue name."
               },
-              "ttsTextJa": "頭を順につなぐと実在の中止会場名になる。",
+              "ttsTextJa": "投稿名の先頭文字を順につなぐと実在の中止会場名になる。",
               "audioId": "L5-012-q1-d",
-              "readingJa": "あたまをじゅんにつなぐとじつざいのちゅーしかいじょうめいになる。"
+              "readingJa": "とーこーめーのせんとーもじをじゅんにつなぐとじつざいのちゅーしかいじょーめーになる。"
             }
           ],
           "correctOptionIds": [
@@ -1259,9 +1259,9 @@
               "en": "Both a marking mechanism and a decoded result matching relevant hidden information are required."
             },
             "evidence": {
-              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞を合わせると、五つの強勢と順序、復号語、会場の一致が偶然の頭文字遊びより具体的です。",
-              "zh": "合并阅读第1句台词、第2句台词、第3句台词、第4句台词、第5句台词、第6句台词、第8句台词、第9句台词、第10句台词可知，五次重音、顺序、解码词与会场一致，比偶然首字游戏更具体。",
-              "en": "Read together, the first line, the second line, the third line, the fourth line, the fifth line, the sixth line, the eighth line, the ninth line, the tenth line show that five stresses, their order, the decoded phrase, and the venue match exceed a chance acrostic."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞を合わせると、五つの先頭文字への強勢と順序、復号語、会場の一致が偶然の頭文字遊びより具体的です。",
+              "zh": "合并阅读第1句台词、第2句台词、第3句台词、第4句台词、第5句台词、第6句台词、第8句台词、第9句台词、第10句台词可知，五个首字的重音、顺序、解码词与会场一致，比偶然首字游戏更具体。",
+              "en": "Read together, the first line, the second line, the third line, the fourth line, the fifth line, the sixth line, the eighth line, the ninth line, the tenth line show that stress on five first written characters, their order, the decoded phrase, and the venue match exceed a chance acrostic."
             },
             "nuance": {
               "ja": "登録履歴不在も演出説を補強しますが、架空名だけではメッセージ内容まで決まりません。",
@@ -1388,13 +1388,13 @@
             {
               "id": "b",
               "text": {
-                "ja": "投稿名の頭音と、その読み上げ順。",
-                "zh": "投稿名首音及其播报顺序。",
-                "en": "The initials of listener names and their spoken order."
+                "ja": "投稿名の先頭文字と、その読み上げ順。",
+                "zh": "投稿名首字及其播报顺序。",
+                "en": "The first written character of each listener name and their spoken order."
               },
-              "ttsTextJa": "投稿名の頭音と、その読み上げ順。",
+              "ttsTextJa": "投稿名の先頭文字と、その読み上げ順。",
               "audioId": "L5-012-q3-b",
-              "readingJa": "とーこーめーのとうおんと、そのよみあげじゅん。"
+              "readingJa": "とーこーめーのせんとーもじと、そのよみあげじゅん。"
             },
             {
               "id": "c",
@@ -1439,14 +1439,14 @@
               "en": "At the literal level, the scene explicitly gives “First, a request from “North Wind.”” and “Next is “Wild Rose.””."
             },
             "intent": {
-              "ja": "情報は名前の選択、強勢、順序という放送音声のメタデータに載っています。",
-              "zh": "信息承载在名字选择、重音与顺序这些播报元数据上。",
-              "en": "The information rides on spoken metadata: name choice, stress, and order."
+              "ja": "情報は名前の選択、先頭文字への強勢、順序という放送のメタデータに載っています。",
+              "zh": "信息承载在名字选择、首字重音与顺序这些播报元数据上。",
+              "en": "The information rides on broadcast metadata: name choice, stress on first written characters, and order."
             },
             "evidence": {
-              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞、8番目の台詞、12番目の台詞を合わせると、各投稿名と強勢の観察、順序復号、分析者の媒体特定が一致します。",
-              "zh": "合并阅读第1句台词、第2句台词、第3句台词、第4句台词、第5句台词、第6句台词、第8句台词、第12句台词可知，各投稿名、重音观察、顺序解码与分析员对媒介的判断相一致。",
-              "en": "Read together, the first line, the second line, the third line, the fourth line, the fifth line, the sixth line, the eighth line, the twelfth line show that the names, stress observation, ordered decoding, and analyst's channel identification agree."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞、8番目の台詞、12番目の台詞を合わせると、各投稿名と先頭文字への強勢、順序復号、分析者の媒体特定が一致します。",
+              "zh": "合并阅读第1句台词、第2句台词、第3句台词、第4句台词、第5句台词、第6句台词、第8句台词、第12句台词可知，各投稿名、首字重音、顺序解码与分析员对媒介的判断相一致。",
+              "en": "Read together, the first line, the second line, the third line, the fourth line, the fifth line, the sixth line, the eighth line, the twelfth line show that the names, first-character stress, ordered decoding, and analyst's channel identification agree."
             },
             "nuance": {
               "ja": "曲順変更というDJの言葉も順序の重要性を示しますが、それだけでは復号規則を完成しません。",
@@ -1564,13 +1564,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "c3dc5d9997ff337b06c96347744658d98fc7ceaa556f4a28e250cfc1098b94ae"
+      "contentHash": "728808e4696e8d0cf4df32ac31799786b7e298b90715ee58f99bd1fa5733bdc9"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-013",
-      "revision": 3,
+      "revision": 6,
       "level": 5,
       "stage": 13,
       "jlptTarget": "N1-pragmatics",
@@ -1813,7 +1813,7 @@
             "zh": "工程顺序是基础、屋顶、完工，和留言日期正相反。",
             "en": "Construction ran foundation, roof, completion—the reverse of the message dates."
           },
-          "readingJa": "こーてーわきそ、やね、かんせーのじゅんです。るすでんのひずけとわぎゃくですね。",
+          "readingJa": "こーてーわきそ、やね、かんせーのじゅんです。るすでんのひづけとわぎゃくですね。",
           "ttsTextJa": "工程は基礎、屋根、完成の順です。留守電の日付とは逆ですね。",
           "audioId": "L5-013-line-007",
           "pauseAfterMs": 480,
@@ -1827,7 +1827,7 @@
             {
               "id": "token-002",
               "text": "留守電の日付とは逆ですね。",
-              "reading": "るすでんのひずけとわぎゃくですね。",
+              "reading": "るすでんのひづけとわぎゃくですね。",
               "audioId": "L5-013-line-007-token-002"
             }
           ]
@@ -1863,25 +1863,25 @@
           "id": "line-009",
           "speaker": "daughter",
           "text": {
-            "ja": "では録音自体が新しい順ではない。",
-            "zh": "那录音内容本身并不是按新到旧排序。",
-            "en": "Then the recordings themselves are not in date order."
+            "ja": "では表示日の順と録音内容の年代順が逆なのですね。",
+            "zh": "那就是显示日期的顺序与录音内容的年代顺序正好相反。",
+            "en": "Then the displayed-date order runs opposite to the recordings' chronology."
           },
-          "readingJa": "でわろくおんじたいがあたらしいじゅんでわない。",
-          "ttsTextJa": "では録音自体が新しい順ではない。",
+          "readingJa": "でわひょーじびのじゅんとろくおんないよーのねんだいじゅんがぎゃくなのですね。",
+          "ttsTextJa": "では表示日の順と録音内容の年代順が逆なのですね。",
           "audioId": "L5-013-line-009",
           "pauseAfterMs": 480,
           "tokens": [
             {
               "id": "token-001",
-              "text": "では録音自体が",
-              "reading": "でわろくおんじたいが",
+              "text": "では表示日の順と",
+              "reading": "でわひょーじびのじゅんと",
               "audioId": "L5-013-line-009-token-001"
             },
             {
               "id": "token-002",
-              "text": "新しい順ではない。",
-              "reading": "あたらしいじゅんでわない。",
+              "text": "録音内容の年代順が逆なのですね。",
+              "reading": "ろくおんないよーのねんだいじゅんがぎゃくなのですね。",
               "audioId": "L5-013-line-009-token-002"
             }
           ]
@@ -1921,7 +1921,7 @@
             "zh": "我从旧设备一次性转了三条。",
             "en": "I transferred all three together from an old device."
           },
-          "readingJa": "むかしのたんまつからさんげんまとめてうつしたの。",
+          "readingJa": "むかしのたんまつからさんけんまとめてうつしたの。",
           "ttsTextJa": "昔の端末から三件まとめて移したの。",
           "audioId": "L5-013-line-011",
           "pauseAfterMs": 480,
@@ -1935,7 +1935,7 @@
             {
               "id": "token-002",
               "text": "三件まとめて移したの。",
-              "reading": "さんげんまとめてうつしたの。",
+              "reading": "さんけんまとめてうつしたの。",
               "audioId": "L5-013-line-011-token-002"
             }
           ]
@@ -2074,7 +2074,7 @@
               },
               "ttsTextJa": "三件は同時に録音された。",
               "audioId": "L5-013-q1-d",
-              "readingJa": "さんげんわどーじにろくおんされた。"
+              "readingJa": "さんけんわどーじにろくおんされた。"
             }
           ],
           "correctOptionIds": [
@@ -2094,14 +2094,14 @@
               "en": "At the literal level, the scene explicitly gives “I will meet you when the new east entrance is complete.” and “They are installing the east-entrance roof now.”."
             },
             "intent": {
-              "ja": "工事の不可逆な工程と声の年齢が、表示日とは逆の年代順を同時に示します。",
-              "zh": "不可逆施工顺序与声音年龄共同显示出和显示日期相反的年代顺序。",
-              "en": "Irreversible construction stages and voice age jointly establish chronology opposite the displayed dates."
+              "ja": "不可逆な工事工程が、表示日とは逆の内容順を示します。声の若返りもその順序と整合します。",
+              "zh": "不可逆的施工阶段显示出与显示日期相反的内容顺序，声音越变越年轻也与该顺序一致。",
+              "en": "Irreversible construction stages establish content chronology opposite the displayed dates; the progressively younger voice is consistent with it."
             },
             "evidence": {
-              "ja": "2番目の台詞、4番目の台詞、6番目の台詞、7番目の台詞、14番目の台詞を合わせると、基礎から完成へという工程順と、学生声から現在声へという加齢方向が一致します。",
-              "zh": "合并阅读第2句台词、第4句台词、第6句台词、第7句台词、第14句台词可知，从基础到完工的工程顺序，与从学生声音到当前声音的年龄方向一致。",
-              "en": "Read together, the second line, the fourth line, the sixth line, the seventh line, the fourteenth line show that foundation-to-completion progress aligns with student-to-current voice aging."
+              "ja": "2番目の台詞、4番目の台詞、6番目の台詞、7番目の台詞、14番目の台詞を合わせると、三月の基礎、二月の屋根、一月の完成という対応が、内容の年代順を確定します。",
+              "zh": "合并阅读第2句台词、第4句台词、第6句台词、第7句台词、第14句台词可知，三月对应基础、二月对应屋顶、一月对应完工，由此确定内容的年代顺序。",
+              "en": "Read together, the second line, the fourth line, the sixth line, the seventh line, the fourteenth line show that March maps to foundation work, February to the roof, and January to completion, establishing the content chronology."
             },
             "nuance": {
               "ja": "声の高さだけなら演技の可能性もありますが、工事記録が独立した時間軸を与えます。",
@@ -2224,7 +2224,7 @@
               },
               "ttsTextJa": "古い録音が逆順の新日付を与えられ、若い時代へ遡って見える。",
               "audioId": "L5-013-q3-a",
-              "readingJa": "ふるいろくおんがぎゃくじゅんのしんひずけをあたえられ、わかいじだいえさかのぼってみえる。"
+              "readingJa": "ふるいろくおんがぎゃくじゅんのしんひづけをあたえられ、わかいじだいえさかのぼってみえる。"
             },
             {
               "id": "b",
@@ -2311,13 +2311,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "93baf744f744da948a7fd114593d56280f4d31cb07db69485d5f53409662a171"
+      "contentHash": "81adacfcc8334c96aa95b7733f8e9cc0a684a8716a34be2fd11122841dc346fb"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-014",
-      "revision": 3,
+      "revision": 5,
       "level": 5,
       "stage": 14,
       "jlptTarget": "N1-pragmatics",
@@ -2331,9 +2331,9 @@
       ],
       "layout": "short-story",
       "title": {
-        "ja": "三人が残した順番",
-        "zh": "三个人留下的先后",
-        "en": "The Order of Three Warnings"
+        "ja": "三つの文を書いた順番",
+        "zh": "三句话的书写先后",
+        "en": "The Writing Order of Three Messages"
       },
       "setting": {
         "ja": "同じ時間を繰り返す研究室。三人の記憶者が競合するメモを残し、紙の折れと重なるインクが書かれた順を示す。",
@@ -2345,9 +2345,9 @@
         "src": "assets/stages/l5-014.webp",
         "style": "monochrome-four-panel",
         "alt": {
-          "ja": "三人が残した順番の場面を描いた、モノクロ四コマ漫画。",
-          "zh": "描绘“三个人留下的先后”场景的黑白四格漫画。",
-          "en": "A black-and-white four-panel manga depicting the scene \"The Order of Three Warnings\"."
+          "ja": "三つの文を書いた順番の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“三句话的书写先后”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"The Writing Order of Three Messages\"."
         },
         "sha256": "45a7f85149ca290acb031eff71b91d914d9b30c3aabe20234210b15df5c8301d"
       },
@@ -2980,7 +2980,7 @@
               },
               "ttsTextJa": "時系列上は最新だが、正しさは装置・発言・他の痕跡で別に検証する。",
               "audioId": "L5-014-q3-d",
-              "readingJa": "じけーれつじょうわさいしんだが、ただしさわそーち・はつげん・たのこんせきでべつにけんしょーする。"
+              "readingJa": "じけーれつじょうわさいしんだが、ただしさわそーち・はつげん・ほかのこんせきでべつにけんしょーする。"
             }
           ],
           "correctOptionIds": [
@@ -3122,13 +3122,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "37dd02476ef0cb84fe2f7cca79c26f71d86fde18db4f9228b65836f1f44e8782"
+      "contentHash": "9bff909c47480104c2aa34547cecec5a6ce0738158d134576ec6b10ea15d2a29"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-015",
-      "revision": 3,
+      "revision": 5,
       "level": 5,
       "stage": 15,
       "jlptTarget": "N1-pragmatics",
@@ -3313,7 +3313,7 @@
           "id": "line-005",
           "speaker": "mirror",
           "text": {
-            "ja": "She told her sister:waiting at the station. Go ahead.",
+            "ja": "She told her sister: waiting at the station. Go ahead.",
             "zh": "她告诉姐姐：“在车站等。先走。”",
             "en": "She told her sister: waiting at the station. Go ahead."
           },
@@ -3324,7 +3324,7 @@
           "tokens": [
             {
               "id": "token-001",
-              "text": "She told her sister:",
+              "text": "She told her sister: ",
               "reading": "しー・とーるど・はー・しすたー。",
               "audioId": "L5-015-line-005-token-001"
             },
@@ -3344,7 +3344,7 @@
             "zh": "英语里waiting的主语消失了。",
             "en": "English has dropped the subject of “waiting.”"
           },
-          "readingJa": "えーごでわだぶりゅーえーあいてぃーあいえぬじーのしゅごがきえています。",
+          "readingJa": "えーごでわうぇいてぃんぐのしゅごがきえています。",
           "ttsTextJa": "英語ではwaitingの主語が消えています。",
           "audioId": "L5-015-line-006",
           "pauseAfterMs": 480,
@@ -3358,7 +3358,7 @@
             {
               "id": "token-002",
               "text": "waitingの主語が消えています。",
-              "reading": "だぶりゅーえーあいてぃーあいえぬじーのしゅごがきえています。",
+              "reading": "うぇいてぃんぐのしゅごがきえています。",
               "audioId": "L5-015-line-006-token-002"
             }
           ]
@@ -3371,7 +3371,7 @@
             "zh": "但我说话时看着明里的镜像。",
             "en": "But I spoke while looking at Akari's reflection."
           },
-          "readingJa": "でもわたしわあかりのかがみぞーをみてはなしました。",
+          "readingJa": "でもわたしわあかりのきょうぞうをみてはなしました。",
           "ttsTextJa": "でも私はあかりの鏡像を見て話しました。",
           "audioId": "L5-015-line-007",
           "pauseAfterMs": 480,
@@ -3385,7 +3385,7 @@
             {
               "id": "token-002",
               "text": "明里の鏡像を見て話しました。",
-              "reading": "あかりのかがみぞーをみてはなしました。",
+              "reading": "あかりのきょうぞうをみてはなしました。",
               "audioId": "L5-015-line-007-token-002"
             }
           ]
@@ -3610,7 +3610,7 @@
               },
               "ttsTextJa": "英語の鏡像。",
               "audioId": "L5-015-q1-b",
-              "readingJa": "えーごのかがみぞー。"
+              "readingJa": "えーごのきょうぞう。"
             },
             {
               "id": "c",
@@ -3742,7 +3742,7 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "字面上は「『私は駅で待っている。姉さんは先に行って』。」、「She told her sister:waiting at the station. Go ahead.」という観察が明示されています。",
+              "ja": "字面上は「『私は駅で待っている。姉さんは先に行って』。」、「She told her sister: waiting at the station. Go ahead.」という観察が明示されています。",
               "zh": "字面上明确给出了““我在车站等，你先走。””、“她告诉姐姐：“在车站等。先走。””这些观察。",
               "en": "At the literal level, the scene explicitly gives ““I am waiting at the station. Go ahead, Sister.”” and “She told her sister: waiting at the station. Go ahead.”."
             },
@@ -3872,13 +3872,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "05710c4a6b7347946f40dddd50ebc7f2354f910bfcf8eb9a6c18f4ccbb05f97e"
+      "contentHash": "b4ffc2f702ac40af9361fb2b7b61a4ad43a748df1e2a05d695e66d12b7df7f34"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-016",
-      "revision": 3,
+      "revision": 5,
       "level": 5,
       "stage": 16,
       "jlptTarget": "N1-pragmatics",
@@ -4170,19 +4170,19 @@
           "id": "line-009",
           "speaker": "scribe",
           "text": {
-            "ja": "王は布衣となり、名も黎とだけ記しました。",
+            "ja": "王は平服に着替え、名も黎とだけ記しました。",
             "zh": "国王换上便服，姓名只登记为黎。",
             "en": "He changed into plain clothes and registered simply as Rei."
           },
-          "readingJa": "おーわふいとなり、なもれいとだけしるしました。",
-          "ttsTextJa": "王は布衣となり、名もれいとだけ記しました。",
+          "readingJa": "おーわへーふくにきがえ、なもれいとだけしるしました。",
+          "ttsTextJa": "王は平服に着替え、名もれいとだけ記しました。",
           "audioId": "L5-016-line-009",
           "pauseAfterMs": 480,
           "tokens": [
             {
               "id": "token-001",
-              "text": "王は布衣となり、",
-              "reading": "おーわふいとなり、",
+              "text": "王は平服に着替え、",
+              "reading": "おーわへーふくにきがえ、",
               "audioId": "L5-016-line-009-token-001"
             },
             {
@@ -4412,13 +4412,13 @@
             {
               "id": "b",
               "text": {
-                "ja": "冠と印章を預け、布衣で個人名だけを記した。",
+                "ja": "冠と印章を預け、平服に着替えて個人名だけを記した。",
                 "zh": "寄存王冠印玺，换便服并只登记个人名。",
                 "en": "He deposits crown and seal, wears plain clothes, and registers only his name."
               },
-              "ttsTextJa": "冠と印章を預け、布衣で個人名だけを記した。",
+              "ttsTextJa": "冠と印章を預け、平服に着替えて個人名だけを記した。",
               "audioId": "L5-016-q2-b",
-              "readingJa": "かんむりといんしょーをあずけ、ふいでこじんめーだけをしるした。"
+              "readingJa": "かんむりといんしょーをあずけ、へーふくにきがえてこじんめーだけをしるした。"
             },
             {
               "id": "c",
@@ -4510,7 +4510,7 @@
               },
               "ttsTextJa": "同じれいが、王権を使わない旅人として登録される。",
               "audioId": "L5-016-q3-b",
-              "readingJa": "どーじれいが、おーけんをつかわないたびびととしてとーろくされる。"
+              "readingJa": "おなじれいが、おーけんをつかわないたびびととしてとーろくされる。"
             },
             {
               "id": "c",
@@ -4679,13 +4679,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "63e2aaeb47ab2dbf712cad43bde463cc2e99c8516367f7d23e5162c0f14d3088"
+      "contentHash": "d0d41a99efef3b17a7208afb6e8822bd9a641d95b212660afd97f5af762bc641"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-017",
-      "revision": 3,
+      "revision": 5,
       "level": 5,
       "stage": 17,
       "jlptTarget": "N1-pragmatics",
@@ -4815,25 +4815,25 @@
           "id": "line-003",
           "speaker": "friend",
           "text": {
-            "ja": "エルは生前から……いや、眠る前から姫と呼ばれるのを嫌がった。",
+            "ja": "エルは眠る前から、姫と呼ばれるのを嫌がった。",
             "zh": "艾尔在沉睡前就讨厌被叫公主。",
             "en": "Before sleeping, El already disliked being called princess."
           },
-          "readingJa": "えるわせーぜんから……いや、ねむるまえからひめとよばれるのをいやがった。",
-          "ttsTextJa": "エルは生前から……いや、眠る前から姫と呼ばれるのを嫌がった。",
+          "readingJa": "えるわねむるまえから、ひめとよばれるのをいやがった。",
+          "ttsTextJa": "エルは眠る前から、姫と呼ばれるのを嫌がった。",
           "audioId": "L5-017-line-003",
           "pauseAfterMs": 480,
           "tokens": [
             {
               "id": "token-001",
-              "text": "エルは生前から……",
-              "reading": "えるわせーぜんから……",
+              "text": "エルは眠る前から、",
+              "reading": "えるわねむるまえから、",
               "audioId": "L5-017-line-003-token-001"
             },
             {
               "id": "token-002",
-              "text": "いや、眠る前から姫と呼ばれるのを嫌がった。",
-              "reading": "いや、ねむるまえからひめとよばれるのをいやがった。",
+              "text": "姫と呼ばれるのを嫌がった。",
+              "reading": "ひめとよばれるのをいやがった。",
               "audioId": "L5-017-line-003-token-002"
             }
           ]
@@ -4981,7 +4981,7 @@
             "zh": "继续使用本人拒绝的称呼，才是在无视意愿。",
             "en": "Continuing a rejected name disregards El's wishes."
           },
-          "readingJa": "ほんにんがこばんだなをつずけるかたがいしをむしします。",
+          "readingJa": "ほんにんがこばんだなをつづけるかたがいしをむしします。",
           "ttsTextJa": "本人が拒んだ名を続ける方が意思を無視します。",
           "audioId": "L5-017-line-009",
           "pauseAfterMs": 480,
@@ -4989,7 +4989,7 @@
             {
               "id": "token-001",
               "text": "本人が拒んだ名を続ける方が",
-              "reading": "ほんにんがこばんだなをつずけるかたが",
+              "reading": "ほんにんがこばんだなをつづけるかたが",
               "audioId": "L5-017-line-009-token-001"
             },
             {
@@ -5155,7 +5155,7 @@
               },
               "ttsTextJa": "周囲が本人の拒否後も『姫』という役割を呼び続けたこと。",
               "audioId": "L5-017-q1-a",
-              "readingJa": "しゅーいがほんにんのきょひごも『ひめ』というやくわりをよびつずけたこと。"
+              "readingJa": "しゅーいがほんにんのきょひごも『ひめ』というやくわりをよびつづけたこと。"
             },
             {
               "id": "b",
@@ -5208,7 +5208,7 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "字面上は「姫様、どうかお目覚めください。」、「エルは生前から……いや、眠る前から姫と呼ばれるのを嫌がった。」という観察が明示されています。",
+              "ja": "字面上は「姫様、どうかお目覚めください。」、「エルは眠る前から、姫と呼ばれるのを嫌がった。」という観察が明示されています。",
               "zh": "字面上明确给出了“公主殿下，请醒来。”、“艾尔在沉睡前就讨厌被叫公主。”这些观察。",
               "en": "At the literal level, the scene explicitly gives “Princess, please awaken.” and “Before sleeping, El already disliked being called princess.”."
             },
@@ -5300,7 +5300,7 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "字面上は「エルは生前から……いや、眠る前から姫と呼ばれるのを嫌がった。」、「王の子なら正式には姫です。」という観察が明示されています。",
+              "ja": "字面上は「エルは眠る前から、姫と呼ばれるのを嫌がった。」、「王の子なら正式には姫です。」という観察が明示されています。",
               "zh": "字面上明确给出了“艾尔在沉睡前就讨厌被叫公主。”、“既然是国王的孩子，正式称呼就是公主。”这些观察。",
               "en": "At the literal level, the scene explicitly gives “Before sleeping, El already disliked being called princess.” and “A sovereign's child is formally a princess.”."
             },
@@ -5521,13 +5521,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "17dd792031abec50dee07ac2a34c36c2dff435212af5c537a501458d001a5c89"
+      "contentHash": "37c53d6caf12d375a963d6ee400c3ace44ce80bb449cc5b95691e9d95efdcd22"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-018",
-      "revision": 3,
+      "revision": 4,
       "level": 5,
       "stage": 18,
       "jlptTarget": "N1-pragmatics",
@@ -5606,7 +5606,7 @@
           "text": {
             "ja": "以上を踏まえ、我々は新協定を――",
             "zh": "综上，我们将对新协定——",
-            "en": "In light of this, we shall—"
+            "en": "In light of this, the new agreement shall be—"
           },
           "readingJa": "いじょーをふまえ、われわれわしんきょーてーを……",
           "ttsTextJa": "以上を踏まえ、我々は新協定を――",
@@ -5687,7 +5687,7 @@
           "text": {
             "ja": "――全会一致で承認します。",
             "zh": "——全会一致批准。",
-            "en": "—approve it unanimously."
+            "en": "—approved unanimously."
           },
           "readingJa": "……ぜんかいいっちでしょーにんします。",
           "ttsTextJa": "――全会一致で承認します。",
@@ -6024,7 +6024,7 @@
             "literal": {
               "ja": "字面上は「以上を踏まえ、我々は新協定を――」、「拍手トラック、再生。」という観察が明示されています。",
               "zh": "字面上明确给出了“综上，我们将对新协定——”、“掌声音轨，播放。”这些观察。",
-              "en": "At the literal level, the scene explicitly gives “In light of this, we shall—” and “Applause track, play.”."
+              "en": "At the literal level, the scene explicitly gives “In light of this, the new agreement shall be—” and “Applause track, play.”."
             },
             "intent": {
               "ja": "音の時刻、台本、投票表示、身体動作という独立記録が、会場反応より前の再生を示します。",
@@ -6429,13 +6429,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "d68ffc11420c4b1d428f49a6cc72c1dff31ce714b7a7bc77e2d6a737c9d97102"
+      "contentHash": "1c2867208db19f0b30b19488282f1f5b8a467cb4115e13e17b8652127d1728b7"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-019",
-      "revision": 3,
+      "revision": 6,
       "level": 5,
       "stage": 19,
       "jlptTarget": "N1-pragmatics",
@@ -6516,7 +6516,7 @@
             "zh": "这幅肖像在屏幕里眨眼了。",
             "en": "This portrait blinked on my screen."
           },
-          "readingJa": "このしょーぞー、がめんのなかでしばたきました。",
+          "readingJa": "このしょーぞー、がめんのなかでまばたきました。",
           "ttsTextJa": "この肖像、画面の中で瞬きました。",
           "audioId": "L5-019-line-001",
           "pauseAfterMs": 480,
@@ -6530,7 +6530,7 @@
             {
               "id": "token-002",
               "text": "画面の中で瞬きました。",
-              "reading": "がめんのなかでしばたきました。",
+              "reading": "がめんのなかでまばたきました。",
               "audioId": "L5-019-line-001-token-002"
             }
           ]
@@ -6570,7 +6570,7 @@
             "zh": "旁边三幅也只在相机里眨眼。",
             "en": "The three beside it blink only through the camera too."
           },
-          "readingJa": "となりのさんまいもかめらごしだけしばたきます。",
+          "readingJa": "となりのさんまいもかめらごしだけまばたきます。",
           "ttsTextJa": "隣の三枚もカメラ越しだけ瞬きます。",
           "audioId": "L5-019-line-003",
           "pauseAfterMs": 480,
@@ -6584,7 +6584,7 @@
             {
               "id": "token-002",
               "text": "カメラ越しだけ瞬きます。",
-              "reading": "かめらごしだけしばたきます。",
+              "reading": "かめらごしだけまばたきます。",
               "audioId": "L5-019-line-003-token-002"
             }
           ]
@@ -6593,19 +6593,19 @@
           "id": "line-004",
           "speaker": "tech",
           "text": {
-            "ja": "端末に旧AR案内が自動起動しています。",
+            "ja": "端末では旧AR案内が自動起動しています。",
             "zh": "设备自动启动了旧AR导览。",
             "en": "An old AR guide auto-launches on the device."
           },
-          "readingJa": "たんまつにきゅーえーあーるあんないがじどーきどーしています。",
-          "ttsTextJa": "端末に旧AR案内が自動起動しています。",
+          "readingJa": "たんまつでわきゅーえーあーるあんないがじどーきどーしています。",
+          "ttsTextJa": "端末では旧AR案内が自動起動しています。",
           "audioId": "L5-019-line-004",
           "pauseAfterMs": 480,
           "tokens": [
             {
               "id": "token-001",
-              "text": "端末に旧AR案内が",
-              "reading": "たんまつにきゅーえーあーるあんないが",
+              "text": "端末では旧AR案内が",
+              "reading": "たんまつでわきゅーえーあーるあんないが",
               "audioId": "L5-019-line-004-token-001"
             },
             {
@@ -6732,7 +6732,7 @@
             "zh": "里面那幅蓝色肖像不属于AR目标。",
             "en": "The blue portrait at the back is not an AR target."
           },
-          "readingJa": "おくのあおいしょーぞーわＡＲたいしょうがいです。",
+          "readingJa": "おくのあおいしょーぞーわえーあーるたいしょうがいです。",
           "ttsTextJa": "奥の青い肖像はAR対象外です。",
           "audioId": "L5-019-line-009",
           "pauseAfterMs": 480,
@@ -6746,7 +6746,7 @@
             {
               "id": "token-002",
               "text": "AR対象外です。",
-              "reading": "ＡＲたいしょうがいです。",
+              "reading": "えーあーるたいしょうがいです。",
               "audioId": "L5-019-line-009-token-002"
             }
           ]
@@ -6759,7 +6759,7 @@
             "zh": "可刚才蓝色肖像也在屏幕里眨眼。",
             "en": "But the blue portrait just blinked on screen too."
           },
-          "readingJa": "でもいま、あおいしょーぞーもがめんでしばたきました。",
+          "readingJa": "でもいま、あおいしょーぞーもがめんでまばたきました。",
           "ttsTextJa": "でも今、青い肖像も画面で瞬きました。",
           "audioId": "L5-019-line-010",
           "pauseAfterMs": 480,
@@ -6773,7 +6773,7 @@
             {
               "id": "token-002",
               "text": "青い肖像も画面で瞬きました。",
-              "reading": "あおいしょーぞーもがめんでしばたきました。",
+              "reading": "あおいしょーぞーもがめんでまばたきました。",
               "audioId": "L5-019-line-010-token-002"
             }
           ]
@@ -6838,7 +6838,7 @@
           "text": {
             "ja": "確認中です。今の時点では否定も肯定もできません。",
             "zh": "还在检查，目前不能肯定也不能否定。",
-            "en": "I am checking. At present I can neither confirm nor reject that."
+            "en": "I am checking. At present, I can neither confirm nor rule that out."
           },
           "readingJa": "かくにんちゅうです。いまのじてんでわひてーもこーてーもできません。",
           "ttsTextJa": "確認中です。今の時点では否定も肯定もできません。",
@@ -7245,7 +7245,7 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "字面上は「隣の三枚もカメラ越しだけ瞬きます。」、「端末に旧AR案内が自動起動しています。」という観察が明示されています。",
+              "ja": "字面上は「隣の三枚もカメラ越しだけ瞬きます。」、「端末では旧AR案内が自動起動しています。」という観察が明示されています。",
               "zh": "字面上明确给出了“旁边三幅也只在相机里眨眼。”、“设备自动启动了旧AR导览。”这些观察。",
               "en": "At the literal level, the scene explicitly gives “The three beside it blink only through the camera too.” and “An old AR guide auto-launches on the device.”."
             },
@@ -7282,13 +7282,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "093ab1a30fb1bdcbbf9e27afe0a547798870948c69a9c60333fc24abd5c26679"
+      "contentHash": "1d07ecf86cd59a029fe5612f218cb0a3691276b0be9668fefa129cd800e0a66f"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-020",
-      "revision": 3,
+      "revision": 6,
       "level": 5,
       "stage": 20,
       "jlptTarget": "N1-pragmatics",
@@ -7532,7 +7532,7 @@
             "zh": "……昨天我说太苦，今天焦葱把甜味收得刚好。",
             "en": "...Yesterday I called it bitter, but today's charred scallion balances the sweetness."
           },
-          "readingJa": "……きのーわにがいといったけど、きょーわこがしねぎがあまさをしめてる。",
+          "readingJa": "……きのーわにがいといったけど、きょうわこがしねぎがあまさをしめてる。",
           "ttsTextJa": "……昨日は苦いと言ったけど、今日は焦がし葱が甘さを締めてる。",
           "audioId": "L5-020-line-007",
           "pauseAfterMs": 480,
@@ -7546,7 +7546,7 @@
             {
               "id": "token-002",
               "text": "今日は焦がし葱が甘さを締めてる。",
-              "reading": "きょーわこがしねぎがあまさをしめてる。",
+              "reading": "きょうわこがしねぎがあまさをしめてる。",
               "audioId": "L5-020-line-007-token-002"
             }
           ]
@@ -7557,7 +7557,7 @@
           "text": {
             "ja": "支払い完了。釣りは信頼度に加算します。",
             "zh": "付款完成，余值计入信任度。",
-            "en": "Payment complete. Change is added to trust."
+            "en": "Payment complete. Any change is credited to your trust score."
           },
           "readingJa": "しはらいかんりょー。つりわしんらいどにかさんします。",
           "ttsTextJa": "支払い完了。釣りは信頼度に加算します。",
@@ -7694,7 +7694,7 @@
             "zh": "我不是为了付钱才夸，是真的更喜欢今天这份。",
             "en": "I did not praise it just to pay. I genuinely prefer today's dish."
           },
-          "readingJa": "ほめるためにほめたんじゃない。ほんとーにきょーのほおがすきです。",
+          "readingJa": "ほめるためにほめたんじゃない。ほんとーにきょうのほおがすきです。",
           "ttsTextJa": "褒めるために褒めたんじゃない。本当に今日の方が好きです。",
           "audioId": "L5-020-line-013",
           "pauseAfterMs": 480,
@@ -7708,7 +7708,7 @@
             {
               "id": "token-002",
               "text": "本当に今日の方が好きです。",
-              "reading": "ほんとーにきょーのほおがすきです。",
+              "reading": "ほんとーにきょうのほおがすきです。",
               "audioId": "L5-020-line-013-token-002"
             }
           ]
@@ -7733,7 +7733,7 @@
               },
               "ttsTextJa": "朔の文が最も長かった。",
               "audioId": "L5-020-q1-a",
-              "readingJa": "ついたちのぶんがもっともながかった。"
+              "readingJa": "さくのぶんがもっともながかった。"
             },
             {
               "id": "b",
@@ -7755,7 +7755,7 @@
               },
               "ttsTextJa": "朔だけ現金も払った。",
               "audioId": "L5-020-q1-c",
-              "readingJa": "ついたちだけげんきんもはらった。"
+              "readingJa": "さくだけげんきんもはらった。"
             },
             {
               "id": "d",
@@ -7766,7 +7766,7 @@
               },
               "ttsTextJa": "AIが朔の友人だった。",
               "audioId": "L5-020-q1-d",
-              "readingJa": "えーあいがついたちのゆーじんだった。"
+              "readingJa": "えーあいがさくのゆーじんだった。"
             }
           ],
           "correctOptionIds": [
@@ -7959,6 +7959,7 @@
           "evidenceLineIds": [
             "line-003",
             "line-004",
+            "line-005",
             "line-007",
             "line-010",
             "line-011",
@@ -8051,7 +8052,9 @@
           ],
           "evidenceLineIds": [
             "line-002",
+            "line-003",
             "line-004",
+            "line-005",
             "line-007",
             "line-009",
             "line-010",
@@ -8097,7 +8100,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "5b38cbb6e14415d5808e33058e392a027d0553c298ff0395598b6953fcf24a8d"
+      "contentHash": "6fca045f988abdb463aaf23c86a62e771f1bba0112c3215acda949b75b9ca59f"
     }
   ]
 }

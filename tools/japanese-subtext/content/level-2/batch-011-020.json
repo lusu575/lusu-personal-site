@@ -315,7 +315,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L2-012",
-      "revision": 3,
+      "revision": 4,
       "level": 2,
       "stage": 12,
       "jlptTarget": "N2",
@@ -636,7 +636,7 @@
               },
               "ttsTextJa": "場の緊張を感じ、議論を続けず退出した。",
               "audioId": "L2-012-q2-c",
-              "readingJa": "ばのきんちょーをかんじ、ぎろんをつずけずたいしゅつした。"
+              "readingJa": "ばのきんちょーをかんじ、ぎろんをつづけずたいしゅつした。"
             },
             {
               "id": "d",
@@ -696,7 +696,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "f91c425cce6504c399a1cfb03018832423acc17726cfa55cbf2bdb6b62a721e3"
+      "contentHash": "eb3ec534e2892c2243b1e6d28736c22ba7b332f51efe1fc18cbc41f83f3330cb"
     },
     {
       "schemaVersion": 1,
@@ -1011,7 +1011,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L2-014",
-      "revision": 3,
+      "revision": 4,
       "level": 2,
       "stage": 14,
       "jlptTarget": "N2",
@@ -1332,7 +1332,7 @@
               },
               "ttsTextJa": "係員なら次の搭乗口を近い場所へ必ず変更してもらえると決まっているから。",
               "audioId": "L2-014-q2-c",
-              "readingJa": "かかりいんならつぎのとうじょうこうをちかいばしょえかならずへんこーしてもらえるときまっているから。"
+              "readingJa": "かかりいんならつぎのとうじょうぐちをちかいばしょえかならずへんこーしてもらえるときまっているから。"
             },
             {
               "id": "d",
@@ -1393,13 +1393,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "9e3789c19895d9562022286773fd0b9daa6e422abd8b50898ea3e14f9ded8e34"
+      "contentHash": "66ae8abf1a2ff0bd496c9c2534b58c171bc21f88deedba90920414d1877dc077"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L2-015",
-      "revision": 3,
+      "revision": 5,
       "level": 2,
       "stage": 15,
       "jlptTarget": "N2",
@@ -1608,7 +1608,7 @@
               },
               "ttsTextJa": "話題を完全に忘れ、送信取り消し後の返信にも美羽の反応にも関心がない。",
               "audioId": "L2-015-q1-a",
-              "readingJa": "わだいをかんぜんにわすれ、そーしんとりけしごのへんしんにもみわのはんのーにもかんしんがない。"
+              "readingJa": "わだいをかんぜんにわすれ、そーしんとりけしごのへんしんにもみうのはんのーにもかんしんがない。"
             },
             {
               "id": "b",
@@ -1619,7 +1619,7 @@
               },
               "ttsTextJa": "話題を引っ込めた形を取りながら、美羽に気づいてほしい。",
               "audioId": "L2-015-q1-b",
-              "readingJa": "わだいをひっこめたかたちをとりながら、みわにきずいてほしい。"
+              "readingJa": "わだいをひっこめたかたちをとりながら、みうにきづいてほしい。"
             },
             {
               "id": "c",
@@ -1641,7 +1641,7 @@
               },
               "ttsTextJa": "美羽とのチャットをすぐ終えたい。",
               "audioId": "L2-015-q1-d",
-              "readingJa": "みわとのちゃっとをすぐおえたい。"
+              "readingJa": "みうとのちゃっとをすぐおえたい。"
             }
           ],
           "correctOptionIds": [
@@ -1692,7 +1692,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "05e15231592a8379b7eaa8af9890f29f8d2520b60811dacd53bd53014b9d5433"
+      "contentHash": "3c2db1564e3f695be65907d3507adaa11e4a940710d57f3cb49c3a552a2f30b4"
     },
     {
       "schemaVersion": 1,
@@ -3103,7 +3103,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L2-020",
-      "revision": 3,
+      "revision": 4,
       "level": 2,
       "stage": 20,
       "jlptTarget": "N2",
@@ -3344,7 +3344,7 @@
               },
               "ttsTextJa": "猫は杏の袋にも移り、順番に匂いを確かめた。",
               "audioId": "L2-020-q1-c",
-              "readingJa": "ねこわあんずのふくろにもうつり、じゅんばんににおいをたしかめた。"
+              "readingJa": "ねこわあんのふくろにもうつり、じゅんばんににおいをたしかめた。"
             },
             {
               "id": "d",
@@ -3423,7 +3423,7 @@
               },
               "ttsTextJa": "杏が菓子を持っていなかったと分かる。",
               "audioId": "L2-020-q2-b",
-              "readingJa": "あんずがかしをもっていなかったとわかる。"
+              "readingJa": "あんがかしをもっていなかったとわかる。"
             },
             {
               "id": "c",
@@ -3496,7 +3496,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "d252c3cd9f70f2c19a6da1d7d240e8f2301480846e8546e1a49071f6d3f2a647"
+      "contentHash": "2419fe240115c9a6a44cfc085a84aa584875082e139c0bba0935af847b589408"
     }
   ]
 }

@@ -8,7 +8,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-021",
-      "revision": 3,
+      "revision": 6,
       "level": 4,
       "stage": 21,
       "jlptTarget": "N1-advanced",
@@ -22,23 +22,23 @@
       ],
       "layout": "station-broadcast",
       "title": {
-        "ja": "明朝六時二分着",
-        "zh": "明早六点零二分到站",
-        "en": "Arrival at 6:02 Tomorrow"
+        "ja": "明朝六時二分発",
+        "zh": "明早六点零二分发车",
+        "en": "Departure at 6:02 Tomorrow"
       },
       "setting": {
-        "ja": "終電後の無人駅。翌朝の到着案内が流れ、ホーム時計だけが日付を先取りしている。",
-        "zh": "末班车后的无人车站播放次日早晨到站信息，只有站台钟提前了一天。",
-        "en": "An empty station after the last train: a next-morning arrival is announced, and only the platform clock has advanced to tomorrow."
+        "ja": "終電後の無人駅。翌朝の列車案内が流れ、ホーム側だけが明朝の景色と時刻を映し始める。",
+        "zh": "末班车后的无人车站播放次日早班列车信息，只有站台一侧开始呈现明早的景象与时间。",
+        "en": "An empty station after the last train: a next-morning service is announced, and only the platform side begins to show tomorrow morning's scene and time."
       },
       "illustration": {
         "enabled": true,
         "src": "assets/stages/l4-021.webp",
         "style": "monochrome-four-panel",
         "alt": {
-          "ja": "明朝六時二分着の場面を描いた、モノクロ四コマ漫画。",
-          "zh": "描绘“明早六点零二分到站”场景的黑白四格漫画。",
-          "en": "A black-and-white four-panel manga depicting the scene \"Arrival at 6:02 Tomorrow\"."
+          "ja": "明朝六時二分発の場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘“明早六点零二分发车”场景的黑白四格漫画。",
+          "en": "A black-and-white four-panel manga depicting the scene \"Departure at 6:02 Tomorrow\"."
         },
         "sha256": "1872d7f131156401329f97b53cc9d361bdc30221e0f9b1f050fc178b0e07c112"
       },
@@ -134,7 +134,7 @@
             "zh": "办公室时钟是23:56，日期仍是今天。",
             "en": "The office clock reads 11:56 p.m., and its date is still today."
           },
-          "readingJa": "じむしつのとけーわにじゅーさんじごじゅーろっぷん、ひずけもきょーのままです。",
+          "readingJa": "じむしつのとけーわにじゅーさんじごじゅーろっぷん、ひづけもきょうのままです。",
           "ttsTextJa": "事務室の時計は二十三時五十六分、日付も今日のままです。",
           "audioId": "L4-021-line-003",
           "pauseAfterMs": 520,
@@ -148,7 +148,7 @@
             {
               "id": "token-002",
               "text": "日付も今日のままです。",
-              "reading": "ひずけもきょーのままです。",
+              "reading": "ひづけもきょうのままです。",
               "audioId": "L4-021-line-003-token-002"
             }
           ]
@@ -161,7 +161,7 @@
             "zh": "但站台钟显示明天6:01，秒针也在走。",
             "en": "But the platform clock reads 6:01 tomorrow, and the second hand is moving."
           },
-          "readingJa": "でもほーむとけーわ、あしたのろくじいちぶをさしています。びょーしんもうごいている。",
+          "readingJa": "でもほーむとけーわ、あしたのろくじいっぷんをさしています。びょーしんもうごいている。",
           "ttsTextJa": "でもホーム時計は、明日の六時一分を指しています。秒針も動いている。",
           "audioId": "L4-021-line-004",
           "pauseAfterMs": 520,
@@ -175,7 +175,7 @@
             {
               "id": "token-002",
               "text": "明日の六時一分を指しています。",
-              "reading": "あしたのろくじいちぶをさしています。",
+              "reading": "あしたのろくじいっぷんをさしています。",
               "audioId": "L4-021-line-004-token-002"
             },
             {
@@ -248,7 +248,7 @@
             "zh": "轨道远端有亮光，声音也在靠近，不只是录音。",
             "en": "There is light down the track, and the sound is approaching. This is not only a recording."
           },
-          "readingJa": "せんろのさきがあかるい。おともちかずいています。ろくおんだけでわありません。",
+          "readingJa": "せんろのさきがあかるい。おともちかづいています。ろくおんだけでわありません。",
           "ttsTextJa": "線路の先が明るい。音も近づいています。録音だけではありません。",
           "audioId": "L4-021-line-007",
           "pauseAfterMs": 520,
@@ -262,7 +262,7 @@
             {
               "id": "token-002",
               "text": "音も近づいています。",
-              "reading": "おともちかずいています。",
+              "reading": "おともちかづいています。",
               "audioId": "L4-021-line-007-token-002"
             },
             {
@@ -478,7 +478,7 @@
               },
               "ttsTextJa": "ホームの時計、接近する列車、監視映像がそろって明朝を示すこと。",
               "audioId": "L4-021-q1-b",
-              "readingJa": "ほーむのとけー、せっきんするれっしゃ、かんしえーぞーがそろってみんちょーをしめすこと。"
+              "readingJa": "ほーむのとけー、せっきんするれっしゃ、かんしえーぞーがそろってみょうちょうをしめすこと。"
             },
             {
               "id": "c",
@@ -653,7 +653,7 @@
               },
               "ttsTextJa": "事務室時計は今日の二十三時五十六分、ホーム時計は明日の六時一分である。",
               "audioId": "L4-021-q3-a",
-              "readingJa": "じむしつとけーわきょーのにじゅーさんじごじゅーろっぷん、ほーむとけーわあしたのろくじいっぷんである。"
+              "readingJa": "じむしつとけーわきょうのにじゅーさんじごじゅーろっぷん、ほーむとけーわあしたのろくじいっぷんである。"
             },
             {
               "id": "b",
@@ -830,13 +830,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "f4e1dc41c4eb279fe425ce46b92e9c3075a54202c89108f5b2cf87a0678345ce"
+      "contentHash": "75538178a78b4bb3952f4db410c9a47746c0da5e405cd9d0b14ff8ff9213c5a9"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-022",
-      "revision": 3,
+      "revision": 4,
       "level": 4,
       "stage": 22,
       "jlptTarget": "N1-advanced",
@@ -1249,7 +1249,7 @@
             "zh": "直到不再遮掩的那天，我都记得自己是你们的延续。",
             "en": "Up to the day I stopped hiding it, I remember myself as the continuation of both of you."
           },
-          "readingJa": "かくさなくなったひまで、わたしわふたりのつずきとしておぼえている。",
+          "readingJa": "かくさなくなったひまで、わたしわふたりのつづきとしておぼえている。",
           "ttsTextJa": "隠さなくなった日まで、私は二人の続きとして覚えている。",
           "audioId": "L4-022-line-012",
           "pauseAfterMs": 520,
@@ -1263,7 +1263,7 @@
             {
               "id": "token-002",
               "text": "私は二人の続きとして覚えている。",
-              "reading": "わたしわふたりのつずきとしておぼえている。",
+              "reading": "わたしわふたりのつづきとしておぼえている。",
               "audioId": "L4-022-line-012-token-002"
             }
           ]
@@ -1559,13 +1559,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "5218068224c7dab1379300616ae9215fdc64374ce1fe17b9df2e2384d229e9d2"
+      "contentHash": "45b365751badf18474c8520f27fc824defdbba7a479a53ab2d45c1ccc1148184"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-023",
-      "revision": 3,
+      "revision": 6,
       "level": 4,
       "stage": 23,
       "jlptTarget": "N1-advanced",
@@ -1679,7 +1679,7 @@
             "zh": "早安哟。今天也是好天气呢。",
             "en": "Mornign. Nice weather again today."
           },
-          "readingJa": "おはよぅ。きょーもいいてんきだね。",
+          "readingJa": "おはよぅ。きょうもいいてんきだね。",
           "ttsTextJa": "おはよぅ。今日もいい天気だね。",
           "audioId": "L4-023-line-002",
           "pauseAfterMs": 520,
@@ -1693,7 +1693,7 @@
             {
               "id": "token-002",
               "text": "今日もいい天気だね。",
-              "reading": "きょーもいいてんきだね。",
+              "reading": "きょうもいいてんきだね。",
               "audioId": "L4-023-line-002-token-002"
             }
           ]
@@ -1702,12 +1702,12 @@
           "id": "line-003",
           "speaker": "kei",
           "text": {
-            "ja": "里奈、『よう』の字が逆だよ。昨日も同じ打ち間違いだった。",
-            "zh": "里奈，“早安”的字又打错了。昨天也是同样的错字。",
-            "en": "Rina, your greeting has the same typo as yesterday."
+            "ja": "里奈、「おはよぅ」って、最後の「う」が小書きの「ぅ」になってるよ。昨日も同じ打ち間違いだった。",
+            "zh": "里奈，你写的“おはよぅ”里，末尾的“う”变成了小写假名“ぅ”，和昨天是同一个输入错误。",
+            "en": "Rina, the final う in “おはよぅ” is written as the small kana ぅ, the same typo you made yesterday."
           },
-          "readingJa": "りな、『よー』のじがぎゃくだよ。きのーもおなじうちまちがいだった。",
-          "ttsTextJa": "りな、『よう』の字が逆だよ。昨日も同じ打ち間違いだった。",
+          "readingJa": "りな、「おはよぅ」って、さいごの「う」がこがきの「ぅ」になってるよ。きのーもおなじうちまちがいだった。",
+          "ttsTextJa": "りな、「おはよぅ」って、最後の「う」が小書きの「ぅ」になってるよ。昨日も同じ打ち間違いだった。",
           "audioId": "L4-023-line-003",
           "pauseAfterMs": 520,
           "tokens": [
@@ -1719,8 +1719,8 @@
             },
             {
               "id": "token-002",
-              "text": "『よう』の字が逆だよ。",
-              "reading": "『よー』のじがぎゃくだよ。",
+              "text": "「おはよぅ」って、最後の「う」が小書きの「ぅ」になってるよ。",
+              "reading": "「おはよぅ」って、さいごの「う」がこがきの「ぅ」になってるよ。",
               "audioId": "L4-023-line-003-token-002"
             },
             {
@@ -1859,7 +1859,7 @@
             "zh": "若不记得，也不会意识到自己在改变吧。",
             "en": "If I did not remember, I could hardly know I was changing it."
           },
-          "readingJa": "おぼえていないなら、かえていることにもきずけないだろーね。",
+          "readingJa": "おぼえていないなら、かえていることにもきづけないだろーね。",
           "ttsTextJa": "覚えていないなら、変えていることにも気づけないだろうね。",
           "audioId": "L4-023-line-008",
           "pauseAfterMs": 520,
@@ -1873,7 +1873,7 @@
             {
               "id": "token-002",
               "text": "変えていることにも気づけないだろうね。",
-              "reading": "かえていることにもきずけないだろーね。",
+              "reading": "かえていることにもきづけないだろーね。",
               "audioId": "L4-023-line-008-token-002"
             }
           ]
@@ -2006,7 +2006,7 @@
             "zh": "第四天7:00:04，里奈又发了“早安哟。今天也是好天气呢”。",
             "en": "On day four at 7:00:04, Rina again sent, 'Mornign. Nice weather again today.'"
           },
-          "readingJa": "よっかめしちじれーふんよんびょー、りなわまた『おはよぅ。きょーもいいてんきだね』とおくった。",
+          "readingJa": "よっかめしちじれーふんよんびょー、りなわまた『おはよぅ。きょうもいいてんきだね』とおくった。",
           "ttsTextJa": "四日目七時零分四秒、りなはまた『おはよぅ。今日もいい天気だね』と送った。",
           "audioId": "L4-023-line-013",
           "pauseAfterMs": 520,
@@ -2026,7 +2026,7 @@
             {
               "id": "token-003",
               "text": "今日もいい天気だね』と送った。",
-              "reading": "きょーもいいてんきだね』とおくった。",
+              "reading": "きょうもいいてんきだね』とおくった。",
               "audioId": "L4-023-line-013-token-003"
             }
           ]
@@ -2037,9 +2037,9 @@
           "id": "q1",
           "type": "single",
           "prompt": {
-            "ja": "ループを自覚している可能性が最も高い人物は誰ですか。",
-            "zh": "谁最可能意识到时间循环？",
-            "en": "Who is most likely aware of the loop?"
+            "ja": "ループへの自覚を、意図的な発言変更と次周回の検査提案の両方で最も直接に示す人物は誰ですか。",
+            "zh": "谁通过有意改变说法并提出下一轮测试，最直接地表现出对循环的自觉？",
+            "en": "Who most directly demonstrates loop awareness through both deliberate wording changes and a proposed test for the next loop?"
           },
           "options": [
             {
@@ -2114,9 +2114,9 @@
               "en": "Taken together, the fifth line, the sixth line, the seventh line, the eighth line, the eleventh line establish the relation that no single line proves alone."
             },
             "nuance": {
-              "ja": "紬も記録を保持しているようですが、問いは会話参加者の自覚を中心にしており、智也の意図が最も直接的です。",
-              "zh": "紬似乎也保存记录，但问题聚焦参与者的自觉，智也的意图最直接。",
-              "en": "Tsumugi also seems to retain records, but among dialogue participants Tomoya's intentionality is most direct."
+              "ja": "紬と圭も周回差を把握しているようですが、意図的な言い換えと次周回の検査提案を両方示すのは智也です。",
+              "zh": "紬和圭似乎也掌握了各轮之间的差异，但同时有意改变说法并提出下一轮测试的只有智也。",
+              "en": "Tsumugi and Kei also appear to track differences across loops, but Tomoya alone combines deliberate rewording with a proposed next-loop test."
             },
             "alternative": {
               "ja": "偶然に語尾が変わるだけなら8番目の台詞の説明と翌日への試験提案が説明できません。",
@@ -2322,13 +2322,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "b06137093f420f1dd175f2eb807bcea11e52e80d3eb846604bed788611acc6a2"
+      "contentHash": "48977a77f603006eb67739a49174de644b95b02ab92b2cb3ac0bec2d20aa3c43"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-024",
-      "revision": 3,
+      "revision": 4,
       "level": 4,
       "stage": 24,
       "jlptTarget": "N1-advanced",
@@ -3017,7 +3017,7 @@
               },
               "ttsTextJa": "日没後まで話し続けた。",
               "audioId": "L4-024-q3-d",
-              "readingJa": "にちぼつごまではなしつずけた。"
+              "readingJa": "にちぼつごまではなしつづけた。"
             }
           ],
           "correctOptionIds": [
@@ -3162,13 +3162,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "a933761722819fb1ed02eea8649109520b1410ff14f20d0d529917baf8a150d9"
+      "contentHash": "b42a55cf32ae1ebc569b78864ec5ef548dc73de9d393a0aff9aca45d32745e01"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-025",
-      "revision": 3,
+      "revision": 6,
       "level": 4,
       "stage": 25,
       "jlptTarget": "N1-advanced",
@@ -3187,18 +3187,18 @@
         "en": "Every Bubble Swapped"
       },
       "setting": {
-        "ja": "印刷ミスの彩色四コマ。吹き出しは全員分ずれているが、視線、持ち物、反応の向きから本来の話者を戻せる。",
-        "zh": "一页印刷出错的彩色四格漫画，对话框全部错位，但可由视线、道具与反应方向还原说话者。",
-        "en": "A misprinted full-color four-panel comic: all speech bubbles are displaced, but gazes, props, and reaction directions reveal the intended speakers."
+        "ja": "印刷所の校正室。作品に登場する葵、淳、美紀、太郎の四人が、吹き出しの配置がすべてずれたモノクロ四コマの校正刷りを見ながら、視線、持ち物、反応の向きから本来の話者を確認している。",
+        "zh": "印刷厂校样室里，漫画中的葵、淳、美纪和太郎正在核对一份所有对话框位置都错开的黑白四格校样，并根据视线、物品与反应方向还原原本的说话者。",
+        "en": "In a printer's proofing room, Aoi, Jun, Miki, and Taro—the people depicted in the comic—review a monochrome four-panel proof whose bubble positions are all displaced, using gazes, props, and reaction direction to recover the intended speakers."
       },
       "illustration": {
         "enabled": true,
         "src": "assets/stages/l4-025.webp",
         "style": "monochrome-four-panel",
         "alt": {
-          "ja": "吹き出し総入れ替えの場面を描いた、モノクロ四コマ漫画。",
-          "zh": "描绘“全部错位的对话框”场景的黑白四格漫画。",
-          "en": "A black-and-white four-panel manga depicting the scene \"Every Bubble Swapped\"."
+          "ja": "四人が吹き出しのずれた校正刷りを確認する場面を描いた、モノクロ四コマ漫画。",
+          "zh": "描绘四人核对错位对话框校样的黑白四格漫画。",
+          "en": "A monochrome four-panel manga showing four reviewers examining a proof with displaced speech bubbles."
         },
         "sha256": "99fb934b62175818f0e827fe134c421b16b4b7dc1d23e60ec5c43fabbdd18d1f"
       },
@@ -3510,7 +3510,7 @@
             "zh": "台词似乎逐格从葵移给淳、淳移给美纪、美纪移给太郎、太郎移给葵。",
             "en": "Each line seems shifted from Aoi to Jun, Jun to Miki, Miki to Taro, and Taro to Aoi."
           },
-          "readingJa": "せりふわいちこまずつ、あおいからじゅん、じゅんからみき、みきからたろー、たろーからあおいえずれたよーだ。",
+          "readingJa": "せりふわひとこまずつ、あおいからじゅん、じゅんからみき、みきからたろー、たろーからあおいえずれたよーだ。",
           "ttsTextJa": "台詞は一コマずつ、あおいからじゅん、じゅんからみき、みきからたろう、たろうからあおいへずれたようだ。",
           "audioId": "L4-025-line-010",
           "pauseAfterMs": 520,
@@ -3518,7 +3518,7 @@
             {
               "id": "token-001",
               "text": "台詞は一コマずつ、葵から淳、",
-              "reading": "せりふわいちこまずつ、あおいからじゅん、",
+              "reading": "せりふわひとこまずつ、あおいからじゅん、",
               "audioId": "L4-025-line-010-token-001"
             },
             {
@@ -3549,7 +3549,7 @@
             "zh": "因此原本第一句是淳，第二句美纪，第三句太郎，第四句葵。",
             "en": "So the intended speakers are Jun, Miki, Taro, and Aoi in panels one through four."
           },
-          "readingJa": "だからほんらいのだいいっせーわじゅん、だいにせいわみき、だいさんせいわたろー、だいしせーわあおい。",
+          "readingJa": "だからほんらいのだいいっせーわじゅん、だいにせいわみき、だいさんせいわたろー、だいよんせーわあおい。",
           "ttsTextJa": "だから本来の第一声はじゅん、第二声はみき、第三声はたろう、第四声はあおい。",
           "audioId": "L4-025-line-011",
           "pauseAfterMs": 520,
@@ -3575,7 +3575,7 @@
             {
               "id": "token-004",
               "text": "第四声は葵。",
-              "reading": "だいしせーわあおい。",
+              "reading": "だいよんせーわあおい。",
               "audioId": "L4-025-line-011-token-004"
             }
           ]
@@ -3870,7 +3870,7 @@
               },
               "ttsTextJa": "登場人物の色がすべて入れ替わった。",
               "audioId": "L4-025-q3-d",
-              "readingJa": "きゃらくたーのいろがすべていれかわった。"
+              "readingJa": "とうじょうじんぶつのいろがすべていれかわった。"
             }
           ],
           "correctOptionIds": [
@@ -3924,13 +3924,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "5f0aa1172626381c33163897ca8ae5ec5e7f08f78ce7a9333e4fa086dfe4c1c9"
+      "contentHash": "d180403e49f9fe04f1dcd5f1d126a5eea28c92de489d9fd7ad3459c1902f75e8"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-026",
-      "revision": 3,
+      "revision": 6,
       "level": 4,
       "stage": 26,
       "jlptTarget": "N1-advanced",
@@ -4010,7 +4010,7 @@
             "zh": "价格有讨论余地，但我还没说今天的条件可签。",
             "en": "There is room to discuss price. I am not yet saying we can contract on today's terms."
           },
-          "readingJa": "かかくわけんとーのよちがあります。きょーのじょーけんでけーやくできるとわまだもーしません。",
+          "readingJa": "かかくわけんとーのよちがあります。きょうのじょーけんでけーやくできるとわまだもーしません。",
           "ttsTextJa": "価格は検討の余地があります。今日の条件で契約できるとはまだ申しません。",
           "audioId": "L4-026-line-001",
           "pauseAfterMs": 520,
@@ -4024,7 +4024,7 @@
             {
               "id": "token-002",
               "text": "今日の条件で契約できるとはまだ申しません。",
-              "reading": "きょーのじょーけんでけーやくできるとわまだもーしません。",
+              "reading": "きょうのじょーけんでけーやくできるとわまだもーしません。",
               "audioId": "L4-026-line-001-token-002"
             }
           ]
@@ -4190,7 +4190,7 @@
             "zh": "我明确说现合同下不可行；我积极的只是启动修订流程。",
             "en": "I explicitly said it is impossible under the current contract. I support only starting amendment procedures."
           },
-          "readingJa": "わたしわげんけーやくでわふかとめーげんしました。まえむきなのわ、かいてーてつずきをはじめることだけです。",
+          "readingJa": "わたしわげんけーやくでわふかとめーげんしました。まえむきなのわ、かいてーてつづきをはじめることだけです。",
           "ttsTextJa": "私は現契約では不可と明言しました。前向きなのは、改定手続きを始めることだけです。",
           "audioId": "L4-026-line-007",
           "pauseAfterMs": 520,
@@ -4210,7 +4210,7 @@
             {
               "id": "token-003",
               "text": "改定手続きを始めることだけです。",
-              "reading": "かいてーてつずきをはじめることだけです。",
+              "reading": "かいてーてつづきをはじめることだけです。",
               "audioId": "L4-026-line-007-token-003"
             }
           ]
@@ -4368,9 +4368,9 @@
           "id": "q1",
           "type": "multiple",
           "prompt": {
-            "ja": "現提案が実行できないことを示す二つの独立した制約を選んでください。",
-            "zh": "请选择两项表明当前方案无法执行的独立限制。",
-            "en": "Choose two independent constraints making the current proposal infeasible."
+            "ja": "次の選択肢から、現提案を実行不能にする独立した制約を二つ選んでください。",
+            "zh": "请从以下选项中选出两项使当前方案无法执行的独立限制。",
+            "en": "Choose the two listed independent constraints that make the current proposal infeasible."
           },
           "options": [
             {
@@ -4451,9 +4451,9 @@
               "en": "Resolving one leaves the other, so the conditions are cumulative rather than alternatives."
             },
             "alternative": {
-              "ja": "価格未決も追加制約ですが、設問は二点を求めるため、明示的に実行不能へ直結する技術と法務を選びます。",
-              "zh": "价格未决也是额外限制，但题目要求两项，因此选择直接明确阻止执行的技术与法务。",
-              "en": "Unapproved pricing is another constraint, but engineering and legal most explicitly block execution."
+              "ja": "価格未決も追加制約ですが、選択肢に挙がっているうち、実行不能へ直結するのは技術と法務の二点です。",
+              "zh": "价格未定也是额外限制，但在所列选项中，直接导致无法执行的是技术与法务两项。",
+              "en": "Unapproved pricing is another constraint, but among the listed options, engineering and legal are the two that directly block execution."
             }
           }
         },
@@ -4658,13 +4658,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "2fccb05fbba1855e64b8af4763eef2f0a1eaea85fb79ac677be0621efd60ca4f"
+      "contentHash": "0f536690ccae4fae28b07bec2a182101010fc8c893834814f791781b05372c4c"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-027",
-      "revision": 3,
+      "revision": 6,
       "level": 4,
       "stage": 27,
       "jlptTarget": "N1-advanced",
@@ -4744,7 +4744,7 @@
             "zh": "候选演讲开始。奏，你当部长后想做什么？",
             "en": "Candidate speeches begin. Kanade, what would you do as president?"
           },
-          "readingJa": "こーほしゃえんぜつをはじめます。まずかなでさん、ぶちょーになったらなんをしたいですか。",
+          "readingJa": "こーほしゃえんぜつをはじめます。まずかなでさん、ぶちょーになったらなにをしたいですか。",
           "ttsTextJa": "候補者演説を始めます。まずかなでさん、部長になったら何をしたいですか。",
           "audioId": "L4-027-line-001",
           "pauseAfterMs": 520,
@@ -4764,7 +4764,7 @@
             {
               "id": "token-003",
               "text": "部長になったら何をしたいですか。",
-              "reading": "ぶちょーになったらなんをしたいですか。",
+              "reading": "ぶちょーになったらなにをしたいですか。",
               "audioId": "L4-027-line-001-token-003"
             }
           ]
@@ -5092,7 +5092,7 @@
             "zh": "是的。比起职位，我更想继续参加活动，这才是真心话。",
             "en": "Yes. I care more about continuing the activity than holding office. That is the truth."
           },
-          "readingJa": "はい。やくしょくよりかつどーをつずけたい、それがほんねです。",
+          "readingJa": "はい。やくしょくよりかつどーをつづけたい、それがほんねです。",
           "ttsTextJa": "はい。役職より活動を続けたい、それが本音です。",
           "audioId": "L4-027-line-013",
           "pauseAfterMs": 520,
@@ -5106,7 +5106,7 @@
             {
               "id": "token-002",
               "text": "役職より活動を続けたい、",
-              "reading": "やくしょくよりかつどーをつずけたい、",
+              "reading": "やくしょくよりかつどーをつづけたい、",
               "audioId": "L4-027-line-013-token-002"
             },
             {
@@ -5294,7 +5294,7 @@
               "en": "Taken together, the first line, the second line, the third line, the eleventh line establish the relation that no single line proves alone."
             },
             "nuance": {
-              "ja": "他者称賛は礼貌でも、質問への非回答と組み合わさると票誘導の手段になります。",
+              "ja": "他者称賛は礼儀正しく見えても、質問への非回答と組み合わさると票誘導の手段になります。",
               "zh": "赞美他人很礼貌，但与回避自身问题结合后就成为导票手段。",
               "en": "Praise is courteous, but paired with nonresponse it becomes a vote-steering device."
             },
@@ -5499,13 +5499,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "b6c79598be50b8cf644ac987283138da46a29789e253b9a4b773142cee876375"
+      "contentHash": "6b5a3d52cb0e3f49ad7cad7914e053e273294527cb8e423b0533e843f50c9984"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-028",
-      "revision": 3,
+      "revision": 6,
       "level": 4,
       "stage": 28,
       "jlptTarget": "N1-advanced",
@@ -5524,9 +5524,9 @@
         "en": "The Fourth Pudding"
       },
       "setting": {
-        "ja": "三人家族が喫茶店で四人分を整える。空席を片付けようとするたび全員が時計を見て、遅れる誰かを待っている。",
-        "zh": "一家三口在咖啡馆摆了四人份。每当服务员要清理空座，三人都会看表，显然在等迟到的人。",
-        "en": "A family of three sets a cafe table for four; whenever staff move to clear the empty seat, all three check the time."
+        "ja": "三人家族が喫茶店で四人分を整える。店員が空席側の皿を下げようとすると、家族は列車時刻や届いた連絡を確かめながら、もう少し待つよう頼む。",
+        "zh": "一家三口在咖啡馆摆了四人份。店员提出收走空座一侧的餐具时，家人一边确认列车时间和收到的消息，一边请他再等一会儿。",
+        "en": "A family of three sets a cafe table for four; when the server offers to clear the empty place setting, the family checks train timing and incoming messages and asks to wait a little longer."
       },
       "illustration": {
         "enabled": true,
@@ -5787,7 +5787,7 @@
             "zh": "收到“到北口了”。再五分钟就到。",
             "en": "They wrote, 'At the north exit.' Five minutes should do it."
           },
-          "readingJa": "『きたぐちについた』ときた。ごぶもあればここだ。",
+          "readingJa": "『きたぐちについた』ときた。ごふんもあればここだ。",
           "ttsTextJa": "『北口に着いた』と来た。五分もあればここだ。",
           "audioId": "L4-028-line-008",
           "pauseAfterMs": 520,
@@ -5801,7 +5801,7 @@
             {
               "id": "token-002",
               "text": "五分もあればここだ。",
-              "reading": "ごぶもあればここだ。",
+              "reading": "ごふんもあればここだ。",
               "audioId": "L4-028-line-008-token-002"
             }
           ]
@@ -5814,7 +5814,7 @@
             "zh": "是在庆祝什么吗？第四份要换个装饰吗？",
             "en": "Is this a celebration? Shall I decorate the fourth one differently?"
           },
-          "readingJa": "おいわいかなんかですか。よつめだけかざりをかえましょーか。",
+          "readingJa": "おいわいかなんかですか。よっつめだけかざりをかえましょーか。",
           "ttsTextJa": "お祝いか何かですか。四つ目だけ飾りを変えましょうか。",
           "audioId": "L4-028-line-009",
           "pauseAfterMs": 520,
@@ -5828,7 +5828,7 @@
             {
               "id": "token-002",
               "text": "四つ目だけ飾りを変えましょうか。",
-              "reading": "よつめだけかざりをかえましょーか。",
+              "reading": "よっつめだけかざりをかえましょーか。",
               "audioId": "L4-028-line-009-token-002"
             }
           ]
@@ -6041,7 +6041,7 @@
               },
               "ttsTextJa": "空席の人が予定時刻に向かって移動中で、片付けるにはまだ早いと判断している。",
               "audioId": "L4-028-q2-a",
-              "readingJa": "くーせきのひとがよてーじこくにむかっていどーちゅーで、かたずけるにわまだはやいとはんだんしている。"
+              "readingJa": "くーせきのひとがよてーじこくにむかっていどーちゅーで、かたづけるにわまだはやいとはんだんしている。"
             },
             {
               "id": "b",
@@ -6144,7 +6144,7 @@
               },
               "ttsTextJa": "店員が三名だと数える。",
               "audioId": "L4-028-q3-b",
-              "readingJa": "てんいんがさんみょーだとかぞえる。"
+              "readingJa": "てんいんがさんめーだとかぞえる。"
             },
             {
               "id": "c",
@@ -6218,13 +6218,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "be4a7773e9bce81f69b5253393dee12b24c7e704a8307bd5e504841d1379ef36"
+      "contentHash": "fd56bef6751f2fbe77bd0c868919be209f79d3865a4043aebc66c4691f9d4ee9"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-029",
-      "revision": 3,
+      "revision": 4,
       "level": 4,
       "stage": 29,
       "jlptTarget": "N1-advanced",
@@ -6409,25 +6409,25 @@
           "id": "line-005",
           "speaker": "member",
           "text": {
-            "ja": "三体とも同じ誤字で、句点の前に半角空白まで同じです。",
-            "zh": "三个都犯同一错字，连句号前的半角空格都一样。",
-            "en": "All three share the same typo and even the same half-width space before the period."
+            "ja": "三体とも、同じ珍しい誤字を使っています。",
+            "zh": "三个机器人都使用了同一个罕见错字。",
+            "en": "All three bots use the same unusual typo."
           },
-          "readingJa": "さんたいともおなじごじで、くてんのまえにはんかくくーはくまでおなじです。",
-          "ttsTextJa": "三体とも同じ誤字で、句点の前に半角空白まで同じです。",
+          "readingJa": "さんたいとも、おなじめずらしいごじをつかっています。",
+          "ttsTextJa": "三体とも、同じ珍しい誤字を使っています。",
           "audioId": "L4-029-line-005",
           "pauseAfterMs": 520,
           "tokens": [
             {
               "id": "token-001",
-              "text": "三体とも同じ誤字で、",
-              "reading": "さんたいともおなじごじで、",
+              "text": "三体とも、",
+              "reading": "さんたいとも、",
               "audioId": "L4-029-line-005-token-001"
             },
             {
               "id": "token-002",
-              "text": "句点の前に半角空白まで同じです。",
-              "reading": "くてんのまえにはんかくくーはくまでおなじです。",
+              "text": "同じ珍しい誤字を使っています。",
+              "reading": "おなじめずらしいごじをつかっています。",
               "audioId": "L4-029-line-005-token-002"
             }
           ]
@@ -6673,13 +6673,13 @@
             {
               "id": "b",
               "text": {
-                "ja": "珍しい同一誤字と同一の空白位置を共有すること。",
-                "zh": "共享罕见的同一错字和同一空格位置。",
-                "en": "They share the same rare typo and identical spacing."
+                "ja": "同じ珍しい誤字を共有すること。",
+                "zh": "共享同一个罕见错字。",
+                "en": "They share the same rare typo."
               },
-              "ttsTextJa": "珍しい同一誤字と同一の空白位置を共有すること。",
+              "ttsTextJa": "同じ珍しい誤字を共有すること。",
               "audioId": "L4-029-q1-b",
-              "readingJa": "めずらしいどーいつごじとどーいつのくーはくいちをきょーゆーすること。"
+              "readingJa": "おなじめずらしいごじをきょーゆーすること。"
             },
             {
               "id": "c",
@@ -6716,14 +6716,14 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "本文に即した答えは「珍しい同一誤字と同一の空白位置を共有すること。」です。",
-              "zh": "依照原文，答案是“共享罕见的同一错字和同一空格位置。”。",
-              "en": "The text-supported answer is “They share the same rare typo and identical spacing..”"
+              "ja": "本文に即した答えは「同じ珍しい誤字を共有すること。」です。",
+              "zh": "依照原文，答案是“共享同一个罕见错字。”。",
+              "en": "The text-supported answer is “They share the same rare typo.”"
             },
             "intent": {
-              "ja": "一般的な語彙や敬語より、低頻度の誤りと書式癖が同時一致する方が共通生成源の指紋として情報量が高いです。",
-              "zh": "相比常见词汇或敬语，低频错误与格式习惯同时吻合，更像共同生成源的指纹。",
-              "en": "A matching low-frequency error plus formatting habit carries far more source-identifying information than shared common vocabulary or politeness."
+              "ja": "一般的な語彙や敬語より、複数の発話源が同じ低頻度の誤りを共有する方が、共通テンプレートを疑う情報量が高いです。",
+              "zh": "相比共同使用常见词汇或敬语，多个发言源共享同一个低频错误，更像共同模板留下的指纹。",
+              "en": "A shared low-frequency error across multiple speaking sources is a stronger fingerprint of a common template than shared vocabulary or politeness."
             },
             "evidence": {
               "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞を組み合わせると、単独の一文では見えない関係が確かめられます。",
@@ -6938,13 +6938,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "d6d8a6c7ec9669d9250347e99cbb90aa6bf12fe8118f3074a6083e62c65619c9"
+      "contentHash": "4a5dc7919207e02cd23a5800d3a0cf8a2347c6fff3d210cc899275cff8f9c9c8"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-030",
-      "revision": 3,
+      "revision": 5,
       "level": 4,
       "stage": 30,
       "jlptTarget": "N1-advanced",
@@ -7151,7 +7151,7 @@
             "zh": "下一位亮，今天咨询什么？",
             "en": "Next, Ryo. What brings you to us today?"
           },
-          "readingJa": "つぎわりょーさん。きょーわどのよーなごそーだんですか。",
+          "readingJa": "つぎわりょーさん。きょうわどのよーなごそーだんですか。",
           "ttsTextJa": "次はりょうさん。今日はどのようなご相談ですか。",
           "audioId": "L4-030-line-005",
           "pauseAfterMs": 520,
@@ -7165,7 +7165,7 @@
             {
               "id": "token-002",
               "text": "今日はどのようなご相談ですか。",
-              "reading": "きょーわどのよーなごそーだんですか。",
+              "reading": "きょうわどのよーなごそーだんですか。",
               "audioId": "L4-030-line-005-token-002"
             }
           ]
@@ -7493,7 +7493,7 @@
           "prompt": {
             "ja": "楓の2番目の台詞が不自然に聞こえる直接の理由は何ですか。",
             "zh": "枫在第2句台词的回答为何直接显得不自然？",
-            "en": "Why does Kaede's the second line sound immediately unnatural?"
+            "en": "Why does Kaede's second line sound immediately unnatural?"
           },
           "options": [
             {
@@ -7772,7 +7772,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "2860aef18c322f3176706495254b82e7ccd91d1642b9efd818b8ee185a29befe"
+      "contentHash": "d7c73abb9f2e3c513c9d260f290a5bd917dfb03f9d471bb5cf5265d2102392e9"
     }
   ]
 }

@@ -8,7 +8,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-001",
-      "revision": 3,
+      "revision": 6,
       "level": 5,
       "stage": 1,
       "jlptTarget": "N1-pragmatics",
@@ -167,7 +167,7 @@
           "text": {
             "ja": "三者とも『私たち』と言いましたね。",
             "zh": "三方都说了“我们”吧。",
-            "en": "All three sides said “we,” then."
+            "en": "All three parties said “we,” didn't they?"
           },
           "readingJa": "さんしゃとも『わたしたち』といいましたね。",
           "ttsTextJa": "三者とも『私たち』と言いましたね。",
@@ -196,7 +196,7 @@
             "zh": "不过，我刚才的“我们”指东公司。",
             "en": "But my “we” meant East Co."
           },
-          "readingJa": "ただしいまの『わたしたち』わひがしやしろのことです。",
+          "readingJa": "ただしいまの『わたしたち』わひがししゃのことです。",
           "ttsTextJa": "ただし今の『私たち』は東社のことです。",
           "audioId": "L5-001-line-005",
           "pauseAfterMs": 480,
@@ -210,7 +210,7 @@
             {
               "id": "token-002",
               "text": "今の『私たち』は東社のことです。",
-              "reading": "いまの『わたしたち』わひがしやしろのことです。",
+              "reading": "いまの『わたしたち』わひがししゃのことです。",
               "audioId": "L5-001-line-005-token-002"
             }
           ]
@@ -223,7 +223,7 @@
             "zh": "我这里也指西公司的董事会。",
             "en": "Mine referred to West Co.'s board."
           },
-          "readingJa": "こちらもにしやしろのとりしまりやくかいをさしました。",
+          "readingJa": "こちらもにししゃのとりしまりやくかいをさしました。",
           "ttsTextJa": "こちらも西社の取締役会を指しました。",
           "audioId": "L5-001-line-006",
           "pauseAfterMs": 480,
@@ -237,7 +237,7 @@
             {
               "id": "token-002",
               "text": "西社の取締役会を指しました。",
-              "reading": "にしやしろのとりしまりやくかいをさしました。",
+              "reading": "にししゃのとりしまりやくかいをさしました。",
               "audioId": "L5-001-line-006-token-002"
             }
           ]
@@ -246,25 +246,25 @@
           "id": "line-007",
           "speaker": "lead",
           "text": {
-            "ja": "私の発言は両社から来た六人だけです。",
-            "zh": "我的发言只指两家公司派来的六个人。",
-            "en": "I meant only the six joint-team members."
+            "ja": "私が言った『私たち』は、両社から来た六人だけを指します。",
+            "zh": "我所说的“我们”只指两家公司派来的六个人。",
+            "en": "My “we” refers only to the six joint-team members."
           },
-          "readingJa": "わたしのはつげんわりょーしゃからきたろくにんだけです。",
-          "ttsTextJa": "私の発言は両社から来た六人だけです。",
+          "readingJa": "わたしがいった『わたしたち』わ、りょーしゃからきたろくにんだけをさします。",
+          "ttsTextJa": "私が言った『私たち』は、両社から来た六人だけを指します。",
           "audioId": "L5-001-line-007",
           "pauseAfterMs": 480,
           "tokens": [
             {
               "id": "token-001",
-              "text": "私の発言は",
-              "reading": "わたしのはつげんわ",
+              "text": "私が言った『私たち』は、",
+              "reading": "わたしがいった『わたしたち』わ、",
               "audioId": "L5-001-line-007-token-001"
             },
             {
               "id": "token-002",
-              "text": "両社から来た六人だけです。",
-              "reading": "りょーしゃからきたろくにんだけです。",
+              "text": "両社から来た六人だけを指します。",
+              "reading": "りょーしゃからきたろくにんだけをさします。",
               "audioId": "L5-001-line-007-token-002"
             }
           ]
@@ -391,13 +391,13 @@
             {
               "id": "a",
               "text": {
-                "ja": "『私たち』の範囲が発言ごとに違い、統一合意はない。",
-                "zh": "每次“我们”所指不同，并没有统一共识。",
-                "en": "Each “we” names a different group, so there is no common agreement."
+                "ja": "『私たち』の範囲が発言ごとに違い、商標条件についての共通合意はない。",
+                "zh": "每次“我们”所指不同，商标条件上并没有共同共识。",
+                "en": "Each “we” names a different group, so there is no shared agreement on the brand terms."
               },
-              "ttsTextJa": "『私たち』の範囲が発言ごとに違い、統一合意はない。",
+              "ttsTextJa": "『私たち』の範囲が発言ごとに違い、商標条件についての共通合意はない。",
               "audioId": "L5-001-q1-a",
-              "readingJa": "『わたしたち』のはんいがはつげんごとにちがい、とーいつごーいわない。"
+              "readingJa": "『わたしたち』のはんいがはつげんごとにちがい、しょーひょーじょーけんについてのきょーつーごーいわない。"
             },
             {
               "id": "b",
@@ -490,7 +490,7 @@
               },
               "ttsTextJa": "商標の綴りを誤記した。",
               "audioId": "L5-001-q2-a",
-              "readingJa": "しょーひょーのつずりをごきした。"
+              "readingJa": "しょーひょーのつづりをごきした。"
             },
             {
               "id": "b",
@@ -537,7 +537,7 @@
             "literal": {
               "ja": "字面上は「三者とも『私たち』と言いましたね。」、「では同じ集団の合意ではないのですか。」という観察が明示されています。",
               "zh": "字面上明确给出了“三方都说了“我们”吧。”、“那么，这并不是同一群体的共识吗？”这些观察。",
-              "en": "At the literal level, the scene explicitly gives “All three sides said “we,” then.” and “So these are not approvals by the same group?”."
+              "en": "At the literal level, the scene explicitly gives “All three parties said “we,” didn't they?” and “So these are not approvals by the same group?”."
             },
             "intent": {
               "ja": "語形の一致から指示範囲の一致を推定した点が誤りです。",
@@ -636,7 +636,7 @@
               "en": "The joint team's readiness must be separated from disagreement over branding."
             },
             "evidence": {
-              "ja": "3番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞を合わせると、協働可能という線索と、相互に受け入れない条件が同時に残っています。",
+              "ja": "3番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞を合わせると、協働可能という手がかりと、相互に受け入れない条件が同時に残っています。",
               "zh": "合并阅读第3句台词、第9句台词、第10句台词、第11句台词可知，既有能够协作的线索，也有双方互不接受的条件。",
               "en": "Read together, the third line, the ninth line, the tenth line, the eleventh line show that evidence of operational cooperation coexists with mutually unacceptable brand conditions."
             },
@@ -663,13 +663,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "fcc1d126a16f502055864009cfe1c2fd3cb5058ccf42532b6b01cf21361c5e7f"
+      "contentHash": "9c5f36bee2296e2fadd59bc55cf6087514a1dde8098d62553816d197f55bb030"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-002",
-      "revision": 3,
+      "revision": 5,
       "level": 5,
       "stage": 2,
       "jlptTarget": "N1-pragmatics",
@@ -746,12 +746,12 @@
           "id": "line-001",
           "speaker": "teacher",
           "text": {
-            "ja": "最初は昔から場を明るくした真衣ちゃんです。",
+            "ja": "最初は昔から場を明るくしていた真衣ちゃんです。",
             "zh": "首先是从前就很会活跃气氛的真衣。",
             "en": "First is Mai-chan, who always brightened the room."
           },
-          "readingJa": "さいしょわむかしからばをあかるくしたまいちゃんです。",
-          "ttsTextJa": "最初は昔から場を明るくした真衣ちゃんです。",
+          "readingJa": "さいしょわむかしからばをあかるくしていたまいちゃんです。",
+          "ttsTextJa": "最初は昔から場を明るくしていた真衣ちゃんです。",
           "audioId": "L5-002-line-001",
           "pauseAfterMs": 480,
           "tokens": [
@@ -763,8 +763,8 @@
             },
             {
               "id": "token-002",
-              "text": "昔から場を明るくした真衣ちゃんです。",
-              "reading": "むかしからばをあかるくしたまいちゃんです。",
+              "text": "昔から場を明るくしていた真衣ちゃんです。",
+              "reading": "むかしからばをあかるくしていたまいちゃんです。",
               "audioId": "L5-002-line-001-token-002"
             }
           ]
@@ -990,10 +990,10 @@
           "speaker": "yui",
           "text": {
             "ja": "その写真は今日は出さないでください。",
-            "zh": "那张合照今天请不要拿出来。",
+            "zh": "那张照片今天请不要拿出来。",
             "en": "Please do not show that photograph today."
           },
-          "readingJa": "そのしゃしんわきょーわださないでください。",
+          "readingJa": "そのしゃしんわきょうわださないでください。",
           "ttsTextJa": "その写真は今日は出さないでください。",
           "audioId": "L5-002-line-010",
           "pauseAfterMs": 480,
@@ -1007,7 +1007,7 @@
             {
               "id": "token-002",
               "text": "今日は出さないでください。",
-              "reading": "きょーわださないでください。",
+              "reading": "きょうわださないでください。",
               "audioId": "L5-002-line-010-token-002"
             }
           ]
@@ -1059,13 +1059,13 @@
             {
               "id": "d",
               "text": {
-                "ja": "唯との共有した過去を公の場から切り離している。",
-                "zh": "他在公开场合切断与唯共有的过去。",
-                "en": "He is separating his shared past with Yui from the public event."
+                "ja": "唯との以前の親しさを現在の公の場から切り離している。",
+                "zh": "他把过去与唯的亲近关系同当前公开场合区分开来。",
+                "en": "He is keeping his former familiarity with Yui separate from the present public event."
               },
-              "ttsTextJa": "ゆいとの共有した過去を公の場から切り離している。",
+              "ttsTextJa": "ゆいとの以前の親しさを現在の公の場から切り離している。",
               "audioId": "L5-002-q1-d",
-              "readingJa": "ゆいとのきょーゆーしたかこをおーやけのばからきりはなしている。"
+              "readingJa": "ゆいとのいぜんのしたしさをげんざいのおーやけのばからきりはなしている。"
             }
           ],
           "correctOptionIds": [
@@ -1080,7 +1080,7 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "字面上は「最初は昔から場を明るくした真衣ちゃんです。」、「次は寝坊常習の蓮坊です。」という観察が明示されています。",
+              "ja": "字面上は「最初は昔から場を明るくしていた真衣ちゃんです。」、「次は寝坊常習の蓮坊です。」という観察が明示されています。",
               "zh": "字面上明确给出了“首先是从前就很会活跃气氛的真衣。”、“接下来是总爱睡懒觉的阿莲。”这些观察。",
               "en": "At the literal level, the scene explicitly gives “First is Mai-chan, who always brightened the room.” and “Next is sleepyhead Ren-bo.”."
             },
@@ -1170,7 +1170,7 @@
           "explanation": {
             "literal": {
               "ja": "字面上は「ご紹介ありがとうございます。」、「その写真は今日は出さないでください。」という観察が明示されています。",
-              "zh": "字面上明确给出了“感谢您的介绍。”、“那张合照今天请不要拿出来。”这些观察。",
+              "zh": "字面上明确给出了“感谢您的介绍。”、“那张照片今天请不要拿出来。”这些观察。",
               "en": "At the literal level, the scene explicitly gives “Thank you for the introduction.” and “Please do not show that photograph today.”."
             },
             "intent": {
@@ -1297,13 +1297,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "5e699831dbd6d4f36f6b0bf0281a005ab6992497c228141dbe7693409b226274"
+      "contentHash": "a5878f1fffe42ea367c2390bc65c9bd9ee29ffa4323f987f5b8e1962b3caa9ae"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-003",
-      "revision": 3,
+      "revision": 5,
       "level": 5,
       "stage": 3,
       "jlptTarget": "N1-pragmatics",
@@ -1383,7 +1383,7 @@
             "zh": "请给新品A打1到3分。",
             "en": "Score dish A from one to three."
           },
-          "readingJa": "しんさくＡえいちからさんでてんをつけてください。",
+          "readingJa": "しんさくえーえいちからさんでてんをつけてください。",
           "ttsTextJa": "新作Aへ一から三で点を付けてください。",
           "audioId": "L5-003-line-001",
           "pauseAfterMs": 480,
@@ -1391,7 +1391,7 @@
             {
               "id": "token-001",
               "text": "新作Aへ",
-              "reading": "しんさくＡえ",
+              "reading": "しんさくえーえ",
               "audioId": "L5-003-line-001-token-001"
             },
             {
@@ -1572,7 +1572,7 @@
             "zh": "我的三是辣度等级，不是喜好。",
             "en": "My three is a heat level, not preference."
           },
-          "readingJa": "わたしのさんわつらさのだんかいで、このみでわない。",
+          "readingJa": "わたしのさんわからさのだんかいで、このみでわない。",
           "ttsTextJa": "私の三は辛さの段階で、好みではない。",
           "audioId": "L5-003-line-008",
           "pauseAfterMs": 480,
@@ -1586,7 +1586,7 @@
             {
               "id": "token-002",
               "text": "辛さの段階で、好みではない。",
-              "reading": "つらさのだんかいで、このみでわない。",
+              "reading": "からさのだんかいで、このみでわない。",
               "audioId": "L5-003-line-008-token-002"
             }
           ]
@@ -1678,9 +1678,9 @@
           "id": "q1",
           "type": "single",
           "prompt": {
-            "ja": "平均二点が評価として無効な理由は何ですか。",
-            "zh": "为什么平均两分不能作为评价？",
-            "en": "Why is the two-point average invalid as an evaluation?"
+            "ja": "平均二点を『普通の評価』と解釈できない理由は何ですか。",
+            "zh": "为什么不能把平均两分解释为“普通评价”？",
+            "en": "Why can't the two-point average be interpreted as an “ordinary” rating?"
           },
           "options": [
             {
@@ -1708,13 +1708,13 @@
             {
               "id": "c",
               "text": {
-                "ja": "数値が最良、順位、辛さという異なる尺度に属する。",
-                "zh": "数字分别属于最佳等级、名次和辣度三种不同量表。",
-                "en": "The values belong to different scales: quality direction, rank, and heat."
+                "ja": "数値が評価、順位、辛さという異なる尺度に属する。",
+                "zh": "这些数字分别属于评价、名次和辣度三种不同量表。",
+                "en": "The numbers belong to different scales: rating, rank, and heat."
               },
-              "ttsTextJa": "数値が最良、順位、辛さという異なる尺度に属する。",
+              "ttsTextJa": "数値が評価、順位、辛さという異なる尺度に属する。",
               "audioId": "L5-003-q1-c",
-              "readingJa": "すーちがさいりょー、じゅんい、つらさということなるしゃくどにぞくする。"
+              "readingJa": "すーちがひょーか、じゅんい、からさということなるしゃくどにぞくする。"
             },
             {
               "id": "d",
@@ -1783,7 +1783,7 @@
               },
               "ttsTextJa": "各数字が何を測り、大小が何を意味するか。",
               "audioId": "L5-003-q2-a",
-              "readingJa": "かくすーじがなんをはかり、だいしょーがなんをいみするか。"
+              "readingJa": "かくすーじがなにをはかり、だいしょーがなにをいみするか。"
             },
             {
               "id": "b",
@@ -1908,7 +1908,7 @@
               },
               "ttsTextJa": "辛さ三は必ず不味いという意味だ。",
               "audioId": "L5-003-q3-d",
-              "readingJa": "つらささんわかならずまずいといういみだ。"
+              "readingJa": "からささんわかならずまずいといういみだ。"
             }
           ],
           "correctOptionIds": [
@@ -1932,7 +1932,7 @@
               "en": "Only Mika's direction establishes approval; Jun gives a rank and the chef only heat."
             },
             "evidence": {
-              "ja": "6番目の台詞、7番目の台詞、8番目の台詞、11番目の台詞を合わせると、評価、順位、物性の情報を分離すると、全員の好みを復元できないことが分かります。",
+              "ja": "6番目の台詞、7番目の台詞、8番目の台詞、11番目の台詞を合わせると、評価、順位、辛さの情報を分けても、全員の好みは復元できないと分かります。",
               "zh": "合并阅读第6句台词、第7句台词、第8句台词、第11句台词可知，将评价、排名与物性信息分开后，可见无法还原所有人的喜好。",
               "en": "Read together, the sixth line, the seventh line, the eighth line, the eleventh line show that separating evaluation, rank, and physical intensity shows that group preference cannot be reconstructed."
             },
@@ -1959,13 +1959,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "5aa3fbf1033ff7fa638d9bc501fe4346dd786483e908a0af78dd6b65c2049ced"
+      "contentHash": "027a4f4b9424b0c755eaf6eeeae5ba91a3eeb9feb79c91bdd8a1474be99ffca1"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-004",
-      "revision": 3,
+      "revision": 4,
       "level": 5,
       "stage": 4,
       "jlptTarget": "N1-pragmatics",
@@ -2177,25 +2177,25 @@
           "id": "line-006",
           "speaker": "planner",
           "text": {
-            "ja": "線路は十年前に外し、排水路へ転用しました。",
-            "zh": "铁轨十年前就拆了，改作排水沟。",
-            "en": "The rails were removed ten years ago and reused as drainage."
+            "ja": "線路は十年前に撤去され、跡地は排水路に転用されました。",
+            "zh": "铁轨十年前就被拆除，原址改作了排水沟。",
+            "en": "The tracks were removed ten years ago, and the site was converted into a drainage channel."
           },
-          "readingJa": "せんろわじゅーねんまえにはずし、はいすいろえてんよーしました。",
-          "ttsTextJa": "線路は十年前に外し、排水路へ転用しました。",
+          "readingJa": "せんろわじゅーねんまえにてっきょされ、あとちわはいすいろにてんよーされました。",
+          "ttsTextJa": "線路は十年前に撤去され、跡地は排水路に転用されました。",
           "audioId": "L5-004-line-006",
           "pauseAfterMs": 480,
           "tokens": [
             {
               "id": "token-001",
-              "text": "線路は十年前に外し、",
-              "reading": "せんろわじゅーねんまえにはずし、",
+              "text": "線路は十年前に撤去され、",
+              "reading": "せんろわじゅーねんまえにてっきょされ、",
               "audioId": "L5-004-line-006-token-001"
             },
             {
               "id": "token-002",
-              "text": "排水路へ転用しました。",
-              "reading": "はいすいろえてんよーしました。",
+              "text": "跡地は排水路に転用されました。",
+              "reading": "あとちわはいすいろにてんよーされました。",
               "audioId": "L5-004-line-006-token-002"
             }
           ]
@@ -2375,9 +2375,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "字面上は「旧線は本日も『一時利用不可』です。」、「線路は十年前に外し、排水路へ転用しました。」という観察が明示されています。",
-              "zh": "字面上明确给出了“旧线今天仍“暂时无法使用”。”、“铁轨十年前就拆了，改作排水沟。”这些观察。",
-              "en": "At the literal level, the scene explicitly gives “The old line remains “temporarily unavailable” today.” and “The rails were removed ten years ago and reused as drainage.”."
+              "ja": "字面上は「旧線は本日も『一時利用不可』です。」、「線路は十年前に撤去され、跡地は排水路に転用されました。」という観察が明示されています。",
+              "zh": "字面上明确给出了“旧线今天仍“暂时无法使用”。”、“铁轨十年前就被拆除，原址改作了排水沟。”这些观察。",
+              "en": "At the literal level, the scene explicitly gives “The old line remains “temporarily unavailable” today.” and “The tracks were removed ten years ago, and the site was converted into a drainage channel.”."
             },
             "intent": {
               "ja": "施設の現状ではなく、未署名の政治的状態を保つ婉曲表現です。",
@@ -2446,13 +2446,13 @@
             {
               "id": "d",
               "text": {
-                "ja": "市場が長年定着し、線路自体が排水路へ転用された。",
-                "zh": "市场已长期扎根，铁轨本身改成排水沟。",
-                "en": "The market is long established and the rail bed has become drainage."
+                "ja": "市場が長年定着し、線路が撤去され、跡地が排水路へ転用された。",
+                "zh": "市场已长期扎根，铁轨被拆除，原址改成了排水沟。",
+                "en": "The market is long established, the tracks are gone, and the site has become a drainage channel."
               },
-              "ttsTextJa": "市場が長年定着し、線路自体が排水路へ転用された。",
+              "ttsTextJa": "市場が長年定着し、線路が撤去され、跡地が排水路へ転用された。",
               "audioId": "L5-004-q2-d",
-              "readingJa": "しじょーがながねんてーちゃくし、せんろじたいがはいすいろえてんよーされた。"
+              "readingJa": "しじょーがながねんてーちゃくし、せんろがてっきょされ、あとちがはいすいろえてんよーされた。"
             }
           ],
           "correctOptionIds": [
@@ -2592,13 +2592,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "936441d0eaf946ea981df098e54b5d998032d3dc37a12bdfe94a681e4e071c5b"
+      "contentHash": "3f93b103b5272152e13fe16c841d56c66c0c130426b8800d3a901aa28db03a50"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-005",
-      "revision": 3,
+      "revision": 5,
       "level": 5,
       "stage": 5,
       "jlptTarget": "N1-pragmatics",
@@ -2755,19 +2755,19 @@
           "id": "line-004",
           "speaker": "kei",
           "text": {
-            "ja": "元の文へ付いた怒り反応だけ残っています。",
+            "ja": "元の文に付いた怒り反応だけ残っています。",
             "zh": "原帖收到的愤怒表情还留着。",
             "en": "Only the angry reactions to the original remain."
           },
-          "readingJa": "もとのぶんえついたおこりはんのーだけのこっています。",
-          "ttsTextJa": "元の文へ付いた怒り反応だけ残っています。",
+          "readingJa": "もとのぶんについたおこりはんのーだけのこっています。",
+          "ttsTextJa": "元の文に付いた怒り反応だけ残っています。",
           "audioId": "L5-005-line-004",
           "pauseAfterMs": 480,
           "tokens": [
             {
               "id": "token-001",
-              "text": "元の文へ付いた",
-              "reading": "もとのぶんえついた",
+              "text": "元の文に付いた",
+              "reading": "もとのぶんについた",
               "audioId": "L5-005-line-004-token-001"
             },
             {
@@ -2864,10 +2864,10 @@
           "speaker": "admin",
           "text": {
             "ja": "最終画面では全員が同じ文です。",
-            "zh": "最终画面上大家文字相同。",
+            "zh": "最终画面上大家的文字都相同。",
             "en": "On the final screen everyone says the same thing."
           },
-          "readingJa": "さいしゅーがめんでわぜんいんがどーじぶんです。",
+          "readingJa": "さいしゅーがめんでわぜんいんがおなじぶんです。",
           "ttsTextJa": "最終画面では全員が同じ文です。",
           "audioId": "L5-005-line-008",
           "pauseAfterMs": 480,
@@ -2881,7 +2881,7 @@
             {
               "id": "token-002",
               "text": "全員が同じ文です。",
-              "reading": "ぜんいんがどーじぶんです。",
+              "reading": "ぜんいんがおなじぶんです。",
               "audioId": "L5-005-line-008-token-002"
             }
           ]
@@ -3090,7 +3090,7 @@
               },
               "ttsTextJa": "締切時刻を一分延ばした。",
               "audioId": "L5-005-q2-b",
-              "readingJa": "しめきりじこくをいちぶのばした。"
+              "readingJa": "しめきりじこくをいっぷんのばした。"
             },
             {
               "id": "c",
@@ -3185,13 +3185,13 @@
             {
               "id": "c",
               "text": {
-                "ja": "怒り反応は法的な投票票数である。",
-                "zh": "愤怒表情就是法律意义上的票数。",
-                "en": "Angry reactions are legally binding votes."
+                "ja": "怒り反応は法的に有効な票である。",
+                "zh": "愤怒表情是具有法律效力的选票。",
+                "en": "Angry reactions are legally valid votes."
               },
-              "ttsTextJa": "怒り反応は法的な投票票数である。",
+              "ttsTextJa": "怒り反応は法的に有効な票である。",
               "audioId": "L5-005-q3-c",
-              "readingJa": "おこりはんのーわほーてきなとーひょーひょーすーである。"
+              "readingJa": "おこりはんのーわほーてきにゆーこーなひょーである。"
             },
             {
               "id": "d",
@@ -3202,7 +3202,7 @@
               },
               "ttsTextJa": "管理者以外の投稿は全て無効だ。",
               "audioId": "L5-005-q3-d",
-              "readingJa": "かんりものいがいのとーこーわすべてむこーだ。"
+              "readingJa": "かんりしゃいがいのとーこーわすべてむこーだ。"
             }
           ],
           "correctOptionIds": [
@@ -3217,7 +3217,7 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "字面上は「僕のもです。編集時刻は締切後になっています。」、「元の文へ付いた怒り反応だけ残っています。」という観察が明示されています。",
+              "ja": "字面上は「僕のもです。編集時刻は締切後になっています。」、「元の文に付いた怒り反応だけ残っています。」という観察が明示されています。",
               "zh": "字面上明确给出了“我的也是，编辑时间在截止之后。”、“原帖收到的愤怒表情还留着。”这些观察。",
               "en": "At the literal level, the scene explicitly gives “Mine too. Its edit time is after the deadline.” and “Only the angry reactions to the original remain.”."
             },
@@ -3254,13 +3254,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "f392da0e275f7b54bd5623c22fe5f76801de5907def1a38fe047c98e65a9c7f0"
+      "contentHash": "c2bca1215ed2e1a23506964631c089a5d7e0ea7333b510367aba1b2e6708c3d6"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-006",
-      "revision": 3,
+      "revision": 6,
       "level": 5,
       "stage": 6,
       "jlptTarget": "N1-pragmatics",
@@ -3395,7 +3395,7 @@
             "zh": "接着说我会打开蓝箱。",
             "en": "Now say I will open the blue chest."
           },
-          "readingJa": "つぎわわたしがあおいはこをあけるってげんって。",
+          "readingJa": "つぎわわたしがあおいはこをあけるっていって。",
           "ttsTextJa": "次は私が青い箱を開けるって言って。",
           "audioId": "L5-006-line-003",
           "pauseAfterMs": 480,
@@ -3409,7 +3409,7 @@
             {
               "id": "token-002",
               "text": "青い箱を開けるって言って。",
-              "reading": "あおいはこをあけるってげんって。",
+              "reading": "あおいはこをあけるっていって。",
               "audioId": "L5-006-line-003-token-002"
             }
           ]
@@ -3445,12 +3445,12 @@
           "id": "line-005",
           "speaker": "nagi",
           "text": {
-            "ja": "まだ触ってないのに……同じになった。",
-            "zh": "明明还没碰……却真变成那样。",
-            "en": "I had not touched it... but it happened."
+            "ja": "まだ触ってないのに……その通りになった。",
+            "zh": "明明还没碰……事情却真的照她说的发生了。",
+            "en": "I hadn't touched it yet... but it happened exactly as she said."
           },
-          "readingJa": "まださわってないのに……おなじになった。",
-          "ttsTextJa": "まだ触ってないのに……同じになった。",
+          "readingJa": "まださわってないのに……そのとーりになった。",
+          "ttsTextJa": "まだ触ってないのに……その通りになった。",
           "audioId": "L5-006-line-005",
           "pauseAfterMs": 480,
           "tokens": [
@@ -3462,8 +3462,8 @@
             },
             {
               "id": "token-002",
-              "text": "同じになった。",
-              "reading": "おなじになった。",
+              "text": "その通りになった。",
+              "reading": "そのとーりになった。",
               "audioId": "L5-006-line-005-token-002"
             }
           ]
@@ -3555,7 +3555,7 @@
           "text": {
             "ja": "前回も同じ橋で落ちたのか。",
             "zh": "原来上局我也在同一座桥掉下去。",
-            "en": "So I fell at the same bridge last round."
+            "en": "So I fell from the same bridge last round."
           },
           "readingJa": "ぜんかいもおなじはしでおちたのか。",
           "ttsTextJa": "前回も同じ橋で落ちたのか。",
@@ -3580,19 +3580,19 @@
           "id": "line-010",
           "speaker": "nagi",
           "text": {
-            "ja": "今回の操作が似たから古い実況と重なったんだね。",
-            "zh": "这局操作相似，所以和旧解说重合了。",
-            "en": "Our similar play made the old commentary line up."
+            "ja": "今回も似た操作をしたから、古い実況と重なったんだね。",
+            "zh": "因为这局也做了相似的操作，才会和旧解说重合。",
+            "en": "The old commentary lined up because we made similar moves this round."
           },
-          "readingJa": "こんかいのそーさがにたからふるいじっきょーとかさなったんだね。",
-          "ttsTextJa": "今回の操作が似たから古い実況と重なったんだね。",
+          "readingJa": "こんかいもにたそーさをしたから、ふるいじっきょーとかさなったんだね。",
+          "ttsTextJa": "今回も似た操作をしたから、古い実況と重なったんだね。",
           "audioId": "L5-006-line-010",
           "pauseAfterMs": 480,
           "tokens": [
             {
               "id": "token-001",
-              "text": "今回の操作が似たから",
-              "reading": "こんかいのそーさがにたから",
+              "text": "今回も似た操作をしたから、",
+              "reading": "こんかいもにたそーさをしたから、",
               "audioId": "L5-006-line-010-token-001"
             },
             {
@@ -3677,13 +3677,13 @@
             {
               "id": "d",
               "text": {
-                "ja": "前回の実況が現在の返事へ重なり、似た行動と同期した。",
+                "ja": "前回の実況が現在の返事に重なり、似た行動と同期した。",
                 "zh": "上局解说叠在当前回应上，并与相似操作同步。",
                 "en": "Prior narration overlays live replies and aligns with repeated actions."
               },
-              "ttsTextJa": "前回の実況が現在の返事へ重なり、似た行動と同期した。",
+              "ttsTextJa": "前回の実況が現在の返事に重なり、似た行動と同期した。",
               "audioId": "L5-006-q1-d",
-              "readingJa": "ぜんかいのじっきょーがげんざいのへんじえかさなり、にたこーどーとどーきした。"
+              "readingJa": "ぜんかいのじっきょーがげんざいのへんじにかさなり、にたこーどーとどーきした。"
             }
           ],
           "correctOptionIds": [
@@ -3790,9 +3790,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "字面上は「そんなわけ……あ、本当に落ちた。」、「まだ触ってないのに……同じになった。」という観察が明示されています。",
-              "zh": "字面上明确给出了“怎么会……啊，真掉了。”、“明明还没碰……却真变成那样。”这些观察。",
-              "en": "At the literal level, the scene explicitly gives “No way... oh, I really fell.” and “I had not touched it... but it happened.”."
+              "ja": "字面上は「そんなわけ……あ、本当に落ちた。」、「まだ触ってないのに……その通りになった。」という観察が明示されています。",
+              "zh": "字面上明确给出了“怎么会……啊，真掉了。”、“明明还没碰……事情却真的照她说的发生了。”这些观察。",
+              "en": "At the literal level, the scene explicitly gives “No way... oh, I really fell.” and “I hadn't touched it yet... but it happened exactly as she said.”."
             },
             "intent": {
               "ja": "技術者は実況を古い層、返事を現在入力と明確に分けています。",
@@ -3937,7 +3937,7 @@
               },
               "ttsTextJa": "古い実況による先取りだけが止まり、現在の会話は続く。",
               "audioId": "L5-006-q4-b",
-              "readingJa": "ふるいじっきょーによるさきどりだけがとまり、げんざいのかいわわつずく。"
+              "readingJa": "ふるいじっきょーによるさきどりだけがとまり、げんざいのかいわわつづく。"
             },
             {
               "id": "c",
@@ -4009,13 +4009,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "bc6911822a59b643a1dedbe37daf66cfe5fda256f9ba03413a05f19e63bd6684"
+      "contentHash": "7fc40eba1e73f84c1f8cfce9719621f12bd1fbbe3fbcca26bca673272269f4cc"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-007",
-      "revision": 3,
+      "revision": 5,
       "level": 5,
       "stage": 7,
       "jlptTarget": "N1-pragmatics",
@@ -4175,7 +4175,7 @@
           "text": {
             "ja": "前半は東京から接続し、右手でペンを持っています。",
             "zh": "前半从东京登录，用右手拿笔。",
-            "en": "The first session connected from Tokyo and held the pen right-handed."
+            "en": "During the first half, the user connected from Tokyo and held the pen in their right hand."
           },
           "readingJa": "ぜんはんわとーきょーからせつぞくし、みぎてでぺんをもっています。",
           "ttsTextJa": "前半は東京から接続し、右手でペンを持っています。",
@@ -4258,7 +4258,7 @@
             "zh": "只隔十二分钟，不可能从东京移到札幌。",
             "en": "Only twelve minutes separate them; travel from Tokyo to Sapporo is impossible."
           },
-          "readingJa": "かんかくわじゅーにぶん。とーきょーからさっぽろえわうつれません。",
+          "readingJa": "かんかくわじゅーにふん。とーきょーからさっぽろえわうつれません。",
           "ttsTextJa": "間隔は十二分。東京から札幌へは移れません。",
           "audioId": "L5-007-line-007",
           "pauseAfterMs": 480,
@@ -4266,7 +4266,7 @@
             {
               "id": "token-001",
               "text": "間隔は十二分。",
-              "reading": "かんかくわじゅーにぶん。",
+              "reading": "かんかくわじゅーにふん。",
               "audioId": "L5-007-line-007-token-001"
             },
             {
@@ -4483,7 +4483,7 @@
             "literal": {
               "ja": "字面上は「だから一人の連続違反と扱います。」、「前半は東京から接続し、右手でペンを持っています。」という観察が明示されています。",
               "zh": "字面上明确给出了“所以按一个人的连续违规处理。”、“前半从东京登录，用右手拿笔。”这些观察。",
-              "en": "At the literal level, the scene explicitly gives “So I will treat this as one repeat offender.” and “The first session connected from Tokyo and held the pen right-handed.”."
+              "en": "At the literal level, the scene explicitly gives “So I will treat this as one repeat offender.” and “During the first half, the user connected from Tokyo and held the pen in their right hand.”."
             },
             "intent": {
               "ja": "表面的な識別子より、同時に偽装しにくい複数の行動痕跡が主体を分けます。",
@@ -4519,13 +4519,13 @@
             {
               "id": "a",
               "text": {
-                "ja": "十二分で東京と札幌の接続が切り替わる。",
-                "zh": "十二分钟内登录地点从东京切到札幌。",
-                "en": "The connection switches Tokyo to Sapporo within twelve minutes."
+                "ja": "十二分の間に接続元が東京から札幌へ変わる。",
+                "zh": "十二分钟内，登录地点从东京变为札幌。",
+                "en": "Within twelve minutes, the connection location changes from Tokyo to Sapporo."
               },
-              "ttsTextJa": "十二分で東京と札幌の接続が切り替わる。",
+              "ttsTextJa": "十二分の間に接続元が東京から札幌へ変わる。",
               "audioId": "L5-007-q2-a",
-              "readingJa": "じゅーにぶんでとーきょーとさっぽろのせつぞくがきりかわる。"
+              "readingJa": "じゅーにふんのあいだにせつぞくもとがとーきょーからさっぽろえかわる。"
             },
             {
               "id": "b",
@@ -4552,13 +4552,13 @@
             {
               "id": "d",
               "text": {
-                "ja": "合言葉と身内ネタへの反応が別々の人物知識に対応する。",
-                "zh": "对暗号与家人梗的反应分别对应不同人的知识。",
-                "en": "Passphrase and family-joke responses map to different personal knowledge."
+                "ja": "合言葉と身内ネタへの反応が、それぞれ絵美と冬馬の個人知識に対応する。",
+                "zh": "对暗号和家人梗的反应分别对应绘美与冬马的个人知识。",
+                "en": "Responses to the passphrase and family joke match Emi's and Toma's personal knowledge, respectively."
               },
-              "ttsTextJa": "合言葉と身内ネタへの反応が別々の人物知識に対応する。",
+              "ttsTextJa": "合言葉と身内ネタへの反応が、それぞれ絵美と冬馬の個人知識に対応する。",
               "audioId": "L5-007-q2-d",
-              "readingJa": "あいことばとみうちねたえのはんのーがべつべつのじんぶつちしきにたいおーする。"
+              "readingJa": "あいことばとみうちねたえのはんのーが、それぞれえみととうまのこじんちしきにたいおーする。"
             }
           ],
           "correctOptionIds": [
@@ -4576,7 +4576,7 @@
             "literal": {
               "ja": "字面上は「アバターも声も同じ設定です。」、「前半は東京から接続し、右手でペンを持っています。」という観察が明示されています。",
               "zh": "字面上明确给出了“头像和声音都是同一设置。”、“前半从东京登录，用右手拿笔。”这些观察。",
-              "en": "At the literal level, the scene explicitly gives “The avatar and voice settings are identical.” and “The first session connected from Tokyo and held the pen right-handed.”."
+              "en": "At the literal level, the scene explicitly gives “The avatar and voice settings are identical.” and “During the first half, the user connected from Tokyo and held the pen in their right hand.”."
             },
             "intent": {
               "ja": "時空上の分離と知識上の分離が、互いに異なる種類の証拠として補強します。",
@@ -4645,13 +4645,13 @@
             {
               "id": "d",
               "text": {
-                "ja": "声が女性型なので絵美だけを処分する。",
-                "zh": "因声音呈女性就只处罚绘美。",
+                "ja": "声が女性らしく聞こえるので絵美だけを処分する。",
+                "zh": "因为声音听起来像女性，就只处罚绘美。",
                 "en": "Punish only Emi because the voice sounds feminine."
               },
-              "ttsTextJa": "声が女性型なので絵美だけを処分する。",
+              "ttsTextJa": "声が女性らしく聞こえるので絵美だけを処分する。",
               "audioId": "L5-007-q3-d",
-              "readingJa": "こえがじょせーがたなのでえみだけをしょぶんする。"
+              "readingJa": "こえがじょせーらしくきこえるのでえみだけをしょぶんする。"
             }
           ],
           "correctOptionIds": [
@@ -4701,13 +4701,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "5c485abdf0a85175aca502041a231406219e985144755ffd20bed8a023cda924"
+      "contentHash": "5c3790ae0f2f7c9ddc2bed812d0953fdd1dba66a922025b693606d381a5ddb70"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-008",
-      "revision": 3,
+      "revision": 4,
       "level": 5,
       "stage": 8,
       "jlptTarget": "N1-pragmatics",
@@ -4786,7 +4786,7 @@
           "text": {
             "ja": "今週中に出せ。事情は後で聞く。",
             "zh": "本周内交出来，情况之后再说。",
-            "en": "Deliver it this week. I will hear circumstances later."
+            "en": "Submit it by the end of this week. I'll hear the circumstances later."
           },
           "readingJa": "こんしゅーちゅうにだせ。じじょーわあとできく。",
           "ttsTextJa": "今週中に出せ。事情は後で聞く。",
@@ -4840,7 +4840,7 @@
           "text": {
             "ja": "検証を省くなら可能ですが、事故の危険があります。",
             "zh": "若省略验证可以，但有事故风险。",
-            "en": "It is possible if we skip validation, but that risks failure."
+            "en": "We can do it if we skip validation, but that risks an accident."
           },
           "readingJa": "けんしょーをはぶくならかのーですが、じこのきけんがあります。",
           "ttsTextJa": "検証を省くなら可能ですが、事故の危険があります。",
@@ -4893,7 +4893,7 @@
           "speaker": "boss",
           "text": {
             "ja": "拒否なら担当を外すしかない。",
-            "zh": "既然拒绝，只能撤掉她的负责权。",
+            "zh": "如果她拒绝，就只能把她调离这个任务。",
             "en": "If she refuses, I must remove her from the task."
           },
           "readingJa": "きょひならたんとーをはずすしかない。",
@@ -5147,7 +5147,7 @@
             "literal": {
               "ja": "字面上は「今週中に出せ。事情は後で聞く。」、「課長は早期提出を期待しています。」という観察が明示されています。",
               "zh": "字面上明确给出了“本周内交出来，情况之后再说。”、“课长期待尽早提交。”这些观察。",
-              "en": "At the literal level, the scene explicitly gives “Deliver it this week. I will hear circumstances later.” and “The manager hopes for an early submission.”."
+              "en": "At the literal level, the scene explicitly gives “Submit it by the end of this week. I'll hear the circumstances later.” and “The manager hopes for an early submission.”."
             },
             "intent": {
               "ja": "一方の発話力を弱め、他方を強める非対称な変換です。",
@@ -5238,7 +5238,7 @@
             "literal": {
               "ja": "字面上は「検証を省くなら可能ですが、事故の危険があります。」、「泉さんは提出を拒否しています。」という観察が明示されています。",
               "zh": "字面上明确给出了“若省略验证可以，但有事故风险。”、“泉拒绝提交。”这些观察。",
-              "en": "At the literal level, the scene explicitly gives “It is possible if we skip validation, but that risks failure.” and “Izumi refuses to submit.”."
+              "en": "At the literal level, the scene explicitly gives “We can do it if we skip validation, but that risks an accident.” and “Izumi refuses to submit.”."
             },
             "intent": {
               "ja": "誤要約が課長の条件文の前提となり、泉の本来の立場をさらに遠ざけました。",
@@ -5296,13 +5296,13 @@
             {
               "id": "c",
               "text": {
-                "ja": "人事がAIを質問した。",
+                "ja": "人事がAIに質問した。",
                 "zh": "人事向AI提问。",
                 "en": "HR questioned the AI."
               },
-              "ttsTextJa": "人事がAIを質問した。",
+              "ttsTextJa": "人事がAIに質問した。",
               "audioId": "L5-008-q3-c",
-              "readingJa": "じんじがえーあいをしつもんした。"
+              "readingJa": "じんじがえーあいにしつもんした。"
             },
             {
               "id": "d",
@@ -5421,7 +5421,7 @@
             "literal": {
               "ja": "字面上は「今週中に出せ。事情は後で聞く。」、「検証を省くなら可能ですが、事故の危険があります。」という観察が明示されています。",
               "zh": "字面上明确给出了“本周内交出来，情况之后再说。”、“若省略验证可以，但有事故风险。”这些观察。",
-              "en": "At the literal level, the scene explicitly gives “Deliver it this week. I will hear circumstances later.” and “It is possible if we skip validation, but that risks failure.”."
+              "en": "At the literal level, the scene explicitly gives “Submit it by the end of this week. I'll hear the circumstances later.” and “We can do it if we skip validation, but that risks an accident.”."
             },
             "intent": {
               "ja": "失われた発話力と条件を復元し、推測でなく当事者確認へ戻す必要があります。",
@@ -5456,13 +5456,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "c519406dafe57b6204f0d4ea5332d5a16359e6650aac825557336166d8e6061b"
+      "contentHash": "9f3c6bca30dfb99eb779c1a6732c0bd3806273a27bbf8dbe79e23759e20fb632"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-009",
-      "revision": 3,
+      "revision": 5,
       "level": 5,
       "stage": 9,
       "jlptTarget": "N1-pragmatics",
@@ -5481,9 +5481,9 @@
         "en": "A Present Tense Inside the Drill"
       },
       "setting": {
-        "ja": "漂流船から届いた救難通信。古い訓練録音の周期音に、一文だけ現在の呼びかけが差し込まれる。",
-        "zh": "漂流船发来求救通信，旧训练录音的周期噪声中插入一句现在的呼叫。",
-        "en": "A distress call built from an old drill recording with one present-tense sentence inserted into it."
+        "ja": "漂流船から届いた救難通信。古い訓練録音の周期音に、現在の呼びかけが二度差し込まれる。",
+        "zh": "漂流船发来求救通信，旧训练录音的周期噪声中插入了两次当前呼叫。",
+        "en": "A distress call from a drifting ship in which two present-time appeals are inserted into an old drill recording."
       },
       "illustration": {
         "enabled": true,
@@ -5541,7 +5541,7 @@
           "text": {
             "ja": "船体は損傷し、主電源は停止した。",
             "zh": "船体受损，主电源已经停止。",
-            "en": "The hull was damaged, and main power stopped."
+            "en": "The hull was damaged, and the main power shut down."
           },
           "readingJa": "せんたいわそんしょーし、しゅでんげんわてーしした。",
           "ttsTextJa": "船体は損傷し、主電源は停止した。",
@@ -5647,19 +5647,19 @@
           "id": "line-005",
           "speaker": "controller",
           "text": {
-            "ja": "前三文は過去形、最後だけ現在形です。",
-            "zh": "前三句是过去时，只有最后一句是现在时。",
-            "en": "The first three sentences are past tense; only the last is present."
+            "ja": "最初の三文は過去形で、最後だけ現在形です。",
+            "zh": "最初三句是过去时，只有最后一句是现在时。",
+            "en": "The first three sentences are in the past tense; only the last is in the present tense."
           },
-          "readingJa": "ぜんさんぶんわかこけい、さいごだけげんざいけいです。",
-          "ttsTextJa": "前三文は過去形、最後だけ現在形です。",
+          "readingJa": "さいしょのさんぶんわかこけいで、さいごだけげんざいけいです。",
+          "ttsTextJa": "最初の三文は過去形で、最後だけ現在形です。",
           "audioId": "L5-009-line-005",
           "pauseAfterMs": 480,
           "tokens": [
             {
               "id": "token-001",
-              "text": "前三文は過去形、",
-              "reading": "ぜんさんぶんわかこけい、",
+              "text": "最初の三文は過去形で、",
+              "reading": "さいしょのさんぶんわかこけいで、",
               "audioId": "L5-009-line-005-token-001"
             },
             {
@@ -5879,7 +5879,7 @@
               },
               "ttsTextJa": "古い訓練音声を背景に、現在の救難文だけ差し込んだ。",
               "audioId": "L5-009-q1-a",
-              "readingJa": "ふるいくんれんおんせーをはいけーに、げんざいのすくいなんぶんだけさしこんだ。"
+              "readingJa": "ふるいくんれんおんせーをはいけーに、げんざいのきゅうなんぶんだけさしこんだ。"
             },
             {
               "id": "b",
@@ -5932,7 +5932,7 @@
             "literal": {
               "ja": "字面上は「船体は損傷し、主電源は停止した。」、「セナ管制官、私は今ここで待っている。」という観察が明示されています。",
               "zh": "字面上明确给出了“船体受损，主电源已经停止。”、“濑奈管制官，我现在在这里等。”这些观察。",
-              "en": "At the literal level, the scene explicitly gives “The hull was damaged, and main power stopped.” and “Controller Sena, I am waiting here now.”."
+              "en": "At the literal level, the scene explicitly gives “The hull was damaged, and the main power shut down.” and “Controller Sena, I am waiting here now.”."
             },
             "intent": {
               "ja": "時制、背景音、担当者名という三種類の境界が同じ二層構造を示します。",
@@ -5996,7 +5996,7 @@
               },
               "ttsTextJa": "現在形、現担当者の名、背景無音が同じ文に集まる。",
               "audioId": "L5-009-q2-c",
-              "readingJa": "げんざいけい、げんたんとーしゃのな、はいけーむおんがどーじぶんにあつまる。"
+              "readingJa": "げんざいけい、げんたんとーしゃのな、はいけーむおんがおなじぶんにあつまる。"
             },
             {
               "id": "d",
@@ -6023,9 +6023,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "字面上は「セナ管制官、私は今ここで待っている。」、「前三文は過去形、最後だけ現在形です。」という観察が明示されています。",
-              "zh": "字面上明确给出了“濑奈管制官，我现在在这里等。”、“前三句是过去时，只有最后一句是现在时。”这些观察。",
-              "en": "At the literal level, the scene explicitly gives “Controller Sena, I am waiting here now.” and “The first three sentences are past tense; only the last is present.”."
+              "ja": "字面上は「セナ管制官、私は今ここで待っている。」、「最初の三文は過去形で、最後だけ現在形です。」という観察が明示されています。",
+              "zh": "字面上明确给出了“濑奈管制官，我现在在这里等。”、“最初三句是过去时，只有最后一句是现在时。”这些观察。",
+              "en": "At the literal level, the scene explicitly gives “Controller Sena, I am waiting here now.” and “The first three sentences are in the past tense; only the last is in the present tense.”."
             },
             "intent": {
               "ja": "時間、人物、音響の三指標が一つの区間だけ旧録音から外れます。",
@@ -6153,13 +6153,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "510ea0719eb7b60c7dcef8599ee5d71d894698d0f35332fd135e6f60ff75cad2"
+      "contentHash": "b5ffb2ad911807989b94a932e2af484adc9c595519a0afa0a0444334d4360931"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L5-010",
-      "revision": 3,
+      "revision": 4,
       "level": 5,
       "stage": 10,
       "jlptTarget": "N1-pragmatics",
@@ -6177,9 +6177,9 @@
         "en": "Four Ways of Being There"
       },
       "setting": {
-        "ja": "資料流出をめぐる聞き取り。四人は真実を話しながら、部屋・建物・会議・画面という別の範囲へ答える。",
-        "zh": "围绕资料泄露展开问询，四人都说真话，却分别回答房间、建筑、会议与画面等不同范围。",
-        "en": "An inquiry where four truthful answers use different scopes for room, building, meeting, and screen presence."
+        "ja": "資料流出をめぐる聞き取り。三人の回答者は真実を話しながら、部屋・建物・会議・画面という異なる範囲で答える。",
+        "zh": "围绕资料泄露展开问询，三名回答者都说真话，却分别按房间、建筑、会议与屏幕等不同范围回答。",
+        "en": "An inquiry in which three respondents tell the truth while answering within different scopes: room, building, meeting, and screen presence."
       },
       "illustration": {
         "enabled": true,
@@ -6318,7 +6318,7 @@
           "text": {
             "ja": "会議には参加していました。",
             "zh": "我参加了会议。",
-            "en": "I was in the meeting."
+            "en": "I participated in the meeting."
           },
           "readingJa": "かいぎにわさんかしていました。",
           "ttsTextJa": "会議には参加していました。",
@@ -6343,25 +6343,25 @@
           "id": "line-005",
           "speaker": "investigator",
           "text": {
-            "ja": "では三人の証言は矛盾していますね。",
-            "zh": "那么三人的证词互相矛盾。",
-            "en": "Then your statements contradict one another."
+            "ja": "では三人の証言を同じ基準では比べられませんね。",
+            "zh": "那么三人的证词不能按同一标准比较。",
+            "en": "Then the three statements cannot be compared on the same basis."
           },
-          "readingJa": "でわさんにんのしょーげんわむじゅんしていますね。",
-          "ttsTextJa": "では三人の証言は矛盾していますね。",
+          "readingJa": "でわさんにんのしょーげんをおなじきじゅんでわくらべられませんね。",
+          "ttsTextJa": "では三人の証言を同じ基準では比べられませんね。",
           "audioId": "L5-010-line-005",
           "pauseAfterMs": 480,
           "tokens": [
             {
               "id": "token-001",
-              "text": "では三人の証言は",
-              "reading": "でわさんにんのしょーげんわ",
+              "text": "では三人の証言を",
+              "reading": "でわさんにんのしょーげんを",
               "audioId": "L5-010-line-005-token-001"
             },
             {
               "id": "token-002",
-              "text": "矛盾していますね。",
-              "reading": "むじゅんしていますね。",
+              "text": "同じ基準では比べられませんね。",
+              "reading": "おなじきじゅんでわくらべられませんね。",
               "audioId": "L5-010-line-005-token-002"
             }
           ]
@@ -6534,9 +6534,9 @@
           "id": "q1",
           "type": "single",
           "prompt": {
-            "ja": "最初の証言が矛盾して見えた原因は何ですか。",
-            "zh": "最初的证词为何看似矛盾？",
-            "en": "Why did the initial statements appear contradictory?"
+            "ja": "三人の最初の証言を同じ基準で比べられない理由は何ですか。",
+            "zh": "为什么不能用同一标准比较三人的最初证词？",
+            "en": "Why can't the three initial statements be compared on the same basis?"
           },
           "options": [
             {
@@ -6575,13 +6575,13 @@
             {
               "id": "d",
               "text": {
-                "ja": "『そこ』『いた』を物理空間・オンライン参加・画面表示で別々に解釈した。",
-                "zh": "他们分别用物理空间、在线参会与屏幕呈现来理解“那里”和“在场”。",
-                "en": "They scoped “there” and “present” as physical place, online participation, and screen appearance."
+                "ja": "『そこ』『いた』を、部屋・建物・会議という異なる範囲で解釈した。",
+                "zh": "他们分别把“那里”和“在场”理解为房间、建筑与会议等不同范围。",
+                "en": "They interpreted “there” and “present” within different scopes: room, building, and meeting."
               },
-              "ttsTextJa": "『そこ』『いた』を物理空間・オンライン参加・画面表示で別々に解釈した。",
+              "ttsTextJa": "『そこ』『いた』を、部屋・建物・会議という異なる範囲で解釈した。",
               "audioId": "L5-010-q1-d",
-              "readingJa": "『そこ』『いた』をぶつりくーかん・おんらいんさんか・がめんひょーじでべつべつにかいしゃくした。"
+              "readingJa": "『そこ』『いた』を、へや・たてもの・かいぎということなるはんいでかいしゃくした。"
             }
           ],
           "correctOptionIds": [
@@ -6609,9 +6609,9 @@
               "en": "The issue is not truthfulness but unshared scope for the question's terms."
             },
             "evidence": {
-              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、10番目の台詞を合わせると、後続説明が各発言を別の領域で同時に真にします。",
-              "zh": "合并阅读第1句台词、第2句台词、第3句台词、第4句台词、第6句台词、第7句台词、第8句台词、第10句台词可知，后续说明让每句证词在不同领域中同时为真。",
-              "en": "Read together, the first line, the second line, the third line, the fourth line, the sixth line, the seventh line, the eighth line, the tenth line show that later explanations make all statements true in different domains."
+              "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、10番目の台詞を合わせると、三人は最初に部屋、建物、会議という別々の範囲で答え、後続説明がその違いを具体化しています。",
+              "zh": "合并阅读第1句台词、第2句台词、第3句台词、第4句台词、第6句台词、第7句台词、第8句台词、第10句台词可知，三人起初分别按房间、建筑与会议回答，后续说明又具体界定了这些范围。",
+              "en": "Read together, the first line, the second line, the third line, the fourth line, the sixth line, the seventh line, the eighth line, the tenth line show that the three respondents initially answer at the room, building, and meeting scopes, which the later explanations then make explicit."
             },
             "nuance": {
               "ja": "玄の『参加』は録画表示まで含む特殊な使い方で、通常の参加概念より広いため明示が必要です。",
@@ -6784,7 +6784,7 @@
             "literal": {
               "ja": "字面上は「会議には参加していました。」、「私は画面には映りましたが、録画映像でした。」という観察が明示されています。",
               "zh": "字面上明确给出了“我参加了会议。”、“我出现在屏幕上，但那是预录视频。”这些观察。",
-              "en": "At the literal level, the scene explicitly gives “I was in the meeting.” and “I appeared on screen, but it was prerecorded.”."
+              "en": "At the literal level, the scene explicitly gives “I participated in the meeting.” and “I appeared on screen, but it was prerecorded.”."
             },
             "intent": {
               "ja": "画面上の存在と本人の同時位置を分ける言い換えだけが両方の情報を保持します。",
@@ -6877,9 +6877,9 @@
           ],
           "explanation": {
             "literal": {
-              "ja": "字面上は「八時にあなたはそこにいましたか。」、「では三人の証言は矛盾していますね。」という観察が明示されています。",
-              "zh": "字面上明确给出了“八点时你在“那里”吗？”、“那么三人的证词互相矛盾。”这些观察。",
-              "en": "At the literal level, the scene explicitly gives “Were you there at eight?” and “Then your statements contradict one another.”."
+              "ja": "字面上は「八時にあなたはそこにいましたか。」、「では三人の証言を同じ基準では比べられませんね。」という観察が明示されています。",
+              "zh": "字面上明确给出了“八点时你在“那里”吗？”、“那么三人的证词不能按同一标准比较。”这些观察。",
+              "en": "At the literal level, the scene explicitly gives “Were you there at eight?” and “Then the three statements cannot be compared on the same basis.”."
             },
             "intent": {
               "ja": "一つの曖昧な存在質問を、媒体と空間ごとの検証可能な問いに分けるべきです。",
@@ -6887,9 +6887,9 @@
               "en": "One ambiguous presence question should be split into verifiable questions by medium and space."
             },
             "evidence": {
-              "ja": "1番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞を合わせると、調査員自身の誤判と最後の反省が、必要な区別を場面全体から列挙しています。",
-              "zh": "合并阅读第1句台词、第5句台词、第6句台词、第7句台词、第8句台词、第9句台词、第10句台词、第11句台词可知，调查员的误判与最后反思共同列出了场景所需的区分。",
-              "en": "Read together, the first line, the fifth line, the sixth line, the seventh line, the eighth line, the ninth line, the tenth line, the eleventh line show that the investigator's error and final reflection enumerate the necessary distinctions across the scene."
+              "ja": "1番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞、9番目の台詞、10番目の台詞、11番目の台詞を合わせると、曖昧な質問、三つの異なる回答範囲、後続の具体化、最後の反省が、必要な区別を場面全体から示しています。",
+              "zh": "合并阅读第1句台词、第5句台词、第6句台词、第7句台词、第8句台词、第9句台词、第10句台词、第11句台词可知，含混问句、三种不同回答范围、后续具体说明与最后反思共同表明了所需区分。",
+              "en": "Read together, the first line, the fifth line, the sixth line, the seventh line, the eighth line, the ninth line, the tenth line, the eleventh line show that the ambiguous question, three different response scopes, later clarifications, and final reflection jointly establish the distinctions needed."
             },
             "nuance": {
               "ja": "定義を細かくしすぎて回答を誘導しないよう、選択肢だけでなく自由説明も求めると安全です。",
@@ -6914,7 +6914,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "036a8e23f977788af48ba7ff12bd05e31c7b9aead68d617be632e3cbf34dd56e"
+      "contentHash": "abd32fdad9db3aac639969b396780698d950ce5a36fa65fa0d0784e8cd27cda0"
     }
   ]
 }

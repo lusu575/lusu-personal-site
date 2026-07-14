@@ -1,4 +1,4 @@
-import { mergeProgress, mergeSettings, sanitizeProgress, sanitizeSettings } from "./storage.mjs?v=20260711-japanese-subtext-v102-r2";
+import { mergeProgress, mergeSettings, sanitizeProgress, sanitizeSettings } from "./storage.mjs?v=20260712-japanese-subtext-v103-r6";
 
 const ENDPOINT = "/api/tools/japanese-subtext/progress";
 

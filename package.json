@@ -11,13 +11,18 @@
     "jp-subtext:validate:content": "node tools/japanese-subtext/scripts/validate-content.mjs --skip-audio",
     "jp-subtext:validate:draft": "node tools/japanese-subtext/scripts/validate-content.mjs --skip-audio --allow-partial --allow-unlocked",
     "jp-subtext:stats": "node tools/japanese-subtext/scripts/content-stats.mjs",
-    "jp-subtext:illustrations": "node tools/japanese-subtext/scripts/generate-manga-assets.mjs",
+    "jp-subtext:image2:generate": "node tools/japanese-subtext/scripts/generate-image2-assets.mjs",
+    "jp-subtext:image2:import-builtin": "node tools/japanese-subtext/scripts/import-builtin-image2-asset.mjs",
+    "jp-subtext:image2:migrate": "node tools/japanese-subtext/scripts/migrate-image2-content.mjs",
+    "jp-subtext:image2:check": "node tools/japanese-subtext/scripts/publish-image2-assets.mjs --check --published-only --public-root tools/japanese-subtext --stage-out-root tools/japanese-subtext/assets/stages/v1.0.3 --background-out-root tools/japanese-subtext/assets/backgrounds/v1.0.3 --manifest tools/japanese-subtext/assets/stages/v1.0.3/manifest.json --content-version 1.0.3 --schema-version 3 --review-status codex-approved",
     "jp-subtext:test": "node --test --test-isolation=none tools/japanese-subtext/tests/*.test.mjs tools/japanese-subtext/scripts/tts/tests/*.mjs",
+    "jp-subtext:test:tts-python": "node tools/japanese-subtext/scripts/run-python-tts-tests.mjs",
     "jp-subtext:audio:validate": "node tools/japanese-subtext/scripts/validate-audio.mjs",
     "jp-subtext:audio:validate:quick": "node tools/japanese-subtext/scripts/validate-audio.mjs --skip-probe",
+    "jp-subtext:audio:audit:live": "node tools/japanese-subtext/scripts/run-live-audio-audit.mjs",
     "jp-subtext:audio:estimate": "node tools/japanese-subtext/scripts/estimate-audio-size.mjs",
     "jp-subtext:audio:merge": "node tools/japanese-subtext/scripts/merge-audio-manifests.mjs",
-    "jp-subtext:release-check": "npm run jp-subtext:validate && npm run jp-subtext:audio:validate -- --check-silence && npm run jp-subtext:test && npm run build"
+    "jp-subtext:release-check": "npm run jp-subtext:validate && npm run jp-subtext:audio:validate -- --check-silence && npm run jp-subtext:audio:audit:live && npm run jp-subtext:image2:check && npm run jp-subtext:test:tts-python && npm run jp-subtext:test && npm run build"
   },
   "devDependencies": {
     "sharp": "0.34.5",

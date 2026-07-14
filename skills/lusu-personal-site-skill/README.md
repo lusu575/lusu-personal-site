@@ -21,11 +21,12 @@ skills/lusu-personal-site-skill/SKILL.md
 - 可见文案必须维护中文 / English / 日本語。
 - 改首页、窗口、任务栏、图标、弹窗、游戏外壳等前端内容时，必须检查手机端适配。
 - “日语的言外之意 / Behind the Japanese / 日本語の裏側”位于 `tools/japanese-subtext/`，固定采用版本化分批 JSON 和不可随意变更的关卡 ID；每次公开维护版本增加 `0.0.1`，改关另增 `revision`，完整流程见 `tools/japanese-subtext/MAINTENANCE.md`。
-- 题库、音频 manifest 与时间轴必须同步并分别验证；日语先使用审校读音，再进入 G2P/Kokoro。Misaki 音素与音高标记必须分离，完整 P2R 要保持 `j → y` 早于 `ʥ → j`，未知或超长音素必须失败关闭。每关 source hash、cue、reading/phoneme hash、实际 CPU provider、模型/运行时 provenance、输出参数和发音表 canonical SHA-256 必须一致；发布前做全量音素复算、ffprobe、SHA-256、孤儿文件和静音检测。模型只作离线批处理，结束后关闭，不安装服务或自启动。
+- 题库、版本化音频 manifest 与时间轴必须同步并分别验证；当前只接受 `aivisspeech-1.2.0-aivmx-v3` 管线在 CPU 上生成的 44.1 kHz mono 约 96 kbps MP3 与 clarity schema 3。日语先保存人工审校的纯假名，再由 AivisSpeech 从假名生成 accent phrase / mora 并替换表面汉字查询结果，禁止模型自行猜读音；“今日”统一使用 `きょう`。教学音频按扣除 `≥250 ms` 句内长停顿后的实际发音时长计算，上限 `7.2 mora/s`；普通短词下限 `1.5 mora/s`，仅单 mora「ん……」自然迟疑可用 `1.2 mora/s` 专用带。目标 `-18 ±1.5 LUFS`、安全正增益最多 `4.5 dB`、true peak `≤ -2 dBTP`；scene 绑定无损 line SHA，禁止从 MP3 二次编码，同一根写入加 OS 锁并在完整验收后原子替换。发布前做全量假名/mora/query/task/scene 复算、fresh ffprobe、SHA-256、响度、首尾静音、clipping、异常尾音、截断、孤儿文件和离线 ASR 候选人工复听。模型只作离线批处理，结束后关闭，不安装服务或自启动。
 - 声线必须来源和许可清晰；保留 `NOTICE-japanese-voices.md` 与设置面板三语署名链接，不使用来源不明或模仿受保护动漫角色的声线。
 - 工具学习进度使用独立 D1 表，不得与游戏存档混用；跨设备合并必须保留已通关记录的首次通关模式。所有题库字符串安全渲染，图片只来自本工具资产目录，音频只从 manifest 解析。
-- 日语工具每关配图使用映射 setting、人物、台词、题问和道具的原创黑白四格漫画，统一线条、网点、边框和 4:3 画幅；图片 manifest 必须锁定 960×720、SHA-256、生成器和审查状态。imagegen 不可用时允许明确标注的本地原创 fallback，但不能冒充 AI 逐图产物。
-- 发布日语工具前必须通过题库、真实音频、自动测试、主站构建和 359×500 / 375×667 / 390×844 / 844×390 / 1365×900 五视口回归，并同步文档、Skill、缓存版本与唯一三语更新记录。
+- 日语工具每关配图只能由 `gpt-image-2` 逐关生成，v4 prompt 映射 setting、确定性设计身份卡、全部台词和题问而不包含答案；`image2/design-identities.json` 默认按关卡与 cast id 隔离人物，仅允许显式 alias 共享核心外观，并以注册表 schema/SHA/namespace 与确定性 seed 锁定任务和 provenance，禁止按通用 cast id 跨关误合并。发布为统一灰阶、网点、墨色、2×2 边框和 4:3 画幅的高完成度黑白四格漫画，不允许 CSS/SVG/程序化图或本地 fallback。远程场景的四个主格各自必须是一幅未分割镜头，参与者用整格交替，斜线分屏、内部边框、画中画或额外子格一律拒收。反复生成错误拓扑、伪文字或泄题动作时，只能把题面已有约束写进受测的稳定关卡 addendum 并重算该关 promptHash，不能用未入库临时提示词。内置 imagegen 与 Images API 两条真实证据通道必须互斥；原图保存在项目外，并以写锁、provenance sidecar、原子替换、尺寸/SHA-256、有界重试和断点续跑保护。图片 manifest 必须锁定模型、quality、版本化文本场景 `sourceTextHash`、prompt/style/设计身份注册表哈希、960×720、SHA-256、dHash 和审查状态；文本场景哈希排除插图、版本/revision、现有关卡 `contentHash` 与设计身份注册表，避免新图修改自身来源。
+- 内置 image2 的 canonical prompt 必须由 Node UTF-8 读取，在同一执行单元核对 prompt SHA 与 `promptHash` 后直接传入；禁止 PowerShell 5.1 JSON 往返和人工复制。生成、审核、稳定源、review、raw 导入按可恢复事务维护，任何中断都不能破坏最后一个完整证据链；单关有界重试后应退回队列而不是阻塞并发。
+- 发布日语工具前必须通过题库、真实音频、image2 图片检查、自动测试、主站构建和 359×500 / 375×667 / 390×844 / 844×390 / 1365×900 五视口回归，并同步文档、Skill、缓存版本与追加式三语更新记录；上线和每个维护版本各建一篇，旧记录不可覆写。
 - 首页四时段壁纸基础图放在 `assets/images/wallpapers/`；时间段统一为 05:00-10:59 morning、11:00-16:59 day、17:00-19:59 dusk、20:00-04:59 night。
 - 首页保留 `wallpaper-root` / `wallpaper-stage` 舞台坐标结构和动画 layer DOM/class；当前 morning / day / dusk / night 四时段均已启用无云底图 + 独立云层的动态云层。
 - 顶部栏和底部任务栏跟随同一套 `body[data-time-theme]` 四时段主题；维护顶部栏、任务栏、Start、任务按钮、账号入口、语言切换或状态托盘时，必须同时检查四套外观，保持无竖线的现代玻璃像素 HUD 方向，并保留现有图标资源。

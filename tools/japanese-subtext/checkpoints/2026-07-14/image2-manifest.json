@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "kind": "japanese-subtext-image2-candidate-checkpoint",
+  "createdAt": "2026-07-14",
+  "status": "not-published",
+  "stageCount": 13,
+  "webp": {
+    "width": 960,
+    "height": 720,
+    "quality": 86,
+    "effort": 6,
+    "smartSubsample": true
+  },
+  "styleBibleHash": "4b4f7f45ff67197b335aa95b65640e0ef3e83f3b068d31fb948ed7a528227742",
+  "excluded": {
+    "L1-003": "interrupted source copy no longer matches review/raw evidence",
+    "backgrounds": "old style hash and obsolete human-approved evidence",
+    "remainingStages": "no complete current-v4 source/review/raw evidence chain"
+  },
+  "stages": [
+    {"stageId":"L1-001","file":"image2/l1-001.webp","sha256":"e48e12b81b77c4be03724f631f0c375c746f83ae82f249613794dd10463e9890","rawSha256":"d23e8e86a21558bc03ef0bdcf3a3aea73b687c534b18895fd029115cf5a02be3","sourceArtifactSha256":"06da133226890feaeec6d3096f43ac56619b13bd5bba85c92956f39a14547938","toolRunId":"exec-f053987f-538a-4fb1-84f1-9aa47cf18b3a","promptHash":"963848cda1e22c11c16cdf9365e8c1a2079c8478566f4cc2f927d4d884127f4f"},
+    {"stageId":"L1-002","file":"image2/l1-002.webp","sha256":"dc6b85b8f213910ad15044ac5b499ac6614d71d40aa3243a908df4d0d69a2f33","rawSha256":"a7224bef25dabc7be19236659dea3ed78f93b5a4a0ca12054c7c09d99778a26c","sourceArtifactSha256":"b6208e74f6aa9dd4ccce247bf1557efce13856acd264e7579a5e3c2ac232a48c","toolRunId":"exec-fd6addf9-cfbf-45bc-978f-beb6b85a01ea","promptHash":"c3dc3e74745dd28749a4029650912f8f493fdf6e17efb7d550756782a8227715"},
+    {"stageId":"L1-004","file":"image2/l1-004.webp","sha256":"ee9ba7eb83b1c8c4b067a1982a7ae2ee553d8077a4499daa9f3b546f56c45c77","rawSha256":"1ecd133d6b734701e89a99fa26010900c37271c64c66d82f18be5f0b72bfff4b","sourceArtifactSha256":"7f8fb09446a95c6b59992a9e06f46b726e5cd639a1b5cb3128c093543a834178","toolRunId":"exec-5d0bd7bd-60a1-46b8-948d-7953d4b51bed","promptHash":"dfdb230fe049e68cb0afb64284a98015e13b7edf1fdb3cd6c149a7359d81fc54"},
+    {"stageId":"L1-005","file":"image2/l1-005.webp","sha256":"b8154d40a2c231dfeb58b89b04589b85a0fd87d10935565319d89423270019f1","rawSha256":"479c4af607bed2d65af9cf81909a5900f6d24e577415d4a2a4310edb17185116","sourceArtifactSha256":"0b8e7520f7c788aa485e3a66991dc54d931629894089fac2ce07d1c972514c7f","toolRunId":"exec-396b0f63-9427-4559-acc0-1752c25c19a6","promptHash":"5d669d2b88020b7ab23b10bcb2387449e2abe72695479a596ee536bb1d14e7b5"},
+    {"stageId":"L1-006","file":"image2/l1-006.webp","sha256":"0f06a91b84d45196458b5918575880127dbed062a6451c7946a5160db0857c1a","rawSha256":"35d00b92de5642ce54b73af0111a085d6f28df7dc4e7adf8221f7f265d4c1f96","sourceArtifactSha256":"f7a0d77a09387a9e5b550db237c901075c4c2958c146dcb86002601c5747fba9","toolRunId":"exec-108e1238-dc69-4b4e-aca3-bb1657670bfb","promptHash":"486aa7e6445c2de998accad206b0967b7f8de9e7a146bfc6940f0917f5d967eb"},
+    {"stageId":"L1-007","file":"image2/l1-007.webp","sha256":"7ac4ea2d44a66b6431054dfd619ff9c30fc5ba79dee8cc9dfc105d56723ab034","rawSha256":"d2fbe3bc054851daac6d049e0c0ebe79726021d949995c30ea82517be6fc38a1","sourceArtifactSha256":"d2ec31cfe4716f75218a4a30ff3591fcda1d0c2f78fba3e16a9b967853867d38","toolRunId":"exec-f81afb1e-28ba-4095-bc20-f3aad9add152","promptHash":"f1921c7fc558bf79fe82a713691904029186bb3cd6b3f65046ced052058add9c"},
+    {"stageId":"L1-008","file":"image2/l1-008.webp","sha256":"c1536ac6193fe71872a0fe9f354bcafe3f51043b9fc1a2499be732e0da2ea312","rawSha256":"bd71b778b73636f6f3b0352a0d900849f9ad732198814c67fb76a984207fb737","sourceArtifactSha256":"db1f4e857fac438a44a2130d370a606bda40606dab2e70a9d35493b2310a5b96","toolRunId":"exec-7a3909c3-bf85-4095-b59f-94ea22b85b5f","promptHash":"c967fe15f0eadaf8ff2f2048cd1f374c6bce2e26aa1984b940357797bd9ac9f1"},
+    {"stageId":"L1-010","file":"image2/l1-010.webp","sha256":"819f341c92876bfceb4f2033d0bb37accf296a637345b878024a53e73949464a","rawSha256":"eeea4ca32e9c98995f2f610e76b32563ffadb14683e9c7809cffd0b129a8a8d1","sourceArtifactSha256":"104fcbf0a8d544ec1fdae486d2050623b88c2dd3b5b1b7c51b269ff7fb41579d","toolRunId":"exec-af35da64-06b8-4661-8492-665b51d2ac21","promptHash":"46a82c8d06d707083e0270b50af240826b723e937ca70c2a31d98302ef94413b"},
+    {"stageId":"L1-012","file":"image2/l1-012.webp","sha256":"a5a0c32e6851cfb11e4c464329d6aeeb747a3c58ed01f3f518b327b1d9cf3b0a","rawSha256":"accb2eed71d9d6625ab2b72cf9ae82ddde128d0f7b54b6d9470facbfe7a37555","sourceArtifactSha256":"83b23bf2430585c6a046ff3cd604e0a06d1874f8aae5139fe2db055444afa5df","toolRunId":"exec-2f27daa4-cdba-4599-ada5-a57b80a4c68d","promptHash":"c0a4ef70c030962e2e88014b449019e27eab2b06c19168f9737587fc7b987f53"},
+    {"stageId":"L1-014","file":"image2/l1-014.webp","sha256":"c66ff2c67af57d5157a62478ac4f2a19ffbc4aaf9e22ebd5b1990a46c2bcfc4d","rawSha256":"4715c8418f1cee9a9e3942544908774dd9dbb45e355b47c947d25b82ea49c318","sourceArtifactSha256":"a41c63f42c1a0e0f6a27fa84c17c1c8b8d6deab195e4d46aab8a14eb99db26ed","toolRunId":"exec-e9b90a09-f78b-4559-8a5a-69d0806e4908","promptHash":"592d311c04a6ec4497cf2d27a982c139a294693bf79444b07f0790e589cbef26"},
+    {"stageId":"L1-016","file":"image2/l1-016.webp","sha256":"61c5f100608537b960a4e9179ee0d48b2f55a03ba5f3729deebccdb6facad4ed","rawSha256":"50d192292b767c79b7187bad8df326b98ade6e253ffd07b4cf02aa3f6d57695c","sourceArtifactSha256":"f2b27c0dd741713c0262df9d7f60812e388b08ba6e6980843605bcd2bcc4b52d","toolRunId":"exec-78c998c7-afd3-469e-aefb-cee30094d283","promptHash":"02d7a33e85f7d2907c117a3c0ba94a08be23f85ffb747f405da3f3538bef2468"},
+    {"stageId":"L1-018","file":"image2/l1-018.webp","sha256":"7bb14f10c0fc54468841e2ea0bd19308d3b2f2ff5b60f4d484b09117173fb47a","rawSha256":"4014632432d7d094b011a96c20ffc1cda48d5d4730fb4f2a023b997feaff5c41","sourceArtifactSha256":"32e0a0996c5aa3c7f05e67b23728449d581ad67a615cb6c4225b37f3a2bdcc63","toolRunId":"exec-b917a041-e49a-4031-97a0-12dd6d97bea5","promptHash":"5a87f767ba8088672ca5c32f928486fcfeb98510fad5be2368b2a912d5864ce2"},
+    {"stageId":"L1-020","file":"image2/l1-020.webp","sha256":"cec3083b0b54bd641e207382a964e55d4df155e8d07842cd2c1252ca508c0ac1","rawSha256":"fa72b35b4b328b959cceaca04c22ad9912e27038bc2b81f5e4e6765b4d817525","sourceArtifactSha256":"79359d8305e939a85687ee67c7500fa796843e24fa045980bd52109a8cadffcc","toolRunId":"exec-6394e452-74e3-4609-8fef-215a32d07ebd","promptHash":"3a539080610d418e28dddd6497cb159dd1dad96f33811104bca801ea41ac6ed5"}
+  ]
+}

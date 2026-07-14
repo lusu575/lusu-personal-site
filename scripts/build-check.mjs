@@ -1,8 +1,16 @@
 import { createHash } from "node:crypto";
-import { readFileSync, existsSync, statSync } from "node:fs";
+import { readFileSync, existsSync, readdirSync, statSync } from "node:fs";
 import { relative, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { runInNewContext } from "node:vm";
+import {
+  RELEASE_CONTRACT as japaneseSubtextReleaseContract,
+  findLegacyStageAssetResidue,
+  readWebpDimensions,
+  validateFinalStatsContract,
+  validateImage2BackgroundContract,
+  validateReleaseReportContract,
+} from "../tools/japanese-subtext/scripts/release-gate-contract.mjs";
 
 const root = resolve(import.meta.dirname, "..");
 const analyticsRedactionMarker = "[email]";
@@ -86,6 +94,37 @@ function canonicalJson(value) {
     return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${canonicalJson(value[key])}`).join(",")}}`;
   }
   return JSON.stringify(value);
+}
+
+function reviewedReadingMap(stages) {
+  const readings = new Map();
+  for (const stage of stages || []) {
+    for (const line of stage?.lines || []) {
+      if (line?.audioId && typeof line.readingJa === "string") readings.set(line.audioId, line.readingJa);
+      for (const token of line?.tokens || []) {
+        if (token?.audioId && typeof token.reading === "string") readings.set(token.audioId, token.reading);
+      }
+    }
+    for (const question of stage?.questions || []) {
+      for (const option of question?.options || []) {
+        if (option?.audioId && typeof option.readingJa === "string") readings.set(option.audioId, option.readingJa);
+      }
+    }
+  }
+  return readings;
+}
+
+function expectedTeachingSpeechRate(item, reviewedReading) {
+  const moraCount = item?.clarityAudit?.spokenMoraCount;
+  const readingKana = typeof reviewedReading === "string"
+    ? reviewedReading.trim()
+    : (typeof item?.readingKana === "string" ? item.readingKana.trim() : "");
+  if (moraCount === 1 && /^ん[、。…！？!?・〜～ー\s]*$/u.test(readingKana)) {
+    return { band: "hesitation", minimum: 1.2 };
+  }
+  return moraCount <= 5
+    ? { band: "short", minimum: 1.5 }
+    : { band: "standard", minimum: 2.5 };
 }
 
 function readRequiredJson(path) {
@@ -475,32 +514,72 @@ const japaneseSubtextLibrarySources = Object.fromEntries([
 const japaneseSubtextManifest = readRequiredJson("tools/japanese-subtext/manifest.json");
 const japaneseSubtextCatalog = readRequiredJson("tools/japanese-subtext/content/catalog.json");
 const japaneseSubtextGenerationState = readRequiredJson("tools/japanese-subtext/content/generation-state.json");
-const japaneseSubtextIllustrationManifest = readRequiredJson("tools/japanese-subtext/assets/stages/manifest.json");
+const japaneseSubtextIllustrationManifestPath = japaneseSubtextGenerationState.illustrations?.manifest || "assets/stages/manifest.json";
+if (
+  !/^assets\/stages\/[a-z0-9._/-]*manifest\.json$/i.test(japaneseSubtextIllustrationManifestPath)
+  || japaneseSubtextIllustrationManifestPath.includes("..")
+) {
+  fail("tools/japanese-subtext/content/generation-state.json must reference a safe stage illustration manifest");
+}
+const japaneseSubtextIllustrationManifestSource = readRequired(`tools/japanese-subtext/${japaneseSubtextIllustrationManifestPath}`);
+const japaneseSubtextIllustrationManifest = parseJsonSource(
+  `tools/japanese-subtext/${japaneseSubtextIllustrationManifestPath}`,
+  japaneseSubtextIllustrationManifestSource
+);
 const japaneseSubtextAudioManifest = readRequiredJson("tools/japanese-subtext/audio/manifest.json");
 const japaneseSubtextFinalStats = readRequiredJson("tools/japanese-subtext/reports/final-stats.json");
 const japaneseSubtextReleaseReport = readRequired("tools/japanese-subtext/reports/release-report.md");
+const japaneseSubtextAivisAdapter = readRequired("tools/japanese-subtext/scripts/tts/aivis_adapter.py");
+const japaneseSubtextAudioGenerator = readRequired("tools/japanese-subtext/scripts/tts/generate_audio.py");
+const japaneseSubtextLiveAudioAudit = readRequired("tools/japanese-subtext/scripts/run-live-audio-audit.mjs");
 
 function validateJapaneseSubtextReleaseContract() {
   const toolRoot = "tools/japanese-subtext";
   const contentRoot = `${toolRoot}/content`;
   const audioRoot = `${toolRoot}/audio`;
-  const contentVersion = "1.0.2";
+  const contentVersion = japaneseSubtextReleaseContract.contentVersion;
+  if (japaneseSubtextManifest.contentVersion !== contentVersion) {
+    fail(`${toolRoot}/manifest.json contentVersion must be the current ${contentVersion} release contract`);
+  }
   const publicTitles = {
     zh: "日语的言外之意",
     en: "Behind the Japanese",
     ja: "日本語の裏側"
   };
   const publicTitle = publicTitles.ja;
-  const assetVersion = "20260711-japanese-subtext-v102-r2";
+  const assetVersion = japaneseSubtextReleaseContract.assetVersion;
   const expectedAudioCounts = Object.freeze({
     scene: 250,
     line: 2400,
     option: 2445,
     token: 4993
   });
+  const image2Illustrations = Array.isArray(japaneseSubtextIllustrationManifest.stages);
+  const legacyIllustrations = Array.isArray(japaneseSubtextIllustrationManifest.entries);
+  const expectedIllustrationStyle = "image2-monochrome-four-panel-v1";
+  const image2ManifestActive =
+    image2Illustrations
+    && japaneseSubtextIllustrationManifest.schemaVersion === 3
+    && japaneseSubtextIllustrationManifest.kind === "japanese-subtext-image2-assets"
+    && japaneseSubtextIllustrationManifest.contentVersion === contentVersion
+    && japaneseSubtextIllustrationManifestPath === `assets/stages/v${contentVersion}/manifest.json`;
+  if (!image2Illustrations || legacyIllustrations) {
+    fail(`${toolRoot}/${japaneseSubtextIllustrationManifestPath} must use only the 1.0.3 image2 stages[] publication shape`);
+  }
+  const legacyStageAssetResidue = findLegacyStageAssetResidue(
+    readdirSync(resolve(root, `${toolRoot}/assets/stages`), { withFileTypes: true })
+      .map((entry) => entry.name),
+    { image2Active: image2ManifestActive }
+  );
+  if (legacyStageAssetResidue.length > 0) {
+    fail(`${toolRoot}/assets/stages must not retain legacy top-level assets after Image2 activation: ${legacyStageAssetResidue.join(", ")}`);
+  }
   const expectedAudioItems = Object.values(expectedAudioCounts).reduce((sum, count) => sum + count, 0);
   const statsExpectedAudio = japaneseSubtextFinalStats.expectedAudio || {};
   const statsGeneratedAudio = japaneseSubtextFinalStats.generatedAudio || {};
+  for (const error of validateFinalStatsContract(japaneseSubtextFinalStats, japaneseSubtextAudioManifest)) {
+    fail(`${toolRoot}/reports/final-stats.json: ${error}`);
+  }
   if (
     japaneseSubtextFinalStats.totalStages !== 250
     || japaneseSubtextFinalStats.totalLines !== 2400
@@ -509,7 +588,7 @@ function validateJapaneseSubtextReleaseContract() {
     || japaneseSubtextFinalStats.multipleChoice !== 113
     || japaneseSubtextFinalStats.multiQuestionStages !== 180
     || japaneseSubtextFinalStats.illustratedStages !== 250
-    || japaneseSubtextFinalStats.illustrationStyles?.["monochrome-four-panel"] !== 250
+    || japaneseSubtextFinalStats.illustrationStyles?.[expectedIllustrationStyle] !== 250
     || Object.keys(japaneseSubtextFinalStats.illustrationStyles || {}).length !== 1
     || statsExpectedAudio.scenes !== expectedAudioCounts.scene
     || statsExpectedAudio.lines !== expectedAudioCounts.line
@@ -572,9 +651,14 @@ function validateJapaneseSubtextReleaseContract() {
     "jp-subtext:validate:content": "tools/japanese-subtext/scripts/validate-content.mjs --skip-audio",
     "jp-subtext:validate:draft": "tools/japanese-subtext/scripts/validate-content.mjs --skip-audio --allow-partial --allow-unlocked",
     "jp-subtext:stats": "tools/japanese-subtext/scripts/content-stats.mjs",
+    "jp-subtext:image2:import-builtin": "tools/japanese-subtext/scripts/import-builtin-image2-asset.mjs",
+    "jp-subtext:image2:migrate": "tools/japanese-subtext/scripts/migrate-image2-content.mjs",
+    "jp-subtext:image2:check": "tools/japanese-subtext/scripts/publish-image2-assets.mjs --check",
     "jp-subtext:test": "tools/japanese-subtext/tests/*.test.mjs",
+    "jp-subtext:test:tts-python": "tools/japanese-subtext/scripts/run-python-tts-tests.mjs",
     "jp-subtext:audio:validate": "tools/japanese-subtext/scripts/validate-audio.mjs",
     "jp-subtext:audio:validate:quick": "tools/japanese-subtext/scripts/validate-audio.mjs --skip-probe",
+    "jp-subtext:audio:audit:live": "tools/japanese-subtext/scripts/run-live-audio-audit.mjs",
     "jp-subtext:audio:estimate": "tools/japanese-subtext/scripts/estimate-audio-size.mjs",
     "jp-subtext:audio:merge": "tools/japanese-subtext/scripts/merge-audio-manifests.mjs"
   };
@@ -589,6 +673,9 @@ function validateJapaneseSubtextReleaseContract() {
   const expectedReleaseSteps = [
     "npm run jp-subtext:validate",
     "npm run jp-subtext:audio:validate -- --check-silence",
+    "npm run jp-subtext:audio:audit:live",
+    "npm run jp-subtext:image2:check",
+    "npm run jp-subtext:test:tts-python",
     "npm run jp-subtext:test",
     "npm run build"
   ];
@@ -635,16 +722,83 @@ function validateJapaneseSubtextReleaseContract() {
   const indexedBatches = new Map();
   const lockedContentStages = new Map();
   const publishedStageIllustrations = new Set();
-  const illustrationByStage = new Map((japaneseSubtextIllustrationManifest.entries || []).map((entry) => [entry.stageId, entry]));
-  if (
+  const publishedStageIllustrationHashes = new Set();
+  const publishedStageIllustrationDHashes = new Set();
+  const illustrationEntries = image2Illustrations
+    ? japaneseSubtextIllustrationManifest.stages.map((entry) => ({
+        stageId: entry.stageId,
+        path: entry.published?.path,
+        sha256: entry.published?.sha256,
+        width: entry.published?.width,
+        height: entry.published?.height,
+        format: entry.published?.format,
+        style: "image2-monochrome-four-panel-v1",
+        reviewStatus: entry.reviewStatus,
+        sourceTextHash: entry.sourceTextHash,
+        sourceTextHashSchemaVersion: entry.sourceTextHashSchemaVersion,
+        dHash: entry.dHash,
+        raw: entry
+      }))
+    : japaneseSubtextIllustrationManifest.entries;
+  const illustrationByStage = new Map(illustrationEntries.map((entry) => [entry.stageId, entry]));
+  if (image2Illustrations) {
+    if (
+      japaneseSubtextIllustrationManifest.schemaVersion !== 3
+      || japaneseSubtextIllustrationManifest.kind !== "japanese-subtext-image2-assets"
+      || japaneseSubtextIllustrationManifestPath !== `assets/stages/v${contentVersion}/manifest.json`
+      || japaneseSubtextIllustrationManifest.contentVersion !== contentVersion
+      || japaneseSubtextIllustrationManifest.model !== "gpt-image-2"
+      || japaneseSubtextIllustrationManifest.quality !== "high"
+      || japaneseSubtextIllustrationManifest.stageCount !== 250
+      || japaneseSubtextIllustrationManifest.webp?.stageWidth !== 960
+      || japaneseSubtextIllustrationManifest.webp?.stageHeight !== 720
+      || japaneseSubtextIllustrationManifest.reviewStatus !== "codex-approved"
+    ) {
+      fail(`${toolRoot}/${japaneseSubtextIllustrationManifestPath} must contain the approved gpt-image-2 high v3 publication`);
+    }
+  } else if (
     japaneseSubtextIllustrationManifest.schemaVersion !== 1
     || japaneseSubtextIllustrationManifest.contentVersion !== contentVersion
     || japaneseSubtextIllustrationManifest.generatorVersion !== "local-four-panel-v2"
   ) {
-    fail(`${toolRoot}/assets/stages/manifest.json has stale generator metadata`);
+    fail(`${toolRoot}/${japaneseSubtextIllustrationManifestPath} has stale legacy generator metadata`);
   }
-  if (illustrationByStage.size !== 250) {
-    fail(`${toolRoot}/assets/stages/manifest.json must contain exactly 250 stage entries`);
+  if (illustrationEntries.length !== 250 || illustrationByStage.size !== 250) {
+    fail(`${toolRoot}/${japaneseSubtextIllustrationManifestPath} must contain exactly 250 stage entries`);
+  }
+  for (const error of validateImage2BackgroundContract(japaneseSubtextIllustrationManifest, japaneseSubtextCss)) {
+    fail(`${toolRoot}/${japaneseSubtextIllustrationManifestPath}: ${error}`);
+  }
+  const expectedBackgrounds = {
+    desktop: { width: 2048, height: 1152 },
+    mobile: { width: 1024, height: 1536 }
+  };
+  for (const entry of Array.isArray(japaneseSubtextIllustrationManifest.backgrounds)
+    ? japaneseSubtextIllustrationManifest.backgrounds
+    : []) {
+    const expected = expectedBackgrounds[entry?.backgroundId];
+    if (!expected) continue;
+    const published = entry.published || {};
+    const backgroundFile = requireReferencedNonEmptyFile(
+      toolRoot,
+      published.path,
+      toolRoot,
+      `image2 ${entry.backgroundId} background`
+    );
+    if (!backgroundFile) continue;
+    const fileBuffer = readFileSync(backgroundFile);
+    const actualHash = createHash("sha256").update(fileBuffer).digest("hex");
+    if (actualHash !== published.sha256 || statSync(backgroundFile).size !== published.bytes) {
+      fail(`${toolRoot}/${japaneseSubtextIllustrationManifestPath} ${entry.backgroundId} background file hash/bytes do not match its manifest`);
+    }
+    try {
+      const dimensions = readWebpDimensions(fileBuffer);
+      if (dimensions.width !== expected.width || dimensions.height !== expected.height) {
+        fail(`${relative(root, backgroundFile)} must be an actual ${expected.width}x${expected.height} WebP`);
+      }
+    } catch (error) {
+      fail(`${relative(root, backgroundFile)} WebP dimensions could not be verified: ${error.message}`);
+    }
   }
   const expectedJlptTargets = ["N3", "N2", "N1", "N1-advanced", "N1-pragmatics"];
   for (let index = 0; index < 5; index += 1) {
@@ -731,28 +885,123 @@ function validateJapaneseSubtextReleaseContract() {
       lockedContentStages.set(stage?.id, stage);
       const illustration = stage?.illustration || {};
       if (illustration.enabled === true) {
-        if (illustration.style !== "monochrome-four-panel") {
+        if (illustration.style !== expectedIllustrationStyle) {
           fail(`${relative(root, fullPath)} ${stage?.id} must use the approved monochrome four-panel manga style`);
         }
         const illustrationFile = requireReferencedNonEmptyFile(toolRoot, illustration.src, toolRoot, `illustration ${stage?.id}`);
         if (!illustrationFile || !String(illustration.src || "").endsWith(".webp")) {
           fail(`${relative(root, fullPath)} ${stage?.id} must reference a published WebP illustration`);
         }
+        if (
+          image2Illustrations
+          && illustration.src !== `assets/stages/v${contentVersion}/${String(stage?.id || "").toLowerCase()}.webp`
+        ) {
+          fail(`${relative(root, fullPath)} ${stage?.id} must use its versioned image2 stage path`);
+        }
         const illustrationEntry = illustrationByStage.get(stage?.id);
         if (
           illustrationEntry?.path !== illustration.src
-          || illustrationEntry?.style !== "monochrome-four-panel"
+          || illustrationEntry?.style !== expectedIllustrationStyle
           || illustrationEntry?.width !== 960
           || illustrationEntry?.height !== 720
-          || illustrationEntry?.reviewStatus !== "automated-scene-mapped"
+          || (
+            image2Illustrations
+              ? (
+                illustrationEntry?.format !== "webp"
+                || illustrationEntry?.reviewStatus !== "codex-approved"
+                || illustrationEntry?.reviewStatus !== japaneseSubtextIllustrationManifest.reviewStatus
+              )
+              : illustrationEntry?.reviewStatus !== "automated-scene-mapped"
+          )
           || illustrationEntry?.sha256 !== illustration.sha256
         ) {
           fail(`${relative(root, fullPath)} ${stage?.id} illustration metadata must match the asset manifest`);
+        }
+        if (image2Illustrations) {
+          const rawIllustrationEntry = illustrationEntry?.raw || {};
+          const provenance = illustration.provenance || {};
+          const generationEvidence = rawIllustrationEntry.generationEvidence || {};
+          const generatedAt = new Date(generationEvidence.generatedAt);
+          const reviewedAt = new Date(generationEvidence.reviewedAt);
+          const apiGenerationEvidenceValid =
+            generationEvidence.evidenceType === "openai-images-api-v1"
+            && generationEvidence.requestSchemaVersion === "openai-images-gpt-image-2-v1"
+            && generationEvidence.endpoint === "/v1/images/generations"
+            && /^req[_-][A-Za-z0-9_-]{4,}$/.test(generationEvidence.requestId || "")
+            && Number.isInteger(generationEvidence.attempts)
+            && generationEvidence.attempts >= 1
+            && generationEvidence.attempts <= 8
+            && !Object.hasOwn(generationEvidence, "tool")
+            && !Object.hasOwn(generationEvidence, "toolRunId");
+          const builtinGenerationEvidenceValid =
+            generationEvidence.evidenceType === "codex-builtin-imagegen-v1"
+            && generationEvidence.tool === "image_gen.imagegen"
+            && /^exec-[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(generationEvidence.toolRunId || "")
+            && /^[a-f0-9]{64}$/.test(generationEvidence.sourceArtifactSha256 || "")
+            && Number.isSafeInteger(generationEvidence.sourceArtifactBytes)
+            && generationEvidence.sourceArtifactBytes > 0
+            && Number.isSafeInteger(generationEvidence.sourceArtifactWidth)
+            && generationEvidence.sourceArtifactWidth > 0
+            && Number.isSafeInteger(generationEvidence.sourceArtifactHeight)
+            && generationEvidence.sourceArtifactHeight > 0
+            && generationEvidence.normalizationSchemaVersion === "codex-builtin-imagegen-normalization-v1"
+            && generationEvidence.normalizationOperation === "aspect-verified-resize"
+            && generationEvidence.normalizationKernel === "lanczos3"
+            && generationEvidence.reviewStatus === "codex-approved"
+            && Number.isFinite(reviewedAt.valueOf())
+            && reviewedAt.toISOString() === generationEvidence.reviewedAt
+            && typeof generationEvidence.reviewer === "string"
+            && generationEvidence.reviewer.trim() !== ""
+            && /^[a-f0-9]{64}$/.test(generationEvidence.reviewEvidenceSha256 || "")
+            && !Object.hasOwn(generationEvidence, "requestSchemaVersion")
+            && !Object.hasOwn(generationEvidence, "endpoint")
+            && !Object.hasOwn(generationEvidence, "requestId")
+            && !Object.hasOwn(generationEvidence, "attempts");
+          const generationProvenanceValid =
+            rawIllustrationEntry.generatorProvenance?.evidenceType === generationEvidence.evidenceType
+            && provenance.evidenceType === generationEvidence.evidenceType
+            && (generationEvidence.evidenceType === "codex-builtin-imagegen-v1"
+              ? rawIllustrationEntry.generatorProvenance?.tool === "image_gen.imagegen"
+                && provenance.tool === "image_gen.imagegen"
+              : !Object.hasOwn(rawIllustrationEntry.generatorProvenance || {}, "tool")
+                && !Object.hasOwn(provenance, "tool"));
+          if (
+            rawIllustrationEntry.model !== "gpt-image-2"
+            || rawIllustrationEntry.quality !== "high"
+            || rawIllustrationEntry.sourceHashKind !== "stage-source-text"
+            || illustrationEntry.sourceTextHashSchemaVersion !== "japanese-subtext-image-source-text-v1"
+            || !/^[a-f0-9]{64}$/.test(illustrationEntry.sourceTextHash || "")
+            || rawIllustrationEntry.generatorProvenance?.provider !== "OpenAI Images"
+            || rawIllustrationEntry.generatorProvenance?.model !== "gpt-image-2"
+            || rawIllustrationEntry.generatorProvenance?.operation !== "generate"
+            || generationEvidence.stateSchemaVersion !== 1
+            || !/^[a-f0-9]{64}$/.test(generationEvidence.stateSha256 || "")
+            || generationEvidence.provider !== "OpenAI Images"
+            || generationEvidence.model !== "gpt-image-2"
+            || !Number.isFinite(generatedAt.valueOf())
+            || generatedAt.toISOString() !== generationEvidence.generatedAt
+            || generationEvidence.promptSchemaVersion !== "japanese-subtext-image2-prompt-v3"
+            || (!apiGenerationEvidenceValid && !builtinGenerationEvidenceValid)
+            || !generationProvenanceValid
+            || provenance.model !== "gpt-image-2"
+            || provenance.quality !== "high"
+            || provenance.sourceHashKind !== "stage-source-text"
+            || provenance.sourceTextHash !== illustrationEntry.sourceTextHash
+            || provenance.sourceTextHashSchemaVersion !== "japanese-subtext-image-source-text-v1"
+            || provenance.promptHash !== rawIllustrationEntry.promptHash
+            || provenance.styleBibleHash !== rawIllustrationEntry.styleBibleHash
+            || provenance.dHash !== rawIllustrationEntry.dHash
+            || provenance.reviewStatus !== rawIllustrationEntry.reviewStatus
+          ) {
+            fail(`${relative(root, fullPath)} ${stage?.id} image2 provenance must match the v3 publication manifest`);
+          }
         }
         if (illustrationFile && createHash("sha256").update(readFileSync(illustrationFile)).digest("hex") !== illustration.sha256) {
           fail(`${relative(root, fullPath)} ${stage?.id} illustration SHA-256 is stale`);
         }
         publishedStageIllustrations.add(illustration.src);
+        publishedStageIllustrationHashes.add(illustration.sha256);
+        publishedStageIllustrationDHashes.add(illustration.provenance?.dHash);
       } else {
         fail(`${relative(root, fullPath)} ${stage?.id} must publish a stage-specific illustration`);
       }
@@ -762,7 +1011,13 @@ function validateJapaneseSubtextReleaseContract() {
     }
   }
   if (publishedStageIllustrations.size !== 250) {
-    fail(`${contentRoot} must reference exactly 250 unique monochrome four-panel manga illustrations`);
+    fail(`${contentRoot} must reference exactly 250 unique ${expectedIllustrationStyle} illustrations`);
+  }
+  if (image2Illustrations && publishedStageIllustrationHashes.size !== 250) {
+    fail(`${contentRoot} must reference exactly 250 distinct image2 illustration SHA-256 values`);
+  }
+  if (image2Illustrations && publishedStageIllustrationDHashes.size !== 250) {
+    fail(`${contentRoot} must reference exactly 250 distinct image2 illustration dHash values`);
   }
 
   const generationState = japaneseSubtextGenerationState;
@@ -796,16 +1051,33 @@ function validateJapaneseSubtextReleaseContract() {
   if (!Array.isArray(generationState.needsReworkStageIds) || generationState.needsReworkStageIds.length) {
     fail(`${contentRoot}/generation-state.json must not contain release-time rework stages`);
   }
-  if (
-    generationState.illustrations?.status !== "complete"
-    || generationState.illustrations?.stageAssetCount !== 250
-    || generationState.illustrations?.styleCounts?.["monochrome-four-panel"] !== 250
-    || generationState.illustrations?.manifest !== "assets/stages/manifest.json"
-    || generationState.illustrations?.generatorVersion !== "local-four-panel-v2"
-    || generationState.illustrations?.reviewStatus !== "automated-scene-mapped"
-    || generationState.illustrations?.imagegenStatus !== "network-unavailable-local-fallback"
-  ) {
-    fail(`${contentRoot}/generation-state.json must record 250 monochrome four-panel manga illustrations`);
+  const illustrationState = generationState.illustrations || {};
+  const illustrationStateInvalid =
+    illustrationState.status !== "complete"
+    || illustrationState.stageAssetCount !== 250
+    || illustrationState.styleCounts?.[expectedIllustrationStyle] !== 250
+    || illustrationState.manifest !== japaneseSubtextIllustrationManifestPath
+    || (
+      image2Illustrations
+        ? (
+          illustrationState.generatorVersion !== "gpt-image-2-high-v1"
+          || illustrationState.provider !== "OpenAI Images"
+          || illustrationState.model !== "gpt-image-2"
+          || illustrationState.quality !== "high"
+          || illustrationState.sourceHashKind !== "stage-source-text"
+          || illustrationState.sourceTextHashSchemaVersion !== "japanese-subtext-image-source-text-v1"
+          || illustrationState.reviewStatus !== "codex-approved"
+          || illustrationState.imagegenStatus !== "approved-published"
+          || illustrationState.manifestSha256 !== createHash("sha256").update(japaneseSubtextIllustrationManifestSource, "utf8").digest("hex")
+        )
+        : (
+          illustrationState.generatorVersion !== "local-four-panel-v2"
+          || illustrationState.reviewStatus !== "automated-scene-mapped"
+          || illustrationState.imagegenStatus !== "network-unavailable-local-fallback"
+        )
+    );
+  if (illustrationStateInvalid) {
+    fail(`${contentRoot}/generation-state.json must record 250 ${expectedIllustrationStyle} illustrations`);
   }
   if (
     generationState.audio?.status !== "complete"
@@ -822,50 +1094,122 @@ function validateJapaneseSubtextReleaseContract() {
     fail(`${contentRoot}/generation-state.json audio must record complete content, phoneme, ffprobe, and silence validation for 250 stages and ${expectedAudioItems} artifacts`);
   }
 
+  const requiredAivisAdapterContracts = [
+    'PIPELINE_FINGERPRINT = "aivisspeech-1.2.0-aivmx-v3"',
+    'kana_source = "surface" if structures_match else "reviewed-reading-fallback"',
+    'query_parameters: dict[str, Any] = {"kanaSource": kana_source}',
+    'query["outputSamplingRate"] = 44_100',
+    'query["outputStereo"] = False'
+  ];
+  for (const contract of requiredAivisAdapterContracts) {
+    if (!japaneseSubtextAivisAdapter.includes(contract)) {
+      fail(`tools/japanese-subtext/scripts/tts/aivis_adapter.py must keep the current reviewed-reading/surface-fallback contract: ${contract}`);
+    }
+  }
+  const requiredAudioGeneratorContracts = [
+    'PIPELINE_VERSION = "aivisspeech-1.2.0-aivmx-v3"',
+    "CLARITY_SCHEMA_VERSION = 3",
+    'f"{artifact_hash}.boundary.json"',
+    '"sourceBoundaryAudit"',
+    '"integratedLufs"',
+    'MAX_CLEAR_MORA_RATE = 7.2',
+    'MAX_CALIBRATED_MORA_RATE = 6.6',
+    'MAX_RATE_CALIBRATION_ATTEMPTS = 6',
+    'MIN_HESITATION_CLEAR_MORA_RATE = 1.2',
+    '"ratePolicy": rate_policy_evidence()',
+    'MAX_SAFE_LOUDNESS_BOOST_DB = 4.5',
+    'LIMITER_OUTPUT_DBFS = -2.2',
+    'LOUDNESS_POST_PROCESSING_PROFILE = "audited-loudness-gain-v3"',
+    'for adjustment_attempt in range(3):'
+  ];
+  for (const contract of requiredAudioGeneratorContracts) {
+    if (!japaneseSubtextAudioGenerator.includes(contract)) {
+      fail(`tools/japanese-subtext/scripts/tts/generate_audio.py must keep the current Aivis v3 clarity/boundary-sidecar contract: ${contract}`);
+    }
+  }
+  for (const contract of [
+    "JP_SUBTEXT_TTS_CONFIG",
+    "JP_SUBTEXT_AUDIO_MANIFEST",
+    "JP_SUBTEXT_AUDIO_ROOT",
+    "audit_manifest_phonemes.py",
+    '"--manifest"',
+    '"--content-root"'
+  ]) {
+    if (!japaneseSubtextLiveAudioAudit.includes(contract)) {
+      fail(`tools/japanese-subtext/scripts/run-live-audio-audit.mjs must keep the explicit fresh full-media audit contract: ${contract}`);
+    }
+  }
+
   const audioManifest = japaneseSubtextAudioManifest;
   const expectedAudioOutput = {
     format: "mp3",
-    sampleRate: 24000,
+    sampleRate: 44100,
     channels: 1,
-    bitrate: "64k",
+    bitrate: "96k",
     targetLufs: -18,
     leadingSilenceMs: 60,
     trailingSilenceMs: 100,
     sceneGapMs: 180
   };
+  const expectedAudioRatePolicy = {
+    policy: "post-synthesis-active-mora-rate-v3",
+    targetMoraPerSecond: 6.5,
+    maximumCalibratedMoraPerSecond: 6.6,
+    maximumMoraPerSecond: 7.2,
+    maximumCalibrationAttempts: 6
+  };
   const pronunciationsSource = readRequired("tools/japanese-subtext/config/pronunciations.json");
   const pronunciationsData = parseJsonSource("tools/japanese-subtext/config/pronunciations.json", pronunciationsSource);
   const pronunciationsSha256 = createHash("sha256").update(canonicalJson(pronunciationsData), "utf8").digest("hex");
+  const modelFilesSource = readRequired("tools/japanese-subtext/scripts/tts/model-files.sha256.json");
+  const modelFilesManifest = parseJsonSource("tools/japanese-subtext/scripts/tts/model-files.sha256.json", modelFilesSource);
+  const expectedAudioEngine = {
+    name: modelFilesManifest.engine?.name,
+    version: modelFilesManifest.engine?.version
+  };
+  const expectedAudioModels = (modelFilesManifest.models || []).map(({ source: _source, ...model }) => model);
   if (
     audioManifest.schemaVersion !== 1
     || audioManifest.contentVersion !== contentVersion
     || audioManifest.audioBaseUrl !== "./"
-    || audioManifest.generator?.name !== "kokoro-onnx-offline"
-    || audioManifest.generator?.pipelineVersion !== "kokoro-ja-mp3-v4"
-    || audioManifest.generator?.executionProvider !== "CPUExecutionProvider"
+    || audioManifest.generator?.name !== "aivisspeech-engine-local-ai"
+    || audioManifest.generator?.pipelineVersion !== "aivisspeech-1.2.0-aivmx-v3"
+    || audioManifest.generator?.claritySchemaVersion !== 3
+    || canonicalJson(audioManifest.generator?.ratePolicy) !== canonicalJson(expectedAudioRatePolicy)
+    || audioManifest.generator?.executionProvider !== "CPU"
     || audioManifest.generator?.pronunciationsSha256 !== pronunciationsSha256
+    || modelFilesManifest.pipeline !== "aivisspeech-1.2.0-aivmx-v3"
+    || canonicalJson(audioManifest.generator?.engine) !== canonicalJson(expectedAudioEngine)
+    || canonicalJson(audioManifest.generator?.models) !== canonicalJson(expectedAudioModels)
+    || audioManifest.generator?.license !== "ACML-1.0"
     || Object.entries(expectedAudioOutput).some(([key, value]) => audioManifest.generator?.output?.[key] !== value)
   ) {
-    fail(`${audioRoot}/manifest.json must keep the locked Kokoro pipeline, output, and pronunciation metadata for ${contentVersion}`);
+    fail(`${audioRoot}/manifest.json must keep the locked AivisSpeech v3 CPU pipeline, checked ACML models, clarity schema, output, and pronunciation metadata for ${contentVersion}`);
   }
-  const requiredModelVoices = ["jf_alpha", "jf_gongitsune", "jf_nezumi", "jf_tebukuro", "jm_kumo"];
-  const modelVoices = new Set(Object.values(audioManifest.voices || {}).map((voice) => voice?.modelVoice).filter(Boolean));
-  for (const voice of requiredModelVoices) {
-    if (!modelVoices.has(voice)) {
-      fail(`${audioRoot}/manifest.json missing licensed Japanese model voice ${voice}`);
-    }
+  const expectedModelUuids = new Set(expectedAudioModels.map((model) => model.uuid));
+  const publicAudioVoices = Object.values(audioManifest.voices || {});
+  if (!publicAudioVoices.length) {
+    fail(`${audioRoot}/manifest.json must expose AivisSpeech voice descriptors`);
   }
-  const licensePaths = audioManifest.generator?.licenses;
-  if (!Array.isArray(licensePaths) || licensePaths.length !== 3) {
-    fail(`${audioRoot}/manifest.json must expose the model, runtime, and Japanese voice notices`);
-  } else {
-    for (const licensePath of licensePaths) {
-      requireReferencedNonEmptyFile(audioRoot, licensePath, toolRoot, "audio generator license", { allowParentSegments: true });
+  for (const voice of publicAudioVoices) {
+    if (
+      !expectedModelUuids.has(voice?.modelUuid)
+      || !voice?.voiceKey
+      || !voice?.styleName
+      || !Number.isInteger(voice?.styleId)
+      || !/^[a-f0-9]{64}$/.test(voice?.modelSha256 || "")
+      || !voice?.modelVersion
+      || !voice?.queryParameters
+      || typeof voice.queryParameters !== "object"
+    ) {
+      fail(`${audioRoot}/manifest.json contains an invalid AivisSpeech voice descriptor`);
+      break;
     }
   }
 
   const items = audioManifest.items && typeof audioManifest.items === "object" ? audioManifest.items : {};
   const stages = audioManifest.stages && typeof audioManifest.stages === "object" ? audioManifest.stages : {};
+  const reviewedReadingByAudioId = reviewedReadingMap([...lockedContentStages.values()]);
   const itemEntries = Object.entries(items);
   const stageEntries = Object.entries(stages);
   if (itemEntries.length !== expectedAudioItems || stageEntries.length !== 250) {
@@ -876,6 +1220,43 @@ function validateJapaneseSubtextReleaseContract() {
   }
   const actualAudioCounts = { scene: 0, line: 0, option: 0, token: 0 };
   const publishedAudioPaths = new Set();
+  const requiredBaseClarityFields = [
+    "leadingSilenceMs", "trailingSilenceMs", "voicedDurationSeconds",
+    "speechRateDurationSeconds", "speechRateDurationPolicy", "excludedSpeechPauseMs",
+    "speechPauseThresholdMs", "peakDbfs",
+    "rmsDbfs", "noiseFloorDbfs", "crestFactorDb", "clippingSampleRatio",
+    "tailEnergyRatio", "activityIslandCount", "longestInternalSilenceMs",
+    "finalActivityIslandMs", "finalInternalSilenceMs", "expectedSokuonClosure",
+    "detachedTailGapThresholdMs", "detachedTailCheckEnabled", "detachedTailObserved",
+    "detachedTailRisk", "truncationRisk", "integratedLufs", "truePeakDbtp",
+    "loudnessRangeLu", "loudnessMeasurementMode", "targetLufs", "loudnessErrorLufs", "loudnessToleranceLufs",
+    "loudnessPass", "pass"
+  ];
+  const requiredTaskRateFields = [
+    "speechRateMoraPerSecond", "spokenMoraCount", "speechRateBand",
+    "speechRateMinimum", "speechRateMaximum", "speechRatePass"
+  ];
+  const requiredSourceBoundaryFields = [
+    "schemaVersion", "claritySchemaVersion", "artifactHash", "normalizedSha256",
+    "raw", "normalized", "pass"
+  ];
+  const requiredRawBoundaryFields = [
+    "boundaryKind", "leadingSilenceMs", "trailingSilenceMs", "absoluteActiveSpanMs",
+    "activeSpanMs", "peakDbfs", "boundaryThresholdDbfs", "activeSpanThresholdDbfs",
+    "activeSpanDbBelowPeak",
+    "clippingSampleRatio", "edgeClippingSampleRatio", "minimumLeadingSilenceMs",
+    "minimumTrailingSilenceMs", "truncationRisk", "pass"
+  ];
+  const requiredNormalizedBoundaryFields = [
+    "boundaryKind", "leadingSilenceMs", "trailingSilenceMs", "absoluteActiveSpanMs",
+    "activeSpanMs", "peakDbfs", "boundaryThresholdDbfs", "activeSpanThresholdDbfs",
+    "activeSpanDbBelowPeak",
+    "clippingSampleRatio", "edgeClippingSampleRatio", "rawActiveSpanMs",
+    "activeSpanRatio", "minimumActiveSpanRatio", "maximumActiveSpanRatio",
+    "activeSpanCollapseRisk", "edgeClippingRisk", "pass"
+  ];
+  const hasFields = (value, fields) => value && typeof value === "object" && fields.every((field) => field in value);
+  const isSha256 = (value) => /^[a-f0-9]{64}$/.test(value || "");
   let audioBytes = 0;
   let audioDuration = 0;
   for (const [id, item] of itemEntries) {
@@ -884,21 +1265,129 @@ function validateJapaneseSubtextReleaseContract() {
       continue;
     }
     actualAudioCounts[item.type] += 1;
+    const expectedReviewedReading = reviewedReadingByAudioId.get(id);
+    const expectedSpeechRate = expectedTeachingSpeechRate(item, expectedReviewedReading);
     if (!expectedStageIds.has(item.stageId) || item.level !== Number(String(item.stageId || "")[1])) {
       fail(`${audioRoot}/manifest.json audio item ${id} has an unknown stage or mismatched level (${item.stageId})`);
     }
+    const clarityFields = item.type === "scene"
+      ? requiredBaseClarityFields
+      : [...requiredBaseClarityFields, ...requiredTaskRateFields];
+    const clarityIsValid = (
+      item.claritySchemaVersion === 3
+      && hasFields(item.clarityAudit, clarityFields)
+      && item.clarityAudit?.pass === true
+      && item.clarityAudit?.loudnessPass === true
+      && item.clarityAudit?.targetLufs === expectedAudioOutput.targetLufs
+      && item.clarityAudit?.truePeakDbtp <= -2.0
+      && item.clarityAudit?.loudnessToleranceLufs <= 1.5
+      && Math.abs(item.clarityAudit?.integratedLufs - item.clarityAudit?.targetLufs)
+        <= item.clarityAudit?.loudnessToleranceLufs + 0.001
+      && ["integrated-lufs", "short-active-loop-lufs"].includes(item.clarityAudit?.loudnessMeasurementMode)
+      && item.clarityAudit?.detachedTailCheckEnabled === (item.type !== "scene")
+      && item.clarityAudit?.speechRateDurationPolicy === "exclude-long-internal-pauses-v1"
+      && item.clarityAudit?.speechPauseThresholdMs === 250
+      && item.clarityAudit?.speechRateDurationSeconds > 0
+      && item.clarityAudit?.speechRateDurationSeconds <= item.clarityAudit?.voicedDurationSeconds + 0.001
+      && Math.abs(
+        item.clarityAudit?.voicedDurationSeconds
+          - item.clarityAudit?.excludedSpeechPauseMs / 1000
+          - item.clarityAudit?.speechRateDurationSeconds
+      ) <= 0.02
+      && (
+        item.type === "scene"
+        || (
+          item.clarityAudit?.speechRateMaximum === 7.2
+          && item.clarityAudit?.speechRateBand === expectedSpeechRate.band
+          && item.clarityAudit?.speechRateMinimum === expectedSpeechRate.minimum
+          && item.clarityAudit?.speechRateMoraPerSecond >= expectedSpeechRate.minimum
+          && item.clarityAudit?.speechRateMoraPerSecond <= 7.2
+          && item.clarityAudit?.speechRatePass === true
+          && Math.abs(
+            item.clarityAudit?.spokenMoraCount / item.clarityAudit?.speechRateDurationSeconds
+              - item.clarityAudit?.speechRateMoraPerSecond
+          ) <= 0.001
+        )
+      )
+    );
+    const postProcessingIsValid = item.postProcessing === undefined || (
+      item.postProcessing?.profile === "audited-loudness-gain-v3"
+      && Number.isFinite(item.loudnessCorrection?.gainDb)
+      && item.loudnessCorrection?.gainDb <= 4.5
+      && typeof item.loudnessCorrection?.limiterRequired === "boolean"
+    );
+    let pronunciationEvidenceIsValid = true;
+    if (item.type === "scene") {
+      pronunciationEvidenceIsValid = !("readingSha256" in item) && !("phonemeSha256" in item);
+    } else {
+      const boundary = item.sourceBoundaryAudit;
+      const rateAdjustment = item.rateAdjustment;
+      const rateAdjustmentIsValid = rateAdjustment === undefined || (
+        rateAdjustment
+        && typeof rateAdjustment === "object"
+        && rateAdjustment.policy === "post-synthesis-active-mora-rate-v3"
+        && isSha256(rateAdjustment.baseArtifactHash)
+        && isSha256(rateAdjustment.baseQuerySha256)
+        && Number.isFinite(rateAdjustment.calibrationSpeedScale)
+        && rateAdjustment.adjustedSpeedScale >= 0.5
+        && rateAdjustment.calibrationSpeedScale <= rateAdjustment.configuredSpeedScale
+        && rateAdjustment.adjustedSpeedScale < rateAdjustment.calibrationSpeedScale
+        && rateAdjustment.adjustedSpeedScale < rateAdjustment.configuredSpeedScale
+        && rateAdjustment.adjustedSpeedScale === item.queryParameters?.speedScale
+        && rateAdjustment.configuredSpeedScale === item.queryParameters?.configuredSpeedScale
+        && item.queryParameters?.rateAdjustmentPolicy === "post-synthesis-active-mora-rate-v3"
+        && rateAdjustment.observedMoraPerSecond > rateAdjustment.targetMoraPerSecond
+        && rateAdjustment.maximumMoraPerSecond === 7.2
+        && rateAdjustment.targetMoraPerSecond === 6.5
+      );
+      pronunciationEvidenceIsValid = (
+        isSha256(item.readingSha256)
+        && expectedReviewedReading !== undefined
+        && item.readingKana === expectedReviewedReading
+        && item.readingSha256 === createHash("sha256").update(expectedReviewedReading, "utf8").digest("hex")
+        && isSha256(item.phonemeSha256)
+        && isSha256(item.moraSha256)
+        && isSha256(item.querySha256)
+        && typeof item.readingKana === "string"
+        && item.readingKana.length > 0
+        && item.queryParameters
+        && typeof item.queryParameters === "object"
+        && canonicalJson(item.ratePolicy) === canonicalJson(expectedAudioRatePolicy)
+        && rateAdjustmentIsValid
+        && hasFields(boundary, requiredSourceBoundaryFields)
+        && boundary.schemaVersion === 1
+        && boundary.claritySchemaVersion === 3
+        && boundary.artifactHash === item.contentHash
+        && isSha256(boundary.normalizedSha256)
+        && boundary.pass === true
+        && hasFields(boundary.raw, requiredRawBoundaryFields)
+        && boundary.raw.boundaryKind === "raw"
+        && boundary.raw.activeSpanDbBelowPeak === 40
+        && boundary.raw.pass === true
+        && boundary.raw.truncationRisk === false
+        && hasFields(boundary.normalized, requiredNormalizedBoundaryFields)
+        && boundary.normalized.boundaryKind === "normalized"
+        && boundary.normalized.activeSpanDbBelowPeak === 40
+        && boundary.normalized.pass === true
+        && boundary.normalized.activeSpanCollapseRisk === false
+        && boundary.normalized.edgeClippingRisk === false
+      );
+    }
     if (
       item.codec !== "mp3"
-      || item.sampleRate !== 24000
+      || item.sampleRate !== 44100
       || item.channels !== 1
-      || item.bitrate !== 64000
+      || !(item.bitrate >= 88000 && item.bitrate <= 104000)
       || !(item.durationSeconds > 0)
       || !(item.bytes > 0)
-      || !/^[a-f0-9]{64}$/.test(item.contentHash || "")
-      || !/^[a-f0-9]{64}$/.test(item.sha256 || "")
+      || !isSha256(item.contentHash)
+      || !isSha256(item.sha256)
+      || !clarityIsValid
+      || !postProcessingIsValid
+      || !pronunciationEvidenceIsValid
       || !String(item.path || "").endsWith(".mp3")
     ) {
-      fail(`${audioRoot}/manifest.json audio item ${id} must be a hashed 24 kHz mono 64 kbps MP3`);
+      fail(`${audioRoot}/manifest.json audio item ${id} must be a hashed 44.1 kHz mono ~96 kbps MP3 with clarity schema 3 and complete Aivis pronunciation/source-boundary evidence`);
     }
     const audioFile = requireReferencedNonEmptyFile(audioRoot, item.path, audioRoot, `audio item ${id}`);
     if (audioFile && statSync(audioFile).size !== item.bytes) {
@@ -933,7 +1422,7 @@ function validateJapaneseSubtextReleaseContract() {
       stage.stageId !== expectedId
       || stage.contentVersion !== contentVersion
       || stage.level !== Number(expectedId[1])
-      || stage.sampleRate !== 24000
+      || stage.sampleRate !== 44100
       || !(stage.duration > 0)
       || !/^[a-f0-9]{64}$/.test(stage.contentHash || "")
       || stage.sourceContentHash !== contentStage?.contentHash
@@ -986,7 +1475,7 @@ function validateJapaneseSubtextReleaseContract() {
       || timeline.sceneAudioId !== stage.sceneAudioId
       || timeline.contentHash !== stage.contentHash
       || timeline.sourceContentHash !== stage.sourceContentHash
-      || timeline.sampleRate !== 24000
+      || timeline.sampleRate !== 44100
       || !Array.isArray(timeline.cues)
       || timeline.cues.length !== stage.lineAudioIds.length
       || JSON.stringify((timeline.cues || []).map((cue) => [cue.lineId, cue.audioId])) !== JSON.stringify(expectedCueLinks)
@@ -998,8 +1487,8 @@ function validateJapaneseSubtextReleaseContract() {
 
   const resourceEntry = windowAfter(mainJs, 'iconSrc: "tools/japanese-subtext/assets/icons/tool-icon-64.webp"', 2200);
   for (const token of [
-    'version: "v1.0.2"',
-    'updated: "2026.07.11"',
+    'version: "v1.0.3"',
+    'updated: "2026.07.12"',
     'external: false',
     'showReadyStatus: false',
     'url: "/tools/japanese-subtext/"',
@@ -1033,9 +1522,10 @@ function validateJapaneseSubtextReleaseContract() {
   }
   if (
     !windowAfter(mainJs, "function safeResourceIconSrc", 700).includes('path === "tools/japanese-subtext/assets/icons/tool-icon-64.webp"')
-    || !windowAfter(mainJs, "function safeResourceUrl", 1300).includes('/^tools\\/japanese-subtext\\/?$/i.test(localPath)')
+    || !windowAfter(mainJs, "function safeResourceUrl", 1500).includes('/^tools\\/japanese-subtext\\/?$/i.test(localPath)')
+    || !windowAfter(mainJs, "function safeResourceUrl", 1500).includes('`${sitePath("tools/japanese-subtext/")}?lang=${encodeURIComponent(currentLang)}`')
   ) {
-    fail("js/main.js must keep explicit safe allowlists for the Japanese subtext resource URL and icon");
+    fail("js/main.js must keep explicit safe allowlists and current-language routing for the Japanese subtext resource URL and icon");
   }
 
   const progressRoute = windowAfter(apiJs, 'parts[0] === "tools"', 900);
@@ -1059,7 +1549,7 @@ function validateJapaneseSubtextReleaseContract() {
   }
   for (const token of [
     "const MAX_JAPANESE_SUBTEXT_PROGRESS_BYTES = 1024 * 1024",
-    'const JAPANESE_SUBTEXT_CONTENT_VERSION = "1.0.2"',
+    `const JAPANESE_SUBTEXT_CONTENT_VERSION = "${contentVersion}"`,
     "const JAPANESE_SUBTEXT_STAGE_LIMIT = 250",
     "create table if not exists japanese_subtext_profiles",
     "create table if not exists japanese_subtext_stage_progress",
@@ -1114,6 +1604,7 @@ function validateJapaneseSubtextReleaseContract() {
     "AUDIO_DURATION",
     "AUDIO_BYTES",
     "AUDIO_VALIDATION",
+    "IMAGE2_VALIDATION",
     "BROWSER_QA"
   ]) {
     for (const edge of ["START", "END"]) {
@@ -1123,10 +1614,13 @@ function validateJapaneseSubtextReleaseContract() {
       }
     }
   }
-  for (const releaseGate of ["AUDIO_VALIDATION", "BROWSER_QA"]) {
-    if (!japaneseSubtextReleaseReport.includes(`<!-- RELEASE:${releaseGate}:PASS -->`)) {
-      fail(`${toolRoot}/reports/release-report.md must record RELEASE:${releaseGate}:PASS before publishing`);
-    }
+  for (const error of validateReleaseReportContract(japaneseSubtextReleaseReport, {
+    requirePass: true,
+    audioManifest: japaneseSubtextAudioManifest,
+    imageManifest: japaneseSubtextIllustrationManifest,
+    finalStats: japaneseSubtextFinalStats,
+  })) {
+    fail(`${toolRoot}/reports/release-report.md: ${error}`);
   }
 }
 
@@ -1769,7 +2263,7 @@ for (const asset of [
 }
 
 const premiumUiVersion = "20260711-calm-motion-r13";
-const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
+const currentPreFinalMainVersion = "20260712-japanese-subtext-v103-r6";
 const currentPreFinalCssVersion = "20260711-calm-motion-r13";
 const currentPreFinalTelemetryVersion = "20260623-analytics-privacy-r1";
 const currentGameShellVersion = "20260623-game-shell-storage-safe-r1";
@@ -2677,181 +3171,270 @@ for (const obsoleteText of [
   }
 }
 
-const finalUpdateId = "seed-update-2026-07-11-japanese-subtext-trainer";
-const finalUpdateSlug = "2026-07-11-japanese-subtext-trainer";
-const finalMainVersion = "20260711-japanese-subtext-v102-r2";
-const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Japanese Subtext Trainer 1.0.2 Update";
-const finalPublishedAt = "2026-07-10T17:30:00.000Z";
-const finalTranslationMinimums = {
+const immutableJapaneseSubtextTranslationMinimums = {
   title: 8,
   summary: 24,
   content_markdown: 160
 };
-const finalUpdateTokens = [finalUpdateId, finalUpdateSlug, finalMainVersion, finalTitleEn];
-const finalUpdateStarted = [mainJs, apiJs, schemaSql, indexHtml, changelog].some((source) =>
-  finalUpdateTokens.some((token) => source.includes(token))
-);
-const changelog20260623Section = markdownSection(changelog, "## 2026-06-23");
-const changelog20260624Section = markdownSection(changelog, "## 2026-06-24");
-const changelog20260630Section = markdownSection(changelog, "## 2026-06-30");
-const changelog20260706Section = markdownSection(changelog, "## 2026-07-06");
-const changelog20260710Section = markdownSection(changelog, "## 2026-07-10");
-const changelog20260711Section = markdownSection(changelog, "## 2026-07-11");
-
-if (!finalUpdateStarted) {
-  if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
-    fail(`index.html pre-final main.js query should be ${currentPreFinalMainVersion}`);
-  }
-
-  if (!changelog20260623Section.includes(`主站 main.js cache query 更新为 \`${currentPreFinalMainVersion}\``)) {
-    fail(`CHANGELOG.md should name the current pre-final main.js query ${currentPreFinalMainVersion}`);
-  }
-
-  for (const supersededMainVersion of [supersededAccountA11yMainVersion, "20260623-hidden-dialog-focus-r1", "20260623-honest-empty-states-r1", "20260623-resource-social-source-r1", "20260623-url-social-quicklinks-r1", "20260623-article-short-hash-r1", "20260623-chat-cooldown-clamp-r1", "20260623-route-article-deeplink-r1", "20260623-article-detail-meta-r1", "20260623-hover-cache-guard-r1", "20260623-storage-safe-r1", "20260623-article-cache-avatar-alt-r1", "20260623-dialog-toc-a11y-r1", "20260623-article-toc-focus-a11y-r1", "20260623-game-cache-detail-retry-r1", "20260623-chat-sync-status-r1", "20260623-chat-sending-state-r2"]) {
-    if (!changelog20260623Section.includes(supersededMainVersion)) {
-      fail(`CHANGELOG.md should mention superseded main.js query ${supersededMainVersion} before final wrap-up`);
+const immutableJapaneseSubtextUpdates = [
+  {
+    id: "seed-update-2026-07-12-japanese-subtext-v1-0-3",
+    slug: "2026-07-12-japanese-subtext-v1-0-3",
+    publishedAt: "2026-07-11T18:00:00.000Z",
+    date: "2026.07.12",
+    requiredMarkers: {
+      zh: ["AivisSpeech", "纯假名", "250", "精制黑白四格漫画", "简洁彩色桌面与手机画面", "gpt-image-2", "UI 与手机交互重整"],
+      en: ["AivisSpeech", "kana-only", "250", "polished monochrome four-panel manga", "quiet full-color desktop and mobile backgrounds", "gpt-image-2", "Desktop and mobile interaction"],
+      ja: ["AivisSpeech", "かな読みだけ", "250", "モノクロ四コマ", "控えめなカラーの PC・モバイル背景", "gpt-image-2", "PC・モバイル操作の再整理"]
+    },
+    legacyFingerprints: {
+      zh: "2c1f12cba6326890eca1561873dc53e5c4b0ccb6d7db9f73e5715d35350fe397",
+      en: "4a649cf6de41cdb8305ba733a4c19d7012470e305aa96d15ee62f06e434205fd",
+      ja: "4dbedd989c98487b952664abad7b3a9b6f427ca38743dccec817311af6abbb4a"
+    }
+  },
+  {
+    id: "seed-update-2026-07-11-japanese-subtext-trainer",
+    slug: "2026-07-11-japanese-subtext-trainer",
+    publishedAt: "2026-07-10T17:30:00.000Z",
+    date: "2026.07.11",
+    legacyTitles: {
+      zh: "日语潜台词训练工具更新至 1.0.2",
+      en: "Japanese Subtext Trainer 1.0.2 Update",
+      ja: "日本語の裏側 1.0.2 アップデート"
+    },
+    legacyMarkers: {
+      zh: ["句尾异常“いい”和“今日”漏读", "## 语音读音全量重置", "原创黑白四格漫画"],
+      en: ["detached ending sounds and missing consonants", "## Full speech-reading reset", "original black-and-white four-panel manga"],
+      ja: ["語尾の異音と子音欠落", "## 読みを固定した全音声の再生成", "オリジナル白黒四コマ漫画"]
+    },
+    legacyFingerprints: {
+      zh: "473744471a57b2fd793796e662513eed305af202eabe4d2ca4eecf60d8ff6732",
+      en: "7cd15a0a1f336362475fdfcfa1157a513b0ecf36ae935239a4f7ee6e5f3215c6",
+      ja: "d1033a9ecb0f2bb860c37cd2edaef7278f53e53359a6aeae7acce27a040f2832"
+    }
+  },
+  {
+    id: "seed-update-2026-07-11-japanese-subtext-v1-0-1",
+    slug: "2026-07-11-japanese-subtext-v1-0-1",
+    publishedAt: "2026-07-10T16:30:00.000Z",
+    date: "2026.07.11",
+    legacyFingerprints: {
+      zh: "e9de5e7d71fe9d534ff82990d95066555505a19f9ed41a96018feeb4cd51ca9d",
+      en: "faca8facd1889753f676401c6bc689421653689cd89592b725eb2a156bb55e87",
+      ja: "d5a3f345263d1804bc7a77759bcb83c60d4456c7a6a827e644c8904b5598ec71"
+    }
+  },
+  {
+    id: "seed-update-2026-07-11-japanese-subtext-launch",
+    slug: "2026-07-11-japanese-subtext-launch",
+    publishedAt: "2026-07-10T16:00:00.000Z",
+    date: "2026.07.11",
+    legacyFingerprints: {
+      zh: "0c85c6ca694ee6e93b123b82102f31b5200a5550f8ddb1a75f73a6b4101bcd83",
+      en: "4605a26ebcc2d64c5148601e997497a36a78f5f5fda743c5f2edff3cdf422e90",
+      ja: "95318f789ec62e93ec7a7b7ea784335756cc30b4d1bea70808413c5b5bd1f119"
     }
   }
+];
+
+const immutableTranslationHelper = objectBlockAfterMarker(apiJs, "function immutableArticleTranslationsStatements");
+if (!immutableTranslationHelper
+  || !hasPattern(immutableTranslationHelper, /on conflict\s*\(\s*article_id\s*,\s*lang\s*\)\s*do nothing/i)
+  || /do update set/i.test(immutableTranslationHelper)) {
+  fail("Functions immutable article translation helper must keep existing rows unchanged");
 }
 
-if (finalUpdateStarted) {
-  for (const token of [
-    'date: "2026.06.23"',
-    'date: "2026.06.24"',
-    'date: "2026.07.06"',
-    'date: "2026.07.11"',
-    finalTitleEn
-  ]) {
-    if (!mainJs.includes(token)) {
-      fail(`js/main.js final public update fallback missing ${token}`);
-    }
-  }
+function sqlStatementContaining(source, marker, statementMarker) {
+  const markerIndex = source.indexOf(marker);
+  if (markerIndex < 0) return "";
+  const start = source.lastIndexOf(statementMarker, markerIndex);
+  if (start < 0) return "";
+  const next = source.indexOf(statementMarker, markerIndex + marker.length);
+  return source.slice(start, next >= 0 ? next : source.length);
+}
 
-  const apiFinalSeed = windowAfter(apiJs, `'${finalUpdateId}'`, 1200);
-  for (const token of [
-    `'${finalUpdateId}'`,
-    `'${finalUpdateSlug}'`,
-    "'site-updates'",
-    finalPublishedAt
-  ]) {
-    if (!apiFinalSeed.includes(token)) {
-      fail(`functions/api/[[route]].js final public update seed missing ${token}`);
-    }
-  }
+function mainUpdateBlock(articleId) {
+  const marker = `article_id: "${articleId}"`;
+  const start = mainJs.indexOf(marker);
+  if (start < 0) return "";
+  const next = mainJs.indexOf('article_id: "', start + marker.length);
+  return mainJs.slice(start, next >= 0 ? next : mainJs.length);
+}
 
-  const apiTranslationMarker = apiJs.includes(`articleTranslationsStatements(env, "${finalUpdateId}"`)
-    ? `articleTranslationsStatements(env, "${finalUpdateId}"`
-    : `articleTranslationsStatements(env, '${finalUpdateId}'`;
-  const apiFinalTranslations = objectBlockAfterMarker(apiJs, apiTranslationMarker);
-  const apiFinalTranslationValues = {};
-  if (!apiFinalTranslations) {
-    fail("functions/api/[[route]].js final public update translations missing");
-  } else {
-    for (const lang of ["zh", "en", "ja"]) {
-      const langBlock = propertyObjectBlock(apiFinalTranslations, lang);
-      if (!langBlock) {
-        fail(`functions/api/[[route]].js final public update missing ${lang} translation`);
-        continue;
-      }
-      for (const [field, minimumLength] of Object.entries(finalTranslationMinimums)) {
-        const value = jsStringPropertyValue(langBlock, field);
-        if (!value || value.trim().length < minimumLength) {
-          fail(`functions/api/[[route]].js final public update ${lang}.${field} should be populated`);
-        }
-        apiFinalTranslationValues[lang] ||= {};
-        apiFinalTranslationValues[lang][field] = value;
-      }
-    }
-  }
+function normalizedArticleText(value) {
+  return value?.replace(/\r\n/g, "\n");
+}
 
-  const mainFinalFallback = windowAfter(mainJs, `article_id: "${finalUpdateId}"`, 12000);
+for (const update of immutableJapaneseSubtextUpdates) {
+  const label = `${update.id} immutable update`;
+  const mainMarker = `article_id: "${update.id}"`;
+  if (countLiteral(mainJs, mainMarker) !== 1) {
+    fail(`js/main.js ${label} should appear exactly once`);
+  }
+  const mainSeed = mainUpdateBlock(update.id);
   for (const token of [
-    `article_id: "${finalUpdateId}"`,
-    `slug: "${finalUpdateSlug}"`,
+    mainMarker,
+    `slug: "${update.slug}"`,
     'category: "site-updates"',
-    `published_at: "${finalPublishedAt}"`,
-    "fallbackOnly: true"
+    `created_at: "${update.publishedAt}"`,
+    `updated_at: "${update.publishedAt}"`,
+    `published_at: "${update.publishedAt}"`,
+    "fallbackOnly: true",
+    `date: "${update.date}"`
   ]) {
-    if (!mainFinalFallback.includes(token)) {
-      fail(`js/main.js final public update fallback metadata missing ${token}`);
+    if (!mainSeed.includes(token)) {
+      fail(`js/main.js ${label} metadata missing ${token}`);
     }
   }
-  const mainFallbackFieldBlocks = Object.fromEntries(
-    Object.keys(finalTranslationMinimums).map((field) => [field, propertyObjectBlock(mainFinalFallback, field)])
+
+  const apiParentMarker = `'${update.id}'`;
+  const apiParentSeed = sqlStatementContaining(apiJs, apiParentMarker, "env.DB.prepare(`");
+  for (const token of [
+    "insert into articles",
+    apiParentMarker,
+    `'${update.slug}'`,
+    "'site-updates'"
+  ]) {
+    if (!apiParentSeed.includes(token)) {
+      fail(`functions/api/[[route]].js ${label} parent seed missing ${token}`);
+    }
+  }
+  if (countLiteral(apiParentSeed, update.publishedAt) !== 3) {
+    fail(`functions/api/[[route]].js ${label} parent timestamps must all stay ${update.publishedAt}`);
+  }
+  if (!hasPattern(apiParentSeed, /on conflict\s*\(\s*article_id\s*\)\s*do nothing/i)
+    || /on conflict\s*\(\s*article_id\s*\)\s*do update set/i.test(apiParentSeed)) {
+    fail(`functions/api/[[route]].js ${label} parent seed must not rewrite an existing article`);
+  }
+
+  const schemaParentSeed = sqlStatementContaining(schemaSql, apiParentMarker, "insert into articles (");
+  for (const token of [
+    apiParentMarker,
+    `'${update.slug}'`,
+    "'site-updates'"
+  ]) {
+    if (!schemaParentSeed.includes(token)) {
+      fail(`cloudflare/schema.sql ${label} parent seed missing ${token}`);
+    }
+  }
+  if (countLiteral(schemaParentSeed, update.publishedAt) !== 3) {
+    fail(`cloudflare/schema.sql ${label} parent timestamps must all stay ${update.publishedAt}`);
+  }
+  if (!hasPattern(schemaParentSeed, /on conflict\s*\(\s*article_id\s*\)\s*do nothing/i)
+    || /on conflict\s*\(\s*article_id\s*\)\s*do update set/i.test(schemaParentSeed)) {
+    fail(`cloudflare/schema.sql ${label} parent seed must not rewrite an existing article`);
+  }
+
+  const immutableCallMarker = `immutableArticleTranslationsStatements(env, "${update.id}"`;
+  if (countLiteral(apiJs, immutableCallMarker) !== 1) {
+    fail(`functions/api/[[route]].js ${label} should use the immutable translation helper exactly once`);
+  }
+  if (countLiteral(apiJs, `...articleTranslationsStatements(env, "${update.id}"`) !== 0) {
+    fail(`functions/api/[[route]].js ${label} must not use the mutable translation helper`);
+  }
+  const apiTranslations = objectBlockAfterMarker(apiJs, immutableCallMarker);
+  const apiTranslationsStart = apiJs.indexOf(apiTranslations, apiJs.indexOf(immutableCallMarker));
+  const immutableCallTail = apiJs.slice(
+    apiTranslationsStart + apiTranslations.length,
+    apiTranslationsStart + apiTranslations.length + 96
   );
+  if (!immutableCallTail.includes(`, "${update.publishedAt}")`)) {
+    fail(`functions/api/[[route]].js ${label} translation timestamp must stay ${update.publishedAt}`);
+  }
+  const mainTranslationBlocks = Object.fromEntries(
+    Object.keys(immutableJapaneseSubtextTranslationMinimums).map((field) => [field, propertyObjectBlock(mainSeed, field)])
+  );
+  const valuesByLanguage = {};
+
   for (const lang of ["zh", "en", "ja"]) {
-    for (const [field, minimumLength] of Object.entries(finalTranslationMinimums)) {
-      const fallbackValue = jsStringPropertyValue(mainFallbackFieldBlocks[field], lang);
-      const apiValue = apiFinalTranslationValues[lang]?.[field];
-      if (!fallbackValue || fallbackValue.trim().length < minimumLength) {
-        fail(`js/main.js final public update fallback ${lang}.${field} should be populated`);
-      } else if (fallbackValue !== apiValue) {
-        fail(`js/main.js and Functions final public update ${lang}.${field} should match exactly`);
+    const apiLanguageBlock = propertyObjectBlock(apiTranslations, lang);
+    valuesByLanguage[lang] = {};
+    for (const [field, minimumLength] of Object.entries(immutableJapaneseSubtextTranslationMinimums)) {
+      const mainValue = jsStringPropertyValue(mainTranslationBlocks[field], lang);
+      const apiValue = jsStringPropertyValue(apiLanguageBlock, field);
+      valuesByLanguage[lang][field] = mainValue;
+      if (!mainValue || mainValue.trim().length < minimumLength) {
+        fail(`js/main.js ${label} ${lang}.${field} should be populated`);
+      }
+      if (!apiValue || apiValue.trim().length < minimumLength) {
+        fail(`functions/api/[[route]].js ${label} ${lang}.${field} should be populated`);
+      }
+      if (mainValue !== apiValue) {
+        fail(`js/main.js and Functions ${label} ${lang}.${field} should match exactly`);
       }
     }
-  }
 
-  const schemaFinalSeed = windowAfter(schemaSql, `'${finalUpdateId}'`, 1200);
-  for (const token of [
-    `'${finalUpdateId}'`,
-    `'${finalUpdateSlug}'`,
-    "'site-updates'",
-    finalPublishedAt
-  ]) {
-    if (!schemaFinalSeed.includes(token)) {
-      fail(`cloudflare/schema.sql final public update seed missing ${token}`);
+    const schemaTranslationId = `${update.id}-${lang}`;
+    const schemaTranslationMarker = `'${schemaTranslationId}'`;
+    if (countLiteral(schemaSql, schemaTranslationMarker) !== 1) {
+      fail(`cloudflare/schema.sql ${label} should have exactly one ${lang} translation id`);
     }
-  }
-
-  for (const lang of ["zh", "en", "ja"]) {
-    if (countLiteral(schemaSql, `'${finalUpdateId}-${lang}'`) !== 1) {
-      fail(`cloudflare/schema.sql final public update should have one ${lang} translation id`);
+    const schemaTranslationStatement = sqlStatementContaining(
+      schemaSql,
+      schemaTranslationMarker,
+      "insert into article_translations ("
+    );
+    if (!hasPattern(schemaTranslationStatement, /on conflict\s*\(\s*article_id\s*,\s*lang\s*\)\s*do nothing/i)
+      || /on conflict\s*\(\s*article_id\s*,\s*lang\s*\)\s*do update set/i.test(schemaTranslationStatement)) {
+      fail(`cloudflare/schema.sql ${label} translations must not rewrite existing rows`);
     }
-    const languageTuplePattern = new RegExp(`${escapeRegExp(`'${finalUpdateId}'`)}\\s*,\\s*${escapeRegExp(`'${lang}'`)}`);
-    if (!hasPattern(schemaSql, languageTuplePattern)) {
-      fail(`cloudflare/schema.sql final public update missing ${lang} language tuple`);
-    }
-    const schemaLangSeed = windowAfter(schemaSql, `'${finalUpdateId}-${lang}'`, 8000);
-    const schemaValues = sqlSingleQuotedValues(schemaLangSeed);
-    const [translationId, articleId, rowLang, title, summary, contentMarkdown] = schemaValues;
-    if (translationId !== `${finalUpdateId}-${lang}` || articleId !== finalUpdateId || rowLang !== lang) {
-      fail(`cloudflare/schema.sql final public update ${lang} translation tuple should start with the expected ids`);
+    const tupleStart = schemaTranslationStatement.indexOf(schemaTranslationMarker);
+    const schemaValues = sqlSingleQuotedValues(schemaTranslationStatement.slice(tupleStart));
+    const [translationId, articleId, rowLang, title, summary, contentMarkdown, createdAt, updatedAt] = schemaValues;
+    if (translationId !== schemaTranslationId || articleId !== update.id || rowLang !== lang) {
+      fail(`cloudflare/schema.sql ${label} ${lang} translation tuple should start with the expected ids`);
       continue;
     }
-    for (const [field, value] of [
+    if (createdAt !== update.publishedAt || updatedAt !== update.publishedAt) {
+      fail(`cloudflare/schema.sql ${label} ${lang} translation timestamps must stay ${update.publishedAt}`);
+    }
+    for (const [field, schemaValue] of [
       ["title", title],
       ["summary", summary],
       ["content_markdown", contentMarkdown]
     ]) {
-      if (!value || value.trim().length < finalTranslationMinimums[field]) {
-        fail(`cloudflare/schema.sql final public update ${lang}.${field} should be populated`);
-      } else if (value.replace(/\r\n/g, "\n") !== apiFinalTranslationValues[lang]?.[field]?.replace(/\r\n/g, "\n")) {
-        fail(`Functions and schema final public update ${lang}.${field} should match exactly`);
+      if (!schemaValue || schemaValue.trim().length < immutableJapaneseSubtextTranslationMinimums[field]) {
+        fail(`cloudflare/schema.sql ${label} ${lang}.${field} should be populated`);
+      }
+      if (normalizedArticleText(schemaValue) !== normalizedArticleText(valuesByLanguage[lang][field])) {
+        fail(`main fallback, Functions, and schema ${label} ${lang}.${field} should match exactly`);
+      }
+    }
+
+    const combinedText = `${valuesByLanguage[lang].summary}\n${valuesByLanguage[lang].content_markdown}`;
+    for (const marker of update.requiredMarkers?.[lang] || []) {
+      if (!combinedText.includes(marker)) {
+        fail(`${label} ${lang} copy must include ${marker}`);
+      }
+    }
+    if (update.legacyTitles?.[lang] && valuesByLanguage[lang].title !== update.legacyTitles[lang]) {
+      fail(`${label} ${lang} legacy title changed`);
+    }
+    for (const marker of update.legacyMarkers?.[lang] || []) {
+      if (!combinedText.includes(marker)) {
+        fail(`${label} ${lang} legacy copy marker changed: ${marker}`);
+      }
+    }
+    if (update.legacyFingerprints?.[lang]) {
+      const fingerprint = createHash("sha256").update(JSON.stringify({
+        title: valuesByLanguage[lang].title,
+        summary: valuesByLanguage[lang].summary,
+        content_markdown: valuesByLanguage[lang].content_markdown
+      })).digest("hex");
+      if (fingerprint !== update.legacyFingerprints[lang]) {
+        fail(`${label} ${lang} legacy title, summary, or body changed (${fingerprint} != ${update.legacyFingerprints[lang]})`);
       }
     }
   }
+}
 
-  for (const token of [
-    'id="top-updated">2026.07.11',
-    `/js/main.js?v=${finalMainVersion}`
-  ]) {
-    if (!indexHtml.includes(token)) {
-      fail(`index.html final public update sync missing ${token}`);
-    }
-  }
-
-  for (const token of [
-    finalMainVersion,
-    finalUpdateId,
-    "site-updates",
-    "fallback",
-    "Functions seed",
-    "schema seed"
-  ]) {
-    if (!changelog20260711Section.includes(token)) {
-      fail(`CHANGELOG.md final public update sync missing ${token}`);
-    }
+for (const token of [
+  'id="top-updated">2026.07.12',
+  "/js/main.js?v=20260712-japanese-subtext-v103-r6"
+]) {
+  if (!indexHtml.includes(token)) {
+    fail(`index.html Japanese subtext 1.0.3 public update sync missing ${token}`);
   }
 }
 

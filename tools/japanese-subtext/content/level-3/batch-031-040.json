@@ -1925,7 +1925,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L3-034",
-      "revision": 3,
+      "revision": 4,
       "level": 3,
       "stage": 34,
       "jlptTarget": "N1",
@@ -2493,7 +2493,7 @@
               },
               "ttsTextJa": "二人は今日初めて会った。",
               "audioId": "L3-034-q3-c",
-              "readingJa": "ふたりわきょーはじめてあった。"
+              "readingJa": "ふたりわきょうはじめてあった。"
             },
             {
               "id": "d",
@@ -2555,13 +2555,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "ccd451fd247b85ae33976c0b2499a6e5e4e54b10d763e9e30e01b56de036493f"
+      "contentHash": "894345619a18b4cb04a97d37deae543a9cc35d583df593190f7217b3a57d41da"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L3-035",
-      "revision": 3,
+      "revision": 5,
       "level": 3,
       "stage": 35,
       "jlptTarget": "N1",
@@ -2973,7 +2973,7 @@
               },
               "ttsTextJa": "里奈が資料の日付を確認した。",
               "audioId": "L3-035-q1-c",
-              "readingJa": "りながしりょーのひずけをかくにんした。"
+              "readingJa": "りながしりょーのひづけをかくにんした。"
             },
             {
               "id": "d",
@@ -3067,7 +3067,7 @@
               },
               "ttsTextJa": "告発が訂正されず確定したように見え、徹だけが悪い記録になる。",
               "audioId": "L3-035-q2-c",
-              "readingJa": "こくはつがてーせーされずかくてーしたよーにみえ、てっだけがわるいきろくになる。"
+              "readingJa": "こくはつがてーせーされずかくてーしたよーにみえ、とおるだけがわるいきろくになる。"
             },
             {
               "id": "d",
@@ -3225,7 +3225,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "6a505f9be0fda788bc6891596361dfe8acca4f470346ee8c77ef97de840a1cfc"
+      "contentHash": "7f26fb355abad727a80846dbe00520d53691c446a53d51ad1434880053ac025e"
     },
     {
       "schemaVersion": 1,
@@ -3855,7 +3855,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L3-037",
-      "revision": 3,
+      "revision": 5,
       "level": 3,
       "stage": 37,
       "jlptTarget": "N1",
@@ -4339,7 +4339,7 @@
               },
               "ttsTextJa": "佐藤と林が沈黙の後に明示的な反対理由を述べている。",
               "audioId": "L3-037-q2-a",
-              "readingJa": "さとーとはやしがちんもくのあとにめーじてきなはんたいりゆーをのべている。"
+              "readingJa": "さとーとりんがちんもくのあとにめーじてきなはんたいりゆーをのべている。"
             },
             {
               "id": "b",
@@ -4361,7 +4361,7 @@
               },
               "ttsTextJa": "沈黙が五秒以上続いた。",
               "audioId": "L3-037-q2-c",
-              "readingJa": "ちんもくがごびょーいじょーつずいた。"
+              "readingJa": "ちんもくがごびょーいじょーつづいた。"
             },
             {
               "id": "d",
@@ -4517,13 +4517,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "9303484c70ab21af61367f5d4446be10692863e58e5e2c72886bfd61e04569e5"
+      "contentHash": "ea561bc60e69012428677f4398f7b5d53780bfabf2b7dd004b129f8b93f51480"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L3-038",
-      "revision": 3,
+      "revision": 4,
       "level": 3,
       "stage": 38,
       "jlptTarget": "N1",
@@ -4978,7 +4978,7 @@
               },
               "ttsTextJa": "生体乗員数を二名へ書き換える。",
               "audioId": "L3-038-q2-c",
-              "readingJa": "せーたいじょういんすうをにみょーえかきかえる。"
+              "readingJa": "せーたいじょういんすうをにめーえかきかえる。"
             },
             {
               "id": "d",
@@ -5134,7 +5134,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "0b057447617005f135e1ba3460981ee5a46bee37d906c792353d0a19e3620a48"
+      "contentHash": "26e0ed86ed670acb0b3b717f6f0b1c99ae053f9ef13c464832a1912687a1da14"
     },
     {
       "schemaVersion": 1,

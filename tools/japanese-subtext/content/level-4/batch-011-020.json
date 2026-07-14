@@ -8,7 +8,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-011",
-      "revision": 3,
+      "revision": 5,
       "level": 4,
       "stage": 11,
       "jlptTarget": "N1-advanced",
@@ -64,7 +64,7 @@
           "id": "sota",
           "name": {
             "ja": "広報・颯太",
-            "zh": "宣传颯太",
+            "zh": "宣传飒太",
             "en": "Sota, publicity"
           },
           "voiceKey": "male-casual"
@@ -154,7 +154,7 @@
             "zh": "18:12，绘里发言：“通知太晚，我无法向客人说明。”",
             "en": "At 18:12, Eri posted, 'The notice is too late for me to explain to customers.'"
           },
-          "readingJa": "じゅーはちじじゅーにぶん、えりさんが『こくちがおそく、きゃくにせつめーできない』ととーこー。",
+          "readingJa": "じゅーはちじじゅーにふん、えりさんが『こくちがおそく、きゃくにせつめーできない』ととーこー。",
           "ttsTextJa": "十八時十二分、えりさんが『告知が遅く、客に説明できない』と投稿。",
           "audioId": "L4-011-line-003",
           "pauseAfterMs": 520,
@@ -162,7 +162,7 @@
             {
               "id": "token-001",
               "text": "十八時十二分、",
-              "reading": "じゅーはちじじゅーにぶん、",
+              "reading": "じゅーはちじじゅーにふん、",
               "audioId": "L4-011-line-003-token-001"
             },
             {
@@ -427,7 +427,7 @@
               },
               "ttsTextJa": "投稿時刻を一分だけ誤記し、出来事の順序自体は保っている",
               "audioId": "L4-011-q1-a",
-              "readingJa": "とーこーじこくをいちぶだけごきし、できごとのじゅんじょじたいわたもっている"
+              "readingJa": "とーこーじこくをいっぷんだけごきし、できごとのじゅんじょじたいわたもっている"
             },
             {
               "id": "b",
@@ -444,7 +444,7 @@
               "id": "c",
               "text": {
                 "ja": "颯太の役職を取り違えている。",
-                "zh": "它弄错了颯太的职务。",
+                "zh": "它弄错了飒太的职务。",
                 "en": "It misidentifies Sota's role."
               },
               "ttsTextJa": "そうたの役職を取り違えている。",
@@ -572,7 +572,7 @@
             },
             "intent": {
               "ja": "三つの時刻を並べると、問題提起、颯太の非難、絵里の限定的謝罪という応答連鎖が復元されます。",
-              "zh": "三个时间点连起来，便能还原“提出问题—颯太指责—绘里限定道歉”的回应链。",
+              "zh": "三个时间点连起来，便能还原“提出问题—飒太指责—绘里限定道歉”的回应链。",
               "en": "The three times reconstruct the response chain: concern, Sota's accusation, then Eri's limited apology."
             },
             "evidence": {
@@ -603,13 +603,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "33dd0d37dc466b804b7596c143665fc4a22689ff97f64021e436e87d8a6cf318"
+      "contentHash": "40545d76593aac43fd31f5ff1f06234bdf3573b53e4b7bd62bd77d602b2e62ac"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-012",
-      "revision": 3,
+      "revision": 4,
       "level": 4,
       "stage": 12,
       "jlptTarget": "N1-advanced",
@@ -1051,7 +1051,7 @@
               "en": "The text-supported answer is “That the alternate candidate was the bookstore's second floor..”"
             },
             "intent": {
-              "ja": "公開留言は中止と待機しか述べず、古書店は舞の未送信下書きにしかありません。",
+              "ja": "公開された留守番電話メッセージは中止と待機しか述べず、古書店は舞の未送信下書きにしかありません。",
               "zh": "公开留言只说取消和等待，旧书店只存在于舞尚未发送的草稿。",
               "en": "The public messages state only cancellation and waiting; the bookstore exists solely in Mai's unsent draft."
             },
@@ -1268,13 +1268,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "50b229909c05b5331b1245d4bcb837139ebbeb7c17ccbcde6d5970799fdc973a"
+      "contentHash": "e1afe7c27d8612a2f4b0773f920e534698f2edcd13f81970cb971644c793f8a3"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-013",
-      "revision": 3,
+      "revision": 4,
       "level": 4,
       "stage": 13,
       "jlptTarget": "N1-advanced",
@@ -1802,7 +1802,7 @@
               },
               "ttsTextJa": "卒業生が暗号に気づいたため、サプライズ計画自体を中止した",
               "audioId": "L4-013-q2-c",
-              "readingJa": "そつぎょーせーがあんごーにきずいたため、さぷらいずけーかくじたいをちゅーしした"
+              "readingJa": "そつぎょーせーがあんごーにきづいたため、さぷらいずけーかくじたいをちゅーしした"
             },
             {
               "id": "d",
@@ -1864,13 +1864,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "bf5e73d95c4c3757c1406078a2ba3cd5b3c808b933e9e267353a9140ceaae724"
+      "contentHash": "751626aecdb47a3693be5c29c7a10dc269618c4b2aa317a706f7d5ea532cfbc3"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-014",
-      "revision": 3,
+      "revision": 5,
       "level": 4,
       "stage": 14,
       "jlptTarget": "N1-advanced",
@@ -2003,7 +2003,7 @@
           "text": {
             "ja": "ご多忙のところ恐縮ですが、本日中に確定日をご教示いただけますと幸いです。部長を共有先に加えます。",
             "zh": "百忙之中打扰，若能在今日内告知确定日期，不胜感激。我将部长加入抄送。",
-            "en": "I apologize for the interruption, but would appreciate a confirmed date today. I am adding my manager."
+            "en": "I apologize for the interruption, but would appreciate a confirmed date today. I am adding the sales manager."
           },
           "readingJa": "ごたぼーのところきょーしゅくですが、ほんじつちゅうにかくてーびをごきょーしいただけますとさいわいです。ぶちょーをきょーゆーさきにくわえます。",
           "ttsTextJa": "ご多忙のところ恐縮ですが、本日中に確定日をご教示いただけますと幸いです。部長を共有先に加えます。",
@@ -2164,7 +2164,7 @@
             "zh": "给您添麻烦了。因需共享影响金额，我方董事也加入收件人。",
             "en": "Thank you for your trouble. I have added our executive because the impact amount must be shared."
           },
-          "readingJa": "おてかずをおかけします。えいきょうがくをきょーゆーするつごうじょう、とーしゃやくいんもあてさきにくわえました。",
+          "readingJa": "おてすうをおかけします。えいきょうがくをきょーゆーするつごうじょう、とーしゃやくいんもあてさきにくわえました。",
           "ttsTextJa": "お手数をおかけします。影響額を共有する都合上、当社役員も宛先に加えました。",
           "audioId": "L4-014-line-008",
           "pauseAfterMs": 520,
@@ -2172,7 +2172,7 @@
             {
               "id": "token-001",
               "text": "お手数をおかけします。",
-              "reading": "おてかずをおかけします。",
+              "reading": "おてすうをおかけします。",
               "audioId": "L4-014-line-008-token-001"
             },
             {
@@ -2197,7 +2197,7 @@
             "zh": "井上，如果25日有困难，请今天提出替代日期和补偿方案，不要再含糊回复。",
             "en": "Inoue, if the 25th is difficult, provide an alternate date and remedy today rather than another ambiguous answer."
           },
-          "readingJa": "いのうえさん、にじゅーごにちがむずかしいなら、あいまいなへんとーでわなくだいたいひとほしょーあんをほんじつてーじしてください。",
+          "readingJa": "いのうえさん、にじゅーごにちがむずかしいなら、あいまいなへんとーでわなくだいたいびとほしょーあんをほんじつてーじしてください。",
           "ttsTextJa": "いのうえさん、二十五日が難しいなら、曖昧な返答ではなく代替日と補償案を本日提示してください。",
           "audioId": "L4-014-line-009",
           "pauseAfterMs": 520,
@@ -2217,7 +2217,7 @@
             {
               "id": "token-003",
               "text": "曖昧な返答ではなく代替日と補償案を本日提示してください。",
-              "reading": "あいまいなへんとーでわなくだいたいひとほしょーあんをほんじつてーじしてください。",
+              "reading": "あいまいなへんとーでわなくだいたいびとほしょーあんをほんじつてーじしてください。",
               "audioId": "L4-014-line-009-token-003"
             }
           ]
@@ -2318,7 +2318,7 @@
             "literal": {
               "ja": "本文に即した答えは「丁寧な表現を保ちながら、記録と関係者を増やして正式にエスカレートする。」です。",
               "zh": "依照原文，答案是“保持礼貌措辞的同时增加记录与相关方，进行正式升级。”。",
-              "en": "The text-supported answer is “Formally escalating by expanding the record and audience while retaining polite wording..”"
+              "en": "The text-supported answer is “Formally escalating by expanding the record and audience while retaining polite wording.”"
             },
             "intent": {
               "ja": "追加される受信者と契約語彙は、柔らかな文体のまま問題を個人間確認から組織的記録へ移しています。",
@@ -2348,7 +2348,7 @@
           "prompt": {
             "ja": "井上の4番目の台詞が確約を避ける表現である理由は何ですか。",
             "zh": "为何井上在第4句台词中是在回避承诺？",
-            "en": "Why does Inoue's the fourth line avoid commitment?"
+            "en": "Why does Inoue's fourth line avoid commitment?"
           },
           "options": [
             {
@@ -2409,11 +2409,11 @@
             "literal": {
               "ja": "本文に即した答えは「『社内調整中』を理由に、可否も代替日も示していないから。」です。",
               "zh": "依照原文，答案是“因为以“内部协调中”为由，既不说明可否也不给替代日期。”。",
-              "en": "The text-supported answer is “Because 'internal coordination' supplies neither feasibility nor an alternate date..”"
+              "en": "The text-supported answer is “Because 'internal coordination' supplies neither feasibility nor an alternate date.”"
             },
             "intent": {
               "ja": "『確約は差し控える』は否定を直接言わずに約束だけを保留し、必要な具体情報を空白にします。",
-              "zh": "“暂不保证”没有直接否定，却只保留承诺，关键具体信息仍为空白。",
+              "zh": "“暂不保证”没有直接否定，却把承诺本身搁置，关键具体信息仍为空白。",
               "en": "'Refrain from committing' avoids a direct no while leaving the needed concrete information blank."
             },
             "evidence": {
@@ -2422,7 +2422,7 @@
               "en": "Taken together, the second line, the fourth line, the sixth line, the ninth line establish the relation that no single line proves alone."
             },
             "nuance": {
-              "ja": "婉曲表現は礼貌ですが、期限が迫る契約確認では情報不足という機能的問題が残ります。",
+              "ja": "婉曲表現は丁寧ですが、期限が迫る契約確認では情報不足という機能的問題が残ります。",
               "zh": "委婉表达很礼貌，但在临近期限的合同确认中仍存在信息不足。",
               "en": "The euphemism is courteous, but still functionally inadequate for a time-sensitive contractual confirmation."
             },
@@ -2501,7 +2501,7 @@
             "literal": {
               "ja": "本文に即した答えは「法務が、日程変更の合意はなく書面提案が必要だと述べる。／役員が影響額の共有先として追加される。」です。",
               "zh": "依照原文，答案是“法务指出尚无改期协议，变更需书面提出。／董事因影响金额被加入收件人。”。",
-              "en": "The text-supported answer is “Legal states there is no amended date and requests a written proposal. / An executive is added to receive the impact amount..”"
+              "en": "The text-supported answer is “Legal states there is no amended date and requests a written proposal. / An executive is added to receive the impact amount.”"
             },
             "intent": {
               "ja": "書面合意の有無と影響額を扱う受信者が加わり、単なる日程問い合わせを契約責任の記録へ変えています。",
@@ -2536,7 +2536,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "2f82cad8b72553532c86ce6bd26d9aee7f90c3ddb2fd16e5d86630279eca0fec"
+      "contentHash": "a9fcfd082d58c35ccc1e2013dffa906403ce7e438643252b680cff8f49bd8554"
     },
     {
       "schemaVersion": 1,
@@ -3766,7 +3766,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-017",
-      "revision": 3,
+      "revision": 4,
       "level": 4,
       "stage": 17,
       "jlptTarget": "N1-advanced",
@@ -3846,7 +3846,7 @@
             "zh": "是否开放北路，请在明日正午前答复。",
             "en": "We request your answer by noon tomorrow on whether to open the northern road."
           },
-          "readingJa": "ほくどーをひらくかひか、あしたのしょーごまでにかいとーをいただきたい。",
+          "readingJa": "ほくどーをひらくかいなか、あしたのしょーごまでにかいとーをいただきたい。",
           "ttsTextJa": "北道を開くか否か、明日の正午までに回答をいただきたい。",
           "audioId": "L4-017-line-001",
           "pauseAfterMs": 520,
@@ -3854,7 +3854,7 @@
             {
               "id": "token-001",
               "text": "北道を開くか否か、",
-              "reading": "ほくどーをひらくかひか、",
+              "reading": "ほくどーをひらくかいなか、",
               "audioId": "L4-017-line-001-token-001"
             },
             {
@@ -4047,7 +4047,7 @@
             "zh": "那么请今天提出第三方案。继续等待本身就等于决定维持封路。",
             "en": "Then present a third option today. Waiting itself decides to keep the road closed."
           },
-          "readingJa": "でわだいさんあんをきょーしめしてください。まつことじたいがへーさけーぞくのけってーになります。",
+          "readingJa": "でわだいさんあんをきょうしめしてください。まつことじたいがへーさけーぞくのけってーになります。",
           "ttsTextJa": "では第三案を今日示してください。待つこと自体が閉鎖継続の決定になります。",
           "audioId": "L4-017-line-008",
           "pauseAfterMs": 520,
@@ -4055,7 +4055,7 @@
             {
               "id": "token-001",
               "text": "では第三案を今日示してください。",
-              "reading": "でわだいさんあんをきょーしめしてください。",
+              "reading": "でわだいさんあんをきょうしめしてください。",
               "audioId": "L4-017-line-008-token-001"
             },
             {
@@ -4454,13 +4454,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "16df61eb98b10275665c04ca6feb985ed40858110b3ebad2d4f65328a9903c80"
+      "contentHash": "7c4ec4b1dbc84b3a35f0f396fb2c7db1ac310b20cc9375d864a8d81910f5e666"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-018",
-      "revision": 3,
+      "revision": 4,
       "level": 4,
       "stage": 18,
       "jlptTarget": "N1-advanced",
@@ -4475,7 +4475,7 @@
       "layout": "short-story",
       "title": {
         "ja": "大きすぎる片方",
-        "zh": "故意做大的那只鞋",
+        "zh": "过大的那只鞋",
         "en": "The Oversized Shoe"
       },
       "setting": {
@@ -4489,7 +4489,7 @@
         "style": "monochrome-four-panel",
         "alt": {
           "ja": "大きすぎる片方の場面を描いた、モノクロ四コマ漫画。",
-          "zh": "描绘“故意做大的那只鞋”场景的黑白四格漫画。",
+          "zh": "描绘“过大的那只鞋”场景的黑白四格漫画。",
           "en": "A black-and-white four-panel manga depicting the scene \"The Oversized Shoe\"."
         },
         "sha256": "13e76e1963e4f41987e01361501e72a33de85d765576f53b1274cdc4a41beafc"
@@ -5193,13 +5193,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "8dda534fa5b4852cf3911010c7373039b2cbc1a0718f8a3c3b9a07b6489b20fd"
+      "contentHash": "e58172b4d83646c8a8cc5f53d7235e28b436c9ca9436db6c6b9ad841ce05e8e1"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-019",
-      "revision": 3,
+      "revision": 5,
       "level": 4,
       "stage": 19,
       "jlptTarget": "N1-advanced",
@@ -5426,7 +5426,7 @@
             "zh": "是。只有“必须”能保全东国颜面，但西国就无法签署。",
             "en": "Correct. 'Must' alone preserved the eastern side's face, but the west could not sign."
           },
-          "readingJa": "はい。『ねばならない』だけでわとーごくのめんこわたちますが、さいこくわしょめーできませんでした。",
+          "readingJa": "はい。『ねばならない』だけでわとーごくのめんつわたちますが、さいごくわしょめーできませんでした。",
           "ttsTextJa": "はい。『ねばならない』だけでは東国の面子は立ちますが、西国は署名できませんでした。",
           "audioId": "L4-019-line-006",
           "pauseAfterMs": 520,
@@ -5440,13 +5440,13 @@
             {
               "id": "token-002",
               "text": "『ねばならない』だけでは東国の面子は立ちますが、",
-              "reading": "『ねばならない』だけでわとーごくのめんこわたちますが、",
+              "reading": "『ねばならない』だけでわとーごくのめんつわたちますが、",
               "audioId": "L4-019-line-006-token-002"
             },
             {
               "id": "token-003",
               "text": "西国は署名できませんでした。",
-              "reading": "さいこくわしょめーできませんでした。",
+              "reading": "さいごくわしょめーできませんでした。",
               "audioId": "L4-019-line-006-token-003"
             }
           ]
@@ -5486,7 +5486,7 @@
             "zh": "两版正文并不相同，但都同意继续执行磋商。",
             "en": "The two texts are not identical, but both agree that implementation talks continue."
           },
-          "readingJa": "ふたつのほんぶんわどーいつでわないが、どちらもじっしきょーぎをつずけるてんでわいっちした。",
+          "readingJa": "ふたつのほんぶんわどーいつでわないが、どちらもじっしきょーぎをつづけるてんでわいっちした。",
           "ttsTextJa": "二つの本文は同一ではないが、どちらも実施協議を続ける点では一致した。",
           "audioId": "L4-019-line-008",
           "pauseAfterMs": 520,
@@ -5500,7 +5500,7 @@
             {
               "id": "token-002",
               "text": "どちらも実施協議を続ける点では一致した。",
-              "reading": "どちらもじっしきょーぎをつずけるてんでわいっちした。",
+              "reading": "どちらもじっしきょーぎをつづけるてんでわいっちした。",
               "audioId": "L4-019-line-008-token-002"
             }
           ]
@@ -5617,7 +5617,7 @@
               },
               "ttsTextJa": "西国だけを有利にするため秘密裏に改変した。",
               "audioId": "L4-019-q1-b",
-              "readingJa": "さいこくだけをゆーりにするためひみつりにかいへんした。"
+              "readingJa": "さいごくだけをゆーりにするためひみつりにかいへんした。"
             },
             {
               "id": "c",
@@ -5875,13 +5875,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "515fbcb71709a0b95af79e48979119d19abb8918438b53de8882355cf2c4a6a8"
+      "contentHash": "ea2056ce6c6b4c6c9457fd02fdbe5754fb737af7e10d445791b13caedbe66960"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-020",
-      "revision": 3,
+      "revision": 4,
       "level": 4,
       "stage": 20,
       "jlptTarget": "N1-advanced",
@@ -5962,7 +5962,7 @@
             "zh": "日志只写“无用数据已整理”。是谁删除了什么？",
             "en": "The log says only, 'Unnecessary data was organized.' Who deleted what?"
           },
-          "readingJa": "ろぐにわ『ふよーでーたがせーりされました』とだけあります。なんをだれがけしたのですか。",
+          "readingJa": "ろぐにわ『ふよーでーたがせーりされました』とだけあります。なにをだれがけしたのですか。",
           "ttsTextJa": "ログには『不要データが整理されました』とだけあります。何を誰が消したのですか。",
           "audioId": "L4-020-line-001",
           "pauseAfterMs": 520,
@@ -5976,7 +5976,7 @@
             {
               "id": "token-002",
               "text": "何を誰が消したのですか。",
-              "reading": "なんをだれがけしたのですか。",
+              "reading": "なにをだれがけしたのですか。",
               "audioId": "L4-020-line-001-token-002"
             }
           ]
@@ -6512,7 +6512,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "6952ac13138ab17c465b9aec6a62b91a99637820453abf4058b972511819fb3f"
+      "contentHash": "b1fba3f3916fb6ebce9c6338a709b6eaf8f7e2a9362e7543f1f711b3a5734abf"
     }
   ]
 }

@@ -8,7 +8,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L1-001",
-      "revision": 3,
+      "revision": 4,
       "level": 1,
       "stage": 1,
       "jlptTarget": "N3",
@@ -181,7 +181,7 @@
               },
               "ttsTextJa": "今日は一緒に昼食へ行けないと、やわらかく断っている。",
               "audioId": "L1-001-q1-a",
-              "readingJa": "きょーわいっしょにちゅーしょくえいけないと、やわらかくことわっている。"
+              "readingJa": "きょうわいっしょにちゅーしょくえいけないと、やわらかくことわっている。"
             },
             {
               "id": "b",
@@ -263,7 +263,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "0a4426612f34d0f4acff2777138f19abd25195b3498b6d50c27813b1d3ae544f"
+      "contentHash": "07c8b4fa92876343ffb83befbb76a15fa0aaf1ceed6d3295db5618b04fb9b49b"
     },
     {
       "schemaVersion": 1,
@@ -980,7 +980,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L1-005",
-      "revision": 3,
+      "revision": 4,
       "level": 1,
       "stage": 5,
       "jlptTarget": "N3",
@@ -1159,7 +1159,7 @@
               },
               "ttsTextJa": "料理への感謝を伝えながら、おかわりを丁寧に断っている。",
               "audioId": "L1-005-q1-a",
-              "readingJa": "りょーりえのかんしゃをつたえながら、おかわりをてーねーにたっている。"
+              "readingJa": "りょーりえのかんしゃをつたえながら、おかわりをてーねーにことわっている。"
             },
             {
               "id": "b",
@@ -1241,7 +1241,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "67ef6a9255e7d8d910e73ad2a37f00846f20c26e465f9fe36552cac2aae15316"
+      "contentHash": "ec8493aed18e171b685869ba18959d926115054f14db495f35e7694abbe81e24"
     },
     {
       "schemaVersion": 1,
@@ -1515,7 +1515,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L1-007",
-      "revision": 3,
+      "revision": 4,
       "level": 1,
       "stage": 7,
       "jlptTarget": "N3",
@@ -1738,7 +1738,7 @@
               },
               "ttsTextJa": "次の日時は決めず、今日は会話と対戦を終える。",
               "audioId": "L1-007-q1-c",
-              "readingJa": "つぎのにちじわきめず、きょーわかいわとたいせんをおえる。"
+              "readingJa": "つぎのにちじわきめず、きょうわかいわとたいせんをおえる。"
             },
             {
               "id": "d",
@@ -1799,7 +1799,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "98869a6bf75e9e6ef17a88fd14f7f3c792972c095996d7f8d719b5fac88edd45"
+      "contentHash": "61f53f6480550f673c491fa355e934852deecd63bd37c732740b77d00f28897f"
     },
     {
       "schemaVersion": 1,
@@ -2377,7 +2377,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L1-010",
-      "revision": 3,
+      "revision": 4,
       "level": 1,
       "stage": 10,
       "jlptTarget": "N3",
@@ -2568,7 +2568,7 @@
               },
               "ttsTextJa": "棚のパンは売れないので、買うのを断っている。",
               "audioId": "L1-010-q1-a",
-              "readingJa": "たなのぱんわうれないので、かうのをたっている。"
+              "readingJa": "たなのぱんわうれないので、かうのをことわっている。"
             },
             {
               "id": "b",
@@ -2651,7 +2651,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "a195479d6220553e90d8bfc1b153f2403263ea24c262920b39cba871105530d1"
+      "contentHash": "9c2411b17396d1488de2233f650b7fd562e9ade722085fcd5ef69b43ea4df32a"
     }
   ]
 }

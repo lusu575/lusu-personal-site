@@ -386,7 +386,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L1-032",
-      "revision": 3,
+      "revision": 4,
       "level": 1,
       "stage": 32,
       "jlptTarget": "N3",
@@ -763,7 +763,7 @@
               },
               "ttsTextJa": "初月無料キャンペーンを提案します。",
               "audioId": "L1-032-q2-a",
-              "readingJa": "はつずきむりょーきゃんぺーんをてーあんします。"
+              "readingJa": "しょげつむりょーきゃんぺーんをてーあんします。"
             },
             {
               "id": "b",
@@ -845,13 +845,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "33bab3234671ab0f125ab246aefe56782669ba8662dde414177dc19bc3a34df9"
+      "contentHash": "af5b81be44dfb3c1d7278221ef954a40f577e1e484e526f2d71ccb0cfa683bad"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L1-033",
-      "revision": 3,
+      "revision": 4,
       "level": 1,
       "stage": 33,
       "jlptTarget": "N3",
@@ -1073,15 +1073,15 @@
             "zh": "（小声对春香说）里面的蛋糕和装饰再过五分钟就能准备好。",
             "en": "(quietly to Haruka) The cake and decorations in the back will be ready in five minutes."
           },
-          "readingJa": "はるかにこごえで。おくのけーきとかざりつけは、あとごふんでごよういできます。",
+          "readingJa": "はるかさん、おくのけーきとかざりつけは、あとごふんでごよういできます。",
           "ttsTextJa": "春香さん、奥のケーキと飾りつけは、あと五分でご用意できます。",
           "audioId": "L1-033-line-005",
           "pauseAfterMs": 600,
           "tokens": [
             {
               "id": "token-001",
-              "text": "春香に小声で",
-              "reading": "はるかにこごえで",
+              "text": "春香さん",
+              "reading": "はるかさん",
               "audioId": "L1-033-line-005-token-001"
             },
             {
@@ -1248,13 +1248,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "6ad560a3b8d22c4f877ed37c12b1f11b049bc9d2ffda3d36ec6c3aa145cba713"
+      "contentHash": "13d02185b45153d6b06d2e85552e2380468b0bf935690387a207b8eebf3120e9"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L1-034",
-      "revision": 3,
+      "revision": 4,
       "level": 1,
       "stage": 34,
       "jlptTarget": "N3",
@@ -1583,7 +1583,7 @@
               },
               "ttsTextJa": "預け荷物を制限内の重さに近づけ、超過料金を避けたい。",
               "audioId": "L1-034-q1-d",
-              "readingJa": "あずけにもつをせーげんないのおもさにちかずけ、ちょーかりょーきんをさけたい。"
+              "readingJa": "あずけにもつをせーげんないのおもさにちかづけ、ちょーかりょーきんをさけたい。"
             }
           ],
           "correctOptionIds": [
@@ -1725,13 +1725,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "3d7244658210b82cbc5bee40ffdff3f4570791c8b9f56668a47b92cce727b0b7"
+      "contentHash": "f06bd8084ac460f780e7f44cc93c04db3f49d2e524d794669ca006f3ae83f240"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L1-035",
-      "revision": 3,
+      "revision": 4,
       "level": 1,
       "stage": 35,
       "jlptTarget": "N3",
@@ -1833,7 +1833,7 @@
             "zh": "（生气猫咪贴纸）",
             "en": "(angry-cat sticker)"
           },
-          "readingJa": "おこったねこのすたんぷ",
+          "readingJa": "おこったねこのすたんぷをおくりました。",
           "ttsTextJa": "怒った猫のスタンプを送りました。",
           "audioId": "L1-035-line-002",
           "pauseAfterMs": 300,
@@ -1846,8 +1846,8 @@
             },
             {
               "id": "token-002",
-              "text": "スタンプ",
-              "reading": "すたんぷ",
+              "text": "スタンプを送りました。",
+              "reading": "すたんぷをおくりました。",
               "audioId": "L1-035-line-002-token-002"
             }
           ]
@@ -1860,7 +1860,7 @@
             "zh": "（生气猫咪贴纸）",
             "en": "(angry-cat sticker)"
           },
-          "readingJa": "おこったねこのすたんぷ",
+          "readingJa": "おこったねこのすたんぷをおくりました。",
           "ttsTextJa": "怒った猫のスタンプを送りました。",
           "audioId": "L1-035-line-003",
           "pauseAfterMs": 300,
@@ -1873,8 +1873,8 @@
             },
             {
               "id": "token-002",
-              "text": "スタンプ",
-              "reading": "すたんぷ",
+              "text": "スタンプを送りました。",
+              "reading": "すたんぷをおくりました。",
               "audioId": "L1-035-line-003-token-002"
             }
           ]
@@ -1887,7 +1887,7 @@
             "zh": "（生气猫咪贴纸）",
             "en": "(angry-cat sticker)"
           },
-          "readingJa": "おこったねこのすたんぷ",
+          "readingJa": "おこったねこのすたんぷをおくりました。",
           "ttsTextJa": "怒った猫のスタンプを送りました。",
           "audioId": "L1-035-line-004",
           "pauseAfterMs": 450,
@@ -1900,8 +1900,8 @@
             },
             {
               "id": "token-002",
-              "text": "スタンプ",
-              "reading": "すたんぷ",
+              "text": "スタンプを送りました。",
+              "reading": "すたんぷをおくりました。",
               "audioId": "L1-035-line-004-token-002"
             }
           ]
@@ -2060,7 +2060,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "f24226387624eb19ad6543608b372c6a0542b58cc52c03e8e3d5b81de929a08b"
+      "contentHash": "f0ab13fa9ab756f70c2440cf2c090e38102e2ca6137fefc486a8437e854ea953"
     },
     {
       "schemaVersion": 1,
@@ -2535,7 +2535,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L1-037",
-      "revision": 3,
+      "revision": 5,
       "level": 1,
       "stage": 37,
       "jlptTarget": "N3",
@@ -2855,7 +2855,7 @@
               },
               "ttsTextJa": "彩が帰宅する前にケーキを食べた。",
               "audioId": "L1-037-q1-b",
-              "readingJa": "いろどりがきたくするまえにけーきをたべた。"
+              "readingJa": "あやがきたくするまえにけーきをたべた。"
             },
             {
               "id": "c",
@@ -2877,7 +2877,7 @@
               },
               "ttsTextJa": "由衣がすべての皿を別の場所へ隠した。",
               "audioId": "L1-037-q1-d",
-              "readingJa": "よしころもがすべてのさらをべつのばしょえかくした。"
+              "readingJa": "ゆいがすべてのさらをべつのばしょえかくした。"
             }
           ],
           "correctOptionIds": [
@@ -2929,7 +2929,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "c142b0d3461d810db64e8723da0b72f2105736a78f85f0bdedba272eb187d175"
+      "contentHash": "0f4b5f7a41b97b217911c28914b7b335eccc98510c6b33bd5a4ff53b855cf98f"
     },
     {
       "schemaVersion": 1,
@@ -3860,7 +3860,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L1-040",
-      "revision": 3,
+      "revision": 5,
       "level": 1,
       "stage": 40,
       "jlptTarget": "N3",
@@ -4217,7 +4217,7 @@
               },
               "ttsTextJa": "子守歌用のスピーカーを試験すること。",
               "audioId": "L1-040-q1-d",
-              "readingJa": "こもりかよーのすぴーかーをしけんすること。"
+              "readingJa": "こもりうたよーのすぴーかーをしけんすること。"
             }
           ],
           "correctOptionIds": [
@@ -4300,7 +4300,7 @@
               },
               "ttsTextJa": "ロボットは美緒の不安に気づいていない。",
               "audioId": "L1-040-q2-c",
-              "readingJa": "ろぼっとわみおのふあんにきずいていない。"
+              "readingJa": "ろぼっとわみおのふあんにきづいていない。"
             },
             {
               "id": "d",
@@ -4362,7 +4362,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "fc2e11c69854fc5434b3beba20f7646304dac201c6667a813c97291e4052f165"
+      "contentHash": "31b6c6015593a929bbfa15405b4e7b13ee6034a8199771e0460baba06fe94e01"
     }
   ]
 }

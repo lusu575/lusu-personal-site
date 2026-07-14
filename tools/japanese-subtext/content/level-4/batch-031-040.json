@@ -8,7 +8,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-031",
-      "revision": 3,
+      "revision": 4,
       "level": 4,
       "stage": 31,
       "jlptTarget": "N1-advanced",
@@ -88,7 +88,7 @@
             "zh": "快讯：候选人A以52%的支持率获得过半支持。",
             "en": "Breaking: Candidate A has secured majority support at fifty-two percent."
           },
-          "readingJa": "そくほーです。こーほＡがごじゅーにぱーせんとでかはんすーのしじをえました。",
+          "readingJa": "そくほーです。こーほえーがごじゅーにぱーせんとでかはんすーのしじをえました。",
           "ttsTextJa": "速報です。候補Aが五十二パーセントで過半数の支持を得ました。",
           "audioId": "L4-031-line-001",
           "pauseAfterMs": 520,
@@ -102,7 +102,7 @@
             {
               "id": "token-002",
               "text": "候補Aが五十二パーセントで過半数の支持を得ました。",
-              "reading": "こーほＡがごじゅーにぱーせんとでかはんすーのしじをえました。",
+              "reading": "こーほえーがごじゅーにぱーせんとでかはんすーのしじをえました。",
               "audioId": "L4-031-line-001-token-002"
             }
           ]
@@ -142,7 +142,7 @@
             "zh": "这个52%只把已经决定投票对象的人算作分母。",
             "en": "That fifty-two uses only decided respondents as its denominator."
           },
-          "readingJa": "そのいそじわ、とーひょーさきをきめたひとだけをぶんぼにしていますね。",
+          "readingJa": "そのごじゅーにわ、とーひょーさきをきめたひとだけをぶんぼにしていますね。",
           "ttsTextJa": "その五十二は、投票先を決めた人だけを分母にしていますね。",
           "audioId": "L4-031-line-003",
           "pauseAfterMs": 520,
@@ -150,7 +150,7 @@
             {
               "id": "token-001",
               "text": "その五十二は、",
-              "reading": "そのいそじわ、",
+              "reading": "そのごじゅーにわ、",
               "audioId": "L4-031-line-003-token-001"
             },
             {
@@ -190,7 +190,7 @@
             "zh": "在全部一千名受访者的表里，支持A的只有374人。",
             "en": "In the table of all one thousand respondents, A has 374."
           },
-          "readingJa": "ぜんかいとーしゃせんにんのひょうでわ、Ａわさんびゃくななじゅーよにんです。",
+          "readingJa": "ぜんかいとーしゃせんにんのひょうでわ、えーわさんびゃくななじゅーよにんです。",
           "ttsTextJa": "全回答者千人の表では、Aは三百七十四人です。",
           "audioId": "L4-031-line-005",
           "pauseAfterMs": 520,
@@ -204,7 +204,7 @@
             {
               "id": "token-002",
               "text": "Aは三百七十四人です。",
-              "reading": "Ａわさんびゃくななじゅーよにんです。",
+              "reading": "えーわさんびゃくななじゅーよにんです。",
               "audioId": "L4-031-line-005-token-002"
             }
           ]
@@ -244,7 +244,7 @@
             "zh": "若分母是719名已决定者，374确实约为52%。",
             "en": "Among 719 decided voters, 374 is indeed about fifty-two percent."
           },
-          "readingJa": "けってーずみななひゃくじゅーきゅーにんちゅうなら、さんびゃくななじゅーよんわたしかにいそじぱーせんとです。",
+          "readingJa": "けってーずみななひゃくじゅーきゅーにんちゅうなら、さんびゃくななじゅーよんわたしかにごじゅーにぱーせんとです。",
           "ttsTextJa": "決定済み七百十九人中なら、三百七十四は確かに五十二パーセントです。",
           "audioId": "L4-031-line-007",
           "pauseAfterMs": 520,
@@ -258,7 +258,7 @@
             {
               "id": "token-002",
               "text": "三百七十四は確かに五十二パーセントです。",
-              "reading": "さんびゃくななじゅーよんわたしかにいそじぱーせんとです。",
+              "reading": "さんびゃくななじゅーよんわたしかにごじゅーにぱーせんとです。",
               "audioId": "L4-031-line-007-token-002"
             }
           ]
@@ -675,7 +675,7 @@
               },
               "ttsTextJa": "五十二を整数で強調する",
               "audioId": "L4-031-q3-b",
-              "readingJa": "いそじをせーすーできょーちょーする"
+              "readingJa": "ごじゅーにをせーすーできょーちょーする"
             },
             {
               "id": "c",
@@ -748,13 +748,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "75c12fa82ab2b53f2687942b32293064bdcd298912acd2d695e0cc62e78bb352"
+      "contentHash": "8760e30e018be5885731a32bede8ea585d31a303f034ddbee96a33a285850486"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-032",
-      "revision": 3,
+      "revision": 6,
       "level": 4,
       "stage": 32,
       "jlptTarget": "N1-advanced",
@@ -937,7 +937,7 @@
             "zh": "出航时共20套，数量对得上，但第13套是谁穿的？",
             "en": "We departed with twenty. The inventory balances, but who wore the thirteenth?"
           },
-          "readingJa": "しゅっこうじわにじゅっちゃく。かずわあうが、だれがじゅーさんちゃくもくを？",
+          "readingJa": "しゅっこうじわにじゅっちゃく。かずわあうが、だれがじゅーさんちゃくめを？",
           "ttsTextJa": "出航時は二十着。数は合うが、誰が十三着目を？",
           "audioId": "L4-032-line-005",
           "pauseAfterMs": 520,
@@ -951,7 +951,7 @@
             {
               "id": "token-002",
               "text": "数は合うが、誰が十三着目を？",
-              "reading": "かずわあうが、だれがじゅーさんちゃくもくを？",
+              "reading": "かずわあうが、だれがじゅーさんちゃくめを？",
               "audioId": "L4-032-line-005-token-002"
             }
           ]
@@ -991,7 +991,7 @@
             "zh": "作业机器人鲁的外壳上有真空接口的痕迹。",
             "en": "Work unit Rou has marks from a vacuum suit coupling."
           },
-          "readingJa": "さぎょーきるうのそとからに、しんくーよーせつぞくこんがあります。",
+          "readingJa": "さぎょーきるうのがいかくに、しんくーよーせつぞくこんがあります。",
           "ttsTextJa": "作業機ルウの外殻に、真空用接続痕があります。",
           "audioId": "L4-032-line-007",
           "pauseAfterMs": 520,
@@ -999,7 +999,7 @@
             {
               "id": "token-001",
               "text": "作業機ルウの外殻に、",
-              "reading": "さぎょーきるうのそとからに、",
+              "reading": "さぎょーきるうのがいかくに、",
               "audioId": "L4-032-line-007-token-001"
             },
             {
@@ -1165,7 +1165,7 @@
           "speaker": "captain",
           "text": {
             "ja": "報告を訂正する。人間十二名と作業機一体、全員帰還だ。",
-            "zh": "更正报告：12名人类与1台作业机器人，全部归还。",
+            "zh": "更正报告：12名人类与1台作业机器人，全部返回。",
             "en": "Amend the report: twelve humans and one work unit, all returned."
           },
           "readingJa": "ほーこくをてーせーする。にんげんじゅーにめーとさぎょーきいったい、ぜんいんきかんだ。",
@@ -1473,13 +1473,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "fcf213400ac5577d5e3310f143fdccc45f2173da802171c1e6ae26c38f0ace60"
+      "contentHash": "fa83ccc9657a05013de1e536cf01bbbba559e80769e72e8496a08ffeae7ae334"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-033",
-      "revision": 3,
+      "revision": 4,
       "level": 4,
       "stage": 33,
       "jlptTarget": "N1-advanced",
@@ -1587,7 +1587,7 @@
             "zh": "听得见，今天姐姐也在隔壁房间。",
             "en": "Yes, I hear you. My sister is in the next room today."
           },
-          "readingJa": "はい、きこえます。きょーわあねもりんしつにいます。",
+          "readingJa": "はい、きこえます。きょうわあねもりんしつにいます。",
           "ttsTextJa": "はい、聞こえます。今日は姉も隣室にいます。",
           "audioId": "L4-033-line-002",
           "pauseAfterMs": 520,
@@ -1601,7 +1601,7 @@
             {
               "id": "token-002",
               "text": "今日は姉も隣室にいます。",
-              "reading": "きょーわあねもりんしつにいます。",
+              "reading": "きょうわあねもりんしつにいます。",
               "audioId": "L4-033-line-002-token-002"
             }
           ]
@@ -2301,13 +2301,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "b2b3ae19cc7b63b0da6292d4e3740e5c90e3d591de5b111cfbdde2bacf2f8171"
+      "contentHash": "b85dd8e3e71c6f8e0c4e1a050e365309152c1acc563009be9afe8cf24f72331f"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-034",
-      "revision": 3,
+      "revision": 4,
       "level": 4,
       "stage": 34,
       "jlptTarget": "N1-advanced",
@@ -2742,13 +2742,13 @@
             {
               "id": "a",
               "text": {
-                "ja": "二人は接続不能で、提案を聞き発言する機会がなかった",
-                "zh": "两人掉线，既没听到提案也没有发言机会",
-                "en": "Two members were disconnected and lacked a chance to hear or respond"
+                "ja": "接続不能の二人は反対を表明できず、少なくともナディアは修正案を聞けていなかった",
+                "zh": "两名掉线者无法表达反对，且至少娜迪娅还没有听到修正案",
+                "en": "The two disconnected members could not object, and at least Nadia had not heard the amendment"
               },
-              "ttsTextJa": "二人は接続不能で、提案を聞き発言する機会がなかった",
+              "ttsTextJa": "接続不能の二人は反対を表明できず、少なくともナディアは修正案を聞けていなかった",
               "audioId": "L4-034-q1-a",
-              "readingJa": "ふたりわせつぞくふのーで、てーあんをききはつげんするきかいがなかった"
+              "readingJa": "せつぞくふのーのふたりははんたいをひょーめーできず、すくなくともなでぃあはしゅうせーあんをきけていなかった"
             },
             {
               "id": "b",
@@ -2801,19 +2801,19 @@
               "en": "Several readings look possible on the surface, but all explicit details in the third line、the fourth line、the sixth line、the tenth line、the eleventh line must hold together."
             },
             "intent": {
-              "ja": "最も整合する読みは「二人は接続不能で、提案を聞き発言する機会がなかった」です。",
-              "zh": "最能统合全部信息的解读是“两人掉线，既没听到提案也没有发言机会”。",
-              "en": "The reading that best unifies the scene is: Two members were disconnected and lacked a chance to hear or respond."
+              "ja": "最も整合する読みは「接続不能の二人は反対を表明できず、少なくともナディアは修正案を聞けていなかった」です。",
+              "zh": "最能统合全部信息的解读是“两名掉线者无法表达反对，且至少娜迪娅还没有听到修正案”。",
+              "en": "The reading that best unifies the scene is: The two disconnected members could not object, and at least Nadia had not heard the amendment."
             },
             "evidence": {
-              "ja": "3番目の台詞、4番目の台詞、6番目の台詞、10番目の台詞、11番目の台詞を突き合わせると、沈黙には自発的無言だけでなく、通信不能と情報未受領が含まれていました。",
-              "zh": "对照第3句台词、第4句台词、第6句台词、第10句台词、第11句台词可知，沉默中不仅有自愿不发言，也包含通信中断与未收到信息。",
-              "en": "Taken together, the third line、the fourth line、the sixth line、the tenth line、the eleventh line show that the silence included inability to communicate and lack of access to the proposal."
+              "ja": "3番目の台詞、4番目の台詞、6番目の台詞、10番目の台詞、11番目の台詞を突き合わせると、接続不能の二人は反対を表明できず、少なくともナディアは修正案を聞けていなかったことが分かります。",
+              "zh": "对照第3句台词、第4句台词、第6句台词、第10句台词、第11句台词可知，两名掉线者无法表达反对，且至少娜迪娅还没有听到修正案。",
+              "en": "Taken together, the third line、the fourth line、the sixth line、the tenth line、the eleventh line show that the two disconnected members could not object, and at least Nadia had not heard the amendment."
             },
             "nuance": {
-              "ja": "沈黙には自発的無言だけでなく、通信不能と情報未受領が含まれていました。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
-              "zh": "沉默中不仅有自愿不发言，也包含通信中断与未收到信息。 但不应超出文本证据，进一步断言动机或结果。",
-              "en": "the silence included inability to communicate and lack of access to the proposal. The inference should stop there rather than inventing an unsupported motive or outcome."
+              "ja": "接続不能の二人は反対を表明できず、少なくともナディアは修正案を聞けていなかったと読めます。 ただし、本文が支える範囲を越えて動機や結果まで断定してはいけません。",
+              "zh": "可以读出两名掉线者无法表达反对，且至少娜迪娅还没有听到修正案。 但不应超出文本证据，进一步断言动机或结果。",
+              "en": "The two disconnected members could not object, and at least Nadia had not heard the amendment. The inference should stop there rather than inventing an unsupported motive or outcome."
             },
             "alternative": {
               "ja": "他の選択肢は一部の発言だけなら説明できますが、3番目の台詞、4番目の台詞、6番目の台詞、10番目の台詞、11番目の台詞の時間順・語の範囲・行動証拠を同時には説明できません。",
@@ -3016,7 +3016,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "d12c5fdd3f43de86fa09442d7cdf496375b7820822542d0e6862fb74bc1997ca"
+      "contentHash": "3e00a6ae2925d01373da4d4802572040f8da0bccf057f4a7c660579c3dc68430"
     },
     {
       "schemaVersion": 1,
@@ -4574,7 +4574,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-037",
-      "revision": 3,
+      "revision": 5,
       "level": 4,
       "stage": 37,
       "jlptTarget": "N1-advanced",
@@ -4682,7 +4682,7 @@
             "zh": "历代书信都留有拼写习惯与犹豫痕迹。",
             "en": "Each historical letter retains spelling habits and hesitation."
           },
-          "readingJa": "れきだいのてがみにわ、つずりへきやためらいがのこっています。",
+          "readingJa": "れきだいのてがみにわ、つづりぐせやためらいがのこっています。",
           "ttsTextJa": "歴代の手紙には、綴り癖やためらいが残っています。",
           "audioId": "L4-037-line-002",
           "pauseAfterMs": 520,
@@ -4696,7 +4696,7 @@
             {
               "id": "token-002",
               "text": "綴り癖やためらいが残っています。",
-              "reading": "つずりへきやためらいがのこっています。",
+              "reading": "つづりぐせやためらいがのこっています。",
               "audioId": "L4-037-line-002-token-002"
             }
           ]
@@ -4913,7 +4913,7 @@
             "zh": "阅读记录发生在签名后12分钟。",
             "en": "The viewing record is twelve minutes after signing."
           },
-          "readingJa": "えつらんきろくわしょめーのじゅーにぶんごです。",
+          "readingJa": "えつらんきろくわしょめーのじゅーにふんごです。",
           "ttsTextJa": "閲覧記録は署名の十二分後です。",
           "audioId": "L4-037-line-011",
           "pauseAfterMs": 520,
@@ -4921,7 +4921,7 @@
             {
               "id": "token-001",
               "text": "閲覧記録は署名の十二分後です。",
-              "reading": "えつらんきろくわしょめーのじゅーにぶんごです。",
+              "reading": "えつらんきろくわしょめーのじゅーにふんごです。",
               "audioId": "L4-037-line-011-token-001"
             }
           ]
@@ -4934,7 +4934,7 @@
             "zh": "形式已经满足，还需要什么？",
             "en": "The form was satisfied. What more is required?"
           },
-          "readingJa": "けーしきわみたした。それいじょー、なんがいる。",
+          "readingJa": "けーしきわみたした。それいじょー、なにがいる。",
           "ttsTextJa": "形式は満たした。それ以上、何が要る。",
           "audioId": "L4-037-line-012",
           "pauseAfterMs": 520,
@@ -4948,7 +4948,7 @@
             {
               "id": "token-002",
               "text": "それ以上、何が要る。",
-              "reading": "それいじょー、なんがいる。",
+              "reading": "それいじょー、なにがいる。",
               "audioId": "L4-037-line-012-token-002"
             }
           ]
@@ -5320,13 +5320,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "d69a1a53d0220292cd45ec5672eb31a894ea6d2db9402286618301e36c7c19c8"
+      "contentHash": "b3f7bacf0db1c0676c0c956018df9e531155891cdb1cf734b39fd424c197df78"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-038",
-      "revision": 3,
+      "revision": 4,
       "level": 4,
       "stage": 38,
       "jlptTarget": "N1-advanced",
@@ -5542,7 +5542,7 @@
             "zh": "既然还有旧称，就不可能是今天才建成。",
             "en": "If it has an old name, it was not created today."
           },
-          "readingJa": "きゅーめーまであるなら、きょーはじめてつくったわけでわない。",
+          "readingJa": "きゅーめーまであるなら、きょうはじめてつくったわけでわない。",
           "ttsTextJa": "旧名まであるなら、今日初めて作ったわけではない。",
           "audioId": "L4-038-line-006",
           "pauseAfterMs": 520,
@@ -5556,7 +5556,7 @@
             {
               "id": "token-002",
               "text": "今日初めて作ったわけではない。",
-              "reading": "きょーはじめてつくったわけでわない。",
+              "reading": "きょうはじめてつくったわけでわない。",
               "audioId": "L4-038-line-006-token-002"
             }
           ]
@@ -5882,7 +5882,7 @@
               },
               "ttsTextJa": "回線は今日初めて作られた",
               "audioId": "L4-038-q2-b",
-              "readingJa": "かいせんわきょーはじめてつくられた"
+              "readingJa": "かいせんわきょうはじめてつくられた"
             },
             {
               "id": "c",
@@ -6047,13 +6047,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "e3ef0f531e6c3d386a6f0c80f082134892e59f418cce2a358c53aecd8c6ddbbd"
+      "contentHash": "a784846aefc278a2b455458b46427f40356cab2ecb322215bb258bc1a5e3195f"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-039",
-      "revision": 3,
+      "revision": 4,
       "level": 4,
       "stage": 39,
       "jlptTarget": "N1-advanced",
@@ -6124,7 +6124,7 @@
             "zh": "日期是昨天，开头写着“正午，钟将响三次”。",
             "en": "The date is yesterday. It begins: At noon, the bell will ring three times."
           },
-          "readingJa": "ひずけわきのー。ぼーとーわ「しょーご、かねがさんかいなるだろー」。",
+          "readingJa": "ひづけわきのー。ぼーとーわ「しょーご、かねがさんかいなるだろー」。",
           "ttsTextJa": "日付は昨日。冒頭は「正午、鐘が三回鳴るだろう」。",
           "audioId": "L4-039-line-001",
           "pauseAfterMs": 520,
@@ -6132,7 +6132,7 @@
             {
               "id": "token-001",
               "text": "日付は昨日。",
-              "reading": "ひずけわきのー。",
+              "reading": "ひづけわきのー。",
               "audioId": "L4-039-line-001-token-001"
             },
             {
@@ -6349,7 +6349,7 @@
             "zh": "那么昨天的日期并非事件发生日期。",
             "en": "Then yesterday’s date is not the event date."
           },
-          "readingJa": "でわきのーのひずけわ、できごとのひずけでわない。",
+          "readingJa": "でわきのーのひづけわ、できごとのひづけでわない。",
           "ttsTextJa": "では昨日の日付は、出来事の日付ではない。",
           "audioId": "L4-039-line-010",
           "pauseAfterMs": 520,
@@ -6357,13 +6357,13 @@
             {
               "id": "token-001",
               "text": "では昨日の日付は、",
-              "reading": "でわきのーのひずけわ、",
+              "reading": "でわきのーのひづけわ、",
               "audioId": "L4-039-line-010-token-001"
             },
             {
               "id": "token-002",
               "text": "出来事の日付ではない。",
-              "reading": "できごとのひずけでわない。",
+              "reading": "できごとのひづけでわない。",
               "audioId": "L4-039-line-010-token-002"
             }
           ]
@@ -6430,7 +6430,7 @@
             "zh": "笔迹、录音指令与后加日期都指向同一结论。",
             "en": "Handwriting, recording cues, and the added date point to one conclusion."
           },
-          "readingJa": "ひっせき、しゅーろくしじ、あとずけのひずけがおなじけつろんをさします。",
+          "readingJa": "ひっせき、しゅーろくしじ、あとづけのひづけがおなじけつろんをさします。",
           "ttsTextJa": "筆跡、収録指示、後付けの日付が同じ結論を指します。",
           "audioId": "L4-039-line-013",
           "pauseAfterMs": 520,
@@ -6444,7 +6444,7 @@
             {
               "id": "token-002",
               "text": "後付けの日付が同じ結論を指します。",
-              "reading": "あとずけのひずけがおなじけつろんをさします。",
+              "reading": "あとづけのひづけがおなじけつろんをさします。",
               "audioId": "L4-039-line-013-token-002"
             }
           ]
@@ -6615,7 +6615,7 @@
               },
               "ttsTextJa": "みおが収録時に日付を読み間違え、その誤りが表紙へ残った",
               "audioId": "L4-039-q2-a",
-              "readingJa": "みおがしゅーろくじにひずけをよみまちがえ、そのあやまりがひょーしえのこった"
+              "readingJa": "みおがしゅーろくじにひづけをよみまちがえ、そのあやまりがひょーしえのこった"
             },
             {
               "id": "b",
@@ -6728,7 +6728,7 @@
               },
               "ttsTextJa": "昨日の日付だけがある",
               "audioId": "L4-039-q3-c",
-              "readingJa": "きのーのひずけだけがある"
+              "readingJa": "きのーのひづけだけがある"
             },
             {
               "id": "d",
@@ -6831,7 +6831,7 @@
               },
               "ttsTextJa": "日付を後から付した本人である",
               "audioId": "L4-039-q4-d",
-              "readingJa": "ひずけをあとからふしたほんにんである"
+              "readingJa": "ひづけをあとからふしたほんにんである"
             }
           ],
           "correctOptionIds": [
@@ -6882,13 +6882,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "2ca7c78f10f3f2e9a6e55df5a8e7b551aee8dd83e4d00605a00b6f4abbad4f69"
+      "contentHash": "641e087a43eef701f33a29cdb570772b56d206c681e8155147285ec6109f2fda"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-040",
-      "revision": 3,
+      "revision": 5,
       "level": 4,
       "stage": 40,
       "jlptTarget": "N1-advanced",
@@ -7146,7 +7146,7 @@
             "zh": "光标靠近右边时，只有标签再次交换。",
             "en": "Approaching the right swaps only the labels again."
           },
-          "readingJa": "みぎえちかずくと、らべるだけもーいちどいれかわります。",
+          "readingJa": "みぎえちかづくと、らべるだけもーいちどいれかわります。",
           "ttsTextJa": "右へ近づくと、ラベルだけもう一度入れ替わります。",
           "audioId": "L4-040-line-008",
           "pauseAfterMs": 520,
@@ -7154,7 +7154,7 @@
             {
               "id": "token-001",
               "text": "右へ近づくと、",
-              "reading": "みぎえちかずくと、",
+              "reading": "みぎえちかづくと、",
               "audioId": "L4-040-line-008-token-001"
             },
             {
@@ -7328,7 +7328,7 @@
           "type": "single",
           "prompt": {
             "ja": "この場面で一貫して欺瞞的なのは何ですか。",
-            "zh": "本场景中持续具有欺骗性的是谁？",
+            "zh": "本场景中持续具有欺骗性的是什么？",
             "en": "What is consistently deceptive in this scene?"
           },
           "options": [
@@ -7610,7 +7610,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "7ce06242521335dd348c66b4ca1164bb8bbcc933a9ef83c309c9a85f7e88ef21"
+      "contentHash": "53a2b1af12c134bdcc56f4f8ccaf89e282aac7672ed84301c8ae69e9620431ba"
     }
   ]
 }

@@ -66,7 +66,7 @@ test("one audio element handles scene, sentence, token, option, seek, and stop",
 
 test("manifest audioBaseUrl is normalized and traversal remains blocked", async () => {
   const player = new AudioPlayer(FakeAudio);
-  const manifest = { schemaVersion: 1, contentVersion: "1.0.2", audioBaseUrl: "https://cdn.example.test/jp-audio", items: {}, stages: {} };
+  const manifest = { schemaVersion: 1, contentVersion: "1.0.3", audioBaseUrl: "https://cdn.example.test/jp-audio", items: {}, stages: {} };
   await player.loadManifest(async () => ({ ok: true, json: async () => manifest }));
   assert.equal(player.audioRoot.href, "https://cdn.example.test/jp-audio/");
   player.manifest.items.bad = { path: "../secret.mp3" };
@@ -76,8 +76,18 @@ test("manifest audioBaseUrl is normalized and traversal remains blocked", async 
 test("unsafe or missing audio paths fail closed", async () => {
   const player = new AudioPlayer(FakeAudio);
   player.manifest = { schemaVersion: 1, contentVersion: "1.0.2", items: { bad: { path: "../secret.mp3" } }, stages: {} };
-  await assert.rejects(() => player.playItem("bad"), /missing/i);
-  await assert.rejects(() => player.playItem("none"), /missing/i);
+  await assert.rejects(
+    () => player.playOption("q1", "a", "bad"),
+    (error) => error.audioContext?.kind === "option" && error.audioItemId === "bad",
+  );
+  await assert.rejects(
+    () => player.playOption("q1", "a", "none"),
+    (error) => error.audioContext?.kind === "option" && error.audioItemId === "none",
+  );
+  await assert.rejects(
+    () => player.playToken("line-001", "token-001", "none"),
+    (error) => error.audioContext?.kind === "token" && error.audioContext?.tokenId === "token-001",
+  );
 });
 
 test("validated content hashes bust cached audio without weakening the path guard", async () => {
@@ -177,6 +187,37 @@ test("a failed source is invalidated so the same item can be retried", async () 
   await player.playScene();
   assert.equal(player.itemId, "scene");
   assert.equal(player.audio.paused, false);
+});
+
+test("a failed item preserves its logical playback context for an exact retry", async () => {
+  class MetadataFailureAudio extends FakeAudio {
+    constructor() {
+      super();
+      this.readyState = 0;
+    }
+  }
+  const player = new AudioPlayer(MetadataFailureAudio);
+  player.manifest = {
+    schemaVersion: 1,
+    contentVersion: "1.0.2",
+    items: { option: { path: "level-1/L1-001/options/q1-a.mp3" } },
+    stages: {},
+  };
+  const failed = player.playOption("q1", "a", "option");
+  player.audio.dispatchEvent(new Event("error"));
+  await assert.rejects(failed, (error) => {
+    assert.deepEqual(error.audioContext, {
+      kind: "option",
+      lineId: "",
+      tokenId: "",
+      questionId: "q1",
+      optionId: "a",
+    });
+    assert.equal(error.audioItemId, "option");
+    return true;
+  });
+  assert.equal(player.context.kind, "");
+  assert.equal(player.itemId, "");
 });
 
 test("natural and clipped endings expose a stopped transport state", async () => {

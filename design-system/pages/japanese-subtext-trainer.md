@@ -8,8 +8,9 @@
 
 ## Visual direction
 
-- Keep LuSu's Neo-XP / Pixel Glass shell, then evoke a friendly 2000s language-learning CD-ROM inside the tool: cobalt title bars, warm cream reading paper, mint progress, sun-yellow focus, and chunky one-pixel edges. Every stage uses one scene-matched 960×720 black-and-white four-panel manga with consistent characters, panel borders, line work, and screentones; do not revert to the former full-color crayon/chibi set.
+- Keep LuSu's Neo-XP / Pixel Glass shell, then evoke a friendly 2000s language-learning CD-ROM inside the tool: cobalt title bars, warm cream reading paper, mint progress, sun-yellow focus, and chunky one-pixel edges. Every stage uses one scene-matched 960×720 black-and-white four-panel manga generated with `gpt-image-2`: a fixed 2×2 grid, consistent character design cards, rich grayscale, ink shadows, restrained screentones, and complete scene detail rather than sparse line art. CSS, SVG, Canvas, procedural art, generic anime scenes, and local fallback illustrations are not accepted.
 - Content surfaces stay opaque and calm. Avoid modern SaaS cards, large white marketing panels, excessive glass, emoji UI icons, and illustrations that reveal answers.
+- The outer page background is a separate quiet image2 raster asset for desktop and mobile. It sits behind the application shell, stays low-contrast and text-free, and never substitutes for the stage art. Use the portrait mobile asset only at `max-width: 900px` in portrait; mobile landscape such as 844×390 keeps the desktop landscape asset.
 - Japanese text is the visual priority. Use Tahoma / Verdana / Yu Gothic / MS PGothic / Microsoft YaHei fallbacks; body copy is at least 16px on mobile with 1.55 line height.
 
 ## Interaction and accessibility
@@ -17,9 +18,9 @@
 - Every button, sentence row, option row, token, range control, and map tile is keyboard reachable with a visible high-contrast focus state. Main touch targets are at least 44x44 CSS px.
 - The first-use mode dialog offers listening, Japanese, and bilingual entry exactly once per browser. Later changes live in Settings; stage entry never autoplays.
 - Public transport exposes only play/pause, timeline seek, and speed. Sentence and token text remain the direct playback targets; do not add duplicate line buttons, previous/next, replay, or mute controls.
-- Answer submission opens a focused result dialog with score, medal, analysis, and next/retry actions. Do not insert visible correctness labels inside option rows.
+- Answer submission opens a focused result dialog with score, medal, analysis, and next/retry actions. It cannot be dismissed into an already-submitted dead end: Escape and backdrop clicks keep the dialog open and refocus a valid action. Do not insert visible correctness labels inside option rows; use a fixed-size check/cross shape plus accessible text so color is not the only signal and option geometry stays stable.
 - Color never acts alone: locked/current/cleared stages, medals, correct/incorrect answers, loading, audio error, and cloud status all have text or icons plus accessible labels.
-- The first sound action is an explicit user gesture. Audio failures expose Retry and Continue in text mode; cloud failures never block local play.
+- The first sound action is an explicit user gesture. Audio failures expose Retry and Continue in text mode; Retry restores the exact failed scene, line, token, or option context rather than silently playing a different source. Cloud failures never block local play.
 - Only one audio source may play. Route changes, map return, page hide, and unload stop or pause it.
 
 ## Responsive and media rules

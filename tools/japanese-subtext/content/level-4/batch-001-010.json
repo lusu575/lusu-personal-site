@@ -8,7 +8,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-001",
-      "revision": 3,
+      "revision": 5,
       "level": 4,
       "stage": 1,
       "jlptTarget": "N1-advanced",
@@ -171,19 +171,19 @@
           "id": "line-004",
           "speaker": "finance",
           "text": {
-            "ja": "……。",
-            "zh": "……",
-            "en": "..."
+            "ja": "ん……。",
+            "zh": "嗯……",
+            "en": "Mm..."
           },
-          "readingJa": "……。",
-          "ttsTextJa": "……。",
+          "readingJa": "ん……。",
+          "ttsTextJa": "ん……。",
           "audioId": "L4-001-line-004",
           "pauseAfterMs": 500,
           "tokens": [
             {
               "id": "token-001",
-              "text": "……。",
-              "reading": "……。",
+              "text": "ん……。",
+              "reading": "ん",
               "audioId": "L4-001-line-004-token-001"
             }
           ]
@@ -431,7 +431,7 @@
               },
               "ttsTextJa": "財務の沈黙は常に法的な拒否票なので、採決手続きそのものが無効だ",
               "audioId": "L4-001-q2-c",
-              "readingJa": "ざいむのちんもくわつねにほーてきなきょひひょーなので、さいけつてつずきそのものがむこーだ"
+              "readingJa": "ざいむのちんもくわつねにほーてきなきょひひょーなので、さいけつてつづきそのものがむこーだ"
             },
             {
               "id": "d",
@@ -495,13 +495,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "7f627cc535d0bae789c7c7d9d36a419dfe53c88e0d8ae135a9b419b6a1f9fa50"
+      "contentHash": "0f9853eb2016a637a54dc2cb75c1faacaf41d18efcf03335be84865fb1d87461"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-002",
-      "revision": 3,
+      "revision": 5,
       "level": 4,
       "stage": 2,
       "jlptTarget": "N1-advanced",
@@ -582,7 +582,7 @@
             "zh": "老师，借终端五分钟，我想查打印室预约。",
             "en": "May I borrow your device for five minutes to check the print-room booking?"
           },
-          "readingJa": "せんせー、たんまつをごぶだけかります。いんさつしつのよやくをかくにんしたいので。",
+          "readingJa": "せんせー、たんまつをごふんだけかります。いんさつしつのよやくをかくにんしたいので。",
           "ttsTextJa": "先生、端末を五分だけ借ります。印刷室の予約を確認したいので。",
           "audioId": "L4-002-line-001",
           "pauseAfterMs": 500,
@@ -596,7 +596,7 @@
             {
               "id": "token-002",
               "text": "端末を五分だけ借ります。",
-              "reading": "たんまつをごぶだけかります。",
+              "reading": "たんまつをごふんだけかります。",
               "audioId": "L4-002-line-001-token-002"
             },
             {
@@ -642,7 +642,7 @@
             "zh": "杏，作业好像从周一改到周三，先保密。",
             "en": "An, apparently the assignment moves from Monday to Wednesday. Keep it quiet."
           },
-          "readingJa": "あんず、かだいわげつよーじゃなくすいよーになるらしいよ。まだないしょ。",
+          "readingJa": "あん、かだいわげつよーじゃなくすいよーになるらしいよ。まだないしょ。",
           "ttsTextJa": "杏、課題は月曜じゃなく水曜になるらしいよ。まだ内緒。",
           "audioId": "L4-002-line-003",
           "pauseAfterMs": 500,
@@ -650,7 +650,7 @@
             {
               "id": "token-001",
               "text": "杏、",
-              "reading": "あんず、",
+              "reading": "あん、",
               "audioId": "L4-002-line-003-token-001"
             },
             {
@@ -675,7 +675,7 @@
             "zh": "【23:47】提交期限改为周三，请确认。",
             "en": "[23:47] The deadline is changed to Wednesday. Please confirm."
           },
-          "readingJa": "【にじゅーさん：よんじゅーなな】てーしゅつきげんをすいよーえへんこーします。かくにんしてください。",
+          "readingJa": "【にじゅーさんじよんじゅーななふん】てーしゅつきげんをすいよーえへんこーします。かくにんしてください。",
           "ttsTextJa": "【23:47】提出期限を水曜へ変更します。確認してください。",
           "audioId": "L4-002-line-004",
           "pauseAfterMs": 500,
@@ -683,13 +683,13 @@
             {
               "id": "token-001",
               "text": "【23:",
-              "reading": "【にじゅーさん：",
+              "reading": "【にじゅーさんじ",
               "audioId": "L4-002-line-004-token-001"
             },
             {
               "id": "token-002",
               "text": "47】提出期限を水曜へ変更します。",
-              "reading": "よんじゅーなな】てーしゅつきげんをすいよーえへんこーします。",
+              "reading": "よんじゅーななふん】てーしゅつきげんをすいよーえへんこーします。",
               "audioId": "L4-002-line-004-token-002"
             },
             {
@@ -708,7 +708,7 @@
             "zh": "森老师23:40至0:10都在台上，未接触终端。",
             "en": "Mori was on stage from 23:40 to 00:10 and never touched the device."
           },
-          "readingJa": "もりせんせいわにじゅーさん：よんじゅーからぜろ：じゅーまでだんじょーで、たんまつにわふれていません。",
+          "readingJa": "もりせんせいわにじゅーさんじよんじゅっぷんかられいじじゅっぷんまでだんじょーで、たんまつにわふれていません。",
           "ttsTextJa": "森先生は23:40から0:10まで壇上で、端末には触れていません。",
           "audioId": "L4-002-line-005",
           "pauseAfterMs": 500,
@@ -716,19 +716,19 @@
             {
               "id": "token-001",
               "text": "森先生は23:",
-              "reading": "もりせんせいわにじゅーさん：",
+              "reading": "もりせんせいわにじゅーさんじ",
               "audioId": "L4-002-line-005-token-001"
             },
             {
               "id": "token-002",
               "text": "40から0:",
-              "reading": "よんじゅーからぜろ：",
+              "reading": "よんじゅっぷんかられいじ",
               "audioId": "L4-002-line-005-token-002"
             },
             {
               "id": "token-003",
               "text": "10まで壇上で、",
-              "reading": "じゅーまでだんじょーで、",
+              "reading": "じゅっぷんまでだんじょーで、",
               "audioId": "L4-002-line-005-token-003"
             },
             {
@@ -846,7 +846,7 @@
               },
               "ttsTextJa": "新期限を聞いただけの杏。",
               "audioId": "L4-002-q1-d",
-              "readingJa": "しんきげんをきいただけのあんず。"
+              "readingJa": "しんきげんをきいただけのあん。"
             }
           ],
           "correctOptionIds": [
@@ -990,13 +990,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "615ba66f378780d6803b3b0759675477d4a60ca34a118fb4efe192f861f1f72f"
+      "contentHash": "372a1971e59bd30ea151c5ec50cf17438d1142e17478bfa0babad774c0ac6cba"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-003",
-      "revision": 3,
+      "revision": 5,
       "level": 4,
       "stage": 3,
       "jlptTarget": "N1-advanced",
@@ -1338,13 +1338,13 @@
             {
               "id": "d",
               "text": {
-                "ja": "遅れて来る沙耶への誕生日祝いを共同で隠している。",
-                "zh": "他们共同隐瞒给迟到的沙耶准备的生日惊喜。",
-                "en": "They jointly conceal a birthday surprise for the late-arriving Saya."
+                "ja": "遅れて来る四人目への誕生日祝いを共同で隠している。",
+                "zh": "他们共同隐瞒给迟到的第四个人准备的生日惊喜。",
+                "en": "They jointly conceal a birthday surprise for the late-arriving fourth guest."
               },
-              "ttsTextJa": "遅れて来る沙耶への誕生日祝いを共同で隠している。",
+              "ttsTextJa": "遅れて来る四人目への誕生日祝いを共同で隠している。",
               "audioId": "L4-003-q1-d",
-              "readingJa": "おくれてくるさやえのたんじょーびいわいをきょーどーでかくしている。"
+              "readingJa": "おくれてくるよにんめえのたんじょーびいわいをきょーどーでかくしている。"
             }
           ],
           "correctOptionIds": [
@@ -1367,9 +1367,9 @@
               "en": "From “Fish, pasta, salad, and a small strawberry plate.” to “Let us agree that none of us ordered it.,” the text juxtaposes facts that do not fully align at face value."
             },
             "intent": {
-              "ja": "それらをまとめる最も具体的な読みは「遅れて来る沙耶への誕生日祝いを共同で隠している。」です。",
-              "zh": "能最具体统合这些事实的解读是“他们共同隐瞒给迟到的沙耶准备的生日惊喜。”。",
-              "en": "The most specific reading that unifies those facts is: They jointly conceal a birthday surprise for the late-arriving Saya."
+              "ja": "それらをまとめる最も具体的な読みは「遅れて来る四人目への誕生日祝いを共同で隠している。」です。",
+              "zh": "能最具体统合这些事实的解读是“他们共同隐瞒给迟到的第四个人准备的生日惊喜。”。",
+              "en": "The most specific reading that unifies those facts is: They jointly conceal a birthday surprise for the late-arriving fourth guest."
             },
             "evidence": {
               "ja": "1番目の台詞、2番目の台詞、3番目の台詞、4番目の台詞、5番目の台詞、6番目の台詞、7番目の台詞、8番目の台詞が、発言・時系列・行動の異なる側面から同じ推論を支えます。",
@@ -1439,7 +1439,7 @@
               },
               "ttsTextJa": "四人席に三人が座っている。",
               "audioId": "L4-003-q2-d",
-              "readingJa": "よんにんせきにさんにんがすわっている。"
+              "readingJa": "よにんせきにさんにんがすわっている。"
             }
           ],
           "correctOptionIds": [
@@ -1491,13 +1491,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "4359aaea524de64b748ffb4ea1314651f6b7d36ea6676c0edd01651a05b15a55"
+      "contentHash": "9f8134864590296294dc303d0485c00fecb6ff9d3f80dadaccd6f86eab189b8f"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-004",
-      "revision": 3,
+      "revision": 4,
       "level": 4,
       "stage": 4,
       "jlptTarget": "N1-advanced",
@@ -1703,7 +1703,7 @@
             "zh": "礼央，我只能聊五分钟。我的航班从这个旧门出发。",
             "en": "Reo, I have only five minutes. My flight leaves from this old gate."
           },
-          "readingJa": "れお、ごぶだけならはなせる。ぼくのびんわこのきゅーげーとからでる。",
+          "readingJa": "れお、ごふんだけならはなせる。ぼくのびんわこのきゅーげーとからでる。",
           "ttsTextJa": "礼央、五分だけなら話せる。僕の便はこの旧ゲートから出る。",
           "audioId": "L4-004-line-005",
           "pauseAfterMs": 500,
@@ -1717,7 +1717,7 @@
             {
               "id": "token-002",
               "text": "五分だけなら話せる。",
-              "reading": "ごぶだけならはなせる。",
+              "reading": "ごふんだけならはなせる。",
               "audioId": "L4-004-line-005-token-002"
             },
             {
@@ -1808,7 +1808,7 @@
               },
               "ttsTextJa": "美紀に搭乗口の中国語だけを教わり、放送を聞き直すため",
               "audioId": "L4-004-q1-a",
-              "readingJa": "みきにとうじょうこうのちゅーごくごだけをおそわり、ほーそーをききなおすため"
+              "readingJa": "みきにとうじょうぐちのちゅーごくごだけをおそわり、ほーそーをききなおすため"
             },
             {
               "id": "b",
@@ -1901,7 +1901,7 @@
               },
               "ttsTextJa": "彼は前日に中国語放送を訳せるほど多言語に堪能だった。",
               "audioId": "L4-004-q2-a",
-              "readingJa": "かれわぜんじつにちゅーごくごほーそーをやくせるほどたげんごにかんのーだった。"
+              "readingJa": "かれわぜんじつにちゅーごくごほーそーをやくせるほどたげんごにたんのーだった。"
             },
             {
               "id": "b",
@@ -1985,7 +1985,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "a8e94dc15594b18dbbcd48a8f10888f1c0735475bcd179b3dbe9c10dc970f48a"
+      "contentHash": "d97408be60924459f523fdfbe00453233df6a15c861d0cf186c2646a1e2e74cd"
     },
     {
       "schemaVersion": 1,
@@ -2498,7 +2498,7 @@
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-006",
-      "revision": 3,
+      "revision": 4,
       "level": 4,
       "stage": 6,
       "jlptTarget": "N1-advanced",
@@ -2741,7 +2741,7 @@
             "zh": "能看到那次移动的只有侦察手沙奈。",
             "en": "Only scout Sana could see that movement."
           },
-          "readingJa": "そのいどーをみられるのわ、ていさつやくのしゃなだけだ。",
+          "readingJa": "そのいどーをみられるのわ、ていさつやくのさなだけだ。",
           "ttsTextJa": "その移動を見られるのは、偵察役の沙奈だけだ。",
           "audioId": "L4-006-line-007",
           "pauseAfterMs": 500,
@@ -2755,7 +2755,7 @@
             {
               "id": "token-002",
               "text": "偵察役の沙奈だけだ。",
-              "reading": "ていさつやくのしゃなだけだ。",
+              "reading": "ていさつやくのさなだけだ。",
               "audioId": "L4-006-line-007-token-002"
             }
           ]
@@ -3016,7 +3016,7 @@
               },
               "ttsTextJa": "沙奈だけが見た移動を海斗が知り、個別通話を認める。",
               "audioId": "L4-006-q3-c",
-              "readingJa": "しゃなだけがみたいどーをかいとがしり、こべつつーわをみとめる。"
+              "readingJa": "さなだけがみたいどーをかいとがしり、こべつつーわをみとめる。"
             },
             {
               "id": "d",
@@ -3081,13 +3081,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "377f0d13ab865bb3e93a5572ea9e08826e428ae672a90a665b938bab904ae245"
+      "contentHash": "90a1f85ff085750694634953cfe26b45785567d02ca0bfeab930588eceea36cc"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-007",
-      "revision": 3,
+      "revision": 4,
       "level": 4,
       "stage": 7,
       "jlptTarget": "N1-advanced",
@@ -3562,7 +3562,7 @@
               },
               "ttsTextJa": "智が三人で記憶を確認したと認める。",
               "audioId": "L4-007-q2-b",
-              "readingJa": "さとしがさんにんできおくをかくにんしたとみとめる。"
+              "readingJa": "ともがさんにんできおくをかくにんしたとみとめる。"
             },
             {
               "id": "c",
@@ -3638,13 +3638,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "c46605697cbf407d32d1dbf7e9a61b2f257c05592d62eb2e05467153149dda1a"
+      "contentHash": "4e9c70e718ad544a246ac1196d6612ae71974cbe75d1dec76624d0da6d7ff046"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-008",
-      "revision": 3,
+      "revision": 4,
       "level": 4,
       "stage": 8,
       "jlptTarget": "N1-advanced",
@@ -3827,7 +3827,7 @@
             "zh": "原片里主语是人。",
             "en": "People were the subject in the raw footage."
           },
-          "readingJa": "はらえーぞーでわひとがしゅごでした。",
+          "readingJa": "げんえーぞーでわひとがしゅごでした。",
           "ttsTextJa": "原映像では人が主語でした。",
           "audioId": "L4-008-line-005",
           "pauseAfterMs": 500,
@@ -3835,7 +3835,7 @@
             {
               "id": "token-001",
               "text": "原映像では人が主語でした。",
-              "reading": "はらえーぞーでわひとがしゅごでした。",
+              "reading": "げんえーぞーでわひとがしゅごでした。",
               "audioId": "L4-008-line-005-token-001"
             }
           ]
@@ -4126,7 +4126,7 @@
               },
               "ttsTextJa": "原映像を長くする。",
               "audioId": "L4-008-q3-b",
-              "readingJa": "はらえーぞーをながくする。"
+              "readingJa": "げんえーぞーをながくする。"
             },
             {
               "id": "c",
@@ -4200,13 +4200,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "6f4f9ffaa30d62638599e8523c26a54b44c66416f46ab6bde120f5e36a7a5076"
+      "contentHash": "15f01ce8132e00779854a53cd753c181af626098b651bf58a5bf3f431a67d9fd"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-009",
-      "revision": 3,
+      "revision": 4,
       "level": 4,
       "stage": 9,
       "jlptTarget": "N1-advanced",
@@ -4377,7 +4377,7 @@
             "zh": "实测7.8%，已附样本数与日志。",
             "en": "Measured loss is 7.8 percent; sample and logs attached."
           },
-          "readingJa": "じっそくわななてんはちぱーせんとです。ははすーとろぐをてんぷしました。",
+          "readingJa": "じっそくわななてんはちぱーせんとです。ぼすーとろぐをてんぷしました。",
           "ttsTextJa": "実測は七・八％です。母数とログを添付しました。",
           "audioId": "L4-009-line-005",
           "pauseAfterMs": 500,
@@ -4391,7 +4391,7 @@
             {
               "id": "token-002",
               "text": "母数とログを添付しました。",
-              "reading": "ははすーとろぐをてんぷしました。",
+              "reading": "ぼすーとろぐをてんぷしました。",
               "audioId": "L4-009-line-005-token-002"
             }
           ]
@@ -4717,13 +4717,13 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "25d8bac76582017517412e4acf4b933cc93b6b5c3fbe798c48677b7fc99e2ab0"
+      "contentHash": "196f82b1d1be8d379105852638f6e55538cf292beda9482de8c5ba64e2467a33"
     },
     {
       "schemaVersion": 1,
       "contentVersion": "1.0.2",
       "id": "L4-010",
-      "revision": 3,
+      "revision": 4,
       "level": 4,
       "stage": 10,
       "jlptTarget": "N1-advanced",
@@ -4939,7 +4939,7 @@
             "zh": "已把同一频道的同一代词解析为同一群体。",
             "en": "The same pronoun on one channel was resolved to one group."
           },
-          "readingJa": "どーいっかいせんのどーいつだいめーしをどーいつしゅーだんとしてかいけつしました。",
+          "readingJa": "どーいつかいせんのどーいつだいめーしをどーいつしゅーだんとしてかいけつしました。",
           "ttsTextJa": "同一回線の同一代名詞を同一集団として解決しました。",
           "audioId": "L4-010-line-006",
           "pauseAfterMs": 500,
@@ -4947,7 +4947,7 @@
             {
               "id": "token-001",
               "text": "同一回線の同一代名詞を同一集団として解決しました。",
-              "reading": "どーいっかいせんのどーいつだいめーしをどーいつしゅーだんとしてかいけつしました。",
+              "reading": "どーいつかいせんのどーいつだいめーしをどーいつしゅーだんとしてかいけつしました。",
               "audioId": "L4-010-line-006-token-001"
             }
           ]
@@ -5054,7 +5054,7 @@
               },
               "ttsTextJa": "AIが同一回線・同一代名詞を同一集団とみなす。",
               "audioId": "L4-010-q1-c",
-              "readingJa": "えーあいがどーいっかいせん・どーいつだいめーしをどーいつしゅーだんとみなす。"
+              "readingJa": "えーあいがどーいつかいせん・どーいつだいめーしをどーいつしゅーだんとみなす。"
             },
             {
               "id": "d",
@@ -5149,7 +5149,7 @@
               },
               "ttsTextJa": "二号船の六名それぞれの帰還。",
               "audioId": "L4-010-q2-c",
-              "readingJa": "にごうせんのむつなそれぞれのきかん。"
+              "readingJa": "にごうせんのろくめーそれぞれのきかん。"
             },
             {
               "id": "d",
@@ -5305,7 +5305,7 @@
       },
       "contentRating": "general",
       "textLocked": true,
-      "contentHash": "421dc07179c0131de5063545c235558b7bab6886276306d034b80df961424b92"
+      "contentHash": "ad62cdbfaba9aba3264a99020122c055b1dc62cedbedb350ca2a884a0218592f"
     }
   ]
 }

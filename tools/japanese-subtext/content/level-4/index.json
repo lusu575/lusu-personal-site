@@ -25,7 +25,7 @@
         "veto-inference"
       ],
       "batch": "batch-001-010.json",
-      "contentHash": "7f627cc535d0bae789c7c7d9d36a419dfe53c88e0d8ae135a9b419b6a1f9fa50"
+      "contentHash": "0f9853eb2016a637a54dc2cb75c1faacaf41d18efcf03335be84865fb1d87461"
     },
     {
       "id": "L4-002",
@@ -49,7 +49,7 @@
         "identity-inference"
       ],
       "batch": "batch-001-010.json",
-      "contentHash": "615ba66f378780d6803b3b0759675477d4a60ca34a118fb4efe192f861f1f72f"
+      "contentHash": "372a1971e59bd30ea151c5ec50cf17438d1142e17478bfa0babad774c0ac6cba"
     },
     {
       "id": "L4-003",
@@ -73,7 +73,7 @@
         "protective-deception"
       ],
       "batch": "batch-001-010.json",
-      "contentHash": "4359aaea524de64b748ffb4ea1314651f6b7d36ea6676c0edd01651a05b15a55"
+      "contentHash": "9f8134864590296294dc303d0485c00fecb6ff9d3f80dadaccd6f86eab189b8f"
     },
     {
       "id": "L4-004",
@@ -96,7 +96,7 @@
         "motive-inference"
       ],
       "batch": "batch-001-010.json",
-      "contentHash": "a8e94dc15594b18dbbcd48a8f10888f1c0735475bcd179b3dbe9c10dc970f48a"
+      "contentHash": "d97408be60924459f523fdfbe00453233df6a15c861d0cf186c2646a1e2e74cd"
     },
     {
       "id": "L4-005",
@@ -144,7 +144,7 @@
         "channel-analysis"
       ],
       "batch": "batch-001-010.json",
-      "contentHash": "377f0d13ab865bb3e93a5572ea9e08826e428ae672a90a665b938bab904ae245"
+      "contentHash": "90a1f85ff085750694634953cfe26b45785567d02ca0bfeab930588eceea36cc"
     },
     {
       "id": "L4-007",
@@ -167,7 +167,7 @@
         "knowledge-boundary"
       ],
       "batch": "batch-001-010.json",
-      "contentHash": "c46605697cbf407d32d1dbf7e9a61b2f257c05592d62eb2e05467153149dda1a"
+      "contentHash": "4e9c70e718ad544a246ac1196d6612ae71974cbe75d1dec76624d0da6d7ff046"
     },
     {
       "id": "L4-008",
@@ -191,7 +191,7 @@
         "word-choice"
       ],
       "batch": "batch-001-010.json",
-      "contentHash": "6f4f9ffaa30d62638599e8523c26a54b44c66416f46ab6bde120f5e36a7a5076"
+      "contentHash": "15f01ce8132e00779854a53cd753c181af626098b651bf58a5bf3f431a67d9fd"
     },
     {
       "id": "L4-009",
@@ -215,7 +215,7 @@
         "rank-inference"
       ],
       "batch": "batch-001-010.json",
-      "contentHash": "25d8bac76582017517412e4acf4b933cc93b6b5c3fbe798c48677b7fc99e2ab0"
+      "contentHash": "196f82b1d1be8d379105852638f6e55538cf292beda9482de8c5ba64e2467a33"
     },
     {
       "id": "L4-010",
@@ -239,7 +239,7 @@
         "speaker-tracking"
       ],
       "batch": "batch-001-010.json",
-      "contentHash": "421dc07179c0131de5063545c235558b7bab6886276306d034b80df961424b92"
+      "contentHash": "ad62cdbfaba9aba3264a99020122c055b1dc62cedbedb350ca2a884a0218592f"
     },
     {
       "id": "L4-011",
@@ -262,7 +262,7 @@
         "narrative-framing"
       ],
       "batch": "batch-011-020.json",
-      "contentHash": "33dd0d37dc466b804b7596c143665fc4a22689ff97f64021e436e87d8a6cf318"
+      "contentHash": "40545d76593aac43fd31f5ff1f06234bdf3573b53e4b7bd62bd77d602b2e62ac"
     },
     {
       "id": "L4-012",
@@ -286,7 +286,7 @@
         "privacy-inference"
       ],
       "batch": "batch-011-020.json",
-      "contentHash": "50b229909c05b5331b1245d4bcb837139ebbeb7c17ccbcde6d5970799fdc973a"
+      "contentHash": "e1afe7c27d8612a2f4b0773f920e534698f2edcd13f81970cb971644c793f8a3"
     },
     {
       "id": "L4-013",
@@ -310,7 +310,7 @@
         "group-knowledge"
       ],
       "batch": "batch-011-020.json",
-      "contentHash": "bf5e73d95c4c3757c1406078a2ba3cd5b3c808b933e9e267353a9140ceaae724"
+      "contentHash": "751626aecdb47a3693be5c29c7a10dc269618c4b2aa317a706f7d5ea532cfbc3"
     },
     {
       "id": "L4-014",
@@ -334,7 +334,7 @@
         "escalation-inference"
       ],
       "batch": "batch-011-020.json",
-      "contentHash": "2f82cad8b72553532c86ce6bd26d9aee7f90c3ddb2fd16e5d86630279eca0fec"
+      "contentHash": "a9fcfd082d58c35ccc1e2013dffa906403ce7e438643252b680cff8f49bd8554"
     },
     {
       "id": "L4-015",
@@ -403,19 +403,19 @@
         "decision-evasion"
       ],
       "batch": "batch-011-020.json",
-      "contentHash": "16df61eb98b10275665c04ca6feb985ed40858110b3ebad2d4f65328a9903c80"
+      "contentHash": "7c4ec4b1dbc84b3a35f0f396fb2c7db1ac310b20cc9375d864a8d81910f5e666"
     },
     {
       "id": "L4-018",
       "stage": 18,
       "title": {
         "ja": "大きすぎる片方",
-        "zh": "故意做大的那只鞋",
+        "zh": "过大的那只鞋",
         "en": "The Oversized Shoe"
       },
       "shortLabel": {
         "ja": "大きすぎる片方",
-        "zh": "故意做大的那只鞋",
+        "zh": "过大的那只鞋",
         "en": "The Oversized Shoe"
       },
       "genres": [
@@ -427,7 +427,7 @@
         "intentional-clue"
       ],
       "batch": "batch-011-020.json",
-      "contentHash": "8dda534fa5b4852cf3911010c7373039b2cbc1a0718f8a3c3b9a07b6489b20fd"
+      "contentHash": "e58172b4d83646c8a8cc5f53d7235e28b436c9ca9436db6c6b9ad841ce05e8e1"
     },
     {
       "id": "L4-019",
@@ -450,7 +450,7 @@
         "ethical-agency"
       ],
       "batch": "batch-011-020.json",
-      "contentHash": "515fbcb71709a0b95af79e48979119d19abb8918438b53de8882355cf2c4a6a8"
+      "contentHash": "ea2056ce6c6b4c6c9457fd02fdbe5754fb737af7e10d445791b13caedbe66960"
     },
     {
       "id": "L4-020",
@@ -474,20 +474,20 @@
         "log-analysis"
       ],
       "batch": "batch-011-020.json",
-      "contentHash": "6952ac13138ab17c465b9aec6a62b91a99637820453abf4058b972511819fb3f"
+      "contentHash": "b1fba3f3916fb6ebce9c6338a709b6eaf8f7e2a9362e7543f1f711b3a5734abf"
     },
     {
       "id": "L4-021",
       "stage": 21,
       "title": {
-        "ja": "明朝六時二分着",
-        "zh": "明早六点零二分到站",
-        "en": "Arrival at 6:02 Tomorrow"
+        "ja": "明朝六時二分発",
+        "zh": "明早六点零二分发车",
+        "en": "Departure at 6:02 Tomorrow"
       },
       "shortLabel": {
-        "ja": "明朝六時二分着",
-        "zh": "明早六点零二分到站",
-        "en": "Arrival at 6:02 Tomorrow"
+        "ja": "明朝六時二分発",
+        "zh": "明早六点零二分发车",
+        "en": "Departure at 6:02 Tomorrow"
       },
       "genres": [
         "mild-horror",
@@ -498,7 +498,7 @@
         "broadcast-source"
       ],
       "batch": "batch-021-030.json",
-      "contentHash": "f4e1dc41c4eb279fe425ce46b92e9c3075a54202c89108f5b2cf87a0678345ce"
+      "contentHash": "75538178a78b4bb3952f4db410c9a47746c0da5e405cd9d0b14ff8ff9213c5a9"
     },
     {
       "id": "L4-022",
@@ -521,7 +521,7 @@
         "memory-inference"
       ],
       "batch": "batch-021-030.json",
-      "contentHash": "5218068224c7dab1379300616ae9215fdc64374ce1fe17b9df2e2384d229e9d2"
+      "contentHash": "45b365751badf18474c8520f27fc824defdbba7a479a53ab2d45c1ccc1148184"
     },
     {
       "id": "L4-023",
@@ -545,7 +545,7 @@
         "awareness-inference"
       ],
       "batch": "batch-021-030.json",
-      "contentHash": "b06137093f420f1dd175f2eb807bcea11e52e80d3eb846604bed788611acc6a2"
+      "contentHash": "48977a77f603006eb67739a49174de644b95b02ab92b2cb3ac0bec2d20aa3c43"
     },
     {
       "id": "L4-024",
@@ -569,7 +569,7 @@
         "autonomy"
       ],
       "batch": "batch-021-030.json",
-      "contentHash": "a933761722819fb1ed02eea8649109520b1410ff14f20d0d529917baf8a150d9"
+      "contentHash": "b42a55cf32ae1ebc569b78864ec5ef548dc73de9d393a0aff9aca45d32745e01"
     },
     {
       "id": "L4-025",
@@ -593,7 +593,7 @@
         "speaker-mapping"
       ],
       "batch": "batch-021-030.json",
-      "contentHash": "5f0aa1172626381c33163897ca8ae5ec5e7f08f78ce7a9333e4fa086dfe4c1c9"
+      "contentHash": "d180403e49f9fe04f1dcd5f1d126a5eea28c92de489d9fd7ad3459c1902f75e8"
     },
     {
       "id": "L4-026",
@@ -616,7 +616,7 @@
         "constraint-synthesis"
       ],
       "batch": "batch-021-030.json",
-      "contentHash": "2fccb05fbba1855e64b8af4763eef2f0a1eaea85fb79ac677be0621efd60ca4f"
+      "contentHash": "0f536690ccae4fae28b07bec2a182101010fc8c893834814f791781b05372c4c"
     },
     {
       "id": "L4-027",
@@ -639,7 +639,7 @@
         "motive-inference"
       ],
       "batch": "batch-021-030.json",
-      "contentHash": "b6c79598be50b8cf644ac987283138da46a29789e253b9a4b773142cee876375"
+      "contentHash": "6b5a3d52cb0e3f49ad7cad7914e053e273294527cb8e423b0533e843f50c9984"
     },
     {
       "id": "L4-028",
@@ -663,7 +663,7 @@
         "shared-knowledge"
       ],
       "batch": "batch-021-030.json",
-      "contentHash": "be4a7773e9bce81f69b5253393dee12b24c7e704a8307bd5e504841d1379ef36"
+      "contentHash": "fd56bef6751f2fbe77bd0c868919be209f79d3865a4043aebc66c4691f9d4ee9"
     },
     {
       "id": "L4-029",
@@ -687,7 +687,7 @@
         "identity-inference"
       ],
       "batch": "batch-021-030.json",
-      "contentHash": "d6d8a6c7ec9669d9250347e99cbb90aa6bf12fe8118f3074a6083e62c65619c9"
+      "contentHash": "4a5dc7919207e02cd23a5800d3a0cf8a2347c6fff3d210cc899275cff8f9c9c8"
     },
     {
       "id": "L4-030",
@@ -711,7 +711,7 @@
         "production-inference"
       ],
       "batch": "batch-021-030.json",
-      "contentHash": "2860aef18c322f3176706495254b82e7ccd91d1642b9efd818b8ee185a29befe"
+      "contentHash": "d7c73abb9f2e3c513c9d260f290a5bd917dfb03f9d471bb5cf5265d2102392e9"
     },
     {
       "id": "L4-031",
@@ -734,7 +734,7 @@
         "denominator-inference"
       ],
       "batch": "batch-031-040.json",
-      "contentHash": "75c12fa82ab2b53f2687942b32293064bdcd298912acd2d695e0cc62e78bb352"
+      "contentHash": "8760e30e018be5885731a32bede8ea585d31a303f034ddbee96a33a285850486"
     },
     {
       "id": "L4-032",
@@ -758,7 +758,7 @@
         "counting-ambiguity"
       ],
       "batch": "batch-031-040.json",
-      "contentHash": "fcf213400ac5577d5e3310f143fdccc45f2173da802171c1e6ae26c38f0ace60"
+      "contentHash": "fa83ccc9657a05013de1e536cf01bbbba559e80769e72e8496a08ffeae7ae334"
     },
     {
       "id": "L4-033",
@@ -782,7 +782,7 @@
         "identity-sharing"
       ],
       "batch": "batch-031-040.json",
-      "contentHash": "b2b3ae19cc7b63b0da6292d4e3740e5c90e3d591de5b111cfbdde2bacf2f8171"
+      "contentHash": "b85dd8e3e71c6f8e0c4e1a050e365309152c1acc563009be9afe8cf24f72331f"
     },
     {
       "id": "L4-034",
@@ -806,7 +806,7 @@
         "silence-inference"
       ],
       "batch": "batch-031-040.json",
-      "contentHash": "d12c5fdd3f43de86fa09442d7cdf496375b7820822542d0e6862fb74bc1997ca"
+      "contentHash": "3e00a6ae2925d01373da4d4802572040f8da0bccf057f4a7c660579c3dc68430"
     },
     {
       "id": "L4-035",
@@ -878,7 +878,7 @@
         "sincerity-inference"
       ],
       "batch": "batch-031-040.json",
-      "contentHash": "d69a1a53d0220292cd45ec5672eb31a894ea6d2db9402286618301e36c7c19c8"
+      "contentHash": "b3f7bacf0db1c0676c0c956018df9e531155891cdb1cf734b39fd424c197df78"
     },
     {
       "id": "L4-038",
@@ -902,7 +902,7 @@
         "hidden-history"
       ],
       "batch": "batch-031-040.json",
-      "contentHash": "e3ef0f531e6c3d386a6f0c80f082134892e59f418cce2a358c53aecd8c6ddbbd"
+      "contentHash": "a784846aefc278a2b455458b46427f40356cab2ecb322215bb258bc1a5e3195f"
     },
     {
       "id": "L4-039",
@@ -925,7 +925,7 @@
         "document-authorship"
       ],
       "batch": "batch-031-040.json",
-      "contentHash": "2ca7c78f10f3f2e9a6e55df5a8e7b551aee8dd83e4d00605a00b6f4abbad4f69"
+      "contentHash": "641e087a43eef701f33a29cdb570772b56d206c681e8155147285ec6109f2fda"
     },
     {
       "id": "L4-040",
@@ -949,7 +949,7 @@
         "dynamic-evidence"
       ],
       "batch": "batch-031-040.json",
-      "contentHash": "7ce06242521335dd348c66b4ca1164bb8bbcc933a9ef83c309c9a85f7e88ef21"
+      "contentHash": "53a2b1af12c134bdcc56f4f8ccaf89e282aac7672ed84301c8ae69e9620431ba"
     },
     {
       "id": "L4-041",
@@ -972,7 +972,7 @@
         "stakeholder-inference"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "930ab2e2c42e329027e85f5bd8d61ad4c8f4ff810191d95089f18ab41b104f54"
+      "contentHash": "1b3daa49c40b8a6d642fc18e1963e878730542a8c9d7d3acc6ec4cb4de3a78eb"
     },
     {
       "id": "L4-042",
@@ -996,7 +996,7 @@
         "consensus-testing"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "ea20ebc613aa3664e27f0a036391feefbba9da1d0dea797458b81cef4ec5e7da"
+      "contentHash": "478759b2ac3d139e1e523e64a89cc85a8e81b0401eaec1a2950e89a268415bb7"
     },
     {
       "id": "L4-043",
@@ -1020,7 +1020,7 @@
         "misunderstanding"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "4060f28455d5e1a1da48beafe63b1fae8e7d4017f401253f332aa8c922bd0810"
+      "contentHash": "8cde5f21b847250782b32b3f73c4f3d7019294f86d004c65478ea8ad7e490191"
     },
     {
       "id": "L4-044",
@@ -1044,7 +1044,7 @@
         "location-inference"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "4928af3052e37b785c7d98cd2bb94659c31c6db121e16fd05702d3241ea9c695"
+      "contentHash": "d08aea4671fe546b35b540cefe38700611ac3ce7c4750b5ebe3a5c469fd919e3"
     },
     {
       "id": "L4-045",
@@ -1068,7 +1068,7 @@
         "statistical-framing"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "b3e903e6f96546aa22a938d9e5c92c6582bbe3ac6a485cf8f34129eeb13aa8ea"
+      "contentHash": "2d3bf8a4e0beff629d750439e85e77f60202a35165ff2f4f74276ad050b95d6e"
     },
     {
       "id": "L4-046",
@@ -1092,7 +1092,7 @@
         "agent-inference"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "30ace5542e85ac7132984c7393942d24e8efaec3cb95ee9b2a537c7aa668a5d6"
+      "contentHash": "bd75038ecaf1614a7085b964235ff8c85ec92a5f5cf8898bcc85bc542e0a01af"
     },
     {
       "id": "L4-047",
@@ -1116,7 +1116,7 @@
         "genre-misdirection"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "a6ee813047c7adf73efb16bae1eb52ef1f711c0c4bc3747317019bcb65ec30a5"
+      "contentHash": "4bfcbc32f55af7591c0d6c268545cb23920bef43d05d8e102e6e50be6be2746f"
     },
     {
       "id": "L4-048",
@@ -1140,7 +1140,7 @@
         "face-saving"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "5c6e78c4b98ee8cba346ba0092726be176315bb158c65a7f357512b99012db7f"
+      "contentHash": "2d6277a360bbf354b681339c5f40d36fbcd492cd0369a65c72a2bc07e02ee0d8"
     },
     {
       "id": "L4-049",
@@ -1164,7 +1164,7 @@
         "succession-inference"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "39e9db2f9b65ff5c4ab9eda1053308d9b3831757a20a2675662c04066d7e379f"
+      "contentHash": "9197b05940901b0d514d8e5422a403bd392fa11ddb68e058d5fecd9568ea4f6c"
     },
     {
       "id": "L4-050",
@@ -1189,7 +1189,7 @@
         "identity-boundary"
       ],
       "batch": "batch-041-050.json",
-      "contentHash": "bda1347de149e168e2efdc4d51a6ed67e0975a95fdeb9459a54ae24c1f1c3975"
+      "contentHash": "11e6ef288e48c06c4c6b65b93261262866d92c2426f166a91697342df26608a8"
     }
   ]
 }
