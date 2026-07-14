@@ -4199,6 +4199,33 @@ function articleSeedStatements(env) {
         article_id, slug, category, tags, cover_image, status, is_pinned,
         view_count, created_at, updated_at, published_at
       ) values (
+        'seed-update-2026-07-14-japanese-subtext-retry-hotfix',
+        '2026-07-14-japanese-subtext-retry-hotfix',
+        'site-updates',
+        '["Japanese","learning","accessibility","bugfix"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-07-14T02:20:00.000Z',
+        '2026-07-14T02:20:00.000Z',
+        '2026-07-14T02:20:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
         'seed-update-2026-07-11-japanese-subtext-trainer',
         '2026-07-11-japanese-subtext-trainer',
         'site-updates',
@@ -6846,6 +6873,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    ...articleTranslationsStatements(env, "seed-update-2026-07-14-japanese-subtext-retry-hotfix", {
+      zh: {
+        title: "日语潜台词训练器 1.0.3 重答修复",
+        summary: "修复错答后关闭结果弹窗、点击弹窗外或查看解析时可能失去重新答题入口的问题；题库、音频和云存档兼容版本继续保持 1.0.2。",
+        content_markdown: "# 日语潜台词训练器 1.0.3 重答修复\n\n“日语的言外之意”应用更新至 1.0.3，集中修复错答后的操作死路。\n\n## 错答后始终可以继续\n\n- 结果弹窗不再允许通过关闭按钮、Escape 或点击弹窗外绕过必选操作。\n- 即使弹窗被浏览器或其他代码强制关闭，题面仍会显示重新答题按钮。\n- 查看解析后，重新答题入口会放在解析正文之前；只有本次答对时才显示进入下一关。\n\n## 版本边界\n\n本次只更新应用界面与交互。250 关题库、10,088 段静态音频以及云存档兼容边界继续使用 contentVersion 1.0.2，没有伪造内容迁移或重录记录。"
+      },
+      en: {
+        title: "Japanese Subtext Trainer 1.0.3 Retry Fix",
+        summary: "Fixes the dead end that could hide retry after a wrong answer when the result dialog was dismissed or analysis was opened; course, audio, and save compatibility remain on 1.0.2.",
+        content_markdown: "# Japanese Subtext Trainer 1.0.3 Retry Fix\n\nBehind the Japanese moves to app version 1.0.3 with a focused fix for the wrong-answer dead end.\n\n## Retry always remains available\n\n- The result dialog can no longer bypass its required actions through the close button, Escape, or an outside click.\n- If the browser or another script forcibly closes the dialog, the question area still exposes Try Again.\n- After View Analysis, Try Again appears before the explanation content; Next Stage appears only when the current attempt is correct.\n\n## Version boundary\n\nThis release changes only the application interface and interaction. The 250-stage course, 10,088 static audio files, and cloud-save compatibility boundary remain on contentVersion 1.0.2, with no fabricated content migration or rerecording claim."
+      },
+      ja: {
+        title: "日本語の裏側 1.0.3 再回答修正",
+        summary: "誤答後に結果ダイアログを閉じたり解説を開いたりすると再回答できなくなる問題を修正しました。問題集・音声・セーブ互換版は 1.0.2 のままです。",
+        content_markdown: "# 日本語の裏側 1.0.3 再回答修正\n\n「日本語の裏側」をアプリ版 1.0.3 に更新し、誤答後に操作できなくなる経路を修正しました。\n\n## いつでも再回答できる導線\n\n- 結果ダイアログは、閉じるボタン、Escape、外側クリックで必須操作を回避できないようにしました。\n- ブラウザや別のスクリプトがダイアログを強制的に閉じても、問題欄には再回答ボタンが残ります。\n- 解説を開いた後は本文より前に再回答を表示し、今回の回答が正解した場合だけ次のステージを表示します。\n\n## バージョン境界\n\n今回はアプリ画面と操作だけの更新です。250 ステージの問題集、10,088 件の静的音声、クラウドセーブの互換境界は contentVersion 1.0.2 のままで、内容移行や再録を行ったとは扱いません。"
+      }
+    }, "2026-07-14T02:20:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-07-11-japanese-subtext-trainer", {
       zh: {
         title: "日语潜台词训练工具更新至 1.0.2",

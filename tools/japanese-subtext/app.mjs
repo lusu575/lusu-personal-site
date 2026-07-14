@@ -1,12 +1,13 @@
-import { ContentLoader } from "./lib/content-loader.mjs?v=20260711-japanese-subtext-v102-r2";
-import { AudioPlayer } from "./lib/audio-player.mjs?v=20260711-japanese-subtext-v102-r2";
-import { CloudProgress } from "./lib/cloud.mjs?v=20260711-japanese-subtext-v102-r2";
-import { formatTime, localized, parseStageId, safeToolAssetPath, shortContentHash, stageId } from "./lib/constants.mjs?v=20260711-japanese-subtext-v102-r2";
-import { createTranslator, normalizeUiLanguage } from "./lib/i18n.mjs?v=20260711-japanese-subtext-v102-r2";
+import { ContentLoader } from "./lib/content-loader.mjs?v=20260714-japanese-subtext-v103-retry-r1";
+import { AudioPlayer } from "./lib/audio-player.mjs?v=20260714-japanese-subtext-v103-retry-r1";
+import { CloudProgress } from "./lib/cloud.mjs?v=20260714-japanese-subtext-v103-retry-r1";
+import { formatTime, localized, parseStageId, safeToolAssetPath, shortContentHash, stageId } from "./lib/constants.mjs?v=20260714-japanese-subtext-v103-retry-r1";
+import { createTranslator, normalizeUiLanguage } from "./lib/i18n.mjs?v=20260714-japanese-subtext-v103-retry-r1";
+import { questionActionState } from "./lib/question-flow.mjs?v=20260714-japanese-subtext-v103-retry-r1";
 import {
   checkInStats, hasCompletedModeOnboarding, loadLocalState, localDateKey, markModeOnboardingComplete, mergeProgress, mergeSettings,
   nextStageId, progressStats, recordAttempt, resetLocalState, saveProgress, saveSettings
-} from "./lib/storage.mjs?v=20260711-japanese-subtext-v102-r2";
+} from "./lib/storage.mjs?v=20260714-japanese-subtext-v103-retry-r1";
 
 const loader = new ContentLoader();
 const player = new AudioPlayer();
@@ -100,11 +101,12 @@ function bindActions() {
     readSettingsForm();
     announce(t("settingsSaved"));
   });
-  [$("#settings-dialog"), $("#records-dialog"), $("#result-dialog")].forEach((dialog) => {
+  [$("#settings-dialog"), $("#records-dialog")].forEach((dialog) => {
     dialog.addEventListener("click", (event) => {
       if (event.target === dialog) closeDialog(dialog);
     });
   });
+  $("#result-dialog").addEventListener("cancel", (event) => event.preventDefault());
   $("#question-form").addEventListener("submit", submitAnswers);
   $("#audio-progress").addEventListener("input", previewSeekFromControl);
   $("#audio-progress").addEventListener("change", (event) => commitSeekFromControl(event).catch(handleAudioError));
@@ -130,7 +132,7 @@ function bindActions() {
   $("#sound-gate").addEventListener("cancel", () => focusScreenHeading("stage"));
   document.addEventListener("keydown", (event) => {
     const interactiveTarget = event.target instanceof Element && event.target.closest("button, a, input, select, textarea");
-    if (event.key === "Escape" && !interactiveTarget && state.screen === "stage" && !$("#settings-dialog").open && !$("#records-dialog").open && !$("#sound-gate").open) {
+    if (event.key === "Escape" && !interactiveTarget && state.screen === "stage" && !$("#settings-dialog").open && !$("#records-dialog").open && !$("#result-dialog").open && !$("#sound-gate").open) {
       showMap(state.level).catch(handleUiError);
     }
   });
@@ -151,7 +153,6 @@ async function dispatchAction(action, target) {
     case "choose-mode": return chooseInitialMode(target.dataset.mode);
     case "text-mode": return enableTextMode();
     case "try-again": return resetQuestions();
-    case "close-result": return closeDialog($("#result-dialog"));
     case "view-analysis": return showAnalysis();
     case "result-retry": closeDialog($("#result-dialog")); return resetQuestions();
     case "result-next": closeDialog($("#result-dialog")); return goToNextStage();
@@ -497,6 +498,7 @@ function renderQuestions(stage) {
   replaceChildren(form, cards);
   form.hidden = !state.questionUnlocked;
   $("#submit-answers").hidden = !state.questionUnlocked || state.submitted;
+  $("#try-again").hidden = !questionActionState(state).showRetry;
 }
 
 function renderAnalysis(stage) {
@@ -512,7 +514,9 @@ function renderAnalysis(stage) {
   });
   replaceChildren($("#analysis-content"), entries);
   $("#analysis-panel").hidden = !state.submitted || !state.analysisVisible;
-  syncNextStageButton($("#analysis-next"), state.cleared);
+  const actions = questionActionState(state);
+  $("#analysis-retry").hidden = !actions.showRetry;
+  syncNextStageButton($("#analysis-next"), actions.showNext);
 }
 
 function updateQuestionGate() {
@@ -599,6 +603,7 @@ function resetQuestions() {
 }
 
 function renderResultDialog() {
+  const actions = questionActionState(state);
   const result = $("#answer-result");
   const medal = $("#result-medal");
   result.className = `answer-result ${state.attemptCleared ? "is-success" : "is-error"}`;
@@ -607,8 +612,8 @@ function renderResultDialog() {
   medal.textContent = state.attemptMedal === "none"
     ? t("noMedal")
     : `${t("resultMedal")}: ${t(state.attemptMedal)}`;
-  syncNextStageButton($("#result-next"), state.attemptCleared);
-  $("#result-retry").hidden = state.attemptCleared;
+  syncNextStageButton($("#result-next"), actions.showNext);
+  $("#result-retry").hidden = !actions.showRetry;
 }
 
 function syncNextStageButton(button, visible) {

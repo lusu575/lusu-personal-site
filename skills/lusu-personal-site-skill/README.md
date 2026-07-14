@@ -20,10 +20,11 @@ skills/lusu-personal-site-skill/SKILL.md
 - 桌面端保持 Windows XP + Pixel Art + Y2K，并沿 Neo-XP / Pixel Glass OS 演进；移动端使用原创、受 iOS 交互启发的虚拟手机 OS，不能只压缩桌面 XP 布局。
 - 可见文案必须维护中文 / English / 日本語。
 - 改首页、窗口、任务栏、图标、弹窗、游戏外壳等前端内容时，必须检查手机端适配。
-- “日语的言外之意 / Behind the Japanese / 日本語の裏側”位于 `tools/japanese-subtext/`，固定采用版本化分批 JSON 和不可随意变更的关卡 ID；每次公开维护版本增加 `0.0.1`，改关另增 `revision`，完整流程见 `tools/japanese-subtext/MAINTENANCE.md`。
+- “日语的言外之意 / Behind the Japanese / 日本語の裏側”位于 `tools/japanese-subtext/`，固定采用版本化分批 JSON 和不可随意变更的关卡 ID；每次公开应用更新增加 `appVersion`，只有题库结构或存档兼容边界变化时才增加 `contentVersion`，改关另增 `revision`，完整流程见 `tools/japanese-subtext/MAINTENANCE.md`。
 - 题库、音频 manifest 与时间轴必须同步并分别验证；日语先使用审校读音，再进入 G2P/Kokoro。Misaki 音素与音高标记必须分离，完整 P2R 要保持 `j → y` 早于 `ʥ → j`，未知或超长音素必须失败关闭。每关 source hash、cue、reading/phoneme hash、实际 CPU provider、模型/运行时 provenance、输出参数和发音表 canonical SHA-256 必须一致；发布前做全量音素复算、ffprobe、SHA-256、孤儿文件和静音检测。模型只作离线批处理，结束后关闭，不安装服务或自启动。
 - 声线必须来源和许可清晰；保留 `NOTICE-japanese-voices.md` 与设置面板三语署名链接，不使用来源不明或模仿受保护动漫角色的声线。
 - 工具学习进度使用独立 D1 表，不得与游戏存档混用；跨设备合并必须保留已通关记录的首次通关模式。所有题库字符串安全渲染，图片只来自本工具资产目录，音频只从 manifest 解析。
+- 日语工具错答后必须在题面与解析顶部保留重新答题入口；结果弹窗不能通过关闭、Escape 或外侧点击留下已提交死路，下一关只按本次答题是否通过判断。
 - 日语工具每关配图使用映射 setting、人物、台词、题问和道具的原创黑白四格漫画，统一线条、网点、边框和 4:3 画幅；图片 manifest 必须锁定 960×720、SHA-256、生成器和审查状态。imagegen 不可用时允许明确标注的本地原创 fallback，但不能冒充 AI 逐图产物。
 - 发布日语工具前必须通过题库、真实音频、自动测试、主站构建和 359×500 / 375×667 / 390×844 / 844×390 / 1365×900 五视口回归，并同步文档、Skill、缓存版本与唯一三语更新记录。
 - 首页四时段壁纸基础图放在 `assets/images/wallpapers/`；时间段统一为 05:00-10:59 morning、11:00-16:59 day、17:00-19:59 dusk、20:00-04:59 night。

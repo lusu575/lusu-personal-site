@@ -5,12 +5,12 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const [html, app, css, main, audioPlayer, cloud, contentLoader, i18n, storage] = await Promise.all([
+const [html, app, css, main, audioPlayer, cloud, contentLoader, i18n, questionFlow, storage] = await Promise.all([
   readFile(path.join(root, "index.html"), "utf8"),
   readFile(path.join(root, "app.mjs"), "utf8"),
   readFile(path.join(root, "style.css"), "utf8"),
   readFile(path.resolve(root, "..", "..", "js", "main.js"), "utf8"),
-  ...["audio-player.mjs", "cloud.mjs", "content-loader.mjs", "i18n.mjs", "storage.mjs"]
+  ...["audio-player.mjs", "cloud.mjs", "content-loader.mjs", "i18n.mjs", "question-flow.mjs", "storage.mjs"]
     .map((file) => readFile(path.join(root, "lib", file), "utf8"))
 ]);
 
@@ -27,8 +27,8 @@ test("standalone shell exposes the required playback and learning controls", () 
   assert.match(html, /<dialog class="sound-gate"/);
   for (const mode of ["listening", "japanese", "bilingual"]) assert.match(html, new RegExp(`data-action="choose-mode" data-mode="${mode}"`));
   assert.match(html, /id="settings-form"[\s\S]*data-i18n="confirm"/);
-  assert.match(html, /id="result-dialog"[\s\S]*data-action="view-analysis"[\s\S]*data-action="result-next"/);
-  assert.match(html, /id="analysis-panel"[\s\S]*id="analysis-next"[\s\S]*data-action="next-stage"/);
+  assert.match(html, /id="result-dialog"[^>]*closedby="none"[\s\S]*data-action="view-analysis"[\s\S]*data-action="result-next"/);
+  assert.match(html, /id="analysis-panel"[\s\S]*id="analysis-retry"[\s\S]*id="analysis-content"/);
   for (const id of ["back-site", "status-text", "cloud-status", "ui-language"]) {
     assert.match(html, new RegExp(`id=["']${id}["']`));
   }
@@ -72,7 +72,7 @@ test("navigation, modal focus, option feedback, and cache invalidation have expl
   assert.match(app, /classList\.toggle\("has-illustration", Boolean\(src\)\)/);
   assert.match(app, /hasCompletedModeOnboarding\(\)/);
   assert.match(app, /markModeOnboardingComplete\(\)/);
-  assert.match(app, /syncNextStageButton\(\$\("#analysis-next"\), state\.cleared\)/);
+  assert.match(app, /syncNextStageButton\(\$\("#analysis-next"\), actions\.showNext\)/);
   assert.match(app, /function buildCheckInCalendar\(month\)/);
   assert.match(app, /\[data-action='choose-mode'\]/);
   assert.match(app, /function highlightLine\(id\)[\s\S]*?classList\.toggle/);
@@ -84,8 +84,21 @@ test("navigation, modal focus, option feedback, and cache invalidation have expl
   assert.match(app, /state\.audioAvailable = Boolean\(player\.manifest\)/);
   assert.match(app, /async function retryAudio\(\)\s*\{[\s\S]*?player\.stop\(\);[\s\S]*?if \(!manifestIsValid\)[\s\S]*?if \(state\.stage\) await playScene\(0\)/);
   assert.doesNotMatch(app, /\.\/lib\/[^"?]+\.mjs\?v=20260711-japanese-subtext-r14/);
-  assert.doesNotMatch(`${audioPlayer}\n${cloud}\n${contentLoader}\n${i18n}\n${storage}`, /v102-r1/);
-  assert.equal((app.match(/\.\/lib\/[^"?]+\.mjs\?v=20260711-japanese-subtext-v102-r2/g) || []).length, 6);
+  assert.doesNotMatch(`${audioPlayer}\n${cloud}\n${contentLoader}\n${i18n}\n${questionFlow}\n${storage}`, /v102-r1/);
+  assert.equal((app.match(/\.\/lib\/[^"?]+\.mjs\?v=20260714-japanese-subtext-v103-retry-r1/g) || []).length, 7);
+});
+
+test("wrong-answer recovery remains reachable outside the result dialog", () => {
+  assert.match(html, /class="question-actions"[\s\S]*id="try-again"[^>]*data-action="try-again"/);
+  assert.match(html, /id="analysis-retry"[^>]*data-action="try-again"[\s\S]*id="analysis-content"/);
+  assert.doesNotMatch(html, /data-action="close-result"/);
+  assert.match(app, /\[\$\("#settings-dialog"\), \$\("#records-dialog"\)\]/);
+  assert.match(app, /\$\("#result-dialog"\)\.addEventListener\("cancel", \(event\) => event\.preventDefault\(\)\)/);
+  assert.match(app, /!\$\("#result-dialog"\)\.open/);
+  assert.doesNotMatch(app, /case "close-result"/);
+  assert.match(app, /\$\("#try-again"\)\.hidden = !questionActionState\(state\)\.showRetry/);
+  assert.match(app, /\$\("#analysis-retry"\)\.hidden = !actions\.showRetry/);
+  assert.match(app, /\$\("#result-retry"\)\.hidden = !actions\.showRetry/);
 });
 
 test("main-site resource path is narrowly allowlisted", () => {

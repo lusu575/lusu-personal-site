@@ -470,6 +470,7 @@ const japaneseSubtextLibrarySources = Object.fromEntries([
   "constants.mjs",
   "content-loader.mjs",
   "i18n.mjs",
+  "question-flow.mjs",
   "storage.mjs"
 ].map((file) => [file, readRequired(`tools/japanese-subtext/lib/${file}`)]));
 const japaneseSubtextManifest = readRequiredJson("tools/japanese-subtext/manifest.json");
@@ -484,6 +485,7 @@ function validateJapaneseSubtextReleaseContract() {
   const toolRoot = "tools/japanese-subtext";
   const contentRoot = `${toolRoot}/content`;
   const audioRoot = `${toolRoot}/audio`;
+  const appVersion = "1.0.3";
   const contentVersion = "1.0.2";
   const publicTitles = {
     zh: "日语的言外之意",
@@ -491,7 +493,7 @@ function validateJapaneseSubtextReleaseContract() {
     ja: "日本語の裏側"
   };
   const publicTitle = publicTitles.ja;
-  const assetVersion = "20260711-japanese-subtext-v102-r2";
+  const assetVersion = "20260714-japanese-subtext-v103-retry-r1";
   const expectedAudioCounts = Object.freeze({
     scene: 250,
     line: 2400,
@@ -564,6 +566,21 @@ function validateJapaneseSubtextReleaseContract() {
   if (!japaneseSubtextApp.includes("textContent")) {
     fail(`${toolRoot}/app.mjs should render trainer strings with safe text APIs`);
   }
+  if (!japaneseSubtextLibrarySources["constants.mjs"].includes(`export const APP_VERSION = "${appVersion}"`)) {
+    fail(`${toolRoot}/lib/constants.mjs APP_VERSION must be ${appVersion}`);
+  }
+  for (const token of [
+    "toolVersion: `版本 ${APP_VERSION}`",
+    "toolVersion: `Version ${APP_VERSION}`",
+    "toolVersion: `バージョン ${APP_VERSION}`"
+  ]) {
+    if (!japaneseSubtextLibrarySources["i18n.mjs"].includes(token)) {
+      fail(`${toolRoot}/lib/i18n.mjs must derive visible version copy from APP_VERSION`);
+    }
+  }
+  if (!japaneseSubtextHtml.includes(`data-i18n="toolVersion">版本 ${appVersion}<`)) {
+    fail(`${toolRoot}/index.html must expose the ${appVersion} default version before scripts load`);
+  }
 
   const packageData = parseJsonSource("package.json", packageJson);
   const requiredPackageScripts = {
@@ -599,6 +616,7 @@ function validateJapaneseSubtextReleaseContract() {
   for (const [field, expected] of Object.entries({
     id: "japanese-subtext",
     schemaVersion: 1,
+    appVersion,
     contentVersion,
     title: publicTitle,
     entry: "./index.html",
@@ -998,8 +1016,8 @@ function validateJapaneseSubtextReleaseContract() {
 
   const resourceEntry = windowAfter(mainJs, 'iconSrc: "tools/japanese-subtext/assets/icons/tool-icon-64.webp"', 2200);
   for (const token of [
-    'version: "v1.0.2"',
-    'updated: "2026.07.11"',
+    'version: "v1.0.3"',
+    'updated: "2026.07.14"',
     'external: false',
     'showReadyStatus: false',
     'url: "/tools/japanese-subtext/"',
@@ -1770,6 +1788,7 @@ for (const asset of [
 
 const premiumUiVersion = "20260711-calm-motion-r13";
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
+const currentMainVersion = "20260714-japanese-subtext-v103-retry-r1";
 const currentPreFinalCssVersion = "20260711-calm-motion-r13";
 const currentPreFinalTelemetryVersion = "20260623-analytics-privacy-r1";
 const currentGameShellVersion = "20260623-game-shell-storage-safe-r1";
@@ -2304,7 +2323,7 @@ if (!hasPattern(mainJs, /const\s+keepsDesktopChromeLive\s*=\s*isDesktopShell[\s\
 
 for (const [asset, expectedVersion] of [
   ["/css/style.css", currentPreFinalCssVersion],
-  ["/js/main.js", currentPreFinalMainVersion]
+  ["/js/main.js", currentMainVersion]
 ]) {
   const versions = assetQueryVersions(indexHtml, asset);
   if (versions.length !== 1 || versions[0] !== expectedVersion) {
@@ -2677,12 +2696,12 @@ for (const obsoleteText of [
   }
 }
 
-const finalUpdateId = "seed-update-2026-07-11-japanese-subtext-trainer";
-const finalUpdateSlug = "2026-07-11-japanese-subtext-trainer";
-const finalMainVersion = "20260711-japanese-subtext-v102-r2";
+const finalUpdateId = "seed-update-2026-07-14-japanese-subtext-retry-hotfix";
+const finalUpdateSlug = "2026-07-14-japanese-subtext-retry-hotfix";
+const finalMainVersion = "20260714-japanese-subtext-v103-retry-r1";
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Japanese Subtext Trainer 1.0.2 Update";
-const finalPublishedAt = "2026-07-10T17:30:00.000Z";
+const finalTitleEn = "Japanese Subtext Trainer 1.0.3 Retry Fix";
+const finalPublishedAt = "2026-07-14T02:20:00.000Z";
 const finalTranslationMinimums = {
   title: 8,
   summary: 24,
@@ -2698,6 +2717,7 @@ const changelog20260630Section = markdownSection(changelog, "## 2026-06-30");
 const changelog20260706Section = markdownSection(changelog, "## 2026-07-06");
 const changelog20260710Section = markdownSection(changelog, "## 2026-07-10");
 const changelog20260711Section = markdownSection(changelog, "## 2026-07-11");
+const changelog20260714Section = markdownSection(changelog, "## 2026-07-14");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -2721,6 +2741,7 @@ if (finalUpdateStarted) {
     'date: "2026.06.24"',
     'date: "2026.07.06"',
     'date: "2026.07.11"',
+    'date: "2026.07.14"',
     finalTitleEn
   ]) {
     if (!mainJs.includes(token)) {
@@ -2833,7 +2854,7 @@ if (finalUpdateStarted) {
   }
 
   for (const token of [
-    'id="top-updated">2026.07.11',
+    'id="top-updated">2026.07.14',
     `/js/main.js?v=${finalMainVersion}`
   ]) {
     if (!indexHtml.includes(token)) {
@@ -2849,7 +2870,7 @@ if (finalUpdateStarted) {
     "Functions seed",
     "schema seed"
   ]) {
-    if (!changelog20260711Section.includes(token)) {
+    if (!changelog20260714Section.includes(token)) {
       fail(`CHANGELOG.md final public update sync missing ${token}`);
     }
   }
