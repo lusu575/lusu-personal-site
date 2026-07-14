@@ -1,66 +1,66 @@
 {
   "stageId": "L3-024",
-  "sampleRate": 24000,
-  "duration": 36.970292,
+  "sampleRate": 44100,
+  "duration": 39.496395,
   "cues": [
     {
       "lineId": "line-001",
       "audioId": "L3-024-line-001",
       "start": 0.06,
-      "end": 3.090042
+      "end": 3.994943
     },
     {
       "lineId": "line-002",
       "audioId": "L3-024-line-002",
-      "start": 3.590042,
-      "end": 7.182167
+      "start": 4.494943,
+      "end": 8.492902
     },
     {
       "lineId": "line-003",
       "audioId": "L3-024-line-003",
-      "start": 7.682167,
-      "end": 13.456708
+      "start": 8.992902,
+      "end": 14.711179
     },
     {
       "lineId": "line-004",
       "audioId": "L3-024-line-004",
-      "start": 13.956708,
-      "end": 18.373583
+      "start": 15.211179,
+      "end": 19.691497
     },
     {
       "lineId": "line-005",
       "audioId": "L3-024-line-005",
-      "start": 18.873583,
-      "end": 22.242083
+      "start": 20.191497,
+      "end": 23.521043
     },
     {
       "lineId": "line-006",
       "audioId": "L3-024-line-006",
-      "start": 22.742083,
-      "end": 26.619375
+      "start": 24.021043,
+      "end": 27.748231
     },
     {
       "lineId": "line-007",
       "audioId": "L3-024-line-007",
-      "start": 27.119375,
-      "end": 29.017375
+      "start": 28.248231,
+      "end": 30.424172
     },
     {
       "lineId": "line-008",
       "audioId": "L3-024-line-008",
-      "start": 29.517375,
-      "end": 32.679958
+      "start": 30.924172,
+      "end": 34.738073
     },
     {
       "lineId": "line-009",
       "audioId": "L3-024-line-009",
-      "start": 33.179958,
-      "end": 36.870292
+      "start": 35.238073,
+      "end": 39.396395
     }
   ],
   "schemaVersion": 1,
   "timelineId": "L3-024-timeline",
   "sceneAudioId": "L3-024-scene",
-  "contentHash": "409f2b9027c2d3ec7b3d35a3be0c660a2edac70d18329298db453f552e6f28c2",
+  "contentHash": "51b34091805cbbe5405e58c4e026c3af762db001b5d43bbd46d1e488cac6b6d6",
   "sourceContentHash": "77aae6b241d55ccb89a14c4ff60d1fe07d2f02ee29fb6e45bf86bc54d0388069"
 }

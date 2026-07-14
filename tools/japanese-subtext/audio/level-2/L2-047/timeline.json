@@ -1,66 +1,66 @@
 {
   "stageId": "L2-047",
-  "sampleRate": 24000,
-  "duration": 39.627042,
+  "sampleRate": 44100,
+  "duration": 42.921927,
   "cues": [
     {
       "lineId": "line-001",
       "audioId": "L2-047-line-001",
       "start": 0.06,
-      "end": 3.515458
+      "end": 4.338095
     },
     {
       "lineId": "line-002",
       "audioId": "L2-047-line-002",
-      "start": 3.995458,
-      "end": 8.656
+      "start": 4.818095,
+      "end": 10.029592
     },
     {
       "lineId": "line-003",
       "audioId": "L2-047-line-003",
-      "start": 9.136,
-      "end": 13.6165
+      "start": 10.509592,
+      "end": 15.328617
     },
     {
       "lineId": "line-004",
       "audioId": "L2-047-line-004",
-      "start": 14.0965,
-      "end": 16.777375
+      "start": 15.808617,
+      "end": 18.433492
     },
     {
       "lineId": "line-005",
       "audioId": "L2-047-line-005",
-      "start": 17.257375,
-      "end": 21.555917
+      "start": 18.913492,
+      "end": 23.678549
     },
     {
       "lineId": "line-006",
       "audioId": "L2-047-line-006",
-      "start": 22.035917,
-      "end": 24.110875
+      "start": 24.158549,
+      "end": 26.349728
     },
     {
       "lineId": "line-007",
       "audioId": "L2-047-line-007",
-      "start": 24.590875,
-      "end": 30.182333
+      "start": 26.829728,
+      "end": 32.722268
     },
     {
       "lineId": "line-008",
       "audioId": "L2-047-line-008",
-      "start": 30.662333,
-      "end": 34.696458
+      "start": 33.202268,
+      "end": 37.041973
     },
     {
       "lineId": "line-009",
       "audioId": "L2-047-line-009",
-      "start": 35.176458,
-      "end": 39.527042
+      "start": 37.521973,
+      "end": 42.821927
     }
   ],
   "schemaVersion": 1,
   "timelineId": "L2-047-timeline",
   "sceneAudioId": "L2-047-scene",
-  "contentHash": "b2dd3a77a9c0e719cf347f97cae6bd8a90205aa6efd99fbca02ee4cc56bc1198",
+  "contentHash": "f775c67a24ccea3f1bcb266d6013bef6828e798dd02cd47d69fad8c9f2eabc7b",
   "sourceContentHash": "50e218f782eff12fdb787817ec780c354575d8dfe12cdd56fc85333501fa86df"
 }

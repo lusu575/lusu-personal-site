@@ -1,66 +1,66 @@
 {
   "stageId": "L2-049",
-  "sampleRate": 24000,
-  "duration": 26.657333,
+  "sampleRate": 44100,
+  "duration": 31.622517,
   "cues": [
     {
       "lineId": "line-001",
       "audioId": "L2-049-line-001",
       "start": 0.06,
-      "end": 3.402917
+      "end": 4.126939
     },
     {
       "lineId": "line-002",
       "audioId": "L2-049-line-002",
-      "start": 3.882917,
-      "end": 6.424
+      "start": 4.606939,
+      "end": 7.54161
     },
     {
       "lineId": "line-003",
       "audioId": "L2-049-line-003",
-      "start": 6.904,
-      "end": 9.172958
+      "start": 8.02161,
+      "end": 10.538866
     },
     {
       "lineId": "line-004",
       "audioId": "L2-049-line-004",
-      "start": 9.652958,
-      "end": 10.982542
+      "start": 11.018866,
+      "end": 12.549184
     },
     {
       "lineId": "line-005",
       "audioId": "L2-049-line-005",
-      "start": 11.462542,
-      "end": 15.095833
+      "start": 13.029184,
+      "end": 17.273946
     },
     {
       "lineId": "line-006",
       "audioId": "L2-049-line-006",
-      "start": 15.575833,
-      "end": 18.185083
+      "start": 17.753946,
+      "end": 20.908889
     },
     {
       "lineId": "line-007",
       "audioId": "L2-049-line-007",
-      "start": 18.665083,
-      "end": 21.256667
+      "start": 21.388889,
+      "end": 25.082381
     },
     {
       "lineId": "line-008",
       "audioId": "L2-049-line-008",
-      "start": 21.736667,
-      "end": 24.282625
+      "start": 25.562381,
+      "end": 28.808957
     },
     {
       "lineId": "line-009",
       "audioId": "L2-049-line-009",
-      "start": 24.762625,
-      "end": 26.557333
+      "start": 29.288957,
+      "end": 31.522517
     }
   ],
   "schemaVersion": 1,
   "timelineId": "L2-049-timeline",
   "sceneAudioId": "L2-049-scene",
-  "contentHash": "ac8519cb655879728f09bfbe6021d4a9a86774deee5efa4af3e04324b8b2ddec",
+  "contentHash": "61903e4b61d0d7eabfd653f26b6000a7ac1e239071e349984113d854706b1494",
   "sourceContentHash": "fce5752828dc960ff7e9a72d59b63ee99018bb1f2666973a212174e7b313cbd1"
 }

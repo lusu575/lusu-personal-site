@@ -1,66 +1,66 @@
 {
   "stageId": "L3-028",
-  "sampleRate": 24000,
-  "duration": 42.706167,
+  "sampleRate": 44100,
+  "duration": 45.131678,
   "cues": [
     {
       "lineId": "line-001",
       "audioId": "L3-028-line-001",
       "start": 0.06,
-      "end": 4.71625
+      "end": 4.747438
     },
     {
       "lineId": "line-002",
       "audioId": "L3-028-line-002",
-      "start": 5.21625,
-      "end": 8.728792
+      "start": 5.247438,
+      "end": 9.208594
     },
     {
       "lineId": "line-003",
       "audioId": "L3-028-line-003",
-      "start": 9.228792,
-      "end": 11.477708
+      "start": 9.708594,
+      "end": 12.170544
     },
     {
       "lineId": "line-004",
       "audioId": "L3-028-line-004",
-      "start": 11.977708,
-      "end": 16.884917
+      "start": 12.670544,
+      "end": 17.887551
     },
     {
       "lineId": "line-005",
       "audioId": "L3-028-line-005",
-      "start": 17.384917,
-      "end": 22.89775
+      "start": 18.387551,
+      "end": 24.402721
     },
     {
       "lineId": "line-006",
       "audioId": "L3-028-line-006",
-      "start": 23.39775,
-      "end": 26.383792
+      "start": 24.902721,
+      "end": 28.506349
     },
     {
       "lineId": "line-007",
       "audioId": "L3-028-line-007",
-      "start": 26.883792,
-      "end": 31.585125
+      "start": 29.006349,
+      "end": 33.801678
     },
     {
       "lineId": "line-008",
       "audioId": "L3-028-line-008",
-      "start": 32.085125,
-      "end": 36.159417
+      "start": 34.301678,
+      "end": 38.617506
     },
     {
       "lineId": "line-009",
       "audioId": "L3-028-line-009",
-      "start": 36.659417,
-      "end": 42.606167
+      "start": 39.117506,
+      "end": 45.031678
     }
   ],
   "schemaVersion": 1,
   "timelineId": "L3-028-timeline",
   "sceneAudioId": "L3-028-scene",
-  "contentHash": "c42dce327f01fd96e77a056fddb274c6831c2ced2fe5ca56194aec2f50c25db8",
+  "contentHash": "37d4d4f9f4ee4868a6eb39a9c963cde223705bcbd402e6ce3642bc80738ec8fa",
   "sourceContentHash": "94c45a7dc05763e9f23573006b411fdb7f71cb1f1150d148257f9e6e5f76db05"
 }

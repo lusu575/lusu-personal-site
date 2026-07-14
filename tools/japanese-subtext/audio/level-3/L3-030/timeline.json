@@ -1,66 +1,66 @@
 {
   "stageId": "L3-030",
-  "sampleRate": 24000,
-  "duration": 30.047167,
+  "sampleRate": 44100,
+  "duration": 34.891678,
   "cues": [
     {
       "lineId": "line-001",
       "audioId": "L3-030-line-001",
       "start": 0.06,
-      "end": 2.727417
+      "end": 3.700204
     },
     {
       "lineId": "line-002",
       "audioId": "L3-030-line-002",
-      "start": 3.227417,
-      "end": 6.104875
+      "start": 4.200204,
+      "end": 7.456032
     },
     {
       "lineId": "line-003",
       "audioId": "L3-030-line-003",
-      "start": 6.604875,
-      "end": 8.702333
+      "start": 7.956032,
+      "end": 10.583311
     },
     {
       "lineId": "line-004",
       "audioId": "L3-030-line-004",
-      "start": 9.202333,
-      "end": 12.790417
+      "start": 11.083311,
+      "end": 14.812132
     },
     {
       "lineId": "line-005",
       "audioId": "L3-030-line-005",
-      "start": 13.290417,
-      "end": 15.744708
+      "start": 15.312132,
+      "end": 18.456327
     },
     {
       "lineId": "line-006",
       "audioId": "L3-030-line-006",
-      "start": 16.244708,
-      "end": 19.052292
+      "start": 18.956327,
+      "end": 22.132426
     },
     {
       "lineId": "line-007",
       "audioId": "L3-030-line-007",
-      "start": 19.552292,
-      "end": 21.29625
+      "start": 22.632426,
+      "end": 25.026032
     },
     {
       "lineId": "line-008",
       "audioId": "L3-030-line-008",
-      "start": 21.79625,
-      "end": 25.45025
+      "start": 25.526032,
+      "end": 29.651043
     },
     {
       "lineId": "line-009",
       "audioId": "L3-030-line-009",
-      "start": 25.95025,
-      "end": 29.947167
+      "start": 30.151043,
+      "end": 34.791678
     }
   ],
   "schemaVersion": 1,
   "timelineId": "L3-030-timeline",
   "sceneAudioId": "L3-030-scene",
-  "contentHash": "fa9ddd27fd37238ac2add27665cbe97df40d99dcf36ce8633afdbed8bfec6238",
+  "contentHash": "9bbdbfd938476e0af31c7c611ebdf466148b78717288c7d20faf1813e9cb94db",
   "sourceContentHash": "197156d8a0154660e2bbe33f6ed24bebc188857423b5c19ca60f2933909dd227"
 }
