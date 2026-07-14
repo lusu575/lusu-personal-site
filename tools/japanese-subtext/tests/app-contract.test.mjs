@@ -5,12 +5,13 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const [html, app, css, main, audioPlayer, cloud, contentLoader, i18n, storage] = await Promise.all([
+const [html, app, css, main, manifest, audioPlayer, cloud, constants, contentLoader, i18n, questionFlow, storage] = await Promise.all([
   readFile(path.join(root, "index.html"), "utf8"),
   readFile(path.join(root, "app.mjs"), "utf8"),
   readFile(path.join(root, "style.css"), "utf8"),
   readFile(path.resolve(root, "..", "..", "js", "main.js"), "utf8"),
-  ...["audio-player.mjs", "cloud.mjs", "content-loader.mjs", "i18n.mjs", "storage.mjs"]
+  readFile(path.join(root, "manifest.json"), "utf8"),
+  ...["audio-player.mjs", "cloud.mjs", "constants.mjs", "content-loader.mjs", "i18n.mjs", "question-flow.mjs", "storage.mjs"]
     .map((file) => readFile(path.join(root, "lib", file), "utf8"))
 ]);
 
@@ -27,9 +28,9 @@ test("standalone shell exposes the required playback and learning controls", () 
   assert.match(html, /<dialog class="sound-gate"/);
   for (const mode of ["listening", "japanese", "bilingual"]) assert.match(html, new RegExp(`data-action="choose-mode" data-mode="${mode}"`));
   assert.match(html, /id="settings-form"[\s\S]*data-i18n="confirm"/);
-  assert.match(html, /id="result-dialog"[\s\S]*data-action="view-analysis"[\s\S]*data-action="result-next"/);
+  assert.match(html, /id="result-dialog"[^>]*closedby="none"[\s\S]*data-action="view-analysis"[\s\S]*data-action="result-next"/);
   assert.doesNotMatch(html, /data-action="close-result"/);
-  assert.match(html, /id="analysis-panel"[\s\S]*id="analysis-retry"[\s\S]*id="analysis-next"[\s\S]*data-action="next-stage"/);
+  assert.match(html, /id="analysis-panel"[\s\S]*id="analysis-retry"[^>]*data-action="try-again"[\s\S]*id="analysis-next"[\s\S]*data-action="next-stage"[\s\S]*id="analysis-content"/);
   assert.match(html, /id="dashboard-primary-action"[\s\S]*data-i18n="startChallenge"/);
   assert.match(html, /class="eyebrow" data-i18n="dashboardEyebrow"/);
   assert.equal((html.match(/data-action="open-settings"/g) || []).length, 1);
@@ -44,8 +45,9 @@ test("standalone shell exposes the required playback and learning controls", () 
     assert.match(html, new RegExp(`id=["']${id}["']`));
   }
   assert.match(html, /NOTICE-japanese-voices\.md"[\s\S]*rel="license noopener"/);
-  assert.match(html, /style\.css\?v=20260712-japanese-subtext-v103-r6/);
-  assert.match(html, /app\.mjs\?v=20260712-japanese-subtext-v103-r6/);
+  assert.match(html, /style\.css\?v=20260714-japanese-subtext-v104-r1/);
+  assert.match(html, /app\.mjs\?v=20260714-japanese-subtext-v104-r1/);
+  assert.match(html, /data-i18n="toolVersion">版本 1\.0\.4</);
   assert.doesNotMatch(app, /from "\.\/lib\/[^"?]+\.mjs";/);
 });
 
@@ -102,8 +104,8 @@ test("navigation, modal focus, option feedback, and cache invalidation have expl
   assert.doesNotMatch(app, /classList\.toggle\("has-illustration"/);
   assert.match(app, /hasCompletedModeOnboarding\(\)/);
   assert.match(app, /markModeOnboardingComplete\(\)/);
-  assert.match(app, /syncNextStageButton\(\$\("#analysis-next"\), state\.attemptCleared\)/);
-  assert.match(app, /syncNextStageButton\(\$\("#result-next"\), state\.attemptCleared\)/);
+  assert.match(app, /syncNextStageButton\(\$\("#analysis-next"\), actions\.showNext\)/);
+  assert.match(app, /syncNextStageButton\(\$\("#result-next"\), actions\.showNext\)/);
   assert.doesNotMatch(app, /syncNextStageButton\([^\n]+state\.cleared\)/);
   assert.match(app, /unansweredIndex[\s\S]*?card\?\.querySelector\("input:not\(:disabled\)"\)\?\.focus\(\)/);
   assert.match(app, /enforceOptionAvailability\(form, event\?\.target\?\.name\)/);
@@ -143,8 +145,32 @@ test("navigation, modal focus, option feedback, and cache invalidation have expl
   assert.match(app, /optionLanguage === "zh" \? "zh-CN" : state\.settings\.optionLanguage/);
   assert.match(app, /async function retryAudio\(\)\s*\{[\s\S]*?player\.stop\(\);[\s\S]*?if \(!manifestIsValid\)[\s\S]*?await playScene\(0\)/);
   assert.doesNotMatch(app, /\.\/lib\/[^"?]+\.mjs\?v=20260711-japanese-subtext-r14/);
-  assert.doesNotMatch(`${audioPlayer}\n${cloud}\n${contentLoader}\n${i18n}\n${storage}`, /v102-r1/);
-  assert.equal((app.match(/\.\/lib\/[^"?]+\.mjs\?v=20260712-japanese-subtext-v103-r6/g) || []).length, 6);
+  assert.doesNotMatch(`${audioPlayer}\n${cloud}\n${contentLoader}\n${i18n}\n${questionFlow}\n${storage}`, /v102-r1|v103-r6|v103-retry-r1/);
+  assert.equal((app.match(/\.\/lib\/[^"?]+\.mjs\?v=20260714-japanese-subtext-v104-r1/g) || []).length, 7);
+});
+
+test("application and content versions remain independently pinned", () => {
+  const parsedManifest = JSON.parse(manifest);
+  assert.equal(parsedManifest.appVersion, "1.0.4");
+  assert.equal(parsedManifest.contentVersion, "1.0.3");
+  assert.match(constants, /APP_VERSION = "1\.0\.4"/);
+  assert.match(constants, /CONTENT_VERSION = "1\.0\.3"/);
+  assert.match(i18n, /toolVersion: `版本 \$\{APP_VERSION\}`/);
+  assert.match(i18n, /toolVersion: `Version \$\{APP_VERSION\}`/);
+  assert.match(i18n, /toolVersion: `バージョン \$\{APP_VERSION\}`/);
+});
+
+test("wrong-answer recovery remains reachable outside the result dialog", () => {
+  assert.match(html, /class="question-actions"[\s\S]*id="try-again"[^>]*data-action="try-again"/);
+  assert.match(html, /id="analysis-retry"[^>]*data-action="try-again"[\s\S]*id="analysis-content"/);
+  assert.doesNotMatch(html, /data-action="close-result"/);
+  assert.match(app, /\[\$\("#settings-dialog"\), \$\("#records-dialog"\)\]/);
+  assert.match(app, /resultDialog\.addEventListener\("cancel", \(event\) => \{[\s\S]*?event\.preventDefault\(\)[\s\S]*?requireResultAction\(\)/);
+  assert.match(app, /!\$\("#result-dialog"\)\.open/);
+  assert.doesNotMatch(app, /case "close-result"/);
+  assert.match(app, /\$\("#try-again"\)\.hidden = !questionActionState\(state\)\.showRetry/);
+  assert.match(app, /\$\("#analysis-retry"\)\.hidden = !actions\.showRetry/);
+  assert.match(app, /\$\("#result-retry"\)\.hidden = !actions\.showRetry/);
 });
 
 test("main-site resource path is narrowly allowlisted", () => {

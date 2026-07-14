@@ -142,7 +142,7 @@ function currentFinalStats(audioManifest = currentAudioManifest()) {
 
 function reportWith(status) {
   return [
-    "# 日本語の裏側 1.0.3 发布验收报告",
+    `# 日本語の裏側 ${RELEASE_CONTRACT.appVersion} 发布验收报告`,
     "",
     releaseContractMarker(),
     ...RELEASE_GATES.map((gate) => releaseGateMarker(gate, status)),
@@ -164,7 +164,7 @@ function completeReport({
   browserEvidence = "QA complete for zh/en/ja and every required viewport.",
 } = {}) {
   let report = [
-    "# 日本語の裏側 1.0.3 发布验收报告",
+    `# 日本語の裏側 ${RELEASE_CONTRACT.appVersion} 发布验收报告`,
     "",
     "> 状态：**已通过**。全部发布证据已按当前契约复核。",
     "",
@@ -187,10 +187,11 @@ function completeReport({
   return { report, audioManifest, imageManifest, finalStats };
 }
 
-test("the release contract is locked to 1.0.3, r6, Aivis 44.1 kHz, and gpt-image-2 high", () => {
+test("the release contract is locked to app 1.0.4, content 1.0.3, v104-r1, Aivis 44.1 kHz, and gpt-image-2 high", () => {
   assert.deepEqual(RELEASE_CONTRACT, {
+    appVersion: "1.0.4",
     contentVersion: "1.0.3",
-    assetVersion: "20260712-japanese-subtext-v103-r6",
+    assetVersion: "20260714-japanese-subtext-v104-r1",
     audioPipeline: "aivisspeech-1.2.0-aivmx-v3",
     audioClaritySchemaVersion: 3,
     audioSampleRate: 44100,
@@ -199,7 +200,7 @@ test("the release contract is locked to 1.0.3, r6, Aivis 44.1 kHz, and gpt-image
     stageImageCount: 250,
     backgroundImageCount: 2,
   });
-  assert.match(releaseContractSha256(), /^[a-f0-9]{64}$/);
+  assert.equal(releaseContractSha256(), "14ce758af1a205a07559ccbd69a78ed79026dc8734b535f18990e66aee4d536d");
 });
 
 test("launch and 1.0.1 public update copy is frozen by trilingual fingerprints", async () => {
@@ -251,14 +252,14 @@ test("the build guard rejects only top-level legacy stage assets after Image2 ac
   assert.match(buildCheck, /findLegacyStageAssetResidue\([\s\S]*?image2Active: image2ManifestActive/);
 });
 
-test("a stale unbound 1.0.2 PASS report cannot satisfy the current release gate", () => {
+test("a stale unbound 1.0.3 app PASS report cannot satisfy the current release gate", () => {
   const staleReport = [
-    "# 日本語の裏側 1.0.2 发布验收报告",
+    "# 日本語の裏側 1.0.3 发布验收报告",
     "<!-- RELEASE:AUDIO_VALIDATION:PASS -->",
     "<!-- RELEASE:BROWSER_QA:PASS -->",
   ].join("\n");
   const errors = validateReleaseReportContract(staleReport, { requirePass: true });
-  assert.ok(errors.some((error) => error.includes("1.0.3")));
+  assert.ok(errors.some((error) => error.includes("appVersion 1.0.4")));
   assert.ok(errors.some((error) => error.includes("contract marker")));
   assert.ok(errors.some((error) => error.includes("unbound PASS")));
 });
@@ -269,6 +270,26 @@ test("the report may be current but pending, while unbound PASS markers are reje
   assert.ok(pendingErrors.every((error) => error.includes("is PENDING")));
   const unboundPassErrors = validateReleaseReportContract(reportWith("PASS"), { requirePass: true });
   assert.ok(unboundPassErrors.some((error) => /evidence/i.test(error)));
+});
+
+test("the checked-in report stays PENDING and is bound to the app 1.0.4 contract", async () => {
+  const report = await readFile(
+    path.resolve(import.meta.dirname, "../reports/release-report.md"),
+    "utf8",
+  );
+  assert.deepEqual(validateReleaseReportContract(report, { requirePass: false }), []);
+  assert.match(report, /^# 日本語の裏側 1\.0\.4 发布验收报告（内容 1\.0\.3）/);
+  assert.doesNotMatch(report, /<!-- RELEASE:[A-Z0-9_]+:PASS\b/);
+  for (const gate of RELEASE_GATES) {
+    assert.equal(report.split(releaseGateMarker(gate, "PENDING")).length - 1, 1);
+  }
+
+  const contentVersionHeading = reportWith("PENDING").replace(
+    ` ${RELEASE_CONTRACT.appVersion} 发布验收报告`,
+    ` ${RELEASE_CONTRACT.contentVersion} 发布验收报告`,
+  );
+  assert.ok(validateReleaseReportContract(contentVersionHeading, { requirePass: false })
+    .some((error) => error.includes("appVersion 1.0.4")));
 });
 
 test("changing only hidden gate words cannot pass while visible evidence remains pending", async () => {

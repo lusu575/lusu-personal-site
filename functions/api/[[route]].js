@@ -4369,17 +4369,17 @@ function articleSeedStatements(env) {
         article_id, slug, category, tags, cover_image, status, is_pinned,
         view_count, created_at, updated_at, published_at
       ) values (
-        'seed-update-2026-07-12-japanese-subtext-v1-0-3',
-        '2026-07-12-japanese-subtext-v1-0-3',
+        'seed-update-2026-07-14-japanese-subtext-v1-0-4',
+        '2026-07-14-japanese-subtext-v1-0-4',
         'site-updates',
         '["Japanese","AivisSpeech","gpt-image-2","mobile"]',
         '',
         'published',
         0,
         0,
-        '2026-07-11T18:00:00.000Z',
-        '2026-07-11T18:00:00.000Z',
-        '2026-07-11T18:00:00.000Z'
+        '2026-07-14T02:50:00.000Z',
+        '2026-07-14T02:50:00.000Z',
+        '2026-07-14T02:50:00.000Z'
       )
       on conflict(article_id) do nothing
     `),
@@ -4420,6 +4420,33 @@ function articleSeedStatements(env) {
         '2026-07-10T16:00:00.000Z'
       )
       on conflict(article_id) do nothing
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-14-japanese-subtext-retry-hotfix',
+        '2026-07-14-japanese-subtext-retry-hotfix',
+        'site-updates',
+        '["Japanese","learning","accessibility","bugfix"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-07-14T02:20:00.000Z',
+        '2026-07-14T02:20:00.000Z',
+        '2026-07-14T02:20:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
     `),
     env.DB.prepare(`
       insert into articles (
@@ -7066,23 +7093,40 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
-    ...immutableArticleTranslationsStatements(env, "seed-update-2026-07-12-japanese-subtext-v1-0-3", {
+    ...immutableArticleTranslationsStatements(env, "seed-update-2026-07-14-japanese-subtext-v1-0-4", {
       zh: {
-        title: "日语潜台词训练工具更新至 1.0.3",
-        summary: "“日语的言外之意”1.0.3 使用 AivisSpeech 按审校假名重新生成全库 AI 语音，并以 gpt-image-2 重制 250 张精制黑白四格题目配图和简洁彩色站外背景，同时重整桌面与手机交互。",
-        content_markdown: "# 日语潜台词训练工具更新至 1.0.3\n\n“日语的言外之意”这次同时更新语音、配图、外部背景和训练交互。题库显示仍保留日语汉字，生成输入与展示内容继续分离。\n\n## AivisSpeech 全库 AI 语音\n\n- 所有语音改用 AivisSpeech 离线 AI 模型重新制作。\n- 合成前先使用已审校的纯假名读音，避免日语汉字被错误切分或读错。\n- 浏览器只播放预生成文件，不在日常使用时加载本地模型。\n\n## gpt-image-2 黑白四格配图与彩色背景\n\n- 250 个关卡分别依据当关场景、人物关系、台词和题问生成精制黑白四格漫画，使用丰富灰阶、网点和完整明暗，不是简陋线稿。\n- 训练器外部背景改为 gpt-image-2 生成的简洁彩色桌面与手机画面。\n- 配图使用真实图片文件，页面不再用 CSS 绘制场景。\n\n## UI 与手机交互重整\n\n- 首次挑战、听力锁题、漏答提醒、结果与解析后的去向更明确。\n- 播放高亮只在真实播放时出现，配图加载失败可重试。\n- 手机端按播放器、场景、题目的学习顺序重新排布，并控制图片高度和触控尺寸。"
+        title: "日语潜台词训练工具更新至 1.0.4",
+        summary: "“日语的言外之意”1.0.4 使用 AivisSpeech 按审校假名重新生成全库 AI 语音，并以 gpt-image-2 重制 250 张精制黑白四格题目配图和简洁彩色站外背景，同时重整桌面与手机交互。版本边界为 appVersion 1.0.4 / contentVersion 1.0.3。",
+        content_markdown: "# 日语潜台词训练工具更新至 1.0.4\n\n“日语的言外之意”这次同时更新语音、配图、外部背景和训练交互。题库显示仍保留日语汉字，生成输入与展示内容继续分离。\n\n## AivisSpeech 全库 AI 语音\n\n- 所有语音改用 AivisSpeech 离线 AI 模型重新制作。\n- 合成前先使用已审校的纯假名读音，避免日语汉字被错误切分或读错。\n- 浏览器只播放预生成文件，不在日常使用时加载本地模型。\n\n## gpt-image-2 黑白四格配图与彩色背景\n\n- 250 个关卡分别依据当关场景、人物关系、台词和题问生成精制黑白四格漫画，使用丰富灰阶、网点和完整明暗，不是简陋线稿。\n- 训练器外部背景改为 gpt-image-2 生成的简洁彩色桌面与手机画面。\n- 配图使用真实图片文件，页面不再用 CSS 绘制场景。\n\n## UI 与手机交互重整\n\n- 首次挑战、听力锁题、漏答提醒、结果与解析后的去向更明确。\n- 播放高亮只在真实播放时出现，配图加载失败可重试。\n- 手机端按播放器、场景、题目的学习顺序重新排布，并控制图片高度和触控尺寸。\n\n## 版本边界\n\n本次发布使用 appVersion 1.0.4 / contentVersion 1.0.3：前者标识应用与交互版本，后者标识 250 关素材、10,088 段音频、题库与云存档的兼容边界。"
       },
       en: {
-        title: "Behind the Japanese 1.0.3 Update",
-        summary: "Behind the Japanese 1.0.3 regenerates the full AI voice library with AivisSpeech from reviewed kana, replaces all 250 stage illustrations with polished monochrome four-panel manga, adds quiet full-color outer backdrops, and refines desktop and mobile interaction.",
-        content_markdown: "# Behind the Japanese 1.0.3 Update\n\nThis release updates speech, stage artwork, the outer backdrop, and training interaction together. The course still displays normal Japanese writing while keeping synthesis input separate.\n\n## Full AivisSpeech AI voice rebuild\n\n- Every voice item is regenerated with the offline AivisSpeech AI model.\n- Synthesis uses reviewed kana-only readings first, reducing incorrect kanji segmentation or pronunciation.\n- The browser plays pre-generated files and does not load the local model during normal use.\n\n## Monochrome gpt-image-2 manga and color backdrops\n\n- Each of the 250 stages receives a polished monochrome four-panel manga based on its own setting, cast relationships, dialogue, and questions, with rich grayscale, screentones, and finished shading rather than sparse line art.\n- The area outside the trainer uses quiet full-color desktop and mobile backgrounds generated with gpt-image-2.\n- These scenes are image assets rather than CSS-drawn illustrations.\n\n## Desktop and mobile interaction\n\n- First challenge, listening locks, unanswered-question feedback, results, and post-analysis routes are clearer.\n- Playback highlighting appears only during real playback, and failed illustrations can be retried.\n- Mobile content follows player, scene, and question order with bounded image height and practical touch targets."
+        title: "Behind the Japanese 1.0.4 Update",
+        summary: "Behind the Japanese 1.0.4 regenerates the full AI voice library with AivisSpeech from reviewed kana, replaces all 250 stage illustrations with polished monochrome four-panel manga, adds quiet full-color outer backdrops, and refines desktop and mobile interaction. Its version boundary is appVersion 1.0.4 / contentVersion 1.0.3.",
+        content_markdown: "# Behind the Japanese 1.0.4 Update\n\nThis release updates speech, stage artwork, the outer backdrop, and training interaction together. The course still displays normal Japanese writing while keeping synthesis input separate.\n\n## Full AivisSpeech AI voice rebuild\n\n- Every voice item is regenerated with the offline AivisSpeech AI model.\n- Synthesis uses reviewed kana-only readings first, reducing incorrect kanji segmentation or pronunciation.\n- The browser plays pre-generated files and does not load the local model during normal use.\n\n## Monochrome gpt-image-2 manga and color backdrops\n\n- Each of the 250 stages receives a polished monochrome four-panel manga based on its own setting, cast relationships, dialogue, and questions, with rich grayscale, screentones, and finished shading rather than sparse line art.\n- The area outside the trainer uses quiet full-color desktop and mobile backgrounds generated with gpt-image-2.\n- These scenes are image assets rather than CSS-drawn illustrations.\n\n## Desktop and mobile interaction\n\n- First challenge, listening locks, unanswered-question feedback, results, and post-analysis routes are clearer.\n- Playback highlighting appears only during real playback, and failed illustrations can be retried.\n- Mobile content follows player, scene, and question order with bounded image height and practical touch targets.\n\n## Version boundary\n\nThis release uses appVersion 1.0.4 / contentVersion 1.0.3: the former identifies the application and interaction release, while the latter identifies the compatibility boundary for the 250-stage assets, 10,088 audio files, course data, and cloud saves."
       },
       ja: {
-        title: "日本語の裏側 1.0.3 アップデート",
-        summary: "「日本語の裏側」1.0.3 では、確認済みのかな読みから AivisSpeech で全 AI 音声を再生成し、250 ステージの精細なモノクロ四コマと外側の控えめなカラー背景を gpt-image-2 で作り直して、PC・モバイルの操作も再整理しました。",
-        content_markdown: "# 日本語の裏側 1.0.3 アップデート\n\n今回は音声、ステージ画像、ツール外側の背景、練習操作をまとめて更新しました。画面には通常の漢字表記を残し、合成用の入力とは分離しています。\n\n## AivisSpeech による全 AI 音声の再生成\n\n- すべての音声をオフラインの AivisSpeech AI モデルで作り直しました。\n- 合成前に確認済みのかな読みだけを使い、漢字の区切りや読みの誤りを抑えます。\n- 通常利用時は生成済みファイルだけを再生し、ブラウザーでローカルモデルを読み込みません。\n\n## gpt-image-2 のモノクロ四コマとカラー背景\n\n- 250 ステージそれぞれの場面、人物関係、台詞、設問に基づき、豊かなグレースケール、スクリーントーン、仕上げた陰影を持つモノクロ四コマへ更新しました。簡素な線画ではありません。\n- ツール外側には gpt-image-2 で生成した控えめなカラーの PC・モバイル背景を使います。\n- 場面は CSS 描画ではなく画像ファイルとして表示します。\n\n## PC・モバイル操作の再整理\n\n- 初回チャレンジ、聴解時の問題ロック、未回答通知、結果と解説後の移動先を明確にしました。\n- 再生中だけ台詞を強調し、画像の読み込み失敗時には再試行できます。\n- モバイルはプレーヤー、場面、問題の順に並べ、画像の高さとタップ領域を調整しました。"
+        title: "日本語の裏側 1.0.4 アップデート",
+        summary: "「日本語の裏側」1.0.4 では、確認済みのかな読みから AivisSpeech で全 AI 音声を再生成し、250 ステージの精細なモノクロ四コマと外側の控えめなカラー背景を gpt-image-2 で作り直して、PC・モバイルの操作も再整理しました。バージョン境界は appVersion 1.0.4 / contentVersion 1.0.3 です。",
+        content_markdown: "# 日本語の裏側 1.0.4 アップデート\n\n今回は音声、ステージ画像、ツール外側の背景、練習操作をまとめて更新しました。画面には通常の漢字表記を残し、合成用の入力とは分離しています。\n\n## AivisSpeech による全 AI 音声の再生成\n\n- すべての音声をオフラインの AivisSpeech AI モデルで作り直しました。\n- 合成前に確認済みのかな読みだけを使い、漢字の区切りや読みの誤りを抑えます。\n- 通常利用時は生成済みファイルだけを再生し、ブラウザーでローカルモデルを読み込みません。\n\n## gpt-image-2 のモノクロ四コマとカラー背景\n\n- 250 ステージそれぞれの場面、人物関係、台詞、設問に基づき、豊かなグレースケール、スクリーントーン、仕上げた陰影を持つモノクロ四コマへ更新しました。簡素な線画ではありません。\n- ツール外側には gpt-image-2 で生成した控えめなカラーの PC・モバイル背景を使います。\n- 場面は CSS 描画ではなく画像ファイルとして表示します。\n\n## PC・モバイル操作の再整理\n\n- 初回チャレンジ、聴解時の問題ロック、未回答通知、結果と解説後の移動先を明確にしました。\n- 再生中だけ台詞を強調し、画像の読み込み失敗時には再試行できます。\n- モバイルはプレーヤー、場面、問題の順に並べ、画像の高さとタップ領域を調整しました。\n\n## バージョン境界\n\n今回のリリースは appVersion 1.0.4 / contentVersion 1.0.3 を使用します。前者はアプリと操作の版、後者は 250 ステージの素材、10,088 件の音声、問題集、クラウドセーブの互換境界を表します。"
       }
-    }, "2026-07-11T18:00:00.000Z"),
+    }, "2026-07-14T02:50:00.000Z"),
+    ...articleTranslationsStatements(env, "seed-update-2026-07-14-japanese-subtext-retry-hotfix", {
+      zh: {
+        title: "日语潜台词训练器 1.0.3 重答修复",
+        summary: "修复错答后关闭结果弹窗、点击弹窗外或查看解析时可能失去重新答题入口的问题；题库、音频和云存档兼容版本继续保持 1.0.2。",
+        content_markdown: "# 日语潜台词训练器 1.0.3 重答修复\n\n“日语的言外之意”应用更新至 1.0.3，集中修复错答后的操作死路。\n\n## 错答后始终可以继续\n\n- 结果弹窗不再允许通过关闭按钮、Escape 或点击弹窗外绕过必选操作。\n- 即使弹窗被浏览器或其他代码强制关闭，题面仍会显示重新答题按钮。\n- 查看解析后，重新答题入口会放在解析正文之前；只有本次答对时才显示进入下一关。\n\n## 版本边界\n\n本次只更新应用界面与交互。250 关题库、10,088 段静态音频以及云存档兼容边界继续使用 contentVersion 1.0.2，没有伪造内容迁移或重录记录。"
+      },
+      en: {
+        title: "Japanese Subtext Trainer 1.0.3 Retry Fix",
+        summary: "Fixes the dead end that could hide retry after a wrong answer when the result dialog was dismissed or analysis was opened; course, audio, and save compatibility remain on 1.0.2.",
+        content_markdown: "# Japanese Subtext Trainer 1.0.3 Retry Fix\n\nBehind the Japanese moves to app version 1.0.3 with a focused fix for the wrong-answer dead end.\n\n## Retry always remains available\n\n- The result dialog can no longer bypass its required actions through the close button, Escape, or an outside click.\n- If the browser or another script forcibly closes the dialog, the question area still exposes Try Again.\n- After View Analysis, Try Again appears before the explanation content; Next Stage appears only when the current attempt is correct.\n\n## Version boundary\n\nThis release changes only the application interface and interaction. The 250-stage course, 10,088 static audio files, and cloud-save compatibility boundary remain on contentVersion 1.0.2, with no fabricated content migration or rerecording claim."
+      },
+      ja: {
+        title: "日本語の裏側 1.0.3 再回答修正",
+        summary: "誤答後に結果ダイアログを閉じたり解説を開いたりすると再回答できなくなる問題を修正しました。問題集・音声・セーブ互換版は 1.0.2 のままです。",
+        content_markdown: "# 日本語の裏側 1.0.3 再回答修正\n\n「日本語の裏側」をアプリ版 1.0.3 に更新し、誤答後に操作できなくなる経路を修正しました。\n\n## いつでも再回答できる導線\n\n- 結果ダイアログは、閉じるボタン、Escape、外側クリックで必須操作を回避できないようにしました。\n- ブラウザや別のスクリプトがダイアログを強制的に閉じても、問題欄には再回答ボタンが残ります。\n- 解説を開いた後は本文より前に再回答を表示し、今回の回答が正解した場合だけ次のステージを表示します。\n\n## バージョン境界\n\n今回はアプリ画面と操作だけの更新です。250 ステージの問題集、10,088 件の静的音声、クラウドセーブの互換境界は contentVersion 1.0.2 のままで、内容移行や再録を行ったとは扱いません。"
+      }
+    }, "2026-07-14T02:20:00.000Z"),
     ...immutableArticleTranslationsStatements(env, "seed-update-2026-07-11-japanese-subtext-trainer", {
       zh: {
         title: "日语潜台词训练工具更新至 1.0.2",

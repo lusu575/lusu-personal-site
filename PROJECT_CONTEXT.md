@@ -1,17 +1,23 @@
 # PROJECT_CONTEXT.md
 
-## 2026-07-14 日本語の裏側 1.0.3 待发布阶段
+## 2026-07-14 日本語の裏側 1.0.3 重答修复
 
-- `/tools/japanese-subtext/` 当前正在维护的待发布版本是 `1.0.3`，不是已完成发布状态。canonical Image2 v4 jobs 已按最新题库和设计身份注册表全量重建，来源哈希、身份、生成／导入、迁移与发布管线契约测试通过；这只证明任务和门禁合同自洽，不代表图片资产或版本已上线。
+- `/tools/japanese-subtext/` 当前公开应用版本为 `1.0.3`，题库、音频、云存档兼容边界继续使用 `contentVersion: 1.0.2`。`appVersion` 表示界面与交互发布，`contentVersion` 只在题库结构或存档兼容边界变化时增加；UI 热修不得连带伪造 250 关哈希或全量音频迁移。
+- 错答后必须始终存在重新答题入口：结果弹窗不能由关闭按钮、Escape 或点击外侧直接丢弃，题面保留兜底重答按钮，查看解析后在解析正文之前显示重答；进入下一关只按本次 `attemptCleared` 判断，不得使用历史累计通关状态。
+- 本次未修改正式题库、静态音频、关卡图片、进度 API 或 D1 存档结构；主站 Resources 显示应用版本 1.0.3，并通过三语更新记录明确内容兼容版本仍是 1.0.2。
+
+## 2026-07-14 日本語の裏側下一候选（应用 1.0.4 / 内容 1.0.3）
+
+- `/tools/japanese-subtext/` 当前公开基线是应用 `1.0.3` / 内容 `1.0.2`；正在维护的下一候选是应用 `1.0.4` / 内容 `1.0.3`，尚未发布。canonical Image2 v4 jobs 已按最新题库和设计身份注册表全量重建，来源哈希、身份、生成／导入、迁移与发布管线契约测试通过；这只证明任务和门禁合同自洽，不代表图片资产或版本已上线。
 - 设计身份注册表当前解析 780 个 cast reference、778 个 design identity，只有两组显式共享：`person:l4-hori` 对应 L4-008／L4-014 的 Hori 同一人物，`appearance:l3-036-yui` 对应 L3-036 的 Yui／Predictive Avatar 同外观变体。L5-043 的未识别咳嗽声使用独立 `stage:l5-043:cast:cough` identity，不得与任何通用人物、Avatar 或非人系统合并。
 - L5-001～L5-050 已完成内容、三语语用解释、证据和 reviewed reading 审计；L5-011～L5-020 的关键读音／证据回归已补入自动测试。后续音频工作只按最终题库做 Aivis 增量生成、受影响 scene 重拼与全量媒体验收，不在文档中预写最终差异数量。
 - Codex 内置 image2 通道的逐图视觉证据必须诚实记录为 Codex 六项审核，状态为 `codex-approved`，并绑定原 reviewer、toolRunId 与原始 PNG SHA-256；不得称为人工或人类审核。
-- 尚未完成的发布前工作包括：250 张关卡图与桌面／手机两张背景图的逐图生成、Codex 审核、导入和发布；Aivis 最终增量与全量音频门禁；release check；359×500、375×667、390×844、844×390、1365×900 的 zh／en／ja 浏览器回归；合并／推送 GitHub main 及 Cloudflare Pages 部署。上述工作完成前不得把 `1.0.3` 写成已发布。
+- 尚未完成的发布前工作包括：250 张关卡图与桌面／手机两张背景图的逐图生成、Codex 审核、导入和发布；Aivis 最终跨版本 reconciliation 与全量音频门禁；release check；359×500、375×667、390×844、844×390、1365×900 的 zh／en／ja 浏览器回归；合并／推送 GitHub main 及 Cloudflare Pages 部署。上述工作完成前不得把应用 `1.0.4` 写成已发布。
 - 2026-07-14 暂停点有 13 张关卡图具备 current-v4 完整证据链；恢复时对中断事务中的 L1-003 重新核验原始工具产物、归一化 PNG、review、sidecar 与当前 prompt/style/source hash 后，将未引用 WebP checkpoint 恢复到 14 张。它们仍不是正式发布资源，250 张关卡图加两张背景的严格剩余缺口为 238 张。Aivis 候选已覆盖 250 关／10,088 件，远端 `f9bed65e` 的 MP3、250 份时间轴、manifest、大小和 SHA-256 复核全部一致；manifest 仍是 `contentVersion: 1.0.2`，最终迁移后必须再次跨版本 reconcile。生产复盘见 `tools/japanese-subtext/reports/2026-07-14-image2-production-retrospective.md`。
 
-## 2026-07-12 日本語の裏側 1.0.3 前期实现
+## 2026-07-12 日本語の裏側内容 1.0.3 前期实现
 
-- `/tools/japanese-subtext/` 的待发布维护版本为 `1.0.3`。版本仍严格按公开维护每次 `+0.0.1`；主站更新文章改为追加式历史，上线、1.0.1、1.0.2 与候选 1.0.3 分别拥有独立三语记录，已发布 ID、时间、标题、摘要和正文不可覆写，fallback / Functions / schema 三处必须同步且冲突时只忽略、不得更新。
+- 这批工作最初以待发布 `1.0.3` 开始；公开应用 1.0.3 后来先被重答热修占用，因此最终候选边界调整为应用 `1.0.4` / 内容 `1.0.3`。版本仍严格按公开维护每次 `+0.0.1`；主站更新文章使用追加式历史，已发布 ID、时间、标题、摘要和正文不可覆写，fallback / Functions / schema 三处必须同步且冲突时只忽略、不得更新。
 - 1.0.3 全库语音改为本机隔离的 AivisSpeech Engine 1.2.0 + 四套 ACML-1.0 AIVMX 日语模型，固定使用 `aivisspeech-1.2.0-aivmx-v3` 管线在 CPU 上离线预生成 44.1 kHz、mono、约 96 kbps MP3。句子/选项只接受人工审校纯假名 `readingJa`，词块只接受纯假名 `reading`；适配器可保留表面文本查询的自然韵律结构，但 accent phrase / mora 必须由审校假名全量替换，表面文本与审校假名的韵律或标点结构不一致时必须使用 `reviewed-reading-fallback`，“今日”统一锁定为 `きょう`。manifest 绑定 reading / mora / query / task hash、Engine/模型 provenance、声线与输出参数；非场景任务的原始合成结果与归一化缓存还必须通过并绑定 `.boundary.json` 边界 sidecar，scene 绑定最终 normalized WAV SHA。发布只接受 clarity schema 3：所有教学任务按扣除 `≥250 ms` 句内长停顿后的实际发音时长计算，并限制为不高于 `7.2 mora/s`；普通短词下限是 `1.5 mora/s`，仅 reviewed reading 精确为单 mora 填充迟疑「ん……」时使用 `hesitation` 专用带和 `1.2 mora/s` 下限，生成器、fresh 审计与 Node/build 门禁都从假名重新推导。速率调整策略 `post-synthesis-active-mora-rate-v3` 以 `6.5 mora/s` 为目标、要求校准样本不高于 `6.6 mora/s` 且最多校准 6 轮，并作为完整 `ratePolicy` 证据绑定每个非场景 artifact、manifest item 与生成器元数据，策略变化会使未调整的旧成品同样失效。响度为 `-18 ±1.5 LUFS`、安全正增益最多 `4.5 dB`、true peak 不高于 `-2 dBTP`。同一音频根由 OS 锁保护，候选通过全部验收后才原子替换，Windows 瞬时占用允许有界原子替换重试，缺无损源不得从 MP3 回填；批处理另以同卷关卡媒体快照保证失败时 MP3/scene/timeline 与 manifest 一起恢复，并继续输出可重试失败清单。最终还必须通过 fresh 音素/媒体全量审计、离线 ASR 候选人工复听、引用和孤儿文件检查。
 - AivisSpeech 只在本次离线录制时运行，不安装服务、不加入计划任务、Run 或 Startup，不使用 GPU；录制结束必须关闭 Engine 及子进程并释放端口、内存。公开仓库不提交模型权重、API key、本机路径或实际 TTS 配置，浏览器永远只读取预生成静态音频。
 - Codex 内置 image2 的视觉审核状态固定为 `codex-approved`，保留每份记录原有的 Codex reviewer 标识，并绑定六项显式检查、toolRunId 与原始 PNG SHA-256；该证据不得描述为人类审核，`human-approved` 会被导入、发布和构建门禁拒绝。
@@ -23,13 +29,12 @@
 - L4-031～L4-040 已使用逐关 source-preserving addendum 固定选举播报／观众端、救援船返航清单、两名现实用户与一个共享 Avatar、远程会议／非人纪要 AI、碎纸证据、雨中集合点、龙族道歉档案／非人法庭 AI、政府新闻播报端、单份私人文档复盘以及游戏内角色／外部记录层；L4-032/037 必须走本地布局，L4-033 必须走远程整格布局且只显示一个共享 Avatar，L4-040 的 Choice UI 必须保持非人界面。题面不得把统计分母、装备使用者、Avatar 操作者、断线表决、纸张来源、雨伞归属、道歉真伪、网络沿革、文档体裁或双门选择画成答案链。L4-032 中文返航报告、L4-034 掉线者判断／解析／发音和 L4-040 中文题问的修正不改变 source projection；实时计算的 10 关 `sourceTextHash` 保持不变且真实选项／解析泄漏为 0。canonical v4 已在 2026-07-14 随全库任务重建；raw 与 review 仍须按新哈希重生／复审，完成前不得发布。
 - 关卡工作区重新收紧桌面留白，并按手机顺序保持播放器、场景、问题连续可达；无答案时提交会聚焦问题，声音失败会显式回退为可答的文字选项，并保存失败 line/token/option context 供“重新加载”精确重试，听力模式切换会重新锁题。首次模式弹窗只能在第一次使用时出现且不可用 Escape 绕过；答题结果弹窗同样不能被 Esc、遮罩或无动作关闭，必须选择重试、查看解析、下一关或最终返回地图。正确/错误选项使用固定 ✓/× 形状配合颜色而不插入会撑宽的答案文字，播放高亮只跟随真实音频且不强制滚动。
 - 主站 Resources 进入工具时必须把当前 `zh/en/ja` 作为 `lang` 查询参数传入，避免新用户回落中文；应用外手机竖版背景只在 `≤900px` 竖屏使用，844×390 等横屏使用桌面横版背景，避免 `cover` 大幅裁切竖图。
-
 ## 2026-07-11 六项移动 Dock 尺寸与桌面选中态
 - 六项移动 Dock 使用 340px 最大宽度、48px 单项触控宽度和更清晰的 34px 图标（Home 为 39px），不再保留八项时期的整栏长度；桌面任务栏选中态在导航请求开始时同步，页面转场结束后再次校准。
 
 ## 2026-07-11 日本語の裏側 1.0.2
 
-- `/tools/japanese-subtext/` 是独立日语潜台词训练器，当前版本 `1.0.2`；标题随界面语言显示为中文“日语的言外之意”、English “Behind the Japanese”、日本語“日本語の裏側”。模块复用一套数据驱动渲染器，题库是 `contentVersion` 管理的分批 JSON，不为单关创建 HTML，也不把 250 关内联到主站 `js/main.js`。
+- `/tools/japanese-subtext/` 是独立日语潜台词训练器，当时公开应用版本为 `1.0.2`；标题随界面语言显示为中文“日语的言外之意”、English “Behind the Japanese”、日本語“日本語の裏側”。模块复用一套数据驱动渲染器，题库是 `contentVersion` 管理的分批 JSON，不为单关创建 HTML，也不把 250 关内联到主站 `js/main.js`。
 - 正式题库固定为 5×50 关：LEVEL 1=N3、LEVEL 2=N2、LEVEL 3–5=N1 / N1 高阶。每级前 5–10 关相对短，后续递增；每关都包含完整场景、问题、三语选项、答案、证据行和不作绝对化断言的语用解析。
 - 内容展示、选项语言和音频设置彼此独立。正文支持纯听 / 日语 / 双语，选项支持 ja / zh / en；首次模式选择只出现一次，进入关卡不自动播放。播放器只保留一个音频实例，公开控件为播放/暂停、任意 seek 和倍速，句子/词块/选项文本本身可点击播放；离开关卡或页面隐藏时必须停止旧音频，播放高亮不得强制滚动页面。
 - 未登录进度保存在版本化本地存档；登录后通过独立 D1 表 `japanese_subtext_profiles` / `japanese_subtext_stage_progress` / `japanese_subtext_daily_activity` 和 GET/PUT `/api/tools/japanese-subtext/progress` 合并。日活动按用户本地日期与关卡稳定 ID 幂等记录，用于月历打卡、当前连续、最长连续和最近活动。服务端从 HttpOnly 会话取用户 ID，并校验 payload、关卡、解锁链、成绩和奖章；不得复用游戏存档表。跨设备合并必须保留已通关记录的 `firstClearMode`，较新的失败尝试不得生成 `cleared=true` 但首次通关模式为空的非法状态。

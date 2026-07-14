@@ -1,10 +1,23 @@
-# 日本語の裏側 1.0.3 发布验收报告
+# 日本語の裏側 1.0.4 发布验收报告（内容 1.0.3）
 
-> 状态：**当前待验收**。旧版 1.0.2 的通过记录不属于本次发布证据；只有下列 1.0.3 契约绑定的门槛全部改为 `PASS` 后，才可发布。
+> 状态：**当前待验收**。已发布应用 1.0.3 / 内容 1.0.2 的通过记录不属于本次候选证据；只有下列应用 1.0.4 / 内容 1.0.3 契约绑定的门槛全部改为 `PASS` 后，才可发布。
 
-<!-- RELEASE:CONTRACT:{"assetVersion":"20260712-japanese-subtext-v103-r6","audioClaritySchemaVersion":3,"audioPipeline":"aivisspeech-1.2.0-aivmx-v3","audioSampleRate":44100,"backgroundImageCount":2,"contentVersion":"1.0.3","imageModel":"gpt-image-2","imageQuality":"high","stageImageCount":250} -->
+<!-- RELEASE:CONTRACT:{"appVersion":"1.0.4","assetVersion":"20260714-japanese-subtext-v104-r1","audioClaritySchemaVersion":3,"audioPipeline":"aivisspeech-1.2.0-aivmx-v3","audioSampleRate":44100,"backgroundImageCount":2,"contentVersion":"1.0.3","imageModel":"gpt-image-2","imageQuality":"high","stageImageCount":250} -->
 
-验收对象为 `/tools/japanese-subtext/` 的 1.0.3 发布候选，固定使用缓存键 `20260712-japanese-subtext-v103-r6`。语音必须来自 `aivisspeech-1.2.0-aivmx-v3` 的 44.1 kHz 离线 AI 管线；250 张关卡图与桌面、手机两张背景必须来自 `gpt-image-2`、`high`，并由 Codex 完成六项显式视觉检查。该证据状态为 `codex-approved`，不代表人类审核。
+验收对象为 `/tools/japanese-subtext/` 的应用 1.0.4 / 内容 1.0.3 发布候选，固定使用缓存键 `20260714-japanese-subtext-v104-r1`。语音必须来自 `aivisspeech-1.2.0-aivmx-v3` 的 44.1 kHz 离线 AI 管线；250 张关卡图与桌面、手机两张背景必须来自 `gpt-image-2`、`high`，并由 Codex 完成六项显式视觉检查。该证据状态为 `codex-approved`，不代表人类审核。
+
+## 已发布 1.0.3 UI 热修基线 — 2026-07-14
+
+本次只修复答错后的交互死路：结果弹窗不再允许通过关闭按钮、Escape 或点击弹窗外部绕过结果操作；即使弹窗因浏览器或脚本原因被关闭，题目区仍保留“重新答题”。解析页也在正文前提供“重新答题”，并按**当前这一次作答**而非历史通关记录决定显示“重新答题”或“进入下一关”。
+
+- 应用界面版本：`appVersion 1.0.3`
+- 题库兼容版本：`contentVersion 1.0.2`
+- 兼容边界：250 关题库、10,088 份音频、时间轴、云存档键和正式关卡图均未变更。
+- Node 自动测试：`51/51` 通过。
+- 内容校验：`250/250` 通过。
+- 音频快速校验：`10,088/10,088` 通过。
+- 真实无头 Chrome 交互回归：`HeadlessChrome/150`、`L1-001`、zh / en / ja，以及 359×500、375×667、390×844、844×390、1365×900 全部通过；Escape 与弹窗外点击不能绕过错题结果，强制关闭后的题面兜底重答、解析页正文前重答、正确作答下一关、历史已通关后本次答错仍显示重答均通过；所有视口横向溢出为 0，相关按钮高度为 44px，未捕获浏览器异常。
+- 完整发布门禁：`npm.cmd run jp-subtext:release-check` 通过；250/250 关内容、10,088/10,088 音频（含 ffprobe 与静音检查）、51/51 Node 测试和 `build-check: ok` 全部通过。
 
 ## 发布门槛
 
@@ -22,7 +35,7 @@
 <!-- AUTO:IMAGE2_VALIDATION:START -->
 `PENDING：等待 250 张关卡图、桌面背景与手机背景发布，并完成绑定 toolRunId、原始 SHA-256 和六项检查的 Codex 视觉审核。`
 <!-- AUTO:IMAGE2_VALIDATION:END -->
-<!-- RELEASE:IMAGE2_VALIDATION:PENDING contract=31c63a8f6e1502a0da171427565878c279dc5ac89d9e17ad9168d58ceb2a449a -->
+<!-- RELEASE:IMAGE2_VALIDATION:PENDING contract=14ce758af1a205a07559ccbd69a78ed79026dc8734b535f18990e66aee4d536d -->
 
 ## 音频最终数据
 
@@ -57,14 +70,14 @@
   <!-- AUTO:AUDIO_VALIDATION:START -->
   `PENDING：必须以 aivisspeech-1.2.0-aivmx-v3、44.1 kHz、clarity schema 3 的最终 10,088 件资产完成全量验证。`
   <!-- AUTO:AUDIO_VALIDATION:END -->
-  <!-- RELEASE:AUDIO_VALIDATION:PENDING contract=31c63a8f6e1502a0da171427565878c279dc5ac89d9e17ad9168d58ceb2a449a -->
+  <!-- RELEASE:AUDIO_VALIDATION:PENDING contract=14ce758af1a205a07559ccbd69a78ed79026dc8734b535f18990e66aee4d536d -->
 
 ## 浏览器回归
 
 <!-- AUTO:BROWSER_QA:START -->
-`PENDING：真实 Image2 图片、版本化背景、最终音频和 r6 缓存键落地后，重新执行全部 zh / en / ja 与五个规定视口回归。`
+`PENDING：真实 Image2 图片、版本化背景、最终音频和 v104-r1 缓存键落地后，重新执行全部 zh / en / ja 与五个规定视口回归。`
 <!-- AUTO:BROWSER_QA:END -->
-<!-- RELEASE:BROWSER_QA:PENDING contract=31c63a8f6e1502a0da171427565878c279dc5ac89d9e17ad9168d58ceb2a449a -->
+<!-- RELEASE:BROWSER_QA:PENDING contract=14ce758af1a205a07559ccbd69a78ed79026dc8734b535f18990e66aee4d536d -->
 
 ## 最终发布命令
 

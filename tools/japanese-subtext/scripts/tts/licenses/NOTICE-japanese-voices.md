@@ -1,6 +1,6 @@
 # Japanese AivisSpeech voice notice
 
-The Japanese audio distributed with “日本語の裏側” 1.0.3 was rendered locally
+The Japanese audio prepared for “日本語の裏側” application 1.0.4 / content 1.0.3 was rendered locally
 with **AivisSpeech Engine 1.2.0** and the four AIVMX models listed below. The
 model weights are not included in this repository; only pre-generated MP3
 files, reproducibility metadata, and hashes are published.

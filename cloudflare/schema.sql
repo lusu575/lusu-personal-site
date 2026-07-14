@@ -385,17 +385,17 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
-  'seed-update-2026-07-12-japanese-subtext-v1-0-3',
-  '2026-07-12-japanese-subtext-v1-0-3',
+  'seed-update-2026-07-14-japanese-subtext-v1-0-4',
+  '2026-07-14-japanese-subtext-v1-0-4',
   'site-updates',
   '["Japanese","AivisSpeech","gpt-image-2","mobile"]',
   '',
   'published',
   0,
   0,
-  '2026-07-11T18:00:00.000Z',
-  '2026-07-11T18:00:00.000Z',
-  '2026-07-11T18:00:00.000Z'
+  '2026-07-14T02:50:00.000Z',
+  '2026-07-14T02:50:00.000Z',
+  '2026-07-14T02:50:00.000Z'
 )
 on conflict(article_id) do nothing;
 
@@ -504,7 +504,7 @@ on conflict(article_id) do update set
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
-  ('seed-update-2026-07-12-japanese-subtext-v1-0-3-zh', 'seed-update-2026-07-12-japanese-subtext-v1-0-3', 'zh', '日语潜台词训练工具更新至 1.0.3', '“日语的言外之意”1.0.3 使用 AivisSpeech 按审校假名重新生成全库 AI 语音，并以 gpt-image-2 重制 250 张精制黑白四格题目配图和简洁彩色站外背景，同时重整桌面与手机交互。', '# 日语潜台词训练工具更新至 1.0.3
+  ('seed-update-2026-07-14-japanese-subtext-v1-0-4-zh', 'seed-update-2026-07-14-japanese-subtext-v1-0-4', 'zh', '日语潜台词训练工具更新至 1.0.4', '“日语的言外之意”1.0.4 使用 AivisSpeech 按审校假名重新生成全库 AI 语音，并以 gpt-image-2 重制 250 张精制黑白四格题目配图和简洁彩色站外背景，同时重整桌面与手机交互。版本边界为 appVersion 1.0.4 / contentVersion 1.0.3。', '# 日语潜台词训练工具更新至 1.0.4
 
 “日语的言外之意”这次同时更新语音、配图、外部背景和训练交互。题库显示仍保留日语汉字，生成输入与展示内容继续分离。
 
@@ -524,8 +524,12 @@ insert into article_translations (
 
 - 首次挑战、听力锁题、漏答提醒、结果与解析后的去向更明确。
 - 播放高亮只在真实播放时出现，配图加载失败可重试。
-- 手机端按播放器、场景、题目的学习顺序重新排布，并控制图片高度和触控尺寸。', '2026-07-11T18:00:00.000Z', '2026-07-11T18:00:00.000Z'),
-  ('seed-update-2026-07-12-japanese-subtext-v1-0-3-en', 'seed-update-2026-07-12-japanese-subtext-v1-0-3', 'en', 'Behind the Japanese 1.0.3 Update', 'Behind the Japanese 1.0.3 regenerates the full AI voice library with AivisSpeech from reviewed kana, replaces all 250 stage illustrations with polished monochrome four-panel manga, adds quiet full-color outer backdrops, and refines desktop and mobile interaction.', '# Behind the Japanese 1.0.3 Update
+- 手机端按播放器、场景、题目的学习顺序重新排布，并控制图片高度和触控尺寸。
+
+## 版本边界
+
+本次发布使用 appVersion 1.0.4 / contentVersion 1.0.3：前者标识应用与交互版本，后者标识 250 关素材、10,088 段音频、题库与云存档的兼容边界。', '2026-07-14T02:50:00.000Z', '2026-07-14T02:50:00.000Z'),
+  ('seed-update-2026-07-14-japanese-subtext-v1-0-4-en', 'seed-update-2026-07-14-japanese-subtext-v1-0-4', 'en', 'Behind the Japanese 1.0.4 Update', 'Behind the Japanese 1.0.4 regenerates the full AI voice library with AivisSpeech from reviewed kana, replaces all 250 stage illustrations with polished monochrome four-panel manga, adds quiet full-color outer backdrops, and refines desktop and mobile interaction. Its version boundary is appVersion 1.0.4 / contentVersion 1.0.3.', '# Behind the Japanese 1.0.4 Update
 
 This release updates speech, stage artwork, the outer backdrop, and training interaction together. The course still displays normal Japanese writing while keeping synthesis input separate.
 
@@ -545,8 +549,12 @@ This release updates speech, stage artwork, the outer backdrop, and training int
 
 - First challenge, listening locks, unanswered-question feedback, results, and post-analysis routes are clearer.
 - Playback highlighting appears only during real playback, and failed illustrations can be retried.
-- Mobile content follows player, scene, and question order with bounded image height and practical touch targets.', '2026-07-11T18:00:00.000Z', '2026-07-11T18:00:00.000Z'),
-  ('seed-update-2026-07-12-japanese-subtext-v1-0-3-ja', 'seed-update-2026-07-12-japanese-subtext-v1-0-3', 'ja', '日本語の裏側 1.0.3 アップデート', '「日本語の裏側」1.0.3 では、確認済みのかな読みから AivisSpeech で全 AI 音声を再生成し、250 ステージの精細なモノクロ四コマと外側の控えめなカラー背景を gpt-image-2 で作り直して、PC・モバイルの操作も再整理しました。', '# 日本語の裏側 1.0.3 アップデート
+- Mobile content follows player, scene, and question order with bounded image height and practical touch targets.
+
+## Version boundary
+
+This release uses appVersion 1.0.4 / contentVersion 1.0.3: the former identifies the application and interaction release, while the latter identifies the compatibility boundary for the 250-stage assets, 10,088 audio files, course data, and cloud saves.', '2026-07-14T02:50:00.000Z', '2026-07-14T02:50:00.000Z'),
+  ('seed-update-2026-07-14-japanese-subtext-v1-0-4-ja', 'seed-update-2026-07-14-japanese-subtext-v1-0-4', 'ja', '日本語の裏側 1.0.4 アップデート', '「日本語の裏側」1.0.4 では、確認済みのかな読みから AivisSpeech で全 AI 音声を再生成し、250 ステージの精細なモノクロ四コマと外側の控えめなカラー背景を gpt-image-2 で作り直して、PC・モバイルの操作も再整理しました。バージョン境界は appVersion 1.0.4 / contentVersion 1.0.3 です。', '# 日本語の裏側 1.0.4 アップデート
 
 今回は音声、ステージ画像、ツール外側の背景、練習操作をまとめて更新しました。画面には通常の漢字表記を残し、合成用の入力とは分離しています。
 
@@ -566,7 +574,11 @@ This release updates speech, stage artwork, the outer backdrop, and training int
 
 - 初回チャレンジ、聴解時の問題ロック、未回答通知、結果と解説後の移動先を明確にしました。
 - 再生中だけ台詞を強調し、画像の読み込み失敗時には再試行できます。
-- モバイルはプレーヤー、場面、問題の順に並べ、画像の高さとタップ領域を調整しました。', '2026-07-11T18:00:00.000Z', '2026-07-11T18:00:00.000Z')
+- モバイルはプレーヤー、場面、問題の順に並べ、画像の高さとタップ領域を調整しました。
+
+## バージョン境界
+
+今回のリリースは appVersion 1.0.4 / contentVersion 1.0.3 を使用します。前者はアプリと操作の版、後者は 250 ステージの素材、10,088 件の音声、問題集、クラウドセーブの互換境界を表します。', '2026-07-14T02:50:00.000Z', '2026-07-14T02:50:00.000Z')
 on conflict(article_id, lang) do nothing;
 
 insert into article_translations (
@@ -897,6 +909,32 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-07-14-japanese-subtext-retry-hotfix',
+  '2026-07-14-japanese-subtext-retry-hotfix',
+  'site-updates',
+  '["Japanese","learning","accessibility","bugfix"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-07-14T02:20:00.000Z',
+  '2026-07-14T02:20:00.000Z',
+  '2026-07-14T02:20:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-07-11-japanese-subtext-trainer',
   '2026-07-11-japanese-subtext-trainer',
   'site-updates',
@@ -1174,6 +1212,45 @@ on conflict(article_id) do update set
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
+  ('seed-update-2026-07-14-japanese-subtext-retry-hotfix-zh', 'seed-update-2026-07-14-japanese-subtext-retry-hotfix', 'zh', '日语潜台词训练器 1.0.3 重答修复', '修复错答后关闭结果弹窗、点击弹窗外或查看解析时可能失去重新答题入口的问题；题库、音频和云存档兼容版本继续保持 1.0.2。', '# 日语潜台词训练器 1.0.3 重答修复
+
+“日语的言外之意”应用更新至 1.0.3，集中修复错答后的操作死路。
+
+## 错答后始终可以继续
+
+- 结果弹窗不再允许通过关闭按钮、Escape 或点击弹窗外绕过必选操作。
+- 即使弹窗被浏览器或其他代码强制关闭，题面仍会显示重新答题按钮。
+- 查看解析后，重新答题入口会放在解析正文之前；只有本次答对时才显示进入下一关。
+
+## 版本边界
+
+本次只更新应用界面与交互。250 关题库、10,088 段静态音频以及云存档兼容边界继续使用 contentVersion 1.0.2，没有伪造内容迁移或重录记录。', '2026-07-14T02:20:00.000Z', '2026-07-14T02:20:00.000Z'),
+  ('seed-update-2026-07-14-japanese-subtext-retry-hotfix-en', 'seed-update-2026-07-14-japanese-subtext-retry-hotfix', 'en', 'Japanese Subtext Trainer 1.0.3 Retry Fix', 'Fixes the dead end that could hide retry after a wrong answer when the result dialog was dismissed or analysis was opened; course, audio, and save compatibility remain on 1.0.2.', '# Japanese Subtext Trainer 1.0.3 Retry Fix
+
+Behind the Japanese moves to app version 1.0.3 with a focused fix for the wrong-answer dead end.
+
+## Retry always remains available
+
+- The result dialog can no longer bypass its required actions through the close button, Escape, or an outside click.
+- If the browser or another script forcibly closes the dialog, the question area still exposes Try Again.
+- After View Analysis, Try Again appears before the explanation content; Next Stage appears only when the current attempt is correct.
+
+## Version boundary
+
+This release changes only the application interface and interaction. The 250-stage course, 10,088 static audio files, and cloud-save compatibility boundary remain on contentVersion 1.0.2, with no fabricated content migration or rerecording claim.', '2026-07-14T02:20:00.000Z', '2026-07-14T02:20:00.000Z'),
+  ('seed-update-2026-07-14-japanese-subtext-retry-hotfix-ja', 'seed-update-2026-07-14-japanese-subtext-retry-hotfix', 'ja', '日本語の裏側 1.0.3 再回答修正', '誤答後に結果ダイアログを閉じたり解説を開いたりすると再回答できなくなる問題を修正しました。問題集・音声・セーブ互換版は 1.0.2 のままです。', '# 日本語の裏側 1.0.3 再回答修正
+
+「日本語の裏側」をアプリ版 1.0.3 に更新し、誤答後に操作できなくなる経路を修正しました。
+
+## いつでも再回答できる導線
+
+- 結果ダイアログは、閉じるボタン、Escape、外側クリックで必須操作を回避できないようにしました。
+- ブラウザや別のスクリプトがダイアログを強制的に閉じても、問題欄には再回答ボタンが残ります。
+- 解説を開いた後は本文より前に再回答を表示し、今回の回答が正解した場合だけ次のステージを表示します。
+
+## バージョン境界
+
+今回はアプリ画面と操作だけの更新です。250 ステージの問題集、10,088 件の静的音声、クラウドセーブの互換境界は contentVersion 1.0.2 のままで、内容移行や再録を行ったとは扱いません。', '2026-07-14T02:20:00.000Z', '2026-07-14T02:20:00.000Z'),
   ('seed-update-2026-07-11-japanese-subtext-trainer-zh', 'seed-update-2026-07-11-japanese-subtext-trainer', 'zh', '日语潜台词训练工具更新至 1.0.2', '“日语的言外之意”更新至 1.0.2：重置全库语音读音链路，修复句尾异常“いい”和“今日”漏读；重做 PC 布局、打卡记录、解析续关与四格漫画配图。', '# 日语潜台词训练工具更新至 1.0.2
 
 “日语的言外之意”继续使用 250 关数据题库，这次重点重置语音生成、桌面布局和学习记录，让听力训练更可靠也更紧凑。

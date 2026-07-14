@@ -1,8 +1,8 @@
-import { UI_LANGUAGES } from "./constants.mjs?v=20260712-japanese-subtext-v103-r6";
+import { APP_VERSION, UI_LANGUAGES } from "./constants.mjs?v=20260714-japanese-subtext-v104-r1";
 
 const copy = {
   zh: {
-    toolTitle: "日语的言外之意", toolVersion: "版本 1.0.3", uiLanguage: "界面语言", backSite: "返回个人站", trainingConsole: "训练控制台", saveSync: "存档同步", startSound: "听力练习模式",
+    toolTitle: "日语的言外之意", toolVersion: `版本 ${APP_VERSION}`, uiLanguage: "界面语言", backSite: "返回个人站", trainingConsole: "训练控制台", saveSync: "存档同步", startSound: "听力练习模式",
     modeChoiceIntro: "请选择首次进入关卡时使用的练习方式。之后可以在训练设置中切换。", modeChoiceAudioUnavailable: "语音暂时无法载入，听力模式已停用。请先使用日语或双语模式。", listeningUnavailable: "当前语音不可用，暂时不能进入听力模式。", japaneseModeEntry: "日语模式", bilingualModeEntry: "双语模式",
     dashboardEyebrow: "语境听力实验室 · 250 关", dashboardIntro: "从语气、停顿、关系和上下文里，听见没说出口的话。",
     startChallenge: "开始挑战", continueTraining: "继续挑战", chooseStage: "选择关卡", settings: "训练设置", records: "学习记录",
@@ -35,7 +35,7 @@ const copy = {
     levelDescriptions: ["N3 · 日常表达与明显线索", "N2 · 口语省略、转折与敬语距离", "N1 · 复杂语气、讽刺与信息差", "N1 高阶 · 多人推理与不可靠叙述", "N1 语用挑战 · 多重含义与开放结局"]
   },
   en: {
-    toolTitle: "Behind the Japanese", toolVersion: "Version 1.0.3", uiLanguage: "Interface language", backSite: "Back to Site", trainingConsole: "Training Console", saveSync: "Save Sync", startSound: "Listening Practice",
+    toolTitle: "Behind the Japanese", toolVersion: `Version ${APP_VERSION}`, uiLanguage: "Interface language", backSite: "Back to Site", trainingConsole: "Training Console", saveSync: "Save Sync", startSound: "Listening Practice",
     modeChoiceIntro: "Choose how to enter your first stage. You can change this later in Training Settings.", modeChoiceAudioUnavailable: "Audio is unavailable, so Listening Practice is disabled. Choose Japanese or Bilingual Mode for now.", listeningUnavailable: "Audio is unavailable, so Listening Practice cannot be selected yet.", japaneseModeEntry: "Japanese Mode", bilingualModeEntry: "Bilingual Mode",
     dashboardEyebrow: "Context Listening Lab · 250 Stages", dashboardIntro: "Hear what was left unsaid through tone, pauses, relationships, and context.",
     startChallenge: "Start Challenge", continueTraining: "Continue Challenge", chooseStage: "Choose Stage", settings: "Training Settings", records: "Learning Record",
@@ -68,7 +68,7 @@ const copy = {
     levelDescriptions: ["N3 · Daily expressions and clear clues", "N2 · Ellipsis, contrast, and polite distance", "N1 · Complex tone, irony, and information gaps", "Advanced N1 · Multi-speaker reasoning and unreliable accounts", "N1 pragmatics · Multiple readings and open endings"]
   },
   ja: {
-    toolTitle: "日本語の裏側", toolVersion: "バージョン 1.0.3", uiLanguage: "表示言語", backSite: "サイトへ戻る", trainingConsole: "トレーニング操作", saveSync: "セーブ同期", startSound: "聴解練習モード",
+    toolTitle: "日本語の裏側", toolVersion: `バージョン ${APP_VERSION}`, uiLanguage: "表示言語", backSite: "サイトへ戻る", trainingConsole: "トレーニング操作", saveSync: "セーブ同期", startSound: "聴解練習モード",
     modeChoiceIntro: "初めてステージに入るときの練習方法を選んでください。あとからトレーニング設定で変更できます。", modeChoiceAudioUnavailable: "音声を読み込めないため、聴解練習モードは一時的に選べません。日本語または二言語モードを選んでください。", listeningUnavailable: "現在は音声を利用できないため、聴解練習モードを選べません。", japaneseModeEntry: "日本語モード", bilingualModeEntry: "二言語モード",
     dashboardEyebrow: "文脈リスニング・ラボ · 250ステージ", dashboardIntro: "声色、間、関係、文脈から、言葉にされなかった本音を読み取ります。",
     startChallenge: "チャレンジ開始", continueTraining: "続きから挑戦", chooseStage: "ステージ選択", settings: "トレーニング設定", records: "学習記録",

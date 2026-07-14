@@ -76,7 +76,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 ## 日本語の裏側维护规则
 
 - `/tools/japanese-subtext/` 是可独立打开的工具；标题随界面语言显示为中文“日语的言外之意”、English “Behind the Japanese”、日本語“日本語の裏側”。题库固定为按 `contentVersion` 管理的分批 JSON，不为单关新建 HTML，也不得把 250 关整体内联进 `js/main.js`。
-- 每次公开修改工具界面、题库、音频、存档兼容或维护流程，版本号固定增加 `0.0.1`，并同步 manifest、题库、音频、API、Resources 卡片、构建守卫和更新记录。完整清单以 `tools/japanese-subtext/MAINTENANCE.md` 为准。
+- 每次公开修改工具界面、交互或维护流程，独立 `appVersion` 固定增加 `0.0.1`，并同步 manifest、前端可见版本、Resources 卡片、缓存、构建守卫和更新记录。只有题库结构、内容哈希或存档兼容边界变化时才增加 `contentVersion`，再同步题库、音频、API 与迁移说明；UI 热修不得伪造全库迁移。完整清单以 `tools/japanese-subtext/MAINTENANCE.md` 为准。
 - 已发布关卡 ID 是持久主键，不得随意修改、重排或复用。修改关卡必须增加该关 `revision`；题库结构或兼容边界变化时再增加 `contentVersion`，并提供可解释的存档迁移策略。
 - 先完成日语、语用和游戏性审校，再用构建器锁定文本。只有 `textLocked` 与内容哈希有效后才可生成正式音频；句子和日语选项使用人工审校的纯假名 `readingJa`，词块使用纯假名 `reading`，画面继续显示原汉字表记。AivisSpeech 查询必须先由表面文本建立基础参数，再用审校假名生成并替换全部 accent phrase / mora，禁止让模型自行猜汉字读音。仅当表面文本与审校假名的韵律和标点结构一致时允许 `kanaSource=surface`，否则必须使用 `reviewed-reading-fallback`；`kanaSource` 与最终 query 一起进入任务哈希。修改台词、读音、声线、语速、模型或输出配置后，只重建最终任务哈希受影响的场景、句子、词块和选项。
 - `content/*.json`、稳定入口 `audio/manifest.json`、各关时间轴和静态音频必须始终以稳定 ID 同步；manifest 自身的 `contentVersion`、任务哈希与实体 SHA-256 负责锁定具体发布版本。当前音频契约固定为 `aivisspeech-1.2.0-aivmx-v3`、CPU、44.1 kHz mono 约 96 kbps MP3 和 clarity schema 3；所有教学任务按扣除 `≥250 ms` 句内长停顿后的实际发音时长计算且不高于 `7.2 mora/s`，普通短词下限为 `1.5 mora/s`，仅 reviewed reading 为单 mora 填充迟疑「ん……」时可使用 `1.2 mora/s` 专用下限。响度 `-18 ±1.5 LUFS`，安全正增益最多 `4.5 dB`，最终 true peak 不高于 `-2 dBTP`。manifest 必须把每关 `sourceContentHash`、逐句 cue、reading / mora / query SHA-256、实际 CPU provider、AivisSpeech Engine 与 AIVMX 模型 provenance、输出参数和发音表 canonical SHA-256 与锁定题库精确绑定。每个非场景原始合成结果与归一化缓存必须使用同哈希 `.boundary.json` sidecar 绑定 raw / normalized 边界审计；scene hash 还要绑定各 line 的 normalized WAV SHA-256，缺无损源时向 Aivis重建，禁止从 MP3 回填。同一音频根必须加跨进程写锁，正式文件只在候选通过全部验收后原子替换。9,838 项假名与 mora 复算、10,088 件音频的 fresh ffprobe / SHA-256 / 首尾静音 / 响度 / clipping / 异常尾音 / 截断 / 孤儿文件验证，以及离线 ASR 候选人工复听通过前不得发布；清晰度失败项只定向重录，不得混入旧库。
@@ -89,6 +89,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 所有题库字符串使用安全 DOM API / `textContent` 渲染；插图路径限定在本工具 `assets/`，音频路径只从 manifest 解析。播放器只能存在一个活动音频实例，换关、返回地图、页面隐藏和离开页面必须停止旧音频。
 - 面向用户的题干、选项和解析不得显示 `line-002` / `line 002` 等内部 ID；中文 UI 和日语题目分别使用中文/日文字体栈。进入关卡不得自动播放，播放不得强制滚动；公开播放器只保留播放/暂停、seek、倍速和文本点击播放。
 - 修改工具脚本、题库、音频 manifest、公开 CSS/JS 或图片后，要更新对应缓存版本，并同步 `CHANGELOG.md`、`PROJECT_CONTEXT.md`、`README.md` 和本 Skill。公开 `site-updates` 采用追加式记录：上线、1.0.1、1.0.2、1.0.3 等每次各建一篇三语记录，已发布 ID、时间、标题、摘要和正文不得覆写；fallback、Functions seed 与 schema seed 必须同步且使用只插入不更新的冲突策略。发布前运行 `jp-subtext:validate`、完整音频与清晰度验证、image2 图片发布/检查、`jp-subtext:test` 与主站 `build`，并复测 359×500、375×667、390×844、844×390、1365×900。
+- 错答后必须始终存在重新答题入口：结果弹窗不得通过关闭按钮、Escape 或外侧点击把页面留在已提交死路；题面保留兜底重答，解析正文之前也要提供重答。下一关只按本次 `attemptCleared` 判断，不得复用历史累计通关状态。
 
 ## 前端和移动端检查
 

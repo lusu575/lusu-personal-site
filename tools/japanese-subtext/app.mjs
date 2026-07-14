@@ -1,12 +1,13 @@
-import { ContentLoader } from "./lib/content-loader.mjs?v=20260712-japanese-subtext-v103-r6";
-import { AudioPlayer } from "./lib/audio-player.mjs?v=20260712-japanese-subtext-v103-r6";
-import { CloudProgress } from "./lib/cloud.mjs?v=20260712-japanese-subtext-v103-r6";
-import { formatTime, localized, parseStageId, safeToolAssetPath, shortContentHash, stageId } from "./lib/constants.mjs?v=20260712-japanese-subtext-v103-r6";
-import { createTranslator, genreLabel, normalizeUiLanguage } from "./lib/i18n.mjs?v=20260712-japanese-subtext-v103-r6";
+import { ContentLoader } from "./lib/content-loader.mjs?v=20260714-japanese-subtext-v104-r1";
+import { AudioPlayer } from "./lib/audio-player.mjs?v=20260714-japanese-subtext-v104-r1";
+import { CloudProgress } from "./lib/cloud.mjs?v=20260714-japanese-subtext-v104-r1";
+import { formatTime, localized, parseStageId, safeToolAssetPath, shortContentHash, stageId } from "./lib/constants.mjs?v=20260714-japanese-subtext-v104-r1";
+import { createTranslator, genreLabel, normalizeUiLanguage } from "./lib/i18n.mjs?v=20260714-japanese-subtext-v104-r1";
+import { questionActionState } from "./lib/question-flow.mjs?v=20260714-japanese-subtext-v104-r1";
 import {
   checkInStats, hasCompletedModeOnboarding, loadLocalState, localDateKey, markModeOnboardingComplete, mergeProgress, mergeSettings,
   nextStageId, progressStats, recordAttempt, resetLocalState, saveProgress, saveSettings
-} from "./lib/storage.mjs?v=20260712-japanese-subtext-v103-r6";
+} from "./lib/storage.mjs?v=20260714-japanese-subtext-v104-r1";
 
 const loader = new ContentLoader();
 const player = new AudioPlayer();
@@ -602,6 +603,7 @@ function renderQuestions(stage) {
   replaceChildren(form, cards);
   form.hidden = !state.questionUnlocked;
   $("#submit-answers").hidden = !state.questionUnlocked || state.submitted;
+  $("#try-again").hidden = !questionActionState(state).showRetry;
 }
 
 function renderAnalysis(stage) {
@@ -617,8 +619,9 @@ function renderAnalysis(stage) {
   });
   replaceChildren($("#analysis-content"), entries);
   $("#analysis-panel").hidden = !state.submitted || !state.analysisVisible;
-  $("#analysis-retry").hidden = state.attemptCleared;
-  syncNextStageButton($("#analysis-next"), state.attemptCleared);
+  const actions = questionActionState(state);
+  $("#analysis-retry").hidden = !actions.showRetry;
+  syncNextStageButton($("#analysis-next"), actions.showNext);
 }
 
 function updateQuestionGate() {
@@ -723,6 +726,7 @@ function resetQuestions() {
 }
 
 function renderResultDialog() {
+  const actions = questionActionState(state);
   const result = $("#answer-result");
   const medal = $("#result-medal");
   result.className = `answer-result ${state.attemptCleared ? "is-success" : "is-error"}`;
@@ -731,8 +735,8 @@ function renderResultDialog() {
   medal.textContent = state.attemptMedal === "none"
     ? t("noMedal")
     : `${t("resultMedal")}: ${t(state.attemptMedal)}`;
-  syncNextStageButton($("#result-next"), state.attemptCleared);
-  $("#result-retry").hidden = state.attemptCleared;
+  syncNextStageButton($("#result-next"), actions.showNext);
+  $("#result-retry").hidden = !actions.showRetry;
 }
 
 function requireResultAction() {

@@ -509,6 +509,7 @@ const japaneseSubtextLibrarySources = Object.fromEntries([
   "constants.mjs",
   "content-loader.mjs",
   "i18n.mjs",
+  "question-flow.mjs",
   "storage.mjs"
 ].map((file) => [file, readRequired(`tools/japanese-subtext/lib/${file}`)]));
 const japaneseSubtextManifest = readRequiredJson("tools/japanese-subtext/manifest.json");
@@ -537,6 +538,7 @@ function validateJapaneseSubtextReleaseContract() {
   const toolRoot = "tools/japanese-subtext";
   const contentRoot = `${toolRoot}/content`;
   const audioRoot = `${toolRoot}/audio`;
+  const appVersion = "1.0.4";
   const contentVersion = japaneseSubtextReleaseContract.contentVersion;
   if (japaneseSubtextManifest.contentVersion !== contentVersion) {
     fail(`${toolRoot}/manifest.json contentVersion must be the current ${contentVersion} release contract`);
@@ -643,6 +645,21 @@ function validateJapaneseSubtextReleaseContract() {
   if (!japaneseSubtextApp.includes("textContent")) {
     fail(`${toolRoot}/app.mjs should render trainer strings with safe text APIs`);
   }
+  if (!japaneseSubtextLibrarySources["constants.mjs"].includes(`export const APP_VERSION = "${appVersion}"`)) {
+    fail(`${toolRoot}/lib/constants.mjs APP_VERSION must be ${appVersion}`);
+  }
+  for (const token of [
+    "toolVersion: `版本 ${APP_VERSION}`",
+    "toolVersion: `Version ${APP_VERSION}`",
+    "toolVersion: `バージョン ${APP_VERSION}`"
+  ]) {
+    if (!japaneseSubtextLibrarySources["i18n.mjs"].includes(token)) {
+      fail(`${toolRoot}/lib/i18n.mjs must derive visible version copy from APP_VERSION`);
+    }
+  }
+  if (!japaneseSubtextHtml.includes(`data-i18n="toolVersion">版本 ${appVersion}<`)) {
+    fail(`${toolRoot}/index.html must expose the ${appVersion} default version before scripts load`);
+  }
 
   const packageData = parseJsonSource("package.json", packageJson);
   const requiredPackageScripts = {
@@ -686,6 +703,7 @@ function validateJapaneseSubtextReleaseContract() {
   for (const [field, expected] of Object.entries({
     id: "japanese-subtext",
     schemaVersion: 1,
+    appVersion,
     contentVersion,
     title: publicTitle,
     entry: "./index.html",
@@ -1487,8 +1505,8 @@ function validateJapaneseSubtextReleaseContract() {
 
   const resourceEntry = windowAfter(mainJs, 'iconSrc: "tools/japanese-subtext/assets/icons/tool-icon-64.webp"', 2200);
   for (const token of [
-    'version: "v1.0.3"',
-    'updated: "2026.07.12"',
+    'version: "v1.0.4"',
+    'updated: "2026.07.14"',
     'external: false',
     'showReadyStatus: false',
     'url: "/tools/japanese-subtext/"',
@@ -2263,7 +2281,7 @@ for (const asset of [
 }
 
 const premiumUiVersion = "20260711-calm-motion-r13";
-const currentPreFinalMainVersion = "20260712-japanese-subtext-v103-r6";
+const currentMainVersion = "20260714-japanese-subtext-v104-r1";
 const currentPreFinalCssVersion = "20260711-calm-motion-r13";
 const currentPreFinalTelemetryVersion = "20260623-analytics-privacy-r1";
 const currentGameShellVersion = "20260623-game-shell-storage-safe-r1";
@@ -2798,7 +2816,7 @@ if (!hasPattern(mainJs, /const\s+keepsDesktopChromeLive\s*=\s*isDesktopShell[\s\
 
 for (const [asset, expectedVersion] of [
   ["/css/style.css", currentPreFinalCssVersion],
-  ["/js/main.js", currentPreFinalMainVersion]
+  ["/js/main.js", currentMainVersion]
 ]) {
   const versions = assetQueryVersions(indexHtml, asset);
   if (versions.length !== 1 || versions[0] !== expectedVersion) {
@@ -3178,19 +3196,32 @@ const immutableJapaneseSubtextTranslationMinimums = {
 };
 const immutableJapaneseSubtextUpdates = [
   {
-    id: "seed-update-2026-07-12-japanese-subtext-v1-0-3",
-    slug: "2026-07-12-japanese-subtext-v1-0-3",
-    publishedAt: "2026-07-11T18:00:00.000Z",
-    date: "2026.07.12",
+    id: "seed-update-2026-07-14-japanese-subtext-v1-0-4",
+    slug: "2026-07-14-japanese-subtext-v1-0-4",
+    publishedAt: "2026-07-14T02:50:00.000Z",
+    date: "2026.07.14",
     requiredMarkers: {
-      zh: ["AivisSpeech", "纯假名", "250", "精制黑白四格漫画", "简洁彩色桌面与手机画面", "gpt-image-2", "UI 与手机交互重整"],
-      en: ["AivisSpeech", "kana-only", "250", "polished monochrome four-panel manga", "quiet full-color desktop and mobile backgrounds", "gpt-image-2", "Desktop and mobile interaction"],
-      ja: ["AivisSpeech", "かな読みだけ", "250", "モノクロ四コマ", "控えめなカラーの PC・モバイル背景", "gpt-image-2", "PC・モバイル操作の再整理"]
+      zh: ["AivisSpeech", "纯假名", "250", "精制黑白四格漫画", "简洁彩色桌面与手机画面", "gpt-image-2", "UI 与手机交互重整", "## 版本边界", "appVersion 1.0.4 / contentVersion 1.0.3", "10,088"],
+      en: ["AivisSpeech", "kana-only", "250", "polished monochrome four-panel manga", "quiet full-color desktop and mobile backgrounds", "gpt-image-2", "Desktop and mobile interaction", "## Version boundary", "appVersion 1.0.4 / contentVersion 1.0.3", "10,088"],
+      ja: ["AivisSpeech", "かな読みだけ", "250", "モノクロ四コマ", "控えめなカラーの PC・モバイル背景", "gpt-image-2", "PC・モバイル操作の再整理", "## バージョン境界", "appVersion 1.0.4 / contentVersion 1.0.3", "10,088"]
     },
-    legacyFingerprints: {
-      zh: "2c1f12cba6326890eca1561873dc53e5c4b0ccb6d7db9f73e5715d35350fe397",
-      en: "4a649cf6de41cdb8305ba733a4c19d7012470e305aa96d15ee62f06e434205fd",
-      ja: "4dbedd989c98487b952664abad7b3a9b6f427ca38743dccec817311af6abbb4a"
+    expectedFingerprints: {
+      zh: "f5126b58a1dde8fc2e922fb27544ea25eae71373f0769841a94f206025f72c54",
+      en: "da7c41819df3b016fd7502356705c7807a7fabf551a38981baa135e1ed94e12a",
+      ja: "bb29678926ed81684ee98f74dae97f497bedfd11fb62e0335d01ea172dfac431"
+    }
+  },
+  {
+    id: "seed-update-2026-07-14-japanese-subtext-retry-hotfix",
+    slug: "2026-07-14-japanese-subtext-retry-hotfix",
+    publishedAt: "2026-07-14T02:20:00.000Z",
+    date: "2026.07.14",
+    mutableParent: true,
+    mutableFunctionTranslations: true,
+    requiredMarkers: {
+      zh: ["1.0.3 重答修复", "重新答题按钮", "查看解析", "contentVersion 1.0.2"],
+      en: ["1.0.3 Retry Fix", "Try Again", "View Analysis", "contentVersion 1.0.2"],
+      ja: ["1.0.3 再回答修正", "再回答ボタン", "解説", "contentVersion 1.0.2"]
     }
   },
   {
@@ -3303,9 +3334,11 @@ for (const update of immutableJapaneseSubtextUpdates) {
   if (countLiteral(apiParentSeed, update.publishedAt) !== 3) {
     fail(`functions/api/[[route]].js ${label} parent timestamps must all stay ${update.publishedAt}`);
   }
-  if (!hasPattern(apiParentSeed, /on conflict\s*\(\s*article_id\s*\)\s*do nothing/i)
-    || /on conflict\s*\(\s*article_id\s*\)\s*do update set/i.test(apiParentSeed)) {
-    fail(`functions/api/[[route]].js ${label} parent seed must not rewrite an existing article`);
+  const apiParentIsMutable = /on conflict\s*\(\s*article_id\s*\)\s*do update set/i.test(apiParentSeed);
+  if (update.mutableParent ? !apiParentIsMutable : (
+    !hasPattern(apiParentSeed, /on conflict\s*\(\s*article_id\s*\)\s*do nothing/i) || apiParentIsMutable
+  )) {
+    fail(`functions/api/[[route]].js ${label} parent seed conflict policy is incorrect`);
   }
 
   const schemaParentSeed = sqlStatementContaining(schemaSql, apiParentMarker, "insert into articles (");
@@ -3321,25 +3354,28 @@ for (const update of immutableJapaneseSubtextUpdates) {
   if (countLiteral(schemaParentSeed, update.publishedAt) !== 3) {
     fail(`cloudflare/schema.sql ${label} parent timestamps must all stay ${update.publishedAt}`);
   }
-  if (!hasPattern(schemaParentSeed, /on conflict\s*\(\s*article_id\s*\)\s*do nothing/i)
-    || /on conflict\s*\(\s*article_id\s*\)\s*do update set/i.test(schemaParentSeed)) {
-    fail(`cloudflare/schema.sql ${label} parent seed must not rewrite an existing article`);
+  const schemaParentIsMutable = /on conflict\s*\(\s*article_id\s*\)\s*do update set/i.test(schemaParentSeed);
+  if (update.mutableParent ? !schemaParentIsMutable : (
+    !hasPattern(schemaParentSeed, /on conflict\s*\(\s*article_id\s*\)\s*do nothing/i) || schemaParentIsMutable
+  )) {
+    fail(`cloudflare/schema.sql ${label} parent seed conflict policy is incorrect`);
   }
 
-  const immutableCallMarker = `immutableArticleTranslationsStatements(env, "${update.id}"`;
-  if (countLiteral(apiJs, immutableCallMarker) !== 1) {
-    fail(`functions/api/[[route]].js ${label} should use the immutable translation helper exactly once`);
+  const translationHelper = update.mutableFunctionTranslations ? "articleTranslationsStatements" : "immutableArticleTranslationsStatements";
+  const translationCallMarker = `${translationHelper}(env, "${update.id}"`;
+  if (countLiteral(apiJs, translationCallMarker) !== 1) {
+    fail(`functions/api/[[route]].js ${label} should use ${translationHelper} exactly once`);
   }
-  if (countLiteral(apiJs, `...articleTranslationsStatements(env, "${update.id}"`) !== 0) {
+  if (!update.mutableFunctionTranslations && countLiteral(apiJs, `...articleTranslationsStatements(env, "${update.id}"`) !== 0) {
     fail(`functions/api/[[route]].js ${label} must not use the mutable translation helper`);
   }
-  const apiTranslations = objectBlockAfterMarker(apiJs, immutableCallMarker);
-  const apiTranslationsStart = apiJs.indexOf(apiTranslations, apiJs.indexOf(immutableCallMarker));
-  const immutableCallTail = apiJs.slice(
+  const apiTranslations = objectBlockAfterMarker(apiJs, translationCallMarker);
+  const apiTranslationsStart = apiJs.indexOf(apiTranslations, apiJs.indexOf(translationCallMarker));
+  const translationCallTail = apiJs.slice(
     apiTranslationsStart + apiTranslations.length,
     apiTranslationsStart + apiTranslations.length + 96
   );
-  if (!immutableCallTail.includes(`, "${update.publishedAt}")`)) {
+  if (!translationCallTail.includes(`, "${update.publishedAt}")`)) {
     fail(`functions/api/[[route]].js ${label} translation timestamp must stay ${update.publishedAt}`);
   }
   const mainTranslationBlocks = Object.fromEntries(
@@ -3375,9 +3411,12 @@ for (const update of immutableJapaneseSubtextUpdates) {
       schemaTranslationMarker,
       "insert into article_translations ("
     );
-    if (!hasPattern(schemaTranslationStatement, /on conflict\s*\(\s*article_id\s*,\s*lang\s*\)\s*do nothing/i)
-      || /on conflict\s*\(\s*article_id\s*,\s*lang\s*\)\s*do update set/i.test(schemaTranslationStatement)) {
-      fail(`cloudflare/schema.sql ${label} translations must not rewrite existing rows`);
+    const schemaTranslationsAreMutable = /on conflict\s*\(\s*article_id\s*,\s*lang\s*\)\s*do update set/i.test(schemaTranslationStatement);
+    if (update.mutableSchemaTranslations ? !schemaTranslationsAreMutable : (
+      !hasPattern(schemaTranslationStatement, /on conflict\s*\(\s*article_id\s*,\s*lang\s*\)\s*do nothing/i)
+        || schemaTranslationsAreMutable
+    )) {
+      fail(`cloudflare/schema.sql ${label} translation conflict policy is incorrect`);
     }
     const tupleStart = schemaTranslationStatement.indexOf(schemaTranslationMarker);
     const schemaValues = sqlSingleQuotedValues(schemaTranslationStatement.slice(tupleStart));
@@ -3416,25 +3455,26 @@ for (const update of immutableJapaneseSubtextUpdates) {
         fail(`${label} ${lang} legacy copy marker changed: ${marker}`);
       }
     }
-    if (update.legacyFingerprints?.[lang]) {
+    const expectedFingerprint = update.expectedFingerprints?.[lang] || update.legacyFingerprints?.[lang];
+    if (expectedFingerprint) {
       const fingerprint = createHash("sha256").update(JSON.stringify({
         title: valuesByLanguage[lang].title,
         summary: valuesByLanguage[lang].summary,
         content_markdown: valuesByLanguage[lang].content_markdown
       })).digest("hex");
-      if (fingerprint !== update.legacyFingerprints[lang]) {
-        fail(`${label} ${lang} legacy title, summary, or body changed (${fingerprint} != ${update.legacyFingerprints[lang]})`);
+      if (fingerprint !== expectedFingerprint) {
+        fail(`${label} ${lang} title, summary, or body fingerprint changed (${fingerprint} != ${expectedFingerprint})`);
       }
     }
   }
 }
 
 for (const token of [
-  'id="top-updated">2026.07.12',
-  "/js/main.js?v=20260712-japanese-subtext-v103-r6"
+  'id="top-updated">2026.07.14',
+  "/js/main.js?v=20260714-japanese-subtext-v104-r1"
 ]) {
   if (!indexHtml.includes(token)) {
-    fail(`index.html Japanese subtext 1.0.3 public update sync missing ${token}`);
+    fail(`index.html Japanese subtext 1.0.4 public update sync missing ${token}`);
   }
 }
 

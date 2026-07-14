@@ -1,8 +1,9 @@
 import { createHash } from "node:crypto";
 
 export const RELEASE_CONTRACT = Object.freeze({
+  appVersion: "1.0.4",
   contentVersion: "1.0.3",
-  assetVersion: "20260712-japanese-subtext-v103-r6",
+  assetVersion: "20260714-japanese-subtext-v104-r1",
   audioPipeline: "aivisspeech-1.2.0-aivmx-v3",
   audioClaritySchemaVersion: 3,
   audioSampleRate: 44100,
@@ -222,9 +223,9 @@ export function validateReleaseReportContract(report, {
 } = {}) {
   const source = String(report || "");
   const errors = [];
-  const expectedHeading = `# 日本語の裏側 ${RELEASE_CONTRACT.contentVersion} 发布验收报告`;
+  const expectedHeading = `# 日本語の裏側 ${RELEASE_CONTRACT.appVersion} 发布验收报告`;
   if (!source.startsWith(expectedHeading)) {
-    errors.push(`release report heading must target ${RELEASE_CONTRACT.contentVersion}`);
+    errors.push(`release report heading must target appVersion ${RELEASE_CONTRACT.appVersion}`);
   }
 
   const expectedContractMarker = releaseContractMarker();

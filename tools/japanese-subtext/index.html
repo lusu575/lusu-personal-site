@@ -7,7 +7,7 @@
   <meta name="description" content="Japanese subtext listening and context trainer">
   <title>日语的言外之意</title>
   <link rel="icon" href="./assets/icons/tool-icon-64.webp" type="image/webp">
-  <link rel="stylesheet" href="./style.css?v=20260712-japanese-subtext-v103-r6">
+  <link rel="stylesheet" href="./style.css?v=20260714-japanese-subtext-v104-r1">
 </head>
 <body>
   <div class="trainer-shell" id="trainer-shell">
@@ -17,7 +17,7 @@
         <img src="./assets/icons/tool-icon-64.webp" width="32" height="32" alt="" aria-hidden="true">
         <div>
           <h1 data-i18n="toolTitle">日语的言外之意</h1>
-          <span data-i18n="toolVersion">版本 1.0.3</span>
+          <span data-i18n="toolVersion">版本 1.0.4</span>
         </div>
       </div>
     </header>
@@ -142,16 +142,17 @@
             <form id="question-form" class="question-form" hidden></form>
             <div class="question-actions">
               <button class="xp-control primary" id="submit-answers" type="submit" form="question-form" data-i18n="submitAnswers" hidden>提交答案</button>
+              <button class="xp-control" id="try-again" type="button" data-action="try-again" data-i18n="tryAgain" hidden>重新答题</button>
             </div>
           </section>
 
           <section class="analysis-column pixel-panel" id="analysis-panel" aria-labelledby="analysis-heading" hidden>
             <div class="panel-caption"><h3 id="analysis-heading" tabindex="-1" data-i18n="analysis">潜台词解析</h3></div>
-            <div id="analysis-content"></div>
             <div class="analysis-actions">
-              <button class="xp-control" id="analysis-retry" type="button" data-action="analysis-retry" data-i18n="retryChallenge">重新挑战</button>
+              <button class="xp-control" id="analysis-retry" type="button" data-action="try-again" data-i18n="tryAgain">重新答题</button>
               <button class="xp-control primary" id="analysis-next" type="button" data-action="next-stage" data-i18n="enterNextStage">进入下一关</button>
             </div>
+            <div id="analysis-content"></div>
           </section>
           </div>
         </div>
@@ -186,7 +187,7 @@
     </form>
   </dialog>
 
-  <dialog class="trainer-dialog result-dialog" id="result-dialog" aria-labelledby="result-heading">
+  <dialog class="trainer-dialog result-dialog" id="result-dialog" aria-labelledby="result-heading" closedby="none">
     <div class="dialog-window">
       <div class="mini-titlebar"><h2 id="result-heading" data-i18n="resultTitle">挑战结果</h2></div>
       <div class="dialog-body result-dialog-body">
@@ -210,6 +211,6 @@
   </dialog>
 
   <div class="sr-live" id="live-region" aria-live="polite" aria-atomic="true"></div>
-  <script type="module" src="./app.mjs?v=20260712-japanese-subtext-v103-r6"></script>
+  <script type="module" src="./app.mjs?v=20260714-japanese-subtext-v104-r1"></script>
 </body>
 </html>
