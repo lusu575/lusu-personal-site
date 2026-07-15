@@ -4,11 +4,12 @@
 
 ## 2026-07-15
 
-- 补齐 GPTWork / 全新克隆的可复现开发基线：Node.js 22.13+、Wrangler `4.99.0`、`.nvmrc`、标准 `npm test`、本地 `wrangler pages dev`、`.env.example`、更完整的本地与敏感文件忽略规则，以及 Pull Request / `main` 的最小 GitHub Actions test + build 校验；纯本地使用 `.dev.vars`，GPTWork 使用平台注入的 process Secrets 且不创建会遮蔽云端值的空文件。
+- 补齐 GPTWork / 全新克隆的可复现开发基线：Node.js 22.13+、Wrangler `4.111.0`、`.nvmrc`、兼容 Node 22 且不依赖测试子进程的标准 `npm test`、本地 `wrangler pages dev`、`.env.example`、更完整的本地与敏感文件忽略规则，以及 Pull Request / `main` 的最小 GitHub Actions test + build 校验；纯本地使用 `.dev.vars`，GPTWork 使用平台注入的 process Secrets 且不创建会遮蔽云端值的空文件。
 - `wrangler.jsonc` 声明 D1 `preview_database_id` 和两个 required secrets；根 README、Cloudflare 配置文档、项目上下文、项目专用 Skill 与 `docs/GPTWORK_MIGRATION_READINESS.md` 记录安装、D1 初始化、命令清单、云端绑定、仅本地资源边界和安全 PR 流程。固定盘符运维示例改为当前 checkout 相对路径，`design-qa.md` 明确历史截图属于未提交的本地证据。项目当前没有真实 lint / typecheck 工具链，明确标记为未配置，不增加伪命令。
 - 聊天与分析 IP 标识删除仓库固定盐及跨用途 fallback，改为 `HMAC-SHA256(secret, purpose + ":" + ip)`；`CHAT_IP_HASH_SALT` / `ANALYTICS_IP_HASH_SALT` 必须独立、至少 32 字节且不能相同，配置不合格时会在任何 API 业务 D1 访问前返回通用 503，日志只记录不合格变量名。
 - 聊天消息与网络来源禁言新增非敏感 `ip_hash_key_id` 代次：后台只允许从当前代次消息新建网络来源禁言，服务端按消息编号读取目标并拒绝旧代次；旧禁言显示为“密钥已轮换”，过期 / 生效状态改由服务端按实际拦截条件计算，避免后台误报。全新库由基础 schema 建列，复合索引拆到 `schema-indexes.sql`；本地迁移脚本和云端 `ensureChatSchema()` 都先补列再建索引，避免旧表直接创建新索引失败。同步更新后台 JS query、后台上下文、Skill、私有 changelog 和页面内 `adminUpdates`，不写入公开 `site-updates`。
 - 新增运行时 Secret、IP HMAC 行为、仓库敏感文件 / 常见凭据形态回归测试和构建守卫，覆盖 fail-fast 不触碰 D1、相同 Secret 拒绝、响应 / 日志不泄露 Secret 或 IP、聊天 / 分析用途与密钥隔离、请求 IP 优先级，以及 `.env.example` 只保留空变量声明；统一根测试入口覆盖 Functions 与日语训练器现有测试。
+- 首轮 Node 22 CI 揭示旧 Wrangler `4.99.0` 的 npm 10 审计结果包含 4 项高危传递依赖；升级并精确锁定到兼容 Node 22 的 `4.111.0`，随附的 `undici`、`ws`、`miniflare` 与 `esbuild` 修复后，npm 10 / npm 11 完整依赖审计均回到 0 项。
 - 修复 `cloudflare/schema.sql` 遗漏 `seed-update-2026-07-10-premium-interaction-mobile-os` 父文章、导致空库插入三语翻译时触发外键失败的问题；新增内存 SQLite 空库初始化、外键完整性、旧聊天表带历史数据补列和二次执行幂等测试，CI 也会实际执行一次 Wrangler 本地 D1 初始化。
 - 部署兼容性提醒：首次改用 HMAC 或以后轮换 Secret 会让历史 IP hash 禁言无法继续匹配；现已通过代次字段明确隔离并阻止从旧消息创建无效禁言，既有旧网络禁言仍无法重算，只能等待新消息后重新建立。本次未访问生产 D1、未写入真实 Secret、未修改公开 UI，因此不新增三语 `site-updates` 或主站前端缓存 query。
 

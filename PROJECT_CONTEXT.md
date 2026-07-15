@@ -2,7 +2,7 @@
 
 ## 2026-07-15 GPTWork 可复现开发基线
 
-- 普通站点开发的可复现运行时固定为 Node.js 22.13+、npm lockfile v3 和 Wrangler `4.99.0`；全新克隆使用 `npm ci`。纯本地环境从 `.env.example` 创建被忽略的 `.dev.vars`，GPTWork 使用平台注入的 process Secrets，不能再创建会遮蔽云端值的空 `.dev.vars`。
+- 普通站点开发的可复现运行时固定为 Node.js 22.13+、npm lockfile v3 和 Wrangler `4.111.0`；全新克隆使用 `npm ci`。纯本地环境从 `.env.example` 创建被忽略的 `.dev.vars`，GPTWork 使用平台注入的 process Secrets，不能再创建会遮蔽云端值的空 `.dev.vars`。
 - 本地 Pages Functions 使用 `wrangler pages dev`，D1 binding 固定为 `DB`，`preview_database_id` 只用于本地模拟数据库；普通开发、CI 和 GPTWork 不需要 Cloudflare 登录、API Token、生产 D1 权限或本机 TTS 模型。
 - API router 必须同时获得独立的 `CHAT_IP_HASH_SALT` 与 `ANALYTICS_IP_HASH_SALT`，两者至少 32 字节且不能相同。IP 标识使用 `HMAC-SHA256(secret, purpose + ":" + ip)` 做聊天 / 分析用途隔离；配置不合格时必须在任何 API 业务 D1 访问前返回通用 503，且日志不得输出 Secret 值或请求 IP。
 - 聊天消息和网络来源禁言保存由聊天 Secret 自动派生的非敏感密钥代次。Secret 轮换后旧消息只供审计、不能新建网络来源禁言，旧禁言明确显示失效；服务端必须按消息编号读取当前代次目标，不能信任前端提交的 hash，也不得恢复公开 fallback。

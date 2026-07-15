@@ -70,6 +70,7 @@ const requiredFiles = [
   "package-lock.json",
   "package.json",
   "scripts/d1-migrate-local.mjs",
+  "scripts/run-tests.mjs",
   "robots.txt",
   "CHANGELOG.md",
   "wrangler.jsonc"
@@ -458,6 +459,7 @@ const apiJs = readRequired("functions/api/[[route]].js");
 const schemaSql = readRequired("cloudflare/schema.sql");
 const schemaIndexesSql = readRequired("cloudflare/schema-indexes.sql");
 const d1MigrateLocalJs = readRequired("scripts/d1-migrate-local.mjs");
+const testRunnerJs = readRequired("scripts/run-tests.mjs");
 const indexHtml = readRequired("index.html");
 const mobileIosShellCss = readRequired("css/mobile-ios-shell.css");
 const motionSystemCss = readRequired("css/motion-system.css");
@@ -2918,8 +2920,8 @@ const migrationWranglerData = parseJsonSource("wrangler.jsonc", wranglerConfig);
 if (nodeVersion.trim() !== "22" || migrationPackageData.engines?.node !== ">=22.13.0") {
   fail("Node.js runtime must stay documented as version 22.13+ in .nvmrc and package.json");
 }
-if (migrationPackageData.devDependencies?.wrangler !== "4.99.0") {
-  fail("package.json must pin Wrangler 4.99.0 for reproducible GPTWork setup");
+if (migrationPackageData.devDependencies?.wrangler !== "4.111.0") {
+  fail("package.json must pin Wrangler 4.111.0 for reproducible GPTWork setup");
 }
 if (migrationPackageData.scripts?.dev !== "wrangler pages dev") {
   fail("package.json dev must use wrangler pages dev and wrangler.jsonc");
@@ -2935,6 +2937,16 @@ for (const token of ["pragma table_info", "alter table", "schema-indexes.sql", "
 for (const token of ["tests/*.test.mjs", "tools/japanese-subtext/tests/*.test.mjs", "tools/japanese-subtext/scripts/tts/tests/*.mjs"]) {
   if (!String(migrationPackageData.scripts?.test || "").includes(token)) {
     fail(`package.json test must cover ${token}`);
+  }
+}
+for (const scriptName of ["test", "jp-subtext:test"]) {
+  if (!String(migrationPackageData.scripts?.[scriptName] || "").startsWith("node scripts/run-tests.mjs ")) {
+    fail(`package.json ${scriptName} must use the Node 22-compatible in-process test runner`);
+  }
+}
+for (const token of ["pathToFileURL", "await import", "projectRelative.startsWith(\"..\")"]) {
+  if (!testRunnerJs.includes(token)) {
+    fail(`scripts/run-tests.mjs missing compatibility or path guard ${token}`);
   }
 }
 if (migrationWranglerData.d1_databases?.[0]?.binding !== "DB" || migrationWranglerData.d1_databases?.[0]?.preview_database_id !== "DB") {
