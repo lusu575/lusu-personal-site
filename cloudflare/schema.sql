@@ -122,6 +122,7 @@ create table if not exists anonymous_chat_messages (
   edited_at text,
   hidden integer not null default 0,
   ip_hash text not null,
+  ip_hash_key_id text not null default 'legacy',
   ip_prefix text not null default '',
   room_key text not null default 'public',
   encrypted integer not null default 0
@@ -148,6 +149,7 @@ create table if not exists chat_bans (
   ban_type text not null,
   visitor_id text not null default '',
   ip_hash text not null default '',
+  ip_hash_key_id text not null default 'legacy',
   ip_prefix text not null default '',
   reason text not null default '',
   active integer not null default 1,
@@ -650,6 +652,32 @@ insert into articles (
   '2026-07-14T02:20:00.000Z',
   '2026-07-14T02:20:00.000Z',
   '2026-07-14T02:20:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-07-10-premium-interaction-mobile-os',
+  '2026-07-10-premium-interaction-mobile-os',
+  'site-updates',
+  '["design","mobile","interaction","accessibility"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-07-10T16:20:00.000Z',
+  '2026-07-10T16:20:00.000Z',
+  '2026-07-10T16:20:00.000Z'
 )
 on conflict(article_id) do update set
   slug = excluded.slug,

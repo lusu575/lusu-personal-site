@@ -25,6 +25,13 @@ const PUBLIC_CHAT_ROOM_KEY = "public";
 const CHAT_PRIVATE_ROOM_TTL_MS = 24 * 60 * 60 * 1000;
 const MAX_CHAT_ROOM_KEY_CHARS = 80;
 const MAX_CHAT_ENCRYPTED_CONTENT_CHARS = 3200;
+const REQUIRED_RUNTIME_SECRETS = Object.freeze([
+  "CHAT_IP_HASH_SALT",
+  "ANALYTICS_IP_HASH_SALT"
+]);
+const MIN_RUNTIME_SECRET_BYTES = 32;
+const CHAT_IP_HASH_ALGORITHM = "hmac-sha256-v1";
+const LEGACY_IP_HASH_KEY_ID = "legacy";
 const VISITOR_COOKIE = "lusu_visitor";
 const VISITOR_DAYS = 365;
 const OWNER_ADMIN_EMAILS = new Set(["630739094@qq.com"]);
@@ -95,6 +102,12 @@ export async function onRequest(context) {
 
   if (!env.DB) {
     return json({ error: "D1 database binding DB is not configured." }, 500);
+  }
+
+  const invalidRuntimeSecrets = invalidRuntimeSecretNames(env);
+  if (invalidRuntimeSecrets.length) {
+    console.error("API runtime secret validation failed.", { variables: invalidRuntimeSecrets });
+    return json({ error: "Service privacy configuration is unavailable." }, 503);
   }
 
   try {
@@ -1152,6 +1165,7 @@ async function postChatMessage(request, env) {
     : normalizeChatContent(body.content);
   const ipInfo = await requestIpInfo(request, env, "chat");
   const ipHash = ipInfo.ipHash;
+  const ipHashKeyId = ipInfo.ipHashKeyId;
   const now = new Date();
   const nowText = now.toISOString();
   const visitorSince = new Date(now.getTime() - CHAT_COOLDOWN_MS).toISOString();
@@ -1159,7 +1173,7 @@ async function postChatMessage(request, env) {
 
   await cleanupExpiredPrivateChatRooms(env);
   await ensureVisitorProfile(env, request, identity.visitorId, {}, false);
-  const ban = await activeChatBan(env, identity.visitorId, ipHash);
+  const ban = await activeChatBan(env, identity.visitorId, ipHash, ipHashKeyId);
   if (ban) {
     const expires = ban.expires_at ? `，到 ${ban.expires_at} 结束` : "";
     return withVisitorCookie(json({ error: `当前访客已被禁言${expires}。` }, 403), request, identity);
@@ -1179,8 +1193,8 @@ async function postChatMessage(request, env) {
   const ipRow = await env.DB.prepare(`
     select count(*) as count
     from anonymous_chat_messages
-    where ip_hash = ? and room_key = ? and created_at > ?
-  `).bind(ipHash, roomKey, ipSince).first();
+    where ip_hash = ? and ip_hash_key_id = ? and room_key = ? and created_at > ?
+  `).bind(ipHash, ipHashKeyId, roomKey, ipSince).first();
   if (Number(ipRow?.count || 0) >= CHAT_IP_WINDOW_LIMIT) {
     return withVisitorCookie(json({ error: "当前网络发送过于频繁，请稍后再试。" }, 429), request, identity);
   }
@@ -1200,10 +1214,22 @@ async function postChatMessage(request, env) {
   await env.DB.prepare(`
     insert into anonymous_chat_messages (
       message_id, visitor_id, client_id, nickname, content, created_at,
-      hidden, ip_hash, ip_prefix, room_key, encrypted
+      hidden, ip_hash, ip_hash_key_id, ip_prefix, room_key, encrypted
     )
-    values (?, ?, ?, ?, ?, ?, 0, ?, ?, ?, ?)
-  `).bind(messageId, identity.visitorId, clientId, nickname, content, nowText, ipHash, ipInfo.ipPrefix, roomKey, encrypted ? 1 : 0).run();
+    values (?, ?, ?, ?, ?, ?, 0, ?, ?, ?, ?, ?)
+  `).bind(
+    messageId,
+    identity.visitorId,
+    clientId,
+    nickname,
+    content,
+    nowText,
+    ipHash,
+    ipHashKeyId,
+    ipInfo.ipPrefix,
+    roomKey,
+    encrypted ? 1 : 0
+  ).run();
 
   return withVisitorCookie(json({
     message: {
@@ -2333,6 +2359,7 @@ async function getAdminAnalyticsOverview(request, env) {
 async function getAdminChatMessages(request, env) {
   await requireAdmin(request, env);
   await ensureAnalyticsSchema(env);
+  const currentIpHashKeyId = await chatIpHashKeyId(runtimeSecret(env, "CHAT_IP_HASH_SALT"));
   const url = new URL(request.url);
   const limit = clampLimit(url.searchParams.get("limit"), 100);
   const includeHidden = url.searchParams.get("includeHidden") === "1";
@@ -2350,6 +2377,10 @@ async function getAdminChatMessages(request, env) {
       anonymous_chat_messages.edited_at,
       anonymous_chat_messages.hidden,
       anonymous_chat_messages.ip_hash,
+      case
+        when anonymous_chat_messages.ip_hash_key_id = ? then 1
+        else 0
+      end as ip_hash_current,
       anonymous_chat_messages.ip_prefix,
       site_visitors.country,
       site_visitors.region,
@@ -2360,7 +2391,7 @@ async function getAdminChatMessages(request, env) {
     ${where}
     order by anonymous_chat_messages.created_at desc, anonymous_chat_messages.message_id desc
     limit ?
-  `).bind(limit).all()).results || [];
+  `).bind(currentIpHashKeyId, limit).all()).results || [];
   return json({ messages: rows });
 }
 
@@ -2403,13 +2434,32 @@ async function deleteAdminChatMessage(request, env, messageId) {
 
 async function getAdminChatBans(request, env) {
   await requireAdmin(request, env);
+  const currentIpHashKeyId = await chatIpHashKeyId(runtimeSecret(env, "CHAT_IP_HASH_SALT"));
+  const now = nowIso();
   const rows = (await env.DB.prepare(`
-    select chat_bans.*, users.email as created_by_email
+    select
+      chat_bans.*,
+      users.email as created_by_email,
+      case
+        when chat_bans.ban_type not in ('ip_hash', 'ip') or chat_bans.ip_hash_key_id = ? then 1
+        else 0
+      end as target_current,
+      case
+        when chat_bans.expires_at is not null and chat_bans.expires_at <= ? then 1
+        else 0
+      end as expired,
+      case
+        when chat_bans.active = 1
+          and (chat_bans.expires_at is null or chat_bans.expires_at > ?)
+          and (chat_bans.ban_type not in ('ip_hash', 'ip') or chat_bans.ip_hash_key_id = ?)
+        then 1
+        else 0
+      end as effective
     from chat_bans
     left join users on users.id = chat_bans.created_by
     order by chat_bans.created_at desc
     limit 100
-  `).all()).results || [];
+  `).bind(currentIpHashKeyId, now, now, currentIpHashKeyId).all()).results || [];
   return json({ bans: rows });
 }
 
@@ -2420,9 +2470,30 @@ async function createAdminChatBan(request, env) {
   if (!["visitor", "ip_hash"].includes(banType)) {
     return json({ error: "禁言类型只能是 visitor 或 ip_hash。" }, 400);
   }
-  const visitorId = banType === "visitor" ? normalizeRecordId(body.visitorId || body.visitor_id, "访客 ID 不正确。") : "";
-  const ipHash = banType === "ip_hash" ? normalizeIpHash(body.ipHash || body.ip_hash) : "";
-  const ipPrefix = banType === "ip_hash" ? normalizeIpPrefix(body.ipPrefix || body.ip_prefix) : "";
+  const visitorId = banType === "visitor"
+    ? normalizeRecordId(body.visitorId || body.visitor_id, "访客 ID 不正确。")
+    : "";
+  let ipHash = "";
+  let ipPrefix = "";
+  let ipHashKeyId = LEGACY_IP_HASH_KEY_ID;
+  if (banType === "ip_hash") {
+    const messageId = normalizeRecordId(body.messageId || body.message_id, "消息编号不正确。");
+    const target = await env.DB.prepare(`
+      select ip_hash, ip_hash_key_id, ip_prefix
+      from anonymous_chat_messages
+      where message_id = ?
+    `).bind(messageId).first();
+    if (!target) {
+      return json({ error: "消息不存在，无法按网络来源禁言。" }, 404);
+    }
+    const currentIpHashKeyId = await chatIpHashKeyId(runtimeSecret(env, "CHAT_IP_HASH_SALT"));
+    if (target.ip_hash_key_id !== currentIpHashKeyId) {
+      return json({ error: "这条消息使用旧代次网络指纹，不能新建网络来源禁言；请等待该来源产生新消息。" }, 409);
+    }
+    ipHash = normalizeIpHash(target.ip_hash);
+    ipPrefix = normalizeIpPrefix(target.ip_prefix);
+    ipHashKeyId = currentIpHashKeyId;
+  }
   const reason = normalizeAnalyticsText(body.reason, 200) || "后台禁言";
   const durationHours = Number(body.durationHours || body.duration_hours || 0);
   const expiresAt = Number.isFinite(durationHours) && durationHours > 0
@@ -2432,10 +2503,21 @@ async function createAdminChatBan(request, env) {
   const banId = crypto.randomUUID();
   await env.DB.prepare(`
     insert into chat_bans (
-      ban_id, ban_type, visitor_id, ip_hash, ip_prefix, reason,
+      ban_id, ban_type, visitor_id, ip_hash, ip_hash_key_id, ip_prefix, reason,
       active, created_by, created_at, expires_at
-    ) values (?, ?, ?, ?, ?, ?, 1, ?, ?, ?)
-  `).bind(banId, banType, visitorId, ipHash, ipPrefix, reason, session.user.id, nowIso(), expiresAt).run();
+    ) values (?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?)
+  `).bind(
+    banId,
+    banType,
+    visitorId,
+    ipHash,
+    ipHashKeyId,
+    ipPrefix,
+    reason,
+    session.user.id,
+    nowIso(),
+    expiresAt
+  ).run();
   return json({ ok: true, banId });
 }
 
@@ -2450,7 +2532,7 @@ async function disableAdminChatBan(request, env, banId) {
   return json({ ok: true });
 }
 
-async function activeChatBan(env, visitorId, ipHash) {
+async function activeChatBan(env, visitorId, ipHash, ipHashKeyId) {
   return env.DB.prepare(`
     select ban_id, ban_type, reason, expires_at
     from chat_bans
@@ -2458,11 +2540,11 @@ async function activeChatBan(env, visitorId, ipHash) {
       and (expires_at is null or expires_at > ?)
       and (
         (visitor_id <> '' and visitor_id = ?)
-        or (ip_hash <> '' and ip_hash = ?)
+        or (ip_hash <> '' and ip_hash_key_id = ? and ip_hash = ?)
       )
     order by created_at desc
     limit 1
-  `).bind(nowIso(), visitorId, ipHash).first();
+  `).bind(nowIso(), visitorId, ipHashKeyId, ipHash).first();
 }
 
 async function recentChatNicknames(env, roomKey = PUBLIC_CHAT_ROOM_KEY) {
@@ -2549,6 +2631,7 @@ async function ensureChatSchema(env) {
         edited_at text,
         hidden integer not null default 0,
         ip_hash text not null,
+        ip_hash_key_id text not null default 'legacy',
         ip_prefix text not null default '',
         room_key text not null default 'public',
         encrypted integer not null default 0
@@ -2560,6 +2643,7 @@ async function ensureChatSchema(env) {
         ban_type text not null,
         visitor_id text not null default '',
         ip_hash text not null default '',
+        ip_hash_key_id text not null default 'legacy',
         ip_prefix text not null default '',
         reason text not null default '',
         active integer not null default 1,
@@ -2586,9 +2670,13 @@ async function ensureChatSchema(env) {
   await ensureTableColumns(env, "anonymous_chat_messages", [
     ["client_id", "text not null default ''"],
     ["edited_at", "text"],
+    ["ip_hash_key_id", "text not null default 'legacy'"],
     ["ip_prefix", "text not null default ''"],
     ["room_key", "text not null default 'public'"],
     ["encrypted", "integer not null default 0"]
+  ]);
+  await ensureTableColumns(env, "chat_bans", [
+    ["ip_hash_key_id", "text not null default 'legacy'"]
   ]);
   await env.DB.prepare("create index if not exists anonymous_chat_messages_client_idx on anonymous_chat_messages(client_id, created_at)").run();
   await env.DB.prepare("create index if not exists anonymous_chat_messages_room_visible_idx on anonymous_chat_messages(room_key, hidden, created_at, message_id)").run();
@@ -2596,6 +2684,8 @@ async function ensureChatSchema(env) {
   await env.DB.prepare("create index if not exists anonymous_chat_messages_room_created_idx on anonymous_chat_messages(room_key, created_at)").run();
   await env.DB.prepare("create index if not exists anonymous_chat_messages_room_visitor_idx on anonymous_chat_messages(room_key, visitor_id, created_at)").run();
   await env.DB.prepare("create index if not exists anonymous_chat_messages_room_ip_idx on anonymous_chat_messages(room_key, ip_hash, created_at)").run();
+  await env.DB.prepare("create index if not exists anonymous_chat_messages_room_ip_generation_idx on anonymous_chat_messages(room_key, ip_hash_key_id, ip_hash, created_at)").run();
+  await env.DB.prepare("create index if not exists chat_bans_active_ip_generation_idx on chat_bans(active, ip_hash_key_id, ip_hash, expires_at)").run();
   chatSchemaReady = true;
 }
 
@@ -8675,20 +8765,16 @@ function createdAtFromChatMessageId(messageId) {
   return Number.isNaN(date.getTime()) ? "" : date.toISOString();
 }
 
-async function requestIpHash(request, env) {
-  return (await requestIpInfo(request, env, "chat")).ipHash;
-}
-
 async function requestIpInfo(request, env, purpose = "analytics") {
   const ip = requestIp(request);
-  const salt = purpose === "chat"
-    ? (env.CHAT_IP_HASH_SALT || "lusu-chat")
-    : (env.ANALYTICS_IP_HASH_SALT || env.CHAT_IP_HASH_SALT || "lusu-analytics");
+  const secretName = purpose === "chat" ? "CHAT_IP_HASH_SALT" : "ANALYTICS_IP_HASH_SALT";
+  const secret = runtimeSecret(env, secretName);
   const cf = request.cf || {};
   const latitude = Number(cf.latitude);
   const longitude = Number(cf.longitude);
   return {
-    ipHash: await sha256Hex(`${salt}:${ip}`),
+    ipHash: await hmacSha256Hex(secret, `${purpose}:${ip}`),
+    ipHashKeyId: purpose === "chat" ? await chatIpHashKeyId(secret) : "",
     ipPrefix: maskIp(ip),
     country: normalizeAnalyticsText(cf.country || request.headers.get("CF-IPCountry"), 80),
     region: normalizeAnalyticsText(cf.region || cf.regionCode, 120),
@@ -8803,6 +8889,45 @@ async function verifyPassword(password, stored) {
 async function sha256Hex(value) {
   const digest = await crypto.subtle.digest("SHA-256", textBytes(value));
   return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+async function hmacSha256Hex(secret, value) {
+  const key = await crypto.subtle.importKey(
+    "raw",
+    textBytes(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const signature = await crypto.subtle.sign("HMAC", key, textBytes(value));
+  return [...new Uint8Array(signature)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+async function chatIpHashKeyId(secret) {
+  const fingerprint = await hmacSha256Hex(secret, `${CHAT_IP_HASH_ALGORITHM}:key-id`);
+  return `${CHAT_IP_HASH_ALGORITHM}:${fingerprint.slice(0, 24)}`;
+}
+
+function invalidRuntimeSecretNames(env) {
+  const invalid = REQUIRED_RUNTIME_SECRETS.filter((name) => {
+    const value = String(env?.[name] || "").trim();
+    return textBytes(value).byteLength < MIN_RUNTIME_SECRET_BYTES;
+  });
+  if (
+    !invalid.length
+    && String(env.CHAT_IP_HASH_SALT).trim() === String(env.ANALYTICS_IP_HASH_SALT).trim()
+  ) {
+    return [...REQUIRED_RUNTIME_SECRETS];
+  }
+  return invalid;
+}
+
+function runtimeSecret(env, name) {
+  const value = String(env?.[name] || "").trim();
+  if (textBytes(value).byteLength < MIN_RUNTIME_SECRET_BYTES) {
+    throw new HttpError("Service privacy configuration is unavailable.", 503);
+  }
+  return value;
 }
 
 function timingSafeEqual(a, b) {

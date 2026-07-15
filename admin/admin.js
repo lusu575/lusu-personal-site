@@ -94,6 +94,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
   {
+    date: "2026-07-15",
+    title: "网络来源禁言增加哈希代次保护",
+    body: "聊天消息与网络来源禁言会记录非敏感的哈希密钥代次。后台只允许从当前代次消息新建网络来源禁言；旧代次消息只供审计，相关按钮会禁用，旧禁言会标记为“密钥已轮换”。禁言是否生效、是否过期由服务端按实际拦截条件返回，避免后台误报。后台 JS query 更新为 20260715-chat-ip-hash-generation-r1。"
+  },
+  {
     date: "2026-07-06",
     title: "密码房加密消息治理显示",
     body: "聊天室管理支持主站暗色密码房：后台列表会把加密消息显示为“密码房加密消息（后台无法解密）”，状态概览增加密码房数量，详情表单锁定密文内容编辑；隐藏、删除、按隐藏用户标识或网络来源禁言继续可用。后台 JS query 更新为 20260706-private-chat-rooms-r1。"
@@ -3646,7 +3651,9 @@ function renderChatStatusOverview(messages, isFiltered) {
   const encryptedCount = rows.filter(isEncryptedChatMessage).length;
   const withPlace = rows.filter((message) => [message.country, message.region, message.city].some(Boolean)).length;
   const withVisitor = rows.filter((message) => Boolean(message.visitor_id)).length;
-  const withBanSource = rows.filter((message) => Boolean(message.visitor_id || message.ip_hash)).length;
+  const withBanSource = rows.filter((message) => Boolean(
+    message.visitor_id || (message.ip_hash && isCurrentChatIpHash(message))
+  )).length;
   const items = [
     [isFiltered ? "当前显示" : "已加载", rows.length],
     ["可见", Math.max(0, rows.length - hiddenCount)],
@@ -3682,6 +3689,10 @@ function chatMessageMatchesFilter(message, filterText) {
 
 function isEncryptedChatMessage(message) {
   return Number(message?.encrypted) === 1;
+}
+
+function isCurrentChatIpHash(message) {
+  return Number(message?.ip_hash_current) === 1;
 }
 
 function chatMessageDisplayContent(message) {
@@ -3725,6 +3736,12 @@ function selectChatMessage(messageId) {
     ["隐藏用户标识", message.visitor_id || ""],
     ["前端临时标识", message.client_id || ""],
     ["隐藏网络指纹", message.ip_hash || ""],
+    [
+      "网络指纹代次",
+      !message.ip_hash
+        ? "未记录"
+        : (isCurrentChatIpHash(message) ? "当前代次，可用于禁言" : "旧代次，仅供审计，不能新建禁言")
+    ],
     ["网络前缀", message.ip_prefix || ""],
     ["来源", [message.country, message.region, message.city].filter(Boolean).join(" / ") || "未知"]
   ].map(([label, value]) => createChatMetaItem(label, value)));
@@ -3798,13 +3815,18 @@ function syncChatActionState() {
   }
   if (ipBanButton) {
     const missingIpHash = hasMessage && !message.ip_hash;
-    ipBanButton.disabled = busy || !hasMessage || missingIpHash;
+    const staleIpHash = hasMessage && Boolean(message.ip_hash) && !isCurrentChatIpHash(message);
+    ipBanButton.disabled = busy || !hasMessage || missingIpHash || staleIpHash;
     ipBanButton.setAttribute("aria-busy", busy ? "true" : "false");
     ipBanButton.setAttribute("aria-disabled", ipBanButton.disabled ? "true" : "false");
     ipBanButton.textContent = state.chatActionBusyMode === "banIp" ? "禁言中..." : "禁言网络来源";
     syncButtonHint(
       ipBanButton,
-      missingIpHash ? "这条记录没有隐藏网络指纹，无法按网络来源禁言" : chatActionButtonHint("按网络来源禁言", hasMessage, busy)
+      missingIpHash
+        ? "这条记录没有隐藏网络指纹，无法按网络来源禁言"
+        : (staleIpHash
+          ? "这条记录使用旧代次网络指纹；请等待该来源产生新消息"
+          : chatActionButtonHint("按网络来源禁言", hasMessage, busy))
     );
   }
   syncChatListBusyState();
@@ -4025,6 +4047,10 @@ async function banSelectedChat(type) {
     showChatActionError(new Error("这条记录没有隐藏网络指纹，无法按网络来源禁言。"));
     return;
   }
+  if ((type === "ip_hash" || type === "ip") && !isCurrentChatIpHash(message)) {
+    showChatActionError(new Error("这条记录使用旧代次网络指纹；请等待该来源产生新消息后再禁言。"));
+    return;
+  }
   setChatActionBusy(type === "ip_hash" || type === "ip" ? "banIp" : "banVisitor");
   setBanListBusy("refresh");
   const form = $("#chat-form-admin");
@@ -4032,9 +4058,8 @@ async function banSelectedChat(type) {
     type,
     reason: form.elements.ban_reason.value || "后台禁言",
     durationHours: Number(form.elements.ban_hours.value || 0),
-    visitorId: message.visitor_id,
-    ipHash: message.ip_hash,
-    ipPrefix: message.ip_prefix
+    messageId: message.message_id,
+    visitorId: message.visitor_id
   };
   try {
     await api("/api/admin/chat/bans", { method: "POST", body: JSON.stringify(body) });
@@ -4055,7 +4080,7 @@ async function loadBans() {
 
 function renderBans() {
   const list = $("#ban-list");
-  const activeCount = state.bans.filter((ban) => ban.active).length;
+  const activeCount = state.bans.filter(isEffectiveChatBan).length;
   const filterText = normalizeFilterText(state.banFilter);
   const visibleBans = filterText
     ? state.bans.filter((ban) => banMatchesFilter(ban, filterText))
@@ -4087,8 +4112,9 @@ function renderBans() {
     meta.className = "list-meta";
     item.title = banListLabel(ban);
     item.setAttribute("aria-label", item.title);
+    const statusLabel = chatBanStatusLabel(ban);
     meta.append(
-      createStatusBadgeElement(ban.active ? "生效中" : "已停用", ban.active ? "active" : "off"),
+      createStatusBadgeElement(statusLabel, isEffectiveChatBan(ban) ? "active" : "off"),
       createStatusBadgeElement(banTypeLabel(ban.ban_type), "neutral")
     );
     const targetText = `${ban.visitor_id || ban.ip_prefix || ban.ip_hash || ""} · ${ban.reason || ""}`;
@@ -4118,14 +4144,20 @@ function renderBanStatusOverview(bans, isFiltered) {
     return;
   }
   const rows = bans || [];
-  const activeCount = rows.filter((ban) => ban.active).length;
+  const activeCount = rows.filter(isEffectiveChatBan).length;
+  const expiredCount = rows.filter((ban) => ban.active && Number(ban.expired) === 1).length;
+  const staleCount = rows.filter((ban) => (
+    ban.active && Number(ban.expired) !== 1 && !isCurrentChatBanTarget(ban)
+  )).length;
   const userCount = rows.filter((ban) => ban.ban_type === "visitor").length;
   const ipCount = rows.filter((ban) => ban.ban_type === "ip_hash" || ban.ban_type === "ip").length;
   const reasonCount = rows.filter((ban) => Boolean(ban.reason)).length;
   const items = [
     [isFiltered ? "当前显示" : "全部禁言", rows.length],
     ["生效中", activeCount],
-    ["已停用", Math.max(0, rows.length - activeCount)],
+    ["已停用/失效", Math.max(0, rows.length - activeCount)],
+    ["已过期", expiredCount],
+    ["密钥已轮换", staleCount],
     ["按用户", userCount],
     ["按网络来源", ipCount],
     ["有原因", reasonCount]
@@ -4139,7 +4171,7 @@ function banMatchesFilter(ban, filterText) {
   }
   const target = ban.visitor_id || ban.ip_prefix || ban.ip_hash || "";
   const searchText = [
-    ban.active ? "生效中" : "已停用",
+    chatBanStatusLabel(ban),
     banTypeLabel(ban.ban_type),
     ban.ban_type,
     target,
@@ -4165,13 +4197,31 @@ function banListLabel(ban) {
   const reason = ban.reason || "未记录原因";
   const expires = ban.expires_at ? `到期 ${formatTime(ban.expires_at)}` : "长期";
   return [
-    ban.active ? "生效中" : "已停用",
+    chatBanStatusLabel(ban),
     banTypeLabel(ban.ban_type),
     `目标 ${target}`,
     `原因 ${reason}`,
     `创建 ${formatTime(ban.created_at) || "未记录"}`,
     expires
   ].join("；");
+}
+
+function isCurrentChatBanTarget(ban) {
+  return !["ip_hash", "ip"].includes(ban?.ban_type) || Number(ban?.target_current) === 1;
+}
+
+function isEffectiveChatBan(ban) {
+  return Number(ban?.effective) === 1;
+}
+
+function chatBanStatusLabel(ban) {
+  if (!ban?.active) {
+    return "已停用";
+  }
+  if (Number(ban?.expired) === 1) {
+    return "已过期";
+  }
+  return isCurrentChatBanTarget(ban) ? "生效中" : "密钥已轮换";
 }
 
 function banTypeLabel(type) {

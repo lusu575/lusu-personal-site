@@ -2,6 +2,35 @@
 
 鲁肃的个人站，一个保留 Windows XP + Pixel Art + Y2K 桌面识别度、同时提供原创移动虚拟 OS 的个人空间。
 
+## GPTWork / 全新克隆启动
+
+普通站点开发只需要 Node.js 22.13+、npm 和仓库中的文件，不需要登录 Cloudflare，也不会访问生产 D1。
+
+纯本地 Windows 开发在仓库根目录执行：
+
+```powershell
+npm.cmd ci
+Copy-Item .env.example .dev.vars
+# 分别填写两个独立、随机且至少 32 字节的本地值；不要提交 .dev.vars
+npm.cmd run d1:migrate:local
+npm.cmd test
+npm.cmd run build
+npm.cmd run dev
+```
+
+GPTWork 先在云端 Secrets 中配置下列两个变量，再执行 `npm ci`、`npm run d1:migrate:local`、`npm test`、`npm run build`、`npm run dev`。GPTWork 已注入 process environment 时不要创建 `.dev.vars`，空的本地文件会遮蔽云端值；Linux 纯本地开发才使用 `cp .env.example .dev.vars` 并填写本地随机值。
+
+本地站点默认位于 `http://127.0.0.1:8788/`，健康检查为 `http://127.0.0.1:8788/api/health`；本地 D1 数据位于被 Git 忽略的 `.wrangler/`，与生产数据库完全分离。
+
+云端运行需要在 Cloudflare Pages 的 Preview 和 Production 环境分别配置 D1 binding `DB`，以及以下两个 Secret（只配置名称，不写入仓库）：
+
+- `CHAT_IP_HASH_SALT`
+- `ANALYTICS_IP_HASH_SALT`
+
+常用校验命令：`npm test`、`npm run build`。项目目前未配置独立的 lint 和 typecheck 命令，不应以空命令伪装通过。正式部署仍由 GitHub `main` 触发 Cloudflare Pages 自动部署；GPTWork 不需要生产 D1 权限或 Cloudflare API Token，除非站长另行授权远程运维。
+
+后台视频链接预览、首次保存或刷新元数据时会访问 YouTube / Bilibili；网络受限时只有这些管理功能会降级或失败，普通安装、测试、构建、健康检查与站点启动不依赖它们。Python、Kokoro、ffmpeg、本机 TTS 配置、参考声线和模型权重只在重新生成日语训练器语音时需要。完整迁移清单见 `docs/GPTWORK_MIGRATION_READINESS.md`，Cloudflare 配置见 `cloudflare/README.md`。
+
 ## 当前状态
 
 - 首页使用 morning / day / dusk / night 四时段像素壁纸，并已接入无云底图 + 单朵独立云层的动态云层效果。

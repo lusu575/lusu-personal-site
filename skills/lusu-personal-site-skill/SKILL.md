@@ -7,7 +7,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 
 ## 使用时机
 
-维护 `F:\lusu575个人站` / `lusu575/lusu-personal-site` 时使用本 Skill，尤其是以下任务：
+维护当前 Git checkout / `lusu575/lusu-personal-site` 时使用本 Skill，尤其是以下任务：
 
 - 修改网站代码、样式、文案、图片、游戏区、聊天室、账号、云存档或后端接口。
 - 修改 `PROJECT_CONTEXT.md`、`CHANGELOG.md`、README、部署说明或维护规则。
@@ -218,8 +218,8 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 ```powershell
 git status -sb
 git log --oneline --decorate -5
-$env:XDG_CONFIG_HOME='F:\lusu575个人站\.wrangler-config'; npx.cmd wrangler pages project list
-$env:XDG_CONFIG_HOME='F:\lusu575个人站\.wrangler-config'; npx.cmd wrangler pages deployment list --project-name lusu-personal-site
+$env:XDG_CONFIG_HOME=(Join-Path (Get-Location) '.wrangler-config'); npx.cmd wrangler pages project list
+$env:XDG_CONFIG_HOME=(Join-Path (Get-Location) '.wrangler-config'); npx.cmd wrangler pages deployment list --project-name lusu-personal-site
 ```
 
 期望状态：
@@ -229,6 +229,17 @@ $env:XDG_CONFIG_HOME='F:\lusu575个人站\.wrangler-config'; npx.cmd wrangler pa
 - Cloudflare 项目域名包含 `lusu575.com` 和 `www.lusu575.com`。
 - 最新 Cloudflare 部署来源应为 GitHub `main` 的最新提交。
 - `lusu575.com` 和 `www.lusu575.com` 应指向同一个 Cloudflare Pages 项目和同一个 GitHub `main` 构建产物。
+
+## GPTWork 与运行时 Secret 规则
+
+- 可复现开发基线是 Node.js 22.13+、`npm ci`、固定 Wrangler 版本和仓库中的 lockfile；不得依赖父目录 `node_modules`、本机全局包或未记录的安装步骤。
+- 本地 Pages 启动使用 `wrangler pages dev`。纯本地环境先从 `.env.example` 创建被 Git 忽略的 `.dev.vars`；GPTWork 使用平台注入的 process Secrets，不能创建会遮蔽云端值的空 `.dev.vars`。两者再执行 `npm run d1:migrate:local`，且普通开发、CI 和 GPTWork 不得连接生产 D1。
+- `DB` 是 D1 binding，不是写入 `.env.example` 的字符串变量。Cloudflare Preview 与 Production 都必须检查 `DB`，并分别配置 `CHAT_IP_HASH_SALT` 和 `ANALYTICS_IP_HASH_SALT`。
+- 两个 Secret 必须独立、随机、至少 32 字节且不能相同，不得互相 fallback、使用仓库固定值或写进代码 / 文档 / Git。运行时配置不合格时必须在任何 API 业务 D1 访问前 fail-fast，日志只记录变量名。
+- IP hash 固定使用带 `chat` / `analytics` 用途隔离的 HMAC-SHA256。聊天消息与网络来源禁言必须保存非敏感密钥代次；Secret 轮换后旧消息只供审计，服务端必须按消息编号读取当前代次目标并拒绝旧代次禁言，不能只依赖后台按钮状态，也不得恢复旧公开盐。全新库由 `cloudflare/schema.sql` 建列，代次索引放在 `cloudflare/schema-indexes.sql`；`scripts/d1-migrate-local.mjs` 和已有库的 `ensureChatSchema()` 都必须先补列再建索引。
+- 普通 GPTWork 开发不需要 `CLOUDFLARE_API_TOKEN`、生产 D1 权限、本机 TTS 配置、模型权重或参考声线。`output/`、`.wrangler/`、`.wrangler-config/`、`node_modules/` 和本地 TTS 配置不得提交。
+- CI 只执行无生产权限的 `npm ci`、本地 D1 空库初始化、`npm test`、`npm run build`。项目未真正配置 lint / typecheck 时应明确记录“未配置”，不能添加永远成功的占位命令。
+- 迁移事实和交接步骤以 `docs/GPTWORK_MIGRATION_READINESS.md`、根 `README.md` 和 `cloudflare/README.md` 为准。
 
 ## 本地开发和验证注意事项
 
