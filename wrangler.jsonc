@@ -39,12 +39,7 @@
           "preview_database_id": "DB"
         }
       ],
-      "r2_buckets": [
-        {
-          "binding": "TRANSFER_BUCKET",
-          "bucket_name": "lusu-temp-transfer-preview"
-        }
-      ]
+      "r2_buckets": []
     }
   }
 }

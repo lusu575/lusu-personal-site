@@ -29,25 +29,27 @@
 
 ### 1. 创建私有 R2 桶
 
-- Production：`lusu-temp-transfer`
-- Preview：`lusu-temp-transfer-preview`
+- Production（必须）：`lusu-temp-transfer`
+- Preview（可选，启用预览文件上传前再创建）：`lusu-temp-transfer-preview`
 - Storage class：Standard
 - 不启用公开 `r2.dev` URL，不绑定公共自定义域名。
 - 本功能通过同源 Pages Functions 下载，不需要跨域浏览器直传，因此默认不需要 R2 CORS。
 
 ### 2. Pages 绑定
 
-根 `wrangler.jsonc` 已在顶层声明 Production R2 binding，并通过 `env.preview` 覆盖 Preview binding。Git 部署必须保留以下映射：
+根 `wrangler.jsonc` 已在顶层声明 Production R2 binding，并通过 `env.preview.r2_buckets: []` 让 Preview 文件上传安全关闭。Git 部署必须保留以下状态：
 
 ```text
 Variable name: TRANSFER_BUCKET
 Production bucket: lusu-temp-transfer
-Preview bucket: lusu-temp-transfer-preview
+Preview: no R2 binding (r2Ready: false)
 ```
 
 `preview_bucket_name` 只用于 Wrangler 本地/远程开发，不能替代 Pages Preview deployment 的 `env.preview`。由于 D1、R2 与 required secrets 都不是环境自动继承项，`env.preview` 必须完整重述这些配置。
 
-两个桶必须先在同一 Cloudflare 账户中创建。若 Pages 项目曾在 Dashboard 保存过旧绑定，确认变量名与桶名和根 `wrangler.jsonc` 一致，并在改动后重新部署；上线验收要求 `/api/transfer/config` 的登录响应中 `r2Ready: true`。
+Production 桶必须先在同一 Cloudflare 账户中创建。若 Pages 项目曾在 Dashboard 保存过旧绑定，确认变量名与桶名和根 `wrangler.jsonc` 一致，并在改动后重新部署；Production 上线验收要求 `/api/transfer/config` 的登录响应中 `r2Ready: true`。
+
+以后启用 Preview 文件上传时，先创建独立的 `lusu-temp-transfer-preview`，再把 `env.preview.r2_buckets` 改为该桶并同步构建守卫；不得让 Preview 继承或指向 Production 桶。
 
 ### 3. D1 migration
 
@@ -73,7 +75,7 @@ Deploy command: npx wrangler deploy --config workers/transfer-cleanup/wrangler.j
 
 ### 5. R2 生命周期兜底
 
-在两个桶中增加前缀 `transfer/` 的生命周期规则：
+在 Production 桶以及任何已启用的独立 Preview 桶中增加前缀 `transfer/` 的生命周期规则：
 
 - 完成对象：2 天后删除，作为应用 24 小时逻辑过期与小时清理的兜底。
 - 未完成 Multipart Upload：1 天后中止。

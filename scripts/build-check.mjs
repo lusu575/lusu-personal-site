@@ -3212,9 +3212,8 @@ const previewDatabaseBinding = previewWranglerData?.d1_databases?.find((binding)
 if (previewDatabaseBinding?.database_id !== migrationWranglerData.d1_databases?.[0]?.database_id) {
   fail("wrangler.jsonc env.preview must preserve the DB binding when overriding non-inheritable bindings");
 }
-const previewTransferBucketBinding = previewWranglerData?.r2_buckets?.find((binding) => binding.binding === "TRANSFER_BUCKET");
-if (previewTransferBucketBinding?.bucket_name !== "lusu-temp-transfer-preview") {
-  fail("wrangler.jsonc env.preview must bind TRANSFER_BUCKET to the preview Quick Transfer R2 bucket");
+if (!Array.isArray(previewWranglerData?.r2_buckets) || previewWranglerData.r2_buckets.length !== 0) {
+  fail("wrangler.jsonc env.preview must explicitly disable Quick Transfer R2 until a separate preview bucket is provisioned");
 }
 const declaredSecrets = new Set(migrationWranglerData.secrets?.required || []);
 const previewDeclaredSecrets = new Set(previewWranglerData?.secrets?.required || []);
