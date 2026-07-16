@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "status": "codex-approved",
+  "jobId": "L1-013",
+  "toolRunId": "exec-b3ca0921-d0a4-4edf-805c-2c9caf67070f",
+  "sourceArtifactSha256": "10c6bab1eb7dea866d74e458b42fb0a9fb5283aa1e95093134f14ed02dc3d7bb",
+  "reviewedAt": "2026-07-12T15:54:19.059Z",
+  "reviewer": "codex-visual-review/image2-l1-013-017",
+  "checks": {
+    "promptRelevant": true,
+    "compositionMatchesTask": true,
+    "noAnswerLeak": true,
+    "noReadableText": true,
+    "noWatermark": true,
+    "aspectRatioApproved": true
+  }
+}
