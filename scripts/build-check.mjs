@@ -37,6 +37,7 @@ const requiredFiles = [
   "admin/index.html",
   "admin/admin.css",
   "admin/admin.js",
+  "assets/images/admin-world-map.svg",
   "admin/transfer.html",
   "admin/transfer.css",
   "admin/transfer.js",
@@ -467,6 +468,7 @@ for (const file of [
 const adminHtml = readRequired("admin/index.html");
 const adminCss = readRequired("admin/admin.css");
 const adminJs = readRequired("admin/admin.js");
+const adminWorldMapSvg = readRequired("assets/images/admin-world-map.svg");
 const adminMiddlewareJs = readRequired("functions/admin/_middleware.js");
 const apiJs = readRequired("functions/api/[[route]].js");
 const transferApiJs = readRequired("functions/api/transfer-service.mjs");
@@ -1307,7 +1309,7 @@ for (const asset of ["admin.css", "admin.js"]) {
   }
 }
 
-const adminSafetyCacheVersion = "20260716-admin-interactive-map-r1";
+const adminSafetyCacheVersion = "20260716-admin-svg-vector-map-r1";
 if (countLiteral(adminHtml, adminSafetyCacheVersion) !== 2) {
   fail("admin CSS and JS must share the current interaction-safety cache version");
 }
@@ -1316,6 +1318,7 @@ for (const id of [
   "mobile-nav-toggle",
   "admin-sidebar",
   "mobile-nav-backdrop",
+  "visitor-map-svg",
   "visitor-map-world",
   "visitor-map-points",
   "visitor-map-zoom-out",
@@ -1333,6 +1336,33 @@ for (const id of [
   if (!adminHtml.includes(`id="${id}"`)) {
     fail(`admin/index.html missing safety workflow #${id}`);
   }
+}
+
+if (!hasPattern(adminHtml, /<svg[\s\S]*?id="visitor-map-svg"[\s\S]*?viewBox="0 0 1000 500"[\s\S]*?>/)) {
+  fail("admin map must use a real 1000x500 SVG viewport");
+}
+
+if (!hasPattern(adminHtml, /<use[\s\S]*?id="visitor-map-world"[\s\S]*?href="\/assets\/images\/admin-world-map\.svg\?v=20260716-admin-world-map-svg-r1#admin-world-map-scene"[\s\S]*?>/)) {
+  fail("admin map must render the versioned Natural Earth SVG scene through a real SVG use node");
+}
+
+if (!hasPattern(adminHtml, /<g\s+id="visitor-map-points"\s+role="group"/)) {
+  fail("admin map point container must remain a real SVG group");
+}
+
+for (const requiredWorldMapToken of [
+  'viewBox="0 0 1000 500"',
+  'id="admin-world-map-scene"',
+  "<path ",
+  'vector-effect="non-scaling-stroke"'
+]) {
+  if (!adminWorldMapSvg.includes(requiredWorldMapToken)) {
+    fail(`admin world map SVG missing ${requiredWorldMapToken}`);
+  }
+}
+
+if (/<image\b|data:image\//i.test(adminWorldMapSvg)) {
+  fail("admin world map SVG must not embed raster image content");
 }
 
 if (countLiteral(adminHtml, "data-master-detail=") !== 4) {
@@ -1462,6 +1492,35 @@ for (const requiredMapEvent of [
   if (!adminJs.includes(requiredMapEvent)) {
     fail(`admin interactive map missing ${requiredMapEvent}`);
   }
+}
+
+for (const requiredVectorMapToken of [
+  'const SVG_NAMESPACE = "http://www.w3.org/2000/svg"',
+  "document.createElementNS(SVG_NAMESPACE, tagName)",
+  'createMapMarkerCircle("map-marker-hit"',
+  'createMapMarkerCircle("map-marker-core"',
+  'svg.setAttribute(\n    "viewBox"',
+  "syncMapMarkerGeometry(viewWidth, viewHeight, map)"
+]) {
+  if (!adminJs.includes(requiredVectorMapToken)) {
+    fail(`admin vector map missing ${requiredVectorMapToken}`);
+  }
+}
+
+for (const obsoleteMapPattern of [
+  /background[^;{}]*admin-world-map\.svg/i,
+  /\.map-point::(?:before|after)/,
+  /--map-(?:scale|inverse-scale|x|y)/,
+  /translate3d\([^)]*--map-/,
+  /\.map-world\s*\{/
+]) {
+  if (obsoleteMapPattern.test(adminCss)) {
+    fail(`admin map must not retain rasterizing CSS map geometry: ${obsoleteMapPattern}`);
+  }
+}
+
+if (/\.map-city-marker::(?:before|after)/.test(adminCss)) {
+  fail("admin SVG city markers must use real circle nodes instead of CSS pseudo geometry");
 }
 
 const cityQueryMarker = "select country, region, city, count(*) as pv, count(distinct visitor_id) as uv";
@@ -1655,18 +1714,20 @@ for (const selector of [
   "@media (max-width: 760px)",
   "--admin-touch-target: 44px",
   "@media (max-width: 920px)",
-  ".map-world",
+  ".map-vector",
+  ".map-city-marker",
+  ".map-marker-hit",
   "touch-action: none",
   "overscroll-behavior: contain",
-  "pointer-events: auto !important"
+  "pointer-events: all !important"
 ]) {
   if (!adminCss.includes(selector)) {
     fail(`admin/admin.css missing ${selector}`);
   }
 }
 
-if (/\.map-point\s*\{[^}]*pointer-events:\s*none/s.test(adminCss)) {
-  fail("admin map points must remain pointer-interactive");
+if (/\.map-city-marker\s*\{[^}]*pointer-events:\s*none/s.test(adminCss)) {
+  fail("admin SVG map markers must remain pointer-interactive");
 }
 
 for (const token of [

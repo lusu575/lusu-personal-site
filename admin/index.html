@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex,nofollow">
   <title>鲁肃个人站管理后台</title>
-  <link rel="stylesheet" href="/admin/admin.css?v=20260716-admin-interactive-map-r1">
+  <link rel="stylesheet" href="/admin/admin.css?v=20260716-admin-svg-vector-map-r1">
 </head>
 <body>
   <div class="admin-shell">
@@ -90,9 +90,23 @@
               aria-describedby="visitor-map-instructions"
               aria-keyshortcuts="+ - ArrowUp ArrowDown ArrowLeft ArrowRight Home Escape"
             >
-              <div class="map-world" id="visitor-map-world">
-                <div class="map-points" id="visitor-map-points"></div>
-              </div>
+              <svg
+                class="map-vector"
+                id="visitor-map-svg"
+                viewBox="0 0 1000 500"
+                preserveAspectRatio="none"
+                role="group"
+                aria-label="城市访问矢量地图"
+              >
+                <use
+                  class="map-vector-world"
+                  id="visitor-map-world"
+                  href="/assets/images/admin-world-map.svg?v=20260716-admin-world-map-svg-r1#admin-world-map-scene"
+                  stroke-width="1.15"
+                  aria-hidden="true"
+                ></use>
+                <g id="visitor-map-points" role="group" aria-label="城市访问点位"></g>
+              </svg>
               <aside class="map-tooltip" id="visitor-map-tooltip" role="tooltip" hidden>
                 <strong id="visitor-map-tooltip-city">城市未选择</strong>
                 <span id="visitor-map-tooltip-region">地区未记录</span>
@@ -630,6 +644,6 @@
     </div>
   </dialog>
 
-  <script src="/admin/admin.js?v=20260716-admin-interactive-map-r1"></script>
+  <script src="/admin/admin.js?v=20260716-admin-svg-vector-map-r1"></script>
 </body>
 </html>

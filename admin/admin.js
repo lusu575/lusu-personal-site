@@ -88,12 +88,15 @@ const state = {
 const ACTIVE_PANEL_STORAGE_KEY = "lusu-admin-active-panel";
 const ADMIN_HISTORY_STATE_KEY = "lusuAdminView";
 const MOBILE_ADMIN_MEDIA = window.matchMedia("(max-width: 920px)");
-const WORLD_MAP_ASPECT_RATIO = 1000 / 500;
+const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
+const WORLD_MAP_WIDTH = 1000;
+const WORLD_MAP_HEIGHT = 500;
 const MAP_MIN_SCALE = 1;
 const MAP_MAX_SCALE = 5;
 const MAP_ZOOM_STEP = 0.5;
 const MAP_KEYBOARD_PAN_STEP = 72;
 const MAP_DRAG_THRESHOLD = 5;
+const MAP_MARKER_HIT_RADIUS_PX = 22;
 const LOCAL_COVER_ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/jpg", "image/png", "image/webp", "image/avif"]);
 const LOCAL_COVER_ALLOWED_IMAGE_EXTENSIONS = new Set(["jpg", "jpeg", "png", "webp", "avif"]);
 const LOCAL_COVER_ALLOWED_VIDEO_TYPES = new Set(["video/mp4", "video/webm", "video/ogg", "video/quicktime"]);
@@ -133,6 +136,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-07-16",
+    title: "全矢量城市访问地图",
+    body: "城市访问地图的底图与圆点已全部改为真实 SVG：Natural Earth 世界陆地路径通过 SVG 节点直接绘制，缩放和平移改用 viewBox，不再把 CSS 背景图栅格化后放大；城市点由多层 SVG circle 构成，100% 至 500% 缩放时保持清晰且维持至少 44px 点击范围。鼠标滚轮、拖动、触屏双指、键盘导航、城市 PV/UV 详情和隐私口径保持不变。后台资源版本更新为 20260716-admin-svg-vector-map-r1。"
+  },
   {
     date: "2026-07-16",
     title: "可缩放城市访问地图",
@@ -2109,6 +2117,68 @@ function renderBars(container, rows, labelKey) {
   }));
 }
 
+function createSvgNode(tagName, className = "") {
+  const node = document.createElementNS(SVG_NAMESPACE, tagName);
+  if (className) {
+    node.setAttribute("class", className);
+  }
+  return node;
+}
+
+function createMapMarkerCircle(className, radiusPx, options = {}) {
+  const circle = createSvgNode("circle", className);
+  circle.dataset.radiusPx = String(radiusPx);
+  if (Number.isFinite(options.cxPx)) {
+    circle.dataset.cxPx = String(options.cxPx);
+  }
+  if (Number.isFinite(options.cyPx)) {
+    circle.dataset.cyPx = String(options.cyPx);
+  }
+  circle.setAttribute("aria-hidden", "true");
+  return circle;
+}
+
+function projectCoordinateToSvg(lon, lat) {
+  return {
+    x: clampNumber(((lon + 180) / 360) * WORLD_MAP_WIDTH, 0, WORLD_MAP_WIDTH),
+    y: clampNumber(((90 - lat) / 180) * WORLD_MAP_HEIGHT, 0, WORLD_MAP_HEIGHT)
+  };
+}
+
+function createMapCityMarker(row, index, maxPv) {
+  const { x, y } = projectCoordinateToSvg(Number(row.longitude), Number(row.latitude));
+  const pvRatio = Number(row.pv || 0) / Math.max(1, maxPv);
+  const coreRadiusPx = 5.5 + Math.sqrt(pvRatio) * 4.5;
+  const key = mapLocationKey(row, index);
+  const label = mapPlaceLabel(row);
+  const marker = createSvgNode("g", "map-city-marker");
+  marker.setAttribute("transform", `translate(${x.toFixed(3)} ${y.toFixed(3)})`);
+  marker.setAttribute("tabindex", "0");
+  marker.setAttribute("focusable", "true");
+  marker.setAttribute("role", "button");
+  marker.setAttribute("aria-pressed", state.mapViewport.pinnedKey === key ? "true" : "false");
+  marker.setAttribute(
+    "aria-label",
+    `${label}；PV 浏览量 ${formatNumber(row.pv)}；UV 独立访客 ${formatNumber(row.uv)}。点击可固定详情。`
+  );
+  marker.dataset.mapKey = key;
+  marker.dataset.mapX = String(x);
+  marker.dataset.mapY = String(y);
+  marker.append(
+    createMapMarkerCircle("map-marker-hit", MAP_MARKER_HIT_RADIUS_PX),
+    createMapMarkerCircle("map-marker-halo", coreRadiusPx + 6),
+    createMapMarkerCircle("map-marker-selection", coreRadiusPx + 4),
+    createMapMarkerCircle("map-marker-core", coreRadiusPx),
+    createMapMarkerCircle("map-marker-highlight", Math.max(1.8, coreRadiusPx * 0.26), {
+      cxPx: -coreRadiusPx * 0.3,
+      cyPx: -coreRadiusPx * 0.3
+    }),
+    createMapMarkerCircle("map-marker-focus map-marker-focus-outer", MAP_MARKER_HIT_RADIUS_PX - 2.5),
+    createMapMarkerCircle("map-marker-focus map-marker-focus-inner", MAP_MARKER_HIT_RADIUS_PX - 2.5)
+  );
+  return { key, marker };
+}
+
 function renderMap(rows) {
   if (state.mapViewport.pointers.size) {
     state.mapViewport.pendingRows = rows;
@@ -2118,7 +2188,7 @@ function renderMap(rows) {
   const map = $("#visitor-map");
   const points = $("#visitor-map-points");
   const list = $("#visitor-map-list");
-  const focusedNode = document.activeElement?.closest?.(".map-point, .map-data-focus");
+  const focusedNode = document.activeElement?.closest?.(".map-city-marker, .map-data-focus");
   const focusedKey = focusedNode?.dataset.mapKey || "";
   const focusedKind = focusedNode?.classList.contains("map-data-focus") ? "list" : "point";
   const windowDays = Number(state.overview?.windowDays || 14);
@@ -2134,8 +2204,11 @@ function renderMap(rows) {
     const emptyText = `城市访问地图：最近 ${formatNumber(windowDays)} 天暂无带经纬度的城市访问数据`;
     map.setAttribute("aria-label", emptyText);
     map.classList.add("is-empty");
-    const empty = document.createElement("span");
-    empty.className = "map-empty";
+    const empty = createSvgNode("text", "map-vector-empty");
+    empty.setAttribute("x", String(WORLD_MAP_WIDTH / 2));
+    empty.setAttribute("y", String(WORLD_MAP_HEIGHT / 2));
+    empty.setAttribute("text-anchor", "middle");
+    empty.setAttribute("dominant-baseline", "middle");
     setElementText(empty, "暂无可定位的城市访问数据");
     points.replaceChildren(empty);
     clearMapSelection();
@@ -2147,34 +2220,12 @@ function renderMap(rows) {
   const mapLabel = `可缩放城市访问地图：最近 ${formatNumber(windowDays)} 天共 ${formatNumber(data.length)} 个城市点；可使用滚轮、双指或缩放按钮查看`;
   map.setAttribute("aria-label", mapLabel);
   const max = Math.max(...data.map((row) => Number(row.pv || 0)), 1);
-  const mapBounds = getVisibleMapBounds(map);
-  points.replaceChildren(...data.map((row, index) => {
-    const lon = Number(row.longitude);
-    const lat = Number(row.latitude);
-    const { left, top } = projectCoordinateToVisibleMap(lon, lat, mapBounds);
-    const size = 12 + Math.round((Number(row.pv || 0) / max) * 18);
-    const label = mapPlaceLabel(row);
-    const key = mapLocationKey(row, index);
-    const point = document.createElement("span");
-    const pointLabel = document.createElement("span");
-    point.className = "map-point";
-    point.tabIndex = 0;
-    point.setAttribute("role", "button");
-    point.dataset.mapKey = key;
-    point.dataset.mapLeft = String(left);
-    point.dataset.mapTop = String(top);
-    point.style.left = `${left}%`;
-    point.style.top = `${top}%`;
-    point.style.setProperty("--point-size", `${size}px`);
-    point.style.zIndex = String(10 + Math.round((Number(row.pv || 0) / max) * 20));
-    const pointTitle = `${label}；PV 浏览量 ${formatNumber(row.pv)}；UV 独立访客 ${formatNumber(row.uv)}。点击可固定详情。`;
-    point.setAttribute("aria-pressed", state.mapViewport.pinnedKey === key ? "true" : "false");
-    pointLabel.className = "map-point-label";
-    setElementText(pointLabel, pointTitle);
-    point.append(pointLabel);
+  const markerRows = data.map((row, index) => ({ row, index })).reverse();
+  points.replaceChildren(...markerRows.map(({ row, index }) => {
+    const { key, marker } = createMapCityMarker(row, index, max);
     state.mapViewport.rowsByKey.set(key, row);
-    state.mapViewport.pointElements.set(key, point);
-    return point;
+    state.mapViewport.pointElements.set(key, marker);
+    return marker;
   }));
   renderMapDataList(data);
   clampMapViewport();
@@ -2370,18 +2421,49 @@ function clampMapViewport() {
   }
 }
 
+function formatSvgNumber(value) {
+  return Number(value.toFixed(4)).toString();
+}
+
+function syncMapMarkerGeometry(viewWidth, viewHeight, map) {
+  const width = Math.max(1, map.clientWidth);
+  const height = Math.max(1, map.clientHeight);
+  const unitsPerPixel = Math.max(viewWidth / width, viewHeight / height);
+  state.mapViewport.pointElements.forEach((marker) => {
+    marker.querySelectorAll("circle[data-radius-px]").forEach((circle) => {
+      circle.setAttribute("r", formatSvgNumber(Number(circle.dataset.radiusPx) * unitsPerPixel));
+      if (circle.dataset.cxPx) {
+        circle.setAttribute("cx", formatSvgNumber(Number(circle.dataset.cxPx) * unitsPerPixel));
+      }
+      if (circle.dataset.cyPx) {
+        circle.setAttribute("cy", formatSvgNumber(Number(circle.dataset.cyPx) * unitsPerPixel));
+      }
+    });
+  });
+}
+
 function applyMapViewport(options = {}) {
   const map = $("#visitor-map");
+  const svg = $("#visitor-map-svg");
   const world = $("#visitor-map-world");
-  if (!map || !world) {
+  if (!map || !svg) {
     return;
   }
   clampMapViewport();
   const viewport = state.mapViewport;
-  world.style.setProperty("--map-scale", String(viewport.scale));
-  world.style.setProperty("--map-inverse-scale", String(1 / viewport.scale));
-  world.style.setProperty("--map-x", `${viewport.x}px`);
-  world.style.setProperty("--map-y", `${viewport.y}px`);
+  const mapWidth = Math.max(1, map.clientWidth);
+  const mapHeight = Math.max(1, map.clientHeight);
+  const viewWidth = WORLD_MAP_WIDTH / viewport.scale;
+  const viewHeight = WORLD_MAP_HEIGHT / viewport.scale;
+  const viewX = -viewport.x * WORLD_MAP_WIDTH / (mapWidth * viewport.scale);
+  const viewY = -viewport.y * WORLD_MAP_HEIGHT / (mapHeight * viewport.scale);
+  svg.setAttribute(
+    "viewBox",
+    [viewX, viewY, viewWidth, viewHeight].map(formatSvgNumber).join(" ")
+  );
+  svg.dataset.mapScale = String(viewport.scale);
+  world?.setAttribute("stroke-width", formatSvgNumber(1.15 / viewport.scale));
+  syncMapMarkerGeometry(viewWidth, viewHeight, map);
   map.classList.toggle("is-zoomed", viewport.scale > MAP_MIN_SCALE + 0.001);
   syncMapControls();
   positionMapTooltip();
@@ -2458,8 +2540,8 @@ function focusMapLocation(key) {
     return false;
   }
   const targetScale = Math.max(state.mapViewport.scale, 2.25);
-  const left = Number(point.dataset.mapLeft || 50) / 100;
-  const top = Number(point.dataset.mapTop || 50) / 100;
+  const left = Number(point.dataset.mapX || WORLD_MAP_WIDTH / 2) / WORLD_MAP_WIDTH;
+  const top = Number(point.dataset.mapY || WORLD_MAP_HEIGHT / 2) / WORLD_MAP_HEIGHT;
   state.mapViewport.scale = targetScale;
   state.mapViewport.x = map.clientWidth / 2 - map.clientWidth * left * targetScale;
   state.mapViewport.y = map.clientHeight / 2 - map.clientHeight * top * targetScale;
@@ -2667,10 +2749,15 @@ function schedulePendingMapRender() {
 }
 
 function handleMapKeydown(event) {
-  const point = event.target.closest(".map-point");
+  const point = event.target.closest(".map-city-marker");
   if (point && (event.key === "Enter" || event.key === " ")) {
     event.preventDefault();
-    point.click();
+    const key = point.dataset.mapKey || "";
+    if (state.mapViewport.pinnedKey === key) {
+      clearMapSelection({ announce: true });
+    } else {
+      showMapLocation(key, { pin: true, announce: true });
+    }
     return;
   }
   if (event.key === "+" || event.key === "=") {
@@ -2712,7 +2799,7 @@ function handleMapClick(event) {
     event.preventDefault();
     return;
   }
-  const point = event.target.closest(".map-point");
+  const point = event.target.closest(".map-city-marker");
   if (point) {
     const key = point.dataset.mapKey || "";
     if (state.mapViewport.pinnedKey === key) {
@@ -2731,7 +2818,7 @@ function handleMapPointerOver(event) {
   if (event.pointerType === "touch") {
     return;
   }
-  const point = event.target.closest(".map-point");
+  const point = event.target.closest(".map-city-marker");
   if (!point || point.contains(event.relatedTarget)) {
     return;
   }
@@ -2742,7 +2829,7 @@ function handleMapPointerOut(event) {
   if (event.pointerType === "touch") {
     return;
   }
-  const point = event.target.closest(".map-point");
+  const point = event.target.closest(".map-city-marker");
   if (!point || point.contains(event.relatedTarget)) {
     return;
   }
@@ -2753,18 +2840,18 @@ function handleMapPointerOut(event) {
 }
 
 function handleMapFocusIn(event) {
-  const point = event.target.closest(".map-point");
+  const point = event.target.closest(".map-city-marker");
   if (point) {
     showMapLocation(point.dataset.mapKey || "", { announce: true });
   }
 }
 
 function handleMapFocusOut(event) {
-  if (!event.target.closest(".map-point")) {
+  if (!event.target.closest(".map-city-marker")) {
     return;
   }
   window.setTimeout(() => {
-    if (!$("#visitor-map")?.contains(document.activeElement) || !document.activeElement.closest?.(".map-point")) {
+    if (!$("#visitor-map")?.contains(document.activeElement) || !document.activeElement.closest?.(".map-city-marker")) {
       restorePinnedMapTooltip();
     }
   }, 0);
@@ -2777,48 +2864,6 @@ function handleMapDataListClick(event) {
     const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
     $("#visitor-map")?.scrollIntoView({ block: "nearest", behavior: reducedMotion ? "auto" : "smooth" });
   }
-}
-
-function getVisibleMapBounds(map) {
-  const rect = map.getBoundingClientRect();
-  if (!rect.width || !rect.height) {
-    return { left: 0, top: 0, width: 100, height: 100 };
-  }
-  const containerAspect = rect.width / rect.height;
-  if (containerAspect > WORLD_MAP_ASPECT_RATIO) {
-    const width = (WORLD_MAP_ASPECT_RATIO / containerAspect) * 100;
-    return {
-      left: (100 - width) / 2,
-      top: 0,
-      width,
-      height: 100
-    };
-  }
-  const height = (containerAspect / WORLD_MAP_ASPECT_RATIO) * 100;
-  return {
-    left: 0,
-    top: (100 - height) / 2,
-    width: 100,
-    height
-  };
-}
-
-function projectCoordinateToVisibleMap(lon, lat, bounds) {
-  const lonRatio = clampNumber((lon + 180) / 360, 0, 1);
-  const latRatio = clampNumber((90 - lat) / 180, 0, 1);
-  const edgePadding = 1.4;
-  return {
-    left: clampNumber(
-      bounds.left + lonRatio * bounds.width,
-      bounds.left + edgePadding,
-      bounds.left + bounds.width - edgePadding
-    ),
-    top: clampNumber(
-      bounds.top + latRatio * bounds.height,
-      bounds.top + edgePadding,
-      bounds.top + bounds.height - edgePadding
-    )
-  };
 }
 
 function isUsableCoordinate(lat, lon) {
