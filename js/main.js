@@ -80,7 +80,7 @@ const translations = {
     blogEmptyTitle: "杂谈区正在整理中",
     blogEmptyBody: "这里会保留正式随笔和站点记录。内容发布前，可以先查看知识库和最近更新。",
     blogEmptyAction: "查看知识库",
-    openOriginal: "打开原地址",
+    openOriginal: "在新窗口打开原地址",
     videoFullscreen: "全屏",
     videoRestore: "还原",
     languageSupportLabel: "语言支持",
@@ -111,10 +111,17 @@ const translations = {
     accountLogout: "退出账号",
     accountLogin: "登录",
     accountRegister: "注册",
+    accountModeAria: "账号操作模式",
+    accountLoginTitle: "登录云存档账号",
+    accountRegisterTitle: "注册云存档账号",
+    accountSubmitting: "正在提交...",
     accountEmailPlaceholder: "邮箱",
     accountEmailLabel: "邮箱",
+    accountEmailRequired: "请输入有效邮箱。",
     accountPasswordPlaceholder: "密码至少 8 位",
     accountPasswordLabel: "密码",
+    accountPasswordRequired: "密码至少需要 8 个字符。",
+    accountFormError: "请检查标出的账号信息。",
     accountGuestNote: "登录只用于游戏自动云存档，网站浏览不受影响。",
     accountUnavailable: "云存档接口暂时不可用。",
     accountLoggedIn: "已登录。",
@@ -159,6 +166,8 @@ const translations = {
     chatSyncStatusActive: "约 5 秒刷新",
     chatSyncStatusIdle: "约 15 秒刷新",
     chatSyncStatusSlow: "约 30 秒低频刷新",
+    chatOfflineStatus: "当前离线，联网后可继续同步",
+    chatBackOnline: "网络已恢复，正在同步新消息。",
     chatInputLabel: "聊天内容",
     chatPlaceholder: "说点什么吧...",
     chatSend: "发送",
@@ -167,6 +176,12 @@ const translations = {
     chatWelcome: "欢迎来到鲁肃的匿名聊天室！请文明发言哦~",
     chatLoading: "正在连接聊天室...",
     chatLoadFailed: "聊天室读取失败，请稍后再试。",
+    chatRetry: "重新读取",
+    chatJumpLatest: "回到最新消息",
+    chatUnreadMessages: "{count} 条新消息",
+    chatShortcut: "Ctrl 或 Command + Enter 发送",
+    chatRoomSwitchBlocked: "消息发送完成前暂不能切换房间。",
+    chatRoomChanged: "房间已切换，旧房间的发送结果未写入当前聊天。",
     chatEmptyMessage: "空消息不可发送。",
     chatTooLong: "单条消息最多 300 字。",
     chatCooldown: "发送太快啦，请等 3 秒。",
@@ -261,7 +276,7 @@ const translations = {
     blogEmptyTitle: "Notes are being organized",
     blogEmptyBody: "Published essays and site notes will live here. Until then, the Knowledge window has the current public writing.",
     blogEmptyAction: "Open Knowledge",
-    openOriginal: "Open Original",
+    openOriginal: "Open original in a new window",
     videoFullscreen: "Full screen",
     videoRestore: "Restore",
     languageSupportLabel: "Language support",
@@ -292,10 +307,17 @@ const translations = {
     accountLogout: "Sign out",
     accountLogin: "Log in",
     accountRegister: "Register",
+    accountModeAria: "Account action mode",
+    accountLoginTitle: "Log in to cloud saves",
+    accountRegisterTitle: "Register a cloud save account",
+    accountSubmitting: "Submitting...",
     accountEmailPlaceholder: "Email",
     accountEmailLabel: "Email address",
+    accountEmailRequired: "Enter a valid email address.",
     accountPasswordPlaceholder: "At least 8 characters",
     accountPasswordLabel: "Password",
+    accountPasswordRequired: "Password must be at least 8 characters.",
+    accountFormError: "Check the highlighted account details.",
     accountGuestNote: "Login is only for automatic game cloud saves. Site browsing is not affected.",
     accountUnavailable: "Cloud save service is temporarily unavailable.",
     accountLoggedIn: "Logged in.",
@@ -340,6 +362,8 @@ const translations = {
     chatSyncStatusActive: "Refreshes about every 5 seconds",
     chatSyncStatusIdle: "Refreshes about every 15 seconds",
     chatSyncStatusSlow: "Low-frequency refresh, about every 30 seconds",
+    chatOfflineStatus: "Offline. Sync will continue when the connection returns.",
+    chatBackOnline: "Connection restored. Syncing new messages.",
     chatInputLabel: "Chat message",
     chatPlaceholder: "Say something...",
     chatSend: "Send",
@@ -348,6 +372,12 @@ const translations = {
     chatWelcome: "Welcome to LuSu's anonymous chat room. Keep it friendly!",
     chatLoading: "Connecting to chat room...",
     chatLoadFailed: "Could not load chat. Please try again later.",
+    chatRetry: "Retry loading",
+    chatJumpLatest: "Jump to latest",
+    chatUnreadMessages: "{count} new messages",
+    chatShortcut: "Press Ctrl or Command + Enter to send",
+    chatRoomSwitchBlocked: "Wait for the current message to finish sending before switching rooms.",
+    chatRoomChanged: "The room changed, so the previous room's send result was not added here.",
     chatEmptyMessage: "Empty messages cannot be sent.",
     chatTooLong: "Messages can be up to 300 characters.",
     chatCooldown: "Too fast. Please wait 3 seconds.",
@@ -442,7 +472,7 @@ const translations = {
     blogEmptyTitle: "雑談欄を整理中です",
     blogEmptyBody: "正式な随筆やサイト記録をここに置く予定です。公開前はナレッジ欄と最近の更新をご覧ください。",
     blogEmptyAction: "ナレッジを見る",
-    openOriginal: "元のページを開く",
+    openOriginal: "新しいウィンドウで元のページを開く",
     videoFullscreen: "全画面",
     videoRestore: "元に戻す",
     languageSupportLabel: "言語対応",
@@ -473,10 +503,17 @@ const translations = {
     accountLogout: "ログアウト",
     accountLogin: "ログイン",
     accountRegister: "登録",
+    accountModeAria: "アカウント操作モード",
+    accountLoginTitle: "クラウドセーブにログイン",
+    accountRegisterTitle: "クラウドセーブを登録",
+    accountSubmitting: "送信中...",
     accountEmailPlaceholder: "メール",
     accountEmailLabel: "メールアドレス",
+    accountEmailRequired: "有効なメールアドレスを入力してください。",
     accountPasswordPlaceholder: "8文字以上のパスワード",
     accountPasswordLabel: "パスワード",
+    accountPasswordRequired: "パスワードは8文字以上にしてください。",
+    accountFormError: "強調表示されたアカウント情報を確認してください。",
     accountGuestNote: "ログインはゲームの自動クラウドセーブ専用です。サイト閲覧には影響しません。",
     accountUnavailable: "クラウドセーブサービスは一時的に利用できません。",
     accountLoggedIn: "ログインしました。",
@@ -521,6 +558,8 @@ const translations = {
     chatSyncStatusActive: "約5秒ごとに更新",
     chatSyncStatusIdle: "約15秒ごとに更新",
     chatSyncStatusSlow: "低頻度更新、約30秒ごと",
+    chatOfflineStatus: "オフラインです。接続が戻ると同期を再開します。",
+    chatBackOnline: "接続が戻りました。新しいメッセージを同期します。",
     chatInputLabel: "チャット本文",
     chatPlaceholder: "何か話してみよう...",
     chatSend: "送信",
@@ -529,6 +568,12 @@ const translations = {
     chatWelcome: "魯粛の匿名チャットへようこそ！やさしく話しましょう。",
     chatLoading: "チャットに接続中...",
     chatLoadFailed: "チャットを読み込めません。あとで試してください。",
+    chatRetry: "再読み込み",
+    chatJumpLatest: "最新メッセージへ",
+    chatUnreadMessages: "新着 {count} 件",
+    chatShortcut: "Ctrl または Command + Enter で送信",
+    chatRoomSwitchBlocked: "現在の送信が終わるまで部屋を切り替えられません。",
+    chatRoomChanged: "部屋が切り替わったため、前の部屋の送信結果はここに表示していません。",
     chatEmptyMessage: "空のメッセージは送れません。",
     chatTooLong: "1通は最大300文字です。",
     chatCooldown: "送信が速すぎます。3秒待ってください。",
@@ -1744,7 +1789,8 @@ const gameState = {
 };
 
 const videoWindowState = {
-  maximized: false
+  maximized: false,
+  currentVideo: null
 };
 const modalFocusState = {
   videoTrigger: null,
@@ -1918,6 +1964,8 @@ const chatState = {
   roomMode: "public",
   roomCryptoKey: null,
   roomRevision: 0,
+  unreadCount: 0,
+  drafts: new Map(),
   lastSentAt: sanitizeChatLastSentAt(safeStorageGet(chatStorageKeys.lastSentAt, "0"))
 };
 
@@ -2321,9 +2369,16 @@ function setLanguage(lang, options = {}) {
   updateWelcomeGreeting();
   updateArticleWindowButton();
   updateVideoWindowButton();
-  renderAccountWidget();
+  const videoRetry = document.getElementById("video-retry");
+  if (videoRetry) {
+    videoRetry.textContent = videoUiText("retryPlayer");
+  }
+  if (!accountSubmitting) {
+    renderAccountWidget();
+  }
   updateChatSyncStatus();
   syncChatRoomUi();
+  updateChatUnreadIndicator();
 }
 
 function routeReturnTarget(route, motionKind) {
@@ -3155,6 +3210,7 @@ function scrollArticleToTop() {
     return;
   }
   detail.scrollTo({ top: 0, behavior: motionScrollBehavior() });
+  document.getElementById("article-detail-title")?.focus({ preventScroll: true });
   scheduleArticleReadProgressUpdate();
 }
 
@@ -3213,8 +3269,13 @@ function clearArticleCopyStatus() {
   articleState.copyStatusTimer = 0;
   const status = document.getElementById("article-copy-status");
   const button = document.querySelector("[data-article-copy-link]");
+  const manualField = document.getElementById("article-copy-manual");
   if (status) {
     status.textContent = "";
+  }
+  if (manualField) {
+    manualField.hidden = true;
+    manualField.value = "";
   }
   button?.classList.remove("is-done");
 }
@@ -3295,6 +3356,7 @@ async function copyArticleLink() {
   const slug = articleState.currentArticle?.slug || articleState.currentSlug;
   const status = document.getElementById("article-copy-status");
   const button = document.querySelector("[data-article-copy-link]");
+  const manualField = document.getElementById("article-copy-manual");
   if (!slug || !status) {
     return;
   }
@@ -3307,14 +3369,27 @@ async function copyArticleLink() {
     }
     status.textContent = t("articleCopyDone");
     button?.classList.add("is-done");
+    if (manualField) {
+      manualField.hidden = true;
+      manualField.value = "";
+    }
   } catch {
     status.textContent = t("articleCopyFailed");
     button?.classList.remove("is-done");
+    if (manualField) {
+      manualField.value = shareUrl;
+      manualField.hidden = false;
+      manualField.setAttribute("aria-label", t("articleCopyFailed"));
+      manualField.focus({ preventScroll: true });
+      manualField.select();
+    }
   }
   window.clearTimeout(articleState.copyStatusTimer);
   articleState.copyStatusTimer = window.setTimeout(() => {
-    status.textContent = "";
-    button?.classList.remove("is-done");
+    if (manualField?.hidden !== false) {
+      status.textContent = "";
+      button?.classList.remove("is-done");
+    }
   }, 2400);
 }
 
@@ -3882,6 +3957,9 @@ function videoUiText(key) {
     untitled: { zh: "未命名视频", en: "Untitled video", ja: "無題の動画" },
     noDescription: { zh: "暂无简介。", en: "No description yet.", ja: "説明はまだありません。" },
     unsupported: { zh: "该视频暂不支持站内播放", en: "This video cannot be played inline right now.", ja: "この動画は現在サイト内再生に対応していません。" },
+    playerLoading: { zh: "播放器正在载入...", en: "Loading the player...", ja: "プレイヤーを読み込み中..." },
+    playerFailed: { zh: "播放器载入失败，可以重试或在新窗口打开原地址。", en: "The player failed to load. Retry or open the original in a new window.", ja: "プレイヤーを読み込めません。再試行するか、新しいウィンドウで元ページを開いてください。" },
+    retryPlayer: { zh: "重试播放", en: "Retry playback", ja: "再生を再試行" },
     playAria: { zh: "播放视频", en: "Play video", ja: "動画を再生" }
   };
   return copy[key]?.[currentLang] || copy[key]?.zh || key;
@@ -4447,22 +4525,55 @@ function renderAll() {
   renderUpdates();
 }
 
+function renderVideoPlayerError(video, message = "") {
+  const frame = document.getElementById("video-frame");
+  const retryButton = document.getElementById("video-retry");
+  if (!frame) {
+    return;
+  }
+  frame.setAttribute("aria-busy", "false");
+  const placeholder = document.createElement("div");
+  placeholder.className = "video-placeholder video-player-error";
+  placeholder.setAttribute("role", "status");
+  const icon = document.createElement("span");
+  icon.className = "video-placeholder-asset";
+  icon.setAttribute("aria-hidden", "true");
+  const text = document.createElement("p");
+  text.textContent = message || video?.metadata_error || videoUiText("playerFailed");
+  placeholder.append(icon, text);
+  frame.replaceChildren(placeholder);
+  if (retryButton) {
+    retryButton.textContent = videoUiText("retryPlayer");
+    retryButton.hidden = false;
+  }
+}
+
 function openVideo(index) {
-  const video = typeof index === "number"
-    ? content.videos[index]
-    : videoState.videos.find((item) => item.video_id === index);
+  const video = index && typeof index === "object"
+    ? index
+    : typeof index === "number"
+      ? content.videos[index]
+      : videoState.videos.find((item) => item.video_id === index);
   const modal = document.getElementById("video-modal");
   const frame = document.getElementById("video-frame");
   const sourceLink = document.getElementById("video-link");
+  const retryButton = document.getElementById("video-retry");
   cancelSurfaceClose(modal);
   frame.replaceChildren();
+  frame.setAttribute("aria-busy", "true");
+  if (retryButton) {
+    retryButton.hidden = true;
+    retryButton.textContent = videoUiText("retryPlayer");
+  }
   if (!video) {
+    frame.setAttribute("aria-busy", "false");
     window.lusuTrackClick?.("video:play-failed", "video not found", { route: "videos" });
     return;
   }
-  modalFocusState.videoTrigger = document.activeElement && !modal.contains(document.activeElement)
-    ? document.activeElement
-    : null;
+  videoWindowState.currentVideo = video;
+  if (document.activeElement && !modal.contains(document.activeElement)) {
+    modalFocusState.videoTrigger = document.activeElement;
+  }
   const videoTitle = localText(video.title) || "Video Player";
   document.getElementById("modal-title").textContent = videoTitle;
   if (sourceLink) {
@@ -4486,6 +4597,10 @@ function openVideo(index) {
   if (embedUrl) {
     const shell = document.createElement("div");
     shell.className = "video-embed-shell";
+    const loading = document.createElement("div");
+    loading.className = "video-player-loading";
+    loading.setAttribute("role", "status");
+    loading.textContent = videoUiText("playerLoading");
     const iframe = document.createElement("iframe");
     iframe.src = embedUrl;
     iframe.title = videoTitle;
@@ -4493,22 +4608,25 @@ function openVideo(index) {
     iframe.allow = "autoplay; fullscreen; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
     iframe.allowFullscreen = true;
     iframe.referrerPolicy = "strict-origin-when-cross-origin";
+    iframe.addEventListener("load", () => {
+      if (!iframe.isConnected) {
+        return;
+      }
+      loading.remove();
+      frame.setAttribute("aria-busy", "false");
+    }, { once: true });
     iframe.addEventListener("error", () => {
+      if (!iframe.isConnected || videoWindowState.currentVideo !== video) {
+        return;
+      }
+      renderVideoPlayerError(video);
       window.lusuTrackClick?.("video:play-failed", video.video_id || video.external_id || "video", { route: "videos" });
     }, { once: true });
-    shell.append(iframe, videoClickShield());
+    shell.append(loading, iframe, videoClickShield());
     frame.appendChild(shell);
     window.lusuTrackClick?.("video:player-open", video.video_id || video.external_id || "video", { route: "videos" });
   } else {
-    const placeholder = document.createElement("div");
-    placeholder.className = "video-placeholder";
-    const icon = document.createElement("span");
-    icon.className = "video-placeholder-asset";
-    icon.setAttribute("aria-hidden", "true");
-    const text = document.createElement("p");
-    text.textContent = video.metadata_error || videoUiText("unsupported");
-    placeholder.append(icon, text);
-    frame.appendChild(placeholder);
+    renderVideoPlayerError(video, video.metadata_error || videoUiText("unsupported"));
     window.lusuTrackClick?.("video:play-failed", video.video_id || video.external_id || "video", { route: "videos" });
   }
   modal.hidden = false;
@@ -4608,7 +4726,13 @@ function closeVideo(options = {}) {
     }
     const frame = document.getElementById("video-frame");
     const sourceLink = document.getElementById("video-link");
+    const retryButton = document.getElementById("video-retry");
     frame.replaceChildren();
+    frame.setAttribute("aria-busy", "false");
+    videoWindowState.currentVideo = null;
+    if (retryButton) {
+      retryButton.hidden = true;
+    }
     if (sourceLink) {
       sourceLink.hidden = true;
       sourceLink.removeAttribute("href");
@@ -4963,46 +5087,150 @@ function renderAccountWidget(message = "") {
   form.id = "account-form";
   form.dataset.accountMode = "login";
   const title = document.createElement("strong");
-  title.textContent = t("accountTitle");
+  title.id = "account-form-title";
+  title.textContent = t("accountLoginTitle");
+  const modeSwitch = document.createElement("div");
+  modeSwitch.className = "account-mode-switch";
+  modeSwitch.setAttribute("role", "group");
+  modeSwitch.setAttribute("aria-label", t("accountModeAria"));
+  const loginModeButton = document.createElement("button");
+  loginModeButton.className = "account-mode-button";
+  loginModeButton.type = "button";
+  loginModeButton.dataset.accountModeChoice = "login";
+  loginModeButton.textContent = t("accountLogin");
+  const registerModeButton = document.createElement("button");
+  registerModeButton.className = "account-mode-button";
+  registerModeButton.type = "button";
+  registerModeButton.dataset.accountModeChoice = "register";
+  registerModeButton.textContent = t("accountRegister");
+  modeSwitch.append(loginModeButton, registerModeButton);
+
+  const emailField = document.createElement("label");
+  emailField.className = "account-field";
+  const emailLabel = document.createElement("span");
+  emailLabel.textContent = t("accountEmailLabel");
   const emailInput = document.createElement("input");
   emailInput.name = "email";
   emailInput.type = "email";
   emailInput.autocomplete = "email";
   emailInput.placeholder = t("accountEmailPlaceholder");
   emailInput.setAttribute("aria-label", t("accountEmailLabel"));
+  emailInput.setAttribute("aria-describedby", "account-email-error");
   emailInput.required = true;
+  const emailError = document.createElement("small");
+  emailError.className = "account-field-error";
+  emailError.id = "account-email-error";
+  emailError.hidden = true;
+  emailField.append(emailLabel, emailInput, emailError);
+
+  const passwordField = document.createElement("label");
+  passwordField.className = "account-field";
+  const passwordLabel = document.createElement("span");
+  passwordLabel.textContent = t("accountPasswordLabel");
   const passwordInput = document.createElement("input");
   passwordInput.name = "password";
   passwordInput.type = "password";
   passwordInput.autocomplete = "current-password";
   passwordInput.placeholder = t("accountPasswordPlaceholder");
   passwordInput.setAttribute("aria-label", t("accountPasswordLabel"));
+  passwordInput.setAttribute("aria-describedby", "account-password-error");
   passwordInput.required = true;
+  passwordInput.minLength = 8;
+  const passwordError = document.createElement("small");
+  passwordError.className = "account-field-error";
+  passwordError.id = "account-password-error";
+  passwordError.hidden = true;
+  passwordField.append(passwordLabel, passwordInput, passwordError);
+
   const actions = document.createElement("div");
   actions.className = "account-actions";
-  const loginButton = document.createElement("button");
-  loginButton.className = "account-button";
-  loginButton.type = "submit";
-  loginButton.dataset.accountMode = "login";
-  loginButton.textContent = t("accountLogin");
-  const registerButton = document.createElement("button");
-  registerButton.className = "account-button";
-  registerButton.type = "submit";
-  registerButton.dataset.accountMode = "register";
-  registerButton.textContent = t("accountRegister");
-  [loginButton, registerButton].forEach((button) => {
-    button.addEventListener("click", () => {
-      form.dataset.accountMode = button.dataset.accountMode || "login";
-    });
-  });
-  actions.append(loginButton, registerButton);
+  const submitButton = document.createElement("button");
+  submitButton.className = "account-button account-submit-button";
+  submitButton.type = "submit";
+  submitButton.dataset.accountSubmit = "";
+  actions.appendChild(submitButton);
+  const feedback = document.createElement("p");
+  feedback.className = "account-note account-form-feedback";
+  feedback.id = "account-form-feedback";
+  feedback.setAttribute("role", "status");
+  feedback.setAttribute("aria-live", "polite");
+  feedback.textContent = message;
+  feedback.classList.toggle("is-error", Boolean(message));
   const note = document.createElement("p");
   note.className = "account-note";
-  note.textContent = message || t("accountGuestNote");
-  form.append(title, emailInput, passwordInput, actions, note);
+  note.textContent = t("accountGuestNote");
+  modeSwitch.querySelectorAll("[data-account-mode-choice]").forEach((button) => {
+    button.addEventListener("click", () => {
+      setAccountFormMode(form, button.dataset.accountModeChoice || button.dataset.accountMode || "login");
+    });
+  });
+  form.append(title, modeSwitch, emailField, passwordField, actions, feedback, note);
   form.addEventListener("submit", submitAccountForm);
+  setAccountFormMode(form, "login", { preserveFeedback: true });
   popover.appendChild(form);
   widget.append(toggle, popover);
+}
+
+function clearAccountFormErrors(form, options = {}) {
+  form?.querySelectorAll("[aria-invalid='true']").forEach((input) => input.removeAttribute("aria-invalid"));
+  form?.querySelectorAll(".account-field-error").forEach((node) => {
+    node.hidden = true;
+    node.textContent = "";
+  });
+  const feedback = form?.querySelector("#account-form-feedback");
+  if (feedback && options.preserveFeedback !== true) {
+    feedback.textContent = "";
+    feedback.classList.remove("is-error");
+  }
+}
+
+function setAccountFormMode(form, mode, options = {}) {
+  if (!form) {
+    return;
+  }
+  const nextMode = mode === "register" ? "register" : "login";
+  form.dataset.accountMode = nextMode;
+  form.querySelector("#account-form-title").textContent = t(nextMode === "register" ? "accountRegisterTitle" : "accountLoginTitle");
+  form.querySelectorAll("[data-account-mode-choice]").forEach((button) => {
+    button.setAttribute("aria-pressed", String(button.dataset.accountModeChoice === nextMode));
+  });
+  const password = form.elements.password;
+  if (password) {
+    password.autocomplete = nextMode === "register" ? "new-password" : "current-password";
+  }
+  const submit = form.querySelector("[data-account-submit]");
+  if (submit) {
+    submit.dataset.idleLabel = t(nextMode === "register" ? "accountRegister" : "accountLogin");
+    submit.textContent = accountSubmitting ? t("accountSubmitting") : submit.dataset.idleLabel;
+  }
+  clearAccountFormErrors(form, options);
+}
+
+function showAccountFormError(form, message, fieldName = "") {
+  if (!form) {
+    return;
+  }
+  clearAccountFormErrors(form);
+  const normalized = String(message || t("accountFormError"));
+  let targetName = fieldName;
+  if (!targetName && /email|邮箱|メール/i.test(normalized)) {
+    targetName = "email";
+  } else if (!targetName && /password|密码|パスワード/i.test(normalized)) {
+    targetName = "password";
+  }
+  const feedback = form.querySelector("#account-form-feedback");
+  if (feedback) {
+    feedback.textContent = normalized;
+    feedback.classList.add("is-error");
+  }
+  const input = targetName ? form.elements[targetName] : null;
+  const error = targetName ? form.querySelector(`#account-${targetName}-error`) : null;
+  if (input && error) {
+    input.setAttribute("aria-invalid", "true");
+    error.textContent = normalized;
+    error.hidden = false;
+  }
+  (input || form.elements.email)?.focus({ preventScroll: true });
 }
 
 async function initAccountWidget() {
@@ -5022,14 +5250,25 @@ async function submitAccountForm(event) {
     return;
   }
   const form = event.currentTarget;
-  const mode = event.submitter?.dataset.accountMode || form.dataset.accountMode || "login";
+  const mode = form.dataset.accountMode || "login";
+  const email = form.elements.email;
+  const password = form.elements.password;
+  if (!email?.validity?.valid) {
+    showAccountFormError(form, t("accountEmailRequired"), "email");
+    return;
+  }
+  if (!password?.validity?.valid || Array.from(password.value).length < 8) {
+    showAccountFormError(form, t("accountPasswordRequired"), "password");
+    return;
+  }
+  clearAccountFormErrors(form);
   setAccountSubmitting(true);
   try {
     const payload = await accountApi(`/api/auth/${mode}`, {
       method: "POST",
       body: JSON.stringify({
-        email: form.email.value.trim(),
-        password: form.password.value
+        email: email.value.trim(),
+        password: password.value
       })
     });
     authUser = payload.user;
@@ -5037,10 +5276,10 @@ async function submitAccountForm(event) {
     openAccountPopover();
     window.dispatchEvent(new CustomEvent("lusu:accountchange", { detail: { signedIn: true } }));
   } catch (error) {
-    renderAccountWidget(error.message);
-    openAccountPopover();
+    showAccountFormError(form, error.message || t("accountFormError"));
+    openAccountPopover({ focus: false });
   } finally {
-    accountSubmitting = false;
+    setAccountSubmitting(false);
   }
 }
 
@@ -5058,7 +5297,7 @@ async function logoutAccount() {
   renderAccountWidget(t("accountLoggedOut"));
   openAccountPopover();
   window.dispatchEvent(new CustomEvent("lusu:accountchange", { detail: { signedIn: false } }));
-  accountSubmitting = false;
+  setAccountSubmitting(false);
 }
 
 function setAccountSubmitting(isSubmitting) {
@@ -5066,6 +5305,10 @@ function setAccountSubmitting(isSubmitting) {
   const form = document.getElementById("account-form");
   if (form) {
     form.setAttribute("aria-busy", String(isSubmitting));
+    const submit = form.querySelector("[data-account-submit]");
+    if (submit) {
+      submit.textContent = isSubmitting ? t("accountSubmitting") : submit.dataset.idleLabel || t("accountLogin");
+    }
   }
   document.querySelectorAll("#account-widget button:not([data-account-toggle])").forEach((button) => {
     button.disabled = isSubmitting;
@@ -5081,6 +5324,17 @@ function openAccountPopover(options = {}) {
     cancelSurfaceClose(popover);
     popover.hidden = false;
     syncAccountPopoverState(popover);
+    if (options.focus !== false) {
+      window.requestAnimationFrame(() => {
+        if (popover.hidden || !popover.isConnected) {
+          return;
+        }
+        const focusTarget = popover.querySelector("[aria-invalid='true']")
+          || popover.querySelector("input:not([disabled])")
+          || popover.querySelector("button:not([disabled])");
+        focusTarget?.focus({ preventScroll: true });
+      });
+    }
   }
 }
 
@@ -5246,8 +5500,8 @@ async function deriveChatPrivateRoom(password) {
   return { roomKey, roomCryptoKey };
 }
 
-async function encryptChatContent(content) {
-  if (!isPrivateChatRoomActive()) {
+async function encryptChatContent(content, roomCryptoKey = chatState.roomCryptoKey, privateRoom = isPrivateChatRoomActive()) {
+  if (!privateRoom) {
     return content;
   }
   try {
@@ -5256,7 +5510,7 @@ async function encryptChatContent(content) {
     window.crypto.getRandomValues(iv);
     const encrypted = await window.crypto.subtle.encrypt(
       { name: "AES-GCM", iv },
-      chatState.roomCryptoKey,
+      roomCryptoKey,
       encoder.encode(content)
     );
     return `${base64UrlEncode(iv)}.${base64UrlEncode(new Uint8Array(encrypted))}`;
@@ -5341,7 +5595,30 @@ function hideChatPrivateRoomForm(options = {}) {
   }
 }
 
+function saveCurrentChatDraft() {
+  const input = document.getElementById("chat-message-input");
+  const key = chatState.roomKey || chatPublicRoomKey;
+  if (!input) {
+    return;
+  }
+  if (input.value) {
+    chatState.drafts.set(key, input.value);
+  } else {
+    chatState.drafts.delete(key);
+  }
+}
+
+function restoreCurrentChatDraft() {
+  const input = document.getElementById("chat-message-input");
+  if (!input) {
+    return;
+  }
+  input.value = chatState.drafts.get(chatState.roomKey || chatPublicRoomKey) || "";
+  updateChatCounter();
+}
+
 function prepareChatRoomSwitch() {
+  saveCurrentChatDraft();
   if (chatState.pollTimer) {
     window.clearTimeout(chatState.pollTimer);
     chatState.pollTimer = null;
@@ -5352,6 +5629,10 @@ function prepareChatRoomSwitch() {
 
 async function enterChatPrivateRoom(event) {
   event?.preventDefault();
+  if (chatState.sending) {
+    setChatFeedback(t("chatRoomSwitchBlocked"), true);
+    return;
+  }
   const input = document.getElementById("chat-private-password");
   const password = String(input?.value || "");
   if (Array.from(password).length < 6) {
@@ -5367,10 +5648,15 @@ async function enterChatPrivateRoom(event) {
     chatState.roomKey = room.roomKey;
     chatState.roomCryptoKey = room.roomCryptoKey;
     chatState.roomMode = "private";
+    const roomRevision = chatState.roomRevision;
+    restoreCurrentChatDraft();
     hideChatPrivateRoomForm();
     syncChatRoomUi();
     resetChatLog(t("chatLoading"));
     await refreshChatMessages({ initial: true });
+    if (roomRevision !== chatState.roomRevision) {
+      return;
+    }
     setChatFeedback(t("chatPrivateRoomReady"));
     scheduleChatPolling(5000);
   } catch (error) {
@@ -5379,19 +5665,32 @@ async function enterChatPrivateRoom(event) {
 }
 
 async function switchChatPublicRoom() {
+  if (chatState.sending) {
+    setChatFeedback(t("chatRoomSwitchBlocked"), true);
+    return;
+  }
   prepareChatRoomSwitch();
   chatState.roomKey = chatPublicRoomKey;
   chatState.roomCryptoKey = null;
   chatState.roomMode = "public";
+  const roomRevision = chatState.roomRevision;
+  restoreCurrentChatDraft();
   hideChatPrivateRoomForm();
   syncChatRoomUi();
   resetChatLog(t("chatLoading"));
   await refreshChatMessages({ initial: true });
+  if (roomRevision !== chatState.roomRevision) {
+    return;
+  }
   setChatFeedback(t("chatPublicRoomReady"));
   scheduleChatPolling(5000);
 }
 
 async function handleChatRoomToggle() {
+  if (chatState.sending) {
+    setChatFeedback(t("chatRoomSwitchBlocked"), true);
+    return;
+  }
   if (isPrivateChatRoomActive()) {
     await switchChatPublicRoom();
     return;
@@ -5415,6 +5714,13 @@ function setChatFeedback(message, isError = false) {
   feedback.classList.toggle("is-error", isError);
 }
 
+function setChatRetryVisible(visible) {
+  const retry = document.getElementById("chat-retry");
+  if (retry) {
+    retry.hidden = !visible;
+  }
+}
+
 function setChatSendingState(sending) {
   chatState.sending = sending;
   const form = document.getElementById("chat-form");
@@ -5422,14 +5728,20 @@ function setChatSendingState(sending) {
   const button = document.querySelector(".chat-send-button");
   form?.setAttribute("aria-busy", String(sending));
   if (input) {
-    input.disabled = sending;
+    input.readOnly = sending;
   }
   if (button) {
-    button.disabled = sending;
+    button.disabled = sending || navigator.onLine === false;
   }
+  document.querySelectorAll("#chat-room-toggle, #chat-private-room-form button, #chat-private-password").forEach((control) => {
+    control.disabled = sending;
+  });
 }
 
 function chatSyncStatusText(delay = chatState.pollDelay) {
+  if (navigator.onLine === false) {
+    return t("chatOfflineStatus");
+  }
   if (delay >= 30000) {
     return t("chatSyncStatusSlow");
   }
@@ -5452,7 +5764,38 @@ function updateChatCounter() {
   const count = document.getElementById("chat-char-count");
   if (input && count) {
     count.textContent = String(Array.from(input.value).length);
+    saveCurrentChatDraft();
   }
+}
+
+function chatListIsNearBottom(list) {
+  return Boolean(list) && list.scrollHeight - list.scrollTop - list.clientHeight <= 72;
+}
+
+function updateChatUnreadIndicator() {
+  const button = document.getElementById("chat-jump-latest");
+  if (!button) {
+    return;
+  }
+  button.hidden = chatState.unreadCount <= 0;
+  if (!button.hidden) {
+    button.textContent = t("chatUnreadMessages").replace("{count}", String(chatState.unreadCount));
+    button.setAttribute("aria-label", `${button.textContent}. ${t("chatJumpLatest")}`);
+  }
+}
+
+function clearChatUnread() {
+  chatState.unreadCount = 0;
+  updateChatUnreadIndicator();
+}
+
+function jumpToLatestChatMessage() {
+  const list = document.getElementById("chat-message-list");
+  if (!list) {
+    return;
+  }
+  list.scrollTo({ top: list.scrollHeight, behavior: motionScrollBehavior() });
+  clearChatUnread();
 }
 
 async function initChatroom() {
@@ -5485,14 +5828,21 @@ function scheduleChatPolling(delay) {
   if (chatState.pollTimer) {
     window.clearTimeout(chatState.pollTimer);
   }
+  const roomRevision = chatState.roomRevision;
   chatState.pollTimer = window.setTimeout(async () => {
     chatState.pollTimer = null;
+    if (roomRevision !== chatState.roomRevision) {
+      return;
+    }
     const chatVisible = !document.hidden && document.getElementById("chatroom")?.classList.contains("active");
     if (!chatVisible) {
       scheduleChatPolling(30000);
       return;
     }
     const newCount = await refreshChatMessages();
+    if (roomRevision !== chatState.roomRevision) {
+      return;
+    }
     scheduleChatPolling(nextChatPollDelay(newCount));
   }, delay);
 }
@@ -5520,6 +5870,7 @@ function resetChatLog(message) {
   chatState.hasLoadedInitial = false;
   chatState.idlePolls = 0;
   chatState.seenMessageIds.clear();
+  clearChatUnread();
 }
 
 function appendChatSystemMessage(message) {
@@ -5560,14 +5911,19 @@ async function refreshChatMessages(options = {}) {
     if (roomRevision !== chatState.roomRevision) {
       return 0;
     }
-    appendedCount = appendChatMessages(messages);
+    appendedCount = appendChatMessages(messages, { initial: options.initial === true });
     chatState.hasLoadedInitial = true;
+    setChatRetryVisible(false);
   } catch {
+    if (roomRevision !== chatState.roomRevision) {
+      return 0;
+    }
     if (options.initial) {
       resetChatLog(t("chatLoadFailed"));
     } else {
       setChatFeedback(t("chatLoadFailed"), true);
     }
+    setChatRetryVisible(true);
   } finally {
     if (roomRevision === chatState.roomRevision) {
       chatState.loading = false;
@@ -5576,13 +5932,14 @@ async function refreshChatMessages(options = {}) {
   return appendedCount;
 }
 
-function appendChatMessages(messages) {
+function appendChatMessages(messages, options = {}) {
   const list = document.getElementById("chat-message-list");
   if (!list || !messages.length) {
     return 0;
   }
-
+  const wasNearBottom = chatListIsNearBottom(list);
   let appendedCount = 0;
+  let appendedOwnMessage = false;
   messages.forEach((message) => {
     if (!message.message_id || chatState.seenMessageIds.has(message.message_id)) {
       return;
@@ -5591,11 +5948,16 @@ function appendChatMessages(messages) {
     chatState.lastMessageId = message.message_id;
     list.appendChild(createChatMessageNode(message));
     appendedCount += 1;
+    appendedOwnMessage ||= message.visitor_id === chatState.visitorId;
   });
 
   const autoscroll = document.getElementById("chat-autoscroll");
-  if (!autoscroll || autoscroll.checked) {
+  if (options.initial || appendedOwnMessage || ((!autoscroll || autoscroll.checked) && wasNearBottom)) {
     list.scrollTop = list.scrollHeight;
+    clearChatUnread();
+  } else {
+    chatState.unreadCount += appendedCount;
+    updateChatUnreadIndicator();
   }
   return appendedCount;
 }
@@ -5608,6 +5970,10 @@ function createChatMessageNode(message) {
   const avatar = document.createElement("img");
   avatar.className = "chat-message-avatar";
   avatar.src = "/assets/images/icon-chatroom-clean.png";
+  avatar.width = 36;
+  avatar.height = 36;
+  avatar.loading = "lazy";
+  avatar.decoding = "async";
   avatar.alt = "";
   avatar.setAttribute("aria-hidden", "true");
 
@@ -5653,6 +6019,11 @@ async function submitChatMessage(event) {
     setChatFeedback(t("chatSending"));
     return;
   }
+  if (navigator.onLine === false) {
+    setChatFeedback(t("chatOfflineStatus"), true);
+    updateChatSyncStatus();
+    return;
+  }
 
   const input = document.getElementById("chat-message-input");
   const contentText = input.value.trim();
@@ -5670,17 +6041,27 @@ async function submitChatMessage(event) {
     return;
   }
 
+  let sendContext = null;
   try {
     setChatSendingState(true);
     setChatFeedback(t("chatSending"));
     await ensureChatIdentity();
+    sendContext = {
+      revision: chatState.roomRevision,
+      roomKey: chatState.roomKey,
+      roomMode: chatState.roomMode,
+      roomCryptoKey: chatState.roomCryptoKey
+    };
     const body = {
       visitorId: chatState.visitorId,
       nickname: chatState.nickname
     };
-    if (isPrivateChatRoomActive()) {
-      body.room = chatState.roomKey;
-      body.encryptedContent = await encryptChatContent(contentText);
+    const privateRoom = sendContext.roomMode === "private"
+      && sendContext.roomKey !== chatPublicRoomKey
+      && Boolean(sendContext.roomCryptoKey);
+    if (privateRoom) {
+      body.room = sendContext.roomKey;
+      body.encryptedContent = await encryptChatContent(contentText, sendContext.roomCryptoKey, true);
     } else {
       body.content = contentText;
     }
@@ -5688,9 +6069,16 @@ async function submitChatMessage(event) {
       method: "POST",
       body: JSON.stringify(body)
     });
+    if (sendContext.revision !== chatState.roomRevision || sendContext.roomKey !== chatState.roomKey) {
+      setChatFeedback(t("chatRoomChanged"), true);
+      return;
+    }
     chatState.lastSentAt = Date.now();
     safeStorageSet(chatStorageKeys.lastSentAt, String(chatState.lastSentAt));
-    input.value = "";
+    if (input.value.trim() === contentText) {
+      input.value = "";
+    }
+    chatState.drafts.delete(sendContext.roomKey);
     updateChatCounter();
     setChatFeedback(t("chatSent"));
     const messages = await prepareChatMessagesForDisplay(payload.message ? [payload.message] : []);
@@ -5699,6 +6087,10 @@ async function submitChatMessage(event) {
     await refreshChatMessages({ immediate: true });
     scheduleChatPolling(5000);
   } catch (error) {
+    if (sendContext && (sendContext.revision !== chatState.roomRevision || sendContext.roomKey !== chatState.roomKey)) {
+      setChatFeedback(t("chatRoomChanged"), true);
+      return;
+    }
     if (error.code === "nickname_taken") {
       setChatFeedback(t("chatNicknameTaken"), true);
       const nickname = await fetchAvailableChatNickname();
@@ -5887,6 +6279,13 @@ document.addEventListener("click", (event) => {
     return;
   }
 
+  if (target.closest("[data-video-player-retry]")) {
+    if (videoWindowState.currentVideo) {
+      openVideo(videoWindowState.currentVideo);
+    }
+    return;
+  }
+
   if (target.closest("[data-video-window-toggle], [data-video-fullscreen]")) {
     fullscreenVideo();
     return;
@@ -5966,6 +6365,34 @@ window.addEventListener("popstate", () => {
 
 document.getElementById("chat-form")?.addEventListener("submit", submitChatMessage);
 document.getElementById("chat-message-input")?.addEventListener("input", updateChatCounter);
+document.getElementById("chat-message-input")?.addEventListener("keydown", (event) => {
+  if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+    event.preventDefault();
+    if (navigator.onLine === false) {
+      setChatFeedback(t("chatOfflineStatus"), true);
+      updateChatSyncStatus();
+      return;
+    }
+    document.getElementById("chat-form")?.requestSubmit();
+  }
+});
+document.getElementById("chat-message-list")?.addEventListener("scroll", (event) => {
+  if (chatListIsNearBottom(event.currentTarget)) {
+    clearChatUnread();
+  }
+}, { passive: true });
+document.getElementById("chat-jump-latest")?.addEventListener("click", jumpToLatestChatMessage);
+document.getElementById("chat-autoscroll")?.addEventListener("change", (event) => {
+  if (event.currentTarget.checked) {
+    jumpToLatestChatMessage();
+  }
+});
+document.getElementById("chat-retry")?.addEventListener("click", async () => {
+  setChatRetryVisible(false);
+  setChatFeedback(t("chatLoading"));
+  await refreshChatMessages({ initial: !chatState.hasLoadedInitial });
+  scheduleChatPolling(5000);
+});
 document.getElementById("chat-edit-nickname")?.addEventListener("click", editChatNickname);
 document.getElementById("chat-room-toggle")?.addEventListener("click", () => {
   handleChatRoomToggle().catch((error) => {
@@ -5974,6 +6401,26 @@ document.getElementById("chat-room-toggle")?.addEventListener("click", () => {
 });
 document.getElementById("chat-private-room-form")?.addEventListener("submit", enterChatPrivateRoom);
 document.getElementById("chat-private-room-cancel")?.addEventListener("click", hideChatPrivateRoomForm);
+
+window.addEventListener("offline", () => {
+  updateChatSyncStatus();
+  setChatFeedback(t("chatOfflineStatus"), true);
+  const button = document.querySelector(".chat-send-button");
+  if (button) {
+    button.disabled = true;
+  }
+});
+window.addEventListener("online", () => {
+  updateChatSyncStatus();
+  setChatFeedback(t("chatBackOnline"));
+  const button = document.querySelector(".chat-send-button");
+  if (button) {
+    button.disabled = chatState.sending;
+  }
+  if (document.getElementById("chatroom")?.classList.contains("active")) {
+    refreshChatMessages().then((newCount) => scheduleChatPolling(nextChatPollDelay(newCount || 0)));
+  }
+});
 document.getElementById("knowledge-search-input")?.addEventListener("input", (event) => {
   articleState.searchTerm = event.target.value;
   renderKnowledge();

@@ -60,7 +60,7 @@ input {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 34px;
+  min-height: 44px;
   padding: 7px 12px;
   border: 2px solid #0c45a8;
   border-radius: 6px;
@@ -70,6 +70,15 @@ input {
   font-weight: 900;
   text-decoration: none;
   cursor: pointer;
+}
+
+.back-link:focus-visible,
+.play-button:focus-visible,
+.tool-button:focus-visible,
+.file-button:focus-within,
+.license-panel a:focus-visible {
+  outline: 3px solid #ffcc33;
+  outline-offset: 2px;
 }
 
 .game-frame-card {
@@ -109,6 +118,9 @@ input {
   width: min(1280px, calc(100% - 20px));
   margin: 10px auto;
   overflow: hidden;
+  display: grid;
+  grid-template-rows: auto auto auto minmax(0, 1fr);
+  align-self: start;
 }
 
 .game-tools {
@@ -134,10 +146,14 @@ input {
 }
 
 .tool-row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(116px, 1fr));
   gap: 8px;
+}
+
+.tool-row .tool-button,
+.tool-row .file-button {
+  width: 100%;
 }
 
 .tool-button.subtle {
@@ -183,7 +199,7 @@ input {
 }
 
 .cloud-actions .tool-button {
-  min-height: 30px;
+  min-height: 44px;
   padding: 5px 9px;
   font-size: 12px;
 }
@@ -217,13 +233,115 @@ input {
   font-weight: 900;
 }
 
+.game-play-info {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding: 8px 10px;
+  border-bottom: 2px solid var(--line);
+  background: #eef6ff;
+}
+
+.game-info-card {
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid #b8ccec;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.game-info-card strong {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--blue-dark);
+  font-size: 13px;
+}
+
+.game-info-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.game-stage {
+  position: relative;
+  width: 100%;
+  min-height: clamp(420px, 62dvh, 720px);
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #d9e8fb;
+}
+
 .game-frame {
   display: block;
+  position: absolute;
+  inset: 0;
   width: 100%;
-  height: calc(100dvh - 168px);
-  min-height: 620px;
+  height: 100%;
+  min-height: 0;
   border: 0;
   background: #fff;
+}
+
+.game-frame[hidden],
+.game-load-state[hidden] {
+  display: none;
+}
+
+.game-load-state {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 16px;
+  padding: 24px;
+  color: var(--text);
+  text-align: center;
+  background: linear-gradient(180deg, rgba(247, 251, 255, 0.98), rgba(221, 237, 255, 0.98));
+}
+
+.game-load-state-copy {
+  width: min(560px, 100%);
+  padding: 18px;
+  border: 2px solid #8fb0df;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(16, 62, 135, 0.14);
+}
+
+.game-load-state-title {
+  display: block;
+  color: var(--blue-dark);
+  font-size: clamp(18px, 3vw, 26px);
+}
+
+.game-load-state-body {
+  margin: 8px 0 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.game-load-state.is-network .game-load-state-copy {
+  border-color: #d99a24;
+  background: #fffaf0;
+}
+
+.game-load-state.is-missing .game-load-state-copy {
+  border-color: #c95555;
+  background: #fff4f4;
+}
+
+.game-load-state.is-unsupported .game-load-state-copy {
+  border-color: #7c66b6;
+  background: #f8f5ff;
+}
+
+.game-retry-button {
+  min-width: min(240px, 100%);
 }
 
 .status-text {
@@ -264,7 +382,7 @@ input {
   }
 
   .tool-row {
-    justify-content: flex-start;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .game-frame-card {
@@ -278,9 +396,8 @@ input {
     font-size: 12px;
   }
 
-  .game-frame {
-    height: calc(100dvh - 230px);
-    min-height: 420px;
+  .game-stage {
+    min-height: clamp(400px, 60dvh, 620px);
   }
 }
 
@@ -332,7 +449,7 @@ input {
   .file-button,
   .play-button,
   .back-link {
-    min-height: 32px;
+    min-height: 44px;
     padding: 6px 9px;
     font-size: 12px;
   }
@@ -342,9 +459,23 @@ input {
     padding: 6px 8px;
   }
 
-  .game-frame {
-    height: calc(100dvh - 270px);
+  .game-play-info {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 6px;
+  }
+
+  .game-info-card {
+    padding: 7px 8px;
+  }
+
+  .game-stage {
     min-height: 360px;
+    aspect-ratio: 4 / 5;
+  }
+
+  .game-load-state {
+    padding: 14px;
   }
 }
 
@@ -402,8 +533,9 @@ input {
     padding: 5px 8px;
   }
 
-  .game-frame {
+  .game-stage {
     height: calc(100dvh - 156px);
     min-height: 260px;
+    aspect-ratio: auto;
   }
 }

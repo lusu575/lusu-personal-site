@@ -32,6 +32,12 @@ test("standalone shell exposes the required playback and learning controls", () 
   for (const id of ["back-site", "status-text", "cloud-status", "ui-language"]) {
     assert.match(html, new RegExp(`id=["']${id}["']`));
   }
+  assert.equal((html.match(/id="cloud-status"/g) || []).length, 1);
+  assert.match(html, /<header class="trainer-titlebar">[\s\S]*id="back-site"[\s\S]*class="trainer-title-lockup"[\s\S]*class="trainer-cloud-panel trainer-title-cloud"[\s\S]*id="cloud-status"[\s\S]*<\/header>/);
+  assert.match(html, /id="audio-progress"[^>]*aria-valuetext="0:00 \/ 0:00"[^>]*data-i18n-aria-label="progress"/);
+  assert.match(html, /data-audio-action="toggle"[^>]*aria-pressed="false"/);
+  assert.match(html, /id="stage-illustration-image"[^>]*width="960"[^>]*height="720"[^>]*loading="lazy"[^>]*decoding="async"/);
+  assert.match(html, /assets\/ui\/audio-start\.webp"[^>]*width="512"[^>]*height="384"[^>]*loading="lazy"[^>]*decoding="async"/);
   assert.match(html, /NOTICE-japanese-voices\.md"[\s\S]*rel="license noopener"/);
   assert.doesNotMatch(app, /from "\.\/lib\/[^"?]+\.mjs";/);
 });
@@ -59,6 +65,13 @@ test("responsive contract covers all acceptance viewports and reduced motion", (
   assert.match(css, /\.checkin-table\s*\{[^}]*table-layout:\s*fixed/);
   assert.match(css, /\.dialog-window\s*\{[^}]*max-height:\s*calc\(100dvh - 24px\)/);
   assert.match(css, /\.dialog-body\s*\{[^}]*flex:\s*1 1 auto;[^}]*min-height:\s*0/);
+  assert.match(css, /\.trainer-titlebar\s*\{[^}]*grid-template-columns:/);
+  assert.match(css, /\.trainer-title-cloud\s*\{[^}]*min-height:\s*44px/);
+  assert.match(css, /\[data-audio-action\]\[aria-pressed="true"\]/);
+  assert.match(css, /\.question-card\.has-error/);
+  assert.match(css, /@media \(max-width:\s*340px\)/);
+  assert.match(css, /@media \(orientation:\s*landscape\) and \(max-height:\s*500px\)[\s\S]*?\.question-actions, \.analysis-actions\s*\{[\s\S]*?position:\s*sticky/);
+  assert.match(css, /\.sound-gate-window img\s*\{[^}]*aspect-ratio:\s*4 \/ 3/);
 });
 
 test("navigation, modal focus, option feedback, and cache invalidation have explicit guards", () => {
@@ -77,6 +90,11 @@ test("navigation, modal focus, option feedback, and cache invalidation have expl
   assert.match(app, /\[data-action='choose-mode'\]/);
   assert.match(app, /function highlightLine\(id\)[\s\S]*?classList\.toggle/);
   assert.doesNotMatch(app, /function highlightLine\(id\)[\s\S]{0,400}scrollIntoView/);
+  assert.match(app, /function clearPlaybackHighlights\(\)[\s\S]*?aria-pressed/);
+  assert.match(app, /function syncAudioControlStates\(\)[\s\S]*?context\.kind/);
+  assert.match(app, /function updateProgressAccessibility\(currentTime, duration\)[\s\S]*?aria-valuetext/);
+  assert.match(app, /function beginNavigation\(\)[\s\S]*?clearPlaybackHighlights\(\)[\s\S]*?player\.stop\(\)/);
+  assert.match(app, /decoding:\s*"async"/);
   assert.match(app, /state\.settings\.autoplay = false/);
   assert.match(app, /document\.hidden[\s\S]*?player\.stop\(\)/);
   assert.match(app, /if \(detail\.context\?\.kind === "scene"\) \{[\s\S]*?unlockQuestions\(\);[\s\S]*?return;/);
@@ -99,6 +117,9 @@ test("wrong-answer recovery remains reachable outside the result dialog", () => 
   assert.match(app, /\$\("#try-again"\)\.hidden = !questionActionState\(state\)\.showRetry/);
   assert.match(app, /\$\("#analysis-retry"\)\.hidden = !actions\.showRetry/);
   assert.match(app, /\$\("#result-retry"\)\.hidden = !actions\.showRetry/);
+  assert.match(app, /function focusFirstUnansweredQuestion\(form, formData\)[\s\S]*?scrollIntoView[\s\S]*?input:not\(:disabled\)[\s\S]*?focus/);
+  assert.match(app, /if \(focusFirstUnansweredQuestion\(event\.currentTarget, formData\)\) return/);
+  assert.match(app, /card\.classList\.remove\("has-error"\)/);
 });
 
 test("main-site resource path is narrowly allowlisted", () => {

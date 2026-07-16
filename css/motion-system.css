@@ -765,3 +765,17 @@ html[data-ui-shell="mobile"][data-motion="off"] .wallpaper-stage {
     transform: none !important;
   }
 }
+
+html[data-performance="low"] .wallpaper-cloud {
+  display: none;
+  animation: none !important;
+}
+
+html[data-performance="low"] :is(.xp-window, .xp-topbar, .xp-taskbar, .account-popover, .modal-window) {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+html[data-performance="low"] :is(.wallpaper-stage, .desktop-icon, .page, .xp-window, .modal-window) {
+  transition-duration: 1ms !important;
+}

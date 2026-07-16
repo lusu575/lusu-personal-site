@@ -7,7 +7,7 @@
   <meta name="description" content="Japanese subtext listening and context trainer">
   <title>日语的言外之意</title>
   <link rel="icon" href="./assets/icons/tool-icon-64.webp" type="image/webp">
-  <link rel="stylesheet" href="./style.css?v=20260714-japanese-subtext-v103-retry-r1">
+  <link rel="stylesheet" href="./style.css?v=20260717-100-ui-ux-preview-r1">
 </head>
 <body>
   <div class="trainer-shell" id="trainer-shell">
@@ -20,6 +20,10 @@
           <span data-i18n="toolVersion">版本 1.0.3</span>
         </div>
       </div>
+      <div class="trainer-cloud-panel trainer-title-cloud" aria-live="polite" role="status">
+        <strong data-i18n="saveSync">存档同步</strong>
+        <span id="cloud-status" data-i18n="authLocal">未登录 · 使用本地进度</span>
+      </div>
     </header>
 
     <section class="trainer-frame-card">
@@ -27,10 +31,6 @@
         <div class="trainer-context">
           <strong data-i18n="trainingConsole">训练控制台</strong>
           <span id="status-text" aria-live="polite">READY</span>
-        </div>
-        <div class="trainer-cloud-panel" aria-live="polite">
-          <strong data-i18n="saveSync">存档同步</strong>
-          <span id="cloud-status" data-i18n="authLocal">未登录 · 使用本地进度</span>
         </div>
         <div class="trainer-tool-actions">
           <label class="language-control">
@@ -102,7 +102,7 @@
               <span id="scene-setting"></span>
             </div>
             <figure class="stage-illustration media-frame" id="stage-illustration" hidden>
-              <img id="stage-illustration-image" alt="" loading="lazy" decoding="async">
+              <img id="stage-illustration-image" width="960" height="720" alt="" loading="lazy" decoding="async">
             </figure>
             <div class="transcript" id="transcript"></div>
           </section>
@@ -114,9 +114,9 @@
               <label for="audio-progress" data-i18n="progress">播放进度</label>
               <span id="total-time">0:00</span>
             </div>
-            <input id="audio-progress" class="audio-range" type="range" min="0" max="1000" value="0" step="1" aria-describedby="audio-message">
+            <input id="audio-progress" class="audio-range" type="range" min="0" max="1000" value="0" step="1" aria-describedby="audio-message" aria-valuetext="0:00 / 0:00" data-i18n-aria-label="progress">
             <div class="transport-grid">
-              <button class="xp-control compact primary" type="button" data-audio-action="toggle" data-i18n="play">播放</button>
+              <button class="xp-control compact primary" type="button" data-audio-action="toggle" data-i18n="play" aria-pressed="false">播放</button>
             </div>
             <div class="quick-audio-settings">
               <label><span data-i18n="playbackSpeed">播放速度</span><select id="quick-speed"><option value="0.75">0.75×</option><option value="1">1.0×</option><option value="1.15">1.15×</option></select></label>
@@ -157,7 +157,7 @@
   <dialog class="sound-gate" id="sound-gate" aria-labelledby="sound-gate-title" aria-describedby="mode-choice-intro">
     <div class="sound-gate-window">
       <div class="mini-titlebar"><span id="sound-gate-title" data-i18n="toolTitle">日语的言外之意</span></div>
-      <img src="./assets/ui/audio-start.webp" width="512" height="384" alt="" aria-hidden="true">
+      <img src="./assets/ui/audio-start.webp" width="512" height="384" alt="" aria-hidden="true" loading="lazy" decoding="async">
       <p class="mode-choice-intro" id="mode-choice-intro" data-i18n="modeChoiceIntro">请选择首次进入关卡时使用的练习方式。之后可以在训练设置中切换。</p>
       <div class="sound-gate-actions">
         <button class="xp-control primary large" type="button" data-action="choose-mode" data-mode="listening" data-i18n="startSound">听力练习模式</button>
@@ -204,6 +204,6 @@
   </dialog>
 
   <div class="sr-live" id="live-region" aria-live="polite" aria-atomic="true"></div>
-  <script type="module" src="./app.mjs?v=20260714-japanese-subtext-v103-retry-r1"></script>
+  <script type="module" src="./app.mjs?v=20260717-100-ui-ux-preview-r1"></script>
 </body>
 </html>

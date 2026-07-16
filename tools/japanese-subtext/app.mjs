@@ -108,6 +108,14 @@ function bindActions() {
   });
   $("#result-dialog").addEventListener("cancel", (event) => event.preventDefault());
   $("#question-form").addEventListener("submit", submitAnswers);
+  $("#question-form").addEventListener("change", (event) => {
+    const card = event.target instanceof Element ? event.target.closest(".question-card") : null;
+    if (!card) return;
+    card.classList.remove("has-error");
+    card.removeAttribute("aria-invalid");
+    const error = $(".question-error", card);
+    if (error) error.hidden = true;
+  });
   $("#audio-progress").addEventListener("input", previewSeekFromControl);
   $("#audio-progress").addEventListener("change", (event) => commitSeekFromControl(event).catch(handleAudioError));
   $("#quick-speed").addEventListener("change", (event) => updateQuickSetting("playbackRate", Number(event.target.value)));
@@ -174,12 +182,30 @@ async function dispatchAudioAction(action, target) {
     case "toggle":
       if (state.audioState === "playing") player.pause();
       else if (state.audioState === "paused") await player.resume();
-      else await playScene(0);
+      else {
+        clearPlaybackHighlights();
+        await playScene(0);
+      }
       break;
-    case "line": state.replayCount += 1; await playLine(target.dataset.lineId); break;
-    case "token": state.replayCount += 1; await player.playToken(target.dataset.lineId, target.dataset.tokenId, target.dataset.audioId); break;
-    case "option": await player.playOption(target.dataset.questionId, target.dataset.optionId, target.dataset.audioId); break;
-    case "retry": await retryAudio(); break;
+    case "line":
+      clearPlaybackHighlights();
+      state.replayCount += 1;
+      await playLine(target.dataset.lineId);
+      break;
+    case "token":
+      clearPlaybackHighlights();
+      state.replayCount += 1;
+      setActiveLine(target.dataset.lineId);
+      await player.playToken(target.dataset.lineId, target.dataset.tokenId, target.dataset.audioId);
+      break;
+    case "option":
+      clearPlaybackHighlights();
+      await player.playOption(target.dataset.questionId, target.dataset.optionId, target.dataset.audioId);
+      break;
+    case "retry":
+      clearPlaybackHighlights();
+      await retryAudio();
+      break;
     default: break;
   }
   clearAudioError();
@@ -203,6 +229,7 @@ function applyLanguage() {
   $$('[data-i18n-aria-label]').forEach((node) => node.setAttribute("aria-label", t(node.dataset.i18nAriaLabel)));
   syncSettingsControls();
   updatePlayerState(state.audioState);
+  updateProgressAccessibility(player.audio?.currentTime || 0, player.audio?.duration || player.sceneDuration());
   updateCloudStatus(state.cloudStatusKey || (cloud.signedIn ? "authCloud" : "authLocal"));
 }
 
@@ -216,6 +243,7 @@ function renderCurrentScreen() {
 function beginNavigation() {
   navigationEpoch += 1;
   cancelOptionQueue();
+  clearPlaybackHighlights();
   closeSoundGate();
   closeDialog($("#settings-dialog"));
   closeDialog($("#records-dialog"));
@@ -282,7 +310,7 @@ function renderLevels() {
       dataset: { action: "select-level", level: String(level.level) }
     });
     button.append(
-      el("img", { src: cover, width: 800, height: 600, alt: "", ariaHidden: "true", loading: "lazy" }),
+      el("img", { src: cover, width: 800, height: 600, alt: "", ariaHidden: "true", loading: "lazy", decoding: "async" }),
       el("div", { className: "level-card-copy" },
         el("h3", { text: `${t("level")} ${level.level} · ${level.jlptTarget}` }),
         el("p", { text: localized(level.description, state.settings.uiLanguage, t("levelDescriptions")[level.level - 1]) })
@@ -359,7 +387,7 @@ async function openStage(id, { historyMode = "push", focus = true } = {}) {
   state.attemptMedal = "none";
   state.replayCount = 0;
   state.hintCount = 0;
-  state.activeLineId = state.stage.lines[0]?.id || "";
+  state.activeLineId = "";
   state.optionQueue = [];
   state.optionQueueRunning = false;
   state.draftAnswers = {};
@@ -431,6 +459,7 @@ function renderTranscript(stage) {
       text: line.text.ja,
       lang: "ja",
       dataset: { audioAction: "line", lineId: line.id },
+      "aria-pressed": "false",
       ariaLabel: `${t("playSentence")}: ${line.text.ja}`
     }));
     if (state.settings.kana) copy.append(el("p", { className: "line-reading", text: line.readingJa, lang: "ja" }));
@@ -441,6 +470,7 @@ function renderTranscript(stage) {
     line.tokens.forEach((token) => {
       tokens.append(el("button", {
         type: "button", className: "token-button", lang: "ja", dataset: { audioAction: "token", lineId: line.id, tokenId: token.id, audioId: token.audioId },
+        "aria-pressed": "false",
         ariaLabel: `${t("playChunk")}: ${token.text}`
       }, el("span", { text: token.text }), state.settings.kana ? el("small", { text: token.reading }) : null));
     });
@@ -452,6 +482,7 @@ function renderTranscript(stage) {
     return card;
   });
   replaceChildren(root, lines);
+  syncAudioControlStates();
 }
 
 function renderQuestions(stage) {
@@ -459,10 +490,13 @@ function renderQuestions(stage) {
   captureDraftAnswers(form);
   const cards = stage.questions.map((question, questionIndex) => {
     const type = question.type === "multiple" ? "checkbox" : "radio";
+    const hintId = `${stage.id}-${question.id}-hint`;
+    const errorId = `${stage.id}-${question.id}-error`;
     const card = el("fieldset", { className: "question-card", dataset: { questionId: question.id } });
     card.append(
       el("legend", { text: `${questionIndex + 1}. ${localized(question.prompt, state.settings.uiLanguage)}` }),
-      el("p", { className: "question-hint", text: t(question.type === "multiple" ? "selectMany" : "selectOne") })
+      el("p", { id: hintId, className: "question-hint", text: t(question.type === "multiple" ? "selectMany" : "selectOne") }),
+      el("p", { id: errorId, className: "question-error", text: t(question.type === "multiple" ? "selectMany" : "selectOne"), hidden: true })
     );
     const list = el("div", { className: "option-list" });
     question.options.forEach((option, optionIndex) => {
@@ -470,7 +504,15 @@ function renderQuestions(stage) {
       const optionMarker = String.fromCharCode(65 + optionIndex);
       const label = el("label", { className: "option-label", htmlFor: inputId });
       const selected = state.draftAnswers[question.id]?.includes(option.id) === true;
-      const input = el("input", { id: inputId, type, name: question.id, value: option.id, checked: selected, disabled: !state.questionUnlocked || state.submitted });
+      const input = el("input", {
+        id: inputId,
+        type,
+        name: question.id,
+        value: option.id,
+        checked: selected,
+        disabled: !state.questionUnlocked || state.submitted,
+        "aria-describedby": `${hintId} ${errorId}`
+      });
       const optionText = state.settings.optionText ? localized(option.text, state.settings.optionLanguage) : t("optionHidden");
       label.append(input, el("span", { className: "option-copy" },
         el("strong", { className: "option-marker", text: `${optionMarker}.` }),
@@ -487,6 +529,7 @@ function renderQuestions(stage) {
         row.append(el("button", {
           type: "button", className: "xp-control compact option-audio", text: "▶", disabled: !state.questionUnlocked,
           dataset: { audioAction: "option", questionId: question.id, optionId: option.id, audioId: option.audioId },
+          "aria-pressed": "false",
           ariaLabel: `${t("playOption")} ${optionMarker}`
         }));
       }
@@ -499,6 +542,7 @@ function renderQuestions(stage) {
   form.hidden = !state.questionUnlocked;
   $("#submit-answers").hidden = !state.questionUnlocked || state.submitted;
   $("#try-again").hidden = !questionActionState(state).showRetry;
+  syncAudioControlStates();
 }
 
 function renderAnalysis(stage) {
@@ -551,6 +595,7 @@ function submitAnswers(event) {
   event.preventDefault();
   if (!state.stage || !state.questionUnlocked || state.submitted) return;
   const formData = new FormData(event.currentTarget);
+  if (focusFirstUnansweredQuestion(event.currentTarget, formData)) return;
   state.draftAnswers = Object.fromEntries(state.stage.questions.map((question) => [question.id, formData.getAll(question.id).map(String)]));
   let correctCount = 0;
   state.stage.questions.forEach((question) => {
@@ -587,6 +632,30 @@ function submitAnswers(event) {
   renderResultDialog();
   openDialog($("#result-dialog"));
   announce($("#answer-result").textContent);
+}
+
+function focusFirstUnansweredQuestion(form, formData) {
+  let firstMissing = null;
+  state.stage.questions.forEach((question) => {
+    const card = $$(".question-card", form).find((node) => node.dataset.questionId === question.id);
+    if (!card) return;
+    const missing = formData.getAll(question.id).length === 0;
+    card.classList.toggle("has-error", missing);
+    if (missing) card.setAttribute("aria-invalid", "true");
+    else card.removeAttribute("aria-invalid");
+    const error = $(".question-error", card);
+    if (error) error.hidden = !missing;
+    if (!firstMissing && missing) firstMissing = { question, card };
+  });
+  if (!firstMissing) return false;
+
+  const message = `${localized(firstMissing.question.prompt, state.settings.uiLanguage)} ${t(firstMissing.question.type === "multiple" ? "selectMany" : "selectOne")}`;
+  announce(message);
+  requestAnimationFrame(() => {
+    firstMissing.card.scrollIntoView({ block: "center", behavior: "auto" });
+    $("input:not(:disabled)", firstMissing.card)?.focus({ preventScroll: true });
+  });
+  return true;
 }
 
 function resetQuestions() {
@@ -655,7 +724,7 @@ function chooseInitialMode(mode, { countHint = false } = {}) {
 }
 
 async function playScene(start = 0) {
-  state.activeLineId = state.stage?.lines[0]?.id || "";
+  setActiveLine(state.stage?.lines[0]?.id || "");
   if (player.isSceneLoaded() && player.seek(start)) {
     await player.resume();
     return;
@@ -665,8 +734,7 @@ async function playScene(start = 0) {
 
 async function playLine(id) {
   if (!id) return;
-  state.activeLineId = id;
-  highlightLine(id);
+  setActiveLine(id);
   await player.playLine(id);
 }
 
@@ -680,6 +748,7 @@ function previewSeekFromControl(event) {
   const target = seekTarget(event);
   if (target === null) return;
   $("#current-time").textContent = formatTime(target);
+  updateProgressAccessibility(target, player.sceneDuration() || player.audio?.duration || 0);
   player.seek(target);
 }
 
@@ -694,22 +763,32 @@ function updatePlayerTime(detail) {
   $("#current-time").textContent = formatTime(detail.currentTime);
   $("#total-time").textContent = formatTime(detail.duration);
   $("#audio-progress").value = detail.duration > 0 ? String(Math.round((detail.currentTime / detail.duration) * 1000)) : "0";
+  updateProgressAccessibility(detail.currentTime, detail.duration);
   if (detail.lineId && detail.lineId !== state.activeLineId) {
-    state.activeLineId = detail.lineId;
-    highlightLine(detail.lineId);
+    setActiveLine(detail.lineId);
   }
 }
 
 function resetPlayerTimeline() {
   $("#current-time").textContent = "0:00";
-  $("#total-time").textContent = formatTime(player.sceneDuration());
+  const duration = player.sceneDuration();
+  $("#total-time").textContent = formatTime(duration);
   $("#audio-progress").value = "0";
+  updateProgressAccessibility(0, duration);
 }
 
 function updatePlayerState(value) {
   state.audioState = value;
   const toggle = $('[data-audio-action="toggle"]');
-  if (toggle) toggle.textContent = t(value === "playing" ? "pause" : value === "paused" ? "resume" : "play");
+  if (toggle) {
+    toggle.textContent = t(value === "playing" ? "pause" : value === "paused" ? "resume" : "play");
+    toggle.setAttribute("aria-pressed", String(value === "playing"));
+  }
+  if (value === "stopped") {
+    state.activeLineId = "";
+    highlightLine("");
+  }
+  syncAudioControlStates();
   const message = $("#audio-message");
   if (message.classList.contains("is-error")) message.textContent = t("audioUnavailable");
   else message.textContent = value === "playing" ? t("play") : value === "paused" ? t("pause") : t("audioReady");
@@ -717,7 +796,57 @@ function updatePlayerState(value) {
 
 function highlightLine(id) {
   const lines = $$(".line-card");
-  lines.forEach((node) => node.classList.toggle("is-active", node.dataset.lineId === id));
+  lines.forEach((node) => {
+    const active = Boolean(id) && node.dataset.lineId === id;
+    node.classList.toggle("is-active", active);
+    if (active) node.setAttribute("aria-current", "true");
+    else node.removeAttribute("aria-current");
+  });
+}
+
+function setActiveLine(id) {
+  state.activeLineId = id || "";
+  highlightLine(state.activeLineId);
+  syncAudioControlStates();
+}
+
+function clearPlaybackHighlights() {
+  state.activeLineId = "";
+  highlightLine("");
+  $$('[data-audio-action][aria-pressed="true"]').forEach((button) => button.setAttribute("aria-pressed", "false"));
+}
+
+function syncAudioControlStates() {
+  const playing = state.audioState === "playing";
+  const context = player.context || {};
+  $$('[data-audio-action]:not([data-audio-action="retry"])').forEach((button) => {
+    const action = button.dataset.audioAction;
+    let pressed = action === "toggle" && playing;
+    if (action === "line") {
+      pressed = playing
+        && button.dataset.lineId === state.activeLineId
+        && ["scene", "line"].includes(context.kind);
+    } else if (action === "token") {
+      pressed = playing
+        && context.kind === "token"
+        && button.dataset.lineId === context.lineId
+        && button.dataset.tokenId === context.tokenId;
+    } else if (action === "option") {
+      pressed = playing
+        && context.kind === "option"
+        && button.dataset.questionId === context.questionId
+        && button.dataset.optionId === context.optionId;
+    }
+    button.setAttribute("aria-pressed", String(pressed));
+  });
+}
+
+function updateProgressAccessibility(currentTime, duration) {
+  const control = $("#audio-progress");
+  if (!control) return;
+  const current = Number.isFinite(Number(currentTime)) ? Math.max(0, Number(currentTime)) : 0;
+  const total = Number.isFinite(Number(duration)) ? Math.max(0, Number(duration)) : 0;
+  control.setAttribute("aria-valuetext", `${t("progress")}: ${formatTime(current)} / ${formatTime(total)}`);
 }
 
 function beginOptionQueue() {
@@ -888,6 +1017,7 @@ function scheduleCloudSave() {
 function updateCloudStatus(key) {
   state.cloudStatusKey = key;
   $("#cloud-status").textContent = t(key);
+  $("#cloud-status").closest(".trainer-cloud-panel")?.setAttribute("data-status", key);
 }
 
 function renderRecords() {

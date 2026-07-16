@@ -14,7 +14,9 @@
     dockLayoutFrame: 0,
     viewportFrame: 0,
     routeObserver: null,
-    languageObserver: null
+    languageObserver: null,
+    presentedRoute: "",
+    focusByRoute: new Map()
   };
 
   function currentShell() {
@@ -72,16 +74,29 @@
 
   function syncRoutePresentation() {
     const route = document.body?.dataset.route || "home";
+    const previousRoute = state.presentedRoute;
+    state.presentedRoute = route;
     const title = translatedRouteTitle(route);
     const routeTitle = document.getElementById("mobile-route-title");
     if (routeTitle) {
       routeTitle.textContent = title;
+      routeTitle.title = title;
     }
+    const appbar = document.querySelector(".mobile-appbar");
+    appbar?.setAttribute("aria-label", title);
     document.querySelectorAll("[data-mobile-route-active]").forEach((node) => {
       node.toggleAttribute("data-mobile-route-active", node.dataset.route === route);
     });
     root.dataset.mobileRoute = route;
     syncDockLayout(route);
+    if (previousRoute && previousRoute !== route) {
+      window.requestAnimationFrame(() => {
+        const target = state.focusByRoute.get(route);
+        if (state.shell === "mobile" && target?.isConnected && document.body?.dataset.route === route) {
+          target.focus?.({ preventScroll: true });
+        }
+      });
+    }
   }
 
   function motionIsReduced() {
@@ -126,6 +141,16 @@
     }
   }
 
+  function syncDockEdges() {
+    const scroller = document.querySelector(".mobile-dock-scroll");
+    if (!scroller) {
+      return;
+    }
+    const remaining = scroller.scrollWidth - scroller.clientWidth - scroller.scrollLeft;
+    scroller.toggleAttribute("data-can-scroll-start", scroller.scrollLeft > 4);
+    scroller.toggleAttribute("data-can-scroll-end", remaining > 4);
+  }
+
   function revealActiveDockItem(route) {
     if (state.shell !== "mobile" || state.dockCollapsed) {
       return;
@@ -157,6 +182,7 @@
       state.dockLayoutFrame = 0;
       syncDockIndicator(route, options.immediate === true);
       revealActiveDockItem(route);
+      syncDockEdges();
     });
   }
 
@@ -187,6 +213,56 @@
     if (label) {
       label.textContent = lang === "ja" ? "日" : lang === "en" ? "EN" : "中";
     }
+    const nextLang = lang === "zh" ? "en" : lang === "en" ? "ja" : "zh";
+    const names = {
+      zh: { zh: "中文", en: "English", ja: "日本語" },
+      en: { zh: "Chinese", en: "English", ja: "Japanese" },
+      ja: { zh: "中国語", en: "英語", ja: "日本語" }
+    };
+    const descriptions = {
+      zh: `当前语言：${names.zh[lang]}；切换到 ${names.zh[nextLang]}`,
+      en: `Current language: ${names.en[lang]}; switch to ${names.en[nextLang]}`,
+      ja: `現在の言語：${names.ja[lang]}。${names.ja[nextLang]}に切り替え`
+    };
+    const button = document.querySelector(".mobile-language-cycle");
+    button?.setAttribute("aria-label", descriptions[lang] || descriptions.zh);
+  }
+
+  function syncPerformanceMode() {
+    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    const lowPerformance = Boolean(
+      connection?.saveData
+      || /(^|-)2g$/i.test(connection?.effectiveType || "")
+      || (Number.isFinite(navigator.deviceMemory) && navigator.deviceMemory <= 4)
+      || (Number.isFinite(navigator.hardwareConcurrency) && navigator.hardwareConcurrency <= 4)
+      || window.matchMedia?.("(update: slow)")?.matches
+    );
+    root.dataset.performance = lowPerformance ? "low" : "standard";
+  }
+
+  function rememberRouteFocus(event) {
+    const target = event.target;
+    if (state.shell !== "mobile" || !(target instanceof HTMLElement) || !target.closest(".page.active")) {
+      return;
+    }
+    if (!target.matches("button, a[href], input, textarea, select, [tabindex]:not([tabindex='-1'])")) {
+      return;
+    }
+    state.focusByRoute.set(document.body?.dataset.route || "home", target);
+  }
+
+  function keepFocusedControlVisible(event) {
+    const target = event.target;
+    if (state.shell !== "mobile" || !(target instanceof HTMLElement) || !target.matches("input, textarea, select")) {
+      return;
+    }
+    window.setTimeout(() => {
+      const viewport = window.visualViewport;
+      const keyboardVisible = viewport && viewport.height < window.innerHeight - 80;
+      if (keyboardVisible && document.activeElement === target) {
+        target.scrollIntoView({ block: "nearest", inline: "nearest", behavior: motionIsReduced() ? "auto" : "smooth" });
+      }
+    }, 140);
   }
 
   function cycleLanguage() {
@@ -275,13 +351,18 @@
     document.addEventListener("pointercancel", () => {
       state.gestureStart = null;
     }, { passive: true });
+    document.addEventListener("focusin", rememberRouteFocus);
+    document.addEventListener("focusin", keepFocusedControlVisible);
     document.querySelector(".mobile-language-cycle")?.addEventListener("click", cycleLanguage);
     document.querySelector("[data-mobile-dock-toggle]")?.addEventListener("click", toggleDock);
+    document.querySelector(".mobile-dock-scroll")?.addEventListener("scroll", syncDockEdges, { passive: true });
     syncDockState();
+    syncDockEdges();
   }
 
   applyShell();
   syncViewportMetrics();
+  syncPerformanceMode();
 
   if (typeof mobileMedia?.addEventListener === "function") {
     mobileMedia.addEventListener("change", applyShell);
@@ -292,6 +373,8 @@
   window.addEventListener("resize", syncViewportMetrics, { passive: true });
   window.visualViewport?.addEventListener("resize", syncViewportMetrics, { passive: true });
   window.visualViewport?.addEventListener("scroll", syncViewportMetrics, { passive: true });
+  const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  connection?.addEventListener?.("change", syncPerformanceMode);
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", bindDom, { once: true });
@@ -308,6 +391,7 @@
       syncViewportMetrics();
       syncRoutePresentation();
       syncLanguageCycle();
+      syncPerformanceMode();
     }
   });
 })();

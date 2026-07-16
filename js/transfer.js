@@ -2,6 +2,8 @@
   "use strict";
 
   const MIB = 1024 * 1024;
+  const MAX_PENDING_FILES = 20;
+  const MAX_PENDING_BYTES = 500 * MIB;
   const ROOM_NAMESPACE = "lusu575-quick-transfer-room-v1";
   const TEXT_SALT = new TextEncoder().encode("lusu575-quick-transfer-text-v1");
   const SESSION_TASKS_KEY = "lusu-transfer-upload-tasks-v1";
@@ -21,9 +23,11 @@
       empty: "房间里还没有内容。发送加密文字或选择文件开始互传。", expires: "剩余 {time}", download: "下载", delete: "删除", copyText: "复制文字", textCopied: "文字已复制。",
       decrypting: "正在解密文字……", decryptFailed: "这条文字无法用当前房间口令解密。", unknownUploader: "已登录用户",
       queued: "等待上传", uploading: "上传中", paused: "已暂停", retrying: "分片重试", completing: "正在完成", complete: "上传完成", failed: "上传失败", cancelled: "已取消",
-      pause: "暂停", resume: "继续", cancel: "取消", reselect: "重新选择同一文件", speed: "{done} / {total} · {speed}/s · 约 {eta}",
+      pause: "暂停", resume: "继续", cancel: "取消", reselect: "重新选择同一文件", speed: "{done} / {total} · 每秒 {speed} · 剩余时间：{eta}",
+      progressLabel: "{name} 的上传进度", progressValue: "{status}，{percent}%：已上传 {done} / {total}，剩余时间：{eta}",
+      durationUnknown: "估算中", durationComplete: "0 秒", durationSeconds: "{count} 秒", durationMinutes: "{count} 分钟", durationHoursMinutes: "{hours} 小时 {minutes} 分钟",
       normalHelp: "选择后先留在输入区，点击发送才上传。单文件不超过 {max}，24 小时额度剩余 {remaining}。", adminHelp: "选择后先留在输入区，点击发送才上传；大文件按有限并发稳定上传。",
-      fileTooLarge: "普通账号不能上传超过 {max} 的文件。", sessionExpired: "上传任务已失效，请重新选择文件。", fileMismatch: "所选文件与待恢复任务不一致。",
+      fileTooLarge: "普通账号不能上传超过 {max} 的文件。", attachmentCountLimit: "待发送附件最多保留 {max} 个。请移除部分附件后再选择。", attachmentBatchTooLarge: "待发送附件总大小不能超过 {max}。请分批发送。", sessionExpired: "上传任务已失效，请重新选择文件。", fileMismatch: "所选文件与待恢复任务不一致。",
       unsafeNotice: "文件未做病毒扫描，请只下载可信来源内容。", textSent: "加密文字已发送。", attachmentsReady: "已选择 {count} 个附件，点击“发送”后开始上传。", attachmentsQueued: "{count} 个附件已开始上传。", composerSent: "文字已发送，{count} 个附件已开始上传。", textSentAttachmentsPending: "文字已发送，但文件上传暂不可用；附件仍保留在输入区。", removeAttachment: "移除附件", deleted: "内容已删除。", genericError: "操作失败，请稍后重试。",
       poolGreen: "正常", poolYellow: "接近阈值，已降低上传压力", poolRed: "已暂停普通用户新增文件", restoreHint: "刷新后需重新选择同一文件继续。"
     },
@@ -41,9 +45,11 @@
       pool: "Standard-user free pool: {status}", empty: "Nothing is here yet. Send encrypted text or choose a file.", expires: "{time} left", download: "Download", delete: "Delete", copyText: "Copy text", textCopied: "Text copied.",
       decrypting: "Decrypting text…", decryptFailed: "This text cannot be decrypted with the current passphrase.", unknownUploader: "Signed-in user",
       queued: "Queued", uploading: "Uploading", paused: "Paused", retrying: "Retrying part", completing: "Completing", complete: "Upload complete", failed: "Upload failed", cancelled: "Cancelled",
-      pause: "Pause", resume: "Resume", cancel: "Cancel", reselect: "Select the same file", speed: "{done} / {total} · {speed}/s · about {eta}",
+      pause: "Pause", resume: "Resume", cancel: "Cancel", reselect: "Select the same file", speed: "{done} / {total} · {speed}/s · Time remaining: {eta}",
+      progressLabel: "Upload progress for {name}", progressValue: "{status}, {percent}%: {done} of {total} uploaded. Time remaining: {eta}",
+      durationUnknown: "estimating", durationComplete: "0 seconds", durationSeconds: "{count} seconds", durationMinutes: "{count} minutes", durationHoursMinutes: "{hours} hours {minutes} minutes",
       normalHelp: "Selections stay in the composer until Send is pressed. Up to {max} per file, with {remaining} left in the rolling 24-hour quota.", adminHelp: "Selections stay in the composer until Send is pressed; bounded concurrency keeps large uploads stable.",
-      fileTooLarge: "Standard accounts cannot upload files over {max}.", sessionExpired: "This upload session expired. Select the file again to restart.", fileMismatch: "The selected file does not match the resumable task.",
+      fileTooLarge: "Standard accounts cannot upload files over {max}.", attachmentCountLimit: "Up to {max} pending attachments can be kept at once. Remove some before selecting more.", attachmentBatchTooLarge: "Pending attachments cannot exceed {max} in total. Send them in smaller batches.", sessionExpired: "This upload session expired. Select the file again to restart.", fileMismatch: "The selected file does not match the resumable task.",
       unsafeNotice: "Files are not virus-scanned. Download only from people you trust.", textSent: "Encrypted text sent.", attachmentsReady: "{count} attachment(s) selected. Press Send to start uploading.", attachmentsQueued: "{count} attachment(s) started uploading.", composerSent: "Text sent and {count} attachment(s) started uploading.", textSentAttachmentsPending: "Text sent, but file uploads are unavailable; attachments remain in the composer.", removeAttachment: "Remove attachment", deleted: "Item deleted.", genericError: "The operation failed. Try again later.",
       poolGreen: "Healthy", poolYellow: "Near the threshold; upload pressure is reduced", poolRed: "New standard-user files are paused", restoreHint: "After refresh, reselect the same file to continue."
     },
@@ -61,9 +67,11 @@
       pool: "一般ユーザー無料枠：{status}", empty: "まだ内容がありません。暗号化テキストまたはファイルを送ってください。", expires: "残り {time}", download: "ダウンロード", delete: "削除", copyText: "テキストをコピー", textCopied: "テキストをコピーしました。",
       decrypting: "テキストを復号中…", decryptFailed: "現在の合言葉では復号できません。", unknownUploader: "ログインユーザー",
       queued: "送信待ち", uploading: "送信中", paused: "一時停止", retrying: "分割を再試行", completing: "完了処理中", complete: "送信完了", failed: "送信失敗", cancelled: "キャンセル済み",
-      pause: "一時停止", resume: "再開", cancel: "キャンセル", reselect: "同じファイルを再選択", speed: "{done} / {total} · {speed}/秒 · 約 {eta}",
+      pause: "一時停止", resume: "再開", cancel: "キャンセル", reselect: "同じファイルを再選択", speed: "{done} / {total} · 毎秒 {speed} · 残り時間：{eta}",
+      progressLabel: "{name} のアップロード進捗", progressValue: "{status}、{percent}%：{done} / {total} 送信済み、残り時間：{eta}",
+      durationUnknown: "計算中", durationComplete: "0 秒", durationSeconds: "{count} 秒", durationMinutes: "{count} 分", durationHoursMinutes: "{hours} 時間 {minutes} 分",
       normalHelp: "選択後は入力欄に保持され、「送信」でアップロードします。1件 {max} まで、直近24時間の残りは {remaining} です。", adminHelp: "選択後は入力欄に保持され、「送信」でアップロードします。大容量送信も同時処理数を制限します。",
-      fileTooLarge: "一般アカウントは {max} を超えるファイルを送れません。", sessionExpired: "アップロード期限が切れました。最初からやり直してください。", fileMismatch: "選択したファイルが再開対象と一致しません。",
+      fileTooLarge: "一般アカウントは {max} を超えるファイルを送れません。", attachmentCountLimit: "送信待ちの添付は最大 {max} 件です。いくつか外してから選び直してください。", attachmentBatchTooLarge: "送信待ち添付の合計は {max} までです。複数回に分けて送信してください。", sessionExpired: "アップロード期限が切れました。最初からやり直してください。", fileMismatch: "選択したファイルが再開対象と一致しません。",
       unsafeNotice: "ウイルス検査は行っていません。信頼できる相手のファイルだけを開いてください。", textSent: "暗号化テキストを送信しました。", attachmentsReady: "{count} 件の添付を選択しました。「送信」でアップロードを開始します。", attachmentsQueued: "{count} 件の添付をアップロード中です。", composerSent: "テキストを送信し、{count} 件の添付をアップロード中です。", textSentAttachmentsPending: "テキストは送信しましたが、ファイル送信は利用できません。添付は入力欄に残しています。", removeAttachment: "添付を外す", deleted: "削除しました。", genericError: "処理に失敗しました。後でもう一度お試しください。",
       poolGreen: "正常", poolYellow: "しきい値に接近。負荷を抑制中", poolRed: "一般ユーザーの新規ファイルを停止中", restoreHint: "更新後は同じファイルを再選択すると続行できます。"
     }
@@ -170,14 +178,16 @@
     document.getElementById("transfer-leave-room")?.addEventListener("click", leaveRoom);
     document.getElementById("transfer-refresh-button")?.addEventListener("click", () => refreshItems(true));
     document.getElementById("transfer-text-form")?.addEventListener("submit", sendComposer);
-    refs.photoInput?.addEventListener("change", (event) => stageFiles(event.target.files));
-    refs.fileInput?.addEventListener("change", (event) => stageFiles(event.target.files));
+    refs.photoInput?.addEventListener("change", handlePickerChange);
+    refs.fileInput?.addEventListener("change", handlePickerChange);
     refs.dropSurface?.addEventListener("dragenter", handleWindowDragEnter);
     refs.dropSurface?.addEventListener("dragover", handleWindowDragOver);
     refs.dropSurface?.addEventListener("dragleave", handleWindowDragLeave);
     refs.dropSurface?.addEventListener("drop", handleWindowDrop);
     refs.uploadZone?.addEventListener("keydown", handleUploadZoneKeydown);
-    document.addEventListener("paste", (event) => { if (state.open && state.roomKey && event.clipboardData?.files?.length) stageFiles(event.clipboardData.files); });
+    document.addEventListener("paste", (event) => {
+      if (state.open && state.roomKey && event.clipboardData?.files?.length) stageFiles(event.clipboardData.files, document.activeElement);
+    });
     document.addEventListener("dragend", resetWindowDragState);
     window.addEventListener("blur", resetWindowDragState);
     ["pointerdown", "keydown"].forEach((name) => document.addEventListener(name, () => { state.lastActivity = Date.now(); }, { passive: true }));
@@ -195,6 +205,11 @@
 
   function canAcceptFiles() {
     return Boolean(state.open && state.roomKey && !refs.room?.hidden && state.config?.r2Ready && !state.composerSending);
+  }
+
+  function handlePickerChange(event) {
+    const input = event.currentTarget;
+    stageFiles(input.files, input);
   }
 
   function handleWindowDragEnter(event) {
@@ -227,7 +242,7 @@
     event.preventDefault();
     const files = event.dataTransfer?.files;
     resetWindowDragState();
-    if (files?.length) stageFiles(files);
+    if (files?.length) stageFiles(files, refs.uploadZone);
   }
 
   function resetWindowDragState() {
@@ -611,6 +626,8 @@
         const image = document.createElement("img");
         image.src = item.fileUrl;
         image.alt = item.filename;
+        image.width = 320;
+        image.height = 200;
         image.loading = "lazy";
         image.decoding = "async";
         preview.append(image);
@@ -646,7 +663,7 @@
       actions.className = "transfer-item-actions";
       const download = document.createElement("a");
       download.className = "xp-button";
-      download.href = `${item.fileUrl}&download=1`;
+      download.href = withDownloadParam(item.fileUrl);
       download.download = item.filename || "";
       download.append(iconNode("download"), document.createTextNode(text("download")));
       actions.append(download);
@@ -675,33 +692,47 @@
     }
   }
 
-  function stageFiles(fileList) {
+  function stageFiles(fileList, focusTarget = refs.textInput) {
     const files = Array.from(fileList || []);
     resetFilePickers();
+    restoreComposerFocus(focusTarget);
     if (!files.length || !state.open || !state.roomKey || refs.room?.hidden || state.composerSending) return;
     if (!state.config?.r2Ready) {
       setFeedback(text("r2Missing"), true);
       syncUploadAvailability();
       return;
     }
-    let added = 0;
-    files.forEach((file) => {
-      if (!state.config?.user?.isAdmin && file.size > state.config.normal.maxFileBytes) {
-        setFeedback(text("fileTooLarge", { max: formatBytes(state.config.normal.maxFileBytes) }), true);
-        return;
-      }
-      const duplicate = [...state.pendingFiles.values()].some((pending) => sameFile(pending.file, file));
-      if (duplicate) return;
+    const pending = [...state.pendingFiles.values()];
+    const candidates = files.filter((file, index) => {
+      const alreadyPending = pending.some((entry) => sameFile(entry.file, file));
+      const repeatedInSelection = files.slice(0, index).some((entry) => sameFile(entry, file));
+      return !alreadyPending && !repeatedInSelection;
+    });
+    if (!candidates.length) return;
+    if (!state.config?.user?.isAdmin && candidates.some((file) => file.size > state.config.normal.maxFileBytes)) {
+      setFeedback(text("fileTooLarge", { max: formatBytes(state.config.normal.maxFileBytes) }), true);
+      return;
+    }
+    if (state.pendingFiles.size + candidates.length > MAX_PENDING_FILES) {
+      setFeedback(text("attachmentCountLimit", { max: MAX_PENDING_FILES }), true);
+      return;
+    }
+    const pendingBytes = pending.reduce((total, entry) => total + entry.file.size, 0);
+    const candidateBytes = candidates.reduce((total, file) => total + file.size, 0);
+    if (pendingBytes + candidateBytes > MAX_PENDING_BYTES) {
+      setFeedback(text("attachmentBatchTooLarge", { max: formatBytes(MAX_PENDING_BYTES) }), true);
+      return;
+    }
+    candidates.forEach((file) => {
       const localId = crypto.randomUUID();
       state.pendingFiles.set(localId, {
         localId,
         file,
         previewUrl: file.type.startsWith("image/") ? URL.createObjectURL(file) : ""
       });
-      added += 1;
     });
     renderPendingFiles();
-    if (added) setFeedback(text("attachmentsReady", { count: state.pendingFiles.size }));
+    setFeedback(text("attachmentsReady", { count: state.pendingFiles.size }));
   }
 
   function renderPendingFiles() {
@@ -741,11 +772,13 @@
   }
 
   function removePendingFile(localId) {
+    if (state.composerSending) return;
     const pending = state.pendingFiles.get(localId);
     if (!pending) return;
     if (pending.previewUrl) URL.revokeObjectURL(pending.previewUrl);
     state.pendingFiles.delete(localId);
     renderPendingFiles();
+    restoreComposerFocus(refs.textInput);
   }
 
   function clearPendingFiles() {
@@ -774,6 +807,13 @@
   function resetFilePickers() {
     if (refs.photoInput) refs.photoInput.value = "";
     if (refs.fileInput) refs.fileInput.value = "";
+  }
+
+  function restoreComposerFocus(target) {
+    window.requestAnimationFrame(() => {
+      const preferred = target?.isConnected && !target.disabled ? target : refs.textInput;
+      preferred?.focus({ preventScroll: true });
+    });
   }
 
   function sameFile(left, right) {
@@ -1099,12 +1139,21 @@
       status.textContent = task.error || text(task.status in COPY.zh ? task.status : "uploading");
       const progress = document.createElement("progress");
       progress.max = task.size || 1;
-      progress.value = task.uploaded || 0;
+      progress.value = Math.min(task.uploaded || 0, progress.max);
       const stats = document.createElement("small");
       const remainingBytes = Math.max(0, task.size - task.uploaded);
+      const done = formatBytes(task.uploaded);
+      const total = formatBytes(task.size);
+      const eta = remainingBytes === 0 ? text("durationComplete") : formatDuration(task.speed ? remainingBytes / task.speed : 0);
+      const percent = Math.min(100, Math.round((task.uploaded / (task.size || 1)) * 100));
+      const statusText = task.error || text(task.status in COPY.zh ? task.status : "uploading");
       stats.textContent = text("speed", {
-        done: formatBytes(task.uploaded), total: formatBytes(task.size), speed: formatBytes(task.speed || 0), eta: formatDuration(task.speed ? remainingBytes / task.speed : 0)
+        done, total, speed: formatBytes(task.speed || 0), eta
       });
+      progress.setAttribute("aria-label", text("progressLabel", { name: task.filename }));
+      progress.setAttribute("aria-valuetext", text("progressValue", {
+        status: statusText, percent, done, total, eta
+      }));
       copy.append(name, status, progress, stats);
       const actions = document.createElement("div");
       actions.className = "transfer-task-actions";
@@ -1250,10 +1299,22 @@
   }
 
   function formatDuration(seconds) {
-    if (!Number.isFinite(seconds) || seconds <= 0) return "--";
-    if (seconds < 60) return `${Math.ceil(seconds)}s`;
+    if (!Number.isFinite(seconds) || seconds <= 0) return text("durationUnknown");
+    if (seconds < 60) return text("durationSeconds", { count: Math.ceil(seconds) });
     const minutes = Math.ceil(seconds / 60);
-    return minutes < 60 ? `${minutes}m` : `${Math.floor(minutes / 60)}h ${minutes % 60}m`;
+    return minutes < 60
+      ? text("durationMinutes", { count: minutes })
+      : text("durationHoursMinutes", { hours: Math.floor(minutes / 60), minutes: minutes % 60 });
+  }
+
+  function withDownloadParam(value) {
+    try {
+      const url = new URL(value, window.location.href);
+      url.searchParams.set("download", "1");
+      return url.href;
+    } catch {
+      return value;
+    }
   }
 
   function remaining(expiresAt) {

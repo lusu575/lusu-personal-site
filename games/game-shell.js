@@ -10,7 +10,8 @@
   const importInput = document.getElementById("save-import");
   const cloudPanel = document.getElementById("cloud-panel");
   const cloudMetaPrefix = "lusu.cloudSave.";
-  const backToGamesUrl = `../../index.html?lang=${encodeURIComponent(requestedSiteLang)}#games`;
+  const returnFocusStorageKey = "lusu.games.returnFocus";
+  const backToGamesUrl = `../../index.html?lang=${encodeURIComponent(requestedSiteLang)}&focusGame=${encodeURIComponent(slug || "")}#games`;
   const shellTranslations = {
     zh: {
       backToGames: "返回个人站游戏区",
@@ -49,7 +50,22 @@
       loadedCloud: "游戏已加载，云端存档会自动同步。",
       loadedLocal: "游戏已加载，本地存档会保存在当前浏览器。",
       gameLoadFailed: "游戏加载失败",
-      invalidGameSource: "游戏启动路径无效"
+      invalidGameSource: "游戏启动路径无效",
+      controlsLabel: "控制方式",
+      saveScopeLabel: "存档范围",
+      gameInfoAria: "游戏操作与存档说明",
+      gameFrameTitle: "游戏画面：{title}",
+      loadingGame: "正在启动 {title}…",
+      networkErrorTitle: "网络连接失败",
+      networkErrorBody: "网络暂不可用或服务器没有响应。请检查连接后重试。",
+      missingErrorTitle: "游戏资源缺失",
+      missingErrorBody: "游戏目录或启动文件暂时不存在。你可以重试，或返回游戏区选择其他游戏。",
+      unsupportedErrorTitle: "当前浏览器不支持此游戏",
+      unsupportedErrorBody: "浏览器缺少运行所需能力：{features}。请更新浏览器或改用较新的浏览器。",
+      retryGame: "重新加载游戏",
+      unknownGame: "目录中找不到这个游戏。",
+      catalogUnavailable: "游戏目录暂时无法读取。",
+      sourceUnavailable: "游戏启动文件暂时无法读取。"
     },
     en: {
       backToGames: "Back to Games",
@@ -88,7 +104,22 @@
       loadedCloud: "Game loaded. Cloud saves will sync automatically.",
       loadedLocal: "Game loaded. Local saves stay in this browser.",
       gameLoadFailed: "Game failed to load",
-      invalidGameSource: "Invalid game launch path"
+      invalidGameSource: "Invalid game launch path",
+      controlsLabel: "Controls",
+      saveScopeLabel: "Save scope",
+      gameInfoAria: "Game controls and save information",
+      gameFrameTitle: "Game view: {title}",
+      loadingGame: "Starting {title}…",
+      networkErrorTitle: "Network connection failed",
+      networkErrorBody: "The network is unavailable or the server did not respond. Check the connection and retry.",
+      missingErrorTitle: "Game resource is missing",
+      missingErrorBody: "The game directory or launch file is not available. Retry, or return to Games and choose another title.",
+      unsupportedErrorTitle: "This browser cannot run the game",
+      unsupportedErrorBody: "The browser is missing required capabilities: {features}. Update it or use a newer browser.",
+      retryGame: "Reload game",
+      unknownGame: "This game is not in the catalog.",
+      catalogUnavailable: "The game catalog is unavailable.",
+      sourceUnavailable: "The game launch file is unavailable."
     },
     ja: {
       backToGames: "ゲーム一覧へ戻る",
@@ -127,7 +158,22 @@
       loadedCloud: "ゲームを読み込みました。クラウドセーブは自動同期されます。",
       loadedLocal: "ゲームを読み込みました。ローカルセーブはこのブラウザーに保存されます。",
       gameLoadFailed: "ゲームの読み込みに失敗しました",
-      invalidGameSource: "ゲーム起動パスが無効です"
+      invalidGameSource: "ゲーム起動パスが無効です",
+      controlsLabel: "操作方法",
+      saveScopeLabel: "セーブ範囲",
+      gameInfoAria: "ゲームの操作方法とセーブ情報",
+      gameFrameTitle: "ゲーム画面：{title}",
+      loadingGame: "{title} を起動しています…",
+      networkErrorTitle: "ネットワーク接続に失敗しました",
+      networkErrorBody: "ネットワークを利用できないか、サーバーが応答していません。接続を確認して再試行してください。",
+      missingErrorTitle: "ゲームのリソースが見つかりません",
+      missingErrorBody: "ゲームのディレクトリまたは起動ファイルを利用できません。再試行するか、ゲーム一覧へ戻ってください。",
+      unsupportedErrorTitle: "このブラウザーではゲームを実行できません",
+      unsupportedErrorBody: "必要な機能が不足しています：{features}。ブラウザーを更新するか、新しいブラウザーを使用してください。",
+      retryGame: "ゲームを再読み込み",
+      unknownGame: "このゲームはカタログにありません。",
+      catalogUnavailable: "ゲームカタログを読み込めません。",
+      sourceUnavailable: "ゲームの起動ファイルを読み込めません。"
     }
   };
   const languageNames = {
@@ -142,7 +188,26 @@
   let syncInFlight = false;
   let localStorageReadBlocked = false;
   let localStorageWarningShown = false;
+  let initializeRequestId = 0;
+  let frameLaunchId = 0;
+  let frameLoadTimer = 0;
+  let expectedFrameUrl = "";
+  let shellEventsBound = false;
   const sessionStorageFallback = new Map();
+  const gameStage = createGameStage();
+  const loadState = gameStage.querySelector(".game-load-state");
+  const loadStateTitle = gameStage.querySelector(".game-load-state-title");
+  const loadStateBody = gameStage.querySelector(".game-load-state-body");
+  const retryButton = gameStage.querySelector("[data-game-retry]");
+
+  class GameShellError extends Error {
+    constructor(kind, message, details = "") {
+      super(message);
+      this.name = "GameShellError";
+      this.kind = kind;
+      this.details = details;
+    }
+  }
 
   document.documentElement.lang = requestedSiteLang === "zh" ? "zh-CN" : requestedSiteLang;
 
@@ -186,6 +251,151 @@
     return Object.entries(values).reduce((text, [name, value]) => text.split(`{${name}}`).join(String(value)), template);
   }
 
+  function createGameStage() {
+    const existing = document.querySelector(".game-stage");
+    if (existing) {
+      return existing;
+    }
+    const stage = document.createElement("section");
+    stage.className = "game-stage";
+    stage.setAttribute("aria-busy", "true");
+
+    const stateView = document.createElement("div");
+    stateView.className = "game-load-state is-loading";
+    stateView.setAttribute("role", "status");
+    stateView.setAttribute("aria-live", "polite");
+    stateView.setAttribute("aria-atomic", "true");
+
+    const copy = document.createElement("div");
+    copy.className = "game-load-state-copy";
+    const stateTitle = document.createElement("strong");
+    stateTitle.className = "game-load-state-title";
+    stateTitle.textContent = t("loading");
+    const stateBody = document.createElement("p");
+    stateBody.className = "game-load-state-body";
+    copy.append(stateTitle, stateBody);
+
+    const retry = document.createElement("button");
+    retry.className = "tool-button game-retry-button";
+    retry.type = "button";
+    retry.dataset.gameRetry = "";
+    retry.textContent = t("retryGame");
+    retry.hidden = true;
+    stateView.append(copy, retry);
+
+    frame.parentNode.insertBefore(stage, frame);
+    stage.append(frame, stateView);
+    frame.hidden = true;
+    return stage;
+  }
+
+  function showGameLoading(game = currentGame) {
+    const displayTitle = game ? localText(game.titles || game.titleZh || game.title) : "";
+    gameStage.dataset.state = "loading";
+    gameStage.setAttribute("aria-busy", "true");
+    loadState.className = "game-load-state is-loading";
+    loadState.setAttribute("role", "status");
+    loadState.hidden = false;
+    loadStateTitle.textContent = displayTitle ? t("loadingGame", { title: displayTitle }) : t("loading");
+    loadStateBody.textContent = "";
+    retryButton.hidden = true;
+    retryButton.disabled = false;
+    frame.hidden = true;
+    setStatus(loadStateTitle.textContent);
+  }
+
+  function showGameReady() {
+    gameStage.dataset.state = "ready";
+    gameStage.setAttribute("aria-busy", "false");
+    loadState.hidden = true;
+    frame.hidden = false;
+  }
+
+  function normalizedGameShellError(error) {
+    if (error instanceof GameShellError) {
+      return error;
+    }
+    return new GameShellError("network", error?.message || t("catalogUnavailable"));
+  }
+
+  function gameLoadErrorCopy(error) {
+    if (error.kind === "unsupported") {
+      return {
+        title: t("unsupportedErrorTitle"),
+        body: t("unsupportedErrorBody", { features: error.details || "—" })
+      };
+    }
+    if (error.kind === "missing") {
+      return { title: t("missingErrorTitle"), body: t("missingErrorBody") };
+    }
+    return { title: t("networkErrorTitle"), body: t("networkErrorBody") };
+  }
+
+  function showGameLoadError(errorValue) {
+    const error = normalizedGameShellError(errorValue);
+    const copy = gameLoadErrorCopy(error);
+    window.clearTimeout(frameLoadTimer);
+    frameLoadTimer = 0;
+    gameStage.dataset.state = `error-${error.kind}`;
+    gameStage.setAttribute("aria-busy", "false");
+    loadState.hidden = false;
+    loadState.className = `game-load-state is-error is-${error.kind}`;
+    loadState.setAttribute("role", "alert");
+    loadStateTitle.textContent = copy.title;
+    loadStateBody.textContent = copy.body;
+    retryButton.textContent = t("retryGame");
+    retryButton.hidden = false;
+    retryButton.disabled = false;
+    frame.hidden = true;
+    title.textContent = currentGame ? localText(currentGame.titles || currentGame.titleZh || currentGame.title) : t("gameLoadFailed");
+    subtitle.textContent = copy.title;
+    setStatus(copy.body);
+    console.warn("Game shell load failure", error.kind, error.message);
+  }
+
+  function rememberGameReturnFocus() {
+    try {
+      window.sessionStorage.setItem(returnFocusStorageKey, JSON.stringify({
+        gameId: slug,
+        createdAt: Date.now()
+      }));
+    } catch {
+      // The focusGame query parameter remains as a storage-free fallback.
+    }
+  }
+
+  function canReturnToGamesThroughHistory() {
+    if (window.history.length <= 1 || !document.referrer) {
+      return false;
+    }
+    try {
+      const referrer = new URL(document.referrer);
+      const sameOrigin = referrer.origin === window.location.origin;
+      const isMainPage = referrer.pathname === "/" || referrer.pathname.endsWith("/index.html");
+      return sameOrigin && isMainPage && referrer.hash === "#games";
+    } catch {
+      return false;
+    }
+  }
+
+  function handleBackToGames(event) {
+    rememberGameReturnFocus();
+    if (!canReturnToGamesThroughHistory()) {
+      return;
+    }
+    event.preventDefault();
+    window.history.back();
+  }
+
+  function bindBackLink(link) {
+    if (!link || link.dataset.gameBackBound === "true") {
+      return;
+    }
+    link.dataset.gameBackBound = "true";
+    link.dataset.focusGame = slug || "";
+    link.addEventListener("click", handleBackToGames);
+  }
+
   function formatLanguageSupport(game) {
     const support = game.languageSupport || {};
     const names = languageNames[requestedSiteLang] || languageNames.zh;
@@ -208,6 +418,7 @@
     document.querySelectorAll(".back-link, a[href='../../index.html#games']").forEach((link) => {
       link.setAttribute("href", backToGamesUrl);
       link.textContent = t("backToGames");
+      bindBackLink(link);
     });
     const toolsTitle = document.querySelector(".game-title h1");
     const toolsDesc = document.querySelector(".game-title p");
@@ -308,16 +519,58 @@
     }
   }
 
+  function renderPlayInfo(game) {
+    document.getElementById("game-play-info")?.remove();
+
+    const info = document.createElement("section");
+    info.id = "game-play-info";
+    info.className = "game-play-info";
+    info.setAttribute("aria-label", t("gameInfoAria"));
+
+    const controlsCard = document.createElement("div");
+    controlsCard.className = "game-info-card";
+    controlsCard.append(
+      textElement("strong", t("controlsLabel")),
+      textElement("p", localText(game.controls))
+    );
+
+    const saveCard = document.createElement("div");
+    saveCard.className = "game-info-card";
+    saveCard.append(
+      textElement("strong", t("saveScopeLabel")),
+      textElement("p", localText(game.storage?.scope))
+    );
+
+    info.append(controlsCard, saveCard);
+    gameStage.parentNode.insertBefore(info, gameStage);
+  }
+
   function setStatus(text) {
     status.textContent = text;
   }
 
   async function loadCatalog() {
-    const response = await fetch("../catalog.json", { cache: "no-store" });
-    if (!response.ok) {
-      throw new Error(`catalog load failed: ${response.status}`);
+    let response;
+    try {
+      response = await fetch("../catalog.json", { cache: "no-store" });
+    } catch (error) {
+      throw new GameShellError("network", t("catalogUnavailable"), error?.message);
     }
-    return response.json();
+    if (response.status === 404 || response.status === 410) {
+      throw new GameShellError("missing", t("catalogUnavailable"));
+    }
+    if (!response.ok) {
+      throw new GameShellError("network", `${t("catalogUnavailable")} HTTP ${response.status}`);
+    }
+    try {
+      const catalog = await response.json();
+      if (!catalog || !Array.isArray(catalog.games)) {
+        throw new Error("catalog.games is missing");
+      }
+      return catalog;
+    } catch (error) {
+      throw new GameShellError("missing", t("catalogUnavailable"), error?.message);
+    }
   }
 
   function localText(value) {
@@ -337,12 +590,77 @@
   function buildEntry(game) {
     const sourceEntry = safeGameSourceEntry(game.sourceEntry);
     if (!sourceEntry) {
-      throw new Error(t("invalidGameSource"));
+      throw new GameShellError("missing", t("invalidGameSource"));
     }
     const params = new URLSearchParams(game.launchQuery || "");
     params.set(safeQueryParamName(game.languageQueryParam), getGameLanguage(game));
     const query = params.toString();
     return `${sourceEntry}${query ? `?${query}` : ""}`;
+  }
+
+  function browserFeatureLabel(feature) {
+    const labels = {
+      localStorage: { zh: "本地存储", en: "local storage", ja: "ローカルストレージ" },
+      canvas2d: { zh: "Canvas 2D", en: "Canvas 2D", ja: "Canvas 2D" },
+      webgl: { zh: "WebGL", en: "WebGL", ja: "WebGL" },
+      moduleScripts: { zh: "JavaScript 模块", en: "JavaScript modules", ja: "JavaScript モジュール" },
+      requestAnimationFrame: { zh: "流畅动画", en: "smooth animation", ja: "アニメーション機能" }
+    };
+    return localText(labels[feature]) || feature;
+  }
+
+  function supportsBrowserFeature(feature) {
+    try {
+      if (feature === "localStorage") {
+        const key = "__lusu_game_support_test__";
+        window.localStorage.setItem(key, "1");
+        window.localStorage.removeItem(key);
+        return true;
+      }
+      if (feature === "canvas2d") {
+        return Boolean(document.createElement("canvas").getContext("2d"));
+      }
+      if (feature === "webgl") {
+        const canvas = document.createElement("canvas");
+        return Boolean(canvas.getContext("webgl") || canvas.getContext("experimental-webgl"));
+      }
+      if (feature === "moduleScripts") {
+        return "noModule" in document.createElement("script");
+      }
+      if (feature === "requestAnimationFrame") {
+        return typeof window.requestAnimationFrame === "function";
+      }
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  function assertBrowserSupport(game) {
+    const missing = (game.browserRequirements || []).filter((feature) => !supportsBrowserFeature(feature));
+    if (missing.length) {
+      throw new GameShellError(
+        "unsupported",
+        t("unsupportedErrorTitle"),
+        missing.map(browserFeatureLabel).join(" / ")
+      );
+    }
+  }
+
+  async function verifyGameSource(entry) {
+    let response;
+    try {
+      response = await fetch(entry, { method: "HEAD", cache: "no-store" });
+    } catch (error) {
+      throw new GameShellError("network", t("sourceUnavailable"), error?.message);
+    }
+    if (response.ok || response.status === 405 || response.status === 501) {
+      return;
+    }
+    if (response.status >= 400 && response.status < 500) {
+      throw new GameShellError("missing", `${t("sourceUnavailable")} HTTP ${response.status}`);
+    }
+    throw new GameShellError("network", `${t("sourceUnavailable")} HTTP ${response.status}`);
   }
 
   function flushGameSave() {
@@ -508,6 +826,7 @@
     actions.className = "cloud-actions";
     const loginLink = textElement("a", t("loginFromHome"), "tool-button");
     loginLink.href = backToGamesUrl;
+    bindBackLink(loginLink);
     actions.appendChild(loginLink);
     account.appendChild(actions);
     cloudPanel.appendChild(account);
@@ -647,58 +966,140 @@
     frame.contentWindow.location.reload();
   }
 
-  try {
-    const catalog = await loadCatalog();
-    const game = catalog.games.find((item) => item.id === slug);
-    if (!game) {
-      throw new Error(`unknown game: ${slug}`);
-    }
-    currentGame = game;
+  async function launchGame(game) {
+    const launchId = ++frameLaunchId;
+    expectedFrameUrl = "";
+    window.clearTimeout(frameLoadTimer);
+    showGameLoading(game);
+    assertBrowserSupport(game);
 
-    const displayTitle = localText(game.titles || game.titleZh);
-    document.title = `${displayTitle} · ${t("shellTitleSuffix")}`;
-    title.textContent = displayTitle;
-    subtitle.textContent = `${game.title} · ${formatLanguageSupport(game)}`;
-    frame.setAttribute("title", displayTitle);
-    renderLicensePanel(game);
-
-    applyStorageDefaults(game);
-    await loadAuthSession();
-    await restoreOrUpload(game);
-    if (authUser) {
-      startAutoSync(game);
+    const entry = buildEntry(game);
+    await verifyGameSource(entry);
+    if (launchId !== frameLaunchId) {
+      return;
     }
 
-    applyLanguagePreference(game);
-    frame.src = buildEntry(game);
-    frame.addEventListener("load", () => {
-      setStatus(authUser ? t("loadedCloud") : t("loadedLocal"));
-    });
+    const displayTitle = localText(game.titles || game.titleZh || game.title);
+    expectedFrameUrl = new URL(entry, window.location.href).href;
+    frame.setAttribute("title", t("gameFrameTitle", { title: displayTitle }));
+    frame.hidden = false;
+    frame.src = expectedFrameUrl;
+    frameLoadTimer = window.setTimeout(() => {
+      if (launchId === frameLaunchId && gameStage.dataset.state === "loading") {
+        showGameLoadError(new GameShellError("network", t("sourceUnavailable")));
+      }
+    }, 20000);
+  }
+
+  function handleFrameLoad() {
+    if (!expectedFrameUrl || frame.src !== expectedFrameUrl) {
+      return;
+    }
+    window.clearTimeout(frameLoadTimer);
+    frameLoadTimer = 0;
+    showGameReady();
+    setStatus(authUser ? t("loadedCloud") : t("loadedLocal"));
+  }
+
+  function handleFrameError() {
+    if (!expectedFrameUrl) {
+      return;
+    }
+    showGameLoadError(new GameShellError("network", t("sourceUnavailable")));
+  }
+
+  async function retryGame() {
+    retryButton.disabled = true;
+    try {
+      if (currentGame) {
+        applyLanguagePreference(currentGame);
+        await launchGame(currentGame);
+      } else {
+        await initializeGameShell();
+      }
+    } catch (error) {
+      showGameLoadError(error);
+    }
+  }
+
+  function bindShellEvents() {
+    if (shellEventsBound) {
+      return;
+    }
+    shellEventsBound = true;
+    retryButton.addEventListener("click", retryGame);
+    frame.addEventListener("load", handleFrameLoad);
+    frame.addEventListener("error", handleFrameError);
     window.addEventListener("beforeunload", flushGameSave);
     document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "hidden") {
+      if (document.visibilityState === "hidden" && currentGame) {
         flushGameSave();
-        syncToCloud(game, false);
+        syncToCloud(currentGame, false);
       }
     });
 
-    document.getElementById("export-save").addEventListener("click", () => exportSave(game));
-    importInput.addEventListener("change", async () => {
-      const file = importInput.files[0];
-      if (!file) {
+    document.getElementById("export-save")?.addEventListener("click", () => {
+      if (currentGame) {
+        exportSave(currentGame);
+      }
+    });
+    importInput?.addEventListener("change", async () => {
+      const file = importInput.files?.[0];
+      if (!file || !currentGame) {
         return;
       }
       try {
-        await importSave(game, file);
+        await importSave(currentGame, file);
       } catch (error) {
         setStatus(t("importFailed", { message: error.message }));
       } finally {
         importInput.value = "";
       }
     });
-  } catch (error) {
-    title.textContent = t("gameLoadFailed");
-    subtitle.textContent = error.message;
-    setStatus(error.message);
   }
+
+  async function initializeGameShell() {
+    const requestId = ++initializeRequestId;
+    stopAutoSync();
+    showGameLoading();
+    try {
+      const catalog = await loadCatalog();
+      if (requestId !== initializeRequestId) {
+        return;
+      }
+      const game = catalog.games.find((item) => item.id === slug);
+      if (!game) {
+        throw new GameShellError("missing", t("unknownGame"));
+      }
+      currentGame = game;
+
+      const displayTitle = localText(game.titles || game.titleZh || game.title);
+      document.title = `${displayTitle} · ${t("shellTitleSuffix")}`;
+      title.textContent = displayTitle;
+      subtitle.textContent = `${game.title} · ${formatLanguageSupport(game)}`;
+      frame.setAttribute("title", t("gameFrameTitle", { title: displayTitle }));
+      renderLicensePanel(game);
+      renderPlayInfo(game);
+
+      applyStorageDefaults(game);
+      await loadAuthSession();
+      if (requestId !== initializeRequestId) {
+        return;
+      }
+      await restoreOrUpload(game);
+      if (authUser) {
+        startAutoSync(game);
+      }
+
+      applyLanguagePreference(game);
+      await launchGame(game);
+    } catch (error) {
+      if (requestId === initializeRequestId) {
+        showGameLoadError(error);
+      }
+    }
+  }
+
+  bindShellEvents();
+  initializeGameShell();
 })();

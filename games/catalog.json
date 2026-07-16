@@ -1,5 +1,5 @@
 {
-  "updated": "2026.06.12",
+  "updated": "2026.07.17",
   "games": [
     {
       "id": "kittens-game",
@@ -15,6 +15,12 @@
         "en": "A long-form resource management and incremental game about a kitten civilization, wired into site language launch and cloud saves.",
         "ja": "子猫の文明を育てる長期型の資源管理・放置ゲームです。サイト言語起動とクラウド保存に対応しています。"
       },
+      "controls": {
+        "zh": "使用鼠标或触控选择标签、按钮和资源操作；键盘可用于输入数量与快捷操作。",
+        "en": "Use a mouse or touch to choose tabs, buttons, and resource actions; the keyboard is available for quantities and shortcuts.",
+        "ja": "マウスまたはタッチでタブ、ボタン、資源操作を選びます。数量入力やショートカットにはキーボードも使えます。"
+      },
+      "browserRequirements": ["localStorage"],
       "cover": "../assets/images/icon-knowledge.png",
       "entry": "kittens-game/",
       "sourceEntry": "source/index.html",
@@ -36,6 +42,11 @@
       },
       "repo": "https://github.com/nuclear-unicorn/kittensgame",
       "storage": {
+        "scope": {
+          "zh": "完整进度保存在当前浏览器；登录后可同步本站云存档，也可下载或导入 JSON 备份。",
+          "en": "Full progress is kept in this browser; after signing in, it can sync to this site's cloud save or be backed up as JSON.",
+          "ja": "完全な進行状況をこのブラウザーに保存します。ログイン後はサイトのクラウドセーブ同期と JSON バックアップを利用できます。"
+        },
         "keys": [
           "com.nuclearunicorn.kittengame.savedata",
           "com.nuclearunicorn.kittengame.language",
@@ -60,6 +71,12 @@
         "en": "A minimalist text adventure and resource management game, wired into site language launch and cloud saves.",
         "ja": "ミニマルなテキスト冒険・資源管理ゲームです。サイト言語起動とクラウド保存に対応しています。"
       },
+      "controls": {
+        "zh": "使用鼠标或触控选择文字按钮与区域；游戏内可使用键盘输入和浏览器滚动。",
+        "en": "Use a mouse or touch to select text buttons and areas; keyboard input and browser scrolling remain available in the game.",
+        "ja": "マウスまたはタッチでテキストボタンや領域を選びます。ゲーム内ではキーボード入力とブラウザーのスクロールも使えます。"
+      },
+      "browserRequirements": ["localStorage"],
       "cover": "../assets/images/icon-blog.png",
       "entry": "a-dark-room/",
       "sourceEntry": "source/index.html",
@@ -82,6 +99,11 @@
       },
       "repo": "https://github.com/doublespeakgames/adarkroom",
       "storage": {
+        "scope": {
+          "zh": "完整进度保存在当前浏览器；登录后可同步本站云存档，并支持 JSON 导入导出。",
+          "en": "Full progress is kept in this browser, can sync to this site's cloud save after sign-in, and supports JSON import and export.",
+          "ja": "完全な進行状況をこのブラウザーに保存し、ログイン後のクラウド同期と JSON の入出力に対応します。"
+        },
         "keys": ["gameState", "lang"]
       }
     },
@@ -99,6 +121,12 @@
         "en": "The classic sliding-number puzzle game, deployed locally with save import/export and cloud saves.",
         "ja": "定番の数字スライドパズルです。本站に内蔵し、保存の入出力とクラウド保存に対応しました。"
       },
+      "controls": {
+        "zh": "键盘使用方向键移动方块；手机和平板可在棋盘上向四个方向滑动。",
+        "en": "Move tiles with the arrow keys; on phones and tablets, swipe across the board in any of the four directions.",
+        "ja": "キーボードでは矢印キーでタイルを動かします。スマートフォンやタブレットでは盤面を上下左右にスワイプします。"
+      },
+      "browserRequirements": ["localStorage"],
       "cover": "../assets/images/icon-resources.png",
       "entry": "2048/",
       "sourceEntry": "source/index.html",
@@ -121,6 +149,11 @@
       "repo": "https://github.com/gabrielecirulli/2048",
       "storage": {
         "scoreOnly": true,
+        "scope": {
+          "zh": "只保存最高分；每次进入会从新棋局开始。最高分可导入导出，登录后可同步云端。",
+          "en": "Only the best score is saved; each visit starts a new board. The score can be imported, exported, and synced after sign-in.",
+          "ja": "最高スコアのみ保存し、開くたびに新しい盤面から始まります。スコアは入出力でき、ログイン後はクラウド同期も可能です。"
+        },
         "keys": [
           "lusu.2048.best"
         ]
@@ -140,6 +173,12 @@
         "en": "A Hextris-inspired hex color puzzle, deployed locally with save import/export and cloud saves.",
         "ja": "Hextris に着想を得た六角形カラーパズルです。本站に内蔵し、保存の入出力とクラウド保存に対応しました。"
       },
+      "controls": {
+        "zh": "键盘使用左/右方向键或 A/D 旋转；触屏可左右滑动，也可点击游戏内旋转按钮。",
+        "en": "Rotate with the Left/Right arrow keys or A/D; on touch screens, swipe sideways or use the in-game rotate buttons.",
+        "ja": "左右矢印キーまたは A/D で回転します。タッチ画面では左右スワイプ、またはゲーム内の回転ボタンを使えます。"
+      },
+      "browserRequirements": ["canvas2d", "requestAnimationFrame", "localStorage"],
       "cover": "../assets/images/icon-games.png",
       "entry": "hextris/",
       "sourceEntry": "source/index.html",
@@ -162,9 +201,14 @@
       "repo": "https://github.com/Hextris/hextris",
       "storage": {
         "scoreOnly": true,
+        "scope": {
+          "zh": "只保存最高分；每局从初始状态开始。最高分支持 JSON 备份，登录后可同步云端。",
+          "en": "Only the best score is saved and each round starts fresh. The score supports JSON backup and cloud sync after sign-in.",
+          "ja": "最高スコアのみ保存し、各ラウンドは初期状態から始まります。JSON バックアップとログイン後のクラウド同期に対応します。"
+        },
         "keys": [
-        "lusu.hextris.best"
-      ]
+          "lusu.hextris.best"
+        ]
       }
     },
     {
@@ -181,6 +225,12 @@
         "en": "An open-source life simulation text game, deployed locally with Chinese and English UI plus save import/export and cloud saves.",
         "ja": "オープンソースの人生シミュレーションゲームです。本站に内蔵し、中国語と英語UI、保存の入出力とクラウド保存に対応しています。"
       },
+      "controls": {
+        "zh": "使用鼠标或触控选择天赋、分配属性并推进事件；横屏能获得更完整的游戏画面。",
+        "en": "Use a mouse or touch to choose talents, allocate attributes, and advance events; landscape orientation provides the fullest view.",
+        "ja": "マウスまたはタッチで才能の選択、能力値の配分、イベントの進行を行います。横向き表示で画面を広く使えます。"
+      },
+      "browserRequirements": ["canvas2d", "webgl", "moduleScripts", "localStorage"],
       "cover": "../assets/images/icon-games.png",
       "entry": "life-restart/",
       "sourceEntry": "source/index.html",
@@ -203,6 +253,11 @@
       },
       "repo": "https://github.com/VickScarlet/lifeRestart",
       "storage": {
+        "scope": {
+          "zh": "重开次数、成就、主题和扩展天赋等完整进度保存在当前浏览器；支持 JSON 与登录后的云同步。",
+          "en": "Restart count, achievements, theme, extended talents, and other progress stay in this browser, with JSON and signed-in cloud sync.",
+          "ja": "周回数、実績、テーマ、拡張才能などの進行状況をこのブラウザーに保存し、JSON とログイン後のクラウド同期に対応します。"
+        },
         "keys": [
           "theme",
           "times",
