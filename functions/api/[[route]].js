@@ -36,7 +36,6 @@ const CHAT_IP_HASH_ALGORITHM = "hmac-sha256-v1";
 const LEGACY_IP_HASH_KEY_ID = "legacy";
 const VISITOR_COOKIE = "lusu_visitor";
 const VISITOR_DAYS = 365;
-const OWNER_ADMIN_EMAILS = new Set(["630739094@qq.com"]);
 const MAX_VIDEO_THUMBNAIL_TEXT_CHARS = 420000;
 const MAX_LOCAL_THUMBNAIL_BYTES = 320 * 1024;
 const LOCAL_THUMBNAIL_MIME_TYPES = new Set(["jpeg", "jpg", "png", "webp", "avif"]);
@@ -2066,7 +2065,7 @@ async function updateAdminAccount(request, env, userId) {
   const passwordChanged = password.trim().length > 0;
   const revokeSessions = body.revokeSessions !== false;
 
-  if (OWNER_ADMIN_EMAILS.has(nextEmail) && nextRole !== "admin") {
+  if (ownerAdminEmails(env).has(nextEmail) && nextRole !== "admin") {
     throw new HttpError("站长账号必须保留管理员权限。", 400);
   }
   if (existing.id === adminSession.user.id && nextRole !== "admin") {
@@ -3144,7 +3143,7 @@ async function ensureUserRoleColumn(env) {
 }
 
 async function ensureOwnerAdminRole(env) {
-  for (const email of OWNER_ADMIN_EMAILS) {
+  for (const email of ownerAdminEmails(env)) {
     await env.DB.prepare("update users set role = 'admin', updated_at = ? where email = ?")
       .bind(nowIso(), email).run();
   }
@@ -4352,6 +4351,30 @@ function articleSeedStatements(env) {
     env.DB.prepare(`
       delete from articles
       where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-17-mobile-transfer-send-fix',
+        '2026-07-17-mobile-transfer-send-fix',
+        'site-updates',
+        '["mobile","Quick Transfer","attachments","UI"]',
+        '', 'published', 0, 0,
+        '2026-07-16T18:45:00.000Z',
+        '2026-07-16T18:45:00.000Z',
+        '2026-07-16T18:45:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
     `),
     env.DB.prepare(`
       insert into articles (
@@ -7080,6 +7103,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    ...articleTranslationsStatements(env, "seed-update-2026-07-17-mobile-transfer-send-fix", {
+      zh: {
+        title: "手机顶栏与临时互传发送体验修复",
+        summary: "移除手机端重复状态与阅读文字，临时互传改为附件先暂存再发送，并补齐相册选择、缩略图、下载和文字复制操作。",
+        content_markdown: "# 手机顶栏与临时互传发送体验修复\n\n本轮修复手机阅读和临时互传的直接操作问题，不改变登录、房间口令、加密、R2、配额、24 小时过期或下载鉴权。\n\n## 手机阅读\n\n- 手机虚拟 OS 移除顶部时间与 LUSU OS 状态行，释放正文空间；栏目 Appbar、首页入口和桌面顶栏保持不变。\n- 知识库文章不再同时显示栏目文字、百分比和进度条，只保留进度条以及可操作的返回、复制与回到顶部控件。\n\n## 临时互传\n\n- 从相册或文件选择器添加的附件会先显示在输入区，用户再次点击发送后才开始上传。\n- 待发送图片以小缩略图显示并可单独移除；发送后的图片限制在消息卡片内，普通文件使用文件卡片与类型图标。\n- 每个图片或文件都保留下载按钮，每条已解密文字末尾提供复制按钮。\n\n## 边界不变\n\n房间明文口令仍不会发送到服务器；文字继续在浏览器使用 AES-GCM，文件继续由 HTTPS、私有 R2 与服务端鉴权保护。普通账号配额、管理员 Multipart、24 小时过期和现有 API 保持不变。"
+      },
+      en: {
+        title: "Mobile Header and Quick Transfer Send Fixes",
+        summary: "Removes duplicated mobile status and reading labels, stages Quick Transfer attachments until Send, and adds photo selection, thumbnails, downloads, and text copy actions.",
+        content_markdown: "# Mobile Header and Quick Transfer Send Fixes\n\nThis release fixes direct mobile-reading and Quick Transfer interactions without changing sign-in, passphrases, encryption, R2, quotas, 24-hour expiry, or download authorization.\n\n## Mobile reading\n\n- The mobile virtual OS removes the time and LUSU OS status row to return space to content. The Appbar, Home entry, and desktop top bar stay unchanged.\n- Knowledge articles no longer repeat the route label, percentage, and progress bar together. The progress bar and real Back, Copy, and Back to Top controls remain.\n\n## Quick Transfer\n\n- Attachments added from the photo library or file picker stay in the composer until the user presses Send again.\n- Pending images use small removable thumbnails. Sent images stay bounded inside message cards, while regular files use a file card and type icon.\n- Every image or file keeps a Download action, and each decrypted text message ends with a Copy action.\n\n## Unchanged boundaries\n\nPlaintext room passphrases still never reach the server. Text continues to use browser AES-GCM, while files remain protected by HTTPS, private R2, and server authorization. Standard quotas, admin Multipart, 24-hour expiry, and existing APIs are unchanged."
+      },
+      ja: {
+        title: "モバイル上部バーと一時転送の送信修正",
+        summary: "モバイルの重複した状態・読書表示を整理し、一時転送で添付を送信前に保持して、写真選択、縮小表示、ダウンロード、文字コピーを追加しました。",
+        content_markdown: "# モバイル上部バーと一時転送の送信修正\n\n今回はモバイル記事と一時転送の直接操作を修正し、ログイン、合言葉、暗号化、R2、割り当て、24 時間の有効期限、ダウンロード認可は変更していません。\n\n## モバイル記事\n\n- モバイル仮想 OS から時刻と LUSU OS の状態行を外し、本文の表示領域を広げました。Appbar、Home 入口、デスクトップ上部バーは維持します。\n- ナレッジ記事では、ルート名、百分率、進捗バーの重複表示をやめ、進捗バーと実際に操作できる戻る・コピー・トップへ戻るを残しました。\n\n## 一時転送\n\n- 写真ライブラリまたはファイル選択から追加した添付は入力欄に保持され、もう一度送信を押してからアップロードを開始します。\n- 送信待ち画像は削除できる小さなサムネイルで表示します。送信済み画像はメッセージカード内に収め、通常ファイルは種類アイコン付きファイルカードにします。\n- 画像とファイルにはダウンロード、復号済みテキストの末尾にはコピー操作を用意しました。\n\n## 変更していない境界\n\n部屋の平文合言葉は引き続きサーバーへ送りません。文字はブラウザ AES-GCM、ファイルは HTTPS、非公開 R2、サーバー認可で保護します。一般割り当て、管理者 Multipart、24 時間期限、既存 API は変更していません。"
+      }
+    }, "2026-07-16T18:45:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-07-16-mobile-transfer-ui-polish", {
       zh: {
         title: "手机文章与临时互传界面修复",
@@ -8571,6 +8611,16 @@ function json(payload, status = 200) {
 
 function normalizeEmail(email) {
   return String(email || "").trim().toLowerCase();
+}
+
+function ownerAdminEmails(env) {
+  const configured = typeof env?.OWNER_ADMIN_EMAILS === "string"
+    ? env.OWNER_ADMIN_EMAILS
+    : "";
+  return new Set(configured
+    .split(/[\s,;]+/u)
+    .map(normalizeEmail)
+    .filter((email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && email.length <= 254));
 }
 
 function validateEmail(email) {

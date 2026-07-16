@@ -139,10 +139,10 @@ function accountRequest(userId, body) {
   });
 }
 
-async function api(request, db) {
+async function api(request, db, envOverrides = {}) {
   return onRequest({
     request,
-    env: { DB: db, ...RUNTIME_SECRETS },
+    env: { DB: db, ...RUNTIME_SECRETS, ...envOverrides },
     waitUntil() {}
   });
 }
@@ -253,4 +253,46 @@ test("account demotion atomically rejects the last admin and allows it when anot
   }), multiAdminDb);
   assert.equal(allowed.status, 200, await allowed.clone().text());
   assert.equal(multiAdminDb.account.role, "user");
+});
+
+test("configured owner admin emails are normalized from the environment and cannot be demoted", async () => {
+  const ownerDb = createAdminD1({
+    targetAccount: accountFixture({
+      email: "owner@example.test",
+      role: "admin"
+    }),
+    otherAdminExists: true
+  });
+  const response = await api(accountRequest(ownerDb.account.id, {
+    email: "OWNER@example.test",
+    role: "user"
+  }), ownerDb, {
+    OWNER_ADMIN_EMAILS: "backup@example.test; OWNER@example.test\nthird@example.test"
+  });
+
+  assert.equal(response.status, 400);
+  assert.match((await response.json()).error, /站长账号必须保留管理员权限/);
+  assert.equal(ownerDb.account.role, "admin");
+  assert.equal(ownerDb.calls.some((call) => (
+    call.method === "run"
+    && /^update users set .+where id = \? and \(/i.test(normalizedSql(call.sql))
+  )), false, "configured owner rejection must happen before the guarded role update");
+});
+
+test("missing owner admin configuration keeps the atomic last-admin protection active", async () => {
+  const db = createAdminD1({
+    targetAccount: accountFixture({
+      email: "owner@example.test",
+      role: "admin"
+    }),
+    otherAdminExists: false
+  });
+  const response = await api(accountRequest(db.account.id, {
+    email: db.account.email,
+    role: "user"
+  }), db);
+
+  assert.equal(response.status, 409);
+  assert.match((await response.json()).error, /最后一个管理员/);
+  assert.equal(db.account.role, "admin");
 });

@@ -583,6 +583,36 @@ const labels = {
 const content = {
   updates: [
     {
+      article_id: "seed-update-2026-07-17-mobile-transfer-send-fix",
+      slug: "2026-07-17-mobile-transfer-send-fix",
+      category: "site-updates",
+      tags: ["mobile", "Quick Transfer", "attachments", "UI"],
+      cover_image: "",
+      status: "published",
+      is_pinned: 0,
+      created_at: "2026-07-16T18:45:00.000Z",
+      updated_at: "2026-07-16T18:45:00.000Z",
+      published_at: "2026-07-16T18:45:00.000Z",
+      fallbackOnly: true,
+      icon: "system",
+      date: "2026.07.17",
+      title: {
+        zh: "手机顶栏与临时互传发送体验修复",
+        en: "Mobile Header and Quick Transfer Send Fixes",
+        ja: "モバイル上部バーと一時転送の送信修正"
+      },
+      summary: {
+        zh: "移除手机端重复状态与阅读文字，临时互传改为附件先暂存再发送，并补齐相册选择、缩略图、下载和文字复制操作。",
+        en: "Removes duplicated mobile status and reading labels, stages Quick Transfer attachments until Send, and adds photo selection, thumbnails, downloads, and text copy actions.",
+        ja: "モバイルの重複した状態・読書表示を整理し、一時転送で添付を送信前に保持して、写真選択、縮小表示、ダウンロード、文字コピーを追加しました。"
+      },
+      content_markdown: {
+        zh: "# 手机顶栏与临时互传发送体验修复\n\n本轮修复手机阅读和临时互传的直接操作问题，不改变登录、房间口令、加密、R2、配额、24 小时过期或下载鉴权。\n\n## 手机阅读\n\n- 手机虚拟 OS 移除顶部时间与 LUSU OS 状态行，释放正文空间；栏目 Appbar、首页入口和桌面顶栏保持不变。\n- 知识库文章不再同时显示栏目文字、百分比和进度条，只保留进度条以及可操作的返回、复制与回到顶部控件。\n\n## 临时互传\n\n- 从相册或文件选择器添加的附件会先显示在输入区，用户再次点击发送后才开始上传。\n- 待发送图片以小缩略图显示并可单独移除；发送后的图片限制在消息卡片内，普通文件使用文件卡片与类型图标。\n- 每个图片或文件都保留下载按钮，每条已解密文字末尾提供复制按钮。\n\n## 边界不变\n\n房间明文口令仍不会发送到服务器；文字继续在浏览器使用 AES-GCM，文件继续由 HTTPS、私有 R2 与服务端鉴权保护。普通账号配额、管理员 Multipart、24 小时过期和现有 API 保持不变。",
+        en: "# Mobile Header and Quick Transfer Send Fixes\n\nThis release fixes direct mobile-reading and Quick Transfer interactions without changing sign-in, passphrases, encryption, R2, quotas, 24-hour expiry, or download authorization.\n\n## Mobile reading\n\n- The mobile virtual OS removes the time and LUSU OS status row to return space to content. The Appbar, Home entry, and desktop top bar stay unchanged.\n- Knowledge articles no longer repeat the route label, percentage, and progress bar together. The progress bar and real Back, Copy, and Back to Top controls remain.\n\n## Quick Transfer\n\n- Attachments added from the photo library or file picker stay in the composer until the user presses Send again.\n- Pending images use small removable thumbnails. Sent images stay bounded inside message cards, while regular files use a file card and type icon.\n- Every image or file keeps a Download action, and each decrypted text message ends with a Copy action.\n\n## Unchanged boundaries\n\nPlaintext room passphrases still never reach the server. Text continues to use browser AES-GCM, while files remain protected by HTTPS, private R2, and server authorization. Standard quotas, admin Multipart, 24-hour expiry, and existing APIs are unchanged.",
+        ja: "# モバイル上部バーと一時転送の送信修正\n\n今回はモバイル記事と一時転送の直接操作を修正し、ログイン、合言葉、暗号化、R2、割り当て、24 時間の有効期限、ダウンロード認可は変更していません。\n\n## モバイル記事\n\n- モバイル仮想 OS から時刻と LUSU OS の状態行を外し、本文の表示領域を広げました。Appbar、Home 入口、デスクトップ上部バーは維持します。\n- ナレッジ記事では、ルート名、百分率、進捗バーの重複表示をやめ、進捗バーと実際に操作できる戻る・コピー・トップへ戻るを残しました。\n\n## 一時転送\n\n- 写真ライブラリまたはファイル選択から追加した添付は入力欄に保持され、もう一度送信を押してからアップロードを開始します。\n- 送信待ち画像は削除できる小さなサムネイルで表示します。送信済み画像はメッセージカード内に収め、通常ファイルは種類アイコン付きファイルカードにします。\n- 画像とファイルにはダウンロード、復号済みテキストの末尾にはコピー操作を用意しました。\n\n## 変更していない境界\n\n部屋の平文合言葉は引き続きサーバーへ送りません。文字はブラウザ AES-GCM、ファイルは HTTPS、非公開 R2、サーバー認可で保護します。一般割り当て、管理者 Multipart、24 時間期限、既存 API は変更していません。"
+      }
+    },
+    {
       article_id: "seed-update-2026-07-16-mobile-transfer-ui-polish",
       slug: "2026-07-16-mobile-transfer-ui-polish",
       category: "site-updates",

@@ -9,14 +9,14 @@
 ```powershell
 npm.cmd ci
 Copy-Item .env.example .dev.vars
-# 分别填写两个独立、随机且至少 32 字节的本地值
+# 填写两个独立、随机且至少 32 字节的盐，并用测试邮箱填写站长配置
 npm.cmd run d1:migrate:local
 npm.cmd test
 npm.cmd run build
 npm.cmd run dev
 ```
 
-Linux 纯本地开发使用 `cp .env.example .dev.vars`。GPTWork 应把两个 Secret 注入 process environment，并直接执行 npm 命令；已注入时不要创建 `.dev.vars`，否则空文件可能遮蔽云端值。Wrangler 从 `wrangler.jsonc` 读取 Pages 和 D1 配置；`preview_database_id` 让本地开发使用模拟 D1，不会连接生产数据库。本地状态、`.dev.vars` 和依赖目录均被 Git 忽略。
+Linux 纯本地开发使用 `cp .env.example .dev.vars`。GPTWork 应把三个 Secret 注入 process environment，并直接执行 npm 命令；已注入时不要创建 `.dev.vars`，否则空文件可能遮蔽云端值。Wrangler 从 `wrangler.jsonc` 读取 Pages 和 D1 配置；`preview_database_id` 让本地开发使用模拟 D1，不会连接生产数据库。本地状态、`.dev.vars` 和依赖目录均被 Git 忽略。
 
 打开：
 
@@ -27,12 +27,15 @@ Linux 纯本地开发使用 `cp .env.example .dev.vars`。GPTWork 应把两个 S
 
 ## 环境变量和 Secrets
 
-运行时必须同时提供以下两个独立 Secret：
+运行时配置包含以下三个 Secret：
 
 - `CHAT_IP_HASH_SALT`：聊天室限流与禁言所用的 IP HMAC key。
 - `ANALYTICS_IP_HASH_SALT`：分析事件所用的 IP HMAC key。
+- `OWNER_ADMIN_EMAILS`：需要保持管理员角色的站长邮箱列表，可用逗号、分号或空白分隔。
 
 两者必须分别生成，UTF-8 长度至少 32 字节；不得互相复用，也不得写进代码、README、`.env.example`、命令历史或 Git。缺少、过短或两者相同时，API router 会在任何 API 业务 D1 访问前返回通用 503，并且只记录变量名称。
+
+`OWNER_ADMIN_EMAILS` 只从请求运行时 `env` 读取并规范化，用于把匹配账号保持为 `users.role = admin` 以及阻止后台降级，不是登录或鉴权 bypass。缺失或为空时不会回退公开源码、不会自动提升账号，也不会触发上述 503；数据库现有角色、当前登录管理员不可自降级和最后管理员原子保护仍然有效。
 
 纯本地开发只使用被忽略的 `.dev.vars`。GPTWork 使用平台注入的 process environment，不创建 `.dev.vars`。两种方式都不要创建或提交 `.env`、`.dev.vars.*` 或 `.env.*`。
 
@@ -43,13 +46,15 @@ Linux 纯本地开发使用 `cp .env.example .dev.vars`。GPTWork 应把两个 S
 1. D1 binding 名称为 `DB`，指向获准使用的 D1 数据库。
 2. 以加密 Secret 方式配置 `CHAT_IP_HASH_SALT`。
 3. 以加密 Secret 方式配置 `ANALYTICS_IP_HASH_SALT`。
-4. 在部署使用这些变量的提交之前完成配置。
+4. 以加密 Secret 方式配置 `OWNER_ADMIN_EMAILS`，并确认邮箱列表属于当前环境。
+5. 在部署使用这些变量的提交之前完成配置。
 
 只有获授权的运维人员才可远程修改 Secret。Wrangler 的交互式命令如下；它会修改 Cloudflare 远程状态，本地或 GPTWork 验证流程不得自动执行：
 
 ```powershell
 npx.cmd wrangler pages secret put CHAT_IP_HASH_SALT --project-name lusu-personal-site
 npx.cmd wrangler pages secret put ANALYTICS_IP_HASH_SALT --project-name lusu-personal-site
+npx.cmd wrangler pages secret put OWNER_ADMIN_EMAILS --project-name lusu-personal-site
 ```
 
 需要区分 Preview 与 Production 时，优先在 Dashboard 中明确选择环境并逐项核对，避免把值写到错误环境。

@@ -6,7 +6,8 @@
   "secrets": {
     "required": [
       "CHAT_IP_HASH_SALT",
-      "ANALYTICS_IP_HASH_SALT"
+      "ANALYTICS_IP_HASH_SALT",
+      "OWNER_ADMIN_EMAILS"
     ]
   },
   "d1_databases": [

@@ -12,19 +12,19 @@
       roomPassword: "房间口令", roomPlaceholder: "至少 6 位，分享给另一位登录用户", generate: "随机生成", copy: "复制",
       securityNote: "口令不会发送到服务器；知道口令的人可读取房间内容，请勿上传账号凭证。", enter: "进入房间",
       roomActive: "临时房间已连接", refresh: "刷新", leave: "离开房间", textLabel: "加密文字",
-      textPlaceholder: "发送一段加密文字……", send: "发送", dropTitle: "选择或拖入文件", dropRelease: "松开即可上传到当前房间", chooseFile: "选择文件", tasks: "上传任务",
+      textPlaceholder: "发送一段加密文字……", send: "发送", dropTitle: "添加照片或文件", dropRelease: "松开以添加到待发送附件", choosePhoto: "选择照片", chooseFile: "选择文件", tasks: "上传任务",
       online: "在线", offline: "离线", loading: "正在连接临时互传……", loginNeeded: "请先登录后使用临时互传。",
       r2Missing: "R2 尚未绑定，文字房间可查看，但文件上传暂不可用。", generated: "已生成随机口令，请复制给另一位登录用户。",
       copied: "房间口令已复制。", copyFailed: "无法访问剪贴板，请手动复制。", shortPassword: "房间口令至少需要 6 位。",
       joined: "已进入临时房间。", joinFailed: "无法进入房间。", normalMode: "普通账号 · 单文件最多 {max} · 今日剩余 {remaining}",
       adminMode: "管理员大文件模式 · 分片上传 · 不受普通业务配额限制", pool: "普通用户免费池：{status}",
-      empty: "房间里还没有内容。发送加密文字或选择文件开始互传。", expires: "剩余 {time}", download: "下载", delete: "删除",
+      empty: "房间里还没有内容。发送加密文字或选择文件开始互传。", expires: "剩余 {time}", download: "下载", delete: "删除", copyText: "复制文字", textCopied: "文字已复制。",
       decrypting: "正在解密文字……", decryptFailed: "这条文字无法用当前房间口令解密。", unknownUploader: "已登录用户",
       queued: "等待上传", uploading: "上传中", paused: "已暂停", retrying: "分片重试", completing: "正在完成", complete: "上传完成", failed: "上传失败", cancelled: "已取消",
       pause: "暂停", resume: "继续", cancel: "取消", reselect: "重新选择同一文件", speed: "{done} / {total} · {speed}/s · 约 {eta}",
-      normalHelp: "普通账号单文件不超过 {max}，24 小时额度剩余 {remaining}。", adminHelp: "管理员可连续添加大文件；客户端按队列和有限并发稳定上传。",
+      normalHelp: "选择后先留在输入区，点击发送才上传。单文件不超过 {max}，24 小时额度剩余 {remaining}。", adminHelp: "选择后先留在输入区，点击发送才上传；大文件按有限并发稳定上传。",
       fileTooLarge: "普通账号不能上传超过 {max} 的文件。", sessionExpired: "上传任务已失效，请重新选择文件。", fileMismatch: "所选文件与待恢复任务不一致。",
-      unsafeNotice: "文件未做病毒扫描，请只下载可信来源内容。", textSent: "加密文字已发送。", deleted: "内容已删除。", genericError: "操作失败，请稍后重试。",
+      unsafeNotice: "文件未做病毒扫描，请只下载可信来源内容。", textSent: "加密文字已发送。", attachmentsReady: "已选择 {count} 个附件，点击“发送”后开始上传。", attachmentsQueued: "{count} 个附件已开始上传。", composerSent: "文字已发送，{count} 个附件已开始上传。", textSentAttachmentsPending: "文字已发送，但文件上传暂不可用；附件仍保留在输入区。", removeAttachment: "移除附件", deleted: "内容已删除。", genericError: "操作失败，请稍后重试。",
       poolGreen: "正常", poolYellow: "接近阈值，已降低上传压力", poolRed: "已暂停普通用户新增文件", restoreHint: "刷新后需重新选择同一文件继续。"
     },
     en: {
@@ -33,18 +33,18 @@
       roomPassword: "Room passphrase", roomPlaceholder: "At least 6 characters; share it with another signed-in person", generate: "Generate", copy: "Copy",
       securityNote: "The passphrase is never sent to the server. Anyone who knows it can read the room; do not upload credentials.", enter: "Enter room",
       roomActive: "Temporary room connected", refresh: "Refresh", leave: "Leave room", textLabel: "Encrypted text", textPlaceholder: "Send encrypted text…", send: "Send",
-      dropTitle: "Choose or drop files", dropRelease: "Drop to upload to this room", chooseFile: "Choose files", tasks: "Upload tasks", online: "Online", offline: "Offline", loading: "Connecting to Quick Transfer…",
+      dropTitle: "Add photos or files", dropRelease: "Drop to add pending attachments", choosePhoto: "Choose photos", chooseFile: "Choose files", tasks: "Upload tasks", online: "Online", offline: "Offline", loading: "Connecting to Quick Transfer…",
       loginNeeded: "Sign in before using Quick Transfer.", r2Missing: "R2 is not bound yet. Text rooms remain visible, but file uploads are unavailable.",
       generated: "Random passphrase generated. Copy it to the other signed-in person.", copied: "Room passphrase copied.", copyFailed: "Clipboard access failed; copy it manually.",
       shortPassword: "The room passphrase must be at least 6 characters.", joined: "Temporary room joined.", joinFailed: "Unable to enter the room.",
       normalMode: "Standard account · {max} per file · {remaining} remaining today", adminMode: "Admin large-file mode · multipart · standard quotas do not apply",
-      pool: "Standard-user free pool: {status}", empty: "Nothing is here yet. Send encrypted text or choose a file.", expires: "{time} left", download: "Download", delete: "Delete",
+      pool: "Standard-user free pool: {status}", empty: "Nothing is here yet. Send encrypted text or choose a file.", expires: "{time} left", download: "Download", delete: "Delete", copyText: "Copy text", textCopied: "Text copied.",
       decrypting: "Decrypting text…", decryptFailed: "This text cannot be decrypted with the current passphrase.", unknownUploader: "Signed-in user",
       queued: "Queued", uploading: "Uploading", paused: "Paused", retrying: "Retrying part", completing: "Completing", complete: "Upload complete", failed: "Upload failed", cancelled: "Cancelled",
       pause: "Pause", resume: "Resume", cancel: "Cancel", reselect: "Select the same file", speed: "{done} / {total} · {speed}/s · about {eta}",
-      normalHelp: "Standard accounts: up to {max} per file, {remaining} left in the rolling 24-hour quota.", adminHelp: "Admins may queue large files; bounded concurrency keeps uploads stable.",
+      normalHelp: "Selections stay in the composer until Send is pressed. Up to {max} per file, with {remaining} left in the rolling 24-hour quota.", adminHelp: "Selections stay in the composer until Send is pressed; bounded concurrency keeps large uploads stable.",
       fileTooLarge: "Standard accounts cannot upload files over {max}.", sessionExpired: "This upload session expired. Select the file again to restart.", fileMismatch: "The selected file does not match the resumable task.",
-      unsafeNotice: "Files are not virus-scanned. Download only from people you trust.", textSent: "Encrypted text sent.", deleted: "Item deleted.", genericError: "The operation failed. Try again later.",
+      unsafeNotice: "Files are not virus-scanned. Download only from people you trust.", textSent: "Encrypted text sent.", attachmentsReady: "{count} attachment(s) selected. Press Send to start uploading.", attachmentsQueued: "{count} attachment(s) started uploading.", composerSent: "Text sent and {count} attachment(s) started uploading.", textSentAttachmentsPending: "Text sent, but file uploads are unavailable; attachments remain in the composer.", removeAttachment: "Remove attachment", deleted: "Item deleted.", genericError: "The operation failed. Try again later.",
       poolGreen: "Healthy", poolYellow: "Near the threshold; upload pressure is reduced", poolRed: "New standard-user files are paused", restoreHint: "After refresh, reselect the same file to continue."
     },
     ja: {
@@ -53,18 +53,18 @@
       roomPassword: "部屋の合言葉", roomPlaceholder: "6文字以上。相手のログインユーザーと共有", generate: "ランダム生成", copy: "コピー",
       securityNote: "合言葉はサーバーへ送信されません。知っている人は閲覧できるため、認証情報を送らないでください。", enter: "部屋に入る",
       roomActive: "一時部屋に接続済み", refresh: "更新", leave: "退出", textLabel: "暗号化テキスト", textPlaceholder: "暗号化テキストを送信…", send: "送信",
-      dropTitle: "ファイルを選択またはドロップ", dropRelease: "ここで放して部屋へ送信", chooseFile: "ファイル選択", tasks: "アップロード", online: "オンライン", offline: "オフライン", loading: "一時転送に接続中…",
+      dropTitle: "写真またはファイルを追加", dropRelease: "ここで放して送信待ちに追加", choosePhoto: "写真を選択", chooseFile: "ファイル選択", tasks: "アップロード", online: "オンライン", offline: "オフライン", loading: "一時転送に接続中…",
       loginNeeded: "先にログインしてください。", r2Missing: "R2 が未接続です。テキスト部屋は利用できますが、ファイル送信はまだ使えません。",
       generated: "ランダム合言葉を生成しました。相手にコピーしてください。", copied: "合言葉をコピーしました。", copyFailed: "クリップボードを利用できません。手動でコピーしてください。",
       shortPassword: "合言葉は6文字以上必要です。", joined: "一時部屋に入りました。", joinFailed: "部屋に入れませんでした。",
       normalMode: "一般アカウント · 1件 {max} まで · 本日残り {remaining}", adminMode: "管理者大容量モード · 分割送信 · 一般枠の対象外",
-      pool: "一般ユーザー無料枠：{status}", empty: "まだ内容がありません。暗号化テキストまたはファイルを送ってください。", expires: "残り {time}", download: "ダウンロード", delete: "削除",
+      pool: "一般ユーザー無料枠：{status}", empty: "まだ内容がありません。暗号化テキストまたはファイルを送ってください。", expires: "残り {time}", download: "ダウンロード", delete: "削除", copyText: "テキストをコピー", textCopied: "テキストをコピーしました。",
       decrypting: "テキストを復号中…", decryptFailed: "現在の合言葉では復号できません。", unknownUploader: "ログインユーザー",
       queued: "送信待ち", uploading: "送信中", paused: "一時停止", retrying: "分割を再試行", completing: "完了処理中", complete: "送信完了", failed: "送信失敗", cancelled: "キャンセル済み",
       pause: "一時停止", resume: "再開", cancel: "キャンセル", reselect: "同じファイルを再選択", speed: "{done} / {total} · {speed}/秒 · 約 {eta}",
-      normalHelp: "一般アカウントは1件 {max} まで、直近24時間の残りは {remaining} です。", adminHelp: "管理者は大容量ファイルを連続追加できます。安定性のため同時分割数は制限します。",
+      normalHelp: "選択後は入力欄に保持され、「送信」でアップロードします。1件 {max} まで、直近24時間の残りは {remaining} です。", adminHelp: "選択後は入力欄に保持され、「送信」でアップロードします。大容量送信も同時処理数を制限します。",
       fileTooLarge: "一般アカウントは {max} を超えるファイルを送れません。", sessionExpired: "アップロード期限が切れました。最初からやり直してください。", fileMismatch: "選択したファイルが再開対象と一致しません。",
-      unsafeNotice: "ウイルス検査は行っていません。信頼できる相手のファイルだけを開いてください。", textSent: "暗号化テキストを送信しました。", deleted: "削除しました。", genericError: "処理に失敗しました。後でもう一度お試しください。",
+      unsafeNotice: "ウイルス検査は行っていません。信頼できる相手のファイルだけを開いてください。", textSent: "暗号化テキストを送信しました。", attachmentsReady: "{count} 件の添付を選択しました。「送信」でアップロードを開始します。", attachmentsQueued: "{count} 件の添付をアップロード中です。", composerSent: "テキストを送信し、{count} 件の添付をアップロード中です。", textSentAttachmentsPending: "テキストは送信しましたが、ファイル送信は利用できません。添付は入力欄に残しています。", removeAttachment: "添付を外す", deleted: "削除しました。", genericError: "処理に失敗しました。後でもう一度お試しください。",
       poolGreen: "正常", poolYellow: "しきい値に接近。負荷を抑制中", poolRed: "一般ユーザーの新規ファイルを停止中", restoreHint: "更新後は同じファイルを再選択すると続行できます。"
     }
   };
@@ -72,7 +72,8 @@
   const state = {
     initialized: false, lang: "zh", open: false, config: null, roomKey: "", cryptoKey: null,
     items: [], pollTimer: 0, lastActivity: Date.now(), tasks: new Map(), xhrByTask: new Map(),
-    pendingTaskIds: [], activeTaskIds: new Set(), dragDepth: 0
+    pendingFiles: new Map(), pendingTaskIds: [], activeTaskIds: new Set(), dragDepth: 0,
+    roomGeneration: 0, composerSending: false, composerToken: null
   };
   const refs = {};
 
@@ -85,7 +86,7 @@
   }
 
   function cacheRefs() {
-    ["app", "feedback", "login-gate", "room-entry", "room", "room-password", "quota-card", "room-mode", "feed", "text-input", "file-input", "upload-zone", "upload-help", "task-list", "network-status", "drop-overlay"]
+    ["app", "feedback", "login-gate", "room-entry", "room", "room-password", "quota-card", "room-mode", "feed", "text-input", "photo-input", "file-input", "pending-attachments", "send-button", "upload-zone", "upload-help", "task-list", "network-status", "drop-overlay"]
       .forEach((name) => { refs[toCamel(name)] = document.getElementById(`transfer-${name}`); });
     refs.resourceCategories = document.getElementById("resource-categories");
     refs.resourceList = document.getElementById("resource-list");
@@ -95,6 +96,60 @@
 
   function toCamel(value) {
     return value.replace(/-([a-z])/g, (_, char) => char.toUpperCase());
+  }
+
+  function captureRoomContext() {
+    return Object.freeze({
+      roomKey: state.roomKey,
+      cryptoKey: state.cryptoKey,
+      generation: state.roomGeneration
+    });
+  }
+
+  function isRoomReferenceCurrent(reference) {
+    return Boolean(reference?.roomKey
+      && state.open
+      && state.roomKey === reference.roomKey
+      && state.roomGeneration === reference.generation
+      && !refs.room?.hidden);
+  }
+
+  function isRoomContextCurrent(context) {
+    return isRoomReferenceCurrent(context) && state.cryptoKey === context.cryptoKey;
+  }
+
+  function isTaskContextCurrent(task) {
+    return isRoomReferenceCurrent({ roomKey: task?.roomKey, generation: task?.roomGeneration });
+  }
+
+  function activateRoomContext(roomKey, cryptoKey) {
+    state.roomGeneration += 1;
+    state.roomKey = roomKey;
+    state.cryptoKey = cryptoKey;
+  }
+
+  function resetComposerBusyState(token = null) {
+    if (token && state.composerToken !== token) return;
+    state.composerToken = null;
+    state.composerSending = false;
+    refs.sendButton?.removeAttribute("aria-busy");
+    if (refs.sendButton) refs.sendButton.disabled = false;
+    syncUploadAvailability();
+    refs.pendingAttachments?.querySelectorAll("button").forEach((button) => { button.disabled = false; });
+  }
+
+  function invalidateRoomContext() {
+    state.roomGeneration += 1;
+    state.composerToken = null;
+    state.composerSending = false;
+    refs.sendButton?.removeAttribute("aria-busy");
+    if (refs.sendButton) refs.sendButton.disabled = false;
+    clearPendingFiles();
+    cancelAndClearUploadTasks();
+    state.roomKey = "";
+    state.cryptoKey = null;
+    state.items = [];
+    syncUploadAvailability();
   }
 
   function init(lang) {
@@ -114,14 +169,15 @@
     document.getElementById("transfer-room-form")?.addEventListener("submit", joinRoom);
     document.getElementById("transfer-leave-room")?.addEventListener("click", leaveRoom);
     document.getElementById("transfer-refresh-button")?.addEventListener("click", () => refreshItems(true));
-    document.getElementById("transfer-text-form")?.addEventListener("submit", sendText);
-    refs.fileInput?.addEventListener("change", (event) => queueFiles(event.target.files));
+    document.getElementById("transfer-text-form")?.addEventListener("submit", sendComposer);
+    refs.photoInput?.addEventListener("change", (event) => stageFiles(event.target.files));
+    refs.fileInput?.addEventListener("change", (event) => stageFiles(event.target.files));
     refs.dropSurface?.addEventListener("dragenter", handleWindowDragEnter);
     refs.dropSurface?.addEventListener("dragover", handleWindowDragOver);
     refs.dropSurface?.addEventListener("dragleave", handleWindowDragLeave);
     refs.dropSurface?.addEventListener("drop", handleWindowDrop);
     refs.uploadZone?.addEventListener("keydown", handleUploadZoneKeydown);
-    document.addEventListener("paste", (event) => { if (state.open && state.roomKey && event.clipboardData?.files?.length) queueFiles(event.clipboardData.files); });
+    document.addEventListener("paste", (event) => { if (state.open && state.roomKey && event.clipboardData?.files?.length) stageFiles(event.clipboardData.files); });
     document.addEventListener("dragend", resetWindowDragState);
     window.addEventListener("blur", resetWindowDragState);
     ["pointerdown", "keydown"].forEach((name) => document.addEventListener(name, () => { state.lastActivity = Date.now(); }, { passive: true }));
@@ -138,7 +194,7 @@
   }
 
   function canAcceptFiles() {
-    return Boolean(state.open && state.roomKey && !refs.room?.hidden && state.config?.r2Ready);
+    return Boolean(state.open && state.roomKey && !refs.room?.hidden && state.config?.r2Ready && !state.composerSending);
   }
 
   function handleWindowDragEnter(event) {
@@ -171,7 +227,7 @@
     event.preventDefault();
     const files = event.dataTransfer?.files;
     resetWindowDragState();
-    if (files?.length) queueFiles(files);
+    if (files?.length) stageFiles(files);
   }
 
   function resetWindowDragState() {
@@ -191,13 +247,16 @@
   }
 
   function syncUploadAvailability() {
-    const available = Boolean(state.config?.r2Ready);
+    const available = Boolean(state.config?.r2Ready && !state.composerSending);
+    if (refs.photoInput) refs.photoInput.disabled = !available;
     if (refs.fileInput) refs.fileInput.disabled = !available;
     refs.uploadZone?.classList.toggle("is-disabled", !available);
     refs.uploadZone?.setAttribute("aria-disabled", String(!available));
-    const picker = refs.fileInput?.closest(".transfer-file-picker");
-    picker?.classList.toggle("is-disabled", !available);
-    picker?.setAttribute("aria-disabled", String(!available));
+    [refs.photoInput, refs.fileInput].forEach((input) => {
+      const picker = input?.closest(".transfer-file-picker");
+      picker?.classList.toggle("is-disabled", !available);
+      picker?.setAttribute("aria-disabled", String(!available));
+    });
     if (!available) resetWindowDragState();
   }
 
@@ -245,6 +304,7 @@
     updateNetwork();
     renderQuota();
     renderItems();
+    renderPendingFiles();
     renderTasks();
   }
 
@@ -263,6 +323,7 @@
   function close() {
     state.open = false;
     resetWindowDragState();
+    invalidateRoomContext();
     refs.app.hidden = true;
     refs.windowFrame?.classList.remove("is-transfer-open");
     refs.resourceCategories.hidden = false;
@@ -271,9 +332,12 @@
     document.querySelector("[data-quick-transfer-open]")?.focus();
   }
 
-  async function loadConfig() {
+  async function loadConfig(expectedRoom = null) {
+    if (expectedRoom && !isRoomReferenceCurrent(expectedRoom)) return false;
     try {
-      state.config = await api("/api/transfer/config");
+      const config = await api("/api/transfer/config");
+      if (expectedRoom && !isRoomReferenceCurrent(expectedRoom)) return false;
+      state.config = config;
       refs.loginGate.hidden = true;
       refs.roomEntry.hidden = Boolean(state.roomKey);
       refs.room.hidden = !state.roomKey;
@@ -283,13 +347,16 @@
       else setFeedback("");
       if (state.roomKey) {
         restoreTasks();
-        await refreshItems(true);
+        await refreshItems(true, expectedRoom || captureRoomContext());
         schedulePoll();
         revealComposer();
       }
+      return true;
     } catch (error) {
+      if (expectedRoom && !isRoomReferenceCurrent(expectedRoom)) return false;
       if (error.status === 401) {
         stopPoll();
+        invalidateRoomContext();
         state.config = null;
         syncUploadAvailability();
         refs.loginGate.hidden = false;
@@ -299,6 +366,7 @@
       } else {
         setFeedback(error.message || text("genericError"), true);
       }
+      return false;
     }
   }
 
@@ -312,7 +380,7 @@
   async function copyPassword() {
     if (!refs.roomPassword.value) generatePassword();
     try {
-      await navigator.clipboard.writeText(refs.roomPassword.value);
+      await copyToClipboard(refs.roomPassword.value);
       setFeedback(text("copied"));
     } catch {
       refs.roomPassword.select();
@@ -320,15 +388,38 @@
     }
   }
 
+  async function copyToClipboard(value) {
+    if (navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(value);
+        return;
+      } catch {
+        /* Fall back for older mobile browsers and non-secure local previews. */
+      }
+    }
+    const input = document.createElement("textarea");
+    input.value = value;
+    input.readOnly = true;
+    input.style.position = "fixed";
+    input.style.opacity = "0";
+    input.style.pointerEvents = "none";
+    document.body.append(input);
+    input.select();
+    const copied = document.execCommand?.("copy");
+    input.remove();
+    if (!copied) throw new Error("Clipboard unavailable");
+  }
+
   async function joinRoom(event) {
     event.preventDefault();
+    const entryGeneration = state.roomGeneration;
     const password = refs.roomPassword.value.normalize("NFKC").trim();
     if (Array.from(password).length < 6) return setFeedback(text("shortPassword"), true);
     try {
       const derived = await deriveRoom(password);
       await api("/api/transfer/room/join", { method: "POST", json: { roomKey: derived.roomKey } });
-      state.roomKey = derived.roomKey;
-      state.cryptoKey = derived.cryptoKey;
+      if (!state.open || state.roomGeneration !== entryGeneration) return;
+      activateRoomContext(derived.roomKey, derived.cryptoKey);
       refs.roomPassword.value = "";
       refs.roomPassword.type = "password";
       refs.roomEntry.hidden = true;
@@ -336,7 +427,7 @@
       syncUploadAvailability();
       updateRoomMode();
       restoreTasks();
-      await refreshItems(true);
+      await refreshItems(true, captureRoomContext());
       schedulePoll();
       setFeedback(text("joined"));
       revealComposer();
@@ -348,9 +439,7 @@
   function leaveRoom() {
     stopPoll();
     resetWindowDragState();
-    state.roomKey = "";
-    state.cryptoKey = null;
-    state.items = [];
+    invalidateRoomContext();
     refs.room.hidden = true;
     refs.roomEntry.hidden = false;
     renderItems();
@@ -368,9 +457,9 @@
     return { roomKey: `transfer_${base64url(digest)}`, cryptoKey };
   }
 
-  async function encryptText(value) {
+  async function encryptText(value, cryptoKey) {
     const iv = crypto.getRandomValues(new Uint8Array(12));
-    const cipher = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, state.cryptoKey, new TextEncoder().encode(value));
+    const cipher = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, cryptoKey, new TextEncoder().encode(value));
     return `${base64url(iv)}.${base64url(new Uint8Array(cipher))}`;
   }
 
@@ -380,36 +469,76 @@
     return new TextDecoder().decode(clear);
   }
 
-  async function sendText(event) {
+  async function sendComposer(event) {
     event.preventDefault();
-    const value = refs.textInput.value.trim();
-    if (!value || !state.cryptoKey) return;
+    const context = captureRoomContext();
+    const draft = refs.textInput.value;
+    const value = draft.trim();
+    const pending = [...state.pendingFiles.values()];
+    if ((!value && !pending.length) || !isRoomContextCurrent(context) || state.composerSending) return;
+    if (value && !context.cryptoKey) return;
+    if (pending.length && !state.config?.r2Ready) {
+      setFeedback(text("r2Missing"), true);
+      syncUploadAvailability();
+      return;
+    }
+    const composerToken = Object.freeze({ generation: context.generation });
+    state.composerToken = composerToken;
+    state.composerSending = true;
+    refs.sendButton?.setAttribute("aria-busy", "true");
+    if (refs.sendButton) refs.sendButton.disabled = true;
+    syncUploadAvailability();
+    refs.pendingAttachments?.querySelectorAll("button").forEach((button) => { button.disabled = true; });
+    let queuedCount = 0;
     try {
-      const encryptedContent = await encryptText(value);
-      await api("/api/transfer/text", { method: "POST", json: { roomKey: state.roomKey, encryptedContent } });
-      refs.textInput.value = "";
-      await refreshItems(true);
-      setFeedback(text("textSent"));
+      if (value) {
+        const encryptedContent = await encryptText(value, context.cryptoKey);
+        if (!isRoomContextCurrent(context)) return;
+        await api("/api/transfer/text", { method: "POST", json: { roomKey: context.roomKey, encryptedContent } });
+        if (!isRoomContextCurrent(context)) return;
+        if (refs.textInput.value === draft) refs.textInput.value = "";
+        await refreshItems(true, context);
+        if (!isRoomContextCurrent(context)) return;
+      }
+      if (pending.length) {
+        if (!isRoomContextCurrent(context)) return;
+        if (!state.config?.r2Ready) {
+          setFeedback(text(value ? "textSentAttachmentsPending" : "r2Missing"), true);
+          return;
+        }
+        const files = takePendingFiles(pending.map((entry) => entry.localId));
+        queueFiles(files, context);
+        queuedCount = files.length;
+      }
+      if (!isRoomContextCurrent(context)) return;
+      setFeedback(queuedCount
+        ? text(value ? "composerSent" : "attachmentsQueued", { count: queuedCount })
+        : text("textSent"));
     } catch (error) {
-      setFeedback(error.message || text("genericError"), true);
+      if (isRoomContextCurrent(context)) setFeedback(error.message || text("genericError"), true);
+    } finally {
+      resetComposerBusyState(composerToken);
     }
   }
 
-  async function refreshItems(showErrors) {
-    if (!state.roomKey) return;
+  async function refreshItems(showErrors, requestedRoom = captureRoomContext()) {
+    if (!isRoomReferenceCurrent(requestedRoom)) return;
     try {
       const all = [];
       let after = "";
       for (let page = 0; page < 5; page += 1) {
-        const payload = await api(`/api/transfer/room/items?room=${encodeURIComponent(state.roomKey)}&limit=100${after ? `&after=${encodeURIComponent(after)}` : ""}`);
+        const payload = await api(`/api/transfer/room/items?room=${encodeURIComponent(requestedRoom.roomKey)}&limit=100${after ? `&after=${encodeURIComponent(after)}` : ""}`);
+        if (!isRoomReferenceCurrent(requestedRoom)) return;
         all.push(...(payload.items || []));
         if (!payload.nextCursor || payload.items.length < 100) break;
         after = payload.nextCursor;
       }
+      if (!isRoomReferenceCurrent(requestedRoom)) return;
       state.items = all;
       renderItems();
       if (!all.length) setFeedback("");
     } catch (error) {
+      if (!isRoomReferenceCurrent(requestedRoom)) return;
       if (showErrors) setFeedback(error.message || text("genericError"), true);
       if (error.status === 401) await loadConfig();
     }
@@ -451,16 +580,41 @@
     if (item.type === "text") {
       const paragraph = document.createElement("p");
       paragraph.textContent = text("decrypting");
-      body.append(paragraph);
-      decryptText(item.encryptedContent).then((value) => { paragraph.textContent = value; }).catch(() => { paragraph.textContent = text("decryptFailed"); article.classList.add("is-error"); });
+      const actions = document.createElement("div");
+      actions.className = "transfer-item-actions transfer-text-actions";
+      const copyButton = document.createElement("button");
+      copyButton.type = "button";
+      copyButton.className = "xp-button transfer-copy-text-button";
+      copyButton.disabled = true;
+      copyButton.append(iconNode("copy"), document.createTextNode(text("copyText")));
+      actions.append(copyButton);
+      body.append(paragraph, actions);
+      decryptText(item.encryptedContent).then((value) => {
+        paragraph.textContent = value;
+        copyButton.disabled = false;
+        copyButton.addEventListener("click", async () => {
+          try {
+            await copyToClipboard(value);
+            setFeedback(text("textCopied"));
+          } catch {
+            setFeedback(text("copyFailed"), true);
+          }
+        });
+      }).catch(() => {
+        paragraph.textContent = text("decryptFailed");
+        article.classList.add("is-error");
+      });
     } else {
       if (item.type === "image") {
+        const preview = document.createElement("div");
+        preview.className = "transfer-media-preview transfer-image-preview";
         const image = document.createElement("img");
         image.src = item.fileUrl;
         image.alt = item.filename;
         image.loading = "lazy";
         image.decoding = "async";
-        body.append(image);
+        preview.append(image);
+        body.append(preview);
       } else if (item.type === "video") {
         const video = document.createElement("video");
         video.src = item.fileUrl;
@@ -475,11 +629,17 @@
         audio.preload = "metadata";
         body.append(audio);
       }
+      const fileCard = document.createElement("div");
+      fileCard.className = "transfer-file-card";
+      fileCard.append(iconNode(iconName(item.type)));
+      const fileDetails = document.createElement("div");
       const filename = document.createElement("strong");
       filename.className = "transfer-filename";
       filename.textContent = item.filename;
       const meta = document.createElement("span");
       meta.textContent = `${formatBytes(item.sizeBytes)} · ${item.mimeType || "application/octet-stream"}`;
+      fileDetails.append(filename, meta);
+      fileCard.append(fileDetails);
       const warning = document.createElement("small");
       warning.textContent = text("unsafeNotice");
       const actions = document.createElement("div");
@@ -487,9 +647,10 @@
       const download = document.createElement("a");
       download.className = "xp-button";
       download.href = `${item.fileUrl}&download=1`;
+      download.download = item.filename || "";
       download.append(iconNode("download"), document.createTextNode(text("download")));
       actions.append(download);
-      body.append(filename, meta, warning, actions);
+      body.append(fileCard, warning, actions);
     }
     if (item.canDelete) {
       const remove = document.createElement("button");
@@ -514,10 +675,117 @@
     }
   }
 
-  function queueFiles(fileList) {
+  function stageFiles(fileList) {
     const files = Array.from(fileList || []);
-    refs.fileInput.value = "";
-    if (!files.length || !state.open || !state.roomKey || refs.room?.hidden) return;
+    resetFilePickers();
+    if (!files.length || !state.open || !state.roomKey || refs.room?.hidden || state.composerSending) return;
+    if (!state.config?.r2Ready) {
+      setFeedback(text("r2Missing"), true);
+      syncUploadAvailability();
+      return;
+    }
+    let added = 0;
+    files.forEach((file) => {
+      if (!state.config?.user?.isAdmin && file.size > state.config.normal.maxFileBytes) {
+        setFeedback(text("fileTooLarge", { max: formatBytes(state.config.normal.maxFileBytes) }), true);
+        return;
+      }
+      const duplicate = [...state.pendingFiles.values()].some((pending) => sameFile(pending.file, file));
+      if (duplicate) return;
+      const localId = crypto.randomUUID();
+      state.pendingFiles.set(localId, {
+        localId,
+        file,
+        previewUrl: file.type.startsWith("image/") ? URL.createObjectURL(file) : ""
+      });
+      added += 1;
+    });
+    renderPendingFiles();
+    if (added) setFeedback(text("attachmentsReady", { count: state.pendingFiles.size }));
+  }
+
+  function renderPendingFiles() {
+    if (!refs.pendingAttachments) return;
+    refs.pendingAttachments.replaceChildren();
+    refs.pendingAttachments.hidden = !state.pendingFiles.size;
+    state.pendingFiles.forEach((pending) => {
+      const card = document.createElement("article");
+      card.className = "transfer-pending-card";
+      card.setAttribute("role", "listitem");
+      if (pending.previewUrl) {
+        const image = document.createElement("img");
+        image.src = pending.previewUrl;
+        image.alt = "";
+        card.classList.add("is-image");
+        card.append(image);
+      } else {
+        card.append(iconNode(iconName(pending.file.type.split("/")[0] || "file")));
+      }
+      const details = document.createElement("div");
+      const name = document.createElement("strong");
+      name.textContent = pending.file.name;
+      const meta = document.createElement("small");
+      meta.textContent = formatBytes(pending.file.size);
+      details.append(name, meta);
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.className = "transfer-pending-remove";
+      remove.disabled = state.composerSending;
+      remove.setAttribute("aria-label", `${text("removeAttachment")}：${pending.file.name}`);
+      remove.title = text("removeAttachment");
+      remove.append(iconNode("cancel"));
+      remove.addEventListener("click", () => removePendingFile(pending.localId));
+      card.append(details, remove);
+      refs.pendingAttachments.append(card);
+    });
+  }
+
+  function removePendingFile(localId) {
+    const pending = state.pendingFiles.get(localId);
+    if (!pending) return;
+    if (pending.previewUrl) URL.revokeObjectURL(pending.previewUrl);
+    state.pendingFiles.delete(localId);
+    renderPendingFiles();
+  }
+
+  function clearPendingFiles() {
+    state.pendingFiles.forEach((pending) => {
+      if (pending.previewUrl) URL.revokeObjectURL(pending.previewUrl);
+    });
+    state.pendingFiles.clear();
+    resetFilePickers();
+    renderPendingFiles();
+  }
+
+  function takePendingFiles(localIds = [...state.pendingFiles.keys()]) {
+    const files = [];
+    localIds.forEach((localId) => {
+      const pending = state.pendingFiles.get(localId);
+      if (!pending) return;
+      files.push(pending.file);
+      if (pending.previewUrl) URL.revokeObjectURL(pending.previewUrl);
+      state.pendingFiles.delete(localId);
+    });
+    resetFilePickers();
+    renderPendingFiles();
+    return files;
+  }
+
+  function resetFilePickers() {
+    if (refs.photoInput) refs.photoInput.value = "";
+    if (refs.fileInput) refs.fileInput.value = "";
+  }
+
+  function sameFile(left, right) {
+    return left.name === right.name
+      && left.size === right.size
+      && left.lastModified === right.lastModified
+      && left.type === right.type;
+  }
+
+  function queueFiles(fileList, context = captureRoomContext()) {
+    const files = Array.from(fileList || []);
+    if (!files.length || !isRoomContextCurrent(context)) return;
     if (!state.config?.r2Ready) {
       setFeedback(text("r2Missing"), true);
       syncUploadAvailability();
@@ -530,7 +798,8 @@
       }
       const task = {
         localId: crypto.randomUUID(), file, filename: file.name, size: file.size, lastModified: file.lastModified,
-        uploaded: 0, status: "queued", startedAt: Date.now(), speed: 0, paused: false, controller: null,
+        roomKey: context.roomKey, roomGeneration: context.generation,
+        uploaded: 0, status: "queued", startedAt: Date.now(), speed: 0, paused: false, controller: null, controllers: new Set(),
         multipart: Boolean(state.config.user.isAdmin && file.size > state.config.normal.maxFileBytes), parts: []
       };
       state.tasks.set(task.localId, task);
@@ -540,6 +809,10 @@
 
   function enqueueTask(task) {
     if (state.activeTaskIds.has(task.localId) || state.pendingTaskIds.includes(task.localId)) return;
+    if (!isTaskContextCurrent(task)) {
+      task.status = "cancelled";
+      return;
+    }
     if (!state.config?.r2Ready) {
       task.status = "failed";
       task.error = text("r2Missing");
@@ -566,6 +839,10 @@
       const localId = state.pendingTaskIds.shift();
       const task = state.tasks.get(localId);
       if (!task || ["cancelled", "complete", "paused"].includes(task.status)) continue;
+      if (!isTaskContextCurrent(task)) {
+        task.status = "cancelled";
+        continue;
+      }
       state.activeTaskIds.add(localId);
       task.status = "uploading";
       task.startedAt = Date.now();
@@ -591,51 +868,63 @@
   }
 
   async function runTask(task) {
+    if (!isTaskContextCurrent(task)) {
+      task.status = "cancelled";
+      return;
+    }
     if (task.multipart) return runMultipart(task);
     return runSimple(task);
   }
 
   async function runSimple(task) {
-    await new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      state.xhrByTask.set(task.localId, xhr);
-      xhr.open("POST", `/api/transfer/upload/simple?room=${encodeURIComponent(state.roomKey)}&filename=${encodeURIComponent(task.filename)}&mime=${encodeURIComponent(task.file.type || "application/octet-stream")}&size=${task.size}`);
-      xhr.withCredentials = true;
-      xhr.setRequestHeader("Content-Type", task.file.type || "application/octet-stream");
-      xhr.upload.onprogress = (event) => {
-        if (!event.lengthComputable) return;
-        task.uploaded = event.loaded;
-        updateTaskSpeed(task);
-        renderTasks();
-      };
-      xhr.onerror = () => reject(new Error(text("genericError")));
-      xhr.onabort = () => reject(Object.assign(new Error(text("cancelled")), { cancelled: true }));
-      xhr.onload = () => {
-        const payload = parseJson(xhr.responseText);
-        if (xhr.status >= 200 && xhr.status < 300) resolve(payload);
-        else reject(Object.assign(new Error(payload.error || text("genericError")), { status: xhr.status, code: payload.code || "" }));
-      };
-      xhr.send(task.file);
-    });
+    try {
+      await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        state.xhrByTask.set(task.localId, xhr);
+        xhr.open("POST", `/api/transfer/upload/simple?room=${encodeURIComponent(task.roomKey)}&filename=${encodeURIComponent(task.filename)}&mime=${encodeURIComponent(task.file.type || "application/octet-stream")}&size=${task.size}`);
+        xhr.withCredentials = true;
+        xhr.setRequestHeader("Content-Type", task.file.type || "application/octet-stream");
+        xhr.upload.onprogress = (event) => {
+          if (!event.lengthComputable || !isTaskContextCurrent(task)) return;
+          task.uploaded = event.loaded;
+          updateTaskSpeed(task);
+          renderTasks();
+        };
+        xhr.onerror = () => reject(new Error(text("genericError")));
+        xhr.onabort = () => reject(Object.assign(new Error(text("cancelled")), { cancelled: true }));
+        xhr.onload = () => {
+          const payload = parseJson(xhr.responseText);
+          if (xhr.status >= 200 && xhr.status < 300) resolve(payload);
+          else reject(Object.assign(new Error(payload.error || text("genericError")), { status: xhr.status, code: payload.code || "" }));
+        };
+        xhr.send(task.file);
+      });
+    } finally {
+      state.xhrByTask.delete(task.localId);
+    }
+    if (!isTaskContextCurrent(task) || task.status === "cancelled") return;
     task.uploaded = task.size;
     task.status = "complete";
-    state.xhrByTask.delete(task.localId);
     renderTasks();
-    await loadConfig();
-    await refreshItems(true);
+    await loadConfig(task);
   }
 
   async function runMultipart(task) {
     if (!task.sessionId) {
       const initialized = await api("/api/transfer/upload/init", {
         method: "POST",
-        json: { roomKey: state.roomKey, filename: task.filename, mimeType: task.file.type || "application/octet-stream", sizeBytes: task.size }
+        json: { roomKey: task.roomKey, filename: task.filename, mimeType: task.file.type || "application/octet-stream", sizeBytes: task.size }
       });
+      if (!isTaskContextCurrent(task)) {
+        if (initialized.sessionId) void abortMultipartSession(task.roomKey, initialized.sessionId);
+        return;
+      }
       Object.assign(task, initialized);
       task.parts = [];
       saveTasks();
     } else {
-      const status = await api(`/api/transfer/upload/status?session=${encodeURIComponent(task.sessionId)}&room=${encodeURIComponent(state.roomKey)}`);
+      const status = await api(`/api/transfer/upload/status?session=${encodeURIComponent(task.sessionId)}&room=${encodeURIComponent(task.roomKey)}`);
+      if (!isTaskContextCurrent(task)) return;
       task.parts = status.parts || [];
       task.uploaded = task.parts.reduce((sum, part) => sum + part.sizeBytes, 0);
     }
@@ -644,36 +933,40 @@
     const concurrency = document.documentElement.dataset.uiShell === "mobile" ? 2 : 4;
     const workers = Array.from({ length: Math.min(concurrency, pending.length) }, async () => {
       while (pending.length) {
-        if (task.paused || task.status === "cancelled") return;
+        if (task.paused || task.status === "cancelled" || !isTaskContextCurrent(task)) return;
         const partNumber = pending.shift();
         await uploadPartWithRetry(task, partNumber);
       }
     });
     await Promise.all(workers);
-    if (task.paused || task.status === "cancelled") return;
+    if (task.paused || task.status === "cancelled" || !isTaskContextCurrent(task)) return;
     task.status = "completing";
     renderTasks();
-    await api("/api/transfer/upload/complete", { method: "POST", json: { roomKey: state.roomKey, sessionId: task.sessionId } });
+    await api("/api/transfer/upload/complete", { method: "POST", json: { roomKey: task.roomKey, sessionId: task.sessionId } });
+    if (!isTaskContextCurrent(task)) return;
     task.uploaded = task.size;
     task.status = "complete";
     removeSavedTask(task.localId);
     renderTasks();
-    await refreshItems(true);
+    await refreshItems(true, task);
   }
 
   async function uploadPartWithRetry(task, partNumber) {
     const start = (partNumber - 1) * task.partSizeBytes;
     const end = Math.min(task.size, start + task.partSizeBytes);
     for (let attempt = 0; attempt < 4; attempt += 1) {
-      if (task.paused || task.status === "cancelled") return;
+      if (task.paused || task.status === "cancelled" || !isTaskContextCurrent(task)) return;
       const controller = new AbortController();
       task.controller = controller;
+      task.controllers ||= new Set();
+      task.controllers.add(controller);
       try {
-        const response = await fetch(`/api/transfer/upload/part?session=${encodeURIComponent(task.sessionId)}&room=${encodeURIComponent(state.roomKey)}&part=${partNumber}&size=${end - start}`, {
+        const response = await fetch(`/api/transfer/upload/part?session=${encodeURIComponent(task.sessionId)}&room=${encodeURIComponent(task.roomKey)}&part=${partNumber}&size=${end - start}`, {
           method: "PUT", body: task.file.slice(start, end), credentials: "same-origin", signal: controller.signal,
           headers: { "Content-Type": "application/octet-stream" }
         });
         const payload = await response.json().catch(() => ({}));
+        if (!isTaskContextCurrent(task)) return;
         if (!response.ok) throw Object.assign(new Error(payload.error || `HTTP ${response.status}`), { status: response.status, code: payload.code || "" });
         task.parts.push(payload);
         task.uploaded += end - start;
@@ -682,28 +975,32 @@
         renderTasks();
         return;
       } catch (error) {
-        if (task.paused || task.status === "cancelled" || error.name === "AbortError") return;
+        if (task.paused || task.status === "cancelled" || !isTaskContextCurrent(task) || error.name === "AbortError") return;
         if (error.code === "TRANSFER_R2_NOT_BOUND") throw error;
         if (attempt === 3) throw error;
         task.status = "retrying";
         renderTasks();
         await delay(800 * (2 ** attempt));
         task.status = "uploading";
+      } finally {
+        task.controllers.delete(controller);
+        if (task.controller === controller) task.controller = null;
       }
     }
   }
 
   function pauseTask(task) {
+    if (!isTaskContextCurrent(task)) return;
     task.paused = true;
     task.status = "paused";
     state.pendingTaskIds = state.pendingTaskIds.filter((localId) => localId !== task.localId);
-    task.controller?.abort();
-    state.xhrByTask.get(task.localId)?.abort();
+    abortTaskTransport(task);
     saveTasks();
     renderTasks();
   }
 
   function resumeTask(task) {
+    if (!isTaskContextCurrent(task)) return;
     if (!task.file) return selectResumeFile(task);
     enqueueTask(task);
   }
@@ -711,12 +1008,45 @@
   async function cancelTask(task) {
     task.status = "cancelled";
     state.pendingTaskIds = state.pendingTaskIds.filter((localId) => localId !== task.localId);
-    task.controller?.abort();
-    state.xhrByTask.get(task.localId)?.abort();
+    abortTaskTransport(task);
     if (task.sessionId) {
-      try { await api("/api/transfer/upload/abort", { method: "POST", json: { roomKey: state.roomKey, sessionId: task.sessionId } }); } catch { /* cleanup worker remains the fallback */ }
+      await abortMultipartSession(task.roomKey, task.sessionId);
     }
     removeSavedTask(task.localId);
+    if (isTaskContextCurrent(task)) renderTasks();
+  }
+
+  function abortTaskTransport(task) {
+    task.controller?.abort();
+    task.controllers?.forEach((controller) => controller.abort());
+    task.controllers?.clear();
+    state.xhrByTask.get(task.localId)?.abort();
+    state.xhrByTask.delete(task.localId);
+  }
+
+  async function abortMultipartSession(roomKey, sessionId) {
+    try {
+      await api("/api/transfer/upload/abort", { method: "POST", json: { roomKey, sessionId } });
+    } catch {
+      /* The cleanup worker and R2 lifecycle remain the fallback. */
+    }
+  }
+
+  function cancelAndClearUploadTasks() {
+    const tasks = [...state.tasks.values()];
+    state.pendingTaskIds = [];
+    state.activeTaskIds.clear();
+    tasks.forEach((task) => {
+      if (!["complete", "cancelled"].includes(task.status)) {
+        task.paused = true;
+        task.status = "cancelled";
+        abortTaskTransport(task);
+        if (task.sessionId && task.roomKey) void abortMultipartSession(task.roomKey, task.sessionId);
+      }
+      removeSavedTask(task.localId);
+    });
+    state.xhrByTask.clear();
+    state.tasks.clear();
     renderTasks();
   }
 
@@ -727,6 +1057,7 @@
     input.addEventListener("change", () => {
       const file = input.files?.[0];
       input.remove();
+      if (!isTaskContextCurrent(task)) return;
       if (!file || file.name !== task.filename || file.size !== task.size || file.lastModified !== task.lastModified) {
         return setFeedback(text("fileMismatch"), true);
       }
@@ -738,7 +1069,7 @@
   }
 
   function failTask(task, error) {
-    if (error.cancelled || task.status === "cancelled") return;
+    if (error.cancelled || task.status === "cancelled" || !isTaskContextCurrent(task)) return;
     task.status = error.status === 410 ? "failed" : "failed";
     if (error.code === "TRANSFER_R2_NOT_BOUND") {
       task.error = text("r2Missing");
@@ -754,7 +1085,10 @@
   function renderTasks() {
     if (!refs.taskList) return;
     refs.taskList.replaceChildren();
-    [...state.tasks.values()].sort((a, b) => b.startedAt - a.startedAt).forEach((task) => {
+    [...state.tasks.values()]
+      .filter((task) => isTaskContextCurrent(task))
+      .sort((a, b) => b.startedAt - a.startedAt)
+      .forEach((task) => {
       const row = document.createElement("article");
       row.className = `transfer-task is-${task.status}`;
       row.append(iconNode(iconName(task.file?.type?.split("/")[0] || "file")));
@@ -793,7 +1127,7 @@
 
   function saveTasks() {
     const saved = [...state.tasks.values()].filter((task) => task.multipart && task.sessionId && !["complete", "cancelled"].includes(task.status)).map((task) => ({
-      localId: task.localId, roomKey: state.roomKey, sessionId: task.sessionId, itemId: task.itemId, filename: task.filename,
+      localId: task.localId, roomKey: task.roomKey, sessionId: task.sessionId, itemId: task.itemId, filename: task.filename,
       size: task.size, lastModified: task.lastModified, partSizeBytes: task.partSizeBytes, expectedParts: task.expectedParts,
       expiresAt: task.expiresAt, uploaded: task.uploaded, parts: task.parts, status: "paused", multipart: true, startedAt: task.startedAt
     }));
@@ -804,7 +1138,9 @@
     let saved = [];
     try { saved = JSON.parse(sessionStorage.getItem(SESSION_TASKS_KEY) || "[]"); } catch { saved = []; }
     saved.filter((task) => task.roomKey === state.roomKey && new Date(task.expiresAt).getTime() > Date.now()).forEach((task) => {
-      if (!state.tasks.has(task.localId)) state.tasks.set(task.localId, { ...task, file: null, paused: true, status: "paused", speed: 0 });
+      if (!state.tasks.has(task.localId)) state.tasks.set(task.localId, {
+        ...task, roomGeneration: state.roomGeneration, file: null, paused: true, status: "paused", speed: 0, controller: null, controllers: new Set()
+      });
     });
     renderTasks();
   }
@@ -845,10 +1181,14 @@
   function schedulePoll() {
     stopPoll();
     if (!state.open || !state.roomKey) return;
+    const room = captureRoomContext();
     const idle = Date.now() - state.lastActivity;
     if (idle > 30 * 60 * 1000) return;
     const delayMs = document.hidden ? 30000 : idle > 60000 ? 15000 : 5000;
-    state.pollTimer = window.setTimeout(async () => { await refreshItems(false); schedulePoll(); }, delayMs);
+    state.pollTimer = window.setTimeout(async () => {
+      await refreshItems(false, room);
+      if (isRoomContextCurrent(room)) schedulePoll();
+    }, delayMs);
   }
 
   function stopPoll() {

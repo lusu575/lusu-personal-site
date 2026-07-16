@@ -534,7 +534,7 @@ if (!hasPattern(transferCss, /body\[data-route="resources"\]\s+\.topbar-actions\
   fail("Quick Transfer sign-in should open the mobile account popover and restore authentication/focus state");
 }
 
-if (!hasPattern(transferJs, /catch\s*\(error\)\s*\{\s*if\s*\(error\.status\s*===\s*401\)\s*\{\s*stopPoll\(\)/)) {
+if (!hasPattern(transferJs, /catch\s*\(error\)\s*\{[\s\S]{0,240}?if\s*\(error\.status\s*===\s*401\)\s*\{\s*stopPoll\(\)/)) {
   fail("Quick Transfer should stop room polling as soon as the account session becomes unauthorized");
 }
 
@@ -1418,7 +1418,7 @@ if (!adminMiddlewareJs.includes("users.role")) {
   fail("functions/admin/_middleware.js must keep users.role admin checks");
 }
 
-if (/OWNER_ADMIN_EMAILS|630739094@qq\.com/.test(adminMiddlewareJs)) {
+if (/OWNER_ADMIN_EMAILS/.test(adminMiddlewareJs)) {
   fail("functions/admin/_middleware.js must not restore owner-email admin bypasses");
 }
 
@@ -2052,7 +2052,7 @@ for (const asset of [
 }
 
 const premiumUiVersion = "20260711-calm-motion-r13";
-const mobileTransferUiVersion = "20260716-transfer-upload-window-r2";
+const mobileTransferUiVersion = "20260717-mobile-transfer-send-r1";
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
 const currentMainVersion = mobileTransferUiVersion;
 const currentPreFinalCssVersion = "20260711-calm-motion-r13";
@@ -2769,9 +2769,17 @@ if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\[data-arti
 
 if (!hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-read-progress\s*\{[\s\S]*top:\s*calc\(var\(--mobile-safe-top\)\s*\+\s*var\(--mobile-status-height\)\s*\+\s*8px\)[\s\S]*bottom:\s*auto[\s\S]*z-index:\s*95[\s\S]*height:\s*32px/)
   || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-top-link\s*\{[\s\S]*top:\s*calc\(var\(--mobile-safe-top\)\s*\+\s*var\(--mobile-status-height\)\s*\+\s*2px\)[\s\S]*bottom:\s*auto[\s\S]*width:\s*44px/)
+  || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-read-progress\s*\{\s*grid-template-columns:\s*minmax\(0,\s*1fr\)/)
+  || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-read-progress-label strong\s*\{\s*display:\s*none/)
+  || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.mobile-route-copy\s*\{\s*display:\s*none/)
   || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.xp-topbar\s*\{\s*pointer-events:\s*none[\s\S]*body\.is-article-reading\s+\.xp-topbar\s+:is\(button,\s*a,\s*input,\s*select,\s*textarea,\s*\.account-popover\)\s*\{\s*pointer-events:\s*auto/)
   || !hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*body\.is-article-reading\s+\.article-top-link\s*\{[\s\S]*right:\s*104px[\s\S]*bottom:\s*auto/)) {
   fail("css/mobile-ios-shell.css should place tappable mobile article controls in the App bar without covering copy controls or body text");
+}
+
+if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s*\{[\s\S]*--mobile-status-height:\s*0px/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.mobile-statusbar\s*\{\s*display:\s*none/)) {
+  fail("css/mobile-ios-shell.css should remove the mobile time and LuSu OS status row without affecting the App bar");
 }
 
 if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+#video-window-maximize\s*\{\s*display:\s*none/)) {
@@ -2973,12 +2981,12 @@ for (const obsoleteText of [
   }
 }
 
-const finalUpdateId = "seed-update-2026-07-16-mobile-transfer-ui-polish";
-const finalUpdateSlug = "2026-07-16-mobile-transfer-ui-polish";
+const finalUpdateId = "seed-update-2026-07-17-mobile-transfer-send-fix";
+const finalUpdateSlug = "2026-07-17-mobile-transfer-send-fix";
 const finalMainVersion = mobileTransferUiVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Mobile Reading and Transfer UI Fixes";
-const finalPublishedAt = "2026-07-16T13:30:00.000Z";
+const finalTitleEn = "Mobile Header and Quick Transfer Send Fixes";
+const finalPublishedAt = "2026-07-16T18:45:00.000Z";
 const finalTranslationMinimums = {
   title: 8,
   summary: 24,
@@ -2996,6 +3004,7 @@ const changelog20260710Section = markdownSection(changelog, "## 2026-07-10");
 const changelog20260711Section = markdownSection(changelog, "## 2026-07-11");
 const changelog20260714Section = markdownSection(changelog, "## 2026-07-14");
 const changelog20260716Section = markdownSection(changelog, "## 2026-07-16");
+const changelog20260717Section = markdownSection(changelog, "## 2026-07-17");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -3021,6 +3030,7 @@ if (finalUpdateStarted) {
     'date: "2026.07.11"',
     'date: "2026.07.14"',
     'date: "2026.07.16"',
+    'date: "2026.07.17"',
     finalTitleEn
   ]) {
     if (!mainJs.includes(token)) {
@@ -3133,7 +3143,7 @@ if (finalUpdateStarted) {
   }
 
   for (const token of [
-    'id="top-updated">2026.07.16',
+    'id="top-updated">2026.07.17',
     `/js/main.js?v=${finalMainVersion}`
   ]) {
     if (!indexHtml.includes(token)) {
@@ -3149,7 +3159,7 @@ if (finalUpdateStarted) {
     "Functions seed",
     "schema seed"
   ]) {
-    if (!changelog20260716Section.includes(token)) {
+    if (!changelog20260717Section.includes(token)) {
       fail(`CHANGELOG.md final public update sync missing ${token}`);
     }
   }
@@ -3216,7 +3226,7 @@ if (!Array.isArray(previewWranglerData?.r2_buckets) || previewWranglerData.r2_bu
   fail("wrangler.jsonc env.preview must explicitly disable Quick Transfer R2 until a separate preview bucket is provisioned");
 }
 const declaredSecrets = new Set(migrationWranglerData.secrets?.required || []);
-for (const secretName of ["CHAT_IP_HASH_SALT", "ANALYTICS_IP_HASH_SALT"]) {
+for (const secretName of ["CHAT_IP_HASH_SALT", "ANALYTICS_IP_HASH_SALT", "OWNER_ADMIN_EMAILS"]) {
   if (!declaredSecrets.has(secretName)) {
     fail(`wrangler.jsonc secrets.required missing ${secretName}`);
   }
@@ -3248,6 +3258,14 @@ for (const secretName of ["CHAT_IP_HASH_SALT", "ANALYTICS_IP_HASH_SALT"]) {
   if (!apiJs.includes(secretName)) {
     fail(`functions/api/[[route]].js missing required runtime secret ${secretName}`);
   }
+}
+for (const token of ["ownerAdminEmails(env)", "env?.OWNER_ADMIN_EMAILS", ".split(/[\\s,;]+/u)"]) {
+  if (!apiJs.includes(token)) {
+    fail(`functions/api/[[route]].js missing environment-backed owner admin parsing: ${token}`);
+  }
+}
+if (/const\s+OWNER_ADMIN_EMAILS\s*=\s*new\s+Set\s*\(/.test(apiJs)) {
+  fail("functions/api/[[route]].js must not hardcode owner admin email addresses");
 }
 if (/lusu-chat|lusu-analytics|ANALYTICS_IP_HASH_SALT\s*\|\|\s*env\.CHAT_IP_HASH_SALT/.test(apiJs)) {
   fail("functions/api/[[route]].js must not keep fixed or cross-purpose IP hash secret fallbacks");

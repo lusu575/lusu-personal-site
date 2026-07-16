@@ -22,7 +22,7 @@ html[data-ui-shell="mobile"] {
   --mobile-safe-right: env(safe-area-inset-right, 0px);
   --mobile-safe-bottom: env(safe-area-inset-bottom, 0px);
   --mobile-safe-left: env(safe-area-inset-left, 0px);
-  --mobile-status-height: 34px;
+  --mobile-status-height: 0px;
   --mobile-toolbar-height: 52px;
   --mobile-header-height: calc(var(--mobile-safe-top) + var(--mobile-status-height) + var(--mobile-toolbar-height));
   --mobile-dock-height: 82px;
@@ -153,20 +153,7 @@ html[data-ui-shell="mobile"] body.is-article-reading .xp-topbar :is(button, a, i
 }
 
 html[data-ui-shell="mobile"] .mobile-statusbar {
-  grid-column: 1 / -1;
-  grid-row: 1;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: end;
-  min-width: 0;
-  height: 100%;
-  padding: var(--mobile-safe-top) 2px 5px;
-  color: #fff;
-  font-size: 13px;
-  font-weight: 900;
-  line-height: 1;
-  letter-spacing: 0.02em;
-  text-shadow: 0 1px 4px rgba(0, 9, 36, 0.7);
+  display: none;
 }
 
 html[data-ui-shell="mobile"] .mobile-status-time {
@@ -1157,7 +1144,7 @@ html[data-ui-shell="mobile"] .article-copy-status:empty {
 }
 
 html[data-ui-shell="mobile"] body.is-article-reading .article-read-progress {
-  grid-template-columns: minmax(0, 1fr) 30px;
+  grid-template-columns: minmax(0, 1fr);
   align-items: center;
   gap: 4px;
   top: calc(var(--mobile-safe-top) + var(--mobile-status-height) + 8px);
@@ -1192,9 +1179,7 @@ html[data-ui-shell="mobile"] body.is-article-reading .article-read-progress-labe
 }
 
 html[data-ui-shell="mobile"] body.is-article-reading .article-read-progress-label strong {
-  grid-column: 2;
-  justify-self: end;
-  font-size: 11px;
+  display: none;
 }
 
 html[data-ui-shell="mobile"] body.is-article-reading .article-read-progress-track {
@@ -1232,6 +1217,10 @@ html[data-ui-shell="mobile"] body.is-article-reading .article-top-link > span:la
 
 html[data-ui-shell="mobile"] body.is-article-reading .mobile-route-copy strong {
   max-width: min(calc(100vw - 216px), 520px);
+}
+
+html[data-ui-shell="mobile"] body.is-article-reading .mobile-route-copy {
+  display: none;
 }
 
 html[data-ui-shell="mobile"] .notepad-menu {
@@ -2462,7 +2451,7 @@ html[data-ui-shell="mobile"] .online-dot {
   }
 
   html[data-ui-shell="mobile"] body.is-article-reading .article-read-progress {
-    grid-template-columns: minmax(0, 1fr) 38px;
+    grid-template-columns: minmax(0, 1fr);
     right: 8px;
     bottom: auto;
     left: auto;
@@ -2484,8 +2473,7 @@ html[data-ui-shell="mobile"] .online-dot {
   }
 
   html[data-ui-shell="mobile"] body.is-article-reading .article-read-progress-label strong {
-    grid-column: 2;
-    font-size: 12px;
+    display: none;
   }
 
   html[data-ui-shell="mobile"] body.is-article-reading .article-read-progress-track {

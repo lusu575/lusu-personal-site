@@ -1,5 +1,15 @@
 # PROJECT_CONTEXT.md
 
+## 2026-07-17 手机顶栏、文章进度与临时互传发送修复
+
+- 手机虚拟 OS 不再显示顶部时间与 `LUSU OS` 状态行，`--mobile-status-height` 固定为 `0px`；safe area、栏目 Appbar、首页入口和桌面顶栏继续保留。
+- 手机知识库文章阅读态只显示进度条，不再同时显示栏目文字和百分比；返回、复制、回到顶部等真实控件必须继续可聚焦、可点击。
+- 临时互传的相册选择、通用文件选择、拖放和粘贴必须先进入输入区待发送托盘；只有用户再次提交 composer 后才能创建上传任务。文字 API 失败时不得清空附件，发送期间不得追加或移除同一批附件。
+- 手机相册入口使用独立 `accept="image/*"` 的多选 file input，不能强制 `capture`；通用文件入口继续多选。待发送图片使用小尺寸 Object URL 预览并在移除、离房或发送后释放。
+- 已发送图片必须限制在消息卡片内；普通文件使用包含类型图标、文件名、大小与 MIME 的文件卡片。所有附件保留下载按钮，每条成功解密文字末尾提供复制按钮和剪贴板回退。
+- 本轮不修改 HttpOnly 登录、房间 key、AES-GCM、私有 R2、Multipart、配额、24 小时过期、下载鉴权或 `/api/transfer/*` 服务端协议。三语公开更新记录为 `seed-update-2026-07-17-mobile-transfer-send-fix`，资源 query 为 `20260717-mobile-transfer-send-r1`。
+- 站长邮箱不得再写入公开源码；由 Cloudflare Pages Production / Preview 各自的加密 `OWNER_ADMIN_EMAILS` Secret 提供，可用逗号、分号或空白分隔多个地址。Functions 只能从请求 `env` 解析规范化 Set，用它执行 schema 后的管理员角色保持和后台账号不可降级检查；它不是登录或权限绕过。未配置时必须保持可用，不回退任何固定邮箱、不自动提升账号且不触发 503，现有 D1 `users.role`、当前账号不可自降级和最后管理员原子保护继续有效。
+
 ## 2026-07-16 临时互传上传、全窗拖放与视口高度修复
 
 - Pages Functions 的文件路由依赖根 `wrangler.jsonc` 中 `TRANSFER_BUCKET` R2 binding；顶层 Production 使用 `lusu-temp-transfer`。`env.preview` 必须同时重述 D1 与显式空 `r2_buckets` 等 Pages 非继承 binding，在独立 Preview 桶尚未创建时让预览文件上传安全关闭，绝不回退到正式桶。Secret 的实际值继续在 Cloudflare 的 Production / Preview 环境分别管理，顶层 `secrets.required` 只声明本地校验与类型生成需要的名称。构建必须校验这套映射，避免正式环境文字房间可用但文件路由持续返回 `TRANSFER_R2_NOT_BOUND`，也避免预览部署误用正式数据。

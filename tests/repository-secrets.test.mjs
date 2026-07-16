@@ -40,6 +40,7 @@ function sourceFiles(directory = root) {
 test("repository source does not contain recognizable credential values", () => {
   const files = sourceFiles();
   const findings = [];
+  const ownerConfigurationFindings = [];
   for (const file of files) {
     let source;
     try {
@@ -58,11 +59,15 @@ test("repository source does not contain recognizable credential values", () => 
         });
       }
     }
+    if (/const\s+OWNER_ADMIN_EMAILS\s*=\s*new\s+Set\s*\(/.test(source)) {
+      ownerConfigurationFindings.push(file);
+    }
   }
   assert.deepEqual(findings, [], `recognizable credential patterns found: ${JSON.stringify(findings)}`);
+  assert.deepEqual(ownerConfigurationFindings, [], "owner admin emails must come from runtime environment configuration");
 
   const envExample = readFileSync(resolve(root, ".env.example"), "utf8");
-  for (const name of ["CHAT_IP_HASH_SALT", "ANALYTICS_IP_HASH_SALT"]) {
+  for (const name of ["CHAT_IP_HASH_SALT", "ANALYTICS_IP_HASH_SALT", "OWNER_ADMIN_EMAILS"]) {
     assert.match(envExample, new RegExp(`^${name}=\\s*$`, "m"));
   }
 });
