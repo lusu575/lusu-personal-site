@@ -583,6 +583,36 @@ const labels = {
 const content = {
   updates: [
     {
+      article_id: "seed-update-2026-07-16-quick-transfer",
+      slug: "2026-07-16-quick-transfer",
+      category: "site-updates",
+      tags: ["Quick Transfer", "R2", "files", "security"],
+      cover_image: "",
+      status: "published",
+      is_pinned: 0,
+      created_at: "2026-07-16T10:00:00.000Z",
+      updated_at: "2026-07-16T10:00:00.000Z",
+      published_at: "2026-07-16T10:00:00.000Z",
+      fallbackOnly: true,
+      icon: "system",
+      date: "2026.07.16",
+      title: {
+        zh: "临时互传进入资源区",
+        en: "Quick Transfer Arrives in Resources",
+        ja: "リソースに一時転送を追加"
+      },
+      summary: {
+        zh: "资源区新增登录限定的临时互传房间，支持加密文字、图片、视频和文件；普通账号受免费池保护，管理员可使用分片大文件上传。",
+        en: "Resources now includes signed-in temporary rooms for encrypted text, images, video, and files, with a guarded free pool for standard accounts and multipart large files for admins.",
+        ja: "リソースにログイン限定の一時転送部屋を追加し、暗号化テキスト・画像・動画・ファイル、一般ユーザーの無料枠保護、管理者の大容量分割送信に対応しました。"
+      },
+      content_markdown: {
+        zh: "# 临时互传进入资源区\n\n已登录用户输入同一房间口令后，可以临时交换加密文字、图片、视频和普通文件。房间明文口令不会发送到服务器；文件通过 HTTPS、私有 R2、随机对象键和服务端鉴权保护。普通账号单文件上限 95 MiB，并受个人、房间、频率及全站 8 GiB 免费池保护；只有数据库角色为 admin 的账号可用 Multipart Upload 发送数百 MB 到数 GB 文件。内容发布完成 24 小时后立即不可读取，下载支持 Range 和视频拖动。R2 桶、Pages 绑定、独立清理 Worker、生命周期规则和 Cloudflare 官方预算提醒仍需站长在 Dashboard 完成人工配置。",
+        en: "# Quick Transfer Arrives in Resources\n\nSigned-in users who enter the same passphrase can exchange encrypted text, images, video, and regular files. Plaintext passphrases never reach the server; files use HTTPS, private R2, random object keys, and server authorization. Standard accounts are limited to 95 MiB per file and guarded by personal, room, rate, and shared 8 GiB free-pool limits. Only database admins may use Multipart Upload for hundreds of megabytes through multi-GB files. Items become unreadable after 24 hours, and downloads support Range requests and video seeking. The owner must still configure R2, Pages bindings, the cleanup Worker, lifecycle rules, and official Cloudflare budget alerts.",
+        ja: "# リソースに一時転送を追加\n\n同じ合言葉を入力したログイン済みユーザー同士で、暗号化テキスト、画像、動画、通常ファイルを一時共有できます。一般アカウントは1件 95 MiB までで、個人・部屋・頻度・全体 8 GiB の無料枠保護を受けます。Multipart Upload で数百 MB から数 GB を送れるのはデータベースの admin のみです。公開完了から24時間後にアクセス不可となり、Range ダウンロードと動画シークに対応します。R2、Pages バインド、清理 Worker、ライフサイクル、Cloudflare 公式予算通知は Dashboard で手動設定が必要です。"
+      }
+    },
+    {
       article_id: "seed-update-2026-07-14-japanese-subtext-retry-hotfix",
       slug: "2026-07-14-japanese-subtext-retry-hotfix",
       category: "site-updates",
@@ -1522,6 +1552,27 @@ const content = {
     }
   ],
   resources: [
+    {
+      category: 0,
+      action: "quick-transfer",
+      iconSprite: "app",
+      version: "v1.0.0",
+      size: "24 HOURS",
+      updated: "2026.07.16",
+      external: false,
+      title: { zh: "临时互传", en: "Quick Transfer", ja: "一時転送" },
+      desc: {
+        zh: "登录后通过房间口令临时发送加密文字、图片、视频和文件，内容 24 小时后失效。",
+        en: "Share encrypted text, images, video, and files in a passphrase room after signing in. Items expire after 24 hours.",
+        ja: "ログイン後、合言葉の部屋で暗号化テキスト・画像・動画・ファイルを一時共有し、24時間後に失効します。"
+      },
+      actionLabel: { zh: "打开", en: "Open", ja: "開く" },
+      tags: [
+        { zh: "登录限定", en: "Sign-in required", ja: "ログイン限定" },
+        { zh: "24小时", en: "24 hours", ja: "24時間" },
+        { zh: "管理员大文件", en: "Admin large files", ja: "管理者の大容量送信" }
+      ]
+    },
     {
       category: 0,
       iconSrc: "tools/japanese-subtext/assets/icons/tool-icon-64.webp",
@@ -3798,12 +3849,14 @@ function safeResourceUrl(item) {
 }
 
 function resourceActionElement(item, url = safeResourceUrl(item)) {
-  const resourceTitle = contentTitle(item.title);
+  const internalAction = item.action === "quick-transfer";
+  const available = Boolean(url || internalAction);
+  const resourceTitle = available ? localText(item.title) : contentTitle(item.title);
   const customLabel = localText(item.actionLabel).trim();
-  const text = url
+  const text = available
     ? customLabel || (item.external ? t("externalButton") : t("downloadButton"))
     : t("resourcePending");
-  if (!url) {
+  if (!available) {
     const status = document.createElement("span");
     status.className = "card-action resource-pending-action";
     status.setAttribute("role", "status");
@@ -3811,6 +3864,15 @@ function resourceActionElement(item, url = safeResourceUrl(item)) {
     status.setAttribute("title", t("resourcePendingTitle"));
     status.textContent = text;
     return status;
+  }
+  if (internalAction) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "card-action";
+    button.dataset.quickTransferOpen = "true";
+    button.textContent = text;
+    button.setAttribute("aria-label", `${text}: ${resourceTitle}`);
+    return button;
   }
   const link = document.createElement("a");
   link.className = "card-action";
@@ -3866,13 +3928,14 @@ function resourceEmptyStateElement({ hasAnyReady = true } = {}) {
 }
 
 function readyResourceItems() {
-  return content.resources.filter((item) => safeResourceUrl(item));
+  return content.resources.filter((item) => safeResourceUrl(item) || item.action === "quick-transfer");
 }
 
 function resourceCardElement(item) {
   const card = document.createElement("article");
   card.className = "resource-card";
   const resourceUrl = safeResourceUrl(item);
+  const resourceAvailable = Boolean(resourceUrl || item.action === "quick-transfer");
 
   const main = document.createElement("div");
   main.className = "resource-main";
@@ -3880,7 +3943,9 @@ function resourceCardElement(item) {
   const title = document.createElement("h3");
   const resourceIconSrc = safeResourceIconSrc(item.iconSrc);
   const icon = resourceIconSrc ? document.createElement("img") : document.createElement("span");
-  icon.className = resourceIconSrc ? "resource-icon-image" : "resource-icon";
+  icon.className = resourceIconSrc
+    ? "resource-icon-image"
+    : item.iconSprite === "app" ? "resource-icon transfer-icon transfer-icon-app" : "resource-icon";
   icon.setAttribute("aria-hidden", "true");
   if (resourceIconSrc) {
     icon.src = resourceIconSrc;
@@ -3892,7 +3957,7 @@ function resourceCardElement(item) {
   } else {
     icon.textContent = String(item.icon || "");
   }
-  const resourceTitle = resourceUrl ? localText(item.title) : contentTitle(item.title);
+  const resourceTitle = resourceAvailable ? localText(item.title) : contentTitle(item.title);
   title.append(icon, document.createTextNode(resourceTitle));
 
   const desc = document.createElement("p");
@@ -3903,7 +3968,7 @@ function resourceCardElement(item) {
   const metaItems = [
     `${label("type")}\uFF1A${label("resourceCategories")[item.category] || ""}`
   ];
-  if (resourceUrl) {
+  if (resourceAvailable) {
     if (item.version) metaItems.push(`${label("version")}\uFF1A${item.version}`);
     if (item.size) metaItems.push(`${label("size")}\uFF1A${item.size}`);
     if (item.updated) metaItems.push(`${label("updated")}\uFF1A${item.updated}`);
@@ -3919,7 +3984,7 @@ function resourceCardElement(item) {
     tagNode.textContent = localText(tag);
     meta.appendChild(tagNode);
   });
-  if (item.showReadyStatus !== false) meta.appendChild(resourceStatusElement(resourceUrl, resourceTitle));
+  if (item.showReadyStatus !== false) meta.appendChild(resourceStatusElement(resourceAvailable, resourceTitle));
 
   main.append(title, desc, meta);
   card.append(main, resourceActionElement(item, resourceUrl));
@@ -5666,6 +5731,11 @@ document.addEventListener("click", (event) => {
   if (target.closest("[data-resource-show-all]")) {
     activeFilters.resources = "all";
     renderResources();
+    return;
+  }
+
+  if (target.closest("[data-quick-transfer-open]")) {
+    window.QuickTransfer?.open();
     return;
   }
 

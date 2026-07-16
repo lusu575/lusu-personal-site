@@ -1,5 +1,12 @@
 # lusu-personal-site
 
+## 临时互传
+
+- 资源区提供登录限定的“临时互传 / Quick Transfer / 一時転送”，支持 24 小时房间、加密文字、私有 R2 文件和 Range 视频播放。
+- 普通账号受 95 MiB 单文件、个人/房间/频率及全站 8 GiB 免费池限制；只有 D1 `users.role = admin` 可用 Multipart 上传数百 MB 到数 GB 文件。
+- 部署前需按 `docs/transfer/README.md` 创建并绑定 `TRANSFER_BUCKET`、部署清理 Worker、设置生命周期与 Cloudflare 官方预算提醒。
+- 本地建议 Node.js 22.13+；本地同名变量放在 Git 忽略的 `.dev.vars` 并独立生成，不得提交 `.dev.vars`、`.env` 或真实密钥。
+
 鲁肃的个人站，一个保留 Windows XP + Pixel Art + Y2K 桌面识别度、同时提供原创移动虚拟 OS 的个人空间。
 
 ## GPTWork / 全新克隆启动

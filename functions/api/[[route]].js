@@ -1,3 +1,5 @@
+import { handleTransferApi } from "./transfer-service.mjs";
+
 const SESSION_COOKIE = "lusu_session";
 const SESSION_DAYS = 30;
 const MAX_SAVE_BYTES = 1024 * 1024;
@@ -112,6 +114,11 @@ export async function onRequest(context) {
 
   try {
     await ensureCoreSchema(env);
+
+    const transferResponse = await handleTransferApi(context, parts);
+    if (transferResponse) {
+      return transferResponse;
+    }
 
     if (request.method === "GET" && parts[0] === "health") {
       return await health(env);
@@ -4351,6 +4358,30 @@ function articleSeedStatements(env) {
         article_id, slug, category, tags, cover_image, status, is_pinned,
         view_count, created_at, updated_at, published_at
       ) values (
+        'seed-update-2026-07-16-quick-transfer',
+        '2026-07-16-quick-transfer',
+        'site-updates',
+        '["Quick Transfer","R2","files","security"]',
+        '', 'published', 0, 0,
+        '2026-07-16T10:00:00.000Z',
+        '2026-07-16T10:00:00.000Z',
+        '2026-07-16T10:00:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
         'seed-update-2026-07-14-japanese-subtext-retry-hotfix',
         '2026-07-14-japanese-subtext-retry-hotfix',
         'site-updates',
@@ -7025,6 +7056,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    ...articleTranslationsStatements(env, "seed-update-2026-07-16-quick-transfer", {
+      zh: {
+        title: "临时互传进入资源区",
+        summary: "资源区新增登录限定的临时互传房间，支持加密文字、图片、视频和文件；普通账号受免费池保护，管理员可使用分片大文件上传。",
+        content_markdown: "# 临时互传进入资源区\n\n已登录用户输入同一房间口令后，可以临时交换加密文字、图片、视频和普通文件。房间明文口令不会发送到服务器；文件通过 HTTPS、私有 R2、随机对象键和服务端鉴权保护。普通账号单文件上限 95 MiB，并受个人、房间、频率及全站 8 GiB 免费池保护；只有数据库角色为 admin 的账号可用 Multipart Upload 发送数百 MB 到数 GB 文件。内容发布完成 24 小时后立即不可读取，下载支持 Range 和视频拖动。R2 桶、Pages 绑定、独立清理 Worker、生命周期规则和 Cloudflare 官方预算提醒仍需站长在 Dashboard 完成人工配置。"
+      },
+      en: {
+        title: "Quick Transfer Arrives in Resources",
+        summary: "Resources now includes signed-in temporary rooms for encrypted text, images, video, and files, with a guarded free pool for standard accounts and multipart large files for admins.",
+        content_markdown: "# Quick Transfer Arrives in Resources\n\nSigned-in users who enter the same passphrase can exchange encrypted text, images, video, and regular files. Plaintext passphrases never reach the server; files use HTTPS, private R2, random object keys, and server authorization. Standard accounts are limited to 95 MiB per file and guarded by personal, room, rate, and shared 8 GiB free-pool limits. Only database admins may use Multipart Upload for hundreds of megabytes through multi-GB files. Items become unreadable after 24 hours, and downloads support Range requests and video seeking. The owner must still configure R2, Pages bindings, the cleanup Worker, lifecycle rules, and official Cloudflare budget alerts."
+      },
+      ja: {
+        title: "リソースに一時転送を追加",
+        summary: "リソースにログイン限定の一時転送部屋を追加し、暗号化テキスト・画像・動画・ファイル、一般ユーザーの無料枠保護、管理者の大容量分割送信に対応しました。",
+        content_markdown: "# リソースに一時転送を追加\n\n同じ合言葉を入力したログイン済みユーザー同士で、暗号化テキスト、画像、動画、通常ファイルを一時共有できます。一般アカウントは1件 95 MiB までで、個人・部屋・頻度・全体 8 GiB の無料枠保護を受けます。Multipart Upload で数百 MB から数 GB を送れるのはデータベースの admin のみです。公開完了から24時間後にアクセス不可となり、Range ダウンロードと動画シークに対応します。R2、Pages バインド、清理 Worker、ライフサイクル、Cloudflare 公式予算通知は Dashboard で手動設定が必要です。"
+      }
+    }, "2026-07-16T10:00:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-07-14-japanese-subtext-retry-hotfix", {
       zh: {
         title: "日语潜台词训练器 1.0.3 重答修复",

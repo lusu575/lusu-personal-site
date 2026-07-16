@@ -243,6 +243,14 @@ $env:XDG_CONFIG_HOME=(Join-Path (Get-Location) '.wrangler-config'); npx.cmd wran
 
 ## 本地开发和验证注意事项
 
+- 建议使用 Node.js 22.13+；本地 Pages Functions / API 的同名变量只放在 Git 忽略的根目录 `.dev.vars`，并独立于 Production 生成。
+- `.dev.vars`、`.env`、`.env.*`、真实邮箱、Webhook URL、R2 Access Key 和其他真实密钥绝不能提交 GitHub。
+- 临时互传固定放在资源区，不新增顶层 route、任务栏或移动 Dock。所有 API 复用 HttpOnly 会话，管理员只能由 D1 `users.role = admin` 判断。
+- 普通互传默认 95 MiB/文件并受个人、房间、频率和全站免费池的服务端限制；管理员大文件必须使用 R2 Multipart。“不限频次”不等于无限并发或突破 R2 平台/账单边界。
+- 房间明文口令不得发送服务端或进入 D1/R2/日志；文字可称浏览器 AES-GCM，文件只准确描述为 HTTPS + 私有 R2 + 服务端鉴权，未实现可靠流式 E2EE 或病毒扫描时不得声称已实现。
+- 互传列表与下载必须以 `expires_at` 做 24 小时逻辑过期；独立 `workers/transfer-cleanup/` Worker 和 R2 生命周期兜底都要保留。
+- R2 桶、Pages Production/Preview binding、清理 Worker、生命周期规则和 Cloudflare 官方预算提醒均是 Dashboard 人工步骤，代码交付不得虚假声称已配置完成。
+
 - PowerShell 可能禁止 `npm.ps1` / `npx.ps1`，优先用 `npm.cmd`、`npx.cmd`。
 - 本机 Wrangler 登录临时配置目录可能是 `.wrangler-config/`，该目录已被 `.gitignore` 忽略，不得提交。
 - `.wrangler/`、`.wrangler-config/`、`node_modules/`、`.codex-remote-attachments/` 都是本地生成内容，不得提交。

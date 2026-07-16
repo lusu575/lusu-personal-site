@@ -37,6 +37,9 @@ const requiredFiles = [
   "admin/index.html",
   "admin/admin.css",
   "admin/admin.js",
+  "admin/transfer.html",
+  "admin/transfer.css",
+  "admin/transfer.js",
   "admin/docs/ADMIN_CHANGELOG.md",
   "admin/docs/ADMIN_PROJECT_CONTEXT.md",
   "admin/docs/ADMIN_SKILL.md",
@@ -44,6 +47,7 @@ const requiredFiles = [
   "cloudflare/schema-indexes.sql",
   "functions/admin/_middleware.js",
   "functions/api/[[route]].js",
+  "functions/api/transfer-service.mjs",
   "functions/sitemap.xml.js",
   "assets/images/ui/pixel-ui-glyph-atlas.png",
   "assets/images/mobile-wallpapers/morning.webp",
@@ -53,6 +57,7 @@ const requiredFiles = [
   "css/mobile-ios-shell.css",
   "css/motion-system.css",
   "css/style.css",
+  "css/transfer.css",
   "design-system/MASTER.md",
   "design-system/pages/desktop-shell.md",
   "design-system/pages/mobile-shell.md",
@@ -64,9 +69,17 @@ const requiredFiles = [
   "games/game-shell.js",
   "js/mobile-shell.js",
   "js/main.js",
+  "js/transfer.js",
   "js/telemetry.js",
   "js/ui-motion.js",
   "manifest.webmanifest",
+  "assets/transfer/quick-transfer-icons.png",
+  "assets/transfer/quick-transfer-icons-source.png",
+  "docs/transfer/README.md",
+  "docs/transfer/ASSET_MANIFEST.md",
+  "docs/transfer/dev-vars.example",
+  "workers/transfer-cleanup/index.mjs",
+  "workers/transfer-cleanup/wrangler.jsonc",
   "package-lock.json",
   "package.json",
   "scripts/d1-migrate-local.mjs",
@@ -456,6 +469,7 @@ const adminCss = readRequired("admin/admin.css");
 const adminJs = readRequired("admin/admin.js");
 const adminMiddlewareJs = readRequired("functions/admin/_middleware.js");
 const apiJs = readRequired("functions/api/[[route]].js");
+const transferApiJs = readRequired("functions/api/transfer-service.mjs");
 const schemaSql = readRequired("cloudflare/schema.sql");
 const schemaIndexesSql = readRequired("cloudflare/schema-indexes.sql");
 const d1MigrateLocalJs = readRequired("scripts/d1-migrate-local.mjs");
@@ -475,6 +489,7 @@ const gameIndexFiles = [
 const gameIndexHtmls = gameIndexFiles.map((file) => [file, readRequired(file)]);
 const mobileShellJs = readRequired("js/mobile-shell.js");
 const mainJs = readRequired("js/main.js");
+const transferJs = readRequired("js/transfer.js");
 const telemetryJs = readRequired("js/telemetry.js");
 const uiMotionJs = readRequired("js/ui-motion.js");
 const manifest = readRequired("manifest.webmanifest");
@@ -489,6 +504,18 @@ const robots = readRequired("robots.txt");
 const changelog = readRequired("CHANGELOG.md");
 const headersConfig = readRequired("_headers");
 const redirectsConfig = readRequired("_redirects");
+
+for (const [label, source, markers] of [
+  ["index.html transfer UI", indexHtml, ["id=\"transfer-app\"", "/css/transfer.css", "/js/transfer.js"]],
+  ["js/main.js transfer resource", mainJs, ["seed-update-2026-07-16-quick-transfer", "quick-transfer", "quickTransferOpen"]],
+  ["transfer API", transferApiJs, ["handleTransferApi", "ensureTransferSchema", "runTransferCleanup"]],
+  ["transfer client", transferJs, ["QuickTransfer", "deriveRoom", "runMultipart"]],
+  ["transfer schema", schemaSql, ["transfer_rooms", "transfer_upload_sessions", "transfer_alerts"]]
+]) {
+  for (const marker of markers) {
+    if (!source.includes(marker)) fail(`${label} missing ${marker}`);
+  }
+}
 const japaneseSubtextHtml = readRequired("tools/japanese-subtext/index.html");
 const japaneseSubtextCss = readRequired("tools/japanese-subtext/style.css");
 const japaneseSubtextApp = readRequired("tools/japanese-subtext/app.mjs");
@@ -1918,7 +1945,7 @@ for (const asset of [
 
 const premiumUiVersion = "20260711-calm-motion-r13";
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
-const currentMainVersion = "20260714-japanese-subtext-v103-retry-r1";
+const currentMainVersion = "20260716-quick-transfer-r1";
 const currentPreFinalCssVersion = "20260711-calm-motion-r13";
 const currentPreFinalTelemetryVersion = "20260623-analytics-privacy-r1";
 const currentGameShellVersion = "20260623-game-shell-storage-safe-r1";
@@ -2149,7 +2176,7 @@ for (const [marker, pattern, message] of [
   ],
   [
     "function resourceActionElement",
-    /const\s+resourceTitle\s*=\s*contentTitle\(item\.title\)[\s\S]*status\.className\s*=\s*["']card-action resource-pending-action["'][\s\S]*status\.setAttribute\(\s*["']role["']\s*,\s*["']status["']\s*\)[\s\S]*status\.setAttribute\(\s*["']aria-label["']\s*,\s*`\$\{t\(["']resourcePendingTitle["']\)\}:\s*\$\{resourceTitle\}`\s*\)[\s\S]*link\.setAttribute\(\s*["']aria-label["']\s*,\s*`\$\{text\}:\s*\$\{resourceTitle\}`\s*\)/,
+    /const\s+internalAction\s*=\s*item\.action\s*===\s*["']quick-transfer["'][\s\S]*status\.className\s*=\s*["']card-action resource-pending-action["'][\s\S]*status\.setAttribute\(\s*["']role["']\s*,\s*["']status["']\s*\)[\s\S]*button\.dataset\.quickTransferOpen\s*=\s*["']true["'][\s\S]*link\.setAttribute\(\s*["']aria-label["']\s*,\s*`\$\{text\}:\s*\$\{resourceTitle\}`\s*\)/,
     "js/main.js resourceActionElement should expose pending resources as non-interactive titled status text"
   ],
   [
@@ -2671,18 +2698,18 @@ if (!hasPattern(mainJs, /window\.addEventListener\(\s*["']keydown["']\s*,\s*\(ev
 }
 
 const resourceActionBody = objectBlockAfterMarker(mainJs, "function resourceActionElement");
-if (/aria-disabled|button\.disabled\s*=|document\.createElement\(\s*["']button["']\s*\)/.test(resourceActionBody)) {
+if (/aria-disabled|button\.disabled\s*=/.test(resourceActionBody)) {
   fail("js/main.js resource pending action should be non-interactive status text, not a disabled button");
 }
 
 if (!hasPattern(
   objectBlockAfterMarker(mainJs, "function resourceCardElement"),
-  /const\s+metaItems\s*=\s*\[[\s\S]*label\("type"\)[\s\S]*if\s*\(\s*resourceUrl\s*\)\s*\{[\s\S]*metaItems\.push\([\s\S]*label\("version"\)[\s\S]*label\("size"\)[\s\S]*label\("updated"\)[\s\S]*metaItems\.forEach/
+  /const\s+metaItems\s*=\s*\[[\s\S]*label\("type"\)[\s\S]*if\s*\(\s*resourceAvailable\s*\)\s*\{[\s\S]*metaItems\.push\([\s\S]*label\("version"\)[\s\S]*label\("size"\)[\s\S]*label\("updated"\)[\s\S]*metaItems\.forEach/
 )) {
   fail("js/main.js resource cards should hide version/size/updated metadata until a real resource URL exists");
 }
 
-if (!hasPattern(mainJs, /function\s+readyResourceItems\(\)\s*\{[\s\S]*content\.resources\.filter\(\(item\)\s*=>\s*safeResourceUrl\(item\)\)/)) {
+if (!hasPattern(mainJs, /function\s+readyResourceItems\(\)\s*\{[\s\S]*content\.resources\.filter\(\(item\)\s*=>\s*safeResourceUrl\(item\)\s*\|\|\s*item\.action\s*===\s*["']quick-transfer["']\)/)) {
   fail("js/main.js should separate ready resources from placeholder resource drafts");
 }
 
@@ -2826,12 +2853,12 @@ for (const obsoleteText of [
   }
 }
 
-const finalUpdateId = "seed-update-2026-07-14-japanese-subtext-retry-hotfix";
-const finalUpdateSlug = "2026-07-14-japanese-subtext-retry-hotfix";
-const finalMainVersion = "20260714-japanese-subtext-v103-retry-r1";
+const finalUpdateId = "seed-update-2026-07-16-quick-transfer";
+const finalUpdateSlug = "2026-07-16-quick-transfer";
+const finalMainVersion = "20260716-quick-transfer-r1";
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Japanese Subtext Trainer 1.0.3 Retry Fix";
-const finalPublishedAt = "2026-07-14T02:20:00.000Z";
+const finalTitleEn = "Quick Transfer Arrives in Resources";
+const finalPublishedAt = "2026-07-16T10:00:00.000Z";
 const finalTranslationMinimums = {
   title: 8,
   summary: 24,
@@ -2848,6 +2875,7 @@ const changelog20260706Section = markdownSection(changelog, "## 2026-07-06");
 const changelog20260710Section = markdownSection(changelog, "## 2026-07-10");
 const changelog20260711Section = markdownSection(changelog, "## 2026-07-11");
 const changelog20260714Section = markdownSection(changelog, "## 2026-07-14");
+const changelog20260716Section = markdownSection(changelog, "## 2026-07-16");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -2872,6 +2900,7 @@ if (finalUpdateStarted) {
     'date: "2026.07.06"',
     'date: "2026.07.11"',
     'date: "2026.07.14"',
+    'date: "2026.07.16"',
     finalTitleEn
   ]) {
     if (!mainJs.includes(token)) {
@@ -2984,7 +3013,7 @@ if (finalUpdateStarted) {
   }
 
   for (const token of [
-    'id="top-updated">2026.07.14',
+    'id="top-updated">2026.07.16',
     `/js/main.js?v=${finalMainVersion}`
   ]) {
     if (!indexHtml.includes(token)) {
@@ -3000,7 +3029,7 @@ if (finalUpdateStarted) {
     "Functions seed",
     "schema seed"
   ]) {
-    if (!changelog20260714Section.includes(token)) {
+    if (!changelog20260716Section.includes(token)) {
       fail(`CHANGELOG.md final public update sync missing ${token}`);
     }
   }

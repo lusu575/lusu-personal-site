@@ -1,0 +1,27 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "lusu-transfer-cleanup",
+  "main": "index.mjs",
+  "compatibility_date": "2026-07-16",
+  "compatibility_flags": ["nodejs_compat"],
+  "triggers": {
+    "crons": ["17 * * * *"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "lusu_personal_site",
+      "database_id": "55087326-4cf0-4002-8229-f202af774da4"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "TRANSFER_BUCKET",
+      "bucket_name": "lusu-temp-transfer",
+      "preview_bucket_name": "lusu-temp-transfer-preview"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}

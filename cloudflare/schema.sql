@@ -112,6 +112,177 @@ create table if not exists site_runtime_state (
   updated_at text not null
 );
 
+create table if not exists transfer_rooms (
+  id text primary key,
+  room_key text not null unique,
+  created_by text not null references users(id),
+  status text not null default 'open',
+  created_at text not null,
+  last_activity_at text not null,
+  closed_at text not null default '',
+  closed_by text not null default ''
+);
+
+create table if not exists transfer_items (
+  id text primary key,
+  room_id text not null references transfer_rooms(id) on delete cascade,
+  uploader_user_id text not null references users(id),
+  uploader_role_snapshot text not null default 'user',
+  item_type text not null,
+  encrypted integer not null default 0,
+  text_ciphertext text not null default '',
+  original_filename text not null default '',
+  display_filename text not null default '',
+  r2_object_key text unique,
+  mime_type text not null default '',
+  size_bytes integer not null default 0,
+  etag text not null default '',
+  upload_mode text not null,
+  upload_status text not null,
+  created_at text not null,
+  completed_at text not null default '',
+  expires_at text not null,
+  cleanup_attempts integer not null default 0,
+  last_error text not null default ''
+);
+
+create table if not exists transfer_upload_sessions (
+  id text primary key,
+  item_id text not null references transfer_items(id) on delete cascade,
+  room_id text not null references transfer_rooms(id) on delete cascade,
+  user_id text not null references users(id),
+  user_role_snapshot text not null default 'user',
+  object_key text not null unique,
+  r2_upload_id text not null,
+  filename text not null,
+  mime_type text not null,
+  declared_size_bytes integer not null,
+  part_size_bytes integer not null,
+  expected_parts integer not null,
+  status text not null,
+  created_at text not null,
+  updated_at text not null,
+  expires_at text not null,
+  completed_at text not null default '',
+  aborted_at text not null default ''
+);
+
+create table if not exists transfer_upload_parts (
+  upload_session_id text not null references transfer_upload_sessions(id) on delete cascade,
+  part_number integer not null,
+  etag text not null,
+  size_bytes integer not null,
+  completed_at text not null,
+  primary key (upload_session_id, part_number)
+);
+
+create table if not exists transfer_usage_daily (
+  user_id text not null references users(id),
+  user_role_snapshot text not null default 'user',
+  usage_date text not null,
+  uploaded_bytes integer not null default 0,
+  downloaded_bytes integer not null default 0,
+  completed_files integer not null default 0,
+  initialized_uploads integer not null default 0,
+  failed_uploads integer not null default 0,
+  normal_peak_active_bytes integer not null default 0,
+  total_peak_active_bytes integer not null default 0,
+  updated_at text not null,
+  primary key (user_id, usage_date)
+);
+
+create table if not exists transfer_storage_daily (
+  usage_date text primary key,
+  normal_peak_active_bytes integer not null default 0,
+  total_peak_active_bytes integer not null default 0,
+  updated_at text not null
+);
+
+create table if not exists transfer_usage_monthly (
+  billing_month text primary key,
+  uploaded_bytes integer not null default 0,
+  class_a_operations integer not null default 0,
+  class_b_operations integer not null default 0,
+  updated_at text not null
+);
+
+create table if not exists transfer_settings (
+  setting_key text primary key,
+  setting_value text not null,
+  updated_at text not null,
+  updated_by text not null default ''
+);
+
+create table if not exists transfer_alerts (
+  id text primary key,
+  billing_month text not null,
+  threshold_usd real not null,
+  alert_type text not null,
+  status text not null,
+  details text not null default '',
+  sent_at text not null default '',
+  created_at text not null,
+  unique (billing_month, threshold_usd, alert_type)
+);
+
+create table if not exists transfer_cleanup_runs (
+  id text primary key,
+  started_at text not null,
+  finished_at text not null default '',
+  status text not null,
+  trigger_type text not null,
+  deleted_items integer not null default 0,
+  deleted_bytes integer not null default 0,
+  aborted_uploads integer not null default 0,
+  orphan_objects integer not null default 0,
+  failed_operations integer not null default 0
+);
+
+create table if not exists transfer_audit_log (
+  id text primary key,
+  actor_user_id text not null,
+  action text not null,
+  room_id text not null default '',
+  item_id text not null default '',
+  size_bytes integer not null default 0,
+  mime_type text not null default '',
+  created_at text not null
+);
+
+create index if not exists transfer_rooms_activity_idx on transfer_rooms(status, last_activity_at);
+create index if not exists transfer_items_room_created_idx on transfer_items(room_id, created_at);
+create index if not exists transfer_items_expires_idx on transfer_items(upload_status, expires_at);
+create index if not exists transfer_items_user_status_idx on transfer_items(uploader_user_id, upload_status, created_at);
+create index if not exists transfer_items_role_status_idx on transfer_items(uploader_role_snapshot, upload_status, expires_at);
+create index if not exists transfer_upload_sessions_user_status_idx on transfer_upload_sessions(user_id, status, updated_at);
+create index if not exists transfer_upload_sessions_expires_idx on transfer_upload_sessions(status, expires_at);
+create index if not exists transfer_upload_parts_session_idx on transfer_upload_parts(upload_session_id, part_number);
+create index if not exists transfer_usage_daily_date_idx on transfer_usage_daily(usage_date, user_role_snapshot);
+create index if not exists transfer_alerts_month_idx on transfer_alerts(billing_month, created_at);
+create index if not exists transfer_audit_created_idx on transfer_audit_log(created_at, action);
+
+insert into transfer_settings (setting_key, setting_value, updated_at, updated_by) values
+  ('normal_max_file_bytes', '99614720', '2026-07-16T00:00:00.000Z', 'system'),
+  ('normal_user_24h_bytes', '314572800', '2026-07-16T00:00:00.000Z', 'system'),
+  ('normal_user_daily_files', '30', '2026-07-16T00:00:00.000Z', 'system'),
+  ('normal_user_init_per_minute', '3', '2026-07-16T00:00:00.000Z', 'system'),
+  ('normal_user_concurrent_uploads', '1', '2026-07-16T00:00:00.000Z', 'system'),
+  ('normal_room_active_bytes', '1073741824', '2026-07-16T00:00:00.000Z', 'system'),
+  ('normal_room_active_items', '100', '2026-07-16T00:00:00.000Z', 'system'),
+  ('normal_pool_active_bytes', '8589934592', '2026-07-16T00:00:00.000Z', 'system'),
+  ('normal_pool_class_a_budget', '700000', '2026-07-16T00:00:00.000Z', 'system'),
+  ('normal_pool_class_b_budget', '7000000', '2026-07-16T00:00:00.000Z', 'system'),
+  ('normal_pool_storage_gb_month', '8', '2026-07-16T00:00:00.000Z', 'system'),
+  ('normal_pool_yellow_ratio', '0.75', '2026-07-16T00:00:00.000Z', 'system'),
+  ('normal_pool_red_ratio', '1', '2026-07-16T00:00:00.000Z', 'system'),
+  ('retention_hours', '24', '2026-07-16T00:00:00.000Z', 'system'),
+  ('text_max_chars', '10000', '2026-07-16T00:00:00.000Z', 'system'),
+  ('text_per_minute', '20', '2026-07-16T00:00:00.000Z', 'system'),
+  ('global_upload_enabled', '1', '2026-07-16T00:00:00.000Z', 'system'),
+  ('normal_upload_enabled', '1', '2026-07-16T00:00:00.000Z', 'system'),
+  ('alert_thresholds', '1,3,5', '2026-07-16T00:00:00.000Z', 'system')
+on conflict(setting_key) do nothing;
+
 create table if not exists anonymous_chat_messages (
   message_id text primary key,
   visitor_id text not null,
@@ -448,6 +619,47 @@ on conflict(article_id) do update set
   is_pinned = excluded.is_pinned,
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-07-16-quick-transfer',
+  '2026-07-16-quick-transfer',
+  'site-updates',
+  '["Quick Transfer","R2","files","security"]',
+  '', 'published', 0, 0,
+  '2026-07-16T10:00:00.000Z',
+  '2026-07-16T10:00:00.000Z',
+  '2026-07-16T10:00:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-07-16-quick-transfer-zh', 'seed-update-2026-07-16-quick-transfer', 'zh', '临时互传进入资源区', '资源区新增登录限定的临时互传房间，支持加密文字、图片、视频和文件；普通账号受免费池保护，管理员可使用分片大文件上传。', '# 临时互传进入资源区
+
+已登录用户输入同一房间口令后，可以临时交换加密文字、图片、视频和普通文件。房间明文口令不会发送到服务器；文件通过 HTTPS、私有 R2、随机对象键和服务端鉴权保护。普通账号单文件上限 95 MiB，并受个人、房间、频率及全站 8 GiB 免费池保护；只有数据库角色为 admin 的账号可用 Multipart Upload 发送数百 MB 到数 GB 文件。内容发布完成 24 小时后立即不可读取，下载支持 Range 和视频拖动。R2 桶、Pages 绑定、独立清理 Worker、生命周期规则和 Cloudflare 官方预算提醒仍需站长在 Dashboard 完成人工配置。', '2026-07-16T10:00:00.000Z', '2026-07-16T10:00:00.000Z'),
+  ('seed-update-2026-07-16-quick-transfer-en', 'seed-update-2026-07-16-quick-transfer', 'en', 'Quick Transfer Arrives in Resources', 'Resources now includes signed-in temporary rooms for encrypted text, images, video, and files, with a guarded free pool for standard accounts and multipart large files for admins.', '# Quick Transfer Arrives in Resources
+
+Signed-in users who enter the same passphrase can exchange encrypted text, images, video, and regular files. Plaintext passphrases never reach the server; files use HTTPS, private R2, random object keys, and server authorization. Standard accounts are limited to 95 MiB per file and guarded by personal, room, rate, and shared 8 GiB free-pool limits. Only database admins may use Multipart Upload for hundreds of megabytes through multi-GB files. Items become unreadable after 24 hours, and downloads support Range requests and video seeking. The owner must still configure R2, Pages bindings, the cleanup Worker, lifecycle rules, and official Cloudflare budget alerts.', '2026-07-16T10:00:00.000Z', '2026-07-16T10:00:00.000Z'),
+  ('seed-update-2026-07-16-quick-transfer-ja', 'seed-update-2026-07-16-quick-transfer', 'ja', 'リソースに一時転送を追加', 'リソースにログイン限定の一時転送部屋を追加し、暗号化テキスト・画像・動画・ファイル、一般ユーザーの無料枠保護、管理者の大容量分割送信に対応しました。', '# リソースに一時転送を追加
+
+同じ合言葉を入力したログイン済みユーザー同士で、暗号化テキスト、画像、動画、通常ファイルを一時共有できます。一般アカウントは1件 95 MiB までで、個人・部屋・頻度・全体 8 GiB の無料枠保護を受けます。Multipart Upload で数百 MB から数 GB を送れるのはデータベースの admin のみです。公開完了から24時間後にアクセス不可となり、Range ダウンロードと動画シークに対応します。R2、Pages バインド、清理 Worker、ライフサイクル、Cloudflare 公式予算通知は Dashboard で手動設定が必要です。', '2026-07-16T10:00:00.000Z', '2026-07-16T10:00:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
 
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at

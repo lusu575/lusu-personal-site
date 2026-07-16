@@ -13,6 +13,14 @@
 - 账号页默认不自动选中用户，资料与密码重置分离；密码重置可选择撤销既有会话，服务端通过原子条件更新阻止最后一个管理员被降级。
 - 本轮仅更新管理后台私有界面、后台接口和后台文档；不进入公开 `site-updates`。后台资源 query 为 `20260716-admin-safety-foundation-r1`，细节见 `admin/docs/ADMIN_PROJECT_CONTEXT.md`。
 
+## 2026-07-16 临时互传
+
+- “临时互传 / Quick Transfer / 一時転送”固定放在 Resources 资源区，未登录用户只能看到说明；创建或加入房间、列表、文字、上传、下载和删除全部由现有 HttpOnly 会话在服务端鉴权。
+- 房间口令只在浏览器规范化并派生不可枚举的 room key 与文字 AES-GCM 密钥，服务端不接收明文口令；文件放入私有 `TRANSFER_BUCKET`，D1 只保存房间、元数据、配额、上传会话、分片和告警记录。
+- 普通账号受保守免费池、单文件与个人配额限制；管理员只通过 `users.role = admin` 识别，可使用 R2 Multipart、暂停/恢复/取消和 GiB 级上传，不受普通业务频次与免费池暂停限制，但仍受并发稳定性、R2 平台边界和实际账单约束。
+- 内容发布完成后保留 24 小时，过期后 API 立即拒绝访问；`workers/transfer-cleanup/` 每小时物理清理，R2 生命周期与未完成 Multipart 自动中止规则作为兜底。独立后台页位于 `/admin/transfer.html`，避免与同期 `/admin/` 核心改造冲突。
+- 本地开发要求 Node.js 22.13+，本地 API 同名变量只能写入已忽略的 `.dev.vars` 并独立生成；Production 值、`.dev.vars`、`.env` 和真实 Secret 不得进入 Git。
+
 ## 2026-07-15 GPTWork 可复现开发基线
 
 - 普通站点开发的可复现运行时固定为 Node.js 22.13+、npm lockfile v3 和 Wrangler `4.111.0`；全新克隆使用 `npm ci`。纯本地环境从 `.env.example` 创建被忽略的 `.dev.vars`，GPTWork 使用平台注入的 process Secrets，不能再创建会遮蔽云端值的空 `.dev.vars`。

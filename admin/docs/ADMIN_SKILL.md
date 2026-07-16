@@ -15,6 +15,15 @@ description: 维护鲁肃个人站 `/admin/` 管理后台时使用。只适用�
 - 修改后台专用文档：`admin/docs/ADMIN_PROJECT_CONTEXT.md`、`admin/docs/ADMIN_SKILL.md`、`admin/docs/ADMIN_CHANGELOG.md`。
 - 修改后台页面内“后台项目介绍”或后台私有更新记录。
 
+## 临时互传后台规则
+
+- 临时互传管理当前是独立页 `/admin/transfer.html`；在同期后台核心改动完成前，不要把它直接揉进 `admin/index.html`、`admin/admin.js` 或 `admin/admin.css`。
+- 互传管理页只展示必要元数据，不显示明文房间口令，不默认预览用户文件；管理员操作仍须调用 `/api/admin/transfer/*` 并由服务端数据库角色鉴权。
+- 普通账号免费池与管理员豁免的判断都在服务端执行。管理员“不限频次”不等于无限网络并发，也不突破 Cloudflare、R2、浏览器或账单边界。
+- 站内费用是估算值，不能宣称等同 Cloudflare 正式账单；官方 1 / 3 / 5 美元预算提醒必须记录为 Dashboard 人工配置。
+- 本地 API 建议 Node.js 22.13+；同名变量放入被 Git 忽略的 `.dev.vars`，本地值独立生成。不得提交 `.dev.vars`、`.env`、真实邮箱、令牌、Webhook 或其他密钥。
+- 修改独立管理页时同步更新根 `CHANGELOG.md`、`admin/docs/ADMIN_PROJECT_CONTEXT.md`、本 Skill 和 `admin/docs/ADMIN_CHANGELOG.md`；将来合入后台导航时再同步页面内 `adminUpdates`，避免覆盖并行开发中的后台数据。
+
 ## 文档边界
 
 - 后台专用上下文写入 `admin/docs/ADMIN_PROJECT_CONTEXT.md`。

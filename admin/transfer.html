@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <title>临时互传管理 - LuSu Admin</title>
+  <link rel="stylesheet" href="/admin/transfer.css?v=20260716-r1">
+</head>
+<body>
+  <header class="transfer-admin-topbar">
+    <div class="transfer-admin-title"><span class="transfer-admin-icon icon-app" aria-hidden="true"></span><div><h1>临时互传</h1><p>R2、配额、清理与费用估算</p></div></div>
+    <nav><a href="/admin/">返回后台</a><button type="button" id="refresh">刷新数据</button></nav>
+  </header>
+  <main>
+    <div class="notice" id="notice" role="status" aria-live="polite"></div>
+    <section class="metrics" id="metrics" aria-label="互传概览"></section>
+    <section class="panel controls">
+      <div><h2>紧急控制</h2><p>暂停后已有内容仍可下载和删除。</p></div>
+      <button type="button" id="normal-switch">暂停普通用户上传</button>
+      <button type="button" id="global-switch" class="danger">暂停全部上传</button>
+      <button type="button" id="cleanup">立即清理</button>
+      <button type="button" id="test-alert">测试报警</button>
+    </section>
+    <section class="panel">
+      <header><div><h2>费用与报警</h2><p>站内数据是估算；正式账单以 Cloudflare 为准。</p></div><span id="notification-status"></span></header>
+      <div class="cost-grid" id="cost-grid"></div>
+      <div class="table-wrap"><table><thead><tr><th>月份</th><th>阈值</th><th>类型</th><th>状态</th><th>时间</th></tr></thead><tbody id="alerts"></tbody></table></div>
+    </section>
+    <section class="panel">
+      <header><div><h2>普通用户配额</h2><p>保存后由服务端立即执行。</p></div><button type="submit" form="settings-form">保存设置</button></header>
+      <form class="settings" id="settings-form">
+        <label>单文件字节<input name="normal_max_file_bytes" type="number" min="1048576" max="99614720" required></label>
+        <label>24小时字节<input name="normal_user_24h_bytes" type="number" min="1048576" required></label>
+        <label>每日文件数<input name="normal_user_daily_files" type="number" min="1" required></label>
+        <label>每分钟初始化<input name="normal_user_init_per_minute" type="number" min="1" required></label>
+        <label>房间有效字节<input name="normal_room_active_bytes" type="number" min="1048576" required></label>
+        <label>全站普通池字节<input name="normal_pool_active_bytes" type="number" min="1073741824" required></label>
+        <label>黄色阈值<input name="normal_pool_yellow_ratio" type="number" min="0.25" max="0.95" step="0.01" required></label>
+        <label>红色阈值<input name="normal_pool_red_ratio" type="number" min="0.5" max="1" step="0.01" required></label>
+        <label>报警阈值<input name="alert_thresholds" value="1,3,5" required></label>
+      </form>
+    </section>
+    <section class="panel">
+      <header><div><h2>房间</h2><p>后台只显示随机房间标识，不显示明文口令。</p></div><input id="room-search" type="search" placeholder="搜索房间 ID"></header>
+      <div class="table-wrap"><table><thead><tr><th>房间</th><th>状态</th><th>项目</th><th>有效字节</th><th>最后活动</th><th>操作</th></tr></thead><tbody id="rooms"></tbody></table></div>
+    </section>
+    <section class="panel">
+      <header><div><h2>文件与内容</h2><p>默认不预览内容，仅展示必要元数据。</p></div><input id="item-search" type="search" placeholder="文件名 / 用户 / 项目 ID"></header>
+      <div class="table-wrap"><table><thead><tr><th>文件</th><th>账号</th><th>类型</th><th>大小</th><th>状态</th><th>到期</th><th>操作</th></tr></thead><tbody id="items"></tbody></table></div>
+    </section>
+    <section class="panel">
+      <header><div><h2>分片上传</h2><p>卡住的管理员大文件任务可在此中止。</p></div></header>
+      <div class="table-wrap"><table><thead><tr><th>任务</th><th>文件</th><th>大小</th><th>分片</th><th>状态</th><th>更新时间</th><th>操作</th></tr></thead><tbody id="uploads"></tbody></table></div>
+    </section>
+  </main>
+  <script src="/admin/transfer.js?v=20260716-r1"></script>
+</body>
+</html>

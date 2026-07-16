@@ -1,0 +1,12 @@
+# Copy variable names to the repository-root .dev.vars file.
+# Generate independent local values. Never paste Preview or Production secrets here.
+
+TRANSFER_ALERT_THRESHOLDS=1,3,5
+TRANSFER_ALERT_EMAIL=local-admin@example.invalid
+TRANSFER_ALERT_WEBHOOK_URL=http://127.0.0.1:8788/local-transfer-alert
+
+# Optional local overrides; omit to use the safe D1 defaults.
+TRANSFER_MAX_FILE_BYTES=99614720
+TRANSFER_USER_24H_BYTES=314572800
+TRANSFER_ROOM_ACTIVE_BYTES=1073741824
+TRANSFER_NORMAL_POOL_ACTIVE_BYTES=8589934592

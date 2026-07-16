@@ -37,6 +37,12 @@ For article / update-log work, also inspect:
 - Games: `games/`
 - Deployment: GitHub `main` triggers Cloudflare Pages auto-deploy. Do not treat Wrangler manual deploy as the normal release path.
 
+## Local Runtime And Secrets
+
+- Use Node.js 22.13 or newer when possible.
+- Local API variables belong in the Git-ignored repository-root `.dev.vars`, using deployment variable names but independently generated local values.
+- Never commit `.dev.vars`, `.env`, `.env.*`, real email destinations, webhook URLs, access keys, or secrets.
+
 ## Mandatory Change Rules
 
 - Every project change must update `CHANGELOG.md`.

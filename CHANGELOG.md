@@ -11,6 +11,11 @@
 - 账号默认不再自动选中，资料与密码重置分离；密码重置可选择撤销会话，服务端用原子更新保护最后一个管理员。资源 query 更新为 `20260716-admin-safety-foundation-r1`。
 - 本轮属于后台私有改造，未修改公开主站界面、三语 `site-updates`、主站 fallback 或生产 D1 数据。
 
+- 资源区新增仅登录用户可用的“临时互传 / Quick Transfer / 一時転送”：同一房间口令进入同一 24 小时临时房间，可发送加密文字、图片、视频和普通文件；公开更新记录使用 `seed-update-2026-07-16-quick-transfer`，已同步三语 `site-updates`、主站 `fallback`、Functions seed 与 schema seed。
+- 普通账号执行单文件、24 小时累计量、文件数、并发和全站免费池限制；只有数据库 `users.role = admin` 的管理员可以使用 R2 Multipart 数百 MiB、GiB 级上传及断点续传。下载支持 Range 与视频拖动，所有文件到期后先逻辑拒绝，再由清理 Worker 和 R2 生命周期兜底删除。
+- 新增独立 `/admin/transfer.html` 监控和治理页、费用估算与 1/3/5 美元站内报警；Cloudflare 官方账单提醒、Production/Preview R2 binding 和清理 Worker 部署仍按文档由站长人工完成。主站 `main.js` cache query 更新为 `20260716-quick-transfer-r1`。
+- 本地基线为 Node.js 22.13+；本地 API 变量写入被 Git 忽略的 `.dev.vars`，使用独立生成的值，`.dev.vars`、`.env` 与真实密钥绝不提交。
+
 ## 2026-07-15
 
 - 补齐 GPTWork / 全新克隆的可复现开发基线：Node.js 22.13+、Wrangler `4.111.0`、`.nvmrc`、兼容 Node 22 且不依赖测试子进程的标准 `npm test`、本地 `wrangler pages dev`、`.env.example`、更完整的本地与敏感文件忽略规则，以及 Pull Request / `main` 的最小 GitHub Actions test + build 校验；纯本地使用 `.dev.vars`，GPTWork 使用平台注入的 process Secrets 且不创建会遮蔽云端值的空文件。
