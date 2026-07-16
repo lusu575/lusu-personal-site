@@ -37,16 +37,19 @@
 
 ### 2. Pages 绑定
 
-在 Cloudflare Pages 项目 Settings / Bindings 中，为 Production 增加 R2 binding：
+根 `wrangler.jsonc` 已在顶层声明 Production R2 binding，并通过 `env.preview.r2_buckets: []` 让 Preview 文件上传安全关闭。Git 部署必须保留以下状态：
 
 ```text
 Variable name: TRANSFER_BUCKET
 Production bucket: lusu-temp-transfer
+Preview: no R2 binding (r2Ready: false)
 ```
 
-根 `wrangler.jsonc` 不引用尚未创建的线上桶，因为 Cloudflare 会在配置阶段直接拒绝整站部署。先创建 Production 桶并完成 Dashboard binding，再重新部署 `main`。上线验收要求匿名文件路由由 `TRANSFER_R2_NOT_BOUND` 的 503 变为登录鉴权 401，并且 `/api/transfer/config` 的登录响应中 `r2Ready: true`。
+`preview_bucket_name` 只用于 Wrangler 本地/远程开发，不能替代 Pages Preview deployment 的 `env.preview`。由于 D1 与 R2 binding 不是 Pages 环境自动继承项，`env.preview` 必须完整重述它们。Secret 的实际值继续在 Cloudflare 的 Production / Preview 环境分别管理；顶层 `secrets.required` 仅用于本地校验与类型生成，不复制进 Pages 的 `env.preview` 覆盖。
 
-以后启用 Preview 文件上传时，必须先创建并单独绑定 `lusu-temp-transfer-preview`；不得让 Preview 继承或指向 Production 桶。`preview_bucket_name` 只用于 Wrangler 本地/远程开发，不能替代 Pages Preview deployment 的独立 binding。
+Production 桶必须先在同一 Cloudflare 账户中创建。若 Pages 项目曾在 Dashboard 保存过旧绑定，确认变量名与桶名和根 `wrangler.jsonc` 一致，并在改动后重新部署；Production 上线验收要求 `/api/transfer/config` 的登录响应中 `r2Ready: true`。
+
+以后启用 Preview 文件上传时，先创建独立的 `lusu-temp-transfer-preview`，再把 `env.preview.r2_buckets` 改为该桶并同步构建守卫；不得让 Preview 继承或指向 Production 桶。
 
 ### 3. D1 migration
 
