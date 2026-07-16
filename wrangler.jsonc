@@ -25,12 +25,6 @@
   ],
   "env": {
     "preview": {
-      "secrets": {
-        "required": [
-          "CHAT_IP_HASH_SALT",
-          "ANALYTICS_IP_HASH_SALT"
-        ]
-      },
       "d1_databases": [
         {
           "binding": "DB",

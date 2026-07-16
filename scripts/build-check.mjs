@@ -3216,13 +3216,9 @@ if (!Array.isArray(previewWranglerData?.r2_buckets) || previewWranglerData.r2_bu
   fail("wrangler.jsonc env.preview must explicitly disable Quick Transfer R2 until a separate preview bucket is provisioned");
 }
 const declaredSecrets = new Set(migrationWranglerData.secrets?.required || []);
-const previewDeclaredSecrets = new Set(previewWranglerData?.secrets?.required || []);
 for (const secretName of ["CHAT_IP_HASH_SALT", "ANALYTICS_IP_HASH_SALT"]) {
   if (!declaredSecrets.has(secretName)) {
     fail(`wrangler.jsonc secrets.required missing ${secretName}`);
-  }
-  if (!previewDeclaredSecrets.has(secretName)) {
-    fail(`wrangler.jsonc env.preview secrets.required missing ${secretName}`);
   }
   if (!new RegExp(`^${secretName}=\\s*$`, "m").test(envExample)) {
     fail(`.env.example must list ${secretName} without a value`);

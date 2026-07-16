@@ -45,7 +45,7 @@ Production bucket: lusu-temp-transfer
 Preview: no R2 binding (r2Ready: false)
 ```
 
-`preview_bucket_name` 只用于 Wrangler 本地/远程开发，不能替代 Pages Preview deployment 的 `env.preview`。由于 D1、R2 与 required secrets 都不是环境自动继承项，`env.preview` 必须完整重述这些配置。
+`preview_bucket_name` 只用于 Wrangler 本地/远程开发，不能替代 Pages Preview deployment 的 `env.preview`。由于 D1 与 R2 binding 不是 Pages 环境自动继承项，`env.preview` 必须完整重述它们。Secret 的实际值继续在 Cloudflare 的 Production / Preview 环境分别管理；顶层 `secrets.required` 仅用于本地校验与类型生成，不复制进 Pages 的 `env.preview` 覆盖。
 
 Production 桶必须先在同一 Cloudflare 账户中创建。若 Pages 项目曾在 Dashboard 保存过旧绑定，确认变量名与桶名和根 `wrangler.jsonc` 一致，并在改动后重新部署；Production 上线验收要求 `/api/transfer/config` 的登录响应中 `r2Ready: true`。
 

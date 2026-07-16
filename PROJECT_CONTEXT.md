@@ -2,7 +2,7 @@
 
 ## 2026-07-16 临时互传上传、全窗拖放与视口高度修复
 
-- Pages Functions 的文件路由依赖根 `wrangler.jsonc` 中 `TRANSFER_BUCKET` R2 binding；顶层 Production 使用 `lusu-temp-transfer`。`env.preview` 必须同时重述 D1、required secrets 与显式空 `r2_buckets` 等非继承配置，在独立 Preview 桶尚未创建时让预览文件上传安全关闭，绝不回退到正式桶。构建必须校验这套映射，避免正式环境文字房间可用但文件路由持续返回 `TRANSFER_R2_NOT_BOUND`，也避免预览部署误用正式数据。
+- Pages Functions 的文件路由依赖根 `wrangler.jsonc` 中 `TRANSFER_BUCKET` R2 binding；顶层 Production 使用 `lusu-temp-transfer`。`env.preview` 必须同时重述 D1 与显式空 `r2_buckets` 等 Pages 非继承 binding，在独立 Preview 桶尚未创建时让预览文件上传安全关闭，绝不回退到正式桶。Secret 的实际值继续在 Cloudflare 的 Production / Preview 环境分别管理，顶层 `secrets.required` 只声明本地校验与类型生成需要的名称。构建必须校验这套映射，避免正式环境文字房间可用但文件路由持续返回 `TRANSFER_R2_NOT_BOUND`，也避免预览部署误用正式数据。
 - 文件拖放热区覆盖整个互传窗口，只拦截 `DataTransfer.types` 包含 `Files` 的拖放；文字或链接拖放不得被阻断。全窗提示层不接收指针事件，drop、close、blur 与 dragend 都必须清理拖放状态。
 - `r2Ready: false` 时客户端必须禁用文件选择并在排队前返回，不得生成上传进度到 100% 后才失败的任务；服务端稳定错误码继续用于诊断，公开 5xx 文案不暴露内部细节。
 - 桌面互传窗口按 `100dvh` 的可用区域伸展，消息流吃满新增空间；移动端仍由 `--mobile-viewport-height`、单一 `.transfer-room` 滚动路径、sticky composer 和 `visualViewport` 补偿控制。
