@@ -1,5 +1,12 @@
 # PROJECT_CONTEXT.md
 
+## 2026-07-16 日本語の裏側半成品归档
+
+- 应用 `1.0.4` / 内容 `1.0.3` 候选已冻结到 `codex/japanese-subtext-wip-20260716`，用于以后继续开发；它不是发布分支，不得直接合并 `main` 或部署。当前公开版本仍是应用 `1.0.3` / 内容 `1.0.2`。
+- WIP 保留候选代码、250 关题库、10,088 个 Aivis MP3、250 份时间轴、Image2 canonical jobs／prompts／生产管线、14 张未引用 checkpoint WebP 和 62 份 `codex-approved` review；其中 48 份 review 是清理前补存证据。
+- 252 份 current-v4 完整图片资产仍缺 238 份。旧 checkpoint 与 review 只作溯源参考，不能替代项目外原始 PNG／sidecar，也不得自动导入或发布；下一轮默认重新生成完整图片包，并为每张新图重新绑定 toolRunId、SHA-256 与视觉审核。
+- 完整恢复点、缺口与继续步骤以 [`tools/japanese-subtext/WIP_STATUS.md`](./tools/japanese-subtext/WIP_STATUS.md) 为准；正式发布前仍须完成图片生产、Image2 publish/migrate、完整 release check、五视口三语浏览器回归以及与最新 `main` 的重新集成。
+
 ## 2026-07-14 日本語の裏側 1.0.3 重答修复
 
 - `/tools/japanese-subtext/` 当前公开应用版本为 `1.0.3`，题库、音频、云存档兼容边界继续使用 `contentVersion: 1.0.2`。`appVersion` 表示界面与交互发布，`contentVersion` 只在题库结构或存档兼容边界变化时增加；UI 热修不得连带伪造 250 关哈希或全量音频迁移。

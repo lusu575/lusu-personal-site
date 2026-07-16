@@ -4,6 +4,8 @@
 
 当前公开应用版本为 `1.0.3`，题库、音频与云存档兼容版本为 `1.0.2`。下一候选为应用 `1.0.4`、内容 `1.0.3`，尚未合并 main、尚未上线。候选题库已通过显式音频优先过渡构建为内容 1.0.3；音频 manifest 已从内容 1.0.2 `rebound` 到 1.0.3，覆盖 10,088 个 MP3、250 份时间轴，总长 `42,533.531` 秒、总计 `518,739,675` 字节，rebind 期间 MP3 字节改动为 0。长期版本、界面、题库、音频、image2 插图与发布维护规则见 [`MAINTENANCE.md`](./MAINTENANCE.md)，逐版本变更见工具专用 [`CHANGELOG.md`](./CHANGELOG.md)。
 
+2026-07-16 已把这套候选冻结为可恢复的半成品；已保存内容、明确缺口与下一轮重新生成图片的边界见 [`WIP_STATUS.md`](./WIP_STATUS.md)。旧 checkpoint 和 review 只作溯源参考，不作为正式资产自动发布。
+
 当前运行时仍在显式 `transitional-audio-first` 状态下复用 250 张 `assetContentVersion: 1.0.2` legacy illustrations。2026-07-14 的恢复 checkpoint 只有 14／252 份 current-v4 有效、未引用证据资产，仍缺 238 份；默认构建、image2 检查和 release gate 没有放宽。全部图片、release check、五视口三语浏览器回归和部署完成前，这只能称为音频优先候选，不能称为完整发布候选或已发布 1.0.4。复盘与说明见 [`reports/2026-07-14-image2-production-retrospective.md`](./reports/2026-07-14-image2-production-retrospective.md) 和 [`checkpoints/2026-07-14/`](./checkpoints/2026-07-14/)。
 
 公开 1.0.3 已修复错答后的重答死路：题面和解析顶部都有重答入口，结果弹窗不能通过关闭按钮、Escape 或点击外侧把用户留在已提交但无法操作的状态；下一关只按本次答题结果判断。候选 1.0.4 必须保留这套行为。
