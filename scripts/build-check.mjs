@@ -1280,15 +1280,23 @@ for (const asset of ["admin.css", "admin.js"]) {
   }
 }
 
-const adminSafetyCacheVersion = "20260716-admin-safety-foundation-r1";
+const adminSafetyCacheVersion = "20260716-admin-interactive-map-r1";
 if (countLiteral(adminHtml, adminSafetyCacheVersion) !== 2) {
-  fail("admin CSS and JS must share the mobile-safety cache version");
+  fail("admin CSS and JS must share the current interaction-safety cache version");
 }
 
 for (const id of [
   "mobile-nav-toggle",
   "admin-sidebar",
   "mobile-nav-backdrop",
+  "visitor-map-world",
+  "visitor-map-points",
+  "visitor-map-zoom-out",
+  "visitor-map-zoom-in",
+  "visitor-map-reset",
+  "visitor-map-zoom-status",
+  "visitor-map-tooltip",
+  "visitor-map-announcement",
   "visitor-map-list",
   "article-error-summary",
   "account-password-form",
@@ -1400,10 +1408,52 @@ for (const requiredAdminSafetyToken of [
   "openUnsavedDialog",
   "setMasterDetailView",
   "renderMapDataList",
+  "handleMapWheel",
+  "handleMapPointerDown",
+  "handleMapPointerMove",
+  "handleMapPointerEnd",
+  "setMapZoom",
+  "focusMapLocation",
   "resetAccountPassword"
 ]) {
   if (!adminJs.includes(requiredAdminSafetyToken)) {
     fail(`admin/admin.js missing safety workflow ${requiredAdminSafetyToken}`);
+  }
+}
+
+for (const requiredMapEvent of [
+  'addEventListener("wheel", handleMapWheel, { passive: false })',
+  'addEventListener("pointerdown", handleMapPointerDown)',
+  'addEventListener("pointermove", handleMapPointerMove)',
+  'addEventListener("pointerup", handleMapPointerEnd)',
+  'addEventListener("pointercancel", handleMapPointerEnd)',
+  'addEventListener("lostpointercapture", handleMapLostPointerCapture)',
+  'window.addEventListener("pointerup", handleMapPointerEnd)',
+  'window.addEventListener("pointercancel", handleMapPointerEnd)',
+  "setPointerCapture"
+]) {
+  if (!adminJs.includes(requiredMapEvent)) {
+    fail(`admin interactive map missing ${requiredMapEvent}`);
+  }
+}
+
+const cityQueryMarker = "select country, region, city, count(*) as pv, count(distinct visitor_id) as uv";
+const cityQueryAt = apiJs.indexOf(cityQueryMarker);
+const cityQueryEnd = cityQueryAt < 0 ? -1 : apiJs.indexOf("limit 200", cityQueryAt);
+const cityQueryBlock = cityQueryAt < 0 || cityQueryEnd < 0 ? "" : apiJs.slice(cityQueryAt, cityQueryEnd);
+if (!cityQueryBlock
+  || !cityQueryBlock.includes("group by country, region, city")
+  || cityQueryBlock.includes("ip_prefix")
+  || !cityQueryBlock.includes("count(distinct visitor_id) as uv")) {
+  fail("admin map cities must aggregate exact PV/UV by country, region, and city without network identifiers");
+}
+
+for (const requiredCityContract of [
+  "cities: (cityRows.results || []).map(adminAnalyticsCityRow)",
+  "function adminAnalyticsCityRow"
+]) {
+  if (!apiJs.includes(requiredCityContract)) {
+    fail(`admin analytics city response missing ${requiredCityContract}`);
   }
 }
 
@@ -1577,11 +1627,19 @@ for (const selector of [
   ".file-picker:has(input:disabled)",
   "@media (max-width: 760px)",
   "--admin-touch-target: 44px",
-  "@media (max-width: 920px)"
+  "@media (max-width: 920px)",
+  ".map-world",
+  "touch-action: none",
+  "overscroll-behavior: contain",
+  "pointer-events: auto !important"
 ]) {
   if (!adminCss.includes(selector)) {
     fail(`admin/admin.css missing ${selector}`);
   }
+}
+
+if (/\.map-point\s*\{[^}]*pointer-events:\s*none/s.test(adminCss)) {
+  fail("admin map points must remain pointer-interactive");
 }
 
 for (const token of [

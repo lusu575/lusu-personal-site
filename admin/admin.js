@@ -61,6 +61,23 @@ const state = {
   unsavedDialogReturnFocus: null,
   handlingPopState: false,
   chatGovernanceTab: "message",
+  mapViewport: {
+    scale: 1,
+    x: 0,
+    y: 0,
+    pointers: new Map(),
+    dragStart: null,
+    pinchStart: null,
+    moved: false,
+    suppressClick: false,
+    pinnedKey: "",
+    visibleKey: "",
+    rows: [],
+    rowsByKey: new Map(),
+    pointElements: new Map(),
+    pendingRows: null,
+    pendingRenderTimer: null
+  },
   loadedPanels: {},
   loadingPanels: {},
   statusHoldUntil: 0,
@@ -72,6 +89,11 @@ const ACTIVE_PANEL_STORAGE_KEY = "lusu-admin-active-panel";
 const ADMIN_HISTORY_STATE_KEY = "lusuAdminView";
 const MOBILE_ADMIN_MEDIA = window.matchMedia("(max-width: 920px)");
 const WORLD_MAP_ASPECT_RATIO = 1000 / 500;
+const MAP_MIN_SCALE = 1;
+const MAP_MAX_SCALE = 5;
+const MAP_ZOOM_STEP = 0.5;
+const MAP_KEYBOARD_PAN_STEP = 72;
+const MAP_DRAG_THRESHOLD = 5;
 const LOCAL_COVER_ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/jpg", "image/png", "image/webp", "image/avif"]);
 const LOCAL_COVER_ALLOWED_IMAGE_EXTENSIONS = new Set(["jpg", "jpeg", "png", "webp", "avif"]);
 const LOCAL_COVER_ALLOWED_VIDEO_TYPES = new Set(["video/mp4", "video/webm", "video/ogg", "video/quicktime"]);
@@ -111,6 +133,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-07-16",
+    title: "可缩放城市访问地图",
+    body: "实时大屏访问地图升级为最近 14 天按国家、地区和城市精确分组的城市级聚合视图：桌面端支持鼠标滚轮缩放、拖拽平移及点击或悬停查看城市 PV/UV，触屏支持双指缩放和拖动，键盘可聚焦点位并打开同一城市详情；地图控件与点位使用至少 44px 触控目标。详情展示城市、地区、PV/UV 和最近访问时间，不展示 IP、网络前缀或隐藏标识等敏感数据。后台资源版本更新为 20260716-admin-interactive-map-r1。"
+  },
   {
     date: "2026-07-16",
     title: "移动与操作安全底座",
@@ -1856,7 +1883,9 @@ function renderOverview() {
   renderKpis(state.overview.cards);
   renderDailyChart(state.overview.daily || []);
   renderHourlyChart(state.overview.hourly || []);
-  renderMap(overviewMapRows());
+  if (state.activePanel === "dashboard") {
+    renderMap(overviewMapRows());
+  }
   renderTopPages(state.overview.topPages || []);
   renderTopArticles(state.overview.topArticles || []);
   renderDashboardCountries(state.overview.countries || []);
@@ -2081,54 +2110,81 @@ function renderBars(container, rows, labelKey) {
 }
 
 function renderMap(rows) {
+  if (state.mapViewport.pointers.size) {
+    state.mapViewport.pendingRows = rows;
+    return;
+  }
+  state.mapViewport.pendingRows = null;
   const map = $("#visitor-map");
+  const points = $("#visitor-map-points");
   const list = $("#visitor-map-list");
+  const focusedNode = document.activeElement?.closest?.(".map-point, .map-data-focus");
+  const focusedKey = focusedNode?.dataset.mapKey || "";
+  const focusedKind = focusedNode?.classList.contains("map-data-focus") ? "list" : "point";
+  const windowDays = Number(state.overview?.windowDays || 14);
   const data = rows
-    .filter((row) => Number(row.pv || 0) > 0)
+    .filter((row) => Number(row.pv || 0) > 0 && isUsableCoordinate(Number(row.latitude), Number(row.longitude)))
     .sort((a, b) => Number(b.pv || 0) - Number(a.pv || 0))
-    .slice(0, 60);
+    .slice(0, 80);
+  setElementText($("#visitor-map-range"), `最近 ${formatNumber(windowDays)} 天 · 城市聚合`);
+  state.mapViewport.rows = data;
+  state.mapViewport.rowsByKey = new Map();
+  state.mapViewport.pointElements = new Map();
   if (!data.length) {
-    const emptyText = "访问地图：暂无访问数据";
-    map.title = emptyText;
+    const emptyText = `城市访问地图：最近 ${formatNumber(windowDays)} 天暂无带经纬度的城市访问数据`;
     map.setAttribute("aria-label", emptyText);
+    map.classList.add("is-empty");
     const empty = document.createElement("span");
     empty.className = "map-empty";
-    setElementText(empty, "等待访问数据");
-    map.replaceChildren(empty);
+    setElementText(empty, "暂无可定位的城市访问数据");
+    points.replaceChildren(empty);
+    clearMapSelection();
+    resetMapViewport({ announce: false });
     list?.replaceChildren(createEmptyStateElement("暂无地图来源数据"));
     return;
   }
-  const mapLabel = `访问地图：${formatNumber(data.length)} 个真实经纬度来源点`;
-  map.title = mapLabel;
+  map.classList.remove("is-empty");
+  const mapLabel = `可缩放城市访问地图：最近 ${formatNumber(windowDays)} 天共 ${formatNumber(data.length)} 个城市点；可使用滚轮、双指或缩放按钮查看`;
   map.setAttribute("aria-label", mapLabel);
   const max = Math.max(...data.map((row) => Number(row.pv || 0)), 1);
   const mapBounds = getVisibleMapBounds(map);
-  map.replaceChildren(...data.map((row, index) => {
-    const [lon, lat] = coordinatesFor(row, index);
+  points.replaceChildren(...data.map((row, index) => {
+    const lon = Number(row.longitude);
+    const lat = Number(row.latitude);
     const { left, top } = projectCoordinateToVisibleMap(lon, lat, mapBounds);
-    const size = 10 + Math.round((Number(row.pv || 0) / max) * 22);
+    const size = 12 + Math.round((Number(row.pv || 0) / max) * 18);
     const label = mapPlaceLabel(row);
-    const shortLabel = mapShortPlaceLabel(row);
-    const ipHint = row.ip_prefix ? ` · 网络前缀 ${row.ip_prefix}` : "";
+    const key = mapLocationKey(row, index);
     const point = document.createElement("span");
-    const caption = document.createElement("span");
+    const pointLabel = document.createElement("span");
     point.className = "map-point";
-    point.setAttribute("role", "img");
+    point.tabIndex = 0;
+    point.setAttribute("role", "button");
+    point.dataset.mapKey = key;
+    point.dataset.mapLeft = String(left);
+    point.dataset.mapTop = String(top);
     point.style.left = `${left}%`;
     point.style.top = `${top}%`;
-    point.style.setProperty("--size", `${size}px`);
-    point.classList.toggle("is-low", top > 72);
-    point.classList.toggle("is-left", left < 16);
-    point.classList.toggle("is-right", left > 84);
-    const pointTitle = `${label}${ipHint} · 浏览 ${formatNumber(row.pv)} / 访客 ${formatNumber(row.uv)}`;
-    point.title = pointTitle;
-    point.setAttribute("aria-label", pointTitle);
-    caption.textContent = `${shortLabel} ${formatNumber(row.pv)}`;
-    caption.title = pointTitle;
-    point.append(caption);
+    point.style.setProperty("--point-size", `${size}px`);
+    point.style.zIndex = String(10 + Math.round((Number(row.pv || 0) / max) * 20));
+    const pointTitle = `${label}；PV 浏览量 ${formatNumber(row.pv)}；UV 独立访客 ${formatNumber(row.uv)}。点击可固定详情。`;
+    point.setAttribute("aria-pressed", state.mapViewport.pinnedKey === key ? "true" : "false");
+    pointLabel.className = "map-point-label";
+    setElementText(pointLabel, pointTitle);
+    point.append(pointLabel);
+    state.mapViewport.rowsByKey.set(key, row);
+    state.mapViewport.pointElements.set(key, point);
     return point;
   }));
   renderMapDataList(data);
+  clampMapViewport();
+  applyMapViewport();
+  if (state.mapViewport.pinnedKey && state.mapViewport.rowsByKey.has(state.mapViewport.pinnedKey)) {
+    showMapLocation(state.mapViewport.pinnedKey, { pin: true });
+  } else {
+    clearMapSelection();
+  }
+  restoreMapFocus(focusedKey, focusedKind);
 }
 
 function renderMapDataList(rows) {
@@ -2140,35 +2196,587 @@ function renderMapDataList(rows) {
     list.replaceChildren(createEmptyStateElement("暂无地图来源数据"));
     return;
   }
-  list.replaceChildren(...rows.map((row) => {
+  list.replaceChildren(...rows.map((row, index) => {
     const item = document.createElement("article");
+    const action = document.createElement("button");
     const place = document.createElement("strong");
     const metrics = document.createElement("span");
     const detail = document.createElement("small");
     const label = mapPlaceLabel(row);
+    const key = mapLocationKey(row, index);
     const detailText = [
-      row.ip_prefix ? `网络前缀 ${row.ip_prefix}` : "网络前缀未记录",
+      `坐标 ${Number(row.latitude).toFixed(2)}, ${Number(row.longitude).toFixed(2)}`,
       row.last_seen_at ? `最近访问 ${formatTime(row.last_seen_at)}` : "最近访问未记录"
     ].join(" · ");
     item.className = "map-data-item";
     item.setAttribute("role", "listitem");
+    action.className = "map-data-focus";
+    action.type = "button";
+    action.dataset.mapKey = key;
+    action.setAttribute("aria-controls", "visitor-map");
+    action.setAttribute("aria-label", `在地图中查看 ${label}，PV 浏览量 ${formatNumber(row.pv)}，UV 独立访客 ${formatNumber(row.uv)}`);
     setElementText(place, label);
-    setElementText(metrics, `浏览 ${formatNumber(row.pv)} / 访客 ${formatNumber(row.uv)}`);
+    setElementText(metrics, `PV ${formatNumber(row.pv)} / UV ${formatNumber(row.uv)}`);
     setElementText(detail, detailText);
-    item.append(place, metrics, detail);
+    action.append(place, metrics);
+    item.append(action, detail);
     return item;
   }));
+}
+
+function restoreMapFocus(key, kind) {
+  if (!key) {
+    return;
+  }
+  const target = kind === "list"
+    ? [...$$("#visitor-map-list .map-data-focus")].find((item) => item.dataset.mapKey === key)
+    : state.mapViewport.pointElements.get(key);
+  target?.focus({ preventScroll: true });
 }
 
 function overviewMapRows() {
   if (!state.overview) {
     return [];
   }
-  return (state.overview.regions || []).length ? state.overview.regions : (state.overview.countries || []);
+  return state.overview.cities || [];
 }
 
 function renderVisitorMapFromOverview() {
   renderMap(overviewMapRows());
+}
+
+function mapLocationKey(row, index = 0) {
+  const place = [row.country, row.region, row.city].map((value) => String(value || "").trim()).join("|");
+  if (place.replaceAll("|", "")) {
+    return place;
+  }
+  return `${Number(row.latitude).toFixed(4)}|${Number(row.longitude).toFixed(4)}|${index}`;
+}
+
+function mapRegionLabel(row) {
+  return [countryDisplayName(row.country), row.region].filter(Boolean).join(" · ") || "地区未记录";
+}
+
+function showMapLocation(key, options = {}) {
+  const row = state.mapViewport.rowsByKey.get(key);
+  const point = state.mapViewport.pointElements.get(key);
+  const tooltip = $("#visitor-map-tooltip");
+  if (!row || !point || !tooltip) {
+    return false;
+  }
+  if (options.pin) {
+    state.mapViewport.pinnedKey = key;
+  }
+  state.mapViewport.visibleKey = key;
+  state.mapViewport.pointElements.forEach((item, itemKey) => {
+    const active = itemKey === key;
+    item.classList.toggle("is-active", active);
+    item.setAttribute("aria-pressed", state.mapViewport.pinnedKey === itemKey ? "true" : "false");
+  });
+  setElementText($("#visitor-map-tooltip-city"), row.city || row.region || countryDisplayName(row.country) || "未知城市");
+  setElementText($("#visitor-map-tooltip-region"), mapRegionLabel(row));
+  setElementText($("#visitor-map-tooltip-pv"), formatNumber(row.pv));
+  setElementText($("#visitor-map-tooltip-uv"), formatNumber(row.uv));
+  setElementText($("#visitor-map-tooltip-time"), row.last_seen_at ? `最近访问 ${formatTime(row.last_seen_at)}` : "最近访问未记录");
+  tooltip.hidden = false;
+  positionMapTooltip();
+  if (options.announce) {
+    announceMap(`${mapPlaceLabel(row)}，PV 浏览量 ${formatNumber(row.pv)}，UV 独立访客 ${formatNumber(row.uv)}`);
+  }
+  return true;
+}
+
+function positionMapTooltip() {
+  const map = $("#visitor-map");
+  const tooltip = $("#visitor-map-tooltip");
+  const point = state.mapViewport.pointElements.get(state.mapViewport.visibleKey);
+  if (!map || !tooltip || tooltip.hidden || !point) {
+    return;
+  }
+  tooltip.style.visibility = "hidden";
+  const mapRect = map.getBoundingClientRect();
+  const pointRect = point.getBoundingClientRect();
+  const tooltipRect = tooltip.getBoundingClientRect();
+  const gap = 10;
+  const edge = 8;
+  const pointCenterX = pointRect.left + pointRect.width / 2 - mapRect.left;
+  let left = pointCenterX - tooltipRect.width / 2;
+  let top = pointRect.top - mapRect.top - tooltipRect.height - gap;
+  if (top < edge) {
+    top = pointRect.bottom - mapRect.top + gap;
+  }
+  left = clampNumber(left, edge, Math.max(edge, mapRect.width - tooltipRect.width - edge));
+  top = clampNumber(top, edge, Math.max(edge, mapRect.height - tooltipRect.height - edge));
+  tooltip.style.left = `${Math.round(left)}px`;
+  tooltip.style.top = `${Math.round(top)}px`;
+  tooltip.style.visibility = "";
+}
+
+function restorePinnedMapTooltip() {
+  if (state.mapViewport.pinnedKey && state.mapViewport.rowsByKey.has(state.mapViewport.pinnedKey)) {
+    showMapLocation(state.mapViewport.pinnedKey, { pin: true });
+    return;
+  }
+  hideMapTooltip();
+}
+
+function hideMapTooltip() {
+  const tooltip = $("#visitor-map-tooltip");
+  state.mapViewport.visibleKey = "";
+  state.mapViewport.pointElements.forEach((point, key) => {
+    point.classList.toggle("is-active", key === state.mapViewport.pinnedKey);
+  });
+  if (tooltip) {
+    tooltip.hidden = true;
+    tooltip.style.removeProperty("left");
+    tooltip.style.removeProperty("top");
+    tooltip.style.removeProperty("visibility");
+  }
+}
+
+function clearMapSelection(options = {}) {
+  const hadSelection = Boolean(state.mapViewport.pinnedKey || state.mapViewport.visibleKey);
+  state.mapViewport.pinnedKey = "";
+  state.mapViewport.pointElements.forEach((point) => {
+    point.classList.remove("is-active");
+    point.setAttribute("aria-pressed", "false");
+  });
+  hideMapTooltip();
+  if (hadSelection && options.announce) {
+    announceMap("已关闭城市详情");
+  }
+}
+
+function announceMap(message) {
+  setElementText($("#visitor-map-announcement"), message);
+}
+
+function clampMapViewport() {
+  const map = $("#visitor-map");
+  const viewport = state.mapViewport;
+  if (!map) {
+    return;
+  }
+  const width = map.clientWidth;
+  const height = map.clientHeight;
+  viewport.scale = clampNumber(viewport.scale, MAP_MIN_SCALE, MAP_MAX_SCALE);
+  const minX = Math.min(0, width - width * viewport.scale);
+  const minY = Math.min(0, height - height * viewport.scale);
+  viewport.x = clampNumber(viewport.x, minX, 0);
+  viewport.y = clampNumber(viewport.y, minY, 0);
+  if (viewport.scale === MAP_MIN_SCALE) {
+    viewport.x = 0;
+    viewport.y = 0;
+  }
+}
+
+function applyMapViewport(options = {}) {
+  const map = $("#visitor-map");
+  const world = $("#visitor-map-world");
+  if (!map || !world) {
+    return;
+  }
+  clampMapViewport();
+  const viewport = state.mapViewport;
+  world.style.setProperty("--map-scale", String(viewport.scale));
+  world.style.setProperty("--map-inverse-scale", String(1 / viewport.scale));
+  world.style.setProperty("--map-x", `${viewport.x}px`);
+  world.style.setProperty("--map-y", `${viewport.y}px`);
+  map.classList.toggle("is-zoomed", viewport.scale > MAP_MIN_SCALE + 0.001);
+  syncMapControls();
+  positionMapTooltip();
+  if (options.announce) {
+    announceMap(options.announce);
+  }
+}
+
+function syncMapControls() {
+  const viewport = state.mapViewport;
+  const zoomOut = $("#visitor-map-zoom-out");
+  const zoomIn = $("#visitor-map-zoom-in");
+  const reset = $("#visitor-map-reset");
+  const zoomStatus = $("#visitor-map-zoom-status");
+  const zoomLabel = `${Math.round(viewport.scale * 100)}%`;
+  if (zoomStatus?.textContent !== zoomLabel) {
+    setElementText(zoomStatus, zoomLabel);
+  }
+  if (zoomOut) {
+    zoomOut.disabled = viewport.scale <= MAP_MIN_SCALE + 0.001;
+  }
+  if (zoomIn) {
+    zoomIn.disabled = viewport.scale >= MAP_MAX_SCALE - 0.001;
+  }
+  if (reset) {
+    reset.disabled = viewport.scale <= MAP_MIN_SCALE + 0.001 && Math.abs(viewport.x) < 0.5 && Math.abs(viewport.y) < 0.5;
+  }
+}
+
+function setMapZoom(nextScale, clientX, clientY, options = {}) {
+  const map = $("#visitor-map");
+  if (!map) {
+    return false;
+  }
+  const viewport = state.mapViewport;
+  const scale = clampNumber(nextScale, MAP_MIN_SCALE, MAP_MAX_SCALE);
+  if (Math.abs(scale - viewport.scale) < 0.001) {
+    return false;
+  }
+  const rect = map.getBoundingClientRect();
+  const anchorX = Number.isFinite(clientX) ? clampNumber(clientX - rect.left, 0, rect.width) : rect.width / 2;
+  const anchorY = Number.isFinite(clientY) ? clampNumber(clientY - rect.top, 0, rect.height) : rect.height / 2;
+  const worldX = (anchorX - viewport.x) / viewport.scale;
+  const worldY = (anchorY - viewport.y) / viewport.scale;
+  viewport.scale = scale;
+  viewport.x = anchorX - worldX * scale;
+  viewport.y = anchorY - worldY * scale;
+  applyMapViewport(options);
+  return true;
+}
+
+function resetMapViewport(options = {}) {
+  state.mapViewport.scale = MAP_MIN_SCALE;
+  state.mapViewport.x = 0;
+  state.mapViewport.y = 0;
+  applyMapViewport({ announce: options.announce === false ? "" : "地图已复位到 100%" });
+}
+
+function panMapBy(deltaX, deltaY, options = {}) {
+  const viewport = state.mapViewport;
+  const previousX = viewport.x;
+  const previousY = viewport.y;
+  viewport.x += deltaX;
+  viewport.y += deltaY;
+  applyMapViewport(options);
+  return Math.abs(previousX - viewport.x) > 0.1 || Math.abs(previousY - viewport.y) > 0.1;
+}
+
+function focusMapLocation(key) {
+  const map = $("#visitor-map");
+  const point = state.mapViewport.pointElements.get(key);
+  const row = state.mapViewport.rowsByKey.get(key);
+  if (!map || !point || !row) {
+    return false;
+  }
+  const targetScale = Math.max(state.mapViewport.scale, 2.25);
+  const left = Number(point.dataset.mapLeft || 50) / 100;
+  const top = Number(point.dataset.mapTop || 50) / 100;
+  state.mapViewport.scale = targetScale;
+  state.mapViewport.x = map.clientWidth / 2 - map.clientWidth * left * targetScale;
+  state.mapViewport.y = map.clientHeight / 2 - map.clientHeight * top * targetScale;
+  applyMapViewport();
+  showMapLocation(key, { pin: true, announce: true });
+  point.focus({ preventScroll: true });
+  return true;
+}
+
+function handleMapWheel(event) {
+  const delta = clampNumber(event.deltaY, -120, 120);
+  const nextScale = state.mapViewport.scale * Math.exp(-delta * 0.0025);
+  if (!setMapZoom(nextScale, event.clientX, event.clientY)) {
+    return;
+  }
+  event.preventDefault();
+  const map = event.currentTarget;
+  map.classList.add("is-interacting");
+  window.clearTimeout(state.mapViewport.wheelTimer);
+  state.mapViewport.wheelTimer = window.setTimeout(() => map.classList.remove("is-interacting"), 120);
+}
+
+function mapPointerDistance(first, second) {
+  return Math.hypot(second.x - first.x, second.y - first.y);
+}
+
+function beginMapPinch(map) {
+  const pointers = [...state.mapViewport.pointers.values()].slice(0, 2);
+  if (pointers.length < 2) {
+    return;
+  }
+  const rect = map.getBoundingClientRect();
+  const midpointX = (pointers[0].x + pointers[1].x) / 2 - rect.left;
+  const midpointY = (pointers[0].y + pointers[1].y) / 2 - rect.top;
+  state.mapViewport.pinchStart = {
+    distance: Math.max(1, mapPointerDistance(pointers[0], pointers[1])),
+    scale: state.mapViewport.scale,
+    worldX: (midpointX - state.mapViewport.x) / state.mapViewport.scale,
+    worldY: (midpointY - state.mapViewport.y) / state.mapViewport.scale
+  };
+  state.mapViewport.dragStart = null;
+  state.mapViewport.moved = true;
+  state.mapViewport.suppressClick = true;
+  map.classList.add("is-interacting");
+  state.mapViewport.pointers.forEach((_, pointerId) => {
+    try {
+      map.setPointerCapture(pointerId);
+    } catch {
+      // The pointer may already have ended between events.
+    }
+  });
+}
+
+function handleMapPointerDown(event) {
+  if (event.pointerType === "mouse" && event.button !== 0) {
+    return;
+  }
+  const map = event.currentTarget;
+  state.mapViewport.pointers.set(event.pointerId, {
+    x: event.clientX,
+    y: event.clientY,
+    startX: event.clientX,
+    startY: event.clientY,
+    pointerType: event.pointerType
+  });
+  if (state.mapViewport.pointers.size === 1) {
+    state.mapViewport.dragStart = {
+      pointerId: event.pointerId,
+      x: event.clientX,
+      y: event.clientY,
+      mapX: state.mapViewport.x,
+      mapY: state.mapViewport.y,
+      pointerType: event.pointerType
+    };
+    state.mapViewport.moved = false;
+  } else if (state.mapViewport.pointers.size === 2) {
+    beginMapPinch(map);
+  }
+}
+
+function handleMapPointerMove(event) {
+  const map = event.currentTarget;
+  const pointer = state.mapViewport.pointers.get(event.pointerId);
+  if (!pointer) {
+    return;
+  }
+  pointer.x = event.clientX;
+  pointer.y = event.clientY;
+  if (state.mapViewport.pointers.size >= 2) {
+    if (!state.mapViewport.pinchStart) {
+      beginMapPinch(map);
+    }
+    const pointers = [...state.mapViewport.pointers.values()].slice(0, 2);
+    const start = state.mapViewport.pinchStart;
+    const rect = map.getBoundingClientRect();
+    const midpointX = (pointers[0].x + pointers[1].x) / 2 - rect.left;
+    const midpointY = (pointers[0].y + pointers[1].y) / 2 - rect.top;
+    const distance = Math.max(1, mapPointerDistance(pointers[0], pointers[1]));
+    state.mapViewport.scale = clampNumber(start.scale * (distance / start.distance), MAP_MIN_SCALE, MAP_MAX_SCALE);
+    state.mapViewport.x = midpointX - start.worldX * state.mapViewport.scale;
+    state.mapViewport.y = midpointY - start.worldY * state.mapViewport.scale;
+    applyMapViewport();
+    event.preventDefault();
+    return;
+  }
+  const drag = state.mapViewport.dragStart;
+  if (!drag || drag.pointerId !== event.pointerId) {
+    return;
+  }
+  if (drag.pointerType === "touch" && state.mapViewport.scale <= MAP_MIN_SCALE + 0.001) {
+    return;
+  }
+  const deltaX = event.clientX - drag.x;
+  const deltaY = event.clientY - drag.y;
+  const dragThreshold = drag.pointerType === "touch" ? 9 : MAP_DRAG_THRESHOLD;
+  if (!state.mapViewport.moved && Math.hypot(deltaX, deltaY) < dragThreshold) {
+    return;
+  }
+  if (!state.mapViewport.moved) {
+    state.mapViewport.moved = true;
+    state.mapViewport.suppressClick = true;
+    map.classList.add("is-interacting");
+    try {
+      map.setPointerCapture(event.pointerId);
+    } catch {
+      // Pointer capture is a progressive enhancement for mouse and touch drags.
+    }
+  }
+  state.mapViewport.x = drag.mapX + deltaX;
+  state.mapViewport.y = drag.mapY + deltaY;
+  applyMapViewport();
+  event.preventDefault();
+}
+
+function handleMapPointerEnd(event) {
+  const map = $("#visitor-map");
+  if (!state.mapViewport.pointers.has(event.pointerId)) {
+    return;
+  }
+  state.mapViewport.pointers.delete(event.pointerId);
+  if (map?.hasPointerCapture?.(event.pointerId)) {
+    map.releasePointerCapture(event.pointerId);
+  }
+  if (state.mapViewport.pointers.size === 1) {
+    const [pointerId, pointer] = state.mapViewport.pointers.entries().next().value;
+    state.mapViewport.pinchStart = null;
+    state.mapViewport.dragStart = {
+      pointerId,
+      x: pointer.x,
+      y: pointer.y,
+      mapX: state.mapViewport.x,
+      mapY: state.mapViewport.y,
+      pointerType: pointer.pointerType
+    };
+    return;
+  }
+  if (state.mapViewport.pointers.size > 1) {
+    beginMapPinch(map);
+    return;
+  }
+  state.mapViewport.dragStart = null;
+  state.mapViewport.pinchStart = null;
+  map?.classList.remove("is-interacting");
+  if (state.mapViewport.moved) {
+    state.mapViewport.suppressClick = true;
+    window.setTimeout(() => {
+      state.mapViewport.suppressClick = false;
+    }, 0);
+  }
+  state.mapViewport.moved = false;
+  schedulePendingMapRender();
+}
+
+function handleMapLostPointerCapture(event) {
+  if (event.target !== event.currentTarget) {
+    return;
+  }
+  handleMapPointerEnd(event);
+}
+
+function clearMapPointers() {
+  const map = $("#visitor-map");
+  state.mapViewport.pointers.clear();
+  state.mapViewport.dragStart = null;
+  state.mapViewport.pinchStart = null;
+  state.mapViewport.moved = false;
+  state.mapViewport.suppressClick = false;
+  map?.classList.remove("is-interacting");
+  schedulePendingMapRender();
+}
+
+function schedulePendingMapRender() {
+  if (!state.mapViewport.pendingRows || state.mapViewport.pointers.size || state.mapViewport.pendingRenderTimer) {
+    return;
+  }
+  state.mapViewport.pendingRenderTimer = window.setTimeout(() => {
+    state.mapViewport.pendingRenderTimer = null;
+    if (state.mapViewport.pointers.size || !state.mapViewport.pendingRows) {
+      return;
+    }
+    const rows = state.mapViewport.pendingRows;
+    state.mapViewport.pendingRows = null;
+    renderMap(rows);
+  }, 0);
+}
+
+function handleMapKeydown(event) {
+  const point = event.target.closest(".map-point");
+  if (point && (event.key === "Enter" || event.key === " ")) {
+    event.preventDefault();
+    point.click();
+    return;
+  }
+  if (event.key === "+" || event.key === "=") {
+    event.preventDefault();
+    setMapZoom(state.mapViewport.scale + MAP_ZOOM_STEP, undefined, undefined, { announce: `地图缩放至 ${Math.round(clampNumber(state.mapViewport.scale + MAP_ZOOM_STEP, MAP_MIN_SCALE, MAP_MAX_SCALE) * 100)}%` });
+    return;
+  }
+  if (event.key === "-") {
+    event.preventDefault();
+    setMapZoom(state.mapViewport.scale - MAP_ZOOM_STEP, undefined, undefined, { announce: `地图缩放至 ${Math.round(clampNumber(state.mapViewport.scale - MAP_ZOOM_STEP, MAP_MIN_SCALE, MAP_MAX_SCALE) * 100)}%` });
+    return;
+  }
+  if (event.key === "Home" || event.key === "0") {
+    event.preventDefault();
+    resetMapViewport();
+    return;
+  }
+  if (event.key === "Escape") {
+    if (state.mapViewport.pinnedKey || state.mapViewport.visibleKey) {
+      event.preventDefault();
+      clearMapSelection({ announce: true });
+    }
+    return;
+  }
+  const movement = {
+    ArrowLeft: [MAP_KEYBOARD_PAN_STEP, 0],
+    ArrowRight: [-MAP_KEYBOARD_PAN_STEP, 0],
+    ArrowUp: [0, MAP_KEYBOARD_PAN_STEP],
+    ArrowDown: [0, -MAP_KEYBOARD_PAN_STEP]
+  }[event.key];
+  if (movement && panMapBy(...movement)) {
+    event.preventDefault();
+    announceMap(`地图位置已移动，当前缩放 ${Math.round(state.mapViewport.scale * 100)}%`);
+  }
+}
+
+function handleMapClick(event) {
+  if (state.mapViewport.suppressClick) {
+    event.preventDefault();
+    return;
+  }
+  const point = event.target.closest(".map-point");
+  if (point) {
+    const key = point.dataset.mapKey || "";
+    if (state.mapViewport.pinnedKey === key) {
+      clearMapSelection({ announce: true });
+    } else {
+      showMapLocation(key, { pin: true, announce: true });
+    }
+    return;
+  }
+  if (!event.target.closest(".map-tooltip")) {
+    clearMapSelection({ announce: true });
+  }
+}
+
+function handleMapPointerOver(event) {
+  if (event.pointerType === "touch") {
+    return;
+  }
+  const point = event.target.closest(".map-point");
+  if (!point || point.contains(event.relatedTarget)) {
+    return;
+  }
+  showMapLocation(point.dataset.mapKey || "");
+}
+
+function handleMapPointerOut(event) {
+  if (event.pointerType === "touch") {
+    return;
+  }
+  const point = event.target.closest(".map-point");
+  if (!point || point.contains(event.relatedTarget)) {
+    return;
+  }
+  if (document.activeElement === point) {
+    return;
+  }
+  restorePinnedMapTooltip();
+}
+
+function handleMapFocusIn(event) {
+  const point = event.target.closest(".map-point");
+  if (point) {
+    showMapLocation(point.dataset.mapKey || "", { announce: true });
+  }
+}
+
+function handleMapFocusOut(event) {
+  if (!event.target.closest(".map-point")) {
+    return;
+  }
+  window.setTimeout(() => {
+    if (!$("#visitor-map")?.contains(document.activeElement) || !document.activeElement.closest?.(".map-point")) {
+      restorePinnedMapTooltip();
+    }
+  }, 0);
+}
+
+function handleMapDataListClick(event) {
+  const action = event.target.closest(".map-data-focus");
+  if (action) {
+    focusMapLocation(action.dataset.mapKey || "");
+    const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+    $("#visitor-map")?.scrollIntoView({ block: "nearest", behavior: reducedMotion ? "auto" : "smooth" });
+  }
 }
 
 function getVisibleMapBounds(map) {
@@ -2213,16 +2821,6 @@ function projectCoordinateToVisibleMap(lon, lat, bounds) {
   };
 }
 
-function coordinatesFor(row, index) {
-  const lat = Number(row.latitude);
-  const lon = Number(row.longitude);
-  if (isUsableCoordinate(lat, lon)) {
-    return [lon, lat];
-  }
-  const fallback = countryPositions[String(row.country || "").toUpperCase()] || [20 + index * 17, 25 - (index % 5) * 8];
-  return [fallback[0] + (index % 3) * 3, fallback[1] - (index % 4) * 2];
-}
-
 function isUsableCoordinate(lat, lon) {
   return Number.isFinite(lat)
     && Number.isFinite(lon)
@@ -2239,10 +2837,6 @@ function clampNumber(value, min, max) {
 
 function mapPlaceLabel(row) {
   return [countryDisplayName(row.country), row.region, row.city].filter(Boolean).join(" / ") || "未知位置";
-}
-
-function mapShortPlaceLabel(row) {
-  return row.city || row.region || countryDisplayName(row.country) || "未知";
 }
 
 function renderTopPages(rows) {
@@ -6243,6 +6837,9 @@ function bindEvents() {
     }
   });
   window.addEventListener("resize", handleMapResize);
+  window.addEventListener("blur", clearMapPointers);
+  window.addEventListener("pointerup", handleMapPointerEnd);
+  window.addEventListener("pointercancel", handleMapPointerEnd);
   window.addEventListener("popstate", handleAdminPopState);
   window.addEventListener("beforeunload", (event) => {
     if (!hasAnyDirtyEditor()) {
@@ -6254,6 +6851,30 @@ function bindEvents() {
   $$('[data-detail-back]').forEach((button) => {
     button.addEventListener("click", () => leaveMobileDetail(button.dataset.detailBack));
   });
+
+  const visitorMap = $("#visitor-map");
+  visitorMap.addEventListener("wheel", handleMapWheel, { passive: false });
+  visitorMap.addEventListener("pointerdown", handleMapPointerDown);
+  visitorMap.addEventListener("pointermove", handleMapPointerMove);
+  visitorMap.addEventListener("pointerup", handleMapPointerEnd);
+  visitorMap.addEventListener("pointercancel", handleMapPointerEnd);
+  visitorMap.addEventListener("lostpointercapture", handleMapLostPointerCapture);
+  visitorMap.addEventListener("pointerover", handleMapPointerOver);
+  visitorMap.addEventListener("pointerout", handleMapPointerOut);
+  visitorMap.addEventListener("focusin", handleMapFocusIn);
+  visitorMap.addEventListener("focusout", handleMapFocusOut);
+  visitorMap.addEventListener("click", handleMapClick);
+  visitorMap.addEventListener("keydown", handleMapKeydown);
+  $("#visitor-map-zoom-in").addEventListener("click", () => {
+    const nextScale = clampNumber(state.mapViewport.scale + MAP_ZOOM_STEP, MAP_MIN_SCALE, MAP_MAX_SCALE);
+    setMapZoom(nextScale, undefined, undefined, { announce: `地图缩放至 ${Math.round(nextScale * 100)}%` });
+  });
+  $("#visitor-map-zoom-out").addEventListener("click", () => {
+    const nextScale = clampNumber(state.mapViewport.scale - MAP_ZOOM_STEP, MAP_MIN_SCALE, MAP_MAX_SCALE);
+    setMapZoom(nextScale, undefined, undefined, { announce: `地图缩放至 ${Math.round(nextScale * 100)}%` });
+  });
+  $("#visitor-map-reset").addEventListener("click", () => resetMapViewport());
+  $("#visitor-map-list").addEventListener("click", handleMapDataListClick);
 
   const confirmDialog = $("#admin-confirm-dialog");
   $("#admin-confirm-cancel").addEventListener("click", () => settleConfirmDialog(false));

@@ -2238,7 +2238,10 @@ async function recordArticleView(request, env, article, lang) {
 async function getAdminAnalyticsOverview(request, env) {
   await requireAdmin(request, env);
   const url = new URL(request.url);
-  const days = Math.min(Math.max(Number(url.searchParams.get("days") || 14), 1), 90);
+  const requestedDays = Number(url.searchParams.get("days") || 14);
+  const days = Number.isFinite(requestedDays)
+    ? Math.min(Math.max(Math.trunc(requestedDays), 1), 90)
+    : 14;
   const now = new Date();
   const since = new Date(now.getTime() - (days - 1) * 24 * 60 * 60 * 1000);
   since.setUTCHours(0, 0, 0, 0);
@@ -2259,6 +2262,7 @@ async function getAdminAnalyticsOverview(request, env) {
     dailyRows,
     hourlyRows,
     countryRows,
+    cityRows,
     regionRows,
     topPages,
     topArticles,
@@ -2295,6 +2299,25 @@ async function getAdminAnalyticsOverview(request, env) {
       group by country
       order by pv desc
       limit 80
+    `).bind(sinceIso).all(),
+    env.DB.prepare(`
+      select country, region, city, count(*) as pv, count(distinct visitor_id) as uv,
+             max(created_at) as last_seen_at, avg(latitude) as latitude, avg(longitude) as longitude
+      from analytics_page_views
+      where created_at >= ?
+        and latitude is not null
+        and longitude is not null
+        and latitude between -90 and 90
+        and longitude between -180 and 180
+        and (abs(latitude) > 0.0001 or abs(longitude) > 0.0001)
+        and (
+          coalesce(trim(country), '') <> ''
+          or coalesce(trim(region), '') <> ''
+          or coalesce(trim(city), '') <> ''
+        )
+      group by country, region, city
+      order by pv desc, uv desc
+      limit 200
     `).bind(sinceIso).all(),
     env.DB.prepare(`
       select country, region, city, ip_prefix, count(*) as pv, count(distinct visitor_id) as uv,
@@ -2370,6 +2393,7 @@ async function getAdminAnalyticsOverview(request, env) {
     daily: fillDailySeries((dailyRows.results || []), since, days),
     hourly: hourlyRows.results || [],
     countries: countryRows.results || [],
+    cities: (cityRows.results || []).map(adminAnalyticsCityRow),
     regions: regionRows.results || [],
     topPages: topPages.results || [],
     topArticles: topArticles.results || [],
@@ -2377,6 +2401,21 @@ async function getAdminAnalyticsOverview(request, env) {
     recentViews: recentViews.results || [],
     recentClicks: recentClicks.results || []
   });
+}
+
+function adminAnalyticsCityRow(row) {
+  const latitude = Number(row?.latitude);
+  const longitude = Number(row?.longitude);
+  return {
+    country: row?.country || "",
+    region: row?.region || "",
+    city: row?.city || "",
+    pv: Number(row?.pv || 0),
+    uv: Number(row?.uv || 0),
+    last_seen_at: row?.last_seen_at || "",
+    latitude: Number.isFinite(latitude) ? latitude : null,
+    longitude: Number.isFinite(longitude) ? longitude : null
+  };
 }
 
 async function getAdminChatMessages(request, env) {

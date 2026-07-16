@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex,nofollow">
   <title>鲁肃个人站管理后台</title>
-  <link rel="stylesheet" href="/admin/admin.css?v=20260716-admin-safety-foundation-r1">
+  <link rel="stylesheet" href="/admin/admin.css?v=20260716-admin-interactive-map-r1">
 </head>
 <body>
   <div class="admin-shell">
@@ -69,10 +69,41 @@
         <div class="dashboard-priority-grid">
           <section class="xp-panel map-block priority-map">
             <div class="mini-table-head">
-              <h2>实时城市分布</h2>
-              <span>按真实经纬度聚合</span>
+              <h2>城市访问分布</h2>
+              <span id="visitor-map-range">最近 14 天 · 城市聚合</span>
             </div>
-            <div class="pixel-map" id="visitor-map" aria-label="访问地图"></div>
+            <div class="map-interaction-bar">
+              <p id="visitor-map-instructions">滚轮或双指缩放，拖动查看区域；悬停、点击或聚焦城市点可查看 PV 与 UV。</p>
+              <div class="map-controls" role="group" aria-label="地图缩放控件">
+                <button class="xp-button map-control-button" type="button" id="visitor-map-zoom-out" aria-controls="visitor-map" aria-label="缩小地图">缩小</button>
+                <output id="visitor-map-zoom-status" aria-live="polite" aria-atomic="true">100%</output>
+                <button class="xp-button map-control-button" type="button" id="visitor-map-zoom-in" aria-controls="visitor-map" aria-label="放大地图">放大</button>
+                <button class="xp-button map-control-button" type="button" id="visitor-map-reset" aria-controls="visitor-map">复位</button>
+              </div>
+            </div>
+            <div
+              class="pixel-map"
+              id="visitor-map"
+              role="region"
+              tabindex="0"
+              aria-label="可缩放城市访问地图"
+              aria-describedby="visitor-map-instructions"
+              aria-keyshortcuts="+ - ArrowUp ArrowDown ArrowLeft ArrowRight Home Escape"
+            >
+              <div class="map-world" id="visitor-map-world">
+                <div class="map-points" id="visitor-map-points"></div>
+              </div>
+              <aside class="map-tooltip" id="visitor-map-tooltip" role="tooltip" hidden>
+                <strong id="visitor-map-tooltip-city">城市未选择</strong>
+                <span id="visitor-map-tooltip-region">地区未记录</span>
+                <div class="map-tooltip-metrics">
+                  <span><b id="visitor-map-tooltip-pv">0</b><small>PV 浏览量</small></span>
+                  <span><b id="visitor-map-tooltip-uv">0</b><small>UV 独立访客</small></span>
+                </div>
+                <small id="visitor-map-tooltip-time">最近访问未记录</small>
+              </aside>
+              <span class="sr-only" id="visitor-map-announcement" aria-live="polite" aria-atomic="true"></span>
+            </div>
             <details class="map-data-details">
               <summary>查看地图数据列表</summary>
               <div class="map-data-list" id="visitor-map-list" role="list" aria-label="地图访问来源数据"></div>
@@ -599,6 +630,6 @@
     </div>
   </dialog>
 
-  <script src="/admin/admin.js?v=20260716-admin-safety-foundation-r1"></script>
+  <script src="/admin/admin.js?v=20260716-admin-interactive-map-r1"></script>
 </body>
 </html>
