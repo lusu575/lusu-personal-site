@@ -2057,6 +2057,7 @@ async function updateAdminAccount(request, env, userId) {
   const nextRole = normalizeAccountRole(body.role === undefined ? existing.role : body.role);
   const password = String(body.password || body.newPassword || "");
   const passwordChanged = password.trim().length > 0;
+  const revokeSessions = body.revokeSessions !== false;
 
   if (OWNER_ADMIN_EMAILS.has(nextEmail) && nextRole !== "admin") {
     throw new HttpError("站长账号必须保留管理员权限。", 400);
@@ -2081,10 +2082,32 @@ async function updateAdminAccount(request, env, userId) {
     fields.splice(2, 0, "password_hash = ?");
     binds.splice(2, 0, await hashPassword(password));
   }
-  binds.push(existing.id);
-  await env.DB.prepare(`update users set ${fields.join(", ")} where id = ?`).bind(...binds).run();
+  binds.push(existing.id, nextRole);
+  const updateResult = await env.DB.prepare(`
+    update users
+    set ${fields.join(", ")}
+    where id = ?
+      and (
+        role <> 'admin'
+        or ? = 'admin'
+        or exists (
+          select 1
+          from users as other_admin
+          where other_admin.role = 'admin'
+            and other_admin.id <> users.id
+        )
+      )
+  `).bind(...binds).run();
 
-  if (passwordChanged) {
+  if (typeof updateResult?.meta?.changes === "number" && updateResult.meta.changes < 1) {
+    const current = await env.DB.prepare("select id, role from users where id = ?").bind(existing.id).first();
+    if (!current) {
+      return json({ error: "账号不存在。" }, 404);
+    }
+    throw new HttpError("不能移除最后一个管理员；请先为其他账号授予管理员权限。", 409);
+  }
+
+  if (passwordChanged && revokeSessions) {
     if (existing.id === adminSession.user.id) {
       await env.DB.prepare("delete from sessions where user_id = ? and token_hash <> ?")
         .bind(existing.id, adminSession.tokenHash).run();
@@ -4128,7 +4151,7 @@ function normalizeArticleTranslations(value, partial = false) {
     translations[lang] = {
       title,
       summary: normalizeOptionalText(item.summary, 500),
-      content_markdown: normalizeOptionalText(item.content_markdown, 200000)
+      content_markdown: normalizeRequiredText(item.content_markdown, 200000, `${lang} 正文不能为空。`)
     };
   });
 

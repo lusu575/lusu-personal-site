@@ -45,6 +45,22 @@ const state = {
   accountSaving: false,
   socialLinks: [],
   socialLinksSaving: false,
+  mobileNavOpen: false,
+  mobileNavReturnFocus: null,
+  masterDetail: {
+    articles: { view: "list", scrollTop: 0, focusId: "" },
+    videos: { view: "list", scrollTop: 0, focusId: "" },
+    chat: { view: "list", scrollTop: 0, focusId: "" },
+    accounts: { view: "list", scrollTop: 0, focusId: "" }
+  },
+  editorTracking: {},
+  confirmDialogResolve: null,
+  confirmDialogReturnFocus: null,
+  confirmDialogExpected: "",
+  unsavedDialogResolve: null,
+  unsavedDialogReturnFocus: null,
+  handlingPopState: false,
+  chatGovernanceTab: "message",
   loadedPanels: {},
   loadingPanels: {},
   statusHoldUntil: 0,
@@ -53,6 +69,8 @@ const state = {
 };
 
 const ACTIVE_PANEL_STORAGE_KEY = "lusu-admin-active-panel";
+const ADMIN_HISTORY_STATE_KEY = "lusuAdminView";
+const MOBILE_ADMIN_MEDIA = window.matchMedia("(max-width: 920px)");
 const WORLD_MAP_ASPECT_RATIO = 1000 / 500;
 const LOCAL_COVER_ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/jpg", "image/png", "image/webp", "image/avif"]);
 const LOCAL_COVER_ALLOWED_IMAGE_EXTENSIONS = new Set(["jpg", "jpeg", "png", "webp", "avif"]);
@@ -93,6 +111,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-07-16",
+    title: "移动与操作安全底座",
+    body: "管理后台完成第一阶段移动与操作安全底座：移动端使用可关闭并回收焦点的导航抽屉，文章、视频、聊天和账号使用列表/详情双态；编辑表单增加未保存保护、三语错误定位和上下文危险确认；地图补充非交互点位与同数据替代列表，视频封面脱离元数据网格，聊天室治理分层，账号默认不选中并拆分资料保存与密码重置。后台资源版本更新为 20260716-admin-safety-foundation-r1。"
+  },
   {
     date: "2026-07-15",
     title: "网络来源禁言增加哈希代次保护",
@@ -496,6 +519,600 @@ const articleSlugLabels = {
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+
+const editorConfigs = {
+  articles: { form: "#article-form", indicator: "#article-dirty-indicator", label: "文章" },
+  videos: { form: "#video-form", indicator: "#video-dirty-indicator", label: "视频" },
+  videoCategories: { form: "#video-category-form", indicator: "", label: "视频分类" },
+  chat: { form: "#chat-form-admin", indicator: "#chat-dirty-indicator", label: "聊天记录" },
+  accounts: { form: "#account-form", indicator: "#account-dirty-indicator", label: "账号" },
+  socialLinks: { form: "#social-links-form", indicator: "", label: "社交链接" }
+};
+
+const masterDetailConfigs = {
+  articles: { list: "#article-list", title: "#article-editor-title", idAttribute: "articleId" },
+  videos: { list: "#video-list-admin", title: "#video-editor-title", idAttribute: "adminVideoId" },
+  chat: { list: "#chat-list", title: "#chat-detail-title", idAttribute: "messageId" },
+  accounts: { list: "#account-list", title: "#account-editor-title", idAttribute: "accountId" }
+};
+
+function editorForm(panel) {
+  const selector = editorConfigs[panel]?.form;
+  return selector ? $(selector) : null;
+}
+
+function editorTracking(panel) {
+  if (!editorConfigs[panel]) {
+    return null;
+  }
+  if (!state.editorTracking[panel]) {
+    state.editorTracking[panel] = {
+      initialized: false,
+      baseline: "",
+      baselineValues: [],
+      dirty: false,
+      lastSavedAt: ""
+    };
+  }
+  return state.editorTracking[panel];
+}
+
+function editorFieldElements(panel) {
+  const forms = panel === "accounts"
+    ? [$("#account-form"), $("#account-password-form")].filter(Boolean)
+    : [editorForm(panel)].filter(Boolean);
+  if (!forms.length) {
+    return [];
+  }
+  return forms.flatMap((form) => Array.from(form.elements)).filter((field) => {
+    if (!(field instanceof HTMLElement)) {
+      return false;
+    }
+    const type = String(field.type || "").toLowerCase();
+    if (["button", "submit", "reset", "file"].includes(type)) {
+      return false;
+    }
+    if (panel === "chat" && ["ban_reason", "ban_hours"].includes(field.name)) {
+      return false;
+    }
+    if (panel === "accounts" && field.name === "password_status") {
+      return false;
+    }
+    return Boolean(field.name || field.id || field.value);
+  });
+}
+
+function editorFieldKey(field, index) {
+  const type = String(field.type || field.tagName || "").toLowerCase();
+  const optionValue = type === "checkbox" || type === "radio" ? String(field.value || "") : "";
+  return `${field.name || field.id || "field"}:${type}:${optionValue}:${index}`;
+}
+
+function editorComparableValue(field) {
+  const type = String(field.type || "").toLowerCase();
+  if (type === "password") {
+    return field.value ? "pending-password" : "";
+  }
+  if (type === "checkbox" || type === "radio") {
+    return Boolean(field.checked);
+  }
+  if (field instanceof HTMLSelectElement && field.multiple) {
+    return Array.from(field.selectedOptions).map((option) => option.value);
+  }
+  return String(field.value || "");
+}
+
+function editorComparableSnapshot(panel) {
+  return JSON.stringify(editorFieldElements(panel).map((field, index) => [
+    editorFieldKey(field, index),
+    editorComparableValue(field)
+  ]));
+}
+
+function editorRestorableSnapshot(panel) {
+  return editorFieldElements(panel).map((field, index) => {
+    const type = String(field.type || "").toLowerCase();
+    let value = type === "password" ? "" : String(field.value || "");
+    if (type === "checkbox" || type === "radio") {
+      value = Boolean(field.checked);
+    }
+    return { index, key: editorFieldKey(field, index), type, value };
+  });
+}
+
+function ensureEditorIndicator(panel) {
+  const config = editorConfigs[panel];
+  if (!config) {
+    return null;
+  }
+  let indicator = config.indicator ? $(config.indicator) : null;
+  if (indicator) {
+    return indicator;
+  }
+  const actions = editorForm(panel)?.querySelector(".form-actions");
+  if (!actions) {
+    return null;
+  }
+  indicator = document.createElement("span");
+  indicator.className = "edit-state";
+  indicator.id = `${panel}-dirty-indicator`;
+  indicator.setAttribute("aria-live", "polite");
+  const status = actions.querySelector(".form-status");
+  actions.insertBefore(indicator, status || null);
+  config.indicator = `#${indicator.id}`;
+  return indicator;
+}
+
+function syncEditorIndicator(panel) {
+  const tracking = editorTracking(panel);
+  const indicator = ensureEditorIndicator(panel);
+  if (!tracking || !indicator) {
+    return;
+  }
+  indicator.classList.toggle("is-dirty", tracking.dirty);
+  if (tracking.dirty) {
+    setElementText(indicator, "未保存");
+    indicator.title = `${editorConfigs[panel].label}有未保存更改`;
+    return;
+  }
+  const savedText = tracking.lastSavedAt ? `已保存 ${tracking.lastSavedAt}` : "已保存";
+  setElementText(indicator, savedText);
+  indicator.title = savedText;
+}
+
+function captureEditorBaseline(panel, options = {}) {
+  const tracking = editorTracking(panel);
+  if (!tracking || !editorForm(panel)) {
+    return;
+  }
+  tracking.baseline = editorComparableSnapshot(panel);
+  tracking.baselineValues = editorRestorableSnapshot(panel);
+  tracking.initialized = true;
+  tracking.dirty = false;
+  if (options.saved) {
+    tracking.lastSavedAt = new Intl.DateTimeFormat("zh-CN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit"
+    }).format(new Date());
+  }
+  syncEditorIndicator(panel);
+}
+
+function refreshEditorDirtyState(panel) {
+  const tracking = editorTracking(panel);
+  if (!tracking || !editorForm(panel)) {
+    return false;
+  }
+  if (!tracking.initialized) {
+    captureEditorBaseline(panel);
+    return false;
+  }
+  tracking.dirty = editorComparableSnapshot(panel) !== tracking.baseline;
+  syncEditorIndicator(panel);
+  return tracking.dirty;
+}
+
+function isEditorDirty(panel) {
+  return refreshEditorDirtyState(panel);
+}
+
+function restoreEditorBaseline(panel) {
+  const tracking = editorTracking(panel);
+  const fields = editorFieldElements(panel);
+  if (!tracking?.initialized) {
+    return;
+  }
+  tracking.baselineValues.forEach((item, index) => {
+    const field = fields[index];
+    if (!field || item.key !== editorFieldKey(field, index)) {
+      return;
+    }
+    if (item.type === "checkbox" || item.type === "radio") {
+      field.checked = Boolean(item.value);
+    } else {
+      field.value = item.value;
+    }
+  });
+  if (panel === "articles") {
+    clearArticleValidation();
+    updateArticleLanguageStates();
+  } else if (panel === "videos") {
+    const form = editorForm(panel);
+    renderVideoThumbnailPreview(form?.elements?.thumbnail_url?.value || "");
+    renderAdminVideoPreview(form?.elements?.embed_url?.value || "");
+    syncVideoPinnedSortHint();
+  } else if (panel === "chat") {
+    syncChatActionState();
+  } else if (panel === "accounts") {
+    syncAccountSaveButton();
+  } else if (panel === "socialLinks") {
+    renderSocialLinkPreviewFromForm();
+  }
+  tracking.dirty = false;
+  syncEditorIndicator(panel);
+}
+
+function hasAnyDirtyEditor() {
+  return Object.keys(editorConfigs).some((panel) => isEditorDirty(panel));
+}
+
+function activeEditorPanel() {
+  return editorConfigs[state.activePanel] ? state.activePanel : "";
+}
+
+function isEditorBusy(panel) {
+  if (panel === "articles") {
+    return isArticleWriteBusy() || isArticleDetailPending();
+  }
+  if (panel === "videos") {
+    return isVideoEditBusy();
+  }
+  if (panel === "videoCategories") {
+    return isVideoCategoryWriteBusy();
+  }
+  if (panel === "chat") {
+    return isChatInteractionBusy();
+  }
+  if (panel === "accounts") {
+    return isAccountWriteBusy() || isAccountDetailPending();
+  }
+  if (panel === "socialLinks") {
+    return state.socialLinksSaving;
+  }
+  return false;
+}
+
+function focusableElements(container) {
+  return $$([
+    "button:not([disabled])",
+    "a[href]",
+    "input:not([disabled])",
+    "textarea:not([disabled])",
+    "select:not([disabled])",
+    "summary",
+    "[tabindex]:not([tabindex='-1'])"
+  ].join(","), container).filter((item) => !item.hidden && item.getClientRects().length > 0);
+}
+
+function trapFocus(event, container) {
+  if (event.key !== "Tab") {
+    return;
+  }
+  const items = focusableElements(container);
+  if (!items.length) {
+    event.preventDefault();
+    return;
+  }
+  const first = items[0];
+  const last = items[items.length - 1];
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
+}
+
+function openMobileNav(opener = document.activeElement) {
+  if (!MOBILE_ADMIN_MEDIA.matches || state.mobileNavOpen) {
+    return;
+  }
+  const sidebar = $("#admin-sidebar");
+  const backdrop = $("#mobile-nav-backdrop");
+  state.mobileNavOpen = true;
+  state.mobileNavReturnFocus = opener instanceof HTMLElement ? opener : $("#mobile-nav-toggle");
+  document.body.classList.add("admin-nav-open");
+  sidebar.inert = false;
+  backdrop.hidden = false;
+  $("#mobile-nav-toggle").setAttribute("aria-expanded", "true");
+  window.requestAnimationFrame(() => {
+    const active = sidebar.querySelector(".nav-button.active");
+    (active || $("#mobile-nav-close"))?.focus();
+  });
+}
+
+function closeMobileNav(options = {}) {
+  const restoreFocus = options.restoreFocus !== false;
+  const sidebar = $("#admin-sidebar");
+  const backdrop = $("#mobile-nav-backdrop");
+  state.mobileNavOpen = false;
+  document.body.classList.remove("admin-nav-open");
+  backdrop.hidden = true;
+  $("#mobile-nav-toggle").setAttribute("aria-expanded", "false");
+  sidebar.inert = MOBILE_ADMIN_MEDIA.matches;
+  if (restoreFocus) {
+    const target = state.mobileNavReturnFocus;
+    window.requestAnimationFrame(() => target?.isConnected && target.focus());
+  }
+  state.mobileNavReturnFocus = null;
+}
+
+function syncMobileNavMode() {
+  if (!MOBILE_ADMIN_MEDIA.matches) {
+    closeMobileNav({ restoreFocus: false });
+    $("#admin-sidebar").inert = false;
+    return;
+  }
+  if (!state.mobileNavOpen) {
+    $("#admin-sidebar").inert = true;
+    $("#mobile-nav-backdrop").hidden = true;
+  }
+}
+
+function settleConfirmDialog(result) {
+  const dialog = $("#admin-confirm-dialog");
+  const resolve = state.confirmDialogResolve;
+  const returnFocus = state.confirmDialogReturnFocus;
+  state.confirmDialogResolve = null;
+  state.confirmDialogReturnFocus = null;
+  state.confirmDialogExpected = "";
+  if (dialog.open) {
+    dialog.close();
+  }
+  resolve?.(Boolean(result));
+  window.requestAnimationFrame(() => returnFocus?.isConnected && returnFocus.focus());
+}
+
+function openConfirmDialog(options = {}) {
+  if (state.confirmDialogResolve) {
+    return Promise.resolve(false);
+  }
+  const dialog = $("#admin-confirm-dialog");
+  const inputWrap = $("#admin-confirm-input-wrap");
+  const input = $("#admin-confirm-input");
+  const submit = $("#admin-confirm-submit");
+  setElementText($("#admin-confirm-title"), options.title || "确认操作");
+  setElementText($("#admin-confirm-object"), options.object || "未选择");
+  setElementText($("#admin-confirm-state"), options.state || "未知");
+  setElementText($("#admin-confirm-impact"), options.impact || "请检查本次操作影响。");
+  setElementText($("#admin-confirm-recovery"), options.recovery || "请检查后再继续。");
+  setElementText(submit, options.confirmLabel || "确认");
+  state.confirmDialogExpected = String(options.expectedText || "");
+  input.value = "";
+  inputWrap.hidden = !state.confirmDialogExpected;
+  setElementText(
+    $("#admin-confirm-input-hint"),
+    state.confirmDialogExpected ? `请输入“${state.confirmDialogExpected}”后继续。` : ""
+  );
+  submit.disabled = Boolean(state.confirmDialogExpected);
+  state.confirmDialogReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  return new Promise((resolve) => {
+    state.confirmDialogResolve = resolve;
+    dialog.showModal();
+    window.requestAnimationFrame(() => $("#admin-confirm-cancel").focus());
+  });
+}
+
+function settleUnsavedDialog(choice) {
+  const dialog = $("#admin-unsaved-dialog");
+  const resolve = state.unsavedDialogResolve;
+  const returnFocus = state.unsavedDialogReturnFocus;
+  state.unsavedDialogResolve = null;
+  state.unsavedDialogReturnFocus = null;
+  if (dialog.open) {
+    dialog.close();
+  }
+  resolve?.(choice);
+  if (choice === "stay") {
+    window.requestAnimationFrame(() => returnFocus?.isConnected && returnFocus.focus());
+  }
+}
+
+function openUnsavedDialog(panel, description) {
+  if (state.unsavedDialogResolve) {
+    return Promise.resolve("stay");
+  }
+  const dialog = $("#admin-unsaved-dialog");
+  const label = editorConfigs[panel]?.label || "当前内容";
+  setElementText($("#admin-unsaved-title"), `${label}有未保存更改`);
+  setElementText($("#admin-unsaved-description"), description || "继续离开会丢弃当前表单里尚未保存的内容。");
+  setElementText($("#admin-unsaved-status"), "");
+  state.unsavedDialogReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  return new Promise((resolve) => {
+    state.unsavedDialogResolve = resolve;
+    dialog.showModal();
+    window.requestAnimationFrame(() => $("#admin-unsaved-stay").focus());
+  });
+}
+
+async function saveEditorForPanel(panel) {
+  if (panel === "articles") {
+    return saveArticle();
+  }
+  if (panel === "videos") {
+    return saveVideo();
+  }
+  if (panel === "videoCategories") {
+    return saveVideoCategory();
+  }
+  if (panel === "chat") {
+    return saveChatMessage();
+  }
+  if (panel === "accounts") {
+    const passwordForm = $("#account-password-form");
+    if (passwordForm?.elements?.password?.value) {
+      const passwordSaved = await resetAccountPassword();
+      if (!passwordSaved) {
+        return false;
+      }
+    }
+    if (refreshEditorDirtyState("accounts")) {
+      return saveAccountProfile();
+    }
+    return true;
+  }
+  if (panel === "socialLinks") {
+    return saveSocialLinks();
+  }
+  return true;
+}
+
+async function confirmEditorCanLeave(panel, description) {
+  if (!editorConfigs[panel] || !isEditorDirty(panel)) {
+    return true;
+  }
+  if (isEditorBusy(panel)) {
+    setStatus(`${editorConfigs[panel].label}正在处理，请完成后再离开。`, { holdMs: 2500 });
+    return false;
+  }
+  const choice = await openUnsavedDialog(panel, description);
+  if (choice === "stay") {
+    return false;
+  }
+  if (choice === "save") {
+    const saved = await saveEditorForPanel(panel);
+    if (!saved || isEditorDirty(panel)) {
+      return false;
+    }
+    return true;
+  }
+  restoreEditorBaseline(panel);
+  return true;
+}
+
+async function runGuardedTransition(panel, description, action) {
+  if (!(await confirmEditorCanLeave(panel, description))) {
+    return false;
+  }
+  const result = await action();
+  return result !== false;
+}
+
+function masterDetailLayout(panel) {
+  return document.querySelector(`[data-master-detail="${panel}"]`);
+}
+
+function masterDetailList(panel) {
+  const selector = masterDetailConfigs[panel]?.list;
+  return selector ? $(selector) : null;
+}
+
+function selectedItemSelector(panel, id) {
+  const attribute = {
+    articles: "data-article-id",
+    videos: "data-admin-video-id",
+    chat: "data-message-id",
+    accounts: "data-account-id"
+  }[panel];
+  return attribute && id ? `[${attribute}="${CSS.escape(String(id))}"]` : "";
+}
+
+function rememberMasterListContext(panel, focusId = "") {
+  const detailState = state.masterDetail[panel];
+  const list = masterDetailList(panel);
+  if (!detailState) {
+    return;
+  }
+  detailState.scrollTop = list?.scrollTop || 0;
+  detailState.focusId = focusId || detailState.focusId;
+}
+
+function setMasterDetailView(panel, view, options = {}) {
+  const detailState = state.masterDetail[panel];
+  const layout = masterDetailLayout(panel);
+  if (!detailState || !layout) {
+    return;
+  }
+  detailState.view = view === "detail" ? "detail" : "list";
+  layout.classList.toggle("is-mobile-detail", detailState.view === "detail");
+  if (detailState.view === "detail" && options.focus !== false) {
+    const title = $(masterDetailConfigs[panel].title);
+    if (title) {
+      title.tabIndex = -1;
+      window.requestAnimationFrame(() => title.focus());
+    }
+  } else if (detailState.view === "list" && options.restore !== false) {
+    window.requestAnimationFrame(() => {
+      const list = masterDetailList(panel);
+      if (list) {
+        list.scrollTop = detailState.scrollTop || 0;
+      }
+      const selector = selectedItemSelector(panel, detailState.focusId);
+      const target = selector ? document.querySelector(selector) : null;
+      (target || list)?.focus?.();
+    });
+  }
+}
+
+function currentAdminHistoryView() {
+  return {
+    panel: state.activePanel,
+    view: state.masterDetail[state.activePanel]?.view || "list"
+  };
+}
+
+function replaceAdminHistoryView(panel = state.activePanel, view = "list") {
+  const next = { ...(history.state || {}) };
+  next[ADMIN_HISTORY_STATE_KEY] = { panel, view };
+  history.replaceState(next, "");
+}
+
+function pushAdminDetailHistory(panel) {
+  const next = { ...(history.state || {}) };
+  next[ADMIN_HISTORY_STATE_KEY] = { panel, view: "detail" };
+  history.pushState(next, "");
+}
+
+function enterMobileDetail(panel, focusId = "") {
+  if (!MOBILE_ADMIN_MEDIA.matches || !state.masterDetail[panel]) {
+    return;
+  }
+  rememberMasterListContext(panel, focusId);
+  setMasterDetailView(panel, "detail");
+  const current = history.state?.[ADMIN_HISTORY_STATE_KEY];
+  if (current?.panel !== panel || current?.view !== "detail") {
+    pushAdminDetailHistory(panel);
+  }
+}
+
+async function leaveMobileDetail(panel) {
+  if (!state.masterDetail[panel] || state.masterDetail[panel].view !== "detail") {
+    return true;
+  }
+  const current = history.state?.[ADMIN_HISTORY_STATE_KEY];
+  if (current?.panel === panel && current?.view === "detail") {
+    history.back();
+    return true;
+  }
+  return runGuardedTransition(panel, "返回列表会放弃当前详情里尚未保存的更改。", async () => {
+    setMasterDetailView(panel, "list");
+    replaceAdminHistoryView(panel, "list");
+  });
+}
+
+async function handleAdminPopState(event) {
+  if (state.handlingPopState) {
+    return;
+  }
+  const target = event.state?.[ADMIN_HISTORY_STATE_KEY];
+  if (!target || !validPanels.has(target.panel)) {
+    return;
+  }
+  state.handlingPopState = true;
+  const current = currentAdminHistoryView();
+  const editorPanel = activeEditorPanel();
+  const allowed = await confirmEditorCanLeave(editorPanel, "浏览器返回会离开当前详情，未保存内容将被丢弃。");
+  if (!allowed) {
+    const restore = { ...(history.state || {}) };
+    restore[ADMIN_HISTORY_STATE_KEY] = current;
+    history.pushState(restore, "");
+    state.handlingPopState = false;
+    return;
+  }
+  applyActivePanel(target.panel);
+  rememberActivePanel(target.panel);
+  Object.keys(state.masterDetail).forEach((panel) => {
+    setMasterDetailView(panel, panel === target.panel ? target.view : "list", {
+      focus: false,
+      restore: panel === target.panel
+    });
+  });
+  updateRefreshButton();
+  await loadPanelData(target.panel);
+  state.handlingPopState = false;
+}
 
 async function api(path, options = {}) {
   const response = await fetch(path, {
@@ -1149,17 +1766,47 @@ function applyActivePanel(panel) {
   }
 }
 
-function switchPanel(panel) {
+async function switchPanel(panel, options = {}) {
   if (!validPanels.has(panel)) {
-    return;
+    return false;
   }
-  applyActivePanel(panel);
-  rememberActivePanel(panel);
-  updateRefreshButton();
-  loadPanelData(panel);
+  if (panel === state.activePanel) {
+    if (state.mobileNavOpen) {
+      closeMobileNav({ restoreFocus: false });
+    }
+    if (options.focusTitle) {
+      window.requestAnimationFrame(() => $("#panel-title")?.focus());
+    }
+    return true;
+  }
+  const previousPanel = state.activePanel;
+  return runGuardedTransition(
+    activeEditorPanel(),
+    `切换到“${panelMeta[panel][0]}”会离开当前编辑内容。`,
+    async () => {
+      if (state.masterDetail[previousPanel]) {
+        setMasterDetailView(previousPanel, "list", { focus: false, restore: false });
+      }
+      applyActivePanel(panel);
+      rememberActivePanel(panel);
+      if (state.masterDetail[panel]) {
+        setMasterDetailView(panel, "list", { focus: false, restore: true });
+      }
+      replaceAdminHistoryView(panel, "list");
+      updateRefreshButton();
+      if (state.mobileNavOpen) {
+        closeMobileNav({ restoreFocus: false });
+      }
+      await loadPanelData(panel);
+      if (options.focusTitle) {
+        window.requestAnimationFrame(() => $("#panel-title")?.focus());
+      }
+      return true;
+    }
+  );
 }
 
-function handleNavKeydown(event, index, buttons) {
+async function handleNavKeydown(event, index, buttons) {
   const nextIndex = {
     ArrowDown: (index + 1) % buttons.length,
     ArrowRight: (index + 1) % buttons.length,
@@ -1173,8 +1820,8 @@ function handleNavKeydown(event, index, buttons) {
   }
   event.preventDefault();
   const next = buttons[nextIndex];
-  next.focus();
-  switchPanel(next.dataset.panel);
+  const switched = await switchPanel(next.dataset.panel);
+  (switched ? next : buttons[index]).focus();
 }
 
 function autoRefreshActivePanel() {
@@ -1435,6 +2082,7 @@ function renderBars(container, rows, labelKey) {
 
 function renderMap(rows) {
   const map = $("#visitor-map");
+  const list = $("#visitor-map-list");
   const data = rows
     .filter((row) => Number(row.pv || 0) > 0)
     .sort((a, b) => Number(b.pv || 0) - Number(a.pv || 0))
@@ -1447,6 +2095,7 @@ function renderMap(rows) {
     empty.className = "map-empty";
     setElementText(empty, "等待访问数据");
     map.replaceChildren(empty);
+    list?.replaceChildren(createEmptyStateElement("暂无地图来源数据"));
     return;
   }
   const mapLabel = `访问地图：${formatNumber(data.length)} 个真实经纬度来源点`;
@@ -1461,10 +2110,10 @@ function renderMap(rows) {
     const label = mapPlaceLabel(row);
     const shortLabel = mapShortPlaceLabel(row);
     const ipHint = row.ip_prefix ? ` · 网络前缀 ${row.ip_prefix}` : "";
-    const point = document.createElement("button");
+    const point = document.createElement("span");
     const caption = document.createElement("span");
     point.className = "map-point";
-    point.type = "button";
+    point.setAttribute("role", "img");
     point.style.left = `${left}%`;
     point.style.top = `${top}%`;
     point.style.setProperty("--size", `${size}px`);
@@ -1478,6 +2127,36 @@ function renderMap(rows) {
     caption.title = pointTitle;
     point.append(caption);
     return point;
+  }));
+  renderMapDataList(data);
+}
+
+function renderMapDataList(rows) {
+  const list = $("#visitor-map-list");
+  if (!list) {
+    return;
+  }
+  if (!rows.length) {
+    list.replaceChildren(createEmptyStateElement("暂无地图来源数据"));
+    return;
+  }
+  list.replaceChildren(...rows.map((row) => {
+    const item = document.createElement("article");
+    const place = document.createElement("strong");
+    const metrics = document.createElement("span");
+    const detail = document.createElement("small");
+    const label = mapPlaceLabel(row);
+    const detailText = [
+      row.ip_prefix ? `网络前缀 ${row.ip_prefix}` : "网络前缀未记录",
+      row.last_seen_at ? `最近访问 ${formatTime(row.last_seen_at)}` : "最近访问未记录"
+    ].join(" · ");
+    item.className = "map-data-item";
+    item.setAttribute("role", "listitem");
+    setElementText(place, label);
+    setElementText(metrics, `浏览 ${formatNumber(row.pv)} / 访客 ${formatNumber(row.uv)}`);
+    setElementText(detail, detailText);
+    item.append(place, metrics, detail);
+    return item;
   }));
 }
 
@@ -2134,8 +2813,11 @@ function resetArticleForm() {
   $("#delete-article").disabled = true;
   $("#article-status").textContent = "";
   setArticleLang(state.articleLang);
+  clearArticleValidation();
+  updateArticleLanguageStates();
   syncArticleSaveButtons();
   renderArticleList();
+  captureEditorBaseline("articles");
 }
 
 function fillArticleForm(article) {
@@ -2156,7 +2838,10 @@ function fillArticleForm(article) {
   });
   $("#delete-article").disabled = false;
   $("#article-status").textContent = `文章访问：总浏览 ${formatNumber(article.article_pv)} / 总访客 ${formatNumber(article.article_uv)}，今日浏览 ${formatNumber(article.article_today_pv)} / 今日访客 ${formatNumber(article.article_today_uv)}`;
+  clearArticleValidation();
+  updateArticleLanguageStates();
   syncArticleSaveButtons();
+  captureEditorBaseline("articles");
 }
 
 function setArticleLang(lang) {
@@ -2175,21 +2860,133 @@ function setArticleLang(lang) {
   });
 }
 
+function clearArticleValidation() {
+  const summary = $("#article-error-summary");
+  if (summary) {
+    summary.hidden = true;
+  }
+  $("#article-error-list")?.replaceChildren();
+  $$("#article-form .field-error[data-article-error]").forEach((item) => item.remove());
+  $$("#article-form [aria-invalid='true']").forEach((field) => {
+    field.removeAttribute("aria-invalid");
+    const describedBy = String(field.getAttribute("aria-describedby") || "")
+      .split(/\s+/)
+      .filter((id) => id && !id.startsWith("article-error-"));
+    if (describedBy.length) {
+      field.setAttribute("aria-describedby", describedBy.join(" "));
+    } else {
+      field.removeAttribute("aria-describedby");
+    }
+  });
+}
+
+function articleValidationErrors() {
+  const form = $("#article-form");
+  const errors = [];
+  if (!form.elements.slug.value.trim()) {
+    errors.push({ name: "slug", lang: "", message: "请填写文章路径标识，用于生成公开文章地址。" });
+  }
+  ["zh", "en", "ja"].forEach((lang) => {
+    if (!form.elements[`title_${lang}`].value.trim()) {
+      errors.push({
+        name: `title_${lang}`,
+        lang,
+        message: `请填写${articleLangLabel(lang)}标题。`
+      });
+    }
+    if (!form.elements[`content_${lang}`].value.trim()) {
+      errors.push({
+        name: `content_${lang}`,
+        lang,
+        message: `请填写${articleLangLabel(lang)}正文（Markdown）。`
+      });
+    }
+  });
+  return errors;
+}
+
+function updateArticleLanguageStates(errors = articleValidationErrors()) {
+  ["zh", "en", "ja"].forEach((lang) => {
+    const stateNode = $(`[data-lang-state="${lang}"]`);
+    if (!stateNode) {
+      return;
+    }
+    const count = errors.filter((error) => error.lang === lang).length;
+    stateNode.classList.toggle("has-errors", count > 0);
+    stateNode.classList.toggle("is-complete", count === 0);
+    setElementText(stateNode, count ? `缺 ${count} 项` : "完整");
+    stateNode.title = count ? `${articleLangLabel(lang)}还有 ${count} 项必填内容` : `${articleLangLabel(lang)}必填内容完整`;
+  });
+}
+
+function focusArticleValidationError(error) {
+  if (error.lang) {
+    setArticleLang(error.lang);
+  }
+  window.requestAnimationFrame(() => {
+    const field = $("#article-form")?.elements?.[error.name];
+    field?.scrollIntoView({ block: "center", behavior: "smooth" });
+    field?.focus();
+  });
+}
+
+function renderArticleValidation(errors) {
+  clearArticleValidation();
+  updateArticleLanguageStates(errors);
+  if (!errors.length) {
+    return;
+  }
+  const summary = $("#article-error-summary");
+  const list = $("#article-error-list");
+  errors.forEach((error) => {
+    const field = $("#article-form")?.elements?.[error.name];
+    if (field) {
+      const errorText = document.createElement("small");
+      const errorId = `article-error-${error.name}`;
+      errorText.className = "field-error";
+      errorText.dataset.articleError = error.name;
+      errorText.id = errorId;
+      setElementText(errorText, error.message);
+      field.setAttribute("aria-invalid", "true");
+      field.setAttribute("aria-describedby", errorId);
+      field.closest("label")?.append(errorText);
+    }
+    const item = document.createElement("li");
+    const button = document.createElement("button");
+    button.type = "button";
+    setElementText(button, error.message);
+    button.addEventListener("click", () => focusArticleValidationError(error));
+    item.append(button);
+    list.append(item);
+  });
+  summary.hidden = false;
+  summary.focus();
+}
+
+function validateArticleDraft(options = {}) {
+  const errors = articleValidationErrors();
+  if (options.render !== false) {
+    renderArticleValidation(errors);
+  } else {
+    updateArticleLanguageStates(errors);
+  }
+  return errors;
+}
+
 function articlePayload(statusOverride = "") {
   const form = $("#article-form");
-  const slug = form.elements.slug.value.trim();
-  if (!slug) {
-    throw new Error("请填写文章路径标识。");
+  const errors = validateArticleDraft();
+  if (errors.length) {
+    const error = new Error(`发布前还有 ${errors.length} 项必填内容需要处理。`);
+    error.validationErrors = errors;
+    throw error;
   }
+  const slug = form.elements.slug.value.trim();
   const translations = {};
   ["zh", "en", "ja"].forEach((lang) => {
     const title = form.elements[`title_${lang}`].value.trim();
     const summary = form.elements[`summary_${lang}`].value.trim();
     const content = form.elements[`content_${lang}`].value.trim();
-    if (!title || !content) {
-      setArticleLang(lang);
-      throw new Error(`请补齐${articleLangLabel(lang)}标题和正文。`);
-    }
     translations[lang] = { title, summary, content_markdown: content };
   });
   return {
@@ -2214,12 +3011,12 @@ function articleLangLabel(lang) {
 
 async function saveArticle(statusOverride = "") {
   if (state.articleSaving) {
-    return;
+    return false;
   }
   if (state.selectedArticleId && !state.articleDetailReady) {
     $("#article-status").textContent = "请等待文章详情读取完成后再保存。";
     syncArticleSaveButtons();
-    return;
+    return false;
   }
   state.articleSaving = true;
   state.articleSavingMode = statusOverride === "published" ? "publish" : "save";
@@ -2240,8 +3037,12 @@ async function saveArticle(statusOverride = "") {
       await selectArticle(state.selectedArticleId);
       status.textContent = "已保存。";
     }
+    captureEditorBaseline("articles", { saved: true });
+    return true;
   } catch (error) {
     status.textContent = error.message;
+    refreshEditorDirtyState("articles");
+    return false;
   } finally {
     state.articleSaving = false;
     state.articleSavingMode = "";
@@ -2357,7 +3158,21 @@ function syncArticleListBusyState() {
 }
 
 async function deleteArticle() {
-  if (state.articleSaving || state.articleDeleting || !state.selectedArticleId || !window.confirm("确定删除这篇文章？")) {
+  if (state.articleSaving || state.articleDeleting || !state.selectedArticleId) {
+    return;
+  }
+  const article = state.articles.find((item) => item.article_id === state.selectedArticleId) || {};
+  const published = article.status === "published";
+  const confirmed = await openConfirmDialog({
+    title: published ? "删除已发布文章" : "删除文章",
+    object: article.title_zh || article.title || article.slug || state.selectedArticleId,
+    state: articleStatusLabel(article.status),
+    impact: published ? "文章将立即从公开知识库消失，现有链接会失效。" : "文章记录及三种语言内容将被永久删除。",
+    recovery: `无法在后台撤销，只能从备份恢复；操作人：${state.user?.email || "当前管理员"}。`,
+    expectedText: published ? String(article.slug || "") : "",
+    confirmLabel: "确认删除"
+  });
+  if (!confirmed) {
     return;
   }
   state.articleDeleting = true;
@@ -2580,6 +3395,7 @@ function renderVideoCategoryChecks() {
       label.classList.add("is-disabled");
     }
     input.type = "checkbox";
+    input.name = "category_ids";
     input.value = category.category_id || "";
     input.checked = selected.has(category.category_id);
     input.disabled = !category.enabled && !selected.has(category.category_id);
@@ -2688,6 +3504,7 @@ function resetVideoForm() {
   renderVideoThumbnailPreview();
   renderVideoList();
   renderVideoCategoryChecks();
+  captureEditorBaseline("videos");
 }
 
 function fillVideoForm(video) {
@@ -2716,6 +3533,7 @@ function fillVideoForm(video) {
   $("#video-cover-file").value = "";
   $("#video-frame-file").value = "";
   renderVideoThumbnailPreview(video.thumbnail_url || "");
+  captureEditorBaseline("videos");
 }
 
 function renderAdminVideoPreview(embedUrl) {
@@ -2770,6 +3588,7 @@ function setVideoThumbnailValue(value, message = "") {
   if (message) {
     $("#video-status").textContent = message;
   }
+  refreshEditorDirtyState("videos");
 }
 
 async function handleLocalCoverFileChange(event) {
@@ -2851,6 +3670,7 @@ function applyPreviewToVideoForm(video) {
     : "识别完成";
   renderAdminVideoPreview(video.embed_url);
   renderVideoThumbnailPreview(form.elements.thumbnail_url.value);
+  refreshEditorDirtyState("videos");
 }
 
 async function previewVideoUrl() {
@@ -2959,12 +3779,14 @@ function handleVideoPinnedChange() {
       field.value = "";
     }
     syncVideoFormBusyState();
+    refreshEditorDirtyState("videos");
     return;
   }
   if (field && Number(field.value || 0) === 0) {
     field.value = String(nextPinnedSortOrder(state.videos));
   }
   syncVideoFormBusyState();
+  refreshEditorDirtyState("videos");
 }
 
 function syncVideoPinnedSortHint() {
@@ -2985,7 +3807,7 @@ function syncVideoPinnedSortHint() {
 
 async function saveVideo(statusOverride = "") {
   if (state.videoSaving) {
-    return;
+    return false;
   }
   state.videoSaving = true;
   state.videoSavingMode = statusOverride === "published" ? "publish" : "save";
@@ -3007,8 +3829,12 @@ async function saveVideo(statusOverride = "") {
       fillVideoForm(video);
       status.textContent = video.metadata_error ? `已保存；${video.metadata_error}` : "已保存";
     }
+    captureEditorBaseline("videos", { saved: true });
+    return true;
   } catch (error) {
     status.textContent = error.message;
+    refreshEditorDirtyState("videos");
+    return false;
   } finally {
     state.videoSaving = false;
     state.videoSavingMode = "";
@@ -3195,7 +4021,19 @@ function selectVideo(videoId) {
 }
 
 async function deleteVideo() {
-  if (state.videoSaving || state.videoDeleting || !state.selectedVideoId || !window.confirm("确定删除这个视频吗？")) {
+  if (state.videoSaving || state.videoDeleting || !state.selectedVideoId) {
+    return;
+  }
+  const video = selectedVideo() || {};
+  const confirmed = await openConfirmDialog({
+    title: "删除视频",
+    object: adminVideoDisplayTitle(video),
+    state: videoStatusLabel(video.status),
+    impact: "视频记录会从管理列表和主站视频区移除。",
+    recovery: `无法在后台撤销，需要重新添加原始链接；操作人：${state.user?.email || "当前管理员"}。`,
+    confirmLabel: "确认删除"
+  });
+  if (!confirmed) {
     return;
   }
   state.videoDeleting = true;
@@ -3375,6 +4213,7 @@ function resetVideoCategoryForm() {
   $("#video-category-status").textContent = "";
   syncVideoCategoryButtons();
   renderVideoCategoryList();
+  captureEditorBaseline("videoCategories");
 }
 
 function fillVideoCategoryForm(category) {
@@ -3390,6 +4229,7 @@ function fillVideoCategoryForm(category) {
   $("#video-category-status").textContent = videoCategoryUsageStatus(category);
   syncVideoCategoryButtons();
   renderVideoCategoryList();
+  captureEditorBaseline("videoCategories");
 }
 
 function videoCategoryUsageStatus(category) {
@@ -3412,9 +4252,9 @@ function videoCategoryPayload() {
 }
 
 async function saveVideoCategory(event) {
-  event.preventDefault();
+  event?.preventDefault?.();
   if (state.videoCategoryBusy) {
-    return;
+    return false;
   }
   state.videoCategoryBusy = true;
   state.videoCategoryBusyMode = "save";
@@ -3435,8 +4275,12 @@ async function saveVideoCategory(event) {
       fillVideoCategoryForm(category);
       status.textContent = "已保存";
     }
+    captureEditorBaseline("videoCategories", { saved: true });
+    return true;
   } catch (error) {
     status.textContent = error.message;
+    refreshEditorDirtyState("videoCategories");
+    return false;
   } finally {
     state.videoCategoryBusy = false;
     state.videoCategoryBusyMode = "";
@@ -3535,7 +4379,15 @@ async function deleteVideoCategory() {
     $("#video-category-status").textContent = `已有 ${category.video_count} 个视频使用，不能直接删除。`;
     return;
   }
-  if (!window.confirm("确定删除这个视频分类吗？")) {
+  const confirmed = await openConfirmDialog({
+    title: "删除视频分类",
+    object: category.name_zh || category.name || category.slug || category.category_id,
+    state: category.active === false ? "已停用 · 0 个视频" : "启用中 · 0 个视频",
+    impact: "分类会从后台和主站分类入口永久移除。",
+    recovery: `无法在后台撤销，只能重新创建；操作人：${state.user?.email || "当前管理员"}。`,
+    confirmLabel: "确认删除"
+  });
+  if (!confirmed) {
     return;
   }
   state.videoCategoryBusy = true;
@@ -3745,7 +4597,9 @@ function selectChatMessage(messageId) {
     ["网络前缀", message.ip_prefix || ""],
     ["来源", [message.country, message.region, message.city].filter(Boolean).join(" / ") || "未知"]
   ].map(([label, value]) => createChatMetaItem(label, value)));
+  setChatGovernanceTab("message", { focus: false });
   syncChatActionState();
+  captureEditorBaseline("chat");
 }
 
 function selectedChatMessage() {
@@ -3757,6 +4611,29 @@ function resetChatForm(selectedText = "未选择", metaText = "") {
   setElementText($("#chat-selected-id"), selectedText);
   $("#chat-meta").replaceChildren(createEmptyStateElement(metaText || "选择消息后查看访客识别信息。"));
   syncChatActionState();
+  captureEditorBaseline("chat");
+}
+
+function setChatGovernanceTab(tab, options = {}) {
+  const nextTab = tab === "bans" ? "bans" : "message";
+  state.chatGovernanceTab = nextTab;
+  $$('[data-chat-governance-tab]').forEach((button) => {
+    const active = button.dataset.chatGovernanceTab === nextTab;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-selected", active ? "true" : "false");
+    button.tabIndex = active ? 0 : -1;
+    if (active && options.focus) {
+      button.focus();
+    }
+  });
+  const messagePanel = $("#chat-message-governance");
+  const bansPanel = $("#chat-bans-governance");
+  const showMessage = nextTab === "message";
+  messagePanel.hidden = !showMessage;
+  messagePanel.classList.toggle("active", showMessage);
+  bansPanel.hidden = showMessage;
+  bansPanel.classList.toggle("active", !showMessage);
+  setElementText($("#chat-detail-title"), showMessage ? "消息详情" : "禁言记录");
 }
 
 function syncChatActionState() {
@@ -3956,13 +4833,13 @@ function showChatActionError(error) {
 }
 
 async function saveChatMessage(event) {
-  event.preventDefault();
+  event?.preventDefault?.();
   if (state.chatActionBusy) {
-    return;
+    return false;
   }
   const message = selectedChatMessage();
   if (!message) {
-    return;
+    return false;
   }
   setChatActionBusy("save");
   const form = $("#chat-form-admin");
@@ -3980,8 +4857,13 @@ async function saveChatMessage(event) {
     });
     await loadChatMessages();
     selectChatMessage(message.message_id);
+    captureEditorBaseline("chat", { saved: true });
+    setElementText($("#chat-selected-id"), `已保存 ${message.nickname || message.message_id} · 操作人 ${state.user?.email || "当前管理员"}`);
+    return true;
   } catch (error) {
     showChatActionError(error);
+    refreshEditorDirtyState("chat");
+    return false;
   } finally {
     setChatActionBusy("");
   }
@@ -3995,6 +4877,9 @@ async function toggleChatHidden() {
   if (!message) {
     return;
   }
+  if (!(await confirmEditorCanLeave("chat", "切换消息可见性会重新读取详情，请先处理未保存的昵称或正文。"))) {
+    return;
+  }
   setChatActionBusy("toggle");
   try {
     await api(`/api/admin/chat/messages/${encodeURIComponent(message.message_id)}`, {
@@ -4003,6 +4888,8 @@ async function toggleChatHidden() {
     });
     await loadChatMessages();
     selectChatMessage(message.message_id);
+    const action = Number(message.hidden) === 1 ? "恢复" : "隐藏";
+    setElementText($("#chat-selected-id"), `${action}成功：${message.nickname || message.message_id} · 操作人 ${state.user?.email || "当前管理员"}`);
   } catch (error) {
     showChatActionError(error);
   } finally {
@@ -4015,7 +4902,21 @@ async function deleteChatMessage() {
     return;
   }
   const message = selectedChatMessage();
-  if (!message || !window.confirm("确定删除这条聊天记录？")) {
+  if (!message) {
+    return;
+  }
+  if (!(await confirmEditorCanLeave("chat", "永久删除会丢弃当前消息尚未保存的编辑内容。"))) {
+    return;
+  }
+  const confirmed = await openConfirmDialog({
+    title: "永久删除聊天消息",
+    object: `${message.nickname || "未命名访客"} · ${formatTime(message.created_at) || message.message_id}`,
+    state: `${chatRoomBadgeLabel(message)} · ${Number(message.hidden) === 1 ? "已隐藏" : "当前可见"}`,
+    impact: "这条消息会从聊天室记录中永久删除。",
+    recovery: "不可恢复；如只是日常治理，优先使用隐藏消息。",
+    confirmLabel: "永久删除"
+  });
+  if (!confirmed) {
     return;
   }
   setChatActionBusy("delete");
@@ -4024,6 +4925,7 @@ async function deleteChatMessage() {
     state.selectedMessageId = "";
     resetChatForm();
     await loadChatMessages();
+    setElementText($("#chat-selected-id"), `已删除 ${message.nickname || message.message_id} · 操作人 ${state.user?.email || "当前管理员"}`);
   } catch (error) {
     showChatActionError(error);
   } finally {
@@ -4051,19 +4953,38 @@ async function banSelectedChat(type) {
     showChatActionError(new Error("这条记录使用旧代次网络指纹；请等待该来源产生新消息后再禁言。"));
     return;
   }
+  const form = $("#chat-form-admin");
+  const reason = form.elements.ban_reason.value.trim() || "后台禁言";
+  const durationHours = Number(form.elements.ban_hours.value || 0);
+  const networkBan = type === "ip_hash" || type === "ip";
+  const targetLabel = networkBan
+    ? (message.ip_prefix || "当前网络来源")
+    : (message.nickname || message.visitor_id || "当前用户标识");
+  const confirmed = await openConfirmDialog({
+    title: networkBan ? "禁言网络来源" : "禁言用户标识",
+    object: targetLabel,
+    state: `${chatRoomBadgeLabel(message)} · ${Number(message.hidden) === 1 ? "消息已隐藏" : "消息可见"}`,
+    impact: `${durationHours > 0 ? `${durationHours} 小时` : "长期"}禁止继续发送消息；原因：${reason}。`,
+    recovery: `可在禁言记录中停用；执行人：${state.user?.email || "当前管理员"}。`,
+    confirmLabel: "确认禁言"
+  });
+  if (!confirmed) {
+    return;
+  }
   setChatActionBusy(type === "ip_hash" || type === "ip" ? "banIp" : "banVisitor");
   setBanListBusy("refresh");
-  const form = $("#chat-form-admin");
   const body = {
     type,
-    reason: form.elements.ban_reason.value || "后台禁言",
-    durationHours: Number(form.elements.ban_hours.value || 0),
+    reason,
+    durationHours,
     messageId: message.message_id,
     visitorId: message.visitor_id
   };
   try {
     await api("/api/admin/chat/bans", { method: "POST", body: JSON.stringify(body) });
     await loadBans();
+    setElementText($("#chat-selected-id"), `禁言成功：${targetLabel} · 操作人 ${state.user?.email || "当前管理员"}`);
+    setChatGovernanceTab("bans", { focus: true });
   } catch (error) {
     showChatActionError(error);
   } finally {
@@ -4274,10 +5195,26 @@ async function disableBan(banId) {
   if (state.banListBusy) {
     return;
   }
+  const ban = state.bans.find((item) => item.ban_id === banId);
+  if (!ban) {
+    return;
+  }
+  const confirmed = await openConfirmDialog({
+    title: "停用禁言",
+    object: ban.visitor_id || ban.ip_prefix || ban.ip_hash || banId,
+    state: `${chatBanStatusLabel(ban)} · ${banTypeLabel(ban.ban_type)}`,
+    impact: "停用后，该目标将不再被这条禁言记录拦截。",
+    recovery: `如需再次限制，必须重新建立禁言；操作人：${state.user?.email || "当前管理员"}。`,
+    confirmLabel: "确认停用"
+  });
+  if (!confirmed) {
+    return;
+  }
   setBanListBusy("disable", banId);
   try {
     await api(`/api/admin/chat/bans/${encodeURIComponent(banId)}`, { method: "DELETE" });
     await loadBans();
+    setElementText($("#chat-selected-id"), `已停用禁言：${ban.reason || banId} · 操作人 ${state.user?.email || "当前管理员"}`);
   } catch (error) {
     renderBanListNotice(`停用禁言失败：${error.message}`, "禁言列表错误");
   } finally {
@@ -4290,12 +5227,7 @@ async function loadAccounts() {
   state.accounts = payload.accounts || [];
   renderAccountSummary();
   renderAccountList();
-  if (!state.selectedAccountId && state.accounts[0]) {
-    const loadedDetail = await selectAccount(state.accounts[0].id);
-    if (!loadedDetail) {
-      return { partialError: $("#account-status").textContent || "账号详情读取失败" };
-    }
-  } else if (state.selectedAccountId && !state.accounts.some((account) => account.id === state.selectedAccountId)) {
+  if (state.selectedAccountId && !state.accounts.some((account) => account.id === state.selectedAccountId)) {
     state.selectedAccountId = "";
     state.accountDetail = null;
     resetAccountForm();
@@ -4492,49 +5424,81 @@ async function selectAccount(accountId) {
 
 function fillAccountForm(account) {
   const form = $("#account-form");
+  const passwordForm = $("#account-password-form");
   setElementText($("#account-editor-title"), `编辑：${account.email}`);
   form.elements.email.value = account.email || "";
   form.elements.role.value = account.role || "user";
-  form.elements.password.value = "";
   form.elements.password_status.value = account.password_status || "已加密保存，不能查看原文";
+  passwordForm.elements.password.value = "";
+  passwordForm.elements.revoke_sessions.checked = true;
+  captureEditorBaseline("accounts");
+  syncAccountSaveButton();
 }
 
 function resetAccountForm(title = "选择账号后编辑") {
   const form = $("#account-form");
+  const passwordForm = $("#account-password-form");
   setElementText($("#account-editor-title"), title);
   form.elements.email.value = "";
   form.elements.role.value = "user";
-  form.elements.password.value = "";
   form.elements.password_status.value = "已加密保存，不能查看原文";
+  passwordForm.elements.password.value = "";
+  passwordForm.elements.revoke_sessions.checked = true;
+  captureEditorBaseline("accounts");
+  syncAccountSaveButton();
 }
 
-async function saveAccount(event) {
-  event.preventDefault();
+function markAccountSavedWhilePreservingPasswordDraft() {
+  const passwordForm = $("#account-password-form");
+  const password = passwordForm.elements.password.value;
+  const revokeSessions = passwordForm.elements.revoke_sessions.checked;
+  passwordForm.elements.password.value = "";
+  passwordForm.elements.revoke_sessions.checked = true;
+  captureEditorBaseline("accounts", { saved: true });
+  passwordForm.elements.password.value = password;
+  passwordForm.elements.revoke_sessions.checked = revokeSessions;
+  refreshEditorDirtyState("accounts");
+}
+
+async function saveAccountProfile(event) {
+  event?.preventDefault?.();
   if (state.accountSaving) {
-    return;
+    return false;
   }
   if (!state.selectedAccountId) {
     $("#account-status").textContent = "请先选择一个账号。";
     syncAccountSaveButton();
-    return;
+    return false;
   }
   if (!state.accountDetail || state.accountDetail.account?.id !== state.selectedAccountId) {
     $("#account-status").textContent = "请等待账号详情读取完成后再保存。";
     syncAccountSaveButton();
-    return;
+    return false;
   }
   const form = $("#account-form");
-  const password = form.elements.password.value.trim();
   const payload = {
     email: form.elements.email.value.trim(),
     role: form.elements.role.value
   };
-  if (password) {
-    payload.password = password;
+  const existingAccount = state.accountDetail.account;
+  if (payload.role !== existingAccount.role) {
+    const confirmed = await openConfirmDialog({
+      title: payload.role === "admin" ? "授予管理员权限" : "移除管理员权限",
+      object: existingAccount.email || state.selectedAccountId,
+      state: existingAccount.role === "admin" ? "当前为管理员" : "当前为普通用户",
+      impact: payload.role === "admin"
+        ? "保存后，该账号将可以进入管理后台并执行管理操作。"
+        : "保存后，该账号将失去管理后台访问权限；当前管理员和最后一个管理员不能被降级。",
+      recovery: `可以由其他管理员再次调整角色；操作人：${state.user?.email || "当前管理员"}。`,
+      confirmLabel: payload.role === "admin" ? "确认授权" : "确认降级"
+    });
+    if (!confirmed) {
+      return false;
+    }
   }
   state.accountSaving = true;
   syncAccountSaveButton();
-  $("#account-status").textContent = password ? "正在保存账号并重置密码..." : "正在保存账号...";
+  $("#account-status").textContent = "正在保存账号资料...";
   try {
     const detail = await api(`/api/admin/accounts/${encodeURIComponent(state.selectedAccountId)}`, {
       method: "PUT",
@@ -4542,13 +5506,90 @@ async function saveAccount(event) {
     });
     state.accountDetail = detail;
     state.accounts = upsertById(state.accounts, detail.account, "id");
-    fillAccountForm(detail.account);
+    form.elements.email.value = detail.account.email || "";
+    form.elements.role.value = detail.account.role || "user";
+    form.elements.password_status.value = detail.account.password_status || "已加密保存，不能查看原文";
+    setElementText($("#account-editor-title"), `编辑：${detail.account.email}`);
     renderAccountSummary();
     renderAccountList();
     renderAccountDetail();
-    $("#account-status").textContent = password ? "已保存，新密码已生效，相关旧会话已清理。" : "已保存账号信息。";
+    markAccountSavedWhilePreservingPasswordDraft();
+    $("#account-status").textContent = `已保存账号资料。操作人：${state.user?.email || "当前管理员"}。`;
+    return true;
   } catch (error) {
     $("#account-status").textContent = error.message;
+    refreshEditorDirtyState("accounts");
+    return false;
+  } finally {
+    state.accountSaving = false;
+    syncAccountSaveButton();
+  }
+}
+
+async function resetAccountPassword(event) {
+  event?.preventDefault?.();
+  if (state.accountSaving) {
+    return false;
+  }
+  if (!state.selectedAccountId || state.accountDetail?.account?.id !== state.selectedAccountId) {
+    setElementText($("#account-status"), "请先选择账号并等待详情读取完成。");
+    syncAccountSaveButton();
+    return false;
+  }
+  const form = $("#account-password-form");
+  const password = form.elements.password.value;
+  const revokeSessions = Boolean(form.elements.revoke_sessions.checked);
+  if (password.length < 8) {
+    setElementText($("#account-status"), "新密码至少需要 8 个字符。");
+    form.elements.password.focus();
+    return false;
+  }
+  const account = state.accountDetail.account;
+  const confirmed = await openConfirmDialog({
+    title: "重置账号密码",
+    object: account.email || state.selectedAccountId,
+    state: account.password_status || "密码已加密保存",
+    impact: revokeSessions
+      ? "新密码将立即生效，并撤销该账号的其他登录会话。"
+      : "新密码将立即生效，现有登录会话将继续保留。",
+    recovery: `密码原文无法取回，只能再次重置；操作人：${state.user?.email || "当前管理员"}。`,
+    confirmLabel: "确认重置"
+  });
+  if (!confirmed) {
+    return false;
+  }
+  state.accountSaving = true;
+  syncAccountSaveButton();
+  setElementText($("#account-status"), "正在重置密码...");
+  try {
+    const detail = await api(`/api/admin/accounts/${encodeURIComponent(state.selectedAccountId)}`, {
+      method: "PUT",
+      body: JSON.stringify({ password, revokeSessions })
+    });
+    state.accountDetail = detail;
+    state.accounts = upsertById(state.accounts, detail.account, "id");
+    $("#account-form").elements.password_status.value = detail.account.password_status || "已加密保存，不能查看原文";
+    form.elements.password.value = "";
+    form.elements.revoke_sessions.checked = true;
+    const tracking = editorTracking("accounts");
+    tracking.lastSavedAt = new Intl.DateTimeFormat("zh-CN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit"
+    }).format(new Date());
+    refreshEditorDirtyState("accounts");
+    renderAccountSummary();
+    renderAccountList();
+    renderAccountDetail();
+    setElementText(
+      $("#account-status"),
+      revokeSessions ? "密码已重置，其他登录会话已撤销。" : "密码已重置，现有登录会话已保留。"
+    );
+    return true;
+  } catch (error) {
+    setElementText($("#account-status"), error.message);
+    refreshEditorDirtyState("accounts");
+    return false;
   } finally {
     state.accountSaving = false;
     syncAccountSaveButton();
@@ -4556,18 +5597,23 @@ async function saveAccount(event) {
 }
 
 function syncAccountSaveButton() {
-  const button = $("#account-form button[type='submit']");
-  if (!button) {
+  const profileButton = $("#save-account-profile");
+  const passwordButton = $("#reset-account-password");
+  if (!profileButton || !passwordButton) {
     syncAccountFormBusyState();
     syncAccountListBusyState();
     return;
   }
   const hasAccount = Boolean(state.selectedAccountId);
   const hasLoadedAccount = Boolean(state.accountDetail?.account?.id === state.selectedAccountId);
-  button.disabled = state.accountSaving || !hasAccount || !hasLoadedAccount;
-  button.textContent = state.accountSaving ? "保存中..." : "保存账号";
-  button.setAttribute("aria-busy", state.accountSaving ? "true" : "false");
-  let hint = "保存当前账号设置";
+  const passwordReady = Boolean($("#account-password-form")?.elements?.password?.value);
+  profileButton.disabled = state.accountSaving || !hasAccount || !hasLoadedAccount;
+  passwordButton.disabled = state.accountSaving || !hasAccount || !hasLoadedAccount || !passwordReady;
+  profileButton.textContent = state.accountSaving ? "处理中..." : "保存账号资料";
+  passwordButton.textContent = state.accountSaving ? "处理中..." : "确认重置密码";
+  profileButton.setAttribute("aria-busy", state.accountSaving ? "true" : "false");
+  passwordButton.setAttribute("aria-busy", state.accountSaving ? "true" : "false");
+  let hint = "保存当前账号资料";
   if (!hasAccount) {
     hint = "请先选择账号";
   } else if (!hasLoadedAccount) {
@@ -4575,7 +5621,15 @@ function syncAccountSaveButton() {
   } else if (state.accountSaving) {
     hint = "正在保存账号";
   }
-  syncButtonHint(button, hint);
+  syncButtonHint(profileButton, hint);
+  syncButtonHint(
+    passwordButton,
+    !hasAccount
+      ? "请先选择账号"
+      : (!hasLoadedAccount
+        ? "请先等待账号详情读取完成"
+        : (state.accountSaving ? "正在处理账号" : (passwordReady ? "重置当前账号密码" : "请先输入新密码")))
+  );
   syncAccountFormBusyState();
   syncAccountListBusyState();
 }
@@ -4594,9 +5648,12 @@ function syncAccountListBusyState() {
 }
 
 function syncAccountFormBusyState() {
-  const locked = isAccountWriteBusy() || isAccountDetailPending();
-  const title = isAccountDetailPending() ? accountDetailPendingFormTitle() : accountBusyFormTitle();
-  $$("#account-form input, #account-form select").forEach((field) => {
+  const hasLoadedAccount = Boolean(state.selectedAccountId && state.accountDetail?.account?.id === state.selectedAccountId);
+  const locked = isAccountWriteBusy() || !hasLoadedAccount;
+  const title = !state.selectedAccountId
+    ? "请先选择账号"
+    : (isAccountDetailPending() ? accountDetailPendingFormTitle() : accountBusyFormTitle());
+  $$("#account-form input, #account-form select, #account-password-form input").forEach((field) => {
     field.disabled = locked;
     field.setAttribute("aria-busy", locked ? "true" : "false");
     if (locked) {
@@ -4641,12 +5698,11 @@ function resetSocialLinksFormToDefaults() {
   if (!form || state.socialLinksSaving) {
     return;
   }
-  state.socialLinks = SOCIAL_LINK_PLATFORMS.map((item) => ({
-    ...item,
-    url: item.default_url
-  }));
-  fillSocialLinksForm(state.socialLinks);
-  renderSocialLinkPreview();
+  SOCIAL_LINK_PLATFORMS.forEach((item) => {
+    form.elements[item.platform].value = item.default_url;
+  });
+  renderSocialLinkPreviewFromForm();
+  refreshEditorDirtyState("socialLinks");
   setElementText($("#social-links-status"), "已填入默认链接，保存后才会写入数据库。");
 }
 
@@ -4665,6 +5721,7 @@ async function loadSocialLinks() {
   state.socialLinks = normalizeAdminSocialLinks(payload.links || []);
   fillSocialLinksForm(state.socialLinks);
   renderSocialLinkPreview();
+  captureEditorBaseline("socialLinks");
   setElementText($("#social-links-status"), "");
 }
 
@@ -4682,12 +5739,29 @@ function normalizeAdminSocialLinks(links) {
   });
 }
 
-function renderSocialLinkPreview() {
+function socialLinksFromForm() {
+  const form = $("#social-links-form");
+  if (!form) {
+    return normalizeAdminSocialLinks([]);
+  }
+  const savedByPlatform = new Map(state.socialLinks.map((item) => [item.platform, item]));
+  return SOCIAL_LINK_PLATFORMS.map((platform) => ({
+    ...platform,
+    ...(savedByPlatform.get(platform.platform) || {}),
+    url: form.elements[platform.platform]?.value.trim() || ""
+  }));
+}
+
+function renderSocialLinkPreviewFromForm() {
+  renderSocialLinkPreview(socialLinksFromForm());
+}
+
+function renderSocialLinkPreview(linksOverride = null) {
   const list = $("#social-link-preview-list");
   if (!list) {
     return;
   }
-  const links = state.socialLinks.length ? state.socialLinks : normalizeAdminSocialLinks([]);
+  const links = linksOverride || (state.socialLinks.length ? state.socialLinks : normalizeAdminSocialLinks([]));
   const countText = `${formatNumber(links.length)} 个入口`;
   setElementText($("#social-link-preview-count"), countText);
   renderSocialLinkStatusOverview(links);
@@ -4784,9 +5858,9 @@ function syncSocialLinksFormBusyState() {
 }
 
 async function saveSocialLinks(event) {
-  event.preventDefault();
+  event?.preventDefault?.();
   if (state.socialLinksSaving) {
-    return;
+    return false;
   }
   state.socialLinksSaving = true;
   setElementText($("#social-links-status"), "正在保存社交链接...");
@@ -4799,10 +5873,14 @@ async function saveSocialLinks(event) {
     state.socialLinks = normalizeAdminSocialLinks(payload.links || []);
     fillSocialLinksForm(state.socialLinks);
     renderSocialLinkPreview();
+    captureEditorBaseline("socialLinks", { saved: true });
     setElementText($("#social-links-status"), "已保存，主站关于我图标将读取新的跳转地址。");
     state.loadedPanels[panelDataKey("socialLinks")] = Date.now();
+    return true;
   } catch (error) {
     setElementText($("#social-links-status"), error.message);
+    refreshEditorDirtyState("socialLinks");
+    return false;
   } finally {
     state.socialLinksSaving = false;
     syncSocialLinksFormBusyState();
@@ -5126,11 +6204,29 @@ function handleMapResize() {
 
 function bindEvents() {
   $$(".nav-button").forEach((button, index, buttons) => {
-    button.addEventListener("click", () => switchPanel(button.dataset.panel));
+    button.addEventListener("click", () => switchPanel(button.dataset.panel, { focusTitle: true }));
     button.addEventListener("keydown", (event) => handleNavKeydown(event, index, buttons));
   });
-  $("#manual-refresh").addEventListener("click", () => {
-    loadPanelData(state.activePanel, { force: true });
+  $("#mobile-nav-toggle").addEventListener("click", (event) => openMobileNav(event.currentTarget));
+  $("#mobile-nav-close").addEventListener("click", () => closeMobileNav());
+  $("#mobile-nav-backdrop").addEventListener("click", () => closeMobileNav());
+  $("#admin-sidebar").addEventListener("keydown", (event) => {
+    if (state.mobileNavOpen && MOBILE_ADMIN_MEDIA.matches) {
+      trapFocus(event, event.currentTarget);
+    }
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && state.mobileNavOpen && !$("#admin-confirm-dialog").open && !$("#admin-unsaved-dialog").open) {
+      event.preventDefault();
+      closeMobileNav();
+    }
+  });
+  MOBILE_ADMIN_MEDIA.addEventListener?.("change", syncMobileNavMode);
+  $("#manual-refresh").addEventListener("click", async () => {
+    const panel = activeEditorPanel();
+    await runGuardedTransition(panel, "手动刷新会重新读取当前模块，未保存内容可能被覆盖。", () => (
+      loadPanelData(state.activePanel, { force: true })
+    ));
   });
   $("#region-table-filter").addEventListener("input", (event) => {
     state.regionFilter = event.currentTarget.value;
@@ -5147,16 +6243,101 @@ function bindEvents() {
     }
   });
   window.addEventListener("resize", handleMapResize);
-  $("#new-article").addEventListener("click", () => {
+  window.addEventListener("popstate", handleAdminPopState);
+  window.addEventListener("beforeunload", (event) => {
+    if (!hasAnyDirtyEditor()) {
+      return;
+    }
+    event.preventDefault();
+    event.returnValue = "";
+  });
+  $$('[data-detail-back]').forEach((button) => {
+    button.addEventListener("click", () => leaveMobileDetail(button.dataset.detailBack));
+  });
+
+  const confirmDialog = $("#admin-confirm-dialog");
+  $("#admin-confirm-cancel").addEventListener("click", () => settleConfirmDialog(false));
+  $("#admin-confirm-submit").addEventListener("click", () => settleConfirmDialog(true));
+  $("#admin-confirm-input").addEventListener("input", (event) => {
+    $("#admin-confirm-submit").disabled = event.currentTarget.value !== state.confirmDialogExpected;
+  });
+  confirmDialog.addEventListener("cancel", (event) => {
+    event.preventDefault();
+    settleConfirmDialog(false);
+  });
+  confirmDialog.addEventListener("click", (event) => {
+    if (event.target === confirmDialog) {
+      settleConfirmDialog(false);
+    }
+  });
+  confirmDialog.addEventListener("keydown", (event) => {
+    trapFocus(event, confirmDialog);
+    if (event.key === "Enter") {
+      event.preventDefault();
+      if (event.target === $("#admin-confirm-cancel")) {
+        settleConfirmDialog(false);
+      }
+    }
+  });
+
+  const unsavedDialog = $("#admin-unsaved-dialog");
+  $("#admin-unsaved-stay").addEventListener("click", () => settleUnsavedDialog("stay"));
+  $("#admin-unsaved-discard").addEventListener("click", () => settleUnsavedDialog("discard"));
+  $("#admin-unsaved-save").addEventListener("click", () => settleUnsavedDialog("save"));
+  unsavedDialog.addEventListener("cancel", (event) => {
+    event.preventDefault();
+    settleUnsavedDialog("stay");
+  });
+  unsavedDialog.addEventListener("click", (event) => {
+    if (event.target === unsavedDialog) {
+      settleUnsavedDialog("stay");
+    }
+  });
+  unsavedDialog.addEventListener("keydown", (event) => trapFocus(event, unsavedDialog));
+
+  const dirtyForms = [
+    ["articles", "#article-form"],
+    ["videos", "#video-form"],
+    ["videoCategories", "#video-category-form"],
+    ["chat", "#chat-form-admin"],
+    ["accounts", "#account-form"],
+    ["accounts", "#account-password-form"],
+    ["socialLinks", "#social-links-form"]
+  ];
+  dirtyForms.forEach(([panel, selector]) => {
+    const form = $(selector);
+    const handleDirtyInput = () => {
+      refreshEditorDirtyState(panel);
+      if (panel === "articles") {
+        updateArticleLanguageStates();
+      } else if (panel === "accounts") {
+        syncAccountSaveButton();
+      } else if (panel === "socialLinks") {
+        renderSocialLinkPreviewFromForm();
+      }
+    };
+    form.addEventListener("input", handleDirtyInput);
+    form.addEventListener("change", handleDirtyInput);
+  });
+
+  $("#new-article").addEventListener("click", async () => {
     if (isArticleWriteBusy()) {
       return;
     }
-    resetArticleForm();
+    await runGuardedTransition("articles", "新建文章会清空当前编辑内容。", async () => {
+      resetArticleForm();
+      enterMobileDetail("articles");
+    });
   });
-  $("#article-list").addEventListener("click", (event) => {
+  $("#article-list").addEventListener("click", async (event) => {
     const item = event.target.closest("[data-article-id]");
     if (item && !isArticleWriteBusy()) {
-      selectArticle(item.dataset.articleId);
+      const articleId = item.dataset.articleId;
+      await runGuardedTransition("articles", "打开其他文章会离开当前编辑内容。", async () => {
+        rememberMasterListContext("articles", articleId);
+        await selectArticle(articleId);
+        enterMobileDetail("articles", articleId);
+      });
     }
   });
   $("#article-list-filter").addEventListener("input", (event) => {
@@ -5190,16 +6371,24 @@ function bindEvents() {
   });
   $("#publish-article").addEventListener("click", () => saveArticle("published"));
   $("#delete-article").addEventListener("click", deleteArticle);
-  $("#new-video").addEventListener("click", () => {
+  $("#new-video").addEventListener("click", async () => {
     if (isVideoEditBusy()) {
       return;
     }
-    resetVideoForm();
+    await runGuardedTransition("videos", "新建视频会清空当前编辑内容。", async () => {
+      resetVideoForm();
+      enterMobileDetail("videos");
+    });
   });
-  $("#video-list-admin").addEventListener("click", (event) => {
+  $("#video-list-admin").addEventListener("click", async (event) => {
     const item = event.target.closest("[data-admin-video-id]");
     if (item && !isVideoEditBusy()) {
-      selectVideo(item.dataset.adminVideoId);
+      const videoId = item.dataset.adminVideoId;
+      await runGuardedTransition("videos", "打开其他视频会离开当前编辑内容。", async () => {
+        rememberMasterListContext("videos", videoId);
+        selectVideo(videoId);
+        enterMobileDetail("videos", videoId);
+      });
     }
   });
   $("#video-list-filter").addEventListener("input", (event) => {
@@ -5228,16 +6417,18 @@ function bindEvents() {
   });
   $("#publish-video").addEventListener("click", () => saveVideo("published"));
   $("#delete-video").addEventListener("click", deleteVideo);
-  $("#new-video-category").addEventListener("click", () => {
+  $("#new-video-category").addEventListener("click", async () => {
     if (isVideoCategoryWriteBusy()) {
       return;
     }
-    resetVideoCategoryForm();
+    await runGuardedTransition("videoCategories", "新建分类会清空当前编辑内容。", resetVideoCategoryForm);
   });
-  $("#video-category-list-admin").addEventListener("click", (event) => {
+  $("#video-category-list-admin").addEventListener("click", async (event) => {
     const item = event.target.closest("[data-admin-video-category-id]");
     if (item && !isVideoCategoryWriteBusy()) {
-      selectVideoCategory(item.dataset.adminVideoCategoryId);
+      await runGuardedTransition("videoCategories", "打开其他分类会离开当前编辑内容。", () => (
+        selectVideoCategory(item.dataset.adminVideoCategoryId)
+      ));
     }
   });
   $("#video-category-list-filter").addEventListener("input", (event) => {
@@ -5249,17 +6440,28 @@ function bindEvents() {
     copyFieldValue("#video-category-form input[name='slug']", event.currentTarget, "视频分类路径标识");
   });
   $("#delete-video-category").addEventListener("click", deleteVideoCategory);
-  $("#include-hidden-chat").addEventListener("change", () => {
-    if (!isChatFilterBusy()) {
-      loadChatMessages().catch((error) => {
-        renderChatListNotice(`读取聊天记录失败：${error.message}`, "聊天记录错误");
-      });
+  $("#include-hidden-chat").addEventListener("change", async (event) => {
+    if (isChatFilterBusy()) {
+      return;
     }
+    const allowed = await confirmEditorCanLeave("chat", "调整隐藏记录筛选会重新读取消息列表。");
+    if (!allowed) {
+      event.currentTarget.checked = !event.currentTarget.checked;
+      return;
+    }
+    loadChatMessages().catch((error) => {
+      renderChatListNotice(`读取聊天记录失败：${error.message}`, "聊天记录错误");
+    });
   });
-  $("#chat-list").addEventListener("click", (event) => {
+  $("#chat-list").addEventListener("click", async (event) => {
     const item = event.target.closest("[data-message-id]");
     if (item && !isChatInteractionBusy()) {
-      selectChatMessage(item.dataset.messageId);
+      const messageId = item.dataset.messageId;
+      await runGuardedTransition("chat", "打开其他聊天记录会离开当前编辑内容。", async () => {
+        rememberMasterListContext("chat", messageId);
+        selectChatMessage(messageId);
+        enterMobileDetail("chat", messageId);
+      });
     }
   });
   $("#chat-list-filter").addEventListener("input", (event) => {
@@ -5282,17 +6484,39 @@ function bindEvents() {
     state.banFilter = event.currentTarget.value;
     renderBans();
   });
-  $("#account-list").addEventListener("click", (event) => {
+  $$('[data-chat-governance-tab]').forEach((button, index, tabs) => {
+    button.addEventListener("click", () => setChatGovernanceTab(button.dataset.chatGovernanceTab));
+    button.addEventListener("keydown", (event) => {
+      const nextIndex = {
+        ArrowRight: (index + 1) % tabs.length,
+        ArrowLeft: (index - 1 + tabs.length) % tabs.length,
+        Home: 0,
+        End: tabs.length - 1
+      }[event.key];
+      if (nextIndex === undefined) {
+        return;
+      }
+      event.preventDefault();
+      setChatGovernanceTab(tabs[nextIndex].dataset.chatGovernanceTab, { focus: true });
+    });
+  });
+  $("#account-list").addEventListener("click", async (event) => {
     const item = event.target.closest("[data-account-id]");
     if (item && !isAccountWriteBusy()) {
-      selectAccount(item.dataset.accountId);
+      const accountId = item.dataset.accountId;
+      await runGuardedTransition("accounts", "打开其他账号会离开当前资料和密码草稿。", async () => {
+        rememberMasterListContext("accounts", accountId);
+        await selectAccount(accountId);
+        enterMobileDetail("accounts", accountId);
+      });
     }
   });
   $("#account-list-filter").addEventListener("input", (event) => {
     state.accountFilter = event.currentTarget.value;
     renderAccountList();
   });
-  $("#account-form").addEventListener("submit", saveAccount);
+  $("#account-form").addEventListener("submit", saveAccountProfile);
+  $("#account-password-form").addEventListener("submit", resetAccountPassword);
   $("#social-links-form").addEventListener("submit", saveSocialLinks);
   $("#reset-social-links-defaults").addEventListener("click", resetSocialLinksFormToDefaults);
 }
@@ -5306,12 +6530,16 @@ async function init() {
   resetVideoForm();
   resetVideoCategoryForm();
   resetChatForm();
-  syncAccountSaveButton();
+  resetAccountForm();
+  setChatGovernanceTab("message", { focus: false });
   state.socialLinks = normalizeAdminSocialLinks([]);
   fillSocialLinksForm(state.socialLinks);
   renderSocialLinkPreview();
+  captureEditorBaseline("socialLinks");
+  syncMobileNavMode();
   try {
     applyActivePanel(getStoredActivePanel());
+    replaceAdminHistoryView(state.activePanel, "list");
     await loadMe();
     await loadPanelData(state.activePanel, { force: true });
     state.timer = window.setInterval(autoRefreshActivePanel, 30000);

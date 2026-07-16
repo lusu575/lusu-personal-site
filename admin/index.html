@@ -5,14 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex,nofollow">
   <title>鲁肃个人站管理后台</title>
-  <link rel="stylesheet" href="/admin/admin.css?v=20260622-admin-insight-r41">
+  <link rel="stylesheet" href="/admin/admin.css?v=20260716-admin-safety-foundation-r1">
 </head>
 <body>
   <div class="admin-shell">
     <main class="main">
       <header class="topbar">
-        <div>
-          <h1 id="panel-title">鲁肃个人站管理后台</h1>
+        <button class="xp-button mobile-nav-toggle" type="button" id="mobile-nav-toggle" aria-controls="admin-sidebar" aria-expanded="false" aria-label="打开后台导航">菜单</button>
+        <div class="topbar-title">
+          <h1 id="panel-title" tabindex="-1">鲁肃个人站管理后台</h1>
           <p id="panel-subtitle">实时访问工作台</p>
         </div>
         <div class="topbar-actions">
@@ -21,32 +22,46 @@
         </div>
       </header>
 
-      <aside class="sidebar" aria-label="后台导航">
+      <aside class="sidebar" id="admin-sidebar" aria-label="后台导航">
         <div class="sidebar-brand">
           <span class="brand-mark">LS</span>
           <div>
             <strong>站点追踪</strong>
             <small>已连接 <span id="admin-email">读取中...</span></small>
           </div>
+          <button class="xp-button mobile-nav-close" type="button" id="mobile-nav-close" aria-label="关闭后台导航">关闭</button>
         </div>
         <nav class="nav-list" aria-label="后台功能导航">
-          <button class="nav-button active" type="button" data-panel="dashboard" aria-current="page" aria-controls="dashboard-panel">实时大屏</button>
-          <button class="nav-button" type="button" data-panel="visits" aria-controls="visits-panel">访问来源</button>
-          <button class="nav-button" type="button" data-panel="clicks" aria-controls="clicks-panel">点击埋点</button>
-          <button class="nav-button" type="button" data-panel="articles" aria-controls="articles-panel">知识库文章</button>
-          <button class="nav-button" type="button" data-panel="videos" aria-controls="videos-panel">视频管理</button>
-          <button class="nav-button" type="button" data-panel="videoCategories" aria-controls="videoCategories-panel">视频分类管理</button>
-          <button class="nav-button" type="button" data-panel="chat" aria-controls="chat-panel">聊天室管理</button>
-          <button class="nav-button" type="button" data-panel="accounts" aria-controls="accounts-panel">账号管理</button>
-          <button class="nav-button" type="button" data-panel="socialLinks" aria-controls="socialLinks-panel">社交链接</button>
-          <button class="nav-button" type="button" data-panel="updates" aria-controls="updates-panel">后台更新记录</button>
-          <button class="nav-button" type="button" data-panel="docs" aria-controls="docs-panel">后台说明</button>
+          <div class="nav-group" role="group" aria-labelledby="nav-group-data">
+            <span class="nav-group-title" id="nav-group-data">数据分析</span>
+            <button class="nav-button active" type="button" data-panel="dashboard" aria-current="page" aria-controls="dashboard-panel">实时大屏</button>
+            <button class="nav-button" type="button" data-panel="visits" aria-controls="visits-panel">访问来源</button>
+            <button class="nav-button" type="button" data-panel="clicks" aria-controls="clicks-panel">点击埋点</button>
+          </div>
+          <div class="nav-group" role="group" aria-labelledby="nav-group-content">
+            <span class="nav-group-title" id="nav-group-content">内容管理</span>
+            <button class="nav-button" type="button" data-panel="articles" aria-controls="articles-panel">知识库文章</button>
+            <button class="nav-button" type="button" data-panel="videos" aria-controls="videos-panel">视频管理</button>
+            <button class="nav-button" type="button" data-panel="videoCategories" aria-controls="videoCategories-panel">视频分类管理</button>
+          </div>
+          <div class="nav-group" role="group" aria-labelledby="nav-group-community">
+            <span class="nav-group-title" id="nav-group-community">社区治理</span>
+            <button class="nav-button" type="button" data-panel="chat" aria-controls="chat-panel">聊天室管理</button>
+          </div>
+          <div class="nav-group" role="group" aria-labelledby="nav-group-system">
+            <span class="nav-group-title" id="nav-group-system">账号与系统</span>
+            <button class="nav-button" type="button" data-panel="accounts" aria-controls="accounts-panel">账号管理</button>
+            <button class="nav-button" type="button" data-panel="socialLinks" aria-controls="socialLinks-panel">社交链接</button>
+            <button class="nav-button" type="button" data-panel="updates" aria-controls="updates-panel">后台更新记录</button>
+            <button class="nav-button" type="button" data-panel="docs" aria-controls="docs-panel">后台说明</button>
+          </div>
         </nav>
         <div class="sidebar-note">
           <span>页面 <strong id="tracked-sites-count">0</strong> 个 · 地区 <strong id="tracked-properties-count">0</strong> 个</span>
           <span id="sidebar-loaded-summary">内容数据按需加载</span>
         </div>
       </aside>
+      <button class="mobile-nav-backdrop" type="button" id="mobile-nav-backdrop" tabindex="-1" aria-label="关闭后台导航" hidden></button>
 
       <section class="panel active" id="dashboard-panel" aria-hidden="false">
         <div class="insight-note" id="analytics-explainer">正在整理访问数据...</div>
@@ -58,6 +73,10 @@
               <span>按真实经纬度聚合</span>
             </div>
             <div class="pixel-map" id="visitor-map" aria-label="访问地图"></div>
+            <details class="map-data-details">
+              <summary>查看地图数据列表</summary>
+              <div class="map-data-list" id="visitor-map-list" role="list" aria-label="地图访问来源数据"></div>
+            </details>
           </section>
           <section class="xp-panel page-overview-panel">
             <div class="mini-table-head">
@@ -121,8 +140,8 @@
       </section>
 
       <section class="panel" id="articles-panel" hidden aria-hidden="true">
-        <div class="split-layout articles-layout">
-          <section class="xp-panel list-panel">
+        <div class="split-layout articles-layout master-detail-layout" data-master-detail="articles">
+          <section class="xp-panel list-panel master-pane">
             <div class="panel-head">
               <h2>文章列表</h2>
               <span id="article-list-count">0 篇文章</span>
@@ -134,12 +153,24 @@
             <div class="list-overview-strip" id="article-status-overview" aria-label="文章状态概览"></div>
             <div class="article-list" id="article-list"></div>
           </section>
-          <section class="xp-panel editor-panel">
+          <section class="xp-panel editor-panel detail-pane">
             <div class="panel-head">
+              <button class="xp-button mobile-detail-back" type="button" data-detail-back="articles" aria-label="返回文章列表">返回列表</button>
               <h2 id="article-editor-title">新建文章</h2>
               <span>保存时校验三语内容</span>
             </div>
             <form id="article-form" class="editor-form" novalidate>
+              <div class="form-error-summary" id="article-error-summary" role="alert" tabindex="-1" hidden>
+                <strong>发布前请处理以下问题</strong>
+                <ul id="article-error-list"></ul>
+              </div>
+              <div class="form-actions sticky-actions">
+                <button class="xp-button" type="submit" id="save-article" title="保存当前文章">保存</button>
+                <button class="xp-button primary" type="button" id="publish-article" title="保存并发布当前文章">保存并发布</button>
+                <button class="xp-button danger" type="button" id="delete-article" title="请先选择已保存文章" disabled>删除</button>
+                <span class="edit-state" id="article-dirty-indicator" aria-live="polite">已保存</span>
+                <span class="form-status" id="article-status" role="status" aria-live="polite" aria-atomic="true"></span>
+              </div>
               <div class="form-grid">
                 <label>文章路径标识<input name="slug" required maxlength="120" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="例如：ai-notes-2026"></label>
                 <button class="xp-button copy-field-button" type="button" id="copy-article-slug" aria-label="复制文章路径标识" title="复制文章路径标识">复制标识</button>
@@ -158,9 +189,9 @@
               </div>
 
               <div class="lang-tabs" role="tablist" aria-label="文章语言">
-                <button class="lang-tab active" type="button" role="tab" id="article-lang-tab-zh" data-article-lang="zh" aria-selected="true" aria-controls="article-lang-panel-zh">中文</button>
-                <button class="lang-tab" type="button" role="tab" id="article-lang-tab-en" data-article-lang="en" aria-selected="false" aria-controls="article-lang-panel-en" tabindex="-1">英文</button>
-                <button class="lang-tab" type="button" role="tab" id="article-lang-tab-ja" data-article-lang="ja" aria-selected="false" aria-controls="article-lang-panel-ja" tabindex="-1">日文</button>
+                <button class="lang-tab active" type="button" role="tab" id="article-lang-tab-zh" data-article-lang="zh" aria-selected="true" aria-controls="article-lang-panel-zh">中文 <span class="lang-tab-state" data-lang-state="zh">待填写</span></button>
+                <button class="lang-tab" type="button" role="tab" id="article-lang-tab-en" data-article-lang="en" aria-selected="false" aria-controls="article-lang-panel-en" tabindex="-1">英文 <span class="lang-tab-state" data-lang-state="en">待填写</span></button>
+                <button class="lang-tab" type="button" role="tab" id="article-lang-tab-ja" data-article-lang="ja" aria-selected="false" aria-controls="article-lang-panel-ja" tabindex="-1">日文 <span class="lang-tab-state" data-lang-state="ja">待填写</span></button>
               </div>
 
               <div class="language-editor active" data-lang-panel="zh" role="tabpanel" id="article-lang-panel-zh" aria-labelledby="article-lang-tab-zh" aria-hidden="false">
@@ -179,20 +210,14 @@
                 <label>日文正文（Markdown）<textarea name="content_ja" rows="14" required></textarea></label>
               </div>
 
-              <div class="form-actions">
-                <button class="xp-button" type="submit" id="save-article" title="保存当前文章">保存</button>
-                <button class="xp-button primary" type="button" id="publish-article" title="保存并发布当前文章">保存并发布</button>
-                <button class="xp-button danger" type="button" id="delete-article" title="请先选择已保存文章" disabled>删除</button>
-                <span class="form-status" id="article-status" role="status" aria-live="polite" aria-atomic="true"></span>
-              </div>
             </form>
           </section>
         </div>
       </section>
 
       <section class="panel" id="videos-panel" hidden aria-hidden="true">
-        <div class="split-layout articles-layout">
-          <section class="xp-panel list-panel">
+        <div class="split-layout articles-layout master-detail-layout" data-master-detail="videos">
+          <section class="xp-panel list-panel master-pane">
             <div class="panel-head">
               <h2>视频列表</h2>
               <span id="video-list-count">0 个视频</span>
@@ -204,12 +229,20 @@
             <div class="list-overview-strip" id="video-status-overview" aria-label="视频状态概览"></div>
             <div class="article-list" id="video-list-admin"></div>
           </section>
-          <section class="xp-panel editor-panel">
+          <section class="xp-panel editor-panel detail-pane">
             <div class="panel-head">
+              <button class="xp-button mobile-detail-back" type="button" data-detail-back="videos" aria-label="返回视频列表">返回列表</button>
               <h2 id="video-editor-title">新建视频</h2>
               <span>链接由服务端识别并生成站内播放器</span>
             </div>
             <form id="video-form" class="editor-form">
+              <div class="form-actions sticky-actions">
+                <button class="xp-button" type="submit" title="保存当前视频">保存</button>
+                <button class="xp-button primary" type="button" id="publish-video" title="保存并发布当前视频">保存并发布</button>
+                <button class="xp-button danger" type="button" id="delete-video" title="请先选择已保存视频" disabled>删除</button>
+                <span class="edit-state" id="video-dirty-indicator" aria-live="polite">已保存</span>
+                <span class="form-status" id="video-status" role="status" aria-live="polite" aria-atomic="true"></span>
+              </div>
               <label>视频链接<input name="original_url" maxlength="800" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="粘贴 YouTube、哔哩哔哩或 b23.tv 链接"></label>
               <div class="form-actions compact-actions">
                 <button class="xp-button" type="button" id="preview-video-url" title="自动识别视频链接并获取元数据">自动识别/获取信息</button>
@@ -221,20 +254,6 @@
                 <label>平台视频编号<input name="external_id" readonly></label>
                 <label>播放器地址<input name="embed_url" readonly></label>
                 <button class="xp-button copy-field-button" type="button" id="copy-video-embed-url" aria-label="复制视频播放器地址" title="复制视频播放器地址">复制播放器</button>
-                <div class="thumbnail-field">
-                  <label>封面<input name="thumbnail_url" maxlength="420000" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="平台封面、本地封面或图片链接"></label>
-                  <div class="cover-tools">
-                    <label class="file-picker">上传本地封面
-                      <input id="video-cover-file" type="file" accept="image/jpeg,image/jpg,image/png,image/webp,image/avif,.jpg,.jpeg,.png,.webp,.avif">
-                    </label>
-                    <label class="file-picker">从本地视频截首帧
-                      <input id="video-frame-file" type="file" accept="video/mp4,video/webm,video/ogg,video/quicktime,.mp4,.m4v,.mov,.webm,.ogv">
-                    </label>
-                    <button class="xp-button" type="button" id="clear-video-thumbnail">清空封面</button>
-                  </div>
-                  <small class="field-hint">支持 JPG / PNG / WEBP / AVIF；首帧生成只读取本机视频，不上传视频文件。</small>
-                  <div class="thumbnail-preview" id="video-thumbnail-preview" role="status" aria-live="polite" aria-atomic="true"></div>
-                </div>
                 <label>作者<input name="author_name" maxlength="160"></label>
                 <label>发布时间<input name="published_at" type="datetime-local" step="1"></label>
                 <label>状态
@@ -248,6 +267,23 @@
                 <label class="checkbox-line"><input name="pinned" type="checkbox"> 置顶</label>
                 <label>置顶排序<input name="pinned_sort_order" type="number" value="10"><small class="field-hint" id="video-pinned-sort-hint">勾选置顶后设置，数值越大越靠前。</small></label>
               </div>
+              <section class="thumbnail-field thumbnail-card" aria-labelledby="video-thumbnail-title">
+                <div>
+                  <strong id="video-thumbnail-title">视频封面</strong>
+                  <label>封面地址<input name="thumbnail_url" maxlength="420000" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="平台封面、本地封面或图片链接"></label>
+                  <div class="cover-tools">
+                    <label class="file-picker">上传本地封面
+                      <input id="video-cover-file" type="file" accept="image/jpeg,image/jpg,image/png,image/webp,image/avif,.jpg,.jpeg,.png,.webp,.avif">
+                    </label>
+                    <label class="file-picker">从本地视频截首帧
+                      <input id="video-frame-file" type="file" accept="video/mp4,video/webm,video/ogg,video/quicktime,.mp4,.m4v,.mov,.webm,.ogv">
+                    </label>
+                    <button class="xp-button" type="button" id="clear-video-thumbnail">清空封面</button>
+                  </div>
+                  <small class="field-hint">支持 JPG / PNG / WEBP / AVIF；首帧生成只读取本机视频，不上传视频文件。</small>
+                </div>
+                <div class="thumbnail-preview" id="video-thumbnail-preview" role="status" aria-live="polite" aria-atomic="true"></div>
+              </section>
               <label>标题<input name="title" maxlength="220" required></label>
               <label>简介<textarea name="description" rows="4" maxlength="2000"></textarea></label>
               <fieldset class="category-checks">
@@ -255,12 +291,6 @@
                 <div id="video-category-checks"></div>
               </fieldset>
               <div class="admin-video-preview" id="admin-video-preview"></div>
-              <div class="form-actions">
-                <button class="xp-button" type="submit" title="保存当前视频">保存</button>
-                <button class="xp-button primary" type="button" id="publish-video" title="保存并发布当前视频">保存并发布</button>
-                <button class="xp-button danger" type="button" id="delete-video" title="请先选择已保存视频" disabled>删除</button>
-                <span class="form-status" id="video-status" role="status" aria-live="polite" aria-atomic="true"></span>
-              </div>
             </form>
           </section>
         </div>
@@ -345,8 +375,8 @@
       </section>
 
       <section class="panel" id="chat-panel" hidden aria-hidden="true">
-        <div class="split-layout chat-layout">
-          <section class="xp-panel list-panel">
+        <div class="split-layout chat-layout master-detail-layout" data-master-detail="chat">
+          <section class="xp-panel list-panel master-pane">
             <div class="panel-head">
               <h2>聊天记录</h2>
               <span id="chat-list-count">0 条消息</span>
@@ -358,42 +388,60 @@
             <div class="list-overview-strip" id="chat-status-overview" aria-label="聊天消息状态概览"></div>
             <div class="chat-list" id="chat-list"></div>
           </section>
-          <section class="xp-panel editor-panel">
+          <section class="xp-panel editor-panel detail-pane">
             <div class="panel-head">
-              <h2>记录编辑与禁言</h2>
+              <button class="xp-button mobile-detail-back" type="button" data-detail-back="chat" aria-label="返回聊天记录列表">返回列表</button>
+              <h2 id="chat-detail-title">消息详情</h2>
               <span id="chat-selected-id">未选择</span>
             </div>
-            <form class="editor-form" id="chat-form-admin">
-              <label>昵称<input name="nickname" maxlength="16"></label>
-              <label>内容<textarea name="content" rows="6" maxlength="300"></textarea></label>
-              <label>禁言原因<input name="ban_reason" maxlength="200" placeholder="后台处理"></label>
-              <label>禁言时长（小时，0 为长期）<input name="ban_hours" type="number" min="0" max="8760" value="24"></label>
-              <div class="chat-meta" id="chat-meta"></div>
-              <div class="form-actions">
-                <button class="xp-button" type="submit" disabled>保存修改</button>
-                <button class="xp-button" type="button" id="toggle-chat-hidden" disabled>隐藏消息</button>
-                <button class="xp-button danger" type="button" id="delete-chat-message" disabled>删除</button>
-                <button class="xp-button warning" type="button" id="ban-chat-visitor" disabled>禁言用户标识</button>
-                <button class="xp-button warning" type="button" id="ban-chat-ip" disabled>禁言网络来源</button>
-              </div>
-            </form>
-            <div class="panel-head subhead">
-              <h2>禁言列表</h2>
-              <span id="ban-list-count">0 条禁言</span>
-              <button class="xp-button" type="button" id="refresh-bans">刷新</button>
+            <div class="governance-tabs" role="tablist" aria-label="聊天室治理视图">
+              <button class="governance-tab active" type="button" role="tab" id="chat-message-tab" data-chat-governance-tab="message" aria-selected="true" aria-controls="chat-message-governance">消息详情</button>
+              <button class="governance-tab" type="button" role="tab" id="chat-bans-tab" data-chat-governance-tab="bans" aria-selected="false" aria-controls="chat-bans-governance" tabindex="-1">禁言记录</button>
             </div>
-            <label class="list-filter">筛选禁言
-              <input id="ban-list-filter" type="search" autocomplete="off" placeholder="对象、原因、状态、来源">
-            </label>
-            <div class="list-overview-strip" id="ban-status-overview" aria-label="禁言状态概览"></div>
-            <div class="ban-list" id="ban-list"></div>
+            <div id="chat-message-governance" class="governance-panel active" role="tabpanel" aria-labelledby="chat-message-tab">
+              <form class="editor-form" id="chat-form-admin">
+                <label>昵称<input name="nickname" maxlength="16"></label>
+                <label>内容<textarea name="content" rows="6" maxlength="300"></textarea></label>
+                <div class="chat-meta" id="chat-meta"></div>
+                <div class="form-actions sticky-actions">
+                  <button class="xp-button" type="submit" disabled>保存修改</button>
+                  <button class="xp-button primary" type="button" id="toggle-chat-hidden" disabled>隐藏消息</button>
+                  <span class="edit-state" id="chat-dirty-indicator" aria-live="polite">已保存</span>
+                </div>
+                <details class="danger-actions-menu">
+                  <summary>更多治理操作</summary>
+                  <div class="danger-actions-body">
+                    <p>删除不可恢复；禁言会影响该用户或网络来源后续发言。</p>
+                    <label>禁言原因<input name="ban_reason" maxlength="200" placeholder="说明本次治理原因"></label>
+                    <label>禁言时长（小时，0 为长期）<input name="ban_hours" type="number" min="0" max="8760" value="24"></label>
+                    <div class="form-actions">
+                      <button class="xp-button warning" type="button" id="ban-chat-visitor" disabled>禁言用户标识</button>
+                      <button class="xp-button warning" type="button" id="ban-chat-ip" disabled>禁言网络来源</button>
+                      <button class="xp-button danger" type="button" id="delete-chat-message" disabled>永久删除消息</button>
+                    </div>
+                  </div>
+                </details>
+              </form>
+            </div>
+            <div id="chat-bans-governance" class="governance-panel" role="tabpanel" aria-labelledby="chat-bans-tab" hidden>
+              <div class="panel-head subhead">
+                <h2>禁言列表</h2>
+                <span id="ban-list-count">0 条禁言</span>
+                <button class="xp-button" type="button" id="refresh-bans">刷新</button>
+              </div>
+              <label class="list-filter">筛选禁言
+                <input id="ban-list-filter" type="search" autocomplete="off" placeholder="对象、原因、状态、来源">
+              </label>
+              <div class="list-overview-strip" id="ban-status-overview" aria-label="禁言状态概览"></div>
+              <div class="ban-list" id="ban-list"></div>
+            </div>
           </section>
         </div>
       </section>
 
       <section class="panel" id="accounts-panel" hidden aria-hidden="true">
-        <div class="split-layout account-layout">
-          <section class="xp-panel list-panel">
+        <div class="split-layout account-layout master-detail-layout" data-master-detail="accounts">
+          <section class="xp-panel list-panel master-pane">
             <div class="panel-head">
               <h2>账号列表</h2>
               <span id="account-list-count">邮箱、角色、最近登录和活跃会话</span>
@@ -405,10 +453,11 @@
             <div class="list-overview-strip" id="account-status-overview" aria-label="账号状态概览"></div>
             <div class="article-list" id="account-list"></div>
           </section>
-          <section class="xp-panel editor-panel">
+          <section class="xp-panel editor-panel detail-pane">
             <div class="panel-head">
+              <button class="xp-button mobile-detail-back" type="button" data-detail-back="accounts" aria-label="返回账号列表">返回列表</button>
               <h2 id="account-editor-title">选择一个账号</h2>
-              <span>密码只允许重置，不显示原文</span>
+              <span>未选择账号时，高风险操作保持锁定</span>
             </div>
             <form id="account-form" class="editor-form" autocomplete="off">
               <div class="form-grid">
@@ -419,14 +468,23 @@
                     <option value="admin">管理员</option>
                   </select>
                 </label>
-                <label>新密码<input name="password" type="password" minlength="8" maxlength="128" autocomplete="new-password" placeholder="留空则不改密码"></label>
                 <label>密码状态<input name="password_status" readonly value="已加密保存，不能查看原文"></label>
               </div>
-              <p class="safe-note">为了不让 GitHub、浏览器或后台页面泄露账号资料，这里不展示明文密码，也不返回密码哈希。需要修改密码时，直接填写新密码并保存。</p>
-              <div class="form-actions">
-                <button class="xp-button primary" type="submit" disabled>保存账号</button>
+              <p class="safe-note">角色修改会单独显示影响确认；当前管理员和最后一个管理员不能被降级。</p>
+              <div class="form-actions sticky-actions">
+                <button class="xp-button primary" type="submit" id="save-account-profile" disabled>保存账号资料</button>
+                <span class="edit-state" id="account-dirty-indicator" aria-live="polite">已保存</span>
                 <span class="form-status" id="account-status" role="status" aria-live="polite" aria-atomic="true"></span>
               </div>
+            </form>
+            <form id="account-password-form" class="editor-form account-security-card" autocomplete="off" aria-labelledby="account-password-title">
+              <div>
+                <h3 id="account-password-title">单独重置密码</h3>
+                <p>密码不会显示原文，也不会写入更新记录。提交前会再次确认影响范围。</p>
+              </div>
+              <label>新密码<input name="password" type="password" minlength="8" maxlength="128" autocomplete="new-password" placeholder="至少 8 个字符"></label>
+              <label class="checkbox-line"><input name="revoke_sessions" type="checkbox" checked> 重置后撤销该账号的其他会话</label>
+              <button class="xp-button warning" type="submit" id="reset-account-password" disabled>确认重置密码</button>
             </form>
 
             <div class="account-detail-grid">
@@ -506,6 +564,41 @@
     <button class="xp-button compact-button floating-top-button" type="button" id="back-to-top" aria-label="回到后台页面顶部" title="回到后台页面顶部">顶部</button>
   </div>
 
-  <script src="/admin/admin.js?v=20260715-chat-ip-hash-generation-r1"></script>
+  <dialog class="admin-dialog" id="admin-confirm-dialog" aria-labelledby="admin-confirm-title" aria-describedby="admin-confirm-impact">
+    <div class="admin-dialog-card">
+      <span class="admin-dialog-kicker">请确认操作范围</span>
+      <h2 id="admin-confirm-title">确认操作</h2>
+      <dl class="confirm-context">
+        <div><dt>操作对象</dt><dd id="admin-confirm-object">未选择</dd></div>
+        <div><dt>当前状态</dt><dd id="admin-confirm-state">未知</dd></div>
+        <div><dt>影响</dt><dd id="admin-confirm-impact">请检查本次操作影响。</dd></div>
+        <div><dt>可恢复性</dt><dd id="admin-confirm-recovery">请检查后再继续。</dd></div>
+      </dl>
+      <label class="confirm-input-wrap" id="admin-confirm-input-wrap" hidden>输入确认文字
+        <input id="admin-confirm-input" autocomplete="off" autocapitalize="none" spellcheck="false">
+        <small id="admin-confirm-input-hint"></small>
+      </label>
+      <div class="admin-dialog-actions">
+        <button class="xp-button" type="button" id="admin-confirm-cancel" autofocus>取消</button>
+        <button class="xp-button danger" type="button" id="admin-confirm-submit" disabled>确认</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog class="admin-dialog" id="admin-unsaved-dialog" aria-labelledby="admin-unsaved-title" aria-describedby="admin-unsaved-description">
+    <div class="admin-dialog-card">
+      <span class="admin-dialog-kicker">编辑内容尚未保存</span>
+      <h2 id="admin-unsaved-title">要先保存更改吗？</h2>
+      <p id="admin-unsaved-description">继续离开会丢弃当前表单里尚未保存的内容。</p>
+      <div class="admin-dialog-actions three-actions">
+        <button class="xp-button" type="button" id="admin-unsaved-stay" autofocus>留在此页</button>
+        <button class="xp-button danger-quiet" type="button" id="admin-unsaved-discard">放弃更改</button>
+        <button class="xp-button primary" type="button" id="admin-unsaved-save">保存后继续</button>
+      </div>
+      <span class="form-status" id="admin-unsaved-status" role="status" aria-live="polite"></span>
+    </div>
+  </dialog>
+
+  <script src="/admin/admin.js?v=20260716-admin-safety-foundation-r1"></script>
 </body>
 </html>

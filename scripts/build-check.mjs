@@ -1280,6 +1280,30 @@ for (const asset of ["admin.css", "admin.js"]) {
   }
 }
 
+const adminSafetyCacheVersion = "20260716-admin-safety-foundation-r1";
+if (countLiteral(adminHtml, adminSafetyCacheVersion) !== 2) {
+  fail("admin CSS and JS must share the mobile-safety cache version");
+}
+
+for (const id of [
+  "mobile-nav-toggle",
+  "admin-sidebar",
+  "mobile-nav-backdrop",
+  "visitor-map-list",
+  "article-error-summary",
+  "account-password-form",
+  "admin-confirm-dialog",
+  "admin-unsaved-dialog"
+]) {
+  if (!adminHtml.includes(`id="${id}"`)) {
+    fail(`admin/index.html missing safety workflow #${id}`);
+  }
+}
+
+if (countLiteral(adminHtml, "data-master-detail=") !== 4) {
+  fail("admin mobile master/detail must cover articles, videos, chat, and accounts");
+}
+
 if (!adminMiddlewareJs.includes("users.role")) {
   fail("functions/admin/_middleware.js must keep users.role admin checks");
 }
@@ -1362,6 +1386,24 @@ for (const sensitiveText of ["password_hash", "token_hash"]) {
 for (const unsafeDomApi of ["innerHTML", "outerHTML", "insertAdjacentHTML"]) {
   if (adminJs.includes(unsafeDomApi)) {
     fail(`admin/admin.js must not render backend data with ${unsafeDomApi}`);
+  }
+}
+
+if (adminJs.includes("window.confirm")) {
+  fail("admin destructive actions must use the contextual confirmation dialog");
+}
+
+for (const requiredAdminSafetyToken of [
+  'window.matchMedia("(max-width: 920px)")',
+  'window.addEventListener("beforeunload"',
+  "openConfirmDialog",
+  "openUnsavedDialog",
+  "setMasterDetailView",
+  "renderMapDataList",
+  "resetAccountPassword"
+]) {
+  if (!adminJs.includes(requiredAdminSafetyToken)) {
+    fail(`admin/admin.js missing safety workflow ${requiredAdminSafetyToken}`);
   }
 }
 
@@ -1533,7 +1575,9 @@ for (const selector of [
   ".xp-panel",
   ".table-wrap",
   ".file-picker:has(input:disabled)",
-  "@media (max-width: 760px)"
+  "@media (max-width: 760px)",
+  "--admin-touch-target: 44px",
+  "@media (max-width: 920px)"
 ]) {
   if (!adminCss.includes(selector)) {
     fail(`admin/admin.css missing ${selector}`);
