@@ -37,6 +37,85 @@
   background-color: transparent;
 }
 
+/* Resource cards share one sizing rhythm even when a tool has more metadata. */
+#resource-list {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#resource-list > .resource-card {
+  width: 100%;
+  height: 210px;
+  min-height: 210px;
+  max-height: 210px;
+  box-sizing: border-box;
+  align-self: stretch;
+  grid-template-columns: minmax(0, 1fr) minmax(112px, 140px);
+  align-items: stretch;
+}
+
+#resource-list .resource-main {
+  display: grid;
+  grid-template-rows: 44px 58px minmax(54px, 1fr);
+  align-content: stretch;
+  min-width: 0;
+  height: 100%;
+}
+
+#resource-list .resource-main h3 {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 44px;
+  max-height: 44px;
+  align-items: center;
+  padding-inline-start: 54px;
+  overflow: hidden;
+  line-height: 1.22;
+}
+
+#resource-list .resource-main h3 > .resource-icon,
+#resource-list .resource-main h3 > .resource-icon-image {
+  position: absolute;
+  inset-inline-start: 0;
+  top: 50%;
+  margin: 0;
+  transform: translateY(-50%);
+}
+
+#resource-list .resource-main > p {
+  display: block;
+  min-width: 0;
+  min-height: 0;
+  align-self: start;
+  overflow: visible;
+  line-height: 1.45;
+  -webkit-line-clamp: unset;
+}
+
+#resource-list .meta-row {
+  flex-wrap: wrap;
+  align-content: start;
+  gap: 5px 7px;
+  min-width: 0;
+  min-height: 54px;
+  padding: 0;
+  overflow: visible;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Noto Sans JP", "Microsoft YaHei", sans-serif;
+}
+
+#resource-list .meta-row > * {
+  flex: 0 0 auto;
+}
+
+#resource-list .resource-card > .card-action {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  align-self: center;
+  justify-self: stretch;
+}
+
 .transfer-app[hidden],
 #resource-categories[hidden],
 #resource-list[hidden],
@@ -48,7 +127,13 @@
 }
 
 .transfer-app {
-  min-height: min(680px, calc(100vh - 170px));
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  box-sizing: border-box;
   color: #10285b;
   border: 2px solid #316ec8;
   border-radius: 8px;
@@ -58,6 +143,7 @@
 }
 
 .transfer-app-header {
+  flex: 0 0 auto;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 14px;
@@ -135,6 +221,7 @@
 }
 
 .transfer-feedback {
+  flex: 0 0 auto;
   margin: 10px 12px 0;
   padding: 9px 11px;
   color: #174a27;
@@ -152,6 +239,8 @@
 
 .transfer-login-gate,
 .transfer-room-entry {
+  min-width: 0;
+  min-height: 0;
   margin: 18px;
   padding: clamp(16px, 3vw, 30px);
   border: 1px solid #7ba1d0;
@@ -161,6 +250,7 @@
 }
 
 .transfer-login-gate {
+  overflow: auto;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 16px;
@@ -171,6 +261,9 @@
 .transfer-login-gate p { margin-top: 6px; color: #4b6382; }
 
 .transfer-room-entry {
+  flex: 1 1 auto;
+  align-content: start;
+  overflow: auto;
   display: grid;
   grid-template-columns: minmax(0, 1.5fr) minmax(240px, .75fr);
   gap: 18px;
@@ -222,6 +315,7 @@
 }
 
 .transfer-quota-card {
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -233,14 +327,20 @@
 
 .transfer-quota-card .transfer-icon { --transfer-icon-size: 58px; }
 .transfer-quota-card div { display: grid; gap: 7px; }
+.transfer-quota-card strong,
+.transfer-quota-card span { overflow-wrap: anywhere; }
 .transfer-quota-card span { color: #536b90; font-size: 12px; }
 
 .transfer-room {
+  flex: 1 1 auto;
   display: grid;
-  grid-template-rows: auto minmax(220px, 1fr) auto auto auto;
+  grid-template-rows: auto minmax(180px, 1fr) auto auto auto;
   gap: 10px;
-  min-height: 610px;
+  min-width: 0;
+  min-height: 0;
   padding: 12px;
+  overflow: auto;
+  overscroll-behavior: contain;
 }
 
 .transfer-room-toolbar {
@@ -270,7 +370,8 @@
 }
 
 .transfer-feed {
-  min-height: 220px;
+  min-width: 0;
+  min-height: 0;
   max-height: min(48vh, 520px);
   padding: 10px;
   overflow: auto;
@@ -396,6 +497,7 @@
 .transfer-file-picker input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 
 .transfer-tasks {
+  min-width: 0;
   padding: 9px;
   border: 1px solid #91a8ce;
   border-radius: 5px;
@@ -403,6 +505,11 @@
 }
 .transfer-tasks h3 { margin-bottom: 7px; font-size: 13px; }
 #transfer-task-list:empty::after { content: "—"; color: #7890ac; }
+#transfer-task-list {
+  max-height: min(22vh, 190px);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
 
 .transfer-task {
   display: grid;
@@ -422,15 +529,46 @@
 .transfer-task-actions .xp-button { min-width: 44px; padding: 3px 7px; }
 
 @media (max-width: 760px) {
-  .transfer-app-header { grid-template-columns: minmax(0, 1fr) auto; }
-  .transfer-back-button { grid-column: 1 / -1; justify-self: start; }
-  .transfer-app-heading .transfer-icon { --transfer-icon-size: 46px; }
+  .transfer-app-header {
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+  .transfer-back-button {
+    position: relative;
+    width: 44px;
+    min-width: 44px;
+    padding: 4px;
+  }
+  .transfer-back-button [data-transfer-copy="back"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  .transfer-app-heading { gap: 7px; }
+  .transfer-app-heading .transfer-icon { --transfer-icon-size: 40px; }
+  .transfer-app-heading h2 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
   .transfer-room-entry { grid-template-columns: 1fr; margin: 10px; padding: 13px; }
   .transfer-password-row { grid-template-columns: 1fr 1fr; }
   .transfer-password-row input { grid-column: 1 / -1; }
-  .transfer-room-toolbar { align-items: flex-start; }
-  .transfer-toolbar-actions { flex-direction: column; }
-  .transfer-item { max-width: 98%; }
+  .transfer-room-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .transfer-toolbar-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+  .transfer-item { max-width: 100%; }
   .transfer-upload-zone { grid-template-columns: auto 1fr; }
   .transfer-file-picker { grid-column: 1 / -1; justify-content: center; }
   .transfer-task { grid-template-columns: auto minmax(0, 1fr); }
@@ -438,60 +576,301 @@
 }
 
 html[data-ui-shell="mobile"] #resources .xp-window {
+  display: flex;
+  flex-direction: column;
   min-height: 0;
 }
 
+/* Keep only the account popover's portal path alive on the Resources App.
+ * The account/language rail itself remains visually absent off Home. */
+html[data-ui-shell="mobile"] body[data-route="resources"] .topbar-actions {
+  display: contents;
+}
+
+html[data-ui-shell="mobile"] body[data-route="resources"] .topbar-actions > :not(.account-widget),
+html[data-ui-shell="mobile"] body[data-route="resources"] .account-widget > [data-account-toggle] {
+  display: none;
+}
+
+html[data-ui-shell="mobile"] body[data-route="resources"] .account-widget {
+  display: contents;
+}
+
+html[data-ui-shell="mobile"] #resource-list > .resource-card {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: 221px 44px;
+  gap: 8px;
+  height: 295px;
+  min-height: 295px;
+  max-height: 295px;
+}
+
+html[data-ui-shell="mobile"] #resource-list .resource-main {
+  grid-template-rows: 44px 82px 83px;
+  gap: 6px;
+}
+
+html[data-ui-shell="mobile"] #resource-list .resource-main > p {
+  max-height: none;
+  line-height: 1.42;
+  -webkit-line-clamp: unset;
+}
+
+html[data-ui-shell="mobile"] #resource-list .meta-row {
+  flex-wrap: wrap;
+  align-content: start;
+  gap: 5px 6px;
+  min-height: 83px;
+  max-height: 83px;
+  padding: 0;
+  overflow: visible;
+  font-size: 11px;
+}
+
+html[data-ui-shell="mobile"] #resource-list .meta-row::-webkit-scrollbar {
+  display: none;
+}
+
+html[data-ui-shell="mobile"] #resource-list .resource-card > .card-action {
+  grid-column: 1;
+  width: 100%;
+  min-height: 44px;
+}
+
 html[data-ui-shell="mobile"] .transfer-app {
-  min-height: 100%;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
   border: 0;
   border-radius: 0;
   box-shadow: none;
   background: linear-gradient(180deg, #eef8ff, #e8edff);
+  overflow: hidden;
 }
 
 html[data-ui-shell="mobile"] .transfer-app-header {
-  position: sticky;
   z-index: 5;
-  top: 0;
-  padding: 8px 10px;
+  min-height: 56px;
+  padding: 6px 8px;
 }
 
 html[data-ui-shell="mobile"] .transfer-app-heading p { display: none; }
+html[data-ui-shell="mobile"] .transfer-network-status {
+  flex: 0 0 auto;
+  max-width: 64px;
+  padding-inline: 7px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+html[data-ui-shell="mobile"] .transfer-feedback {
+  margin: 6px 8px 0;
+  padding: 7px 9px;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+html[data-ui-shell="mobile"] .transfer-room-entry {
+  margin: 8px;
+  padding: 12px;
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+html[data-ui-shell="mobile"] .transfer-password-row input,
+html[data-ui-shell="mobile"] .transfer-compose textarea {
+  font-size: 16px;
+}
+
+html[data-ui-shell="mobile"] .transfer-enter-button {
+  width: 100%;
+  justify-content: center;
+}
+
+html[data-ui-shell="mobile"] .transfer-quota-card {
+  align-items: flex-start;
+  padding: 11px;
+}
+
+html[data-ui-shell="mobile"] .transfer-quota-card .transfer-icon {
+  --transfer-icon-size: 46px;
+}
+
 html[data-ui-shell="mobile"] .transfer-room {
-  min-height: calc(var(--mobile-app-height, 100dvh) - 118px);
+  grid-template-rows: auto minmax(180px, auto) auto auto auto;
+  flex: 1 1 auto;
+  min-height: 0;
   padding: 8px;
   padding-bottom: max(14px, env(safe-area-inset-bottom));
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-padding-bottom: max(18px, env(safe-area-inset-bottom));
 }
 
 html[data-ui-shell="mobile"] .transfer-feed {
   max-height: none;
-  min-height: clamp(180px, 37dvh, 420px);
+  min-height: 180px;
+  padding: 8px;
+  overflow: visible;
+  overscroll-behavior: auto;
 }
 
 html[data-ui-shell="mobile"] .transfer-compose {
   position: sticky;
   z-index: 4;
   bottom: 0;
-  padding-bottom: max(4px, env(safe-area-inset-bottom));
-  background: linear-gradient(180deg, rgba(232,237,255,0), #e8edff 20%);
+  grid-template-columns: minmax(0, 1fr) minmax(68px, auto);
+  padding: 6px 0 max(6px, env(safe-area-inset-bottom));
+  scroll-margin-bottom: 14px;
+  background: linear-gradient(180deg, rgba(232, 237, 255, 0.35), #e8edff 26%);
+}
+
+html[data-ui-shell="mobile"] .transfer-compose .xp-button {
+  min-width: 68px;
+  padding-inline: 8px;
+}
+
+html[data-ui-shell="mobile"] .transfer-upload-zone {
+  gap: 8px;
+  padding: 9px;
+}
+
+html[data-ui-shell="mobile"] .transfer-upload-zone > .transfer-icon {
+  --transfer-icon-size: 42px;
+}
+
+html[data-ui-shell="mobile"] .transfer-file-picker {
+  width: 100%;
+  justify-content: center;
+}
+
+html[data-ui-shell="mobile"] .transfer-tasks {
+  padding: 8px;
+}
+
+html[data-ui-shell="mobile"] #transfer-task-list {
+  max-height: none;
+  overflow: visible;
+}
+
+html[data-ui-shell="mobile"] .transfer-item {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin-inline: 0;
+}
+
+html[data-ui-shell="mobile"] .transfer-item > header {
+  grid-template-columns: 30px minmax(0, 1fr) 44px;
+  grid-template-areas:
+    "icon author delete"
+    "icon time delete"
+    "expiry expiry expiry";
+  gap: 3px 7px;
+}
+
+html[data-ui-shell="mobile"] .transfer-item > header > .transfer-icon { grid-area: icon; }
+html[data-ui-shell="mobile"] .transfer-item > header > strong {
+  grid-area: author;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+html[data-ui-shell="mobile"] .transfer-item > header > time { grid-area: time; }
+html[data-ui-shell="mobile"] .transfer-expiry {
+  grid-area: expiry;
+  justify-self: start;
+  padding-inline-start: 37px;
+}
+html[data-ui-shell="mobile"] .transfer-delete-button {
+  grid-area: delete;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
+}
+html[data-ui-shell="mobile"] .transfer-item-body {
+  min-width: 0;
+  padding: 8px 1px 1px;
+}
+html[data-ui-shell="mobile"] .transfer-item-body img,
+html[data-ui-shell="mobile"] .transfer-item-body video,
+html[data-ui-shell="mobile"] .transfer-item-body audio {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+html[data-ui-shell="mobile"] .transfer-item-actions .xp-button {
+  width: 100%;
+  justify-content: center;
+}
+
+html[data-ui-shell="mobile"] .transfer-task {
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 7px;
+  align-items: start;
+}
+
+html[data-ui-shell="mobile"] .transfer-task > .transfer-icon {
+  --transfer-icon-size: 32px;
+}
+
+html[data-ui-shell="mobile"] .transfer-task > div:nth-child(2) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+html[data-ui-shell="mobile"] .transfer-task-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: 100%;
+}
+
+html[data-ui-shell="mobile"] .transfer-task-actions .xp-button {
+  width: 100%;
+  min-width: 0;
+  justify-content: center;
 }
 
 html[data-ui-shell="mobile"] .transfer-login-gate {
+  flex: 1 1 auto;
   grid-template-columns: auto 1fr;
-  margin: 10px;
-  padding: 14px;
+  align-content: start;
+  align-content: safe center;
+  margin: 8px;
+  padding: 12px;
+  overflow: auto;
 }
 html[data-ui-shell="mobile"] .transfer-login-gate .xp-button { grid-column: 1 / -1; min-height: 44px; }
 html[data-ui-shell="mobile"] .transfer-login-gate > .transfer-icon { --transfer-icon-size: 54px; }
 
-@media (max-height: 560px) and (orientation: landscape) {
+@media (max-width: 380px) {
+  html[data-ui-shell="mobile"] .transfer-app-heading .transfer-icon { display: none; }
+  html[data-ui-shell="mobile"] .transfer-app-heading h2 { font-size: 17px; }
+  html[data-ui-shell="mobile"] .transfer-network-status { max-width: 58px; font-size: 9px; }
+  html[data-ui-shell="mobile"] .transfer-login-gate {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+  html[data-ui-shell="mobile"] .transfer-login-gate .xp-button { width: 100%; }
+  html[data-ui-shell="mobile"] .transfer-login-gate > .transfer-icon { --transfer-icon-size: 46px; }
+}
+
+@media (min-width: 700px) and (max-height: 560px) and (orientation: landscape) {
   html[data-ui-shell="mobile"] .transfer-app-heading .transfer-icon { --transfer-icon-size: 36px; }
-  html[data-ui-shell="mobile"] .transfer-room { grid-template-columns: minmax(0, 1.4fr) minmax(250px, .8fr); grid-template-rows: auto minmax(150px, 1fr) auto; }
+  html[data-ui-shell="mobile"] .transfer-app-header { min-height: 48px; }
+  html[data-ui-shell="mobile"] .transfer-room {
+    grid-template-columns: minmax(0, 1.35fr) minmax(270px, .9fr);
+    grid-template-rows: auto auto auto auto;
+  }
   html[data-ui-shell="mobile"] .transfer-room-toolbar { grid-column: 1 / -1; }
-  html[data-ui-shell="mobile"] .transfer-feed { grid-column: 1; grid-row: 2 / span 2; min-height: 170px; }
-  html[data-ui-shell="mobile"] .transfer-compose,
-  html[data-ui-shell="mobile"] .transfer-upload-zone,
-  html[data-ui-shell="mobile"] .transfer-tasks { grid-column: 2; }
+  html[data-ui-shell="mobile"] .transfer-feed { grid-column: 1; grid-row: 2 / span 3; min-height: 210px; }
+  html[data-ui-shell="mobile"] .transfer-compose { grid-column: 2; grid-row: 2; }
+  html[data-ui-shell="mobile"] .transfer-upload-zone { grid-column: 2; grid-row: 3; }
+  html[data-ui-shell="mobile"] .transfer-tasks { grid-column: 2; grid-row: 4; }
   html[data-ui-shell="mobile"] .transfer-upload-zone { grid-template-columns: auto 1fr; }
   html[data-ui-shell="mobile"] .transfer-upload-zone > .transfer-icon { --transfer-icon-size: 38px; }
 }

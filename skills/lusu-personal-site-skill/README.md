@@ -19,7 +19,8 @@ skills/lusu-personal-site-skill/SKILL.md
 - 如果改动涉及 `/admin/` 管理后台、后台权限、后台 API、后台统计、后台视频管理、后台社交链接管理、后台聊天室治理或后台专用文档，必须额外先读取 `admin/docs/ADMIN_PROJECT_CONTEXT.md`、`admin/docs/ADMIN_SKILL.md` 和必要时的 `admin/docs/ADMIN_CHANGELOG.md`。
 - 桌面端保持 Windows XP + Pixel Art + Y2K，并沿 Neo-XP / Pixel Glass OS 演进；移动端使用原创、受 iOS 交互启发的虚拟手机 OS，不能只压缩桌面 XP 布局。
 - 可见文案必须维护中文 / English / 日本語。
-- 临时互传固定放在资源区并复用现有登录；普通账号受 95 MiB、个人/房间/频率和全站免费池限制，只有 D1 admin 可用 R2 Multipart 大文件。24 小时过期、私有 R2、清理 Worker和 Dashboard 人工绑定规则见 `docs/transfer/README.md`。
+- 临时互传固定放在资源区并复用现有登录；手机非 Home 的 Resources App 必须能直接到达登录，短屏、横屏和软键盘状态下消息、任务与输入区都要可达。普通账号受 95 MiB、个人/房间/频率和全站免费池限制，只有 D1 admin 可用 R2 Multipart 大文件。24 小时过期、私有 R2、清理 Worker 和 Dashboard 人工绑定规则见 `docs/transfer/README.md`。
+- Resources 同列表工具卡必须共享网格宽度和卡片高度节奏；zh/en/ja 的标题、元信息、说明与 CTA 不得相交或被 `nowrap`、隐藏滚动条、裁剪吞掉。
 - 本地建议 Node.js 22.13+；同名 API 变量使用 Git 忽略的 `.dev.vars` 和独立本地值，绝不提交 `.dev.vars`、`.env`、真实邮箱、Webhook 或密钥。
 - 改首页、窗口、任务栏、图标、弹窗、游戏外壳等前端内容时，必须检查手机端适配。
 - “日语的言外之意 / Behind the Japanese / 日本語の裏側”位于 `tools/japanese-subtext/`，固定采用版本化分批 JSON 和不可随意变更的关卡 ID；每次公开应用更新增加 `appVersion`，只有题库结构或存档兼容边界变化时才增加 `contentVersion`，改关另增 `revision`，完整流程见 `tools/japanese-subtext/MAINTENANCE.md`。
@@ -35,6 +36,7 @@ skills/lusu-personal-site-skill/SKILL.md
 - 维护右上角账号入口、语言切换或其他顶栏浮层时，必须同时检查 `.xp-topbar` 的裁剪行为和 `.site-shell > header` / `.site-shell > main` 的 stacking context；账号弹窗必须能从按钮下方溢出显示，且 `header` 必须高于 `main`，否则首页会像点了没反应、其他栏目会被窗口遮挡。
 - 每次改动都必须写记录并更新日期：至少更新 `CHANGELOG.md`；公开可见更新还必须补 `PROJECT_CONTEXT.md`、`content.updates`、`site-updates` 三语记录、相关 seed 和资源 query，确保首页最近更新日期真的变化。
 - 底部任务栏必须固定贴合浏览器视口下沿，窗口高度、页面 padding、文章阅读浮层和移动端断点都要为它预留空间，避免导航被顶下去或盖住正常窗口。
+- 手机文章回顶等控制放在 Appbar 可见区域时，要验证真实触控命中层：顶栏空白层不能拦截控制，返回、复制、账号等真实控件仍需可操作。
 - 旧版 460px 以下“两行 XP 顶栏”规则只用于兼容历史样式；当前移动壳必须按虚拟手机 OS 的状态区、全屏 App、Dock 和 Home 控制校验，不能恢复成压缩桌面布局。
 - 非首页窗口页背景必须跟随 `body[data-time-theme]` 的四时段专用图片 `assets/images/window-backdrops/<time>.png`，并保持比首页更低干扰、更简单的现代遮罩，不要恢复成单一蓝绿色渐变，也不要直接复用首页大场景图。
 - 关于我窗口的 X、GitHub、Bilibili、Instagram、Discord 必须保持小图标按钮展示，链接从 `GET /api/social-links` 公开读取，后台通过 `GET/PUT /api/admin/social-links` 修改并保存到 `site_runtime_state.about_social_links`。

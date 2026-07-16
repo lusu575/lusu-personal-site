@@ -106,7 +106,7 @@
 
   function bindEvents() {
     document.getElementById("transfer-back-to-resources")?.addEventListener("click", close);
-    document.getElementById("transfer-login-button")?.addEventListener("click", () => document.querySelector("[data-account-toggle]")?.click());
+    document.getElementById("transfer-login-button")?.addEventListener("click", openAccountFromTransfer);
     document.getElementById("transfer-generate-password")?.addEventListener("click", generatePassword);
     document.getElementById("transfer-copy-password")?.addEventListener("click", copyPassword);
     document.getElementById("transfer-room-form")?.addEventListener("submit", joinRoom);
@@ -124,6 +124,46 @@
     window.addEventListener("online", updateNetwork);
     window.addEventListener("offline", updateNetwork);
     document.addEventListener("visibilitychange", schedulePoll);
+    refs.app?.addEventListener("focusin", keepFocusedControlVisible);
+    window.visualViewport?.addEventListener("resize", keepFocusedControlVisible, { passive: true });
+    window.addEventListener("lusu:accountchange", syncAccountState);
+  }
+
+  function openAccountFromTransfer(event) {
+    event.stopPropagation();
+    const trigger = event.currentTarget;
+    if (typeof window.openAccountPopover === "function") {
+      window.openAccountPopover({ returnFocus: trigger });
+    } else {
+      document.querySelector("[data-account-toggle]")?.click();
+    }
+    window.requestAnimationFrame(() => document.querySelector("#account-popover input")?.focus({ preventScroll: true }));
+  }
+
+  async function syncAccountState(event) {
+    if (!state.open) return;
+    if (typeof window.closeAccountPopover === "function") {
+      window.closeAccountPopover({ restoreFocus: false, motion: false });
+    }
+    await loadConfig();
+    const target = event.detail?.signedIn && !refs.room?.hidden
+      ? refs.textInput
+      : event.detail?.signedIn && !refs.roomEntry?.hidden
+        ? refs.roomPassword
+        : document.getElementById("transfer-login-button");
+    window.requestAnimationFrame(() => target?.focus({ preventScroll: true }));
+  }
+
+  function keepFocusedControlVisible() {
+    if (!state.open || document.documentElement.dataset.uiShell !== "mobile") return;
+    const control = document.activeElement;
+    if (!(control instanceof HTMLElement) || !refs.app?.contains(control) || !control.matches("input:not([type='file']), textarea")) return;
+    window.requestAnimationFrame(() => control.scrollIntoView({ block: "nearest", inline: "nearest" }));
+  }
+
+  function revealComposer() {
+    if (document.documentElement.dataset.uiShell !== "mobile" || refs.room?.hidden) return;
+    window.requestAnimationFrame(() => document.getElementById("transfer-text-form")?.scrollIntoView({ block: "nearest" }));
   }
 
   function setLanguage(lang) {
@@ -169,9 +209,11 @@
         restoreTasks();
         await refreshItems(true);
         schedulePoll();
+        revealComposer();
       }
     } catch (error) {
       if (error.status === 401) {
+        stopPoll();
         state.config = null;
         refs.loginGate.hidden = false;
         refs.roomEntry.hidden = true;
@@ -219,6 +261,7 @@
       await refreshItems(true);
       schedulePoll();
       setFeedback(text("joined"));
+      revealComposer();
     } catch (error) {
       setFeedback(error.message || text("joinFailed"), true);
     }

@@ -583,6 +583,36 @@ const labels = {
 const content = {
   updates: [
     {
+      article_id: "seed-update-2026-07-16-mobile-transfer-ui-polish",
+      slug: "2026-07-16-mobile-transfer-ui-polish",
+      category: "site-updates",
+      tags: ["mobile", "Quick Transfer", "UI", "accessibility"],
+      cover_image: "",
+      status: "published",
+      is_pinned: 0,
+      created_at: "2026-07-16T13:30:00.000Z",
+      updated_at: "2026-07-16T13:30:00.000Z",
+      published_at: "2026-07-16T13:30:00.000Z",
+      fallbackOnly: true,
+      icon: "system",
+      date: "2026.07.16",
+      title: {
+        zh: "手机文章与临时互传界面修复",
+        en: "Mobile Reading and Transfer UI Fixes",
+        ja: "モバイル記事と一時転送 UI の修正"
+      },
+      summary: {
+        zh: "修复手机端知识库文章回顶触控，并统一资源卡片尺寸与互传页面在窄屏、短屏和软键盘下的布局；安全、配额与 API 边界保持不变。",
+        en: "Fixes mobile article back-to-top touch handling, aligns Resource cards, and adapts Quick Transfer to narrow, short, and keyboard-constrained screens without changing security, quotas, or APIs.",
+        ja: "モバイル記事のトップへ戻る操作を修正し、リソースカードと一時転送を狭い画面・短い画面・ソフトキーボード向けに整えました。安全・割り当て・API の境界は変更していません。"
+      },
+      content_markdown: {
+        zh: "# 手机文章与临时互传界面修复\n\n本轮针对手机阅读和资源区互传做可见体验修复，不改变后端能力与权限模型。\n\n## 知识库文章\n\n- 手机阅读文章时，回到顶部按钮不再被固定 Appbar 的触控层拦截，点击后可以正常返回文章开头。\n- Appbar 中真实可操作的返回、复制等控件仍然可以正常使用。\n\n## 资源区与互传\n\n- 临时互传卡片与日语学习卡片使用一致的网格宽度和卡片节奏，标题、元信息、说明与入口重新对齐。\n- 互传入口、房间、消息、上传任务、文件预览和输入区适配窄竖屏、短屏与手机横屏；软键盘出现时输入控件保持可见。\n- 非首页手机 App 中的登录入口仍然可达，关键控件保持合适的触控尺寸，不通过裁剪隐藏排版问题。\n\n## 边界不变\n\n本次只调整公开交互和响应式 UI。房间口令派生、HttpOnly 会话、私有 R2、24 小时过期、普通账号配额、管理员 Multipart 权限、下载鉴权以及现有 API 均未改变。",
+        en: "# Mobile Reading and Transfer UI Fixes\n\nThis release improves mobile reading and the Resources transfer experience without changing backend capabilities or the permission model.\n\n## Knowledge articles\n\n- The Back to Top control is no longer blocked by the fixed Appbar touch layer while reading an article on mobile, so it returns to the article start as expected.\n- Real Appbar controls such as Back and Copy remain interactive.\n\n## Resources and Quick Transfer\n\n- The Quick Transfer and Japanese learning cards now share a consistent grid width and card rhythm, with aligned headings, metadata, descriptions, and actions.\n- Entry, room, message, upload task, file preview, and composer layouts now adapt to narrow portrait screens, short screens, and mobile landscape; focused inputs remain visible when the software keyboard opens.\n- Sign-in remains reachable from a non-Home mobile App, and key controls retain practical touch sizes without clipping content to hide layout problems.\n\n## Unchanged boundaries\n\nThis release changes only public interaction and responsive UI. Passphrase derivation, HttpOnly sessions, private R2 storage, 24-hour expiry, standard-account quotas, admin Multipart permissions, download authorization, and existing APIs are unchanged.",
+        ja: "# モバイル記事と一時転送 UI の修正\n\n今回はモバイルでの記事閲覧とリソース欄の一時転送を改善し、バックエンド機能や権限モデルは変更していません。\n\n## ナレッジ記事\n\n- モバイルで記事を読む際、トップへ戻る操作が固定 Appbar のタッチ層に遮られなくなり、記事の先頭へ正しく戻ります。\n- 戻る・コピーなど Appbar 上の実際の操作ボタンは引き続き利用できます。\n\n## リソースと一時転送\n\n- 一時転送カードと日本語学習カードのグリッド幅とカードのリズムを揃え、見出し、メタ情報、説明、操作を整列しました。\n- 入口、部屋、メッセージ、アップロードタスク、ファイルプレビュー、入力欄を、狭い縦画面、短い画面、モバイル横画面に対応させました。ソフトキーボード表示中も入力欄を確認できます。\n- Home 以外のモバイル App からもログインへ進め、主要操作は内容を切り捨てずに十分なタッチ領域を保ちます。\n\n## 変更していない境界\n\n今回は公開操作とレスポンシブ UI のみの変更です。合言葉の派生、HttpOnly セッション、非公開 R2、24 時間の有効期限、一般アカウントの割り当て、管理者 Multipart 権限、ダウンロード認可、既存 API は変更していません。"
+      }
+    },
+    {
       article_id: "seed-update-2026-07-16-quick-transfer",
       slug: "2026-07-16-quick-transfer",
       category: "site-updates",
@@ -1656,6 +1686,7 @@ const activeFilters = {
 };
 let authUser = null;
 let accountSubmitting = false;
+let accountPopoverReturnFocus = null;
 const articleState = {
   loading: false,
   requestId: 0,
@@ -2656,7 +2687,7 @@ function articleCardElement(item) {
   const meta = document.createElement("div");
   meta.className = "meta-row";
   const category = document.createElement("span");
-  category.textContent = `${t("articleCategory")}：${articleCategoryName(item.category || "note")}`;
+  category.textContent = `${t("articleCategory")}: ${articleCategoryName(item.category || "note")}`;
   meta.appendChild(category);
   (item.tags || []).forEach((tag) => {
     const tagNode = document.createElement("span");
@@ -2665,7 +2696,7 @@ function articleCardElement(item) {
     meta.appendChild(tagNode);
   });
   const published = document.createElement("span");
-  published.textContent = `${t("articlePublished")}：${formatArticleDate(item.published_at || item.created_at)}`;
+  published.textContent = `${t("articlePublished")}: ${formatArticleDate(item.published_at || item.created_at)}`;
   meta.appendChild(published);
   if (item.lang !== currentLang) {
     const fallback = document.createElement("span");
@@ -2978,8 +3009,8 @@ function renderArticleDetail(article) {
   summary.textContent = article.summary || "";
   meta.replaceChildren();
   [
-    { text: `${t("articleCategory")}：${articleCategoryName(article.category || "note")}`, className: "article-meta-item article-meta-category" },
-    { text: `${t("articlePublished")}：${formatArticleDate(article.published_at || article.created_at)}`, className: "article-meta-item article-meta-published" },
+    { text: `${t("articleCategory")}: ${articleCategoryName(article.category || "note")}`, className: "article-meta-item article-meta-category" },
+    { text: `${t("articlePublished")}: ${formatArticleDate(article.published_at || article.created_at)}`, className: "article-meta-item article-meta-published" },
     ...(article.tags || []).map((tag) => ({ text: `#${articleTagName(tag)}`, className: "tag" })),
     article.lang !== currentLang ? { text: t("articleFallback"), className: "tag" } : null
   ].filter(Boolean).forEach(({ text, className }) => {
@@ -3966,12 +3997,12 @@ function resourceCardElement(item) {
   const meta = document.createElement("div");
   meta.className = "meta-row";
   const metaItems = [
-    `${label("type")}\uFF1A${label("resourceCategories")[item.category] || ""}`
+    `${label("type")}: ${label("resourceCategories")[item.category] || ""}`
   ];
   if (resourceAvailable) {
-    if (item.version) metaItems.push(`${label("version")}\uFF1A${item.version}`);
-    if (item.size) metaItems.push(`${label("size")}\uFF1A${item.size}`);
-    if (item.updated) metaItems.push(`${label("updated")}\uFF1A${item.updated}`);
+    if (item.version) metaItems.push(`${label("version")}: ${item.version}`);
+    if (item.size) metaItems.push(`${label("size")}: ${item.size}`);
+    if (item.updated) metaItems.push(`${label("updated")}: ${item.updated}`);
   }
   metaItems.forEach((text) => {
     const itemNode = document.createElement("span");
@@ -4092,7 +4123,7 @@ async function renderGames({ forceRefresh = false } = {}) {
   } catch (error) {
     const failed = document.createElement("p");
     failed.className = "loading-text";
-    failed.textContent = `${t("gameConfigFailed")}：${error.message}`;
+    failed.textContent = `${t("gameConfigFailed")}: ${error.message}`;
     markStatusMessage(failed);
     const action = document.createElement("button");
     action.type = "button";
@@ -4228,7 +4259,7 @@ function blogCardElement(item) {
   const meta = document.createElement("div");
   meta.className = "meta-row";
   const date = document.createElement("span");
-  date.textContent = `${label("date")}：${item.date || ""}`;
+  date.textContent = `${label("date")}: ${item.date || ""}`;
   meta.appendChild(date);
   (item.tags || []).forEach((tag) => {
     const tagNode = document.createElement("span");
@@ -4974,6 +5005,7 @@ async function submitAccountForm(event) {
     authUser = payload.user;
     renderAccountWidget(t("accountLoggedIn"));
     openAccountPopover();
+    window.dispatchEvent(new CustomEvent("lusu:accountchange", { detail: { signedIn: true } }));
   } catch (error) {
     renderAccountWidget(error.message);
     openAccountPopover();
@@ -4995,6 +5027,7 @@ async function logoutAccount() {
   authUser = null;
   renderAccountWidget(t("accountLoggedOut"));
   openAccountPopover();
+  window.dispatchEvent(new CustomEvent("lusu:accountchange", { detail: { signedIn: false } }));
   accountSubmitting = false;
 }
 
@@ -5009,9 +5042,12 @@ function setAccountSubmitting(isSubmitting) {
   });
 }
 
-function openAccountPopover() {
+function openAccountPopover(options = {}) {
   const popover = document.getElementById("account-popover");
   if (popover) {
+    if (options.returnFocus instanceof HTMLElement && options.returnFocus.isConnected) {
+      accountPopoverReturnFocus = options.returnFocus;
+    }
     cancelSurfaceClose(popover);
     popover.hidden = false;
     syncAccountPopoverState(popover);
@@ -5025,24 +5061,31 @@ function closeAccountPopover(options = {}) {
     return;
   }
   const toggle = document.querySelector("[data-account-toggle]");
+  const returnFocus = accountPopoverReturnFocus?.isConnected ? accountPopoverReturnFocus : toggle;
   runSurfaceClose(popover, {
     motion: options.motion,
-    origin: toggle
+    origin: returnFocus
   }, () => {
     popover.hidden = true;
     syncAccountPopoverState(popover);
-    if (options.restoreFocus !== false && toggle && typeof toggle.focus === "function") {
+    accountPopoverReturnFocus = null;
+    if (options.restoreFocus !== false && returnFocus && typeof returnFocus.focus === "function") {
+      returnFocus.focus({ preventScroll: true });
+    } else if (options.restoreFocus !== false && toggle && typeof toggle.focus === "function") {
       toggle.focus({ preventScroll: true });
     }
   });
 }
 
-function toggleAccountPopover() {
+function toggleAccountPopover(trigger = null) {
   const popover = document.getElementById("account-popover");
   if (!popover) {
     return;
   }
   if (popover.hidden) {
+    if (trigger instanceof HTMLElement && trigger.isConnected) {
+      accountPopoverReturnFocus = trigger;
+    }
     openAccountPopover();
   } else {
     closeAccountPopover();
@@ -5691,8 +5734,9 @@ document.addEventListener("click", (event) => {
     closeAccountPopover({ restoreFocus: Boolean(popover?.contains(document.activeElement)) });
   }
 
-  if (target.closest("[data-account-toggle]")) {
-    toggleAccountPopover();
+  const accountToggle = target.closest("[data-account-toggle]");
+  if (accountToggle) {
+    toggleAccountPopover(accountToggle);
     return;
   }
 

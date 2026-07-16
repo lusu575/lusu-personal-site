@@ -141,6 +141,17 @@ html[data-ui-shell="mobile"] .xp-topbar::after {
   content: none;
 }
 
+/* Article reading controls share the visual App bar, but remain inside main's
+ * lower stacking context. Let taps cross the header's empty surface while
+ * keeping its real controls interactive. */
+html[data-ui-shell="mobile"] body.is-article-reading .xp-topbar {
+  pointer-events: none;
+}
+
+html[data-ui-shell="mobile"] body.is-article-reading .xp-topbar :is(button, a, input, select, textarea, .account-popover) {
+  pointer-events: auto;
+}
+
 html[data-ui-shell="mobile"] .mobile-statusbar {
   grid-column: 1 / -1;
   grid-row: 1;

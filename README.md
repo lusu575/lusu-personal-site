@@ -3,6 +3,7 @@
 ## 临时互传
 
 - 资源区提供登录限定的“临时互传 / Quick Transfer / 一時転送”，支持 24 小时房间、加密文字、私有 R2 文件和 Range 视频播放。
+- Resources 中的临时互传与日语学习卡片使用一致的网格宽度和卡片节奏；互传入口、登录、房间、消息、上传任务、文件预览与输入区已适配窄竖屏、短屏、软键盘和手机横屏。
 - 普通账号受 95 MiB 单文件、个人/房间/频率及全站 8 GiB 免费池限制；只有 D1 `users.role = admin` 可用 Multipart 上传数百 MB 到数 GB 文件。
 - 部署前需按 `docs/transfer/README.md` 创建并绑定 `TRANSFER_BUCKET`、部署清理 Worker、设置生命周期与 Cloudflare 官方预算提醒。
 - 本地建议 Node.js 22.13+；本地同名变量放在 Git 忽略的 `.dev.vars` 并独立生成，不得提交 `.dev.vars`、`.env` 或真实密钥。
@@ -42,6 +43,7 @@ GPTWork 先在云端 Secrets 中配置下列两个变量，再执行 `npm ci`、
 
 - 首页使用 morning / day / dusk / night 四时段像素壁纸，并已接入无云底图 + 单朵独立云层的动态云层效果。
 - 公开主站使用“同一业务状态、两套呈现壳”：桌面端是 Neo-XP / Pixel Glass OS，移动端是带状态栏、App Home 和 safe-area 适配的虚拟手机系统。真实毛玻璃 Dock 在 Home 与栏目 App 内持续悬浮，保留 Home、知识库、视频、资源、游戏、聊天室六个高频入口；杂谈与关于仍从 Home 图标进入。Dock 可横向滑动、切换并收起，账号和语言操作仍只在 Home。
+- 手机知识库文章的回顶控制与固定 Appbar 已完成触控层隔离；非控件区域不会拦截回顶点击，返回、复制等真实 Appbar 控件保持可用。
 - 桌面图标打开只淡入目标窗口，任务栏返回 Home 只轻滑入图标区；壁纸、顶栏和任务栏不进入这两条转场。模块间 route 只让新页面低位移淡入，旧窗口快照隐藏，不使用 3D 书页翻动、双边框叠影、整屏闪白或点击原点巨幅缩放；移动 Home 使用紧凑固定行高图标网格，真实 Dock 以共享选中底板连续滑动。
 - 知识库文章内容保存在 Cloudflare D1，正式文章需要同时维护中文 / English / 日本語 三语内容。
 - 关于我窗口提供 X、GitHub、Bilibili、Instagram、Discord 小图标入口，链接从 `GET /api/social-links` 公开只读读取。

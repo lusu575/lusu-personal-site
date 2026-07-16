@@ -58,7 +58,9 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - Home 的 App grid 必须按 DOM 顺序从左到右、从上到下填充并使用固定行高；不得用 `1fr` 弹性行把图标在细长屏幕上纵向摊开。App 按钮热区应与可见图标加标题的实际盒接近，不得把整列或大块空白变成点击区，同时仍保持 44px 最小触控目标。
 - 移动栏目统一保留“外框—工具/筛选区—标签区—内容区”的多层边框结构；知识库、视频、资源、游戏、杂谈、聊天室与关于页都要有清晰容器层级，边框颜色从本站四时段/Neo-XP token 取值。新增边框后必须重新测可读容量和子项相交，不能用边框挤掉正文、聊天日志或按钮。
 - 移动端固定复测 359x500、375x667、390x844、430x932 和 coarse pointer 横屏 844x390；至少验证 Home、Chat、账号弹窗、文章详情、视频弹窗和底部返回路径。验收不能只看“没有横向溢出”：App 窗口应至少占视口高度 80%，Games 列表要使用可用高度，Chat 日志区在短竖屏/横屏要分别保留至少 260px/150px，短屏文章首屏至少显示 44px 无遮挡正文。文章进度与回顶控制应放在移动 Appbar 的空余区域，不能覆盖复制按钮或正文。
+- 手机文章阅读把回顶等控制放入 Appbar 可见区域时，必须同时检查视觉层和真实 hit-testing：固定 `.xp-topbar` 的装饰/空白区域不得拦截正文中的控制，Appbar 内返回、复制、账号等真实交互节点仍需单独恢复指针事件。
 - 移动排版以“包含且不相交”为硬门槛：卡片内标题、摘要、元信息和 CTA 必须完全位于卡片内，结构子项不得伸进下一张卡；输入框、计数、发送按钮、密码房操作和 footer 文案不得相互覆盖。不得靠把按钮缩到 44px 以下、把反馈字缩到难读或用 `overflow: hidden` 掩盖排版错误来通过验收；横竖屏与 zh / en / ja 长文案都要做真实几何检查。
+- Resources 同一列表中的工具卡必须共享同一网格列宽和卡片高度节奏；标题、元信息、说明、标签和 CTA 要在 zh/en/ja 与桌面/手机上对齐，窄屏元信息应自然换行，不得用 `nowrap`、隐藏滚动条或裁剪吞掉状态与日期。
 - 全站关闭指针驱动视差，不得通过鼠标或触控位置移动壁纸、系统栏、窗口或内容层。慢速壁纸氛围只允许使用与输入无关的 `transform` / `opacity`，并在页面隐藏、`prefers-reduced-motion`、`data-motion="reduced"` 或 `off` 时回到稳定静态状态。
 - 大面积页面、窗口和弹层只允许动画 `transform + opacity`，禁止动画 `filter`、`box-shadow`、`border-radius`、`left/top`、`width/height`，也禁止大面积 3D 透视或书页翻动。统一时长约为 instant 80ms、fast 140ms、standard 200ms、window 220ms、scene 300ms；`reduced` 与 `off` 必须立即提交导航和状态。
 - 在线状态、托盘图标和其他状态提示不得持续闪烁。移动和桌面过渡都要短促、可中断，并禁止通过整页 `transform` 破坏 fixed 元素的包含块。
@@ -246,6 +248,8 @@ $env:XDG_CONFIG_HOME=(Join-Path (Get-Location) '.wrangler-config'); npx.cmd wran
 - 建议使用 Node.js 22.13+；本地 Pages Functions / API 的同名变量只放在 Git 忽略的根目录 `.dev.vars`，并独立于 Production 生成。
 - `.dev.vars`、`.env`、`.env.*`、真实邮箱、Webhook URL、R2 Access Key 和其他真实密钥绝不能提交 GitHub。
 - 临时互传固定放在资源区，不新增顶层 route、任务栏或移动 Dock。所有 API 复用 HttpOnly 会话，管理员只能由 D1 `users.role = admin` 判断。
+- 未登录用户从手机 Resources App 打开临时互传时必须能直接到达登录操作；不能只代理点击在非 Home 路由被隐藏的 `.topbar-actions`，账号弹窗也不能留在 `display: none` 的祖先内。
+- 互传房间的消息流、上传任务和输入区必须在 359x500、375x667、390x844、844x390 及软键盘 `visualViewport` 缩小时保持可到达。允许消息区域内部滚动，但不得用嵌套滚动、过度 overscroll containment 或固定高度把登录、发送或上传操作锁在视口外。
 - 普通互传默认 95 MiB/文件并受个人、房间、频率和全站免费池的服务端限制；管理员大文件必须使用 R2 Multipart。“不限频次”不等于无限并发或突破 R2 平台/账单边界。
 - 房间明文口令不得发送服务端或进入 D1/R2/日志；文字可称浏览器 AES-GCM，文件只准确描述为 HTTPS + 私有 R2 + 服务端鉴权，未实现可靠流式 E2EE 或病毒扫描时不得声称已实现。
 - 互传列表与下载必须以 `expires_at` 做 24 小时逻辑过期；独立 `workers/transfer-cleanup/` Worker 和 R2 生命周期兜底都要保留。

@@ -491,6 +491,7 @@ const gameIndexFiles = [
 const gameIndexHtmls = gameIndexFiles.map((file) => [file, readRequired(file)]);
 const mobileShellJs = readRequired("js/mobile-shell.js");
 const mainJs = readRequired("js/main.js");
+const transferCss = readRequired("css/transfer.css");
 const transferJs = readRequired("js/transfer.js");
 const telemetryJs = readRequired("js/telemetry.js");
 const uiMotionJs = readRequired("js/ui-motion.js");
@@ -517,6 +518,32 @@ for (const [label, source, markers] of [
   for (const marker of markers) {
     if (!source.includes(marker)) fail(`${label} missing ${marker}`);
   }
+}
+
+if (!hasPattern(transferCss, /#resource-list\s*>\s*\.resource-card\s*\{[\s\S]*?width:\s*100%[\s\S]*?height:\s*210px[\s\S]*?max-height:\s*210px/)
+  || !hasPattern(transferCss, /#resource-list\s+\.meta-row\s*\{[\s\S]*?flex-wrap:\s*wrap[\s\S]*?overflow:\s*visible/)
+  || !hasPattern(transferCss, /html\[data-ui-shell="mobile"\]\s+#resource-list\s+\.meta-row\s*\{[\s\S]*?flex-wrap:\s*wrap[\s\S]*?overflow:\s*visible/)) {
+  fail("css/transfer.css should keep Resource cards equal-width/equal-height while exposing wrapped mobile metadata");
+}
+
+if (!hasPattern(transferCss, /body\[data-route="resources"\]\s+\.topbar-actions\s*\{\s*display:\s*contents/)
+  || !hasPattern(transferCss, /body\[data-route="resources"\]\s+\.account-widget\s*\{\s*display:\s*contents/)
+  || !hasPattern(transferJs, /function\s+openAccountFromTransfer[\s\S]*openAccountPopover\(\{\s*returnFocus:\s*trigger\s*\}\)/)
+  || !hasPattern(transferJs, /addEventListener\(["']lusu:accountchange["'],\s*syncAccountState\)/)
+  || !hasPattern(mainJs, /function\s+openAccountPopover\(options\s*=\s*\{\}\)[\s\S]*accountPopoverReturnFocus/)) {
+  fail("Quick Transfer sign-in should open the mobile account popover and restore authentication/focus state");
+}
+
+if (!hasPattern(transferJs, /catch\s*\(error\)\s*\{\s*if\s*\(error\.status\s*===\s*401\)\s*\{\s*stopPoll\(\)/)) {
+  fail("Quick Transfer should stop room polling as soon as the account session becomes unauthorized");
+}
+
+if (!hasPattern(transferCss, /html\[data-ui-shell="mobile"\]\s+\.transfer-feed\s*\{[\s\S]*?overflow:\s*visible[\s\S]*?overscroll-behavior:\s*auto/)
+  || !hasPattern(transferCss, /html\[data-ui-shell="mobile"\]\s+\.transfer-compose\s*\{[\s\S]*?position:\s*sticky[\s\S]*?bottom:\s*0/)
+  || !hasPattern(transferCss, /html\[data-ui-shell="mobile"\]\s+\.transfer-delete-button\s*\{[\s\S]*?width:\s*44px[\s\S]*?min-height:\s*44px/)
+  || !hasPattern(transferJs, /function\s+keepFocusedControlVisible[\s\S]*scrollIntoView/)
+  || !hasPattern(transferJs, /visualViewport\?\.addEventListener\(["']resize["'],\s*keepFocusedControlVisible/)) {
+  fail("Quick Transfer mobile room should use one reachable scroll path, a sticky composer, keyboard compensation, and 44px delete controls");
 }
 const japaneseSubtextHtml = readRequired("tools/japanese-subtext/index.html");
 const japaneseSubtextCss = readRequired("tools/japanese-subtext/style.css");
@@ -1994,9 +2021,11 @@ for (const asset of [
   "/css/style.css",
   "/css/mobile-ios-shell.css",
   "/css/motion-system.css",
+  "/css/transfer.css",
   "/js/mobile-shell.js",
   "/js/ui-motion.js",
   "/js/main.js",
+  "/js/transfer.js",
   "/js/telemetry.js"
 ]) {
   if (!hasVersionedAssetReference(indexHtml, asset)) {
@@ -2005,14 +2034,14 @@ for (const asset of [
 }
 
 const premiumUiVersion = "20260711-calm-motion-r13";
+const mobileTransferUiVersion = "20260716-mobile-transfer-ui-r1";
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
-const currentMainVersion = "20260716-quick-transfer-r1";
+const currentMainVersion = mobileTransferUiVersion;
 const currentPreFinalCssVersion = "20260711-calm-motion-r13";
 const currentPreFinalTelemetryVersion = "20260623-analytics-privacy-r1";
 const currentGameShellVersion = "20260623-game-shell-storage-safe-r1";
 
 for (const asset of [
-  "/css/mobile-ios-shell.css",
   "/css/motion-system.css",
   "/js/mobile-shell.js",
   "/js/ui-motion.js"
@@ -2020,6 +2049,17 @@ for (const asset of [
   const versions = assetQueryVersions(indexHtml, asset);
   if (versions.length !== 1 || versions[0] !== premiumUiVersion) {
     fail(`index.html ${asset} query should appear once as ${premiumUiVersion}`);
+  }
+}
+
+for (const asset of [
+  "/css/mobile-ios-shell.css",
+  "/css/transfer.css",
+  "/js/transfer.js"
+]) {
+  const versions = assetQueryVersions(indexHtml, asset);
+  if (versions.length !== 1 || versions[0] !== mobileTransferUiVersion) {
+    fail(`index.html ${asset} query should appear once as ${mobileTransferUiVersion}`);
   }
 }
 
@@ -2711,8 +2751,9 @@ if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\[data-arti
 
 if (!hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-read-progress\s*\{[\s\S]*top:\s*calc\(var\(--mobile-safe-top\)\s*\+\s*var\(--mobile-status-height\)\s*\+\s*8px\)[\s\S]*bottom:\s*auto[\s\S]*z-index:\s*95[\s\S]*height:\s*32px/)
   || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-top-link\s*\{[\s\S]*top:\s*calc\(var\(--mobile-safe-top\)\s*\+\s*var\(--mobile-status-height\)\s*\+\s*2px\)[\s\S]*bottom:\s*auto[\s\S]*width:\s*44px/)
+  || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.xp-topbar\s*\{\s*pointer-events:\s*none[\s\S]*body\.is-article-reading\s+\.xp-topbar\s+:is\(button,\s*a,\s*input,\s*select,\s*textarea,\s*\.account-popover\)\s*\{\s*pointer-events:\s*auto/)
   || !hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*body\.is-article-reading\s+\.article-top-link\s*\{[\s\S]*right:\s*104px[\s\S]*bottom:\s*auto/)) {
-  fail("css/mobile-ios-shell.css should place mobile article controls in the App bar without covering copy controls or body text");
+  fail("css/mobile-ios-shell.css should place tappable mobile article controls in the App bar without covering copy controls or body text");
 }
 
 if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+#video-window-maximize\s*\{\s*display:\s*none/)) {
@@ -2914,12 +2955,12 @@ for (const obsoleteText of [
   }
 }
 
-const finalUpdateId = "seed-update-2026-07-16-quick-transfer";
-const finalUpdateSlug = "2026-07-16-quick-transfer";
-const finalMainVersion = "20260716-quick-transfer-r1";
+const finalUpdateId = "seed-update-2026-07-16-mobile-transfer-ui-polish";
+const finalUpdateSlug = "2026-07-16-mobile-transfer-ui-polish";
+const finalMainVersion = mobileTransferUiVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Quick Transfer Arrives in Resources";
-const finalPublishedAt = "2026-07-16T10:00:00.000Z";
+const finalTitleEn = "Mobile Reading and Transfer UI Fixes";
+const finalPublishedAt = "2026-07-16T13:30:00.000Z";
 const finalTranslationMinimums = {
   title: 8,
   summary: 24,
