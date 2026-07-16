@@ -538,6 +538,24 @@ if (!hasPattern(transferJs, /catch\s*\(error\)\s*\{\s*if\s*\(error\.status\s*===
   fail("Quick Transfer should stop room polling as soon as the account session becomes unauthorized");
 }
 
+if (!indexHtml.includes('id="transfer-drop-overlay"')
+  || !hasPattern(transferJs, /refs\.dropSurface\?\.addEventListener\(["']dragenter["'],\s*handleWindowDragEnter\)/)
+  || !hasPattern(transferJs, /refs\.dropSurface\?\.addEventListener\(["']drop["'],\s*handleWindowDrop\)/)
+  || !hasPattern(transferJs, /function\s+isFileDrag[\s\S]*dataTransfer\?\.types[\s\S]*includes\(["']Files["']\)/)
+  || !hasPattern(transferJs, /function\s+queueFiles\([\s\S]*!state\.config\?\.r2Ready[\s\S]*setFeedback\(text\(["']r2Missing["']\),\s*true\)[\s\S]*return/)
+  || !hasPattern(transferJs, /function\s+pumpTaskQueue\(\)\s*\{\s*if\s*\(!state\.config\?\.r2Ready\)\s*\{\s*failPendingTasksForUnavailableStorage\(\)/)
+  || !hasPattern(transferJs, /payload\.code\s*\|\|\s*["']["'][\s\S]*error\.code\s*===\s*["']TRANSFER_R2_NOT_BOUND["']/)
+  || !hasPattern(transferCss, /\.transfer-drop-overlay\s*\{[\s\S]*position:\s*absolute[\s\S]*pointer-events:\s*none/)) {
+  fail("Quick Transfer should accept file-only drops across the full window and block unavailable uploads before creating tasks");
+}
+
+if (!hasPattern(transferCss, /html\[data-ui-shell="desktop"\]\s+#resources\s+\.xp-window\.is-transfer-open\s*\{[\s\S]*height:\s*calc\(100dvh\s*-\s*var\(--chrome-window-compact-reserve\)\)/)
+  || !hasPattern(transferCss, /html\[data-ui-shell="desktop"\]\s+#resources\s+\.xp-window\.is-transfer-open\s+\.transfer-feed\s*\{\s*max-height:\s*none/)
+  || !hasPattern(transferJs, /refs\.windowFrame\?\.classList\.add\(["']is-transfer-open["']\)/)
+  || !hasPattern(transferJs, /refs\.windowFrame\?\.classList\.remove\(["']is-transfer-open["']\)/)) {
+  fail("Quick Transfer desktop window and feed should expand with the available browser viewport");
+}
+
 if (!hasPattern(transferCss, /html\[data-ui-shell="mobile"\]\s+\.transfer-feed\s*\{[\s\S]*?overflow:\s*visible[\s\S]*?overscroll-behavior:\s*auto/)
   || !hasPattern(transferCss, /html\[data-ui-shell="mobile"\]\s+\.transfer-compose\s*\{[\s\S]*?position:\s*sticky[\s\S]*?bottom:\s*0/)
   || !hasPattern(transferCss, /html\[data-ui-shell="mobile"\]\s+\.transfer-delete-button\s*\{[\s\S]*?width:\s*44px[\s\S]*?min-height:\s*44px/)
@@ -2034,7 +2052,7 @@ for (const asset of [
 }
 
 const premiumUiVersion = "20260711-calm-motion-r13";
-const mobileTransferUiVersion = "20260716-mobile-transfer-ui-r1";
+const mobileTransferUiVersion = "20260716-transfer-upload-window-r2";
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
 const currentMainVersion = mobileTransferUiVersion;
 const currentPreFinalCssVersion = "20260711-calm-motion-r13";
@@ -3185,10 +3203,27 @@ for (const token of ["pathToFileURL", "await import", "projectRelative.startsWit
 if (migrationWranglerData.d1_databases?.[0]?.binding !== "DB" || migrationWranglerData.d1_databases?.[0]?.preview_database_id !== "DB") {
   fail("wrangler.jsonc must bind local preview D1 as DB");
 }
+const transferBucketBinding = migrationWranglerData.r2_buckets?.find((binding) => binding.binding === "TRANSFER_BUCKET");
+if (transferBucketBinding?.bucket_name !== "lusu-temp-transfer" || transferBucketBinding?.preview_bucket_name) {
+  fail("wrangler.jsonc must bind the production TRANSFER_BUCKET without a local-only preview_bucket_name override");
+}
+const previewWranglerData = migrationWranglerData.env?.preview;
+const previewDatabaseBinding = previewWranglerData?.d1_databases?.find((binding) => binding.binding === "DB");
+if (previewDatabaseBinding?.database_id !== migrationWranglerData.d1_databases?.[0]?.database_id) {
+  fail("wrangler.jsonc env.preview must preserve the DB binding when overriding non-inheritable bindings");
+}
+const previewTransferBucketBinding = previewWranglerData?.r2_buckets?.find((binding) => binding.binding === "TRANSFER_BUCKET");
+if (previewTransferBucketBinding?.bucket_name !== "lusu-temp-transfer-preview") {
+  fail("wrangler.jsonc env.preview must bind TRANSFER_BUCKET to the preview Quick Transfer R2 bucket");
+}
 const declaredSecrets = new Set(migrationWranglerData.secrets?.required || []);
+const previewDeclaredSecrets = new Set(previewWranglerData?.secrets?.required || []);
 for (const secretName of ["CHAT_IP_HASH_SALT", "ANALYTICS_IP_HASH_SALT"]) {
   if (!declaredSecrets.has(secretName)) {
     fail(`wrangler.jsonc secrets.required missing ${secretName}`);
+  }
+  if (!previewDeclaredSecrets.has(secretName)) {
+    fail(`wrangler.jsonc env.preview secrets.required missing ${secretName}`);
   }
   if (!new RegExp(`^${secretName}=\\s*$`, "m").test(envExample)) {
     fail(`.env.example must list ${secretName} without a value`);

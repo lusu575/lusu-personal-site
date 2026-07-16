@@ -4,8 +4,9 @@
 
 - 资源区提供登录限定的“临时互传 / Quick Transfer / 一時転送”，支持 24 小时房间、加密文字、私有 R2 文件和 Range 视频播放。
 - Resources 中的临时互传与日语学习卡片使用一致的网格宽度和卡片节奏；互传入口、登录、房间、消息、上传任务、文件预览与输入区已适配窄竖屏、短屏、软键盘和手机横屏。
+- 互传房间支持整个窗口拖入文件；桌面窗口与消息区会随浏览器可用高度伸展，手机继续使用单滚动路径。
 - 普通账号受 95 MiB 单文件、个人/房间/频率及全站 8 GiB 免费池限制；只有 D1 `users.role = admin` 可用 Multipart 上传数百 MB 到数 GB 文件。
-- 部署前需按 `docs/transfer/README.md` 创建并绑定 `TRANSFER_BUCKET`、部署清理 Worker、设置生命周期与 Cloudflare 官方预算提醒。
+- 根 `wrangler.jsonc` 已分别在顶层与 `env.preview` 声明 `TRANSFER_BUCKET` 的 Production / Preview 私有桶映射；部署前仍需按 `docs/transfer/README.md` 确认桶已创建，并部署清理 Worker、生命周期与 Cloudflare 官方预算提醒。
 - 本地建议 Node.js 22.13+；本地同名变量放在 Git 忽略的 `.dev.vars` 并独立生成，不得提交 `.dev.vars`、`.env` 或真实密钥。
 
 鲁肃的个人站，一个保留 Windows XP + Pixel Art + Y2K 桌面识别度、同时提供原创移动虚拟 OS 的个人空间。

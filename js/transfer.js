@@ -12,7 +12,7 @@
       roomPassword: "房间口令", roomPlaceholder: "至少 6 位，分享给另一位登录用户", generate: "随机生成", copy: "复制",
       securityNote: "口令不会发送到服务器；知道口令的人可读取房间内容，请勿上传账号凭证。", enter: "进入房间",
       roomActive: "临时房间已连接", refresh: "刷新", leave: "离开房间", textLabel: "加密文字",
-      textPlaceholder: "发送一段加密文字……", send: "发送", dropTitle: "选择或拖入文件", chooseFile: "选择文件", tasks: "上传任务",
+      textPlaceholder: "发送一段加密文字……", send: "发送", dropTitle: "选择或拖入文件", dropRelease: "松开即可上传到当前房间", chooseFile: "选择文件", tasks: "上传任务",
       online: "在线", offline: "离线", loading: "正在连接临时互传……", loginNeeded: "请先登录后使用临时互传。",
       r2Missing: "R2 尚未绑定，文字房间可查看，但文件上传暂不可用。", generated: "已生成随机口令，请复制给另一位登录用户。",
       copied: "房间口令已复制。", copyFailed: "无法访问剪贴板，请手动复制。", shortPassword: "房间口令至少需要 6 位。",
@@ -33,7 +33,7 @@
       roomPassword: "Room passphrase", roomPlaceholder: "At least 6 characters; share it with another signed-in person", generate: "Generate", copy: "Copy",
       securityNote: "The passphrase is never sent to the server. Anyone who knows it can read the room; do not upload credentials.", enter: "Enter room",
       roomActive: "Temporary room connected", refresh: "Refresh", leave: "Leave room", textLabel: "Encrypted text", textPlaceholder: "Send encrypted text…", send: "Send",
-      dropTitle: "Choose or drop files", chooseFile: "Choose files", tasks: "Upload tasks", online: "Online", offline: "Offline", loading: "Connecting to Quick Transfer…",
+      dropTitle: "Choose or drop files", dropRelease: "Drop to upload to this room", chooseFile: "Choose files", tasks: "Upload tasks", online: "Online", offline: "Offline", loading: "Connecting to Quick Transfer…",
       loginNeeded: "Sign in before using Quick Transfer.", r2Missing: "R2 is not bound yet. Text rooms remain visible, but file uploads are unavailable.",
       generated: "Random passphrase generated. Copy it to the other signed-in person.", copied: "Room passphrase copied.", copyFailed: "Clipboard access failed; copy it manually.",
       shortPassword: "The room passphrase must be at least 6 characters.", joined: "Temporary room joined.", joinFailed: "Unable to enter the room.",
@@ -53,7 +53,7 @@
       roomPassword: "部屋の合言葉", roomPlaceholder: "6文字以上。相手のログインユーザーと共有", generate: "ランダム生成", copy: "コピー",
       securityNote: "合言葉はサーバーへ送信されません。知っている人は閲覧できるため、認証情報を送らないでください。", enter: "部屋に入る",
       roomActive: "一時部屋に接続済み", refresh: "更新", leave: "退出", textLabel: "暗号化テキスト", textPlaceholder: "暗号化テキストを送信…", send: "送信",
-      dropTitle: "ファイルを選択またはドロップ", chooseFile: "ファイル選択", tasks: "アップロード", online: "オンライン", offline: "オフライン", loading: "一時転送に接続中…",
+      dropTitle: "ファイルを選択またはドロップ", dropRelease: "ここで放して部屋へ送信", chooseFile: "ファイル選択", tasks: "アップロード", online: "オンライン", offline: "オフライン", loading: "一時転送に接続中…",
       loginNeeded: "先にログインしてください。", r2Missing: "R2 が未接続です。テキスト部屋は利用できますが、ファイル送信はまだ使えません。",
       generated: "ランダム合言葉を生成しました。相手にコピーしてください。", copied: "合言葉をコピーしました。", copyFailed: "クリップボードを利用できません。手動でコピーしてください。",
       shortPassword: "合言葉は6文字以上必要です。", joined: "一時部屋に入りました。", joinFailed: "部屋に入れませんでした。",
@@ -72,7 +72,7 @@
   const state = {
     initialized: false, lang: "zh", open: false, config: null, roomKey: "", cryptoKey: null,
     items: [], pollTimer: 0, lastActivity: Date.now(), tasks: new Map(), xhrByTask: new Map(),
-    pendingTaskIds: [], activeTaskIds: new Set()
+    pendingTaskIds: [], activeTaskIds: new Set(), dragDepth: 0
   };
   const refs = {};
 
@@ -85,10 +85,12 @@
   }
 
   function cacheRefs() {
-    ["app", "feedback", "login-gate", "room-entry", "room", "room-password", "quota-card", "room-mode", "feed", "text-input", "file-input", "upload-help", "task-list", "network-status"]
+    ["app", "feedback", "login-gate", "room-entry", "room", "room-password", "quota-card", "room-mode", "feed", "text-input", "file-input", "upload-zone", "upload-help", "task-list", "network-status", "drop-overlay"]
       .forEach((name) => { refs[toCamel(name)] = document.getElementById(`transfer-${name}`); });
     refs.resourceCategories = document.getElementById("resource-categories");
     refs.resourceList = document.getElementById("resource-list");
+    refs.windowFrame = refs.app?.closest("#resources .xp-window") || refs.app;
+    refs.dropSurface = refs.windowFrame;
   }
 
   function toCamel(value) {
@@ -114,12 +116,14 @@
     document.getElementById("transfer-refresh-button")?.addEventListener("click", () => refreshItems(true));
     document.getElementById("transfer-text-form")?.addEventListener("submit", sendText);
     refs.fileInput?.addEventListener("change", (event) => queueFiles(event.target.files));
-    const zone = document.getElementById("transfer-upload-zone");
-    ["dragenter", "dragover"].forEach((name) => zone?.addEventListener(name, (event) => { event.preventDefault(); zone.classList.add("is-dragging"); }));
-    ["dragleave", "drop"].forEach((name) => zone?.addEventListener(name, (event) => { event.preventDefault(); zone.classList.remove("is-dragging"); }));
-    zone?.addEventListener("drop", (event) => queueFiles(event.dataTransfer?.files));
-    zone?.addEventListener("keydown", (event) => { if (event.key === "Enter" || event.key === " ") refs.fileInput?.click(); });
+    refs.dropSurface?.addEventListener("dragenter", handleWindowDragEnter);
+    refs.dropSurface?.addEventListener("dragover", handleWindowDragOver);
+    refs.dropSurface?.addEventListener("dragleave", handleWindowDragLeave);
+    refs.dropSurface?.addEventListener("drop", handleWindowDrop);
+    refs.uploadZone?.addEventListener("keydown", handleUploadZoneKeydown);
     document.addEventListener("paste", (event) => { if (state.open && state.roomKey && event.clipboardData?.files?.length) queueFiles(event.clipboardData.files); });
+    document.addEventListener("dragend", resetWindowDragState);
+    window.addEventListener("blur", resetWindowDragState);
     ["pointerdown", "keydown"].forEach((name) => document.addEventListener(name, () => { state.lastActivity = Date.now(); }, { passive: true }));
     window.addEventListener("online", updateNetwork);
     window.addEventListener("offline", updateNetwork);
@@ -127,6 +131,74 @@
     refs.app?.addEventListener("focusin", keepFocusedControlVisible);
     window.visualViewport?.addEventListener("resize", keepFocusedControlVisible, { passive: true });
     window.addEventListener("lusu:accountchange", syncAccountState);
+  }
+
+  function isFileDrag(event) {
+    return Array.from(event.dataTransfer?.types || []).includes("Files");
+  }
+
+  function canAcceptFiles() {
+    return Boolean(state.open && state.roomKey && !refs.room?.hidden && state.config?.r2Ready);
+  }
+
+  function handleWindowDragEnter(event) {
+    if (!state.open || !isFileDrag(event)) return;
+    event.preventDefault();
+    if (!canAcceptFiles()) return;
+    state.dragDepth += 1;
+    refs.app?.classList.add("is-file-dragging");
+    refs.uploadZone?.classList.add("is-dragging");
+  }
+
+  function handleWindowDragOver(event) {
+    if (!state.open || !isFileDrag(event)) return;
+    event.preventDefault();
+    if (!canAcceptFiles()) return;
+    if (event.dataTransfer) event.dataTransfer.dropEffect = "copy";
+    refs.app?.classList.add("is-file-dragging");
+    refs.uploadZone?.classList.add("is-dragging");
+  }
+
+  function handleWindowDragLeave(event) {
+    if (!state.open || (!state.dragDepth && !isFileDrag(event))) return;
+    event.preventDefault();
+    state.dragDepth = Math.max(0, state.dragDepth - 1);
+    if (!state.dragDepth) resetWindowDragState();
+  }
+
+  function handleWindowDrop(event) {
+    if (!state.open || (!isFileDrag(event) && !event.dataTransfer?.files?.length)) return;
+    event.preventDefault();
+    const files = event.dataTransfer?.files;
+    resetWindowDragState();
+    if (files?.length) queueFiles(files);
+  }
+
+  function resetWindowDragState() {
+    state.dragDepth = 0;
+    refs.app?.classList.remove("is-file-dragging");
+    refs.uploadZone?.classList.remove("is-dragging");
+  }
+
+  function handleUploadZoneKeydown(event) {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    if (!canAcceptFiles()) {
+      if (state.config && !state.config.r2Ready) setFeedback(text("r2Missing"), true);
+      return;
+    }
+    refs.fileInput?.click();
+  }
+
+  function syncUploadAvailability() {
+    const available = Boolean(state.config?.r2Ready);
+    if (refs.fileInput) refs.fileInput.disabled = !available;
+    refs.uploadZone?.classList.toggle("is-disabled", !available);
+    refs.uploadZone?.setAttribute("aria-disabled", String(!available));
+    const picker = refs.fileInput?.closest(".transfer-file-picker");
+    picker?.classList.toggle("is-disabled", !available);
+    picker?.setAttribute("aria-disabled", String(!available));
+    if (!available) resetWindowDragState();
   }
 
   function openAccountFromTransfer(event) {
@@ -182,6 +254,7 @@
     refs.resourceCategories.hidden = true;
     refs.resourceList.hidden = true;
     refs.app.hidden = false;
+    refs.windowFrame?.classList.add("is-transfer-open");
     setFeedback(text("loading"));
     await loadConfig();
     refs.app.querySelector("button, input")?.focus();
@@ -189,7 +262,9 @@
 
   function close() {
     state.open = false;
+    resetWindowDragState();
     refs.app.hidden = true;
+    refs.windowFrame?.classList.remove("is-transfer-open");
     refs.resourceCategories.hidden = false;
     refs.resourceList.hidden = false;
     stopPoll();
@@ -203,6 +278,7 @@
       refs.roomEntry.hidden = Boolean(state.roomKey);
       refs.room.hidden = !state.roomKey;
       renderQuota();
+      syncUploadAvailability();
       if (!state.config.r2Ready) setFeedback(text("r2Missing"), true);
       else setFeedback("");
       if (state.roomKey) {
@@ -215,6 +291,7 @@
       if (error.status === 401) {
         stopPoll();
         state.config = null;
+        syncUploadAvailability();
         refs.loginGate.hidden = false;
         refs.roomEntry.hidden = true;
         refs.room.hidden = true;
@@ -256,6 +333,7 @@
       refs.roomPassword.type = "password";
       refs.roomEntry.hidden = true;
       refs.room.hidden = false;
+      syncUploadAvailability();
       updateRoomMode();
       restoreTasks();
       await refreshItems(true);
@@ -269,6 +347,7 @@
 
   function leaveRoom() {
     stopPoll();
+    resetWindowDragState();
     state.roomKey = "";
     state.cryptoKey = null;
     state.items = [];
@@ -438,6 +517,12 @@
   function queueFiles(fileList) {
     const files = Array.from(fileList || []);
     refs.fileInput.value = "";
+    if (!files.length || !state.open || !state.roomKey || refs.room?.hidden) return;
+    if (!state.config?.r2Ready) {
+      setFeedback(text("r2Missing"), true);
+      syncUploadAvailability();
+      return;
+    }
     files.forEach((file) => {
       if (!state.config?.user?.isAdmin && file.size > state.config.normal.maxFileBytes) {
         setFeedback(text("fileTooLarge", { max: formatBytes(state.config.normal.maxFileBytes) }), true);
@@ -455,6 +540,13 @@
 
   function enqueueTask(task) {
     if (state.activeTaskIds.has(task.localId) || state.pendingTaskIds.includes(task.localId)) return;
+    if (!state.config?.r2Ready) {
+      task.status = "failed";
+      task.error = text("r2Missing");
+      renderTasks();
+      setFeedback(task.error, true);
+      return;
+    }
     task.paused = false;
     task.status = "queued";
     task.error = "";
@@ -464,6 +556,10 @@
   }
 
   function pumpTaskQueue() {
+    if (!state.config?.r2Ready) {
+      failPendingTasksForUnavailableStorage();
+      return;
+    }
     const isMobile = document.documentElement.dataset.uiShell === "mobile";
     const maximumActiveTasks = state.config?.user?.isAdmin ? (isMobile ? 1 : 2) : 1;
     while (state.activeTaskIds.size < maximumActiveTasks && state.pendingTaskIds.length) {
@@ -481,6 +577,17 @@
           pumpTaskQueue();
         });
     }
+  }
+
+  function failPendingTasksForUnavailableStorage() {
+    const pending = state.pendingTaskIds.splice(0);
+    pending.forEach((localId) => {
+      const task = state.tasks.get(localId);
+      if (!task || ["complete", "cancelled"].includes(task.status)) return;
+      task.status = "failed";
+      task.error = text("r2Missing");
+    });
+    if (pending.length) renderTasks();
   }
 
   async function runTask(task) {
@@ -506,7 +613,7 @@
       xhr.onload = () => {
         const payload = parseJson(xhr.responseText);
         if (xhr.status >= 200 && xhr.status < 300) resolve(payload);
-        else reject(Object.assign(new Error(payload.error || text("genericError")), { status: xhr.status }));
+        else reject(Object.assign(new Error(payload.error || text("genericError")), { status: xhr.status, code: payload.code || "" }));
       };
       xhr.send(task.file);
     });
@@ -567,7 +674,7 @@
           headers: { "Content-Type": "application/octet-stream" }
         });
         const payload = await response.json().catch(() => ({}));
-        if (!response.ok) throw Object.assign(new Error(payload.error || `HTTP ${response.status}`), { status: response.status });
+        if (!response.ok) throw Object.assign(new Error(payload.error || `HTTP ${response.status}`), { status: response.status, code: payload.code || "" });
         task.parts.push(payload);
         task.uploaded += end - start;
         updateTaskSpeed(task);
@@ -576,6 +683,7 @@
         return;
       } catch (error) {
         if (task.paused || task.status === "cancelled" || error.name === "AbortError") return;
+        if (error.code === "TRANSFER_R2_NOT_BOUND") throw error;
         if (attempt === 3) throw error;
         task.status = "retrying";
         renderTasks();
@@ -632,7 +740,13 @@
   function failTask(task, error) {
     if (error.cancelled || task.status === "cancelled") return;
     task.status = error.status === 410 ? "failed" : "failed";
-    task.error = error.status === 410 ? text("sessionExpired") : error.message || text("genericError");
+    if (error.code === "TRANSFER_R2_NOT_BOUND") {
+      task.error = text("r2Missing");
+      if (state.config) state.config.r2Ready = false;
+      syncUploadAvailability();
+    } else {
+      task.error = error.status === 410 ? text("sessionExpired") : error.message || text("genericError");
+    }
     renderTasks();
     setFeedback(task.error, true);
   }

@@ -37,7 +37,7 @@
 
 ### 2. Pages 绑定
 
-在 Cloudflare Pages 项目 Settings / Bindings 中，为 Production 与 Preview 分别增加 R2 binding：
+根 `wrangler.jsonc` 已在顶层声明 Production R2 binding，并通过 `env.preview` 覆盖 Preview binding。Git 部署必须保留以下映射：
 
 ```text
 Variable name: TRANSFER_BUCKET
@@ -45,7 +45,9 @@ Production bucket: lusu-temp-transfer
 Preview bucket: lusu-temp-transfer-preview
 ```
 
-根 `wrangler.jsonc` 不预先声明尚未创建的线上桶，避免首次推送 `main` 时因不存在的资源让 Pages 全站部署失败；Production / Preview 必须在 Dashboard 创建桶后分别绑定并验证。
+`preview_bucket_name` 只用于 Wrangler 本地/远程开发，不能替代 Pages Preview deployment 的 `env.preview`。由于 D1、R2 与 required secrets 都不是环境自动继承项，`env.preview` 必须完整重述这些配置。
+
+两个桶必须先在同一 Cloudflare 账户中创建。若 Pages 项目曾在 Dashboard 保存过旧绑定，确认变量名与桶名和根 `wrangler.jsonc` 一致，并在改动后重新部署；上线验收要求 `/api/transfer/config` 的登录响应中 `r2Ready: true`。
 
 ### 3. D1 migration
 

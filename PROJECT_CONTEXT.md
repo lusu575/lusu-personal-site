@@ -1,5 +1,13 @@
 # PROJECT_CONTEXT.md
 
+## 2026-07-16 临时互传上传、全窗拖放与视口高度修复
+
+- Pages Functions 的文件路由依赖根 `wrangler.jsonc` 中 `TRANSFER_BUCKET` R2 binding；顶层 Production 使用 `lusu-temp-transfer`，`env.preview` 使用 `lusu-temp-transfer-preview`。Preview 覆盖时必须同时重述 D1 与 required secrets 等非继承配置；构建必须校验这套映射，避免文字房间可用但文件路由持续返回 `TRANSFER_R2_NOT_BOUND`，也避免预览部署误用正式桶。
+- 文件拖放热区覆盖整个互传窗口，只拦截 `DataTransfer.types` 包含 `Files` 的拖放；文字或链接拖放不得被阻断。全窗提示层不接收指针事件，drop、close、blur 与 dragend 都必须清理拖放状态。
+- `r2Ready: false` 时客户端必须禁用文件选择并在排队前返回，不得生成上传进度到 100% 后才失败的任务；服务端稳定错误码继续用于诊断，公开 5xx 文案不暴露内部细节。
+- 桌面互传窗口按 `100dvh` 的可用区域伸展，消息流吃满新增空间；移动端仍由 `--mobile-viewport-height`、单一 `.transfer-room` 滚动路径、sticky composer 和 `visualViewport` 补偿控制。
+- 本批公开资源 query 为 `20260716-transfer-upload-window-r2`。
+
 ## 2026-07-16 手机文章与临时互传界面修复
 
 - 手机端知识库文章的“回到顶部”控制放在 Appbar 可见区域时，固定 `.xp-topbar` 的非控件触控层必须允许点击穿透；Appbar 内实际的返回、复制、账号等交互控件继续单独接收指针事件。

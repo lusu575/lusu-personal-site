@@ -26,9 +26,9 @@
   <link rel="manifest" href="/manifest.webmanifest">
   <script src="/js/mobile-shell.js?v=20260711-calm-motion-r13"></script>
   <link rel="stylesheet" href="/css/style.css?v=20260711-calm-motion-r13">
-  <link rel="stylesheet" href="/css/mobile-ios-shell.css?v=20260716-mobile-transfer-ui-r1">
+  <link rel="stylesheet" href="/css/mobile-ios-shell.css?v=20260716-transfer-upload-window-r2">
   <link rel="stylesheet" href="/css/motion-system.css?v=20260711-calm-motion-r13">
-  <link rel="stylesheet" href="/css/transfer.css?v=20260716-mobile-transfer-ui-r1">
+  <link rel="stylesheet" href="/css/transfer.css?v=20260716-transfer-upload-window-r2">
 </head>
 <body data-route="home">
   <div class="site-shell">
@@ -285,6 +285,10 @@
               </div>
               <section class="transfer-tasks" aria-labelledby="transfer-tasks-title"><h3 id="transfer-tasks-title" data-transfer-copy="tasks">上传任务</h3><div id="transfer-task-list"></div></section>
             </section>
+            <div class="transfer-drop-overlay" id="transfer-drop-overlay" aria-hidden="true">
+              <span class="transfer-icon transfer-icon-upload" aria-hidden="true"></span>
+              <strong data-transfer-copy="dropRelease">松开即可上传到当前房间</strong>
+            </div>
           </section>
         </div>
       </section>
@@ -487,7 +491,7 @@
 
   <script src="/js/telemetry.js?v=20260623-analytics-privacy-r1"></script>
   <script src="/js/ui-motion.js?v=20260711-calm-motion-r13"></script>
-  <script src="/js/transfer.js?v=20260716-mobile-transfer-ui-r1"></script>
-  <script src="/js/main.js?v=20260716-mobile-transfer-ui-r1"></script>
+  <script src="/js/transfer.js?v=20260716-transfer-upload-window-r2"></script>
+  <script src="/js/main.js?v=20260716-transfer-upload-window-r2"></script>
 </body>
 </html>

@@ -16,5 +16,35 @@
       "database_id": "55087326-4cf0-4002-8229-f202af774da4",
       "preview_database_id": "DB"
     }
-  ]
+  ],
+  "r2_buckets": [
+    {
+      "binding": "TRANSFER_BUCKET",
+      "bucket_name": "lusu-temp-transfer"
+    }
+  ],
+  "env": {
+    "preview": {
+      "secrets": {
+        "required": [
+          "CHAT_IP_HASH_SALT",
+          "ANALYTICS_IP_HASH_SALT"
+        ]
+      },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "lusu_personal_site",
+          "database_id": "55087326-4cf0-4002-8229-f202af774da4",
+          "preview_database_id": "DB"
+        }
+      ],
+      "r2_buckets": [
+        {
+          "binding": "TRANSFER_BUCKET",
+          "bucket_name": "lusu-temp-transfer-preview"
+        }
+      ]
+    }
+  }
 }

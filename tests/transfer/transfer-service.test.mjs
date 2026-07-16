@@ -166,7 +166,7 @@ db.sqlite.prepare("insert into users values (?, ?, '', ?, ?, ?)").run("admin-1",
 db.sqlite.prepare("insert into sessions values (?, ?, ?, ?)").run(await sha256Hex(userToken), "user-1", now, future);
 db.sqlite.prepare("insert into sessions values (?, ?, ?, ?)").run(await sha256Hex(adminToken), "admin-1", now, future);
 
-async function call(path, { method = "GET", token = "", body, headers = {}, includeOrigin = true } = {}) {
+async function call(path, { method = "GET", token = "", body, headers = {}, includeOrigin = true, envOverride = env } = {}) {
   const requestHeaders = new Headers(headers);
   if (token) requestHeaders.set("Cookie", `lusu_session=${token}`);
   if (includeOrigin && method !== "GET" && method !== "HEAD") requestHeaders.set("Origin", origin);
@@ -175,7 +175,7 @@ async function call(path, { method = "GET", token = "", body, headers = {}, incl
   const waits = [];
   const response = await handleTransferApi({
     request,
-    env,
+    env: envOverride,
     waitUntil(promise) {
       waits.push(Promise.resolve(promise));
     }
@@ -195,6 +195,23 @@ test("transfer endpoints require the existing HttpOnly session", async () => {
   const response = await call("transfer/config");
   assert.equal(response.status, 401);
   assert.equal((await response.json()).code, "TRANSFER_LOGIN_REQUIRED");
+});
+
+test("missing R2 keeps text rooms available but rejects file routes with a stable code", async () => {
+  const envWithoutBucket = { DB: db };
+  const config = await call("transfer/config", { token: userToken, envOverride: envWithoutBucket });
+  assert.equal(config.status, 200);
+  assert.equal((await config.json()).r2Ready, false);
+
+  const upload = await call(`transfer/upload/simple?room=${roomKey}&filename=probe.txt&mime=text%2Fplain&size=1`, {
+    method: "POST",
+    token: userToken,
+    body: new Uint8Array([1]),
+    headers: { "Content-Type": "text/plain", "Content-Length": "1" },
+    envOverride: envWithoutBucket
+  });
+  assert.equal(upload.status, 503);
+  assert.equal((await upload.json()).code, "TRANSFER_R2_NOT_BOUND");
 });
 
 test("mutating endpoints enforce same-origin requests", async () => {
