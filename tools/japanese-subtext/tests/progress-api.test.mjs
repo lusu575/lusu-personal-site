@@ -4,6 +4,15 @@ import test from "node:test";
 import { onRequest } from "../../../functions/api/[[route]].js";
 import { defaultProgress, mergeProgress, sanitizeProgress } from "../lib/storage.mjs";
 
+const TEST_RUNTIME_SECRETS = Object.freeze({
+  CHAT_IP_HASH_SALT: "test-chat-ip-hash-secret-0000000000000001",
+  ANALYTICS_IP_HASH_SALT: "test-analytics-ip-hash-secret-00000001"
+});
+
+function apiEnv(DB) {
+  return { DB, ...TEST_RUNTIME_SECRETS };
+}
+
 function createEmptyD1() {
   function statement(sql) {
     return {
@@ -223,7 +232,7 @@ async function apiRequest(db, { method = "GET", body, headers = {} } = {}) {
       headers: requestHeaders,
       body: requestBody
     }),
-    env: { DB: db }
+    env: apiEnv(db)
   });
 }
 
@@ -240,7 +249,7 @@ async function withoutExpectedApiErrorLog(callback) {
 test("GET progress rejects an anonymous visitor", async () => {
   const response = await withoutExpectedApiErrorLog(() => onRequest({
     request: new Request("https://example.test/api/tools/japanese-subtext/progress"),
-    env: { DB: createEmptyD1() }
+    env: apiEnv(createEmptyD1())
   }));
 
   assert.equal(response.status, 401);

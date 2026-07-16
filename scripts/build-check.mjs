@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import { createHash, createHmac } from "node:crypto";
 import { readFileSync, existsSync, statSync } from "node:fs";
 import { relative, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
@@ -18,8 +18,22 @@ backendEmailSmokeSample.encoded = encodeURIComponent(backendEmailSmokeSample.lit
 backendEmailSmokeSample.doubleEncoded = encodeURIComponent(backendEmailSmokeSample.encoded);
 const frontendForbiddenEmailTexts = Object.values(frontendEmailSmokeSample);
 const backendForbiddenEmailTexts = Object.values(backendEmailSmokeSample);
+const API_RUNTIME_SECRETS = Object.freeze({
+  CHAT_IP_HASH_SALT: "build-check-chat-ip-hash-secret-000000001",
+  ANALYTICS_IP_HASH_SALT: "build-check-analytics-ip-hash-secret-00001"
+});
+
+function apiEnv(DB) {
+  return { DB, ...API_RUNTIME_SECRETS };
+}
 
 const requiredFiles = [
+  ".env.example",
+  ".github/workflows/verify.yml",
+  ".gitignore",
+  ".nvmrc",
+  "AGENTS.md",
+  "README.md",
   "admin/index.html",
   "admin/admin.css",
   "admin/admin.js",
@@ -27,6 +41,7 @@ const requiredFiles = [
   "admin/docs/ADMIN_PROJECT_CONTEXT.md",
   "admin/docs/ADMIN_SKILL.md",
   "cloudflare/schema.sql",
+  "cloudflare/schema-indexes.sql",
   "functions/admin/_middleware.js",
   "functions/api/[[route]].js",
   "functions/sitemap.xml.js",
@@ -52,9 +67,13 @@ const requiredFiles = [
   "js/telemetry.js",
   "js/ui-motion.js",
   "manifest.webmanifest",
+  "package-lock.json",
   "package.json",
+  "scripts/d1-migrate-local.mjs",
+  "scripts/run-tests.mjs",
   "robots.txt",
-  "CHANGELOG.md"
+  "CHANGELOG.md",
+  "wrangler.jsonc"
 ];
 
 function fail(message) {
@@ -438,6 +457,9 @@ const adminJs = readRequired("admin/admin.js");
 const adminMiddlewareJs = readRequired("functions/admin/_middleware.js");
 const apiJs = readRequired("functions/api/[[route]].js");
 const schemaSql = readRequired("cloudflare/schema.sql");
+const schemaIndexesSql = readRequired("cloudflare/schema-indexes.sql");
+const d1MigrateLocalJs = readRequired("scripts/d1-migrate-local.mjs");
+const testRunnerJs = readRequired("scripts/run-tests.mjs");
 const indexHtml = readRequired("index.html");
 const mobileIosShellCss = readRequired("css/mobile-ios-shell.css");
 const motionSystemCss = readRequired("css/motion-system.css");
@@ -456,6 +478,12 @@ const mainJs = readRequired("js/main.js");
 const telemetryJs = readRequired("js/telemetry.js");
 const uiMotionJs = readRequired("js/ui-motion.js");
 const manifest = readRequired("manifest.webmanifest");
+const envExample = readRequired(".env.example");
+const gitignore = readRequired(".gitignore");
+const nodeVersion = readRequired(".nvmrc");
+const rootReadme = readRequired("README.md");
+const verifyWorkflow = readRequired(".github/workflows/verify.yml");
+const wranglerConfig = readRequired("wrangler.jsonc");
 const packageJson = readRequired("package.json");
 const robots = readRequired("robots.txt");
 const changelog = readRequired("CHANGELOG.md");
@@ -2887,8 +2915,118 @@ for (const [name, source] of [
   }
 }
 
+const migrationPackageData = parseJsonSource("package.json", packageJson);
+const migrationWranglerData = parseJsonSource("wrangler.jsonc", wranglerConfig);
+if (nodeVersion.trim() !== "22" || migrationPackageData.engines?.node !== ">=22.13.0") {
+  fail("Node.js runtime must stay documented as version 22.13+ in .nvmrc and package.json");
+}
+if (migrationPackageData.devDependencies?.wrangler !== "4.111.0") {
+  fail("package.json must pin Wrangler 4.111.0 for reproducible GPTWork setup");
+}
+if (migrationPackageData.scripts?.dev !== "wrangler pages dev") {
+  fail("package.json dev must use wrangler pages dev and wrangler.jsonc");
+}
+if (migrationPackageData.scripts?.["d1:migrate:local"] !== "node scripts/d1-migrate-local.mjs") {
+  fail("package.json local D1 migration must use the compatibility-aware migration script");
+}
+for (const token of ["pragma table_info", "alter table", "schema-indexes.sql", "local-d1-migrate: ok"]) {
+  if (!d1MigrateLocalJs.includes(token)) {
+    fail(`scripts/d1-migrate-local.mjs missing old-database compatibility guard ${token}`);
+  }
+}
+for (const token of ["tests/*.test.mjs", "tools/japanese-subtext/tests/*.test.mjs", "tools/japanese-subtext/scripts/tts/tests/*.mjs"]) {
+  if (!String(migrationPackageData.scripts?.test || "").includes(token)) {
+    fail(`package.json test must cover ${token}`);
+  }
+}
+for (const scriptName of ["test", "jp-subtext:test"]) {
+  if (!String(migrationPackageData.scripts?.[scriptName] || "").startsWith("node scripts/run-tests.mjs ")) {
+    fail(`package.json ${scriptName} must use the Node 22-compatible in-process test runner`);
+  }
+}
+for (const token of ["pathToFileURL", "await import", "projectRelative.startsWith(\"..\")"]) {
+  if (!testRunnerJs.includes(token)) {
+    fail(`scripts/run-tests.mjs missing compatibility or path guard ${token}`);
+  }
+}
+if (migrationWranglerData.d1_databases?.[0]?.binding !== "DB" || migrationWranglerData.d1_databases?.[0]?.preview_database_id !== "DB") {
+  fail("wrangler.jsonc must bind local preview D1 as DB");
+}
+const declaredSecrets = new Set(migrationWranglerData.secrets?.required || []);
+for (const secretName of ["CHAT_IP_HASH_SALT", "ANALYTICS_IP_HASH_SALT"]) {
+  if (!declaredSecrets.has(secretName)) {
+    fail(`wrangler.jsonc secrets.required missing ${secretName}`);
+  }
+  if (!new RegExp(`^${secretName}=\\s*$`, "m").test(envExample)) {
+    fail(`.env.example must list ${secretName} without a value`);
+  }
+}
+for (const token of [".dev.vars", ".dev.vars.*", ".env", ".env.*", "!.env.example", "output/", "*.pem", "*.key"]) {
+  if (!gitignore.split(/\r?\n/).includes(token)) {
+    fail(`.gitignore missing ${token}`);
+  }
+}
+for (const token of ["actions/checkout@v6", "actions/setup-node@v6", "npm ci", "npm run d1:migrate:local", "npm test", "npm run build"]) {
+  if (!verifyWorkflow.includes(token)) {
+    fail(`.github/workflows/verify.yml missing ${token}`);
+  }
+}
+for (const token of ["npm ci", ".env.example", "npm run d1:migrate:local", "npm test", "npm run build", "npm run dev"]) {
+  if (!rootReadme.includes(token)) {
+    fail(`README.md GPTWork setup missing ${token}`);
+  }
+}
+
 if (/wrangler\s+(?:pages\s+)?deploy/i.test(packageJson) || !packageJson.includes("Merge to GitHub main")) {
   fail("package.json deploy script should point to merge-to-main Cloudflare Pages deployment, not Wrangler manual deploy");
+}
+
+for (const secretName of ["CHAT_IP_HASH_SALT", "ANALYTICS_IP_HASH_SALT"]) {
+  if (!apiJs.includes(secretName)) {
+    fail(`functions/api/[[route]].js missing required runtime secret ${secretName}`);
+  }
+}
+if (/lusu-chat|lusu-analytics|ANALYTICS_IP_HASH_SALT\s*\|\|\s*env\.CHAT_IP_HASH_SALT/.test(apiJs)) {
+  fail("functions/api/[[route]].js must not keep fixed or cross-purpose IP hash secret fallbacks");
+}
+if (
+  !hasPattern(apiJs, /crypto\.subtle\.importKey\([\s\S]*name:\s*"HMAC"[\s\S]*crypto\.subtle\.sign\("HMAC"/)
+  || !apiJs.includes('hmacSha256Hex(secret, `${purpose}:${ip}`)')
+) {
+  fail("functions/api/[[route]].js must use purpose-separated HMAC-SHA256 for IP hashes");
+}
+for (const token of [
+  "ip_hash_key_id",
+  "chatIpHashKeyId",
+  "target.ip_hash_key_id !== currentIpHashKeyId",
+  "chat_bans_active_ip_generation_idx"
+]) {
+  if (!apiJs.includes(token)) {
+    fail(`functions/api/[[route]].js missing chat IP hash generation guard ${token}`);
+  }
+}
+for (const token of ["ip_hash_key_id"]) {
+  if (!schemaSql.includes(token)) {
+    fail(`cloudflare/schema.sql missing chat IP hash generation field ${token}`);
+  }
+}
+for (const token of ["anonymous_chat_messages_room_ip_generation_idx", "chat_bans_active_ip_generation_idx"]) {
+  if (!schemaIndexesSql.includes(token)) {
+    fail(`cloudflare/schema-indexes.sql missing chat IP hash generation index ${token}`);
+  }
+}
+for (const token of ["end as expired", "end as effective", "expires_at > ?"]) {
+  if (!apiJs.includes(token)) {
+    fail(`functions/api/[[route]].js missing authoritative chat-ban expiry state ${token}`);
+  }
+}
+for (const token of ["Number(ban?.effective) === 1", 'return "已过期"']) {
+  if (!adminJs.includes(token)) {
+    fail(`admin/admin.js must render server-authoritative chat-ban state ${token}`);
+  }
+}
+if (!hasPattern(apiJs, /invalidRuntimeSecretNames\(env\)[\s\S]{0,500}status[^\n]*503|invalidRuntimeSecretNames\(env\)[\s\S]{0,500}503/)) {
+  fail("functions/api/[[route]].js must fail before schema work when required runtime secrets are invalid");
 }
 
 for (const token of ['"display": "standalone"', '"theme_color"', '"icons"']) {
@@ -3436,7 +3574,7 @@ try {
   for (const path of ["/api/articles?lang=zh", "/api/videos?lang=zh", "/api/social-links", "/api/sitemap.xml"]) {
     const response = await onRequest({
       request: new Request(`https://example.test${path}`),
-      env: { DB: createMockD1() },
+      env: apiEnv(createMockD1()),
       waitUntil() {}
     });
 
@@ -3481,7 +3619,7 @@ try {
   });
   const chatRecoveryResponse = await onRequest({
     request: new Request(`https://example.test/api/chat/messages?after=${deletedChatCursorId}&limit=10`),
-    env: { DB: chatRecoveryDb },
+    env: apiEnv(chatRecoveryDb),
     waitUntil() {}
   });
   if (!chatRecoveryResponse?.ok) {
@@ -3523,7 +3661,7 @@ try {
         screenHeight: 720
       })
     }),
-    env: { DB: analyticsDb },
+    env: apiEnv(analyticsDb),
     waitUntil() {}
   });
   if (!pageViewResponse?.ok) {
@@ -3556,7 +3694,7 @@ try {
         y: 34
       })
     }),
-    env: { DB: analyticsDb },
+    env: apiEnv(analyticsDb),
     waitUntil() {}
   });
   if (!clickResponse?.ok) {
@@ -3565,7 +3703,17 @@ try {
   }
   assertAnalyticsParamsRedacted(analyticsParamCalls(analyticsDb, "analytics_page_views"), "page-view", backendForbiddenEmailTexts);
   assertAnalyticsParamsRedacted(analyticsParamCalls(analyticsDb, "analytics_click_events"), "click", backendForbiddenEmailTexts);
-  assertAnalyticsCallSetRedacted(analyticsParamCalls(analyticsDb, "site_visitors"), "visitor-profile", backendForbiddenEmailTexts);
+  const analyticsVisitorCalls = analyticsParamCalls(analyticsDb, "site_visitors");
+  assertAnalyticsCallSetRedacted(analyticsVisitorCalls, "visitor-profile", backendForbiddenEmailTexts);
+  const expectedAnalyticsIpHash = createHmac("sha256", API_RUNTIME_SECRETS.ANALYTICS_IP_HASH_SALT)
+    .update("analytics:unknown", "utf8")
+    .digest("hex");
+  if (
+    !analyticsVisitorCalls.length
+    || analyticsVisitorCalls.some((call) => call.params[4] !== expectedAnalyticsIpHash)
+  ) {
+    fail("functions/api/[[route]].js analytics IP hash must use the analytics HMAC secret and purpose context");
+  }
 
   const originalConsoleError = console.error;
   let adminResponse;
@@ -3573,7 +3721,7 @@ try {
     console.error = () => {};
     adminResponse = await onRequest({
       request: new Request("https://example.test/api/admin/me"),
-      env: { DB: createMockD1() },
+      env: apiEnv(createMockD1()),
       waitUntil() {}
     });
   } finally {
@@ -3588,7 +3736,7 @@ try {
   const { onRequest: onSitemapRequest } = await import(pathToFileURL(sitemapPath).href);
   const sitemapResponse = await onSitemapRequest({
     request: new Request("https://example.test/sitemap.xml"),
-    env: { DB: createMockD1() },
+    env: apiEnv(createMockD1()),
     waitUntil() {}
   });
   if (!sitemapResponse || sitemapResponse.status >= 500) {

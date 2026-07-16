@@ -2,31 +2,31 @@
 
 Date: 2026-07-11
 
-Source reference:
+Source reference（历史本机临时附件，未提交到 Git，GPTWork 不可获得）：
 
-- `C:\Users\lusu\AppData\Local\Temp\codex-clipboard-bf1f039a-3d9e-42c1-8c88-6d2e2755e04f.png`
+- 原始参考图仅用于当次人工比对；当前仓库不依赖该文件。
 
-Earlier R8 implementation captures retained as comparison evidence:
+Earlier R8 implementation captures retained as local-only comparison evidence（以下为仓库相对位置，`output/` 被 Git 忽略，云端可能不存在）：
 
-- `F:\lusu575个人站\output\playwright\page-turn-frame-qa\home-390x844.png`
-- `F:\lusu575个人站\output\playwright\page-turn-frame-qa\knowledge-390x844.png`
-- `F:\lusu575个人站\output\playwright\page-turn-frame-qa\knowledge-ja-359x500.png`
-- `F:\lusu575个人站\output\playwright\page-turn-frame-qa\knowledge-en-844x390-mobile.png`
-- `F:\lusu575个人站\output\playwright\page-turn-frame-qa\games-zh-390x844.png`
-- `F:\lusu575个人站\output\playwright\page-turn-frame-qa\chatroom-zh-390x844.png`
-- `F:\lusu575个人站\output\playwright\page-turn-frame-qa\page-turn-mid-390x844.png`
-- `F:\lusu575个人站\output\playwright\page-turn-frame-qa\page-turn-mid-desktop-1440x900.png`
+- `output/playwright/page-turn-frame-qa/home-390x844.png`
+- `output/playwright/page-turn-frame-qa/knowledge-390x844.png`
+- `output/playwright/page-turn-frame-qa/knowledge-ja-359x500.png`
+- `output/playwright/page-turn-frame-qa/knowledge-en-844x390-mobile.png`
+- `output/playwright/page-turn-frame-qa/games-zh-390x844.png`
+- `output/playwright/page-turn-frame-qa/chatroom-zh-390x844.png`
+- `output/playwright/page-turn-frame-qa/page-turn-mid-390x844.png`
+- `output/playwright/page-turn-frame-qa/page-turn-mid-desktop-1440x900.png`
 
 Final calm-motion evidence:
 
-- `F:\lusu575个人站\output\playwright\six-item-dock-home-390x844.png`
-- `F:\lusu575个人站\output\playwright\six-item-dock-about-390x844.png`
-- `F:\lusu575个人站\output\playwright\desktop-icon-open-mid-after-fix.png`
-- `F:\lusu575个人站\output\playwright\desktop-taskbar-home-mid-after-fix.png`
-- `F:\lusu575个人站\output\playwright\calm-motion-desktop-route-mid.png`
-- `F:\lusu575个人站\output\playwright\calm-motion-desktop.png`
-- `F:\lusu575个人站\output\playwright\calm-motion-mobile-route-mid.png`
-- `F:\lusu575个人站\output\playwright\calm-motion-mobile-390x844.png`
+- `output/playwright/six-item-dock-home-390x844.png`
+- `output/playwright/six-item-dock-about-390x844.png`
+- `output/playwright/desktop-icon-open-mid-after-fix.png`
+- `output/playwright/desktop-taskbar-home-mid-after-fix.png`
+- `output/playwright/calm-motion-desktop-route-mid.png`
+- `output/playwright/calm-motion-desktop.png`
+- `output/playwright/calm-motion-mobile-route-mid.png`
+- `output/playwright/calm-motion-mobile-390x844.png`
 
 The reference and the 390x844 Knowledge capture were inspected together in one comparison input. The requested reference scope was the frame hierarchy only; its colors and icons were deliberately excluded.
 

@@ -47,6 +47,11 @@ skills/lusu-personal-site-skill/SKILL.md
 - 用户要求只美化、不动功能时，只改视觉层，避免改功能逻辑。
 - 用户要求只改文档时，只修改文档文件，不改网站代码、样式、功能或资源。
 - Cloudflare Pages Git 自动部署是正式部署链路，不要把 `npx wrangler deploy` 或 `npx wrangler pages deploy .` 写成 Git 自动部署命令。
+- GPTWork / 全新克隆开发固定使用 Node.js 22.13+、`npm ci`、仓库 lockfile 和本地 D1；纯本地环境使用 `.env.example` -> `.dev.vars`，GPTWork 使用 process Secrets 且不创建 `.dev.vars`。不得依赖固定盘符、父目录依赖、本机全局工具或生产数据库。
+- Cloudflare Preview 与 Production 都必须检查 D1 binding `DB`，并分别配置独立、随机、至少 32 字节且不能相同的 `CHAT_IP_HASH_SALT` 和 `ANALYTICS_IP_HASH_SALT`；不得提交真实值、固定 fallback 或跨用途复用。
+- IP hash 使用按 `chat` / `analytics` 隔离的 HMAC-SHA256。聊天消息和网络来源禁言带非敏感密钥代次；Secret 轮换后旧消息只供审计、旧网络禁言标记失效，服务端拒绝从旧代次新建禁言。
+- 普通 CI / GPTWork 不需要 Cloudflare API Token、生产 D1 权限、本机 TTS 配置、模型权重或参考声线；`output/`、Wrangler 状态、依赖和本地 TTS 配置均不得提交。
+- 项目没有真实 lint / typecheck 工具链时应明确标为“未配置”，不能增加空的成功占位；迁移清单见 `docs/GPTWORK_MIGRATION_READINESS.md`。
 - 后续新增游戏时，必须在游戏标签或信息里标明中文、English、日本語是否支持。
 - 网站切换语言时，游戏区优先展示对应语言。
 - 如果游戏不支持当前语言，默认启动英语版本。

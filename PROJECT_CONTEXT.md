@@ -1,5 +1,14 @@
 # PROJECT_CONTEXT.md
 
+## 2026-07-15 GPTWork 可复现开发基线
+
+- 普通站点开发的可复现运行时固定为 Node.js 22.13+、npm lockfile v3 和 Wrangler `4.111.0`；全新克隆使用 `npm ci`。纯本地环境从 `.env.example` 创建被忽略的 `.dev.vars`，GPTWork 使用平台注入的 process Secrets，不能再创建会遮蔽云端值的空 `.dev.vars`。
+- 本地 Pages Functions 使用 `wrangler pages dev`，D1 binding 固定为 `DB`，`preview_database_id` 只用于本地模拟数据库；普通开发、CI 和 GPTWork 不需要 Cloudflare 登录、API Token、生产 D1 权限或本机 TTS 模型。
+- API router 必须同时获得独立的 `CHAT_IP_HASH_SALT` 与 `ANALYTICS_IP_HASH_SALT`，两者至少 32 字节且不能相同。IP 标识使用 `HMAC-SHA256(secret, purpose + ":" + ip)` 做聊天 / 分析用途隔离；配置不合格时必须在任何 API 业务 D1 访问前返回通用 503，且日志不得输出 Secret 值或请求 IP。
+- 聊天消息和网络来源禁言保存由聊天 Secret 自动派生的非敏感密钥代次。Secret 轮换后旧消息只供审计、不能新建网络来源禁言，旧禁言明确显示失效；服务端必须按消息编号读取当前代次目标，不能信任前端提交的 hash，也不得恢复公开 fallback。
+- Pull Request 和 `main` 由 `.github/workflows/verify.yml` 执行 `npm ci`、本地 D1 空库初始化、`npm test`、`npm run build`；当前项目没有独立 lint / typecheck 工具链，不添加伪命令。正式部署仍是 GitHub `main` 触发 Cloudflare Pages。
+- GPTWork 迁移清单和仅本地资源边界见 `docs/GPTWORK_MIGRATION_READINESS.md`；`output/`、`.wrangler/`、本机 TTS 配置、模型 / 参考声线和 `node_modules/` 不属于 GitHub 运行源。
+
 ## 2026-07-14 日本語の裏側 1.0.3 重答修复
 
 - `/tools/japanese-subtext/` 当前公开应用版本为 `1.0.3`，题库、音频、云存档兼容边界继续使用 `contentVersion: 1.0.2`。`appVersion` 表示界面与交互发布，`contentVersion` 只在题库结构或存档兼容边界变化时增加；UI 热修不得连带伪造 250 关哈希或全量音频迁移。
@@ -108,7 +117,7 @@
 - 项目名称：鲁肃的个人站
 - 英文名称：LuSu's Personal Site
 - GitHub 仓库：`lusu575/lusu-personal-site`
-- 本地目录：`F:\lusu575个人站`
+- 本地目录：以当前 Git checkout 根目录为准；维护脚本不得依赖某台机器的固定盘符路径。
 - 当前主分支：`main`
 - 当前正式域名：`https://lusu575.com`
 - 当前备用 Pages 域名：`https://lusu-personal-site-9hd.pages.dev`
@@ -517,7 +526,7 @@ npm.cmd run d1:migrate:remote
 如果需要把当前账号设为管理员，先正常注册/登录账号，再在 D1 中将对应邮箱的用户角色更新为 `admin`：
 
 ```powershell
-$env:XDG_CONFIG_HOME='F:\lusu575个人站\.wrangler-config'
+$env:XDG_CONFIG_HOME=(Join-Path (Get-Location) '.wrangler-config')
 npx.cmd wrangler d1 execute lusu_personal_site --remote --command "update users set role = 'admin' where email = '你的邮箱'"
 ```
 
