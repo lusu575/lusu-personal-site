@@ -1,4 +1,4 @@
-import { mergeProgress, mergeSettings, sanitizeProgress, sanitizeSettings } from "./storage.mjs?v=20260714-japanese-subtext-v103-retry-r1";
+import { mergeProgress, mergeSettings, sanitizeProgress, sanitizeSettings } from "./storage.mjs?v=20260717-100-ui-ux-preview-r2";
 
 const ENDPOINT = "/api/tools/japanese-subtext/progress";
 
@@ -8,7 +8,9 @@ export class CloudProgress {
     this.signedIn = false;
     this.timer = 0;
     this.inFlight = false;
+    this.inFlightPromise = null;
     this.queuedSave = null;
+    this.resetting = false;
   }
 
   async loadAndMerge(localProgress, localSettings) {
@@ -28,7 +30,7 @@ export class CloudProgress {
   }
 
   schedule(progress, settings, callback, delay = 900) {
-    if (!this.signedIn) return;
+    if (!this.signedIn || this.resetting) return;
     globalThis.clearTimeout?.(this.timer);
     const snapshot = {
       progress: sanitizeProgress(progress),
@@ -38,7 +40,7 @@ export class CloudProgress {
   }
 
   save(progressInput, settingsInput) {
-    if (!this.signedIn || !this.fetch) return Promise.resolve(null);
+    if (!this.signedIn || !this.fetch || this.resetting) return Promise.resolve(null);
     const progress = sanitizeProgress(progressInput);
     const settings = sanitizeSettings(settingsInput, settingsInput?.uiLanguage);
     return new Promise((resolve, reject) => {
@@ -48,12 +50,40 @@ export class CloudProgress {
     });
   }
 
+  async reset() {
+    if (!this.fetch) return false;
+    this.resetting = true;
+    globalThis.clearTimeout?.(this.timer);
+    this.timer = 0;
+    const queued = this.queuedSave;
+    this.queuedSave = null;
+    queued?.waiters?.forEach(({ resolve }) => resolve(null));
+    try {
+      if (this.inFlightPromise) await this.inFlightPromise.catch(() => null);
+      const response = await this.fetch(ENDPOINT, {
+        method: "DELETE",
+        credentials: "include",
+        headers: { Accept: "application/json" }
+      });
+      if (response.status === 401) {
+        this.signedIn = false;
+        return false;
+      }
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload.error || `HTTP ${response.status}`);
+      this.signedIn = true;
+      return payload.progress ? sanitizeProgress(payload.progress) : true;
+    } finally {
+      this.resetting = false;
+    }
+  }
+
   async #drainSaves() {
     if (this.inFlight || !this.queuedSave) return;
     const job = this.queuedSave;
     this.queuedSave = null;
     this.inFlight = true;
-    try {
+    const operation = (async () => {
       const response = await this.fetch(ENDPOINT, {
         method: "PUT",
         credentials: "include",
@@ -61,12 +91,23 @@ export class CloudProgress {
         body: JSON.stringify({ progress: job.progress, settings: job.settings })
       });
       const payload = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(payload.error || `HTTP ${response.status}`);
+      if (!response.ok) {
+        throw Object.assign(new Error(payload.error || `HTTP ${response.status}`), {
+          status: response.status,
+          code: payload.code || ""
+        });
+      }
+      return payload;
+    })();
+    this.inFlightPromise = operation;
+    try {
+      const payload = await operation;
       job.waiters.forEach(({ resolve }) => resolve(payload));
     } catch (error) {
       job.waiters.forEach(({ reject }) => reject(error));
     } finally {
       this.inFlight = false;
+      if (this.inFlightPromise === operation) this.inFlightPromise = null;
       if (this.queuedSave) this.#drainSaves();
     }
   }

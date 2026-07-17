@@ -2,7 +2,7 @@
   const slug = window.GAME_SLUG;
   const shellParams = new URLSearchParams(window.location.search);
   const requestedSiteLang = ["zh", "en", "ja"].includes(shellParams.get("lang")) ? shellParams.get("lang") : "zh";
-  const frame = document.getElementById("game-frame");
+  let frame = document.getElementById("game-frame");
   const title = document.getElementById("game-title");
   const subtitle = document.getElementById("game-subtitle");
   const license = document.getElementById("game-license");
@@ -29,6 +29,7 @@
       loginFromHome: "回主界面登录",
       loggedOutPanel: "已退出，当前仍会保留本地存档。",
       loggedOutStatus: "已退出账号，本地存档仍在当前浏览器。",
+      logoutFailed: "退出未完成，账号仍保持登录。请确认云存档同步和网络正常后重试。",
       mergedCloudScore: "已合并云端历史分数，游戏会从新对局开始。",
       restoreCloudConfirm: "检测到云端存档较新，要恢复云端存档吗？",
       restoredCloud: "已恢复云端存档，正在加载游戏。",
@@ -83,6 +84,7 @@
       loginFromHome: "Sign in from Home",
       loggedOutPanel: "You are signed out. Local saves are still kept here.",
       loggedOutStatus: "Signed out. Local saves remain in this browser.",
+      logoutFailed: "Sign-out did not complete, so the account remains signed in. Check cloud sync and your connection, then try again.",
       mergedCloudScore: "Cloud score history merged. The game will start from a new round.",
       restoreCloudConfirm: "A newer cloud save was found. Restore it now?",
       restoredCloud: "Cloud save restored. Loading the game...",
@@ -137,6 +139,7 @@
       loginFromHome: "ホームでログイン",
       loggedOutPanel: "ログアウトしました。ローカルセーブは引き続き保存されます。",
       loggedOutStatus: "ログアウトしました。ローカルセーブはこのブラウザーに残ります。",
+      logoutFailed: "ログアウトが完了していないため、アカウントはログイン状態のままです。クラウド同期と通信を確認して再試行してください。",
       mergedCloudScore: "クラウドの履歴スコアを統合しました。ゲームは新しい対局から始まります。",
       restoreCloudConfirm: "新しいクラウドセーブが見つかりました。復元しますか？",
       restoredCloud: "クラウドセーブを復元しました。ゲームを読み込んでいます。",
@@ -185,7 +188,9 @@
   let authUser = null;
   let currentGame = null;
   let syncTimer = null;
-  let syncInFlight = false;
+  let syncInFlight = null;
+  let syncQueued = false;
+  let syncQueuedVisible = false;
   let localStorageReadBlocked = false;
   let localStorageWarningShown = false;
   let initializeRequestId = 0;
@@ -612,7 +617,7 @@
   function supportsBrowserFeature(feature) {
     try {
       if (feature === "localStorage") {
-        const key = "__lusu_game_support_test__";
+        const key = `__lusu_game_support_test_${Date.now()}_${Math.random().toString(36).slice(2)}__`;
         window.localStorage.setItem(key, "1");
         window.localStorage.removeItem(key);
         return true;
@@ -649,10 +654,14 @@
 
   async function verifyGameSource(entry) {
     let response;
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 10000);
     try {
-      response = await fetch(entry, { method: "HEAD", cache: "no-store" });
+      response = await fetch(entry, { method: "HEAD", cache: "no-store", signal: controller.signal });
     } catch (error) {
       throw new GameShellError("network", t("sourceUnavailable"), error?.message);
+    } finally {
+      window.clearTimeout(timeout);
     }
     if (response.ok || response.status === 405 || response.status === 501) {
       return;
@@ -833,11 +842,20 @@
   }
 
   async function logout() {
+    flushGameSave();
     try {
-      await syncToCloud(currentGame, false);
+      const synced = await syncToCloud(currentGame, false);
+      if (!synced) {
+        renderCloudPanel(t("logoutFailed"));
+        setStatus(t("logoutFailed"));
+        return;
+      }
       await apiFetch("/api/auth/logout", { method: "POST", body: "{}" });
     } catch (error) {
       console.warn("Logout failed", error);
+      renderCloudPanel(t("logoutFailed"));
+      setStatus(t("logoutFailed"));
+      return;
     }
     authUser = null;
     stopAutoSync();
@@ -888,34 +906,51 @@
   }
 
   async function syncToCloud(game, visible) {
-    if (!authUser || !game || syncInFlight) {
-      return;
-    }
-    const saveData = collectSaveData(game);
-    if (!Object.keys(saveData).length) {
-      if (visible) {
-        setStatus(t("noLocalSave"));
-      }
-      return;
-    }
-
-    syncInFlight = true;
-    try {
-      const payload = await apiFetch(`/api/saves/${game.id}`, {
-        method: "PUT",
-        body: JSON.stringify({ saveData })
+    if (!authUser || !game) return true;
+    syncQueued = true;
+    syncQueuedVisible ||= Boolean(visible);
+    if (!syncInFlight) {
+      const settled = drainCloudSync(game).then(async (result) => {
+        if (syncInFlight === settled) syncInFlight = null;
+        if (syncQueued && authUser) {
+          const queuedResult = await syncToCloud(game, false);
+          return result && queuedResult;
+        }
+        return result;
       });
-      rememberCloudTime(game, payload.updatedAt);
-      setStatus(t("cloudSynced", { time: new Date(payload.updatedAt).toLocaleTimeString() }));
-      renderCloudPanel(t("cloudOk"));
-    } catch (error) {
-      if (visible) {
-        setStatus(t("cloudSyncFailed", { message: error.message }));
-        renderCloudPanel(error.message);
-      }
-    } finally {
-      syncInFlight = false;
+      syncInFlight = settled;
     }
+    return syncInFlight;
+  }
+
+  async function drainCloudSync(game) {
+    let succeeded = true;
+    while (syncQueued && authUser && game) {
+      const visible = syncQueuedVisible;
+      syncQueued = false;
+      syncQueuedVisible = false;
+      const saveData = collectSaveData(game);
+      if (!Object.keys(saveData).length) {
+        if (visible) setStatus(t("noLocalSave"));
+        continue;
+      }
+      try {
+        const payload = await apiFetch(`/api/saves/${game.id}`, {
+          method: "PUT",
+          body: JSON.stringify({ saveData })
+        });
+        rememberCloudTime(game, payload.updatedAt);
+        setStatus(t("cloudSynced", { time: new Date(payload.updatedAt).toLocaleTimeString() }));
+        renderCloudPanel(t("cloudOk"));
+      } catch (error) {
+        succeeded = false;
+        if (visible) {
+          setStatus(t("cloudSyncFailed", { message: error.message }));
+          renderCloudPanel(error.message);
+        }
+      }
+    }
+    return succeeded;
   }
 
   function startAutoSync(game) {
@@ -979,11 +1014,12 @@
       return;
     }
 
+    const launchFrame = replaceGameFrame(launchId);
     const displayTitle = localText(game.titles || game.titleZh || game.title);
     expectedFrameUrl = new URL(entry, window.location.href).href;
-    frame.setAttribute("title", t("gameFrameTitle", { title: displayTitle }));
-    frame.hidden = false;
-    frame.src = expectedFrameUrl;
+    launchFrame.setAttribute("title", t("gameFrameTitle", { title: displayTitle }));
+    launchFrame.hidden = false;
+    launchFrame.src = expectedFrameUrl;
     frameLoadTimer = window.setTimeout(() => {
       if (launchId === frameLaunchId && gameStage.dataset.state === "loading") {
         showGameLoadError(new GameShellError("network", t("sourceUnavailable")));
@@ -991,8 +1027,27 @@
     }, 20000);
   }
 
-  function handleFrameLoad() {
-    if (!expectedFrameUrl || frame.src !== expectedFrameUrl) {
+  function replaceGameFrame(launchId) {
+    const nextFrame = frame.cloneNode(false);
+    nextFrame.removeAttribute("src");
+    nextFrame.hidden = true;
+    nextFrame.dataset.launchId = String(launchId);
+    frame.replaceWith(nextFrame);
+    frame = nextFrame;
+    bindFrameEvents(nextFrame);
+    return nextFrame;
+  }
+
+  function bindFrameEvents(target) {
+    target.addEventListener("load", handleFrameLoad);
+    target.addEventListener("error", handleFrameError);
+  }
+
+  function handleFrameLoad(event) {
+    if (event.currentTarget !== frame
+      || Number(frame.dataset.launchId) !== frameLaunchId
+      || !expectedFrameUrl
+      || frame.src !== expectedFrameUrl) {
       return;
     }
     window.clearTimeout(frameLoadTimer);
@@ -1001,8 +1056,8 @@
     setStatus(authUser ? t("loadedCloud") : t("loadedLocal"));
   }
 
-  function handleFrameError() {
-    if (!expectedFrameUrl) {
+  function handleFrameError(event) {
+    if (event.currentTarget !== frame || Number(frame.dataset.launchId) !== frameLaunchId || !expectedFrameUrl) {
       return;
     }
     showGameLoadError(new GameShellError("network", t("sourceUnavailable")));
@@ -1028,8 +1083,7 @@
     }
     shellEventsBound = true;
     retryButton.addEventListener("click", retryGame);
-    frame.addEventListener("load", handleFrameLoad);
-    frame.addEventListener("error", handleFrameError);
+    bindFrameEvents(frame);
     window.addEventListener("beforeunload", flushGameSave);
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "hidden" && currentGame) {

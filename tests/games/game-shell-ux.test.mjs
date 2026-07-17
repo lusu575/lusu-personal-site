@@ -47,12 +47,24 @@ test("game load failures distinguish network, missing resources, and unsupported
   assert.match(shellScript, /new GameShellError\("network"/);
   assert.match(shellScript, /new GameShellError\("missing"/);
   assert.match(shellScript, /new GameShellError\(\s*"unsupported"/);
-  assert.match(shellScript, /fetch\(entry, \{ method: "HEAD", cache: "no-store" \}\)/);
+  assert.match(shellScript, /fetch\(entry, \{ method: "HEAD", cache: "no-store", signal: controller\.signal \}\)/);
+  assert.match(shellScript, /setTimeout\(\(\) => controller\.abort\(\), 10000\)/);
   assert.match(shellScript, /dataset\.gameRetry/);
   assert.match(shellScript, /retryButton\.addEventListener\("click", retryGame\)/);
   assert.match(shellStyle, /\.game-load-state\.is-network/);
   assert.match(shellStyle, /\.game-load-state\.is-missing/);
   assert.match(shellStyle, /\.game-load-state\.is-unsupported/);
+});
+
+test("game retries isolate frame events and preserve logout/session truth", () => {
+  assert.match(shellScript, /function replaceGameFrame\(launchId\)/);
+  assert.match(shellScript, /event\.currentTarget !== frame/);
+  assert.match(shellScript, /Number\(frame\.dataset\.launchId\) !== frameLaunchId/);
+  assert.match(shellScript, /const synced = await syncToCloud\(currentGame, false\)/);
+  assert.match(shellScript, /if \(!synced\) \{[\s\S]*?return;/);
+  assert.match(shellScript, /syncQueued = true/);
+  assert.match(shellScript, /async function drainCloudSync\(game\)/);
+  assert.match(shellScript, /__lusu_game_support_test_\$\{Date\.now\(\)\}_/);
 });
 
 test("game shell uses a stable media stage and aligned touch-sized actions", () => {

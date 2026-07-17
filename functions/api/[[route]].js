@@ -9,6 +9,7 @@ const JAPANESE_SUBTEXT_CONTENT_VERSION = "1.0.2";
 const JAPANESE_SUBTEXT_EMPTY_TIMESTAMP = "1970-01-01T00:00:00.000Z";
 const JAPANESE_SUBTEXT_STAGE_LIMIT = 250;
 const JAPANESE_SUBTEXT_COUNTER_LIMIT = 1000000;
+const JAPANESE_SUBTEXT_RESET_GENERATION_LIMIT = 2147483647;
 const JAPANESE_SUBTEXT_ACTIVITY_DAY_LIMIT = 400;
 const JAPANESE_SUBTEXT_ACTIVITY_ROW_LIMIT = 5000;
 const JAPANESE_SUBTEXT_LANGUAGES = new Set(["zh", "en", "ja"]);
@@ -202,6 +203,9 @@ export async function onRequest(context) {
       }
       if (request.method === "PUT") {
         return await putJapaneseSubtextProgress(request, env);
+      }
+      if (request.method === "DELETE") {
+        return await resetJapaneseSubtextProgress(request, env);
       }
     }
     if (parts[0] === "admin" && request.method === "GET" && parts[1] === "me") {
@@ -458,12 +462,21 @@ async function putJapaneseSubtextProgress(request, env) {
   );
   const now = nowIso();
   const profile = input.profile;
+  const resetGeneration = profile.resetGeneration;
+  const currentResetGeneration = await readJapaneseSubtextResetGeneration(env, session.user.id);
+  if (resetGeneration !== currentResetGeneration) {
+    return japaneseSubtextResetConflict(currentResetGeneration);
+  }
 
   await env.DB.prepare(`
     insert into japanese_subtext_profiles (
       user_id, schema_version, content_version, revision, current_level, current_stage,
       settings_json, progress_updated_at, settings_updated_at, created_at, updated_at
-    ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    )
+    select ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+    where coalesce((
+      select reset_generation from japanese_subtext_sync_state where user_id = ?
+    ), 0) = ?
     on conflict(user_id)
     do update set
       schema_version = excluded.schema_version,
@@ -500,15 +513,26 @@ async function putJapaneseSubtextProgress(request, env) {
     profile.updatedAt,
     input.settings.updatedAt,
     now,
-    now
+    now,
+    session.user.id,
+    resetGeneration
   ).run();
+
+  const generationAfterProfile = await readJapaneseSubtextResetGeneration(env, session.user.id);
+  if (generationAfterProfile !== resetGeneration) {
+    return japaneseSubtextResetConflict(generationAfterProfile);
+  }
 
   const stageStatements = input.stages.map((stage) => env.DB.prepare(`
     insert into japanese_subtext_stage_progress (
       user_id, stage_id, level, stage, cleared, best_score, best_medal, attempts,
       first_accuracy, first_clear_mode, used_translation, used_kana,
       used_listening_mode, replay_count, hint_count, progress_updated_at, updated_at
-    ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    )
+    select ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+    where coalesce((
+      select reset_generation from japanese_subtext_sync_state where user_id = ?
+    ), 0) = ?
     on conflict(user_id, stage_id)
     do update set
       cleared = max(japanese_subtext_stage_progress.cleared, excluded.cleared),
@@ -545,7 +569,9 @@ async function putJapaneseSubtextProgress(request, env) {
     stage.replayCount,
     stage.hintCount,
     stage.updatedAt,
-    now
+    now,
+    session.user.id,
+    resetGeneration
   ));
 
   for (let index = 0; index < stageStatements.length; index += 50) {
@@ -555,7 +581,11 @@ async function putJapaneseSubtextProgress(request, env) {
   const activityStatements = input.activities.map((activity) => env.DB.prepare(`
     insert into japanese_subtext_daily_activity (
       user_id, local_date, stage_id, cleared, best_medal, activity_updated_at, updated_at
-    ) values (?, ?, ?, ?, ?, ?, ?)
+    )
+    select ?, ?, ?, ?, ?, ?, ?
+    where coalesce((
+      select reset_generation from japanese_subtext_sync_state where user_id = ?
+    ), 0) = ?
     on conflict(user_id, local_date, stage_id)
     do update set
       cleared = max(japanese_subtext_daily_activity.cleared, excluded.cleared),
@@ -569,7 +599,9 @@ async function putJapaneseSubtextProgress(request, env) {
     activity.cleared ? 1 : 0,
     JAPANESE_SUBTEXT_MEDAL_RANK[activity.medal],
     activity.updatedAt,
-    now
+    now,
+    session.user.id,
+    resetGeneration
   ));
 
   for (let index = 0; index < activityStatements.length; index += 50) {
@@ -583,6 +615,9 @@ async function putJapaneseSubtextProgress(request, env) {
     env.DB.prepare(`
       delete from japanese_subtext_daily_activity
       where user_id = ?
+        and coalesce((
+          select reset_generation from japanese_subtext_sync_state where user_id = ?
+        ), 0) = ?
         and local_date not in (
           select local_date from (
             select local_date
@@ -593,10 +628,19 @@ async function putJapaneseSubtextProgress(request, env) {
             limit ?
           )
         )
-    `).bind(session.user.id, session.user.id, JAPANESE_SUBTEXT_ACTIVITY_DAY_LIMIT),
+    `).bind(
+      session.user.id,
+      session.user.id,
+      resetGeneration,
+      session.user.id,
+      JAPANESE_SUBTEXT_ACTIVITY_DAY_LIMIT
+    ),
     env.DB.prepare(`
       delete from japanese_subtext_daily_activity
       where user_id = ?
+        and coalesce((
+          select reset_generation from japanese_subtext_sync_state where user_id = ?
+        ), 0) = ?
         and rowid in (
           select rowid
           from japanese_subtext_daily_activity
@@ -604,13 +648,66 @@ async function putJapaneseSubtextProgress(request, env) {
           order by local_date desc, activity_updated_at desc, stage_id asc
           limit -1 offset ?
         )
-    `).bind(session.user.id, session.user.id, JAPANESE_SUBTEXT_ACTIVITY_ROW_LIMIT)
+    `).bind(
+      session.user.id,
+      session.user.id,
+      resetGeneration,
+      session.user.id,
+      JAPANESE_SUBTEXT_ACTIVITY_ROW_LIMIT
+    )
   ]);
+
+  const finalResetGeneration = await readJapaneseSubtextResetGeneration(env, session.user.id);
+  if (finalResetGeneration !== resetGeneration) {
+    return japaneseSubtextResetConflict(finalResetGeneration);
+  }
 
   return json(await readJapaneseSubtextProgress(env, session.user.id));
 }
 
+async function resetJapaneseSubtextProgress(request, env) {
+  const session = await requireSession(request, env);
+  await ensureJapaneseSubtextSchema(env);
+  if (await readJapaneseSubtextResetGeneration(env, session.user.id) >= JAPANESE_SUBTEXT_RESET_GENERATION_LIMIT) {
+    throw new HttpError("学习进度重置次数已达到上限，请联系管理员。", 409);
+  }
+  const now = nowIso();
+  await env.DB.batch([
+    env.DB.prepare(`
+      insert into japanese_subtext_sync_state (user_id, reset_generation, updated_at)
+      values (?, 1, ?)
+      on conflict(user_id)
+      do update set
+        reset_generation = japanese_subtext_sync_state.reset_generation + 1,
+        updated_at = excluded.updated_at
+    `).bind(session.user.id, now),
+    env.DB.prepare("delete from japanese_subtext_daily_activity where user_id = ?").bind(session.user.id),
+    env.DB.prepare("delete from japanese_subtext_stage_progress where user_id = ?").bind(session.user.id),
+    env.DB.prepare(`
+      update japanese_subtext_profiles
+      set revision = 1,
+        current_level = 1,
+        current_stage = 1,
+        progress_updated_at = ?,
+        updated_at = ?
+      where user_id = ?
+    `).bind(now, now, session.user.id)
+  ]);
+  return json({ ok: true, progress: (await readJapaneseSubtextProgress(env, session.user.id)).progress });
+}
+
 async function readJapaneseSubtextProgress(env, userId) {
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const resetGeneration = await readJapaneseSubtextResetGeneration(env, userId);
+    const snapshot = await readJapaneseSubtextProgressSnapshot(env, userId, resetGeneration);
+    if (await readJapaneseSubtextResetGeneration(env, userId) === resetGeneration) {
+      return snapshot;
+    }
+  }
+  throw new HttpError("学习进度刚刚在其他设备重置，请重新同步。", 409);
+}
+
+async function readJapaneseSubtextProgressSnapshot(env, userId, resetGeneration) {
   const profileRow = await env.DB.prepare(`
     select schema_version, content_version, revision, current_level, current_stage,
       settings_json, progress_updated_at, settings_updated_at, created_at, updated_at
@@ -620,11 +717,13 @@ async function readJapaneseSubtextProgress(env, userId) {
 
   if (!profileRow) {
     const settings = defaultJapaneseSubtextSettings(JAPANESE_SUBTEXT_EMPTY_TIMESTAMP);
+    const progress = defaultJapaneseSubtextProgress(JAPANESE_SUBTEXT_EMPTY_TIMESTAMP);
+    progress.resetGeneration = resetGeneration;
     return {
       profile: null,
       stages: [],
       updatedAt: JAPANESE_SUBTEXT_EMPTY_TIMESTAMP,
-      progress: defaultJapaneseSubtextProgress(JAPANESE_SUBTEXT_EMPTY_TIMESTAMP),
+      progress,
       settings
     };
   }
@@ -681,6 +780,7 @@ async function readJapaneseSubtextProgress(env, userId) {
     profile: {
       schemaVersion: JAPANESE_SUBTEXT_SCHEMA_VERSION,
       contentVersion: JAPANESE_SUBTEXT_CONTENT_VERSION,
+      resetGeneration,
       revision: boundedStoredInteger(profileRow.revision, 1, JAPANESE_SUBTEXT_COUNTER_LIMIT, 1),
       currentLevel: current.level,
       currentStage: current.stage,
@@ -694,6 +794,7 @@ async function readJapaneseSubtextProgress(env, userId) {
     progress: {
       schemaVersion: JAPANESE_SUBTEXT_SCHEMA_VERSION,
       contentVersion: JAPANESE_SUBTEXT_CONTENT_VERSION,
+      resetGeneration,
       revision: boundedStoredInteger(profileRow.revision, 1, JAPANESE_SUBTEXT_COUNTER_LIMIT, 1),
       currentLevel: current.level,
       currentStage: current.stage,
@@ -706,6 +807,28 @@ async function readJapaneseSubtextProgress(env, userId) {
   };
 }
 
+async function readJapaneseSubtextResetGeneration(env, userId) {
+  const row = await env.DB.prepare(`
+    select reset_generation
+    from japanese_subtext_sync_state
+    where user_id = ?
+  `).bind(userId).first();
+  return boundedStoredInteger(
+    row?.reset_generation,
+    0,
+    JAPANESE_SUBTEXT_RESET_GENERATION_LIMIT,
+    0
+  );
+}
+
+function japaneseSubtextResetConflict(resetGeneration) {
+  return json({
+    error: "学习进度已在其他设备重置，请先重新同步。",
+    code: "JAPANESE_SUBTEXT_RESET_CONFLICT",
+    resetGeneration
+  }, 409);
+}
+
 function normalizeJapaneseSubtextPayload(body) {
   assertJapaneseSubtextObject(body, "云端进度");
   assertJapaneseSubtextKeys(body, ["progress", "settings"], "云端进度");
@@ -716,12 +839,18 @@ function normalizeJapaneseSubtextPayload(body) {
 
 function normalizeJapaneseSubtextProgress(value) {
   const keys = [
-    "schemaVersion", "contentVersion", "revision", "currentLevel", "currentStage",
+    "schemaVersion", "contentVersion", "resetGeneration", "revision", "currentLevel", "currentStage",
     "unlockedStageIds", "stageProgress", "activityDays", "updatedAt"
   ];
   assertJapaneseSubtextObject(value, "进度");
-  assertJapaneseSubtextKeys(value, keys, "进度");
+  assertJapaneseSubtextOptionalKeys(value, keys, ["resetGeneration"], "进度");
   assertJapaneseSubtextVersion(value, "进度");
+  const resetGeneration = japaneseSubtextInteger(
+    value.resetGeneration ?? 0,
+    0,
+    JAPANESE_SUBTEXT_RESET_GENERATION_LIMIT,
+    "resetGeneration"
+  );
   const revision = japaneseSubtextInteger(value.revision, 1, JAPANESE_SUBTEXT_COUNTER_LIMIT, "revision");
   const currentLevel = japaneseSubtextInteger(value.currentLevel, 1, 5, "currentLevel");
   const currentStage = japaneseSubtextInteger(value.currentStage, 1, 50, "currentStage");
@@ -773,7 +902,7 @@ function normalizeJapaneseSubtextProgress(value) {
     throw new HttpError("当前关卡尚未解锁。", 400);
   }
 
-  return { revision, currentLevel, currentStage, updatedAt, stages, activities };
+  return { resetGeneration, revision, currentLevel, currentStage, updatedAt, stages, activities };
 }
 
 function normalizeJapaneseSubtextActivityDays(value) {
@@ -928,6 +1057,16 @@ function assertJapaneseSubtextKeys(value, expectedKeys, label) {
   const actualKeys = Object.keys(value).sort();
   const expected = [...expectedKeys].sort();
   if (actualKeys.length !== expected.length || actualKeys.some((key, index) => key !== expected[index])) {
+    throw new HttpError(`${label}字段不正确。`, 400);
+  }
+}
+
+function assertJapaneseSubtextOptionalKeys(value, expectedKeys, optionalKeys, label) {
+  const optional = new Set(optionalKeys);
+  const actualKeys = Object.keys(value).sort();
+  const allowed = new Set(expectedKeys);
+  const missingRequired = expectedKeys.some((key) => !optional.has(key) && !Object.hasOwn(value, key));
+  if (missingRequired || actualKeys.some((key) => !allowed.has(key))) {
     throw new HttpError(`${label}字段不正确。`, 400);
   }
 }
@@ -1089,6 +1228,7 @@ function defaultJapaneseSubtextProgress(updatedAt) {
   return {
     schemaVersion: JAPANESE_SUBTEXT_SCHEMA_VERSION,
     contentVersion: JAPANESE_SUBTEXT_CONTENT_VERSION,
+    resetGeneration: 0,
     revision: 1,
     currentLevel: 1,
     currentStage: 1,
@@ -3058,6 +3198,14 @@ async function ensureJapaneseSubtextSchema(env) {
         activity_updated_at text not null,
         updated_at text not null,
         primary key (user_id, local_date, stage_id)
+      )
+    `),
+    env.DB.prepare(`
+      create table if not exists japanese_subtext_sync_state (
+        user_id text primary key references users(id) on delete cascade,
+        reset_generation integer not null default 0
+          check(reset_generation between 0 and 2147483647),
+        updated_at text not null
       )
     `),
     env.DB.prepare(`

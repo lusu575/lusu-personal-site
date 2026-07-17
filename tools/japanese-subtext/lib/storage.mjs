@@ -1,7 +1,7 @@
 import {
   CONTENT_VERSION, DISPLAY_MODES, MEDAL_RANK, OPTION_LANGUAGES, PLAYBACK_RATES,
   MODE_ONBOARDING_KEY, PROGRESS_KEY, SETTINGS_KEY, UI_LANGUAGES, clampNumber, isoNow, parseStageId, stageId
-} from "./constants.mjs?v=20260714-japanese-subtext-v103-retry-r1";
+} from "./constants.mjs?v=20260717-100-ui-ux-preview-r2";
 
 export function defaultSettings(uiLanguage = "zh") {
   return {
@@ -25,6 +25,7 @@ export function defaultProgress() {
   return {
     schemaVersion: 1,
     contentVersion: CONTENT_VERSION,
+    resetGeneration: 0,
     revision: 1,
     currentLevel: 1,
     currentStage: 1,
@@ -137,10 +138,11 @@ export function sanitizeProgress(input) {
   if (!unlocked.has(currentId)) {
     const furthest = [...unlocked].sort(stageSort).at(-1) || "L1-001";
     const parsed = parseStageId(furthest);
-    return { ...base, revision: clampNumber(input.revision, 1, 1000000, 1), currentLevel: parsed.level, currentStage: parsed.stage, unlockedStageIds: [...unlocked].sort(stageSort), stageProgress, activityDays, updatedAt: validIso(input.updatedAt) || base.updatedAt };
+    return { ...base, resetGeneration: clampNumber(input.resetGeneration, 0, 2147483647, 0), revision: clampNumber(input.revision, 1, 1000000, 1), currentLevel: parsed.level, currentStage: parsed.stage, unlockedStageIds: [...unlocked].sort(stageSort), stageProgress, activityDays, updatedAt: validIso(input.updatedAt) || base.updatedAt };
   }
   return {
     ...base,
+    resetGeneration: clampNumber(input.resetGeneration, 0, 2147483647, 0),
     revision: clampNumber(input.revision, 1, 1000000, 1),
     currentLevel,
     currentStage,
@@ -223,6 +225,9 @@ export function recordAttempt(progressInput, id, result) {
 export function mergeProgress(localInput, cloudInput) {
   const local = sanitizeProgress(localInput);
   const cloud = sanitizeProgress(cloudInput);
+  if (local.resetGeneration !== cloud.resetGeneration) {
+    return local.resetGeneration > cloud.resetGeneration ? local : cloud;
+  }
   const stageProgress = {};
   const ids = new Set([...Object.keys(local.stageProgress), ...Object.keys(cloud.stageProgress)]);
   ids.forEach((id) => {
@@ -255,6 +260,7 @@ export function mergeProgress(localInput, cloudInput) {
   const parsed = parseStageId(current);
   return sanitizeProgress({
     ...local,
+    resetGeneration: local.resetGeneration,
     revision: Math.max(local.revision, cloud.revision) + 1,
     currentLevel: parsed.level,
     currentStage: parsed.stage,

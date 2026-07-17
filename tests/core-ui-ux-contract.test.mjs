@@ -27,6 +27,24 @@ test("account flow has explicit modes, one primary submit, field errors, and foc
   assert.match(styleCss, /\.account-mode-button\[aria-pressed="true"\]/);
 });
 
+test("account, article, and private-room async work cannot overwrite newer intent", () => {
+  const accountInit = mainJs.slice(mainJs.indexOf("async function initAccountWidget"), mainJs.indexOf("async function submitAccountForm"));
+  const logout = mainJs.slice(mainJs.indexOf("async function logoutAccount"), mainJs.indexOf("function setAccountSubmitting"));
+  const articleDetail = mainJs.slice(mainJs.indexOf("async function loadArticleDetail"), mainJs.indexOf("function renderArticleDetailFailure"));
+  const privateRoom = mainJs.slice(mainJs.indexOf("function showChatPrivateRoomForm"), mainJs.indexOf("async function handleChatRoomToggle"));
+
+  assert.match(mainJs, /let authRevision = 0/);
+  assert.match(accountInit, /const revision = authRevision[\s\S]*if \(revision !== authRevision\) return;[\s\S]*authUser = payload\.user/);
+  assert.match(logout, /await accountApi\("\/api\/auth\/logout"[\s\S]*authUser = null/);
+  assert.match(logout, /catch \{[\s\S]*renderAccountWidget\(t\("accountLogoutFailed"\)\)[\s\S]*openAccountPopover\(\)/);
+  assert.match(articleDetail, /articleState\.detailRequestId = requestId[\s\S]*const requestedLang = currentLang[\s\S]*detailCache\.get/);
+  assert.match(articleDetail, /currentLang !== requestedLang/);
+  assert.match(mainJs, /roomSwitchEpoch: 0/);
+  assert.match(privateRoom, /chatState\.roomSwitchEpoch = attemptId[\s\S]*attemptId !== chatState\.roomSwitchEpoch/);
+  assert.match(privateRoom, /hideChatPrivateRoomForm\(\{ preserveAttempt: true \}\)/);
+  assert.match(privateRoom, /setChatPrivateRoomBusy\(true\)/);
+});
+
 test("mobile App bar exposes account access, full titles, dock edges, keyboard focus, and low-cost mode", () => {
   assert.match(mobileCss, /body:not\(\[data-route="home"\]\) \.topbar-actions \{[\s\S]*display: flex[\s\S]*width: 44px/);
   assert.match(mobileShellJs, /routeTitle\.title = title/);
@@ -64,7 +82,7 @@ test("chat preserves room context, drafts, reading position, and explicit recove
 });
 
 test("preview cache, branch CI, and responsive guards cover the optimization build", () => {
-  const version = "20260717-100-ui-ux-preview-r1";
+  const version = "20260717-100-ui-ux-preview-r2";
   for (const asset of [
     "/js/mobile-shell.js",
     "/css/style.css",
@@ -83,9 +101,9 @@ test("preview cache, branch CI, and responsive guards cover the optimization bui
   assert.match(mobileCss, /orientation: landscape[\s\S]*chat-send-shortcut \{\s*display: none/);
   assert.match(motionCss, /prefers-reduced-motion: reduce/);
   for (const html of gamePages) {
-    assert.match(html, /game-shell\.css\?v=20260717-100-ui-ux-preview-r1/);
-    assert.match(html, /game-shell\.js\?v=20260717-100-ui-ux-preview-r1/);
+    assert.match(html, /game-shell\.css\?v=20260717-100-ui-ux-preview-r2/);
+    assert.match(html, /game-shell\.js\?v=20260717-100-ui-ux-preview-r2/);
   }
-  assert.match(japaneseToolHtml, /style\.css\?v=20260717-100-ui-ux-preview-r1/);
-  assert.match(japaneseToolHtml, /app\.mjs\?v=20260717-100-ui-ux-preview-r1/);
+  assert.match(japaneseToolHtml, /style\.css\?v=20260717-100-ui-ux-preview-r2/);
+  assert.match(japaneseToolHtml, /app\.mjs\?v=20260717-100-ui-ux-preview-r2/);
 });

@@ -99,3 +99,31 @@ test("Quick Transfer upload tasks keep their captured room and are cleared on co
   assert.match(client, /function leaveRoom\(\)[\s\S]*invalidateRoomContext\(\)/);
   assert.match(client, /localId: task\.localId, roomKey: task\.roomKey/);
 });
+
+test("Quick Transfer makes config, join, retry, and completion transitions latest-wins", () => {
+  assert.match(client, /configRequestId: 0, configController: null, joinAttemptId: 0/);
+  assert.match(client, /state\.configController\?\.abort\(\)/);
+  assert.match(client, /api\("\/api\/transfer\/config", \{ signal: controller\.signal \}\)/);
+  assert.match(client, /requestId !== state\.configRequestId \|\| !state\.open \|\| state\.roomGeneration !== requestGeneration/);
+  assert.match(client, /state\.joinAttemptId = attemptId[\s\S]*state\.joinAttemptId !== attemptId/);
+  assert.match(client, /loadConfig\(\{ roomKey: task\.roomKey, generation: task\.roomGeneration \}\)/);
+  assert.match(client, /function isTaskRunCurrent\(task, runId\)/);
+  assert.match(client, /await delay\(800 \* \(2 \*\* attempt\)\);\s*if \(!isTaskRunCurrent\(task, runId\)\) return;/);
+  assert.match(client, /task\.resumeRequested = true/);
+  assert.match(client, /task\.status === "completing"\) return;/);
+  assert.match(client, /!\["complete", "cancelled", "completing"\]\.includes\(task\.status\)/);
+});
+
+test("Quick Transfer contains a fatal multipart failure until every worker settles", () => {
+  const runGuard = client.slice(client.indexOf("function isTaskRunCurrent"), client.indexOf("async function runSimple"));
+  const multipart = client.slice(client.indexOf("async function runMultipart"), client.indexOf("async function uploadPartWithRetry"));
+  const failure = client.slice(client.indexOf("function failTask"), client.indexOf("function renderTasks"));
+
+  assert.match(runGuard, /!\["cancelled", "failed", "complete"\]\.includes\(task\.status\)/);
+  assert.match(runGuard, /function invalidateTaskRun\(task, runId\)[\s\S]*task\.runId = runId \+ 1;[\s\S]*abortTaskTransport\(task\)/);
+  assert.match(multipart, /let fatalError = null;/);
+  assert.match(multipart, /catch \(error\) \{\s*fatalError \|\|= error;\s*invalidateTaskRun\(task, runId\);\s*\}/);
+  assert.match(multipart, /await Promise\.allSettled\(workers\);\s*if \(fatalError\) throw fatalError;/);
+  assert.doesNotMatch(multipart, /await Promise\.all\(workers\)/);
+  assert.match(failure, /task\.runId = \(task\.runId \|\| 0\) \+ 1;[\s\S]*abortTaskTransport\(task\);[\s\S]*task\.status = .*"failed"/);
+});

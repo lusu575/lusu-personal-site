@@ -81,7 +81,8 @@
     initialized: false, lang: "zh", open: false, config: null, roomKey: "", cryptoKey: null,
     items: [], pollTimer: 0, lastActivity: Date.now(), tasks: new Map(), xhrByTask: new Map(),
     pendingFiles: new Map(), pendingTaskIds: [], activeTaskIds: new Set(), dragDepth: 0,
-    roomGeneration: 0, composerSending: false, composerToken: null
+    roomGeneration: 0, composerSending: false, composerToken: null,
+    configRequestId: 0, configController: null, joinAttemptId: 0
   };
   const refs = {};
 
@@ -148,6 +149,8 @@
 
   function invalidateRoomContext() {
     state.roomGeneration += 1;
+    state.joinAttemptId += 1;
+    cancelConfigRequest();
     state.composerToken = null;
     state.composerSending = false;
     refs.sendButton?.removeAttribute("aria-busy");
@@ -158,6 +161,12 @@
     state.cryptoKey = null;
     state.items = [];
     syncUploadAvailability();
+  }
+
+  function cancelConfigRequest() {
+    state.configRequestId += 1;
+    state.configController?.abort();
+    state.configController = null;
   }
 
   function init(lang) {
@@ -349,8 +358,15 @@
 
   async function loadConfig(expectedRoom = null) {
     if (expectedRoom && !isRoomReferenceCurrent(expectedRoom)) return false;
+    const requestId = state.configRequestId + 1;
+    state.configRequestId = requestId;
+    state.configController?.abort();
+    const controller = new AbortController();
+    state.configController = controller;
+    const requestGeneration = state.roomGeneration;
     try {
-      const config = await api("/api/transfer/config");
+      const config = await api("/api/transfer/config", { signal: controller.signal });
+      if (requestId !== state.configRequestId || !state.open || state.roomGeneration !== requestGeneration) return false;
       if (expectedRoom && !isRoomReferenceCurrent(expectedRoom)) return false;
       state.config = config;
       refs.loginGate.hidden = true;
@@ -368,6 +384,7 @@
       }
       return true;
     } catch (error) {
+      if (error.name === "AbortError" || requestId !== state.configRequestId || !state.open || state.roomGeneration !== requestGeneration) return false;
       if (expectedRoom && !isRoomReferenceCurrent(expectedRoom)) return false;
       if (error.status === 401) {
         stopPoll();
@@ -382,6 +399,8 @@
         setFeedback(error.message || text("genericError"), true);
       }
       return false;
+    } finally {
+      if (state.configController === controller) state.configController = null;
     }
   }
 
@@ -427,13 +446,21 @@
 
   async function joinRoom(event) {
     event.preventDefault();
-    const entryGeneration = state.roomGeneration;
+    const submitButton = event.currentTarget?.querySelector("button[type='submit']");
     const password = refs.roomPassword.value.normalize("NFKC").trim();
     if (Array.from(password).length < 6) return setFeedback(text("shortPassword"), true);
+    const attemptId = state.joinAttemptId + 1;
+    state.joinAttemptId = attemptId;
+    const entryGeneration = state.roomGeneration;
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.setAttribute("aria-busy", "true");
+    }
     try {
       const derived = await deriveRoom(password);
+      if (!state.open || state.joinAttemptId !== attemptId || state.roomGeneration !== entryGeneration) return;
       await api("/api/transfer/room/join", { method: "POST", json: { roomKey: derived.roomKey } });
-      if (!state.open || state.roomGeneration !== entryGeneration) return;
+      if (!state.open || state.joinAttemptId !== attemptId || state.roomGeneration !== entryGeneration) return;
       activateRoomContext(derived.roomKey, derived.cryptoKey);
       refs.roomPassword.value = "";
       refs.roomPassword.type = "password";
@@ -447,7 +474,14 @@
       setFeedback(text("joined"));
       revealComposer();
     } catch (error) {
-      setFeedback(error.message || text("joinFailed"), true);
+      if (state.open && state.joinAttemptId === attemptId && state.roomGeneration === entryGeneration) {
+        setFeedback(error.message || text("joinFailed"), true);
+      }
+    } finally {
+      if (state.joinAttemptId === attemptId && submitButton) {
+        submitButton.disabled = false;
+        submitButton.removeAttribute("aria-busy");
+      }
     }
   }
 
@@ -810,7 +844,9 @@
   }
 
   function restoreComposerFocus(target) {
+    const generation = state.roomGeneration;
     window.requestAnimationFrame(() => {
+      if (!state.open || state.roomGeneration !== generation || refs.room?.hidden) return;
       const preferred = target?.isConnected && !target.disabled ? target : refs.textInput;
       preferred?.focus({ preventScroll: true });
     });
@@ -891,6 +927,10 @@
         .catch((error) => failTask(task, error))
         .finally(() => {
           state.activeTaskIds.delete(localId);
+          if (task.resumeRequested && !["cancelled", "complete", "completing"].includes(task.status) && isTaskContextCurrent(task)) {
+            task.resumeRequested = false;
+            enqueueTask(task);
+          }
           pumpTaskQueue();
         });
     }
@@ -908,15 +948,31 @@
   }
 
   async function runTask(task) {
-    if (!isTaskContextCurrent(task)) {
+    const runId = (task.runId || 0) + 1;
+    task.runId = runId;
+    if (!isTaskRunCurrent(task, runId)) {
       task.status = "cancelled";
       return;
     }
-    if (task.multipart) return runMultipart(task);
-    return runSimple(task);
+    if (task.multipart) return runMultipart(task, runId);
+    return runSimple(task, runId);
   }
 
-  async function runSimple(task) {
+  function isTaskRunCurrent(task, runId) {
+    return task?.runId === runId
+      && !task.paused
+      && !["cancelled", "failed", "complete"].includes(task.status)
+      && isTaskContextCurrent(task);
+  }
+
+  function invalidateTaskRun(task, runId) {
+    if (task?.runId !== runId) return false;
+    task.runId = runId + 1;
+    abortTaskTransport(task);
+    return true;
+  }
+
+  async function runSimple(task, runId) {
     try {
       await new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
@@ -942,20 +998,20 @@
     } finally {
       state.xhrByTask.delete(task.localId);
     }
-    if (!isTaskContextCurrent(task) || task.status === "cancelled") return;
+    if (!isTaskRunCurrent(task, runId)) return;
     task.uploaded = task.size;
     task.status = "complete";
     renderTasks();
-    await loadConfig(task);
+    await loadConfig({ roomKey: task.roomKey, generation: task.roomGeneration });
   }
 
-  async function runMultipart(task) {
+  async function runMultipart(task, runId) {
     if (!task.sessionId) {
       const initialized = await api("/api/transfer/upload/init", {
         method: "POST",
         json: { roomKey: task.roomKey, filename: task.filename, mimeType: task.file.type || "application/octet-stream", sizeBytes: task.size }
       });
-      if (!isTaskContextCurrent(task)) {
+      if (!isTaskRunCurrent(task, runId)) {
         if (initialized.sessionId) void abortMultipartSession(task.roomKey, initialized.sessionId);
         return;
       }
@@ -964,38 +1020,45 @@
       saveTasks();
     } else {
       const status = await api(`/api/transfer/upload/status?session=${encodeURIComponent(task.sessionId)}&room=${encodeURIComponent(task.roomKey)}`);
-      if (!isTaskContextCurrent(task)) return;
+      if (!isTaskRunCurrent(task, runId)) return;
       task.parts = status.parts || [];
       task.uploaded = task.parts.reduce((sum, part) => sum + part.sizeBytes, 0);
     }
     const completeParts = new Set(task.parts.map((part) => part.partNumber));
     const pending = Array.from({ length: task.expectedParts }, (_, index) => index + 1).filter((part) => !completeParts.has(part));
     const concurrency = document.documentElement.dataset.uiShell === "mobile" ? 2 : 4;
+    let fatalError = null;
     const workers = Array.from({ length: Math.min(concurrency, pending.length) }, async () => {
-      while (pending.length) {
-        if (task.paused || task.status === "cancelled" || !isTaskContextCurrent(task)) return;
-        const partNumber = pending.shift();
-        await uploadPartWithRetry(task, partNumber);
+      try {
+        while (pending.length) {
+          if (!isTaskRunCurrent(task, runId)) return;
+          const partNumber = pending.shift();
+          await uploadPartWithRetry(task, partNumber, runId);
+        }
+      } catch (error) {
+        fatalError ||= error;
+        invalidateTaskRun(task, runId);
       }
     });
-    await Promise.all(workers);
-    if (task.paused || task.status === "cancelled" || !isTaskContextCurrent(task)) return;
+    await Promise.allSettled(workers);
+    if (fatalError) throw fatalError;
+    if (!isTaskRunCurrent(task, runId)) return;
     task.status = "completing";
     renderTasks();
     await api("/api/transfer/upload/complete", { method: "POST", json: { roomKey: task.roomKey, sessionId: task.sessionId } });
-    if (!isTaskContextCurrent(task)) return;
+    if (!isTaskRunCurrent(task, runId) || task.status !== "completing") return;
     task.uploaded = task.size;
     task.status = "complete";
     removeSavedTask(task.localId);
     renderTasks();
-    await refreshItems(true, task);
+    await refreshItems(true, { roomKey: task.roomKey, generation: task.roomGeneration });
   }
 
-  async function uploadPartWithRetry(task, partNumber) {
+  async function uploadPartWithRetry(task, partNumber, runId) {
     const start = (partNumber - 1) * task.partSizeBytes;
     const end = Math.min(task.size, start + task.partSizeBytes);
     for (let attempt = 0; attempt < 4; attempt += 1) {
-      if (task.paused || task.status === "cancelled" || !isTaskContextCurrent(task)) return;
+      if (!isTaskRunCurrent(task, runId)) return;
       const controller = new AbortController();
       task.controller = controller;
       task.controllers ||= new Set();
@@ -1006,7 +1069,7 @@
           headers: { "Content-Type": "application/octet-stream" }
         });
         const payload = await response.json().catch(() => ({}));
-        if (!isTaskContextCurrent(task)) return;
+        if (!isTaskRunCurrent(task, runId)) return;
         if (!response.ok) throw Object.assign(new Error(payload.error || `HTTP ${response.status}`), { status: response.status, code: payload.code || "" });
         task.parts.push(payload);
         task.uploaded += end - start;
@@ -1015,12 +1078,13 @@
         renderTasks();
         return;
       } catch (error) {
-        if (task.paused || task.status === "cancelled" || !isTaskContextCurrent(task) || error.name === "AbortError") return;
+        if (!isTaskRunCurrent(task, runId) || error.name === "AbortError") return;
         if (error.code === "TRANSFER_R2_NOT_BOUND") throw error;
         if (attempt === 3) throw error;
         task.status = "retrying";
         renderTasks();
         await delay(800 * (2 ** attempt));
+        if (!isTaskRunCurrent(task, runId)) return;
         task.status = "uploading";
       } finally {
         task.controllers.delete(controller);
@@ -1031,6 +1095,7 @@
 
   function pauseTask(task) {
     if (!isTaskContextCurrent(task)) return;
+    task.runId = (task.runId || 0) + 1;
     task.paused = true;
     task.status = "paused";
     state.pendingTaskIds = state.pendingTaskIds.filter((localId) => localId !== task.localId);
@@ -1042,10 +1107,21 @@
   function resumeTask(task) {
     if (!isTaskContextCurrent(task)) return;
     if (!task.file) return selectResumeFile(task);
+    if (state.activeTaskIds.has(task.localId)) {
+      task.paused = false;
+      task.resumeRequested = true;
+      task.status = "queued";
+      task.error = "";
+      renderTasks();
+      return;
+    }
     enqueueTask(task);
   }
 
   async function cancelTask(task) {
+    if (task.status === "completing") return;
+    task.runId = (task.runId || 0) + 1;
+    task.resumeRequested = false;
     task.status = "cancelled";
     state.pendingTaskIds = state.pendingTaskIds.filter((localId) => localId !== task.localId);
     abortTaskTransport(task);
@@ -1077,7 +1153,10 @@
     state.pendingTaskIds = [];
     state.activeTaskIds.clear();
     tasks.forEach((task) => {
-      if (!["complete", "cancelled"].includes(task.status)) {
+      if (task.status === "completing") {
+        removeSavedTask(task.localId);
+      } else if (!["complete", "cancelled"].includes(task.status)) {
+        task.runId = (task.runId || 0) + 1;
         task.paused = true;
         task.status = "cancelled";
         abortTaskTransport(task);
@@ -1110,6 +1189,9 @@
 
   function failTask(task, error) {
     if (error.cancelled || task.status === "cancelled" || !isTaskContextCurrent(task)) return;
+    task.runId = (task.runId || 0) + 1;
+    task.resumeRequested = false;
+    abortTaskTransport(task);
     task.status = error.status === 410 ? "failed" : "failed";
     if (error.code === "TRANSFER_R2_NOT_BOUND") {
       task.error = text("r2Missing");
@@ -1159,7 +1241,7 @@
       actions.className = "transfer-task-actions";
       if (["uploading", "retrying"].includes(task.status)) actions.append(taskButton("pause", "pause", () => pauseTask(task)));
       if (["paused", "failed"].includes(task.status)) actions.append(taskButton("resume", task.file ? "resume" : "reselect", () => resumeTask(task)));
-      if (!["complete", "cancelled"].includes(task.status)) actions.append(taskButton("cancel", "cancel", () => cancelTask(task)));
+      if (!["complete", "cancelled", "completing"].includes(task.status)) actions.append(taskButton("cancel", "cancel", () => cancelTask(task)));
       row.append(copy, actions);
       refs.taskList.append(row);
     });

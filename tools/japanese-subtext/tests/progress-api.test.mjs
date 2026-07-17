@@ -50,9 +50,10 @@ function createEmptyD1() {
   };
 }
 
-function createProgressD1({ signedIn = true, profile = null, stages = [], activities = [] } = {}) {
+function createProgressD1({ signedIn = true, profile = null, stages = [], activities = [], resetGeneration = 0 } = {}) {
   const state = {
     profile,
+    resetGeneration,
     stages: new Map(stages.map((stage) => [stage.stage_id, stage])),
     activities: new Map(activities.map((activity) => [`${activity.local_date}|${activity.stage_id}`, activity])),
     writes: []
@@ -68,7 +69,32 @@ function createProgressD1({ signedIn = true, profile = null, stages = [], activi
         return this;
       },
       async run() {
+        if (normalized.startsWith("insert into japanese_subtext_sync_state")) {
+          state.resetGeneration = Math.min(state.resetGeneration + 1, 2147483647);
+          state.writes.push({ table: "sync-reset", params: [...this.params] });
+        }
+        if (normalized === "delete from japanese_subtext_daily_activity where user_id = ?") {
+          state.activities.clear();
+          state.writes.push({ table: "activity-reset", params: [...this.params] });
+        }
+        if (normalized === "delete from japanese_subtext_stage_progress where user_id = ?") {
+          state.stages.clear();
+          state.writes.push({ table: "stage-reset", params: [...this.params] });
+        }
+        if (normalized.startsWith("update japanese_subtext_profiles") && state.profile) {
+          const [progress_updated_at, updated_at] = this.params;
+          state.profile = {
+            ...state.profile,
+            revision: 1,
+            current_level: 1,
+            current_stage: 1,
+            progress_updated_at,
+            updated_at
+          };
+          state.writes.push({ table: "profile-reset", params: [...this.params] });
+        }
         if (normalized.startsWith("insert into japanese_subtext_profiles")) {
+          if (this.params.at(-1) !== state.resetGeneration) return { success: true, meta: { changes: 0 } };
           const [
             user_id, schema_version, content_version, revision, current_level, current_stage,
             settings_json, progress_updated_at, settings_updated_at, created_at, updated_at
@@ -82,6 +108,7 @@ function createProgressD1({ signedIn = true, profile = null, stages = [], activi
           state.writes.push({ table: "profile", params: [...this.params] });
         }
         if (normalized.startsWith("insert into japanese_subtext_stage_progress")) {
+          if (this.params.at(-1) !== state.resetGeneration) return { success: true, meta: { changes: 0 } };
           const [
             user_id, stage_id, level, stage, cleared, best_score, best_medal, attempts,
             first_accuracy, first_clear_mode, used_translation, used_kana,
@@ -110,6 +137,7 @@ function createProgressD1({ signedIn = true, profile = null, stages = [], activi
           state.writes.push({ table: "stage", params: [...this.params] });
         }
         if (normalized.startsWith("insert into japanese_subtext_daily_activity")) {
+          if (this.params.at(-1) !== state.resetGeneration) return { success: true, meta: { changes: 0 } };
           const [user_id, local_date, stage_id, cleared, best_medal, activity_updated_at, updated_at] = this.params;
           const key = `${local_date}|${stage_id}`;
           const before = state.activities.get(key);
@@ -134,6 +162,9 @@ function createProgressD1({ signedIn = true, profile = null, stages = [], activi
         }
         if (/from japanese_subtext_profiles/i.test(sql)) {
           return state.profile;
+        }
+        if (/from japanese_subtext_sync_state/i.test(sql)) {
+          return state.resetGeneration > 0 ? { reset_generation: state.resetGeneration } : null;
         }
         return null;
       },
@@ -171,6 +202,7 @@ function validPayload() {
     progress: {
       schemaVersion: 1,
       contentVersion: "1.0.2",
+      resetGeneration: 0,
       revision: 2,
       currentLevel: 1,
       currentStage: 2,
@@ -374,6 +406,61 @@ test("GET progress returns profile, stages, and compatibility state", async () =
   assert.equal(payload.progress.activityDays["2026-07-10"].stages["L1-001"].medal, "gold");
   assert.equal(payload.settings.contentVersion, "1.0.2");
   assert.equal(payload.updatedAt, "2026-07-10T17:00:02.000Z");
+});
+
+test("DELETE progress clears cloud learning state while retaining signed-in settings", async () => {
+  const settings = validPayload().settings;
+  const db = createProgressD1({
+    profile: {
+      user_id: "user-123", schema_version: 1, content_version: "1.0.2", revision: 4,
+      current_level: 1, current_stage: 2, settings_json: JSON.stringify(settings),
+      progress_updated_at: "2026-07-10T17:00:00.000Z", settings_updated_at: settings.updatedAt,
+      created_at: "2026-07-10T16:00:00.000Z", updated_at: "2026-07-10T17:00:01.000Z"
+    },
+    stages: [{ user_id: "user-123", stage_id: "L1-001", level: 1, stage: 1, cleared: 1 }],
+    activities: [{ user_id: "user-123", local_date: "2026-07-10", stage_id: "L1-001", cleared: 1 }]
+  });
+
+  const response = await apiRequest(db, { method: "DELETE" });
+  const payload = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(payload.ok, true);
+  assert.equal(db.state.stages.size, 0);
+  assert.equal(db.state.activities.size, 0);
+  assert.equal(db.state.profile.current_level, 1);
+  assert.equal(db.state.profile.current_stage, 1);
+  assert.equal(db.state.resetGeneration, 1);
+  assert.equal(payload.progress.currentLevel, 1);
+  assert.equal(payload.progress.currentStage, 1);
+  assert.equal(payload.progress.resetGeneration, 1);
+  assert.deepEqual(payload.progress.stageProgress, {});
+});
+
+test("DELETE reset generation rejects a stale snapshot from another device", async () => {
+  const settings = validPayload().settings;
+  const db = createProgressD1({
+    profile: {
+      user_id: "user-123", schema_version: 1, content_version: "1.0.2", revision: 4,
+      current_level: 1, current_stage: 2, settings_json: JSON.stringify(settings),
+      progress_updated_at: "2026-07-10T17:00:00.000Z", settings_updated_at: settings.updatedAt,
+      created_at: "2026-07-10T16:00:00.000Z", updated_at: "2026-07-10T17:00:01.000Z"
+    },
+    stages: [{ user_id: "user-123", stage_id: "L1-001", level: 1, stage: 1, cleared: 1 }],
+    activities: [{ user_id: "user-123", local_date: "2026-07-10", stage_id: "L1-001", cleared: 1 }]
+  });
+  const staleDeviceSnapshot = validPayload();
+
+  assert.equal((await apiRequest(db, { method: "DELETE" })).status, 200);
+  const response = await apiRequest(db, { method: "PUT", body: staleDeviceSnapshot });
+  const payload = await response.json();
+
+  assert.equal(response.status, 409);
+  assert.equal(payload.code, "JAPANESE_SUBTEXT_RESET_CONFLICT");
+  assert.equal(payload.resetGeneration, 1);
+  assert.equal(db.state.stages.size, 0);
+  assert.equal(db.state.activities.size, 0);
+  assert.equal(db.state.profile.current_stage, 1);
 });
 
 test("PUT progress rejects unknown fields and invalid stage IDs", async () => {

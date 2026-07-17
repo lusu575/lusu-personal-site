@@ -1,13 +1,13 @@
-import { ContentLoader } from "./lib/content-loader.mjs?v=20260714-japanese-subtext-v103-retry-r1";
-import { AudioPlayer } from "./lib/audio-player.mjs?v=20260714-japanese-subtext-v103-retry-r1";
-import { CloudProgress } from "./lib/cloud.mjs?v=20260714-japanese-subtext-v103-retry-r1";
-import { formatTime, localized, parseStageId, safeToolAssetPath, shortContentHash, stageId } from "./lib/constants.mjs?v=20260714-japanese-subtext-v103-retry-r1";
-import { createTranslator, normalizeUiLanguage } from "./lib/i18n.mjs?v=20260714-japanese-subtext-v103-retry-r1";
-import { questionActionState } from "./lib/question-flow.mjs?v=20260714-japanese-subtext-v103-retry-r1";
+import { ContentLoader } from "./lib/content-loader.mjs?v=20260717-100-ui-ux-preview-r2";
+import { AudioPlayer } from "./lib/audio-player.mjs?v=20260717-100-ui-ux-preview-r2";
+import { CloudProgress } from "./lib/cloud.mjs?v=20260717-100-ui-ux-preview-r2";
+import { formatTime, localized, parseStageId, safeToolAssetPath, shortContentHash, stageId } from "./lib/constants.mjs?v=20260717-100-ui-ux-preview-r2";
+import { createTranslator, normalizeUiLanguage } from "./lib/i18n.mjs?v=20260717-100-ui-ux-preview-r2";
+import { questionActionState } from "./lib/question-flow.mjs?v=20260717-100-ui-ux-preview-r2";
 import {
   checkInStats, hasCompletedModeOnboarding, loadLocalState, localDateKey, markModeOnboardingComplete, mergeProgress, mergeSettings,
   nextStageId, progressStats, recordAttempt, resetLocalState, saveProgress, saveSettings
-} from "./lib/storage.mjs?v=20260714-japanese-subtext-v103-retry-r1";
+} from "./lib/storage.mjs?v=20260717-100-ui-ux-preview-r2";
 
 const loader = new ContentLoader();
 const player = new AudioPlayer();
@@ -44,6 +44,7 @@ const state = {
 };
 let navigationEpoch = 0;
 let audioManifestPromise = null;
+let cloudEpoch = 0;
 
 const t = createTranslator(() => state.settings.uiLanguage);
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -986,8 +987,10 @@ function persistSettings() {
 }
 
 async function mergeCloudProgress() {
+  const epoch = cloudEpoch;
   try {
     const merged = await cloud.loadAndMerge(state.progress, state.settings);
+    if (epoch !== cloudEpoch) return;
     if (!merged.signedIn) return;
     // The request runs in the background. Merge once more with the live state
     // so answers or preference changes made while it was in flight are never
@@ -1003,6 +1006,7 @@ async function mergeCloudProgress() {
     updateCloudStatus("authCloud");
     scheduleCloudSave();
   } catch (error) {
+    if (epoch !== cloudEpoch) return;
     console.warn(error);
     updateCloudStatus("cloudUnavailable");
   }
@@ -1010,8 +1014,16 @@ async function mergeCloudProgress() {
 
 function scheduleCloudSave() {
   if (!cloud.signedIn) return;
+  const epoch = cloudEpoch;
   updateCloudStatus("syncing");
-  cloud.schedule(state.progress, state.settings, (error) => updateCloudStatus(error ? "cloudUnavailable" : "synced"));
+  cloud.schedule(state.progress, state.settings, (error) => {
+    if (epoch !== cloudEpoch) return;
+    if (error?.code === "JAPANESE_SUBTEXT_RESET_CONFLICT") {
+      void mergeCloudProgress();
+      return;
+    }
+    updateCloudStatus(error ? "cloudUnavailable" : "synced");
+  });
 }
 
 function updateCloudStatus(key) {
@@ -1134,18 +1146,43 @@ function formatRecordDate(value) {
   return new Intl.DateTimeFormat(state.settings.uiLanguage === "zh" ? "zh-CN" : state.settings.uiLanguage, { month: "short", day: "numeric", weekday: "short" }).format(new Date(year, month - 1, day, 12));
 }
 
-function resetProgress() {
+async function resetProgress() {
   if (!confirm(t("resetConfirm"))) return;
+  const epoch = cloudEpoch + 1;
+  cloudEpoch = epoch;
   const retainedSettings = state.settings;
+  const retainedResetGeneration = state.progress.resetGeneration;
   const reset = resetLocalState(undefined, state.settings.uiLanguage);
   state.settings = saveSettings(retainedSettings);
-  state.progress = reset.progress;
+  state.progress = saveProgress({ ...reset.progress, resetGeneration: retainedResetGeneration });
+  state.level = state.progress.currentLevel;
+  state.stage = null;
+  state.cleared = false;
+  state.submitted = false;
   player.configure(state.settings);
   applyLanguage();
   syncSettingsControls();
   state.localResetInProgress = true;
   closeDialog($("#settings-dialog"));
   showScreen("dashboard");
+  updateCloudStatus("syncing");
+  try {
+    const resetCloud = await cloud.reset();
+    if (epoch !== cloudEpoch) return;
+    if (resetCloud && typeof resetCloud === "object") {
+      state.progress = saveProgress({
+        ...state.progress,
+        resetGeneration: resetCloud.resetGeneration
+      });
+    }
+    updateCloudStatus(resetCloud ? "synced" : "authLocal");
+    announce(t(resetCloud ? "resetDone" : "resetLocalOnly"));
+  } catch (error) {
+    if (epoch !== cloudEpoch) return;
+    console.warn(error);
+    updateCloudStatus("cloudUnavailable");
+    announce(t("cloudUnavailable"));
+  }
 }
 
 async function restoreDeepLink({ focus = true } = {}) {

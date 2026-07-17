@@ -126,6 +126,7 @@ const translations = {
     accountUnavailable: "云存档接口暂时不可用。",
     accountLoggedIn: "已登录。",
     accountLoggedOut: "已退出账号。",
+    accountLogoutFailed: "退出请求未完成，当前账号仍保持登录。请检查网络后重试。",
     all: "全部",
     nicknameLabel: "昵称",
     nicknameValue: "鲁肃",
@@ -322,6 +323,7 @@ const translations = {
     accountUnavailable: "Cloud save service is temporarily unavailable.",
     accountLoggedIn: "Logged in.",
     accountLoggedOut: "Signed out.",
+    accountLogoutFailed: "Sign-out did not complete. This account is still signed in; check your connection and try again.",
     all: "All",
     nicknameLabel: "Nickname",
     nicknameValue: "LuSu",
@@ -518,6 +520,7 @@ const translations = {
     accountUnavailable: "クラウドセーブサービスは一時的に利用できません。",
     accountLoggedIn: "ログインしました。",
     accountLoggedOut: "ログアウトしました。",
+    accountLogoutFailed: "ログアウトが完了していません。現在のアカウントはログイン状態のままです。通信を確認して再試行してください。",
     all: "すべて",
     nicknameLabel: "ニックネーム",
     nicknameValue: "魯粛",
@@ -1762,6 +1765,7 @@ const activeFilters = {
 let authUser = null;
 let accountSubmitting = false;
 let accountPopoverReturnFocus = null;
+let authRevision = 0;
 const articleState = {
   loading: false,
   requestId: 0,
@@ -1964,6 +1968,7 @@ const chatState = {
   roomMode: "public",
   roomCryptoKey: null,
   roomRevision: 0,
+  roomSwitchEpoch: 0,
   unreadCount: 0,
   drafts: new Map(),
   lastSentAt: sanitizeChatLastSentAt(safeStorageGet(chatStorageKeys.lastSentAt, "0"))
@@ -3011,15 +3016,18 @@ async function loadVideos() {
 
 async function loadArticleDetail(slug) {
   const requestId = articleState.detailRequestId + 1;
-  const detailKey = `${slug}:${currentLang}`;
+  articleState.detailRequestId = requestId;
+  const requestedLang = currentLang;
+  const detailKey = `${slug}:${requestedLang}`;
   const cachedArticle = articleState.detailCache.get(detailKey);
   if (cachedArticle) {
-    articleState.currentArticle = cachedArticle;
-    renderArticleDetail(cachedArticle);
+    if (articleState.currentSlug === slug && currentLang === requestedLang && requestId === articleState.detailRequestId) {
+      articleState.currentArticle = cachedArticle;
+      renderArticleDetail(cachedArticle);
+    }
     return;
   }
 
-  articleState.detailRequestId = requestId;
   articleState.detailLoadingKey = detailKey;
   const detail = document.getElementById("article-detail");
   const title = document.getElementById("article-detail-title");
@@ -3037,15 +3045,15 @@ async function loadArticleDetail(slug) {
   resetArticleToc();
 
   try {
-    const payload = await articleApi(`/api/articles/${encodeURIComponent(slug)}?lang=${encodeURIComponent(currentLang)}`);
-    if (articleState.currentSlug !== slug || requestId !== articleState.detailRequestId) {
+    const payload = await articleApi(`/api/articles/${encodeURIComponent(slug)}?lang=${encodeURIComponent(requestedLang)}`);
+    if (articleState.currentSlug !== slug || currentLang !== requestedLang || requestId !== articleState.detailRequestId) {
       return;
     }
-    articleState.currentArticle = { ...payload.article, requestedLang: currentLang };
+    articleState.currentArticle = { ...payload.article, requestedLang };
     articleState.detailCache.set(detailKey, articleState.currentArticle);
     renderArticleDetail(articleState.currentArticle);
   } catch {
-    if (articleState.currentSlug === slug && requestId === articleState.detailRequestId) {
+    if (articleState.currentSlug === slug && currentLang === requestedLang && requestId === articleState.detailRequestId) {
       renderArticleDetailFailure(slug);
     }
   } finally {
@@ -5235,11 +5243,14 @@ function showAccountFormError(form, message, fieldName = "") {
 
 async function initAccountWidget() {
   renderAccountWidget();
+  const revision = authRevision;
   try {
     const payload = await accountApi("/api/auth/me");
+    if (revision !== authRevision) return;
     authUser = payload.user || null;
     renderAccountWidget();
   } catch {
+    if (revision !== authRevision) return;
     renderAccountWidget(t("accountUnavailable"));
   }
 }
@@ -5262,6 +5273,8 @@ async function submitAccountForm(event) {
     return;
   }
   clearAccountFormErrors(form);
+  const revision = authRevision + 1;
+  authRevision = revision;
   setAccountSubmitting(true);
   try {
     const payload = await accountApi(`/api/auth/${mode}`, {
@@ -5271,11 +5284,13 @@ async function submitAccountForm(event) {
         password: password.value
       })
     });
+    if (revision !== authRevision) return;
     authUser = payload.user;
     renderAccountWidget(t("accountLoggedIn"));
     openAccountPopover();
     window.dispatchEvent(new CustomEvent("lusu:accountchange", { detail: { signedIn: true } }));
   } catch (error) {
+    if (revision !== authRevision) return;
     showAccountFormError(form, error.message || t("accountFormError"));
     openAccountPopover({ focus: false });
   } finally {
@@ -5287,17 +5302,23 @@ async function logoutAccount() {
   if (accountSubmitting) {
     return;
   }
+  const revision = authRevision + 1;
+  authRevision = revision;
   setAccountSubmitting(true);
   try {
     await accountApi("/api/auth/logout", { method: "POST", body: "{}" });
+    if (revision !== authRevision) return;
+    authUser = null;
+    renderAccountWidget(t("accountLoggedOut"));
+    openAccountPopover();
+    window.dispatchEvent(new CustomEvent("lusu:accountchange", { detail: { signedIn: false } }));
   } catch {
-    // Keep the UI responsive even if the network is gone.
+    if (revision !== authRevision) return;
+    renderAccountWidget(t("accountLogoutFailed"));
+    openAccountPopover();
+  } finally {
+    if (revision === authRevision) setAccountSubmitting(false);
   }
-  authUser = null;
-  renderAccountWidget(t("accountLoggedOut"));
-  openAccountPopover();
-  window.dispatchEvent(new CustomEvent("lusu:accountchange", { detail: { signedIn: false } }));
-  setAccountSubmitting(false);
 }
 
 function setAccountSubmitting(isSubmitting) {
@@ -5576,11 +5597,15 @@ function showChatPrivateRoomForm() {
   }
   if (form) {
     form.hidden = false;
+    setChatPrivateRoomBusy(false);
   }
   input?.focus();
 }
 
 function hideChatPrivateRoomForm(options = {}) {
+  if (options.preserveAttempt !== true) {
+    chatState.roomSwitchEpoch += 1;
+  }
   const form = document.getElementById("chat-private-room-form");
   const input = document.getElementById("chat-private-password");
   const wasOpen = form && !form.hidden;
@@ -5590,9 +5615,19 @@ function hideChatPrivateRoomForm(options = {}) {
   if (input) {
     input.value = "";
   }
+  setChatPrivateRoomBusy(false);
   if (wasOpen && options.restoreFocus !== false) {
     document.getElementById("chat-room-toggle")?.focus({ preventScroll: true });
   }
+}
+
+function setChatPrivateRoomBusy(busy) {
+  const form = document.getElementById("chat-private-room-form");
+  const input = document.getElementById("chat-private-password");
+  const submit = form?.querySelector("button[type='submit']");
+  form?.setAttribute("aria-busy", String(busy));
+  if (input) input.readOnly = busy;
+  if (submit) submit.disabled = busy || chatState.sending;
 }
 
 function saveCurrentChatDraft() {
@@ -5634,6 +5669,8 @@ async function enterChatPrivateRoom(event) {
     return;
   }
   const input = document.getElementById("chat-private-password");
+  const attemptId = chatState.roomSwitchEpoch + 1;
+  chatState.roomSwitchEpoch = attemptId;
   const password = String(input?.value || "");
   if (Array.from(password).length < 6) {
     setChatFeedback(t("chatPrivatePasswordTooShort"), true);
@@ -5642,25 +5679,31 @@ async function enterChatPrivateRoom(event) {
   }
 
   try {
+    setChatPrivateRoomBusy(true);
     setChatFeedback(t("chatLoading"));
     const room = await deriveChatPrivateRoom(password);
+    if (attemptId !== chatState.roomSwitchEpoch) return;
     prepareChatRoomSwitch();
     chatState.roomKey = room.roomKey;
     chatState.roomCryptoKey = room.roomCryptoKey;
     chatState.roomMode = "private";
     const roomRevision = chatState.roomRevision;
     restoreCurrentChatDraft();
-    hideChatPrivateRoomForm();
+    hideChatPrivateRoomForm({ preserveAttempt: true });
     syncChatRoomUi();
     resetChatLog(t("chatLoading"));
     await refreshChatMessages({ initial: true });
-    if (roomRevision !== chatState.roomRevision) {
+    if (attemptId !== chatState.roomSwitchEpoch || roomRevision !== chatState.roomRevision) {
       return;
     }
     setChatFeedback(t("chatPrivateRoomReady"));
     scheduleChatPolling(5000);
   } catch (error) {
-    setChatFeedback(error.message || t("chatPrivateCryptoUnavailable"), true);
+    if (attemptId === chatState.roomSwitchEpoch) {
+      setChatFeedback(error.message || t("chatPrivateCryptoUnavailable"), true);
+    }
+  } finally {
+    if (attemptId === chatState.roomSwitchEpoch) setChatPrivateRoomBusy(false);
   }
 }
 
@@ -5669,17 +5712,19 @@ async function switchChatPublicRoom() {
     setChatFeedback(t("chatRoomSwitchBlocked"), true);
     return;
   }
+  const attemptId = chatState.roomSwitchEpoch + 1;
+  chatState.roomSwitchEpoch = attemptId;
   prepareChatRoomSwitch();
   chatState.roomKey = chatPublicRoomKey;
   chatState.roomCryptoKey = null;
   chatState.roomMode = "public";
   const roomRevision = chatState.roomRevision;
   restoreCurrentChatDraft();
-  hideChatPrivateRoomForm();
+  hideChatPrivateRoomForm({ preserveAttempt: true });
   syncChatRoomUi();
   resetChatLog(t("chatLoading"));
   await refreshChatMessages({ initial: true });
-  if (roomRevision !== chatState.roomRevision) {
+  if (attemptId !== chatState.roomSwitchEpoch || roomRevision !== chatState.roomRevision) {
     return;
   }
   setChatFeedback(t("chatPublicRoomReady"));
@@ -5736,6 +5781,9 @@ function setChatSendingState(sending) {
   document.querySelectorAll("#chat-room-toggle, #chat-private-room-form button, #chat-private-password").forEach((control) => {
     control.disabled = sending;
   });
+  if (!sending && document.getElementById("chat-private-room-form")?.getAttribute("aria-busy") === "true") {
+    setChatPrivateRoomBusy(true);
+  }
 }
 
 function chatSyncStatusText(delay = chatState.pollDelay) {

@@ -103,7 +103,13 @@ test("navigation, modal focus, option feedback, and cache invalidation have expl
   assert.match(app, /async function retryAudio\(\)\s*\{[\s\S]*?player\.stop\(\);[\s\S]*?if \(!manifestIsValid\)[\s\S]*?if \(state\.stage\) await playScene\(0\)/);
   assert.doesNotMatch(app, /\.\/lib\/[^"?]+\.mjs\?v=20260711-japanese-subtext-r14/);
   assert.doesNotMatch(`${audioPlayer}\n${cloud}\n${contentLoader}\n${i18n}\n${questionFlow}\n${storage}`, /v102-r1/);
-  assert.equal((app.match(/\.\/lib\/[^"?]+\.mjs\?v=20260714-japanese-subtext-v103-retry-r1/g) || []).length, 7);
+  assert.equal((app.match(/\.\/lib\/[^"?]+\.mjs\?v=20260717-100-ui-ux-preview-r2/g) || []).length, 7);
+  assert.match(app, /let cloudEpoch = 0/);
+  assert.match(app, /async function resetProgress\(\)[\s\S]*cloudEpoch = epoch[\s\S]*await cloud\.reset\(\)/);
+  assert.match(app, /async function mergeCloudProgress\(\)[\s\S]*if \(epoch !== cloudEpoch\) return;/);
+  assert.match(app, /JAPANESE_SUBTEXT_RESET_CONFLICT[\s\S]*mergeCloudProgress\(\)/);
+  assert.match(cloud, /async reset\(\)[\s\S]*if \(this\.inFlightPromise\) await this\.inFlightPromise[\s\S]*method: "DELETE"/);
+  assert.match(storage, /local\.resetGeneration !== cloud\.resetGeneration[\s\S]*cloud\.resetGeneration/);
 });
 
 test("wrong-answer recovery remains reachable outside the result dialog", () => {

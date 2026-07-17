@@ -1,4 +1,4 @@
-import { CONTENT_VERSION, clampNumber, shortContentHash } from "./constants.mjs?v=20260714-japanese-subtext-v103-retry-r1";
+import { CONTENT_VERSION, clampNumber, shortContentHash } from "./constants.mjs?v=20260717-100-ui-ux-preview-r2";
 
 const manifestUrl = new URL("../audio/manifest.json", import.meta.url);
 const defaultAudioRoot = new URL("../audio/", import.meta.url);

@@ -1,4 +1,4 @@
-import { APP_VERSION, UI_LANGUAGES } from "./constants.mjs?v=20260714-japanese-subtext-v103-retry-r1";
+import { APP_VERSION, UI_LANGUAGES } from "./constants.mjs?v=20260717-100-ui-ux-preview-r2";
 
 const copy = {
   zh: {
@@ -16,7 +16,7 @@ const copy = {
     displayMode: "场景显示", listening: "纯听模式", japanese: "日语模式", bilingual: "双语模式",
     kana: "假名提示", optionLanguage: "选项语言", optionText: "选项文字", optionAudio: "选项日语语音",
     autoReadOptions: "自动依次朗读选项", autoplay: "进入关卡自动播放", on: "开启", off: "关闭",
-    playbackSpeed: "播放速度", mute: "静音", resetProgress: "重置本地进度", resetConfirm: "确定清空本工具的本地进度吗？",
+    playbackSpeed: "播放速度", mute: "静音", resetProgress: "重置进度", resetConfirm: "确定清空本工具的进度吗？登录时也会清空云端进度。", resetDone: "学习进度已重置。", resetLocalOnly: "本地进度已重置；当前未登录，因此没有云端进度需要清空。",
     play: "播放", pause: "暂停", resume: "继续", restart: "从头播放", replay: "重播", previousLine: "上一句", nextLine: "下一句",
     progress: "播放进度", singleLineReplay: "单句重播", playSentence: "播放这句话", playChunk: "播放这个词块", playOption: "播放选项",
     answerAfterListening: "场景播放结束后即可答题。", enableQuestions: "开始答题", selectOne: "请选择一项。", selectMany: "可选择多项。",
@@ -48,7 +48,7 @@ const copy = {
     displayMode: "Scene display", listening: "Listening only", japanese: "Japanese", bilingual: "Bilingual",
     kana: "Kana hints", optionLanguage: "Option language", optionText: "Option text", optionAudio: "Japanese option audio",
     autoReadOptions: "Read options in sequence", autoplay: "Autoplay on stage entry", on: "On", off: "Off",
-    playbackSpeed: "Playback speed", mute: "Mute", resetProgress: "Reset local progress", resetConfirm: "Clear local progress for this tool?",
+    playbackSpeed: "Playback speed", mute: "Mute", resetProgress: "Reset progress", resetConfirm: "Clear this tool's progress? Signed-in cloud progress will also be cleared.", resetDone: "Learning progress was reset.", resetLocalOnly: "Local progress was reset. You are signed out, so there was no cloud progress to clear.",
     play: "Play", pause: "Pause", resume: "Resume", restart: "Start over", replay: "Replay", previousLine: "Previous line", nextLine: "Next line",
     progress: "Playback progress", singleLineReplay: "Replay sentence", playSentence: "Play this sentence", playChunk: "Play this phrase", playOption: "Play option",
     answerAfterListening: "Questions unlock after the scene audio finishes.", enableQuestions: "Start Questions", selectOne: "Choose one.", selectMany: "Choose all that apply.",
@@ -80,7 +80,7 @@ const copy = {
     displayMode: "場面表示", listening: "聞き取りのみ", japanese: "日本語", bilingual: "日本語＋補足",
     kana: "かなヒント", optionLanguage: "選択肢の言語", optionText: "選択肢の文字", optionAudio: "選択肢の日本語音声",
     autoReadOptions: "選択肢を順に読む", autoplay: "入場時に自動再生", on: "オン", off: "オフ",
-    playbackSpeed: "再生速度", mute: "ミュート", resetProgress: "ローカル進捗をリセット", resetConfirm: "このツールのローカル進捗を消去しますか？",
+    playbackSpeed: "再生速度", mute: "ミュート", resetProgress: "進捗をリセット", resetConfirm: "このツールの進捗を消去しますか？ログイン中はクラウド進捗も消去されます。", resetDone: "学習進捗をリセットしました。", resetLocalOnly: "ローカル進捗をリセットしました。未ログインのため、消去するクラウド進捗はありません。",
     play: "再生", pause: "一時停止", resume: "続ける", restart: "最初から", replay: "リプレイ", previousLine: "前の文", nextLine: "次の文",
     progress: "再生位置", singleLineReplay: "一文を再生", playSentence: "この文を再生", playChunk: "この語句を再生", playOption: "選択肢を再生",
     answerAfterListening: "場面音声の終了後に解答できます。", enableQuestions: "解答を始める", selectOne: "一つ選んでください。", selectMany: "複数選択できます。",

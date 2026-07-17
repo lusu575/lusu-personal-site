@@ -7,7 +7,7 @@
   <meta name="description" content="Japanese subtext listening and context trainer">
   <title>日语的言外之意</title>
   <link rel="icon" href="./assets/icons/tool-icon-64.webp" type="image/webp">
-  <link rel="stylesheet" href="./style.css?v=20260717-100-ui-ux-preview-r1">
+  <link rel="stylesheet" href="./style.css?v=20260717-100-ui-ux-preview-r2">
 </head>
 <body>
   <div class="trainer-shell" id="trainer-shell">
@@ -176,7 +176,7 @@
         <fieldset><legend data-i18n="settings">训练设置</legend><label><input type="checkbox" name="kana"><span data-i18n="kana">假名提示</span></label><label><input type="checkbox" name="optionText"><span data-i18n="optionText">选项文字</span></label><label><input type="checkbox" name="optionAudio"><span data-i18n="optionAudio">选项日语语音</span></label><label><input type="checkbox" name="autoReadOptions"><span data-i18n="autoReadOptions">自动依次朗读选项</span></label></fieldset>
         <fieldset><legend data-i18n="playbackSpeed">播放速度</legend><label><input type="radio" name="playbackRate" value="0.75"><span>0.75×</span></label><label><input type="radio" name="playbackRate" value="1"><span>1.0×</span></label><label><input type="radio" name="playbackRate" value="1.15"><span>1.15×</span></label></fieldset>
       </div>
-      <div class="dialog-actions"><a class="xp-control secondary" href="./scripts/tts/licenses/NOTICE-japanese-voices.md" target="_blank" rel="license noopener" data-i18n="voiceCredits">语音来源与许可</a><button class="xp-control danger" type="button" data-action="reset-progress" data-i18n="resetProgress">重置本地进度</button><button class="xp-control primary" value="close" data-i18n="confirm">确认</button></div>
+      <div class="dialog-actions"><a class="xp-control secondary" href="./scripts/tts/licenses/NOTICE-japanese-voices.md" target="_blank" rel="license noopener" data-i18n="voiceCredits">语音来源与许可</a><button class="xp-control danger" type="button" data-action="reset-progress" data-i18n="resetProgress">重置进度</button><button class="xp-control primary" value="close" data-i18n="confirm">确认</button></div>
     </form>
   </dialog>
 
@@ -204,6 +204,6 @@
   </dialog>
 
   <div class="sr-live" id="live-region" aria-live="polite" aria-atomic="true"></div>
-  <script type="module" src="./app.mjs?v=20260717-100-ui-ux-preview-r1"></script>
+  <script type="module" src="./app.mjs?v=20260717-100-ui-ux-preview-r2"></script>
 </body>
 </html>
