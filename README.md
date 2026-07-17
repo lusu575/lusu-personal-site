@@ -39,7 +39,9 @@ GPTWork 先在云端 Secrets 中配置下列三个变量，再执行 `npm ci`、
 - `ANALYTICS_IP_HASH_SALT`
 - `OWNER_ADMIN_EMAILS`
 
-`OWNER_ADMIN_EMAILS` 接受逗号、分号或空白分隔的邮箱列表。Functions 只从运行时环境读取它，用于保持已配置站长账号的 D1 管理员角色并阻止后台降级；它不是权限绕过。缺失时不会使用源码 fallback、不会自动提升任何账号，也不会令全站返回 503；既有 D1 角色和最后管理员原子保护仍然工作。
+`OWNER_ADMIN_EMAILS` 接受逗号、分号或空白分隔的邮箱列表。Functions 只从运行时环境读取它，用于保护已经在 D1 中具有 `admin` 角色的站长账号：阻止公开抢注、后台改邮箱和降级；它不会授予管理员权限，也不是权限绕过。站长账号必须先通过受控方式在 D1 中建立并授予 `admin`。缺失时不会使用源码 fallback、不会自动提升任何账号，也不会令全站返回 503；既有 D1 角色和最后管理员原子保护仍然工作。
+
+Cloudflare Pages 预览子域名会在任何 D1 调用前关闭 `/api/*`；自定义预览域名也可设置 `PREVIEW_API_DISABLED=true`。在独立 Preview D1 配置完成前，Preview API 会 fail closed，不会读写 Production D1。
 
 常用校验命令：`npm test`、`npm run build`。项目目前未配置独立的 lint 和 typecheck 命令，不应以空命令伪装通过。正式部署仍由 GitHub `main` 触发 Cloudflare Pages 自动部署；GPTWork 不需要生产 D1 权限或 Cloudflare API Token，除非站长另行授权远程运维。
 

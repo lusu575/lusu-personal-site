@@ -101,6 +101,13 @@ export async function onRequest(context) {
   const path = url.pathname.replace(/^\/api\/?/, "");
   const parts = path.split("/").filter(Boolean);
 
+  if (previewApiIsDisabled(env, url.hostname)) {
+    return json({
+      error: "Preview API is disabled until isolated data bindings are configured.",
+      code: "PREVIEW_API_DISABLED"
+    }, 503);
+  }
+
   if (!env.DB) {
     return json({ error: "D1 database binding DB is not configured." }, 500);
   }
@@ -338,7 +345,7 @@ async function register(request, env) {
   validatePassword(password);
 
   const existing = await env.DB.prepare("select id from users where email = ?").bind(email).first();
-  if (existing) {
+  if (existing || ownerAdminEmails(env).has(email)) {
     return json({ error: "这个邮箱已经注册。" }, 409);
   }
 
@@ -2065,8 +2072,15 @@ async function updateAdminAccount(request, env, userId) {
   const passwordChanged = password.trim().length > 0;
   const revokeSessions = body.revokeSessions !== false;
 
-  if (ownerAdminEmails(env).has(nextEmail) && nextRole !== "admin") {
+  const ownerEmails = ownerAdminEmails(env);
+  const existingEmail = normalizeEmail(existing.email);
+  const existingIsOwner = ownerEmails.has(existingEmail);
+  const nextIsOwner = ownerEmails.has(nextEmail);
+  if ((existingIsOwner || nextIsOwner) && nextRole !== "admin") {
     throw new HttpError("站长账号必须保留管理员权限。", 400);
+  }
+  if (existingIsOwner && nextEmail !== existingEmail) {
+    throw new HttpError("站长账号邮箱由运行时配置保护，不能在后台修改。", 400);
   }
   if (existing.id === adminSession.user.id && nextRole !== "admin") {
     throw new HttpError("不能把当前登录账号降级，否则会立刻失去后台权限。", 400);
@@ -3131,7 +3145,6 @@ async function ensureCoreSchema(env) {
     env.DB.prepare("create index if not exists game_saves_updated_at_idx on game_saves(updated_at)")
   ]);
   await ensureUserRoleColumn(env);
-  await ensureOwnerAdminRole(env);
   coreSchemaReady = true;
 }
 
@@ -3139,13 +3152,6 @@ async function ensureUserRoleColumn(env) {
   const columns = (await env.DB.prepare("pragma table_info(users)").all()).results || [];
   if (!columns.some((column) => column.name === "role")) {
     await env.DB.prepare("alter table users add column role text not null default 'user'").run();
-  }
-}
-
-async function ensureOwnerAdminRole(env) {
-  for (const email of ownerAdminEmails(env)) {
-    await env.DB.prepare("update users set role = 'admin', updated_at = ? where email = ?")
-      .bind(nowIso(), email).run();
   }
 }
 
@@ -8621,6 +8627,12 @@ function ownerAdminEmails(env) {
     .split(/[\s,;]+/u)
     .map(normalizeEmail)
     .filter((email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && email.length <= 254));
+}
+
+function previewApiIsDisabled(env, hostname) {
+  const host = String(hostname || "").trim().toLowerCase();
+  const pagesPreviewHost = host.endsWith(".pages.dev") && host.split(".").length > 3;
+  return String(env?.PREVIEW_API_DISABLED || "").trim().toLowerCase() === "true" || pagesPreviewHost;
 }
 
 function validateEmail(email) {

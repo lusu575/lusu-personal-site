@@ -279,6 +279,30 @@ test("configured owner admin emails are normalized from the environment and cann
   )), false, "configured owner rejection must happen before the guarded role update");
 });
 
+test("configured owner accounts cannot be renamed away from the protected address", async () => {
+  const ownerDb = createAdminD1({
+    targetAccount: accountFixture({
+      email: "owner@example.test",
+      role: "admin"
+    }),
+    otherAdminExists: true
+  });
+  const response = await api(accountRequest(ownerDb.account.id, {
+    email: "renamed@example.test",
+    role: "admin"
+  }), ownerDb, {
+    OWNER_ADMIN_EMAILS: "OWNER@example.test"
+  });
+
+  assert.equal(response.status, 400);
+  assert.match((await response.json()).error, /不能在后台修改/);
+  assert.equal(ownerDb.account.email, "owner@example.test");
+  assert.equal(ownerDb.calls.some((call) => (
+    call.method === "run"
+    && /^update users set .+where id = \? and \(/i.test(normalizedSql(call.sql))
+  )), false, "configured owner rename rejection must happen before the guarded update");
+});
+
 test("missing owner admin configuration keeps the atomic last-admin protection active", async () => {
   const db = createAdminD1({
     targetAccount: accountFixture({
