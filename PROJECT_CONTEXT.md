@@ -7,8 +7,8 @@
 - 页面路由的自动焦点迁移不得选择 `input`、`textarea` 等编辑控件；手机从 Home、欢迎快捷入口或 Dock 进入知识库时只能聚焦可见的非编辑控件或窗口表面，不能未经用户点击就唤起软键盘。用户主动搜索、清空或重置后的显式聚焦继续保留。
 - 临时互传的相册选择、通用文件选择、拖放和粘贴必须先进入输入区待发送托盘；只有用户再次提交 composer 后才能创建上传任务。文字 API 失败时不得清空附件，发送期间不得追加或移除同一批附件。
 - 手机相册入口使用独立 `accept="image/*"` 的多选 file input，不能强制 `capture`；通用文件入口继续多选。待发送图片使用小尺寸 Object URL 预览并在移除、离房或发送后释放。
-- 手机互传房间继续使用单一 `.transfer-room` 滚动路径，但 composer 必须处于正常文档流，不能用 sticky / fixed 层覆盖消息；已发送图片使用占满卡片宽度且预留稳定高度的 `object-fit: contain` 预览框，普通文件使用占满可用宽度并包含类型图标、文件名、大小与 MIME 的文件卡片。所有附件保留下载按钮，每条成功解密文字末尾提供复制按钮和剪贴板回退。
-- 本轮不修改 HttpOnly 登录、房间 key、AES-GCM、私有 R2、Multipart、配额、24 小时过期、下载鉴权或 `/api/transfer/*` 服务端协议。三语公开更新记录为 `seed-update-2026-07-17-mobile-transfer-send-fix`，资源 query 为 `20260717-mobile-transfer-send-r2`。
+- 手机互传房间继续使用单一 `.transfer-room` 滚动路径，但 composer 必须处于正常文档流，不能用 sticky / fixed 层覆盖消息；竖屏房间使用纵向 Flex 流，toolbar、feed、composer 与 tasks 直接子项不可收缩并按真实内容高度依次排列，仅将 `position` 改为 static 不足以避免 Grid 轨道中的视觉溢出。短横屏显式恢复原有双栏 Grid。已发送图片使用占满卡片宽度且预留稳定高度的 `object-fit: contain` 预览框，普通文件使用占满可用宽度并包含类型图标、文件名、大小与 MIME 的文件卡片。所有附件保留下载按钮，每条成功解密文字末尾提供复制按钮和剪贴板回退。
+- 本轮不修改 HttpOnly 登录、房间 key、AES-GCM、私有 R2、Multipart、配额、24 小时过期、下载鉴权或 `/api/transfer/*` 服务端协议。三语公开更新记录为 `seed-update-2026-07-17-mobile-transfer-send-fix`，资源 query 为 `20260717-mobile-transfer-send-r3`。
 - 站长邮箱不得再写入公开源码；由 Cloudflare Pages Production / Preview 各自的加密 `OWNER_ADMIN_EMAILS` Secret 提供，可用逗号、分号或空白分隔多个地址。Functions 只能从请求 `env` 解析规范化 Set，用它执行 schema 后的管理员角色保持和后台账号不可降级检查；它不是登录或权限绕过。未配置时必须保持可用，不回退任何固定邮箱、不自动提升账号且不触发 503，现有 D1 `users.role`、当前账号不可自降级和最后管理员原子保护继续有效。
 
 ## 2026-07-16 临时互传上传、全窗拖放与视口高度修复
@@ -16,7 +16,7 @@
 - Pages Functions 的文件路由依赖根 `wrangler.jsonc` 中 `TRANSFER_BUCKET` R2 binding；顶层 Production 使用 `lusu-temp-transfer`。`env.preview` 必须同时重述 D1 与显式空 `r2_buckets` 等 Pages 非继承 binding，在独立 Preview 桶尚未创建时让预览文件上传安全关闭，绝不回退到正式桶。Secret 的实际值继续在 Cloudflare 的 Production / Preview 环境分别管理，顶层 `secrets.required` 只声明本地校验与类型生成需要的名称。构建必须校验这套映射，避免正式环境文字房间可用但文件路由持续返回 `TRANSFER_R2_NOT_BOUND`，也避免预览部署误用正式数据。
 - 文件拖放热区覆盖整个互传窗口，只拦截 `DataTransfer.types` 包含 `Files` 的拖放；文字或链接拖放不得被阻断。全窗提示层不接收指针事件，drop、close、blur 与 dragend 都必须清理拖放状态。
 - `r2Ready: false` 时客户端必须禁用文件选择并在排队前返回，不得生成上传进度到 100% 后才失败的任务；服务端稳定错误码继续用于诊断，公开 5xx 文案不暴露内部细节。
-- 桌面互传窗口按 `100dvh` 的可用区域伸展，消息流吃满新增空间；移动端仍由 `--mobile-viewport-height`、单一 `.transfer-room` 滚动路径、sticky composer 和 `visualViewport` 补偿控制。
+- 桌面互传窗口按 `100dvh` 的可用区域伸展，消息流吃满新增空间；移动端仍由 `--mobile-viewport-height`、单一 `.transfer-room` 滚动路径和 `visualViewport` 补偿控制。此处原有 sticky composer 已由 2026-07-17 的不可收缩正常流方案取代。
 - 本批公开资源 query 为 `20260716-transfer-upload-window-r2`。
 
 ## 2026-07-16 手机文章与临时互传界面修复
@@ -24,7 +24,7 @@
 - 手机端知识库文章的“回到顶部”控制放在 Appbar 可见区域时，固定 `.xp-topbar` 的非控件触控层必须允许点击穿透；Appbar 内实际的返回、复制、账号等交互控件继续单独接收指针事件。
 - Resources 列表中的临时互传与日语学习卡片使用同一网格宽度、卡片高度节奏和内边距；标题、元信息、摘要与 CTA 不得因语言长度或内容量出现错位，窄屏信息应换行而不是隐藏。
 - 跨语言动态元信息统一使用可稳定回退的 ASCII 分隔符，避免英文系统字体缺少全角标点字形时出现缺字符号。
-- 临时互传的未登录入口、房间、消息流、上传任务、文件预览和输入区必须覆盖 359x500、375x667、390x844 与 844x390；短屏和软键盘出现时仍能到达登录与输入操作，不能用内部滚动锁住页面底部。
+- 临时互传的未登录入口、房间、消息流、上传任务、文件预览和输入区必须覆盖 359x500、375x667、390x844、430x932 与 844x390；短屏和软键盘出现时仍能到达登录与输入操作，不能用内部滚动锁住页面底部。
 - 本轮只更新主站公开 UI 与交互，不修改房间口令派生、HttpOnly 会话、私有 R2、24 小时过期、普通账号配额、管理员 Multipart 权限、下载鉴权或 `/api/transfer/*` 接口。
 - 三语公开更新记录为 `seed-update-2026-07-16-mobile-transfer-ui-polish`；本批公开资源 query 统一为 `20260716-mobile-transfer-ui-r1`。
 

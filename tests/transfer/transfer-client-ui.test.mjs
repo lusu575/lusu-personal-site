@@ -28,11 +28,27 @@ test("Quick Transfer exposes a gallery picker without forcing camera capture", (
 });
 
 test("Quick Transfer keeps mobile media stable, aligned, and clear of the composer", () => {
+  const landscapeStart = styles.indexOf('@media (min-width: 700px) and (max-height: 560px) and (orientation: landscape)');
+  const landscapeEnd = styles.indexOf('@media (prefers-reduced-motion: reduce)', landscapeStart);
+  const landscapeStyles = landscapeStart >= 0 && landscapeEnd > landscapeStart
+    ? styles.slice(landscapeStart, landscapeEnd)
+    : "";
+  const mobileRoomRule = styles.match(/html\[data-ui-shell="mobile"\] \.transfer-room\s*\{([^}]*)\}/)?.[1] || "";
+  const mobileRoomChildrenRule = styles.match(/html\[data-ui-shell="mobile"\] \.transfer-room > \.transfer-room-toolbar,\s*html\[data-ui-shell="mobile"\] \.transfer-room > \.transfer-feed,\s*html\[data-ui-shell="mobile"\] \.transfer-room > \.transfer-compose,\s*html\[data-ui-shell="mobile"\] \.transfer-room > \.transfer-tasks\s*\{([^}]*)\}/)?.[1] || "";
+  const landscapeRoomRule = landscapeStyles.match(/html\[data-ui-shell="mobile"\] \.transfer-room\s*\{([^}]*)\}/)?.[1] || "";
   assert.match(client, /className = "transfer-media-preview transfer-image-preview"/);
   assert.match(client, /className = "transfer-file-card"/);
   assert.match(client, /download\.download = item\.filename/);
   assert.match(client, /className = "xp-button transfer-copy-text-button"/);
   assert.equal(client.match(/copyText:/g)?.length, 3);
+  assert.match(mobileRoomRule, /display:\s*flex/);
+  assert.match(mobileRoomRule, /flex-direction:\s*column/);
+  assert.match(mobileRoomRule, /align-items:\s*stretch/);
+  assert.doesNotMatch(mobileRoomRule, /grid-template-rows/);
+  assert.match(mobileRoomChildrenRule, /flex:\s*0 0 auto/);
+  assert.match(landscapeRoomRule, /display:\s*grid/);
+  assert.match(landscapeRoomRule, /grid-template-columns:\s*minmax\(0, 1\.35fr\) minmax\(270px, \.9fr\)/);
+  assert.match(landscapeRoomRule, /grid-template-rows:\s*auto auto auto/);
   assert.match(styles, /\.transfer-media-preview\s*\{[\s\S]*width:\s*min\(100%, 320px\)[\s\S]*max-height:\s*220px/);
   assert.match(styles, /html\[data-ui-shell="mobile"\] \.transfer-compose\s*\{[\s\S]*position:\s*static[\s\S]*z-index:\s*auto[\s\S]*bottom:\s*auto/);
   assert.match(styles, /html\[data-ui-shell="mobile"\] \.transfer-media-preview\s*\{[\s\S]*width:\s*100%[\s\S]*height:\s*clamp\(190px, 58vw, 240px\)[\s\S]*box-sizing:\s*border-box[\s\S]*justify-self:\s*stretch/);

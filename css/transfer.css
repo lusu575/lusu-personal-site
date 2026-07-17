@@ -873,7 +873,9 @@ html[data-ui-shell="mobile"] .transfer-quota-card .transfer-icon {
 }
 
 html[data-ui-shell="mobile"] .transfer-room {
-  grid-template-rows: auto minmax(180px, auto) auto auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
   flex: 1 1 auto;
   min-height: 0;
   padding: 8px;
@@ -882,6 +884,13 @@ html[data-ui-shell="mobile"] .transfer-room {
   overflow-y: auto;
   overscroll-behavior: contain;
   scroll-padding-bottom: max(18px, env(safe-area-inset-bottom));
+}
+
+html[data-ui-shell="mobile"] .transfer-room > .transfer-room-toolbar,
+html[data-ui-shell="mobile"] .transfer-room > .transfer-feed,
+html[data-ui-shell="mobile"] .transfer-room > .transfer-compose,
+html[data-ui-shell="mobile"] .transfer-room > .transfer-tasks {
+  flex: 0 0 auto;
 }
 
 html[data-ui-shell="mobile"] .transfer-feed {
@@ -1099,6 +1108,7 @@ html[data-ui-shell="mobile"] .transfer-login-gate > .transfer-icon { --transfer-
   html[data-ui-shell="mobile"] .transfer-app-heading .transfer-icon { --transfer-icon-size: 36px; }
   html[data-ui-shell="mobile"] .transfer-app-header { min-height: 48px; }
   html[data-ui-shell="mobile"] .transfer-room {
+    display: grid;
     grid-template-columns: minmax(0, 1.35fr) minmax(270px, .9fr);
     grid-template-rows: auto auto auto;
   }

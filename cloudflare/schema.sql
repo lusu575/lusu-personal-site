@@ -646,7 +646,7 @@ on conflict(article_id) do update set
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
 ) values
-  ('seed-update-2026-07-17-mobile-transfer-send-fix-zh', 'seed-update-2026-07-17-mobile-transfer-send-fix', 'zh', '手机顶栏与临时互传发送体验修复', '修复手机进入知识库时误弹输入法，并整理移动顶栏与阅读信息；临时互传继续采用先暂存再发送，发送区不再覆盖卡片，图片与文件在手机端对齐显示。', '# 手机顶栏与临时互传发送体验修复
+  ('seed-update-2026-07-17-mobile-transfer-send-fix-zh', 'seed-update-2026-07-17-mobile-transfer-send-fix', 'zh', '手机顶栏与临时互传发送体验修复', '修复手机进入知识库时误弹输入法，并整理移动顶栏与阅读信息；临时互传采用纵向正常流，让整个发送区始终排在完整消息卡之后。', '# 手机顶栏与临时互传发送体验修复
 
 本轮修复手机阅读和临时互传的直接操作问题，不改变登录、房间口令、加密、R2、配额、24 小时过期或下载鉴权。
 
@@ -659,14 +659,14 @@ insert into article_translations (
 ## 临时互传
 
 - 从相册或文件选择器添加的附件会先显示在输入区，用户再次点击发送后才开始上传。
-- 手机端发送区回到单一房间滚动容器的正常文档流，不再以粘性浮层覆盖已发送消息或文件卡片。
+- 手机竖屏房间使用纵向 Flex，toolbar、消息区、发送区和任务区等直接子项不可收缩；消息区按文字、图片和文件卡的实际高度完整撑开，发送区所有控件始终排在最后一条完整消息之后；短横屏显式恢复原有双栏布局。
 - 待发送图片以小缩略图显示并可单独移除；发送后的图片使用占满消息卡片宽度且高度稳定的预览框，普通文件卡片同步占满可用宽度。
 - 每个图片或文件都保留下载按钮，每条已解密文字末尾提供复制按钮。
 
 ## 边界不变
 
 房间明文口令仍不会发送到服务器；文字继续在浏览器使用 AES-GCM，文件继续由 HTTPS、私有 R2 与服务端鉴权保护。普通账号配额、管理员 Multipart、24 小时过期和现有 API 保持不变。', '2026-07-16T18:45:00.000Z', '2026-07-16T18:45:00.000Z'),
-  ('seed-update-2026-07-17-mobile-transfer-send-fix-en', 'seed-update-2026-07-17-mobile-transfer-send-fix', 'en', 'Mobile Header and Quick Transfer Send Fixes', 'Prevents Knowledge from opening the software keyboard on entry, streamlines mobile reading, keeps Quick Transfer attachments staged until Send, and stops the composer from covering full-width file cards.', '# Mobile Header and Quick Transfer Send Fixes
+  ('seed-update-2026-07-17-mobile-transfer-send-fix-en', 'seed-update-2026-07-17-mobile-transfer-send-fix', 'en', 'Mobile Header and Quick Transfer Send Fixes', 'Prevents Knowledge from opening the software keyboard on entry, streamlines mobile reading, and keeps the entire Quick Transfer composer after complete message cards in a non-shrinking vertical flow.', '# Mobile Header and Quick Transfer Send Fixes
 
 This release fixes direct mobile-reading and Quick Transfer interactions without changing sign-in, passphrases, encryption, R2, quotas, 24-hour expiry, or download authorization.
 
@@ -679,14 +679,14 @@ This release fixes direct mobile-reading and Quick Transfer interactions without
 ## Quick Transfer
 
 - Attachments added from the photo library or file picker stay in the composer until the user presses Send again.
-- On mobile, the composer stays in normal flow inside the single room scroller instead of covering sent messages or file cards as a sticky layer.
+- In mobile portrait, the room uses a vertical flex layout whose toolbar, feed, composer, and task children cannot shrink. Text, image, and file cards contribute their full height, so every composer control begins after the final complete message card. Short landscape explicitly restores the existing two-column layout.
 - Pending images use small removable thumbnails. Sent images use a stable full-width preview inside the message card, and regular file cards fill the same available width.
 - Every image or file keeps a Download action, and each decrypted text message ends with a Copy action.
 
 ## Unchanged boundaries
 
 Plaintext room passphrases still never reach the server. Text continues to use browser AES-GCM, while files remain protected by HTTPS, private R2, and server authorization. Standard quotas, admin Multipart, 24-hour expiry, and existing APIs are unchanged.', '2026-07-16T18:45:00.000Z', '2026-07-16T18:45:00.000Z'),
-  ('seed-update-2026-07-17-mobile-transfer-send-fix-ja', 'seed-update-2026-07-17-mobile-transfer-send-fix', 'ja', 'モバイル上部バーと一時転送の送信修正', '知識庫を開いた直後のキーボード表示を防ぎ、モバイル閲覧を整理しました。一時転送は送信前の添付保持を維持し、入力欄の重なりと画像・ファイルカードのずれを修正します。', '# モバイル上部バーと一時転送の送信修正
+  ('seed-update-2026-07-17-mobile-transfer-send-fix-ja', 'seed-update-2026-07-17-mobile-transfer-send-fix', 'ja', 'モバイル上部バーと一時転送の送信修正', '知識庫を開いた直後のキーボード表示を防ぎ、モバイル閲覧を整理しました。一時転送を縮まない縦方向の通常フローにし、入力欄全体を完全なメッセージカードの後へ確実に配置します。', '# モバイル上部バーと一時転送の送信修正
 
 今回はモバイル記事と一時転送の直接操作を修正し、ログイン、合言葉、暗号化、R2、割り当て、24 時間の有効期限、ダウンロード認可は変更していません。
 
@@ -699,7 +699,7 @@ Plaintext room passphrases still never reach the server. Text continues to use b
 ## 一時転送
 
 - 写真ライブラリまたはファイル選択から追加した添付は入力欄に保持され、もう一度送信を押してからアップロードを開始します。
-- モバイルの入力欄は単一の部屋スクロール内の通常フローに戻し、送信済みメッセージやファイルカードへ重なる粘着レイヤーをなくしました。
+- モバイル縦画面の部屋は縦方向 Flex を使い、ツールバー・メッセージ欄・入力欄・タスク欄の直下要素を縮ませません。文字・画像・ファイルカードの実際の高さを確保し、入力欄内のすべての操作を最後の完全なメッセージカードの後に配置します。短い横画面では既存の 2 列配置を明示的に復元します。
 - 送信待ち画像は削除できる小さなサムネイルで表示します。送信済み画像はカード幅いっぱいの安定したプレビュー、通常ファイルは同じ利用可能幅のファイルカードで表示します。
 - 画像とファイルにはダウンロード、復号済みテキストの末尾にはコピー操作を用意しました。
 

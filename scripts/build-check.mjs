@@ -556,14 +556,23 @@ if (!hasPattern(transferCss, /html\[data-ui-shell="desktop"\]\s+#resources\s+\.x
   fail("Quick Transfer desktop window and feed should expand with the available browser viewport");
 }
 
-if (!hasPattern(transferCss, /html\[data-ui-shell="mobile"\]\s+\.transfer-feed\s*\{[\s\S]*?overflow:\s*visible[\s\S]*?overscroll-behavior:\s*auto/)
+const mobileTransferLandscapeStart = transferCss.indexOf("@media (min-width: 700px) and (max-height: 560px) and (orientation: landscape)");
+const mobileTransferLandscapeEnd = transferCss.indexOf("@media (prefers-reduced-motion: reduce)", mobileTransferLandscapeStart);
+const mobileTransferLandscapeCss = mobileTransferLandscapeStart >= 0 && mobileTransferLandscapeEnd > mobileTransferLandscapeStart
+  ? transferCss.slice(mobileTransferLandscapeStart, mobileTransferLandscapeEnd)
+  : "";
+
+if (!hasPattern(transferCss, /html\[data-ui-shell="mobile"\]\s+\.transfer-room\s*\{[^}]*display:\s*flex[^}]*flex-direction:\s*column[^}]*align-items:\s*stretch[^}]*overflow-y:\s*auto/)
+  || !hasPattern(transferCss, /html\[data-ui-shell="mobile"\]\s+\.transfer-room\s*>\s*\.transfer-room-toolbar,\s*html\[data-ui-shell="mobile"\]\s+\.transfer-room\s*>\s*\.transfer-feed,\s*html\[data-ui-shell="mobile"\]\s+\.transfer-room\s*>\s*\.transfer-compose,\s*html\[data-ui-shell="mobile"\]\s+\.transfer-room\s*>\s*\.transfer-tasks\s*\{[^{}]*flex:\s*0\s+0\s+auto/)
+  || !hasPattern(mobileTransferLandscapeCss, /html\[data-ui-shell="mobile"\]\s+\.transfer-room\s*\{[^}]*display:\s*grid[^}]*grid-template-columns:\s*minmax\(0,\s*1\.35fr\)\s+minmax\(270px,\s*\.9fr\)[^}]*grid-template-rows:\s*auto\s+auto\s+auto/)
+  || !hasPattern(transferCss, /html\[data-ui-shell="mobile"\]\s+\.transfer-feed\s*\{[^}]*overflow:\s*visible[^}]*overscroll-behavior:\s*auto/)
   || !hasPattern(transferCss, /html\[data-ui-shell="mobile"\]\s+\.transfer-compose\s*\{[\s\S]*?position:\s*static[\s\S]*?z-index:\s*auto[\s\S]*?bottom:\s*auto/)
   || !hasPattern(transferCss, /html\[data-ui-shell="mobile"\]\s+\.transfer-media-preview\s*\{[\s\S]*?width:\s*100%[\s\S]*?height:\s*clamp\(190px,\s*58vw,\s*240px\)[\s\S]*?box-sizing:\s*border-box[\s\S]*?justify-self:\s*stretch/)
   || !hasPattern(transferCss, /html\[data-ui-shell="mobile"\]\s+\.transfer-file-card\s*\{[\s\S]*?width:\s*100%[\s\S]*?max-width:\s*none/)
   || !hasPattern(transferCss, /html\[data-ui-shell="mobile"\]\s+\.transfer-delete-button\s*\{[\s\S]*?width:\s*44px[\s\S]*?min-height:\s*44px/)
   || !hasPattern(transferJs, /function\s+keepFocusedControlVisible[\s\S]*scrollIntoView/)
   || !hasPattern(transferJs, /visualViewport\?\.addEventListener\(["']resize["'],\s*keepFocusedControlVisible/)) {
-  fail("Quick Transfer mobile room should use one reachable scroll path, a normal-flow composer, stable full-width media, keyboard compensation, and 44px delete controls");
+  fail("Quick Transfer mobile room should use a non-shrinking portrait flex stack, an explicit landscape grid, one reachable scroll path, a normal-flow composer, stable full-width media, keyboard compensation, and 44px delete controls");
 }
 const japaneseSubtextHtml = readRequired("tools/japanese-subtext/index.html");
 const japaneseSubtextCss = readRequired("tools/japanese-subtext/style.css");
@@ -2054,7 +2063,7 @@ for (const asset of [
 }
 
 const premiumUiVersion = "20260711-calm-motion-r13";
-const mobileTransferUiVersion = "20260717-mobile-transfer-send-r2";
+const mobileTransferUiVersion = "20260717-mobile-transfer-send-r3";
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
 const currentMainVersion = mobileTransferUiVersion;
 const currentPreFinalCssVersion = "20260711-calm-motion-r13";
