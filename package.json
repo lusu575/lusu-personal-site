@@ -3,7 +3,7 @@
     "build": "node scripts/build-check.mjs",
     "dev": "wrangler pages dev",
     "transfer:dev": "wrangler pages dev --r2 TRANSFER_BUCKET",
-    "test": "node scripts/run-tests.mjs tests/*.test.mjs tools/japanese-subtext/tests/*.test.mjs tools/japanese-subtext/scripts/tts/tests/*.mjs",
+    "test": "node scripts/run-tests.mjs tests/*.test.mjs tests/transfer/*.test.mjs tools/japanese-subtext/tests/*.test.mjs tools/japanese-subtext/scripts/tts/tests/*.mjs",
     "d1:create": "wrangler d1 create lusu_personal_site",
     "d1:migrate:local": "node scripts/d1-migrate-local.mjs",
     "d1:migrate:remote": "wrangler d1 execute lusu_personal_site --remote --file=cloudflare/schema.sql",

@@ -4,10 +4,11 @@
 
 - 手机虚拟 OS 不再显示顶部时间与 `LUSU OS` 状态行，`--mobile-status-height` 固定为 `0px`；safe area、栏目 Appbar、首页入口和桌面顶栏继续保留。
 - 手机知识库文章阅读态只显示进度条，不再同时显示栏目文字和百分比；返回、复制、回到顶部等真实控件必须继续可聚焦、可点击。
+- 页面路由的自动焦点迁移不得选择 `input`、`textarea` 等编辑控件；手机从 Home、欢迎快捷入口或 Dock 进入知识库时只能聚焦可见的非编辑控件或窗口表面，不能未经用户点击就唤起软键盘。用户主动搜索、清空或重置后的显式聚焦继续保留。
 - 临时互传的相册选择、通用文件选择、拖放和粘贴必须先进入输入区待发送托盘；只有用户再次提交 composer 后才能创建上传任务。文字 API 失败时不得清空附件，发送期间不得追加或移除同一批附件。
 - 手机相册入口使用独立 `accept="image/*"` 的多选 file input，不能强制 `capture`；通用文件入口继续多选。待发送图片使用小尺寸 Object URL 预览并在移除、离房或发送后释放。
-- 已发送图片必须限制在消息卡片内；普通文件使用包含类型图标、文件名、大小与 MIME 的文件卡片。所有附件保留下载按钮，每条成功解密文字末尾提供复制按钮和剪贴板回退。
-- 本轮不修改 HttpOnly 登录、房间 key、AES-GCM、私有 R2、Multipart、配额、24 小时过期、下载鉴权或 `/api/transfer/*` 服务端协议。三语公开更新记录为 `seed-update-2026-07-17-mobile-transfer-send-fix`，资源 query 为 `20260717-mobile-transfer-send-r1`。
+- 手机互传房间继续使用单一 `.transfer-room` 滚动路径，但 composer 必须处于正常文档流，不能用 sticky / fixed 层覆盖消息；已发送图片使用占满卡片宽度且预留稳定高度的 `object-fit: contain` 预览框，普通文件使用占满可用宽度并包含类型图标、文件名、大小与 MIME 的文件卡片。所有附件保留下载按钮，每条成功解密文字末尾提供复制按钮和剪贴板回退。
+- 本轮不修改 HttpOnly 登录、房间 key、AES-GCM、私有 R2、Multipart、配额、24 小时过期、下载鉴权或 `/api/transfer/*` 服务端协议。三语公开更新记录为 `seed-update-2026-07-17-mobile-transfer-send-fix`，资源 query 为 `20260717-mobile-transfer-send-r2`。
 - 站长邮箱不得再写入公开源码；由 Cloudflare Pages Production / Preview 各自的加密 `OWNER_ADMIN_EMAILS` Secret 提供，可用逗号、分号或空白分隔多个地址。Functions 只能从请求 `env` 解析规范化 Set，用它执行 schema 后的管理员角色保持和后台账号不可降级检查；它不是登录或权限绕过。未配置时必须保持可用，不回退任何固定邮箱、不自动提升账号且不触发 503，现有 D1 `users.role`、当前账号不可自降级和最后管理员原子保护继续有效。
 
 ## 2026-07-16 临时互传上传、全窗拖放与视口高度修复

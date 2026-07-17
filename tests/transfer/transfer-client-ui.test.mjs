@@ -27,14 +27,17 @@ test("Quick Transfer exposes a gallery picker without forcing camera capture", (
   assert.match(html, /id="transfer-file-input" type="file" multiple/);
 });
 
-test("Quick Transfer renders compact media, file cards, downloads, and text copy controls", () => {
+test("Quick Transfer keeps mobile media stable, aligned, and clear of the composer", () => {
   assert.match(client, /className = "transfer-media-preview transfer-image-preview"/);
   assert.match(client, /className = "transfer-file-card"/);
   assert.match(client, /download\.download = item\.filename/);
   assert.match(client, /className = "xp-button transfer-copy-text-button"/);
   assert.equal(client.match(/copyText:/g)?.length, 3);
   assert.match(styles, /\.transfer-media-preview\s*\{[\s\S]*width:\s*min\(100%, 320px\)[\s\S]*max-height:\s*220px/);
-  assert.match(styles, /html\[data-ui-shell="mobile"\] \.transfer-media-preview\s*\{[\s\S]*width:\s*min\(100%, 260px\)[\s\S]*max-height:\s*180px/);
+  assert.match(styles, /html\[data-ui-shell="mobile"\] \.transfer-compose\s*\{[\s\S]*position:\s*static[\s\S]*z-index:\s*auto[\s\S]*bottom:\s*auto/);
+  assert.match(styles, /html\[data-ui-shell="mobile"\] \.transfer-media-preview\s*\{[\s\S]*width:\s*100%[\s\S]*height:\s*clamp\(190px, 58vw, 240px\)[\s\S]*box-sizing:\s*border-box[\s\S]*justify-self:\s*stretch/);
+  assert.match(styles, /html\[data-ui-shell="mobile"\] \.transfer-media-preview img\s*\{[\s\S]*height:\s*100%[\s\S]*object-fit:\s*contain/);
+  assert.match(styles, /html\[data-ui-shell="mobile"\] \.transfer-file-card\s*\{[\s\S]*width:\s*100%[\s\S]*max-width:\s*none/);
 });
 
 test("Quick Transfer binds text submission to an immutable room context", () => {

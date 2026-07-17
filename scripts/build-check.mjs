@@ -101,7 +101,7 @@ function readRequired(path) {
     fail(`missing ${path}`);
     return "";
   }
-  return readFileSync(fullPath, "utf8");
+  return readFileSync(fullPath, "utf8").replace(/\r\n?/g, "\n");
 }
 
 function parseJsonSource(path, source) {
@@ -557,11 +557,13 @@ if (!hasPattern(transferCss, /html\[data-ui-shell="desktop"\]\s+#resources\s+\.x
 }
 
 if (!hasPattern(transferCss, /html\[data-ui-shell="mobile"\]\s+\.transfer-feed\s*\{[\s\S]*?overflow:\s*visible[\s\S]*?overscroll-behavior:\s*auto/)
-  || !hasPattern(transferCss, /html\[data-ui-shell="mobile"\]\s+\.transfer-compose\s*\{[\s\S]*?position:\s*sticky[\s\S]*?bottom:\s*0/)
+  || !hasPattern(transferCss, /html\[data-ui-shell="mobile"\]\s+\.transfer-compose\s*\{[\s\S]*?position:\s*static[\s\S]*?z-index:\s*auto[\s\S]*?bottom:\s*auto/)
+  || !hasPattern(transferCss, /html\[data-ui-shell="mobile"\]\s+\.transfer-media-preview\s*\{[\s\S]*?width:\s*100%[\s\S]*?height:\s*clamp\(190px,\s*58vw,\s*240px\)[\s\S]*?box-sizing:\s*border-box[\s\S]*?justify-self:\s*stretch/)
+  || !hasPattern(transferCss, /html\[data-ui-shell="mobile"\]\s+\.transfer-file-card\s*\{[\s\S]*?width:\s*100%[\s\S]*?max-width:\s*none/)
   || !hasPattern(transferCss, /html\[data-ui-shell="mobile"\]\s+\.transfer-delete-button\s*\{[\s\S]*?width:\s*44px[\s\S]*?min-height:\s*44px/)
   || !hasPattern(transferJs, /function\s+keepFocusedControlVisible[\s\S]*scrollIntoView/)
   || !hasPattern(transferJs, /visualViewport\?\.addEventListener\(["']resize["'],\s*keepFocusedControlVisible/)) {
-  fail("Quick Transfer mobile room should use one reachable scroll path, a sticky composer, keyboard compensation, and 44px delete controls");
+  fail("Quick Transfer mobile room should use one reachable scroll path, a normal-flow composer, stable full-width media, keyboard compensation, and 44px delete controls");
 }
 const japaneseSubtextHtml = readRequired("tools/japanese-subtext/index.html");
 const japaneseSubtextCss = readRequired("tools/japanese-subtext/style.css");
@@ -2052,7 +2054,7 @@ for (const asset of [
 }
 
 const premiumUiVersion = "20260711-calm-motion-r13";
-const mobileTransferUiVersion = "20260717-mobile-transfer-send-r1";
+const mobileTransferUiVersion = "20260717-mobile-transfer-send-r2";
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
 const currentMainVersion = mobileTransferUiVersion;
 const currentPreFinalCssVersion = "20260711-calm-motion-r13";
@@ -2561,6 +2563,13 @@ if (!hasPattern(mainJs, /const\s+routeIconRectCache\s*=\s*new\s+Map[\s\S]*functi
   || !hasPattern(mainJs, /function\s+routeExitOriginRect[\s\S]*motionKind\s*===\s*["']window-minimize["'][\s\S]*cachedRouteIconRect\(route\)[\s\S]*taskbar-tabs button\[data-route\][\s\S]*\.start-button/)
   || !hasPattern(mainJs, /function\s+navigate[\s\S]*const\s+exitOriginRect\s*=\s*isExitMotion[\s\S]*focusReturnTarget\.focus\(\s*\{\s*preventScroll:\s*true\s*\}\s*\)[\s\S]*originRect:\s*exitOriginRect[\s\S]*deferCommit:\s*isExitMotion/)) {
   fail("js/main.js navigate should reverse close/minimize toward the route icon or task button and restore focus after committing");
+}
+
+const routeWindowFocusBlock = windowAfter(mainJs, "function routeWindowFocusTarget", 900);
+const routeWindowFocusSelector = routeWindowFocusBlock.match(/querySelectorAll\(\s*["']([^"']+)["']/)?.[1] || "";
+if (routeWindowFocusSelector !== ".close-button:not(:disabled), [data-article-back]:not(:disabled), button:not(:disabled), a[href]"
+  || /(^|,\s*)(input|textarea|select|\[contenteditable)/i.test(routeWindowFocusSelector)) {
+  fail("js/main.js automatic route focus should use visible non-editing controls so mobile navigation cannot summon the software keyboard");
 }
 
 if (!hasPattern(mainJs, /function\s+routeWindowFocusTarget[\s\S]*\.find\(\(element\)\s*=>\s*focusTargetIsVisible\(element\)\)[\s\S]*windowSurface\.tabIndex\s*=\s*-1[\s\S]*const\s+shouldFocusWindow[\s\S]*document\.documentElement\.dataset\.inputMethod\s*===\s*["']keyboard["'][\s\S]*!focusTargetIsVisible\(options\.trigger\)[\s\S]*routeWindowFocusTarget\(nextRoute\)[\s\S]*focusTarget\.focus\(\s*\{\s*preventScroll:\s*true\s*\}\s*\)/)) {
@@ -3195,7 +3204,7 @@ for (const token of ["pragma table_info", "alter table", "schema-indexes.sql", "
     fail(`scripts/d1-migrate-local.mjs missing old-database compatibility guard ${token}`);
   }
 }
-for (const token of ["tests/*.test.mjs", "tools/japanese-subtext/tests/*.test.mjs", "tools/japanese-subtext/scripts/tts/tests/*.mjs"]) {
+for (const token of ["tests/*.test.mjs", "tests/transfer/*.test.mjs", "tools/japanese-subtext/tests/*.test.mjs", "tools/japanese-subtext/scripts/tts/tests/*.mjs"]) {
   if (!String(migrationPackageData.scripts?.test || "").includes(token)) {
     fail(`package.json test must cover ${token}`);
   }

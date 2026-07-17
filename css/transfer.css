@@ -893,9 +893,9 @@ html[data-ui-shell="mobile"] .transfer-feed {
 }
 
 html[data-ui-shell="mobile"] .transfer-compose {
-  position: sticky;
-  z-index: 4;
-  bottom: 0;
+  position: static;
+  z-index: auto;
+  bottom: auto;
   padding: 7px;
   padding-bottom: max(7px, env(safe-area-inset-bottom));
   scroll-margin-bottom: 14px;
@@ -1020,11 +1020,21 @@ html[data-ui-shell="mobile"] .transfer-item-body audio {
   max-width: 100%;
 }
 html[data-ui-shell="mobile"] .transfer-media-preview {
-  width: min(100%, 260px);
-  max-height: 180px;
+  width: 100%;
+  max-width: none;
+  height: clamp(190px, 58vw, 240px);
+  max-height: none;
+  box-sizing: border-box;
+  justify-self: stretch;
 }
 html[data-ui-shell="mobile"] .transfer-media-preview img {
-  max-height: 180px;
+  height: 100%;
+  max-height: none;
+  object-fit: contain;
+}
+html[data-ui-shell="mobile"] .transfer-file-card {
+  width: 100%;
+  max-width: none;
 }
 html[data-ui-shell="mobile"] .transfer-item-actions .xp-button {
   width: 100%;
