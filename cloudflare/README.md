@@ -75,6 +75,8 @@ npm.cmd run d1:migrate:remote
 
 普通迁移准备、CI 和 GPTWork 开发都不得执行远程迁移，也不得访问生产 D1。
 
+`d1:migrate:remote` 由 `scripts/d1-migrate-remote.mjs` 执行，固定顺序为基础 `schema.sql`、PRAGMA 兼容列检查、仅缺失列的 `ALTER TABLE ... ADD COLUMN`、`schema-indexes.sql`、分组核验。它不会删除表或历史记录；任一列或索引未成功建立都会以失败退出。不得绕过该 runner 直接只执行 `schema.sql`，否则旧表可能缺少新列，后续索引无法安全创建。
+
 ## 发布方式
 
 正式发布链路固定为：GitHub Pull Request 审查并合并到 `main`，随后由 Cloudflare Pages Git 集成自动部署。`npm run deploy` 只输出提示，不执行手工发布；不要把 `wrangler pages deploy` 当成常规发布步骤。
@@ -83,7 +85,7 @@ npm.cmd run d1:migrate:remote
 
 当前实现使用带用途域隔离的 HMAC-SHA256。聊天消息和网络来源禁言同时保存由 Secret 自动派生的非敏感密钥代次；首次从旧固定盐切换或以后轮换 Secret 时，旧记录会被明确标记为旧代次。后台不会再从旧消息创建表面成功但无法匹配的禁言，旧禁言显示“密钥已轮换”；只有新代次消息能用于重新建立网络来源禁言。用户标识禁言不受影响，分析历史仍会形成新旧两个时期。不要恢复公开 fallback，也不要为了兼容把旧 Secret 写入仓库。
 
-`cloudflare/schema.sql` 定义表和 seed，`cloudflare/schema-indexes.sql` 定义依赖新增列的代次索引。`npm run d1:migrate:local` 会先执行基础 schema，再检查旧表、补齐缺失列，最后创建并核验索引；已有云端 D1 仍由 `ensureChatSchema()` 在聊天 / 后台聊天接口查询前按“先补列、再建索引”的顺序自升级。不要删除运行时 schema guard，也不要把依赖新列的索引提前放进静态 schema 的旧表执行路径。
+`cloudflare/schema.sql` 定义表和 seed，`cloudflare/schema-indexes.sql` 定义依赖新增列的代次索引。`npm run d1:migrate:local` 与获授权后人工运行的 `npm run d1:migrate:remote` 都会先执行基础 schema，再检查旧表、补齐缺失列，最后创建并核验索引；已有云端 D1 的 `ensureChatSchema()` 仍在聊天 / 后台聊天接口查询前提供同顺序的运行时兜底。不要删除运行时 schema guard，也不要把依赖新列的索引提前放进静态 schema 的旧表执行路径。
 
 ## 可选外部服务
 

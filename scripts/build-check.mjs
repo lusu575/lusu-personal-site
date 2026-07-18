@@ -1,8 +1,9 @@
 import { createHash, createHmac } from "node:crypto";
-import { readFileSync, existsSync, statSync } from "node:fs";
+import { readFileSync, existsSync, readdirSync, statSync } from "node:fs";
 import { relative, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { runInNewContext } from "node:vm";
+import { validatePublicModuleGraph } from "./check-public-module-graph.mjs";
 
 const root = resolve(import.meta.dirname, "..");
 const analyticsRedactionMarker = "[email]";
@@ -57,8 +58,13 @@ const requiredFiles = [
   "assets/images/mobile-wallpapers/night.webp",
   "css/mobile-ios-shell.css",
   "css/motion-system.css",
+  "css/routes/chatroom.css",
+  "css/routes/games.css",
+  "css/routes/knowledge.css",
+  "css/routes/videos.css",
   "css/style.css",
   "css/transfer.css",
+  "fragments/quick-transfer.html",
   "design-system/MASTER.md",
   "design-system/pages/desktop-shell.md",
   "design-system/pages/mobile-shell.md",
@@ -70,6 +76,15 @@ const requiredFiles = [
   "games/game-shell.js",
   "js/mobile-shell.js",
   "js/main.js",
+  "js/core/i18n.mjs",
+  "js/core/route-lifecycle.mjs",
+  "js/core/route-modules.mjs",
+  "js/data/content.mjs",
+  "js/data/home-content.mjs",
+  "js/data/videos-content.mjs",
+  "js/data/resources-content.mjs",
+  "js/data/blog-content.mjs",
+  "js/features/quick-transfer-loader.mjs",
   "js/transfer.js",
   "js/telemetry.js",
   "js/ui-motion.js",
@@ -79,12 +94,19 @@ const requiredFiles = [
   "docs/transfer/README.md",
   "docs/transfer/ASSET_MANIFEST.md",
   "docs/transfer/dev-vars.example",
+  "docs/PUBLIC_SITE_RELEASE_QA.md",
   "workers/transfer-cleanup/index.mjs",
   "workers/transfer-cleanup/wrangler.jsonc",
   "package-lock.json",
   "package.json",
   "scripts/d1-migrate-local.mjs",
+  "scripts/build-transfer-icon-atlas.mjs",
+  "scripts/check-public-module-graph.mjs",
+  "scripts/public-ui-audit.mjs",
   "scripts/run-tests.mjs",
+  "tests/api-failure-recovery-gate.test.mjs",
+  "tests/qa-release-contract.test.mjs",
+  "tests/public-security-boundaries.test.mjs",
   "robots.txt",
   "CHANGELOG.md",
   "wrangler.jsonc"
@@ -189,6 +211,171 @@ function requireBalancedCss(path, source) {
   }
 }
 
+function cssBlockEnd(source, openIndex) {
+  let depth = 1;
+  let quote = "";
+  for (let index = openIndex + 1; index < source.length; index += 1) {
+    const char = source[index];
+    if (quote) {
+      if (char === "\\") index += 1;
+      else if (char === quote) quote = "";
+      continue;
+    }
+    if (char === '"' || char === "'") {
+      quote = char;
+    } else if (char === "{") {
+      depth += 1;
+    } else if (char === "}") {
+      depth -= 1;
+      if (depth === 0) return index;
+    }
+  }
+  return -1;
+}
+
+function cssDeclarations(source) {
+  const declarations = [];
+  let start = 0;
+  let quote = "";
+  let parentheses = 0;
+  const pushDeclaration = (end) => {
+    const raw = source.slice(start, end).trim();
+    start = end + 1;
+    const colon = raw.indexOf(":");
+    if (colon <= 0) return;
+    const property = raw.slice(0, colon).trim().toLowerCase();
+    if (/^(?:--|-[a-z]+-)?[a-z][a-z0-9-]*$/.test(property)) {
+      declarations.push(property);
+    }
+  };
+  for (let index = 0; index < source.length; index += 1) {
+    const char = source[index];
+    if (quote) {
+      if (char === "\\") index += 1;
+      else if (char === quote) quote = "";
+      continue;
+    }
+    if (char === '"' || char === "'") quote = char;
+    else if (char === "(") parentheses += 1;
+    else if (char === ")") parentheses = Math.max(0, parentheses - 1);
+    else if (char === ";" && parentheses === 0) pushDeclaration(index);
+  }
+  pushDeclaration(source.length);
+  return declarations;
+}
+
+function collectCssRules(source, atRules = []) {
+  const css = source.replace(/\/\*[\s\S]*?\*\//g, " ");
+  const rules = [];
+  let cursor = 0;
+  while (cursor < css.length) {
+    const openIndex = css.indexOf("{", cursor);
+    if (openIndex < 0) break;
+    const semicolonIndex = css.indexOf(";", cursor);
+    if (semicolonIndex >= 0 && semicolonIndex < openIndex) {
+      cursor = semicolonIndex + 1;
+      continue;
+    }
+    const header = css.slice(cursor, openIndex).trim();
+    const closeIndex = cssBlockEnd(css, openIndex);
+    if (!header || closeIndex < 0) break;
+    const body = css.slice(openIndex + 1, closeIndex);
+    if (header.startsWith("@")) {
+      rules.push(...collectCssRules(body, [...atRules, header]));
+    } else {
+      rules.push({ selector: header, atRules, declarations: cssDeclarations(body) });
+    }
+    cursor = closeIndex + 1;
+  }
+  return rules;
+}
+
+const MOBILE_LAYOUT_COMPONENTS = Object.freeze([
+  "account-button", "account-popover", "account-widget", "article-detail", "article-detail-card",
+  "article-read-progress", "article-reader-sidebar", "article-top-link", "brand-button", "brand-orb",
+  "card-grid", "category-button", "category-panel", "chat-message", "chat-message-avatar",
+  "chat-private-room-panel", "chat-send-button", "chatroom-avatar", "chatroom-compose", "chatroom-counter",
+  "chatroom-footer", "chatroom-header", "chatroom-log", "chatroom-status", "chatroom-window",
+  "desktop-icon", "desktop-icons", "desktop-intro", "filter-row", "folder-layout", "game-card",
+  "game-cover", "game-list", "icon-title", "knowledge-searchbar", "modal", "modal-window", "page",
+  "page-home", "pixel-icon", "profile-avatar", "profile-avatar-image", "profile-card", "recent-panel",
+  "start-button", "status-tray", "taskbar-tabs", "topbar-actions", "video-body", "video-card", "video-grid",
+  "video-thumb", "welcome-content", "welcome-note", "welcome-window", "window-controls", "window-titlebar",
+  "xp-taskbar", "xp-topbar", "xp-window"
+]);
+
+const MOBILE_LAYOUT_PROPERTIES = new Set([
+  "align-content", "align-items", "align-self", "aspect-ratio", "bottom", "box-sizing", "clear", "contain",
+  "display", "flex", "flex-basis", "flex-direction", "flex-flow", "flex-grow", "flex-shrink", "flex-wrap", "float",
+  "gap", "grid", "grid-area", "grid-auto-columns", "grid-auto-flow", "grid-auto-rows", "grid-column", "grid-row",
+  "grid-template", "grid-template-areas", "grid-template-columns", "grid-template-rows", "height", "inset", "left",
+  "margin", "margin-block", "margin-block-end", "margin-block-start", "margin-bottom", "margin-inline",
+  "margin-inline-end", "margin-inline-start", "margin-left", "margin-right", "margin-top", "max-height", "max-width",
+  "min-height", "min-width", "order", "overflow", "overflow-block", "overflow-inline", "overflow-x", "overflow-y",
+  "overscroll-behavior", "overscroll-behavior-block", "overscroll-behavior-inline", "overscroll-behavior-x",
+  "overscroll-behavior-y", "padding", "padding-block", "padding-block-end", "padding-block-start", "padding-bottom",
+  "padding-inline", "padding-inline-end", "padding-inline-start", "padding-left", "padding-right", "padding-top",
+  "place-content", "place-items", "place-self", "position", "resize", "right", "scroll-padding", "scroll-padding-block",
+  "scroll-padding-inline", "scroll-snap-align", "scroll-snap-type", "top", "touch-action", "visibility", "width", "z-index"
+]);
+// Transform/animation/transition are intentionally absent: motion-system.css
+// owns those stateful effects while mobile-ios-shell.css owns box geometry.
+
+function mobileLayoutComponent(selector) {
+  const matches = [...selector.matchAll(/\.([a-z][a-z0-9-]*)/gi)];
+  for (let index = matches.length - 1; index >= 0; index -= 1) {
+    if (MOBILE_LAYOUT_COMPONENTS.includes(matches[index][1])) return matches[index][1];
+  }
+  return "";
+}
+
+function ruleCanTargetMobile(file, rule) {
+  if (file === "css/mobile-ios-shell.css") {
+    return rule.selector.includes('html[data-ui-shell="mobile"]');
+  }
+  if (file === "css/motion-system.css") {
+    return !rule.selector.includes('html[data-ui-shell="desktop"]');
+  }
+  return rule.atRules.some((atRule) => /@media\b[^\{]*(?:max-width:\s*(?:980|900|760|620|460|380|360)px|max-height:\s*(?:720|540|520|460)px)/i.test(atRule));
+}
+
+function findMobileLayoutOwnershipConflicts(sources) {
+  const ownerDeclarations = new Set();
+  const sourceRules = sources.map(({ file, source }) => ({ file, rules: collectCssRules(source) }));
+  for (const { file, rules } of sourceRules) {
+    if (file !== "css/mobile-ios-shell.css") continue;
+    for (const rule of rules) {
+      if (!ruleCanTargetMobile(file, rule)) continue;
+      for (const selector of rule.selector.split(",")) {
+        const component = mobileLayoutComponent(selector);
+        if (!component) continue;
+        for (const property of rule.declarations) {
+          if (MOBILE_LAYOUT_PROPERTIES.has(property)) ownerDeclarations.add(`${component}:${property}`);
+        }
+      }
+    }
+  }
+  const conflicts = [];
+  for (const { file, rules } of sourceRules) {
+    if (file === "css/mobile-ios-shell.css") continue;
+    for (const rule of rules) {
+      if (!ruleCanTargetMobile(file, rule)) continue;
+      for (const selector of rule.selector.split(",")) {
+        const component = mobileLayoutComponent(selector);
+        if (!component) continue;
+        for (const property of rule.declarations) {
+          const key = `${component}:${property}`;
+          if (MOBILE_LAYOUT_PROPERTIES.has(property)) {
+            const reason = ownerDeclarations.has(key) ? "duplicates mobile owner" : "outside mobile owner";
+            conflicts.push(`${file} ${selector.trim()} -> ${property} (${reason})`);
+          }
+        }
+      }
+    }
+  }
+  return [...new Set(conflicts)].sort();
+}
+
 function visibleHtmlText(source) {
   return source
     .replace(/<!--[\s\S]*?-->/g, " ")
@@ -209,6 +396,35 @@ function hasVersionedAssetReference(html, assetPath) {
 function assetQueryVersions(source, assetPath) {
   const pattern = new RegExp(`${escapeRegExp(assetPath)}\\?v=([^"')\\s;]+)`, "g");
   return [...source.matchAll(pattern)].map((match) => match[1]);
+}
+
+const repositoryRuntimeSourceExtensions = /\.(?:css|html?|[cm]?js|mjs)$/i;
+const repositoryScanIgnoredDirectories = new Set([
+  ".git",
+  ".wrangler",
+  ".wrangler-config",
+  ".codex-remote-attachments",
+  "dist",
+  "node_modules",
+  "output"
+]);
+
+function repositoryRuntimeSources(directory = root) {
+  const sources = [];
+  for (const entry of readdirSync(directory, { withFileTypes: true })) {
+    if (entry.isDirectory()) {
+      if (repositoryScanIgnoredDirectories.has(entry.name) || entry.name.startsWith(".production-build-")) continue;
+      sources.push(...repositoryRuntimeSources(resolve(directory, entry.name)));
+      continue;
+    }
+    if (!entry.isFile() || !repositoryRuntimeSourceExtensions.test(entry.name)) continue;
+    const fullPath = resolve(directory, entry.name);
+    sources.push({
+      path: relative(root, fullPath).replaceAll("\\", "/"),
+      source: readFileSync(fullPath, "utf8").replace(/\r\n?/g, "\n")
+    });
+  }
+  return sources;
 }
 
 function findRequiredHtml(source, pattern, message) {
@@ -232,12 +448,12 @@ function hasPattern(source, pattern) {
 }
 
 function requireFunctionPattern(source, marker, pattern, message) {
-  const body = objectBlockAfterMarker(source, marker);
-  if (!body) {
+  const bodies = objectBlocksAfterMarker(source, marker);
+  if (!bodies.length) {
     fail(`missing ${marker}`);
     return;
   }
-  if (!hasPattern(body, pattern)) {
+  if (!bodies.some((body) => hasPattern(body, pattern))) {
     fail(message);
   }
 }
@@ -373,7 +589,7 @@ function objectBlockAfterMarker(source, marker) {
 }
 
 function propertyObjectBlock(source, propertyName) {
-  const pattern = new RegExp(`\\b${escapeRegExp(propertyName)}\\s*:\\s*\\{`);
+  const pattern = new RegExp(`(?:^|[^\\w$])["']?${escapeRegExp(propertyName)}["']?\\s*:\\s*\\{`, "m");
   const match = source.match(pattern);
   if (!match || match.index === undefined) {
     return "";
@@ -411,7 +627,7 @@ function readJsQuotedString(source, quoteIndex) {
 }
 
 function jsStringPropertyValue(source, propertyName) {
-  const pattern = new RegExp("\\b" + escapeRegExp(propertyName) + "\\s*:\\s*([\"'`])");
+  const pattern = new RegExp("(?:^|[^\\w$])[\"']?" + escapeRegExp(propertyName) + "[\"']?\\s*:\\s*([\"'`])", "m");
   const match = pattern.exec(source);
   if (!match || match.index === undefined) {
     return null;
@@ -448,6 +664,25 @@ for (const file of requiredFiles) {
   readRequired(file);
 }
 
+function objectBlocksAfterMarker(source, marker) {
+  const bodies = [];
+  let searchFrom = 0;
+  while (searchFrom < source.length) {
+    const markerIndex = source.indexOf(marker, searchFrom);
+    if (markerIndex < 0) break;
+    const tail = source.slice(markerIndex);
+    const body = objectBlockAfterMarker(tail, marker);
+    if (body) bodies.push(body);
+    searchFrom = markerIndex + marker.length;
+  }
+  return bodies;
+}
+
+const publicModuleGraph = validatePublicModuleGraph({ root });
+for (const failure of publicModuleGraph.failures) {
+  fail(`public module graph: ${failure}`);
+}
+
 for (const file of [
   "assets/images/ui/pixel-ui-glyph-atlas.png",
   "assets/images/mobile-wallpapers/morning.webp",
@@ -460,6 +695,9 @@ for (const file of [
   "design-system/pages/desktop-shell.md",
   "design-system/pages/mobile-shell.md",
   "js/mobile-shell.js",
+  "js/core/i18n.mjs",
+  "js/core/route-modules.mjs",
+  "js/data/content.mjs",
   "js/ui-motion.js"
 ]) {
   requireNonEmptyFile(file);
@@ -468,6 +706,8 @@ for (const file of [
 const adminHtml = readRequired("admin/index.html");
 const adminCss = readRequired("admin/admin.css");
 const adminJs = readRequired("admin/admin.js");
+const adminTransferHtml = readRequired("admin/transfer.html");
+const adminTransferCss = readRequired("admin/transfer.css");
 const adminWorldMapSvg = readRequired("assets/images/admin-world-map.svg");
 const adminMiddlewareJs = readRequired("functions/admin/_middleware.js");
 const apiJs = readRequired("functions/api/[[route]].js");
@@ -490,9 +730,26 @@ const gameIndexFiles = [
 ];
 const gameIndexHtmls = gameIndexFiles.map((file) => [file, readRequired(file)]);
 const mobileShellJs = readRequired("js/mobile-shell.js");
-const mainJs = readRequired("js/main.js");
+const publicModuleSources = Object.fromEntries(publicModuleGraph.files.map((file) => [file, readRequired(file)]));
+const mainEntryJs = publicModuleSources["js/main.js"];
+const i18nModuleJs = publicModuleSources["js/core/i18n.mjs"];
+const contentModuleJs = publicModuleSources["js/data/content.mjs"];
+const homeContentModuleJs = publicModuleSources["js/data/home-content.mjs"];
+const mainJs = publicModuleGraph.files.map((file) => publicModuleSources[file]).join("\n");
+const runtimePublicJs = publicModuleGraph.files
+  .filter((file) => !file.startsWith("js/data/"))
+  .map((file) => publicModuleSources[file])
+  .join("\n");
+const lazyPublicRoutes = ["knowledge", "videos", "resources", "games", "chatroom"];
+const lazyStyledRoutes = ["knowledge", "videos", "games", "chatroom"];
+const lazyRouteCssSources = Object.fromEntries(lazyStyledRoutes.map((route) => {
+  const path = `css/routes/${route}.css`;
+  return [route, readRequired(path)];
+}));
 const transferCss = readRequired("css/transfer.css");
 const transferJs = readRequired("js/transfer.js");
+const transferFragmentHtml = readRequired("fragments/quick-transfer.html");
+const quickTransferLoaderJs = readRequired("js/features/quick-transfer-loader.mjs");
 const telemetryJs = readRequired("js/telemetry.js");
 const uiMotionJs = readRequired("js/ui-motion.js");
 const manifest = readRequired("manifest.webmanifest");
@@ -503,13 +760,223 @@ const rootReadme = readRequired("README.md");
 const verifyWorkflow = readRequired(".github/workflows/verify.yml");
 const wranglerConfig = readRequired("wrangler.jsonc");
 const packageJson = readRequired("package.json");
+const publicUiAuditJs = readRequired("scripts/public-ui-audit.mjs");
 const robots = readRequired("robots.txt");
 const changelog = readRequired("CHANGELOG.md");
 const headersConfig = readRequired("_headers");
 const redirectsConfig = readRequired("_redirects");
 
+const routeLazyVersion = "20260718-resource-icons-layout-r1";
+const transferAtlasVersion = routeLazyVersion;
+const transferAtlasReferences = [];
+for (const { path, source } of repositoryRuntimeSources()) {
+  if (path === "scripts/build-check.mjs") continue;
+  for (const version of assetQueryVersions(source, "quick-transfer-icons.png")) {
+    transferAtlasReferences.push({ path, version });
+    if (version !== transferAtlasVersion) {
+      fail(`${path} Quick Transfer atlas query should be ${transferAtlasVersion}, found ${version}`);
+    }
+  }
+}
+for (const expectedPath of ["admin/transfer.css", "css/style.css", "css/transfer.css"]) {
+  const matching = transferAtlasReferences.filter((reference) => reference.path === expectedPath);
+  if (matching.length !== 1 || matching[0].version !== transferAtlasVersion) {
+    fail(`${expectedPath} should reference quick-transfer-icons.png once at ${transferAtlasVersion}`);
+  }
+}
+const adminTransferStyleVersions = assetQueryVersions(adminTransferHtml, "/admin/transfer.css");
+if (adminTransferStyleVersions.length !== 1 || adminTransferStyleVersions[0] !== transferAtlasVersion) {
+  fail(`admin/transfer.html stylesheet query should appear once as ${transferAtlasVersion}`);
+}
+if (!adminTransferCss.includes(`quick-transfer-icons.png?v=${transferAtlasVersion}`)) {
+  fail(`admin/transfer.css should use the shared Quick Transfer atlas query ${transferAtlasVersion}`);
+}
+const staticPublicImports = [...mainEntryJs.matchAll(/\bimport\s+(?:[^"']+?\s+from\s+)?["']([^"']+)["']/g)]
+  .map((match) => match[1]);
+if (staticPublicImports.some((specifier) => specifier.startsWith("./routes/"))) {
+  fail("js/main.js must not statically import public route modules");
+}
+
+for (const route of lazyPublicRoutes) {
+  const modulePath = `./routes/${route}.mjs`;
+  const versions = assetQueryVersions(mainEntryJs, modulePath);
+  if (versions.length !== 1 || versions[0] !== routeLazyVersion) {
+    fail(`js/main.js ${route} route must use one literal dynamic import at ${modulePath}?v=${routeLazyVersion}`);
+  }
+  const loaderPattern = new RegExp(
+    `\\b${escapeRegExp(route)}\\s*:\\s*\\(\\)\\s*=>[\\s\\S]{0,360}?import\\(\\s*["']${escapeRegExp(modulePath)}\\?v=${routeLazyVersion}["']\\s*\\)`
+  );
+  if (!hasPattern(mainEntryJs, loaderPattern)) {
+    fail(`js/main.js ${route} registry loader must own its literal dynamic import`);
+  }
+}
+
+if (!mainEntryJs.includes(`const routeStyleVersion = "${routeLazyVersion}";`)
+  || !hasPattern(mainEntryJs, /function\s+ensureRouteStylesheet\(route\)[\s\S]*?document\.createElement\(["']link["']\)[\s\S]*?link\.rel\s*=\s*["']stylesheet["'][\s\S]*?document\.head\.appendChild\(link\)/)
+  || !hasPattern(mainEntryJs, /function\s+loadStyledRoute\(route,\s*moduleLoader,\s*instantiate\)[\s\S]*?Promise\.all\(\[ensureRouteStylesheet\(route\),\s*moduleLoader\(\)\]\)/)) {
+  fail("route CSS loader must await one versioned stylesheet and route module before instantiation");
+}
+
+for (const route of lazyStyledRoutes) {
+  const cssPath = `css/routes/${route}.css`;
+  const publicCssPath = `/css/routes/${route}.css`;
+  const cssSource = lazyRouteCssSources[route];
+  if (!cssSource.trim()) fail(`${cssPath} must not be empty`);
+  requireBalancedCss(cssPath, cssSource);
+  if (/@media\b/i.test(cssSource)) {
+    fail(`${cssPath} must not define @media rules; responsive geometry belongs to css/mobile-ios-shell.css`);
+  }
+  const hrefPattern = new RegExp(
+    `\\b${escapeRegExp(route)}\\s*:\\s*` + "`" + `${escapeRegExp(publicCssPath)}\\?v=\\$\\{routeStyleVersion\\}` + "`"
+  );
+  if (!hasPattern(mainEntryJs, hrefPattern)) {
+    fail(`js/main.js routeStyleHrefs must map ${route} to ${publicCssPath}?v=\${routeStyleVersion}`);
+  }
+  const styledLoaderPattern = new RegExp(
+    `\\b${escapeRegExp(route)}\\s*:\\s*\\(\\)\\s*=>\\s*loadStyledRoute\\(\\s*["']${escapeRegExp(route)}["'][\\s\\S]{0,240}?import\\(\\s*["']\\.\\/routes\\/${escapeRegExp(route)}\\.mjs\\?v=${routeLazyVersion}["']\\s*\\)`
+  );
+  if (!hasPattern(mainEntryJs, styledLoaderPattern)) {
+    fail(`js/main.js ${route} loader must await its route stylesheet through loadStyledRoute()`);
+  }
+}
+
+if (indexHtml.includes("/css/routes/")
+  || hasPattern(indexHtml, /<link\b(?=[^>]*\brel=["']modulepreload["'])(?=[^>]*\bhref=["'][^"']*(?:\/js\/routes\/|\.\/js\/routes\/))/i)) {
+  fail("index.html must not eagerly link route CSS or modulepreload public route modules");
+}
+
+const publicUiAuditPackageData = parseJsonSource("package.json", packageJson);
+if (publicUiAuditPackageData.scripts?.["audit:public-ui"] !== "node scripts/public-ui-audit.mjs"
+  || publicUiAuditPackageData.scripts?.["audit:resources-layout"] !== "node scripts/public-ui-audit.mjs --resources-only"
+  || publicUiAuditPackageData.scripts?.["build:transfer-icons"] !== "node scripts/build-transfer-icon-atlas.mjs") {
+  fail("package.json audit:public-ui must run scripts/public-ui-audit.mjs directly");
+}
+if (publicUiAuditPackageData.scripts?.["audit:public-ui:release"] !== "node scripts/public-ui-audit.mjs --release-only"
+  || publicUiAuditPackageData.scripts?.["qa:public-release"] !== "npm run verify:public-site-release"
+  || publicUiAuditPackageData.scripts?.["verify:public-site-release"] !== "npm run test && npm run check:public-modules && npm run build && npm run build:production:verify && git diff --check && git status --short && npm run audit:public-ui:release") {
+  fail("package.json must expose the non-publishing public release audit and unified local QA command");
+}
+for (const token of [
+  "359x500",
+  "375x667",
+  "390x844",
+  "430x932",
+  "760x900",
+  "844x390",
+  "1280x720",
+  "1440x900",
+  "Emulation.setDeviceMetricsOverride",
+  "prefers-reduced-motion",
+  "Page.captureScreenshot",
+  "document scrollWidth",
+  "windowDockOverlapArea",
+  "theme-bootstrap",
+  "Accessibility.getFullAXTree",
+  "skip-route-stability",
+  "activeH1Count",
+  "wrong-theme requests",
+  "route-exit",
+  "article-history",
+  "article-lifecycle",
+  "twitter:image:alt",
+  "backgroundsInert",
+  "programmatic focus escaped",
+  "mobile close target is invalid",
+  "quick-transfer-editing",
+  "account popover Escape close",
+  "chat-growth-359x500",
+  "chat-height-proxy-390x844-to-390x500",
+  "article-scroll-owner-390x500",
+  "about-scroll-owner-390x500",
+  "native-pagescale-internal-focus",
+  "realSoftKeyboardTested:false",
+  "keyboard-chat-compose-390x844-to-390x500",
+  "keyboard-chat-private-390x844-to-390x500",
+  "keyboard-home-account-390x844-to-390x500",
+  "keyboard-resources-transfer-account-390x844-to-390x500",
+  "keyboard-knowledge-search-390x844-to-390x500",
+  "keyboard-transfer-room-entry-390x844-to-390x500",
+  "keyboard-transfer-composer-390x844-to-390x500",
+  "browser-ui-height-proxy-390x844-to-390x760",
+  "orientation-round-trip-390x844-to-844x390",
+  "native-pagescale-layout-stability",
+  "dock-state-keyboard-round-trip-expanded",
+  "dock-state-keyboard-round-trip-collapsed",
+  "safe-area-insets-proxy",
+  "realSafeAreaTested: false",
+  "realBrowserChromeTested: false",
+  "viewportProxyTested: true",
+  "Page.bringToFront"
+  ,"--resources-only"
+  ,"checkResourceReturnState"
+  ,"resources-returned-${lang}-"
+  ,"resourceVisualLanguages"
+  ,"resourceVisualExpectedResultCount"
+  ,"responsive-release-matrix"
+  ,"performance-traces.json"
+  ,"Memory.getDOMCounters"
+  ,"release-summary.json"
+  ,"realDeviceCertified: false"
+  ,"wcagCertified: false"
+]) {
+  if (!publicUiAuditJs.includes(token)) {
+    fail(`scripts/public-ui-audit.mjs missing baseline contract token ${token}`);
+  }
+}
+const publicReleaseQa = readRequired("docs/PUBLIC_SITE_RELEASE_QA.md");
+for (const token of [
+  "npm.cmd run verify:public-site-release",
+  "npm.cmd run qa:public-release",
+  "Authorized release: NO | YES",
+  "NOT TESTED",
+  "do not commit, push, merge",
+  "origin/main",
+  "Cloudflare Pages production deployment commit",
+  "online `index.html` CSS/JS query strings"
+]) {
+  if (!publicReleaseQa.includes(token)) fail(`docs/PUBLIC_SITE_RELEASE_QA.md missing release barrier/evidence token ${token}`);
+}
+if (!hasPattern(publicUiAuditJs, /viewport\.mobile\s*&&\s*viewport\.height\s*>\s*viewport\.width\s*&&\s*viewport\.width\s*>=\s*500/)
+  || !hasPattern(publicUiAuditJs, /wallpaper=\$\{fixedTheme\}&welcome=0/)
+  || !hasPattern(publicUiAuditJs, /data\.document\.scrollWidth\s*===\s*viewport\.width/)
+  || !hasPattern(publicUiAuditJs, /data\.windowDockOverlapArea\s*<=\s*1/)
+  || !hasPattern(publicUiAuditJs, /function\s+scrollOwnerFailures[\s\S]*ownerInternal[\s\S]*targetFullyVisible[\s\S]*recentRealOwner/)
+  || !hasPattern(publicUiAuditJs, /document:\s*documentPosition\(\)[\s\S]*pipelineViewport:/)) {
+  fail("public UI audit must reject pseudo-phone widths and guard exact width plus Dock geometry");
+}
+
+const themeBootstrapIndex = indexHtml.indexOf("document.documentElement.dataset.timeTheme");
+const firstBlockingStyleIndex = indexHtml.indexOf('/css/style.css?v=');
+if (themeBootstrapIndex < 0 || firstBlockingStyleIndex < 0 || themeBootstrapIndex > firstBlockingStyleIndex) {
+  fail("index.html must establish html[data-time-theme] before the first blocking stylesheet");
+}
+if (indexHtml.includes('id="wallpaper-root" data-time="day"')
+  || !hasPattern(styleCss, /html\[data-time-theme="morning"\][\s\S]*html\[data-time-theme="day"\][\s\S]*html\[data-time-theme="dusk"\][\s\S]*html\[data-time-theme="night"\]/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\[data-time-theme="morning"\][\s\S]*html\[data-ui-shell="mobile"\]\[data-time-theme="night"\]/)
+  || !hasPattern(mainJs, /document\.documentElement\.dataset\.timeTheme\s*=\s*theme/)) {
+  fail("four-period wallpaper bootstrap must avoid a hard-coded day theme and synchronize html, desktop, and mobile selectors");
+}
+
+if (indexHtml.indexOf('class="skip-link"') < 0
+  || indexHtml.indexOf('class="skip-link"') > indexHtml.indexOf('class="site-shell"')
+  || !indexHtml.includes('<main id="main-content" tabindex="-1">')
+  || countLiteral(indexHtml, "<h1") !== 8) {
+  fail("index.html must expose a first-focus skip link, a focusable main landmark, and exactly one H1 per route");
+}
+for (const route of ["home", "knowledge", "videos", "resources", "games", "blog", "chatroom", "about"]) {
+  if (!indexHtml.includes(`id="${route}-title"`) || !hasPattern(indexHtml, new RegExp(`<section[^>]+id="${route}"[^>]+aria-labelledby="${route}-title"`))) {
+    fail(`index.html ${route} route must be labelled by its stable H1`);
+  }
+}
+if (!hasPattern(mainJs, /document\.querySelector\("\.skip-link"\)\?\.addEventListener\("click",[\s\S]*event\.preventDefault\(\)[\s\S]*main\.focus\(\{\s*preventScroll:\s*true\s*\}\)/)
+  || !mainJs.includes('document.createElement(`h${heading[1].length + 1}`)')
+  || mainJs.includes('const title = document.createElement("h3")')) {
+  fail("skip navigation must preserve the current route and public card/Markdown headings must start at H2");
+}
+
 for (const [label, source, markers] of [
-  ["index.html transfer UI", indexHtml, ["id=\"transfer-app\"", "/css/transfer.css", "/js/transfer.js"]],
+  ["Quick Transfer fragment", transferFragmentHtml, ["id=\"transfer-app\"", "id=\"transfer-drop-overlay\"", "id=\"transfer-text-form\""]],
+  ["Quick Transfer lazy loader", quickTransferLoaderJs, ["/fragments/quick-transfer.html", "/css/transfer.css", "/js/transfer.js", "DOMParser", "EXPECTED_IDS"]],
   ["js/main.js transfer resource", mainJs, ["seed-update-2026-07-16-quick-transfer", "quick-transfer", "quickTransferOpen"]],
   ["transfer API", transferApiJs, ["handleTransferApi", "ensureTransferSchema", "runTransferCleanup"]],
   ["transfer client", transferJs, ["QuickTransfer", "deriveRoom", "runMultipart"]],
@@ -520,16 +987,31 @@ for (const [label, source, markers] of [
   }
 }
 
-if (!hasPattern(transferCss, /#resource-list\s*>\s*\.resource-card\s*\{[\s\S]*?width:\s*100%[\s\S]*?height:\s*210px[\s\S]*?max-height:\s*210px/)
-  || !hasPattern(transferCss, /#resource-list\s+\.meta-row\s*\{[\s\S]*?flex-wrap:\s*wrap[\s\S]*?overflow:\s*visible/)
-  || !hasPattern(transferCss, /html\[data-ui-shell="mobile"\]\s+#resource-list\s+\.meta-row\s*\{[\s\S]*?flex-wrap:\s*wrap[\s\S]*?overflow:\s*visible/)) {
-  fail("css/transfer.css should keep Resource cards equal-width/equal-height while exposing wrapped mobile metadata");
+if (indexHtml.includes('id="transfer-app"')
+  || indexHtml.includes('/css/transfer.css')
+  || indexHtml.includes('/js/transfer.js')) {
+  fail("index.html must not preload Quick Transfer DOM, CSS, or JavaScript before its resource action is clicked");
+}
+
+if (!hasPattern(quickTransferLoaderJs, /const\s+TRANSFER_VERSION\s*=\s*["']20260718-resource-icons-layout-r1["']/)
+  || !hasPattern(quickTransferLoaderJs, /Promise\.all\(\[ensureStylesheet\(\),\s*ensureFragment\(\),\s*ensureScript\(\)\]\)/)
+  || !hasPattern(quickTransferLoaderJs, /root\.querySelector\(["']script, style, link, meta, base, iframe, object, embed, svg, math["']\)/)
+  || !hasPattern(quickTransferLoaderJs, /routeActive[\s\S]*await\s+ensureLoaded\(\)[\s\S]*if\s*\(!routeActive\)/)
+  || !hasPattern(quickTransferLoaderJs, /if\s*\(!initialized\)\s*\{[\s\S]*implementation\.init\(language\)[\s\S]*initialized\s*=\s*true/)) {
+  fail("Quick Transfer loader must keep its three local assets single-flight, validate inert markup, and initialize only after an active click route");
+}
+
+if (!hasPattern(styleCss, /#resource-list\s*>\s*\.resource-card\s*\{[\s\S]*?width:\s*100%[\s\S]*?height:\s*auto[\s\S]*?min-height:\s*150px[\s\S]*?max-height:\s*none/)
+  || !hasPattern(styleCss, /#resource-list\s+\.meta-row\s*\{[\s\S]*?flex-wrap:\s*wrap[\s\S]*?overflow:\s*visible/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+#resource-list\s*>\s*\.resource-card\s*\{[\s\S]*?height:\s*auto[\s\S]*?min-height:\s*0[\s\S]*?max-height:\s*none/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+#resource-list\s+\.meta-row\s*\{[\s\S]*?flex-wrap:\s*wrap[\s\S]*?overflow:\s*visible/)) {
+  fail("eager base CSS should keep Resource cards stable before Quick Transfer CSS is requested");
 }
 
 if (!hasPattern(transferCss, /body\[data-route="resources"\]\s+\.topbar-actions\s*\{\s*display:\s*contents/)
   || !hasPattern(transferCss, /body\[data-route="resources"\]\s+\.account-widget\s*\{\s*display:\s*contents/)
-  || !hasPattern(transferJs, /function\s+openAccountFromTransfer[\s\S]*openAccountPopover\(\{\s*returnFocus:\s*trigger\s*\}\)/)
-  || !hasPattern(transferJs, /addEventListener\(["']lusu:accountchange["'],\s*syncAccountState\)/)
+  || !hasPattern(transferJs, /function\s+openAccountFromTransfer[\s\S]*openAccountPopover\(\{\s*returnFocus:\s*trigger,\s*mode:\s*["']login["'],\s*context:\s*["']transfer["']\s*\}\)/)
+  || !hasPattern(transferJs, /listen\(window,\s*["']lusu:accountchange["'],\s*syncAccountState\)/)
   || !hasPattern(mainJs, /function\s+openAccountPopover\(options\s*=\s*\{\}\)[\s\S]*accountPopoverReturnFocus/)) {
   fail("Quick Transfer sign-in should open the mobile account popover and restore authentication/focus state");
 }
@@ -538,9 +1020,9 @@ if (!hasPattern(transferJs, /catch\s*\(error\)\s*\{[\s\S]{0,240}?if\s*\(error\.s
   fail("Quick Transfer should stop room polling as soon as the account session becomes unauthorized");
 }
 
-if (!indexHtml.includes('id="transfer-drop-overlay"')
-  || !hasPattern(transferJs, /refs\.dropSurface\?\.addEventListener\(["']dragenter["'],\s*handleWindowDragEnter\)/)
-  || !hasPattern(transferJs, /refs\.dropSurface\?\.addEventListener\(["']drop["'],\s*handleWindowDrop\)/)
+if (!transferFragmentHtml.includes('id="transfer-drop-overlay"')
+  || !hasPattern(transferJs, /listen\(refs\.dropSurface,\s*["']dragenter["'],\s*handleWindowDragEnter\)/)
+  || !hasPattern(transferJs, /listen\(refs\.dropSurface,\s*["']drop["'],\s*handleWindowDrop\)/)
   || !hasPattern(transferJs, /function\s+isFileDrag[\s\S]*dataTransfer\?\.types[\s\S]*includes\(["']Files["']\)/)
   || !hasPattern(transferJs, /function\s+queueFiles\([\s\S]*!state\.config\?\.r2Ready[\s\S]*setFeedback\(text\(["']r2Missing["']\),\s*true\)[\s\S]*return/)
   || !hasPattern(transferJs, /function\s+pumpTaskQueue\(\)\s*\{\s*if\s*\(!state\.config\?\.r2Ready\)\s*\{\s*failPendingTasksForUnavailableStorage\(\)/)
@@ -549,10 +1031,10 @@ if (!indexHtml.includes('id="transfer-drop-overlay"')
   fail("Quick Transfer should accept file-only drops across the full window and block unavailable uploads before creating tasks");
 }
 
-if (!hasPattern(transferCss, /html\[data-ui-shell="desktop"\]\s+#resources\s+\.xp-window\.is-transfer-open\s*\{[\s\S]*height:\s*calc\(100dvh\s*-\s*var\(--chrome-window-compact-reserve\)\)/)
-  || !hasPattern(transferCss, /html\[data-ui-shell="desktop"\]\s+#resources\s+\.xp-window\.is-transfer-open\s+\.transfer-feed\s*\{\s*max-height:\s*none/)
-  || !hasPattern(transferJs, /refs\.windowFrame\?\.classList\.add\(["']is-transfer-open["']\)/)
-  || !hasPattern(transferJs, /refs\.windowFrame\?\.classList\.remove\(["']is-transfer-open["']\)/)) {
+if (!hasPattern(transferCss, /html\[data-ui-shell="desktop"\]\s+#resources\s+\.xp-window\.is-transfer-room-mode\s*\{[\s\S]*height:\s*calc\(100dvh\s*-\s*var\(--chrome-window-compact-reserve\)\)/)
+  || !hasPattern(transferCss, /html\[data-ui-shell="desktop"\]\s+#resources\s+\.xp-window\.is-transfer-room-mode\s+\.transfer-feed\s*\{\s*max-height:\s*none/)
+  || !hasPattern(transferJs, /frame\.classList\.toggle\(["']is-transfer-open["'],\s*open\)/)
+  || !hasPattern(transferJs, /frame\.classList\.toggle\(["']is-transfer-room-mode["'],\s*mode\s*===\s*["']room["']\)/)) {
   fail("Quick Transfer desktop window and feed should expand with the available browser viewport");
 }
 
@@ -570,9 +1052,9 @@ if (!hasPattern(transferCss, /html\[data-ui-shell="mobile"\]\s+\.transfer-room\s
   || !hasPattern(transferCss, /html\[data-ui-shell="mobile"\]\s+\.transfer-media-preview\s*\{[\s\S]*?width:\s*100%[\s\S]*?height:\s*clamp\(190px,\s*58vw,\s*240px\)[\s\S]*?box-sizing:\s*border-box[\s\S]*?justify-self:\s*stretch/)
   || !hasPattern(transferCss, /html\[data-ui-shell="mobile"\]\s+\.transfer-file-card\s*\{[\s\S]*?width:\s*100%[\s\S]*?max-width:\s*none/)
   || !hasPattern(transferCss, /html\[data-ui-shell="mobile"\]\s+\.transfer-delete-button\s*\{[\s\S]*?width:\s*44px[\s\S]*?min-height:\s*44px/)
-  || !hasPattern(transferJs, /function\s+keepFocusedControlVisible[\s\S]*scrollIntoView/)
-  || !hasPattern(transferJs, /visualViewport\?\.addEventListener\(["']resize["'],\s*keepFocusedControlVisible/)) {
-  fail("Quick Transfer mobile room should use a non-shrinking portrait flex stack, an explicit landscape grid, one reachable scroll path, a normal-flow composer, stable full-width media, keyboard compensation, and 44px delete controls");
+  || !hasPattern(transferJs, /function\s+requestFocusReveal\(reason\)[\s\S]*window\.LusuMobileShell\?\.requestFocusReveal\?\.\(reason\)/)
+  || hasPattern(transferJs, /subscribeViewport|quick-transfer:viewport-focus|viewportUnsubscribe|focusedTransferControl|revealFocusedTransferControl|scrollIntoView/)) {
+  fail("Quick Transfer mobile room should keep one reachable owner, stable full-width media, 44px delete controls, and delegate focus recovery to the shared mobile shell");
 }
 const japaneseSubtextHtml = readRequired("tools/japanese-subtext/index.html");
 const japaneseSubtextCss = readRequired("tools/japanese-subtext/style.css");
@@ -1216,11 +1698,13 @@ function validateJapaneseSubtextReleaseContract() {
   }
 
   const requiredHeaderRules = [
-    ["/tools/japanese-subtext/manifest.json", "public, max-age=0, must-revalidate"],
-    ["/tools/japanese-subtext/content/*", "public, max-age=300, must-revalidate"],
-    ["/tools/japanese-subtext/audio/manifest.json", "public, max-age=0, must-revalidate"],
-    ["/tools/japanese-subtext/audio/*", "public, max-age=86400, must-revalidate"],
-    ["/tools/japanese-subtext/assets/*", "public, max-age=86400, must-revalidate"]
+    ["/", "no-cache, max-age=0, must-revalidate"],
+    ["/index.html", "no-cache, max-age=0, must-revalidate"],
+    ["/_assets/*", "public, max-age=31536000, immutable"],
+    ["/*.json", "public, max-age=300, must-revalidate"],
+    ["/css/*", "public, max-age=300, must-revalidate"],
+    ["/js/*", "public, max-age=300, must-revalidate"],
+    ["/admin/*", "no-store"]
   ];
   for (const [path, cacheControl] of requiredHeaderRules) {
     const pattern = new RegExp(`(?:^|\\r?\\n)${escapeRegExp(path)}\\r?\\n[ \\t]+Cache-Control:\\s*${escapeRegExp(cacheControl)}(?:\\r?\\n|$)`);
@@ -1710,10 +2194,23 @@ try {
   fail(`admin/admin.js syntax error: ${error.message}`);
 }
 
-try {
-  new Function(mainJs);
-} catch (error) {
-  fail(`js/main.js syntax error: ${error.message}`);
+for (const path of publicModuleGraph.files) {
+  const source = publicModuleSources[path]
+    .replace(/^import\s+[^;]+;\s*$/gm, "")
+    .replace(/^export\s+(?=(?:async\s+)?(?:function|class|const|let|var)\b)/gm, "");
+  try {
+    new Function(source);
+  } catch (error) {
+    fail(`${path} syntax error: ${error.message}`);
+  }
+  if (/(?:^|\r?\n)\/\*\r?\n[ \t]+Cache-Control:/i.test(headersConfig)) {
+    fail("_headers must not restore a global Cache-Control rule that overlaps every cache class");
+  }
+  const immutableRules = [...headersConfig.matchAll(/(?:^|\r?\n)(\/[^\r\n]*)\r?\n[ \t]+Cache-Control:[^\r\n]*\bimmutable\b/gi)]
+    .map((match) => match[1]);
+  if (immutableRules.some((path) => path !== "/_assets/*")) {
+    fail("_headers may only assign immutable caching to content-hashed /_assets files");
+  }
 }
 
 for (const [path, source] of [
@@ -1760,6 +2257,18 @@ if (openBraces !== closeBraces) {
 requireBalancedCss("css/mobile-ios-shell.css", mobileIosShellCss);
 requireBalancedCss("css/motion-system.css", motionSystemCss);
 
+const mobileLayoutOwnershipConflicts = findMobileLayoutOwnershipConflicts([
+  { file: "css/style.css", source: styleCss },
+  { file: "css/mobile-ios-shell.css", source: mobileIosShellCss },
+  { file: "css/motion-system.css", source: motionSystemCss }
+]);
+if (mobileLayoutOwnershipConflicts.length > 0) {
+  fail([
+    "mobile critical layout must have one authority in css/mobile-ios-shell.css; remove these cross-file duplicates:",
+    ...mobileLayoutOwnershipConflicts.map((conflict) => `  - ${conflict}`)
+  ].join("\n"));
+}
+
 for (const selector of [
   ".admin-shell",
   ".sidebar",
@@ -1788,12 +2297,65 @@ if (/\.map-city-marker\s*\{[^}]*pointer-events:\s*none/s.test(adminCss)) {
 
 for (const token of [
   'rel="canonical"',
+  'name="description"',
+  'property="og:type"',
+  'property="og:site_name"',
   'property="og:title"',
+  'property="og:description"',
+  'property="og:url"',
+  'property="og:image"',
+  'property="og:image:width"',
+  'property="og:image:height"',
+  'property="og:image:alt"',
+  'property="og:locale"',
   'name="twitter:card"',
+  'name="twitter:title"',
+  'name="twitter:description"',
+  'name="twitter:image"',
+  'name="twitter:image:alt"',
   'rel="manifest"'
 ]) {
-  if (!indexHtml.includes(token)) {
-    fail(`index.html missing ${token}`);
+  if (countLiteral(indexHtml, token) !== 1) {
+    fail(`index.html should contain exactly one ${token}`);
+  }
+}
+
+for (const key of [
+  "metaKnowledgeDescription",
+  "metaVideosDescription",
+  "metaResourcesDescription",
+  "metaGamesDescription",
+  "metaBlogDescription",
+  "metaChatDescription",
+  "metaAboutDescription",
+  "metaShareImageAlt"
+]) {
+  const definitions = mainJs.match(new RegExp(`^\\s+${key}:\\s*"[^"\\r\\n]+"`, "gm")) || [];
+  if (definitions.length !== 3) {
+    fail(`js/main.js should define non-empty zh/en/ja ${key} values`);
+  }
+}
+
+if (countLiteral(indexHtml, "data-modal-background") !== 2) {
+  fail("index.html should mark exactly the skip link and site shell as modal backgrounds");
+}
+for (const dialogPattern of [
+  /class="xp-window welcome-window"\s+role="dialog"\s+aria-modal="true"\s+aria-labelledby="welcome-title"\s+tabindex="-1"/,
+  /class="xp-window modal-window"\s+role="dialog"\s+aria-modal="true"\s+aria-labelledby="modal-title"\s+tabindex="-1"/
+]) {
+  if (!hasPattern(indexHtml, dialogPattern)) {
+    fail("index.html modal dialogs should be labelled, modal, and programmatically focusable");
+  }
+}
+if (!hasPattern(mainJs, /openVideo\(Number\(videoButton\.dataset\.videoIndex\),\s*\{\s*trigger:\s*videoButton\s*\}\)/)
+  || !hasPattern(mainJs, /managedVideoButton\.dataset\.videoSource\s*===\s*["']thumbnail["'][\s\S]*querySelector\(\s*["']\.card-action\[data-video-id\]["']\s*\)[\s\S]*openVideo\(managedVideoButton\.dataset\.videoId,\s*\{\s*trigger:\s*videoTrigger\s*\|\|\s*managedVideoButton\s*\}\)/)) {
+  fail("js/main.js video click branches should map decorative thumbnails to the card's single exact play trigger");
+}
+
+for (const marker of ["function applyDocumentMeta", "function syncDocumentMeta", "function syncArticleDocumentMeta"]) {
+  const block = objectBlockAfterMarker(mainJs, marker);
+  if (!block || /history\.(?:pushState|replaceState)/.test(block)) {
+    fail(`${marker} must not mutate browser history`);
   }
 }
 
@@ -1813,6 +2375,10 @@ if (!hasPattern(uiMotionJs, /transition\.ready\s*&&\s*typeof\s+transition\.ready
   fail("js/ui-motion.js should consume skipped View Transition ready rejections without leaking page errors");
 }
 
+if (!hasPattern(uiMotionJs, /if\s*\(\s*!canUseFullMotion\(\)\s*\)\s*\{\s*try\s*\{\s*var\s+immediateResult\s*=\s*commitOnce\(\)[\s\S]*cleanup\(\)[\s\S]*Promise\.resolve\(immediateResult\)/)) {
+  fail("js/ui-motion.js reduced/off mode should commit modal closes immediately");
+}
+
 if (!hasPattern(uiMotionJs, /function\s+enterAnimation[\s\S]*transformOrigin:\s*["']center center["'][\s\S]*function\s+exitAnimation[\s\S]*transformOrigin:\s*["']center center["']/)) {
   fail("js/ui-motion.js center-based window deltas should use an explicit center transform origin");
 }
@@ -1826,8 +2392,8 @@ if (!hasPattern(motionSystemCss, /\.resource-empty-icon\.blog-empty-icon\s*\{[\s
   fail("css/motion-system.css should preserve the blog bitmap when the empty-state node also carries the shared resource class");
 }
 
-if (!indexHtml.includes('content="width=device-width, initial-scale=1.0, viewport-fit=cover"')) {
-  fail("index.html viewport should opt into iOS safe-area coverage");
+if (!indexHtml.includes('content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content"')) {
+  fail("index.html viewport should opt into safe-area coverage and content-resizing keyboard geometry");
 }
 
 const welcomeQuickLinksHtml = findRequiredHtml(
@@ -1856,14 +2422,14 @@ if (visibleEmojiPattern.test(visibleHtmlText(indexHtml))) {
   fail("index.html visible text must not use emoji or symbol artwork; use bitmap-backed asset classes");
 }
 
-const runtimeVisibleEmojiLines = mainJs.split(/\r?\n/).filter((line) => (
+const runtimeVisibleEmojiLines = runtimePublicJs.split(/\r?\n/).filter((line) => (
   /\b(?:textContent|innerText)\s*=|createTextNode\s*\(/.test(line)
   && visibleEmojiPattern.test(line)
 ));
 if (runtimeVisibleEmojiLines.length) {
   fail("js/main.js runtime renderers must not write visible emoji or symbol artwork");
 }
-const mainWithoutLegacyIconMetadata = mainJs.replace(/^\s*icon\s*:\s*(["'`]).*?\1\s*,?\s*$/gmu, "");
+const mainWithoutLegacyIconMetadata = runtimePublicJs.replace(/^\s*icon\s*:\s*(["'`]).*?\1\s*,?\s*$/gmu, "");
 if (visibleEmojiPattern.test(mainWithoutLegacyIconMetadata)) {
   fail("js/main.js must keep emoji out of runtime-visible copy; legacy non-rendered icon metadata is the only tolerated source");
 }
@@ -1951,14 +2517,114 @@ for (const token of [
 }
 
 for (const [label, pattern] of [
-  ["chat quick link", /\.quick-link-chat\s+\.quick-link-asset\s*\{[\s\S]*?background-image:\s*url\(["']\.\.\/assets\/images\/icon-chatroom-clean\.png["']\)/],
-  ["games quick link", /\.quick-link-games\s+\.quick-link-asset[\s\S]*?\{[\s\S]*?background-image:\s*url\(["']\.\.\/assets\/images\/icon-games\.png["']\)/],
-  ["knowledge quick link", /\.quick-link-knowledge\s+\.quick-link-asset\s*\{[\s\S]*?background-image:\s*url\(["']\.\.\/assets\/images\/icon-knowledge\.png["']\)/],
-  ["video placeholder", /\.video-placeholder-asset\s*,\s*\.video-empty-icon\s*\{[\s\S]*?background-image:\s*url\(["']\.\.\/assets\/images\/icon-videos\.png["']\)/]
+  ["chat quick link", /\.quick-link-chat\s+\.quick-link-asset\s*\{[\s\S]*?background-image:\s*url\(["']\.\.\/assets\/images\/icon-chatroom-clean\.png\?v=20260718-resource-icons-layout-r1["']\)/],
+  ["games quick link", /\.quick-link-games\s+\.quick-link-asset[\s\S]*?\{[\s\S]*?background-image:\s*url\(["']\.\.\/assets\/images\/icon-games\.png\?v=20260718-resource-icons-layout-r1["']\)/],
+  ["knowledge quick link", /\.quick-link-knowledge\s+\.quick-link-asset\s*\{[\s\S]*?background-image:\s*url\(["']\.\.\/assets\/images\/icon-knowledge\.png\?v=20260718-resource-icons-layout-r1["']\)/],
+  ["video placeholder", /\.video-placeholder-asset\s*,\s*\.video-empty-icon\s*\{[\s\S]*?background-image:\s*url\(["']\.\.\/assets\/images\/icon-videos\.png\?v=20260718-resource-icons-layout-r1["']\)/]
 ]) {
   if (!hasPattern(motionSystemCss, pattern)) {
     fail(`css/motion-system.css missing bitmap-backed ${label} asset mapping`);
   }
+}
+
+const chatroomAssetVersionPattern = escapeRegExp(routeLazyVersion);
+if (!hasPattern(styleCss, new RegExp(`\\.chatroom-icon\\s*\\{[^}]*icon-chatroom-clean\\.png\\?v=${chatroomAssetVersionPattern}`))
+  || hasPattern(lazyRouteCssSources.chatroom, /\.chatroom-icon\s*\{/)
+  || !hasPattern(styleCss, new RegExp(`\\.title-icon-chatroom\\s*\\{[^}]*icon-chatroom-clean\\.png\\?v=${chatroomAssetVersionPattern}`))
+  || hasPattern(mobileIosShellCss, /\.chatroom-avatar\s*\{[^}]*display:\s*none/)
+  || (mobileIosShellCss.match(/\.chatroom-avatar\s*\{[^}]*display:\s*block[^}]*width:\s*(?:32|34)px[^}]*height:\s*(?:32|34)px/g) || []).length < 2) {
+  fail("the Chat shell icon must load before route CSS, the titlebar must use the Chat asset, and short mobile layouts must retain a decoded avatar");
+}
+
+const viewportRuntimeSources = [mobileShellJs, mainJs, uiMotionJs, transferJs];
+const nativeWindowResizeBindings = viewportRuntimeSources
+  .reduce((count, source) => count + (source.match(/\bwindow\.addEventListener\(\s*["']resize["']/g) || []).length, 0);
+const nativeVisualResizeBindings = viewportRuntimeSources
+  .reduce((count, source) => count + (source.match(/\bwindow\.visualViewport\?*\.addEventListener\(\s*["']resize["']/g) || []).length, 0);
+const nativeVisualScrollBindings = viewportRuntimeSources
+  .reduce((count, source) => count + (source.match(/\bwindow\.visualViewport\?*\.addEventListener\(\s*["']scroll["']/g) || []).length, 0);
+
+if (nativeWindowResizeBindings !== 1 || nativeVisualResizeBindings !== 1 || nativeVisualScrollBindings !== 1
+  || !hasPattern(mobileShellJs, /function\s+createFramePipeline[\s\S]*function\s+schedule[\s\S]*function\s+flushFrame[\s\S]*phase\s*=\s*["']measure["'][\s\S]*phase\s*=\s*["']mutate["']/)
+  || !hasPattern(mobileShellJs, /function\s+request\(/)
+  || !hasPattern(mobileShellJs, /function\s+requestViewport\(/)
+  || !hasPattern(mobileShellJs, /function\s+subscribeViewport\(/)
+  || !hasPattern(mobileShellJs, /function\s+snapshot\(/)
+  || !hasPattern(mobileShellJs, /const\s+tier\s*=[\s\S]*["']low["'][\s\S]*["']normal["'][\s\S]*root\.dataset\.performanceTier\s*=\s*framePipeline\.snapshot\(\)\.tier/)
+  || !hasPattern(mobileShellJs, /isPinchZoomed[\s\S]*keyboardOffset\s*=\s*isPinchZoomed\s*\?\s*0/)
+  || !hasPattern(mainJs, /pipeline\.schedule\(\s*["']main:article-read["'][\s\S]*measure:\s*measureArticleReadState[\s\S]*mutate:\s*applyArticleReadState/)
+  || !hasPattern(mainJs, /subscribeViewport\(\s*["']main:home-layout["'][\s\S]*measure:\s*measureHomeViewportLayout[\s\S]*mutate:\s*applyHomeViewportLayout/)
+  || !hasPattern(uiMotionJs, /subscribeViewport\(\s*["']ui-motion["'][\s\S]*mutate:\s*handleResize/)
+  || !hasPattern(transferJs, /window\.LusuMobileShell\?\.requestFocusReveal\?\.\(reason\)/)
+  || hasPattern(transferJs, /subscribeViewport|quick-transfer:viewport-focus|viewportUnsubscribe/)
+  || !styleCss.includes('html[data-performance-tier="low"]')
+  || !mobileIosShellCss.includes('html[data-ui-shell="mobile"][data-performance-tier="low"]')
+  || !motionSystemCss.includes('html[data-performance-tier="low"]')) {
+  fail("public viewport work must use one keyed read/write frame pipeline and expose a normal/low paint tier");
+}
+
+if (!hasPattern(mobileShellJs, /const\s+stableExpandedHeights\s*=\s*new\s+Map\(\)/)
+  || !hasPattern(mobileShellJs, /const\s+keyboardThreshold\s*=\s*Math\.max\(96,\s*Math\.round\(stableExpandedHeight\s*\*\s*0\.18\)\)/)
+  || !hasPattern(mobileShellJs, /const\s+keyboardOpen\s*=\s*hasVisualViewport[\s\S]*!isPinchZoomed[\s\S]*editingHasFocus[\s\S]*shortenedBy\s*>=\s*keyboardThreshold/)
+  || !hasPattern(mobileShellJs, /orientationChanged[\s\S]*!stableExpandedHeight[\s\S]*!keyboardWasOpen\s*&&\s*!editingHasFocus/)
+  || !hasPattern(mobileShellJs, /keyboardBlurDeadline[\s\S]*blurGraceActive[\s\S]*function\s+noteEditingFocus[\s\S]*allowBlurGrace/)
+  || !hasPattern(mobileShellJs, /viewportMode\s*=\s*["']zoom["'][\s\S]*viewportMode\s*=\s*["']keyboard["'][\s\S]*viewportMode\s*=\s*["']browser-ui["']/)
+  || !hasPattern(mobileShellJs, /width:\s*isPinchZoomed\s*\?\s*layoutWidth\s*:\s*visualWidth[\s\S]*height:\s*isPinchZoomed\s*\?\s*layoutHeight\s*:\s*visualHeight/)
+  || !hasPattern(mobileShellJs, /--mobile-viewport-height[\s\S]*--mobile-viewport-width[\s\S]*--mobile-viewport-offset-top[\s\S]*--mobile-viewport-offset-left[\s\S]*--mobile-keyboard-offset/)
+  || !hasPattern(mobileShellJs, /root\.dataset\.mobileKeyboard\s*=\s*keyboardState[\s\S]*root\.dataset\.mobileOrientation\s*=[\s\S]*root\.dataset\.mobileViewportMode\s*=/)
+  || !hasPattern(mobileShellJs, /const\s+FOCUS_RECHECK_DELAY_MS\s*=\s*400[\s\S]*function\s+scheduleFocusoutRecheck[\s\S]*window\.setTimeout/)
+  || !hasPattern(mobileShellJs, /minimumTargetDelta\s*=\s*targetRect\.bottom\s*-\s*contentBottom[\s\S]*maximumTargetDelta\s*=\s*targetRect\.top\s*-\s*contentTop[\s\S]*Math\.max\(minimumTargetDelta/)
+  || !indexHtml.includes("interactive-widget=resizes-content")) {
+  fail("mobile viewport state must distinguish browser UI, keyboard, rotation, and pinch zoom through the shared frame pipeline");
+}
+
+if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\[data-mobile-keyboard="open"\]\s+body\s*\{[^}]*--mobile-dock-space:/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\[data-mobile-keyboard="open"\]\s+body\s+\.xp-taskbar\s*\{[^}]*visibility:\s*hidden[^}]*opacity:\s*0[^}]*pointer-events:\s*none/)
+  || !hasPattern(mobileIosShellCss, /\.account-popover\s*\{[\s\S]*--mobile-viewport-offset-top[\s\S]*--mobile-safe-right[\s\S]*--mobile-safe-left/)
+  || !hasPattern(transferCss, /var\(--mobile-safe-bottom,\s*env\(safe-area-inset-bottom\)\)/)
+  || hasPattern(transferJs, /visualViewport|scrollIntoView|subscribeViewport/)) {
+  fail("mobile keyboard avoidance must temporarily release Dock space, respect shared safe-area variables, and keep Transfer free of private viewport geometry");
+}
+
+if (!hasPattern(mainJs, /function\s+setAccountStatus[\s\S]*function\s+syncAccountStatus[\s\S]*refs\.status\.textContent\s*=\s*message[\s\S]*requestMobileFocusReveal/)
+  || !hasPattern(mainJs, /catch\s*\(error\)\s*\{[\s\S]*setFieldError\(failure\.field,\s*failure\.key\)[\s\S]*setAccountStatus\(failure\.key,\s*\{\s*error:\s*true\s*\}\)[\s\S]*requestMobileFocusReveal\(["']account-form-error-focus["']\)[\s\S]*finally\s*\{[\s\S]*setAccountSubmitting\(["']["']\)/)
+  || !hasPattern(mainJs, /function\s+setChatFeedback[\s\S]*requestMobileFocusReveal\(["']chat-feedback["']\)/)
+  || !hasPattern(mainJs, /const\s+setSearchStatus[\s\S]*requestMobileFocusReveal\(["']knowledge-search-status["']\)/)) {
+  fail("account, Chat, and Knowledge feedback must preserve editing state and request shared mobile focus recovery");
+}
+
+for (const route of ["knowledge", "videos", "resources", "games", "blog", "chatroom", "about"]) {
+  const routeEscapeHatch = new RegExp(`html\\[data-ui-shell="mobile"\\]\\s+body:not\\(\\[data-route="home"\\]\\)\\s+#${route}\\.page\\.active\\s*>\\s*\\.xp-window`);
+  if (!hasPattern(mobileIosShellCss, routeEscapeHatch)) {
+    fail(`css/mobile-ios-shell.css missing the specific mobile overflow escape hatch for ${route}`);
+  }
+}
+
+if (!hasPattern(mobileIosShellCss, /#about\.page\.active\s*>\s*\.xp-window\s*\{[^}]*overflow-x:\s*hidden[^}]*overflow-y:\s*auto[^}]*overscroll-behavior-y:\s*contain[^}]*scroll-padding-block:\s*12px/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+body\.is-article-reading\s+#knowledge\.page\.active\s*>\s*\.xp-window[\s\S]*?\{[^}]*overflow-y:\s*hidden[^}]*overscroll-behavior-y:\s*none/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+#knowledge\s+\.content-list,\s*html\[data-ui-shell="mobile"\]\s+#videos\s+\.card-grid,\s*html\[data-ui-shell="mobile"\]\s+#resources\s+\.download-list,\s*html\[data-ui-shell="mobile"\]\s+#games\s+\.game-list,\s*html\[data-ui-shell="mobile"\]\s+#blog\s+\.notepad-paper,\s*html\[data-ui-shell="mobile"\]\s+#about\s+\.profile-card,\s*html\[data-ui-shell="mobile"\]\s+\.chatroom-log\s*\{[^}]*overscroll-behavior-y:\s*auto/)
+  || !hasPattern(transferCss, /html\[data-ui-shell="mobile"\]\s+\.transfer-room-entry\s*\{[^}]*overflow-y:\s*auto[^}]*overscroll-behavior-y:\s*auto[^}]*scroll-padding-block:/)
+  || !hasPattern(transferCss, /html\[data-ui-shell="mobile"\]\s+\.transfer-room\s*\{[^}]*overflow-y:\s*auto[^}]*overscroll-behavior-y:\s*auto[^}]*scroll-padding-block:/)
+  || !hasPattern(transferCss, /html\[data-ui-shell="mobile"\]\s+\.transfer-login-gate\s*\{[^}]*overflow-y:\s*auto[^}]*overscroll-behavior-y:\s*auto[^}]*scroll-padding-block:/)
+  || hasPattern(mobileIosShellCss, /body\[data-route="home"\][^,{]*\.xp-window\s*\{[^}]*overflow-y:\s*auto/)) {
+  fail("mobile App windows must provide a dormant vertical overflow escape hatch while Home and article detail retain their established scroll ownership");
+}
+
+const mobileFocusRevealContract = windowAfter(mobileShellJs, "function focusRevealBoundary", 18000);
+if (!mobileFocusRevealContract
+  || !mobileShellJs.includes('const FOCUS_REVEAL_KEY = "mobile-shell:focus-reveal"')
+  || !hasPattern(mobileFocusRevealContract, /const\s+accountPopover\s*=\s*target\.closest\(\s*["']#account-popover["']\s*\)[\s\S]*!accountPopover\.hidden[\s\S]*return\s+accountPopover[\s\S]*route\s*===\s*["']home["'][\s\S]*return\s+null/)
+  || !hasPattern(mobileFocusRevealContract, /function\s+nearestVerticalScrollOwner[\s\S]*getComputedStyle\(node\)\.overflowY[\s\S]*scrollHeight\s*>\s*node\.clientHeight/)
+  || !hasPattern(mobileFocusRevealContract, /function\s+contextElementsForFocus[\s\S]*#chat-message-input[\s\S]*#chat-private-password[\s\S]*#knowledge-search-input[\s\S]*\.account-actions[\s\S]*#transfer-room-password[\s\S]*#transfer-text-input/)
+  || !hasPattern(mobileFocusRevealContract, /function\s+measureFocusReveal[\s\S]*target\.getBoundingClientRect\(\)[\s\S]*owner\.getBoundingClientRect\(\)[\s\S]*framePipeline\.snapshot\(\)\.viewport[\s\S]*viewport\.visualHeight/)
+  || !hasPattern(mobileFocusRevealContract, /const\s+visualTop\s*=[\s\S]*viewport\.offsetTop[\s\S]*const\s+visualBottom\s*=\s*visualTop\s*\+\s*visualHeight/)
+  || !hasPattern(mobileFocusRevealContract, /function\s+mutateFocusReveal[\s\S]*measurement\.owner\.scrollTop\s*=\s*measurement\.nextScrollTop/)
+  || !hasPattern(mobileFocusRevealContract, /framePipeline\.schedule\(FOCUS_REVEAL_KEY,\s*\{[\s\S]*measure:\s*measureFocusReveal[\s\S]*mutate:\s*mutateFocusReveal/)
+  || !hasPattern(mobileFocusRevealContract, /function\s+requestFocusReveal\(reason\s*=\s*["']manual["']\)[\s\S]*framePipeline\.requestViewport[\s\S]*setFocusRevealTarget\(document\.activeElement/)
+  || !hasPattern(mobileFocusRevealContract, /scheduleFocusReveal\(\s*["']viewport["']\s*\)/)
+  || !hasPattern(mobileShellJs, /document\.addEventListener\(\s*["']focusin["']\s*,\s*handleFocusIn\s*,\s*\{\s*capture:\s*true\s*\}\s*\)[\s\S]*document\.addEventListener\(\s*["']focusout["']\s*,\s*handleFocusOut\s*,\s*\{\s*capture:\s*true\s*\}\s*\)/)
+  || mobileFocusRevealContract.includes("scrollIntoView(")) {
+  fail("mobile focus recovery must use the keyed frame pipeline and mutate only the nearest real vertical scroll owner's scrollTop");
 }
 
 for (const token of [
@@ -2050,11 +2716,9 @@ for (const asset of [
   "/css/style.css",
   "/css/mobile-ios-shell.css",
   "/css/motion-system.css",
-  "/css/transfer.css",
   "/js/mobile-shell.js",
   "/js/ui-motion.js",
   "/js/main.js",
-  "/js/transfer.js",
   "/js/telemetry.js"
 ]) {
   if (!hasVersionedAssetReference(indexHtml, asset)) {
@@ -2064,31 +2728,67 @@ for (const asset of [
 
 const premiumUiVersion = "20260711-calm-motion-r13";
 const mobileTransferUiVersion = "20260717-mobile-transfer-send-r3";
+const themeA11yFoundationVersion = "20260718-theme-a11y-foundation-r1";
+const focusPopoverCaretVersion = "20260718-focus-popover-caret-r1";
+const knowledgeHistoryVersion = "20260718-knowledge-history-r1";
+const routeMetaModalVersion = "20260718-route-meta-modal-r1";
+const routeLifecycleVersion = "20260718-route-lifecycle-r1";
+const routeLifecycleCssVersion = "20260718-route-lifecycle-css-r1";
+const framePipelineVersion = "20260718-frame-pipeline-low-r1";
+const framePipelineCssVersion = "20260718-frame-pipeline-low-css-r1";
+const mobileScrollRecoveryVersion = "20260718-mobile-scroll-recovery-r1";
+const mobileScrollRecoveryCssVersion = "20260718-mobile-scroll-recovery-css-r1";
+const mobileViewportKeyboardVersion = "20260718-mobile-viewport-keyboard-r1";
+const mobileViewportKeyboardCssVersion = "20260718-resource-icons-layout-r1";
+const publicModulesVersion = "20260718-resource-icons-layout-r1";
+const transferLazyVersion = "20260718-resource-icons-layout-r1";
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
-const currentMainVersion = mobileTransferUiVersion;
-const currentPreFinalCssVersion = "20260711-calm-motion-r13";
+const currentMainVersion = routeLazyVersion;
+const currentCssVersion = routeLazyVersion;
 const currentPreFinalTelemetryVersion = "20260623-analytics-privacy-r1";
 const currentGameShellVersion = "20260623-game-shell-storage-safe-r1";
 
 for (const asset of [
-  "/css/motion-system.css",
   "/js/mobile-shell.js",
   "/js/ui-motion.js"
 ]) {
   const versions = assetQueryVersions(indexHtml, asset);
-  if (versions.length !== 1 || versions[0] !== premiumUiVersion) {
-    fail(`index.html ${asset} query should appear once as ${premiumUiVersion}`);
+  if (versions.length !== 1 || versions[0] !== publicModulesVersion) {
+    fail(`index.html ${asset} query should appear once as ${publicModulesVersion}`);
   }
 }
 
-for (const asset of [
-  "/css/mobile-ios-shell.css",
-  "/css/transfer.css",
-  "/js/transfer.js"
-]) {
+const mainVersions = assetQueryVersions(indexHtml, "/js/main.js");
+if (mainVersions.length !== 1 || mainVersions[0] !== routeLazyVersion) {
+  fail(`index.html /js/main.js query should appear once as ${routeLazyVersion}`);
+}
+
+for (const asset of ["/css/style.css", "/css/mobile-ios-shell.css"]) {
   const versions = assetQueryVersions(indexHtml, asset);
-  if (versions.length !== 1 || versions[0] !== mobileTransferUiVersion) {
-    fail(`index.html ${asset} query should appear once as ${mobileTransferUiVersion}`);
+  if (versions.length !== 1 || versions[0] !== routeLazyVersion) {
+    fail(`index.html ${asset} query should appear once as ${routeLazyVersion}`);
+  }
+}
+
+const motionCssVersions = assetQueryVersions(indexHtml, "/css/motion-system.css");
+if (motionCssVersions.length !== 1 || motionCssVersions[0] !== mobileViewportKeyboardCssVersion) {
+  fail(`index.html /css/motion-system.css query should appear once as ${mobileViewportKeyboardCssVersion}`);
+}
+
+if (countLiteral(quickTransferLoaderJs, transferLazyVersion) !== 1) {
+  fail(`Quick Transfer lazy assets should consistently use ${transferLazyVersion}`);
+}
+
+for (const theme of ["morning", "day", "dusk", "night"]) {
+  const reducedFallback = styleCss.lastIndexOf(`wallpapers/${theme}.png?v=20260612-hd-wallpapers`);
+  const optimized960 = styleCss.lastIndexOf(`wallpapers/optimized/${theme}-960.webp`);
+  const optimized1440 = styleCss.lastIndexOf(`wallpapers/optimized/${theme}-1440.webp`);
+  const optimized1920 = styleCss.lastIndexOf(`wallpapers/optimized/${theme}-1920.webp`);
+  if (reducedFallback < 0 || optimized960 <= reducedFallback || optimized1440 <= optimized960 || optimized1920 <= optimized1440
+    || !styleCss.includes(`wallpapers/optimized/${theme}-960.avif`)
+    || !styleCss.includes(`wallpapers/optimized/${theme}-1440.avif`)
+    || !styleCss.includes(`wallpapers/optimized/${theme}-1920.avif`)) {
+    fail(`prefers-reduced-motion ${theme} wallpaper must keep PNG only as fallback and override it with ordered 960/1440/1920 AVIF/WebP image-set sources`);
   }
 }
 
@@ -2139,21 +2839,31 @@ for (const token of [
   ".desktop-icon:focus-visible",
   ".close-button:focus-visible",
   ".taskbar-tabs button:focus-visible",
-  "repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.24) 0 2px",
-  "inset -18px 0 16px rgba(30, 91, 197, 0.18)",
   ".category-button .filter-count",
-  ".knowledge-searchbar input",
-  "caret-color: auto",
   ".game-empty-state",
   ".resource-pending-action",
-  ".about-social-link[hidden]",
-  "transition-delay: 0s !important",
-  "transition-duration: 1ms !important",
-  "@media (max-width: 460px)"
+  ".about-social-link[hidden]"
 ]) {
   if (!styleCss.includes(token)) {
     fail(`css/style.css missing ${token}`);
   }
+}
+if (!lazyRouteCssSources.knowledge.includes(".knowledge-searchbar input")) {
+  fail("css/routes/knowledge.css missing .knowledge-searchbar input");
+}
+if (!hasPattern(lazyRouteCssSources.knowledge, /\.knowledge-searchbar\s+input\s*\{[^}]*font-size:\s*16px/)
+  || !hasPattern(lazyRouteCssSources.knowledge, /\.article-card-cta\s*\{[^}]*justify-self:\s*start[^}]*min-width:\s*88px/)
+  || !hasPattern(lazyRouteCssSources.knowledge, /\.article-card-skeleton\s*\{[^}]*min-height:\s*154px/)) {
+  fail("css/routes/knowledge.css should keep search zoom-safe, article CTAs compact, and loading skeleton geometry stable");
+}
+
+if (!styleCss.includes(':where(input, textarea, [contenteditable]:not([contenteditable="false"]))')
+  || !hasPattern(windowAfter(styleCss, ':where(input, textarea, [contenteditable]:not([contenteditable="false"]))', 140), /caret-color:\s*auto/)) {
+  fail("css/style.css should restore the browser caret for every editable main-site control with a zero-specificity rule");
+}
+
+if (hasPattern(styleCss, /(?:^|\})\s*(?:html|body|\*)\b[^\{]*\{[^\}]*caret-color:\s*transparent/im)) {
+  fail("css/style.css must not hide the caret through html, body, or universal-selector inheritance");
 }
 
 for (const token of [
@@ -2166,6 +2876,11 @@ for (const token of [
   ".mobile-home-indicator",
   ".account-popover",
   ".xp-taskbar",
+  "repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.24) 0 2px",
+  "inset -18px 0 16px rgba(30, 91, 197, 0.18)",
+  "transition-delay: 0s !important",
+  "transition-duration: 1ms !important",
+  "@media (max-width: 460px)",
   "@media (orientation: landscape) and (max-height: 520px)",
   "@media (prefers-reduced-motion: reduce)"
 ]) {
@@ -2179,9 +2894,9 @@ for (const token of [
   ".asset-icon",
   ".quick-link-asset",
   ".video-placeholder-asset",
-  "background-image: url(\"../assets/images/icon-videos.png\")",
-  "background-image: url(\"../assets/images/icon-knowledge.png\")",
-  "background-image: url(\"../assets/images/icon-games.png\")",
+  "background-image: url(\"../assets/images/icon-videos.png?v=20260718-resource-icons-layout-r1\")",
+  "background-image: url(\"../assets/images/icon-knowledge.png?v=20260718-resource-icons-layout-r1\")",
+  "background-image: url(\"../assets/images/icon-games.png?v=20260718-resource-icons-layout-r1\")",
   ".online-dot",
   "animation: none !important",
   "@media (prefers-reduced-motion: reduce)"
@@ -2244,6 +2959,157 @@ for (const token of [
   }
 }
 
+// OPT-097: keep the public security/privacy boundary independent from visual QA.
+// Content/data modules intentionally contain prose that names unsafe APIs, so only
+// executable public runtime modules participate in the DOM-sink scan.
+const publicSecurityRuntimeSources = [
+  ...publicModuleGraph.files
+    .filter((file) => !file.startsWith("js/data/"))
+    .map((file) => [file, publicModuleSources[file]]),
+  ["js/mobile-shell.js", mobileShellJs],
+  ["js/ui-motion.js", uiMotionJs],
+  ["js/transfer.js", transferJs],
+  ["js/telemetry.js", telemetryJs],
+  ["games/game-shell.js", gameShellJs]
+];
+const unsafePublicDomSink = /\b(?:innerHTML|outerHTML|insertAdjacentHTML|setHTMLUnsafe|createContextualFragment)\b|document\.write\s*\(|\beval\s*\(|\bnew\s+Function\s*\(/;
+for (const [file, source] of publicSecurityRuntimeSources) {
+  if (unsafePublicDomSink.test(source)) {
+    fail(`${file} must keep user/external content on safe DOM APIs`);
+  }
+}
+
+const chatroomModuleJs = publicModuleSources["js/routes/chatroom.mjs"];
+const accountModuleJs = publicModuleSources["js/features/account.mjs"];
+const knowledgeModuleJs = publicModuleSources["js/routes/knowledge.mjs"];
+const videosModuleJs = publicModuleSources["js/routes/videos.mjs"];
+const resourcesModuleJs = publicModuleSources["js/routes/resources.mjs"];
+for (const [file, source, token] of [
+  ["js/routes/chatroom.mjs", chatroomModuleJs, 'name.textContent = String(message.nickname || "")'],
+  ["js/routes/chatroom.mjs", chatroomModuleJs, 'bubble.textContent = String(message.content || "")'],
+  ["js/features/account.mjs", accountModuleJs, 'refs.signedEmail.textContent = authUser?.email || ""'],
+  ["js/routes/knowledge.mjs", knowledgeModuleJs, "parent.appendChild(document.createTextNode(part))"]
+]) {
+  if (!source.includes(token)) {
+    fail(`${file} missing safe text rendering contract ${token}`);
+  }
+}
+if (!hasPattern(knowledgeModuleJs, /function\s+rebuildArticleSearchIndex[\s\S]*articleState\.searchIndex\s*=\s*new Map[\s\S]*function\s+handleKnowledgeSearchInput[\s\S]*setTimeout\([\s\S]*},\s*120\)/)
+  || !hasPattern(knowledgeModuleJs, /function\s+renderArticleCollection[\s\S]*items\.slice\(0,\s*visibleCount\)[\s\S]*dataset\.articleLoadMore[\s\S]*function\s+showMoreArticles[\s\S]*articleState\.visibleCount\s*=\s*previousCount\s*\+\s*12[\s\S]*\.focus\(\{\s*preventScroll:\s*true\s*\}\)/)
+  || !hasPattern(knowledgeModuleJs, /articleState\.loading\s*&&\s*!articleState\.articles\.length[\s\S]*renderArticleSkeletons[\s\S]*articleState\.error\s*&&\s*!articleState\.articles\.length[\s\S]*articleRefreshFailed/)
+  || hasPattern(knowledgeModuleJs, /catch\s*\(error\)[\s\S]{0,500}articleState\.articles\s*=\s*\[\]/)
+  || !hasPattern(knowledgeModuleJs, /while\s*\(articleState\.detailCache\.size\s*>\s*12\)/)) {
+  fail("js/routes/knowledge.mjs should debounce indexed search, segment the list, retain last-known-good results, and cap detail cache growth");
+}
+
+const hiddenVisitorFallbackPattern = /coalesce\(nullif\(client_id,\s*['"]{2}\),\s*visitor_id\)\s+as\s+visitor_id/gi;
+const safePublicVisitorAliasPattern = /coalesce\(nullif\(client_id,\s*['"]{2}\),\s*['"]{2}\)\s+as\s+visitor_id/gi;
+if (hiddenVisitorFallbackPattern.test(apiJs)
+  || [...apiJs.matchAll(safePublicVisitorAliasPattern)].length < 2) {
+  fail("public Chat queries must expose only the frontend client_id and use an empty legacy fallback, never the hidden server visitor_id");
+}
+const postChatMessageBlock = objectBlockAfterMarker(apiJs, "function postChatMessage");
+if (!postChatMessageBlock.includes("visitor_id: clientId")) {
+  fail("public Chat send responses must expose only the submitted frontend client id");
+}
+const encryptedChatNormalizerBlock = objectBlockAfterMarker(apiJs, "function normalizeChatEncryptedContent");
+if (!hasPattern(encryptedChatNormalizerBlock, /String\(plainContent \|\| ["']{2}\)\.trim\(\)[\s\S]*throw new HttpError\(["']\u5bc6\u7801\u623f\u53ea\u63a5\u6536\u52a0\u5bc6\u6d88\u606f\u3002["']/)) {
+  fail("private Chat API must keep rejecting plaintext content");
+}
+
+const sensitiveSideChannelPattern = /\b(?:pushState|replaceState|lusuTrackClick)\b|console\.(?:log|info|warn|error|debug)\s*\(/;
+for (const [file, source] of [
+  ["js/features/account.mjs", accountModuleJs],
+  ["js/routes/chatroom.mjs", chatroomModuleJs]
+]) {
+  if (sensitiveSideChannelPattern.test(source) || /\b(?:localStorage|sessionStorage)\b/.test(source)) {
+    fail(`${file} must not persist, history-store, log, or telemetry-track account/Chat sensitive values`);
+  }
+}
+const telemetryTargetDescriptorBlock = objectBlockAfterMarker(telemetryJs, "function targetDescriptor");
+if (!telemetryTargetDescriptorBlock
+  || /element\.(?:value|innerText|textContent|title)\b|getAttribute\(["']aria-label["']\)/.test(telemetryTargetDescriptorBlock)) {
+  fail("automatic telemetry must not read input values, visible drafts, titles, or aria-label text");
+}
+if (chatroomModuleJs.includes("lusuTrackClick")
+  || accountModuleJs.includes("lusuTrackClick")
+  || transferJs.includes("lusuTrackClick")) {
+  fail("account, Chat, and Quick Transfer must not send password, private-room, or draft material to telemetry");
+}
+const transferTaskPersistenceBlock = objectBlockAfterMarker(transferJs, "function saveTasks");
+if (!transferTaskPersistenceBlock
+  || /\b(?:password|passphrase|cryptoKey|encryptedContent|draft|textInput|roomPassword)\b/i.test(transferTaskPersistenceBlock)) {
+  fail("Quick Transfer resumability storage must not contain passphrases, crypto keys, encrypted text, or composer drafts");
+}
+for (const [label, block] of [
+  ["private Chat entry", objectBlockAfterMarker(chatroomModuleJs, "function enterChatPrivateRoom")],
+  ["private/public Chat submit", objectBlockAfterMarker(chatroomModuleJs, "function submitChatMessage")],
+  ["account submit", objectBlockAfterMarker(accountModuleJs, "function submitAccountForm")],
+  ["Quick Transfer room entry", objectBlockAfterMarker(transferJs, "function joinRoom")],
+  ["Quick Transfer composer", objectBlockAfterMarker(transferJs, "function sendComposer")]
+]) {
+  if (!block || sensitiveSideChannelPattern.test(block)) {
+    fail(`${label} must not copy sensitive material into history, logs, or telemetry`);
+  }
+}
+if (!hasPattern(chatroomModuleJs, /function hideChatPrivateRoomForm[\s\S]{0,700}?input\.value = ["']{2}/)
+  || !hasPattern(transferJs, /function joinRoom[\s\S]{0,900}?deriveRoom\(password\)[\s\S]{0,500}?refs\.roomPassword\.value = ["']{2}/)) {
+  fail("Chat and Quick Transfer passphrase fields must be cleared after use/close");
+}
+
+for (const token of [
+  'const trustedResourceExternalHosts = new Set(["github.com", "www.github.com", "raw.githubusercontent.com", "gist.github.com"])',
+  'const trustedGameExternalHosts = new Set(["github.com", "www.github.com", "github.io"])',
+  'return url.protocol === "https:" && hostMatches(url.hostname, allowedHosts) ? url.href : ""'
+]) {
+  if (!mainEntryJs.includes(token)) {
+    fail(`js/main.js missing external allowlist boundary ${token}`);
+  }
+}
+for (const token of [
+  'const isYoutube = host === "youtube.com" && parsed.pathname.startsWith("/embed/")',
+  'const isBilibili = host === "player.bilibili.com" && parsed.pathname === "/player.html"',
+  'iframe.referrerPolicy = "strict-origin-when-cross-origin"',
+  'sourceLink.rel = "noreferrer noopener"'
+]) {
+  if (!videosModuleJs.includes(token)) {
+    fail(`js/routes/videos.mjs missing iframe/external-link allowlist boundary ${token}`);
+  }
+}
+for (const host of [
+  "i.ytimg.com",
+  "img.youtube.com",
+  "i0.hdslb.com",
+  "i1.hdslb.com",
+  "i2.hdslb.com",
+  "archive.biliimg.com"
+]) {
+  if (!videosModuleJs.includes(`"${host}"`)) {
+    fail(`js/routes/videos.mjs thumbnail allowlist missing ${host}`);
+  }
+}
+if (!resourcesModuleJs.includes("safeTrustedExternalUrl(value, trustedResourceExternalHosts)")) {
+  fail("Resources external links must continue through the trusted-host allowlist");
+}
+for (const token of [
+  'url.protocol !== "https:" || !["github.com", "www.github.com"].includes(url.hostname.toLowerCase())',
+  '!/^source\\/[a-z0-9][a-z0-9._/-]*\\.html$/i.test(entry)'
+]) {
+  if (!gameShellJs.includes(token)) {
+    fail(`games/game-shell.js missing local-frame/repository allowlist boundary ${token}`);
+  }
+}
+for (const token of [
+  "responseUrl.origin !== window.location.origin",
+  "responseUrl.pathname !== FRAGMENT_PATH",
+  'root.querySelector("script, style, link, meta, base, iframe, object, embed, svg, math")',
+  '/^(?:src|srcdoc|href|action|formaction|xlink:href)$/i.test(attribute.name)'
+]) {
+  if (!quickTransferLoaderJs.includes(token)) {
+    fail(`Quick Transfer fragment loader missing local/executable-content guard ${token}`);
+  }
+}
+
 for (const token of [
   'action.dataset.videoRetry = ""',
   'target.closest("[data-video-retry]")',
@@ -2263,13 +3129,21 @@ for (const token of [
   'accountPasswordLabel: "密码"',
   'accountPasswordLabel: "Password"',
   'accountPasswordLabel: "パスワード"',
-  'emailInput.setAttribute("aria-label", t("accountEmailLabel"))',
-  'passwordInput.setAttribute("aria-label", t("accountPasswordLabel"))',
-  'form.dataset.accountMode = "login"',
-  'button.dataset.accountMode || "login"',
+  "function createField",
+  'label.htmlFor = `account-${name}`',
+  'refs.form.dataset.accountMode = accountMode',
+  'dataset: { accountMode: "login" }',
+  'dataset: { accountMode: "register" }',
+  'dataset: { accountSubmit: "" }',
+  "function normalizeAccountMode",
+  "accountConfirmPasswordLabel",
+  "accountPasswordToggle",
   "function setAccountSubmitting",
   'toggle.setAttribute("aria-controls", "account-popover")',
   'toggle.setAttribute("aria-expanded", "false")',
+  'popover.setAttribute("role", "group")',
+  'popover.setAttribute("aria-labelledby", "account-popover-title")',
+  'title.id = "account-popover-title"',
   "function syncAccountPopoverState",
   'toggle.setAttribute("aria-expanded", String(!popover.hidden))',
   "modalFocusState",
@@ -2286,13 +3160,13 @@ for (const token of [
 for (const [marker, pattern, message] of [
   [
     "function articleCardElement",
-    /const\s+titleText\s*=\s*item\.title\s*\|\|\s*["'][\s\S]*const\s+actionLabel\s*=\s*`\$\{t\(["']readButton["']\)\}:\s*\$\{titleText\}`[\s\S]*action\.setAttribute\(\s*["']aria-label["']\s*,\s*actionLabel\s*\)[\s\S]*action\.setAttribute\(\s*["']title["']\s*,\s*actionLabel\s*\)/,
-    "js/main.js articleCardElement should include the article title in read link labels"
+    /document\.createElement\(["']a["']\)[\s\S]*card\.dataset\.articleSlug\s*=\s*item\.slug[\s\S]*card\.setAttribute\(\s*["']aria-label["']\s*,\s*`\$\{t\(["']readButton["']\)\}:\s*\$\{titleText\}`\s*\)[\s\S]*article-card-cta[\s\S]*aria-hidden/,
+    "js/routes/knowledge.mjs articleCardElement should expose one whole-card article link with a titled accessible name and decorative compact CTA"
   ],
   [
     "function videoCardElement",
-    /const\s+videoTitleText\s*=\s*item\.title\s*\|\|\s*videoUiText\(["']untitled["']\)[\s\S]*const\s+videoPlayLabel\s*=\s*`\$\{videoUiText\(["']playAria["']\)\}:\s*\$\{videoTitleText\}`[\s\S]*thumb\.setAttribute\(\s*["']aria-label["']\s*,\s*videoPlayLabel\s*\)[\s\S]*button\.setAttribute\(\s*["']aria-label["']\s*,\s*videoPlayLabel\s*\)/,
-    "js/main.js videoCardElement should use the video title in thumbnail and action aria-labels"
+    /const\s+videoTitleText\s*=\s*item\.title\s*\|\|\s*videoUiText\(["']untitled["']\)[\s\S]*const\s+videoPlayLabel\s*=\s*`\$\{videoUiText\(["']playAria["']\)\}:\s*\$\{videoTitleText\}`[\s\S]*thumb\.setAttribute\(\s*["']aria-hidden["']\s*,\s*["']true["']\s*\)[\s\S]*button\.setAttribute\(\s*["']aria-label["']\s*,\s*videoPlayLabel\s*\)/,
+    "js/routes/videos.mjs videoCardElement should keep the thumbnail decorative and use the video title on the single play action"
   ],
   [
     "function renderKnowledgeCategoryButtons",
@@ -2366,7 +3240,7 @@ for (const [marker, pattern, message] of [
   ],
   [
     "async function renderGames",
-    /gameState\.catalog\s*&&\s*!forceRefresh[\s\S]*renderGameCatalog\(list,\s*gameState\.catalog\)[\s\S]*loadGameCatalog\(\s*\{\s*forceRefresh\s*\}\s*\)[\s\S]*renderGameCatalog\(list,\s*catalog\)/,
+    /gameState\.catalog\s*&&\s*!forceRefresh[\s\S]*renderGameCatalog\(list,\s*gameState\.catalog\)[\s\S]*loadGameCatalog\(\s*\{\s*forceRefresh,\s*signal\s*\}\s*\)[\s\S]*renderGameCatalog\(list,\s*catalog\)/,
     "js/main.js renderGames should reuse cached games unless a retry forces refresh"
   ],
   [
@@ -2396,27 +3270,42 @@ for (const [marker, pattern, message] of [
   ],
   [
     "async function articleApi",
-    /fetch\(path,\s*\{\s*cache:\s*["']no-store["'][\s\S]*["']Accept["']:\s*["']application\/json["']/,
-    "js/main.js articleApi should bypass browser cache for fresh public articles"
+    /return\s+requestJson\(\s*["']knowledge["'],\s*path,\s*\{[\s\S]*force:\s*options\.force\s*===\s*true[\s\S]*maxAgeMs:[\s\S]*staleWhileRevalidate:\s*options\.force\s*!==\s*true[\s\S]*onRevalidated:\s*options\.onRevalidated/,
+    "js/routes/knowledge.mjs articleApi should use the shared ETag/SWR cache with explicit force and revalidation controls"
   ],
   [
     "async function loadArticles",
-    /articleState\.detailCache\.clear\(\)[\s\S]*articleState\.articles\s*=\s*visiblePublicArticles\(payload\.articles\s*\|\|\s*\[\]\)/,
-    "js/main.js loadArticles should clear cached article details after a fresh list read"
+    /articleState\.detailCache\.clear\(\)[\s\S]*articleState\.articles\s*=\s*sortKnowledgeArticles\(visiblePublicArticles\(result\.data\?\.articles\s*\|\|\s*\[\]\)\)[\s\S]*rebuildArticleSearchIndex\(\)/,
+    "js/routes/knowledge.mjs loadArticles should clear stale details, enforce pinned/date order, and rebuild the normalized search index"
+  ],
+  [
+    "const routeMetaConfig",
+    /home:[\s\S]*knowledge:[\s\S]*videos:[\s\S]*resources:[\s\S]*games:[\s\S]*blog:[\s\S]*chatroom:[\s\S]*about:/,
+    "js/main.js routeMetaConfig should cover all eight public routes"
+  ],
+  [
+    "function canonicalSiteUrl",
+    /routeMetaConfig\[route\][\s\S]*\["zh",\s*"en",\s*"ja"\]\.includes\(lang\)[\s\S]*#\$\{normalizedRoute\}[\s\S]*https:\/\/lusu575\.com\/\?lang=\$\{normalizedLang\}/,
+    "js/main.js canonicalSiteUrl should whitelist routes and languages while projecting route hashes"
+  ],
+  [
+    "function applyDocumentMeta",
+    /document\.title[\s\S]*link\[rel="canonical"\][\s\S]*meta\[name="description"\][\s\S]*og:type[\s\S]*og:site_name[\s\S]*og:title[\s\S]*og:description[\s\S]*og:url[\s\S]*og:image[\s\S]*og:image:width[\s\S]*og:image:height[\s\S]*og:image:alt[\s\S]*og:locale[\s\S]*twitter:card[\s\S]*twitter:title[\s\S]*twitter:description[\s\S]*twitter:image[\s\S]*twitter:image:alt/,
+    "js/main.js applyDocumentMeta should atomically write canonical, Open Graph, and Twitter fields"
   ],
   [
     "function syncDocumentMeta",
-    /setMetaContent\(\s*["']meta\[property="og:type"\]["']\s*,\s*["']website["']\s*\)[\s\S]*setMetaContent\(\s*["']meta\[property="og:image"\]["']\s*,\s*defaultShareImageUrl\s*\)[\s\S]*setMetaContent\(\s*["']meta\[name="twitter:image"\]["']\s*,\s*defaultShareImageUrl\s*\)/,
-    "js/main.js syncDocumentMeta should restore default website share metadata"
+    /routeMetaConfig\[normalizedRoute\][\s\S]*translatedText\(normalizedLang,\s*config\.titleKey\)[\s\S]*translatedText\(normalizedLang,\s*config\.descriptionKey\)[\s\S]*applyDocumentMeta\(\{[\s\S]*canonicalSiteUrl\(normalizedRoute,\s*normalizedLang\)[\s\S]*type:\s*["']website["']/,
+    "js/main.js syncDocumentMeta should derive complete route-specific website metadata"
   ],
   [
-    "function articleShareImageUrl",
-    /safeArticleImageSrc\(article\?\.cover_image\s*\|\|\s*["']["']\)[\s\S]*https:\/\/lusu575\.com\/\$\{safeCover\}[\s\S]*defaultShareImageUrl/,
-    "js/main.js articleShareImageUrl should only use safe article cover paths"
+    "function articleShareImageDescriptor",
+    /safeArticleImageSrc\(article\?\.cover_image\s*\|\|\s*["']["']\)[\s\S]*https:\/\/lusu575\.com\/\$\{safeCover\}[\s\S]*width:\s*["']["'][\s\S]*defaultShareImageSize\.width[\s\S]*metaShareImageAlt/,
+    "js/main.js articleShareImageDescriptor should only use safe covers and clear unknown cover dimensions"
   ],
   [
     "function syncArticleDocumentMeta",
-    /articleRouteHref\(article\?\.slug\s*\|\|\s*articleState\.currentSlug,\s*currentLang\)[\s\S]*document\.title\s*=\s*articleTitle\s*===\s*siteTitle[\s\S]*setMetaContent\(\s*["']meta\[property="og:type"\]["']\s*,\s*["']article["']\s*\)[\s\S]*setMetaContent\(\s*["']meta\[property="og:image"\]["']\s*,\s*imageUrl\s*\)[\s\S]*setMetaContent\(\s*["']meta\[name="twitter:image"\]["']\s*,\s*imageUrl\s*\)/,
+    /articleRouteHref\(article\?\.slug\s*\|\|\s*articleState\.currentSlug,\s*currentLang\)[\s\S]*articleShareImageDescriptor\(article,\s*articleTitle\)[\s\S]*applyDocumentMeta\(\{[\s\S]*type:\s*["']article["'][\s\S]*imageUrl:\s*image\.url[\s\S]*localeByLanguage/,
     "js/main.js syncArticleDocumentMeta should write article title, canonical, and share metadata"
   ],
   [
@@ -2426,18 +3315,18 @@ for (const [marker, pattern, message] of [
   ],
   [
     "function renderArticleToc",
-    /heading\.tabIndex\s*=\s*-1[\s\S]*button\.setAttribute\(\s*["']aria-current["']\s*,\s*["']location["']\s*\)[\s\S]*button\.setAttribute\(\s*["']aria-controls["']\s*,\s*id\s*\)/,
-    "js/main.js article TOC buttons should control focusable headings and mark the initial current location"
+    /deduplicateArticleHeadingAnchors\([\s\S]*heading\.id\s*=\s*headingIds\[index\][\s\S]*heading\.tabIndex\s*=\s*-1[\s\S]*button\.setAttribute\(\s*["']aria-controls["']\s*,\s*id\s*\)[\s\S]*setActiveArticleTocHeading\(headingIds\[0\]/,
+    "js/routes/knowledge.mjs article TOC should create stable duplicate-safe anchors, focusable headings, and one initial current location"
   ],
   [
-    "function updateArticleTocActive",
+    "function setActiveArticleTocHeading",
     /button\.setAttribute\(\s*["']aria-current["']\s*,\s*["']location["']\s*\)[\s\S]*button\.removeAttribute\(\s*["']aria-current["']\s*\)/,
-    "js/main.js article TOC active state should sync aria-current"
+    "js/routes/knowledge.mjs article TOC active state should sync aria-current"
   ],
   [
     "function scrollToArticleHeading",
-    /heading\.scrollIntoView\(\s*\{\s*block:\s*["']start["']\s*,\s*behavior:\s*motionScrollBehavior\(\)\s*\}\s*\)[\s\S]*heading\.focus\(\s*\{\s*preventScroll:\s*true\s*\}\s*\)/,
-    "js/main.js article TOC jumps should move programmatic focus to the target heading without extra scroll"
+    /targetTop\s*=\s*Math\.max\([\s\S]*detail\.scrollTo\(\s*\{\s*top:\s*targetTop\s*,\s*behavior\s*\}\s*\)[\s\S]*heading\.focus\(\s*\{\s*preventScroll:\s*true\s*\}\s*\)[\s\S]*window\.history\.replaceState/,
+    "js/routes/knowledge.mjs article TOC jumps should scroll only the article owner, focus the target, and project a shareable hash"
   ],
   [
     "function focusableDialogElements",
@@ -2446,8 +3335,23 @@ for (const [marker, pattern, message] of [
   ],
   [
     "function activeModalDialog",
-    /videoModal\s*&&\s*!videoModal\.hidden[\s\S]*videoModal\.querySelector\(\s*["']\[role='dialog'\]["']\s*\)[\s\S]*welcomeModal\s*&&\s*!welcomeModal\.hidden[\s\S]*welcomeModal\.querySelector\(\s*["']\[role='dialog'\]["']\s*\)/,
+    /activeModalSurface\(\)\?\.querySelector\(\s*["']\[role='dialog'\]["']\s*\)\s*\|\|\s*null/,
     "js/main.js activeModalDialog should prefer the open video dialog, then welcome dialog"
+  ],
+  [
+    "function activeModalSurface",
+    /videoModal\s*&&\s*!videoModal\.hidden[\s\S]*welcomeModal\s*&&\s*!welcomeModal\.hidden/,
+    "js/main.js activeModalSurface should deterministically prioritize video over welcome"
+  ],
+  [
+    "function syncModalIsolation",
+    /activeModalSurface\(\)[\s\S]*\[data-modal-background\][\s\S]*modalBackgroundOriginalInert\.has\(background\)[\s\S]*background\.inert\s*=\s*true[\s\S]*background\.inert\s*=\s*modalBackgroundOriginalInert\.get\(background\)[\s\S]*surface\.inert\s*=\s*Boolean\(activeSurface/,
+    "js/main.js syncModalIsolation should own background inert and isolate any secondary modal"
+  ],
+  [
+    "function restoreModalFocus",
+    /usableModalFocusTarget\(target\)[\s\S]*activeModalSurface\(\)\?\.querySelector\([\s\S]*routeWindowFocusTarget\(document\.body\.dataset\.route[\s\S]*fallback\.focus/,
+    "js/main.js restoreModalFocus should use the exact trigger, active dialog, then stable route heading"
   ],
   [
     "function trapDialogFocus",
@@ -2476,7 +3380,7 @@ for (const [marker, pattern, message] of [
   ],
   [
     "function navigate",
-    /if\s*\(\s*!\(\s*nextRoute\s*===\s*["']knowledge["']\s*&&\s*options\.articleSlug\s*\)\s*\)\s*\{[\s\S]*syncDocumentMeta\(\)[\s\S]*\}/,
+    /isSameRouteNoop[\s\S]*syncDocumentMeta\(currentLang,\s*nextRoute\)[\s\S]*commitNavigation[\s\S]*!\(nextRoute\s*===\s*["']knowledge["']\s*&&\s*options\.articleSlug\)[\s\S]*syncDocumentMeta\(currentLang,\s*nextRoute\)/,
     "js/main.js navigate should restore site metadata outside article detail routes"
   ],
   [
@@ -2486,8 +3390,8 @@ for (const [marker, pattern, message] of [
   ],
   [
     "function setChatSendingState",
-    /chatState\.sending\s*=\s*sending[\s\S]*form\?\.setAttribute\(\s*["']aria-busy["']\s*,\s*String\(sending\)\s*\)[\s\S]*input\.disabled\s*=\s*sending[\s\S]*button\.disabled\s*=\s*sending/,
-    "js/main.js setChatSendingState should lock the chat form while sending"
+    /chatState\.sending\s*=\s*sending[\s\S]*form\?\.setAttribute\(\s*["']aria-busy["']\s*,\s*String\(sending\)\s*\)[\s\S]*button\.disabled\s*=\s*sending[\s\S]*options\.keepInputFocus\s*!==\s*false[\s\S]*input\.focus\(\{\s*preventScroll:\s*true\s*\}\)/,
+    "js/main.js setChatSendingState should lock only duplicate submission while preserving the editable focused draft"
   ],
   [
     "function updateChatSyncStatus",
@@ -2496,8 +3400,8 @@ for (const [marker, pattern, message] of [
   ],
   [
     "async function submitChatMessage",
-    /if\s*\(\s*chatState\.sending\s*\)[\s\S]*setChatFeedback\(t\(["']chatSending["']\)\)[\s\S]*Date\.now\(\)\s*-\s*chatState\.lastSentAt\s*<\s*chatCooldownMs[\s\S]*setChatSendingState\(true\)[\s\S]*setChatFeedback\(t\(["']chatSending["']\)\)[\s\S]*await\s+ensureChatIdentity\(\)[\s\S]*finally\s*\{[\s\S]*setChatSendingState\(false\)/,
-    "js/main.js submitChatMessage should prevent duplicate submissions and restore the form"
+    /if\s*\(\s*chatState\.sending\s*\)[\s\S]*setChatFeedbackKey\(["']chatSending["'][\s\S]*source:\s*["']send["'][\s\S]*submittedDraftRevision\s*=\s*chatState\.draftRevision[\s\S]*Date\.now\(\)\s*-\s*chatState\.lastSentAt\s*<\s*chatCooldownMs[\s\S]*setChatSendingState\(true,\s*\{\s*keepInputFocus:\s*true\s*\}\)[\s\S]*await\s+ensureChatIdentity\(\{\s*signal:[\s\S]*chatState\.draftRevision\s*===\s*submittedDraftRevision\s*&&\s*input\.value\s*===\s*submittedDraft[\s\S]*finally\s*\{[\s\S]*setChatSendingState\(false\)/,
+    "js/main.js submitChatMessage should single-flight sends and clear only the untouched submitted draft"
   ],
   [
     "function openVideo",
@@ -2506,8 +3410,8 @@ for (const [marker, pattern, message] of [
   ],
   [
     "function openVideo",
-    /modalFocusState\.videoTrigger[\s\S]*modal\.querySelector\(\s*["']button\[data-close-modal\]["']\s*\)\?\.focus\(\s*\{\s*preventScroll:\s*true\s*\}\s*\)/,
-    "js/main.js openVideo should remember the trigger and focus the video dialog close button"
+    /modalOptions\s*=\s*options\s*&&\s*typeof\s+options\s*===\s*["']object["'][\s\S]*modalTriggerCandidate\(modalOptions\.trigger,\s*modal\)[\s\S]*modal\.hidden\s*=\s*false[\s\S]*syncModalIsolation\(\)[\s\S]*modal\.querySelector\(\s*["']button\[data-close-modal\]["']\s*\)\?\.focus\(\s*\{\s*preventScroll:\s*true\s*\}\s*\)/,
+    "js/main.js openVideo should remember the explicit trigger, isolate the background, then focus Close"
   ],
   [
     "function closeVideo",
@@ -2516,18 +3420,13 @@ for (const [marker, pattern, message] of [
   ],
   [
     "function closeVideo",
-    /const\s+wasOpen[\s\S]*restoreModalFocus\(\s*["']videoTrigger["']\s*\)/,
-    "js/main.js closeVideo should restore focus to the video trigger when it closes an open dialog"
-  ],
-  [
-    "function blogCardElement",
-    /const\s+titleText\s*=\s*contentTitle\(item\.title\)[\s\S]*action\.setAttribute\(\s*["']aria-disabled["']\s*,\s*["']true["']\s*\)[\s\S]*action\.setAttribute\(\s*["']aria-label["']\s*,\s*`\$\{t\(["']blogPending["']\)\}:\s*\$\{titleText\}`\s*\)[\s\S]*action\.setAttribute\(\s*["']title["']\s*,\s*`\$\{t\(["']blogPending["']\)\}:\s*\$\{titleText\}`\s*\)/,
-    "js/main.js blogCardElement should keep pending actions focusable and titled"
+    /const\s+wasOpen[\s\S]*modal\.hidden\s*=\s*true[\s\S]*syncModalIsolation\(\)[\s\S]*restoreModalFocus\(\s*["']videoTrigger["']\s*\)/,
+    "js/main.js closeVideo should hide, release isolation, then restore the explicit trigger"
   ],
   [
     "function closeWelcome",
-    /const\s+wasOpen[\s\S]*restoreModalFocus\(\s*["']welcomeTrigger["']\s*\)/,
-    "js/main.js closeWelcome should restore focus when it closes an open welcome dialog"
+    /const\s+wasOpen[\s\S]*modal\.hidden\s*=\s*true[\s\S]*syncModalIsolation\(\)[\s\S]*restoreModalFocus\(\s*["']welcomeTrigger["']\s*\)/,
+    "js/main.js closeWelcome should hide, release isolation, then restore focus"
   ],
   [
     "function showArticle",
@@ -2551,55 +3450,99 @@ for (const [marker, pattern, message] of [
   ],
   [
     "function syncRouteFromLocation",
-    /navigate\(\s*parsed\.route\s*,\s*\{\s*updateUrl:\s*false,\s*articleSlug:\s*parsed\.articleSlug\s*\|\|\s*["']["']\s*\}\s*\)/,
+    /navigate\(\s*parsed\.route\s*,\s*\{\s*updateUrl:\s*false,\s*articleSlug:\s*parsed\.articleSlug\s*\|\|\s*["']["']\s*,\s*focusWindow:\s*shouldFocusRoute\s*&&\s*!parsed\.articleSlug\s*\}\s*\)/,
     "js/main.js route syncing should preserve parsed article slugs before navigate clears stale detail state"
   ],
   [
     "function maybeShowWelcome",
-    /modalFocusState\.welcomeTrigger[\s\S]*modal\.querySelector\(\s*["']button\[data-close-welcome\]["']\s*\)\?\.focus\(\s*\{\s*preventScroll:\s*true\s*\}\s*\)/,
-    "js/main.js maybeShowWelcome should remember prior focus and focus the welcome close button"
+    /modalTriggerCandidate\(document\.activeElement,\s*modal\)[\s\S]*modal\.hidden\s*=\s*false[\s\S]*syncModalIsolation\(\)[\s\S]*modal\.querySelector\(\s*["']button\[data-close-welcome\]["']\s*\)\?\.focus\(\s*\{\s*preventScroll:\s*true\s*\}\s*\)/,
+    "js/main.js maybeShowWelcome should remember prior focus, isolate the background, then focus Close"
   ]
 ]) {
   requireFunctionPattern(mainJs, marker, pattern, message);
+}
+
+if (!hasPattern(mainJs, /requestJson:\s*cachedRouteJson/)
+  || !hasPattern(mainJs, /requestJson\(\s*["']videos["'][\s\S]*staleWhileRevalidate:\s*options\.force\s*!==\s*true/)
+  || !hasPattern(mainJs, /videoState\.loading\s*&&\s*!videoState\.videos\.length[\s\S]*renderVideoStatusState\(["']loading["']\)/)
+  || !hasPattern(mainJs, /videoState\.error[\s\S]*renderVideoRecoveryNotice\(["']failed["']\)/)) {
+  fail("Knowledge and Videos must consume the shared ETag/SWR route cache while preserving cold-load and stale-data recovery states");
+}
+
+const chatSendingStateContract = windowAfter(mainJs, "function setChatSendingState", 1400);
+if (/input\.disabled\s*=\s*sending/.test(chatSendingStateContract)) {
+  fail("js/routes/chatroom.mjs must not disable the composer or dismiss the soft keyboard while a send is in flight");
 }
 
 if (!hasPattern(mainJs, /const\s+routeButton[\s\S]*if\s*\(routeButton\)\s*\{[\s\S]*const\s+motionKind\s*=\s*routeButton\.matches\(\s*["']\.minimize-button["']\s*\)[\s\S]*["']window-minimize["'][\s\S]*routeButton\.matches\(\s*["']\.close-button["']\s*\)[\s\S]*["']window-close["'][\s\S]*navigate\(\s*routeButton\.dataset\.route\s*,\s*\{\s*trigger:\s*routeButton\s*,\s*motionKind\s*\}\s*\)\s*;\s*closeWelcome\(\s*\{\s*restoreFocus:\s*false\s*,\s*motion:\s*false\s*\}\s*\)/)) {
   fail("js/main.js route click branch should classify minimize/close motion, pass its trigger, and close welcome without restoring stale modal focus");
 }
 
-if (!hasPattern(mainJs, /const\s+routeIconRectCache\s*=\s*new\s+Map[\s\S]*function\s+captureRouteIconRects[\s\S]*document\.body\.dataset\.route\s*!==\s*["']home["'][\s\S]*routeIconRectCache\.set/)
+if (!hasPattern(mainJs, /const\s+routeIconRectCache\s*=\s*new\s+Map[\s\S]*function\s+measureRouteIconRects[\s\S]*document\.body\.dataset\.route\s*!==\s*["']home["'][\s\S]*function\s+storeRouteIconRects[\s\S]*routeIconRectCache\.set/)
   || !hasPattern(mainJs, /function\s+cachedRouteIconRect[\s\S]*cached\.shell[\s\S]*cached\.viewportWidth\s*!==\s*window\.innerWidth[\s\S]*cached\.viewportHeight\s*!==\s*window\.innerHeight/)
   || !hasPattern(mainJs, /function\s+routeExitOriginRect[\s\S]*motionKind\s*===\s*["']window-minimize["'][\s\S]*cachedRouteIconRect\(route\)[\s\S]*taskbar-tabs button\[data-route\][\s\S]*\.start-button/)
-  || !hasPattern(mainJs, /function\s+navigate[\s\S]*const\s+exitOriginRect\s*=\s*isExitMotion[\s\S]*focusReturnTarget\.focus\(\s*\{\s*preventScroll:\s*true\s*\}\s*\)[\s\S]*originRect:\s*exitOriginRect[\s\S]*deferCommit:\s*isExitMotion/)) {
-  fail("js/main.js navigate should reverse close/minimize toward the route icon or task button and restore focus after committing");
+  || !hasPattern(mainJs, /function\s+navigate[\s\S]*const\s+exitOriginRect\s*=\s*isExitMotion[\s\S]*originRect:\s*exitOriginRect[\s\S]*deferCommit:\s*isExitMotion/)) {
+  fail("js/main.js navigate should retain the route-icon/task-button geometry used to reverse close and minimize motion");
 }
 
 const routeWindowFocusBlock = windowAfter(mainJs, "function routeWindowFocusTarget", 900);
-const routeWindowFocusSelector = routeWindowFocusBlock.match(/querySelectorAll\(\s*["']([^"']+)["']/)?.[1] || "";
-if (routeWindowFocusSelector !== ".close-button:not(:disabled), [data-article-back]:not(:disabled), button:not(:disabled), a[href]"
-  || /(^|,\s*)(input|textarea|select|\[contenteditable)/i.test(routeWindowFocusSelector)) {
-  fail("js/main.js automatic route focus should use visible non-editing controls so mobile navigation cannot summon the software keyboard");
+if (!hasPattern(routeWindowFocusBlock, /:scope\s*>\s*h1[\s\S]*heading\.tabIndex\s*=\s*-1[\s\S]*return\s+heading[\s\S]*:scope\s*>\s*\.xp-window[\s\S]*windowSurface\.tabIndex\s*=\s*-1[\s\S]*return\s+windowSurface/)
+  || /querySelectorAll\([^\)]*(?:button|input|textarea|select|contenteditable)/i.test(routeWindowFocusBlock)) {
+  fail("js/main.js automatic route focus should target the stable H1, with only the route window as fallback");
 }
 
-if (!hasPattern(mainJs, /function\s+routeWindowFocusTarget[\s\S]*\.find\(\(element\)\s*=>\s*focusTargetIsVisible\(element\)\)[\s\S]*windowSurface\.tabIndex\s*=\s*-1[\s\S]*const\s+shouldFocusWindow[\s\S]*document\.documentElement\.dataset\.inputMethod\s*===\s*["']keyboard["'][\s\S]*!focusTargetIsVisible\(options\.trigger\)[\s\S]*routeWindowFocusTarget\(nextRoute\)[\s\S]*focusTarget\.focus\(\s*\{\s*preventScroll:\s*true\s*\}\s*\)/)) {
-  fail("js/main.js route navigation should move focus into a window when its launch trigger becomes hidden or keyboard navigation requests it");
+if (!hasPattern(mainJs, /const\s+shouldFocusWindow\s*=\s*\[[^\]]*["']route["'][^\]]*["']app-open["'][^\]]*["']mobile-tab["'][^\]]*["']window-close["'][^\]]*["']window-minimize["'][^\]]*\]\.includes\(motionKind\)[\s\S]*options\.focusWindow\s*!==\s*false[\s\S]*requestId\s*!==\s*navigationRequestId[\s\S]*document\.body\.dataset\.route\s*!==\s*nextRoute[\s\S]*routeWindowFocusTarget\(nextRoute\)[\s\S]*focusTarget\.focus/)) {
+  fail("js/main.js committed route navigation should focus the stable route title and reject stale animation-frame focus");
 }
 
-if (!hasPattern(mainJs, /const\s+mobileHomeReturnTarget[\s\S]*\.mobile-home-button[\s\S]*routeReturnTarget\(previousRoute,\s*["']window-close["']\)[\s\S]*const\s+focusReturnTarget\s*=\s*returnTarget\s*\|\|\s*mobileHomeReturnTarget[\s\S]*focusReturnTarget\.focus/)) {
-  fail("js/main.js mobile App home navigation should restore focus to a visible Home-screen App icon");
+if (!hasPattern(mainJs, /if\s*\(isSameRouteNoop\)[\s\S]*syncBrowserUrl\(\s*nextRoute,\s*nextRoute\s*===\s*["']knowledge["']\s*\?\s*options\.articleSlug\s*\|\|\s*["']["']\s*:\s*["']["']\s*,\s*options\.historyState\s*\)[\s\S]*options\.focusWindow\s*===\s*true[\s\S]*requestId\s*!==\s*navigationRequestId[\s\S]*routeWindowFocusTarget\(nextRoute\)/)
+  || !hasPattern(mainJs, /function\s+syncRouteFromLocation\(options\s*=\s*\{\}\)[\s\S]*const\s+shouldFocusRoute\s*=\s*options\.focusWindow\s*===\s*true[\s\S]*focusWindow:\s*shouldFocusRoute\s*&&\s*!parsed\.articleSlug/)
+  || !hasPattern(mainJs, /hashchange[\s\S]*syncRouteFromLocation\(\{\s*focusWindow:\s*true\s*\}\)[\s\S]*popstate[\s\S]*syncRouteFromLocation\(\{\s*focusWindow:\s*true\s*\}\)[\s\S]*syncRouteFromLocation\(\{\s*focusWindow:\s*false\s*\}\)/)) {
+  fail("js/main.js history projection should focus route titles once while initial load preserves the skip-link-first tab order");
+}
+
+if (!hasPattern(mainJs, /const\s+publicHistoryStateKey\s*=\s*["']lusuPublicState["'][\s\S]*const\s+publicHistoryStateVersion\s*=\s*1/)
+  || !hasPattern(mainJs, /function\s+normalizeKnowledgeHistorySnapshot[\s\S]*slice\(0,\s*200\)[\s\S]*boundedHistoryScrollTop/)
+  || !hasPattern(mainJs, /function\s+publicHistoryStateFor[\s\S]*\.\.\.existingRoot[\s\S]*entryId:[\s\S]*knowledge:[\s\S]*articleScrollTop:[\s\S]*articleReturnMode:/)
+  || !hasPattern(mainJs, /function\s+syncBrowserUrl[\s\S]*replaceEntry[\s\S]*history\.pushState\(nextState[\s\S]*history\.replaceState\(nextState/)
+  || /history\.(?:pushState|replaceState)\(\s*null\b/.test(mainJs)) {
+  fail("js/main.js public navigation history should use a bounded versioned state while preserving non-project state fields");
+}
+
+if (!hasPattern(mainJs, /function\s+showArticle\(slug[\s\S]*const\s+knowledgeSnapshot[\s\S]*replaceCurrentPublicHistoryState[\s\S]*articleState\.currentSlug\s*=\s*slug[\s\S]*articleReturnMode:\s*sourceIsKnowledgeList\s*\?\s*["']history["']\s*:\s*["']default["']/)
+  || !hasPattern(mainJs, /function\s+showArticleList[\s\S]*articleReturnMode\s*===\s*["']history["'][\s\S]*window\.history\.back\(\)[\s\S]*defaultKnowledgeHistorySnapshot[\s\S]*replaceEntry:\s*true/)
+  || !hasPattern(mainJs, /function\s+syncLanguageUrl[\s\S]*history\.replaceState\(window\.history\.state/)
+  || !hasPattern(mainJs, /scrollRestoration\s*=\s*["']manual["']/)) {
+  fail("js/main.js article list/history flow should capture its source, use Back only for source entries, and replace direct-link fallback entries");
+}
+
+if (!hasPattern(mainJs, /function\s+syncRouteFromLocation[\s\S]*historyMatchesLocation[\s\S]*activeFilters\.knowledge\s*=\s*knowledgeSnapshot\.category[\s\S]*articleState\.searchTerm\s*=\s*knowledgeSnapshot\.searchTerm[\s\S]*pendingListScrollTop[\s\S]*pendingDetailScrollTop[\s\S]*lastLocationProjectionKey\s*=\s*locationProjectionKey\(\)/)
+  || !hasPattern(mainJs, /function\s+restorePendingKnowledgeScroll[\s\S]*knowledge-list[\s\S]*scrollTop\s*=\s*target/)
+  || !hasPattern(mainJs, /scope\.listen\(list,\s*["']scroll["'],\s*schedulePublicHistoryStateSync,\s*\{\s*passive:\s*true\s*\}/)
+  || !hasPattern(mainJs, /scope\.listen\(detail,\s*["']scroll["'],\s*handleArticleDetailScroll,\s*\{\s*passive:\s*true\s*\}/)
+  || !hasPattern(mainJs, /function\s+handleArticleDetailScroll[\s\S]*scheduleArticleReadProgressUpdate\(\)[\s\S]*schedulePublicHistoryStateSync\(\)/)) {
+  fail("js/main.js Knowledge history restoration should apply state before render and persist both list and article scroll positions");
 }
 
 if (!hasPattern(mainJs, /function\s+focusTargetIsVisible[\s\S]*element\.closest\(\s*["']\[hidden\]["']\s*\)[\s\S]*page\.classList\.contains\(\s*["']active["']\s*\)[\s\S]*const\s+hadInteractiveFocus[\s\S]*!hadInteractiveFocus\s*\|\|\s*focusTargetIsVisible\(activeElement\)[\s\S]*fallbackTarget\?\.focus/)) {
   fail("js/main.js navigation should recover focus from controls hidden by browser history or route projection");
 }
 
-if (!hasPattern(mainJs, /function\s+showArticle\(slug,\s*options\s*=\s*\{\}\)[\s\S]*trigger:\s*options\.trigger[\s\S]*focusWindow:\s*true[\s\S]*function\s+showArticleList\(options\s*=\s*\{\}\)[\s\S]*trigger:\s*options\.trigger[\s\S]*focusWindow:\s*true/)
+if (!hasPattern(mainJs, /function\s+showArticle\(slug,\s*options\s*=\s*\{\}\)[\s\S]*focusDetailOnRender\s*=\s*true[\s\S]*trigger:\s*options\.trigger[\s\S]*focusWindow:\s*false[\s\S]*function\s+showArticleList\(options\s*=\s*\{\}\)[\s\S]*focusDetailOnRender\s*=\s*false[\s\S]*trigger:\s*options\.trigger[\s\S]*focusWindow:\s*true/)
+  || !hasPattern(mainJs, /function\s+focusArticleDetailTitle[\s\S]*focusDetailOnRender[\s\S]*detailFocusReady[\s\S]*article-detail-title[\s\S]*articleState\.currentSlug\s*===\s*pendingSlug[\s\S]*title\.focus/)
   || !hasPattern(mainJs, /showArticle\(articleButton\.dataset\.articleSlug,\s*\{\s*trigger:\s*articleButton\s*\}\)[\s\S]*showArticleList\(\{\s*trigger:\s*articleBackButton\s*\}\)/)) {
-  fail("js/main.js article detail and back controls should carry focus into the newly revealed surface");
+  fail("js/main.js article detail and list projections should focus their newly revealed title exactly after it is ready");
+}
+
+if (!hasPattern(mainJs, /function\s+openAccountPopover[\s\S]*popover\.hidden\s*=\s*false[\s\S]*syncAccountPopoverState\(popover\)/)
+  || !hasPattern(mainJs, /function\s+closeAccountPopover[\s\S]*popover\.hidden\s*=\s*true[\s\S]*syncAccountPopoverState\(popover\)[\s\S]*returnFocus\.focus/)
+  || !hasPattern(mainJs, /if\s*\(!target\.closest\(\s*["']#account-widget["']\s*\)\)[\s\S]*closeAccountPopover\(\{\s*restoreFocus:\s*Boolean\(popover\?\.contains\(document\.activeElement\)\)\s*\}\)/)
+  || !hasPattern(mainJs, /event\.key\s*===\s*["']Escape["'][\s\S]*closeAccountPopover\(\)/)) {
+  fail("js/main.js account disclosure should synchronize semantics, close on outside click or Escape, and restore its trigger");
 }
 
 if (!hasPattern(mainJs, /function\s+motionScrollBehavior[\s\S]*managedMode\s*===\s*["']reduced["']\s*\|\|\s*managedMode\s*===\s*["']off["'][\s\S]*return\s+["']auto["'][\s\S]*prefers-reduced-motion:\s*reduce/)
-  || !hasPattern(mainJs, /scrollIntoView\(\s*\{\s*block:\s*["']start["']\s*,\s*behavior:\s*motionScrollBehavior\(\)\s*\}\s*\)/)
+  || !hasPattern(mainJs, /function\s+scrollToArticleHeading\([^)]*\{\s*behavior\s*=\s*motionScrollBehavior\(\)[\s\S]*detail\.scrollTo\(\s*\{\s*top:\s*targetTop\s*,\s*behavior\s*\}\s*\)/)
   || !hasPattern(mainJs, /detail\.scrollTo\(\s*\{\s*top:\s*0\s*,\s*behavior:\s*motionScrollBehavior\(\)\s*\}\s*\)/)) {
   fail("js/main.js article scrolling should honor reduced and off motion modes");
 }
@@ -2608,15 +3551,15 @@ if (!hasPattern(motionSystemCss, /html\[data-ui-shell="desktop"\]\s+\.desktop-ic
   fail("css/motion-system.css should provide a visible non-color-only desktop icon selected state");
 }
 
-if (!hasPattern(mainJs, /const\s+keepsDesktopChromeLive\s*=\s*isDesktopShell[\s\S]*motionKind\s*===\s*["']app-open["'][\s\S]*motionKind\s*===\s*["']route["']\s*&&\s*nextRoute\s*===\s*["']home["']/)
-  || !hasPattern(mainJs, /useViewTransition:\s*\[["']route["'],\s*["']app-open["'],\s*["']mobile-tab["']\]\.includes\(motionKind\)[\s\S]*&&\s*!keepsDesktopChromeLive/)
+if (!hasPattern(mainJs, /LusuUiMotion\.run\(motionKind,[\s\S]*useViewTransition:\s*false/)
+  || !hasPattern(uiMotionJs, /pageNavigationKeepsChromeLive\s*=\s*kind\s*===\s*["']route["'][\s\S]*kind\s*===\s*["']app-open["'][\s\S]*kind\s*===\s*["']mobile-tab["'][\s\S]*context\.useViewTransition[\s\S]*&&\s*!pageNavigationKeepsChromeLive/)
   || !hasPattern(uiMotionJs, /function\s+resolveMotionTarget[\s\S]*kind\s*===\s*["']route["'][\s\S]*kind\s*===\s*["']app-open["'][\s\S]*shellMode\(\)\s*===\s*["']desktop["'][\s\S]*currentRoute\(\)\s*===\s*["']home["'][\s\S]*\.desktop-icons[\s\S]*\.page\.active\s*>\s*\.xp-window/)
   || !hasPattern(uiMotionJs, /function\s+appOpenEnterAnimation[\s\S]*opacity:\s*0\.84[\s\S]*translate3d\(0,3px,0\)[\s\S]*duration:\s*DURATIONS\.standard/)) {
-  fail("desktop App launch and Home return must animate live window/icon surfaces without a full-page snapshot covering fixed chrome");
+  fail("page navigation must animate live page/window surfaces without a snapshot covering fixed topbar, taskbar, or mobile Dock");
 }
 
 for (const [asset, expectedVersion] of [
-  ["/css/style.css", currentPreFinalCssVersion],
+  ["/css/style.css", currentCssVersion],
   ["/js/main.js", currentMainVersion]
 ]) {
   const versions = assetQueryVersions(indexHtml, asset);
@@ -2633,21 +3576,15 @@ if (/\brotateY\s*\(|\bperspective\s*:|@keyframes\s+[\w-]*page-turn|data-ui-page-
 if (!hasPattern(uiMotionJs, /ROUTE_ORDER[\s\S]*function\s+routeDirection/)
   || !hasPattern(uiMotionJs, /setData\(root,\s*["']uiDirection["']/)
   || !hasPattern(uiMotionJs, /removeData\(root,\s*["']uiDirection["']\)/)
-  || !hasPattern(motionSystemCss, /html\[data-ui-transition="route"\]\s+\.page\.active\s*\{[\s\S]*view-transition-name:\s*module-page/)
   || !hasPattern(motionSystemCss, /::view-transition-old\(root\),\s*::view-transition-new\(root\)\s*\{[\s\S]*animation:\s*none/)
-  || !hasPattern(motionSystemCss, /data-ui-transition="route"[\s\S]*::view-transition-old\(module-page\)\s*\{[\s\S]*opacity:\s*0[\s\S]*animation:\s*none/)
-  || !hasPattern(motionSystemCss, /data-ui-transition="route"[\s\S]*::view-transition-new\(module-page\)[\s\S]*neo-xp-route-in/)) {
-  fail("desktop taskbar route changes should reveal one calm active page without a second border snapshot while unchanged chrome remains stable");
+  || !hasPattern(uiMotionJs, /function\s+routeEnterAnimation[\s\S]*translate3d[\s\S]*duration:\s*DURATIONS\.standard/)
+  || /view-transition-name:\s*(?:module-page|app-screen|mobile-tab-page)/.test(motionSystemCss)) {
+  fail("route direction should use a local transform/opacity fallback while fixed chrome remains live");
 }
 
 if (!hasPattern(mainJs, /routeButton\.matches\(\s*["']\.desktop-icon["']\s*\)[\s\S]*["']app-open["']/)
   || !hasPattern(mainJs, /dataset\.uiShell\s*===\s*["']mobile["'][\s\S]*\.taskbar-tabs button, \.start-button, \.mobile-home-button[\s\S]*["']mobile-tab["']/)
-  || !hasPattern(motionSystemCss, /data-ui-transition="app-open"[\s\S]*view-transition-name:\s*app-screen/)
-  || !hasPattern(motionSystemCss, /data-ui-transition="app-open"[\s\S]*::view-transition-new\(app-screen\)[\s\S]*neo-xp-app-open-calm/)
-  || !hasPattern(motionSystemCss, /data-ui-transition="mobile-tab"[\s\S]*view-transition-name:\s*mobile-tab-page/)
-  || !hasPattern(motionSystemCss, /data-ui-transition="mobile-tab"[\s\S]*::view-transition-old\(mobile-tab-page\)[\s\S]*neo-xp-mobile-slide-out/)
-  || !hasPattern(motionSystemCss, /data-ui-transition="mobile-tab"[\s\S]*::view-transition-new\(mobile-tab-page\)[\s\S]*neo-xp-mobile-slide-in/)
-  || !hasPattern(motionSystemCss, /data-ui-transition="mobile-tab"\]\[data-ui-direction="backward"\]/)
+  || !hasPattern(uiMotionJs, /function\s+mobileTabEnterAnimation[\s\S]*direction\s*===\s*["']backward["'][\s\S]*translate3d[\s\S]*duration:\s*DURATIONS\.window/)
   || /\.desktop-icon\.is-opening/.test(motionSystemCss)) {
   fail("Home Apps should open calmly while mobile Dock routes use a directional, lightweight slide without page turns");
 }
@@ -2686,14 +3623,14 @@ if (!hasPattern(motionSystemCss, /html\[data-ui-shell="mobile"\]\[data-motion="r
 
 if (hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*?\.chatroom-header\s*\{\s*display:\s*none/)
   || hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*?\.chatroom-footer\s*\{\s*display:\s*none/)
-  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-window\.is-private-room\s+\.send-bubble-icon[\s\S]*pixel-ui-glyph-atlas\.png\?v=20260711-calm-motion-r13/)) {
+  || !hasPattern(lazyRouteCssSources.chatroom, /\.send-bubble-icon[\s\S]*pixel-ui-glyph-atlas\.png\?v=20260718-resource-icons-layout-r1/)) {
   fail("css/mobile-ios-shell.css should preserve landscape chat room controls, feedback, and the private-room send bitmap");
 }
 
-if (!hasPattern(styleCss, /\.minimize-button::before,\s*\.maximize-button::before\s*\{[\s\S]*pixel-ui-glyph-atlas\.png\?v=20260711-calm-motion-r13[\s\S]*background-size:\s*200%\s+200%/)
+if (!hasPattern(styleCss, /\.minimize-button::before,\s*\.maximize-button::before\s*\{[\s\S]*pixel-ui-glyph-atlas\.png\?v=20260718-resource-icons-layout-r1[\s\S]*background-size:\s*200%\s+200%/)
   || !hasPattern(styleCss, /\.minimize-button::before\s*\{\s*background-position:\s*0\s+0[\s\S]*\.maximize-button::before\s*\{\s*background-position:\s*100%\s+0[\s\S]*\.maximize-button\[aria-pressed="true"\]::before\s*\{\s*background-position:\s*0\s+100%/)
-  || !hasPattern(styleCss, /\.send-bubble-icon\s*\{[\s\S]*pixel-ui-glyph-atlas\.png\?v=20260711-calm-motion-r13[\s\S]*background-position:\s*100%\s+100%/)
-  || hasPattern(styleCss, /\.send-bubble-icon::(?:before|after)\s*\{[\s\S]{0,320}(?:clip-path|border|box-shadow|background\s*:)/)) {
+  || !hasPattern(lazyRouteCssSources.chatroom, /\.send-bubble-icon\s*\{[\s\S]*\.\.\/\.\.\/assets\/images\/ui\/pixel-ui-glyph-atlas\.png\?v=20260718-resource-icons-layout-r1[\s\S]*background-position:\s*100%\s+100%/)
+  || hasPattern(lazyRouteCssSources.chatroom, /\.send-bubble-icon::(?:before|after)\s*\{[\s\S]{0,320}(?:clip-path|border|box-shadow|background\s*:)/)) {
   fail("public window and chat glyphs should use the image2 bitmap atlas instead of CSS-drawn geometry");
 }
 
@@ -2711,23 +3648,22 @@ if (!hasPattern(mobileIosShellCss, /@media\s*\(max-width:\s*380px\)[\s\S]*\.chat
   fail("css/mobile-ios-shell.css should keep password and chat controls reachable on narrow and soft-keyboard portrait viewports");
 }
 
-const dockIndicatorReferences = mobileShellJs.match(/\bsyncDockIndicator\s*\(/g) || [];
-
 if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.mobile-dock-scroll\s*\{[\s\S]*overflow-x:\s*auto[\s\S]*touch-action:\s*pan-x/)
   || !hasPattern(mobileIosShellCss, /body\[data-mobile-dock="collapsed"\]\s+\.xp-taskbar\s*\{[\s\S]*transform:\s*translate3d/)
   || !hasPattern(mobileShellJs, /function\s+toggleDock[\s\S]*dockCollapsed[\s\S]*syncDockState/)
-  || !hasPattern(mobileShellJs, /function\s+revealActiveDockItem[\s\S]*isClipped[\s\S]*scrollIntoView[\s\S]*behavior:/)
+  || !hasPattern(mobileShellJs, /function\s+measureDockLayout[\s\S]*getBoundingClientRect[\s\S]*reveal\s*=/)
+  || !hasPattern(mobileShellJs, /function\s+mutateDockLayout[\s\S]*measurement\.reveal[\s\S]*scrollIntoView[\s\S]*behavior:/)
   || !hasPattern(indexHtml, /class=["'][^"']*\bmobile-dock-selection\b[^"']*["'][^>]*aria-hidden=["']true["']/)
   || !hasPattern(mobileIosShellCss, /\.mobile-dock-selection\s*\{[\s\S]*width:\s*var\(--mobile-dock-selection-width/)
   || !hasPattern(mobileIosShellCss, /\.mobile-dock-selection\s*\{[\s\S]*transform:\s*translate3d\(var\(--mobile-dock-selection-x/)
-  || !hasPattern(mobileShellJs, /function\s+syncDockIndicator[\s\S]*setProperty\(\s*["']--mobile-dock-selection-x["']/)
-  || !hasPattern(mobileShellJs, /function\s+syncDockIndicator[\s\S]*setProperty\(\s*["']--mobile-dock-selection-width["']/)
+  || !hasPattern(mobileShellJs, /function\s+mutateDockLayout[\s\S]*setProperty\(\s*["']--mobile-dock-selection-x["']/)
+  || !hasPattern(mobileShellJs, /function\s+mutateDockLayout[\s\S]*setProperty\(\s*["']--mobile-dock-selection-width["']/)
   || !hasPattern(indexHtml, /data-route="blog"\s+data-mobile-dock-excluded/)
   || !hasPattern(indexHtml, /data-route="about"\s+data-mobile-dock-excluded/)
   || !hasPattern(mobileIosShellCss, /taskbar-tabs\s+button\[data-mobile-dock-excluded\]\s*\{\s*display:\s*none/)
   || !hasPattern(mobileIosShellCss, /@media\s*\(min-width:\s*375px\)[\s\S]*mobile-dock-scroll\s*\{\s*justify-content:\s*center/)
   || !hasPattern(mobileShellJs, /dockRouteElements[\s\S]*:not\(\[data-mobile-dock-excluded\]\)[\s\S]*has-no-dock-route/)
-  || dockIndicatorReferences.length < 2
+  || !hasPattern(mobileShellJs, /function\s+syncDockLayout[\s\S]*framePipeline\.schedule\(\s*["']mobile-shell:dock-layout["']/)
   || !hasPattern(indexHtml, /data-mobile-dock-toggle[\s\S]*aria-expanded="true"/)
   || !hasPattern(mobileIosShellCss, /body:not\(\[data-route="home"\]\)\s+\.page\.active\s*>\s*\.xp-window\s*>\s*\.window-titlebar\s*\{\s*display:\s*none/)) {
   fail("mobile Apps should retain one App bar and a six-item, balanced, collapsible frosted Dock with a truthful sliding indicator");
@@ -2766,8 +3702,9 @@ if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+#about\s+\.
   fail("css/mobile-ios-shell.css should keep translated About content scrollable and reserve landscape article space above fixed reading controls");
 }
 
-if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+#article-detail-meta\s*\{[\s\S]*flex-wrap:\s*nowrap[\s\S]*min-height:\s*36px[\s\S]*overflow-x:\s*auto/)
+if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+#article-detail-meta\s*\{[\s\S]*flex-wrap:\s*wrap[\s\S]*overflow:\s*visible/)
   || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.article-detail-head\s*>\s*p\s*\{[\s\S]*-webkit-line-clamp:\s*2/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.article-summary-toggle:not\(\[hidden\]\)\s*\{[\s\S]*min-height:\s*44px[\s\S]*#article-detail-summary\.is-expanded\s*\{[\s\S]*-webkit-line-clamp:\s*unset/)
   || !hasPattern(mobileIosShellCss, /@media\s*\(max-width:\s*760px\)\s*and\s*\(max-height:\s*720px\)\s*and\s*\(orientation:\s*portrait\)[\s\S]*\.folder-layout\.is-reading\s+#article-detail-meta\s*\{[\s\S]*min-height:\s*32px[\s\S]*\.folder-layout\.is-reading\s+\.article-detail-head\s*>\s*p\s*\{[\s\S]*-webkit-line-clamp:\s*1/)
   || !hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*\.folder-layout\.is-reading\s+\.article-detail-head\s*>\s*p\s*\{\s*-webkit-line-clamp:\s*1/)) {
   fail("css/mobile-ios-shell.css should compact mobile article metadata and summaries so the first body paragraph remains readable");
@@ -2785,14 +3722,33 @@ if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\[data-arti
   fail("css/mobile-ios-shell.css should hide the no-op article maximize control inside always-full-screen mobile Apps");
 }
 
-if (!hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-read-progress\s*\{[\s\S]*top:\s*calc\(var\(--mobile-safe-top\)\s*\+\s*var\(--mobile-status-height\)\s*\+\s*8px\)[\s\S]*bottom:\s*auto[\s\S]*z-index:\s*95[\s\S]*height:\s*32px/)
+const knowledgeRouteCss = lazyRouteCssSources.knowledge;
+const progressMarkupStart = indexHtml.indexOf('<div class="article-read-progress"');
+const knowledgeTitlebarEnd = indexHtml.indexOf('</div>', indexHtml.indexOf('<div class="window-titlebar">'));
+const knowledgeSearchbarStart = indexHtml.indexOf('<div class="knowledge-searchbar"');
+const articleDetailStart = indexHtml.indexOf('<article class="article-detail"');
+if (progressMarkupStart < knowledgeTitlebarEnd || progressMarkupStart > knowledgeSearchbarStart
+  || indexHtml.slice(articleDetailStart, indexHtml.indexOf('</article>', articleDetailStart)).includes('class="article-read-progress"')
+  || !hasPattern(knowledgeRouteCss, /html:not\(\[data-ui-shell="mobile"\]\)\s+body\.is-article-reading\s*\{[^}]*height:\s*100dvh[^}]*overflow:\s*hidden/)
+  || !hasPattern(knowledgeRouteCss, /html:not\(\[data-ui-shell="mobile"\]\)\s+body\.is-article-reading\s+#knowledge\s*\{[^}]*height:\s*calc\(100dvh\s*-\s*var\(--chrome-topbar-height\)\)[^}]*overflow:\s*hidden/)
+  || !hasPattern(knowledgeRouteCss, /html:not\(\[data-ui-shell="mobile"\]\)\s+body\.is-article-reading\s+#knowledge\s+\.xp-window\s*\{[^}]*margin:\s*0\s+auto/)
+  || !hasPattern(knowledgeRouteCss, /#knowledge\s+\.article-detail\s*\{[^}]*overflow:\s*auto/)
+  || !hasPattern(knowledgeRouteCss, /\.article-read-progress\s*\{[^}]*display:\s*none/)
+  || hasPattern(knowledgeRouteCss, /\.article-read-progress\s*\{[^}]*position:\s*fixed/)
+  || !hasPattern(knowledgeRouteCss, /body\.is-article-reading\s+#knowledge\s+\.article-read-progress\s*\{[^}]*display:\s*grid/)
+  || !hasPattern(knowledgeRouteCss, /\.article-read-progress-track\s*\{[^}]*height:\s*4px/)) {
+  fail("desktop articles must keep document scrolling locked, use article-detail as the sole scroll owner, and render progress as a 4px in-flow window status");
+}
+
+if (!hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-read-progress\s*\{[^}]*position:\s*relative[^}]*grid-template-columns:\s*auto\s+minmax\(64px,\s*1fr\)\s+auto[^}]*width:\s*100%[^}]*min-height:\s*26px/)
   || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-top-link\s*\{[\s\S]*top:\s*calc\(var\(--mobile-safe-top\)\s*\+\s*var\(--mobile-status-height\)\s*\+\s*2px\)[\s\S]*bottom:\s*auto[\s\S]*width:\s*44px/)
-  || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-read-progress\s*\{\s*grid-template-columns:\s*minmax\(0,\s*1fr\)/)
-  || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-read-progress-label strong\s*\{\s*display:\s*none/)
+  || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-read-progress-label span\s*\{[^}]*position:\s*static[^}]*font-size:\s*11px/)
+  || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-read-progress-label strong\s*\{[^}]*display:\s*block[^}]*grid-column:\s*3/)
+  || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-read-progress-track\s*\{[^}]*grid-column:\s*2[^}]*height:\s*4px/)
   || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.mobile-route-copy\s*\{\s*display:\s*none/)
   || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.xp-topbar\s*\{\s*pointer-events:\s*none[\s\S]*body\.is-article-reading\s+\.xp-topbar\s+:is\(button,\s*a,\s*input,\s*select,\s*textarea,\s*\.account-popover\)\s*\{\s*pointer-events:\s*auto/)
-  || !hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*body\.is-article-reading\s+\.article-top-link\s*\{[\s\S]*right:\s*104px[\s\S]*bottom:\s*auto/)) {
-  fail("css/mobile-ios-shell.css should place tappable mobile article controls in the App bar without covering copy controls or body text");
+  || !hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*body\.is-article-reading\s+\.article-read-progress\s*\{[^}]*grid-template-columns:\s*auto\s+minmax\(52px,\s*1fr\)\s+auto[^}]*width:\s*100%[\s\S]*body\.is-article-reading\s+\.article-top-link\s*\{[\s\S]*right:\s*104px[\s\S]*bottom:\s*auto/)) {
+  fail("css/mobile-ios-shell.css should expose a labeled 4px article progress status and keep the 44px top control clear of copy controls or body text");
 }
 
 if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s*\{[\s\S]*--mobile-status-height:\s*0px/)
@@ -2822,11 +3778,13 @@ if (!hasPattern(motionSystemCss, /\.page\s*\{\s*animation:\s*none/)) {
   fail("css/motion-system.css should disable the legacy page popIn so routes have one authoritative transition system");
 }
 
-if (!hasPattern(mainJs, /function\s+runSurfaceClose[\s\S]*LusuUiMotion\.run\(\s*["']modal-close["'][\s\S]*deferCommit:\s*true[\s\S]*function\s+closeVideo[\s\S]*runSurfaceClose\(modal[\s\S]*function\s+closeWelcome[\s\S]*runSurfaceClose\(modal/)) {
+if (!hasPattern(mainJs, /function\s+runSurfaceClose[\s\S]*LusuUiMotion\.run\(\s*["']modal-close["'][\s\S]*deferCommit:\s*true/)
+  || !hasPattern(mainJs, /function\s+closeVideo[\s\S]*runSurfaceClose\(modal/)
+  || !hasPattern(mainJs, /function\s+closeWelcome[\s\S]*runSurfaceClose\(modal/)) {
   fail("js/main.js video and welcome dialogs should use a deferred reverse close animation with an immediate reduced-motion fallback");
 }
 
-if (!hasPattern(mainJs, /function\s+closeAccountPopover\(options\s*=\s*\{\}\)[\s\S]*runSurfaceClose\(popover[\s\S]*toggle\.focus\(\s*\{\s*preventScroll:\s*true\s*\}\s*\)/)
+if (!hasPattern(mainJs, /function\s+closeAccountPopover\(options\s*=\s*\{\}\)[\s\S]*runSurfaceClose\(popover[\s\S]*returnFocus\.focus\(\s*\{\s*preventScroll:\s*true\s*\}\s*\)/)
   || !hasPattern(mainJs, /function\s+hideChatPrivateRoomForm\(options\s*=\s*\{\}\)[\s\S]*chat-room-toggle["']\)\?\.focus\(\s*\{\s*preventScroll:\s*true\s*\}\s*\)/)) {
   fail("js/main.js account and private-room surfaces should restore focus when they close");
 }
@@ -2860,18 +3818,21 @@ if (!hasPattern(mainJs, /function\s+readyResourceItems\(\)\s*\{[\s\S]*content\.r
 }
 
 if (!hasPattern(
-  objectBlockAfterMarker(mainJs, "function renderResources"),
+  objectBlocksAfterMarker(mainJs, "function renderResources").find((body) => body.includes("readyResourceItems")) || "",
   /const\s+readyItems\s*=\s*readyResourceItems\(\)[\s\S]*renderResourceCategoryButtons\(readyItems\)[\s\S]*const\s+items\s*=\s*readyItems\.filter[\s\S]*resourceEmptyStateElement\(\{\s*hasAnyReady:\s*readyItems\.length\s*>\s*0\s*\}\)/
 )) {
   fail("js/main.js renderResources should show an honest empty state instead of placeholder resource cards");
 }
 
 const blogCardBody = objectBlockAfterMarker(mainJs, "function blogCardElement");
-if (/action\.disabled\s*=/.test(blogCardBody)) {
-  fail("js/main.js blog pending action should remain focusable via aria-disabled instead of native disabled");
+if (/aria-disabled|action\.disabled\s*=|blogPending/.test(blogCardBody)
+  || !/const\s+blogUrl\s*=\s*String\(item\.url\s*\|\|\s*["']["']\)\.trim\(\)/.test(blogCardBody)
+  || !blogCardBody.includes('/^\\/articles\\/[a-z0-9]')
+  || !/document\.createElement\(["']a["']\)/.test(blogCardBody)) {
+  fail("js/main.js blog cards must expose a real article link only for a safe published article URL, never a fake pending action");
 }
 
-if (!hasPattern(mainJs, /function\s+publishedBlogItems\(\)\s*\{[\s\S]*content\.blog\.filter\(\(item\)\s*=>\s*item\.published\s*===\s*true\s*\|\|\s*item\.url\s*\|\|\s*item\.content\)/)) {
+if (!hasPattern(mainJs, /function\s+publishedBlogItems\(\)\s*\{[\s\S]*blogState\.items\.filter\(\(item\)\s*=>\s*item\.published\s*===\s*true\s*&&\s*\(item\.url\s*\|\|\s*item\.content\)\)/)) {
   fail("js/main.js should separate published blog items from placeholder drafts");
 }
 
@@ -2982,7 +3943,7 @@ if (!hasPattern(gameShellJs, /const\s+repoHref\s*=\s*safeGithubHref\(game\.repo\
   fail("games/game-shell.js upstream repository link should use the GitHub-only guard");
 }
 
-if (!hasPattern(mainJs, /function\s+safeResourceUrl[\s\S]*if\s*\(\s*httpUrl\s*\)\s*\{[\s\S]*item\.external\s*===\s*true\s*\?\s*safeTrustedExternalUrl\(value,\s*trustedResourceExternalHosts\)\s*:\s*["']["']/)) {
+if (!hasPattern(mainJs, /function\s+safeResourceUrl[\s\S]*if\s*\(\s*httpUrl\s*\)[\s\S]*item\.external\s*===\s*true\s*\?\s*safeTrustedExternalUrl\(value,\s*trustedResourceExternalHosts\)\s*:\s*["']["']/)) {
   fail("js/main.js safeResourceUrl should require explicit external status and a trusted host for resource external links");
 }
 
@@ -2999,12 +3960,13 @@ for (const obsoleteText of [
   }
 }
 
-const finalUpdateId = "seed-update-2026-07-17-mobile-transfer-send-fix";
-const finalUpdateSlug = "2026-07-17-mobile-transfer-send-fix";
-const finalMainVersion = mobileTransferUiVersion;
+const finalUpdateId = "seed-update-2026-07-18-resource-icons-layout";
+const finalUpdateSlug = "2026-07-18-resource-icons-layout";
+const finalMainVersion = routeLazyVersion;
+const finalCssVersion = routeLazyVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Mobile Header and Quick Transfer Send Fixes";
-const finalPublishedAt = "2026-07-16T18:45:00.000Z";
+const finalTitleEn = "Resources Icon and Layout Fixes";
+const finalPublishedAt = "2026-07-18T15:35:00.000Z";
 const finalTranslationMinimums = {
   title: 8,
   summary: 24,
@@ -3023,6 +3985,7 @@ const changelog20260711Section = markdownSection(changelog, "## 2026-07-11");
 const changelog20260714Section = markdownSection(changelog, "## 2026-07-14");
 const changelog20260716Section = markdownSection(changelog, "## 2026-07-16");
 const changelog20260717Section = markdownSection(changelog, "## 2026-07-17");
+const changelog20260718Section = markdownSection(changelog, "## 2026-07-18");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -3049,6 +4012,7 @@ if (finalUpdateStarted) {
     'date: "2026.07.14"',
     'date: "2026.07.16"',
     'date: "2026.07.17"',
+    'date: "2026.07.18"',
     finalTitleEn
   ]) {
     if (!mainJs.includes(token)) {
@@ -3093,16 +4057,16 @@ if (finalUpdateStarted) {
     }
   }
 
-  const mainFinalFallback = windowAfter(mainJs, `article_id: "${finalUpdateId}"`, 12000);
+  const mainFinalFallback = windowAfter(contentModuleJs, `"article_id": "${finalUpdateId}"`, 12000);
   for (const token of [
-    `article_id: "${finalUpdateId}"`,
-    `slug: "${finalUpdateSlug}"`,
-    'category: "site-updates"',
-    `published_at: "${finalPublishedAt}"`,
-    "fallbackOnly: true"
+    `"article_id": "${finalUpdateId}"`,
+    `"slug": "${finalUpdateSlug}"`,
+    '"category": "site-updates"',
+    `"published_at": "${finalPublishedAt}"`,
+    '"fallbackOnly": true'
   ]) {
     if (!mainFinalFallback.includes(token)) {
-      fail(`js/main.js final public update fallback metadata missing ${token}`);
+      fail(`js/data/content.mjs final public update fallback metadata missing ${token}`);
     }
   }
   const mainFallbackFieldBlocks = Object.fromEntries(
@@ -3113,11 +4077,45 @@ if (finalUpdateStarted) {
       const fallbackValue = jsStringPropertyValue(mainFallbackFieldBlocks[field], lang);
       const apiValue = apiFinalTranslationValues[lang]?.[field];
       if (!fallbackValue || fallbackValue.trim().length < minimumLength) {
-        fail(`js/main.js final public update fallback ${lang}.${field} should be populated`);
+        fail(`js/data/content.mjs final public update fallback ${lang}.${field} should be populated`);
       } else if (fallbackValue !== apiValue) {
-        fail(`js/main.js and Functions final public update ${lang}.${field} should match exactly`);
+        fail(`js/data/content.mjs and Functions final public update ${lang}.${field} should match exactly`);
       }
     }
+  }
+
+  const homeFinalProjection = windowAfter(homeContentModuleJs, `"article_id": "${finalUpdateId}"`, 8000);
+  for (const token of [
+    `"article_id": "${finalUpdateId}"`,
+    `"slug": "${finalUpdateSlug}"`,
+    '"category": "site-updates"',
+    `"published_at": "${finalPublishedAt}"`,
+    '"fallbackOnly": true'
+  ]) {
+    if (!homeFinalProjection.includes(token)) {
+      fail(`js/data/home-content.mjs final public update projection missing ${token}`);
+    }
+  }
+  for (const lang of ["zh", "en", "ja"]) {
+    for (const field of ["title", "summary"]) {
+      const homeFieldBlock = objectBlockAfterMarker(homeFinalProjection, `"${field}":`);
+      const homeValue = jsStringPropertyValue(homeFieldBlock, lang);
+      const apiValue = apiFinalTranslationValues[lang]?.[field];
+      if (!homeValue) {
+        fail(`js/data/home-content.mjs final public update ${lang}.${field} should be populated`);
+      } else if (homeValue !== apiValue) {
+        fail(`js/data/home-content.mjs and Functions final public update ${lang}.${field} should match exactly`);
+      }
+    }
+  }
+  if (/content_markdown/.test(homeContentModuleJs)) {
+    fail("js/data/home-content.mjs should not include article bodies");
+  }
+  if ((homeContentModuleJs.match(/"article_id"\s*:/g) || []).length !== 5) {
+    fail("js/data/home-content.mjs should project exactly the newest five updates");
+  }
+  if (Buffer.byteLength(homeContentModuleJs, "utf8") > 12 * 1024) {
+    fail("js/data/home-content.mjs should remain a slim Home projection under 12 KB");
   }
 
   const schemaFinalSeed = windowAfter(schemaSql, `'${finalUpdateId}'`, 1200);
@@ -3161,7 +4159,9 @@ if (finalUpdateStarted) {
   }
 
   for (const token of [
-    'id="top-updated">2026.07.17',
+    'id="top-updated">2026.07.18',
+    `/css/style.css?v=${finalCssVersion}`,
+    `/css/mobile-ios-shell.css?v=${finalCssVersion}`,
     `/js/main.js?v=${finalMainVersion}`
   ]) {
     if (!indexHtml.includes(token)) {
@@ -3177,7 +4177,7 @@ if (finalUpdateStarted) {
     "Functions seed",
     "schema seed"
   ]) {
-    if (!changelog20260717Section.includes(token)) {
+    if (!changelog20260718Section.includes(token)) {
       fail(`CHANGELOG.md final public update sync missing ${token}`);
     }
   }
@@ -3212,6 +4212,12 @@ for (const token of ["pragma table_info", "alter table", "schema-indexes.sql", "
   if (!d1MigrateLocalJs.includes(token)) {
     fail(`scripts/d1-migrate-local.mjs missing old-database compatibility guard ${token}`);
   }
+}
+if (!schemaIndexesSql.includes("transfer_items_idempotency_idx")
+  || !hasPattern(schemaIndexesSql, /create\s+unique\s+index\s+if\s+not\s+exists\s+transfer_items_idempotency_idx[\s\S]*transfer_items\(uploader_user_id,\s*idempotency_key\)[\s\S]*where\s+idempotency_key\s*<>\s*''/i)
+  || !d1MigrateLocalJs.includes('column: "sync_generation"')
+  || !d1MigrateLocalJs.includes('column: "idempotency_key"')) {
+  fail("local D1 migration must add Transfer compatibility columns before creating transfer_items_idempotency_idx from schema-indexes.sql");
 }
 for (const token of ["tests/*.test.mjs", "tests/transfer/*.test.mjs", "tools/japanese-subtext/tests/*.test.mjs", "tools/japanese-subtext/scripts/tts/tests/*.mjs"]) {
   if (!String(migrationPackageData.scripts?.test || "").includes(token)) {

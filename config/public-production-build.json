@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 1,
+  "outputDirectory": "dist",
+  "excludeHiddenTreeEntries": true,
+  "rootFiles": [
+    "index.html",
+    "manifest.webmanifest",
+    "robots.txt",
+    "_headers",
+    "_redirects"
+  ],
+  "copyTrees": [
+    {
+      "source": "assets",
+      "excludeFiles": [
+        ".gitkeep",
+        "transfer/quick-transfer-icons-source.png",
+        "images/homepage-day.png",
+        "images/homepage-evening.png",
+        "images/homepage-morning.png",
+        "images/homepage-night.png",
+        "images/icon-chatroom.png",
+        "images/lusu-about-avatar.png",
+        "images/lusu-tv-head.png",
+        "images/start-tv-icon.png"
+      ],
+      "excludePrefixes": []
+    },
+    {
+      "source": "games",
+      "excludeFiles": [
+        "game-shell.css",
+        "game-shell.js",
+        "a-dark-room/source/README.md",
+        "a-dark-room/source/contributing.md",
+        "a-dark-room/source/package.json",
+        "a-dark-room/source/yarn.lock",
+        "a-dark-room/source/lang/babel.cfg",
+        "kittens-game/source/README.md",
+        "kittens-game/source/crowdin.yml",
+        "kittens-game/source/jest.config.unittest.json",
+        "kittens-game/source/kg-workspace.code-workspace",
+        "kittens-game/source/package.json",
+        "kittens-game/source/tests.html",
+        "kittens-game/source/yarn.lock",
+        "life-restart/source/condition_test.html"
+      ],
+      "excludePrefixes": [
+        "a-dark-room/source/doc/",
+        "a-dark-room/source/tools/",
+        "kittens-game/source/test/",
+        "kittens-game/source/tools/"
+      ],
+      "excludeExtensions": [
+        ".po",
+        ".pot"
+      ]
+    },
+    {
+      "source": "admin",
+      "excludeFiles": [
+        "admin.css",
+        "admin.js",
+        "transfer.css",
+        "transfer.js"
+      ],
+      "excludePrefixes": [
+        "docs/"
+      ]
+    },
+    {
+      "source": "tools/japanese-subtext/audio",
+      "excludeFiles": [],
+      "excludePrefixes": [
+        ".work/"
+      ]
+    },
+    {
+      "source": "tools/japanese-subtext/assets",
+      "excludeFiles": [
+        ".gitkeep"
+      ],
+      "excludePrefixes": []
+    },
+    {
+      "source": "tools/japanese-subtext/content",
+      "excludeFiles": [
+        "blueprint.json"
+      ],
+      "excludePrefixes": []
+    },
+    {
+      "source": "tools/japanese-subtext/scripts/tts/licenses",
+      "target": "tools/japanese-subtext/licenses",
+      "excludeFiles": [],
+      "excludePrefixes": []
+    }
+  ],
+  "standaloneFiles": [
+    "tools/japanese-subtext/index.html",
+    "tools/japanese-subtext/manifest.json"
+  ],
+  "htmlEntrypoints": [
+    "index.html",
+    "admin/index.html",
+    "admin/transfer.html",
+    "games/2048/index.html",
+    "games/a-dark-room/index.html",
+    "games/hextris/index.html",
+    "games/kittens-game/index.html",
+    "games/life-restart/index.html",
+    "tools/japanese-subtext/index.html"
+  ],
+  "forbiddenOutputSegments": [
+    ".git",
+    ".github",
+    ".wrangler",
+    ".wrangler-config",
+    ".codex-remote-attachments",
+    "cloudflare",
+    "config",
+    "docs",
+    "functions",
+    "node_modules",
+    "output",
+    "scripts",
+    "skills",
+    "tests",
+    "workers"
+  ],
+  "forbiddenOutputNames": [
+    ".dev.vars",
+    ".env",
+    "package-lock.json",
+    "package.json",
+    "wrangler.jsonc"
+  ],
+  "forbiddenOutputExtensions": [
+    ".key",
+    ".log",
+    ".p12",
+    ".pem",
+    ".pfx"
+  ]
+}

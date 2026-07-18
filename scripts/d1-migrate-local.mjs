@@ -7,6 +7,22 @@ const root = resolve(import.meta.dirname, "..");
 const database = "lusu_personal_site";
 const wranglerCli = resolve(root, "node_modules", "wrangler", "bin", "wrangler.js");
 export const CHAT_HASH_TABLES = Object.freeze(["anonymous_chat_messages", "chat_bans"]);
+export const CHAT_COLUMN_MIGRATIONS = Object.freeze({
+  anonymous_chat_messages: Object.freeze({
+    column: "client_request_id",
+    sql: "alter table anonymous_chat_messages add column client_request_id text not null default ''"
+  })
+});
+export const TRANSFER_COLUMN_MIGRATIONS = Object.freeze({
+  transfer_rooms: Object.freeze({
+    column: "sync_generation",
+    sql: "alter table transfer_rooms add column sync_generation integer not null default 0"
+  }),
+  transfer_items: Object.freeze({
+    column: "idempotency_key",
+    sql: "alter table transfer_items add column idempotency_key text not null default ''"
+  })
+});
 
 export function hasIpHashKeyId(columns) {
   return columns.some((column) => column.name === "ip_hash_key_id");
@@ -17,6 +33,22 @@ export function chatHashColumnMigrationSql(table) {
     throw new Error(`Unsupported chat hash table: ${table}`);
   }
   return `alter table ${table} add column ip_hash_key_id text not null default 'legacy'`;
+}
+
+export function transferColumnMigrationSql(table) {
+  const migration = TRANSFER_COLUMN_MIGRATIONS[table];
+  if (!migration) {
+    throw new Error(`Unsupported transfer table: ${table}`);
+  }
+  return migration.sql;
+}
+
+export function chatColumnMigrationSql(table) {
+  const migration = CHAT_COLUMN_MIGRATIONS[table];
+  if (!migration) {
+    throw new Error(`Unsupported chat table: ${table}`);
+  }
+  return migration.sql;
 }
 
 export async function migrateLocalD1() {
@@ -40,9 +72,38 @@ export async function migrateLocalD1() {
     }
   }
 
+  for (const [table, migration] of Object.entries(CHAT_COLUMN_MIGRATIONS)) {
+    const columns = await queryRows(`pragma table_info('${table}')`);
+    if (!columns.some((column) => column.name === migration.column)) {
+      await runWrangler([
+        "d1",
+        "execute",
+        database,
+        "--local",
+        "--command",
+        chatColumnMigrationSql(table)
+      ]);
+    }
+  }
+
+  for (const [table, migration] of Object.entries(TRANSFER_COLUMN_MIGRATIONS)) {
+    const columns = await queryRows(`pragma table_info('${table}')`);
+    if (!columns.some((column) => column.name === migration.column)) {
+      await runWrangler([
+        "d1",
+        "execute",
+        database,
+        "--local",
+        "--command",
+        transferColumnMigrationSql(table)
+      ]);
+    }
+  }
+
   await runWrangler(["d1", "execute", database, "--local", "--file=cloudflare/schema-indexes.sql"]);
 
-  const verification = await queryRows(`
+  const verification = [
+    ...await queryRows(`
     select 'messages-column' as item, count(*) as present
     from pragma_table_info('anonymous_chat_messages') where name = 'ip_hash_key_id'
     union all
@@ -54,7 +115,25 @@ export async function migrateLocalD1() {
     union all
     select 'bans-index', count(*)
     from sqlite_master where type = 'index' and name = 'chat_bans_active_ip_generation_idx'
-  `);
+    `),
+    ...await queryRows(`
+    select 'chat-request-column' as item, count(*) as present
+    from pragma_table_info('anonymous_chat_messages') where name = 'client_request_id'
+    union all
+    select 'chat-request-index', count(*)
+    from sqlite_master where type = 'index' and name = 'anonymous_chat_messages_request_idx'
+    `),
+    ...await queryRows(`
+    select 'transfer-generation-column' as item, count(*) as present
+    from pragma_table_info('transfer_rooms') where name = 'sync_generation'
+    union all
+    select 'transfer-idempotency-column', count(*)
+    from pragma_table_info('transfer_items') where name = 'idempotency_key'
+    union all
+    select 'transfer-idempotency-index', count(*)
+    from sqlite_master where type = 'index' and name = 'transfer_items_idempotency_idx'
+    `)
+  ];
 
   const missing = verification.filter((row) => Number(row.present) !== 1).map((row) => row.item);
   if (missing.length) {

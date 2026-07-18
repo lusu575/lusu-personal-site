@@ -123,9 +123,9 @@ async function handleUserTransferApi(context, parts) {
   }
   if (request.method === "GET" && parts[0] === "room" && parts[1] === "items") {
     const roomKey = normalizeRoomKey(url.searchParams.get("room"));
-    const after = normalizeCursor(url.searchParams.get("after"));
+    const cursor = normalizeCursor(url.searchParams.get("cursor") || url.searchParams.get("after"));
     const limit = clampInteger(url.searchParams.get("limit"), 1, MAX_ITEMS_PAGE, 100);
-    return transferJson(await listRoomItems(env, session, roomKey, after, limit));
+    return transferJson(await listRoomItems(env, session, roomKey, cursor, limit));
   }
   if (request.method === "POST" && parts[0] === "text" && !parts[1]) {
     const body = await readBoundedJson(request);
@@ -291,21 +291,49 @@ async function joinTransferRoom(env, roomKey, userId) {
   return room;
 }
 
-async function listRoomItems(env, session, roomKey, after, limit) {
+async function listRoomItems(env, session, roomKey, cursor, limit) {
   const room = await activeRoomByKey(env, roomKey);
+  const now = nowIso();
+  const generation = Number(room.sync_generation || 0);
+  if (cursor.generation !== null && cursor.generation !== generation) {
+    return {
+      room: publicRoom(room), items: [], nextCursor: "", hasMore: false,
+      resetRequired: true, resetReason: "items-removed"
+    };
+  }
+  if (cursor.validUntil && cursor.validUntil <= now) {
+    return {
+      room: publicRoom(room), items: [], nextCursor: "", hasMore: false,
+      resetRequired: true, resetReason: "items-expired"
+    };
+  }
   const rows = await env.DB.prepare(`
     select i.*, u.email as uploader_email
     from transfer_items i
     join users u on u.id = i.uploader_user_id
     where i.room_id = ? and i.upload_status = 'ready' and i.expires_at > ?
-      and (? = '' or i.created_at > ?)
+      and (? = '' or i.created_at > ? or (i.created_at = ? and i.id > ?))
     order by i.created_at asc, i.id asc
     limit ?
-  `).bind(room.id, nowIso(), after, after, limit).all();
+  `).bind(room.id, now, cursor.at, cursor.at, cursor.at, cursor.id, limit + 1).all();
+  const pageRows = (rows.results || []).slice(0, limit);
+  const last = pageRows[pageRows.length - 1];
+  const expiry = await env.DB.prepare(`
+    select min(expires_at) as valid_until from transfer_items
+    where room_id = ? and upload_status = 'ready' and expires_at > ?
+  `).bind(room.id, now).first();
   return {
     room: publicRoom(room),
-    items: (rows.results || []).map((item) => publicItem(item, roomKey, session)),
-    nextCursor: rows.results?.length ? rows.results[rows.results.length - 1].created_at : ""
+    items: pageRows.map((item) => publicItem(item, roomKey, session)),
+    nextCursor: encodeCursor({
+      at: last?.created_at || cursor.at,
+      id: last?.id || cursor.id,
+      generation,
+      validUntil: expiry?.valid_until || ""
+    }),
+    hasMore: (rows.results || []).length > limit,
+    resetRequired: false,
+    syncMode: cursor.at ? "incremental" : "initial"
   };
 }
 
@@ -314,6 +342,12 @@ async function createTransferText(env, session, body) {
   const roomKey = normalizeRoomKey(body.roomKey);
   const room = await activeRoomByKey(env, roomKey);
   const encryptedContent = normalizeEncryptedText(body.encryptedContent, settings.textMaxChars);
+  const idempotencyKey = normalizeIdempotencyKey(body.idempotencyKey);
+  const existing = await findIdempotentItem(env, session.user.id, idempotencyKey);
+  if (existing) {
+    assertIdempotentItem(existing, room.id, "text");
+    return { ...existing, room_key: roomKey };
+  }
   const since = new Date(Date.now() - 60000).toISOString();
   const recent = await env.DB.prepare(`
     select count(*) as count from transfer_items
@@ -340,15 +374,22 @@ async function createTransferText(env, session, body) {
     completed_at: now,
     expires_at: expiresAt
   };
-  await env.DB.prepare(`
-    insert into transfer_items (
-      id, room_id, uploader_user_id, uploader_role_snapshot, item_type, encrypted,
-      text_ciphertext, upload_mode, upload_status, created_at, completed_at, expires_at
-    ) values (?, ?, ?, ?, 'text', 1, ?, 'text', 'ready', ?, ?, ?)
-  `).bind(
-    item.id, item.room_id, item.uploader_user_id, item.uploader_role_snapshot,
-    item.text_ciphertext, now, now, expiresAt
-  ).run();
+  try {
+    await env.DB.prepare(`
+      insert into transfer_items (
+        id, room_id, uploader_user_id, uploader_role_snapshot, item_type, encrypted,
+        text_ciphertext, upload_mode, upload_status, created_at, completed_at, expires_at, idempotency_key
+      ) values (?, ?, ?, ?, 'text', 1, ?, 'text', 'ready', ?, ?, ?, ?)
+    `).bind(
+      item.id, item.room_id, item.uploader_user_id, item.uploader_role_snapshot,
+      item.text_ciphertext, now, now, expiresAt, idempotencyKey
+    ).run();
+  } catch (error) {
+    const replay = await findIdempotentItem(env, session.user.id, idempotencyKey);
+    if (!replay) throw error;
+    assertIdempotentItem(replay, room.id, "text");
+    return { ...replay, room_key: roomKey };
+  }
   await touchRoom(env, room.id, now);
   return { ...item, room_key: roomKey, size_bytes: 0, mime_type: "text/plain" };
 }
@@ -365,15 +406,39 @@ async function uploadSimpleObject(context, session) {
   const mimeType = normalizeMimeType(url.searchParams.get("mime") || request.headers.get("Content-Type"));
   const declaredSize = normalizeUploadLength(request, url.searchParams.get("size"));
   const room = await activeRoomByKey(env, roomKey);
+  const idempotencyKey = normalizeIdempotencyKey(request.headers.get("Idempotency-Key"));
+  let existing = await findIdempotentItem(env, session.user.id, idempotencyKey);
+  if (existing) {
+    assertIdempotentItem(existing, room.id, itemTypeFromMime(mimeType));
+    if (existing.display_filename !== filename || Number(existing.size_bytes) !== declaredSize || existing.mime_type !== mimeType) {
+      throw new TransferHttpError("幂等键对应的上传文件不一致。", 409, "TRANSFER_IDEMPOTENCY_KEY_REUSED");
+    }
+    if (existing.upload_status === "ready") return { ...existing, room_key: roomKey };
+    if (existing.upload_status === "failed") {
+      await discardFailedIdempotentItem(env, existing);
+      existing = null;
+    }
+  }
+  if (existing) {
+    throw new TransferHttpError("相同上传仍在处理，请稍后刷新。", 409, "TRANSFER_REQUEST_IN_PROGRESS");
+  }
   await assertUploadAllowed(env, session, room, declaredSize, settings, { simple: true });
 
   const now = nowIso();
   const itemId = crypto.randomUUID();
   const objectKey = objectKeyFor(itemId, now);
   const expiresAt = addHoursIso(settings.retentionHours);
-  await reserveSimpleUpload(env, session, room, {
-    itemId, objectKey, filename, mimeType, declaredSize, now, expiresAt
-  }, settings);
+  try {
+    await reserveSimpleUpload(env, session, room, {
+      itemId, objectKey, filename, mimeType, declaredSize, now, expiresAt, idempotencyKey
+    }, settings);
+  } catch (error) {
+    const replay = await findIdempotentItem(env, session.user.id, idempotencyKey);
+    if (!replay) throw error;
+    assertIdempotentItem(replay, room.id, itemTypeFromMime(mimeType));
+    if (replay.upload_status === "ready") return { ...replay, room_key: roomKey };
+    throw new TransferHttpError("相同上传仍在处理，请稍后刷新。", 409, "TRANSFER_REQUEST_IN_PROGRESS");
+  }
   await refreshDailyStoragePeaks(env);
 
   let object;
@@ -427,12 +492,12 @@ async function reserveSimpleUpload(env, session, room, upload, settings) {
       insert into transfer_items (
         id, room_id, uploader_user_id, uploader_role_snapshot, item_type, original_filename,
         display_filename, r2_object_key, mime_type, size_bytes, upload_mode, upload_status,
-        created_at, expires_at
-      ) values (?, ?, ?, 'admin', ?, ?, ?, ?, ?, ?, 'simple', 'uploading', ?, ?)
+        created_at, expires_at, idempotency_key
+      ) values (?, ?, ?, 'admin', ?, ?, ?, ?, ?, ?, 'simple', 'uploading', ?, ?, ?)
     `).bind(
       upload.itemId, room.id, session.user.id, itemTypeFromMime(upload.mimeType),
       upload.filename, upload.filename, upload.objectKey, upload.mimeType, upload.declaredSize,
-      upload.now, upload.expiresAt
+      upload.now, upload.expiresAt, upload.idempotencyKey
     ).run();
     return;
   }
@@ -444,9 +509,9 @@ async function reserveSimpleUpload(env, session, room, upload, settings) {
     insert into transfer_items (
       id, room_id, uploader_user_id, uploader_role_snapshot, item_type, original_filename,
       display_filename, r2_object_key, mime_type, size_bytes, upload_mode, upload_status,
-      created_at, expires_at
+      created_at, expires_at, idempotency_key
     )
-    select ?, ?, ?, 'user', ?, ?, ?, ?, ?, ?, 'simple', 'uploading', ?, ?
+    select ?, ?, ?, 'user', ?, ?, ?, ?, ?, ?, 'simple', 'uploading', ?, ?, ?
     where
       (select count(*) from transfer_items where uploader_user_id = ? and upload_status = 'uploading') < ?
       and (select count(*) from transfer_items where uploader_user_id = ? and created_at >= ?) < ?
@@ -457,7 +522,7 @@ async function reserveSimpleUpload(env, session, room, upload, settings) {
       and (select coalesce(sum(size_bytes), 0) from transfer_items where uploader_role_snapshot <> 'admin' and upload_status in ('uploading','ready','delete_failed') and expires_at > ?) + ? <= ?
   `).bind(
     upload.itemId, room.id, session.user.id, itemTypeFromMime(upload.mimeType), upload.filename,
-    upload.filename, upload.objectKey, upload.mimeType, upload.declaredSize, upload.now, upload.expiresAt,
+    upload.filename, upload.objectKey, upload.mimeType, upload.declaredSize, upload.now, upload.expiresAt, upload.idempotencyKey,
     session.user.id, settings.normalUserConcurrentUploads,
     session.user.id, recentMinute, settings.normalUserInitPerMinute,
     session.user.id, since24h, upload.declaredSize, settings.normalUser24hBytes,
@@ -485,6 +550,19 @@ async function initializeMultipartUpload(context, session, body) {
   const filename = normalizeFilename(body.filename);
   const mimeType = normalizeMimeType(body.mimeType);
   const declaredSize = integerInRange(body.sizeBytes, 1, settings.adminMaxObjectBytes, "文件大小超出 R2 平台边界。", "TRANSFER_ADMIN_FILE_LIMIT");
+  const idempotencyKey = normalizeIdempotencyKey(body.idempotencyKey);
+  let existing = await findIdempotentMultipart(env, session.user.id, idempotencyKey);
+  if (existing) {
+    assertIdempotentItem(existing, room.id, itemTypeFromMime(mimeType));
+    if (Number(existing.declared_size_bytes) !== declaredSize || existing.filename !== filename) {
+      throw new TransferHttpError("幂等键对应的上传文件不一致。", 409, "TRANSFER_IDEMPOTENCY_KEY_REUSED");
+    }
+    if (["active", "completing", "completed"].includes(existing.session_status)) {
+      return publicMultipartInitialization(existing, true);
+    }
+    await discardFailedIdempotentItem(env, existing);
+    existing = null;
+  }
   const partSize = choosePartSize(declaredSize, body.partSizeBytes, settings);
   const expectedParts = Math.ceil(declaredSize / partSize);
   if (expectedParts > settings.adminMaxParts) {
@@ -509,11 +587,11 @@ async function initializeMultipartUpload(context, session, body) {
         insert into transfer_items (
           id, room_id, uploader_user_id, uploader_role_snapshot, item_type, original_filename,
           display_filename, r2_object_key, mime_type, size_bytes, upload_mode, upload_status,
-          created_at, expires_at
-        ) values (?, ?, ?, 'admin', ?, ?, ?, ?, ?, ?, 'multipart', 'uploading', ?, ?)
+          created_at, expires_at, idempotency_key
+        ) values (?, ?, ?, 'admin', ?, ?, ?, ?, ?, ?, 'multipart', 'uploading', ?, ?, ?)
       `).bind(
         itemId, room.id, session.user.id, itemTypeFromMime(mimeType), filename, filename,
-        objectKey, mimeType, declaredSize, now, expiresAt
+        objectKey, mimeType, declaredSize, now, expiresAt, idempotencyKey
       ),
       env.DB.prepare(`
         insert into transfer_upload_sessions (
@@ -532,6 +610,11 @@ async function initializeMultipartUpload(context, session, body) {
     } catch {
       // R2's default incomplete multipart lifecycle is the final fallback.
     }
+    const replay = await findIdempotentMultipart(env, session.user.id, idempotencyKey);
+    if (replay) {
+      assertIdempotentItem(replay, room.id, itemTypeFromMime(mimeType));
+      return publicMultipartInitialization(replay, true);
+    }
     throw error;
   }
   await refreshDailyStoragePeaks(env);
@@ -542,7 +625,40 @@ async function initializeMultipartUpload(context, session, body) {
     partSizeBytes: partSize,
     expectedParts,
     expiresAt,
-    maxParallelParts: 4
+    maxParallelParts: 4,
+    idempotentReplay: false
+  };
+}
+
+async function findIdempotentMultipart(env, userId, key) {
+  if (!key) return null;
+  return env.DB.prepare(`
+    select i.*, s.id as session_id, s.filename, s.r2_upload_id, s.declared_size_bytes, s.part_size_bytes,
+      s.expected_parts, s.expires_at as session_expires_at, s.status as session_status
+    from transfer_items i join transfer_upload_sessions s on s.item_id = i.id
+    where i.uploader_user_id = ? and i.idempotency_key = ? limit 1
+  `).bind(userId, key).first();
+}
+
+async function discardFailedIdempotentItem(env, item) {
+  if (item.r2_upload_id && item.r2_object_key) {
+    try { await env.TRANSFER_BUCKET?.resumeMultipartUpload(item.r2_object_key, item.r2_upload_id).abort(); } catch { /* lifecycle remains the fallback */ }
+  }
+  if (item.r2_object_key) {
+    try { await env.TRANSFER_BUCKET?.delete(item.r2_object_key); } catch { /* cleanup remains the fallback */ }
+  }
+  await env.DB.prepare("delete from transfer_items where id = ? and upload_status <> 'ready'").bind(item.id).run();
+}
+
+function publicMultipartInitialization(row, idempotentReplay) {
+  return {
+    sessionId: row.session_id,
+    itemId: row.id,
+    partSizeBytes: Number(row.part_size_bytes),
+    expectedParts: Number(row.expected_parts),
+    expiresAt: row.session_expires_at,
+    maxParallelParts: 4,
+    idempotentReplay
   };
 }
 
@@ -777,7 +893,11 @@ async function deleteItemRecordAndObject(env, actorUserId, item, action) {
     }
   }
   await audit(env, actorUserId, action, item.room_id, item.id, Number(item.size_bytes || 0), item.mime_type || "");
-  await env.DB.prepare("delete from transfer_items where id = ?").bind(item.id).run();
+  await env.DB.batch([
+    env.DB.prepare("delete from transfer_items where id = ?").bind(item.id),
+    env.DB.prepare("update transfer_rooms set sync_generation = sync_generation + 1, last_activity_at = ? where id = ?")
+      .bind(nowIso(), item.room_id)
+  ]);
 }
 
 async function assertUploadAllowed(env, session, room, sizeBytes, settings, options = {}) {
@@ -1216,7 +1336,11 @@ export async function runTransferCleanup(env, options = {}) {
         await env.TRANSFER_BUCKET.delete(item.r2_object_key);
       }
       await audit(env, options.actorUserId || "system", "expired_item_deleted", item.room_id, item.id, Number(item.size_bytes || 0), item.mime_type || "");
-      await env.DB.prepare("delete from transfer_items where id = ?").bind(item.id).run();
+      await env.DB.batch([
+        env.DB.prepare("delete from transfer_items where id = ?").bind(item.id),
+        env.DB.prepare("update transfer_rooms set sync_generation = sync_generation + 1, last_activity_at = ? where id = ?")
+          .bind(nowIso(), item.room_id)
+      ]);
       deletedItems += 1;
       deletedBytes += Number(item.size_bytes || 0);
     } catch {
@@ -1254,9 +1378,10 @@ export async function runTransferCleanup(env, options = {}) {
   await env.DB.prepare(`
     delete from transfer_rooms
     where status = 'open'
+      and last_activity_at <= ?
       and not exists (select 1 from transfer_items i where i.room_id = transfer_rooms.id)
       and not exists (select 1 from transfer_upload_sessions s where s.room_id = transfer_rooms.id and s.status in ('active','completing'))
-  `).run();
+  `).bind(new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()).run();
   const finishedAt = nowIso();
   await env.DB.prepare(`
     update transfer_cleanup_runs set finished_at = ?, status = ?, deleted_items = ?, deleted_bytes = ?,
@@ -1450,7 +1575,23 @@ async function ensureTransferSchema(env) {
     return;
   }
   await env.DB.batch(transferSchemaStatements(env));
+  await ensureTransferColumns(env);
+  await env.DB.prepare(`
+    create unique index if not exists transfer_items_idempotency_idx
+    on transfer_items(uploader_user_id, idempotency_key) where idempotency_key <> ''
+  `).run();
   transferSchemaReady = true;
+}
+
+async function ensureTransferColumns(env) {
+  const roomColumns = (await env.DB.prepare("pragma table_info(transfer_rooms)").all()).results || [];
+  if (!roomColumns.some((column) => column.name === "sync_generation")) {
+    await env.DB.prepare("alter table transfer_rooms add column sync_generation integer not null default 0").run();
+  }
+  const itemColumns = (await env.DB.prepare("pragma table_info(transfer_items)").all()).results || [];
+  if (!itemColumns.some((column) => column.name === "idempotency_key")) {
+    await env.DB.prepare("alter table transfer_items add column idempotency_key text not null default ''").run();
+  }
 }
 
 function transferSchemaStatements(env) {
@@ -1458,7 +1599,8 @@ function transferSchemaStatements(env) {
     `create table if not exists transfer_rooms (
       id text primary key, room_key text not null unique, created_by text not null references users(id),
       status text not null default 'open', created_at text not null, last_activity_at text not null,
-      closed_at text not null default '', closed_by text not null default ''
+      closed_at text not null default '', closed_by text not null default '',
+      sync_generation integer not null default 0
     )`,
     `create table if not exists transfer_items (
       id text primary key, room_id text not null references transfer_rooms(id) on delete cascade,
@@ -1468,7 +1610,8 @@ function transferSchemaStatements(env) {
       r2_object_key text unique, mime_type text not null default '', size_bytes integer not null default 0,
       etag text not null default '', upload_mode text not null, upload_status text not null,
       created_at text not null, completed_at text not null default '', expires_at text not null,
-      cleanup_attempts integer not null default 0, last_error text not null default ''
+      cleanup_attempts integer not null default 0, last_error text not null default '',
+      idempotency_key text not null default ''
     )`,
     `create table if not exists transfer_upload_sessions (
       id text primary key, item_id text not null references transfer_items(id) on delete cascade,
@@ -1523,6 +1666,7 @@ function transferSchemaStatements(env) {
     )`,
     "create index if not exists transfer_rooms_activity_idx on transfer_rooms(status, last_activity_at)",
     "create index if not exists transfer_items_room_created_idx on transfer_items(room_id, created_at)",
+    "create index if not exists transfer_items_room_cursor_idx on transfer_items(room_id, upload_status, created_at, id)",
     "create index if not exists transfer_items_expires_idx on transfer_items(upload_status, expires_at)",
     "create index if not exists transfer_items_user_status_idx on transfer_items(uploader_user_id, upload_status, created_at)",
     "create index if not exists transfer_items_role_status_idx on transfer_items(uploader_role_snapshot, upload_status, expires_at)",
@@ -1687,13 +1831,42 @@ function normalizeUploadLength(request, declaredValue) {
 function normalizeCursor(value) {
   const cursor = String(value || "").trim();
   if (!cursor) {
-    return "";
+    return { at: "", id: "", generation: null, validUntil: "" };
   }
-  const date = new Date(cursor);
-  if (!Number.isFinite(date.getTime())) {
+  if (/^\d{4}-\d{2}-\d{2}T/.test(cursor)) {
+    const date = new Date(cursor);
+    if (Number.isFinite(date.getTime())) {
+      return { at: date.toISOString(), id: "", generation: null, validUntil: "" };
+    }
+  }
+  try {
+    const decoded = JSON.parse(decodeCursorText(cursor));
+    const at = decoded.at ? new Date(decoded.at).toISOString() : "";
+    const validUntil = decoded.validUntil ? new Date(decoded.validUntil).toISOString() : "";
+    const id = decoded.id ? normalizeId(decoded.id, "内容游标无效。", "TRANSFER_CURSOR_INVALID") : "";
+    const generation = Number(decoded.generation);
+    if (decoded.v !== 1 || !Number.isSafeInteger(generation) || generation < 0) throw new Error("invalid cursor");
+    return { at, id, generation, validUntil };
+  } catch {
     throw new TransferHttpError("内容游标无效。", 422, "TRANSFER_CURSOR_INVALID");
   }
-  return date.toISOString();
+}
+
+function encodeCursor(cursor) {
+  return encodeCursorText(JSON.stringify({ v: 1, ...cursor }));
+}
+
+function encodeCursorText(value) {
+  const bytes = new TextEncoder().encode(value);
+  let binary = "";
+  bytes.forEach((byte) => { binary += String.fromCharCode(byte); });
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+}
+
+function decodeCursorText(value) {
+  const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
+  const binary = atob(normalized + "=".repeat((4 - normalized.length % 4) % 4));
+  return new TextDecoder().decode(Uint8Array.from(binary, (character) => character.charCodeAt(0)));
 }
 
 function normalizeId(value, message, code) {
@@ -1702,6 +1875,28 @@ function normalizeId(value, message, code) {
     throw new TransferHttpError(message, 422, code);
   }
   return id;
+}
+
+function normalizeIdempotencyKey(value) {
+  const key = String(value || "").trim();
+  if (!key) return "";
+  if (!/^[A-Za-z0-9_-]{16,100}$/.test(key)) {
+    throw new TransferHttpError("幂等键无效。", 422, "TRANSFER_IDEMPOTENCY_KEY_INVALID");
+  }
+  return key;
+}
+
+async function findIdempotentItem(env, userId, key) {
+  if (!key) return null;
+  return env.DB.prepare(`
+    select * from transfer_items where uploader_user_id = ? and idempotency_key = ? limit 1
+  `).bind(userId, key).first();
+}
+
+function assertIdempotentItem(item, roomId, itemType) {
+  if (item.room_id !== roomId || item.item_type !== itemType) {
+    throw new TransferHttpError("幂等键已用于其他互传内容。", 409, "TRANSFER_IDEMPOTENCY_KEY_REUSED");
+  }
 }
 
 function normalizeAdminSearch(value) {

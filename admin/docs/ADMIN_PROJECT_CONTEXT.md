@@ -2,6 +2,13 @@
 
 > 管理后台专用说明：本文档只描述 `/admin/` 管理后台。它不等同于主站根目录 `PROJECT_CONTEXT.md`，也不能替代主站项目上下文。新的 AI / Codex 对话如果只维护后台，应先读本文档和 `admin/docs/ADMIN_SKILL.md`；如果维护主站整体，仍以根目录 `PROJECT_CONTEXT.md` 和 `skills/lusu-personal-site-skill/SKILL.md` 为准。
 
+## 2026-07-18 临时互传共享图集缓存同步
+
+- `/admin/transfer.html` 与公开 Resources / Quick Transfer 共用 `assets/transfer/quick-transfer-icons.png`，当前生产图集为 168×168 RGBA 透明 4×4 atlas。
+- 独立管理页的 `admin/transfer.css` 图集 query 与 `admin/transfer.html` 样式 query 已统一为 `20260718-resource-icons-layout-r1`，避免后台继续命中旧的洋红底色图集或包含旧 URL 的 CSS。
+- 以后共享图集内容或版本变化时，必须同步检查公开 CSS、`admin/transfer.css` 内图集 URL 以及 `admin/transfer.html` 的样式 URL；构建检查会拒绝仓库运行时源码中不一致的图集 query。
+- 本次只同步独立管理页的静态缓存链和后台专用文档，不改变管理 API、权限、D1、配额、清理或费用估算逻辑；后台私有记录不重复写入公开 `site-updates`。
+
 ## 2026-07-16 互动城市访问地图
 
 - 实时大屏地图当前展示最近 14 天按国家、地区和城市精确分组的城市级聚合，只使用具备有效聚合经纬度的数据行；地图仍使用项目内本地世界轮廓，不请求第三方在线地图或瓦片。

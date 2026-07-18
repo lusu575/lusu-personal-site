@@ -2,6 +2,14 @@
 
 > 管理后台专用说明：本文档只记录 `/admin/` 管理后台的私有维护记录，不等同于主站根目录 `CHANGELOG.md`。后台私有更新不写入主站知识库 `site-updates`，也不展示到首页最近更新。
 
+## 2026-07-18
+
+- 临时互传共享图集缓存同步：
+  - 独立管理页继续与公开 Resources / Quick Transfer 共用 168×168 RGBA 透明图集，不新增第二份后台图标资产。
+  - `admin/transfer.css` 的图集 query 与 `admin/transfer.html` 的样式 query 统一为 `20260718-resource-icons-layout-r1`，避免后台命中旧洋红底色图集或缓存旧引用的 CSS。
+  - 构建检查新增仓库运行时源码图集 query 统一守卫，并把最新 `resource-icons-layout` 公开记录作为 fallback、Home、Functions 与 schema 四处一致性目标。
+  - 本次不改变后台 API、权限、D1、配额、清理或费用估算逻辑；独立互传页尚未合入主后台导航，因此不改并行维护的页面内 `adminUpdates`。
+
 ## 2026-07-16
 
 - 全矢量城市访问地图：

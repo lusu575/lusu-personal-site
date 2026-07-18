@@ -54,6 +54,7 @@
     finePointerMedia: null,
     listeners: [],
     mediaListeners: [],
+    viewportUnsubscribe: null,
     observer: null,
     rafId: 0,
     targetX: 0,
@@ -66,6 +67,7 @@
     lastTrigger: null,
     triggerTimer: 0,
     pressedTarget: null,
+    activeRoute: "",
     lastRoute: "",
     lastTheme: "",
     runId: 0,
@@ -368,14 +370,24 @@
 
   function writeMotionMode(mode) {
     var normalized = mode === "off" || mode === "reduced" ? mode : "full";
+    var effectiveTier = normalized === "off"
+      ? "off"
+      : normalized === "reduced"
+        ? "reduced"
+        : root.dataset.performanceTier === "low"
+          ? "low-performance"
+          : "normal";
     state.mode = normalized;
     setData(root, "motion", normalized);
+    setData(root, "motionTier", effectiveTier);
     if (document.body) {
       setData(document.body, "motion", normalized);
+      setData(document.body, "motionTier", effectiveTier);
     }
     var wallpaper = safeQuery("#wallpaper-root");
     if (wallpaper) {
       setData(wallpaper, "motion", normalized);
+      setData(wallpaper, "motionTier", effectiveTier);
       setData(wallpaper, "paused", document.hidden ? "true" : "false");
     }
   }
@@ -399,7 +411,11 @@
   }
 
   function canUseFullMotion() {
-    return state.initialized && !state.destroyed && state.mode === "full" && !document.hidden;
+    return state.initialized
+      && !state.destroyed
+      && state.mode === "full"
+      && root.dataset.performanceTier !== "low"
+      && !document.hidden;
   }
 
   function canUseParallax() {
@@ -864,9 +880,14 @@
     var beforeRect = safeRect(beforeTarget);
     var transition = null;
     var deferCommit = Boolean(context.deferCommit && isExitKind(kind));
+    var pageNavigationKeepsChromeLive = kind === "route"
+      || kind === "app-open"
+      || kind === "mobile-tab";
     var useViewTransition = Boolean(
       context.useViewTransition
+      && !pageNavigationKeepsChromeLive
       && canUseFullMotion()
+      && root.dataset.performanceTier !== "low"
       && typeof document.startViewTransition === "function"
     );
     var direction = kind === "route" || kind === "app-open" || kind === "mobile-tab"
@@ -1251,7 +1272,14 @@
       releasePressedTarget();
       resetParallax(false);
     });
-    addListener(global, "resize", handleResize, { passive: true });
+    if (global.LusuFramePipeline && typeof global.LusuFramePipeline.subscribeViewport === "function") {
+      state.viewportUnsubscribe = global.LusuFramePipeline.subscribeViewport("ui-motion", {
+        mutate: handleResize
+      });
+      if (typeof global.LusuFramePipeline.requestViewport === "function") {
+        global.LusuFramePipeline.requestViewport("ui-motion-init");
+      }
+    }
     addListener(document, "visibilitychange", handleVisibilityChange);
     addMediaListener(state.reducedMedia, handleCapabilityChange);
     addMediaListener(state.finePointerMedia, handleCapabilityChange);
@@ -1279,6 +1307,10 @@
       state.observer.disconnect();
       state.observer = null;
     }
+    if (typeof state.viewportUnsubscribe === "function") {
+      state.viewportUnsubscribe();
+    }
+    state.viewportUnsubscribe = null;
     releasePressedTarget();
     removeListeners();
     removeMediaListeners();
@@ -1318,6 +1350,46 @@
     return state.mode;
   }
 
+  function leaveRoute(route) {
+    var leaving = routeName(route);
+    if (state.activeRoute && leaving && state.activeRoute !== leaving) {
+      return;
+    }
+    state.activeRoute = "";
+    var page = leaving ? safeQuery("#" + leaving) : null;
+    if (page) {
+      safeQueryAll(".is-ui-entering, .is-ui-leaving, .is-ui-pressed", page).forEach(function clearRouteClass(element) {
+        element.classList.remove("is-ui-entering", "is-ui-leaving", "is-ui-pressed");
+      });
+    }
+    if (leaving === "home") {
+      resetParallax(false);
+    }
+  }
+
+  function enterRoute(route) {
+    var entering = routeName(route) || currentRoute();
+    if (state.activeRoute === entering) {
+      return;
+    }
+    state.activeRoute = entering;
+    state.lastRoute = entering;
+    if (entering !== "home") {
+      resetParallax(false);
+    }
+  }
+
+  function lifecycleSnapshot() {
+    return {
+      activeRoute: state.activeRoute,
+      listeners: state.listeners.length,
+      observers: state.observer ? 1 : 0,
+      timers: state.timers.length + Number(Boolean(state.triggerTimer)),
+      frames: Number(Boolean(state.rafId)),
+      animations: state.animations.length
+    };
+  }
+
   function refresh() {
     if (!state.initialized) {
       return init();
@@ -1339,6 +1411,9 @@
     noteTrigger: noteTrigger,
     getMode: getMode,
     setMode: setMode,
+    enterRoute: enterRoute,
+    leaveRoute: leaveRoute,
+    lifecycleSnapshot: lifecycleSnapshot,
     maxParallax: MAX_PARALLAX_PX,
     durations: {
       instant: DURATIONS.instant,

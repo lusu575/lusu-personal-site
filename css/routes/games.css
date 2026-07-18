@@ -1,0 +1,133 @@
+/* games route paint. Loaded once on first route entry; responsive geometry stays in mobile-ios-shell.css. */
+#games .xp-window {
+  display: flex;
+  flex-direction: column;
+  width: min(960px, calc(100% - 16px));
+  height: calc(100dvh - var(--chrome-window-compact-reserve));
+  min-height: min(420px, calc(100dvh - var(--chrome-window-compact-reserve)));
+  max-height: calc(100dvh - var(--chrome-window-compact-reserve));
+}
+
+.game-save-tag {
+  border-color: #6bbf8d;
+  color: #135f32;
+  background: #e5f9ed;
+}
+
+.game-source-link {
+  border-color: #b59be8;
+  color: #4b278f;
+  background: #f1eaff;
+  text-decoration: none;
+}
+
+.game-source-link:hover,
+.game-source-link:focus-visible {
+  text-decoration: underline;
+}
+
+.game-card .card-action {
+  max-width: min(220px, 100%);
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.game-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.game-list > .game-card {
+  flex: 0 0 auto;
+  margin-bottom: 0;
+}
+
+.game-card {
+  grid-template-columns: 72px minmax(0, 1fr) minmax(112px, 220px);
+  align-items: center;
+  gap: 13px;
+  margin: 0;
+  min-height: 126px;
+  padding: 12px;
+}
+
+.game-main {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.game-primary-meta {
+  min-height: 27px;
+}
+
+.game-secondary-details {
+  min-width: 0;
+}
+
+.game-secondary-details > summary {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 34px;
+  color: #1748a7;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.game-secondary-details > summary:focus-visible {
+  outline: 2px solid var(--chrome-focus-ring);
+  outline-offset: 2px;
+}
+
+.game-secondary-meta {
+  padding-top: 5px;
+}
+
+.game-main h3,
+.game-main p {
+  min-width: 0;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+}
+
+.game-main h3 {
+  -webkit-line-clamp: 1;
+}
+
+.game-main p {
+  -webkit-line-clamp: 2;
+}
+
+.game-badge {
+  display: grid;
+  place-items: center;
+  min-width: 72px;
+  min-height: 54px;
+  border: 3px solid #684178;
+  border-radius: 10px;
+  color: #684178;
+  background: linear-gradient(180deg, #ffe3f5, #ffc0e5);
+  font-weight: 900;
+}
+
+.game-cover {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  padding: 7px;
+  border: 2px solid #9bbcff;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #e9f5ff, #c9e3ff);
+}

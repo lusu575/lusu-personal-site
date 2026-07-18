@@ -45,6 +45,8 @@ Cloudflare Pages 预览子域名会在任何 D1 调用前关闭 `/api/*`；自�
 
 常用校验命令：`npm test`、`npm run build`。项目目前未配置独立的 lint 和 typecheck 命令，不应以空命令伪装通过。正式部署仍由 GitHub `main` 触发 Cloudflare Pages 自动部署；GPTWork 不需要生产 D1 权限或 Cloudflare API Token，除非站长另行授权远程运维。
 
+只有获得生产数据变更授权后，才可人工执行 `npm.cmd run d1:migrate:remote`。该命令会先应用基础 schema，再用 PRAGMA 只补旧 Chat / Transfer 表缺失的兼容列，随后创建依赖索引并分组核验；普通本地开发、测试和 CI 不得调用，也不得用删除远端 D1 的方式迁移。
+
 后台视频链接预览、首次保存或刷新元数据时会访问 YouTube / Bilibili；网络受限时只有这些管理功能会降级或失败，普通安装、测试、构建、健康检查与站点启动不依赖它们。Python、Kokoro、ffmpeg、本机 TTS 配置、参考声线和模型权重只在重新生成日语训练器语音时需要。完整迁移清单见 `docs/GPTWORK_MIGRATION_READINESS.md`，Cloudflare 配置见 `cloudflare/README.md`。
 
 ## 当前状态

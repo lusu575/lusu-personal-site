@@ -257,6 +257,81 @@ test("a logged-in user can join a room and send encrypted text", async () => {
   assert.equal("id" in configBody.user, false);
 });
 
+test("text idempotency replays the original item without duplicates", async () => {
+  const idempotencyKey = "text-idempotency-0001";
+  const request = {
+    method: "POST",
+    token: userToken,
+    ...jsonBody({ roomKey, encryptedContent: "YWJj.ZGVm", idempotencyKey })
+  };
+  const first = await call("transfer/text", request);
+  const replay = await call("transfer/text", request);
+  assert.equal(first.status, 201);
+  assert.equal(replay.status, 201);
+  const firstItem = (await first.json()).item;
+  const replayItem = (await replay.json()).item;
+  assert.equal(replayItem.id, firstItem.id);
+  const count = db.sqlite.prepare("select count(*) as count from transfer_items where idempotency_key = ?").get(idempotencyKey);
+  assert.equal(Number(count.count), 1);
+});
+
+test("cursor sync pages 500 items once, then returns only deltas and explicit deletion reset", async () => {
+  await call("transfer/config", { token: userToken });
+  const bulkRoomKey = `transfer_${"B".repeat(43)}`;
+  const roomId = "room-bulk-cursor-0001";
+  const createdAt = "2026-07-18T01:00:00.000Z";
+  const expiresAt = "2099-07-19T01:00:00.000Z";
+  db.sqlite.prepare(`
+    insert into transfer_rooms (id, room_key, created_by, status, created_at, last_activity_at)
+    values (?, ?, 'user-1', 'open', ?, ?)
+  `).run(roomId, bulkRoomKey, createdAt, createdAt);
+  const insert = db.sqlite.prepare(`
+    insert into transfer_items (
+      id, room_id, uploader_user_id, uploader_role_snapshot, item_type, encrypted,
+      text_ciphertext, upload_mode, upload_status, created_at, completed_at, expires_at
+    ) values (?, ?, 'user-1', 'user', 'text', 1, 'YWJj.ZGVm', 'text', 'ready', ?, ?, ?)
+  `);
+  for (let index = 0; index < 500; index += 1) {
+    insert.run(`bulk-item-${String(index).padStart(6, "0")}`, roomId, createdAt, createdAt, expiresAt);
+  }
+  let cursor = "";
+  let total = 0;
+  let requestCount = 0;
+  do {
+    const response = await call(`transfer/room/items?room=${bulkRoomKey}&limit=100${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`, { token: userToken });
+    const payload = await response.json();
+    assert.equal(response.status, 200);
+    total += payload.items.length;
+    requestCount += 1;
+    cursor = payload.nextCursor;
+    if (!payload.hasMore) break;
+  } while (requestCount < 10);
+  assert.equal(total, 500);
+  assert.equal(requestCount, 5);
+
+  insert.run("bulk-item-999999", roomId, "2026-07-18T01:00:01.000Z", "2026-07-18T01:00:01.000Z", expiresAt);
+  const delta = await call(`transfer/room/items?room=${bulkRoomKey}&limit=100&cursor=${encodeURIComponent(cursor)}`, { token: userToken });
+  const deltaPayload = await delta.json();
+  assert.deepEqual(deltaPayload.items.map((item) => item.id), ["bulk-item-999999"]);
+  assert.equal(deltaPayload.syncMode, "incremental");
+
+  const expiredCursorPayload = JSON.parse(Buffer.from(deltaPayload.nextCursor, "base64url").toString("utf8"));
+  expiredCursorPayload.validUntil = "2000-01-01T00:00:00.000Z";
+  const expiredCursor = Buffer.from(JSON.stringify(expiredCursorPayload)).toString("base64url");
+  const expiredReset = await call(`transfer/room/items?room=${bulkRoomKey}&limit=100&cursor=${encodeURIComponent(expiredCursor)}`, { token: userToken });
+  const expiredResetPayload = await expiredReset.json();
+  assert.equal(expiredResetPayload.resetRequired, true);
+  assert.equal(expiredResetPayload.resetReason, "items-expired");
+
+  const removed = await call(`transfer/item/bulk-item-000000?room=${bulkRoomKey}`, { method: "DELETE", token: userToken });
+  assert.equal(removed.status, 200);
+  const reset = await call(`transfer/room/items?room=${bulkRoomKey}&limit=100&cursor=${encodeURIComponent(deltaPayload.nextCursor)}`, { token: userToken });
+  const resetPayload = await reset.json();
+  assert.equal(resetPayload.resetRequired, true);
+  assert.equal(resetPayload.resetReason, "items-removed");
+  assert.deepEqual(resetPayload.items, []);
+});
+
 test("ordinary accounts cannot initialize multipart uploads", async () => {
   const response = await call("transfer/upload/init", {
     method: "POST",
@@ -281,15 +356,26 @@ test("ordinary accounts are rejected above the 95 MiB request-safe limit", async
 
 test("a small upload is private, downloadable, and supports a single byte range", async () => {
   const bytes = new TextEncoder().encode("temporary-transfer");
+  const idempotencyKey = "simple-idempotency-0001";
   const upload = await call(`transfer/upload/simple?room=${roomKey}&filename=note.txt&mime=text%2Fplain&size=${bytes.byteLength}`, {
     method: "POST",
     token: userToken,
     body: bytes,
-    headers: { "Content-Type": "text/plain", "Content-Length": String(bytes.byteLength) }
+    headers: { "Content-Type": "text/plain", "Content-Length": String(bytes.byteLength), "Idempotency-Key": idempotencyKey }
   });
   assert.equal(upload.status, 201);
   const item = (await upload.json()).item;
   assert.equal(item.filename, "note.txt");
+
+  const replay = await call(`transfer/upload/simple?room=${roomKey}&filename=note.txt&mime=text%2Fplain&size=${bytes.byteLength}`, {
+    method: "POST",
+    token: userToken,
+    body: bytes,
+    headers: { "Content-Type": "text/plain", "Content-Length": String(bytes.byteLength), "Idempotency-Key": idempotencyKey }
+  });
+  assert.equal(replay.status, 201);
+  assert.equal((await replay.json()).item.id, item.id);
+  assert.equal(Number(db.sqlite.prepare("select count(*) as count from transfer_items where idempotency_key = ?").get(idempotencyKey).count), 1);
 
   const ranged = await call(`transfer/file/${item.id}?room=${roomKey}`, {
     token: userToken,
@@ -307,15 +393,25 @@ test("only a database admin can plan and resume simulated GiB multipart uploads"
     ...jsonBody({ roomKey })
   });
   const declaredSize = 1024 * 1024 * 1024;
+  const multipartIdempotencyKey = "multipart-idempotency-0001";
   const initialized = await call("transfer/upload/init", {
     method: "POST",
     token: adminToken,
-    ...jsonBody({ roomKey, filename: "admin-video.mp4", mimeType: "video/mp4", sizeBytes: declaredSize })
+    ...jsonBody({ roomKey, filename: "admin-video.mp4", mimeType: "video/mp4", sizeBytes: declaredSize, idempotencyKey: multipartIdempotencyKey })
   });
   assert.equal(initialized.status, 201);
   const task = await initialized.json();
   assert.equal(task.expectedParts, 32);
   assert.equal(task.partSizeBytes, 32 * 1024 * 1024);
+  const replay = await call("transfer/upload/init", {
+    method: "POST",
+    token: adminToken,
+    ...jsonBody({ roomKey, filename: "admin-video.mp4", mimeType: "video/mp4", sizeBytes: declaredSize, idempotencyKey: multipartIdempotencyKey })
+  });
+  const replayTask = await replay.json();
+  assert.equal(replay.status, 201);
+  assert.equal(replayTask.sessionId, task.sessionId);
+  assert.equal(replayTask.idempotentReplay, true);
 
   const upload = [...bucket.uploads.values()].find((entry) => entry.key.includes(task.itemId));
   upload.expectedSize = declaredSize;

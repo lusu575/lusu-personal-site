@@ -1,12 +1,21 @@
 {
   "scripts": {
     "build": "node scripts/build-check.mjs",
+    "build:transfer-icons": "node scripts/build-transfer-icon-atlas.mjs",
+    "build:production": "node scripts/build-production.mjs",
+    "build:production:verify": "node scripts/build-production.mjs --verify-reproducible",
+    "audit:public-ui": "node scripts/public-ui-audit.mjs",
+    "audit:resources-layout": "node scripts/public-ui-audit.mjs --resources-only",
+    "audit:public-ui:release": "node scripts/public-ui-audit.mjs --release-only",
+    "qa:public-release": "npm run verify:public-site-release",
+    "verify:public-site-release": "npm run test && npm run check:public-modules && npm run build && npm run build:production:verify && git diff --check && git status --short && npm run audit:public-ui:release",
+    "check:public-modules": "node scripts/check-public-module-graph.mjs",
     "dev": "wrangler pages dev",
     "transfer:dev": "wrangler pages dev --r2 TRANSFER_BUCKET",
     "test": "node scripts/run-tests.mjs tests/*.test.mjs tests/transfer/*.test.mjs tools/japanese-subtext/tests/*.test.mjs tools/japanese-subtext/scripts/tts/tests/*.mjs",
     "d1:create": "wrangler d1 create lusu_personal_site",
     "d1:migrate:local": "node scripts/d1-migrate-local.mjs",
-    "d1:migrate:remote": "wrangler d1 execute lusu_personal_site --remote --file=cloudflare/schema.sql",
+    "d1:migrate:remote": "node scripts/d1-migrate-remote.mjs",
     "transfer:test": "node --test tests/transfer/*.test.mjs",
     "transfer:cleanup:dev": "wrangler dev --config workers/transfer-cleanup/wrangler.jsonc",
     "deploy": "echo Merge to GitHub main to trigger Cloudflare Pages automatic deploy.",
@@ -27,6 +36,7 @@
     "node": ">=22.13.0"
   },
   "devDependencies": {
+    "esbuild": "0.28.1",
     "sharp": "0.34.5",
     "wrangler": "4.111.0"
   }

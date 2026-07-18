@@ -3,9 +3,13 @@ import { readFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 import test from "node:test";
 import {
+  CHAT_COLUMN_MIGRATIONS,
   CHAT_HASH_TABLES,
+  TRANSFER_COLUMN_MIGRATIONS,
+  chatColumnMigrationSql,
   chatHashColumnMigrationSql,
-  hasIpHashKeyId
+  hasIpHashKeyId,
+  transferColumnMigrationSql
 } from "../scripts/d1-migrate-local.mjs";
 
 const schema = readFileSync(new URL("../cloudflare/schema.sql", import.meta.url), "utf8");
@@ -34,10 +38,18 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
     assert.ok(
       db.prepare("pragma table_info(chat_bans)").all().some((column) => column.name === "ip_hash_key_id")
     );
+    assert.ok(
+      db.prepare("pragma table_info(anonymous_chat_messages)").all().some((column) => column.name === "client_request_id")
+    );
     assert.equal(
       db.prepare("select count(*) as count from sqlite_master where type = 'index' and name in (?, ?)")
         .get("anonymous_chat_messages_room_ip_generation_idx", "chat_bans_active_ip_generation_idx").count,
       2
+    );
+    assert.equal(
+      db.prepare("select count(*) as count from sqlite_master where type = 'index' and name = ?")
+        .get("anonymous_chat_messages_request_idx").count,
+      1
     );
 
     db.exec(schema);
@@ -101,6 +113,12 @@ test("D1 chat hash migration upgrades legacy tables without losing historical ro
       db.exec(chatHashColumnMigrationSql(table));
       assert.equal(hasIpHashKeyId(db.prepare(`pragma table_info('${table}')`).all()), true);
     }
+    for (const [table, migration] of Object.entries(CHAT_COLUMN_MIGRATIONS)) {
+      const columns = db.prepare(`pragma table_info('${table}')`).all();
+      assert.equal(columns.some((column) => column.name === migration.column), false);
+      db.exec(chatColumnMigrationSql(table));
+      assert.equal(db.prepare(`pragma table_info('${table}')`).all().some((column) => column.name === migration.column), true);
+    }
 
     db.exec(schemaIndexes);
     db.exec(schema);
@@ -120,7 +138,64 @@ test("D1 chat hash migration upgrades legacy tables without losing historical ro
         .get("anonymous_chat_messages_room_ip_generation_idx", "chat_bans_active_ip_generation_idx").count,
       2
     );
+    assert.equal(
+      db.prepare("select count(*) as count from sqlite_master where type = 'index' and name = ?")
+        .get("anonymous_chat_messages_request_idx").count,
+      1
+    );
     assert.throws(() => chatHashColumnMigrationSql("articles"), /Unsupported chat hash table/);
+    assert.throws(() => chatColumnMigrationSql("articles"), /Unsupported chat table/);
+  } finally {
+    db.close();
+  }
+});
+
+test("D1 transfer migration adds cursor generation and idempotency before dependent indexes", () => {
+  const db = new DatabaseSync(":memory:");
+  try {
+    db.exec(`
+      create table transfer_rooms (
+        id text primary key,
+        status text not null default 'open',
+        last_activity_at text not null
+      );
+      create table transfer_items (
+        id text primary key,
+        room_id text not null,
+        uploader_user_id text not null,
+        uploader_role_snapshot text not null default 'user',
+        upload_status text not null,
+        created_at text not null,
+        expires_at text not null
+      );
+      insert into transfer_rooms (id, last_activity_at) values ('legacy-room', '2026-01-01T00:00:00.000Z');
+      insert into transfer_items (
+        id, room_id, uploader_user_id, upload_status, created_at, expires_at
+      ) values (
+        'legacy-item', 'legacy-room', 'legacy-user', 'ready',
+        '2026-01-01T00:00:00.000Z', '2026-01-02T00:00:00.000Z'
+      );
+    `);
+
+    db.exec(schema);
+    for (const [table, migration] of Object.entries(TRANSFER_COLUMN_MIGRATIONS)) {
+      const columns = db.prepare(`pragma table_info('${table}')`).all();
+      assert.equal(columns.some((column) => column.name === migration.column), false);
+      db.exec(transferColumnMigrationSql(table));
+    }
+    db.exec(schemaIndexes);
+
+    assert.equal(db.prepare("select sync_generation from transfer_rooms where id = 'legacy-room'").get().sync_generation, 0);
+    assert.equal(db.prepare("select idempotency_key from transfer_items where id = 'legacy-item'").get().idempotency_key, "");
+    assert.equal(
+      db.prepare("select count(*) as count from sqlite_master where type = 'index' and name = 'transfer_items_idempotency_idx'").get().count,
+      1
+    );
+    assert.throws(() => transferColumnMigrationSql("articles"), /Unsupported transfer table/);
+
+    db.exec(schema);
+    db.exec(schemaIndexes);
+    assert.equal(db.prepare("select count(*) as count from transfer_items where id = 'legacy-item'").get().count, 1);
   } finally {
     db.close();
   }

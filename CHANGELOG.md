@@ -2,6 +2,64 @@
 
 本文件记录鲁肃个人站的功能、界面、后端、部署与项目约定变更。每次修改项目后都应同步更新这里，方便后续 AI / Codex 对话快速了解最近改动。
 
+## 2026-07-18
+
+- 修复 Resources / 临时互传的紫色图标根因：`quick-transfer-icons-source.png` 保留为洋红抠图源，新增可重复构建脚本先做柔和色键与边缘去色，再生成 168×168 RGBA 透明生产图集；16 个 sprite 单元均由透明角点与可见像素比例测试保护，公开资产扫描未发现第二个同类运行时文件。Resources 桌面窗口收敛到 960px，资源图标统一 42px 槽位，卡片改为内容自然高度并移除重复“可获取”标签，移动卡片不再被固定高度撑空；互传登录任务在桌面使用紧凑自适应高度、在移动壳按可用空间居中，窄屏及 760px 临界宽度去掉重复标题图标，打开/关闭会精确恢复原分类栏和列表状态。新增 `npm.cmd run audit:resources-layout`，以中、英、日三语精确覆盖 359×500、375×667、390×844、760×900、844×390、1280×720 的列表→登录→返回流程及 Home/Games 同壳参考，58/58 检查和截图已通过；Windows Headless 截图改为预热后双帧 `fromSurface: true`，避免单帧漏掉固定合成层。公共缓存版本升级为 `20260718-resource-icons-layout-r1`，三语记录 `seed-update-2026-07-18-resource-icons-layout` 的 fallback、Home 五条投影、Functions seed 与 schema seed已同步。独立管理页的共享图集与样式 query 也同步到同一版本，构建检查会拒绝全仓运行时图集 query 漂移，并以本条公开记录守卫四处 seed 一致性。未连接生产 D1，未推送，未部署。
+
+- 对 100 项优化进行二次稳定性复查：修复冷启动 Home 的 Chat 图标因规则误置于懒加载 route CSS 而空白、聊天室标题栏误用 Blog 图标以及 359×500 / 844×390 短屏头像被隐藏的问题；移动 route / App 打开 / Dock tab 改为只动画当前页面表面，避免整页 View Transition 快照在约 220ms 内遮住真实 Dock。新增 full-motion 起始、60ms、140ms、稳定帧、40ms 快速连续切换、Dock 节点身份/可见性与 359×500 / 390×844 / 844×390 截图守卫。公开资产统一升级为 `20260718-public-site-100-r2`，三语记录已同步 fallback、Home 投影、Functions seed 与 schema seed。未连接生产 D1，未推送，未部署。
+
+- 二次复查最终门禁全部通过：知识库分页审计改为只统计 `#knowledge-list`，避免把隐藏 Home 更新卡误算为文章列表；独立 Headless 场景统一追加唯一 `audit-stage` 并要求 CDP 返回新文档 `loaderId`，防止同文档 JS 内存缓存污染冷启动、请求中止和几何结论；移动端允许窗口背景延伸到半透明 Dock 后方，但 composer、反馈、页脚和真实内容仍必须零交叠。最终通过 192 / 192 全量测试、19 模块依赖图、普通构建、双次一致的生产构建（manifest SHA-256 `ef8606fbab8d6e2be2e3e8bec806cfaba63497af4ccd2de4b5b6269aa6ce5313`）、142 / 142 完整 UI 审计、190 / 190 发布矩阵和 Dock / Chat 图标逐帧专项；预览继续位于本地 `127.0.0.1:8788`，未连接生产 D1、未推送、未部署。
+
+- 完成公开主站 `OPT-001—OPT-100` 全量收口：在保留 Windows XP + Pixel Art + Y2K 视觉的前提下，完成路由作用域与按需加载、响应式主题图与图集轻量化、Knowledge / Videos / Resources / Games / Blog / About 可用性、账号 / Chat / Quick Transfer 的可恢复交互与幂等保护、三语状态保留、移动 Dock / 短屏 / 横屏 / 粗指针布局、减少动效 / forced-colors / 键盘焦点与语义烟测。动态壁纸的 1920px 组从约 15.18 MiB 收敛到约 0.61 MiB，入口图标与 UI / Transfer 图集合计约缩小 96.5%；Chat 新增稳定 `clientRequestId` 重放与数据库唯一约束，Transfer 使用房间代次、增量游标和幂等任务。本地 / 获授权远端 D1 runner 均固定为基础 schema → PRAGMA 检查 → 仅补缺列 → 依赖索引 → 分组核验，本地兼容迁移 248 + 1 + 4 commands 通过，本轮未连接远端 D1。三语公开记录 `seed-update-2026-07-18-public-site-100-complete` 与公共资源版本 `20260718-public-site-100-r1` 已同步；统一发布闸门覆盖 185 / 185 全量测试、19 模块依赖图、可复现生产构建、147 个三语响应式组合和 190 / 190 项 Headless Chrome 审计。未推送、未部署、未改动生产数据。
+
+- 完成第十二个依赖闭合批次 `OPT-037 + OPT-038 + OPT-056—OPT-060 + OPT-077 + OPT-079 + OPT-097`：文章阅读态只保留正文详情滚动，document 精确等于视口，原覆盖层改为零交叠的 4px 进度轨道；账号改为稳定 DOM、明确登录/注册、完整字段错误/忙碌/退出失败和焦点闭环，Quick Transfer 未登录态收敛为单一上下文任务卡；Chat 发送保留在途新草稿，359×500 普通/私聊容量及 44px 安全说明达标；公共 Chat 隐藏标识、敏感数据与外链/iframe 白名单新增安全闸门。三语记录 `seed-update-2026-07-18-reliable-forms-reading-chat`、主资源 `20260718-reliable-flows-r1` 与 Transfer `20260718-transfer-account-r1` 已同步；112/112 测试、本地 D1 245+2、完整构建和 140/140 Headless Chrome 审计通过。未连接生产数据、未推送、未部署。
+
+- 完成第十一个依赖闭合批次 `OPT-004 + OPT-005 + OPT-006`：公开主站使用 `20260718-route-lazy-r1` 按需加载五个业务路由、四份重 CSS 与各路由 fallback 数据，Home 初始投影仅保留最新五条无正文摘要；Quick Transfer 的 loader、client、CSS 与 fragment 只在真实 CTA 点击后单飞加载，支持重试、离开竞态丢弃与永久复用。三语公开记录 `seed-update-2026-07-18-route-lazy-transfer` 已同步 `js/data/content.mjs` 完整 fallback、`js/data/home-content.mjs` Home fallback、Functions seed 与 schema seed；97/97 测试、完整构建与 137/137 Headless Chrome 精确视口/按需网络审计通过。未连接生产数据、未推送、未部署。
+
+- 完成第十个依赖闭合批次 `OPT-003`，并将 `OPT-073` 复核为 `DONE-PREEXISTING`：公开主站入口改为 ESM composition root，将 router、route lifecycle、i18n、fallback 内容、Knowledge/Article、Videos、Resources、Games、Account 与 Chat 拆入 `js/core/`、`js/data/`、`js/features/`、`js/routes/`；新增 `npm.cmd run check:public-modules` 检查模块缺失、循环、越层依赖和 route 顶层副作用，主入口从约 359KB 收敛到 80,593 bytes。最终 11-module graph、89 / 89 测试、构建与 135 / 135 无头 UI 审计全部通过；Chat 离开/隐藏后 timer 与 request 为零。`index.html` 公共模块 query 统一为 `20260718-public-modules-r1`；本批为不可见重构，不新增 `site-updates`，未连接生产数据、未推送、未部署。
+
+- 新增 `docs/PUBLIC_SITE_UI_UX_100_OPTIMIZATION_PLAN.md`：将主站 UI、UX、动效、视觉、流畅性、可读性、易用性、响应式、无障碍、性能和发布质量的审计结果整理为恰好 100 项 Codex 可执行任务，并为每项提供状态、优先级、代码范围、依赖和完成判定。
+- 工作计划纳入截图复核后的校准事实：默认精确移动视口不存在页面级横向破版，竖屏/横屏 Dock 未遮挡主要操作，844×390 Chat 与文章结构应作为已通过基线保护；短屏 Chat 使用实测 177px/119px 日志容量，不再沿用不现实的 260px 目标。
+- 同步修订主站 Skill 与 README 的长期移动 QA 规则：359×500 Chat 普通房至少保留 160px 日志可读区，私聊至少 115px 或提供可折叠工具区，844×390 至少 150px；验收还必须确认私聊安全说明、输入、反馈和 Dock 同时可达，不能单靠父容器无 overflow 判定通过。
+- 文档规定按 1–5 项小批次实施、先检查现状、允许 `DONE-PREEXISTING`、每批执行测试/构建/精确截图/缓存与三语更新检查，并禁止无授权推送或部署。本轮仅新增计划和维护文档，未修改公开 UI、Functions、D1、三语 `site-updates` 或前端资源 query。
+- 启动首个执行批次 `OPT-001 + OPT-081`：新增 `npm.cmd run audit:public-ui`，以隔离的一次性 Headless Chrome、固定 day 主题、关闭动效和受控本地 API fixture 捕获 6 个 Chat 精确视口及 844×390 文章双栏；命令会断言真实 CDP viewport、页面宽度、活动窗口、固定 Dock、短屏 Chat 容量和文章目录 / 正文几何，并在结束时关闭浏览器、删除临时 profile。构建检查同步守卫视口矩阵、500px 伪手机拒绝逻辑与审计命令。本批没有修改公开 UI、Functions、D1、三语 `site-updates` 或前端资源 query。
+- 完成第二个依赖闭合批次 `OPT-011 + OPT-023`：阻塞 CSS 前的内联 bootstrap 会按 `?wallpaper=` 或本地时间把 morning / day / dusk / night 写入 `html[data-time-theme]`，桌面窗口背景、动态壁纸和移动壁纸从首个请求即命中真实时段，不再由硬编码 day 触发跨时段双下载；主脚本继续同步 html、body、Home 与壁纸舞台，并保留运行时跨时段切换。
+- 全站首个 Tab 现在显示三语 Neo-XP“跳到主内容”入口并聚焦稳定 main Landmark，不改变当前 hash 路由；Home、Knowledge、Videos、Resources、Games、Blog、Chat 与 About 各自拥有唯一、跨桌面/移动都可访问的 H1，标题栏重复视觉文本从辅助技术树隐藏，卡片与安全 Markdown 标题从 H2 开始。
+- `npm.cmd run audit:public-ui` 扩展为 77 项自动检查：模拟四个本地时段与 `?wallpaper=night` 覆盖，分别审计桌面/移动实际资源请求；在 zh/en/ja 下逐路由核对首个 Tab、活动 H1、隐藏路由和 CDP AX Tree，并继续保护精确视口、Chat 容量、文章双栏与 Dock 几何。当前 Headless Chrome 全部通过。
+- 本批公开 `site-updates` 使用 `seed-update-2026-07-18-theme-accessibility-foundation`，已同步 `js/main.js` fallback、Functions seed 与 schema seed；`style.css`、`mobile-ios-shell.css`、`main.js` 资源 query 统一为 `20260718-theme-a11y-foundation-r1`。未连接生产 D1，未推送或部署。
+- 完成第三个依赖闭合批次 `OPT-024 + OPT-026 + OPT-061`：路由提交后的程序化焦点统一落到目标页面稳定 H1，首次加载仍保留 skip link 为第一个 Tab；文章详情只在最终标题就绪后聚焦，返回列表与浏览器前进/后退会同步 URL、阅读态和焦点，快速连续导航也会拒绝陈旧 rAF 抢焦点。
+- 账号入口明确为带三语 label 的非模态 `role=group` popover，触发器继续维护 `aria-expanded/controls`，Escape 与外点关闭后归还触发源焦点；打开后聚焦首字段、移动 44px 可见关闭按钮和全路由层级复核仍按计划留给 `OPT-059`。
+- 移除全局 `body { caret-color: transparent; }`，以零优先级 editable 规则恢复文本输入光标；Headless Chrome 在 1280×720 与 390×844 对 Transfer 密码框和 composer 执行真实键入替换、Backspace 删除与 caret 可见性验证，均通过。
+- `npm.cmd run audit:public-ui` 扩展到 95 / 95 项：覆盖 1280×720 zh/en/ja 全路由、359×500 zh、390×844 en、844×390 ja 语义矩阵，以及路由离开控制、文章历史往返和 Transfer 真键入；既有 Chat 与文章截图继续保留。`npm.cmd run build` 通过。
+- 本批公开 `site-updates` 使用 `seed-update-2026-07-18-focus-popover-caret`，已同步 `js/main.js` fallback、Functions seed 与 schema seed；`style.css`、`main.js` 资源 query 统一为 `20260718-focus-popover-caret-r1`。未连接生产 D1，未推送或部署。
+- 完成第四个依赖闭合批次 `OPT-021`：Knowledge 的每个浏览器 History 条目使用带版本和白名单清洗的站内状态，保存分类、Unicode 搜索词、列表滚动位置、文章 slug、详情阅读位置与返回模式；URL 始终是路由权威来源，未知版本、URL/state 冲突及异常滚动值会安全重建，其他根级 History 字段仍被保留。
+- 从分类或搜索结果打开文章前会原地更新来源列表条目；站内返回与浏览器 Back 恢复原分类、搜索、列表位置及单次标题焦点，Forward 重开同文并恢复阅读位置。直接文章链接的返回会替换当前条目为默认 Knowledge，不创建重复条目、不把访客带离站点；History 状态不保存账号、Chat 草稿、互传口令或内容。
+- 文章列表与详情请求加入 slug + 语言 + request id 竞态保护，旧语言或陈旧请求不能覆盖当前文章；相同详情不再因重复渲染清零阅读位置，短暂列表错误也不会闪回错误视图。`npm.cmd run audit:public-ui` 现为 99 / 99 项，在 1280×720 与 390×844 覆盖站内返回、Back / Forward、直链默认返回、损坏状态清洗、滚动恢复与焦点去重。
+- 本批公开 `site-updates` 使用 `seed-update-2026-07-18-knowledge-history-restoration`，已同步 `js/main.js` fallback、Functions seed 与 schema seed；仅 `main.js` query 更新为 `20260718-knowledge-history-r1`，未改动 CSS query。未连接生产 D1，未推送或部署。
+- 完成第五个依赖闭合批次 `OPT-022 + OPT-025`：Home、Knowledge、Videos、Resources、Games、Blog、Chat、About 使用唯一三语配置派生独立 document title、description、canonical、Open Graph 与 Twitter 字段；路由 canonical 只保留白名单语言和真实 Hash，清除壁纸、欢迎与审计参数，同路由、语言切换及 History 恢复都会重写完整元信息。
+- 文章详情继续使用安全 slug 正式路径和白名单封面；自定义封面没有可信尺寸时移除首页尺寸，默认分享图恢复 1672×941 与三语 alt。文章加载/失败先恢复 Knowledge 元信息，最终响应才写文章信息；离开详情后不会残留文章 type、标题、简介、封面或 canonical。
+- 欢迎窗与视频窗打开后以原生 `inert` 同时隔离 skip link 与站点壳，并让异常双模态只保留顶层可交互；Tab/Shift+Tab 圈定、Escape、完整关闭动画期间持续隔离、减少动态立即提交及触发源/稳定标题焦点归还均纳入守卫。视频卡显式传递真实点击按钮，手机关闭入口继续实测不小于 44×44px。
+- `npm.cmd run audit:public-ui` 扩展到 108 / 108 项：三语八路由逐项核对 canonical、OG/Twitter 全字段，三语文章验证封面尺寸清理与离开详情去残留；桌面、359×500、390×844、844×390 覆盖欢迎/视频模态的 inert、AX Tree、正反 Tab、程序化逃逸阻断、Escape、动效模式、焦点归还和关闭控件几何，并输出模态截图。
+- 本批公开 `site-updates` 使用 `seed-update-2026-07-18-route-metadata-modal-focus`，已同步 `js/main.js` fallback、Functions seed 与 schema seed；`main.js` query 更新为 `20260718-route-meta-modal-r1`，CSS query 不变。未连接生产 D1，未推送或部署。
+- 完成第六个依赖闭合批次 `OPT-002 + OPT-007`：八个公开主路由统一使用显式 `enter/leave` 作用域，路由级事件、定时器、动画帧、Observer、请求计数和 `AbortController` 有统一登记与清理；同一路由重复导航保持幂等，语言切换通过受控重启更新活动路由，不向隐藏路由叠加监听或请求。
+- Knowledge、Videos、Games 与 About 的列表请求随离开路由中止，Home 不再预取这些隐藏数据；Chat 只在活动且可见时轮询，离开或隐藏后 timer 为零。Quick Transfer 在 Resources 进入时绑定、离开时关闭并清理监听、轮询、Fetch、XHR 和重试等待，安全会话、AES-GCM、R2、Multipart 与配额协议未改变。
+- 将 `style.css` 尾部 11 组响应式媒体规则按原顺序迁入 `mobile-ios-shell.css`，选择器和值不变；`motion-system.css` 的相关层级规则限定到桌面壳。构建检查现在解析三份主 CSS，并逐条拒绝移动关键组件的跨文件布局重复或越权声明。
+- `npm.cmd run audit:public-ui` 扩展到 110 / 110 项：在 1280×720 与 390×844 连续遍历全部路由，注入可中止的延迟请求，验证 inactive timer/listener/observer/frame/request/AbortController 归零、Chat/Transfer 清理及同路由不重复绑定；既有三语语义、元信息、模态、History、Caret 和精确视口截图全部通过。
+- 本批公开 `site-updates` 使用 `seed-update-2026-07-18-route-lifecycle-mobile-css`，已同步 `js/main.js` fallback、Functions seed 与 schema seed；主 JS query 为 `20260718-route-lifecycle-r1`，三份主 CSS query 为 `20260718-route-lifecycle-css-r1`。未连接生产 D1，未推送或部署。
+- 完成第七个依赖闭合批次 `OPT-020`：在 `js/mobile-shell.js` 建立唯一 `window.LusuFramePipeline`，window resize、VisualViewport resize / scroll 各保留一个原生监听；同键任务在一帧内合并，所有布局读取先于样式写入，写阶段新增任务自动进入下一帧。管线暴露 `request/schedule/subscribeViewport/requestViewport/dispose` 与隐私安全 snapshot，供运行时和本地审计复用。
+- Home 壁纸舞台与桌面图标几何、Knowledge 文章进度与目录高亮、移动 Dock、动效层及 Quick Transfer 聚焦控件已接入统一管线；旧的 route resize、独立滚动 rAF、动效 resize 和 Transfer VisualViewport 监听被移除，相关订阅随 route / 事件 scope 解绑。原生 page scale 不为 1 时键盘偏移固定为 0，避免把页面缩放当作软键盘。
+- 新增 `normal/low` 绘制档：Save-Data 或明确不超过 2 个逻辑核心 / 2GiB 设备内存时启用 low，能力未知保持 normal。low 关闭大面积 blur、backdrop-filter、壁纸 filter、循环云层、常驻 `will-change` 与全页 View Transition，并为顶部栏、任务栏、Dock、账户层和模态遮罩提供实色高对比回退；normal 档 XP / Pixel Art / Y2K 视觉不变。
+- `scripts/build-check.mjs` 新增唯一 viewport 原生绑定、keyed measure/mutate 消费端、档位与三份主 CSS 降级守卫；`npm.cmd run audit:public-ui` 扩展到 117 / 117 项，覆盖 40 组同帧事件风暴、390×844 / 844×390 视口与 Dock、2× page scale、Save-Data、2 核、未知能力以及 low 截图大面积绘制效果。`performance-low-390x844.png` 人工复核清楚可读；该 Headless 审计不等同真实 iOS / Android 屏幕软键盘认证。
+- 本批公开 `site-updates` 使用 `seed-update-2026-07-18-frame-pipeline-low-performance`，已同步 `js/main.js` fallback、Functions seed、schema seed、项目上下文与主站 Skill / README；主 JS query 为 `20260718-frame-pipeline-low-r1`，三份主 CSS query 为 `20260718-frame-pipeline-low-css-r1`。未连接生产 D1，未推送或部署。
+- 完成第八个依赖闭合批次 `OPT-028`：固定移动壳继续锁定 body、site-shell 与 page，但七个非 Home 活动 App 窗口现在有休眠式纵向溢出逃生通道。route-specific ID 选择器明确压过既有 ID 级 `overflow:hidden`；只有内容确实增长时才产生滚动。Knowledge 文章阅读仍由 `.article-detail` 独占 owner，Home 固定构图不变。
+- Knowledge、Videos、Resources、Games、Blog、About 与 Chat 的既有内部 owner 允许在边界后把剩余滚动交给活动窗口；Quick Transfer 的 room entry、room 与 login gate 同步使用纵向链和 focus padding，不改变 HttpOnly 会话、AES-GCM、R2、Multipart 或配额边界。移动 App 聚焦会通过 keyed `mobile-shell:focus-reveal` 先测量最近真实纵向 owner，再只写其 `scrollTop`；不使用全局 `scrollIntoView`，不移动 document、Appbar 或 Dock。
+- `npm.cmd run audit:public-ui` 扩展到 122 / 122 项：覆盖 359×500 Chat 内容增长、390×844→390×500→390×844 受限高度恢复、文章 / About 真实滚动 owner、2倍 page scale 焦点恢复和 Home 零文档滚动。首次审计真实捕获到 ID 特异性覆盖和未激活 CDP Page 不派发 focus 事件，修复后通过；默认 359×500、390×844 Chat 与 844×390 文章截图人工复核无裁切、交叉或 Dock 回归。Headless 受限高度和缩放不等同真实 iOS / Android 软键盘认证。
+- 本批公开 `site-updates` 使用 `seed-update-2026-07-18-mobile-scroll-recovery`，已同步 `js/main.js` fallback、Functions seed、schema seed、PROJECT_CONTEXT 与主站 Skill / README；公开 JS query 为 `20260718-mobile-scroll-recovery-r1`，三份主 CSS 与 Transfer CSS query 为 `20260718-mobile-scroll-recovery-css-r1`。未连接生产 D1，未推送或部署。
+- 完成第九个依赖闭合批次 `OPT-085`：`window.LusuFramePipeline` 的移动 viewport snapshot 统一提供 layout / visual 宽高、VisualViewport offset、方向、page scale、键盘偏移与 `stable/browser-ui/keyboard/zoom` 模式，并在同一写阶段同步 CSS 变量和根数据属性。旋转会继承已知键盘状态，失焦后用 400ms 有界收敛清理锁存，原生 page scale 不会被误判成软键盘。
+- Chat、密码房、Knowledge、账号 popover 与 Quick Transfer 的编辑控件统一委托 `requestMobileFocusReveal()`；它只测量最近的真实内部滚动 owner，并只修改该 owner 的 `scrollTop`。Transfer 删除私有 viewport / `scrollIntoView` 链路；账号真实点击提交失败后会恢复用户最后编辑的字段，避免异步状态替换表单或丢失焦点。软键盘打开时 Dock 只临时隐藏，不改写用户的展开/收起偏好。
+- `npm.cmd run audit:public-ui` 扩展到 135 / 135 项：新增 Chat 编辑区、密码房、账号错误恢复、Knowledge、Transfer 入口/房间 composer、浏览器 UI 高度代理、旋转往返、原生 page scale、Dock 两种用户偏好和 safe-area 能力检测。该 Headless Chrome 结果明确不代表真实 iOS / Android 软键盘、浏览器地址栏或安全区认证。
+- 本批公开 `site-updates` 使用 `seed-update-2026-07-18-mobile-viewport-keyboard`，已同步 `js/main.js` fallback、`functions/api/[[route]].js` Functions seed 与 `cloudflare/schema.sql` schema seed；公开 JS query 为 `20260718-mobile-viewport-keyboard-r1`，主 CSS 与 Transfer CSS query 为 `20260718-mobile-viewport-keyboard-css-r1`。未连接生产 D1，未推送或部署。
+
 ## 2026-07-17
 
 - 修复手机端从首页、欢迎快捷入口或 Dock 进入知识库时，路由焦点误落到搜索框并自动弹出输入法的问题；自动焦点现在只落到可见的非编辑控件，没有合适控件时落到窗口表面，用户主动点击搜索后的输入与清空聚焦行为保持不变。

@@ -15,7 +15,7 @@
         "en": "A long-form resource management and incremental game about a kitten civilization, wired into site language launch and cloud saves.",
         "ja": "子猫の文明を育てる長期型の資源管理・放置ゲームです。サイト言語起動とクラウド保存に対応しています。"
       },
-      "cover": "../assets/images/icon-knowledge.png",
+      "cover": "../assets/images/icon-knowledge.png?v=20260718-resource-icons-layout-r1",
       "entry": "kittens-game/",
       "sourceEntry": "source/index.html",
       "language": "支持中文 / English / 日本語",
@@ -60,7 +60,7 @@
         "en": "A minimalist text adventure and resource management game, wired into site language launch and cloud saves.",
         "ja": "ミニマルなテキスト冒険・資源管理ゲームです。サイト言語起動とクラウド保存に対応しています。"
       },
-      "cover": "../assets/images/icon-blog.png",
+      "cover": "../assets/images/icon-blog.png?v=20260718-resource-icons-layout-r1",
       "entry": "a-dark-room/",
       "sourceEntry": "source/index.html",
       "launchQuery": "ignorebrowser=true",
@@ -99,7 +99,7 @@
         "en": "The classic sliding-number puzzle game, deployed locally with save import/export and cloud saves.",
         "ja": "定番の数字スライドパズルです。本站に内蔵し、保存の入出力とクラウド保存に対応しました。"
       },
-      "cover": "../assets/images/icon-resources.png",
+      "cover": "../assets/images/icon-resources.png?v=20260718-resource-icons-layout-r1",
       "entry": "2048/",
       "sourceEntry": "source/index.html",
       "language": "支持中文 / English / 日本語",
@@ -140,7 +140,7 @@
         "en": "A Hextris-inspired hex color puzzle, deployed locally with save import/export and cloud saves.",
         "ja": "Hextris に着想を得た六角形カラーパズルです。本站に内蔵し、保存の入出力とクラウド保存に対応しました。"
       },
-      "cover": "../assets/images/icon-games.png",
+      "cover": "../assets/images/icon-games.png?v=20260718-resource-icons-layout-r1",
       "entry": "hextris/",
       "sourceEntry": "source/index.html",
       "language": "支持中文 / English / 日本語",
@@ -181,7 +181,7 @@
         "en": "An open-source life simulation text game, deployed locally with Chinese and English UI plus save import/export and cloud saves.",
         "ja": "オープンソースの人生シミュレーションゲームです。本站に内蔵し、中国語と英語UI、保存の入出力とクラウド保存に対応しています。"
       },
-      "cover": "../assets/images/icon-games.png",
+      "cover": "../assets/images/icon-games.png?v=20260718-resource-icons-layout-r1",
       "entry": "life-restart/",
       "sourceEntry": "source/index.html",
       "languageQueryParam": "language",

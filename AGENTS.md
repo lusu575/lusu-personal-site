@@ -24,13 +24,14 @@ For game work, also inspect:
 
 For article / update-log work, also inspect:
 
-1. `js/main.js` `content.updates`
-2. `functions/api/[[route]].js` `articleSeedStatements`
-3. `cloudflare/schema.sql`
+1. `js/data/content.mjs` `content.updates`
+2. `js/data/home-content.mjs` `homeContent.updates`
+3. `functions/api/[[route]].js` `articleSeedStatements`
+4. `cloudflare/schema.sql`
 
 ## Project Shape
 
-- Public site: `index.html`, `css/style.css`, `css/motion-system.css`, `css/mobile-ios-shell.css`, `js/main.js`, `js/ui-motion.js`, `js/mobile-shell.js`, `js/telemetry.js`
+- Public site: `index.html`, `css/style.css`, `css/motion-system.css`, `css/mobile-ios-shell.css`, `js/main.js`, `js/core/`, `js/data/`, `js/features/`, `js/routes/`, `js/ui-motion.js`, `js/mobile-shell.js`, `js/telemetry.js`
 - Backend: Cloudflare Pages Functions in `functions/api/[[route]].js`
 - Database: Cloudflare D1, schema in `cloudflare/schema.sql`
 - Admin site: `admin/`
@@ -50,11 +51,12 @@ For article / update-log work, also inspect:
 - If a long-term rule or repeated pitfall is discovered, update `skills/lusu-personal-site-skill/SKILL.md` and `skills/lusu-personal-site-skill/README.md`.
 - If `AGENTS.md` guidance changes, keep it concise and actionable.
 - Public visible changes must update the site update system in all required places:
-  - `js/main.js` `content.updates`, so the top-right recent-update date changes.
+  - `js/data/content.mjs` `content.updates`, so the top-right recent-update date changes.
+  - `js/data/home-content.mjs` slim five-item projection, without article bodies.
   - `functions/api/[[route]].js` article seed.
   - `cloudflare/schema.sql` article seed.
   - zh / en / ja `site-updates` title, summary, and body.
-- If `js/main.js`, `css/style.css`, visual assets, top bar, taskbar, or public interaction code changes, update the matching query string in `index.html`.
+- If `js/main.js`, its imported public modules, `css/style.css`, visual assets, top bar, taskbar, or public interaction code changes, update the matching query string in `index.html`.
 - Do not push a visible change where the top-right recent-update date stays stale.
 
 ## Account Popover Rule
@@ -96,11 +98,12 @@ There are two kinds of records:
 
 When seed-backed `site-updates` are used, update all of these together:
 
-- `js/main.js` fallback `content.updates`
+- `js/data/content.mjs` fallback `content.updates`
+- `js/data/home-content.mjs` Home summary projection
 - `functions/api/[[route]].js`
 - `cloudflare/schema.sql`
 
-The top-right recent-update date is generated from `content.updates`. If that date does not change after a visible update, the job is incomplete.
+The top-right recent-update date is generated from `homeContent.updates`. Keep it projected from the newest five `content.updates` records without `content_markdown`; if that date does not change after a visible update, the job is incomplete.
 
 ## Verification
 

@@ -1,22 +1,55 @@
-/*
-  Cache-Control: public, max-age=0, must-revalidate
+/
+  Cache-Control: no-cache, max-age=0, must-revalidate
 
-/assets/images/*
+/index.html
+  Cache-Control: no-cache, max-age=0, must-revalidate
+
+/games/*.html
+  Cache-Control: no-cache, max-age=0, must-revalidate
+
+/tools/japanese-subtext/index.html
+  Cache-Control: no-cache, max-age=0, must-revalidate
+
+/fragments/*.html
+  Cache-Control: no-cache, max-age=0, must-revalidate
+
+/articles/*
+  Cache-Control: no-cache, max-age=0, must-revalidate
+
+/_assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.json
   Cache-Control: public, max-age=300, must-revalidate
 
-/tools/japanese-subtext/manifest.json
-  Cache-Control: public, max-age=0, must-revalidate
-
-/tools/japanese-subtext/content/*
+/manifest.webmanifest
   Cache-Control: public, max-age=300, must-revalidate
 
-/tools/japanese-subtext/audio/manifest.json
-  Cache-Control: public, max-age=0, must-revalidate
+/css/*
+  Cache-Control: public, max-age=300, must-revalidate
 
-/tools/japanese-subtext/audio/*
+/js/*
+  Cache-Control: public, max-age=300, must-revalidate
+
+/assets/*
   Cache-Control: public, max-age=86400, must-revalidate
 
-/tools/japanese-subtext/assets/*
+/games/*.css
+  Cache-Control: public, max-age=300, must-revalidate
+
+/games/*.js
+  Cache-Control: public, max-age=300, must-revalidate
+
+/tools/japanese-subtext/*.css
+  Cache-Control: public, max-age=300, must-revalidate
+
+/tools/japanese-subtext/*.mjs
+  Cache-Control: public, max-age=300, must-revalidate
+
+/tools/japanese-subtext/audio/*.mp3
+  Cache-Control: public, max-age=86400, must-revalidate
+
+/tools/japanese-subtext/assets/*.webp
   Cache-Control: public, max-age=86400, must-revalidate
 
 /admin/*

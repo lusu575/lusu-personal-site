@@ -2,36 +2,78 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="description" content="鲁肃的个人站，一个 Windows XP 像素桌面风格的个人空间。">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
+  <meta name="description" content="鲁肃的个人站，一个 Windows XP、Pixel Art 和 Y2K 风格的个人空间，用来记录 AI、游戏、工具、资源、视频、知识库和杂谈。">
   <meta name="theme-color" content="#1d6fe8">
   <meta name="color-scheme" content="light">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="鲁肃的个人站">
   <meta property="og:title" content="鲁肃的个人站">
-  <meta property="og:description" content="鲁肃的个人站，一个 Windows XP 像素桌面风格的个人空间。">
+  <meta property="og:description" content="鲁肃的个人站，一个 Windows XP、Pixel Art 和 Y2K 风格的个人空间，用来记录 AI、游戏、工具、资源、视频、知识库和杂谈。">
   <meta property="og:url" content="https://lusu575.com/?lang=zh">
   <meta property="og:image" content="https://lusu575.com/assets/images/homepage-pixel-coast.png?v=20260612-hd-wallpapers">
   <meta property="og:image:width" content="1672">
   <meta property="og:image:height" content="941">
+  <meta property="og:image:alt" content="鲁肃个人站的像素海岸桌面景观">
   <meta property="og:locale" content="zh_CN">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="鲁肃的个人站">
-  <meta name="twitter:description" content="鲁肃的个人站，一个 Windows XP 像素桌面风格的个人空间。">
+  <meta name="twitter:description" content="鲁肃的个人站，一个 Windows XP、Pixel Art 和 Y2K 风格的个人空间，用来记录 AI、游戏、工具、资源、视频、知识库和杂谈。">
   <meta name="twitter:image" content="https://lusu575.com/assets/images/homepage-pixel-coast.png?v=20260612-hd-wallpapers">
+  <meta name="twitter:image:alt" content="鲁肃个人站的像素海岸桌面景观">
   <title>鲁肃的个人站</title>
   <link rel="canonical" href="https://lusu575.com/?lang=zh">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32.png?v=20260611-unified-tv-icon">
   <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png?v=20260611-unified-tv-icon">
   <link rel="manifest" href="/manifest.webmanifest">
-  <script src="/js/mobile-shell.js?v=20260711-calm-motion-r13"></script>
-  <link rel="stylesheet" href="/css/style.css?v=20260711-calm-motion-r13">
-  <link rel="stylesheet" href="/css/mobile-ios-shell.css?v=20260717-mobile-transfer-send-r3">
-  <link rel="stylesheet" href="/css/motion-system.css?v=20260711-calm-motion-r13">
-  <link rel="stylesheet" href="/css/transfer.css?v=20260717-mobile-transfer-send-r3">
+  <script>
+    (() => {
+      const themes = ["morning", "day", "dusk", "night"];
+      const preview = new URLSearchParams(window.location.search).get("wallpaper");
+      const now = new Date();
+      const minutes = now.getHours() * 60 + now.getMinutes();
+      const localTheme = minutes >= 5 * 60 && minutes < 11 * 60
+        ? "morning"
+        : minutes >= 11 * 60 && minutes < 17 * 60
+          ? "day"
+          : minutes >= 17 * 60 && minutes < 20 * 60
+            ? "dusk"
+            : "night";
+      const activeTheme = themes.includes(preview) ? preview : localTheme;
+      document.documentElement.dataset.timeTheme = activeTheme;
+
+      const mobileShell = window.matchMedia?.("(max-width: 760px), (max-height: 520px) and (pointer: coarse)")?.matches;
+      const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+      const saveData = (navigator.connection || navigator.mozConnection || navigator.webkitConnection)?.saveData === true;
+      const selectedWidth = saveData || window.innerWidth <= 960 ? 960 : window.innerWidth <= 1440 ? 1440 : 1920;
+      const preload = document.createElement("link");
+      preload.rel = "preload";
+      preload.as = "image";
+      preload.type = "image/webp";
+      if (mobileShell) {
+        preload.href = `/assets/images/mobile-wallpapers/${activeTheme}.webp`;
+        preload.dataset.wallpaperPreload = `${activeTheme}:mobile`;
+      } else {
+        const family = reducedMotion ? "wallpapers/optimized" : `wallpaper-dynamic/${activeTheme}/optimized`;
+        const stem = reducedMotion ? activeTheme : "base";
+        preload.href = `/assets/images/${family}/${stem}-${selectedWidth}.webp`;
+        preload.imageSrcset = [960, 1440, 1920]
+          .map((width) => `/assets/images/${family}/${stem}-${width}.webp ${width}w`)
+          .join(", ");
+        preload.imageSizes = "100vw";
+        preload.dataset.wallpaperPreload = `${activeTheme}:desktop:${reducedMotion ? "static" : "dynamic"}`;
+      }
+      document.head.appendChild(preload);
+    })();
+  </script>
+  <script src="/js/mobile-shell.js?v=20260718-resource-icons-layout-r1"></script>
+  <link rel="stylesheet" href="/css/style.css?v=20260718-resource-icons-layout-r1">
+  <link rel="stylesheet" href="/css/mobile-ios-shell.css?v=20260718-resource-icons-layout-r1">
+  <link rel="stylesheet" href="/css/motion-system.css?v=20260718-resource-icons-layout-r1">
 </head>
 <body data-route="home">
-  <div class="site-shell">
+  <a class="skip-link" href="#main-content" data-modal-background data-i18n="skipToMain">跳到主内容</a>
+  <div class="site-shell" data-modal-background>
     <header class="xp-topbar">
       <div class="mobile-statusbar" aria-label="Mobile status bar">
         <time class="mobile-status-time" id="mobile-status-time" data-local-time="compact">--:--</time>
@@ -62,41 +104,16 @@
           <button class="lang-button" type="button" data-lang="en" aria-pressed="false">EN</button>
           <button class="lang-button" type="button" data-lang="ja" aria-pressed="false">日本語</button>
         </nav>
-        <span class="top-updated"><span data-i18n="lastUpdatedLabel">最近更新日期</span>: <span id="top-updated">2026.07.17</span></span>
+        <span class="top-updated"><span data-i18n="lastUpdatedLabel">最近更新日期</span>: <span id="top-updated">2026.07.18</span></span>
       </div>
     </header>
 
-    <main>
-      <section class="page page-home active" id="home" aria-label="首页" data-i18n-aria-label="startButton">
-        <div class="wallpaper-root" id="wallpaper-root" data-time="day" aria-hidden="true">
+    <main id="main-content" tabindex="-1">
+      <section class="page page-home active" id="home" aria-labelledby="home-title">
+        <h1 class="sr-only" id="home-title" tabindex="-1" data-i18n="heroTitle">鲁肃的个人站</h1>
+        <div class="wallpaper-root" id="wallpaper-root" aria-hidden="true">
           <div class="wallpaper-stage" id="wallpaper-stage">
             <div class="wallpaper-base"></div>
-            <span class="wallpaper-cloud wallpaper-cloud-morning wallpaper-cloud-morning-top-left"></span>
-            <span class="wallpaper-cloud wallpaper-cloud-morning wallpaper-cloud-morning-high-left"></span>
-            <span class="wallpaper-cloud wallpaper-cloud-morning wallpaper-cloud-morning-top-right"></span>
-            <span class="wallpaper-cloud wallpaper-cloud-morning wallpaper-cloud-morning-upper-right"></span>
-            <span class="wallpaper-cloud wallpaper-cloud-morning wallpaper-cloud-morning-left-mid"></span>
-            <span class="wallpaper-cloud wallpaper-cloud-morning wallpaper-cloud-morning-center-mid"></span>
-            <span class="wallpaper-cloud wallpaper-cloud-morning wallpaper-cloud-morning-right-mid"></span>
-            <span class="wallpaper-cloud wallpaper-cloud-day wallpaper-cloud-day-top-left"></span>
-            <span class="wallpaper-cloud wallpaper-cloud-day wallpaper-cloud-day-top-center"></span>
-            <span class="wallpaper-cloud wallpaper-cloud-day wallpaper-cloud-day-top-right"></span>
-            <span class="wallpaper-cloud wallpaper-cloud-day wallpaper-cloud-day-mid-left"></span>
-            <span class="wallpaper-cloud wallpaper-cloud-day wallpaper-cloud-day-mid-right"></span>
-            <span class="wallpaper-cloud wallpaper-cloud-dusk wallpaper-cloud-dusk-top-left"></span>
-            <span class="wallpaper-cloud wallpaper-cloud-dusk wallpaper-cloud-dusk-high-left"></span>
-            <span class="wallpaper-cloud wallpaper-cloud-dusk wallpaper-cloud-dusk-top-right"></span>
-            <span class="wallpaper-cloud wallpaper-cloud-dusk wallpaper-cloud-dusk-upper-right"></span>
-            <span class="wallpaper-cloud wallpaper-cloud-dusk wallpaper-cloud-dusk-left-mid"></span>
-            <span class="wallpaper-cloud wallpaper-cloud-dusk wallpaper-cloud-dusk-center-mid"></span>
-            <span class="wallpaper-cloud wallpaper-cloud-dusk wallpaper-cloud-dusk-right-mid"></span>
-            <span class="wallpaper-cloud wallpaper-cloud-night wallpaper-cloud-night-top-right"></span>
-            <span class="wallpaper-cloud wallpaper-cloud-night wallpaper-cloud-night-upper-right"></span>
-            <span class="wallpaper-cloud wallpaper-cloud-night wallpaper-cloud-night-left-mid"></span>
-            <span class="wallpaper-cloud wallpaper-cloud-night wallpaper-cloud-night-high-left"></span>
-            <span class="wallpaper-cloud wallpaper-cloud-night wallpaper-cloud-night-center-mid"></span>
-            <span class="wallpaper-cloud wallpaper-cloud-night wallpaper-cloud-night-right-mid"></span>
-            <span class="wallpaper-cloud wallpaper-cloud-night wallpaper-cloud-night-left-low"></span>
             <span class="wallpaper-tree-canopy"></span>
             <span class="wallpaper-tv-static"></span>
             <span class="wallpaper-tv-girl"></span>
@@ -123,7 +140,7 @@
             <span class="pixel-icon game-icon"></span>
             <span class="icon-title" data-i18n="navGames">游戏区</span>
           </button>
-          <button class="desktop-icon" data-route="blog">
+          <button class="desktop-icon" data-route="blog" data-blog-entry hidden>
             <span class="pixel-icon chat-icon"></span>
             <span class="icon-title" data-i18n="navBlogBuilding">杂谈区</span>
           </button>
@@ -140,13 +157,23 @@
       </section>
 
       <section class="page" id="knowledge" aria-labelledby="knowledge-title">
+        <h1 class="sr-only" id="knowledge-title" tabindex="-1" data-i18n="knowledgeTitle">知识库</h1>
         <div class="xp-window folder-window">
           <div class="window-titlebar">
-            <span><span class="title-icon section-title-icon title-icon-knowledge" aria-hidden="true"></span><span id="knowledge-title" data-i18n="knowledgeTitle">知识库</span></span>
+            <span aria-hidden="true"><span class="title-icon section-title-icon title-icon-knowledge"></span><span data-i18n="knowledgeTitle">知识库</span></span>
             <div class="knowledge-window-controls" aria-hidden="false">
               <button class="titlebar-button minimize-button" type="button" data-route="home" aria-label="最小化窗口" data-i18n-aria-label="windowMinimizeAria"></button>
               <button class="titlebar-button maximize-button" type="button" data-article-window-toggle aria-label="最大化窗口" data-i18n-aria-label="windowMaximizeAria" aria-pressed="true"></button>
               <button class="close-button" data-route="home" aria-label="关闭窗口" data-i18n-aria-label="closeWindowAria">×</button>
+            </div>
+          </div>
+          <div class="article-read-progress" aria-live="off">
+            <div class="article-read-progress-label">
+              <span data-i18n="articleReadProgress">阅读进度</span>
+              <strong id="article-read-progress-value">0%</strong>
+            </div>
+            <div class="article-read-progress-track" id="article-read-progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="阅读进度" data-i18n-aria-label="articleReadProgress">
+              <span id="article-read-progress-fill"></span>
             </div>
           </div>
           <div class="knowledge-searchbar" id="knowledge-searchbar">
@@ -166,15 +193,6 @@
                 <span class="article-copy-icon" aria-hidden="true">↑</span>
                 <span data-i18n="articleScrollTop">回到顶部</span>
               </button>
-              <div class="article-read-progress" aria-live="off">
-                <div class="article-read-progress-label">
-                  <span data-i18n="articleReadProgress">阅读进度</span>
-                  <strong id="article-read-progress-value">0%</strong>
-                </div>
-                <div class="article-read-progress-track" id="article-read-progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="阅读进度" data-i18n-aria-label="articleReadProgress">
-                  <span id="article-read-progress-fill"></span>
-                </div>
-              </div>
               <aside class="article-reader-sidebar">
                 <nav class="article-toc" id="article-detail-toc" aria-label="文章目录" data-i18n-aria-label="articleTocTitle" hidden>
                   <p>
@@ -196,6 +214,10 @@
                   <div class="meta-row" id="article-detail-meta"></div>
                   <h2 id="article-detail-title"></h2>
                   <p id="article-detail-summary"></p>
+                  <button class="xp-button article-summary-toggle" id="article-summary-toggle" type="button"
+                    data-article-summary-toggle aria-controls="article-detail-summary" aria-expanded="false" hidden>
+                    <span class="article-summary-toggle-label" data-i18n="articleSummaryExpand">展开摘要</span>
+                  </button>
                   <div class="article-detail-actions">
                     <button class="xp-button article-copy-link" type="button" data-article-copy-link>
                       <span class="article-copy-icon asset-icon asset-icon-link" aria-hidden="true"></span>
@@ -212,9 +234,10 @@
       </section>
 
       <section class="page" id="videos" aria-labelledby="videos-title">
+        <h1 class="sr-only" id="videos-title" tabindex="-1" data-i18n="videosTitle">视频区</h1>
         <div class="xp-window">
           <div class="window-titlebar">
-            <span><span class="title-icon section-title-icon title-icon-videos" aria-hidden="true"></span><span id="videos-title" data-i18n="videosTitle">视频区</span></span>
+            <span aria-hidden="true"><span class="title-icon section-title-icon title-icon-videos"></span><span data-i18n="videosTitle">视频区</span></span>
             <button class="close-button" data-route="home" aria-label="关闭窗口" data-i18n-aria-label="closeWindowAria">×</button>
           </div>
           <div class="filter-row" id="video-categories"></div>
@@ -223,86 +246,22 @@
       </section>
 
       <section class="page" id="resources" aria-labelledby="resources-title">
+        <h1 class="sr-only" id="resources-title" tabindex="-1" data-i18n="resourcesTitle">资源区</h1>
         <div class="xp-window">
           <div class="window-titlebar">
-            <span><span class="title-icon section-title-icon title-icon-resources" aria-hidden="true"></span><span id="resources-title" data-i18n="resourcesTitle">资源区</span></span>
+            <span aria-hidden="true"><span class="title-icon section-title-icon title-icon-resources"></span><span data-i18n="resourcesTitle">资源区</span></span>
             <button class="close-button" data-route="home" aria-label="关闭窗口" data-i18n-aria-label="closeWindowAria">×</button>
           </div>
           <div class="filter-row" id="resource-categories"></div>
           <div class="download-list" id="resource-list"></div>
-          <section class="transfer-app" id="transfer-app" aria-labelledby="transfer-app-title" hidden>
-            <header class="transfer-app-header">
-              <button class="xp-button transfer-back-button" type="button" id="transfer-back-to-resources">
-                <span class="transfer-icon transfer-icon-cancel" aria-hidden="true"></span>
-                <span data-transfer-copy="back">返回资源区</span>
-              </button>
-              <div class="transfer-app-heading">
-                <span class="transfer-icon transfer-icon-app" aria-hidden="true"></span>
-                <div>
-                  <h2 id="transfer-app-title" data-transfer-copy="title">临时互传</h2>
-                  <p data-transfer-copy="retention">内容在发布完成 24 小时后自动失效。</p>
-                </div>
-              </div>
-              <span class="transfer-network-status" id="transfer-network-status" role="status">ONLINE</span>
-            </header>
-            <div class="transfer-feedback" id="transfer-feedback" role="status" aria-live="polite"></div>
-            <section class="transfer-login-gate" id="transfer-login-gate" hidden>
-              <span class="transfer-icon transfer-icon-lock" aria-hidden="true"></span>
-              <div><h3 data-transfer-copy="loginTitle">登录后使用临时互传</h3><p data-transfer-copy="loginBody">房间内容只对持有口令的已登录账号开放。</p></div>
-              <button class="xp-button" type="button" id="transfer-login-button" data-transfer-copy="loginAction">打开登录</button>
-            </section>
-            <section class="transfer-room-entry" id="transfer-room-entry" hidden>
-              <form class="transfer-room-form" id="transfer-room-form">
-                <label for="transfer-room-password" data-transfer-copy="roomPassword">房间口令</label>
-                <div class="transfer-password-row">
-                  <input id="transfer-room-password" type="password" autocomplete="off" minlength="6" maxlength="128" required data-transfer-placeholder="roomPlaceholder" placeholder="至少 6 位，分享给另一位登录用户">
-                  <button class="xp-button" type="button" id="transfer-generate-password"><span class="transfer-icon transfer-icon-room" aria-hidden="true"></span><span data-transfer-copy="generate">随机生成</span></button>
-                  <button class="xp-button" type="button" id="transfer-copy-password"><span class="transfer-icon transfer-icon-copy" aria-hidden="true"></span><span data-transfer-copy="copy">复制</span></button>
-                </div>
-                <p class="transfer-security-note" data-transfer-copy="securityNote">口令不会发送到服务器；知道口令的人可读取房间内容，请勿上传账号凭证。</p>
-                <button class="xp-button transfer-enter-button" type="submit"><span class="transfer-icon transfer-icon-lock" aria-hidden="true"></span><span data-transfer-copy="enter">进入房间</span></button>
-              </form>
-              <aside class="transfer-quota-card" id="transfer-quota-card" aria-live="polite"></aside>
-            </section>
-            <section class="transfer-room" id="transfer-room" hidden>
-              <div class="transfer-room-toolbar">
-                <div><strong data-transfer-copy="roomActive">临时房间已连接</strong><span id="transfer-room-mode"></span></div>
-                <div class="transfer-toolbar-actions">
-                  <button class="xp-button" type="button" id="transfer-refresh-button"><span class="transfer-icon transfer-icon-download" aria-hidden="true"></span><span data-transfer-copy="refresh">刷新</span></button>
-                  <button class="xp-button" type="button" id="transfer-leave-room" data-transfer-copy="leave">离开房间</button>
-                </div>
-              </div>
-              <div class="transfer-feed" id="transfer-feed" role="log" aria-live="polite" aria-relevant="additions"></div>
-              <form class="transfer-compose" id="transfer-text-form">
-                <div class="transfer-pending-attachments" id="transfer-pending-attachments" role="list" aria-live="polite" hidden></div>
-                <div class="transfer-compose-row">
-                  <label class="sr-only" for="transfer-text-input" data-transfer-copy="textLabel">加密文字</label>
-                  <textarea id="transfer-text-input" rows="2" maxlength="10000" data-transfer-placeholder="textPlaceholder" placeholder="发送一段加密文字……"></textarea>
-                  <button class="xp-button transfer-send-button" id="transfer-send-button" type="submit"><span class="transfer-icon transfer-icon-text" aria-hidden="true"></span><span data-transfer-copy="send">发送</span></button>
-                </div>
-                <div class="transfer-upload-zone" id="transfer-upload-zone" tabindex="0">
-                  <span class="transfer-icon transfer-icon-upload" aria-hidden="true"></span>
-                  <div class="transfer-upload-copy"><strong data-transfer-copy="dropTitle">添加照片或文件</strong><p id="transfer-upload-help"></p></div>
-                  <div class="transfer-picker-actions">
-                    <label class="xp-button transfer-file-picker transfer-photo-picker"><span class="transfer-icon transfer-icon-image" aria-hidden="true"></span><span data-transfer-copy="choosePhoto">选择照片</span><input id="transfer-photo-input" type="file" accept="image/*" multiple></label>
-                    <label class="xp-button transfer-file-picker"><span class="transfer-icon transfer-icon-file" aria-hidden="true"></span><span data-transfer-copy="chooseFile">选择文件</span><input id="transfer-file-input" type="file" multiple></label>
-                  </div>
-                </div>
-              </form>
-              <section class="transfer-tasks" aria-labelledby="transfer-tasks-title"><h3 id="transfer-tasks-title" data-transfer-copy="tasks">上传任务</h3><div id="transfer-task-list"></div></section>
-            </section>
-            <div class="transfer-drop-overlay" id="transfer-drop-overlay" aria-hidden="true">
-              <span class="transfer-icon transfer-icon-upload" aria-hidden="true"></span>
-              <strong data-transfer-copy="dropRelease">松开即可上传到当前房间</strong>
-            </div>
-          </section>
         </div>
       </section>
 
       <section class="page" id="games" aria-labelledby="games-title">
+        <h1 class="sr-only" id="games-title" tabindex="-1" data-i18n="gamesTitle">游戏区</h1>
         <div class="xp-window">
           <div class="window-titlebar">
-            <span><span class="title-icon section-title-icon title-icon-games" aria-hidden="true"></span><span id="games-title" data-i18n="gamesTitle">游戏区</span></span>
+            <span aria-hidden="true"><span class="title-icon section-title-icon title-icon-games"></span><span data-i18n="gamesTitle">游戏区</span></span>
             <button class="close-button" data-route="home" aria-label="关闭窗口" data-i18n-aria-label="closeWindowAria">×</button>
           </div>
           <div class="game-list" id="game-list"></div>
@@ -310,28 +269,29 @@
       </section>
 
       <section class="page" id="blog" aria-labelledby="blog-title">
+        <h1 class="sr-only" id="blog-title" tabindex="-1" data-i18n="blogTitle">杂谈区</h1>
         <div class="xp-window notepad-window">
           <div class="window-titlebar">
-            <span><span class="title-icon section-title-icon title-icon-blog" aria-hidden="true"></span><span id="blog-title" data-i18n="blogTitle">杂谈区</span></span>
+            <span aria-hidden="true"><span class="title-icon section-title-icon title-icon-blog"></span><span data-i18n="blogTitle">杂谈区</span></span>
             <button class="close-button" data-route="home" aria-label="关闭窗口" data-i18n-aria-label="closeWindowAria">×</button>
           </div>
-          <div class="notepad-menu" data-i18n="notepadMenu">文件  编辑  查看  帮助</div>
           <div class="notepad-paper" id="blog-list"></div>
         </div>
       </section>
 
       <section class="page" id="chatroom" aria-labelledby="chatroom-title">
+        <h1 class="sr-only" id="chatroom-title" tabindex="-1" data-i18n="chatroomTitle">匿名聊天室</h1>
         <div class="xp-window chatroom-window">
           <div class="window-titlebar">
-            <span><span class="title-icon section-title-icon title-icon-chatroom chatroom-title-icon" aria-hidden="true"></span><span id="chatroom-title" data-i18n="chatroomTitle">匿名聊天室</span></span>
+            <span aria-hidden="true"><span class="title-icon section-title-icon title-icon-chatroom chatroom-title-icon"></span><span data-i18n="chatroomTitle">匿名聊天室</span></span>
             <button class="close-button" data-route="home" aria-label="关闭窗口" data-i18n-aria-label="closeWindowAria">×</button>
           </div>
           <div class="chatroom-header">
-            <img class="chatroom-avatar" src="/assets/images/icon-chatroom-clean.png" width="256" height="256" alt="" aria-hidden="true" loading="lazy" decoding="async">
+            <img class="chatroom-avatar" src="/assets/images/icon-chatroom-clean.png?v=20260718-resource-icons-layout-r1" width="256" height="256" alt="" aria-hidden="true" loading="lazy" decoding="async">
             <div class="chatroom-nickname-row">
               <span data-i18n="chatNicknameLabel">我的昵称：</span>
               <strong id="chat-nickname-display"></strong>
-              <button class="xp-button chat-nickname-button" id="chat-edit-nickname" type="button" data-i18n="chatEditNickname">修改昵称</button>
+              <button class="xp-button chat-nickname-button" id="chat-edit-nickname" type="button" data-i18n="chatEditNickname" aria-controls="chat-nickname-form" aria-expanded="false">修改昵称</button>
             </div>
             <div class="chatroom-status">
               <span id="chat-room-label" data-i18n="chatRoomPublicLabel">普通房间</span>
@@ -340,6 +300,15 @@
               <button class="xp-button chat-room-toggle" id="chat-room-toggle" type="button" data-i18n="chatEnterPrivateRoom">密码房</button>
             </div>
           </div>
+          <form class="chat-nickname-form" id="chat-nickname-form" hidden>
+            <label for="chat-nickname-input" data-i18n="chatNicknameInputLabel">新昵称</label>
+            <input id="chat-nickname-input" name="nickname" type="text" minlength="2" maxlength="16" autocomplete="off" data-i18n-placeholder="chatNicknamePlaceholder" placeholder="2-16 个字符" aria-describedby="chat-nickname-error">
+            <div class="chat-nickname-actions">
+              <button class="xp-button" type="submit" data-i18n="chatNicknameSave">保存</button>
+              <button class="xp-button" id="chat-nickname-cancel" type="button" data-i18n="chatNicknameCancel">取消</button>
+            </div>
+            <small id="chat-nickname-error" role="status" aria-live="polite"></small>
+          </form>
           <form class="chat-private-room-panel" id="chat-private-room-form" hidden>
             <label for="chat-private-password" data-i18n="chatPrivatePasswordLabel">密码房密码</label>
             <input id="chat-private-password" name="password" type="password" minlength="6" maxlength="96" autocomplete="off" data-i18n-placeholder="chatPrivatePasswordPlaceholder" placeholder="至少 6 个字符">
@@ -347,7 +316,9 @@
             <button class="xp-button" id="chat-private-room-cancel" type="button" data-i18n="chatPrivateRoomCancel">取消</button>
             <small data-i18n="chatPrivateRoomHint">同一密码进入同一暗色房间；请使用不容易猜到的密码。</small>
           </form>
-          <div class="chatroom-log" id="chat-message-list" role="log" aria-live="polite" aria-relevant="additions"></div>
+          <div class="chatroom-log" id="chat-message-list" role="log" aria-live="off"></div>
+          <button class="xp-button chat-unread-button" id="chat-unread-button" type="button" hidden></button>
+          <p class="sr-only" id="chat-live-summary" role="status" aria-live="polite" aria-atomic="true"></p>
           <form class="chatroom-compose" id="chat-form">
             <label class="sr-only" for="chat-message-input" data-i18n="chatInputLabel">聊天内容</label>
             <textarea id="chat-message-input" name="message" maxlength="300" rows="2" data-i18n-placeholder="chatPlaceholder" placeholder="说点什么吧..."></textarea>
@@ -368,9 +339,10 @@
       </section>
 
       <section class="page" id="about" aria-labelledby="about-title">
+        <h1 class="sr-only" id="about-title" tabindex="-1" data-i18n="aboutTitle">关于我</h1>
         <div class="xp-window about-window">
           <div class="window-titlebar">
-            <span><span class="title-icon section-title-icon title-icon-about" aria-hidden="true"></span><span id="about-title" data-i18n="aboutTitle">关于我</span></span>
+            <span aria-hidden="true"><span class="title-icon section-title-icon title-icon-about"></span><span data-i18n="aboutTitle">关于我</span></span>
             <button class="close-button" data-route="home" aria-label="关闭窗口" data-i18n-aria-label="closeWindowAria">×</button>
           </div>
           <div class="profile-card">
@@ -415,14 +387,14 @@
     <footer class="xp-taskbar">
       <div class="mobile-dock-scroll">
         <span class="mobile-dock-selection" aria-hidden="true"></span>
-        <button class="start-button" data-route="home"><img class="start-windows-icon" src="/assets/images/start-windows-pixel.png" width="96" height="96" alt="" aria-hidden="true"><span data-i18n="startButton">首页</span></button>
+        <button class="start-button" data-route="home"><img class="start-windows-icon" src="/assets/images/start-windows-pixel.png?v=20260718-resource-icons-layout-r1" width="96" height="96" alt="" aria-hidden="true"><span class="dock-label-full" data-i18n="startButton">首页</span><span class="dock-label-short" data-i18n="dockHome">首页</span></button>
         <nav class="taskbar-tabs" aria-label="底部主导航" data-i18n-aria-label="taskbarNavAria">
-          <button data-route="knowledge"><span class="mini-icon taskbar-icon taskbar-icon-knowledge" aria-hidden="true"></span><span data-i18n="navKnowledge">知识库</span></button>
-          <button data-route="videos"><span class="mini-icon taskbar-icon taskbar-icon-videos" aria-hidden="true"></span><span data-i18n="navVideos">视频区</span></button>
-          <button data-route="resources"><span class="mini-icon taskbar-icon taskbar-icon-resources" aria-hidden="true"></span><span data-i18n="navResources">资源区</span></button>
-          <button data-route="games"><span class="mini-icon taskbar-icon taskbar-icon-games" aria-hidden="true"></span><span data-i18n="navGames">游戏区</span></button>
-          <button data-route="blog" data-mobile-dock-excluded><span class="mini-icon taskbar-icon taskbar-icon-blog" aria-hidden="true"></span><span data-i18n="navBlog">杂谈区</span></button>
-          <button data-route="chatroom"><span class="mini-icon chat-mini-icon" aria-hidden="true"></span><span data-i18n="navChatroom">匿名聊天室</span></button>
+          <button data-route="knowledge"><span class="mini-icon taskbar-icon taskbar-icon-knowledge" aria-hidden="true"></span><span class="dock-label-full" data-i18n="navKnowledge">知识库</span><span class="dock-label-short" data-i18n="dockKnowledge">知识</span></button>
+          <button data-route="videos"><span class="mini-icon taskbar-icon taskbar-icon-videos" aria-hidden="true"></span><span class="dock-label-full" data-i18n="navVideos">视频区</span><span class="dock-label-short" data-i18n="dockVideos">视频</span></button>
+          <button data-route="resources"><span class="mini-icon taskbar-icon taskbar-icon-resources" aria-hidden="true"></span><span class="dock-label-full" data-i18n="navResources">资源区</span><span class="dock-label-short" data-i18n="dockResources">资源</span></button>
+          <button data-route="games"><span class="mini-icon taskbar-icon taskbar-icon-games" aria-hidden="true"></span><span class="dock-label-full" data-i18n="navGames">游戏区</span><span class="dock-label-short" data-i18n="dockGames">游戏</span></button>
+          <button data-route="blog" data-mobile-dock-excluded data-blog-entry hidden><span class="mini-icon taskbar-icon taskbar-icon-blog" aria-hidden="true"></span><span data-i18n="navBlog">杂谈区</span></button>
+          <button data-route="chatroom"><span class="mini-icon chat-mini-icon" aria-hidden="true"></span><span class="dock-label-full" data-i18n="navChatroom">匿名聊天室</span><span class="dock-label-short" data-i18n="dockChatroom">聊天</span></button>
           <button data-route="about" data-mobile-dock-excluded><span class="mini-icon taskbar-icon taskbar-icon-about" aria-hidden="true"></span><span data-i18n="navAbout">关于我</span></button>
         </nav>
       </div>
@@ -437,7 +409,7 @@
 
   <div class="modal" id="welcome-modal" hidden>
     <div class="modal-backdrop" data-close-welcome></div>
-    <div class="xp-window welcome-window" role="dialog" aria-modal="true" aria-labelledby="welcome-title">
+    <div class="xp-window welcome-window" role="dialog" aria-modal="true" aria-labelledby="welcome-title" tabindex="-1">
       <div class="window-titlebar">
         <span><span class="title-icon welcome-title-icon" aria-hidden="true"></span><span id="welcome-title" data-i18n="welcomeTitle">欢迎来到我的空间</span></span>
         <button class="close-button" data-close-welcome aria-label="关闭对话框" data-i18n-aria-label="closeDialogAria">×</button>
@@ -475,7 +447,7 @@
 
   <div class="modal" id="video-modal" hidden>
     <div class="modal-backdrop" data-close-modal></div>
-    <div class="xp-window modal-window" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="xp-window modal-window" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1">
       <div class="window-titlebar">
         <span><span class="title-icon section-title-icon title-icon-videos" aria-hidden="true"></span><span id="modal-title">Video Player</span></span>
         <div class="window-controls">
@@ -496,8 +468,7 @@
   </div>
 
   <script src="/js/telemetry.js?v=20260623-analytics-privacy-r1"></script>
-  <script src="/js/ui-motion.js?v=20260711-calm-motion-r13"></script>
-  <script src="/js/transfer.js?v=20260717-mobile-transfer-send-r3"></script>
-  <script src="/js/main.js?v=20260717-mobile-transfer-send-r3"></script>
+  <script src="/js/ui-motion.js?v=20260718-resource-icons-layout-r1"></script>
+  <script type="module" src="/js/main.js?v=20260718-resource-icons-layout-r1"></script>
 </body>
 </html>

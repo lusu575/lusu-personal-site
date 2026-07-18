@@ -13,6 +13,8 @@ __pycache__/
 .codex-wrangler-preview*.log
 .diagnostics/
 output/
+dist/
+.production-build-*/
 .playwright-cli/
 tools/japanese-subtext/config/tts.local.json
 tools/japanese-subtext/audio/.work/

@@ -120,7 +120,8 @@ create table if not exists transfer_rooms (
   created_at text not null,
   last_activity_at text not null,
   closed_at text not null default '',
-  closed_by text not null default ''
+  closed_by text not null default '',
+  sync_generation integer not null default 0
 );
 
 create table if not exists transfer_items (
@@ -143,7 +144,8 @@ create table if not exists transfer_items (
   completed_at text not null default '',
   expires_at text not null,
   cleanup_attempts integer not null default 0,
-  last_error text not null default ''
+  last_error text not null default '',
+  idempotency_key text not null default ''
 );
 
 create table if not exists transfer_upload_sessions (
@@ -251,6 +253,7 @@ create table if not exists transfer_audit_log (
 
 create index if not exists transfer_rooms_activity_idx on transfer_rooms(status, last_activity_at);
 create index if not exists transfer_items_room_created_idx on transfer_items(room_id, created_at);
+create index if not exists transfer_items_room_cursor_idx on transfer_items(room_id, upload_status, created_at, id);
 create index if not exists transfer_items_expires_idx on transfer_items(upload_status, expires_at);
 create index if not exists transfer_items_user_status_idx on transfer_items(uploader_user_id, upload_status, created_at);
 create index if not exists transfer_items_role_status_idx on transfer_items(uploader_role_snapshot, upload_status, expires_at);
@@ -296,7 +299,8 @@ create table if not exists anonymous_chat_messages (
   ip_hash_key_id text not null default 'legacy',
   ip_prefix text not null default '',
   room_key text not null default 'public',
-  encrypted integer not null default 0
+  encrypted integer not null default 0,
+  client_request_id text not null default ''
 );
 
 create index if not exists anonymous_chat_messages_visible_idx
@@ -553,6 +557,1110 @@ create index if not exists article_view_events_slug_idx
   on article_view_events(slug, created_at);
 create index if not exists article_view_events_visitor_idx
   on article_view_events(visitor_id, created_at);
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-07-18-resource-icons-layout',
+  '2026-07-18-resource-icons-layout',
+  'site-updates',
+  '["Resources","Quick Transfer","UI","mobile","QA"]',
+  '', 'published', 1, 0,
+  '2026-07-18T15:35:00.000Z',
+  '2026-07-18T15:35:00.000Z',
+  '2026-07-18T15:35:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-07-18-resource-icons-layout-zh', 'seed-update-2026-07-18-resource-icons-layout', 'zh', '资源区图标与排版修复', '修复临时互传整套图标的洋红底色，收紧资源卡片与互传登录布局，并保证关闭互传后准确恢复资源列表；安全、API 与数据边界不变。', '# 资源区图标与排版修复
+
+本轮针对资源区中最明显的图标异常、卡片节奏和临时互传返回状态进行专项复查，继续沿用既有 Windows XP、Pixel Art 与 Y2K 视觉语言。
+
+## 透明且可验证的图标资产
+
+- 临时互传的原始素材是带洋红抠图底色的源图，不能直接缩放为生产图集。现在先完成柔和抠图与边缘去色，再生成 168×168 RGBA 透明图集。
+- 16 个图标单元都加入透明角点与可见像素比例检查，避免只修入口图标而让房间、文件、图片或操作图标继续带紫色方块。
+- 公开资源扫描未发现第二个同类运行时资产；洋红源图继续保留为构建输入，不作为页面资源引用。
+
+## 更紧凑的资源与互传布局
+
+- 桌面资源窗口收敛到与相邻 App 更协调的宽度，资源卡片按真实内容自然增高，不再用固定空白撑高；重复的“可获取”状态也从当前两张可用卡片中移除。
+- 移动端去掉资源卡的强制高度，保留完整说明、元数据、标签与至少 44px 操作，并覆盖 359×500、375×667、390×844 和 844×390。
+- 临时互传登录任务在可用区域内居中，窄屏不再重复显示标题图标。关闭互传时会恢复打开前的分类栏与列表可见状态，不再出现空分类条或列表闪失。
+
+## 验证边界
+
+精确 CDP 尺寸审计以中、英、日三语覆盖资源列表、互传登录和返回资源列表三个状态，并以 Home、Games 作为同壳参考；359×500、375×667、390×844、760×900、844×390 与 1280×720 共 58 个受控检查均通过。Headless 截图不等同真实设备或完整读屏器认证。本轮未连接生产数据，未 push，也未 deploy。', '2026-07-18T15:35:00.000Z', '2026-07-18T15:35:00.000Z'),
+  ('seed-update-2026-07-18-resource-icons-layout-en', 'seed-update-2026-07-18-resource-icons-layout', 'en', 'Resources Icon and Layout Fixes', 'The magenta background across the Quick Transfer icon atlas is removed, Resources cards and the sign-in layout are tightened, and closing Transfer now restores the exact Resources list state; security, API, and data boundaries are unchanged.', '# Resources Icon and Layout Fixes
+
+This pass focuses on the most visible Resources icon defect, card rhythm, and Quick Transfer return state while preserving the established Windows XP, Pixel Art, and Y2K visual language.
+
+## Transparent, testable icon assets
+
+- The original Quick Transfer artwork is a magenta-key source and must not be resized directly into the production atlas. It is now softly keyed and edge-despilled before generating a 168×168 RGBA transparent atlas.
+- All 16 sprite cells have transparent-corner and visible-pixel-ratio checks, so fixing the entry icon cannot leave room, file, media, or action icons with purple blocks.
+- A public asset sweep found no second affected runtime asset. The magenta source remains a build input and is not referenced by the page.
+
+## Tighter Resources and Transfer layout
+
+- The desktop Resources window now uses a width consistent with neighboring Apps, and cards grow from real content instead of fixed empty height. The redundant Available badge is removed from the two currently usable cards.
+- Mobile cards no longer have forced height while retaining complete descriptions, metadata, tags, and actions of at least 44px across 359×500, 375×667, 390×844, and 844×390.
+- The Quick Transfer sign-in task is centered in the usable area, and narrow screens no longer repeat the heading icon. Closing Transfer restores the exact category and list visibility that existed before opening, avoiding an empty category bar or list flash.
+
+## Verification boundary
+
+Exact CDP-size review covers the Resources list, Transfer sign-in, and returned Resources states in Chinese, English, and Japanese, with Home and Games used as same-shell references; all 58 controlled checks pass across 359×500, 375×667, 390×844, 760×900, 844×390, and 1280×720. Headless screenshots are not real-device or complete screen-reader certification. No production data was accessed, and nothing was pushed or deployed.', '2026-07-18T15:35:00.000Z', '2026-07-18T15:35:00.000Z'),
+  ('seed-update-2026-07-18-resource-icons-layout-ja', 'seed-update-2026-07-18-resource-icons-layout', 'ja', 'リソースのアイコンとレイアウト修正', '一時転送のアイコン atlas 全体に残っていたマゼンタ背景を除去し、リソースカードとログイン画面を整理しました。転送を閉じるとリソース一覧の状態を正確に復元し、安全性、API、データ境界は変更していません。', '# リソースのアイコンとレイアウト修正
+
+今回は、リソース画面で目立っていたアイコン異常、カードの間隔、一時転送から戻る際の状態を重点的に再確認しました。既存の Windows XP、Pixel Art、Y2K の表現は維持しています。
+
+## 透明で検証可能なアイコン素材
+
+- 一時転送の原画はマゼンタキー付きの素材であり、そのまま本番 atlas に縮小できません。現在はソフトなキー処理と輪郭の色除去を行ってから、168×168 の RGBA 透明 atlas を生成します。
+- 16 個すべての sprite cell に透明な四隅と可視ピクセル比率の検査を追加し、入口だけを直してルーム、ファイル、メディア、操作アイコンに紫色の四角が残ることを防ぎます。
+- 公開素材の走査では、同じ問題を持つ別の実行時素材は見つかりませんでした。マゼンタ原画はビルド入力としてのみ保持し、ページからは参照しません。
+
+## 整理されたリソースと転送レイアウト
+
+- デスクトップのリソースウィンドウを隣接 App と調和する幅にし、カードは固定された空白ではなく実際の内容に合わせて伸びます。現在利用可能な 2 枚のカードから重複する「利用可能」表示も外しました。
+- モバイルカードの強制高さを廃止し、359×500、375×667、390×844、844×390 で説明、メタ情報、タグ、44px 以上の操作を維持します。
+- 一時転送のログイン課題を利用可能領域の中央に置き、狭い画面では見出しアイコンを重複表示しません。転送を閉じると、開く前のカテゴリと一覧の表示状態を正確に復元し、空のカテゴリバーや一覧のちらつきを防ぎます。
+
+## 検証範囲
+
+正確な CDP サイズで、中国語・英語・日本語のリソース一覧、転送ログイン、リソースへ戻った状態を確認し、同じシェルの Home と Games も参照しました。359×500、375×667、390×844、760×900、844×390、1280×720 の計 58 件の制御済み検査はすべて成功しています。Headless のスクリーンショットは実機や完全なスクリーンリーダー認証ではありません。本番データへの接続、push、deploy は行っていません。', '2026-07-18T15:35:00.000Z', '2026-07-18T15:35:00.000Z')
+on conflict(translation_id) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-07-18-public-site-100-complete',
+  '2026-07-18-public-site-100-complete',
+  'site-updates',
+  '["performance","UX","accessibility","mobile","security","QA"]',
+  '', 'published', 1, 0,
+  '2026-07-18T04:00:00.000Z',
+  '2026-07-18T04:00:00.000Z',
+  '2026-07-18T04:00:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-07-18-public-site-100-complete-zh', 'seed-update-2026-07-18-public-site-100-complete', 'zh', '公开主站 100 项优化与稳定性复查完成', '公开主站 100 项优化及稳定性复查已完成：修复冷启动 Chat 图标、短屏头像和移动 Dock 切换闪失，并以全动效中间帧、快速连续切换及竖横屏截图重新验证。', '# 公开主站 100 项优化与稳定性复查完成
+
+公开主站的 UI、UX、动效、视觉、性能、响应式、无障碍、安全与发布质量 100 项计划已经完整收口，并继续保持 Windows XP、Pixel Art 与 Y2K 的既有身份。
+
+## 更轻且可恢复
+
+- 四时段壁纸、窗口背景、入口图标和 Quick Transfer 图集完成按槽位压缩，并提供响应式 AVIF / WebP 与可靠 fallback；首屏只预加载当前主题和当前壳。
+- Knowledge、Videos、Games 与社交数据使用有界 ETag / SWR / last-known-good 缓存。短暂失败保留已成功内容，用户重试可绕过新鲜缓存。
+- 生产构建提供内容哈希、白名单 manifest、可定位 sourcemap 与分层缓存策略，同时不改变根目录 Git 自动部署链。
+
+## 核心流程与移动体验
+
+- Home 欢迎、最近更新、桌面图标键盘导航、顶栏和 About 外链更清楚；Knowledge、文章、视频、资源、游戏与可选 Blog 的加载、空态、恢复、焦点和滚动路径统一。
+- Chat 与 Quick Transfer 完成增量游标、单飞刷新、稳定 DOM、草稿保护、幂等、队列背压、取消/重试和旧 D1 安全迁移，并继续遵守 HttpOnly、纯文本渲染与隐私边界。
+- 359×500、375×667、390×844、844×390 的中英日布局覆盖 App 高度、卡片包含、44px 触控、Dock、forced-colors、日文断行与四档动效。
+
+## 稳定性复查补充
+
+- Home 的 Chat 图标改由始终加载的主壳样式提供，聊天室标题栏与短屏头像统一使用真实 Chat 资产。
+- 移动页面切换改为只动画当前 App 表面，不再让整页快照覆盖固定顶栏与 Dock；40ms 快速连续切换仍保持最终路由和选中状态一致。
+- 在完整动效下采集切换前、起始、60ms、140ms 与稳定帧，并复拍 359×500、390×844、844×390 竖横屏布局。
+
+## 验证边界
+
+本地发布闸门覆盖自动化测试、公共模块图、静态构建检查、可复现生产构建、本地 D1 迁移和隔离 Headless UI 矩阵。Headless 结果不等同真实设备或完整读屏器认证；本轮未连接生产数据，未 push，也未 deploy。', '2026-07-18T04:00:00.000Z', '2026-07-18T04:00:00.000Z'),
+  ('seed-update-2026-07-18-public-site-100-complete-en', 'seed-update-2026-07-18-public-site-100-complete', 'en', '100 Public-Site Improvements and Stability Recheck', 'All 100 public-site improvements and the stability recheck are complete: cold-start Chat icons, short-screen avatars, and mobile Dock flicker are fixed and reverified with full-motion intermediate frames, rapid switching, and portrait/landscape screenshots.', '# 100 Public-Site Improvements and Stability Recheck
+
+The 100-item public-site plan for UI, UX, motion, visuals, performance, responsive behavior, accessibility, security, and release quality is complete while preserving the established Windows XP, Pixel Art, and Y2K identity.
+
+## Lighter and recoverable
+
+- Four-time-period wallpapers, window backdrops, entry icons, and the Quick Transfer atlas are compressed for their real slots, with responsive AVIF / WebP and reliable fallbacks. The first view preloads only the current theme and shell.
+- Knowledge, Videos, Games, and social data use bounded ETag / SWR / last-known-good caching. Temporary failures retain successful content, and an explicit retry bypasses fresh cache.
+- The production build provides content hashes, an allowlisted manifest, traceable sourcemaps, and layered cache policy without replacing the repository-root Git deployment chain.
+
+## Core flows and mobile experience
+
+- Home welcome content, recent updates, desktop-icon keyboard navigation, top chrome, and About links are clearer. Knowledge, articles, videos, resources, games, and the optional Blog share consistent loading, empty, recovery, focus, and scroll behavior.
+- Chat and Quick Transfer add incremental cursors, single-flight refresh, stable DOM updates, draft safety, idempotency, queue backpressure, cancel/retry, and safe legacy D1 migration while retaining HttpOnly, plain-text rendering, and privacy boundaries.
+- The Chinese, English, and Japanese matrix at 359×500, 375×667, 390×844, and 844×390 covers App height, card containment, 44px targets, Dock behavior, forced colors, Japanese line breaking, and four motion tiers.
+
+## Stability recheck addendum
+
+- The Home Chat icon now belongs to the always-loaded shell stylesheet; the Chat titlebar and short-screen avatar use the real Chat asset consistently.
+- Mobile page navigation animates only the active App surface, so a full-page snapshot can no longer cover the fixed topbar or Dock. A 40ms rapid double switch still settles on the correct final route and selected item.
+- Full-motion evidence captures before, start, 60ms, 140ms, and stable frames, with additional portrait and landscape checks at 359×500, 390×844, and 844×390.
+
+## Verification boundary
+
+Local release gates cover automated tests, the public module graph, static build checks, reproducible production output, local D1 migration, and an isolated Headless UI matrix. Headless results are not real-device or complete screen-reader certification. No production data was accessed, and nothing was pushed or deployed.', '2026-07-18T04:00:00.000Z', '2026-07-18T04:00:00.000Z'),
+  ('seed-update-2026-07-18-public-site-100-complete-ja', 'seed-update-2026-07-18-public-site-100-complete', 'ja', '公開サイト 100 項目の改善と安定性再確認', '公開サイト 100 項目の改善と安定性再確認を完了しました。初回表示の Chat アイコン、短画面のアバター、モバイル Dock の切替時の消失を修正し、フルモーションの中間フレーム、連続切替、縦横画面のスクリーンショットで再検証しています。', '# 公開サイト 100 項目の改善と安定性再確認
+
+UI、UX、モーション、ビジュアル、性能、レスポンシブ、アクセシビリティ、安全性、リリース品質に関する公開サイトの 100 項目を完了しました。既存の Windows XP、Pixel Art、Y2K の表現は維持しています。
+
+## 軽量で復旧可能
+
+- 4 時間帯の壁紙、ウィンドウ背景、入口アイコン、Quick Transfer atlas を実際の表示枠に合わせて圧縮し、レスポンシブ AVIF / WebP と確実な fallback を用意しました。初期表示は現在のテーマとシェルだけを先読みします。
+- Knowledge、Videos、Games、ソーシャルデータは上限付き ETag / SWR / last-known-good キャッシュを使用します。一時的な失敗でも成功済み内容を保持し、明示的な再試行は新鮮なキャッシュを迂回します。
+- 本番ビルドは内容ハッシュ、許可リスト manifest、追跡可能な sourcemap、階層別キャッシュ方針を提供し、リポジトリ直下の Git デプロイ経路は変更しません。
+
+## 主要フローとモバイル体験
+
+- Home の歓迎表示、最近の更新、デスクトップアイコンのキーボード操作、上部 UI、About リンクを整理しました。Knowledge、記事、動画、リソース、ゲーム、任意の Blog は読み込み、空状態、復旧、フォーカス、スクロールを統一しています。
+- Chat と Quick Transfer は増分カーソル、単一通信、安定 DOM、下書き保護、冪等性、キュー制御、取消／再試行、旧 D1 の安全な移行を備え、HttpOnly、プレーンテキスト描画、プライバシー境界を維持します。
+- 359×500、375×667、390×844、844×390 の中英日マトリクスで App 高さ、カード内包、44px 操作、Dock、forced-colors、日本語改行、4 段階モーションを確認します。
+
+## 安定性再確認の追記
+
+- Home の Chat アイコンを常時読み込むシェル用スタイルに移し、Chat のタイトルバーと短画面のアバターで実際の Chat 素材を統一して使用します。
+- モバイルの画面遷移は現在の App 面だけをアニメーションし、全画面スナップショットが固定トップバーや Dock を覆わないようにしました。40ms 間隔の連続切替でも最終ルートと選択状態が一致します。
+- フルモーションで切替前、開始、60ms、140ms、安定後のフレームを収集し、359×500、390×844、844×390 の縦横画面も再確認しました。
+
+## 検証範囲
+
+ローカルのリリースゲートは自動テスト、公開モジュールグラフ、静的ビルド検査、再現可能な本番成果物、ローカル D1 移行、分離 Headless UI マトリクスを対象にします。Headless の結果は実機や完全なスクリーンリーダー認証ではありません。本番データへの接続、push、deploy は行っていません。', '2026-07-18T04:00:00.000Z', '2026-07-18T04:00:00.000Z')
+on conflict(translation_id) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-07-18-reliable-forms-reading-chat',
+  '2026-07-18-reliable-forms-reading-chat',
+  'site-updates',
+  '["account","reading","chat","privacy","accessibility","QA"]',
+  '', 'published', 1, 0,
+  '2026-07-18T00:26:00.000Z',
+  '2026-07-18T00:26:00.000Z',
+  '2026-07-18T00:26:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-07-18-reliable-forms-reading-chat-zh', 'seed-update-2026-07-18-reliable-forms-reading-chat', 'zh', '账号、阅读与聊天可靠性升级', '账号表单改为稳定 DOM 与明确登录/注册模式，文章只保留正文滚动并使用 4px 进度条；Chat 保留在途新草稿和私聊安全说明，公共隐私闸门同步加固。', '# 账号、阅读与聊天可靠性升级
+
+本轮集中修复公开主站中最容易造成输入丢失、内容遮挡和隐私回归的路径，同时延续 Windows XP、Pixel Art 与 Y2K 的既有界面语言。
+
+## 稳定且可恢复的账号流程
+
+- 账号表单现在只创建一次稳定 DOM。身份初始化、语言切换、模式切换、开关弹层和请求失败不会再重建字段或清空正在编辑的邮箱与密码。
+- 登录与注册成为明确模式，每种模式只有一个主提交动作；可见 label、正确 autocomplete、密码显示、注册确认与匹配校验均已补齐。
+- 字段错误、忙碌原因和退出失败会真实呈现并把焦点移到可恢复位置。Escape、外点与移动 44px 关闭入口都会把焦点归还触发源。
+- Quick Transfer 的未登录状态压缩为单一任务卡，登录后回到原 Transfer 上下文，不再重复表达门槛或使用含糊的红色关闭动作。
+
+## 不遮挡的文章与不丢草稿的 Chat
+
+- 文章阅读时 document 高度严格等于视口，正文详情成为唯一纵向滚动所有者；桌面与移动端的顶栏、任务栏和返回入口保持稳定。
+- 原先覆盖正文的阅读进度层改为窗口内状态，实际进度轨道为 4px、与正文零交叠，屏幕可见百分比和读屏数值误差不超过 2%。
+- Chat 发送期间只锁定提交按钮，输入框与软键盘继续可用；旧请求只会清空未被编辑过的原始草稿，不会删除用户在等待期间输入的新文字。
+- 359×500 下普通房日志保持 177px，私聊表单展开时保持至少 119px；口令用途、最短长度与风险说明通过 44px 折叠入口可达且不覆盖日志。
+
+## 隐私边界与验证
+
+公开 Chat 不再为旧消息回退暴露服务端隐藏访客标识。新增闸门同时约束安全 DOM、密码与草稿的存储/日志/遥测边界，以及外链、媒体、iframe 与 Transfer 片段白名单。当前 112/112 自动化测试、完整构建和 140/140 受控 Headless Chrome 审计均已通过；未访问生产数据，未 push，未 deploy。', '2026-07-18T00:26:00.000Z', '2026-07-18T00:26:00.000Z'),
+  ('seed-update-2026-07-18-reliable-forms-reading-chat-en', 'seed-update-2026-07-18-reliable-forms-reading-chat', 'en', 'More Reliable Account, Reading, and Chat Flows', 'Account forms now keep a stable DOM with explicit sign-in and registration modes; articles use one content scroller and a 4px progress track; Chat preserves in-flight drafts and private-room safety guidance while public privacy gates are tightened.', '# More Reliable Account, Reading, and Chat Flows
+
+This release fixes the public paths most likely to lose editing state, cover content, or regress privacy while retaining the site''s established Windows XP, Pixel Art, and Y2K language.
+
+## Stable and recoverable account work
+
+- The account form now creates one stable DOM tree. Session initialization, language and mode changes, opening or closing the popover, and request failures no longer rebuild fields or clear an email or password being edited.
+- Sign-in and registration are explicit modes with one primary submit action each. Persistent labels, correct autocomplete values, password reveal controls, confirmation, and matching validation are included.
+- Field errors, busy reasons, and logout failures report the real state and move focus to a recoverable target. Escape, outside clicks, and the mobile 44px close action return focus to the originating control.
+- Quick Transfer reduces its signed-out gate to one task card and returns to the original Transfer context after sign-in, without duplicated instructions or an ambiguous red close action.
+
+## Unobstructed articles and draft-safe Chat
+
+- While reading, the document height exactly matches the viewport and the article detail is the only vertical scroll owner. Desktop and mobile chrome, taskbar, and return control stay stable.
+- The former content-covering progress overlay is now an in-window status with a 4px track and zero article overlap. Its visible percentage and screen-reader value stay within two percentage points.
+- During Chat sending, only the submit action is locked. The input and on-screen keyboard remain available, and an older request clears only an untouched submitted draft, never text entered while waiting.
+- At 359×500, the public-room log remains 177px and the private-room state remains at least 119px. Password purpose, minimum length, and risk guidance are reachable through a 44px disclosure without covering the log.
+
+## Privacy boundary and verification
+
+Public Chat no longer falls back to a hidden server visitor identifier for legacy messages. New gates also lock safe DOM rendering, password and draft storage/logging/telemetry boundaries, and the narrow allowlists for links, media, iframes, and the Transfer fragment. All 112/112 automated tests, the complete build, and all 140/140 controlled Headless Chrome checks pass. No production data was accessed, and nothing was pushed or deployed.', '2026-07-18T00:26:00.000Z', '2026-07-18T00:26:00.000Z'),
+  ('seed-update-2026-07-18-reliable-forms-reading-chat-ja', 'seed-update-2026-07-18-reliable-forms-reading-chat', 'ja', 'アカウント・閲覧・Chat の信頼性向上', 'アカウントフォームを安定 DOM と明確なログイン／登録モードに変更し、記事は一つの本文スクロールと 4px の進捗線を使用します。Chat は送信中の新しい下書きと非公開ルームの安全説明を保持し、公開プライバシー境界も強化しました。', '# アカウント・閲覧・Chat の信頼性向上
+
+今回の更新では、入力の消失、本文の遮蔽、プライバシー回帰が起きやすい公開経路を修正し、既存の Windows XP、Pixel Art、Y2K の表現を維持しました。
+
+## 安定して復旧できるアカウント操作
+
+- アカウントフォームは一度だけ安定した DOM を作成します。セッション初期化、言語・モード切替、ポップオーバーの開閉、通信失敗で編集中のメールやパスワードを再作成・消去しません。
+- ログインと登録を明確なモードに分け、各モードの主要送信操作を一つにしました。常時表示ラベル、適切な autocomplete、パスワード表示、登録確認、一致検証を備えます。
+- フィールドエラー、処理中の理由、ログアウト失敗を実状態のまま通知し、復旧可能な位置へフォーカスを移します。Escape、外側クリック、モバイルの 44px 閉じる操作は起点へフォーカスを返します。
+- Quick Transfer の未ログイン表示は一つのタスクカードに整理し、ログイン後は元の Transfer 文脈へ戻ります。重複説明や曖昧な赤い閉じる操作は使用しません。
+
+## 本文を隠さない記事と下書きを守る Chat
+
+- 記事閲覧中は document の高さをビューポートと一致させ、記事詳細だけを縦スクロール所有者にします。デスクトップとモバイルの上部 UI、タスクバー、戻る操作は安定します。
+- 本文を覆っていた進捗レイヤーをウィンドウ内の状態表示へ変更しました。実際の進捗線は 4px で本文との重なりはなく、表示値と読み上げ値の誤差は 2 ポイント以内です。
+- Chat の送信中は送信操作だけをロックし、入力欄と画面キーボードは使い続けられます。古い要求が消去できるのは未編集の送信済み下書きだけで、待機中に入力した新しい文章は失われません。
+- 359×500 では公開ルームのログを 177px、非公開ルームを 119px 以上に保ちます。パスワードの用途、最短長、危険性の説明は 44px の開閉操作から到達でき、ログを覆いません。
+
+## プライバシー境界と検証
+
+公開 Chat は古いメッセージでもサーバー内部の訪問者 ID へフォールバックしません。安全な DOM、パスワードと下書きの保存・ログ・テレメトリ境界、外部リンク、メディア、iframe、Transfer fragment の限定許可も自動検査で固定しました。112/112 の自動テスト、完全ビルド、140/140 の制御済み Headless Chrome 監査が成功しています。本番データへの接続、push、deploy は行っていません。', '2026-07-18T00:26:00.000Z', '2026-07-18T00:26:00.000Z')
+on conflict(translation_id) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-07-18-route-lazy-transfer',
+  '2026-07-18-route-lazy-transfer',
+  'site-updates',
+  '["performance","lazy-loading","routes","transfer","UX","QA"]',
+  '', 'published', 1, 0,
+  '2026-07-17T23:35:00.000Z',
+  '2026-07-17T23:35:00.000Z',
+  '2026-07-17T23:35:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-07-18-route-lazy-transfer-zh', 'seed-update-2026-07-18-route-lazy-transfer', 'zh', '路由与临时互传按需加载', 'Home 初始数据缩至约 8 KB 的五条更新摘要；五个业务路由与四份重样式首次进入时加载并复用，Quick Transfer 只在真实 CTA 点击后加载完整链路，失败可重试且离开不误初始化。', '# 路由与临时互传按需加载
+
+本轮把公开主站的非首屏业务与临时互传改为真正按需加载，同时保持 Windows XP、Pixel Art 与 Y2K 的视觉、三语界面和既有安全边界。
+
+## 更轻的 Home 与可复用路由
+
+- Home 初始数据只保留约 8 KB 的五条更新摘要，不再携带完整更新正文或未进入路由的业务数据。
+- Knowledge、Videos、Resources、Games 与 Chat 的 JavaScript 在首次进入对应路由时加载；Knowledge、Videos、Games 与 Chat 的四份重路由 CSS 同步按需加载。
+- 模块、样式和初始化承诺会被缓存并复用，返回已访问路由不会重复下载、重复初始化或产生闪烁。
+
+## 点击后才启动 Quick Transfer
+
+- Quick Transfer 的加载器、CSS、客户端、界面片段和 API 链路只在用户真实点击资源卡 CTA 后启动；点击前没有完整 DOM、轮询或 Transfer API 请求。
+- 首次加载保留 XP 风格进度与明确失败状态，失败后可以重试。若加载期间离开 Resources，竞态结果会被丢弃，不会在非活动路由初始化。
+- HttpOnly 会话、AES-GCM、上传与配额边界保持不变；访客内容仍使用安全 DOM API，三语文案完整保留。
+
+## 验证边界
+
+当前 97/97 自动化测试和完整构建已通过；Headless Chrome 精确视口与按需加载审计 137/137 通过。本批未访问生产数据，未 push，也未 deploy。', '2026-07-17T23:35:00.000Z', '2026-07-17T23:35:00.000Z'),
+  ('seed-update-2026-07-18-route-lazy-transfer-en', 'seed-update-2026-07-18-route-lazy-transfer', 'en', 'On-Demand Routes and Quick Transfer', 'Home now starts with about 8 KB of five update summaries; five route modules and four heavy styles load once on first entry, while Quick Transfer loads its full chain only after a real CTA click with retry-safe, leave-safe initialization.', '# On-Demand Routes and Quick Transfer
+
+This release moves non-Home work and Quick Transfer behind real demand boundaries while preserving the public site''s Windows XP, Pixel Art, and Y2K visuals, trilingual interface, and existing security model.
+
+## A lighter Home and reusable routes
+
+- Home starts with only about 8 KB containing five update summaries. Full update bodies and unvisited route data are no longer part of its initial data.
+- JavaScript for Knowledge, Videos, Resources, Games, and Chat loads on the first entry to each route. Four heavy route styles for Knowledge, Videos, Games, and Chat load on the same demand boundary.
+- Module, style, and initialization promises are cached and reused, so returning to a visited route does not download or initialize it again and does not introduce a loading flicker.
+
+## Quick Transfer starts after a real click
+
+- The Quick Transfer loader, CSS, client, UI fragment, and API chain start only after the user actually clicks its resource-card CTA. Before that click there is no complete Transfer DOM, polling, or Transfer API request.
+- First load keeps an XP-style progress state and an explicit retryable failure state. If the user leaves Resources during loading, the stale result is discarded and cannot initialize on an inactive route.
+- HttpOnly sessions, AES-GCM, upload, and quota boundaries remain unchanged. Visitor content continues to use safe DOM APIs, and all three interface languages remain available.
+
+## Verification boundary
+
+All 97/97 automated tests and the complete build pass, together with all 137/137 exact-viewport and demand-loading Headless Chrome audit checks. No production data was accessed, and nothing was pushed or deployed.', '2026-07-17T23:35:00.000Z', '2026-07-17T23:35:00.000Z'),
+  ('seed-update-2026-07-18-route-lazy-transfer-ja', 'seed-update-2026-07-18-route-lazy-transfer', 'ja', 'ルートと一時転送のオンデマンド読込', 'Home の初期データを約 8 KB・5 件の更新要約に縮小し、5 つのルートモジュールと 4 つの重い CSS は初回進入時だけ読み込みます。一時転送は実際の CTA 操作後に全構成を読み込み、再試行と離脱競合にも対応します。', '# ルートと一時転送のオンデマンド読込
+
+今回の更新では、Home 以外の処理と一時転送を実際の利用時だけ読み込む構成に変更しました。公開サイトの Windows XP、Pixel Art、Y2K の表現、3 言語 UI、既存の安全境界は維持します。
+
+## 軽量な Home と再利用可能なルート
+
+- Home の初期データは約 8 KB、5 件の更新要約だけになり、更新の全文や未訪問ルートの業務データを含みません。
+- Knowledge、Videos、Resources、Games、Chat の JavaScript は各ルートへの初回進入時に読み込みます。Knowledge、Videos、Games、Chat の 4 つの重いルート CSS も同じ境界で読み込みます。
+- モジュール、スタイル、初期化 Promise をキャッシュして再利用するため、訪問済みルートへ戻っても再ダウンロード、重複初期化、読み込み時のちらつきは発生しません。
+
+## 実際のクリック後に一時転送を開始
+
+- 一時転送の loader、CSS、client、UI fragment、API 経路は、利用者がリソースカードの CTA を実際にクリックした後だけ開始します。クリック前には完全な Transfer DOM、ポーリング、Transfer API 通信はありません。
+- 初回読込には XP 形式の進捗表示と再試行可能な失敗状態があります。読込中に Resources から離れた場合、古い結果を破棄し、非アクティブルートでは初期化しません。
+- HttpOnly セッション、AES-GCM、アップロード、容量制限の境界は変更しません。訪問者データには安全な DOM API を使い続け、3 言語表示も維持します。
+
+## 検証範囲
+
+現在 97/97 の自動テストと完全ビルドが成功し、正確なビューポートとオンデマンド読込を検証する Headless Chrome 監査も 137/137 で成功しました。本番データにはアクセスせず、push と deploy も行っていません。', '2026-07-17T23:35:00.000Z', '2026-07-17T23:35:00.000Z')
+on conflict(translation_id) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-07-18-mobile-viewport-keyboard',
+  '2026-07-18-mobile-viewport-keyboard',
+  'site-updates',
+  '["mobile","viewport","keyboard","focus","accessibility","QA"]',
+  '', 'published', 1, 0,
+  '2026-07-17T22:08:00.000Z',
+  '2026-07-17T22:08:00.000Z',
+  '2026-07-17T22:08:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-07-18-mobile-viewport-keyboard-zh', 'seed-update-2026-07-18-mobile-viewport-keyboard', 'zh', '移动视口与软键盘统一避让', '移动端现在统一处理安全区、地址栏收放、旋转、页面缩放与软键盘状态；Chat、账号、搜索和 Transfer 会在同一滚动容器内保持输入、提交与反馈可见。', '# 移动视口与软键盘统一避让
+
+本轮把公开主站移动壳的安全区、地址栏收放、旋转、页面缩放和软键盘避让收敛到唯一视口状态源，同时保留 Windows XP、Pixel Art 与 Y2K 的固定壳构图。
+
+## 一个视口状态源
+
+- FramePipeline 现在同时记录布局与可见视口宽高、偏移、页面缩放、方向、键盘状态，并区分 `stable`、`browser-ui`、`keyboard` 与 `zoom`。
+- 每个方向维护独立稳定高度基线；只有编辑控件聚焦且高度减少至少 96px 或 18% 时才进入键盘态。键盘关闭前会保持状态，恢复后布局与 Dock 自动回到用户原来的展开或折叠偏好。
+- 页面缩放使用布局视口尺寸并把键盘偏移保持为 0，避免把双指缩放误判成软键盘。统一 data 属性和 CSS 变量在同一写阶段提交。
+
+## 同一滚动所有者内的完整操作
+
+- Chat 输入、发送与反馈，私聊口令与进入动作，Knowledge 搜索、账号表单，以及 Transfer 房间入口和 composer 都按组合矩形测量。
+- 聚焦恢复只修改最近真实纵向滚动容器的 `scrollTop`，不会移动 document、Home、Appbar 或整站壳；键盘打开时 Dock 仅临时退出并释放占位。
+- 账号提交错误改为原地状态更新，保留邮箱、密码、焦点和键盘。Transfer 删除了自己的 viewport 订阅、几何恢复与 `scrollIntoView`，统一委托移动壳。
+
+## 验证边界
+
+受控 Headless Chrome 使用高度收缩、浏览器 UI 高度代理、方向往返、原生 page scale、safe-area 变量代理及 Dock 两种偏好验证状态、滚动所有者和控件可见性。它不等同真实 iOS / Android 软键盘、刘海安全区或浏览器地址栏认证，因此报告明确保留 `realSoftKeyboardTested:false`、`realSafeAreaTested:false` 和 `realBrowserChromeTested:false`。本批未连接生产数据，也未推送或部署。', '2026-07-17T22:08:00.000Z', '2026-07-17T22:08:00.000Z'),
+  ('seed-update-2026-07-18-mobile-viewport-keyboard-en', 'seed-update-2026-07-18-mobile-viewport-keyboard', 'en', 'Unified Mobile Viewport and Keyboard Avoidance', 'Mobile safe areas, browser chrome, rotation, page zoom, and on-screen keyboard states now share one viewport model, keeping Chat, account, search, and Transfer controls visible inside one scroll owner.', '# Unified Mobile Viewport and Keyboard Avoidance
+
+This release brings safe areas, browser chrome changes, rotation, page zoom, and on-screen keyboard avoidance into the public mobile shell''s single viewport state source while preserving its fixed Windows XP, Pixel Art, and Y2K composition.
+
+## One viewport state source
+
+- FramePipeline now records layout and visual dimensions, offsets, page scale, orientation, and keyboard state, classifying each frame as `stable`, `browser-ui`, `keyboard`, or `zoom`.
+- Each orientation keeps its own stable-height baseline. Keyboard mode requires an editing control to have focus and a reduction of at least 96px or 18%. The state remains until height recovers, after which layout and the Dock return to the user''s original expanded or collapsed preference.
+- Page zoom uses layout viewport dimensions and keeps keyboard offset at zero, so pinch zoom is not mistaken for an on-screen keyboard. Shared data attributes and CSS variables commit in the same write phase.
+
+## Complete actions inside one scroll owner
+
+- Chat input, send, and feedback; private-room password and enter action; Knowledge search; account forms; and Transfer room entry and composer are measured as contextual groups.
+- Focus recovery mutates only the nearest real vertical owner''s `scrollTop`. It never moves the document, Home, App bar, or whole site shell. While the keyboard is open, the Dock temporarily leaves view and releases its reserved space.
+- Account submission errors now update status in place, preserving email, password, focus, and keyboard. Transfer removed its private viewport subscription, geometry recovery, and `scrollIntoView`, delegating to the mobile shell instead.
+
+## Verification boundary
+
+Controlled Headless Chrome uses height contraction, a browser-UI height proxy, orientation round trips, native page scale, safe-area variable proxies, and both Dock preferences to verify state, scroll ownership, and control visibility. This is not certification on real iOS or Android keyboards, notches, or browser chrome, so the report explicitly keeps `realSoftKeyboardTested:false`, `realSafeAreaTested:false`, and `realBrowserChromeTested:false`. No production data is accessed, and nothing is pushed or deployed.', '2026-07-17T22:08:00.000Z', '2026-07-17T22:08:00.000Z'),
+  ('seed-update-2026-07-18-mobile-viewport-keyboard-ja', 'seed-update-2026-07-18-mobile-viewport-keyboard', 'ja', 'モバイルビューポートとキーボード回避の統合', 'モバイルのセーフエリア、ブラウザー UI、回転、ページ拡大、画面キーボードを一つのビューポートモデルで扱い、Chat、アカウント、検索、Transfer の操作を同じスクロール領域内で表示します。', '# モバイルビューポートとキーボード回避の統合
+
+今回の更新では、公開サイトの固定モバイルシェルを維持したまま、セーフエリア、ブラウザー UI の伸縮、回転、ページ拡大、画面キーボード回避を一つのビューポート状態源に統合しました。Windows XP、Pixel Art、Y2K の構図は保持します。
+
+## 一つのビューポート状態源
+
+- FramePipeline はレイアウトと表示ビューポートの寸法、オフセット、ページ倍率、向き、キーボード状態を記録し、`stable`、`browser-ui`、`keyboard`、`zoom` を区別します。
+- 縦向きと横向きは別々の安定高さ基準を持ちます。編集操作にフォーカスがあり、高さが 96px または 18% 以上減った場合だけキーボード状態になります。高さが戻るまで状態を保持し、復元後はレイアウトと Dock が利用者の元の展開・折りたたみ設定へ戻ります。
+- ページ拡大時はレイアウトビューポートを使い、キーボードオフセットを 0 に保つため、ピンチズームを画面キーボードと誤判定しません。共通 data 属性と CSS 変数は同じ書き込み段階で反映されます。
+
+## 同じスクロール所有者内で操作を表示
+
+- Chat の入力・送信・フィードバック、非公開ルームのパスワードと入室操作、Knowledge 検索、アカウントフォーム、Transfer のルーム入口と composer を操作単位の矩形として測定します。
+- フォーカス復元は最寄りの実際の縦スクロール所有者の `scrollTop` だけを変更します。document、Home、App バー、サイト全体は移動しません。キーボード表示中は Dock だけが一時的に退避し、予約領域を解放します。
+- アカウント送信エラーはその場で状態だけを更新し、メール、パスワード、フォーカス、キーボードを保持します。Transfer の独自 viewport 購読、形状復元、`scrollIntoView` は削除し、モバイルシェルへ統一しました。
+
+## 検証範囲
+
+制御した Headless Chrome で、高さ縮小、ブラウザー UI 高さの代理、画面方向の往復、ネイティブ page scale、safe-area 変数の代理、Dock の二つの設定を確認します。実機 iOS / Android のキーボード、ノッチ、ブラウザー UI の認証ではないため、レポートは `realSoftKeyboardTested:false`、`realSafeAreaTested:false`、`realBrowserChromeTested:false` を明示します。本番データには接続せず、push や deploy も行っていません。', '2026-07-17T22:08:00.000Z', '2026-07-17T22:08:00.000Z')
+on conflict(translation_id) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-07-18-mobile-scroll-recovery',
+  '2026-07-18-mobile-scroll-recovery',
+  'site-updates',
+  '["mobile","scroll","focus","accessibility","QA"]',
+  '', 'published', 1, 0,
+  '2026-07-17T21:32:00.000Z',
+  '2026-07-17T21:32:00.000Z',
+  '2026-07-17T21:32:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-07-18-mobile-scroll-recovery-zh', 'seed-update-2026-07-18-mobile-scroll-recovery', 'zh', '移动固定壳的滚动与焦点恢复', '移动 App 内容增长或可见高度受限时，会保留真实纵向滚动逃生路径；聚焦控件由统一帧管线滚入最近内容容器，同时不移动 Home、顶栏或 Dock。', '# 移动固定壳的滚动与焦点恢复
+
+本轮为公开主站的固定移动壳补齐内容增长与受限高度下的恢复路径，同时保留 Home 固定桌面构图、顶部 Appbar 和底部 Dock。
+
+## 真实滚动所有者
+
+- 非 Home 的活动 App 窗口现在提供休眠式纵向溢出兜底；只有内部内容确实增长时才成为可用滚动路径，默认视口和布局尺寸不变。
+- Knowledge、Videos、Resources、Games、Blog、About 与 Chat 的既有内部滚动区域允许在到达边界后把剩余滚动交给活动窗口。文章阅读态继续由正文详情独占滚动，避免重新出现双重滚动。
+- Quick Transfer 的登录、房间入口与房间内容沿用自身安全流程，只补齐纵向滚动链和聚焦留白，不改变会话、加密或上传协议。
+
+## 焦点恢复
+
+- 移动 App 的 `focusin` 会通过唯一帧管线测量最近一个真正可滚动的祖先和当前可见高度，再只写入该容器的 `scrollTop`。
+- Home 仅允许账号浮层参与这条恢复路径；普通 Home 构图、页面文档、Appbar 和 Dock 都不会被焦点恢复移动。
+- Transfer 继续使用自己的聚焦恢复逻辑，不建立第二套原生 VisualViewport 监听。
+
+## 验证边界
+
+受控 Headless Chrome 以内容增长、390×500 受限高度、2 倍页面缩放以及既有精确视口验证真实滚动所有者、焦点可见性、文档滚动为 0 与默认构图不回归。该测试不模拟真实 iOS / Android 屏幕软键盘；完整地址栏、安全区、旋转和键盘避让继续由后续专项处理。本批未连接生产数据，也未发布或部署。', '2026-07-17T21:32:00.000Z', '2026-07-17T21:32:00.000Z'),
+  ('seed-update-2026-07-18-mobile-scroll-recovery-en', 'seed-update-2026-07-18-mobile-scroll-recovery', 'en', 'Mobile Fixed-Shell Scroll and Focus Recovery', 'Growing mobile App content and constrained viewports now retain a real vertical escape path, while the frame pipeline reveals focused controls inside the nearest content scroller without moving Home, the App bar, or the Dock.', '# Mobile Fixed-Shell Scroll and Focus Recovery
+
+This release gives the public mobile fixed shell a recovery path for growing content and constrained height while preserving the fixed Home desktop composition, top App bar, and bottom Dock.
+
+## Real scroll ownership
+
+- The active non-Home App window now has a dormant vertical overflow fallback. It becomes a usable path only when its content truly grows, so default viewport geometry and layout dimensions remain unchanged.
+- Existing internal scrollers in Knowledge, Videos, Resources, Games, Blog, About, and Chat can hand remaining movement to the active window at their boundary. Article reading keeps the detail body as its exclusive scroll owner, preventing nested scrolling from returning.
+- Quick Transfer login, room entry, and room content retain their existing security flow. Only vertical chaining and focus padding change; session, encryption, and upload protocols do not.
+
+## Focus recovery
+
+- A mobile App `focusin` is measured through the single frame pipeline. It finds the nearest genuinely scrollable ancestor and the current visible height, then mutates only that container''s `scrollTop`.
+- On Home, only the account popover may use this recovery path. The normal Home composition, document, App bar, and Dock are never moved by focus recovery.
+- Transfer continues to use its own focused-control recovery without creating a second native VisualViewport listener.
+
+## Verification boundary
+
+Controlled Headless Chrome exercises growing content, a constrained 390×500 viewport, native 2× page scale, and the established exact viewport matrix. It verifies the real scroll owner, focused-control visibility, a zero document scroll position, and unchanged default composition. This does not emulate a real iOS or Android on-screen keyboard; complete address-bar, safe-area, rotation, and keyboard avoidance remain a follow-up. No production data, release, or deployment is involved.', '2026-07-17T21:32:00.000Z', '2026-07-17T21:32:00.000Z'),
+  ('seed-update-2026-07-18-mobile-scroll-recovery-ja', 'seed-update-2026-07-18-mobile-scroll-recovery', 'ja', 'モバイル固定シェルのスクロールとフォーカス復元', 'モバイル App の内容増加や表示高さの制限時にも実際の縦スクロール経路を維持し、統合フレーム処理が Home、App バー、Dock を動かさず最寄りのコンテンツ領域へフォーカス中の操作を表示します。', '# モバイル固定シェルのスクロールとフォーカス復元
+
+今回の更新では、公開サイトの固定モバイルシェルに、内容増加と高さ制限時の復元経路を追加しました。Home の固定デスクトップ構図、上部 App バー、下部 Dock は維持します。
+
+## 実際のスクロール所有者
+
+- Home 以外のアクティブ App ウィンドウに、待機状態の縦オーバーフロー代替経路を追加しました。実際に内容が増えた時だけ有効になり、通常のビューポート形状とレイアウト寸法は変わりません。
+- Knowledge、Videos、Resources、Games、Blog、About、Chat の既存内部スクローラーは、端に達した後の移動をアクティブウィンドウへ渡せます。記事閲覧中は本文詳細を唯一のスクロール所有者とし、二重スクロールの再発を防ぎます。
+- Quick Transfer のログイン、ルーム入口、ルーム内容は既存の安全性フローを維持します。縦方向の連鎖とフォーカス余白だけを変更し、セッション、暗号化、アップロード方式は変更しません。
+
+## フォーカス復元
+
+- モバイル App の `focusin` は唯一のフレームパイプラインで計測されます。実際にスクロール可能な最寄りの祖先と現在の可視高さを取得し、そのコンテナの `scrollTop` だけを更新します。
+- Home ではアカウントポップオーバーだけがこの復元経路を使用できます。通常の Home 構図、ドキュメント、App バー、Dock はフォーカス復元で移動しません。
+- Transfer は 2 組目のネイティブ VisualViewport リスナーを作らず、独自のフォーカス中コントロール復元を維持します。
+
+## 検証範囲
+
+制御された Headless Chrome で、内容増加、390×500 の高さ制限、ネイティブ 2 倍ページ倍率、既存の正確なビューポート行列を確認します。実際のスクロール所有者、フォーカス中操作の可視性、ドキュメントのスクロール位置 0、通常構図の非回帰を検証します。この自動化は実際の iOS / Android 画面キーボードを再現しません。完全なアドレスバー、セーフエリア、回転、キーボード回避は後続の専門作業で扱います。本番データへの接続、公開、デプロイは行っていません。', '2026-07-17T21:32:00.000Z', '2026-07-17T21:32:00.000Z')
+on conflict(translation_id) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-07-18-frame-pipeline-low-performance',
+  '2026-07-18-frame-pipeline-low-performance',
+  'site-updates',
+  '["performance","viewport","mobile","accessibility","QA"]',
+  '', 'published', 1, 0,
+  '2026-07-17T21:12:00.000Z',
+  '2026-07-17T21:12:00.000Z',
+  '2026-07-17T21:12:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-07-18-frame-pipeline-low-performance-zh', 'seed-update-2026-07-18-frame-pipeline-low-performance', 'zh', '统一帧管线与低性能绘制档', '窗口、可视视口与关键滚动测量现在由同一帧管线统一先读后写；Save-Data 和明确低配设备会启用清晰的实色低性能绘制档。', '# 统一帧管线与低性能绘制档
+
+本轮把公开主站分散的窗口、VisualViewport 与关键滚动工作收敛到一个可审计的单帧调度器，同时为节省流量和明确低配设备提供不牺牲功能与对比度的绘制降级。
+
+## 单帧先读后写
+
+- `mobile-shell.js` 现在是窗口 resize、VisualViewport resize 与 scroll 的唯一原生监听者；同一事件风暴中的同键任务只保留最后一次，并在一帧内先完成全部布局读取，再完成全部样式写入。
+- Home 壁纸舞台与桌面图标几何、Knowledge 文章进度与目录、移动 Dock、动效层和 Quick Transfer 聚焦控件都接入同一管线；离开路由会退订对应任务。
+- 视口宽高、键盘偏移和 Dock 选中面在同一帧提交。原生页面缩放比例不为 1 时，缩小的 VisualViewport 不会被误判成软键盘。
+- 构建守卫会拒绝主脚本重新增加第二套原生 viewport 监听，并检查主消费者继续遵守 keyed measure/mutate 契约。
+
+## 清晰的低性能绘制档
+
+- 浏览器启用 Save-Data，或明确报告不超过 2 个逻辑核心 / 2GiB 设备内存时进入 `low`；能力未知的设备保持 `normal`，不会被猜测性降级。
+- `low` 关闭大面积 blur、backdrop-filter、壁纸 filter、循环云层、常驻 `will-change` 与全页 View Transition，并为顶部栏、任务栏、Dock、账户层和模态遮罩提供实色高对比回退。
+- `normal` 档的 XP、Pixel Art、Y2K 壁纸、玻璃层次和交互保持不变；小图标阴影与短暂 transform/opacity 反馈继续保留。
+
+## 验证边界
+
+受控 Headless Chrome 通过 117 项检查：40 组同帧事件只产生一次读阶段与一次写阶段，390×844 / 844×390 的视口变量和 Dock 几何一致，原生 2 倍页面缩放的键盘偏移为 0，Save-Data、2 核与未知能力三种档位判定正确，低性能截图无大面积滤镜残留且文字与控件清楚。该自动化没有模拟或声称验证真实 iOS / Android 屏幕软键盘；本批未连接生产数据，也未发布或部署。', '2026-07-17T21:12:00.000Z', '2026-07-17T21:12:00.000Z'),
+  ('seed-update-2026-07-18-frame-pipeline-low-performance-en', 'seed-update-2026-07-18-frame-pipeline-low-performance', 'en', 'Unified Frame Pipeline and Low-Performance Paint Tier', 'Window, VisualViewport, and key scroll measurements now share one read-then-write frame pipeline, with a clear solid-surface tier for Save-Data and confirmed low-end devices.', '# Unified Frame Pipeline and Low-Performance Paint Tier
+
+This release consolidates scattered window, VisualViewport, and key scroll work into one auditable frame scheduler, while giving data-saving and confirmed low-end devices a paint fallback that preserves function and contrast.
+
+## Read once, then write once per frame
+
+- `mobile-shell.js` is now the only native listener for window resize plus VisualViewport resize and scroll. Repeated requests for the same key within an event storm keep the latest job, all layout reads run first, and all style writes follow in the same frame.
+- The Home wallpaper stage and desktop-icon geometry, Knowledge reading progress and table of contents, mobile Dock, motion layer, and focused Quick Transfer control use the same pipeline. Route exits unsubscribe their related jobs.
+- Viewport dimensions, keyboard offset, and the Dock selection surface commit together. When native page scale differs from 1, the smaller VisualViewport is not misclassified as an on-screen keyboard.
+- Build guards reject a second native viewport listener in public scripts and verify that primary consumers retain the keyed measure/mutate contract.
+
+## A clear low-performance paint tier
+
+- `low` activates when Save-Data is enabled or the browser explicitly reports no more than 2 logical cores or 2 GiB of device memory. Devices with unknown capability remain `normal` instead of receiving a guessed downgrade.
+- The low tier removes large blur, backdrop filters, wallpaper filters, looping clouds, permanent `will-change`, and full-page View Transitions. Solid high-contrast fallbacks cover the top bar, taskbar, Dock, account layer, and modal backdrop.
+- The normal tier keeps the XP, Pixel Art, and Y2K wallpaper, glass depth, and interactions unchanged. Small icon shadows and short transform/opacity feedback remain available.
+
+## Verification boundary
+
+Controlled Headless Chrome passes 117 checks: 40 same-frame event groups produce one read and one write phase; 390×844 and 844×390 viewport variables match final Dock geometry; native 2× page scale yields zero keyboard offset; Save-Data, two-core, and unknown-capability profiles select the correct tier; and the low-tier screenshot retains clear text and controls without large paint effects. This automation does not emulate or claim validation of a real iOS or Android on-screen keyboard. No production data, release, or deployment is involved.', '2026-07-17T21:12:00.000Z', '2026-07-17T21:12:00.000Z'),
+  ('seed-update-2026-07-18-frame-pipeline-low-performance-ja', 'seed-update-2026-07-18-frame-pipeline-low-performance', 'ja', '統合フレームパイプラインと低性能描画モード', 'Window、VisualViewport、主要スクロール計測を 1 つの読み取り・書き込みフレームへ統合し、Save-Data と明確な低性能端末には判読しやすい単色描画モードを適用します。', '# 統合フレームパイプラインと低性能描画モード
+
+今回の更新では、分散していた Window、VisualViewport、主要スクロール処理を監査可能な 1 つのフレームスケジューラへ統合し、通信量を節約する設定と明確な低性能端末に、機能とコントラストを維持した描画フォールバックを追加しました。
+
+## 1 フレームで先に読み取り、後で書き込み
+
+- `mobile-shell.js` が window resize、VisualViewport resize、scroll の唯一のネイティブリスナーになりました。同じイベント集中内の同一キーは最新ジョブだけを残し、すべてのレイアウト読み取り後に、同じフレームですべてのスタイル書き込みを行います。
+- Home の壁紙ステージとデスクトップアイコン形状、Knowledge の読書進捗と目次、モバイル Dock、モーション層、Quick Transfer のフォーカス中コントロールが同じパイプラインを使用します。ルート終了時には関連ジョブを解除します。
+- ビューポート寸法、キーボードオフセット、Dock 選択面を同じフレームで反映します。ネイティブページ倍率が 1 以外の時は、縮小した VisualViewport を画面キーボードと誤判定しません。
+- ビルドガードは公開スクリプトへの 2 組目のネイティブ viewport リスナーを拒否し、主要利用箇所の keyed measure/mutate 契約を確認します。
+
+## 判読しやすい低性能描画モード
+
+- Save-Data が有効、またはブラウザが論理コア 2 以下 / 端末メモリ 2GiB 以下を明示した場合に `low` を有効にします。能力が不明な端末は推測で低下させず `normal` を維持します。
+- `low` では大きな blur、backdrop-filter、壁紙 filter、雲のループ、常駐 `will-change`、全画面 View Transition を停止し、トップバー、タスクバー、Dock、アカウント層、モーダル背景へ高コントラストの単色フォールバックを適用します。
+- `normal` の XP、Pixel Art、Y2K 壁紙、ガラスの奥行き、操作感は変更しません。小さなアイコン影と短い transform/opacity フィードバックは維持します。
+
+## 検証範囲
+
+制御された Headless Chrome で 117 項目が成功しました。40 組の同一フレームイベントは読み取り 1 回・書き込み 1 回に統合され、390×844 / 844×390 のビューポート変数と Dock 形状が一致し、ネイティブ 2 倍ページ倍率ではキーボードオフセットが 0 になり、Save-Data、2 コア、能力不明の各プロファイルが正しいモードを選択します。低性能スクリーンショットにも大面積描画効果の残留はなく、文字と操作は明瞭です。この自動化は実際の iOS / Android 画面キーボードを再現したものではなく、その検証を主張しません。本番データへの接続、公開、デプロイは行っていません。', '2026-07-17T21:12:00.000Z', '2026-07-17T21:12:00.000Z')
+on conflict(translation_id) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-07-18-route-lifecycle-mobile-css',
+  '2026-07-18-route-lifecycle-mobile-css',
+  'site-updates',
+  '["performance","lifecycle","mobile","CSS","QA"]',
+  '', 'published', 1, 0,
+  '2026-07-17T20:48:00.000Z',
+  '2026-07-17T20:48:00.000Z',
+  '2026-07-17T20:48:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-07-18-route-lifecycle-mobile-css-zh', 'seed-update-2026-07-18-route-lifecycle-mobile-css', 'zh', '路由生命周期与移动样式权威源', '八个主路由现在显式进入与离开：非活动页会中止请求、定时器和临时监听；移动响应式布局也收敛到单一 CSS 权威文件并由构建守卫防止冲突回归。', '# 路由生命周期与移动样式权威源
+
+本轮补齐公开主站的路由资源生命周期，并把分散的移动响应式布局收敛到唯一权威文件，为后续懒加载、视口协调和软键盘避让建立可验证基础。
+
+## 路由资源按需启停
+
+- Home、Knowledge、Videos、Resources、Games、Blog、Chat 与 About 都使用显式 `enter/leave` 作用域。每次进入只创建一套监听、定时器、动画帧和 `AbortController`，同一路由重复导航不会再次绑定。
+- 离开 Knowledge、Videos、Games 或 About 时会中止尚未完成的列表请求；Home 不再提前读取这些隐藏路由的数据。返回目标路由时会重新建立干净作用域。
+- Chat 只在活动且可见时轮询；离开或页面隐藏后不保留后台定时器。Quick Transfer 的事件、轮询、请求、XHR 与重试等待也跟随 Resources 生命周期清理。
+- 移动壳和动效层继续作为全站基础设施运行，但会接收统一的路由进入/离开通知，并清理只属于旧路由的临时帧与状态。
+
+## 移动 CSS 单一权威源
+
+- 原先散落在 `style.css` 尾部的响应式媒体规则按原顺序迁入 `mobile-ios-shell.css`，选择器、声明和值保持不变，因此 XP、Pixel Art 与 Y2K 构图不被重画。
+- 动效样式中的移动层级越权被限定到桌面壳；移动关键组件的高度、溢出、定位、布局和层级现在只允许由移动壳文件定义。
+- 构建检查会解析三份主 CSS，逐条报告跨文件重复或越权的移动关键布局属性，防止以后用更高优先级补丁重新制造冲突。
+
+## 验证
+
+受控 Headless Chrome 在 1280×720 与 390×844 连续遍历八个路由，验证同路由不重复绑定、延迟请求在离开时被中止、Chat 与 Transfer 资源归零；完整三语语义、元信息、模态、历史、Caret 和精确视口截图共通过 110 项检查。该自动化验证不连接生产数据，也未执行发布或部署。', '2026-07-17T20:48:00.000Z', '2026-07-17T20:48:00.000Z'),
+  ('seed-update-2026-07-18-route-lifecycle-mobile-css-en', 'seed-update-2026-07-18-route-lifecycle-mobile-css', 'en', 'Route Lifecycle and Mobile CSS Ownership', 'All eight routes now enter and leave explicitly, aborting inactive requests, timers, and temporary listeners; responsive mobile layout also has one guarded CSS owner.', '# Route Lifecycle and Mobile CSS Ownership
+
+This release adds an explicit resource lifecycle to every public route and consolidates responsive mobile layout under one authoritative stylesheet, creating a testable base for later lazy loading, viewport coordination, and keyboard avoidance.
+
+## Route resources start and stop on demand
+
+- Home, Knowledge, Videos, Resources, Games, Blog, Chat, and About use explicit `enter/leave` scopes. Each entry creates one set of listeners, timers, animation frames, and an `AbortController`; navigating to the same route does not bind them again.
+- Leaving Knowledge, Videos, Games, or About aborts unfinished list requests. Home no longer preloads those hidden-route datasets, and a clean scope is created when the route is opened again.
+- Chat polls only while active and visible, leaving no background timer after a route exit or hidden page. Quick Transfer events, polling, requests, XHR, and retry waits are likewise cleared with the Resources lifecycle.
+- The mobile shell and motion layer remain global site infrastructure, but now receive consistent route enter and leave notifications and discard route-specific transient frames and state.
+
+## One owner for mobile CSS
+
+- Responsive media rules formerly scattered at the end of `style.css` moved, in the same order, into `mobile-ios-shell.css`. Selectors, declarations, and values are unchanged, so the XP, Pixel Art, and Y2K composition is not redesigned.
+- Mobile stacking overrides in the motion sheet are constrained to the desktop shell. Height, overflow, positioning, layout, and stacking for critical mobile components now belong only to the mobile shell stylesheet.
+- The build check parses all three primary stylesheets and reports every duplicate or out-of-bound critical mobile layout declaration, preventing future specificity patches from recreating the conflict.
+
+## Verification
+
+Controlled Headless Chrome traverses all eight routes at 1280×720 and 390×844, checking same-route idempotence, delayed-request aborts, and zero inactive Chat and Transfer resources. The complete trilingual semantics, metadata, modal, history, caret, and exact-viewport suite passes 110 checks. No production data, release, or deployment is involved.', '2026-07-17T20:48:00.000Z', '2026-07-17T20:48:00.000Z'),
+  ('seed-update-2026-07-18-route-lifecycle-mobile-css-ja', 'seed-update-2026-07-18-route-lifecycle-mobile-css', 'ja', 'ルートライフサイクルとモバイル CSS の一元管理', '8 つの主要ルートに明示的な開始・終了処理を設け、非表示ページの通信、タイマー、一時リスナーを停止しました。モバイルレイアウトも 1 つの CSS 管理元へ統合しています。', '# ルートライフサイクルとモバイル CSS の一元管理
+
+今回の更新では、公開サイトの各ルートに明示的なリソースライフサイクルを追加し、分散していたレスポンシブなモバイルレイアウトを 1 つのスタイルシートへ統合しました。今後の遅延読み込み、ビューポート調整、キーボード回避を検証できる基盤になります。
+
+## ルートごとにリソースを開始・終了
+
+- Home、Knowledge、Videos、Resources、Games、Blog、Chat、About は明示的な `enter/leave` スコープを使います。開始時にリスナー、タイマー、アニメーションフレーム、`AbortController` を 1 組だけ作り、同じルートへの再ナビゲーションでは重複登録しません。
+- Knowledge、Videos、Games、About を離れると未完了の一覧通信を中止します。Home は非表示ルートのデータを先読みせず、再び開いた時に新しいスコープを作ります。
+- Chat は表示中のアクティブルートだけでポーリングし、離脱またはページ非表示後にタイマーを残しません。Quick Transfer のイベント、ポーリング、通信、XHR、再試行待機も Resources の終了時に解放します。
+- モバイルシェルとモーション層はサイト全体の基盤として維持しつつ、共通の開始・終了通知を受け取り、旧ルートだけに属する一時フレームと状態を破棄します。
+
+## モバイル CSS の管理元を 1 つに統一
+
+- `style.css` 末尾に分散していたレスポンシブ規則を、元の順序のまま `mobile-ios-shell.css` へ移しました。セレクター、宣言、値は変えていないため、XP、Pixel Art、Y2K の構図を作り直していません。
+- モーション用スタイルのモバイル階層上書きをデスクトップシェルへ限定しました。重要なモバイル部品の高さ、オーバーフロー、配置、レイアウト、重なり順はモバイルシェルだけが管理します。
+- ビルドチェックは 3 つの主要 CSS を解析し、重複または管理範囲外の重要レイアウト宣言を項目ごとに報告します。優先度の高い後付け規則で競合が再発することを防ぎます。
+
+## 検証
+
+制御された Headless Chrome で 1280×720 と 390×844 の全 8 ルートを連続移動し、同一ルートの重複登録防止、遅延通信の中止、非アクティブな Chat と Transfer のリソース解放を確認しました。3 言語の意味構造、メタデータ、モーダル、履歴、キャレット、正確なビューポートを含む全 110 項目が成功しています。本番データへの接続、公開、デプロイは行っていません。', '2026-07-17T20:48:00.000Z', '2026-07-17T20:48:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-07-18-route-metadata-modal-focus',
+  '2026-07-18-route-metadata-modal-focus',
+  'site-updates',
+  '["SEO","metadata","accessibility","dialog","navigation"]',
+  '', 'published', 1, 0,
+  '2026-07-17T20:22:00.000Z',
+  '2026-07-17T20:22:00.000Z',
+  '2026-07-17T20:22:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-07-18-route-metadata-modal-focus-zh', 'seed-update-2026-07-18-route-metadata-modal-focus', 'zh', '三语路由分享信息与模态焦点隔离', '八个主路由与文章详情现在同步独立三语标题、描述、canonical、OG 和 Twitter 信息；欢迎窗与视频窗会隔离背景、圈定焦点并可靠归还触发源。', '# 三语路由分享信息与模态焦点隔离
+
+本轮完成路由级分享信息和两个公开模态窗口的键盘隔离，让地址、语言、页面语义与焦点生命周期保持一致。
+
+## 路由与文章元信息
+
+- Home、Knowledge、Videos、Resources、Games、Blog、Chat 与 About 都有独立三语标题、描述、canonical、Open Graph 与 Twitter 信息。
+- 临时壁纸、欢迎窗和审计参数不会进入 canonical；文章始终使用正式 `/articles/<slug>?lang=<lang>` 地址。
+- 文章安全封面会替换分享图并清除未知尺寸，离开文章后立即恢复目标栏目的网站类型、默认图片与尺寸，不残留旧文章标题、简介或封面。
+
+## 欢迎窗与视频窗
+
+- 模态打开时，skip link 与整个站点壳使用原生 `inert` 隔离；若两个模态异常重叠，只保留最上层可交互。
+- Tab 与 Shift+Tab 在对话框内循环，Escape 关闭；完整动效结束前背景继续隔离，减少动态或关闭动效时立即完成。
+- 视频卡显式记录真实点击按钮，关闭后优先归还该触发源；触发源失效时回到当前模态或路由稳定标题。手机关闭入口继续保持至少 44×44px。
+
+## 验证边界
+
+受控 Headless Chrome 在三语八路由、三语文章和桌面/短竖屏/标准竖屏/横屏模态场景共执行 108 项检查。运行时 Hash 元信息可保持浏览器状态一致，但不等同独立路径 SSR 或社交抓取器预渲染。', '2026-07-17T20:22:00.000Z', '2026-07-17T20:22:00.000Z'),
+  ('seed-update-2026-07-18-route-metadata-modal-focus-en', 'seed-update-2026-07-18-route-metadata-modal-focus', 'en', 'Trilingual Route Metadata and Modal Focus Isolation', 'All eight routes and article details now synchronize distinct trilingual title, description, canonical, Open Graph, and Twitter data, while welcome and video dialogs isolate background focus.', '# Trilingual Route Metadata and Modal Focus Isolation
+
+This release completes route-level sharing data and keyboard isolation for the two public modal windows, keeping addresses, language, semantics, and focus lifecycles aligned.
+
+## Route and article metadata
+
+- Home, Knowledge, Videos, Resources, Games, Blog, Chat, and About now expose distinct trilingual titles, descriptions, canonicals, Open Graph fields, and Twitter fields.
+- Temporary wallpaper, welcome, and audit parameters never enter canonical URLs. Articles always use `/articles/<slug>?lang=<lang>`.
+- A safe article cover replaces the share image and clears unknown dimensions. Leaving an article immediately restores the target route''s website type, default image, and dimensions without retaining the old title, summary, or cover.
+
+## Welcome and video dialogs
+
+- While a modal is open, native `inert` isolates both the skip link and the complete site shell. If two modals overlap unexpectedly, only the top surface remains interactive.
+- Tab and Shift+Tab wrap inside the dialog, and Escape closes it. The background stays isolated through the full close animation, while reduced or disabled motion commits immediately.
+- Video cards pass the exact clicked button as the return target. Closing restores that trigger first, with the active modal or stable route heading as fallback. Mobile Close remains at least 44 by 44 pixels.
+
+## Verification boundary
+
+Controlled Headless Chrome runs 108 checks across all eight routes in three languages, trilingual article metadata, and desktop, short portrait, standard portrait, and landscape modal scenarios. Runtime hash metadata keeps browser state coherent but is not equivalent to independent-path SSR or social-crawler prerendering.', '2026-07-17T20:22:00.000Z', '2026-07-17T20:22:00.000Z'),
+  ('seed-update-2026-07-18-route-metadata-modal-focus-ja', 'seed-update-2026-07-18-route-metadata-modal-focus', 'ja', '3 言語ルートメタデータとモーダルフォーカス分離', '8 つの主要ルートと記事詳細で 3 言語のタイトル、説明、canonical、OG、Twitter 情報を同期し、ウェルカムと動画ダイアログは背景を分離してフォーカスを確実に戻します。', '# 3 言語ルートメタデータとモーダルフォーカス分離
+
+今回の更新では、ルート単位の共有情報と 2 つの公開モーダルのキーボード分離を完成させ、URL、言語、意味構造、フォーカスのライフサイクルを一致させました。
+
+## ルートと記事のメタデータ
+
+- Home、Knowledge、Videos、Resources、Games、Blog、Chat、About に、それぞれ異なる 3 言語のタイトル、説明、canonical、Open Graph、Twitter 情報を設定します。
+- 一時的な壁紙、ウェルカム、監査パラメータは canonical に含めません。記事は常に `/articles/<slug>?lang=<lang>` を使用します。
+- 安全な記事カバーは共有画像へ反映し、不明な寸法を消去します。記事を離れると、古いタイトル、概要、カバーを残さず、移動先ルートの website 種別、既定画像、寸法を復元します。
+
+## ウェルカムと動画ダイアログ
+
+- モーダル表示中は、ネイティブ `inert` で本文スキップとサイトシェル全体を分離します。2 つが予期せず重なった場合も、最上位だけを操作可能にします。
+- Tab と Shift+Tab はダイアログ内を循環し、Escape で閉じます。通常動作では閉じるアニメーション完了まで背景を分離し、動きを減らす設定または動作オフでは即座に完了します。
+- 動画カードは実際に押したボタンを戻り先として渡します。閉じるとそのトリガーを優先し、利用できない場合は表示中のモーダルまたはルートの安定した見出しへ戻します。モバイルの閉じる操作は 44×44px 以上を維持します。
+
+## 検証範囲
+
+制御された Headless Chrome で、3 言語の 8 ルート、3 言語の記事メタデータ、デスクトップ、短い縦画面、標準縦画面、横画面のモーダルを含む 108 項目を確認しました。実行時の Hash メタデータはブラウザ状態を一致させますが、独立パスの SSR やソーシャルクローラー向け事前描画と同等ではありません。', '2026-07-17T20:22:00.000Z', '2026-07-17T20:22:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-07-18-knowledge-history-restoration',
+  '2026-07-18-knowledge-history-restoration',
+  'site-updates',
+  '["Knowledge","navigation","history","state","accessibility"]',
+  '', 'published', 0, 0,
+  '2026-07-17T20:01:00.000Z',
+  '2026-07-17T20:01:00.000Z',
+  '2026-07-17T20:01:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-07-18-knowledge-history-restoration-zh', 'seed-update-2026-07-18-knowledge-history-restoration', 'zh', '知识库列表与文章历史状态恢复', '从筛选或搜索结果打开文章后，返回与前进会恢复原分类、搜索词、列表位置和文章阅读位置；直链返回默认知识库，并保持稳定焦点。', '# 知识库列表与文章历史状态恢复
+
+本轮让知识库的文章列表、详情和浏览器历史成为一条可预测、可恢复的导航路径。
+
+## 列表与文章往返
+
+- 从分类或 Unicode 搜索结果打开文章前，当前分类、搜索词和列表滚动位置会写入当前历史条目。
+- 返回列表后会恢复完整上下文；浏览器前进可再次打开同一篇文章，并恢复详情阅读位置。
+- 站内返回只回到来源列表，不额外创建重复历史条目。
+
+## 直链与安全回退
+
+- 直接访问 `/articles/<slug>` 时，返回操作会在当前条目中进入默认 Knowledge，不会把访客带离站点。
+- 未知版本、错误路由或异常滚动值会按当前 URL 重新建立安全默认状态，同时保留其他代码写入的根级 History 字段。
+- 搜索词只保存在浏览器 History 状态，不写进 URL；账号、Chat 草稿、互传口令和内容不会进入该状态。
+
+## 焦点与验证
+
+列表和详情恢复完成后，焦点只落在对应稳定标题且不会自动聚焦搜索框。桌面与手机无头审计覆盖站内返回、浏览器 Back / Forward、直链和损坏状态，共 99 项检查通过。', '2026-07-17T20:01:00.000Z', '2026-07-17T20:01:00.000Z'),
+  ('seed-update-2026-07-18-knowledge-history-restoration-en', 'seed-update-2026-07-18-knowledge-history-restoration', 'en', 'Knowledge List and Article History Restoration', 'Back and Forward now restore the Knowledge category, search term, list position, and article reading position, while direct links return safely to the default Knowledge view.', '# Knowledge List and Article History Restoration
+
+This release makes the Knowledge list, article detail, and browser history a predictable and recoverable navigation path.
+
+## List and article round trips
+
+- Before an article opens from a category or Unicode search result, the active category, search term, and list scroll position are stored in the current history entry.
+- Returning restores that complete context. Browser Forward reopens the same article and restores its reading position.
+- The in-app Back action returns to the source entry without creating a duplicate history item.
+
+## Direct links and safe fallback
+
+- When `/articles/<slug>` is opened directly, Back replaces the current entry with the default Knowledge view instead of taking the visitor away from the site.
+- Unknown versions, mismatched routes, and invalid scroll values are rebuilt from the current URL with safe defaults while unrelated root-level History fields are preserved.
+- Search terms stay in browser History rather than the URL. Account data, Chat drafts, Quick Transfer passphrases, and content are never stored there.
+
+## Focus and verification
+
+After list or detail restoration, focus moves once to the matching stable heading and never selects the search field automatically. Desktop and mobile headless audits cover in-app Back, browser Back and Forward, direct links, and malformed state, with all 99 checks passing.', '2026-07-17T20:01:00.000Z', '2026-07-17T20:01:00.000Z'),
+  ('seed-update-2026-07-18-knowledge-history-restoration-ja', 'seed-update-2026-07-18-knowledge-history-restoration', 'ja', 'ナレッジ一覧と記事の履歴状態を復元', '絞り込みや検索結果から記事を開いた後、戻る・進むで分類、検索語、一覧位置、記事の読書位置を復元し、直リンクは既定のナレッジへ安全に戻ります。', '# ナレッジ一覧と記事の履歴状態を復元
+
+今回の更新で、ナレッジ一覧、記事詳細、ブラウザ履歴を予測可能で復元できる移動経路にしました。
+
+## 一覧と記事の往復
+
+- 分類または Unicode 検索結果から記事を開く前に、現在の分類、検索語、一覧のスクロール位置を履歴エントリへ保存します。
+- 一覧へ戻ると文脈を完全に復元し、ブラウザの進む操作で同じ記事と読書位置を再表示します。
+- 画面内の戻る操作は元の一覧エントリへ戻り、重複する履歴を作りません。
+
+## 直リンクと安全なフォールバック
+
+- `/articles/<slug>` を直接開いた場合、戻る操作は訪問者をサイト外へ送らず、現在のエントリを既定の Knowledge 表示へ置き換えます。
+- 未知の版、URL と一致しないルート、不正なスクロール値は現在の URL から安全な既定値で再構築し、他のコードが持つルート階層の History フィールドは保持します。
+- 検索語は URL ではなくブラウザ履歴だけに保存します。アカウント情報、Chat 下書き、一時転送の合言葉や内容は保存しません。
+
+## フォーカスと検証
+
+一覧または詳細の復元後、フォーカスは対応する安定した見出しへ 1 回だけ移り、検索欄を自動選択しません。デスクトップとモバイルのヘッドレス監査で画面内の戻る、ブラウザの戻る・進む、直リンク、壊れた状態を確認し、99 項目すべてに合格しました。', '2026-07-17T20:01:00.000Z', '2026-07-17T20:01:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-07-18-focus-popover-caret',
+  '2026-07-18-focus-popover-caret',
+  'site-updates',
+  '["accessibility","navigation","account","Quick Transfer","UI"]',
+  '', 'published', 0, 0,
+  '2026-07-17T19:42:00.000Z',
+  '2026-07-17T19:42:00.000Z',
+  '2026-07-17T19:42:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-07-18-focus-popover-caret-zh', 'seed-update-2026-07-18-focus-popover-caret', 'zh', '路由焦点、账号浮层与输入光标修复', '统一 8 个路由、文章详情/列表与历史导航的稳定标题焦点，补全账号非模态浮层语义和关闭归还，并恢复临时互传密码与输入区的可见光标；安全、API 与 D1 不变。', '# 路由焦点、账号浮层与输入光标修复
+
+本轮统一公开页面的键盘焦点、账号浮层语义和编辑光标，只修复前端交互与无障碍体验。
+
+## 路由与文章焦点
+
+- 8 个公开路由切换后，程序焦点只移动一次并落在新页面的稳定标题；首次 Tab 仍先到三语“跳到主内容”链接，不会自动聚焦搜索框、密码框或输入区。
+- 文章详情与列表切换、浏览器 history back / forward 后，焦点分别跟随文章标题或知识库标题，和当前 URL 保持一致。
+
+## 账号浮层
+
+- 账号入口继续使用非模态 popover，并补充带可访问名称的 `role=group`；触发器保持正确的 `aria-expanded` 与 `aria-controls`。
+- Escape 和点击浮层外都会关闭它，并把焦点归还到账号触发器。
+
+## 输入光标
+
+- 移除 body 级透明 caret，临时互传的密码框与 composer 恢复可见光标和正常编辑；公开文字仍按原有安全方式渲染。
+
+## 边界不变
+
+本轮不改变账号安全模型、会话、文章或临时互传 API、D1 数据结构与后端权限。', '2026-07-17T19:42:00.000Z', '2026-07-17T19:42:00.000Z'),
+  ('seed-update-2026-07-18-focus-popover-caret-en', 'seed-update-2026-07-18-focus-popover-caret', 'en', 'Route Focus, Account Popover, and Caret Fixes', 'Aligns focus across eight routes, article views, and history navigation; strengthens the non-modal account popover; and restores visible carets in Quick Transfer without changing security, APIs, or D1.', '# Route Focus, Account Popover, and Caret Fixes
+
+This release aligns keyboard focus, account-popover semantics, and editing carets across the public site. Only frontend interaction and accessibility behavior changed.
+
+## Route and article focus
+
+- Switching among all eight public routes moves programmatic focus once to the stable heading for the new route. The first Tab still reaches the trilingual Skip to main content link, and automatic focus never targets a search field, password field, or composer.
+- Article detail/list transitions and browser history back/forward now focus the article title or Knowledge heading to match the current URL.
+
+## Account popover
+
+- The account entry remains a non-modal popover and now exposes a labelled `role=group`; its trigger keeps accurate `aria-expanded` and `aria-controls` state.
+- Escape and outside click both close the popover and return focus to the account trigger.
+
+## Editing carets
+
+- The body-level transparent caret is removed, restoring visible carets and normal editing in the Quick Transfer passphrase field and composer while preserving the existing safe text-rendering path.
+
+## Unchanged boundaries
+
+Account security, sessions, article and Quick Transfer APIs, the D1 schema, and backend permissions are unchanged.', '2026-07-17T19:42:00.000Z', '2026-07-17T19:42:00.000Z'),
+  ('seed-update-2026-07-18-focus-popover-caret-ja', 'seed-update-2026-07-18-focus-popover-caret', 'ja', 'ルートフォーカス・アカウントポップオーバー・入力カーソル修正', '8 ルート、記事表示、履歴移動のフォーカスを安定した見出しにそろえ、アカウントの非モーダルポップオーバーを補強し、一時転送の入力カーソルを復元しました。安全性、API、D1 は変更していません。', '# ルートフォーカス・アカウントポップオーバー・入力カーソル修正
+
+今回の更新では、公開サイトのキーボードフォーカス、アカウントポップオーバーの意味付け、編集カーソルを統一しました。変更はフロントエンドの操作性とアクセシビリティに限定しています。
+
+## ルートと記事のフォーカス
+
+- 8 つの公開ルートを切り替えると、プログラムによるフォーカスは 1 回だけ新しいルートの安定した見出しへ移ります。最初の Tab は引き続き 3 言語の「本文へスキップ」に到達し、検索欄、パスワード欄、入力欄を自動選択しません。
+- 記事詳細と一覧の切り替え、ブラウザの history back / forward 後は、現在の URL に合わせて記事タイトルまたは知識庫の見出しへフォーカスします。
+
+## アカウントポップオーバー
+
+- アカウント入口は非モーダルポップオーバーのまま、アクセシブルな名前を持つ `role=group` を公開します。トリガーの `aria-expanded` と `aria-controls` も正しい状態を維持します。
+- Escape または外側のクリックで閉じ、フォーカスをアカウントトリガーへ戻します。
+
+## 入力カーソル
+
+- body 全体の透明 caret を削除し、一時転送のパスワード欄と composer で見えるカーソルと通常の編集を復元しました。公開テキストの安全な描画方法は維持します。
+
+## 変更していない境界
+
+アカウントの安全モデル、セッション、記事と一時転送の API、D1 スキーマ、バックエンド権限は変更していません。', '2026-07-17T19:42:00.000Z', '2026-07-17T19:42:00.000Z')
+on conflict(translation_id) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-07-18-theme-accessibility-foundation',
+  '2026-07-18-theme-accessibility-foundation',
+  'site-updates',
+  '["performance","accessibility","theme","navigation","UI"]',
+  '', 'published', 0, 0,
+  '2026-07-17T18:53:00.000Z',
+  '2026-07-17T18:53:00.000Z',
+  '2026-07-17T18:53:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-07-18-theme-accessibility-foundation-zh', 'seed-update-2026-07-18-theme-accessibility-foundation', 'zh', '四时段首屏与无障碍导航底座', '首屏在阻塞样式前确定真实四时段主题，避免非日间先下载 day 壁纸；同时新增三语跳到主内容、语义 Landmark 与活动路由唯一 H1。', '# 四时段首屏与无障碍导航底座
+
+本轮完成首屏资源与页面语义的基础优化，让四时段主题从第一帧正确加载，并让键盘和辅助技术更快到达当前内容。
+
+## 首屏主题
+
+- 在阻塞样式加载前，根据 `?wallpaper=` 调试参数或本地时间确定 morning、day、dusk、night。
+- 首个样式计算直接从 `html[data-time-theme]` 读取正确主题，主脚本随后同步到 body、Home 与壁纸舞台；非 day 时段不再先请求 day 资源。
+- 桌面窗口背景、动态壁纸与移动壁纸均接受同一早期主题，调试参数继续有效。
+
+## 导航与语义
+
+- 首个 Tab 显示三语“跳到主内容”入口，并把焦点送到稳定的 main Landmark，不改变当前路由或地址。
+- 每个活动路由只暴露一个 H1，隐藏路由继续离开无障碍树，Home 构图和 Neo-XP 视觉不变。
+- 卡片标题与安全 Markdown 标题从 H2 开始，为后续统一路由焦点和语义烟测提供稳定层级。
+
+## 边界不变
+
+公开路由、账号、Chat、文章 API、D1 与四时段视觉资产均未改变。', '2026-07-17T18:53:00.000Z', '2026-07-17T18:53:00.000Z'),
+  ('seed-update-2026-07-18-theme-accessibility-foundation-en', 'seed-update-2026-07-18-theme-accessibility-foundation', 'en', 'Theme Bootstrap and Accessible Navigation Foundation', 'Selects the real four-period theme before blocking styles to avoid a needless day-wallpaper request, and adds a trilingual skip link, landmarks, and one H1 for the active route.', '# Theme Bootstrap and Accessible Navigation Foundation
+
+This release improves first-paint resources and page semantics so the correct four-period theme loads from the first frame and keyboard or assistive-technology users can reach the active content quickly.
+
+## First-paint theme
+
+- Before blocking styles load, an early bootstrap selects morning, day, dusk, or night from the `?wallpaper=` debug override or local time.
+- The first style calculation reads the correct `html[data-time-theme]`; the main script then synchronizes body, Home, and the wallpaper stage, so non-day sessions no longer request a day asset first.
+- Desktop window backdrops, dynamic wallpaper, and mobile wallpaper share the same early theme while the debug override remains available.
+
+## Navigation and semantics
+
+- The first Tab reveals a trilingual Skip to main content link that focuses the stable main landmark without changing the current route or address.
+- Only the active route exposes one H1. Hidden routes stay outside the accessibility tree, while the Home composition and Neo-XP appearance remain unchanged.
+- Card titles and safe Markdown headings now begin at H2, providing a stable hierarchy for later route-focus and semantic smoke tests.
+
+## Unchanged boundaries
+
+Public routes, accounts, Chat, article APIs, D1, and four-period visual assets are unchanged.', '2026-07-17T18:53:00.000Z', '2026-07-17T18:53:00.000Z'),
+  ('seed-update-2026-07-18-theme-accessibility-foundation-ja', 'seed-update-2026-07-18-theme-accessibility-foundation', 'ja', '時間帯テーマとアクセシブルナビゲーション基盤', 'ブロッキング CSS より前に実際の時間帯テーマを確定して day 壁紙の余分な取得を防ぎ、3 言語の本文スキップ、ランドマーク、アクティブルートごとの唯一の H1 を追加しました。', '# 時間帯テーマとアクセシブルナビゲーション基盤
+
+今回は初回描画のリソースとページ構造を整え、4 つの時間帯テーマを最初のフレームから正しく表示し、キーボードや支援技術から現在の内容へ素早く移動できるようにしました。
+
+## 初回描画のテーマ
+
+- ブロッキング CSS を読み込む前に、`?wallpaper=` デバッグ指定または端末のローカル時刻から morning、day、dusk、night を決定します。
+- 最初のスタイル計算は正しい `html[data-time-theme]` を参照し、メインスクリプトが body、Home、壁紙ステージへ同期するため、day 以外で day の資産を先に取得しません。
+- デスクトップのウィンドウ背景、動的壁紙、モバイル壁紙は同じ初期テーマを使い、デバッグ指定も維持します。
+
+## ナビゲーションと構造
+
+- 最初の Tab で 3 言語の「本文へスキップ」を表示し、現在のルートや URL を変えずに安定した main ランドマークへフォーカスを移します。
+- アクティブなルートだけが 1 つの H1 を公開します。非表示ルートはアクセシビリティツリーから外れ、Home の構図と Neo-XP の外観は変わりません。
+- カード見出しと安全な Markdown 見出しを H2 から始め、今後のルートフォーカス統一とセマンティック smoke test の基準にします。
+
+## 変更していない境界
+
+公開ルート、アカウント、Chat、記事 API、D1、4 時間帯のビジュアル資産は変更していません。', '2026-07-17T18:53:00.000Z', '2026-07-17T18:53:00.000Z')
+on conflict(translation_id) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
 
 insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,

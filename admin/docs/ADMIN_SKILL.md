@@ -22,6 +22,7 @@ description: 维护鲁肃个人站 `/admin/` 管理后台时使用。只适用�
 - 普通账号免费池与管理员豁免的判断都在服务端执行。管理员“不限频次”不等于无限网络并发，也不突破 Cloudflare、R2、浏览器或账单边界。
 - 站内费用是估算值，不能宣称等同 Cloudflare 正式账单；官方 1 / 3 / 5 美元预算提醒必须记录为 Dashboard 人工配置。
 - 本地 API 建议 Node.js 22.13+；同名变量放入被 Git 忽略的 `.dev.vars`，本地值独立生成。不得提交 `.dev.vars`、`.env`、真实邮箱、令牌、Webhook 或其他密钥。
+- 独立管理页与公开 Resources / Quick Transfer 共用生产图集 `assets/transfer/quick-transfer-icons.png`。图集内容或版本变化时，必须使用同一发布 token 同步更新公开引用、`admin/transfer.css` 的图集 query 与 `admin/transfer.html` 的样式 query；不能只更新主站而让后台继续缓存旧图集。
 - 修改独立管理页时同步更新根 `CHANGELOG.md`、`admin/docs/ADMIN_PROJECT_CONTEXT.md`、本 Skill 和 `admin/docs/ADMIN_CHANGELOG.md`；将来合入后台导航时再同步页面内 `adminUpdates`，避免覆盖并行开发中的后台数据。
 
 ## 文档边界
@@ -126,6 +127,7 @@ description: 维护鲁肃个人站 `/admin/` 管理后台时使用。只适用�
 
 - 修改 `admin/admin.css` 后，必须更新 `admin/index.html` 中 CSS query。
 - 修改 `admin/admin.js` 后，必须更新 `admin/index.html` 中 JS query。
+- 修改 `admin/transfer.css` 或它引用的共享图集后，必须同步更新 `admin/transfer.html` 的 CSS query，并让图集 query 与公开侧使用同一发布 token。
 - 如果同时修改主站 `js/main.js`、`css/style.css` 或强视觉资源，还要按主站 Skill 更新 `index.html` query。
 - 后台文档更新不需要改后台资源 query。
 

@@ -5,11 +5,13 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const [html, app, css, main, audioPlayer, cloud, contentLoader, i18n, questionFlow, storage] = await Promise.all([
+const [html, app, css, main, publicResources, publicContent, audioPlayer, cloud, contentLoader, i18n, questionFlow, storage] = await Promise.all([
   readFile(path.join(root, "index.html"), "utf8"),
   readFile(path.join(root, "app.mjs"), "utf8"),
   readFile(path.join(root, "style.css"), "utf8"),
   readFile(path.resolve(root, "..", "..", "js", "main.js"), "utf8"),
+  readFile(path.resolve(root, "..", "..", "js", "routes", "resources.mjs"), "utf8"),
+  readFile(path.resolve(root, "..", "..", "js", "data", "content.mjs"), "utf8"),
   ...["audio-player.mjs", "cloud.mjs", "content-loader.mjs", "i18n.mjs", "question-flow.mjs", "storage.mjs"]
     .map((file) => readFile(path.join(root, "lib", file), "utf8"))
 ]);
@@ -102,7 +104,8 @@ test("wrong-answer recovery remains reachable outside the result dialog", () => 
 });
 
 test("main-site resource path is narrowly allowlisted", () => {
-  assert.ok(main.includes("/^tools\\/japanese-subtext\\/?$/i"));
-  assert.match(main, /tools\/japanese-subtext\/assets\/icons\/tool-icon-64\.webp/);
-  assert.match(main, /actionLabel/);
+  const publicSiteModules = `${main}\n${publicResources}\n${publicContent}`;
+  assert.ok(publicSiteModules.includes("/^tools\\/japanese-subtext\\/?$/i"));
+  assert.match(publicSiteModules, /tools\/japanese-subtext\/assets\/icons\/tool-icon-64\.webp/);
+  assert.match(publicSiteModules, /actionLabel/);
 });

@@ -9,7 +9,7 @@ button.danger { color: #741f1f; border-color: #b84d4d; background: linear-gradie
 .transfer-admin-title,.transfer-admin-topbar nav { display: flex; align-items: center; gap: 10px; }
 .transfer-admin-title h1,.transfer-admin-title p,.panel h2,.panel p { margin: 0; }
 .transfer-admin-title p,.panel p { color: #577092; font-size: 12px; }
-.transfer-admin-icon { display: inline-block; width: 48px; height: 48px; background: url("/assets/transfer/quick-transfer-icons.png?v=20260716-imagegen-r1") no-repeat 0 0/400% 400%; image-rendering: pixelated; }
+.transfer-admin-icon { display: inline-block; width: 48px; height: 48px; background: url("/assets/transfer/quick-transfer-icons.png?v=20260718-resource-icons-layout-r1") no-repeat 0 0/400% 400%; image-rendering: pixelated; }
 main { display: grid; gap: 14px; width: min(1500px,calc(100% - 24px)); margin: 14px auto 30px; }
 .notice { min-height: 0; padding: 9px 12px; border: 1px solid #6d9bd7; border-radius: 4px; background: #f7fbff; }
 .notice:empty { display: none; }
