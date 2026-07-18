@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-07-19-service-recovery",
+      "slug": "2026-07-19-service-recovery",
+      "category": "site-updates",
+      "tags": ["Knowledge", "Japanese", "Quick Transfer", "reliability", "QA"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 1,
+      "created_at": "2026-07-18T17:35:00.000Z",
+      "updated_at": "2026-07-18T17:35:00.000Z",
+      "published_at": "2026-07-18T17:35:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.07.19",
+      "title": {
+        "zh": "知识库、日语与互传服务恢复",
+        "en": "Knowledge, Japanese, and Transfer Service Recovery",
+        "ja": "ナレッジ・日本語・転送サービスの復旧"
+      },
+      "summary": {
+        "zh": "修复知识库文章种子中的无效 D1 参数，兼容 Cloudflare 无扩展名互传片段地址，并补齐本地预览隐私配置检查；日语工具、知识库与互传入口已重新联调。",
+        "en": "An invalid D1 article-seed parameter is fixed, Quick Transfer now accepts Cloudflare's canonical extensionless fragment path, and local-preview privacy configuration is checked; Japanese, Knowledge, and Transfer flows are reverified together.",
+        "ja": "記事 seed の不正な D1 引数を修正し、Quick Transfer が Cloudflare の拡張子なし canonical fragment を受け入れるようにしました。ローカル preview の privacy 設定も補い、日本語・ナレッジ・転送を一括で再確認しています。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-07-18-resource-icons-layout",
       "slug": "2026-07-18-resource-icons-layout",
       "category": "site-updates",
@@ -113,38 +138,6 @@ export const homeContent = Object.freeze({
         "zh": "Home 初始数据缩至约 8 KB 的五条更新摘要；五个业务路由与四份重样式首次进入时加载并复用，Quick Transfer 只在真实 CTA 点击后加载完整链路，失败可重试且离开不误初始化。",
         "en": "Home now starts with about 8 KB of five update summaries; five route modules and four heavy styles load once on first entry, while Quick Transfer loads its full chain only after a real CTA click with retry-safe, leave-safe initialization.",
         "ja": "Home の初期データを約 8 KB・5 件の更新要約に縮小し、5 つのルートモジュールと 4 つの重い CSS は初回進入時だけ読み込みます。一時転送は実際の CTA 操作後に全構成を読み込み、再試行と離脱競合にも対応します。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-07-18-mobile-viewport-keyboard",
-      "slug": "2026-07-18-mobile-viewport-keyboard",
-      "category": "site-updates",
-      "tags": [
-        "mobile",
-        "viewport",
-        "keyboard",
-        "focus",
-        "accessibility",
-        "QA"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 1,
-      "created_at": "2026-07-17T22:08:00.000Z",
-      "updated_at": "2026-07-17T22:08:00.000Z",
-      "published_at": "2026-07-17T22:08:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.07.18",
-      "title": {
-        "zh": "移动视口与软键盘统一避让",
-        "en": "Unified Mobile Viewport and Keyboard Avoidance",
-        "ja": "モバイルビューポートとキーボード回避の統合"
-      },
-      "summary": {
-        "zh": "移动端现在统一处理安全区、地址栏收放、旋转、页面缩放与软键盘状态；Chat、账号、搜索和 Transfer 会在同一滚动容器内保持输入、提交与反馈可见。",
-        "en": "Mobile safe areas, browser chrome, rotation, page zoom, and on-screen keyboard states now share one viewport model, keeping Chat, account, search, and Transfer controls visible inside one scroll owner.",
-        "ja": "モバイルのセーフエリア、ブラウザー UI、回転、ページ拡大、画面キーボードを一つのビューポートモデルで扱い、Chat、アカウント、検索、Transfer の操作を同じスクロール領域内で表示します。"
       }
     }
   ]

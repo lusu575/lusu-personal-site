@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { runInNewContext } from "node:vm";
 import test from "node:test";
+import { isAllowedQuickTransferFragmentUrl } from "../js/features/quick-transfer-loader.mjs";
 
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), "utf8").replace(/\r\n?/g, "\n");
 const sources = Object.freeze({
@@ -210,7 +211,18 @@ test("external links, media, fragments, and iframes retain narrow allowlists", (
   assert.match(sources.api, /if \(url\.protocol !== "https:"\)[\s\S]{0,120}?\u89c6\u9891\u94fe\u63a5\u5fc5\u987b\u4f7f\u7528 https/);
   assert.match(sources.api, /\u53ea\u652f\u6301 youtube\.com\u3001youtu\.be\u3001bilibili\.com\u3001b23\.tv \u89c6\u9891\u94fe\u63a5/);
 
-  assert.match(sources.loader, /responseUrl\.origin !== window\.location\.origin/);
-  assert.match(sources.loader, /responseUrl\.pathname !== FRAGMENT_PATH/);
+  assert.match(sources.loader, /const FRAGMENT_CANONICAL_PATH = "\/fragments\/quick-transfer"/);
+  assert.match(sources.loader, /responseUrl\.origin === pageUrl\.origin[\s\S]{0,100}?ALLOWED_FRAGMENT_PATHS\.includes\(responseUrl\.pathname\)/);
+  assert.doesNotMatch(sources.loader, /responseUrl\.pathname\.startsWith/);
+  const pageHref = "https://lusu575.com/resources";
+  for (const value of [
+    "https://evil.example/fragments/quick-transfer.html",
+    "https://lusu575.com/fragments/quick-transfer.html.evil",
+    "https://lusu575.com/fragments/quick-transfer-extra",
+    "https://lusu575.com/fragments/%2fquick-transfer",
+    "not a valid absolute or local URL"
+  ]) {
+    assert.equal(isAllowedQuickTransferFragmentUrl(value, pageHref), false, value);
+  }
   assert.match(sources.loader, /for \(const attribute of element\.attributes\)[\s\S]{0,220}?\/\^on\/i\.test\(attribute\.name\)/);
 });

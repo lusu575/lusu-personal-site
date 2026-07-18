@@ -562,6 +562,89 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-07-19-service-recovery',
+  '2026-07-19-service-recovery',
+  'site-updates',
+  '["Knowledge","Japanese","Quick Transfer","reliability","QA"]',
+  '', 'published', 1, 0,
+  '2026-07-18T17:35:00.000Z',
+  '2026-07-18T17:35:00.000Z',
+  '2026-07-18T17:35:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  ('seed-update-2026-07-19-service-recovery-zh', 'seed-update-2026-07-19-service-recovery', 'zh', '知识库、日语与互传服务恢复', '修复知识库文章种子中的无效 D1 参数，兼容 Cloudflare 无扩展名互传片段地址，并补齐本地预览隐私配置检查；日语工具、知识库与互传入口已重新联调。', '# 知识库、日语与互传服务恢复
+
+本次修复针对生产站与本地预览中叠加出现的服务异常，恢复知识库文章接口与资源区临时互传入口，并重新验证日语工具的静态资源和云端进度降级路径。
+
+## 知识库数据恢复
+
+- 修正一条三语网站更新 seed 漏传 UTC 时间戳的问题，避免 D1 收到 `undefined` 后让全部文章查询返回 500。
+- 新增全量 seed bind 回归测试，任何未来的未定义绑定参数都会在发布前直接失败。
+
+## 互传与本地预览恢复
+
+- Quick Transfer 继续只允许同源固定片段，但同时接受源文件 `.html` 路径和 Cloudflare clean URL 的无扩展名规范路径。
+- 本地 `.dev.vars` 必须具备两个独立、足够长度的隐私盐；健康检查会在 UI 验收前暴露缺失配置，秘密值不会进入仓库。
+
+## 验证范围
+
+回归覆盖中、英、日文章接口、资源区真实点击到互传登录门、日语课程目录与音频清单，并检查桌面和手机尺寸截图。匿名用户的互传登录提示与日语本地进度降级仍是设计行为。', '2026-07-18T17:35:00.000Z', '2026-07-18T17:35:00.000Z'),
+  ('seed-update-2026-07-19-service-recovery-en', 'seed-update-2026-07-19-service-recovery', 'en', 'Knowledge, Japanese, and Transfer Service Recovery', 'An invalid D1 article-seed parameter is fixed, Quick Transfer now accepts Cloudflare''s canonical extensionless fragment path, and local-preview privacy configuration is checked; Japanese, Knowledge, and Transfer flows are reverified together.', '# Knowledge, Japanese, and Transfer Service Recovery
+
+This release addresses overlapping production and local-preview failures. It restores the Knowledge article API and the Resources Quick Transfer entry, then rechecks the Japanese tool''s static assets and cloud-progress fallback.
+
+## Knowledge data recovery
+
+- A trilingual site-update seed now passes its missing UTC timestamp, preventing D1 from receiving `undefined` and failing every article query with HTTP 500.
+- A full seed-bind regression test now fails the release gate whenever any future binding argument is undefined.
+
+## Transfer and local-preview recovery
+
+- Quick Transfer remains restricted to a fixed same-origin fragment while accepting both the authored `.html` path and Cloudflare''s extensionless clean-URL form.
+- Local `.dev.vars` must contain two independent, sufficiently long privacy salts. Health probing exposes missing configuration before UI review, while secret values stay outside Git.
+
+## Verification scope
+
+Regression coverage includes Chinese, English, and Japanese article APIs, a real Resources click into the Transfer sign-in gate, the Japanese course catalog and audio manifest, plus desktop and mobile screenshots. Anonymous Transfer sign-in prompts and Japanese local-progress fallback remain intentional behavior.', '2026-07-18T17:35:00.000Z', '2026-07-18T17:35:00.000Z'),
+  ('seed-update-2026-07-19-service-recovery-ja', 'seed-update-2026-07-19-service-recovery', 'ja', 'ナレッジ・日本語・転送サービスの復旧', '記事 seed の不正な D1 引数を修正し、Quick Transfer が Cloudflare の拡張子なし canonical fragment を受け入れるようにしました。ローカル preview の privacy 設定も補い、日本語・ナレッジ・転送を一括で再確認しています。', '# ナレッジ・日本語・転送サービスの復旧
+
+本リリースでは、本番環境とローカル preview で重なって発生した障害を修正しました。ナレッジの記事 API とリソース画面の Quick Transfer 入口を復旧し、日本語ツールの静的素材とクラウド進捗の fallback も再確認しています。
+
+## ナレッジデータの復旧
+
+- 3 言語のサイト更新 seed に不足していた UTC timestamp を渡し、D1 に `undefined` が bind されて全記事 query が HTTP 500 になる問題を防ぎました。
+- すべての seed bind を検査する回帰テストを追加し、今後未定義の引数があればリリース前に失敗します。
+
+## 転送とローカル preview の復旧
+
+- Quick Transfer は固定された同一 origin の fragment だけを許可しつつ、元の `.html` path と Cloudflare clean URL の拡張子なし canonical path の両方を受け入れます。
+- ローカル `.dev.vars` には、独立した十分な長さの privacy salt が 2 つ必要です。UI 確認前の health probe で不足を検出し、secret 値は Git に含めません。
+
+## 検証範囲
+
+中国語・英語・日本語の記事 API、リソースから転送ログイン画面までの実クリック、日本語 course catalog と audio manifest、デスクトップとモバイルの screenshot を確認します。匿名時の転送ログイン表示と日本語のローカル進捗 fallback は意図した動作です。', '2026-07-18T17:35:00.000Z', '2026-07-18T17:35:00.000Z')
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-07-18-resource-icons-layout',
   '2026-07-18-resource-icons-layout',
   'site-updates',

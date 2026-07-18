@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
+import { isAllowedQuickTransferFragmentUrl } from "../../js/features/quick-transfer-loader.mjs";
 
 const root = new URL("../../", import.meta.url);
 const html = readFileSync(new URL("index.html", root), "utf8");
@@ -52,11 +53,32 @@ test("Quick Transfer first click shows an XP status and single-flights fixed loc
 
 test("Quick Transfer strictly validates its static fragment before mounting", () => {
   assert.match(loader, /new DOMParser\(\)\.parseFromString\(source, "text\/html"\)/);
-  assert.match(loader, /responseUrl\.origin !== window\.location\.origin \|\| responseUrl\.pathname !== FRAGMENT_PATH/);
+  assert.match(loader, /if \(!isAllowedQuickTransferFragmentUrl\(response\.url \|\| FRAGMENT_URL, window\.location\.href\)\)/);
   assert.match(loader, /root\.querySelector\("script, style, link, meta, base, iframe, object, embed, svg, math"\)/);
   assert.match(loader, /\^\(\?:src\|srcdoc\|href\|action\|formaction\|xlink:href\)\$/);
   assert.match(loader, /JSON\.stringify\(\[\.\.\.ids\]\.sort\(\)\) !== JSON\.stringify\(EXPECTED_IDS\)/);
   assert.match(loader, /document\.importNode\(fragmentRoot, true\)/);
+});
+
+test("Quick Transfer accepts both same-origin fragment spellings and rejects lookalike URLs", () => {
+  const pageHref = "https://lusu575.com/?lang=zh";
+  for (const value of [
+    "/fragments/quick-transfer.html?v=asset",
+    "/fragments/quick-transfer?v=asset",
+    "https://lusu575.com/fragments/quick-transfer.html?v=asset",
+    "https://lusu575.com/fragments/quick-transfer?v=asset"
+  ]) {
+    assert.equal(isAllowedQuickTransferFragmentUrl(value, pageHref), true, value);
+  }
+  for (const value of [
+    "https://cdn.lusu575.com/fragments/quick-transfer.html",
+    "https://lusu575.com/fragments/quick-transfer/",
+    "https://lusu575.com/fragments/quick-transfer.html/extra",
+    "https://lusu575.com/fragments/quick-transfer-backup",
+    "https://lusu575.com/other/quick-transfer"
+  ]) {
+    assert.equal(isAllowedQuickTransferFragmentUrl(value, pageHref), false, value);
+  }
 });
 
 test("Quick Transfer load failure is retryable and route-leave races never initialize", () => {

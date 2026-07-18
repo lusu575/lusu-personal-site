@@ -21,6 +21,8 @@ skills/lusu-personal-site-skill/SKILL.md
 - 文章阅读只允许正文详情纵向滚动，4px 左右进度轨道与正文零交叠并有三语/ARIA 百分比；Chat 发送不得清空在途新草稿，359×500 保护普通约 177px、私聊至少约 119px及可折叠安全说明。
 - Chat 重试复用稳定 `clientRequestId`，服务端在限流前重放首次成功消息，并用 `(visitor_id, room_key, client_request_id)` 唯一索引防并发重复；私聊随机 IV 不得破坏幂等。旧 D1 必须先补 `client_request_id` 列再建索引。
 - 公共 Chat 不返回服务端隐藏 visitor id；密码、私聊、草稿、Secret、完整标识不进入 DOM 泄漏、持久存储、History、日志或 telemetry，外链/iframe/fragment 白名单不得放宽。
+- 文章 translation seed 每次都要显式传 UTC ISO 时间；全量 bind 测试必须拒绝 `undefined`。Quick Transfer fragment 只允许同源 `/fragments/quick-transfer.html` 与 Cloudflare clean URL `/fragments/quick-transfer` 两个精确路径。
+- 交付本地 Wrangler 预览前先检查 `/api/health`；`.dev.vars` 中两个独立、至少 32 bytes 的本地隐私盐缺失时会让全部 API 返回 503，真实值不得输出或提交。
 - 每次修改项目后，必须更新 `CHANGELOG.md`。
 - 项目信息变化时，必须更新 `PROJECT_CONTEXT.md`。
 - 新增长期注意事项、维护规则、踩坑点时，必须同步补充到本 Skill。

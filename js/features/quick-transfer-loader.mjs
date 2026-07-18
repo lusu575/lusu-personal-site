@@ -1,5 +1,7 @@
-const TRANSFER_VERSION = "20260718-resource-icons-layout-r1";
+const TRANSFER_VERSION = "20260719-service-recovery-r1";
 const FRAGMENT_PATH = "/fragments/quick-transfer.html";
+const FRAGMENT_CANONICAL_PATH = "/fragments/quick-transfer";
+const ALLOWED_FRAGMENT_PATHS = Object.freeze([FRAGMENT_PATH, FRAGMENT_CANONICAL_PATH]);
 const FRAGMENT_URL = `${FRAGMENT_PATH}?v=${TRANSFER_VERSION}`;
 const STYLESHEET_URL = `/css/transfer.css?v=${TRANSFER_VERSION}`;
 const SCRIPT_URL = `/js/transfer.js?v=${TRANSFER_VERSION}`;
@@ -60,10 +62,20 @@ function normalizeLanguage(value) {
   return ["zh", "en", "ja"].includes(language) ? language : "zh";
 }
 
+export function isAllowedQuickTransferFragmentUrl(value, pageHref) {
+  try {
+    const pageUrl = new URL(pageHref);
+    const responseUrl = new URL(value, pageUrl);
+    return responseUrl.origin === pageUrl.origin
+      && ALLOWED_FRAGMENT_PATHS.includes(responseUrl.pathname);
+  } catch {
+    return false;
+  }
+}
+
 function validateFragmentResponse(response) {
   if (!response?.ok) throw new Error(`Quick Transfer fragment returned ${response?.status || "an error"}.`);
-  const responseUrl = new URL(response.url || FRAGMENT_URL, window.location.href);
-  if (responseUrl.origin !== window.location.origin || responseUrl.pathname !== FRAGMENT_PATH) {
+  if (!isAllowedQuickTransferFragmentUrl(response.url || FRAGMENT_URL, window.location.href)) {
     throw new Error("Quick Transfer fragment resolved outside its fixed local path.");
   }
 }

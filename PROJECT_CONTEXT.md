@@ -1,5 +1,11 @@
 # PROJECT_CONTEXT.md
 
+## 2026-07-19 公共服务恢复与发布守卫
+
+- `articleTranslationsStatements(env, articleId, translations, now)` 的每一次 seed 调用都必须显式传入确定的 UTC ISO 时间；D1 不接受 `undefined` bind。`tests/article-seed-bindings.test.mjs` 会构造完整文章 seed batch 并拒绝任何未定义参数，知识库故障排查应先运行该测试和三语 `/api/articles` smoke。
+- Cloudflare Pages 会把存在的 `.html` 静态片段重定向到 clean URL。Quick Transfer 仍只接受当前页面同源地址，但固定允许 `/fragments/quick-transfer.html` 与 `/fragments/quick-transfer` 两个精确 pathname；不得用 `startsWith`、后缀或跨源放宽白名单。
+- 本地 Wrangler 预览与 Production 一样会在全部 API 前校验两个独立、至少 32 bytes 的 `CHAT_IP_HASH_SALT` / `ANALYTICS_IP_HASH_SALT`。本地值只放已忽略的 `.dev.vars`；交付预览地址前必须先探测 `/api/health`，不得把缺盐导致的全 API 503 当成单个业务故障。
+
 ## 2026-07-18 资源区透明图集与排版回归
 
 - `assets/transfer/quick-transfer-icons-source.png` 是带洋红色键背景的构建源，不得由页面引用或直接缩放为生产图集。`scripts/build-transfer-icon-atlas.mjs` 负责色键、边缘去色、缩放并生成 168×168 RGBA 的 `quick-transfer-icons.png`；资产测试必须覆盖 alpha、整体透明率、16 个 sprite cell 的透明角点与可见像素比例。同一 Sharp / libvips 运行时双次构建要求 PNG 字节一致，但 Windows 与 Linux 的 PNG 压缩流不作为跨平台契约；跨平台 CI 解码 RGBA 并使用严格像素差阈值验证视觉等价。

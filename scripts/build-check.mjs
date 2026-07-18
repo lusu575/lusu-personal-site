@@ -767,6 +767,8 @@ const headersConfig = readRequired("_headers");
 const redirectsConfig = readRequired("_redirects");
 
 const routeLazyVersion = "20260718-resource-icons-layout-r1";
+const serviceRecoveryVersion = "20260719-service-recovery-r1";
+const publicRouteVersion = (route) => route === "resources" ? serviceRecoveryVersion : routeLazyVersion;
 const transferAtlasVersion = routeLazyVersion;
 const transferAtlasReferences = [];
 for (const { path, source } of repositoryRuntimeSources()) {
@@ -799,12 +801,13 @@ if (staticPublicImports.some((specifier) => specifier.startsWith("./routes/"))) 
 
 for (const route of lazyPublicRoutes) {
   const modulePath = `./routes/${route}.mjs`;
+  const routeVersion = publicRouteVersion(route);
   const versions = assetQueryVersions(mainEntryJs, modulePath);
-  if (versions.length !== 1 || versions[0] !== routeLazyVersion) {
-    fail(`js/main.js ${route} route must use one literal dynamic import at ${modulePath}?v=${routeLazyVersion}`);
+  if (versions.length !== 1 || versions[0] !== routeVersion) {
+    fail(`js/main.js ${route} route must use one literal dynamic import at ${modulePath}?v=${routeVersion}`);
   }
   const loaderPattern = new RegExp(
-    `\\b${escapeRegExp(route)}\\s*:\\s*\\(\\)\\s*=>[\\s\\S]{0,360}?import\\(\\s*["']${escapeRegExp(modulePath)}\\?v=${routeLazyVersion}["']\\s*\\)`
+    `\\b${escapeRegExp(route)}\\s*:\\s*\\(\\)\\s*=>[\\s\\S]{0,360}?import\\(\\s*["']${escapeRegExp(modulePath)}\\?v=${routeVersion}["']\\s*\\)`
   );
   if (!hasPattern(mainEntryJs, loaderPattern)) {
     fail(`js/main.js ${route} registry loader must own its literal dynamic import`);
@@ -993,7 +996,7 @@ if (indexHtml.includes('id="transfer-app"')
   fail("index.html must not preload Quick Transfer DOM, CSS, or JavaScript before its resource action is clicked");
 }
 
-if (!hasPattern(quickTransferLoaderJs, /const\s+TRANSFER_VERSION\s*=\s*["']20260718-resource-icons-layout-r1["']/)
+if (!hasPattern(quickTransferLoaderJs, new RegExp(`const\\s+TRANSFER_VERSION\\s*=\\s*["']${serviceRecoveryVersion}["']`))
   || !hasPattern(quickTransferLoaderJs, /Promise\.all\(\[ensureStylesheet\(\),\s*ensureFragment\(\),\s*ensureScript\(\)\]\)/)
   || !hasPattern(quickTransferLoaderJs, /root\.querySelector\(["']script, style, link, meta, base, iframe, object, embed, svg, math["']\)/)
   || !hasPattern(quickTransferLoaderJs, /routeActive[\s\S]*await\s+ensureLoaded\(\)[\s\S]*if\s*\(!routeActive\)/)
@@ -2741,9 +2744,9 @@ const mobileScrollRecoveryCssVersion = "20260718-mobile-scroll-recovery-css-r1";
 const mobileViewportKeyboardVersion = "20260718-mobile-viewport-keyboard-r1";
 const mobileViewportKeyboardCssVersion = "20260718-resource-icons-layout-r1";
 const publicModulesVersion = "20260718-resource-icons-layout-r1";
-const transferLazyVersion = "20260718-resource-icons-layout-r1";
+const transferLazyVersion = serviceRecoveryVersion;
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
-const currentMainVersion = routeLazyVersion;
+const currentMainVersion = serviceRecoveryVersion;
 const currentCssVersion = routeLazyVersion;
 const currentPreFinalTelemetryVersion = "20260623-analytics-privacy-r1";
 const currentGameShellVersion = "20260623-game-shell-storage-safe-r1";
@@ -2759,8 +2762,8 @@ for (const asset of [
 }
 
 const mainVersions = assetQueryVersions(indexHtml, "/js/main.js");
-if (mainVersions.length !== 1 || mainVersions[0] !== routeLazyVersion) {
-  fail(`index.html /js/main.js query should appear once as ${routeLazyVersion}`);
+if (mainVersions.length !== 1 || mainVersions[0] !== currentMainVersion) {
+  fail(`index.html /js/main.js query should appear once as ${currentMainVersion}`);
 }
 
 for (const asset of ["/css/style.css", "/css/mobile-ios-shell.css"]) {
@@ -3100,8 +3103,9 @@ for (const token of [
   }
 }
 for (const token of [
-  "responseUrl.origin !== window.location.origin",
-  "responseUrl.pathname !== FRAGMENT_PATH",
+  'const FRAGMENT_CANONICAL_PATH = "/fragments/quick-transfer"',
+  "responseUrl.origin === pageUrl.origin",
+  "ALLOWED_FRAGMENT_PATHS.includes(responseUrl.pathname)",
   'root.querySelector("script, style, link, meta, base, iframe, object, embed, svg, math")',
   '/^(?:src|srcdoc|href|action|formaction|xlink:href)$/i.test(attribute.name)'
 ]) {
@@ -3960,13 +3964,13 @@ for (const obsoleteText of [
   }
 }
 
-const finalUpdateId = "seed-update-2026-07-18-resource-icons-layout";
-const finalUpdateSlug = "2026-07-18-resource-icons-layout";
-const finalMainVersion = routeLazyVersion;
-const finalCssVersion = routeLazyVersion;
+const finalUpdateId = "seed-update-2026-07-19-service-recovery";
+const finalUpdateSlug = "2026-07-19-service-recovery";
+const finalMainVersion = currentMainVersion;
+const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Resources Icon and Layout Fixes";
-const finalPublishedAt = "2026-07-18T15:35:00.000Z";
+const finalTitleEn = "Knowledge, Japanese, and Transfer Service Recovery";
+const finalPublishedAt = "2026-07-18T17:35:00.000Z";
 const finalTranslationMinimums = {
   title: 8,
   summary: 24,
@@ -3986,6 +3990,7 @@ const changelog20260714Section = markdownSection(changelog, "## 2026-07-14");
 const changelog20260716Section = markdownSection(changelog, "## 2026-07-16");
 const changelog20260717Section = markdownSection(changelog, "## 2026-07-17");
 const changelog20260718Section = markdownSection(changelog, "## 2026-07-18");
+const changelog20260719Section = markdownSection(changelog, "## 2026-07-19");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -4159,7 +4164,7 @@ if (finalUpdateStarted) {
   }
 
   for (const token of [
-    'id="top-updated">2026.07.18',
+    'id="top-updated">2026.07.19',
     `/css/style.css?v=${finalCssVersion}`,
     `/css/mobile-ios-shell.css?v=${finalCssVersion}`,
     `/js/main.js?v=${finalMainVersion}`
@@ -4177,7 +4182,7 @@ if (finalUpdateStarted) {
     "Functions seed",
     "schema seed"
   ]) {
-    if (!changelog20260718Section.includes(token)) {
+    if (!changelog20260719Section.includes(token)) {
       fail(`CHANGELOG.md final public update sync missing ${token}`);
     }
   }

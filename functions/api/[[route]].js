@@ -4577,6 +4577,30 @@ function articleSeedStatements(env) {
         article_id, slug, category, tags, cover_image, status, is_pinned,
         view_count, created_at, updated_at, published_at
       ) values (
+        'seed-update-2026-07-19-service-recovery',
+        '2026-07-19-service-recovery',
+        'site-updates',
+        '["Knowledge","Japanese","Quick Transfer","reliability","QA"]',
+        '', 'published', 1, 0,
+        '2026-07-18T17:35:00.000Z',
+        '2026-07-18T17:35:00.000Z',
+        '2026-07-18T17:35:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
         'seed-update-2026-07-18-resource-icons-layout',
         '2026-07-18-resource-icons-layout',
         'site-updates',
@@ -7619,6 +7643,23 @@ This update swaps the four home wallpapers used by the live page to higher-resol
         updated_at = excluded.updated_at,
         published_at = excluded.published_at
     `),
+    ...articleTranslationsStatements(env, "seed-update-2026-07-19-service-recovery", {
+      zh: {
+        title: "知识库、日语与互传服务恢复",
+        summary: "修复知识库文章种子中的无效 D1 参数，兼容 Cloudflare 无扩展名互传片段地址，并补齐本地预览隐私配置检查；日语工具、知识库与互传入口已重新联调。",
+        content_markdown: "# 知识库、日语与互传服务恢复\n\n本次修复针对生产站与本地预览中叠加出现的服务异常，恢复知识库文章接口与资源区临时互传入口，并重新验证日语工具的静态资源和云端进度降级路径。\n\n## 知识库数据恢复\n\n- 修正一条三语网站更新 seed 漏传 UTC 时间戳的问题，避免 D1 收到 `undefined` 后让全部文章查询返回 500。\n- 新增全量 seed bind 回归测试，任何未来的未定义绑定参数都会在发布前直接失败。\n\n## 互传与本地预览恢复\n\n- Quick Transfer 继续只允许同源固定片段，但同时接受源文件 `.html` 路径和 Cloudflare clean URL 的无扩展名规范路径。\n- 本地 `.dev.vars` 必须具备两个独立、足够长度的隐私盐；健康检查会在 UI 验收前暴露缺失配置，秘密值不会进入仓库。\n\n## 验证范围\n\n回归覆盖中、英、日文章接口、资源区真实点击到互传登录门、日语课程目录与音频清单，并检查桌面和手机尺寸截图。匿名用户的互传登录提示与日语本地进度降级仍是设计行为。"
+      },
+      en: {
+        title: "Knowledge, Japanese, and Transfer Service Recovery",
+        summary: "An invalid D1 article-seed parameter is fixed, Quick Transfer now accepts Cloudflare's canonical extensionless fragment path, and local-preview privacy configuration is checked; Japanese, Knowledge, and Transfer flows are reverified together.",
+        content_markdown: "# Knowledge, Japanese, and Transfer Service Recovery\n\nThis release addresses overlapping production and local-preview failures. It restores the Knowledge article API and the Resources Quick Transfer entry, then rechecks the Japanese tool's static assets and cloud-progress fallback.\n\n## Knowledge data recovery\n\n- A trilingual site-update seed now passes its missing UTC timestamp, preventing D1 from receiving `undefined` and failing every article query with HTTP 500.\n- A full seed-bind regression test now fails the release gate whenever any future binding argument is undefined.\n\n## Transfer and local-preview recovery\n\n- Quick Transfer remains restricted to a fixed same-origin fragment while accepting both the authored `.html` path and Cloudflare's extensionless clean-URL form.\n- Local `.dev.vars` must contain two independent, sufficiently long privacy salts. Health probing exposes missing configuration before UI review, while secret values stay outside Git.\n\n## Verification scope\n\nRegression coverage includes Chinese, English, and Japanese article APIs, a real Resources click into the Transfer sign-in gate, the Japanese course catalog and audio manifest, plus desktop and mobile screenshots. Anonymous Transfer sign-in prompts and Japanese local-progress fallback remain intentional behavior."
+      },
+      ja: {
+        title: "ナレッジ・日本語・転送サービスの復旧",
+        summary: "記事 seed の不正な D1 引数を修正し、Quick Transfer が Cloudflare の拡張子なし canonical fragment を受け入れるようにしました。ローカル preview の privacy 設定も補い、日本語・ナレッジ・転送を一括で再確認しています。",
+        content_markdown: "# ナレッジ・日本語・転送サービスの復旧\n\n本リリースでは、本番環境とローカル preview で重なって発生した障害を修正しました。ナレッジの記事 API とリソース画面の Quick Transfer 入口を復旧し、日本語ツールの静的素材とクラウド進捗の fallback も再確認しています。\n\n## ナレッジデータの復旧\n\n- 3 言語のサイト更新 seed に不足していた UTC timestamp を渡し、D1 に `undefined` が bind されて全記事 query が HTTP 500 になる問題を防ぎました。\n- すべての seed bind を検査する回帰テストを追加し、今後未定義の引数があればリリース前に失敗します。\n\n## 転送とローカル preview の復旧\n\n- Quick Transfer は固定された同一 origin の fragment だけを許可しつつ、元の `.html` path と Cloudflare clean URL の拡張子なし canonical path の両方を受け入れます。\n- ローカル `.dev.vars` には、独立した十分な長さの privacy salt が 2 つ必要です。UI 確認前の health probe で不足を検出し、secret 値は Git に含めません。\n\n## 検証範囲\n\n中国語・英語・日本語の記事 API、リソースから転送ログイン画面までの実クリック、日本語 course catalog と audio manifest、デスクトップとモバイルの screenshot を確認します。匿名時の転送ログイン表示と日本語のローカル進捗 fallback は意図した動作です。"
+      }
+    }, "2026-07-18T17:35:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-07-18-resource-icons-layout", {
       zh: {
         title: "资源区图标与排版修复",
@@ -7863,7 +7904,7 @@ UI、UX、モーション、ビジュアル、性能、レスポンシブ、ア�
         summary: "Window、VisualViewport、主要スクロール計測を 1 つの読み取り・書き込みフレームへ統合し、Save-Data と明確な低性能端末には判読しやすい単色描画モードを適用します。",
         content_markdown: "# 統合フレームパイプラインと低性能描画モード\n\n今回の更新では、分散していた Window、VisualViewport、主要スクロール処理を監査可能な 1 つのフレームスケジューラへ統合し、通信量を節約する設定と明確な低性能端末に、機能とコントラストを維持した描画フォールバックを追加しました。\n\n## 1 フレームで先に読み取り、後で書き込み\n\n- `mobile-shell.js` が window resize、VisualViewport resize、scroll の唯一のネイティブリスナーになりました。同じイベント集中内の同一キーは最新ジョブだけを残し、すべてのレイアウト読み取り後に、同じフレームですべてのスタイル書き込みを行います。\n- Home の壁紙ステージとデスクトップアイコン形状、Knowledge の読書進捗と目次、モバイル Dock、モーション層、Quick Transfer のフォーカス中コントロールが同じパイプラインを使用します。ルート終了時には関連ジョブを解除します。\n- ビューポート寸法、キーボードオフセット、Dock 選択面を同じフレームで反映します。ネイティブページ倍率が 1 以外の時は、縮小した VisualViewport を画面キーボードと誤判定しません。\n- ビルドガードは公開スクリプトへの 2 組目のネイティブ viewport リスナーを拒否し、主要利用箇所の keyed measure/mutate 契約を確認します。\n\n## 判読しやすい低性能描画モード\n\n- Save-Data が有効、またはブラウザが論理コア 2 以下 / 端末メモリ 2GiB 以下を明示した場合に `low` を有効にします。能力が不明な端末は推測で低下させず `normal` を維持します。\n- `low` では大きな blur、backdrop-filter、壁紙 filter、雲のループ、常駐 `will-change`、全画面 View Transition を停止し、トップバー、タスクバー、Dock、アカウント層、モーダル背景へ高コントラストの単色フォールバックを適用します。\n- `normal` の XP、Pixel Art、Y2K 壁紙、ガラスの奥行き、操作感は変更しません。小さなアイコン影と短い transform/opacity フィードバックは維持します。\n\n## 検証範囲\n\n制御された Headless Chrome で 117 項目が成功しました。40 組の同一フレームイベントは読み取り 1 回・書き込み 1 回に統合され、390×844 / 844×390 のビューポート変数と Dock 形状が一致し、ネイティブ 2 倍ページ倍率ではキーボードオフセットが 0 になり、Save-Data、2 コア、能力不明の各プロファイルが正しいモードを選択します。低性能スクリーンショットにも大面積描画効果の残留はなく、文字と操作は明瞭です。この自動化は実際の iOS / Android 画面キーボードを再現したものではなく、その検証を主張しません。本番データへの接続、公開、デプロイは行っていません。"
       }
-    }),
+    }, "2026-07-17T21:12:00.000Z"),
     ...articleTranslationsStatements(env, "seed-update-2026-07-18-route-lifecycle-mobile-css", {
       zh: {
         title: "路由生命周期与移动样式权威源",

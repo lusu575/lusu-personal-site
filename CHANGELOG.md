@@ -4,6 +4,8 @@
 
 ## 2026-07-19
 
+- 恢复知识库、日语与临时互传联动服务：修复 `seed-update-2026-07-18-frame-pipeline-low-performance` 三语文章 seed 漏传时间戳、导致 D1 bind `undefined` 并使 `/api/articles` 全语言返回 500 的问题；Quick Transfer 严格同源白名单现兼容 `/fragments/quick-transfer.html` 与 Cloudflare clean URL `/fragments/quick-transfer`，不再把生产重定向误判为非法片段。本地预览补齐两个独立隐私盐并恢复 `/api/health`；新增全量文章 seed bind 与片段 URL 正反例测试。公开缓存版本为 `20260719-service-recovery-r1`，三语 `site-updates` 记录 `seed-update-2026-07-19-service-recovery` 已同步完整 fallback、Home 五条投影、Functions seed 与 schema seed。
+
 - 修复 GitHub Actions Linux runner 对 Quick Transfer 图集的跨平台可重复性误报：Sharp / libvips 在 Windows 与 Linux 上可能生成像素等价但 PNG 压缩字节不同的文件，因此同一运行时的双次构建继续要求逐字节一致，跨平台提交图则改为解码 RGBA 后使用严格的通道、alpha 与大差值比例阈值比较；原有尺寸、透明角点、16 格可见比例和洋红残留检查保持不变。本项只修复 CI 门禁，不改变公开图集、资源 query、页面行为或生产数据。
 
 ## 2026-07-18

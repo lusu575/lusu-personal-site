@@ -22,6 +22,9 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - Chat 发送只锁提交动作，用户可继续输入且旧请求不得清空新草稿。359×500 自动回归以普通房约 177px、私聊至少约 119px为目标；安全说明通过 44px 折叠入口提供，关闭时不占日志也不覆盖控件。
 - Chat 发送失败重试必须复用同一 `clientRequestId`，新草稿或上一次已成功后才生成新 ID。服务端要在限流前重放首次成功结果，依靠 `(visitor_id, room_key, client_request_id)` 唯一索引防止并发重复；私聊不得因随机 IV 密文改变而产生第二条消息。旧 D1 先补 `client_request_id` 列、后建依赖索引。
 - 公共 Chat 绝不回退暴露服务端隐藏 visitor id；密码、私聊、草稿、Secret、完整标识不得进入 DOM 泄漏、storage、History、console 或 telemetry。修改渲染、链接、iframe、媒体或 Transfer fragment 时必须运行安全边界测试。
+- 每次调用 `articleTranslationsStatements()` 都必须传入确定的 UTC ISO seed 时间；D1 会拒绝 `undefined` bind。文章或更新 seed 改动后必须运行全量 seed binding 回归和三语文章 API smoke，不能只靠静态 SQL 存在性判断。
+- Cloudflare Pages 可能把 `/fragments/quick-transfer.html` 规范化到 `/fragments/quick-transfer`。互传 loader 只允许这两个同源精确 pathname；不得用前缀、后缀、尾斜杠或跨源规则代替精确白名单。
+- 本地预览交付前先请求 `/api/health`。根 `.dev.vars` 必须包含两个互不相同且至少 32 bytes 的本地隐私盐，值只在本机生成、不得输出或提交；缺失会让全部 API 在进入业务路由前统一返回 503。
 
 ## 使用时机
 
