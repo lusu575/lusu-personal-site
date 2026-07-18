@@ -2,7 +2,7 @@
 
 ## 2026-07-18 资源区透明图集与排版回归
 
-- `assets/transfer/quick-transfer-icons-source.png` 是带洋红色键背景的构建源，不得由页面引用或直接缩放为生产图集。`scripts/build-transfer-icon-atlas.mjs` 负责色键、边缘去色、缩放并生成 168×168 RGBA 的 `quick-transfer-icons.png`；资产测试必须覆盖 alpha、整体透明率、16 个 sprite cell 的透明角点与可见像素比例。
+- `assets/transfer/quick-transfer-icons-source.png` 是带洋红色键背景的构建源，不得由页面引用或直接缩放为生产图集。`scripts/build-transfer-icon-atlas.mjs` 负责色键、边缘去色、缩放并生成 168×168 RGBA 的 `quick-transfer-icons.png`；资产测试必须覆盖 alpha、整体透明率、16 个 sprite cell 的透明角点与可见像素比例。同一 Sharp / libvips 运行时双次构建要求 PNG 字节一致，但 Windows 与 Linux 的 PNG 压缩流不作为跨平台契约；跨平台 CI 解码 RGBA 并使用严格像素差阈值验证视觉等价。
 - Resources 桌面窗口当前宽度上限为 960px，卡片高度由标题、说明、元信息、标签和 CTA 自然决定；移动端不得恢复固定卡片高度或用裁剪隐藏内容，主操作继续保持至少 44px。当前两项资源本身都可用，不显示重复的“可获取”状态。
 - Quick Transfer loader 与实现层分别只能暂存并恢复自己接管前的 `resource-categories` / `resource-list` 精确 hidden 状态。关闭互传必须回到打开前的列表几何，不得无条件显示空分类栏，也不得让列表闪失。
 - Windows 上直接传给 Chrome 的窄 `--window-size` 可能被系统最小窗口宽度钳制到约 500 CSS px。资源布局回归使用 `npm.cmd run audit:resources-layout` 的 CDP 精确 viewport，断言 layout/visual viewport 后，以中、英、日三语覆盖 359×500、375×667、390×844、760×900、844×390、1280×720 的列表、登录和返回状态；当前 58 / 58 个受控检查通过，Headless 结论仍不等同真机。

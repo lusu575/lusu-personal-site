@@ -23,6 +23,31 @@ async function rgba(path) {
   return sharp(fileURLToPath(url)).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
 }
 
+async function rgbaBuffer(buffer) {
+  return sharp(buffer).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+}
+
+function rgbaDifference(left, right) {
+  assert.deepEqual(
+    [left.info.width, left.info.height, left.info.channels],
+    [right.info.width, right.info.height, right.info.channels]
+  );
+  let totalDelta = 0;
+  let alphaDelta = 0;
+  let largeDeltaChannels = 0;
+  for (let offset = 0; offset < left.data.length; offset += 1) {
+    const delta = Math.abs(left.data[offset] - right.data[offset]);
+    totalDelta += delta;
+    if (offset % 4 === 3) alphaDelta += delta;
+    if (delta > 12) largeDeltaChannels += 1;
+  }
+  return {
+    meanChannelDelta: totalDelta / left.data.length,
+    meanAlphaDelta: alphaDelta / (left.data.length / 4),
+    largeDeltaChannelRatio: largeDeltaChannels / left.data.length
+  };
+}
+
 function opaqueMagentaKeyRatio(image) {
   let opaqueMagentaPixels = 0;
   const pixelCount = image.info.width * image.info.height;
@@ -103,10 +128,17 @@ test("sprite and entry icons use decode-sized production atlases", async () => {
   }
 });
 
-test("Quick Transfer production atlas is byte-for-byte reproducible from its keyed source", async () => {
+test("Quick Transfer production atlas is deterministic and pixel-equivalent across encoders", async () => {
   const rebuilt = await buildTransferIconAtlas();
+  const rebuiltAgain = await buildTransferIconAtlas();
   const committed = await readFile(new URL("assets/transfer/quick-transfer-icons.png", root));
-  assert.deepEqual(rebuilt.buffer, committed);
+  assert.deepEqual(rebuilt.buffer, rebuiltAgain.buffer, "the atlas encoder must be deterministic within one runtime");
+  const rebuiltPixels = await rgbaBuffer(rebuilt.buffer);
+  const committedPixels = await rgbaBuffer(committed);
+  const difference = rgbaDifference(rebuiltPixels, committedPixels);
+  assert.ok(difference.meanChannelDelta <= 2, `cross-platform atlas mean channel delta ${difference.meanChannelDelta} is too high`);
+  assert.ok(difference.meanAlphaDelta <= 1.5, `cross-platform atlas mean alpha delta ${difference.meanAlphaDelta} is too high`);
+  assert.ok(difference.largeDeltaChannelRatio <= 0.02, `cross-platform atlas large-delta ratio ${difference.largeDeltaChannelRatio} is too high`);
   assert.deepEqual(rebuilt.dimensions, [168, 168]);
   assert.ok(rebuilt.cellCorners.every((corners) => corners.every((alpha) => alpha === 0)));
 });

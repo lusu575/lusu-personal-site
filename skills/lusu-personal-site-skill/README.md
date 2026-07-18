@@ -30,7 +30,7 @@ skills/lusu-personal-site-skill/SKILL.md
 - 可见文案必须维护中文 / English / 日本語。
 - 临时互传固定放在资源区并复用现有登录；手机非 Home 的 Resources App 必须能直接到达登录，短屏、横屏和软键盘状态下消息、任务与输入区都要可达。手机房间只保留一个滚动容器，composer 必须处于正常文档流，不能以 sticky / fixed 层覆盖已发送卡片；仅改成 static 不足以避免 Grid 轨道视觉溢出，竖屏房间使用纵向 Flex 且直接子项必须不可收缩，短横屏再显式恢复双栏 Grid，并验证 composer 与图片/文件卡的二维交集为零。普通账号受 95 MiB、个人/房间/频率和全站免费池限制，只有 D1 admin 可用 R2 Multipart 大文件。24 小时过期、私有 R2、清理 Worker 和 Dashboard 人工绑定规则见 `docs/transfer/README.md`。
 - Resources 同列表工具卡必须共享网格宽度和卡片高度节奏；zh/en/ja 的标题、元信息、说明与 CTA 不得相交或被 `nowrap`、隐藏滚动条、裁剪吞掉。
-- Quick Transfer 洋红键源图不能直接作为生产 atlas；使用项目构建脚本生成 168×168 RGBA 透明图集，并用 alpha、整体透明率和 16 个 sprite 单元角点/像素比例守卫整张图集。Resources 打开再关闭 Transfer 必须恢复原分类栏与列表 hidden 状态，不能显示空工具条。
+- Quick Transfer 洋红键源图不能直接作为生产 atlas；使用项目构建脚本生成 168×168 RGBA 透明图集，并用 alpha、整体透明率和 16 个 sprite 单元角点/像素比例守卫整张图集。同一 Sharp / libvips 运行时双次构建要求字节一致，跨 Windows / Linux 则解码 RGBA 做严格像素差比较，不比较平台相关的 PNG 压缩流。Resources 打开再关闭 Transfer 必须恢复原分类栏与列表 hidden 状态，不能显示空工具条。
 - Windows 窄屏截图不要信任直接 Chrome `--window-size`；系统可能钳制到约 500 CSS px。移动验收必须使用 CDP 精确 viewport，先校验 layout/visual viewport，再判断 359×500、375×667、390×844、760×900、844×390 的排版。Windows Headless 保存截图时先预热捕获、等待双 `requestAnimationFrame`，再保存第二张 `fromSurface: true`；`fromSurface: false` 可能空白，单帧可能漏掉固定顶栏或 Dock，必须逐图确认。
 - 本地建议 Node.js 22.13+；同名 API 变量使用 Git 忽略的 `.dev.vars` 和独立本地值，绝不提交 `.dev.vars`、`.env`、真实邮箱、Webhook 或密钥。
 - 改首页、窗口、任务栏、图标、弹窗、游戏外壳等前端内容时，必须检查手机端适配。
