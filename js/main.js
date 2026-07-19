@@ -4,13 +4,13 @@ import {
   normalizeLanguage,
   translationFor
 } from "./core/i18n.mjs?v=20260718-resource-icons-layout-r1";
-import { homeContent } from "./data/home-content.mjs?v=20260719-service-recovery-r1";
+import { homeContent } from "./data/home-content.mjs?v=20260719-content-experience-fixes-r1";
 import { blogManifest } from "./data/blog-manifest.mjs?v=20260718-resource-icons-layout-r1";
 import { createRouteLifecycle, isAbortError } from "./core/route-lifecycle.mjs?v=20260718-resource-icons-layout-r1";
 import { createRouter } from "./core/router.mjs?v=20260718-resource-icons-layout-r1";
 import { createRouteModuleRegistry } from "./core/route-modules.mjs?v=20260718-resource-icons-layout-r1";
 import { createJsonResourceCache } from "./core/content-cache.mjs?v=20260718-resource-icons-layout-r1";
-import { createAccountFeature } from "./features/account.mjs?v=20260718-resource-icons-layout-r1";
+import { createAccountFeature } from "./features/account.mjs?v=20260719-content-experience-fixes-r1";
 
 const pageParams = new URLSearchParams(window.location.search);
 const defaultShareImageUrl = "https://lusu575.com/assets/images/homepage-pixel-coast.png?v=20260612-hd-wallpapers";
@@ -369,7 +369,7 @@ function safeStorageSet(key, value) {
   }
 }
 
-const routeStyleVersion = "20260718-resource-icons-layout-r1";
+const routeStyleVersion = "20260719-content-experience-fixes-r1";
 const routeStyleHrefs = Object.freeze({
   knowledge: `/css/routes/knowledge.css?v=${routeStyleVersion}`,
   videos: `/css/routes/videos.css?v=${routeStyleVersion}`,
@@ -428,19 +428,19 @@ function loadStyledRoute(route, moduleLoader, instantiate) {
 
 const routeModuleRegistry = createRouteModuleRegistry({
   loaders: {
-    knowledge: () => loadStyledRoute("knowledge", () => import("./routes/knowledge.mjs?v=20260718-resource-icons-layout-r1"),
+    knowledge: () => loadStyledRoute("knowledge", () => import("./routes/knowledge.mjs?v=20260719-content-experience-fixes-r1"),
       ({ createKnowledgeRoute }) => instantiateKnowledgeRoute(createKnowledgeRoute)),
     videos: () => loadStyledRoute("videos", () => Promise.all([
-      import("./routes/videos.mjs?v=20260718-resource-icons-layout-r1"),
+      import("./routes/videos.mjs?v=20260719-content-experience-fixes-r1"),
       import("./data/videos-content.mjs?v=20260718-resource-icons-layout-r1")
     ]), ([{ createVideosRoute }, { videosContent }]) => instantiateVideosRoute(createVideosRoute, videosContent)),
     resources: () => Promise.all([
-      import("./routes/resources.mjs?v=20260719-service-recovery-r1"),
-      import("./data/resources-content.mjs?v=20260718-resource-icons-layout-r1")
+      import("./routes/resources.mjs?v=20260719-content-experience-fixes-r1"),
+      import("./data/resources-content.mjs?v=20260719-content-experience-fixes-r1")
     ]).then(([{ createResourcesRoute }, { resourcesContent }]) => instantiateResourcesRoute(createResourcesRoute, resourcesContent)),
-    games: () => loadStyledRoute("games", () => import("./routes/games.mjs?v=20260718-resource-icons-layout-r1"),
+    games: () => loadStyledRoute("games", () => import("./routes/games.mjs?v=20260719-content-experience-fixes-r1"),
       ({ createGamesRoute }) => instantiateGamesRoute(createGamesRoute)),
-    chatroom: () => loadStyledRoute("chatroom", () => import("./routes/chatroom.mjs?v=20260718-resource-icons-layout-r1"),
+    chatroom: () => loadStyledRoute("chatroom", () => import("./routes/chatroom.mjs?v=20260719-content-experience-fixes-r1"),
       ({ createChatroomRoute }) => instantiateChatroomRoute(createChatroomRoute))
   },
   onStatus({ route, status, error }) {
@@ -931,7 +931,7 @@ function safeResourceIconSrc(value) {
 }
 
 function safeGameCoverSrc(value) {
-  const fallback = "/assets/images/icon-games.png?v=20260718-resource-icons-layout-r1";
+  const fallback = "/assets/images/icon-games.png?v=20260719-content-experience-fixes-r1";
   const path = String(value || "").trim().replace(/^(\.\.\/)+/, "");
   if (/^assets\/images\/[a-z0-9._/-]+\.(png|jpe?g|webp|gif)(\?[a-z0-9=&._-]+)?$/i.test(path)) {
     return sitePath(path);
@@ -1039,7 +1039,6 @@ function syncActiveRouteLanguage(route, language) {
     return;
   }
   if (route === "knowledge") {
-    updateArticleWindowButton();
     const module = knowledgeRoute();
     if (module) void module.loadArticles({ signal: activeRouteScope("knowledge")?.signal });
     return;
@@ -1494,7 +1493,6 @@ function instantiateKnowledgeRoute(createKnowledgeRoute) {
     latestUpdateDate,
     syncDocumentMeta,
     syncArticleDocumentMeta,
-    runWindowLayoutTransition,
     captureKnowledgeHistorySnapshot,
     defaultKnowledgeHistorySnapshot,
     replaceCurrentPublicHistoryState,
@@ -1524,8 +1522,6 @@ function measureArticleReadState(...args) { return knowledgeRoute()?.measureArti
 function applyArticleReadState(...args) { return knowledgeRoute()?.applyArticleReadState(...args); }
 function scrollToArticleHeading(...args) { return knowledgeRoute()?.scrollToArticleHeading(...args); }
 function scrollArticleToTop(...args) { return knowledgeRoute()?.scrollArticleToTop(...args); }
-function updateArticleWindowButton(...args) { return knowledgeRoute()?.updateArticleWindowButton(...args); }
-function toggleArticleWindowSize(...args) { return knowledgeRoute()?.toggleArticleWindowSize(...args); }
 function clearArticleCopyStatus(...args) { return knowledgeRoute()?.clearArticleCopyStatus(...args); }
 function resetArticleReadProgress(...args) { return knowledgeRoute()?.resetArticleReadProgress(...args); }
 function scheduleArticleReadProgressUpdate(...args) { return knowledgeRoute()?.scheduleArticleReadProgressUpdate(...args); }
@@ -2833,11 +2829,6 @@ document.addEventListener("click", (event) => {
 
   if (target.closest("[data-article-scroll-top]")) {
     scrollArticleToTop();
-    return;
-  }
-
-  if (target.closest("[data-article-window-toggle]")) {
-    toggleArticleWindowSize();
     return;
   }
 

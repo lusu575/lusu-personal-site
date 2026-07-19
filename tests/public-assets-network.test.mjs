@@ -126,6 +126,18 @@ test("sprite and entry icons use decode-sized production atlases", async () => {
     const iconPixels = await rgba(`assets/images/icon-${name}.png`);
     assert.ok(opaqueMagentaKeyRatio(iconPixels) < 0.01, `icon-${name}.png must not contain an opaque magenta-key background`);
   }
+
+  for (const name of ["quick-transfer", "kittens-game", "a-dark-room", "2048", "hextris", "life-restart"]) {
+    const path = `assets/images/generated-icons/${name}.png`;
+    const icon = await asset(path);
+    assert.deepEqual([icon.metadata.width, icon.metadata.height], [192, 192]);
+    assert.equal(icon.metadata.hasAlpha, true, `${path} must preserve transparency`);
+    assert.ok(icon.bytes < 32 * 1024, `${path} exceeds 32 KiB`);
+    const pixels = await rgba(path);
+    assert.ok(opaqueMagentaKeyRatio(pixels) < 0.001, `${path} must not retain its generation key color`);
+    const cornerAlpha = [0, 191, 191 * 192, 192 * 192 - 1].map((pixel) => pixels.data[pixel * 4 + 3]);
+    assert.ok(cornerAlpha.every((alpha) => alpha === 0), `${path} must have transparent corners`);
+  }
 });
 
 test("Quick Transfer production atlas is deterministic and pixel-equivalent across encoders", async () => {
@@ -232,6 +244,17 @@ test("public video thumbnails become bounded URLs with explicit dimensions", () 
   assert.equal(local.url, "https://lusu.example/api/videos/video-2/thumbnail");
   assert.deepEqual([local.width, local.height], [1, 1]);
   assert.doesNotMatch(local.url, /^data:/);
+
+  const uploadedPngHeader = Buffer.alloc(24);
+  Buffer.from([0x89, 0x50, 0x4e, 0x47]).copy(uploadedPngHeader);
+  uploadedPngHeader.writeUInt32BE(960, 16);
+  uploadedPngHeader.writeUInt32BE(540, 20);
+  const uploaded = publicVideoThumbnail(`data:image/png;base64,${uploadedPngHeader.toString("base64")}`, "video-3", "https://lusu.example");
+  assert.equal(uploaded.url, "https://lusu.example/api/videos/video-3/thumbnail");
+  assert.deepEqual([uploaded.width, uploaded.height], [960, 540]);
+
+  uploadedPngHeader.writeUInt32BE(961, 16);
+  assert.equal(publicVideoThumbnail(`data:image/png;base64,${uploadedPngHeader.toString("base64")}`, "video-4", "https://lusu.example").url, "");
 
   assert.equal(publicVideoThumbnail("https://evil.example/huge.jpg").url, "");
 });

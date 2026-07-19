@@ -215,32 +215,6 @@ html:not([data-ui-shell="mobile"]) body.is-article-reading #knowledge .xp-window
   border-radius: 7px 7px 5px 5px;
 }
 
-html:not([data-ui-shell="mobile"]) body.is-article-reading.is-article-window-restored {
-  overflow: hidden;
-}
-
-body.is-article-reading.is-article-window-restored .xp-topbar,
-body.is-article-reading.is-article-window-restored .xp-taskbar {
-  transform: none;
-  opacity: 1;
-  pointer-events: auto;
-}
-
-html:not([data-ui-shell="mobile"]) body.is-article-reading.is-article-window-restored #knowledge {
-  position: relative;
-  height: calc(100dvh - var(--chrome-topbar-height));
-  min-height: 0;
-  overflow: hidden;
-}
-
-html:not([data-ui-shell="mobile"]) body.is-article-reading.is-article-window-restored #knowledge .xp-window {
-  width: min(1080px, calc(100% - 16px));
-  height: calc(100dvh - var(--chrome-window-reserve));
-  max-height: calc(100dvh - var(--chrome-window-reserve));
-  margin: 0 auto;
-  border-radius: 7px 7px 5px 5px;
-}
-
 body.is-article-reading #knowledge .window-titlebar {
   min-height: 48px;
   padding: 6px 8px 6px 15px;

@@ -208,11 +208,7 @@ body.is-article-reading .article-read-progress-label span::before {
 }
 
 .video-thumb::after {
-  content: "";
-  border: 0;
-  border-radius: 0;
-  background: url("../assets/images/icon-videos.png?v=20260718-resource-icons-layout-r1") center / contain no-repeat;
-  filter: drop-shadow(0 8px 16px rgba(0, 18, 62, 0.42));
+  content: none;
 }
 
 .video-placeholder span.video-placeholder-asset {

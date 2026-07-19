@@ -75,21 +75,7 @@
 }
 
 .video-thumb::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  display: grid;
-  place-items: center;
-  width: 52px;
-  height: 52px;
-  transform: translate(-50%, -50%);
-  border: 3px solid #fff;
-  border-radius: 50%;
-  color: #fff;
-  background: rgba(0, 60, 158, 0.62);
-  font-size: 23px;
-  text-indent: 3px;
+  content: none;
 }
 
 .video-body {

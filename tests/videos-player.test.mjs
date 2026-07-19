@@ -19,14 +19,18 @@ test("video cards expose one play focus while thumbnails keep the same click act
   assert.doesNotMatch(source, /const thumb = document\.createElement\("button"\)/);
 });
 
-test("video player keeps native iframe controls unobstructed and supplies retry plus original fallback", async () => {
-  const [source, css, main] = await Promise.all([
+test("video player keeps thumbnails and native iframe controls unobstructed and supplies retry plus original fallback", async () => {
+  const [source, css, motionCss, main] = await Promise.all([
     readFile(new URL("../js/routes/videos.mjs", import.meta.url), "utf8"),
     readFile(new URL("../css/routes/videos.css", import.meta.url), "utf8"),
+    readFile(new URL("../css/motion-system.css", import.meta.url), "utf8"),
     readFile(new URL("../js/main.js", import.meta.url), "utf8")
   ]);
   assert.doesNotMatch(source, /videoClickShield|video-click-shield|video-click-blocker/);
   assert.doesNotMatch(css, /video-click-shield|video-click-blocker/);
+  assert.match(css, /\.video-thumb::after\s*\{\s*content:\s*none/);
+  assert.match(motionCss, /\.video-thumb::after\s*\{\s*content:\s*none/);
+  assert.doesNotMatch(css, /\.video-thumb::after\s*\{[\s\S]{0,320}border-radius:\s*50%/);
   assert.match(source, /iframe\.allowFullscreen = true/);
   assert.match(source, /iframe\.addEventListener\("load", settleLoaded/);
   assert.match(source, /iframe\.addEventListener\("error", settleFailed/);

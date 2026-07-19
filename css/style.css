@@ -596,6 +596,12 @@ body[data-route="home"] .site-shell::after {
   max-width: 100%;
 }
 
+.account-form[hidden],
+.account-signed-in[hidden],
+.account-field[hidden] {
+  display: none !important;
+}
+
 .account-popover-header {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;

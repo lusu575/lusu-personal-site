@@ -9,6 +9,7 @@ const fragment = readFileSync(new URL("fragments/quick-transfer.html", root), "u
 const client = readFileSync(new URL("js/transfer.js", root), "utf8");
 const loader = readFileSync(new URL("js/features/quick-transfer-loader.mjs", root), "utf8");
 const resourcesRoute = readFileSync(new URL("js/routes/resources.mjs", root), "utf8");
+const resourcesContent = readFileSync(new URL("js/data/resources-content.mjs", root), "utf8");
 const styles = readFileSync(new URL("css/transfer.css", root), "utf8");
 const publicStyles = readFileSync(new URL("css/style.css", root), "utf8");
 
@@ -136,10 +137,11 @@ test("Quick Transfer uses explicit compact and full desktop window modes", () =>
   assert.doesNotMatch(styles, /@media \(max-width: \d+px\)\s*\{\s*html\[data-ui-shell="mobile"\] \.transfer-app-heading \.transfer-icon \{ display: none; \}/);
 });
 
-test("Resources launcher icon frames share one 42px geometry token", () => {
+test("Resources launcher uses the generated Quick Transfer icon in the shared 42px frame", () => {
   assert.match(publicStyles, /#resource-list\s*\{\s*--resource-icon-frame-size:\s*42px/);
   assert.match(publicStyles, /\.resource-icon-image\s*\{[\s\S]*?width:\s*var\(--resource-icon-frame-size, 42px\)[\s\S]*?height:\s*var\(--resource-icon-frame-size, 42px\)/);
-  assert.match(publicStyles, /\.resource-icon\.transfer-icon\s*\{\s*--transfer-icon-size:\s*var\(--resource-icon-frame-size, 42px\)/);
+  assert.match(resourcesContent, /"iconSrc": "assets\/images\/generated-icons\/quick-transfer\.png\?v=20260719-content-experience-fixes-r1"/);
+  assert.doesNotMatch(resourcesContent, /"iconSprite": "app"/);
 });
 
 test("Quick Transfer binds text submission to an immutable room context", () => {

@@ -4,7 +4,7 @@ export const resourcesContent = Object.freeze({
     {
       "category": 0,
       "action": "quick-transfer",
-      "iconSprite": "app",
+      "iconSrc": "assets/images/generated-icons/quick-transfer.png?v=20260719-content-experience-fixes-r1",
       "version": "v1.0.0",
       "retention": {
         "zh": "24 小时",

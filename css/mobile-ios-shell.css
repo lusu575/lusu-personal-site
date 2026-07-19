@@ -431,8 +431,7 @@
     overflow: hidden;
   }
 
-  body.is-article-reading #knowledge .xp-window,
-  body.is-article-reading.is-article-window-restored #knowledge .xp-window {
+  body.is-article-reading #knowledge .xp-window {
     width: 100%;
     height: calc(100dvh - var(--chrome-topbar-height) - var(--chrome-taskbar-height) - 22px);
     max-height: calc(100dvh - var(--chrome-topbar-height) - var(--chrome-taskbar-height) - 22px);
@@ -1368,8 +1367,7 @@
     margin-top: 6px;
   }
 
-  body.is-article-reading #knowledge .xp-window,
-  body.is-article-reading.is-article-window-restored #knowledge .xp-window {
+  body.is-article-reading #knowledge .xp-window {
     min-height: 0;
     height: calc(100dvh - 154px);
     max-height: calc(100dvh - 154px);
@@ -1538,8 +1536,7 @@ html[data-ui-shell="mobile"] body {
   -webkit-tap-highlight-color: transparent;
 }
 
-html[data-ui-shell="mobile"] body.is-article-reading,
-html[data-ui-shell="mobile"] body.is-article-reading.is-article-window-restored {
+html[data-ui-shell="mobile"] body.is-article-reading {
   overflow: hidden;
 }
 
@@ -2203,8 +2200,7 @@ html[data-ui-shell="mobile"] #about.page > .xp-window {
   overflow: hidden;
 }
 
-html[data-ui-shell="mobile"] body.is-article-reading #knowledge.page > .xp-window,
-html[data-ui-shell="mobile"] body.is-article-reading.is-article-window-restored #knowledge.page > .xp-window {
+html[data-ui-shell="mobile"] body.is-article-reading #knowledge.page > .xp-window {
   width: 100%;
   max-width: none;
   height: 100%;
@@ -2278,8 +2274,7 @@ html[data-ui-shell="mobile"] body:not([data-route="home"]) #about.page.active > 
 
 /* The active App window is a dormant overflow escape hatch. Article reading
  * keeps its established detail scroller as the sole vertical owner. */
-html[data-ui-shell="mobile"] body.is-article-reading #knowledge.page.active > .xp-window,
-html[data-ui-shell="mobile"] body.is-article-reading.is-article-window-restored #knowledge.page.active > .xp-window {
+html[data-ui-shell="mobile"] body.is-article-reading #knowledge.page.active > .xp-window {
   overflow-y: hidden;
   overscroll-behavior-y: none;
   scroll-padding-block: 0;
@@ -2311,10 +2306,6 @@ html[data-ui-shell="mobile"] .titlebar-button {
 }
 
 html[data-ui-shell="mobile"] .minimize-button {
-  display: none;
-}
-
-html[data-ui-shell="mobile"] [data-article-window-toggle] {
   display: none;
 }
 

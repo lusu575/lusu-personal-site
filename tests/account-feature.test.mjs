@@ -10,6 +10,7 @@ import {
 import { translations } from "../js/core/i18n.mjs";
 
 const accountSource = await readFile(new URL("../js/features/account.mjs", import.meta.url), "utf8");
+const publicStyles = await readFile(new URL("../css/style.css", import.meta.url), "utf8");
 const transferSource = await readFile(new URL("../js/transfer.js", import.meta.url), "utf8");
 const transferFragment = await readFile(new URL("../fragments/quick-transfer.html", import.meta.url), "utf8");
 
@@ -63,6 +64,11 @@ test("account UI keeps one stable safe-DOM tree with explicit labels and busy/er
   assert.doesNotMatch(accountSource, /\.innerHTML\s*=/);
   assert.match(accountSource, /refs\.form\.noValidate = true/);
   assert.match(accountSource, /name: "confirmPassword"[\s\S]*autocomplete: "new-password"/);
+  assert.match(accountSource, /refs\.confirmGroup\.hidden = !registering/);
+  assert.match(accountSource, /refs\.form\.hidden = signedIn[\s\S]*refs\.signedIn\.hidden = !signedIn/);
+  assert.match(accountSource, /refs\.signedEmail\.textContent = t\("accountLoggedIn"\)/);
+  assert.doesNotMatch(accountSource, /refs\.signedEmail\.textContent = authUser\?\.email/);
+  assert.match(publicStyles, /\.account-form\[hidden\],[\s\S]*\.account-signed-in\[hidden\],[\s\S]*\.account-field\[hidden\]\s*\{\s*display:\s*none !important/);
   assert.match(accountSource, /refs\.password\.autocomplete = registering \? "new-password" : "current-password"/);
   assert.match(accountSource, /setAttribute\("aria-errormessage", error\.id\)/);
   assert.match(accountSource, /error\?\.dataset\.errorKey[\s\S]*t\(error\.dataset\.errorKey\)/);

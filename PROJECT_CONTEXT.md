@@ -1,5 +1,13 @@
 # PROJECT_CONTEXT.md
 
+## 2026-07-19 内容窗口、封面、图标与账号规则
+
+- `site-updates` 是普通时间线日志，永远不得置顶。Functions 创建或更新该分类文章时强制 `is_pinned = 0`，schema / seed 会清理历史错误值，Knowledge 前端对缓存中的旧置顶值也必须按非置顶处理；其他知识文章仍可正常置顶。
+- Knowledge 标题栏只保留关闭键，不再提供最小化、最大化或还原状态；以后不要恢复无对应窗口逻辑的装饰性控制。视频模态的独立最大化逻辑不受影响。
+- 后台本地视频封面会生成最大 960×540 的受限 `data:image`。公开视频接口必须允许这组尺寸并继续保持 320KB、受限 MIME 和受控同源缩略图端点，不能因为前台尺寸上限更小而让已保存的 Bilibili 手动封面消失。
+- Resources 的临时互传入口与五款游戏使用 `assets/images/generated-icons/` 下各自的 192×192 RGBA 图标；图标由图像生成流程制作并透明化，不用 CSS / Canvas 几何替代。新图标必须验证 alpha、透明角点、尺寸和文件预算。
+- 账号稳定 DOM 仍同时持有登录／注册字段，但 `[hidden]` 必须在作者 CSS 中可靠生效：登录只显示邮箱和一次密码，注册才显示确认密码；登录后隐藏完整表单，只显示登录成功状态与退出账号按钮，不公开显示账号邮箱。
+
 ## 2026-07-19 公共服务恢复与发布守卫
 
 - `articleTranslationsStatements(env, articleId, translations, now)` 的每一次 seed 调用都必须显式传入确定的 UTC ISO 时间；D1 不接受 `undefined` bind。`tests/article-seed-bindings.test.mjs` 会构造完整文章 seed batch 并拒绝任何未定义参数，知识库故障排查应先运行该测试和三语 `/api/articles` smoke。

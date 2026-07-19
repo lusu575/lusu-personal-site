@@ -45,6 +45,16 @@ test("Games exposes the current language and cloud-save capability before second
   assert.match(gamesRoute, /gameLicenseLabel[\s\S]*safeGithubUrl\(item\.repo\)/);
 });
 
+test("every public game has its own generated cover icon", () => {
+  const catalog = JSON.parse(read("games/catalog.json"));
+  const covers = catalog.games.map((game) => game.cover);
+  assert.equal(covers.length, 5);
+  assert.equal(new Set(covers).size, covers.length);
+  for (const cover of covers) {
+    assert.match(cover, /^\.\.\/assets\/images\/generated-icons\/[a-z0-9-]+\.png\?v=20260719-content-experience-fixes-r1$/);
+  }
+});
+
 test("Games consumes the full desktop height with one list scroll owner", () => {
   assert.match(gamesCss, /#games\s+\.xp-window\s*\{[\s\S]*height:\s*calc\(100dvh\s*-\s*var\(--chrome-window-compact-reserve\)\)[\s\S]*max-height:\s*calc\(100dvh\s*-\s*var\(--chrome-window-compact-reserve\)\)/);
   assert.match(gamesCss, /\.game-list\s*\{[\s\S]*flex:\s*1\s+1\s+auto[\s\S]*min-height:\s*0[\s\S]*overflow-y:\s*auto/);

@@ -41,7 +41,8 @@ export function normalizeKnowledgeSearchText(value) {
 
 export function sortKnowledgeArticles(items) {
   return [...items].sort((left, right) => {
-    const pinnedDelta = Number(Boolean(right?.is_pinned)) - Number(Boolean(left?.is_pinned));
+    const isPinned = (item) => item?.category !== "site-updates" && Boolean(item?.is_pinned);
+    const pinnedDelta = Number(isPinned(right)) - Number(isPinned(left));
     if (pinnedDelta) {
       return pinnedDelta;
     }
@@ -73,7 +74,6 @@ export function createKnowledgeRoute({
   latestUpdateDate,
   syncDocumentMeta,
   syncArticleDocumentMeta,
-  runWindowLayoutTransition,
   captureKnowledgeHistorySnapshot,
   defaultKnowledgeHistorySnapshot,
   replaceCurrentPublicHistoryState,
@@ -133,7 +133,6 @@ export function createKnowledgeRoute({
         searchBar.hidden = true;
       }
       document.body.classList.add("is-article-reading");
-      updateArticleWindowButton();
       layout?.classList.add("is-reading");
       list.hidden = true;
       detail.hidden = false;
@@ -154,8 +153,6 @@ export function createKnowledgeRoute({
       searchBar.hidden = false;
     }
     document.body.classList.remove("is-article-reading");
-    document.body.classList.remove("is-article-window-restored");
-    updateArticleWindowButton();
     layout?.classList.remove("is-reading");
     renderKnowledgeCategoryButtons(categories);
     list.hidden = false;
@@ -297,7 +294,7 @@ export function createKnowledgeRoute({
 
     const meta = document.createElement("div");
     meta.className = "meta-row";
-    if (item.is_pinned) {
+    if (item.category !== siteUpdateCategory && item.is_pinned) {
       const pinned = document.createElement("span");
       pinned.className = "tag article-pinned-badge";
       pinned.textContent = t("articlePinned");
@@ -978,32 +975,6 @@ export function createKnowledgeRoute({
     return window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
   }
 
-  function updateArticleWindowButton() {
-    const button = document.querySelector("[data-article-window-toggle]");
-    if (!button) {
-      return;
-    }
-    const reading = document.body.classList.contains("is-article-reading");
-    const restored = document.body.classList.contains("is-article-window-restored");
-    const actionLabel = t(restored ? "windowMaximizeAria" : "windowRestoreAria");
-    button.hidden = !reading;
-    button.setAttribute("aria-pressed", String(!restored));
-    button.setAttribute("aria-label", actionLabel);
-    button.setAttribute("title", actionLabel);
-  }
-
-  function toggleArticleWindowSize() {
-    if (!document.body.classList.contains("is-article-reading")) {
-      return;
-    }
-    const nextRestored = !document.body.classList.contains("is-article-window-restored");
-    const windowSurface = document.querySelector("#knowledge .xp-window");
-    runWindowLayoutTransition(nextRestored ? "window-restore" : "window-maximize", windowSurface, () => {
-      document.body.classList.toggle("is-article-window-restored", nextRestored);
-      updateArticleWindowButton();
-    });
-  }
-
   function clearArticleCopyStatus() {
     window.clearTimeout(articleState.copyStatusTimer);
     articleState.copyStatusTimer = 0;
@@ -1450,8 +1421,6 @@ export function createKnowledgeRoute({
     applyArticleReadState,
     scrollToArticleHeading,
     scrollArticleToTop,
-    updateArticleWindowButton,
-    toggleArticleWindowSize,
     clearArticleCopyStatus,
     resetArticleReadProgress,
     scheduleArticleReadProgressUpdate,

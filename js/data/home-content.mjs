@@ -2,13 +2,38 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-07-19-content-experience-fixes",
+      "slug": "2026-07-19-content-experience-fixes",
+      "category": "site-updates",
+      "tags": ["Knowledge", "Videos", "Resources", "Games", "account", "UI"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-19T04:04:44.666Z",
+      "updated_at": "2026-07-19T04:04:44.666Z",
+      "published_at": "2026-07-19T04:04:44.666Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.07.19",
+      "title": {
+        "zh": "知识库、视频、图标与账号体验修复",
+        "en": "Knowledge, Video, Icon, and Account Fixes",
+        "ja": "ナレッジ・動画・アイコン・アカウントの修正"
+      },
+      "summary": {
+        "zh": "网站更新日志全部取消置顶，知识库窗口只保留关闭键；恢复后台上传的 B 站封面并移除封面圆圈，替换临时互传和五款游戏的独立图标，同时修正登录、注册与登录后账号界面。",
+        "en": "Site update logs are no longer pinned and the Knowledge window keeps only Close; uploaded Bilibili covers are restored, thumbnail circles removed, Quick Transfer and five games receive distinct icons, and account login, registration, and signed-in states are corrected.",
+        "ja": "サイト更新ログの固定を解除し、ナレッジ画面は閉じる操作だけにしました。Bilibili のアップロード済みサムネイルを復旧し、円形表示を削除。一時転送と5ゲームに個別アイコンを追加し、ログイン・登録・ログイン後表示も修正しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-07-19-service-recovery",
       "slug": "2026-07-19-service-recovery",
       "category": "site-updates",
       "tags": ["Knowledge", "Japanese", "Quick Transfer", "reliability", "QA"],
       "cover_image": "",
       "status": "published",
-      "is_pinned": 1,
+      "is_pinned": 0,
       "created_at": "2026-07-18T17:35:00.000Z",
       "updated_at": "2026-07-18T17:35:00.000Z",
       "published_at": "2026-07-18T17:35:00.000Z",
@@ -33,7 +58,7 @@ export const homeContent = Object.freeze({
       "tags": ["Resources", "Quick Transfer", "UI", "mobile", "QA"],
       "cover_image": "",
       "status": "published",
-      "is_pinned": 1,
+      "is_pinned": 0,
       "created_at": "2026-07-18T15:35:00.000Z",
       "updated_at": "2026-07-18T15:35:00.000Z",
       "published_at": "2026-07-18T15:35:00.000Z",
@@ -58,7 +83,7 @@ export const homeContent = Object.freeze({
       "tags": ["performance", "UX", "accessibility", "mobile", "security", "QA"],
       "cover_image": "",
       "status": "published",
-      "is_pinned": 1,
+      "is_pinned": 0,
       "created_at": "2026-07-18T04:00:00.000Z",
       "updated_at": "2026-07-18T04:00:00.000Z",
       "published_at": "2026-07-18T04:00:00.000Z",
@@ -90,7 +115,7 @@ export const homeContent = Object.freeze({
       ],
       "cover_image": "",
       "status": "published",
-      "is_pinned": 1,
+      "is_pinned": 0,
       "created_at": "2026-07-18T00:26:00.000Z",
       "updated_at": "2026-07-18T00:26:00.000Z",
       "published_at": "2026-07-18T00:26:00.000Z",
@@ -106,38 +131,6 @@ export const homeContent = Object.freeze({
         "zh": "账号表单改为稳定 DOM 与明确登录/注册模式，文章只保留正文滚动并使用 4px 进度条；Chat 保留在途新草稿和私聊安全说明，公共隐私闸门同步加固。",
         "en": "Account forms now keep a stable DOM with explicit sign-in and registration modes; articles use one content scroller and a 4px progress track; Chat preserves in-flight drafts and private-room safety guidance while public privacy gates are tightened.",
         "ja": "アカウントフォームを安定 DOM と明確なログイン／登録モードに変更し、記事は一つの本文スクロールと 4px の進捗線を使用します。Chat は送信中の新しい下書きと非公開ルームの安全説明を保持し、公開プライバシー境界も強化しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-07-18-route-lazy-transfer",
-      "slug": "2026-07-18-route-lazy-transfer",
-      "category": "site-updates",
-      "tags": [
-        "performance",
-        "lazy-loading",
-        "routes",
-        "transfer",
-        "UX",
-        "QA"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 1,
-      "created_at": "2026-07-17T23:35:00.000Z",
-      "updated_at": "2026-07-17T23:35:00.000Z",
-      "published_at": "2026-07-17T23:35:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.07.18",
-      "title": {
-        "zh": "路由与临时互传按需加载",
-        "en": "On-Demand Routes and Quick Transfer",
-        "ja": "ルートと一時転送のオンデマンド読込"
-      },
-      "summary": {
-        "zh": "Home 初始数据缩至约 8 KB 的五条更新摘要；五个业务路由与四份重样式首次进入时加载并复用，Quick Transfer 只在真实 CTA 点击后加载完整链路，失败可重试且离开不误初始化。",
-        "en": "Home now starts with about 8 KB of five update summaries; five route modules and four heavy styles load once on first entry, while Quick Transfer loads its full chain only after a real CTA click with retry-safe, leave-safe initialization.",
-        "ja": "Home の初期データを約 8 KB・5 件の更新要約に縮小し、5 つのルートモジュールと 4 つの重い CSS は初回進入時だけ読み込みます。一時転送は実際の CTA 操作後に全構成を読み込み、再試行と離脱競合にも対応します。"
       }
     }
   ]

@@ -249,15 +249,13 @@ export function createAccountFeature({
     refs.signedIn.hidden = true;
     refs.signedEmail = document.createElement("p");
     refs.signedEmail.className = "account-signed-email";
-    refs.signedNote = document.createElement("p");
-    refs.signedNote.className = "account-note";
     const signedActions = document.createElement("div");
     signedActions.className = "account-actions";
     refs.logout = appendTextButton(signedActions, {
       className: "account-button account-danger-action",
       dataset: { accountLogout: "" }
     });
-    refs.signedIn.append(refs.signedEmail, refs.signedNote, signedActions);
+    refs.signedIn.append(refs.signedEmail, signedActions);
 
     refs.status = document.createElement("p");
     refs.status.className = "account-note account-status";
@@ -339,7 +337,7 @@ export function createAccountFeature({
     refs.email.placeholder = t("accountEmailPlaceholder");
     refs.password.placeholder = t("accountPasswordPlaceholder");
     refs.confirmPassword.placeholder = t("accountConfirmPasswordPlaceholder");
-    refs.signedNote.textContent = t("accountSignedInNote");
+    refs.signedEmail.textContent = t("accountLoggedIn");
     refs.logout.textContent = t("accountLogout");
     refs.toggleText.textContent = authUser ? t("accountTitle") : t("accountLogin");
     refs.toggle.setAttribute("aria-label", authUser ? t("accountTitle") : t("accountLogin"));
@@ -373,7 +371,6 @@ export function createAccountFeature({
     const signedIn = Boolean(authUser);
     refs.form.hidden = signedIn;
     refs.signedIn.hidden = !signedIn;
-    refs.signedEmail.textContent = authUser?.email || "";
     refs.popover.dataset.accountState = signedIn ? "signed-in" : authState;
     syncAccountMode();
     syncAccountCopy();
@@ -514,7 +511,7 @@ export function createAccountFeature({
       refs.confirmPassword.value = "";
       refs.password.type = "password";
       refs.confirmPassword.type = "password";
-      setAccountStatus("accountLoggedIn");
+      setAccountStatus("");
       syncAccountView();
       openAccountPopover({ focus: "status" });
       window.dispatchEvent(new CustomEvent("lusu:accountchange", {

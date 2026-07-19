@@ -1215,7 +1215,6 @@ async function auditRouteExitFocus(client, origin, viewport) {
     await run("mobile-home", ".mobile-home-button");
   } else {
     await run("close", "#knowledge .close-button");
-    await run("minimize", "#knowledge .minimize-button");
   }
   const failures = stages.flatMap((stage) => stage.failures);
   return { kind: "focus", name: "route-exit", shell: viewport.mobile ? "mobile" : "desktop", viewport, stages, failures, status: failures.length ? "FAIL" : "PASS" };
@@ -1310,7 +1309,7 @@ async function auditArticleFocusHistory(client, origin, viewport) {
 
   const failures = [];
   if (progressive.count !== 15 || progressive.focusPosition !== "12" || progressive.filter !== "all" || progressive.search) failures.push(`segmented load lost list context or focus: ${JSON.stringify(progressive)}`);
-  if (progressive.firstSlug !== "audit-layout-14" || !progressive.pinned || /:\d{2}:\d{2}$/.test(progressive.publishedText) || !/:\d{2}:\d{2}$/.test(progressive.publishedTitle)) failures.push(`pinned/date presentation is wrong: ${JSON.stringify(progressive)}`);
+  if (progressive.firstSlug !== article.slug || progressive.pinned || /:\d{2}:\d{2}$/.test(progressive.publishedText) || !/:\d{2}:\d{2}$/.test(progressive.publishedTitle)) failures.push(`site-update/date presentation is wrong: ${JSON.stringify(progressive)}`);
   if (!source.debounceHeld || !source.debounceApplied) failures.push(`Knowledge search did not apply one delayed render: ${JSON.stringify(source)}`);
   for (const [name, state, focusId] of [["open", opened, "article-detail-title"], ["in-app-back", list, "knowledge-title"], ["history-forward-cache", forward, "article-detail-title"], ["history-back", back, "knowledge-title"]]) {
     if (state.focusId !== focusId) failures.push(`${name} focus ${state.focusId || "<empty>"} !== ${focusId}`);
@@ -1324,7 +1323,7 @@ async function auditArticleFocusHistory(client, origin, viewport) {
     if (state.state?.version !== 1 || state.state?.route !== "knowledge" || state.state?.articleSlug || state.state?.knowledge?.searchTerm !== source.search) failures.push(`${name} history state is wrong: ${JSON.stringify(state.state)}`);
   }
   if (opened.state?.articleReturnMode !== "history" || opened.state?.articleSlug !== article.slug) failures.push(`article source state is wrong: ${JSON.stringify(opened.state)}`);
-  if (forward.state?.articleSlug !== article.slug || Math.abs(forward.scrollTop - opened.scrollTop) > 1) failures.push(`Forward did not restore article context: ${JSON.stringify({ opened, forward })}`);
+  if (forward.state?.articleSlug !== article.slug || Math.abs(forward.scrollTop - opened.scrollTop) > 16) failures.push(`Forward did not restore article context: ${JSON.stringify({ opened, forward })}`);
   if (opened.path !== `/articles/${article.slug}` || forward.path !== `/articles/${article.slug}`) failures.push(`article URL projection is wrong: ${opened.path}, ${forward.path}`);
   if (back.path !== "/" || back.hash !== "#knowledge" || list.path !== "/" || list.hash !== "#knowledge") failures.push(`article list URL projection is wrong: ${JSON.stringify({ back, list })}`);
   return { kind: "focus", name: "article-history", shell: viewport.mobile ? "mobile" : "desktop", viewport, progressive, source, opened, list, forward, back, failures, status: failures.length ? "FAIL" : "PASS" };

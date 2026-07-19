@@ -37,9 +37,10 @@ test("knowledge search normalization and article ordering are deterministic", ()
   const ordered = sortKnowledgeArticles([
     { slug: "new", published_at: "2026-07-18T00:00:00Z", is_pinned: 0 },
     { slug: "pinned-old", published_at: "2025-01-01T00:00:00Z", is_pinned: 1 },
-    { slug: "older", published_at: "2026-07-17T00:00:00Z", is_pinned: 0 }
+    { slug: "older", published_at: "2026-07-17T00:00:00Z", is_pinned: 0 },
+    { slug: "stale-pinned-update", category: "site-updates", published_at: "2024-01-01T00:00:00Z", is_pinned: 1 }
   ]);
-  assert.deepEqual(ordered.map(({ slug }) => slug), ["pinned-old", "new", "older"]);
+  assert.deepEqual(ordered.map(({ slug }) => slug), ["pinned-old", "new", "older", "stale-pinned-update"]);
 });
 
 test("article reader uses an observer, in-window scrolling, shareable hashes, and an explicit summary control", async () => {
@@ -60,10 +61,18 @@ test("article reader uses an observer, in-window scrolling, shareable hashes, an
   assert.match(routeSource, /articleState\.searchIndex = new Map/);
   assert.match(routeSource, /data-article-load-more|dataset\.articleLoadMore/);
   assert.match(routeSource, /article-pinned-badge/);
+  assert.match(routeSource, /item\.category !== siteUpdateCategory && item\.is_pinned/);
   assert.match(indexSource, /id="article-summary-toggle"/);
   assert.match(indexSource, /aria-controls="article-detail-summary"/);
   assert.match(routeCss, /max-width:\s*82ch/);
   assert.match(routeCss, /user-select:\s*text/);
   assert.match(mobileCss, /#article-detail-meta[\s\S]*?flex-wrap:\s*wrap/);
   assert.match(mobileCss, /#article-summary-toggle\.is-expanded|#article-detail-summary\.is-expanded/);
+
+  const controls = indexSource.slice(indexSource.indexOf('<div class="knowledge-window-controls"'), indexSource.indexOf('<div class="window-toolbar">'));
+  assert.match(controls, /class="close-button"/);
+  assert.doesNotMatch(controls, /minimize-button|data-article-window-toggle/);
+  assert.doesNotMatch(routeSource, /toggleArticleWindowSize|updateArticleWindowButton|is-article-window-restored/);
+  assert.doesNotMatch(routeCss, /is-article-window-restored/);
+  assert.doesNotMatch(mobileCss, /data-article-window-toggle|is-article-window-restored/);
 });

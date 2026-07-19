@@ -766,10 +766,10 @@ const changelog = readRequired("CHANGELOG.md");
 const headersConfig = readRequired("_headers");
 const redirectsConfig = readRequired("_redirects");
 
-const routeLazyVersion = "20260718-resource-icons-layout-r1";
+const routeLazyVersion = "20260719-content-experience-fixes-r1";
 const serviceRecoveryVersion = "20260719-service-recovery-r1";
-const publicRouteVersion = (route) => route === "resources" ? serviceRecoveryVersion : routeLazyVersion;
-const transferAtlasVersion = routeLazyVersion;
+const publicRouteVersion = () => routeLazyVersion;
+const transferAtlasVersion = "20260718-resource-icons-layout-r1";
 const transferAtlasReferences = [];
 for (const { path, source } of repositoryRuntimeSources()) {
   if (path === "scripts/build-check.mjs") continue;
@@ -1857,8 +1857,10 @@ for (const asset of ["admin.css", "admin.js"]) {
 }
 
 const adminSafetyCacheVersion = "20260719-admin-dirty-transfer-r1";
-if (countLiteral(adminHtml, adminSafetyCacheVersion) !== 2) {
-  fail("admin CSS and JS must share the current interaction-safety cache version");
+const adminPublicContentVersion = "20260719-admin-public-content-r1";
+if (!adminHtml.includes(`/admin/admin.css?v=${adminSafetyCacheVersion}`)
+  || !adminHtml.includes(`/admin/admin.js?v=${adminPublicContentVersion}`)) {
+  fail("admin CSS and JS must use their current cache versions");
 }
 
 for (const id of [
@@ -2536,7 +2538,7 @@ for (const [label, pattern] of [
   }
 }
 
-const chatroomAssetVersionPattern = escapeRegExp(routeLazyVersion);
+const chatroomAssetVersionPattern = escapeRegExp(transferAtlasVersion);
 if (!hasPattern(styleCss, new RegExp(`\\.chatroom-icon\\s*\\{[^}]*icon-chatroom-clean\\.png\\?v=${chatroomAssetVersionPattern}`))
   || hasPattern(lazyRouteCssSources.chatroom, /\.chatroom-icon\s*\{/)
   || !hasPattern(styleCss, new RegExp(`\\.title-icon-chatroom\\s*\\{[^}]*icon-chatroom-clean\\.png\\?v=${chatroomAssetVersionPattern}`))
@@ -2748,11 +2750,11 @@ const framePipelineCssVersion = "20260718-frame-pipeline-low-css-r1";
 const mobileScrollRecoveryVersion = "20260718-mobile-scroll-recovery-r1";
 const mobileScrollRecoveryCssVersion = "20260718-mobile-scroll-recovery-css-r1";
 const mobileViewportKeyboardVersion = "20260718-mobile-viewport-keyboard-r1";
-const mobileViewportKeyboardCssVersion = "20260718-resource-icons-layout-r1";
+const mobileViewportKeyboardCssVersion = routeLazyVersion;
 const publicModulesVersion = "20260718-resource-icons-layout-r1";
 const transferLazyVersion = serviceRecoveryVersion;
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
-const currentMainVersion = serviceRecoveryVersion;
+const currentMainVersion = routeLazyVersion;
 const currentCssVersion = routeLazyVersion;
 const currentPreFinalTelemetryVersion = "20260623-analytics-privacy-r1";
 const currentGameShellVersion = "20260623-game-shell-storage-safe-r1";
@@ -2996,7 +2998,7 @@ const resourcesModuleJs = publicModuleSources["js/routes/resources.mjs"];
 for (const [file, source, token] of [
   ["js/routes/chatroom.mjs", chatroomModuleJs, 'name.textContent = String(message.nickname || "")'],
   ["js/routes/chatroom.mjs", chatroomModuleJs, 'bubble.textContent = String(message.content || "")'],
-  ["js/features/account.mjs", accountModuleJs, 'refs.signedEmail.textContent = authUser?.email || ""'],
+  ["js/features/account.mjs", accountModuleJs, 'refs.signedEmail.textContent = t("accountLoggedIn")'],
   ["js/routes/knowledge.mjs", knowledgeModuleJs, "parent.appendChild(document.createTextNode(part))"]
 ]) {
   if (!source.includes(token)) {
@@ -3728,8 +3730,10 @@ if (!hasPattern(mobileIosShellCss, /body\.is-article-reading\s+#knowledge\.page\
   fail("css/mobile-ios-shell.css should preserve full-App article chrome and 44px window controls");
 }
 
-if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\[data-article-window-toggle\]\s*\{\s*display:\s*none/)) {
-  fail("css/mobile-ios-shell.css should hide the no-op article maximize control inside always-full-screen mobile Apps");
+const knowledgeControlsMarkup = windowAfter(indexHtml, '<div class="knowledge-window-controls"', 500);
+if (!knowledgeControlsMarkup.includes('class="close-button"')
+  || /minimize-button|data-article-window-toggle/.test(knowledgeControlsMarkup)) {
+  fail("index.html Knowledge titlebar should keep only the working close control");
 }
 
 const knowledgeRouteCss = lazyRouteCssSources.knowledge;
@@ -3774,14 +3778,18 @@ if (!hasPattern(mainJs, /let\s+navigationRequestId\s*=\s*0[\s\S]*function\s+navi
   fail("js/main.js navigate should reject stale deferred commits so rapid route changes remain last-action-wins");
 }
 
-if (!hasPattern(mainJs, /function\s+toggleArticleWindowSize[\s\S]*runWindowLayoutTransition\(\s*nextRestored\s*\?\s*["']window-restore["']\s*:\s*["']window-maximize["'][\s\S]*function\s+fullscreenVideo[\s\S]*runWindowLayoutTransition\(\s*nextMaximized\s*\?\s*["']window-maximize["']\s*:\s*["']window-restore["']/)) {
-  fail("js/main.js article and video window controls should use coherent maximize/restore layout transitions");
+if (!hasPattern(mainJs, /function\s+fullscreenVideo[\s\S]*runWindowLayoutTransition\(\s*nextMaximized\s*\?\s*["']window-maximize["']\s*:\s*["']window-restore["']/)) {
+  fail("js/main.js video window control should use the coherent maximize/restore layout transition");
 }
 
-if (!hasPattern(mainJs, /windowRestoreAria:\s*["']还原窗口["'][\s\S]*windowRestoreAria:\s*["']Restore window["'][\s\S]*windowRestoreAria:\s*["']ウィンドウを元に戻す["']/)
-  || !hasPattern(mainJs, /function\s+renderKnowledge[\s\S]*classList\.add\(\s*["']is-article-reading["']\s*\)[\s\S]*updateArticleWindowButton\(\)[\s\S]*classList\.remove\(\s*["']is-article-window-restored["']\s*\)[\s\S]*updateArticleWindowButton\(\)/)
-  || !hasPattern(mainJs, /function\s+updateArticleWindowButton[\s\S]*const\s+reading[\s\S]*restored\s*\?\s*["']windowMaximizeAria["']\s*:\s*["']windowRestoreAria["'][\s\S]*button\.hidden\s*=\s*!reading[\s\S]*aria-pressed[\s\S]*aria-label[\s\S]*title[\s\S]*function\s+toggleArticleWindowSize[\s\S]*updateArticleWindowButton\(\)/)) {
-  fail("js/main.js article maximize/restore control should expose its current action in all three languages");
+if (/data-article-window-toggle|toggleArticleWindowSize|updateArticleWindowButton|is-article-window-restored/.test([
+  indexHtml,
+  mainEntryJs,
+  knowledgeModuleJs,
+  knowledgeRouteCss,
+  mobileIosShellCss
+].join("\n"))) {
+  fail("Knowledge should not retain dormant minimize/maximize/restore controls or layout state");
 }
 
 if (!hasPattern(motionSystemCss, /\.page\s*\{\s*animation:\s*none/)) {
@@ -3898,7 +3906,6 @@ for (const priorityBranch of [
   'target.closest("[data-filter-type]")',
   'target.closest("[data-article-heading-target]")',
   'target.closest("[data-article-scroll-top]")',
-  'target.closest("[data-article-window-toggle]")',
   'target.closest("[data-article-slug]")',
   'target.closest("[data-article-category]")',
   'target.closest("[data-article-back]")',
@@ -3970,13 +3977,13 @@ for (const obsoleteText of [
   }
 }
 
-const finalUpdateId = "seed-update-2026-07-19-service-recovery";
-const finalUpdateSlug = "2026-07-19-service-recovery";
+const finalUpdateId = "seed-update-2026-07-19-content-experience-fixes";
+const finalUpdateSlug = "2026-07-19-content-experience-fixes";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Knowledge, Japanese, and Transfer Service Recovery";
-const finalPublishedAt = "2026-07-18T17:35:00.000Z";
+const finalTitleEn = "Knowledge, Video, Icon, and Account Fixes";
+const finalPublishedAt = "2026-07-19T04:04:44.666Z";
 const finalTranslationMinimums = {
   title: 8,
   summary: 24,
@@ -4026,8 +4033,8 @@ if (finalUpdateStarted) {
     'date: "2026.07.18"',
     finalTitleEn
   ]) {
-    if (!mainJs.includes(token)) {
-      fail(`js/main.js final public update fallback missing ${token}`);
+    if (!contentModuleJs.includes(token)) {
+      fail(`js/data/content.mjs final public update fallback missing ${token}`);
     }
   }
 

@@ -111,7 +111,11 @@ function createAdminD1({ targetAccount, otherAdminExists = true } = {}) {
       assert.equal(typeof sql, "string", "D1 prepare requires a SQL string");
       return statement(sql);
     },
-    async batch() {
+    async batch(statements = []) {
+      calls.push({
+        method: "batch",
+        statements: statements.map((item) => ({ sql: item.sql, params: [...item.params] }))
+      });
       return [];
     }
   };
@@ -188,6 +192,24 @@ test("admin article creation requires non-empty zh, en, and ja bodies on the ser
   const missingLanguageResponse = await api(adminRequest("articles", missingLanguagePayload), db);
   assert.equal(missingLanguageResponse.status, 400);
   assert.match((await missingLanguageResponse.json()).error, /zh \/ en \/ ja/);
+});
+
+test("site update creation cannot enter the pinned Knowledge queue", async () => {
+  const db = createAdminD1();
+  const payload = completeArticlePayload();
+  payload.category = "site-updates";
+  payload.is_pinned = true;
+
+  const response = await api(adminRequest("articles", payload), db);
+  assert.equal(response.status, 201, await response.clone().text());
+
+  const articleInsert = db.calls
+    .filter((call) => call.method === "batch")
+    .flatMap((call) => call.statements)
+    .find((statement) => /insert into articles[\s\S]*values \(\?, \?, \?, \?, \?, \?, \?, 0, \?, \?, \?\)/i.test(statement.sql));
+  assert.ok(articleInsert, "article insert statement must be batched");
+  assert.equal(articleInsert.params[2], "site-updates");
+  assert.equal(articleInsert.params[6], 0);
 });
 
 test("password updates honor revokeSessions false, true, and the secure default", async () => {

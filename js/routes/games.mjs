@@ -139,7 +139,7 @@ export function createGamesRoute({
     const titleText = localText(item.titles || item.titleZh);
     const cover = document.createElement("img");
     cover.className = "game-cover";
-    cover.src = safeGameCoverSrc(item.cover || "assets/images/icon-games.png?v=20260718-resource-icons-layout-r1");
+    cover.src = safeGameCoverSrc(item.cover || "assets/images/icon-games.png?v=20260719-content-experience-fixes-r1");
     cover.alt = titleText;
     cover.width = 64;
     cover.height = 64;

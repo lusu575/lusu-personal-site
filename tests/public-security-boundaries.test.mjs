@@ -54,7 +54,7 @@ test("public user and external content renderers reject executable HTML sinks", 
 
   assert.match(sources.chat, /name\.textContent = String\(message\.nickname \|\| ""\)/);
   assert.match(sources.chat, /bubble\.textContent = String\(message\.content \|\| ""\)/);
-  assert.match(sources.account, /refs\.signedEmail\.textContent = authUser\?\.email \|\| ""/);
+  assert.match(sources.account, /refs\.signedEmail\.textContent = t\("accountLoggedIn"\)/);
   assert.match(sources.knowledge, /parent\.appendChild\(document\.createTextNode\(part\)\)/);
   assert.match(sources.loader, /root\.querySelector\("script, style, link, meta, base, iframe, object, embed, svg, math"\)/);
 });
