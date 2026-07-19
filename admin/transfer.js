@@ -1,6 +1,13 @@
 (function () {
   "use strict";
-  const state = { overview: null, settings: null };
+  const state = {
+    overview: null,
+    settings: null,
+    itemLimit: 50,
+    itemOffset: 0,
+    itemTotal: 0,
+    itemSearch: ""
+  };
   const byId = (id) => document.getElementById(id);
 
   async function api(url, options = {}) {
@@ -18,14 +25,14 @@
     try {
       const [overview, settings, rooms, items, uploads, alerts] = await Promise.all([
         api("/api/admin/transfer/overview"), api("/api/admin/transfer/settings"), api("/api/admin/transfer/rooms?limit=100"),
-        api("/api/admin/transfer/items?limit=100"), api("/api/admin/transfer/uploads?limit=100"), api("/api/admin/transfer/alerts")
+        api(itemsUrl()), api("/api/admin/transfer/uploads?limit=100"), api("/api/admin/transfer/alerts")
       ]);
       state.overview = overview;
       state.settings = settings.settings;
       renderOverview();
       renderSettings();
       renderRooms(rooms.rooms || []);
-      renderItems(items.items || []);
+      renderItems(items.items || [], items.pagination || {});
       renderUploads(uploads.uploads || []);
       renderAlerts(alerts.alerts || []);
       notice("");
@@ -74,12 +81,63 @@
     });
   }
 
-  function renderItems(rows) {
+  function renderItems(rows, pagination = {}) {
     const body = byId("items"); body.replaceChildren();
+    state.itemTotal = Number(pagination.total || 0);
+    state.itemLimit = Number(pagination.limit || state.itemLimit);
+    state.itemOffset = Number(pagination.offset || 0);
+    if (!rows.length) {
+      const row = document.createElement("tr");
+      const cell = document.createElement("td");
+      cell.colSpan = 8;
+      cell.textContent = state.itemSearch ? "没有匹配的互传文件或内容。" : "当前没有保存中的互传文件或内容。";
+      row.append(cell);
+      body.append(row);
+    }
     rows.forEach((row) => {
-      const actions = actionCell(); actions.append(action("删除", true, () => deleteItem(row.id)));
-      body.append(tableRow([row.display_filename || "加密文字", row.uploader_email || row.uploader_user_id, row.mime_type || row.item_type, bytes(row.size_bytes), row.upload_status, time(row.expires_at), actions]));
+      const actions = actionCell(); actions.append(action("永久删除", true, () => deleteItem(row)));
+      body.append(tableRow([
+        row.display_filename || "加密文字",
+        row.uploader_email || row.uploader_user_id || "账号已删除",
+        itemTypeLabel(row),
+        bytes(row.size_bytes),
+        itemStatusLabel(row.upload_status),
+        time(row.created_at),
+        expiry(row.expires_at),
+        actions
+      ]));
     });
+    renderItemPagination(rows.length);
+  }
+
+  function renderItemPagination(rowCount) {
+    const start = state.itemTotal && rowCount ? state.itemOffset + 1 : 0;
+    const end = state.itemOffset + rowCount;
+    byId("items-page-status").textContent = state.itemTotal
+      ? `显示 ${start}–${end} / 共 ${state.itemTotal} 项`
+      : "0 项";
+    byId("items-previous").disabled = state.itemOffset <= 0;
+    byId("items-next").disabled = state.itemOffset + state.itemLimit >= state.itemTotal;
+  }
+
+  function itemsUrl() {
+    const query = new URLSearchParams({
+      limit: String(state.itemLimit),
+      offset: String(state.itemOffset)
+    });
+    if (state.itemSearch) query.set("search", state.itemSearch);
+    return `/api/admin/transfer/items?${query}`;
+  }
+
+  async function loadItemsPage() {
+    try {
+      notice("正在读取互传文件……");
+      const payload = await api(itemsUrl());
+      renderItems(payload.items || [], payload.pagination || {});
+      notice("");
+    } catch (error) {
+      notice(error.message, true);
+    }
   }
 
   function renderUploads(rows) {
@@ -99,8 +157,15 @@
   async function search(kind) {
     const input = byId(`${kind}-search`);
     try {
-      const payload = await api(`/api/admin/transfer/${kind === "room" ? "rooms" : "items"}?limit=100&search=${encodeURIComponent(input.value.trim())}`);
-      if (kind === "room") renderRooms(payload.rooms || []); else renderItems(payload.items || []);
+      if (kind === "item") {
+        state.itemSearch = input.value.trim();
+        state.itemOffset = 0;
+        const payload = await api(itemsUrl());
+        renderItems(payload.items || [], payload.pagination || {});
+        return;
+      }
+      const payload = await api(`/api/admin/transfer/rooms?limit=100&search=${encodeURIComponent(input.value.trim())}`);
+      renderRooms(payload.rooms || []);
     } catch (error) { notice(error.message, true); }
   }
 
@@ -108,7 +173,15 @@
     if (!confirm(`确定${actionName === "clear" ? "清空" : "关闭"}房间 ${id}？`)) return;
     await run(() => api(`/api/admin/transfer/room/${encodeURIComponent(id)}/${actionName}`, { method: "POST", json: {} }));
   }
-  async function deleteItem(id) { if (confirm(`确定删除项目 ${id}？`)) await run(() => api(`/api/admin/transfer/item/${encodeURIComponent(id)}`, { method: "DELETE" })); }
+  async function deleteItem(row) {
+    const filename = row.display_filename || "加密文字";
+    const sender = row.uploader_email || row.uploader_user_id || "账号已删除";
+    const storageImpact = row.item_type === "text"
+      ? "此操作会立即删除数据库中的加密文字记录，无法撤销。"
+      : "此操作会立即删除 R2 文件和数据库记录，直接释放对应存储空间，无法撤销。";
+    if (!confirm(`确定永久删除“${filename}”？\n发送者：${sender}\n大小：${bytes(row.size_bytes)}\n${storageImpact}`)) return;
+    await run(() => api(`/api/admin/transfer/item/${encodeURIComponent(row.id)}`, { method: "DELETE" }));
+  }
   async function abortUpload(row) { if (confirm(`确定中止 ${row.filename}？`)) await run(() => api("/api/admin/transfer/upload/abort", { method: "POST", json: { sessionId: row.id, roomKey: row.room_key } })); }
 
   async function run(operation) {
@@ -117,6 +190,14 @@
 
   function bind() {
     byId("refresh").addEventListener("click", load);
+    byId("items-previous").addEventListener("click", () => {
+      state.itemOffset = Math.max(0, state.itemOffset - state.itemLimit);
+      loadItemsPage();
+    });
+    byId("items-next").addEventListener("click", () => {
+      state.itemOffset += state.itemLimit;
+      loadItemsPage();
+    });
     byId("cleanup").addEventListener("click", () => { if (confirm("立即执行过期文件与孤立对象清理？")) run(() => api("/api/admin/transfer/cleanup", { method: "POST", json: { reconcile: true, limit: 500 } })); });
     byId("test-alert").addEventListener("click", () => run(() => api("/api/admin/transfer/alert/test", { method: "POST", json: {} })));
     byId("normal-switch").addEventListener("click", () => run(() => api("/api/admin/transfer/normal-upload-switch", { method: "POST", json: { enabled: byId("normal-switch").dataset.next === "true" } })));
@@ -139,6 +220,22 @@
   function code(value) { const node = document.createElement("code"); node.textContent = value || ""; return node; }
   function bytes(value) { const size = Number(value) || 0; if (size < 1024) return `${size} B`; const units = ["KiB","MiB","GiB","TiB"]; let number = size / 1024, unit = units[0]; for (let i=1;i<units.length&&number>=1024;i+=1){number/=1024;unit=units[i];} return `${number.toFixed(number>=10?1:2)} ${unit}`; }
   function time(value) { return value ? new Intl.DateTimeFormat("zh-CN",{dateStyle:"short",timeStyle:"short"}).format(new Date(value)) : "—"; }
+  function expiry(value) {
+    if (!value) return "—";
+    const remainingMs = new Date(value).getTime() - Date.now();
+    if (!Number.isFinite(remainingMs)) return time(value);
+    if (remainingMs <= 0) return `${time(value)}（已过期，待清理）`;
+    const hours = Math.ceil(remainingMs / 3600000);
+    const remaining = hours >= 24 ? `约 ${Math.ceil(hours / 24)} 天` : `约 ${hours} 小时`;
+    return `${time(value)}（剩余 ${remaining}）`;
+  }
+  function itemTypeLabel(row) {
+    if (row.item_type === "text") return "加密文字";
+    return row.mime_type || ({ image: "图片", video: "视频", audio: "音频", pdf: "PDF", file: "文件" })[row.item_type] || "文件";
+  }
+  function itemStatusLabel(value) {
+    return ({ ready: "已保存", uploading: "上传中", delete_failed: "删除失败，待重试", failed: "上传失败", deleted: "已删除" })[value] || value || "未知";
+  }
   function notice(value, error) { byId("notice").textContent = value || ""; byId("notice").classList.toggle("error", Boolean(error)); }
 
   bind();

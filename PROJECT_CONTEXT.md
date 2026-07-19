@@ -6,6 +6,12 @@
 - Cloudflare Pages 会把存在的 `.html` 静态片段重定向到 clean URL。Quick Transfer 仍只接受当前页面同源地址，但固定允许 `/fragments/quick-transfer.html` 与 `/fragments/quick-transfer` 两个精确 pathname；不得用 `startsWith`、后缀或跨源放宽白名单。
 - 本地 Wrangler 预览与 Production 一样会在全部 API 前校验两个独立、至少 32 bytes 的 `CHAT_IP_HASH_SALT` / `ANALYTICS_IP_HASH_SALT`。本地值只放已忽略的 `.dev.vars`；交付预览地址前必须先探测 `/api/health`，不得把缺盐导致的全 API 503 当成单个业务故障。
 
+## 2026-07-19 管理后台离开保护与互传文件治理
+
+- `/admin/` 文章、视频、视频分类、聊天、账号和社交链接表单的未保存状态只由真实输入 / change 或明确表单操作维护；程序自动补入的排序、分类选项和详情值不得在离开时被误判为编辑。
+- 主后台侧栏通过“互传文件管理”进入独立受保护的 `/admin/transfer.html`。该页分页展示文件、发送账号、保存时间、过期时间、大小和存储状态；管理员可永久删除 R2 对象及对应 D1 记录，删除失败保留重试状态。
+- 本轮属于后台私有更新，仅同步根项目历史、后台页面内 `adminUpdates` 与后台专用文档；不写入公开三语 `site-updates`、Home 最近更新或公开 fallback。
+
 ## 2026-07-18 资源区透明图集与排版回归
 
 - `assets/transfer/quick-transfer-icons-source.png` 是带洋红色键背景的构建源，不得由页面引用或直接缩放为生产图集。`scripts/build-transfer-icon-atlas.mjs` 负责色键、边缘去色、缩放并生成 168×168 RGBA 的 `quick-transfer-icons.png`；资产测试必须覆盖 alpha、整体透明率、16 个 sprite cell 的透明角点与可见像素比例。同一 Sharp / libvips 运行时双次构建要求 PNG 字节一致，但 Windows 与 Linux 的 PNG 压缩流不作为跨平台契约；跨平台 CI 解码 RGBA 并使用严格像素差阈值验证视觉等价。
@@ -130,7 +136,7 @@
 - “临时互传 / Quick Transfer / 一時転送”固定放在 Resources 资源区，未登录用户只能看到说明；创建或加入房间、列表、文字、上传、下载和删除全部由现有 HttpOnly 会话在服务端鉴权。
 - 房间口令只在浏览器规范化并派生不可枚举的 room key 与文字 AES-GCM 密钥，服务端不接收明文口令；文件放入私有 `TRANSFER_BUCKET`，D1 只保存房间、元数据、配额、上传会话、分片和告警记录。
 - 普通账号受保守免费池、单文件与个人配额限制；管理员只通过 `users.role = admin` 识别，可使用 R2 Multipart、暂停/恢复/取消和 GiB 级上传，不受普通业务频次与免费池暂停限制，但仍受并发稳定性、R2 平台边界和实际账单约束。
-- 内容发布完成后保留 24 小时，过期后 API 立即拒绝访问；`workers/transfer-cleanup/` 每小时物理清理，R2 生命周期与未完成 Multipart 自动中止规则作为兜底。独立后台页位于 `/admin/transfer.html`，避免与同期 `/admin/` 核心改造冲突。
+- 内容发布完成后保留 24 小时，过期后 API 立即拒绝访问；`workers/transfer-cleanup/` 每小时物理清理，R2 生命周期与未完成 Multipart 自动中止规则作为兜底。独立后台页位于 `/admin/transfer.html`，并由主后台侧栏“互传文件管理”进入。
 - 本地开发要求 Node.js 22.13+，本地 API 同名变量只能写入已忽略的 `.dev.vars` 并独立生成；Production 值、`.dev.vars`、`.env` 和真实 Secret 不得进入 Git。
 
 ## 2026-07-15 GPTWork 可复现开发基线
@@ -394,6 +400,7 @@ Markdown 安全：
 - 知识库文章：后台可新建、编辑、发布、删除文章；保存和发布时要求 zh / en / ja 三语标题与正文齐全。
 - 视频管理：后台可维护 YouTube / Bilibili / b23.tv 视频和视频分类；服务端解析链接、生成规范化播放器地址，并在后台预览、保存或刷新时抓取标题、简介、作者、发布时间和封面。
 - 聊天室管理：后台可查看隐藏访客 ID、client id、IP hash/IP 前缀、来源地；可编辑、隐藏/恢复、删除消息，并按隐藏访客 ID 或 IP hash 禁言。
+- 互传文件管理：后台可分页查看当前保存的文件、发送账号、大小、保存 / 过期时间和状态，搜索具体占用项，并永久删除私有 R2 对象及对应 D1 记录。
 - 社交链接管理：后台可修改关于我窗口中 X、GitHub、Bilibili、Instagram、Discord 五个图标按钮的跳转地址；配置保存到 `site_runtime_state.about_social_links`，主站只读展示图标入口。
 - 后台更新记录：后台私有更新说明独立于“后台说明”，每次后台更新后同步维护页面内记录和 `admin/docs/ADMIN_CHANGELOG.md`。
 

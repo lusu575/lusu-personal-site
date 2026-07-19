@@ -9,7 +9,7 @@
 </head>
 <body>
   <header class="transfer-admin-topbar">
-    <div class="transfer-admin-title"><span class="transfer-admin-icon icon-app" aria-hidden="true"></span><div><h1>临时互传</h1><p>R2、配额、清理与费用估算</p></div></div>
+    <div class="transfer-admin-title"><span class="transfer-admin-icon icon-app" aria-hidden="true"></span><div><h1>互传文件管理</h1><p>查看 R2 文件、发送账号与过期时间，并手动释放存储空间</p></div></div>
     <nav><a href="/admin/">返回后台</a><button type="button" id="refresh">刷新数据</button></nav>
   </header>
   <main>
@@ -46,14 +46,19 @@
       <div class="table-wrap"><table><thead><tr><th>房间</th><th>状态</th><th>项目</th><th>有效字节</th><th>最后活动</th><th>操作</th></tr></thead><tbody id="rooms"></tbody></table></div>
     </section>
     <section class="panel">
-      <header><div><h2>文件与内容</h2><p>默认不预览内容，仅展示必要元数据。</p></div><input id="item-search" type="search" placeholder="文件名 / 用户 / 项目 ID"></header>
-      <div class="table-wrap"><table><thead><tr><th>文件</th><th>账号</th><th>类型</th><th>大小</th><th>状态</th><th>到期</th><th>操作</th></tr></thead><tbody id="items"></tbody></table></div>
+      <header><div><h2>当前保存的文件与内容</h2><p>默认不预览内容；永久删除文件会移除 R2 对象和数据库记录，加密文字会移除数据库记录，均无法撤销。</p></div><input id="item-search" type="search" placeholder="文件名 / 发送账号 / 项目 ID"></header>
+      <div class="table-wrap"><table><thead><tr><th>文件</th><th>发送者</th><th>类型</th><th>大小</th><th>状态</th><th>保存时间</th><th>过期时间</th><th>操作</th></tr></thead><tbody id="items"></tbody></table></div>
+      <nav class="table-pagination" aria-label="互传文件分页">
+        <button type="button" id="items-previous">上一页</button>
+        <span id="items-page-status" role="status" aria-live="polite">正在读取文件…</span>
+        <button type="button" id="items-next">下一页</button>
+      </nav>
     </section>
     <section class="panel">
       <header><div><h2>分片上传</h2><p>卡住的管理员大文件任务可在此中止。</p></div></header>
       <div class="table-wrap"><table><thead><tr><th>任务</th><th>文件</th><th>大小</th><th>分片</th><th>状态</th><th>更新时间</th><th>操作</th></tr></thead><tbody id="uploads"></tbody></table></div>
     </section>
   </main>
-  <script src="/admin/transfer.js?v=20260716-r1"></script>
+  <script src="/admin/transfer.js?v=20260719-admin-transfer-files-r1"></script>
 </body>
 </html>

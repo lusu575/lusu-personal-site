@@ -137,6 +137,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
   {
+    date: "2026-07-19",
+    title: "未保存提示修复与互传文件管理入口",
+    body: "修复文章、视频、视频分类、聊天、账号和社交链接等编辑模块在没有人工修改时仍提示保存的问题：离开保护现在只读取真实输入或明确表单操作维护的未保存状态，异步加载的默认排序和分类选项不会再被误判为编辑。主后台导航新增“互传文件管理”，可进入受保护的独立管理页查看文件名、发送账号、大小、保存时间、过期时间和存储状态，并可手动永久删除 R2 文件及对应数据库记录。后台资源版本更新为 20260719-admin-dirty-transfer-r1。"
+  },
+  {
     date: "2026-07-16",
     title: "全矢量城市访问地图",
     body: "城市访问地图的底图与圆点已全部改为真实 SVG：Natural Earth 世界陆地路径通过 SVG 节点直接绘制，缩放和平移改用 viewBox，不再把 CSS 背景图栅格化后放大；城市点由多层 SVG circle 构成，100% 至 500% 缩放时保持清晰且维持至少 44px 点击范围。鼠标滚轮、拖动、触屏双指、键盘导航、城市 PV/UV 详情和隐私口径保持不变。后台资源版本更新为 20260716-admin-svg-vector-map-r1。"
@@ -714,6 +719,15 @@ function captureEditorBaseline(panel, options = {}) {
   syncEditorIndicator(panel);
 }
 
+function captureEditorBaselineIfClean(panel) {
+  const tracking = editorTracking(panel);
+  if (!tracking || tracking.dirty) {
+    return false;
+  }
+  captureEditorBaseline(panel);
+  return true;
+}
+
 function refreshEditorDirtyState(panel) {
   const tracking = editorTracking(panel);
   if (!tracking || !editorForm(panel)) {
@@ -729,7 +743,14 @@ function refreshEditorDirtyState(panel) {
 }
 
 function isEditorDirty(panel) {
-  return refreshEditorDirtyState(panel);
+  const tracking = editorTracking(panel);
+  if (!tracking || !editorForm(panel)) {
+    return false;
+  }
+  if (!tracking.initialized) {
+    captureEditorBaseline(panel);
+  }
+  return Boolean(tracking.dirty);
 }
 
 function restoreEditorBaseline(panel) {
@@ -1841,6 +1862,22 @@ async function switchPanel(panel, options = {}) {
   );
 }
 
+async function navigateToAdminPage(path) {
+  const target = String(path || "").trim();
+  if (!target.startsWith("/admin/")) {
+    return false;
+  }
+  const allowed = await confirmEditorCanLeave(
+    activeEditorPanel(),
+    "打开互传文件管理会离开当前编辑内容。"
+  );
+  if (!allowed) {
+    return false;
+  }
+  window.location.assign(target);
+  return true;
+}
+
 async function handleNavKeydown(event, index, buttons) {
   const nextIndex = {
     ArrowDown: (index + 1) % buttons.length,
@@ -1855,6 +1892,10 @@ async function handleNavKeydown(event, index, buttons) {
   }
   event.preventDefault();
   const next = buttons[nextIndex];
+  if (next.dataset.adminHref) {
+    next.focus();
+    return;
+  }
   const switched = await switchPanel(next.dataset.panel);
   (switched ? next : buttons[index]).focus();
 }
@@ -3861,6 +3902,7 @@ async function loadVideos() {
   if (!state.selectedVideoId) {
     applyNewVideoSortDefault();
   }
+  captureEditorBaselineIfClean("videos");
 }
 
 async function loadVideoCategories() {
@@ -3876,6 +3918,8 @@ async function loadVideoCategories() {
   if (!state.selectedVideoCategoryId) {
     applyNewVideoCategorySortDefault();
   }
+  captureEditorBaselineIfClean("videoCategories");
+  captureEditorBaselineIfClean("videos");
 }
 
 function renderVideoList() {
@@ -6843,7 +6887,13 @@ function handleMapResize() {
 
 function bindEvents() {
   $$(".nav-button").forEach((button, index, buttons) => {
-    button.addEventListener("click", () => switchPanel(button.dataset.panel, { focusTitle: true }));
+    button.addEventListener("click", () => {
+      if (button.dataset.adminHref) {
+        navigateToAdminPage(button.dataset.adminHref);
+        return;
+      }
+      switchPanel(button.dataset.panel, { focusTitle: true });
+    });
     button.addEventListener("keydown", (event) => handleNavKeydown(event, index, buttons));
   });
   $("#mobile-nav-toggle").addEventListener("click", (event) => openMobileNav(event.currentTarget));

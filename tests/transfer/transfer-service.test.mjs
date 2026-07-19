@@ -231,6 +231,66 @@ test("ordinary accounts cannot access transfer administration", async () => {
   assert.equal((await response.json()).code, "TRANSFER_ADMIN_REQUIRED");
 });
 
+test("admins can page stored files with sender and expiry metadata, then delete the R2 object", async () => {
+  await call("transfer/config", { token: adminToken });
+  const adminRoomKey = `transfer_${"M".repeat(43)}`;
+  const roomId = "admin-room-file-manager-0001";
+  const itemId = "admin-file-manager-item-0001";
+  const secondItemId = "admin-file-manager-item-0002";
+  const objectKey = "transfer/2099-01-01/admin-file-manager-item-0001";
+  const secondObjectKey = "transfer/2099-01-01/admin-file-manager-item-0002";
+  const createdAt = "2026-07-19T01:02:03.000Z";
+  const secondCreatedAt = "2026-07-19T01:02:04.000Z";
+  const expiresAt = "2099-07-20T01:02:03.000Z";
+  db.sqlite.prepare(`
+    insert into transfer_rooms (id, room_key, created_by, status, created_at, last_activity_at)
+    values (?, ?, 'user-1', 'open', ?, ?)
+  `).run(roomId, adminRoomKey, createdAt, createdAt);
+  await bucket.put(objectKey, new TextEncoder().encode("managed-file"));
+  await bucket.put(secondObjectKey, new TextEncoder().encode("managed-file-2"));
+  const insertManagedItem = db.sqlite.prepare(`
+    insert into transfer_items (
+      id, room_id, uploader_user_id, uploader_role_snapshot, item_type, original_filename,
+      display_filename, r2_object_key, mime_type, size_bytes, upload_mode, upload_status,
+      created_at, completed_at, expires_at
+    ) values (?, ?, 'user-1', 'user', 'file', ?, ?, ?, 'text/plain', 12, 'simple', 'ready', ?, ?, ?)
+  `);
+  insertManagedItem.run(itemId, roomId, "managed-one.txt", "managed-one.txt", objectKey, createdAt, createdAt, expiresAt);
+  insertManagedItem.run(secondItemId, roomId, "managed-two.txt", "managed-two.txt", secondObjectKey, secondCreatedAt, secondCreatedAt, expiresAt);
+
+  const listed = await call("admin/transfer/items?limit=1&offset=0&search=managed", { token: adminToken });
+  assert.equal(listed.status, 200);
+  const listedPayload = await listed.json();
+  assert.equal(listedPayload.pagination.total, 2);
+  assert.equal(listedPayload.pagination.offset, 0);
+  assert.equal(listedPayload.pagination.hasNext, true);
+  assert.deepEqual(listedPayload.items.map((item) => ({
+    id: item.id,
+    sender: item.uploader_email,
+    createdAt: item.created_at,
+    expiresAt: item.expires_at
+  })), [{
+    id: secondItemId,
+    sender: "user@example.test",
+    createdAt: secondCreatedAt,
+    expiresAt
+  }]);
+
+  const nextPage = await call("admin/transfer/items?limit=1&offset=1&search=managed", { token: adminToken });
+  const nextPagePayload = await nextPage.json();
+  assert.equal(nextPagePayload.pagination.offset, 1);
+  assert.equal(nextPagePayload.pagination.hasPrevious, true);
+  assert.deepEqual(nextPagePayload.items.map((item) => item.id), [itemId]);
+
+  const removed = await call(`admin/transfer/item/${itemId}`, { method: "DELETE", token: adminToken });
+  assert.equal(removed.status, 200);
+  assert.equal(await bucket.head(objectKey), null);
+  assert.equal(db.sqlite.prepare("select id from transfer_items where id = ?").get(itemId), undefined);
+  const removedSecond = await call(`admin/transfer/item/${secondItemId}`, { method: "DELETE", token: adminToken });
+  assert.equal(removedSecond.status, 200);
+  assert.equal(await bucket.head(secondObjectKey), null);
+});
+
 test("a logged-in user can join a room and send encrypted text", async () => {
   const joined = await call("transfer/room/join", {
     method: "POST",

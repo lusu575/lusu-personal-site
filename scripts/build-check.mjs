@@ -1821,6 +1821,10 @@ if (!adminHtml.includes('class="nav-list" aria-label="后台功能导航"')) {
   fail("admin/index.html sidebar navigation must expose an aria-label");
 }
 
+if (!adminHtml.includes('data-admin-href="/admin/transfer.html"')) {
+  fail("admin/index.html must expose the protected transfer file manager from the main navigation");
+}
+
 if (!adminHtml.includes("账号管理、社交链接管理和后台私有更新记录")) {
   fail("admin/index.html backend docs summary must mention account and social link management");
 }
@@ -1852,7 +1856,7 @@ for (const asset of ["admin.css", "admin.js"]) {
   }
 }
 
-const adminSafetyCacheVersion = "20260716-admin-svg-vector-map-r1";
+const adminSafetyCacheVersion = "20260719-admin-dirty-transfer-r1";
 if (countLiteral(adminHtml, adminSafetyCacheVersion) !== 2) {
   fail("admin CSS and JS must share the current interaction-safety cache version");
 }
@@ -2006,6 +2010,8 @@ for (const requiredAdminSafetyToken of [
   'window.addEventListener("beforeunload"',
   "openConfirmDialog",
   "openUnsavedDialog",
+  "captureEditorBaselineIfClean",
+  "navigateToAdminPage",
   "setMasterDetailView",
   "renderMapDataList",
   "handleMapWheel",

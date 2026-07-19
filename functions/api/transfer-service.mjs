@@ -178,7 +178,8 @@ async function handleAdminTransferApi(context, parts) {
     return transferJson({ rooms: await adminRooms(env, url.searchParams) });
   }
   if (request.method === "GET" && parts[0] === "items") {
-    return transferJson({ items: await adminItems(env, url.searchParams) });
+    const result = await adminItems(env, url.searchParams);
+    return transferJson({ items: result.items, pagination: result.pagination });
   }
   if (request.method === "GET" && parts[0] === "uploads") {
     return transferJson({ uploads: await adminUploads(env, url.searchParams) });
@@ -1220,17 +1221,36 @@ async function adminRooms(env, params) {
 
 async function adminItems(env, params) {
   const limit = clampInteger(params.get("limit"), 1, MAX_ADMIN_PAGE, 50);
+  const requestedOffset = clampInteger(params.get("offset"), 0, 1000000, 0);
   const search = normalizeAdminSearch(params.get("search"));
+  const searchPattern = `%${search}%`;
+  const countRow = await env.DB.prepare(`
+    select count(*) as count
+    from transfer_items i left join users u on u.id = i.uploader_user_id
+    where (? = '' or i.display_filename like ? or coalesce(u.email, '') like ? or i.id like ?)
+  `).bind(search, searchPattern, searchPattern, searchPattern).first();
+  const total = Number(countRow?.count || 0);
+  const lastPageOffset = total > 0 ? Math.floor((total - 1) / limit) * limit : 0;
+  const offset = Math.min(requestedOffset, lastPageOffset);
   const rows = await env.DB.prepare(`
     select i.id, i.room_id, i.uploader_user_id, i.uploader_role_snapshot, i.item_type,
       i.display_filename, i.mime_type, i.size_bytes, i.upload_mode, i.upload_status,
       i.created_at, i.completed_at, i.expires_at, i.cleanup_attempts, i.last_error,
       u.email as uploader_email
-    from transfer_items i join users u on u.id = i.uploader_user_id
-    where (? = '' or i.display_filename like ? or u.email like ? or i.id like ?)
-    order by i.created_at desc limit ?
-  `).bind(search, `%${search}%`, `%${search}%`, `%${search}%`, limit).all();
-  return rows.results || [];
+    from transfer_items i left join users u on u.id = i.uploader_user_id
+    where (? = '' or i.display_filename like ? or coalesce(u.email, '') like ? or i.id like ?)
+    order by i.created_at desc limit ? offset ?
+  `).bind(search, searchPattern, searchPattern, searchPattern, limit, offset).all();
+  return {
+    items: rows.results || [],
+    pagination: {
+      total,
+      limit,
+      offset,
+      hasPrevious: offset > 0,
+      hasNext: offset + limit < total
+    }
+  };
 }
 
 async function adminUploads(env, params) {

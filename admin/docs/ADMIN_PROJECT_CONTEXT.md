@@ -2,6 +2,14 @@
 
 > 管理后台专用说明：本文档只描述 `/admin/` 管理后台。它不等同于主站根目录 `PROJECT_CONTEXT.md`，也不能替代主站项目上下文。新的 AI / Codex 对话如果只维护后台，应先读本文档和 `admin/docs/ADMIN_SKILL.md`；如果维护主站整体，仍以根目录 `PROJECT_CONTEXT.md` 和 `skills/lusu-personal-site-skill/SKILL.md` 为准。
 
+## 2026-07-19 未保存状态与互传文件治理
+
+- 文章、视频、视频分类、聊天、账号和社交链接的离开保护由真实输入 / change 事件维护 dirty 状态；离开时不得重新把程序自动补入的默认排序、分类复选框或异步详情数据当成人工编辑。干净表单在相关数据加载完成后重建基线，真实编辑、保存失败与恢复流程继续保留提示。
+- 主后台侧栏新增“互传文件管理”入口，打开仍受 `/admin/*` 中间件保护的独立 `/admin/transfer.html`；离开当前后台编辑模块前继续复用未保存保护。
+- 互传文件列表展示文件名、发送账号、类型、大小、状态、保存时间和过期时间，支持搜索和分页。账号记录缺失时仍保留文件治理行，不因 inner join 隐藏实际占用。
+- 管理员永久删除先删除私有 R2 对象，再删除 D1 `transfer_items` 记录并增加房间同步代次；R2 删除失败时保留 `delete_failed` 状态供清理任务重试，不能伪报空间已释放。
+- 当前主后台资源版本为 `20260719-admin-dirty-transfer-r1`，互传管理脚本版本为 `20260719-admin-transfer-files-r1`；本轮只进入后台私有更新记录，不写入主站 `site-updates`。
+
 ## 2026-07-18 临时互传共享图集缓存同步
 
 - `/admin/transfer.html` 与公开 Resources / Quick Transfer 共用 `assets/transfer/quick-transfer-icons.png`，当前生产图集为 168×168 RGBA 透明 4×4 atlas。
@@ -29,7 +37,7 @@
 
 ## 2026-07-16 临时互传管理
 
-- 临时互传管理使用独立受保护页面 `/admin/transfer.html`，从现有后台跳转或直接打开；其 API 继续由服务端数据库角色鉴权，不能信任客户端管理员状态。
+- 临时互传管理使用独立受保护页面 `/admin/transfer.html`，由主后台侧栏“互传文件管理”进入或直接打开；其 API 继续由服务端数据库角色鉴权，不能信任客户端管理员状态。
 - 页面只展示治理所需元数据和用量，不默认预览用户内容，也不展示房间明文口令；危险操作必须确认并记录审计。
 - 可监控普通用户免费池、管理员大文件任务、清理状态和站内费用估算，并可暂停普通上传、暂停全部上传、触发清理与测试告警。
 - Cloudflare 官方 1/3/5 美元账单提醒、R2 binding、生命周期及清理 Worker 部署属于站长人工配置，站内估算不得冒充官方账单。
@@ -73,6 +81,7 @@
 - 视频管理：维护 YouTube / Bilibili / b23.tv 视频，服务端识别链接、抓取标题、简介、作者、发布时间、封面和规范化 `embed_url`，支持草稿、发布、隐藏、排序、置顶、置顶排序、删除和刷新元数据。元数据只在后台预览、首次保存、URL 变化保存或刷新时抓取，已有视频 URL 未变化的普通保存不重新抓取外部元数据。封面可使用平台图片 URL，或在后台选择 JPG、PNG、WEBP、AVIF 本地图片后压缩写入 `thumbnail_url`；也可从本地视频文件读取第一帧生成封面，但这只生成封面，不上传或托管本地视频。置顶视频进入独立置顶队列并一定排在未置顶视频前面；多个置顶视频按 `pinned_sort_order` 从大到小显示，未置顶视频按 `sort_order` 从大到小显示，新建视频默认普通排序最大值 +10、置顶排序最大值 +10；后台编辑区只展示检查用小播放器，避免 iframe 预览占满页面。
 - 视频分类管理：维护视频区分类标签，支持 slug、中文名、English、日本語、排序和启用状态；分类排序同样是数值越大越靠前，新建默认 +10；默认分类 seed 只在全新视频分类表首次创建时初始化，已有表会通过 `site_runtime_state.video_categories_default_seeded` 标记为已处理，不覆盖或补回后台维护过的 slug、分类名、排序、启用状态和已删除分类；“全部”分类只由前台生成，不写入数据库。
 - 聊天室管理：查看聊天记录，编辑普通大厅明文消息，隐藏/恢复、删除消息，并按隐藏 visitor id 或 IP hash 禁言；密码房加密消息只显示“密码房加密消息（后台无法解密）”，不能编辑内容，但仍可隐藏、删除和禁言来源。网络来源 hash 带非敏感密钥代次，只有当前代次消息可新建网络来源禁言；旧代次消息仅供审计，旧禁言显示为“密钥已轮换”。禁言是否生效、是否过期由后台 API 按实际拦截条件计算。
+- 互传文件管理：通过主后台侧栏进入独立受保护页，分页查看当前 R2 / D1 文件和内容记录、发送账号、保存 / 过期时间及占用；可搜索、永久删除单项、清空 / 关闭房间、中止分片任务和执行过期清理。
 - 社交链接管理：维护主站关于我窗口的 X、GitHub、Bilibili、Instagram、Discord 五个图标跳转；保存到 `site_runtime_state.about_social_links`，只允许 http(s) 链接，主站只显示小图标不显示平台文字。
 - 后台更新记录：展示后台私有更新说明，每次后台更新后必须同步维护页面内 `adminUpdates` 和 `admin/docs/ADMIN_CHANGELOG.md`。
 - 后台说明：展示后台项目介绍，不对外公开。
@@ -104,6 +113,15 @@
 - `DELETE /api/admin/chat/bans/:banId`
 - `GET /api/admin/social-links`
 - `PUT /api/admin/social-links`
+- `GET /api/admin/transfer/overview`
+- `GET /api/admin/transfer/items`
+- `DELETE /api/admin/transfer/item/:itemId`
+- `GET /api/admin/transfer/rooms`
+- `POST /api/admin/transfer/room/:roomId/clear`
+- `POST /api/admin/transfer/room/:roomId/close`
+- `GET /api/admin/transfer/uploads`
+- `POST /api/admin/transfer/upload/abort`
+- `POST /api/admin/transfer/cleanup`
 
 ## 相关公开接口
 
