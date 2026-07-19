@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-07-19-historical-video-thumbnail-cache",
+      "slug": "2026-07-19-historical-video-thumbnail-cache",
+      "category": "site-updates",
+      "tags": ["Videos", "Bilibili", "cache", "ETag", "reliability"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-19T11:56:27.825Z",
+      "updated_at": "2026-07-19T11:56:27.825Z",
+      "published_at": "2026-07-19T11:56:27.825Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.07.19",
+      "title": {
+        "zh": "历史视频封面缓存恢复",
+        "en": "Historical Video Thumbnail Cache Recovery",
+        "ja": "過去の動画サムネイルキャッシュ復旧"
+      },
+      "summary": {
+        "zh": "历史上传的 B 站封面并未丢失；公开视频 ETag 与封面代理地址现已完整版本化，旧浏览器会自动丢弃曾缓存的空封面，无需重新上传。",
+        "en": "Previously uploaded Bilibili covers were still intact; complete response ETags and versioned thumbnail proxy URLs now make existing browsers discard cached empty covers without requiring another upload.",
+        "ja": "以前アップロードした Bilibili サムネイルは失われていません。完全なレスポンス ETag とバージョン付きプロキシ URL により、既存ブラウザーもキャッシュ済みの空表示を破棄し、再アップロードなしで復旧します。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-07-19-content-experience-fixes",
       "slug": "2026-07-19-content-experience-fixes",
       "category": "site-updates",
@@ -99,38 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "公开主站 100 项优化及稳定性复查已完成：修复冷启动 Chat 图标、短屏头像和移动 Dock 切换闪失，并以全动效中间帧、快速连续切换及竖横屏截图重新验证。",
         "en": "All 100 public-site improvements and the stability recheck are complete: cold-start Chat icons, short-screen avatars, and mobile Dock flicker are fixed and reverified with full-motion intermediate frames, rapid switching, and portrait/landscape screenshots.",
         "ja": "公開サイト 100 項目の改善と安定性再確認を完了しました。初回表示の Chat アイコン、短画面のアバター、モバイル Dock の切替時の消失を修正し、フルモーションの中間フレーム、連続切替、縦横画面のスクリーンショットで再検証しています。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-07-18-reliable-forms-reading-chat",
-      "slug": "2026-07-18-reliable-forms-reading-chat",
-      "category": "site-updates",
-      "tags": [
-        "account",
-        "reading",
-        "chat",
-        "privacy",
-        "accessibility",
-        "QA"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-07-18T00:26:00.000Z",
-      "updated_at": "2026-07-18T00:26:00.000Z",
-      "published_at": "2026-07-18T00:26:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.07.18",
-      "title": {
-        "zh": "账号、阅读与聊天可靠性升级",
-        "en": "More Reliable Account, Reading, and Chat Flows",
-        "ja": "アカウント・閲覧・Chat の信頼性向上"
-      },
-      "summary": {
-        "zh": "账号表单改为稳定 DOM 与明确登录/注册模式，文章只保留正文滚动并使用 4px 进度条；Chat 保留在途新草稿和私聊安全说明，公共隐私闸门同步加固。",
-        "en": "Account forms now keep a stable DOM with explicit sign-in and registration modes; articles use one content scroller and a 4px progress track; Chat preserves in-flight drafts and private-room safety guidance while public privacy gates are tightened.",
-        "ja": "アカウントフォームを安定 DOM と明確なログイン／登録モードに変更し、記事は一つの本文スクロールと 4px の進捗線を使用します。Chat は送信中の新しい下書きと非公開ルームの安全説明を保持し、公開プライバシー境界も強化しました。"
       }
     }
   ]

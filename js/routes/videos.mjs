@@ -217,7 +217,7 @@ export function createVideosRoute({
       image.fetchPriority = "low";
       const thumbnailWidth = Number(item.thumbnail_width) || 0;
       const thumbnailHeight = Number(item.thumbnail_height) || 0;
-      if (thumbnailWidth > 0 && thumbnailWidth <= 640 && thumbnailHeight > 0 && thumbnailHeight <= 360) {
+      if (thumbnailWidth > 0 && thumbnailWidth <= 960 && thumbnailHeight > 0 && thumbnailHeight <= 540) {
         image.width = thumbnailWidth;
         image.height = thumbnailHeight;
       }

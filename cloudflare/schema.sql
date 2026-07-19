@@ -562,6 +562,104 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-07-19-historical-video-thumbnail-cache',
+  '2026-07-19-historical-video-thumbnail-cache',
+  'site-updates',
+  '["Videos","Bilibili","cache","ETag","reliability"]',
+  '', 'published', 0, 0,
+  '2026-07-19T11:56:27.825Z',
+  '2026-07-19T11:56:27.825Z',
+  '2026-07-19T11:56:27.825Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  (
+    'seed-update-2026-07-19-historical-video-thumbnail-cache-zh',
+    'seed-update-2026-07-19-historical-video-thumbnail-cache',
+    'zh',
+    '历史视频封面缓存恢复',
+    '历史上传的 B 站封面并未丢失；公开视频 ETag 与封面代理地址现已完整版本化，旧浏览器会自动丢弃曾缓存的空封面，无需重新上传。',
+    '# 历史视频封面缓存恢复
+
+历史 B 站视频的手动封面仍完整保存在数据库中，公开封面端点也能返回有效图片。本次修复针对旧浏览器仍显示空封面的缓存兼容问题。
+
+## 根因与恢复
+
+- 旧版 `/api/videos` 的 ETag 只根据视频行更新时间生成。封面解析逻辑更新后数据库没有变化，浏览器因此收到 304，并继续复用修复前的空封面响应。
+- 公开视频列表与单条详情的 ETag 现在根据完整公开响应生成，任何封面 URL、尺寸或分类表示变化都会得到新的缓存标识。
+- 本地上传封面的同源代理 URL 会携带视频更新时间版本；历史空缓存会立即失效，之后重新上传封面也不会继续看到旧图。
+
+## 验证
+
+线上 11 张历史 B 站封面逐一返回有效 JPEG，并在全新浏览器中正常显示。修复不修改或重新编码数据库中的原始封面，也不需要管理员再次上传。',
+    '2026-07-19T11:56:27.825Z',
+    '2026-07-19T11:56:27.825Z'
+  ),
+  (
+    'seed-update-2026-07-19-historical-video-thumbnail-cache-en',
+    'seed-update-2026-07-19-historical-video-thumbnail-cache',
+    'en',
+    'Historical Video Thumbnail Cache Recovery',
+    'Previously uploaded Bilibili covers were still intact; complete response ETags and versioned thumbnail proxy URLs now make existing browsers discard cached empty covers without requiring another upload.',
+    '# Historical Video Thumbnail Cache Recovery
+
+The manually uploaded covers for older Bilibili videos remain intact in the database, and every public thumbnail endpoint returns a valid image. This fix addresses cached empty covers in existing browsers.
+
+## Cause and recovery
+
+- The previous `/api/videos` ETag was derived only from video-row timestamps. When thumbnail interpretation changed without a database edit, browsers received 304 and reused the pre-fix response with empty cover fields.
+- Video-list and single-video ETags now derive from the complete public representation, so changes to cover URLs, dimensions, categories, or other public fields produce a new cache identity.
+- Same-origin proxy URLs for uploaded covers now carry the video update version. Historical empty caches are bypassed immediately, and later cover replacements cannot remain stuck on an older image.
+
+## Verification
+
+All 11 historical Bilibili covers on the live site returned valid JPEG responses and rendered in a clean browser profile. The recovery neither rewrites the stored cover data nor requires another admin upload.',
+    '2026-07-19T11:56:27.825Z',
+    '2026-07-19T11:56:27.825Z'
+  ),
+  (
+    'seed-update-2026-07-19-historical-video-thumbnail-cache-ja',
+    'seed-update-2026-07-19-historical-video-thumbnail-cache',
+    'ja',
+    '過去の動画サムネイルキャッシュ復旧',
+    '以前アップロードした Bilibili サムネイルは失われていません。完全なレスポンス ETag とバージョン付きプロキシ URL により、既存ブラウザーもキャッシュ済みの空表示を破棄し、再アップロードなしで復旧します。',
+    '# 過去の動画サムネイルキャッシュ復旧
+
+以前の Bilibili 動画に手動アップロードしたサムネイルはデータベースに残っており、公開サムネイル endpoint も有効な画像を返しています。今回は既存ブラウザーに残った空表示キャッシュを修正しました。
+
+## 原因と復旧
+
+- 旧 `/api/videos` の ETag は動画行の更新時刻だけから生成されていました。サムネイル解釈を修正しても DB 行が変わらないため、ブラウザーは 304 を受け取り、修正前の空サムネイル応答を再利用していました。
+- 動画一覧と単体動画の ETag は完全な公開レスポンスから生成するようになり、URL、寸法、分類などの公開表現が変われば新しいキャッシュ識別子になります。
+- アップロード済み画像の同一 origin プロキシ URL には動画更新版を付与します。過去の空キャッシュを直ちに回避し、今後サムネイルを差し替えた場合も古い画像に固定されません。
+
+## 検証
+
+本番サイトの過去の Bilibili サムネイル 11 枚がすべて有効な JPEG を返し、新規ブラウザープロファイルで表示されることを確認しました。保存済み画像の書き換えや管理画面からの再アップロードは不要です。',
+    '2026-07-19T11:56:27.825Z',
+    '2026-07-19T11:56:27.825Z'
+  )
+on conflict(translation_id) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-07-19-content-experience-fixes',
   '2026-07-19-content-experience-fixes',
   'site-updates',

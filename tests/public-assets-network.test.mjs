@@ -233,6 +233,8 @@ test("cacheable API JSON emits a stable ETag and honors If-None-Match", async ()
     headers: { "If-None-Match": etag }
   }), { articles: [] });
   assert.equal(second.status, 304);
+  const changed = await cacheableJson(new Request("https://example.test/api/articles"), { articles: [{ slug: "changed" }] });
+  assert.notEqual(changed.headers.get("ETag"), etag, "ETags must change with the complete public representation");
 });
 
 test("public video thumbnails become bounded URLs with explicit dimensions", () => {
@@ -240,8 +242,8 @@ test("public video thumbnails become bounded URLs with explicit dimensions", () 
   assert.equal(youtube.url, "https://i.ytimg.com/vi/demo/mqdefault.jpg");
   assert.deepEqual([youtube.width, youtube.height], [320, 180]);
 
-  const local = publicVideoThumbnail("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJ", "video-2", "https://lusu.example");
-  assert.equal(local.url, "https://lusu.example/api/videos/video-2/thumbnail");
+  const local = publicVideoThumbnail("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJ", "video-2", "https://lusu.example", "2026-07-19T12:00:00.000Z");
+  assert.equal(local.url, "https://lusu.example/api/videos/video-2/thumbnail?v=2026-07-19T12%3A00%3A00.000Z");
   assert.deepEqual([local.width, local.height], [1, 1]);
   assert.doesNotMatch(local.url, /^data:/);
 
@@ -249,8 +251,8 @@ test("public video thumbnails become bounded URLs with explicit dimensions", () 
   Buffer.from([0x89, 0x50, 0x4e, 0x47]).copy(uploadedPngHeader);
   uploadedPngHeader.writeUInt32BE(960, 16);
   uploadedPngHeader.writeUInt32BE(540, 20);
-  const uploaded = publicVideoThumbnail(`data:image/png;base64,${uploadedPngHeader.toString("base64")}`, "video-3", "https://lusu.example");
-  assert.equal(uploaded.url, "https://lusu.example/api/videos/video-3/thumbnail");
+  const uploaded = publicVideoThumbnail(`data:image/png;base64,${uploadedPngHeader.toString("base64")}`, "video-3", "https://lusu.example", "cover-r2");
+  assert.equal(uploaded.url, "https://lusu.example/api/videos/video-3/thumbnail?v=cover-r2");
   assert.deepEqual([uploaded.width, uploaded.height], [960, 540]);
 
   uploadedPngHeader.writeUInt32BE(961, 16);

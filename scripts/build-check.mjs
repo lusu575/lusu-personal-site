@@ -766,7 +766,7 @@ const changelog = readRequired("CHANGELOG.md");
 const headersConfig = readRequired("_headers");
 const redirectsConfig = readRequired("_redirects");
 
-const routeLazyVersion = "20260719-content-experience-fixes-r1";
+const routeLazyVersion = "20260719-video-thumbnail-cache-r2";
 const serviceRecoveryVersion = "20260719-service-recovery-r1";
 const publicRouteVersion = () => routeLazyVersion;
 const transferAtlasVersion = "20260718-resource-icons-layout-r1";
@@ -3977,13 +3977,13 @@ for (const obsoleteText of [
   }
 }
 
-const finalUpdateId = "seed-update-2026-07-19-content-experience-fixes";
-const finalUpdateSlug = "2026-07-19-content-experience-fixes";
+const finalUpdateId = "seed-update-2026-07-19-historical-video-thumbnail-cache";
+const finalUpdateSlug = "2026-07-19-historical-video-thumbnail-cache";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Knowledge, Video, Icon, and Account Fixes";
-const finalPublishedAt = "2026-07-19T04:04:44.666Z";
+const finalTitleEn = "Historical Video Thumbnail Cache Recovery";
+const finalPublishedAt = "2026-07-19T11:56:27.825Z";
 const finalTranslationMinimums = {
   title: 8,
   summary: 24,

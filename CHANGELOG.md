@@ -4,6 +4,8 @@
 
 ## 2026-07-19
 
+- 恢复既有浏览器中的历史 Bilibili 手动封面：线上核对确认 11 张旧封面仍完整保存在 D1、同源代理均返回有效 JPEG，空白来自 `/api/videos` 旧 ETag 只依赖数据库行时间，代码修复后仍返回 304 并复用旧空响应。公开视频列表与详情现按完整响应生成 ETag，本地上传封面代理 URL 同时携带视频更新时间版本，历史空缓存和今后换图的旧缓存都会自动失效；前端 960×540 固有尺寸边界也与服务端一致。公开缓存版本为 `20260719-video-thumbnail-cache-r2`，三语 `site-updates` 记录 `seed-update-2026-07-19-historical-video-thumbnail-cache` 已同步 `js/data/content.mjs` 完整 fallback、Home 五条投影、Functions seed 与 schema seed。
+
 - 修复知识库、视频、资源、游戏和账号区的公开体验：全部 `site-updates` 更新日志改为非置顶，Functions 后台文章写入会强制该分类 `is_pinned = 0`，schema 迁移也会清理历史置顶；知识库标题栏删除无实际用途的最小化与缩放／还原，只保留关闭。公开视频封面上限由 640×360 对齐到后台真实上传的 960×540、继续保持 320KB 限制，Bilibili 手动封面恢复显示，所有视频封面的蓝色圆圈移除。使用图像生成流程新增临时互传和五款游戏的六枚 192×192 RGBA 独立图标；登录仅显示一次密码，确认密码仅注册显示，登录后隐藏完整表单并只留成功状态与退出。公开缓存版本为 `20260719-content-experience-fixes-r1`，三语 `site-updates` 记录 `seed-update-2026-07-19-content-experience-fixes` 已同步 `js/data/content.mjs` 完整 fallback、Home 五条投影、Functions seed 与 schema seed。
 
 - 恢复知识库、日语与临时互传联动服务：修复 `seed-update-2026-07-18-frame-pipeline-low-performance` 三语文章 seed 漏传时间戳、导致 D1 bind `undefined` 并使 `/api/articles` 全语言返回 500 的问题；Quick Transfer 严格同源白名单现兼容 `/fragments/quick-transfer.html` 与 Cloudflare clean URL `/fragments/quick-transfer`，不再把生产重定向误判为非法片段。本地预览补齐两个独立隐私盐并恢复 `/api/health`；新增全量文章 seed bind 与片段 URL 正反例测试。公开缓存版本为 `20260719-service-recovery-r1`，三语 `site-updates` 记录 `seed-update-2026-07-19-service-recovery` 已同步完整 fallback、Home 五条投影、Functions seed 与 schema seed。

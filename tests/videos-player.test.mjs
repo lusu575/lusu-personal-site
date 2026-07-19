@@ -53,11 +53,17 @@ test("video loading, failure, true empty, and normal data keep distinct filter s
 });
 
 test("video list uses cached request JSON and bounded thumbnail metadata", async () => {
-  const source = await readFile(new URL("../js/routes/videos.mjs", import.meta.url), "utf8");
+  const [source, api] = await Promise.all([
+    readFile(new URL("../js/routes/videos.mjs", import.meta.url), "utf8"),
+    readFile(new URL("../functions/api/[[route]].js", import.meta.url), "utf8")
+  ]);
   assert.match(source, /requestJson\("videos", `\/api\/videos\?lang=/);
   assert.match(source, /staleWhileRevalidate: options\.force !== true/);
   assert.match(source, /item\.thumbnail_width/);
   assert.match(source, /item\.thumbnail_height/);
   assert.match(source, /image\.fetchPriority = "low"/);
+  assert.match(source, /thumbnailWidth <= 960 && thumbnailHeight > 0 && thumbnailHeight <= 540/);
   assert.match(source, /const controlledLocalThumbnail = url\.origin === window\.location\.origin/);
+  assert.match(api, /publicVideoThumbnail\(row\.thumbnail_url, row\.video_id, options\.origin, row\.updated_at \|\| row\.created_at\)/);
+  assert.doesNotMatch(api, /etagSeed: `\$\{lang\}:\$\{rows\.map/);
 });
