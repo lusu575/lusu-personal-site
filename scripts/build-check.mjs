@@ -766,7 +766,7 @@ const changelog = readRequired("CHANGELOG.md");
 const headersConfig = readRequired("_headers");
 const redirectsConfig = readRequired("_redirects");
 
-const routeLazyVersion = "20260719-video-thumbnail-cache-r2";
+const routeLazyVersion = "20260721-desktop-taskbar-active-r1";
 const serviceRecoveryVersion = "20260719-service-recovery-r1";
 const publicRouteVersion = () => routeLazyVersion;
 const transferAtlasVersion = "20260718-resource-icons-layout-r1";
@@ -2359,8 +2359,9 @@ for (const dialogPattern of [
   }
 }
 if (!hasPattern(mainJs, /openVideo\(Number\(videoButton\.dataset\.videoIndex\),\s*\{\s*trigger:\s*videoButton\s*\}\)/)
-  || !hasPattern(mainJs, /managedVideoButton\.dataset\.videoSource\s*===\s*["']thumbnail["'][\s\S]*querySelector\(\s*["']\.card-action\[data-video-id\]["']\s*\)[\s\S]*openVideo\(managedVideoButton\.dataset\.videoId,\s*\{\s*trigger:\s*videoTrigger\s*\|\|\s*managedVideoButton\s*\}\)/)) {
-  fail("js/main.js video click branches should map decorative thumbnails to the card's single exact play trigger");
+  || !hasPattern(mainJs, /const\s+managedVideoButton\s*=\s*target\.closest\(\s*["']\[data-video-id\]["']\s*\)[\s\S]*openVideo\(managedVideoButton\.dataset\.videoId,\s*\{\s*trigger:\s*managedVideoButton\s*\}\)/)
+  || hasPattern(mainJs, /dataset\.videoSource\s*===\s*["']thumbnail["'][\s\S]{0,300}querySelector\(\s*["']\.card-action\[data-video-id\]["']/)) {
+  fail("js/main.js video click branches should preserve the exact semantic thumbnail or card-action trigger");
 }
 
 for (const marker of ["function applyDocumentMeta", "function syncDocumentMeta", "function syncArticleDocumentMeta"]) {
@@ -2751,7 +2752,7 @@ const mobileScrollRecoveryVersion = "20260718-mobile-scroll-recovery-r1";
 const mobileScrollRecoveryCssVersion = "20260718-mobile-scroll-recovery-css-r1";
 const mobileViewportKeyboardVersion = "20260718-mobile-viewport-keyboard-r1";
 const mobileViewportKeyboardCssVersion = routeLazyVersion;
-const publicModulesVersion = "20260718-resource-icons-layout-r1";
+const publicModulesVersion = "20260721-desktop-taskbar-active-r1";
 const transferLazyVersion = serviceRecoveryVersion;
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
 const currentMainVersion = routeLazyVersion;
@@ -3177,8 +3178,8 @@ for (const [marker, pattern, message] of [
   ],
   [
     "function videoCardElement",
-    /const\s+videoTitleText\s*=\s*item\.title\s*\|\|\s*videoUiText\(["']untitled["']\)[\s\S]*const\s+videoPlayLabel\s*=\s*`\$\{videoUiText\(["']playAria["']\)\}:\s*\$\{videoTitleText\}`[\s\S]*thumb\.setAttribute\(\s*["']aria-hidden["']\s*,\s*["']true["']\s*\)[\s\S]*button\.setAttribute\(\s*["']aria-label["']\s*,\s*videoPlayLabel\s*\)/,
-    "js/routes/videos.mjs videoCardElement should keep the thumbnail decorative and use the video title on the single play action"
+    /const\s+videoTitleText\s*=\s*item\.title\s*\|\|\s*videoUiText\(["']untitled["']\)[\s\S]*const\s+videoPlayLabel\s*=\s*`\$\{videoUiText\(["']playAria["']\)\}:\s*\$\{videoTitleText\}`[\s\S]*thumb\s*=\s*document\.createElement\(["']button["']\)[\s\S]*thumb\.type\s*=\s*["']button["'][\s\S]*thumb\.dataset\.videoId\s*=\s*item\.video_id[\s\S]*thumb\.setAttribute\(\s*["']aria-label["']\s*,\s*videoPlayLabel\s*\)[\s\S]*button\.setAttribute\(\s*["']aria-label["']\s*,\s*videoPlayLabel\s*\)/,
+    "js/routes/videos.mjs videoCardElement should expose a titled native thumbnail button and a titled card action"
   ],
   [
     "function renderKnowledgeCategoryButtons",
@@ -3217,22 +3218,22 @@ for (const [marker, pattern, message] of [
   ],
   [
     "function markStatusMessage",
-    /node\.setAttribute\(\s*["']role["']\s*,\s*["']status["']\s*\)[\s\S]*node\.setAttribute\(\s*["']aria-live["']\s*,\s*["']polite["']\s*\)[\s\S]*node\.setAttribute\(\s*["']aria-atomic["']\s*,\s*["']true["']\s*\)/,
-    "js/main.js markStatusMessage should create polite atomic status messages"
+    /const\s+isError\s*=\s*kind\s*===\s*["']error["'][\s\S]*node\.setAttribute\(\s*["']role["']\s*,\s*isError\s*\?\s*["']alert["']\s*:\s*["']status["']\s*\)[\s\S]*node\.setAttribute\(\s*["']aria-live["']\s*,\s*isError\s*\?\s*["']assertive["']\s*:\s*["']polite["']\s*\)[\s\S]*node\.setAttribute\(\s*["']aria-atomic["']\s*,\s*["']true["']\s*\)/,
+    "js/main.js markStatusMessage should distinguish atomic errors from polite status messages"
   ],
   [
     "function renderListMessage",
-    /markStatusMessage\(note\)/,
-    "js/main.js renderListMessage should mark article loading/failure copy as a status message"
+    /stateKind\s*=\s*action\?\.state\s*===\s*["']error["'][\s\S]*state\.className\s*=\s*`content-state\s+is-\$\{stateKind\}`[\s\S]*markStatusMessage\(state,\s*stateKind\s*===\s*["']error["']\s*\?\s*["']error["']\s*:\s*["']status["']\)[\s\S]*state\.appendChild\(button\)[\s\S]*list\.replaceChildren\(state\)/,
+    "js/routes/knowledge.mjs renderListMessage should distinguish error and empty live semantics"
   ],
   [
     "function renderVideoStatusState",
-    /markStatusMessage\(copy\)/,
-    "js/main.js renderVideoStatusState should mark only the video status copy as a live status"
+    /markStatusMessage\(copy,\s*kind\s*===\s*["']failed["']\s*\?\s*["']error["']\s*:\s*["']status["']\)/,
+    "js/routes/videos.mjs renderVideoStatusState should expose failures as alerts and loading as status"
   ],
   [
     "async function renderGames",
-    /markStatusMessage\(loading\)[\s\S]*renderGameCatalog\(list,\s*catalog\)[\s\S]*markStatusMessage\(failed\)/,
+    /markStatusMessage\(loading\)[\s\S]*renderGameCatalog\(list,\s*catalog\)[\s\S]*markStatusMessage\(failed,\s*["']error["']\)/,
     "js/main.js renderGames should handle loading and failure states"
   ],
   [
@@ -3257,7 +3258,7 @@ for (const [marker, pattern, message] of [
   ],
   [
     "function renderArticleDetailFailure",
-    /syncDocumentMeta\(\)[\s\S]*title\.textContent\s*=\s*t\(["']articleLoadFailed["']\)[\s\S]*markStatusMessage\(note\)[\s\S]*action\.dataset\.articleDetailRetry\s*=\s*slug[\s\S]*action\.textContent\s*=\s*t\(["']articleRetryAction["']\)/,
+    /syncDocumentMeta\(\)[\s\S]*title\.textContent\s*=\s*t\(["']articleLoadFailed["']\)[\s\S]*state\.className\s*=\s*["']content-state is-error["'][\s\S]*markStatusMessage\(state,\s*["']error["']\)[\s\S]*action\.dataset\.articleDetailRetry\s*=\s*slug[\s\S]*state\.append\(note,\s*action\)[\s\S]*body\.replaceChildren\(state\)/,
     "js/main.js article detail failures should expose a retry action"
   ],
   [
@@ -3564,7 +3565,7 @@ if (!hasPattern(motionSystemCss, /html\[data-ui-shell="desktop"\]\s+\.desktop-ic
 }
 
 if (!hasPattern(mainJs, /LusuUiMotion\.run\(motionKind,[\s\S]*useViewTransition:\s*false/)
-  || !hasPattern(uiMotionJs, /pageNavigationKeepsChromeLive\s*=\s*kind\s*===\s*["']route["'][\s\S]*kind\s*===\s*["']app-open["'][\s\S]*kind\s*===\s*["']mobile-tab["'][\s\S]*context\.useViewTransition[\s\S]*&&\s*!pageNavigationKeepsChromeLive/)
+  || !hasPattern(uiMotionJs, /pageNavigationKeepsChromeLive\s*=\s*kind\s*===\s*["']route["'][\s\S]*kind\s*===\s*["']app-open["'][\s\S]*kind\s*===\s*["']mobile-tab["'][\s\S]*context\.useViewTransition[\s\S]*&&\s*kind\s*!==\s*["']theme["'][\s\S]*&&\s*!pageNavigationKeepsChromeLive/)
   || !hasPattern(uiMotionJs, /function\s+resolveMotionTarget[\s\S]*kind\s*===\s*["']route["'][\s\S]*kind\s*===\s*["']app-open["'][\s\S]*shellMode\(\)\s*===\s*["']desktop["'][\s\S]*currentRoute\(\)\s*===\s*["']home["'][\s\S]*\.desktop-icons[\s\S]*\.page\.active\s*>\s*\.xp-window/)
   || !hasPattern(uiMotionJs, /function\s+appOpenEnterAnimation[\s\S]*opacity:\s*0\.84[\s\S]*translate3d\(0,3px,0\)[\s\S]*duration:\s*DURATIONS\.standard/)) {
   fail("page navigation must animate live page/window surfaces without a snapshot covering fixed topbar, taskbar, or mobile Dock");
@@ -3588,10 +3589,10 @@ if (/\brotateY\s*\(|\bperspective\s*:|@keyframes\s+[\w-]*page-turn|data-ui-page-
 if (!hasPattern(uiMotionJs, /ROUTE_ORDER[\s\S]*function\s+routeDirection/)
   || !hasPattern(uiMotionJs, /setData\(root,\s*["']uiDirection["']/)
   || !hasPattern(uiMotionJs, /removeData\(root,\s*["']uiDirection["']\)/)
-  || !hasPattern(motionSystemCss, /::view-transition-old\(root\),\s*::view-transition-new\(root\)\s*\{[\s\S]*animation:\s*none/)
   || !hasPattern(uiMotionJs, /function\s+routeEnterAnimation[\s\S]*translate3d[\s\S]*duration:\s*DURATIONS\.standard/)
+  || /::view-transition-(?:old|new)\(root\)/.test(motionSystemCss)
   || /view-transition-name:\s*(?:module-page|app-screen|mobile-tab-page)/.test(motionSystemCss)) {
-  fail("route direction should use a local transform/opacity fallback while fixed chrome remains live");
+  fail("route direction should use a local transform/opacity fallback with no root snapshot while fixed chrome remains live");
 }
 
 if (!hasPattern(mainJs, /routeButton\.matches\(\s*["']\.desktop-icon["']\s*\)[\s\S]*["']app-open["']/)
@@ -3609,14 +3610,17 @@ if (/<div\b[^>]*class="desktop-intro"/.test(indexHtml)
 
 if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.desktop-icons\s*\{[\s\S]*grid-auto-rows:\s*90px[\s\S]*justify-items:\s*center/)
   || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.desktop-icon\s*\{[\s\S]*width:\s*min\(78px,\s*100%\)[\s\S]*height:\s*90px/)
-  || !hasPattern(mobileIosShellCss, /\.page:not\(\.page-home\)\s*>\s*\.xp-window\s*\{[\s\S]*--mobile-frame-edge|\.page:not\(\.page-home\)\s*>\s*\.xp-window\s*\{[\s\S]*border:\s*2px\s+solid\s+var\(--mobile-frame-edge\)/)
-  || !hasPattern(mobileIosShellCss, /#videos\s+\.card-grid,[\s\S]*#about\s+\.profile-card\s*\{[\s\S]*border:\s*1px\s+solid\s+var\(--mobile-frame-edge\)/)) {
-  fail("mobile Home hit areas and all App surfaces should keep the compact grid and layered frame system");
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.page:not\(\.page-home\)\s*>\s*\.xp-window\s*\{[\s\S]*border-width:\s*1px/)
+  || !hasPattern(mobileIosShellCss, /:is\([\s\S]*#videos\s+\.card-grid,[\s\S]*#about\s+\.profile-card[\s\S]*\)\s*\{[\s\S]*border-color:\s*transparent;[\s\S]*box-shadow:\s*none/)
+  || !hasPattern(mobileIosShellCss, /:is\([\s\S]*\.video-card,[\s\S]*\.resource-card,[\s\S]*\.game-card,[\s\S]*\.article-card,[\s\S]*\.blog-card[\s\S]*\)\s*\{[\s\S]*border-color:\s*rgba\(49,\s*85,\s*142,\s*0\.58\)/)) {
+  fail("mobile Home hit areas should stay compact while App surfaces use one outer frame and one card edge");
 }
 
 if (!hasPattern(mainJs, /function\s+updateWallpaperMotionState[\s\S]*document\.documentElement\.dataset\.motion[\s\S]*\[\s*["']full["']\s*,\s*["']reduced["']\s*,\s*["']off["']\s*\]\.includes\(managedMode\)/)
-  || !hasPattern(mainJs, /LusuUiMotion\.run\(\s*["']theme["']\s*,\s*\{\s*theme\s*,\s*useViewTransition:\s*true\s*\}/)) {
-  fail("js/main.js wallpaper should share the canonical motion mode and use progressive theme crossfades");
+  || !hasPattern(mainJs, /LusuUiMotion\.run\(\s*["']theme["']\s*,\s*\{\s*theme\s*\}\s*,\s*applyTheme\s*\)/)
+  || !hasPattern(uiMotionJs, /context\.useViewTransition\s*&&\s*kind\s*!==\s*["']theme["']/)
+  || hasPattern(mainJs, /function\s+updateHomeTimeTheme[\s\S]*useViewTransition/)) {
+  fail("js/main.js wallpaper should share the canonical motion mode and settle without a root View Transition snapshot");
 }
 
 if (!hasPattern(mobileShellJs, /function\s+cycleLanguage[\s\S]*CustomEvent\(\s*["']lusu:language-request["'][\s\S]*detail:\s*\{\s*lang:\s*nextLang\s*\}[\s\S]*\}\s*\)/)
@@ -3646,18 +3650,26 @@ if (!hasPattern(styleCss, /\.minimize-button::before,\s*\.maximize-button::befor
   fail("public window and chat glyphs should use the image2 bitmap atlas instead of CSS-drawn geometry");
 }
 
-if (!hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*\.chatroom-window\s*\{[\s\S]*grid-template-columns:\s*minmax\(220px,\s*0\.56fr\)\s+minmax\(0,\s*1\.44fr\)[\s\S]*grid-template-rows:\s*auto\s+minmax\(0,\s*1fr\)\s+52px[\s\S]*\.chatroom-header\s*\{[\s\S]*grid-row:\s*1\s*\/\s*3[\s\S]*\.chat-private-room-panel\s*\{[\s\S]*grid-row:\s*1[\s\S]*grid-column:\s*2[\s\S]*\.chatroom-log\s*\{[\s\S]*grid-row:\s*2[\s\S]*grid-column:\s*2[\s\S]*\.chatroom-compose\s*\{[\s\S]*grid-row:\s*3[\s\S]*grid-column:\s*2[\s\S]*\.chatroom-footer\s*\{[\s\S]*grid-row:\s*3[\s\S]*grid-column:\s*1/)) {
+if (!hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*\.chatroom-window\s*\{[\s\S]*grid-template-columns:\s*minmax\(204px,\s*29vw\)\s+minmax\(0,\s*1fr\)[\s\S]*grid-template-rows:\s*auto\s+minmax\(0,\s*1fr\)\s+64px[\s\S]*\.chatroom-header\s*\{[\s\S]*grid-row:\s*1\s*\/\s*3[\s\S]*\.chat-private-room-panel\s*\{[\s\S]*grid-column:\s*2[\s\S]*grid-row:\s*1[\s\S]*\.chatroom-log\s*\{[\s\S]*grid-column:\s*2[\s\S]*grid-row:\s*2[\s\S]*\.chatroom-compose\s*\{[\s\S]*grid-column:\s*2[\s\S]*grid-row:\s*3[\s\S]*\.chatroom-footer\s*\{[\s\S]*grid-column:\s*1[\s\S]*grid-row:\s*3/)) {
   fail("css/mobile-ios-shell.css should use the available landscape width so chat and private-room controls remain simultaneously reachable");
 }
 
 if (!hasPattern(mobileIosShellCss, /@media\s*\(max-width:\s*380px\)[\s\S]*\.chat-private-room-panel[\s\S]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto\s+auto[\s\S]*\.chat-private-room-panel small\s*\{\s*display:\s*none/)
-  || !hasPattern(mobileIosShellCss, /@media\s*\(max-width:\s*760px\)\s*and\s*\(max-height:\s*720px\)\s*and\s*\(orientation:\s*portrait\)[\s\S]*\.chatroom-compose textarea[\s\S]*height:\s*44px[\s\S]*\.chatroom-footer[\s\S]*min-height:\s*44px/)
+  || !hasPattern(mobileIosShellCss, /@media\s*\(max-width:\s*760px\)\s*and\s*\(max-height:\s*720px\)\s*and\s*\(orientation:\s*portrait\)[\s\S]*\.chatroom-header\s*\{[\s\S]*height:\s*90px[\s\S]*\.chat-private-room-panel\s*\{[\s\S]*height:\s*46px[\s\S]*\.chatroom-log\s*\{[\s\S]*margin:\s*2px\s+5px[\s\S]*\.chatroom-compose\s*\{[\s\S]*grid-template-rows:\s*44px[\s\S]*\.chatroom-counter\s*\{[\s\S]*position:\s*absolute[\s\S]*\.chatroom-footer\s*\{[\s\S]*height:\s*45px/)
   || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-window\s*\{\s*display:\s*grid;\s*grid-template-rows:\s*auto\s+auto\s+minmax\(0,\s*1fr\)\s+auto\s+auto/)
-  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-compose\s*\{[\s\S]*grid-row:\s*4[\s\S]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto\s+auto/)
-  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-counter\s*\{[\s\S]*position:\s*static[\s\S]*grid-column:\s*2[\s\S]*min-width:\s*44px/)
-  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chat-send-button\s*\{[\s\S]*grid-column:\s*3[\s\S]*min-height:\s*44px/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-compose\s*\{[\s\S]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto;[\s\S]*grid-template-rows:\s*minmax\(44px,\s*auto\)\s+17px/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-counter\s*\{[\s\S]*position:\s*static;[\s\S]*grid-column:\s*1;[\s\S]*grid-row:\s*2/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chat-send-button\s*\{[\s\S]*grid-column:\s*2;[\s\S]*grid-row:\s*1\s*\/\s*3[\s\S]*min-height:\s*44px/)
   || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-autoscroll\s*\{[\s\S]*min-height:\s*44px/)) {
   fail("css/mobile-ios-shell.css should keep password and chat controls reachable on narrow and soft-keyboard portrait viewports");
+}
+
+if (!hasPattern(lazyRouteCssSources.chatroom, /\.chatroom-window\s*>\s*\.chatroom-log\s*\{\s*grid-row:\s*4[\s\S]*\.chatroom-window\s*>\s*\.chatroom-compose\s*\{\s*grid-row:\s*5[\s\S]*\.chatroom-window\s*>\s*\.chatroom-footer\s*\{\s*grid-row:\s*6/)) {
+  fail("css/routes/chatroom.css should keep the flexible desktop grid row assigned to the message log");
+}
+
+if (!hasPattern(mobileIosShellCss, /#transfer-app\s+\.transfer-network-status\s*\{\s*font-size:\s*var\(--mobile-readable-caption\)/)) {
+  fail("css/mobile-ios-shell.css should keep the lazy Quick Transfer network status at the readable mobile caption size");
 }
 
 if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.mobile-dock-scroll\s*\{[\s\S]*overflow-x:\s*auto[\s\S]*touch-action:\s*pan-x/)
@@ -3856,9 +3868,14 @@ if (!hasPattern(mainJs, /function\s+publishedBlogItems\(\)\s*\{[\s\S]*blogState\
 
 if (!hasPattern(
   objectBlockAfterMarker(mainJs, "function renderBlog"),
-  /const\s+items\s*=\s*publishedBlogItems\(\)[\s\S]*if\s*\(\s*!items\.length\s*\)\s*\{[\s\S]*blogEmptyStateElement\(\)[\s\S]*items\.forEach\(\(item\)\s*=>\s*list\.appendChild\(blogCardElement\(item\)\)\)/
+  /content-state-copy loading-text[\s\S]*const\s+items\s*=\s*publishedBlogItems\(\)[\s\S]*if\s*\(\s*!items\.length\s*\)\s*\{[\s\S]*blogEmptyStateElement\(\)[\s\S]*items\.forEach\(\(item\)\s*=>\s*list\.appendChild\(blogCardElement\(item\)\)\)/
 )) {
-  fail("js/main.js renderBlog should show an honest empty state until real posts are published");
+  fail("js/main.js renderBlog should wrap its loading copy and show an honest empty state until real posts are published");
+}
+
+if (!hasPattern(mainJs, /function\s+waitForRouteModuleRetryResult[\s\S]*MutationObserver[\s\S]*route-module-status[\s\S]*function\s+restoreRetryFocus/)
+  || !hasPattern(mainJs, /data-route-module-retry[\s\S]*restartActiveRouteLifecycle\(\s*["']module-retry["']\s*\)[\s\S]*restoreRetryFocus\([\s\S]*waitForRouteModuleRetryResult/)) {
+  fail("generic route-module retries should wait for a settled result and restore focus inside the route status target");
 }
 
 for (const functionName of ["openAccountPopover", "closeAccountPopover"]) {
@@ -3977,13 +3994,19 @@ for (const obsoleteText of [
   }
 }
 
-const finalUpdateId = "seed-update-2026-07-19-historical-video-thumbnail-cache";
-const finalUpdateSlug = "2026-07-19-historical-video-thumbnail-cache";
+const desktopTaskbarActiveBlock = objectBlockAfterMarker(styleCss, ".taskbar-tabs button.active");
+if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
+  || /#ffd84c|#ffe990|255\s*,\s*238\s*,\s*142|var\(--chrome-glow\)/i.test(desktopTaskbarActiveBlock)) {
+  fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
+}
+
+const finalUpdateId = "seed-update-2026-07-21-desktop-taskbar-active";
+const finalUpdateSlug = "2026-07-21-desktop-taskbar-active";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Historical Video Thumbnail Cache Recovery";
-const finalPublishedAt = "2026-07-19T11:56:27.825Z";
+const finalTitleEn = "Desktop Taskbar Active-State Polish";
+const finalPublishedAt = "2026-07-21T00:41:00.711Z";
 const finalTranslationMinimums = {
   title: 8,
   summary: 24,
@@ -4004,6 +4027,8 @@ const changelog20260716Section = markdownSection(changelog, "## 2026-07-16");
 const changelog20260717Section = markdownSection(changelog, "## 2026-07-17");
 const changelog20260718Section = markdownSection(changelog, "## 2026-07-18");
 const changelog20260719Section = markdownSection(changelog, "## 2026-07-19");
+const changelog20260720Section = markdownSection(changelog, "## 2026-07-20");
+const changelog20260721Section = markdownSection(changelog, "## 2026-07-21");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -4177,7 +4202,7 @@ if (finalUpdateStarted) {
   }
 
   for (const token of [
-    'id="top-updated">2026.07.19',
+    'id="top-updated">2026.07.21',
     `/css/style.css?v=${finalCssVersion}`,
     `/css/mobile-ios-shell.css?v=${finalCssVersion}`,
     `/js/main.js?v=${finalMainVersion}`
@@ -4195,7 +4220,7 @@ if (finalUpdateStarted) {
     "Functions seed",
     "schema seed"
   ]) {
-    if (!changelog20260719Section.includes(token)) {
+    if (!changelog20260721Section.includes(token)) {
       fail(`CHANGELOG.md final public update sync missing ${token}`);
     }
   }

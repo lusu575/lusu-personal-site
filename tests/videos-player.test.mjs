@@ -10,13 +10,15 @@ test("video iframe timeout is explicit and short enough to expose recovery", () 
   assert.ok(VIDEO_IFRAME_LOAD_TIMEOUT_MS <= 10000);
 });
 
-test("video cards expose one play focus while thumbnails keep the same click action", async () => {
+test("video cards expose a native titled thumbnail button and a titled card action", async () => {
   const source = await readFile(new URL("../js/routes/videos.mjs", import.meta.url), "utf8");
-  assert.match(source, /const thumb = document\.createElement\("div"\)/);
+  assert.match(source, /const thumb = document\.createElement\("button"\)/);
+  assert.match(source, /thumb\.type = "button"/);
   assert.match(source, /thumb\.dataset\.videoId = item\.video_id/);
   assert.match(source, /button\.dataset\.videoId = item\.video_id/);
-  assert.match(source, /thumb\.setAttribute\("aria-hidden", "true"\)/);
-  assert.doesNotMatch(source, /const thumb = document\.createElement\("button"\)/);
+  assert.match(source, /thumb\.setAttribute\("aria-label", videoPlayLabel\)/);
+  assert.match(source, /button\.setAttribute\("aria-label", videoPlayLabel\)/);
+  assert.doesNotMatch(source, /thumb\.setAttribute\("aria-hidden", "true"\)/);
 });
 
 test("video player keeps thumbnails and native iframe controls unobstructed and supplies retry plus original fallback", async () => {
@@ -35,10 +37,17 @@ test("video player keeps thumbnails and native iframe controls unobstructed and 
   assert.match(source, /iframe\.addEventListener\("load", settleLoaded/);
   assert.match(source, /iframe\.addEventListener\("error", settleFailed/);
   assert.match(source, /window\.setTimeout\(settleFailed, VIDEO_IFRAME_LOAD_TIMEOUT_MS\)/);
+  assert.match(source, /let settled = false/);
+  assert.match(source, /settled \|\| requestId !== videoState\.playerRequestId/);
   assert.match(source, /retry\.dataset\.videoPlayerRetry/);
+  assert.match(source, /actions\.className = "video-player-fallback-actions"/);
+  assert.match(source, /original\.href = originalUrl/);
+  assert.match(source, /original\.target = "_blank"/);
+  assert.match(source, /original\.rel = "noreferrer noopener"/);
   assert.match(source, /frame\.replaceChildren\(fallback\)/);
   assert.match(main, /retryVideoPlayer\(videoPlayerRetry\.dataset\.videoPlayerRetry\)/);
   assert.match(css, /\.video-player-fallback \.xp-button\s*\{[\s\S]*?min-height:\s*44px/);
+  assert.match(css, /\.video-modal-actions #video-link\[hidden\]\s*\{\s*display:\s*none/);
 });
 
 test("video loading, failure, true empty, and normal data keep distinct filter states", async () => {

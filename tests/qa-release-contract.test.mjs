@@ -101,11 +101,12 @@ test("controlled article history reloads a unique document and reports segmented
 test("short-screen Chat overlap checks protect real content while allowing the window backdrop behind the translucent Dock", () => {
   const chatFlow = audit.slice(audit.indexOf("async function auditChatShortScreenCapacity"), audit.indexOf("async function auditRouteScrollOwner"));
   assert.match(chatFlow, /windowDock:overlap\(windowRect,dock\)/);
-  for (const token of ["logCompose", "composeFeedback", "composeFooter", "footerDock", "hintLog", "hintCompose"]) {
+  for (const token of ["logCompose", "composeFeedback", "composeFooter", "footerDock", "hintHeader", "hintNickname", "hintRoomStatus", "hintSummary", "hintLog", "hintCompose"]) {
     assert.ok(chatFlow.includes(token), `missing Chat content overlap check ${token}`);
   }
   const assertedPairs = [...chatFlow.matchAll(/checkNoOverlap\([^\n]+/g)].map((match) => match[0]).join("\n");
   assert.doesNotMatch(assertedPairs, /windowDock/);
+  assert.match(chatFlow, /privateExpanded\?\.safety\?\.hint\?\.width[\s\S]*< 220/);
   assert.match(audit, /if \(!viewport\.mobile\) need\(data\.windowDockOverlapArea <= 1/);
 });
 

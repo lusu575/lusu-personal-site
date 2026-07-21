@@ -2,6 +2,21 @@
 
 本文件记录鲁肃个人站的功能、界面、后端、部署与项目约定变更。每次修改项目后都应同步更新这里，方便后续 AI / Codex 对话快速了解最近改动。
 
+## 2026-07-21
+
+- 移除 PC 端底部任务栏当前任务按钮的黄色底边、黄色外描边与常亮光晕，保留蓝色按下背景、内凹层级和清晰文字对比；键盘 `:focus-visible` 焦点环继续保留，移动 Dock 的选中底板、滑动与触控范围不变。
+- 公开缓存版本统一为 `20260721-desktop-taskbar-active-r1`；三语 `site-updates` 记录 `seed-update-2026-07-21-desktop-taskbar-active` 已同步 `js/data/content.mjs` 完整 fallback、`js/data/home-content.mjs` 最新五条无正文投影、Functions seed 与 schema seed，并更新项目上下文、主站 Skill／README 和构建守卫。未连接生产 D1、未推送、未部署。
+- 上线前统一门禁先捕获并修复 Videos 在 844×390 三语横屏中的 44px 操作按钮越出卡片问题；最终 `npm.cmd run verify:public-site-release` 全绿，包含 203 / 203 全量测试、19 个公开模块依赖图、静态构建、190 / 190 发布矩阵，以及两次一致的可重复生产构建（manifest SHA-256 `b8815ecda47c5403cc7395359cb3c25c6d02f7887d967655c3afd78f439ad045`）。另有 142 / 142 完整公共 UI 审计通过，桌面任务栏截图确认活动按钮不再显示黄色常亮层；仅保留既有日语工具 `noMedal` 重复键警告。
+
+## 2026-07-20
+
+- 完成公开主站 30 项界面与美观度精修：1280×720 Chat 改为日志弹性收缩并完整保留 composer／footer，移动短屏与 844×390 横屏使用两行身份／房间结构，字数计数并入输入状态行；视频卡保持真实 16:9，欢迎窗口改为桌面 2×2 快捷入口与移动单滚动容器，Knowledge 使用宽屏双列与 72ch 正文，Resources 元信息、全站字号、图标光学尺寸、最近更新、顶栏分组、任务栏 active、路由 accent 和卡片边界同步整理。
+- 完成交互、状态与动效收口：视频封面改为带标题可访问名称的原生按钮，播放器失败卡内相邻提供重试和原视频，8 秒 iframe 超时使用 request generation + settled 防止旧 timer 覆盖新结果；Knowledge、Videos、Resources、Games、Blog 与 About 统一 `.content-state`，真实错误使用 alert，重试后恢复焦点。disabled／aria-disabled／inert 控件不再产生按压反馈，maximize／restore 使用真实前后几何 FLIP，关闭与最小化方向明确，主题切换移除 root View Transition。
+- motion off 现在硬停止硬编码 transition／animation、Dock smooth scroll 与选中滑动、骨架循环和主题快照；reduced 同步停止非必要循环，full 模式仅保留克制的品牌骨架扫描。移动文章 Appbar 保留路由身份，Dock 与正文小字提升可读性，同时减少重复描边并保持 44px 触控目标。
+- 公开缓存版本统一为 `20260720-ui-motion-polish-r1`；三语 `site-updates` 记录 `seed-update-2026-07-20-ui-motion-polish` 已同步 `js/data/content.mjs` 完整 fallback、`js/data/home-content.mjs` 最新五条无正文投影、Functions seed 与 schema seed，并更新项目上下文、主站 Skill／README、构建守卫与 UI 审计契约。未连接生产 D1、未推送、未部署。
+
+- 验证通过：`npm.cmd run build`、203 / 203 全量测试、19 个公开模块依赖图、142 / 142 公共 UI 审计、58 / 58 Resources / Quick Transfer 专项矩阵、3 / 3 视频播放器专项，以及两次一致的可重复生产构建（manifest SHA-256 `63569f4fc70fcc0fcfa646e8657680ab214de7b3a76d36e254857faa535728e5`）。生产构建仅保留既有日语训练工具 `noMedal` 重复键警告；本轮未连接生产 D1、未推送、未部署。
+
 ## 2026-07-19
 
 - 恢复既有浏览器中的历史 Bilibili 手动封面：线上核对确认 11 张旧封面仍完整保存在 D1、同源代理均返回有效 JPEG，空白来自 `/api/videos` 旧 ETag 只依赖数据库行时间，代码修复后仍返回 304 并复用旧空响应。公开视频列表与详情现按完整响应生成 ETag，本地上传封面代理 URL 同时携带视频更新时间版本，历史空缓存和今后换图的旧缓存都会自动失效；前端 960×540 固有尺寸边界也与服务端一致。公开缓存版本为 `20260719-video-thumbnail-cache-r2`，三语 `site-updates` 记录 `seed-update-2026-07-19-historical-video-thumbnail-cache` 已同步 `js/data/content.mjs` 完整 fallback、Home 五条投影、Functions seed 与 schema seed。

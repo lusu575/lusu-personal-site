@@ -66,7 +66,10 @@
   color: inherit;
   text-decoration: none;
   cursor: pointer;
-  transition: border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
+  transition:
+    border-color var(--motion-fast, 140ms) ease,
+    box-shadow var(--motion-fast, 140ms) ease,
+    transform var(--motion-fast, 140ms) ease;
 }
 
 #knowledge .article-card:hover,
@@ -117,6 +120,10 @@
   background: #eef6ff;
 }
 
+.knowledge-list-notice.content-state {
+  min-height: 0;
+}
+
 .knowledge-list-more p,
 .knowledge-list-notice p {
   margin: 0;
@@ -130,19 +137,43 @@
 }
 
 .knowledge-skeleton-label {
+  display: flex;
+  min-height: 0;
   margin: 0 0 10px;
+  padding: 10px 12px;
 }
 
 .article-card-skeleton {
+  position: relative;
   min-height: 154px;
+  overflow: hidden;
+  border-color: #91b8ed;
+  border-left: 4px solid #2d78d7;
+  background:
+    repeating-linear-gradient(90deg, rgba(62, 132, 226, 0.055) 0 1px, transparent 1px 18px),
+    linear-gradient(180deg, #fbfdff, #f0f6ff);
   cursor: default;
+}
+
+.article-card-skeleton::after {
+  content: "";
+  position: absolute;
+  right: 12px;
+  bottom: 11px;
+  width: 7px;
+  height: 7px;
+  background: #2d78d7;
+  box-shadow: -11px 0 0 #ffd65a, -22px 0 0 #73c991;
+  opacity: 0.72;
 }
 
 .article-card-skeleton > span {
   display: block;
   border: 1px solid #c4d5ee;
   border-radius: 4px;
-  background: linear-gradient(180deg, #f6f9fe, #e3ecf8);
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.8), transparent 48%),
+    linear-gradient(180deg, #edf5ff, #dce9f8);
 }
 
 .article-card-skeleton .skeleton-title {
@@ -171,6 +202,21 @@
 
 #knowledge .folder-layout {
   overflow: hidden;
+}
+
+#knowledge .content-list:not([hidden]) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(460px, 100%), 1fr));
+  align-content: start;
+  gap: 14px;
+}
+
+#knowledge .content-list > .article-card {
+  margin-bottom: 0;
+}
+
+#knowledge .content-list > :where(.knowledge-skeleton-label, .knowledge-list-more, .knowledge-list-notice, .loading-text, .xp-button) {
+  grid-column: 1 / -1;
 }
 
 html:not([data-ui-shell="mobile"]) body.is-article-reading {
@@ -283,7 +329,8 @@ body.is-article-reading .article-reader-sidebar {
 
 .article-detail-card {
   min-width: 0;
-  width: 100%;
+  width: min(100%, 86ch);
+  justify-self: center;
   margin: 0;
   padding: 24px 26px 28px;
   border: 1px solid #8db7ff;
@@ -311,10 +358,16 @@ body.is-article-reading .article-reader-sidebar {
 }
 
 .article-detail-head p {
+  max-width: 72ch;
   margin: 0;
   color: var(--xp-muted);
   line-height: 1.7;
   overflow-wrap: anywhere;
+}
+
+.article-detail-card > .markdown-body {
+  width: 100%;
+  max-width: 72ch;
 }
 
 .article-summary-toggle {
@@ -374,7 +427,7 @@ body.is-article-reading #knowledge .article-read-progress {
 .article-read-progress-label {
   display: contents;
   color: #073a91;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   line-height: 1.2;
 }
@@ -407,7 +460,7 @@ body.is-article-reading #knowledge .article-read-progress {
   inset: 0;
   transform: scaleX(0);
   transform-origin: left center;
-  transition: transform 160ms ease;
+  transition: transform var(--motion-fast, 140ms) ease;
   background:
     repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.28) 0 10px, transparent 10px 18px),
     linear-gradient(90deg, #0759d6, #0b70ff);
@@ -557,7 +610,7 @@ body.is-article-reading .article-read-progress-label {
 
 body.is-article-reading .article-read-progress-label span {
   grid-column: 1;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 body.is-article-reading .article-read-progress-label strong {

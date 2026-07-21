@@ -47,10 +47,13 @@ export function createGamesRoute({
       return;
     }
     gameState.error = "";
-    const loading = document.createElement("p");
-    loading.className = "loading-text";
-    loading.textContent = t("gameConfigLoading");
+    const loading = document.createElement("div");
+    loading.className = "content-state is-loading";
     markStatusMessage(loading);
+    const loadingCopy = document.createElement("p");
+    loadingCopy.className = "content-state-copy loading-text";
+    loadingCopy.textContent = t("gameConfigLoading");
+    loading.appendChild(loadingCopy);
     if (gameState.catalog) {
       renderGameCatalog(list, gameState.catalog);
       list.prepend(renderGameRecoveryNotice("loading"));
@@ -69,23 +72,26 @@ export function createGamesRoute({
         list.prepend(renderGameRecoveryNotice("failed"));
         return;
       }
-      const failed = document.createElement("p");
-      failed.className = "loading-text";
-      failed.textContent = `${t("gameConfigFailed")}: ${error.message}`;
-      markStatusMessage(failed);
+      const failed = document.createElement("div");
+      failed.className = "content-state is-error";
+      markStatusMessage(failed, "error");
+      const failedCopy = document.createElement("p");
+      failedCopy.className = "content-state-copy loading-text";
+      failedCopy.textContent = `${t("gameConfigFailed")}: ${error.message}`;
       const action = document.createElement("button");
       action.type = "button";
       action.className = "xp-button";
       action.dataset.gameRetry = "";
       action.textContent = t("gameRetryAction");
-      list.replaceChildren(failed, action);
+      failed.append(failedCopy, action);
+      list.replaceChildren(failed);
     }
   }
 
   function renderGameRecoveryNotice(kind) {
     const notice = document.createElement("div");
-    notice.className = `content-recovery-notice ${kind === "failed" ? "is-error" : "is-loading"}`;
-    markStatusMessage(notice);
+    notice.className = `content-state content-recovery-notice ${kind === "failed" ? "is-error" : "is-loading"}`;
+    markStatusMessage(notice, kind === "failed" ? "error" : "status");
     const copy = document.createElement("p");
     copy.textContent = kind === "failed" ? t("gameConfigFailed") : t("gameConfigLoading");
     notice.appendChild(copy);
@@ -113,6 +119,7 @@ export function createGamesRoute({
   function renderGameEmptyState() {
     const state = document.createElement("article");
     state.className = "game-empty-state";
+    state.classList.add("content-state", "is-empty");
     const icon = document.createElement("span");
     icon.className = "game-empty-icon";
     icon.setAttribute("aria-hidden", "true");

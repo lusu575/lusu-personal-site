@@ -128,6 +128,10 @@ export function createResourcesRoute({
   function resourceEmptyStateElement({ hasAnyReady = true } = {}) {
     const state = document.createElement("div");
     state.className = "resource-empty-state";
+    state.classList.add("content-state", "is-empty");
+    state.setAttribute("role", "status");
+    state.setAttribute("aria-live", "polite");
+    state.setAttribute("aria-atomic", "true");
     const icon = document.createElement("span");
     icon.className = "resource-empty-icon";
     icon.setAttribute("aria-hidden", "true");

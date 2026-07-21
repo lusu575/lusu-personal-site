@@ -126,8 +126,10 @@
   width: 64px;
   height: 64px;
   object-fit: contain;
-  padding: 7px;
+  object-position: center;
+  padding: 4px;
   border: 2px solid #9bbcff;
   border-radius: 8px;
   background: linear-gradient(180deg, #e9f5ff, #c9e3ff);
+  box-shadow: inset 1px 1px 0 #fff, 2px 2px 0 rgba(19, 53, 108, 0.16);
 }

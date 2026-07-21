@@ -20,6 +20,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - Quick Transfer 未登录态只呈现一个上下文任务卡、一个主登录 CTA 和明确返回；登录完成要回到 Transfer，不得用红色 X 承担含糊返回语义。
 - 文章阅读时 document 不滚动，正文详情是唯一纵向 owner；进度轨道约 4px、与正文零交叠，移动端保留可见含义与准确 ARIA 百分比。
 - Chat 发送只锁提交动作，用户可继续输入且旧请求不得清空新草稿。359×500 自动回归以普通房约 177px、私聊至少约 119px为目标；安全说明通过 44px 折叠入口提供，关闭时不占日志也不覆盖控件。
+- Chat 同时以 1280×720 为短桌面硬门槛：标题、两行身份／房间控制、日志、composer 与 footer 必须完整落在窗口和任务栏上方，只有日志可弹性收缩；字数计数归入输入状态行。短屏／横屏几何只放 `css/mobile-ios-shell.css`，route CSS 不得新增 `@media`。
 - Chat 发送失败重试必须复用同一 `clientRequestId`，新草稿或上一次已成功后才生成新 ID。服务端要在限流前重放首次成功结果，依靠 `(visitor_id, room_key, client_request_id)` 唯一索引防止并发重复；私聊不得因随机 IV 密文改变而产生第二条消息。旧 D1 先补 `client_request_id` 列、后建依赖索引。
 - 公共 Chat 绝不回退暴露服务端隐藏 visitor id；密码、私聊、草稿、Secret、完整标识不得进入 DOM 泄漏、storage、History、console 或 telemetry。修改渲染、链接、iframe、媒体或 Transfer fragment 时必须运行安全边界测试。
 - 每次调用 `articleTranslationsStatements()` 都必须传入确定的 UTC ISO seed 时间；D1 会拒绝 `undefined` bind。文章或更新 seed 改动后必须运行全量 seed binding 回归和三语文章 API smoke，不能只靠静态 SQL 存在性判断。
@@ -56,6 +57,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 首页壁纸必须保留 `wallpaper-root` / `wallpaper-stage` 舞台坐标结构；静态底图和后续动画图层要共享同一套 cover 裁切尺寸，不要直接用视口百分比硬贴小图层。
 - 首页壁纸和欢迎弹窗问候语必须使用同一套时间段：05:00-10:59 morning，11:00-16:59 day，17:00-19:59 dusk，20:00-04:59 night。
 - 顶部栏和底部任务栏也跟随同一套 `body[data-time-theme]` 四时段主题变量；维护 `.xp-topbar`、`.xp-taskbar`、Start、任务栏按钮、账号入口、语言切换或状态托盘时，必须同时检查 morning / day / dusk / night 四套外观，保持无竖线的现代玻璃像素 HUD 方向，并保留现有图标资源。
+- PC 端活动任务按钮使用蓝色按下态与内凹层级，不使用黄色底边、黄色外描边或常亮光晕；仅键盘 `:focus-visible` 保留清楚焦点环。该规则不得改写移动 Dock 的选中底板。
 - 维护右上角账号入口、语言切换或其他顶栏浮层时，必须同时检查 `.xp-topbar` 的裁剪行为和 `.site-shell > header` / `.site-shell > main` 的 stacking context。账号弹窗需要能从顶栏按钮下方溢出显示，且顶栏所在 `header` 必须高于主内容 `main`；否则会出现首页点击像没反应、其他栏目被窗口遮挡的问题。
 - 修改账号入口、顶栏浮层或任何公开可见交互后，必须同步更新 `CHANGELOG.md`、`PROJECT_CONTEXT.md`、`content.updates` 的日期项、`site-updates` 三语记录、相关 seed、以及 CSS/JS query。不能只改代码不写记录，也不能只写 changelog 而不让首页最近更新日期变更。
 - 桌面底部任务栏与移动真实 Dock 必须固定在浏览器视口下沿；移动 Dock 在 Home 和 App 内都保留，支持横向滑动、真实选中和 44px 横线收起/展开。维护窗口高度、页面 padding 或文章阅读浮层时，必须按 Dock 展开/收起状态与 safe area 预留空间，避免导航或固定控件盖住内容。
@@ -78,11 +80,13 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 性能档只允许 `normal` / `low`：Save-Data 或浏览器明确报告不超过 2 核 / 2GiB 时进入 low，能力未知保持 normal。low 必须关闭大面积 blur/filter、常驻 `will-change`、循环环境动效和全页 View Transition，同时提供高对比实色回退；不得靠隐藏功能、降低文字对比或改变 normal 档 XP / Pixel / Y2K 构图来通过。
 - `js/ui-motion.js` 只负责过渡与动效编排；业务提交必须继续由现有处理函数完成，并保证一次用户操作只提交一次。动效失败、关闭或减少动态时，业务操作仍必须立即完成。
 - 桌面 Home 图标进入模块不得捕获整张 Home 页面，只在实时壁纸上对目标 `.xp-window` 做克制淡入和 3px 上移归位；任务栏返回 Home 只动画 `.desktop-icons`，不得让顶层 Home 快照遮住任务栏。模块间 `route` 只让新活动页面轻淡入并小幅方向滑动，移动 Dock route 使用短促方向滑动和一个共享选中底板。页面路由、App 打开与移动 tab 不得调用会捕获整页固定 chrome 的 `document.startViewTransition()`；固定顶栏、桌面任务栏与移动 Dock 必须保持实时可见，fallback 不得克隆带 ID 的业务 DOM。full motion 回归必须拍摄切换起始、60ms、140ms 和稳定帧，验证 Dock 节点身份不变、全程可见，并覆盖 40ms 快速连续切换。
+- `data-motion="off"` 必须真正停止硬编码 transition / animation、Dock smooth scroll 与选中滑动、骨架循环和主题快照；reduced 也停止非必要循环。disabled、`aria-disabled`、inert 后代不产生按压反馈；窗口 maximize/restore 的 FLIP 使用真实 before/after 几何，不能用固定缩放伪装。
+- 视频缩略图必须是带标题可访问名称的原生 16:9 `button`，不得退回装饰 `div` 或恢复遮图播放圆圈。iframe 超时、load 与 error 都按当前 request generation + settled 状态收口；失败卡内相邻显示重试／原视频，loading / empty / error 使用共同 `.content-state`，真实错误为 alert，重试后保留合理键盘焦点。
 - 不要克隆或 reparent 账号入口/弹窗、文章详情、视频弹窗、游戏或聊天等高耦合 DOM。移动壳应通过 CSS 和轻量装饰节点呈现现有内容，避免同一 ID、事件监听、焦点或异步请求产生两套生命周期。
 - 公开呈现文件目前包括 `css/style.css`、`css/mobile-ios-shell.css`、`css/motion-system.css`、`js/main.js` 及其 `js/core/`、`js/data/`、`js/features/`、`js/routes/` 模块、`js/mobile-shell.js` 和 `js/ui-motion.js`。新增或修改任何公开 CSS、JS、图标、壁纸或强视觉资产时，必须同步 `index.html` 中对应 query；同一发布批次使用同一可追踪版本。
 - 移动 Home 使用 App grid，真实 Dock 在 Home 与栏目 App 内持续悬浮；Dock 只保留 Home、Knowledge、Videos、Resources、Games、Chatroom 六个高频入口，Blog 与 About 仍从 Home 进入。六项在 375px 以上居中，359px 可短距离横滑；进入排除路由时选中底板必须隐藏。Dock 仍可由 44px 横线收起/展开，栏目内只保留单一 Appbar。
 - Home 的 App grid 必须按 DOM 顺序从左到右、从上到下填充并使用固定行高；不得用 `1fr` 弹性行把图标在细长屏幕上纵向摊开。App 按钮热区应与可见图标加标题的实际盒接近，不得把整列或大块空白变成点击区，同时仍保持 44px 最小触控目标。
-- 移动栏目统一保留“外框—工具/筛选区—标签区—内容区”的多层边框结构；知识库、视频、资源、游戏、杂谈、聊天室与关于页都要有清晰容器层级，边框颜色从本站四时段/Neo-XP token 取值。新增边框后必须重新测可读容量和子项相交，不能用边框挤掉正文、聊天日志或按钮。
+- 移动栏目保留可辨认的 App 外框和内容卡边界，但工具／筛选／标签区不得层层重复完整描边；优先用间距、浅底色和单侧 accent 建立层级。边框颜色从本站四时段/Neo-XP token 取值，修改后必须重测可读容量和子项相交，不能挤掉正文、聊天日志或按钮。
 - 移动端固定复测 359x500、375x667、390x844、430x932 和 coarse pointer 横屏 844x390；至少验证 Home、Chat、账号弹窗、文章详情、视频弹窗和底部返回路径。验收不能只看“没有横向溢出”：App 窗口应至少占视口高度 80%，Games 列表要使用可用高度；359x500 Chat 普通房日志可读区至少保留 160px，私聊展开至少保留 115px 或提供可折叠工具区，844x390 横屏至少保留 150px，同时安全说明、输入、反馈和 Dock 不得相交。短屏文章首屏至少显示 44px 无遮挡正文。文章进度与回顶控制应放在移动 Appbar 的空余区域，不能覆盖复制按钮或正文。
 - 手机文章阅读把回顶等控制放入 Appbar 可见区域时，必须同时检查视觉层和真实 hit-testing：固定 `.xp-topbar` 的装饰/空白区域不得拦截正文中的控制，Appbar 内返回、复制、账号等真实交互节点仍需单独恢复指针事件。
 - 移动排版以“包含且不相交”为硬门槛：卡片内标题、摘要、元信息和 CTA 必须完全位于卡片内，结构子项不得伸进下一张卡；输入框、计数、发送按钮、密码房操作和 footer 文案不得相互覆盖。不得靠把按钮缩到 44px 以下、把反馈字缩到难读或用 `overflow: hidden` 掩盖排版错误来通过验收；横竖屏与 zh / en / ja 长文案都要做真实几何检查。

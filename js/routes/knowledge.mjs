@@ -167,7 +167,8 @@ export function createKnowledgeRoute({
       renderKnowledgeSearchControls(null, null);
       renderListMessage(list, t("articleLoadFailed"), {
         label: t("articleRetryAction"),
-        dataset: { articleRetry: "" }
+        dataset: { articleRetry: "" },
+        state: "error"
       });
       return;
     }
@@ -182,7 +183,8 @@ export function createKnowledgeRoute({
     if (!items.length) {
       renderListMessage(list, t("articleSearchNoResults"), {
         label: t("articleSearchReset"),
-        dataset: { articleSearchReset: "" }
+        dataset: { articleSearchReset: "" },
+        state: "empty"
       });
       return;
     }
@@ -200,7 +202,7 @@ export function createKnowledgeRoute({
 
   function renderArticleSkeletons(list) {
     const label = document.createElement("p");
-    label.className = "loading-text knowledge-skeleton-label";
+    label.className = "content-state is-loading loading-text knowledge-skeleton-label";
     label.textContent = t("articleLoading");
     markStatusMessage(label);
     const skeletons = Array.from({ length: 6 }, () => {
@@ -219,10 +221,11 @@ export function createKnowledgeRoute({
 
   function articleListNotice(message, action = null, modifier = "") {
     const notice = document.createElement("div");
-    notice.className = `knowledge-list-notice ${modifier}`.trim();
+    notice.className = `content-state knowledge-list-notice ${modifier}`.trim();
     const copy = document.createElement("p");
+    copy.className = "content-state-copy";
     copy.textContent = message;
-    markStatusMessage(copy);
+    markStatusMessage(copy, modifier === "is-error" ? "error" : "status");
     notice.appendChild(copy);
     if (action) {
       const button = document.createElement("button");
@@ -260,12 +263,16 @@ export function createKnowledgeRoute({
   }
 
   function renderListMessage(list, message, action = null) {
+    const state = document.createElement("div");
     const note = document.createElement("p");
-    note.className = "loading-text";
+    const stateKind = action?.state === "error" ? "error" : "empty";
+    state.className = `content-state is-${stateKind}`;
+    note.className = "content-state-copy loading-text";
     note.textContent = message;
-    markStatusMessage(note);
+    markStatusMessage(state, stateKind === "error" ? "error" : "status");
+    state.appendChild(note);
     if (!action) {
-      list.replaceChildren(note);
+      list.replaceChildren(state);
       return;
     }
     const button = document.createElement("button");
@@ -275,7 +282,8 @@ export function createKnowledgeRoute({
     Object.entries(action.dataset || {}).forEach(([key, value]) => {
       button.dataset[key] = value;
     });
-    list.replaceChildren(note, button);
+    state.appendChild(button);
+    list.replaceChildren(state);
   }
 
   function articleCardElement(item, itemIndex = 0) {
@@ -595,16 +603,19 @@ export function createKnowledgeRoute({
     syncArticleSummaryControl();
     meta.replaceChildren();
 
+    const state = document.createElement("div");
+    state.className = "content-state is-error";
     const note = document.createElement("p");
-    note.className = "loading-text";
+    note.className = "content-state-copy loading-text";
     note.textContent = t("articleLoadFailed");
-    markStatusMessage(note);
+    markStatusMessage(state, "error");
     const action = document.createElement("button");
     action.type = "button";
     action.className = "xp-button";
     action.dataset.articleDetailRetry = slug;
     action.textContent = t("articleRetryAction");
-    body.replaceChildren(note, action);
+    state.append(note, action);
+    body.replaceChildren(state);
     articleState.detailFocusReady = true;
     focusArticleDetailTitle();
     restorePendingKnowledgeScroll();

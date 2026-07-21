@@ -3933,13 +3933,40 @@ html[data-ui-shell="mobile"] .online-dot {
   }
 
   html[data-ui-shell="mobile"] #videos .video-body {
+    grid-template-rows: 22px minmax(0, 40px) minmax(0, 20px) minmax(0, 18px) 44px;
+    align-content: start;
+    gap: 4px;
     min-height: 0;
-    padding: 8px;
+    padding: 6px 8px;
     overflow: hidden;
+  }
+
+  html[data-ui-shell="mobile"] #videos .video-body h2,
+  html[data-ui-shell="mobile"] #videos .video-body > p,
+  html[data-ui-shell="mobile"] #videos .video-meta {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  html[data-ui-shell="mobile"] #videos .video-body h2 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
   }
 
   html[data-ui-shell="mobile"] #videos .video-body > p {
     -webkit-line-clamp: 1;
+  }
+
+  html[data-ui-shell="mobile"] #videos .video-meta {
+    flex-wrap: nowrap;
+  }
+
+  html[data-ui-shell="mobile"] #videos .video-body .card-action {
+    height: 44px;
+    min-height: 44px;
+    margin-top: 0;
+    align-self: stretch;
   }
 
   html[data-ui-shell="mobile"] #videos .video-empty-state,
@@ -4594,5 +4621,760 @@ html[data-ui-shell="mobile"] .game-main .meta-row > * {
   ).has-horizontal-overflow {
     -webkit-mask-image: none;
     mask-image: none;
+  }
+}
+
+/* 2026-07-20 mobile UI polish: keep one readable, touch-safe composition from
+   359px portrait through the supported 844x390 landscape workspace. */
+html[data-ui-shell="mobile"] {
+  --mobile-readable-caption: max(11px, 0.6875rem);
+}
+
+/* Keep the App identity visible while article actions share the right side of
+   the same 44px App bar. */
+html[data-ui-shell="mobile"] .mobile-route-copy span {
+  font-size: var(--mobile-readable-caption);
+  letter-spacing: 0.1em;
+}
+
+html[data-ui-shell="mobile"] body.is-article-reading .mobile-appbar {
+  box-sizing: border-box;
+  padding-right: 52px;
+}
+
+html[data-ui-shell="mobile"] body.is-article-reading .mobile-route-copy {
+  display: block;
+}
+
+html[data-ui-shell="mobile"] body.is-article-reading .mobile-route-copy strong {
+  max-width: min(calc(100vw - 204px), 520px);
+}
+
+html[data-ui-shell="mobile"] body.is-article-reading .article-top-link {
+  top: calc(var(--mobile-safe-top) + var(--mobile-status-height) + 2px);
+  right: max(6px, var(--mobile-safe-right));
+}
+
+/* A semantic thumbnail button keeps the same 16:9 artwork, but now exposes a
+   real keyboard focus surface and a full-size touch target. */
+html[data-ui-shell="mobile"] button.video-thumb {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  height: auto;
+  min-height: 44px;
+  max-height: none;
+  padding: 0;
+  overflow: hidden;
+  appearance: none;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  color: inherit;
+  background-color: #2f72bc;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+html[data-ui-shell="mobile"] button.video-thumb:focus-visible {
+  z-index: 2;
+  outline: 3px solid var(--chrome-focus-ring, #ffe774);
+  outline-offset: -3px;
+}
+
+/* The welcome sheet owns vertical scrolling. Its update list expands naturally
+   inside that scroller, while the bottom fade/chevron advertises continuation. */
+html[data-ui-shell="mobile"] .welcome-window {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+html[data-ui-shell="mobile"] .welcome-window > .window-titlebar {
+  flex: 0 0 auto;
+}
+
+html[data-ui-shell="mobile"] .welcome-content {
+  min-height: 0;
+  padding-bottom: 38px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scroll-padding-block: 12px 34px;
+  scrollbar-width: thin;
+}
+
+html[data-ui-shell="mobile"] .welcome-content .recent-panel {
+  max-height: none;
+}
+
+html[data-ui-shell="mobile"] .welcome-content .recent-panel ul {
+  max-height: none;
+  overflow: visible;
+  overscroll-behavior: auto;
+}
+
+html[data-ui-shell="mobile"] .welcome-window::after {
+  content: "";
+  position: absolute;
+  right: 1px;
+  bottom: 1px;
+  left: 1px;
+  z-index: 3;
+  height: 34px;
+  border-radius: 0 0 27px 27px;
+  background: linear-gradient(180deg, rgba(249, 252, 255, 0), rgba(249, 252, 255, 0.97) 66%);
+  pointer-events: none;
+}
+
+/* One outer frame, one content surface, one card edge: retain the XP bevel
+   language without stacking three outlines around every mobile App. */
+html[data-ui-shell="mobile"] .page:not(.page-home) > .xp-window {
+  border-width: 1px;
+  box-shadow:
+    0 16px 42px rgba(5, 20, 63, 0.24),
+    inset 0 0 0 1px rgba(248, 251, 255, 0.72);
+}
+
+html[data-ui-shell="mobile"] body:not([data-route="home"]) .page.active > .xp-window {
+  box-shadow:
+    inset 0 3px 0 var(--mobile-app-accent),
+    inset 0 0 0 1px rgba(248, 251, 255, 0.72),
+    0 16px 42px rgba(5, 20, 63, 0.24);
+}
+
+html[data-ui-shell="mobile"] :is(
+  #videos .card-grid,
+  #resources .download-list,
+  #games .game-list,
+  #blog .notepad-paper,
+  #about .profile-card
+) {
+  border-color: transparent;
+  box-shadow: none;
+}
+
+html[data-ui-shell="mobile"] :is(
+  .video-card,
+  .resource-card,
+  .game-card,
+  .article-card,
+  .blog-card
+) {
+  border-color: rgba(49, 85, 142, 0.58);
+  box-shadow: 0 5px 14px rgba(34, 61, 105, 0.12);
+}
+
+/* Resource facts behave like compact definition rows instead of an unreadable
+   stream of chips. Tags follow the same grid and remain at least 12px. */
+html[data-ui-shell="mobile"] #resource-list .meta-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 5px 7px;
+  width: 100%;
+  font-size: max(12px, 0.75rem);
+  line-height: 1.35;
+}
+
+html[data-ui-shell="mobile"] #resource-list .resource-fact {
+  display: block;
+  min-width: 0;
+  min-height: 2.7em;
+  padding: 4px 6px;
+  border-left: 3px solid rgba(47, 113, 205, 0.56);
+  border-radius: 4px;
+  background: rgba(224, 237, 255, 0.7);
+  overflow-wrap: anywhere;
+}
+
+html[data-ui-shell="mobile"] #resource-list .meta-row > .tag {
+  justify-self: start;
+  min-width: 0;
+  font-size: max(12px, 0.75rem);
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+/* Chat's identity and room controls form two predictable rows. The composer's
+   count is a secondary status row beside the input instead of a loose column. */
+html[data-ui-shell="mobile"] .chatroom-header {
+  grid-template-columns: 44px minmax(0, 1fr);
+  grid-template-rows: minmax(44px, auto) minmax(44px, auto);
+  align-items: center;
+  gap: 5px 8px;
+  padding: 6px 8px;
+}
+
+html[data-ui-shell="mobile"] .chatroom-avatar {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: center;
+  width: 40px;
+  height: 40px;
+}
+
+html[data-ui-shell="mobile"] .chatroom-nickname-row {
+  grid-column: 2;
+  grid-row: 1;
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+
+html[data-ui-shell="mobile"] .chatroom-nickname-row > span:first-child {
+  display: none;
+}
+
+html[data-ui-shell="mobile"] .chatroom-nickname-row strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html[data-ui-shell="mobile"] .chat-nickname-button {
+  flex: 0 0 auto;
+  min-width: 68px;
+  min-height: 44px;
+  padding-inline: 7px;
+  font-size: max(12px, 0.75rem);
+}
+
+html[data-ui-shell="mobile"] .chatroom-status {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-row: 2;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  min-height: 44px;
+  padding: 3px 3px 3px 10px;
+  border-radius: 10px;
+  background: rgba(215, 229, 250, 0.72);
+}
+
+html[data-ui-shell="mobile"] .chatroom-window.is-private-room .chatroom-status {
+  background: rgba(32, 43, 69, 0.88);
+}
+
+html[data-ui-shell="mobile"] #chat-room-label {
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html[data-ui-shell="mobile"] #chat-sync-status,
+html[data-ui-shell="mobile"] .chatroom-status .online-dot {
+  display: none;
+}
+
+html[data-ui-shell="mobile"] .chat-room-toggle {
+  min-width: 84px;
+  min-height: 44px;
+  padding-inline: 8px;
+  font-size: max(12px, 0.75rem);
+}
+
+html[data-ui-shell="mobile"] .chatroom-compose {
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: minmax(44px, auto) 17px;
+  gap: 2px 8px;
+}
+
+html[data-ui-shell="mobile"] .chatroom-compose textarea {
+  grid-column: 1;
+  grid-row: 1;
+  min-height: 44px;
+}
+
+html[data-ui-shell="mobile"] .chatroom-counter {
+  position: static;
+  grid-column: 1;
+  grid-row: 2;
+  align-self: center;
+  justify-self: end;
+  min-width: 0;
+  padding: 0 2px;
+  font-size: var(--mobile-readable-caption);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  pointer-events: none;
+}
+
+html[data-ui-shell="mobile"] .chat-send-button {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  align-self: stretch;
+  min-width: 82px;
+  min-height: 44px;
+}
+
+/* Dock labels and compact chrome stay readable without reducing any 44px
+   interaction surface. */
+html[data-ui-shell="mobile"] :is(
+  .start-button,
+  .taskbar-tabs button,
+  .dock-label-short,
+  .icon-title,
+  .mobile-status-island
+) {
+  font-size: var(--mobile-readable-caption);
+}
+
+html[data-ui-shell="mobile"] .dock-label-short {
+  max-height: 2.2em;
+  line-height: 1.1;
+}
+
+/* Quick Transfer is lazy-loaded after this stylesheet, so keep the compact
+   network label readable with a deliberately more specific mobile override. */
+html[data-ui-shell="mobile"] body #transfer-app .transfer-network-status {
+  font-size: var(--mobile-readable-caption);
+}
+
+/* Motion-reduced and motion-off modes make Dock state changes immediate and
+   disable native smooth scrolling as well as the selection glide. */
+html[data-ui-shell="mobile"][data-motion="reduced"] .mobile-dock-scroll,
+html[data-ui-shell="mobile"][data-motion="off"] .mobile-dock-scroll,
+html[data-ui-shell="mobile"] body[data-motion="reduced"] .mobile-dock-scroll,
+html[data-ui-shell="mobile"] body[data-motion="off"] .mobile-dock-scroll {
+  scroll-behavior: auto !important;
+  scroll-snap-type: none;
+  transition: none !important;
+}
+
+html[data-ui-shell="mobile"][data-motion="reduced"] :is(
+  .mobile-dock-selection,
+  .xp-taskbar,
+  .mobile-home-indicator span,
+  .start-button,
+  .taskbar-tabs button
+),
+html[data-ui-shell="mobile"][data-motion="off"] :is(
+  .mobile-dock-selection,
+  .xp-taskbar,
+  .mobile-home-indicator span,
+  .start-button,
+  .taskbar-tabs button
+),
+html[data-ui-shell="mobile"] body[data-motion="reduced"] :is(
+  .mobile-dock-selection,
+  .xp-taskbar,
+  .mobile-home-indicator span,
+  .start-button,
+  .taskbar-tabs button
+),
+html[data-ui-shell="mobile"] body[data-motion="off"] :is(
+  .mobile-dock-selection,
+  .xp-taskbar,
+  .mobile-home-indicator span,
+  .start-button,
+  .taskbar-tabs button
+) {
+  transition: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-ui-shell="mobile"] .mobile-dock-scroll {
+    scroll-behavior: auto !important;
+    scroll-snap-type: none;
+    transition: none !important;
+  }
+
+  html[data-ui-shell="mobile"] :is(
+    .mobile-dock-selection,
+    .xp-taskbar,
+    .mobile-home-indicator span,
+    .start-button,
+    .taskbar-tabs button
+  ) {
+    transition: none !important;
+  }
+}
+
+/* Short portrait Chat still uses the same two-row header, with a compact log
+   and a count/status line that never steals the send button's touch target. */
+@media (max-width: 760px) and (max-height: 720px) and (orientation: portrait) {
+  html[data-ui-shell="mobile"] .chatroom-header {
+    grid-template-columns: 38px minmax(0, 1fr);
+    grid-template-rows: 44px 44px;
+    box-sizing: border-box;
+    height: 90px;
+    min-height: 90px;
+    max-height: 90px;
+    gap: 0 6px;
+    margin: 2px 5px 0;
+    padding: 0 6px;
+  }
+
+  html[data-ui-shell="mobile"] .chatroom-avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  html[data-ui-shell="mobile"] .chat-private-room-panel {
+    box-sizing: border-box;
+    height: 46px;
+    min-height: 46px;
+    max-height: 46px;
+    gap: 4px;
+    margin: 2px 5px 0;
+    padding: 0 4px;
+  }
+
+  html[data-ui-shell="mobile"] .chat-private-room-panel:has(.chat-private-safety[open]) {
+    height: 46px;
+    min-height: 46px;
+    max-height: 46px;
+    padding-bottom: 0;
+  }
+
+  html[data-ui-shell="mobile"] .chat-private-room-panel .chat-private-safety[open] > small {
+    position: static;
+    grid-column: 1;
+    grid-row: 1;
+    width: auto;
+    max-height: none;
+    margin: 2px 0 2px 4px;
+    padding: 3px 6px;
+    overflow: auto;
+    font-size: var(--mobile-readable-caption);
+    line-height: 1.25;
+  }
+
+  /* The safety explanation replaces the private-room controls inside the
+     fixed-height row. It must never float upward over identity/room controls
+     or downward over the already tight conversation capacity. */
+  html[data-ui-shell="mobile"] .chat-private-room-panel:has(.chat-private-safety[open]) > :is(input, button[type="submit"]),
+  html[data-ui-shell="mobile"] .chat-private-room-panel:has(.chat-private-safety[open]) .chat-private-actions > #chat-private-room-cancel {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  html[data-ui-shell="mobile"] .chat-private-room-panel:has(.chat-private-safety[open]) .chat-private-actions {
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    display: block;
+  }
+
+  html[data-ui-shell="mobile"] .chat-private-room-panel:has(.chat-private-safety[open]) .chat-private-actions > #chat-private-room-cancel {
+    display: none;
+  }
+
+  html[data-ui-shell="mobile"] .chat-private-room-panel .chat-private-safety[open] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 44px;
+    width: 100%;
+    height: 100%;
+  }
+
+  html[data-ui-shell="mobile"] .chat-private-room-panel .chat-private-safety[open] > summary {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+  }
+
+  html[data-ui-shell="mobile"] .chatroom-log {
+    margin: 2px 5px;
+  }
+
+  html[data-ui-shell="mobile"] .chatroom-compose {
+    position: relative;
+    grid-template-columns: minmax(0, 1fr) minmax(76px, auto);
+    grid-template-rows: 44px;
+    gap: 0 8px;
+    padding: 3px 6px;
+  }
+
+  html[data-ui-shell="mobile"] .chatroom-compose textarea {
+    width: 100%;
+    height: 44px;
+    max-height: 44px;
+    padding-right: 54px;
+  }
+
+  html[data-ui-shell="mobile"] .chatroom-counter {
+    position: absolute;
+    right: 98px;
+    bottom: 7px;
+    z-index: 1;
+    grid-column: auto;
+    grid-row: auto;
+    padding: 2px 3px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.86);
+    font-size: var(--mobile-readable-caption);
+  }
+
+  html[data-ui-shell="mobile"] .chatroom-window.is-private-room .chatroom-counter {
+    background: rgba(9, 17, 31, 0.86);
+  }
+
+  html[data-ui-shell="mobile"] .chat-send-button {
+    grid-column: 2;
+    grid-row: 1;
+    min-width: 82px;
+  }
+
+  html[data-ui-shell="mobile"] .chatroom-footer {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    box-sizing: border-box;
+    height: 45px;
+    min-height: 45px;
+    max-height: 45px;
+    gap: 6px;
+    padding: 0 6px;
+  }
+
+  html[data-ui-shell="mobile"] #chat-feedback {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+/* 844x390 and similar short landscape viewports use a grouped identity rail:
+   avatar/name/edit first, room segment second, feedback controls at the foot. */
+@media (orientation: landscape) and (max-height: 520px) {
+  html[data-ui-shell="mobile"] .chatroom-window {
+    grid-template-columns: minmax(204px, 29vw) minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) 64px;
+    gap: 0 6px;
+  }
+
+  html[data-ui-shell="mobile"] .chatroom-header {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    grid-template-columns: 40px minmax(0, 1fr);
+    grid-template-rows: 48px 48px;
+    align-content: start;
+    gap: 5px 7px;
+    min-height: 0;
+    margin: 4px 0 4px 4px;
+    padding: 5px 6px;
+  }
+
+  html[data-ui-shell="mobile"] .chatroom-avatar {
+    grid-column: 1;
+    grid-row: 1;
+    width: 38px;
+    height: 38px;
+  }
+
+  html[data-ui-shell="mobile"] .chatroom-nickname-row {
+    grid-column: 2;
+    grid-row: 1;
+    justify-content: space-between;
+  }
+
+  html[data-ui-shell="mobile"] .chatroom-nickname-row strong {
+    max-width: 10ch;
+  }
+
+  html[data-ui-shell="mobile"] .chat-nickname-button {
+    min-width: 66px;
+    padding-inline: 5px;
+  }
+
+  html[data-ui-shell="mobile"] .chatroom-status {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-content: stretch;
+    min-height: 44px;
+  }
+
+  html[data-ui-shell="mobile"] .chat-room-toggle {
+    min-width: 76px;
+    padding-inline: 6px;
+  }
+
+  html[data-ui-shell="mobile"] .chat-private-room-panel {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  html[data-ui-shell="mobile"] .chatroom-log {
+    grid-column: 2;
+    grid-row: 2;
+    margin: 4px;
+  }
+
+  html[data-ui-shell="mobile"] .chatroom-compose {
+    grid-column: 2;
+    grid-row: 3;
+    grid-template-columns: minmax(0, 1fr) minmax(82px, auto);
+    grid-template-rows: 44px 14px;
+    padding: 3px 6px;
+  }
+
+  html[data-ui-shell="mobile"] .chatroom-compose textarea {
+    width: 100%;
+    height: 44px;
+    max-height: 44px;
+  }
+
+  html[data-ui-shell="mobile"] .chatroom-footer {
+    grid-column: 1;
+    grid-row: 3;
+    align-content: center;
+    align-items: center;
+    gap: 2px 6px;
+    min-height: 64px;
+    padding: 3px 6px;
+  }
+
+  html[data-ui-shell="mobile"] #chat-feedback {
+    display: -webkit-box;
+    overflow: hidden;
+    line-height: 1.2;
+    white-space: normal;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  html[data-ui-shell="mobile"] .icon-title {
+    font-size: var(--mobile-readable-caption);
+  }
+
+  /* In short landscape the metadata column already fits inside the card, so
+     keep the 44px action beside it instead of forcing a second row below the
+     viewport-sized grid track. */
+  html[data-ui-shell="mobile"] #resource-list > .resource-card {
+    grid-template-columns: minmax(0, 1fr) 96px;
+    grid-template-rows: auto;
+    align-items: center;
+  }
+
+  html[data-ui-shell="mobile"] #resource-list .resource-main {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  html[data-ui-shell="mobile"] #resource-list .resource-card > .card-action {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+    width: 96px;
+    min-width: 96px;
+  }
+
+  html[data-ui-shell="mobile"] #videos .video-card {
+    grid-template-columns: clamp(176px, 28vw, 240px) minmax(0, 1fr);
+    grid-template-rows: 184px;
+    align-items: center;
+  }
+
+  html[data-ui-shell="mobile"] #videos button.video-thumb {
+    align-self: center;
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
+}
+
+@media (max-width: 374px) {
+  html[data-ui-shell="mobile"] body.is-article-reading .mobile-home-button {
+    max-width: 35vw;
+  }
+
+  html[data-ui-shell="mobile"] body.is-article-reading .mobile-route-copy strong {
+    max-width: calc(100vw - 190px);
+    font-size: 14px;
+  }
+
+  html[data-ui-shell="mobile"] #resource-list .meta-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (forced-colors: active) {
+  html[data-ui-shell="mobile"] .welcome-window::after {
+    content: none;
+  }
+
+  html[data-ui-shell="mobile"] button.video-thumb:focus-visible {
+    outline-color: Highlight;
+  }
+}
+
+/* Desktop browsers can also be height-constrained. Responsive Chat geometry
+   lives here by project convention, while route CSS remains media-query free. */
+@media (min-width: 761px) and (max-height: 760px) {
+  html:not([data-ui-shell="mobile"]) .chatroom-window {
+    height: calc(100dvh - var(--chrome-window-compact-reserve));
+    min-height: 0;
+    max-height: calc(100dvh - var(--chrome-window-compact-reserve));
+    margin-top: 0;
+  }
+
+  html:not([data-ui-shell="mobile"]) .chatroom-header {
+    grid-template-columns: 44px minmax(0, 1fr);
+    grid-template-rows: minmax(32px, auto) minmax(36px, auto);
+    gap: 3px 10px;
+    padding: 7px 12px;
+  }
+
+  html:not([data-ui-shell="mobile"]) .chatroom-avatar {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    width: 44px;
+    height: 44px;
+  }
+
+  html:not([data-ui-shell="mobile"]) .chatroom-nickname-row {
+    grid-column: 2;
+    grid-row: 1;
+    flex-wrap: nowrap;
+  }
+
+  html:not([data-ui-shell="mobile"]) .chatroom-nickname-row strong,
+  html:not([data-ui-shell="mobile"]) #chat-sync-status {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  html:not([data-ui-shell="mobile"]) .chatroom-status {
+    display: grid;
+    grid-column: 2;
+    grid-row: 2;
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    justify-content: stretch;
+    gap: 6px;
+    width: 100%;
+    max-width: none;
+  }
+
+  html:not([data-ui-shell="mobile"]) .chatroom-log {
+    margin-inline: 12px;
+    padding: 10px 12px;
+  }
+
+  html:not([data-ui-shell="mobile"]) .chatroom-compose {
+    gap: 2px 8px;
+    padding: 7px 12px 4px;
+  }
+
+  html:not([data-ui-shell="mobile"]) .chatroom-compose textarea {
+    min-height: 44px;
+    max-height: 72px;
+  }
+
+  html:not([data-ui-shell="mobile"]) .chatroom-footer {
+    min-height: 28px;
+    padding: 0 12px 5px;
+    font-size: 12px;
+  }
+
+  html:not([data-ui-shell="mobile"]) .chat-unread-button {
+    right: 24px;
+    bottom: 106px;
   }
 }

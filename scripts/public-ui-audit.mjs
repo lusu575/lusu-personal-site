@@ -426,7 +426,15 @@ const metricsCode = `(() => {
     document:{clientWidth:document.documentElement.clientWidth,scrollWidth:Math.max(document.documentElement.scrollWidth,document.body.scrollWidth),clientHeight:document.documentElement.clientHeight,scrollHeight:Math.max(document.documentElement.scrollHeight,document.body.scrollHeight)},
     semantics:{mainTag:document.querySelector('#main-content')?.tagName||'',activeH1Count:activeH1s.length,activeH1Text:activeH1s[0]?.textContent.trim()||'',inactivePagesHidden:inactivePages.every((item)=>getComputedStyle(item).display==='none'),articleBodyH1Count:document.querySelectorAll('#article-detail-body h1').length},
     activeWindow:wb,dock:{...db,position:dock?getComputedStyle(dock).position:''},windowDockGap:wb&&db?r(db.top-wb.bottom):null,windowDockOverlapArea:overlap(wb,db),
-    chat:{log:box(document.querySelector('#chat-message-list')),compose:box(document.querySelector('#chat-form')),feedback:box(document.querySelector('#chat-feedback'))},
+    chat:{
+      header:box(document.querySelector('#chatroom .chatroom-header')),
+      nickname:box(document.querySelector('#chatroom .chatroom-nickname-row')),
+      status:box(document.querySelector('#chatroom .chatroom-status')),
+      log:box(document.querySelector('#chat-message-list')),
+      compose:box(document.querySelector('#chat-form')),
+      feedback:box(document.querySelector('#chat-feedback')),
+      footer:box(document.querySelector('#chatroom .chatroom-footer'))
+    },
     article:{detail:box(document.querySelector('#article-detail:not([hidden])')),sidebar,card,toc:box(document.querySelector('#article-detail-toc:not([hidden])')),sideBySide:Boolean(sidebar&&card&&sidebar.right<=card.left+1),overlapArea:overlap(sidebar,card)} };
 })()`;
 
@@ -446,8 +454,20 @@ function check(viewport, route, data) {
   need(data.dock?.position === "fixed", `Dock position ${data.dock?.position} !== fixed`); need(dockBottomInset >= 0 && dockBottomInset <= maximumDockInset, `Dock bottom inset ${dockBottomInset}px exceeds ${maximumDockInset}px`);
   if (!viewport.mobile) need(data.windowDockOverlapArea <= 1, `active window overlaps Dock by ${data.windowDockOverlapArea}px²`);
   need(data.activeWindow?.left >= -1 && data.activeWindow?.right <= viewport.width + 1, "active window exceeds viewport width");
-  if (route === "chatroom" && viewport.width === 359) need(data.chat.log?.height >= 176, `359x500 Chat log ${data.chat.log?.height}px < ~177px baseline`);
-  if (route === "chatroom" && viewport.width === 844) need(data.chat.log?.height >= 150, `844x390 Chat log ${data.chat.log?.height}px < 150px`);
+  if (route === "chatroom" && viewport.width === 359) need(data.chat.log?.height >= 160, `359x500 Chat log ${data.chat.log?.height}px < 160px`);
+  if (route === "chatroom" && viewport.width === 844) {
+    need(data.chat.log?.height >= 150, `844x390 Chat log ${data.chat.log?.height}px < 150px`);
+    need(data.chat.header?.right <= data.chat.log?.left + 1, `844x390 Chat identity rail overlaps the log: ${JSON.stringify({ header:data.chat.header, log:data.chat.log })}`);
+    need(data.chat.footer?.right <= data.chat.compose?.left + 1, `844x390 Chat feedback rail overlaps the composer: ${JSON.stringify({ footer:data.chat.footer, compose:data.chat.compose })}`);
+    need(data.chat.nickname?.left >= data.chat.header?.left - 1 && data.chat.nickname?.right <= data.chat.header?.right + 1, "844x390 nickname controls escaped the identity rail");
+    need(data.chat.status?.left >= data.chat.header?.left - 1 && data.chat.status?.right <= data.chat.header?.right + 1, "844x390 room controls escaped the identity rail");
+  }
+  if (route === "chatroom" && viewport.width === 1280) {
+    need(data.chat.log?.height >= 180, `1280x720 Chat log ${data.chat.log?.height}px < 180px`);
+    need(data.chat.compose?.height <= 132, `1280x720 Chat composer ${data.chat.compose?.height}px > 132px`);
+    need(data.chat.compose?.bottom <= data.activeWindow?.bottom + 1, "1280x720 Chat composer escaped the window");
+    need(data.chat.footer?.bottom <= data.activeWindow?.bottom + 1, "1280x720 Chat footer escaped the window");
+  }
   if (route === "article") { need(data.article.detail?.height > 0, "article detail is hidden"); need(data.article.sidebar?.width > 0 && data.article.card?.width > 0, "article columns are missing"); need(data.article.sideBySide, "844x390 article columns are not side by side"); need(data.article.overlapArea <= 1, `article columns overlap by ${data.article.overlapArea}px²`); }
   return errors;
 }
@@ -1818,6 +1838,9 @@ async function auditChatShortScreenCapacity(client, origin, viewport) {
     const overlap=(a,b) => !a||!b ? 0 : round(Math.max(0,Math.min(a.right,b.right)-Math.max(a.left,b.left))*Math.max(0,Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)));
     const log=rect(document.getElementById('chat-message-list'));
     const panel=rect(document.getElementById('chat-private-room-form'));
+    const header=rect(document.querySelector('#chatroom .chatroom-header'));
+    const nickname=rect(document.querySelector('#chatroom .chatroom-nickname-row'));
+    const roomStatus=rect(document.querySelector('#chatroom .chatroom-status'));
     const compose=rect(document.getElementById('chat-form'));
     const feedback=rect(document.getElementById('chat-feedback'));
     const footer=rect(document.querySelector('#chatroom .chatroom-footer'));
@@ -1837,13 +1860,17 @@ async function auditChatShortScreenCapacity(client, origin, viewport) {
       composeFooter:overlap(compose,footer),
       footerDock:overlap(footer,dock),
       windowDock:overlap(windowRect,dock),
+      hintHeader:overlap(hintRect,header),
+      hintNickname:overlap(hintRect,nickname),
+      hintRoomStatus:overlap(hintRect,roomStatus),
+      hintSummary:overlap(hintRect,summaryRect),
       hintLog:overlap(hintRect,log),
       hintCompose:overlap(hintRect,compose)
     };
     return {
       viewport:{ width:innerWidth, height:innerHeight },
       document:{ scrollTop:(document.scrollingElement||document.documentElement).scrollTop, scrollHeight:Math.max(document.documentElement.scrollHeight,document.body.scrollHeight), clientHeight:document.documentElement.clientHeight },
-      log,panel,compose,feedback,footer,dock,window:windowRect,pairs,
+      log,panel,header,nickname,roomStatus,compose,feedback,footer,dock,window:windowRect,pairs,
       dockPresentation:dockStyle ? { position:dockStyle.position, display:dockStyle.display, visibility:dockStyle.visibility, opacity:Number(dockStyle.opacity), pointerEvents:dockStyle.pointerEvents } : null,
       safety:disclosure ? {
         open:Boolean(disclosure.open),
@@ -1879,16 +1906,17 @@ async function auditChatShortScreenCapacity(client, origin, viewport) {
       if (Number(state?.pairs?.[name] || 0) > 1) failures.push(`${label} ${name} overlap ${state.pairs[name]}px²`);
     }
   };
-  if (Number(ordinary?.log?.height || 0) < 176) failures.push(`359x500 ordinary Chat log ${ordinary?.log?.height || 0}px < ~177px baseline`);
-  if (Number(privateCollapsed?.log?.height || 0) < 118) failures.push(`359x500 private Chat log ${privateCollapsed?.log?.height || 0}px < ~119px baseline`);
+  if (Number(ordinary?.log?.height || 0) < 160) failures.push(`359x500 ordinary Chat log ${ordinary?.log?.height || 0}px < 160px`);
+  if (Number(privateCollapsed?.log?.height || 0) < 115) failures.push(`359x500 private Chat log ${privateCollapsed?.log?.height || 0}px < 115px`);
   checkNoOverlap(ordinary, "ordinary Chat", ["logCompose", "composeFeedback", "composeFooter", "footerDock"]);
   checkNoOverlap(privateCollapsed, "private Chat", ["panelLog", "logCompose", "composeFeedback", "composeFooter", "footerDock"]);
-  checkNoOverlap(privateExpanded, "expanded private safety", ["panelLog", "logCompose", "composeFeedback", "composeFooter", "footerDock", "hintLog", "hintCompose"]);
+  checkNoOverlap(privateExpanded, "expanded private safety", ["panelLog", "logCompose", "composeFeedback", "composeFooter", "footerDock", "hintHeader", "hintNickname", "hintRoomStatus", "hintSummary", "hintLog", "hintCompose"]);
   const safety = privateCollapsed?.safety;
   if (!safety?.summary || safety.summary.width < 44 || safety.summary.height < 44) failures.push(`private safety disclosure target is below 44px: ${JSON.stringify(safety?.summary)}`);
   if (!safety?.hintOwned || !safety.hintText || !/[6６]/.test(`${safety.label} ${safety.title}`)) failures.push(`private safety disclosure does not expose purpose/minimum/risk copy: ${JSON.stringify(safety)}`);
   if (safety?.hint) failures.push(`collapsed private safety explanation should not cover the Chat log: ${JSON.stringify(safety.hint)}`);
   if (!privateExpanded?.safety?.open || !privateExpanded.safety.hint || privateExpanded.safety.hint.height <= 0) failures.push(`private safety explanation is not visibly reachable when expanded: ${JSON.stringify(privateExpanded?.safety)}`);
+  if (Number(privateExpanded?.safety?.hint?.width || 0) < 220) failures.push(`private safety explanation is too narrow to read: ${JSON.stringify(privateExpanded?.safety?.hint)}`);
   for (const [label, state] of [["ordinary", ordinary], ["private", privateCollapsed], ["expanded safety", privateExpanded]]) {
     if (state?.document?.scrollTop !== 0 || state?.document?.scrollHeight > state?.document?.clientHeight + 1) failures.push(`${label} Chat leaked document scrolling: ${JSON.stringify(state?.document)}`);
     if (!state?.dock || state.dock.top < -1 || state.dock.bottom > viewport.height + 8 || state?.dockPresentation?.position !== "fixed" || state.dockPresentation.display === "none" || state.dockPresentation.visibility === "hidden" || state.dockPresentation.opacity <= .01 || state.dockPresentation.pointerEvents === "none") failures.push(`${label} Chat Dock is not visibly reachable: ${JSON.stringify({ dock:state?.dock, presentation:state?.dockPresentation })}`);
@@ -3686,16 +3714,19 @@ async function auditControlledVideoFlow(client, origin, viewport, output) {
       buttonCount:card?.querySelectorAll('button').length||0,
       primaryTabIndex:primary?.tabIndex,
       thumbTag:thumb?.tagName||'',
+      thumbType:thumb?.getAttribute('type')||'',
       thumbTabIndex:thumb?.tabIndex,
+      thumbLabel:thumb?.getAttribute('aria-label')||'',
       filtersHidden:document.getElementById('video-categories')?.hidden,
       filterCount:document.querySelectorAll('#video-categories button').length
     };
   })()`);
   await evaluate(client, `(() => {
     const primary=document.querySelector('.card-action[data-video-id="${auditPlayableVideo.video_id}"]');
-    window.__auditControlledVideoTrigger=primary;
-    primary.focus({preventScroll:true});
-    primary.closest('.video-card').querySelector('.video-thumb').click();
+    const thumb=primary.closest('.video-card').querySelector('.video-thumb');
+    window.__auditControlledVideoTrigger=thumb;
+    thumb.focus({preventScroll:true});
+    thumb.click();
     return true;
   })()`);
   await waitFor(client, `document.getElementById('video-modal')?.hidden===false && Boolean(document.querySelector('#video-frame iframe'))`, "controlled video iframe");
@@ -3721,13 +3752,18 @@ async function auditControlledVideoFlow(client, origin, viewport, output) {
   const playerFailure = await evaluate(client, `(() => {
     const retry=document.querySelector('[data-video-player-retry]');
     const rect=retry?.getBoundingClientRect();
-    const link=document.getElementById('video-link');
+    const external=document.getElementById('video-link');
+    const original=document.querySelector('.video-player-fallback-actions a[href]');
     return {
       fallback:Boolean(document.querySelector('.video-player-fallback')),
       iframe:Boolean(document.querySelector('#video-frame iframe')),
+      actions:Boolean(document.querySelector('.video-player-fallback-actions')),
       retryRect:rect?{width:rect.width,height:rect.height}:null,
-      originalVisible:link?.hidden===false,
-      originalHref:link?.href||''
+      externalHidden:Boolean(external?.hidden && getComputedStyle(external).display==='none' && !external.getClientRects().length),
+      originalVisible:Boolean(original&&!original.hidden&&original.getClientRects().length),
+      originalHref:original?.href||'',
+      originalTarget:original?.target||'',
+      originalRel:original?.rel||''
     };
   })()`);
   const screenshotFile = `video-controlled-en-${viewport.width}x${viewport.height}.png`;
@@ -3761,9 +3797,9 @@ async function auditControlledVideoFlow(client, origin, viewport, output) {
   const failures = [];
   if (!failedState.status || !failedState.retry || !failedState.filtersHidden || failedState.zeroCounts !== 0) failures.push(`load failure was presented as empty/filter counts: ${JSON.stringify(failedState)}`);
   if (!emptyState.empty || !emptyState.filtersHidden || emptyState.zeroCounts !== 0 || !emptyState.action) failures.push(`true empty state/filter suppression is wrong: ${JSON.stringify(emptyState)}`);
-  if (card.buttonCount !== 1 || card.primaryTabIndex !== 0 || card.thumbTag !== "DIV" || card.thumbTabIndex !== -1 || card.filtersHidden || card.filterCount < 2) failures.push(`video card does not expose one primary play focus: ${JSON.stringify(card)}`);
+  if (card.buttonCount !== 2 || card.primaryTabIndex !== 0 || card.thumbTag !== "BUTTON" || card.thumbType !== "button" || card.thumbTabIndex !== 0 || !card.thumbLabel.includes(auditPlayableVideo.title) || card.filtersHidden || card.filterCount < 2) failures.push(`video card does not expose two exact titled play controls: ${JSON.stringify(card)}`);
   if (nativeControls.iframePointerEvents === "none" || nativeControls.topElements.some((tag)=>tag !== "IFRAME") || nativeControls.shieldCount || nativeControls.shellChildren !== 1 || !nativeControls.allow.includes("fullscreen") || !nativeControls.allowFullscreen || !nativeControls.originalVisible) failures.push(`iframe native control surface is obstructed: ${JSON.stringify(nativeControls)}`);
-  if (!playerFailure.fallback || playerFailure.iframe || !playerFailure.retryRect || playerFailure.retryRect.height < 44 || !playerFailure.originalVisible || playerFailure.originalHref !== auditPlayableVideo.original_url) failures.push(`player failure recovery is incomplete: ${JSON.stringify(playerFailure)}`);
+  if (!playerFailure.fallback || playerFailure.iframe || !playerFailure.actions || !playerFailure.retryRect || playerFailure.retryRect.height < 44 || !playerFailure.externalHidden || !playerFailure.originalVisible || playerFailure.originalHref !== auditPlayableVideo.original_url || playerFailure.originalTarget !== "_blank" || !/noopener/.test(playerFailure.originalRel)) failures.push(`player failure recovery is incomplete: ${JSON.stringify(playerFailure)}`);
   if (!maximized.maximized || !maximized.sameIframe || !maximized.playerFocused || maximized.browserFullscreen || !maximized.dialog || maximized.dialog.left < -1 || maximized.dialog.top < -1 || maximized.dialog.right > viewport.width + 1 || maximized.dialog.bottom > viewport.height + 1) failures.push(`in-site maximize geometry/state is wrong: ${JSON.stringify(maximized)}`);
   if (viewport.mobile && (!maximized.close || maximized.close.width < 44 || maximized.close.height < 44 || maximized.close.left < 0 || maximized.close.top < 0 || maximized.close.right > viewport.width || maximized.close.bottom > viewport.height)) failures.push(`mobile video close control is invalid: ${JSON.stringify(maximized.close)}`);
   if (!closed.focusReturned || closed.runtimeErrors.length) failures.push(`video close/recovery left focus or runtime errors: ${JSON.stringify(closed)}`);

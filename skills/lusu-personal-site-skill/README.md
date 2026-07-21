@@ -19,6 +19,7 @@ skills/lusu-personal-site-skill/SKILL.md
 - 独立 Headless 场景必须以唯一 query 创建新文档并验证 `loaderId`，避免 Hash-only 导航沿用 route 模块和内存缓存；刻意的 SPA History/重试/连续动效流程除外。DOM 断言限定到场景容器，移动窗口背景可延伸到 Dock 后方，真实内容与操作不可被遮挡。
 - 账号表单必须保持稳定 DOM；登录/注册、字段错误、忙碌/退出失败、实际触发源焦点归还和移动 44px 关闭必须一起回归。Transfer 未登录态只保留一个上下文登录任务。
 - 文章阅读只允许正文详情纵向滚动，4px 左右进度轨道与正文零交叠并有三语/ARIA 百分比；Chat 发送不得清空在途新草稿，359×500 保护普通约 177px、私聊至少约 119px及可折叠安全说明。
+- Chat 还必须通过 1280×720 短桌面回归：标题、身份／房间两行控制、日志、输入区和页脚都在任务栏上方，只有日志可收缩；字数计数放入输入状态行，媒体几何只写在 `mobile-ios-shell.css`。
 - Chat 重试复用稳定 `clientRequestId`，服务端在限流前重放首次成功消息，并用 `(visitor_id, room_key, client_request_id)` 唯一索引防并发重复；私聊随机 IV 不得破坏幂等。旧 D1 必须先补 `client_request_id` 列再建索引。
 - 公共 Chat 不返回服务端隐藏 visitor id；密码、私聊、草稿、Secret、完整标识不进入 DOM 泄漏、持久存储、History、日志或 telemetry，外链/iframe/fragment 白名单不得放宽。
 - 文章 translation seed 每次都要显式传 UTC ISO 时间；全量 bind 测试必须拒绝 `undefined`。Quick Transfer fragment 只允许同源 `/fragments/quick-transfer.html` 与 Cloudflare clean URL `/fragments/quick-transfer` 两个精确路径。
@@ -43,6 +44,7 @@ skills/lusu-personal-site-skill/SKILL.md
 - 固定移动壳不解锁整页滚动；非 Home 活动 App 用含 route ID 的规则保留按需纵向逃生通道，文章详情仍是唯一阅读 owner。聚焦恢复必须通过唯一帧管线，保留当前焦点与输入，且只修改最近真实内部 owner 的 `scrollTop`，不移动 document、Home、Appbar 或 Dock。账号面板延迟 autofocus 不得覆盖面板内已有焦点。
 - 软键盘打开只临时隐藏 Dock，不改写用户的 expanded / collapsed 状态。CDP 高度、缩放或 safe-area 代理只是几何回归，不得宣称真实软键盘、safe area 或浏览器 chrome 已验证；真机标志在未完成真机实测前保持 false。Headless 焦点审计先执行 CDP `Page.bringToFront`，避免未激活页只改 `activeElement` 却不触发 focus 事件。
 - 页面 route、App 打开和移动 tab 只动画当前页面/窗口表面，不使用会覆盖固定顶栏、任务栏或 Dock 的整页 View Transition。full motion 审计需要采集起始、60ms、140ms 和稳定帧，检查 Dock 节点身份、几何、透明度与 40ms 快速连续切换的最终路由。
+- motion off 必须同步停止硬编码过渡、Dock smooth scroll／选中滑动、骨架循环与主题快照；disabled / aria-disabled / inert 控件不播放按压反馈，maximize/restore 以真实几何做 FLIP。视频缩略图保持原生 16:9 button，不恢复遮图播放圆圈；播放器超时按 generation + settled 收口，失败卡并排提供重试与原视频，统一 `.content-state` 和重试焦点。
 - “日语的言外之意 / Behind the Japanese / 日本語の裏側”位于 `tools/japanese-subtext/`，固定采用版本化分批 JSON 和不可随意变更的关卡 ID；每次公开应用更新增加 `appVersion`，只有题库结构或存档兼容边界变化时才增加 `contentVersion`，改关另增 `revision`，完整流程见 `tools/japanese-subtext/MAINTENANCE.md`。
 - 题库、音频 manifest 与时间轴必须同步并分别验证；日语先使用审校读音，再进入 G2P/Kokoro。Misaki 音素与音高标记必须分离，完整 P2R 要保持 `j → y` 早于 `ʥ → j`，未知或超长音素必须失败关闭。每关 source hash、cue、reading/phoneme hash、实际 CPU provider、模型/运行时 provenance、输出参数和发音表 canonical SHA-256 必须一致；发布前做全量音素复算、ffprobe、SHA-256、孤儿文件和静音检测。模型只作离线批处理，结束后关闭，不安装服务或自启动。
 - 声线必须来源和许可清晰；保留 `NOTICE-japanese-voices.md` 与设置面板三语署名链接，不使用来源不明或模仿受保护动漫角色的声线。
@@ -53,6 +55,7 @@ skills/lusu-personal-site-skill/SKILL.md
 - 首页四时段壁纸基础图放在 `assets/images/wallpapers/`；时间段统一为 05:00-10:59 morning、11:00-16:59 day、17:00-19:59 dusk、20:00-04:59 night。
 - 首页保留 `wallpaper-root` / `wallpaper-stage` 舞台坐标结构和动画 layer DOM/class；当前 morning / day / dusk / night 四时段均已启用无云底图 + 独立云层的动态云层。
 - 顶部栏和底部任务栏跟随同一套 `body[data-time-theme]` 四时段主题；维护顶部栏、任务栏、Start、任务按钮、账号入口、语言切换或状态托盘时，必须同时检查四套外观，保持无竖线的现代玻璃像素 HUD 方向，并保留现有图标资源。
+- PC 端活动任务按钮保留蓝色按下态与内凹层级，但不使用黄色底边、黄色外描边或常亮光晕；键盘 `:focus-visible` 焦点环和移动 Dock 的选中底板保持不变。
 - 维护右上角账号入口、语言切换或其他顶栏浮层时，必须同时检查 `.xp-topbar` 的裁剪行为和 `.site-shell > header` / `.site-shell > main` 的 stacking context；账号弹窗必须能从按钮下方溢出显示，且 `header` 必须高于 `main`，否则首页会像点了没反应、其他栏目会被窗口遮挡。
 - 每次改动都必须写记录并更新日期：至少更新 `CHANGELOG.md`；公开可见更新还必须补 `PROJECT_CONTEXT.md`、`content.updates`、`site-updates` 三语记录、相关 seed 和资源 query，确保首页最近更新日期真的变化。
 - 底部任务栏必须固定贴合浏览器视口下沿，窗口高度、页面 padding、文章阅读浮层和移动端断点都要为它预留空间，避免导航被顶下去或盖住正常窗口。

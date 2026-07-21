@@ -11,6 +11,10 @@
   --xp-green: #39b889;
   --xp-yellow: #ffd762;
   --xp-pink: #ffd7ee;
+  --type-caption: 12px;
+  --type-meta: 13px;
+  --type-body: 15px;
+  --type-card-title: 18px;
   --shadow-hard: 4px 5px 0 rgba(0, 35, 120, 0.28);
   --shadow-window: 0 18px 34px rgba(0, 33, 96, 0.28);
   --ui-font: Tahoma, Verdana, "Microsoft YaHei", "Yu Gothic", "MS PGothic", sans-serif;
@@ -509,7 +513,7 @@ body[data-route="home"] .site-shell::after {
 .topbar-actions {
   position: relative;
   z-index: 1;
-  gap: 8px;
+  gap: 5px;
   min-width: max-content;
   padding: 4px;
   border: 1px solid var(--chrome-rail-border);
@@ -528,6 +532,10 @@ body[data-route="home"] .site-shell::after {
   display: flex;
   align-items: center;
   min-height: 34px;
+  padding: 2px;
+  border: 1px solid rgba(205, 234, 255, 0.42);
+  border-radius: 7px;
+  background: rgba(1, 31, 101, 0.14);
 }
 
 .account-button {
@@ -676,7 +684,7 @@ body[data-route="home"] .site-shell::after {
 .account-mode-hint {
   margin: -2px 0 0;
   color: #526984;
-  font-size: 11px;
+  font-size: var(--type-caption);
   line-height: 1.45;
 }
 
@@ -724,14 +732,14 @@ body[data-route="home"] .site-shell::after {
   border-radius: 5px;
   color: #174778;
   background: linear-gradient(180deg, #fff, #d9eaff);
-  font-size: 11px;
+  font-size: var(--type-caption);
   font-weight: 800;
 }
 
 .account-field-error {
   margin: 0;
   color: #a12626;
-  font-size: 11px;
+  font-size: var(--type-caption);
   font-weight: 700;
   line-height: 1.35;
 }
@@ -806,7 +814,11 @@ body[data-route="home"] .site-shell::after {
 }
 
 .language-switcher {
-  gap: 8px;
+  gap: 4px;
+  padding: 2px;
+  border: 1px solid rgba(205, 234, 255, 0.42);
+  border-radius: 7px;
+  background: rgba(1, 31, 101, 0.14);
 }
 
 .lang-button {
@@ -839,12 +851,12 @@ body[data-route="home"] .site-shell::after {
   display: inline-flex;
   align-items: center;
   min-height: 34px;
-  padding: 0 9px;
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  padding: 0 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 7px;
-  background: rgba(4, 33, 106, 0.18);
-  font-size: 14px;
-  font-weight: 900;
+  background: rgba(4, 33, 106, 0.1);
+  font-size: 13px;
+  font-weight: 800;
   text-shadow: 1px 1px 0 rgba(0, 30, 105, 0.88);
 }
 
@@ -1095,7 +1107,7 @@ main {
   gap: 2px;
   width: 136px;
   height: 132px;
-  padding: 7px 7px 8px;
+  padding: 5px 7px 6px;
   border: 2px solid transparent;
   border-radius: 5px;
   color: #fff;
@@ -1142,7 +1154,7 @@ main {
 .icon-caption {
   display: none;
   width: 100%;
-  font-size: 11px;
+  font-size: var(--type-caption);
   font-weight: 800;
   line-height: 1.25;
   overflow-wrap: anywhere;
@@ -1810,7 +1822,7 @@ main {
 .game-card h2 {
   margin: 0;
   color: #073a91;
-  font-size: 18px;
+  font-size: var(--type-card-title);
   line-height: 1.25;
 }
 
@@ -1833,6 +1845,7 @@ main {
 .game-card p {
   margin: 0;
   color: var(--xp-muted);
+  font-size: var(--type-body);
   line-height: 1.6;
 }
 
@@ -1968,7 +1981,7 @@ main {
   min-width: 0;
   max-width: 100%;
   color: #555;
-  font-size: 13px;
+  font-size: var(--type-meta);
   overflow-wrap: anywhere;
 }
 
@@ -2101,7 +2114,7 @@ main {
   overflow-wrap: anywhere;
 }
 
-.video-body h3,
+.video-body h2,
 .resource-main h2 {
   display: -webkit-box;
   overflow: hidden;
@@ -2153,7 +2166,7 @@ main {
   border-radius: 4px;
   color: #333;
   background: #f4f4f4;
-  font-size: 12px;
+  font-size: var(--type-caption);
   font-weight: 900;
 }
 
@@ -2300,6 +2313,22 @@ main {
   flex: 0 0 auto;
 }
 
+#resource-list .resource-fact {
+  display: inline-flex;
+  flex: 1 1 180px;
+  align-items: center;
+  min-width: min(180px, 100%);
+  min-height: 27px;
+  padding: 4px 7px;
+  border-left: 3px solid #5c91d7;
+  border-radius: 0 4px 4px 0;
+  color: #2d4f78;
+  background: #edf5ff;
+  font-size: 12.5px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
 #resource-list .resource-card > .card-action {
   width: 100%;
   min-width: 0;
@@ -2323,11 +2352,107 @@ main {
   white-space: normal;
 }
 
+/* Shared async-state surface. Route renderers can add these classes without
+   inventing a new loading / empty / failure card for each collection. */
+.content-state {
+  --content-state-edge: #7fa4df;
+  --content-state-ink: #174176;
+  --content-state-bg: linear-gradient(180deg, #fbfdff, #e9f4ff);
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  grid-column: 1 / -1;
+  width: 100%;
+  min-width: 0;
+  min-height: 112px;
+  padding: 15px 16px;
+  border: 1px dashed var(--content-state-edge);
+  border-radius: 7px;
+  color: var(--content-state-ink);
+  background: var(--content-state-bg);
+  box-shadow: inset 1px 1px 0 #fff, 2px 2px 0 rgba(0, 60, 158, 0.1);
+}
+
+.content-state.is-loading,
+.content-state[data-state="loading"] {
+  --content-state-edge: #6f9fe1;
+  --content-state-bg:
+    repeating-linear-gradient(90deg, rgba(59, 128, 226, 0.06) 0 1px, transparent 1px 18px),
+    linear-gradient(180deg, #fbfdff, #eaf4ff);
+}
+
+.content-state.is-empty,
+.content-state[data-state="empty"] {
+  --content-state-edge: #9d9275;
+  --content-state-ink: #4c4a3d;
+  --content-state-bg: linear-gradient(180deg, #fffdf0, #eef7ff);
+}
+
+.content-state.is-error,
+.content-state[data-state="error"] {
+  --content-state-edge: #c78865;
+  --content-state-ink: #713817;
+  --content-state-bg: linear-gradient(180deg, #fff8ed, #fff0dc);
+}
+
+.content-state-icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 2px solid var(--content-state-edge);
+  border-radius: 6px;
+  color: var(--content-state-ink);
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: inset 1px 1px 0 #fff;
+  font-size: 25px;
+  font-weight: 900;
+}
+
+.content-state-copy {
+  min-width: 0;
+}
+
+.content-state > .content-state-copy:first-child {
+  grid-column: 1 / 3;
+}
+
+.content-state > .content-state-copy:first-child:last-child {
+  grid-column: 1 / -1;
+}
+
+.content-state > .content-state-copy.loading-text {
+  margin: 0;
+}
+
+.content-state-copy :where(h2, h3, p) {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.content-state-copy :where(h2, h3) {
+  color: inherit;
+  font-size: var(--type-card-title);
+  line-height: 1.3;
+}
+
+.content-state-copy p {
+  margin-top: 4px;
+  line-height: 1.5;
+}
+
+.content-state > :where(.xp-button, .card-action) {
+  min-height: 44px;
+  justify-self: end;
+}
+
 .content-recovery-notice {
   display: flex;
   grid-column: 1 / -1;
   width: 100%;
   min-width: 0;
+  min-height: 0;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
@@ -2766,6 +2891,19 @@ main {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.34), inset 0 -2px 0 rgba(0, 45, 24, 0.36);
 }
 
+body[data-route]:not([data-route="home"]) .start-button {
+  filter: saturate(0.68) brightness(0.88);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.34),
+    inset 0 -1px 0 rgba(0, 51, 28, 0.3),
+    0 3px 8px rgba(0, 25, 48, 0.18);
+}
+
+body[data-route]:not([data-route="home"]) .start-button:hover,
+body[data-route]:not([data-route="home"]) .start-button:focus-visible {
+  filter: saturate(0.84) brightness(0.96);
+}
+
 .start-windows-icon {
   width: 14px;
   height: 14px;
@@ -2808,6 +2946,7 @@ main {
 }
 
 .taskbar-tabs button {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -2846,14 +2985,14 @@ main {
 
 .taskbar-tabs button.active {
   color: #fff;
+  border-color: #bfe0ff #07337d #07337d #bfe0ff;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.4), transparent 52%),
     var(--chrome-task-button-active-bg);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.38),
-    inset 0 -2px 0 rgba(0, 25, 96, 0.3),
-    0 0 0 1px rgba(255, 255, 255, 0.18),
-    0 0 12px var(--chrome-glow);
+    inset 0 -2px 0 rgba(0, 32, 112, 0.38),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.24);
 }
 
 .taskbar-tabs button:focus-visible {
@@ -2963,7 +3102,7 @@ main {
 }
 
 .welcome-window {
-  width: min(760px, calc(100vw - 28px));
+  width: min(900px, calc(100vw - 28px));
   margin: 0;
   max-height: calc(100vh - 36px);
   overflow: auto;
@@ -2971,7 +3110,7 @@ main {
 
 .welcome-content {
   display: grid;
-  grid-template-columns: minmax(390px, 1fr) minmax(230px, 260px);
+  grid-template-columns: minmax(390px, 1fr) minmax(300px, 340px);
   gap: 20px;
   padding: 20px;
   background: #fff;
@@ -3065,6 +3204,7 @@ main {
 
 .quick-links {
   display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 9px;
   margin-top: 10px;
 }
@@ -3150,12 +3290,15 @@ main {
 }
 
 .recent-panel strong {
-  display: block;
+  display: -webkit-box;
   color: #33415c;
+  min-height: 2.5em;
   line-height: 1.25;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .recent-panel small {
@@ -3928,8 +4071,8 @@ html[data-time-theme="night"] .wallpaper-base,
 
 .pixel-icon,
 .monitor-icon {
-  width: 92px;
-  height: 92px;
+  width: 82px;
+  height: 82px;
   margin: 0;
   border: 0 !important;
   border-radius: 0 !important;
@@ -3950,36 +4093,69 @@ html[data-time-theme="night"] .wallpaper-base,
 
 .folder-icon {
   background-image: url("../assets/images/icon-knowledge.png?v=20260718-resource-icons-layout-r1") !important;
-  background-size: 90px 90px !important;
+  background-size: 78px 78px !important;
 }
 
 .tv-icon {
   background-image: url("../assets/images/icon-videos.png?v=20260718-resource-icons-layout-r1") !important;
-  background-size: 90px 90px !important;
+  background-size: 78px 78px !important;
 }
 
 .disk-icon {
   background-image: url("../assets/images/icon-resources.png?v=20260718-resource-icons-layout-r1") !important;
-  background-size: 90px 90px !important;
+  background-size: 78px 78px !important;
 }
 
 .game-icon {
   background-image: url("../assets/images/icon-games.png?v=20260718-resource-icons-layout-r1") !important;
-  background-size: 102px 102px !important;
+  background-size: 86px 86px !important;
 }
 
 .chat-icon {
   background-image: url("../assets/images/icon-blog.png?v=20260718-resource-icons-layout-r1") !important;
-  background-size: 102px 102px !important;
+  background-size: 86px 86px !important;
+}
+
+.chatroom-icon {
+  background-size: 82px 82px !important;
 }
 
 .avatar-icon {
   background-image: url("../assets/images/lusu-tv-head-desktop-icon.png?v=20260718-resource-icons-layout-r1") !important;
-  background-size: 90px 90px !important;
+  background-size: 80px 80px !important;
 }
 
 .monitor-icon {
+  width: 92px;
+  height: 92px;
   background-image: url("../assets/images/icon-monitor.png?v=20260718-resource-icons-layout-r1") !important;
+  background-size: 90px 90px !important;
+}
+
+/* Route accents stay secondary to the blue XP titlebar: a three-pixel status
+   strip is enough to orient the user without turning pages into landing-page
+   themes. */
+#knowledge { --route-accent: #ffd65a; }
+#videos { --route-accent: #ff8aba; }
+#resources { --route-accent: #70d39b; }
+#games { --route-accent: #c39aff; }
+#blog { --route-accent: #8dd8ff; }
+#chatroom { --route-accent: #61d8a0; }
+#about { --route-accent: #ffe78a; }
+
+.page:not(.page-home) .window-titlebar {
+  box-shadow: inset 0 -3px 0 var(--route-accent, #8dd8ff);
+}
+
+:where(.article-card, .video-card, .resource-card, .blog-card, .game-card) {
+  border-width: 1px;
+  border-color: #9da8b7;
+  box-shadow: inset 1px 1px 0 #fff, 2px 2px 0 rgba(0, 60, 158, 0.13);
+}
+
+.resource-icon-image {
+  padding: 2px;
+  background: linear-gradient(180deg, #f7fbff, #dcecff);
 }
 
 /*

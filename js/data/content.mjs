@@ -1,6 +1,66 @@
 export const content = {
   updates: [
     {
+      "article_id": "seed-update-2026-07-21-desktop-taskbar-active",
+      "slug": "2026-07-21-desktop-taskbar-active",
+      "category": "site-updates",
+      "tags": ["UI", "taskbar", "desktop", "accessibility"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-21T00:41:00.711Z",
+      "updated_at": "2026-07-21T00:41:00.711Z",
+      "published_at": "2026-07-21T00:41:00.711Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.07.21",
+      "title": {
+        "zh": "桌面任务栏选中态降噪",
+        "en": "Desktop Taskbar Active-State Polish",
+        "ja": "デスクトップタスクバーの選択表示調整"
+      },
+      "summary": {
+        "zh": "移除 PC 端当前任务按钮的黄色底边、外描边和常亮光晕，保留蓝色按下层级与键盘焦点环；移动 Dock 不变。",
+        "en": "The desktop active task button drops its yellow edge and persistent glow while retaining a blue pressed hierarchy and keyboard focus ring; the mobile Dock is unchanged.",
+        "ja": "デスクトップの選択中タスクボタンから黄色の縁と常時グローを外し、青い押下階層とキーボードフォーカスリングを維持。モバイル Dock は変更しません。"
+      },
+      "content_markdown": {
+        "zh": "# 桌面任务栏选中态降噪\n\nPC 端底部任务栏的当前窗口按钮已移除黄色底边、黄色外描边与持续发光效果，让桌面更安静，也更贴近蓝色 Neo-XP 的窗口层级。\n\n## 调整内容\n\n- 当前任务继续使用蓝色按下背景、内凹边缘和清楚的文字对比，不会失去“当前窗口”识别。\n- 只有键盘操作触发的 focus-visible 焦点环继续保留，避免视觉降噪影响可访问性。\n- 移动端 Dock 的透明选中底板、滑动和触控范围完全不变。\n\n本次同步检查 Home 与 Knowledge 的桌面任务栏，并更新缓存版本，避免浏览器继续显示旧的黄色光晕。",
+        "en": "# Desktop Taskbar Active-State Polish\n\nThe active window button in the PC taskbar no longer uses a yellow bottom edge, yellow outer outline, or persistent glow. The desktop now reads more calmly while retaining its blue Neo-XP hierarchy.\n\n## What changed\n\n- The current task keeps its blue pressed background, inset edge, and clear text contrast, so the active window remains obvious.\n- The focus-visible ring still appears for keyboard navigation, preserving an explicit accessible focus indicator.\n- The mobile Dock selection surface, scrolling, and touch geometry are unchanged.\n\nHome and Knowledge were checked with the desktop taskbar, and the public cache version was advanced so browsers do not retain the old yellow glow.",
+        "ja": "# デスクトップタスクバーの選択表示調整\n\nPC 版の下部タスクバーで、選択中ウィンドウのボタンに付いていた黄色の下線、外枠、常時グローを削除しました。青い Neo-XP の階層は維持しつつ、画面を落ち着かせています。\n\n## 変更内容\n\n- 現在のタスクは青い押下背景、内側の段差、十分な文字コントラストを保ち、選択中であることを明確に示します。\n- キーボード操作時の focus-visible リングは残し、アクセシブルなフォーカス表示を維持します。\n- モバイル Dock の選択面、横スクロール、タッチ領域は変更していません。\n\nHome と Knowledge のデスクトップタスクバーを確認し、古い黄色グローがキャッシュに残らないよう公開バージョンも更新しました。"
+      }
+    },
+    {
+      "article_id": "seed-update-2026-07-20-ui-motion-polish",
+      "slug": "2026-07-20-ui-motion-polish",
+      "category": "site-updates",
+      "tags": ["UI", "motion", "accessibility", "mobile", "Chat", "Videos"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-20T14:53:30.199Z",
+      "updated_at": "2026-07-20T14:53:30.199Z",
+      "published_at": "2026-07-20T14:53:30.199Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.07.20",
+      "title": {
+        "zh": "全站界面与动效精修",
+        "en": "Site-wide UI and Motion Polish",
+        "ja": "サイト全体の UI・モーション調整"
+      },
+      "summary": {
+        "zh": "完成聊天短屏、视频卡片、知识库、资源区、欢迎窗口与移动 Dock 的系统化精修，并统一加载、错误、键盘焦点和减少动效体验。",
+        "en": "Chat on short screens, video cards, Knowledge, Resources, the welcome window, and the mobile Dock are systematically refined, with unified loading, error, keyboard-focus, and reduced-motion behavior.",
+        "ja": "短い画面のチャット、動画カード、ナレッジ、リソース、ウェルカム画面、モバイル Dock を整理し、読み込み・エラー・キーボードフォーカス・モーション低減の挙動も統一しました。"
+      },
+      "content_markdown": {
+        "zh": "# 全站界面与动效精修\n\n本轮围绕美观度、UI 结构和动效反馈完成 30 项集中优化，继续保留 Windows XP、Pixel Art 与 Y2K 桌面语言。\n\n## 排版与布局\n\n- 聊天室在 1280×720、短竖屏和手机横屏中重新分配标题、房间切换、消息流与输入区空间，输入框和页脚不再被裁切。\n- 视频封面统一为真实 16:9，失败操作收进卡片；欢迎快捷入口、最近更新、知识库正文和资源元信息获得更清楚的层级与可读宽度。\n- 移动欢迎页只保留一个滚动容器，文章 Appbar 保留路由身份，Dock 字号、触控区和横屏排列同步校准。\n\n## 交互与状态\n\n- 视频封面改为原生按钮并支持键盘；加载、空状态与错误状态采用一致结构，重试后恢复焦点，慢速 iframe 也避免旧计时器覆盖新结果。\n- 禁用控件不再播放按压反馈，桌面 CTA 增加清楚的悬停状态，任务栏活动项、系统消息对比度和各路由强调色更容易辨认。\n\n## 动效与偏好\n\n- 最大化与还原改用真实前后几何差值，关闭与最小化反馈方向统一。\n- “减少动效”与“关闭动效”会同步停止 Dock 平滑移动、骨架循环和硬编码过渡；主题切换不再创建无效的整页快照。\n\n本轮同时复核首页与各 App 的桌面、窄竖屏、短屏和手机横屏组合，并保持中、英、日三语内容与 44px 触控边界。",
+        "en": "# Site-wide UI and Motion Polish\n\nThis release completes 30 focused improvements across visual quality, UI structure, and motion feedback while retaining the Windows XP, Pixel Art, and Y2K desktop language.\n\n## Typography and layout\n\n- Chat now allocates title, room controls, message history, composer, and footer space correctly at 1280×720, short portrait screens, and mobile landscape, so the composer remains visible.\n- Video covers use a true 16:9 frame and failure actions stay inside each card. Welcome shortcuts, recent updates, Knowledge reading width, and Resources metadata now have clearer hierarchy.\n- Mobile Welcome keeps one scroll owner, article Appbars retain route identity, and Dock type, touch geometry, and landscape alignment are recalibrated.\n\n## Interaction and states\n\n- Video covers are native buttons with keyboard support. Loading, empty, and error states share one structure; retry restores focus, and stale iframe timers can no longer replace a newer result.\n- Disabled controls no longer animate as pressed. Desktop CTAs gain visible hover feedback, while active taskbar items, system-message contrast, and subtle route accents are easier to distinguish.\n\n## Motion preferences\n\n- Maximize and restore use real before-and-after geometry, with consistent close and minimize direction.\n- Reduced and off motion also stop Dock smoothing, skeleton loops, and hard-coded transitions. Theme changes no longer create a redundant full-page snapshot.\n\nThe pass rechecks Home and every App across desktop, narrow portrait, short-screen, and mobile-landscape layouts while preserving Chinese, English, and Japanese content and 44px touch targets.",
+        "ja": "# サイト全体の UI・モーション調整\n\nWindows XP、Pixel Art、Y2K のデスクトップ表現を維持しながら、見た目、UI 構造、モーションフィードバックを中心に 30 項目を改善しました。\n\n## 文字組みとレイアウト\n\n- 1280×720、短い縦画面、モバイル横画面のチャットで、タイトル、ルーム切替、履歴、入力欄、フッターの配分を調整し、入力欄が切れないようにしました。\n- 動画サムネイルを正しい 16:9 に統一し、失敗時の操作をカード内に整理。ウェルカムのショートカット、最近の更新、ナレッジ本文、リソースのメタ情報も読みやすくしました。\n- モバイルのウェルカムはスクロール領域を一つにし、記事 Appbar にはルート名を残しています。Dock の文字、タッチ領域、横画面配置も再調整しました。\n\n## 操作と状態表示\n\n- 動画サムネイルはキーボードで操作できる標準ボタンになりました。読み込み、空、エラー表示を統一し、再試行後のフォーカスを復元。古い iframe timer が新しい結果を上書きする競合も防ぎます。\n- 無効な操作には押下アニメーションを出さず、デスクトップ CTA の hover、タスクバーの選択状態、システムメッセージのコントラスト、各ルートの控えめな accent を明確にしました。\n\n## モーション設定\n\n- 最大化と復元は実際の前後座標を使い、閉じる・最小化の方向も統一しました。\n- モーション低減・停止時は Dock の滑らかな移動、スケルトンのループ、固定時間の transition も停止します。テーマ変更時の不要な全画面 snapshot も削除しました。\n\nHome と各 App をデスクトップ、狭い縦画面、短い画面、モバイル横画面で再確認し、中・英・日 3 言語と 44px のタッチ領域を維持しています。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-07-19-historical-video-thumbnail-cache",
       "slug": "2026-07-19-historical-video-thumbnail-cache",
       "category": "site-updates",

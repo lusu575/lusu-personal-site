@@ -2,6 +2,56 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-07-21-desktop-taskbar-active",
+      "slug": "2026-07-21-desktop-taskbar-active",
+      "category": "site-updates",
+      "tags": ["UI", "taskbar", "desktop", "accessibility"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-21T00:41:00.711Z",
+      "updated_at": "2026-07-21T00:41:00.711Z",
+      "published_at": "2026-07-21T00:41:00.711Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.07.21",
+      "title": {
+        "zh": "桌面任务栏选中态降噪",
+        "en": "Desktop Taskbar Active-State Polish",
+        "ja": "デスクトップタスクバーの選択表示調整"
+      },
+      "summary": {
+        "zh": "移除 PC 端当前任务按钮的黄色底边、外描边和常亮光晕，保留蓝色按下层级与键盘焦点环；移动 Dock 不变。",
+        "en": "The desktop active task button drops its yellow edge and persistent glow while retaining a blue pressed hierarchy and keyboard focus ring; the mobile Dock is unchanged.",
+        "ja": "デスクトップの選択中タスクボタンから黄色の縁と常時グローを外し、青い押下階層とキーボードフォーカスリングを維持。モバイル Dock は変更しません。"
+      }
+    },
+    {
+      "article_id": "seed-update-2026-07-20-ui-motion-polish",
+      "slug": "2026-07-20-ui-motion-polish",
+      "category": "site-updates",
+      "tags": ["UI", "motion", "accessibility", "mobile", "Chat", "Videos"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-20T14:53:30.199Z",
+      "updated_at": "2026-07-20T14:53:30.199Z",
+      "published_at": "2026-07-20T14:53:30.199Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.07.20",
+      "title": {
+        "zh": "全站界面与动效精修",
+        "en": "Site-wide UI and Motion Polish",
+        "ja": "サイト全体の UI・モーション調整"
+      },
+      "summary": {
+        "zh": "完成聊天短屏、视频卡片、知识库、资源区、欢迎窗口与移动 Dock 的系统化精修，并统一加载、错误、键盘焦点和减少动效体验。",
+        "en": "Chat on short screens, video cards, Knowledge, Resources, the welcome window, and the mobile Dock are systematically refined, with unified loading, error, keyboard-focus, and reduced-motion behavior.",
+        "ja": "短い画面のチャット、動画カード、ナレッジ、リソース、ウェルカム画面、モバイル Dock を整理し、読み込み・エラー・キーボードフォーカス・モーション低減の挙動も統一しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-07-19-historical-video-thumbnail-cache",
       "slug": "2026-07-19-historical-video-thumbnail-cache",
       "category": "site-updates",
@@ -74,56 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "修复知识库文章种子中的无效 D1 参数，兼容 Cloudflare 无扩展名互传片段地址，并补齐本地预览隐私配置检查；日语工具、知识库与互传入口已重新联调。",
         "en": "An invalid D1 article-seed parameter is fixed, Quick Transfer now accepts Cloudflare's canonical extensionless fragment path, and local-preview privacy configuration is checked; Japanese, Knowledge, and Transfer flows are reverified together.",
         "ja": "記事 seed の不正な D1 引数を修正し、Quick Transfer が Cloudflare の拡張子なし canonical fragment を受け入れるようにしました。ローカル preview の privacy 設定も補い、日本語・ナレッジ・転送を一括で再確認しています。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-07-18-resource-icons-layout",
-      "slug": "2026-07-18-resource-icons-layout",
-      "category": "site-updates",
-      "tags": ["Resources", "Quick Transfer", "UI", "mobile", "QA"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-07-18T15:35:00.000Z",
-      "updated_at": "2026-07-18T15:35:00.000Z",
-      "published_at": "2026-07-18T15:35:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.07.18",
-      "title": {
-        "zh": "资源区图标与排版修复",
-        "en": "Resources Icon and Layout Fixes",
-        "ja": "リソースのアイコンとレイアウト修正"
-      },
-      "summary": {
-        "zh": "修复临时互传整套图标的洋红底色，收紧资源卡片与互传登录布局，并保证关闭互传后准确恢复资源列表；安全、API 与数据边界不变。",
-        "en": "The magenta background across the Quick Transfer icon atlas is removed, Resources cards and the sign-in layout are tightened, and closing Transfer now restores the exact Resources list state; security, API, and data boundaries are unchanged.",
-        "ja": "一時転送のアイコン atlas 全体に残っていたマゼンタ背景を除去し、リソースカードとログイン画面を整理しました。転送を閉じるとリソース一覧の状態を正確に復元し、安全性、API、データ境界は変更していません。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-07-18-public-site-100-complete",
-      "slug": "2026-07-18-public-site-100-complete",
-      "category": "site-updates",
-      "tags": ["performance", "UX", "accessibility", "mobile", "security", "QA"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-07-18T04:00:00.000Z",
-      "updated_at": "2026-07-18T04:00:00.000Z",
-      "published_at": "2026-07-18T04:00:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.07.18",
-      "title": {
-        "zh": "公开主站 100 项优化与稳定性复查完成",
-        "en": "100 Public-Site Improvements and Stability Recheck",
-        "ja": "公開サイト 100 項目の改善と安定性再確認"
-      },
-      "summary": {
-        "zh": "公开主站 100 项优化及稳定性复查已完成：修复冷启动 Chat 图标、短屏头像和移动 Dock 切换闪失，并以全动效中间帧、快速连续切换及竖横屏截图重新验证。",
-        "en": "All 100 public-site improvements and the stability recheck are complete: cold-start Chat icons, short-screen avatars, and mobile Dock flicker are fixed and reverified with full-motion intermediate frames, rapid switching, and portrait/landscape screenshots.",
-        "ja": "公開サイト 100 項目の改善と安定性再確認を完了しました。初回表示の Chat アイコン、短画面のアバター、モバイル Dock の切替時の消失を修正し、フルモーションの中間フレーム、連続切替、縦横画面のスクリーンショットで再検証しています。"
       }
     }
   ]

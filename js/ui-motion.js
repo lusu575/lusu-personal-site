@@ -7,7 +7,7 @@
 
   var document = global.document;
   var root = document.documentElement;
-  var VERSION = "1.3.0";
+  var VERSION = "1.4.0";
   var MAX_PARALLAX_PX = 0;
   var ROUTE_ORDER = ["home", "knowledge", "videos", "resources", "games", "blog", "chatroom", "about"];
   var TRIGGER_SELECTOR = [
@@ -516,6 +516,9 @@
     if (!target || target === document.body || target === root) {
       return null;
     }
+    if (isInteractionDisabled(target)) {
+      return null;
+    }
     if (elementMatches(target, "input, textarea, select, [contenteditable='true']")) {
       return null;
     }
@@ -541,11 +544,27 @@
     return snapshot;
   }
 
+  function isInteractionDisabled(element) {
+    if (!isElement(element)) {
+      return true;
+    }
+    if (element.disabled === true
+      || element.hasAttribute("disabled")
+      || readData(element, "disabled") === "true"
+      || element.getAttribute("aria-disabled") === "true") {
+      return true;
+    }
+    return Boolean(closestElement(element, "[inert], [aria-disabled='true'], [disabled]"));
+  }
+
   function handlePointerDown(event) {
     setData(root, "inputMethod", "pointer");
     releasePressedTarget();
+    if (state.mode === "off") {
+      return;
+    }
     var target = closestElement(event.target, TRIGGER_SELECTOR);
-    if (!target) {
+    if (!target || isInteractionDisabled(target)) {
       return;
     }
     var snapshot = noteTrigger(target, { kind: "press" });
@@ -568,7 +587,7 @@
 
   function handleClick(event) {
     var target = closestElement(event.target, TRIGGER_SELECTOR);
-    if (!target) {
+    if (!target || isInteractionDisabled(target)) {
       return;
     }
     noteTrigger(target, { kind: "activate" });
@@ -758,27 +777,45 @@
     }
     var targetRect = safeRect(target);
     var delta = originTransform(origin, targetRect);
-    var maxShift = kind === "window-minimize" || kind === "minimize" ? 12 : 8;
-    var exitX = origin ? clamp(delta.x, -maxShift, maxShift) : 0;
-    var exitY = origin ? clamp(delta.y, -maxShift, maxShift) : 4;
+    var minimizing = kind === "window-minimize" || kind === "minimize";
+    var exitX = minimizing && origin ? clamp(delta.x, -32, 32) : 0;
+    var exitY = minimizing && origin ? clamp(delta.y, 12, 34) : 8;
     return animateElement(target, [
-      { opacity: 1, transformOrigin: "center center", transform: "translate3d(0,0,0) scale(1)" },
+      { opacity: 1, transformOrigin: "center center", transform: "translate3d(0,0,0)" },
       {
         opacity: 0,
         transformOrigin: "center center",
-        transform: "translate3d(" + exitX.toFixed(2) + "px," + exitY.toFixed(2) + "px,0) scale(.995)"
+        transform: "translate3d(" + exitX.toFixed(2) + "px," + exitY.toFixed(2) + "px,0)"
       }
-    ], { duration: DURATIONS.fast, easing: EASING.in });
+    ], { duration: minimizing ? DURATIONS.standard : DURATIONS.fast, easing: EASING.in });
   }
 
   function flipAnimation(target, beforeRect) {
-    if (!isElement(target)) {
+    if (!isElement(target) || !beforeRect) {
+      return null;
+    }
+    var afterRect = safeRect(target);
+    if (!afterRect || beforeRect.width < 1 || beforeRect.height < 1 || afterRect.width < 1 || afterRect.height < 1) {
+      return null;
+    }
+    var deltaX = beforeRect.left - afterRect.left;
+    var deltaY = beforeRect.top - afterRect.top;
+    var scaleX = clamp(beforeRect.width / afterRect.width, 0.2, 5);
+    var scaleY = clamp(beforeRect.height / afterRect.height, 0.2, 5);
+    var geometryChanged = Math.abs(deltaX) > 0.5
+      || Math.abs(deltaY) > 0.5
+      || Math.abs(scaleX - 1) > 0.002
+      || Math.abs(scaleY - 1) > 0.002;
+    if (!geometryChanged) {
       return null;
     }
     return animateElement(target, [
-      { opacity: 0.92, transformOrigin: "center center", transform: "scale(.997)" },
-      { opacity: 1, transformOrigin: "center center", transform: "scale(1)" }
-    ], { duration: DURATIONS.standard, easing: EASING.out });
+      {
+        transformOrigin: "top left",
+        transform: "translate3d(" + deltaX.toFixed(2) + "px," + deltaY.toFixed(2) + "px,0) scale(" + scaleX.toFixed(4) + "," + scaleY.toFixed(4) + ")"
+      },
+      { transformOrigin: "top left", transform: "translate3d(0,0,0) scale(1,1)" }
+    ], { duration: DURATIONS.window, easing: EASING.out });
   }
 
   function routeEnterAnimation(target, direction) {
@@ -885,6 +922,7 @@
       || kind === "mobile-tab";
     var useViewTransition = Boolean(
       context.useViewTransition
+      && kind !== "theme"
       && !pageNavigationKeepsChromeLive
       && canUseFullMotion()
       && root.dataset.performanceTier !== "low"

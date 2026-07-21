@@ -4,7 +4,7 @@ import {
   normalizeLanguage,
   translationFor
 } from "./core/i18n.mjs?v=20260718-resource-icons-layout-r1";
-import { homeContent } from "./data/home-content.mjs?v=20260719-video-thumbnail-cache-r2";
+import { homeContent } from "./data/home-content.mjs?v=20260721-desktop-taskbar-active-r1";
 import { blogManifest } from "./data/blog-manifest.mjs?v=20260718-resource-icons-layout-r1";
 import { createRouteLifecycle, isAbortError } from "./core/route-lifecycle.mjs?v=20260718-resource-icons-layout-r1";
 import { createRouter } from "./core/router.mjs?v=20260718-resource-icons-layout-r1";
@@ -306,13 +306,12 @@ function renderSocialNetworkStatus(kind = "") {
   if (!status) {
     status = document.createElement("div");
     status.id = "about-social-network-status";
-    status.className = "content-recovery-notice about-social-network-status";
-    status.setAttribute("role", "status");
-    status.setAttribute("aria-live", "polite");
+    status.className = "content-state content-recovery-notice about-social-network-status";
     links.insertAdjacentElement("afterend", status);
   }
   status.classList.toggle("is-error", kind === "failed");
   status.classList.toggle("is-loading", kind === "loading");
+  markStatusMessage(status, kind === "failed" ? "error" : "status");
   const message = document.createElement("p");
   message.textContent = socialNetworkText(kind);
   status.replaceChildren(message);
@@ -369,7 +368,7 @@ function safeStorageSet(key, value) {
   }
 }
 
-const routeStyleVersion = "20260719-video-thumbnail-cache-r2";
+const routeStyleVersion = "20260721-desktop-taskbar-active-r1";
 const routeStyleHrefs = Object.freeze({
   knowledge: `/css/routes/knowledge.css?v=${routeStyleVersion}`,
   videos: `/css/routes/videos.css?v=${routeStyleVersion}`,
@@ -428,19 +427,19 @@ function loadStyledRoute(route, moduleLoader, instantiate) {
 
 const routeModuleRegistry = createRouteModuleRegistry({
   loaders: {
-    knowledge: () => loadStyledRoute("knowledge", () => import("./routes/knowledge.mjs?v=20260719-video-thumbnail-cache-r2"),
+    knowledge: () => loadStyledRoute("knowledge", () => import("./routes/knowledge.mjs?v=20260721-desktop-taskbar-active-r1"),
       ({ createKnowledgeRoute }) => instantiateKnowledgeRoute(createKnowledgeRoute)),
     videos: () => loadStyledRoute("videos", () => Promise.all([
-      import("./routes/videos.mjs?v=20260719-video-thumbnail-cache-r2"),
+      import("./routes/videos.mjs?v=20260721-desktop-taskbar-active-r1"),
       import("./data/videos-content.mjs?v=20260718-resource-icons-layout-r1")
     ]), ([{ createVideosRoute }, { videosContent }]) => instantiateVideosRoute(createVideosRoute, videosContent)),
     resources: () => Promise.all([
-      import("./routes/resources.mjs?v=20260719-video-thumbnail-cache-r2"),
+      import("./routes/resources.mjs?v=20260721-desktop-taskbar-active-r1"),
       import("./data/resources-content.mjs?v=20260719-content-experience-fixes-r1")
     ]).then(([{ createResourcesRoute }, { resourcesContent }]) => instantiateResourcesRoute(createResourcesRoute, resourcesContent)),
-    games: () => loadStyledRoute("games", () => import("./routes/games.mjs?v=20260719-video-thumbnail-cache-r2"),
+    games: () => loadStyledRoute("games", () => import("./routes/games.mjs?v=20260721-desktop-taskbar-active-r1"),
       ({ createGamesRoute }) => instantiateGamesRoute(createGamesRoute)),
-    chatroom: () => loadStyledRoute("chatroom", () => import("./routes/chatroom.mjs?v=20260719-video-thumbnail-cache-r2"),
+    chatroom: () => loadStyledRoute("chatroom", () => import("./routes/chatroom.mjs?v=20260721-desktop-taskbar-active-r1"),
       ({ createChatroomRoute }) => instantiateChatroomRoute(createChatroomRoute))
   },
   onStatus({ route, status, error }) {
@@ -487,12 +486,15 @@ function routeModuleStatusTarget(route) {
 function renderRouteModuleStatus(route, status, error = null) {
   const target = routeModuleStatusTarget(route);
   if (!target) return;
+  const state = document.createElement("div");
+  state.className = `content-state route-module-status is-${status === "failed" ? "error" : "loading"}`;
   const note = document.createElement("p");
-  note.className = "loading-text route-module-status";
+  note.className = "content-state-copy loading-text";
   note.textContent = status === "failed" ? t("routeModuleFailed") : t("routeModuleLoading");
-  markStatusMessage(note);
+  markStatusMessage(state, status === "failed" ? "error" : "status");
+  state.appendChild(note);
   if (status !== "failed") {
-    target.replaceChildren(note);
+    target.replaceChildren(state);
     return;
   }
   const retry = document.createElement("button");
@@ -502,7 +504,33 @@ function renderRouteModuleStatus(route, status, error = null) {
   retry.textContent = t("routeModuleRetry");
   retry.setAttribute("aria-label", `${t("routeModuleRetry")}: ${t(`${route}Title`)}`);
   if (error) retry.dataset.errorKind = error instanceof TypeError ? "network" : "module";
-  target.replaceChildren(note, retry);
+  state.appendChild(retry);
+  target.replaceChildren(state);
+}
+
+function waitForRouteModuleRetryResult(route, target) {
+  return new Promise((resolve) => {
+    let timeout = 0;
+    const observer = new MutationObserver(check);
+    const finish = () => {
+      observer.disconnect();
+      window.clearTimeout(timeout);
+      resolve();
+    };
+    function check() {
+      if (document.body.dataset.route !== route || !document.contains(target)) {
+        finish();
+        return;
+      }
+      const status = target.querySelector(".route-module-status");
+      if (!status || status.classList.contains("is-error") || !status.classList.contains("is-loading")) {
+        finish();
+      }
+    }
+    observer.observe(target, { childList: true, subtree: true, attributes: true, attributeFilter: ["class"] });
+    timeout = window.setTimeout(finish, 10_000);
+    window.queueMicrotask(check);
+  });
 }
 
 
@@ -1540,10 +1568,38 @@ async function loadArticleDetail(...args) { return (await ensureRouteModule("kno
 
 
 
-function markStatusMessage(node) {
-  node.setAttribute("role", "status");
-  node.setAttribute("aria-live", "polite");
+function markStatusMessage(node, kind = "status") {
+  const isError = kind === "error";
+  node.setAttribute("role", isError ? "alert" : "status");
+  node.setAttribute("aria-live", isError ? "assertive" : "polite");
   node.setAttribute("aria-atomic", "true");
+}
+
+function restoreRetryFocus(operation, retrySelector, containerSelector) {
+  const settle = () => window.requestAnimationFrame(() => {
+    const container = document.querySelector(containerSelector);
+    if (!container || !document.contains(container)) return;
+    const active = document.activeElement;
+    if (active instanceof HTMLElement
+      && active !== document.body
+      && active !== document.documentElement
+      && document.contains(active)
+      && focusTargetIsVisible(active)) {
+      return;
+    }
+    const target = document.querySelector(retrySelector)
+      || container.querySelector("[role='alert'], [role='status']")
+      || container.querySelector("button:not(:disabled), a[href]")
+      || container;
+    if (!(target instanceof HTMLElement) || !focusTargetIsVisible(target)) return;
+    const needsTemporaryTabIndex = target.tabIndex < 0 && !target.hasAttribute("tabindex");
+    if (needsTemporaryTabIndex) target.setAttribute("tabindex", "-1");
+    target.focus({ preventScroll: true });
+    if (needsTemporaryTabIndex) {
+      target.addEventListener("blur", () => target.removeAttribute("tabindex"), { once: true });
+    }
+  });
+  Promise.resolve(operation).then(settle, settle);
 }
 
 
@@ -1831,6 +1887,8 @@ function blogCardElement(item) {
 function blogEmptyStateElement() {
   const state = document.createElement("article");
   state.className = "resource-empty-state blog-empty-state";
+  state.classList.add("content-state", "is-empty");
+  markStatusMessage(state);
 
   const icon = document.createElement("span");
   icon.className = "resource-empty-icon blog-empty-icon";
@@ -1940,10 +1998,13 @@ function renderBlog() {
   const list = document.getElementById("blog-list");
   list.replaceChildren();
   if (blogState.loading) {
-    const status = document.createElement("p");
-    status.className = "loading-text";
-    status.textContent = t("routeModuleLoading");
+    const status = document.createElement("div");
+    status.className = "content-state is-loading";
+    const copy = document.createElement("p");
+    copy.className = "content-state-copy loading-text";
+    copy.textContent = t("routeModuleLoading");
     markStatusMessage(status);
+    status.appendChild(copy);
     list.appendChild(status);
     return;
   }
@@ -2397,7 +2458,7 @@ function updateHomeTimeTheme() {
   };
 
   if (renderedHomeTimeTheme && window.LusuUiMotion?.run) {
-    window.LusuUiMotion.run("theme", { theme, useViewTransition: true }, applyTheme).catch(applyTheme);
+    window.LusuUiMotion.run("theme", { theme }, applyTheme).catch(applyTheme);
     return;
   }
   applyTheme();
@@ -2737,7 +2798,11 @@ document.addEventListener("click", (event) => {
   }
 
   if (target.closest("[data-video-retry]")) {
-    loadVideos({ force: true });
+    restoreRetryFocus(
+      loadVideos({ force: true }),
+      "[data-video-retry]",
+      "#video-list"
+    );
     return;
   }
 
@@ -2748,30 +2813,54 @@ document.addEventListener("click", (event) => {
   }
 
   if (target.closest("[data-article-retry]")) {
-    loadArticles({ force: true });
+    restoreRetryFocus(
+      loadArticles({ force: true }),
+      "[data-article-retry]",
+      "#knowledge-list"
+    );
     return;
   }
 
   const articleDetailRetryButton = target.closest("[data-article-detail-retry]");
   if (articleDetailRetryButton) {
-    loadArticleDetail(articleDetailRetryButton.dataset.articleDetailRetry || articleState.currentSlug, { force: true });
+    restoreRetryFocus(
+      loadArticleDetail(articleDetailRetryButton.dataset.articleDetailRetry || articleState.currentSlug, { force: true }),
+      "[data-article-detail-retry]",
+      "#article-detail-body"
+    );
     return;
   }
 
   if (target.closest("[data-game-retry]")) {
-    renderGames({ forceRefresh: true });
+    restoreRetryFocus(
+      renderGames({ forceRefresh: true }),
+      "[data-game-retry]",
+      "#game-list"
+    );
     return;
   }
 
   if (target.closest("[data-social-retry]")) {
-    loadSocialLinks({ force: true, signal: activeRouteScope("about")?.signal });
+    restoreRetryFocus(
+      loadSocialLinks({ force: true, signal: activeRouteScope("about")?.signal }),
+      "[data-social-retry]",
+      "#about-social-network-status, #about-social-links"
+    );
     return;
   }
 
   const routeModuleRetryButton = target.closest("[data-route-module-retry]");
   if (routeModuleRetryButton) {
     const route = routeModuleRetryButton.dataset.routeModuleRetry;
-    if (route === document.body.dataset.route) restartActiveRouteLifecycle("module-retry");
+    const statusTarget = routeModuleStatusTarget(route);
+    if (route === document.body.dataset.route && statusTarget) {
+      restartActiveRouteLifecycle("module-retry");
+      restoreRetryFocus(
+        waitForRouteModuleRetryResult(route, statusTarget),
+        `[data-route-module-retry="${route}"]`,
+        `#${statusTarget.id}`
+      );
+    }
     return;
   }
 
@@ -2889,10 +2978,7 @@ document.addEventListener("click", (event) => {
 
   const managedVideoButton = target.closest("[data-video-id]");
   if (managedVideoButton) {
-    const videoTrigger = managedVideoButton.dataset.videoSource === "thumbnail"
-      ? managedVideoButton.closest(".video-card")?.querySelector(".card-action[data-video-id]")
-      : managedVideoButton;
-    openVideo(managedVideoButton.dataset.videoId, { trigger: videoTrigger || managedVideoButton });
+    openVideo(managedVideoButton.dataset.videoId, { trigger: managedVideoButton });
     return;
   }
 

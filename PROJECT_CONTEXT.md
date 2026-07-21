@@ -1,5 +1,18 @@
 # PROJECT_CONTEXT.md
 
+## 2026-07-21 桌面任务栏选中态规则
+
+- PC 端当前任务按钮继续使用蓝色按下背景与内凹层级，但不再使用黄色底边、黄色外描边或常亮光晕；键盘操作的 `:focus-visible` 焦点环必须保留，不能为了视觉降噪破坏可访问性。移动 Dock 的透明选中底板与样式不受影响。
+- 本轮公开记录为 `seed-update-2026-07-21-desktop-taskbar-active`，公开入口与模块缓存版本统一使用 `20260721-desktop-taskbar-active-r1`；Home 仍只投影最新五条无正文摘要。
+
+## 2026-07-20 公共界面、状态与动效精修规则
+
+- Chat 除移动小屏外还必须把 1280×720 当作短桌面硬门槛：窗口标题、两行身份／房间控制、日志、输入区和页脚都要位于可用窗口内，只有日志轨道可弹性收缩。响应式几何继续只写在 `css/mobile-ios-shell.css`，`css/routes/chatroom.css` 只提供无媒体查询的基础网格；字数计数属于输入状态行，不能作为独立列挤压正文。
+- 视频卡缩略图是带视频标题可访问名称的原生 `button`，并保持 16:9；不得退回无键盘语义的装饰 `div`，也不得重新添加遮挡封面的蓝色播放圆圈。iframe 的 8 秒超时必须绑定当前 request generation 与 settled 状态，旧 timer / load / error 不能覆盖新的播放器；失败卡内并排提供重试与原视频入口，重试后恢复合理焦点。
+- Knowledge、Videos、Resources、Games、Blog 与 About 的 loading / empty / error 使用共同 `.content-state` 视觉语言。加载和空状态使用 polite status，真实错误使用 alert；重新渲染不得让键盘焦点消失。Knowledge 正文保持约 72ch 可读行长，Resources 窄屏元信息至少 12px 并自然换行。
+- `data-motion="off"` 是全局即时提交契约，不只是把 token 改成 1ms：必须关闭硬编码 transition / animation、Dock smooth scroll 与选中底板滑动、骨架循环和主题整页快照；reduced 同样不得保留非必要循环。disabled、`aria-disabled` 或 inert 控件不产生按压反馈，最大化／还原的 FLIP 必须使用真实前后几何。
+- 本轮公开记录为 `seed-update-2026-07-20-ui-motion-polish`，主 CSS、移动壳、动效脚本、公共入口与路由懒加载资源统一使用 `20260720-ui-motion-polish-r1`。Home 最近更新继续只投影最新五条无正文摘要。
+
 ## 2026-07-19 历史视频封面缓存恢复规则
 
 - 生产 D1 中历史 Bilibili 手动封面使用受限 `data:image` 保存，并通过 `/api/videos/:videoId/thumbnail` 同源端点公开；排查“旧封面不显示”时先分别核对公开列表字段、代理端点状态与全新浏览器渲染，不能在确认数据丢失前要求管理员重新上传。

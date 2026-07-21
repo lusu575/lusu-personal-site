@@ -86,8 +86,8 @@ export function createVideosRoute({
 
   function renderVideoRecoveryNotice(kind) {
     const notice = document.createElement("div");
-    notice.className = `content-recovery-notice ${kind === "failed" ? "is-error" : "is-loading"}`;
-    markStatusMessage(notice);
+    notice.className = `content-state content-recovery-notice ${kind === "failed" ? "is-error" : "is-loading"}`;
+    markStatusMessage(notice, kind === "failed" ? "error" : "status");
     const copy = document.createElement("p");
     copy.textContent = videoUiText(kind);
     notice.appendChild(copy);
@@ -104,7 +104,7 @@ export function createVideosRoute({
 
   function renderVideoStatusState(kind) {
     const state = document.createElement("article");
-    state.className = "video-empty-state video-status-state";
+    state.className = `content-state video-empty-state video-status-state ${kind === "failed" ? "is-error" : "is-loading"}`;
 
     const icon = document.createElement("span");
     icon.className = `video-empty-icon${kind === "failed" ? " is-error" : ""}`;
@@ -112,7 +112,7 @@ export function createVideosRoute({
 
     const copy = document.createElement("div");
     copy.className = "video-empty-copy";
-    markStatusMessage(copy);
+    markStatusMessage(copy, kind === "failed" ? "error" : "status");
     const title = document.createElement("h2");
     title.textContent = videoUiText(kind);
 
@@ -131,7 +131,7 @@ export function createVideosRoute({
 
   function renderVideoEmptyState(isFiltered = false) {
     const state = document.createElement("article");
-    state.className = "video-empty-state";
+    state.className = "content-state is-empty video-empty-state";
 
     const icon = document.createElement("span");
     icon.className = "video-empty-icon";
@@ -139,6 +139,7 @@ export function createVideosRoute({
 
     const copy = document.createElement("div");
     copy.className = "video-empty-copy";
+    markStatusMessage(copy);
     const title = document.createElement("h2");
     title.textContent = videoUiText("emptyTitle");
     const text = document.createElement("p");
@@ -202,11 +203,13 @@ export function createVideosRoute({
     const videoTitleText = item.title || videoUiText("untitled");
     const videoPlayLabel = `${videoUiText("playAria")}: ${videoTitleText}`;
 
-    const thumb = document.createElement("div");
+    const thumb = document.createElement("button");
+    thumb.type = "button";
     thumb.className = "video-thumb";
     thumb.dataset.videoId = item.video_id;
     thumb.dataset.videoSource = "thumbnail";
-    thumb.setAttribute("aria-hidden", "true");
+    thumb.setAttribute("aria-label", videoPlayLabel);
+    thumb.setAttribute("title", videoPlayLabel);
     const thumbnailUrl = safeVideoThumbnailSrc(item.thumbnail_url);
     if (thumbnailUrl) {
       const image = document.createElement("img");
@@ -358,6 +361,7 @@ export function createVideosRoute({
       playAria: { zh: "播放视频", en: "Play video", ja: "動画を再生" },
       playerFailedTitle: { zh: "播放器暂时无法载入", en: "The player could not load", ja: "プレーヤーを読み込めませんでした" },
       playerFailedBody: { zh: "可以重试站内播放，或打开原视频继续观看。", en: "Retry the embedded player or open the original video to keep watching.", ja: "埋め込み再生を再試行するか、元の動画を開いて視聴を続けられます。" },
+      playerSlowBody: { zh: "网络响应较慢，播放器在 8 秒内没有完成载入。可以重试，或打开原视频继续观看。", en: "The network is responding slowly and the player did not load within 8 seconds. Retry or open the original video.", ja: "ネットワークの応答が遅く、8 秒以内にプレーヤーを読み込めませんでした。再試行するか、元の動画を開いてください。" },
       playerRetry: { zh: "重试播放器", en: "Retry player", ja: "プレーヤーを再試行" },
       playerUnsupportedTitle: { zh: "此视频暂不支持站内播放", en: "Inline playback is unavailable", ja: "サイト内再生には対応していません" },
       playerUnsupportedBody: { zh: "请使用下方按钮打开原视频。", en: "Use the button below to open the original video.", ja: "下のボタンから元の動画を開いてください。" }
@@ -376,17 +380,25 @@ export function createVideosRoute({
     videoState.playerRequestId = (videoState.playerRequestId || 0) + 1;
   }
 
-  function renderVideoPlayerFailure(video, { retryable = true, requestId = 0 } = {}) {
+  function renderVideoPlayerFailure(video, {
+    retryable = true,
+    requestId = 0,
+    slowNetwork = false,
+    focusRetry = false
+  } = {}) {
     if (requestId && requestId !== videoState.playerRequestId) return;
     clearVideoPlayerTimer();
     const frame = document.getElementById("video-frame");
     if (!frame) return;
+    const sourceLink = document.getElementById("video-link");
+    if (sourceLink) sourceLink.hidden = true;
     frame.dataset.videoPlayerState = retryable ? "failed" : "unsupported";
     frame.removeAttribute("aria-busy");
     const fallback = document.createElement("div");
-    fallback.className = "video-player-fallback";
-    fallback.setAttribute("role", "status");
-    fallback.setAttribute("aria-live", "polite");
+    fallback.className = `content-state video-player-fallback ${retryable ? "is-error" : "is-empty"}`;
+    fallback.setAttribute("role", retryable ? "alert" : "status");
+    fallback.setAttribute("aria-live", retryable ? "assertive" : "polite");
+    fallback.setAttribute("aria-atomic", "true");
     const icon = document.createElement("span");
     icon.className = "video-placeholder-asset";
     icon.setAttribute("aria-hidden", "true");
@@ -395,16 +407,45 @@ export function createVideosRoute({
     const title = document.createElement("h2");
     title.textContent = videoUiText(retryable ? "playerFailedTitle" : "playerUnsupportedTitle");
     const body = document.createElement("p");
-    body.textContent = video.metadata_error || videoUiText(retryable ? "playerFailedBody" : "playerUnsupportedBody");
+    body.textContent = slowNetwork
+      ? videoUiText("playerSlowBody")
+      : video.metadata_error || videoUiText(retryable ? "playerFailedBody" : "playerUnsupportedBody");
     copy.append(title, body);
     fallback.append(icon, copy);
+    const actions = document.createElement("div");
+    actions.className = "video-player-fallback-actions";
+    let focusTarget = null;
     if (retryable) {
       const retry = document.createElement("button");
       retry.type = "button";
       retry.className = "xp-button";
       retry.dataset.videoPlayerRetry = video.video_id || video.external_id || "";
       retry.textContent = videoUiText("playerRetry");
-      fallback.appendChild(retry);
+      actions.appendChild(retry);
+      focusTarget = retry;
+    }
+    const originalUrl = safeVideoSourceUrl(video.original_url || video.url || "");
+    if (originalUrl) {
+      const original = document.createElement("a");
+      const videoTitle = localText(video.title) || videoUiText("untitled");
+      original.className = "xp-button";
+      original.href = originalUrl;
+      original.target = "_blank";
+      original.rel = "noreferrer noopener";
+      original.textContent = t("openOriginal");
+      original.setAttribute("aria-label", `${t("openOriginal")}: ${videoTitle}`);
+      actions.appendChild(original);
+      focusTarget ||= original;
+    }
+    if (actions.childElementCount) {
+      fallback.appendChild(actions);
+    }
+    if (focusRetry && focusTarget) {
+      window.requestAnimationFrame(() => {
+        if (requestId === videoState.playerRequestId && focusTarget.isConnected) {
+          focusTarget.focus({ preventScroll: true });
+        }
+      });
     }
     frame.replaceChildren(fallback);
     window.lusuTrackClick?.("video:play-failed", video.video_id || video.external_id || "video", { route: "videos" });
@@ -412,11 +453,13 @@ export function createVideosRoute({
 
   function mountVideoPlayer(video, { focusPlayer = false } = {}) {
     const frame = document.getElementById("video-frame");
+    const sourceLink = document.getElementById("video-link");
+    if (sourceLink?.hasAttribute("href")) sourceLink.hidden = false;
     const embedUrl = videoAutoplayUrl(video.embed_url);
     invalidateVideoPlayer();
     const requestId = videoState.playerRequestId;
     if (!embedUrl) {
-      renderVideoPlayerFailure(video, { retryable: false, requestId });
+      renderVideoPlayerFailure(video, { retryable: false, requestId, focusRetry: focusPlayer });
       return;
     }
     frame.dataset.videoPlayerState = "loading";
@@ -430,14 +473,25 @@ export function createVideosRoute({
     iframe.allowFullscreen = true;
     iframe.referrerPolicy = "strict-origin-when-cross-origin";
     iframe.dataset.videoPlayer = "";
+    let settled = false;
     const settleLoaded = () => {
-      if (requestId !== videoState.playerRequestId) return;
+      if (settled || requestId !== videoState.playerRequestId || !iframe.isConnected) return;
+      settled = true;
       clearVideoPlayerTimer();
       frame.dataset.videoPlayerState = "ready";
       frame.removeAttribute("aria-busy");
       if (focusPlayer) iframe.focus({ preventScroll: true });
     };
-    const settleFailed = () => renderVideoPlayerFailure(video, { retryable: true, requestId });
+    const settleFailed = (event) => {
+      if (settled || requestId !== videoState.playerRequestId) return;
+      settled = true;
+      renderVideoPlayerFailure(video, {
+        retryable: true,
+        requestId,
+        slowNetwork: !event,
+        focusRetry: focusPlayer
+      });
+    };
     iframe.addEventListener("load", settleLoaded, { once: true });
     iframe.addEventListener("error", settleFailed, { once: true });
     shell.appendChild(iframe);
