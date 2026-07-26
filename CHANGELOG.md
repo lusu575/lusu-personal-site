@@ -4,6 +4,8 @@
 
 ## 2026-07-26
 
+- 重绘并直接替换匿名聊天室唯一规范资源 `assets/images/icon-chatroom.png`：新图保持 96×96 RGBA 与 XP 像素聊天终端／粉青双气泡语义，将非透明主体由旧图的 93×90 收敛为 71×73，四边保留 10–13px 透明安全区；桌面 Home 82px 与移动 Home 54px 映射不变，18–54px 小槽位继续使用 contain。Home、窗口标题栏、桌面任务栏／移动 Dock、欢迎快捷入口、Chat 页头和消息头像现全部引用新图，`icon-chatroom-clean.png` 已删除，生产构建也不再排除规范资源。公开缓存版本统一为 `20260726-chatroom-icon-redraw-r2`，三语 `site-updates` 记录 `seed-update-2026-07-26-chatroom-icon-redraw` 已同步完整 fallback、Home 最新五条无正文投影、Functions seed 与 schema seed，并新增尺寸、Alpha、透明角点、文件预算与旧资源不得残留守卫；本批不需要直接写入生产 D1。
+- 匿名聊天室图标批次验证通过：261 / 261 全量测试、20 个公开模块依赖图、静态构建、147 / 147 公共 UI 审计与两次完全一致的生产构建均通过，生产 manifest SHA-256 为 `d13af5e9cfa49d3d83c674f11ebfeca469b3c5fa40954d7303c254447d95ed7a`；生产产物只包含新的 `icon-chatroom.png`，旧 `clean` / `desktop` 路径及引用均为零，截图核对覆盖桌面／移动 Home、标题栏、任务栏／Dock、欢迎入口和 Chat 头像，仅保留既有日语工具 `noMedal` 重复键警告。
 - 完成全界面点检后的移动游戏修复：A Dark Room 在窄屏按实际面板宽度滑动，资源、主操作与声音选择窗不再沿用 700px 桌面几何，声音提示同步中文／English／日本語；同页横竖屏切换会重新测量两层滑轨、当前偏移与资源面板归属，返回桌面宽度时恢复原 700px 布局。Kittens Game 将上游 1300px 三栏在 ≤900px 改为营火→资源→日志单列，顶部工具栏在窄屏自然换为两行，Steam／Version 完整显示不裁切，全部可见关键控件与折叠／日志热区保持至少 44px，桌面三栏不变。
 - Kittens Game 的嵌入副本移除上游 Google Analytics，禁用只适用于原站的 KGNet 登录／同步和 `localhost:7780` 桥接请求，只加载当前主题并在切换时按需加载，避免为未使用主题请求 Google Fonts；文档语言在首屏按中文／English／日本語同步，内部构建修订提升为 `4`，移动 CSS query 为 `20260726-mobile-r3`。这些变更不影响本站游戏 localStorage、JSON 备份或账号云存档。2048“新游戏”、Hextris 核心操作及五游戏共享壳的返回、登录、下载、导入和云存档控件同步达到移动 44px。
 - Life Restart 新增仅在粗指针环境启用的运行时移动适配：主操作与所有可见 `btn*` hitArea 均保持至少 44px，竖屏把工具操作与主流程分离，短横屏将工具放入底部横排；细指针桌面几何维持上游原样。内部缓存版本为 `20260726-life-mobile-touch-r1`。

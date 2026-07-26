@@ -77,9 +77,9 @@ test("forced colors and four effective motion tiers have explicit non-blocking f
 });
 
 test("Chat identity assets belong to the always-loaded shell and remain visible on short screens", () => {
-  assert.match(styleSource, /\.chatroom-icon\s*\{[\s\S]*icon-chatroom-clean\.png\?v=20260718-resource-icons-layout-r1/);
+  assert.match(styleSource, /\.chatroom-icon\s*\{[\s\S]*icon-chatroom\.png\?v=20260726-chatroom-icon-redraw-r2/);
   assert.doesNotMatch(chatRouteSource, /\.chatroom-icon\s*\{/);
-  assert.match(styleSource, /\.title-icon-chatroom\s*\{[\s\S]*icon-chatroom-clean\.png\?v=20260718-resource-icons-layout-r1/);
+  assert.match(styleSource, /\.title-icon-chatroom\s*\{[\s\S]*icon-chatroom\.png\?v=20260726-chatroom-icon-redraw-r2/);
   assert.match(mobileSource, /max-height:\s*720px[\s\S]*\.chatroom-avatar\s*\{[\s\S]*display:\s*block[\s\S]*width:\s*32px/);
   assert.match(mobileSource, /orientation:\s*landscape[\s\S]*\.chatroom-avatar\s*\{[\s\S]*display:\s*block[\s\S]*width:\s*34px/);
 });

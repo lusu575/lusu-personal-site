@@ -984,7 +984,7 @@ export function createChatroomRoute({
 
     const avatar = document.createElement("img");
     avatar.className = "chat-message-avatar";
-    avatar.src = "/assets/images/icon-chatroom-clean.png?v=20260718-resource-icons-layout-r1";
+    avatar.src = "/assets/images/icon-chatroom.png?v=20260726-chatroom-icon-redraw-r2";
     avatar.alt = "";
     avatar.setAttribute("aria-hidden", "true");
 

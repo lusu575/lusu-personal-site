@@ -75,6 +75,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 
 - 桌面 Neo-XP 与移动虚拟 OS 是同一站点的两套呈现壳，不是两套应用。`js/main.js` 是 ESM composition root，`js/core/`、`js/data/`、`js/features/`、`js/routes/` 通过显式 factory 依赖共享唯一业务状态；严禁在壳层或模块内复制、镜像或重新维护第二套路由、语言、账号、文章、视频、游戏、聊天室或主题状态。修改模块图后必须运行 `npm.cmd run check:public-modules`。
 - Home 初始模块图只能包含 shell 必需能力和 `js/data/home-content.mjs` 的五条无正文更新摘要。Knowledge、Videos、工具区（内部 `resources` route）、Games、Chat 的 JS 以及 `css/routes/` 中四个重路由绘制样式按首次进入单飞加载、成功后常驻复用；route CSS 不得承载移动媒体布局，也不得承载 Home、顶栏、任务栏或 Dock 在进入路由前已可见的图标规则。这些 shell 资产映射必须位于始终加载的主 CSS，并在冷启动 Home 上检查 `background-image` / 图片解码。Quick Transfer loader、CSS、客户端和静态 fragment 必须等工具区真实 CTA 点击后才加载，进入 `resources` route 本身不得暴露全局 Transfer facade、挂载完整 DOM 或请求 API。
+- 匿名聊天室只保留 `assets/images/icon-chatroom.png` 这一张 96×96 RGBA 规范资源，Home、标题栏、任务栏／Dock、欢迎快捷入口和聊天头像全部共用；不要恢复 `icon-chatroom-clean.png` / `icon-chatroom-desktop.png` 双资源。18–54px 小槽位继续使用 contain，不额外放大。
 - `js/mobile-shell.js` 只能观察既有状态、维护 safe-area / `visualViewport` 等短生命周期呈现变量，并把导航委托给原有 `data-route` 元素；不得建立第二套路由器、账号状态或内容缓存。
 - `window.LusuFramePipeline` 是公开主站唯一的 window resize / VisualViewport resize / scroll 监听与 viewport 模型。新增视口、Dock、滚动或聚焦几何工作必须使用 keyed `schedule/request`、`subscribeViewport` 或共享 `requestFocusReveal`，坚持一帧内全部 measure/read 先于 mutate/write；功能模块与 Transfer 不得建立私有 `visualViewport` / resize 监听、嵌套布局 rAF 或聚焦滚动逻辑，也不得把 page scale 当成软键盘。
 - 固定移动壳不解锁 body / site-shell / page；非 Home 活动 App 的 route-specific `.xp-window` 必须保留休眠式 `overflow-y:auto` 逃生通道，并用含 route ID 的选择器超过既有 ID 级 `overflow:hidden`。文章阅读继续由 `.article-detail` 独占滚动。通用聚焦恢复只能经 FramePipeline 测量最近的真实内部纵向 owner，保留当前聚焦目标与已输入草稿，且只写该 owner 的 `scrollTop`；不得移动 document、Home、Appbar 或 Dock。账号面板的延迟 autofocus 在面板内已有焦点时必须放弃，不得抢走用户正在编辑的字段。
@@ -343,7 +344,7 @@ $env:XDG_CONFIG_HOME=(Join-Path (Get-Location) '.wrangler-config'); npx.cmd wran
   - `assets/images/lusu-about-avatar-256.png`
   - `assets/images/start-windows-pixel.png`
 - 聊天室图标资源：
-  - `assets/images/icon-chatroom-clean.png`
+  - `assets/images/icon-chatroom.png`（唯一规范资源；Home、标题栏、任务栏／Dock、欢迎快捷入口与聊天头像共用）
 - 管理后台与埋点关键文件：
   - `admin/index.html`
   - `admin/admin.css`

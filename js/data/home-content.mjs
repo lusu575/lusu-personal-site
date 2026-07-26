@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-07-26-chatroom-icon-redraw",
+      "slug": "2026-07-26-chatroom-icon-redraw",
+      "category": "site-updates",
+      "tags": ["UI", "Chat", "icon", "Pixel Art", "QA"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-26T10:58:00.000Z",
+      "updated_at": "2026-07-26T10:58:00.000Z",
+      "published_at": "2026-07-26T10:58:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.07.26",
+      "title": {
+        "zh": "匿名聊天室图标重绘",
+        "en": "Anonymous Chat Icon Redrawn",
+        "ja": "匿名チャットアイコンを再描画"
+      },
+      "summary": {
+        "zh": "重新绘制匿名聊天室图标，缩小可见主体并增加均衡透明留白；Home、窗口、任务栏、欢迎入口与聊天头像现统一使用新图，旧图资源已移除。",
+        "en": "Redrew the Anonymous Chat icon with a smaller silhouette and balanced transparent padding. Home, windows, the taskbar, welcome shortcuts, and chat avatars now share the new asset, and the legacy artwork is removed.",
+        "ja": "匿名チャットアイコンを描き直し、見える輪郭を小さくして透明余白を均等化しました。Home、ウィンドウ、タスクバー、ウェルカム入口、チャットのアバターを新しい素材へ統一し、旧素材は削除しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-07-26-interface-audit-fixes",
       "slug": "2026-07-26-interface-audit-fixes",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "完成云存档与互传安全、真实连接与恢复流程、搜索筛选、三语无障碍，以及资源和游戏卡片等 30 项可验证优化。",
         "en": "Thirty verified improvements now cover cloud-save and transfer safety, truthful connection and recovery flows, search and filtering, trilingual accessibility, plus resource and game cards.",
         "ja": "クラウド保存と転送の安全性、正確な接続・復旧、検索と絞り込み、3言語アクセシビリティ、リソースとゲームカードを含む検証可能な30項目を改善しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-07-21-desktop-taskbar-active",
-      "slug": "2026-07-21-desktop-taskbar-active",
-      "category": "site-updates",
-      "tags": ["UI", "taskbar", "desktop", "accessibility"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-07-21T00:41:00.711Z",
-      "updated_at": "2026-07-21T00:41:00.711Z",
-      "published_at": "2026-07-21T00:41:00.711Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.07.21",
-      "title": {
-        "zh": "桌面任务栏选中态降噪",
-        "en": "Desktop Taskbar Active-State Polish",
-        "ja": "デスクトップタスクバーの選択表示調整"
-      },
-      "summary": {
-        "zh": "移除 PC 端当前任务按钮的黄色底边、外描边和常亮光晕，保留蓝色按下层级与键盘焦点环；移动 Dock 不变。",
-        "en": "The desktop active task button drops its yellow edge and persistent glow while retaining a blue pressed hierarchy and keyboard focus ring; the mobile Dock is unchanged.",
-        "ja": "デスクトップの選択中タスクボタンから黄色の縁と常時グローを外し、青い押下階層とキーボードフォーカスリングを維持。モバイル Dock は変更しません。"
       }
     }
   ]

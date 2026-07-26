@@ -18,7 +18,7 @@ export function createResourcesRoute({
 
   async function ensureQuickTransferLoader() {
     if (quickTransferLoader) return quickTransferLoader;
-    quickTransferPending ||= import("../features/quick-transfer-loader.mjs?v=20260726-interface-audit-fixes-r2")
+    quickTransferPending ||= import("../features/quick-transfer-loader.mjs?v=20260726-chatroom-icon-redraw-r2")
       .then(({ createQuickTransferLoader }) => {
         quickTransferLoader = createQuickTransferLoader();
         quickTransferLoader.setLanguage(quickTransferLanguage);

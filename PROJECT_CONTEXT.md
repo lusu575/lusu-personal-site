@@ -1,5 +1,10 @@
 # PROJECT_CONTEXT.md
 
+## 2026-07-26 匿名聊天室统一图标规格
+
+- 匿名聊天室只保留 `assets/images/icon-chatroom.png` 这一张规范资源，Home 桌面入口、移动 Home 应用网格、窗口标题栏、桌面任务栏／移动 Dock、欢迎快捷入口、Chat 页头和消息头像全部引用它；不要重新引入 `icon-chatroom-clean.png` 或 `icon-chatroom-desktop.png` 的双资源分叉。
+- 当前资源为 96×96 RGBA、透明角点和硬像素边缘，主体 71×73，四边留 10–13px 透明安全区。Home 继续使用桌面 82px、移动 54px 映射；18–54px 小槽位继续使用既有 contain 映射，不额外放大，以保持各位置视觉尺寸适度。公开缓存版本为 `20260726-chatroom-icon-redraw-r2`，更新记录为 `seed-update-2026-07-26-chatroom-icon-redraw`。
+
 ## 2026-07-26 全界面移动游戏与弹窗点检规则
 
 - `games/game-shell.css` 的外层 document 固定占用一个 `100dvh`，不得同时承担页面纵向滚动；共享壳使用“顶栏 + 剩余游戏区”网格，iframe 获取剩余高度并由游戏内容自己滚动。359×500、390×844、844×390 都要精确确认外层横／纵滚动为 false，返回、登录、下载、导入、云存档与冲突操作不得缩到 44px 以下。

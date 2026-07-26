@@ -3,15 +3,15 @@ import {
   isI18nNodeInScope,
   normalizeLanguage,
   translationFor
-} from "./core/i18n.mjs?v=20260726-interface-audit-fixes-r2";
-import { homeContent } from "./data/home-content.mjs?v=20260726-interface-audit-fixes-r2";
+} from "./core/i18n.mjs?v=20260726-chatroom-icon-redraw-r2";
+import { homeContent } from "./data/home-content.mjs?v=20260726-chatroom-icon-redraw-r2";
 import { blogManifest } from "./data/blog-manifest.mjs?v=20260718-resource-icons-layout-r1";
 import { createRouteLifecycle, isAbortError } from "./core/route-lifecycle.mjs?v=20260718-resource-icons-layout-r1";
 import { createRouter } from "./core/router.mjs?v=20260718-resource-icons-layout-r1";
 import { createRouteModuleRegistry } from "./core/route-modules.mjs?v=20260718-resource-icons-layout-r1";
 import { createJsonResourceCache } from "./core/content-cache.mjs?v=20260718-resource-icons-layout-r1";
-import { createAccountFeature } from "./features/account.mjs?v=20260726-interface-audit-fixes-r2";
-import { createConnectionStatus } from "./features/connection-status.mjs?v=20260726-interface-audit-fixes-r2";
+import { createAccountFeature } from "./features/account.mjs?v=20260726-chatroom-icon-redraw-r2";
+import { createConnectionStatus } from "./features/connection-status.mjs?v=20260726-chatroom-icon-redraw-r2";
 
 const pageParams = new URLSearchParams(window.location.search);
 const defaultShareImageUrl = "https://lusu575.com/assets/images/homepage-pixel-coast.png?v=20260612-hd-wallpapers";
@@ -372,7 +372,7 @@ function safeStorageSet(key, value) {
   }
 }
 
-const routeStyleVersion = "20260726-interface-audit-fixes-r2";
+const routeStyleVersion = "20260726-chatroom-icon-redraw-r2";
 const routeStyleHrefs = Object.freeze({
   knowledge: `/css/routes/knowledge.css?v=${routeStyleVersion}`,
   videos: `/css/routes/videos.css?v=${routeStyleVersion}`,
@@ -436,19 +436,19 @@ function loadStyledRoute(route, moduleLoader, instantiate) {
 
 const routeModuleRegistry = createRouteModuleRegistry({
   loaders: {
-    knowledge: () => loadStyledRoute("knowledge", () => import("./routes/knowledge.mjs?v=20260726-interface-audit-fixes-r2"),
+    knowledge: () => loadStyledRoute("knowledge", () => import("./routes/knowledge.mjs?v=20260726-chatroom-icon-redraw-r2"),
       ({ createKnowledgeRoute }) => instantiateKnowledgeRoute(createKnowledgeRoute)),
     videos: () => loadStyledRoute("videos", () => Promise.all([
-      import("./routes/videos.mjs?v=20260726-interface-audit-fixes-r2"),
+      import("./routes/videos.mjs?v=20260726-chatroom-icon-redraw-r2"),
       import("./data/videos-content.mjs?v=20260718-resource-icons-layout-r1")
     ]), ([{ createVideosRoute }, { videosContent }]) => instantiateVideosRoute(createVideosRoute, videosContent)),
     resources: () => Promise.all([
-      import("./routes/resources.mjs?v=20260726-interface-audit-fixes-r2"),
-      import("./data/resources-content.mjs?v=20260726-interface-audit-fixes-r2")
+      import("./routes/resources.mjs?v=20260726-chatroom-icon-redraw-r2"),
+      import("./data/resources-content.mjs?v=20260726-chatroom-icon-redraw-r2")
     ]).then(([{ createResourcesRoute }, { resourcesContent }]) => instantiateResourcesRoute(createResourcesRoute, resourcesContent)),
-    games: () => loadStyledRoute("games", () => import("./routes/games.mjs?v=20260726-interface-audit-fixes-r2"),
+    games: () => loadStyledRoute("games", () => import("./routes/games.mjs?v=20260726-chatroom-icon-redraw-r2"),
       ({ createGamesRoute }) => instantiateGamesRoute(createGamesRoute)),
-    chatroom: () => loadStyledRoute("chatroom", () => import("./routes/chatroom.mjs?v=20260726-interface-audit-fixes-r2"),
+    chatroom: () => loadStyledRoute("chatroom", () => import("./routes/chatroom.mjs?v=20260726-chatroom-icon-redraw-r2"),
       ({ createChatroomRoute }) => instantiateChatroomRoute(createChatroomRoute))
   },
   onStatus({ route, status, error }) {

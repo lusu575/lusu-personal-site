@@ -63,6 +63,33 @@ function opaqueMagentaKeyRatio(image) {
   return opaqueMagentaPixels / pixelCount;
 }
 
+function alphaBounds(image) {
+  let left = image.info.width;
+  let top = image.info.height;
+  let right = -1;
+  let bottom = -1;
+  let visiblePixels = 0;
+  for (let y = 0; y < image.info.height; y += 1) {
+    for (let x = 0; x < image.info.width; x += 1) {
+      if (image.data[(y * image.info.width + x) * 4 + 3] === 0) continue;
+      visiblePixels += 1;
+      left = Math.min(left, x);
+      top = Math.min(top, y);
+      right = Math.max(right, x);
+      bottom = Math.max(bottom, y);
+    }
+  }
+  return {
+    left,
+    top,
+    right,
+    bottom,
+    width: right - left + 1,
+    height: bottom - top + 1,
+    visibleRatio: visiblePixels / (image.info.width * image.info.height)
+  };
+}
+
 test("responsive wallpaper and window assets stay below the per-file budget", async () => {
   for (const theme of themes) {
     for (const width of widths) {
@@ -119,13 +146,26 @@ test("sprite and entry icons use decode-sized production atlases", async () => {
   assert.equal(glyphs.metadata.hasAlpha, true);
   assert.ok(glyphs.bytes < 4 * 1024);
 
-  for (const name of ["knowledge", "videos", "resources", "games", "blog", "monitor", "chatroom-clean"]) {
+  for (const name of ["knowledge", "videos", "resources", "games", "blog", "monitor", "chatroom"]) {
     const icon = await asset(`assets/images/icon-${name}.png`);
     assert.deepEqual([icon.metadata.width, icon.metadata.height], [96, 96]);
     assert.equal(icon.metadata.hasAlpha, true, `icon-${name}.png must preserve transparency`);
     const iconPixels = await rgba(`assets/images/icon-${name}.png`);
     assert.ok(opaqueMagentaKeyRatio(iconPixels) < 0.01, `icon-${name}.png must not contain an opaque magenta-key background`);
   }
+
+  const chatroomIcon = await asset("assets/images/icon-chatroom.png");
+  const chatroomIconPixels = await rgba("assets/images/icon-chatroom.png");
+  const chatroomIconBounds = alphaBounds(chatroomIconPixels);
+  assert.ok(chatroomIcon.bytes < 4 * 1024, "canonical chatroom icon exceeds 4 KiB");
+  assert.ok(chatroomIconBounds.width >= 68 && chatroomIconBounds.width <= 74);
+  assert.ok(chatroomIconBounds.height >= 70 && chatroomIconBounds.height <= 75);
+  assert.ok(chatroomIconBounds.left >= 10 && chatroomIconBounds.top >= 10);
+  assert.ok(95 - chatroomIconBounds.right >= 10 && 95 - chatroomIconBounds.bottom >= 10);
+  assert.ok(chatroomIconBounds.visibleRatio >= 0.45 && chatroomIconBounds.visibleRatio <= 0.60);
+  const chatroomCornerAlpha = [0, 95, 95 * 96, 96 * 96 - 1]
+    .map((pixel) => chatroomIconPixels.data[pixel * 4 + 3]);
+  assert.ok(chatroomCornerAlpha.every((alpha) => alpha === 0), "canonical chatroom icon must have transparent corners");
 
   for (const name of ["quick-transfer", "kittens-game", "a-dark-room", "2048", "hextris", "life-restart"]) {
     const path = `assets/images/generated-icons/${name}.png`;

@@ -1306,7 +1306,7 @@ main {
 
 .chatroom-icon {
   margin-bottom: 3px;
-  background: url("../assets/images/icon-chatroom-clean.png?v=20260718-resource-icons-layout-r1") center / 70px 70px no-repeat;
+  background: url("../assets/images/icon-chatroom.png?v=20260726-chatroom-icon-redraw-r2") center / 70px 70px no-repeat;
 }
 
 .avatar-icon,
@@ -1474,7 +1474,7 @@ main {
 }
 
 .title-icon-chatroom {
-  background-image: url("../assets/images/icon-chatroom-clean.png?v=20260718-resource-icons-layout-r1");
+  background-image: url("../assets/images/icon-chatroom.png?v=20260726-chatroom-icon-redraw-r2");
 }
 
 .title-icon-about {
@@ -3113,7 +3113,7 @@ body[data-route]:not([data-route="home"]) .start-button:focus-visible {
   width: 18px;
   height: 18px;
   flex: 0 0 auto;
-  background: url("../assets/images/icon-chatroom-clean.png?v=20260718-resource-icons-layout-r1") center / contain no-repeat;
+  background: url("../assets/images/icon-chatroom.png?v=20260726-chatroom-icon-redraw-r2") center / contain no-repeat;
 }
 
 .status-tray {

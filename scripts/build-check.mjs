@@ -787,10 +787,11 @@ const changelog = readRequired("CHANGELOG.md");
 const headersConfig = readRequired("_headers");
 const redirectsConfig = readRequired("_redirects");
 
-const routeLazyVersion = "20260726-interface-audit-fixes-r2";
-const trustSafetyStatusVersion = "20260726-interface-audit-fixes-r2";
+const routeLazyVersion = "20260726-chatroom-icon-redraw-r2";
+const trustSafetyStatusVersion = "20260726-chatroom-icon-redraw-r2";
 const publicRouteVersion = (route) => route === "resources" ? trustSafetyStatusVersion : routeLazyVersion;
 const transferAtlasVersion = "20260718-resource-icons-layout-r1";
+const chatroomIconVersion = "20260726-chatroom-icon-redraw-r2";
 const transferAtlasReferences = [];
 for (const { path, source } of repositoryRuntimeSources()) {
   if (path === "scripts/build-check.mjs") continue;
@@ -2564,7 +2565,7 @@ for (const token of [
 }
 
 for (const [label, pattern] of [
-  ["chat quick link", /\.quick-link-chat\s+\.quick-link-asset\s*\{[\s\S]*?background-image:\s*url\(["']\.\.\/assets\/images\/icon-chatroom-clean\.png\?v=20260718-resource-icons-layout-r1["']\)/],
+  ["chat quick link", new RegExp(`\\.quick-link-chat\\s+\\.quick-link-asset\\s*\\{[\\s\\S]*?background-image:\\s*url\\(["']\\.\\.\\/assets\\/images\\/icon-chatroom\\.png\\?v=${escapeRegExp(chatroomIconVersion)}["']\\)`)],
   ["games quick link", /\.quick-link-games\s+\.quick-link-asset[\s\S]*?\{[\s\S]*?background-image:\s*url\(["']\.\.\/assets\/images\/icon-games\.png\?v=20260718-resource-icons-layout-r1["']\)/],
   ["knowledge quick link", /\.quick-link-knowledge\s+\.quick-link-asset\s*\{[\s\S]*?background-image:\s*url\(["']\.\.\/assets\/images\/icon-knowledge\.png\?v=20260718-resource-icons-layout-r1["']\)/],
   ["video placeholder", /\.video-placeholder-asset\s*,\s*\.video-empty-icon\s*\{[\s\S]*?background-image:\s*url\(["']\.\.\/assets\/images\/icon-videos\.png\?v=20260718-resource-icons-layout-r1["']\)/]
@@ -2574,13 +2575,16 @@ for (const [label, pattern] of [
   }
 }
 
-const chatroomAssetVersionPattern = escapeRegExp(transferAtlasVersion);
-if (!hasPattern(styleCss, new RegExp(`\\.chatroom-icon\\s*\\{[^}]*icon-chatroom-clean\\.png\\?v=${chatroomAssetVersionPattern}`))
+if (!hasPattern(styleCss, new RegExp(`\\.chatroom-icon\\s*\\{[^}]*icon-chatroom\\.png\\?v=${escapeRegExp(chatroomIconVersion)}`))
   || hasPattern(lazyRouteCssSources.chatroom, /\.chatroom-icon\s*\{/)
-  || !hasPattern(styleCss, new RegExp(`\\.title-icon-chatroom\\s*\\{[^}]*icon-chatroom-clean\\.png\\?v=${chatroomAssetVersionPattern}`))
+  || !hasPattern(styleCss, new RegExp(`\\.title-icon-chatroom\\s*\\{[^}]*icon-chatroom\\.png\\?v=${escapeRegExp(chatroomIconVersion)}`))
   || hasPattern(mobileIosShellCss, /\.chatroom-avatar\s*\{[^}]*display:\s*none/)
   || (mobileIosShellCss.match(/\.chatroom-avatar\s*\{[^}]*display:\s*block[^}]*width:\s*(?:32|34)px[^}]*height:\s*(?:32|34)px/g) || []).length < 2) {
-  fail("the Chat shell icon must load before route CSS, the titlebar must use the Chat asset, and short mobile layouts must retain a decoded avatar");
+  fail("the canonical Chat icon must load before route CSS, the titlebar must use it, and short mobile layouts must retain a decoded avatar");
+}
+if (existsSync(resolve(root, "assets/images/icon-chatroom-clean.png"))
+  || existsSync(resolve(root, "assets/images/icon-chatroom-desktop.png"))) {
+  fail("legacy Chat icon assets must be removed after canonical icon replacement");
 }
 
 const viewportRuntimeSources = [mobileShellJs, mainJs, uiMotionJs, transferJs];
@@ -2787,7 +2791,7 @@ const mobileScrollRecoveryVersion = "20260718-mobile-scroll-recovery-r1";
 const mobileScrollRecoveryCssVersion = "20260718-mobile-scroll-recovery-css-r1";
 const mobileViewportKeyboardVersion = "20260718-mobile-viewport-keyboard-r1";
 const mobileViewportKeyboardCssVersion = routeLazyVersion;
-const publicModulesVersion = "20260726-interface-audit-fixes-r2";
+const publicModulesVersion = "20260726-chatroom-icon-redraw-r2";
 const transferLazyVersion = trustSafetyStatusVersion;
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
 const currentMainVersion = trustSafetyStatusVersion;

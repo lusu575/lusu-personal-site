@@ -1,4 +1,4 @@
-const TRANSFER_VERSION = "20260726-interface-audit-fixes-r2";
+const TRANSFER_VERSION = "20260726-chatroom-icon-redraw-r2";
 const FRAGMENT_PATH = "/fragments/quick-transfer.html";
 const FRAGMENT_CANONICAL_PATH = "/fragments/quick-transfer";
 const ALLOWED_FRAGMENT_PATHS = Object.freeze([FRAGMENT_PATH, FRAGMENT_CANONICAL_PATH]);

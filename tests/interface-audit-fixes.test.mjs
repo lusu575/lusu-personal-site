@@ -34,8 +34,8 @@ test("public modal fixes preserve readable depth and compact failed-video geomet
   );
 });
 
-test("the interface-audit update is the newest five-item trilingual projection everywhere", async () => {
-  const updateId = "seed-update-2026-07-26-interface-audit-fixes";
+test("the chatroom icon update is the newest five-item trilingual projection everywhere", async () => {
+  const updateId = "seed-update-2026-07-26-chatroom-icon-redraw";
   const [{ content }, { homeContent }] = await Promise.all([
     import("../js/data/content.mjs"),
     import("../js/data/home-content.mjs")
@@ -61,8 +61,8 @@ test("the interface-audit update is the newest five-item trilingual projection e
   }
 });
 
-test("all public module and stylesheet entry queries use the audit-fix cache version", () => {
-  const version = "20260726-interface-audit-fixes-r2";
+test("all public module and stylesheet entry queries use the chatroom-icon cache version", () => {
+  const version = "20260726-chatroom-icon-redraw-r2";
   const index = read("index.html");
   const main = read("js/main.js");
   const transferLoader = read("js/features/quick-transfer-loader.mjs");
