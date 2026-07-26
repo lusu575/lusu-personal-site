@@ -66,6 +66,8 @@
 
 .game-primary-meta {
   min-height: 27px;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 .game-secondary-details {
@@ -76,7 +78,7 @@
   display: flex;
   align-items: center;
   width: fit-content;
-  min-height: 34px;
+  min-height: 44px;
   color: #1748a7;
   font-size: 12px;
   font-weight: 900;
@@ -107,7 +109,7 @@
 }
 
 .game-main p {
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
 }
 
 .game-badge {

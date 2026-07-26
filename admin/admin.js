@@ -137,6 +137,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
   {
+    date: "2026-07-26",
+    title: "工具区名称同步",
+    body: "主站公开栏目已从“资源区”统一显示为“工具区 / Tools / ツール”。后台热门页面、访问路径和账号活跃中的 resources 路由名称同步显示为“工具区”，内部 route、hash、统计键和历史数据保持 resources 不变。后台脚本版本更新为 20260726-admin-tools-label-r1。"
+  },
+  {
     date: "2026-07-19",
     title: "更新日志置顶与公开视频封面边界修复",
     body: "网站更新记录现在由服务端固定为非置顶，后台即使提交置顶也不会让 site-updates 进入知识库置顶队列。公开视频封面读取尺寸同步到后台本地封面生成器的最大 960×540，并继续保留 320KB、受限 MIME 和图片头校验，已保存的 Bilibili 手动封面可以正常公开显示。后台脚本版本更新为 20260719-admin-public-content-r1。"
@@ -541,7 +546,7 @@ const pageRouteLabels = {
   home: "首页",
   videos: "视频区",
   knowledge: "知识库",
-  resources: "资源区",
+  resources: "工具区",
   games: "游戏区",
   chatroom: "聊天室",
   about: "关于我",

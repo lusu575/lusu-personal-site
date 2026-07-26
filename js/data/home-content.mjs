@@ -2,6 +2,106 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-07-26-interface-audit-fixes",
+      "slug": "2026-07-26-interface-audit-fixes",
+      "category": "site-updates",
+      "tags": ["mobile", "Games", "UI", "privacy", "QA"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-26T08:58:00.000Z",
+      "updated_at": "2026-07-26T08:58:00.000Z",
+      "published_at": "2026-07-26T08:58:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.07.26",
+      "title": {
+        "zh": "全界面移动适配与游戏体验修复",
+        "en": "Sitewide Mobile and Game Experience Fixes",
+        "ja": "全画面のモバイル・ゲーム体験修正"
+      },
+      "summary": {
+        "zh": "完成全部公开界面复检，修复 A Dark Room、Kittens Game、Life Restart、2048 与 Hextris 五款游戏的手机适配、触控和滚动问题，并收紧弹窗层级与第三方请求边界。",
+        "en": "Completed a full public-interface recheck, fixing mobile layout, touch, and scrolling across five games—A Dark Room, Kittens Game, Life Restart, 2048, and Hextris—while tightening modal hierarchy and third-party request boundaries.",
+        "ja": "公開画面を全面再点検し、A Dark Room、Kittens Game、Life Restart、2048、Hextris の5ゲームでモバイル配置・タッチ・スクロールを修正。モーダル階層と外部通信の境界も整えました。"
+      }
+    },
+    {
+      "article_id": "seed-update-2026-07-26-resources-to-tools",
+      "slug": "2026-07-26-resources-to-tools",
+      "category": "site-updates",
+      "tags": ["UI", "i18n", "Tools", "compatibility", "QA"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-26T06:55:36.099Z",
+      "updated_at": "2026-07-26T06:55:36.099Z",
+      "published_at": "2026-07-26T06:55:36.099Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.07.26",
+      "title": {
+        "zh": "资源区正式更名为工具区",
+        "en": "Resources Area Renamed to Tools",
+        "ja": "リソース欄をツールへ名称変更"
+      },
+      "summary": {
+        "zh": "公开栏目名称已统一为“工具区 / Tools / ツール”，内部 resources 路由、旧 #resources 链接、临时互传和全部功能保持不变。",
+        "en": "The public section name is now Tools across Chinese, English, and Japanese, while the resources route, existing #resources links, Quick Transfer, and all behavior remain unchanged.",
+        "ja": "公開欄の名称を中国語・英語・日本語で「ツール」に統一し、resources ルート、既存の #resources リンク、一時転送、すべての機能は変更していません。"
+      }
+    },
+    {
+      "article_id": "seed-update-2026-07-26-mobile-article-first-screen",
+      "slug": "2026-07-26-mobile-article-first-screen",
+      "category": "site-updates",
+      "tags": ["mobile", "Knowledge", "accessibility", "QA", "UI"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-26T06:31:45.722Z",
+      "updated_at": "2026-07-26T06:31:45.722Z",
+      "published_at": "2026-07-26T06:31:45.722Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.07.26",
+      "title": {
+        "zh": "手机文章首屏与全站点检修复",
+        "en": "Mobile Article First-Screen and Sitewide QA Fix",
+        "ja": "モバイル記事初期画面と全体点検の修正"
+      },
+      "summary": {
+        "zh": "修复手机知识库文章首屏大面积空白、短横屏英文资源卡裁切，并补齐 Dock、回顶按钮、目录语言与图片说明等无障碍细节。",
+        "en": "Fixed the large blank area above mobile Knowledge articles and clipped English resource cards in short landscape, while completing Dock, back-to-top, TOC-language, and image-caption accessibility details.",
+        "ja": "モバイルのナレッジ記事上部に生じる大きな空白と短い横画面での英語リソースカードの欠けを修正し、Dock、先頭へ戻る操作、目次言語、画像説明のアクセシビリティも整えました。"
+      }
+    },
+    {
+      "article_id": "seed-update-2026-07-26-trust-safety-status",
+      "slug": "2026-07-26-trust-safety-status",
+      "category": "site-updates",
+      "tags": ["Games", "Quick Transfer", "reliability", "security", "UI"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-26T04:54:16.752Z",
+      "updated_at": "2026-07-26T04:54:16.752Z",
+      "published_at": "2026-07-26T04:54:16.752Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.07.26",
+      "title": {
+        "zh": "30 项功能与界面优化完成",
+        "en": "30 Functional and UI Improvements Completed",
+        "ja": "機能・UI 改善 30 項目を完了"
+      },
+      "summary": {
+        "zh": "完成云存档与互传安全、真实连接与恢复流程、搜索筛选、三语无障碍，以及资源和游戏卡片等 30 项可验证优化。",
+        "en": "Thirty verified improvements now cover cloud-save and transfer safety, truthful connection and recovery flows, search and filtering, trilingual accessibility, plus resource and game cards.",
+        "ja": "クラウド保存と転送の安全性、正確な接続・復旧、検索と絞り込み、3言語アクセシビリティ、リソースとゲームカードを含む検証可能な30項目を改善しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-07-21-desktop-taskbar-active",
       "slug": "2026-07-21-desktop-taskbar-active",
       "category": "site-updates",
@@ -24,106 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "移除 PC 端当前任务按钮的黄色底边、外描边和常亮光晕，保留蓝色按下层级与键盘焦点环；移动 Dock 不变。",
         "en": "The desktop active task button drops its yellow edge and persistent glow while retaining a blue pressed hierarchy and keyboard focus ring; the mobile Dock is unchanged.",
         "ja": "デスクトップの選択中タスクボタンから黄色の縁と常時グローを外し、青い押下階層とキーボードフォーカスリングを維持。モバイル Dock は変更しません。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-07-20-ui-motion-polish",
-      "slug": "2026-07-20-ui-motion-polish",
-      "category": "site-updates",
-      "tags": ["UI", "motion", "accessibility", "mobile", "Chat", "Videos"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-07-20T14:53:30.199Z",
-      "updated_at": "2026-07-20T14:53:30.199Z",
-      "published_at": "2026-07-20T14:53:30.199Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.07.20",
-      "title": {
-        "zh": "全站界面与动效精修",
-        "en": "Site-wide UI and Motion Polish",
-        "ja": "サイト全体の UI・モーション調整"
-      },
-      "summary": {
-        "zh": "完成聊天短屏、视频卡片、知识库、资源区、欢迎窗口与移动 Dock 的系统化精修，并统一加载、错误、键盘焦点和减少动效体验。",
-        "en": "Chat on short screens, video cards, Knowledge, Resources, the welcome window, and the mobile Dock are systematically refined, with unified loading, error, keyboard-focus, and reduced-motion behavior.",
-        "ja": "短い画面のチャット、動画カード、ナレッジ、リソース、ウェルカム画面、モバイル Dock を整理し、読み込み・エラー・キーボードフォーカス・モーション低減の挙動も統一しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-07-19-historical-video-thumbnail-cache",
-      "slug": "2026-07-19-historical-video-thumbnail-cache",
-      "category": "site-updates",
-      "tags": ["Videos", "Bilibili", "cache", "ETag", "reliability"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-07-19T11:56:27.825Z",
-      "updated_at": "2026-07-19T11:56:27.825Z",
-      "published_at": "2026-07-19T11:56:27.825Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.07.19",
-      "title": {
-        "zh": "历史视频封面缓存恢复",
-        "en": "Historical Video Thumbnail Cache Recovery",
-        "ja": "過去の動画サムネイルキャッシュ復旧"
-      },
-      "summary": {
-        "zh": "历史上传的 B 站封面并未丢失；公开视频 ETag 与封面代理地址现已完整版本化，旧浏览器会自动丢弃曾缓存的空封面，无需重新上传。",
-        "en": "Previously uploaded Bilibili covers were still intact; complete response ETags and versioned thumbnail proxy URLs now make existing browsers discard cached empty covers without requiring another upload.",
-        "ja": "以前アップロードした Bilibili サムネイルは失われていません。完全なレスポンス ETag とバージョン付きプロキシ URL により、既存ブラウザーもキャッシュ済みの空表示を破棄し、再アップロードなしで復旧します。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-07-19-content-experience-fixes",
-      "slug": "2026-07-19-content-experience-fixes",
-      "category": "site-updates",
-      "tags": ["Knowledge", "Videos", "Resources", "Games", "account", "UI"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-07-19T04:04:44.666Z",
-      "updated_at": "2026-07-19T04:04:44.666Z",
-      "published_at": "2026-07-19T04:04:44.666Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.07.19",
-      "title": {
-        "zh": "知识库、视频、图标与账号体验修复",
-        "en": "Knowledge, Video, Icon, and Account Fixes",
-        "ja": "ナレッジ・動画・アイコン・アカウントの修正"
-      },
-      "summary": {
-        "zh": "网站更新日志全部取消置顶，知识库窗口只保留关闭键；恢复后台上传的 B 站封面并移除封面圆圈，替换临时互传和五款游戏的独立图标，同时修正登录、注册与登录后账号界面。",
-        "en": "Site update logs are no longer pinned and the Knowledge window keeps only Close; uploaded Bilibili covers are restored, thumbnail circles removed, Quick Transfer and five games receive distinct icons, and account login, registration, and signed-in states are corrected.",
-        "ja": "サイト更新ログの固定を解除し、ナレッジ画面は閉じる操作だけにしました。Bilibili のアップロード済みサムネイルを復旧し、円形表示を削除。一時転送と5ゲームに個別アイコンを追加し、ログイン・登録・ログイン後表示も修正しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-07-19-service-recovery",
-      "slug": "2026-07-19-service-recovery",
-      "category": "site-updates",
-      "tags": ["Knowledge", "Japanese", "Quick Transfer", "reliability", "QA"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-07-18T17:35:00.000Z",
-      "updated_at": "2026-07-18T17:35:00.000Z",
-      "published_at": "2026-07-18T17:35:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.07.19",
-      "title": {
-        "zh": "知识库、日语与互传服务恢复",
-        "en": "Knowledge, Japanese, and Transfer Service Recovery",
-        "ja": "ナレッジ・日本語・転送サービスの復旧"
-      },
-      "summary": {
-        "zh": "修复知识库文章种子中的无效 D1 参数，兼容 Cloudflare 无扩展名互传片段地址，并补齐本地预览隐私配置检查；日语工具、知识库与互传入口已重新联调。",
-        "en": "An invalid D1 article-seed parameter is fixed, Quick Transfer now accepts Cloudflare's canonical extensionless fragment path, and local-preview privacy configuration is checked; Japanese, Knowledge, and Transfer flows are reverified together.",
-        "ja": "記事 seed の不正な D1 引数を修正し、Quick Transfer が Cloudflare の拡張子なし canonical fragment を受け入れるようにしました。ローカル preview の privacy 設定も補い、日本語・ナレッジ・転送を一括で再確認しています。"
       }
     }
   ]

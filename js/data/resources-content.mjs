@@ -1,4 +1,4 @@
-// Resources catalog fallback data, loaded with the Resources route.
+// Tools catalog fallback data, loaded with the internal resources route.
 export const resourcesContent = Object.freeze({
   "resources": [
     {
@@ -19,9 +19,9 @@ export const resourcesContent = Object.freeze({
         "ja": "一時転送"
       },
       "desc": {
-        "zh": "登录后通过房间口令临时发送加密文字、图片、视频和文件，内容 24 小时后失效。",
-        "en": "Share encrypted text, images, video, and files in a passphrase room after signing in. Items expire after 24 hours.",
-        "ja": "ログイン後、合言葉の部屋で暗号化テキスト・画像・動画・ファイルを一時共有し、24時間後に失効します。"
+        "zh": "登录后可在口令房间中发送浏览器端 AES-GCM 加密文字，以及通过 HTTPS、私有 R2 和服务端鉴权保护的图片、视频与文件；内容在发布完成 24 小时后失效。",
+        "en": "After signing in, share text encrypted in the browser with AES-GCM, plus images, videos, and files protected by HTTPS, private R2 storage, and server-side authorization. Items expire 24 hours after publishing completes.",
+        "ja": "ログイン後、合言葉の部屋でブラウザー側で AES-GCM 暗号化したテキストと、HTTPS・非公開 R2・サーバー認可で保護される画像／動画／ファイルを共有できます。内容は公開完了から24時間後に失効します。"
       },
       "actionLabel": {
         "zh": "打开",

@@ -2,7 +2,7 @@
   <header class="transfer-app-header">
     <button class="xp-button transfer-back-button" type="button" id="transfer-back-to-resources">
       <span class="transfer-icon transfer-icon-download transfer-icon-back" aria-hidden="true"></span>
-      <span data-transfer-copy="back">返回资源区</span>
+      <span data-transfer-copy="back">返回工具区</span>
     </button>
     <div class="transfer-app-heading">
       <span class="transfer-icon transfer-icon-app" aria-hidden="true"></span>
@@ -17,21 +17,21 @@
   <div class="sr-only" id="transfer-live-summary" role="status" aria-live="polite" aria-atomic="true"></div>
   <section class="transfer-login-gate" id="transfer-login-gate" hidden>
     <span class="transfer-icon transfer-icon-lock" aria-hidden="true"></span>
-    <div class="transfer-login-copy"><h3 data-transfer-copy="loginTitle">登录后使用临时互传</h3><p data-transfer-copy="loginBody">登录后会回到此处；房间内容只对持有口令的账号开放。</p></div>
+    <div class="transfer-login-copy"><h3 data-transfer-copy="loginTitle">登录后使用临时互传</h3><p data-transfer-copy="loginBody">登录后会回到此处；使用同一房间口令的登录账号会进入同一个临时房间。</p></div>
     <div class="transfer-login-actions">
       <button class="xp-button transfer-login-primary" type="button" id="transfer-login-button" data-transfer-copy="loginAction">登录并继续</button>
-      <button class="xp-button transfer-login-return" type="button" data-transfer-login-back data-transfer-copy="loginBack">返回资源列表</button>
+      <button class="xp-button transfer-login-return" type="button" data-transfer-login-back data-transfer-copy="loginBack">返回工具列表</button>
     </div>
   </section>
   <section class="transfer-room-entry" id="transfer-room-entry" hidden>
     <form class="transfer-room-form" id="transfer-room-form">
       <label for="transfer-room-password" data-transfer-copy="roomPassword">房间口令</label>
       <div class="transfer-password-row">
-        <input id="transfer-room-password" type="password" autocomplete="off" minlength="6" maxlength="128" required data-transfer-placeholder="roomPlaceholder" placeholder="至少 6 位，分享给另一位登录用户">
+        <input id="transfer-room-password" type="password" autocomplete="off" minlength="6" maxlength="128" required aria-describedby="transfer-security-note transfer-feedback" data-transfer-placeholder="roomPlaceholder" placeholder="至少 6 位，分享给另一位登录用户">
         <button class="xp-button" type="button" id="transfer-generate-password"><span class="transfer-icon transfer-icon-room" aria-hidden="true"></span><span data-transfer-copy="generate">随机生成</span></button>
         <button class="xp-button" type="button" id="transfer-copy-password"><span class="transfer-icon transfer-icon-copy" aria-hidden="true"></span><span data-transfer-copy="copy">复制</span></button>
       </div>
-      <p class="transfer-security-note" data-transfer-copy="securityNote">口令不会发送到服务器；知道口令的人可读取房间内容，请勿上传账号凭证。</p>
+      <p class="transfer-security-note" id="transfer-security-note" data-transfer-copy="securityNote">明文口令不会发送到服务器；文字会在浏览器中使用 AES-GCM 加密。文件不使用该口令加密，只通过 HTTPS 传输、私有 R2 存储和服务端鉴权保护，且不会进行病毒扫描。请勿发送账号凭证或不可信文件。</p>
       <button class="xp-button transfer-enter-button" type="submit"><span class="transfer-icon transfer-icon-lock" aria-hidden="true"></span><span data-transfer-copy="enter">进入房间</span></button>
     </form>
     <aside class="transfer-quota-card" id="transfer-quota-card"></aside>
@@ -52,7 +52,7 @@
         <textarea id="transfer-text-input" rows="2" maxlength="10000" data-transfer-placeholder="textPlaceholder" placeholder="发送一段加密文字……"></textarea>
         <button class="xp-button transfer-send-button" id="transfer-send-button" type="submit"><span class="transfer-icon transfer-icon-text" aria-hidden="true"></span><span data-transfer-copy="send">发送</span></button>
       </div>
-      <div class="transfer-upload-zone" id="transfer-upload-zone" tabindex="0">
+      <div class="transfer-upload-zone" id="transfer-upload-zone">
         <span class="transfer-icon transfer-icon-upload" aria-hidden="true"></span>
         <div class="transfer-upload-copy"><strong data-transfer-copy="dropTitle">添加照片或文件</strong><p id="transfer-upload-help"></p></div>
         <div class="transfer-picker-actions">
@@ -65,6 +65,6 @@
   </section>
   <div class="transfer-drop-overlay" id="transfer-drop-overlay" aria-hidden="true">
     <span class="transfer-icon transfer-icon-upload" aria-hidden="true"></span>
-    <strong data-transfer-copy="dropRelease">松开即可上传到当前房间</strong>
+    <strong data-transfer-copy="dropRelease">松开以添加到待发送附件</strong>
   </div>
 </section>

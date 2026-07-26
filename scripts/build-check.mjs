@@ -70,9 +70,18 @@ const requiredFiles = [
   "design-system/pages/mobile-shell.md",
   "games/2048/index.html",
   "games/a-dark-room/index.html",
+  "games/a-dark-room/source/css/lusu-mobile.css",
+  "tests/a-dark-room-responsive-browser.audit.mjs",
   "games/hextris/index.html",
   "games/kittens-game/index.html",
+  "games/kittens-game/source/build.version.json",
+  "games/kittens-game/source/game.js",
+  "games/kittens-game/source/index.html",
+  "games/kittens-game/source/js/jsx/toolbar.jsx.js",
+  "games/kittens-game/source/res/lusu-embedded.css",
   "games/life-restart/index.html",
+  "games/life-restart/source/index.html",
+  "games/life-restart/source/lusu-mobile-touch.js",
   "games/game-shell.js",
   "js/mobile-shell.js",
   "js/main.js",
@@ -84,6 +93,7 @@ const requiredFiles = [
   "js/data/videos-content.mjs",
   "js/data/resources-content.mjs",
   "js/data/blog-content.mjs",
+  "js/features/connection-status.mjs",
   "js/features/quick-transfer-loader.mjs",
   "js/transfer.js",
   "js/telemetry.js",
@@ -721,6 +731,14 @@ const mobileIosShellCss = readRequired("css/mobile-ios-shell.css");
 const motionSystemCss = readRequired("css/motion-system.css");
 const styleCss = readRequired("css/style.css");
 const gameShellJs = readRequired("games/game-shell.js");
+const kittensBuildVersion = readRequiredJson("games/kittens-game/source/build.version.json");
+const kittensSourceGameJs = readRequired("games/kittens-game/source/game.js");
+const kittensSourceIndexHtml = readRequired("games/kittens-game/source/index.html");
+const kittensSourceToolbarJs = readRequired("games/kittens-game/source/js/jsx/toolbar.jsx.js");
+readRequired("games/kittens-game/source/res/lusu-embedded.css");
+const kittensThemeFiles = readdirSync(resolve(root, "games/kittens-game/source/res"))
+  .filter((file) => /^theme_.*\.css$/.test(file))
+  .sort();
 const gameIndexFiles = [
   "games/2048/index.html",
   "games/a-dark-room/index.html",
@@ -729,6 +747,9 @@ const gameIndexFiles = [
   "games/life-restart/index.html"
 ];
 const gameIndexHtmls = gameIndexFiles.map((file) => [file, readRequired(file)]);
+const aDarkRoomSourceHtml = readRequired("games/a-dark-room/source/index.html");
+const lifeRestartSourceHtml = readRequired("games/life-restart/source/index.html");
+const lifeRestartMobileTouchJs = readRequired("games/life-restart/source/lusu-mobile-touch.js");
 const mobileShellJs = readRequired("js/mobile-shell.js");
 const publicModuleSources = Object.fromEntries(publicModuleGraph.files.map((file) => [file, readRequired(file)]));
 const mainEntryJs = publicModuleSources["js/main.js"];
@@ -766,9 +787,9 @@ const changelog = readRequired("CHANGELOG.md");
 const headersConfig = readRequired("_headers");
 const redirectsConfig = readRequired("_redirects");
 
-const routeLazyVersion = "20260721-desktop-taskbar-active-r1";
-const serviceRecoveryVersion = "20260719-service-recovery-r1";
-const publicRouteVersion = () => routeLazyVersion;
+const routeLazyVersion = "20260726-interface-audit-fixes-r2";
+const trustSafetyStatusVersion = "20260726-interface-audit-fixes-r2";
+const publicRouteVersion = (route) => route === "resources" ? trustSafetyStatusVersion : routeLazyVersion;
 const transferAtlasVersion = "20260718-resource-icons-layout-r1";
 const transferAtlasReferences = [];
 for (const { path, source } of repositoryRuntimeSources()) {
@@ -814,10 +835,23 @@ for (const route of lazyPublicRoutes) {
   }
 }
 
+for (const modulePath of [
+  "./core/i18n.mjs",
+  "./data/home-content.mjs",
+  "./features/connection-status.mjs",
+  "./data/resources-content.mjs"
+]) {
+  const versions = assetQueryVersions(mainEntryJs, modulePath);
+  if (versions.length !== 1 || versions[0] !== trustSafetyStatusVersion) {
+    fail(`js/main.js ${modulePath} query should appear once as ${trustSafetyStatusVersion}`);
+  }
+}
+
 if (!mainEntryJs.includes(`const routeStyleVersion = "${routeLazyVersion}";`)
-  || !hasPattern(mainEntryJs, /function\s+ensureRouteStylesheet\(route\)[\s\S]*?document\.createElement\(["']link["']\)[\s\S]*?link\.rel\s*=\s*["']stylesheet["'][\s\S]*?document\.head\.appendChild\(link\)/)
+  || !hasPattern(indexHtml, /<link\b(?=[^>]*\brel=["']stylesheet["'])(?=[^>]*\bdata-mobile-shell-style\b)[^>]*\bhref=["']\/css\/mobile-ios-shell\.css\?v=[^"']+["']/i)
+  || !hasPattern(mainEntryJs, /function\s+ensureRouteStylesheet\(route\)[\s\S]*?document\.createElement\(["']link["']\)[\s\S]*?link\.rel\s*=\s*["']stylesheet["'][\s\S]*?querySelector\(["']link\[data-mobile-shell-style\]["']\)[\s\S]*?document\.head\.insertBefore\(link,\s*mobileShellStyle\)[\s\S]*?document\.head\.appendChild\(link\)/)
   || !hasPattern(mainEntryJs, /function\s+loadStyledRoute\(route,\s*moduleLoader,\s*instantiate\)[\s\S]*?Promise\.all\(\[ensureRouteStylesheet\(route\),\s*moduleLoader\(\)\]\)/)) {
-  fail("route CSS loader must await one versioned stylesheet and route module before instantiation");
+  fail("route CSS loader must await one versioned stylesheet, insert it before the responsive authority, and load the route module before instantiation");
 }
 
 for (const route of lazyStyledRoutes) {
@@ -996,7 +1030,7 @@ if (indexHtml.includes('id="transfer-app"')
   fail("index.html must not preload Quick Transfer DOM, CSS, or JavaScript before its resource action is clicked");
 }
 
-if (!hasPattern(quickTransferLoaderJs, new RegExp(`const\\s+TRANSFER_VERSION\\s*=\\s*["']${serviceRecoveryVersion}["']`))
+if (!hasPattern(quickTransferLoaderJs, new RegExp(`const\\s+TRANSFER_VERSION\\s*=\\s*["']${trustSafetyStatusVersion}["']`))
   || !hasPattern(quickTransferLoaderJs, /Promise\.all\(\[ensureStylesheet\(\),\s*ensureFragment\(\),\s*ensureScript\(\)\]\)/)
   || !hasPattern(quickTransferLoaderJs, /root\.querySelector\(["']script, style, link, meta, base, iframe, object, embed, svg, math["']\)/)
   || !hasPattern(quickTransferLoaderJs, /routeActive[\s\S]*await\s+ensureLoaded\(\)[\s\S]*if\s*\(!routeActive\)/)
@@ -1005,9 +1039,10 @@ if (!hasPattern(quickTransferLoaderJs, new RegExp(`const\\s+TRANSFER_VERSION\\s*
 }
 
 if (!hasPattern(styleCss, /#resource-list\s*>\s*\.resource-card\s*\{[\s\S]*?width:\s*100%[\s\S]*?height:\s*auto[\s\S]*?min-height:\s*150px[\s\S]*?max-height:\s*none/)
-  || !hasPattern(styleCss, /#resource-list\s+\.meta-row\s*\{[\s\S]*?flex-wrap:\s*wrap[\s\S]*?overflow:\s*visible/)
+  || !hasPattern(styleCss, /#resource-list\s+\.resource-facts\s*\{[\s\S]*?display:\s*grid[\s\S]*?grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/)
+  || !hasPattern(styleCss, /#resource-list\s+\.resource-tags\s*\{[\s\S]*?display:\s*flex[\s\S]*?flex-wrap:\s*wrap[\s\S]*?overflow:\s*visible/)
   || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+#resource-list\s*>\s*\.resource-card\s*\{[\s\S]*?height:\s*auto[\s\S]*?min-height:\s*0[\s\S]*?max-height:\s*none/)
-  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+#resource-list\s+\.meta-row\s*\{[\s\S]*?flex-wrap:\s*wrap[\s\S]*?overflow:\s*visible/)) {
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+#resource-list\s+\.resource-tags\s*\{[\s\S]*?display:\s*flex[\s\S]*?flex-wrap:\s*wrap/)) {
   fail("eager base CSS should keep Resource cards stable before Quick Transfer CSS is requested");
 }
 
@@ -1857,7 +1892,7 @@ for (const asset of ["admin.css", "admin.js"]) {
 }
 
 const adminSafetyCacheVersion = "20260719-admin-dirty-transfer-r1";
-const adminPublicContentVersion = "20260719-admin-public-content-r1";
+const adminPublicContentVersion = "20260726-admin-tools-label-r1";
 if (!adminHtml.includes(`/admin/admin.css?v=${adminSafetyCacheVersion}`)
   || !adminHtml.includes(`/admin/admin.js?v=${adminPublicContentVersion}`)) {
   fail("admin CSS and JS must use their current cache versions");
@@ -2752,13 +2787,15 @@ const mobileScrollRecoveryVersion = "20260718-mobile-scroll-recovery-r1";
 const mobileScrollRecoveryCssVersion = "20260718-mobile-scroll-recovery-css-r1";
 const mobileViewportKeyboardVersion = "20260718-mobile-viewport-keyboard-r1";
 const mobileViewportKeyboardCssVersion = routeLazyVersion;
-const publicModulesVersion = "20260721-desktop-taskbar-active-r1";
-const transferLazyVersion = serviceRecoveryVersion;
+const publicModulesVersion = "20260726-interface-audit-fixes-r2";
+const transferLazyVersion = trustSafetyStatusVersion;
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
-const currentMainVersion = routeLazyVersion;
-const currentCssVersion = routeLazyVersion;
+const currentMainVersion = trustSafetyStatusVersion;
+const currentCssVersion = trustSafetyStatusVersion;
 const currentPreFinalTelemetryVersion = "20260623-analytics-privacy-r1";
-const currentGameShellVersion = "20260623-game-shell-storage-safe-r1";
+const currentGameShellVersion = "20260726-game-mobile-shell-r1";
+const currentADarkRoomMobileVersion = "20260726-a-dark-room-mobile-r2";
+const currentLifeRestartMobileTouchVersion = "20260726-life-mobile-touch-r1";
 
 for (const asset of [
   "/js/mobile-shell.js",
@@ -2775,11 +2812,14 @@ if (mainVersions.length !== 1 || mainVersions[0] !== currentMainVersion) {
   fail(`index.html /js/main.js query should appear once as ${currentMainVersion}`);
 }
 
-for (const asset of ["/css/style.css", "/css/mobile-ios-shell.css"]) {
-  const versions = assetQueryVersions(indexHtml, asset);
-  if (versions.length !== 1 || versions[0] !== routeLazyVersion) {
-    fail(`index.html ${asset} query should appear once as ${routeLazyVersion}`);
-  }
+const styleVersions = assetQueryVersions(indexHtml, "/css/style.css");
+if (styleVersions.length !== 1 || styleVersions[0] !== currentCssVersion) {
+  fail(`index.html /css/style.css query should appear once as ${currentCssVersion}`);
+}
+
+const mobileShellStyleVersions = assetQueryVersions(indexHtml, "/css/mobile-ios-shell.css");
+if (mobileShellStyleVersions.length !== 1 || mobileShellStyleVersions[0] !== routeLazyVersion) {
+  fail(`index.html /css/mobile-ios-shell.css query should appear once as ${routeLazyVersion}`);
 }
 
 const motionCssVersions = assetQueryVersions(indexHtml, "/css/motion-system.css");
@@ -2825,6 +2865,86 @@ for (const [file, html] of gameIndexHtmls) {
   if (!html.includes(`../game-shell.js?v=${currentGameShellVersion}`)) {
     fail(`${file} game-shell.js query should be ${currentGameShellVersion}`);
   }
+  if (!html.includes(`../game-shell.css?v=${currentGameShellVersion}`)) {
+    fail(`${file} game-shell.css query should be ${currentGameShellVersion}`);
+  }
+}
+
+for (const asset of [
+  "script/lusu-localization-overrides.js",
+  "script/engine.js",
+  "script/path.js",
+  "css/lusu-mobile.css"
+]) {
+  const versions = assetQueryVersions(aDarkRoomSourceHtml, asset);
+  if (versions.length !== 1 || versions[0] !== currentADarkRoomMobileVersion) {
+    fail(`games/a-dark-room/source/index.html ${asset} query should appear once as ${currentADarkRoomMobileVersion}`);
+  }
+}
+
+for (const asset of [
+  "./assets/index-ZpiTsTqN.js",
+  "./lusu-mobile-touch.js"
+]) {
+  const versions = assetQueryVersions(lifeRestartSourceHtml, asset);
+  if (versions.length !== 1 || versions[0] !== currentLifeRestartMobileTouchVersion) {
+    fail(`games/life-restart/source/index.html ${asset} query should appear once as ${currentLifeRestartMobileTouchVersion}`);
+  }
+}
+if (
+  !hasPattern(lifeRestartMobileTouchJs, /const\s+MIN_TOUCH_TARGET_PX\s*=\s*44/)
+  || !hasPattern(lifeRestartMobileTouchJs, /matchMedia\("\(pointer:\s*coarse\)"\)/)
+  || !hasPattern(lifeRestartMobileTouchJs, /new\s+Laya\.Rectangle/)
+  || !hasPattern(lifeRestartMobileTouchJs, /node\.name\s*===\s*"btnRemake"\s*\|\|\s*node\.name\s*===\s*"btnAgain"/)
+  || !hasPattern(lifeRestartMobileTouchJs, /MAIN_BUTTON_MIN_WIDTH_PX\s*\/\s*scaleX/)
+  || !hasPattern(lifeRestartMobileTouchJs, /MIN_TOUCH_TARGET_PX\s*\/\s*scaleY/)
+  || !hasPattern(lifeRestartMobileTouchJs, /saveButton[\s\S]*themeButton[\s\S]*centerNodeAt/)
+  || !lifeRestartMobileTouchJs.includes(currentLifeRestartMobileTouchVersion)
+) {
+  fail("Life Restart mobile canvas controls should keep the coarse-pointer 44px touch-target contract");
+}
+if (/stage\.scaleMode\s*=/.test(lifeRestartMobileTouchJs)) {
+  fail("Life Restart mobile touch patch should not change the desktop canvas scale mode");
+}
+
+if (kittensBuildVersion.buildRevision !== 4) {
+  fail("games/kittens-game/source/build.version.json buildRevision should be 4 for the embedded mobile/privacy release");
+}
+if (!kittensSourceIndexHtml.includes("res/lusu-embedded.css?v=20260726-mobile-r3")) {
+  fail("Kittens embedded mobile CSS query should be 20260726-mobile-r3");
+}
+if (
+  kittensSourceIndexHtml.indexOf("syncEarlyDocumentLanguage")
+    >= kittensSourceIndexHtml.indexOf('src="lib/react.min.js"')
+  || !hasPattern(kittensSourceIndexHtml, /zh:\s*"zh-CN"[\s\S]*en:\s*"en"[\s\S]*ja:\s*"ja"[\s\S]*document\.documentElement\.lang\s*=\s*languageMap\[storedLanguage\]\s*\|\|\s*"en"/)
+) {
+  fail("Kittens embedded page should set zh-CN/en/ja document lang from shell storage before loading libraries");
+}
+if (/googletagmanager|google-analytics|localhost:7780/i.test(kittensSourceIndexHtml)) {
+  fail("Kittens embedded page should omit analytics and localhost bridge references");
+}
+if (
+  !hasPattern(kittensSourceIndexHtml, /var\s+loadedThemes\s*=\s*Object\.create\(null\)[\s\S]*function\s+loadActiveTheme[\s\S]*new\s+MutationObserver\(loadActiveTheme\)[\s\S]*def\.then\(watchThemeSelection\)/)
+  || /for\s*\([^)]*schemes\.length[\s\S]*loadTheme\(schemes\[i\]/.test(kittensSourceIndexHtml)
+  || !hasPattern(kittensSourceGameJs, /toggleScheme:\s*function\(themeId\)[\s\S]*window\.loadTheme\(themeId,\s*window\.buildRevision\s*\|\|\s*Date\.now\(\)\)/)
+) {
+  fail("Kittens themes should load only the active selection and lazy-load later switches");
+}
+if (kittensThemeFiles.length !== 27) {
+  fail(`Kittens embedded source should keep all 27 selectable themes, found ${kittensThemeFiles.length}`);
+}
+for (const themeFile of kittensThemeFiles) {
+  const themeCss = readRequired(`games/kittens-game/source/res/${themeFile}`);
+  if (/^\s*@import\s+url\(["']?https?:\/\//im.test(themeCss)) {
+    fail(`games/kittens-game/source/res/${themeFile} should not import an external stylesheet`);
+  }
+}
+if (
+  /localhost:7780/.test(kittensSourceGameJs)
+  || !hasPattern(kittensSourceGameJs, /isRemoteDisabled:\s*function[\s\S]*disableKgnet[\s\S]*_xhr:\s*function[\s\S]*this\.isRemoteDisabled\(\)[\s\S]*\$\.Deferred\(\)\.resolve\(null\)/)
+  || !hasPattern(kittensSourceToolbarJs, /WLogin\s*=\s*React\.createClass[\s\S]*disableKgnet[\s\S]*return\s+null/)
+) {
+  fail("Kittens embedded KGNet bridge should remain disabled without touching local saves");
 }
 
 if (/[^.\w]localStorage\.(?:getItem|setItem)\(/.test(gameShellJs)) {
@@ -2996,6 +3116,10 @@ const accountModuleJs = publicModuleSources["js/features/account.mjs"];
 const knowledgeModuleJs = publicModuleSources["js/routes/knowledge.mjs"];
 const videosModuleJs = publicModuleSources["js/routes/videos.mjs"];
 const resourcesModuleJs = publicModuleSources["js/routes/resources.mjs"];
+const quickTransferModuleVersions = assetQueryVersions(resourcesModuleJs, "../features/quick-transfer-loader.mjs");
+if (quickTransferModuleVersions.length !== 1 || quickTransferModuleVersions[0] !== trustSafetyStatusVersion) {
+  fail(`js/routes/resources.mjs Quick Transfer loader query should appear once as ${trustSafetyStatusVersion}`);
+}
 for (const [file, source, token] of [
   ["js/routes/chatroom.mjs", chatroomModuleJs, 'name.textContent = String(message.nickname || "")'],
   ["js/routes/chatroom.mjs", chatroomModuleJs, 'bubble.textContent = String(message.content || "")'],
@@ -3173,8 +3297,8 @@ for (const token of [
 for (const [marker, pattern, message] of [
   [
     "function articleCardElement",
-    /document\.createElement\(["']a["']\)[\s\S]*card\.dataset\.articleSlug\s*=\s*item\.slug[\s\S]*card\.setAttribute\(\s*["']aria-label["']\s*,\s*`\$\{t\(["']readButton["']\)\}:\s*\$\{titleText\}`\s*\)[\s\S]*article-card-cta[\s\S]*aria-hidden/,
-    "js/routes/knowledge.mjs articleCardElement should expose one whole-card article link with a titled accessible name and decorative compact CTA"
+    /document\.createElement\(["']a["']\)[\s\S]*card\.dataset\.articleSlug\s*=\s*item\.slug[\s\S]*title\.id\s*=\s*`knowledge-article-title-\$\{itemIndex\}`[\s\S]*card\.setAttribute\(\s*["']aria-labelledby["']\s*,\s*title\.id\s*\)[\s\S]*article-card-cta[\s\S]*aria-hidden/,
+    "js/routes/knowledge.mjs articleCardElement should expose one whole-card article link named by its article-language title and keep the current-language compact CTA decorative"
   ],
   [
     "function videoCardElement",
@@ -3398,7 +3522,7 @@ for (const [marker, pattern, message] of [
   ],
   [
     "function renderArticleDetail(article)",
-    /renderArticleToc\(\)[\s\S]*scheduleArticleReadProgressUpdate\(\)[\s\S]*syncArticleDocumentMeta\(article\)/,
+    /renderArticleToc\(article\.lang\)[\s\S]*scheduleArticleReadProgressUpdate\(\)[\s\S]*syncArticleDocumentMeta\(article\)/,
     "js/main.js renderArticleDetail should sync article document metadata after rendering"
   ],
   [
@@ -3674,7 +3798,9 @@ if (!hasPattern(mobileIosShellCss, /#transfer-app\s+\.transfer-network-status\s*
 
 if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.mobile-dock-scroll\s*\{[\s\S]*overflow-x:\s*auto[\s\S]*touch-action:\s*pan-x/)
   || !hasPattern(mobileIosShellCss, /body\[data-mobile-dock="collapsed"\]\s+\.xp-taskbar\s*\{[\s\S]*transform:\s*translate3d/)
+  || !hasPattern(mobileIosShellCss, /body\[data-mobile-dock="collapsed"\]\s+\.mobile-dock-scroll\s*\{[^}]*visibility:\s*hidden/)
   || !hasPattern(mobileShellJs, /function\s+toggleDock[\s\S]*dockCollapsed[\s\S]*syncDockState/)
+  || !hasPattern(mobileShellJs, /function\s+syncDockAccessibility\(\)[\s\S]*scroller\.inert\s*=\s*collapsed[\s\S]*scroller\.setAttribute\(\s*["']aria-hidden["']\s*,\s*String\(\s*collapsed\s*\)\s*\)/)
   || !hasPattern(mobileShellJs, /function\s+measureDockLayout[\s\S]*getBoundingClientRect[\s\S]*reveal\s*=/)
   || !hasPattern(mobileShellJs, /function\s+mutateDockLayout[\s\S]*measurement\.reveal[\s\S]*scrollIntoView[\s\S]*behavior:/)
   || !hasPattern(indexHtml, /class=["'][^"']*\bmobile-dock-selection\b[^"']*["'][^>]*aria-hidden=["']true["']/)
@@ -3708,8 +3834,9 @@ if (!hasPattern(mobileIosShellCss, /\.knowledge-searchbar\s+label\s*\{[\s\S]*pos
   fail("css/mobile-ios-shell.css should remove decorative mobile rows that reduce readable App content");
 }
 
-if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.game-card\s*\{[\s\S]*grid-template-columns:\s*52px\s+minmax\(0,\s*1fr\)\s+minmax\(70px,\s*82px\)/)
-  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.game-card\s+\.card-action\s*\{[\s\S]*grid-column:\s*3[\s\S]*grid-row:\s*1[\s\S]*min-height:\s*44px/)
+if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+#games\s+\.game-card\s*\{[\s\S]*grid-template-columns:\s*52px\s+minmax\(0,\s*1fr\)\s*;[\s\S]*grid-template-rows:\s*auto\s+44px/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+#games\s+\.game-card\s+\.card-action\s*\{[\s\S]*grid-column:\s*1\s*\/\s*-1[\s\S]*grid-row:\s*2/)
+  || !hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*#games\s+\.game-card\s*\{[\s\S]*grid-template-columns:\s*52px\s+minmax\(0,\s*1fr\)\s+96px[\s\S]*min-height:\s*228px[\s\S]*#games\s+\.game-card\s+\.card-action\s*\{[\s\S]*grid-column:\s*3[\s\S]*grid-row:\s*1/)
   || !hasPattern(mobileIosShellCss, /#blog\s+\.blog-empty-state,[\s\S]*#blog\s+\.list-message[\s\S]*grid-column:\s*1\s*\/\s*-1/)) {
   fail("css/mobile-ios-shell.css should keep mobile card actions inside their cards and span landscape empty states");
 }
@@ -3722,8 +3849,8 @@ if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+#about\s+\.
   || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.profile-avatar\s*\{[\s\S]*height:\s*clamp\(160px,\s*26dvh,\s*180px\)[\s\S]*min-height:\s*0/)
   || !hasPattern(mobileIosShellCss, /#about\s+\.profile-card\s*\{[\s\S]*align-content:\s*safe\s+center[\s\S]*height:\s*100%/)
   || !hasPattern(mobileIosShellCss, /#about\s+\.profile-avatar\s*\{\s*height:\s*172px[\s\S]*min-height:\s*0/)
-  || !hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*\.folder-layout\.is-reading\s+\.article-detail\s*\{[\s\S]*padding:\s*8px\s+8px\s+calc\(var\(--mobile-dock-space\)\s*\+\s*44px\)/)) {
-  fail("css/mobile-ios-shell.css should keep translated About content scrollable and reserve landscape article space above fixed reading controls");
+  || !hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*\.folder-layout\.is-reading\s+\.article-detail\s*\{[\s\S]*padding:\s*8px\s+8px\s+28px/)) {
+  fail("css/mobile-ios-shell.css should keep translated About content scrollable and avoid double-counting Dock space inside the landscape article scroll owner");
 }
 
 if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+#article-detail-meta\s*\{[\s\S]*flex-wrap:\s*wrap[\s\S]*overflow:\s*visible/)
@@ -3767,11 +3894,17 @@ if (progressMarkupStart < knowledgeTitlebarEnd || progressMarkupStart > knowledg
 }
 
 if (!hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-read-progress\s*\{[^}]*position:\s*relative[^}]*grid-template-columns:\s*auto\s+minmax\(64px,\s*1fr\)\s+auto[^}]*width:\s*100%[^}]*min-height:\s*26px/)
+  || !hasPattern(knowledgeRouteCss, /body\.is-article-reading\s+\.article-top-link\s*\{[^}]*min-height:\s*44px/)
   || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-top-link\s*\{[\s\S]*top:\s*calc\(var\(--mobile-safe-top\)\s*\+\s*var\(--mobile-status-height\)\s*\+\s*2px\)[\s\S]*bottom:\s*auto[\s\S]*width:\s*44px/)
   || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-read-progress-label span\s*\{[^}]*position:\s*static[^}]*font-size:\s*11px/)
   || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-read-progress-label strong\s*\{[^}]*display:\s*block[^}]*grid-column:\s*3/)
   || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-read-progress-track\s*\{[^}]*grid-column:\s*2[^}]*height:\s*4px/)
   || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.mobile-route-copy\s*\{\s*display:\s*none/)
+  || !hasPattern(indexHtml, /data-article-scroll-top[^>]*hidden/)
+  || !hasPattern(indexHtml, /id=["']article-detail-title["'][^>]*tabindex=["']-1["']/)
+  || !hasPattern(knowledgeModuleJs, /const\s+atArticleTop\s*=\s*!detail\s*\|\|\s*detail\.scrollTop\s*<=\s*2/)
+  || !hasPattern(knowledgeModuleJs, /topButton\?\.toggleAttribute\(\s*["']hidden["']\s*,\s*atArticleTop\s*\)/)
+  || !hasPattern(knowledgeModuleJs, /document\.getElementById\(\s*["']article-detail-title["']\s*\)\?\.focus\(\s*\{\s*preventScroll:\s*true\s*\}\s*\)/)
   || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.xp-topbar\s*\{\s*pointer-events:\s*none[\s\S]*body\.is-article-reading\s+\.xp-topbar\s+:is\(button,\s*a,\s*input,\s*select,\s*textarea,\s*\.account-popover\)\s*\{\s*pointer-events:\s*auto/)
   || !hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*body\.is-article-reading\s+\.article-read-progress\s*\{[^}]*grid-template-columns:\s*auto\s+minmax\(52px,\s*1fr\)\s+auto[^}]*width:\s*100%[\s\S]*body\.is-article-reading\s+\.article-top-link\s*\{[\s\S]*right:\s*104px[\s\S]*bottom:\s*auto/)) {
   fail("css/mobile-ios-shell.css should expose a labeled 4px article progress status and keep the 44px top control clear of copy controls or body text");
@@ -4000,13 +4133,13 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-07-21-desktop-taskbar-active";
-const finalUpdateSlug = "2026-07-21-desktop-taskbar-active";
+const finalUpdateId = "seed-update-2026-07-26-resources-to-tools";
+const finalUpdateSlug = "2026-07-26-resources-to-tools";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Desktop Taskbar Active-State Polish";
-const finalPublishedAt = "2026-07-21T00:41:00.711Z";
+const finalTitleEn = "Resources Area Renamed to Tools";
+const finalPublishedAt = "2026-07-26T06:55:36.099Z";
 const finalTranslationMinimums = {
   title: 8,
   summary: 24,
@@ -4028,7 +4161,7 @@ const changelog20260717Section = markdownSection(changelog, "## 2026-07-17");
 const changelog20260718Section = markdownSection(changelog, "## 2026-07-18");
 const changelog20260719Section = markdownSection(changelog, "## 2026-07-19");
 const changelog20260720Section = markdownSection(changelog, "## 2026-07-20");
-const changelog20260721Section = markdownSection(changelog, "## 2026-07-21");
+const changelog20260726Section = markdownSection(changelog, "## 2026-07-26");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -4202,9 +4335,9 @@ if (finalUpdateStarted) {
   }
 
   for (const token of [
-    'id="top-updated">2026.07.21',
+    '<time id="top-updated" datetime="2026-07-26">2026.07.26</time>',
     `/css/style.css?v=${finalCssVersion}`,
-    `/css/mobile-ios-shell.css?v=${finalCssVersion}`,
+    `/css/mobile-ios-shell.css?v=${routeLazyVersion}`,
     `/js/main.js?v=${finalMainVersion}`
   ]) {
     if (!indexHtml.includes(token)) {
@@ -4220,7 +4353,7 @@ if (finalUpdateStarted) {
     "Functions seed",
     "schema seed"
   ]) {
-    if (!changelog20260721Section.includes(token)) {
+    if (!changelog20260726Section.includes(token)) {
       fail(`CHANGELOG.md final public update sync missing ${token}`);
     }
   }

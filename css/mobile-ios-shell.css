@@ -2630,7 +2630,7 @@ html[data-ui-shell="mobile"] #resources .filter-row button {
 
 html[data-ui-shell="mobile"] .folder-layout.is-reading .article-detail {
   gap: 11px;
-  padding: 10px 10px calc(var(--mobile-dock-space) + 54px);
+  padding: 10px 10px 32px;
 }
 
 html[data-ui-shell="mobile"] .article-reader-sidebar {
@@ -2638,6 +2638,11 @@ html[data-ui-shell="mobile"] .article-reader-sidebar {
   position: static;
   min-height: 0;
   width: 100%;
+}
+
+html[data-ui-shell="mobile"] body.is-article-reading
+  .folder-layout.is-reading .article-reader-sidebar {
+  min-height: 0;
 }
 
 html[data-ui-shell="mobile"] .article-back-button {
@@ -2666,9 +2671,9 @@ html[data-ui-shell="mobile"] .article-toc-link {
   max-width: 78vw;
   min-height: 44px;
   padding: 7px 10px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  white-space: normal;
 }
 
 html[data-ui-shell="mobile"] .article-detail-card {
@@ -2677,11 +2682,16 @@ html[data-ui-shell="mobile"] .article-detail-card {
 }
 
 html[data-ui-shell="mobile"] .article-detail-head {
-  margin-bottom: 10px;
-  padding-bottom: 10px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 6px 8px;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
 }
 
 html[data-ui-shell="mobile"] #article-detail-meta {
+  grid-column: 1 / -1;
   flex-wrap: wrap;
   gap: 6px;
   min-height: 0;
@@ -2711,12 +2721,14 @@ html[data-ui-shell="mobile"] #article-detail-meta > * {
 }
 
 html[data-ui-shell="mobile"] .article-detail-head h2 {
+  grid-column: 1 / -1;
   margin: 8px 0 6px;
   font-size: clamp(20px, 6vw, 24px);
   line-height: 1.18;
 }
 
 html[data-ui-shell="mobile"] .article-detail-head > p {
+  grid-column: 1 / -1;
   display: -webkit-box;
   overflow: hidden;
   line-height: 1.45;
@@ -2724,13 +2736,18 @@ html[data-ui-shell="mobile"] .article-detail-head > p {
   -webkit-line-clamp: 2;
 }
 
+html[data-ui-shell="mobile"] .article-detail-head > p.is-collapsible:not(.is-expanded) {
+  display: none;
+}
+
 html[data-ui-shell="mobile"] .article-summary-toggle:not([hidden]) {
   display: inline-flex;
+  grid-column: 1;
   align-items: center;
   justify-content: center;
   min-width: 96px;
   min-height: 44px;
-  margin-top: 6px;
+  margin-top: 0;
   padding: 7px 12px;
 }
 
@@ -2741,7 +2758,14 @@ html[data-ui-shell="mobile"] .folder-layout.is-reading #article-detail-summary.i
 }
 
 html[data-ui-shell="mobile"] .article-detail-actions {
-  margin-top: 8px;
+  grid-column: 2;
+  align-items: center;
+  margin-top: 0;
+}
+
+html[data-ui-shell="mobile"] .article-detail-actions .article-copy-link {
+  width: 100%;
+  min-height: 44px;
 }
 
 html[data-ui-shell="mobile"] .article-copy-status:empty {
@@ -3318,6 +3342,7 @@ html[data-ui-shell="mobile"] body[data-mobile-dock="collapsed"] .xp-taskbar {
 }
 
 html[data-ui-shell="mobile"] body[data-mobile-dock="collapsed"] .mobile-dock-scroll {
+  visibility: hidden;
   opacity: 0;
   pointer-events: none;
 }
@@ -3411,6 +3436,33 @@ html[data-ui-shell="mobile"] #video-modal.is-video-maximized .modal-window {
 html[data-ui-shell="mobile"] #video-modal .video-frame {
   flex: 1 1 auto;
   min-height: 0;
+}
+
+/* A failed embed is a compact decision sheet, not an empty full-screen player.
+   Successful playback still owns the complete viewport through the rules above. */
+html[data-ui-shell="mobile"] #video-modal:has(.video-player-fallback) {
+  align-items: center;
+  padding:
+    calc(var(--mobile-safe-top) + 12px)
+    max(10px, var(--mobile-safe-right))
+    calc(var(--mobile-safe-bottom) + 12px)
+    max(10px, var(--mobile-safe-left));
+}
+
+html[data-ui-shell="mobile"] #video-modal .modal-window:has(.video-player-fallback) {
+  width: min(560px, 100%);
+  height: auto;
+  max-height: calc(var(--mobile-viewport-height, 100dvh) - var(--mobile-safe-top) - var(--mobile-safe-bottom) - 24px);
+  border-radius: 24px;
+}
+
+html[data-ui-shell="mobile"] #video-modal .video-frame:has(.video-player-fallback) {
+  flex: 0 1 auto;
+  min-height: clamp(230px, 48dvh, 360px);
+}
+
+html[data-ui-shell="mobile"] #video-modal .video-frame:has(.video-player-fallback) > .video-player-fallback {
+  min-height: clamp(230px, 48dvh, 360px);
 }
 
 html[data-ui-shell="mobile"] .online-dot {
@@ -4057,7 +4109,7 @@ html[data-ui-shell="mobile"] .online-dot {
     grid-template-rows: 44px minmax(0, 1fr);
     align-items: start;
     gap: 8px 10px;
-    padding: 8px 8px calc(var(--mobile-dock-space) + 44px);
+    padding: 8px 8px 28px;
   }
 
   html[data-ui-shell="mobile"] .folder-layout.is-reading .article-back-button {
@@ -4347,8 +4399,15 @@ html[data-ui-shell="mobile"] #resource-list .resource-main > p {
   max-height: calc(1.42em * 2);
   overflow: hidden;
   line-height: 1.42;
+  overflow-wrap: break-word;
+  word-break: normal;
+  text-wrap: pretty;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+}
+
+html[data-ui-shell="mobile"]:lang(zh) #resource-list .resource-main > p {
+  word-break: keep-all;
 }
 
 html[data-ui-shell="mobile"] #resource-list .meta-row {
@@ -5278,6 +5337,78 @@ html[data-ui-shell="mobile"] body[data-motion="off"] :is(
   }
 }
 
+@media (orientation: portrait) and (max-height: 560px) {
+  html[data-ui-shell="mobile"] .welcome-window {
+    max-height: calc(
+      var(--mobile-viewport-height, 100dvh)
+      - var(--mobile-safe-top)
+      - var(--mobile-safe-bottom)
+      - 12px
+    );
+  }
+
+  html[data-ui-shell="mobile"] .folder-layout.is-reading .article-detail {
+    display: grid;
+    grid-template-columns: minmax(132px, 42%) minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    gap: 6px 8px;
+    padding: 6px 8px 24px;
+  }
+
+  html[data-ui-shell="mobile"] .folder-layout.is-reading .article-back-button {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: stretch;
+    width: 100%;
+    min-height: 44px;
+    padding-inline: 8px;
+    font-size: 12px;
+  }
+
+  html[data-ui-shell="mobile"] .folder-layout.is-reading .article-reader-sidebar {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: stretch;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  html[data-ui-shell="mobile"] .folder-layout.is-reading .article-toc {
+    height: 46px;
+    overflow: hidden;
+  }
+
+  html[data-ui-shell="mobile"] .folder-layout.is-reading #article-detail-toc-list {
+    height: 44px;
+    padding: 0;
+  }
+
+  html[data-ui-shell="mobile"] .folder-layout.is-reading .article-toc-link {
+    max-width: none;
+    min-height: 44px;
+    padding-block: 5px;
+    white-space: nowrap;
+  }
+
+  html[data-ui-shell="mobile"] .folder-layout.is-reading .article-detail-card {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    padding: 12px 12px 18px;
+  }
+
+  html[data-ui-shell="mobile"] .folder-layout.is-reading .article-detail-head {
+    gap: 4px 6px;
+    margin-bottom: 6px;
+    padding-bottom: 6px;
+  }
+
+  html[data-ui-shell="mobile"] .folder-layout.is-reading .article-detail-head h2 {
+    margin-block: 4px;
+    font-size: 20px;
+  }
+}
+
 @media (max-width: 374px) {
   html[data-ui-shell="mobile"] body.is-article-reading .mobile-home-button {
     max-width: 35vw;
@@ -5376,5 +5507,158 @@ html[data-ui-shell="mobile"] body[data-motion="off"] :is(
   html:not([data-ui-shell="mobile"]) .chat-unread-button {
     right: 24px;
     bottom: 106px;
+  }
+}
+
+/* Completion pass: keep language names explicit, resource facts readable, and
+   game actions stable at the narrowest supported mobile widths. */
+html[data-ui-shell="mobile"] .mobile-language-cycle {
+  width: auto;
+  min-width: 64px;
+  max-width: 92px;
+  padding-inline: 8px;
+  font-size: max(11px, 0.6875rem);
+  white-space: nowrap;
+}
+
+html[data-ui-shell="mobile"] #resource-list > .resource-card {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto 44px auto;
+  grid-template-areas:
+    "main"
+    "action"
+    "tags";
+  align-items: stretch;
+  gap: 8px;
+  min-height: 0;
+}
+
+html[data-ui-shell="mobile"] #resource-list .resource-main {
+  grid-area: main;
+}
+
+html[data-ui-shell="mobile"] #resource-list .resource-main > .resource-description {
+  display: block;
+  max-height: none;
+  overflow: visible;
+  -webkit-box-orient: initial;
+  -webkit-line-clamp: unset;
+}
+
+html[data-ui-shell="mobile"] #resource-list .resource-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 5px 7px;
+  width: 100%;
+}
+
+html[data-ui-shell="mobile"] #resource-list .resource-fact {
+  min-height: 0;
+}
+
+html[data-ui-shell="mobile"] #resource-list .resource-card > .card-action {
+  grid-area: action;
+  width: 100%;
+  min-width: 0;
+}
+
+html[data-ui-shell="mobile"] #resource-list .resource-tags {
+  grid-area: tags;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 6px;
+}
+
+html[data-ui-shell="mobile"] #resource-list .resource-tags > .tag {
+  min-height: 22px;
+  padding: 1px 6px;
+  font-size: max(12px, 0.75rem);
+}
+
+html[data-ui-shell="mobile"] #videos .video-empty-actions {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: 1fr;
+  gap: 6px;
+  width: 100%;
+}
+
+html[data-ui-shell="mobile"] #videos .video-empty-actions .xp-button {
+  width: 100%;
+}
+
+html[data-ui-shell="mobile"] #games .game-card {
+  grid-template-columns: 52px minmax(0, 1fr);
+  grid-template-rows: auto 44px;
+  align-items: start;
+  min-height: 0;
+  overflow: visible;
+}
+
+html[data-ui-shell="mobile"] #games .game-cover {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+html[data-ui-shell="mobile"] #games .game-main {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+html[data-ui-shell="mobile"] #games .game-main > p {
+  -webkit-line-clamp: 3;
+}
+
+html[data-ui-shell="mobile"] #games .game-primary-meta {
+  min-height: 0;
+}
+
+html[data-ui-shell="mobile"] #games .game-card .card-action {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  width: 100%;
+  min-width: 0;
+}
+
+@media (orientation: landscape) and (max-height: 520px) {
+  html[data-ui-shell="mobile"] #resources .download-list {
+    grid-auto-rows: max-content;
+    align-items: start;
+  }
+
+  html[data-ui-shell="mobile"] #resource-list > .resource-card {
+    grid-template-columns: minmax(0, 1fr) 96px;
+    grid-template-rows: auto auto;
+    grid-template-areas:
+      "main action"
+      "tags action";
+    align-self: start;
+    align-items: center;
+    height: max-content;
+  }
+
+  html[data-ui-shell="mobile"] #resource-list .resource-card > .card-action {
+    width: 96px;
+    min-width: 96px;
+  }
+
+  html[data-ui-shell="mobile"] #games .game-card {
+    grid-template-columns: 52px minmax(0, 1fr) 96px;
+    grid-template-rows: auto;
+    align-items: start;
+    min-height: 228px;
+  }
+
+  html[data-ui-shell="mobile"] #games .game-main {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  html[data-ui-shell="mobile"] #games .game-card .card-action {
+    grid-column: 3;
+    grid-row: 1;
+    width: 96px;
+    min-width: 96px;
   }
 }

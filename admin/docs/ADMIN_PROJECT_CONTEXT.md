@@ -2,11 +2,17 @@
 
 > 管理后台专用说明：本文档只描述 `/admin/` 管理后台。它不等同于主站根目录 `PROJECT_CONTEXT.md`，也不能替代主站项目上下文。新的 AI / Codex 对话如果只维护后台，应先读本文档和 `admin/docs/ADMIN_SKILL.md`；如果维护主站整体，仍以根目录 `PROJECT_CONTEXT.md` 和 `skills/lusu-personal-site-skill/SKILL.md` 为准。
 
+## 2026-07-26 工具区显示名同步
+
+- 主站公开栏目显示名固定为中文“工具区”、English “Tools”、日本語“ツール”；后台热门页面、访问路径和账号活跃中的该路由中文名也显示为“工具区”。
+- 内部稳定 route、hash、统计键与历史数据继续使用 `resources`，不得因显示改名破坏既有统计归组或旧链接。
+- 当前后台 JS query 为 `20260726-admin-tools-label-r1`，CSS 仍为 `20260719-admin-dirty-transfer-r1`。
+
 ## 2026-07-19 公开文章与视频数据边界
 
 - `site-updates` 只用于公开更新日志，后台文章 API 创建或更新该分类时必须强制 `is_pinned = 0`；客户端置顶复选框不能绕过服务端规则。其他文章分类继续允许置顶。
 - 后台本地视频封面生成器会依次尝试 960×540、768×432、640×360，并受文本长度与服务端 320KB 上限约束；公开视频读取必须允许最大 960×540，避免后台保存成功但公开列表拒绝显示。
-- 当前后台 JS query 为 `20260719-admin-public-content-r1`，CSS 仍为 `20260719-admin-dirty-transfer-r1`。
+- 该批后台 JS query 为 `20260719-admin-public-content-r1`，CSS 为 `20260719-admin-dirty-transfer-r1`。
 
 ## 2026-07-19 未保存状态与互传文件治理
 
@@ -18,7 +24,7 @@
 
 ## 2026-07-18 临时互传共享图集缓存同步
 
-- `/admin/transfer.html` 与公开 Resources / Quick Transfer 共用 `assets/transfer/quick-transfer-icons.png`，当前生产图集为 168×168 RGBA 透明 4×4 atlas。
+- `/admin/transfer.html` 与公开工具区（内部 `resources` route）/ Quick Transfer 共用 `assets/transfer/quick-transfer-icons.png`，当前生产图集为 168×168 RGBA 透明 4×4 atlas。
 - 独立管理页的 `admin/transfer.css` 图集 query 与 `admin/transfer.html` 样式 query 已统一为 `20260718-resource-icons-layout-r1`，避免后台继续命中旧的洋红底色图集或包含旧 URL 的 CSS。
 - 以后共享图集内容或版本变化时，必须同步检查公开 CSS、`admin/transfer.css` 内图集 URL 以及 `admin/transfer.html` 的样式 URL；构建检查会拒绝仓库运行时源码中不一致的图集 query。
 - 本次只同步独立管理页的静态缓存链和后台专用文档，不改变管理 API、权限、D1、配额、清理或费用估算逻辑；后台私有记录不重复写入公开 `site-updates`。

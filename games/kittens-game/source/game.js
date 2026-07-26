@@ -223,17 +223,18 @@ dojo.declare("classes.game.Server", null, {
 		this.game = game;
 	},
 
+	isRemoteDisabled: function(){
+		return !!(window.LusuKittensEmbed && window.LusuKittensEmbed.disableKgnet);
+	},
+
 	setUserProfile: function(userProfile){
 		this.userProfile = userProfile;
 	},
 
     getServerUrl: function(){
-		var host = window.location.hostname;
-		var isLocalhost = window.location.protocol == "file:" || host == "localhost" || host == "127.0.0.1" || host.startsWith("192.168");
-        if (isLocalhost && !this.game.isMobile()){
-            //if you are running chilar locally you should know what you are doing
-            return "http://localhost:7780";
-        }
+		if (this.isRemoteDisabled()){
+			return null;
+		}
         return "https://kittensgame.com";
     },
 
@@ -260,7 +261,7 @@ dojo.declare("classes.game.Server", null, {
 		});
 
 		//-- fetch UID from KGNet if HTTP session is established ---
-		if (!this.userProfile){
+		if (!this.userProfile && !this.isRemoteDisabled()){
 			this.syncUserProfile();
 		}
 		
@@ -275,6 +276,9 @@ dojo.declare("classes.game.Server", null, {
 	 * @param {*} handler - onDone callback handler
 	 */
 	_xhr: function(url, method, data, handler){
+		if (this.isRemoteDisabled()){
+			return $.Deferred().resolve(null).promise();
+		}
 		return $.ajax({
             cache: false,
             type: method || "GET",
@@ -294,6 +298,9 @@ dojo.declare("classes.game.Server", null, {
 	 * User must be logged in and session cookie should be set beforehead
 	 */
 	syncUserProfile: function(){
+		if (this.isRemoteDisabled()){
+			return $.Deferred().resolve(null).promise();
+		}
 		var self = this;
 
 		this._xhr("/user/", "GET", {}, function(resp){
@@ -2498,6 +2505,9 @@ dojo.declare("com.nuclearunicorn.game.ui.GamePage", null, {
 	},
 
 	toggleScheme: function(themeId){
+		if (typeof window.loadTheme == "function"){
+			window.loadTheme(themeId, window.buildRevision || Date.now());
+		}
 		this.colorScheme = themeId;
 		this.updateOptionsUI();
 	},

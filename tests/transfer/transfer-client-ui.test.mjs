@@ -16,12 +16,52 @@ const publicStyles = readFileSync(new URL("css/style.css", root), "utf8");
 test("Quick Transfer stages selected, dropped, and pasted files until Send", () => {
   assert.match(fragment, /id="transfer-pending-attachments"/);
   assert.match(fragment, /id="transfer-send-button"/);
+  assert.match(fragment, /data-transfer-copy="dropRelease">松开以添加到待发送附件</);
+  assert.doesNotMatch(fragment, /松开即可上传到当前房间/);
   assert.match(client, /listen\(refs\.photoInput, "change", \(event\) => stageFiles\(event\.target\.files\)\)/);
   assert.match(client, /listen\(refs\.fileInput, "change", \(event\) => stageFiles\(event\.target\.files\)\)/);
   assert.match(client, /function handleWindowDrop[\s\S]*stageFiles\(files\)/);
   assert.match(client, /clipboardData\?\.files\?\.length\) stageFiles\(event\.clipboardData\.files\)/);
   assert.match(client, /function stageFiles[\s\S]*state\.pendingFiles\.set/);
   assert.match(client, /function sendComposer[\s\S]*await api\("\/api\/transfer\/text"[\s\S]*takePendingFiles\(pending\.map[\s\S]*queueFiles\(files, context\)/);
+});
+
+test("Quick Transfer copy states the real text and file security boundaries in every language", () => {
+  for (const phrase of [
+    "浏览器端 AES-GCM 加密文字",
+    "HTTPS、私有 R2 和服务端鉴权保护的图片、视频与文件",
+    "text encrypted in the browser with AES-GCM",
+    "protected by HTTPS, private R2 storage, and server-side authorization",
+    "ブラウザー側で AES-GCM 暗号化したテキスト",
+    "HTTPS・非公開 R2・サーバー認可で保護される画像／動画／ファイル"
+  ]) {
+    assert.ok(resourcesContent.includes(phrase), `resource copy should include: ${phrase}`);
+  }
+  for (const phrase of [
+    "使用同一房间口令的登录账号会进入同一个临时房间",
+    "明文口令不会发送到服务器",
+    "文件不使用该口令加密",
+    "文件未做病毒或恶意软件扫描",
+    "近 24 小时额度剩余 {remaining}",
+    "加密文字已发送，{count} 个附件已开始上传",
+    "Signed-in accounts using the same room passphrase enter the same temporary room",
+    "The plaintext passphrase is not sent to the server",
+    "Files are not encrypted with the passphrase",
+    "Files are not scanned for viruses or malware",
+    "remaining in the rolling 24-hour quota",
+    "Encrypted text sent; {count} attachment(s) started uploading",
+    "同じ部屋の合言葉を使うログイン済みアカウントは、同じ一時ルームに入ります",
+    "平文の合言葉はサーバーへ送信されず",
+    "ファイルは合言葉では暗号化されず",
+    "ファイルのウイルス／マルウェア検査は行っていません",
+    "直近24時間枠の残り {remaining}",
+    "暗号化テキストを送信し、{count} 件の添付をアップロード中です"
+  ]) {
+    assert.ok(client.includes(phrase), `client copy should include: ${phrase}`);
+  }
+  assert.match(fragment, /明文口令不会发送到服务器[\s\S]*文件不使用该口令加密[\s\S]*不会进行病毒扫描/);
+  assert.doesNotMatch(resourcesContent, /加密文字、图片、视频和文件|Share encrypted text, images, video, and files|暗号化テキスト・画像・動画・ファイル/);
+  assert.doesNotMatch(client, /今日剩余 \{remaining\}|remaining today|本日残り \{remaining\}/);
 });
 
 test("Quick Transfer exposes a gallery picker without forcing camera capture", () => {
@@ -31,6 +71,20 @@ test("Quick Transfer exposes a gallery picker without forcing camera capture", (
   assert.match(photoInput, /\bmultiple\b/);
   assert.doesNotMatch(photoInput, /\bcapture(?:=|\s|>)/i);
   assert.match(fragment, /id="transfer-file-input" type="file" multiple/);
+});
+
+test("Quick Transfer exposes password guidance and keeps only native file pickers keyboard-actionable", () => {
+  const passwordInput = fragment.match(/<input id="transfer-room-password"[^>]*>/)?.[0] || "";
+  const uploadZone = fragment.match(/<div class="transfer-upload-zone" id="transfer-upload-zone"[^>]*>/)?.[0] || "";
+  assert.match(passwordInput, /aria-describedby="transfer-security-note transfer-feedback"/);
+  assert.match(fragment, /id="transfer-security-note"[^>]*data-transfer-copy="securityNote"/);
+  assert.match(loader, /"transfer-security-note"/);
+  assert.doesNotMatch(uploadZone, /\btabindex=/);
+  assert.doesNotMatch(client, /listen\(refs\.uploadZone, "keydown"/);
+  assert.doesNotMatch(client, /function handleUploadZoneKeydown/);
+  assert.doesNotMatch(client, /refs\.uploadZone\?\.setAttribute\("aria-disabled"/);
+  assert.match(fragment, /<label class="xp-button transfer-file-picker transfer-photo-picker">[\s\S]*id="transfer-photo-input" type="file"/);
+  assert.match(fragment, /<label class="xp-button transfer-file-picker">[\s\S]*id="transfer-file-input" type="file"/);
 });
 
 test("Quick Transfer has no eager CSS, client, fragment DOM, or API request", () => {

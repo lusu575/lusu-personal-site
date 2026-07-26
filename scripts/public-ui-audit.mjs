@@ -22,9 +22,14 @@ const themeBootstrapScenarios = Object.freeze([
 ]);
 const auditRoutes = Object.freeze(["home", "knowledge", "videos", "resources", "games", "chatroom", "about"]);
 const semanticLanguages = Object.freeze({
-  zh: { htmlLang: "zh-CN", locale: "zh_CN", skip: "跳到主内容", headings: { home: "鲁肃的个人站", knowledge: "知识库", videos: "视频区", resources: "资源区", games: "游戏区", blog: "杂谈区", chatroom: "匿名聊天室", about: "关于我" } },
-  en: { htmlLang: "en", locale: "en_US", skip: "Skip to main content", headings: { home: "LuSu Site", knowledge: "Knowledge", videos: "Videos", resources: "Resources", games: "Games", blog: "Talk", chatroom: "Chat Room", about: "About" } },
-  ja: { htmlLang: "ja", locale: "ja_JP", skip: "本文へスキップ", headings: { home: "魯粛サイト", knowledge: "知識庫", videos: "動画", resources: "リソース", games: "ゲーム", blog: "雑談", chatroom: "匿名チャット", about: "プロフィール" } }
+  zh: { htmlLang: "zh-CN", locale: "zh_CN", skip: "跳到主内容", headings: { home: "鲁肃的个人站", knowledge: "知识库", videos: "视频区", resources: "工具区", games: "游戏区", blog: "杂谈区", chatroom: "匿名聊天室", about: "关于我" } },
+  en: { htmlLang: "en", locale: "en_US", skip: "Skip to main content", headings: { home: "LuSu Site", knowledge: "Knowledge", videos: "Videos", resources: "Tools", games: "Games", blog: "Talk", chatroom: "Chat Room", about: "About" } },
+  ja: { htmlLang: "ja", locale: "ja_JP", skip: "本文へスキップ", headings: { home: "魯粛サイト", knowledge: "知識庫", videos: "動画", resources: "ツール", games: "ゲーム", blog: "雑談", chatroom: "匿名チャット", about: "プロフィール" } }
+});
+const resourceDisplayLabels = Object.freeze({
+  zh: Object.freeze({ title: "工具区", dock: "工具", transferBack: "返回工具区", transferLoginBack: "返回工具列表" }),
+  en: Object.freeze({ title: "Tools", dock: "Tools", transferBack: "Back to Tools", transferLoginBack: "Back to tool list" }),
+  ja: Object.freeze({ title: "ツール", dock: "ツール", transferBack: "ツールへ戻る", transferLoginBack: "ツール一覧へ戻る" })
 });
 const resourceVisualLanguages = Object.freeze(["zh", "en", "ja"]);
 const resourceVisualViewportKeys = Object.freeze(["359x500", "375x667", "390x844", "760x900", "844x390", "1280x720"]);
@@ -123,6 +128,7 @@ const articleTranslations = Object.freeze({
     content_markdown: "# 公開 UI 監査レイアウト記事\n\n## 第 1 節\n\n本番データを使わず、再現可能な閲覧表示とメタデータを確認する制御された記事です。\n\n## 第 2 節\n\n記事詳細は安全な描画、スクロール、ブラウザ履歴との同期を維持します。"
   })
 });
+const fallbackAuditArticleSlug = "audit-layout-fallback";
 const auditArticles = Object.freeze([
   article,
   ...Array.from({ length: 14 }, (_, index) => ({
@@ -174,17 +180,18 @@ const mime = Object.freeze({
 });
 
 function args(argv) {
-  const result = { output: defaultOutput, chrome: "", list: false, videoOnly: false, releaseOnly: false, dockIconOnly: false, resourcesOnly: false };
+  const result = { output: defaultOutput, chrome: "", list: false, videoOnly: false, articleOnly: false, releaseOnly: false, dockIconOnly: false, resourcesOnly: false };
   for (let i = 0; i < argv.length; i += 1) {
     if (argv[i] === "--list") result.list = true;
     else if (argv[i] === "--video-only") result.videoOnly = true;
+    else if (argv[i] === "--article-only") result.articleOnly = true;
     else if (argv[i] === "--release-only") result.releaseOnly = true;
     else if (argv[i] === "--dock-icon-only") result.dockIconOnly = true;
     else if (argv[i] === "--resources-only") result.resourcesOnly = true;
     else if (argv[i] === "--output") result.output = resolve(root, argv[++i] || "");
     else if (argv[i] === "--chrome") result.chrome = resolve(argv[++i] || "");
     else if (["--help", "-h"].includes(argv[i])) {
-      console.log("Usage: npm.cmd run audit:public-ui -- [--output <dir>] [--chrome <path>] [--video-only] [--release-only] [--dock-icon-only] [--resources-only] [--list]");
+      console.log("Usage: npm.cmd run audit:public-ui -- [--output <dir>] [--chrome <path>] [--video-only] [--article-only] [--release-only] [--dock-icon-only] [--resources-only] [--list]");
       process.exit(0);
     } else throw new Error(`Unknown argument: ${argv[i]}`);
   }
@@ -226,11 +233,33 @@ function sendJson(response, statusCode, value) {
 function apiFixture(url, response) {
   const { pathname, searchParams } = url;
   const lang = ["zh", "en", "ja"].includes(searchParams.get("lang")) ? searchParams.get("lang") : "zh";
-  if (pathname === "/api/health") sendJson(response, 200, { ok: true, audit: true });
+  if (pathname === "/api/health") sendJson(response, 200, { ok: true, db: true, audit: true });
   else if (pathname === "/api/auth/me") sendJson(response, 200, { user: null });
-  else if (pathname === "/api/articles") sendJson(response, 200, { articles: auditArticles.map((item) => localizedAuditArticle(item, lang)) });
+  else if (pathname === "/api/articles") {
+    const localizedArticles = auditArticles.map((item) => localizedAuditArticle(item, lang));
+    if (lang === "en" && localizedArticles.length > 1) {
+      localizedArticles[1] = {
+        ...article,
+        ...articleTranslations.zh,
+        slug: fallbackAuditArticleSlug,
+        lang: "zh"
+      };
+    }
+    sendJson(response, 200, { articles: localizedArticles });
+  }
   else if (pathname.startsWith("/api/articles/")) {
     const slug = decodeURIComponent(pathname.slice("/api/articles/".length));
+    if (slug === fallbackAuditArticleSlug) {
+      sendJson(response, 200, {
+        article: {
+          ...article,
+          ...articleTranslations.zh,
+          slug: fallbackAuditArticleSlug,
+          lang: "zh"
+        }
+      });
+      return true;
+    }
     const matched = auditArticles.find((item) => item.slug === slug);
     if (!matched) return false;
     sendJson(response, 200, { article: localizedAuditArticle(matched, lang) });
@@ -546,6 +575,7 @@ async function auditLazyRouteAndTransferLoading(client, server, viewport) {
   })`);
   const forbiddenHomeApis = homeRequests.filter((entry) => entry.path.startsWith("/api/")
     && entry.path !== "/api/auth/me"
+    && entry.path !== "/api/health"
     && !entry.path.startsWith("/api/analytics/"));
   const forbiddenHomeChunks = homeRequests.filter((entry) => /^\/js\/routes\//.test(entry.path)
     || /^\/css\/routes\//.test(entry.path)
@@ -963,13 +993,14 @@ async function auditResourcesAndGamesHierarchy(client, origin, viewport) {
   })()`);
   const failures = [];
   if (!resources.categories.hidden || resources.categories.display !== "none") failures.push(`single Resources category filter is still visible: ${JSON.stringify(resources.categories)}`);
-  if (resources.cardHeights.some((height)=>height >= 210 || height < 150)) failures.push(`Resource card whitespace rhythm is wrong: ${JSON.stringify(resources.cardHeights)}`);
+  const resourceHeightSpread = Math.max(...resources.cardHeights)-Math.min(...resources.cardHeights);
+  if (resources.cardHeights.some((height)=>height >= 260 || height < 190) || resourceHeightSpread > 32) failures.push(`Resource card readable-height rhythm is wrong: ${JSON.stringify(resources.cardHeights)}`);
   if (Math.max(...resources.ctaLefts)-Math.min(...resources.ctaLefts) > 1) failures.push(`Resource CTAs are not aligned: ${JSON.stringify(resources.ctaLefts)}`);
   if (!resources.contained) failures.push("Resource card content escapes its card bounds");
   if (!resources.text.includes("保留期: 24 小时") || resources.text.includes("大小: 24 HOURS")) failures.push(`Resource retention semantics are wrong: ${resources.text}`);
   const bottomGap = Number(games.taskbar?.top||0)-Number(games.window?.bottom||0);
   if (bottomGap < 8) failures.push(`Games window bottom gap ${bottomGap}px < 8px`);
-  if (games.actionCount !== 5 || games.secondaryCount !== 5 || games.primaryLanguageCounts.some((count)=>count !== 1) || games.primarySaveCounts.some((count)=>count !== 1)) failures.push(`Games primary/secondary hierarchy is incomplete: ${JSON.stringify(games)}`);
+  if (games.actionCount !== 5 || games.secondaryCount !== 5 || games.primaryLanguageCounts.some((count)=>count !== 3) || games.primarySaveCounts.some((count)=>count !== 1)) failures.push(`Games primary/secondary hierarchy is incomplete: ${JSON.stringify(games)}`);
   if (games.windowOverflow !== "hidden" || !["auto","scroll"].includes(games.listOverflow) || games.document.scrollTop !== 0 || games.document.scrollHeight > games.document.clientHeight + 1) failures.push(`Games has more than one scroll owner: ${JSON.stringify(games)}`);
   if (!games.expanded.open || !games.expanded.summaryFocus || !games.expanded.meta || games.expanded.meta.height <= 0) failures.push(`Game secondary details are not keyboard-discoverable: ${JSON.stringify(games.expanded)}`);
   if (!games.lastAction || games.lastAction.top < games.list.top - 1 || games.lastAction.bottom > games.list.bottom + 1 || games.scrollTop <= 0) failures.push(`fifth game action is not reachable through the list scroll: ${JSON.stringify({list:games.list,lastAction:games.lastAction,scrollTop:games.scrollTop})}`);
@@ -987,6 +1018,14 @@ async function auditArticleMetadataLanguages(client, origin, viewport) {
     const siteTitle = expected.headings.home;
     const canonical = `https://lusu575.com/articles/${article.slug}?lang=${lang}`;
     const articleMeta = await readDocumentMeta(client);
+    const articleLanguage = await evaluate(client, `(() => ({
+      document:document.documentElement.lang||'',
+      title:document.getElementById('article-detail-title')?.lang||'',
+      body:document.getElementById('article-detail-body')?.lang||'',
+      tocList:document.getElementById('article-detail-toc-list')?.lang||'',
+      tocLinks:[...document.querySelectorAll('[data-article-heading-target]')].map((item)=>item.lang||''),
+      tocNavLabel:document.getElementById('article-detail-toc')?.getAttribute('aria-label')||''
+    }))()`);
     const failures = metadataFailures(articleMeta, {
       documentTitle: `${translatedArticle.title} | ${siteTitle}`,
       description: translatedArticle.summary,
@@ -1007,6 +1046,16 @@ async function auditArticleMetadataLanguages(client, origin, viewport) {
       twitterImage: `https://lusu575.com/${article.cover_image}`,
       twitterImageAlt: translatedArticle.title
     });
+    const expectedLanguage = lang === "zh" ? "zh-CN" : lang;
+    if (articleLanguage.document !== expectedLanguage
+      || articleLanguage.title !== expectedLanguage
+      || articleLanguage.body !== expectedLanguage
+      || articleLanguage.tocList !== expectedLanguage
+      || !articleLanguage.tocLinks.length
+      || articleLanguage.tocLinks.some((value) => value !== expectedLanguage)
+      || !articleLanguage.tocNavLabel) {
+      failures.push(`article or TOC language semantics are incomplete: ${JSON.stringify(articleLanguage)}`);
+    }
 
     await setAuditRoute(client, "videos");
     const videosMeta = await readDocumentMeta(client);
@@ -1027,8 +1076,71 @@ async function auditArticleMetadataLanguages(client, origin, viewport) {
     if (videosMeta.description === translatedArticle.summary || videosMeta.ogImage === `https://lusu575.com/${article.cover_image}` || videosMeta.ogType === "article") {
       failures.push("leaving the article retained stale article metadata");
     }
-    results.push({ kind: "metadata", name: `article-lifecycle-${lang}`, shell: viewport.mobile ? "mobile" : "desktop", viewport, lang, articleMeta, videosMeta, failures, status: failures.length ? "FAIL" : "PASS" });
+    results.push({ kind: "metadata", name: `article-lifecycle-${lang}`, shell: viewport.mobile ? "mobile" : "desktop", viewport, lang, articleMeta, articleLanguage, videosMeta, failures, status: failures.length ? "FAIL" : "PASS" });
   }
+  await client.send("Page.navigate", { url: `${origin}/?lang=en&wallpaper=${fixedTheme}&welcome=0&audit-fallback-card=1#knowledge` });
+  await stable(client, "knowledge");
+  await waitFor(client, `Boolean(document.querySelector('[data-article-slug="${fallbackAuditArticleSlug}"]'))`, "fallback article list card");
+  const fallbackListLanguage = await evaluate(client, `(() => {
+    const card=document.querySelector('[data-article-slug="${fallbackAuditArticleSlug}"]');
+    const title=card?.querySelector('h2');
+    const summary=card?.querySelector('p');
+    const meta=card?.querySelector('.meta-row');
+    return {
+      cardLanguage:card?.lang||'',
+      titleLanguage:title?.lang||'',
+      summaryLanguage:summary?.lang||'',
+      metaLanguage:meta?.lang||'',
+      labelledBy:card?.getAttribute('aria-labelledby')||'',
+      titleId:title?.id||'',
+      titleText:title?.textContent?.trim()||'',
+      tagCount:meta?.querySelectorAll('.tag').length||0,
+      fallbackLabel:meta?.lastElementChild?.classList.contains('tag') ? meta.lastElementChild.textContent.trim() : ''
+    };
+  })()`);
+  await client.send("Page.navigate", { url: `${origin}/articles/${fallbackAuditArticleSlug}?lang=en&wallpaper=${fixedTheme}&welcome=0&audit-fallback-language=1` });
+  await stable(client, "article");
+  const fallbackLanguage = await evaluate(client, `(() => ({
+    document:document.documentElement.lang||'',
+    title:document.getElementById('article-detail-title')?.lang||'',
+    body:document.getElementById('article-detail-body')?.lang||'',
+    tocList:document.getElementById('article-detail-toc-list')?.lang||'',
+    tocLinks:[...document.querySelectorAll('[data-article-heading-target]')].map((item)=>item.lang||''),
+    tocNavLanguage:document.getElementById('article-detail-toc')?.closest('[lang]')?.lang||'',
+    tocNavLabel:document.getElementById('article-detail-toc')?.getAttribute('aria-label')||''
+  }))()`);
+  const fallbackFailures = [];
+  if (fallbackListLanguage.cardLanguage !== "zh-CN"
+    || fallbackListLanguage.titleLanguage !== "zh-CN"
+    || fallbackListLanguage.summaryLanguage !== "zh-CN"
+    || fallbackListLanguage.metaLanguage !== "en"
+    || fallbackListLanguage.labelledBy !== fallbackListLanguage.titleId
+    || !fallbackListLanguage.titleText
+    || fallbackListLanguage.tagCount < 3
+    || !fallbackListLanguage.fallbackLabel) {
+    fallbackFailures.push(`fallback article list-card semantics are incomplete: ${JSON.stringify(fallbackListLanguage)}`);
+  }
+  if (fallbackLanguage.document !== "en"
+    || fallbackLanguage.title !== "zh-CN"
+    || fallbackLanguage.body !== "zh-CN"
+    || fallbackLanguage.tocList !== "zh-CN"
+    || !fallbackLanguage.tocLinks.length
+    || fallbackLanguage.tocLinks.some((value) => value !== "zh-CN")
+    || fallbackLanguage.tocNavLanguage !== "en"
+    || !fallbackLanguage.tocNavLabel) {
+    fallbackFailures.push(`fallback article language semantics are incomplete: ${JSON.stringify(fallbackLanguage)}`);
+  }
+  results.push({
+    kind: "metadata",
+    name: "article-fallback-language-en-to-zh",
+    shell: viewport.mobile ? "mobile" : "desktop",
+    viewport,
+    lang: "en",
+    fallbackListLanguage,
+    fallbackLanguage,
+    failures: fallbackFailures,
+    status: fallbackFailures.length ? "FAIL" : "PASS"
+  });
   return results;
 }
 
@@ -1067,8 +1179,10 @@ async function auditModalIsolation(client, origin, viewport, { lang, kind, motio
       closeRect:rect?{left:rect.left,top:rect.top,right:rect.right,bottom:rect.bottom,width:rect.width,height:rect.height}:null
     };
   })()`);
+  const connectionStatusAccessibleName = await evaluate(client, `document.getElementById("site-connection-status")?.getAttribute("aria-label") || ""`);
   const axTree = await client.send("Accessibility.getFullAXTree");
-  const backgroundExposed = (axTree.nodes || []).some((node) => !node.ignored && String(node.name?.value || "").trim() === "ONLINE");
+  const backgroundExposed = Boolean(connectionStatusAccessibleName)
+    && (axTree.nodes || []).some((node) => !node.ignored && String(node.name?.value || "").trim() === connectionStatusAccessibleName);
   const screenshotFile = `modal-${kind}-${lang}-${viewport.width}x${viewport.height}.png`;
   const screenshot = await client.send("Page.captureScreenshot", { format: "png", fromSurface: true });
   await writeFile(resolve(output, screenshotFile), Buffer.from(screenshot.data, "base64"));
@@ -1617,6 +1731,7 @@ async function readMobileViewportState(client) {
     };
     const dock=document.querySelector('.xp-taskbar');
     const dockStyle=dock ? getComputedStyle(dock) : null;
+    const dockScroller=document.querySelector('.mobile-dock-scroll');
     const scrolling=document.scrollingElement || document.documentElement;
     const snapshot=window.LusuFramePipeline?.snapshot?.() || window.LusuFramePipeline?.debugSnapshot?.() || null;
     return {
@@ -1650,7 +1765,12 @@ async function readMobileViewportState(client) {
         display:dockStyle?.display||'',
         visibility:dockStyle?.visibility||'',
         opacity:dockStyle?.opacity||'',
-        pointerEvents:dockStyle?.pointerEvents||''
+        pointerEvents:dockStyle?.pointerEvents||'',
+        scrollerInert:Boolean(dockScroller?.inert),
+        scrollerAriaHidden:dockScroller?.getAttribute('aria-hidden')||'',
+        reachableItems:dockScroller && !dockScroller.inert
+          ? [...dockScroller.querySelectorAll('button:not([hidden]),a[href]:not([hidden])')].filter((item)=>item.tabIndex>=0).length
+          : 0
       },
       activeWindow:box(document.querySelector('.page.active > .xp-window')),
       document:{
@@ -2677,6 +2797,19 @@ async function auditDockKeyboardPreference(client, origin, portrait, constrained
   })()`);
   await settleMobileViewport(client, `dock-${collapsed ? "collapsed" : "expanded"}-baseline`, "document.documentElement.dataset.mobileKeyboard==='closed'");
   const baseline = await readMobileViewportState(client);
+  const collapsedFocusProbe = collapsed ? await evaluate(client, `(() => {
+    const input=document.getElementById('chat-message-input');
+    const item=document.querySelector('.mobile-dock-scroll a[href], .mobile-dock-scroll button');
+    item?.focus({preventScroll:true});
+    const result={
+      targetFound:Boolean(item),
+      targetReceivedFocus:document.activeElement===item,
+      activeId:document.activeElement?.id||'',
+      activeInsideDock:Boolean(document.activeElement?.closest?.('.mobile-dock-scroll'))
+    };
+    input?.focus({preventScroll:true});
+    return result;
+  })()`) : null;
   await emulate(client, constrained);
   await waitFor(client, `innerHeight===${constrained.height}`, `${collapsed ? "collapsed" : "expanded"} Dock keyboard proxy`);
   await settleMobileViewport(client, `dock-${collapsed ? "collapsed" : "expanded"}-keyboard`, "document.documentElement.dataset.mobileKeyboard==='open'&&document.documentElement.dataset.mobileViewportMode==='keyboard'");
@@ -2691,10 +2824,18 @@ async function auditDockKeyboardPreference(client, origin, portrait, constrained
     ...mobileViewportContractFailures(restored, `${expectedPreference} Dock restored`, { keyboard:"closed", orientation:"portrait", viewportMode:"stable", width:portrait.width, height:portrait.height, keyboardOffset:0 })
   ];
   if (baseline.bodyDock !== expectedPreference || keyboard.bodyDock !== expectedPreference || restored.bodyDock !== expectedPreference) failures.push(`${expectedPreference} Dock preference was mutated: ${baseline.bodyDock}/${keyboard.bodyDock}/${restored.bodyDock}`);
+  if (collapsed && (!collapsedFocusProbe?.targetFound || collapsedFocusProbe.targetReceivedFocus || collapsedFocusProbe.activeInsideDock)) failures.push(`collapsed Dock accepted programmatic focus: ${JSON.stringify(collapsedFocusProbe)}`);
+  for (const [label, sample] of [["baseline", baseline], ["restored", restored]]) {
+    if (collapsed) {
+      if (!sample.dock?.scrollerInert || sample.dock.scrollerAriaHidden !== "true" || sample.dock.reachableItems !== 0) failures.push(`collapsed Dock remains exposed to keyboard or accessibility APIs at ${label}: ${JSON.stringify(sample.dock)}`);
+    } else if (sample.dock?.scrollerInert || sample.dock?.scrollerAriaHidden === "true" || sample.dock?.reachableItems < 6) {
+      failures.push(`expanded Dock navigation is not fully available at ${label}: ${JSON.stringify(sample.dock)}`);
+    }
+  }
   if (!dockIsHidden(keyboard)) failures.push(`${expectedPreference} Dock remained visible for keyboard`);
   if (dockIsHidden(baseline) || dockIsHidden(restored)) failures.push(`${expectedPreference} Dock was not visible outside keyboard state`);
   if (Math.abs(Number(baseline.dock?.rect?.height)-Number(restored.dock?.rect?.height))>2 || Math.abs(Number(baseline.dock?.rect?.bottom)-Number(restored.dock?.rect?.bottom))>2) failures.push(`${expectedPreference} Dock geometry did not restore: ${JSON.stringify({ baseline:baseline.dock, restored:restored.dock })}`);
-  return { kind:"mobile-viewport", name:`dock-state-keyboard-round-trip-${expectedPreference}`, route:"chatroom", shell:"mobile", viewport:portrait, constrainedViewport:constrained, dockPreference:expectedPreference, ...mobileViewportLimitations, baseline, keyboard, restored, failures, status:failures.length ? "FAIL" : "PASS" };
+  return { kind:"mobile-viewport", name:`dock-state-keyboard-round-trip-${expectedPreference}`, route:"chatroom", shell:"mobile", viewport:portrait, constrainedViewport:constrained, dockPreference:expectedPreference, ...mobileViewportLimitations, baseline, collapsedFocusProbe, keyboard, restored, failures, status:failures.length ? "FAIL" : "PASS" };
 }
 
 async function readSafeAreaGeometry(client) {
@@ -3103,6 +3244,8 @@ async function readResourceVisualState(client) {
       header:rect(app.querySelector('.transfer-app-header')),
       gate:rect(gate),
       actions:rect(gate?.querySelector('.transfer-login-actions')),
+      back:app.querySelector('#transfer-back-to-resources')?.textContent?.replace(/\\s+/g, ' ').trim() || '',
+      loginBack:gate?.querySelector('[data-transfer-login-back]')?.textContent?.replace(/\\s+/g, ' ').trim() || '',
       buttons:[...(gate?.querySelectorAll('button') || [])].filter(visible).map((button) => ({ text:button.textContent.trim(), box:rect(button) })),
       horizontalOverflow:app.scrollWidth > app.clientWidth + 1 || (gate && gate.scrollWidth > gate.clientWidth + 1)
     } : null;
@@ -3110,6 +3253,7 @@ async function readResourceVisualState(client) {
     const dockRect = rect(document.querySelector('.xp-taskbar'));
     return {
       route:document.body.dataset.route || '',
+      hash:location.hash,
       shell:document.documentElement.dataset.uiShell || '',
       lang:document.documentElement.lang,
       viewport:{ width:innerWidth, height:innerHeight, visualWidth:round(visualViewport?.width || innerWidth), visualHeight:round(visualViewport?.height || innerHeight) },
@@ -3126,6 +3270,13 @@ async function readResourceVisualState(client) {
       },
       cards,
       transfer,
+      sectionLabels:{
+        heading:document.getElementById('resources-title')?.textContent?.trim() || '',
+        windowTitle:document.querySelector('#resources .window-titlebar [data-i18n="resourcesTitle"]')?.textContent?.trim() || '',
+        routeTitle:document.getElementById('mobile-route-title')?.textContent?.trim() || '',
+        dockFull:document.querySelector('.xp-taskbar [data-route="resources"] .dock-label-full')?.textContent?.trim() || '',
+        dockShort:document.querySelector('.xp-taskbar [data-route="resources"] .dock-label-short')?.textContent?.trim() || ''
+      },
       chrome:{
         topbar:chromeNode('.xp-topbar'),
         brand:chromeNode('.xp-topbar > .brand-button'),
@@ -3187,12 +3338,23 @@ function checkResourceChromeRetention(viewport, initialState, currentState, labe
 
 function checkResourceVisualState(viewport, state, { transferOpen = false, lang = 'zh' } = {}) {
   const failures = [];
+  const expectedLabels = resourceDisplayLabels[lang];
   if (state.viewport.width !== viewport.width || state.viewport.height !== viewport.height) failures.push(`exact viewport is ${state.viewport.width}x${state.viewport.height}, expected ${viewport.width}x${viewport.height}`);
   if (Math.abs(state.viewport.visualWidth - viewport.width) > .5 || Math.abs(state.viewport.visualHeight - viewport.height) > .5) failures.push(`visual viewport is ${state.viewport.visualWidth}x${state.viewport.visualHeight}`);
   if (state.document.clientWidth !== viewport.width || state.document.scrollWidth !== viewport.width) failures.push(`document width ${state.document.clientWidth}/${state.document.scrollWidth} !== ${viewport.width}`);
   if (state.route !== 'resources') failures.push(`route ${state.route} !== resources`);
+  if (state.hash !== '#resources') failures.push(`stable Tools route hash ${state.hash} !== #resources`);
   if (state.shell !== (viewport.mobile ? 'mobile' : 'desktop')) failures.push(`shell ${state.shell} is wrong`);
   if (state.lang !== semanticLanguages[lang]?.htmlLang) failures.push(`document language ${state.lang} !== ${semanticLanguages[lang]?.htmlLang || lang}`);
+  for (const [key, value] of Object.entries({
+    heading:expectedLabels?.title,
+    windowTitle:expectedLabels?.title,
+    routeTitle:expectedLabels?.title,
+    dockFull:expectedLabels?.title,
+    dockShort:expectedLabels?.dock
+  })) {
+    if (state.sectionLabels?.[key] !== value) failures.push(`Tools ${lang} ${key} label ${JSON.stringify(state.sectionLabels?.[key] || '')} !== ${JSON.stringify(value || '')}`);
+  }
   failures.push(...checkResourceChromeState(viewport, state, transferOpen ? 'Quick Transfer' : 'Resources'));
   if (!transferOpen && state.cards.length !== 2) failures.push(`visible Resource card count ${state.cards.length} !== 2`);
   if (!transferOpen && state.list.scrollWidth > state.list.clientWidth + 1) failures.push(`Resource list overflows horizontally ${state.list.scrollWidth}/${state.list.clientWidth}`);
@@ -3206,6 +3368,8 @@ function checkResourceVisualState(viewport, state, { transferOpen = false, lang 
     if (!state.transfer) failures.push('Quick Transfer did not expose the sign-in task');
     else {
       if (state.transfer.horizontalOverflow) failures.push('Quick Transfer sign-in task overflows horizontally');
+      if (state.transfer.back !== expectedLabels?.transferBack) failures.push(`Quick Transfer ${lang} back label ${JSON.stringify(state.transfer.back)} !== ${JSON.stringify(expectedLabels?.transferBack || '')}`);
+      if (state.transfer.loginBack !== expectedLabels?.transferLoginBack) failures.push(`Quick Transfer ${lang} login back label ${JSON.stringify(state.transfer.loginBack)} !== ${JSON.stringify(expectedLabels?.transferLoginBack || '')}`);
       for (const button of state.transfer.buttons) if (button.box.width < 43.5 || button.box.height < 43.5) failures.push(`Quick Transfer button is below 44px: ${JSON.stringify(button)}`);
     }
   }
@@ -3260,11 +3424,12 @@ async function auditResourcesVisualReview(client, origin, output) {
       if (!transferOpen.loadingReached || !transferOpen.state?.appVisible) transferFailures.push(`Quick Transfer loader state is incomplete: ${JSON.stringify(transferOpen)}`);
       results.push({ kind:'resource-visual-review', name:`transfer-login-${lang}-${viewport.width}x${viewport.height}`, route:'resources', shell:viewport.mobile ? 'mobile' : 'desktop', viewport, lang, screenshotFile:transferScreenshotFile, state:transferState, transferOpen, failures:transferFailures, status:transferFailures.length ? 'FAIL' : 'PASS' });
 
+      const returnSelector = lang === 'en' ? '[data-transfer-login-back]' : '#transfer-back-to-resources';
       const transferClose = await evaluate(client, `(() => {
-        const button = document.getElementById('transfer-back-to-resources');
+        const button = document.querySelector(${JSON.stringify(returnSelector)});
         if (!button) return { clicked:false, reason:'missing back button' };
         button.click();
-        return { clicked:true };
+        return { clicked:true, selector:${JSON.stringify(returnSelector)} };
       })()`);
       await waitFor(client, `document.getElementById('transfer-app')?.hidden===true&&document.getElementById('resource-list')?.hidden===false`, `Quick Transfer ${lang} return to Resources`);
       await settleScreenshotState(client);
@@ -3528,21 +3693,47 @@ async function auditArticleScrollAndProgress(client, origin, viewport) {
       const overlap=(a,b) => !a||!b ? 0 : Math.max(0,Math.min(a.right,b.right)-Math.max(a.left,b.left))*Math.max(0,Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top));
       const scrolling=document.scrollingElement||document.documentElement;
       const detail=document.getElementById('article-detail');
+      const body=document.getElementById('article-detail-body');
       const progress=document.querySelector('#knowledge .article-read-progress');
       const track=document.getElementById('article-read-progress-bar');
       const label=document.querySelector('.article-read-progress-label span');
       const value=document.getElementById('article-read-progress-value');
       const detailRect=rect(detail);
+      const bodyRect=rect(body);
       const progressRect=rect(progress);
       const trackRect=rect(track);
-      const scrollable=Math.max(0,detail.scrollHeight-detail.clientHeight);
-      const expected=scrollable ? Math.round(detail.scrollTop/scrollable*100) : 0;
+      const contentEnd=bodyRect ? detail.scrollTop+(bodyRect.bottom-detailRect.top) : detail.scrollHeight;
+      const readableDistance=Math.max(0,contentEnd-detail.clientHeight+24);
+      const expected=readableDistance<=1 ? 100 : Math.round(Math.min(100,Math.max(0,detail.scrollTop/readableDistance*100)));
       return {
         document:{ scrollHeight:scrolling.scrollHeight, clientHeight:scrolling.clientHeight, scrollTop:scrolling.scrollTop, innerHeight },
         detail:{ scrollHeight:detail.scrollHeight, clientHeight:detail.clientHeight, scrollTop:detail.scrollTop, overflowY:getComputedStyle(detail).overflowY, rect:detailRect },
         progress:{ rect:progressRect, track:trackRect, label:rect(label), labelText:label?.textContent?.trim()||'', value:rect(value), valueText:value?.textContent?.trim()||'', ariaNow:Number(track?.getAttribute('aria-valuenow')), expected, overlap:overlap(progressRect,detailRect), display:getComputedStyle(progress).display },
         chrome:{ topbar:getComputedStyle(document.querySelector('.xp-topbar')).position, topbarRect:rect(document.querySelector('.xp-topbar')), taskbar:getComputedStyle(document.querySelector('.xp-taskbar')).position },
         runtimeErrors:[...(window.__auditRuntimeErrors||[])]
+      };
+    })()`);
+    await evaluate(client, `(() => {
+      const detail=document.getElementById('article-detail');
+      const body=document.getElementById('article-detail-body');
+      const detailRect=detail.getBoundingClientRect();
+      const bodyRect=body.getBoundingClientRect();
+      const contentEnd=detail.scrollTop+(bodyRect.bottom-detailRect.top);
+      detail.scrollTop=Math.max(0,contentEnd-detail.clientHeight+24);
+      detail.dispatchEvent(new Event('scroll'));
+      return true;
+    })()`);
+    await waitFrames(client, 4);
+    state.bodyEnd = await evaluate(client, `(() => {
+      const detail=document.getElementById('article-detail');
+      const body=document.getElementById('article-detail-body');
+      const detailRect=detail.getBoundingClientRect();
+      const bodyRect=body.getBoundingClientRect();
+      return {
+        bodyBottom:bodyRect.bottom,
+        detailBottom:detailRect.bottom,
+        scrollTop:detail.scrollTop,
+        ariaNow:Number(document.getElementById('article-read-progress-bar')?.getAttribute('aria-valuenow'))
       };
     })()`);
   } finally {
@@ -3556,25 +3747,42 @@ async function auditArticleScrollAndProgress(client, origin, viewport) {
   if (state.progress.overlap > 0.5) failures.push(`article progress overlaps the article scroll owner by ${state.progress.overlap}px²`);
   if (!state.progress.label?.width || !state.progress.value?.width || !state.progress.labelText || !/^\d+%$/.test(state.progress.valueText)) failures.push(`article progress meaning is not visibly clear: ${JSON.stringify(state.progress)}`);
   if (!Number.isFinite(state.progress.ariaNow) || Math.abs(state.progress.ariaNow - state.progress.expected) > 2) failures.push(`article progress aria value ${state.progress.ariaNow} differs from ${state.progress.expected}`);
+  if (!Number.isFinite(state.bodyEnd?.ariaNow) || state.bodyEnd.ariaNow < 99 || state.bodyEnd.bodyBottom > state.bodyEnd.detailBottom - 8 || state.bodyEnd.bodyBottom < state.bodyEnd.detailBottom - 48) failures.push(`article body-end progress or spacing is wrong: ${JSON.stringify(state.bodyEnd)}`);
   if (!['relative','sticky','fixed'].includes(state.chrome.topbar) || Math.abs(Number(state.chrome.topbarRect?.top || 0)) > 1 || state.chrome.taskbar !== "fixed") failures.push(`article chrome positions changed: ${JSON.stringify(state.chrome)}`);
   if (state.runtimeErrors.length) failures.push(`runtime errors: ${state.runtimeErrors.join(" | ")}`);
   return { kind:"article-scroll-progress", name:`article-scroll-progress-${viewport.width}x${viewport.height}`, route:"knowledge", shell:viewport.mobile ? "mobile" : "desktop", viewport, state, failures, status:failures.length ? "FAIL" : "PASS" };
 }
 
-async function auditArticleTocAndReadingDetails(client, origin, viewport) {
+async function auditArticleTocAndReadingDetails(client, origin, viewport, outputPath = defaultOutput) {
   await emulate(client, viewport);
   await client.send("Page.navigate", { url: `${origin}/articles/${article.slug}?lang=zh&wallpaper=${fixedTheme}&welcome=0&motion=off&audit-reader=1` });
   await stable(client, "article");
   await waitFrames(client, 5);
+  const screenshotFile = viewport.mobile
+    ? await captureViewportScreenshot(client, outputPath, `article-first-screen-${viewport.width}x${viewport.height}.png`)
+    : "";
   const before = await evaluate(client, `(() => {
     const rect=(element)=>{const value=element?.getBoundingClientRect();return value?{top:value.top,right:value.right,bottom:value.bottom,left:value.left,width:value.width,height:value.height}:null;};
+    const visibleHeight=(elementRect,ownerRect)=>!elementRect||!ownerRect?0:Math.max(0,Math.min(elementRect.bottom,ownerRect.bottom)-Math.max(elementRect.top,ownerRect.top));
+    const detail=document.getElementById('article-detail');
+    const sidebar=document.querySelector('.article-reader-sidebar');
+    const tocList=document.getElementById('article-detail-toc-list');
+    const card=document.querySelector('.article-detail-card');
     const summary=document.getElementById('article-detail-summary');
     const toggle=document.getElementById('article-summary-toggle');
     const meta=document.getElementById('article-detail-meta');
     const body=document.getElementById('article-detail-body');
+    const firstBodyChild=body?.firstElementChild;
     const image=body?.querySelector('.article-figure img');
+    const topButton=document.querySelector('[data-article-scroll-top]');
     const links=[...document.querySelectorAll('[data-article-heading-target]')];
     const ids=links.map((link)=>link.dataset.articleHeadingTarget);
+    const detailRect=rect(detail);
+    const sidebarRect=rect(sidebar);
+    const tocListRect=rect(tocList);
+    const cardRect=rect(card);
+    const bodyRect=rect(body);
+    const firstBodyRect=rect(firstBodyChild);
     const metaRect=rect(meta);
     return {
       ids,
@@ -3583,8 +3791,37 @@ async function auditArticleTocAndReadingDetails(client, origin, viewport) {
       currentCount:links.filter((link)=>link.getAttribute('aria-current')==='location').length,
       summary:{hidden:toggle?.hidden,expanded:toggle?.getAttribute('aria-expanded'),height:rect(summary)?.height||0,toggleHeight:rect(toggle)?.height||0},
       meta:{flexWrap:getComputedStyle(meta).flexWrap,scrollWidth:meta.scrollWidth,clientWidth:meta.clientWidth,children:[...meta.children].map((child)=>rect(child)),rect:metaRect},
-      body:{fontSize:parseFloat(getComputedStyle(body).fontSize),lineHeight:getComputedStyle(body).lineHeight,userSelect:getComputedStyle(body).userSelect,width:rect(body)?.width||0},
-      image:image?{width:image.getAttribute('width'),height:image.getAttribute('height'),rect:rect(image)}:null,
+      body:{fontSize:parseFloat(getComputedStyle(body).fontSize),lineHeight:getComputedStyle(body).lineHeight,userSelect:getComputedStyle(body).userSelect,width:bodyRect?.width||0},
+      firstScreen:{
+        detail:detailRect,
+        sidebar:sidebarRect,
+        tocList:tocListRect,
+        card:cardRect,
+        body:bodyRect,
+        firstBody:firstBodyRect,
+        cardOffset:detailRect&&cardRect?cardRect.top-detailRect.top:null,
+        bodyVisibleHeight:visibleHeight(bodyRect,detailRect),
+        firstBodyVisibleHeight:visibleHeight(firstBodyRect,detailRect),
+        sidebarMinHeight:sidebar?getComputedStyle(sidebar).minHeight:"",
+        detailScrollTop:detail?.scrollTop||0
+      },
+      topControl:{hidden:Boolean(topButton?.hidden),tabIndex:topButton?.tabIndex??null,rect:rect(topButton)},
+      articleSemantics:{
+        labelledBy:detail?.getAttribute('aria-labelledby')||'',
+        titleId:document.getElementById('article-detail-title')?.id||'',
+        titleTabIndex:document.getElementById('article-detail-title')?.tabIndex??null
+      },
+      tocSemantics:{
+        listTabIndex:tocList?.getAttribute('tabindex'),
+        titlesMatch:links.every((link)=>link.getAttribute('title')===link.textContent)
+      },
+      image:image?{
+        width:image.getAttribute('width'),
+        height:image.getAttribute('height'),
+        alt:image.getAttribute('alt'),
+        caption:image.closest('figure')?.querySelector('figcaption')?.textContent?.trim()||'',
+        rect:rect(image)
+      }:null,
       runtimeErrors:[...(window.__auditRuntimeErrors||[])]
     };
   })()`);
@@ -3592,7 +3829,7 @@ async function auditArticleTocAndReadingDetails(client, origin, viewport) {
     const toggle=document.getElementById('article-summary-toggle');
     if(!toggle.hidden) toggle.click();
     const links=[...document.querySelectorAll('[data-article-heading-target]')];
-    const target=links.at(-1);
+    const target=links[Math.floor(links.length / 2)];
     target?.click();
     await new Promise((ok)=>requestAnimationFrame(()=>requestAnimationFrame(()=>requestAnimationFrame(ok))));
     const rect=(element)=>{const value=element?.getBoundingClientRect();return value?{top:value.top,right:value.right,bottom:value.bottom,left:value.left,width:value.width,height:value.height}:null;};
@@ -3601,6 +3838,7 @@ async function auditArticleTocAndReadingDetails(client, origin, viewport) {
     const heading=document.getElementById(target?.dataset.articleHeadingTarget||'');
     const active=document.querySelector('[data-article-heading-target][aria-current="location"]');
     const list=document.getElementById('article-detail-toc-list');
+    const topButton=document.querySelector('[data-article-scroll-top]');
     return {
       targetId:target?.dataset.articleHeadingTarget||'',
       focusId:document.activeElement?.id||'',
@@ -3612,7 +3850,19 @@ async function auditArticleTocAndReadingDetails(client, origin, viewport) {
       activeId:active?.dataset.articleHeadingTarget||'',
       active:rect(active),
       list:rect(list),
+      topControl:{hidden:Boolean(topButton?.hidden),tabIndex:topButton?.tabIndex??null,rect:rect(topButton)},
       summary:{expanded:toggle?.getAttribute('aria-expanded'),height:rect(summary)?.height||0,toggleHeight:rect(toggle)?.height||0}
+    };
+  })()`);
+  const topReturn = await evaluate(client, `(async()=>{
+    const detail=document.getElementById('article-detail');
+    const button=document.querySelector('[data-article-scroll-top]');
+    button?.click();
+    await new Promise((ok)=>requestAnimationFrame(()=>requestAnimationFrame(()=>requestAnimationFrame(ok))));
+    return {
+      scrollTop:detail?.scrollTop??null,
+      focusId:document.activeElement?.id||'',
+      hidden:Boolean(button?.hidden)
     };
   })()`);
   const directTarget = "article-第二节-2";
@@ -3643,13 +3893,30 @@ async function auditArticleTocAndReadingDetails(client, origin, viewport) {
     if (before.meta.flexWrap !== "wrap" || before.meta.scrollWidth > before.meta.clientWidth + 1 || clippedMeta) failures.push(`mobile metadata does not wrap completely: ${JSON.stringify(before.meta)}`);
   } else if (before.summary.hidden !== true) failures.push(`desktop should not show the mobile summary disclosure: ${JSON.stringify(before.summary)}`);
   if (before.body.fontSize < 16 || before.body.userSelect !== "text") failures.push(`article body readability/copy styles are wrong: ${JSON.stringify(before.body)}`);
-  if (!before.image || before.image.width !== "1910" || before.image.height !== "1226" || before.image.rect.height <= 0) failures.push(`article image does not reserve intrinsic dimensions: ${JSON.stringify(before.image)}`);
+  if (!before.image || before.image.width !== "1910" || before.image.height !== "1226" || before.image.alt !== "" || !before.image.caption || before.image.rect.height <= 0) failures.push(`article image semantics or intrinsic dimensions are wrong: ${JSON.stringify(before.image)}`);
+  if (before.articleSemantics.labelledBy !== before.articleSemantics.titleId || before.articleSemantics.titleId !== "article-detail-title" || before.articleSemantics.titleTabIndex !== -1) failures.push(`article title relationship or focus target is incomplete: ${JSON.stringify(before.articleSemantics)}`);
+  if (before.tocSemantics.listTabIndex !== null || !before.tocSemantics.titlesMatch) failures.push(`TOC container or full-title semantics are wrong: ${JSON.stringify(before.tocSemantics)}`);
   if (!interaction.targetId || interaction.focusId !== interaction.targetId || interaction.hash !== interaction.targetId || interaction.activeId !== interaction.targetId || interaction.currentCount !== 1) failures.push(`TOC click focus/hash/current state is wrong: ${JSON.stringify(interaction)}`);
   if (!interaction.heading || !interaction.detail || interaction.heading.top < interaction.detail.top - 1 || interaction.heading.bottom > interaction.detail.bottom + 1) failures.push(`TOC target is obscured outside the article viewport: ${JSON.stringify({ heading:interaction.heading, detail:interaction.detail })}`);
   if (!interaction.active || !interaction.list || interaction.active.top < interaction.list.top - 1 || interaction.active.bottom > interaction.list.bottom + 1 || interaction.active.left < interaction.list.left - 1 || interaction.active.right > interaction.list.right + 1) failures.push(`active TOC item is outside its own scroll viewport: ${JSON.stringify({ active:interaction.active, list:interaction.list })}`);
+  if (!before.topControl.hidden || (before.topControl.rect && (before.topControl.rect.width > 0 || before.topControl.rect.height > 0))) failures.push(`article top control remains exposed at 0%: ${JSON.stringify(before.topControl)}`);
+  if (interaction.topControl.hidden || !interaction.topControl.rect || interaction.topControl.rect.width < 44 || interaction.topControl.rect.height < 44) failures.push(`article top control is unavailable after scrolling: ${JSON.stringify(interaction.topControl)}`);
+  if (topReturn.scrollTop !== 0 || topReturn.focusId !== "article-detail-title" || !topReturn.hidden) failures.push(`article top activation did not restore the reading title focus: ${JSON.stringify(topReturn)}`);
   if (direct.focusId !== directTarget || direct.hash !== directTarget || direct.scrollTop <= 0 || direct.targetOffset === null || direct.targetOffset < -1 || direct.targetOffset > 34 || JSON.stringify(direct.currentIds) !== JSON.stringify([directTarget])) failures.push(`direct shared heading restoration is wrong: ${JSON.stringify(direct)}`);
   if (before.runtimeErrors.length || direct.runtimeErrors.length) failures.push(`runtime errors: ${[...before.runtimeErrors,...direct.runtimeErrors].join(" | ")}`);
-  return { kind:"article-toc-reading-details", name:`article-toc-reading-details-${viewport.width}x${viewport.height}`, route:"knowledge", shell:viewport.mobile ? "mobile" : "desktop", viewport, before, interaction, direct, failures, status:failures.length ? "FAIL" : "PASS" };
+  if (viewport.mobile) {
+    const firstScreen = before.firstScreen;
+    const portraitReference = viewport.width === 390 && viewport.height === 844;
+    const shortPortrait = viewport.width === 359 && viewport.height === 500;
+    const shortLandscape = viewport.width === 844 && viewport.height === 390;
+    const maximumCardOffset = shortPortrait ? 90 : shortLandscape ? 24 : portraitReference ? 180 : 260;
+    const minimumBodyVisible = portraitReference ? 200 : 44;
+    if (parseFloat(firstScreen.sidebarMinHeight || "0") > 1) failures.push(`mobile article sidebar reserves ${firstScreen.sidebarMinHeight} before the article card`);
+    if (!firstScreen.card || firstScreen.cardOffset > maximumCardOffset || firstScreen.card.top >= firstScreen.detail.bottom - 44) failures.push(`mobile article card starts too far below the first screen: ${JSON.stringify(firstScreen)}`);
+    if (!firstScreen.firstBody || firstScreen.firstBodyVisibleHeight < Math.min(firstScreen.firstBody.height, 20) || firstScreen.bodyVisibleHeight < minimumBodyVisible) failures.push(`mobile article first screen exposes only ${firstScreen.bodyVisibleHeight}px of body copy`);
+    if (firstScreen.detailScrollTop !== 0) failures.push(`mobile article did not start at scrollTop 0: ${firstScreen.detailScrollTop}`);
+  }
+  return { kind:"article-toc-reading-details", name:`article-toc-reading-details-${viewport.width}x${viewport.height}`, route:"knowledge", shell:viewport.mobile ? "mobile" : "desktop", viewport, screenshotFile, before, interaction, topReturn, direct, failures, status:failures.length ? "FAIL" : "PASS" };
 }
 
 async function auditControlledVideoFlow(client, origin, viewport, output) {
@@ -4102,6 +4369,32 @@ async function main() {
       console.log(`public-ui-audit Resources visual review: ok (${resourceResults.length} checks, ${options.output})`);
       return;
     }
+    if (options.articleOnly) {
+      const articleResults = [];
+      for (const viewport of [
+        viewports.find((item) => item.width === 359 && item.height === 500),
+        viewports.find((item) => item.width === 390 && item.height === 844),
+        viewports.find((item) => item.width === 844 && item.height === 390)
+      ]) {
+        articleResults.push(
+          await auditArticleScrollAndProgress(client, server.origin, viewport),
+          await auditArticleTocAndReadingDetails(client, server.origin, viewport, options.output)
+        );
+      }
+      articleResults.push(
+        ...await auditArticleMetadataLanguages(
+          client,
+          server.origin,
+          viewports.find((item) => item.width === 390 && item.height === 844)
+        )
+      );
+      for (const result of articleResults) logAuditStatus(result, `${result.name}${result.screenshotFile ? ` -> ${result.screenshotFile}` : ""}`);
+      await writeFile(resolve(options.output, "article-summary.json"), `${JSON.stringify({ generatedAt:new Date().toISOString(), results:articleResults }, null, 2)}\n`, "utf8");
+      const failedArticleChecks = articleResults.filter((result) => result.failures.length);
+      if (failedArticleChecks.length) throw new Error(`${failedArticleChecks.length} article reader check(s) failed`);
+      console.log(`public-ui-audit article reader: ok (${articleResults.length} checks, ${options.output})`);
+      return;
+    }
     if (options.videoOnly) {
       for (const viewport of [
         viewports.find((item) => item.width === 1280 && item.height === 720),
@@ -4147,12 +4440,14 @@ async function main() {
     articleMetadata.filter((item) => item.failures.length).forEach((item) => console.error(`${item.name}: ${item.failures.join("; ")}`));
     for (const viewport of [
       viewports.find((item) => item.width === 1440 && item.height === 900),
-      viewports.find((item) => item.width === 390 && item.height === 844)
+      viewports.find((item) => item.width === 359 && item.height === 500),
+      viewports.find((item) => item.width === 390 && item.height === 844),
+      viewports.find((item) => item.width === 844 && item.height === 390)
     ]) {
       const articleScrollProgress = await auditArticleScrollAndProgress(client, server.origin, viewport);
       results.push(articleScrollProgress);
       logAuditStatus(articleScrollProgress, `OPT-037/038 article scroll/progress ${viewport.width}x${viewport.height}`);
-      const articleReader = await auditArticleTocAndReadingDetails(client, server.origin, viewport);
+      const articleReader = await auditArticleTocAndReadingDetails(client, server.origin, viewport, options.output);
       results.push(articleReader);
       logAuditStatus(articleReader, `OPT-039/040 article TOC/reading details ${viewport.width}x${viewport.height}`);
     }

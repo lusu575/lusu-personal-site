@@ -249,6 +249,10 @@
       
       Engine.saveLanguage();
       Engine.travelTo(Room);
+      Engine.syncResponsiveLayout();
+      $(window)
+        .off('resize.adrResponsive orientationchange.adrResponsive')
+        .on('resize.adrResponsive orientationchange.adrResponsive', Engine.scheduleResponsiveLayout);
 
       setTimeout(notifyAboutSound, 3000);
 
@@ -597,6 +601,104 @@
     },
 
     activeModule: null,
+    _responsiveLayoutFrame: null,
+    _responsivePanelWidth: 700,
+
+    useCompactLayout: function() {
+      return window.matchMedia && window.matchMedia('(max-width: 600px)').matches;
+    },
+
+    getPanelWidth: function() {
+      if (!Engine.useCompactLayout()) {
+        return 700;
+      }
+      return Math.max(280, Math.floor($('#content').innerWidth() || window.innerWidth || 700));
+    },
+
+    getCurrentLocationPanel: function() {
+      var slider = $('#locationSlider');
+      var activePanel = Engine.activeModule && Engine.activeModule.panel
+        ? $(Engine.activeModule.panel)
+        : $();
+      if(activePanel.length && activePanel.parent().is(slider)) {
+        return activePanel;
+      }
+
+      var selectedId = $('#header .headerButton.selected').attr('id') || '';
+      if(selectedId.indexOf('location_') === 0) {
+        var selectedPanel = $('#' + selectedId.slice('location_'.length) + 'Panel');
+        if(selectedPanel.length && selectedPanel.parent().is(slider)) {
+          return selectedPanel;
+        }
+      }
+
+      return slider.children('.location').first();
+    },
+
+    syncStoresLayout: function(compact, panel, panelIndex, panelWidth) {
+      var stores = $('#storesContainer');
+      if(!stores.length || !panel.length) {
+        return;
+      }
+
+      stores.stop(true, true);
+      if(compact) {
+        stores.appendTo(panel).css({right: '', top: ''});
+        return;
+      }
+
+      if(typeof Room != 'undefined' && Room.panel && Room.panel.length) {
+        stores.appendTo(Room.panel);
+      }
+
+      var topContainer = $();
+      if(panel.attr('id') === 'outsidePanel') {
+        topContainer = $('#village');
+      } else if(panel.attr('id') === 'pathPanel') {
+        topContainer = $('#perks');
+      }
+      var top = topContainer.length ? topContainer.height() + 26 : 0;
+      stores.css({
+        right: -(panelIndex * panelWidth) + 'px',
+        top: top + 'px'
+      });
+    },
+
+    syncResponsiveLayout: function() {
+      var compact = Engine.useCompactLayout();
+      var panelWidth = Engine.getPanelWidth();
+      var locationSlider = $('#locationSlider');
+      var outerSlider = $('#outerSlider');
+      var panel = Engine.getCurrentLocationPanel();
+      var panelIndex = Math.max(0, locationSlider.children('.location').index(panel));
+
+      locationSlider.stop(true, true);
+      outerSlider.stop(true, true);
+      Engine.updateSlider();
+      Engine.updateOuterSlider();
+      locationSlider.css('left', -(panelIndex * panelWidth) + 'px');
+
+      var outerIndex = 0;
+      if(typeof World != 'undefined' && Engine.activeModule === World && World.panel) {
+        outerIndex = Math.max(0, outerSlider.children().index(World.panel));
+      }
+      outerSlider.css('left', -(outerIndex * panelWidth) + 'px');
+      Engine.syncStoresLayout(compact, panel, panelIndex, panelWidth);
+      Engine._responsivePanelWidth = panelWidth;
+    },
+
+    scheduleResponsiveLayout: function() {
+      if(Engine._responsiveLayoutFrame !== null) {
+        return;
+      }
+      var requestFrame = window.requestAnimationFrame || function(callback) {
+        return window.setTimeout(callback, 16);
+      };
+      Engine._responsiveLayoutFrame = requestFrame(function() {
+        Engine._responsiveLayoutFrame = null;
+        Engine.syncResponsiveLayout();
+      });
+    },
 
     travelTo: function(module) {
       if(Engine.activeModule == module) {
@@ -611,11 +713,16 @@
       var stores = $('#storesContainer');
       var panelIndex = $('.location').index(module.panel);
       var diff = Math.abs(panelIndex - currentIndex);
-      slider.animate({left: -(panelIndex * 700) + 'px'}, 300 * diff);
+      var panelWidth = Engine.getPanelWidth();
+      slider.animate({left: -(panelIndex * panelWidth) + 'px'}, 300 * diff);
 
       if($SM.get('stores.wood') !== undefined) {
-        // FIXME Why does this work if there's an animation queue...?
-        stores.animate({right: -(panelIndex * 700) + 'px'}, 300 * diff);
+        if(Engine.useCompactLayout()) {
+          stores.stop(true, true).appendTo(module.panel).css({right: '', top: ''});
+        } else {
+          // FIXME Why does this work if there's an animation queue...?
+          stores.animate({right: -(panelIndex * panelWidth) + 'px'}, 300 * diff);
+        }
       }
 
       if(Engine.activeModule == Room || Engine.activeModule == Path || Engine.activeModule == Fabricator) {
@@ -645,6 +752,13 @@
       // If we don't have a storesContainer yet, leave.
       if(typeof(stores) === 'undefined') return;
 
+      if(Engine.useCompactLayout()) {
+        if(Engine.activeModule && Engine.activeModule.panel) {
+          stores.stop(true, true).appendTo(Engine.activeModule.panel).css({right: '', top: ''});
+        }
+        return;
+      }
+
       if(typeof(transition_diff) === 'undefined') transition_diff = 1;
 
       if(top_container === null) {
@@ -671,12 +785,16 @@
 
     updateSlider: function() {
       var slider = $('#locationSlider');
-      slider.width((slider.children().length * 700) + 'px');
+      var panelWidth = Engine.getPanelWidth();
+      slider.children().css('width', panelWidth + 'px');
+      slider.width((slider.children().length * panelWidth) + 'px');
     },
 
     updateOuterSlider: function() {
       var slider = $('#outerSlider');
-      slider.width((slider.children().length * 700) + 'px');
+      var panelWidth = Engine.getPanelWidth();
+      slider.children().css('width', panelWidth + 'px');
+      slider.width((slider.children().length * panelWidth) + 'px');
     },
 
     getIncomeMsg: function(num, delay) {

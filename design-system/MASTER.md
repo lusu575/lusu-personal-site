@@ -103,7 +103,7 @@ Every interactive control supports default, hover where available, pressed, focu
 - Mobile portrait: 390×844, 375×667, and 430×932.
 - Mobile landscape: 844×390.
 - Shell boundary: 760px mobile and 761px desktop.
-- Check Home plus Knowledge, Videos, Resources, Games, Chat, About, account popover, welcome modal, video modal, and an `/articles/<slug>?lang=` direct link.
+- Check Home plus Knowledge, Videos, Tools (internal `resources` route), Games, Chat, About, account popover, welcome modal, video modal, and an `/articles/<slug>?lang=` direct link.
 - Capacity checks accompany overflow checks: App surfaces use at least 80% of viewport height, Games fills its scrollport, Chat retains a meaningful log, and the article body exposes at least 44px before fixed reading controls.
 
 ## Page Overrides

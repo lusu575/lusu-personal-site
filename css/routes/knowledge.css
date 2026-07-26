@@ -600,6 +600,10 @@ body.is-article-reading #knowledge .article-read-progress {
   box-shadow: inset 1px 1px 0 #fff, 2px 2px 0 rgba(0, 60, 158, 0.18);
 }
 
+.article-top-link[hidden] {
+  display: none !important;
+}
+
 body.is-article-reading .article-read-progress {
   grid-template-columns: auto minmax(72px, 1fr) auto;
 }
@@ -628,7 +632,7 @@ body.is-article-reading .article-top-link {
   right: max(57px, calc((100vw - 1560px) / 2 + 57px));
   bottom: calc(var(--chrome-taskbar-height) + 17px);
   min-width: 116px;
-  min-height: 38px;
+  min-height: 44px;
   justify-content: center;
 }
 

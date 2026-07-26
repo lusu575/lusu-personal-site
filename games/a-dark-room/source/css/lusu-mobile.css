@@ -1,0 +1,296 @@
+/*
+ * Narrow-screen integration overrides for the locally hosted copy.
+ * The upstream 700px desktop canvas remains untouched above 600px.
+ */
+@media (max-width: 600px) {
+	html,
+	body {
+		width: 100%;
+		max-width: 100%;
+		min-height: 100%;
+		height: auto;
+		overflow-x: hidden;
+	}
+
+	body {
+		-webkit-text-size-adjust: 100%;
+	}
+
+	div#wrapper {
+		box-sizing: border-box;
+		width: 100%;
+		max-width: 100%;
+		margin: 0;
+		padding: 8px;
+	}
+
+	div#content {
+		width: 100%;
+		max-width: 100%;
+		height: 700px;
+		overflow: hidden;
+	}
+
+	div#header {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+		height: auto;
+		min-height: 44px;
+		padding-bottom: 8px;
+	}
+
+	div.headerButton {
+		display: inline-flex;
+		float: none;
+		align-items: center;
+		justify-content: center;
+		box-sizing: border-box;
+		min-height: 44px;
+		margin: 0;
+		padding: 8px 10px;
+		border: 1px solid #111;
+	}
+
+	div.headerButton:first-child {
+		padding: 8px 10px;
+		border-left: 1px solid #111;
+	}
+
+	div#outerSlider > div,
+	div.location {
+		box-sizing: border-box;
+		max-width: 100%;
+		padding: 2px;
+	}
+
+	div#roomPanel > .button,
+	div#outsidePanel > .button,
+	div#pathPanel > .button,
+	div#shipPanel > .button,
+	div#fabricatorPanel > .button {
+		width: 100% !important;
+	}
+
+	div.button {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-sizing: border-box;
+		min-width: 44px;
+		min-height: 44px;
+		padding: 9px 10px;
+		line-height: 1.25;
+	}
+
+	div#storesContainer,
+	div#village,
+	div#workers,
+	div#perks,
+	div#blueprints,
+	div#buildBtns,
+	div#craftBtns,
+	div#buyBtns,
+	div#fabricateButtons {
+		position: relative;
+		top: auto;
+		right: auto;
+		left: auto;
+		box-sizing: border-box;
+		width: 100%;
+		max-width: 100%;
+		margin: 16px 0 0;
+	}
+
+	div#stores,
+	div#weapons,
+	div#village,
+	div#outfitting,
+	div#perks,
+	div#blueprints {
+		box-sizing: border-box;
+		width: 100%;
+		max-width: 100%;
+	}
+
+	div#workers {
+		padding: 0 8px;
+	}
+
+	div#buildBtns,
+	div#craftBtns,
+	div#buyBtns,
+	div#fabricateButtons {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 8px;
+	}
+
+	div#buildBtns::before,
+	div#craftBtns::before,
+	div#buyBtns::before,
+	div#fabricateButtons::before {
+		grid-column: 1 / -1;
+		top: auto;
+	}
+
+	div#buildBtns .button,
+	div#craftBtns .button,
+	div#buyBtns .button,
+	div#fabricateButtons .button {
+		width: 100% !important;
+		margin: 0;
+	}
+
+	#pathScroller {
+		box-sizing: border-box;
+		width: 100%;
+		max-width: 100%;
+		max-height: none;
+		padding: 10px 2px 0;
+		overflow: visible;
+	}
+
+	div.outfitRow {
+		margin-right: 0;
+	}
+
+	#worldOuter {
+		display: block;
+		width: 100%;
+		max-width: 100%;
+		overflow-x: auto;
+		overflow-y: hidden;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	.eventPanel {
+		position: fixed;
+		z-index: 1000;
+		top: max(10px, env(safe-area-inset-top));
+		right: max(10px, env(safe-area-inset-right));
+		bottom: auto;
+		left: max(10px, env(safe-area-inset-left));
+		box-sizing: border-box;
+		width: auto !important;
+		max-width: none;
+		max-height: calc(100dvh - 20px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+		padding: 18px 14px 14px;
+		overflow: auto;
+	}
+
+	.eventPanel::before {
+		position: fixed;
+		inset: 0;
+		width: auto;
+		height: auto;
+	}
+
+	.eventPanel .eventTitle {
+		position: relative;
+		top: auto;
+		display: block;
+		margin: 0 0 14px;
+		font-size: 18px;
+		line-height: 1.35;
+	}
+
+	.eventPanel .eventTitle::after {
+		display: none;
+	}
+
+	.eventPanel #description {
+		min-height: 0;
+	}
+
+	.eventPanel #description > div {
+		padding-bottom: 12px;
+		line-height: 1.45;
+	}
+
+	.eventPanel #buttons {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 8px;
+	}
+
+	.eventPanel .button,
+	#buttons > .button {
+		float: none;
+		width: 100% !important;
+		margin: 0;
+	}
+
+	#description textarea {
+		box-sizing: border-box;
+		max-width: 100%;
+	}
+
+	div#notifications {
+		position: relative;
+		top: auto;
+		left: auto;
+		box-sizing: border-box;
+		width: 100%;
+		height: 120px;
+		margin-top: 12px;
+		padding: 8px;
+		border-top: 1px solid #aaa;
+	}
+
+	.menu {
+		position: relative;
+		right: auto;
+		bottom: auto;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+		box-sizing: border-box;
+		width: 100%;
+		padding: 8px;
+	}
+
+	.menu span.menuBtn {
+		display: inline-flex;
+		float: none;
+		align-items: center;
+		justify-content: center;
+		box-sizing: border-box;
+		min-height: 44px;
+		margin: 0;
+		padding: 8px 10px;
+		border: 1px solid #aaa;
+	}
+
+	.menu .customSelectOptions,
+	.menu .customSelectOptions > ul {
+		position: relative;
+		right: auto;
+		bottom: auto;
+		box-sizing: border-box;
+		width: 100%;
+	}
+
+	.menu .customSelectOptions > ul {
+		max-height: 132px;
+		overflow: auto;
+	}
+
+	.menu .customSelectOptions > ul > li {
+		box-sizing: border-box;
+		min-height: 44px;
+		height: auto;
+		padding: 10px 6px;
+	}
+
+	.logo {
+		position: relative;
+		left: auto;
+		bottom: auto;
+		display: inline-flex;
+		align-items: center;
+		min-width: 44px;
+		min-height: 44px;
+		margin: 8px;
+	}
+}

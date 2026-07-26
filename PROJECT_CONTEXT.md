@@ -1,5 +1,42 @@
 # PROJECT_CONTEXT.md
 
+## 2026-07-26 全界面移动游戏与弹窗点检规则
+
+- `games/game-shell.css` 的外层 document 固定占用一个 `100dvh`，不得同时承担页面纵向滚动；共享壳使用“顶栏 + 剩余游戏区”网格，iframe 获取剩余高度并由游戏内容自己滚动。359×500、390×844、844×390 都要精确确认外层横／纵滚动为 false，返回、登录、下载、导入、云存档与冲突操作不得缩到 44px 以下。
+- 上游嵌入游戏不能把固定桌面文档宽度带进手机 iframe。A Dark Room 窄屏按实际面板宽度移动，声音选择窗完整落在视口内并提供 zh／en／ja 文案；运行中 resize／orientationchange 必须重新测量两层滑轨、当前偏移与资源面板归属，compact→desktop 要恢复 700px 和原资源面板。Kittens Game 在 ≤900px 使用营火→资源→日志单列，顶部工具栏自然换为两行且 Steam／Version 不裁切，全部可见关键控件不小于 44px，`clientWidth` 必须等于 `scrollWidth`；>900px 保留原三栏。
+- Life Restart 的移动补丁只对 `pointer: coarse` 生效，运行时必须把主操作与所有可见 `btn*` hitArea 扩到至少 44px；竖屏将工具操作从主流程分离，短横屏改为底部横排，`pointer: fine` 的桌面几何必须与上游保持一致。修改或升级上游后，需同时回归粗指针竖屏、粗指针短横屏与细指针桌面。
+- 嵌入副本不得运行与本站无关的上游统计、原站账号、本机开发桥接或未使用主题的外部字体请求。Kittens Game 固定关闭 Google Analytics、KGNet 登录／同步和 `localhost:7780`，首屏只加载当前主题、切换时按需加载，并按站点语言设置 iframe 文档 `lang`；同时保留本站 localStorage、JSON 备份和账号云存档链路。以后升级上游时必须重新扫描全部非本站请求。
+- 视频正常播放与最大化继续使用完整窗口；只有 `.video-player-fallback` 失败／不支持状态收敛为居中紧凑决策窗。359×500 欢迎窗可扩大到安全区内的可用高度，桌面模态遮罩必须让窗口与壁纸建立清楚层级，不能靠捕获入场动画中的半透明帧判断最终状态。
+- 本轮公开记录为 `seed-update-2026-07-26-interface-audit-fixes`，主站缓存版本为 `20260726-interface-audit-fixes-r2`，共享游戏壳为 `20260726-game-mobile-shell-r1`，A Dark Room 内部资源为 `20260726-a-dark-room-mobile-r2`，Kittens Game `buildRevision` 为 `4`、移动 CSS query 为 `20260726-mobile-r3`，Life Restart 内部缓存为 `20260726-life-mobile-touch-r1`；Home 继续只投影最新五条无正文摘要。最终本地结果为 261 / 261 测试、20 个公开模块、可重复生产构建（manifest SHA-256 `dd99d2a75ea725c9efc34cc4e6b0671821dad9a22f0b6ed140f74d54f9f6d5cb`）、190 / 190 发布矩阵、147 / 147 完整公共 UI 审计与 58 / 58 Tools／Quick Transfer 专项。本地 Headless／CDP 结论不等同真实 iOS／Android 浏览器 chrome、软键盘或完整读屏认证。
+
+## 2026-07-26 工具区三语显示名与兼容规则
+
+- 原“资源区”的公开显示名固定为中文“工具区”、English “Tools”、日本語“ツール”；首页桌面入口、窗口标题、任务栏、移动 Dock、Appbar、文档元信息、空状态和 Quick Transfer 返回操作必须保持一致。
+- 这次只改显示层。内部 route/hash 继续使用 `resources` / `#resources`，DOM、CSS、模块、API、统计键和审计命名继续使用稳定的 `resource-*` / `resources` 技术标识，不能为了显示改名破坏旧收藏链接、Quick Transfer、筛选状态或统计归组。
+- 旧文章标签值“资源区 / Resources / リソース”保留为兼容输入，但渲染时统一显示新名称；既有 changelog 和旧 `site-updates` 正文中的旧称属于发布历史，不做追溯改写。
+- 本轮公开记录为 `seed-update-2026-07-26-resources-to-tools`，公开缓存版本为 `20260726-tools-rename-r1`；Home 继续只投影最新五条无正文摘要。当前本地结果为 Tools／Quick Transfer 三语六视口专项 58 / 58、全量测试 242 / 242、20 个公开模块依赖图、可重复生产构建与发布矩阵 190 / 190。
+
+## 2026-07-26 手机文章首屏与统一点检规则
+
+- 按需 route CSS 的固定级联顺序是：主壳基础样式 → route 样式 → `link[data-mobile-shell-style]` 移动样式 → motion 样式。`ensureRouteStylesheet()` 必须把 route 样式插在移动 marker 之前，不能再 append 到文档末尾；移动几何仍由 `css/mobile-ios-shell.css` 最终裁决，并为文章侧栏保留高优先级 `min-height: 0` 防线。
+- 手机文章首屏必须用精确 CDP viewport 同时守卫 359×500、390×844、844×390：初始 `#article-detail.scrollTop` 为 0，侧栏计算最小高度不大于 1px，第一段至少可见 20px，正文总可见量至少分别为 44px、200px、44px；不能只断言父容器无 overflow 或卡片已进入 DOM。
+- 文章进度的 100% 终点是 `.markdown-body` 正文末尾，不包含为 Dock 保留的安全尾距。顶部状态的回顶按钮必须使用原生 `hidden` 退出键盘与读屏顺序，并在激活后把焦点交给 `tabindex="-1"` 的文章标题。目录列表和按钮使用 API 返回的实际文章语言，目录导航标签仍使用界面语言；含内部按钮的横向容器不得再增加空白容器 Tab 停靠点。
+- 视觉收起不等于可访问性收起：移动 Dock 收起时必须同步 `inert`、`aria-hidden="true"` 与视觉隐藏，并在收起前把已有焦点移到 44px 展开按钮。图片若已有同文可见 `figcaption`，图片使用空 `alt` 避免重复朗读。844×390 英文 Resources 卡继续使用内容高度，所有说明、标签与主操作必须在卡片边界内。
+- 本轮公开记录为 `seed-update-2026-07-26-mobile-article-first-screen`，公开缓存版本为 `20260726-mobile-reading-qa-r1`；Home 继续只投影最新五条无正文摘要。当前本地结果为文章专项 10 / 10、Resources 58 / 58、完整公共 UI 审计 147 / 147、全量测试 240 / 240 与发布矩阵 190 / 190；这些 Headless / CDP 结果仍不等同真实 iOS / Android 软键盘、safe area、浏览器 chrome 或完整读屏器认证。
+
+## 2026-07-26 公开主站 30 项功能与界面优化规则
+
+- 游戏云存档写入使用乐观并发控制：客户端每次 PUT 都必须携带最近一次 GET／恢复／同步获得的精确 `expectedUpdatedAt`；首次创建显式传 `null`。服务端只允许 `null` 原子插入不存在的记录，或用 `WHERE updated_at = ?` 更新匹配版本；未命中返回 `409 + SAVE_CONFLICT`，旧页面、并发标签页或其他设备不能无条件覆盖新存档。
+- 检测到较新的云存档时，`games/game-shell.js` 必须立即停止 30 秒自动同步和隐藏页／退出／导入等全部上传路径，并显示三语 XP 冲突窗口。用户可以先下载本地 JSON 备份，再明确恢复云端、用本地覆盖当前云端版本或暂不处理；取消、Escape 和外点都只暂停，不得暗中上传。覆盖动作仍受服务端版本校验保护；恢复云端前必须重新 GET 并核对仍是弹窗所示版本，变化时不得应用旧快照。
+- 云存档版本基线属于当前标签页，只能写入 `sessionStorage`（不可用时退回当前页面内存），不得与游戏本体一起写入跨标签页共享的 `localStorage`。当前标签页没有已知云版本且本地、云端同时存在时必须进入冲突流程，不能借用其他标签页的新版本号自动上传旧本地数据。
+- Quick Transfer 的公开安全说明必须区分两条边界：文字在浏览器使用 AES-GCM；图片、视频和文件不使用房间口令加密，只由 HTTPS 传输、私有 R2 与服务端鉴权保护，且不进行病毒／恶意软件扫描。明文口令不发往服务端；配额是滚动 24 小时，不得写成自然日“今日剩余”。
+- PC 任务栏连接托盘不再静态宣称 `ONLINE`。`js/features/connection-status.mjs` 以 `/api/health` 的 `2xx + { ok:true, db:true }` 为唯一在线依据，显示 checking / online / degraded / offline 四态；5 秒超时，在线 60 秒复查，异常按 10／20／40／60 秒退避，隐藏页面时中止。浏览器 `online` 事件只触发复查，不能直接宣称恢复；状态可点击重试、三语播报且不循环闪烁，移动 Dock 继续隐藏该非高频托盘。
+- 账号状态检查与 Chat 网络恢复也必须保持真实：账号 GET 有界超时并在稳定 popover 内提供原位重试，不重建或清空编辑字段；Chat 只有成功刷新历史后才从 reconnecting 进入 online，失败时显示可聚焦手动重试。密码房进入与返回公开房必须单飞，读取历史失败不得宣布进入成功。
+- Knowledge 搜索使用 NFKC／大小写归一后的多词 AND 匹配；搜索、分类与清空要同步重置真实列表滚动和 History 快照。Videos／Resources 重建分类按钮后恢复原筛选焦点；空视频分类优先提供“显示全部”，网站更新只是次操作。
+- `html.lang` 在主壳加载前只接受 zh／en／ja query 并尽早写入；文章卡与详情标题、摘要、正文按 API 返回的实际文章语言标注，回退内容不能继续冒充当前界面语言。移动语言按钮显示完整当前语言名，并在 aria-label／title 中同时说明当前与下一语言。
+- 手机 Resources 卡完整显示说明，将事实字段、标签和主操作分层，CTA 排在标签前且保持 44px；Games 卡直接展示全部语言支持，简介可读三行，二级许可／来源使用至少 44px 的原生 `details/summary`，后台刷新失败时保留并明确标示上次成功目录。
+- `/api/health` 只返回固定 `{ ok, db }` 健康契约，不再公开用户数量。公开缓存版本为 `20260726-mobile-reading-qa-r1`；三语更新记录与 Home 最新五条投影以本批 `2026-07-26` 记录为准。
+
 ## 2026-07-21 桌面任务栏选中态规则
 
 - PC 端当前任务按钮继续使用蓝色按下背景与内凹层级，但不再使用黄色底边、黄色外描边或常亮光晕；键盘操作的 `:focus-visible` 焦点环必须保留，不能为了视觉降噪破坏可访问性。移动 Dock 的透明选中底板与样式不受影响。
@@ -287,7 +324,7 @@
 - 当前主分支：`main`
 - 当前正式域名：`https://lusu575.com`
 - 当前备用 Pages 域名：`https://lusu-personal-site-9hd.pages.dev`
-- 站点定位：个人空间，用于记录 AI、游戏、工具、资源、视频、知识库和杂谈内容。
+- 站点定位：个人空间，用于记录 AI、游戏、工具、素材、视频、知识库和杂谈内容。
 - 风格目标：桌面端保持 Windows XP + Pixel Art + Y2K 并升级为 Neo-XP / Pixel Glass OS；移动端使用原创、受 iOS 交互启发的虚拟手机 OS，两端共享同一业务状态。
 
 ## 技术栈
@@ -332,7 +369,7 @@ Cloudflare Pages 项目状态：
 - 桌面首页图标入口；移动 Home 的 App grid 与 Dock 复用同一组既有路由
 - 首页使用四时段像素壁纸：基础静态底图位于 `assets/images/wallpapers/`，按用户本地时间切换 morning / day / dusk / night。四个时段均已接入动态云层，分别使用 `assets/images/wallpaper-dynamic/<time>/base-clean.png` 作为无云底图，并叠加从对应原始壁纸抠出的独立透明云层；云层沿用 `wallpaper-root` / `wallpaper-stage` 舞台坐标结构，只用 CSS `transform` / `opacity` 做同一主风向下的慢速错相漂移，并支持减少动态、小屏和页面隐藏暂停降级。本地调试可用 `?wallpaper=morning` / `?wallpaper=day` / `?wallpaper=dusk` / `?wallpaper=night` 强制预览指定动态壁纸，预览模式会临时加快云层位移以便肉眼确认动画。树冠、电视雪花、小女孩、星星、水面光效等层仍作为后续动画接口保留。
 - 顶部栏和底部任务栏：保留 XP 桌面结构与原有图标，并跟随 morning / day / dusk / night 四时段切换无竖线的现代玻璃像素 HUD 色温与高光
-- 知识库、视频区、资源区、游戏区、杂谈区、匿名聊天室、关于我
+- 知识库、视频区、工具区、游戏区、杂谈区、匿名聊天室、关于我
 - 关于我窗口含 X、GitHub、Bilibili、Instagram、Discord 五个可点击小图标入口，链接从 D1 `site_runtime_state.about_social_links` 读取，后台可维护
 - 中文 / English / 日本語 三语切换
 - 主站右上角账号入口
@@ -496,10 +533,10 @@ functions/api/[[route]].js
 - 游戏本体仍然使用浏览器 `localStorage`。
 - `games/game-shell.js` 收集 `games/catalog.json` 中声明的 storage keys。
 - 登录后进入游戏页，会读取云端存档。
-- 如果云端存档比本地已知存档更新，会询问是否恢复云端。
-- 本地有存档时会上传到 D1。
+- 如果云端存档比本地已知存档更新，会暂停全部上传并显示可下载本地备份的三语冲突处理窗口。
+- 本地有存档时只会携带精确 `expectedUpdatedAt` 上传到 D1；服务端原子条件写入，版本不匹配返回 `SAVE_CONFLICT`。
 - 自动同步间隔：30 秒。
-- 切出页面时会尝试 flush 游戏自己的保存函数并同步。
+- 切出页面时会尝试 flush 游戏自己的保存函数并同步；存在冲突或尚未核对云端版本时不上传。
 
 安全和限制：
 

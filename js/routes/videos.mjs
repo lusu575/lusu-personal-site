@@ -146,18 +146,33 @@ export function createVideosRoute({
     text.textContent = videoUiText(isFiltered ? "emptyFiltered" : "emptyBody");
     copy.append(title, text);
 
-    const action = document.createElement("button");
-    action.type = "button";
-    action.className = "xp-button";
-    action.dataset.articleCategory = siteUpdateCategory;
-    action.textContent = videoUiText("emptyAction");
+    const actions = document.createElement("div");
+    actions.className = "video-empty-actions";
+    if (isFiltered) {
+      const showAll = document.createElement("button");
+      showAll.type = "button";
+      showAll.className = "xp-button";
+      showAll.dataset.videoShowAll = "";
+      showAll.textContent = videoUiText("showAll");
+      actions.appendChild(showAll);
+    }
+    const updates = document.createElement("button");
+    updates.type = "button";
+    updates.className = `xp-button${isFiltered ? " is-secondary" : ""}`;
+    updates.dataset.articleCategory = siteUpdateCategory;
+    updates.textContent = videoUiText("emptyAction");
+    actions.appendChild(updates);
 
-    state.append(icon, copy, action);
+    state.append(icon, copy, actions);
     return state;
   }
 
   function renderVideoCategoryButtons() {
     const target = document.getElementById("video-categories");
+    const focusedButton = target.contains(document.activeElement)
+      ? document.activeElement.closest?.('[data-filter-type="videos"]')
+      : null;
+    const focusedCategory = focusedButton?.dataset.filter || "";
     target.replaceChildren();
     target.hidden = videoState.videos.length === 0;
     if (target.hidden) {
@@ -195,6 +210,27 @@ export function createVideosRoute({
       button.append(labelNode, countNode);
       target.appendChild(button);
     });
+    if (focusedCategory) {
+      focusVideoCategory(focusedCategory);
+    }
+  }
+
+  function focusVideoCategory(categoryId = activeFilters.videos) {
+    window.requestAnimationFrame(() => {
+      const target = document.getElementById("video-categories");
+      if (!target || target.hidden) return;
+      const buttons = [...target.querySelectorAll('[data-filter-type="videos"]')];
+      const button = buttons.find((candidate) => candidate.dataset.filter === categoryId)
+        || buttons.find((candidate) => candidate.dataset.filter === activeFilters.videos)
+        || buttons.find((candidate) => candidate.dataset.filter === "all");
+      button?.focus({ preventScroll: true });
+    });
+  }
+
+  function showAllVideos() {
+    activeFilters.videos = "all";
+    renderVideos();
+    focusVideoCategory("all");
   }
 
   function videoCardElement(item) {
@@ -353,6 +389,7 @@ export function createVideosRoute({
       emptyTitle: { zh: "视频还在整理中", en: "Videos are being organized", ja: "動画を整理中です" },
       emptyBody: { zh: "这里会放 Bilibili / YouTube 作品、收藏和网站施工记录。可以先查看最近的网站更新。", en: "Bilibili / YouTube works, favorites, and build logs will live here. You can check recent site updates first.", ja: "ここには Bilibili / YouTube の作品、保存動画、制作記録を置く予定です。まずは最近のサイト更新を確認できます。" },
       emptyFiltered: { zh: "当前分类暂时没有公开视频，换个分类或先看看网站更新记录。", en: "This category has no published videos yet. Try another category or check site updates.", ja: "このカテゴリには公開動画がまだありません。別のカテゴリ、またはサイト更新記録を確認してください。" },
+      showAll: { zh: "显示全部", en: "Show all", ja: "すべて表示" },
       emptyAction: { zh: "查看网站更新", en: "View site updates", ja: "サイト更新を見る" },
       retryAction: { zh: "重新读取视频", en: "Retry loading videos", ja: "動画を再読み込み" },
       untitled: { zh: "未命名视频", en: "Untitled video", ja: "無題の動画" },
@@ -622,6 +659,8 @@ export function createVideosRoute({
     loadVideos,
     renderVideos,
     renderVideoCategoryButtons,
+    focusVideoCategory,
+    showAllVideos,
     openVideo,
     retryVideoPlayer,
     updateVideoWindowButton,

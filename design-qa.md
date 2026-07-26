@@ -1,78 +1,102 @@
-# Design QA: Calm Motion Reset, Persistent Mobile Dock, and Layered App Frames
+# Design QA：手机文章首屏、工具区更名与全界面修复
 
-Date: 2026-07-11
+Date: 2026-07-26
 
-Source reference（历史本机临时附件，未提交到 Git，GPTWork 不可获得）：
+## 结论
 
-- 原始参考图仅用于当次人工比对；当前仓库不依赖该文件。
+本轮已完成用户指出的手机文章首屏大面积空白、公开“资源区”改名为“工具区”，并对公共主站、弹窗、三语界面、五款游戏及共享游戏壳进行统一设计 QA。当前本地证据中未发现 P0、P1 或 P2 遗留问题；XP／Pixel Art／Y2K 桌面语言和移动虚拟 OS 结构均保留，功能路由、旧收藏链接、Quick Transfer、游戏本地存档及账号云存档边界未因视觉调整而改变。
 
-Earlier R8 implementation captures retained as local-only comparison evidence（以下为仓库相对位置，`output/` 被 Git 忽略，云端可能不存在）：
+## 来源证据
 
-- `output/playwright/page-turn-frame-qa/home-390x844.png`
-- `output/playwright/page-turn-frame-qa/knowledge-390x844.png`
-- `output/playwright/page-turn-frame-qa/knowledge-ja-359x500.png`
-- `output/playwright/page-turn-frame-qa/knowledge-en-844x390-mobile.png`
-- `output/playwright/page-turn-frame-qa/games-zh-390x844.png`
-- `output/playwright/page-turn-frame-qa/chatroom-zh-390x844.png`
-- `output/playwright/page-turn-frame-qa/page-turn-mid-390x844.png`
-- `output/playwright/page-turn-frame-qa/page-turn-mid-desktop-1440x900.png`
+- 用户原始截图：`C:\Users\lusu\AppData\Local\Temp\codex-clipboard-911bab70-96bd-4a94-bf46-30bc229eacf6.png`，967×1776。图中 390×844 等效手机文章首屏在目录与正文卡片之间出现大块空白，正文标题位于首屏底部附近，首段实际可见量为 0。
+- 根因证据：按需加载的 `css/routes/knowledge.css` 被插入到 `css/mobile-ios-shell.css` 之后，同等优先级下把桌面文章侧栏 `min-height` 写回移动布局；问题不是文章数据缺失，也不是用户误滚动。
+- 修复后文章证据：`output/interface-audit-fixes-20260726/public-ui-final/article-first-screen-390x844.png`。初始滚动位置为 0，文章标题、操作和多段正文进入首屏；受控测量中 359×500、390×844、844×390 的正文可见量分别约为 109px、346px、82px。
+- 工具区桌面证据：`output/interface-audit-fixes-20260726/tools-desktop-after.png`；公开显示为“工具区”，卡片节奏、元信息、标签和操作保持完整。
+- About 桌面证据：`output/interface-audit-fixes-20260726/about-desktop-final.png`；中文“工具折腾”等短语不再孤字断行，窗口宽度和遮罩层级稳定。
+- 自动化原始记录：`output/interface-audit-fixes-20260726/public-ui-final/summary.json` 与 `output/interface-audit-fixes-20260726/resources-final-r2/resources-visual-summary.json`。
 
-Final calm-motion evidence:
+`output/` 和用户临时附件均为本机 QA 证据，不属于生产页面依赖，也不作为部署产物提交。
 
-- `output/playwright/six-item-dock-home-390x844.png`
-- `output/playwright/six-item-dock-about-390x844.png`
-- `output/playwright/desktop-icon-open-mid-after-fix.png`
-- `output/playwright/desktop-taskbar-home-mid-after-fix.png`
-- `output/playwright/calm-motion-desktop-route-mid.png`
-- `output/playwright/calm-motion-desktop.png`
-- `output/playwright/calm-motion-mobile-route-mid.png`
-- `output/playwright/calm-motion-mobile-390x844.png`
+## Before / After 组合对比
 
-The reference and the 390x844 Knowledge capture were inspected together in one comparison input. The requested reference scope was the frame hierarchy only; its colors and icons were deliberately excluded.
+下面两张组合图都把修复前后状态放在同一画布中进行人工比对，而不是只凭单张截图判断。
 
-## Comparison and Iterations
+### 游戏与共享游戏壳
 
-1. Desktop Home App launch no longer creates a Home-screen View Transition snapshot or transforms the whole active page. Only the destination window uses a 200ms fade and at most 3px of upward settle; the live wallpaper and fixed chrome remain stable.
-2. Desktop taskbar module routes reveal only the new active page with a slight fade-slide while the old window snapshot stays hidden. Returning Home bypasses the page snapshot and animates only `.desktop-icons`, so the taskbar never disappears behind the transition top layer. Mobile Dock routes keep their short directional content slide.
-3. The mobile Home grid was moved into the reclaimed first-screen space and changed from elastic rows to fixed rows. Narrow portrait icons use 74x84px buttons, regular portrait uses 78x90px, and short landscape uses 70x70px; visible icon/label to hit-area ratios stay between 1.092 and 1.157.
-4. Knowledge, Videos, Resources, Games, Notes, Chat, and About received a shared outer frame plus framed toolbar/filter, tabs/categories, content scrollport, and bordered list items. The palette continues to follow morning/day/dusk/night Neo-XP tokens.
-5. The mobile Dock exposes six high-frequency routes in one frosted rail: Home, Knowledge, Videos, Resources, Games, and Chat. The six items center cleanly at 375px and wider; 359px keeps a short horizontal scroll. Blog and About remain available from Home, and their App views hide the Dock selection surface instead of showing a false active item.
+![游戏修复前后组合图](output/interface-audit-fixes-20260726/compare-games-before-after.png)
 
-## Visual and Functional Checks
+可见差异包括：共享壳把固定工具区与游戏内容正确分层；2048、Hextris 的主操作达到手机触控尺寸；A Dark Room 的窄屏面板和声音选择不再被 700px 桌面几何裁断；Kittens Game 从桌面三栏改为移动单列。组合图生成后又完成了两项末轮收口：Kittens 顶部工具栏自然换为两行并完整显示 Steam／版本号，Life Restart“立即重开”和三个角落操作均达到 44px。
 
-- Fonts and typography: zh/en/ja headings, summaries, metadata, tags, and controls remain readable in portrait and short landscape; no visible text escapes its card.
-- Spacing and layout: outer frames remain inside the viewport with 8px side margins; toolbars, category rows, content regions, cards, and buttons do not overlap.
-- Colors and surfaces: layered edges are present in all Apps and vary with the existing four time themes; reference colors and icons were not copied.
-- Icons and assets: all existing bitmap assets remain in use; no emoji, placeholder drawing, custom SVG, or CSS-drawn icon was introduced.
-- States and interactions: calm Home App launch, desktop single-page fade-slide, mobile directional route slide, Dock selection/scroll/collapse, Home return, search controls, category controls, game actions, chat compose, and article card actions remain reachable.
-- Accessibility: all visible primary controls in the measured App states are at least 44px; reduced/off motion still commits navigation without spatial movement.
+末轮独立证据：
 
-## Automated Geometry Matrix
+- `output/kittens-mobile-wrap-final.png`
+- `output/life-restart-touch-audit/final-390x844.png`
+- `output/life-restart-touch-audit/final-844x390.png`
+- `output/life-restart-touch-audit/final.json`
 
-- Home/Dock interaction: 359x500, 375x667, 390x844, and 844x390 in zh/en/ja = 12 states; six visible Dock routes, two Home-only modules, and 0 failures.
-- Apps: 7 routes x 4 viewports x 3 languages = 84 states.
-- Password-panel and article-detail deep states: 3 critical viewports x 3 languages x 2 states = 18 states, 81 assertions, 0 failures.
-- Wrong active route: 0.
-- Horizontal overflow: 0.
-- Desktop icon intersections: 0.
-- Card intersections: 0.
-- Card child escapes: 0.
-- Undersized primary controls: 0.
-- Missing layered App frames: 0.
-- Console/page errors: 0.
-- Chat log threshold failures: 0; 375x667 remains at least 260px and 844x390 remains at least 150px.
+### 欢迎窗与视频失败弹窗
 
-## Motion Checks
+![弹窗修复前后组合图](output/interface-audit-fixes-20260726/compare-modals-before-after.png)
 
-- Desktop Home icon launch: the mid-frame contains zero View Transition image animations; only the destination `.xp-window` is animated, its scale remains exactly 1, and its travel stays within 3px. Header and taskbar rectangles are unchanged.
-- Desktop 1440x900 taskbar switch: module-to-module navigation keeps the content-only transition, while taskbar Home return contains zero View Transition image animations and moves only the icon group within the 6px route budget. The taskbar remains visible at opacity 1 throughout.
-- Mobile Dock switch: outgoing/incoming content moves in the selected route direction, while the shared selection surface moves continuously to the destination item; neither surface uses a 3D turn or hard-cut substitute.
-- Large-surface animations use transform/opacity only; computed animation does not interpolate filter, box-shadow, border-radius, left/top, width, or height.
-- Reduced and off motion commit the route immediately with no spatial transition. After full-motion transitions, direction/transition attributes and inline transforms are cleaned.
+修复后 359×500 欢迎窗利用更多安全可用高度；视频正常播放仍保留完整播放器窗口，只有失败／不支持状态收敛为紧凑决策窗。竖屏和短横屏不再用大面积黑色占位，桌面遮罩也能清楚区分弹窗、页面和壁纸层级。
 
-## Remaining Notes
+## 五轮迭代
 
-- P3: The frame is not a pixel-identical clone. Its denser header, existing icons, four-time palette, and compact actions are intentional because the user requested only the reference border layout and asked to preserve more readable content.
-- P3: Browser antialiasing and local dynamic article/chat data can make individual lines differ between captures without changing the verified geometry.
+1. **手机文章首屏。** 修正 route CSS 注入顺序，固定为主壳基础样式 → route 样式 → mobile 样式 → motion 样式，并为移动文章侧栏补上高优先级 `min-height: 0` 防线。同步确认阅读进度只计算 Markdown 正文、回顶按钮顶部隐藏、激活后焦点回到文章标题，移动 Dock 不遮住正文。
+2. **工具区三语更名。** 首页入口、窗口标题、桌面任务栏、移动 Dock、Appbar、空状态、文章标签映射、Quick Transfer 返回操作和维护文档统一为中文“工具区”、English “Tools”、日本語“ツール”。内部 `resources` route、`#resources` 深链、DOM／CSS／API／统计标识保持不变，避免破坏旧链接和既有功能。
+3. **公共界面与弹窗。** 扩大 359×500 欢迎窗可读容量；压缩视频失败弹窗；提高桌面模态遮罩对比；修复 Tools／About 的 CJK 孤字与长文案换行；复查 Home、Knowledge、Videos、Tools、Games、Chat、Blog、About 的层级、裁剪、滚动和 Dock 占位。
+4. **游戏移动体验。** 五游戏共享壳改为单一 `100dvh` 网格，外层文档不滚动，iframe 使用剩余高度。A Dark Room 按实时面板宽度移动并支持同页旋转重算；Kittens Game 在 ≤900px 使用营火→资源→日志单列，同时停用上游统计、KGNet、localhost 桥接和未用主题字体请求；2048、Hextris 与 Life Restart 的主要操作补齐 44px。
+5. **独立发布审查与视觉扫尾。** 代码复查进一步发现并修复 A Dark Room 缓存版本和 orientationchange 恢复、Kittens 文档语言／主题懒加载／外部字体、Kittens 顶栏裁字以及 Life Restart“立即重开”不足 44px。最终逐张复看文章、工具、About、弹窗、共享壳和五款游戏截图，再运行专项几何与发布门禁。
 
-final result: passed — desktop live-surface motion, six-item mobile Dock layout, Home-only Blog/About selection handling, 96-state zh/en/ja geometry, Dock collapse, and reduced/off cleanup were rechecked on query `20260711-calm-motion-r12` with zero UI failures or console errors
+## 界面与视口矩阵
+
+| 范围 | 视口／状态 | 语言 | 重点结论 |
+| --- | --- | --- | --- |
+| 手机文章首屏 | 359×500、390×844、844×390 | zh，并检查实际文章语言标记 | 初始 `scrollTop=0`；首段至少可见 20px；正文可见量达到 44／200／44px 门槛；目录与正文无相交 |
+| 公共主站 | 359×500、375×667、390×844、430×932、844×390、1280×720、1440×900 的适用场景 | zh／en／ja | Home 与各 App 路由、Chat、文章、视频、欢迎窗、低性能档和短桌面场景均无审计失败 |
+| Tools／Quick Transfer | 359×500、375×667、390×844、760×900、844×390、1280×720 | zh／en／ja | 54 个三语流程状态加 4 个 Home／Games 参照状态，共 58 个；列表、登录、两种返回入口和旧 `#resources` 深链均可用 |
+| 共享游戏壳 | 359×500、390×844、844×390 | zh／en／ja | 外层横纵滚动为 false；返回、登录、下载、导入、云存档和冲突操作不小于 44px |
+| A Dark Room | 390×844 ↔ 844×390，同一文档连续旋转；另有桌面状态 | zh／en／ja | 两层滑轨、当前偏移和资源面板归属会重算；回桌面恢复 700px；声音窗完整可见 |
+| Kittens Game | 390×844 与 >900px 桌面 | zh／en／ja | 手机单列、桌面三栏；35 个关键操作不小于 44px；Steam／版本号完整换行；无页面横向溢出和非本站外部请求 |
+| Life Restart | 390×844、844×390 | zh／en；ja 按目录规则回退 en | “立即重开”及 GitHub／保存／主题操作均至少 44px，中心点击能触发状态转换 |
+| 2048／Hextris | 359×500、390×844、844×390 | zh／en／ja | 新游戏、左右操作和共享壳控制达到 44px，游戏区保持可达 |
+
+## 视觉、交互与无障碍点检
+
+- **视觉一致性：** 继续使用现有 XP 蓝色标题栏、像素图标、任务栏、四时段背景和移动磨砂 Dock；没有把页面改成现代极简卡片站，也没有用占位图、Emoji 或 CSS 绘图替代现有资产。
+- **文字与三语：** 当前可见栏目名称为“工具区／Tools／ツール”；zh／en／ja 的标题、摘要、元信息、按钮和返回操作均检查换行、截断和卡片边界。历史更新正文和兼容标签中的旧称作为历史／输入兼容保留，不属于当前导航漏改。
+- **44px 触控目标：** Dock 收起／展开、App 返回、弹窗关闭、共享游戏壳控制及各游戏关键操作均按至少 44×44 CSS px 检查；未通过缩小按钮或隐藏内容来消除溢出。
+- **溢出与滚动归属：** 主站固定壳不承担意外 document 滚动；文章详情、Chat 日志、Tools 列表和游戏 iframe 各自保留唯一可理解的滚动主体。检查了 `clientWidth`／`scrollWidth`、子项越界、卡片相交和 Dock 遮挡，而不只检查父容器的 `overflow` 属性。
+- **弹窗与层级：** 欢迎窗、视频失败窗、账号浮层和游戏冲突窗检查 z-index、裁剪、遮罩、关闭按钮、Escape、外点行为及滚动锁；桌面 header 仍高于 main，浮层可以从顶栏按钮下方完整溢出。
+- **键盘与焦点：** App 返回、文章目录／回顶、筛选重绘、Quick Transfer 返回、弹窗关闭和 Dock 收起均保留可聚焦路径；收起 Dock 同步使用 `inert`、`aria-hidden` 和视觉隐藏，焦点先移到 44px 展开按钮。测试覆盖浏览器 DOM 焦点与键盘行为，但不把它表述为完整读屏认证。
+- **功能边界：** “工具区”仅改变公开显示名；`resources` 技术标识、Quick Transfer、筛选、统计、文章兼容标签和旧深链继续工作。游戏改动保留 localStorage、JSON 导入导出和本站账号云存档链路。
+- **隐私与网络：** Kittens 嵌入副本不再发出 Google Analytics、KGNet、localhost 桥接或未使用主题 Google Fonts 请求；主题切换按需加载本地样式。
+
+## 最终验证数字
+
+<!-- FINAL_VERIFICATION_BLOCK_START：主任务最后一次同批次重跑后，仅更新本段 -->
+
+| 门禁 | 当前记录 |
+| --- | --- |
+| Release 单元／契约测试 | 261 / 261 |
+| 公共 ESM 依赖图 | 20 modules |
+| 公共 UI 精确 CDP 审计 | 147 / 147 |
+| Tools／Quick Transfer 三语六视口专项 | 58 / 58 |
+| Headless 发布矩阵 | 190 / 190 |
+| 生产构建 | 两次构建内容一致 |
+| 最近一次完整门禁 manifest SHA-256 | `dd99d2a75ea725c9efc34cc4e6b0671821dad9a22f0b6ed140f74d54f9f6d5cb` |
+| 已知非阻断输出 | 仅既有日语工具 `noMedal` 重复键警告 |
+
+上述数字来自 Kittens 顶栏换行、Life Restart 44px 末轮精修及三语更新记录同步后的同一批次最终门禁；A Dark Room 同页旋转另有 1 / 1 浏览器专项，Kittens 与 Life Restart 另有精确 CDP 几何和真实触摸证据。
+
+<!-- FINAL_VERIFICATION_BLOCK_END -->
+
+## 遗留 P3 与证据边界
+
+- **P3：真机系统界面。** Headless Chrome／CDP 已验证精确 CSS 视口和代理几何，但仍不能替代真实 iOS／Android 的可折叠浏览器 chrome、软键盘、物理 safe area、触控手势和完整读屏器流程；需要真机回归后才能关闭该项。
+- **P3：A Dark Room 深层流程。** 当前覆盖首页、房间／资源面板、声音选择、同页横竖屏和桌面恢复；世界、路径、太空等后期状态及真实移动设备上的长手势／音频权限仍需单独游玩验证。
+- **P3：Kittens Game 深层流程。** 当前覆盖首屏三语、营火／资源／日志、顶部工具栏、主题按需加载、网络请求和关键触控目标；全部后期面板、长周期存档、所有主题组合与真实设备长时运行仍需专项回归。
+
+这些 P3 是截图和本地自动化无法完全证明的设备／深层内容边界，不代表当前已测界面存在可复现阻断。
+
+final result: passed

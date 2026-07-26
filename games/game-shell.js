@@ -29,7 +29,19 @@
       loggedOutPanel: "已退出，当前仍会保留本地存档。",
       loggedOutStatus: "已退出账号，本地存档仍在当前浏览器。",
       mergedCloudScore: "已合并云端历史分数，游戏会从新对局开始。",
-      restoreCloudConfirm: "检测到云端存档较新，要恢复云端存档吗？",
+      cloudChecking: "正在核对云端版本…",
+      cloudConflictTitle: "发现更新的云端存档",
+      cloudConflictBody: "当前浏览器里的本地进度与较新的云端版本不同。自动上传已经暂停，直到你明确选择。",
+      cloudConflictRemoteTime: "云端更新时间：{time}",
+      cloudConflictAdvice: "建议先下载本地备份。恢复云端会替换当前本地存档；保留本地会覆盖当前云端版本。",
+      restoreCloud: "恢复云端",
+      keepLocalOverwrite: "保留本地并覆盖云端",
+      downloadLocalBackup: "先下载本地备份",
+      cancelConflict: "暂不处理",
+      reviewConflict: "处理冲突",
+      cloudConflictPaused: "检测到较新的云端存档。当前本地存档未被修改，所有云端上传已暂停。",
+      cloudConflictBlocked: "为防止覆盖较新的云端存档，本次同步已阻止。",
+      cloudChangedElsewhere: "云端存档已被其他页面或设备更新，自动同步已暂停。",
       restoredCloud: "已恢复云端存档，正在加载游戏。",
       signedInNoCloud: "已登录云端存档，暂时没有可恢复的云端数据。",
       cloudUnavailable: "云端存档暂不可用：{message}",
@@ -68,7 +80,19 @@
       loggedOutPanel: "You are signed out. Local saves are still kept here.",
       loggedOutStatus: "Signed out. Local saves remain in this browser.",
       mergedCloudScore: "Cloud score history merged. The game will start from a new round.",
-      restoreCloudConfirm: "A newer cloud save was found. Restore it now?",
+      cloudChecking: "Checking the cloud version…",
+      cloudConflictTitle: "Newer Cloud Save Found",
+      cloudConflictBody: "This browser's local progress differs from a newer cloud version. Automatic uploads are paused until you make an explicit choice.",
+      cloudConflictRemoteTime: "Cloud updated: {time}",
+      cloudConflictAdvice: "Download a local backup first. Restoring replaces this browser's local save; keeping local overwrites the current cloud version.",
+      restoreCloud: "Restore Cloud",
+      keepLocalOverwrite: "Keep Local & Overwrite Cloud",
+      downloadLocalBackup: "Download Local Backup",
+      cancelConflict: "Decide Later",
+      reviewConflict: "Resolve Conflict",
+      cloudConflictPaused: "A newer cloud save was found. Your local save is unchanged and all cloud uploads are paused.",
+      cloudConflictBlocked: "Sync was blocked to avoid overwriting the newer cloud save.",
+      cloudChangedElsewhere: "The cloud save was updated by another page or device. Automatic sync is paused.",
       restoredCloud: "Cloud save restored. Loading the game...",
       signedInNoCloud: "Cloud saves are signed in, but there is no cloud data to restore yet.",
       cloudUnavailable: "Cloud saves are unavailable: {message}",
@@ -107,7 +131,19 @@
       loggedOutPanel: "ログアウトしました。ローカルセーブは引き続き保存されます。",
       loggedOutStatus: "ログアウトしました。ローカルセーブはこのブラウザーに残ります。",
       mergedCloudScore: "クラウドの履歴スコアを統合しました。ゲームは新しい対局から始まります。",
-      restoreCloudConfirm: "新しいクラウドセーブが見つかりました。復元しますか？",
+      cloudChecking: "クラウドの版を確認しています…",
+      cloudConflictTitle: "新しいクラウドセーブを検出",
+      cloudConflictBody: "このブラウザーのローカル進捗と、より新しいクラウド版が異なります。明示的に選択するまで自動アップロードを停止します。",
+      cloudConflictRemoteTime: "クラウド更新日時：{time}",
+      cloudConflictAdvice: "先にローカルのバックアップを保存してください。クラウドを復元すると現在のローカルセーブが置き換わり、ローカルを保持すると現在のクラウド版を上書きします。",
+      restoreCloud: "クラウドを復元",
+      keepLocalOverwrite: "ローカルを保持してクラウドを上書き",
+      downloadLocalBackup: "ローカルをバックアップ",
+      cancelConflict: "後で決める",
+      reviewConflict: "競合を解決",
+      cloudConflictPaused: "新しいクラウドセーブを検出しました。ローカルセーブは変更せず、クラウドへのアップロードを停止しました。",
+      cloudConflictBlocked: "新しいクラウドセーブの上書きを防ぐため、今回の同期を停止しました。",
+      cloudChangedElsewhere: "クラウドセーブが別のページまたは端末で更新されたため、自動同期を停止しました。",
       restoredCloud: "クラウドセーブを復元しました。ゲームを読み込んでいます。",
       signedInNoCloud: "クラウドセーブにログイン済みですが、復元できるデータはまだありません。",
       cloudUnavailable: "クラウドセーブを利用できません: {message}",
@@ -140,9 +176,14 @@
   let currentGame = null;
   let syncTimer = null;
   let syncInFlight = false;
+  let cloudVersionReady = false;
+  let expectedCloudUpdatedAt = null;
+  let cloudConflict = null;
+  let conflictDialogPromise = null;
   let localStorageReadBlocked = false;
   let localStorageWarningShown = false;
   const sessionStorageFallback = new Map();
+  const tabStorageFallback = new Map();
 
   document.documentElement.lang = requestedSiteLang === "zh" ? "zh-CN" : requestedSiteLang;
 
@@ -177,6 +218,26 @@
     } catch (error) {
       sessionStorageFallback.set(key, textValue);
       warnLocalStorageFallback(error);
+      return false;
+    }
+  }
+
+  function safeGetTabStorageItem(key) {
+    try {
+      return window.sessionStorage.getItem(key) ?? tabStorageFallback.get(key) ?? null;
+    } catch {
+      return tabStorageFallback.get(key) ?? null;
+    }
+  }
+
+  function safeSetTabStorageItem(key, value) {
+    const textValue = String(value);
+    try {
+      window.sessionStorage.setItem(key, textValue);
+      tabStorageFallback.delete(key);
+      return true;
+    } catch {
+      tabStorageFallback.set(key, textValue);
       return false;
     }
   }
@@ -437,13 +498,25 @@
   }
 
   function getKnownCloudTime(game) {
-    return Date.parse(safeGetStorageItem(getCloudMetaKey(game)) || "") || 0;
+    return Date.parse(safeGetTabStorageItem(getCloudMetaKey(game)) || "") || 0;
   }
 
   function rememberCloudTime(game, updatedAt) {
     if (updatedAt) {
-      safeSetStorageItem(getCloudMetaKey(game), updatedAt);
+      safeSetTabStorageItem(getCloudMetaKey(game), updatedAt);
     }
+  }
+
+  function formatCloudTime(updatedAt) {
+    const date = new Date(updatedAt);
+    if (Number.isNaN(date.getTime())) {
+      return updatedAt || "—";
+    }
+    const locale = requestedSiteLang === "zh" ? "zh-CN" : requestedSiteLang === "ja" ? "ja-JP" : "en";
+    return new Intl.DateTimeFormat(locale, {
+      dateStyle: "medium",
+      timeStyle: "short"
+    }).format(date);
   }
 
   async function apiFetch(path, options = {}) {
@@ -454,7 +527,11 @@
     });
     const payload = await response.json().catch(() => ({}));
     if (!response.ok) {
-      throw new Error(payload.error || `HTTP ${response.status}`);
+      const error = new Error(payload.error || `HTTP ${response.status}`);
+      error.status = response.status;
+      error.code = payload.code || "";
+      error.updatedAt = payload.updatedAt ?? null;
+      throw error;
     }
     return payload;
   }
@@ -466,6 +543,9 @@
     } catch {
       authUser = null;
     }
+    cloudVersionReady = !authUser;
+    expectedCloudUpdatedAt = null;
+    cloudConflict = null;
     renderCloudPanel();
   }
 
@@ -477,6 +557,7 @@
 
     const account = document.createElement("div");
     account.className = "cloud-account";
+    account.classList.toggle("is-conflict", Boolean(cloudConflict));
     account.appendChild(textElement("strong", t("cloudSave")));
 
     if (authUser) {
@@ -487,17 +568,39 @@
       const syncButton = textElement("button", t("syncNow"), "tool-button");
       syncButton.id = "sync-cloud-save";
       syncButton.type = "button";
+      syncButton.disabled = !cloudVersionReady || Boolean(cloudConflict);
+      syncButton.title = cloudConflict
+        ? t("cloudConflictBlocked")
+        : !cloudVersionReady
+          ? t("cloudChecking")
+          : t("syncNow");
+      if (cloudConflict) {
+        const reviewButton = textElement("button", t("reviewConflict"), "tool-button cloud-review-button");
+        reviewButton.id = "review-cloud-conflict";
+        reviewButton.type = "button";
+        actions.appendChild(reviewButton);
+        reviewButton.addEventListener("click", () => {
+          void resolveCloudConflict(currentGame);
+        });
+      }
       const logoutButton = textElement("button", t("logout"), "tool-button subtle");
       logoutButton.id = "logout-account";
       logoutButton.type = "button";
       actions.append(syncButton, logoutButton);
       account.appendChild(actions);
 
-      if (message) {
-        account.appendChild(textElement("p", message));
+      const panelMessage = cloudConflict ? t("cloudConflictPaused") : message || (!cloudVersionReady ? t("cloudChecking") : "");
+      if (panelMessage) {
+        const messageNode = textElement("p", panelMessage, cloudConflict ? "cloud-conflict-message" : "");
+        if (cloudConflict) {
+          messageNode.setAttribute("role", "alert");
+        }
+        account.appendChild(messageNode);
       }
       cloudPanel.appendChild(account);
-      syncButton.addEventListener("click", () => syncToCloud(currentGame, true));
+      syncButton.addEventListener("click", () => {
+        void syncToCloud(currentGame, true);
+      });
       logoutButton.addEventListener("click", logout);
       return;
     }
@@ -513,6 +616,226 @@
     cloudPanel.appendChild(account);
   }
 
+  function markCloudConflict(game, details = {}, statusKey = "cloudConflictPaused") {
+    cloudVersionReady = true;
+    expectedCloudUpdatedAt = details.updatedAt ?? null;
+    cloudConflict = {
+      gameId: game?.id || "",
+      updatedAt: details.updatedAt ?? null,
+      save: details.save && typeof details.save === "object" ? details.save : null
+    };
+    stopAutoSync();
+    renderCloudPanel(t(statusKey));
+    setStatus(t(statusKey));
+  }
+
+  function showCloudConflictDialog(game, conflict) {
+    return new Promise((resolve) => {
+      const overlay = document.createElement("div");
+      overlay.className = "cloud-conflict-overlay";
+
+      const dialog = document.createElement("section");
+      dialog.className = "cloud-conflict-dialog";
+      dialog.setAttribute("role", "dialog");
+      dialog.setAttribute("aria-modal", "true");
+      dialog.setAttribute("aria-labelledby", "cloud-conflict-title");
+      dialog.setAttribute("aria-describedby", "cloud-conflict-description");
+      dialog.tabIndex = -1;
+
+      const titlebar = document.createElement("div");
+      titlebar.className = "cloud-conflict-titlebar";
+      titlebar.appendChild(textElement("span", t("cloudConflictTitle")));
+
+      const body = document.createElement("div");
+      body.className = "cloud-conflict-body";
+      const heading = textElement("h2", t("cloudConflictTitle"));
+      heading.id = "cloud-conflict-title";
+      const description = textElement("p", t("cloudConflictBody"));
+      description.id = "cloud-conflict-description";
+      const remoteTime = textElement("p", t("cloudConflictRemoteTime", {
+        time: formatCloudTime(conflict.updatedAt)
+      }), "cloud-conflict-time");
+      const advice = textElement("p", t("cloudConflictAdvice"), "cloud-conflict-advice");
+
+      const actions = document.createElement("div");
+      actions.className = "cloud-conflict-actions";
+      const backupButton = textElement("button", t("downloadLocalBackup"), "tool-button cloud-conflict-backup");
+      backupButton.type = "button";
+      const restoreButton = textElement("button", t("restoreCloud"), "tool-button cloud-conflict-restore");
+      restoreButton.type = "button";
+      const keepButton = textElement("button", t("keepLocalOverwrite"), "tool-button cloud-conflict-overwrite");
+      keepButton.type = "button";
+      const cancelButton = textElement("button", t("cancelConflict"), "tool-button subtle cloud-conflict-cancel");
+      cancelButton.type = "button";
+      actions.append(backupButton, restoreButton, keepButton, cancelButton);
+      body.append(heading, description, remoteTime, advice, actions);
+      dialog.append(titlebar, body);
+      overlay.appendChild(dialog);
+
+      const previousFocus = document.activeElement;
+      const isolatedElements = [...document.body.children]
+        .filter((element) => element !== overlay && !["SCRIPT"].includes(element.tagName))
+        .map((element) => ({ element, wasInert: element.hasAttribute("inert") }));
+      isolatedElements.forEach(({ element }) => {
+        element.setAttribute("inert", "");
+      });
+
+      let settled = false;
+      const settle = (choice) => {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        document.removeEventListener("keydown", handleKeydown, true);
+        isolatedElements.forEach(({ element, wasInert }) => {
+          if (!wasInert) {
+            element.removeAttribute("inert");
+          }
+        });
+        overlay.remove();
+        if (previousFocus instanceof HTMLElement && previousFocus.isConnected) {
+          previousFocus.focus({ preventScroll: true });
+        }
+        resolve(choice);
+      };
+      const handleKeydown = (event) => {
+        if (event.key === "Escape") {
+          event.preventDefault();
+          settle("cancel");
+          return;
+        }
+        if (event.key !== "Tab") {
+          return;
+        }
+        const focusable = [...dialog.querySelectorAll("button:not([disabled])")];
+        if (!focusable.length) {
+          event.preventDefault();
+          dialog.focus();
+          return;
+        }
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      };
+
+      backupButton.addEventListener("click", () => exportSave(game));
+      restoreButton.addEventListener("click", () => settle("restore"));
+      keepButton.addEventListener("click", () => settle("keep-local"));
+      cancelButton.addEventListener("click", () => settle("cancel"));
+      overlay.addEventListener("click", (event) => {
+        if (event.target === overlay) {
+          settle("cancel");
+        }
+      });
+      document.addEventListener("keydown", handleKeydown, true);
+      document.body.appendChild(overlay);
+      backupButton.focus({ preventScroll: true });
+    });
+  }
+
+  async function runCloudConflictResolution(game, initialPayload = null) {
+    if (!authUser || !game) {
+      return;
+    }
+    let payload = initialPayload;
+    while (authUser && game) {
+      try {
+        if (!payload) {
+          payload = await apiFetch(`/api/saves/${game.id}`);
+        }
+      } catch (error) {
+        setStatus(t("cloudUnavailable", { message: error.message }));
+        renderCloudPanel(t("cloudConflictPaused"));
+        return;
+      }
+
+      if (!payload.save) {
+        cloudConflict = null;
+        expectedCloudUpdatedAt = null;
+        cloudVersionReady = true;
+        renderCloudPanel();
+        setStatus(t("signedInNoCloud"));
+        return;
+      }
+
+      markCloudConflict(game, payload);
+      const choice = await showCloudConflictDialog(game, cloudConflict);
+      if (choice === "cancel") {
+        renderCloudPanel(t("cloudConflictPaused"));
+        setStatus(t("cloudConflictPaused"));
+        return;
+      }
+
+      if (choice === "restore") {
+        let currentPayload;
+        try {
+          currentPayload = await apiFetch(`/api/saves/${game.id}`);
+        } catch (error) {
+          setStatus(t("cloudUnavailable", { message: error.message }));
+          renderCloudPanel(t("cloudConflictPaused"));
+          return;
+        }
+        if (!currentPayload.save) {
+          cloudConflict = null;
+          expectedCloudUpdatedAt = null;
+          cloudVersionReady = true;
+          renderCloudPanel();
+          setStatus(t("signedInNoCloud"));
+          return;
+        }
+        if (currentPayload.updatedAt !== payload.updatedAt) {
+          payload = currentPayload;
+          markCloudConflict(game, payload, "cloudChangedElsewhere");
+          continue;
+        }
+
+        applySaveData(game, currentPayload.save);
+        expectedCloudUpdatedAt = currentPayload.updatedAt || null;
+        rememberCloudTime(game, currentPayload.updatedAt);
+        cloudConflict = null;
+        renderCloudPanel(t("cloudOk"));
+        setStatus(t("restoredCloud"));
+        if (frame.getAttribute("src")) {
+          frame.contentWindow.location.reload();
+          startAutoSync(game);
+        }
+        return;
+      }
+
+      const attemptedUpdatedAt = payload.updatedAt || null;
+      expectedCloudUpdatedAt = attemptedUpdatedAt;
+      const uploaded = await syncToCloud(game, true, { allowConflict: true });
+      if (uploaded) {
+        if (frame.getAttribute("src")) {
+          startAutoSync(game);
+        }
+        return;
+      }
+      if (cloudConflict?.updatedAt !== attemptedUpdatedAt) {
+        payload = null;
+        continue;
+      }
+      return;
+    }
+  }
+
+  function resolveCloudConflict(game, initialPayload = null) {
+    if (conflictDialogPromise) {
+      return conflictDialogPromise;
+    }
+    conflictDialogPromise = runCloudConflictResolution(game, initialPayload)
+      .finally(() => {
+        conflictDialogPromise = null;
+      });
+    return conflictDialogPromise;
+  }
+
   async function logout() {
     try {
       await syncToCloud(currentGame, false);
@@ -521,6 +844,9 @@
       console.warn("Logout failed", error);
     }
     authUser = null;
+    cloudVersionReady = true;
+    expectedCloudUpdatedAt = null;
+    cloudConflict = null;
     stopAutoSync();
     renderCloudPanel(t("loggedOutPanel"));
     setStatus(t("loggedOutStatus"));
@@ -537,6 +863,9 @@
       const cloudTime = Date.parse(payload.updatedAt || "") || 0;
       const knownCloudTime = getKnownCloudTime(game);
       const localExists = hasLocalSave(game);
+      expectedCloudUpdatedAt = payload.updatedAt || null;
+      cloudVersionReady = true;
+      renderCloudPanel();
 
       if (cloudSave && isScoreOnlyStorage(game)) {
         applySaveData(game, cloudSave);
@@ -548,14 +877,16 @@
         return;
       }
 
-      if (cloudSave && (!localExists || cloudTime > knownCloudTime)) {
-        const shouldRestore = !localExists || window.confirm(t("restoreCloudConfirm"));
-        if (shouldRestore) {
-          applySaveData(game, cloudSave);
-          rememberCloudTime(game, payload.updatedAt);
-          setStatus(t("restoredCloud"));
-          return;
-        }
+      if (cloudSave && !localExists) {
+        applySaveData(game, cloudSave);
+        rememberCloudTime(game, payload.updatedAt);
+        setStatus(t("restoredCloud"));
+        return;
+      }
+
+      if (cloudSave && localExists && cloudTime > knownCloudTime) {
+        await resolveCloudConflict(game, payload);
+        return;
       }
 
       if (localExists) {
@@ -564,36 +895,63 @@
         setStatus(t("signedInNoCloud"));
       }
     } catch (error) {
+      cloudVersionReady = false;
+      renderCloudPanel(t("cloudUnavailable", { message: error.message }));
       setStatus(t("cloudUnavailable", { message: error.message }));
     }
   }
 
-  async function syncToCloud(game, visible) {
+  async function syncToCloud(game, visible, options = {}) {
     if (!authUser || !game || syncInFlight) {
-      return;
+      return false;
+    }
+    if (cloudConflict && !options.allowConflict) {
+      if (visible) {
+        setStatus(t("cloudConflictBlocked"));
+        renderCloudPanel(t("cloudConflictPaused"));
+      }
+      return false;
+    }
+    if (!cloudVersionReady) {
+      if (visible) {
+        setStatus(t("cloudChecking"));
+        renderCloudPanel(t("cloudChecking"));
+      }
+      return false;
     }
     const saveData = collectSaveData(game);
     if (!Object.keys(saveData).length) {
       if (visible) {
         setStatus(t("noLocalSave"));
       }
-      return;
+      return false;
     }
 
     syncInFlight = true;
     try {
       const payload = await apiFetch(`/api/saves/${game.id}`, {
         method: "PUT",
-        body: JSON.stringify({ saveData })
+        body: JSON.stringify({
+          saveData,
+          expectedUpdatedAt: expectedCloudUpdatedAt
+        })
       });
+      expectedCloudUpdatedAt = payload.updatedAt || null;
       rememberCloudTime(game, payload.updatedAt);
+      cloudConflict = null;
       setStatus(t("cloudSynced", { time: new Date(payload.updatedAt).toLocaleTimeString() }));
       renderCloudPanel(t("cloudOk"));
+      return true;
     } catch (error) {
+      if (error.status === 409 && error.code === "SAVE_CONFLICT") {
+        markCloudConflict(game, { updatedAt: error.updatedAt }, "cloudChangedElsewhere");
+        return false;
+      }
       if (visible) {
         setStatus(t("cloudSyncFailed", { message: error.message }));
         renderCloudPanel(error.message);
       }
+      return false;
     } finally {
       syncInFlight = false;
     }
@@ -601,6 +959,9 @@
 
   function startAutoSync(game) {
     stopAutoSync();
+    if (!authUser || !cloudVersionReady || cloudConflict) {
+      return;
+    }
     syncTimer = window.setInterval(() => syncToCloud(game, false), 30000);
   }
 
@@ -672,7 +1033,11 @@
     applyLanguagePreference(game);
     frame.src = buildEntry(game);
     frame.addEventListener("load", () => {
-      setStatus(authUser ? t("loadedCloud") : t("loadedLocal"));
+      setStatus(cloudConflict
+        ? t("cloudConflictPaused")
+        : authUser
+          ? t("loadedCloud")
+          : t("loadedLocal"));
     });
     window.addEventListener("beforeunload", flushGameSave);
     document.addEventListener("visibilitychange", () => {

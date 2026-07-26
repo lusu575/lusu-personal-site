@@ -24,7 +24,7 @@ description: 维护鲁肃个人站 `/admin/` 管理后台时使用。只适用�
 - 普通账号免费池与管理员豁免的判断都在服务端执行。管理员“不限频次”不等于无限网络并发，也不突破 Cloudflare、R2、浏览器或账单边界。
 - 站内费用是估算值，不能宣称等同 Cloudflare 正式账单；官方 1 / 3 / 5 美元预算提醒必须记录为 Dashboard 人工配置。
 - 本地 API 建议 Node.js 22.13+；同名变量放入被 Git 忽略的 `.dev.vars`，本地值独立生成。不得提交 `.dev.vars`、`.env`、真实邮箱、令牌、Webhook 或其他密钥。
-- 独立管理页与公开 Resources / Quick Transfer 共用生产图集 `assets/transfer/quick-transfer-icons.png`。图集内容或版本变化时，必须使用同一发布 token 同步更新公开引用、`admin/transfer.css` 的图集 query 与 `admin/transfer.html` 的样式 query；不能只更新主站而让后台继续缓存旧图集。
+- 独立管理页与公开工具区（内部 `resources` route）/ Quick Transfer 共用生产图集 `assets/transfer/quick-transfer-icons.png`。图集内容或版本变化时，必须使用同一发布 token 同步更新公开引用、`admin/transfer.css` 的图集 query 与 `admin/transfer.html` 的样式 query；不能只更新主站而让后台继续缓存旧图集。
 - 修改独立管理页或主后台入口时同步更新页面内 `adminUpdates`、根 `CHANGELOG.md`、`admin/docs/ADMIN_PROJECT_CONTEXT.md`、本 Skill 和 `admin/docs/ADMIN_CHANGELOG.md`。
 
 ## 文档边界

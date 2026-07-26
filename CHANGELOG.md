@@ -2,6 +2,31 @@
 
 本文件记录鲁肃个人站的功能、界面、后端、部署与项目约定变更。每次修改项目后都应同步更新这里，方便后续 AI / Codex 对话快速了解最近改动。
 
+## 2026-07-26
+
+- 完成全界面点检后的移动游戏修复：A Dark Room 在窄屏按实际面板宽度滑动，资源、主操作与声音选择窗不再沿用 700px 桌面几何，声音提示同步中文／English／日本語；同页横竖屏切换会重新测量两层滑轨、当前偏移与资源面板归属，返回桌面宽度时恢复原 700px 布局。Kittens Game 将上游 1300px 三栏在 ≤900px 改为营火→资源→日志单列，顶部工具栏在窄屏自然换为两行，Steam／Version 完整显示不裁切，全部可见关键控件与折叠／日志热区保持至少 44px，桌面三栏不变。
+- Kittens Game 的嵌入副本移除上游 Google Analytics，禁用只适用于原站的 KGNet 登录／同步和 `localhost:7780` 桥接请求，只加载当前主题并在切换时按需加载，避免为未使用主题请求 Google Fonts；文档语言在首屏按中文／English／日本語同步，内部构建修订提升为 `4`，移动 CSS query 为 `20260726-mobile-r3`。这些变更不影响本站游戏 localStorage、JSON 备份或账号云存档。2048“新游戏”、Hextris 核心操作及五游戏共享壳的返回、登录、下载、导入和云存档控件同步达到移动 44px。
+- Life Restart 新增仅在粗指针环境启用的运行时移动适配：主操作与所有可见 `btn*` hitArea 均保持至少 44px，竖屏把工具操作与主流程分离，短横屏将工具放入底部横排；细指针桌面几何维持上游原样。内部缓存版本为 `20260726-life-mobile-touch-r1`。
+- 五游戏共享壳固定为一个 `100dvh` 网格，外层 document 不再滚动，工具区按短屏压缩，iframe 使用剩余空间并成为游戏内容的滚动主体；共享壳版本为 `20260726-game-mobile-shell-r1`，2048／Hextris 内部样式版本为 `20260726-mobile-touch-r1`。
+- 公共 UI 同步收口：359×500 欢迎窗增加首屏可读容量；视频内嵌失败时使用紧凑决策窗，不再保留大面积空白；桌面模态遮罩提高背景层级对比，Tools／About 长文案使用更自然的换行。主站入口与 ESM 模块缓存版本统一为 `20260726-interface-audit-fixes-r2`，A Dark Room 本轮四项内部资源统一为 `20260726-a-dark-room-mobile-r2`。
+- 新增 A Dark Room、Kittens Game、共享游戏壳和公共弹窗／更新投影专项契约测试；三语 `site-updates` 记录 `seed-update-2026-07-26-interface-audit-fixes` 已同步完整 fallback、Home 最新五条无正文投影、Functions seed 与 schema seed。未连接生产 D1，未推送、未部署。
+- 本批最终门禁全绿：261 / 261 单元与契约测试、20 个公开模块依赖图、静态构建、两次完全一致的生产构建（manifest SHA-256 `dd99d2a75ea725c9efc34cc4e6b0671821dad9a22f0b6ed140f74d54f9f6d5cb`）、190 / 190 发布矩阵、147 / 147 完整公共 UI 审计及 58 / 58 Tools／Quick Transfer 三语专项均通过；A Dark Room 同页 390→844→390 旋转、Kittens 顶栏完整换行与 Life Restart 两种手机方向的真实触摸也分别通过。仅保留既有日语工具 `noMedal` 重复键警告；未连接生产 D1、未推送、未部署。
+- 公开“资源区”显示名统一更名为中文“工具区”、English “Tools”、日本語“ツール”，并同步首页桌面入口、窗口标题、任务栏／移动 Dock、Appbar、文档元信息、空状态、Quick Transfer 返回操作、后台访问路径标签与三语维护文档。旧文章中的“资源区 / Resources / リソース”标签继续兼容，但在当前界面统一显示新名称。
+- 本次只调整公开显示层：内部 `resources` 路由、`#resources` 收藏链接、DOM／CSS、模块、API、统计和审计标识均保持不变；新增精确三语名称、Transfer 返回文案与深链兼容回归。公开缓存版本更新为 `20260726-tools-rename-r1`，后台脚本版本为 `20260726-admin-tools-label-r1`；三语 `site-updates` 记录 `seed-update-2026-07-26-resources-to-tools` 已同步完整 fallback、Home 最新五条无正文投影、Functions seed 与 schema seed。未连接生产 D1，未推送、未部署。
+- 更名批次最终验证通过：Tools／Quick Transfer 三语六视口专项 58 / 58（同时真实点击两种返回入口），全量测试 242 / 242、20 个公开模块依赖图、静态构建、两次完全一致的生产构建（manifest SHA-256 `2bc1790f7806a02721c53a23d354a6b36b8df81ad69d5938249bbffbd91c82d5`）及发布矩阵 190 / 190 均通过；残留扫描确认当前运行时没有旧栏目名，也没有 `#tools` 等错误技术迁移。仅保留既有日语工具 `noMedal` 重复键警告。
+- 修复用户截图中的手机 Knowledge 文章首屏大面积空白：根因是懒加载 `css/routes/knowledge.css` 被追加到 `css/mobile-ios-shell.css` 之后，同等优先级下重新写回桌面侧栏 `min-height`。`index.html` 现为移动样式增加稳定 marker，`js/main.js` 将全部 route CSS 固定插在移动样式之前，移动样式再以高优先级规则保护阅读侧栏；359×500、390×844、844×390 首屏分别可见约 109px、346px、82px 正文，而原 390×844 截图正文可见量为 0。
+- 统一修复点检发现的移动端问题：844×390 英文 Resources 卡改为按内容高度排布，不再有 20.75px 子项越界；文章短竖屏把返回与目录同排，常规目录允许完整换行；阅读进度在正文末尾完成，不把 Dock 安全尾距算入正文。收起 Dock 同时使用 `inert`、`aria-hidden` 与 `visibility:hidden`，回顶按钮在顶部原生 `hidden`，激活后焦点交还 `#article-detail-title`；目录使用文章实际语言并移除重复容器 Tab 停靠点，图片空 `alt` 配合可见 `figcaption` 避免重复朗读。
+- 公开缓存版本统一更新为 `20260726-mobile-reading-qa-r1`；三语 `site-updates` 记录 `seed-update-2026-07-26-mobile-article-first-screen` 已同步 `js/data/content.mjs` 完整 fallback、`js/data/home-content.mjs` 最新五条无正文投影、Functions seed 与 schema seed。文章专项 10 / 10、Resources 三语布局 58 / 58、完整公共 UI 审计 147 / 147 均通过；最终 `npm.cmd run verify:public-site-release` 全绿，包含 240 / 240 测试、20 个模块依赖图、静态构建、两次完全一致的生产构建（manifest SHA-256 `69f50b9df664d7afdbb317744795fdb8068d10e734115ee9ddd911f1799314a9`）与 190 / 190 发布矩阵。仅保留既有日语工具 `noMedal` 重复键警告；未连接生产 D1、未推送、未部署。
+- 完成用户审计清单的 30 项功能与界面优化：在原有云存档 CAS／冲突备份、Quick Transfer 真实安全边界和四态连接检测基础上，补齐账号 8 秒超时与原位重试、聊天室真实重连与手动重试、密码房单飞切换、知识库多词 AND 搜索和滚动／History 复位、视频／资源筛选焦点恢复、视频空分类“显示全部”主操作，以及游戏目录后台刷新失败的缓存提示。
+- 三语与无障碍同步收口：首屏按受支持 query 提前设置 `html.lang`，文章列表和回退正文使用 API 实际语言；移动语言按钮完整显示当前语言并播报下一语言；Chat 密码错误、300 字计数与 Quick Transfer 口令说明均关联输入控件，上传区移除伪按钮键盘代理并保留原生文件选择器。资源卡在手机完整展示说明，将事实字段、标签和 CTA 分层；游戏卡直接显示中／英／日支持情况，简介放宽到三行，原生详情控件统一 44px。
+- 新增／扩展账号、Chat、Knowledge、Videos、Resources、Games、连接状态、云存档冲突、Transfer 与公共壳专项回归；Home 懒加载审计将 `/api/health` 识别为壳层健康检查而非业务 API。公开缓存版本统一更新为 `20260726-complete-30-optimization-r1`；三语更新记录继续使用 `seed-update-2026-07-26-trust-safety-status` 的稳定 ID，并已将标题、摘要和正文扩展为完整 30 项说明，同步完整 fallback、Home 五条投影、Functions seed 与 schema seed。
+- 云存档冲突改为明确的三语 XP 决策窗口：发现较新云端版本后立即锁住 30 秒计时、切后台、退出、导入和手动同步等全部上传入口；用户可先下载本地 JSON 备份，再选择恢复云端、明确以本地覆盖当前云端版本或暂不处理。Escape、外点与取消都只暂停，不会再沿旧分支把本地存档反向写回；恢复云端前会重新获取并核对当前版本，弹窗停留期间再次变化时刷新冲突而不应用旧快照。
+- 游戏存档 API 新增原子乐观并发控制。客户端每次 PUT 携带精确 `expectedUpdatedAt`，首次创建显式传 `null`；D1 只允许首次原子插入或版本匹配的条件更新，陈旧页面／并发标签页／其他设备竞争时返回 `409 + SAVE_CONFLICT` 并保留新云端数据。客户端云版本基线改为标签页级 `sessionStorage`，不再从共享 `localStorage` 借用其他标签页的新版本号上传旧进度；服务端成功写入的版本时间也保证严格递增。五个游戏入口同步更新共享 JS／CSS 缓存版本，短横屏冲突警告与 44px 决策操作保持可见。
+- Quick Transfer 的资源卡、登录说明、房间安全提示、上传配额与历史更新文案统一到真实边界：文字在浏览器使用 AES-GCM；图片、视频和文件不使用房间口令加密，只通过 HTTPS、私有 R2 与服务端鉴权保护，且不做病毒／恶意软件扫描；配额明确为滚动 24 小时，拖放明确先进入待发送附件。
+- PC 任务栏静态 `ONLINE` 改为可点击重试的真实服务状态：初始检查中，只有 `/api/health` 返回 `2xx + ok:true + db:true` 才显示在线；浏览器离线、服务异常和健康恢复各有独立三语文字与静态状态灯。探测使用 5 秒超时、在线 60 秒复查及 10／20／40／60 秒异常退避，页面隐藏时中止；移动 Dock 继续隐藏该非高频托盘。健康接口不再查询或公开用户数量，只返回 `{ ok, db }`。
+- 新增云存档 CAS、冲突 UI、连接状态机和 Quick Transfer 三语安全边界回归测试；三语 `site-updates` 记录 `seed-update-2026-07-26-trust-safety-status` 已同步 `js/data/content.mjs` 完整 fallback、`js/data/home-content.mjs` 最新五条无正文投影、Functions seed 与 schema seed；同时更新 `PROJECT_CONTEXT.md`、主站 Skill／README 和构建守卫。未连接生产 D1，未推送、未部署。
+- 最终 `npm.cmd run verify:public-site-release` 全绿：236 / 236 单元与契约测试、20 个公开模块依赖图、静态构建、两次完全一致的生产构建（manifest SHA-256 `83e1d7be5a3446de6c130435b9e2791f01430c6e2c8627b381a9da1abc821897`）及 190 / 190 Headless Chrome 发布矩阵均通过；另有 142 / 142 完整公共 UI 审计通过。仅保留既有日语工具 `noMedal` 重复键警告；本轮未连接生产 D1、未推送、未部署。
+
 ## 2026-07-21
 
 - 移除 PC 端底部任务栏当前任务按钮的黄色底边、黄色外描边与常亮光晕，保留蓝色按下背景、内凹层级和清晰文字对比；键盘 `:focus-visible` 焦点环继续保留，移动 Dock 的选中底板、滑动与触控范围不变。

@@ -145,6 +145,12 @@ canvas {
   text-align: center;
 }
 
+@media (pointer: coarse) {
+  button {
+    min-height: 44px;
+  }
+}
+
 @media (max-width: 540px) {
   .top {
     align-items: stretch;
@@ -166,7 +172,8 @@ canvas {
   }
 
   button {
-    padding: 6px;
+    min-height: 44px;
+    padding: 8px 6px;
     font-size: 12px;
   }
 }

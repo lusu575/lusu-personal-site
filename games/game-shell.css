@@ -11,14 +11,27 @@
   box-sizing: border-box;
 }
 
+html {
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
   margin: 0;
-  min-height: 100vh;
+  height: 100vh;
+  min-height: 0;
+  overflow: hidden;
   color: var(--text);
   font-family: Tahoma, Verdana, "Microsoft YaHei", sans-serif;
   background:
     linear-gradient(180deg, rgba(44, 145, 244, 0.92), rgba(57, 184, 137, 0.78)),
     url("../assets/images/xp-wallpaper-generated.png") center / cover fixed;
+}
+
+@supports (height: 100dvh) {
+  body {
+    height: 100dvh;
+  }
 }
 
 button,
@@ -73,6 +86,8 @@ input {
 }
 
 .game-frame-card {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
   border: 3px solid #0645b7;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.94);
@@ -101,12 +116,14 @@ input {
 
 .game-shell {
   display: grid;
-  grid-template-rows: auto 1fr;
-  min-height: 100vh;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0;
 }
 
 .game-frame-card {
   width: min(1280px, calc(100% - 20px));
+  height: calc(100% - 20px);
+  min-height: 0;
   margin: 10px auto;
   overflow: hidden;
 }
@@ -160,6 +177,12 @@ input {
   box-shadow: inset 1px 1px 0 #fff;
 }
 
+.cloud-account.is-conflict {
+  border-color: #d87900;
+  background: linear-gradient(180deg, #fffdf4, #fff0c8);
+  box-shadow: inset 1px 1px 0 #fff, 0 0 0 2px rgba(216, 121, 0, 0.14);
+}
+
 .cloud-login strong,
 .cloud-account strong {
   color: var(--blue-dark);
@@ -188,6 +211,20 @@ input {
   font-size: 12px;
 }
 
+.cloud-actions .tool-button:disabled {
+  border-color: #8b98ab;
+  color: #687386;
+  background: linear-gradient(180deg, #f4f5f6, #d7dce3);
+  box-shadow: inset 1px 1px 0 #fff;
+  cursor: not-allowed;
+}
+
+.cloud-review-button {
+  border-color: #b55c00;
+  color: #713000;
+  background: linear-gradient(180deg, #fffdf1 0%, #ffe09a 48%, #f6aa39 100%);
+}
+
 .cloud-login p,
 .cloud-account p,
 .cloud-account span {
@@ -195,6 +232,111 @@ input {
   color: var(--muted);
   font-size: 12px;
   overflow-wrap: anywhere;
+}
+
+.cloud-account .cloud-conflict-message {
+  padding: 6px 7px;
+  border: 1px solid #d87900;
+  border-radius: 4px;
+  color: #6c3100;
+  background: rgba(255, 255, 255, 0.72);
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.cloud-conflict-overlay {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(4, 22, 66, 0.56);
+  backdrop-filter: blur(2px);
+}
+
+.cloud-conflict-dialog {
+  width: min(600px, 100%);
+  max-height: calc(100dvh - 36px);
+  overflow: auto;
+  border: 3px solid #0645b7;
+  border-radius: 8px;
+  color: var(--text);
+  background: #f7fbff;
+  box-shadow: 7px 8px 0 rgba(0, 20, 72, 0.34), inset 1px 1px 0 #fff;
+}
+
+.cloud-conflict-titlebar {
+  min-height: 36px;
+  padding: 8px 10px;
+  border-bottom: 2px solid #043080;
+  color: #fff;
+  background: linear-gradient(180deg, #4aa4ff 0%, #1d6fe8 50%, #12439f 100%);
+  font-size: 14px;
+  font-weight: 900;
+  text-shadow: 1px 1px 0 #06357d;
+}
+
+.cloud-conflict-body {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+}
+
+.cloud-conflict-body h2 {
+  margin: 0;
+  color: var(--blue-dark);
+  font-size: 20px;
+}
+
+.cloud-conflict-body p {
+  margin: 0;
+  line-height: 1.55;
+}
+
+.cloud-conflict-time {
+  padding: 8px 10px;
+  border: 2px inset #d2e2ff;
+  background: #fff;
+  font-weight: 900;
+}
+
+.cloud-conflict-advice {
+  padding: 9px 10px;
+  border: 1px solid #d87900;
+  border-radius: 5px;
+  color: #653000;
+  background: #fff2cc;
+}
+
+.cloud-conflict-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.cloud-conflict-actions .tool-button {
+  min-height: 44px;
+  padding: 8px 10px;
+  line-height: 1.25;
+  white-space: normal;
+}
+
+.cloud-conflict-backup {
+  border-color: #217340;
+  color: #124f2b;
+  background: linear-gradient(180deg, #f8fff9 0%, #c9f2d4 48%, #7dce93 100%);
+}
+
+.cloud-conflict-overwrite {
+  border-color: #9d2d24;
+  color: #7f1d18;
+  background: linear-gradient(180deg, #fff8f7 0%, #ffd4cf 48%, #ed8d82 100%);
+}
+
+.cloud-conflict-dialog button:focus-visible {
+  outline: 3px solid #ffdc3d;
+  outline-offset: 2px;
 }
 
 .file-button input {
@@ -220,8 +362,8 @@ input {
 .game-frame {
   display: block;
   width: 100%;
-  height: calc(100dvh - 168px);
-  min-height: 620px;
+  height: 100%;
+  min-height: 0;
   border: 0;
   background: #fff;
 }
@@ -269,6 +411,7 @@ input {
 
   .game-frame-card {
     width: calc(100% - 12px);
+    height: calc(100% - 12px);
     margin: 6px auto;
   }
 
@@ -278,24 +421,42 @@ input {
     font-size: 12px;
   }
 
-  .game-frame {
-    height: calc(100dvh - 230px);
-    min-height: 420px;
-  }
 }
 
 @media (max-width: 560px) {
   .game-topbar {
-    align-items: stretch;
-    flex-direction: column;
+    align-items: center;
+    flex-direction: row;
+    gap: 6px;
+    min-height: 56px;
+    padding: 6px;
   }
 
   .back-link {
-    width: 100%;
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+  }
+
+  .game-topbar > div {
+    flex: 0 1 auto;
+    min-width: 0;
+    text-align: right;
+  }
+
+  .game-topbar strong {
+    overflow: hidden;
+    max-width: 44vw;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .game-topbar span {
+    display: none;
   }
 
   .game-title h1 {
-    font-size: 17px;
+    font-size: 15px;
   }
 
   .game-title p {
@@ -310,6 +471,32 @@ input {
   .cloud-login,
   .cloud-account {
     padding: 7px;
+  }
+
+  .cloud-login input,
+  .cloud-actions .tool-button {
+    min-height: 44px;
+  }
+
+  .cloud-conflict-overlay {
+    padding: 8px;
+  }
+
+  .cloud-conflict-dialog {
+    max-height: calc(100dvh - 16px);
+  }
+
+  .cloud-conflict-body {
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .cloud-conflict-body h2 {
+    font-size: 17px;
+  }
+
+  .cloud-conflict-actions {
+    grid-template-columns: 1fr;
   }
 
   .tool-row {
@@ -332,8 +519,8 @@ input {
   .file-button,
   .play-button,
   .back-link {
-    min-height: 32px;
-    padding: 6px 9px;
+    min-height: 44px;
+    padding: 8px 9px;
     font-size: 12px;
   }
 
@@ -342,9 +529,16 @@ input {
     padding: 6px 8px;
   }
 
-  .game-frame {
-    height: calc(100dvh - 270px);
-    min-height: 360px;
+}
+
+@media (pointer: coarse) {
+  .tool-button,
+  .file-button,
+  .play-button,
+  .back-link,
+  .cloud-login input,
+  .cloud-actions .tool-button {
+    min-height: 44px;
   }
 }
 
@@ -370,6 +564,12 @@ input {
   .cloud-login p,
   .cloud-account p {
     display: none;
+  }
+
+  .cloud-account.is-conflict .cloud-conflict-message {
+    display: block;
+    max-height: 64px;
+    overflow: auto;
   }
 
   .cloud-login,
@@ -402,8 +602,4 @@ input {
     padding: 5px 8px;
   }
 
-  .game-frame {
-    height: calc(100dvh - 156px);
-    min-height: 260px;
-  }
 }

@@ -1,6 +1,126 @@
 export const content = {
   updates: [
     {
+      "article_id": "seed-update-2026-07-26-interface-audit-fixes",
+      "slug": "2026-07-26-interface-audit-fixes",
+      "category": "site-updates",
+      "tags": ["mobile", "Games", "UI", "privacy", "QA"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-26T08:58:00.000Z",
+      "updated_at": "2026-07-26T08:58:00.000Z",
+      "published_at": "2026-07-26T08:58:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.07.26",
+      "title": {
+        "zh": "全界面移动适配与游戏体验修复",
+        "en": "Sitewide Mobile and Game Experience Fixes",
+        "ja": "全画面のモバイル・ゲーム体験修正"
+      },
+      "summary": {
+        "zh": "完成全部公开界面复检，修复 A Dark Room、Kittens Game、Life Restart、2048 与 Hextris 五款游戏的手机适配、触控和滚动问题，并收紧弹窗层级与第三方请求边界。",
+        "en": "Completed a full public-interface recheck, fixing mobile layout, touch, and scrolling across five games—A Dark Room, Kittens Game, Life Restart, 2048, and Hextris—while tightening modal hierarchy and third-party request boundaries.",
+        "ja": "公開画面を全面再点検し、A Dark Room、Kittens Game、Life Restart、2048、Hextris の5ゲームでモバイル配置・タッチ・スクロールを修正。モーダル階層と外部通信の境界も整えました。"
+      },
+      "content_markdown": {
+        "zh": "# 全界面移动适配与游戏体验修复\n\n本轮基于全界面截图和几何点检，集中修复移动游戏首屏、触控尺寸、嵌入页面宽度、弹窗层级及外部请求边界，同时保持桌面布局和现有存档功能不变。\n\n## 移动游戏\n\n- A Dark Room 与 Kittens Game 不再沿用固定桌面宽度，手机上可在当前视口内完整使用，并保留桌面原布局。A Dark Room 在同页横竖屏切换时会重算两层滑轨、当前偏移与资源面板归属；Kittens Game 顶部工具栏在窄屏自然换为两行，Steam 与 Version 信息不再裁切，全部可见关键控件保持至少 44px。\n- Life Restart 只在粗指针移动环境启用运行时适配：主操作与所有可见 `btn*` hitArea 至少 44px，竖屏把工具与主流程分开，短横屏改为底部横排；细指针桌面几何保持原样。\n- 2048 的“新游戏”和 Hextris 的核心控制扩大为移动端友好的触控尺寸。\n- 五个游戏共用壳在短屏上压缩工具区，让游戏画面成为主要滚动区域，避免外层页面与 iframe 同时纵向滚动。\n\n## 本地化与隐私\n\n- A Dark Room 的音频提示随中文、英文和日文界面切换。\n- Kittens Game 移除上游 Google Analytics，并禁用仅适用于原站的 KGNet 与 localhost 本地桥接请求；文档语言随站点同步，未选择主题不再预载或发起外部字体请求。本站自己的本地存档和账号云存档不受影响。\n\n## 公共界面细节\n\n- 短屏欢迎窗增加可读容量；视频无法内嵌时改用紧凑决策窗，不再留下大面积空白。\n- 桌面弹窗遮罩提高层级对比度，工具和关于页面的长文案使用更自然的换行。\n\n## 全面回归\n\n公开首页、知识库、视频、工具、游戏、聊天、关于、文章阅读器与五个游戏均按桌面和关键手机尺寸复检，并覆盖中文、英文与日文可见文案、横向溢出、滚动所有者和 44px 触控目标。",
+        "en": "# Sitewide Mobile and Game Experience Fixes\n\nThis pass uses full-interface screenshots and geometry checks to fix mobile game first screens, touch sizes, embedded-document widths, modal hierarchy, and external request boundaries while preserving desktop layouts and existing save behavior.\n\n## Mobile games\n\n- A Dark Room and Kittens Game no longer inherit fixed desktop widths on phones. Their complete interfaces fit the current viewport, and their desktop layouts remain intact. A Dark Room now recomputes both sliders, the active offset, and store-panel ownership during same-page orientation changes; the Kittens Game top toolbar wraps naturally into two rows on narrow screens, keeps Steam and Version fully visible, and maintains at least 44px for every visible critical control.\n- Life Restart enables its runtime adaptation only for coarse pointers: the primary action and every visible `btn*` hit area are at least 44px, portrait separates tools from the main flow, and short landscape places them in a bottom row, while fine-pointer desktop geometry stays unchanged.\n- The New Game action in 2048 and the core Hextris controls now provide mobile-friendly touch targets.\n- The shared shell for all five games compacts its tools on short screens so the game surface owns the primary scroll instead of creating competing outer-page and iframe scrolling.\n\n## Localization and privacy\n\n- The A Dark Room audio prompt follows the Chinese, English, or Japanese interface language.\n- Kittens Game removes upstream Google Analytics and disables KGNet plus the localhost bridge that only applied to the original host. Its document language follows the site, and unselected themes no longer preload or trigger external font requests. This does not affect the site's own local saves or account cloud saves.\n\n## Public-interface details\n\n- The short-screen welcome sheet exposes more readable content. Failed video embeds now use a compact decision sheet instead of a mostly empty full-screen player.\n- Desktop modal dimming has clearer depth, and long copy on Tools and About wraps more naturally.\n\n## Full regression\n\nHome, Knowledge, Videos, Tools, Games, Chat, About, the article reader, and all five games were rechecked at desktop and critical phone sizes, covering Chinese, English, and Japanese copy, horizontal overflow, scroll ownership, and 44px touch targets.",
+        "ja": "# 全画面のモバイル・ゲーム体験修正\n\n全画面のスクリーンショットと要素寸法の点検を基に、モバイルゲームの初期画面、タッチ寸法、埋め込み文書幅、モーダル階層、外部通信の境界を修正しました。デスクトップ配置と既存の保存機能は維持しています。\n\n## モバイルゲーム\n\n- A Dark Room と Kittens Game はスマートフォンで固定デスクトップ幅を使わず、現在の表示幅に収まり、デスクトップの元の配置も維持します。A Dark Room は同じ画面で端末を回転した時も、2段のスライダー、現在位置、資源パネルの所属を再計算します。Kittens Game の上部ツールバーは狭い画面で自然に2段へ折り返し、Steam と Version を欠けずに表示し、見えている主要操作をすべて44px以上に保ちます。\n- Life Restart は粗いポインター環境だけで実行時レイアウトを切り替えます。主操作と表示中のすべての `btn*` ヒット領域を44px以上にし、縦画面ではツールを主フローから分離、短い横画面では下部の横並びにします。細かいポインターのデスクトップ配置は変更しません。\n- 2048 の「新しいゲーム」と Hextris の主要操作を、モバイルで押しやすい寸法に広げました。\n- 5ゲーム共通シェルは短い画面でツール部を圧縮し、外側ページと iframe の二重縦スクロールを避けてゲーム面を主スクロールにします。\n\n## 多言語とプライバシー\n\n- A Dark Room の音声案内は中国語・英語・日本語の画面言語に合わせて表示します。\n- Kittens Game から上流の Google Analytics を削除し、元サイト専用の KGNet と localhost ブリッジを無効化しました。文書言語は当サイトに合わせ、未選択テーマの事前読み込みと外部フォント通信も行いません。当サイトのローカル保存とアカウント用クラウド保存には影響しません。\n\n## 公開画面の調整\n\n- 短い画面のウェルカムシートで読める範囲を増やしました。動画を埋め込めない場合は、大きな空白のある全画面ではなくコンパクトな選択シートを表示します。\n- デスクトップのモーダル背景を明確にし、ツールと About の長文を自然に折り返します。\n\n## 全面回帰\n\nHome、Knowledge、Videos、Tools、Games、Chat、About、記事リーダー、5ゲームをデスクトップと主要モバイル寸法で再点検し、中国語・英語・日本語、横方向のはみ出し、スクロール所有者、44px タッチ対象を確認しました。"
+      }
+    },
+    {
+      "article_id": "seed-update-2026-07-26-resources-to-tools",
+      "slug": "2026-07-26-resources-to-tools",
+      "category": "site-updates",
+      "tags": ["UI", "i18n", "Tools", "compatibility", "QA"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-26T06:55:36.099Z",
+      "updated_at": "2026-07-26T06:55:36.099Z",
+      "published_at": "2026-07-26T06:55:36.099Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.07.26",
+      "title": {
+        "zh": "资源区正式更名为工具区",
+        "en": "Resources Area Renamed to Tools",
+        "ja": "リソース欄をツールへ名称変更"
+      },
+      "summary": {
+        "zh": "公开栏目名称已统一为“工具区 / Tools / ツール”，内部 resources 路由、旧 #resources 链接、临时互传和全部功能保持不变。",
+        "en": "The public section name is now Tools across Chinese, English, and Japanese, while the resources route, existing #resources links, Quick Transfer, and all behavior remain unchanged.",
+        "ja": "公開欄の名称を中国語・英語・日本語で「ツール」に統一し、resources ルート、既存の #resources リンク、一時転送、すべての機能は変更していません。"
+      },
+      "content_markdown": {
+        "zh": "# 资源区正式更名为工具区\n\n公开栏目现在统一使用中文“工具区”、English “Tools”、日本語“ツール”，让入口名称更准确地对应当前的软件、临时互传和学习工具。\n\n## 显示名称\n\n- 首页桌面入口、窗口标题、任务栏、移动 Dock、Appbar、文档标题、空状态和临时互传返回操作已同步三种语言。\n- 旧文章标签中的“资源区 / Resources / リソース”会继续兼容，但显示时统一为新名称。\n\n## 功能兼容\n\n- 内部 route、hash、DOM、CSS、模块、API 和统计键继续使用稳定的 resources / resource-* 技术标识。\n- 既有 #resources 收藏链接、筛选状态、临时互传、工具卡片和后台统计归组均保持可用，不迁移或删除任何数据。\n\n## 点检\n\n构建和三语浏览器审计会同时检查首页入口、窗口标题、文档元信息、Dock、临时互传返回按钮及 #resources 深链，防止只改到部分界面。",
+        "en": "# Resources Area Renamed to Tools\n\nThe public section now uses Tools in English, 工具区 in Chinese, and ツール in Japanese so the label accurately matches the software, Quick Transfer, and learning tools available there.\n\n## Display name\n\n- The Home desktop entry, window title, taskbar, mobile Dock, Appbar, document metadata, empty states, and Quick Transfer return actions now use the same trilingual name.\n- Legacy article tags containing 资源区, Resources, or リソース remain accepted and render with the new display name.\n\n## Compatibility\n\n- Stable technical identifiers remain resources and resource-* across the route, hash, DOM, CSS, modules, APIs, analytics, and audits.\n- Existing #resources bookmarks, filters, Quick Transfer, tool cards, and analytics grouping continue to work without data migration or deletion.\n\n## QA\n\nBuild checks and trilingual browser audits now verify the Home entry, section title, document metadata, Dock, Quick Transfer return buttons, and the #resources deep link so partial renames are caught.",
+        "ja": "# リソース欄をツールへ名称変更\n\n公開欄の表示名を日本語「ツール」、中文「工具区」、English「Tools」に統一し、ソフトウェア、一時転送、学習ツールという現在の内容に合わせました。\n\n## 表示名\n\n- Home のデスクトップ入口、ウィンドウタイトル、タスクバー、モバイル Dock、Appbar、文書メタデータ、空状態、一時転送の戻る操作を3言語で同期しました。\n- 過去の記事タグにある「资源区 / Resources / リソース」は互換入力として維持し、画面では新しい名称を表示します。\n\n## 互換性\n\n- route、hash、DOM、CSS、モジュール、API、統計、監査の技術識別子は resources / resource-* のままです。\n- 既存の #resources ブックマーク、絞り込み、一時転送、ツールカード、統計グループはデータ移行や削除なしで引き続き利用できます。\n\n## 点検\n\nビルドと3言語ブラウザー監査で Home 入口、欄タイトル、文書メタデータ、Dock、一時転送の戻るボタン、#resources 直リンクを確認し、一部だけ旧名称が残る回帰を防ぎます。"
+      }
+    },
+    {
+      "article_id": "seed-update-2026-07-26-mobile-article-first-screen",
+      "slug": "2026-07-26-mobile-article-first-screen",
+      "category": "site-updates",
+      "tags": ["mobile", "Knowledge", "accessibility", "QA", "UI"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-26T06:31:45.722Z",
+      "updated_at": "2026-07-26T06:31:45.722Z",
+      "published_at": "2026-07-26T06:31:45.722Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.07.26",
+      "title": {
+        "zh": "手机文章首屏与全站点检修复",
+        "en": "Mobile Article First-Screen and Sitewide QA Fix",
+        "ja": "モバイル記事初期画面と全体点検の修正"
+      },
+      "summary": {
+        "zh": "修复手机知识库文章首屏大面积空白、短横屏英文资源卡裁切，并补齐 Dock、回顶按钮、目录语言与图片说明等无障碍细节。",
+        "en": "Fixed the large blank area above mobile Knowledge articles and clipped English resource cards in short landscape, while completing Dock, back-to-top, TOC-language, and image-caption accessibility details.",
+        "ja": "モバイルのナレッジ記事上部に生じる大きな空白と短い横画面での英語リソースカードの欠けを修正し、Dock、先頭へ戻る操作、目次言語、画像説明のアクセシビリティも整えました。"
+      },
+      "content_markdown": {
+        "zh": "# 手机文章首屏与全站点检修复\n\n本轮针对手机知识库文章首屏的大面积空白做了根因修复，并把同一批移动端、短屏和无障碍问题统一纳入回归点检。\n\n## 首屏与短屏布局\n\n- 根因是按需加载的知识库路由样式插到了移动端样式之后，同等优先级下重新写回了桌面阅读侧栏的最小高度。现在所有路由样式固定插在移动端样式之前，并保留高优先级移动端保护规则。\n- 359×500、390×844 与 844×390 三种关键手机尺寸都会在首屏直接露出正文，不再由目录区域撑出空白。\n- 短横屏英文资源卡改为按内容高度排布，说明、标签和 44px 主操作都保持在卡片内部。\n\n## 阅读与无障碍\n\n- 阅读进度按正文末尾计算，不再把 Dock 安全留白算进正文；回到顶部后焦点交还给文章标题。\n- 收起的 Dock 同时使用 inert、aria-hidden 与视觉隐藏，不再留下可聚焦的透明项目。\n- 目录使用文章实际语言，长标题可换行或横向显露，内部按钮存在时不再给容器增加重复 Tab 停靠点。\n- 图片由可见说明文字负责朗读，装饰性图片使用空替代文本，避免读屏重复播报。\n\n## 统一点检\n\n文章阅读器已覆盖三种关键手机尺寸、中文／英文／日文与回退语言；资源页同时复验三种语言和短横屏返回流程。构建门禁还会持续检查样式加载顺序、首屏正文容量、单一滚动所有者、触控尺寸与焦点行为。",
+        "en": "# Mobile Article First-Screen and Sitewide QA Fix\n\nThis pass fixes the root cause of the large blank area above mobile Knowledge articles and adds the related mobile, short-screen, and accessibility cases to the shared regression audit.\n\n## First-screen and short-screen layout\n\n- Lazy Knowledge route CSS was being inserted after the mobile stylesheet, allowing an equal-specificity desktop sidebar minimum height to win. Route styles now always load before the mobile authority, with a defensive mobile guard retained.\n- At 359×500, 390×844, and 844×390, article body copy is visible on the first screen instead of being pushed down by the TOC area.\n- English resource cards in short landscape now use content-sized rows, keeping descriptions, tags, and the 44px primary action inside each card.\n\n## Reading and accessibility\n\n- Reading progress ends at the article body instead of counting Dock safety padding, and back-to-top activation returns focus to the article title.\n- A collapsed Dock is inert, aria-hidden, and visually hidden, leaving no transparent focusable items.\n- The TOC follows the article's actual language, long titles wrap or reveal horizontally, and containers with interactive children no longer create a duplicate Tab stop.\n- Visible captions provide image descriptions while the corresponding image uses empty alt text, preventing duplicate screen-reader announcements.\n\n## Unified QA\n\nThe article reader now covers three critical mobile sizes, Chinese, English, Japanese, and fallback-language content. Resources are also rechecked across all three languages and the short-landscape return flow. Build gates continue to verify stylesheet order, first-screen body capacity, a single scroll owner, touch sizes, and focus behavior.",
+        "ja": "# モバイル記事初期画面と全体点検の修正\n\nモバイルのナレッジ記事上部に大きな空白が生じる根本原因を修正し、関連するモバイル、短い画面、アクセシビリティの項目を共通回帰点検へ追加しました。\n\n## 初期画面と短い画面のレイアウト\n\n- 遅延読み込みされるナレッジのルート CSS がモバイル CSS の後ろに挿入され、同じ詳細度のデスクトップ用サイドバー最小高さが再適用されていました。ルート CSS は必ずモバイル CSS より前に読み込み、モバイル側の保護規則も維持します。\n- 359×500、390×844、844×390 の各サイズで、目次領域に押し下げられず初期画面から本文が見えるようになりました。\n- 短い横画面の英語リソースカードは内容に応じた高さとなり、説明、タグ、44px の主操作がカード内に収まります。\n\n## 閲覧とアクセシビリティ\n\n- 読了率は Dock 用の安全余白を含めず本文末尾で完了し、先頭へ戻る操作後は記事タイトルへフォーカスを移します。\n- 折りたたんだ Dock は inert、aria-hidden、視覚非表示を同時に使い、透明なフォーカス項目を残しません。\n- 目次は記事の実際の言語を使用し、長いタイトルは折り返しまたは横方向に表示します。内部に操作要素がある場合、コンテナへ重複した Tab 停止位置を追加しません。\n- 画像説明は表示中のキャプションが担当し、画像の alt は空にしてスクリーンリーダーの重複読み上げを防ぎます。\n\n## 統一点検\n\n記事リーダーは3つの主要モバイルサイズ、中国語・英語・日本語とフォールバック言語を対象にしました。リソース画面も3言語と短い横画面からの復帰を再確認します。ビルドゲートでは CSS 順序、初期画面の本文量、単一スクロール所有者、タッチサイズ、フォーカス挙動を継続して検証します。"
+      }
+    },
+    {
+      "article_id": "seed-update-2026-07-26-trust-safety-status",
+      "slug": "2026-07-26-trust-safety-status",
+      "category": "site-updates",
+      "tags": ["Games", "Quick Transfer", "reliability", "security", "UI"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-26T04:54:16.752Z",
+      "updated_at": "2026-07-26T04:54:16.752Z",
+      "published_at": "2026-07-26T04:54:16.752Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.07.26",
+      "title": {
+        "zh": "30 项功能与界面优化完成",
+        "en": "30 Functional and UI Improvements Completed",
+        "ja": "機能・UI 改善 30 項目を完了"
+      },
+      "summary": {
+        "zh": "完成云存档与互传安全、真实连接与恢复流程、搜索筛选、三语无障碍，以及资源和游戏卡片等 30 项可验证优化。",
+        "en": "Thirty verified improvements now cover cloud-save and transfer safety, truthful connection and recovery flows, search and filtering, trilingual accessibility, plus resource and game cards.",
+        "ja": "クラウド保存と転送の安全性、正確な接続・復旧、検索と絞り込み、3言語アクセシビリティ、リソースとゲームカードを含む検証可能な30項目を改善しました。"
+      },
+      "content_markdown": {
+        "zh": "# 30 项功能与界面优化完成\n\n本轮把功能可靠性、真实状态、搜索与筛选、三语无障碍和移动端卡片层级一起收口，并继续保持 Windows XP、Pixel Art 与 Y2K 桌面风格。\n\n## 云存档、互传与连接状态\n\n- 云存档写入加入 CAS 版本校验；冲突时暂停全部上传，并提供备份本地、恢复云端、保留本地覆盖云端和稍后决定。\n- 临时互传明确安全边界：文字使用浏览器端 AES-GCM；文件依靠 HTTPS、私有 R2 与服务端鉴权，不宣称口令端到端加密，也不提供病毒扫描。\n- 桌面托盘使用检测中、在线、服务降级和离线四种真实状态，严格校验数据库健康，并在后台暂停退避重试。\n\n## 恢复、搜索与筛选\n\n- 账号状态检查加入超时和原位重试；聊天室增加真实重连、手动重试，密码房切换防重复提交，历史读取失败不会误报进入成功。\n- 知识库搜索支持多关键词 AND 匹配，筛选和搜索会重置真实滚动位置与历史快照。\n- 视频与资源筛选重建后恢复键盘焦点；视频空分类把“显示全部”设为主操作，网站更新为次操作。\n\n## 三语与无障碍\n\n- 首屏会尽早同步页面语言；文章回退内容使用实际内容语言，移动语言按钮完整显示当前语言并播报下一语言。\n- 聊天密码错误、字数计数和互传口令说明都与对应控件关联；上传区域保留原生文件选择器，不再伪装成额外键盘按钮。\n\n## 资源与游戏卡片\n\n- 手机资源卡完整显示说明，把事实字段、标签和主操作分层，短横屏继续保持操作可见。\n- 游戏卡直接显示中、英、日支持情况，简介最多三行，更多信息使用 44px 原生展开控件；后台刷新失败时明确提示正在显示已缓存列表。",
+        "en": "# 30 Functional and UI Improvements Completed\n\nThis pass closes out functional reliability, truthful state, search and filtering, trilingual accessibility, and mobile card hierarchy while retaining the Windows XP, Pixel Art, and Y2K desktop style.\n\n## Cloud saves, transfer, and connection state\n\n- Cloud-save writes now use compare-and-swap version checks. A conflict pauses every upload path and offers local backup, restore cloud, keep local and overwrite cloud, or decide later.\n- Quick Transfer now states the real boundary: text uses browser-side AES-GCM; files rely on HTTPS, private R2 storage, and server authorization, with no passphrase end-to-end encryption or malware scanning claim.\n- The desktop tray uses four real states—checking, online, degraded, and offline—strictly verifies database health, and pauses backoff checks in the background.\n\n## Recovery, search, and filtering\n\n- Account checks have a timeout and in-place retry. Chat has truthful reconnect and manual retry, password-room switching is single-flight, and failed history never reports successful entry.\n- Knowledge search supports multi-token AND matching, while searches and filters reset the real scroll owner and history snapshot.\n- Video and resource filters restore keyboard focus after rebuilding. Empty video categories make Show all the primary action and site updates secondary.\n\n## Trilingual accessibility\n\n- The first paint applies the requested document language early. Fallback articles expose their actual content language, and the mobile language control shows the full current language while announcing the next one.\n- Chat password errors, character counts, and Transfer passphrase guidance are associated with their controls. The upload area keeps native file pickers instead of pretending to be another keyboard button.\n\n## Resource and game cards\n\n- Mobile resource cards show their full description and separate facts, tags, and the primary action; short landscape keeps the action visible.\n- Game cards expose Chinese, English, and Japanese support directly, allow three summary lines, and use a native 44px disclosure for secondary details. A failed background refresh clearly says the cached catalog is still on screen.",
+        "ja": "# 機能・UI 改善 30 項目を完了\n\n機能の信頼性、正確な状態表示、検索と絞り込み、3言語アクセシビリティ、モバイルカードの階層をまとめて改善し、Windows XP、Pixel Art、Y2K のデスクトップ表現は維持しました。\n\n## クラウド保存・転送・接続状態\n\n- クラウド保存の書き込みに CAS 版照合を追加しました。競合時はすべてのアップロードを停止し、ローカルのバックアップ、クラウドの復元、ローカルを残して上書き、後で決める、を選べます。\n- 一時転送の境界を明記しました。テキストはブラウザー側 AES-GCM、ファイルは HTTPS・非公開 R2・サーバー認可で保護され、パスフレーズによる E2E 暗号化やマルウェア検査は行いません。\n- デスクトップトレイは確認中、オンライン、サービス低下、オフラインの4状態を実際に判定し、DB 健全性も確認。バックグラウンドでは再試行を停止します。\n\n## 復旧・検索・絞り込み\n\n- アカウント確認にタイムアウトとその場での再試行を追加。チャットは正確な再接続と手動再試行に対応し、パスワード部屋の切替は単一実行、履歴失敗時は入室成功と表示しません。\n- ナレッジ検索は複数語の AND 検索に対応し、検索・絞り込み時に実際のスクロール領域と履歴スナップショットを先頭へ戻します。\n- 動画とリソースの絞り込みは再描画後にキーボードフォーカスを復元。空の動画カテゴリでは「すべて表示」を主操作、サイト更新を副操作にしました。\n\n## 3言語アクセシビリティ\n\n- 初回描画で要求された文書言語を早めに適用し、フォールバック記事には実際の本文言語を設定。モバイル言語ボタンは現在の言語名を完全表示し、次の言語も読み上げます。\n- チャットのパスワードエラー、文字数、転送のパスフレーズ説明を各入力に関連付けました。アップロード領域は偽のキーボードボタンを持たず、標準のファイル選択を使います。\n\n## リソースとゲームカード\n\n- モバイルのリソースカードは説明を省略せず、事実情報・タグ・主操作を分離。短い横画面でも操作を表示します。\n- ゲームカードは中国語・英語・日本語対応を直接表示し、概要は3行、詳細は44pxの標準開閉操作に整理。バックグラウンド更新失敗時はキャッシュ済み一覧であることを明示します。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-07-21-desktop-taskbar-active",
       "slug": "2026-07-21-desktop-taskbar-active",
       "category": "site-updates",
@@ -597,14 +717,14 @@ export const content = {
         ja: "リソースに一時転送を追加"
       },
       summary: {
-        zh: "资源区新增登录限定的临时互传房间，支持加密文字、图片、视频和文件；普通账号受免费池保护，管理员可使用分片大文件上传。",
-        en: "Resources now includes signed-in temporary rooms for encrypted text, images, video, and files, with a guarded free pool for standard accounts and multipart large files for admins.",
-        ja: "リソースにログイン限定の一時転送部屋を追加し、暗号化テキスト・画像・動画・ファイル、一般ユーザーの無料枠保護、管理者の大容量分割送信に対応しました。"
+        zh: "资源区新增登录限定的临时互传房间，支持浏览器端 AES-GCM 加密文字，以及通过 HTTPS、私有 R2 和服务端鉴权保护的图片、视频与文件；普通账号受免费池保护，管理员可使用分片大文件上传。",
+        en: "Resources now includes signed-in temporary rooms for text encrypted in the browser with AES-GCM, plus images, video, and files protected by HTTPS, private R2 storage, and server-side authorization, with a guarded free pool for standard accounts and multipart large files for admins.",
+        ja: "リソースにログイン限定の一時転送部屋を追加し、ブラウザー側で AES-GCM 暗号化するテキストと、HTTPS・非公開 R2・サーバー認可で保護する画像・動画・ファイル、一般ユーザーの無料枠保護、管理者の大容量分割送信に対応しました。"
       },
       content_markdown: {
-        zh: "# 临时互传进入资源区\n\n已登录用户输入同一房间口令后，可以临时交换加密文字、图片、视频和普通文件。房间明文口令不会发送到服务器；文件通过 HTTPS、私有 R2、随机对象键和服务端鉴权保护。普通账号单文件上限 95 MiB，并受个人、房间、频率及全站 8 GiB 免费池保护；只有数据库角色为 admin 的账号可用 Multipart Upload 发送数百 MB 到数 GB 文件。内容发布完成 24 小时后立即不可读取，下载支持 Range 和视频拖动。R2 桶、Pages 绑定、独立清理 Worker、生命周期规则和 Cloudflare 官方预算提醒仍需站长在 Dashboard 完成人工配置。",
-        en: "# Quick Transfer Arrives in Resources\n\nSigned-in users who enter the same passphrase can exchange encrypted text, images, video, and regular files. Plaintext passphrases never reach the server; files use HTTPS, private R2, random object keys, and server authorization. Standard accounts are limited to 95 MiB per file and guarded by personal, room, rate, and shared 8 GiB free-pool limits. Only database admins may use Multipart Upload for hundreds of megabytes through multi-GB files. Items become unreadable after 24 hours, and downloads support Range requests and video seeking. The owner must still configure R2, Pages bindings, the cleanup Worker, lifecycle rules, and official Cloudflare budget alerts.",
-        ja: "# リソースに一時転送を追加\n\n同じ合言葉を入力したログイン済みユーザー同士で、暗号化テキスト、画像、動画、通常ファイルを一時共有できます。一般アカウントは1件 95 MiB までで、個人・部屋・頻度・全体 8 GiB の無料枠保護を受けます。Multipart Upload で数百 MB から数 GB を送れるのはデータベースの admin のみです。公開完了から24時間後にアクセス不可となり、Range ダウンロードと動画シークに対応します。R2、Pages バインド、清理 Worker、ライフサイクル、Cloudflare 公式予算通知は Dashboard で手動設定が必要です。"
+        zh: "# 临时互传进入资源区\n\n已登录用户输入同一房间口令后，可以临时交换浏览器端 AES-GCM 加密文字，以及通过 HTTPS、私有 R2、随机对象键和服务端鉴权保护的图片、视频与普通文件。房间明文口令不会发送到服务器，文件不使用该口令加密。普通账号单文件上限 95 MiB，并受个人、房间、频率及全站 8 GiB 免费池保护；只有数据库角色为 admin 的账号可用 Multipart Upload 发送数百 MB 到数 GB 文件。内容发布完成 24 小时后立即不可读取，下载支持 Range 和视频拖动。R2 桶、Pages 绑定、独立清理 Worker、生命周期规则和 Cloudflare 官方预算提醒仍需站长在 Dashboard 完成人工配置。",
+        en: "# Quick Transfer Arrives in Resources\n\nSigned-in users who enter the same passphrase can exchange text encrypted in the browser with AES-GCM, plus images, video, and regular files protected by HTTPS, private R2 storage, random object keys, and server-side authorization. Plaintext passphrases never reach the server, and files are not encrypted with the passphrase. Standard accounts are limited to 95 MiB per file and guarded by personal, room, rate, and shared 8 GiB free-pool limits. Only database admins may use Multipart Upload for hundreds of megabytes through multi-GB files. Items become unreadable after 24 hours, and downloads support Range requests and video seeking. The owner must still configure R2, Pages bindings, the cleanup Worker, lifecycle rules, and official Cloudflare budget alerts.",
+        ja: "# リソースに一時転送を追加\n\n同じ合言葉を入力したログイン済みユーザー同士で、ブラウザー側で AES-GCM 暗号化するテキストと、HTTPS・非公開 R2・ランダムなオブジェクトキー・サーバー認可で保護する画像、動画、通常ファイルを一時共有できます。平文の合言葉はサーバーへ送信されず、ファイルは合言葉では暗号化されません。一般アカウントは1件 95 MiB までで、個人・部屋・頻度・全体 8 GiB の無料枠保護を受けます。Multipart Upload で数百 MB から数 GB を送れるのはデータベースの admin のみです。公開完了から24時間後にアクセス不可となり、Range ダウンロードと動画シークに対応します。R2、Pages バインド、清理 Worker、ライフサイクル、Cloudflare 公式予算通知は Dashboard で手動設定が必要です。"
       }
     },
     {
@@ -1557,9 +1677,9 @@ export const content = {
       external: false,
       title: { zh: "临时互传", en: "Quick Transfer", ja: "一時転送" },
       desc: {
-        zh: "登录后通过房间口令临时发送加密文字、图片、视频和文件，内容 24 小时后失效。",
-        en: "Share encrypted text, images, video, and files in a passphrase room after signing in. Items expire after 24 hours.",
-        ja: "ログイン後、合言葉の部屋で暗号化テキスト・画像・動画・ファイルを一時共有し、24時間後に失効します。"
+        zh: "登录后可在口令房间中发送浏览器端 AES-GCM 加密文字，以及通过 HTTPS、私有 R2 和服务端鉴权保护的图片、视频与文件；内容在发布完成 24 小时后失效。",
+        en: "After signing in, share text encrypted in the browser with AES-GCM, plus images, videos, and files protected by HTTPS, private R2 storage, and server-side authorization. Items expire 24 hours after publishing completes.",
+        ja: "ログイン後、合言葉の部屋でブラウザー側で AES-GCM 暗号化したテキストと、HTTPS・非公開 R2・サーバー認可で保護される画像／動画／ファイルを共有できます。内容は公開完了から24時間後に失効します。"
       },
       actionLabel: { zh: "打开", en: "Open", ja: "開く" },
       tags: [

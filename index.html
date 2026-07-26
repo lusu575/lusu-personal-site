@@ -28,8 +28,19 @@
   <link rel="manifest" href="/manifest.webmanifest">
   <script>
     (() => {
+      const searchParams = new URLSearchParams(window.location.search);
+      const requestedLanguage = searchParams.get("lang");
+      const documentLanguage = {
+        zh: "zh-CN",
+        en: "en",
+        ja: "ja"
+      }[requestedLanguage];
+      if (documentLanguage) {
+        document.documentElement.lang = documentLanguage;
+      }
+
       const themes = ["morning", "day", "dusk", "night"];
-      const preview = new URLSearchParams(window.location.search).get("wallpaper");
+      const preview = searchParams.get("wallpaper");
       const now = new Date();
       const minutes = now.getHours() * 60 + now.getMinutes();
       const localTheme = minutes >= 5 * 60 && minutes < 11 * 60
@@ -66,10 +77,10 @@
       document.head.appendChild(preload);
     })();
   </script>
-  <script src="/js/mobile-shell.js?v=20260721-desktop-taskbar-active-r1"></script>
-  <link rel="stylesheet" href="/css/style.css?v=20260721-desktop-taskbar-active-r1">
-  <link rel="stylesheet" href="/css/mobile-ios-shell.css?v=20260721-desktop-taskbar-active-r1">
-  <link rel="stylesheet" href="/css/motion-system.css?v=20260721-desktop-taskbar-active-r1">
+  <script src="/js/mobile-shell.js?v=20260726-interface-audit-fixes-r2"></script>
+  <link rel="stylesheet" href="/css/style.css?v=20260726-interface-audit-fixes-r2">
+  <link rel="stylesheet" data-mobile-shell-style href="/css/mobile-ios-shell.css?v=20260726-interface-audit-fixes-r2">
+  <link rel="stylesheet" href="/css/motion-system.css?v=20260726-interface-audit-fixes-r2">
 </head>
 <body data-route="home">
   <a class="skip-link" href="#main-content" data-modal-background data-i18n="skipToMain">跳到主内容</a>
@@ -98,13 +109,13 @@
       </button>
       <div class="topbar-actions">
         <div class="account-widget" id="account-widget"></div>
-        <button class="mobile-language-cycle" type="button" aria-label="语言切换" data-i18n-aria-label="languageSwitcherAria"><span data-mobile-language-label>中</span></button>
+        <button class="mobile-language-cycle" type="button" aria-label="当前语言：中文。切换到 English。" title="当前语言：中文。切换到 English。"><span data-mobile-language-label>中文</span></button>
         <nav class="language-switcher" aria-label="语言切换" data-i18n-aria-label="languageSwitcherAria">
           <button class="lang-button active" type="button" data-lang="zh" aria-pressed="true">中文</button>
           <button class="lang-button" type="button" data-lang="en" aria-pressed="false">EN</button>
           <button class="lang-button" type="button" data-lang="ja" aria-pressed="false">日本語</button>
         </nav>
-        <span class="top-updated"><span data-i18n="lastUpdatedLabel">最近更新日期</span>: <span id="top-updated">2026.07.21</span></span>
+        <span class="top-updated"><span data-i18n="lastUpdatedLabel">最近更新日期</span>: <time id="top-updated" datetime="2026-07-26">2026.07.26</time></span>
       </div>
     </header>
 
@@ -134,7 +145,7 @@
           </button>
           <button class="desktop-icon" data-route="resources">
             <span class="pixel-icon disk-icon"></span>
-            <span class="icon-title" data-i18n="navResourcesBuilding">资源区</span>
+            <span class="icon-title" data-i18n="navResourcesBuilding">工具区</span>
           </button>
           <button class="desktop-icon" data-route="games">
             <span class="pixel-icon game-icon"></span>
@@ -183,11 +194,11 @@
           <div class="folder-layout">
             <aside class="category-panel" id="knowledge-categories"></aside>
             <div class="content-list" id="knowledge-list"></div>
-            <article class="article-detail" id="article-detail" hidden>
+            <article class="article-detail" id="article-detail" aria-labelledby="article-detail-title" hidden>
               <button class="xp-button article-back-button" type="button" data-article-back>
                 <span data-i18n="articleBack">返回文章列表</span>
               </button>
-              <button class="xp-button article-top-link" type="button" data-article-scroll-top>
+              <button class="xp-button article-top-link" type="button" data-article-scroll-top hidden>
                 <span class="article-copy-icon" aria-hidden="true">↑</span>
                 <span data-i18n="articleScrollTop">回到顶部</span>
               </button>
@@ -210,7 +221,7 @@
               <div class="article-detail-card">
                 <div class="article-detail-head">
                   <div class="meta-row" id="article-detail-meta"></div>
-                  <h2 id="article-detail-title"></h2>
+                  <h2 id="article-detail-title" tabindex="-1"></h2>
                   <p id="article-detail-summary"></p>
                   <button class="xp-button article-summary-toggle" id="article-summary-toggle" type="button"
                     data-article-summary-toggle aria-controls="article-detail-summary" aria-expanded="false" hidden>
@@ -244,10 +255,10 @@
       </section>
 
       <section class="page" id="resources" aria-labelledby="resources-title">
-        <h1 class="sr-only" id="resources-title" tabindex="-1" data-i18n="resourcesTitle">资源区</h1>
+        <h1 class="sr-only" id="resources-title" tabindex="-1" data-i18n="resourcesTitle">工具区</h1>
         <div class="xp-window">
           <div class="window-titlebar">
-            <span aria-hidden="true"><span class="title-icon section-title-icon title-icon-resources"></span><span data-i18n="resourcesTitle">资源区</span></span>
+            <span aria-hidden="true"><span class="title-icon section-title-icon title-icon-resources"></span><span data-i18n="resourcesTitle">工具区</span></span>
             <button class="close-button" data-route="home" aria-label="关闭窗口" data-i18n-aria-label="closeWindowAria">×</button>
           </div>
           <div class="filter-row" id="resource-categories"></div>
@@ -309,18 +320,19 @@
           </form>
           <form class="chat-private-room-panel" id="chat-private-room-form" hidden>
             <label for="chat-private-password" data-i18n="chatPrivatePasswordLabel">密码房密码</label>
-            <input id="chat-private-password" name="password" type="password" minlength="6" maxlength="96" autocomplete="off" data-i18n-placeholder="chatPrivatePasswordPlaceholder" placeholder="至少 6 个字符">
-            <button class="xp-button" type="submit" data-i18n="chatPrivateRoomEnter">进入</button>
+            <input id="chat-private-password" name="password" type="password" minlength="6" maxlength="96" autocomplete="off" data-i18n-placeholder="chatPrivatePasswordPlaceholder" placeholder="至少 6 个字符" aria-describedby="chat-private-room-hint" aria-errormessage="chat-private-password-error">
+            <button class="xp-button" id="chat-private-room-submit" type="submit" data-i18n="chatPrivateRoomEnter">进入</button>
             <button class="xp-button" id="chat-private-room-cancel" type="button" data-i18n="chatPrivateRoomCancel">取消</button>
-            <small data-i18n="chatPrivateRoomHint">同一密码进入同一暗色房间；请使用不容易猜到的密码。</small>
+            <small id="chat-private-room-hint" data-i18n="chatPrivateRoomHint">同一密码进入同一暗色房间；请使用不容易猜到的密码。</small>
+            <small id="chat-private-password-error" role="alert" hidden></small>
           </form>
           <div class="chatroom-log" id="chat-message-list" role="log" aria-live="off"></div>
           <button class="xp-button chat-unread-button" id="chat-unread-button" type="button" hidden></button>
           <p class="sr-only" id="chat-live-summary" role="status" aria-live="polite" aria-atomic="true"></p>
           <form class="chatroom-compose" id="chat-form">
             <label class="sr-only" for="chat-message-input" data-i18n="chatInputLabel">聊天内容</label>
-            <textarea id="chat-message-input" name="message" maxlength="300" rows="2" data-i18n-placeholder="chatPlaceholder" placeholder="说点什么吧..."></textarea>
-            <div class="chatroom-counter"><span id="chat-char-count">0</span>/300</div>
+            <textarea id="chat-message-input" name="message" maxlength="300" rows="2" data-i18n-placeholder="chatPlaceholder" placeholder="说点什么吧..." aria-describedby="chat-char-count-status"></textarea>
+            <div class="chatroom-counter" id="chat-char-count-status"><span id="chat-char-count">0</span>/300</div>
             <button class="xp-button chat-send-button" type="submit">
               <span data-i18n="chatSend">发送</span>
               <span class="send-bubble-icon" aria-hidden="true"></span>
@@ -328,6 +340,7 @@
           </form>
           <div class="chatroom-footer">
             <span id="chat-feedback" data-i18n="chatCooldownHint" role="status" aria-live="polite" aria-atomic="true">每 3 秒可发送一条消息哦~</span>
+            <button class="xp-button chat-retry-button" id="chat-retry-button" type="button" data-i18n="chatRetry" hidden>重试</button>
             <label class="chatroom-autoscroll">
               <input id="chat-autoscroll" type="checkbox" checked>
               <span data-i18n="chatAutoscroll">自动滚动</span>
@@ -389,17 +402,20 @@
         <nav class="taskbar-tabs" aria-label="底部主导航" data-i18n-aria-label="taskbarNavAria">
           <button data-route="knowledge"><span class="mini-icon taskbar-icon taskbar-icon-knowledge" aria-hidden="true"></span><span class="dock-label-full" data-i18n="navKnowledge">知识库</span><span class="dock-label-short" data-i18n="dockKnowledge">知识</span></button>
           <button data-route="videos"><span class="mini-icon taskbar-icon taskbar-icon-videos" aria-hidden="true"></span><span class="dock-label-full" data-i18n="navVideos">视频区</span><span class="dock-label-short" data-i18n="dockVideos">视频</span></button>
-          <button data-route="resources"><span class="mini-icon taskbar-icon taskbar-icon-resources" aria-hidden="true"></span><span class="dock-label-full" data-i18n="navResources">资源区</span><span class="dock-label-short" data-i18n="dockResources">资源</span></button>
+          <button data-route="resources"><span class="mini-icon taskbar-icon taskbar-icon-resources" aria-hidden="true"></span><span class="dock-label-full" data-i18n="navResources">工具区</span><span class="dock-label-short" data-i18n="dockResources">工具</span></button>
           <button data-route="games"><span class="mini-icon taskbar-icon taskbar-icon-games" aria-hidden="true"></span><span class="dock-label-full" data-i18n="navGames">游戏区</span><span class="dock-label-short" data-i18n="dockGames">游戏</span></button>
           <button data-route="blog" data-mobile-dock-excluded data-blog-entry hidden><span class="mini-icon taskbar-icon taskbar-icon-blog" aria-hidden="true"></span><span data-i18n="navBlog">杂谈区</span></button>
           <button data-route="chatroom"><span class="mini-icon chat-mini-icon" aria-hidden="true"></span><span class="dock-label-full" data-i18n="navChatroom">匿名聊天室</span><span class="dock-label-short" data-i18n="dockChatroom">聊天</span></button>
           <button data-route="about" data-mobile-dock-excluded><span class="mini-icon taskbar-icon taskbar-icon-about" aria-hidden="true"></span><span data-i18n="navAbout">关于我</span></button>
         </nav>
       </div>
-      <div class="status-tray">
+      <div class="status-tray" data-connection-state="checking">
         <span id="local-time" data-local-time="full">--:--:--</span>
-        <span class="online-dot"></span>
-        <span>ONLINE</span>
+        <button class="site-connection-status" id="site-connection-status" type="button" data-connection-state="checking" data-i18n-aria-label="connectionStatusCheckingDetail" data-i18n-title="connectionStatusCheckingDetail" aria-label="正在检测站点连接" title="正在检测站点连接" aria-busy="true">
+          <span class="site-connection-lamp" aria-hidden="true"></span>
+          <span id="site-connection-label" data-i18n="connectionStatusChecking">检测中</span>
+        </button>
+        <span class="sr-only" id="site-connection-live" role="status" aria-live="polite" aria-atomic="true"></span>
       </div>
       <button class="mobile-home-indicator" type="button" data-mobile-dock-toggle aria-expanded="true" aria-label="收起或展开底部导航" data-i18n-aria-label="mobileDockToggleAria"><span aria-hidden="true"></span></button>
     </footer>
@@ -466,7 +482,7 @@
   </div>
 
   <script src="/js/telemetry.js?v=20260623-analytics-privacy-r1"></script>
-  <script src="/js/ui-motion.js?v=20260721-desktop-taskbar-active-r1"></script>
-  <script type="module" src="/js/main.js?v=20260721-desktop-taskbar-active-r1"></script>
+  <script src="/js/ui-motion.js?v=20260726-interface-audit-fixes-r2"></script>
+  <script type="module" src="/js/main.js?v=20260726-interface-audit-fixes-r2"></script>
 </body>
 </html>

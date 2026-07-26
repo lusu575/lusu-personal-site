@@ -1,4 +1,4 @@
-const TRANSFER_VERSION = "20260719-service-recovery-r1";
+const TRANSFER_VERSION = "20260726-interface-audit-fixes-r2";
 const FRAGMENT_PATH = "/fragments/quick-transfer.html";
 const FRAGMENT_CANONICAL_PATH = "/fragments/quick-transfer";
 const ALLOWED_FRAGMENT_PATHS = Object.freeze([FRAGMENT_PATH, FRAGMENT_CANONICAL_PATH]);
@@ -48,6 +48,7 @@ const EXPECTED_IDS = Object.freeze([
   "transfer-room-form",
   "transfer-room-mode",
   "transfer-room-password",
+  "transfer-security-note",
   "transfer-send-button",
   "transfer-task-list",
   "transfer-tasks-title",

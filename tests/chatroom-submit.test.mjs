@@ -7,8 +7,12 @@ import { createChatroomRoute } from "../js/routes/chatroom.mjs";
 
 function deferred() {
   let resolve;
-  const promise = new Promise((onResolve) => { resolve = onResolve; });
-  return { promise, resolve };
+  let reject;
+  const promise = new Promise((onResolve, onReject) => {
+    resolve = onResolve;
+    reject = onReject;
+  });
+  return { promise, resolve, reject };
 }
 
 class FakeElement {
@@ -47,6 +51,7 @@ class FakeElement {
 
   setAttribute(name, value) { this.attributes.set(name, String(value)); }
   getAttribute(name) { return this.attributes.get(name) ?? null; }
+  removeAttribute(name) { this.attributes.delete(name); }
 
   append(...nodes) {
     for (const node of nodes) {
@@ -112,6 +117,10 @@ function response(payload) {
   return { ok: true, status: 200, json: async () => payload };
 }
 
+function failedResponse(status = 500, payload = { error: "fixture failure" }) {
+  return { ok: false, status, json: async () => payload };
+}
+
 function makeHarness(options = {}) {
   const documentNode = new FakeDocument();
   const windowElement = documentNode.add("div", "chatroom-window", "chatroom-window");
@@ -129,14 +138,19 @@ function makeHarness(options = {}) {
   const privateForm = documentNode.add("form", "chat-private-room-form", "chat-private-room-panel");
   privateForm.hidden = true;
   const privateInput = documentNode.add("input", "chat-private-password");
+  const privateSubmit = documentNode.add("button", "chat-private-room-submit");
   const privateCancel = documentNode.add("button", "chat-private-room-cancel");
+  const privateError = documentNode.add("small", "chat-private-password-error");
+  privateError.hidden = true;
   const privateHint = documentNode.add("small", "chat-private-room-hint");
   privateHint.dataset.i18n = "chatPrivateRoomHint";
-  privateForm.append(privateInput, privateCancel, privateHint);
+  privateForm.append(privateInput, privateSubmit, privateCancel, privateError, privateHint);
   const log = documentNode.add("div", "chat-message-list", "chatroom-log");
   log.clientHeight = 100;
   const unreadButton = documentNode.add("button", "chat-unread-button", "chat-unread-button");
   unreadButton.hidden = true;
+  const retryButton = documentNode.add("button", "chat-retry-button", "chat-retry-button");
+  retryButton.hidden = true;
   const liveSummary = documentNode.add("p", "chat-live-summary");
   const form = documentNode.add("form", "chat-form", "chatroom-compose");
   const input = documentNode.add("textarea", "chat-message-input");
@@ -146,7 +160,7 @@ function makeHarness(options = {}) {
   const feedback = documentNode.add("span", "chat-feedback");
   const autoscroll = documentNode.add("input", "chat-autoscroll");
   autoscroll.checked = true;
-  windowElement.append(nickname, editNickname, roomLabel, roomToggle, syncStatus, nicknameForm, privateForm, log, unreadButton, liveSummary, form, feedback, autoscroll);
+  windowElement.append(nickname, editNickname, roomLabel, roomToggle, syncStatus, nicknameForm, privateForm, log, unreadButton, retryButton, liveSummary, form, feedback, autoscroll);
 
   const listeners = new Map();
   const abortController = new AbortController();
@@ -205,9 +219,9 @@ function makeHarness(options = {}) {
     storage,
     setLang(lang) { currentLang = lang; },
     elements: {
-      input, sendButton, form, counter, feedback, privateForm, privateInput, privateHint,
+      input, sendButton, form, counter, feedback, privateForm, privateInput, privateSubmit, privateCancel, privateError, privateHint,
       nickname, editNickname, nicknameForm, nicknameInput, nicknameCancel, nicknameError,
-      log, unreadButton, liveSummary, roomToggle, syncStatus, autoscroll
+      log, unreadButton, retryButton, liveSummary, roomToggle, syncStatus, autoscroll
     }
   };
 }
@@ -215,7 +229,7 @@ function makeHarness(options = {}) {
 async function waitFor(check, label) {
   for (let attempt = 0; attempt < 50; attempt += 1) {
     if (check()) return;
-    await Promise.resolve();
+    await new Promise((resolve) => setTimeout(resolve, 1));
   }
   throw new Error(`Timed out waiting for ${label}`);
 }
@@ -576,6 +590,110 @@ test("offline recovery refreshes but never replays a failed or pending POST", as
     assert.equal(harness.postCount, 1, "reconnect must only refresh and never replay the POST");
     harness.post.resolve(response({ message: null }));
     await sending;
+  } finally {
+    globalThis.document = originalDocument;
+    globalThis.window = originalWindow;
+  }
+});
+
+test("online plus a failed refresh stays reconnecting until manual retry succeeds", async () => {
+  const harness = makeHarness({
+    getMessages(attempt) {
+      if (attempt === 2) return failedResponse(500);
+      return response({ messages: [] });
+    }
+  });
+  const originalDocument = globalThis.document;
+  const originalWindow = globalThis.window;
+  globalThis.document = harness.documentNode;
+  globalThis.window = { crypto: globalThis.crypto, TextEncoder, TextDecoder };
+  try {
+    await harness.route.enter(harness.scope);
+    await harness.listeners.get("document:online")();
+    assert.equal(harness.elements.syncStatus.dataset.connectionState, "reconnecting");
+    assert.equal(harness.elements.syncStatus.textContent, translations.zh.chatSyncReconnecting);
+    assert.equal(harness.elements.retryButton.hidden, false);
+    assert.equal(harness.elements.feedback.textContent, translations.zh.chatLoadFailed);
+
+    await harness.listeners.get("chat-retry-button:click")();
+    assert.equal(harness.getCount, 3);
+    assert.equal(harness.elements.syncStatus.dataset.connectionState, "online");
+    assert.equal(harness.elements.retryButton.hidden, true);
+    assert.equal(harness.documentNode.activeElement, harness.elements.input);
+  } finally {
+    globalThis.document = originalDocument;
+    globalThis.window = originalWindow;
+  }
+});
+
+test("private-room switching is single-flight and exposes a real busy state", async () => {
+  const privateHistory = deferred();
+  const harness = makeHarness({
+    getMessages(attempt) {
+      if (attempt === 2) return privateHistory.promise;
+      return response({ messages: [] });
+    }
+  });
+  const originalDocument = globalThis.document;
+  const originalWindow = globalThis.window;
+  globalThis.document = harness.documentNode;
+  globalThis.window = { crypto: globalThis.crypto, TextEncoder, TextDecoder };
+  try {
+    await harness.route.enter(harness.scope);
+    harness.elements.privateInput.value = "secret-room";
+    const submit = harness.listeners.get("chat-private-room-form:submit");
+    const firstSwitch = submit({ preventDefault() {} });
+    await waitFor(() => harness.getCount === 2, "private history request");
+    const duplicateSwitch = submit({ preventDefault() {} });
+    await duplicateSwitch;
+
+    assert.equal(harness.getCount, 2, "duplicate submit must not start a second history request");
+    assert.equal(harness.elements.privateForm.getAttribute("aria-busy"), "true");
+    assert.equal(harness.elements.privateInput.disabled, true);
+    assert.equal(harness.elements.privateSubmit.disabled, true);
+    assert.equal(harness.elements.privateCancel.disabled, true);
+    assert.equal(harness.elements.roomToggle.disabled, true);
+    assert.equal(harness.elements.feedback.textContent, translations.zh.chatPrivateRoomBusy);
+
+    privateHistory.resolve(response({ messages: [] }));
+    await firstSwitch;
+    assert.equal(harness.elements.privateForm.getAttribute("aria-busy"), "false");
+    assert.equal(harness.elements.roomToggle.disabled, false);
+    assert.equal(harness.elements.feedback.textContent, translations.zh.chatPrivateRoomReady);
+  } finally {
+    globalThis.document = originalDocument;
+    globalThis.window = originalWindow;
+  }
+});
+
+test("private-room validation is field-linked and history failure is never announced as ready", async () => {
+  const harness = makeHarness({
+    getMessages(attempt) {
+      if (attempt === 2) return failedResponse(500);
+      return response({ messages: [] });
+    }
+  });
+  const originalDocument = globalThis.document;
+  const originalWindow = globalThis.window;
+  globalThis.document = harness.documentNode;
+  globalThis.window = { crypto: globalThis.crypto, TextEncoder, TextDecoder };
+  try {
+    await harness.route.enter(harness.scope);
+    const submit = harness.listeners.get("chat-private-room-form:submit");
+    harness.elements.privateInput.value = "short";
+    await submit({ preventDefault() {} });
+    assert.equal(harness.elements.privateInput.getAttribute("aria-invalid"), "true");
+    assert.equal(harness.elements.privateInput.getAttribute("aria-errormessage"), "chat-private-password-error");
+    assert.equal(harness.elements.privateError.hidden, false);
+    assert.equal(harness.elements.privateError.textContent, translations.zh.chatPrivatePasswordError);
+
+    harness.elements.privateInput.value = "secret-room";
+    harness.listeners.get("chat-private-password:input")();
+    assert.equal(harness.elements.privateInput.getAttribute("aria-invalid"), null);
+    await submit({ preventDefault() {} });
+    assert.equal(harness.elements.feedback.textContent, translations.zh.chatPrivateRoomLoadFailed);
+    assert.notEqual(harness.elements.feedback.textContent, translations.zh.chatPrivateRoomReady);
+    assert.equal(harness.elements.retryButton.hidden, false);
   } finally {
     globalThis.document = originalDocument;
     globalThis.window = originalWindow;

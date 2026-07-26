@@ -17,11 +17,13 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 ## 账号、文章与 Chat 稳定性规则
 
 - 账号表单必须保持稳定 DOM：语言/模式/身份状态/错误同步不得重建编辑字段；登录和注册各一个主提交，注册含确认密码，错误关联字段并聚焦首错，退出失败不得伪报成功。popover 必须归还实际触发源焦点，移动关闭不小于 44px。
+- 账号初始状态检查必须使用有界超时；失败或超时在同一个稳定 popover 内提供原位重试，保留输入与现有编辑焦点。Chat 的 online 也只能在消息刷新成功后建立；失败继续显示 reconnecting 和可聚焦手动重试，不得仅凭浏览器 `online` 事件宣称恢复。
 - Quick Transfer 未登录态只呈现一个上下文任务卡、一个主登录 CTA 和明确返回；登录完成要回到 Transfer，不得用红色 X 承担含糊返回语义。
-- 文章阅读时 document 不滚动，正文详情是唯一纵向 owner；进度轨道约 4px、与正文零交叠，移动端保留可见含义与准确 ARIA 百分比。
+- 文章阅读时 document 不滚动，正文详情是唯一纵向 owner；进度轨道约 4px、与正文零交叠，移动端保留可见含义与准确 ARIA 百分比。100% 必须按 `.markdown-body` 正文末尾计算，不能把 Dock 安全尾距计入正文；回顶按钮在顶部用原生 `hidden` 退出焦点顺序，激活后把焦点交给 `tabindex="-1"` 的文章标题。
 - Chat 发送只锁提交动作，用户可继续输入且旧请求不得清空新草稿。359×500 自动回归以普通房约 177px、私聊至少约 119px为目标；安全说明通过 44px 折叠入口提供，关闭时不占日志也不覆盖控件。
 - Chat 同时以 1280×720 为短桌面硬门槛：标题、两行身份／房间控制、日志、composer 与 footer 必须完整落在窗口和任务栏上方，只有日志可弹性收缩；字数计数归入输入状态行。短屏／横屏几何只放 `css/mobile-ios-shell.css`，route CSS 不得新增 `@media`。
 - Chat 发送失败重试必须复用同一 `clientRequestId`，新草稿或上一次已成功后才生成新 ID。服务端要在限流前重放首次成功结果，依靠 `(visitor_id, room_key, client_request_id)` 唯一索引防止并发重复；私聊不得因随机 IV 密文改变而产生第二条消息。旧 D1 先补 `client_request_id` 列、后建依赖索引。
+- Chat 密码房进入和返回公开房必须单飞，相关按钮在切换期间进入真实 busy/disabled 状态；只有目标房间历史读取成功后才显示 ready。短密码错误要关联密码输入并设置 `aria-invalid`，失败恢复后焦点回到可继续操作的位置。
 - 公共 Chat 绝不回退暴露服务端隐藏 visitor id；密码、私聊、草稿、Secret、完整标识不得进入 DOM 泄漏、storage、History、console 或 telemetry。修改渲染、链接、iframe、媒体或 Transfer fragment 时必须运行安全边界测试。
 - 每次调用 `articleTranslationsStatements()` 都必须传入确定的 UTC ISO seed 时间；D1 会拒绝 `undefined` bind。文章或更新 seed 改动后必须运行全量 seed binding 回归和三语文章 API smoke，不能只靠静态 SQL 存在性判断。
 - Cloudflare Pages 可能把 `/fragments/quick-transfer.html` 规范化到 `/fragments/quick-transfer`。互传 loader 只允许这两个同源精确 pathname；不得用前缀、后缀、尾斜杠或跨源规则代替精确白名单。
@@ -72,7 +74,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 ## 双呈现壳、状态与动效规则
 
 - 桌面 Neo-XP 与移动虚拟 OS 是同一站点的两套呈现壳，不是两套应用。`js/main.js` 是 ESM composition root，`js/core/`、`js/data/`、`js/features/`、`js/routes/` 通过显式 factory 依赖共享唯一业务状态；严禁在壳层或模块内复制、镜像或重新维护第二套路由、语言、账号、文章、视频、游戏、聊天室或主题状态。修改模块图后必须运行 `npm.cmd run check:public-modules`。
-- Home 初始模块图只能包含 shell 必需能力和 `js/data/home-content.mjs` 的五条无正文更新摘要。Knowledge、Videos、Resources、Games、Chat 的 JS 以及 `css/routes/` 中四个重路由绘制样式按首次进入单飞加载、成功后常驻复用；route CSS 不得承载移动媒体布局，也不得承载 Home、顶栏、任务栏或 Dock 在进入路由前已可见的图标规则。这些 shell 资产映射必须位于始终加载的主 CSS，并在冷启动 Home 上检查 `background-image` / 图片解码。Quick Transfer loader、CSS、客户端和静态 fragment 必须等 Resources 真实 CTA 点击后才加载，进入 Resources 本身不得暴露全局 Transfer facade、挂载完整 DOM 或请求 API。
+- Home 初始模块图只能包含 shell 必需能力和 `js/data/home-content.mjs` 的五条无正文更新摘要。Knowledge、Videos、工具区（内部 `resources` route）、Games、Chat 的 JS 以及 `css/routes/` 中四个重路由绘制样式按首次进入单飞加载、成功后常驻复用；route CSS 不得承载移动媒体布局，也不得承载 Home、顶栏、任务栏或 Dock 在进入路由前已可见的图标规则。这些 shell 资产映射必须位于始终加载的主 CSS，并在冷启动 Home 上检查 `background-image` / 图片解码。Quick Transfer loader、CSS、客户端和静态 fragment 必须等工具区真实 CTA 点击后才加载，进入 `resources` route 本身不得暴露全局 Transfer facade、挂载完整 DOM 或请求 API。
 - `js/mobile-shell.js` 只能观察既有状态、维护 safe-area / `visualViewport` 等短生命周期呈现变量，并把导航委托给原有 `data-route` 元素；不得建立第二套路由器、账号状态或内容缓存。
 - `window.LusuFramePipeline` 是公开主站唯一的 window resize / VisualViewport resize / scroll 监听与 viewport 模型。新增视口、Dock、滚动或聚焦几何工作必须使用 keyed `schedule/request`、`subscribeViewport` 或共享 `requestFocusReveal`，坚持一帧内全部 measure/read 先于 mutate/write；功能模块与 Transfer 不得建立私有 `visualViewport` / resize 监听、嵌套布局 rAF 或聚焦滚动逻辑，也不得把 page scale 当成软键盘。
 - 固定移动壳不解锁 body / site-shell / page；非 Home 活动 App 的 route-specific `.xp-window` 必须保留休眠式 `overflow-y:auto` 逃生通道，并用含 route ID 的选择器超过既有 ID 级 `overflow:hidden`。文章阅读继续由 `.article-detail` 独占滚动。通用聚焦恢复只能经 FramePipeline 测量最近的真实内部纵向 owner，保留当前聚焦目标与已输入草稿，且只写该 owner 的 `scrollTop`；不得移动 document、Home、Appbar 或 Dock。账号面板的延迟 autofocus 在面板内已有焦点时必须放弃，不得抢走用户正在编辑的字段。
@@ -84,18 +86,23 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 视频缩略图必须是带标题可访问名称的原生 16:9 `button`，不得退回装饰 `div` 或恢复遮图播放圆圈。iframe 超时、load 与 error 都按当前 request generation + settled 状态收口；失败卡内相邻显示重试／原视频，loading / empty / error 使用共同 `.content-state`，真实错误为 alert，重试后保留合理键盘焦点。
 - 不要克隆或 reparent 账号入口/弹窗、文章详情、视频弹窗、游戏或聊天等高耦合 DOM。移动壳应通过 CSS 和轻量装饰节点呈现现有内容，避免同一 ID、事件监听、焦点或异步请求产生两套生命周期。
 - 公开呈现文件目前包括 `css/style.css`、`css/mobile-ios-shell.css`、`css/motion-system.css`、`js/main.js` 及其 `js/core/`、`js/data/`、`js/features/`、`js/routes/` 模块、`js/mobile-shell.js` 和 `js/ui-motion.js`。新增或修改任何公开 CSS、JS、图标、壁纸或强视觉资产时，必须同步 `index.html` 中对应 query；同一发布批次使用同一可追踪版本。
-- 移动 Home 使用 App grid，真实 Dock 在 Home 与栏目 App 内持续悬浮；Dock 只保留 Home、Knowledge、Videos、Resources、Games、Chatroom 六个高频入口，Blog 与 About 仍从 Home 进入。六项在 375px 以上居中，359px 可短距离横滑；进入排除路由时选中底板必须隐藏。Dock 仍可由 44px 横线收起/展开，栏目内只保留单一 Appbar。
+- 移动 Home 使用 App grid，真实 Dock 在 Home 与栏目 App 内持续悬浮；Dock 只保留 Home、Knowledge、Videos、Tools（内部 `resources` route）、Games、Chatroom 六个高频入口，Blog 与 About 仍从 Home 进入。六项在 375px 以上居中，359px 可短距离横滑；进入排除路由时选中底板必须隐藏。Dock 仍可由 44px 横线收起/展开，栏目内只保留单一 Appbar。
 - Home 的 App grid 必须按 DOM 顺序从左到右、从上到下填充并使用固定行高；不得用 `1fr` 弹性行把图标在细长屏幕上纵向摊开。App 按钮热区应与可见图标加标题的实际盒接近，不得把整列或大块空白变成点击区，同时仍保持 44px 最小触控目标。
 - 移动栏目保留可辨认的 App 外框和内容卡边界，但工具／筛选／标签区不得层层重复完整描边；优先用间距、浅底色和单侧 accent 建立层级。边框颜色从本站四时段/Neo-XP token 取值，修改后必须重测可读容量和子项相交，不能挤掉正文、聊天日志或按钮。
-- 移动端固定复测 359x500、375x667、390x844、430x932 和 coarse pointer 横屏 844x390；至少验证 Home、Chat、账号弹窗、文章详情、视频弹窗和底部返回路径。验收不能只看“没有横向溢出”：App 窗口应至少占视口高度 80%，Games 列表要使用可用高度；359x500 Chat 普通房日志可读区至少保留 160px，私聊展开至少保留 115px 或提供可折叠工具区，844x390 横屏至少保留 150px，同时安全说明、输入、反馈和 Dock 不得相交。短屏文章首屏至少显示 44px 无遮挡正文。文章进度与回顶控制应放在移动 Appbar 的空余区域，不能覆盖复制按钮或正文。
+- 移动端固定复测 359x500、375x667、390x844、430x932 和 coarse pointer 横屏 844x390；至少验证 Home、Chat、账号弹窗、文章详情、视频弹窗和底部返回路径。验收不能只看“没有横向溢出”：App 窗口应至少占视口高度 80%，Games 列表要使用可用高度；359x500 Chat 普通房日志可读区至少保留 160px，私聊展开至少保留 115px 或提供可折叠工具区，844x390 横屏至少保留 150px，同时安全说明、输入、反馈和 Dock 不得相交。文章首屏必须在 359x500、390x844、844x390 精确测量：第一段至少显示 20px，正文总可见量至少为 44px、200px、44px，侧栏 computed min-height 不大于 1px。文章进度与回顶控制应放在移动 Appbar 的空余区域，不能覆盖复制按钮或正文。
+- 懒加载 route CSS 必须插在 `link[data-mobile-shell-style]` 之前，固定保持基础样式 → route → mobile → motion 的级联顺序；不得 append 到文档末尾反向覆盖移动几何。收起 Dock 必须同时设置 inert、aria-hidden 和视觉隐藏，不能只用 opacity / pointer-events；目录列表与按钮使用文章实际语言，目录导航标签使用界面语言，带交互子项的横向容器不能再成为重复 Tab 停靠点。
 - 手机文章阅读把回顶等控制放入 Appbar 可见区域时，必须同时检查视觉层和真实 hit-testing：固定 `.xp-topbar` 的装饰/空白区域不得拦截正文中的控制，Appbar 内返回、复制、账号等真实交互节点仍需单独恢复指针事件。
 - 移动排版以“包含且不相交”为硬门槛：卡片内标题、摘要、元信息和 CTA 必须完全位于卡片内，结构子项不得伸进下一张卡；输入框、计数、发送按钮、密码房操作和 footer 文案不得相互覆盖。不得靠把按钮缩到 44px 以下、把反馈字缩到难读或用 `overflow: hidden` 掩盖排版错误来通过验收；横竖屏与 zh / en / ja 长文案都要做真实几何检查。
-- Resources 同一列表中的工具卡必须共享同一网格列宽和卡片高度节奏；标题、元信息、说明、标签和 CTA 要在 zh/en/ja 与桌面/手机上对齐，窄屏元信息应自然换行，不得用 `nowrap`、隐藏滚动条或裁剪吞掉状态与日期。
+- 工具区同一列表中的工具卡必须共享同一网格列宽和卡片高度节奏；标题、元信息、说明、标签和 CTA 要在 zh/en/ja 与桌面/手机上对齐，窄屏元信息应自然换行，不得用 `nowrap`、隐藏滚动条或裁剪吞掉状态与日期。
+- 搜索／筛选重绘必须保留键盘上下文：Knowledge 使用 NFKC 归一后的多词 AND 匹配，并在搜索、清空、分类切换时同步复位真实列表滚动与 History；Videos／工具区（内部 `resources` route）替换分类 DOM 后恢复同一筛选按钮焦点，空视频分类优先提供“显示全部”主操作。
+- 首屏语言 query 只接受 zh／en／ja，并在壳脚本前尽早同步 `html.lang`。文章卡与详情按 API 实际内容语言设置 `lang`，包括 fallback；移动语言按钮必须显示完整当前语言，并在可访问名称中同时说明当前与下一语言。
+- 手机工具区卡片不得裁剪说明，事实字段、标签和主 CTA 分层且 CTA 保持至少 44px；Games 卡直接显示全部语言支持，简介最多三行，许可／来源使用至少 44px 的原生 `details/summary`，后台刷新失败时保留并标示上次成功列表。
 - Quick Transfer 的 `quick-transfer-icons-source.png` 是洋红键构建源，不能在页面中引用，也不能直接 resize 覆盖生产 atlas。必须通过 `scripts/build-transfer-icon-atlas.mjs` 先色键和边缘去色，再生成 168×168 RGBA 图集；测试同时检查 alpha、整体透明率以及 16 个 sprite cell 的四角透明与可见像素比例。修资源入口时要检查整张图集，不能只看第一格。同一 Sharp / libvips 运行时的双次构建应逐字节一致；Windows / Linux 之间不得把 PNG 压缩流当作稳定接口，跨平台门禁应解码 RGBA 并用严格像素差阈值比较。
-- Resources → Quick Transfer → Resources 必须恢复打开前 `resource-categories` 与 `resource-list` 的精确 hidden 状态和列表几何，loader 与实现层不能用无条件显示互相覆盖。Windows 的直接 Chrome `--window-size` 在窄屏可能被钳制到约 500 CSS px；359×500 / 375×667 / 390×844 / 760×900 / 844×390 必须用 CDP 精确 viewport 并先断言 `innerWidth`、`innerHeight` 与 `visualViewport` 后再采信截图。Windows Headless 保存视觉证据时不要用可能空白的 `fromSurface: false`，也不要信任可能漏掉固定合成层的单帧结果；先预热捕获、等待双 `requestAnimationFrame`，再保存第二张 `fromSurface: true` 并逐张确认顶栏与 Dock。
+- 工具区（`resources`）→ Quick Transfer → 工具区必须恢复打开前 `resource-categories` 与 `resource-list` 的精确 hidden 状态和列表几何，loader 与实现层不能用无条件显示互相覆盖。Windows 的直接 Chrome `--window-size` 在窄屏可能被钳制到约 500 CSS px；359×500 / 375×667 / 390×844 / 760×900 / 844×390 必须用 CDP 精确 viewport 并先断言 `innerWidth`、`innerHeight` 与 `visualViewport` 后再采信截图。Windows Headless 保存视觉证据时不要用可能空白的 `fromSurface: false`，也不要信任可能漏掉固定合成层的单帧结果；先预热捕获、等待双 `requestAnimationFrame`，再保存第二张 `fromSurface: true` 并逐张确认顶栏与 Dock。
 - 全站关闭指针驱动视差，不得通过鼠标或触控位置移动壁纸、系统栏、窗口或内容层。慢速壁纸氛围只允许使用与输入无关的 `transform` / `opacity`，并在页面隐藏、`prefers-reduced-motion`、`data-motion="reduced"` 或 `off` 时回到稳定静态状态。
 - 大面积页面、窗口和弹层只允许动画 `transform + opacity`，禁止动画 `filter`、`box-shadow`、`border-radius`、`left/top`、`width/height`，也禁止大面积 3D 透视或书页翻动。统一时长约为 instant 80ms、fast 140ms、standard 200ms、window 220ms、scene 300ms；`reduced` 与 `off` 必须立即提交导航和状态。
 - 在线状态、托盘图标和其他状态提示不得持续闪烁。移动和桌面过渡都要短促、可中断，并禁止通过整页 `transform` 破坏 fixed 元素的包含块。
+- PC 任务栏连接状态只能在 `/api/health` 返回 `2xx + ok:true + db:true` 后显示在线；浏览器 `online` 事件只触发复查，不能直接宣称恢复。检查中、服务异常、离线必须同时用文字和独立状态灯表达，支持键盘重试与三语播报；页面隐藏时中止探测，移动 Dock 不重复放置该托盘。
 - 四时段移动竖版壁纸与位图 UI 资产使用 image2 生成并复制到项目资产目录；不要显示无法对应用户真实设备的模拟信号、Wi-Fi 或电量状态。不要把 Codex 临时生成目录或本地 QA 输出目录写进公开页面，QA 截图不提交仓库。
 - 壳层改造必须保持现有公开路由、Pages Functions API、D1、HttpOnly 账号会话、游戏云存档、普通大厅与前端加密密码房、三语内容、视频系统和遥测隐私边界不变，除非用户另行明确授权功能变更。
 
@@ -110,7 +117,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 ## 日本語の裏側维护规则
 
 - `/tools/japanese-subtext/` 是可独立打开的工具；标题随界面语言显示为中文“日语的言外之意”、English “Behind the Japanese”、日本語“日本語の裏側”。题库固定为按 `contentVersion` 管理的分批 JSON，不为单关新建 HTML，也不得把 250 关整体内联进 `js/main.js`。
-- 每次公开修改工具界面、交互或维护流程，独立 `appVersion` 固定增加 `0.0.1`，并同步 manifest、前端可见版本、Resources 卡片、缓存、构建守卫和更新记录。只有题库结构、内容哈希或存档兼容边界变化时才增加 `contentVersion`，再同步题库、音频、API 与迁移说明；UI 热修不得伪造全库迁移。完整清单以 `tools/japanese-subtext/MAINTENANCE.md` 为准。
+- 每次公开修改工具界面、交互或维护流程，独立 `appVersion` 固定增加 `0.0.1`，并同步 manifest、前端可见版本、工具区卡片、缓存、构建守卫和更新记录。只有题库结构、内容哈希或存档兼容边界变化时才增加 `contentVersion`，再同步题库、音频、API 与迁移说明；UI 热修不得伪造全库迁移。完整清单以 `tools/japanese-subtext/MAINTENANCE.md` 为准。
 - 已发布关卡 ID 是持久主键，不得随意修改、重排或复用。修改关卡必须增加该关 `revision`；题库结构或兼容边界变化时再增加 `contentVersion`，并提供可解释的存档迁移策略。
 - 先完成日语、语用和游戏性审校，再用构建器锁定文本。只有 `textLocked` 与内容哈希有效后才可生成正式音频；句子和日语选项使用可审校 `readingJa`，词块使用 `reading`，其他日语表记先经 PyOpenJTalk 转为明确假名再进入 G2P/Kokoro，画面继续显示原汉字表记。修改台词、读音、声线、语速或发音配置后，只重建最终任务哈希受影响的场景、句子、词块和选项。
 - `content/*.json`、`audio/manifest.json`、各关时间轴和静态音频必须始终以稳定 ID 同步。v4 manifest 必须把每关 `sourceContentHash`、逐句 cue、reading/phoneme SHA-256、实际 CPU provider、模型/运行时 provenance、输出参数和发音表 canonical SHA-256 与锁定题库精确绑定；完整 P2R 必须保持原始 `j → y` 早于 `ʥ → j`。全量音素复算与 10,088 件音频的 ffprobe / SHA-256 / 静音 / 孤儿文件验证通过前不得发布。
@@ -168,6 +175,9 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
   - 中文 / English / 日本語 的支持情况
 - 如果 `storage.keys` 不完整，导出和云存档会找不到对应游戏存档。
 - 后续新增游戏时，必须在游戏标签或信息里标明中文、English、日本語是否支持。
+- 五游戏共享壳必须固定为单一 `100dvh` 网格：外层 document 横／纵都不滚动，iframe 获得工具区之外的剩余高度并作为游戏内容滚动主体。359×500、390×844、844×390 要测量外层滚动、iframe 可达性，以及返回、登录、下载、导入、云存档／冲突操作的 44px 热区，不能只看截图。
+- 上游游戏嵌入本站后不得保留固定桌面宽度、与本站无关的第三方统计、原站账号同步、localhost／原生开发桥接或未使用主题触发的外部字体请求。窄屏 document 必须满足 `scrollWidth <= clientWidth`；A Dark Room 声音提示维护 zh／en／ja，并在同页 resize／orientationchange 后重算滑轨、偏移和资源面板归属；Kittens Game 固定关闭 Google Analytics、KGNet 和 `localhost:7780`，首屏只加载当前主题、切换时按需加载，把 iframe `lang` 同步到站点语言，且窄屏顶部工具栏自然换为两行，Steam／Version 不裁切、全部可见关键控件至少 44px，同时不得破坏本站 localStorage、JSON 备份与账号云存档。
+- Life Restart 的移动几何只能在粗指针运行时启用：主操作与所有当前可见的 `btn*` hitArea 均不得小于 44px，竖屏把工具操作与主流程分开，短横屏把工具放到底部横排；细指针桌面几何必须保持上游原样。升级上游或调整补丁后，要分别验证粗指针竖屏、粗指针短横屏与细指针桌面，不能用全局缩放或永久改写桌面布局换取移动达标。
 - 网站切换语言时，游戏区优先展示对应语言。
 - 如果游戏不支持当前语言，默认启动英语版本。
 - 本地验证游戏区不要直接打开 `file://`，应通过静态服务器访问，因为主站会 `fetch("games/catalog.json")`。
@@ -189,12 +199,14 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 
 - 账号系统只服务于游戏自动云存档，不影响普通网站浏览。
 - 游戏本体仍然使用浏览器 `localStorage`。
+- 游戏本体的存档可以继续使用共享 `localStorage`，但客户端已知的云端 `updatedAt` 基线必须使用标签页级 `sessionStorage`（失败时仅退回当前页面内存）。无本标签页基线且本地、云端同时存在时必须进入冲突处理，禁止读取其他标签页留下的版本号后自动上传。
 - `games/game-shell.js` 负责收集 `games/catalog.json` 里声明的 storage keys。
 - 登录后进入游戏页，会读取云端存档。
-- 如果云端存档比本地已知存档更新，会询问是否恢复云端。
-- 本地有存档时会上传到 D1。
+- 如果云端存档比本地已知存档更新，必须先锁住全部上传入口并显示三语冲突处理；取消、Escape、外点、自动计时、隐藏页、退出和导入都不得覆盖较新的云端数据。
+- 冲突窗口必须保留下载本地 JSON 备份、恢复云端、明确用本地覆盖当前云端版本和暂不处理；覆盖动作也必须经过服务端版本校验，不能使用原生 `confirm()` 后无条件 PUT。执行“恢复云端”前必须重新 GET；若云版本已变化，应刷新冲突信息并重新确认，不能落地弹窗打开时的旧快照。
+- 每次存档 PUT 必须携带最近 GET／恢复／同步得到的精确 `expectedUpdatedAt`；首次创建显式传 `null`。服务端用原子 insert-only 或 `WHERE updated_at = ?` update，未命中固定返回 `409 + SAVE_CONFLICT`，禁止“先读再无条件写”。
 - 自动同步间隔：30 秒。
-- 切出页面时会尝试 flush 游戏自己的保存函数并同步。
+- 切出页面时会尝试 flush 游戏自己的保存函数并同步；冲突锁定或云端版本尚未就绪时必须跳过上传。
 - 密码使用 PBKDF2-SHA256 哈希。
 - 会话使用 HttpOnly cookie：`lusu_session`。
 - 单个游戏存档最大约 1MB。
@@ -280,8 +292,8 @@ $env:XDG_CONFIG_HOME=(Join-Path (Get-Location) '.wrangler-config'); npx.cmd wran
 
 - 建议使用 Node.js 22.13+；本地 Pages Functions / API 的同名变量只放在 Git 忽略的根目录 `.dev.vars`，并独立于 Production 生成。
 - `.dev.vars`、`.env`、`.env.*`、真实邮箱、Webhook URL、R2 Access Key 和其他真实密钥绝不能提交 GitHub。
-- 临时互传固定放在资源区，不新增顶层 route、任务栏或移动 Dock。所有 API 复用 HttpOnly 会话，管理员只能由 D1 `users.role = admin` 判断。
-- 未登录用户从手机 Resources App 打开临时互传时必须能直接到达登录操作；不能只代理点击在非 Home 路由被隐藏的 `.topbar-actions`，账号弹窗也不能留在 `display: none` 的祖先内。
+- 临时互传固定放在工具区（内部 `resources` route），不新增顶层 route、任务栏或移动 Dock。所有 API 复用 HttpOnly 会话，管理员只能由 D1 `users.role = admin` 判断。
+- 未登录用户从手机 Tools App（内部 `resources` route）打开临时互传时必须能直接到达登录操作；不能只代理点击在非 Home 路由被隐藏的 `.topbar-actions`，账号弹窗也不能留在 `display: none` 的祖先内。
 - 互传房间的消息流、上传任务和输入区必须在 359x500、375x667、390x844、430x932、844x390 及软键盘 `visualViewport` 缩小时保持可到达。手机房间保持单一 `.transfer-room` 滚动路径，composer 必须留在正常文档流，不能用 sticky / fixed 层覆盖已发送卡片；仅把 composer 改成 `position: static` 不够，竖屏房间必须使用纵向 Flex，toolbar/feed/composer/tasks 直接子项不可收缩，让消息按真实内容高度撑开，短横屏再显式恢复双栏 Grid。验收必须测量 composer 与图片、文件卡的二维交集为零，不得用嵌套滚动、过度 overscroll containment 或固定高度把登录、发送或上传操作锁在视口外。
 - 普通互传默认 95 MiB/文件并受个人、房间、频率和全站免费池的服务端限制；管理员大文件必须使用 R2 Multipart。“不限频次”不等于无限并发或突破 R2 平台/账单边界。
 - 房间明文口令不得发送服务端或进入 D1/R2/日志；文字可称浏览器 AES-GCM，文件只准确描述为 HTTPS + 私有 R2 + 服务端鉴权，未实现可靠流式 E2EE 或病毒扫描时不得声称已实现。

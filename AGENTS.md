@@ -66,7 +66,7 @@ The top-right account entry is a top-bar floating layer. When touching it, check
 - `.xp-topbar` must allow the popover to overflow below the button.
 - `.site-shell > header` must sit above `.site-shell > main`.
 
-Fixing only one side can make the home page look unresponsive or make the popover appear behind section windows. Verify Home, Knowledge, Videos, Resources, Games, Chat, About, and narrow mobile layouts.
+Fixing only one side can make the home page look unresponsive or make the popover appear behind section windows. Verify Home, Knowledge, Videos, Tools (the internal `resources` route), Games, Chat, About, and narrow mobile layouts.
 
 ## Public UI Rules
 

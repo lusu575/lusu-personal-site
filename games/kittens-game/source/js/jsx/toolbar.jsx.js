@@ -321,6 +321,9 @@ WLoginForm = React.createClass({
     },
 
     render: function(){
+        if (window.LusuKittensEmbed && window.LusuKittensEmbed.disableKgnet){
+            return null;
+        }
         if (this.state.isLoading){
             return $r("span", null, "Loading...");
         }
@@ -391,6 +394,9 @@ WLoginForm = React.createClass({
     },
 
     login: function(){
+        if (window.LusuKittensEmbed && window.LusuKittensEmbed.disableKgnet){
+            return;
+        }
         var self = this;
 
         self.setState({error: null, isLoading: true});
@@ -643,6 +649,9 @@ WLogin = React.createClass({
 
     render: function(){
         var game = this.props.game;
+        if (window.LusuKittensEmbed && window.LusuKittensEmbed.disableKgnet){
+            return null;
+        }
 
         var lastBackup = (new Date().getTime() - game.lastBackup) / (1000 * 60 * 60 * 24);
 

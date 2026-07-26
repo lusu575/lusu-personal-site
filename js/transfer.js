@@ -7,16 +7,16 @@
   const SESSION_TASKS_KEY = "lusu-transfer-upload-tasks-v1";
   const COPY = {
     zh: {
-      back: "返回资源区", title: "临时互传", retention: "内容在发布完成 24 小时后自动失效。",
-      loginTitle: "登录后使用临时互传", loginBody: "登录后会回到此处；房间内容只对持有口令的账号开放。", loginAction: "登录并继续", loginBack: "返回资源列表",
+      back: "返回工具区", title: "临时互传", retention: "内容在发布完成 24 小时后自动失效。",
+      loginTitle: "登录后使用临时互传", loginBody: "登录后会回到此处；使用同一房间口令的登录账号会进入同一个临时房间。", loginAction: "登录并继续", loginBack: "返回工具列表",
       roomPassword: "房间口令", roomPlaceholder: "至少 6 位，分享给另一位登录用户", generate: "随机生成", copy: "复制",
-      securityNote: "口令不会发送到服务器；知道口令的人可读取房间内容，请勿上传账号凭证。", enter: "进入房间",
+      securityNote: "明文口令不会发送到服务器；文字会在浏览器中使用 AES-GCM 加密。文件不使用该口令加密，只通过 HTTPS 传输、私有 R2 存储和服务端鉴权保护，且不会进行病毒扫描。请勿发送账号凭证或不可信文件。", enter: "进入房间",
       roomActive: "临时房间已连接", refresh: "刷新", leave: "离开房间", textLabel: "加密文字",
       textPlaceholder: "发送一段加密文字……", send: "发送", dropTitle: "添加照片或文件", dropRelease: "松开以添加到待发送附件", choosePhoto: "选择照片", chooseFile: "选择文件", tasks: "上传任务",
       online: "在线", offline: "离线", loading: "正在连接临时互传……", loginNeeded: "请先登录后使用临时互传。",
       r2Missing: "R2 尚未绑定，文字房间可查看，但文件上传暂不可用。", generated: "已生成随机口令，请复制给另一位登录用户。",
       copied: "房间口令已复制。", copyFailed: "无法访问剪贴板，请手动复制。", shortPassword: "房间口令至少需要 6 位。",
-      joined: "已进入临时房间。", joinFailed: "无法进入房间。", normalMode: "普通账号 · 单文件最多 {max} · 今日剩余 {remaining}",
+      joined: "已进入临时房间。", joinFailed: "无法进入房间。", normalMode: "普通账号 · 单文件最多 {max} · 近 24 小时额度剩余 {remaining}",
       adminMode: "管理员大文件模式 · 分片上传 · 不受普通业务配额限制", pool: "普通用户免费池：{status}",
       empty: "房间里还没有内容。发送加密文字或选择文件开始互传。", expires: "剩余 {time}", download: "下载", delete: "删除", copyText: "复制文字", textCopied: "文字已复制。",
       decrypting: "正在解密文字……", decryptFailed: "这条文字无法用当前房间口令解密。", unknownUploader: "已登录用户",
@@ -24,49 +24,49 @@
       pause: "暂停", resume: "继续", cancel: "取消", reselect: "重新选择同一文件", speed: "{done} / {total} · {speed}/s · 约 {eta}",
       normalHelp: "选择后先留在输入区，点击发送才上传。单文件不超过 {max}，24 小时额度剩余 {remaining}。", adminHelp: "选择后先留在输入区，点击发送才上传；大文件按有限并发稳定上传。",
       fileTooLarge: "普通账号不能上传超过 {max} 的文件。", sessionExpired: "上传任务已失效，请重新选择文件。", fileMismatch: "所选文件与待恢复任务不一致。",
-      unsafeNotice: "文件未做病毒扫描，请只下载可信来源内容。", textSent: "加密文字已发送。", attachmentsReady: "已选择 {count} 个附件，点击“发送”后开始上传。", attachmentsQueued: "{count} 个附件已开始上传。", composerSent: "文字已发送，{count} 个附件已开始上传。", textSentAttachmentsPending: "文字已发送，但文件上传暂不可用；附件仍保留在输入区。", removeAttachment: "移除附件", deleted: "内容已删除。", genericError: "操作失败，请稍后重试。",
+      unsafeNotice: "文件未做病毒或恶意软件扫描，请只打开或下载可信来源的文件。", textSent: "加密文字已发送。", attachmentsReady: "已选择 {count} 个附件，点击“发送”后开始上传。", attachmentsQueued: "{count} 个附件已开始上传。", composerSent: "加密文字已发送，{count} 个附件已开始上传。", textSentAttachmentsPending: "加密文字已发送，但文件上传暂不可用；附件仍保留在输入区。", removeAttachment: "移除附件", deleted: "内容已删除。", genericError: "操作失败，请稍后重试。",
       poolGreen: "正常", poolYellow: "接近阈值，已降低上传压力", poolRed: "已暂停普通用户新增文件", restoreHint: "刷新后需重新选择同一文件继续。",
       feedLoaded: "已加载 {count} 条互传内容。", feedAdded: "新增 {count} 条互传内容。", taskCompleted: "{name} 上传完成。", taskFailed: "{name} 上传失败，可重试。", taskCancelled: "{name} 已取消。"
     },
     en: {
-      back: "Back to Resources", title: "Quick Transfer", retention: "Items expire 24 hours after publishing completes.",
-      loginTitle: "Sign in to use Quick Transfer", loginBody: "After signing in, you will return here. Room content is available only to accounts with the passphrase.", loginAction: "Sign in and continue", loginBack: "Back to resource list",
+      back: "Back to Tools", title: "Quick Transfer", retention: "Items expire 24 hours after publishing completes.",
+      loginTitle: "Sign in to use Quick Transfer", loginBody: "After signing in, you will return here. Signed-in accounts using the same room passphrase enter the same temporary room.", loginAction: "Sign in and continue", loginBack: "Back to tool list",
       roomPassword: "Room passphrase", roomPlaceholder: "At least 6 characters; share it with another signed-in person", generate: "Generate", copy: "Copy",
-      securityNote: "The passphrase is never sent to the server. Anyone who knows it can read the room; do not upload credentials.", enter: "Enter room",
+      securityNote: "The plaintext passphrase is not sent to the server; text is encrypted in the browser with AES-GCM. Files are not encrypted with the passphrase—they are protected by HTTPS in transit, private R2 storage, and server-side authorization, and are not virus-scanned. Do not share credentials or untrusted files.", enter: "Enter room",
       roomActive: "Temporary room connected", refresh: "Refresh", leave: "Leave room", textLabel: "Encrypted text", textPlaceholder: "Send encrypted text…", send: "Send",
       dropTitle: "Add photos or files", dropRelease: "Drop to add pending attachments", choosePhoto: "Choose photos", chooseFile: "Choose files", tasks: "Upload tasks", online: "Online", offline: "Offline", loading: "Connecting to Quick Transfer…",
       loginNeeded: "Sign in before using Quick Transfer.", r2Missing: "R2 is not bound yet. Text rooms remain visible, but file uploads are unavailable.",
       generated: "Random passphrase generated. Copy it to the other signed-in person.", copied: "Room passphrase copied.", copyFailed: "Clipboard access failed; copy it manually.",
       shortPassword: "The room passphrase must be at least 6 characters.", joined: "Temporary room joined.", joinFailed: "Unable to enter the room.",
-      normalMode: "Standard account · {max} per file · {remaining} remaining today", adminMode: "Admin large-file mode · multipart · standard quotas do not apply",
+      normalMode: "Standard account · {max} per file · {remaining} remaining in the rolling 24-hour quota", adminMode: "Admin large-file mode · multipart · standard quotas do not apply",
       pool: "Standard-user free pool: {status}", empty: "Nothing is here yet. Send encrypted text or choose a file.", expires: "{time} left", download: "Download", delete: "Delete", copyText: "Copy text", textCopied: "Text copied.",
       decrypting: "Decrypting text…", decryptFailed: "This text cannot be decrypted with the current passphrase.", unknownUploader: "Signed-in user",
       queued: "Queued", uploading: "Uploading", paused: "Paused", retrying: "Retrying part", completing: "Completing", complete: "Upload complete", failed: "Upload failed", cancelled: "Cancelled",
       pause: "Pause", resume: "Resume", cancel: "Cancel", reselect: "Select the same file", speed: "{done} / {total} · {speed}/s · about {eta}",
       normalHelp: "Selections stay in the composer until Send is pressed. Up to {max} per file, with {remaining} left in the rolling 24-hour quota.", adminHelp: "Selections stay in the composer until Send is pressed; bounded concurrency keeps large uploads stable.",
       fileTooLarge: "Standard accounts cannot upload files over {max}.", sessionExpired: "This upload session expired. Select the file again to restart.", fileMismatch: "The selected file does not match the resumable task.",
-      unsafeNotice: "Files are not virus-scanned. Download only from people you trust.", textSent: "Encrypted text sent.", attachmentsReady: "{count} attachment(s) selected. Press Send to start uploading.", attachmentsQueued: "{count} attachment(s) started uploading.", composerSent: "Text sent and {count} attachment(s) started uploading.", textSentAttachmentsPending: "Text sent, but file uploads are unavailable; attachments remain in the composer.", removeAttachment: "Remove attachment", deleted: "Item deleted.", genericError: "The operation failed. Try again later.",
+      unsafeNotice: "Files are not scanned for viruses or malware. Open or download only files from people you trust.", textSent: "Encrypted text sent.", attachmentsReady: "{count} attachment(s) selected. Press Send to start uploading.", attachmentsQueued: "{count} attachment(s) started uploading.", composerSent: "Encrypted text sent; {count} attachment(s) started uploading.", textSentAttachmentsPending: "Encrypted text sent, but file uploads are unavailable; attachments remain in the composer.", removeAttachment: "Remove attachment", deleted: "Item deleted.", genericError: "The operation failed. Try again later.",
       poolGreen: "Healthy", poolYellow: "Near the threshold; upload pressure is reduced", poolRed: "New standard-user files are paused", restoreHint: "After refresh, reselect the same file to continue.",
       feedLoaded: "Loaded {count} transfer item(s).", feedAdded: "{count} new transfer item(s).", taskCompleted: "{name} upload completed.", taskFailed: "{name} upload failed and can be retried.", taskCancelled: "{name} cancelled."
     },
     ja: {
-      back: "リソースへ戻る", title: "一時転送", retention: "公開完了から24時間後に自動で失効します。",
-      loginTitle: "ログインして一時転送を使用", loginBody: "ログイン後はここへ戻ります。部屋の内容は合言葉を持つアカウントだけが利用できます。", loginAction: "ログインして続行", loginBack: "リソース一覧へ戻る",
+      back: "ツールへ戻る", title: "一時転送", retention: "公開完了から24時間後に自動で失効します。",
+      loginTitle: "ログインして一時転送を使用", loginBody: "ログイン後はここへ戻ります。同じ部屋の合言葉を使うログイン済みアカウントは、同じ一時ルームに入ります。", loginAction: "ログインして続行", loginBack: "ツール一覧へ戻る",
       roomPassword: "部屋の合言葉", roomPlaceholder: "6文字以上。相手のログインユーザーと共有", generate: "ランダム生成", copy: "コピー",
-      securityNote: "合言葉はサーバーへ送信されません。知っている人は閲覧できるため、認証情報を送らないでください。", enter: "部屋に入る",
+      securityNote: "平文の合言葉はサーバーへ送信されず、テキストはブラウザー内で AES-GCM 暗号化されます。ファイルは合言葉では暗号化されず、HTTPS 通信・非公開 R2 ストレージ・サーバー認可で保護されますが、ウイルス検査は行われません。認証情報や信頼できないファイルを送らないでください。", enter: "部屋に入る",
       roomActive: "一時部屋に接続済み", refresh: "更新", leave: "退出", textLabel: "暗号化テキスト", textPlaceholder: "暗号化テキストを送信…", send: "送信",
       dropTitle: "写真またはファイルを追加", dropRelease: "ここで放して送信待ちに追加", choosePhoto: "写真を選択", chooseFile: "ファイル選択", tasks: "アップロード", online: "オンライン", offline: "オフライン", loading: "一時転送に接続中…",
       loginNeeded: "先にログインしてください。", r2Missing: "R2 が未接続です。テキスト部屋は利用できますが、ファイル送信はまだ使えません。",
       generated: "ランダム合言葉を生成しました。相手にコピーしてください。", copied: "合言葉をコピーしました。", copyFailed: "クリップボードを利用できません。手動でコピーしてください。",
       shortPassword: "合言葉は6文字以上必要です。", joined: "一時部屋に入りました。", joinFailed: "部屋に入れませんでした。",
-      normalMode: "一般アカウント · 1件 {max} まで · 本日残り {remaining}", adminMode: "管理者大容量モード · 分割送信 · 一般枠の対象外",
+      normalMode: "一般アカウント · 1件 {max} まで · 直近24時間枠の残り {remaining}", adminMode: "管理者大容量モード · 分割送信 · 一般枠の対象外",
       pool: "一般ユーザー無料枠：{status}", empty: "まだ内容がありません。暗号化テキストまたはファイルを送ってください。", expires: "残り {time}", download: "ダウンロード", delete: "削除", copyText: "テキストをコピー", textCopied: "テキストをコピーしました。",
       decrypting: "テキストを復号中…", decryptFailed: "現在の合言葉では復号できません。", unknownUploader: "ログインユーザー",
       queued: "送信待ち", uploading: "送信中", paused: "一時停止", retrying: "分割を再試行", completing: "完了処理中", complete: "送信完了", failed: "送信失敗", cancelled: "キャンセル済み",
       pause: "一時停止", resume: "再開", cancel: "キャンセル", reselect: "同じファイルを再選択", speed: "{done} / {total} · {speed}/秒 · 約 {eta}",
       normalHelp: "選択後は入力欄に保持され、「送信」でアップロードします。1件 {max} まで、直近24時間の残りは {remaining} です。", adminHelp: "選択後は入力欄に保持され、「送信」でアップロードします。大容量送信も同時処理数を制限します。",
       fileTooLarge: "一般アカウントは {max} を超えるファイルを送れません。", sessionExpired: "アップロード期限が切れました。最初からやり直してください。", fileMismatch: "選択したファイルが再開対象と一致しません。",
-      unsafeNotice: "ウイルス検査は行っていません。信頼できる相手のファイルだけを開いてください。", textSent: "暗号化テキストを送信しました。", attachmentsReady: "{count} 件の添付を選択しました。「送信」でアップロードを開始します。", attachmentsQueued: "{count} 件の添付をアップロード中です。", composerSent: "テキストを送信し、{count} 件の添付をアップロード中です。", textSentAttachmentsPending: "テキストは送信しましたが、ファイル送信は利用できません。添付は入力欄に残しています。", removeAttachment: "添付を外す", deleted: "削除しました。", genericError: "処理に失敗しました。後でもう一度お試しください。",
+      unsafeNotice: "ファイルのウイルス／マルウェア検査は行っていません。信頼できる相手のファイルだけを開くかダウンロードしてください。", textSent: "暗号化テキストを送信しました。", attachmentsReady: "{count} 件の添付を選択しました。「送信」でアップロードを開始します。", attachmentsQueued: "{count} 件の添付をアップロード中です。", composerSent: "暗号化テキストを送信し、{count} 件の添付をアップロード中です。", textSentAttachmentsPending: "暗号化テキストは送信しましたが、ファイル送信は利用できません。添付は入力欄に残しています。", removeAttachment: "添付を外す", deleted: "削除しました。", genericError: "処理に失敗しました。後でもう一度お試しください。",
       poolGreen: "正常", poolYellow: "しきい値に接近。負荷を抑制中", poolRed: "一般ユーザーの新規ファイルを停止中", restoreHint: "更新後は同じファイルを再選択すると続行できます。",
       feedLoaded: "転送内容を {count} 件読み込みました。", feedAdded: "新しい転送内容が {count} 件あります。", taskCompleted: "{name} の送信が完了しました。", taskFailed: "{name} の送信に失敗しました。再試行できます。", taskCancelled: "{name} をキャンセルしました。"
     }
@@ -200,7 +200,6 @@
     listen(refs.dropSurface, "dragover", handleWindowDragOver);
     listen(refs.dropSurface, "dragleave", handleWindowDragLeave);
     listen(refs.dropSurface, "drop", handleWindowDrop);
-    listen(refs.uploadZone, "keydown", handleUploadZoneKeydown);
     listen(document, "paste", (event) => { if (state.open && state.roomKey && event.clipboardData?.files?.length) stageFiles(event.clipboardData.files); });
     listen(document, "dragend", resetWindowDragState);
     listen(window, "blur", resetWindowDragState);
@@ -303,22 +302,11 @@
     refs.uploadZone?.classList.remove("is-dragging");
   }
 
-  function handleUploadZoneKeydown(event) {
-    if (event.key !== "Enter" && event.key !== " ") return;
-    event.preventDefault();
-    if (!canAcceptFiles()) {
-      if (state.config && !state.config.r2Ready) setFeedback(text("r2Missing"), true);
-      return;
-    }
-    refs.fileInput?.click();
-  }
-
   function syncUploadAvailability() {
     const available = Boolean(state.config?.r2Ready && !state.composerSending);
     if (refs.photoInput) refs.photoInput.disabled = !available;
     if (refs.fileInput) refs.fileInput.disabled = !available;
     refs.uploadZone?.classList.toggle("is-disabled", !available);
-    refs.uploadZone?.setAttribute("aria-disabled", String(!available));
     [refs.photoInput, refs.fileInput].forEach((input) => {
       const picker = input?.closest(".transfer-file-picker");
       picker?.classList.toggle("is-disabled", !available);

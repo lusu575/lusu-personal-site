@@ -6,7 +6,7 @@
 
 - 每次修改“日本語の裏側”的公开界面、交互或维护流程，`appVersion` 固定增加 `0.0.1`；例如 `1.0.2 -> 1.0.3`。不要跳过版本，也不要把网站整体版本代替工具版本。
 - 只有题库结构、内容哈希边界或存档兼容发生变化时才增加 `contentVersion`。仅 UI 热修不得改写 250 关内容哈希、音频 manifest、时间轴或云进度兼容版本。
-- `appVersion` 必须同步到工具 manifest、前端常量、三语可见版本、主站 Resources 卡片、缓存 query、构建守卫和更新记录；`contentVersion` 变化时才额外同步内容批次与目录、音频 manifest、云进度 API 和迁移说明。
+- `appVersion` 必须同步到工具 manifest、前端常量、三语可见版本、主站工具区卡片（内部 `resources` route）、缓存 query、构建守卫和更新记录；`contentVersion` 变化时才额外同步内容批次与目录、音频 manifest、云进度 API 和迁移说明。
 - 已发布关卡 ID 永久稳定；修改某关可见内容时单独增加该关 `revision`，版本号和关卡 revision 不能互相替代。
 
 ## 界面维护

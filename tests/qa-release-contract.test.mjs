@@ -73,6 +73,9 @@ test("Resources visual audit freezes the transparent icon, compact card, and Tra
     "resources-returned-${lang}-",
     "Resource list is not restored after closing Quick Transfer",
     "resourceVisualExpectedResultCount",
+    "resourceDisplayLabels",
+    "stable Tools route hash",
+    "transferLoginBack",
     "exactCdpViewport:true"
   ]) assert.ok(audit.includes(token), `missing Resources audit contract ${token}`);
   assert.match(audit, /const resourceVisualLanguages\s*=\s*Object\.freeze\(\["zh",\s*"en",\s*"ja"\]\)/);

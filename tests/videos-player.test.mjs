@@ -51,7 +51,10 @@ test("video player keeps thumbnails and native iframe controls unobstructed and 
 });
 
 test("video loading, failure, true empty, and normal data keep distinct filter states", async () => {
-  const source = await readFile(new URL("../js/routes/videos.mjs", import.meta.url), "utf8");
+  const [source, main] = await Promise.all([
+    readFile(new URL("../js/routes/videos.mjs", import.meta.url), "utf8"),
+    readFile(new URL("../js/main.js", import.meta.url), "utf8")
+  ]);
   assert.match(source, /if \(videoState\.loading && !videoState\.videos\.length\)[\s\S]*?renderVideoStatusState\("loading"\)/);
   assert.match(source, /if \(videoState\.error && !videoState\.videos\.length\)[\s\S]*?renderVideoStatusState\("failed"\)/);
   assert.match(source, /renderVideoEmptyState\(videoState\.videos\.length > 0\)/);
@@ -59,6 +62,26 @@ test("video loading, failure, true empty, and normal data keep distinct filter s
   assert.match(source, /if \(videoState\.loading\) list\.prepend\(renderVideoRecoveryNotice\("loading"\)\)/);
   assert.match(source, /else if \(videoState\.error\) list\.prepend\(renderVideoRecoveryNotice\("failed"\)\)/);
   assert.match(source, /activeFilters\.videos = "all"/);
+  assert.match(source, /showAll\.dataset\.videoShowAll = ""/);
+  assert.match(source, /showAll\.textContent = videoUiText\("showAll"\)/);
+  assert.match(source, /updates\.dataset\.articleCategory = siteUpdateCategory/);
+  assert.match(source, /updates\.className = `xp-button\$\{isFiltered \? " is-secondary" : ""\}`/);
+  assert.match(main, /data-video-show-all[\s\S]*?showAllVideos\(\)/);
+});
+
+test("video category DOM replacement preserves the focused category", async () => {
+  const [source, main] = await Promise.all([
+    readFile(new URL("../js/routes/videos.mjs", import.meta.url), "utf8"),
+    readFile(new URL("../js/main.js", import.meta.url), "utf8")
+  ]);
+
+  assert.match(source, /const focusedCategory = focusedButton\?\.dataset\.filter \|\| ""/);
+  assert.match(source, /target\.replaceChildren\(\)/);
+  assert.match(source, /if \(focusedCategory\) \{\s*focusVideoCategory\(focusedCategory\)/);
+  assert.match(source, /function focusVideoCategory\(categoryId = activeFilters\.videos\)/);
+  assert.match(source, /button\?\.focus\(\{ preventScroll: true \}\)/);
+  assert.match(source, /function showAllVideos\(\) \{[\s\S]*?activeFilters\.videos = "all"[\s\S]*?focusVideoCategory\("all"\)/);
+  assert.match(main, /filterType === "videos"[\s\S]*?renderVideos\(\)[\s\S]*?focusVideoCategory\(filterValue\)/);
 });
 
 test("video list uses cached request JSON and bounded thumbnail metadata", async () => {

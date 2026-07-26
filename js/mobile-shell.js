@@ -407,6 +407,7 @@
         cancelFocusoutRecheck();
       }
     }
+    syncDockAccessibility();
     if (nextShell === "mobile") {
       syncDockLayout(document.body?.dataset.route || "home", { immediate: true });
     }
@@ -461,13 +462,16 @@
   function mutateHorizontalDiscovery(measurements) {
     (measurements || []).forEach(({ node, overflow, before, after }) => {
       if (!node.isConnected) return;
+      const ownsInteractiveChildren = Boolean(node.querySelector(
+        "button, a[href], input, select, textarea, [tabindex]:not([tabindex='-1'])"
+      ));
       node.classList.toggle("has-horizontal-overflow", overflow);
       node.classList.toggle("has-overflow-before", before);
       node.classList.toggle("has-overflow-after", after);
-      if (overflow && !node.hasAttribute("tabindex")) {
+      if (overflow && !ownsInteractiveChildren && !node.hasAttribute("tabindex")) {
         node.tabIndex = 0;
         node.dataset.mobileScrollTabstop = "true";
-      } else if (!overflow && node.dataset.mobileScrollTabstop === "true") {
+      } else if ((!overflow || ownsInteractiveChildren) && node.dataset.mobileScrollTabstop === "true") {
         node.removeAttribute("tabindex");
         delete node.dataset.mobileScrollTabstop;
       }
@@ -879,9 +883,24 @@
     document.body.dataset.mobileDock = state.dockCollapsed ? "collapsed" : "expanded";
     const toggle = document.querySelector("[data-mobile-dock-toggle]");
     toggle?.setAttribute("aria-expanded", String(!state.dockCollapsed));
+    syncDockAccessibility();
     if (!state.dockCollapsed) {
       syncDockLayout(document.body.dataset.route || "home", { immediate: true });
     }
+  }
+
+  function syncDockAccessibility() {
+    const scroller = document.querySelector(".mobile-dock-scroll");
+    if (!scroller) {
+      return;
+    }
+    const collapsed = state.shell === "mobile" && state.dockCollapsed;
+    const toggle = document.querySelector("[data-mobile-dock-toggle]");
+    if (collapsed && scroller.contains(document.activeElement)) {
+      toggle?.focus({ preventScroll: true });
+    }
+    scroller.inert = collapsed;
+    scroller.setAttribute("aria-hidden", String(collapsed));
   }
 
   function leaveRoute(route) {
@@ -927,10 +946,31 @@
 
   function syncLanguageCycle() {
     const active = document.querySelector(".lang-button[aria-pressed='true']");
-    const lang = active?.dataset.lang || document.documentElement.lang?.slice(0, 2) || "zh";
+    const detectedLanguage = active?.dataset.lang || document.documentElement.lang?.slice(0, 2) || "zh";
+    const lang = ["zh", "en", "ja"].includes(detectedLanguage) ? detectedLanguage : "zh";
+    const copy = {
+      zh: {
+        visible: "中文",
+        accessible: "当前语言：中文。切换到 English。"
+      },
+      en: {
+        visible: "English",
+        accessible: "Current language: English. Switch to 日本語."
+      },
+      ja: {
+        visible: "日本語",
+        accessible: "現在の言語：日本語。中文に切り替えます。"
+      }
+    }[lang];
+    const button = document.querySelector(".mobile-language-cycle");
     const label = document.querySelector("[data-mobile-language-label]");
     if (label) {
-      label.textContent = lang === "ja" ? "日" : lang === "en" ? "EN" : "中";
+      label.textContent = copy.visible;
+    }
+    if (button) {
+      button.dataset.currentLanguage = lang;
+      button.setAttribute("aria-label", copy.accessible);
+      button.setAttribute("title", copy.accessible);
     }
   }
 

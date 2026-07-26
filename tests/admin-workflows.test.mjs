@@ -6,6 +6,15 @@ import test from "node:test";
 const root = resolve(import.meta.dirname, "..");
 const read = (path) => readFileSync(resolve(root, path), "utf8");
 
+test("admin analytics shows the renamed Tools label without changing the resources route", () => {
+  const source = read("admin/admin.js");
+  const routeLabels = source.match(/const pageRouteLabels = \{([\s\S]*?)\n\};/)?.[1] || "";
+  const pageDisplayInfo = source.match(/function pageDisplayInfo\(value, route = ""\) \{([\s\S]*?)\n\}/)?.[1] || "";
+  assert.match(routeLabels, /resources:\s*"工具区"/);
+  assert.doesNotMatch(routeLabels, /resources:\s*"资源区"/);
+  assert.match(pageDisplayInfo, /pageRouteLabels\[sectionKey\]\s*\|\|\s*pageRouteLabels\[routeKey\]/);
+});
+
 test("admin leave protection is event-driven and refreshes clean async video baselines", () => {
   const source = read("admin/admin.js");
   const dirtyCheck = source.match(/function isEditorDirty\(panel\) \{([\s\S]*?)\n\}/)?.[1] || "";

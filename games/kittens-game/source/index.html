@@ -6,8 +6,23 @@
 		<meta http-equiv="Cache-Control" content="private, no-cache, no-store">
 		<meta http-equiv="Pragma" content="no-cache">
 		<meta http-equiv="Expires" content="0">
-
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<script>
+			(function syncEarlyDocumentLanguage() {
+				var languageMap = {
+					zh: "zh-CN",
+					en: "en",
+					ja: "ja"
+				};
+				var storedLanguage = "en";
+				try {
+					storedLanguage = window.localStorage.getItem("com.nuclearunicorn.kittengame.language") || "en";
+				} catch (error) {
+					storedLanguage = "en";
+				}
+				document.documentElement.lang = languageMap[storedLanguage] || "en";
+			})();
+		</script>
 
 		<link rel="shortcut icon" href="res/favicon.gif" type="image/x-icon">
 		<!-- I only use jquery ironically -->
@@ -23,6 +38,7 @@
 
 		<!-- friends don't let friends use AMD and require.js -->
 		<script src="lib/system.js"></script>
+		<link rel="stylesheet" href="res/lusu-embedded.css?v=20260726-mobile-r3">
 
 		<script>
 			SystemJS.config({
@@ -34,14 +50,16 @@
 			});
 		</script>
 
-		<!-- Global site tag (gtag.js) - Google Analytics -->
-		<script async src="https://www.googletagmanager.com/gtag/js?id=G-0QBDX221PR"></script>
 		<script>
-			window.dataLayer = window.dataLayer || [];
-			function gtag(){dataLayer.push(arguments);}
-			gtag('js', new Date());
-
-			gtag('config', 'G-0QBDX221PR');
+			/*
+			 * This bundled copy runs inside LuSu's own game shell. The shell already
+			 * provides local/cloud saves, so upstream analytics and KGNet login are
+			 * deliberately disabled without changing the game's localStorage data.
+			 */
+			window.LusuKittensEmbed = Object.freeze({
+				disableExternalAnalytics: true,
+				disableKgnet: true
+			});
 		</script>
 
 		<script type="text/javascript">
@@ -116,12 +134,34 @@
 				}
 			}
 
+			var loadedThemes = Object.create(null);
+
 			function loadTheme(themeId, timestamp){
+				if (!themeId || themeId == "default" || !/^[a-z0-9-]+$/.test(themeId) || loadedThemes[themeId]){
+					return;
+				}
+				loadedThemes[themeId] = true;
 				$("<link />")
 					.attr("rel", "stylesheet")
 					.attr("type", "text/css")
+					.attr("data-kittens-theme", themeId)
 					.attr("href", "res/theme_" + themeId + ".css?_=" + timestamp)
 					.appendTo($("head"));
+			}
+
+			function loadActiveTheme(){
+				var match = document.body.className.match(/(?:^|\s)scheme_([a-z0-9-]+)(?:\s|$)/);
+				if (match){
+					loadTheme(match[1], buildRevision || now);
+				}
+			}
+
+			function watchThemeSelection(){
+				loadActiveTheme();
+				new MutationObserver(loadActiveTheme).observe(document.body, {
+					attributes: true,
+					attributeFilter: ["class"]
+				});
 			}
 
 			dojo.addOnLoad(function() {
@@ -185,15 +225,7 @@
 					$("#versionLink").html(displayedVersion + ".r" + buildRevision);
 				});
 				def = _import("config", def);
-				def.then(function() {
-					var schemes = new classes.KGConfig().statics.schemes;
-					for (var i = 0; i < schemes.length; ++i) {
-						//todo: skip theme if preloaded
-						if (!uiSettings || uiSettings.theme != schemes[i]){
-							loadTheme(schemes[i], buildRevision);
-						}
-					}
-				});
+				def.then(watchThemeSelection);
 
 				def = _import("i18n", def);
 				def.then(function () {
@@ -239,6 +271,7 @@
 				console.log("About to initialize the game");
 				$("#loadingContainer").hide();
 				$("#game").show();
+				$("#game").addClass("lusu-embedded-game");
 
 				try {
 					gamePage = game = new com.nuclearunicorn.game.ui.GamePage();

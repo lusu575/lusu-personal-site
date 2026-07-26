@@ -11,6 +11,7 @@
 		Contribute on GitHub! (https://github.com/doublespeakgames/adarkroom/)
 	-->
 	<title>A Dark Room</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 	<meta itemprop="description" name="description" property="og:description" content="A minimalist text adventure">
 	<meta itemprop="image" property="og:image" content="img/adr.png" />
 	<meta itemprop="name" property="og:title" content="A Dark Room" />
@@ -34,18 +35,25 @@
 				lang = localStorage.lang;
 			} catch(e) {}
 		}
+		var documentLanguages = {
+			zh_cn: 'zh-CN',
+			zh_tw: 'zh-TW',
+			en: 'en',
+			ja: 'ja'
+		};
+		document.documentElement.lang = documentLanguages[lang] || (lang ? lang.replace('_', '-') : 'en');
 		// if a language different than english requested, load all translations
 		if(lang && lang != 'en'){
 			document.write('<script src="lang/'+lang+'/strings.js"><\/script>');
 			document.write('<link rel="stylesheet" type="text/css" href="lang/'+lang+'/main.css" \/>');
 		}
 	</script>
-	<script src="script/lusu-localization-overrides.js"></script>
+	<script src="script/lusu-localization-overrides.js?v=20260726-a-dark-room-mobile-r2"></script>
 	
 	<script src="script/Button.js"></script>
 	<script src="script/audioLibrary.js"></script>
 	<script src="script/audio.js"></script>
-	<script src="script/engine.js"></script>
+	<script src="script/engine.js?v=20260726-a-dark-room-mobile-r2"></script>
 	<script src="script/state_manager.js"></script>
 	<script src="script/header.js"></script>
 	<script src="script/notifications.js"></script>
@@ -53,7 +61,7 @@
 	<script src="script/room.js"></script>
 	<script src="script/outside.js"></script>
 	<script src="script/world.js"></script>
-	<script src="script/path.js"></script>
+	<script src="script/path.js?v=20260726-a-dark-room-mobile-r2"></script>
 	<script src="script/ship.js"></script>
   <script src="script/space.js"></script>
   <script src="script/fabricator.js"></script>
@@ -83,6 +91,7 @@
 	<link rel="stylesheet" type="text/css" href="css/ship.css" />
   <link rel="stylesheet" type="text/css" href="css/space.css" />
   <link rel="stylesheet" type="text/css" href="css/fabricator.css" />
+	<link rel="stylesheet" type="text/css" href="css/lusu-mobile.css?v=20260726-a-dark-room-mobile-r2" />
 	
 	<script src="script/localization.js"></script>
 </head>

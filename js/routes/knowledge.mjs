@@ -39,6 +39,35 @@ export function normalizeKnowledgeSearchText(value) {
     .trim();
 }
 
+export function knowledgeSearchTokens(value) {
+  const normalized = normalizeKnowledgeSearchText(value);
+  return normalized ? normalized.split(" ") : [];
+}
+
+export function articleLanguageTag(value) {
+  const lang = String(value || "").trim().toLowerCase();
+  if (lang === "zh" || lang === "zh-cn") return "zh-CN";
+  if (lang === "en") return "en";
+  if (lang === "ja") return "ja";
+  return "";
+}
+
+export function articleReadProgressPercent({
+  scrollTop = 0,
+  clientHeight = 0,
+  contentEnd = 0,
+  endInset = 24
+} = {}) {
+  const readableDistance = Math.max(
+    0,
+    Number(contentEnd || 0) - Number(clientHeight || 0) + Number(endInset || 0)
+  );
+  if (readableDistance <= 1) {
+    return 100;
+  }
+  return Math.min(100, Math.max(0, (Number(scrollTop || 0) / readableDistance) * 100));
+}
+
 export function sortKnowledgeArticles(items) {
   return [...items].sort((left, right) => {
     const isPinned = (item) => item?.category !== "site-updates" && Boolean(item?.is_pinned);
@@ -71,7 +100,7 @@ export function createKnowledgeRoute({
   visiblePublicArticles,
   renderUpdates,
   isAbortError,
-  latestUpdateDate,
+  renderLatestUpdateDate,
   syncDocumentMeta,
   syncArticleDocumentMeta,
   captureKnowledgeHistorySnapshot,
@@ -85,6 +114,36 @@ export function createKnowledgeRoute({
   sitePath,
   schedulePublicHistoryStateSync
 }) {
+  function applyArticleLanguage(node, lang) {
+    if (!node) return;
+    const languageTag = articleLanguageTag(lang);
+    if (languageTag) {
+      node.setAttribute("lang", languageTag);
+    } else {
+      node.removeAttribute("lang");
+    }
+  }
+
+  function resetKnowledgeListScroll({ syncHistory = false } = {}) {
+    articleState.pendingListScrollTop = null;
+    const list = document.getElementById("knowledge-list");
+    if (list) {
+      list.scrollTop = 0;
+    }
+    if (syncHistory
+      && document.body.dataset.route === "knowledge"
+      && !articleState.currentSlug) {
+      replaceCurrentPublicHistoryState({
+        knowledge: normalizeKnowledgeHistorySnapshot({
+          category: activeFilters.knowledge,
+          searchTerm: articleState.searchTerm,
+          scrollTop: 0
+        }),
+        articleScrollTop: 0
+      });
+    }
+  }
+
   function restorePendingKnowledgeScroll() {
     window.requestAnimationFrame(() => {
       window.requestAnimationFrame(() => {
@@ -289,19 +348,24 @@ export function createKnowledgeRoute({
   function articleCardElement(item, itemIndex = 0) {
     const card = document.createElement("a");
     card.className = "article-card";
+    applyArticleLanguage(card, item.lang);
     const titleText = item.title || "";
     card.href = articleRouteHref(item.slug);
     card.dataset.articleSlug = item.slug;
     card.dataset.articleListPosition = String(itemIndex);
-    card.setAttribute("aria-label", `${t("readButton")}: ${titleText}`);
 
     const title = document.createElement("h2");
+    title.id = `knowledge-article-title-${itemIndex}`;
     title.textContent = titleText;
+    applyArticleLanguage(title, item.lang);
+    card.setAttribute("aria-labelledby", title.id);
     const summary = document.createElement("p");
     summary.textContent = item.summary || "";
+    applyArticleLanguage(summary, item.lang);
 
     const meta = document.createElement("div");
     meta.className = "meta-row";
+    applyArticleLanguage(meta, getCurrentLang());
     if (item.category !== siteUpdateCategory && item.is_pinned) {
       const pinned = document.createElement("span");
       pinned.className = "tag article-pinned-badge";
@@ -334,6 +398,7 @@ export function createKnowledgeRoute({
     action.className = "article-card-cta";
     action.textContent = t("readButton");
     action.setAttribute("aria-hidden", "true");
+    applyArticleLanguage(action, getCurrentLang());
 
     card.append(title, summary, meta, action);
     return card;
@@ -391,15 +456,15 @@ export function createKnowledgeRoute({
   }
 
   function articleMatchesSearch(item) {
-    const term = normalizeKnowledgeSearchText(articleState.searchTerm);
-    if (!term) {
+    const tokens = knowledgeSearchTokens(articleState.searchTerm);
+    if (!tokens.length) {
       return true;
     }
     if (articleState.searchIndexLanguage !== getCurrentLang()) {
       rebuildArticleSearchIndex();
     }
     const haystack = articleState.searchIndex.get(item.slug) || "";
-    return haystack.includes(term);
+    return tokens.every((token) => haystack.includes(token));
   }
 
   function renderKnowledgeCategoryButtons(categories) {
@@ -505,7 +570,7 @@ export function createKnowledgeRoute({
         articleState.loading = false;
         renderKnowledge();
         renderUpdates();
-        document.getElementById("top-updated").textContent = latestUpdateDate();
+        renderLatestUpdateDate();
       }
     }
   }
@@ -529,6 +594,8 @@ export function createKnowledgeRoute({
     const summary = document.getElementById("article-detail-summary");
     const meta = document.getElementById("article-detail-meta");
     const body = document.getElementById("article-detail-body");
+    [title, summary, body].forEach((node) => applyArticleLanguage(node, ""));
+    applyArticleLanguage(meta, getCurrentLang());
 
     if (articleState.pendingDetailScrollTop === null && detail && !detail.hidden && body.childElementCount) {
       articleState.pendingDetailScrollTop = detail.scrollTop;
@@ -590,6 +657,8 @@ export function createKnowledgeRoute({
     const summary = document.getElementById("article-detail-summary");
     const meta = document.getElementById("article-detail-meta");
     const body = document.getElementById("article-detail-body");
+    [title, summary, body].forEach((node) => applyArticleLanguage(node, ""));
+    applyArticleLanguage(meta, getCurrentLang());
 
     articleState.renderedDetailKey = "";
     clearArticleCopyStatus();
@@ -627,6 +696,8 @@ export function createKnowledgeRoute({
     const meta = document.getElementById("article-detail-meta");
     const body = document.getElementById("article-detail-body");
     const renderedDetailKey = `${article.slug || articleState.currentSlug}:${article.requestedLang || getCurrentLang()}`;
+    [title, summary, body].forEach((node) => applyArticleLanguage(node, article.lang));
+    applyArticleLanguage(meta, getCurrentLang());
 
     if (articleState.renderedDetailKey === renderedDetailKey
       && body.childElementCount
@@ -662,7 +733,7 @@ export function createKnowledgeRoute({
       meta.appendChild(item);
     });
     renderMarkdownSafe(body, stripRepeatedArticleHeading(article.content_markdown || "", article.title || ""));
-    renderArticleToc();
+    renderArticleToc(article.lang);
     scheduleArticleReadProgressUpdate();
     syncArticleDocumentMeta(article);
     articleState.renderedDetailKey = renderedDetailKey;
@@ -717,6 +788,7 @@ export function createKnowledgeRoute({
         || window.matchMedia?.("(max-width: 760px)").matches;
       const expanded = preserveExpansion && summary.dataset.summaryExpanded === "true";
       summary.classList.remove("is-expanded");
+      summary.classList.remove("is-collapsible");
       summary.dataset.summaryExpanded = "false";
       if (!mobileShell || !summary.textContent.trim()) {
         toggle.hidden = true;
@@ -725,6 +797,7 @@ export function createKnowledgeRoute({
       }
       const canExpand = summary.scrollHeight > summary.clientHeight + 1;
       toggle.hidden = !canExpand;
+      summary.classList.toggle("is-collapsible", canExpand);
       const nextExpanded = canExpand && expanded;
       summary.classList.toggle("is-expanded", nextExpanded);
       summary.dataset.summaryExpanded = String(nextExpanded);
@@ -756,6 +829,7 @@ export function createKnowledgeRoute({
     const list = document.getElementById("article-detail-toc-list");
     if (list) {
       list.replaceChildren();
+      applyArticleLanguage(list, "");
     }
     if (toc) {
       toc.hidden = true;
@@ -863,13 +937,14 @@ export function createKnowledgeRoute({
     });
   }
 
-  function renderArticleToc() {
+  function renderArticleToc(articleLang = "") {
     const toc = document.getElementById("article-detail-toc");
     const list = document.getElementById("article-detail-toc-list");
     const body = document.getElementById("article-detail-body");
     if (!toc || !list || !body) {
       return;
     }
+    applyArticleLanguage(list, articleLang);
     const headings = [...body.querySelectorAll("h2, h3")]
       .map((heading) => ({ heading, text: heading.textContent.trim() }))
       .filter((item) => item.text);
@@ -895,6 +970,8 @@ export function createKnowledgeRoute({
       button.dataset.articleHeadingTarget = id;
       button.setAttribute("aria-controls", id);
       button.textContent = text;
+      button.title = text;
+      applyArticleLanguage(button, articleLang);
       return button;
     });
     list.replaceChildren(...buttons);
@@ -915,8 +992,16 @@ export function createKnowledgeRoute({
     if (!detail || detail.hidden) {
       return null;
     }
-    const scrollable = Math.max(0, detail.scrollHeight - detail.clientHeight);
-    const percent = scrollable <= 1 ? 100 : (detail.scrollTop / scrollable) * 100;
+    const detailRect = detail.getBoundingClientRect();
+    const bodyRect = body?.getBoundingClientRect();
+    const contentEnd = bodyRect
+      ? detail.scrollTop + (bodyRect.bottom - detailRect.top)
+      : detail.scrollHeight;
+    const percent = articleReadProgressPercent({
+      scrollTop: detail.scrollTop,
+      clientHeight: detail.clientHeight,
+      contentEnd
+    });
     const links = list ? [...list.querySelectorAll("[data-article-heading-target]")] : [];
     if (!links.length || articleState.tocObserver) {
       return { percent, activeId: "", links };
@@ -975,6 +1060,7 @@ export function createKnowledgeRoute({
       return;
     }
     detail.scrollTo({ top: 0, behavior: motionScrollBehavior() });
+    document.getElementById("article-detail-title")?.focus({ preventScroll: true });
     scheduleArticleReadProgressUpdate();
   }
 
@@ -1003,6 +1089,8 @@ export function createKnowledgeRoute({
     const value = document.getElementById("article-read-progress-value");
     const bar = document.getElementById("article-read-progress-bar");
     const topButton = document.querySelector("[data-article-scroll-top]");
+    const detail = document.getElementById("article-detail");
+    const atArticleTop = !detail || detail.scrollTop <= 2;
     if (fill) {
       fill.style.transform = `scaleX(${bounded / 100})`;
     }
@@ -1013,7 +1101,8 @@ export function createKnowledgeRoute({
       bar.setAttribute("aria-valuenow", String(bounded));
       bar.style.setProperty("--article-progress", String(bounded));
     }
-    topButton?.classList.toggle("is-at-article-top", bounded <= 2);
+    topButton?.classList.toggle("is-at-article-top", atArticleTop);
+    topButton?.toggleAttribute("hidden", atArticleTop);
   }
 
   function resetArticleReadProgress() {
@@ -1179,6 +1268,7 @@ export function createKnowledgeRoute({
     articleState.detailFocusReady = false;
     articleState.pendingListScrollTop = 0;
     articleState.pendingDetailScrollTop = null;
+    resetKnowledgeListScroll();
     navigate("knowledge", {
       trigger: options.trigger,
       historyState: {
@@ -1335,7 +1425,7 @@ export function createKnowledgeRoute({
     figure.className = "article-figure";
     const image = document.createElement("img");
     image.src = sitePath(safeSrc);
-    image.alt = alt || "";
+    image.alt = "";
     image.loading = "lazy";
     image.decoding = "async";
     const dimensions = articleImageDimensions(safeSrc);
@@ -1388,7 +1478,7 @@ export function createKnowledgeRoute({
   function handleKnowledgeSearchInput(event) {
     articleState.searchTerm = event.target.value;
     articleState.visibleCount = 12;
-    articleState.pendingListScrollTop = null;
+    resetKnowledgeListScroll({ syncHistory: true });
     const clearButton = document.querySelector("[data-article-search-clear]");
     if (clearButton) {
       clearButton.disabled = !articleState.searchTerm.trim();
@@ -1417,6 +1507,7 @@ export function createKnowledgeRoute({
 
   return Object.freeze({
     restorePendingKnowledgeScroll,
+    resetKnowledgeListScroll,
     renderKnowledge,
     loadArticles,
     loadArticleDetail,

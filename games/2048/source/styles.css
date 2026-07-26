@@ -158,7 +158,18 @@ button {
   font-size: 28px;
 }
 
+@media (pointer: coarse) {
+  button {
+    min-height: 44px;
+  }
+}
+
 @media (max-width: 520px) {
+  button {
+    min-height: 44px;
+    padding-block: 8px;
+  }
+
   .hud,
   .controls {
     align-items: stretch;

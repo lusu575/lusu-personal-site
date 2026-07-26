@@ -41,6 +41,7 @@ export function createChatroomRoute({
     roomMode: "public",
     roomCryptoKey: null,
     roomRevision: 0,
+    roomSwitching: false,
     connectionState: typeof navigator !== "undefined" && navigator.onLine === false ? "offline" : "online",
     lastRefreshSucceeded: true,
     nicknameErrorKey: "",
@@ -273,16 +274,21 @@ export function createChatroomRoute({
       toggleButton.dataset.i18n = isPrivate ? "chatSwitchPublicRoom" : "chatEnterPrivateRoom";
       toggleButton.textContent = t(toggleButton.dataset.i18n);
     }
+    syncChatRoomBusyState();
   }
 
   function showChatPrivateRoomForm() {
     const form = document.getElementById("chat-private-room-form");
     const input = document.getElementById("chat-private-password");
+    if (chatState.roomSwitching) {
+      return;
+    }
     if (!hasChatPrivateCrypto()) {
       setChatFeedbackKey("chatPrivateCryptoUnavailable", true, { source: "room", force: true });
       return;
     }
     hideChatNicknameForm({ restoreFocus: false });
+    clearChatPrivatePasswordError();
     if (form) {
       syncChatPrivateSafetyDisclosure();
       form.hidden = false;
@@ -321,9 +327,62 @@ export function createChatroomRoute({
     hint.textContent = t("chatPrivateRoomHint");
   }
 
+  function setChatPrivatePasswordError(key = "") {
+    const input = document.getElementById("chat-private-password");
+    const error = document.getElementById("chat-private-password-error");
+    if (!input) return;
+    if (!key) {
+      input.removeAttribute("aria-invalid");
+      input.removeAttribute("aria-errormessage");
+      if (error) {
+        error.hidden = true;
+        error.textContent = "";
+        delete error.dataset.errorKey;
+      }
+      return;
+    }
+    if (error) {
+      error.hidden = false;
+      error.dataset.errorKey = key;
+      error.textContent = t(key);
+      input.setAttribute("aria-errormessage", error.id);
+    }
+    input.setAttribute("aria-invalid", "true");
+  }
+
+  function clearChatPrivatePasswordError() {
+    setChatPrivatePasswordError("");
+  }
+
+  function handleChatPrivatePasswordInput() {
+    clearChatPrivatePasswordError();
+  }
+
+  function syncChatRoomBusyState() {
+    const busy = chatState.roomSwitching;
+    const form = document.getElementById("chat-private-room-form");
+    const input = document.getElementById("chat-private-password");
+    const submit = document.getElementById("chat-private-room-submit");
+    const cancel = document.getElementById("chat-private-room-cancel");
+    const toggle = document.getElementById("chat-room-toggle");
+    form?.setAttribute("aria-busy", String(busy));
+    [input, submit, cancel, toggle].forEach((control) => {
+      if (control) control.disabled = busy;
+    });
+    syncChatRetryButton();
+  }
+
+  function setChatRoomSwitching(switching) {
+    chatState.roomSwitching = Boolean(switching);
+    syncChatRoomBusyState();
+  }
+
   function hideChatPrivateRoomForm(options = {}) {
     const form = document.getElementById("chat-private-room-form");
     const input = document.getElementById("chat-private-password");
+    if (chatState.roomSwitching && options.force !== true) {
+      return;
+    }
     const wasOpen = form && !form.hidden;
     if (form) {
       form.hidden = true;
@@ -331,6 +390,7 @@ export function createChatroomRoute({
     if (input) {
       input.value = "";
     }
+    clearChatPrivatePasswordError();
     if (wasOpen && options.restoreFocus !== false) {
       document.getElementById("chat-room-toggle")?.focus({ preventScroll: true });
     }
@@ -345,48 +405,90 @@ export function createChatroomRoute({
 
   async function enterChatPrivateRoom(event) {
     event?.preventDefault();
+    if (chatState.roomSwitching) {
+      return;
+    }
     const input = document.getElementById("chat-private-password");
     const password = String(input?.value || "");
     if (Array.from(password).length < 6) {
+      setChatPrivatePasswordError("chatPrivatePasswordError");
       setChatFeedbackKey("chatPrivatePasswordTooShort", true, { source: "room", force: true });
       input?.focus();
       return;
     }
 
+    let roomPrepared = false;
+    setChatRoomSwitching(true);
     try {
-      setChatFeedbackKey("chatLoading", false, { source: "room", force: true });
+      clearChatPrivatePasswordError();
+      setChatFeedbackKey("chatPrivateRoomBusy", false, { source: "room", force: true });
       const room = await deriveChatPrivateRoom(password);
+      if (!activeRouteScope("chatroom")?.isActive()) {
+        throw new DOMException("The route was left", "AbortError");
+      }
       prepareChatRoomSwitch();
+      roomPrepared = true;
       chatState.roomKey = room.roomKey;
       chatState.roomCryptoKey = room.roomCryptoKey;
       chatState.roomMode = "private";
-      hideChatPrivateRoomForm();
+      hideChatPrivateRoomForm({ restoreFocus: false, force: true });
       syncChatRoomUi();
       restoreChatRoomDraft();
       resetChatLog(t("chatLoading"));
       await refreshChatMessages({ initial: true });
-      setChatFeedbackKey("chatPrivateRoomReady", false, { source: "room", force: true });
-      scheduleChatPolling(5000);
+      if (chatState.lastRefreshSucceeded) {
+        setChatFeedbackKey("chatPrivateRoomReady", false, { source: "room", force: true });
+        scheduleChatPolling(5000);
+      } else {
+        setChatFeedbackKey("chatPrivateRoomLoadFailed", true, { source: "room", force: true });
+        scheduleChatPolling(15000);
+      }
     } catch (error) {
+      if (isAbortError(error)) {
+        return;
+      }
+      if (!roomPrepared) {
+        setChatPrivatePasswordError("chatPrivatePasswordError");
+        input?.focus({ preventScroll: true });
+      }
       setChatFeedback(error.message || t("chatPrivateCryptoUnavailable"), true, { source: "room", force: true });
+    } finally {
+      setChatRoomSwitching(false);
     }
   }
 
   async function switchChatPublicRoom() {
-    prepareChatRoomSwitch();
-    chatState.roomKey = chatPublicRoomKey;
-    chatState.roomCryptoKey = null;
-    chatState.roomMode = "public";
-    hideChatPrivateRoomForm();
-    syncChatRoomUi();
-    restoreChatRoomDraft();
-    resetChatLog(t("chatLoading"));
-    await refreshChatMessages({ initial: true });
-    setChatFeedbackKey("chatPublicRoomReady", false, { source: "room", force: true });
-    scheduleChatPolling(5000);
+    if (chatState.roomSwitching) {
+      return;
+    }
+    setChatRoomSwitching(true);
+    try {
+      setChatFeedbackKey("chatPrivateRoomBusy", false, { source: "room", force: true });
+      prepareChatRoomSwitch();
+      chatState.roomKey = chatPublicRoomKey;
+      chatState.roomCryptoKey = null;
+      chatState.roomMode = "public";
+      hideChatPrivateRoomForm({ restoreFocus: false, force: true });
+      syncChatRoomUi();
+      restoreChatRoomDraft();
+      resetChatLog(t("chatLoading"));
+      await refreshChatMessages({ initial: true });
+      if (chatState.lastRefreshSucceeded) {
+        setChatFeedbackKey("chatPublicRoomReady", false, { source: "room", force: true });
+        scheduleChatPolling(5000);
+      } else {
+        setChatFeedbackKey("chatLoadFailed", true, { source: "room", force: true });
+        scheduleChatPolling(15000);
+      }
+    } finally {
+      setChatRoomSwitching(false);
+    }
   }
 
   async function handleChatRoomToggle() {
+    if (chatState.roomSwitching) {
+      return;
+    }
     if (isPrivateChatRoomActive()) {
       await switchChatPublicRoom();
       return;
@@ -539,6 +641,19 @@ export function createChatroomRoute({
     }
     status.textContent = chatSyncStatusText(delay);
     status.dataset.connectionState = chatState.connectionState;
+    syncChatRetryButton();
+  }
+
+  function syncChatRetryButton() {
+    const button = document.getElementById("chat-retry-button");
+    if (!button) return;
+    const needsRetry = !chatState.lastRefreshSucceeded;
+    button.textContent = t("chatRetry");
+    button.hidden = !needsRetry;
+    button.disabled = chatState.loading
+      || chatState.roomSwitching
+      || chatState.connectionState === "offline";
+    button.setAttribute("aria-busy", String(needsRetry && chatState.loading));
   }
 
   function updateChatCounter() {
@@ -669,6 +784,8 @@ export function createChatroomRoute({
     syncChatPrivateSafetyDisclosure();
 
     if (chatState.connectionState === "offline") {
+      chatState.lastRefreshSucceeded = false;
+      syncChatRetryButton();
       if (!chatState.initialized) {
         chatState.initialized = true;
         resetChatLog(t("chatWelcome"));
@@ -766,6 +883,7 @@ export function createChatroomRoute({
       return 0;
     }
     chatState.loading = true;
+    syncChatRetryButton();
     const roomRevision = chatState.roomRevision;
     let appendedCount = 0;
     try {
@@ -793,7 +911,11 @@ export function createChatroomRoute({
       appendedCount = appendChatMessages(messages, { initial: Boolean(options.initial) });
       chatState.hasLoadedInitial = true;
       chatState.lastRefreshSucceeded = true;
+      if (chatState.connectionState === "reconnecting") {
+        chatState.connectionState = "online";
+      }
       clearChatFeedbackSources("sync", "network");
+      updateChatSyncStatus();
       if (options.initial) {
         restoreChatRoomScroll({ initial: true });
         announceChatBatch("chatHistoryLoaded", appendedCount);
@@ -805,6 +927,10 @@ export function createChatroomRoute({
         return 0;
       }
       chatState.lastRefreshSucceeded = false;
+      chatState.connectionState = typeof navigator !== "undefined" && navigator.onLine === false
+        ? "offline"
+        : "reconnecting";
+      updateChatSyncStatus();
       if (options.initial) {
         resetChatLog(t("chatLoadFailed"));
       }
@@ -812,6 +938,7 @@ export function createChatroomRoute({
     } finally {
       if (roomRevision === chatState.roomRevision) {
         chatState.loading = false;
+        syncChatRetryButton();
       }
     }
     return appendedCount;
@@ -996,11 +1123,45 @@ export function createChatroomRoute({
   }
 
   function handleChatRoomToggleClick() {
-    handleChatRoomToggle().catch((error) => {
+    return handleChatRoomToggle().catch((error) => {
       if (!isAbortError(error)) {
         setChatFeedback(error.message || t("chatLoadFailed"), true, { source: "room", force: true });
       }
     });
+  }
+
+  async function retryChatMessages() {
+    const scope = activeRouteScope("chatroom");
+    if (!scope?.isActive() || chatState.loading || chatState.roomSwitching) {
+      return;
+    }
+    const retryButton = document.getElementById("chat-retry-button");
+    if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      chatState.connectionState = "offline";
+      updateChatSyncStatus();
+      setChatFeedbackKey("chatOffline", true, { source: "network", force: true });
+      retryButton?.focus({ preventScroll: true });
+      return;
+    }
+    chatState.connectionState = "reconnecting";
+    updateChatSyncStatus();
+    setChatFeedbackKey("chatReconnecting", false, { source: "network", force: true });
+    chatState.idlePolls = 0;
+    const newCount = await refreshChatMessages({ initial: !chatState.hasLoadedInitial });
+    if (!scope.isActive()) return;
+    if (chatState.lastRefreshSucceeded) {
+      chatState.connectionState = "online";
+      updateChatSyncStatus();
+      setChatFeedbackKey("chatReconnectSuccess", false, { source: "network", force: true });
+      scheduleChatPolling(nextChatPollDelay(newCount || 0));
+      document.getElementById("chat-message-input")?.focus({ preventScroll: true });
+      return;
+    }
+    chatState.connectionState = "reconnecting";
+    updateChatSyncStatus();
+    setChatFeedbackKey("chatLoadFailed", true, { source: "network", force: true });
+    scheduleChatPolling(15000);
+    retryButton?.focus({ preventScroll: true });
   }
 
   function handleChatVisibilityChange() {
@@ -1019,6 +1180,7 @@ export function createChatroomRoute({
 
   function handleChatOffline() {
     chatState.connectionState = "offline";
+    chatState.lastRefreshSucceeded = false;
     stopChatPolling();
     updateChatSyncStatus();
     setChatFeedbackKey("chatOffline", true, { source: "network" });
@@ -1032,14 +1194,16 @@ export function createChatroomRoute({
     chatState.idlePolls = 0;
     const newCount = await refreshChatMessages({ initial: !chatState.hasLoadedInitial });
     if (!activeRouteScope("chatroom")) return;
-    chatState.connectionState = "online";
-    updateChatSyncStatus();
     if (chatState.lastRefreshSucceeded) {
+      chatState.connectionState = "online";
+      updateChatSyncStatus();
       if (chatState.feedback.source === "network" || chatState.feedback.source === "sync") {
         setChatFeedbackKey("chatReconnectSuccess", false, { source: "network", force: true });
       }
       scheduleChatPolling(nextChatPollDelay(newCount || 0));
     } else {
+      chatState.connectionState = "reconnecting";
+      updateChatSyncStatus();
       setChatFeedbackKey("chatLoadFailed", true, { source: "network", force: true });
       scheduleChatPolling(15000);
     }
@@ -1057,7 +1221,9 @@ export function createChatroomRoute({
     scope.listen(document.getElementById("chat-private-room-cancel"), "click", hideChatPrivateRoomForm);
     scope.listen(document.getElementById("chat-message-list"), "scroll", handleChatLogScroll, { passive: true });
     scope.listen(document.getElementById("chat-unread-button"), "click", scrollChatToBottom);
+    scope.listen(document.getElementById("chat-retry-button"), "click", retryChatMessages);
     scope.listen(document.getElementById("chat-autoscroll"), "change", handleChatAutoscrollChange);
+    scope.listen(document.getElementById("chat-private-password"), "input", handleChatPrivatePasswordInput);
     scope.listen(document, "visibilitychange", handleChatVisibilityChange);
     scope.listen(window, "offline", handleChatOffline);
     scope.listen(window, "online", handleChatOnline);
@@ -1069,7 +1235,8 @@ export function createChatroomRoute({
     stopChatPolling();
     chatState.loading = false;
     chatState.roomRevision += 1;
-    hideChatPrivateRoomForm({ restoreFocus: false });
+    setChatRoomSwitching(false);
+    hideChatPrivateRoomForm({ restoreFocus: false, force: true });
     hideChatNicknameForm({ restoreFocus: false });
   }
 
@@ -1077,8 +1244,14 @@ export function createChatroomRoute({
     updateChatSyncStatus();
     syncChatRoomUi();
     syncChatPrivateSafetyDisclosure();
+    const privatePasswordError = document.getElementById("chat-private-password-error");
+    if (privatePasswordError?.dataset.errorKey) {
+      privatePasswordError.textContent = t(privatePasswordError.dataset.errorKey);
+    }
     renderChatNicknameError();
     renderChatFeedback();
+    syncChatRetryButton();
+    syncChatRoomBusyState();
     updateChatUnreadButton();
     if (chatState.liveSummary.key) {
       const live = document.getElementById("chat-live-summary");

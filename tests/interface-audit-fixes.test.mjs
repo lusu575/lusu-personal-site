@@ -1,0 +1,83 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import test from "node:test";
+
+const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
+
+test("public modal fixes preserve readable depth and compact failed-video geometry", () => {
+  const style = read("css/style.css");
+  const mobile = read("css/mobile-ios-shell.css");
+
+  assert.match(style, /\.modal-backdrop\s*\{[^}]*background:\s*rgba\(0,\s*24,\s*74,\s*0\.46\)/s);
+  assert.match(style, /html:lang\(zh\) #resource-list \.resource-main > p,[\s\S]*?html:lang\(zh\) \.about-copy\s*\{[^}]*word-break:\s*keep-all;/s);
+  assert.match(style, /html:not\(\[data-ui-shell="mobile"\]\):lang\(zh\) \.about-copy\s*\{[^}]*word-break:\s*keep-all;[^}]*overflow-wrap:\s*normal;/s);
+  assert.match(style, /@supports \(word-break:\s*auto-phrase\)[\s\S]*?html:lang\(zh\) #resource-list[\s\S]*?html:lang\(ja\) #resource-list[\s\S]*?word-break:\s*auto-phrase;/s);
+  assert.match(style, /\.profile-info dd\s*\{[^}]*overflow-wrap:\s*break-word;[^}]*text-wrap:\s*pretty;/s);
+  assert.match(style, /\.about-copy\s*\{[^}]*word-break:\s*normal;[^}]*text-wrap:\s*pretty;/s);
+
+  assert.match(mobile, /#video-modal:has\(\.video-player-fallback\)\s*\{[^}]*align-items:\s*center;/s);
+  assert.match(
+    mobile,
+    /\.modal-window:has\(\.video-player-fallback\)\s*\{[^}]*height:\s*auto;[^}]*max-height:\s*calc\(/s
+  );
+  assert.match(
+    mobile,
+    /\.video-frame:has\(\.video-player-fallback\)\s*\{[^}]*min-height:\s*clamp\(230px,\s*48dvh,\s*360px\)/s
+  );
+  assert.match(
+    mobile,
+    /\.video-frame:has\(\.video-player-fallback\) > \.video-player-fallback\s*\{[^}]*min-height:\s*clamp\(230px,\s*48dvh,\s*360px\)/s
+  );
+  assert.match(
+    mobile,
+    /@media \(orientation:\s*portrait\) and \(max-height:\s*560px\)\s*\{[\s\S]*?\.welcome-window\s*\{[\s\S]*?var\(--mobile-viewport-height,\s*100dvh\)/s
+  );
+});
+
+test("the interface-audit update is the newest five-item trilingual projection everywhere", async () => {
+  const updateId = "seed-update-2026-07-26-interface-audit-fixes";
+  const [{ content }, { homeContent }] = await Promise.all([
+    import("../js/data/content.mjs"),
+    import("../js/data/home-content.mjs")
+  ]);
+
+  assert.equal(content.updates[0].article_id, updateId);
+  assert.equal(homeContent.updates[0].article_id, updateId);
+  assert.equal(homeContent.updates.length, 5);
+  for (const lang of ["zh", "en", "ja"]) {
+    assert.ok(content.updates[0].title[lang]);
+    assert.ok(content.updates[0].summary[lang]);
+    assert.ok(content.updates[0].content_markdown[lang]);
+    assert.equal(homeContent.updates[0].title[lang], content.updates[0].title[lang]);
+    assert.equal(homeContent.updates[0].summary[lang], content.updates[0].summary[lang]);
+  }
+
+  for (const path of ["functions/api/[[route]].js", "cloudflare/schema.sql"]) {
+    const source = read(path);
+    assert.ok(source.includes(updateId), `${path} should include the newest update seed`);
+    for (const title of Object.values(content.updates[0].title)) {
+      assert.ok(source.includes(title), `${path} should include ${title}`);
+    }
+  }
+});
+
+test("all public module and stylesheet entry queries use the audit-fix cache version", () => {
+  const version = "20260726-interface-audit-fixes-r2";
+  const index = read("index.html");
+  const main = read("js/main.js");
+  const transferLoader = read("js/features/quick-transfer-loader.mjs");
+  const resources = read("js/routes/resources.mjs");
+
+  for (const asset of [
+    "/js/mobile-shell.js",
+    "/css/style.css",
+    "/css/mobile-ios-shell.css",
+    "/css/motion-system.css",
+    "/js/ui-motion.js",
+    "/js/main.js"
+  ]) {
+    assert.ok(index.includes(`${asset}?v=${version}`), `${asset} should use ${version}`);
+  }
+  assert.ok(main.includes(`const routeStyleVersion = "${version}"`));
+  assert.doesNotMatch([index, main, transferLoader, resources].join("\n"), /20260726-tools-rename-r1/);
+});

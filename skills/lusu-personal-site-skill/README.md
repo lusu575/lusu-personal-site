@@ -18,12 +18,14 @@ skills/lusu-personal-site-skill/SKILL.md
 - 收口时运行统一 release 验证、生产构建复现性和本地 D1 迁移；Headless 不代表真机/完整读屏/线上部署，无外部授权时只报告本地完成。
 - 独立 Headless 场景必须以唯一 query 创建新文档并验证 `loaderId`，避免 Hash-only 导航沿用 route 模块和内存缓存；刻意的 SPA History/重试/连续动效流程除外。DOM 断言限定到场景容器，移动窗口背景可延伸到 Dock 后方，真实内容与操作不可被遮挡。
 - 账号表单必须保持稳定 DOM；登录/注册、字段错误、忙碌/退出失败、实际触发源焦点归还和移动 44px 关闭必须一起回归。Transfer 未登录态只保留一个上下文登录任务。
+- 账号状态检查使用有界超时并在稳定 popover 内原位重试；Chat 只有消息刷新成功后才能标记 online，失败保留 reconnecting 和可聚焦手动重试。密码房切换必须单飞，历史读取失败不能显示 ready。
 - 文章阅读只允许正文详情纵向滚动，4px 左右进度轨道与正文零交叠并有三语/ARIA 百分比；Chat 发送不得清空在途新草稿，359×500 保护普通约 177px、私聊至少约 119px及可折叠安全说明。
 - Chat 还必须通过 1280×720 短桌面回归：标题、身份／房间两行控制、日志、输入区和页脚都在任务栏上方，只有日志可收缩；字数计数放入输入状态行，媒体几何只写在 `mobile-ios-shell.css`。
 - Chat 重试复用稳定 `clientRequestId`，服务端在限流前重放首次成功消息，并用 `(visitor_id, room_key, client_request_id)` 唯一索引防并发重复；私聊随机 IV 不得破坏幂等。旧 D1 必须先补 `client_request_id` 列再建索引。
 - 公共 Chat 不返回服务端隐藏 visitor id；密码、私聊、草稿、Secret、完整标识不进入 DOM 泄漏、持久存储、History、日志或 telemetry，外链/iframe/fragment 白名单不得放宽。
 - 文章 translation seed 每次都要显式传 UTC ISO 时间；全量 bind 测试必须拒绝 `undefined`。Quick Transfer fragment 只允许同源 `/fragments/quick-transfer.html` 与 Cloudflare clean URL `/fragments/quick-transfer` 两个精确路径。
 - 交付本地 Wrangler 预览前先检查 `/api/health`；`.dev.vars` 中两个独立、至少 32 bytes 的本地隐私盐缺失时会让全部 API 返回 503，真实值不得输出或提交。
+- PC 任务栏不得用静态 `ONLINE` 冒充服务状态；只有 `/api/health` 的严格健康响应可进入在线态，检查中／异常／离线要有三语文字、独立静态状态灯、键盘重试和隐藏页中止。健康接口只返回 `{ ok, db }`，不公开用户计数。
 - 每次修改项目后，必须更新 `CHANGELOG.md`。
 - 项目信息变化时，必须更新 `PROJECT_CONTEXT.md`。
 - 新增长期注意事项、维护规则、踩坑点时，必须同步补充到本 Skill。
@@ -31,18 +33,24 @@ skills/lusu-personal-site-skill/SKILL.md
 - 如果改动涉及 `/admin/` 管理后台、后台权限、后台 API、后台统计、后台视频管理、后台社交链接管理、后台聊天室治理或后台专用文档，必须额外先读取 `admin/docs/ADMIN_PROJECT_CONTEXT.md`、`admin/docs/ADMIN_SKILL.md` 和必要时的 `admin/docs/ADMIN_CHANGELOG.md`。
 - 桌面端保持 Windows XP + Pixel Art + Y2K，并沿 Neo-XP / Pixel Glass OS 演进；移动端使用原创、受 iOS 交互启发的虚拟手机 OS，不能只压缩桌面 XP 布局。
 - 可见文案必须维护中文 / English / 日本語。
-- 临时互传固定放在资源区并复用现有登录；手机非 Home 的 Resources App 必须能直接到达登录，短屏、横屏和软键盘状态下消息、任务与输入区都要可达。手机房间只保留一个滚动容器，composer 必须处于正常文档流，不能以 sticky / fixed 层覆盖已发送卡片；仅改成 static 不足以避免 Grid 轨道视觉溢出，竖屏房间使用纵向 Flex 且直接子项必须不可收缩，短横屏再显式恢复双栏 Grid，并验证 composer 与图片/文件卡的二维交集为零。普通账号受 95 MiB、个人/房间/频率和全站免费池限制，只有 D1 admin 可用 R2 Multipart 大文件。24 小时过期、私有 R2、清理 Worker 和 Dashboard 人工绑定规则见 `docs/transfer/README.md`。
-- Resources 同列表工具卡必须共享网格宽度和卡片高度节奏；zh/en/ja 的标题、元信息、说明与 CTA 不得相交或被 `nowrap`、隐藏滚动条、裁剪吞掉。
-- Quick Transfer 洋红键源图不能直接作为生产 atlas；使用项目构建脚本生成 168×168 RGBA 透明图集，并用 alpha、整体透明率和 16 个 sprite 单元角点/像素比例守卫整张图集。同一 Sharp / libvips 运行时双次构建要求字节一致，跨 Windows / Linux 则解码 RGBA 做严格像素差比较，不比较平台相关的 PNG 压缩流。Resources 打开再关闭 Transfer 必须恢复原分类栏与列表 hidden 状态，不能显示空工具条。
+- 临时互传固定放在工具区（内部 `resources` route）并复用现有登录；手机非 Home 的 Tools App 必须能直接到达登录，短屏、横屏和软键盘状态下消息、任务与输入区都要可达。手机房间只保留一个滚动容器，composer 必须处于正常文档流，不能以 sticky / fixed 层覆盖已发送卡片；仅改成 static 不足以避免 Grid 轨道视觉溢出，竖屏房间使用纵向 Flex 且直接子项必须不可收缩，短横屏再显式恢复双栏 Grid，并验证 composer 与图片/文件卡的二维交集为零。普通账号受 95 MiB、个人/房间/频率和全站免费池限制，只有 D1 admin 可用 R2 Multipart 大文件。24 小时过期、私有 R2、清理 Worker 和 Dashboard 人工绑定规则见 `docs/transfer/README.md`。
+- Quick Transfer 只能称文字为浏览器 AES-GCM 加密；图片、视频和文件不使用房间口令加密，只由 HTTPS、私有 R2 与服务端鉴权保护，且不做病毒／恶意软件扫描。明文口令不发服务器，配额按滚动 24 小时描述，公开卡片、房间提示和历史 seed 不得扩大安全承诺。
+- 工具区同列表工具卡必须共享网格宽度和卡片高度节奏；zh/en/ja 的标题、元信息、说明与 CTA 不得相交或被 `nowrap`、隐藏滚动条、裁剪吞掉。
+- Knowledge 使用 NFKC 多词 AND 搜索，并在搜索／筛选时复位真实滚动和 History；Videos／工具区（内部 `resources` route）重建分类按钮后恢复同一焦点，空视频分类优先提供“显示全部”。首屏只接受 zh／en／ja 并尽早设置文档语言，文章 fallback 标注实际内容语言。
+- 手机工具区卡片完整显示说明并分离事实、标签和 44px CTA；Games 卡直接显示全部语言支持，简介最多三行，许可／来源使用至少 44px 的原生展开控件，后台刷新失败时明确保留的是缓存目录。
+- 五游戏共享壳固定为一个 `100dvh` 网格，外层不滚动，iframe 使用剩余空间；359×500、390×844、844×390 必须测量外层滚动、iframe 可达性以及返回／存档控件 44px 热区。
+- 上游游戏嵌入后不能保留固定桌面宽度、第三方统计、原站账号、localhost 开发桥接或未使用主题的外部字体请求；窄屏必须满足 `scrollWidth <= clientWidth`。A Dark Room 声音提示维护三语，且横竖屏切换后重算滑轨与资源面板；Kittens Game 关闭 Google Analytics、KGNet 与 `localhost:7780`，只按需加载当前主题并同步 iframe 文档语言，窄屏顶部工具栏自然换为两行且 Steam／Version 不裁切，全部可见关键控件保持至少 44px，但本站 localStorage、JSON 备份和账号云存档必须继续可用。
+- Life Restart 只在粗指针运行时采用移动几何：主操作和所有可见 `btn*` hitArea 至少 44px，竖屏将工具与主流程分离，短横屏把工具放到底部横排；细指针桌面几何保持上游原样。升级上游后必须分别复测粗指针竖屏、粗指针短横屏和细指针桌面，不得用全局缩放掩盖命中区不足。
+- Quick Transfer 洋红键源图不能直接作为生产 atlas；使用项目构建脚本生成 168×168 RGBA 透明图集，并用 alpha、整体透明率和 16 个 sprite 单元角点/像素比例守卫整张图集。同一 Sharp / libvips 运行时双次构建要求字节一致，跨 Windows / Linux 则解码 RGBA 做严格像素差比较，不比较平台相关的 PNG 压缩流。工具区（`resources`）打开再关闭 Transfer 必须恢复原分类栏与列表 hidden 状态，不能显示空工具条。
 - Windows 窄屏截图不要信任直接 Chrome `--window-size`；系统可能钳制到约 500 CSS px。移动验收必须使用 CDP 精确 viewport，先校验 layout/visual viewport，再判断 359×500、375×667、390×844、760×900、844×390 的排版。Windows Headless 保存截图时先预热捕获、等待双 `requestAnimationFrame`，再保存第二张 `fromSurface: true`；`fromSurface: false` 可能空白，单帧可能漏掉固定顶栏或 Dock，必须逐图确认。
 - 本地建议 Node.js 22.13+；同名 API 变量使用 Git 忽略的 `.dev.vars` 和独立本地值，绝不提交 `.dev.vars`、`.env`、真实邮箱、Webhook 或密钥。
 - 改首页、窗口、任务栏、图标、弹窗、游戏外壳等前端内容时，必须检查手机端适配。
-- 移动 QA 不能只看父容器 overflow：固定复测 359×500、375×667、390×844、430×932、844×390，并测量子项交叠、输入可达性和 Chat 日志容量。359×500 普通房日志可读区至少 160px，私聊展开至少 115px 或提供可折叠工具区，844×390 至少 150px；安全说明、反馈、输入和 Dock 必须同时可达。旧 260px 短竖屏目标已由 2026-07-17 精确截图审计证明不适合作为固定门槛。
+- 移动 QA 不能只看父容器 overflow：固定复测 359×500、375×667、390×844、430×932、844×390，并测量子项交叠、输入可达性和 Chat 日志容量。359×500 普通房日志可读区至少 160px，私聊展开至少 115px 或提供可折叠工具区，844×390 至少 150px；安全说明、反馈、输入和 Dock 必须同时可达。文章首屏在 359×500、390×844、844×390 必须分别保留至少 44px、200px、44px 正文可见量，第一段至少显示 20px，阅读侧栏 computed min-height 不大于 1px。旧 260px 短竖屏目标已由 2026-07-17 精确截图审计证明不适合作为固定门槛。
 - 公开主站的 window resize 与 VisualViewport resize / scroll 只能由 `window.LusuFramePipeline` 原生监听并产生唯一 viewport 模型；新增消费者使用 keyed measure/mutate、viewport 订阅或共享聚焦显示请求。功能模块与 Transfer 不得新建私有 `visualViewport` / resize 监听或聚焦滚动逻辑。性能档固定为 normal / low：Save-Data 或明确不超过 2 核 / 2GiB 才进入 low，未知能力保持 normal；low 使用实色高对比回退并停止大面积绘制效果，normal 档视觉不变。page scale 不得误判为软键盘。
 - 公开主站使用 ESM 模块图：`js/main.js` 只做 composition，`js/core/` 提供无业务副作用的核心能力，`js/data/` 提供静态内容，`js/features/` 提供跨路由功能，`js/routes/` 提供路由域。route 模块不得导入入口或兄弟 route，也不得在顶层查询 DOM、请求网络或启动 timer；改动后运行 `npm.cmd run check:public-modules`。
-- Home 只静态加载五条无正文更新摘要；五个业务 route JS 与四个 route paint CSS 首次进入时单飞加载并常驻复用，移动几何继续只放 `mobile-ios-shell.css`。Home、顶栏、任务栏或 Dock 在进入 route 前已可见的图标规则必须放始终加载的主 CSS，不得依赖 route CSS；冷启动 Home 要检查背景图与真实图片解码。Quick Transfer loader/CSS/client/fragment 只允许在 Resources 真实 CTA 点击后请求，点击前不得出现完整 DOM、全局 facade、API 或轮询。
+- Home 只静态加载五条无正文更新摘要；五个业务 route JS 与四个 route paint CSS 首次进入时单飞加载并常驻复用，移动几何继续只放 `mobile-ios-shell.css`。懒加载 route CSS 固定插在 `link[data-mobile-shell-style]` 之前，维持基础 → route → mobile → motion 的级联顺序，不能 append 到末尾重新覆盖移动几何。Home、顶栏、任务栏或 Dock 在进入 route 前已可见的图标规则必须放始终加载的主 CSS，不得依赖 route CSS；冷启动 Home 要检查背景图与真实图片解码。Quick Transfer loader/CSS/client/fragment 只允许在工具区的真实 CTA 点击后请求，点击前不得出现完整 DOM、全局 facade、API 或轮询。
 - 固定移动壳不解锁整页滚动；非 Home 活动 App 用含 route ID 的规则保留按需纵向逃生通道，文章详情仍是唯一阅读 owner。聚焦恢复必须通过唯一帧管线，保留当前焦点与输入，且只修改最近真实内部 owner 的 `scrollTop`，不移动 document、Home、Appbar 或 Dock。账号面板延迟 autofocus 不得覆盖面板内已有焦点。
-- 软键盘打开只临时隐藏 Dock，不改写用户的 expanded / collapsed 状态。CDP 高度、缩放或 safe-area 代理只是几何回归，不得宣称真实软键盘、safe area 或浏览器 chrome 已验证；真机标志在未完成真机实测前保持 false。Headless 焦点审计先执行 CDP `Page.bringToFront`，避免未激活页只改 `activeElement` 却不触发 focus 事件。
+- 软键盘打开只临时隐藏 Dock，不改写用户的 expanded / collapsed 状态。用户主动收起 Dock 时，滚动区必须同步 inert、aria-hidden 和视觉隐藏，并把已有焦点移到展开按钮；opacity / pointer-events 不能替代可访问性隐藏。文章回顶激活后把焦点交给标题，目录正文使用文章实际语言、目录导航标签保留界面语言，带按钮的横向容器不能再增加空白 Tab 停靠点。CDP 高度、缩放或 safe-area 代理只是几何回归，不得宣称真实软键盘、safe area 或浏览器 chrome 已验证；真机标志在未完成真机实测前保持 false。Headless 焦点审计先执行 CDP `Page.bringToFront`，避免未激活页只改 `activeElement` 却不触发 focus 事件。
 - 页面 route、App 打开和移动 tab 只动画当前页面/窗口表面，不使用会覆盖固定顶栏、任务栏或 Dock 的整页 View Transition。full motion 审计需要采集起始、60ms、140ms 和稳定帧，检查 Dock 节点身份、几何、透明度与 40ms 快速连续切换的最终路由。
 - motion off 必须同步停止硬编码过渡、Dock smooth scroll／选中滑动、骨架循环与主题快照；disabled / aria-disabled / inert 控件不播放按压反馈，maximize/restore 以真实几何做 FLIP。视频缩略图保持原生 16:9 button，不恢复遮图播放圆圈；播放器超时按 generation + settled 收口，失败卡并排提供重试与原视频，统一 `.content-state` 和重试焦点。
 - “日语的言外之意 / Behind the Japanese / 日本語の裏側”位于 `tools/japanese-subtext/`，固定采用版本化分批 JSON 和不可随意变更的关卡 ID；每次公开应用更新增加 `appVersion`，只有题库结构或存档兼容边界变化时才增加 `contentVersion`，改关另增 `revision`，完整流程见 `tools/japanese-subtext/MAINTENANCE.md`。
@@ -80,6 +88,7 @@ skills/lusu-personal-site-skill/SKILL.md
 - 普通 CI / GPTWork 不需要 Cloudflare API Token、生产 D1 权限、本机 TTS 配置、模型权重或参考声线；`output/`、Wrangler 状态、依赖和本地 TTS 配置均不得提交。
 - 项目没有真实 lint / typecheck 工具链时应明确标为“未配置”，不能增加空的成功占位；迁移清单见 `docs/GPTWORK_MIGRATION_READINESS.md`。
 - 后续新增游戏时，必须在游戏标签或信息里标明中文、English、日本語是否支持。
+- 游戏云存档 PUT 必须携带精确 `expectedUpdatedAt`，服务端以原子 insert-only／条件 update 实施 CAS 并在未命中时返回 `409 + SAVE_CONFLICT`。云版本基线必须保存在标签页级 `sessionStorage`，不得与游戏存档共用跨标签页 `localStorage`。发现较新云存档后，客户端先锁住计时、隐藏页、退出、导入和手动同步等全部上传路径；三语冲突窗应允许先下载本地备份，任何显式覆盖仍受 CAS 保护，“恢复云端”也要先重新 GET 并拒绝过时快照。
 - 网站切换语言时，游戏区优先展示对应语言。
 - 如果游戏不支持当前语言，默认启动英语版本。
 - `kittens-game` 语言设置使用 `com.nuclearunicorn.kittengame.language`；`a-dark-room` 简体中文语言参数为 `zh_cn`，并保留 `ignorebrowser=true`。

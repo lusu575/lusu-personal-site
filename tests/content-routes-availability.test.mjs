@@ -13,6 +13,13 @@ const mobileCss = read("css/mobile-ios-shell.css");
 const main = read("js/main.js");
 const index = read("index.html");
 
+test("Lazy route CSS stays before the mobile responsive authority", () => {
+  assert.match(index, /<link\b(?=[^>]*\bdata-mobile-shell-style\b)[^>]*href="\/css\/mobile-ios-shell\.css\?v=[^"]+"/);
+  assert.match(main, /querySelector\("link\[data-mobile-shell-style\]"\)/);
+  assert.match(main, /document\.head\.insertBefore\(link,\s*mobileShellStyle\)/);
+  assert.match(main, /else\s*\{\s*document\.head\.appendChild\(link\)/);
+});
+
 test("Resources hides a redundant single-category filter and restores it for multiple categories", () => {
   assert.match(resourcesRoute, /availableCategoryValues\.length <= 1[\s\S]*activeFilters\.resources = "all"[\s\S]*target\.hidden = true[\s\S]*target\.replaceChildren\(\)/);
   assert.match(resourcesRoute, /target\.hidden = false[\s\S]*const entries = \[[\s\S]*value: "all"/);
@@ -34,15 +41,20 @@ test("Resource cards use content-sized rows and a bottom action row on mobile", 
   assert.match(mobileCss, /#resource-list\s*>\s*\.resource-card\s*\{[\s\S]*grid-template-rows:\s*auto\s+44px[\s\S]*min-height:\s*0[\s\S]*align-self:\s*stretch/);
 });
 
-test("Games exposes the current language and cloud-save capability before secondary provenance", () => {
+test("Games exposes all supported languages and cloud-save capability before secondary provenance", () => {
   const primaryIndex = gamesRoute.indexOf('className = "meta-row game-primary-meta"');
   const actionIndex = gamesRoute.indexOf('action.className = "card-action"');
   const secondaryIndex = gamesRoute.indexOf('className = "game-secondary-details"');
   assert.ok(primaryIndex > 0 && primaryIndex < actionIndex);
   assert.ok(secondaryIndex > primaryIndex);
-  assert.match(gamesRoute, /languageSupportTagElements\(item,\s*\{\s*onlyCurrent:\s*true\s*\}\)/);
+  assert.match(gamesRoute, /meta\.append\(languageLabel,\s*\.\.\.languageSupportTagElements\(item\)\)/);
+  assert.doesNotMatch(gamesRoute, /onlyCurrent:\s*true/);
   assert.match(gamesRoute, /gameCloudSaveReady[\s\S]*details\.className = "game-secondary-details"/);
   assert.match(gamesRoute, /gameLicenseLabel[\s\S]*safeGithubUrl\(item\.repo\)/);
+  assert.match(gamesCss, /\.game-secondary-details\s*>\s*summary\s*\{[\s\S]*min-height:\s*44px/);
+  assert.match(gamesCss, /\.game-main p\s*\{[\s\S]*-webkit-line-clamp:\s*3/);
+  assert.match(gamesRoute, /onRevalidated\(result\)[\s\S]*gameConfigStale[\s\S]*renderGames\(\{\s*load:\s*false\s*\}\)/);
+  assert.match(mobileCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*#games\s+\.game-card\s*\{[\s\S]*min-height:\s*228px/);
 });
 
 test("every public game has its own generated cover icon", () => {

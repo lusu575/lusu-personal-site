@@ -34,13 +34,13 @@ npm.cmd run verify:public-site-release
 5. `git diff --check` and a worktree status report;
 6. the isolated Headless Chrome release audit.
 
-For a focused Resources / Quick Transfer layout review, run:
+For a focused Tools (`resources` route) / Quick Transfer layout review, run:
 
 ```powershell
 npm.cmd run audit:resources-layout
 ```
 
-This focused check uses exact CDP viewport metrics and captures Resources, Transfer sign-in, and return-to-Resources states. It does not replace the full local gate.
+This focused check uses exact CDP viewport metrics and captures Tools, Transfer sign-in, and return-to-Tools states while preserving the internal `resources` route. It does not replace the full local gate.
 
 ## Evidence record
 
@@ -52,7 +52,7 @@ Module graph: NOT TESTED
 Static build: NOT TESTED
 Reproducible production build: NOT TESTED
 Headless release audit: NOT TESTED
-Resources layout audit: NOT TESTED
+Tools (`resources`) layout audit: NOT TESTED
 git diff --check: NOT TESTED
 Worktree reviewed: NOT TESTED
 ```

@@ -3,8 +3,10 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 import {
+  ACCOUNT_REQUEST_TIMEOUT_MS,
   accountRequestFailure,
   normalizeAccountMode,
+  requestAccountJson,
   validateAccountDraft
 } from "../js/features/account.mjs";
 import { translations } from "../js/core/i18n.mjs";
@@ -59,6 +61,26 @@ test("account request failures map to a real field and recoverable localized sta
   });
 });
 
+test("account requests have a bounded timeout and keep successful JSON behavior", async () => {
+  assert.equal(ACCOUNT_REQUEST_TIMEOUT_MS, 8000);
+  const hangingFetch = (_path, options) => new Promise((_resolve, reject) => {
+    options.signal.addEventListener("abort", () => {
+      reject(new DOMException("aborted", "AbortError"));
+    }, { once: true });
+  });
+  await assert.rejects(
+    requestAccountJson(hangingFetch, "/api/auth/me", {}, 5),
+    (error) => error?.code === "ACCOUNT_TIMEOUT" && error?.status === 0
+  );
+
+  const payload = await requestAccountJson(async () => ({
+    ok: true,
+    status: 200,
+    json: async () => ({ user: null })
+  }), "/api/auth/me", {}, 50);
+  assert.deepEqual(payload, { user: null });
+});
+
 test("account UI keeps one stable safe-DOM tree with explicit labels and busy/error semantics", () => {
   assert.doesNotMatch(accountSource, /\.replaceChildren\s*\(/);
   assert.doesNotMatch(accountSource, /\.innerHTML\s*=/);
@@ -77,6 +99,10 @@ test("account UI keeps one stable safe-DOM tree with explicit labels and busy/er
   assert.match(accountSource, /setAccountStatus\("accountBusyLogout"\)/);
   assert.match(accountSource, /setAccountStatus\("accountLogoutFailed", \{ error: true \}\)/);
   assert.match(accountSource, /accountFocusRequest[\s\S]*requestAnimationFrame[\s\S]*account-popover-focus/);
+  assert.match(accountSource, /dataset: \{ accountRetryCheck: "" \}/);
+  assert.match(accountSource, /refs\.retryCheck\.addEventListener\("click", retryAccountCheck\)/);
+  assert.match(accountSource, /error\?\.code === "ACCOUNT_TIMEOUT" \? "accountCheckTimeout" : "accountUnavailable"/);
+  assert.match(accountSource, /preserveEditingFocus[\s\S]*activeBeforeRetry\.focus\(\{ preventScroll: true \}\)/);
 });
 
 test("all account copy keys exist in Chinese, English, and Japanese", () => {
@@ -90,6 +116,8 @@ test("all account copy keys exist in Chinese, English, and Japanese", () => {
     "accountShowPassword",
     "accountHidePassword",
     "accountChecking",
+    "accountCheckRetry",
+    "accountCheckTimeout",
     "accountBusyLogin",
     "accountBusyRegister",
     "accountBusyLogout",

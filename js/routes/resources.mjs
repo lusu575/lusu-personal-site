@@ -18,7 +18,7 @@ export function createResourcesRoute({
 
   async function ensureQuickTransferLoader() {
     if (quickTransferLoader) return quickTransferLoader;
-    quickTransferPending ||= import("../features/quick-transfer-loader.mjs?v=20260719-service-recovery-r1")
+    quickTransferPending ||= import("../features/quick-transfer-loader.mjs?v=20260726-interface-audit-fixes-r2")
       .then(({ createQuickTransferLoader }) => {
         quickTransferLoader = createQuickTransferLoader();
         quickTransferLoader.setLanguage(quickTransferLanguage);
@@ -187,9 +187,10 @@ export function createResourcesRoute({
     const resourceTitle = resourceAvailable ? localText(item.title) : contentTitle(item.title);
     title.append(icon, document.createTextNode(resourceTitle));
     const desc = document.createElement("p");
+    desc.className = "resource-description";
     desc.textContent = localText(item.desc);
-    const meta = document.createElement("div");
-    meta.className = "meta-row";
+    const facts = document.createElement("div");
+    facts.className = "resource-facts";
     const metaItems = [`${label("type")}: ${label("resourceCategories")[item.category] || ""}`];
     if (resourceAvailable) {
       if (item.version) metaItems.push(`${label("version")}: ${item.version}`);
@@ -201,22 +202,28 @@ export function createResourcesRoute({
       const itemNode = document.createElement("span");
       itemNode.className = "resource-fact";
       itemNode.textContent = text;
-      meta.appendChild(itemNode);
+      facts.appendChild(itemNode);
     });
+    const tags = document.createElement("div");
+    tags.className = "meta-row resource-tags";
     (Array.isArray(item.tags) ? item.tags : []).slice(0, 6).forEach((tag) => {
       const tagNode = document.createElement("span");
       tagNode.className = "tag";
       tagNode.textContent = localText(tag);
-      meta.appendChild(tagNode);
+      tags.appendChild(tagNode);
     });
-    if (item.showReadyStatus === true) meta.appendChild(resourceStatusElement(resourceAvailable, resourceTitle));
-    main.append(title, desc, meta);
-    card.append(main, resourceActionElement(item, resourceUrl));
+    if (item.showReadyStatus === true) tags.appendChild(resourceStatusElement(resourceAvailable, resourceTitle));
+    main.append(title, desc, facts);
+    card.append(main, resourceActionElement(item, resourceUrl), tags);
     return card;
   }
 
   function renderResourceCategoryButtons(items = readyResourceItems()) {
     const target = document.getElementById("resource-categories");
+    const activeFilterButton = document.activeElement?.closest?.('[data-filter-type="resources"]');
+    const focusFilter = activeFilterButton && target.contains(activeFilterButton)
+      ? String(activeFilterButton.dataset.filter || "")
+      : "";
     const categories = label("resourceCategories");
     const counts = new Map(categories.map((_, index) => [String(index), 0]));
     items.forEach((item) => {
@@ -255,6 +262,9 @@ export function createResourcesRoute({
       return button;
     });
     target.replaceChildren(...buttons);
+    if (focusFilter) {
+      buttons.find((button) => button.dataset.filter === focusFilter)?.focus({ preventScroll: true });
+    }
   }
 
   function renderResources() {

@@ -14,6 +14,7 @@ import {
   translationKeyDiff,
   translations
 } from "../js/core/i18n.mjs";
+import { createRouter } from "../js/core/router.mjs";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const mainSource = await readFile(path.join(root, "js/main.js"), "utf8");
@@ -216,4 +217,55 @@ test("Quick Transfer zh/en/ja copy sets are identical and never fall back to raw
       assert.equal(typeof transferCopy[language][key], "string", `transfer COPY ${language}.${key} is missing`);
     }
   }
+});
+
+test("Tools display names are trilingual while the resources route stays backward compatible", () => {
+  const expected = {
+    zh: { navResources: "工具区", navResourcesBuilding: "工具区", resourcesTitle: "工具区", dockResources: "工具" },
+    en: { navResources: "Tools", navResourcesBuilding: "Tools", resourcesTitle: "Tools", dockResources: "Tools" },
+    ja: { navResources: "ツール", navResourcesBuilding: "ツール", resourcesTitle: "ツール", dockResources: "ツール" }
+  };
+  for (const language of supportedLanguages) {
+    for (const [key, value] of Object.entries(expected[language])) {
+      assert.equal(translations[language][key], value, `${language}.${key} must use the Tools display name`);
+    }
+  }
+
+  const transferCopy = vm.runInNewContext(`(${extractObjectLiteral(transferSource, "const COPY =")})`);
+  assert.deepEqual(
+    {
+      zh: { back: transferCopy.zh.back, loginBack: transferCopy.zh.loginBack },
+      en: { back: transferCopy.en.back, loginBack: transferCopy.en.loginBack },
+      ja: { back: transferCopy.ja.back, loginBack: transferCopy.ja.loginBack }
+    },
+    {
+      zh: { back: "返回工具区", loginBack: "返回工具列表" },
+      en: { back: "Back to Tools", loginBack: "Back to tool list" },
+      ja: { back: "ツールへ戻る", loginBack: "ツール一覧へ戻る" }
+    }
+  );
+  assert.match(transferFragment, /data-transfer-copy="back">返回工具区</);
+  assert.match(transferFragment, /data-transfer-copy="loginBack">返回工具列表</);
+  assert.doesNotMatch(transferSource, /返回资源区|Back to Resources|リソースへ戻る|返回资源列表|Back to resource list|リソース一覧へ戻る/);
+
+  assert.match(indexSource, /<section class="page" id="resources" aria-labelledby="resources-title">/);
+  assert.match(indexSource, /data-route="resources"/);
+  assert.match(indexSource, /data-i18n="navResourcesBuilding">工具区</);
+  assert.match(indexSource, /data-i18n="resourcesTitle">工具区</);
+  assert.match(indexSource, /data-route="resources"[\s\S]*?data-i18n="navResources">工具区<\/span><span class="dock-label-short" data-i18n="dockResources">工具<\/span>/);
+  assert.match(mainSource, /const pageIds = \["home", "knowledge", "videos", "resources", "games", "blog", "chatroom", "about"\]/);
+  for (const legacyTag of ["资源区", "Resources", "リソース"]) {
+    assert.match(
+      mainSource,
+      new RegExp(`"${legacyTag}": \\{ zh: "工具区", en: "Tools", ja: "ツール" \\}`),
+      `${legacyTag} article tags must render with the Tools display name`
+    );
+  }
+
+  const router = createRouter({
+    routes: ["home", "knowledge", "resources"],
+    location: { hash: "", pathname: "/", origin: "https://lusu575.com", search: "" }
+  });
+  assert.deepEqual(router.parseRouteHash("#resources"), { route: "resources", articleSlug: "" });
+  assert.equal(router.routeUrl("resources"), "/#resources");
 });

@@ -1,4 +1,5 @@
 const ACCOUNT_MODES = Object.freeze(["login", "register"]);
+export const ACCOUNT_REQUEST_TIMEOUT_MS = 8000;
 
 export function normalizeAccountMode(value) {
   return ACCOUNT_MODES.includes(value) ? value : "login";
@@ -38,12 +39,65 @@ export function accountRequestFailure(error, mode, lastField = "password") {
   };
 }
 
+export async function requestAccountJson(fetchImpl, path, options = {}, timeoutMs = ACCOUNT_REQUEST_TIMEOUT_MS) {
+  const controller = new AbortController();
+  const upstreamSignal = options.signal;
+  let timedOut = false;
+  const forwardAbort = () => controller.abort(upstreamSignal?.reason);
+  if (upstreamSignal?.aborted) {
+    forwardAbort();
+  } else {
+    upstreamSignal?.addEventListener?.("abort", forwardAbort, { once: true });
+  }
+  const timeout = setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, Math.max(1, Number(timeoutMs) || ACCOUNT_REQUEST_TIMEOUT_MS));
+
+  try {
+    const response = await fetchImpl(path, {
+      credentials: "include",
+      headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+      ...options,
+      signal: controller.signal
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw Object.assign(new Error(payload.error || `HTTP ${response.status}`), {
+        status: response.status,
+        code: payload.code || "",
+        payload
+      });
+    }
+    return payload;
+  } catch (cause) {
+    if (timedOut) {
+      throw Object.assign(new Error("Account request timed out"), {
+        status: 0,
+        code: "ACCOUNT_TIMEOUT",
+        cause
+      });
+    }
+    if (upstreamSignal?.aborted || cause?.name === "AbortError") {
+      throw cause;
+    }
+    if (Number.isFinite(cause?.status)) {
+      throw cause;
+    }
+    throw Object.assign(new Error("Account request failed"), { status: 0, cause });
+  } finally {
+    clearTimeout(timeout);
+    upstreamSignal?.removeEventListener?.("abort", forwardAbort);
+  }
+}
+
 export function createAccountFeature({
   t,
   requestMobileFocusReveal,
   cancelSurfaceClose,
   runSurfaceClose,
-  fetchImpl
+  fetchImpl,
+  requestTimeoutMs = ACCOUNT_REQUEST_TIMEOUT_MS
 }) {
   let authUser = null;
   let authState = "checking";
@@ -58,25 +112,7 @@ export function createAccountFeature({
   const refs = {};
 
   async function accountApi(path, options = {}) {
-    let response;
-    try {
-      response = await fetchImpl(path, {
-        credentials: "include",
-        headers: { "Content-Type": "application/json", ...(options.headers || {}) },
-        ...options
-      });
-    } catch (cause) {
-      throw Object.assign(new Error("Account request failed"), { status: 0, cause });
-    }
-    const payload = await response.json().catch(() => ({}));
-    if (!response.ok) {
-      throw Object.assign(new Error(payload.error || `HTTP ${response.status}`), {
-        status: response.status,
-        code: payload.code || "",
-        payload
-      });
-    }
-    return payload;
+    return requestAccountJson(fetchImpl, path, options, requestTimeoutMs);
   }
 
   function appendTextButton(parent, { className, dataset = {}, type = "button" } = {}) {
@@ -264,7 +300,15 @@ export function createAccountFeature({
     refs.status.setAttribute("aria-live", "polite");
     refs.status.setAttribute("aria-atomic", "true");
 
-    refs.popover.append(header, refs.form, refs.signedIn, refs.status);
+    refs.recoveryActions = document.createElement("div");
+    refs.recoveryActions.className = "account-actions account-recovery-actions";
+    refs.retryCheck = appendTextButton(refs.recoveryActions, {
+      className: "account-button account-retry-action",
+      dataset: { accountRetryCheck: "" }
+    });
+    refs.retryCheck.hidden = true;
+
+    refs.popover.append(header, refs.form, refs.signedIn, refs.status, refs.recoveryActions);
     widget.appendChild(refs.popover);
 
     refs.form.addEventListener("submit", submitAccountForm);
@@ -275,6 +319,7 @@ export function createAccountFeature({
       closeAccountPopover();
     });
     refs.logout.addEventListener("click", logoutAccount);
+    refs.retryCheck.addEventListener("click", retryAccountCheck);
     [refs.email, refs.password, refs.confirmPassword].forEach((input) => {
       input.addEventListener("focus", () => {
         accountLastEditingField = input.name;
@@ -339,6 +384,7 @@ export function createAccountFeature({
     refs.confirmPassword.placeholder = t("accountConfirmPasswordPlaceholder");
     refs.signedEmail.textContent = t("accountLoggedIn");
     refs.logout.textContent = t("accountLogout");
+    refs.retryCheck.textContent = t("accountCheckRetry");
     refs.toggleText.textContent = authUser ? t("accountTitle") : t("accountLogin");
     refs.toggle.setAttribute("aria-label", authUser ? t("accountTitle") : t("accountLogin"));
     refs.toggle.dataset.analyticsLabel = authUser ? "account:signed-in-toggle" : "account:login-toggle";
@@ -349,6 +395,7 @@ export function createAccountFeature({
       if (error?.dataset.errorKey) error.textContent = t(error.dataset.errorKey);
     });
     syncAccountStatus();
+    syncAccountRecoveryState();
   }
 
   function syncAccountMode() {
@@ -467,12 +514,36 @@ export function createAccountFeature({
       authState = authUser ? "signed-in" : "guest";
       setAccountStatus(authUser ? "" : "accountGuestNote");
       syncAccountView();
-    } catch {
+    } catch (error) {
       if (requestId !== initRequestId || revision !== sessionRevision) return;
       authState = "unavailable";
-      setAccountStatus("accountUnavailable", { error: true });
+      setAccountStatus(error?.code === "ACCOUNT_TIMEOUT" ? "accountCheckTimeout" : "accountUnavailable", { error: true });
       syncAccountView();
     }
+  }
+
+  async function retryAccountCheck() {
+    if (authState === "checking") return;
+    const retryButton = refs.retryCheck;
+    const activeBeforeRetry = document.activeElement;
+    const preserveEditingFocus = refs.popover?.contains(activeBeforeRetry)
+      && activeBeforeRetry !== retryButton;
+    await initAccountWidget();
+    if (!refs.popover || refs.popover.hidden) return;
+    if (preserveEditingFocus
+      && activeBeforeRetry?.isConnected
+      && !activeBeforeRetry.disabled
+      && !activeBeforeRetry.closest?.("[hidden]")) {
+      activeBeforeRetry.focus({ preventScroll: true });
+      return;
+    }
+    const target = authState === "unavailable"
+      ? retryButton
+      : authUser
+        ? refs.logout
+        : refs.email;
+    target?.focus?.({ preventScroll: true });
+    requestMobileFocusReveal("account-retry-focus");
   }
 
   async function submitAccountForm(event) {
@@ -584,6 +655,15 @@ export function createAccountFeature({
       if (control) control.disabled = busy;
     });
     refs.popover.dataset.accountBusy = accountSubmitting || "idle";
+    syncAccountRecoveryState();
+  }
+
+  function syncAccountRecoveryState() {
+    if (!refs.retryCheck || !refs.recoveryActions) return;
+    const retryAvailable = authState === "unavailable" && !accountSubmitting;
+    refs.retryCheck.hidden = !retryAvailable;
+    refs.retryCheck.disabled = authState === "checking" || Boolean(accountSubmitting);
+    refs.recoveryActions.hidden = !retryAvailable;
   }
 
   function focusAccountPopover(preference = "auto") {

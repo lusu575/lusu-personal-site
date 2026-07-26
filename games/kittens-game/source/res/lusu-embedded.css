@@ -1,0 +1,353 @@
+/*
+ * LuSu embedded/mobile compatibility layer.
+ *
+ * Kittens Game remains licensed under the upstream license in ../license.txt.
+ * These rules only adapt the bundled copy to the site's narrow iframe; desktop
+ * keeps the original three-column presentation.
+ */
+
+html,
+body {
+	max-width: 100%;
+}
+
+@media (max-width: 900px) {
+	html,
+	body {
+		width: 100%;
+		min-height: 100%;
+		height: auto !important;
+		overflow-x: hidden !important;
+		overflow-y: auto !important;
+	}
+
+	body {
+		-webkit-text-size-adjust: 100%;
+	}
+
+	body #gamePageContainer {
+		width: 100% !important;
+		max-width: 100% !important;
+		min-width: 0 !important;
+		overflow: visible !important;
+	}
+
+	body #topBar {
+		position: relative !important;
+		inset: auto !important;
+		display: flex !important;
+		flex-wrap: wrap !important;
+		align-items: center;
+		justify-content: flex-start !important;
+		gap: 4px 8px;
+		width: 100% !important;
+		min-width: 0 !important;
+		height: auto !important;
+		min-height: 44px;
+		padding: 4px 6px;
+		white-space: normal !important;
+		box-sizing: border-box;
+	}
+
+	body #topBar > div:first-child {
+		flex: 1 1 180px;
+		max-width: 100% !important;
+		padding-left: 0 !important;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	body #devPanel {
+		display: none !important;
+	}
+
+	body #headerLinks {
+		order: 3;
+		flex: 1 1 100%;
+		min-width: 0;
+		overflow-x: auto;
+		overflow-y: hidden;
+		overscroll-behavior-inline: contain;
+	}
+
+	body #headerToolbar {
+		display: flex;
+		align-items: stretch;
+		width: max-content;
+		min-width: 100%;
+		height: auto;
+	}
+
+	body #topBar .links-block {
+		order: 2;
+		display: flex !important;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0 4px;
+		width: 100%;
+		max-width: 100%;
+		min-height: 44px;
+		padding-top: 0 !important;
+		overflow: visible;
+		white-space: normal;
+		font-size: 0;
+	}
+
+	body #topBar .links-block a {
+		display: inline-flex;
+		flex: 0 0 auto;
+		align-items: center;
+		justify-content: center;
+		width: max-content;
+		min-width: 44px;
+		min-height: 44px;
+		height: 44px;
+		padding: 0 7px;
+		font-size: 14px;
+		line-height: 1.25;
+		white-space: nowrap;
+		box-sizing: border-box;
+	}
+
+	body #game,
+	body #loadingContainer {
+		position: relative !important;
+		inset: auto !important;
+		width: 100% !important;
+		min-width: 0 !important;
+		height: auto !important;
+		margin: 0 !important;
+		white-space: normal !important;
+	}
+
+	body #loadingContainer .content {
+		min-height: 50vh;
+		margin: 0;
+		padding: 16px;
+	}
+
+	body #game.lusu-embedded-game {
+		display: flex !important;
+		flex-direction: column;
+		align-items: stretch;
+		overflow: visible !important;
+	}
+
+	body #leftColumn,
+	body #midColumn,
+	body #rightColumn {
+		position: relative !important;
+		inset: auto !important;
+		display: block !important;
+		float: none !important;
+		width: 100% !important;
+		max-width: 100% !important;
+		min-width: 0 !important;
+		height: auto !important;
+		min-height: 0 !important;
+		margin: 0 !important;
+		padding: 10px 8px !important;
+		overflow: visible !important;
+		box-sizing: border-box;
+	}
+
+	body #midColumn {
+		order: 1;
+	}
+
+	body #leftColumn {
+		order: 2;
+		border-top: 1px solid rgba(128, 128, 128, 0.35);
+	}
+
+	body #rightColumn {
+		order: 3;
+		border-top: 1px solid rgba(128, 128, 128, 0.35);
+	}
+
+	body #leftColumnViewport,
+	body #midColumnViewport,
+	body #gameContainerId,
+	body #rightColumn > div,
+	body .tabInner {
+		float: none !important;
+		width: 100% !important;
+		max-width: 100% !important;
+		min-width: 0 !important;
+		box-sizing: border-box;
+	}
+
+	body #midColumnViewport {
+		padding: 0 !important;
+	}
+
+	body .tabsContainer {
+		position: relative !important;
+		inset: auto !important;
+		display: flex;
+		align-items: stretch;
+		gap: 4px;
+		width: 100%;
+		max-width: 100%;
+		min-height: 44px;
+		padding: 0 0 8px;
+		overflow-x: auto;
+		overflow-y: hidden;
+		overscroll-behavior-inline: contain;
+		text-align: left;
+		white-space: nowrap !important;
+	}
+
+	body .tabsContainer a.tab,
+	body .right-tab-header a {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 44px;
+		min-height: 44px;
+		height: 44px;
+		padding: 6px 12px !important;
+		line-height: 1.25;
+		box-sizing: border-box;
+	}
+
+	body .tabInner {
+		min-height: 0 !important;
+		margin: 0 0 12px;
+		padding: 8px !important;
+	}
+
+	body .btn,
+	body .btn.modern {
+		width: min(100%, 264px) !important;
+		min-height: 44px;
+		margin-bottom: 8px;
+		box-sizing: border-box;
+	}
+
+	body .btn .btnContent {
+		min-height: 42px;
+		box-sizing: border-box;
+	}
+
+	body input[type="button"],
+	body input[type="submit"],
+	body button,
+	body select {
+		min-height: 44px;
+	}
+
+	body textarea,
+	body input,
+	body select,
+	body table,
+	body canvas,
+	body img,
+	body svg {
+		max-width: 100%;
+		box-sizing: border-box;
+	}
+
+	body .resourceRow {
+		white-space: normal !important;
+	}
+
+	body .res-table {
+		width: 100% !important;
+		table-layout: fixed;
+	}
+
+	body .resourceRow td {
+		overflow-wrap: anywhere;
+	}
+
+	body .res-toolbar.right,
+	body .expandAllBar,
+	body .btn.explore {
+		float: none !important;
+		margin-right: 0 !important;
+	}
+
+	body .res-toolbar .link,
+	body a.link.collapse,
+	body .res-toolbar .tooltip-block {
+		display: inline-flex !important;
+		align-items: center;
+		justify-content: center;
+		min-width: 44px;
+		min-height: 44px;
+		padding: 0 !important;
+		box-sizing: border-box;
+	}
+
+	body .bldTopContainer > a,
+	body #clearLogHref,
+	body #logFiltersBlockText,
+	body #pauseBtn,
+	body #undoBtn {
+		display: inline-flex !important;
+		align-items: center;
+		justify-content: center;
+		min-width: 44px;
+		min-height: 44px;
+		height: 44px;
+		padding: 6px 8px !important;
+		line-height: 1.25;
+		box-sizing: border-box;
+	}
+
+	body .right-tab {
+		height: auto !important;
+		min-height: 0 !important;
+		overflow: visible !important;
+	}
+
+	body #gameLog {
+		width: 100% !important;
+		height: 240px !important;
+		min-height: 180px !important;
+		max-height: 45vh;
+		padding: 8px 4px 16px !important;
+		overflow-y: auto !important;
+		overflow-x: hidden !important;
+		box-sizing: border-box;
+	}
+
+	body #footerLinks {
+		position: relative !important;
+		inset: auto !important;
+		display: block;
+		padding: 8px;
+	}
+
+	body .dialog,
+	body .help,
+	body .credits {
+		position: fixed !important;
+		inset: 8px !important;
+		width: auto !important;
+		max-width: none !important;
+		height: auto !important;
+		max-height: calc(100dvh - 16px) !important;
+		margin: 0 !important;
+		padding: 12px !important;
+		overflow: auto !important;
+		box-sizing: border-box;
+	}
+
+	body #exportData,
+	body #importData {
+		width: 100% !important;
+		min-height: 180px;
+	}
+
+	body .button_tooltip {
+		max-width: calc(100vw - 16px) !important;
+		box-sizing: border-box;
+	}
+
+	body #toggleCenter {
+		display: none !important;
+	}
+}

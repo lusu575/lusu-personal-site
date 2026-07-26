@@ -20,8 +20,15 @@ export function createGamesRoute({
       maxAgeMs: 5 * 60 * 1000,
       staleWhileRevalidate: !forceRefresh,
       onRevalidated(result) {
-        if (result.error || !Array.isArray(result.data?.games)) return;
+        if (result.error || !Array.isArray(result.data?.games)) {
+          gameState.error = result.error?.message || t("gameConfigStale");
+          if (gameState.catalog && document.body.dataset.route === "games") {
+            renderGames({ load: false });
+          }
+          return;
+        }
         gameState.catalog = result.data;
+        gameState.error = "";
         if (document.body.dataset.route === "games") renderGames({ load: false });
       }
     }).then((result) => {
@@ -160,10 +167,10 @@ export function createGamesRoute({
     summary.textContent = localText(item.summaries || item.summary);
     const meta = document.createElement("div");
     meta.className = "meta-row game-primary-meta";
-    const currentLanguageLabel = document.createElement("span");
-    currentLanguageLabel.className = "language-support-label";
-    currentLanguageLabel.textContent = `${t("gameCurrentLanguageLabel")}:`;
-    meta.append(currentLanguageLabel, ...languageSupportTagElements(item, { onlyCurrent: true }));
+    const languageLabel = document.createElement("span");
+    languageLabel.className = "language-support-label";
+    languageLabel.textContent = `${t("languageSupportLabel")}:`;
+    meta.append(languageLabel, ...languageSupportTagElements(item));
     if (item.storage?.keys?.length || item.storage?.scoreOnly) {
       const save = document.createElement("span");
       save.className = "tag game-save-tag";
@@ -177,12 +184,9 @@ export function createGamesRoute({
     details.className = "game-secondary-details";
     const detailsSummary = document.createElement("summary");
     detailsSummary.textContent = t("gameDetailsLabel");
+    detailsSummary.setAttribute("aria-label", `${t("gameDetailsLabel")}: ${titleText}`);
     const detailsMeta = document.createElement("div");
     detailsMeta.className = "meta-row game-secondary-meta";
-    const languageLabel = document.createElement("span");
-    languageLabel.className = "language-support-label";
-    languageLabel.textContent = `${t("languageSupportLabel")}:`;
-    detailsMeta.append(languageLabel, ...languageSupportTagElements(item));
     if (item.license?.name) {
       const license = document.createElement("span");
       license.className = "tag game-license-tag";

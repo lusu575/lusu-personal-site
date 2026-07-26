@@ -3,14 +3,15 @@ import {
   isI18nNodeInScope,
   normalizeLanguage,
   translationFor
-} from "./core/i18n.mjs?v=20260718-resource-icons-layout-r1";
-import { homeContent } from "./data/home-content.mjs?v=20260721-desktop-taskbar-active-r1";
+} from "./core/i18n.mjs?v=20260726-interface-audit-fixes-r2";
+import { homeContent } from "./data/home-content.mjs?v=20260726-interface-audit-fixes-r2";
 import { blogManifest } from "./data/blog-manifest.mjs?v=20260718-resource-icons-layout-r1";
 import { createRouteLifecycle, isAbortError } from "./core/route-lifecycle.mjs?v=20260718-resource-icons-layout-r1";
 import { createRouter } from "./core/router.mjs?v=20260718-resource-icons-layout-r1";
 import { createRouteModuleRegistry } from "./core/route-modules.mjs?v=20260718-resource-icons-layout-r1";
 import { createJsonResourceCache } from "./core/content-cache.mjs?v=20260718-resource-icons-layout-r1";
-import { createAccountFeature } from "./features/account.mjs?v=20260719-content-experience-fixes-r1";
+import { createAccountFeature } from "./features/account.mjs?v=20260726-interface-audit-fixes-r2";
+import { createConnectionStatus } from "./features/connection-status.mjs?v=20260726-interface-audit-fixes-r2";
 
 const pageParams = new URLSearchParams(window.location.search);
 const defaultShareImageUrl = "https://lusu575.com/assets/images/homepage-pixel-coast.png?v=20260612-hd-wallpapers";
@@ -164,7 +165,10 @@ const tagLabels = {
   "视频区": { zh: "视频区", en: "Videos", ja: "動画欄" },
   "播放器": { zh: "播放器", en: "Player", ja: "プレイヤー" },
   "空状态": { zh: "空状态", en: "Empty state", ja: "空状態" },
-  "资源区": { zh: "资源区", en: "Resources", ja: "リソース" },
+  "工具区": { zh: "工具区", en: "Tools", ja: "ツール" },
+  "资源区": { zh: "工具区", en: "Tools", ja: "ツール" },
+  "Resources": { zh: "工具区", en: "Tools", ja: "ツール" },
+  "リソース": { zh: "工具区", en: "Tools", ja: "ツール" },
   "主站优化": { zh: "主站优化", en: "Main site", ja: "メインサイト" },
   "夜间汇总": { zh: "夜间汇总", en: "Nightly summary", ja: "夜間まとめ" },
   "下载": { zh: "下载", en: "Download", ja: "ダウンロード" },
@@ -368,7 +372,7 @@ function safeStorageSet(key, value) {
   }
 }
 
-const routeStyleVersion = "20260721-desktop-taskbar-active-r1";
+const routeStyleVersion = "20260726-interface-audit-fixes-r2";
 const routeStyleHrefs = Object.freeze({
   knowledge: `/css/routes/knowledge.css?v=${routeStyleVersion}`,
   videos: `/css/routes/videos.css?v=${routeStyleVersion}`,
@@ -399,7 +403,12 @@ function ensureRouteStylesheet(route) {
     }, { once: true });
   });
   routeStylePromises.set(route, pending);
-  document.head.appendChild(link);
+  const mobileShellStyle = document.head.querySelector("link[data-mobile-shell-style]");
+  if (mobileShellStyle?.parentNode === document.head) {
+    document.head.insertBefore(link, mobileShellStyle);
+  } else {
+    document.head.appendChild(link);
+  }
   return pending;
 }
 
@@ -427,19 +436,19 @@ function loadStyledRoute(route, moduleLoader, instantiate) {
 
 const routeModuleRegistry = createRouteModuleRegistry({
   loaders: {
-    knowledge: () => loadStyledRoute("knowledge", () => import("./routes/knowledge.mjs?v=20260721-desktop-taskbar-active-r1"),
+    knowledge: () => loadStyledRoute("knowledge", () => import("./routes/knowledge.mjs?v=20260726-interface-audit-fixes-r2"),
       ({ createKnowledgeRoute }) => instantiateKnowledgeRoute(createKnowledgeRoute)),
     videos: () => loadStyledRoute("videos", () => Promise.all([
-      import("./routes/videos.mjs?v=20260721-desktop-taskbar-active-r1"),
+      import("./routes/videos.mjs?v=20260726-interface-audit-fixes-r2"),
       import("./data/videos-content.mjs?v=20260718-resource-icons-layout-r1")
     ]), ([{ createVideosRoute }, { videosContent }]) => instantiateVideosRoute(createVideosRoute, videosContent)),
     resources: () => Promise.all([
-      import("./routes/resources.mjs?v=20260721-desktop-taskbar-active-r1"),
-      import("./data/resources-content.mjs?v=20260719-content-experience-fixes-r1")
+      import("./routes/resources.mjs?v=20260726-interface-audit-fixes-r2"),
+      import("./data/resources-content.mjs?v=20260726-interface-audit-fixes-r2")
     ]).then(([{ createResourcesRoute }, { resourcesContent }]) => instantiateResourcesRoute(createResourcesRoute, resourcesContent)),
-    games: () => loadStyledRoute("games", () => import("./routes/games.mjs?v=20260721-desktop-taskbar-active-r1"),
+    games: () => loadStyledRoute("games", () => import("./routes/games.mjs?v=20260726-interface-audit-fixes-r2"),
       ({ createGamesRoute }) => instantiateGamesRoute(createGamesRoute)),
-    chatroom: () => loadStyledRoute("chatroom", () => import("./routes/chatroom.mjs?v=20260721-desktop-taskbar-active-r1"),
+    chatroom: () => loadStyledRoute("chatroom", () => import("./routes/chatroom.mjs?v=20260726-interface-audit-fixes-r2"),
       ({ createChatroomRoute }) => instantiateChatroomRoute(createChatroomRoute))
   },
   onStatus({ route, status, error }) {
@@ -1149,10 +1158,10 @@ function setLanguage(lang, options = {}) {
     button.setAttribute("aria-pressed", String(active));
   });
 
-  const topUpdated = document.getElementById("top-updated");
-  if (topUpdated) topUpdated.textContent = latestUpdateDate();
+  renderLatestUpdateDate();
   updateWelcomeGreeting();
   renderAccountWidget();
+  siteConnectionStatus.syncLanguage();
   if (previousLanguage !== nextLanguage) syncActiveRouteLanguage(activeRoute, nextLanguage);
 }
 
@@ -1518,7 +1527,7 @@ function instantiateKnowledgeRoute(createKnowledgeRoute) {
     visiblePublicArticles,
     renderUpdates,
     isAbortError,
-    latestUpdateDate,
+    renderLatestUpdateDate,
     syncDocumentMeta,
     syncArticleDocumentMeta,
     captureKnowledgeHistorySnapshot,
@@ -1540,6 +1549,7 @@ function knowledgeRoute() {
 
 function renderKnowledge(...args) { return knowledgeRoute()?.renderKnowledge(...args); }
 function restorePendingKnowledgeScroll(...args) { return knowledgeRoute()?.restorePendingKnowledgeScroll(...args); }
+function resetKnowledgeListScroll(...args) { return knowledgeRoute()?.resetKnowledgeListScroll(...args); }
 function focusArticleDetailTitle(...args) { return knowledgeRoute()?.focusArticleDetailTitle(...args); }
 function syncArticleSummaryControl(...args) { return knowledgeRoute()?.syncArticleSummaryControl(...args); }
 function toggleArticleSummary(...args) { return knowledgeRoute()?.toggleArticleSummary(...args); }
@@ -1675,6 +1685,8 @@ function instantiateVideosRoute(createVideosRoute, videosContent) {
 
 function videosRoute() { return routeModuleRegistry.get("videos"); }
 function renderVideos(...args) { return videosRoute()?.renderVideos(...args); }
+function focusVideoCategory(...args) { return videosRoute()?.focusVideoCategory(...args); }
+function showAllVideos(...args) { return videosRoute()?.showAllVideos(...args); }
 function updateVideoWindowButton(...args) { return videosRoute()?.updateVideoWindowButton(...args); }
 function openVideo(...args) { return videosRoute()?.openVideo(...args); }
 function retryVideoPlayer(...args) { return videosRoute()?.retryVideoPlayer(...args); }
@@ -2088,6 +2100,20 @@ function latestUpdateDate() {
   }, "");
 }
 
+function renderLatestUpdateDate(node = document.getElementById("top-updated")) {
+  if (!node) return "";
+  const value = latestUpdateDate();
+  node.textContent = value;
+  if (node.localName === "time") {
+    if (/^\d{4}\.\d{2}\.\d{2}$/.test(value)) {
+      node.setAttribute("datetime", value.replace(/\./g, "-"));
+    } else {
+      node.removeAttribute("datetime");
+    }
+  }
+  return value;
+}
+
 function siteUpdateArticles() {
   return visiblePublicArticles(articleState.articles)
     .filter((item) => item.category === siteUpdateCategory)
@@ -2100,7 +2126,7 @@ function truncateText(value, maxLength) {
 }
 
 function renderAll() {
-  document.getElementById("top-updated").textContent = latestUpdateDate();
+  renderLatestUpdateDate();
   const route = document.body.dataset.route || "home";
   if (route === "knowledge") renderKnowledge();
   if (route === "videos") renderVideos();
@@ -2566,6 +2592,15 @@ const {
   syncAccountPopoverState
 } = accountFeature;
 
+const siteConnectionStatus = createConnectionStatus({
+  tray: document.querySelector(".status-tray"),
+  button: document.getElementById("site-connection-status"),
+  label: document.getElementById("site-connection-label"),
+  liveRegion: document.getElementById("site-connection-live"),
+  translate: t,
+  fetchImpl: window.fetch.bind(window)
+});
+
 
 
 
@@ -2876,6 +2911,11 @@ document.addEventListener("click", (event) => {
     return;
   }
 
+  if (target.closest("[data-video-show-all]")) {
+    showAllVideos();
+    return;
+  }
+
   if (target.closest("[data-quick-transfer-open]")) {
     resourcesRoute()?.quickTransfer.open();
     return;
@@ -2883,10 +2923,12 @@ document.addEventListener("click", (event) => {
 
   const filterButton = target.closest("[data-filter-type]");
   if (filterButton) {
-    activeFilters[filterButton.dataset.filterType] = filterButton.dataset.filter;
-    if (filterButton.dataset.filterType === "knowledge") {
-      articleState.pendingListScrollTop = null;
+    const filterType = filterButton.dataset.filterType;
+    const filterValue = filterButton.dataset.filter;
+    activeFilters[filterType] = filterValue;
+    if (filterType === "knowledge") {
       articleState.visibleCount = 12;
+      resetKnowledgeListScroll({ syncHistory: true });
       renderKnowledge();
       window.requestAnimationFrame(() => {
         [...document.querySelectorAll('[data-filter-type="knowledge"]')]
@@ -2894,6 +2936,11 @@ document.addEventListener("click", (event) => {
           ?.focus({ preventScroll: true });
       });
       schedulePublicHistoryStateSync();
+      return;
+    }
+    if (filterType === "videos") {
+      renderVideos();
+      focusVideoCategory(filterValue);
       return;
     }
     renderAll();
@@ -2950,7 +2997,7 @@ document.addEventListener("click", (event) => {
     articleState.searchDebounceTimer = 0;
     articleState.searchTerm = "";
     articleState.visibleCount = 12;
-    articleState.pendingListScrollTop = null;
+    resetKnowledgeListScroll({ syncHistory: true });
     renderKnowledge();
     schedulePublicHistoryStateSync();
     document.getElementById("knowledge-search-input")?.focus();
@@ -2963,7 +3010,7 @@ document.addEventListener("click", (event) => {
     articleState.searchTerm = "";
     articleState.visibleCount = 12;
     activeFilters.knowledge = "all";
-    articleState.pendingListScrollTop = null;
+    resetKnowledgeListScroll({ syncHistory: true });
     renderKnowledge();
     schedulePublicHistoryStateSync();
     document.getElementById("knowledge-search-input")?.focus();
@@ -3132,6 +3179,7 @@ const initialLang = initialLanguage();
 syncOptionalRouteEntries();
 setLanguage(initialLang);
 initAccountWidget();
+siteConnectionStatus.start();
 updateClock();
 setInterval(updateClock, 1000);
 if ("scrollRestoration" in window.history) {
