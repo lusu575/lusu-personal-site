@@ -64,18 +64,15 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
       db.prepare(`
         select count(*) as count from articles
         where article_id = 'seed-daily-ai-news-test-placeholder'
-          and category = 'daily-ai-news'
-          and status = 'published'
-          and is_pinned = 0
       `).get().count,
-      1
+      0
     );
     assert.equal(
       db.prepare(`
         select count(*) as count from article_translations
         where article_id = 'seed-daily-ai-news-test-placeholder'
       `).get().count,
-      3
+      0
     );
     assert.ok(
       db.prepare("pragma table_info(anonymous_chat_messages)").all().some((column) => column.name === "ip_hash_key_id")

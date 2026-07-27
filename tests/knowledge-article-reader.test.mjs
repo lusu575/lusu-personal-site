@@ -3,9 +3,11 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 import {
+  articleDetailShowsSummary,
   articleLanguageTag,
   articleImageDimensions,
   articleReadProgressPercent,
+  articleTocHeadingSelector,
   deduplicateArticleHeadingAnchors,
   knowledgeCategoryValues,
   knowledgeSearchTokens,
@@ -13,6 +15,13 @@ import {
   normalizeKnowledgeSearchText,
   sortKnowledgeArticles
 } from "../js/routes/knowledge.mjs";
+
+test("Daily AI News reader hides the repeated summary and indexes story headlines", () => {
+  assert.equal(articleDetailShowsSummary("daily-ai-news"), false);
+  assert.equal(articleDetailShowsSummary("note"), true);
+  assert.equal(articleTocHeadingSelector("daily-ai-news"), "h4");
+  assert.equal(articleTocHeadingSelector("site-updates"), "h2, h3");
+});
 
 test("article heading anchors stay semantic, Unicode-safe, and deterministic", () => {
   assert.equal(normalizeArticleHeadingAnchor("  Getting Started!  "), "article-getting-started");
@@ -115,7 +124,7 @@ test("article list and reader content inherit the API response language, includi
   assert.match(source, /applyArticleLanguage\(summary, item\.lang\)/);
   assert.match(source, /\[title, summary, body\]\.forEach\(\(node\) => applyArticleLanguage\(node, article\.lang\)\)/);
   assert.match(source, /applyArticleLanguage\(meta, getCurrentLang\(\)\)/);
-  assert.match(source, /renderArticleToc\(article\.lang\)/);
+  assert.match(source, /renderArticleToc\(article\.lang,\s*article\.category\)/);
   assert.match(source, /applyArticleLanguage\(list, articleLang\)/);
   assert.match(source, /applyArticleLanguage\(button, articleLang\)/);
 });
@@ -164,6 +173,12 @@ test("article reader uses an observer, in-window scrolling, shareable hashes, an
   assert.match(routeSource, /image\.width = dimensions\.width/);
   assert.match(routeSource, /setTimeout\(\(\) =>[\s\S]*?120\)/);
   assert.match(routeSource, /articleState\.searchIndex = new Map/);
+  assert.match(routeSource, /querySelectorAll\("\[data-article-toc-heading\]\[id\]"\)/);
+  assert.match(routeSource, /articleTocHeadingSelector\(articleCategory\)/);
+  assert.match(routeSource, /querySelectorAll\(selector\)/);
+  assert.match(routeSource, /article\.category \|\| "note"/);
+  assert.match(routeSource, /article\.updated_at \|\| ""/);
+  assert.match(routeSource, /heading\.dataset\.articleTocHeading = ""/);
   assert.match(routeSource, /data-article-load-more|dataset\.articleLoadMore/);
   assert.match(routeSource, /article-pinned-badge/);
   assert.match(routeSource, /item\.category !== siteUpdateCategory && item\.is_pinned/);

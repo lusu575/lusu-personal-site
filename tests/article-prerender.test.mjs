@@ -1,11 +1,17 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  articleNoScriptShowsSummary,
   buildArticleMetadata,
   escapeHtml,
   normalizeArticleRoute,
   safeArticleImageUrl
 } from "../functions/articles/[slug].js";
+
+test("Daily AI News keeps metadata summary but omits the visible noscript repeat", () => {
+  assert.equal(articleNoScriptShowsSummary("daily-ai-news"), false);
+  assert.equal(articleNoScriptShowsSummary("note"), true);
+});
 
 test("article prerender accepts one safe slug and a supported language", () => {
   assert.deepEqual(

@@ -52,6 +52,14 @@ export function articleLanguageTag(value) {
   return "";
 }
 
+export function articleDetailShowsSummary(category) {
+  return String(category || "") !== "daily-ai-news";
+}
+
+export function articleTocHeadingSelector(category) {
+  return String(category || "") === "daily-ai-news" ? "h4" : "h2, h3";
+}
+
 export function articleReadProgressPercent({
   scrollTop = 0,
   clientHeight = 0,
@@ -721,9 +729,16 @@ export function createKnowledgeRoute({
     const summary = document.getElementById("article-detail-summary");
     const meta = document.getElementById("article-detail-meta");
     const body = document.getElementById("article-detail-body");
-    const renderedDetailKey = `${article.slug || articleState.currentSlug}:${article.requestedLang || getCurrentLang()}`;
+    const renderedDetailKey = [
+      article.slug || articleState.currentSlug,
+      article.requestedLang || getCurrentLang(),
+      article.category || "note",
+      article.updated_at || ""
+    ].join(":");
+    const showSummary = articleDetailShowsSummary(article.category);
     [title, summary, body].forEach((node) => applyArticleLanguage(node, article.lang));
     applyArticleLanguage(meta, getCurrentLang());
+    summary.hidden = !showSummary;
 
     if (articleState.renderedDetailKey === renderedDetailKey
       && body.childElementCount
@@ -742,7 +757,7 @@ export function createKnowledgeRoute({
     resetArticleReadProgress();
     resetArticleToc();
     title.textContent = article.title || "";
-    summary.textContent = article.summary || "";
+    summary.textContent = showSummary ? (article.summary || "") : "";
     summary.classList.remove("is-expanded");
     summary.dataset.summaryExpanded = "false";
     syncArticleSummaryControl();
@@ -759,7 +774,7 @@ export function createKnowledgeRoute({
       meta.appendChild(item);
     });
     renderMarkdownSafe(body, stripRepeatedArticleHeading(article.content_markdown || "", article.title || ""));
-    renderArticleToc(article.lang);
+    renderArticleToc(article.lang, article.category);
     scheduleArticleReadProgressUpdate();
     syncArticleDocumentMeta(article);
     articleState.renderedDetailKey = renderedDetailKey;
@@ -918,7 +933,7 @@ export function createKnowledgeRoute({
     disconnectArticleTocObserver();
     const detail = document.getElementById("article-detail");
     const body = document.getElementById("article-detail-body");
-    const headings = body ? [...body.querySelectorAll("h2[id], h3[id]")] : [];
+    const headings = body ? [...body.querySelectorAll("[data-article-toc-heading][id]")] : [];
     if (!detail || detail.hidden || !headings.length || typeof window.IntersectionObserver !== "function") {
       return false;
     }
@@ -963,7 +978,7 @@ export function createKnowledgeRoute({
     });
   }
 
-  function renderArticleToc(articleLang = "") {
+  function renderArticleToc(articleLang = "", articleCategory = "") {
     const toc = document.getElementById("article-detail-toc");
     const list = document.getElementById("article-detail-toc-list");
     const body = document.getElementById("article-detail-body");
@@ -971,7 +986,8 @@ export function createKnowledgeRoute({
       return;
     }
     applyArticleLanguage(list, articleLang);
-    const headings = [...body.querySelectorAll("h2, h3")]
+    const selector = articleTocHeadingSelector(articleCategory);
+    const headings = [...body.querySelectorAll(selector)]
       .map((heading) => ({ heading, text: heading.textContent.trim() }))
       .filter((item) => item.text);
     const headingIds = deduplicateArticleHeadingAnchors(headings.map(({ text }) => text));
@@ -979,16 +995,18 @@ export function createKnowledgeRoute({
       heading.id = headingIds[index];
       heading.tabIndex = -1;
     });
-    if (headings.length < 2) {
+    const minimumHeadings = String(articleCategory || "") === "daily-ai-news" ? 1 : 2;
+    if (headings.length < minimumHeadings) {
       resetArticleToc();
       restoreArticleHashTarget();
       return;
     }
     const buttons = headings.map(({ heading, text }, itemIndex) => {
-      const id = headingIds[itemIndex];
+      const id = heading.id;
+      heading.dataset.articleTocHeading = "";
       const button = document.createElement("button");
       button.type = "button";
-      button.className = `article-toc-link level-${heading.tagName === "H3" ? "3" : "2"}`;
+      button.className = `article-toc-link level-${heading.tagName === "H2" ? "2" : "3"}`;
       if (itemIndex === 0) {
         button.classList.add("is-active");
         button.setAttribute("aria-current", "location");
@@ -1002,7 +1020,7 @@ export function createKnowledgeRoute({
     });
     list.replaceChildren(...buttons);
     toc.hidden = false;
-    setActiveArticleTocHeading(headingIds[0], { reveal: false });
+    setActiveArticleTocHeading(headings[0].heading.id, { reveal: false });
     connectArticleTocObserver();
     restoreArticleHashTarget();
   }
@@ -1032,7 +1050,7 @@ export function createKnowledgeRoute({
     if (!links.length || articleState.tocObserver) {
       return { percent, activeId: "", links };
     }
-    const headings = body ? [...body.querySelectorAll("h2[id], h3[id]")] : [];
+    const headings = body ? [...body.querySelectorAll("[data-article-toc-heading][id]")] : [];
     if (!headings.length) {
       return { percent, activeId: "", links };
     }

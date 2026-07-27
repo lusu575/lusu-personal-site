@@ -34,8 +34,8 @@ test("public modal fixes preserve readable depth and compact failed-video geomet
   );
 });
 
-test("the Daily AI News inbox update is the newest five-item trilingual projection everywhere", async () => {
-  const updateId = "seed-update-2026-07-27-daily-ai-news-inbox";
+test("the Daily AI News reader update is the newest five-item trilingual projection everywhere", async () => {
+  const updateId = "seed-update-2026-07-28-daily-ai-news-reader-format";
   const [{ content }, { homeContent }] = await Promise.all([
     import("../js/data/content.mjs"),
     import("../js/data/home-content.mjs")
@@ -63,7 +63,7 @@ test("the Daily AI News inbox update is the newest five-item trilingual projecti
 
 test("Daily AI News modules use a fresh cache version without invalidating unrelated public assets", () => {
   const stableVersion = "20260726-security-reliability-r1";
-  const dailyAiNewsVersion = "20260728-daily-ai-news-production-r1";
+  const dailyAiNewsVersion = "20260728-daily-ai-news-reader-r1";
   const index = read("index.html");
   const main = read("js/main.js");
   const transferLoader = read("js/features/quick-transfer-loader.mjs");

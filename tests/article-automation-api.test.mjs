@@ -355,7 +355,10 @@ test("Daily AI News automation defaults to drafts and can explicitly auto-publis
     );
     assert.equal(publicList.status, 200, await publicList.clone().text());
     const publicPayload = await publicList.json();
-    assert.ok(publicPayload.articles.some((article) => article.slug === "daily-ai-news-test-placeholder"));
+    assert.equal(
+      publicPayload.articles.some((article) => article.slug === "daily-ai-news-test-placeholder"),
+      false
+    );
     assert.equal(publicPayload.articles.some((article) => article.slug === deliveryBody.slug), false);
 
     const adminSnapshot = await invoke(

@@ -792,7 +792,7 @@ const redirectsConfig = readRequired("_redirects");
 
 const routeLazyVersion = "20260726-security-reliability-r1";
 const trustSafetyStatusVersion = "20260726-security-reliability-r1";
-const dailyAiNewsVersion = "20260728-daily-ai-news-production-r1";
+const dailyAiNewsVersion = "20260728-daily-ai-news-reader-r1";
 const publicRouteVersion = (route) => route === "knowledge"
   ? dailyAiNewsVersion
   : (route === "resources" ? trustSafetyStatusVersion : routeLazyVersion);
@@ -2400,6 +2400,8 @@ for (const token of [
   'meta property="article:published_time"',
   'type="application/ld+json"',
   "new NoScriptArticleHandler",
+  "articles.category",
+  "articleNoScriptShowsSummary",
   "escapeHtml(content)",
   'headers.set("X-Robots-Tag", "noindex")',
   '"no-cache, max-age=0, must-revalidate"'
@@ -3498,8 +3500,8 @@ for (const [marker, pattern, message] of [
   ],
   [
     "function renderArticleToc",
-    /deduplicateArticleHeadingAnchors\([\s\S]*heading\.id\s*=\s*headingIds\[index\][\s\S]*heading\.tabIndex\s*=\s*-1[\s\S]*button\.setAttribute\(\s*["']aria-controls["']\s*,\s*id\s*\)[\s\S]*setActiveArticleTocHeading\(headingIds\[0\]/,
-    "js/routes/knowledge.mjs article TOC should create stable duplicate-safe anchors, focusable headings, and one initial current location"
+    /articleTocHeadingSelector\(articleCategory\)[\s\S]*querySelectorAll\(selector\)[\s\S]*deduplicateArticleHeadingAnchors\([\s\S]*heading\.id\s*=\s*headingIds\[index\][\s\S]*heading\.dataset\.articleTocHeading[\s\S]*button\.setAttribute\(\s*["']aria-controls["']\s*,\s*id\s*\)[\s\S]*setActiveArticleTocHeading\(headings\[0\]\.heading\.id/,
+    "js/routes/knowledge.mjs article TOC should create stable anchors and select Daily AI News story headlines"
   ],
   [
     "function setActiveArticleTocHeading",
@@ -3568,7 +3570,7 @@ for (const [marker, pattern, message] of [
   ],
   [
     "function renderArticleDetail(article)",
-    /renderArticleToc\(article\.lang\)[\s\S]*scheduleArticleReadProgressUpdate\(\)[\s\S]*syncArticleDocumentMeta\(article\)/,
+    /articleDetailShowsSummary\(article\.category\)[\s\S]*summary\.hidden\s*=\s*!showSummary[\s\S]*renderArticleToc\(article\.lang,\s*article\.category\)[\s\S]*scheduleArticleReadProgressUpdate\(\)[\s\S]*syncArticleDocumentMeta\(article\)/,
     "js/main.js renderArticleDetail should sync article document metadata after rendering"
   ],
   [

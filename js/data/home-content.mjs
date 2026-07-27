@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-07-28-daily-ai-news-reader-format",
+      "slug": "2026-07-28-daily-ai-news-reader-format",
+      "category": "site-updates",
+      "tags": ["网站更新", "知识库", "每日AI新闻", "阅读体验"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-27T20:40:00.000Z",
+      "updated_at": "2026-07-27T20:40:00.000Z",
+      "published_at": "2026-07-27T20:40:00.000Z",
+      "fallbackOnly": true,
+      "icon": "knowledge",
+      "date": "2026.07.28",
+      "title": {
+        "zh": "每日 AI 新闻阅读格式调整",
+        "en": "Daily AI News Reading Format Updated",
+        "ja": "毎日AIニュースの閲覧形式を更新"
+      },
+      "summary": {
+        "zh": "每日 AI 新闻详情不再重复摘要和采集窗口，正文直接进入要闻；目录改为列出每条新闻标题，测试占位文章已删除。",
+        "en": "Daily AI News now opens directly with the stories, without a repeated summary or collection-window paragraph. Its contents list every headline, and the test placeholder is removed.",
+        "ja": "毎日AIニュースは概要や収集時間を繰り返さず記事へ直接入り、目次には全ニュース見出しを表示します。テスト用記事も削除しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-07-27-daily-ai-news-inbox",
       "slug": "2026-07-27-daily-ai-news-inbox",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "完成全部公开界面复检，修复 A Dark Room、Kittens Game、Life Restart、2048 与 Hextris 五款游戏的手机适配、触控和滚动问题，并收紧弹窗层级与第三方请求边界。",
         "en": "Completed a full public-interface recheck, fixing mobile layout, touch, and scrolling across five games—A Dark Room, Kittens Game, Life Restart, 2048, and Hextris—while tightening modal hierarchy and third-party request boundaries.",
         "ja": "公開画面を全面再点検し、A Dark Room、Kittens Game、Life Restart、2048、Hextris の5ゲームでモバイル配置・タッチ・スクロールを修正。モーダル階層と外部通信の境界も整えました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-07-26-resources-to-tools",
-      "slug": "2026-07-26-resources-to-tools",
-      "category": "site-updates",
-      "tags": ["UI", "i18n", "Tools", "compatibility", "QA"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-07-26T06:55:36.099Z",
-      "updated_at": "2026-07-26T06:55:36.099Z",
-      "published_at": "2026-07-26T06:55:36.099Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.07.26",
-      "title": {
-        "zh": "资源区正式更名为工具区",
-        "en": "Resources Area Renamed to Tools",
-        "ja": "リソース欄をツールへ名称変更"
-      },
-      "summary": {
-        "zh": "公开栏目名称已统一为“工具区 / Tools / ツール”，内部 resources 路由、旧 #resources 链接、临时互传和全部功能保持不变。",
-        "en": "The public section name is now Tools across Chinese, English, and Japanese, while the resources route, existing #resources links, Quick Transfer, and all behavior remain unchanged.",
-        "ja": "公開欄の名称を中国語・英語・日本語で「ツール」に統一し、resources ルート、既存の #resources リンク、一時転送、すべての機能は変更していません。"
       }
     }
   ]

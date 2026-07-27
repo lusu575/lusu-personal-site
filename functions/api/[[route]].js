@@ -1,6 +1,6 @@
 import { handleTransferApi } from "./transfer-service.mjs";
 
-export const PUBLIC_API_REPRESENTATION_VERSION = "20260728-daily-ai-news-production-r1";
+export const PUBLIC_API_REPRESENTATION_VERSION = "20260728-daily-ai-news-reader-r1";
 const SESSION_COOKIE = "lusu_session";
 const SESSION_DAYS = 30;
 const MAX_SAVE_BYTES = 1024 * 1024;
@@ -5793,9 +5793,60 @@ function aiAgentWorkflowArticleHeadingMediaStatements(env, now) {
   `).bind(heading, `${image}\n\n${heading}`, now, articleId, lang, heading, filename)));
 }
 
+const DAILY_AI_NEWS_2026_07_27_READER_PATCH = Object.freeze({
+  slug: "daily-ai-news-2026-07-27",
+  updatedAt: "2026-07-27T20:30:00.000Z",
+  intros: Object.freeze({
+    zh: "采集范围为北京时间 7 月 26 日 23:00 至 7 月 27 日 23:00。只保留在这一窗口内发布、且达到重要性门槛的消息。",
+    en: "The collection window runs from 11:00 p.m. Beijing time on July 26 to 11:00 p.m. on July 27. Only material published inside that window and clearing the importance threshold is included.",
+    ja: "収集期間は北京時間7月26日23時から7月27日23時までです。この24時間内に公開され、重要度の基準を満たした情報だけを掲載します。"
+  })
+});
+
 function articleSeedStatements(env) {
   // Seed timestamps must be UTC ISO strings; the UI converts them to each visitor's local time.
   return [
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-28-daily-ai-news-reader-format',
+        '2026-07-28-daily-ai-news-reader-format',
+        'site-updates',
+        '["网站更新","知识库","每日AI新闻","阅读体验"]',
+        '', 'published', 0, 0,
+        '2026-07-27T20:40:00.000Z',
+        '2026-07-27T20:40:00.000Z',
+        '2026-07-27T20:40:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-07-28-daily-ai-news-reader-format", {
+      zh: {
+        title: "每日 AI 新闻阅读格式调整",
+        summary: "每日 AI 新闻详情不再重复摘要和采集窗口，正文直接进入要闻；目录改为列出每条新闻标题，测试占位文章已删除。",
+        content_markdown: "# 每日 AI 新闻阅读格式调整\n\n本次根据实际阅读反馈，收紧了“每日 AI 新闻”的详情展示与固定生成格式。\n\n## 阅读更直接\n\n- 文章详情不再重复显示摘要。\n- 正文标题后直接进入“今日要闻”，不再向读者展示采集时间和筛选说明；严格的 24 小时窗口仍保留在内部工作流中。\n\n## 目录与内容清理\n\n- 文章目录改为逐条列出全部新闻的一句话标题，不再只显示“今日要闻 / 主要新闻 / 传闻”三个栏目。\n- 已删除用于早期链路验证的测试占位文章。\n\n## 后续规则\n\n工作流文档和自动校验已同步锁定这些要求，之后每天生成的三语日报都会沿用同一格式。"
+      },
+      en: {
+        title: "Daily AI News Reading Format Updated",
+        summary: "Daily AI News now opens directly with the stories, without a repeated summary or collection-window paragraph. Its contents list every headline, and the test placeholder is removed.",
+        content_markdown: "# Daily AI News Reading Format Updated\n\nThis update tightens the Daily AI News reader and its permanent generation format based on real reading feedback.\n\n## A more direct reading flow\n\n- Article details no longer repeat the summary.\n- The body now moves from the title straight into Lead Story. Collection times and selection notes stay inside the workflow, while the exact 24-hour rule remains enforced.\n\n## Contents and cleanup\n\n- The contents panel now lists every one-line story headline instead of only Lead Story, More News, and Rumors.\n- The early test placeholder article has been removed.\n\n## Future editions\n\nThe workflow guide and validator now lock these rules, so future Chinese, English, and Japanese editions keep the same format."
+      },
+      ja: {
+        title: "毎日AIニュースの閲覧形式を更新",
+        summary: "毎日AIニュースは概要や収集時間を繰り返さず記事へ直接入り、目次には全ニュース見出しを表示します。テスト用記事も削除しました。",
+        content_markdown: "# 毎日AIニュースの閲覧形式を更新\n\n実際の閲覧フィードバックに基づき、「毎日AIニュース」の表示と固定生成形式を整理しました。\n\n## すぐ本文へ\n\n- 記事詳細では概要を重ねて表示しません。\n- タイトルの直後から「今日のトップニュース」へ入り、収集時間や選定説明は読者向け本文に出しません。正確な24時間ルールは内部ワークフローで引き続き厳守します。\n\n## 目次と整理\n\n- 目次は「トップニュース / 主なニュース / 噂」の3区分だけでなく、すべてのニュース見出しを一件ずつ表示します。\n- 初期確認用のテスト記事を削除しました。\n\n## 今後の記事\n\nワークフロー文書と自動検証にも同じ規則を固定し、今後の中国語・英語・日本語版すべてでこの形式を継続します。"
+      }
+    }, "2026-07-27T20:40:00.000Z"),
     env.DB.prepare(`
       insert into articles (
         article_id, slug, category, tags, cover_image, status, is_pinned,
@@ -5837,47 +5888,6 @@ function articleSeedStatements(env) {
         content_markdown: "# 毎日AIニュース正式稼働\n\n知識庫の「毎日AIニュース」は、Horizon と Codex による固定の日次公開フローへ接続され、中国語・英語・日本語の完全版を公開します。\n\n## 毎日の流れ\n\n- 毎日北京時間7時に開始し、直前の正確な24時間に公開された情報だけを扱います。\n- まず Horizon が複数ソースの収集、URL正規化、重複統合を行い、その後 Codex が一次情報の確認、重要度判定、過去30日との重複確認、3言語の記事作成を行います。\n- 本文は「今日のトップニュース / 主なニュース / 噂」の3部構成を保ち、各項目に短く具体的なAI解説を付け、読者向け本文には大量の参照リンクを並べません。\n\n## 公開時の安全策\n\n- 3言語、時間範囲、出典記録、構成、重複確認のすべてを通過した場合だけ、専用チャンネルが記事を公開します。\n- Horizon が利用できない、検証に失敗する、または北京時間8時を過ぎた場合は、不完全な記事を公開せず、その日の処理を停止して失敗を記録します。\n- 管理画面では引き続きチャンネルの一時停止、自動公開の無効化、認証情報の更新・失効、最近の配信結果の確認ができます。\n\n## 初回公開\n\n7月27日の3言語版で本番経路全体を検証します。プレースホルダー記事は引き続きテスト用と明記され、実際のニュースとは区別されます。"
       }
     }, "2026-07-27T16:05:00.000Z"),
-    env.DB.prepare(`
-      insert into articles (
-        article_id, slug, category, tags, cover_image, status, is_pinned,
-        view_count, created_at, updated_at, published_at
-      ) values (
-        'seed-daily-ai-news-test-placeholder',
-        'daily-ai-news-test-placeholder',
-        'daily-ai-news',
-        '["每日AI新闻","测试"]',
-        '', 'published', 0, 0,
-        '2026-07-27T13:05:00.000Z',
-        '2026-07-27T13:05:00.000Z',
-        '2026-07-27T13:05:00.000Z'
-      )
-      on conflict(article_id) do update set
-        slug = excluded.slug,
-        category = excluded.category,
-        tags = excluded.tags,
-        cover_image = excluded.cover_image,
-        status = excluded.status,
-        is_pinned = excluded.is_pinned,
-        updated_at = excluded.updated_at,
-        published_at = excluded.published_at
-    `),
-    ...articleTranslationsStatements(env, "seed-daily-ai-news-test-placeholder", {
-      zh: {
-        title: "每日 AI 新闻测试占位",
-        summary: "这是一篇用于确认“每日 AI 新闻”分区显示与发布流程的测试占位文章，不包含正式新闻。",
-        content_markdown: "# 每日 AI 新闻测试占位\n\n这是一篇测试占位文章，用来确认“每日 AI 新闻”分区、文章列表和阅读页面能够正常显示。\n\n这里暂时没有正式新闻内容。"
-      },
-      en: {
-        title: "Daily AI News Test Placeholder",
-        summary: "This placeholder verifies the Daily AI News section and publishing flow. It does not contain real news.",
-        content_markdown: "# Daily AI News Test Placeholder\n\nThis is a test placeholder used to confirm that the Daily AI News section, article list, and reading page display correctly.\n\nIt does not contain real news."
-      },
-      ja: {
-        title: "毎日AIニュース テスト用プレースホルダー",
-        summary: "「毎日AIニュース」欄と公開フローを確認するためのテスト記事です。実際のニュースは含まれていません。",
-        content_markdown: "# 毎日AIニュース テスト用プレースホルダー\n\n「毎日AIニュース」欄、記事一覧、閲覧ページが正しく表示されることを確認するためのテスト記事です。\n\n実際のニュース内容はまだ含まれていません。"
-      }
-    }, "2026-07-27T13:05:00.000Z"),
     env.DB.prepare(`
       insert into articles (
         article_id, slug, category, tags, cover_image, status, is_pinned,
@@ -10987,6 +10997,64 @@ UI、UX、モーション、ビジュアル、性能、レスポンシブ、ア�
       update articles
       set is_pinned = 0
       where category = 'site-updates' and is_pinned <> 0
+    `),
+    env.DB.prepare(`
+      update articles
+      set updated_at = ?
+      where slug = ?
+        and category = 'daily-ai-news'
+        and exists (
+          select 1
+          from article_translations
+          where article_translations.article_id = articles.article_id
+            and (
+              instr(article_translations.content_markdown, ?) > 0
+              or instr(article_translations.content_markdown, ?) > 0
+              or instr(article_translations.content_markdown, ?) > 0
+            )
+        )
+    `).bind(
+      DAILY_AI_NEWS_2026_07_27_READER_PATCH.updatedAt,
+      DAILY_AI_NEWS_2026_07_27_READER_PATCH.slug,
+      DAILY_AI_NEWS_2026_07_27_READER_PATCH.intros.zh,
+      DAILY_AI_NEWS_2026_07_27_READER_PATCH.intros.en,
+      DAILY_AI_NEWS_2026_07_27_READER_PATCH.intros.ja
+    ),
+    env.DB.prepare(`
+      update article_translations
+      set content_markdown = case lang
+            when 'zh' then replace(content_markdown, ?, '')
+            when 'en' then replace(content_markdown, ?, '')
+            when 'ja' then replace(content_markdown, ?, '')
+            else content_markdown
+          end,
+          updated_at = ?
+      where article_id = (
+        select article_id
+        from articles
+        where slug = ? and category = 'daily-ai-news'
+        limit 1
+      )
+        and lang in ('zh', 'en', 'ja')
+        and (
+          instr(content_markdown, ?) > 0
+          or instr(content_markdown, ?) > 0
+          or instr(content_markdown, ?) > 0
+        )
+    `).bind(
+      `${DAILY_AI_NEWS_2026_07_27_READER_PATCH.intros.zh}\n\n`,
+      `${DAILY_AI_NEWS_2026_07_27_READER_PATCH.intros.en}\n\n`,
+      `${DAILY_AI_NEWS_2026_07_27_READER_PATCH.intros.ja}\n\n`,
+      DAILY_AI_NEWS_2026_07_27_READER_PATCH.updatedAt,
+      DAILY_AI_NEWS_2026_07_27_READER_PATCH.slug,
+      DAILY_AI_NEWS_2026_07_27_READER_PATCH.intros.zh,
+      DAILY_AI_NEWS_2026_07_27_READER_PATCH.intros.en,
+      DAILY_AI_NEWS_2026_07_27_READER_PATCH.intros.ja
+    ),
+    env.DB.prepare(`
+      delete from articles
+      where article_id = 'seed-daily-ai-news-test-placeholder'
+        and slug = 'daily-ai-news-test-placeholder'
     `),
     env.DB.prepare(`
       delete from articles

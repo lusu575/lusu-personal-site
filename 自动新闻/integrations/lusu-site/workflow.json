@@ -96,9 +96,16 @@
       "ja": "毎日AIニュース｜YYYY年M月D日"
     },
     "intro": {
-      "required": true,
-      "mustStateExactWindow": true,
-      "mustStateSelectionRule": true
+      "allowed": false,
+      "firstContentAfterTitle": "lead-section-heading",
+      "windowDetailsInternalOnly": true
+    },
+    "tableOfContents": {
+      "generatedBySite": true,
+      "manualTableOfContents": false,
+      "sourceHeadings": "story-headings-only",
+      "includeEveryStoryHeading": true,
+      "requireUniqueStoryHeadings": true
     },
     "sectionOrder": [
       "lead",

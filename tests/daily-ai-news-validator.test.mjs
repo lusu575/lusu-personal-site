@@ -2,9 +2,11 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
+import { fileURLToPath } from "node:url";
 
 import {
   isHistoricalOneShotWindow,
+  readAndValidateRun,
   validateRun
 } from "../自动新闻/integrations/lusu-site/validate-draft.mjs";
 import {
@@ -56,8 +58,6 @@ function translationsWithThreeSections() {
       content_markdown: [
         "# 每日 AI 新闻｜2026 年 7 月 27 日",
         "",
-        "采集范围为北京时间过去 24 小时，只保留达到编辑门槛的内容，并把事实与传闻分开呈现。",
-        "",
         "## 今日要闻",
         "",
         "### 已确认的要闻",
@@ -89,8 +89,6 @@ function translationsWithThreeSections() {
       content_markdown: [
         "# Daily AI News | July 27, 2026",
         "",
-        "The exact 24-hour collection window uses Beijing time, and only items that clear the editorial bar are included.",
-        "",
         "## Lead Story",
         "",
         "### A confirmed lead development",
@@ -121,8 +119,6 @@ function translationsWithThreeSections() {
       summary: "本日はトップニュース1件、主なニュース1件に加え、事実と分離した未確認の噂1件を扱います。",
       content_markdown: [
         "# 毎日AIニュース｜2026年7月27日",
-        "",
-        "北京時間の正確な24時間を収集期間とし、編集基準を満たした項目だけを掲載します。",
         "",
         "## 今日のトップニュース",
         "",
@@ -221,6 +217,14 @@ test("Daily AI News workflow declares the permanent three-section contract", asy
   assert.equal(workflow.calendar.deadlinePolicy, "fail-closed");
   assert.equal(workflow.calendar.historicalOneShot.requiresExplicitFlag, "--one-shot-history");
   assert.equal(workflow.article.styleGuide, "ARTICLE_STYLE.md");
+  assert.equal(workflow.article.intro.allowed, false);
+  assert.equal(workflow.article.intro.firstContentAfterTitle, "lead-section-heading");
+  assert.equal(workflow.article.intro.windowDetailsInternalOnly, true);
+  assert.equal(workflow.article.tableOfContents.generatedBySite, true);
+  assert.equal(workflow.article.tableOfContents.manualTableOfContents, false);
+  assert.equal(workflow.article.tableOfContents.sourceHeadings, "story-headings-only");
+  assert.equal(workflow.article.tableOfContents.includeEveryStoryHeading, true);
+  assert.equal(workflow.article.tableOfContents.requireUniqueStoryHeadings, true);
   assert.deepEqual(workflow.article.aiTake.sentenceRange, [1, 2]);
   assert.equal(workflow.article.aiTake.mustBeShorterThanStoryBody, true);
   assert.equal(workflow.article.aiTake.maxStoryBodyLengthRatio, 0.8);
@@ -258,17 +262,17 @@ test("Daily AI News section counts stay flexible outside the single lead", () =>
     zh: {
       title: "每日 AI 新闻｜2026 年 7 月 27 日",
       summary: "今天只有一条达到门槛的已确认要闻，没有用低价值内容补足数量。",
-      content_markdown: "# 每日 AI 新闻｜2026 年 7 月 27 日\n\n采集范围为北京时间过去 24 小时，今天只保留达到门槛的内容。\n\n## 今日要闻\n\n### 唯一入选要闻\n\n这条消息已经完成一手核实，正文说明发生了什么、关键数字、影响范围和当前限制。\n\n**AI 解读：** 核心价值在于实际能力是否持续，而不是当天的讨论热度。\n\n## 主要新闻\n\n今天没有其他达到门槛的已确认新闻。\n\n## 传闻\n\n今天没有值得单列的传闻。"
+      content_markdown: "# 每日 AI 新闻｜2026 年 7 月 27 日\n\n## 今日要闻\n\n### 唯一入选要闻\n\n这条消息已经完成一手核实，正文说明发生了什么、关键数字、影响范围和当前限制。\n\n**AI 解读：** 核心价值在于实际能力是否持续，而不是当天的讨论热度。\n\n## 主要新闻\n\n今天没有其他达到门槛的已确认新闻。\n\n## 传闻\n\n今天没有值得单列的传闻。"
     },
     en: {
       title: "Daily AI News | July 27, 2026",
       summary: "Only one confirmed story cleared the bar today, with no low-value items added to fill space.",
-      content_markdown: "# Daily AI News | July 27, 2026\n\nThe exact 24-hour collection window uses Beijing time, and only material that cleared the editorial bar is included.\n\n## Lead Story\n\n### The only selected lead\n\nPrimary material confirms the event, while the article explains what happened, the key figures, its impact and present limits.\n\n**AI take:** Durable capability matters more than the volume of discussion on release day.\n\n## More News\n\nNo other confirmed item cleared the bar today.\n\n## Rumors\n\nNo rumor was useful enough to include today."
+      content_markdown: "# Daily AI News | July 27, 2026\n\n## Lead Story\n\n### The only selected lead\n\nPrimary material confirms the event, while the article explains what happened, the key figures, its impact and present limits.\n\n**AI take:** Durable capability matters more than the volume of discussion on release day.\n\n## More News\n\nNo other confirmed item cleared the bar today.\n\n## Rumors\n\nNo rumor was useful enough to include today."
     },
     ja: {
       title: "毎日AIニュース｜2026年7月27日",
       summary: "本日は確認済みの1件だけが基準を満たし、件数合わせの低価値情報は追加していません。",
-      content_markdown: "# 毎日AIニュース｜2026年7月27日\n\n北京時間の正確な24時間を収集期間とし、基準を満たした内容だけを掲載します。\n\n## 今日のトップニュース\n\n### 唯一のトップニュース\n\n一次資料で事実を確認し、何が起きたか、重要な数字、影響と現在の限界を分けて説明します。\n\n**AI解説：** 公開日の話題量より、能力が継続して使えるかどうかが重要です。\n\n## 主なニュース\n\n本日はほかに基準を満たす確認済みニュースがありません。\n\n## 噂\n\n本日は掲載する価値のある噂がありません。"
+      content_markdown: "# 毎日AIニュース｜2026年7月27日\n\n## 今日のトップニュース\n\n### 唯一のトップニュース\n\n一次資料で事実を確認し、何が起きたか、重要な数字、影響と現在の限界を分けて説明します。\n\n**AI解説：** 公開日の話題量より、能力が継続して使えるかどうかが重要です。\n\n## 主なニュース\n\n本日はほかに基準を満たす確認済みニュースがありません。\n\n## 噂\n\n本日は掲載する価値のある噂がありません。"
     }
   };
 
@@ -345,7 +349,7 @@ test("Daily AI News validator locks section order without repeating rumor discla
   assert.throws(() => validateRun(noConditionalLanguage), /en 的传闻正文必须使用条件语气/);
 });
 
-test("Daily AI News validator locks title, window intro, and concise AI take style", () => {
+test("Daily AI News validator locks title, direct section start, and concise AI take style", () => {
   const wrongTitle = clone(validRun());
   wrongTitle.delivery.translations.en.title = "A different headline";
   wrongTitle.delivery.translations.en.content_markdown =
@@ -355,13 +359,13 @@ test("Daily AI News validator locks title, window intro, and concise AI take sty
     );
   assert.throws(() => validateRun(wrongTitle), /en 标题必须固定为/);
 
-  const missingWindowIntro = clone(validRun());
-  missingWindowIntro.delivery.translations.ja.content_markdown =
-    missingWindowIntro.delivery.translations.ja.content_markdown.replace(
-      "北京時間の正確な24時間を収集期間とし、編集基準を満たした項目だけを掲載します。",
-      "編集基準を満たした項目だけを掲載します。"
+  const visibleIntro = clone(validRun());
+  visibleIntro.delivery.translations.ja.content_markdown =
+    visibleIntro.delivery.translations.ja.content_markdown.replace(
+      "\n\n## 今日のトップニュース",
+      "\n\n北京時間の24時間を収集対象としました。\n\n## 今日のトップニュース"
     );
-  assert.throws(() => validateRun(missingWindowIntro), /ja 正文开头必须用一小段说明精确 24 小时采集窗口/);
+  assert.throws(() => validateRun(visibleIntro), /ja 正文一级标题后必须直接进入首个栏目/);
 
   const threeSentenceTake = clone(validRun());
   threeSentenceTake.candidates[0].aiTake = "这是第一句具体判断。这是第二句现实影响。这是第三句后续观察。";
@@ -374,6 +378,23 @@ test("Daily AI News validator locks title, window intro, and concise AI take sty
       "事件已经公布。"
     );
   assert.throws(() => validateRun(longerThanBody), /AI 解读必须明显短于新闻事实段/);
+});
+
+test("Daily AI News validator requires one unique heading per selected story", () => {
+  const repeatedHeading = clone(validRun());
+  repeatedHeading.delivery.translations.zh.content_markdown =
+    repeatedHeading.delivery.translations.zh.content_markdown.replace(
+      "### 已确认的主要新闻",
+      "### 已确认的要闻"
+    );
+  assert.throws(() => validateRun(repeatedHeading), /每条新闻必须使用不重复的三级标题/);
+});
+
+test("the published 27 July run still passes the locked reader format", async () => {
+  await assert.doesNotReject(() => readAndValidateRun(
+    fileURLToPath(new URL("../自动新闻/integrations/lusu-site/runs/2026-07-27-2300.json", import.meta.url)),
+    { allowHistoricalOneShot: true }
+  ));
 });
 
 test("Daily AI News validator enforces the exact 24-hour publication window", () => {

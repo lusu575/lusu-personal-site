@@ -112,6 +112,10 @@ export function safeArticleImageUrl(value) {
   }
 }
 
+export function articleNoScriptShowsSummary(category) {
+  return String(category || "") !== "daily-ai-news";
+}
+
 async function loadIndexShell(context) {
   const assetUrl = new URL(context.request.url);
   assetUrl.pathname = "/index.html";
@@ -131,6 +135,7 @@ async function findPublishedArticle(db, slug, lang) {
   return db.prepare(`
     select
       articles.slug,
+      articles.category,
       articles.cover_image,
       articles.created_at,
       articles.updated_at,
@@ -242,12 +247,13 @@ class NoScriptArticleHandler {
 
   element(element) {
     const content = String(this.article.content_markdown || "").trim();
+    const showSummary = articleNoScriptShowsSummary(this.article.category);
     const html = [
       "<noscript>",
       "<style>.crawler-article{max-width:72ch;margin:2rem auto;padding:1rem;font:16px/1.65 system-ui,sans-serif;white-space:normal}.crawler-article pre{white-space:pre-wrap;font:inherit}</style>",
       `<main class="crawler-article" lang="${escapeHtml(this.metadata.htmlLang)}">`,
       `<article><h1>${escapeHtml(this.metadata.title)}</h1>`,
-      `<p>${escapeHtml(this.metadata.summary)}</p>`,
+      showSummary ? `<p>${escapeHtml(this.metadata.summary)}</p>` : "",
       content ? `<pre>${escapeHtml(content)}</pre>` : "",
       "</article></main></noscript>"
     ].join("");

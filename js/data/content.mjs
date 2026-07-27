@@ -1,6 +1,36 @@
 export const content = {
   updates: [
     {
+      "article_id": "seed-update-2026-07-28-daily-ai-news-reader-format",
+      "slug": "2026-07-28-daily-ai-news-reader-format",
+      "category": "site-updates",
+      "tags": ["网站更新", "知识库", "每日AI新闻", "阅读体验"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-27T20:40:00.000Z",
+      "updated_at": "2026-07-27T20:40:00.000Z",
+      "published_at": "2026-07-27T20:40:00.000Z",
+      "fallbackOnly": true,
+      "icon": "knowledge",
+      "date": "2026.07.28",
+      "title": {
+        "zh": "每日 AI 新闻阅读格式调整",
+        "en": "Daily AI News Reading Format Updated",
+        "ja": "毎日AIニュースの閲覧形式を更新"
+      },
+      "summary": {
+        "zh": "每日 AI 新闻详情不再重复摘要和采集窗口，正文直接进入要闻；目录改为列出每条新闻标题，测试占位文章已删除。",
+        "en": "Daily AI News now opens directly with the stories, without a repeated summary or collection-window paragraph. Its contents list every headline, and the test placeholder is removed.",
+        "ja": "毎日AIニュースは概要や収集時間を繰り返さず記事へ直接入り、目次には全ニュース見出しを表示します。テスト用記事も削除しました。"
+      },
+      "content_markdown": {
+        "zh": "# 每日 AI 新闻阅读格式调整\n\n本次根据实际阅读反馈，收紧了“每日 AI 新闻”的详情展示与固定生成格式。\n\n## 阅读更直接\n\n- 文章详情不再重复显示摘要。\n- 正文标题后直接进入“今日要闻”，不再向读者展示采集时间和筛选说明；严格的 24 小时窗口仍保留在内部工作流中。\n\n## 目录与内容清理\n\n- 文章目录改为逐条列出全部新闻的一句话标题，不再只显示“今日要闻 / 主要新闻 / 传闻”三个栏目。\n- 已删除用于早期链路验证的测试占位文章。\n\n## 后续规则\n\n工作流文档和自动校验已同步锁定这些要求，之后每天生成的三语日报都会沿用同一格式。",
+        "en": "# Daily AI News Reading Format Updated\n\nThis update tightens the Daily AI News reader and its permanent generation format based on real reading feedback.\n\n## A more direct reading flow\n\n- Article details no longer repeat the summary.\n- The body now moves from the title straight into Lead Story. Collection times and selection notes stay inside the workflow, while the exact 24-hour rule remains enforced.\n\n## Contents and cleanup\n\n- The contents panel now lists every one-line story headline instead of only Lead Story, More News, and Rumors.\n- The early test placeholder article has been removed.\n\n## Future editions\n\nThe workflow guide and validator now lock these rules, so future Chinese, English, and Japanese editions keep the same format.",
+        "ja": "# 毎日AIニュースの閲覧形式を更新\n\n実際の閲覧フィードバックに基づき、「毎日AIニュース」の表示と固定生成形式を整理しました。\n\n## すぐ本文へ\n\n- 記事詳細では概要を重ねて表示しません。\n- タイトルの直後から「今日のトップニュース」へ入り、収集時間や選定説明は読者向け本文に出しません。正確な24時間ルールは内部ワークフローで引き続き厳守します。\n\n## 目次と整理\n\n- 目次は「トップニュース / 主なニュース / 噂」の3区分だけでなく、すべてのニュース見出しを一件ずつ表示します。\n- 初期確認用のテスト記事を削除しました。\n\n## 今後の記事\n\nワークフロー文書と自動検証にも同じ規則を固定し、今後の中国語・英語・日本語版すべてでこの形式を継続します。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-07-27-daily-ai-news-inbox",
       "slug": "2026-07-27-daily-ai-news-inbox",
       "category": "site-updates",

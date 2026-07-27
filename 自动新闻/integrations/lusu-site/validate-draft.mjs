@@ -26,7 +26,6 @@ const ARTICLE_STRUCTURE = {
       rumor: "传闻"
     },
     aiTakeMarker: "**AI 解读：**",
-    windowIntroPattern: /24\s*小时|采集范围|北京时间/,
     forbiddenRumorLabelPattern: /^\*\*(?:核实状态|确认状态)[：:]/,
     forbiddenRepeatedRumorWordingPattern: /未获?官方证实|尚未(?:得到|获得)?(?:官方)?确认|待核实/,
     rumorConditionalPattern: /据(?:报道|悉)|可能|或将|正在商谈|计划|预计|传出|有望|若|拟/,
@@ -39,7 +38,6 @@ const ARTICLE_STRUCTURE = {
       rumor: "Rumors"
     },
     aiTakeMarker: "**AI take:**",
-    windowIntroPattern: /24[- ]hour|collection window|Beijing time/i,
     forbiddenRumorLabelPattern: /^\*\*(?:verification status|confirmation status)[：:]/i,
     forbiddenRepeatedRumorWordingPattern: /\bunconfirmed\b|\bunverified\b|not (?:officially )?confirmed/i,
     rumorConditionalPattern: /\breportedly\b|\bmay\b|\bmight\b|\bcould\b|in talks|\bplans?\b|\baims?\b|\bif\b/i,
@@ -52,7 +50,6 @@ const ARTICLE_STRUCTURE = {
       rumor: "噂"
     },
     aiTakeMarker: "**AI解説：**",
-    windowIntroPattern: /24時間|収集期間|北京時間/,
     forbiddenRumorLabelPattern: /^\*\*(?:確認状況|検証状況)[：:]/,
     forbiddenRepeatedRumorWordingPattern: /未確認|公式確認なし|確認されていない/,
     rumorConditionalPattern: /報じられ|報道によると|可能性|かもしれ|計画|協議|予定|見込み|実現すれば/,
@@ -356,17 +353,25 @@ function validateArticleStructure({ body, lang, sectionCounts, errors }) {
     .map((line) => line.trim())
     .filter(Boolean)
     .join(" ");
-  if (!introText || !contract.windowIntroPattern.test(introText)) {
-    errors.push(`${lang} 正文开头必须用一小段说明精确 24 小时采集窗口和筛选原则。`);
+  if (introText) {
+    errors.push(`${lang} 正文一级标题后必须直接进入首个栏目，不得显示摘要、采集窗口或筛选导语。`);
   }
 
   const totalExpectedItems = SECTION_ORDER.reduce(
     (total, section) => total + sectionCounts[section],
     0
   );
-  const totalStoryHeadings = lines.filter((line) => /^###\s+\S/.test(line)).length;
-  if (totalStoryHeadings !== totalExpectedItems) {
+  const storyHeadings = lines
+    .map((line) => line.match(/^###\s+(.+?)\s*$/)?.[1]?.trim() || "")
+    .filter(Boolean);
+  if (storyHeadings.length !== totalExpectedItems) {
     errors.push(`${lang} 正文的三级新闻标题数量必须与入选新闻数量一致。`);
+  }
+  const normalizedStoryHeadings = storyHeadings.map((heading) => (
+    heading.normalize("NFKC").toLocaleLowerCase().replace(/\s+/g, " ").trim()
+  ));
+  if (new Set(normalizedStoryHeadings).size !== normalizedStoryHeadings.length) {
+    errors.push(`${lang} 每条新闻必须使用不重复的三级标题，供文章目录逐条列出。`);
   }
 
   const totalAiTakeMarkers = lines.filter(

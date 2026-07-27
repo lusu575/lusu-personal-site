@@ -613,6 +613,116 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-07-28-daily-ai-news-reader-format',
+  '2026-07-28-daily-ai-news-reader-format',
+  'site-updates',
+  '["网站更新","知识库","每日AI新闻","阅读体验"]',
+  '', 'published', 0, 0,
+  '2026-07-27T20:40:00.000Z',
+  '2026-07-27T20:40:00.000Z',
+  '2026-07-27T20:40:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  (
+    'seed-update-2026-07-28-daily-ai-news-reader-format-zh',
+    'seed-update-2026-07-28-daily-ai-news-reader-format',
+    'zh',
+    '每日 AI 新闻阅读格式调整',
+    '每日 AI 新闻详情不再重复摘要和采集窗口，正文直接进入要闻；目录改为列出每条新闻标题，测试占位文章已删除。',
+    '# 每日 AI 新闻阅读格式调整
+
+本次根据实际阅读反馈，收紧了“每日 AI 新闻”的详情展示与固定生成格式。
+
+## 阅读更直接
+
+- 文章详情不再重复显示摘要。
+- 正文标题后直接进入“今日要闻”，不再向读者展示采集时间和筛选说明；严格的 24 小时窗口仍保留在内部工作流中。
+
+## 目录与内容清理
+
+- 文章目录改为逐条列出全部新闻的一句话标题，不再只显示“今日要闻 / 主要新闻 / 传闻”三个栏目。
+- 已删除用于早期链路验证的测试占位文章。
+
+## 后续规则
+
+工作流文档和自动校验已同步锁定这些要求，之后每天生成的三语日报都会沿用同一格式。',
+    '2026-07-27T20:40:00.000Z',
+    '2026-07-27T20:40:00.000Z'
+  ),
+  (
+    'seed-update-2026-07-28-daily-ai-news-reader-format-en',
+    'seed-update-2026-07-28-daily-ai-news-reader-format',
+    'en',
+    'Daily AI News Reading Format Updated',
+    'Daily AI News now opens directly with the stories, without a repeated summary or collection-window paragraph. Its contents list every headline, and the test placeholder is removed.',
+    '# Daily AI News Reading Format Updated
+
+This update tightens the Daily AI News reader and its permanent generation format based on real reading feedback.
+
+## A more direct reading flow
+
+- Article details no longer repeat the summary.
+- The body now moves from the title straight into Lead Story. Collection times and selection notes stay inside the workflow, while the exact 24-hour rule remains enforced.
+
+## Contents and cleanup
+
+- The contents panel now lists every one-line story headline instead of only Lead Story, More News, and Rumors.
+- The early test placeholder article has been removed.
+
+## Future editions
+
+The workflow guide and validator now lock these rules, so future Chinese, English, and Japanese editions keep the same format.',
+    '2026-07-27T20:40:00.000Z',
+    '2026-07-27T20:40:00.000Z'
+  ),
+  (
+    'seed-update-2026-07-28-daily-ai-news-reader-format-ja',
+    'seed-update-2026-07-28-daily-ai-news-reader-format',
+    'ja',
+    '毎日AIニュースの閲覧形式を更新',
+    '毎日AIニュースは概要や収集時間を繰り返さず記事へ直接入り、目次には全ニュース見出しを表示します。テスト用記事も削除しました。',
+    '# 毎日AIニュースの閲覧形式を更新
+
+実際の閲覧フィードバックに基づき、「毎日AIニュース」の表示と固定生成形式を整理しました。
+
+## すぐ本文へ
+
+- 記事詳細では概要を重ねて表示しません。
+- タイトルの直後から「今日のトップニュース」へ入り、収集時間や選定説明は読者向け本文に出しません。正確な24時間ルールは内部ワークフローで引き続き厳守します。
+
+## 目次と整理
+
+- 目次は「トップニュース / 主なニュース / 噂」の3区分だけでなく、すべてのニュース見出しを一件ずつ表示します。
+- 初期確認用のテスト記事を削除しました。
+
+## 今後の記事
+
+ワークフロー文書と自動検証にも同じ規則を固定し、今後の中国語・英語・日本語版すべてでこの形式を継続します。',
+    '2026-07-27T20:40:00.000Z',
+    '2026-07-27T20:40:00.000Z'
+  )
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-07-27-daily-ai-news-inbox',
   '2026-07-27-daily-ai-news-inbox',
   'site-updates',
@@ -725,79 +835,66 @@ on conflict(article_id, lang) do update set
   content_markdown = excluded.content_markdown,
   updated_at = excluded.updated_at;
 
-insert into articles (
-  article_id, slug, category, tags, cover_image, status, is_pinned,
-  view_count, created_at, updated_at, published_at
-) values (
-  'seed-daily-ai-news-test-placeholder',
-  'daily-ai-news-test-placeholder',
-  'daily-ai-news',
-  '["每日AI新闻","测试"]',
-  '', 'published', 0, 0,
-  '2026-07-27T13:05:00.000Z',
-  '2026-07-27T13:05:00.000Z',
-  '2026-07-27T13:05:00.000Z'
+update articles
+set updated_at = '2026-07-27T20:30:00.000Z'
+where slug = 'daily-ai-news-2026-07-27'
+  and category = 'daily-ai-news'
+  and exists (
+    select 1
+    from article_translations
+    where article_translations.article_id = articles.article_id
+      and (
+        instr(article_translations.content_markdown, '采集范围为北京时间 7 月 26 日 23:00 至 7 月 27 日 23:00。只保留在这一窗口内发布、且达到重要性门槛的消息。') > 0
+        or instr(article_translations.content_markdown, 'The collection window runs from 11:00 p.m. Beijing time on July 26 to 11:00 p.m. on July 27. Only material published inside that window and clearing the importance threshold is included.') > 0
+        or instr(article_translations.content_markdown, '収集期間は北京時間7月26日23時から7月27日23時までです。この24時間内に公開され、重要度の基準を満たした情報だけを掲載します。') > 0
+      )
+  );
+
+update article_translations
+set content_markdown = replace(content_markdown, '采集范围为北京时间 7 月 26 日 23:00 至 7 月 27 日 23:00。只保留在这一窗口内发布、且达到重要性门槛的消息。
+
+', ''),
+    updated_at = '2026-07-27T20:30:00.000Z'
+where article_id = (
+  select article_id
+  from articles
+  where slug = 'daily-ai-news-2026-07-27' and category = 'daily-ai-news'
+  limit 1
 )
-on conflict(article_id) do update set
-  slug = excluded.slug,
-  category = excluded.category,
-  tags = excluded.tags,
-  cover_image = excluded.cover_image,
-  status = excluded.status,
-  is_pinned = excluded.is_pinned,
-  updated_at = excluded.updated_at,
-  published_at = excluded.published_at;
+  and lang = 'zh'
+  and instr(content_markdown, '采集范围为北京时间 7 月 26 日 23:00 至 7 月 27 日 23:00。只保留在这一窗口内发布、且达到重要性门槛的消息。') > 0;
 
-insert into article_translations (
-  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
-) values
-  (
-    'seed-daily-ai-news-test-placeholder-zh',
-    'seed-daily-ai-news-test-placeholder',
-    'zh',
-    '每日 AI 新闻测试占位',
-    '这是一篇用于确认“每日 AI 新闻”分区显示与发布流程的测试占位文章，不包含正式新闻。',
-    '# 每日 AI 新闻测试占位
+update article_translations
+set content_markdown = replace(content_markdown, 'The collection window runs from 11:00 p.m. Beijing time on July 26 to 11:00 p.m. on July 27. Only material published inside that window and clearing the importance threshold is included.
 
-这是一篇测试占位文章，用来确认“每日 AI 新闻”分区、文章列表和阅读页面能够正常显示。
+', ''),
+    updated_at = '2026-07-27T20:30:00.000Z'
+where article_id = (
+  select article_id
+  from articles
+  where slug = 'daily-ai-news-2026-07-27' and category = 'daily-ai-news'
+  limit 1
+)
+  and lang = 'en'
+  and instr(content_markdown, 'The collection window runs from 11:00 p.m. Beijing time on July 26 to 11:00 p.m. on July 27. Only material published inside that window and clearing the importance threshold is included.') > 0;
 
-这里暂时没有正式新闻内容。',
-    '2026-07-27T13:05:00.000Z',
-    '2026-07-27T13:05:00.000Z'
-  ),
-  (
-    'seed-daily-ai-news-test-placeholder-en',
-    'seed-daily-ai-news-test-placeholder',
-    'en',
-    'Daily AI News Test Placeholder',
-    'This placeholder verifies the Daily AI News section and publishing flow. It does not contain real news.',
-    '# Daily AI News Test Placeholder
+update article_translations
+set content_markdown = replace(content_markdown, '収集期間は北京時間7月26日23時から7月27日23時までです。この24時間内に公開され、重要度の基準を満たした情報だけを掲載します。
 
-This is a test placeholder used to confirm that the Daily AI News section, article list, and reading page display correctly.
+', ''),
+    updated_at = '2026-07-27T20:30:00.000Z'
+where article_id = (
+  select article_id
+  from articles
+  where slug = 'daily-ai-news-2026-07-27' and category = 'daily-ai-news'
+  limit 1
+)
+  and lang = 'ja'
+  and instr(content_markdown, '収集期間は北京時間7月26日23時から7月27日23時までです。この24時間内に公開され、重要度の基準を満たした情報だけを掲載します。') > 0;
 
-It does not contain real news.',
-    '2026-07-27T13:05:00.000Z',
-    '2026-07-27T13:05:00.000Z'
-  ),
-  (
-    'seed-daily-ai-news-test-placeholder-ja',
-    'seed-daily-ai-news-test-placeholder',
-    'ja',
-    '毎日AIニュース テスト用プレースホルダー',
-    '「毎日AIニュース」欄と公開フローを確認するためのテスト記事です。実際のニュースは含まれていません。',
-    '# 毎日AIニュース テスト用プレースホルダー
-
-「毎日AIニュース」欄、記事一覧、閲覧ページが正しく表示されることを確認するためのテスト記事です。
-
-実際のニュース内容はまだ含まれていません。',
-    '2026-07-27T13:05:00.000Z',
-    '2026-07-27T13:05:00.000Z'
-  )
-on conflict(article_id, lang) do update set
-  title = excluded.title,
-  summary = excluded.summary,
-  content_markdown = excluded.content_markdown,
-  updated_at = excluded.updated_at;
+delete from articles
+where article_id = 'seed-daily-ai-news-test-placeholder'
+  and slug = 'daily-ai-news-test-placeholder';
 
 insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
