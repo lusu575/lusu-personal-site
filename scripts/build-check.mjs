@@ -50,6 +50,7 @@ const requiredFiles = [
   "functions/admin/_middleware.js",
   "functions/api/[[route]].js",
   "functions/api/transfer-service.mjs",
+  "functions/articles/[slug].js",
   "functions/sitemap.xml.js",
   "assets/images/ui/pixel-ui-glyph-atlas.png",
   "assets/images/mobile-wallpapers/morning.webp",
@@ -115,6 +116,7 @@ const requiredFiles = [
   "scripts/public-ui-audit.mjs",
   "scripts/run-tests.mjs",
   "tests/api-failure-recovery-gate.test.mjs",
+  "tests/article-prerender.test.mjs",
   "tests/qa-release-contract.test.mjs",
   "tests/public-security-boundaries.test.mjs",
   "robots.txt",
@@ -722,6 +724,7 @@ const adminWorldMapSvg = readRequired("assets/images/admin-world-map.svg");
 const adminMiddlewareJs = readRequired("functions/admin/_middleware.js");
 const apiJs = readRequired("functions/api/[[route]].js");
 const transferApiJs = readRequired("functions/api/transfer-service.mjs");
+const articlePrerenderJs = readRequired("functions/articles/[slug].js");
 const schemaSql = readRequired("cloudflare/schema.sql");
 const schemaIndexesSql = readRequired("cloudflare/schema-indexes.sql");
 const d1MigrateLocalJs = readRequired("scripts/d1-migrate-local.mjs");
@@ -787,9 +790,12 @@ const changelog = readRequired("CHANGELOG.md");
 const headersConfig = readRequired("_headers");
 const redirectsConfig = readRequired("_redirects");
 
-const routeLazyVersion = "20260726-chatroom-icon-redraw-r2";
-const trustSafetyStatusVersion = "20260726-chatroom-icon-redraw-r2";
-const publicRouteVersion = (route) => route === "resources" ? trustSafetyStatusVersion : routeLazyVersion;
+const routeLazyVersion = "20260726-security-reliability-r1";
+const trustSafetyStatusVersion = "20260726-security-reliability-r1";
+const dailyAiNewsVersion = "20260728-daily-ai-news-production-r1";
+const publicRouteVersion = (route) => route === "knowledge"
+  ? dailyAiNewsVersion
+  : (route === "resources" ? trustSafetyStatusVersion : routeLazyVersion);
 const transferAtlasVersion = "20260718-resource-icons-layout-r1";
 const chatroomIconVersion = "20260726-chatroom-icon-redraw-r2";
 const transferAtlasReferences = [];
@@ -836,15 +842,15 @@ for (const route of lazyPublicRoutes) {
   }
 }
 
-for (const modulePath of [
-  "./core/i18n.mjs",
-  "./data/home-content.mjs",
-  "./features/connection-status.mjs",
-  "./data/resources-content.mjs"
+for (const [modulePath, expectedVersion] of [
+  ["./core/i18n.mjs", dailyAiNewsVersion],
+  ["./data/home-content.mjs", dailyAiNewsVersion],
+  ["./features/connection-status.mjs", trustSafetyStatusVersion],
+  ["./data/resources-content.mjs", trustSafetyStatusVersion]
 ]) {
   const versions = assetQueryVersions(mainEntryJs, modulePath);
-  if (versions.length !== 1 || versions[0] !== trustSafetyStatusVersion) {
-    fail(`js/main.js ${modulePath} query should appear once as ${trustSafetyStatusVersion}`);
+  if (versions.length !== 1 || versions[0] !== expectedVersion) {
+    fail(`js/main.js ${modulePath} query should appear once as ${expectedVersion}`);
   }
 }
 
@@ -870,8 +876,9 @@ for (const route of lazyStyledRoutes) {
   if (!hasPattern(mainEntryJs, hrefPattern)) {
     fail(`js/main.js routeStyleHrefs must map ${route} to ${publicCssPath}?v=\${routeStyleVersion}`);
   }
+  const routeVersion = publicRouteVersion(route);
   const styledLoaderPattern = new RegExp(
-    `\\b${escapeRegExp(route)}\\s*:\\s*\\(\\)\\s*=>\\s*loadStyledRoute\\(\\s*["']${escapeRegExp(route)}["'][\\s\\S]{0,240}?import\\(\\s*["']\\.\\/routes\\/${escapeRegExp(route)}\\.mjs\\?v=${routeLazyVersion}["']\\s*\\)`
+    `\\b${escapeRegExp(route)}\\s*:\\s*\\(\\)\\s*=>\\s*loadStyledRoute\\(\\s*["']${escapeRegExp(route)}["'][\\s\\S]{0,240}?import\\(\\s*["']\\.\\/routes\\/${escapeRegExp(route)}\\.mjs\\?v=${routeVersion}["']\\s*\\)`
   );
   if (!hasPattern(mainEntryJs, styledLoaderPattern)) {
     fail(`js/main.js ${route} loader must await its route stylesheet through loadStyledRoute()`);
@@ -890,8 +897,8 @@ if (publicUiAuditPackageData.scripts?.["audit:public-ui"] !== "node scripts/publ
   fail("package.json audit:public-ui must run scripts/public-ui-audit.mjs directly");
 }
 if (publicUiAuditPackageData.scripts?.["audit:public-ui:release"] !== "node scripts/public-ui-audit.mjs --release-only"
-  || publicUiAuditPackageData.scripts?.["qa:public-release"] !== "npm run verify:public-site-release"
-  || publicUiAuditPackageData.scripts?.["verify:public-site-release"] !== "npm run test && npm run check:public-modules && npm run build && npm run build:production:verify && git diff --check && git status --short && npm run audit:public-ui:release") {
+  || publicUiAuditPackageData.scripts?.["qa:local"] !== "npm run verify:public-site-release"
+  || publicUiAuditPackageData.scripts?.["verify:public-site-release"] !== "npm run test && npm run check:public-modules && npm run build && npm run build:production:verify && npm run audit:public-ui:release && npm run audit:a-dark-room && git diff --check && git status --short") {
   fail("package.json must expose the non-publishing public release audit and unified local QA command");
 }
 for (const token of [
@@ -1127,7 +1134,7 @@ function validateJapaneseSubtextReleaseContract() {
     ja: "日本語の裏側"
   };
   const publicTitle = publicTitles.ja;
-  const assetVersion = "20260714-japanese-subtext-v103-retry-r1";
+  const assetVersion = "20260726-japanese-subtext-network-r1";
   const expectedAudioCounts = Object.freeze({
     scene: 250,
     line: 2400,
@@ -1751,8 +1758,23 @@ function validateJapaneseSubtextReleaseContract() {
       fail(`_headers missing ${path} Cache-Control: ${cacheControl}`);
     }
   }
+  for (const [header, requiredValue] of [
+    ["Content-Security-Policy", "frame-ancestors 'self'; base-uri 'self'; object-src 'none'"],
+    ["Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=(), usb=()"],
+    ["Referrer-Policy", "strict-origin-when-cross-origin"],
+    ["Strict-Transport-Security", "max-age=31536000; includeSubDomains"],
+    ["X-Content-Type-Options", "nosniff"],
+    ["X-Frame-Options", "SAMEORIGIN"]
+  ]) {
+    if (!headersConfig.includes(`  ${header}: ${requiredValue}`)) {
+      fail(`_headers missing global ${header}: ${requiredValue}`);
+    }
+  }
   if (!/(?:^|\r?\n)\/tools\/japanese-subtext \/tools\/japanese-subtext\/ 301(?:\r?\n|$)/.test(redirectsConfig)) {
     fail("_redirects must canonicalize /tools/japanese-subtext to its trailing-slash URL");
+  }
+  if (/^\/articles\/\*/m.test(redirectsConfig)) {
+    fail("_redirects must leave article URLs to functions/articles/[slug].js");
   }
   if (
     !apiJs.includes("const japaneseSubtextEntries = langs.map")
@@ -1837,6 +1859,7 @@ for (const panel of [
   "visits",
   "clicks",
   "articles",
+  "automation",
   "videos",
   "videoCategories",
   "chat",
@@ -1873,6 +1896,7 @@ for (const panel of [
   "visits",
   "clicks",
   "articles",
+  "automation",
   "videos",
   "videoCategories",
   "chat",
@@ -1892,8 +1916,8 @@ for (const asset of ["admin.css", "admin.js"]) {
   }
 }
 
-const adminSafetyCacheVersion = "20260719-admin-dirty-transfer-r1";
-const adminPublicContentVersion = "20260726-admin-tools-label-r1";
+const adminSafetyCacheVersion = "20260727-daily-ai-news-inbox-r1";
+const adminPublicContentVersion = "20260728-daily-ai-news-production-r1";
 if (!adminHtml.includes(`/admin/admin.css?v=${adminSafetyCacheVersion}`)
   || !adminHtml.includes(`/admin/admin.js?v=${adminPublicContentVersion}`)) {
   fail("admin CSS and JS must use their current cache versions");
@@ -2367,6 +2391,24 @@ for (const token of [
   }
 }
 
+for (const token of [
+  '["GET", "HEAD"]',
+  "articles.status = 'published'",
+  "new HTMLRewriter()",
+  'meta[property="og:type"]',
+  'new AttributeHandler("content", "article")',
+  'meta property="article:published_time"',
+  'type="application/ld+json"',
+  "new NoScriptArticleHandler",
+  "escapeHtml(content)",
+  'headers.set("X-Robots-Tag", "noindex")',
+  '"no-cache, max-age=0, must-revalidate"'
+]) {
+  if (!articlePrerenderJs.includes(token)) {
+    fail(`functions/articles/[slug].js missing article prerender contract: ${token}`);
+  }
+}
+
 for (const key of [
   "metaKnowledgeDescription",
   "metaVideosDescription",
@@ -2791,13 +2833,13 @@ const mobileScrollRecoveryVersion = "20260718-mobile-scroll-recovery-r1";
 const mobileScrollRecoveryCssVersion = "20260718-mobile-scroll-recovery-css-r1";
 const mobileViewportKeyboardVersion = "20260718-mobile-viewport-keyboard-r1";
 const mobileViewportKeyboardCssVersion = routeLazyVersion;
-const publicModulesVersion = "20260726-chatroom-icon-redraw-r2";
+const publicModulesVersion = "20260726-security-reliability-r1";
 const transferLazyVersion = trustSafetyStatusVersion;
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
-const currentMainVersion = trustSafetyStatusVersion;
+const currentMainVersion = dailyAiNewsVersion;
 const currentCssVersion = trustSafetyStatusVersion;
 const currentPreFinalTelemetryVersion = "20260623-analytics-privacy-r1";
-const currentGameShellVersion = "20260726-game-mobile-shell-r1";
+const currentGameShellVersion = "20260726-game-network-resilience-r1";
 const currentADarkRoomMobileVersion = "20260726-a-dark-room-mobile-r2";
 const currentLifeRestartMobileTouchVersion = "20260726-life-mobile-touch-r1";
 
@@ -4137,13 +4179,13 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-07-26-resources-to-tools";
-const finalUpdateSlug = "2026-07-26-resources-to-tools";
+const finalUpdateId = "seed-update-2026-07-27-daily-ai-news-inbox";
+const finalUpdateSlug = "2026-07-27-daily-ai-news-inbox";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Resources Area Renamed to Tools";
-const finalPublishedAt = "2026-07-26T06:55:36.099Z";
+const finalTitleEn = "Daily AI News Goes Live";
+const finalPublishedAt = "2026-07-27T16:05:00.000Z";
 const finalTranslationMinimums = {
   title: 8,
   summary: 24,
@@ -4166,6 +4208,8 @@ const changelog20260718Section = markdownSection(changelog, "## 2026-07-18");
 const changelog20260719Section = markdownSection(changelog, "## 2026-07-19");
 const changelog20260720Section = markdownSection(changelog, "## 2026-07-20");
 const changelog20260726Section = markdownSection(changelog, "## 2026-07-26");
+const changelog20260727Section = markdownSection(changelog, "## 2026-07-27");
+const changelog20260728Section = markdownSection(changelog, "## 2026-07-28");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -4339,7 +4383,7 @@ if (finalUpdateStarted) {
   }
 
   for (const token of [
-    '<time id="top-updated" datetime="2026-07-26">2026.07.26</time>',
+    '<time id="top-updated" datetime="2026-07-27">2026.07.27</time>',
     `/css/style.css?v=${finalCssVersion}`,
     `/css/mobile-ios-shell.css?v=${routeLazyVersion}`,
     `/js/main.js?v=${finalMainVersion}`
@@ -4357,7 +4401,7 @@ if (finalUpdateStarted) {
     "Functions seed",
     "schema seed"
   ]) {
-    if (!changelog20260726Section.includes(token)) {
+    if (!changelog20260728Section.includes(token)) {
       fail(`CHANGELOG.md final public update sync missing ${token}`);
     }
   }
@@ -4381,6 +4425,9 @@ if (nodeVersion.trim() !== "22" || migrationPackageData.engines?.node !== ">=22.
 }
 if (migrationPackageData.devDependencies?.wrangler !== "4.111.0") {
   fail("package.json must pin Wrangler 4.111.0 for reproducible GPTWork setup");
+}
+if (migrationWranglerData.compatibility_date !== "2026-07-17") {
+  fail("wrangler.jsonc compatibility_date must stay within Wrangler 4.111.0 workerd support (2026-07-17)");
 }
 if (migrationPackageData.scripts?.dev !== "wrangler pages dev") {
   fail("package.json dev must use wrangler pages dev and wrangler.jsonc");
@@ -4430,10 +4477,15 @@ if (!Array.isArray(previewWranglerData?.r2_buckets) || previewWranglerData.r2_bu
   fail("wrangler.jsonc env.preview must explicitly disable Quick Transfer R2 until a separate preview bucket is provisioned");
 }
 const declaredSecrets = new Set(migrationWranglerData.secrets?.required || []);
-for (const secretName of ["CHAT_IP_HASH_SALT", "ANALYTICS_IP_HASH_SALT", "OWNER_ADMIN_EMAILS"]) {
+for (const secretName of ["CHAT_IP_HASH_SALT", "ANALYTICS_IP_HASH_SALT"]) {
   if (!declaredSecrets.has(secretName)) {
     fail(`wrangler.jsonc secrets.required missing ${secretName}`);
   }
+}
+if (declaredSecrets.has("OWNER_ADMIN_EMAILS")) {
+  fail("wrangler.jsonc must not declare optional OWNER_ADMIN_EMAILS as a required secret");
+}
+for (const secretName of ["CHAT_IP_HASH_SALT", "ANALYTICS_IP_HASH_SALT", "OWNER_ADMIN_EMAILS"]) {
   if (!new RegExp(`^${secretName}=\\s*$`, "m").test(envExample)) {
     fail(`.env.example must list ${secretName} without a value`);
   }
@@ -4443,10 +4495,20 @@ for (const token of [".dev.vars", ".dev.vars.*", ".env", ".env.*", "!.env.exampl
     fail(`.gitignore missing ${token}`);
   }
 }
-for (const token of ["actions/checkout@v6", "actions/setup-node@v6", "npm ci", "npm run d1:migrate:local", "npm test", "npm run build"]) {
+for (const token of [
+  "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+  "actions/setup-node@820762786026740c76f36085b0efc47a31fe5020",
+  "npm ci",
+  "npm run d1:migrate:local",
+  "npm run verify:public-site-release",
+  "git diff --exit-code"
+]) {
   if (!verifyWorkflow.includes(token)) {
     fail(`.github/workflows/verify.yml missing ${token}`);
   }
+}
+if (/uses:\s+actions\/(?:checkout|setup-node)@v\d+/i.test(verifyWorkflow)) {
+  fail(".github/workflows/verify.yml must pin third-party actions to immutable commit SHAs");
 }
 for (const token of ["npm ci", ".env.example", "npm run d1:migrate:local", "npm test", "npm run build", "npm run dev"]) {
   if (!rootReadme.includes(token)) {

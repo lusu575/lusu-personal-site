@@ -2,8 +2,39 @@
 
 本文件记录鲁肃个人站的功能、界面、后端、部署与项目约定变更。每次修改项目后都应同步更新这里，方便后续 AI / Codex 对话快速了解最近改动。
 
+## 2026-07-28
+
+- 记录每日 AI 新闻正式生产授权：仅 `daily-ai-news` 专用通道在显式 auto-publish 配置启用后可自动公开；每天按北京时间 07:00 启动，使用此前精确 24 小时左闭右开窗口，抓取、复核、三语校验、投递和受控公开必须在 08:00 前完成，超时或任一失败均不补发、不公开。
+- 将 2026-07-27 Horizon 三语样稿定为生产链路测试输入，要求与正式运行一样保留 Horizon 来源证明、令牌、限流、幂等、slug 冲突和失败关闭约束；历史样稿只能通过显式 one-shot 参数投递，正式任务不能复用该参数。
+- 自动投递通道新增默认关闭的 `auto_publish` 开关；仅在通道启用、凭证有效且该开关开启时，服务端才创建已公开文章并写入公开时间，否则仍保存草稿。后台新增独立开关与危险操作确认，撤销凭证会同时暂停通道和关闭自动公开；旧 D1 会在执行完整 schema 前安全补列。
+- Horizon 生产投递固定为 `lusu575.com`，从 Git 忽略的根目录 `.dev.vars` 安全读取专用凭证；投递成功后必须在截止前核验中、英、日三个公开文章接口。生产通道使用 pending → 远端启用 → 本地 active 的两阶段配置，屏幕不显示完整凭证。
+- 公开 `site-updates` 记录继续使用稳定 ID `seed-update-2026-07-27-daily-ai-news-inbox`，标题已改为“每日 AI 新闻正式上线”；`js/data/content.mjs` fallback、Home 投影、Functions seed 与 schema seed 四处完全同步。主站、知识库、API 与后台主脚本版本更新为 `20260728-daily-ai-news-production-r1`；后台样式继续使用 `20260727-daily-ai-news-inbox-r1`。
+
+## 2026-07-27
+
+- 将本次试稿确认的文章格式与文风固化为长期工作流契约。新增 `自动新闻/integrations/lusu-site/ARTICLE_STYLE.md`，记录固定日期标题、24 小时窗口导语、“今日要闻 / 主要新闻 / 传闻”三段顺序、中性事实标题、一段式新闻正文、逐条 AI 解读和传闻条件语气；`AGENTS.md` 要求后续代理先读取该标准。工作流升级为 schema v3，校验器新增固定三语标题、窗口导语、AI 解读一至两句且短于事实段、单条以 AI 解读结束、禁止重复传闻核实标签等硬性检查，专项测试增至 11 项并全部通过；现有 12 条试稿仍通过新版规则。
+- 每日 AI 新闻工作流升级为固定成稿时刻前的精确 24 小时窗口，采用“包含开始、不包含结束”的边界；Horizon 主题发现扩展到 AI、芯片与存储、机器人、AI 设备、自动驾驶、数据中心／散热／能源／网络和科技金融。新版校验器要求每条入选新闻具有准确发布时间并位于窗口内，正文固定为“今日要闻 / 主要新闻 / 传闻”，传闻只用独立分区和条件语气区分，不再逐条重复“未证实”。每条新闻的 AI 解读统一为明显短于正文的一至两句，只挑关键影响、现实门槛、隐含限制或下一步观察点，不复述新闻，也不为了找问题而硬挑问题。
+- 完成北京时间 2026-07-26 23:00 至 2026-07-27 23:00 的 Horizon 试运行：合并前 416 条、合并后 411 条、窗口内 350 条，最终按重要性和一手核验保留 12 条，覆盖 Kimi K3 完整权重、存储芯片、工程代理、AI 安全、液冷、自动驾驶、机器人、工作研究和科技金融，并将两条市场消息单列为传闻。三语本地样稿保存在 `自动新闻/integrations/lusu-site/runs/2026-07-27-2300.json`，已通过来源、24 小时窗口、三段结构、逐条 AI 解读和正文无链接验证；没有投递到本地 D1，没有发布、调度、推送或部署。
+- 在 `自动新闻/integrations/lusu-site/` 建立以 Horizon 为必经数据入口的个人站工作流。新增 Horizon 原生配置和抓取入口，真实调用其多来源抓取、网址规范化与跨来源去重；RSS 单源发生瞬时失败时仍由 Horizon 自带抓取器定向重试，不改用手工浏览冒充采集。Codex 只从本次 Horizon 运行产物中做重要性判断、一手来源复核、近 30 天故事去重和三语整稿。
+- 完成 2026-07-27 Horizon 实跑：最终稳定运行从 Hacker News、RSS、Reddit、OSS Insight 与 Google News 共取得 113 条合并后候选，并按 `Asia/Shanghai` 自然日筛出 74 条。编辑层不写死条数，最终保留 Kimi K3 发布预告、Open Secure AI Alliance、SSI 与 NVIDIA 合作、Cosmos-H-Dreams 四件事；发布方日期为 7 月 26 日的 Agent Toolkit 与 Vera CPU 消息明确排除，OpenAI 工作任务研究保留为未入选候选。样稿记录真实 `horizonRunId`，验证器会反查 Horizon `daily_candidates.json`，禁止把非 Horizon 来源冒充自动采集。
+- 新增 `npm.cmd run ai-news:horizon:fetch`、`npm.cmd run ai-news:validate` 与 `npm.cmd run ai-news:deliver:local`。Horizon 的锁定依赖已安装在其被忽略的本地 `.venv`，没有填写云端模型密钥；当前由 Horizon 负责采集和初次跨源去重，Codex 承担编辑判断与成文。此前写入本地 D1 的两条消息草稿属于早期规则试投，未作为本次 Horizon 实跑验收稿覆盖；新稿先给站长审阅。没有创建每日定时任务，没有连接生产 D1，没有自动发布、推送或部署。后台私有更新记录与 JS 缓存版本同步为 `20260727-daily-ai-news-local-workflow-r1`。
+- 知识库新增固定分区“每日 AI 新闻 / Daily AI News / 毎日AIニュース”。该分区即使暂时没有文章也会保留入口，并新增一篇三语“每日 AI 新闻测试占位”公开文章，用来确认分类、列表和文章详情链路；正文明确标注为测试内容，不冒充真实新闻。
+- 管理后台在“知识库文章”之后新增“自动投递”页面。站长可查看固定投递目标、开启或暂停入口、复制地址、生成／轮换／撤销一次性显示的访问令牌，并查看最近投递结果；投递成功后可直接进入知识库文章列表审阅。
+- 新增每日 AI 新闻专用投递接口与 D1 配置／事件表。外部投递固定写入 `daily-ai-news` 分类，只能创建不置顶、无封面、无发布时间的三语草稿；服务端校验 Bearer 令牌、正文大小、重复请求、slug 冲突和频率上限，不接受调用方改写分类、发布状态或置顶状态。令牌只保存 SHA-256 摘要和提示，不保存或回传完整明文。未鉴权请求只初始化轻量通道表，不触发文章种子；幂等记录保存规范化内容指纹，同一标记改投不同内容或原草稿已删除时明确返回冲突，不再假报成功。
+- 当前只完成网站、后台和安全投递入口的本地改造；没有创建每日定时任务，没有填入任何模型或平台密钥，没有自动发布文章，也没有连接生产 D1、推送或部署。公开与后台资源版本统一为 `20260727-daily-ai-news-inbox-r1`，三语 `site-updates` 记录 `seed-update-2026-07-27-daily-ai-news-inbox` 已同步完整 fallback、Home 最新五条投影、Functions seed 与 schema seed。
+- 新增自动投递 API、后台页面、知识库固定分类、全新 schema 与公开资源契约测试。最终本地 D1 迁移、静态构建和 300 / 300 项全量测试通过；只读核对确认测试文章为 published、三种翻译齐全，投递通道仍为暂停且没有令牌。同时修正游戏存档测试中已到期的固定 session 时间与公共壳日期断言。仅有既存的 Node 模块类型性能警告，没有失败项。
+
 ## 2026-07-26
 
+- 完成公开站点、Cloudflare 后端与管理后台的一次性安全加固：所有账号及写请求增加同源、JSON 类型和流式正文上限；登录／注册按 IP 与账号标识写入 D1 限流，重复邮箱、站长保留邮箱和并发注册统一返回不可枚举的 `REGISTRATION_FAILED`。PBKDF2-HMAC-SHA256 新哈希提升至 600,000 次，旧 25,000／100,000 次哈希在成功登录后自动升级；意外 5xx 不再把内部异常返回浏览器。
+- 分析写入增加频率上限与重复抑制，文章阅读计数只在去重写入成功后增加；每日健康检查分批清理过期 session、365 天登录记录、180 天 page/click 记录和 2 天限流桶。`cloudflare/schema.sql` 新增 `api_rate_limits`，Wrangler compatibility date 固定为当前锁定运行时可启动的 `2026-07-17`，并补齐采样日志／追踪与运行时变量边界。
+- 修复 legacy D1 初始化顺序：本地与远端迁移先为聊天、禁言、Transfer 历史表补列，再执行依赖索引与完整 schema，并用真正旧库 fixture 验证保留数据和幂等升级。CI 固定 `actions/checkout`、`actions/setup-node` 到不可变 commit，执行本地 D1、全量测试、公共模块图、静态构建、可重复生产构建、公共 UI 与 A Dark Room Headless 发布审计。
+- 后台文章、视频、视频分类、社交链接、元数据刷新与删除加入 `expectedUpdatedAt` 乐观并发控制；文章翻译和视频分类关系与主记录原子受保护。陈旧后台标签页会保留当前输入并显示合并提示，不再静默覆盖或删除较新内容。后台 JS query 更新为 `20260726-admin-concurrency-safety-r1`。
+- 临时互传设置采用 revision 条件更新；清空房间、过期清理和 R2 删除出现部分失败时返回非 2xx、失败对象及重试信息。管理页补齐离开保护、并发冲突恢复、全局写锁、可访问危险确认、搜索取消／序列、分区加载降级、键盘表格和孤立对象清理；Transfer 管理资源版本为 `20260726-admin-transfer-safety-r1`。
+- 新增 `functions/articles/[slug].js`，直接访问 `/articles/<slug>` 时在边缘输出文章专属 title、description、Open Graph、Twitter、canonical、Article JSON-LD 与安全 `noscript` 正文；不存在的文章返回 404 / noindex，数据库暂时失败仍保留前端 fallback 主壳。全站与后台响应头同步补齐 CSP、frame、Permissions Policy、HSTS、referrer policy 与 nosniff 边界。
+- 游戏目录和日语工具可选 manifest 加入 7 秒超时、Abort、版本缓存及本地回退，网络异常不再阻塞内置内容或已有存档；日语题目先渲染、音频异步加载，并清理重复 `noMedal` 键。生产构建的日语工具路径转换现严格匹配一次并保留音频 manifest 版本 query，既不会把新缓存版本丢进产物，也不会在重复／缺失引用时静默继续。首页壁纸预载与 CSS 使用完全一致的候选资源，首屏同步识别 reduced motion，避免重复下载或瞬时请求动态壁纸。
+- 公开入口、样式与 ESM 模块缓存版本统一为 `20260726-security-reliability-r1`；三语 `site-updates` 记录 `seed-update-2026-07-26-security-reliability-hardening` 已同步完整 fallback、Home 最新五条无正文投影、Functions seed 与 schema seed。账号错误文案同步为不可枚举注册失败和限流提示；本批未连接生产 D1、未推送、未部署。
+- 本批最终本地门禁全绿：legacy 本地 D1 迁移完成，297 / 297 单元与契约测试、20 个公共模块依赖图、静态构建、两次完全一致的生产构建（11,494 个文件、392.14 MiB，manifest SHA-256 `fbc56fe9f178f2d00fb050f80d872b558985d47b6117f0325b620f64c74797bd`）、192 / 192 Headless Chrome 发布矩阵与 A Dark Room 390→844→390 同文档旋转审计均通过。真实 `wrangler pages dev` 冒烟确认健康接口 200、版本文章 200 / 专属 canonical、缺失文章 404 / noindex、未登录后台 401 / noindex 且 Functions 安全响应头完整；临时服务和浏览器进程均已关闭。未连接生产 D1、未推送、未部署。
 - 重绘并直接替换匿名聊天室唯一规范资源 `assets/images/icon-chatroom.png`：新图保持 96×96 RGBA 与 XP 像素聊天终端／粉青双气泡语义，将非透明主体由旧图的 93×90 收敛为 71×73，四边保留 10–13px 透明安全区；桌面 Home 82px 与移动 Home 54px 映射不变，18–54px 小槽位继续使用 contain。Home、窗口标题栏、桌面任务栏／移动 Dock、欢迎快捷入口、Chat 页头和消息头像现全部引用新图，`icon-chatroom-clean.png` 已删除，生产构建也不再排除规范资源。公开缓存版本统一为 `20260726-chatroom-icon-redraw-r2`，三语 `site-updates` 记录 `seed-update-2026-07-26-chatroom-icon-redraw` 已同步完整 fallback、Home 最新五条无正文投影、Functions seed 与 schema seed，并新增尺寸、Alpha、透明角点、文件预算与旧资源不得残留守卫；本批不需要直接写入生产 D1。
 - 匿名聊天室图标批次验证通过：261 / 261 全量测试、20 个公开模块依赖图、静态构建、147 / 147 公共 UI 审计与两次完全一致的生产构建均通过，生产 manifest SHA-256 为 `d13af5e9cfa49d3d83c674f11ebfeca469b3c5fa40954d7303c254447d95ed7a`；生产产物只包含新的 `icon-chatroom.png`，旧 `clean` / `desktop` 路径及引用均为零，截图核对覆盖桌面／移动 Home、标题栏、任务栏／Dock、欢迎入口和 Chat 头像，仅保留既有日语工具 `noMedal` 重复键警告。
 - 完成全界面点检后的移动游戏修复：A Dark Room 在窄屏按实际面板宽度滑动，资源、主操作与声音选择窗不再沿用 700px 桌面几何，声音提示同步中文／English／日本語；同页横竖屏切换会重新测量两层滑轨、当前偏移与资源面板归属，返回桌面宽度时恢复原 700px 布局。Kittens Game 将上游 1300px 三栏在 ≤900px 改为营火→资源→日志单列，顶部工具栏在窄屏自然换为两行，Steam／Version 完整显示不裁切，全部可见关键控件与折叠／日志热区保持至少 44px，桌面三栏不变。

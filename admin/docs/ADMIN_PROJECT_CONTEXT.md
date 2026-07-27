@@ -2,6 +2,36 @@
 
 > 管理后台专用说明：本文档只描述 `/admin/` 管理后台。它不等同于主站根目录 `PROJECT_CONTEXT.md`，也不能替代主站项目上下文。新的 AI / Codex 对话如果只维护后台，应先读本文档和 `admin/docs/ADMIN_SKILL.md`；如果维护主站整体，仍以根目录 `PROJECT_CONTEXT.md` 和 `skills/lusu-personal-site-skill/SKILL.md` 为准。
 
+## 2026-07-28 每日 AI 新闻生产自动公开规则
+
+- 站长已明确授权正式每日运行：仅 `daily-ai-news` 专用通道在显式 auto-publish 配置启用时可自动公开。机器调用方仍不可提交发布状态；未启用时继续只创建草稿。
+- 每天按北京时间 07:00 启动，使用严格的 `[前一日 07:00, 当日 07:00)` 精确 24 小时窗口。Horizon 抓取、编辑复核、三语校验、投递与受控公开都必须在 08:00 前完成；08:00 后不得补发。无合格稿、来源／格式／三语验证失败、令牌或通道校验失败、冲突未安全处理、Horizon 不可用或超时，均关闭本期且不公开。
+- 2026-07-27 样稿用于生产链路测试，不能绕过 Horizon 来源证明、令牌、限流、幂等、slug 冲突或失败关闭规则。暂停通道、撤销令牌或关闭 auto-publish 必须立刻关闭公开路径。
+
+## 2026-07-27 每日 AI 新闻本地试运行
+
+- `自动新闻/integrations/lusu-site/` 已增加个人站适配层。Horizon 是必经数据入口，真实负责多源抓取、网址规范化和跨来源去重；Codex 只在当次 Horizon 候选上按北京时间自然日、重要性与近 30 天记录收口。Horizon 不可用时停止，不能静默改成手工采集。
+- 最终稿固定生成 zh / en / ja 三语完整文章，正文不放外链、参考资料、来源列表、评分或“阅读全文”跳转；来源只留在内部运行记录中供核验。
+- 2026-07-27 Horizon 稳定实跑取得 113 条合并后候选，并筛出北京时间当日 74 条；真实样稿保留四件事并通过来源反查、日期、去重、三语和无外链检查。此前写入本地 D1 的两条消息稿是接入 Horizon 前的规则试投，仍为 `draft` 且未发布；2026-07-27 样稿改作生产链路测试输入。
+- 每天定时运行与受控自动公开已获授权，具体边界以本文件顶部 07:00–08:00 生产规则为准。主后台 JS query 为 `20260728-daily-ai-news-production-r1`，CSS query 不变。
+
+## 2026-07-27 每日 AI 新闻受控投递
+
+- 主后台新增“自动投递”模块，导航位于“知识库文章”之后，固定管理 `daily-ai-news` 通道。页面可启用／暂停入口、复制投递地址、生成／轮换／撤销令牌、查看最近事件，并跳转到知识库文章列表审阅草稿。
+- 完整令牌只在生成或轮换响应中返回一次；服务端只保存 SHA-256 摘要和末尾提示，后台刷新后不能恢复明文。撤销令牌会同时暂停通道。
+- 机器入口 `POST /api/automation/daily-ai-news` 不使用管理员 cookie，而使用专用 Bearer 令牌。它固定创建 `daily-ai-news` 分类、非置顶、无封面的 zh / en / ja 三语文章；分类、状态、置顶等字段由服务端固定，不能由调用方覆盖。默认保存为无发布时间的草稿，只有专用通道的显式 auto-publish 配置开启时才创建已公开文章并写入公开时间。
+- `article_delivery_channels` 保存通道开关、令牌摘要和 revision；`article_delivery_events` 保存幂等请求、规范化内容指纹、结果、文章引用和必要错误摘要，不保存文章正文或令牌。相同幂等键只有在指纹一致且原草稿仍存在时才能成功重放；内容变化或原稿已删除时返回冲突。未鉴权请求只初始化轻量通道表，通过令牌与启用状态校验后才准备文章 schema 和 seed。入口同时受请求体上限、来源／通道限流、幂等和 slug 冲突保护。
+- 生产定时运行和受控自动公开已获授权，但不因此保存模型／搜索／第三方密钥，也不会创建其他计划任务。站长仍可在“知识库文章”中检查草稿；关闭 auto-publish、暂停通道、撤销令牌、失败或超时后只允许保留草稿或失败事件，不能公开。主后台 CSS query 为 `20260727-daily-ai-news-inbox-r1`，JS query 为 `20260728-daily-ai-news-production-r1`。
+- 本地 D1 迁移、静态构建和 300 / 300 项全量测试通过；只读核对确认测试文章三语齐全，投递通道暂停且没有令牌。没有启动长期服务、连接生产 D1、推送或部署。
+
+## 2026-07-26 并发编辑与互传治理
+
+- `GET /api/admin/articles/:id` 的 `article.updated_at`、视频／分类行的 `updated_at`、`GET /api/admin/social-links` 的顶层 `updatedAt` 是后台编辑基线。PUT、视频元数据刷新和 DELETE 必须提交 `expectedUpdatedAt`；主记录、文章翻译和视频分类关系原子受版本条件保护。陈旧版本统一返回 `409 + CONTENT_CONFLICT`，页面保留当前输入并提示人工合并。
+- `GET /api/admin/transfer/settings` 返回 `settings.updatedAt`。设置保存和两个上传开关必须提交 `expectedUpdatedAt`；缺少版本返回 `428 TRANSFER_SETTINGS_VERSION_REQUIRED`，陈旧版本返回 `409 TRANSFER_SETTINGS_CONFLICT`，成功后以服务端新 revision 作为下一次基线。
+- 互传清空房间与清理任务只有全部对象完成才返回 2xx；部分 R2 失败返回 502，并保留 `failed` / `failures` / `retry`。简单上传和 Multipart 完成会核对 D1 changes；记录被并发删除时清理刚写入对象，ready 竞态赢家存在时保留有效对象。
+- Transfer 管理页维护真实 dirty / `beforeunload` / 站内离开保护、可访问上下文确认、全局 mutation lock、Abort + generation 搜索、分区加载降级、部分失败重试与可键盘滚动表格。主后台内容编辑沿用相同的草稿保留和冲突提示。
+- 当前主后台 JS query 为 `20260726-admin-concurrency-safety-r1`，CSS 仍为 `20260719-admin-dirty-transfer-r1`；Transfer 管理脚本与页面缓存版本为 `20260726-admin-transfer-safety-r1`，共享生产图集仍为 `20260718-resource-icons-layout-r1`。
+
 ## 2026-07-26 工具区显示名同步
 
 - 主站公开栏目显示名固定为中文“工具区”、English “Tools”、日本語“ツール”；后台热门页面、访问路径和账号活跃中的该路由中文名也显示为“工具区”。
@@ -90,6 +120,7 @@
 - 访问来源：按国家、省份/地区、城市、IP 掩码前缀和 Cloudflare 经纬度聚合访问来源；访问地图使用本地真实世界地图轮廓资源，不加载第三方在线地图瓦片。
 - 点击埋点：查看站内按钮、链接、桌面入口、筛选、文章、视频等点击目标和最近点击事件；目标文本、页面路径、来源、链接、元素标识和点击聚合键中的邮箱样式文本（含 URL 编码和双重编码形态）写入前会脱敏为 `[email]`。
 - 知识库文章：新建、编辑、发布、删除文章；编辑界面按当前选择语言显示面板，但保存和发布要求 zh / en / ja 三语标题与正文齐全。
+- 自动投递：管理“每日 AI 新闻”专用通道、一次性令牌、显式 auto-publish 配置和最近投递事件，并进入知识库文章列表审阅；生产任务只在每日 07:00–08:00 的硬窗口内运行，失败不自动公开。
 - 视频管理：维护 YouTube / Bilibili / b23.tv 视频，服务端识别链接、抓取标题、简介、作者、发布时间、封面和规范化 `embed_url`，支持草稿、发布、隐藏、排序、置顶、置顶排序、删除和刷新元数据。元数据只在后台预览、首次保存、URL 变化保存或刷新时抓取，已有视频 URL 未变化的普通保存不重新抓取外部元数据。封面可使用平台图片 URL，或在后台选择 JPG、PNG、WEBP、AVIF 本地图片后压缩写入 `thumbnail_url`；也可从本地视频文件读取第一帧生成封面，但这只生成封面，不上传或托管本地视频。置顶视频进入独立置顶队列并一定排在未置顶视频前面；多个置顶视频按 `pinned_sort_order` 从大到小显示，未置顶视频按 `sort_order` 从大到小显示，新建视频默认普通排序最大值 +10、置顶排序最大值 +10；后台编辑区只展示检查用小播放器，避免 iframe 预览占满页面。
 - 视频分类管理：维护视频区分类标签，支持 slug、中文名、English、日本語、排序和启用状态；分类排序同样是数值越大越靠前，新建默认 +10；默认分类 seed 只在全新视频分类表首次创建时初始化，已有表会通过 `site_runtime_state.video_categories_default_seeded` 标记为已处理，不覆盖或补回后台维护过的 slug、分类名、排序、启用状态和已删除分类；“全部”分类只由前台生成，不写入数据库。
 - 聊天室管理：查看聊天记录，编辑普通大厅明文消息，隐藏/恢复、删除消息，并按隐藏 visitor id 或 IP hash 禁言；密码房加密消息只显示“密码房加密消息（后台无法解密）”，不能编辑内容，但仍可隐藏、删除和禁言来源。网络来源 hash 带非敏感密钥代次，只有当前代次消息可新建网络来源禁言；旧代次消息仅供审计，旧禁言显示为“密钥已轮换”。禁言是否生效、是否过期由后台 API 按实际拦截条件计算。
@@ -107,6 +138,10 @@
 - `POST /api/admin/articles`
 - `PUT /api/admin/articles/:articleId`
 - `DELETE /api/admin/articles/:articleId`
+- `GET /api/admin/automation/daily-ai-news`
+- `PUT /api/admin/automation/daily-ai-news`
+- `POST /api/admin/automation/daily-ai-news/token`
+- `DELETE /api/admin/automation/daily-ai-news/token`
 - `GET /api/admin/videos`
 - `POST /api/admin/videos`
 - `PUT /api/admin/videos/:videoId`
@@ -144,6 +179,7 @@
 - `POST /api/analytics/click`
 - `GET /api/articles`
 - `GET /api/articles/:slug`
+- `POST /api/automation/daily-ai-news`
 - `GET /api/videos`
 - `GET /api/videos/:videoId`
 - `GET /api/social-links`
@@ -160,6 +196,8 @@
 - `articles`
 - `article_translations`
 - `article_view_events`
+- `article_delivery_channels`
+- `article_delivery_events`
 - `videos`
 - `video_categories`
 - `video_category_relations`
@@ -177,6 +215,7 @@
 - 密码房聊天消息在 D1 中只保存密文，后台没有密码、密钥或解密能力；后台治理只能看到房间类型、加密状态、隐藏 visitor id、IP hash、来源字段和时间等审计信息。
 - IP 信息只保留 hash、掩码前缀和 Cloudflare 提供的国家、region/省份、城市、colo、时区、经纬度等聚合字段。
 - 埋点不得记录输入框内容、密码、文章草稿、后台表单内容或未发送聊天内容；点击目标文本、页面路径、来源、链接、元素标识和点击聚合键中的邮箱样式文本（含 URL 编码和双重编码形态）写入前必须脱敏。
+- 自动投递令牌的完整明文只允许在生成／轮换响应中显示一次；D1、后台更新记录、事件日志、浏览器持久化和普通错误信息都不得保存或输出完整令牌。机器入口只拥有新建固定分类文章的最小权限，不能读取后台数据或自行指定发布状态；默认创建草稿，受控公开只能由已启用 auto-publish 的专用通道执行。
 - 聊天室内容和昵称必须纯文本渲染；后台展示也要避免把用户内容当 HTML 执行。
 - 后台视频 iframe 只能使用服务端规范化生成的 `embed_url`，不得直接信任管理员输入的任意 URL。
 - 社交链接保存时只接受 http(s) URL；前台关于我窗口只显示图标按钮，不能把后台填写的链接文字作为 HTML 或可见文案注入页面。
@@ -187,6 +226,7 @@
 - 后台静态资源随主站一起部署，不单独部署。
 - 修改 `admin/admin.js` 或 `admin/admin.css` 后，必须同步更新 `admin/index.html` 中对应 CSS / JS query 版本，减少线上缓存继续加载旧后台资源。
 - 修改后台 API、D1 schema 或权限逻辑时，需要同步检查 `functions/api/[[route]].js`、`functions/admin/_middleware.js` 和 `cloudflare/schema.sql`。
+- 自动投递通道默认暂停；只有站长明确生成令牌、启用通道并显式配置 auto-publish 后，才允许每日生产任务在 07:00–08:00 内自动公开合格文章。部署网站不会自动创建其他计划任务，也不会替站长配置任何模型、搜索或第三方密钥。
 - 后台文档更新只改 `admin/docs/`、根目录 `CHANGELOG.md` 以及必要的 README 索引，不需要发布主站 `site-updates` 文章。
 
 ## 本地验证

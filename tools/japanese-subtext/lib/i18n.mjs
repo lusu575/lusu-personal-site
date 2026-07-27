@@ -1,4 +1,4 @@
-import { APP_VERSION, UI_LANGUAGES } from "./constants.mjs?v=20260714-japanese-subtext-v103-retry-r1";
+import { APP_VERSION, UI_LANGUAGES } from "./constants.mjs?v=20260726-japanese-subtext-network-r1";
 
 const copy = {
   zh: {
@@ -9,7 +9,7 @@ const copy = {
     currentLevel: "当前等级", currentStage: "当前关卡", clearedStages: "已完成关卡", totalStages: "总关卡",
     chooseLevel: "选择难度", stageMap: "关卡地图", backDashboard: "返回启动页", backMap: "返回关卡地图",
     level: "难度", stage: "关卡", jlpt: "日语难度", locked: "未解锁", unlocked: "已解锁", cleared: "已通关", current: "当前",
-    bronze: "铜牌", silver: "银牌", gold: "金牌", noMedal: "未获奖章", medalEarned: "本关奖章",
+    bronze: "铜牌", silver: "银牌", gold: "金牌", medalEarned: "本关奖章",
     scene: "场景", questions: "问题", analysis: "潜台词解析", audioPlayer: "语音播放器", loading: "正在读取题目…",
     loadFailed: "题目读取失败。", retry: "重新加载", textModeContinue: "使用日语模式继续",
     audioUnavailable: "语音暂时无法载入。", audioReady: "语音已准备好。", cloudUnavailable: "云端进度暂不可用，本地进度仍会保存。",
@@ -41,7 +41,7 @@ const copy = {
     currentLevel: "Current level", currentStage: "Current stage", clearedStages: "Stages cleared", totalStages: "Total stages",
     chooseLevel: "Choose Difficulty", stageMap: "Stage Map", backDashboard: "Back to Start", backMap: "Back to Stage Map",
     level: "Level", stage: "Stage", jlpt: "Japanese level", locked: "Locked", unlocked: "Unlocked", cleared: "Cleared", current: "Current",
-    bronze: "Bronze", silver: "Silver", gold: "Gold", noMedal: "No medal", medalEarned: "Stage medal",
+    bronze: "Bronze", silver: "Silver", gold: "Gold", medalEarned: "Stage medal",
     scene: "Scene", questions: "Questions", analysis: "Subtext Analysis", audioPlayer: "Audio player", loading: "Loading stage…",
     loadFailed: "The stage could not be loaded.", retry: "Retry", textModeContinue: "Continue in Japanese Mode",
     audioUnavailable: "Audio is temporarily unavailable.", audioReady: "Audio is ready.", cloudUnavailable: "Cloud progress is unavailable. Local progress will still be saved.",
@@ -73,7 +73,7 @@ const copy = {
     currentLevel: "現在のレベル", currentStage: "現在のステージ", clearedStages: "クリア数", totalStages: "全ステージ",
     chooseLevel: "難易度を選ぶ", stageMap: "ステージマップ", backDashboard: "スタートへ", backMap: "マップへ戻る",
     level: "難易度", stage: "ステージ", jlpt: "日本語難度", locked: "未解放", unlocked: "解放済み", cleared: "クリア", current: "現在",
-    bronze: "銅", silver: "銀", gold: "金", noMedal: "メダルなし", medalEarned: "ステージメダル",
+    bronze: "銅", silver: "銀", gold: "金", medalEarned: "ステージメダル",
     scene: "場面", questions: "問題", analysis: "含意の解説", audioPlayer: "音声プレーヤー", loading: "問題を読み込み中…",
     loadFailed: "問題を読み込めませんでした。", retry: "再読み込み", textModeContinue: "日本語モードで続ける",
     audioUnavailable: "音声を一時的に読み込めません。", audioReady: "音声の準備ができました。", cloudUnavailable: "クラウド進捗は利用できません。ローカル進捗は保存されます。",

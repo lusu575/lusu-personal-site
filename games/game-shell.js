@@ -45,6 +45,8 @@
       restoredCloud: "已恢复云端存档，正在加载游戏。",
       signedInNoCloud: "已登录云端存档，暂时没有可恢复的云端数据。",
       cloudUnavailable: "云端存档暂不可用：{message}",
+      retryCloud: "重试云端连接",
+      requestTimedOut: "请求超时，请重试。",
       noLocalSave: "还没有找到本地存档，先玩一会儿再同步。",
       cloudSynced: "云端存档已同步：{time}",
       cloudOk: "云端同步正常。",
@@ -96,6 +98,8 @@
       restoredCloud: "Cloud save restored. Loading the game...",
       signedInNoCloud: "Cloud saves are signed in, but there is no cloud data to restore yet.",
       cloudUnavailable: "Cloud saves are unavailable: {message}",
+      retryCloud: "Retry Cloud Connection",
+      requestTimedOut: "The request timed out. Please retry.",
       noLocalSave: "No local save found yet. Play for a bit, then sync.",
       cloudSynced: "Cloud save synced: {time}",
       cloudOk: "Cloud sync is healthy.",
@@ -147,6 +151,8 @@
       restoredCloud: "クラウドセーブを復元しました。ゲームを読み込んでいます。",
       signedInNoCloud: "クラウドセーブにログイン済みですが、復元できるデータはまだありません。",
       cloudUnavailable: "クラウドセーブを利用できません: {message}",
+      retryCloud: "クラウド接続を再試行",
+      requestTimedOut: "リクエストがタイムアウトしました。もう一度お試しください。",
       noLocalSave: "ローカルセーブがまだありません。少し遊んでから同期してください。",
       cloudSynced: "クラウドセーブを同期しました: {time}",
       cloudOk: "クラウド同期は正常です。",
@@ -182,6 +188,9 @@
   let conflictDialogPromise = null;
   let localStorageReadBlocked = false;
   let localStorageWarningShown = false;
+  let cloudRetryPending = false;
+  let cloudRetryMessage = "";
+  const cloudRequestTimeoutMs = 7000;
   const sessionStorageFallback = new Map();
   const tabStorageFallback = new Map();
 
@@ -520,33 +529,82 @@
   }
 
   async function apiFetch(path, options = {}) {
-    const response = await fetch(path, {
-      credentials: "include",
-      headers: { "Content-Type": "application/json", ...(options.headers || {}) },
-      ...options
-    });
-    const payload = await response.json().catch(() => ({}));
-    if (!response.ok) {
-      const error = new Error(payload.error || `HTTP ${response.status}`);
-      error.status = response.status;
-      error.code = payload.code || "";
-      error.updatedAt = payload.updatedAt ?? null;
-      throw error;
+    const {
+      headers = {},
+      signal: callerSignal,
+      timeoutMs = cloudRequestTimeoutMs,
+      ...requestOptions
+    } = options;
+    const controller = new AbortController();
+    let timedOut = false;
+    const abortFromCaller = () => controller.abort(callerSignal?.reason);
+    if (callerSignal?.aborted) {
+      abortFromCaller();
+    } else {
+      callerSignal?.addEventListener("abort", abortFromCaller, { once: true });
     }
-    return payload;
+    const timer = window.setTimeout(() => {
+      timedOut = true;
+      controller.abort();
+    }, timeoutMs);
+
+    try {
+      const response = await fetch(path, {
+        credentials: "include",
+        ...requestOptions,
+        headers: { "Content-Type": "application/json", ...headers },
+        signal: controller.signal
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        const error = new Error(payload.error || `HTTP ${response.status}`);
+        error.status = response.status;
+        error.code = payload.code || "";
+        error.updatedAt = payload.updatedAt ?? null;
+        throw error;
+      }
+      return payload;
+    } catch (error) {
+      if (timedOut) {
+        const timeoutError = new Error(t("requestTimedOut"));
+        timeoutError.name = "TimeoutError";
+        timeoutError.code = "REQUEST_TIMEOUT";
+        throw timeoutError;
+      }
+      throw error;
+    } finally {
+      window.clearTimeout(timer);
+      callerSignal?.removeEventListener("abort", abortFromCaller);
+    }
   }
 
   async function loadAuthSession() {
+    let requestError = null;
     try {
       const payload = await apiFetch("/api/auth/me");
       authUser = payload.user || null;
-    } catch {
+      cloudRetryMessage = "";
+    } catch (error) {
       authUser = null;
+      requestError = error;
+      cloudRetryMessage = t("cloudUnavailable", { message: error.message });
     }
     cloudVersionReady = !authUser;
     expectedCloudUpdatedAt = null;
     cloudConflict = null;
-    renderCloudPanel();
+    renderCloudPanel(cloudRetryMessage);
+    return requestError === null;
+  }
+
+  function addCloudRetryButton(actions) {
+    const retryButton = textElement("button", cloudRetryPending ? t("cloudChecking") : t("retryCloud"), "tool-button");
+    retryButton.id = "retry-cloud-access";
+    retryButton.type = "button";
+    retryButton.disabled = cloudRetryPending;
+    retryButton.addEventListener("click", () => {
+      void retryCloudAccess();
+    });
+    actions.appendChild(retryButton);
   }
 
   function renderCloudPanel(message = "") {
@@ -583,6 +641,9 @@
           void resolveCloudConflict(currentGame);
         });
       }
+      if (!cloudVersionReady && !cloudConflict) {
+        addCloudRetryButton(actions);
+      }
       const logoutButton = textElement("button", t("logout"), "tool-button subtle");
       logoutButton.id = "logout-account";
       logoutButton.type = "button";
@@ -612,8 +673,47 @@
     const loginLink = textElement("a", t("loginFromHome"), "tool-button");
     loginLink.href = backToGamesUrl;
     actions.appendChild(loginLink);
+    if (cloudRetryMessage) {
+      addCloudRetryButton(actions);
+    }
     account.appendChild(actions);
     cloudPanel.appendChild(account);
+  }
+
+  async function initializeCloudAccess(game) {
+    const authAvailable = await loadAuthSession();
+    if (!authAvailable || !authUser) {
+      return;
+    }
+    await restoreOrUpload(game);
+    if (authUser && cloudVersionReady && !cloudConflict) {
+      startAutoSync(game);
+    }
+  }
+
+  async function retryCloudAccess() {
+    if (cloudRetryPending || !currentGame) {
+      return;
+    }
+    cloudRetryPending = true;
+    cloudRetryMessage = "";
+    setStatus(t("cloudChecking"));
+    renderCloudPanel(t("cloudChecking"));
+    try {
+      const authAvailable = authUser ? true : await loadAuthSession();
+      if (!authAvailable) {
+        return;
+      }
+      if (authUser) {
+        await restoreOrUpload(currentGame);
+        if (cloudVersionReady && !cloudConflict) {
+          startAutoSync(currentGame);
+        }
+      }
+    } finally {
+      cloudRetryPending = false;
+      renderCloudPanel(cloudRetryMessage);
+    }
   }
 
   function markCloudConflict(game, details = {}, statusKey = "cloudConflictPaused") {
@@ -847,6 +947,7 @@
     cloudVersionReady = true;
     expectedCloudUpdatedAt = null;
     cloudConflict = null;
+    cloudRetryMessage = "";
     stopAutoSync();
     renderCloudPanel(t("loggedOutPanel"));
     setStatus(t("loggedOutStatus"));
@@ -859,6 +960,7 @@
 
     try {
       const payload = await apiFetch(`/api/saves/${game.id}`);
+      cloudRetryMessage = "";
       const cloudSave = payload.save;
       const cloudTime = Date.parse(payload.updatedAt || "") || 0;
       const knownCloudTime = getKnownCloudTime(game);
@@ -871,6 +973,9 @@
         applySaveData(game, cloudSave);
         rememberCloudTime(game, payload.updatedAt);
         setStatus(t("mergedCloudScore"));
+        if (frame.getAttribute("src")) {
+          frame.contentWindow.location.reload();
+        }
         if (hasLocalSave(game)) {
           await syncToCloud(game, false);
         }
@@ -881,6 +986,9 @@
         applySaveData(game, cloudSave);
         rememberCloudTime(game, payload.updatedAt);
         setStatus(t("restoredCloud"));
+        if (frame.getAttribute("src")) {
+          frame.contentWindow.location.reload();
+        }
         return;
       }
 
@@ -896,8 +1004,9 @@
       }
     } catch (error) {
       cloudVersionReady = false;
-      renderCloudPanel(t("cloudUnavailable", { message: error.message }));
-      setStatus(t("cloudUnavailable", { message: error.message }));
+      cloudRetryMessage = t("cloudUnavailable", { message: error.message });
+      renderCloudPanel(cloudRetryMessage);
+      setStatus(cloudRetryMessage);
     }
   }
 
@@ -1024,14 +1133,7 @@
     renderLicensePanel(game);
 
     applyStorageDefaults(game);
-    await loadAuthSession();
-    await restoreOrUpload(game);
-    if (authUser) {
-      startAutoSync(game);
-    }
-
     applyLanguagePreference(game);
-    frame.src = buildEntry(game);
     frame.addEventListener("load", () => {
       setStatus(cloudConflict
         ? t("cloudConflictPaused")
@@ -1039,6 +1141,8 @@
           ? t("loadedCloud")
           : t("loadedLocal"));
     });
+    frame.src = buildEntry(game);
+    renderCloudPanel();
     window.addEventListener("beforeunload", flushGameSave);
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "hidden") {
@@ -1061,6 +1165,7 @@
         importInput.value = "";
       }
     });
+    void initializeCloudAccess(game);
   } catch (error) {
     title.textContent = t("gameLoadFailed");
     subtitle.textContent = error.message;

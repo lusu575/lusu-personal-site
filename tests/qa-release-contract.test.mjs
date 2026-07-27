@@ -127,8 +127,10 @@ test("independent audit scenarios force new documents instead of inheriting warm
 
 test("unified release command is local-only and release documentation defaults to blocked", () => {
   assert.equal(packageData.scripts["audit:public-ui:release"], "node scripts/public-ui-audit.mjs --release-only");
+  assert.equal(packageData.scripts["audit:a-dark-room"], "node tests/a-dark-room-responsive-browser.audit.mjs");
+  assert.equal(packageData.scripts["qa:local"], "npm run verify:public-site-release");
   assert.equal(packageData.scripts["qa:public-release"], "npm run verify:public-site-release");
-  assert.equal(packageData.scripts["verify:public-site-release"], "npm run test && npm run check:public-modules && npm run build && npm run build:production:verify && git diff --check && git status --short && npm run audit:public-ui:release");
+  assert.equal(packageData.scripts["verify:public-site-release"], "npm run test && npm run check:public-modules && npm run build && npm run build:production:verify && npm run audit:public-ui:release && npm run audit:a-dark-room && git diff --check && git status --short");
   assert.doesNotMatch(packageData.scripts["verify:public-site-release"], /push|deploy|wrangler|commit/i);
   assert.match(qa, /default decision is `BLOCKED`/);
   assert.match(qa, /do not commit, push, merge/);

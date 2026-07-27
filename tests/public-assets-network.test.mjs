@@ -7,7 +7,11 @@ import sharp from "sharp";
 
 import { createJsonResourceCache } from "../js/core/content-cache.mjs";
 import { buildTransferIconAtlas } from "../scripts/build-transfer-icon-atlas.mjs";
-import { cacheableJson, publicVideoThumbnail } from "../functions/api/[[route]].js";
+import {
+  cacheableJson,
+  PUBLIC_API_REPRESENTATION_VERSION,
+  publicVideoThumbnail
+} from "../functions/api/[[route]].js";
 
 const root = new URL("../", import.meta.url);
 const themes = ["morning", "day", "dusk", "night"];
@@ -265,16 +269,35 @@ test("JSON resource cache still coalesces callers that share the same scope", as
 });
 
 test("cacheable API JSON emits a stable ETag and honors If-None-Match", async () => {
+  assert.equal(PUBLIC_API_REPRESENTATION_VERSION, "20260728-daily-ai-news-production-r1");
   const first = await cacheableJson(new Request("https://example.test/api/articles"), { articles: [] });
   const etag = first.headers.get("ETag");
   assert.match(etag, /^"sha256-[a-f0-9]{64}"$/);
   assert.match(first.headers.get("Cache-Control"), /stale-while-revalidate=120/);
+  assert.equal(first.headers.get("X-Content-Type-Options"), "nosniff");
+  assert.match(first.headers.get("Content-Security-Policy") || "", /default-src 'none'/);
   const second = await cacheableJson(new Request("https://example.test/api/articles", {
     headers: { "If-None-Match": etag }
   }), { articles: [] });
   assert.equal(second.status, 304);
   const changed = await cacheableJson(new Request("https://example.test/api/articles"), { articles: [{ slug: "changed" }] });
   assert.notEqual(changed.headers.get("ETag"), etag, "ETags must change with the complete public representation");
+
+  const seeded = await cacheableJson(
+    new Request("https://example.test/api/articles/demo"),
+    { article: { title: "mapped representation" } },
+    { etagSeed: "article-1:2026-07-26T00:00:00.000Z:zh" }
+  );
+  const versionlessDigest = await crypto.subtle.digest(
+    "SHA-256",
+    new TextEncoder().encode("article-1:2026-07-26T00:00:00.000Z:zh")
+  );
+  const versionlessEtag = `"sha256-${Buffer.from(versionlessDigest).toString("hex")}"`;
+  assert.notEqual(
+    seeded.headers.get("ETag"),
+    versionlessEtag,
+    "custom ETag seeds must still be namespaced by the public representation version"
+  );
 });
 
 test("public video thumbnails become bounded URLs with explicit dimensions", () => {

@@ -69,8 +69,11 @@ test("public registration cannot claim a configured owner email", async () => {
     waitUntil() {}
   });
 
-  assert.equal(response.status, 409);
-  assert.match((await response.json()).error, /已经注册/);
+  assert.equal(response.status, 400);
+  const payload = await response.json();
+  assert.equal(payload.code, "REGISTRATION_FAILED");
+  assert.match(payload.error, /无法完成注册/);
+  assert.doesNotMatch(payload.error, /已经注册|存在|owner@example\.test/i);
   assert.equal(db.calls.some((call) => /insert into users/i.test(call.sql || "")), false);
 });
 

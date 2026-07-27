@@ -41,6 +41,17 @@ create index if not exists user_login_events_created_idx
 create index if not exists user_login_events_email_created_idx
   on user_login_events(email, created_at);
 
+create table if not exists api_rate_limits (
+  bucket_key text primary key,
+  window_started_at integer not null,
+  request_count integer not null default 0,
+  blocked_until integer not null default 0,
+  updated_at text not null
+);
+
+create index if not exists api_rate_limits_updated_idx
+  on api_rate_limits(updated_at);
+
 create table if not exists game_saves (
   user_id text not null references users(id) on delete cascade,
   game_id text not null,
@@ -283,7 +294,8 @@ insert into transfer_settings (setting_key, setting_value, updated_at, updated_b
   ('text_per_minute', '20', '2026-07-16T00:00:00.000Z', 'system'),
   ('global_upload_enabled', '1', '2026-07-16T00:00:00.000Z', 'system'),
   ('normal_upload_enabled', '1', '2026-07-16T00:00:00.000Z', 'system'),
-  ('alert_thresholds', '1,3,5', '2026-07-16T00:00:00.000Z', 'system')
+  ('alert_thresholds', '1,3,5', '2026-07-16T00:00:00.000Z', 'system'),
+  ('__settings_revision', '2026-07-16T00:00:00.000Z', '2026-07-16T00:00:00.000Z', 'system')
 on conflict(setting_key) do nothing;
 
 create table if not exists anonymous_chat_messages (
@@ -370,6 +382,45 @@ create index if not exists articles_category_idx
   on articles(category);
 create index if not exists article_translations_article_lang_idx
   on article_translations(article_id, lang);
+
+create table if not exists article_delivery_channels (
+  channel_key text primary key,
+  category text not null,
+  enabled integer not null default 0,
+  auto_publish integer not null default 0,
+  token_hash text not null default '',
+  token_hint text not null default '',
+  token_created_at text,
+  last_used_at text,
+  created_at text not null,
+  updated_at text not null
+);
+
+create table if not exists article_delivery_events (
+  event_id text primary key,
+  channel_key text not null references article_delivery_channels(channel_key) on delete cascade,
+  idempotency_key text not null,
+  payload_hash text not null default '',
+  article_id text references articles(article_id) on delete set null,
+  slug text not null,
+  title_zh text not null default '',
+  source_label text not null default '',
+  status text not null default 'draft',
+  created_at text not null,
+  unique(channel_key, idempotency_key)
+);
+
+create index if not exists article_delivery_events_channel_created_idx
+  on article_delivery_events(channel_key, created_at desc);
+
+insert into article_delivery_channels (
+  channel_key, category, enabled, auto_publish, token_hash, token_hint,
+  token_created_at, last_used_at, created_at, updated_at
+) values (
+  'daily-ai-news', 'daily-ai-news', 0, 0, '', '', null, null,
+  '2026-07-27T00:00:00.000Z', '2026-07-27T00:00:00.000Z'
+)
+on conflict(channel_key) do nothing;
 
 create table if not exists videos (
   video_id text primary key,
@@ -557,6 +608,333 @@ create index if not exists article_view_events_slug_idx
   on article_view_events(slug, created_at);
 create index if not exists article_view_events_visitor_idx
   on article_view_events(visitor_id, created_at);
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-07-27-daily-ai-news-inbox',
+  '2026-07-27-daily-ai-news-inbox',
+  'site-updates',
+  '["网站更新","知识库","AI新闻","Admin"]',
+  '', 'published', 0, 0,
+  '2026-07-27T13:06:00.000Z',
+  '2026-07-27T16:05:00.000Z',
+  '2026-07-27T16:05:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  (
+    'seed-update-2026-07-27-daily-ai-news-inbox-zh',
+    'seed-update-2026-07-27-daily-ai-news-inbox',
+    'zh',
+    '每日 AI 新闻正式上线',
+    '知识库“每日 AI 新闻”正式接入 Horizon 与 Codex：每天北京时间 7 点开始整理前 24 小时内容，三语稿通过检查后在 8 点前自动公开。',
+    '# 每日 AI 新闻正式上线
+
+知识库“每日 AI 新闻”已经接入 Horizon 与 Codex 的固定日更流程，并以完整中文、英文、日文文章公开。
+
+## 每日流程
+
+- 每天北京时间 7 点开始，只处理此前精确 24 小时内发布的消息。
+- Horizon 必须先完成多来源采集、网址归一和重复合并；Codex 再做一手核实、重要性筛选、近 30 天去重和三语成文。
+- 正文继续使用“今日要闻 / 主要新闻 / 传闻”三段结构，每条保留简短、具体的 AI 解读，不向读者堆放来源链接。
+
+## 发布安全
+
+- 只有三语内容、时间窗口、来源记录、结构和去重检查全部通过，专用通道才会公开文章。
+- Horizon 不可用、验证失败或运行超过北京时间 8 点时，当天任务停止发布并留下失败记录，不用不完整内容凑数。
+- 后台仍可随时暂停通道、关闭自动公开、轮换或撤销凭证，并查看最近投递结果。
+
+## 首次上线
+
+正式上线使用 7 月 27 日三语样稿走完整生产链路验证；测试占位文章仍会明确标注，不会冒充真实新闻。',
+    '2026-07-27T13:06:00.000Z',
+    '2026-07-27T16:05:00.000Z'
+  ),
+  (
+    'seed-update-2026-07-27-daily-ai-news-inbox-en',
+    'seed-update-2026-07-27-daily-ai-news-inbox',
+    'en',
+    'Daily AI News Goes Live',
+    'Daily AI News now runs through Horizon and Codex: each Beijing-time day starts at 07:00, covers the prior 24 hours, and publishes the validated Chinese, English, and Japanese edition by 08:00.',
+    '# Daily AI News Goes Live
+
+Knowledge’s Daily AI News is now connected to a fixed Horizon and Codex publishing flow, with complete Chinese, English, and Japanese editions.
+
+## Daily flow
+
+- Work starts every day at 07:00 Beijing time and only covers items published in the exact preceding 24 hours.
+- Horizon must first collect from multiple sources, normalize URLs, and merge duplicates. Codex then verifies primary material, applies the editorial threshold, checks the previous 30 days, and writes the three editions.
+- Each article keeps the Lead Story, More News, and Rumors structure, with one brief and specific AI take per item and no pile of source links for readers to open.
+
+## Publishing safeguards
+
+- The dedicated channel publishes only after all three languages, the time window, source record, structure, and duplicate checks pass.
+- If Horizon is unavailable, validation fails, or the run reaches 08:00 Beijing time, that day stops without publishing incomplete filler.
+- Admin can still pause the channel, disable automatic publishing, rotate or revoke its credential, and review recent delivery results.
+
+## First live run
+
+The July 27 trilingual edition is used to verify the complete production path. The placeholder remains clearly labelled and cannot be mistaken for real news.',
+    '2026-07-27T13:06:00.000Z',
+    '2026-07-27T16:05:00.000Z'
+  ),
+  (
+    'seed-update-2026-07-27-daily-ai-news-inbox-ja',
+    'seed-update-2026-07-27-daily-ai-news-inbox',
+    'ja',
+    '毎日AIニュース正式稼働',
+    '「毎日AIニュース」は Horizon と Codex に正式接続され、北京時間の毎朝7時に直前24時間分の処理を始め、検証済みの中・英・日3言語版を8時までに自動公開します。',
+    '# 毎日AIニュース正式稼働
+
+知識庫の「毎日AIニュース」は、Horizon と Codex による固定の日次公開フローへ接続され、中国語・英語・日本語の完全版を公開します。
+
+## 毎日の流れ
+
+- 毎日北京時間7時に開始し、直前の正確な24時間に公開された情報だけを扱います。
+- まず Horizon が複数ソースの収集、URL正規化、重複統合を行い、その後 Codex が一次情報の確認、重要度判定、過去30日との重複確認、3言語の記事作成を行います。
+- 本文は「今日のトップニュース / 主なニュース / 噂」の3部構成を保ち、各項目に短く具体的なAI解説を付け、読者向け本文には大量の参照リンクを並べません。
+
+## 公開時の安全策
+
+- 3言語、時間範囲、出典記録、構成、重複確認のすべてを通過した場合だけ、専用チャンネルが記事を公開します。
+- Horizon が利用できない、検証に失敗する、または北京時間8時を過ぎた場合は、不完全な記事を公開せず、その日の処理を停止して失敗を記録します。
+- 管理画面では引き続きチャンネルの一時停止、自動公開の無効化、認証情報の更新・失効、最近の配信結果の確認ができます。
+
+## 初回公開
+
+7月27日の3言語版で本番経路全体を検証します。プレースホルダー記事は引き続きテスト用と明記され、実際のニュースとは区別されます。',
+    '2026-07-27T13:06:00.000Z',
+    '2026-07-27T16:05:00.000Z'
+  )
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-daily-ai-news-test-placeholder',
+  'daily-ai-news-test-placeholder',
+  'daily-ai-news',
+  '["每日AI新闻","测试"]',
+  '', 'published', 0, 0,
+  '2026-07-27T13:05:00.000Z',
+  '2026-07-27T13:05:00.000Z',
+  '2026-07-27T13:05:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  (
+    'seed-daily-ai-news-test-placeholder-zh',
+    'seed-daily-ai-news-test-placeholder',
+    'zh',
+    '每日 AI 新闻测试占位',
+    '这是一篇用于确认“每日 AI 新闻”分区显示与发布流程的测试占位文章，不包含正式新闻。',
+    '# 每日 AI 新闻测试占位
+
+这是一篇测试占位文章，用来确认“每日 AI 新闻”分区、文章列表和阅读页面能够正常显示。
+
+这里暂时没有正式新闻内容。',
+    '2026-07-27T13:05:00.000Z',
+    '2026-07-27T13:05:00.000Z'
+  ),
+  (
+    'seed-daily-ai-news-test-placeholder-en',
+    'seed-daily-ai-news-test-placeholder',
+    'en',
+    'Daily AI News Test Placeholder',
+    'This placeholder verifies the Daily AI News section and publishing flow. It does not contain real news.',
+    '# Daily AI News Test Placeholder
+
+This is a test placeholder used to confirm that the Daily AI News section, article list, and reading page display correctly.
+
+It does not contain real news.',
+    '2026-07-27T13:05:00.000Z',
+    '2026-07-27T13:05:00.000Z'
+  ),
+  (
+    'seed-daily-ai-news-test-placeholder-ja',
+    'seed-daily-ai-news-test-placeholder',
+    'ja',
+    '毎日AIニュース テスト用プレースホルダー',
+    '「毎日AIニュース」欄と公開フローを確認するためのテスト記事です。実際のニュースは含まれていません。',
+    '# 毎日AIニュース テスト用プレースホルダー
+
+「毎日AIニュース」欄、記事一覧、閲覧ページが正しく表示されることを確認するためのテスト記事です。
+
+実際のニュース内容はまだ含まれていません。',
+    '2026-07-27T13:05:00.000Z',
+    '2026-07-27T13:05:00.000Z'
+  )
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-07-26-security-reliability-hardening',
+  '2026-07-26-security-reliability-hardening',
+  'site-updates',
+  '["security","reliability","Admin","Cloudflare","QA"]',
+  '', 'published', 0, 0,
+  '2026-07-26T14:58:00.000Z',
+  '2026-07-26T14:58:00.000Z',
+  '2026-07-26T14:58:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  (
+    'seed-update-2026-07-26-security-reliability-hardening-zh',
+    'seed-update-2026-07-26-security-reliability-hardening',
+    'zh',
+    '全站安全与可靠性加固',
+    '一次性加固账号入口、统计写入、D1 迁移、后台并发编辑与互传治理，并为文章分享、游戏和日语工具补齐超时、降级与离线回退。',
+    '# 全站安全与可靠性加固
+
+本轮把公开站点、Cloudflare 后端和管理后台作为一个完整系统复检，集中修复会影响账号安全、数据一致性、失败恢复和发布可信度的问题。
+
+## 账号、接口与统计
+
+- 账号与写接口限制请求体、来源和内容类型；登录、注册采用不暴露账号是否存在的响应，并按网络来源与账号标识实施退避限流。
+- 密码派生提高成本，旧密码在成功登录后渐进升级；服务端错误只返回稳定错误码，不把内部异常细节交给浏览器。
+- 页面、点击和文章浏览写入增加频率上限、重复抑制与有界保留，避免机器人或重复刷新无限放大 D1 写入。
+
+## 数据与后台一致性
+
+- 旧 D1 会先补齐缺失列，再执行依赖这些列的索引和完整 schema；全新数据库仍可一次初始化。
+- 文章、视频、视频分类与社交链接使用版本匹配写入；多个后台标签页同时编辑时，陈旧页面会收到冲突提示，不再静默覆盖较新的内容。
+- 临时互传管理区分部分成功与完全成功，设置写入使用条件更新，列表搜索、危险确认、重复操作锁和 R2 清理失败都有可恢复状态。
+
+## 公开访问与离线回退
+
+- 游戏目录和日语工具的可选 manifest 都有超时与本地回退；网络服务变慢时不会阻塞本地内容和已有存档。
+- 首页壁纸预载与真正渲染复用同一资源选择，避免重复下载。
+- `/articles/<slug>` 现在由边缘函数输出文章专属标题、摘要、Open Graph、Twitter、规范链接和结构化数据；脚本不可用时仍保留安全的可读正文回退。
+
+## 发布边界
+
+- 全站补齐基础安全响应头与采样可观测性；CI 的第三方 Actions 固定到不可变提交，并执行完整测试、构建、可重复产物和浏览器发布审计。
+- 这些改动不公开 session、密码、完整 IP、访客隐藏标识或后台草稿，也不改变 GitHub main 触发 Cloudflare Pages 自动部署的正式流程。',
+    '2026-07-26T14:58:00.000Z',
+    '2026-07-26T14:58:00.000Z'
+  ),
+  (
+    'seed-update-2026-07-26-security-reliability-hardening-en',
+    'seed-update-2026-07-26-security-reliability-hardening',
+    'en',
+    'Sitewide Security and Reliability Hardening',
+    'Hardened account entry, analytics writes, D1 migrations, concurrent admin editing, and Transfer governance while adding timeouts, degradation paths, and offline fallbacks for articles, games, and the Japanese tool.',
+    '# Sitewide Security and Reliability Hardening
+
+This pass reviews the public site, Cloudflare backend, and admin area as one system, fixing issues that could affect account security, data consistency, failure recovery, and release confidence.
+
+## Accounts, APIs, and analytics
+
+- Account and write endpoints now bound request bodies, origins, and content types. Sign-in and registration avoid revealing whether an account exists, with backoff limits applied by network source and account identifier.
+- Password derivation is more expensive, and older hashes upgrade gradually after a successful sign-in. Server errors expose stable codes instead of internal exception details.
+- Page, click, and article-view writes now have rate ceilings, duplicate suppression, and bounded retention so bots or repeated refreshes cannot grow D1 writes without limit.
+
+## Data and admin consistency
+
+- Legacy D1 databases add missing columns before dependent indexes and the complete schema run; fresh databases still initialize in one pass.
+- Articles, videos, video categories, and social links use version-matched writes. When multiple admin tabs edit the same record, a stale tab reports a conflict instead of silently overwriting newer content.
+- Quick Transfer governance distinguishes partial success from full success, uses conditional setting updates, and provides recoverable states for list search, dangerous confirmations, duplicate-action locks, and failed R2 cleanup.
+
+## Public access and offline fallback
+
+- The game catalog and optional Japanese-tool manifests have timeouts and local fallbacks, so slow network services do not block local content or existing saves.
+- Home wallpaper preload and rendering now share the same asset selection, avoiding duplicate downloads.
+- `/articles/<slug>` now receives article-specific title, summary, Open Graph, Twitter, canonical, and structured metadata at the edge, with a safe readable fallback when scripts are unavailable.
+
+## Release boundary
+
+- The site now ships baseline security headers and sampled observability. CI pins third-party Actions to immutable commits and runs the complete tests, build, reproducible-output check, and browser release audits.
+- These changes do not expose sessions, passwords, full IP addresses, hidden visitor identifiers, or admin drafts, and the official release path remains GitHub main triggering Cloudflare Pages.',
+    '2026-07-26T14:58:00.000Z',
+    '2026-07-26T14:58:00.000Z'
+  ),
+  (
+    'seed-update-2026-07-26-security-reliability-hardening-ja',
+    'seed-update-2026-07-26-security-reliability-hardening',
+    'ja',
+    'サイト全体のセキュリティと信頼性を強化',
+    'アカウント入口、分析書き込み、D1 移行、管理画面の同時編集、転送管理を強化し、記事・ゲーム・日本語ツールへタイムアウト、縮退、オフライン復帰を追加しました。',
+    '# サイト全体のセキュリティと信頼性を強化
+
+公開サイト、Cloudflare バックエンド、管理画面を一つのシステムとして再点検し、アカウント安全性、データ整合性、障害復旧、公開品質に影響する問題をまとめて修正しました。
+
+## アカウント・API・分析
+
+- アカウント系と書き込み API は本文サイズ、送信元、Content-Type を制限します。ログインと登録ではアカウントの存在を推測できない応答を使い、ネットワーク元とアカウント識別子の両方で段階的に制限します。
+- パスワード導出コストを高め、古いハッシュはログイン成功後に順次更新します。サーバー内部の例外詳細はブラウザーへ返さず、安定したエラーコードだけを公開します。
+- ページ、クリック、記事閲覧の書き込みに上限、重複抑制、有限の保存期間を設け、ボットや連続更新で D1 書き込みが無制限に増えないようにしました。
+
+## データと管理画面の整合性
+
+- 旧 D1 は不足列を先に追加し、その後で依存インデックスと完全な schema を適用します。新規データベースは従来どおり一度で初期化できます。
+- 記事、動画、動画分類、ソーシャルリンクは版を照合して保存します。複数の管理タブで同じ項目を編集した場合、古い画面は新しい内容を黙って上書きせず競合を通知します。
+- 一時転送管理は部分成功と完全成功を区別し、設定を条件付きで更新します。検索、危険操作の確認、重複操作ロック、R2 削除失敗も復旧可能な状態として扱います。
+
+## 公開アクセスとオフライン復帰
+
+- ゲーム一覧と日本語ツールの任意 manifest にタイムアウトとローカル復帰を追加し、ネットワークが遅くてもローカル内容や既存保存を妨げません。
+- Home の壁紙は事前読み込みと実表示で同じ素材選択を使い、重複ダウンロードを避けます。
+- `/articles/<slug>` はエッジで記事固有のタイトル、概要、Open Graph、Twitter、canonical、構造化データを返し、スクリプトが使えない場合も安全な可読本文を残します。
+
+## 公開工程
+
+- 基本セキュリティヘッダーとサンプリング観測を追加しました。CI の外部 Actions は不変コミットへ固定し、全テスト、ビルド、再現可能な成果物、ブラウザー公開監査を実行します。
+- session、パスワード、完全な IP、非公開 visitor 識別子、管理下書きは公開せず、正式な公開経路も GitHub main から Cloudflare Pages を起動する方式のままです。',
+    '2026-07-26T14:58:00.000Z',
+    '2026-07-26T14:58:00.000Z'
+  )
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
 
 insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,

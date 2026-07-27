@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "reportDate": "2026-07-27",
+  "timezone": "Asia/Shanghai",
+  "collectionMethod": "Horizon native fetch and cross-source dedupe, followed by Codex editorial review",
+  "horizonRun": {
+    "runId": "run-20260727T142834Z-7e8c855c",
+    "candidatesPath": "data/mcp-runs/run-20260727T142834Z-7e8c855c/daily_candidates.json",
+    "rawBeforeMerge": 113,
+    "rawAfterMerge": 113,
+    "exactDayCount": 74,
+    "fetchStatus": "success"
+  },
+  "selection": {
+    "importanceThreshold": 7,
+    "maxItems": null,
+    "dedupeLookbackDays": 30,
+    "selectedStoryKeys": [
+      "moonshot-kimi-k3-release-preview",
+      "open-secure-ai-alliance",
+      "ssi-nvidia-strategic-partnership",
+      "nvidia-cosmos-h-dreams"
+    ]
+  },
+  "candidates": [
+    {
+      "storyKey": "moonshot-kimi-k3-release-preview",
+      "publishedDate": "2026-07-27",
+      "datePrecision": "day",
+      "importance": 8.9,
+      "selected": true,
+      "whyWorth": "Horizon 抓到的 Hacker News 头部讨论指向月之暗面官方模型页。3T 级开放权重模型及其原生智能体定位值得关注，但截稿时仍处于发布倒计时，必须把预告与已经发布的能力严格区分。",
+      "sourceUrls": [
+        "https://huggingface.co/moonshotai/Kimi-K3"
+      ]
+    },
+    {
+      "storyKey": "open-secure-ai-alliance",
+      "publishedDate": "2026-07-27",
+      "datePrecision": "day",
+      "importance": 8.6,
+      "selected": true,
+      "whyWorth": "联盟把开放权重、智能体框架、身份、隔离、审计和漏洞工具放进同一个安全议题，并集结了云、网络安全、模型和开源基金会等多类参与者；真正产出仍需后续观察。",
+      "sourceUrls": [
+        "https://blogs.nvidia.com/blog/open-secure-ai-alliance/"
+      ]
+    },
+    {
+      "storyKey": "ssi-nvidia-strategic-partnership",
+      "publishedDate": "2026-07-27",
+      "datePrecision": "day",
+      "importance": 9,
+      "selected": true,
+      "whyWorth": "它同时影响前沿模型实验室的算力扩张、AI 安全研究路线和头部算力平台的绑定关系；但投资金额与研究成果尚未公开，适合讲清事实与边界。",
+      "sourceUrls": [
+        "https://nvidianews.nvidia.com/news/ilya-sutskevers-safe-superintelligence-inc-and-nvidia-announce-long-term-strategic-partnership"
+      ]
+    },
+    {
+      "storyKey": "openai-work-task-crossover-research",
+      "publishedDate": "2026-07-27",
+      "datePrecision": "day",
+      "importance": 6.9,
+      "selected": false,
+      "whyWorth": "Horizon 从 OpenAI 官方 RSS 抓到这项真实使用研究，但它更接近长期工作方式观察，并非当天发生的产品、研究突破或产业结构变化；本期先保留在候选记录，不为拉长文章而纳入。",
+      "sourceUrls": [
+        "https://openai.com/index/how-ai-is-expanding-what-people-do-at-work/"
+      ]
+    },
+    {
+      "storyKey": "nvidia-cosmos-h-dreams",
+      "publishedDate": "2026-07-27",
+      "datePrecision": "day",
+      "importance": 7.7,
+      "selected": true,
+      "whyWorth": "实时、可交互的生成式手术机器人模拟器把世界模型从离线视频生成推进到闭环训练与评估，方向具有代表性；但性能数据来自发布团队，且不等于临床有效性或安全性。",
+      "sourceUrls": [
+        "https://huggingface.co/blog/nvidia/cosmos-h-dreams"
+      ]
+    },
+    {
+      "storyKey": "nvidia-engineering-agent-toolkit-dac",
+      "publishedDate": "2026-07-26",
+      "datePrecision": "day",
+      "importance": 8,
+      "selected": false,
+      "whyWorth": "Horizon 在北京时间窗口内抓到了这条消息，但发布方页面明确标注 7 月 26 日，因此按最终自然日复核规则排除，不拿来凑数。",
+      "sourceUrls": [
+        "https://nvidianews.nvidia.com/news/nvidia-expands-nvidia-agent-toolkit-with-nvidia-physicsnemo-and-cuda-x-libraries-to-transform-how-the-world-engineers-designs-and-builds"
+      ]
+    },
+    {
+      "storyKey": "nvidia-vera-cpu-eda",
+      "publishedDate": "2026-07-26",
+      "datePrecision": "day",
+      "importance": 7.4,
+      "selected": false,
+      "whyWorth": "Vera CPU 与 EDA 优化值得跟踪，但发布方日期不属于 7 月 27 日，本期排除。",
+      "sourceUrls": [
+        "https://blogs.nvidia.com/blog/vera-cpu-eda/"
+      ]
+    }
+  ],
+  "delivery": {
+    "idempotencyKey": "daily-ai-news:2026-07-27:horizon-v1",
+    "slug": "daily-ai-news-2026-07-27",
+    "source": "Horizon + Codex local workflow",
+    "tags": [
+      "AI",
+      "开放模型",
+      "AI安全",
+      "前沿研究"
+    ],
+    "translations": {
+      "zh": {
+        "title": "每日 AI 新闻｜2026年7月27日：开放模型、安全联盟与前沿算力同时升温",
+        "summary": "Horizon 在北京时间当天筛出 72 条候选，本期最终保留四件值得讲的事：Kimi K3 开放模型预告、开放安全联盟成立、SSI 获 NVIDIA 投资与算力支持，以及实时手术机器人生成式模拟器亮相。",
+        "content_markdown": "# 每日 AI 新闻｜2026年7月27日：开放模型、安全联盟与前沿算力同时升温\n\n今天的候选很多，但真正值得展开讲的并不等于热榜数量。本期最终保留四件事：一款受到高度关注的开放模型进入发布倒计时，一批科技与安全公司成立开放 AI 安全联盟，一家极少公开进展的前沿实验室获得更大规模算力，以及一个面向手术机器人的世界模型开始尝试实时闭环模拟。它们共同指向一个变化：AI 的竞争已经不只发生在模型分数上，也在开放生态、安全基础设施、算力绑定和专业场景中同时展开。\n\n## Kimi K3 进入发布倒计时，但能力仍需等待实物验证\n\n月之暗面在官方模型页面预告 Kimi K3，并把它描述为下一代开放前沿模型和首个开放的 3T 级模型。页面列出的目标包括长时间跨度的代码任务、知识工作与推理，同时强调工具调用、浏览和多步规划等原生智能体能力，以及面向大型代码仓库的更长上下文。架构说明中还提到 Kimi Delta Attention 和 Attention Residuals。\n\n这条消息值得关注，是因为一个 3T 级开放权重模型会直接影响开放模型的能力上限、部署成本和第三方服务价格，也会检验超大规模混合专家路线能否在开放生态里形成实际竞争力。不过，截稿时官方页面仍显示为即将发布，模型权重、完整模型卡、评测条件和实际推理成本尚未全部公开。因此今天能确认的是发布计划与技术定位，而不是这些能力已经被独立验证。真正的判断要等权重落地后再做。\n\n## 开放安全联盟试图为 AI 智能体建立共同防线\n\nNVIDIA 与来自云计算、网络安全、企业软件、开放模型和开源基金会等领域的数十家机构宣布成立 Open Secure AI Alliance。联盟建立在 Linux Foundation 的 Akrites 项目和 OpenSSF 社区工作的基础上，目标是共同开发和分享用于 AI 软件与智能体安全的开放技术、工具和方法。\n\n发起方把安全范围放到了完整的智能体系统，而不只是模型权重，包括身份、权限、隔离、运行框架、护栏、日志、评测和漏洞修复。公告还列出了若干准备投入联盟的项目，例如用于测试、追踪、审计和治理智能体行为的开放研究框架，以及模型文件安全、工作负载身份和多模型漏洞扫描等现有工作。\n\n联盟成立本身不等于安全问题已经得到解决。成员名单很强大，但接下来更重要的是治理方式是否清晰、项目是否真正开放、漏洞披露是否透明，以及不同公司的工具能否互相配合。如果这些承诺能落到可复用的代码、数据集和评测上，它可能成为 AI 智能体时代类似软件供应链安全社区的一层公共基础设施。\n\n## SSI 获得 NVIDIA 投资，计划把可用算力扩大约十倍\n\nSafe Superintelligence，也就是 SSI，与 NVIDIA 宣布长期合作。NVIDIA 同时进行了投资，但双方没有公布金额。SSI 将获得下一代 Vera Rubin 计算平台支持；按照公告中的计划，这会让它可使用的计算能力扩大一个数量级。两家公司还将围绕 NVIDIA 当前和未来的计算平台继续进行技术合作。\n\nSSI 由 Ilya Sutskever 与 Daniel Levy 领导，成立以来一直把目标集中在安全超级智能，并很少公开研究细节。此次合作说明 SSI 认为现有研究方向已经值得进入更大规模验证，也说明 NVIDIA 愿意用资金和核心计算平台绑定这条高度保密的路线。\n\n但这还不是研究突破。SSI 没有发布新模型、论文或可供第三方核验的实验结果，扩大算力也只是合作计划。后续最值得观察的是，SSI 会不会公开可验证的成果，以及更大训练规模能否同时改善能力、稳健性与安全性，而不是只增加成本和外界期待。\n\n## 生成式世界模型开始实时模拟手术机器人操作\n\nNVIDIA 团队发布 Cosmos-H-Dreams，这是一套由机器人动作驱动、可实时生成后续手术画面的模拟系统。它把原本用于离线生成的手术世界模型蒸馏成因果、少步数的学生模型，再通过 FlashDreams 流式推理，使操作者或机器人策略能够一边发出动作，一边看到合成场景的变化。\n\n按发布团队给出的数据，在单张 RTX PRO 6000 上，系统把原先大约每秒十帧的生成速度提高到约每秒一百六十帧。它可以用于手术技能练习、机器人策略的闭环评估和合成训练数据生成，当前公开模型聚焦于研究型手术机器人平台上的桌面缝合场景。\n\n这件事的意义不在于 AI 已经能安全做手术，而在于高成本、难复现的机器人实验有机会先在可交互的生成环境里大量试错。它仍然需要面对模拟与真实组织差异、长时间运行误差累积、硬件依赖和临床验证等问题。实时生成速度是一项工程进展，不能被直接解释为医疗有效性。\n\n## 今天的总体判断\n\n今天四条消息看似分散，其实都在回答同一个问题：当 AI 从聊天工具走向长期运行的智能体、前沿研究和真实机器时，谁来提供模型、算力、安全边界与可重复的训练环境？Kimi K3 把开放模型的规模继续向上推，开放安全联盟试图补上共同防线，SSI 与 NVIDIA 强化了前沿研究对巨额算力的依赖，Cosmos-H-Dreams 则把生成模型推向专业机器人的闭环模拟。\n\n接下来不应只看发布口号。Kimi K3 要看权重、评测与成本，安全联盟要看开放产出，SSI 要看可验证研究，手术模拟器要看真实迁移与安全验证。只有这些后续证据出现，今天的热度才会变成长期价值。"
+      },
+      "en": {
+        "title": "Daily AI News | July 27, 2026: Open Models, Security Alliances and Frontier Compute",
+        "summary": "Horizon found 72 candidates dated July 27 in Shanghai time. Four cleared the editorial bar: the Kimi K3 release preview, a new open AI security alliance, NVIDIA’s investment and compute support for SSI, and a real-time generative simulator for surgical robotics.",
+        "content_markdown": "# Daily AI News | July 27, 2026: Open Models, Security Alliances and Frontier Compute\n\nThere was no shortage of candidates today, but a long feed is not the same as a useful briefing. Four developments survived the final review: a highly anticipated open model entered its release countdown, a broad group of technology and security organizations formed an open AI security alliance, a secretive frontier laboratory secured substantially more compute, and a surgical robotics world model moved toward real-time closed-loop simulation. Together they show that AI competition is spreading beyond benchmark scores into ecosystems, security infrastructure, compute relationships and specialized physical applications.\n\n## Kimi K3 enters its release countdown, with its claims still awaiting verification\n\nMoonshot AI previewed Kimi K3 on its official model page, describing it as its next-generation open frontier model and the first open model in the 3-trillion-parameter class. The page targets long-horizon coding, knowledge work and reasoning, along with native tool use, browsing and multi-step planning. It also names Kimi Delta Attention and Attention Residuals as parts of the new architecture and promises an extended context window for repository-scale code.\n\nThe announcement matters because an open model at this scale could affect the capability ceiling of open-weight systems, serving costs and third-party pricing. It will also test whether an extremely large mixture-of-experts design can become practically competitive outside a closed laboratory. At the time of writing, however, the page still marked the model as an upcoming release. The weights, complete model card, evaluation conditions and real serving costs were not yet fully available. Today confirms the plan and positioning, not the performance claims. A serious judgment must wait for the actual release.\n\n## A new alliance aims to build shared defenses for AI agents\n\nNVIDIA and dozens of organizations spanning cloud computing, cybersecurity, enterprise software, open models and open-source foundations announced the Open Secure AI Alliance. Building on the Linux Foundation's Akrites initiative and OpenSSF community work, the alliance says it will develop and share open technologies, tools and methods for securing AI software and agents.\n\nIts scope covers the whole agent system rather than model weights alone: identity, permissions, isolation, agent harnesses, guardrails, logs, evaluation and vulnerability remediation. The announcement points to planned contributions including an open research framework for testing, tracing, auditing and governing agent behavior, alongside existing work on safer model formats, workload identity and multi-model vulnerability scanning.\n\nA strong member list does not itself create a security standard. The next questions are whether governance is clear, projects are genuinely open, disclosures are transparent and tools from different contributors work together. If those promises turn into reusable code, datasets and evaluations, the alliance could become a shared infrastructure layer for agent security much like earlier open communities did for software supply-chain security.\n\n## SSI receives NVIDIA investment and plans roughly ten times more compute\n\nSafe Superintelligence, or SSI, announced a long-term partnership with NVIDIA. NVIDIA also made an investment, although the amount was not disclosed. SSI will gain access to the next-generation Vera Rubin platform, which the companies say should expand its available compute by an order of magnitude. They also plan to collaborate on current and future NVIDIA computing platforms.\n\nLed by Ilya Sutskever and Daniel Levy, SSI has focused on a single stated goal, safe superintelligence, while revealing very little about its research. The partnership suggests the lab believes its current direction is ready for larger-scale testing and that NVIDIA is willing to support the highly confidential effort with both capital and core infrastructure.\n\nThis is not yet a research breakthrough. SSI released no new model, paper or independently verifiable result, and the compute expansion remains a plan. The evidence to watch is whether SSI publishes results others can examine and whether larger training runs improve capability, robustness and safety together rather than simply increasing cost and expectation.\n\n## A generative world model begins simulating surgical robots in real time\n\nNVIDIA researchers introduced Cosmos-H-Dreams, an action-conditioned system that generates the next frames of a surgical scene in real time. It distills an offline surgical world model into a causal, few-step student model and serves it through the FlashDreams streaming engine, allowing a human operator or learned robot policy to act and immediately observe a synthesized response.\n\nAccording to the release team, the system increases generation from roughly ten frames per second to about 160 frames per second on a single RTX PRO 6000. It is intended for skills rehearsal, closed-loop policy evaluation and synthetic training data. The released checkpoint currently focuses on tabletop suturing with a research surgical robotics platform.\n\nThe significance is not that AI can now perform surgery safely. It is that expensive and difficult-to-repeat robotics experiments may be rehearsed at scale inside an interactive generative environment before moving to physical systems. Important gaps remain, including differences between simulation and real tissue, error accumulation over long runs, hardware demands and clinical validation. Real-time generation is an engineering milestone, not evidence of medical effectiveness.\n\n## Today’s overall judgment\n\nThese four developments answer different parts of the same question: as AI moves from chat interfaces into persistent agents, frontier research and physical machines, who supplies the models, compute, security boundaries and repeatable training environments? Kimi K3 pushes the scale of open models, the security alliance tries to build shared defenses, SSI’s partnership underscores frontier research’s dependence on expensive compute, and Cosmos-H-Dreams moves generative models into closed-loop robotics simulation.\n\nThe follow-up evidence matters more than the launch language. Kimi K3 needs weights, benchmarks and cost data. The alliance needs open deliverables. SSI needs verifiable research. The surgical simulator needs evidence of transfer and safety. Only then will today’s attention turn into durable value."
+      },
+      "ja": {
+        "title": "毎日AIニュース｜2026年7月27日：オープンモデル、安全連合、最先端計算資源",
+        "summary": "Horizonが上海時間の7月27日として抽出した72件から、Kimi K3の公開予告、オープンAI安全連合、NVIDIAによるSSIへの投資と計算支援、手術ロボット向けリアルタイム生成シミュレーターの4件を選びました。",
+        "content_markdown": "# 毎日AIニュース｜2026年7月27日：オープンモデル、安全連合、最先端計算資源\n\n今日は候補そのものは多くありましたが、長い一覧がそのまま良いニュース記事になるわけではありません。最終的に残したのは4件です。注目度の高いオープンモデルが公開カウントダウンに入り、多様な企業と団体がオープンなAI安全連合を立ち上げ、情報公開の少ない最先端研究所が大規模な計算資源を確保し、手術ロボット向け世界モデルがリアルタイムの閉ループシミュレーションへ進みました。AI競争がベンチマークだけでなく、エコシステム、安全基盤、計算資源、専門的な物理応用へ広がっていることを示しています。\n\n## Kimi K3は公開間近。ただし性能は実物での確認が必要\n\nMoonshot AIは公式モデルページでKimi K3を予告し、次世代のオープン・フロンティアモデルであり、世界初のオープンな3兆パラメータ級モデルだと説明しました。長期のコーディング、知識労働、推論に加え、ツール利用、ブラウジング、複数段階の計画といったネイティブなエージェント能力を掲げています。新アーキテクチャとしてKimi Delta AttentionとAttention Residualsも挙げ、大規模コードリポジトリ向けの長いコンテキストをうたっています。\n\nこの規模のオープンウェイトモデルは、オープンモデルの能力上限、提供コスト、外部サービスの価格に影響する可能性があります。また、超大規模な混合エキスパート方式が閉じた研究所の外で実用的な競争力を持てるかを試す機会にもなります。ただし執筆時点では公式ページはまだ公開予定の状態で、重み、完全なモデルカード、評価条件、実際の推論コストはそろっていません。今日確認できるのは公開計画と技術的な位置付けであり、性能の証明ではありません。\n\n## AIエージェントの共通防衛線を目指す新たな連合\n\nNVIDIAと、クラウド、サイバーセキュリティ、企業ソフトウェア、オープンモデル、オープンソース財団などの数十組織は、Open Secure AI Allianceの設立を発表しました。Linux FoundationのAkritesとOpenSSFコミュニティの活動を土台に、AIソフトウェアとエージェントを守るためのオープンな技術、ツール、手法を共同開発・共有するとしています。\n\n対象はモデルの重みだけではありません。ID、権限、隔離、エージェント実行基盤、ガードレール、ログ、評価、脆弱性修正まで、エージェント全体を安全の範囲に含めています。発表では、エージェントの挙動をテスト、追跡、監査、統治するためのオープンな研究基盤や、安全なモデル形式、ワークロードID、複数モデルによる脆弱性スキャンなどの取り組みが示されました。\n\n有力な参加者がそろっただけで安全標準が完成するわけではありません。統治が明確か、成果物が本当に公開されるか、脆弱性開示が透明か、各社のツールが相互運用できるかが重要です。約束が再利用可能なコード、データセット、評価手法になれば、ソフトウェア供給網の安全コミュニティと同じように、エージェント時代の公共基盤になり得ます。\n\n## SSIがNVIDIAの投資を受け、計算能力を約10倍へ\n\nSafe Superintelligence、通称SSIは、NVIDIAとの長期提携を発表しました。NVIDIAは投資も行いましたが、金額は公表されていません。SSIは次世代Vera Rubin基盤を利用し、使用できる計算能力を1桁分、つまり約10倍に拡大する計画です。両社はNVIDIAの現在および将来の計算基盤についても技術協力を進めます。\n\nIlya SutskeverとDaniel Levyが率いるSSIは、安全な超知能という一つの目標に集中し、研究の詳細をほとんど公開してきませんでした。今回の提携は、研究所が現在の方向をより大きな規模で検証する段階に進めると判断し、NVIDIAも資金と中核インフラの両面から支える意思を示したものです。\n\nただし、これはまだ研究上の突破ではありません。新モデル、論文、第三者が検証できる結果は公開されておらず、計算資源の拡大も計画です。今後は、SSIが検証可能な成果を示すか、大規模化が能力だけでなく堅牢性と安全性の向上にもつながるかを見る必要があります。\n\n## 生成世界モデルが手術ロボットをリアルタイムで模擬\n\nNVIDIAの研究チームは、ロボットの動作に応じて手術場面の次の映像をリアルタイム生成するCosmos-H-Dreamsを発表しました。従来のオフライン手術世界モデルを、因果的で少ないステップの生徒モデルへ蒸留し、FlashDreamsのストリーミング推論で動かします。人間の操作者や学習済みロボット方策が動作を入力し、合成された反応をすぐに確認できます。\n\n発表チームによると、1枚のRTX PRO 6000で、従来のおよそ毎秒10フレームから約160フレームへ高速化しました。技能練習、ロボット方策の閉ループ評価、合成訓練データの生成を想定し、公開モデルは研究用手術ロボットによる卓上縫合に焦点を当てています。\n\nこれはAIが安全に手術できるようになったという意味ではありません。高価で再現しにくいロボット実験を、実機に移す前に対話的な生成環境で大量に試せる可能性が重要です。シミュレーションと実際の組織の差、長時間動作での誤差蓄積、必要なハードウェア、臨床検証は残された課題です。リアルタイム生成は工学的進展であり、医療効果の証明ではありません。\n\n## 今日の総合判断\n\n4件は別々に見えますが、共通する問いがあります。AIがチャットから常時動くエージェント、最先端研究、物理機械へ進むとき、モデル、計算資源、安全境界、反復可能な訓練環境を誰が提供するのかという問いです。Kimi K3はオープンモデルの規模を押し上げ、安全連合は共通防衛線を築こうとし、SSIの提携は最先端研究が高価な計算資源に依存する現実を示し、Cosmos-H-Dreamsは生成モデルをロボットの閉ループ模擬へ進めました。\n\n今後は発表文より証拠を見る必要があります。Kimi K3には重み、評価、コスト、安全連合には公開成果、SSIには検証可能な研究、手術シミュレーターには実環境への移行と安全検証が必要です。それらが示されて初めて、今日の注目が長期的な価値へ変わります。"
+      }
+    }
+  }
+}

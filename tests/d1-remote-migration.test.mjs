@@ -39,23 +39,17 @@ function createLegacyDatabase() {
     create table anonymous_chat_messages (
       message_id text primary key,
       visitor_id text not null,
-      client_id text not null default '',
       nickname text not null,
       content text not null,
       created_at text not null,
-      edited_at text,
       hidden integer not null default 0,
-      ip_hash text not null,
-      ip_prefix text not null default '',
-      room_key text not null default 'public',
-      encrypted integer not null default 0
+      ip_hash text not null
     );
     create table chat_bans (
       ban_id text primary key,
       ban_type text not null,
       visitor_id text not null default '',
       ip_hash text not null default '',
-      ip_prefix text not null default '',
       reason text not null default '',
       active integer not null default 1,
       created_by text not null,
@@ -75,6 +69,29 @@ function createLegacyDatabase() {
       upload_status text not null,
       created_at text not null,
       expires_at text not null
+    );
+    create table article_delivery_channels (
+      channel_key text primary key,
+      category text not null,
+      enabled integer not null default 0,
+      token_hash text not null default '',
+      token_hint text not null default '',
+      token_created_at text,
+      last_used_at text,
+      created_at text not null,
+      updated_at text not null
+    );
+    create table article_delivery_events (
+      event_id text primary key,
+      channel_key text not null references article_delivery_channels(channel_key) on delete cascade,
+      idempotency_key text not null,
+      article_id text references articles(article_id) on delete set null,
+      slug text not null,
+      title_zh text not null default '',
+      source_label text not null default '',
+      status text not null default 'draft',
+      created_at text not null,
+      unique(channel_key, idempotency_key)
     );
     insert into anonymous_chat_messages (
       message_id, visitor_id, nickname, content, created_at, ip_hash
@@ -106,15 +123,17 @@ test("remote D1 runner upgrades only missing compatibility columns before depend
     const result = await migrateRemoteD1(createAdapter(db, events));
     const expectedColumns = compatibilityColumnMigrations().map(({ table, column }) => ({ table, column }));
     assert.deepEqual(result.alteredColumns, expectedColumns);
-    assert.equal(events[0], "file:cloudflare/schema.sql");
+    assert.match(events[0], /^query:pragma table_info/);
 
     const indexFilePosition = events.indexOf("file:cloudflare/schema-indexes.sql");
+    const schemaFilePosition = events.indexOf("file:cloudflare/schema.sql");
     const alterPositions = events
       .map((event, index) => event.startsWith("command:") ? index : -1)
       .filter((index) => index >= 0);
     assert.equal(alterPositions.length, expectedColumns.length);
-    assert.ok(alterPositions.every((position) => position > 0 && position < indexFilePosition));
-    assert.equal(events.filter((event) => event.startsWith("query:pragma table_info")).length, 4);
+    assert.ok(alterPositions.every((position) => position > 0 && position < schemaFilePosition));
+    assert.ok(schemaFilePosition < indexFilePosition);
+    assert.equal(events.filter((event) => event.startsWith("query:pragma table_info")).length, 6);
     assert.equal(
       events.filter((event) => event.startsWith("query:select ")).length,
       REMOTE_MIGRATION_VERIFICATION_QUERIES.length
@@ -124,9 +143,15 @@ test("remote D1 runner upgrades only missing compatibility columns before depend
       .every((event) => !/\b(?:delete|drop|truncate|replace)\b/i.test(event)));
 
     assert.deepEqual(
-      { ...db.prepare("select content, ip_hash_key_id, client_request_id from anonymous_chat_messages where message_id = ?")
+      { ...db.prepare("select content, room_key, encrypted, ip_hash_key_id, client_request_id from anonymous_chat_messages where message_id = ?")
         .get("legacy-message") },
-      { content: "kept", ip_hash_key_id: "legacy", client_request_id: "" }
+      {
+        content: "kept",
+        room_key: "public",
+        encrypted: 0,
+        ip_hash_key_id: "legacy",
+        client_request_id: ""
+      }
     );
     assert.equal(
       db.prepare("select ip_hash_key_id from chat_bans where ban_id = ?").get("legacy-ban").ip_hash_key_id,
@@ -134,6 +159,21 @@ test("remote D1 runner upgrades only missing compatibility columns before depend
     );
     assert.equal(db.prepare("select sync_generation from transfer_rooms where id = ?").get("legacy-room").sync_generation, 0);
     assert.equal(db.prepare("select idempotency_key from transfer_items where id = ?").get("legacy-item").idempotency_key, "");
+    assert.ok(
+      db.prepare("pragma table_info(article_delivery_events)").all()
+        .some((column) => column.name === "payload_hash")
+    );
+    assert.ok(
+      db.prepare("pragma table_info(article_delivery_channels)").all()
+        .some((column) => column.name === "auto_publish")
+    );
+    assert.equal(
+      db.prepare(`
+        select auto_publish from article_delivery_channels
+        where channel_key = 'daily-ai-news'
+      `).get().auto_publish,
+      0
+    );
     assert.deepEqual(db.prepare("pragma foreign_key_check").all(), []);
   } finally {
     db.close();

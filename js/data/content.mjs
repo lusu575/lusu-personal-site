@@ -1,6 +1,66 @@
 export const content = {
   updates: [
     {
+      "article_id": "seed-update-2026-07-27-daily-ai-news-inbox",
+      "slug": "2026-07-27-daily-ai-news-inbox",
+      "category": "site-updates",
+      "tags": ["网站更新", "知识库", "AI新闻", "Admin"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-27T13:06:00.000Z",
+      "updated_at": "2026-07-27T16:05:00.000Z",
+      "published_at": "2026-07-27T16:05:00.000Z",
+      "fallbackOnly": true,
+      "icon": "knowledge",
+      "date": "2026.07.27",
+      "title": {
+        "zh": "每日 AI 新闻正式上线",
+        "en": "Daily AI News Goes Live",
+        "ja": "毎日AIニュース正式稼働"
+      },
+      "summary": {
+        "zh": "知识库“每日 AI 新闻”正式接入 Horizon 与 Codex：每天北京时间 7 点开始整理前 24 小时内容，三语稿通过检查后在 8 点前自动公开。",
+        "en": "Daily AI News now runs through Horizon and Codex: each Beijing-time day starts at 07:00, covers the prior 24 hours, and publishes the validated Chinese, English, and Japanese edition by 08:00.",
+        "ja": "「毎日AIニュース」は Horizon と Codex に正式接続され、北京時間の毎朝7時に直前24時間分の処理を始め、検証済みの中・英・日3言語版を8時までに自動公開します。"
+      },
+      "content_markdown": {
+        "zh": "# 每日 AI 新闻正式上线\n\n知识库“每日 AI 新闻”已经接入 Horizon 与 Codex 的固定日更流程，并以完整中文、英文、日文文章公开。\n\n## 每日流程\n\n- 每天北京时间 7 点开始，只处理此前精确 24 小时内发布的消息。\n- Horizon 必须先完成多来源采集、网址归一和重复合并；Codex 再做一手核实、重要性筛选、近 30 天去重和三语成文。\n- 正文继续使用“今日要闻 / 主要新闻 / 传闻”三段结构，每条保留简短、具体的 AI 解读，不向读者堆放来源链接。\n\n## 发布安全\n\n- 只有三语内容、时间窗口、来源记录、结构和去重检查全部通过，专用通道才会公开文章。\n- Horizon 不可用、验证失败或运行超过北京时间 8 点时，当天任务停止发布并留下失败记录，不用不完整内容凑数。\n- 后台仍可随时暂停通道、关闭自动公开、轮换或撤销凭证，并查看最近投递结果。\n\n## 首次上线\n\n正式上线使用 7 月 27 日三语样稿走完整生产链路验证；测试占位文章仍会明确标注，不会冒充真实新闻。",
+        "en": "# Daily AI News Goes Live\n\nKnowledge’s Daily AI News is now connected to a fixed Horizon and Codex publishing flow, with complete Chinese, English, and Japanese editions.\n\n## Daily flow\n\n- Work starts every day at 07:00 Beijing time and only covers items published in the exact preceding 24 hours.\n- Horizon must first collect from multiple sources, normalize URLs, and merge duplicates. Codex then verifies primary material, applies the editorial threshold, checks the previous 30 days, and writes the three editions.\n- Each article keeps the Lead Story, More News, and Rumors structure, with one brief and specific AI take per item and no pile of source links for readers to open.\n\n## Publishing safeguards\n\n- The dedicated channel publishes only after all three languages, the time window, source record, structure, and duplicate checks pass.\n- If Horizon is unavailable, validation fails, or the run reaches 08:00 Beijing time, that day stops without publishing incomplete filler.\n- Admin can still pause the channel, disable automatic publishing, rotate or revoke its credential, and review recent delivery results.\n\n## First live run\n\nThe July 27 trilingual edition is used to verify the complete production path. The placeholder remains clearly labelled and cannot be mistaken for real news.",
+        "ja": "# 毎日AIニュース正式稼働\n\n知識庫の「毎日AIニュース」は、Horizon と Codex による固定の日次公開フローへ接続され、中国語・英語・日本語の完全版を公開します。\n\n## 毎日の流れ\n\n- 毎日北京時間7時に開始し、直前の正確な24時間に公開された情報だけを扱います。\n- まず Horizon が複数ソースの収集、URL正規化、重複統合を行い、その後 Codex が一次情報の確認、重要度判定、過去30日との重複確認、3言語の記事作成を行います。\n- 本文は「今日のトップニュース / 主なニュース / 噂」の3部構成を保ち、各項目に短く具体的なAI解説を付け、読者向け本文には大量の参照リンクを並べません。\n\n## 公開時の安全策\n\n- 3言語、時間範囲、出典記録、構成、重複確認のすべてを通過した場合だけ、専用チャンネルが記事を公開します。\n- Horizon が利用できない、検証に失敗する、または北京時間8時を過ぎた場合は、不完全な記事を公開せず、その日の処理を停止して失敗を記録します。\n- 管理画面では引き続きチャンネルの一時停止、自動公開の無効化、認証情報の更新・失効、最近の配信結果の確認ができます。\n\n## 初回公開\n\n7月27日の3言語版で本番経路全体を検証します。プレースホルダー記事は引き続きテスト用と明記され、実際のニュースとは区別されます。"
+      }
+    },
+    {
+      "article_id": "seed-update-2026-07-26-security-reliability-hardening",
+      "slug": "2026-07-26-security-reliability-hardening",
+      "category": "site-updates",
+      "tags": ["security", "reliability", "Admin", "Cloudflare", "QA"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-26T14:58:00.000Z",
+      "updated_at": "2026-07-26T14:58:00.000Z",
+      "published_at": "2026-07-26T14:58:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.07.26",
+      "title": {
+        "zh": "全站安全与可靠性加固",
+        "en": "Sitewide Security and Reliability Hardening",
+        "ja": "サイト全体のセキュリティと信頼性を強化"
+      },
+      "summary": {
+        "zh": "一次性加固账号入口、统计写入、D1 迁移、后台并发编辑与互传治理，并为文章分享、游戏和日语工具补齐超时、降级与离线回退。",
+        "en": "Hardened account entry, analytics writes, D1 migrations, concurrent admin editing, and Transfer governance while adding timeouts, degradation paths, and offline fallbacks for articles, games, and the Japanese tool.",
+        "ja": "アカウント入口、分析書き込み、D1 移行、管理画面の同時編集、転送管理を強化し、記事・ゲーム・日本語ツールへタイムアウト、縮退、オフライン復帰を追加しました。"
+      },
+      "content_markdown": {
+        "zh": "# 全站安全与可靠性加固\n\n本轮把公开站点、Cloudflare 后端和管理后台作为一个完整系统复检，集中修复会影响账号安全、数据一致性、失败恢复和发布可信度的问题。\n\n## 账号、接口与统计\n\n- 账号与写接口限制请求体、来源和内容类型；登录、注册采用不暴露账号是否存在的响应，并按网络来源与账号标识实施退避限流。\n- 密码派生提高成本，旧密码在成功登录后渐进升级；服务端错误只返回稳定错误码，不把内部异常细节交给浏览器。\n- 页面、点击和文章浏览写入增加频率上限、重复抑制与有界保留，避免机器人或重复刷新无限放大 D1 写入。\n\n## 数据与后台一致性\n\n- 旧 D1 会先补齐缺失列，再执行依赖这些列的索引和完整 schema；全新数据库仍可一次初始化。\n- 文章、视频、视频分类与社交链接使用版本匹配写入；多个后台标签页同时编辑时，陈旧页面会收到冲突提示，不再静默覆盖较新的内容。\n- 临时互传管理区分部分成功与完全成功，设置写入使用条件更新，列表搜索、危险确认、重复操作锁和 R2 清理失败都有可恢复状态。\n\n## 公开访问与离线回退\n\n- 游戏目录和日语工具的可选 manifest 都有超时与本地回退；网络服务变慢时不会阻塞本地内容和已有存档。\n- 首页壁纸预载与真正渲染复用同一资源选择，避免重复下载。\n- `/articles/<slug>` 现在由边缘函数输出文章专属标题、摘要、Open Graph、Twitter、规范链接和结构化数据；脚本不可用时仍保留安全的可读正文回退。\n\n## 发布边界\n\n- 全站补齐基础安全响应头与采样可观测性；CI 的第三方 Actions 固定到不可变提交，并执行完整测试、构建、可重复产物和浏览器发布审计。\n- 这些改动不公开 session、密码、完整 IP、访客隐藏标识或后台草稿，也不改变 GitHub main 触发 Cloudflare Pages 自动部署的正式流程。",
+        "en": "# Sitewide Security and Reliability Hardening\n\nThis pass reviews the public site, Cloudflare backend, and admin area as one system, fixing issues that could affect account security, data consistency, failure recovery, and release confidence.\n\n## Accounts, APIs, and analytics\n\n- Account and write endpoints now bound request bodies, origins, and content types. Sign-in and registration avoid revealing whether an account exists, with backoff limits applied by network source and account identifier.\n- Password derivation is more expensive, and older hashes upgrade gradually after a successful sign-in. Server errors expose stable codes instead of internal exception details.\n- Page, click, and article-view writes now have rate ceilings, duplicate suppression, and bounded retention so bots or repeated refreshes cannot grow D1 writes without limit.\n\n## Data and admin consistency\n\n- Legacy D1 databases add missing columns before dependent indexes and the complete schema run; fresh databases still initialize in one pass.\n- Articles, videos, video categories, and social links use version-matched writes. When multiple admin tabs edit the same record, a stale tab reports a conflict instead of silently overwriting newer content.\n- Quick Transfer governance distinguishes partial success from full success, uses conditional setting updates, and provides recoverable states for list search, dangerous confirmations, duplicate-action locks, and failed R2 cleanup.\n\n## Public access and offline fallback\n\n- The game catalog and optional Japanese-tool manifests have timeouts and local fallbacks, so slow network services do not block local content or existing saves.\n- Home wallpaper preload and rendering now share the same asset selection, avoiding duplicate downloads.\n- `/articles/<slug>` now receives article-specific title, summary, Open Graph, Twitter, canonical, and structured metadata at the edge, with a safe readable fallback when scripts are unavailable.\n\n## Release boundary\n\n- The site now ships baseline security headers and sampled observability. CI pins third-party Actions to immutable commits and runs the complete tests, build, reproducible-output check, and browser release audits.\n- These changes do not expose sessions, passwords, full IP addresses, hidden visitor identifiers, or admin drafts, and the official release path remains GitHub main triggering Cloudflare Pages.",
+        "ja": "# サイト全体のセキュリティと信頼性を強化\n\n公開サイト、Cloudflare バックエンド、管理画面を一つのシステムとして再点検し、アカウント安全性、データ整合性、障害復旧、公開品質に影響する問題をまとめて修正しました。\n\n## アカウント・API・分析\n\n- アカウント系と書き込み API は本文サイズ、送信元、Content-Type を制限します。ログインと登録ではアカウントの存在を推測できない応答を使い、ネットワーク元とアカウント識別子の両方で段階的に制限します。\n- パスワード導出コストを高め、古いハッシュはログイン成功後に順次更新します。サーバー内部の例外詳細はブラウザーへ返さず、安定したエラーコードだけを公開します。\n- ページ、クリック、記事閲覧の書き込みに上限、重複抑制、有限の保存期間を設け、ボットや連続更新で D1 書き込みが無制限に増えないようにしました。\n\n## データと管理画面の整合性\n\n- 旧 D1 は不足列を先に追加し、その後で依存インデックスと完全な schema を適用します。新規データベースは従来どおり一度で初期化できます。\n- 記事、動画、動画分類、ソーシャルリンクは版を照合して保存します。複数の管理タブで同じ項目を編集した場合、古い画面は新しい内容を黙って上書きせず競合を通知します。\n- 一時転送管理は部分成功と完全成功を区別し、設定を条件付きで更新します。検索、危険操作の確認、重複操作ロック、R2 削除失敗も復旧可能な状態として扱います。\n\n## 公開アクセスとオフライン復帰\n\n- ゲーム一覧と日本語ツールの任意 manifest にタイムアウトとローカル復帰を追加し、ネットワークが遅くてもローカル内容や既存保存を妨げません。\n- Home の壁紙は事前読み込みと実表示で同じ素材選択を使い、重複ダウンロードを避けます。\n- `/articles/<slug>` はエッジで記事固有のタイトル、概要、Open Graph、Twitter、canonical、構造化データを返し、スクリプトが使えない場合も安全な可読本文を残します。\n\n## 公開工程\n\n- 基本セキュリティヘッダーとサンプリング観測を追加しました。CI の外部 Actions は不変コミットへ固定し、全テスト、ビルド、再現可能な成果物、ブラウザー公開監査を実行します。\n- session、パスワード、完全な IP、非公開 visitor 識別子、管理下書きは公開せず、正式な公開経路も GitHub main から Cloudflare Pages を起動する方式のままです。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-07-26-chatroom-icon-redraw",
       "slug": "2026-07-26-chatroom-icon-redraw",
       "category": "site-updates",

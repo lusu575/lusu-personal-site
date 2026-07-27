@@ -1,7 +1,8 @@
-import { CONTENT_VERSION, clampNumber, shortContentHash } from "./constants.mjs?v=20260714-japanese-subtext-v103-retry-r1";
+import { CONTENT_VERSION, clampNumber, shortContentHash } from "./constants.mjs?v=20260726-japanese-subtext-network-r1";
 
-const manifestUrl = new URL("../audio/manifest.json", import.meta.url);
+const manifestUrl = new URL("../audio/manifest.json?v=20260726-audio-manifest-cache-r1", import.meta.url);
 const defaultAudioRoot = new URL("../audio/", import.meta.url);
+const defaultManifestTimeoutMs = 7000;
 
 export class AudioPlayer extends EventTarget {
   constructor(AudioClass = globalThis.Audio) {
@@ -19,16 +20,45 @@ export class AudioPlayer extends EventTarget {
     this.#bind();
   }
 
-  async loadManifest(fetchImpl = globalThis.fetch?.bind(globalThis)) {
+  async loadManifest(fetchImpl = globalThis.fetch?.bind(globalThis), { signal: callerSignal, timeoutMs = defaultManifestTimeoutMs } = {}) {
     if (this.manifest) return this.manifest;
     if (!fetchImpl) throw new Error("Fetch unavailable");
-    const response = await fetchImpl(manifestUrl, { cache: "no-store", credentials: "same-origin" });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const manifest = await response.json();
-    if (manifest?.schemaVersion !== 1 || manifest.contentVersion !== CONTENT_VERSION || !manifest.items || !manifest.stages) throw new Error("Invalid audio manifest");
-    this.audioRoot = resolveAudioRoot(manifest.audioBaseUrl);
-    this.manifest = manifest;
-    return manifest;
+    const controller = new AbortController();
+    let timedOut = false;
+    const abortFromCaller = () => controller.abort(callerSignal?.reason);
+    if (callerSignal?.aborted) {
+      abortFromCaller();
+    } else {
+      callerSignal?.addEventListener("abort", abortFromCaller, { once: true });
+    }
+    const timer = globalThis.setTimeout(() => {
+      timedOut = true;
+      controller.abort();
+    }, timeoutMs);
+    try {
+      const response = await fetchImpl(manifestUrl, {
+        cache: "force-cache",
+        credentials: "same-origin",
+        signal: controller.signal
+      });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const manifest = await response.json();
+      if (manifest?.schemaVersion !== 1 || manifest.contentVersion !== CONTENT_VERSION || !manifest.items || !manifest.stages) throw new Error("Invalid audio manifest");
+      this.audioRoot = resolveAudioRoot(manifest.audioBaseUrl);
+      this.manifest = manifest;
+      return manifest;
+    } catch (error) {
+      if (timedOut) {
+        const timeoutError = new Error("Audio manifest request timed out");
+        timeoutError.name = "TimeoutError";
+        timeoutError.code = "AUDIO_MANIFEST_TIMEOUT";
+        throw timeoutError;
+      }
+      throw error;
+    } finally {
+      globalThis.clearTimeout(timer);
+      callerSignal?.removeEventListener("abort", abortFromCaller);
+    }
   }
 
   unlock() {

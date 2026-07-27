@@ -67,10 +67,39 @@ test("one audio element handles scene, sentence, token, option, seek, and stop",
 test("manifest audioBaseUrl is normalized and traversal remains blocked", async () => {
   const player = new AudioPlayer(FakeAudio);
   const manifest = { schemaVersion: 1, contentVersion: "1.0.2", audioBaseUrl: "https://cdn.example.test/jp-audio", items: {}, stages: {} };
-  await player.loadManifest(async () => ({ ok: true, json: async () => manifest }));
+  let manifestRequest = null;
+  await player.loadManifest(async (url, options) => {
+    manifestRequest = { url: String(url), options };
+    return { ok: true, json: async () => manifest };
+  });
+  assert.match(manifestRequest.url, /audio\/manifest\.json\?v=20260726-audio-manifest-cache-r1$/);
+  assert.equal(manifestRequest.options.cache, "force-cache");
+  assert.equal(manifestRequest.options.credentials, "same-origin");
   assert.equal(player.audioRoot.href, "https://cdn.example.test/jp-audio/");
   player.manifest.items.bad = { path: "../secret.mp3" };
   await assert.rejects(() => player.playItem("bad"), /missing/i);
+});
+
+test("a hanging manifest request times out and aborts its fetch", async () => {
+  const player = new AudioPlayer(FakeAudio);
+  let requestSignal = null;
+  const hangingFetch = (_url, options) => {
+    requestSignal = options.signal;
+    return new Promise((_resolve, reject) => {
+      options.signal.addEventListener("abort", () => {
+        const error = new Error("aborted");
+        error.name = "AbortError";
+        reject(error);
+      }, { once: true });
+    });
+  };
+
+  await assert.rejects(
+    player.loadManifest(hangingFetch, { timeoutMs: 15 }),
+    (error) => error?.name === "TimeoutError" && error?.code === "AUDIO_MANIFEST_TIMEOUT"
+  );
+  assert.equal(requestSignal?.aborted, true);
+  assert.equal(player.manifest, null);
 });
 
 test("unsafe or missing audio paths fail closed", async () => {

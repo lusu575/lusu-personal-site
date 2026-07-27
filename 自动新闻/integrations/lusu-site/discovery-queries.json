@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "queries": [
+    {
+      "id": "ai",
+      "query": "(\"artificial intelligence\" OR \"generative AI\" OR \"large language model\" OR \"AI agent\" OR \"foundation model\")",
+      "language": "en",
+      "country": "US",
+      "maxResults": 60,
+      "category": "ai-discovery"
+    },
+    {
+      "id": "chips-storage",
+      "query": "(\"AI chip\" OR \"AI accelerator\" OR GPU OR NPU OR HBM OR DRAM OR NAND OR CXL)",
+      "language": "en",
+      "country": "US",
+      "maxResults": 50,
+      "category": "chips-storage-discovery"
+    },
+    {
+      "id": "robotics",
+      "query": "(robotics OR humanoid OR \"embodied AI\" OR \"robot foundation model\")",
+      "language": "en",
+      "country": "US",
+      "maxResults": 50,
+      "category": "robotics-discovery"
+    },
+    {
+      "id": "ai-devices",
+      "query": "(\"AI glasses\" OR \"smart glasses\" OR \"AI phone\" OR \"AI PC\" OR \"edge AI device\")",
+      "language": "en",
+      "country": "US",
+      "maxResults": 50,
+      "category": "ai-devices-discovery"
+    },
+    {
+      "id": "autonomous-driving",
+      "query": "(\"autonomous driving\" OR \"self-driving\" OR ADAS OR robotaxi)",
+      "language": "en",
+      "country": "US",
+      "maxResults": 50,
+      "category": "autonomous-driving-discovery"
+    },
+    {
+      "id": "data-centers",
+      "query": "\"AI data center\" OR \"AI datacenter\" OR \"data center cooling\" OR \"data center power\" OR \"AI networking\" OR \"AI interconnect\"",
+      "language": "en",
+      "country": "US",
+      "maxResults": 50,
+      "category": "data-centers-discovery"
+    },
+    {
+      "id": "tech-finance",
+      "query": "\"AI investment\" OR \"AI funding\" OR \"AI acquisition\" OR \"semiconductor investment\" OR \"robotics funding\" OR \"data center financing\"",
+      "language": "en",
+      "country": "US",
+      "maxResults": 50,
+      "category": "tech-finance-discovery"
+    }
+  ]
+}

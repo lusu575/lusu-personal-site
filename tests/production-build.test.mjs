@@ -10,6 +10,7 @@ import {
   classifyCache,
   replaceDirectoryAtomically,
   rewriteHtmlAssetUrls,
+  rewriteJapaneseToolModulePaths,
   validateOutputPath,
   verifyManifestInventory
 } from "../scripts/build-production.mjs";
@@ -64,6 +65,56 @@ test("moving first-party CSS to the hashed root keeps current asset URLs stable"
   assert.doesNotThrow(() => assertCssUrlsStayStable('a{background:url("../assets/images/a.png?v=1")}', "css/style.css", "_assets/site.hash.css"));
   assert.doesNotThrow(() => assertCssUrlsStayStable('a{background:url("../../assets/images/a.png")}', "css/routes/chatroom.css", "_assets/route-chatroom.hash.css"));
   assert.throws(() => assertCssUrlsStayStable('a{background:url("./local.png")}', "tools/demo/style.css", "_assets/demo.hash.css"), /changes CSS URL/);
+});
+
+test("Japanese production paths preserve a versioned audio manifest query", () => {
+  const source = [
+    'const manifestUrl = new URL("../audio/manifest.json?v=cache-r1", import.meta.url);',
+    'const defaultAudioBaseUrl = new URL("../audio/", import.meta.url);'
+  ].join("\n");
+  const rewritten = rewriteJapaneseToolModulePaths(
+    source,
+    "tools/japanese-subtext/lib/audio-player.mjs"
+  );
+  assert.match(
+    rewritten,
+    /new URL\("\/tools\/japanese-subtext\/audio\/manifest\.json\?v=cache-r1", location\.origin\)/
+  );
+  assert.match(
+    rewritten,
+    /new URL\("\/tools\/japanese-subtext\/audio\/", location\.origin\)/
+  );
+  assert.doesNotMatch(rewritten, /import\.meta\.url/);
+});
+
+test("Japanese production path rewriting remains exactly-once and supports an unversioned manifest", () => {
+  const unversioned = rewriteJapaneseToolModulePaths(
+    [
+      "const manifestUrl = new URL('../audio/manifest.json', import.meta.url);",
+      "const defaultAudioBaseUrl = new URL('../audio/', import.meta.url);"
+    ].join("\n"),
+    "audio-player.mjs"
+  );
+  assert.match(unversioned, /audio\/manifest\.json", location\.origin/);
+  assert.doesNotMatch(unversioned, /manifest\.json\?/);
+
+  assert.throws(
+    () => rewriteJapaneseToolModulePaths(
+      [
+        'const first = new URL("../audio/manifest.json?v=one", import.meta.url);',
+        'const second = new URL("../audio/manifest.json?v=two", import.meta.url);',
+        'const root = new URL("../audio/", import.meta.url);'
+      ].join("\n"),
+      "audio-player.mjs"
+    ),
+    /Expected exactly one tool audio manifest replacement/
+  );
+
+  const content = rewriteJapaneseToolModulePaths(
+    'const contentRoot = new URL("../content/", import.meta.url);',
+    "tools/japanese-subtext/lib/content-loader.mjs"
+  );
+  assert.match(content, /new URL\("\/tools\/japanese-subtext\/content\/", location\.origin\)/);
 });
 
 test("atomic promotion restores the previous artifact if promotion fails", async () => {

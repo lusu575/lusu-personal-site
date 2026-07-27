@@ -63,6 +63,9 @@ class R2Mock {
   constructor() {
     this.objects = new Map();
     this.uploads = new Map();
+    this.failDeleteKeys = new Set();
+    this.onPut = null;
+    this.onMultipartComplete = null;
   }
 
   async put(key, body, metadata = {}) {
@@ -76,6 +79,7 @@ class R2Mock {
       uploaded: new Date()
     };
     this.objects.set(key, object);
+    await this.onPut?.(object, metadata);
     return object;
   }
 
@@ -94,6 +98,9 @@ class R2Mock {
   }
 
   async delete(key) {
+    if (this.failDeleteKeys.has(key)) {
+      throw new Error("simulated R2 delete failure");
+    }
     this.objects.delete(key);
   }
 
@@ -108,6 +115,7 @@ class R2Mock {
   }
 
   resumeMultipartUpload(key, uploadId) {
+    const bucket = this;
     const upload = this.uploads.get(uploadId);
     if (!upload || upload.key !== key) {
       throw new Error("multipart upload not found");
@@ -131,6 +139,7 @@ class R2Mock {
           uploaded: new Date()
         };
         this.objects.set(key, object);
+        await bucket.onMultipartComplete?.(object);
         return object;
       },
       abort: async () => {
@@ -231,6 +240,40 @@ test("ordinary accounts cannot access transfer administration", async () => {
   assert.equal((await response.json()).code, "TRANSFER_ADMIN_REQUIRED");
 });
 
+test("transfer settings use an expectedUpdatedAt revision and reject stale admin tabs", async () => {
+  const loaded = await call("admin/transfer/settings", { token: adminToken });
+  assert.equal(loaded.status, 200);
+  const baseline = (await loaded.json()).settings;
+  assert.match(baseline.updatedAt, /^\d{4}-\d{2}-\d{2}T/);
+
+  const saved = await call("admin/transfer/settings", {
+    method: "PUT",
+    token: adminToken,
+    ...jsonBody({
+      normal_user_daily_files: 42,
+      expectedUpdatedAt: baseline.updatedAt
+    })
+  });
+  assert.equal(saved.status, 200);
+  const current = (await saved.json()).settings;
+  assert.equal(current.normalUserDailyFiles, 42);
+  assert.notEqual(current.updatedAt, baseline.updatedAt);
+
+  const stale = await call("admin/transfer/settings", {
+    method: "PUT",
+    token: adminToken,
+    ...jsonBody({
+      normal_user_daily_files: 77,
+      expectedUpdatedAt: baseline.updatedAt
+    })
+  });
+  assert.equal(stale.status, 409);
+  assert.equal((await stale.json()).code, "TRANSFER_SETTINGS_CONFLICT");
+
+  const reloaded = await call("admin/transfer/settings", { token: adminToken });
+  assert.equal((await reloaded.json()).settings.normalUserDailyFiles, 42);
+});
+
 test("admins can page stored files with sender and expiry metadata, then delete the R2 object", async () => {
   await call("transfer/config", { token: adminToken });
   const adminRoomKey = `transfer_${"M".repeat(43)}`;
@@ -289,6 +332,61 @@ test("admins can page stored files with sender and expiry metadata, then delete 
   const removedSecond = await call(`admin/transfer/item/${secondItemId}`, { method: "DELETE", token: adminToken });
   assert.equal(removedSecond.status, 200);
   assert.equal(await bucket.head(secondObjectKey), null);
+});
+
+test("room clear reports partial failure as non-2xx and preserves retryable objects", async () => {
+  const adminRoomKey = `transfer_${"Q".repeat(43)}`;
+  const roomId = "admin-room-partial-clear-0001";
+  const failedItemId = "admin-partial-item-failed-0001";
+  const deletedItemId = "admin-partial-item-deleted-0001";
+  const failedKey = "transfer/2099-01-01/admin-partial-item-failed-0001";
+  const deletedKey = "transfer/2099-01-01/admin-partial-item-deleted-0001";
+  const createdAt = "2026-07-20T01:02:03.000Z";
+  const expiresAt = "2099-07-20T01:02:03.000Z";
+  db.sqlite.prepare(`
+    insert into transfer_rooms (id, room_key, created_by, status, created_at, last_activity_at)
+    values (?, ?, 'user-1', 'open', ?, ?)
+  `).run(roomId, adminRoomKey, createdAt, createdAt);
+  await bucket.put(failedKey, new Uint8Array([1]));
+  await bucket.put(deletedKey, new Uint8Array([2]));
+  const insert = db.sqlite.prepare(`
+    insert into transfer_items (
+      id, room_id, uploader_user_id, uploader_role_snapshot, item_type, original_filename,
+      display_filename, r2_object_key, mime_type, size_bytes, upload_mode, upload_status,
+      created_at, completed_at, expires_at
+    ) values (?, ?, 'user-1', 'user', 'file', ?, ?, ?, 'application/octet-stream', 1, 'simple', 'ready', ?, ?, ?)
+  `);
+  insert.run(failedItemId, roomId, "failed.bin", "failed.bin", failedKey, createdAt, createdAt, expiresAt);
+  insert.run(deletedItemId, roomId, "deleted.bin", "deleted.bin", deletedKey, createdAt, createdAt, expiresAt);
+  bucket.failDeleteKeys.add(failedKey);
+
+  const response = await call(`admin/transfer/room/${roomId}/clear`, {
+    method: "POST",
+    token: adminToken,
+    ...jsonBody({})
+  });
+  bucket.failDeleteKeys.delete(failedKey);
+  assert.equal(response.status, 502);
+  const payload = await response.json();
+  assert.equal(payload.ok, false);
+  assert.equal(payload.status, "partial");
+  assert.equal(payload.deleted, 1);
+  assert.equal(payload.failed, 1);
+  assert.deepEqual(payload.failures.map((failure) => failure.id), [failedItemId]);
+  assert.equal(
+    db.sqlite.prepare("select upload_status from transfer_items where id = ?").get(failedItemId).upload_status,
+    "delete_failed"
+  );
+  assert.equal(db.sqlite.prepare("select id from transfer_items where id = ?").get(deletedItemId), undefined);
+
+  const retry = await call(`admin/transfer/room/${roomId}/clear`, {
+    method: "POST",
+    token: adminToken,
+    ...jsonBody({})
+  });
+  assert.equal(retry.status, 200);
+  assert.equal((await retry.json()).failed, 0);
+  assert.equal(db.sqlite.prepare("select id from transfer_items where id = ?").get(failedItemId), undefined);
 });
 
 test("a logged-in user can join a room and send encrypted text", async () => {
@@ -446,6 +544,42 @@ test("a small upload is private, downloadable, and supports a single byte range"
   assert.equal(await ranged.text(), "temporary");
 });
 
+test("a simple upload deleted while R2 is writing never becomes ready and cleans the orphan object", async () => {
+  const raceRoomKey = `transfer_${"R".repeat(43)}`;
+  const joined = await call("transfer/room/join", {
+    method: "POST",
+    token: adminToken,
+    ...jsonBody({ roomKey: raceRoomKey })
+  });
+  assert.equal(joined.status, 200);
+  let writtenKey = "";
+  bucket.onPut = async (object, metadata) => {
+    const itemId = metadata.customMetadata?.transferItemId;
+    if (!itemId) return;
+    writtenKey = object.key;
+    db.sqlite.prepare("delete from transfer_items where id = ?").run(itemId);
+  };
+  const uploadBytes = new TextEncoder().encode("race-cleanup");
+  const response = await call(
+    `transfer/upload/simple?room=${raceRoomKey}&filename=race.txt&mime=text%2Fplain&size=${uploadBytes.byteLength}`,
+    {
+      method: "POST",
+      token: adminToken,
+      body: uploadBytes,
+      headers: {
+        "Content-Type": "text/plain",
+        "Content-Length": String(uploadBytes.byteLength),
+        "Idempotency-Key": "simple-race-cleanup-0001"
+      }
+    }
+  );
+  bucket.onPut = null;
+  assert.equal(response.status, 409);
+  assert.equal((await response.json()).code, "TRANSFER_UPLOAD_CANCELLED");
+  assert.ok(writtenKey);
+  assert.equal(await bucket.head(writtenKey), null);
+});
+
 test("only a database admin can plan and resume simulated GiB multipart uploads", async () => {
   await call("transfer/room/join", {
     method: "POST",
@@ -507,6 +641,136 @@ test("only a database admin can plan and resume simulated GiB multipart uploads"
   assert.equal(fiveGiBTask.expectedParts, 80);
 });
 
+test("a multipart item deleted during completion cannot leave a ready orphan in R2", async () => {
+  const raceRoomKey = `transfer_${"S".repeat(43)}`;
+  await call("transfer/room/join", {
+    method: "POST",
+    token: adminToken,
+    ...jsonBody({ roomKey: raceRoomKey })
+  });
+  const declaredSize = 5 * 1024 * 1024;
+  const initialized = await call("transfer/upload/init", {
+    method: "POST",
+    token: adminToken,
+    ...jsonBody({
+      roomKey: raceRoomKey,
+      filename: "multipart-race.bin",
+      mimeType: "application/octet-stream",
+      sizeBytes: declaredSize,
+      idempotencyKey: "multipart-race-cleanup-0001"
+    })
+  });
+  assert.equal(initialized.status, 201);
+  const task = await initialized.json();
+  const upload = [...bucket.uploads.values()].find((entry) => entry.key.includes(task.itemId));
+  upload.expectedSize = declaredSize;
+  const part = await call(
+    `transfer/upload/part?session=${task.sessionId}&room=${raceRoomKey}&part=1&size=${declaredSize}`,
+    {
+      method: "PUT",
+      token: adminToken,
+      body: new Uint8Array([1]),
+      headers: {
+        "Content-Type": "application/octet-stream",
+        "Content-Length": String(declaredSize)
+      }
+    }
+  );
+  assert.equal(part.status, 200);
+  let completedKey = "";
+  bucket.onMultipartComplete = async (object) => {
+    completedKey = object.key;
+    db.sqlite.prepare("delete from transfer_items where id = ?").run(task.itemId);
+  };
+  const completed = await call("transfer/upload/complete", {
+    method: "POST",
+    token: adminToken,
+    ...jsonBody({ roomKey: raceRoomKey, sessionId: task.sessionId })
+  });
+  bucket.onMultipartComplete = null;
+  assert.equal(completed.status, 409);
+  assert.equal((await completed.json()).code, "TRANSFER_UPLOAD_CANCELLED");
+  assert.equal(await bucket.head(completedKey), null);
+  assert.equal(db.sqlite.prepare("select id from transfer_items where id = ?").get(task.itemId), undefined);
+});
+
+test("multipart completion preserves the object when another request wins the ready-state race", async () => {
+  const raceRoomKey = `transfer_${"U".repeat(43)}`;
+  await call("transfer/room/join", {
+    method: "POST",
+    token: adminToken,
+    ...jsonBody({ roomKey: raceRoomKey })
+  });
+  const declaredSize = 5 * 1024 * 1024;
+  const initialized = await call("transfer/upload/init", {
+    method: "POST",
+    token: adminToken,
+    ...jsonBody({
+      roomKey: raceRoomKey,
+      filename: "multipart-concurrent.bin",
+      mimeType: "application/octet-stream",
+      sizeBytes: declaredSize,
+      idempotencyKey: "multipart-concurrent-complete-0001"
+    })
+  });
+  assert.equal(initialized.status, 201);
+  const task = await initialized.json();
+  const upload = [...bucket.uploads.values()].find((entry) => entry.key.includes(task.itemId));
+  upload.expectedSize = declaredSize;
+  const part = await call(
+    `transfer/upload/part?session=${task.sessionId}&room=${raceRoomKey}&part=1&size=${declaredSize}`,
+    {
+      method: "PUT",
+      token: adminToken,
+      body: new Uint8Array([1]),
+      headers: {
+        "Content-Type": "application/octet-stream",
+        "Content-Length": String(declaredSize)
+      }
+    }
+  );
+  assert.equal(part.status, 200);
+
+  let completedKey = "";
+  bucket.onMultipartComplete = async (object) => {
+    completedKey = object.key;
+    const completedAt = new Date().toISOString();
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+    db.sqlite.prepare(`
+      update transfer_items set upload_status = 'ready', size_bytes = ?, etag = ?,
+        completed_at = ?, expires_at = ?, last_error = ''
+      where id = ? and upload_status = 'uploading'
+    `).run(object.size, object.etag, completedAt, expiresAt, task.itemId);
+    db.sqlite.prepare(`
+      update transfer_upload_sessions set status = 'completed', updated_at = ?, completed_at = ?
+      where id = ?
+    `).run(completedAt, completedAt, task.sessionId);
+  };
+  let completed;
+  try {
+    completed = await call("transfer/upload/complete", {
+      method: "POST",
+      token: adminToken,
+      ...jsonBody({ roomKey: raceRoomKey, sessionId: task.sessionId })
+    });
+  } finally {
+    bucket.onMultipartComplete = null;
+  }
+
+  assert.equal(completed.status, 200);
+  const payload = await completed.json();
+  assert.equal(payload.alreadyCompleted, true);
+  assert.equal(payload.item.id, task.itemId);
+  assert.notEqual(await bucket.head(completedKey), null);
+  const stored = db.sqlite.prepare(`
+    select i.upload_status, s.status as session_status
+    from transfer_items i join transfer_upload_sessions s on s.item_id = i.id
+    where i.id = ?
+  `).get(task.itemId);
+  assert.equal(stored.upload_status, "ready");
+  assert.equal(stored.session_status, "completed");
+});
+
 test("range and multipart planning helpers enforce platform-safe geometry", () => {
   assert.deepEqual(transferInternals.parseSingleRange("bytes=5-9", 20), { offset: 5, length: 5 });
   assert.throws(() => transferInternals.parseSingleRange("bytes=0-1,4-5", 20), /多个 Range/);
@@ -535,6 +799,50 @@ test("cleanup makes expired objects unavailable and removes their R2 data", asyn
   assert.equal(cleaned.deletedItems >= 1, true);
   assert.equal(await bucket.head(key), null);
   assert.equal(db.sqlite.prepare("select id from transfer_items where id = ?").get(itemId), undefined);
+});
+
+test("admin cleanup returns a retryable non-2xx payload when an R2 object cannot be deleted", async () => {
+  const cleanupRoomKey = `transfer_${"T".repeat(43)}`;
+  const roomId = "cleanup-partial-room-0001";
+  const itemId = "cleanup-partial-item-0001";
+  const objectKey = "transfer/2000-01-01/cleanup-partial-item-0001";
+  const expired = "2000-01-01T00:00:00.000Z";
+  db.sqlite.prepare(`
+    insert into transfer_rooms (id, room_key, created_by, status, created_at, last_activity_at)
+    values (?, ?, 'user-1', 'open', ?, ?)
+  `).run(roomId, cleanupRoomKey, expired, expired);
+  await bucket.put(objectKey, new Uint8Array([1]));
+  db.sqlite.prepare(`
+    insert into transfer_items (
+      id, room_id, uploader_user_id, uploader_role_snapshot, item_type, original_filename,
+      display_filename, r2_object_key, mime_type, size_bytes, upload_mode, upload_status,
+      created_at, completed_at, expires_at
+    ) values (?, ?, 'user-1', 'user', 'file', 'partial.bin', 'partial.bin', ?,
+      'application/octet-stream', 1, 'simple', 'ready', ?, ?, ?)
+  `).run(itemId, roomId, objectKey, expired, expired, expired);
+  bucket.failDeleteKeys.add(objectKey);
+  const response = await call("admin/transfer/cleanup", {
+    method: "POST",
+    token: adminToken,
+    ...jsonBody({ reconcile: false, limit: 100 })
+  });
+  bucket.failDeleteKeys.delete(objectKey);
+  assert.equal(response.status, 502);
+  const payload = await response.json();
+  assert.equal(payload.status, "partial");
+  assert.equal(payload.ok, false);
+  assert.equal(payload.failed, 1);
+  assert.deepEqual(payload.failures.map((failure) => failure.id), [itemId]);
+  assert.deepEqual(payload.retry, { reconcile: false, limit: 100 });
+
+  const retry = await call("admin/transfer/cleanup", {
+    method: "POST",
+    token: adminToken,
+    ...jsonBody(payload.retry)
+  });
+  assert.equal(retry.status, 200);
+  assert.equal((await retry.json()).status, "success");
+  assert.equal(await bucket.head(objectKey), null);
 });
 
 async function sha256Hex(value) {

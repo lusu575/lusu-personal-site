@@ -7,6 +7,7 @@ import {
   articleImageDimensions,
   articleReadProgressPercent,
   deduplicateArticleHeadingAnchors,
+  knowledgeCategoryValues,
   knowledgeSearchTokens,
   normalizeArticleHeadingAnchor,
   normalizeKnowledgeSearchText,
@@ -46,6 +47,26 @@ test("knowledge search normalization and article ordering are deterministic", ()
     { slug: "stale-pinned-update", category: "site-updates", published_at: "2024-01-01T00:00:00Z", is_pinned: 1 }
   ]);
   assert.deepEqual(ordered.map(({ slug }) => slug), ["pinned-old", "new", "older", "stale-pinned-update"]);
+});
+
+test("Daily AI News remains a stable first category and Site Updates remains last", () => {
+  const categories = knowledgeCategoryValues([
+    { category: "note" },
+    { category: "site-updates" },
+    { category: "daily-ai-news" },
+    { category: "note" }
+  ], {
+    fixedCategories: ["daily-ai-news"],
+    firstCategory: "daily-ai-news",
+    lastCategory: "site-updates",
+    labelFor: (value) => ({ note: "Notes" }[value] || value)
+  });
+  assert.deepEqual(categories, ["daily-ai-news", "note", "site-updates"]);
+  assert.deepEqual(knowledgeCategoryValues([], {
+    fixedCategories: ["daily-ai-news"],
+    firstCategory: "daily-ai-news",
+    lastCategory: "site-updates"
+  }), ["daily-ai-news"]);
 });
 
 test("API article languages map to valid document language tags", () => {

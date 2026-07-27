@@ -303,6 +303,57 @@ function replaceExactlyOnce(source, search, replacement, label) {
   return `${source.slice(0, first)}${replacement}${source.slice(first + search.length)}`;
 }
 
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function replaceModuleUrlExactlyOnce(source, {
+  relativePath,
+  publicPath,
+  preserveQuery = false,
+  label
+}) {
+  const queryPattern = preserveQuery ? "(\\?[^\"']*)?" : "";
+  const pattern = new RegExp(
+    `new\\s+URL\\(\\s*([\"'])${escapeRegExp(relativePath)}${queryPattern}\\1\\s*,\\s*import\\.meta\\.url\\s*\\)`,
+    "g"
+  );
+  const matches = [...source.matchAll(pattern)];
+  if (matches.length !== 1) {
+    throw new Error(`Expected exactly one ${label} replacement`);
+  }
+  const match = matches[0];
+  const query = preserveQuery ? match[2] || "" : "";
+  const replacement = `new URL(${JSON.stringify(`${publicPath}${query}`)}, location.origin)`;
+  return `${source.slice(0, match.index)}${replacement}${source.slice(match.index + match[0].length)}`;
+}
+
+export function rewriteJapaneseToolModulePaths(source, modulePath) {
+  const normalizedPath = toPosix(modulePath);
+  if (normalizedPath.endsWith("/audio-player.mjs") || normalizedPath === "audio-player.mjs") {
+    let rewritten = replaceModuleUrlExactlyOnce(source, {
+      relativePath: "../audio/manifest.json",
+      publicPath: "/tools/japanese-subtext/audio/manifest.json",
+      preserveQuery: true,
+      label: "tool audio manifest"
+    });
+    rewritten = replaceModuleUrlExactlyOnce(rewritten, {
+      relativePath: "../audio/",
+      publicPath: "/tools/japanese-subtext/audio/",
+      label: "tool audio root"
+    });
+    return rewritten;
+  }
+  if (normalizedPath.endsWith("/content-loader.mjs") || normalizedPath === "content-loader.mjs") {
+    return replaceModuleUrlExactlyOnce(source, {
+      relativePath: "../content/",
+      publicPath: "/tools/japanese-subtext/content/",
+      label: "tool content root"
+    });
+  }
+  throw new Error(`Unsupported Japanese tool module rewrite: ${modulePath}`);
+}
+
 function publicRewritePlugin({ routeStyles, transferAssets }) {
   const mainPath = path.join(PROJECT_ROOT, "js", "main.js");
   const transferLoaderPath = path.join(PROJECT_ROOT, "js", "features", "quick-transfer-loader.mjs");
@@ -338,13 +389,7 @@ function japaneseToolRewritePlugin() {
     name: "production-japanese-tool-paths",
     setup(build) {
       build.onLoad({ filter: /(?:audio-player|content-loader)\.mjs$/ }, async (args) => {
-        let source = await readFile(args.path, "utf8");
-        if (args.path.endsWith("audio-player.mjs")) {
-          source = replaceExactlyOnce(source, 'new URL("../audio/manifest.json", import.meta.url)', 'new URL("/tools/japanese-subtext/audio/manifest.json", location.origin)', "tool audio manifest");
-          source = replaceExactlyOnce(source, 'new URL("../audio/", import.meta.url)', 'new URL("/tools/japanese-subtext/audio/", location.origin)', "tool audio root");
-        } else {
-          source = replaceExactlyOnce(source, 'new URL("../content/", import.meta.url)', 'new URL("/tools/japanese-subtext/content/", location.origin)', "tool content root");
-        }
+        const source = rewriteJapaneseToolModulePaths(await readFile(args.path, "utf8"), args.path);
         return { contents: source, loader: "js", resolveDir: path.dirname(args.path) };
       });
     }

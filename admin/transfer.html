@@ -5,30 +5,48 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="color-scheme" content="light">
   <title>临时互传管理 - LuSu Admin</title>
-  <link rel="stylesheet" href="/admin/transfer.css?v=20260718-resource-icons-layout-r1">
+  <link rel="stylesheet" href="/admin/transfer.css?v=20260718-resource-icons-layout-r1;admin=20260726-admin-transfer-safety-r1">
 </head>
 <body>
   <header class="transfer-admin-topbar">
     <div class="transfer-admin-title"><span class="transfer-admin-icon icon-app" aria-hidden="true"></span><div><h1>互传文件管理</h1><p>查看 R2 文件、发送账号与过期时间，并手动释放存储空间</p></div></div>
-    <nav><a href="/admin/">返回后台</a><button type="button" id="refresh">刷新数据</button></nav>
+    <nav><a href="/admin/" id="back-admin">返回后台</a><button type="button" id="refresh">刷新数据</button></nav>
   </header>
   <main>
-    <div class="notice" id="notice" role="status" aria-live="polite"></div>
+    <div class="notice" id="notice" role="status" aria-live="polite">
+      <span id="notice-text"></span>
+      <button type="button" id="notice-retry" hidden>重试失败数据</button>
+    </div>
+    <section class="operation-result" id="operation-result" role="alert" aria-live="assertive" tabindex="-1" hidden>
+      <div>
+        <h2 id="operation-result-title">操作未完全完成</h2>
+        <p id="operation-result-summary"></p>
+      </div>
+      <ul id="operation-result-failures"></ul>
+      <div class="actions">
+        <button type="button" id="operation-retry" data-mutation>重试失败操作</button>
+        <button type="button" id="operation-dismiss">保留结果并关闭提示</button>
+      </div>
+    </section>
+    <p class="sr-only" id="table-scroll-hint">表格区域可获得键盘焦点，并使用方向键横向或纵向滚动。</p>
     <section class="metrics" id="metrics" aria-label="互传概览"></section>
     <section class="panel controls">
       <div><h2>紧急控制</h2><p>暂停后已有内容仍可下载和删除。</p></div>
-      <button type="button" id="normal-switch">暂停普通用户上传</button>
-      <button type="button" id="global-switch" class="danger">暂停全部上传</button>
-      <button type="button" id="cleanup">立即清理</button>
-      <button type="button" id="test-alert">测试报警</button>
+      <button type="button" id="normal-switch" data-mutation>暂停普通用户上传</button>
+      <button type="button" id="global-switch" class="danger" data-mutation>暂停全部上传</button>
+      <button type="button" id="cleanup" data-mutation>立即清理</button>
+      <button type="button" id="test-alert" data-mutation>测试报警</button>
     </section>
     <section class="panel">
       <header><div><h2>费用与报警</h2><p>站内数据是估算；正式账单以 Cloudflare 为准。</p></div><span id="notification-status"></span></header>
       <div class="cost-grid" id="cost-grid"></div>
-      <div class="table-wrap"><table><thead><tr><th>月份</th><th>阈值</th><th>类型</th><th>状态</th><th>时间</th></tr></thead><tbody id="alerts"></tbody></table></div>
+      <div class="table-wrap" tabindex="0" role="region" aria-label="费用报警记录" aria-describedby="table-scroll-hint"><table><thead><tr><th>月份</th><th>阈值</th><th>类型</th><th>状态</th><th>时间</th></tr></thead><tbody id="alerts"></tbody></table></div>
     </section>
     <section class="panel">
-      <header><div><h2>普通用户配额</h2><p>保存后由服务端立即执行。</p></div><button type="submit" form="settings-form">保存设置</button></header>
+      <header>
+        <div><h2>普通用户配额</h2><p>保存后由服务端立即执行；并发修改会先提示冲突。</p></div>
+        <div class="settings-actions"><span id="settings-dirty" role="status">已保存</span><button type="submit" form="settings-form" id="settings-save" data-mutation>保存设置</button></div>
+      </header>
       <form class="settings" id="settings-form">
         <label>单文件字节<input name="normal_max_file_bytes" type="number" min="1048576" max="99614720" required></label>
         <label>24小时字节<input name="normal_user_24h_bytes" type="number" min="1048576" required></label>
@@ -40,14 +58,22 @@
         <label>红色阈值<input name="normal_pool_red_ratio" type="number" min="0.5" max="1" step="0.01" required></label>
         <label>报警阈值<input name="alert_thresholds" value="1,3,5" required></label>
       </form>
+      <section class="settings-conflict" id="settings-conflict" role="alert" hidden>
+        <h3>设置已被其他页面更新</h3>
+        <p>本页输入仍完整保留。可以载入服务器版本，或明确保留本页输入并准备覆盖最新版本。</p>
+        <div class="actions">
+          <button type="button" id="settings-reload">载入服务器版本</button>
+          <button type="button" id="settings-keep" class="danger">保留本页输入，准备覆盖</button>
+        </div>
+      </section>
     </section>
     <section class="panel">
       <header><div><h2>房间</h2><p>后台只显示随机房间标识，不显示明文口令。</p></div><input id="room-search" type="search" placeholder="搜索房间 ID"></header>
-      <div class="table-wrap"><table><thead><tr><th>房间</th><th>状态</th><th>项目</th><th>有效字节</th><th>最后活动</th><th>操作</th></tr></thead><tbody id="rooms"></tbody></table></div>
+      <div class="table-wrap" tabindex="0" role="region" aria-label="互传房间列表" aria-describedby="table-scroll-hint"><table><thead><tr><th>房间</th><th>状态</th><th>项目</th><th>有效字节</th><th>最后活动</th><th>操作</th></tr></thead><tbody id="rooms"></tbody></table></div>
     </section>
     <section class="panel">
       <header><div><h2>当前保存的文件与内容</h2><p>默认不预览内容；永久删除文件会移除 R2 对象和数据库记录，加密文字会移除数据库记录，均无法撤销。</p></div><input id="item-search" type="search" placeholder="文件名 / 发送账号 / 项目 ID"></header>
-      <div class="table-wrap"><table><thead><tr><th>文件</th><th>发送者</th><th>类型</th><th>大小</th><th>状态</th><th>保存时间</th><th>过期时间</th><th>操作</th></tr></thead><tbody id="items"></tbody></table></div>
+      <div class="table-wrap" tabindex="0" role="region" aria-label="互传文件与内容列表" aria-describedby="table-scroll-hint"><table><thead><tr><th>文件</th><th>发送者</th><th>类型</th><th>大小</th><th>状态</th><th>保存时间</th><th>过期时间</th><th>操作</th></tr></thead><tbody id="items"></tbody></table></div>
       <nav class="table-pagination" aria-label="互传文件分页">
         <button type="button" id="items-previous">上一页</button>
         <span id="items-page-status" role="status" aria-live="polite">正在读取文件…</span>
@@ -56,9 +82,20 @@
     </section>
     <section class="panel">
       <header><div><h2>分片上传</h2><p>卡住的管理员大文件任务可在此中止。</p></div></header>
-      <div class="table-wrap"><table><thead><tr><th>任务</th><th>文件</th><th>大小</th><th>分片</th><th>状态</th><th>更新时间</th><th>操作</th></tr></thead><tbody id="uploads"></tbody></table></div>
+      <div class="table-wrap" tabindex="0" role="region" aria-label="分片上传任务列表" aria-describedby="table-scroll-hint"><table><thead><tr><th>任务</th><th>文件</th><th>大小</th><th>分片</th><th>状态</th><th>更新时间</th><th>操作</th></tr></thead><tbody id="uploads"></tbody></table></div>
     </section>
   </main>
-  <script src="/admin/transfer.js?v=20260719-admin-transfer-files-r1"></script>
+  <dialog class="context-dialog" id="context-dialog" aria-labelledby="context-dialog-title" aria-describedby="context-dialog-message">
+    <div class="context-dialog-window">
+      <header><h2 id="context-dialog-title">确认操作</h2></header>
+      <p id="context-dialog-message"></p>
+      <ul id="context-dialog-details"></ul>
+      <div class="context-dialog-actions">
+        <button type="button" id="context-dialog-cancel">取消，保留当前状态</button>
+        <button type="button" id="context-dialog-confirm" class="danger" data-mutation>确认操作</button>
+      </div>
+    </div>
+  </dialog>
+  <script src="/admin/transfer.js?v=20260726-admin-transfer-safety-r1"></script>
 </body>
 </html>

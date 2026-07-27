@@ -12,7 +12,7 @@ const gameEntries = [
   "games/kittens-game/index.html",
   "games/life-restart/index.html"
 ].map((path) => [path, read(path)]);
-const cacheVersion = "20260726-game-mobile-shell-r1";
+const cacheVersion = "20260726-game-network-resilience-r1";
 
 test("game shell pauses every upload path while a cloud-save conflict is unresolved", () => {
   assert.doesNotMatch(gameShell, /window\.confirm\s*\(/);

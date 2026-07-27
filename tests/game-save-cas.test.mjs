@@ -118,7 +118,7 @@ function saveRow(db, gameId) {
 test("game save PUT enforces an atomic expectedUpdatedAt contract", async (t) => {
   const db = new D1Database();
   const now = "2026-07-26T00:00:00.000Z";
-  const future = "2026-07-27T00:00:00.000Z";
+  const future = "2099-01-01T00:00:00.000Z";
   db.sqlite.prepare(
     "insert into users (id, email, password_hash, role, created_at, updated_at) values (?, ?, '', 'user', ?, ?)"
   ).run(USER_ID, "game-save-cas@example.test", now, now);

@@ -85,9 +85,18 @@ test("navigation, modal focus, option feedback, and cache invalidation have expl
   assert.match(app, /player\.isSceneLoaded\(\) && player\.seek\(start\)[\s\S]*?await player\.resume\(\)/);
   assert.match(app, /state\.audioAvailable = Boolean\(player\.manifest\)/);
   assert.match(app, /async function retryAudio\(\)\s*\{[\s\S]*?player\.stop\(\);[\s\S]*?if \(!manifestIsValid\)[\s\S]*?if \(state\.stage\) await playScene\(0\)/);
+  assert.doesNotMatch(app, /Promise\.all\(\[\s*loader\.loadStage\(id\),\s*ensureAudioManifest/);
+  assert.match(
+    app,
+    /const stage = await loader\.loadStage\(id\);[\s\S]*?activateScreen\("stage"[\s\S]*?renderStage\(\);[\s\S]*?void prepareStageAudio\(request, id\);/
+  );
+  assert.match(app, /function syncAudioAvailabilityControls\(\)[\s\S]*?#audio-progress/);
+  assert.match(audioPlayer, /manifest\.json\?v=20260726-audio-manifest-cache-r1/);
+  assert.match(audioPlayer, /cache:\s*"force-cache"/);
+  assert.match(audioPlayer, /timeoutError\.code = "AUDIO_MANIFEST_TIMEOUT"/);
   assert.doesNotMatch(app, /\.\/lib\/[^"?]+\.mjs\?v=20260711-japanese-subtext-r14/);
   assert.doesNotMatch(`${audioPlayer}\n${cloud}\n${contentLoader}\n${i18n}\n${questionFlow}\n${storage}`, /v102-r1/);
-  assert.equal((app.match(/\.\/lib\/[^"?]+\.mjs\?v=20260714-japanese-subtext-v103-retry-r1/g) || []).length, 7);
+  assert.equal((app.match(/\.\/lib\/[^"?]+\.mjs\?v=20260726-japanese-subtext-network-r1/g) || []).length, 7);
 });
 
 test("wrong-answer recovery remains reachable outside the result dialog", () => {

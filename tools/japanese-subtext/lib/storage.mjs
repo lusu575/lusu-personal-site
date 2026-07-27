@@ -1,7 +1,7 @@
 import {
   CONTENT_VERSION, DISPLAY_MODES, MEDAL_RANK, OPTION_LANGUAGES, PLAYBACK_RATES,
   MODE_ONBOARDING_KEY, PROGRESS_KEY, SETTINGS_KEY, UI_LANGUAGES, clampNumber, isoNow, parseStageId, stageId
-} from "./constants.mjs?v=20260714-japanese-subtext-v103-retry-r1";
+} from "./constants.mjs?v=20260726-japanese-subtext-network-r1";
 
 export function defaultSettings(uiLanguage = "zh") {
   return {

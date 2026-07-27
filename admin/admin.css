@@ -4528,3 +4528,154 @@ textarea::placeholder {
     transition: none !important;
   }
 }
+
+.automation-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, .8fr);
+  gap: 16px;
+}
+
+.automation-overview,
+.automation-credential,
+.automation-guide,
+.automation-history {
+  min-width: 0;
+}
+
+.automation-overview {
+  grid-column: 1 / -1;
+}
+
+.automation-facts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin: 14px 0;
+}
+
+.automation-facts > div {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  padding: 12px;
+  background: #f7f9fd;
+  border: 1px solid #d7dfeb;
+  border-radius: 7px;
+}
+
+.automation-facts span,
+.automation-endpoint-row span {
+  color: #667085;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.automation-facts strong {
+  color: #16233a;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.automation-actions {
+  flex-wrap: wrap;
+}
+
+.automation-note {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  color: #34425a;
+  background: #fff9d9;
+  border: 1px solid #e3cd73;
+  border-radius: 6px;
+  line-height: 1.65;
+}
+
+.automation-endpoint-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 10px;
+  margin: 14px 0;
+}
+
+.automation-endpoint-row > div {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.automation-endpoint-row code,
+.automation-secret code {
+  display: block;
+  min-width: 0;
+  padding: 10px;
+  color: #173867;
+  background: #f4f7fc;
+  border: 1px inset #fff;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 12px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+
+.automation-secret {
+  display: grid;
+  gap: 10px;
+  margin: 12px 0;
+  padding: 12px;
+  color: #6b3800;
+  background: #fff3ca;
+  border: 2px solid #d39a24;
+  border-radius: 7px;
+}
+
+.automation-secret[hidden] {
+  display: none !important;
+}
+
+.automation-secret .xp-button {
+  justify-self: start;
+}
+
+.automation-guide ol {
+  display: grid;
+  gap: 10px;
+  margin: 14px 0 0;
+  padding-left: 24px;
+  color: #34425a;
+  line-height: 1.65;
+}
+
+.automation-deliveries {
+  max-height: 430px;
+  overflow: auto;
+}
+
+@media (max-width: 920px) {
+  .automation-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .automation-overview {
+    grid-column: auto;
+  }
+
+  .automation-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .automation-facts,
+  .automation-endpoint-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .automation-endpoint-row .xp-button,
+  .automation-actions .xp-button,
+  .automation-secret .xp-button {
+    width: 100%;
+    min-height: 44px;
+  }
+}

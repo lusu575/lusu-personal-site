@@ -3,12 +3,7 @@ import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
-  CHAT_COLUMN_MIGRATIONS,
-  CHAT_HASH_TABLES,
-  TRANSFER_COLUMN_MIGRATIONS,
-  chatColumnMigrationSql,
-  chatHashColumnMigrationSql,
-  transferColumnMigrationSql
+  COMPATIBILITY_COLUMN_MIGRATIONS
 } from "./d1-migrate-local.mjs";
 
 const root = resolve(import.meta.dirname, "..");
@@ -45,30 +40,18 @@ export const REMOTE_MIGRATION_VERIFICATION_QUERIES = Object.freeze([
     union all
     select 'transfer-idempotency-index', count(*)
     from sqlite_master where type = 'index' and name = 'transfer_items_idempotency_idx'
+  `,
+  `
+    select 'article-delivery-auto-publish-column' as item, count(*) as present
+    from pragma_table_info('article_delivery_channels') where name = 'auto_publish'
+    union all
+    select 'article-delivery-payload-hash-column', count(*)
+    from pragma_table_info('article_delivery_events') where name = 'payload_hash'
   `
 ]);
 
 export function compatibilityColumnMigrations() {
-  return [
-    ...CHAT_HASH_TABLES.map((table) => ({
-      group: "chat-hash",
-      table,
-      column: "ip_hash_key_id",
-      sql: chatHashColumnMigrationSql(table)
-    })),
-    ...Object.entries(CHAT_COLUMN_MIGRATIONS).map(([table, migration]) => ({
-      group: "chat",
-      table,
-      column: migration.column,
-      sql: chatColumnMigrationSql(table)
-    })),
-    ...Object.entries(TRANSFER_COLUMN_MIGRATIONS).map(([table, migration]) => ({
-      group: "transfer",
-      table,
-      column: migration.column,
-      sql: transferColumnMigrationSql(table)
-    }))
-  ];
+  return [...COMPATIBILITY_COLUMN_MIGRATIONS];
 }
 
 export async function inspectMissingColumns(queryRows) {
@@ -83,6 +66,12 @@ export async function inspectMissingColumns(queryRows) {
       );
     }
     const columns = columnsByTable.get(migration.table);
+    // An absent table is a fresh install and will be created by schema.sql.
+    // Existing legacy tables must be upgraded before schema.sql creates any
+    // indexes that depend on newer columns.
+    if (!columns.length) {
+      continue;
+    }
     if (!columns.some((column) => column.name === migration.column)) {
       missing.push(migration);
     }
@@ -97,15 +86,15 @@ export async function migrateRemoteD1({
   queryRows = queryRemoteRows,
   log = console.log
 } = {}) {
-  log("remote-d1-migrate: applying base schema");
-  await executeFile("cloudflare/schema.sql");
-
-  log("remote-d1-migrate: inspecting compatibility columns");
+  log("remote-d1-migrate: inspecting legacy compatibility columns");
   const missingMigrations = await inspectMissingColumns(queryRows);
   for (const migration of missingMigrations) {
     log(`remote-d1-migrate: adding ${migration.table}.${migration.column}`);
     await executeCommand(migration.sql);
   }
+
+  log("remote-d1-migrate: applying base schema");
+  await executeFile("cloudflare/schema.sql");
 
   log("remote-d1-migrate: applying dependent indexes");
   await executeFile("cloudflare/schema-indexes.sql");

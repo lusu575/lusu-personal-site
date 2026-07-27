@@ -36,3 +36,34 @@ test("main admin navigation exposes transfer file governance without publishing 
   assert.match(transferJs, /永久删除[\s\S]*R2 文件和数据库记录/);
   assert.match(transferJs, /row\.uploader_email \|\| row\.uploader_user_id/);
 });
+
+test("admin exposes protected Daily AI News delivery and explicit auto-publish controls", () => {
+  const html = read("admin/index.html");
+  const source = read("admin/admin.js");
+  const styles = read("admin/admin.css");
+
+  assert.match(html, /data-panel="automation"[^>]*aria-controls="automation-panel"[^>]*>自动投递</);
+  assert.match(html, /id="automation-panel" hidden aria-hidden="true"/);
+  assert.match(html, /每日 AI 新闻投递箱/);
+  assert.match(html, /自动公开默认关闭/);
+  for (const id of [
+    "automation-toggle",
+    "automation-auto-publish",
+    "automation-rotate-token",
+    "automation-revoke-token",
+    "automation-secret-value",
+    "automation-deliveries"
+  ]) {
+    assert.ok(html.includes(`id="${id}"`), `missing #${id}`);
+  }
+
+  assert.match(source, /\/api\/admin\/automation\/daily-ai-news/);
+  assert.match(source, /state\.automationOneTimeToken\s*=\s*payload\.token/);
+  assert.match(source, /state\.automationOneTimeToken\s*=\s*""/);
+  assert.match(source, /async function updateAutomationAutoPublish\(\)/);
+  assert.match(source, /autoPublish:\s*nextAutoPublish/);
+  assert.match(source, /createEventItemElement\(/);
+  assert.doesNotMatch(source, /automation[\s\S]{0,200}innerHTML/);
+  assert.match(styles, /\.automation-secret\[hidden\]\s*\{[^}]*display:\s*none !important/);
+  assert.match(styles, /@media \(max-width:\s*560px\)[\s\S]*\.automation-actions \.xp-button[\s\S]*min-height:\s*44px/);
+});

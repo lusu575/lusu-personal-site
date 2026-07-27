@@ -27,11 +27,14 @@ export function validateAccountDraft({ mode, email, password, confirmPassword })
 
 export function accountRequestFailure(error, mode, lastField = "password") {
   const normalizedMode = normalizeAccountMode(mode);
+  if (error?.status === 429 || error?.code === "RATE_LIMITED") {
+    return { key: "accountErrorRateLimited", field: normalizedMode === "register" ? "email" : "password" };
+  }
   if (error?.status === 401 && normalizedMode === "login") {
     return { key: "accountErrorInvalidCredentials", field: "password" };
   }
-  if (error?.status === 409 && normalizedMode === "register") {
-    return { key: "accountErrorEmailExists", field: "email" };
+  if (normalizedMode === "register" && (error?.code === "REGISTRATION_FAILED" || error?.status === 409)) {
+    return { key: "accountErrorRegistrationFailed", field: "email" };
   }
   return {
     key: "accountErrorRequest",

@@ -23,6 +23,58 @@ export const TRANSFER_COLUMN_MIGRATIONS = Object.freeze({
     sql: "alter table transfer_items add column idempotency_key text not null default ''"
   })
 });
+export const ARTICLE_DELIVERY_COLUMN_MIGRATIONS = Object.freeze({
+  article_delivery_channels: Object.freeze({
+    column: "auto_publish",
+    sql: "alter table article_delivery_channels add column auto_publish integer not null default 0"
+  }),
+  article_delivery_events: Object.freeze({
+    column: "payload_hash",
+    sql: "alter table article_delivery_events add column payload_hash text not null default ''"
+  })
+});
+
+const COMPATIBILITY_TABLES = new Set([
+  "anonymous_chat_messages",
+  "chat_bans",
+  "transfer_rooms",
+  "transfer_items",
+  "article_delivery_channels",
+  "article_delivery_events"
+]);
+
+export const COMPATIBILITY_COLUMN_MIGRATIONS = Object.freeze([
+  ["chat", "anonymous_chat_messages", "client_id", "text not null default ''"],
+  ["chat", "anonymous_chat_messages", "edited_at", "text"],
+  ["chat-hash", "anonymous_chat_messages", "ip_hash_key_id", "text not null default 'legacy'"],
+  ["chat", "anonymous_chat_messages", "ip_prefix", "text not null default ''"],
+  ["chat", "anonymous_chat_messages", "room_key", "text not null default 'public'"],
+  ["chat", "anonymous_chat_messages", "encrypted", "integer not null default 0"],
+  ["chat", "anonymous_chat_messages", "client_request_id", "text not null default ''"],
+  ["chat-hash", "chat_bans", "ip_hash_key_id", "text not null default 'legacy'"],
+  ["chat", "chat_bans", "ip_prefix", "text not null default ''"],
+  ["transfer", "transfer_rooms", "sync_generation", "integer not null default 0"],
+  ["transfer", "transfer_items", "idempotency_key", "text not null default ''"],
+  ["article-delivery", "article_delivery_channels", "auto_publish", "integer not null default 0"],
+  ["article-delivery", "article_delivery_events", "payload_hash", "text not null default ''"]
+].map(([group, table, column, definition]) => Object.freeze({
+  group,
+  table,
+  column,
+  definition,
+  sql: compatibilityColumnMigrationSql(table, column, definition)
+})));
+
+export function compatibilityColumnMigrationSql(table, column, definition) {
+  if (
+    !COMPATIBILITY_TABLES.has(table)
+    || !/^[a-z][a-z0-9_]*$/.test(column)
+    || !/^(?:text|integer)(?:\s+not null)?(?:\s+default\s+(?:''|'legacy'|'public'|0))?$/.test(definition)
+  ) {
+    throw new Error(`Unsupported compatibility column migration: ${table}.${column}`);
+  }
+  return `alter table ${table} add column ${column} ${definition}`;
+}
 
 export function hasIpHashKeyId(columns) {
   return columns.some((column) => column.name === "ip_hash_key_id");
@@ -56,49 +108,32 @@ export async function migrateLocalD1() {
     throw new Error("Wrangler is not installed. Run npm ci before initializing local D1.");
   }
 
+  const columnsByTable = new Map();
+  for (const migration of COMPATIBILITY_COLUMN_MIGRATIONS) {
+    if (!columnsByTable.has(migration.table)) {
+      columnsByTable.set(
+        migration.table,
+        await queryRows(`pragma table_info('${migration.table}')`)
+      );
+    }
+    const columns = columnsByTable.get(migration.table);
+    // A missing table is a fresh install. The full schema below creates it with
+    // every current column; ALTER is only needed for an existing legacy table.
+    if (!columns.length || columns.some((column) => column.name === migration.column)) {
+      continue;
+    }
+    await runWrangler([
+      "d1",
+      "execute",
+      database,
+      "--local",
+      "--command",
+      migration.sql
+    ]);
+    columns.push({ name: migration.column });
+  }
+
   await runWrangler(["d1", "execute", database, "--local", "--file=cloudflare/schema.sql"]);
-
-  for (const table of CHAT_HASH_TABLES) {
-    const columns = await queryRows(`pragma table_info('${table}')`);
-    if (!hasIpHashKeyId(columns)) {
-      await runWrangler([
-        "d1",
-        "execute",
-        database,
-        "--local",
-        "--command",
-        chatHashColumnMigrationSql(table)
-      ]);
-    }
-  }
-
-  for (const [table, migration] of Object.entries(CHAT_COLUMN_MIGRATIONS)) {
-    const columns = await queryRows(`pragma table_info('${table}')`);
-    if (!columns.some((column) => column.name === migration.column)) {
-      await runWrangler([
-        "d1",
-        "execute",
-        database,
-        "--local",
-        "--command",
-        chatColumnMigrationSql(table)
-      ]);
-    }
-  }
-
-  for (const [table, migration] of Object.entries(TRANSFER_COLUMN_MIGRATIONS)) {
-    const columns = await queryRows(`pragma table_info('${table}')`);
-    if (!columns.some((column) => column.name === migration.column)) {
-      await runWrangler([
-        "d1",
-        "execute",
-        database,
-        "--local",
-        "--command",
-        transferColumnMigrationSql(table)
-      ]);
-    }
-  }
 
   await runWrangler(["d1", "execute", database, "--local", "--file=cloudflare/schema-indexes.sql"]);
 
@@ -132,6 +167,13 @@ export async function migrateLocalD1() {
     union all
     select 'transfer-idempotency-index', count(*)
     from sqlite_master where type = 'index' and name = 'transfer_items_idempotency_idx'
+    `),
+    ...await queryRows(`
+    select 'article-delivery-auto-publish-column' as item, count(*) as present
+    from pragma_table_info('article_delivery_channels') where name = 'auto_publish'
+    union all
+    select 'article-delivery-payload-hash-column', count(*)
+    from pragma_table_info('article_delivery_events') where name = 'payload_hash'
     `)
   ];
 

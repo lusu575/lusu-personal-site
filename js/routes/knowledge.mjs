@@ -84,10 +84,32 @@ export function sortKnowledgeArticles(items) {
   });
 }
 
+export function knowledgeCategoryValues(items, {
+  fixedCategories = [],
+  firstCategory = "",
+  lastCategory = "",
+  labelFor = (value) => String(value || "")
+} = {}) {
+  const categories = [
+    ...new Set([
+      ...fixedCategories,
+      ...(Array.isArray(items) ? items : []).map((item) => item?.category)
+    ].filter(Boolean))
+  ];
+  return categories.sort((left, right) => {
+    if (left === firstCategory) return -1;
+    if (right === firstCategory) return 1;
+    if (left === lastCategory) return 1;
+    if (right === lastCategory) return -1;
+    return labelFor(left).localeCompare(labelFor(right));
+  });
+}
+
 export function createKnowledgeRoute({
   articleState,
   activeFilters,
   siteUpdateCategory,
+  dailyAiNewsCategory,
   getCurrentLang,
   t,
   boundedHistoryScrollTop,
@@ -185,7 +207,12 @@ export function createKnowledgeRoute({
     const detail = document.getElementById("article-detail");
     const layout = document.querySelector("#knowledge .folder-layout");
     const searchBar = document.getElementById("knowledge-searchbar");
-    const categories = sortArticleCategories([...new Set(articleState.articles.map((item) => item.category).filter(Boolean))]);
+    const categories = knowledgeCategoryValues(articleState.articles, {
+      fixedCategories: [dailyAiNewsCategory],
+      firstCategory: dailyAiNewsCategory,
+      lastCategory: siteUpdateCategory,
+      labelFor: articleCategoryName
+    });
 
     if (articleState.currentSlug) {
       if (searchBar) {
@@ -240,6 +267,13 @@ export function createKnowledgeRoute({
       return;
     }
     if (!items.length) {
+      if (
+        activeFilters.knowledge === dailyAiNewsCategory
+        && !String(articleState.searchTerm || "").trim()
+      ) {
+        renderListMessage(list, t("dailyAiNewsEmpty"));
+        return;
+      }
       renderListMessage(list, t("articleSearchNoResults"), {
         label: t("articleSearchReset"),
         dataset: { articleSearchReset: "" },
@@ -523,14 +557,6 @@ export function createKnowledgeRoute({
     const maxScroll = Math.max(0, rail.scrollWidth - rail.clientWidth);
     rail.classList.toggle("has-overflow-before", rail.scrollLeft > 2);
     rail.classList.toggle("has-overflow-after", rail.scrollLeft < maxScroll - 2);
-  }
-
-  function sortArticleCategories(categories) {
-    return categories.sort((a, b) => {
-      if (a === siteUpdateCategory) return 1;
-      if (b === siteUpdateCategory) return -1;
-      return articleCategoryName(a).localeCompare(articleCategoryName(b));
-    });
   }
 
   async function loadArticles(options = {}) {

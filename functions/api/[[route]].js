@@ -1,5 +1,6 @@
 import { handleTransferApi } from "./transfer-service.mjs";
 
+export const PUBLIC_API_REPRESENTATION_VERSION = "20260728-daily-ai-news-production-r1";
 const SESSION_COOKIE = "lusu_session";
 const SESSION_DAYS = 30;
 const MAX_SAVE_BYTES = 1024 * 1024;
@@ -16,7 +17,42 @@ const JAPANESE_SUBTEXT_DISPLAY_MODES = new Set(["listening", "japanese", "biling
 const JAPANESE_SUBTEXT_PLAYBACK_RATES = new Set([0.75, 1, 1.15]);
 const JAPANESE_SUBTEXT_MEDAL_RANK = Object.freeze({ none: 0, bronze: 1, silver: 2, gold: 3 });
 const JAPANESE_SUBTEXT_MEDAL_NAME = Object.freeze(["none", "bronze", "silver", "gold"]);
-const PASSWORD_HASH_ITERATIONS = 25000;
+const PASSWORD_HASH_ITERATIONS = 600000;
+const MAX_AUTH_JSON_BYTES = 8 * 1024;
+const MAX_ANALYTICS_JSON_BYTES = 16 * 1024;
+const MAX_CHAT_JSON_BYTES = 16 * 1024;
+const MAX_ADMIN_JSON_BYTES = 2 * 1024 * 1024;
+const MAX_DEFAULT_JSON_BYTES = 2 * 1024 * 1024;
+const MAX_ARTICLE_DELIVERY_JSON_BYTES = 700 * 1024;
+const API_RATE_LIMIT_RETENTION_MS = 2 * 24 * 60 * 60 * 1000;
+const DATA_CLEANUP_STATE_KEY = "api_periodic_data_cleanup";
+const DATA_CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
+const DATA_CLEANUP_DELETE_LIMIT = 5000;
+const LOGIN_EVENT_RETENTION_DAYS = 365;
+const ANALYTICS_EVENT_RETENTION_DAYS = 180;
+const AUTH_RATE_LIMITS = Object.freeze({
+  loginIp: Object.freeze({ limit: 30, windowMs: 10 * 60 * 1000, backoffMs: 30 * 1000, maxBackoffMs: 15 * 60 * 1000 }),
+  loginEmail: Object.freeze({ limit: 8, windowMs: 15 * 60 * 1000, backoffMs: 60 * 1000, maxBackoffMs: 30 * 60 * 1000 }),
+  loginPair: Object.freeze({ limit: 5, windowMs: 15 * 60 * 1000, backoffMs: 60 * 1000, maxBackoffMs: 30 * 60 * 1000 }),
+  registerIp: Object.freeze({ limit: 5, windowMs: 60 * 60 * 1000, backoffMs: 5 * 60 * 1000, maxBackoffMs: 60 * 60 * 1000 }),
+  registerEmail: Object.freeze({ limit: 3, windowMs: 60 * 60 * 1000, backoffMs: 10 * 60 * 1000, maxBackoffMs: 60 * 60 * 1000 })
+});
+const ANALYTICS_RATE_LIMITS = Object.freeze({
+  identifyIp: Object.freeze({ limit: 30, windowMs: 5 * 60 * 1000, backoffMs: 5 * 60 * 1000 }),
+  identifyVisitor: Object.freeze({ limit: 2, windowMs: 5 * 60 * 1000, backoffMs: 5 * 60 * 1000 }),
+  pageViewIp: Object.freeze({ limit: 90, windowMs: 60 * 1000, backoffMs: 60 * 1000 }),
+  pageViewVisitor: Object.freeze({ limit: 45, windowMs: 60 * 1000, backoffMs: 60 * 1000 }),
+  pageViewDuplicate: Object.freeze({ limit: 1, windowMs: 15 * 1000, backoffMs: 15 * 1000 }),
+  clickIp: Object.freeze({ limit: 180, windowMs: 60 * 1000, backoffMs: 60 * 1000 }),
+  clickVisitor: Object.freeze({ limit: 120, windowMs: 60 * 1000, backoffMs: 60 * 1000 }),
+  clickDuplicate: Object.freeze({ limit: 1, windowMs: 1000, backoffMs: 1000 }),
+  articleIp: Object.freeze({ limit: 90, windowMs: 60 * 1000, backoffMs: 60 * 1000 }),
+  articleVisitor: Object.freeze({ limit: 1, windowMs: 5 * 60 * 1000, backoffMs: 5 * 60 * 1000 })
+});
+const ARTICLE_DELIVERY_RATE_LIMITS = Object.freeze({
+  ip: Object.freeze({ limit: 30, windowMs: 60 * 60 * 1000, backoffMs: 60 * 60 * 1000 }),
+  channel: Object.freeze({ limit: 10, windowMs: 10 * 60 * 1000, backoffMs: 10 * 60 * 1000 })
+});
 const MAX_CHAT_MESSAGE_CHARS = 300;
 const MAX_CHAT_NICKNAME_CHARS = 16;
 const CHAT_COOLDOWN_MS = 3000;
@@ -63,6 +99,10 @@ const BILIBILI_PAGE_HEADERS = {
 };
 const VIDEO_CATEGORY_SEED_FLAG = "video_categories_default_seeded";
 const SOCIAL_LINKS_STATE_KEY = "about_social_links";
+const DAILY_AI_NEWS_CHANNEL = "daily-ai-news";
+const DAILY_AI_NEWS_CATEGORY = "daily-ai-news";
+const DAILY_AI_NEWS_TOKEN_PREFIX = "lusu_ai_news_";
+const DAILY_AI_NEWS_CHANNEL_CREATED_AT = "2026-07-27T00:00:00.000Z";
 const DEFAULT_VIDEO_CATEGORIES = [
   ["video-cat-vrchat", "vrchat", "VRChat作品", "VRChat Works", "VRChat作品", 10],
   ["video-cat-ai", "ai-experiments", "AI实验", "AI Experiments", "AI実験", 20],
@@ -94,6 +134,8 @@ let coreSchemaReady = false;
 let chatSchemaReady = false;
 let articleSchemaReady = false;
 let articleSeedReady = false;
+let articleDeliveryChannelSchemaReady = false;
+let articleDeliverySchemaReady = false;
 let analyticsSchemaReady = false;
 let videoSchemaReady = false;
 let japaneseSubtextSchemaReady = false;
@@ -122,6 +164,11 @@ export async function onRequest(context) {
   }
 
   try {
+    const transferRoute = isTransferApiPath(parts);
+    if (!transferRoute) {
+      assertMainApiMutationRequest(request);
+    }
+
     await ensureCoreSchema(env);
 
     const transferResponse = await handleTransferApi(context, parts);
@@ -129,7 +176,19 @@ export async function onRequest(context) {
       return transferResponse;
     }
 
+    if (parts[0] === "admin") {
+      await requireAdmin(request, env);
+    }
+
     if (request.method === "GET" && parts[0] === "health") {
+      if (typeof context.waitUntil === "function") {
+        context.waitUntil(runPeriodicDataCleanup(env).catch((error) => {
+          console.error(JSON.stringify({
+            message: "periodic api data cleanup failed",
+            error: error instanceof Error ? error.message : String(error)
+          }));
+        }));
+      }
       return await health(env);
     }
     if (request.method === "POST" && parts[0] === "auth" && parts[1] === "register") {
@@ -155,15 +214,17 @@ export async function onRequest(context) {
     if (request.method === "GET" && parts[0] === "chat" && parts[1] === "nickname") {
       return await getChatNickname(request, env);
     }
-    if (parts[0] === "analytics") {
-      await ensureAnalyticsSchema(env);
-      if (request.method === "POST" && parts[1] === "identify") {
+    if (request.method === "POST" && parts[0] === "analytics") {
+      if (parts[1] === "identify") {
+        await ensureAnalyticsSchema(env);
         return await identifyVisitor(request, env);
       }
-      if (request.method === "POST" && parts[1] === "page-view") {
+      if (parts[1] === "page-view") {
+        await ensureAnalyticsSchema(env);
         return await recordPageView(request, env);
       }
-      if (request.method === "POST" && parts[1] === "click") {
+      if (parts[1] === "click") {
+        await ensureAnalyticsSchema(env);
         return await recordClickEvent(request, env);
       }
     }
@@ -171,6 +232,15 @@ export async function onRequest(context) {
       await ensureArticleSchema(env);
       await seedArticleTestData(env);
       return await getSitemap(request, env);
+    }
+    if (
+      request.method === "POST"
+      && parts[0] === "automation"
+      && parts[1] === DAILY_AI_NEWS_CHANNEL
+      && !parts[2]
+    ) {
+      await ensureArticleDeliveryChannelSchema(env);
+      return await deliverDailyAiNews(request, env);
     }
     if (parts[0] === "articles") {
       await ensureArticleSchema(env);
@@ -282,6 +352,27 @@ export async function onRequest(context) {
         return await deleteArticle(request, env, parts[2]);
       }
     }
+    if (
+      parts[0] === "admin"
+      && parts[1] === "automation"
+      && parts[2] === DAILY_AI_NEWS_CHANNEL
+      && !parts[4]
+    ) {
+      await ensureArticleSchema(env);
+      await ensureArticleDeliverySchema(env);
+      if (request.method === "GET" && !parts[3]) {
+        return await getAdminDailyAiNewsAutomation(request, env);
+      }
+      if (request.method === "PUT" && !parts[3]) {
+        return await updateAdminDailyAiNewsAutomation(request, env);
+      }
+      if (request.method === "POST" && parts[3] === "token") {
+        return await rotateAdminDailyAiNewsToken(request, env);
+      }
+      if (request.method === "DELETE" && parts[3] === "token") {
+        return await revokeAdminDailyAiNewsToken(request, env);
+      }
+    }
     if (parts[0] === "admin" && parts[1] === "videos") {
       await ensureVideoSchema(env);
       if (request.method === "GET" && !parts[2]) {
@@ -333,8 +424,22 @@ export async function onRequest(context) {
 
     return json({ error: "Not found." }, 404);
   } catch (error) {
-    console.error("API error", error);
-    return json({ error: error.message || "Unexpected server error." }, error.status || 500);
+    const expectedError = error instanceof HttpError;
+    const status = expectedError ? error.status : 500;
+    if (status >= 500) {
+      console.error(JSON.stringify({
+        message: "api request failed",
+        method: request.method,
+        path: url.pathname,
+        status,
+        error: error instanceof Error ? error.message : String(error)
+      }));
+    }
+    return json({
+      error: expectedError
+        ? error.message
+        : "服务暂时不可用，请稍后重试。"
+    }, status);
   }
 }
 
@@ -345,39 +450,83 @@ async function health(env) {
 }
 
 async function register(request, env) {
-  const body = await readJson(request);
+  const body = await readJson(request, MAX_AUTH_JSON_BYTES, "账号请求内容过大。");
   const email = normalizeEmail(body.email);
   const password = String(body.password || "");
   validateEmail(email);
   validatePassword(password);
 
+  const rateContext = await authRateLimitContext(request, env, "register", email);
+  const limited = await consumeFirstExceededRateLimit(env, [
+    [rateContext.ipBucket, AUTH_RATE_LIMITS.registerIp],
+    [rateContext.emailBucket, AUTH_RATE_LIMITS.registerEmail]
+  ]);
+  if (limited) {
+    return rateLimitedResponse(limited.retryAfterSeconds);
+  }
+
+  // Always perform the expensive derivation before revealing whether the account can be created.
+  const passwordHash = await hashPassword(password);
   const existing = await env.DB.prepare("select id from users where email = ?").bind(email).first();
   if (existing || ownerAdminEmails(env).has(email)) {
-    return json({ error: "这个邮箱已经注册。" }, 409);
+    return registrationFailedResponse();
   }
 
   const userId = crypto.randomUUID();
-  const passwordHash = await hashPassword(password);
   const now = nowIso();
-  await env.DB.prepare(
-    "insert into users (id, email, password_hash, created_at, updated_at) values (?, ?, ?, ?, ?)"
-  ).bind(userId, email, passwordHash, now, now).run();
+  try {
+    await env.DB.prepare(
+      "insert into users (id, email, password_hash, created_at, updated_at) values (?, ?, ?, ?, ?)"
+    ).bind(userId, email, passwordHash, now, now).run();
+  } catch (error) {
+    if (isUniqueConstraintError(error)) {
+      return registrationFailedResponse();
+    }
+    throw error;
+  }
 
   await recordUserLoginEvent(env, request, { id: userId, email, role: "user" }, "register");
   return createSessionResponse(env, request, userId, email, 201);
 }
 
 async function login(request, env) {
-  const body = await readJson(request);
+  const body = await readJson(request, MAX_AUTH_JSON_BYTES, "账号请求内容过大。");
   const email = normalizeEmail(body.email);
   const password = String(body.password || "");
   validateEmail(email);
 
+  const rateContext = await authRateLimitContext(request, env, "login", email);
+  const limited = await consumeFirstExceededRateLimit(env, [
+    [rateContext.ipBucket, AUTH_RATE_LIMITS.loginIp],
+    [rateContext.emailBucket, AUTH_RATE_LIMITS.loginEmail],
+    [rateContext.pairBucket, AUTH_RATE_LIMITS.loginPair]
+  ]);
+  if (limited) {
+    return rateLimitedResponse(limited.retryAfterSeconds);
+  }
+
   const user = await env.DB.prepare("select id, email, password_hash, role from users where email = ?").bind(email).first();
-  if (!user || !(await verifyPassword(password, user.password_hash))) {
+  const passwordMatches = user
+    ? await verifyPassword(password, user.password_hash)
+    : false;
+  if (!user) {
+    await hashPassword(password);
+  } else if (!passwordMatches && passwordHashNeedsUpgrade(user.password_hash)) {
+    await hashPassword(password);
+  }
+  if (!user || !passwordMatches) {
     return json({ error: "邮箱或密码不正确。" }, 401);
   }
 
+  if (passwordHashNeedsUpgrade(user.password_hash)) {
+    const upgradedHash = await hashPassword(password);
+    await env.DB.prepare(`
+      update users
+      set password_hash = ?, updated_at = ?
+      where id = ? and password_hash = ?
+    `).bind(upgradedHash, nowIso(), user.id, user.password_hash).run();
+  }
+  await clearRateLimitBuckets(env, [rateContext.emailBucket, rateContext.pairBucket]);
   await recordUserLoginEvent(env, request, user, "login");
   return createSessionResponse(env, request, user.id, user.email, 200, user.role || "user");
 }
@@ -1206,7 +1355,7 @@ async function getRecentChatMessages(env, limit, roomKey = PUBLIC_CHAT_ROOM_KEY)
 async function postChatMessage(request, env) {
   await ensureChatSchema(env);
   await ensureAnalyticsSchema(env);
-  const body = await readJson(request);
+  const body = await readJson(request, MAX_CHAT_JSON_BYTES, "聊天请求内容过大。");
   const clientId = normalizeVisitorId(body.visitorId);
   const identity = getOrCreateVisitorIdentity(request);
   const nickname = normalizeChatNickname(body.nickname);
@@ -1438,10 +1587,10 @@ async function getSitemap(request, env) {
   ].join("\n");
 
   return new Response(xml, {
-    headers: {
+    headers: apiSecurityHeaders({
       "Content-Type": "application/xml; charset=utf-8",
       "Cache-Control": "public, max-age=300"
-    }
+    })
   });
 }
 
@@ -1527,10 +1676,22 @@ async function getArticle(request, env, slug) {
     return response;
   }
 
-  await env.DB.prepare("update articles set view_count = view_count + 1 where article_id = ?")
-    .bind(row.article_id).run();
-  const identity = await recordArticleView(request, env, row, row.lang || lang);
-  return withVisitorCookie(response, request, identity.cookieIdentity);
+  let cookieIdentity = getOrCreateVisitorIdentity(request);
+  try {
+    const view = await recordArticleView(request, env, row, row.lang || lang);
+    cookieIdentity = view.cookieIdentity;
+    if (view.recorded) {
+      await env.DB.prepare("update articles set view_count = view_count + 1 where article_id = ?")
+        .bind(row.article_id).run();
+    }
+  } catch (error) {
+    console.error(JSON.stringify({
+      message: "article view telemetry failed",
+      path: url.pathname,
+      error: error instanceof Error ? error.message : String(error)
+    }));
+  }
+  return withVisitorCookie(response, request, cookieIdentity);
 }
 
 async function getAdminArticles(request, env) {
@@ -1595,55 +1756,81 @@ async function createArticle(request, env) {
 
 async function updateArticle(request, env, articleId) {
   await requireAdmin(request, env);
-  const body = await readJson(request);
+  const body = await readJson(request, MAX_ADMIN_JSON_BYTES, "文章内容过大。");
+  const expectedUpdatedAt = expectedUpdatedAtFromBody(body);
   const article = normalizeArticlePayload(body, { partial: true });
-  const existing = await env.DB.prepare("select article_id, published_at, category from articles where article_id = ?")
+  const existing = await env.DB.prepare(
+    "select article_id, published_at, category, updated_at from articles where article_id = ?"
+  )
     .bind(articleId).first();
   if (!existing) {
     return json({ error: "文章不存在。" }, 404);
+  }
+  if (existing.updated_at !== expectedUpdatedAt) {
+    return contentConflictResponse(existing.updated_at);
   }
   if ((article.category ?? existing.category) === "site-updates") {
     article.is_pinned = 0;
   }
 
-  const now = nowIso();
+  const now = nextMutationUpdatedAt(existing.updated_at);
   const publishedAt = article.status === "published" && !existing.published_at
     ? (article.published_at || now)
     : (article.published_at === undefined ? existing.published_at : article.published_at);
 
-  await env.DB.batch([
-    env.DB.prepare(`
-      update articles
-      set slug = coalesce(?, slug),
-          category = coalesce(?, category),
-          tags = coalesce(?, tags),
-          cover_image = coalesce(?, cover_image),
-          status = coalesce(?, status),
-          is_pinned = coalesce(?, is_pinned),
-          updated_at = ?,
-          published_at = ?
-      where article_id = ?
-    `).bind(
-      article.slug ?? null,
-      article.category ?? null,
-      article.tags ? JSON.stringify(article.tags) : null,
-      article.cover_image ?? null,
-      article.status ?? null,
-      article.is_pinned ?? null,
-      now,
-      publishedAt,
-      articleId
-    ),
-    ...(article.translations ? articleTranslationsStatements(env, articleId, article.translations, now) : [])
+  const updateStatement = env.DB.prepare(`
+    update articles
+    set slug = coalesce(?, slug),
+        category = coalesce(?, category),
+        tags = coalesce(?, tags),
+        cover_image = coalesce(?, cover_image),
+        status = coalesce(?, status),
+        is_pinned = coalesce(?, is_pinned),
+        updated_at = ?,
+        published_at = ?
+    where article_id = ? and updated_at = ?
+  `).bind(
+    article.slug ?? null,
+    article.category ?? null,
+    article.tags ? JSON.stringify(article.tags) : null,
+    article.cover_image ?? null,
+    article.status ?? null,
+    article.is_pinned ?? null,
+    now,
+    publishedAt,
+    articleId,
+    expectedUpdatedAt
+  );
+  const mutationResults = await env.DB.batch([
+    ...(article.translations
+      ? conditionalArticleTranslationsStatements(env, articleId, article.translations, now, expectedUpdatedAt)
+      : []),
+    updateStatement
   ]);
+  const updated = mutationResults[mutationResults.length - 1];
+  if (Number(updated?.meta?.changes || 0) !== 1) {
+    const current = await env.DB.prepare("select updated_at from articles where article_id = ?")
+      .bind(articleId).first();
+    return contentConflictResponse(current?.updated_at || null);
+  }
 
-  return json({ ok: true, articleId });
+  return json({ ok: true, articleId, updatedAt: now });
 }
 
 async function deleteArticle(request, env, articleId) {
   await requireAdmin(request, env);
-  const result = await env.DB.prepare("delete from articles where article_id = ?").bind(articleId).run();
-  if (!result.meta?.changes) {
+  const normalizedId = normalizeRecordId(articleId, "文章编号不正确。");
+  const body = await readJson(request, MAX_ADMIN_JSON_BYTES, "删除请求过大。");
+  const expectedUpdatedAt = expectedUpdatedAtFromBody(body);
+  const result = await env.DB.prepare(
+    "delete from articles where article_id = ? and updated_at = ?"
+  ).bind(normalizedId, expectedUpdatedAt).run();
+  if (Number(result.meta?.changes || 0) !== 1) {
+    const current = await env.DB.prepare("select updated_at from articles where article_id = ?")
+      .bind(normalizedId).first();
+    if (current) {
+      return contentConflictResponse(current.updated_at || null);
+    }
     return json({ error: "文章不存在。" }, 404);
   }
   return json({ ok: true });
@@ -1697,6 +1884,510 @@ async function getAdminArticle(request, env, articleId) {
       article_today_uv: Number(metrics?.article_today_uv || 0)
     }
   });
+}
+
+async function getAdminDailyAiNewsAutomation(request, env) {
+  await requireAdmin(request, env);
+  return json(await dailyAiNewsAdminSnapshot(env));
+}
+
+async function updateAdminDailyAiNewsAutomation(request, env) {
+  await requireAdmin(request, env);
+  const body = await readJson(request, MAX_ADMIN_JSON_BYTES, "自动投递设置内容过大。");
+  const expectedUpdatedAt = expectedUpdatedAtFromBody(body);
+  if (body.enabled !== undefined && typeof body.enabled !== "boolean") {
+    throw new HttpError("请选择启用或暂停自动投递。", 400);
+  }
+  if (body.autoPublish !== undefined && typeof body.autoPublish !== "boolean") {
+    throw new HttpError("请选择是否自动公开文章。", 400);
+  }
+  if (body.enabled === undefined && body.autoPublish === undefined) {
+    throw new HttpError("请提供需要修改的自动投递设置。", 400);
+  }
+  const channel = await dailyAiNewsChannelRow(env);
+  if (!channel) {
+    throw new HttpError("自动投递通道尚未初始化。", 503);
+  }
+  if (channel.updated_at !== expectedUpdatedAt) {
+    return contentConflictResponse(channel.updated_at);
+  }
+  const enabled = body.enabled === undefined
+    ? Number(channel.enabled || 0) === 1
+    : body.enabled;
+  const autoPublish = body.autoPublish === undefined
+    ? Number(channel.auto_publish || 0) === 1
+    : body.autoPublish;
+  if ((enabled || autoPublish) && !channel.token_hash) {
+    return json({
+      error: "请先生成连接凭证，再启用自动投递或自动公开。",
+      code: "AUTOMATION_TOKEN_REQUIRED"
+    }, 400);
+  }
+
+  const updatedAt = nextMutationUpdatedAt(channel.updated_at);
+  const result = await env.DB.prepare(`
+    update article_delivery_channels
+    set enabled = ?, auto_publish = ?, updated_at = ?
+    where channel_key = ? and updated_at = ?
+  `).bind(
+    enabled ? 1 : 0,
+    autoPublish ? 1 : 0,
+    updatedAt,
+    DAILY_AI_NEWS_CHANNEL,
+    expectedUpdatedAt
+  ).run();
+  if (Number(result.meta?.changes || 0) !== 1) {
+    const current = await dailyAiNewsChannelRow(env);
+    return contentConflictResponse(current?.updated_at || null);
+  }
+  return json({
+    ok: true,
+    channel: await dailyAiNewsAdminChannel(env)
+  });
+}
+
+async function rotateAdminDailyAiNewsToken(request, env) {
+  await requireAdmin(request, env);
+  const body = await readJson(request, MAX_ADMIN_JSON_BYTES, "凭证请求内容过大。");
+  const expectedUpdatedAt = expectedUpdatedAtFromBody(body);
+  const channel = await dailyAiNewsChannelRow(env);
+  if (!channel) {
+    throw new HttpError("自动投递通道尚未初始化。", 503);
+  }
+  if (channel.updated_at !== expectedUpdatedAt) {
+    return contentConflictResponse(channel.updated_at);
+  }
+
+  const token = `${DAILY_AI_NEWS_TOKEN_PREFIX}${randomToken(32)}`;
+  const tokenHash = await sha256Hex(token);
+  const tokenHint = token.slice(-6);
+  const tokenCreatedAt = nowIso();
+  const updatedAt = nextMutationUpdatedAt(channel.updated_at);
+  const result = await env.DB.prepare(`
+    update article_delivery_channels
+    set token_hash = ?,
+        token_hint = ?,
+        token_created_at = ?,
+        updated_at = ?
+    where channel_key = ? and updated_at = ?
+  `).bind(
+    tokenHash,
+    tokenHint,
+    tokenCreatedAt,
+    updatedAt,
+    DAILY_AI_NEWS_CHANNEL,
+    expectedUpdatedAt
+  ).run();
+  if (Number(result.meta?.changes || 0) !== 1) {
+    const current = await dailyAiNewsChannelRow(env);
+    return contentConflictResponse(current?.updated_at || null);
+  }
+  return json({
+    ok: true,
+    token,
+    channel: await dailyAiNewsAdminChannel(env)
+  });
+}
+
+async function revokeAdminDailyAiNewsToken(request, env) {
+  await requireAdmin(request, env);
+  const body = await readJson(request, MAX_ADMIN_JSON_BYTES, "凭证请求内容过大。");
+  const expectedUpdatedAt = expectedUpdatedAtFromBody(body);
+  const channel = await dailyAiNewsChannelRow(env);
+  if (!channel) {
+    throw new HttpError("自动投递通道尚未初始化。", 503);
+  }
+  if (channel.updated_at !== expectedUpdatedAt) {
+    return contentConflictResponse(channel.updated_at);
+  }
+
+  const updatedAt = nextMutationUpdatedAt(channel.updated_at);
+  const result = await env.DB.prepare(`
+    update article_delivery_channels
+    set enabled = 0,
+        auto_publish = 0,
+        token_hash = '',
+        token_hint = '',
+        token_created_at = null,
+        updated_at = ?
+    where channel_key = ? and updated_at = ?
+  `).bind(
+    updatedAt,
+    DAILY_AI_NEWS_CHANNEL,
+    expectedUpdatedAt
+  ).run();
+  if (Number(result.meta?.changes || 0) !== 1) {
+    const current = await dailyAiNewsChannelRow(env);
+    return contentConflictResponse(current?.updated_at || null);
+  }
+  return json({
+    ok: true,
+    channel: await dailyAiNewsAdminChannel(env)
+  });
+}
+
+async function dailyAiNewsAdminSnapshot(env) {
+  const [channel, deliveryResult] = await Promise.all([
+    dailyAiNewsAdminChannel(env),
+    env.DB.prepare(`
+      select
+        event_id,
+        article_delivery_events.article_id,
+        article_delivery_events.slug,
+        article_delivery_events.title_zh,
+        article_delivery_events.source_label,
+        coalesce(articles.status, article_delivery_events.status) as status,
+        article_delivery_events.created_at
+      from article_delivery_events
+      left join articles
+        on articles.article_id = article_delivery_events.article_id
+      where article_delivery_events.channel_key = ?
+      order by article_delivery_events.created_at desc, article_delivery_events.event_id desc
+      limit 20
+    `).bind(DAILY_AI_NEWS_CHANNEL).all()
+  ]);
+  return {
+    channel,
+    deliveries: (deliveryResult.results || []).map((item) => ({
+      eventId: item.event_id,
+      articleId: item.article_id || "",
+      slug: item.slug,
+      title: item.title_zh || item.slug,
+      source: item.source_label || "",
+      status: item.status || "draft",
+      createdAt: item.created_at
+    }))
+  };
+}
+
+async function dailyAiNewsAdminChannel(env) {
+  const channel = await dailyAiNewsChannelRow(env);
+  if (!channel) {
+    throw new HttpError("自动投递通道尚未初始化。", 503);
+  }
+  const draft = await env.DB.prepare(`
+    select count(*) as count
+    from articles
+    where category = ? and status = 'draft'
+  `).bind(DAILY_AI_NEWS_CATEGORY).first();
+  return {
+    channelKey: DAILY_AI_NEWS_CHANNEL,
+    category: DAILY_AI_NEWS_CATEGORY,
+    enabled: Number(channel.enabled || 0) === 1,
+    autoPublish: Number(channel.auto_publish || 0) === 1,
+    tokenConfigured: Boolean(channel.token_hash),
+    tokenHint: channel.token_hint || "",
+    tokenCreatedAt: channel.token_created_at || null,
+    lastUsedAt: channel.last_used_at || null,
+    updatedAt: channel.updated_at,
+    draftCount: Number(draft?.count || 0)
+  };
+}
+
+async function dailyAiNewsChannelRow(env) {
+  return env.DB.prepare(`
+    select
+      channel_key,
+      category,
+      enabled,
+      auto_publish,
+      token_hash,
+      token_hint,
+      token_created_at,
+      last_used_at,
+      created_at,
+      updated_at
+    from article_delivery_channels
+    where channel_key = ?
+    limit 1
+  `).bind(DAILY_AI_NEWS_CHANNEL).first();
+}
+
+async function deliverDailyAiNews(request, env) {
+  const ipInfo = await requestIpInfo(request, env, "analytics");
+  const ipLimit = await consumeRateLimit(
+    env,
+    await rateLimitBucketKey("article-delivery:ip", ipInfo.ipHash),
+    ARTICLE_DELIVERY_RATE_LIMITS.ip
+  );
+  if (!ipLimit.allowed) {
+    return rateLimitedResponse(ipLimit.retryAfterSeconds);
+  }
+
+  const token = readDailyAiNewsBearerToken(request);
+  const tokenHash = token ? await sha256Hex(token) : "";
+  const channel = await dailyAiNewsChannelRow(env);
+  const validToken = Boolean(
+    channel?.token_hash
+    && tokenHash
+    && timingSafeEqualBytes(
+      new TextEncoder().encode(channel.token_hash),
+      new TextEncoder().encode(tokenHash)
+    )
+  );
+  if (!validToken) {
+    return articleDeliveryUnauthorizedResponse();
+  }
+  if (Number(channel.enabled || 0) !== 1) {
+    return json({
+      error: "每日 AI 新闻投递目前已暂停。",
+      code: "AUTOMATION_DISABLED"
+    }, 409);
+  }
+
+  const channelLimit = await consumeRateLimit(
+    env,
+    await rateLimitBucketKey("article-delivery:channel", channel.token_hash),
+    ARTICLE_DELIVERY_RATE_LIMITS.channel
+  );
+  if (!channelLimit.allowed) {
+    return rateLimitedResponse(channelLimit.retryAfterSeconds);
+  }
+
+  await ensureArticleSchema(env);
+  await ensureArticleDeliverySchema(env);
+  const body = await readJson(
+    request,
+    MAX_ARTICLE_DELIVERY_JSON_BYTES,
+    "每日 AI 新闻投递内容过大。"
+  );
+  const delivery = normalizeDailyAiNewsDeliveryPayload(request, body);
+  const payloadHash = await dailyAiNewsDeliveryPayloadHash(delivery);
+  const duplicate = await findDailyAiNewsDelivery(env, delivery.idempotencyKey);
+  if (duplicate) {
+    return dailyAiNewsReplayResponse(duplicate, payloadHash);
+  }
+
+  const slugConflict = await env.DB.prepare(
+    "select article_id, slug from articles where slug = ? limit 1"
+  ).bind(delivery.article.slug).first();
+  if (slugConflict) {
+    return json({
+      error: "文章路径标识已存在，请更换后重试。",
+      code: "ARTICLE_SLUG_CONFLICT"
+    }, 409);
+  }
+
+  const now = nowIso();
+  const articleId = crypto.randomUUID();
+  const eventId = crypto.randomUUID();
+  const status = Number(channel.auto_publish || 0) === 1 ? "published" : "draft";
+  const publishedAt = status === "published" ? now : null;
+  try {
+    await env.DB.batch([
+      env.DB.prepare(`
+        insert into articles (
+          article_id, slug, category, tags, cover_image, status, is_pinned,
+          view_count, created_at, updated_at, published_at
+        ) values (?, ?, ?, ?, '', ?, 0, 0, ?, ?, ?)
+      `).bind(
+        articleId,
+        delivery.article.slug,
+        DAILY_AI_NEWS_CATEGORY,
+        JSON.stringify(delivery.article.tags),
+        status,
+        now,
+        now,
+        publishedAt
+      ),
+      ...articleTranslationsStatements(env, articleId, delivery.article.translations, now),
+      env.DB.prepare(`
+        insert into article_delivery_events (
+          event_id, channel_key, idempotency_key, payload_hash, article_id, slug,
+          title_zh, source_label, status, created_at
+        ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).bind(
+        eventId,
+        DAILY_AI_NEWS_CHANNEL,
+        delivery.idempotencyKey,
+        payloadHash,
+        articleId,
+        delivery.article.slug,
+        delivery.article.translations.zh.title,
+        delivery.source,
+        status,
+        now
+      ),
+      env.DB.prepare(`
+        update article_delivery_channels
+        set last_used_at = ?
+        where channel_key = ?
+      `).bind(now, DAILY_AI_NEWS_CHANNEL)
+    ]);
+  } catch (error) {
+    if (isUniqueConstraintError(error)) {
+      const repeated = await findDailyAiNewsDelivery(env, delivery.idempotencyKey);
+      if (repeated) {
+        return dailyAiNewsReplayResponse(repeated, payloadHash);
+      }
+      const conflictingArticle = await env.DB.prepare(
+        "select article_id from articles where slug = ? limit 1"
+      ).bind(delivery.article.slug).first();
+      if (conflictingArticle) {
+        return json({
+          error: "文章路径标识已存在，请更换后重试。",
+          code: "ARTICLE_SLUG_CONFLICT"
+        }, 409);
+      }
+    }
+    throw error;
+  }
+
+  return json({
+    ok: true,
+    duplicate: false,
+    articleId,
+    slug: delivery.article.slug,
+    category: DAILY_AI_NEWS_CATEGORY,
+    status
+  }, 201);
+}
+
+function normalizeDailyAiNewsDeliveryPayload(request, body) {
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    throw new HttpError("投递内容格式不正确。", 400);
+  }
+  const forbiddenFields = [
+    "article_id",
+    "category",
+    "status",
+    "is_pinned",
+    "published_at",
+    "cover_image"
+  ].filter((field) => Object.prototype.hasOwnProperty.call(body, field));
+  if (forbiddenFields.length) {
+    throw new HttpError("投递目标和发布状态由网站固定管理，请移除相关字段。", 400);
+  }
+
+  const headerKey = normalizeOptionalText(request.headers.get("Idempotency-Key"), 120);
+  const bodyKey = normalizeOptionalText(body.idempotencyKey ?? body.idempotency_key, 120);
+  if (headerKey && bodyKey && headerKey !== bodyKey) {
+    throw new HttpError("重复保护标记不一致。", 400);
+  }
+  const idempotencyKey = headerKey || bodyKey;
+  if (!/^[a-zA-Z0-9][a-zA-Z0-9._:-]{7,119}$/.test(idempotencyKey)) {
+    throw new HttpError("请提供 8 至 120 位的唯一投递标记。", 400);
+  }
+
+  const tags = normalizeTags([
+    "每日AI新闻",
+    "AI",
+    ...(Array.isArray(body.tags) ? body.tags : [])
+  ]);
+  const article = normalizeArticlePayload({
+    slug: body.slug,
+    category: DAILY_AI_NEWS_CATEGORY,
+    tags,
+    cover_image: "",
+    status: "draft",
+    is_pinned: false,
+    translations: body.translations
+  });
+  article.category = DAILY_AI_NEWS_CATEGORY;
+  article.cover_image = "";
+  article.status = "draft";
+  article.is_pinned = 0;
+  article.published_at = null;
+  return {
+    idempotencyKey,
+    source: normalizeOptionalText(body.source, 80) || "Codex",
+    article
+  };
+}
+
+async function findDailyAiNewsDelivery(env, idempotencyKey) {
+  return env.DB.prepare(`
+    select
+      article_delivery_events.article_id,
+      article_delivery_events.slug,
+      coalesce(articles.status, article_delivery_events.status) as status,
+      article_delivery_events.payload_hash,
+      case when articles.article_id is null then 0 else 1 end as article_exists
+    from article_delivery_events
+    left join articles
+      on articles.article_id = article_delivery_events.article_id
+    where article_delivery_events.channel_key = ?
+      and article_delivery_events.idempotency_key = ?
+    limit 1
+  `).bind(DAILY_AI_NEWS_CHANNEL, idempotencyKey).first();
+}
+
+function dailyAiNewsReplayResponse(row, payloadHash) {
+  if (Number(row.article_exists || 0) !== 1 || !row.article_id) {
+    return json({
+      error: "原投递对应的草稿已不存在，请使用新的唯一投递标记。",
+      code: "IDEMPOTENCY_TARGET_MISSING"
+    }, 409);
+  }
+  if (!sameSha256Hash(row.payload_hash, payloadHash)) {
+    return json({
+      error: "该唯一投递标记已用于不同内容，请更换后重试。",
+      code: "IDEMPOTENCY_CONFLICT"
+    }, 409);
+  }
+  return json(dailyAiNewsDeliveryResponse(row, true));
+}
+
+function dailyAiNewsDeliveryResponse(row, duplicate) {
+  return {
+    ok: true,
+    duplicate: Boolean(duplicate),
+    articleId: row.article_id || "",
+    slug: row.slug,
+    category: DAILY_AI_NEWS_CATEGORY,
+    status: row.status || "draft"
+  };
+}
+
+async function dailyAiNewsDeliveryPayloadHash(delivery) {
+  const translations = {};
+  for (const lang of ["zh", "en", "ja"]) {
+    const item = delivery.article.translations[lang];
+    translations[lang] = {
+      title: item.title,
+      summary: item.summary,
+      content_markdown: item.content_markdown
+    };
+  }
+  return sha256Hex(JSON.stringify({
+    slug: delivery.article.slug,
+    tags: [...delivery.article.tags].sort(),
+    source: delivery.source,
+    translations
+  }));
+}
+
+function sameSha256Hash(left, right) {
+  const normalizedLeft = String(left || "");
+  const normalizedRight = String(right || "");
+  if (!/^[a-f0-9]{64}$/.test(normalizedLeft) || !/^[a-f0-9]{64}$/.test(normalizedRight)) {
+    return false;
+  }
+  return timingSafeEqualBytes(
+    new TextEncoder().encode(normalizedLeft),
+    new TextEncoder().encode(normalizedRight)
+  );
+}
+
+function readDailyAiNewsBearerToken(request) {
+  const authorization = String(request.headers.get("Authorization") || "").trim();
+  const match = authorization.match(/^Bearer\s+([^\s]+)$/i);
+  if (!match || match[1].length > 180) {
+    return "";
+  }
+  const token = match[1];
+  return new RegExp(`^${DAILY_AI_NEWS_TOKEN_PREFIX}[a-zA-Z0-9_-]{32,128}$`).test(token)
+    ? token
+    : "";
+}
+
+function articleDeliveryUnauthorizedResponse() {
+  const response = json({
+    error: "自动投递凭证无效。",
+    code: "AUTOMATION_UNAUTHORIZED"
+  }, 401);
+  response.headers.set("WWW-Authenticate", 'Bearer realm="daily-ai-news"');
+  return response;
 }
 
 async function getVideos(request, env) {
@@ -1851,34 +2542,67 @@ async function updateVideo(request, env, videoId) {
   if (!existing) {
     return json({ error: "Video not found." }, 404);
   }
-  const body = await readJson(request);
+  const body = await readJson(request, MAX_ADMIN_JSON_BYTES, "视频内容过大。");
+  const expectedUpdatedAt = expectedUpdatedAtFromBody(body);
+  if (existing.updated_at !== expectedUpdatedAt) {
+    return contentConflictResponse(existing.updated_at);
+  }
   const video = await normalizeVideoPayload(body, env, { existing });
   await assertVideoNotDuplicate(env, video, normalizedId);
-  await env.DB.batch([
+  const now = nextMutationUpdatedAt(existing.updated_at);
+  const updateStatement = env.DB.prepare(`
+    update videos
+    set platform = ?, original_url = ?, external_id = ?, embed_url = ?,
+        title = ?, description = ?, thumbnail_url = ?, author_name = ?,
+        published_at = ?, status = ?, sort_order = ?, pinned = ?, pinned_sort_order = ?,
+        metadata_error = ?, updated_at = ?
+    where video_id = ? and updated_at = ?
+  `).bind(
+    video.platform, video.original_url, video.external_id, video.embed_url,
+    video.title, video.description, video.thumbnail_url, video.author_name,
+    video.published_at, video.status, video.sort_order, video.pinned,
+    video.pinned_sort_order, video.metadata_error, now, normalizedId, expectedUpdatedAt
+  );
+  const mutationResults = await env.DB.batch([
     env.DB.prepare(`
-      update videos
-      set platform = ?, original_url = ?, external_id = ?, embed_url = ?,
-          title = ?, description = ?, thumbnail_url = ?, author_name = ?,
-          published_at = ?, status = ?, sort_order = ?, pinned = ?, pinned_sort_order = ?,
-          metadata_error = ?, updated_at = ?
+      delete from video_category_relations
       where video_id = ?
-    `).bind(
-      video.platform, video.original_url, video.external_id, video.embed_url,
-      video.title, video.description, video.thumbnail_url, video.author_name,
-      video.published_at, video.status, video.sort_order, video.pinned,
-      video.pinned_sort_order, video.metadata_error, nowIso(), normalizedId
+        and exists (
+          select 1 from videos
+          where video_id = ? and updated_at = ?
+        )
+    `).bind(normalizedId, normalizedId, expectedUpdatedAt),
+    ...conditionalVideoCategoryRelationStatements(
+      env,
+      normalizedId,
+      video.category_ids,
+      expectedUpdatedAt
     ),
-    env.DB.prepare("delete from video_category_relations where video_id = ?").bind(normalizedId),
-    ...videoCategoryRelationStatements(env, normalizedId, video.category_ids)
+    updateStatement
   ]);
-  return json({ ok: true, videoId: normalizedId });
+  const updated = mutationResults[mutationResults.length - 1];
+  if (Number(updated?.meta?.changes || 0) !== 1) {
+    const current = await env.DB.prepare("select updated_at from videos where video_id = ?")
+      .bind(normalizedId).first();
+    return contentConflictResponse(current?.updated_at || null);
+  }
+  return json({ ok: true, videoId: normalizedId, updatedAt: now });
 }
 
 async function deleteVideo(request, env, videoId) {
   await requireAdmin(request, env);
   const normalizedId = normalizeRecordId(videoId, "Video id is invalid.");
-  const result = await env.DB.prepare("delete from videos where video_id = ?").bind(normalizedId).run();
-  if (!result.meta?.changes) {
+  const body = await readJson(request, MAX_ADMIN_JSON_BYTES, "删除请求过大。");
+  const expectedUpdatedAt = expectedUpdatedAtFromBody(body);
+  const result = await env.DB.prepare(
+    "delete from videos where video_id = ? and updated_at = ?"
+  ).bind(normalizedId, expectedUpdatedAt).run();
+  if (Number(result.meta?.changes || 0) !== 1) {
+    const current = await env.DB.prepare("select updated_at from videos where video_id = ?")
+      .bind(normalizedId).first();
+    if (current) {
+      return contentConflictResponse(current.updated_at || null);
+    }
     return json({ error: "Video not found." }, 404);
   }
   return json({ ok: true });
@@ -1898,23 +2622,38 @@ async function refreshVideoMetadata(request, env, videoId) {
   if (!existing) {
     return json({ error: "Video not found." }, 404);
   }
+  const body = await readJson(request, MAX_ADMIN_JSON_BYTES, "刷新请求过大。");
+  const expectedUpdatedAt = expectedUpdatedAtFromBody(body);
+  if (existing.updated_at !== expectedUpdatedAt) {
+    return contentConflictResponse(existing.updated_at);
+  }
   const metadata = await metadataForVideoUrl(existing.original_url);
   const title = metadata.title || existing.title;
   const description = metadata.description || existing.description;
   const thumbnail = metadata.thumbnail_url || existing.thumbnail_url;
   const author = metadata.author_name || existing.author_name;
-  await env.DB.prepare(`
+  const now = nextMutationUpdatedAt(existing.updated_at);
+  const result = await env.DB.prepare(`
     update videos
     set platform = ?, external_id = ?, embed_url = ?, title = ?, description = ?,
         thumbnail_url = ?, author_name = ?, published_at = coalesce(?, published_at),
         metadata_error = ?, updated_at = ?
-    where video_id = ?
+    where video_id = ? and updated_at = ?
   `).bind(
     metadata.platform, metadata.external_id, metadata.embed_url, title, description,
     thumbnail, author, metadata.published_at || null, metadata.metadata_error || "",
-    nowIso(), normalizedId
+    now, normalizedId, expectedUpdatedAt
   ).run();
-  return json({ ok: true, video: { ...metadata, title, description, thumbnail_url: thumbnail, author_name: author } });
+  if (Number(result.meta?.changes || 0) !== 1) {
+    const current = await env.DB.prepare("select updated_at from videos where video_id = ?")
+      .bind(normalizedId).first();
+    return contentConflictResponse(current?.updated_at || null);
+  }
+  return json({
+    ok: true,
+    updatedAt: now,
+    video: { ...metadata, title, description, thumbnail_url: thumbnail, author_name: author }
+  });
 }
 
 async function getAdminVideoCategories(request, env) {
@@ -1955,33 +2694,68 @@ async function createVideoCategory(request, env) {
 async function updateVideoCategory(request, env, categoryId) {
   await requireAdmin(request, env);
   const normalizedId = normalizeRecordId(categoryId, "Category id is invalid.");
-  const existing = await env.DB.prepare("select category_id, sort_order from video_categories where category_id = ?")
+  const existing = await env.DB.prepare(
+    "select category_id, sort_order, updated_at from video_categories where category_id = ?"
+  )
     .bind(normalizedId).first();
   if (!existing) {
     return json({ error: "Category not found." }, 404);
   }
-  const category = normalizeVideoCategoryPayload(await readJson(request), { defaultSortOrder: existing.sort_order });
-  await env.DB.prepare(`
+  const body = await readJson(request, MAX_ADMIN_JSON_BYTES, "分类内容过大。");
+  const expectedUpdatedAt = expectedUpdatedAtFromBody(body);
+  if (existing.updated_at !== expectedUpdatedAt) {
+    return contentConflictResponse(existing.updated_at);
+  }
+  const category = normalizeVideoCategoryPayload(body, { defaultSortOrder: existing.sort_order });
+  const now = nextMutationUpdatedAt(existing.updated_at);
+  const updated = await env.DB.prepare(`
     update video_categories
     set slug = ?, name_zh = ?, name_en = ?, name_ja = ?, sort_order = ?, enabled = ?, updated_at = ?
-    where category_id = ?
+    where category_id = ? and updated_at = ?
   `).bind(
     category.slug, category.name_zh, category.name_en, category.name_ja,
-    category.sort_order, category.enabled, nowIso(), normalizedId
+    category.sort_order, category.enabled, now, normalizedId, expectedUpdatedAt
   ).run();
-  return json({ ok: true, categoryId: normalizedId });
+  if (Number(updated?.meta?.changes || 0) !== 1) {
+    const current = await env.DB.prepare("select updated_at from video_categories where category_id = ?")
+      .bind(normalizedId).first();
+    return contentConflictResponse(current?.updated_at || null);
+  }
+  return json({ ok: true, categoryId: normalizedId, updatedAt: now });
 }
 
 async function deleteVideoCategory(request, env, categoryId) {
   await requireAdmin(request, env);
   const normalizedId = normalizeRecordId(categoryId, "Category id is invalid.");
-  const usage = await env.DB.prepare("select count(*) as count from video_category_relations where category_id = ?")
-    .bind(normalizedId).first();
-  if (Number(usage?.count || 0) > 0) {
-    return json({ error: "这个分类已有视频使用，请先移动或取消关联后再删除。", videoCount: Number(usage.count) }, 409);
-  }
-  const result = await env.DB.prepare("delete from video_categories where category_id = ?").bind(normalizedId).run();
-  if (!result.meta?.changes) {
+  const body = await readJson(request, MAX_ADMIN_JSON_BYTES, "删除请求过大。");
+  const expectedUpdatedAt = expectedUpdatedAtFromBody(body);
+  const result = await env.DB.prepare(`
+    delete from video_categories
+    where category_id = ? and updated_at = ?
+      and not exists (
+        select 1 from video_category_relations
+        where video_category_relations.category_id = video_categories.category_id
+      )
+  `).bind(normalizedId, expectedUpdatedAt).run();
+  if (Number(result.meta?.changes || 0) !== 1) {
+    const current = await env.DB.prepare(
+      "select updated_at from video_categories where category_id = ?"
+    ).bind(normalizedId).first();
+    if (!current) {
+      return json({ error: "Category not found." }, 404);
+    }
+    if (current.updated_at !== expectedUpdatedAt) {
+      return contentConflictResponse(current.updated_at || null);
+    }
+    const usage = await env.DB.prepare(
+      "select count(*) as count from video_category_relations where category_id = ?"
+    ).bind(normalizedId).first();
+    if (Number(usage?.count || 0) > 0) {
+      return json({
+        error: "这个分类已有视频使用，请先移动或取消关联后再删除。",
+        videoCount: Number(usage.count)
+      }, 409);
+    }
     return json({ error: "Category not found." }, 404);
   }
   return json({ ok: true });
@@ -1998,24 +2772,51 @@ async function getSocialLinks(request, env) {
 
 async function getAdminSocialLinks(request, env) {
   await requireAdmin(request, env);
-  return json({ links: await socialLinkRows(env) });
+  const state = await socialLinksState(env);
+  return json({
+    links: socialLinkRowsFromValue(state.value, state.updatedAt || ""),
+    updatedAt: state.updatedAt
+  });
 }
 
 async function updateAdminSocialLinks(request, env) {
   await requireAdmin(request, env);
-  const links = normalizeSocialLinksPayload(await readJson(request));
-  const now = nowIso();
-  await env.DB.prepare(`
-    insert into site_runtime_state (key, value, updated_at)
-    values (?, ?, ?)
-    on conflict(key) do update set
-      value = excluded.value,
-      updated_at = excluded.updated_at
-  `).bind(SOCIAL_LINKS_STATE_KEY, JSON.stringify(links), now).run();
-  return json({ ok: true, links: socialLinkRowsFromValue(links, now) });
+  const body = await readJson(request, MAX_ADMIN_JSON_BYTES, "社交链接内容过大。");
+  const expectedUpdatedAt = expectedUpdatedAtFromBody(body, { allowNull: true });
+  const links = normalizeSocialLinksPayload(body);
+  const state = await socialLinksState(env);
+  if (state.updatedAt !== expectedUpdatedAt) {
+    return contentConflictResponse(state.updatedAt);
+  }
+  const now = nextMutationUpdatedAt(state.updatedAt);
+  const result = expectedUpdatedAt === null
+    ? await env.DB.prepare(`
+        insert or ignore into site_runtime_state (key, value, updated_at)
+        values (?, ?, ?)
+      `).bind(SOCIAL_LINKS_STATE_KEY, JSON.stringify(links), now).run()
+    : await env.DB.prepare(`
+        update site_runtime_state
+        set value = ?, updated_at = ?
+        where key = ? and updated_at = ?
+      `).bind(JSON.stringify(links), now, SOCIAL_LINKS_STATE_KEY, expectedUpdatedAt).run();
+  if (Number(result?.meta?.changes || 0) !== 1) {
+    const current = await env.DB.prepare("select updated_at from site_runtime_state where key = ?")
+      .bind(SOCIAL_LINKS_STATE_KEY).first();
+    return contentConflictResponse(current?.updated_at || null);
+  }
+  return json({
+    ok: true,
+    links: socialLinkRowsFromValue(links, now),
+    updatedAt: now
+  });
 }
 
 async function socialLinkRows(env) {
+  const state = await socialLinksState(env);
+  return socialLinkRowsFromValue(state.value, state.updatedAt || "");
+}
+
+async function socialLinksState(env) {
   const row = await env.DB.prepare("select value, updated_at from site_runtime_state where key = ?")
     .bind(SOCIAL_LINKS_STATE_KEY).first();
   let stored = {};
@@ -2025,7 +2826,10 @@ async function socialLinkRows(env) {
   } catch {
     stored = {};
   }
-  return socialLinkRowsFromValue(stored, row?.updated_at || "");
+  return {
+    value: stored,
+    updatedAt: row?.updated_at || null
+  };
 }
 
 function socialLinkRowsFromValue(value, updatedAt = "") {
@@ -2278,18 +3082,34 @@ async function updateAdminAccount(request, env, userId) {
 }
 
 async function identifyVisitor(request, env) {
-  const body = await readOptionalJson(request);
+  const body = await readOptionalJson(request, MAX_ANALYTICS_JSON_BYTES, "统计请求内容过大。");
   const identity = await analyticsIdentityForRequest(request, env);
-  await ensureVisitorProfile(env, request, identity.visitorId, body || {}, false);
+  const geo = await requestIpInfo(request, env, "analytics");
+  const limited = await consumeFirstExceededRateLimit(env, [
+    [await rateLimitBucketKey("analytics:identify:ip", geo.ipHash), ANALYTICS_RATE_LIMITS.identifyIp],
+    [await rateLimitBucketKey("analytics:identify:visitor", identity.visitorId), ANALYTICS_RATE_LIMITS.identifyVisitor]
+  ]);
+  if (!limited) {
+    await ensureVisitorProfile(env, request, identity.visitorId, body || {}, false, geo);
+  }
   return withVisitorCookie(json({ ok: true }), request, identity.cookieIdentity);
 }
 
 async function recordPageView(request, env) {
-  const body = await readOptionalJson(request);
+  const body = await readOptionalJson(request, MAX_ANALYTICS_JSON_BYTES, "统计请求内容过大。");
   const identity = await analyticsIdentityForRequest(request, env);
   const now = nowIso();
   const geo = await requestIpInfo(request, env, "analytics");
-  await ensureVisitorProfile(env, request, identity.visitorId, body || {}, true);
+  const path = normalizeAnalyticsPath(body?.path);
+  const limited = await consumeFirstExceededRateLimit(env, [
+    [await rateLimitBucketKey("analytics:page-view:ip", geo.ipHash), ANALYTICS_RATE_LIMITS.pageViewIp],
+    [await rateLimitBucketKey("analytics:page-view:visitor", identity.visitorId), ANALYTICS_RATE_LIMITS.pageViewVisitor],
+    [await rateLimitBucketKey("analytics:page-view:dedupe", `${identity.visitorId}:${path}`), ANALYTICS_RATE_LIMITS.pageViewDuplicate]
+  ]);
+  if (limited) {
+    return withVisitorCookie(json({ ok: true }), request, identity.cookieIdentity);
+  }
+  await ensureVisitorProfile(env, request, identity.visitorId, body || {}, true, geo);
   await env.DB.prepare(`
     insert into analytics_page_views (
       event_id, visitor_id, path, route, referrer, title, lang,
@@ -2299,7 +3119,7 @@ async function recordPageView(request, env) {
   `).bind(
     crypto.randomUUID(),
     identity.visitorId,
-    normalizeAnalyticsPath(body?.path),
+    path,
     normalizeAnalyticsText(body?.route, 80),
     normalizeAnalyticsText(body?.referrer, 500),
     normalizeAnalyticsText(body?.title, 200),
@@ -2321,11 +3141,29 @@ async function recordPageView(request, env) {
 }
 
 async function recordClickEvent(request, env) {
-  const body = await readOptionalJson(request);
+  const body = await readOptionalJson(request, MAX_ANALYTICS_JSON_BYTES, "统计请求内容过大。");
   const identity = await analyticsIdentityForRequest(request, env);
   const now = nowIso();
   const geo = await requestIpInfo(request, env, "analytics");
-  await ensureVisitorProfile(env, request, identity.visitorId, body || {}, false);
+  const path = normalizeAnalyticsPath(body?.path);
+  const targetKey = normalizeAnalyticsText(body?.targetKey, 160);
+  const clickFingerprint = [
+    identity.visitorId,
+    path,
+    targetKey,
+    normalizeAnalyticsText(body?.dataRoute, 80),
+    normalizeInteger(body?.x, -100000, 100000),
+    normalizeInteger(body?.y, -100000, 100000)
+  ].join(":");
+  const limited = await consumeFirstExceededRateLimit(env, [
+    [await rateLimitBucketKey("analytics:click:ip", geo.ipHash), ANALYTICS_RATE_LIMITS.clickIp],
+    [await rateLimitBucketKey("analytics:click:visitor", identity.visitorId), ANALYTICS_RATE_LIMITS.clickVisitor],
+    [await rateLimitBucketKey("analytics:click:dedupe", clickFingerprint), ANALYTICS_RATE_LIMITS.clickDuplicate]
+  ]);
+  if (limited) {
+    return withVisitorCookie(json({ ok: true }), request, identity.cookieIdentity);
+  }
+  await ensureVisitorProfile(env, request, identity.visitorId, body || {}, false, geo);
   await env.DB.prepare(`
     insert into analytics_click_events (
       event_id, visitor_id, path, route, target_key, target_text, tag_name,
@@ -2335,9 +3173,9 @@ async function recordClickEvent(request, env) {
   `).bind(
     crypto.randomUUID(),
     identity.visitorId,
-    normalizeAnalyticsPath(body?.path),
+    path,
     normalizeAnalyticsText(body?.route, 80),
-    normalizeAnalyticsText(body?.targetKey, 160),
+    targetKey,
     normalizeAnalyticsTargetText(body?.targetText, 160),
     normalizeAnalyticsText(body?.tagName, 40).toUpperCase(),
     normalizeAnalyticsText(body?.elementId, 120),
@@ -2363,11 +3201,24 @@ async function recordClickEvent(request, env) {
 async function recordArticleView(request, env, article, lang) {
   await ensureAnalyticsSchema(env);
   const identity = await analyticsIdentityForRequest(request, env);
+  if (!analyticsReadSourceIsTrusted(request)) {
+    return { ...identity, recorded: false };
+  }
   const now = nowIso();
   const geo = await requestIpInfo(request, env, "analytics");
+  const limited = await consumeFirstExceededRateLimit(env, [
+    [await rateLimitBucketKey("analytics:article:ip", geo.ipHash), ANALYTICS_RATE_LIMITS.articleIp],
+    [await rateLimitBucketKey(
+      "analytics:article:visitor",
+      `${identity.visitorId}:${article.article_id}`
+    ), ANALYTICS_RATE_LIMITS.articleVisitor]
+  ]);
+  if (limited) {
+    return { ...identity, recorded: false };
+  }
   await ensureVisitorProfile(env, request, identity.visitorId, {
     language: request.headers.get("Accept-Language") || ""
-  }, false);
+  }, false, geo);
   await env.DB.prepare(`
     insert into article_view_events (
       event_id, article_id, slug, lang, visitor_id, country, region, city,
@@ -2390,7 +3241,7 @@ async function recordArticleView(request, env, article, lang) {
     geo.ipPrefix,
     now
   ).run();
-  return identity;
+  return { ...identity, recorded: true };
 }
 
 async function getAdminAnalyticsOverview(request, env) {
@@ -2957,6 +3808,74 @@ async function ensureArticleSchema(env) {
   articleSchemaReady = true;
 }
 
+async function ensureArticleDeliveryChannelSchema(env) {
+  if (articleDeliveryChannelSchemaReady) {
+    return;
+  }
+  await env.DB.prepare(`
+    create table if not exists article_delivery_channels (
+      channel_key text primary key,
+      category text not null,
+      enabled integer not null default 0,
+      auto_publish integer not null default 0,
+      token_hash text not null default '',
+      token_hint text not null default '',
+      token_created_at text,
+      last_used_at text,
+      created_at text not null,
+      updated_at text not null
+    )
+  `).run();
+  await ensureTableColumns(env, "article_delivery_channels", [
+    ["auto_publish", "integer not null default 0"]
+  ]);
+  await env.DB.prepare(`
+    insert into article_delivery_channels (
+      channel_key, category, enabled, auto_publish, token_hash, token_hint,
+      token_created_at, last_used_at, created_at, updated_at
+    ) values (?, ?, 0, 0, '', '', null, null, ?, ?)
+    on conflict(channel_key) do nothing
+  `).bind(
+    DAILY_AI_NEWS_CHANNEL,
+    DAILY_AI_NEWS_CATEGORY,
+    DAILY_AI_NEWS_CHANNEL_CREATED_AT,
+    DAILY_AI_NEWS_CHANNEL_CREATED_AT
+  ).run();
+  articleDeliveryChannelSchemaReady = true;
+}
+
+async function ensureArticleDeliverySchema(env) {
+  if (articleDeliverySchemaReady) {
+    return;
+  }
+  await ensureArticleDeliveryChannelSchema(env);
+  await env.DB.batch([
+    env.DB.prepare(`
+      create table if not exists article_delivery_events (
+        event_id text primary key,
+        channel_key text not null references article_delivery_channels(channel_key) on delete cascade,
+        idempotency_key text not null,
+        payload_hash text not null default '',
+        article_id text references articles(article_id) on delete set null,
+        slug text not null,
+        title_zh text not null default '',
+        source_label text not null default '',
+        status text not null default 'draft',
+        created_at text not null,
+        unique(channel_key, idempotency_key)
+      )
+    `),
+    env.DB.prepare(`
+      create index if not exists article_delivery_events_channel_created_idx
+        on article_delivery_events(channel_key, created_at desc)
+    `)
+  ]);
+  await ensureTableColumns(env, "article_delivery_events", [
+    ["payload_hash", "text not null default ''"]
+  ]);
+  articleDeliverySchemaReady = true;
+}
+
 async function ensureVideoSchema(env) {
   if (videoSchemaReady) {
     return;
@@ -3287,9 +4206,31 @@ async function ensureCoreSchema(env) {
         updated_at text not null
       )
     `),
+    env.DB.prepare(`
+      create table if not exists api_rate_limits (
+        bucket_key text primary key,
+        window_started_at integer not null,
+        request_count integer not null default 0,
+        blocked_until integer not null default 0,
+        updated_at text not null
+      )
+    `),
+    env.DB.prepare("create index if not exists api_rate_limits_updated_idx on api_rate_limits(updated_at)"),
     env.DB.prepare("create index if not exists game_saves_updated_at_idx on game_saves(updated_at)")
   ]);
   await ensureUserRoleColumn(env);
+  await env.DB.prepare(`
+    delete from api_rate_limits
+    where bucket_key in (
+      select bucket_key from api_rate_limits
+      where updated_at < ?
+      order by updated_at asc
+      limit ?
+    )
+  `).bind(
+    new Date(Date.now() - API_RATE_LIMIT_RETENTION_MS).toISOString(),
+    DATA_CLEANUP_DELETE_LIMIT
+  ).run();
   coreSchemaReady = true;
 }
 
@@ -3298,6 +4239,199 @@ async function ensureUserRoleColumn(env) {
   if (!columns.some((column) => column.name === "role")) {
     await env.DB.prepare("alter table users add column role text not null default 'user'").run();
   }
+}
+
+async function authRateLimitContext(request, env, action, email) {
+  const ipInfo = await requestIpInfo(request, env, "analytics");
+  const emailHash = await sha256Hex(`auth-email:${email}`);
+  return {
+    ipBucket: await rateLimitBucketKey(`auth:${action}:ip`, ipInfo.ipHash),
+    emailBucket: await rateLimitBucketKey(`auth:${action}:email`, emailHash),
+    pairBucket: await rateLimitBucketKey(`auth:${action}:pair`, `${ipInfo.ipHash}:${emailHash}`)
+  };
+}
+
+async function rateLimitBucketKey(scope, identity) {
+  return `rl_${await sha256Hex(`${scope}:${identity}`)}`;
+}
+
+async function consumeFirstExceededRateLimit(env, entries) {
+  for (const [bucketKey, policy] of entries) {
+    const result = await consumeRateLimit(env, bucketKey, policy);
+    if (!result.allowed) {
+      return result;
+    }
+  }
+  return null;
+}
+
+async function consumeRateLimit(env, bucketKey, policy) {
+  const now = Date.now();
+  const windowMs = Math.max(1000, Number(policy.windowMs) || 60000);
+  const limit = Math.max(1, Number(policy.limit) || 1);
+  const backoffMs = Math.max(1000, Number(policy.backoffMs) || windowMs);
+  const maxBackoffMs = Math.max(backoffMs, Number(policy.maxBackoffMs) || backoffMs);
+  const resetBefore = now - windowMs;
+  const row = await env.DB.prepare(`
+    insert into api_rate_limits (
+      bucket_key, window_started_at, request_count, blocked_until, updated_at
+    ) values (?, ?, 1, 0, ?)
+    on conflict(bucket_key) do update set
+      window_started_at = case
+        when api_rate_limits.window_started_at <= ? then excluded.window_started_at
+        else api_rate_limits.window_started_at
+      end,
+      request_count = case
+        when api_rate_limits.window_started_at <= ? then 1
+        else api_rate_limits.request_count + 1
+      end,
+      blocked_until = case
+        when api_rate_limits.window_started_at <= ? then 0
+        when api_rate_limits.blocked_until > ? then api_rate_limits.blocked_until
+        when api_rate_limits.request_count + 1 > ? then
+          ? + min(?, ? * (1 << min(api_rate_limits.request_count + 1 - ?, 4)))
+        else 0
+      end,
+      updated_at = excluded.updated_at
+    returning request_count, blocked_until
+  `).bind(
+    bucketKey,
+    now,
+    new Date(now).toISOString(),
+    resetBefore,
+    resetBefore,
+    resetBefore,
+    now,
+    limit,
+    now,
+    maxBackoffMs,
+    backoffMs,
+    limit
+  ).first();
+  const blockedUntil = Number(row?.blocked_until || 0);
+  return {
+    allowed: blockedUntil <= now,
+    retryAfterSeconds: blockedUntil > now
+      ? Math.max(1, Math.ceil((blockedUntil - now) / 1000))
+      : 0
+  };
+}
+
+async function clearRateLimitBuckets(env, bucketKeys) {
+  const keys = [...new Set(bucketKeys.filter(Boolean))];
+  if (!keys.length) {
+    return;
+  }
+  await env.DB.batch(keys.map((key) => (
+    env.DB.prepare("delete from api_rate_limits where bucket_key = ?").bind(key)
+  )));
+}
+
+function rateLimitedResponse(retryAfterSeconds) {
+  const response = json({
+    error: "请求过于频繁，请稍后再试。",
+    code: "RATE_LIMITED"
+  }, 429);
+  response.headers.set("Retry-After", String(Math.max(1, Number(retryAfterSeconds) || 1)));
+  return response;
+}
+
+function registrationFailedResponse() {
+  return json({
+    error: "无法完成注册，请检查填写的信息后重试。",
+    code: "REGISTRATION_FAILED"
+  }, 400);
+}
+
+function isUniqueConstraintError(error) {
+  return /(?:unique|constraint failed)/i.test(
+    error instanceof Error ? error.message : String(error || "")
+  );
+}
+
+async function runPeriodicDataCleanup(env) {
+  const now = new Date();
+  const dueBefore = new Date(now.getTime() - DATA_CLEANUP_INTERVAL_MS).toISOString();
+  const state = await env.DB.prepare("select updated_at from site_runtime_state where key = ?")
+    .bind(DATA_CLEANUP_STATE_KEY).first();
+  if (state?.updated_at && Date.parse(state.updated_at) > Date.parse(dueBefore)) {
+    return false;
+  }
+
+  const claimed = await env.DB.prepare(`
+    insert into site_runtime_state (key, value, updated_at)
+    values (?, '1', ?)
+    on conflict(key) do update set
+      value = excluded.value,
+      updated_at = excluded.updated_at
+    where site_runtime_state.updated_at <= ?
+  `).bind(DATA_CLEANUP_STATE_KEY, now.toISOString(), dueBefore).run();
+  if (Number(claimed?.meta?.changes || 0) !== 1) {
+    return false;
+  }
+
+  const statements = [
+    env.DB.prepare(`
+      delete from sessions
+      where token_hash in (
+        select token_hash from sessions
+        where expires_at <= ?
+        order by expires_at asc
+        limit ?
+      )
+    `).bind(now.toISOString(), DATA_CLEANUP_DELETE_LIMIT),
+    env.DB.prepare(`
+      delete from user_login_events
+      where event_id in (
+        select event_id from user_login_events
+        where created_at < ?
+        order by created_at asc
+        limit ?
+      )
+    `).bind(
+      new Date(now.getTime() - LOGIN_EVENT_RETENTION_DAYS * 24 * 60 * 60 * 1000).toISOString(),
+      DATA_CLEANUP_DELETE_LIMIT
+    ),
+    env.DB.prepare(`
+      delete from api_rate_limits
+      where bucket_key in (
+        select bucket_key from api_rate_limits
+        where updated_at < ?
+        order by updated_at asc
+        limit ?
+      )
+    `).bind(
+      new Date(now.getTime() - API_RATE_LIMIT_RETENTION_MS).toISOString(),
+      DATA_CLEANUP_DELETE_LIMIT
+    )
+  ];
+  if (await tableExists(env, "analytics_page_views")) {
+    const analyticsCutoff = new Date(
+      now.getTime() - ANALYTICS_EVENT_RETENTION_DAYS * 24 * 60 * 60 * 1000
+    ).toISOString();
+    statements.push(
+      env.DB.prepare(`
+        delete from analytics_page_views
+        where event_id in (
+          select event_id from analytics_page_views
+          where created_at < ?
+          order by created_at asc
+          limit ?
+        )
+      `).bind(analyticsCutoff, DATA_CLEANUP_DELETE_LIMIT),
+      env.DB.prepare(`
+        delete from analytics_click_events
+        where event_id in (
+          select event_id from analytics_click_events
+          where created_at < ?
+          order by created_at asc
+          limit ?
+        )
+      `).bind(analyticsCutoff, DATA_CLEANUP_DELETE_LIMIT)
+    );
+  }
+  await env.DB.batch(statements);
+  return true;
 }
 
 async function ensureTableColumns(env, tableName, columns) {
@@ -3716,6 +4850,26 @@ function videoCategoryRelationStatements(env, videoId, categoryIds) {
     values (?, ?, ?, ?)
     on conflict(video_id, category_id) do update set sort_order = excluded.sort_order
   `).bind(videoId, categoryId, index, now));
+}
+
+function conditionalVideoCategoryRelationStatements(env, videoId, categoryIds, expectedUpdatedAt) {
+  const now = nowIso();
+  return categoryIds.map((categoryId, index) => env.DB.prepare(`
+    insert into video_category_relations (video_id, category_id, sort_order, created_at)
+    select ?, ?, ?, ?
+    where exists (
+      select 1 from videos
+      where video_id = ? and updated_at = ?
+    )
+    on conflict(video_id, category_id) do update set sort_order = excluded.sort_order
+  `).bind(
+    videoId,
+    categoryId,
+    index,
+    now,
+    videoId,
+    expectedUpdatedAt
+  ));
 }
 
 async function metadataForVideoUrl(input) {
@@ -4500,6 +5654,36 @@ function articleTranslationsStatements(env, articleId, translations, now) {
   ));
 }
 
+function conditionalArticleTranslationsStatements(env, articleId, translations, now, expectedUpdatedAt) {
+  return Object.entries(translations).map(([lang, item]) => env.DB.prepare(`
+    insert into article_translations (
+      translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+    )
+    select ?, ?, ?, ?, ?, ?, ?, ?
+    where exists (
+      select 1 from articles
+      where article_id = ? and updated_at = ?
+    )
+    on conflict(article_id, lang)
+    do update set
+      title = excluded.title,
+      summary = excluded.summary,
+      content_markdown = excluded.content_markdown,
+      updated_at = excluded.updated_at
+  `).bind(
+    `${articleId}-${lang}`,
+    articleId,
+    lang,
+    item.title,
+    item.summary,
+    item.content_markdown,
+    now,
+    now,
+    articleId,
+    expectedUpdatedAt
+  ));
+}
+
 function articleMarkdownReplaceStatements(env, articleId, lang, replacements, now) {
   return replacements.map(([needle, replacement]) => env.DB.prepare(`
     update article_translations
@@ -4612,6 +5796,129 @@ function aiAgentWorkflowArticleHeadingMediaStatements(env, now) {
 function articleSeedStatements(env) {
   // Seed timestamps must be UTC ISO strings; the UI converts them to each visitor's local time.
   return [
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-27-daily-ai-news-inbox',
+        '2026-07-27-daily-ai-news-inbox',
+        'site-updates',
+        '["网站更新","知识库","AI新闻","Admin"]',
+        '', 'published', 0, 0,
+        '2026-07-27T13:06:00.000Z',
+        '2026-07-27T16:05:00.000Z',
+        '2026-07-27T16:05:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-07-27-daily-ai-news-inbox", {
+      zh: {
+        title: "每日 AI 新闻正式上线",
+        summary: "知识库“每日 AI 新闻”正式接入 Horizon 与 Codex：每天北京时间 7 点开始整理前 24 小时内容，三语稿通过检查后在 8 点前自动公开。",
+        content_markdown: "# 每日 AI 新闻正式上线\n\n知识库“每日 AI 新闻”已经接入 Horizon 与 Codex 的固定日更流程，并以完整中文、英文、日文文章公开。\n\n## 每日流程\n\n- 每天北京时间 7 点开始，只处理此前精确 24 小时内发布的消息。\n- Horizon 必须先完成多来源采集、网址归一和重复合并；Codex 再做一手核实、重要性筛选、近 30 天去重和三语成文。\n- 正文继续使用“今日要闻 / 主要新闻 / 传闻”三段结构，每条保留简短、具体的 AI 解读，不向读者堆放来源链接。\n\n## 发布安全\n\n- 只有三语内容、时间窗口、来源记录、结构和去重检查全部通过，专用通道才会公开文章。\n- Horizon 不可用、验证失败或运行超过北京时间 8 点时，当天任务停止发布并留下失败记录，不用不完整内容凑数。\n- 后台仍可随时暂停通道、关闭自动公开、轮换或撤销凭证，并查看最近投递结果。\n\n## 首次上线\n\n正式上线使用 7 月 27 日三语样稿走完整生产链路验证；测试占位文章仍会明确标注，不会冒充真实新闻。"
+      },
+      en: {
+        title: "Daily AI News Goes Live",
+        summary: "Daily AI News now runs through Horizon and Codex: each Beijing-time day starts at 07:00, covers the prior 24 hours, and publishes the validated Chinese, English, and Japanese edition by 08:00.",
+        content_markdown: "# Daily AI News Goes Live\n\nKnowledge’s Daily AI News is now connected to a fixed Horizon and Codex publishing flow, with complete Chinese, English, and Japanese editions.\n\n## Daily flow\n\n- Work starts every day at 07:00 Beijing time and only covers items published in the exact preceding 24 hours.\n- Horizon must first collect from multiple sources, normalize URLs, and merge duplicates. Codex then verifies primary material, applies the editorial threshold, checks the previous 30 days, and writes the three editions.\n- Each article keeps the Lead Story, More News, and Rumors structure, with one brief and specific AI take per item and no pile of source links for readers to open.\n\n## Publishing safeguards\n\n- The dedicated channel publishes only after all three languages, the time window, source record, structure, and duplicate checks pass.\n- If Horizon is unavailable, validation fails, or the run reaches 08:00 Beijing time, that day stops without publishing incomplete filler.\n- Admin can still pause the channel, disable automatic publishing, rotate or revoke its credential, and review recent delivery results.\n\n## First live run\n\nThe July 27 trilingual edition is used to verify the complete production path. The placeholder remains clearly labelled and cannot be mistaken for real news."
+      },
+      ja: {
+        title: "毎日AIニュース正式稼働",
+        summary: "「毎日AIニュース」は Horizon と Codex に正式接続され、北京時間の毎朝7時に直前24時間分の処理を始め、検証済みの中・英・日3言語版を8時までに自動公開します。",
+        content_markdown: "# 毎日AIニュース正式稼働\n\n知識庫の「毎日AIニュース」は、Horizon と Codex による固定の日次公開フローへ接続され、中国語・英語・日本語の完全版を公開します。\n\n## 毎日の流れ\n\n- 毎日北京時間7時に開始し、直前の正確な24時間に公開された情報だけを扱います。\n- まず Horizon が複数ソースの収集、URL正規化、重複統合を行い、その後 Codex が一次情報の確認、重要度判定、過去30日との重複確認、3言語の記事作成を行います。\n- 本文は「今日のトップニュース / 主なニュース / 噂」の3部構成を保ち、各項目に短く具体的なAI解説を付け、読者向け本文には大量の参照リンクを並べません。\n\n## 公開時の安全策\n\n- 3言語、時間範囲、出典記録、構成、重複確認のすべてを通過した場合だけ、専用チャンネルが記事を公開します。\n- Horizon が利用できない、検証に失敗する、または北京時間8時を過ぎた場合は、不完全な記事を公開せず、その日の処理を停止して失敗を記録します。\n- 管理画面では引き続きチャンネルの一時停止、自動公開の無効化、認証情報の更新・失効、最近の配信結果の確認ができます。\n\n## 初回公開\n\n7月27日の3言語版で本番経路全体を検証します。プレースホルダー記事は引き続きテスト用と明記され、実際のニュースとは区別されます。"
+      }
+    }, "2026-07-27T16:05:00.000Z"),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-daily-ai-news-test-placeholder',
+        'daily-ai-news-test-placeholder',
+        'daily-ai-news',
+        '["每日AI新闻","测试"]',
+        '', 'published', 0, 0,
+        '2026-07-27T13:05:00.000Z',
+        '2026-07-27T13:05:00.000Z',
+        '2026-07-27T13:05:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-daily-ai-news-test-placeholder", {
+      zh: {
+        title: "每日 AI 新闻测试占位",
+        summary: "这是一篇用于确认“每日 AI 新闻”分区显示与发布流程的测试占位文章，不包含正式新闻。",
+        content_markdown: "# 每日 AI 新闻测试占位\n\n这是一篇测试占位文章，用来确认“每日 AI 新闻”分区、文章列表和阅读页面能够正常显示。\n\n这里暂时没有正式新闻内容。"
+      },
+      en: {
+        title: "Daily AI News Test Placeholder",
+        summary: "This placeholder verifies the Daily AI News section and publishing flow. It does not contain real news.",
+        content_markdown: "# Daily AI News Test Placeholder\n\nThis is a test placeholder used to confirm that the Daily AI News section, article list, and reading page display correctly.\n\nIt does not contain real news."
+      },
+      ja: {
+        title: "毎日AIニュース テスト用プレースホルダー",
+        summary: "「毎日AIニュース」欄と公開フローを確認するためのテスト記事です。実際のニュースは含まれていません。",
+        content_markdown: "# 毎日AIニュース テスト用プレースホルダー\n\n「毎日AIニュース」欄、記事一覧、閲覧ページが正しく表示されることを確認するためのテスト記事です。\n\n実際のニュース内容はまだ含まれていません。"
+      }
+    }, "2026-07-27T13:05:00.000Z"),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-26-security-reliability-hardening',
+        '2026-07-26-security-reliability-hardening',
+        'site-updates',
+        '["security","reliability","Admin","Cloudflare","QA"]',
+        '', 'published', 0, 0,
+        '2026-07-26T14:58:00.000Z',
+        '2026-07-26T14:58:00.000Z',
+        '2026-07-26T14:58:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-07-26-security-reliability-hardening", {
+      zh: {
+        title: "全站安全与可靠性加固",
+        summary: "一次性加固账号入口、统计写入、D1 迁移、后台并发编辑与互传治理，并为文章分享、游戏和日语工具补齐超时、降级与离线回退。",
+        content_markdown: "# 全站安全与可靠性加固\n\n本轮把公开站点、Cloudflare 后端和管理后台作为一个完整系统复检，集中修复会影响账号安全、数据一致性、失败恢复和发布可信度的问题。\n\n## 账号、接口与统计\n\n- 账号与写接口限制请求体、来源和内容类型；登录、注册采用不暴露账号是否存在的响应，并按网络来源与账号标识实施退避限流。\n- 密码派生提高成本，旧密码在成功登录后渐进升级；服务端错误只返回稳定错误码，不把内部异常细节交给浏览器。\n- 页面、点击和文章浏览写入增加频率上限、重复抑制与有界保留，避免机器人或重复刷新无限放大 D1 写入。\n\n## 数据与后台一致性\n\n- 旧 D1 会先补齐缺失列，再执行依赖这些列的索引和完整 schema；全新数据库仍可一次初始化。\n- 文章、视频、视频分类与社交链接使用版本匹配写入；多个后台标签页同时编辑时，陈旧页面会收到冲突提示，不再静默覆盖较新的内容。\n- 临时互传管理区分部分成功与完全成功，设置写入使用条件更新，列表搜索、危险确认、重复操作锁和 R2 清理失败都有可恢复状态。\n\n## 公开访问与离线回退\n\n- 游戏目录和日语工具的可选 manifest 都有超时与本地回退；网络服务变慢时不会阻塞本地内容和已有存档。\n- 首页壁纸预载与真正渲染复用同一资源选择，避免重复下载。\n- `/articles/<slug>` 现在由边缘函数输出文章专属标题、摘要、Open Graph、Twitter、规范链接和结构化数据；脚本不可用时仍保留安全的可读正文回退。\n\n## 发布边界\n\n- 全站补齐基础安全响应头与采样可观测性；CI 的第三方 Actions 固定到不可变提交，并执行完整测试、构建、可重复产物和浏览器发布审计。\n- 这些改动不公开 session、密码、完整 IP、访客隐藏标识或后台草稿，也不改变 GitHub main 触发 Cloudflare Pages 自动部署的正式流程。"
+      },
+      en: {
+        title: "Sitewide Security and Reliability Hardening",
+        summary: "Hardened account entry, analytics writes, D1 migrations, concurrent admin editing, and Transfer governance while adding timeouts, degradation paths, and offline fallbacks for articles, games, and the Japanese tool.",
+        content_markdown: "# Sitewide Security and Reliability Hardening\n\nThis pass reviews the public site, Cloudflare backend, and admin area as one system, fixing issues that could affect account security, data consistency, failure recovery, and release confidence.\n\n## Accounts, APIs, and analytics\n\n- Account and write endpoints now bound request bodies, origins, and content types. Sign-in and registration avoid revealing whether an account exists, with backoff limits applied by network source and account identifier.\n- Password derivation is more expensive, and older hashes upgrade gradually after a successful sign-in. Server errors expose stable codes instead of internal exception details.\n- Page, click, and article-view writes now have rate ceilings, duplicate suppression, and bounded retention so bots or repeated refreshes cannot grow D1 writes without limit.\n\n## Data and admin consistency\n\n- Legacy D1 databases add missing columns before dependent indexes and the complete schema run; fresh databases still initialize in one pass.\n- Articles, videos, video categories, and social links use version-matched writes. When multiple admin tabs edit the same record, a stale tab reports a conflict instead of silently overwriting newer content.\n- Quick Transfer governance distinguishes partial success from full success, uses conditional setting updates, and provides recoverable states for list search, dangerous confirmations, duplicate-action locks, and failed R2 cleanup.\n\n## Public access and offline fallback\n\n- The game catalog and optional Japanese-tool manifests have timeouts and local fallbacks, so slow network services do not block local content or existing saves.\n- Home wallpaper preload and rendering now share the same asset selection, avoiding duplicate downloads.\n- `/articles/<slug>` now receives article-specific title, summary, Open Graph, Twitter, canonical, and structured metadata at the edge, with a safe readable fallback when scripts are unavailable.\n\n## Release boundary\n\n- The site now ships baseline security headers and sampled observability. CI pins third-party Actions to immutable commits and runs the complete tests, build, reproducible-output check, and browser release audits.\n- These changes do not expose sessions, passwords, full IP addresses, hidden visitor identifiers, or admin drafts, and the official release path remains GitHub main triggering Cloudflare Pages."
+      },
+      ja: {
+        title: "サイト全体のセキュリティと信頼性を強化",
+        summary: "アカウント入口、分析書き込み、D1 移行、管理画面の同時編集、転送管理を強化し、記事・ゲーム・日本語ツールへタイムアウト、縮退、オフライン復帰を追加しました。",
+        content_markdown: "# サイト全体のセキュリティと信頼性を強化\n\n公開サイト、Cloudflare バックエンド、管理画面を一つのシステムとして再点検し、アカウント安全性、データ整合性、障害復旧、公開品質に影響する問題をまとめて修正しました。\n\n## アカウント・API・分析\n\n- アカウント系と書き込み API は本文サイズ、送信元、Content-Type を制限します。ログインと登録ではアカウントの存在を推測できない応答を使い、ネットワーク元とアカウント識別子の両方で段階的に制限します。\n- パスワード導出コストを高め、古いハッシュはログイン成功後に順次更新します。サーバー内部の例外詳細はブラウザーへ返さず、安定したエラーコードだけを公開します。\n- ページ、クリック、記事閲覧の書き込みに上限、重複抑制、有限の保存期間を設け、ボットや連続更新で D1 書き込みが無制限に増えないようにしました。\n\n## データと管理画面の整合性\n\n- 旧 D1 は不足列を先に追加し、その後で依存インデックスと完全な schema を適用します。新規データベースは従来どおり一度で初期化できます。\n- 記事、動画、動画分類、ソーシャルリンクは版を照合して保存します。複数の管理タブで同じ項目を編集した場合、古い画面は新しい内容を黙って上書きせず競合を通知します。\n- 一時転送管理は部分成功と完全成功を区別し、設定を条件付きで更新します。検索、危険操作の確認、重複操作ロック、R2 削除失敗も復旧可能な状態として扱います。\n\n## 公開アクセスとオフライン復帰\n\n- ゲーム一覧と日本語ツールの任意 manifest にタイムアウトとローカル復帰を追加し、ネットワークが遅くてもローカル内容や既存保存を妨げません。\n- Home の壁紙は事前読み込みと実表示で同じ素材選択を使い、重複ダウンロードを避けます。\n- `/articles/<slug>` はエッジで記事固有のタイトル、概要、Open Graph、Twitter、canonical、構造化データを返し、スクリプトが使えない場合も安全な可読本文を残します。\n\n## 公開工程\n\n- 基本セキュリティヘッダーとサンプリング観測を追加しました。CI の外部 Actions は不変コミットへ固定し、全テスト、ビルド、再現可能な成果物、ブラウザー公開監査を実行します。\n- session、パスワード、完全な IP、非公開 visitor 識別子、管理下書きは公開せず、正式な公開経路も GitHub main から Cloudflare Pages を起動する方式のままです。"
+      }
+    }, "2026-07-26T14:58:00.000Z"),
     env.DB.prepare(`
       insert into articles (
         article_id, slug, category, tags, cover_image, status, is_pinned,
@@ -9696,9 +11003,9 @@ async function seedArticleTestData(env) {
   articleSeedReady = true;
 }
 
-async function ensureVisitorProfile(env, request, visitorId, body = {}, incrementVisit = false) {
+async function ensureVisitorProfile(env, request, visitorId, body = {}, incrementVisit = false, providedGeo = null) {
   const now = nowIso();
-  const geo = await requestIpInfo(request, env, "analytics");
+  const geo = providedGeo || await requestIpInfo(request, env, "analytics");
   const userAgent = normalizeAnalyticsText(request.headers.get("User-Agent"), 500);
   const language = normalizeAnalyticsText(body.language || request.headers.get("Accept-Language"), 160);
   await env.DB.prepare(`
@@ -9862,28 +11169,64 @@ function isValidHiddenVisitorId(value) {
   return /^vis_[a-zA-Z0-9_-]{16,80}$/.test(String(value || ""));
 }
 
-async function readOptionalJson(request) {
-  if (!request.headers.get("Content-Type")?.includes("application/json")) {
-    return {};
+function isTransferApiPath(parts) {
+  return parts[0] === "transfer" || (parts[0] === "admin" && parts[1] === "transfer");
+}
+
+function assertMainApiMutationRequest(request) {
+  if (request.method === "GET" || request.method === "HEAD" || request.method === "OPTIONS") {
+    return;
   }
-  try {
-    return await request.json();
-  } catch {
-    return {};
+  assertSameOriginRequest(request);
+  if (request.method !== "DELETE") {
+    assertApplicationJsonRequest(request);
   }
 }
 
-async function readBoundedJson(request, maxBytes) {
-  if (!request.headers.get("Content-Type")?.toLowerCase().includes("application/json")) {
+function assertSameOriginRequest(request) {
+  const expectedOrigin = new URL(request.url).origin;
+  const originHeader = String(request.headers.get("Origin") || "").trim();
+  const fetchSite = String(request.headers.get("Sec-Fetch-Site") || "").trim().toLowerCase();
+  if (originHeader) {
+    let origin;
+    try {
+      origin = new URL(originHeader).origin;
+    } catch {
+      throw new HttpError("请求来源不受信任。", 403);
+    }
+    if (origin !== expectedOrigin) {
+      throw new HttpError("请求来源不受信任。", 403);
+    }
+  }
+  if (fetchSite && !["same-origin", "none"].includes(fetchSite)) {
+    throw new HttpError("请求来源不受信任。", 403);
+  }
+}
+
+function analyticsReadSourceIsTrusted(request) {
+  try {
+    assertSameOriginRequest(request);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function assertApplicationJsonRequest(request) {
+  const contentType = String(request.headers.get("Content-Type") || "")
+    .split(";", 1)[0]
+    .trim()
+    .toLowerCase();
+  if (contentType !== "application/json") {
     throw new HttpError("请求必须使用 application/json。", 415);
   }
-  const declaredLength = Number(request.headers.get("Content-Length"));
-  if (Number.isFinite(declaredLength) && declaredLength > maxBytes) {
-    throw new HttpError("云端进度数据过大。", 413);
-  }
-  const raw = await request.text();
-  if (new TextEncoder().encode(raw).length > maxBytes) {
-    throw new HttpError("云端进度数据过大。", 413);
+}
+
+async function readOptionalJson(request, maxBytes = MAX_DEFAULT_JSON_BYTES, tooLargeMessage = "请求内容过大。") {
+  assertApplicationJsonRequest(request);
+  const raw = await readBoundedRequestText(request, maxBytes, tooLargeMessage);
+  if (!raw.trim()) {
+    return {};
   }
   try {
     return JSON.parse(raw);
@@ -9892,28 +11235,94 @@ async function readBoundedJson(request, maxBytes) {
   }
 }
 
-async function readJson(request) {
+async function readBoundedJson(request, maxBytes) {
+  return readJson(request, maxBytes, "云端进度数据过大。");
+}
+
+async function readJson(request, maxBytes = MAX_DEFAULT_JSON_BYTES, tooLargeMessage = "请求内容过大。") {
+  assertApplicationJsonRequest(request);
+  const raw = await readBoundedRequestText(request, maxBytes, tooLargeMessage);
   try {
-    return await request.json();
+    return JSON.parse(raw);
   } catch {
     throw new HttpError("请求内容不是有效 JSON。", 400);
+  }
+}
+
+async function readBoundedRequestText(request, maxBytes, tooLargeMessage) {
+  const limit = Math.max(1, Number(maxBytes) || MAX_DEFAULT_JSON_BYTES);
+  const declaredLengthText = request.headers.get("Content-Length");
+  const declaredLength = declaredLengthText === null ? NaN : Number(declaredLengthText);
+  if (Number.isFinite(declaredLength) && declaredLength > limit) {
+    throw new HttpError(tooLargeMessage, 413);
+  }
+  if (!request.body) {
+    return "";
+  }
+
+  const reader = request.body.getReader();
+  const chunks = [];
+  let totalBytes = 0;
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) {
+        break;
+      }
+      const chunk = value instanceof Uint8Array ? value : new Uint8Array(value);
+      totalBytes += chunk.byteLength;
+      if (totalBytes > limit) {
+        await reader.cancel();
+        throw new HttpError(tooLargeMessage, 413);
+      }
+      chunks.push(chunk);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+
+  const bytes = new Uint8Array(totalBytes);
+  let offset = 0;
+  chunks.forEach((chunk) => {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  });
+  try {
+    return new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+  } catch {
+    throw new HttpError("请求内容不是有效 UTF-8。", 400);
   }
 }
 
 function json(payload, status = 200) {
   return new Response(JSON.stringify(payload), {
     status,
-    headers: {
+    headers: apiSecurityHeaders({
       "Content-Type": "application/json; charset=utf-8",
       "Cache-Control": "no-store"
-    }
+    })
   });
+}
+
+function apiSecurityHeaders(headers = {}) {
+  const secured = new Headers(headers);
+  secured.set("Content-Security-Policy", "default-src 'none'; base-uri 'none'; frame-ancestors 'none'");
+  secured.set("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=(), usb=()");
+  secured.set("Referrer-Policy", "no-referrer");
+  secured.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+  secured.set("X-Content-Type-Options", "nosniff");
+  secured.set("X-Frame-Options", "DENY");
+  return secured;
 }
 
 export async function cacheableJson(request, payload, options = {}) {
   const body = JSON.stringify(payload);
+  const representationSeed = Object.prototype.hasOwnProperty.call(options, "etagSeed")
+    ? options.etagSeed
+    : body;
   return cacheableResponse(request, body, {
     ...options,
+    etagSeed: [PUBLIC_API_REPRESENTATION_VERSION, representationSeed],
     contentType: "application/json; charset=utf-8"
   });
 }
@@ -9930,7 +11339,7 @@ async function cacheableResponse(request, body, {
   etagSeed = body
 } = {}) {
   const etag = await strongEtag(etagSeed);
-  const headers = new Headers({
+  const headers = apiSecurityHeaders({
     "Content-Type": contentType,
     "Cache-Control": `${cacheScope}, max-age=${Math.max(0, Number(maxAge) || 0)}, stale-while-revalidate=${Math.max(0, Number(staleWhileRevalidate) || 0)}`,
     ETag: etag,
@@ -9986,6 +11395,41 @@ function validatePassword(password) {
   if (password.length < 8 || password.length > 128) {
     throw new HttpError("密码至少 8 位，最多 128 位。", 400);
   }
+}
+
+function expectedUpdatedAtFromBody(body, { allowNull = false } = {}) {
+  if (!body || typeof body !== "object" || Array.isArray(body)
+    || !Object.prototype.hasOwnProperty.call(body, "expectedUpdatedAt")) {
+    throw new HttpError("缺少内容版本，请刷新后重试。", 400);
+  }
+  const value = body.expectedUpdatedAt;
+  if (allowNull && value === null) {
+    return null;
+  }
+  if (
+    typeof value !== "string"
+    || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/.test(value)
+    || Number.isNaN(Date.parse(value))
+  ) {
+    throw new HttpError("内容版本不正确，请刷新后重试。", 400);
+  }
+  return value;
+}
+
+function nextMutationUpdatedAt(previousValue) {
+  const previousTime = Date.parse(String(previousValue || ""));
+  const timestamp = Number.isFinite(previousTime)
+    ? Math.max(Date.now(), previousTime + 1)
+    : Date.now();
+  return new Date(timestamp).toISOString();
+}
+
+function contentConflictResponse(updatedAt) {
+  return json({
+    error: "内容已被其他编辑更新，请刷新后重试。",
+    code: "CONTENT_CONFLICT",
+    updatedAt: updatedAt || null
+  }, 409);
 }
 
 function normalizeAccountRole(value) {
@@ -10419,16 +11863,19 @@ function fillDailySeries(rows, since, days) {
   });
 }
 
-async function hashPassword(password) {
+async function hashPassword(password, iterations = PASSWORD_HASH_ITERATIONS) {
   const salt = randomToken(16);
-  const iterations = PASSWORD_HASH_ITERATIONS;
+  const normalizedIterations = Math.max(
+    PASSWORD_HASH_ITERATIONS,
+    Math.min(1500000, Math.floor(Number(iterations) || PASSWORD_HASH_ITERATIONS))
+  );
   const key = await crypto.subtle.importKey("raw", textBytes(password), "PBKDF2", false, ["deriveBits"]);
   const bits = await crypto.subtle.deriveBits(
-    { name: "PBKDF2", salt: base64urlToBytes(salt), iterations, hash: "SHA-256" },
+    { name: "PBKDF2", salt: base64urlToBytes(salt), iterations: normalizedIterations, hash: "SHA-256" },
     key,
     256
   );
-  return `pbkdf2_sha256$${iterations}$${salt}$${bytesToBase64url(new Uint8Array(bits))}`;
+  return `pbkdf2_sha256$${normalizedIterations}$${salt}$${bytesToBase64url(new Uint8Array(bits))}`;
 }
 
 async function verifyPassword(password, stored) {
@@ -10437,16 +11884,30 @@ async function verifyPassword(password, stored) {
     return false;
   }
   const iterations = Number(iterationText);
-  if (!Number.isFinite(iterations) || iterations < 10000) {
+  if (!Number.isInteger(iterations) || iterations < 10000 || iterations > 1500000) {
     return false;
   }
-  const key = await crypto.subtle.importKey("raw", textBytes(password), "PBKDF2", false, ["deriveBits"]);
-  const bits = await crypto.subtle.deriveBits(
-    { name: "PBKDF2", salt: base64urlToBytes(salt), iterations, hash: "SHA-256" },
-    key,
-    256
-  );
-  return timingSafeEqual(bytesToBase64url(new Uint8Array(bits)), expected);
+  try {
+    const saltBytes = base64urlToBytes(salt);
+    const expectedBytes = base64urlToBytes(expected);
+    if (saltBytes.byteLength < 16 || expectedBytes.byteLength !== 32) {
+      return false;
+    }
+    const key = await crypto.subtle.importKey("raw", textBytes(password), "PBKDF2", false, ["deriveBits"]);
+    const bits = await crypto.subtle.deriveBits(
+      { name: "PBKDF2", salt: saltBytes, iterations, hash: "SHA-256" },
+      key,
+      256
+    );
+    return timingSafeEqualBytes(new Uint8Array(bits), expectedBytes);
+  } catch {
+    return false;
+  }
+}
+
+function passwordHashNeedsUpgrade(stored) {
+  const [scheme, iterationText] = String(stored || "").split("$");
+  return scheme !== "pbkdf2_sha256" || Number(iterationText) < PASSWORD_HASH_ITERATIONS;
 }
 
 async function sha256Hex(value) {
@@ -10493,13 +11954,13 @@ function runtimeSecret(env, name) {
   return value;
 }
 
-function timingSafeEqual(a, b) {
-  if (a.length !== b.length) {
-    return false;
-  }
-  let diff = 0;
-  for (let i = 0; i < a.length; i += 1) {
-    diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+function timingSafeEqualBytes(left, right) {
+  const a = left instanceof Uint8Array ? left : new Uint8Array(left);
+  const b = right instanceof Uint8Array ? right : new Uint8Array(right);
+  const length = Math.max(a.byteLength, b.byteLength);
+  let diff = a.byteLength ^ b.byteLength;
+  for (let index = 0; index < length; index += 1) {
+    diff |= (a[index] || 0) ^ (b[index] || 0);
   }
   return diff === 0;
 }

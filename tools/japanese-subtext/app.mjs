@@ -1,13 +1,13 @@
-import { ContentLoader } from "./lib/content-loader.mjs?v=20260714-japanese-subtext-v103-retry-r1";
-import { AudioPlayer } from "./lib/audio-player.mjs?v=20260714-japanese-subtext-v103-retry-r1";
-import { CloudProgress } from "./lib/cloud.mjs?v=20260714-japanese-subtext-v103-retry-r1";
-import { formatTime, localized, parseStageId, safeToolAssetPath, shortContentHash, stageId } from "./lib/constants.mjs?v=20260714-japanese-subtext-v103-retry-r1";
-import { createTranslator, normalizeUiLanguage } from "./lib/i18n.mjs?v=20260714-japanese-subtext-v103-retry-r1";
-import { questionActionState } from "./lib/question-flow.mjs?v=20260714-japanese-subtext-v103-retry-r1";
+import { ContentLoader } from "./lib/content-loader.mjs?v=20260726-japanese-subtext-network-r1";
+import { AudioPlayer } from "./lib/audio-player.mjs?v=20260726-japanese-subtext-network-r1";
+import { CloudProgress } from "./lib/cloud.mjs?v=20260726-japanese-subtext-network-r1";
+import { formatTime, localized, parseStageId, safeToolAssetPath, shortContentHash, stageId } from "./lib/constants.mjs?v=20260726-japanese-subtext-network-r1";
+import { createTranslator, normalizeUiLanguage } from "./lib/i18n.mjs?v=20260726-japanese-subtext-network-r1";
+import { questionActionState } from "./lib/question-flow.mjs?v=20260726-japanese-subtext-network-r1";
 import {
   checkInStats, hasCompletedModeOnboarding, loadLocalState, localDateKey, markModeOnboardingComplete, mergeProgress, mergeSettings,
   nextStageId, progressStats, recordAttempt, resetLocalState, saveProgress, saveSettings
-} from "./lib/storage.mjs?v=20260714-japanese-subtext-v103-retry-r1";
+} from "./lib/storage.mjs?v=20260726-japanese-subtext-network-r1";
 
 const loader = new ContentLoader();
 const player = new AudioPlayer();
@@ -345,10 +345,7 @@ async function openStage(id, { historyMode = "push", focus = true } = {}) {
   if (!parsed || !state.progress.unlockedStageIds.includes(id)) return;
   const request = beginNavigation();
   setStatus(t("loading"));
-  const [stage, audioError] = await Promise.all([
-    loader.loadStage(id),
-    ensureAudioManifest().then(() => null).catch((error) => error)
-  ]);
+  const stage = await loader.loadStage(id);
   if (request !== navigationEpoch) return;
   state.level = parsed.level;
   state.stage = stage;
@@ -365,6 +362,7 @@ async function openStage(id, { historyMode = "push", focus = true } = {}) {
   state.draftAnswers = {};
   state.lastScore = null;
   state.analysisVisible = false;
+  state.audioAvailable = Boolean(player.manifest);
   player.setStage(id);
   player.configure(state.settings);
   state.progress.currentLevel = parsed.level;
@@ -374,8 +372,13 @@ async function openStage(id, { historyMode = "push", focus = true } = {}) {
   activateScreen("stage", { historyMode, historyQuery: `stage=${encodeURIComponent(id)}`, focus });
   renderStage();
   resetPlayerTimeline();
-  if (audioError) showAudioError(audioError);
-  else clearAudioError();
+  if (state.audioAvailable) {
+    clearAudioError();
+  } else {
+    $("#audio-message").textContent = t("loading");
+    syncAudioAvailabilityControls();
+    void prepareStageAudio(request, id);
+  }
   setStatus(`${id} · ${state.stage.jlptTarget}`);
   loader.preloadNext(id);
   if (!hasCompletedModeOnboarding()) {
@@ -395,6 +398,7 @@ function renderStage() {
   renderAnalysis(stage);
   updateQuestionGate();
   syncQuickControls();
+  syncAudioAvailabilityControls();
 }
 
 function renderIllustration(stage) {
@@ -430,6 +434,7 @@ function renderTranscript(stage) {
       className: "line-ja line-ja-trigger",
       text: line.text.ja,
       lang: "ja",
+      disabled: !state.audioAvailable,
       dataset: { audioAction: "line", lineId: line.id },
       ariaLabel: `${t("playSentence")}: ${line.text.ja}`
     }));
@@ -440,7 +445,7 @@ function renderTranscript(stage) {
     const tokens = el("div", { className: "token-row" });
     line.tokens.forEach((token) => {
       tokens.append(el("button", {
-        type: "button", className: "token-button", lang: "ja", dataset: { audioAction: "token", lineId: line.id, tokenId: token.id, audioId: token.audioId },
+        type: "button", className: "token-button", lang: "ja", disabled: !state.audioAvailable, dataset: { audioAction: "token", lineId: line.id, tokenId: token.id, audioId: token.audioId },
         ariaLabel: `${t("playChunk")}: ${token.text}`
       }, el("span", { text: token.text }), state.settings.kana ? el("small", { text: token.reading }) : null));
     });
@@ -485,7 +490,7 @@ function renderQuestions(stage) {
       const row = el("div", { className: "option-row" }, label);
       if (state.settings.optionAudio) {
         row.append(el("button", {
-          type: "button", className: "xp-control compact option-audio", text: "▶", disabled: !state.questionUnlocked,
+          type: "button", className: "xp-control compact option-audio", text: "▶", disabled: !state.audioAvailable || !state.questionUnlocked,
           dataset: { audioAction: "option", questionId: question.id, optionId: option.id, audioId: option.audioId },
           ariaLabel: `${t("playOption")} ${optionMarker}`
         }));
@@ -758,6 +763,19 @@ async function retryAudio() {
   if (state.stage) await playScene(0);
 }
 
+async function prepareStageAudio(request, id) {
+  try {
+    await ensureAudioManifest();
+    if (request !== navigationEpoch || state.stage?.id !== id) return;
+    clearAudioError();
+    resetPlayerTimeline();
+    syncAudioAvailabilityControls();
+  } catch (error) {
+    if (request !== navigationEpoch || state.stage?.id !== id) return;
+    showAudioError(error);
+  }
+}
+
 async function ensureAudioManifest() {
   if (player.manifest) {
     state.audioAvailable = true;
@@ -789,6 +807,7 @@ function showAudioError() {
   message.textContent = t("audioUnavailable");
   message.classList.add("is-error");
   $("#audio-error-actions").hidden = false;
+  syncAudioAvailabilityControls();
   announce(t("audioUnavailable"));
 }
 
@@ -796,6 +815,15 @@ function clearAudioError() {
   $("#audio-error-actions").hidden = true;
   $("#audio-message").classList.remove("is-error");
   updatePlayerState(state.audioState);
+  syncAudioAvailabilityControls();
+}
+
+function syncAudioAvailabilityControls() {
+  $$("[data-audio-action]:not([data-audio-action='retry'])").forEach((control) => {
+    control.disabled = !state.audioAvailable
+      || (control.dataset.audioAction === "option" && !state.questionUnlocked);
+  });
+  $("#audio-progress").disabled = !state.audioAvailable;
 }
 
 function syncSettingsControls() {

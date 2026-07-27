@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex,nofollow">
   <title>鲁肃个人站管理后台</title>
-  <link rel="stylesheet" href="/admin/admin.css?v=20260719-admin-dirty-transfer-r1">
+  <link rel="stylesheet" href="/admin/admin.css?v=20260727-daily-ai-news-inbox-r1">
 </head>
 <body>
   <div class="admin-shell">
@@ -41,6 +41,7 @@
           <div class="nav-group" role="group" aria-labelledby="nav-group-content">
             <span class="nav-group-title" id="nav-group-content">内容管理</span>
             <button class="nav-button" type="button" data-panel="articles" aria-controls="articles-panel">知识库文章</button>
+            <button class="nav-button" type="button" data-panel="automation" aria-controls="automation-panel">自动投递</button>
             <button class="nav-button" type="button" data-panel="videos" aria-controls="videos-panel">视频管理</button>
             <button class="nav-button" type="button" data-panel="videoCategories" aria-controls="videoCategories-panel">视频分类管理</button>
           </div>
@@ -257,6 +258,82 @@
               </div>
 
             </form>
+          </section>
+        </div>
+      </section>
+
+      <section class="panel" id="automation-panel" hidden aria-hidden="true">
+        <div class="automation-layout">
+          <section class="xp-panel automation-overview">
+            <div class="panel-head">
+              <div>
+                <h2>每日 AI 新闻投递箱</h2>
+                <span>固定进入知识库“每日 AI 新闻”，可独立控制投递与自动公开</span>
+              </div>
+              <span class="status-badge neutral" id="automation-enabled-badge">读取中</span>
+            </div>
+            <div class="automation-facts" aria-label="自动投递状态">
+              <div><span>目标分区</span><strong>每日 AI 新闻</strong></div>
+              <div><span>收到后状态</span><strong id="automation-publish-mode">草稿，需人工发布</strong></div>
+              <div><span>待审草稿</span><strong id="automation-draft-count">0</strong></div>
+              <div><span>最近投递</span><strong id="automation-last-used">尚无记录</strong></div>
+            </div>
+            <div class="form-actions automation-actions">
+              <button class="xp-button primary" type="button" id="automation-toggle">启用投递</button>
+              <button class="xp-button" type="button" id="automation-auto-publish">开启自动公开</button>
+              <button class="xp-button" type="button" id="automation-open-articles">查看每日 AI 新闻文章</button>
+            </div>
+            <p class="automation-note" id="automation-publish-note">自动公开默认关闭；关闭时新内容只进入草稿箱，等你检查后再发布。</p>
+          </section>
+
+          <section class="xp-panel automation-credential">
+            <div class="panel-head">
+              <div>
+                <h2>连接凭证</h2>
+                <span id="automation-token-state">尚未生成</span>
+              </div>
+            </div>
+            <div class="automation-endpoint-row">
+              <div>
+                <span>投递地址</span>
+                <code id="automation-endpoint"></code>
+              </div>
+              <button class="xp-button" type="button" id="automation-copy-endpoint">复制地址</button>
+            </div>
+            <div class="automation-secret" id="automation-secret" role="status" aria-live="polite" hidden>
+              <strong>请现在复制并妥善保存，关闭或刷新后将不再显示：</strong>
+              <code id="automation-secret-value"></code>
+              <button class="xp-button primary" type="button" id="automation-copy-token">复制凭证</button>
+            </div>
+            <div class="form-actions automation-actions">
+              <button class="xp-button" type="button" id="automation-rotate-token">生成连接凭证</button>
+              <button class="xp-button danger" type="button" id="automation-revoke-token" disabled>撤销凭证</button>
+            </div>
+            <p class="form-status" id="automation-status" role="status" aria-live="polite" aria-atomic="true"></p>
+          </section>
+
+          <section class="xp-panel automation-guide">
+            <div class="panel-head">
+              <div>
+                <h2>以后怎么使用</h2>
+                <span>本轮只准备入口，不创建定时任务</span>
+              </div>
+            </div>
+            <ol>
+              <li>生成连接凭证，并启用投递箱。</li>
+              <li>保持“自动公开”关闭时，Codex 生成的内容只会送入草稿箱。</li>
+              <li>只有你明确开启“自动公开”后，新的合格三语稿件才会直接公开；随时可以暂停投递或关闭自动公开。</li>
+            </ol>
+          </section>
+
+          <section class="xp-panel automation-history">
+            <div class="panel-head">
+              <div>
+                <h2>最近投递</h2>
+                <span id="automation-delivery-count">0 条记录</span>
+              </div>
+            </div>
+            <div class="admin-updates automation-deliveries" id="automation-deliveries"></div>
           </section>
         </div>
       </section>
@@ -595,7 +672,7 @@
           </div>
           <p>这个后台只服务站长维护个人站，不对外展示，也不复用知识库的网站更新记录。</p>
           <p>后台复用主站账号系统，只有管理员角色可以访问页面和后台接口。</p>
-          <p>后台包含实时大屏、访问来源、点击埋点、三语文章编辑、视频管理、视频分类管理、聊天室编辑/删除/禁言、临时互传文件管理、账号管理、社交链接管理和后台私有更新记录。</p>
+          <p>后台包含实时大屏、访问来源、点击埋点、三语文章编辑、每日 AI 新闻自动投递管理、视频管理、视频分类管理、聊天室编辑/删除/禁言、临时互传文件管理、账号管理、社交链接管理和后台私有更新记录。</p>
         </section>
       </section>
 
@@ -645,6 +722,6 @@
     </div>
   </dialog>
 
-  <script src="/admin/admin.js?v=20260726-admin-tools-label-r1"></script>
+  <script src="/admin/admin.js?v=20260728-daily-ai-news-production-r1"></script>
 </body>
 </html>

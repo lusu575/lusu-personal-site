@@ -6,6 +6,7 @@ const state = {
   clickFilter: "",
   articles: [],
   selectedArticleId: "",
+  articleUpdatedAt: null,
   articleFilter: "",
   articleDetailReady: false,
   articleLang: "zh",
@@ -14,9 +15,11 @@ const state = {
   articleDeleting: false,
   videos: [],
   selectedVideoId: "",
+  videoUpdatedAt: null,
   videoFilter: "",
   videoCategories: [],
   selectedVideoCategoryId: "",
+  videoCategoryUpdatedAt: null,
   videoCategoryFilter: "",
   videoCategoryBusy: false,
   videoCategoryBusyMode: "",
@@ -44,7 +47,12 @@ const state = {
   accountDetail: null,
   accountSaving: false,
   socialLinks: [],
+  socialLinksUpdatedAt: null,
   socialLinksSaving: false,
+  automationChannel: null,
+  automationDeliveries: [],
+  automationOneTimeToken: "",
+  automationBusy: false,
   mobileNavOpen: false,
   mobileNavReturnFocus: null,
   masterDetail: {
@@ -122,6 +130,7 @@ const panelMeta = {
   visits: ["访问来源", "按国家、省份、城市和掩码网络前缀查看每日访问。"],
   clicks: ["点击埋点", "查看站内各位置点击、浏览访客和最近事件。"],
   articles: ["知识库文章", "一次编辑中文、英文、日文三种版本，按当前选择语言显示编辑区。"],
+  automation: ["自动投递", "管理“每日 AI 新闻”草稿投递箱、连接凭证和最近投递记录。"],
   videos: ["视频管理", "输入视频链接后由服务端识别并缓存标题、简介、发布时间和封面，也可上传本地封面。"],
   videoCategories: ["视频分类管理", "维护视频区顶部标签，支持新增、编辑、停用、排序和安全删除。"],
   chat: ["聊天室管理", "编辑、隐藏、删除聊天记录，按隐藏用户标识或网络来源禁言。"],
@@ -136,6 +145,26 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-07-28",
+    title: "每日 AI 新闻正式生产",
+    body: "每日 AI 新闻现已具备受控自动公开能力：只有专用通道启用、连接凭证有效且“自动公开”开关明确开启时，新稿才会直接发布；关闭开关时仍只进入草稿。正式任务每天北京时间 7 点开始处理此前 24 小时消息，必须在 8 点前完成 Horizon 采集、核实、三语校验、投递和公开核验，失败或超时不补发。后台脚本版本为 20260728-daily-ai-news-production-r1。"
+  },
+  {
+    date: "2026-07-27",
+    title: "每日 AI 新闻本地试运行",
+    body: "已让 Horizon 真正承担每日 AI 新闻的多来源采集和重复合并，Codex 只从它的本次结果里按北京时间筛选、核实并整理三语完整文章。首次稳定实跑取得 113 条合并后候选和 74 条当日候选，最终保留四件事；新稿先等待审阅，尚未覆盖草稿箱中的早期测试稿。定时运行和自动发布仍然关闭。后台脚本版本为 20260727-daily-ai-news-local-workflow-r1。"
+  },
+  {
+    date: "2026-07-27",
+    title: "每日 AI 新闻草稿投递箱",
+    body: "后台新增“自动投递”管理页，可启用或暂停每日 AI 新闻投递、生成或撤销一次性连接凭证，并查看最近成功送达的记录。外部投递只能进入固定的“每日 AI 新闻”分类，服务端强制保存为非置顶草稿，管理员仍需在知识库文章中审阅并手动发布。本轮没有创建定时任务。后台资源版本更新为 20260727-daily-ai-news-inbox-r1。"
+  },
+  {
+    date: "2026-07-26",
+    title: "并发编辑与互传治理加固",
+    body: "文章、视频、视频分类、社交链接、元数据刷新和删除操作现在携带读取时的版本；其他后台标签页已先更新时会保留当前输入并提示手动合并，不再静默覆盖。互传设置采用条件更新，清空与清理会区分完整成功和部分失败；列表搜索、危险确认、重复写操作、离开未保存页面和 R2 清理失败均提供可恢复状态。后台脚本版本更新为 20260726-admin-concurrency-safety-r1，互传资源版本更新为 20260726-admin-transfer-safety-r1。"
+  },
   {
     date: "2026-07-26",
     title: "工具区名称同步",
@@ -1190,9 +1219,23 @@ async function api(path, options = {}) {
     if (response.status === 401) {
       window.location.reload();
     }
-    throw new Error(payload.error || `HTTP ${response.status}`);
+    throw Object.assign(new Error(payload.error || `HTTP ${response.status}`), {
+      status: response.status,
+      code: payload.code || "",
+      payload
+    });
   }
   return payload;
+}
+
+function contentWriteErrorMessage(error) {
+  if (error?.status === 409 && error?.code === "CONTENT_CONFLICT") {
+    return "内容已被其他后台页面更新。当前输入已保留；请先复制需要保留的内容，再重新载入最新版本并手动合并。";
+  }
+  if (error?.status === 428 && error?.code === "CONTENT_VERSION_REQUIRED") {
+    return "缺少内容版本，当前输入已保留。请重新载入该内容后再保存。";
+  }
+  return error?.message || "保存失败，请稍后重试。";
 }
 
 function formatNumber(value) {
@@ -1238,6 +1281,7 @@ function categoryDisplayName(value) {
   const labels = {
     note: "随笔",
     knowledge: "知识库",
+    "daily-ai-news": "每日 AI 新闻",
     "site-updates": "网站更新",
     update: "更新记录",
     guide: "指南",
@@ -1734,6 +1778,13 @@ async function loadPanelData(panel, options = {}) {
         } catch (error) {
           renderArticleListNotice(`读取文章列表失败：${error.message}`, "文章列表错误");
           throw new Error(`文章列表：${error.message}`);
+        }
+      } else if (panel === "automation") {
+        try {
+          await loadAutomation();
+        } catch (error) {
+          renderAutomationFailure(`读取自动投递失败：${error.message}`);
+          throw new Error(`自动投递：${error.message}`);
         }
       } else if (panel === "videos") {
         const videoResults = await Promise.allSettled([loadVideoCategories(), loadVideos()]);
@@ -3290,6 +3341,326 @@ function formatClickScreenSize(row) {
     : "设备尺寸未记录";
 }
 
+async function loadAutomation() {
+  const payload = await api("/api/admin/automation/daily-ai-news");
+  state.automationChannel = payload.channel || null;
+  state.automationDeliveries = Array.isArray(payload.deliveries) ? payload.deliveries : [];
+  state.automationOneTimeToken = "";
+  renderAutomationPanel();
+}
+
+function renderAutomationPanel() {
+  const channel = state.automationChannel;
+  const enabled = Boolean(channel?.enabled);
+  const autoPublish = Boolean(channel?.autoPublish);
+  const tokenConfigured = Boolean(channel?.tokenConfigured);
+  const badge = $("#automation-enabled-badge");
+  badge.className = `status-badge ${enabled ? "visible" : "warning"}`;
+  setElementText(badge, enabled ? "投递已启用" : "投递已暂停");
+  setElementText($("#automation-draft-count"), formatNumber(channel?.draftCount || 0));
+  setElementText(
+    $("#automation-last-used"),
+    channel?.lastUsedAt ? formatTime(channel.lastUsedAt) : "尚无记录"
+  );
+  setElementText(
+    $("#automation-token-state"),
+    tokenConfigured
+      ? `已配置 · 尾号 ${channel.tokenHint || "未记录"} · ${formatTime(channel.tokenCreatedAt)}`
+      : "尚未生成"
+  );
+  setElementText(
+    $("#automation-endpoint"),
+    `${window.location.origin}/api/automation/daily-ai-news`
+  );
+  setElementText(
+    $("#automation-publish-mode"),
+    autoPublish ? "自动公开" : "草稿，需人工发布"
+  );
+  setElementText(
+    $("#automation-publish-note"),
+    autoPublish
+      ? "自动公开已开启。投递启用且凭证有效时，新稿会直接公开；暂停投递或关闭自动公开可阻止后续稿件自动上线。"
+      : "自动公开默认关闭；关闭时新内容只进入草稿箱，等你检查后再发布。"
+  );
+
+  const secret = $("#automation-secret");
+  secret.hidden = !state.automationOneTimeToken;
+  setElementText($("#automation-secret-value"), state.automationOneTimeToken || "");
+
+  const toggle = $("#automation-toggle");
+  toggle.textContent = enabled ? "暂停投递" : "启用投递";
+  syncButtonHint(
+    toggle,
+    enabled
+      ? "暂停后不再接收新稿，已有草稿不受影响"
+      : (
+          tokenConfigured
+            ? (autoPublish ? "启用后新稿会直接公开" : "启用每日 AI 新闻草稿投递")
+            : "请先生成连接凭证"
+        )
+  );
+
+  const autoPublishToggle = $("#automation-auto-publish");
+  autoPublishToggle.textContent = autoPublish ? "关闭自动公开" : "开启自动公开";
+  autoPublishToggle.classList.toggle("danger", autoPublish);
+  syncButtonHint(
+    autoPublishToggle,
+    autoPublish
+      ? "关闭后新稿只会进入草稿箱"
+      : (tokenConfigured ? "开启后，投递启用时新稿会直接对外公开" : "请先生成连接凭证")
+  );
+
+  const rotate = $("#automation-rotate-token");
+  rotate.textContent = tokenConfigured ? "轮换连接凭证" : "生成连接凭证";
+  syncButtonHint(
+    rotate,
+    tokenConfigured ? "生成新凭证，旧凭证会立即失效" : "生成只显示一次的连接凭证"
+  );
+  syncAutomationBusyState();
+
+  const deliveries = $("#automation-deliveries");
+  const rows = state.automationDeliveries;
+  setElementText($("#automation-delivery-count"), `${formatNumber(rows.length)} 条记录`);
+  if (!rows.length) {
+    deliveries.replaceChildren(createEmptyStateElement("还没有成功投递的记录。"));
+    return;
+  }
+  deliveries.replaceChildren(...rows.map((item) => createEventItemElement(
+    item.title || item.slug || "未命名投递",
+    [
+      `状态：${articleStatusLabel(item.status)}`,
+      `文章标识：${item.slug || "未记录"}`,
+      item.source ? `来源：${item.source}` : "",
+      `送达：${formatTime(item.createdAt)}`
+    ].filter(Boolean)
+  )));
+}
+
+function renderAutomationFailure(message) {
+  state.automationChannel = null;
+  state.automationDeliveries = [];
+  state.automationOneTimeToken = "";
+  setElementText($("#automation-status"), message);
+  setElementText($("#automation-enabled-badge"), "读取失败");
+  $("#automation-enabled-badge").className = "status-badge warning";
+  $("#automation-secret").hidden = true;
+  $("#automation-deliveries").replaceChildren(createEmptyStateElement(message));
+  setElementText($("#automation-delivery-count"), "读取失败");
+  setElementText($("#automation-publish-mode"), "读取失败");
+  setElementText($("#automation-publish-note"), "无法确认自动公开状态，请刷新后再操作。");
+  syncAutomationBusyState();
+}
+
+function syncAutomationBusyState() {
+  const channel = state.automationChannel;
+  const busy = state.automationBusy;
+  const buttons = [
+    $("#automation-toggle"),
+    $("#automation-auto-publish"),
+    $("#automation-rotate-token"),
+    $("#automation-revoke-token")
+  ];
+  buttons.forEach((button) => {
+    button.setAttribute("aria-busy", busy ? "true" : "false");
+  });
+  $("#automation-toggle").disabled = busy
+    || !channel
+    || (!channel.enabled && !channel.tokenConfigured);
+  $("#automation-auto-publish").disabled = busy || !channel?.tokenConfigured;
+  $("#automation-rotate-token").disabled = busy || !channel;
+  $("#automation-revoke-token").disabled = busy || !channel?.tokenConfigured;
+}
+
+async function updateAutomationEnabled() {
+  const channel = state.automationChannel;
+  if (!channel || state.automationBusy) {
+    return;
+  }
+  state.automationBusy = true;
+  syncAutomationBusyState();
+  const nextEnabled = !channel.enabled;
+  setElementText(
+    $("#automation-status"),
+    nextEnabled ? "正在启用投递..." : "正在暂停投递..."
+  );
+  try {
+    const payload = await api("/api/admin/automation/daily-ai-news", {
+      method: "PUT",
+      body: JSON.stringify({
+        enabled: nextEnabled,
+        expectedUpdatedAt: channel.updatedAt
+      })
+    });
+    state.automationChannel = payload.channel || channel;
+    setElementText(
+      $("#automation-status"),
+      nextEnabled
+        ? (
+            payload.channel?.autoPublish
+              ? "投递已启用，新的合格稿件会直接公开。"
+              : "投递已启用，新稿只会进入草稿箱。"
+          )
+        : "投递已暂停，已有文章不会被删除。"
+    );
+    state.loadedPanels[panelDataKey("automation")] = Date.now();
+  } catch (error) {
+    setElementText($("#automation-status"), contentWriteErrorMessage(error));
+  } finally {
+    state.automationBusy = false;
+    renderAutomationPanel();
+  }
+}
+
+async function updateAutomationAutoPublish() {
+  const channel = state.automationChannel;
+  if (!channel?.tokenConfigured || state.automationBusy) {
+    return;
+  }
+  const nextAutoPublish = !channel.autoPublish;
+  if (nextAutoPublish) {
+    const confirmed = await openConfirmDialog({
+      title: "开启每日 AI 新闻自动公开",
+      object: "每日 AI 新闻投递箱",
+      state: channel.enabled ? "当前投递已启用" : "当前投递已暂停",
+      impact: "开启后，只要投递保持启用且凭证有效，后续送达的合格稿件就会直接对外公开，不再停在草稿箱等待检查。",
+      recovery: "可以随时关闭自动公开或暂停投递；已经公开的文章需要到文章管理中单独调整。",
+      confirmLabel: "确认开启"
+    });
+    if (!confirmed) {
+      return;
+    }
+  }
+
+  state.automationBusy = true;
+  syncAutomationBusyState();
+  setElementText(
+    $("#automation-status"),
+    nextAutoPublish ? "正在开启自动公开..." : "正在关闭自动公开..."
+  );
+  try {
+    const payload = await api("/api/admin/automation/daily-ai-news", {
+      method: "PUT",
+      body: JSON.stringify({
+        autoPublish: nextAutoPublish,
+        expectedUpdatedAt: channel.updatedAt
+      })
+    });
+    state.automationChannel = payload.channel || channel;
+    setElementText(
+      $("#automation-status"),
+      nextAutoPublish
+        ? (
+            payload.channel?.enabled
+              ? "自动公开已开启，后续合格稿件会直接对外公开。"
+              : "自动公开已开启；投递仍处于暂停状态，启用投递后才会生效。"
+          )
+        : "自动公开已关闭，后续稿件只会进入草稿箱。"
+    );
+    state.loadedPanels[panelDataKey("automation")] = Date.now();
+  } catch (error) {
+    setElementText($("#automation-status"), contentWriteErrorMessage(error));
+  } finally {
+    state.automationBusy = false;
+    renderAutomationPanel();
+  }
+}
+
+async function rotateAutomationToken() {
+  const channel = state.automationChannel;
+  if (!channel || state.automationBusy) {
+    return;
+  }
+  if (channel.tokenConfigured) {
+    const confirmed = await openConfirmDialog({
+      title: "轮换自动投递凭证",
+      object: "每日 AI 新闻投递箱",
+      state: channel.enabled ? "当前投递已启用" : "当前投递已暂停",
+      impact: "新凭证生成后，旧凭证会立即失效；尚未更新凭证的任务将无法继续投递。",
+      recovery: "可以再次生成新凭证，但无法找回旧凭证。",
+      confirmLabel: "确认轮换"
+    });
+    if (!confirmed) {
+      return;
+    }
+  }
+
+  state.automationBusy = true;
+  syncAutomationBusyState();
+  setElementText($("#automation-status"), "正在生成连接凭证...");
+  try {
+    const payload = await api("/api/admin/automation/daily-ai-news/token", {
+      method: "POST",
+      body: JSON.stringify({ expectedUpdatedAt: channel.updatedAt })
+    });
+    state.automationChannel = payload.channel || channel;
+    state.automationOneTimeToken = payload.token || "";
+    setElementText(
+      $("#automation-status"),
+      "新凭证已生成，只会在本页显示这一次。"
+    );
+    state.loadedPanels[panelDataKey("automation")] = Date.now();
+  } catch (error) {
+    setElementText($("#automation-status"), contentWriteErrorMessage(error));
+  } finally {
+    state.automationBusy = false;
+    renderAutomationPanel();
+    if (state.automationOneTimeToken) {
+      window.requestAnimationFrame(() => $("#automation-copy-token")?.focus());
+    }
+  }
+}
+
+async function revokeAutomationToken() {
+  const channel = state.automationChannel;
+  if (!channel?.tokenConfigured || state.automationBusy) {
+    return;
+  }
+  const confirmed = await openConfirmDialog({
+    title: "撤销自动投递凭证",
+    object: "每日 AI 新闻投递箱",
+    state: channel.enabled ? "当前投递已启用" : "当前投递已暂停",
+    impact: "凭证会立即失效，投递箱会自动暂停，自动公开也会关闭；已有文章和投递记录不会删除。",
+    recovery: "之后可以重新生成新凭证并再次启用。",
+    confirmLabel: "确认撤销"
+  });
+  if (!confirmed) {
+    return;
+  }
+
+  state.automationBusy = true;
+  syncAutomationBusyState();
+  setElementText($("#automation-status"), "正在撤销连接凭证...");
+  try {
+    const payload = await api("/api/admin/automation/daily-ai-news/token", {
+      method: "DELETE",
+      body: JSON.stringify({ expectedUpdatedAt: channel.updatedAt })
+    });
+    state.automationChannel = payload.channel || channel;
+    state.automationOneTimeToken = "";
+    setElementText(
+      $("#automation-status"),
+      "凭证已撤销，投递箱已暂停，自动公开已关闭。"
+    );
+    state.loadedPanels[panelDataKey("automation")] = Date.now();
+  } catch (error) {
+    setElementText($("#automation-status"), contentWriteErrorMessage(error));
+  } finally {
+    state.automationBusy = false;
+    renderAutomationPanel();
+  }
+}
+
+async function openDailyAiNewsArticles() {
+  const switched = await switchPanel("articles", { focusTitle: true });
+  if (!switched) {
+    return;
+  }
+  state.articleFilter = "daily-ai-news";
+  $("#article-list-filter").value = state.articleFilter;
+  renderArticleList();
+  window.requestAnimationFrame(() => $("#article-list-filter")?.focus());
+}
+
 async function loadArticles() {
   const payload = await api("/api/admin/articles");
   state.articles = payload.articles || [];
@@ -3461,6 +3832,7 @@ function adminArticleDisplayTitle(article = {}) {
 
 async function selectArticle(articleId) {
   state.selectedArticleId = articleId;
+  state.articleUpdatedAt = null;
   state.articleDetailReady = false;
   resetArticleEditorForSelection(articleId, "正在读取文章详情...");
   renderArticleList();
@@ -3495,6 +3867,7 @@ function resetArticleEditorForSelection(articleId, statusText) {
 
 function resetArticleForm() {
   state.selectedArticleId = "";
+  state.articleUpdatedAt = null;
   state.articleDetailReady = false;
   setElementText($("#article-editor-title"), "新建文章");
   $("#article-form").reset();
@@ -3512,6 +3885,7 @@ function resetArticleForm() {
 
 function fillArticleForm(article) {
   const form = $("#article-form");
+  state.articleUpdatedAt = article.updated_at || null;
   setElementText($("#article-editor-title"), `编辑：${adminArticleDisplayTitle(article)}`);
   form.elements.slug.value = article.slug || "";
   form.elements.category.value = article.category || "note";
@@ -3679,7 +4053,7 @@ function articlePayload(statusOverride = "") {
     const content = form.elements[`content_${lang}`].value.trim();
     translations[lang] = { title, summary, content_markdown: content };
   });
-  return {
+  const payload = {
     slug,
     category: form.elements.category.value.trim() || "note",
     tags: form.elements.tags.value.split(/[，,]/).map((item) => item.trim()).filter(Boolean),
@@ -3689,6 +4063,10 @@ function articlePayload(statusOverride = "") {
     published_at: normalizePublishedAtForApi(form.elements.published_at.value),
     translations
   };
+  if (state.selectedArticleId) {
+    payload.expectedUpdatedAt = state.articleUpdatedAt;
+  }
+  return payload;
 }
 
 function articleLangLabel(lang) {
@@ -3721,6 +4099,7 @@ async function saveArticle(statusOverride = "") {
     const method = state.selectedArticleId ? "PUT" : "POST";
     const result = await api(path, { method, body: JSON.stringify(payload) });
     state.selectedArticleId = result.articleId || state.selectedArticleId;
+    state.articleUpdatedAt = result.updatedAt || state.articleUpdatedAt;
     status.textContent = "已保存。";
     await loadArticles();
     if (state.selectedArticleId) {
@@ -3730,7 +4109,7 @@ async function saveArticle(statusOverride = "") {
     captureEditorBaseline("articles", { saved: true });
     return true;
   } catch (error) {
-    status.textContent = error.message;
+    status.textContent = contentWriteErrorMessage(error);
     refreshEditorDirtyState("articles");
     return false;
   } finally {
@@ -3870,7 +4249,10 @@ async function deleteArticle() {
   const status = $("#article-status");
   try {
     status.textContent = "正在删除...";
-    await api(`/api/admin/articles/${encodeURIComponent(state.selectedArticleId)}`, { method: "DELETE" });
+    await api(`/api/admin/articles/${encodeURIComponent(state.selectedArticleId)}`, {
+      method: "DELETE",
+      body: JSON.stringify({ expectedUpdatedAt: state.articleUpdatedAt })
+    });
     resetArticleForm();
     await loadArticles();
     status.textContent = "已删除。";
@@ -4183,6 +4565,7 @@ function applyNewVideoCategorySortDefault() {
 
 function resetVideoForm() {
   state.selectedVideoId = "";
+  state.videoUpdatedAt = null;
   setElementText($("#video-editor-title"), "新建视频");
   $("#video-form").reset();
   $("#video-form").elements.status.value = "draft";
@@ -4202,6 +4585,7 @@ function resetVideoForm() {
 
 function fillVideoForm(video) {
   const form = $("#video-form");
+  state.videoUpdatedAt = video.updated_at || null;
   setElementText($("#video-editor-title"), `编辑：${adminVideoDisplayTitle(video)}`);
   form.elements.original_url.value = video.original_url || "";
   form.elements.platform.value = video.platform || "";
@@ -4449,7 +4833,7 @@ function videoBusyMetadataTitle(action) {
 
 function videoPayload(statusOverride = "") {
   const form = $("#video-form");
-  return {
+  const payload = {
     original_url: form.elements.original_url.value.trim(),
     title: form.elements.title.value.trim(),
     description: form.elements.description.value.trim(),
@@ -4462,6 +4846,10 @@ function videoPayload(statusOverride = "") {
     pinned_sort_order: form.elements.pinned.checked ? Number(form.elements.pinned_sort_order.value || 0) : 0,
     category_ids: Array.from($("#video-category-checks").querySelectorAll("input:checked")).map((input) => input.value)
   };
+  if (state.selectedVideoId) {
+    payload.expectedUpdatedAt = state.videoUpdatedAt;
+  }
+  return payload;
 }
 
 function handleVideoPinnedChange() {
@@ -4515,6 +4903,7 @@ async function saveVideo(statusOverride = "") {
     const method = state.selectedVideoId ? "PUT" : "POST";
     const result = await api(path, { method, body: JSON.stringify(videoPayload(statusOverride)) });
     state.selectedVideoId = result.videoId || state.selectedVideoId;
+    state.videoUpdatedAt = result.updatedAt || state.videoUpdatedAt;
     status.textContent = "已保存";
     await loadVideos();
     const video = selectedVideo();
@@ -4525,7 +4914,7 @@ async function saveVideo(statusOverride = "") {
     captureEditorBaseline("videos", { saved: true });
     return true;
   } catch (error) {
-    status.textContent = error.message;
+    status.textContent = contentWriteErrorMessage(error);
     refreshEditorDirtyState("videos");
     return false;
   } finally {
@@ -4734,12 +5123,15 @@ async function deleteVideo() {
   const status = $("#video-status");
   try {
     status.textContent = "正在删除...";
-    await api(`/api/admin/videos/${encodeURIComponent(state.selectedVideoId)}`, { method: "DELETE" });
+    await api(`/api/admin/videos/${encodeURIComponent(state.selectedVideoId)}`, {
+      method: "DELETE",
+      body: JSON.stringify({ expectedUpdatedAt: state.videoUpdatedAt })
+    });
     resetVideoForm();
     await loadVideos();
     status.textContent = "已删除。";
   } catch (error) {
-    status.textContent = error.message;
+    status.textContent = contentWriteErrorMessage(error);
   } finally {
     state.videoDeleting = false;
     syncVideoSaveButtons();
@@ -4758,10 +5150,14 @@ async function refreshVideoMetadata() {
   syncVideoSaveButtons();
   $("#video-status").textContent = "正在刷新元数据...";
   try {
-    const payload = await api(`/api/admin/videos/${encodeURIComponent(videoId)}/refresh-metadata`, { method: "POST" });
+    const payload = await api(`/api/admin/videos/${encodeURIComponent(videoId)}/refresh-metadata`, {
+      method: "POST",
+      body: JSON.stringify({ expectedUpdatedAt: state.videoUpdatedAt })
+    });
     if (state.selectedVideoId !== videoId) {
       return;
     }
+    state.videoUpdatedAt = payload.updatedAt || state.videoUpdatedAt;
     const refreshedVideo = payload.video || {};
     applyPreviewToVideoForm(refreshedVideo);
     $("#video-status").textContent = refreshedVideo.metadata_error
@@ -4769,7 +5165,7 @@ async function refreshVideoMetadata() {
       : "元数据已刷新。";
     await loadVideos();
   } catch (error) {
-    $("#video-status").textContent = error.message;
+    $("#video-status").textContent = contentWriteErrorMessage(error);
   } finally {
     state.videoMetadataRefreshing = false;
     syncVideoSaveButtons();
@@ -4898,6 +5294,7 @@ function selectedVideoCategory() {
 
 function resetVideoCategoryForm() {
   state.selectedVideoCategoryId = "";
+  state.videoCategoryUpdatedAt = null;
   setElementText($("#video-category-editor-title"), "新建分类");
   $("#video-category-form").reset();
   $("#video-category-form").elements.enabled.checked = true;
@@ -4911,6 +5308,7 @@ function resetVideoCategoryForm() {
 
 function fillVideoCategoryForm(category) {
   const form = $("#video-category-form");
+  state.videoCategoryUpdatedAt = category.updated_at || null;
   setElementText($("#video-category-editor-title"), `编辑：${category.name_zh || category.slug}`);
   form.elements.slug.value = category.slug || "";
   form.elements.name_zh.value = category.name_zh || "";
@@ -4934,7 +5332,7 @@ function videoCategoryUsageStatus(category) {
 
 function videoCategoryPayload() {
   const form = $("#video-category-form");
-  return {
+  const payload = {
     slug: form.elements.slug.value.trim(),
     name_zh: form.elements.name_zh.value.trim(),
     name_en: form.elements.name_en.value.trim(),
@@ -4942,6 +5340,10 @@ function videoCategoryPayload() {
     sort_order: Number(form.elements.sort_order.value || 0),
     enabled: form.elements.enabled.checked
   };
+  if (state.selectedVideoCategoryId) {
+    payload.expectedUpdatedAt = state.videoCategoryUpdatedAt;
+  }
+  return payload;
 }
 
 async function saveVideoCategory(event) {
@@ -4961,6 +5363,7 @@ async function saveVideoCategory(event) {
     const method = state.selectedVideoCategoryId ? "PUT" : "POST";
     const result = await api(path, { method, body: JSON.stringify(videoCategoryPayload()) });
     state.selectedVideoCategoryId = result.categoryId || state.selectedVideoCategoryId;
+    state.videoCategoryUpdatedAt = result.updatedAt || state.videoCategoryUpdatedAt;
     status.textContent = "已保存";
     await loadVideoCategories();
     const category = selectedVideoCategory();
@@ -4971,7 +5374,7 @@ async function saveVideoCategory(event) {
     captureEditorBaseline("videoCategories", { saved: true });
     return true;
   } catch (error) {
-    status.textContent = error.message;
+    status.textContent = contentWriteErrorMessage(error);
     refreshEditorDirtyState("videoCategories");
     return false;
   } finally {
@@ -5088,12 +5491,15 @@ async function deleteVideoCategory() {
   syncVideoCategoryButtons();
   try {
     $("#video-category-status").textContent = "正在删除...";
-    await api(`/api/admin/video-categories/${encodeURIComponent(category.category_id)}`, { method: "DELETE" });
+    await api(`/api/admin/video-categories/${encodeURIComponent(category.category_id)}`, {
+      method: "DELETE",
+      body: JSON.stringify({ expectedUpdatedAt: state.videoCategoryUpdatedAt })
+    });
     resetVideoCategoryForm();
     await loadVideoCategories();
     $("#video-category-status").textContent = "已删除。";
   } catch (error) {
-    $("#video-category-status").textContent = error.message;
+    $("#video-category-status").textContent = contentWriteErrorMessage(error);
   } finally {
     state.videoCategoryBusy = false;
     state.videoCategoryBusyMode = "";
@@ -6402,6 +6808,7 @@ function resetSocialLinksFormToDefaults() {
 function socialLinksPayloadFromForm() {
   const form = $("#social-links-form");
   return {
+    expectedUpdatedAt: state.socialLinksUpdatedAt,
     links: SOCIAL_LINK_PLATFORMS.reduce((result, platform) => {
       result[platform.platform] = form.elements[platform.platform].value.trim();
       return result;
@@ -6412,6 +6819,7 @@ function socialLinksPayloadFromForm() {
 async function loadSocialLinks() {
   const payload = await api("/api/admin/social-links");
   state.socialLinks = normalizeAdminSocialLinks(payload.links || []);
+  state.socialLinksUpdatedAt = payload.updatedAt ?? null;
   fillSocialLinksForm(state.socialLinks);
   renderSocialLinkPreview();
   captureEditorBaseline("socialLinks");
@@ -6564,6 +6972,7 @@ async function saveSocialLinks(event) {
       body: JSON.stringify(socialLinksPayloadFromForm())
     });
     state.socialLinks = normalizeAdminSocialLinks(payload.links || []);
+    state.socialLinksUpdatedAt = payload.updatedAt ?? state.socialLinksUpdatedAt;
     fillSocialLinksForm(state.socialLinks);
     renderSocialLinkPreview();
     captureEditorBaseline("socialLinks", { saved: true });
@@ -6571,7 +6980,7 @@ async function saveSocialLinks(event) {
     state.loadedPanels[panelDataKey("socialLinks")] = Date.now();
     return true;
   } catch (error) {
-    setElementText($("#social-links-status"), error.message);
+    setElementText($("#social-links-status"), contentWriteErrorMessage(error));
     refreshEditorDirtyState("socialLinks");
     return false;
   } finally {
@@ -6927,6 +7336,19 @@ function bindEvents() {
       loadPanelData(state.activePanel, { force: true })
     ));
   });
+  $("#automation-toggle").addEventListener("click", updateAutomationEnabled);
+  $("#automation-auto-publish").addEventListener("click", updateAutomationAutoPublish);
+  $("#automation-rotate-token").addEventListener("click", rotateAutomationToken);
+  $("#automation-revoke-token").addEventListener("click", revokeAutomationToken);
+  $("#automation-open-articles").addEventListener("click", openDailyAiNewsArticles);
+  $("#automation-copy-endpoint").addEventListener("click", (event) => {
+    copyAdminText($("#automation-endpoint").textContent, event.currentTarget);
+  });
+  $("#automation-copy-token").addEventListener("click", (event) => {
+    if (state.automationOneTimeToken) {
+      copyAdminText(state.automationOneTimeToken, event.currentTarget);
+    }
+  });
   $("#region-table-filter").addEventListener("input", (event) => {
     state.regionFilter = event.currentTarget.value;
     renderVisitTables();
@@ -7257,6 +7679,7 @@ async function init() {
   resetVideoCategoryForm();
   resetChatForm();
   resetAccountForm();
+  renderAutomationPanel();
   setChatGovernanceTab("message", { focus: false });
   state.socialLinks = normalizeAdminSocialLinks([]);
   fillSocialLinksForm(state.socialLinks);

@@ -29,6 +29,8 @@ For article / update-log work, also inspect:
 3. `functions/api/[[route]].js` `articleSeedStatements`
 4. `cloudflare/schema.sql`
 
+For Daily AI News delivery work, first read `自动新闻/integrations/lusu-site/ARTICLE_STYLE.md`, then inspect the `daily-ai-news` category handling, `article_delivery_channels`, `article_delivery_events`, and the admin automation panel. The production schedule is explicitly authorized: start at 07:00 Asia/Shanghai, use the exact preceding 24-hour half-open window, and publish only when the dedicated channel's explicit auto-publish configuration is enabled and every gate finishes before 08:00. Any failure, missing qualifying story, or 08:00 timeout must close the run without publication; preserve token, rate-limit, idempotency, conflict, and failure-closure safeguards.
+
 ## Project Shape
 
 - Public site: `index.html`, `css/style.css`, `css/motion-system.css`, `css/mobile-ios-shell.css`, `js/main.js`, `js/core/`, `js/data/`, `js/features/`, `js/routes/`, `js/ui-motion.js`, `js/mobile-shell.js`, `js/telemetry.js`

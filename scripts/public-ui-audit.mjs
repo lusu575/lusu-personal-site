@@ -286,9 +286,16 @@ function localPath(pathname) {
   return rel && !rel.startsWith("..") && !isAbsolute(rel) ? full : "";
 }
 
+function isWallpaperBaseAssetPath(pathname) {
+  return /\/assets\/images\/wallpapers\/optimized\/[^/]+$/.test(pathname)
+    || /\/assets\/images\/wallpaper-dynamic\/[^/]+\/optimized\/base-[^/]+$/.test(pathname)
+    || /\/assets\/images\/mobile-wallpapers\/[^/]+$/.test(pathname);
+}
+
 async function auditServer() {
   const index = resolve(root, "index.html");
   const requests = [];
+  let cacheWallpaperBaseAssets = false;
   const server = createServer(async (request, response) => {
     let requestEntry = null;
     try {
@@ -305,7 +312,10 @@ async function auditServer() {
       const file = url.pathname === "/" || url.pathname.startsWith("/articles/") ? index : localPath(url.pathname);
       const info = file ? await stat(file).catch(() => null) : null;
       if (!info?.isFile()) { response.writeHead(404); response.end("Not found"); return; }
-      response.writeHead(200, { "Cache-Control": "no-store", "Content-Type": mime[extname(file).toLowerCase()] || "application/octet-stream", "Content-Length": info.size });
+      const cacheControl = cacheWallpaperBaseAssets && isWallpaperBaseAssetPath(url.pathname)
+        ? "public, max-age=86400, must-revalidate"
+        : "no-store";
+      response.writeHead(200, { "Cache-Control": cacheControl, "Content-Type": mime[extname(file).toLowerCase()] || "application/octet-stream", "Content-Length": info.size });
       if (request.method === "HEAD") response.end();
       else createReadStream(file).pipe(response);
     } catch (error) { response.writeHead(500); response.end(`Audit server error: ${error.message}`); }
@@ -317,6 +327,7 @@ async function auditServer() {
     origin: `http://127.0.0.1:${address.port}`,
     close: () => new Promise((ok) => server.close(ok)),
     resetRequests: () => { requests.length = 0; },
+    setWallpaperBaseAssetCaching: (enabled) => { cacheWallpaperBaseAssets = Boolean(enabled); },
     requestPaths: () => requests.map((entry) => `${entry.path}${entry.search}`),
     requestLog: () => requests.map((entry) => ({ ...entry }))
   };
@@ -4116,18 +4127,130 @@ async function auditForcedColorsSmoke(client, origin) {
 
 async function auditReducedMotionWallpaperNetwork(client, server) {
   const viewport = viewports.find((item) => item.width === 1280 && item.height === 720);
+  await client.send("Page.navigate", { url: "about:blank" });
+  await waitFor(client, `document.readyState==='complete'`, "reduced-motion wallpaper blank boundary");
   await emulate(client, viewport);
+  await client.send("Network.clearBrowserCache");
   server.resetRequests();
-  await client.send("Page.navigate", { url:`${server.origin}/?lang=zh&wallpaper=day&welcome=0&audit-reduced-motion-network=1` });
-  await stable(client, "home");
-  await new Promise((ok)=>setTimeout(ok,250));
-  const requests = server.requestLog().filter((item)=>item.path.includes("/assets/images/wallpapers/"));
-  const state = await evaluate(client, `({reduced:matchMedia('(prefers-reduced-motion: reduce)').matches,motion:document.getElementById('wallpaper-root')?.dataset.motion||'',background:getComputedStyle(document.querySelector('.wallpaper-base')).backgroundImage})`);
+  server.setWallpaperBaseAssetCaching(true);
+  let requests;
+  let state;
+  try {
+    await navigateFresh(client, `${server.origin}/?lang=zh&wallpaper=day&welcome=0&audit-reduced-motion-network=1`, "reduced-motion-wallpaper-network");
+    await stable(client, "home");
+    await new Promise((ok)=>setTimeout(ok,250));
+    requests = server.requestLog().filter((item)=>item.method === "GET" && isWallpaperBaseAssetPath(item.path));
+    state = await evaluate(client, `(() => {
+      const preload=document.querySelector('link[data-wallpaper-preload]');
+      return {
+        reduced:matchMedia('(prefers-reduced-motion: reduce)').matches,
+        motion:document.getElementById('wallpaper-root')?.dataset.motion||'',
+        background:getComputedStyle(document.querySelector('.wallpaper-base')).backgroundImage,
+        preload:preload?{href:new URL(preload.href).pathname+new URL(preload.href).search,type:preload.type,srcset:preload.imageSrcset||''}:null
+      };
+    })()`);
+  } finally {
+    server.setWallpaperBaseAssetCaching(false);
+  }
   const failures = [];
   if (!state.reduced) failures.push("prefers-reduced-motion was not active");
-  if (requests.some((item)=>/\/assets\/images\/wallpapers\/day\.png$/.test(item.path))) failures.push(`reduced motion requested the full PNG: ${JSON.stringify(requests)}`);
-  if (!requests.some((item)=>/\/assets\/images\/wallpapers\/optimized\/day-(?:960|1440|1920)\.(?:avif|webp)$/.test(item.path))) failures.push(`reduced motion did not request an optimized static wallpaper: ${JSON.stringify(requests)}`);
+  if (requests.length !== 1 || requests[0]?.path !== "/assets/images/wallpapers/optimized/day-1440.avif" || requests[0]?.search) {
+    failures.push(`reduced motion did not make exactly one request for the CSS-selected AVIF: ${JSON.stringify(requests)}`);
+  }
+  if (state.preload?.href !== "/assets/images/wallpapers/optimized/day-1440.avif" || state.preload?.type !== "image/avif" || state.preload?.srcset) {
+    failures.push(`reduced motion preload does not exactly match the applied CSS resource: ${JSON.stringify(state.preload)}`);
+  }
   return { kind:"reduced-motion-network", name:"optimized-static-wallpaper", shell:"desktop", viewport, state, requests, failures, status:failures.length?"FAIL":"PASS" };
+}
+
+async function auditWallpaperPreloadNetwork(client, server) {
+  const scenarios = [
+    {
+      name: "dynamic-desktop",
+      viewport: viewports.find((item) => item.width === 1280 && item.height === 720),
+      expectedShell: "desktop",
+      expectedPath: "/assets/images/wallpaper-dynamic/day/optimized/base-1440.avif",
+      expectedSearch: "",
+      expectedType: "image/avif"
+    },
+    {
+      name: "mobile",
+      viewport: viewports.find((item) => item.width === 390 && item.height === 844),
+      expectedShell: "mobile",
+      expectedPath: "/assets/images/mobile-wallpapers/day.webp",
+      expectedSearch: "?v=20260711-calm-motion-r13",
+      expectedType: "image/webp"
+    }
+  ];
+  const results = [];
+  for (const scenario of scenarios) {
+    await client.send("Page.navigate", { url: "about:blank" });
+    await waitFor(client, `document.readyState==='complete'`, `${scenario.name} wallpaper blank boundary`);
+    await emulate(client, scenario.viewport);
+    await client.send("Emulation.setEmulatedMedia", {
+      media: "screen",
+      features: [
+        { name: "prefers-reduced-motion", value: "no-preference" },
+        { name: "prefers-color-scheme", value: "light" }
+      ]
+    });
+    await client.send("Network.clearBrowserCache");
+    server.resetRequests();
+    server.setWallpaperBaseAssetCaching(true);
+    let requests;
+    let state;
+    try {
+      await navigateFresh(
+        client,
+        `${server.origin}/?lang=zh&wallpaper=day&welcome=0&audit-wallpaper-preload=${scenario.name}`,
+        `wallpaper-preload-${scenario.name}`
+      );
+      await waitFor(
+        client,
+        `document.readyState==='complete'&&document.documentElement.dataset.uiShell===${JSON.stringify(scenario.expectedShell)}&&document.querySelector('#wallpaper-root')?.dataset.time==='day'`,
+        `${scenario.name} wallpaper bootstrap`
+      );
+      await new Promise((ok)=>setTimeout(ok,250));
+      requests = server.requestLog().filter((item)=>item.method === "GET" && isWallpaperBaseAssetPath(item.path));
+      state = await evaluate(client, `(() => {
+        const preload=document.querySelector('link[data-wallpaper-preload]');
+        const url=preload?new URL(preload.href):null;
+        return {
+          reduced:matchMedia('(prefers-reduced-motion: reduce)').matches,
+          shell:document.documentElement.dataset.uiShell||'',
+          theme:document.querySelector('#wallpaper-root')?.dataset.time||'',
+          motion:document.querySelector('#wallpaper-root')?.dataset.motion||'',
+          background:getComputedStyle(document.querySelector('.wallpaper-base')).backgroundImage,
+          preload:preload?{href:url.pathname+url.search,type:preload.type,srcset:preload.imageSrcset||''}:null
+        };
+      })()`);
+    } finally {
+      server.setWallpaperBaseAssetCaching(false);
+    }
+    const failures = [];
+    const expectedHref = `${scenario.expectedPath}${scenario.expectedSearch}`;
+    if (state.reduced) failures.push("no-preference motion emulation was not active");
+    if (state.shell !== scenario.expectedShell || state.theme !== "day") {
+      failures.push(`wallpaper shell/theme bootstrap is wrong: ${JSON.stringify(state)}`);
+    }
+    if (state.preload?.href !== expectedHref || state.preload?.type !== scenario.expectedType || state.preload?.srcset) {
+      failures.push(`preload does not exactly match the applied CSS resource: ${JSON.stringify(state.preload)}`);
+    }
+    if (requests.length !== 1 || requests[0]?.path !== scenario.expectedPath || requests[0]?.search !== scenario.expectedSearch) {
+      failures.push(`expected one exact wallpaper request for ${expectedHref}: ${JSON.stringify(requests)}`);
+    }
+    results.push({
+      kind: "wallpaper-preload-network",
+      name: scenario.name,
+      shell: scenario.expectedShell,
+      viewport: scenario.viewport,
+      state,
+      requests,
+      failures,
+      status: failures.length ? "FAIL" : "PASS"
+    });
+  }
+  return results;
 }
 
 async function auditResponsiveReleaseMatrix(client, origin) {
@@ -4322,6 +4445,7 @@ async function runReleaseAudit(client, server, options, executable) {
   const home = await auditHomeThemeAndInteractionContracts(client, server.origin, options.output); results.push(home); logAuditStatus(home, "OPT-029/030/051-055 Home/theme/shell/About contracts");
   const semantics = await auditSemanticMatrix(client, server.origin, viewports.find((item)=>item.width===1280), ["zh","en","ja"]); results.push(...semantics); logAuditStatus({failures:semantics.flatMap((item)=>item.failures),status:semantics.some((item)=>item.failures.length)?"FAIL":"PASS"}, "OPT-094 semantic smoke");
   const forcedColors = await auditForcedColorsSmoke(client, server.origin); results.push(forcedColors); logAuditStatus(forcedColors,"OPT-094 forced-colors smoke");
+  const wallpaperPreloadNetwork = await auditWallpaperPreloadNetwork(client, server); results.push(...wallpaperPreloadNetwork); wallpaperPreloadNetwork.forEach((item)=>logAuditStatus(item, `OPT-093 wallpaper preload ${item.name}`));
   const reducedMotionNetwork = await auditReducedMotionWallpaperNetwork(client, server); results.push(reducedMotionNetwork); logAuditStatus(reducedMotionNetwork,"OPT-093 reduced-motion optimized wallpaper network");
   const optionalBlog = await auditOptionalBlogRoute(client, server.origin, viewports.find((item)=>item.width===1280)); results.push(optionalBlog); logAuditStatus(optionalBlog,"OPT-091 optional unpublished Blog route");
   const lifecycle = await auditLifecycleGrowth(client, server.origin); results.push(lifecycle); logAuditStatus(lifecycle,"OPT-096 lifecycle growth");

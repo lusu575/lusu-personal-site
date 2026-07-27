@@ -3559,6 +3559,40 @@ html[data-time-theme="night"] .wallpaper-base,
   html[data-performance-tier="low"] .wallpaper-root[data-time="night"] .wallpaper-base { background-image: image-set(url("../assets/images/wallpaper-dynamic/night/optimized/base-960.avif") type("image/avif") 1x, url("../assets/images/wallpaper-dynamic/night/optimized/base-960.webp") type("image/webp") 1x); }
 }
 
+html[data-motion="reduced"][data-time-theme="morning"] { --bootstrap-static-wallpaper: url("../assets/images/wallpapers/morning.png?v=20260612-hd-wallpapers"); }
+html[data-motion="reduced"][data-time-theme="day"] { --bootstrap-static-wallpaper: url("../assets/images/wallpapers/day.png?v=20260612-hd-wallpapers"); }
+html[data-motion="reduced"][data-time-theme="dusk"] { --bootstrap-static-wallpaper: url("../assets/images/wallpapers/dusk.png?v=20260612-hd-wallpapers"); }
+html[data-motion="reduced"][data-time-theme="night"] { --bootstrap-static-wallpaper: url("../assets/images/wallpapers/night.png?v=20260612-hd-wallpapers"); }
+
+@supports (background-image: image-set(url("data:image/gif;base64,R0lGODlhAQABAAAAACw=") type("image/gif") 1x)) {
+  html[data-motion="reduced"][data-time-theme="morning"] { --bootstrap-static-wallpaper: image-set(url("../assets/images/wallpapers/optimized/morning-960.avif") type("image/avif") 1x, url("../assets/images/wallpapers/optimized/morning-960.webp") type("image/webp") 1x); }
+  html[data-motion="reduced"][data-time-theme="day"] { --bootstrap-static-wallpaper: image-set(url("../assets/images/wallpapers/optimized/day-960.avif") type("image/avif") 1x, url("../assets/images/wallpapers/optimized/day-960.webp") type("image/webp") 1x); }
+  html[data-motion="reduced"][data-time-theme="dusk"] { --bootstrap-static-wallpaper: image-set(url("../assets/images/wallpapers/optimized/dusk-960.avif") type("image/avif") 1x, url("../assets/images/wallpapers/optimized/dusk-960.webp") type("image/webp") 1x); }
+  html[data-motion="reduced"][data-time-theme="night"] { --bootstrap-static-wallpaper: image-set(url("../assets/images/wallpapers/optimized/night-960.avif") type("image/avif") 1x, url("../assets/images/wallpapers/optimized/night-960.webp") type("image/webp") 1x); }
+}
+
+@media (min-width: 961px) {
+  @supports (background-image: image-set(url("data:image/gif;base64,R0lGODlhAQABAAAAACw=") type("image/gif") 1x)) {
+    html[data-motion="reduced"][data-time-theme="morning"] { --bootstrap-static-wallpaper: image-set(url("../assets/images/wallpapers/optimized/morning-1440.avif") type("image/avif") 1x, url("../assets/images/wallpapers/optimized/morning-1440.webp") type("image/webp") 1x); }
+    html[data-motion="reduced"][data-time-theme="day"] { --bootstrap-static-wallpaper: image-set(url("../assets/images/wallpapers/optimized/day-1440.avif") type("image/avif") 1x, url("../assets/images/wallpapers/optimized/day-1440.webp") type("image/webp") 1x); }
+    html[data-motion="reduced"][data-time-theme="dusk"] { --bootstrap-static-wallpaper: image-set(url("../assets/images/wallpapers/optimized/dusk-1440.avif") type("image/avif") 1x, url("../assets/images/wallpapers/optimized/dusk-1440.webp") type("image/webp") 1x); }
+    html[data-motion="reduced"][data-time-theme="night"] { --bootstrap-static-wallpaper: image-set(url("../assets/images/wallpapers/optimized/night-1440.avif") type("image/avif") 1x, url("../assets/images/wallpapers/optimized/night-1440.webp") type("image/webp") 1x); }
+  }
+}
+
+@media (min-width: 1441px) {
+  @supports (background-image: image-set(url("data:image/gif;base64,R0lGODlhAQABAAAAACw=") type("image/gif") 1x)) {
+    html[data-motion="reduced"][data-time-theme="morning"] { --bootstrap-static-wallpaper: image-set(url("../assets/images/wallpapers/optimized/morning-1920.avif") type("image/avif") 1x, url("../assets/images/wallpapers/optimized/morning-1920.webp") type("image/webp") 1x); }
+    html[data-motion="reduced"][data-time-theme="day"] { --bootstrap-static-wallpaper: image-set(url("../assets/images/wallpapers/optimized/day-1920.avif") type("image/avif") 1x, url("../assets/images/wallpapers/optimized/day-1920.webp") type("image/webp") 1x); }
+    html[data-motion="reduced"][data-time-theme="dusk"] { --bootstrap-static-wallpaper: image-set(url("../assets/images/wallpapers/optimized/dusk-1920.avif") type("image/avif") 1x, url("../assets/images/wallpapers/optimized/dusk-1920.webp") type("image/webp") 1x); }
+    html[data-motion="reduced"][data-time-theme="night"] { --bootstrap-static-wallpaper: image-set(url("../assets/images/wallpapers/optimized/night-1920.avif") type("image/avif") 1x, url("../assets/images/wallpapers/optimized/night-1920.webp") type("image/webp") 1x); }
+  }
+}
+
+html[data-motion="reduced"] .wallpaper-base {
+  background-image: var(--bootstrap-static-wallpaper);
+}
+
 .wallpaper-cloud,
 .wallpaper-tree-canopy,
 .wallpaper-tv-static,

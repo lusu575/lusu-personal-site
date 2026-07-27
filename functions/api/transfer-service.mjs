@@ -11,6 +11,7 @@ const MAX_FILENAME_CHARS = 180;
 const MAX_MIME_CHARS = 120;
 const MAX_ITEMS_PAGE = 100;
 const MAX_ADMIN_PAGE = 200;
+const SETTINGS_REVISION_KEY = "__settings_revision";
 const DEFAULTS = Object.freeze({
   normalMaxFileBytes: 95 * MIB,
   normalUser24hBytes: 300 * MIB,
@@ -208,28 +209,42 @@ async function handleAdminTransferApi(context, parts) {
     return transferJson({ ok: true });
   }
   if (request.method === "POST" && parts[0] === "room" && parts[1] && parts[2] === "clear") {
-    return transferJson(await adminClearRoom(env, session, parts[1]));
+    const result = await adminClearRoom(env, session, parts[1]);
+    return transferJson(result, result.ok ? 200 : 502);
   }
   if (request.method === "POST" && parts[0] === "room" && parts[1] && parts[2] === "close") {
     return transferJson(await adminCloseRoom(env, session, parts[1]));
   }
   if (request.method === "POST" && parts[0] === "normal-upload-switch") {
     const body = await readBoundedJson(request);
-    await setBooleanSetting(env, "normal_upload_enabled", body.enabled, session.user.id);
-    return transferJson({ ok: true, enabled: Boolean(body.enabled) });
+    const settings = await setBooleanSetting(
+      env,
+      "normal_upload_enabled",
+      body.enabled,
+      session.user.id,
+      body.expectedUpdatedAt
+    );
+    return transferJson({ ok: true, enabled: Boolean(body.enabled), settings });
   }
   if (request.method === "POST" && parts[0] === "global-upload-switch") {
     const body = await readBoundedJson(request);
-    await setBooleanSetting(env, "global_upload_enabled", body.enabled, session.user.id);
-    return transferJson({ ok: true, enabled: Boolean(body.enabled) });
+    const settings = await setBooleanSetting(
+      env,
+      "global_upload_enabled",
+      body.enabled,
+      session.user.id,
+      body.expectedUpdatedAt
+    );
+    return transferJson({ ok: true, enabled: Boolean(body.enabled), settings });
   }
   if (request.method === "POST" && parts[0] === "cleanup") {
     const body = await readBoundedJson(request).catch(() => ({}));
-    return transferJson(await runTransferCleanup(env, {
+    const result = await runTransferCleanup(env, {
       actorUserId: session.user.id,
       reconcile: body.reconcile === true,
       limit: clampInteger(body.limit, 1, 500, 100)
-    }));
+    });
+    return transferJson(result, result.status === "partial" ? 502 : 200);
   }
   if (request.method === "POST" && parts[0] === "alert" && parts[1] === "test") {
     return transferJson(await createTestAlert(env, session.user.id));
@@ -461,21 +476,40 @@ async function uploadSimpleObject(context, session) {
       throw new TransferHttpError("上传后的文件大小校验失败，请重试。", 422, "TRANSFER_SIZE_MISMATCH");
     }
     const completeAt = nowIso();
-    await env.DB.prepare(`
+    const readyResult = await env.DB.prepare(`
       update transfer_items set upload_status = 'ready', size_bytes = ?, etag = ?, completed_at = ?, expires_at = ?
       where id = ? and upload_status = 'uploading'
     `).bind(declaredSize, head.etag || "", completeAt, addHoursIso(settings.retentionHours), itemId).run();
+    if (statementChanges(readyResult) !== 1) {
+      throw new TransferHttpError(
+        "上传记录已被删除或取消，已清理刚写入的文件对象。",
+        409,
+        "TRANSFER_UPLOAD_CANCELLED"
+      );
+    }
     await recordCompletedUpload(env, session, declaredSize);
     await touchRoom(env, room.id, completeAt);
     scheduleAlerts(context);
   } catch (error) {
-    await env.DB.prepare("update transfer_items set upload_status = 'failed', last_error = ? where id = ?")
-      .bind(safeErrorCode(error), itemId).run();
+    try {
+      await env.DB.prepare("update transfer_items set upload_status = 'failed', last_error = ? where id = ?")
+        .bind(safeErrorCode(error), itemId).run();
+    } catch (databaseError) {
+      console.error(JSON.stringify({
+        message: "transfer upload failure state could not be recorded",
+        code: safeErrorCode(databaseError),
+        itemId
+      }));
+    }
     if (!(error instanceof TransferHttpError && error.code === "TRANSFER_SIZE_MISMATCH")) {
       try {
         await env.TRANSFER_BUCKET.delete(objectKey);
-      } catch {
-        // Lifecycle and the cleanup worker remain the final orphan-object fallback.
+      } catch (cleanupError) {
+        throw new TransferHttpError(
+          "上传失败后的 R2 对象暂时无法清理，清理任务将继续重试。",
+          503,
+          "TRANSFER_ORPHAN_CLEANUP_FAILED"
+        );
       }
     }
     throw error;
@@ -769,16 +803,57 @@ async function completeMultipartUpload(context, session, body) {
   const settings = await loadTransferSettings(env);
   const completedAt = nowIso();
   const expiresAt = addHoursIso(settings.retentionHours);
-  await env.DB.batch([
+  const completionResults = await env.DB.batch([
     env.DB.prepare(`
       update transfer_items set upload_status = 'ready', size_bytes = ?, etag = ?,
         completed_at = ?, expires_at = ?, last_error = ''
-      where id = ?
+      where id = ? and upload_status = 'uploading'
     `).bind(Number(verified.size), verified.etag || object?.etag || "", completedAt, expiresAt, row.item_id),
     env.DB.prepare(`
-      update transfer_upload_sessions set status = 'completed', updated_at = ?, completed_at = ? where id = ?
-    `).bind(completedAt, completedAt, sessionId)
+      update transfer_upload_sessions set status = 'completed', updated_at = ?, completed_at = ?
+      where id = ? and status = 'completing'
+        and exists (select 1 from transfer_items where id = ? and upload_status = 'ready')
+    `).bind(completedAt, completedAt, sessionId, row.item_id)
   ]);
+  if (statementChanges(completionResults[0]) !== 1 || statementChanges(completionResults[1]) !== 1) {
+    const concurrentCompletion = await env.DB.prepare(`
+      select i.*, s.status as session_status
+      from transfer_upload_sessions s
+      join transfer_items i on i.id = s.item_id
+      where s.id = ? and i.id = ?
+    `).bind(sessionId, row.item_id).first();
+    if (concurrentCompletion?.session_status === "completed" && concurrentCompletion.upload_status === "ready") {
+      return {
+        item: publicItem(concurrentCompletion, roomKey, session),
+        alreadyCompleted: true
+      };
+    }
+    if (statementChanges(completionResults[0]) === 1) {
+      await env.DB.prepare(`
+        update transfer_items set upload_status = 'failed', last_error = 'completion_session_missing'
+        where id = ? and upload_status = 'ready'
+      `).bind(row.item_id).run();
+    }
+    try {
+      await env.TRANSFER_BUCKET.delete(row.object_key);
+    } catch (error) {
+      throw new TransferHttpError(
+        "上传记录已被删除，但刚完成的 R2 对象暂时无法清理，清理任务将继续重试。",
+        503,
+        "TRANSFER_ORPHAN_CLEANUP_FAILED"
+      );
+    }
+    try {
+      await recordR2Operations(env, { classA: 1 });
+    } catch {
+      // The object is already gone; usage accounting can be reconciled independently.
+    }
+    throw new TransferHttpError(
+      "上传记录已被删除或取消，已清理刚完成的文件对象。",
+      409,
+      "TRANSFER_UPLOAD_CANCELLED"
+    );
+  }
   await recordCompletedUpload(env, session, Number(verified.size));
   await touchRoom(env, row.room_id, completedAt);
   scheduleAlerts(context);
@@ -1025,6 +1100,7 @@ async function loadTransferSettings(env) {
     }
   }
   settings.alertThresholds = String(env.TRANSFER_ALERT_THRESHOLDS || stored.alert_thresholds || DEFAULTS.alertThresholds);
+  settings.updatedAt = stored[SETTINGS_REVISION_KEY] || null;
   return settings;
 }
 
@@ -1048,28 +1124,51 @@ async function updateTransferSettings(env, session, body) {
   if (!entries.length) {
     throw new TransferHttpError("没有可更新的互传设置。", 422, "TRANSFER_SETTINGS_EMPTY");
   }
-  const now = nowIso();
-  await env.DB.batch(entries.map(([key, value]) => env.DB.prepare(`
-    insert into transfer_settings (setting_key, setting_value, updated_at, updated_by)
-    values (?, ?, ?, ?)
-    on conflict(setting_key) do update set setting_value = excluded.setting_value,
-      updated_at = excluded.updated_at, updated_by = excluded.updated_by
-  `).bind(key, value, now, session.user.id)));
+  await updateSettingsEntriesCas(env, entries, session.user.id, body.expectedUpdatedAt);
   await audit(env, session.user.id, "settings_updated", "", "", 0, "");
   return await loadTransferSettings(env);
 }
 
-async function setBooleanSetting(env, key, enabled, userId) {
+async function setBooleanSetting(env, key, enabled, userId, expectedUpdatedAt) {
   if (typeof enabled !== "boolean") {
     throw new TransferHttpError("开关状态必须是布尔值。", 422, "TRANSFER_SWITCH_INVALID");
   }
-  await env.DB.prepare(`
+  await updateSettingsEntriesCas(env, [[key, enabled ? "1" : "0"]], userId, expectedUpdatedAt);
+  await audit(env, userId, `${key}_${enabled ? "enabled" : "disabled"}`, "", "", 0, "");
+  return await loadTransferSettings(env);
+}
+
+async function updateSettingsEntriesCas(env, entries, userId, expectedUpdatedAtValue) {
+  const expectedUpdatedAt = normalizeSettingsRevision(expectedUpdatedAtValue);
+  const nextUpdatedAt = nextSettingsRevision(expectedUpdatedAt);
+  const statements = entries.map(([key, value]) => env.DB.prepare(`
     insert into transfer_settings (setting_key, setting_value, updated_at, updated_by)
-    values (?, ?, ?, ?)
+    select ?, ?, ?, ?
+    where (select setting_value from transfer_settings where setting_key = ?) = ?
     on conflict(setting_key) do update set setting_value = excluded.setting_value,
       updated_at = excluded.updated_at, updated_by = excluded.updated_by
-  `).bind(key, enabled ? "1" : "0", nowIso(), userId).run();
-  await audit(env, userId, `${key}_${enabled ? "enabled" : "disabled"}`, "", "", 0, "");
+  `).bind(key, value, nextUpdatedAt, userId, SETTINGS_REVISION_KEY, expectedUpdatedAt));
+  statements.push(env.DB.prepare(`
+    update transfer_settings set setting_value = ?, updated_at = ?, updated_by = ?
+    where setting_key = ? and setting_value = ?
+  `).bind(nextUpdatedAt, nextUpdatedAt, userId, SETTINGS_REVISION_KEY, expectedUpdatedAt));
+  const results = await env.DB.batch(statements);
+  const revisionResult = results[results.length - 1];
+  if (statementChanges(revisionResult) !== 1) {
+    throw new TransferHttpError(
+      "互传设置已被其他页面更新，请先读取最新设置后再决定是否覆盖。",
+      409,
+      "TRANSFER_SETTINGS_CONFLICT"
+    );
+  }
+  if (results.slice(0, -1).some((result) => statementChanges(result) !== 1)) {
+    throw new TransferHttpError(
+      "互传设置没有完整保存，请重新读取后再试。",
+      409,
+      "TRANSFER_SETTINGS_INCOMPLETE"
+    );
+  }
+  return nextUpdatedAt;
 }
 
 async function usageSummary(env, providedSettings) {
@@ -1270,19 +1369,32 @@ async function adminUploads(env, params) {
 
 async function adminClearRoom(env, session, roomIdValue) {
   const roomId = normalizeId(roomIdValue, "房间编号无效。", "TRANSFER_ROOM_INVALID");
+  const room = await env.DB.prepare("select id from transfer_rooms where id = ?").bind(roomId).first();
+  if (!room) {
+    throw new TransferHttpError("房间不存在。", 404, "TRANSFER_ROOM_NOT_FOUND");
+  }
   const items = await env.DB.prepare("select * from transfer_items where room_id = ?").bind(roomId).all();
   let deleted = 0;
-  let failed = 0;
+  const failures = [];
   for (const item of items.results || []) {
     try {
       await deleteItemRecordAndObject(env, session.user.id, item, "admin_room_item_deleted");
       deleted += 1;
-    } catch {
-      failed += 1;
+    } catch (error) {
+      failures.push(operationFailure("item", item.id, item.display_filename || "加密文字", error));
     }
   }
-  await audit(env, session.user.id, "room_cleared", roomId, "", 0, "");
-  return { ok: failed === 0, deleted, failed };
+  await audit(env, session.user.id, failures.length ? "room_clear_partial" : "room_cleared", roomId, "", 0, "");
+  return {
+    ok: failures.length === 0,
+    status: failures.length ? "partial" : "success",
+    error: failures.length ? "房间只清空了一部分；失败项目已保留，可安全重试。" : undefined,
+    roomId,
+    deleted,
+    failed: failures.length,
+    failures,
+    retry: { roomId, action: "clear" }
+  };
 }
 
 async function adminCloseRoom(env, session, roomIdValue) {
@@ -1308,6 +1420,7 @@ export async function runTransferCleanup(env, options = {}) {
   let abortedUploads = 0;
   let failed = 0;
   let orphanObjects = 0;
+  const failures = [];
 
   await env.DB.prepare(`
     insert into transfer_cleanup_runs (id, started_at, status, trigger_type)
@@ -1340,8 +1453,9 @@ export async function runTransferCleanup(env, options = {}) {
         env.DB.prepare("delete from transfer_items where id = ? and upload_status <> 'ready'").bind(row.item_id)
       ]);
       abortedUploads += 1;
-    } catch {
+    } catch (error) {
       failed += 1;
+      failures.push(operationFailure("upload", row.id, row.filename || row.object_key || "分片上传", error));
     }
   }
 
@@ -1363,8 +1477,9 @@ export async function runTransferCleanup(env, options = {}) {
       ]);
       deletedItems += 1;
       deletedBytes += Number(item.size_bytes || 0);
-    } catch {
+    } catch (error) {
       failed += 1;
+      failures.push(operationFailure("item", item.id, item.display_filename || item.r2_object_key || "互传项目", error));
       await env.DB.prepare(`
         update transfer_items set upload_status = 'delete_failed', cleanup_attempts = cleanup_attempts + 1,
           last_error = 'cleanup_r2_delete_failed' where id = ?
@@ -1388,8 +1503,9 @@ export async function runTransferCleanup(env, options = {}) {
         try {
           await env.TRANSFER_BUCKET.delete(object.key);
           orphanObjects += 1;
-        } catch {
+        } catch (error) {
           failed += 1;
+          failures.push(operationFailure("object", object.key, object.key, error));
         }
       }
     }
@@ -1408,7 +1524,20 @@ export async function runTransferCleanup(env, options = {}) {
       aborted_uploads = ?, orphan_objects = ?, failed_operations = ? where id = ?
   `).bind(finishedAt, failed ? "partial" : "success", deletedItems, deletedBytes, abortedUploads, orphanObjects, failed, runId).run();
   await refreshDailyStoragePeaks(env);
-  return { runId, status: failed ? "partial" : "success", deletedItems, deletedBytes, abortedUploads, orphanObjects, failed };
+  return {
+    ok: failed === 0,
+    runId,
+    status: failed ? "partial" : "success",
+    error: failed ? "清理只完成了一部分；失败对象已保留，可安全重试。" : undefined,
+    deletedItems,
+    deletedBytes,
+    abortedUploads,
+    orphanObjects,
+    failed,
+    failures: failures.slice(0, 100),
+    failuresTruncated: failures.length > 100,
+    retry: { reconcile: options.reconcile === true, limit }
+  };
 }
 
 async function recordCompletedUpload(env, session, bytes) {
@@ -1708,6 +1837,10 @@ function transferSchemaStatements(env) {
     insert into transfer_settings (setting_key, setting_value, updated_at, updated_by)
     values ('alert_thresholds', ?, ?, 'system') on conflict(setting_key) do nothing
   `).bind(DEFAULTS.alertThresholds, seededAt));
+  statements.push(env.DB.prepare(`
+    insert into transfer_settings (setting_key, setting_value, updated_at, updated_by)
+    values (?, ?, ?, 'system') on conflict(setting_key) do nothing
+  `).bind(SETTINGS_REVISION_KEY, seededAt, seededAt));
   return statements;
 }
 
@@ -1933,6 +2066,22 @@ function normalizeAlertThresholds(value) {
   return normalized;
 }
 
+function normalizeSettingsRevision(value) {
+  if (typeof value !== "string" || !value || !Number.isFinite(Date.parse(value))) {
+    throw new TransferHttpError(
+      "保存互传设置前必须先读取当前版本。",
+      428,
+      "TRANSFER_SETTINGS_VERSION_REQUIRED"
+    );
+  }
+  return new Date(value).toISOString();
+}
+
+function nextSettingsRevision(current) {
+  const currentTime = Date.parse(current);
+  return new Date(Math.max(Date.now(), currentTime + 1)).toISOString();
+}
+
 function integerInRange(value, min, max, message, code) {
   const numeric = Number(value);
   if (!Number.isSafeInteger(numeric) || numeric < min || numeric > max) {
@@ -2060,6 +2209,22 @@ function maskEmail(value) {
 
 function safeErrorCode(error) {
   return error instanceof TransferHttpError ? error.code : String(error?.name || "transfer_error").slice(0, 80);
+}
+
+function operationFailure(type, id, label, error) {
+  return {
+    type,
+    id: String(id || "").slice(0, 180),
+    label: String(label || id || "未命名对象").slice(0, 180),
+    code: safeErrorCode(error),
+    message: error instanceof TransferHttpError
+      ? error.message
+      : "存储操作失败，保留对象等待重试。"
+  };
+}
+
+function statementChanges(result) {
+  return Number(result?.meta?.changes ?? result?.changes ?? 0);
 }
 
 function transferJson(payload, status = 200) {

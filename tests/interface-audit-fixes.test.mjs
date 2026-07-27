@@ -34,8 +34,8 @@ test("public modal fixes preserve readable depth and compact failed-video geomet
   );
 });
 
-test("the chatroom icon update is the newest five-item trilingual projection everywhere", async () => {
-  const updateId = "seed-update-2026-07-26-chatroom-icon-redraw";
+test("the Daily AI News inbox update is the newest five-item trilingual projection everywhere", async () => {
+  const updateId = "seed-update-2026-07-27-daily-ai-news-inbox";
   const [{ content }, { homeContent }] = await Promise.all([
     import("../js/data/content.mjs"),
     import("../js/data/home-content.mjs")
@@ -61,8 +61,9 @@ test("the chatroom icon update is the newest five-item trilingual projection eve
   }
 });
 
-test("all public module and stylesheet entry queries use the chatroom-icon cache version", () => {
-  const version = "20260726-chatroom-icon-redraw-r2";
+test("Daily AI News modules use a fresh cache version without invalidating unrelated public assets", () => {
+  const stableVersion = "20260726-security-reliability-r1";
+  const dailyAiNewsVersion = "20260728-daily-ai-news-production-r1";
   const index = read("index.html");
   const main = read("js/main.js");
   const transferLoader = read("js/features/quick-transfer-loader.mjs");
@@ -73,11 +74,14 @@ test("all public module and stylesheet entry queries use the chatroom-icon cache
     "/css/style.css",
     "/css/mobile-ios-shell.css",
     "/css/motion-system.css",
-    "/js/ui-motion.js",
-    "/js/main.js"
+    "/js/ui-motion.js"
   ]) {
-    assert.ok(index.includes(`${asset}?v=${version}`), `${asset} should use ${version}`);
+    assert.ok(index.includes(`${asset}?v=${stableVersion}`), `${asset} should use ${stableVersion}`);
   }
-  assert.ok(main.includes(`const routeStyleVersion = "${version}"`));
+  assert.ok(index.includes(`/js/main.js?v=${dailyAiNewsVersion}`));
+  assert.ok(main.includes(`const routeStyleVersion = "${stableVersion}"`));
+  assert.ok(main.includes(`./core/i18n.mjs?v=${dailyAiNewsVersion}`));
+  assert.ok(main.includes(`./data/home-content.mjs?v=${dailyAiNewsVersion}`));
+  assert.ok(main.includes(`./routes/knowledge.mjs?v=${dailyAiNewsVersion}`));
   assert.doesNotMatch([index, main, transferLoader, resources].join("\n"), /20260726-tools-rename-r1/);
 });

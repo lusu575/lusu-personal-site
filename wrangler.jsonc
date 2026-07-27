@@ -1,13 +1,23 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "lusu-personal-site",
-  "compatibility_date": "2026-06-09",
+  "compatibility_date": "2026-07-17",
   "pages_build_output_dir": ".",
+  "observability": {
+    "enabled": true,
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 0.1
+    },
+    "traces": {
+      "enabled": true,
+      "head_sampling_rate": 0.01
+    }
+  },
   "secrets": {
     "required": [
       "CHAT_IP_HASH_SALT",
-      "ANALYTICS_IP_HASH_SALT",
-      "OWNER_ADMIN_EMAILS"
+      "ANALYTICS_IP_HASH_SALT"
     ]
   },
   "d1_databases": [

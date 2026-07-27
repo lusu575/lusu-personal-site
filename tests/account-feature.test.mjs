@@ -51,9 +51,17 @@ test("account request failures map to a real field and recoverable localized sta
     key: "accountErrorInvalidCredentials",
     field: "password"
   });
-  assert.deepEqual(accountRequestFailure({ status: 409 }, "register"), {
-    key: "accountErrorEmailExists",
+  assert.deepEqual(accountRequestFailure({ status: 400, code: "REGISTRATION_FAILED" }, "register"), {
+    key: "accountErrorRegistrationFailed",
     field: "email"
+  });
+  assert.deepEqual(accountRequestFailure({ status: 409 }, "register"), {
+    key: "accountErrorRegistrationFailed",
+    field: "email"
+  });
+  assert.deepEqual(accountRequestFailure({ status: 429, code: "RATE_LIMITED" }, "login"), {
+    key: "accountErrorRateLimited",
+    field: "password"
   });
   assert.deepEqual(accountRequestFailure({ status: 0 }, "login", "email"), {
     key: "accountErrorRequest",
@@ -125,7 +133,8 @@ test("all account copy keys exist in Chinese, English, and Japanese", () => {
     "accountErrorPasswordLength",
     "accountErrorPasswordMismatch",
     "accountErrorInvalidCredentials",
-    "accountErrorEmailExists",
+    "accountErrorRegistrationFailed",
+    "accountErrorRateLimited",
     "accountErrorRequest",
     "accountLogoutFailed"
   ];

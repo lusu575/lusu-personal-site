@@ -12,12 +12,19 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 文章、视频、游戏、社交等公开列表复用统一的有界 ETag / SWR / last-known-good 请求层；304 不重建列表，离线/短暂错误不清空成功内容，用户强制重试可绕过新鲜缓存且仍受单飞与生命周期 Abort 约束。ETag 必须覆盖完整公开响应，不能只取数据库行时间等不足以描述代码转换和关联数据的局部种子。视频封面禁止恢复无上限 base64 列表负载；同源封面代理 URL 必须带内容或行更新时间版本，后台换图与纯代码兼容修复都要能击穿旧浏览器缓存。
 - Transfer 增量同步必须使用稳定复合游标与服务端 generation，客户端键控保留节点、媒体状态、焦点和滚动；上传/发送使用幂等键、队列背压、取消/重试与 URL 清理。D1 迁移一律先 `ALTER` 补列再建依赖索引，并同时验证旧库保留数据与 fresh install。
 - 发布前运行统一 release 验证，覆盖测试、公共模块图、构建守卫、生产构建复现性、本地 D1 迁移和精确 Headless UI 矩阵。Headless 不能冒充真机、完整读屏或线上认证；无推送/部署授权时必须停在本地通过状态并清楚记录剩余线上步骤。
+- CI 中第三方 GitHub Actions 必须固定到已核对 release 的不可变 commit；`qa:local` 与 CI 应复用完整 `verify:public-site-release`，不能只跑轻量 build。安全响应头、Wrangler compatibility date、采样 observability 或 release gate 改动都必须进入构建守卫。
+- `/articles/<slug>` 的独立边缘入口必须只读取已发布文章，输出文章级 title、description、Open Graph、Twitter、canonical 与 Article JSON-LD，并转义 `noscript` 可读正文；不存在的 slug 返回 404 / noindex，D1 暂时失败时不得把可由前端 fallback 恢复的主壳直接变成 5xx。
+- 游戏目录、题库音频清单等可选远端 manifest 必须有有界超时、Abort、版本缓存和仓库内本地回退；可选网络失败不能阻塞内置内容、现有本地存档或已经加载成功的数据。日语工具的生产路径转换必须保留 manifest query 并坚持严格一次匹配，缺失或重复引用都要让构建失败。预加载的壁纸候选必须与实际 CSS 渲染使用完全相同的格式、尺寸和版本，且在首个资源请求前同步确定 reduced/off 动效状态。
+- `wrangler.jsonc` 的 compatibility date 不得超过仓库锁定 Wrangler 所带 workerd 的支持上限；当前 Wrangler `4.111.0` 使用 `2026-07-17`。日期或 Wrangler 版本变化后必须真实启动一次 `wrangler pages dev` 并请求健康、文章、404 与后台入口，静态 schema/build 通过不能替代运行时启动验证。
 - Headless 中每个独立审计场景必须用唯一 query 强制新文档，并确认 CDP 返回 `loaderId`；不要依赖 Hash-only `Page.navigate` 清空 route 模块或 30 秒内存缓存。刻意测试 SPA History、重试链或连续动效时才保留同文档。DOM 数量和交叠断言必须限定到真实场景容器；移动 App 外框可处于半透明 Dock 后方，但 composer、反馈、页脚和最后操作必须位于 Dock 上方。
 
 ## 账号、文章与 Chat 稳定性规则
 
 - 账号表单必须保持稳定 DOM：语言/模式/身份状态/错误同步不得重建编辑字段；登录和注册各一个主提交，注册含确认密码，错误关联字段并聚焦首错，退出失败不得伪报成功。popover 必须归还实际触发源焦点，移动关闭不小于 44px。
 - 账号初始状态检查必须使用有界超时；失败或超时在同一个稳定 popover 内提供原位重试，保留输入与现有编辑焦点。Chat 的 online 也只能在消息刷新成功后建立；失败继续显示 reconnecting 和可聚焦手动重试，不得仅凭浏览器 `online` 事件宣称恢复。
+- 账号和其他公开写接口必须在业务读取前校验同源、允许的 JSON `Content-Type` 与流式正文上限。登录和注册按网络来源及规范化账号标识做持久化限流；注册的重复邮箱、站长保留邮箱和并发冲突必须返回相同状态、错误码与正文，公开文案不得暴露账号是否存在。
+- 新密码固定使用 PBKDF2-HMAC-SHA256 600,000 次并把迭代数随哈希保存；登录必须按记录中的历史迭代数验证，成功后用条件更新升级旧 25,000 / 100,000 次哈希。不得以加大 KDF 代替登录限流，也不得在错误、日志或统计中泄露密码或哈希。
+- page view、click、article view 等匿名写入必须有来源限流与重复抑制；文章 PV 只在去重事件实际落库后增加。过期 session、登录履历、分析事件和限流桶必须按明确保留期分批清理，每次有行数上限并通过 `waitUntil` 脱离健康响应关键路径。
 - Quick Transfer 未登录态只呈现一个上下文任务卡、一个主登录 CTA 和明确返回；登录完成要回到 Transfer，不得用红色 X 承担含糊返回语义。
 - 文章阅读时 document 不滚动，正文详情是唯一纵向 owner；进度轨道约 4px、与正文零交叠，移动端保留可见含义与准确 ARIA 百分比。100% 必须按 `.markdown-body` 正文末尾计算，不能把 Dock 安全尾距计入正文；回顶按钮在顶部用原生 `hidden` 退出焦点顺序，激活后把焦点交给 `tabindex="-1"` 的文章标题。
 - Chat 发送只锁提交动作，用户可继续输入且旧请求不得清空新草稿。359×500 自动回归以普通房约 177px、私聊至少约 119px为目标；安全说明通过 44px 折叠入口提供，关闭时不占日志也不覆盖控件。
@@ -224,9 +231,16 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 文章正文使用 Markdown 保存；前端渲染必须防 XSS，不能把未经处理的 Markdown 或 HTML 直接作为 `innerHTML` 插入页面。
 - 文章正文可以使用安全的基础 Markdown、有序/无序列表、blockquote、`text` 代码块蓝色说明框和 `assets/images/articles/` 下的白名单文章图片；新增文章图片必须复制到项目资源目录，不要引用本机临时路径。
 - 后台文章管理接口必须要求登录用户 `role = admin`；普通登录用户不能新建、编辑、删除或发布文章。
+- `daily-ai-news` 是固定的“每日 AI 新闻 / Daily AI News / 毎日AIニュース”知识库分区；它应在筛选栏持续可见，即使没有已发布文章也不得消失。测试占位文章必须明确说明不是真实新闻。
+- 每日 AI 新闻机器投递固定创建该分类的 zh / en / ja 三语文章；服务端固定非置顶、无封面，不接受调用方指定其他分类或发布状态。默认保存为草稿；仅 `daily-ai-news` 专用通道的显式 auto-publish 配置开启时，服务端才创建已公开文章并写入公开时间，其他情况仍须后台手动发布。
+- 投递通道默认暂停，专用令牌只在生成／轮换时显示一次并仅保存哈希；入口必须保留正文上限、限流、幂等和 slug 冲突保护，事件记录不得保存正文或完整令牌。相同幂等键只有在规范化内容指纹一致且原草稿仍存在时才能成功重放；内容变化或原稿删除要明确冲突。未鉴权请求不得触发文章 seed。令牌撤销、通道暂停、auto-publish 关闭、验证失败或超时都必须关闭公开路径，不得留半公开文章。
+- 每日生成适配层固定放在 `自动新闻/integrations/lusu-site/`。任何一期开始前必须完整读取同目录 `ARTICLE_STYLE.md`，不得临时更换日期标题、三段栏目、事实段或 AI 解读格式。生产运行固定每天 `Asia/Shanghai` 07:00 开始，窗口为此前精确 24 小时、左闭右开 `[前一日 07:00, 当日 07:00)`；随后运行带 `--start` / `--end` 的 `npm.cmd run ai-news:horizon:fetch`，由 Horizon 原生抓取器完成多源采集、网址规范化和跨来源去重，并把真实窗口、`runId` 与 `daily_candidates.json` 写进运行记录。所有抓取、核验、三语生成、投递和受控公开必须在 08:00 前完成；Horizon 不可用、无合格稿、校验失败或超时均停止且不发布，不得以 Codex 手工浏览冒充自动采集。
+- 新闻数量不得写死，只使用重要性门槛决定收录；没有合格内容时报告“今日无稿”。正文固定为“今日要闻 / 主要新闻 / 传闻”，传闻只靠独立分区和条件语气区分，不逐条重复“未证实”。每条 AI 解读通常一至两句、明显短于正文，只挑关键影响、现实门槛、隐含限制或下一步观察点，不复述新闻，也不为了找问题而硬挑问题。来源 URL、评分与筛选理由只留在内部运行记录，对外正文不得出现网址、Markdown 链接、来源／参考资料章节、相关阅读跳转或内部评分。
+- `npm.cmd run ai-news:validate` 必须反查对应 Horizon 候选文件，并检查固定三语日期标题、窗口导语、三段顺序、单段事实正文、逐条一至两句且短于事实段的 AI 解读、传闻无重复核实标签；不得删除或绕过格式与来源证明。本地试投只允许通过 `npm.cmd run ai-news:deliver:local` 使用进程内临时令牌并走正式机器入口；无论成功失败都要停止预览、暂停通道和清除令牌。2026-07-27 样稿是生产链路测试输入，不能绕过相同的令牌、幂等、冲突、验证和 08:00 截止规则。
 - 每次合并代码、上线功能或做可见更新时，必须在知识库 `site-updates`（网站更新记录）分类发布一篇真实文章。
 - 网站更新记录文章必须同时写入 zh / en / ja，包含主标题、简短简介和正文；正文要概括本次更新内容。
 - `site-updates` 只是按时间排列的更新日志，已有和新增记录都不得置顶；后台写入、seed / schema、Home / Knowledge fallback 与前端排序必须把该分类保持为 `is_pinned = 0`，不能让旧缓存的错误值重新显示置顶标记。
+- 后台文章、视频、视频分类、社交链接及任何会覆盖既有内容的刷新／删除必须携带读取时的 `expectedUpdatedAt`。服务端只允许版本匹配的条件写入，关系表与翻译等附属写入必须和主记录 CAS 原子收口；陈旧页返回统一 `409 + CONTENT_CONFLICT`，前端保留草稿并提示手动合并。
 - 这是合并前验收门槛，不是事后可选补记；如果本轮无法走后台发布，也必须在同一次变更中补齐 seed 与 fallback，确认知识库、欢迎弹窗“最近更新”和右上角最新日期都能读到这次更新。
 - 如果网站更新记录通过 seed 维护，必须同时更新 `functions/api/[[route]].js` 的 `articleSeedStatements`、`cloudflare/schema.sql`、`js/data/content.mjs` 的完整 fallback `content.updates`，以及 `js/data/home-content.mjs` 的最近五条无正文摘要投影，避免线上 D1、手动 migration、Home 首屏和 D1 不可用兜底显示不一致。
 - 首页欢迎弹窗右侧“最近更新”自动读取 `site-updates` 分类文章；不要再把右侧更新列表改回只读写死数组。
@@ -297,6 +311,7 @@ $env:XDG_CONFIG_HOME=(Join-Path (Get-Location) '.wrangler-config'); npx.cmd wran
 - 未登录用户从手机 Tools App（内部 `resources` route）打开临时互传时必须能直接到达登录操作；不能只代理点击在非 Home 路由被隐藏的 `.topbar-actions`，账号弹窗也不能留在 `display: none` 的祖先内。
 - 互传房间的消息流、上传任务和输入区必须在 359x500、375x667、390x844、430x932、844x390 及软键盘 `visualViewport` 缩小时保持可到达。手机房间保持单一 `.transfer-room` 滚动路径，composer 必须留在正常文档流，不能用 sticky / fixed 层覆盖已发送卡片；仅把 composer 改成 `position: static` 不够，竖屏房间必须使用纵向 Flex，toolbar/feed/composer/tasks 直接子项不可收缩，让消息按真实内容高度撑开，短横屏再显式恢复双栏 Grid。验收必须测量 composer 与图片、文件卡的二维交集为零，不得用嵌套滚动、过度 overscroll containment 或固定高度把登录、发送或上传操作锁在视口外。
 - 普通互传默认 95 MiB/文件并受个人、房间、频率和全站免费池的服务端限制；管理员大文件必须使用 R2 Multipart。“不限频次”不等于无限并发或突破 R2 平台/账单边界。
+- Transfer 设置必须以服务端 revision / `expectedUpdatedAt` 条件更新；清空房间、定时清理、简单上传和 Multipart ready 转换必须检查真实 D1 changes。只完成部分对象时返回非 2xx、失败对象和可重试信息；并发删除或 ready 竞态产生的 R2 对象必须清理，不能把部分失败或孤立对象伪报为成功。
 - 房间明文口令不得发送服务端或进入 D1/R2/日志；文字可称浏览器 AES-GCM，文件只准确描述为 HTTPS + 私有 R2 + 服务端鉴权，未实现可靠流式 E2EE 或病毒扫描时不得声称已实现。
 - 互传列表与下载必须以 `expires_at` 做 24 小时逻辑过期；独立 `workers/transfer-cleanup/` Worker 和 R2 生命周期兜底都要保留。
 - R2 桶、Pages Production/Preview binding、清理 Worker、生命周期规则和 Cloudflare 官方预算提醒均是 Dashboard 人工步骤，代码交付不得虚假声称已配置完成。

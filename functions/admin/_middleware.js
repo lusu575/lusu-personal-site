@@ -55,6 +55,15 @@ function adminSecurityHeaders(headers = {}) {
   secured.set("X-Robots-Tag", "noindex, nofollow");
   secured.set("X-Content-Type-Options", "nosniff");
   secured.set("Referrer-Policy", "same-origin");
+  secured.set(
+    "Content-Security-Policy",
+    "default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; media-src 'self' blob:; connect-src 'self'; frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.bilibili.com; font-src 'self'; worker-src 'none'"
+  );
+  secured.set("X-Frame-Options", "DENY");
+  secured.set(
+    "Permissions-Policy",
+    "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), serial=(), usb=()"
+  );
   return secured;
 }
 
@@ -156,8 +165,8 @@ function adminLoginHtml(email) {
     }
     form { padding: 16px; display: grid; gap: 12px; }
     label { display: grid; gap: 5px; font-size: 13px; font-weight: 700; }
-    input { width: 100%; height: 36px; border: 2px inset #fff; padding: 0 9px; font: inherit; background: #fff; color: #10213a; }
-    button { min-height: 38px; border: 2px outset #fff; background: linear-gradient(#fff, #d8d2bd); font: inherit; font-weight: 700; cursor: pointer; }
+    input { width: 100%; height: 44px; min-height: 44px; border: 2px inset #fff; padding: 0 9px; font: inherit; background: #fff; color: #10213a; }
+    button { min-height: 44px; border: 2px outset #fff; background: linear-gradient(#fff, #d8d2bd); font: inherit; font-weight: 700; cursor: pointer; }
     button:disabled { cursor: wait; filter: grayscale(.45); opacity: .78; }
     button:active:not(:disabled) { border-style: inset; transform: translate(1px, 1px); }
     input:focus-visible,
@@ -181,6 +190,10 @@ function adminLoginHtml(email) {
       body { padding: 10px; align-items: start; }
       .bar { align-items: flex-start; flex-direction: column; }
       form { padding: 12px; }
+    }
+    @media (pointer: coarse) {
+      input,
+      button { min-height: 44px; }
     }
   </style>
 </head>

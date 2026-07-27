@@ -3,15 +3,15 @@ import {
   isI18nNodeInScope,
   normalizeLanguage,
   translationFor
-} from "./core/i18n.mjs?v=20260726-chatroom-icon-redraw-r2";
-import { homeContent } from "./data/home-content.mjs?v=20260726-chatroom-icon-redraw-r2";
+} from "./core/i18n.mjs?v=20260728-daily-ai-news-production-r1";
+import { homeContent } from "./data/home-content.mjs?v=20260728-daily-ai-news-production-r1";
 import { blogManifest } from "./data/blog-manifest.mjs?v=20260718-resource-icons-layout-r1";
 import { createRouteLifecycle, isAbortError } from "./core/route-lifecycle.mjs?v=20260718-resource-icons-layout-r1";
 import { createRouter } from "./core/router.mjs?v=20260718-resource-icons-layout-r1";
 import { createRouteModuleRegistry } from "./core/route-modules.mjs?v=20260718-resource-icons-layout-r1";
 import { createJsonResourceCache } from "./core/content-cache.mjs?v=20260718-resource-icons-layout-r1";
-import { createAccountFeature } from "./features/account.mjs?v=20260726-chatroom-icon-redraw-r2";
-import { createConnectionStatus } from "./features/connection-status.mjs?v=20260726-chatroom-icon-redraw-r2";
+import { createAccountFeature } from "./features/account.mjs?v=20260726-security-reliability-r1";
+import { createConnectionStatus } from "./features/connection-status.mjs?v=20260726-security-reliability-r1";
 
 const pageParams = new URLSearchParams(window.location.search);
 const defaultShareImageUrl = "https://lusu575.com/assets/images/homepage-pixel-coast.png?v=20260612-hd-wallpapers";
@@ -101,6 +101,7 @@ const welcomeStorageKey = "lusu-welcome-version";
 const welcomeContentVersion = "2026-07-18-public-ui-100";
 let welcomeSeenInMemory = false;
 const siteUpdateCategory = "site-updates";
+const dailyAiNewsCategory = "daily-ai-news";
 const publicLoopNightlyUpdateSlug = "2026-06-18-main-visual-polish-cycle";
 const publicLoopNightlyUpdateTitleEn = "Main Site Visual Polish Cycle";
 const publicLoopNightlyCollapsedSlugs = new Set([
@@ -116,6 +117,11 @@ const publicLoopNightlyCollapsedFallbackTitlesEn = new Set([
   "Cleaner Article Deep Links"
 ]);
 const articleCategoryLabels = {
+  "daily-ai-news": {
+    zh: "每日 AI 新闻",
+    en: "Daily AI News",
+    ja: "毎日AIニュース"
+  },
   "site-updates": {
     zh: "网站更新记录",
     en: "Site Update Log",
@@ -372,7 +378,7 @@ function safeStorageSet(key, value) {
   }
 }
 
-const routeStyleVersion = "20260726-chatroom-icon-redraw-r2";
+const routeStyleVersion = "20260726-security-reliability-r1";
 const routeStyleHrefs = Object.freeze({
   knowledge: `/css/routes/knowledge.css?v=${routeStyleVersion}`,
   videos: `/css/routes/videos.css?v=${routeStyleVersion}`,
@@ -436,19 +442,19 @@ function loadStyledRoute(route, moduleLoader, instantiate) {
 
 const routeModuleRegistry = createRouteModuleRegistry({
   loaders: {
-    knowledge: () => loadStyledRoute("knowledge", () => import("./routes/knowledge.mjs?v=20260726-chatroom-icon-redraw-r2"),
+    knowledge: () => loadStyledRoute("knowledge", () => import("./routes/knowledge.mjs?v=20260728-daily-ai-news-production-r1"),
       ({ createKnowledgeRoute }) => instantiateKnowledgeRoute(createKnowledgeRoute)),
     videos: () => loadStyledRoute("videos", () => Promise.all([
-      import("./routes/videos.mjs?v=20260726-chatroom-icon-redraw-r2"),
+      import("./routes/videos.mjs?v=20260726-security-reliability-r1"),
       import("./data/videos-content.mjs?v=20260718-resource-icons-layout-r1")
     ]), ([{ createVideosRoute }, { videosContent }]) => instantiateVideosRoute(createVideosRoute, videosContent)),
     resources: () => Promise.all([
-      import("./routes/resources.mjs?v=20260726-chatroom-icon-redraw-r2"),
-      import("./data/resources-content.mjs?v=20260726-chatroom-icon-redraw-r2")
+      import("./routes/resources.mjs?v=20260726-security-reliability-r1"),
+      import("./data/resources-content.mjs?v=20260726-security-reliability-r1")
     ]).then(([{ createResourcesRoute }, { resourcesContent }]) => instantiateResourcesRoute(createResourcesRoute, resourcesContent)),
-    games: () => loadStyledRoute("games", () => import("./routes/games.mjs?v=20260726-chatroom-icon-redraw-r2"),
+    games: () => loadStyledRoute("games", () => import("./routes/games.mjs?v=20260726-security-reliability-r1"),
       ({ createGamesRoute }) => instantiateGamesRoute(createGamesRoute)),
-    chatroom: () => loadStyledRoute("chatroom", () => import("./routes/chatroom.mjs?v=20260726-chatroom-icon-redraw-r2"),
+    chatroom: () => loadStyledRoute("chatroom", () => import("./routes/chatroom.mjs?v=20260726-security-reliability-r1"),
       ({ createChatroomRoute }) => instantiateChatroomRoute(createChatroomRoute))
   },
   onStatus({ route, status, error }) {
@@ -1515,6 +1521,7 @@ function instantiateKnowledgeRoute(createKnowledgeRoute) {
     articleState,
     activeFilters,
     siteUpdateCategory,
+    dailyAiNewsCategory,
     getCurrentLang: () => currentLang,
     t,
     boundedHistoryScrollTop,

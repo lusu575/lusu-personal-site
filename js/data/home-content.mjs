@@ -2,6 +2,56 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-07-27-daily-ai-news-inbox",
+      "slug": "2026-07-27-daily-ai-news-inbox",
+      "category": "site-updates",
+      "tags": ["网站更新", "知识库", "AI新闻", "Admin"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-27T13:06:00.000Z",
+      "updated_at": "2026-07-27T16:05:00.000Z",
+      "published_at": "2026-07-27T16:05:00.000Z",
+      "fallbackOnly": true,
+      "icon": "knowledge",
+      "date": "2026.07.27",
+      "title": {
+        "zh": "每日 AI 新闻正式上线",
+        "en": "Daily AI News Goes Live",
+        "ja": "毎日AIニュース正式稼働"
+      },
+      "summary": {
+        "zh": "知识库“每日 AI 新闻”正式接入 Horizon 与 Codex：每天北京时间 7 点开始整理前 24 小时内容，三语稿通过检查后在 8 点前自动公开。",
+        "en": "Daily AI News now runs through Horizon and Codex: each Beijing-time day starts at 07:00, covers the prior 24 hours, and publishes the validated Chinese, English, and Japanese edition by 08:00.",
+        "ja": "「毎日AIニュース」は Horizon と Codex に正式接続され、北京時間の毎朝7時に直前24時間分の処理を始め、検証済みの中・英・日3言語版を8時までに自動公開します。"
+      }
+    },
+    {
+      "article_id": "seed-update-2026-07-26-security-reliability-hardening",
+      "slug": "2026-07-26-security-reliability-hardening",
+      "category": "site-updates",
+      "tags": ["security", "reliability", "Admin", "Cloudflare", "QA"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-26T14:58:00.000Z",
+      "updated_at": "2026-07-26T14:58:00.000Z",
+      "published_at": "2026-07-26T14:58:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.07.26",
+      "title": {
+        "zh": "全站安全与可靠性加固",
+        "en": "Sitewide Security and Reliability Hardening",
+        "ja": "サイト全体のセキュリティと信頼性を強化"
+      },
+      "summary": {
+        "zh": "一次性加固账号入口、统计写入、D1 迁移、后台并发编辑与互传治理，并为文章分享、游戏和日语工具补齐超时、降级与离线回退。",
+        "en": "Hardened account entry, analytics writes, D1 migrations, concurrent admin editing, and Transfer governance while adding timeouts, degradation paths, and offline fallbacks for articles, games, and the Japanese tool.",
+        "ja": "アカウント入口、分析書き込み、D1 移行、管理画面の同時編集、転送管理を強化し、記事・ゲーム・日本語ツールへタイムアウト、縮退、オフライン復帰を追加しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-07-26-chatroom-icon-redraw",
       "slug": "2026-07-26-chatroom-icon-redraw",
       "category": "site-updates",
@@ -74,56 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "公开栏目名称已统一为“工具区 / Tools / ツール”，内部 resources 路由、旧 #resources 链接、临时互传和全部功能保持不变。",
         "en": "The public section name is now Tools across Chinese, English, and Japanese, while the resources route, existing #resources links, Quick Transfer, and all behavior remain unchanged.",
         "ja": "公開欄の名称を中国語・英語・日本語で「ツール」に統一し、resources ルート、既存の #resources リンク、一時転送、すべての機能は変更していません。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-07-26-mobile-article-first-screen",
-      "slug": "2026-07-26-mobile-article-first-screen",
-      "category": "site-updates",
-      "tags": ["mobile", "Knowledge", "accessibility", "QA", "UI"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-07-26T06:31:45.722Z",
-      "updated_at": "2026-07-26T06:31:45.722Z",
-      "published_at": "2026-07-26T06:31:45.722Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.07.26",
-      "title": {
-        "zh": "手机文章首屏与全站点检修复",
-        "en": "Mobile Article First-Screen and Sitewide QA Fix",
-        "ja": "モバイル記事初期画面と全体点検の修正"
-      },
-      "summary": {
-        "zh": "修复手机知识库文章首屏大面积空白、短横屏英文资源卡裁切，并补齐 Dock、回顶按钮、目录语言与图片说明等无障碍细节。",
-        "en": "Fixed the large blank area above mobile Knowledge articles and clipped English resource cards in short landscape, while completing Dock, back-to-top, TOC-language, and image-caption accessibility details.",
-        "ja": "モバイルのナレッジ記事上部に生じる大きな空白と短い横画面での英語リソースカードの欠けを修正し、Dock、先頭へ戻る操作、目次言語、画像説明のアクセシビリティも整えました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-07-26-trust-safety-status",
-      "slug": "2026-07-26-trust-safety-status",
-      "category": "site-updates",
-      "tags": ["Games", "Quick Transfer", "reliability", "security", "UI"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-07-26T04:54:16.752Z",
-      "updated_at": "2026-07-26T04:54:16.752Z",
-      "published_at": "2026-07-26T04:54:16.752Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.07.26",
-      "title": {
-        "zh": "30 项功能与界面优化完成",
-        "en": "30 Functional and UI Improvements Completed",
-        "ja": "機能・UI 改善 30 項目を完了"
-      },
-      "summary": {
-        "zh": "完成云存档与互传安全、真实连接与恢复流程、搜索筛选、三语无障碍，以及资源和游戏卡片等 30 项可验证优化。",
-        "en": "Thirty verified improvements now cover cloud-save and transfer safety, truthful connection and recovery flows, search and filtering, trilingual accessibility, plus resource and game cards.",
-        "ja": "クラウド保存と転送の安全性、正確な接続・復旧、検索と絞り込み、3言語アクセシビリティ、リソースとゲームカードを含む検証可能な30項目を改善しました。"
       }
     }
   ]

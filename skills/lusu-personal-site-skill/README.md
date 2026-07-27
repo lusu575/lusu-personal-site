@@ -16,9 +16,14 @@ skills/lusu-personal-site-skill/SKILL.md
 - 大图/图集按真实槽位提供 AVIF/WebP 与 fallback，首屏只预加载当前主题和壳；动态主题只挂载当前图层，同路径位图变化仍要更新 query。
 - 公共列表请求采用有界 ETag/SWR/LKG，失败保留成功内容且强制重试可绕过新鲜缓存；ETag 覆盖完整公开响应，不能只取数据库行时间等局部种子，同源媒体代理 URL 以内容或行更新时间版本击穿旧缓存。Transfer 使用稳定复合游标、generation、键控 DOM、幂等和背压。旧 D1 必须先补列再建依赖索引。
 - 收口时运行统一 release 验证、生产构建复现性和本地 D1 迁移；Headless 不代表真机/完整读屏/线上部署，无外部授权时只报告本地完成。
+- CI 第三方 Actions 固定到已核对 release 的不可变 commit，并与本地 `qa:local` 一起运行完整发布门禁。`/articles/<slug>` 边缘入口输出已发布文章的专属分享／结构化元数据与转义 `noscript` 正文；不存在返回 404 / noindex，D1 暂时失败保留可恢复主壳。
+- 游戏目录、音频清单等可选 manifest 使用有界超时、Abort、版本缓存和仓库内 fallback，不得因可选网络失败阻塞本地内容或存档；日语工具的生产路径转换必须保留版本 query 并严格一次匹配。壁纸预载必须与 CSS 实际候选完全一致，并在首个资源请求前同步判定 reduced/off。
+- Wrangler compatibility date 不能超过仓库锁定 workerd 的支持上限；当前 `4.111.0` 使用 `2026-07-17`。改日期或 Wrangler 后必须真实启动 Pages dev 并冒烟请求健康、文章、404 与后台入口。
 - 独立 Headless 场景必须以唯一 query 创建新文档并验证 `loaderId`，避免 Hash-only 导航沿用 route 模块和内存缓存；刻意的 SPA History/重试/连续动效流程除外。DOM 断言限定到场景容器，移动窗口背景可延伸到 Dock 后方，真实内容与操作不可被遮挡。
 - 账号表单必须保持稳定 DOM；登录/注册、字段错误、忙碌/退出失败、实际触发源焦点归还和移动 44px 关闭必须一起回归。Transfer 未登录态只保留一个上下文登录任务。
 - 账号状态检查使用有界超时并在稳定 popover 内原位重试；Chat 只有消息刷新成功后才能标记 online，失败保留 reconnecting 和可聚焦手动重试。密码房切换必须单飞，历史读取失败不能显示 ready。
+- 账号及公开写接口先校验同源、JSON 类型和流式正文上限；登录／注册按网络与账号标识持久限流，注册失败响应不能枚举账号。PBKDF2-HMAC-SHA256 新哈希为 600,000 次，旧 25k／100k 记录按存储迭代数验证并在成功登录后条件升级。
+- 分析写入使用来源限流与重复抑制，文章 PV 只随真实去重事件增加；session、登录履历、分析事件和限流桶按明确保留期与单批上限异步清理。
 - 文章阅读只允许正文详情纵向滚动，4px 左右进度轨道与正文零交叠并有三语/ARIA 百分比；Chat 发送不得清空在途新草稿，359×500 保护普通约 177px、私聊至少约 119px及可折叠安全说明。
 - Chat 还必须通过 1280×720 短桌面回归：标题、身份／房间两行控制、日志、输入区和页脚都在任务栏上方，只有日志可收缩；字数计数放入输入状态行，媒体几何只写在 `mobile-ios-shell.css`。
 - Chat 重试复用稳定 `clientRequestId`，服务端在限流前重放首次成功消息，并用 `(visitor_id, room_key, client_request_id)` 唯一索引防并发重复；私聊随机 IV 不得破坏幂等。旧 D1 必须先补 `client_request_id` 列再建索引。
@@ -34,6 +39,7 @@ skills/lusu-personal-site-skill/SKILL.md
 - 桌面端保持 Windows XP + Pixel Art + Y2K，并沿 Neo-XP / Pixel Glass OS 演进；移动端使用原创、受 iOS 交互启发的虚拟手机 OS，不能只压缩桌面 XP 布局。
 - 可见文案必须维护中文 / English / 日本語。
 - 临时互传固定放在工具区（内部 `resources` route）并复用现有登录；手机非 Home 的 Tools App 必须能直接到达登录，短屏、横屏和软键盘状态下消息、任务与输入区都要可达。手机房间只保留一个滚动容器，composer 必须处于正常文档流，不能以 sticky / fixed 层覆盖已发送卡片；仅改成 static 不足以避免 Grid 轨道视觉溢出，竖屏房间使用纵向 Flex 且直接子项必须不可收缩，短横屏再显式恢复双栏 Grid，并验证 composer 与图片/文件卡的二维交集为零。普通账号受 95 MiB、个人/房间/频率和全站免费池限制，只有 D1 admin 可用 R2 Multipart 大文件。24 小时过期、私有 R2、清理 Worker 和 Dashboard 人工绑定规则见 `docs/transfer/README.md`。
+- Transfer 设置以 revision / `expectedUpdatedAt` 条件保存；房间清空、清理和上传 ready 转换检查真实 D1 changes。部分失败必须返回非 2xx 与可重试对象，并清理并发竞态产生的孤立 R2 对象，不能伪报完成。
 - Quick Transfer 只能称文字为浏览器 AES-GCM 加密；图片、视频和文件不使用房间口令加密，只由 HTTPS、私有 R2 与服务端鉴权保护，且不做病毒／恶意软件扫描。明文口令不发服务器，配额按滚动 24 小时描述，公开卡片、房间提示和历史 seed 不得扩大安全承诺。
 - 工具区同列表工具卡必须共享网格宽度和卡片高度节奏；zh/en/ja 的标题、元信息、说明与 CTA 不得相交或被 `nowrap`、隐藏滚动条、裁剪吞掉。
 - Knowledge 使用 NFKC 多词 AND 搜索，并在搜索／筛选时复位真实滚动和 History；Videos／工具区（内部 `resources` route）重建分类按钮后恢复同一焦点，空视频分类优先提供“显示全部”。首屏只接受 zh／en／ja 并尽早设置文档语言，文章 fallback 标注实际内容语言。
@@ -101,6 +107,11 @@ skills/lusu-personal-site-skill/SKILL.md
 - 文章详情公开地址使用 `/articles/<slug>`，必须能通过域名直接分享和恢复单篇文章详情；内部 `article_id` 不在公开链接或公开 API 中外显。
 - 文章 Markdown 渲染必须防 XSS，不能把未经处理的 Markdown 或 HTML 直接作为 `innerHTML` 插入页面；文章图片只引用 `assets/images/articles/` 下的项目内资源，不引用本机临时路径。
 - 后台文章管理接口必须要求 `users.role = admin`，普通登录用户不能管理文章。
+- `daily-ai-news` 固定显示为“每日 AI 新闻 / Daily AI News / 毎日AIニュース”，即使暂时没有文章也保留分类入口；测试占位文章必须明确标注不是真实新闻。
+- 每日 AI 新闻机器投递由服务端固定三语、分类、非置顶和无封面，调用方不能指定发布状态。默认保存为无发布时间的草稿；只有 `daily-ai-news` 专用通道的显式 auto-publish 配置开启时，服务端才创建已公开文章并写入公开时间。通道默认暂停，令牌明文只显示一次且只保存哈希，入口保留大小、频率、幂等和 slug 冲突保护；同键异内容或原稿已删必须返回冲突，未鉴权请求不得触发文章 seed。令牌撤销、通道暂停、auto-publish 关闭、失败或超时必须关闭公开路径。
+- 每日 AI 新闻适配层位于 `自动新闻/integrations/lusu-site/`：每期先完整读取 `ARTICLE_STYLE.md`，再用带 `--start` / `--end` 的 `npm.cmd run ai-news:horizon:fetch` 真实调用 Horizon 做多源采集、网址规范化和跨来源去重。生产运行每天北京时间 07:00 开始，窗口严格是 `[前一日 07:00, 当日 07:00)`；全部抓取、复核、三语生成、验证、投递和受控公开必须在 08:00 前完成。运行记录保留可反查窗口、`runId` 与候选文件；Horizon 不可用、没有合格新闻、验证失败或超时就停止且不发布。条数不写死；固定日期标题、窗口导语、“今日要闻 / 主要新闻 / 传闻”、一段事实正文和更短的一至两句 AI 解读由校验器强制执行，传闻不逐条重复“未证实”，外部三语文章不得含网址、参考资料、来源列表或内部评分。
+- 本地试投使用进程内临时令牌走正式机器接口，结束后必须关闭预览、暂停通道并清空令牌。2026-07-27 样稿用于生产链路测试，必须遵守与正式运行相同的来源证明、令牌、限流、幂等、冲突、失败关闭和 08:00 截止规则；不因自动公开授权而保存模型或第三方密钥。
+- 后台文章、视频、分类、社交链接、元数据刷新与删除都携带读取时的 `expectedUpdatedAt`；关系表和翻译与主记录原子 CAS，陈旧页面固定收到 `409 + CONTENT_CONFLICT`、保留草稿并提示手动合并。
 - 管理后台固定为 `/admin/`，后台静态文件放在 `admin/`，并通过 `functions/admin/_middleware.js` 和 `/api/admin/*` 双层校验 `users.role = admin`。
 - 后台专用文档固定放在 `admin/docs/`，包括 `ADMIN_PROJECT_CONTEXT.md`、`ADMIN_SKILL.md` 和 `ADMIN_CHANGELOG.md`；后台细节优先以这些文档为准，不要只靠主站文档推断。
 - 后台只需要中文；后台项目介绍和后台更新记录单独维护，不写入主站知识库 `site-updates`，不公开展示。

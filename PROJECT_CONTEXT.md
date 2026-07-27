@@ -1,5 +1,46 @@
 # PROJECT_CONTEXT.md
 
+## 2026-07-28 每日 AI 新闻生产运行规则
+
+- 每日 AI 新闻已获正式上线授权。只允许 `daily-ai-news` 专用通道在管理员显式启用 auto-publish 配置后自动公开；机器调用方仍不能自行提交分类、状态、置顶或发布时间。未启用该配置时，入口仍只落三语草稿。
+- 每天固定按 `Asia/Shanghai` 07:00 启动。候选与成稿窗口严格为此前 24 小时、左闭右开，即 `[前一日 07:00, 当日 07:00)`；所有入选项必须有准确时间并位于该窗口内。抓取、复核、三语生成、验证、投递和受控公开必须在 08:00 前成功完成。
+- 08:00 是硬截止，不允许迟到补发。Horizon 不可用、无合格新闻、来源／格式／三语验证失败、令牌或通道校验失败、幂等／slug 冲突未安全处理，或任一阶段超时，均须关闭本期且不公开；只允许在 07:00–08:00 的剩余时间内进行受保护重试。失败不得降级为手工浏览伪造自动采集，也不得留下半公开文章。
+- `自动新闻/integrations/lusu-site/runs/2026-07-27-2300.json` 是生产链路测试样稿：它必须按与正式运行相同的 Horizon 来源证明、精确窗口、三语内容、校验、投递和公开闸门走通，不能因为是样稿而绕过令牌、幂等、限流、冲突或失败关闭规则。
+
+## 2026-07-27 每日 AI 新闻本地生成工作流
+
+- Horizon 是每日 AI 新闻不可绕过的数据入口。本站配置和适配层位于 `自动新闻/integrations/lusu-site/`；`npm.cmd run ai-news:horizon:fetch -- --date <日期> --start <开始> --end <结束>` 真实调用 Horizon 原生多来源抓取、网址规范化和跨来源去重，再按 `Asia/Shanghai` 固定成稿时刻之前的精确 24 小时输出 `data/mcp-runs/<run_id>/daily_candidates.json`。窗口采用左闭右开边界，入选项必须有准确时间且不能越界。主题发现覆盖 AI、芯片与存储、机器人、AI 设备、自动驾驶、数据中心／散热／能源／网络和科技金融。RSS 瞬时失败由 Horizon 自带 RSS 抓取器定向重试；Horizon 不可用时本期停止，禁止静默改成手工浏览冒充自动采集。
+- Codex 只从当次 Horizon 候选中做重要性判断、一手来源复核、近 30 天故事去重、无外链完整文章合成、日文补齐和受控投递。当前没有安装或配置供 Horizon 原生评分／富化使用的本地模型或云端密钥；后续若启用，只能增强 Horizon 阶段，不能绕过候选来源证明。
+- 每日新闻数量不设固定值，只使用 0–10 重要性评分中的 7 分门槛。没有达到门槛的内容时报告“今日无稿”，不得拿窗口外消息、重复公告或低价值更新凑数；同一合作由多家公司分别公告时仍按一个故事处理。正文固定按“今日要闻 / 主要新闻 / 传闻”排列：要闻恰好一条且已经核实，传闻单独放置并使用条件语气，不在每条下重复“未证实”提示。
+- 一手来源 URL、筛选理由和评分只保存在内部运行记录；公开文章是一篇独立完整的 zh / en / ja 三语正文，不包含网址、Markdown 链接、来源／参考资料章节、相关阅读跳转或内部评分。新闻正文以准确陈述事实为主；每条末尾的 AI 解读必须明显短于正文，通常一至两句，只挑最关键的影响、现实门槛、隐含限制或下一步观察点，不复述新闻，也不要求每条都刻意找问题。
+- `自动新闻/integrations/lusu-site/ARTICLE_STYLE.md` 是所有后续日报的唯一固定格式与文风标准，未来代理必须先读。工作流 schema v3 和校验器会硬性检查三语日期标题、24 小时窗口导语、三段栏目顺序、每条一段事实正文、恰好一条一至两句且短于事实段的 AI 解读、以解读结束，以及不得逐条重复传闻核实状态；语义层继续按该文件禁止标题党、新闻复述、空泛套话、强行挑错和无依据扩写。
+- `npm.cmd run ai-news:validate` 除检查入选故事、重要性、重复键、三段结构、逐条 AI 解读、三语完整性和正文无链接外，还会读取对应 Horizon `daily_candidates.json`，核对 `runId`、精确 24 小时窗口和每条入选来源确实存在于该次抓取结果。`npm.cmd run ai-news:deliver:local` 临时启用本地投递通道并启动一次 Pages 预览，走正式 `POST /api/automation/daily-ai-news` 契约后立即关闭服务、暂停通道并清除临时令牌。
+- 最新审阅样稿为 `自动新闻/integrations/lusu-site/runs/2026-07-27-2300.json`，覆盖北京时间 7 月 26 日 23:00 至 7 月 27 日 23:00：Horizon 合并后 411 条、窗口内 350 条，最终保留 12 条并生成 zh / en / ja 三段式完整文章。首次自然日运行 `runs/2026-07-27.json` 仅保留为历史记录；此前本地 D1 中同 slug 的两条消息草稿属于 Horizon 接入前的规则试投，保持 draft 且未发布，新样稿尚未投递覆盖。
+- 正式每日运行已获明确授权，按本文件顶部的 07:00–08:00 生产运行规则执行；不因该授权保存模型／搜索／第三方密钥。自动公开仅限显式启用 auto-publish 的专用通道，其他通道和未配置通道继续草稿优先。
+
+## 2026-07-27 每日 AI 新闻分区、受控投递与自动公开入口
+
+- 知识库新增稳定分类标识 `daily-ai-news`，公开显示名固定为中文“每日 AI 新闻”、English “Daily AI News”、日本語“毎日AIニュース”。该分类在筛选栏中固定排在普通分类之前、`site-updates` 之前，即使当前没有已发布文章也保留入口；专用空状态使用三语文案。
+- 全新 D1 和 fallback 都包含一篇已发布的三语测试占位文章 `daily-ai-news-test-placeholder`。它只用于验证分类、列表和详情链路，正文必须继续明确标注“不是正式新闻”，以后可由站长在后台隐藏、改写或删除。
+- 管理后台新增“自动投递”模块，位置在“知识库文章”之后。管理员可启用／暂停每日 AI 新闻入口，生成、轮换或撤销令牌，复制投递地址，并查看最近事件；令牌明文只在生成或轮换成功后显示一次，D1 只保存 SHA-256 摘要和末尾提示。
+- 机器投递入口固定为 `POST /api/automation/daily-ai-news`，配置和事件审计使用 `article_delivery_channels`、`article_delivery_events`。调用必须使用有效 Bearer 令牌并提供 zh / en / ja 三语标题、摘要和正文；机器入口始终强制分类为 `daily-ai-news`、非置顶、无封面，并拒绝调用方提交分类、状态、置顶等越权字段。默认创建无发布时间的 draft；仅专用通道的显式 auto-publish 配置开启时才创建 published 并写入公开时间。
+- 投递入口具备请求体上限、按来源与通道限流、幂等键和 slug 冲突保护；事件表只记录必要状态、文章引用和规范化内容的 SHA-256 指纹，不记录文章正文或令牌。相同幂等键只有在内容指纹一致且原文章仍存在时才作为成功重放；内容变化或草稿被删除会明确返回冲突并要求新键。未鉴权请求只初始化轻量通道表，不执行文章 seed。管理员接口继续要求 `users.role = admin`，机器入口不复用管理员 cookie。
+- 正式生产调度按 07:00 启动并在 08:00 截止；没有配置模型／搜索／发布密钥，且不会因部署自动创建其他计划任务。站长可随时暂停通道或关闭 auto-publish；关闭、撤销令牌、验证失败或超时后均只能保留草稿或失败事件，绝不自动公开。
+- 每日 AI 新闻正式生产版本为 `20260728-daily-ai-news-production-r1`（公开主脚本、知识库模块、API 表示版本和后台主脚本）；后台样式仍为 `20260727-daily-ai-news-inbox-r1`。公开更新记录继续使用稳定 ID `seed-update-2026-07-27-daily-ai-news-inbox`，并已同步完整 fallback、Home 最新五条无正文投影、Functions seed 和 schema seed。
+- 最终本地验证为 D1 迁移、静态构建和 300 / 300 项全量测试通过；只读查询确认测试文章有三种翻译，通道初始为 `enabled = 0` 且没有令牌。生产启用、令牌生成与 auto-publish 配置必须作为显式受审计操作完成。
+
+## 2026-07-26 全站安全与可靠性加固
+
+- 账号与公开写接口在进入业务逻辑前校验同源、JSON `Content-Type` 和流式请求体上限。登录、注册按网络来源与规范化账号标识使用持久化 D1 限流；重复邮箱、站长保留邮箱和并发注册统一返回 `400 + REGISTRATION_FAILED`，公开界面不再枚举账号是否存在。新密码固定使用 PBKDF2-HMAC-SHA256 600,000 次，旧 25,000 / 100,000 次哈希仍可登录并在成功后条件升级。
+- `api_rate_limits` 保存短期限流桶。页面、点击与文章阅读写入同时做速率上限和重复抑制；每日健康检查用 `waitUntil` 分批清理过期 session、365 天前登录记录、180 天前分析记录和 2 天前限流桶，每表单次最多 5,000 行。意外 5xx 只向客户端返回稳定通用错误，不暴露内部异常。
+- 旧 D1 迁移必须先补齐聊天、禁言和 Transfer 历史表的缺失列，再执行依赖索引与完整 schema；`scripts/d1-migrate-local.mjs` 和 `scripts/d1-migrate-remote.mjs` 都覆盖真正 legacy fixture。全新 schema 同时创建 `api_rate_limits` 和 Transfer 设置 revision。
+- 后台文章、视频、视频分类、社交链接、视频元数据刷新与删除均使用读取时的 `expectedUpdatedAt` 条件写入；陈旧标签页返回 `409 + CONTENT_CONFLICT` 并保留输入。文章翻译与视频分类关系和主记录在同一 D1 batch 内受版本条件保护。Transfer 设置同样使用 revision；清空房间或清理 R2 仅部分成功时返回非 2xx 和可重试失败列表，不能伪报全部完成。
+- `/articles/<slug>` 由 `functions/articles/[slug].js` 在边缘读取已发布文章，并为直接访问输出文章专属 title、description、Open Graph、Twitter、canonical、Article JSON-LD 与安全 `noscript` 正文；不存在的文章返回 404 / noindex，D1 暂时失败时保留可运行主壳。
+- 游戏目录与日语工具可选 manifest 都有 7 秒超时、Abort、版本缓存和本地回退；网络失败不能阻塞内置游戏、本地题目或已有存档。生产构建必须把日语音频 manifest 改写到同源绝对路径并保留版本 query，转换保持严格一次匹配。首页壁纸预载与实际 CSS 选择同一格式、宽度和版本，减少动态模式在首屏同步判定，避免重复或瞬时动态请求。
+- 全局响应头补齐 CSP、Permissions Policy、HSTS、nosniff、referrer policy 与同源 framing；Pages Functions 的 JSON/XML 也显式携带相同安全边界，`/admin/` 额外拒绝任何 framing。锁定 Wrangler `4.111.0` 时 compatibility date 使用其本地 workerd 可启动的 `2026-07-17`，调整日期后必须真实启动 `wrangler pages dev`，不能只通过静态配置校验；采样 logs / traces 保持启用。GitHub Actions 固定第三方 action 的不可变 commit，并运行本地 D1、全量测试、模块图、静态构建、可重复生产构建及两套 Headless 发布审计。
+- 本批公开缓存版本为 `20260726-security-reliability-r1`，公开更新记录为 `seed-update-2026-07-26-security-reliability-hardening`；后台脚本为 `20260726-admin-concurrency-safety-r1`，Transfer 管理资源为 `20260726-admin-transfer-safety-r1`。正式发布路径仍是 GitHub `main` 触发 Cloudflare Pages，本地修复不等于已推送或部署。
+- 2026-07-26 最终本地证据：D1 legacy 迁移通过；297 / 297 测试、20 个公共模块、静态构建、双次一致生产构建（manifest SHA-256 `fbc56fe9f178f2d00fb050f80d872b558985d47b6117f0325b620f64c74797bd`）、192 / 192 发布矩阵和 A Dark Room 同文档旋转审计通过；Pages dev 健康、文章、404 与未登录后台路由冒烟通过。没有执行远端 D1、push 或部署。
+
 ## 2026-07-26 匿名聊天室统一图标规格
 
 - 匿名聊天室只保留 `assets/images/icon-chatroom.png` 这一张规范资源，Home 桌面入口、移动 Home 应用网格、窗口标题栏、桌面任务栏／移动 Dock、欢迎快捷入口、Chat 页头和消息头像全部引用它；不要重新引入 `icon-chatroom-clean.png` 或 `icon-chatroom-desktop.png` 的双资源分叉。
