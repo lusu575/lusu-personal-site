@@ -4476,14 +4476,10 @@ if (previewDatabaseBinding?.database_id !== migrationWranglerData.d1_databases?.
 if (!Array.isArray(previewWranglerData?.r2_buckets) || previewWranglerData.r2_buckets.length !== 0) {
   fail("wrangler.jsonc env.preview must explicitly disable Quick Transfer R2 until a separate preview bucket is provisioned");
 }
-const declaredSecrets = new Set(migrationWranglerData.secrets?.required || []);
-for (const secretName of ["CHAT_IP_HASH_SALT", "ANALYTICS_IP_HASH_SALT"]) {
-  if (!declaredSecrets.has(secretName)) {
-    fail(`wrangler.jsonc secrets.required missing ${secretName}`);
+for (const unsupportedPagesField of ["observability", "secrets"]) {
+  if (Object.hasOwn(migrationWranglerData, unsupportedPagesField)) {
+    fail(`wrangler.jsonc must not declare unsupported Cloudflare Pages field ${unsupportedPagesField}`);
   }
-}
-if (declaredSecrets.has("OWNER_ADMIN_EMAILS")) {
-  fail("wrangler.jsonc must not declare optional OWNER_ADMIN_EMAILS as a required secret");
 }
 for (const secretName of ["CHAT_IP_HASH_SALT", "ANALYTICS_IP_HASH_SALT", "OWNER_ADMIN_EMAILS"]) {
   if (!new RegExp(`^${secretName}=\\s*$`, "m").test(envExample)) {

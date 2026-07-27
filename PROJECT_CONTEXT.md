@@ -37,7 +37,7 @@
 - 后台文章、视频、视频分类、社交链接、视频元数据刷新与删除均使用读取时的 `expectedUpdatedAt` 条件写入；陈旧标签页返回 `409 + CONTENT_CONFLICT` 并保留输入。文章翻译与视频分类关系和主记录在同一 D1 batch 内受版本条件保护。Transfer 设置同样使用 revision；清空房间或清理 R2 仅部分成功时返回非 2xx 和可重试失败列表，不能伪报全部完成。
 - `/articles/<slug>` 由 `functions/articles/[slug].js` 在边缘读取已发布文章，并为直接访问输出文章专属 title、description、Open Graph、Twitter、canonical、Article JSON-LD 与安全 `noscript` 正文；不存在的文章返回 404 / noindex，D1 暂时失败时保留可运行主壳。
 - 游戏目录与日语工具可选 manifest 都有 7 秒超时、Abort、版本缓存和本地回退；网络失败不能阻塞内置游戏、本地题目或已有存档。生产构建必须把日语音频 manifest 改写到同源绝对路径并保留版本 query，转换保持严格一次匹配。首页壁纸预载与实际 CSS 选择同一格式、宽度和版本，减少动态模式在首屏同步判定，避免重复或瞬时动态请求。
-- 全局响应头补齐 CSP、Permissions Policy、HSTS、nosniff、referrer policy 与同源 framing；Pages Functions 的 JSON/XML 也显式携带相同安全边界，`/admin/` 额外拒绝任何 framing。锁定 Wrangler `4.111.0` 时 compatibility date 使用其本地 workerd 可启动的 `2026-07-17`，调整日期后必须真实启动 `wrangler pages dev`，不能只通过静态配置校验；采样 logs / traces 保持启用。GitHub Actions 固定第三方 action 的不可变 commit，并运行本地 D1、全量测试、模块图、静态构建、可重复生产构建及两套 Headless 发布审计。
+- 全局响应头补齐 CSP、Permissions Policy、HSTS、nosniff、referrer policy 与同源 framing；Pages Functions 的 JSON/XML 也显式携带相同安全边界，`/admin/` 额外拒绝任何 framing。锁定 Wrangler `4.111.0` 时 compatibility date 使用其本地 workerd 可启动的 `2026-07-17`，调整日期后必须真实启动 `wrangler pages dev`，不能只通过静态配置校验。根 `wrangler.jsonc` 只能使用 Cloudflare Pages Git 构建支持的字段，不声明会导致 Pages 拒绝部署的 Worker-only `observability` 或非标准 `secrets` 元数据；独立清理 Worker 可在自己的配置中保留 observability。GitHub Actions 固定第三方 action 的不可变 commit，并运行本地 D1、全量测试、模块图、静态构建、可重复生产构建及两套 Headless 发布审计。
 - 本批公开缓存版本为 `20260726-security-reliability-r1`，公开更新记录为 `seed-update-2026-07-26-security-reliability-hardening`；后台脚本为 `20260726-admin-concurrency-safety-r1`，Transfer 管理资源为 `20260726-admin-transfer-safety-r1`。正式发布路径仍是 GitHub `main` 触发 Cloudflare Pages，本地修复不等于已推送或部署。
 - 2026-07-26 最终本地证据：D1 legacy 迁移通过；297 / 297 测试、20 个公共模块、静态构建、双次一致生产构建（manifest SHA-256 `fbc56fe9f178f2d00fb050f80d872b558985d47b6117f0325b620f64c74797bd`）、192 / 192 发布矩阵和 A Dark Room 同文档旋转审计通过；Pages dev 健康、文章、404 与未登录后台路由冒烟通过。没有执行远端 D1、push 或部署。
 
@@ -212,7 +212,7 @@
 
 ## 2026-07-16 临时互传上传、全窗拖放与视口高度修复
 
-- Pages Functions 的文件路由依赖根 `wrangler.jsonc` 中 `TRANSFER_BUCKET` R2 binding；顶层 Production 使用 `lusu-temp-transfer`。`env.preview` 必须同时重述 D1 与显式空 `r2_buckets` 等 Pages 非继承 binding，在独立 Preview 桶尚未创建时让预览文件上传安全关闭，绝不回退到正式桶。Secret 的实际值继续在 Cloudflare 的 Production / Preview 环境分别管理，顶层 `secrets.required` 只声明本地校验与类型生成需要的名称。构建必须校验这套映射，避免正式环境文字房间可用但文件路由持续返回 `TRANSFER_R2_NOT_BOUND`，也避免预览部署误用正式数据。
+- Pages Functions 的文件路由依赖根 `wrangler.jsonc` 中 `TRANSFER_BUCKET` R2 binding；顶层 Production 使用 `lusu-temp-transfer`。`env.preview` 必须同时重述 D1 与显式空 `r2_buckets` 等 Pages 非继承 binding，在独立 Preview 桶尚未创建时让预览文件上传安全关闭，绝不回退到正式桶。Secret 的实际值继续在 Cloudflare 的 Production / Preview 环境分别管理；所需变量名由 `.env.example` 的空声明和运行时校验维护，不写入 Pages 不支持的顶层 `secrets` 元数据。构建必须校验这套映射，避免正式环境文字房间可用但文件路由持续返回 `TRANSFER_R2_NOT_BOUND`，也避免预览部署误用正式数据。
 - 文件拖放热区覆盖整个互传窗口，只拦截 `DataTransfer.types` 包含 `Files` 的拖放；文字或链接拖放不得被阻断。全窗提示层不接收指针事件，drop、close、blur 与 dragend 都必须清理拖放状态。
 - `r2Ready: false` 时客户端必须禁用文件选择并在排队前返回，不得生成上传进度到 100% 后才失败的任务；服务端稳定错误码继续用于诊断，公开 5xx 文案不暴露内部细节。
 - 桌面互传窗口按 `100dvh` 的可用区域伸展，消息流吃满新增空间；移动端仍由 `--mobile-viewport-height`、单一 `.transfer-room` 滚动路径和 `visualViewport` 补偿控制。此处原有 sticky composer 已由 2026-07-17 的不可收缩正常流方案取代。
