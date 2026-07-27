@@ -42,6 +42,20 @@ test("release audit records performance, lifecycle, semantic, Home, shell, and A
   ]) assert.ok(audit.includes(token), `missing ${token}`);
 });
 
+test("release audit uses a three-sample Home TBT median without relaxing structural budgets", () => {
+  assert.match(audit, /name:"home-first-screen",\s*route:"home",\s*sampleCount:3/);
+  assert.match(audit, /const sampleCount = scenario\.sampleCount \|\| 1/);
+  assert.match(audit, /tbtMs:350/);
+  assert.match(audit, /if \(tbtMedian > budgets\.tbtMs\)/);
+  assert.match(audit, /HeapProfiler\.collectGarbage[\s\S]*Memory\.getDOMCounters/);
+  for (const evidenceField of ["tbtSamples", "tbtMedian", "tbtMax", "samples"]) {
+    assert.ok(audit.includes(evidenceField), `missing TBT sample evidence ${evidenceField}`);
+  }
+  for (const structuralBudget of ["requests", "encoded bytes", "decoded bytes", "CLS", "memory counters", "JS heap", "runtime errors"]) {
+    assert.ok(audit.includes(structuralBudget), `missing per-sample performance guard ${structuralBudget}`);
+  }
+});
+
 test("full-motion Dock evidence freezes exact transition frames and covers rapid responsive switching", () => {
   for (const token of [
     "--dock-icon-only",

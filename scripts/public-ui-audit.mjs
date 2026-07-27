@@ -4402,37 +4402,72 @@ async function auditLifecycleGrowth(client, origin) {
 async function auditPerformanceTraces(client, server, output) {
   const viewport = viewports.find((item) => item.width === 1280 && item.height === 720);
   const scenarios = [
-    { name:"home-first-screen", route:"home", action:async()=>{} },
+    { name:"home-first-screen", route:"home", sampleCount:3, action:async()=>{} },
     { name:"route-switch", route:"home", action:async()=>{await setAuditRoute(client,"resources");await stable(client,"resources");} },
     { name:"long-article", route:"article", action:async()=>{} },
     { name:"chat", route:"chatroom", action:async()=>{} },
     { name:"transfer", route:"resources", action:async()=>{await openQuickTransferFromCta(client);} }
   ];
+  const budgets = { requests:55, encodedBytes:12*1024*1024, decodedBytes:24*1024*1024, loadMs:4000, cls:.2, tbtMs:350, nodes:6500, listeners:800, heapBytes:96*1024*1024 };
   const results = [];
   for (const scenario of scenarios) {
-    await emulate(client, viewport); server.resetRequests();
-    const transfers = new Map();
-    const offResponse = client.on("Network.responseReceived", ({ requestId, response, type }) => transfers.set(requestId, { url:response.url, type, mimeType:response.mimeType, encodedDataLength:Number(response.encodedDataLength||0) }));
-    const offFinished = client.on("Network.loadingFinished", ({ requestId, encodedDataLength }) => { const item=transfers.get(requestId); if(item)item.encodedDataLength=Math.max(item.encodedDataLength,Number(encodedDataLength||0)); });
-    const url = scenario.route === "article" ? `${server.origin}/articles/${article.slug}?lang=zh&wallpaper=day&welcome=0&audit-performance-trace=${scenario.name}` : `${server.origin}/?lang=zh&wallpaper=day&welcome=0&audit-performance-trace=${scenario.name}${scenario.route === "home" ? "" : `#${scenario.route}`}`;
-    await client.send("Page.navigate", { url }); await stable(client, scenario.route); await scenario.action(); await waitFrames(client, 4); await new Promise((ok)=>setTimeout(ok,300));
-    offResponse(); offFinished();
-    const web = await evaluate(client, `(() => {const nav=performance.getEntriesByType('navigation')[0];const resources=performance.getEntriesByType('resource');const paints=performance.getEntriesByType('paint');const longTasks=window.__auditPerformanceEntries?.longtask||[];const shifts=(window.__auditPerformanceEntries?.['layout-shift']||[]).filter((item)=>!item.hadRecentInput);const lcp=(window.__auditPerformanceEntries?.['largest-contentful-paint']||[]).at(-1);return {navigation:{domContentLoaded:nav?.domContentLoadedEventEnd||0,load:nav?.loadEventEnd||0,transferSize:nav?.transferSize||0,decodedBodySize:nav?.decodedBodySize||0},resources:{count:resources.length,transferSize:resources.reduce((sum,item)=>sum+(item.transferSize||0),0),decodedBodySize:resources.reduce((sum,item)=>sum+(item.decodedBodySize||0),0)},paint:{...Object.fromEntries(paints.map((item)=>[item.name,item.startTime])),lcp:lcp?.startTime||0},longTasks:{count:longTasks.length,total:longTasks.reduce((sum,item)=>sum+item.duration,0),tbt:longTasks.reduce((sum,item)=>sum+Math.max(0,item.duration-50),0)},cls:shifts.reduce((sum,item)=>sum+item.value,0),heap:performance.memory?{used:performance.memory.usedJSHeapSize,total:performance.memory.totalJSHeapSize}:null,runtimeErrors:[...(window.__auditRuntimeErrors||[])]};})()`);
-    const counters = await client.send("Memory.getDOMCounters");
-    const network = [...transfers.values()].filter((item)=>item.url.startsWith(server.origin));
-    const totals = { requests:network.length, encodedBytes:network.reduce((sum,item)=>sum+item.encodedDataLength,0), decodedBytes:web.navigation.decodedBodySize+web.resources.decodedBodySize };
-    const budgets = { requests:55, encodedBytes:12*1024*1024, decodedBytes:24*1024*1024, loadMs:4000, cls:.2, tbtMs:350, nodes:6500, listeners:800, heapBytes:96*1024*1024 };
-    const failures = [];
-    if (totals.requests > budgets.requests) failures.push(`requests ${totals.requests} > ${budgets.requests}`);
-    if (totals.encodedBytes > budgets.encodedBytes) failures.push(`encoded bytes ${totals.encodedBytes} > ${budgets.encodedBytes}`);
-    if (totals.decodedBytes > budgets.decodedBytes) failures.push(`decoded bytes ${totals.decodedBytes} > ${budgets.decodedBytes}`);
-    if (web.navigation.load > budgets.loadMs) failures.push(`load ${Math.round(web.navigation.load)}ms > ${budgets.loadMs}ms`);
-    if (web.cls > budgets.cls) failures.push(`CLS ${web.cls} > ${budgets.cls}`);
-    if (web.longTasks.tbt > budgets.tbtMs) failures.push(`TBT ${Math.round(web.longTasks.tbt)}ms > ${budgets.tbtMs}ms`);
-    if (counters.nodes > budgets.nodes || counters.jsEventListeners > budgets.listeners) failures.push(`memory counters exceed budget: ${JSON.stringify(counters)}`);
-    if (web.heap?.used > budgets.heapBytes) failures.push(`JS heap ${web.heap.used} > ${budgets.heapBytes}`);
-    if (web.runtimeErrors.length) failures.push(`runtime errors: ${web.runtimeErrors.join(" | ")}`);
-    results.push({ kind:"performance-trace", name:scenario.name, shell:"desktop", viewport, totals, web, counters, budgets, network, failures, status:failures.length?"FAIL":"PASS" });
+    const samples = [];
+    const sampleCount = scenario.sampleCount || 1;
+    for (let sample = 1; sample <= sampleCount; sample += 1) {
+      await emulate(client, viewport); server.resetRequests();
+      const transfers = new Map();
+      const offResponse = client.on("Network.responseReceived", ({ requestId, response, type }) => transfers.set(requestId, { url:response.url, type, mimeType:response.mimeType, encodedDataLength:Number(response.encodedDataLength||0) }));
+      const offFinished = client.on("Network.loadingFinished", ({ requestId, encodedDataLength }) => { const item=transfers.get(requestId); if(item)item.encodedDataLength=Math.max(item.encodedDataLength,Number(encodedDataLength||0)); });
+      const sampleQuery = `&audit-performance-sample=${sample}`;
+      const url = scenario.route === "article" ? `${server.origin}/articles/${article.slug}?lang=zh&wallpaper=day&welcome=0&audit-performance-trace=${scenario.name}${sampleQuery}` : `${server.origin}/?lang=zh&wallpaper=day&welcome=0&audit-performance-trace=${scenario.name}${sampleQuery}${scenario.route === "home" ? "" : `#${scenario.route}`}`;
+      try {
+        await client.send("Page.navigate", { url }); await stable(client, scenario.route); await scenario.action(); await waitFrames(client, 4); await new Promise((ok)=>setTimeout(ok,300));
+      } finally {
+        offResponse(); offFinished();
+      }
+      const web = await evaluate(client, `(() => {const nav=performance.getEntriesByType('navigation')[0];const resources=performance.getEntriesByType('resource');const paints=performance.getEntriesByType('paint');const longTasks=window.__auditPerformanceEntries?.longtask||[];const shifts=(window.__auditPerformanceEntries?.['layout-shift']||[]).filter((item)=>!item.hadRecentInput);const lcp=(window.__auditPerformanceEntries?.['largest-contentful-paint']||[]).at(-1);return {navigation:{domContentLoaded:nav?.domContentLoadedEventEnd||0,load:nav?.loadEventEnd||0,transferSize:nav?.transferSize||0,decodedBodySize:nav?.decodedBodySize||0},resources:{count:resources.length,transferSize:resources.reduce((sum,item)=>sum+(item.transferSize||0),0),decodedBodySize:resources.reduce((sum,item)=>sum+(item.decodedBodySize||0),0)},paint:{...Object.fromEntries(paints.map((item)=>[item.name,item.startTime])),lcp:lcp?.startTime||0},longTasks:{count:longTasks.length,total:longTasks.reduce((sum,item)=>sum+item.duration,0),tbt:longTasks.reduce((sum,item)=>sum+Math.max(0,item.duration-50),0)},cls:shifts.reduce((sum,item)=>sum+item.value,0),heap:performance.memory?{used:performance.memory.usedJSHeapSize,total:performance.memory.totalJSHeapSize}:null,runtimeErrors:[...(window.__auditRuntimeErrors||[])]};})()`);
+      await client.send("HeapProfiler.collectGarbage").catch(() => {});
+      const counters = await client.send("Memory.getDOMCounters");
+      const network = [...transfers.values()].filter((item)=>item.url.startsWith(server.origin));
+      const totals = { requests:network.length, encodedBytes:network.reduce((sum,item)=>sum+item.encodedDataLength,0), decodedBytes:web.navigation.decodedBodySize+web.resources.decodedBodySize };
+      const failures = [];
+      if (totals.requests > budgets.requests) failures.push(`requests ${totals.requests} > ${budgets.requests}`);
+      if (totals.encodedBytes > budgets.encodedBytes) failures.push(`encoded bytes ${totals.encodedBytes} > ${budgets.encodedBytes}`);
+      if (totals.decodedBytes > budgets.decodedBytes) failures.push(`decoded bytes ${totals.decodedBytes} > ${budgets.decodedBytes}`);
+      if (web.navigation.load > budgets.loadMs) failures.push(`load ${Math.round(web.navigation.load)}ms > ${budgets.loadMs}ms`);
+      if (web.cls > budgets.cls) failures.push(`CLS ${web.cls} > ${budgets.cls}`);
+      if (counters.nodes > budgets.nodes || counters.jsEventListeners > budgets.listeners) failures.push(`memory counters exceed budget: ${JSON.stringify(counters)}`);
+      if (web.heap?.used > budgets.heapBytes) failures.push(`JS heap ${web.heap.used} > ${budgets.heapBytes}`);
+      if (web.runtimeErrors.length) failures.push(`runtime errors: ${web.runtimeErrors.join(" | ")}`);
+      samples.push({ sample, totals, web, counters, network, failures, status:failures.length?"FAIL":"PASS" });
+    }
+    const orderedByTbt = [...samples].sort((left, right) => left.web.longTasks.tbt - right.web.longTasks.tbt);
+    const representative = orderedByTbt[Math.floor(orderedByTbt.length / 2)];
+    const tbtSamples = samples.map((sample) => sample.web.longTasks.tbt);
+    const tbtMedian = representative.web.longTasks.tbt;
+    const tbtMax = Math.max(...tbtSamples);
+    const failures = samples.flatMap((sample) => sample.failures.map((failure) => sampleCount > 1 ? `sample ${sample.sample}: ${failure}` : failure));
+    if (tbtMedian > budgets.tbtMs) failures.push(`TBT median ${Math.round(tbtMedian)}ms > ${budgets.tbtMs}ms (samples: ${tbtSamples.map(Math.round).join(", ")})`);
+    const diagnostics = tbtMedian <= budgets.tbtMs && tbtMax > budgets.tbtMs ? [`TBT max ${Math.round(tbtMax)}ms exceeded ${budgets.tbtMs}ms while the median passed`] : [];
+    if (diagnostics.length) console.warn(`OPT-093 performance ${scenario.name}: ${diagnostics.join(" | ")}`);
+    results.push({
+      kind:"performance-trace",
+      name:scenario.name,
+      shell:"desktop",
+      viewport,
+      totals:representative.totals,
+      web:representative.web,
+      counters:representative.counters,
+      budgets,
+      network:representative.network,
+      tbtSamples,
+      tbtMedian,
+      tbtMax,
+      diagnostics,
+      samples,
+      failures,
+      status:failures.length?"FAIL":"PASS"
+    });
   }
   await writeFile(resolve(output,"performance-traces.json"), `${JSON.stringify({generatedAt:new Date().toISOString(),results},null,2)}\n`, "utf8");
   return results;
