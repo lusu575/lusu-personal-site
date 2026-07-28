@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-07-29-tool-radar-live",
+      "slug": "2026-07-29-tool-radar-live",
+      "category": "site-updates",
+      "tags": ["网站更新", "工具雷达", "知识库", "自动化", "多语言"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-28T16:45:00.000Z",
+      "updated_at": "2026-07-28T16:45:00.000Z",
+      "published_at": "2026-07-28T16:45:00.000Z",
+      "fallbackOnly": true,
+      "icon": "knowledge",
+      "date": "2026.07.29",
+      "title": {
+        "zh": "工具雷达正式上线并开启周更",
+        "en": "Tool Radar Is Live with Weekly Publishing",
+        "ja": "ツールレーダーを公開し、週次更新を開始"
+      },
+      "summary": {
+        "zh": "知识库“工具雷达”正式上线，首期 7 工具三语文章已发布；独立去重、原创说明图与每周二 22:00 自动任务同步启用。",
+        "en": "Tool Radar is live in Knowledge with a trilingual first edition covering seven tools; independent deduplication, original explanatory visuals, and the Tuesday 22:00 automation are active.",
+        "ja": "知識庫の「ツールレーダー」を正式公開し、7ツールの初回3言語記事を掲載しました。独立重複防止、オリジナル説明図、毎週火曜22時の自動タスクも有効です。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-07-28-knowledge-archive-visibility",
       "slug": "2026-07-28-knowledge-archive-visibility",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "每日 AI 新闻新增重点厂商与产业主题覆盖审阅、低产出二次检查及多语言可靠来源，并让标题直接显示当天头条。",
         "en": "Daily AI News now reviews priority companies and industry topics, performs a second pass for thin editions, accepts reliable multilingual sources, and surfaces the lead story in each title.",
         "ja": "毎日AIニュースに重点企業・産業テーマの網羅確認、件数が少ない場合の再確認、多言語の信頼できる情報源を追加し、タイトルには当日のトップニュースを表示します。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-07-28-daily-ai-news-reader-format",
-      "slug": "2026-07-28-daily-ai-news-reader-format",
-      "category": "site-updates",
-      "tags": ["网站更新", "知识库", "每日AI新闻", "阅读体验"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-07-27T20:40:00.000Z",
-      "updated_at": "2026-07-27T20:40:00.000Z",
-      "published_at": "2026-07-27T20:40:00.000Z",
-      "fallbackOnly": true,
-      "icon": "knowledge",
-      "date": "2026.07.28",
-      "title": {
-        "zh": "每日 AI 新闻阅读格式调整",
-        "en": "Daily AI News Reading Format Updated",
-        "ja": "毎日AIニュースの閲覧形式を更新"
-      },
-      "summary": {
-        "zh": "每日 AI 新闻详情不再重复摘要和采集窗口，正文直接进入要闻；目录改为列出每条新闻标题，测试占位文章已删除。",
-        "en": "Daily AI News now opens directly with the stories, without a repeated summary or collection-window paragraph. Its contents list every headline, and the test placeholder is removed.",
-        "ja": "毎日AIニュースは概要や収集時間を繰り返さず記事へ直接入り、目次には全ニュース見出しを表示します。テスト用記事も削除しました。"
       }
     }
   ]

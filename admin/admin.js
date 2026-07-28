@@ -49,10 +49,13 @@ const state = {
   socialLinks: [],
   socialLinksUpdatedAt: null,
   socialLinksSaving: false,
+  automationChannelKey: "daily-ai-news",
   automationChannel: null,
   automationDeliveries: [],
   automationOneTimeToken: "",
   automationBusy: false,
+  automationLoading: false,
+  automationLoadGeneration: 0,
   mobileNavOpen: false,
   mobileNavReturnFocus: null,
   masterDetail: {
@@ -124,13 +127,43 @@ const SOCIAL_LINK_PLATFORMS = [
   { platform: "instagram", label: "Instagram", default_url: "https://www.instagram.com/lusu575/" },
   { platform: "discord", label: "Discord", default_url: "https://discord.com/" }
 ];
+const AUTOMATION_CHANNEL_DEFINITIONS = {
+  "daily-ai-news": {
+    key: "daily-ai-news",
+    label: "每日 AI 新闻",
+    schedule: "每日 07:00（Asia/Shanghai）",
+    heading: "每日 AI 新闻投递箱",
+    description: "固定进入知识库“每日 AI 新闻”，可独立控制投递与自动公开",
+    openArticlesLabel: "查看每日 AI 新闻文章",
+    guideSummary: "本机定时任务 ai-7-8 已启用，每日 07:00 开始",
+    guideItems: [
+      "每日 07:00–08:00 保持本机、Codex 与网络可用。",
+      "投递是否生效，以本页的连接凭证、投递状态和“自动公开”状态为准。",
+      "关闭“自动公开”时新稿只进入草稿箱；暂停投递或撤销凭证会阻止后续送达。"
+    ]
+  },
+  "tool-radar": {
+    key: "tool-radar",
+    label: "工具雷达",
+    schedule: "每周二 22:00（Asia/Shanghai）",
+    heading: "工具雷达投递箱",
+    description: "固定进入知识库“工具雷达”，计划每周二 22:00 运行并独立控制投递与自动公开",
+    openArticlesLabel: "查看工具雷达文章",
+    guideSummary: "正式任务已启用，每周二 22:00（Asia/Shanghai）运行",
+    guideItems: [
+      "每周二 22:00 保持本机、Codex 与网络可用，任务会独立收集、核验并整理本期工具。",
+      "投递是否生效，以本页“工具雷达”的连接凭证、投递状态和“自动公开”状态为准，不与每日 AI 新闻共用配置。",
+      "原创图先随主站部署并通过线上 SHA-256 校验；关闭“自动公开”、暂停投递或撤销凭证都会阻止自动公开。"
+    ]
+  }
+};
 
 const panelMeta = {
   dashboard: ["鲁肃个人站管理后台", "实时访问工作台"],
   visits: ["访问来源", "按国家、省份、城市和掩码网络前缀查看每日访问。"],
   clicks: ["点击埋点", "查看站内各位置点击、浏览访客和最近事件。"],
   articles: ["知识库文章", "一次编辑中文、英文、日文三种版本，按当前选择语言显示编辑区。"],
-  automation: ["自动投递", "管理“每日 AI 新闻”草稿投递箱、连接凭证和最近投递记录。"],
+  automation: ["自动投递", "分别管理“每日 AI 新闻”和“工具雷达”的投递状态、连接凭证、自动公开与最近记录。"],
   videos: ["视频管理", "输入视频链接后由服务端识别并缓存标题、简介、发布时间和封面，也可上传本地封面。"],
   videoCategories: ["视频分类管理", "维护视频区顶部标签，支持新增、编辑、停用、排序和安全删除。"],
   chat: ["聊天室管理", "编辑、隐藏、删除聊天记录，按隐藏用户标识或网络来源禁言。"],
@@ -145,6 +178,16 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-07-29",
+    title: "工具雷达正式周更已启用",
+    body: "工具雷达首期试稿已确认，固定分类、专用凭证、投递开关与自动公开继续独立管理，正式任务每周二北京时间 22:00 启动。每期先读取永久目录去重，并要求原创说明图随 GitHub main 部署到 Cloudflare Pages、通过远程 SHA-256 校验后再投递；后台脚本版本更新为 20260729-tool-radar-live-r1。"
+  },
+  {
+    date: "2026-07-28",
+    title: "每日 AI 新闻维护说明同步",
+    body: "后台已移除“未创建定时任务”的过时提示，现明确本机任务 ai-7-8 每天北京时间 07:00 启动，并在 08:00 前完成或失败关闭。维护文档同时说明：Horizon 配置已指向本地 Ollama qwen3.6:27b，但当前正式采集入口只执行抓取与去重，不调用原生 AI 评分或富化；7 月 28 日覆盖修订稿的 manifest v1 仅是按固定指纹登记的历史兼容例外，后续正式运行仍必须生成 v2。后台脚本版本更新为 20260728-daily-ai-news-doc-sync-r1。"
+  },
   {
     date: "2026-07-28",
     title: "文章置顶状态持久化修复",
@@ -1287,6 +1330,7 @@ function categoryDisplayName(value) {
     note: "随笔",
     knowledge: "知识库",
     "daily-ai-news": "每日 AI 新闻",
+    "tool-radar": "工具雷达",
     "site-updates": "网站更新",
     update: "更新记录",
     guide: "指南",
@@ -3346,22 +3390,99 @@ function formatClickScreenSize(row) {
     : "设备尺寸未记录";
 }
 
+function automationDefinition(channelKey = state.automationChannelKey) {
+  return AUTOMATION_CHANNEL_DEFINITIONS[channelKey]
+    || AUTOMATION_CHANNEL_DEFINITIONS["daily-ai-news"];
+}
+
+function automationAdminEndpoint(suffix = "") {
+  return `/api/admin/automation/${automationDefinition().key}${suffix}`;
+}
+
+function renderAutomationGuide(definition) {
+  const guide = $("#automation-guide-list");
+  guide.replaceChildren(...definition.guideItems.map((text) => {
+    const item = document.createElement("li");
+    item.textContent = text;
+    return item;
+  }));
+}
+
 async function loadAutomation() {
-  const payload = await api("/api/admin/automation/daily-ai-news");
+  const definition = automationDefinition();
+  const channelKey = definition.key;
+  const generation = state.automationLoadGeneration + 1;
+  state.automationLoadGeneration = generation;
+  state.automationLoading = true;
+  state.automationOneTimeToken = "";
+  renderAutomationPanel();
+  let payload;
+  try {
+    payload = await api(`/api/admin/automation/${channelKey}`);
+  } finally {
+    if (state.automationLoadGeneration === generation) {
+      state.automationLoading = false;
+    }
+  }
+  if (
+    state.automationLoadGeneration !== generation
+    || state.automationChannelKey !== channelKey
+  ) {
+    return;
+  }
   state.automationChannel = payload.channel || null;
   state.automationDeliveries = Array.isArray(payload.deliveries) ? payload.deliveries : [];
-  state.automationOneTimeToken = "";
   renderAutomationPanel();
 }
 
+async function changeAutomationChannel(event) {
+  const select = event.currentTarget;
+  const nextKey = String(select.value || "");
+  if (!AUTOMATION_CHANNEL_DEFINITIONS[nextKey]) {
+    select.value = state.automationChannelKey;
+    return;
+  }
+  if (nextKey === state.automationChannelKey) {
+    return;
+  }
+  state.automationChannelKey = nextKey;
+  state.automationChannel = null;
+  state.automationDeliveries = [];
+  state.automationOneTimeToken = "";
+  setElementText($("#automation-status"), `正在读取${automationDefinition().label}投递设置...`);
+  renderAutomationPanel();
+  try {
+    await loadAutomation();
+    setElementText($("#automation-status"), `${automationDefinition().label}投递设置已读取。`);
+    state.loadedPanels[panelDataKey("automation")] = Date.now();
+  } catch (error) {
+    if (state.automationChannelKey === nextKey) {
+      renderAutomationFailure(`读取${automationDefinition().label}投递设置失败：${error.message}`);
+    }
+  }
+}
+
 function renderAutomationPanel() {
+  const definition = automationDefinition();
   const channel = state.automationChannel;
   const enabled = Boolean(channel?.enabled);
   const autoPublish = Boolean(channel?.autoPublish);
   const tokenConfigured = Boolean(channel?.tokenConfigured);
+  const loading = state.automationLoading;
+  const selector = $("#automation-channel-select");
+  selector.value = definition.key;
+  setElementText($("#automation-channel-heading"), definition.heading);
+  setElementText($("#automation-channel-description"), definition.description);
+  setElementText($("#automation-target-label"), definition.label);
+  setElementText($("#automation-open-articles"), definition.openArticlesLabel);
+  setElementText($("#automation-guide-summary"), definition.guideSummary);
+  renderAutomationGuide(definition);
   const badge = $("#automation-enabled-badge");
-  badge.className = `status-badge ${enabled ? "visible" : "warning"}`;
-  setElementText(badge, enabled ? "投递已启用" : "投递已暂停");
+  badge.className = `status-badge ${loading || !channel ? "neutral" : (enabled ? "visible" : "warning")}`;
+  setElementText(
+    badge,
+    loading ? "读取中" : (!channel ? "待读取" : (enabled ? "投递已启用" : "投递已暂停"))
+  );
   setElementText($("#automation-draft-count"), formatNumber(channel?.draftCount || 0));
   setElementText(
     $("#automation-last-used"),
@@ -3375,7 +3496,7 @@ function renderAutomationPanel() {
   );
   setElementText(
     $("#automation-endpoint"),
-    `${window.location.origin}/api/automation/daily-ai-news`
+    `${window.location.origin}/api/automation/${definition.key}`
   );
   setElementText(
     $("#automation-publish-mode"),
@@ -3400,7 +3521,7 @@ function renderAutomationPanel() {
       ? "暂停后不再接收新稿，已有草稿不受影响"
       : (
           tokenConfigured
-            ? (autoPublish ? "启用后新稿会直接公开" : "启用每日 AI 新闻草稿投递")
+            ? (autoPublish ? "启用后新稿会直接公开" : `启用${definition.label}草稿投递`)
             : "请先生成连接凭证"
         )
   );
@@ -3425,6 +3546,11 @@ function renderAutomationPanel() {
 
   const deliveries = $("#automation-deliveries");
   const rows = state.automationDeliveries;
+  if (loading) {
+    setElementText($("#automation-delivery-count"), "读取中");
+    deliveries.replaceChildren(createEmptyStateElement(`正在读取${definition.label}最近投递...`));
+    return;
+  }
   setElementText($("#automation-delivery-count"), `${formatNumber(rows.length)} 条记录`);
   if (!rows.length) {
     deliveries.replaceChildren(createEmptyStateElement("还没有成功投递的记录。"));
@@ -3442,6 +3568,7 @@ function renderAutomationPanel() {
 }
 
 function renderAutomationFailure(message) {
+  state.automationLoading = false;
   state.automationChannel = null;
   state.automationDeliveries = [];
   state.automationOneTimeToken = "";
@@ -3458,7 +3585,7 @@ function renderAutomationFailure(message) {
 
 function syncAutomationBusyState() {
   const channel = state.automationChannel;
-  const busy = state.automationBusy;
+  const busy = state.automationBusy || state.automationLoading;
   const buttons = [
     $("#automation-toggle"),
     $("#automation-auto-publish"),
@@ -3474,9 +3601,11 @@ function syncAutomationBusyState() {
   $("#automation-auto-publish").disabled = busy || !channel?.tokenConfigured;
   $("#automation-rotate-token").disabled = busy || !channel;
   $("#automation-revoke-token").disabled = busy || !channel?.tokenConfigured;
+  $("#automation-channel-select").disabled = busy;
 }
 
 async function updateAutomationEnabled() {
+  const definition = automationDefinition();
   const channel = state.automationChannel;
   if (!channel || state.automationBusy) {
     return;
@@ -3486,10 +3615,10 @@ async function updateAutomationEnabled() {
   const nextEnabled = !channel.enabled;
   setElementText(
     $("#automation-status"),
-    nextEnabled ? "正在启用投递..." : "正在暂停投递..."
+    nextEnabled ? `正在启用${definition.label}投递...` : `正在暂停${definition.label}投递...`
   );
   try {
-    const payload = await api("/api/admin/automation/daily-ai-news", {
+    const payload = await api(automationAdminEndpoint(), {
       method: "PUT",
       body: JSON.stringify({
         enabled: nextEnabled,
@@ -3517,6 +3646,7 @@ async function updateAutomationEnabled() {
 }
 
 async function updateAutomationAutoPublish() {
+  const definition = automationDefinition();
   const channel = state.automationChannel;
   if (!channel?.tokenConfigured || state.automationBusy) {
     return;
@@ -3524,8 +3654,8 @@ async function updateAutomationAutoPublish() {
   const nextAutoPublish = !channel.autoPublish;
   if (nextAutoPublish) {
     const confirmed = await openConfirmDialog({
-      title: "开启每日 AI 新闻自动公开",
-      object: "每日 AI 新闻投递箱",
+      title: `开启${definition.label}自动公开`,
+      object: definition.heading,
       state: channel.enabled ? "当前投递已启用" : "当前投递已暂停",
       impact: "开启后，只要投递保持启用且凭证有效，后续送达的合格稿件就会直接对外公开，不再停在草稿箱等待检查。",
       recovery: "可以随时关闭自动公开或暂停投递；已经公开的文章需要到文章管理中单独调整。",
@@ -3543,7 +3673,7 @@ async function updateAutomationAutoPublish() {
     nextAutoPublish ? "正在开启自动公开..." : "正在关闭自动公开..."
   );
   try {
-    const payload = await api("/api/admin/automation/daily-ai-news", {
+    const payload = await api(automationAdminEndpoint(), {
       method: "PUT",
       body: JSON.stringify({
         autoPublish: nextAutoPublish,
@@ -3571,6 +3701,7 @@ async function updateAutomationAutoPublish() {
 }
 
 async function rotateAutomationToken() {
+  const definition = automationDefinition();
   const channel = state.automationChannel;
   if (!channel || state.automationBusy) {
     return;
@@ -3578,7 +3709,7 @@ async function rotateAutomationToken() {
   if (channel.tokenConfigured) {
     const confirmed = await openConfirmDialog({
       title: "轮换自动投递凭证",
-      object: "每日 AI 新闻投递箱",
+      object: definition.heading,
       state: channel.enabled ? "当前投递已启用" : "当前投递已暂停",
       impact: "新凭证生成后，旧凭证会立即失效；尚未更新凭证的任务将无法继续投递。",
       recovery: "可以再次生成新凭证，但无法找回旧凭证。",
@@ -3593,7 +3724,7 @@ async function rotateAutomationToken() {
   syncAutomationBusyState();
   setElementText($("#automation-status"), "正在生成连接凭证...");
   try {
-    const payload = await api("/api/admin/automation/daily-ai-news/token", {
+    const payload = await api(automationAdminEndpoint("/token"), {
       method: "POST",
       body: JSON.stringify({ expectedUpdatedAt: channel.updatedAt })
     });
@@ -3616,13 +3747,14 @@ async function rotateAutomationToken() {
 }
 
 async function revokeAutomationToken() {
+  const definition = automationDefinition();
   const channel = state.automationChannel;
   if (!channel?.tokenConfigured || state.automationBusy) {
     return;
   }
   const confirmed = await openConfirmDialog({
     title: "撤销自动投递凭证",
-    object: "每日 AI 新闻投递箱",
+    object: definition.heading,
     state: channel.enabled ? "当前投递已启用" : "当前投递已暂停",
     impact: "凭证会立即失效，投递箱会自动暂停，自动公开也会关闭；已有文章和投递记录不会删除。",
     recovery: "之后可以重新生成新凭证并再次启用。",
@@ -3636,7 +3768,7 @@ async function revokeAutomationToken() {
   syncAutomationBusyState();
   setElementText($("#automation-status"), "正在撤销连接凭证...");
   try {
-    const payload = await api("/api/admin/automation/daily-ai-news/token", {
+    const payload = await api(automationAdminEndpoint("/token"), {
       method: "DELETE",
       body: JSON.stringify({ expectedUpdatedAt: channel.updatedAt })
     });
@@ -3655,12 +3787,13 @@ async function revokeAutomationToken() {
   }
 }
 
-async function openDailyAiNewsArticles() {
+async function openAutomationArticles() {
+  const definition = automationDefinition();
   const switched = await switchPanel("articles", { focusTitle: true });
   if (!switched) {
     return;
   }
-  state.articleFilter = "daily-ai-news";
+  state.articleFilter = definition.key;
   $("#article-list-filter").value = state.articleFilter;
   renderArticleList();
   window.requestAnimationFrame(() => $("#article-list-filter")?.focus());
@@ -7345,7 +7478,8 @@ function bindEvents() {
   $("#automation-auto-publish").addEventListener("click", updateAutomationAutoPublish);
   $("#automation-rotate-token").addEventListener("click", rotateAutomationToken);
   $("#automation-revoke-token").addEventListener("click", revokeAutomationToken);
-  $("#automation-open-articles").addEventListener("click", openDailyAiNewsArticles);
+  $("#automation-channel-select").addEventListener("change", changeAutomationChannel);
+  $("#automation-open-articles").addEventListener("click", openAutomationArticles);
   $("#automation-copy-endpoint").addEventListener("click", (event) => {
     copyAdminText($("#automation-endpoint").textContent, event.currentTarget);
   });

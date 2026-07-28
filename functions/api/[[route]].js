@@ -1,6 +1,6 @@
 import { handleTransferApi } from "./transfer-service.mjs";
 
-export const PUBLIC_API_REPRESENTATION_VERSION = "20260728-knowledge-archive-r1";
+export const PUBLIC_API_REPRESENTATION_VERSION = "20260729-tool-radar-live-r1";
 export const PUBLIC_ARTICLE_ARCHIVE_LIMIT = 500;
 const SESSION_COOKIE = "lusu_session";
 const SESSION_DAYS = 30;
@@ -103,10 +103,35 @@ const SOCIAL_LINKS_STATE_KEY = "about_social_links";
 const AI_AGENT_WORKFLOW_ARTICLE_ID = "seed-ai-agent-workflow-guide-2026-06-14";
 const AI_AGENT_WORKFLOW_PIN_REPAIR_KEY = "article_ai_agent_workflow_pin_repair_v1";
 const AI_AGENT_WORKFLOW_PIN_REPAIR_TIME = "2026-07-28T05:20:00.000Z";
-const DAILY_AI_NEWS_CHANNEL = "daily-ai-news";
-const DAILY_AI_NEWS_CATEGORY = "daily-ai-news";
-const DAILY_AI_NEWS_TOKEN_PREFIX = "lusu_ai_news_";
-const DAILY_AI_NEWS_CHANNEL_CREATED_AT = "2026-07-27T00:00:00.000Z";
+const ARTICLE_DELIVERY_CHANNELS = Object.freeze({
+  "daily-ai-news": Object.freeze({
+    channelKey: "daily-ai-news",
+    category: "daily-ai-news",
+    tokenPrefix: "lusu_ai_news_",
+    createdAt: "2026-07-27T00:00:00.000Z",
+    defaultTags: Object.freeze(["每日AI新闻", "AI"]),
+    disabledMessage: "每日 AI 新闻投递目前已暂停。",
+    bodyTooLargeMessage: "每日 AI 新闻投递内容过大。",
+    ipRateLimitScope: "article-delivery:ip",
+    sourceMaxLength: 80,
+    summaryMaxLength: 500,
+    usesToolCatalog: false
+  }),
+  "tool-radar": Object.freeze({
+    channelKey: "tool-radar",
+    category: "tool-radar",
+    tokenPrefix: "lusu_tool_radar_",
+    createdAt: "2026-07-28T00:00:00.000Z",
+    defaultTags: Object.freeze(["工具雷达", "工具"]),
+    disabledMessage: "工具雷达投递目前已暂停。",
+    bodyTooLargeMessage: "工具雷达投递内容过大。",
+    ipRateLimitScope: "article-delivery:tool-radar:ip",
+    sourceMaxLength: 160,
+    summaryMaxLength: 500,
+    usesToolCatalog: true
+  })
+});
+const TOOL_RADAR_CHANNEL = ARTICLE_DELIVERY_CHANNELS["tool-radar"].channelKey;
 const DEFAULT_VIDEO_CATEGORIES = [
   ["video-cat-vrchat", "vrchat", "VRChat作品", "VRChat Works", "VRChat作品", 10],
   ["video-cat-ai", "ai-experiments", "AI实验", "AI Experiments", "AI実験", 20],
@@ -237,14 +262,22 @@ export async function onRequest(context) {
       await seedArticleTestData(env);
       return await getSitemap(request, env);
     }
-    if (
-      request.method === "POST"
-      && parts[0] === "automation"
-      && parts[1] === DAILY_AI_NEWS_CHANNEL
-      && !parts[2]
-    ) {
-      await ensureArticleDeliveryChannelSchema(env);
-      return await deliverDailyAiNews(request, env);
+    const machineDeliveryChannel = parts[0] === "automation"
+      ? articleDeliveryChannelConfig(parts[1])
+      : null;
+    if (machineDeliveryChannel && !parts[3]) {
+      if (request.method === "POST" && !parts[2]) {
+        await ensureArticleDeliveryChannelSchema(env);
+        return await deliverArticleAutomation(request, env, machineDeliveryChannel);
+      }
+      if (
+        request.method === "GET"
+        && machineDeliveryChannel.channelKey === TOOL_RADAR_CHANNEL
+        && parts[2] === "catalog"
+      ) {
+        await ensureArticleDeliveryChannelSchema(env);
+        return await getToolRadarAutomationCatalog(request, env, machineDeliveryChannel);
+      }
     }
     if (parts[0] === "articles") {
       await ensureArticleSchema(env);
@@ -356,25 +389,23 @@ export async function onRequest(context) {
         return await deleteArticle(request, env, parts[2]);
       }
     }
-    if (
-      parts[0] === "admin"
-      && parts[1] === "automation"
-      && parts[2] === DAILY_AI_NEWS_CHANNEL
-      && !parts[4]
-    ) {
+    const adminDeliveryChannel = parts[0] === "admin" && parts[1] === "automation"
+      ? articleDeliveryChannelConfig(parts[2])
+      : null;
+    if (adminDeliveryChannel && !parts[4]) {
       await ensureArticleSchema(env);
       await ensureArticleDeliverySchema(env);
       if (request.method === "GET" && !parts[3]) {
-        return await getAdminDailyAiNewsAutomation(request, env);
+        return await getAdminArticleAutomation(request, env, adminDeliveryChannel);
       }
       if (request.method === "PUT" && !parts[3]) {
-        return await updateAdminDailyAiNewsAutomation(request, env);
+        return await updateAdminArticleAutomation(request, env, adminDeliveryChannel);
       }
       if (request.method === "POST" && parts[3] === "token") {
-        return await rotateAdminDailyAiNewsToken(request, env);
+        return await rotateAdminArticleAutomationToken(request, env, adminDeliveryChannel);
       }
       if (request.method === "DELETE" && parts[3] === "token") {
-        return await revokeAdminDailyAiNewsToken(request, env);
+        return await revokeAdminArticleAutomationToken(request, env, adminDeliveryChannel);
       }
     }
     if (parts[0] === "admin" && parts[1] === "videos") {
@@ -1738,6 +1769,7 @@ async function createArticle(request, env) {
   await requireAdmin(request, env);
   const body = await readJson(request);
   const article = normalizeArticlePayload(body);
+  assertGenericAdminArticleCategoryMutation(null, article.category, { create: true });
   const now = nowIso();
   const articleId = crypto.randomUUID();
   const publishedAt = article.status === "published" ? (article.published_at || now) : article.published_at;
@@ -1758,6 +1790,22 @@ async function createArticle(request, env) {
   return json({ ok: true, articleId, slug: article.slug }, 201);
 }
 
+function assertGenericAdminArticleCategoryMutation(
+  existingCategory,
+  requestedCategory,
+  { create = false } = {}
+) {
+  const nextCategory = requestedCategory ?? existingCategory;
+  if (create && nextCategory === TOOL_RADAR_CHANNEL) {
+    throw new HttpError("工具雷达文章必须通过专用自动投递接口创建。", 400);
+  }
+  if (!create
+    && existingCategory !== nextCategory
+    && (existingCategory === TOOL_RADAR_CHANNEL || nextCategory === TOOL_RADAR_CHANNEL)) {
+    throw new HttpError("工具雷达文章分类由专用自动投递工作流固定管理，不能在通用文章接口中转换。", 400);
+  }
+}
+
 async function updateArticle(request, env, articleId) {
   await requireAdmin(request, env);
   const body = await readJson(request, MAX_ADMIN_JSON_BYTES, "文章内容过大。");
@@ -1770,6 +1818,7 @@ async function updateArticle(request, env, articleId) {
   if (!existing) {
     return json({ error: "文章不存在。" }, 404);
   }
+  assertGenericAdminArticleCategoryMutation(existing.category, article.category);
   if (existing.updated_at !== expectedUpdatedAt) {
     return contentConflictResponse(existing.updated_at);
   }
@@ -1890,12 +1939,19 @@ async function getAdminArticle(request, env, articleId) {
   });
 }
 
-async function getAdminDailyAiNewsAutomation(request, env) {
-  await requireAdmin(request, env);
-  return json(await dailyAiNewsAdminSnapshot(env));
+function articleDeliveryChannelConfig(channelKey) {
+  const key = String(channelKey || "");
+  return Object.prototype.hasOwnProperty.call(ARTICLE_DELIVERY_CHANNELS, key)
+    ? ARTICLE_DELIVERY_CHANNELS[key]
+    : null;
 }
 
-async function updateAdminDailyAiNewsAutomation(request, env) {
+async function getAdminArticleAutomation(request, env, config) {
+  await requireAdmin(request, env);
+  return json(await articleAutomationAdminSnapshot(env, config));
+}
+
+async function updateAdminArticleAutomation(request, env, config) {
   await requireAdmin(request, env);
   const body = await readJson(request, MAX_ADMIN_JSON_BYTES, "自动投递设置内容过大。");
   const expectedUpdatedAt = expectedUpdatedAtFromBody(body);
@@ -1908,7 +1964,7 @@ async function updateAdminDailyAiNewsAutomation(request, env) {
   if (body.enabled === undefined && body.autoPublish === undefined) {
     throw new HttpError("请提供需要修改的自动投递设置。", 400);
   }
-  const channel = await dailyAiNewsChannelRow(env);
+  const channel = await articleDeliveryChannelRow(env, config);
   if (!channel) {
     throw new HttpError("自动投递通道尚未初始化。", 503);
   }
@@ -1937,24 +1993,24 @@ async function updateAdminDailyAiNewsAutomation(request, env) {
     enabled ? 1 : 0,
     autoPublish ? 1 : 0,
     updatedAt,
-    DAILY_AI_NEWS_CHANNEL,
+    config.channelKey,
     expectedUpdatedAt
   ).run();
   if (Number(result.meta?.changes || 0) !== 1) {
-    const current = await dailyAiNewsChannelRow(env);
+    const current = await articleDeliveryChannelRow(env, config);
     return contentConflictResponse(current?.updated_at || null);
   }
   return json({
     ok: true,
-    channel: await dailyAiNewsAdminChannel(env)
+    channel: await articleAutomationAdminChannel(env, config)
   });
 }
 
-async function rotateAdminDailyAiNewsToken(request, env) {
+async function rotateAdminArticleAutomationToken(request, env, config) {
   await requireAdmin(request, env);
   const body = await readJson(request, MAX_ADMIN_JSON_BYTES, "凭证请求内容过大。");
   const expectedUpdatedAt = expectedUpdatedAtFromBody(body);
-  const channel = await dailyAiNewsChannelRow(env);
+  const channel = await articleDeliveryChannelRow(env, config);
   if (!channel) {
     throw new HttpError("自动投递通道尚未初始化。", 503);
   }
@@ -1962,7 +2018,7 @@ async function rotateAdminDailyAiNewsToken(request, env) {
     return contentConflictResponse(channel.updated_at);
   }
 
-  const token = `${DAILY_AI_NEWS_TOKEN_PREFIX}${randomToken(32)}`;
+  const token = `${config.tokenPrefix}${randomToken(32)}`;
   const tokenHash = await sha256Hex(token);
   const tokenHint = token.slice(-6);
   const tokenCreatedAt = nowIso();
@@ -1979,25 +2035,25 @@ async function rotateAdminDailyAiNewsToken(request, env) {
     tokenHint,
     tokenCreatedAt,
     updatedAt,
-    DAILY_AI_NEWS_CHANNEL,
+    config.channelKey,
     expectedUpdatedAt
   ).run();
   if (Number(result.meta?.changes || 0) !== 1) {
-    const current = await dailyAiNewsChannelRow(env);
+    const current = await articleDeliveryChannelRow(env, config);
     return contentConflictResponse(current?.updated_at || null);
   }
   return json({
     ok: true,
     token,
-    channel: await dailyAiNewsAdminChannel(env)
+    channel: await articleAutomationAdminChannel(env, config)
   });
 }
 
-async function revokeAdminDailyAiNewsToken(request, env) {
+async function revokeAdminArticleAutomationToken(request, env, config) {
   await requireAdmin(request, env);
   const body = await readJson(request, MAX_ADMIN_JSON_BYTES, "凭证请求内容过大。");
   const expectedUpdatedAt = expectedUpdatedAtFromBody(body);
-  const channel = await dailyAiNewsChannelRow(env);
+  const channel = await articleDeliveryChannelRow(env, config);
   if (!channel) {
     throw new HttpError("自动投递通道尚未初始化。", 503);
   }
@@ -2017,22 +2073,22 @@ async function revokeAdminDailyAiNewsToken(request, env) {
     where channel_key = ? and updated_at = ?
   `).bind(
     updatedAt,
-    DAILY_AI_NEWS_CHANNEL,
+    config.channelKey,
     expectedUpdatedAt
   ).run();
   if (Number(result.meta?.changes || 0) !== 1) {
-    const current = await dailyAiNewsChannelRow(env);
+    const current = await articleDeliveryChannelRow(env, config);
     return contentConflictResponse(current?.updated_at || null);
   }
   return json({
     ok: true,
-    channel: await dailyAiNewsAdminChannel(env)
+    channel: await articleAutomationAdminChannel(env, config)
   });
 }
 
-async function dailyAiNewsAdminSnapshot(env) {
+async function articleAutomationAdminSnapshot(env, config) {
   const [channel, deliveryResult] = await Promise.all([
-    dailyAiNewsAdminChannel(env),
+    articleAutomationAdminChannel(env, config),
     env.DB.prepare(`
       select
         event_id,
@@ -2048,7 +2104,7 @@ async function dailyAiNewsAdminSnapshot(env) {
       where article_delivery_events.channel_key = ?
       order by article_delivery_events.created_at desc, article_delivery_events.event_id desc
       limit 20
-    `).bind(DAILY_AI_NEWS_CHANNEL).all()
+    `).bind(config.channelKey).all()
   ]);
   return {
     channel,
@@ -2064,8 +2120,8 @@ async function dailyAiNewsAdminSnapshot(env) {
   };
 }
 
-async function dailyAiNewsAdminChannel(env) {
-  const channel = await dailyAiNewsChannelRow(env);
+async function articleAutomationAdminChannel(env, config) {
+  const channel = await articleDeliveryChannelRow(env, config);
   if (!channel) {
     throw new HttpError("自动投递通道尚未初始化。", 503);
   }
@@ -2073,10 +2129,10 @@ async function dailyAiNewsAdminChannel(env) {
     select count(*) as count
     from articles
     where category = ? and status = 'draft'
-  `).bind(DAILY_AI_NEWS_CATEGORY).first();
+  `).bind(config.category).first();
   return {
-    channelKey: DAILY_AI_NEWS_CHANNEL,
-    category: DAILY_AI_NEWS_CATEGORY,
+    channelKey: config.channelKey,
+    category: config.category,
     enabled: Number(channel.enabled || 0) === 1,
     autoPublish: Number(channel.auto_publish || 0) === 1,
     tokenConfigured: Boolean(channel.token_hash),
@@ -2088,7 +2144,7 @@ async function dailyAiNewsAdminChannel(env) {
   };
 }
 
-async function dailyAiNewsChannelRow(env) {
+async function articleDeliveryChannelRow(env, config) {
   return env.DB.prepare(`
     select
       channel_key,
@@ -2104,23 +2160,23 @@ async function dailyAiNewsChannelRow(env) {
     from article_delivery_channels
     where channel_key = ?
     limit 1
-  `).bind(DAILY_AI_NEWS_CHANNEL).first();
+  `).bind(config.channelKey).first();
 }
 
-async function deliverDailyAiNews(request, env) {
+async function authorizeArticleAutomationRequest(request, env, config) {
   const ipInfo = await requestIpInfo(request, env, "analytics");
   const ipLimit = await consumeRateLimit(
     env,
-    await rateLimitBucketKey("article-delivery:ip", ipInfo.ipHash),
+    await rateLimitBucketKey(config.ipRateLimitScope, ipInfo.ipHash),
     ARTICLE_DELIVERY_RATE_LIMITS.ip
   );
   if (!ipLimit.allowed) {
-    return rateLimitedResponse(ipLimit.retryAfterSeconds);
+    return { response: rateLimitedResponse(ipLimit.retryAfterSeconds) };
   }
 
-  const token = readDailyAiNewsBearerToken(request);
+  const token = readArticleAutomationBearerToken(request, config);
   const tokenHash = token ? await sha256Hex(token) : "";
-  const channel = await dailyAiNewsChannelRow(env);
+  const channel = await articleDeliveryChannelRow(env, config);
   const validToken = Boolean(
     channel?.token_hash
     && tokenHash
@@ -2130,13 +2186,13 @@ async function deliverDailyAiNews(request, env) {
     )
   );
   if (!validToken) {
-    return articleDeliveryUnauthorizedResponse();
+    return { response: articleDeliveryUnauthorizedResponse(config) };
   }
   if (Number(channel.enabled || 0) !== 1) {
-    return json({
-      error: "每日 AI 新闻投递目前已暂停。",
+    return { response: json({
+      error: config.disabledMessage,
       code: "AUTOMATION_DISABLED"
-    }, 409);
+    }, 409) };
   }
 
   const channelLimit = await consumeRateLimit(
@@ -2145,21 +2201,36 @@ async function deliverDailyAiNews(request, env) {
     ARTICLE_DELIVERY_RATE_LIMITS.channel
   );
   if (!channelLimit.allowed) {
-    return rateLimitedResponse(channelLimit.retryAfterSeconds);
+    return { response: rateLimitedResponse(channelLimit.retryAfterSeconds) };
   }
+  return { channel };
+}
 
+async function deliverArticleAutomation(request, env, config) {
+  const authorization = await authorizeArticleAutomationRequest(request, env, config);
+  if (authorization.response) {
+    return authorization.response;
+  }
+  const channel = authorization.channel;
   await ensureArticleSchema(env);
   await ensureArticleDeliverySchema(env);
   const body = await readJson(
     request,
     MAX_ARTICLE_DELIVERY_JSON_BYTES,
-    "每日 AI 新闻投递内容过大。"
+    config.bodyTooLargeMessage
   );
-  const delivery = normalizeDailyAiNewsDeliveryPayload(request, body);
-  const payloadHash = await dailyAiNewsDeliveryPayloadHash(delivery);
-  const duplicate = await findDailyAiNewsDelivery(env, delivery.idempotencyKey);
+  const delivery = normalizeArticleAutomationPayload(request, body, config);
+  const payloadHash = await articleAutomationPayloadHash(delivery, config);
+  const duplicate = await findArticleAutomationDelivery(env, config, delivery.idempotencyKey);
   if (duplicate) {
-    return dailyAiNewsReplayResponse(duplicate, payloadHash);
+    return articleAutomationReplayResponse(duplicate, payloadHash, config);
+  }
+
+  if (config.usesToolCatalog) {
+    const featuredTools = await findToolRadarCatalogConflicts(env, delivery.tools);
+    if (featuredTools.length) {
+      return toolRadarCatalogConflictResponse(featuredTools);
+    }
   }
 
   const slugConflict = await env.DB.prepare(
@@ -2187,7 +2258,7 @@ async function deliverDailyAiNews(request, env) {
       `).bind(
         articleId,
         delivery.article.slug,
-        DAILY_AI_NEWS_CATEGORY,
+        config.category,
         JSON.stringify(delivery.article.tags),
         status,
         now,
@@ -2202,7 +2273,7 @@ async function deliverDailyAiNews(request, env) {
         ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `).bind(
         eventId,
-        DAILY_AI_NEWS_CHANNEL,
+        config.channelKey,
         delivery.idempotencyKey,
         payloadHash,
         articleId,
@@ -2216,13 +2287,14 @@ async function deliverDailyAiNews(request, env) {
         update article_delivery_channels
         set last_used_at = ?
         where channel_key = ?
-      `).bind(now, DAILY_AI_NEWS_CHANNEL)
+      `).bind(now, config.channelKey),
+      ...toolRadarCatalogInsertStatements(env, config, delivery.tools, articleId, now)
     ]);
   } catch (error) {
     if (isUniqueConstraintError(error)) {
-      const repeated = await findDailyAiNewsDelivery(env, delivery.idempotencyKey);
+      const repeated = await findArticleAutomationDelivery(env, config, delivery.idempotencyKey);
       if (repeated) {
-        return dailyAiNewsReplayResponse(repeated, payloadHash);
+        return articleAutomationReplayResponse(repeated, payloadHash, config);
       }
       const conflictingArticle = await env.DB.prepare(
         "select article_id from articles where slug = ? limit 1"
@@ -2233,6 +2305,12 @@ async function deliverDailyAiNews(request, env) {
           code: "ARTICLE_SLUG_CONFLICT"
         }, 409);
       }
+      if (config.usesToolCatalog) {
+        const featuredTools = await findToolRadarCatalogConflicts(env, delivery.tools);
+        if (featuredTools.length) {
+          return toolRadarCatalogConflictResponse(featuredTools);
+        }
+      }
     }
     throw error;
   }
@@ -2242,12 +2320,12 @@ async function deliverDailyAiNews(request, env) {
     duplicate: false,
     articleId,
     slug: delivery.article.slug,
-    category: DAILY_AI_NEWS_CATEGORY,
+    category: config.category,
     status
   }, 201);
 }
 
-function normalizeDailyAiNewsDeliveryPayload(request, body) {
+function normalizeArticleAutomationPayload(request, body, config) {
   if (!body || typeof body !== "object" || Array.isArray(body)) {
     throw new HttpError("投递内容格式不正确。", 400);
   }
@@ -2256,8 +2334,11 @@ function normalizeDailyAiNewsDeliveryPayload(request, body) {
     "category",
     "status",
     "is_pinned",
+    "pinned",
     "published_at",
-    "cover_image"
+    "published",
+    "cover_image",
+    "cover_image_url"
   ].filter((field) => Object.prototype.hasOwnProperty.call(body, field));
   if (forbiddenFields.length) {
     throw new HttpError("投递目标和发布状态由网站固定管理，请移除相关字段。", 400);
@@ -2273,33 +2354,46 @@ function normalizeDailyAiNewsDeliveryPayload(request, body) {
     throw new HttpError("请提供 8 至 120 位的唯一投递标记。", 400);
   }
 
-  const tags = normalizeTags([
-    "每日AI新闻",
-    "AI",
+  const tagValues = [
+    ...config.defaultTags,
     ...(Array.isArray(body.tags) ? body.tags : [])
-  ]);
+  ];
+  const tags = config.usesToolCatalog
+    ? normalizeTags(tagValues, { maxItems: 16, maxLength: 48, dedupe: true })
+    : normalizeTags(tagValues);
   const article = normalizeArticlePayload({
     slug: body.slug,
-    category: DAILY_AI_NEWS_CATEGORY,
+    category: config.category,
     tags,
     cover_image: "",
     status: "draft",
     is_pinned: false,
     translations: body.translations
+  }, {
+    summaryMaxLength: config.summaryMaxLength
   });
-  article.category = DAILY_AI_NEWS_CATEGORY;
+  article.category = config.category;
   article.cover_image = "";
   article.status = "draft";
   article.is_pinned = 0;
   article.published_at = null;
-  return {
+  const delivery = {
     idempotencyKey,
-    source: normalizeOptionalText(body.source, 80) || "Codex",
+    source: normalizeOptionalText(body.source, config.sourceMaxLength) || "Codex",
     article
   };
+  if (config.usesToolCatalog) {
+    delivery.tools = normalizeToolRadarTools(body.tools);
+    for (const lang of ["zh", "en", "ja"]) {
+      if (!delivery.article.translations[lang].summary) {
+        throw new HttpError("工具雷达投递需要同时提供 zh / en / ja 三种语言摘要。", 400);
+      }
+    }
+  }
+  return delivery;
 }
 
-async function findDailyAiNewsDelivery(env, idempotencyKey) {
+async function findArticleAutomationDelivery(env, config, idempotencyKey) {
   return env.DB.prepare(`
     select
       article_delivery_events.article_id,
@@ -2313,10 +2407,10 @@ async function findDailyAiNewsDelivery(env, idempotencyKey) {
     where article_delivery_events.channel_key = ?
       and article_delivery_events.idempotency_key = ?
     limit 1
-  `).bind(DAILY_AI_NEWS_CHANNEL, idempotencyKey).first();
+  `).bind(config.channelKey, idempotencyKey).first();
 }
 
-function dailyAiNewsReplayResponse(row, payloadHash) {
+function articleAutomationReplayResponse(row, payloadHash, config) {
   if (Number(row.article_exists || 0) !== 1 || !row.article_id) {
     return json({
       error: "原投递对应的草稿已不存在，请使用新的唯一投递标记。",
@@ -2329,21 +2423,21 @@ function dailyAiNewsReplayResponse(row, payloadHash) {
       code: "IDEMPOTENCY_CONFLICT"
     }, 409);
   }
-  return json(dailyAiNewsDeliveryResponse(row, true));
+  return json(articleAutomationDeliveryResponse(row, true, config));
 }
 
-function dailyAiNewsDeliveryResponse(row, duplicate) {
+function articleAutomationDeliveryResponse(row, duplicate, config) {
   return {
     ok: true,
     duplicate: Boolean(duplicate),
     articleId: row.article_id || "",
     slug: row.slug,
-    category: DAILY_AI_NEWS_CATEGORY,
+    category: config.category,
     status: row.status || "draft"
   };
 }
 
-async function dailyAiNewsDeliveryPayloadHash(delivery) {
+async function articleAutomationPayloadHash(delivery, config) {
   const translations = {};
   for (const lang of ["zh", "en", "ja"]) {
     const item = delivery.article.translations[lang];
@@ -2353,12 +2447,170 @@ async function dailyAiNewsDeliveryPayloadHash(delivery) {
       content_markdown: item.content_markdown
     };
   }
-  return sha256Hex(JSON.stringify({
+  const payload = {
     slug: delivery.article.slug,
     tags: [...delivery.article.tags].sort(),
     source: delivery.source,
     translations
-  }));
+  };
+  if (config.usesToolCatalog) {
+    payload.tools = delivery.tools.map((tool) => ({
+      toolKey: tool.toolKey,
+      canonicalUrl: tool.canonicalUrl,
+      name: tool.name
+    }));
+  }
+  return sha256Hex(JSON.stringify(payload));
+}
+
+function normalizeToolRadarTools(value) {
+  if (!Array.isArray(value) || value.length < 3 || value.length > 10) {
+    throw new HttpError("工具雷达投递需要提供 3 至 10 个 tools 条目。", 400);
+  }
+  const toolKeys = new Set();
+  const canonicalUrls = new Set();
+  const tools = value.map((item) => {
+    if (!item || typeof item !== "object" || Array.isArray(item)) {
+      throw new HttpError("工具目录条目格式不正确。", 400);
+    }
+    const toolKey = normalizeRequiredText(
+      item.toolKey ?? item.tool_key,
+      180,
+      "工具目录条目需要 toolKey。"
+    ).toLowerCase();
+    if (!/^[a-z0-9.-]+\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(toolKey)) {
+      throw new HttpError("toolKey 需要使用 <规范官网域名>/<产品标识> 格式。", 400);
+    }
+    const canonicalUrl = normalizeToolRadarCanonicalUrl(
+      item.canonicalUrl ?? item.canonical_url,
+      toolKey
+    );
+    const name = normalizeRequiredText(item.name, 120, "工具名称不能为空。");
+    if (toolKeys.has(toolKey) || canonicalUrls.has(canonicalUrl)) {
+      throw new HttpError("同一次工具雷达投递不能重复提交相同工具或规范网址。", 400);
+    }
+    toolKeys.add(toolKey);
+    canonicalUrls.add(canonicalUrl);
+    return { toolKey, canonicalUrl, name };
+  });
+  return tools.sort((left, right) => left.toolKey.localeCompare(right.toolKey, "en"));
+}
+
+function normalizeToolRadarCanonicalUrl(value, toolKey) {
+  const raw = normalizeRequiredText(value, 500, "工具目录条目需要 canonicalUrl。");
+  let url;
+  try {
+    url = new URL(raw);
+  } catch {
+    throw new HttpError("工具规范网址格式不正确。", 400);
+  }
+  if (url.protocol !== "https:" || url.username || url.password) {
+    throw new HttpError("工具规范网址必须是无账号信息的 HTTPS 地址。", 400);
+  }
+  if (url.hash || url.search) {
+    throw new HttpError("工具规范网址不能包含查询参数或 hash。", 400);
+  }
+  url.hostname = url.hostname.toLowerCase().replace(/^www\./, "");
+  if (toolKey.split("/")[0] !== url.hostname) {
+    throw new HttpError("toolKey 的官网域名必须与 canonicalUrl 一致。", 400);
+  }
+  url.pathname = url.pathname.replace(/\/{2,}/g, "/");
+  if (url.pathname !== "/") {
+    url.pathname = url.pathname.replace(/\/+$/, "");
+  }
+  return url.toString();
+}
+
+async function findToolRadarCatalogConflicts(env, tools) {
+  if (!Array.isArray(tools) || !tools.length) {
+    return [];
+  }
+  const placeholders = tools.map(() => "?").join(", ");
+  const result = await env.DB.prepare(`
+    select tool_key, canonical_url, name, article_id, created_at
+    from tool_radar_catalog
+    where tool_key in (${placeholders})
+       or canonical_url in (${placeholders})
+    order by created_at desc, tool_key asc
+  `).bind(
+    ...tools.map((tool) => tool.toolKey),
+    ...tools.map((tool) => tool.canonicalUrl)
+  ).all();
+  return result.results || [];
+}
+
+function toolRadarCatalogConflictResponse(rows) {
+  return json({
+    error: "本次投递包含已经介绍过的工具，请移除后使用新的唯一投递标记重试。",
+    code: "TOOL_RADAR_TOOL_ALREADY_FEATURED",
+    tools: rows.map(publicToolRadarCatalogRow)
+  }, 409);
+}
+
+function publicToolRadarCatalogRow(row) {
+  const item = {
+    toolKey: row.tool_key,
+    canonicalUrl: row.canonical_url,
+    name: row.name,
+    articleId: row.article_id || "",
+    createdAt: row.created_at
+  };
+  if (row.article_slug) {
+    item.articleSlug = row.article_slug;
+  }
+  if (row.first_published_at) {
+    item.firstPublishedAt = row.first_published_at;
+  }
+  return item;
+}
+
+function toolRadarCatalogInsertStatements(env, config, tools, articleId, now) {
+  if (!config.usesToolCatalog) {
+    return [];
+  }
+  return tools.map((tool) => env.DB.prepare(`
+    insert into tool_radar_catalog (
+      tool_key, canonical_url, name, article_id, created_at
+    ) values (?, ?, ?, ?, ?)
+  `).bind(
+    tool.toolKey,
+    tool.canonicalUrl,
+    tool.name,
+    articleId,
+    now
+  ));
+}
+
+async function getToolRadarAutomationCatalog(request, env, config) {
+  const authorization = await authorizeArticleAutomationRequest(request, env, config);
+  if (authorization.response) {
+    return authorization.response;
+  }
+  await ensureArticleSchema(env);
+  await ensureArticleDeliverySchema(env);
+  const maxRows = 5000;
+  const result = await env.DB.prepare(`
+    select
+      tool_radar_catalog.tool_key,
+      tool_radar_catalog.canonical_url,
+      tool_radar_catalog.name,
+      tool_radar_catalog.article_id,
+      tool_radar_catalog.created_at,
+      articles.slug as article_slug,
+      articles.published_at as first_published_at
+    from tool_radar_catalog
+    left join articles on articles.article_id = tool_radar_catalog.article_id
+    order by tool_radar_catalog.created_at desc, tool_radar_catalog.tool_key asc
+    limit ?
+  `).bind(maxRows + 1).all();
+  const rows = result.results || [];
+  return json({
+    ok: true,
+    channel: config.channelKey,
+    category: config.category,
+    truncated: rows.length > maxRows,
+    tools: rows.slice(0, maxRows).map(publicToolRadarCatalogRow)
+  });
 }
 
 function sameSha256Hash(left, right) {
@@ -2373,24 +2625,26 @@ function sameSha256Hash(left, right) {
   );
 }
 
-function readDailyAiNewsBearerToken(request) {
+function readArticleAutomationBearerToken(request, config) {
   const authorization = String(request.headers.get("Authorization") || "").trim();
   const match = authorization.match(/^Bearer\s+([^\s]+)$/i);
   if (!match || match[1].length > 180) {
     return "";
   }
   const token = match[1];
-  return new RegExp(`^${DAILY_AI_NEWS_TOKEN_PREFIX}[a-zA-Z0-9_-]{32,128}$`).test(token)
-    ? token
-    : "";
+  if (!token.startsWith(config.tokenPrefix)) {
+    return "";
+  }
+  const secret = token.slice(config.tokenPrefix.length);
+  return /^[a-zA-Z0-9_-]{32,128}$/.test(secret) ? token : "";
 }
 
-function articleDeliveryUnauthorizedResponse() {
+function articleDeliveryUnauthorizedResponse(config) {
   const response = json({
     error: "自动投递凭证无效。",
     code: "AUTOMATION_UNAUTHORIZED"
   }, 401);
-  response.headers.set("WWW-Authenticate", 'Bearer realm="daily-ai-news"');
+  response.headers.set("WWW-Authenticate", `Bearer realm="${config.channelKey}"`);
   return response;
 }
 
@@ -3840,18 +4094,20 @@ async function ensureArticleDeliveryChannelSchema(env) {
   await ensureTableColumns(env, "article_delivery_channels", [
     ["auto_publish", "integer not null default 0"]
   ]);
-  await env.DB.prepare(`
-    insert into article_delivery_channels (
-      channel_key, category, enabled, auto_publish, token_hash, token_hint,
-      token_created_at, last_used_at, created_at, updated_at
-    ) values (?, ?, 0, 0, '', '', null, null, ?, ?)
-    on conflict(channel_key) do nothing
-  `).bind(
-    DAILY_AI_NEWS_CHANNEL,
-    DAILY_AI_NEWS_CATEGORY,
-    DAILY_AI_NEWS_CHANNEL_CREATED_AT,
-    DAILY_AI_NEWS_CHANNEL_CREATED_AT
-  ).run();
+  for (const config of Object.values(ARTICLE_DELIVERY_CHANNELS)) {
+    await env.DB.prepare(`
+      insert into article_delivery_channels (
+        channel_key, category, enabled, auto_publish, token_hash, token_hint,
+        token_created_at, last_used_at, created_at, updated_at
+      ) values (?, ?, 0, 0, '', '', null, null, ?, ?)
+      on conflict(channel_key) do nothing
+    `).bind(
+      config.channelKey,
+      config.category,
+      config.createdAt,
+      config.createdAt
+    ).run();
+  }
   articleDeliveryChannelSchemaReady = true;
 }
 
@@ -3879,6 +4135,19 @@ async function ensureArticleDeliverySchema(env) {
     env.DB.prepare(`
       create index if not exists article_delivery_events_channel_created_idx
         on article_delivery_events(channel_key, created_at desc)
+    `),
+    env.DB.prepare(`
+      create table if not exists tool_radar_catalog (
+        tool_key text primary key,
+        canonical_url text not null unique,
+        name text not null,
+        article_id text references articles(article_id) on delete set null,
+        created_at text not null
+      )
+    `),
+    env.DB.prepare(`
+      create index if not exists tool_radar_catalog_created_idx
+        on tool_radar_catalog(created_at desc, tool_key)
     `)
   ]);
   await ensureTableColumns(env, "article_delivery_events", [
@@ -5603,12 +5872,14 @@ function normalizeArticlePayload(body, options = {}) {
     article.published_at = normalizeOptionalDateTime(body.published_at);
   }
   if (!partial || body.translations !== undefined) {
-    article.translations = normalizeArticleTranslations(body.translations, partial);
+    article.translations = normalizeArticleTranslations(body.translations, partial, {
+      summaryMaxLength: options.summaryMaxLength
+    });
   }
   return article;
 }
 
-function normalizeArticleTranslations(value, partial = false) {
+function normalizeArticleTranslations(value, partial = false, options = {}) {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     if (partial) {
       return undefined;
@@ -5628,7 +5899,7 @@ function normalizeArticleTranslations(value, partial = false) {
     const title = normalizeRequiredText(item.title, 180, `${lang} 标题不能为空。`);
     translations[lang] = {
       title,
-      summary: normalizeOptionalText(item.summary, 500),
+      summary: normalizeOptionalText(item.summary, options.summaryMaxLength || 500),
       content_markdown: normalizeRequiredText(item.content_markdown, 200000, `${lang} 正文不能为空。`)
     };
   });
@@ -5817,6 +6088,47 @@ const DAILY_AI_NEWS_2026_07_27_READER_PATCH = Object.freeze({
 function articleSeedStatements(env) {
   // Seed timestamps must be UTC ISO strings; the UI converts them to each visitor's local time.
   return [
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-29-tool-radar-live',
+        '2026-07-29-tool-radar-live',
+        'site-updates',
+        '["网站更新","工具雷达","知识库","自动化","多语言"]',
+        '', 'published', 0, 0,
+        '2026-07-28T16:45:00.000Z',
+        '2026-07-28T16:45:00.000Z',
+        '2026-07-28T16:45:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-07-29-tool-radar-live", {
+      zh: {
+        title: "工具雷达正式上线并开启周更",
+        summary: "知识库“工具雷达”正式上线，首期 7 工具三语文章已发布；独立去重、原创说明图与每周二 22:00 自动任务同步启用。",
+        content_markdown: "# 工具雷达正式上线并开启周更\n\n知识库新增固定分类“工具雷达”，并发布首期 7 个工具的中文、英文和日文完整文章。它面向不熟悉设计、动效、开发或部署术语的普通读者，重点讲清每个工具是什么、能做什么、能省下哪些步骤、怎么开始以及需要注意的限制。\n\n## 首期内容\n\n- 首期沿一条真实工作线介绍 60fps、Mobbin、ChatCut、Remotion、Repomix、Context7 与 Pinokio，从找参考、做视频、补代码上下文与最新文档，一直走到本地 AI 环境。\n- 每个工具都有收费、登录、中文支持、本地部署与 AI 接入的紧凑上手信息，不把文章排成冷冰冰的参数表。\n- 每项穿插一张基于已核实事实制作的本站原创说明图；图片不复制产品界面，先随站点部署，再由投递器核对线上 SHA-256 后公开正文。\n\n## 每周自动更新\n\n- 本机 Codex 任务固定在每周二北京时间 22:00 启动，广泛发现近期热门、实用、有趣或新奇的工具，并生成三语文章。\n- 每期目标介绍 6–10 个达到质量门槛的新工具，少于 3 个时不发布，也不会为了数量加入低价值内容。\n- 同类工具可以在不同周继续介绍，但同一个产品只收录一次。服务端目录阻止相同工具键和官网 URL；改名、换域名或被收购的候选还要人工核对历史名称和别名。\n\n## 发布安全\n\n工具事实优先回到官方网站、官方文档、价格页和可靠案例核对。专用投递通道、凭证与自动公开互相独立；运行记录、图片、三语结构、永久去重或线上回读任一失败，本期都会停止，不发布半成品。"
+      },
+      en: {
+        title: "Tool Radar Is Live with Weekly Publishing",
+        summary: "Tool Radar is live in Knowledge with a trilingual first edition covering seven tools; independent deduplication, original explanatory visuals, and the Tuesday 22:00 automation are active.",
+        content_markdown: "# Tool Radar Is Live with Weekly Publishing\n\nKnowledge now has a permanent Tool Radar category and a complete first edition in Chinese, English, and Japanese covering seven tools. It is written for readers who may not know the vocabulary of design, motion, development, or deployment, so each section explains what a tool is, what it can do, which work it removes, how to begin, and what limits matter.\n\n## The first edition\n\n- The first issue follows one practical workflow through 60fps, Mobbin, ChatCut, Remotion, Repomix, Context7, and Pinokio: find references, make video, supply repository context and current documentation, then get local AI running.\n- Each tool includes compact pricing, sign-in, Chinese support, local deployment, and AI setup details without turning the article into a cold specification sheet.\n- Every entry uses one original explanatory visual based on verified facts. These visuals do not copy product interfaces; they are deployed with the site first, and the delivery client checks their production SHA-256 before publishing the article.\n\n## Weekly automation\n\n- A local Codex task starts every Tuesday at 22:00 Beijing time, searches broadly for useful, interesting, unusual, or recently discussed tools, and produces all three language editions.\n- Each issue targets 6–10 worthwhile tools, publishes nothing with fewer than three, and never fills space with low-value entries.\n- Similar tools may appear in different weeks, but the same product is covered once. The server blocks matching tool keys and canonical URLs, while suspected renames, domain moves, or acquisitions also require a manual historical-name and alias review.\n\n## Publishing safeguards\n\nClaims are checked against official product pages, documentation, pricing, and reliable examples. The dedicated channel, credential, and automatic-publishing switch remain independent; any failure in the run record, visuals, trilingual structure, permanent deduplication, or public readback closes the issue without publishing a partial article."
+      },
+      ja: {
+        title: "ツールレーダーを公開し、週次更新を開始",
+        summary: "知識庫の「ツールレーダー」を正式公開し、7ツールの初回3言語記事を掲載しました。独立重複防止、オリジナル説明図、毎週火曜22時の自動タスクも有効です。",
+        content_markdown: "# ツールレーダーを公開し、週次更新を開始\n\n知識庫に固定分類「ツールレーダー」を追加し、7つのツールを扱う初回記事を中国語・英語・日本語で公開しました。デザイン、モーション、開発、導入の専門用語を知らない読者にも、各ツールが何か、何ができるか、どの手間を省けるか、どこから始めるか、どの制約に注意するかが分かる構成です。\n\n## 初回の記事\n\n- 60fps、Mobbin、ChatCut、Remotion、Repomix、Context7、Pinokio を、参考探し、動画制作、リポジトリ文脈と最新文書の補完、ローカル AI の起動という一つの作業順で紹介します。\n- 各ツールには、料金、ログイン、中国語対応、ローカル導入、AI 接続の情報を短くまとめ、冷たい仕様表にはしていません。\n- 各項目に、確認済みの事実を基に制作したサイト独自の説明図を1枚掲載します。製品画面は複製せず、画像を先にサイトへ配備し、配信前に本番上の SHA-256 を照合します。\n\n## 毎週の自動更新\n\n- ローカル Codex タスクは毎週火曜日の北京時間22時に開始し、便利、実用的、面白い、珍しい、または最近注目されたツールを広く探して3言語の記事を作成します。\n- 1回につき質を満たす6～10件を目安にし、3件未満なら公開せず、件数合わせの低価値な項目も追加しません。\n- 同分野の別製品は別の週に紹介できますが、同一製品は一度だけです。同じツールキーと公式 URL はサーバーが拒否し、改名、ドメイン移転、買収が疑われる候補は旧名称と別名も人手で確認します。\n\n## 公開時の安全策\n\n内容は公式製品ページ、文書、料金、信頼できる事例へ戻って確認します。専用チャンネル、認証情報、自動公開は独立したままです。実行記録、画像、3言語構造、恒久的な重複防止、公開後の読み戻しのどれかが失敗した場合、その回は途中の記事を公開せず停止します。"
+      }
+    }, "2026-07-28T16:45:00.000Z"),
     env.DB.prepare(`
       insert into articles (
         article_id, slug, category, tags, cover_image, status, is_pinned,
@@ -11936,15 +12248,19 @@ function isMaskedIpv6Prefix(value) {
   return Boolean(match);
 }
 
-function normalizeTags(value) {
+function normalizeTags(value, options = {}) {
   if (!Array.isArray(value)) {
     return [];
   }
-  return value
+  const normalized = value
     .map((tag) => String(tag || "").trim())
-    .filter(Boolean)
-    .slice(0, 12)
-    .map((tag) => Array.from(tag).slice(0, 40).join(""));
+    .filter(Boolean);
+  const tags = options.dedupe ? [...new Set(normalized)] : normalized;
+  const maxItems = Number.isFinite(options.maxItems) ? options.maxItems : 12;
+  const maxLength = Number.isFinite(options.maxLength) ? options.maxLength : 40;
+  return tags
+    .slice(0, maxItems)
+    .map((tag) => Array.from(tag).slice(0, maxLength).join(""));
 }
 
 function clampLimit(value, max) {

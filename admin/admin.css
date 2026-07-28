@@ -4546,6 +4546,35 @@ textarea::placeholder {
   grid-column: 1 / -1;
 }
 
+.automation-channel-picker {
+  display: grid;
+  grid-template-columns: auto minmax(240px, 420px);
+  align-items: center;
+  gap: 6px 12px;
+  margin: 0 0 16px;
+  padding: 12px;
+  color: #26344c;
+  background: #f4f7fb;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+}
+
+.automation-channel-picker > span {
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.automation-channel-picker > select {
+  min-width: 0;
+}
+
+.automation-channel-picker > small {
+  grid-column: 2;
+  color: #667085;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
 .automation-facts {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -4667,6 +4696,18 @@ textarea::placeholder {
 }
 
 @media (max-width: 560px) {
+  .automation-channel-picker {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .automation-channel-picker > small {
+    grid-column: auto;
+  }
+
+  .automation-channel-picker > select {
+    min-height: 44px;
+  }
+
   .automation-facts,
   .automation-endpoint-row {
     grid-template-columns: minmax(0, 1fr);

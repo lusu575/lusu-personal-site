@@ -37,16 +37,30 @@ test("main admin navigation exposes transfer file governance without publishing 
   assert.match(transferJs, /row\.uploader_email \|\| row\.uploader_user_id/);
 });
 
-test("admin exposes protected Daily AI News delivery and explicit auto-publish controls", () => {
+test("admin safely switches independent Daily AI News and Tool Radar delivery controls", () => {
   const html = read("admin/index.html");
   const source = read("admin/admin.js");
   const styles = read("admin/admin.css");
 
   assert.match(html, /data-panel="automation"[^>]*aria-controls="automation-panel"[^>]*>自动投递</);
   assert.match(html, /id="automation-panel" hidden aria-hidden="true"/);
+  assert.match(html, /id="automation-channel-select"/);
+  assert.match(html, /value="daily-ai-news">每日 AI 新闻 · 每日 07:00/);
+  assert.match(html, /value="tool-radar">工具雷达 · 计划每周二 22:00/);
   assert.match(html, /每日 AI 新闻投递箱/);
   assert.match(html, /自动公开默认关闭/);
+  assert.match(html, /本机定时任务 ai-7-8 已启用，每日 07:00 开始/);
+  assert.match(html, /时区：Asia\/Shanghai；每个栏目的开关、自动公开和凭证彼此独立/);
+  assert.match(html, /admin\.css\?v=20260729-tool-radar-live-r1/);
+  assert.match(html, /admin\.js\?v=20260729-tool-radar-live-r1/);
+  assert.doesNotMatch(html, /本轮只准备入口，不创建定时任务/);
   for (const id of [
+    "automation-channel-select",
+    "automation-channel-heading",
+    "automation-channel-description",
+    "automation-target-label",
+    "automation-guide-summary",
+    "automation-guide-list",
     "automation-toggle",
     "automation-auto-publish",
     "automation-rotate-token",
@@ -57,13 +71,23 @@ test("admin exposes protected Daily AI News delivery and explicit auto-publish c
     assert.ok(html.includes(`id="${id}"`), `missing #${id}`);
   }
 
-  assert.match(source, /\/api\/admin\/automation\/daily-ai-news/);
+  assert.match(source, /automationChannelKey:\s*"daily-ai-news"/);
+  assert.match(source, /"daily-ai-news":\s*\{[\s\S]*schedule:\s*"每日 07:00（Asia\/Shanghai）"/);
+  assert.match(source, /"tool-radar":\s*\{[\s\S]*schedule:\s*"每周二 22:00（Asia\/Shanghai）"/);
+  assert.match(source, /api\(`\/api\/admin\/automation\/\$\{channelKey\}`\)/);
+  assert.match(source, /automationAdminEndpoint\("\/token"\)/);
+  assert.match(source, /async function changeAutomationChannel\(event\)/);
+  assert.match(source, /state\.automationChannelKey\s*=\s*nextKey/);
   assert.match(source, /state\.automationOneTimeToken\s*=\s*payload\.token/);
   assert.match(source, /state\.automationOneTimeToken\s*=\s*""/);
+  assert.match(source, /state\.articleFilter\s*=\s*definition\.key/);
   assert.match(source, /async function updateAutomationAutoPublish\(\)/);
   assert.match(source, /autoPublish:\s*nextAutoPublish/);
+  assert.match(source, /object:\s*definition\.heading/);
   assert.match(source, /createEventItemElement\(/);
   assert.doesNotMatch(source, /automation[\s\S]{0,200}innerHTML/);
+  assert.match(styles, /\.automation-channel-picker\s*\{/);
   assert.match(styles, /\.automation-secret\[hidden\]\s*\{[^}]*display:\s*none !important/);
+  assert.match(styles, /@media \(max-width:\s*560px\)[\s\S]*\.automation-channel-picker > select[\s\S]*min-height:\s*44px/);
   assert.match(styles, /@media \(max-width:\s*560px\)[\s\S]*\.automation-actions \.xp-button[\s\S]*min-height:\s*44px/);
 });

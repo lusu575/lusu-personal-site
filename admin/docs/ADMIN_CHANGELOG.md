@@ -2,8 +2,17 @@
 
 > 管理后台专用说明：本文档只记录 `/admin/` 管理后台的私有维护记录，不等同于主站根目录 `CHANGELOG.md`。后台私有更新不写入主站知识库 `site-updates`，也不展示到首页最近更新。
 
+## 2026-07-29
+
+- 工具雷达首期试稿已经站长确认，正式任务固定为每周二北京时间 22:00；自动投递页不再显示“待试稿确认”，并继续分别展示 `tool-radar` 专用通道的凭证、启用、auto-publish 与历史。
+- 生产投递必须先读取已认证 `tool_radar_catalog`，按永久 `tool_key` 与 canonical 官网 URL 去重；原创说明图须先随 GitHub `main` 经 Cloudflare Pages 部署，并在投递前通过线上可读取性与远程 SHA-256 校验。
+- 通道启用和 auto-publish 仍是两个独立显式闸门；只有两项都开启时才自动公开，暂停通道、关闭 auto-publish、撤销凭证或任一校验失败都关闭本期公开路径。后台 CSS／JS query 统一更新为 `20260729-tool-radar-live-r1`。
+
 ## 2026-07-28
 
+- 自动投递页新增 `daily-ai-news`／`tool-radar` 通道选择器，按所选通道动态显示计划、固定分类、机器地址、凭证、启用／auto-publish 状态与投递历史；切换时清除一次性明文令牌。后端新增默认暂停且 auto-publish 关闭的工具雷达通道、Bearer 目录读取和 `tool_radar_catalog` 精确工具键／官网 URL 去重，`tools[]` 目录登记与三语文章／事件原子写入；疑似跨域改名由工作流在投递前人工核对历史名称与别名。后台 JS query 更新为 `20260728-tool-radar-weekly-r1`。
+- 收口工具雷达接口说明：机器投递按各自专用通道固定创建 `daily-ai-news` 或 `tool-radar` 分类，不再误写成只能创建每日新闻；本地令牌校验与服务端统一接受 32–128 位 secret。首期试稿保持本地不可投递状态，未开启后台通道或 auto-publish。
+- 收口自动投递页和后台维护说明：当前引导明确本机 Codex 任务 `ai-7-8` 已启用并每天 07:00 开始，不再显示“本轮不创建定时任务”的过时状态；文档同步区分“配置已指向本地 Ollama `qwen3.6:27b`”与“正式入口尚未调用 Horizon 原生 AI 评分／富化”，并将 7 月 28 日 coverage revision 的 manifest v1 限定为按固定指纹登记的唯一历史兼容例外，后续运行必须使用 manifest v2 与完整 `priorityReview`。页面内 `adminUpdates` 已同步，后台 JS query 更新为 `20260728-daily-ai-news-doc-sync-r1`；API、权限、D1、生产通道与令牌均未改变。
 - 修复种子文章置顶状态被冷启动覆盖：`seed-ai-agent-workflow-guide-2026-06-14` 的文章元数据改为仅在全新数据库首次插入，不再通过运行时 upsert 重写后台保存的 `is_pinned` 和 `updated_at`。
 - 新增 `site_runtime_state.article_ai_agent_workflow_pin_repair_v1` 一次性修复标记，首次部署后把“从提问到上线：普通人如何用 AI Agent 放大执行力”恢复为未置顶；标记写入后，管理员后续重新置顶或取消置顶都由后台保存结果决定。
 - 后台页面 `adminUpdates` 已同步，主脚本 query 更新为 `20260728-admin-article-pin-persistence-r1`；公开阅读器变化另按主站规则发布三语网站更新。

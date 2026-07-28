@@ -2,7 +2,14 @@ const articleImageDimensionMap = Object.freeze({
   "assets/images/articles/ai-agent-codex-project-brief.png": Object.freeze({ width: 1910, height: 1226 }),
   "assets/images/articles/ai-agent-codex-update-thread.png": Object.freeze({ width: 1910, height: 1226 }),
   "assets/images/articles/ai-agent-gpt-chatroom-prompt.png": Object.freeze({ width: 1745, height: 1465 }),
-  "assets/images/articles/ai-agent-gpt-project-context.png": Object.freeze({ width: 1539, height: 1349 })
+  "assets/images/articles/ai-agent-gpt-project-context.png": Object.freeze({ width: 1539, height: 1349 }),
+  "assets/images/articles/tool-radar/2026-07-28/60fps-explainer.png": Object.freeze({ width: 1200, height: 675 }),
+  "assets/images/articles/tool-radar/2026-07-28/mobbin-explainer.png": Object.freeze({ width: 1200, height: 675 }),
+  "assets/images/articles/tool-radar/2026-07-28/chatcut-explainer.png": Object.freeze({ width: 1200, height: 675 }),
+  "assets/images/articles/tool-radar/2026-07-28/remotion-explainer.png": Object.freeze({ width: 1200, height: 675 }),
+  "assets/images/articles/tool-radar/2026-07-28/repomix-explainer.png": Object.freeze({ width: 1200, height: 675 }),
+  "assets/images/articles/tool-radar/2026-07-28/context7-explainer.png": Object.freeze({ width: 1200, height: 675 }),
+  "assets/images/articles/tool-radar/2026-07-28/pinokio-explainer.png": Object.freeze({ width: 1200, height: 675 })
 });
 
 export const PUBLIC_ARTICLE_ARCHIVE_LIMIT = 500;
@@ -120,11 +127,20 @@ export function knowledgeCategoryValues(items, {
       ...(Array.isArray(items) ? items : []).map((item) => item?.category)
     ].filter(Boolean))
   ];
+  const priorityCategories = [
+    ...new Set([firstCategory, ...fixedCategories].filter(Boolean))
+  ];
   return categories.sort((left, right) => {
-    if (left === firstCategory) return -1;
-    if (right === firstCategory) return 1;
+    if (left === right) return 0;
     if (left === lastCategory) return 1;
     if (right === lastCategory) return -1;
+    const leftPriority = priorityCategories.indexOf(left);
+    const rightPriority = priorityCategories.indexOf(right);
+    if (leftPriority !== rightPriority) {
+      if (leftPriority === -1) return 1;
+      if (rightPriority === -1) return -1;
+      return leftPriority - rightPriority;
+    }
     return labelFor(left).localeCompare(labelFor(right));
   });
 }
@@ -134,6 +150,7 @@ export function createKnowledgeRoute({
   activeFilters,
   siteUpdateCategory,
   dailyAiNewsCategory,
+  toolRadarCategory,
   getCurrentLang,
   t,
   boundedHistoryScrollTop,
@@ -232,7 +249,7 @@ export function createKnowledgeRoute({
     const layout = document.querySelector("#knowledge .folder-layout");
     const searchBar = document.getElementById("knowledge-searchbar");
     const categories = knowledgeCategoryValues(articleState.articles, {
-      fixedCategories: [dailyAiNewsCategory],
+      fixedCategories: [dailyAiNewsCategory, toolRadarCategory],
       firstCategory: dailyAiNewsCategory,
       lastCategory: siteUpdateCategory,
       labelFor: articleCategoryName
@@ -290,16 +307,24 @@ export function createKnowledgeRoute({
     );
     const items = categoryItems.filter(articleMatchesSearch);
     renderKnowledgeSearchControls(items.length, categoryItems.length);
-    if (!articleState.articles.length) {
-      renderListMessage(list, t("articleEmpty"));
-      return;
-    }
     if (!items.length) {
+      const hasSearchTerm = Boolean(String(articleState.searchTerm || "").trim());
       if (
         activeFilters.knowledge === dailyAiNewsCategory
-        && !String(articleState.searchTerm || "").trim()
+        && !hasSearchTerm
       ) {
         renderListMessage(list, t("dailyAiNewsEmpty"));
+        return;
+      }
+      if (
+        activeFilters.knowledge === toolRadarCategory
+        && !hasSearchTerm
+      ) {
+        renderListMessage(list, t("toolRadarEmpty"));
+        return;
+      }
+      if (!articleState.articles.length) {
+        renderListMessage(list, t("articleEmpty"));
         return;
       }
       renderListMessage(list, t("articleSearchNoResults"), {
@@ -1425,11 +1450,17 @@ export function createKnowledgeRoute({
 
       const image = line.trim().match(/^!\[([^\]]*)\]\(([^)\s]+)\)$/);
       if (image) {
-        const figure = renderArticleFigure(image[1], image[2]);
+        let captionIndex = index + 1;
+        while (captionIndex < lines.length && !lines[captionIndex].trim()) {
+          captionIndex += 1;
+        }
+        const explicitCaption = lines[captionIndex]?.trim()
+          .match(/^\*([^*\r\n]+)\*$/)?.[1] || "";
+        const figure = renderArticleFigure(image[1], image[2], explicitCaption);
         if (figure) {
           target.appendChild(figure);
         }
-        index += 1;
+        index = explicitCaption ? captionIndex + 1 : index + 1;
         continue;
       }
 
@@ -1516,7 +1547,7 @@ export function createKnowledgeRoute({
     return "";
   }
 
-  function renderArticleFigure(alt, src) {
+  function renderArticleFigure(alt, src, explicitCaption = "") {
     const safeSrc = safeArticleImageSrc(src);
     if (!safeSrc) {
       return null;
@@ -1525,7 +1556,7 @@ export function createKnowledgeRoute({
     figure.className = "article-figure";
     const image = document.createElement("img");
     image.src = sitePath(safeSrc);
-    image.alt = "";
+    image.alt = explicitCaption ? String(alt || "") : "";
     image.loading = "lazy";
     image.decoding = "async";
     const dimensions = articleImageDimensions(safeSrc);
@@ -1534,9 +1565,10 @@ export function createKnowledgeRoute({
       image.height = dimensions.height;
     }
     figure.appendChild(image);
-    if (alt) {
+    const visibleCaption = explicitCaption || alt;
+    if (visibleCaption) {
       const caption = document.createElement("figcaption");
-      caption.textContent = alt;
+      caption.textContent = visibleCaption;
       figure.appendChild(caption);
     }
     return figure;

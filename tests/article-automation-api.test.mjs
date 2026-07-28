@@ -517,6 +517,576 @@ test("Daily AI News automation defaults to drafts and can explicitly auto-publis
   }
 });
 
+test("Tool Radar automation isolates credentials, enforces a permanent tool catalog, and can auto-publish", async () => {
+  const moduleUrl = new URL("../functions/api/[[route]].js", import.meta.url);
+  moduleUrl.searchParams.set("tool-radar", `${Date.now()}-${Math.random()}`);
+  const { onRequest } = await import(moduleUrl.href);
+  const DB = new D1Database();
+
+  try {
+    const initialized = await invoke(onRequest, DB, request("/api/health"));
+    assert.equal(initialized.status, 200, await initialized.clone().text());
+
+    const anonymousCatalog = await invoke(onRequest, DB, request(
+      "/api/automation/tool-radar/catalog",
+      { token: "lusu_tool_radar_invalid-credential-that-will-not-match" }
+    ));
+    assert.equal(anonymousCatalog.status, 401);
+    assert.equal((await anonymousCatalog.json()).code, "AUTOMATION_UNAUTHORIZED");
+    assert.equal(
+      DB.sqlite.prepare(`
+        select count(*) as count from sqlite_master
+        where type = 'table' and name in ('articles', 'tool_radar_catalog')
+      `).get().count,
+      0,
+      "unauthenticated catalog reads must not initialize article data"
+    );
+
+    DB.sqlite.prepare(`
+      insert into users (id, email, password_hash, role, created_at, updated_at)
+      values (?, 'tool-radar-admin@example.test', '', 'admin', ?, ?)
+    `).run(ADMIN_ID, INITIAL_TIME, INITIAL_TIME);
+    DB.sqlite.prepare(`
+      insert into sessions (token_hash, user_id, created_at, expires_at)
+      values (?, ?, ?, ?)
+    `).run(await sha256Hex(SESSION_TOKEN), ADMIN_ID, INITIAL_TIME, FUTURE_EXPIRY);
+
+    const initialResponse = await invoke(
+      onRequest,
+      DB,
+      request("/api/admin/automation/tool-radar", { admin: true })
+    );
+    assert.equal(initialResponse.status, 200, await initialResponse.clone().text());
+    const initial = await initialResponse.json();
+    assert.deepEqual(
+      {
+        channelKey: initial.channel.channelKey,
+        category: initial.channel.category,
+        enabled: initial.channel.enabled,
+        autoPublish: initial.channel.autoPublish,
+        tokenConfigured: initial.channel.tokenConfigured,
+        draftCount: initial.channel.draftCount
+      },
+      {
+        channelKey: "tool-radar",
+        category: "tool-radar",
+        enabled: false,
+        autoPublish: false,
+        tokenConfigured: false,
+        draftCount: 0
+      }
+    );
+    assert.deepEqual(initial.deliveries, []);
+
+    const forbiddenGenericCreate = await invoke(onRequest, DB, request(
+      "/api/admin/articles",
+      {
+        method: "POST",
+        admin: true,
+        body: {
+          slug: "manual-tool-radar-article",
+          category: "tool-radar",
+          tags: [],
+          cover_image: "",
+          status: "draft",
+          is_pinned: false,
+          translations: translations("manual tool radar")
+        }
+      }
+    ));
+    assert.equal(forbiddenGenericCreate.status, 400);
+    assert.match((await forbiddenGenericCreate.json()).error, /专用自动投递接口创建/);
+
+    const genericArticleResponse = await invoke(onRequest, DB, request(
+      "/api/admin/articles",
+      {
+        method: "POST",
+        admin: true,
+        body: {
+          slug: "generic-note-for-category-guard",
+          category: "note",
+          tags: [],
+          cover_image: "",
+          status: "draft",
+          is_pinned: false,
+          published_at: null,
+          translations: translations("generic note")
+        }
+      }
+    ));
+    assert.equal(genericArticleResponse.status, 201, await genericArticleResponse.clone().text());
+    const genericArticle = await genericArticleResponse.json();
+    const genericUpdatedAt = DB.sqlite.prepare(
+      "select updated_at from articles where article_id = ?"
+    ).get(genericArticle.articleId).updated_at;
+    const forbiddenTransitionIntoToolRadar = await invoke(onRequest, DB, request(
+      `/api/admin/articles/${genericArticle.articleId}`,
+      {
+        method: "PUT",
+        admin: true,
+        body: {
+          expectedUpdatedAt: genericUpdatedAt,
+          category: "tool-radar"
+        }
+      }
+    ));
+    assert.equal(forbiddenTransitionIntoToolRadar.status, 400);
+    assert.match(
+      (await forbiddenTransitionIntoToolRadar.json()).error,
+      /不能在通用文章接口中转换/
+    );
+
+    const toolTokenResponse = await invoke(onRequest, DB, request(
+      "/api/admin/automation/tool-radar/token",
+      {
+        method: "POST",
+        admin: true,
+        body: { expectedUpdatedAt: initial.channel.updatedAt }
+      }
+    ));
+    assert.equal(toolTokenResponse.status, 200, await toolTokenResponse.clone().text());
+    const toolCredential = await toolTokenResponse.json();
+    assert.match(toolCredential.token, /^lusu_tool_radar_[a-zA-Z0-9_-]{32,128}$/);
+
+    const pausedCatalogResponse = await invoke(onRequest, DB, request(
+      "/api/automation/tool-radar/catalog",
+      { token: toolCredential.token }
+    ));
+    assert.equal(pausedCatalogResponse.status, 409);
+    assert.equal((await pausedCatalogResponse.json()).code, "AUTOMATION_DISABLED");
+
+    const dailyInitialResponse = await invoke(
+      onRequest,
+      DB,
+      request("/api/admin/automation/daily-ai-news", { admin: true })
+    );
+    const dailyInitial = await dailyInitialResponse.json();
+    const dailyTokenResponse = await invoke(onRequest, DB, request(
+      "/api/admin/automation/daily-ai-news/token",
+      {
+        method: "POST",
+        admin: true,
+        body: { expectedUpdatedAt: dailyInitial.channel.updatedAt }
+      }
+    ));
+    const dailyCredential = await dailyTokenResponse.json();
+    assert.match(dailyCredential.token, /^lusu_ai_news_[a-zA-Z0-9_-]{32,128}$/);
+    assert.notEqual(toolCredential.token, dailyCredential.token);
+    assert.notEqual(
+      DB.sqlite.prepare(`
+        select token_hash from article_delivery_channels where channel_key = 'tool-radar'
+      `).get().token_hash,
+      DB.sqlite.prepare(`
+        select token_hash from article_delivery_channels where channel_key = 'daily-ai-news'
+      `).get().token_hash
+    );
+
+    const wrongChannelToken = await invoke(onRequest, DB, request(
+      "/api/automation/tool-radar/catalog",
+      { token: dailyCredential.token }
+    ));
+    assert.equal(wrongChannelToken.status, 401);
+    assert.equal((await wrongChannelToken.json()).code, "AUTOMATION_UNAUTHORIZED");
+    assert.equal(
+      wrongChannelToken.headers.get("WWW-Authenticate"),
+      'Bearer realm="tool-radar"'
+    );
+
+    const enabledResponse = await invoke(onRequest, DB, request(
+      "/api/admin/automation/tool-radar",
+      {
+        method: "PUT",
+        admin: true,
+        body: {
+          enabled: true,
+          expectedUpdatedAt: toolCredential.channel.updatedAt
+        }
+      }
+    ));
+    assert.equal(enabledResponse.status, 200, await enabledResponse.clone().text());
+    const enabled = await enabledResponse.json();
+    assert.equal(enabled.channel.enabled, true);
+    assert.equal(enabled.channel.autoPublish, false);
+
+    const emptyCatalogResponse = await invoke(onRequest, DB, request(
+      "/api/automation/tool-radar/catalog",
+      { token: toolCredential.token }
+    ));
+    assert.equal(emptyCatalogResponse.status, 200, await emptyCatalogResponse.clone().text());
+    assert.deepEqual(await emptyCatalogResponse.json(), {
+      ok: true,
+      channel: "tool-radar",
+      category: "tool-radar",
+      truncated: false,
+      tools: []
+    });
+
+    const missingToolsResponse = await invoke(onRequest, DB, request(
+      "/api/automation/tool-radar",
+      {
+        method: "POST",
+        token: toolCredential.token,
+        body: {
+          idempotencyKey: "tool-radar-missing-tools",
+          slug: "tool-radar-missing-tools",
+          tools: [
+            {
+              toolKey: "small.example.test/one",
+              canonicalUrl: "https://small.example.test/one",
+              name: "Only One"
+            },
+            {
+              toolKey: "small.example.test/two",
+              canonicalUrl: "https://small.example.test/two",
+              name: "Only Two"
+            }
+          ],
+          translations: translations("missing tools")
+        }
+      }
+    ));
+    assert.equal(missingToolsResponse.status, 400);
+    assert.match((await missingToolsResponse.json()).error, /3 至 10/);
+
+    const rejectedOverridesResponse = await invoke(onRequest, DB, request(
+      "/api/automation/tool-radar",
+      {
+        method: "POST",
+        token: toolCredential.token,
+        body: {
+          idempotencyKey: "tool-radar-override-attempt",
+          slug: "tool-radar-override-attempt",
+          category: "site-updates",
+          status: "published",
+          pinned: true,
+          published: true,
+          cover_image_url: "https://attacker.example/cover.png",
+          translations: translations("override attempt")
+        }
+      }
+    ));
+    assert.equal(rejectedOverridesResponse.status, 400);
+    assert.match((await rejectedOverridesResponse.json()).error, /网站固定管理/);
+
+    const draftBody = {
+      idempotencyKey: "tool-radar-weekly-draft-2026-07-28",
+      slug: "tool-radar-weekly-draft-2026-07-28",
+      tags: ["设计参考"],
+      source: "Codex weekly tool radar",
+      tools: [
+        {
+          toolKey: "EXAMPLE.COM/MOTION-PRIMITIVES",
+          canonicalUrl: "https://www.example.com/tools/motion/",
+          name: "Motion Primitives"
+        },
+        {
+          toolKey: "github.com/remotion-helper",
+          canonicalUrl: "https://github.com/example/remotion-helper/",
+          name: "Remotion Helper"
+        },
+        {
+          toolKey: "design.example.test/style-library",
+          canonicalUrl: "https://design.example.test/style-library",
+          name: "Style Library"
+        }
+      ],
+      translations: translations("tool radar draft")
+    };
+    const tooLongSummaryBody = structuredClone(draftBody);
+    tooLongSummaryBody.idempotencyKey = "tool-radar-summary-over-limit";
+    tooLongSummaryBody.slug = "tool-radar-summary-over-limit";
+    tooLongSummaryBody.translations.zh.summary = "摘".repeat(501);
+    const tooLongSummaryResponse = await invoke(onRequest, DB, request(
+      "/api/automation/tool-radar",
+      { method: "POST", token: toolCredential.token, body: tooLongSummaryBody }
+    ));
+    assert.equal(tooLongSummaryResponse.status, 400);
+    assert.match((await tooLongSummaryResponse.json()).error, /最多 500 个字符/);
+    DB.sqlite.prepare("delete from api_rate_limits").run();
+
+    const deliveredResponse = await invoke(onRequest, DB, request(
+      "/api/automation/tool-radar",
+      { method: "POST", token: toolCredential.token, body: draftBody }
+    ));
+    assert.equal(deliveredResponse.status, 201, await deliveredResponse.clone().text());
+    const delivered = await deliveredResponse.json();
+    assert.equal(delivered.category, "tool-radar");
+    assert.equal(delivered.status, "draft");
+    const storedDraft = DB.sqlite.prepare(`
+      select category, tags, status, is_pinned, cover_image, published_at
+      from articles where article_id = ?
+    `).get(delivered.articleId);
+    assert.equal(storedDraft.category, "tool-radar");
+    assert.deepEqual(JSON.parse(storedDraft.tags), ["工具雷达", "工具", "设计参考"]);
+    assert.equal(storedDraft.status, "draft");
+    assert.equal(storedDraft.is_pinned, 0);
+    assert.equal(storedDraft.cover_image, "");
+    assert.equal(storedDraft.published_at, null);
+
+    const toolRadarUpdatedAt = DB.sqlite.prepare(
+      "select updated_at from articles where article_id = ?"
+    ).get(delivered.articleId).updated_at;
+    const sameCategoryEditResponse = await invoke(onRequest, DB, request(
+      `/api/admin/articles/${delivered.articleId}`,
+      {
+        method: "PUT",
+        admin: true,
+        body: {
+          expectedUpdatedAt: toolRadarUpdatedAt,
+          category: "tool-radar"
+        }
+      }
+    ));
+    assert.equal(
+      sameCategoryEditResponse.status,
+      200,
+      await sameCategoryEditResponse.clone().text()
+    );
+    const sameCategoryEdit = await sameCategoryEditResponse.json();
+    const forbiddenTransitionOutOfToolRadar = await invoke(onRequest, DB, request(
+      `/api/admin/articles/${delivered.articleId}`,
+      {
+        method: "PUT",
+        admin: true,
+        body: {
+          expectedUpdatedAt: sameCategoryEdit.updatedAt,
+          category: "note"
+        }
+      }
+    ));
+    assert.equal(forbiddenTransitionOutOfToolRadar.status, 400);
+    assert.match(
+      (await forbiddenTransitionOutOfToolRadar.json()).error,
+      /不能在通用文章接口中转换/
+    );
+
+    const repeatedResponse = await invoke(onRequest, DB, request(
+      "/api/automation/tool-radar",
+      { method: "POST", token: toolCredential.token, body: draftBody }
+    ));
+    assert.equal(repeatedResponse.status, 200, await repeatedResponse.clone().text());
+    assert.equal((await repeatedResponse.json()).duplicate, true);
+    assert.equal(
+      DB.sqlite.prepare(`
+        select count(*) as count from tool_radar_catalog where article_id = ?
+      `).get(delivered.articleId).count,
+      3
+    );
+
+    const duplicateToolResponse = await invoke(onRequest, DB, request(
+      "/api/automation/tool-radar",
+      {
+        method: "POST",
+        token: toolCredential.token,
+        body: {
+          idempotencyKey: "tool-radar-duplicate-new-key",
+          slug: "tool-radar-duplicate-new-key",
+          tools: [
+            {
+              toolKey: "example.com/motion-primitives-renamed",
+              canonicalUrl: "https://example.com/tools/motion",
+              name: "Motion Primitives Again"
+            },
+            {
+              toolKey: "new.example.test/new-one",
+              canonicalUrl: "https://new.example.test/new-one",
+              name: "New Tool One"
+            },
+            {
+              toolKey: "new.example.test/new-two",
+              canonicalUrl: "https://new.example.test/new-two",
+              name: "New Tool Two"
+            }
+          ],
+          translations: translations("duplicate")
+        }
+      }
+    ));
+    assert.equal(duplicateToolResponse.status, 409);
+    const duplicateTool = await duplicateToolResponse.json();
+    assert.equal(duplicateTool.code, "TOOL_RADAR_TOOL_ALREADY_FEATURED");
+    assert.equal(duplicateTool.tools[0].toolKey, "example.com/motion-primitives");
+
+    const catalogResponse = await invoke(onRequest, DB, request(
+      "/api/automation/tool-radar/catalog",
+      { token: toolCredential.token }
+    ));
+    assert.equal(catalogResponse.status, 200, await catalogResponse.clone().text());
+    const catalog = await catalogResponse.json();
+    assert.equal(catalog.tools.length, 3);
+    assert.deepEqual(
+      catalog.tools.find((tool) => tool.toolKey === "example.com/motion-primitives"),
+      {
+        toolKey: "example.com/motion-primitives",
+        canonicalUrl: "https://example.com/tools/motion",
+        name: "Motion Primitives",
+        articleId: delivered.articleId,
+        articleSlug: draftBody.slug,
+        createdAt: catalog.tools.find((tool) => (
+          tool.toolKey === "example.com/motion-primitives"
+        )).createdAt
+      }
+    );
+
+    const snapshotResponse = await invoke(
+      onRequest,
+      DB,
+      request("/api/admin/automation/tool-radar", { admin: true })
+    );
+    const snapshot = await snapshotResponse.json();
+    assert.equal(snapshot.channel.draftCount, 1);
+    assert.equal(snapshot.deliveries.length, 1);
+    assert.equal(snapshot.deliveries[0].slug, draftBody.slug);
+    const dailySnapshotResponse = await invoke(
+      onRequest,
+      DB,
+      request("/api/admin/automation/daily-ai-news", { admin: true })
+    );
+    const dailySnapshot = await dailySnapshotResponse.json();
+    assert.equal(dailySnapshot.channel.tokenConfigured, true);
+    assert.equal(dailySnapshot.channel.draftCount, 0);
+    assert.deepEqual(dailySnapshot.deliveries, []);
+
+    const autoPublishResponse = await invoke(onRequest, DB, request(
+      "/api/admin/automation/tool-radar",
+      {
+        method: "PUT",
+        admin: true,
+        body: {
+          autoPublish: true,
+          expectedUpdatedAt: snapshot.channel.updatedAt
+        }
+      }
+    ));
+    const autoPublish = await autoPublishResponse.json();
+    assert.equal(autoPublish.channel.enabled, true);
+    assert.equal(autoPublish.channel.autoPublish, true);
+
+    const publishedTranslations = translations("tool radar published");
+    for (const lang of ["zh", "en", "ja"]) {
+      publishedTranslations[lang].summary = "s".repeat(500);
+    }
+    const publishedBody = {
+      idempotencyKey: "tool-radar-weekly-published-2026-08-04",
+      slug: "tool-radar-weekly-published-2026-08-04",
+      source: "Tool Radar weekly verification with official product sources and reproducible checks",
+      tags: ["工具雷达", "每周精选"],
+      tools: [
+        {
+          toolKey: "tools.example.test/local-ai-launcher",
+          canonicalUrl: "https://tools.example.test/local-ai-launcher",
+          name: "Local AI Launcher"
+        },
+        {
+          toolKey: "video.example.test/cut-code",
+          canonicalUrl: "https://video.example.test/cut-code",
+          name: "Cut Code"
+        },
+        {
+          toolKey: "ux.example.test/motion-atlas",
+          canonicalUrl: "https://ux.example.test/motion-atlas",
+          name: "Motion Atlas"
+        }
+      ],
+      translations: publishedTranslations
+    };
+    const publishedResponse = await invoke(onRequest, DB, request(
+      "/api/automation/tool-radar",
+      { method: "POST", token: toolCredential.token, body: publishedBody }
+    ));
+    assert.equal(publishedResponse.status, 201, await publishedResponse.clone().text());
+    const published = await publishedResponse.json();
+    assert.equal(published.status, "published");
+    assert.ok(Number.isFinite(Date.parse(
+      DB.sqlite.prepare("select published_at from articles where article_id = ?")
+        .get(published.articleId).published_at
+    )));
+
+    DB.sqlite.prepare("delete from articles where article_id = ?").run(delivered.articleId);
+    const catalogAfterDeleteResponse = await invoke(onRequest, DB, request(
+      "/api/automation/tool-radar/catalog",
+      { token: toolCredential.token }
+    ));
+    const catalogAfterDelete = await catalogAfterDeleteResponse.json();
+    assert.equal(
+      catalogAfterDelete.tools.find((tool) => (
+        tool.toolKey === "example.com/motion-primitives"
+      )).articleId,
+      ""
+    );
+    const publishedCatalogItem = catalogAfterDelete.tools.find((tool) => (
+      tool.toolKey === "tools.example.test/local-ai-launcher"
+    ));
+    assert.equal(publishedCatalogItem.articleSlug, publishedBody.slug);
+    assert.ok(Number.isFinite(Date.parse(publishedCatalogItem.firstPublishedAt)));
+
+    const permanentDuplicateResponse = await invoke(onRequest, DB, request(
+      "/api/automation/tool-radar",
+      {
+        method: "POST",
+        token: toolCredential.token,
+        body: {
+          idempotencyKey: "tool-radar-permanent-duplicate",
+          slug: "tool-radar-permanent-duplicate",
+          tools: [
+            {
+              toolKey: "example.com/motion-primitives",
+              canonicalUrl: "https://example.com/tools/motion",
+              name: "Motion Primitives"
+            },
+            {
+              toolKey: "new.example.test/new-one",
+              canonicalUrl: "https://new.example.test/new-one",
+              name: "New Tool One"
+            },
+            {
+              toolKey: "new.example.test/new-two",
+              canonicalUrl: "https://new.example.test/new-two",
+              name: "New Tool Two"
+            }
+          ],
+          translations: translations("permanent duplicate")
+        }
+      }
+    ));
+    assert.equal(permanentDuplicateResponse.status, 409);
+    assert.equal(
+      (await permanentDuplicateResponse.json()).code,
+      "TOOL_RADAR_TOOL_ALREADY_FEATURED"
+    );
+
+    const latestSnapshotResponse = await invoke(
+      onRequest,
+      DB,
+      request("/api/admin/automation/tool-radar", { admin: true })
+    );
+    const latestSnapshot = await latestSnapshotResponse.json();
+    const revokedResponse = await invoke(onRequest, DB, request(
+      "/api/admin/automation/tool-radar/token",
+      {
+        method: "DELETE",
+        admin: true,
+        body: { expectedUpdatedAt: latestSnapshot.channel.updatedAt }
+      }
+    ));
+    const revoked = await revokedResponse.json();
+    assert.equal(revoked.channel.enabled, false);
+    assert.equal(revoked.channel.autoPublish, false);
+    assert.equal(revoked.channel.tokenConfigured, false);
+    assert.equal(
+      DB.sqlite.prepare(`
+        select count(*) as count
+        from article_delivery_channels
+        where channel_key = 'daily-ai-news' and token_hash <> ''
+      `).get().count,
+      1,
+      "revoking Tool Radar must not revoke the Daily AI News credential"
+    );
+  } finally {
+    DB.close();
+  }
+});
+
 test("Daily AI News runtime schema adds auto_publish before seeding a legacy channel table", async () => {
   const moduleUrl = new URL("../functions/api/[[route]].js", import.meta.url);
   moduleUrl.searchParams.set("daily-ai-news-legacy", `${Date.now()}-${Math.random()}`);
@@ -576,6 +1146,19 @@ test("Daily AI News runtime schema adds auto_publish before seeding a legacy cha
         "select auto_publish from article_delivery_channels where channel_key = 'daily-ai-news'"
       ).get().auto_publish,
       0
+    );
+    assert.deepEqual(
+      { ...DB.sqlite.prepare(`
+        select channel_key, category, enabled, auto_publish, token_hash
+        from article_delivery_channels where channel_key = 'tool-radar'
+      `).get() },
+      {
+        channel_key: "tool-radar",
+        category: "tool-radar",
+        enabled: 0,
+        auto_publish: 0,
+        token_hash: ""
+      }
     );
   } finally {
     DB.close();

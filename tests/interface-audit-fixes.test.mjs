@@ -34,8 +34,8 @@ test("public modal fixes preserve readable depth and compact failed-video geomet
   );
 });
 
-test("the knowledge archive visibility fix is the newest five-item trilingual projection everywhere", async () => {
-  const updateId = "seed-update-2026-07-28-knowledge-archive-visibility";
+test("Tool Radar is the newest five-item trilingual projection everywhere", async () => {
+  const updateId = "seed-update-2026-07-29-tool-radar-live";
   const [{ content }, { homeContent }] = await Promise.all([
     import("../js/data/content.mjs"),
     import("../js/data/home-content.mjs")
@@ -61,10 +61,10 @@ test("the knowledge archive visibility fix is the newest five-item trilingual pr
   }
 });
 
-test("knowledge archive assets use a fresh cache version without invalidating unrelated public assets", () => {
+test("Tool Radar public modules use a fresh cache version without invalidating unrelated public assets", () => {
   const stableVersion = "20260726-security-reliability-r1";
-  const dailyAiNewsVersion = "20260728-daily-ai-news-coverage-r1";
   const knowledgeReaderVersion = "20260728-knowledge-archive-r1";
+  const toolRadarVersion = "20260729-tool-radar-live-r1";
   const index = read("index.html");
   const main = read("js/main.js");
   const transferLoader = read("js/features/quick-transfer-loader.mjs");
@@ -79,10 +79,10 @@ test("knowledge archive assets use a fresh cache version without invalidating un
     assert.ok(index.includes(`${asset}?v=${stableVersion}`), `${asset} should use ${stableVersion}`);
   }
   assert.ok(index.includes(`/css/mobile-ios-shell.css?v=${knowledgeReaderVersion}`));
-  assert.ok(index.includes(`/js/main.js?v=${knowledgeReaderVersion}`));
+  assert.ok(index.includes(`/js/main.js?v=${toolRadarVersion}`));
   assert.ok(main.includes(`const routeStyleVersion = "${knowledgeReaderVersion}"`));
-  assert.ok(main.includes(`./core/i18n.mjs?v=${dailyAiNewsVersion}`));
-  assert.ok(main.includes(`./data/home-content.mjs?v=${knowledgeReaderVersion}`));
-  assert.ok(main.includes(`./routes/knowledge.mjs?v=${knowledgeReaderVersion}`));
+  assert.ok(main.includes(`./core/i18n.mjs?v=${toolRadarVersion}`));
+  assert.ok(main.includes(`./data/home-content.mjs?v=${toolRadarVersion}`));
+  assert.ok(main.includes(`./routes/knowledge.mjs?v=${toolRadarVersion}`));
   assert.doesNotMatch([index, main, transferLoader, resources].join("\n"), /20260726-tools-rename-r1/);
 });

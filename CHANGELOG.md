@@ -2,8 +2,22 @@
 
 本文件记录鲁肃个人站的功能、界面、后端、部署与项目约定变更。每次修改项目后都应同步更新这里，方便后续 AI / Codex 对话快速了解最近改动。
 
+## 2026-07-29
+
+- “工具雷达 / Tool Radar / ツールレーダー”正式上线：首期以独立 production 运行发布 60fps、Mobbin、ChatCut、Remotion、Repomix、Context7 与 Pinokio 七项工具的 zh／en／ja 完整文章；2026-07-21 的 `trial-local + trial + not-delivered` 审阅记录继续只作历史依据，没有被原地改成生产记录。
+- 正式周更任务获站长授权，固定于 `Asia/Shanghai` 每周二 22:00 启动。每期目标 6–10 个、少于 3 个关闭投递；来源核验、真人分享式口播叙事、三语一致、结构化工具清单、线上回读任一失败都不发布半成品。
+- 独立 `tool-radar` 通道、Bearer 凭证和 auto-publish 显式开启后才允许自动公开；通道启用与自动公开仍是两个互不替代的闸门。`tool_radar_catalog` 通过永久工具键与 canonical 官网 URL 阻止同一产品重复收录，疑似改名、换域名或被收购的候选继续人工复核历史名称和别名。
+- 首期七个工具各使用一张本站原创语义说明图，按“输入／动作／结果”完整表达用途，不复制产品界面或使用空截图。所有文章图片先随 GitHub `main` 由 Cloudflare Pages 正常部署，生产投递再逐张核对线上可读取性与远程 SHA-256；不允许外部热链或用本机临时路径绕过门禁。
+- 三语 `site-updates` 公开更新记录统一为 `seed-update-2026-07-29-tool-radar-live`，公开 fallback、Home 最近更新、Functions seed 与 schema seed 保持一致；公共、API 和后台缓存／表示版本统一为 `20260729-tool-radar-live-r1`。后台自动投递说明同步显示工具雷达正式任务已启用，原 7 月 28 日“待首期授权”的记录作为当时历史保留。
+
 ## 2026-07-28
 
+- 再次收口工具雷达的标题、口播叙事与每周视觉工作流：H1 必须同时包含明确读者痛点、与入选工具数完全一致的阿拉伯数字，以及至少两个具体任务范围或收益；首期标题固定为“AI 总做不出你想要的效果？7 个设计、视频、代码与本地 AI 工具”。整篇先确定一句话主线并按真实工作顺序推进，首期三语顺序统一为 `60fps → Mobbin → ChatCut → Remotion → Repomix → Context7 → Pinokio`；每个工具恰好三个自然段，依次说明“是什么／能做什么”“省掉什么／怎么开始”“案例或示例／适合谁／必要限制”，相邻工具自然接力。新增 `VISUAL_METHOD.md`，把选图从单次修稿提升为固定周更方法：先写读者问题、视觉结论、2–5 个必须出现的元素、信息角色和三语图注规划，再按原创可复现演示、明确许可官方素材、原创说明图、无图的顺序取材；单图必须自洽，双图只能形成同组且有先后的输入／输出、操作／结果、前后或连续步骤。`run.schema.json`、`workflow.json` 与 `validate-run.mjs` 现强制每张已采用图片登记 `captureBrief`、三语 `caption`、`framing`／`sequence` 和五项全通过的 `visualQa`，并检查本期内复核时间、本地文件、SHA-256、图注邻接、双图角色／顺序和关键内容未截断；无合格图仍可使用 `image: null`。首期本地审稿页移除固定 16:10 强裁切，每组图新增“这张图要说明什么／看图顺序／完整性检查／图注／权利状态”证据卡；60fps 改为同一 Storyboard 的起点至 final state，Remotion 改为 Prompt 输入至输出结果，Mobbin、ChatCut、Repomix、Context7 与 Pinokio 均裁到完整语义边界。官网截图仍只供本地审稿，不代表转载授权，正式发布须重新取得合格素材与权利依据；首期运行记录继续保持 `image: null`、`trial-local + trial + not-delivered`。工具雷达专项 28 / 28、全量测试 371 / 371 与静态构建通过；未投递、未发布、未部署，也未创建或启用定时任务。
+- 新增知识库固定分类“工具雷达 / Tool Radar / ツールレーダー”，固定排在“每日 AI 新闻”之后；建立目标时段为每周二北京时间 22:00 的多来源工具发现与三语成稿流程，每期目标 6–10 个、少于 3 个关闭投递，逐项核对功能、费用、登录、中文、本地／AI 辅助部署、用法、案例与场景。服务端 `tool_radar_catalog` 以规范化工具键和官网 URL 阻止精确重复；改名、换域名或被收购的疑似同产品须人工核对历史名称与别名，未排除重复前不得投递。首期使用 `trial + not-delivered` 本地试稿，生产投递器硬拒绝 trial；在站长审稿并再次明确授权前不创建定时任务、不投递、不开启通道或 auto-publish。后台自动投递页可在每日新闻与工具雷达两条独立通道间切换，凭证、启用和 auto-publish 互不共用且新通道默认关闭；图片只允许项目内安全资源。同步三语公开更新记录 `seed-update-2026-07-28-tool-radar-weekly`、Home 最新五条、Functions／schema seed、项目与后台维护文档；公共缓存／API 版本为 `20260728-tool-radar-r1`，后台 CSS／JS 版本为 `20260728-tool-radar-weekly-r1`。
+- 完成首期本地不可投递试稿 `tool-radar-2026-07-21`：收录 60fps、ChatCut、Mobbin、Remotion、Repomix、Context7、Pinokio 七项，生成 zh／en／ja 完整正文和结构化官方证据记录；核对并区分 ChatCut 当前 ChatGPT/Codex 桌面插件与旧 Claude Code-only skill，常规剪辑免费、仅生成新内容消耗积分。因来源图片再发布权利不明确，本期不放图片也不热链。正式校验通过 `tools=7`，记录保持 `catalogAudit=trial-local`、`delivery.mode=trial`、`status=not-delivered`，未调用投递器。
+- 收口工具雷达验收发现的契约边界：后台维护说明改为机器入口按各专用通道固定创建对应分类；本地投递令牌长度与服务端统一为 32–128 位 secret；文档与公开更新不再把跨域改名误写成服务端可自动完全识别，而是明确精确工具键／官网 URL 唯一约束加历史名称、别名人工复核。
+- 本批最终验证通过：工具雷达试稿校验、51 / 51 相关接口与工作流回归、359 / 359 全量测试、静态构建，以及覆盖 Home、Knowledge、三语和关键视口的 192 / 192 Headless Chrome 发布审计；未推送、未部署，也未连接生产通道。
+- 收口每日 AI 新闻的三处维护说明滞后：后台自动投递页改为明确本机定时任务 `ai-7-8` 已启用并每天 07:00 开始；项目与后台上下文改为如实记录 Horizon 已配置本地 Ollama `qwen3.6:27b`，但当前正式入口只执行抓取、来源重试和去重，不调用原生 AI 评分／富化；最新审阅记录更新为 `2026-07-28-coverage-revision.json`，并明确其 manifest v1 是按固定指纹登记的唯一历史兼容例外，后续正式运行仍必须使用 manifest v2 与完整 `priorityReview`。后台私有更新记录同步，后台 JS query 与构建守卫更新为 `20260728-daily-ai-news-doc-sync-r1`；未改变工作流逻辑、生产通道、令牌或主站公开内容。
 - 修复每日 AI 新闻“抓到了却仍被静默漏选”和重点消息源不足：宽泛的大型 OR 查询降为补充，OpenAI／Codex 关键人物与产品运营变化、Anthropic、开放权重、Qoder、OpenRouter、GPT-Live、主要中国模型厂商、微信 WeLM、美团 CatPaw、中国光刻与存储改为独立 required 查询；新增 OpenRouter Blog、Qoder Announcements、量子位官网 RSS 及低门槛 r/codex、r/OpenAI 早期发现源。社区源不再逐帖抓评论，避免 Reddit 限流拖慢早晨链路，线索仍须回到一手来源核验。
 - Horizon coverage manifest 升级为 v2，新增 result-limit、review source 与 must-review 证明。Google News 查询最多保留 99 条并请求第 100 条作为探针，只有实际返回第 100 条才判定截断，恰好只有 99 条不再误报；`mustReviewCandidateIds` 同时汇总聚焦查询和指定 RSS／社区发现源命中。schema v4 编辑记录必须逐条选入、合并或具体拒绝这些候选，并用 `sourceCandidateIds` 关联索引。
 - Horizon 的跨来源 URL 合并会保留完整 `feed_names`／`subreddits` 来源集合，指定必审来源即使不是内容最丰富的主项，也不会在首次合并后丢失身份。

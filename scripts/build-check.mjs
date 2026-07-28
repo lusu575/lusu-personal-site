@@ -792,11 +792,11 @@ const redirectsConfig = readRequired("_redirects");
 
 const routeLazyVersion = "20260726-security-reliability-r1";
 const trustSafetyStatusVersion = "20260726-security-reliability-r1";
-const dailyAiNewsVersion = "20260728-daily-ai-news-coverage-r1";
 const knowledgeReaderVersion = "20260728-knowledge-archive-r1";
+const toolRadarVersion = "20260729-tool-radar-live-r1";
 const routeStyleVersion = knowledgeReaderVersion;
 const publicRouteVersion = (route) => route === "knowledge"
-  ? knowledgeReaderVersion
+  ? toolRadarVersion
   : (route === "resources" ? trustSafetyStatusVersion : routeLazyVersion);
 const transferAtlasVersion = "20260718-resource-icons-layout-r1";
 const chatroomIconVersion = "20260726-chatroom-icon-redraw-r2";
@@ -845,8 +845,8 @@ for (const route of lazyPublicRoutes) {
 }
 
 for (const [modulePath, expectedVersion] of [
-  ["./core/i18n.mjs", dailyAiNewsVersion],
-  ["./data/home-content.mjs", knowledgeReaderVersion],
+  ["./core/i18n.mjs", toolRadarVersion],
+  ["./data/home-content.mjs", toolRadarVersion],
   ["./features/connection-status.mjs", trustSafetyStatusVersion],
   ["./data/resources-content.mjs", trustSafetyStatusVersion]
 ]) {
@@ -1918,8 +1918,8 @@ for (const asset of ["admin.css", "admin.js"]) {
   }
 }
 
-const adminSafetyCacheVersion = "20260727-daily-ai-news-inbox-r1";
-const adminPublicContentVersion = "20260728-admin-article-pin-persistence-r1";
+const adminSafetyCacheVersion = "20260729-tool-radar-live-r1";
+const adminPublicContentVersion = "20260729-tool-radar-live-r1";
 if (!adminHtml.includes(`/admin/admin.css?v=${adminSafetyCacheVersion}`)
   || !adminHtml.includes(`/admin/admin.js?v=${adminPublicContentVersion}`)) {
   fail("admin CSS and JS must use their current cache versions");
@@ -2840,7 +2840,7 @@ const mobileViewportKeyboardCssVersion = routeLazyVersion;
 const publicModulesVersion = "20260726-security-reliability-r1";
 const transferLazyVersion = trustSafetyStatusVersion;
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
-const currentMainVersion = knowledgeReaderVersion;
+const currentMainVersion = toolRadarVersion;
 const currentCssVersion = trustSafetyStatusVersion;
 const currentPreFinalTelemetryVersion = "20260623-analytics-privacy-r1";
 const currentGameShellVersion = "20260726-game-network-resilience-r1";
@@ -4193,13 +4193,13 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-07-28-knowledge-archive-visibility";
-const finalUpdateSlug = "2026-07-28-knowledge-archive-visibility";
+const finalUpdateId = "seed-update-2026-07-29-tool-radar-live";
+const finalUpdateSlug = "2026-07-29-tool-radar-live";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Knowledge Archive Visibility Restored";
-const finalPublishedAt = "2026-07-28T05:30:00.000Z";
+const finalTitleEn = "Tool Radar Is Live with Weekly Publishing";
+const finalPublishedAt = "2026-07-28T16:45:00.000Z";
 const finalTranslationMinimums = {
   title: 8,
   summary: 24,
@@ -4224,6 +4224,7 @@ const changelog20260720Section = markdownSection(changelog, "## 2026-07-20");
 const changelog20260726Section = markdownSection(changelog, "## 2026-07-26");
 const changelog20260727Section = markdownSection(changelog, "## 2026-07-27");
 const changelog20260728Section = markdownSection(changelog, "## 2026-07-28");
+const changelog20260729Section = markdownSection(changelog, "## 2026-07-29");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -4397,7 +4398,7 @@ if (finalUpdateStarted) {
   }
 
   for (const token of [
-    '<time id="top-updated" datetime="2026-07-28">2026.07.28</time>',
+    '<time id="top-updated" datetime="2026-07-29">2026.07.29</time>',
     `/css/style.css?v=${finalCssVersion}`,
     `/css/mobile-ios-shell.css?v=${knowledgeReaderVersion}`,
     `/js/main.js?v=${finalMainVersion}`
@@ -4415,7 +4416,7 @@ if (finalUpdateStarted) {
     "Functions seed",
     "schema seed"
   ]) {
-    if (!changelog20260728Section.includes(token)) {
+    if (!changelog20260729Section.includes(token)) {
       fail(`CHANGELOG.md final public update sync missing ${token}`);
     }
   }

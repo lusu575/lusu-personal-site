@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
+import { translations } from "../js/core/i18n.mjs";
 import {
   PUBLIC_ARTICLE_ARCHIVE_LIMIT,
   articleDetailShowsSummary,
@@ -58,8 +59,10 @@ test("the public knowledge archive keeps older unpinned articles and their categ
 
 test("Daily AI News reader hides the repeated summary and indexes story headlines", () => {
   assert.equal(articleDetailShowsSummary("daily-ai-news"), false);
+  assert.equal(articleDetailShowsSummary("tool-radar"), true);
   assert.equal(articleDetailShowsSummary("note"), true);
   assert.equal(articleTocHeadingSelector("daily-ai-news"), "h4");
+  assert.equal(articleTocHeadingSelector("tool-radar"), "h2, h3");
   assert.equal(articleTocHeadingSelector("site-updates"), "h2, h3");
 });
 
@@ -82,6 +85,10 @@ test("known article images reserve their intrinsic aspect ratio", () => {
     width: 1745,
     height: 1465
   });
+  assert.deepEqual(
+    articleImageDimensions("assets/images/articles/tool-radar/2026-07-28/context7-explainer.png"),
+    { width: 1200, height: 675 }
+  );
   assert.equal(articleImageDimensions("assets/images/articles/unknown.png"), null);
 });
 
@@ -115,24 +122,38 @@ test("Site Updates stay out of All and remain available in their dedicated categ
   );
 });
 
-test("Daily AI News remains a stable first category and Site Updates remains last", () => {
+test("Daily AI News and Tool Radar remain stable leading categories while Site Updates remains last", async () => {
   const categories = knowledgeCategoryValues([
     { category: "note" },
     { category: "site-updates" },
     { category: "daily-ai-news" },
+    { category: "tool-radar" },
     { category: "note" }
   ], {
-    fixedCategories: ["daily-ai-news"],
+    fixedCategories: ["daily-ai-news", "tool-radar"],
     firstCategory: "daily-ai-news",
     lastCategory: "site-updates",
     labelFor: (value) => ({ note: "Notes" }[value] || value)
   });
-  assert.deepEqual(categories, ["daily-ai-news", "note", "site-updates"]);
+  assert.deepEqual(categories, ["daily-ai-news", "tool-radar", "note", "site-updates"]);
   assert.deepEqual(knowledgeCategoryValues([], {
-    fixedCategories: ["daily-ai-news"],
+    fixedCategories: ["daily-ai-news", "tool-radar"],
     firstCategory: "daily-ai-news",
     lastCategory: "site-updates"
-  }), ["daily-ai-news"]);
+  }), ["daily-ai-news", "tool-radar"]);
+
+  for (const language of ["zh", "en", "ja"]) {
+    assert.ok(translations[language].toolRadarEmpty.trim());
+  }
+
+  const [mainSource, routeSource] = await Promise.all([
+    readFile(new URL("../js/main.js", import.meta.url), "utf8"),
+    readFile(new URL("../js/routes/knowledge.mjs", import.meta.url), "utf8")
+  ]);
+  assert.match(mainSource, /const toolRadarCategory = "tool-radar"/);
+  assert.match(mainSource, /"tool-radar":\s*\{[\s\S]*?zh:\s*"工具雷达"[\s\S]*?en:\s*"Tool Radar"[\s\S]*?ja:\s*"ツールレーダー"/);
+  assert.match(routeSource, /fixedCategories:\s*\[dailyAiNewsCategory,\s*toolRadarCategory\]/);
+  assert.match(routeSource, /activeFilters\.knowledge === toolRadarCategory[\s\S]*?t\("toolRadarEmpty"\)/);
 });
 
 test("API article languages map to valid document language tags", () => {
@@ -276,8 +297,11 @@ test("article reader uses an observer, in-window scrolling, shareable hashes, an
   assert.match(routeSource, /document\.getElementById\("article-detail-title"\)\?\.focus\(\{ preventScroll: true \}\)/);
   assert.match(routeSource, /card\.setAttribute\("aria-labelledby", title\.id\)/);
   assert.doesNotMatch(routeSource, /card\.setAttribute\("aria-label", `\$\{t\("readButton"\)\}/);
-  assert.match(routeSource, /image\.alt = ""/);
-  assert.match(routeSource, /caption\.textContent = alt/);
+  assert.match(routeSource, /const explicitCaption = lines\[captionIndex\]\?\.trim\(\)/);
+  assert.match(routeSource, /index = explicitCaption \? captionIndex \+ 1 : index \+ 1/);
+  assert.match(routeSource, /image\.alt = explicitCaption \? String\(alt \|\| ""\) : ""/);
+  assert.match(routeSource, /const visibleCaption = explicitCaption \|\| alt/);
+  assert.match(routeSource, /caption\.textContent = visibleCaption/);
 
   const controls = indexSource.slice(indexSource.indexOf('<div class="knowledge-window-controls"'), indexSource.indexOf('<div class="window-toolbar">'));
   assert.match(controls, /class="close-button"/);

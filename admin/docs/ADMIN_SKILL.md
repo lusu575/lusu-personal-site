@@ -29,19 +29,22 @@ description: 维护鲁肃个人站 `/admin/` 管理后台时使用。只适用�
 - 独立管理页与公开工具区（内部 `resources` route）/ Quick Transfer 共用生产图集 `assets/transfer/quick-transfer-icons.png`。图集内容或版本变化时，必须使用同一发布 token 同步更新公开引用、`admin/transfer.css` 的图集 query 与 `admin/transfer.html` 的样式 query；不能只更新主站而让后台继续缓存旧图集。
 - 修改独立管理页或主后台入口时同步更新页面内 `adminUpdates`、根 `CHANGELOG.md`、`admin/docs/ADMIN_PROJECT_CONTEXT.md`、本 Skill 和 `admin/docs/ADMIN_CHANGELOG.md`。
 
-## 每日 AI 新闻自动投递规则
+## 每日 AI 新闻与工具雷达自动投递规则
 
-- “自动投递”是主后台中的普通 panel，固定排在“知识库文章”之后；当前只管理 `daily-ai-news`，不要为同一通道另建独立后台页面。
+- “自动投递”是主后台中的普通 panel，固定排在“知识库文章”之后；用同一选择器管理 `daily-ai-news` 与 `tool-radar`，不要为任一通道另建重复页面。切换时必须清除一次性明文令牌并重新读取所选通道，不能混用状态或历史。
 - 通道配置、令牌生成／轮换／撤销和事件读取使用 `/api/admin/automation/daily-ai-news*`，每条路由都必须调用 `requireAdmin`。机器投递入口 `POST /api/automation/daily-ai-news` 使用专用 Bearer 令牌，不复用管理员 cookie，也不能获得后台读取权限。
+- 工具雷达沿用相同契约的 `/api/admin/automation/tool-radar*` 与 `POST /api/automation/tool-radar`，但配置、凭证与 auto-publish 完全独立。其已认证 `GET /api/automation/tool-radar/catalog` 只提供永久去重目录，不能暴露通道配置、令牌摘要或其他后台数据。
 - 令牌明文只在生成或轮换成功时返回一次；D1 只保存 SHA-256 摘要和末尾提示。不得把完整令牌写入页面持久化、日志、事件表、文档、测试快照或 Git。
-- 机器投递只能创建 `daily-ai-news` 分类文章，服务端固定 `is_pinned = 0`、无封面，并拒绝调用方提交 category、status、is_pinned、cover_image_url、published_at 等越权字段。默认状态为 draft 且无发布时间；只有专用通道显式启用 auto-publish 时，服务端才创建 published 状态并写入公开时间。调用方不得直接发布或改写其他文章。
+- 机器投递只能按各自专用通道创建固定分类文章：`daily-ai-news` 只能创建每日新闻，`tool-radar` 只能创建工具雷达。服务端固定 `is_pinned = 0`、无封面，并拒绝调用方提交 category、status、is_pinned、cover_image_url、published_at 等越权字段。默认状态为 draft 且无发布时间；只有对应专用通道显式启用 auto-publish 时，服务端才创建 published 状态并写入公开时间。调用方不得直接发布或改写其他文章。
 - 每次投递都要求 zh / en / ja 三语标题、摘要和正文，并执行正文大小、频率、幂等键和 slug 冲突保护；事件表只记录必要元数据、规范化内容指纹和错误摘要，不记录正文。相同幂等键只有在内容指纹一致且原草稿仍存在时才能作为成功重放；内容变化或原稿已删除必须返回冲突并要求新键。
 - 公开机器请求应先用轻量通道表完成来源限流、Bearer 校验和启用状态判断；未鉴权或暂停请求不得触发文章 seed。只有验证通过后才准备文章与投递事件表。
 - 通道默认暂停；生成令牌不等于启用，撤销令牌必须同时暂停。正式授权已覆盖每日生产运行：只有站长明确生成令牌、启用通道并显式启用 auto-publish 后，才允许自动公开；暂停、撤销、关闭 auto-publish、验证失败或超时必须关闭公开路径。后台不得自行保存模型密钥或建立范围外的计划任务。
-- 本地生成适配层固定放在 `自动新闻/integrations/lusu-site/`：必须先运行 Horizon 原生抓取入口完成多源采集、网址规范化和跨来源去重，运行记录保存可反查的 `runId`、候选文件、紧凑 candidate index 与 coverage manifest；Horizon 不可用时停止，不能由 Codex 手工采集顶替。生产任务每天北京时间 07:00 开始，严格使用 `[前一日 07:00, 当日 07:00)` 的精确 24 小时窗口；Codex 负责复核、重要性门槛、三语整稿、无外链正文和个人站投递格式。所有阶段必须在 08:00 前完成，失败或超时不得补发。
+- 本地生成适配层固定放在 `自动新闻/integrations/lusu-site/`：必须先运行 Horizon 原生抓取入口完成多源采集、网址规范化和跨来源去重，运行记录保存可反查的 `runId`、候选文件、紧凑 candidate index 与 coverage manifest；Horizon 不可用时停止，不能由 Codex 手工采集顶替。`horizon.config.json` 当前虽指向本地 Ollama `qwen3.6:27b`，正式适配入口仍只调用抓取、来源重试和去重，不调用 Horizon 原生 AI 评分或富化；不得因看见模型配置就误报它已参与正式生产。生产任务每天北京时间 07:00 开始，严格使用 `[前一日 07:00, 当日 07:00)` 的精确 24 小时窗口；Codex 负责复核、重要性门槛、三语整稿、无外链正文和个人站投递格式。所有阶段必须在 08:00 前完成，失败或超时不得补发。
 - 正式日报使用 schema v4，并在投递前完成 required query／entity group 覆盖签收；初选少于 5 条必须执行低产量第二轮审阅和定向补查，但 5 条不是最低配额，复核后可以少于 5 条或无稿，禁止凑数。发现不限制来源语言，应以英中日韩常用别名覆盖重点模型厂商，以及芯片／光刻／存储、机器人、智能设备、数据中心能源／网络和科技金融。跨日去重按 `eventKey + eventStage`；正式发布、开放权重等实质新阶段须记录前序故事和 material difference。任一覆盖、补查或更新阶段证明缺失都应视为验证失败并关闭本期，不能进入自动公开。
+- `runs/2026-07-28-coverage-revision.json` 的 manifest v1 只是一份按固定 run、路径和 SHA-256 登记的 schema v4 历史兼容例外；不得复制、改写或作为新任务模板。除该精确身份外，所有正式 schema v4 运行都必须使用 coverage manifest v2 并填写完整 `priorityReview`。
 - 发现源的“成功但空”与“抓取／解析失败”必须分开记录；低并发有界重试后仍失败就关闭本期，不能把内部错误后的空数组算作没有新闻。candidate index 必须以确定性 UTF-8 字节写盘，并对实际写入字节计算 SHA-256，确保 Windows 本地任务与校验器使用同一来源证明。
 - 本地试投只使用临时令牌，投递结束必须停止预览、撤销令牌并暂停通道。2026-07-27 样稿用于生产链路测试，仍须通过相同的来源、令牌、大小、频率、幂等、slug 冲突、验证和失败关闭闸门。
+- 工具雷达正式任务已获授权，固定于每周二北京时间 22:00 启动；目标 6–10 个、少于 3 个就不投递。请求必须携带与正文一致的结构化 `tools[]`；`tool_radar_catalog.tool_key` 与规范官网 URL 提供服务端精确唯一约束，目录登记必须和文章、三语翻译、投递事件原子落库，重复时整体返回 409。疑似改名、换域名或被收购的产品必须对历史名称、官网和别名做人工目录复核，身份未排除重复前不得作为新工具投递。同类不同产品允许后续介绍。每个工具通常使用一张有明确语义的项目内说明图、最多两张；先经 GitHub `main` → Cloudflare Pages 部署，再由生产投递核对远程 SHA-256。通道启用与 auto-publish 仍是两项独立显式闸门，只有两项都开启时才自动公开。
 - 修改这套能力时同步更新页面内 `adminUpdates`、根 `CHANGELOG.md`、`PROJECT_CONTEXT.md`、`admin/docs/ADMIN_PROJECT_CONTEXT.md`、本 Skill、`admin/docs/ADMIN_CHANGELOG.md`，以及公开可见变化所需的三语 `site-updates` 与缓存 query。
 
 ## 文档边界

@@ -1,6 +1,36 @@
 export const content = {
   updates: [
     {
+      "article_id": "seed-update-2026-07-29-tool-radar-live",
+      "slug": "2026-07-29-tool-radar-live",
+      "category": "site-updates",
+      "tags": ["网站更新", "工具雷达", "知识库", "自动化", "多语言"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-28T16:45:00.000Z",
+      "updated_at": "2026-07-28T16:45:00.000Z",
+      "published_at": "2026-07-28T16:45:00.000Z",
+      "fallbackOnly": true,
+      "icon": "knowledge",
+      "date": "2026.07.29",
+      "title": {
+        "zh": "工具雷达正式上线并开启周更",
+        "en": "Tool Radar Is Live with Weekly Publishing",
+        "ja": "ツールレーダーを公開し、週次更新を開始"
+      },
+      "summary": {
+        "zh": "知识库“工具雷达”正式上线，首期 7 工具三语文章已发布；独立去重、原创说明图与每周二 22:00 自动任务同步启用。",
+        "en": "Tool Radar is live in Knowledge with a trilingual first edition covering seven tools; independent deduplication, original explanatory visuals, and the Tuesday 22:00 automation are active.",
+        "ja": "知識庫の「ツールレーダー」を正式公開し、7ツールの初回3言語記事を掲載しました。独立重複防止、オリジナル説明図、毎週火曜22時の自動タスクも有効です。"
+      },
+      "content_markdown": {
+        "zh": "# 工具雷达正式上线并开启周更\n\n知识库新增固定分类“工具雷达”，并发布首期 7 个工具的中文、英文和日文完整文章。它面向不熟悉设计、动效、开发或部署术语的普通读者，重点讲清每个工具是什么、能做什么、能省下哪些步骤、怎么开始以及需要注意的限制。\n\n## 首期内容\n\n- 首期沿一条真实工作线介绍 60fps、Mobbin、ChatCut、Remotion、Repomix、Context7 与 Pinokio，从找参考、做视频、补代码上下文与最新文档，一直走到本地 AI 环境。\n- 每个工具都有收费、登录、中文支持、本地部署与 AI 接入的紧凑上手信息，不把文章排成冷冰冰的参数表。\n- 每项穿插一张基于已核实事实制作的本站原创说明图；图片不复制产品界面，先随站点部署，再由投递器核对线上 SHA-256 后公开正文。\n\n## 每周自动更新\n\n- 本机 Codex 任务固定在每周二北京时间 22:00 启动，广泛发现近期热门、实用、有趣或新奇的工具，并生成三语文章。\n- 每期目标介绍 6–10 个达到质量门槛的新工具，少于 3 个时不发布，也不会为了数量加入低价值内容。\n- 同类工具可以在不同周继续介绍，但同一个产品只收录一次。服务端目录阻止相同工具键和官网 URL；改名、换域名或被收购的候选还要人工核对历史名称和别名。\n\n## 发布安全\n\n工具事实优先回到官方网站、官方文档、价格页和可靠案例核对。专用投递通道、凭证与自动公开互相独立；运行记录、图片、三语结构、永久去重或线上回读任一失败，本期都会停止，不发布半成品。",
+        "en": "# Tool Radar Is Live with Weekly Publishing\n\nKnowledge now has a permanent Tool Radar category and a complete first edition in Chinese, English, and Japanese covering seven tools. It is written for readers who may not know the vocabulary of design, motion, development, or deployment, so each section explains what a tool is, what it can do, which work it removes, how to begin, and what limits matter.\n\n## The first edition\n\n- The first issue follows one practical workflow through 60fps, Mobbin, ChatCut, Remotion, Repomix, Context7, and Pinokio: find references, make video, supply repository context and current documentation, then get local AI running.\n- Each tool includes compact pricing, sign-in, Chinese support, local deployment, and AI setup details without turning the article into a cold specification sheet.\n- Every entry uses one original explanatory visual based on verified facts. These visuals do not copy product interfaces; they are deployed with the site first, and the delivery client checks their production SHA-256 before publishing the article.\n\n## Weekly automation\n\n- A local Codex task starts every Tuesday at 22:00 Beijing time, searches broadly for useful, interesting, unusual, or recently discussed tools, and produces all three language editions.\n- Each issue targets 6–10 worthwhile tools, publishes nothing with fewer than three, and never fills space with low-value entries.\n- Similar tools may appear in different weeks, but the same product is covered once. The server blocks matching tool keys and canonical URLs, while suspected renames, domain moves, or acquisitions also require a manual historical-name and alias review.\n\n## Publishing safeguards\n\nClaims are checked against official product pages, documentation, pricing, and reliable examples. The dedicated channel, credential, and automatic-publishing switch remain independent; any failure in the run record, visuals, trilingual structure, permanent deduplication, or public readback closes the issue without publishing a partial article.",
+        "ja": "# ツールレーダーを公開し、週次更新を開始\n\n知識庫に固定分類「ツールレーダー」を追加し、7つのツールを扱う初回記事を中国語・英語・日本語で公開しました。デザイン、モーション、開発、導入の専門用語を知らない読者にも、各ツールが何か、何ができるか、どの手間を省けるか、どこから始めるか、どの制約に注意するかが分かる構成です。\n\n## 初回の記事\n\n- 60fps、Mobbin、ChatCut、Remotion、Repomix、Context7、Pinokio を、参考探し、動画制作、リポジトリ文脈と最新文書の補完、ローカル AI の起動という一つの作業順で紹介します。\n- 各ツールには、料金、ログイン、中国語対応、ローカル導入、AI 接続の情報を短くまとめ、冷たい仕様表にはしていません。\n- 各項目に、確認済みの事実を基に制作したサイト独自の説明図を1枚掲載します。製品画面は複製せず、画像を先にサイトへ配備し、配信前に本番上の SHA-256 を照合します。\n\n## 毎週の自動更新\n\n- ローカル Codex タスクは毎週火曜日の北京時間22時に開始し、便利、実用的、面白い、珍しい、または最近注目されたツールを広く探して3言語の記事を作成します。\n- 1回につき質を満たす6～10件を目安にし、3件未満なら公開せず、件数合わせの低価値な項目も追加しません。\n- 同分野の別製品は別の週に紹介できますが、同一製品は一度だけです。同じツールキーと公式 URL はサーバーが拒否し、改名、ドメイン移転、買収が疑われる候補は旧名称と別名も人手で確認します。\n\n## 公開時の安全策\n\n内容は公式製品ページ、文書、料金、信頼できる事例へ戻って確認します。専用チャンネル、認証情報、自動公開は独立したままです。実行記録、画像、3言語構造、恒久的な重複防止、公開後の読み戻しのどれかが失敗した場合、その回は途中の記事を公開せず停止します。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-07-28-knowledge-archive-visibility",
       "slug": "2026-07-28-knowledge-archive-visibility",
       "category": "site-updates",

@@ -1,0 +1,1004 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lusu575.com/schemas/tool-radar-run-v1.json",
+  "title": "Tool Radar weekly editorial run",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "edition",
+    "discoveryAudit",
+    "catalogAudit",
+    "theme",
+    "tools",
+    "delivery"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "edition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "timezone",
+        "scheduledAt",
+        "discoveryStart",
+        "discoveryEnd"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^tool-radar-[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "timezone": {
+          "const": "Asia/Shanghai"
+        },
+        "scheduledAt": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T22:00:00\\+08:00$"
+        },
+        "discoveryStart": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "discoveryEnd": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "discoveryAudit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "catalogVersion",
+        "completedAt",
+        "candidateCount",
+        "signedOffLaneIds",
+        "lanes"
+      ],
+      "properties": {
+        "catalogVersion": {
+          "const": 1
+        },
+        "completedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "candidateCount": {
+          "type": "integer",
+          "minimum": 3
+        },
+        "signedOffLaneIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "lanes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "laneId",
+              "status",
+              "searches",
+              "notes"
+            ],
+            "properties": {
+              "laneId": {
+                "type": "string"
+              },
+              "status": {
+                "const": "complete"
+              },
+              "searches": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "query",
+                    "executedAt",
+                    "status",
+                    "resultCount"
+                  ],
+                  "properties": {
+                    "query": {
+                      "type": "string",
+                      "minLength": 3
+                    },
+                    "executedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "status": {
+                      "enum": [
+                        "success",
+                        "empty"
+                      ]
+                    },
+                    "resultCount": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  }
+                }
+              },
+              "notes": {
+                "type": "string",
+                "minLength": 4
+              }
+            }
+          }
+        }
+      }
+    },
+    "catalogAudit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "snapshotPath",
+        "fetchedAt",
+        "sha256",
+        "knownToolCount"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "authenticated-production",
+            "trial-local"
+          ]
+        },
+        "snapshotPath": {
+          "type": "string",
+          "pattern": "^自动新闻/data/mcp-runs/.+/catalog\\.json$"
+        },
+        "fetchedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "knownToolCount": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "theme": {
+      "$ref": "#/$defs/localizedText"
+    },
+    "tools": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 10,
+      "items": {
+        "$ref": "#/$defs/tool"
+      }
+    },
+    "delivery": {
+      "type": "object",
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "mode": {
+                "const": "trial"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "not-delivered"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "mode": {
+                "const": "production"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "pending"
+              }
+            }
+          }
+        }
+      ],
+      "required": [
+        "mode",
+        "status",
+        "idempotencyKey",
+        "slug",
+        "source",
+        "tags",
+        "tools",
+        "translations"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "production",
+            "trial"
+          ]
+        },
+        "status": {
+          "enum": [
+            "pending",
+            "not-delivered"
+          ]
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "pattern": "^tool-radar:[0-9]{4}-[0-9]{2}-[0-9]{2}:[a-z0-9][a-z0-9._-]{0,80}$"
+        },
+        "slug": {
+          "type": "string",
+          "pattern": "^tool-radar-[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "source": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 160
+        },
+        "tags": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 48
+          }
+        },
+        "tools": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 10,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "toolKey",
+              "canonicalUrl",
+              "name"
+            ],
+            "properties": {
+              "toolKey": {
+                "$ref": "#/$defs/toolKey"
+              },
+              "canonicalUrl": {
+                "type": "string",
+                "format": "uri"
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              }
+            }
+          }
+        },
+        "translations": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "zh",
+            "en",
+            "ja"
+          ],
+          "properties": {
+            "zh": {
+              "$ref": "#/$defs/articleTranslation"
+            },
+            "en": {
+              "$ref": "#/$defs/articleTranslation"
+            },
+            "ja": {
+              "$ref": "#/$defs/articleTranslation"
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "toolKey": {
+      "type": "string",
+      "pattern": "^[a-z0-9.-]+/[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "maxLength": 180
+    },
+    "localizedText": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "zh",
+        "en",
+        "ja"
+      ],
+      "properties": {
+        "zh": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 160
+        },
+        "en": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 160
+        },
+        "ja": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 160
+        }
+      }
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "text",
+        "evidenceIds"
+      ],
+      "properties": {
+        "text": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 1600
+        },
+        "evidenceIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9._-]{0,79}$"
+          }
+        }
+      }
+    },
+    "listClaim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "items",
+        "evidenceIds"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 500
+          }
+        },
+        "evidenceIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "statusClaim": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "status",
+        "details",
+        "checkedAt",
+        "evidenceIds"
+      ],
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "details": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 1000
+        },
+        "checkedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "evidenceIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "toolImageCaptureBrief": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "readerQuestion",
+        "visualClaim",
+        "informationRole",
+        "mustShow"
+      ],
+      "properties": {
+        "readerQuestion": {
+          "type": "string",
+          "minLength": 12,
+          "maxLength": 400
+        },
+        "visualClaim": {
+          "type": "string",
+          "minLength": 12,
+          "maxLength": 500
+        },
+        "informationRole": {
+          "enum": [
+            "interface",
+            "input",
+            "workflow",
+            "output",
+            "result",
+            "installation",
+            "before",
+            "after",
+            "limitation"
+          ]
+        },
+        "mustShow": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 5,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 160
+          }
+        }
+      }
+    },
+    "toolImageSequence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "groupKey",
+        "position",
+        "total"
+      ],
+      "properties": {
+        "groupKey": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$",
+          "maxLength": 100
+        },
+        "position": {
+          "enum": [
+            1,
+            2
+          ]
+        },
+        "total": {
+          "const": 2
+        }
+      }
+    },
+    "toolImageVisualQa": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "threeSecondTestPassed",
+        "productAndContextIdentifiable",
+        "criticalContentUncropped",
+        "privacyClean",
+        "articleWidthReadable",
+        "reviewedAt"
+      ],
+      "properties": {
+        "threeSecondTestPassed": {
+          "const": true
+        },
+        "productAndContextIdentifiable": {
+          "const": true
+        },
+        "criticalContentUncropped": {
+          "const": true
+        },
+        "privacyClean": {
+          "const": true
+        },
+        "articleWidthReadable": {
+          "const": true
+        },
+        "reviewedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "toolImage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "assetPath",
+        "sourceUrl",
+        "rightsBasis",
+        "sha256",
+        "alt",
+        "caption",
+        "captureBrief",
+        "framing",
+        "sequence",
+        "visualQa"
+      ],
+      "properties": {
+        "assetPath": {
+          "type": "string",
+          "pattern": "^assets/images/articles/tool-radar/[a-z0-9._/-]+\\.(?:png|jpe?g|webp)$"
+        },
+        "sourceUrl": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "rightsBasis": {
+          "enum": [
+            "official-press-kit",
+            "official-permitted-download",
+            "original-capture-with-permission",
+            "original-generated"
+          ]
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "alt": {
+          "$ref": "#/$defs/localizedText"
+        },
+        "caption": {
+          "$ref": "#/$defs/localizedText"
+        },
+        "captureBrief": {
+          "$ref": "#/$defs/toolImageCaptureBrief"
+        },
+        "framing": {
+          "enum": [
+            "standalone",
+            "sequence-start",
+            "sequence-end"
+          ]
+        },
+        "sequence": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/toolImageSequence"
+            }
+          ]
+        },
+        "visualQa": {
+          "$ref": "#/$defs/toolImageVisualQa"
+        }
+      }
+    },
+    "tool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "toolKey",
+        "canonicalUrl",
+        "productSlug",
+        "name",
+        "displayNames",
+        "category",
+        "evidence",
+        "profile",
+        "image"
+      ],
+      "properties": {
+        "toolKey": {
+          "$ref": "#/$defs/toolKey"
+        },
+        "canonicalUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "productSlug": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "maxLength": 100
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "displayNames": {
+          "$ref": "#/$defs/localizedText"
+        },
+        "category": {
+          "enum": [
+            "design-inspiration",
+            "video-audio",
+            "coding",
+            "research",
+            "productivity",
+            "deployment",
+            "local-ai",
+            "data",
+            "automation",
+            "content",
+            "infrastructure",
+            "network-access",
+            "education",
+            "other"
+          ]
+        },
+        "evidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "checkedAt",
+            "sources"
+          ],
+          "properties": {
+            "checkedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "sources": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 20,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "url",
+                  "kind",
+                  "accessedAt",
+                  "supports"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9][a-z0-9._-]{0,79}$"
+                  },
+                  "url": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "kind": {
+                    "enum": [
+                      "official-product",
+                      "official-docs",
+                      "official-pricing",
+                      "official-terms",
+                      "official-repository",
+                      "official-release",
+                      "creator-demo",
+                      "reputable-review"
+                    ]
+                  },
+                  "accessedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "supports": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                      "enum": [
+                        "purpose",
+                        "capabilities",
+                        "pricing",
+                        "login",
+                        "chineseSupport",
+                        "localDeployment",
+                        "aiDeployment",
+                        "usageSteps",
+                        "caseStudies",
+                        "scenarios"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "profile": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "purpose",
+            "capabilities",
+            "pricing",
+            "login",
+            "chineseSupport",
+            "localDeployment",
+            "aiDeployment",
+            "usageSteps",
+            "caseStudies",
+            "scenarios"
+          ],
+          "properties": {
+            "purpose": {
+              "$ref": "#/$defs/claim"
+            },
+            "capabilities": {
+              "$ref": "#/$defs/listClaim"
+            },
+            "pricing": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/statusClaim"
+                },
+                {
+                  "type": "object",
+                  "required": [
+                    "freeTier"
+                  ],
+                  "properties": {
+                    "status": {
+                      "enum": [
+                        "free",
+                        "freemium",
+                        "paid",
+                        "open-source",
+                        "enterprise",
+                        "unknown"
+                      ]
+                    },
+                    "freeTier": {
+                      "enum": [
+                        "yes",
+                        "limited",
+                        "no",
+                        "unknown"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "login": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/statusClaim"
+                },
+                {
+                  "properties": {
+                    "status": {
+                      "enum": [
+                        "required",
+                        "optional",
+                        "not-required",
+                        "varies",
+                        "unknown"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "chineseSupport": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/statusClaim"
+                },
+                {
+                  "properties": {
+                    "status": {
+                      "enum": [
+                        "native",
+                        "partial",
+                        "community",
+                        "none",
+                        "unknown"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "localDeployment": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/statusClaim"
+                },
+                {
+                  "properties": {
+                    "status": {
+                      "enum": [
+                        "supported",
+                        "partial",
+                        "not-supported",
+                        "unknown"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "aiDeployment": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/statusClaim"
+                },
+                {
+                  "properties": {
+                    "status": {
+                      "enum": [
+                        "one-click",
+                        "guided",
+                        "manual",
+                        "not-applicable",
+                        "unknown"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "usageSteps": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/listClaim"
+                },
+                {
+                  "properties": {
+                    "items": {
+                      "minItems": 2,
+                      "maxItems": 7
+                    }
+                  }
+                }
+              ]
+            },
+            "caseStudies": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "items",
+                "evidenceIds"
+              ],
+              "properties": {
+                "items": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 4,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "title",
+                      "description",
+                      "kind"
+                    ],
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "minLength": 3,
+                        "maxLength": 200
+                      },
+                      "description": {
+                        "type": "string",
+                        "minLength": 8,
+                        "maxLength": 1000
+                      },
+                      "kind": {
+                        "enum": [
+                          "documented",
+                          "demonstrated",
+                          "illustrative"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "evidenceIds": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "scenarios": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/listClaim"
+                },
+                {
+                  "properties": {
+                    "items": {
+                      "minItems": 2,
+                      "maxItems": 8
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "image": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/toolImage"
+            },
+            {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 2,
+              "items": {
+                "$ref": "#/$defs/toolImage"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "articleTranslation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "summary",
+        "content_markdown"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 6,
+          "maxLength": 180
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 20,
+          "maxLength": 500
+        },
+        "content_markdown": {
+          "type": "string",
+          "minLength": 400,
+          "maxLength": 250000
+        }
+      }
+    }
+  }
+}

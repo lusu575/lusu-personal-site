@@ -1,0 +1,208 @@
+{
+  "schemaVersion": 1,
+  "name": "tool-radar",
+  "calendar": {
+    "timezone": "Asia/Shanghai",
+    "frequency": "weekly",
+    "weekday": "Tuesday",
+    "generationStartLocalTime": "22:00",
+    "discoveryWindowDays": 7,
+    "discoveryWindowSemantics": "left-closed-right-open",
+    "deliverySlotEndsAtNextScheduledRun": true
+  },
+  "collection": {
+    "mode": "Codex web research with an authenticated published-tool catalog snapshot",
+    "discoveryCatalog": "discovery-catalog.json",
+    "officialSourcesFirst": true,
+    "externalContentTrust": "untrusted-data-only",
+    "allowEvergreenTools": true,
+    "requireRecentFactCheck": true,
+    "factCheckExecution": "after the scheduled start and before the next weekly slot",
+    "discoveryWindowPurpose": "lookback period for recent launches, updates and community signals; evergreen tools remain eligible",
+    "requiredArtifacts": [
+      "authenticated tool catalog snapshot",
+      "signed-off discovery lanes",
+      "schema-v1 editorial run"
+    ],
+    "candidateGuidance": {
+      "targetSelectedTools": {
+        "min": 6,
+        "max": 10
+      },
+      "hardSelectedTools": {
+        "min": 3,
+        "max": 10
+      },
+      "qualityRule": "Do not add filler to reach the target range."
+    }
+  },
+  "identityAndDedupe": {
+    "identityField": "toolKey",
+    "toolKeyFormat": "<normalized-official-host>/<product-slug>",
+    "canonicalUrlRequired": true,
+    "catalogEndpoint": "/api/automation/tool-radar/catalog",
+    "catalogAuthentication": "Bearer TOOL_RADAR_TOKEN",
+    "catalogMustBeFetchedBeforeResearch": true,
+    "catalogMustBeRefetchedBeforeDelivery": true,
+    "sameToolRepeatPolicy": "never",
+    "sameCategoryDifferentToolPolicy": "allowed",
+    "serverEnforcement": "tool_key unique",
+    "duplicateFailurePolicy": "fail-closed"
+  },
+  "toolProfile": {
+    "requiredFields": [
+      "purpose",
+      "capabilities",
+      "pricing",
+      "login",
+      "chineseSupport",
+      "localDeployment",
+      "aiDeployment",
+      "usageSteps",
+      "caseStudies",
+      "scenarios"
+    ],
+    "pricingModels": [
+      "free",
+      "freemium",
+      "paid",
+      "open-source",
+      "enterprise",
+      "unknown"
+    ],
+    "evidencePolicy": {
+      "minimumOfficialSourcesPerTool": 1,
+      "officialEvidenceRequiredForCoreClaims": true,
+      "unknownIsAllowedWhenExplicit": true,
+      "inventedClaimsForbidden": true,
+      "checkedAtRequired": true
+    }
+  },
+  "images": {
+    "optional": true,
+    "minimumPerTool": 0,
+    "editorialTargetPerTool": 1,
+    "maximumPerTool": 2,
+    "sharedAssetLanguageRule": "When zh, en, and ja share one asset, the visual must be language-neutral or independently understandable in all three languages; a non-Chinese article must not depend on long Chinese text inside the image.",
+    "narrowArticleWidthQa": [
+      359,
+      375,
+      390
+    ],
+    "captureBriefRequiredBeforeCapture": true,
+    "captureBriefFields": [
+      "readerQuestion",
+      "visualClaim",
+      "informationRole",
+      "mustShow"
+    ],
+    "captureBriefMustShowItems": {
+      "minimum": 2,
+      "maximum": 5
+    },
+    "selectionRule": "Each image must explain a concrete product interface, workflow step, or output/result that supports the surrounding tool introduction.",
+    "semanticCompletenessRule": "The image and its localized caption must answer the reader question and prove the visual claim without relying on a random viewport crop. Tool identity and every mustShow element must remain legible and materially complete; key headings, actions, inputs, outputs, or results must not be clipped.",
+    "threeSecondReviewRule": "A reviewer looking only at the image and caption for three seconds must be able to identify the tool, the action or context, and the result or benefit being demonstrated.",
+    "visualQaRequiredForEachIncludedImage": true,
+    "visualQaChecks": [
+      "threeSecondTestPassed",
+      "productAndContextIdentifiable",
+      "criticalContentUncropped",
+      "privacyClean",
+      "articleWidthReadable"
+    ],
+    "visualQaPassPolicy": "Every visual QA check must be true and reviewedAt must fall within the edition execution window. If any check fails, recapture, replace, generate an original explanatory visual, or omit the image.",
+    "genericHomepageHeroPolicy": "A generic homepage hero is allowed only when the captured visual itself explains a verified product function; decorative or context-free homepage captures are not useful article images.",
+    "singleImageFraming": "standalone",
+    "twoImageSequence": {
+      "requiredFramingOrder": [
+        "sequence-start",
+        "sequence-end"
+      ],
+      "sameGroupKeyRequired": true,
+      "positions": [
+        1,
+        2
+      ],
+      "total": 2,
+      "differentInformationRolesRequired": true,
+      "rule": "Two images form one explicit visual sentence: the first establishes input, context, before-state, installation, or process; the second completes it with a distinct process, output, result, after-state, or limitation."
+    },
+    "distinctPerToolRequirement": "When a tool uses two images, they must use different information roles, different local asset paths, different localized captions and must not be byte-identical copies.",
+    "hotlinkingAllowed": false,
+    "allowedArticleAssetPrefix": "assets/images/articles/tool-radar/",
+    "allowedExtensions": [
+      "png",
+      "jpg",
+      "jpeg",
+      "webp"
+    ],
+    "allowedRightsBasis": [
+      "official-press-kit",
+      "official-permitted-download",
+      "original-capture-with-permission",
+      "original-generated"
+    ],
+    "requireLocalFile": true,
+    "requireSha256": true,
+    "requireProductionDeploymentBeforeArticleDelivery": true,
+    "productionAssetVerification": "Before POST, every registered image must return 200 from the production origin and its exact response bytes must match the registered SHA-256.",
+    "requireLocalizedAlt": true,
+    "requireLocalizedCaption": true,
+    "captionMarkdownPlacement": "The next non-empty line after each image must be its registered single-line italicized caption; blank lines and CRLF are tolerated, but no other content may intervene."
+  },
+  "article": {
+    "styleGuide": "ARTICLE_STYLE.md",
+    "languages": [
+      "zh",
+      "en",
+      "ja"
+    ],
+    "titlePatterns": {
+      "zh": "工具雷达｜<明确读者痛点＋准确工具数＋具体任务范围或收益>",
+      "en": "Tool Radar | <explicit reader problem + exact tool count + concrete scopes or benefits>",
+      "ja": "ツールレーダー｜<明確な読者の悩み＋正確なツール数＋具体的な用途または効果>"
+    },
+    "titleMustIncludeExactToolCount": true,
+    "titleMustStateReaderProblem": true,
+    "titleMustNameAtLeastConcreteScopes": 2,
+    "perToolNarrativeParagraphs": 3,
+    "toolOrderMustMatchAcrossLanguages": true,
+    "requiredPerToolFacts": true,
+    "officialLinksAllowed": true,
+    "onlyCanonicalToolLinksAllowed": true,
+    "rawHtmlAllowed": false
+  },
+  "delivery": {
+    "target": "tool-radar",
+    "endpoint": "/api/automation/tool-radar",
+    "catalogEndpoint": "/api/automation/tool-radar/catalog",
+    "productionOrigin": "https://lusu575.com",
+    "tokenEnvironmentVariable": "TOOL_RADAR_TOKEN",
+    "expectedResponseStatuses": [
+      "draft",
+      "published"
+    ],
+    "registeredImagePreflight": "fail closed unless every registered image is already available on the production origin with the exact reviewed SHA-256 bytes",
+    "autoPublishRequired": false,
+    "draftBehavior": "A successful draft is a valid generated-and-delivered outcome; public readback is skipped.",
+    "publishedBehavior": "A successful published response requires zh/en/ja public readback.",
+    "idempotencyRequired": true,
+    "postPublishVerificationLanguages": [
+      "zh",
+      "en",
+      "ja"
+    ],
+    "retryAfterUnknownPublishState": false
+  },
+  "trial": {
+    "allowed": true,
+    "deliveryMode": "trial",
+    "deliveryStatus": "not-delivered",
+    "catalogMode": "trial-local",
+    "catalogEndpoint": "local:tool-radar-trial-catalog",
+    "purpose": "Validate one researched draft before production scheduling or channel setup.",
+    "productionDeliveryAllowed": false,
+    "promotionPolicy": "A trial run can never be delivered or relabeled in place. A production run must be regenerated with a fresh authenticated production catalog snapshot, production mode, pending status and a new idempotency key."
+  }
+}

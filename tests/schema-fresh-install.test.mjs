@@ -56,6 +56,19 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
         token_hash: ""
       }
     );
+    assert.deepEqual(
+      { ...db.prepare(`
+        select channel_key, category, enabled, auto_publish, token_hash
+        from article_delivery_channels where channel_key = 'tool-radar'
+      `).get() },
+      {
+        channel_key: "tool-radar",
+        category: "tool-radar",
+        enabled: 0,
+        auto_publish: 0,
+        token_hash: ""
+      }
+    );
     assert.ok(
       db.prepare("pragma table_info(article_delivery_channels)").all()
         .some((column) => column.name === "auto_publish" && column.notnull === 1)
@@ -70,6 +83,18 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
     assert.ok(
       db.prepare("pragma table_info(article_delivery_events)").all()
         .some((column) => column.name === "payload_hash" && column.notnull === 1)
+    );
+    assert.deepEqual(
+      db.prepare("pragma table_info(tool_radar_catalog)").all()
+        .map((column) => column.name),
+      ["tool_key", "canonical_url", "name", "article_id", "created_at"]
+    );
+    assert.equal(
+      db.prepare(`
+        select count(*) as count from sqlite_master
+        where type = 'index' and name = 'tool_radar_catalog_created_idx'
+      `).get().count,
+      1
     );
     assert.equal(
       db.prepare(`
@@ -116,6 +141,10 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
     );
     assert.equal(
       db.prepare("select count(*) as count from article_delivery_channels where channel_key = 'daily-ai-news'").get().count,
+      1
+    );
+    assert.equal(
+      db.prepare("select count(*) as count from article_delivery_channels where channel_key = 'tool-radar'").get().count,
       1
     );
     assert.deepEqual(

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex,nofollow">
   <title>鲁肃个人站管理后台</title>
-  <link rel="stylesheet" href="/admin/admin.css?v=20260727-daily-ai-news-inbox-r1">
+  <link rel="stylesheet" href="/admin/admin.css?v=20260729-tool-radar-live-r1">
 </head>
 <body>
   <div class="admin-shell">
@@ -265,15 +265,23 @@
       <section class="panel" id="automation-panel" hidden aria-hidden="true">
         <div class="automation-layout">
           <section class="xp-panel automation-overview">
+            <label class="automation-channel-picker" for="automation-channel-select">
+              <span>管理栏目</span>
+              <select id="automation-channel-select">
+                <option value="daily-ai-news">每日 AI 新闻 · 每日 07:00</option>
+                <option value="tool-radar">工具雷达 · 计划每周二 22:00</option>
+              </select>
+              <small>时区：Asia/Shanghai；每个栏目的开关、自动公开和凭证彼此独立。</small>
+            </label>
             <div class="panel-head">
               <div>
-                <h2>每日 AI 新闻投递箱</h2>
-                <span>固定进入知识库“每日 AI 新闻”，可独立控制投递与自动公开</span>
+                <h2 id="automation-channel-heading">每日 AI 新闻投递箱</h2>
+                <span id="automation-channel-description">固定进入知识库“每日 AI 新闻”，可独立控制投递与自动公开</span>
               </div>
               <span class="status-badge neutral" id="automation-enabled-badge">读取中</span>
             </div>
             <div class="automation-facts" aria-label="自动投递状态">
-              <div><span>目标分区</span><strong>每日 AI 新闻</strong></div>
+              <div><span>目标分区</span><strong id="automation-target-label">每日 AI 新闻</strong></div>
               <div><span>收到后状态</span><strong id="automation-publish-mode">草稿，需人工发布</strong></div>
               <div><span>待审草稿</span><strong id="automation-draft-count">0</strong></div>
               <div><span>最近投递</span><strong id="automation-last-used">尚无记录</strong></div>
@@ -316,13 +324,13 @@
             <div class="panel-head">
               <div>
                 <h2>以后怎么使用</h2>
-                <span>本轮只准备入口，不创建定时任务</span>
+                <span id="automation-guide-summary">本机定时任务 ai-7-8 已启用，每日 07:00 开始</span>
               </div>
             </div>
-            <ol>
-              <li>生成连接凭证，并启用投递箱。</li>
-              <li>保持“自动公开”关闭时，Codex 生成的内容只会送入草稿箱。</li>
-              <li>只有你明确开启“自动公开”后，新的合格三语稿件才会直接公开；随时可以暂停投递或关闭自动公开。</li>
+            <ol id="automation-guide-list">
+              <li>每日 07:00–08:00 保持本机、Codex 与网络可用。</li>
+              <li>投递是否生效，以本页的连接凭证、投递状态和“自动公开”状态为准。</li>
+              <li>关闭“自动公开”时新稿只进入草稿箱；暂停投递或撤销凭证会阻止后续送达。</li>
             </ol>
           </section>
 
@@ -672,7 +680,7 @@
           </div>
           <p>这个后台只服务站长维护个人站，不对外展示，也不复用知识库的网站更新记录。</p>
           <p>后台复用主站账号系统，只有管理员角色可以访问页面和后台接口。</p>
-          <p>后台包含实时大屏、访问来源、点击埋点、三语文章编辑、每日 AI 新闻自动投递管理、视频管理、视频分类管理、聊天室编辑/删除/禁言、临时互传文件管理、账号管理、社交链接管理和后台私有更新记录。</p>
+          <p>后台包含实时大屏、访问来源、点击埋点、三语文章编辑、每日 AI 新闻与工具雷达自动投递管理、视频管理、视频分类管理、聊天室编辑/删除/禁言、临时互传文件管理、账号管理、社交链接管理和后台私有更新记录。</p>
         </section>
       </section>
 
@@ -722,6 +730,6 @@
     </div>
   </dialog>
 
-  <script src="/admin/admin.js?v=20260728-admin-article-pin-persistence-r1"></script>
+  <script src="/admin/admin.js?v=20260729-tool-radar-live-r1"></script>
 </body>
 </html>

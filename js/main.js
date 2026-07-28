@@ -3,8 +3,8 @@ import {
   isI18nNodeInScope,
   normalizeLanguage,
   translationFor
-} from "./core/i18n.mjs?v=20260728-daily-ai-news-coverage-r1";
-import { homeContent } from "./data/home-content.mjs?v=20260728-knowledge-archive-r1";
+} from "./core/i18n.mjs?v=20260729-tool-radar-live-r1";
+import { homeContent } from "./data/home-content.mjs?v=20260729-tool-radar-live-r1";
 import { blogManifest } from "./data/blog-manifest.mjs?v=20260718-resource-icons-layout-r1";
 import { createRouteLifecycle, isAbortError } from "./core/route-lifecycle.mjs?v=20260718-resource-icons-layout-r1";
 import { createRouter } from "./core/router.mjs?v=20260718-resource-icons-layout-r1";
@@ -101,6 +101,7 @@ const welcomeStorageKey = "lusu-welcome-day";
 let welcomeSeenDayInMemory = "";
 const siteUpdateCategory = "site-updates";
 const dailyAiNewsCategory = "daily-ai-news";
+const toolRadarCategory = "tool-radar";
 const publicLoopNightlyUpdateSlug = "2026-06-18-main-visual-polish-cycle";
 const publicLoopNightlyUpdateTitleEn = "Main Site Visual Polish Cycle";
 const publicLoopNightlyCollapsedSlugs = new Set([
@@ -120,6 +121,11 @@ const articleCategoryLabels = {
     zh: "每日 AI 新闻",
     en: "Daily AI News",
     ja: "毎日AIニュース"
+  },
+  "tool-radar": {
+    zh: "工具雷达",
+    en: "Tool Radar",
+    ja: "ツールレーダー"
   },
   "site-updates": {
     zh: "网站更新记录",
@@ -441,7 +447,7 @@ function loadStyledRoute(route, moduleLoader, instantiate) {
 
 const routeModuleRegistry = createRouteModuleRegistry({
   loaders: {
-    knowledge: () => loadStyledRoute("knowledge", () => import("./routes/knowledge.mjs?v=20260728-knowledge-archive-r1"),
+    knowledge: () => loadStyledRoute("knowledge", () => import("./routes/knowledge.mjs?v=20260729-tool-radar-live-r1"),
       ({ createKnowledgeRoute }) => instantiateKnowledgeRoute(createKnowledgeRoute)),
     videos: () => loadStyledRoute("videos", () => Promise.all([
       import("./routes/videos.mjs?v=20260726-security-reliability-r1"),
@@ -1521,6 +1527,7 @@ function instantiateKnowledgeRoute(createKnowledgeRoute) {
     activeFilters,
     siteUpdateCategory,
     dailyAiNewsCategory,
+    toolRadarCategory,
     getCurrentLang: () => currentLang,
     t,
     boundedHistoryScrollTop,
