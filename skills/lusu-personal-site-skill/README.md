@@ -109,10 +109,11 @@ skills/lusu-personal-site-skill/SKILL.md
 - 文章详情公开地址使用 `/articles/<slug>`，必须能通过域名直接分享和恢复单篇文章详情；内部 `article_id` 不在公开链接或公开 API 中外显。
 - 文章 Markdown 渲染必须防 XSS，不能把未经处理的 Markdown 或 HTML 直接作为 `innerHTML` 插入页面；文章图片只引用 `assets/images/articles/` 下的项目内资源，不引用本机临时路径。
 - 后台文章管理接口必须要求 `users.role = admin`，普通登录用户不能管理文章。
+- 后台可编辑的普通 seed 文章只在记录缺失时插入默认元数据，不得在冷启动时 upsert 覆盖 `is_pinned`、`updated_at` 或其他管理员状态；既有线上值修复使用 `site_runtime_state` 一次性标记。
 - `daily-ai-news` 固定显示为“每日 AI 新闻 / Daily AI News / 毎日AIニュース”，即使暂时没有文章也保留分类入口；已删除的测试占位文章不得由 seed、fallback 或迁移重新补回。
 - 每日 AI 新闻机器投递由服务端固定三语、分类、非置顶和无封面，调用方不能指定发布状态。默认保存为无发布时间的草稿；只有 `daily-ai-news` 专用通道的显式 auto-publish 配置开启时，服务端才创建已公开文章并写入公开时间。通道默认暂停，令牌明文只显示一次且只保存哈希，入口保留大小、频率、幂等和 slug 冲突保护；同键异内容或原稿已删必须返回冲突，未鉴权请求不得触发文章 seed。令牌撤销、通道暂停、auto-publish 关闭、失败或超时必须关闭公开路径。
 - 每日 AI 新闻适配层位于 `自动新闻/integrations/lusu-site/`：每期先完整读取 `ARTICLE_STYLE.md`，再用带 `--start` / `--end` 的 `npm.cmd run ai-news:horizon:fetch` 真实调用 Horizon 做多源采集、网址规范化和跨来源去重。生产运行每天北京时间 07:00 开始，窗口严格是 `[前一日 07:00, 当日 07:00)`；全部抓取、复核、三语生成、验证、投递和受控公开必须在 08:00 前完成。运行记录保留可反查窗口、`runId` 与候选文件；Horizon 不可用、没有合格新闻、验证失败或超时就停止且不发布。条数不写死；三语标题固定为栏目名前缀加各自第一条要闻标题，不得只写日期，日期由发布时间与 slug 表达。标题后直接进入“今日要闻”，不显示摘要、采集窗口或筛选说明；正文固定“今日要闻 / 主要新闻 / 传闻”，每条新闻使用唯一三级标题，网站目录据此逐条列出全部新闻标题，不只列栏目名。一段事实正文和更短的一至两句 AI 解读由校验器强制执行，传闻不逐条重复“未证实”，外部三语文章不得含网址、参考资料、来源列表或内部评分。
-- 正式日报使用 schema v4：Horizon 产物必须含紧凑 candidate index 和 coverage manifest，编辑运行必须签收 required query／entity group；初选少于 5 条强制第二轮审阅与定向补查，但 5 条不是最低配额，严禁凑数。发现不限制来源语言，可靠的中文、英文、日文、韩文及其他语言来源均可进入复核，并以多语别名覆盖重点模型厂商、芯片／光刻／存储、机器人、智能设备、数据中心能源／网络和科技金融。跨日去重使用 `eventKey + eventStage`，正式发布、开放权重等实质新阶段只有在记录前序故事和 material difference 后才可再次入选；schema v3 只保留给已登记的历史 one-shot 样稿。
+- 正式日报使用 schema v4：Horizon 产物必须含紧凑 candidate index 和 coverage manifest，编辑运行必须签收 required query／entity group；初选少于 5 条强制第二轮审阅与定向补查，但 5 条不是最低配额，严禁凑数。发现不限制来源语言，可靠的中文、英文、日文、韩文及其他语言来源均可进入复核，并以多语别名覆盖重点模型厂商、芯片／光刻／存储、机器人、智能设备、数据中心能源／网络和科技金融。跨日去重使用 `eventKey + eventStage`，正式发布、开放权重等实质新阶段只有在记录前序故事和 material difference 后才可再次入选；schema v3 只保留给已登记的历史 one-shot 样稿。历史 CI 只可显式使用仓库内紧凑 provenance fixture，并同时校验 one-shot、schemaVersion 3 和登记窗口；schema v4 必须拒绝，不能依赖 Git 忽略的完整本地 Horizon 运行目录。
 - 每日新闻发现必须区分真正的空结果与抓取／解析失败；低并发有界重试后仍失败就关闭本期，不得把报错后的空数组当作没有新闻。candidate index 以确定性 UTF-8 字节写入，并对实际写盘字节计算 SHA-256，避免 Windows 换行转换造成验证指纹失配。
 - 本地试投使用进程内临时令牌走正式机器接口，结束后必须关闭预览、暂停通道并清空令牌。2026-07-27 样稿用于生产链路测试，必须遵守与正式运行相同的来源证明、令牌、限流、幂等、冲突、失败关闭和 08:00 截止规则；不因自动公开授权而保存模型或第三方密钥。
 - 后台文章、视频、分类、社交链接、元数据刷新与删除都携带读取时的 `expectedUpdatedAt`；关系表和翻译与主记录原子 CAS，陈旧页面固定收到 `409 + CONTENT_CONFLICT`、保留草稿并提示手动合并。
@@ -135,6 +136,7 @@ skills/lusu-personal-site-skill/SKILL.md
 - 通过 seed 维护网站更新记录时，必须同步 `functions/api/[[route]].js`、`cloudflare/schema.sql`、`js/data/content.mjs` 的完整 fallback，以及 `js/data/home-content.mjs` 的最近五条无正文 Home 摘要投影。
 - 首页欢迎弹窗右侧“最近更新”自动读取 `site-updates` 分类文章，“查看更多更新”跳转到该分类。
 - 首页欢迎弹窗使用 `lusu-welcome-day` 保存访问设备的本地自然日；每天首次打开任意公开路由显示一次，并在实际打开时立即记录，不能用长期内容版本号永久抑制后续日期。
+- 文章阅读器的“返回文章列表”必须是 `.article-reader-sidebar` 的第一个子项；桌面／横屏由整个侧栏统一 sticky，按钮不能独立 sticky 后覆盖目录。目录点击只滚动 `#article-detail`，并同步目标标题、URL hash、焦点与唯一 `aria-current`。
 - 当前主站不提供公开聚合入口；不要恢复相关按钮、发现链接或公开输出接口，除非用户重新明确要求，并同步补齐三语文案、种子、构建守卫和部署说明。
 - Cloudflare 部署检查命令和期望状态保留在 `SKILL.md`。
 - 线上验证要注意 Cloudflare 缓存和 `lusu575.com` / `www.lusu575.com` 双域名缓存差异。

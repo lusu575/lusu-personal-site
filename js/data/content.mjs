@@ -1,6 +1,36 @@
 export const content = {
   updates: [
     {
+      "article_id": "seed-update-2026-07-28-article-pin-sidebar-navigation",
+      "slug": "2026-07-28-article-pin-sidebar-navigation",
+      "category": "site-updates",
+      "tags": ["网站更新", "知识库", "文章管理", "阅读体验", "QA"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-28T05:20:00.000Z",
+      "updated_at": "2026-07-28T05:20:00.000Z",
+      "published_at": "2026-07-28T05:20:00.000Z",
+      "fallbackOnly": true,
+      "icon": "knowledge",
+      "date": "2026.07.28",
+      "title": {
+        "zh": "文章置顶与目录定位修复",
+        "en": "Article Pinning and Contents Navigation Fixes",
+        "ja": "記事の固定表示と目次移動を修正"
+      },
+      "summary": {
+        "zh": "后台取消置顶不再被种子还原；返回按钮与目录合并为同一固定侧栏，目录点击会把目标标题对齐并同步高亮。",
+        "en": "Admin pin choices now survive seed refreshes. The back control and contents share one anchored sidebar, and contents clicks align and highlight the requested heading.",
+        "ja": "管理画面の固定表示設定を seed が戻さないようにし、戻る操作と目次を同じ固定サイドバーへまとめ、目次移動時の見出し位置と選択表示を同期しました。"
+      },
+      "content_markdown": {
+        "zh": "# 文章置顶与目录定位修复\n\n本次继续修正知识库文章管理和长文阅读导航。\n\n## 后台置顶状态\n\n- “从提问到上线：普通人如何用 AI Agent 放大执行力”已恢复为未置顶。\n- 该文章的初始化种子改为只在首次建库时插入，不再在冷启动时覆盖后台保存的置顶状态和版本时间。\n- 线上已有错误状态通过一次性修复标记清理；以后在后台重新置顶或取消置顶都会保留。\n\n## 固定阅读侧栏\n\n- “返回文章列表”现在位于文章目录上方，并与目录共用同一个固定侧栏，不会在正文滚动后覆盖目录。\n- 桌面和横屏侧栏整体保持原位；窄屏按可读空间重新排版，按钮和目录仍保持独立间距。\n\n## 目录跳转\n\n- 点击目录时使用文章正文容器的精确滚动位置，将目标标题对齐到阅读区顶部安全线。\n- 跳转完成后，目录高亮、地址锚点和标题焦点同步到同一章节，不再停留在上一项。\n- 回归检查覆盖桌面、手机竖屏、短竖屏和手机横屏，并继续验证目录末项不裁切。",
+        "en": "# Article Pinning and Contents Navigation Fixes\n\nThis update continues the Knowledge article-management and long-reading navigation fixes.\n\n## Admin pin state\n\n- “From Prompt to Production: How Ordinary People Can Amplify Execution with AI Agents” is restored to unpinned.\n- Its initialization seed now inserts metadata only on a fresh database, so cold starts no longer overwrite an admin pin choice or row revision.\n- A one-time repair marker clears the existing incorrect state; later pin and unpin actions remain under admin control.\n\n## Anchored reading sidebar\n\n- Back to Article List now sits above the contents and both controls belong to one anchored sidebar, so the back control cannot cover the contents after scrolling.\n- The whole sidebar stays in place on desktop and landscape layouts. Narrow screens reflow the same controls with independent spacing.\n\n## Contents navigation\n\n- A contents click scrolls the article detail container to an exact safe line near the top of the reader.\n- The selected contents item, URL anchor, and heading focus now move to the same chapter instead of remaining on the previous one.\n- Regression checks cover desktop, phone portrait, short portrait, and phone landscape while retaining the final-item clipping checks.",
+        "ja": "# 記事の固定表示と目次移動を修正\n\n知識庫の記事管理と長文ナビゲーションを引き続き修正しました。\n\n## 管理画面の固定表示\n\n- 「質問から公開まで：AI Agent で実行力を広げる方法」を固定表示なしへ戻しました。\n- この文章の初期 seed は新規データベースへの初回挿入だけにし、コールドスタート時に管理画面の固定表示設定や更新時刻を上書きしません。\n- 既存の誤った状態は一度だけ実行する修正マーカーで解除し、その後の固定／解除は管理画面の選択を保持します。\n\n## 固定された閲覧サイドバー\n\n- 「記事一覧へ戻る」を目次の上へ移し、二つを同じ固定サイドバーにまとめました。本文を動かしても戻る操作が目次へ重なりません。\n- デスクトップと横画面ではサイドバー全体を固定し、狭い画面では同じ操作を読みやすい間隔で再配置します。\n\n## 目次からの移動\n\n- 目次を押すと記事詳細コンテナだけを動かし、対象見出しを閲覧領域上部の安全な位置へ正確に合わせます。\n- 選択中の目次、URL のアンカー、見出しフォーカスを同じ章へ同期し、前の項目に残らないようにしました。\n- デスクトップ、スマートフォン縦画面、短い縦画面、横画面で確認し、末尾項目の切れも引き続き検査します。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-07-28-knowledge-reader-welcome-fixes",
       "slug": "2026-07-28-knowledge-reader-welcome-fixes",
       "category": "site-updates",

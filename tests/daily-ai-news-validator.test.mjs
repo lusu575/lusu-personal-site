@@ -29,6 +29,11 @@ import {
   upsertDevVar
 } from "../自动新闻/integrations/lusu-site/production-secrets.mjs";
 
+const historicalProvenanceRoot = fileURLToPath(new URL(
+  "./fixtures/daily-ai-news/historical-horizon-root/",
+  import.meta.url
+));
+
 function candidate({
   storyKey,
   section,
@@ -620,13 +625,20 @@ test("Daily AI News validator requires one unique heading per selected story", (
 test("the published 27 July run still passes the locked reader format", async () => {
   await assert.doesNotReject(() => readAndValidateRun(
     fileURLToPath(new URL("../自动新闻/integrations/lusu-site/runs/2026-07-27-2300.json", import.meta.url)),
-    { allowHistoricalOneShot: true }
+    {
+      allowHistoricalOneShot: true,
+      historicalProvenanceRoot
+    }
   ));
 });
 
 test("schema 4 provenance requires complete multilingual coverage artifacts", async (t) => {
   const fixture = await writeFormalCoverageFixture(t);
   await assert.doesNotReject(() => readAndValidateRun(fixture.runPath));
+  await assert.rejects(
+    () => readAndValidateRun(fixture.runPath, { historicalProvenanceRoot }),
+    /只允许用于已登记的 schemaVersion 3 历史 one-shot/
+  );
 
   fixture.coverageManifest.queries[0].status = "failure";
   await writeFile(

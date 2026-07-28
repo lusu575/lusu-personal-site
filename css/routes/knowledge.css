@@ -306,25 +306,26 @@ body.is-article-reading .folder-layout.is-reading .article-detail {
 }
 
 .article-back-button {
-  grid-column: 1 / -1;
-  justify-self: start;
+  justify-self: stretch;
+  width: 100%;
   min-height: 38px;
   margin: 0;
-  position: sticky;
-  top: 18px;
-  z-index: 4;
+  padding: 8px 10px;
+  position: static;
+  line-height: 1.35;
+  white-space: normal;
 }
 
 .article-reader-sidebar {
   display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
-  gap: 16px;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 12px;
   align-self: start;
   min-width: 0;
   min-height: 0;
-  height: clamp(300px, calc(100dvh - 300px), 640px);
+  height: clamp(320px, calc(100dvh - 246px), 700px);
   position: sticky;
-  top: 72px;
+  top: 18px;
 }
 
 body.is-article-reading .article-reader-sidebar {

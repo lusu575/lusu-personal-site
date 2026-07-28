@@ -71,8 +71,31 @@ export async function readAndValidateRun(path = DEFAULT_RUN, options = {}) {
   const absolutePath = resolve(path);
   const run = JSON.parse(await readFile(absolutePath, "utf8"));
   validateRun(run, options);
-  await validateHorizonProvenance(run);
+  await validateHorizonProvenance(
+    run,
+    resolveValidationHorizonRoot(run, options)
+  );
   return { run, absolutePath };
+}
+
+function resolveValidationHorizonRoot(
+  run,
+  { allowHistoricalOneShot = false, historicalProvenanceRoot } = {}
+) {
+  const defaultRoot = resolve(import.meta.dirname, "..", "..");
+  if (historicalProvenanceRoot === undefined) {
+    return defaultRoot;
+  }
+  if (
+    allowHistoricalOneShot !== true
+    || run.schemaVersion !== HISTORICAL_SCHEMA_VERSION
+    || !isHistoricalOneShotWindow(run)
+  ) {
+    throw new Error(
+      "historicalProvenanceRoot 只允许用于已登记的 schemaVersion 3 历史 one-shot。"
+    );
+  }
+  return resolve(String(historicalProvenanceRoot));
 }
 
 export function validateRun(run, { allowHistoricalOneShot = false } = {}) {
@@ -338,8 +361,7 @@ function validateSignoffIds(values, label, errors) {
   }
 }
 
-async function validateHorizonProvenance(run) {
-  const horizonRoot = resolve(import.meta.dirname, "..", "..");
+async function validateHorizonProvenance(run, horizonRoot) {
   const allowedRoot = resolve(horizonRoot, "data", "mcp-runs");
   const candidatesPath = resolveHorizonArtifactPath(
     horizonRoot,

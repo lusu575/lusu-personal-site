@@ -1,0 +1,112 @@
+{
+  "fixtureType": "historical-provenance-regression-snapshot",
+  "sourceArtifactSha256": "ea137be18bd9edf6426026dcbec2e8ae063f867199e38ebcb955cfe2be99fade",
+  "sourceArtifactItemCount": 350,
+  "selectedItemCount": 12,
+  "schemaVersion": 1,
+  "engine": "Horizon",
+  "horizonRunId": "run-20260727T152816Z-e06cd623",
+  "reportDate": "2026-07-27",
+  "timezone": "Asia/Shanghai",
+  "windowStart": "2026-07-26T23:00:00+08:00",
+  "windowEnd": "2026-07-27T23:00:00+08:00",
+  "windowSemantics": "left-closed-right-open",
+  "items": [
+    {
+      "id": "hackernews:story:49065752",
+      "source_type": "hackernews",
+      "title": "Kimi-K3 Releases on HuggingFace 7/27",
+      "url": "https://huggingface.co/moonshotai/Kimi-K3",
+      "author": "nateb2022",
+      "published_at": "2026-07-27T06:18:10Z"
+    },
+    {
+      "id": "google_news:article:a0850e3a0d05401c",
+      "source_type": "google_news",
+      "title": "CXMT IPO: Where China’s Largest DRAM Maker Stands? - EE Times",
+      "url": "https://news.google.com/rss/articles/CBMifEFVX3lxTE5wWTZXZTRkRmxmaTR1Ump3ZHZFbGV5WGdDa2Uxd1N6ZnlzN0NpQ3p1V29tTzQ2NmFvRUxQZ3JvbXh0aUI5cDktLUVxMVh5TzBkcWFxcm1MOXJ4Z3ZMa1p2dVhGRmZCd3JUa2pzRS00NXpyMWtKWURjekItVXM?oc=5",
+      "author": "EE Times",
+      "published_at": "2026-07-27T07:20:11Z"
+    },
+    {
+      "id": "rss:nvidianews.nvidia.com_rss.xml:d2e381229b5beb8c",
+      "source_type": "rss",
+      "title": "Ilya Sutskever’s Safe Superintelligence Inc. and NVIDIA Announce Long-Term Strategic Partnership",
+      "url": "https://nvidianews.nvidia.com/news/ilya-sutskevers-safe-superintelligence-inc-and-nvidia-announce-long-term-strategic-partnership",
+      "author": "NVIDIA Newsroom",
+      "published_at": "2026-07-27T13:00:00Z"
+    },
+    {
+      "id": "rss:nvidianews.nvidia.com_rss.xml:973f2ef3c64c4c18",
+      "source_type": "rss",
+      "title": "NVIDIA Expands NVIDIA Agent Toolkit With NVIDIA PhysicsNeMo and CUDA-X Libraries to Transform How the World Engineers, Designs and Builds",
+      "url": "https://nvidianews.nvidia.com/news/nvidia-expands-nvidia-agent-toolkit-with-nvidia-physicsnemo-and-cuda-x-libraries-to-transform-how-the-world-engineers-designs-and-builds",
+      "author": "NVIDIA Newsroom",
+      "published_at": "2026-07-27T00:45:00Z"
+    },
+    {
+      "id": "rss:nvidianews.nvidia.com_rss.xml:5a6459c4c276eeae",
+      "source_type": "rss",
+      "title": "Industry Leaders Unite in Open Secure AI Alliance for AI Safety and Security",
+      "url": "https://blogs.nvidia.com/blog/open-secure-ai-alliance/",
+      "author": "NVIDIA",
+      "published_at": "2026-07-27T09:00:07Z"
+    },
+    {
+      "id": "google_news:article:3acd250838e22824",
+      "source_type": "google_news",
+      "title": "Nvidia Certifies LG Electronics' AI Data Center Cooling Unit - Moomoo",
+      "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxPeHFWZUIxSWdPODBpR2o4Mi1lNFRoWEd5OFMyd0xESk1xTlg4dVg5dXBvVWJiajhnUmVqWEtIdk9rbUltU2tZTGJ0SnRKQm5ZNjBENWp1SVNIMW9LSmlfZVVnRUtLRGE5LWZNcXNxeVFuV1lqRFBjRUFQYmZ3dWpnb0pWbi1SUlhHTlVWVTd0ZHpKbkZZdnhoVExncFNuSUN5R3Fj?oc=5",
+      "author": "Moomoo",
+      "published_at": "2026-07-27T10:27:31Z"
+    },
+    {
+      "id": "google_news:article:0b6806bd6e304fc5",
+      "source_type": "google_news",
+      "title": "CaoCao begins Robotaxi testing without onboard safety operator on public roads in Hangzhou - Gasgoo",
+      "url": "https://news.google.com/rss/articles/CBMi5gFBVV95cUxPdFZSczZrWWI0dHhtaHB3Z1RRWWlBOVBDSkhsNl84M3hSNFZ1QVNDMTdDem1CTmpVWkZhcVlYeDNPbTYtSENycGdDTTBRNDlVdmR0emZvRUdZT3MzWE1yejJPbjcwZ1JUeUJLRlEyRmg5SzlzalBYY0NOd3p3MXd5OWpCcmxhaFprdXJvM1VTcVZmVlB4QUlrOGRMendUR0phd2oxRlFLNm4wVUxZRlZuRVdqNEEtckpGUVM3bFJIWlBSUmQ4LVhvNm40aGxxRjN2Vks0NWcxWjNMXzZyenZLbXFuODBPQQ?oc=5",
+      "author": "Gasgoo",
+      "published_at": "2026-07-27T02:22:15Z"
+    },
+    {
+      "id": "rss:huggingface.co_blog_feed.xml:96537f9acc12bc3d",
+      "source_type": "rss",
+      "title": "NVIDIA Cosmos-H-Dreams: Bringing Real-Time Generative Simulation to Surgical Robotics",
+      "url": "https://huggingface.co/blog/nvidia/cosmos-h-dreams",
+      "author": "Hugging Face",
+      "published_at": "2026-07-27T09:32:20Z"
+    },
+    {
+      "id": "rss:openai.com_news_rss.xml:db9d0913513df69e",
+      "source_type": "rss",
+      "title": "How AI is expanding what people do at work",
+      "url": "https://openai.com/index/how-ai-is-expanding-what-people-do-at-work",
+      "author": "OpenAI News",
+      "published_at": "2026-07-27T03:30:00Z"
+    },
+    {
+      "id": "google_news:article:1669f52be3feb38d",
+      "source_type": "google_news",
+      "title": "Israeli AI robotics startup Enigma emerges from stealth with $71 million Seed round - calcalistech.com",
+      "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE02elZVdk1Iczl5UzdTQldJWkxvTWxIejI0dll0ZFhoR0NPR0swUENTdW03b0hlR21sZHJRVUZ1M2xtSzdGQXkzc19VV1lBZWF3TlFKZHNNTEdBTi11d0lHT0txcmhUQmFw?oc=5",
+      "author": "calcalistech.com",
+      "published_at": "2026-07-27T14:00:00Z"
+    },
+    {
+      "id": "google_news:article:56d98e522b81e0b6",
+      "source_type": "google_news",
+      "title": "Nvidia in talks to back OpenAI data center financing with $250B guarantee, WSJ reports - Proactive financial news",
+      "url": "https://news.google.com/rss/articles/CBMi6wFBVV95cUxPSmswaTd1enVvUUpkU19oc0dhRUVrbjh1a05MSUhXVjhqY0ZIQWk2b2p1blN5S0VjMXRnd1R5NHVIWWVBTGJLbjk2UHV0WjVLSm9Jdk03d3dBbXhxWml2U0pUa1RqUTRDd2E0T0F3TUlkTmMtbGF2eUpOdkd2a0tOaTlseG9RdzB5S3l6Z0NET1kzQnZmdlM5dTNiaFNKOXp2WlAxRS1DOVdmRElQR1J1d2pYUVZXekFVLUd4STg0REFNMnZyUlhLSmJRd1oyUGZzUVZLR1JVSzl6Mk9zbzZ1RkdEa1pmX0hmaUc0?oc=5",
+      "author": "Proactive financial news",
+      "published_at": "2026-07-27T14:15:00Z"
+    },
+    {
+      "id": "google_news:article:86d8990e75de96e9",
+      "source_type": "google_news",
+      "title": "Apple is reportedly worried about smart glasses, too - Yahoo Tech",
+      "url": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxOOW1Mb1lheUJ0cG9peVVzdEtaQ0ZJZUhpamQ0bjNTQ0w5cXJnNXZOTmhkVUFYSm85NFlDNnFWdGliUllSenVsX1BLZ24wRWVoZ1hsMGtGMmwyTTIwLWJtVkhWbk9wUU5yeFc5bHZOem5YXy01OURjZHV5eF85MUdZSTF6QTNsRzJNRnBoNnBxNmR6UG55azRTRWFTeU5UeXhoYWp3TkgteEQzV3M?oc=5",
+      "author": "Yahoo Tech",
+      "published_at": "2026-07-27T13:57:10Z"
+    }
+  ]
+}

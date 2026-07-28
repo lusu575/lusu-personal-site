@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-07-28-article-pin-sidebar-navigation",
+      "slug": "2026-07-28-article-pin-sidebar-navigation",
+      "category": "site-updates",
+      "tags": ["网站更新", "知识库", "文章管理", "阅读体验", "QA"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-28T05:20:00.000Z",
+      "updated_at": "2026-07-28T05:20:00.000Z",
+      "published_at": "2026-07-28T05:20:00.000Z",
+      "fallbackOnly": true,
+      "icon": "knowledge",
+      "date": "2026.07.28",
+      "title": {
+        "zh": "文章置顶与目录定位修复",
+        "en": "Article Pinning and Contents Navigation Fixes",
+        "ja": "記事の固定表示と目次移動を修正"
+      },
+      "summary": {
+        "zh": "后台取消置顶不再被种子还原；返回按钮与目录合并为同一固定侧栏，目录点击会把目标标题对齐并同步高亮。",
+        "en": "Admin pin choices now survive seed refreshes. The back control and contents share one anchored sidebar, and contents clicks align and highlight the requested heading.",
+        "ja": "管理画面の固定表示設定を seed が戻さないようにし、戻る操作と目次を同じ固定サイドバーへまとめ、目次移動時の見出し位置と選択表示を同期しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-07-28-knowledge-reader-welcome-fixes",
       "slug": "2026-07-28-knowledge-reader-welcome-fixes",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "知识库“每日 AI 新闻”正式接入 Horizon 与 Codex：每天北京时间 7 点开始整理前 24 小时内容，三语稿通过检查后在 8 点前自动公开。",
         "en": "Daily AI News now runs through Horizon and Codex: each Beijing-time day starts at 07:00, covers the prior 24 hours, and publishes the validated Chinese, English, and Japanese edition by 08:00.",
         "ja": "「毎日AIニュース」は Horizon と Codex に正式接続され、北京時間の毎朝7時に直前24時間分の処理を始め、検証済みの中・英・日3言語版を8時までに自動公開します。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-07-26-security-reliability-hardening",
-      "slug": "2026-07-26-security-reliability-hardening",
-      "category": "site-updates",
-      "tags": ["security", "reliability", "Admin", "Cloudflare", "QA"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-07-26T14:58:00.000Z",
-      "updated_at": "2026-07-26T14:58:00.000Z",
-      "published_at": "2026-07-26T14:58:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.07.26",
-      "title": {
-        "zh": "全站安全与可靠性加固",
-        "en": "Sitewide Security and Reliability Hardening",
-        "ja": "サイト全体のセキュリティと信頼性を強化"
-      },
-      "summary": {
-        "zh": "一次性加固账号入口、统计写入、D1 迁移、后台并发编辑与互传治理，并为文章分享、游戏和日语工具补齐超时、降级与离线回退。",
-        "en": "Hardened account entry, analytics writes, D1 migrations, concurrent admin editing, and Transfer governance while adding timeouts, degradation paths, and offline fallbacks for articles, games, and the Japanese tool.",
-        "ja": "アカウント入口、分析書き込み、D1 移行、管理画面の同時編集、転送管理を強化し、記事・ゲーム・日本語ツールへタイムアウト、縮退、オフライン復帰を追加しました。"
       }
     }
   ]

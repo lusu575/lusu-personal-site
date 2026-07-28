@@ -156,14 +156,21 @@ test("latest update time text keeps its machine-readable date in sync", async ()
 });
 
 test("article navigation and multiline TOC geometry stay scroll-safe across desktop and mobile", async () => {
-  const [routeCss, mobileCss, auditSource] = await Promise.all([
+  const [indexSource, routeCss, mobileCss, mainSource, auditSource] = await Promise.all([
+    readFile(new URL("../index.html", import.meta.url), "utf8"),
     readFile(new URL("../css/routes/knowledge.css", import.meta.url), "utf8"),
     readFile(new URL("../css/mobile-ios-shell.css", import.meta.url), "utf8"),
+    readFile(new URL("../js/main.js", import.meta.url), "utf8"),
     readFile(new URL("../scripts/public-ui-audit.mjs", import.meta.url), "utf8")
   ]);
 
-  assert.match(routeCss, /\.article-back-button\s*\{[^}]*position:\s*sticky[^}]*top:\s*18px/);
-  assert.match(routeCss, /\.article-reader-sidebar\s*\{[^}]*grid-template-rows:\s*minmax\(0,\s*1fr\)\s+auto[^}]*height:\s*clamp\(300px,\s*calc\(100dvh - 300px\),\s*640px\)[^}]*top:\s*72px/);
+  const sidebarMarkup = indexSource.slice(
+    indexSource.indexOf('<aside class="article-reader-sidebar">'),
+    indexSource.indexOf('<div class="article-detail-card">')
+  );
+  assert.match(sidebarMarkup, /data-article-back[\s\S]*?id="article-detail-toc"/);
+  assert.match(routeCss, /\.article-back-button\s*\{[^}]*width:\s*100%[^}]*position:\s*static/);
+  assert.match(routeCss, /\.article-reader-sidebar\s*\{[^}]*grid-template-rows:\s*auto\s+minmax\(0,\s*1fr\)\s+auto[^}]*height:\s*clamp\(320px,\s*calc\(100dvh - 246px\),\s*700px\)[^}]*position:\s*sticky[^}]*top:\s*18px/);
   assert.match(routeCss, /\.article-toc\s*\{[^}]*grid-template-rows:\s*auto\s+minmax\(0,\s*1fr\)[^}]*min-height:\s*0/);
   assert.match(routeCss, /#article-detail-toc-list\s*\{[^}]*grid-auto-rows:\s*max-content[^}]*max-height:\s*none[^}]*padding:\s*10px\s+20px\s+34px\s+10px[^}]*overflow:\s*auto/);
   assert.match(routeCss, /\.article-toc-link\s*\{[^}]*height:\s*auto[^}]*min-height:\s*0[^}]*padding:\s*8px\s+10px[^}]*line-height:\s*1\.45/);
@@ -172,6 +179,7 @@ test("article navigation and multiline TOC geometry stay scroll-safe across desk
   assert.match(mobileCss, /html\[data-ui-shell="mobile"\]\s+\.article-reader-sidebar\s*\{[^}]*min-height:\s*0[^}]*height:\s*auto/);
   assert.match(mobileCss, /@media \(orientation:\s*portrait\) and \(max-height:\s*560px\)[\s\S]*?\.article-toc\s*\{[^}]*height:\s*auto[^}]*max-height:\s*86px/);
   assert.match(mobileCss, /@media \(orientation:\s*portrait\) and \(max-height:\s*560px\)[\s\S]*?\.article-toc-link\s*\{[^}]*height:\s*auto[^}]*white-space:\s*normal/);
+  assert.match(mainSource, /scrollToArticleHeading\(articleHeadingButton\.dataset\.articleHeadingTarget,\s*\{\s*behavior:\s*"auto"\s*\}\)/);
   assert.match(auditSource, /article-first-screen-\$\{viewport\.width\}x\$\{viewport\.height\}\.png/);
   assert.match(auditSource, /mobile article sidebar reserves/);
   assert.match(auditSource, /firstBodyVisibleHeight\s*<\s*Math\.min\(firstScreen\.firstBody\.height,\s*20\)/);

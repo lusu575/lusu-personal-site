@@ -1,9 +1,19 @@
 # PROJECT_CONTEXT.md
 
+## 2026-07-28 文章置顶持久化与固定阅读侧栏
+
+- `seed-ai-agent-workflow-guide-2026-06-14` 是后台可维护的普通文章。其元数据 seed 只在记录缺失时插入，不能在 Functions 冷启动或重复执行 `cloudflare/schema.sql` 时 upsert 覆盖 `is_pinned`、`updated_at` 等管理员状态。
+- `site_runtime_state.article_ai_agent_workflow_pin_repair_v1` 只负责把部署前已被旧 seed 强制恢复为置顶的线上记录一次性改回未置顶。标记存在后，后台重新置顶或取消置顶都必须原样保留。
+- `.article-reader-sidebar` 同时拥有“返回文章列表”和文章目录；桌面与横屏由这一整个侧栏 sticky 定位，返回按钮本身保持普通流布局并位于目录上方，不能再用两个不同 `top` 的 sticky 元素制造覆盖。
+- 目录点击使用 `#article-detail.scrollTo({ behavior: "auto" })` 精确落到阅读区顶部安全线，然后同步标题焦点、URL hash 与唯一 `aria-current`。IntersectionObserver 的激活线与同一落点一致，点击后不得回退显示上一章节。
+- 本批公开记录为 `seed-update-2026-07-28-article-pin-sidebar-navigation`，公共／API 表示版本为 `20260728-article-pin-sidebar-r2`；后台脚本版本为 `20260728-admin-article-pin-persistence-r1`。
+- 2026-07-27 schema v3 历史 one-shot 的来源回归不再依赖 Git 忽略的完整 Horizon 本地运行目录。测试只可显式传入受限的紧凑 provenance fixture；正式 schema v4 运行禁止使用该覆盖入口。
+- 本批本地证据为公共模块图 20 / 20、全量测试 326 / 326、文章专项 16 / 16、发布级 Headless 192 / 192、A Dark Room 浏览器回归、静态构建和连续两次一致的生产构建。
+
 ## 2026-07-28 知识库阅读导航与每日欢迎规则
 
 - 知识库文章目录项不设固定高度；统一 `line-height` 和上下 padding 后由多行标题自然撑高。桌面／横屏的目录列表占用侧栏剩余高度并独立纵向滚动，右侧与底部必须保留滚动安全空间，滚到末尾时最后一项应完整落在列表视口内。短竖屏仍使用横向目录，但标题允许换行并自然增加高度，不得恢复 `white-space: nowrap` 或 44px 固定行高裁切。
-- `#article-detail` 是文章唯一纵向滚动 owner。“返回文章列表”是阅读容器左上角的 sticky 控件，正文或目录滚动后几何位置不变；“回到顶部”是 fixed 控件，但其 right／bottom 由公共帧管线根据 `.article-detail-card`、文章窗口和 `.xp-taskbar`／移动 Dock 的实时边界写入，必须位于正文阅读区右下角。点击回顶只调用文章详情容器的 `scrollTo()`，不滚动 document，并把焦点交给文章标题。
+- `#article-detail` 是文章唯一纵向滚动 owner。“返回文章列表”位于 sticky `.article-reader-sidebar` 内并与目录作为一个整体固定；“回到顶部”是 fixed 控件，但其 right／bottom 由公共帧管线根据 `.article-detail-card`、文章窗口和 `.xp-taskbar`／移动 Dock 的实时边界写入，必须位于正文阅读区右下角。点击回顶只调用文章详情容器的 `scrollTo()`，不滚动 document，并把焦点交给文章标题。
 - `site-updates` 是专属更新日志分类。Knowledge 的“全部”Tab 列表和数量都必须排除它；只有 `site-updates` 专属“更新记录”Tab 显示这些文章。直达文章、搜索专属分类和 Home 最近更新不受影响。
 - 欢迎弹窗使用访问设备本地日期格式 `YYYY-MM-DD` 保存到 `lusu-welcome-day`。每天首次打开任意公开路由时显示一次，并在弹窗实际打开时立刻同步 localStorage、sessionStorage 和页面内存；同一天后续导航／刷新不重复显示，第二天本地日期变化后再次显示。`welcome=0` 和 `welcome=1` 继续作为审计／预览的明确关闭与强制覆盖。
 - 本批公开记录为 `seed-update-2026-07-28-knowledge-reader-welcome-fixes`，公共版本为 `20260728-knowledge-reader-welcome-r1`。文章专项回归固定覆盖 359×500、375×667、390×844、844×390、1280×720 与 1440×900，检查多行标题自然高度、目录末项、返回按钮位置、回顶滚动 owner、正文卡片边界及更新 Tab 筛选。

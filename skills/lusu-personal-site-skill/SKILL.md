@@ -26,7 +26,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 新密码固定使用 PBKDF2-HMAC-SHA256 600,000 次并把迭代数随哈希保存；登录必须按记录中的历史迭代数验证，成功后用条件更新升级旧 25,000 / 100,000 次哈希。不得以加大 KDF 代替登录限流，也不得在错误、日志或统计中泄露密码或哈希。
 - page view、click、article view 等匿名写入必须有来源限流与重复抑制；文章 PV 只在去重事件实际落库后增加。过期 session、登录履历、分析事件和限流桶必须按明确保留期分批清理，每次有行数上限并通过 `waitUntil` 脱离健康响应关键路径。
 - Quick Transfer 未登录态只呈现一个上下文任务卡、一个主登录 CTA 和明确返回；登录完成要回到 Transfer，不得用红色 X 承担含糊返回语义。
-- 文章阅读时 document 不滚动，`#article-detail` 是唯一纵向 owner；进度轨道约 4px、与正文零交叠，移动端保留可见含义与准确 ARIA 百分比。100% 必须按 `.markdown-body` 正文末尾计算，不能把 Dock 安全尾距计入正文。目录项不得固定高度或单行裁切，多行标题以统一行高／上下 padding 自然撑高，目录末尾保留滚动安全区；返回列表固定在阅读区左上，回顶通过帧管线测量正文卡片与任务栏／Dock 后固定在右下。回顶在顶部用原生 `hidden` 退出焦点顺序，激活后只滚动文章容器并把焦点交给 `tabindex="-1"` 的文章标题。
+- 文章阅读时 document 不滚动，`#article-detail` 是唯一纵向 owner；进度轨道约 4px、与正文零交叠，移动端保留可见含义与准确 ARIA 百分比。100% 必须按 `.markdown-body` 正文末尾计算，不能把 Dock 安全尾距计入正文。目录项不得固定高度或单行裁切，多行标题以统一行高／上下 padding 自然撑高，目录末尾保留滚动安全区；返回列表必须是 `.article-reader-sidebar` 的第一个子项，由桌面／横屏的整个 sticky 侧栏与目录一起固定，按钮本身不得再独立 sticky。目录点击要精确滚动 `#article-detail` 并让目标标题、hash、焦点和唯一 `aria-current` 同步。回顶通过帧管线测量正文卡片与任务栏／Dock 后固定在右下；顶部用原生 `hidden` 退出焦点顺序，激活后只滚动文章容器并把焦点交给 `tabindex="-1"` 的文章标题。
 - Chat 发送只锁提交动作，用户可继续输入且旧请求不得清空新草稿。359×500 自动回归以普通房约 177px、私聊至少约 119px为目标；安全说明通过 44px 折叠入口提供，关闭时不占日志也不覆盖控件。
 - Chat 同时以 1280×720 为短桌面硬门槛：标题、两行身份／房间控制、日志、composer 与 footer 必须完整落在窗口和任务栏上方，只有日志可弹性收缩；字数计数归入输入状态行。短屏／横屏几何只放 `css/mobile-ios-shell.css`，route CSS 不得新增 `@media`。
 - Chat 发送失败重试必须复用同一 `clientRequestId`，新草稿或上一次已成功后才生成新 ID。服务端要在限流前重放首次成功结果，依靠 `(visitor_id, room_key, client_request_id)` 唯一索引防止并发重复；私聊不得因随机 IV 密文改变而产生第二条消息。旧 D1 先补 `client_request_id` 列、后建依赖索引。
@@ -239,12 +239,13 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 发现层不得按语言排除来源；可靠的中文、英文、日文、韩文及其他语言来源都可进入复核，并应使用重点实体的英中日韩常用别名帮助发现。required query／entity group 至少覆盖 Anthropic、OpenAI／GPT／Sam Altman／Codex、Kimi／月之暗面、智谱／GLM、千问／Qwen、MiniMax、混元、美团龙猫、字节跳动／豆包／Seed 等模型厂商，以及芯片／光刻／存储、机器人、智能设备、数据中心能源／散热／网络和科技金融；不能用一个过宽的通用检索代替逐组签收。
 - 发现查询必须把成功空结果与抓取／解析失败分开记录。Google News 等发现源使用低并发和有界重试；重试后仍失败时，coverage manifest 必须标记失败并关闭本期，不能把内部错误后返回的空数组算作“没有新闻”。candidate index 必须以确定性 UTF-8 字节写盘，SHA-256 对实际写入的同一字节计算，避免 Windows 换行转换破坏来源证明。
 - 新闻数量不得写死，只使用重要性门槛决定收录；初选少于 5 条时必须启动低产量第二轮审阅和定向补查，但 5 条不是最低配额，复核后仍可少于 5 条或报告“今日无稿”，不得凑数。跨日去重按 `eventKey + eventStage` 处理：同一事件同一阶段继续排除，正式发布、正式开源／开放权重等实质新阶段只有在记录前序故事和 material difference 后才可作为更新入选。正文固定为“今日要闻 / 主要新闻 / 传闻”，传闻只靠独立分区和条件语气区分，不逐条重复“未证实”。每条 AI 解读通常一至两句、明显短于正文，只挑关键影响、现实门槛、隐含限制或下一步观察点，不复述新闻，也不为了找问题而硬挑问题。来源 URL、评分与筛选理由只留在内部运行记录，对外正文不得出现网址、Markdown 链接、来源／参考资料章节、相关阅读跳转或内部评分。
-- 正式日报使用 schema v4；`npm.cmd run ai-news:validate` 必须反查对应 Horizon 候选文件，验证 candidate index、coverage manifest、required query／entity group 签收、低产量第二轮审阅，并检查三语标题均为固定前缀加各自第一条要闻标题、标题后没有公开导语、三段顺序、新闻三级标题唯一、单段事实正文、逐条一至两句且短于事实段的 AI 解读、传闻无重复核实标签。schema v3 只允许已登记的一次性历史样稿兼容，不得用于新的正式运行；不得删除或绕过格式、来源和覆盖证明。本地试投只允许通过 `npm.cmd run ai-news:deliver:local` 使用进程内临时令牌并走正式机器入口；无论成功失败都要停止预览、暂停通道和清除令牌。2026-07-27 样稿是生产链路测试输入，不能绕过相同的令牌、幂等、冲突、验证和 08:00 截止规则。
+- 正式日报使用 schema v4；`npm.cmd run ai-news:validate` 必须反查对应 Horizon 候选文件，验证 candidate index、coverage manifest、required query／entity group 签收、低产量第二轮审阅，并检查三语标题均为固定前缀加各自第一条要闻标题、标题后没有公开导语、三段顺序、新闻三级标题唯一、单段事实正文、逐条一至两句且短于事实段的 AI 解读、传闻无重复核实标签。schema v3 只允许已登记的一次性历史样稿兼容，不得用于新的正式运行；历史 CI 可显式传入仓库内紧凑 provenance fixture，但该入口必须同时校验 one-shot 开关、schemaVersion 3 与登记窗口，schema v4 必须拒绝。不得让 CI 依赖 Git 忽略的完整本地 Horizon 运行目录，也不得删除或绕过格式、来源和覆盖证明。本地试投只允许通过 `npm.cmd run ai-news:deliver:local` 使用进程内临时令牌并走正式机器入口；无论成功失败都要停止预览、暂停通道和清除令牌。2026-07-27 样稿是生产链路测试输入，不能绕过相同的令牌、幂等、冲突、验证和 08:00 截止规则。
 - 每次合并代码、上线功能或做可见更新时，必须在知识库 `site-updates`（网站更新记录）分类发布一篇真实文章。
 - 网站更新记录文章必须同时写入 zh / en / ja，包含主标题、简短简介和正文；正文要概括本次更新内容。
 - `site-updates` 只是按时间排列的更新日志，已有和新增记录都不得置顶；后台写入、seed / schema、Home / Knowledge fallback 与前端排序必须把该分类保持为 `is_pinned = 0`，不能让旧缓存的错误值重新显示置顶标记。
 - Knowledge 的“全部”Tab 列表与数量必须排除 `site-updates`；所有网站更新只在 `site-updates` 专属“更新记录”Tab 中显示。不要用仅隐藏按钮或仅改计数的两套逻辑，筛选与计数必须复用同一分类函数。
 - 后台文章、视频、视频分类、社交链接及任何会覆盖既有内容的刷新／删除必须携带读取时的 `expectedUpdatedAt`。服务端只允许版本匹配的条件写入，关系表与翻译等附属写入必须和主记录 CAS 原子收口；陈旧页返回统一 `409 + CONTENT_CONFLICT`，前端保留草稿并提示手动合并。
+- 后台可编辑的普通 seed 文章不能在冷启动时 upsert 覆盖 `is_pinned`、`updated_at` 或其他管理员维护元数据；默认元数据只在记录缺失时插入。需要修复既有线上值时用 `site_runtime_state` 一次性标记，之后必须继续尊重后台的新选择。
 - 这是合并前验收门槛，不是事后可选补记；如果本轮无法走后台发布，也必须在同一次变更中补齐 seed 与 fallback，确认知识库、欢迎弹窗“最近更新”和右上角最新日期都能读到这次更新。
 - 如果网站更新记录通过 seed 维护，必须同时更新 `functions/api/[[route]].js` 的 `articleSeedStatements`、`cloudflare/schema.sql`、`js/data/content.mjs` 的完整 fallback `content.updates`，以及 `js/data/home-content.mjs` 的最近五条无正文摘要投影，避免线上 D1、手动 migration、Home 首屏和 D1 不可用兜底显示不一致。
 - 首页欢迎弹窗右侧“最近更新”自动读取 `site-updates` 分类文章；不要再把右侧更新列表改回只读写死数组。

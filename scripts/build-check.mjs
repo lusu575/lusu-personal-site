@@ -793,7 +793,7 @@ const redirectsConfig = readRequired("_redirects");
 const routeLazyVersion = "20260726-security-reliability-r1";
 const trustSafetyStatusVersion = "20260726-security-reliability-r1";
 const dailyAiNewsVersion = "20260728-daily-ai-news-coverage-r1";
-const knowledgeReaderVersion = "20260728-knowledge-reader-welcome-r1";
+const knowledgeReaderVersion = "20260728-article-pin-sidebar-r2";
 const routeStyleVersion = knowledgeReaderVersion;
 const publicRouteVersion = (route) => route === "knowledge"
   ? knowledgeReaderVersion
@@ -1919,7 +1919,7 @@ for (const asset of ["admin.css", "admin.js"]) {
 }
 
 const adminSafetyCacheVersion = "20260727-daily-ai-news-inbox-r1";
-const adminPublicContentVersion = "20260728-daily-ai-news-production-r1";
+const adminPublicContentVersion = "20260728-admin-article-pin-persistence-r1";
 if (!adminHtml.includes(`/admin/admin.css?v=${adminSafetyCacheVersion}`)
   || !adminHtml.includes(`/admin/admin.js?v=${adminPublicContentVersion}`)) {
   fail("admin CSS and JS must use their current cache versions");
@@ -3947,9 +3947,12 @@ if (!hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-read-pr
   || !hasPattern(knowledgeRouteCss, /body\.is-article-reading\s+\.article-top-link\s*\{[^}]*min-height:\s*44px/)
   || !hasPattern(knowledgeRouteCss, /\.article-top-link\s*\{[^}]*right:\s*var\(--article-top-control-right[^}]*bottom:\s*var\(--article-top-control-bottom/)
   || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-top-link\s*\{[^}]*top:\s*auto[^}]*right:\s*var\(--article-top-control-right[^}]*bottom:\s*var\([^}]*--article-top-control-bottom[\s\S]*?width:\s*44px/)
-  || !hasPattern(knowledgeRouteCss, /\.article-back-button\s*\{[^}]*position:\s*sticky[^}]*top:\s*18px/)
+  || !hasPattern(indexHtml, /<aside class=["']article-reader-sidebar["']>[\s\S]*?data-article-back[\s\S]*?id=["']article-detail-toc["']/)
+  || !hasPattern(knowledgeRouteCss, /\.article-back-button\s*\{[^}]*width:\s*100%[^}]*position:\s*static/)
+  || !hasPattern(knowledgeRouteCss, /\.article-reader-sidebar\s*\{[^}]*grid-template-rows:\s*auto\s+minmax\(0,\s*1fr\)\s+auto[^}]*position:\s*sticky[^}]*top:\s*18px/)
   || !hasPattern(knowledgeRouteCss, /#article-detail-toc-list\s*\{[^}]*grid-auto-rows:\s*max-content[^}]*padding:\s*10px\s+20px\s+34px\s+10px[^}]*overflow:\s*auto/)
   || !hasPattern(knowledgeRouteCss, /\.article-toc-link\s*\{[^}]*height:\s*auto[^}]*min-height:\s*0[^}]*line-height:\s*1\.45/)
+  || !hasPattern(mainJs, /scrollToArticleHeading\(articleHeadingButton\.dataset\.articleHeadingTarget,\s*\{\s*behavior:\s*["']auto["']\s*\}\)/)
   || !hasPattern(knowledgeModuleJs, /const\s+cardRect\s*=\s*document\.querySelector\(\s*["']\.article-detail-card["']\s*\)\?\.getBoundingClientRect\(\)/)
   || !hasPattern(knowledgeModuleJs, /--article-top-control-right[\s\S]*--article-top-control-bottom/)
   || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-read-progress-label span\s*\{[^}]*position:\s*static[^}]*font-size:\s*11px/)
@@ -4190,13 +4193,13 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-07-27-daily-ai-news-inbox";
-const finalUpdateSlug = "2026-07-27-daily-ai-news-inbox";
+const finalUpdateId = "seed-update-2026-07-28-article-pin-sidebar-navigation";
+const finalUpdateSlug = "2026-07-28-article-pin-sidebar-navigation";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Daily AI News Goes Live";
-const finalPublishedAt = "2026-07-27T16:05:00.000Z";
+const finalTitleEn = "Article Pinning and Contents Navigation Fixes";
+const finalPublishedAt = "2026-07-28T05:20:00.000Z";
 const finalTranslationMinimums = {
   title: 8,
   summary: 24,

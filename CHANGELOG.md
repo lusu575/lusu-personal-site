@@ -4,6 +4,11 @@
 
 ## 2026-07-28
 
+- 修复普通 seed 文章的后台置顶状态被冷启动覆盖：`seed-ai-agent-workflow-guide-2026-06-14` 改为仅在缺失时插入元数据，并通过 `site_runtime_state.article_ai_agent_workflow_pin_repair_v1` 一次性把“从提问到上线：普通人如何用 AI Agent 放大执行力”恢复为未置顶；后续后台置顶／取消置顶及 row revision 均不会被种子重写。
+- 将“返回文章列表”移入 `.article-reader-sidebar` 并置于目录上方，桌面与横屏由整个侧栏统一 sticky，不再用两个独立吸顶偏移造成重叠；目录点击改为正文容器内的精确即时定位，使目标标题、URL hash、焦点与 `aria-current` 同步到同一章节。
+- 新增三语公开更新记录 `seed-update-2026-07-28-article-pin-sidebar-navigation`，同步完整 fallback、Home 最新五条、Functions 与 schema seed；公共／API 版本更新为 `20260728-article-pin-sidebar-r2`，后台主脚本更新为 `20260728-admin-article-pin-persistence-r1`。
+- 修复 GitHub Actions 的历史日报校验红灯：2026-07-27 schema v3 one-shot 改用仓库内紧凑 provenance fixture，不再依赖被忽略的本地 Horizon 完整运行目录；覆盖入口只允许已登记历史窗口，schema v4 正式运行会明确拒绝。
+- 最终本地验证为公共模块图 20 / 20、全量测试 326 / 326、文章专项 16 / 16、发布级 Headless 192 / 192、A Dark Room 浏览器回归及静态构建全部通过；生产产物连续两次构建清单一致。
 - 修复知识库文章页目录与阅读导航：目录项取消固定高度，以统一行高和上下内边距承载多行标题；目录列表改为占用侧栏剩余高度，并在右侧和底部保留滚动安全区，最后几条标题不再被裁切或压到滚动条箭头。桌面、短竖屏和短横屏规则均同步处理。
 - “返回文章列表”改为文章阅读容器内的左上角吸顶控件，正文滚动时保持原位；“回到顶部”由帧管线根据正文卡片、文章窗口和任务栏／移动 Dock 的实际几何固定在阅读区右下角，点击只滚动 `#article-detail` 并把焦点归还文章标题。
 - 知识库“全部”筛选现明确排除 `site-updates`，按钮计数也使用同一过滤结果；网站更新日志只在“更新记录”专属 Tab 显示。欢迎弹窗从长期版本标记改为访问设备的本地自然日标记，每天首次打开任意公开页面时显示一次，并在实际打开时立即记录当天。

@@ -3791,6 +3791,7 @@ async function auditArticleTocAndReadingDetails(client, origin, viewport, output
     const detail=document.getElementById('article-detail');
     const backButton=document.querySelector('[data-article-back]');
     const sidebar=document.querySelector('.article-reader-sidebar');
+    const toc=document.getElementById('article-detail-toc');
     const tocList=document.getElementById('article-detail-toc-list');
     const card=document.querySelector('.article-detail-card');
     const summary=document.getElementById('article-detail-summary');
@@ -3827,6 +3828,8 @@ async function auditArticleTocAndReadingDetails(client, origin, viewport, output
       duplicateIds:ids.filter((id)=>id.startsWith('article-第二节')),
       currentCount:links.filter((link)=>link.getAttribute('aria-current')==='location').length,
       backControl:{position:getComputedStyle(backButton).position,rect:rect(backButton)},
+      sidebarControl:{position:getComputedStyle(sidebar).position,rect:sidebarRect,containsBack:sidebar?.contains(backButton)===true},
+      tocControl:{rect:rect(toc)},
       tocRows,
       tocLayout:getComputedStyle(tocList).display,
       summary:{hidden:toggle?.hidden,expanded:toggle?.getAttribute('aria-expanded'),height:rect(summary)?.height||0,toggleHeight:rect(toggle)?.height||0},
@@ -3880,6 +3883,8 @@ async function auditArticleTocAndReadingDetails(client, origin, viewport, output
     const list=document.getElementById('article-detail-toc-list');
     const topButton=document.querySelector('[data-article-scroll-top]');
     const backButton=document.querySelector('[data-article-back]');
+    const sidebar=document.querySelector('.article-reader-sidebar');
+    const toc=document.getElementById('article-detail-toc');
     const card=document.querySelector('.article-detail-card');
     const taskbar=document.querySelector('.xp-taskbar');
     return {
@@ -3889,11 +3894,14 @@ async function auditArticleTocAndReadingDetails(client, origin, viewport, output
       detailScrollTop:detail.scrollTop,
       heading:rect(heading),
       detail:rect(detail),
+      targetOffset:heading&&detail?rect(heading).top-rect(detail).top:null,
       currentCount:document.querySelectorAll('[data-article-heading-target][aria-current="location"]').length,
       activeId:active?.dataset.articleHeadingTarget||'',
       active:rect(active),
       list:rect(list),
       backControl:{position:getComputedStyle(backButton).position,rect:rect(backButton)},
+      sidebarControl:{position:getComputedStyle(sidebar).position,rect:rect(sidebar),containsBack:sidebar?.contains(backButton)===true},
+      tocControl:{rect:rect(toc)},
       card:rect(card),
       taskbar:rect(taskbar),
       topControl:{hidden:Boolean(topButton?.hidden),tabIndex:topButton?.tabIndex??null,position:getComputedStyle(topButton).position,rect:rect(topButton)},
@@ -3971,9 +3979,16 @@ async function auditArticleTocAndReadingDetails(client, origin, viewport, output
   if (before.tocSemantics.listTabIndex !== null || !before.tocSemantics.titlesMatch) failures.push(`TOC container or full-title semantics are wrong: ${JSON.stringify(before.tocSemantics)}`);
   if (!interaction.targetId || interaction.focusId !== interaction.targetId || interaction.hash !== interaction.targetId || interaction.activeId !== interaction.targetId || interaction.currentCount !== 1) failures.push(`TOC click focus/hash/current state is wrong: ${JSON.stringify(interaction)}`);
   if (!interaction.heading || !interaction.detail || interaction.heading.top < interaction.detail.top - 1 || interaction.heading.bottom > interaction.detail.bottom + 1) failures.push(`TOC target is obscured outside the article viewport: ${JSON.stringify({ heading:interaction.heading, detail:interaction.detail })}`);
+  if (interaction.targetOffset === null || interaction.targetOffset < 10 || interaction.targetOffset > 34) failures.push(`TOC target did not land at the reader activation line: ${JSON.stringify(interaction)}`);
   if (!interaction.active || !interaction.list || interaction.active.top < interaction.list.top - 1 || interaction.active.bottom > interaction.list.bottom + 1 || interaction.active.left < interaction.list.left - 1 || interaction.active.right > interaction.list.right + 1) failures.push(`active TOC item is outside its own scroll viewport: ${JSON.stringify({ active:interaction.active, list:interaction.list })}`);
   if (!tocEnd.last || !tocEnd.list || tocEnd.last.top < tocEnd.list.top - 1 || tocEnd.last.bottom > tocEnd.list.bottom - (tocEnd.vertical ? 8 : -1) || tocEnd.last.left < tocEnd.list.left - 1 || tocEnd.last.right > tocEnd.list.right - (tocEnd.horizontal ? 2 : -1) || (tocEnd.vertical && Math.abs(tocEnd.scrollTop-tocEnd.maxTop)>1) || (tocEnd.horizontal && Math.abs(tocEnd.scrollLeft-tocEnd.maxLeft)>1)) failures.push(`final TOC item is clipped or overlaps the scrollbar edge: ${JSON.stringify(tocEnd)}`);
-  if (before.backControl.position !== "sticky" || interaction.backControl.position !== "sticky" || !before.backControl.rect || !interaction.backControl.rect || Math.abs(before.backControl.rect.top-interaction.backControl.rect.top)>1 || Math.abs(before.backControl.rect.left-interaction.backControl.rect.left)>1) failures.push(`Back to Article List did not remain anchored: ${JSON.stringify({ before:before.backControl, after:interaction.backControl })}`);
+  const anchoredSidebarExpected = !viewport.mobile || viewport.width > viewport.height;
+  const rectanglesOverlap = (first, second) => Boolean(first && second
+    && Math.min(first.right, second.right) > Math.max(first.left, second.left) + 1
+    && Math.min(first.bottom, second.bottom) > Math.max(first.top, second.top) + 1);
+  if (!before.sidebarControl.containsBack || !interaction.sidebarControl.containsBack || before.backControl.position !== "static" || interaction.backControl.position !== "static") failures.push(`Back to Article List is not owned by the shared reader sidebar: ${JSON.stringify({ before:before.sidebarControl, after:interaction.sidebarControl, backBefore:before.backControl, backAfter:interaction.backControl })}`);
+  if (rectanglesOverlap(before.backControl.rect, before.tocControl.rect) || rectanglesOverlap(interaction.backControl.rect, interaction.tocControl.rect)) failures.push(`Back to Article List overlaps the article contents: ${JSON.stringify({ before:{back:before.backControl,toc:before.tocControl}, after:{back:interaction.backControl,toc:interaction.tocControl} })}`);
+  if (anchoredSidebarExpected && (before.sidebarControl.position !== "sticky" || interaction.sidebarControl.position !== "sticky" || !before.sidebarControl.rect || !interaction.sidebarControl.rect || Math.abs(before.sidebarControl.rect.top-interaction.sidebarControl.rect.top)>1 || Math.abs(before.sidebarControl.rect.left-interaction.sidebarControl.rect.left)>1)) failures.push(`reader sidebar did not remain anchored: ${JSON.stringify({ before:before.sidebarControl, after:interaction.sidebarControl })}`);
   if (!before.topControl.hidden || (before.topControl.rect && (before.topControl.rect.width > 0 || before.topControl.rect.height > 0))) failures.push(`article top control remains exposed at 0%: ${JSON.stringify(before.topControl)}`);
   if (interaction.topControl.hidden || !interaction.topControl.rect || interaction.topControl.rect.width < 44 || interaction.topControl.rect.height < 44) failures.push(`article top control is unavailable after scrolling: ${JSON.stringify(interaction.topControl)}`);
   const topControlBottomLimit = Math.min(interaction.detail?.bottom ?? viewport.height, interaction.taskbar?.top ?? viewport.height);

@@ -613,6 +613,125 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-07-28-article-pin-sidebar-navigation',
+  '2026-07-28-article-pin-sidebar-navigation',
+  'site-updates',
+  '["网站更新","知识库","文章管理","阅读体验","QA"]',
+  '', 'published', 0, 0,
+  '2026-07-28T05:20:00.000Z',
+  '2026-07-28T05:20:00.000Z',
+  '2026-07-28T05:20:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  (
+    'seed-update-2026-07-28-article-pin-sidebar-navigation-zh',
+    'seed-update-2026-07-28-article-pin-sidebar-navigation',
+    'zh',
+    '文章置顶与目录定位修复',
+    '后台取消置顶不再被种子还原；返回按钮与目录合并为同一固定侧栏，目录点击会把目标标题对齐并同步高亮。',
+    '# 文章置顶与目录定位修复
+
+本次继续修正知识库文章管理和长文阅读导航。
+
+## 后台置顶状态
+
+- “从提问到上线：普通人如何用 AI Agent 放大执行力”已恢复为未置顶。
+- 该文章的初始化种子改为只在首次建库时插入，不再在冷启动时覆盖后台保存的置顶状态和版本时间。
+- 线上已有错误状态通过一次性修复标记清理；以后在后台重新置顶或取消置顶都会保留。
+
+## 固定阅读侧栏
+
+- “返回文章列表”现在位于文章目录上方，并与目录共用同一个固定侧栏，不会在正文滚动后覆盖目录。
+- 桌面和横屏侧栏整体保持原位；窄屏按可读空间重新排版，按钮和目录仍保持独立间距。
+
+## 目录跳转
+
+- 点击目录时使用文章正文容器的精确滚动位置，将目标标题对齐到阅读区顶部安全线。
+- 跳转完成后，目录高亮、地址锚点和标题焦点同步到同一章节，不再停留在上一项。
+- 回归检查覆盖桌面、手机竖屏、短竖屏和手机横屏，并继续验证目录末项不裁切。',
+    '2026-07-28T05:20:00.000Z',
+    '2026-07-28T05:20:00.000Z'
+  ),
+  (
+    'seed-update-2026-07-28-article-pin-sidebar-navigation-en',
+    'seed-update-2026-07-28-article-pin-sidebar-navigation',
+    'en',
+    'Article Pinning and Contents Navigation Fixes',
+    'Admin pin choices now survive seed refreshes. The back control and contents share one anchored sidebar, and contents clicks align and highlight the requested heading.',
+    '# Article Pinning and Contents Navigation Fixes
+
+This update continues the Knowledge article-management and long-reading navigation fixes.
+
+## Admin pin state
+
+- “From Prompt to Production: How Ordinary People Can Amplify Execution with AI Agents” is restored to unpinned.
+- Its initialization seed now inserts metadata only on a fresh database, so cold starts no longer overwrite an admin pin choice or row revision.
+- A one-time repair marker clears the existing incorrect state; later pin and unpin actions remain under admin control.
+
+## Anchored reading sidebar
+
+- Back to Article List now sits above the contents and both controls belong to one anchored sidebar, so the back control cannot cover the contents after scrolling.
+- The whole sidebar stays in place on desktop and landscape layouts. Narrow screens reflow the same controls with independent spacing.
+
+## Contents navigation
+
+- A contents click scrolls the article detail container to an exact safe line near the top of the reader.
+- The selected contents item, URL anchor, and heading focus now move to the same chapter instead of remaining on the previous one.
+- Regression checks cover desktop, phone portrait, short portrait, and phone landscape while retaining the final-item clipping checks.',
+    '2026-07-28T05:20:00.000Z',
+    '2026-07-28T05:20:00.000Z'
+  ),
+  (
+    'seed-update-2026-07-28-article-pin-sidebar-navigation-ja',
+    'seed-update-2026-07-28-article-pin-sidebar-navigation',
+    'ja',
+    '記事の固定表示と目次移動を修正',
+    '管理画面の固定表示設定を seed が戻さないようにし、戻る操作と目次を同じ固定サイドバーへまとめ、目次移動時の見出し位置と選択表示を同期しました。',
+    '# 記事の固定表示と目次移動を修正
+
+知識庫の記事管理と長文ナビゲーションを引き続き修正しました。
+
+## 管理画面の固定表示
+
+- 「質問から公開まで：AI Agent で実行力を広げる方法」を固定表示なしへ戻しました。
+- この文章の初期 seed は新規データベースへの初回挿入だけにし、コールドスタート時に管理画面の固定表示設定や更新時刻を上書きしません。
+- 既存の誤った状態は一度だけ実行する修正マーカーで解除し、その後の固定／解除は管理画面の選択を保持します。
+
+## 固定された閲覧サイドバー
+
+- 「記事一覧へ戻る」を目次の上へ移し、二つを同じ固定サイドバーにまとめました。本文を動かしても戻る操作が目次へ重なりません。
+- デスクトップと横画面ではサイドバー全体を固定し、狭い画面では同じ操作を読みやすい間隔で再配置します。
+
+## 目次からの移動
+
+- 目次を押すと記事詳細コンテナだけを動かし、対象見出しを閲覧領域上部の安全な位置へ正確に合わせます。
+- 選択中の目次、URL のアンカー、見出しフォーカスを同じ章へ同期し、前の項目に残らないようにしました。
+- デスクトップ、スマートフォン縦画面、短い縦画面、横画面で確認し、末尾項目の切れも引き続き検査します。',
+    '2026-07-28T05:20:00.000Z',
+    '2026-07-28T05:20:00.000Z'
+  )
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-07-28-knowledge-reader-welcome-fixes',
   '2026-07-28-knowledge-reader-welcome-fixes',
   'site-updates',
@@ -6409,8 +6528,25 @@ on conflict(article_id, lang) do update set
 insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
+) values (
+  'seed-ai-agent-workflow-guide-2026-06-14',
+  'ai-agent-workflow-guide',
+  'ai',
+  '["AI","Agent","Codex","经验"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-06-14T15:00:00.000Z',
+  '2026-06-14T15:00:00.000Z',
+  '2026-06-14T15:00:00.000Z'
+)
+on conflict(article_id) do nothing;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
 ) values
-  ('seed-ai-agent-workflow-guide-2026-06-14', 'ai-agent-workflow-guide', 'ai', '["AI","Agent","Codex","经验"]', '', 'published', 1, 0, '2026-06-14T15:00:00.000Z', '2026-06-14T15:00:00.000Z', '2026-06-14T15:00:00.000Z'),
   ('seed-update-2026-06-14-ai-agent-article', '2026-06-14-ai-agent-article', 'site-updates', '["网站更新","AI","文章"]', '', 'published', 0, 0, '2026-06-14T15:01:00.000Z', '2026-06-14T15:01:00.000Z', '2026-06-14T15:01:00.000Z'),
   ('seed-update-2026-06-14-article-reading-links', '2026-06-14-article-reading-links', 'site-updates', '["网站更新","知识库","文章"]', '', 'published', 0, 0, '2026-06-14T16:20:00.000Z', '2026-06-14T16:20:00.000Z', '2026-06-14T16:20:00.000Z'),
   ('seed-update-2026-06-15-clouds-docs-maintenance', '2026-06-15-clouds-docs-maintenance', 'site-updates', '["网站更新","首页","动态壁纸","维护记录"]', '', 'published', 0, 0, '2026-06-15T05:00:00.000Z', '2026-06-15T05:00:00.000Z', '2026-06-15T05:00:00.000Z')
@@ -6423,6 +6559,22 @@ on conflict(article_id) do update set
   is_pinned = excluded.is_pinned,
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
+
+update articles
+set is_pinned = 0
+where article_id = 'seed-ai-agent-workflow-guide-2026-06-14'
+  and not exists (
+    select 1
+    from site_runtime_state
+    where key = 'article_ai_agent_workflow_pin_repair_v1'
+  );
+
+insert or ignore into site_runtime_state (key, value, updated_at)
+values (
+  'article_ai_agent_workflow_pin_repair_v1',
+  'unpin-restored',
+  '2026-07-28T05:20:00.000Z'
+);
 
 insert into article_translations (
   translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at

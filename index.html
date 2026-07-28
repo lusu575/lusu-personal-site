@@ -77,7 +77,7 @@
   </script>
   <script src="/js/mobile-shell.js?v=20260726-security-reliability-r1"></script>
   <link rel="stylesheet" href="/css/style.css?v=20260726-security-reliability-r1">
-  <link rel="stylesheet" data-mobile-shell-style href="/css/mobile-ios-shell.css?v=20260728-knowledge-reader-welcome-r1">
+  <link rel="stylesheet" data-mobile-shell-style href="/css/mobile-ios-shell.css?v=20260728-article-pin-sidebar-r2">
   <link rel="stylesheet" href="/css/motion-system.css?v=20260726-security-reliability-r1">
 </head>
 <body data-route="home">
@@ -193,14 +193,14 @@
             <aside class="category-panel" id="knowledge-categories"></aside>
             <div class="content-list" id="knowledge-list"></div>
             <article class="article-detail" id="article-detail" aria-labelledby="article-detail-title" hidden>
-              <button class="xp-button article-back-button" type="button" data-article-back>
-                <span data-i18n="articleBack">返回文章列表</span>
-              </button>
               <button class="xp-button article-top-link" type="button" data-article-scroll-top hidden>
                 <span class="article-copy-icon" aria-hidden="true">↑</span>
                 <span data-i18n="articleScrollTop">回到顶部</span>
               </button>
               <aside class="article-reader-sidebar">
+                <button class="xp-button article-back-button" type="button" data-article-back>
+                  <span data-i18n="articleBack">返回文章列表</span>
+                </button>
                 <nav class="article-toc" id="article-detail-toc" aria-label="文章目录" data-i18n-aria-label="articleTocTitle" hidden>
                   <p>
                     <span class="article-toc-icon asset-icon asset-icon-knowledge" aria-hidden="true"></span>
@@ -481,6 +481,6 @@
 
   <script src="/js/telemetry.js?v=20260623-analytics-privacy-r1"></script>
   <script src="/js/ui-motion.js?v=20260726-security-reliability-r1"></script>
-  <script type="module" src="/js/main.js?v=20260728-knowledge-reader-welcome-r1"></script>
+  <script type="module" src="/js/main.js?v=20260728-article-pin-sidebar-r2"></script>
 </body>
 </html>

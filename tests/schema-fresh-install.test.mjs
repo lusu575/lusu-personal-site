@@ -15,6 +15,8 @@ import {
 const schema = readFileSync(new URL("../cloudflare/schema.sql", import.meta.url), "utf8");
 const schemaIndexes = readFileSync(new URL("../cloudflare/schema-indexes.sql", import.meta.url), "utf8");
 const mobileOsArticleId = "seed-update-2026-07-10-premium-interaction-mobile-os";
+const aiAgentWorkflowArticleId = "seed-ai-agent-workflow-guide-2026-06-14";
+const aiAgentWorkflowPinRepairKey = "article_ai_agent_workflow_pin_repair_v1";
 
 test("D1 schema initializes an empty database and remains idempotent", () => {
   const db = new DatabaseSync(":memory:");
@@ -31,6 +33,15 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
     assert.equal(
       db.prepare("select count(*) as count from article_translations where article_id = ?").get(mobileOsArticleId).count,
       3
+    );
+    assert.equal(
+      db.prepare("select is_pinned from articles where article_id = ?").get(aiAgentWorkflowArticleId).is_pinned,
+      0
+    );
+    assert.equal(
+      db.prepare("select count(*) as count from site_runtime_state where key = ?")
+        .get(aiAgentWorkflowPinRepairKey).count,
+      1
     );
     assert.deepEqual(
       { ...db.prepare(`
@@ -94,6 +105,8 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
       1
     );
 
+    db.prepare("update articles set is_pinned = 1, updated_at = ? where article_id = ?")
+      .run("2026-07-28T05:30:00.000Z", aiAgentWorkflowArticleId);
     db.exec(schema);
     db.exec(schemaIndexes);
     assert.deepEqual(db.prepare("PRAGMA foreign_key_check").all(), []);
@@ -104,6 +117,14 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
     assert.equal(
       db.prepare("select count(*) as count from article_delivery_channels where channel_key = 'daily-ai-news'").get().count,
       1
+    );
+    assert.deepEqual(
+      { ...db.prepare("select is_pinned, updated_at from articles where article_id = ?").get(aiAgentWorkflowArticleId) },
+      {
+        is_pinned: 1,
+        updated_at: "2026-07-28T05:30:00.000Z"
+      },
+      "reapplying schema seeds must preserve later admin pin choices and row revisions"
     );
   } finally {
     db.close();

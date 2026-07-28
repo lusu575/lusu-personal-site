@@ -3,6 +3,8 @@ import test from "node:test";
 
 const FRAME_PIPELINE_SEED_ID = "seed-update-2026-07-18-frame-pipeline-low-performance";
 const FRAME_PIPELINE_SEED_TIME = "2026-07-17T21:12:00.000Z";
+const AI_AGENT_WORKFLOW_ARTICLE_ID = "seed-ai-agent-workflow-guide-2026-06-14";
+const AI_AGENT_WORKFLOW_PIN_REPAIR_KEY = "article_ai_agent_workflow_pin_repair_v1";
 const VALID_CHAT_SECRET = "article-seed-chat-secret-0000000000000001";
 const VALID_ANALYTICS_SECRET = "article-seed-analytics-secret-000000001";
 
@@ -95,4 +97,23 @@ test("every article seed D1 binding is defined", async () => {
     assert.equal(params[6], FRAME_PIPELINE_SEED_TIME, `${params[2]} created_at must be bound`);
     assert.equal(params[7], FRAME_PIPELINE_SEED_TIME, `${params[2]} updated_at must be bound`);
   }
+
+  const aiAgentSeed = seedBatch.find(({ sql }) => (
+    sql.includes(`'${AI_AGENT_WORKFLOW_ARTICLE_ID}'`)
+    && /on conflict\(article_id\) do nothing/i.test(normalizedSql(sql))
+  ));
+  assert.ok(aiAgentSeed, "the admin-editable AI Agent article must use insert-only metadata seeding");
+
+  const pinRepair = seedBatch.find(({ sql, params }) => (
+    /^update articles set is_pinned = 0/i.test(normalizedSql(sql))
+    && params?.includes(AI_AGENT_WORKFLOW_ARTICLE_ID)
+    && params?.includes(AI_AGENT_WORKFLOW_PIN_REPAIR_KEY)
+  ));
+  assert.ok(pinRepair, "the historical forced pin must be repaired exactly once");
+
+  const pinRepairMarker = seedBatch.find(({ sql, params }) => (
+    /^insert or ignore into site_runtime_state/i.test(normalizedSql(sql))
+    && params?.includes(AI_AGENT_WORKFLOW_PIN_REPAIR_KEY)
+  ));
+  assert.ok(pinRepairMarker, "the one-time pin repair must persist its runtime-state marker");
 });
