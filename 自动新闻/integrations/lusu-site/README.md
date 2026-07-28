@@ -3,8 +3,9 @@
 这套适配层把 Horizon、Codex 和个人站串成一条正式的每日生产链路：
 
 1. Horizon 是必经数据入口，负责多来源抓取、网址规范化和跨来源去重；不可用时当期停止。
-2. Codex 读取真实候选，完成人工编辑标准的一手复核、重要性判断、近 30 天去重和三语完整文章生成。
-3. 本地校验全部通过后，生产投递脚本在受控通道中公开文章，并且只把接口明确返回 `published` 当作成功。
+2. Horizon 对可靠来源不设语言限制，并以英文、简体中文、日文、韩文作为常用检索种子，通过多语言主题查询、重点实体查询和可靠 RSS 入口形成真实候选，同时输出紧凑标题索引和覆盖清单；Codex 必须完整签收这些覆盖证据。
+3. Codex 完成人工编辑标准的一手复核、重要性判断、近 30 天事件阶段去重和三语完整文章生成。少于 5 条时必须做第二轮覆盖审阅，但仍不降低门槛或凑数。
+4. 本地校验全部通过后，生产投递脚本在受控通道中公开文章，并且只把接口明确返回 `published` 当作成功。
 
 `ARTICLE_STYLE.md` 是每一期必须遵守的固定格式与文风标准；`AUTOMATION_PROMPT.md` 是交给每日 Codex 任务的完整执行说明。
 
@@ -15,10 +16,11 @@
 - 抓取、复核、生成、校验、投递和公开必须在 08:00 前完成。
 - 08:00 是硬截止。任何验证失败、通道异常或超时都会停止本期；不迟到补发、不降级成草稿、不自动跨截止重试。
 - 新闻条数不写死；没有 confirmed 候选可以承担要闻时，结果为“今日无稿”。
+- 第一轮少于 5 条不是最低刊发数量，而是强制二次覆盖审阅触发器；复查后仍只有少量高价值消息时可以少发。
 
 ## 固定编辑规则
 
-- 重要性低于 7 分的不写；同一事件只写一次，近 30 天无实质进展的不重复。
+- 重要性低于 7 分的不写；同一事件阶段只写一次，近 30 天无实质进展的不重复。预告、正式发布、权重上线、许可证、技术报告等阶段只有出现实质新事实时才可作为 material update 再写。
 - 正文固定为“今日要闻 / 主要新闻 / 传闻”三段；要闻恰好一条且已经核实，传闻单独放置并使用条件语气。
 - 每条新闻是一段事实正文，末尾是一至两句、明显更短的 AI 解读。
 - 中文、英文、日文使用同一组事实、栏目和核实状态。
@@ -27,8 +29,11 @@
 ## 文件说明
 
 - `horizon.config.json`：本站 AI 新闻源配置，不含密钥。
-- `fetch-with-horizon.py`：调用 Horizon 原生服务并按精确 24 小时窗口输出候选。
-- `workflow.json`：07:00—08:00 的生产时间、筛选、成文和 fail-closed 约定。
+- `discovery-queries.json`：使用 `any-reliable-language` 语言政策，至少提供英文、简体中文、日文、韩文检索种子，并维护重点实体／人物别名和 required coverage group；种子语言不是封闭白名单，文件不含密钥。
+- `fetch-with-horizon.py`：调用 Horizon 原生服务，以两路受控并发执行发现查询；失败查询最多重试两次，仍失败则与真实空结果分开记录并关闭正式运行。候选索引直接写入确定性 UTF-8 字节并据此计算 SHA-256，再按精确 24 小时窗口输出候选。
+- `candidate_index.json`：本次 Horizon 运行生成的紧凑候选索引，只含审阅所需的标题、时间、来源和覆盖归属，不含大段正文。
+- `coverage_manifest.json`：本次 required query、required group、语言、命中数和候选编号的机器可校验清单。
+- `workflow.json`：schemaVersion 4 的 07:00—08:00 生产时间、完整覆盖审阅、事件阶段去重、成文和 fail-closed 约定。
 - `ARTICLE_STYLE.md`：固定标题、栏目、事实段、AI 解读和传闻标准。
 - `AUTOMATION_PROMPT.md`：每日 Codex 任务的完整说明。
 - `validate-draft.mjs`：校验窗口、Horizon 来源、去重、重要性、三语结构和正文无外链。
@@ -36,6 +41,34 @@
 - `configure-production-channel.mjs`：一次性生成并安全保存令牌，再通过 Wrangler 远端开启 `enabled + auto_publish`。它不会显示令牌明文。
 - `deliver-local.mjs`：一次性本地草稿试投；强制关闭本地 auto-publish，结束后暂停通道并清除临时令牌。
 - `runs/`：每次运行的内部核验记录和三语稿件。
+
+schemaVersion 4 的运行记录必须从同一次 `coverage_manifest.json` 原样复制全部 required 编号，并使用生成的 candidate index 摘要：
+
+```json
+{
+  "horizonRun": {
+    "candidatesPath": "data/mcp-runs/<run-id>/daily_candidates.json",
+    "candidateIndexPath": "data/mcp-runs/<run-id>/candidate_index.json",
+    "coverageManifestPath": "data/mcp-runs/<run-id>/coverage_manifest.json"
+  },
+  "coverageAudit": {
+    "candidateIndexReviewedAt": "<带时区时间>",
+    "candidateIndexSha256": "<coverage_manifest.json 中的摘要>",
+    "lowVolumeTrigger": 5,
+    "signedOffQueryIds": ["<全部 requiredQueryIds>"],
+    "signedOffGroupIds": ["<全部 requiredGroupIds>"],
+    "secondPass": {
+      "required": true,
+      "completed": true,
+      "completedAt": "<带时区时间>",
+      "signedOffQueryIds": ["<再次签收全部 requiredQueryIds>"],
+      "signedOffGroupIds": ["<再次签收全部 requiredGroupIds>"]
+    }
+  }
+}
+```
+
+当入选不少于 5 条时，`secondPass.required` 和 `secondPass.completed` 都写 `false`；少于 5 条时必须按示例再次签收。这里的 5 只控制复查，不控制最终刊发数量。
 
 ## 一次性生产通道准备
 
@@ -51,7 +84,7 @@ npm.cmd run ai-news:configure:production -- --confirm-production
 
 本机 Codex 已启用任务“每日 AI 新闻：7点生成，8点前发布”（ID `ai-7-8`），按电脑当前的北京时间每天 07:00 启动。它是本地任务，不是云端常驻服务；电脑、Codex 和网络必须在 07:00–08:00 保持可用，休眠、关机或断网会让当期按失败关闭规则停止，不在 08:00 后补发。
 
-示例中的日期每天由任务按北京时间换算：
+示例中的日期每天由任务按北京时间换算。正式运行记录使用 schemaVersion 4，并引用同一次 Horizon 运行的 `daily_candidates.json`、`candidate_index.json` 与 `coverage_manifest.json`：
 
 ```powershell
 npm.cmd run ai-news:horizon:fetch -- --date 2026-07-29 --start 2026-07-28T07:00:00+08:00 --end 2026-07-29T07:00:00+08:00
@@ -59,11 +92,11 @@ npm.cmd run ai-news:validate -- --run 自动新闻/integrations/lusu-site/runs/2
 npm.cmd run ai-news:deliver:production -- --run 自动新闻/integrations/lusu-site/runs/2026-07-29.json
 ```
 
-生产投递必须显式提供本期运行记录，拒绝使用默认旧稿。它会再次校验日期、07:00 窗口和当前时间；距离 08:00 不足安全余量时不再发起请求。接口确认公开后，它还会在截止前分别读取中文、英文、日文公开文章，核对 slug、分区、语言、标题和正文。投递和公开核验都没有自动重试，避免一次不明确的响应造成重复公开。
+生产投递必须显式提供本期运行记录，拒绝使用默认旧稿。三语标题必须分别采用固定栏目名前缀加各自第一条要闻标题，不能只写日期；日期继续由发布时间和 slug 表达。校验器会核对 required query 与 required group 是否全部签收；入选少于 5 条时，还会要求 `coverageAudit.secondPass` 完成。它会再次校验日期、07:00 窗口和当前时间；距离 08:00 不足安全余量时不再发起请求。接口确认公开后，它还会在截止前分别读取中文、英文、日文公开文章，核对 slug、分区、语言、标题和正文。投递和公开核验都没有自动重试，避免一次不明确的响应造成重复公开。
 
 ## 历史样稿与本地试投
 
-`runs/2026-07-27-2300.json` 是 Horizon 真实抓取的历史链路样稿，窗口为北京时间 2026-07-26 23:00 至 2026-07-27 23:00。它不是正式每日窗口，只能显式 one-shot：
+`runs/2026-07-27-2300.json` 是 schemaVersion 3 的 Horizon 真实抓取历史链路样稿，窗口为北京时间 2026-07-26 23:00 至 2026-07-27 23:00。schemaVersion 3 只为这份历史 one-shot 保留兼容；新的正式每日运行必须使用 schemaVersion 4。历史稿只能显式 one-shot：
 
 ```powershell
 npm.cmd run ai-news:validate -- --run 自动新闻/integrations/lusu-site/runs/2026-07-27-2300.json --one-shot-history

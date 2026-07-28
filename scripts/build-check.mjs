@@ -792,7 +792,7 @@ const redirectsConfig = readRequired("_redirects");
 
 const routeLazyVersion = "20260726-security-reliability-r1";
 const trustSafetyStatusVersion = "20260726-security-reliability-r1";
-const dailyAiNewsVersion = "20260728-daily-ai-news-reader-r1";
+const dailyAiNewsVersion = "20260728-daily-ai-news-coverage-r1";
 const publicRouteVersion = (route) => route === "knowledge"
   ? dailyAiNewsVersion
   : (route === "resources" ? trustSafetyStatusVersion : routeLazyVersion);

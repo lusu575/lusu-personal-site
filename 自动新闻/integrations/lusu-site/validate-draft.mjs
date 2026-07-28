@@ -1,8 +1,15 @@
+import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
-import { resolve } from "node:path";
+import { isAbsolute, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const DEFAULT_RUN = resolve(import.meta.dirname, "runs", "2026-07-27-2300.json");
+const FORMAL_SCHEMA_VERSION = 4;
+const HISTORICAL_SCHEMA_VERSION = 3;
+const COVERAGE_MANIFEST_SCHEMA_VERSION = 1;
+const CANDIDATE_ARTIFACT_SCHEMA_VERSION = 2;
+const CANDIDATE_INDEX_SCHEMA_VERSION = 1;
+const LOW_VOLUME_TRIGGER = 5;
 const PRODUCTION_WINDOW_END_LOCAL_TIME = "07:00";
 const HISTORICAL_ONE_SHOT_WINDOW = Object.freeze({
   reportDate: "2026-07-27",
@@ -16,6 +23,9 @@ const URL_PATTERN = /(?:https?:\/\/|www\.|mailto:|\[[^\]]+]\(\s*(?!#)[^)]+\)|\b(
 const REFERENCE_HEADING_PATTERN = /^#{1,6}\s*(?:参考|来源|相关阅读|参考资料|sources?|references?|further reading|出典|参考文献|関連リンク)\s*$/im;
 const SECTION_ORDER = ["lead", "main", "rumor"];
 const VERIFICATION_VALUES = new Set(["confirmed", "unverified"]);
+const DEDUPE_DECISIONS = new Set(["new", "material-update", "duplicate"]);
+const INTERNAL_ID_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const SHA256_PATTERN = /^[a-f0-9]{64}$/;
 const AI_TAKE_MIN_LENGTH = 12;
 const AI_TAKE_MAX_LENGTH = 240;
 const ARTICLE_STRUCTURE = {
@@ -70,8 +80,15 @@ export function validateRun(run, { allowHistoricalOneShot = false } = {}) {
   if (!run || typeof run !== "object" || Array.isArray(run)) {
     throw new Error("运行记录必须是 JSON 对象。");
   }
-  if (run.schemaVersion !== 3) {
-    errors.push("运行记录必须使用每日 AI 新闻 schemaVersion 3。");
+  const isAllowedHistoricalSchema = run.schemaVersion === HISTORICAL_SCHEMA_VERSION
+    && allowHistoricalOneShot
+    && isHistoricalOneShotWindow(run);
+  const isFormalSchema = run.schemaVersion === FORMAL_SCHEMA_VERSION;
+  if (!isFormalSchema && !isAllowedHistoricalSchema) {
+    errors.push(
+      `正式运行记录必须使用每日 AI 新闻 schemaVersion ${FORMAL_SCHEMA_VERSION}；`
+      + `schemaVersion ${HISTORICAL_SCHEMA_VERSION} 只兼容显式历史 one-shot。`
+    );
   }
 
   const reportDate = String(run.reportDate || "");
@@ -91,6 +108,7 @@ export function validateRun(run, { allowHistoricalOneShot = false } = {}) {
   const isProductionWindow = String(run.windowStart || "").endsWith("+08:00")
     && run.windowEnd === `${reportDate}T${PRODUCTION_WINDOW_END_LOCAL_TIME}:00+08:00`;
   const isAllowedHistoricalWindow = allowHistoricalOneShot
+    && run.schemaVersion === HISTORICAL_SCHEMA_VERSION
     && isHistoricalOneShotWindow(run);
   if (!isProductionWindow && !isAllowedHistoricalWindow) {
     errors.push(
@@ -107,6 +125,14 @@ export function validateRun(run, { allowHistoricalOneShot = false } = {}) {
   if (!String(run.horizonRun?.candidatesPath || "").startsWith("data/mcp-runs/")) {
     errors.push("缺少 Horizon daily_candidates.json 路径。");
   }
+  if (isFormalSchema
+    && !String(run.horizonRun?.candidateIndexPath || "").startsWith("data/mcp-runs/")) {
+    errors.push("正式运行缺少 Horizon candidate_index.json 路径。");
+  }
+  if (isFormalSchema
+    && !String(run.horizonRun?.coverageManifestPath || "").startsWith("data/mcp-runs/")) {
+    errors.push("正式运行缺少 Horizon coverage_manifest.json 路径。");
+  }
 
   const threshold = Number(run.selection?.importanceThreshold);
   if (!Number.isFinite(threshold) || threshold < 0 || threshold > 10) {
@@ -122,16 +148,20 @@ export function validateRun(run, { allowHistoricalOneShot = false } = {}) {
   }
 
   const storyKeys = new Set();
+  const selectedEventStages = new Set();
   const selected = [];
   for (const [index, item] of candidates.entries()) {
     const label = `候选 ${index + 1}`;
     const storyKey = String(item?.storyKey || "");
-    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(storyKey)) {
+    if (!INTERNAL_ID_PATTERN.test(storyKey)) {
       errors.push(`${label} 的 storyKey 不正确。`);
     } else if (storyKeys.has(storyKey)) {
       errors.push(`${label} 与其他候选重复使用 storyKey。`);
     } else {
       storyKeys.add(storyKey);
+    }
+    if (isFormalSchema) {
+      validateEventDedupe(item, label, errors);
     }
     if (!/^\d{4}-\d{2}-\d{2}$/.test(String(item?.publishedDate || ""))) {
       errors.push(`${label} 缺少可核对的发布日期。`);
@@ -146,6 +176,13 @@ export function validateRun(run, { allowHistoricalOneShot = false } = {}) {
     }
     if (item?.selected === true) {
       selected.push(item);
+      if (isFormalSchema) {
+        const eventStageKey = `${item.eventKey}:${item.eventStage}`;
+        if (selectedEventStages.has(eventStageKey)) {
+          errors.push(`${label} 与其他入选候选重复使用 eventKey + eventStage。`);
+        }
+        selectedEventStages.add(eventStageKey);
+      }
       const publishedAt = parseTimestamp(item?.publishedAt);
       if (publishedAt === null) {
         errors.push(`${label} 缺少带时区的准确发布时间 publishedAt。`);
@@ -177,28 +214,143 @@ export function validateRun(run, { allowHistoricalOneShot = false } = {}) {
   if (!sameStringSet(declaredKeys, actualKeys)) {
     errors.push("selectedStoryKeys 与实际入选候选不一致。");
   }
+  if (isFormalSchema) {
+    validateCoverageAudit(run.coverageAudit, selected.length, errors);
+  }
 
-  validateDelivery(run.delivery, reportDate, sectionCounts, errors);
+  validateDelivery(run.delivery, reportDate, sectionCounts, errors, {
+    allowLegacyDateTitle: isAllowedHistoricalSchema
+  });
   if (errors.length) {
     throw new Error(`每日 AI 新闻草稿验证失败：\n- ${errors.join("\n- ")}`);
   }
   return run;
 }
 
+function validateEventDedupe(item, label, errors) {
+  const eventKey = String(item?.eventKey || "");
+  const eventStage = String(item?.eventStage || "");
+  const dedupeDecision = String(item?.dedupeDecision || "");
+  if (!INTERNAL_ID_PATTERN.test(eventKey)) {
+    errors.push(`${label} 缺少有效的 eventKey。`);
+  }
+  if (!INTERNAL_ID_PATTERN.test(eventStage)) {
+    errors.push(`${label} 缺少有效的 eventStage。`);
+  }
+  if (!DEDUPE_DECISIONS.has(dedupeDecision)) {
+    errors.push(`${label} 的 dedupeDecision 必须是 new、material-update 或 duplicate。`);
+  }
+  if (item?.selected === true && dedupeDecision === "duplicate") {
+    errors.push(`${label} 已判定为 duplicate，不得入选。`);
+  }
+  if (dedupeDecision === "material-update") {
+    if (!INTERNAL_ID_PATTERN.test(String(item?.priorStoryKey || ""))) {
+      errors.push(`${label} 的 material-update 必须填写 priorStoryKey。`);
+    }
+    if (!String(item?.materialDifference || "").trim()) {
+      errors.push(`${label} 的 material-update 必须说明 materialDifference。`);
+    }
+  }
+}
+
+function validateCoverageAudit(audit, selectedCount, errors) {
+  if (!audit || typeof audit !== "object" || Array.isArray(audit)) {
+    errors.push("schemaVersion 4 正式运行必须提供 coverageAudit。");
+    return;
+  }
+  if (parseTimestamp(audit.candidateIndexReviewedAt) === null) {
+    errors.push("coverageAudit 缺少有效的 candidateIndexReviewedAt。");
+  }
+  if (!SHA256_PATTERN.test(String(audit.candidateIndexSha256 || ""))) {
+    errors.push("coverageAudit 缺少 candidate_index.json 的 SHA-256。");
+  }
+  if (audit.lowVolumeTrigger !== LOW_VOLUME_TRIGGER) {
+    errors.push(`coverageAudit.lowVolumeTrigger 必须为 ${LOW_VOLUME_TRIGGER}。`);
+  }
+  validateSignoffIds(
+    audit.signedOffQueryIds,
+    "coverageAudit.signedOffQueryIds",
+    errors
+  );
+  validateSignoffIds(
+    audit.signedOffGroupIds,
+    "coverageAudit.signedOffGroupIds",
+    errors
+  );
+
+  const secondPassRequired = selectedCount < LOW_VOLUME_TRIGGER;
+  const secondPass = audit.secondPass;
+  if (!secondPass || typeof secondPass !== "object" || Array.isArray(secondPass)) {
+    errors.push("coverageAudit 缺少 secondPass 记录。");
+    return;
+  }
+  if (secondPass.required !== secondPassRequired) {
+    errors.push(
+      `coverageAudit.secondPass.required 必须为 ${secondPassRequired}；`
+      + `少于 ${LOW_VOLUME_TRIGGER} 条只触发二次审阅，不代表最低刊发数量。`
+    );
+  }
+  if (secondPassRequired) {
+    if (secondPass.completed !== true) {
+      errors.push(`入选少于 ${LOW_VOLUME_TRIGGER} 条时必须完成 coverageAudit.secondPass。`);
+    }
+    if (parseTimestamp(secondPass.completedAt) === null) {
+      errors.push("二次覆盖审阅缺少有效的 completedAt。");
+    }
+    validateSignoffIds(
+      secondPass.signedOffQueryIds,
+      "coverageAudit.secondPass.signedOffQueryIds",
+      errors
+    );
+    validateSignoffIds(
+      secondPass.signedOffGroupIds,
+      "coverageAudit.secondPass.signedOffGroupIds",
+      errors
+    );
+    if (!sameStringSet(
+      stringArray(secondPass.signedOffQueryIds),
+      stringArray(audit.signedOffQueryIds)
+    )) {
+      errors.push("二次覆盖审阅必须重新签收全部 required query。");
+    }
+    if (!sameStringSet(
+      stringArray(secondPass.signedOffGroupIds),
+      stringArray(audit.signedOffGroupIds)
+    )) {
+      errors.push("二次覆盖审阅必须重新签收全部 required coverage group。");
+    }
+  } else if (secondPass.completed !== false) {
+    errors.push(`入选不少于 ${LOW_VOLUME_TRIGGER} 条时 secondPass.completed 应为 false。`);
+  }
+}
+
+function validateSignoffIds(values, label, errors) {
+  const ids = stringArray(values);
+  if (!ids.length) {
+    errors.push(`${label} 必须是非空数组。`);
+    return;
+  }
+  if (ids.some((value) => !INTERNAL_ID_PATTERN.test(value))) {
+    errors.push(`${label} 含有无效编号。`);
+  }
+  if (new Set(ids).size !== ids.length) {
+    errors.push(`${label} 不得重复。`);
+  }
+}
+
 async function validateHorizonProvenance(run) {
   const horizonRoot = resolve(import.meta.dirname, "..", "..");
-  const candidatesPath = resolve(horizonRoot, String(run.horizonRun.candidatesPath));
   const allowedRoot = resolve(horizonRoot, "data", "mcp-runs");
-  if (!candidatesPath.startsWith(`${allowedRoot}\\`) && candidatesPath !== allowedRoot) {
-    throw new Error("Horizon 候选文件必须位于 data/mcp-runs 内。");
-  }
-
-  let candidates;
-  try {
-    candidates = JSON.parse(await readFile(candidatesPath, "utf8"));
-  } catch (error) {
-    throw new Error(`无法读取 Horizon 候选文件：${error.message}`);
-  }
+  const candidatesPath = resolveHorizonArtifactPath(
+    horizonRoot,
+    allowedRoot,
+    run.horizonRun.candidatesPath,
+    "Horizon 候选文件"
+  );
+  const { payload: candidates } = await readJsonArtifact(
+    candidatesPath,
+    "Horizon 候选文件"
+  );
   if (candidates.engine !== "Horizon"
     || candidates.horizonRunId !== run.horizonRun.runId
     || candidates.reportDate !== run.reportDate
@@ -206,6 +358,15 @@ async function validateHorizonProvenance(run) {
     || candidates.windowStart !== run.windowStart
     || candidates.windowEnd !== run.windowEnd) {
     throw new Error("Horizon 候选文件与运行记录不一致。");
+  }
+
+  if (run.schemaVersion === FORMAL_SCHEMA_VERSION) {
+    await validateCoverageProvenance({
+      run,
+      candidates,
+      horizonRoot,
+      allowedRoot
+    });
   }
 
   const horizonUrls = new Set(
@@ -218,6 +379,229 @@ async function validateHorizonProvenance(run) {
     if (!matched) {
       throw new Error(`入选新闻 ${item.storyKey} 没有对应的 Horizon 候选。`);
     }
+  }
+}
+
+async function validateCoverageProvenance({
+  run,
+  candidates,
+  horizonRoot,
+  allowedRoot
+}) {
+  if (candidates.schemaVersion !== CANDIDATE_ARTIFACT_SCHEMA_VERSION) {
+    throw new Error(
+      `正式 Horizon 候选文件必须使用 schemaVersion ${CANDIDATE_ARTIFACT_SCHEMA_VERSION}。`
+    );
+  }
+  if (candidates.fetchStatus !== "success") {
+    throw new Error("Horizon 抓取未完整成功，正式运行必须 fail closed。");
+  }
+  if (candidates.candidateIndexPath !== run.horizonRun.candidateIndexPath
+    || candidates.coverageManifestPath !== run.horizonRun.coverageManifestPath) {
+    throw new Error("Horizon 候选文件中的覆盖工件路径与运行记录不一致。");
+  }
+
+  const candidateIndexPath = resolveHorizonArtifactPath(
+    horizonRoot,
+    allowedRoot,
+    run.horizonRun.candidateIndexPath,
+    "Horizon candidate_index.json"
+  );
+  const coverageManifestPath = resolveHorizonArtifactPath(
+    horizonRoot,
+    allowedRoot,
+    run.horizonRun.coverageManifestPath,
+    "Horizon coverage_manifest.json"
+  );
+  const { payload: candidateIndex, text: candidateIndexText } = await readJsonArtifact(
+    candidateIndexPath,
+    "Horizon candidate_index.json"
+  );
+  const { payload: manifest } = await readJsonArtifact(
+    coverageManifestPath,
+    "Horizon coverage_manifest.json"
+  );
+
+  assertArtifactIdentity(candidateIndex, run, "candidate_index.json");
+  assertArtifactIdentity(manifest, run, "coverage_manifest.json");
+  for (const [artifact, label] of [
+    [candidates, "daily_candidates.json"],
+    [candidateIndex, "candidate_index.json"],
+    [manifest, "coverage_manifest.json"]
+  ]) {
+    validateLanguagePolicyArtifact(artifact, label);
+  }
+  if (candidateIndex.schemaVersion !== CANDIDATE_INDEX_SCHEMA_VERSION) {
+    throw new Error("candidate_index.json schemaVersion 不正确。");
+  }
+  if (manifest.schemaVersion !== COVERAGE_MANIFEST_SCHEMA_VERSION) {
+    throw new Error("coverage_manifest.json schemaVersion 不正确。");
+  }
+  if (manifest.fetchStatus !== "success") {
+    throw new Error("coverage_manifest.json 未确认完整抓取。");
+  }
+  if (manifest.lowVolumeTrigger !== LOW_VOLUME_TRIGGER
+    || candidates.lowVolumeTrigger !== LOW_VOLUME_TRIGGER
+    || run.coverageAudit.lowVolumeTrigger !== LOW_VOLUME_TRIGGER) {
+    throw new Error(`低产出二次审阅触发值必须统一为 ${LOW_VOLUME_TRIGGER}。`);
+  }
+
+  const candidateIndexSha256 = createHash("sha256")
+    .update(candidateIndexText, "utf8")
+    .digest("hex");
+  if (candidateIndexSha256 !== candidates.candidateIndexSha256
+    || candidateIndexSha256 !== manifest.candidateIndexSha256
+    || candidateIndexSha256 !== run.coverageAudit.candidateIndexSha256) {
+    throw new Error("candidate_index.json SHA-256 与候选、覆盖清单或签收记录不一致。");
+  }
+  if (manifest.candidateIndexPath !== run.horizonRun.candidateIndexPath) {
+    throw new Error("coverage_manifest.json 引用的 candidate index 路径不一致。");
+  }
+
+  const candidateItems = Array.isArray(candidates.items) ? candidates.items : [];
+  const indexItems = Array.isArray(candidateIndex.items) ? candidateIndex.items : [];
+  const candidateIds = candidateItems.map((item) => String(item?.id || ""));
+  const indexIds = indexItems.map((item) => String(item?.id || ""));
+  if (!sameStringSet(candidateIds, indexIds)
+    || candidateIndex.itemCount !== candidateItems.length
+    || manifest.candidateCount !== candidateItems.length
+    || candidates.windowCount !== candidateItems.length) {
+    throw new Error("候选索引、覆盖清单与 daily_candidates.json 的候选集合不一致。");
+  }
+  validateManifestCandidateMembership(manifest, indexItems);
+
+  const requiredQueryIds = validatedManifestSignoffs(
+    manifest.requiredQueryIds,
+    manifest.queries,
+    "query"
+  );
+  const requiredGroupIds = validatedManifestSignoffs(
+    manifest.requiredGroupIds,
+    manifest.groups,
+    "coverage group"
+  );
+  const requiredQueryLanguages = new Set(
+    manifest.queries
+      .filter((entry) => requiredQueryIds.includes(String(entry?.id || "")))
+      .map((entry) => String(entry?.language || ""))
+  );
+  for (const language of ["en", "zh-CN", "ja", "ko"]) {
+    if (!requiredQueryLanguages.has(language)) {
+      throw new Error(`required query 未覆盖种子语言 ${language}。`);
+    }
+  }
+  if (!sameStringSet(
+    requiredQueryIds,
+    stringArray(run.coverageAudit.signedOffQueryIds)
+  )) {
+    throw new Error("coverageAudit 未签收 coverage_manifest 中全部 required query。");
+  }
+  if (!sameStringSet(
+    requiredGroupIds,
+    stringArray(run.coverageAudit.signedOffGroupIds)
+  )) {
+    throw new Error("coverageAudit 未签收 coverage_manifest 中全部 required coverage group。");
+  }
+
+  if (run.selection.selectedStoryKeys.length < LOW_VOLUME_TRIGGER) {
+    if (!sameStringSet(
+      requiredQueryIds,
+      stringArray(run.coverageAudit.secondPass?.signedOffQueryIds)
+    ) || !sameStringSet(
+      requiredGroupIds,
+      stringArray(run.coverageAudit.secondPass?.signedOffGroupIds)
+    )) {
+      throw new Error("少于 5 条时的 second pass 未重新签收全部 required 覆盖项。");
+    }
+  }
+}
+
+function validateManifestCandidateMembership(manifest, indexItems) {
+  const indexIds = new Set(indexItems.map((item) => String(item?.id || "")));
+  for (const [entriesKey, membershipKey] of [
+    ["queries", "queryIds"],
+    ["groups", "coverageGroups"]
+  ]) {
+    const entries = Array.isArray(manifest[entriesKey]) ? manifest[entriesKey] : [];
+    const entryIds = entries.map((entry) => String(entry?.id || ""));
+    if (entryIds.some((id) => !INTERNAL_ID_PATTERN.test(id))
+      || new Set(entryIds).size !== entryIds.length) {
+      throw new Error(`coverage_manifest.json ${entriesKey} 编号无效或重复。`);
+    }
+    for (const entry of entries) {
+      const id = String(entry.id);
+      const declaredIds = stringArray(entry.candidateIds);
+      if (declaredIds.some((candidateId) => !indexIds.has(candidateId))
+        || new Set(declaredIds).size !== declaredIds.length) {
+        throw new Error(`coverage_manifest.json ${entriesKey}.${id} 候选编号无效或重复。`);
+      }
+      const expectedIds = indexItems
+        .filter((item) => stringArray(item?.[membershipKey]).includes(id))
+        .map((item) => String(item.id));
+      if (!sameStringSet(declaredIds, expectedIds)) {
+        throw new Error(`coverage_manifest.json ${entriesKey}.${id} 候选集合与索引不一致。`);
+      }
+    }
+  }
+}
+
+function validateLanguagePolicyArtifact(artifact, label) {
+  if (artifact.languagePolicy !== "any-reliable-language") {
+    throw new Error(`${label} 必须声明 any-reliable-language。`);
+  }
+  const seedLanguages = stringArray(artifact.seedLanguages);
+  if (!["en", "zh-CN", "ja", "ko"].every((value) => seedLanguages.includes(value))) {
+    throw new Error(`${label} 的 seedLanguages 必须至少包含 en、zh-CN、ja、ko。`);
+  }
+}
+
+function validatedManifestSignoffs(requiredValues, entries, kind) {
+  const requiredIds = stringArray(requiredValues);
+  const entryList = Array.isArray(entries) ? entries : [];
+  if (!requiredIds.length || new Set(requiredIds).size !== requiredIds.length) {
+    throw new Error(`coverage_manifest.json required ${kind} 清单为空或重复。`);
+  }
+  const byId = new Map(
+    entryList.map((entry) => [String(entry?.id || ""), entry])
+  );
+  for (const id of requiredIds) {
+    const entry = byId.get(id);
+    if (!entry || entry.required !== true) {
+      throw new Error(`coverage_manifest.json 缺少 required ${kind}: ${id}。`);
+    }
+    if (kind === "query" && !["success", "empty"].includes(entry.status)) {
+      throw new Error(`required query ${id} 抓取失败，正式运行必须停止。`);
+    }
+  }
+  return requiredIds;
+}
+
+function assertArtifactIdentity(artifact, run, label) {
+  if (artifact.engine !== "Horizon"
+    || artifact.horizonRunId !== run.horizonRun.runId
+    || artifact.reportDate !== run.reportDate
+    || artifact.timezone !== run.timezone
+    || artifact.windowStart !== run.windowStart
+    || artifact.windowEnd !== run.windowEnd) {
+    throw new Error(`${label} 与运行记录不一致。`);
+  }
+}
+
+function resolveHorizonArtifactPath(horizonRoot, allowedRoot, value, label) {
+  const path = resolve(horizonRoot, String(value || ""));
+  const relativePath = relative(allowedRoot, path);
+  if (!relativePath || relativePath.startsWith("..") || isAbsolute(relativePath)) {
+    throw new Error(`${label}必须位于 data/mcp-runs 内。`);
+  }
+  return path;
+}
+
+async function readJsonArtifact(path, label) {
+  try {
+    const text = await readFile(path, "utf8");
+    return { payload: JSON.parse(text), text };
+  } catch (error) {
+    throw new Error(`无法读取${label}：${error.message}`);
   }
 }
 
@@ -266,7 +650,13 @@ function countSelectedSections(selected) {
   return counts;
 }
 
-function validateDelivery(delivery, reportDate, sectionCounts, errors) {
+function validateDelivery(
+  delivery,
+  reportDate,
+  sectionCounts,
+  errors,
+  { allowLegacyDateTitle = false } = {}
+) {
   if (!delivery || typeof delivery !== "object" || Array.isArray(delivery)) {
     errors.push("缺少 delivery 草稿。");
     return;
@@ -296,9 +686,20 @@ function validateDelivery(delivery, reportDate, sectionCounts, errors) {
     if (!title || title.length > 180) {
       errors.push(`${lang} 标题为空或超过 180 字。`);
     }
-    const requiredTitle = expectedTitle(lang, reportDate);
-    if (title && title !== requiredTitle) {
-      errors.push(`${lang} 标题必须固定为“${requiredTitle}”。`);
+    const leadHeading = firstLeadStoryHeading(body, lang);
+    const requiredTitle = leadHeading
+      ? `${expectedTitlePrefix(lang)}${leadHeading}`
+      : "";
+    const legacyTitle = expectedLegacyTitle(lang, reportDate);
+    const titleMatches = allowLegacyDateTitle
+      ? title === legacyTitle
+      : Boolean(requiredTitle) && title === requiredTitle;
+    if (title && !titleMatches) {
+      errors.push(
+        allowLegacyDateTitle
+          ? `${lang} 历史标题必须固定为“${legacyTitle}”。`
+          : `${lang} 标题必须是“${expectedTitlePrefix(lang)}”加正文第一条要闻标题，且不得只写日期。`
+      );
     }
     if (!summary || summary.length > 500) {
       errors.push(`${lang} 摘要为空或超过 500 字。`);
@@ -498,6 +899,10 @@ function sameStringSet(left, right) {
     && left.every((value) => right.includes(value));
 }
 
+function stringArray(value) {
+  return Array.isArray(value) ? value.map(String) : [];
+}
+
 function isHttpsUrl(value) {
   try {
     return new URL(String(value)).protocol === "https:";
@@ -506,7 +911,40 @@ function isHttpsUrl(value) {
   }
 }
 
-function expectedTitle(lang, reportDate) {
+function expectedTitlePrefix(lang) {
+  if (lang === "zh") {
+    return "每日 AI 新闻｜";
+  }
+  if (lang === "ja") {
+    return "毎日AIニュース｜";
+  }
+  return "Daily AI News | ";
+}
+
+function firstLeadStoryHeading(body, lang) {
+  const leadHeading = ARTICLE_STRUCTURE[lang]?.sectionHeadings?.lead;
+  if (!leadHeading) {
+    return "";
+  }
+  const lines = String(body || "").replace(/\r\n/g, "\n").split("\n");
+  const leadIndex = lines.findIndex((line) => line.trim() === `## ${leadHeading}`);
+  if (leadIndex < 0) {
+    return "";
+  }
+  for (let index = leadIndex + 1; index < lines.length; index += 1) {
+    const line = lines[index].trim();
+    if (line.startsWith("## ")) {
+      break;
+    }
+    const match = line.match(/^###\s+(.+?)\s*$/);
+    if (match) {
+      return match[1].trim();
+    }
+  }
+  return "";
+}
+
+function expectedLegacyTitle(lang, reportDate) {
   const [year, month, day] = reportDate.split("-").map(Number);
   if (lang === "zh") {
     return `每日 AI 新闻｜${year} 年 ${month} 月 ${day} 日`;

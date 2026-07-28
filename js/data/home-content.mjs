@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-07-28-daily-ai-news-coverage-review",
+      "slug": "2026-07-28-daily-ai-news-coverage-review",
+      "category": "site-updates",
+      "tags": ["网站更新", "每日AI新闻", "新闻覆盖", "多语言", "质量复核"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-28T01:03:00.000Z",
+      "updated_at": "2026-07-28T01:03:00.000Z",
+      "published_at": "2026-07-28T01:03:00.000Z",
+      "fallbackOnly": true,
+      "icon": "knowledge",
+      "date": "2026.07.28",
+      "title": {
+        "zh": "每日 AI 新闻覆盖与复核升级",
+        "en": "Daily AI News Coverage and Review Expanded",
+        "ja": "毎日AIニュースの収集・再確認を強化"
+      },
+      "summary": {
+        "zh": "每日 AI 新闻新增重点厂商与产业主题覆盖审阅、低产出二次检查及多语言可靠来源，并让标题直接显示当天头条。",
+        "en": "Daily AI News now reviews priority companies and industry topics, performs a second pass for thin editions, accepts reliable multilingual sources, and surfaces the lead story in each title.",
+        "ja": "毎日AIニュースに重点企業・産業テーマの網羅確認、件数が少ない場合の再確認、多言語の信頼できる情報源を追加し、タイトルには当日のトップニュースを表示します。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-07-28-daily-ai-news-reader-format",
       "slug": "2026-07-28-daily-ai-news-reader-format",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "重新绘制匿名聊天室图标，缩小可见主体并增加均衡透明留白；Home、窗口、任务栏、欢迎入口与聊天头像现统一使用新图，旧图资源已移除。",
         "en": "Redrew the Anonymous Chat icon with a smaller silhouette and balanced transparent padding. Home, windows, the taskbar, welcome shortcuts, and chat avatars now share the new asset, and the legacy artwork is removed.",
         "ja": "匿名チャットアイコンを描き直し、見える輪郭を小さくして透明余白を均等化しました。Home、ウィンドウ、タスクバー、ウェルカム入口、チャットのアバターを新しい素材へ統一し、旧素材は削除しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-07-26-interface-audit-fixes",
-      "slug": "2026-07-26-interface-audit-fixes",
-      "category": "site-updates",
-      "tags": ["mobile", "Games", "UI", "privacy", "QA"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-07-26T08:58:00.000Z",
-      "updated_at": "2026-07-26T08:58:00.000Z",
-      "published_at": "2026-07-26T08:58:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.07.26",
-      "title": {
-        "zh": "全界面移动适配与游戏体验修复",
-        "en": "Sitewide Mobile and Game Experience Fixes",
-        "ja": "全画面のモバイル・ゲーム体験修正"
-      },
-      "summary": {
-        "zh": "完成全部公开界面复检，修复 A Dark Room、Kittens Game、Life Restart、2048 与 Hextris 五款游戏的手机适配、触控和滚动问题，并收紧弹窗层级与第三方请求边界。",
-        "en": "Completed a full public-interface recheck, fixing mobile layout, touch, and scrolling across five games—A Dark Room, Kittens Game, Life Restart, 2048, and Hextris—while tightening modal hierarchy and third-party request boundaries.",
-        "ja": "公開画面を全面再点検し、A Dark Room、Kittens Game、Life Restart、2048、Hextris の5ゲームでモバイル配置・タッチ・スクロールを修正。モーダル階層と外部通信の境界も整えました。"
       }
     }
   ]

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { readFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { join, relative } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
@@ -42,6 +43,9 @@ function candidate({
     importance: 8,
     sourceUrls: [`https://example.test/${storyKey}`],
     selected: true,
+    eventKey: storyKey,
+    eventStage: "release",
+    dedupeDecision: "new",
     section,
     verification,
     aiTake,
@@ -50,13 +54,37 @@ function candidate({
   };
 }
 
+function validCoverageAudit() {
+  const signedOffQueryIds = [
+    "priority-query-en",
+    "priority-query-zh",
+    "priority-query-ja",
+    "priority-query-ko"
+  ];
+  const signedOffGroupIds = ["global-frontier", "china-models"];
+  return {
+    candidateIndexReviewedAt: "2026-07-27T06:30:00+08:00",
+    candidateIndexSha256: "a".repeat(64),
+    lowVolumeTrigger: 5,
+    signedOffQueryIds,
+    signedOffGroupIds,
+    secondPass: {
+      required: true,
+      completed: true,
+      completedAt: "2026-07-27T06:40:00+08:00",
+      signedOffQueryIds: [...signedOffQueryIds],
+      signedOffGroupIds: [...signedOffGroupIds]
+    }
+  };
+}
+
 function translationsWithThreeSections() {
   return {
     zh: {
-      title: "每日 AI 新闻｜2026 年 7 月 27 日",
+      title: "每日 AI 新闻｜已确认的要闻",
       summary: "今天包含一条要闻、一条主要新闻，另有一条传闻仍待核实；传闻不会作为事实写入结论。",
       content_markdown: [
-        "# 每日 AI 新闻｜2026 年 7 月 27 日",
+        "# 每日 AI 新闻｜已确认的要闻",
         "",
         "## 今日要闻",
         "",
@@ -84,10 +112,10 @@ function translationsWithThreeSections() {
       ].join("\n")
     },
     en: {
-      title: "Daily AI News | July 27, 2026",
+      title: "Daily AI News | A confirmed lead development",
       summary: "Today includes one lead story, one more confirmed item, and one unverified rumor that is kept separate from factual conclusions.",
       content_markdown: [
-        "# Daily AI News | July 27, 2026",
+        "# Daily AI News | A confirmed lead development",
         "",
         "## Lead Story",
         "",
@@ -115,10 +143,10 @@ function translationsWithThreeSections() {
       ].join("\n")
     },
     ja: {
-      title: "毎日AIニュース｜2026年7月27日",
+      title: "毎日AIニュース｜確認済みのトップニュース",
       summary: "本日はトップニュース1件、主なニュース1件に加え、事実と分離した未確認の噂1件を扱います。",
       content_markdown: [
-        "# 毎日AIニュース｜2026年7月27日",
+        "# 毎日AIニュース｜確認済みのトップニュース",
         "",
         "## 今日のトップニュース",
         "",
@@ -171,7 +199,7 @@ function validRun() {
     })
   ];
   return {
-    schemaVersion: 3,
+    schemaVersion: 4,
     reportDate: "2026-07-27",
     timezone: "Asia/Shanghai",
     windowStart: "2026-07-26T07:00:00+08:00",
@@ -179,13 +207,16 @@ function validRun() {
     collectionMethod: "Horizon native fetch and cross-source dedupe",
     horizonRun: {
       runId: "run-20260727T010203Z-abc123",
-      candidatesPath: "data/mcp-runs/run-20260727T010203Z-abc123/daily_candidates.json"
+      candidatesPath: "data/mcp-runs/run-20260727T010203Z-abc123/daily_candidates.json",
+      candidateIndexPath: "data/mcp-runs/run-20260727T010203Z-abc123/candidate_index.json",
+      coverageManifestPath: "data/mcp-runs/run-20260727T010203Z-abc123/coverage_manifest.json"
     },
     selection: {
       importanceThreshold: 7,
       maxItems: null,
       selectedStoryKeys: candidates.map((item) => item.storyKey)
     },
+    coverageAudit: validCoverageAudit(),
     candidates,
     delivery: {
       idempotencyKey: "daily-ai-news:2026-07-27:validator-test",
@@ -201,13 +232,140 @@ function clone(value) {
   return structuredClone(value);
 }
 
+async function writeFormalCoverageFixture(t) {
+  const horizonRoot = fileURLToPath(
+    new URL("../自动新闻/", import.meta.url)
+  );
+  const runsRoot = fileURLToPath(
+    new URL("../自动新闻/data/mcp-runs/", import.meta.url)
+  );
+  await mkdir(runsRoot, { recursive: true });
+  const runDirectory = await mkdtemp(join(runsRoot, "validator-schema4-"));
+  t.after(() => rm(runDirectory, { recursive: true, force: true }));
+
+  const run = validRun();
+  run.horizonRun.runId = "run-20260727T010203Z-feed1234";
+  const relativeDirectory = relative(horizonRoot, runDirectory).replaceAll("\\", "/");
+  run.horizonRun.candidatesPath = `${relativeDirectory}/daily_candidates.json`;
+  run.horizonRun.candidateIndexPath = `${relativeDirectory}/candidate_index.json`;
+  run.horizonRun.coverageManifestPath = `${relativeDirectory}/coverage_manifest.json`;
+
+  const items = run.candidates.map((item) => ({
+    id: `candidate-${item.storyKey}`,
+    title: item.storyKey,
+    url: item.sourceUrls[0],
+    source_type: "rss",
+    author: "fixture",
+    published_at: item.publishedAt,
+    metadata: {
+      category: "fixture",
+      discovery_query_ids: [...run.coverageAudit.signedOffQueryIds],
+      coverage_groups: ["global-frontier", "china-models"],
+      coverage_priority: "priority"
+    }
+  }));
+  const identity = {
+    engine: "Horizon",
+    horizonRunId: run.horizonRun.runId,
+    reportDate: run.reportDate,
+    timezone: run.timezone,
+    windowStart: run.windowStart,
+    windowEnd: run.windowEnd,
+    windowSemantics: "left-closed-right-open",
+    languagePolicy: "any-reliable-language",
+    seedLanguages: ["en", "zh-CN", "ja", "ko"]
+  };
+  const candidateIndex = {
+    schemaVersion: 1,
+    ...identity,
+    itemCount: items.length,
+    items: items.map((item) => ({
+      id: item.id,
+      title: item.title,
+      url: item.url,
+      sourceType: item.source_type,
+      sourceName: item.author,
+      publishedAt: item.published_at,
+      category: item.metadata.category,
+      queryIds: item.metadata.discovery_query_ids,
+      coverageGroups: item.metadata.coverage_groups,
+      priority: item.metadata.coverage_priority
+    }))
+  };
+  const candidateIndexText = `${JSON.stringify(candidateIndex, null, 2)}\n`;
+  const candidateIndexSha256 = createHash("sha256")
+    .update(candidateIndexText)
+    .digest("hex");
+  run.coverageAudit.candidateIndexSha256 = candidateIndexSha256;
+
+  const candidates = {
+    schemaVersion: 2,
+    ...identity,
+    windowCount: items.length,
+    fetchStatus: "success",
+    lowVolumeTrigger: 5,
+    candidateIndexPath: run.horizonRun.candidateIndexPath,
+    candidateIndexSha256,
+    coverageManifestPath: run.horizonRun.coverageManifestPath,
+    items
+  };
+  const coverageManifest = {
+    schemaVersion: 1,
+    ...identity,
+    fetchStatus: "success",
+    lowVolumeTrigger: 5,
+    candidateIndexPath: run.horizonRun.candidateIndexPath,
+    candidateIndexSha256,
+    candidateCount: items.length,
+    requiredQueryIds: [...run.coverageAudit.signedOffQueryIds],
+    requiredGroupIds: [...run.coverageAudit.signedOffGroupIds],
+    queries: run.coverageAudit.signedOffQueryIds.map((id, index) => ({
+      id,
+      coverageGroup: run.coverageAudit.signedOffGroupIds[
+        index % run.coverageAudit.signedOffGroupIds.length
+      ],
+      required: true,
+      priority: "priority",
+      language: ["en", "zh-CN", "ja", "ko"][index],
+      country: ["US", "CN", "JP", "KR"][index],
+      status: "success",
+      fetched: items.length,
+      windowFetched: items.length,
+      candidateIds: items.map((item) => item.id)
+    })),
+    groups: run.coverageAudit.signedOffGroupIds.map((id, index) => ({
+      id,
+      required: true,
+      priority: "priority",
+      queryIds: run.coverageAudit.signedOffQueryIds.filter(
+        (_, queryIndex) => (
+          queryIndex % run.coverageAudit.signedOffGroupIds.length
+        ) === index
+      ),
+      candidateIds: items.map((item) => item.id)
+    }))
+  };
+
+  const runPath = join(runDirectory, "daily_run.json");
+  const candidatesPath = join(runDirectory, "daily_candidates.json");
+  const indexPath = join(runDirectory, "candidate_index.json");
+  const manifestPath = join(runDirectory, "coverage_manifest.json");
+  await Promise.all([
+    writeFile(runPath, `${JSON.stringify(run, null, 2)}\n`),
+    writeFile(candidatesPath, `${JSON.stringify(candidates, null, 2)}\n`),
+    writeFile(indexPath, candidateIndexText),
+    writeFile(manifestPath, `${JSON.stringify(coverageManifest, null, 2)}\n`)
+  ]);
+  return { runPath, manifestPath, coverageManifest };
+}
+
 test("Daily AI News workflow declares the permanent three-section contract", async () => {
   const workflow = JSON.parse(await readFile(
     new URL("../自动新闻/integrations/lusu-site/workflow.json", import.meta.url),
     "utf8"
   ));
 
-  assert.equal(workflow.schemaVersion, 3);
+  assert.equal(workflow.schemaVersion, 4);
   assert.equal(workflow.calendar.mode, "fixed-24-hour-window");
   assert.equal(workflow.calendar.windowHours, 24);
   assert.equal(workflow.calendar.windowStartLocalTime, "07:00");
@@ -216,6 +374,15 @@ test("Daily AI News workflow declares the permanent three-section contract", asy
   assert.equal(workflow.calendar.publishDeadlineLocalTime, "08:00");
   assert.equal(workflow.calendar.deadlinePolicy, "fail-closed");
   assert.equal(workflow.calendar.historicalOneShot.requiresExplicitFlag, "--one-shot-history");
+  assert.equal(workflow.collection.candidateIndexRequired, true);
+  assert.equal(workflow.collection.coverageManifestRequired, true);
+  assert.equal(workflow.collection.languagePolicy, "any-reliable-language");
+  assert.deepEqual(workflow.collection.seedLanguages, ["en", "zh-CN", "ja", "ko"]);
+  assert.equal(workflow.collection.coverageReview.lowVolumeTrigger, 5);
+  assert.equal(
+    workflow.collection.coverageReview.lowVolumeAction,
+    "mandatory-second-pass-without-filler"
+  );
   assert.equal(workflow.article.styleGuide, "ARTICLE_STYLE.md");
   assert.equal(workflow.article.intro.allowed, false);
   assert.equal(workflow.article.intro.firstContentAfterTitle, "lead-section-heading");
@@ -239,6 +406,14 @@ test("Daily AI News workflow declares the permanent three-section contract", asy
   assert.equal(workflow.selection.sections.rumor.maxItems, null);
   assert.equal(workflow.selection.sections.rumor.verification, "unverified");
   assert.equal(workflow.selection.sections.rumor.requiresWhyUnverified, true);
+  assert.equal(workflow.selection.coverageAuditRequired, true);
+  assert.equal(workflow.selection.lowVolumeTrigger, 5);
+  assert.equal(
+    workflow.selection.coverageAuditContract.secondPassRepeatsAllRequiredSignoffs,
+    true
+  );
+  assert.equal(workflow.selection.eventDedupe.identity, "eventKey-plus-eventStage");
+  assert.equal(workflow.selection.eventDedupe.selectedDuplicateAllowed, false);
   assert.equal(workflow.article.requirePerItemAiTake, true);
   assert.equal(workflow.delivery.mode, "production-auto-publish");
   assert.equal(workflow.delivery.expectedResponseStatus, "published");
@@ -248,10 +423,53 @@ test("Daily AI News workflow declares the permanent three-section contract", asy
   assert.equal(workflow.delivery.autoPublish, true);
   assert.equal(workflow.delivery.schedulerEnabled, true);
   assert.equal(workflow.delivery.failurePolicy, "fail-closed");
+  assert.equal(workflow.compatibility.formalRunSchemaVersion, 4);
+  assert.equal(workflow.compatibility.historicalOneShotSchemaVersion, 3);
 });
 
 test("Daily AI News validator accepts the three-section contract", () => {
   assert.equal(validateRun(validRun()).reportDate, "2026-07-27");
+});
+
+test("formal schema 4 requires coverage signoff and a low-volume second pass", () => {
+  const missingAudit = clone(validRun());
+  delete missingAudit.coverageAudit;
+  assert.throws(() => validateRun(missingAudit), /必须提供 coverageAudit/);
+
+  const incompleteSecondPass = clone(validRun());
+  incompleteSecondPass.coverageAudit.secondPass.completed = false;
+  assert.throws(() => validateRun(incompleteSecondPass), /少于 5 条时必须完成/);
+
+  const missingGroupSignoff = clone(validRun());
+  missingGroupSignoff.coverageAudit.signedOffGroupIds = [];
+  missingGroupSignoff.coverageAudit.secondPass.signedOffGroupIds = [];
+  assert.throws(() => validateRun(missingGroupSignoff), /signedOffGroupIds 必须是非空数组/);
+});
+
+test("formal schema 4 requires event-stage dedupe decisions", () => {
+  const missingEventStage = clone(validRun());
+  delete missingEventStage.candidates[0].eventStage;
+  assert.throws(() => validateRun(missingEventStage), /缺少有效的 eventStage/);
+
+  const selectedDuplicate = clone(validRun());
+  selectedDuplicate.candidates[0].dedupeDecision = "duplicate";
+  assert.throws(() => validateRun(selectedDuplicate), /已判定为 duplicate，不得入选/);
+
+  const incompleteMaterialUpdate = clone(validRun());
+  incompleteMaterialUpdate.candidates[0].dedupeDecision = "material-update";
+  assert.throws(() => validateRun(incompleteMaterialUpdate), /必须填写 priorStoryKey/);
+
+  const materialUpdate = clone(validRun());
+  materialUpdate.candidates[0].dedupeDecision = "material-update";
+  materialUpdate.candidates[0].priorStoryKey = "previous-release";
+  materialUpdate.candidates[0].materialDifference = "权重文件和许可证已经正式发布。";
+  assert.doesNotThrow(() => validateRun(materialUpdate));
+});
+
+test("schema 3 is rejected for formal runs", () => {
+  const oldFormalRun = clone(validRun());
+  oldFormalRun.schemaVersion = 3;
+  assert.throws(() => validateRun(oldFormalRun), /schemaVersion 4/);
 });
 
 test("Daily AI News section counts stay flexible outside the single lead", () => {
@@ -260,19 +478,19 @@ test("Daily AI News section counts stay flexible outside the single lead", () =>
   run.selection.selectedStoryKeys = [run.candidates[0].storyKey];
   run.delivery.translations = {
     zh: {
-      title: "每日 AI 新闻｜2026 年 7 月 27 日",
+      title: "每日 AI 新闻｜唯一入选要闻",
       summary: "今天只有一条达到门槛的已确认要闻，没有用低价值内容补足数量。",
-      content_markdown: "# 每日 AI 新闻｜2026 年 7 月 27 日\n\n## 今日要闻\n\n### 唯一入选要闻\n\n这条消息已经完成一手核实，正文说明发生了什么、关键数字、影响范围和当前限制。\n\n**AI 解读：** 核心价值在于实际能力是否持续，而不是当天的讨论热度。\n\n## 主要新闻\n\n今天没有其他达到门槛的已确认新闻。\n\n## 传闻\n\n今天没有值得单列的传闻。"
+      content_markdown: "# 每日 AI 新闻｜唯一入选要闻\n\n## 今日要闻\n\n### 唯一入选要闻\n\n这条消息已经完成一手核实，正文说明发生了什么、关键数字、影响范围和当前限制。\n\n**AI 解读：** 核心价值在于实际能力是否持续，而不是当天的讨论热度。\n\n## 主要新闻\n\n今天没有其他达到门槛的已确认新闻。\n\n## 传闻\n\n今天没有值得单列的传闻。"
     },
     en: {
-      title: "Daily AI News | July 27, 2026",
+      title: "Daily AI News | The only selected lead",
       summary: "Only one confirmed story cleared the bar today, with no low-value items added to fill space.",
-      content_markdown: "# Daily AI News | July 27, 2026\n\n## Lead Story\n\n### The only selected lead\n\nPrimary material confirms the event, while the article explains what happened, the key figures, its impact and present limits.\n\n**AI take:** Durable capability matters more than the volume of discussion on release day.\n\n## More News\n\nNo other confirmed item cleared the bar today.\n\n## Rumors\n\nNo rumor was useful enough to include today."
+      content_markdown: "# Daily AI News | The only selected lead\n\n## Lead Story\n\n### The only selected lead\n\nPrimary material confirms the event, while the article explains what happened, the key figures, its impact and present limits.\n\n**AI take:** Durable capability matters more than the volume of discussion on release day.\n\n## More News\n\nNo other confirmed item cleared the bar today.\n\n## Rumors\n\nNo rumor was useful enough to include today."
     },
     ja: {
-      title: "毎日AIニュース｜2026年7月27日",
+      title: "毎日AIニュース｜唯一のトップニュース",
       summary: "本日は確認済みの1件だけが基準を満たし、件数合わせの低価値情報は追加していません。",
-      content_markdown: "# 毎日AIニュース｜2026年7月27日\n\n## 今日のトップニュース\n\n### 唯一のトップニュース\n\n一次資料で事実を確認し、何が起きたか、重要な数字、影響と現在の限界を分けて説明します。\n\n**AI解説：** 公開日の話題量より、能力が継続して使えるかどうかが重要です。\n\n## 主なニュース\n\n本日はほかに基準を満たす確認済みニュースがありません。\n\n## 噂\n\n本日は掲載する価値のある噂がありません。"
+      content_markdown: "# 毎日AIニュース｜唯一のトップニュース\n\n## 今日のトップニュース\n\n### 唯一のトップニュース\n\n一次資料で事実を確認し、何が起きたか、重要な数字、影響と現在の限界を分けて説明します。\n\n**AI解説：** 公開日の話題量より、能力が継続して使えるかどうかが重要です。\n\n## 主なニュース\n\n本日はほかに基準を満たす確認済みニュースがありません。\n\n## 噂\n\n本日は掲載する価値のある噂がありません。"
     }
   };
 
@@ -350,14 +568,23 @@ test("Daily AI News validator locks section order without repeating rumor discla
 });
 
 test("Daily AI News validator locks title, direct section start, and concise AI take style", () => {
+  const dateOnlyTitle = clone(validRun());
+  dateOnlyTitle.delivery.translations.en.title = "Daily AI News | July 27, 2026";
+  dateOnlyTitle.delivery.translations.en.content_markdown =
+    dateOnlyTitle.delivery.translations.en.content_markdown.replace(
+      "# Daily AI News | A confirmed lead development",
+      "# Daily AI News | July 27, 2026"
+    );
+  assert.throws(() => validateRun(dateOnlyTitle), /不得只写日期/);
+
   const wrongTitle = clone(validRun());
   wrongTitle.delivery.translations.en.title = "A different headline";
   wrongTitle.delivery.translations.en.content_markdown =
     wrongTitle.delivery.translations.en.content_markdown.replace(
-      "# Daily AI News | July 27, 2026",
+      "# Daily AI News | A confirmed lead development",
       "# A different headline"
     );
-  assert.throws(() => validateRun(wrongTitle), /en 标题必须固定为/);
+  assert.throws(() => validateRun(wrongTitle), /en 标题必须是/);
 
   const visibleIntro = clone(validRun());
   visibleIntro.delivery.translations.ja.content_markdown =
@@ -397,6 +624,21 @@ test("the published 27 July run still passes the locked reader format", async ()
   ));
 });
 
+test("schema 4 provenance requires complete multilingual coverage artifacts", async (t) => {
+  const fixture = await writeFormalCoverageFixture(t);
+  await assert.doesNotReject(() => readAndValidateRun(fixture.runPath));
+
+  fixture.coverageManifest.queries[0].status = "failure";
+  await writeFile(
+    fixture.manifestPath,
+    `${JSON.stringify(fixture.coverageManifest, null, 2)}\n`
+  );
+  await assert.rejects(
+    () => readAndValidateRun(fixture.runPath),
+    /required query .*抓取失败/
+  );
+});
+
 test("Daily AI News validator enforces the exact 24-hour publication window", () => {
   const outsideWindow = clone(validRun());
   outsideWindow.candidates[1].publishedAt = "2026-07-26T06:59:59+08:00";
@@ -424,8 +666,21 @@ test("Daily AI News validator keeps formal article copy free of links", () => {
 
 test("Daily AI News keeps the 27 July 23:00 sample behind an explicit one-shot", () => {
   const historical = validRun();
+  historical.schemaVersion = 3;
   historical.windowStart = "2026-07-26T23:00:00+08:00";
   historical.windowEnd = "2026-07-27T23:00:00+08:00";
+  for (const [lang, legacyTitle] of Object.entries({
+    zh: "每日 AI 新闻｜2026 年 7 月 27 日",
+    en: "Daily AI News | July 27, 2026",
+    ja: "毎日AIニュース｜2026年7月27日"
+  })) {
+    const translation = historical.delivery.translations[lang];
+    translation.content_markdown = translation.content_markdown.replace(
+      `# ${translation.title}`,
+      `# ${legacyTitle}`
+    );
+    translation.title = legacyTitle;
+  }
 
   assert.equal(isHistoricalOneShotWindow(historical), true);
   assert.throws(() => validateRun(historical), /显式 one-shot 参数/);

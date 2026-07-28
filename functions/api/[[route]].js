@@ -1,6 +1,6 @@
 import { handleTransferApi } from "./transfer-service.mjs";
 
-export const PUBLIC_API_REPRESENTATION_VERSION = "20260728-daily-ai-news-reader-r1";
+export const PUBLIC_API_REPRESENTATION_VERSION = "20260728-daily-ai-news-coverage-r1";
 const SESSION_COOKIE = "lusu_session";
 const SESSION_DAYS = 30;
 const MAX_SAVE_BYTES = 1024 * 1024;
@@ -5806,6 +5806,47 @@ const DAILY_AI_NEWS_2026_07_27_READER_PATCH = Object.freeze({
 function articleSeedStatements(env) {
   // Seed timestamps must be UTC ISO strings; the UI converts them to each visitor's local time.
   return [
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-28-daily-ai-news-coverage-review',
+        '2026-07-28-daily-ai-news-coverage-review',
+        'site-updates',
+        '["网站更新","每日AI新闻","新闻覆盖","多语言","质量复核"]',
+        '', 'published', 0, 0,
+        '2026-07-28T01:03:00.000Z',
+        '2026-07-28T01:03:00.000Z',
+        '2026-07-28T01:03:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-07-28-daily-ai-news-coverage-review", {
+      zh: {
+        title: "每日 AI 新闻覆盖与复核升级",
+        summary: "每日 AI 新闻新增重点厂商与产业主题覆盖审阅、低产出二次检查及多语言可靠来源，并让标题直接显示当天头条。",
+        content_markdown: "# 每日 AI 新闻覆盖与复核升级\n\n针对 7 月 28 日日报内容偏少的问题，本次加强了每日 AI 新闻的发现与发布前复核，并补充修订当天文章。\n\n## 覆盖范围更完整\n\n- 新增重点 AI 厂商、基础模型、芯片与存储、机器人、智能设备、数据中心、能源、网络及科技金融等主题的固定覆盖审阅。\n- 不再局限于中英文消息；其他语言的可靠报道和官方信息也会进入候选范围，之后再按时效、可信度和重要性统一筛选。\n\n## 低产出再次核对\n\n- 新闻数量仍不写死，也不会用低价值内容凑数；若初选结果异常偏少，发布前必须再次检查重点公司、主题和遗漏候选。\n- 去重会区分重复报道与真正的新进展，避免预告后的正式发布、权重开放或关键事实更新被一并忽略。\n\n## 7 月 28 日文章\n\n- 已重新核对此前 24 小时内的候选，补充重要进展并修订中、英、日三语文章。\n- 文章标题改为“每日 AI 新闻｜当天要闻标题”，不再只显示日期。\n- 正文继续保持完整文章、三段结构和逐条简短 AI 解读，不向读者堆放来源链接。"
+      },
+      en: {
+        title: "Daily AI News Coverage and Review Expanded",
+        summary: "Daily AI News now reviews priority companies and industry topics, performs a second pass for thin editions, accepts reliable multilingual sources, and surfaces the lead story in each title.",
+        content_markdown: "# Daily AI News Coverage and Review Expanded\n\nAfter the July 28 edition proved too thin, this update strengthens discovery and the pre-publication review, and expands that day's article.\n\n## Broader coverage\n\n- A fixed coverage review now checks priority AI developers, foundation models, chips and storage, robotics, smart devices, data centers, energy, networking, and technology finance.\n- Reliable reporting and official information in other languages can enter the candidate pool alongside Chinese and English material, before a common review of recency, trustworthiness, and importance.\n\n## A second pass for thin editions\n\n- The article still has no fixed story count and will not use low-value filler. If the initial selection is unusually small, a second check of priority companies, topics, and possible omissions is required before publication.\n- Deduplication now distinguishes repeated coverage from a material new development, so an official release, open-weight milestone, or important factual update after an earlier announcement is not discarded with duplicates.\n\n## July 28 edition\n\n- Candidates from the exact preceding 24 hours were checked again, important developments were added, and the Chinese, English, and Japanese editions were revised.\n- Each title now uses “Daily AI News | lead-story headline” instead of showing only a date.\n- The article keeps its complete narrative, three-part structure, and short AI explanation for every story without piling source links into the reader-facing text."
+      },
+      ja: {
+        title: "毎日AIニュースの収集・再確認を強化",
+        summary: "毎日AIニュースに重点企業・産業テーマの網羅確認、件数が少ない場合の再確認、多言語の信頼できる情報源を追加し、タイトルには当日のトップニュースを表示します。",
+        content_markdown: "# 毎日AIニュースの収集・再確認を強化\n\n7月28日版の記事数が少なすぎたことを受け、ニュース発見と公開前の確認を強化し、同日版も補足改訂しました。\n\n## 収集範囲を拡大\n\n- 重点AI企業、基盤モデル、半導体・ストレージ、ロボット、スマートデバイス、データセンター、エネルギー、ネットワーク、テクノロジー金融を固定の網羅確認対象に加えました。\n- 中国語と英語だけに限定せず、他言語の信頼できる報道や公式情報も候補へ含め、鮮度、信頼性、重要度を共通基準で確認します。\n\n## 件数が少ない場合は再確認\n\n- 掲載数は固定せず、価値の低い情報で埋めることもしません。初回選定が不自然に少ない場合は、重点企業、テーマ、見落とした候補を公開前にもう一度確認します。\n- 重複報道と実質的な新展開を区別し、予告後の正式公開、オープンウェイト化、重要事実の更新まで重複として除外しないようにします。\n\n## 7月28日版\n\n- 直前の正確な24時間に含まれる候補を再確認し、重要な動きを追加して中国語・英語・日本語版を改訂しました。\n- タイトルは日付だけでなく「毎日AIニュース｜当日のトップニュース見出し」を表示します。\n- 読者向け本文は、完結した記事、3部構成、各ニュースの短いAI解説を維持し、参照リンクを大量に並べません。"
+      }
+    }, "2026-07-28T01:03:00.000Z"),
     env.DB.prepare(`
       insert into articles (
         article_id, slug, category, tags, cover_image, status, is_pinned,

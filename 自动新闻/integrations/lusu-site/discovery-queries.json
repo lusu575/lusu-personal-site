@@ -1,61 +1,376 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
+  "queryConcurrency": 2,
+  "lowVolumeTrigger": 5,
+  "languagePolicy": "any-reliable-language",
+  "seedLanguages": [
+    "en",
+    "zh-CN",
+    "ja",
+    "ko"
+  ],
+  "coverageGroups": [
+    {
+      "id": "global-frontier",
+      "label": "全球前沿模型与关键人物",
+      "required": true,
+      "priority": "priority"
+    },
+    {
+      "id": "developer-ai",
+      "label": "AI 编程与开发者工具",
+      "required": true,
+      "priority": "priority"
+    },
+    {
+      "id": "open-models",
+      "label": "开放权重与开源模型",
+      "required": true,
+      "priority": "priority"
+    },
+    {
+      "id": "china-models",
+      "label": "中国模型厂商",
+      "required": true,
+      "priority": "priority"
+    },
+    {
+      "id": "china-semiconductor",
+      "label": "中国芯片与半导体设备",
+      "required": true,
+      "priority": "priority"
+    },
+    {
+      "id": "chips-storage",
+      "label": "芯片与存储",
+      "required": true,
+      "priority": "standard"
+    },
+    {
+      "id": "robotics-devices",
+      "label": "机器人与 AI 设备",
+      "required": true,
+      "priority": "standard"
+    },
+    {
+      "id": "autonomous-driving",
+      "label": "自动驾驶",
+      "required": true,
+      "priority": "standard"
+    },
+    {
+      "id": "data-centers",
+      "label": "数据中心、能源、散热与网络",
+      "required": true,
+      "priority": "standard"
+    },
+    {
+      "id": "tech-finance",
+      "label": "科技金融与投资",
+      "required": true,
+      "priority": "standard"
+    }
+  ],
   "queries": [
     {
-      "id": "ai",
+      "id": "ai-general-en",
       "query": "(\"artificial intelligence\" OR \"generative AI\" OR \"large language model\" OR \"AI agent\" OR \"foundation model\")",
       "language": "en",
       "country": "US",
       "maxResults": 60,
-      "category": "ai-discovery"
+      "category": "ai-discovery",
+      "coverageGroup": "global-frontier",
+      "required": true,
+      "priority": "standard"
     },
     {
-      "id": "chips-storage",
-      "query": "(\"AI chip\" OR \"AI accelerator\" OR GPU OR NPU OR HBM OR DRAM OR NAND OR CXL)",
+      "id": "frontier-labs-people-en",
+      "query": "(OpenAI OR ChatGPT OR GPT OR Codex OR Anthropic OR Claude OR \"Sam Altman\" OR \"Dario Amodei\" OR Gemini OR DeepMind OR Llama OR xAI OR Grok OR Mistral)",
+      "language": "en",
+      "country": "US",
+      "maxResults": 80,
+      "category": "ai-primary-watch",
+      "coverageGroup": "global-frontier",
+      "required": true,
+      "priority": "priority"
+    },
+    {
+      "id": "frontier-labs-people-ja",
+      "query": "(OpenAI OR ChatGPT OR GPT OR Codex OR Anthropic OR Claude OR \"サム・アルトマン\" OR \"ダリオ・アモデイ\" OR Gemini OR DeepMind OR Llama OR xAI OR Grok OR Mistral)",
+      "language": "ja",
+      "country": "JP",
+      "maxResults": 40,
+      "category": "ai-primary-watch",
+      "coverageGroup": "global-frontier",
+      "required": true,
+      "priority": "priority"
+    },
+    {
+      "id": "frontier-labs-people-ko",
+      "query": "(OpenAI OR ChatGPT OR GPT OR Codex OR Anthropic OR Claude OR \"샘 올트먼\" OR \"다리오 아모데이\" OR Gemini OR DeepMind OR Llama OR xAI OR Grok OR Mistral)",
+      "language": "ko",
+      "country": "KR",
+      "maxResults": 40,
+      "category": "ai-primary-watch",
+      "coverageGroup": "global-frontier",
+      "required": true,
+      "priority": "priority"
+    },
+    {
+      "id": "ai-policy-lobbying-en",
+      "query": "(\"AI lobbying\" OR \"artificial intelligence lobbying\" OR \"AI policy\" OR \"AI regulation\" OR \"AI governance\")",
       "language": "en",
       "country": "US",
       "maxResults": 50,
-      "category": "chips-storage-discovery"
+      "category": "ai-policy-watch",
+      "coverageGroup": "global-frontier",
+      "required": true,
+      "priority": "priority"
     },
     {
-      "id": "robotics",
-      "query": "(robotics OR humanoid OR \"embodied AI\" OR \"robot foundation model\")",
+      "id": "ai-lobbying-en",
+      "query": "((\"AI companies\" AND lobbying) OR \"OpenAI lobbying\" OR \"Anthropic lobbying\" OR \"AI lobbying spending\" OR \"Washington lobbying\")",
       "language": "en",
       "country": "US",
       "maxResults": 50,
-      "category": "robotics-discovery"
+      "category": "ai-policy-watch",
+      "coverageGroup": "global-frontier",
+      "required": true,
+      "priority": "priority"
     },
     {
-      "id": "ai-devices",
+      "id": "developer-ai-en",
+      "query": "(\"OpenAI Codex\" OR \"Claude Code\" OR \"AI coding agent\" OR \"coding model\" OR \"developer agent\")",
+      "language": "en",
+      "country": "US",
+      "maxResults": 50,
+      "category": "developer-ai-watch",
+      "coverageGroup": "developer-ai",
+      "required": true,
+      "priority": "priority"
+    },
+    {
+      "id": "open-models-en",
+      "query": "(\"open-weight model\" OR \"open weights\" OR \"open-source AI model\" OR \"open model alliance\" OR Hugging Face)",
+      "language": "en",
+      "country": "US",
+      "maxResults": 50,
+      "category": "open-model-watch",
+      "coverageGroup": "open-models",
+      "required": true,
+      "priority": "priority"
+    },
+    {
+      "id": "china-models-zh",
+      "query": "(Kimi OR 月之暗面 OR 智谱 OR \"智谱AI\" OR GLM OR 通义千问 OR Qwen OR MiniMax OR DeepSeek OR 混元 OR 文心 OR 百度千帆 OR 商汤日日新 OR 阶跃星辰 OR 零一万物 OR 百川智能 OR 小米MiMo OR 美团龙猫 OR LongCat OR 字节跳动豆包 OR 豆包 OR \"字节跳动 Seed\" OR Seedance OR Seedream)",
+      "language": "zh-CN",
+      "country": "CN",
+      "ceid": "CN:zh-Hans",
+      "maxResults": 80,
+      "category": "china-model-watch",
+      "coverageGroup": "china-models",
+      "required": true,
+      "priority": "priority"
+    },
+    {
+      "id": "china-models-en",
+      "query": "(\"Moonshot AI\" OR \"Kimi K3\" OR Zhipu OR \"GLM model\" OR Qwen OR MiniMax OR DeepSeek OR Hunyuan OR \"Baidu ERNIE\" OR SenseNova OR \"Meituan LongCat\" OR \"ByteDance Doubao\" OR \"ByteDance Seed\" OR Seedance OR Seedream)",
+      "language": "en",
+      "country": "US",
+      "maxResults": 60,
+      "category": "china-model-watch",
+      "coverageGroup": "china-models",
+      "required": true,
+      "priority": "priority"
+    },
+    {
+      "id": "china-models-ja",
+      "query": "(Kimi OR 月之暗面 OR 智譜AI OR GLM OR 通義千問 OR Qwen OR MiniMax OR DeepSeek OR 混元 OR Hunyuan OR 美団 LongCat OR \"ByteDance Seed\" OR 豆包 OR Doubao OR Seedance OR Seedream)",
+      "language": "ja",
+      "country": "JP",
+      "maxResults": 40,
+      "category": "china-model-watch",
+      "coverageGroup": "china-models",
+      "required": true,
+      "priority": "priority"
+    },
+    {
+      "id": "china-models-ko",
+      "query": "(Kimi OR 키미 OR Moonshot OR 즈푸AI OR GLM OR 통이첸원 OR Qwen OR MiniMax OR DeepSeek OR 혼위안 OR Hunyuan OR 메이퇀 LongCat OR \"ByteDance Seed\" OR 더우바오 OR Doubao OR Seedance OR Seedream)",
+      "language": "ko",
+      "country": "KR",
+      "maxResults": 40,
+      "category": "china-model-watch",
+      "coverageGroup": "china-models",
+      "required": true,
+      "priority": "priority"
+    },
+    {
+      "id": "china-semiconductor-zh",
+      "query": "(光刻机 OR DUV OR EUV OR 上海微电子 OR 半导体设备 OR 国产芯片 OR 长鑫存储 OR 长江存储 OR HBM OR 存储芯片)",
+      "language": "zh-CN",
+      "country": "CN",
+      "ceid": "CN:zh-Hans",
+      "maxResults": 70,
+      "category": "china-semiconductor-watch",
+      "coverageGroup": "china-semiconductor",
+      "required": true,
+      "priority": "priority"
+    },
+    {
+      "id": "china-semiconductor-en",
+      "query": "(\"China lithography\" OR \"China DUV\" OR SMEE OR \"China semiconductor equipment\" OR CXMT OR YMTC OR \"China HBM\")",
+      "language": "en",
+      "country": "US",
+      "maxResults": 50,
+      "category": "china-semiconductor-watch",
+      "coverageGroup": "china-semiconductor",
+      "required": true,
+      "priority": "priority"
+    },
+    {
+      "id": "china-semiconductor-ja",
+      "query": "(中国 露光装置 OR 中国 DUV OR 中国 EUV OR 上海微電子 OR 中国 半導体製造装置 OR CXMT OR YMTC OR 中国 HBM OR 中国 メモリー)",
+      "language": "ja",
+      "country": "JP",
+      "maxResults": 40,
+      "category": "china-semiconductor-watch",
+      "coverageGroup": "china-semiconductor",
+      "required": true,
+      "priority": "priority"
+    },
+    {
+      "id": "china-semiconductor-ko",
+      "query": "(중국 노광장비 OR 중국 DUV OR 중국 EUV OR 상하이마이크로전자 OR 중국 반도체 장비 OR CXMT OR YMTC OR 중국 HBM OR 중국 메모리)",
+      "language": "ko",
+      "country": "KR",
+      "maxResults": 40,
+      "category": "china-semiconductor-watch",
+      "coverageGroup": "china-semiconductor",
+      "required": true,
+      "priority": "priority"
+    },
+    {
+      "id": "chips-storage-en",
+      "query": "(\"AI chip\" OR \"AI accelerator\" OR GPU OR NPU OR HBM OR DRAM OR NAND OR CXL OR lithography)",
+      "language": "en",
+      "country": "US",
+      "maxResults": 60,
+      "category": "chips-storage-discovery",
+      "coverageGroup": "chips-storage",
+      "required": true,
+      "priority": "standard"
+    },
+    {
+      "id": "sovereign-ai-en",
+      "query": "(\"sovereign AI\" OR \"national AI infrastructure\" OR \"AI ecosystem partnership\" OR \"NPU ecosystem\")",
+      "language": "en",
+      "country": "US",
+      "maxResults": 50,
+      "category": "sovereign-ai-watch",
+      "coverageGroup": "chips-storage",
+      "required": true,
+      "priority": "standard"
+    },
+    {
+      "id": "sovereign-ai-ko",
+      "query": "(\"주권 AI\" OR \"소버린 AI\" OR \"AI 생태계 협력\" OR \"NPU 생태계\")",
+      "language": "ko",
+      "country": "KR",
+      "maxResults": 40,
+      "category": "sovereign-ai-watch",
+      "coverageGroup": "chips-storage",
+      "required": true,
+      "priority": "standard"
+    },
+    {
+      "id": "chip-partnerships-en",
+      "query": "((AMD OR Nvidia OR Intel OR Samsung OR \"SK hynix\" OR TSMC OR Broadcom OR Cadence OR Synopsys) AND (\"AI partnership\" OR \"AI ecosystem\" OR \"AI infrastructure\" OR \"AI chip design\"))",
+      "language": "en",
+      "country": "US",
+      "maxResults": 60,
+      "category": "chip-partnership-watch",
+      "coverageGroup": "chips-storage",
+      "required": true,
+      "priority": "standard"
+    },
+    {
+      "id": "chip-partnerships-ko",
+      "query": "((AMD OR 엔비디아 OR 인텔 OR 삼성전자 OR SK하이닉스) AND (\"AI 생태계\" OR \"AI 인프라\" OR \"AI 반도체 협력\"))",
+      "language": "ko",
+      "country": "KR",
+      "maxResults": 40,
+      "category": "chip-partnership-watch",
+      "coverageGroup": "chips-storage",
+      "required": true,
+      "priority": "standard"
+    },
+    {
+      "id": "robotics-en",
+      "query": "(robotics OR humanoid OR \"embodied AI\" OR \"robot foundation model\" OR \"robotics dataset\")",
+      "language": "en",
+      "country": "US",
+      "maxResults": 50,
+      "category": "robotics-discovery",
+      "coverageGroup": "robotics-devices",
+      "required": true,
+      "priority": "standard"
+    },
+    {
+      "id": "ai-devices-en",
       "query": "(\"AI glasses\" OR \"smart glasses\" OR \"AI phone\" OR \"AI PC\" OR \"edge AI device\")",
       "language": "en",
       "country": "US",
       "maxResults": 50,
-      "category": "ai-devices-discovery"
+      "category": "ai-devices-discovery",
+      "coverageGroup": "robotics-devices",
+      "required": true,
+      "priority": "standard"
     },
     {
-      "id": "autonomous-driving",
+      "id": "autonomous-driving-en",
       "query": "(\"autonomous driving\" OR \"self-driving\" OR ADAS OR robotaxi)",
       "language": "en",
       "country": "US",
       "maxResults": 50,
-      "category": "autonomous-driving-discovery"
+      "category": "autonomous-driving-discovery",
+      "coverageGroup": "autonomous-driving",
+      "required": true,
+      "priority": "standard"
     },
     {
-      "id": "data-centers",
-      "query": "\"AI data center\" OR \"AI datacenter\" OR \"data center cooling\" OR \"data center power\" OR \"AI networking\" OR \"AI interconnect\"",
+      "id": "data-centers-en",
+      "query": "(\"AI data center\" OR \"AI datacenter\" OR \"data center cooling\" OR \"data center power\" OR \"AI networking\" OR \"AI interconnect\")",
       "language": "en",
       "country": "US",
       "maxResults": 50,
-      "category": "data-centers-discovery"
+      "category": "data-centers-discovery",
+      "coverageGroup": "data-centers",
+      "required": true,
+      "priority": "standard"
     },
     {
-      "id": "tech-finance",
-      "query": "\"AI investment\" OR \"AI funding\" OR \"AI acquisition\" OR \"semiconductor investment\" OR \"robotics funding\" OR \"data center financing\"",
+      "id": "tech-finance-en",
+      "query": "(\"AI investment\" OR \"AI funding\" OR \"AI acquisition\" OR \"semiconductor investment\" OR \"robotics funding\" OR \"data center financing\")",
       "language": "en",
       "country": "US",
       "maxResults": 50,
-      "category": "tech-finance-discovery"
+      "category": "tech-finance-discovery",
+      "coverageGroup": "tech-finance",
+      "required": true,
+      "priority": "standard"
+    },
+    {
+      "id": "tech-finance-zh",
+      "query": "((AI OR 人工智能 OR 芯片 OR 半导体 OR 机器人 OR 数据中心) AND (融资 OR 投资 OR 并购 OR 上市 OR IPO))",
+      "language": "zh-CN",
+      "country": "CN",
+      "ceid": "CN:zh-Hans",
+      "maxResults": 50,
+      "category": "tech-finance-discovery",
+      "coverageGroup": "tech-finance",
+      "required": true,
+      "priority": "standard"
     }
   ]
 }

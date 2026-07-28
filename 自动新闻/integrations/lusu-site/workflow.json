@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 3,
+  "schemaVersion": 4,
   "calendar": {
     "timezone": "Asia/Shanghai",
     "mode": "fixed-24-hour-window",
@@ -28,7 +28,27 @@
       "url-normalization",
       "cross-source-deduplication"
     ],
-    "stopWhenUnavailable": true
+    "stopWhenUnavailable": true,
+    "discoveryCatalog": "discovery-queries.json",
+    "languagePolicy": "any-reliable-language",
+    "seedLanguages": [
+      "en",
+      "zh-CN",
+      "ja",
+      "ko"
+    ],
+    "queryConcurrency": 2,
+    "candidateIndexRequired": true,
+    "coverageManifestRequired": true,
+    "requiredQueryFailurePolicy": "fail-closed",
+    "coverageReview": {
+      "reviewEveryRequiredQuery": true,
+      "reviewEveryRequiredGroup": true,
+      "priorityGroupsFirst": true,
+      "lowVolumeTrigger": 5,
+      "lowVolumeMeaning": "selected-story-count",
+      "lowVolumeAction": "mandatory-second-pass-without-filler"
+    }
   },
   "selection": {
     "importanceThreshold": 7,
@@ -36,6 +56,53 @@
     "dedupeWithinRun": true,
     "dedupeLookbackDays": 30,
     "allowRepeatOnlyForMaterialUpdate": true,
+    "eventDedupe": {
+      "identity": "eventKey-plus-eventStage",
+      "requiredFields": [
+        "eventKey",
+        "eventStage",
+        "dedupeDecision"
+      ],
+      "allowedDecisions": [
+        "new",
+        "material-update",
+        "duplicate"
+      ],
+      "selectedDuplicateAllowed": false,
+      "materialUpdateRequires": [
+        "priorStoryKey",
+        "materialDifference"
+      ],
+      "materialStages": [
+        "announcement",
+        "preview",
+        "release",
+        "weights-release",
+        "license",
+        "technical-report",
+        "deployment",
+        "financing",
+        "regulatory-decision"
+      ]
+    },
+    "coverageAuditRequired": true,
+    "coverageAuditContract": {
+      "requiredFields": [
+        "candidateIndexReviewedAt",
+        "candidateIndexSha256",
+        "lowVolumeTrigger",
+        "signedOffQueryIds",
+        "signedOffGroupIds",
+        "secondPass"
+      ],
+      "signoffSource": "coverage_manifest.json",
+      "signedOffQueryIds": "exactly-all-requiredQueryIds",
+      "signedOffGroupIds": "exactly-all-requiredGroupIds",
+      "secondPassWhen": "selected-story-count-below-5",
+      "secondPassRepeatsAllRequiredSignoffs": true
+    },
+    "lowVolumeTrigger": 5,
+    "lowVolumeRule": "Fewer than five selected stories requires a complete second coverage pass, but never lowers the importance threshold or forces filler.",
     "editorialScoring": "Codex applies Horizon-compatible importance criteria to the current Horizon candidate artifact",
     "selectedItemContract": {
       "requiredFields": [
@@ -91,10 +158,12 @@
     "includeScores": false,
     "includeSourceLabels": false,
     "titlePatterns": {
-      "zh": "每日 AI 新闻｜YYYY 年 M 月 D 日",
-      "en": "Daily AI News | Month D, YYYY",
-      "ja": "毎日AIニュース｜YYYY年M月D日"
+      "zh": "每日 AI 新闻｜<今日要闻标题>",
+      "en": "Daily AI News | <Lead Story headline>",
+      "ja": "毎日AIニュース｜<今日のトップニュース見出し>"
     },
+    "titleUsesLeadStoryHeadline": true,
+    "titleIncludesDate": false,
     "intro": {
       "allowed": false,
       "firstContentAfterTitle": "lead-section-heading",
@@ -177,5 +246,10 @@
     "schedulerEnabled": true,
     "failurePolicy": "fail-closed",
     "forbidLatePublish": true
+  },
+  "compatibility": {
+    "formalRunSchemaVersion": 4,
+    "historicalOneShotSchemaVersion": 3,
+    "historicalSchema3OnlyForExplicitOneShot": true
   }
 }

@@ -1,0 +1,259 @@
+{
+  "schemaVersion": 4,
+  "reportDate": "2026-07-28",
+  "timezone": "Asia/Shanghai",
+  "windowStart": "2026-07-27T07:00:00+08:00",
+  "windowEnd": "2026-07-28T07:00:00+08:00",
+  "collectionMethod": "Horizon native fetch and cross-source dedupe, followed by Codex editorial review",
+  "horizonRun": {
+    "runId": "run-20260728T014353Z-c4ddc43d",
+    "candidatesPath": "data/mcp-runs/run-20260728T014353Z-c4ddc43d/daily_candidates.json",
+    "candidateIndexPath": "data/mcp-runs/run-20260728T014353Z-c4ddc43d/candidate_index.json",
+    "coverageManifestPath": "data/mcp-runs/run-20260728T014353Z-c4ddc43d/coverage_manifest.json"
+  },
+  "selection": {
+    "importanceThreshold": 7,
+    "maxItems": null,
+    "dedupeLookbackDays": 30,
+    "selectedStoryKeys": [
+      "anthropic-open-weight-position",
+      "microsoft-mai-cyber-flash",
+      "china-us-ai-policy-response",
+      "cadence-ai-chip-design-outlook",
+      "amd-korea-sovereign-ai-partnership",
+      "ai-labs-washington-lobbying",
+      "china-immersion-duv-production",
+      "openai-open-secure-alliance-absence"
+    ]
+  },
+  "coverageAudit": {
+    "candidateIndexReviewedAt": "2026-07-28T09:45:00+08:00",
+    "candidateIndexSha256": "4753e8e6e8f81f82fda305e33adfd3ab9ea5e9bb9f16c60c621e6764747283cd",
+    "lowVolumeTrigger": 5,
+    "signedOffQueryIds": [
+      "ai-general-en",
+      "frontier-labs-people-en",
+      "frontier-labs-people-ja",
+      "frontier-labs-people-ko",
+      "ai-policy-lobbying-en",
+      "ai-lobbying-en",
+      "developer-ai-en",
+      "open-models-en",
+      "china-models-zh",
+      "china-models-en",
+      "china-models-ja",
+      "china-models-ko",
+      "china-semiconductor-zh",
+      "china-semiconductor-en",
+      "china-semiconductor-ja",
+      "china-semiconductor-ko",
+      "chips-storage-en",
+      "sovereign-ai-en",
+      "sovereign-ai-ko",
+      "chip-partnerships-en",
+      "chip-partnerships-ko",
+      "robotics-en",
+      "ai-devices-en",
+      "autonomous-driving-en",
+      "data-centers-en",
+      "tech-finance-en",
+      "tech-finance-zh"
+    ],
+    "signedOffGroupIds": [
+      "global-frontier",
+      "developer-ai",
+      "open-models",
+      "china-models",
+      "china-semiconductor",
+      "chips-storage",
+      "robotics-devices",
+      "autonomous-driving",
+      "data-centers",
+      "tech-finance"
+    ],
+    "secondPass": {
+      "required": false,
+      "completed": false
+    }
+  },
+  "candidates": [
+    {
+      "storyKey": "anthropic-open-weight-position",
+      "publishedDate": "2026-07-27",
+      "publishedAt": "2026-07-27T22:03:49Z",
+      "importance": 9.3,
+      "selected": true,
+      "eventKey": "anthropic-open-weight-policy",
+      "eventStage": "policy-position",
+      "dedupeDecision": "new",
+      "section": "lead",
+      "verification": "confirmed",
+      "whyWorth": "Anthropic 对开放权重模型的明确立场会影响开放模型、安全测试、算力限制与中美 AI 政策讨论。",
+      "aiTake": "开放权重通常只代表参数可下载，并不等于完整开源。Anthropic 主张按能力测试并限制高端算力，而不是全面封禁。",
+      "sourceUrls": [
+        "https://www.anthropic.com/news/position-open-weights-models"
+      ]
+    },
+    {
+      "storyKey": "microsoft-mai-cyber-flash",
+      "publishedDate": "2026-07-27",
+      "publishedAt": "2026-07-27T16:52:22Z",
+      "importance": 8.8,
+      "selected": true,
+      "eventKey": "microsoft-mai-cyber-1-flash",
+      "eventStage": "model-release",
+      "dedupeDecision": "new",
+      "section": "main",
+      "verification": "confirmed",
+      "whyWorth": "微软首次公布专用网络安全模型及其与大型模型分工的成本和测试结果，具有明确的产品与应用价值。",
+      "aiTake": "专用小模型处理日常任务、大模型处理难题，有望降低自动化安全检查的成本。",
+      "sourceUrls": [
+        "https://microsoft.ai/news/introducing-mai-cyber-1-flash-inside-mdash/"
+      ]
+    },
+    {
+      "storyKey": "china-us-ai-policy-response",
+      "publishedDate": "2026-07-27",
+      "publishedAt": "2026-07-27T12:44:15Z",
+      "importance": 8.7,
+      "selected": true,
+      "eventKey": "china-us-kimi-distillation-dispute",
+      "eventStage": "policy-response",
+      "dedupeDecision": "new",
+      "section": "main",
+      "verification": "confirmed",
+      "whyWorth": "Kimi K3 相关蒸馏争议已从技术讨论升级到可能的调查、制裁、贸易限制及中方反制。",
+      "aiTake": "若措施落地，影响可能从模型公司扩大到芯片、云服务和海外业务。",
+      "sourceUrls": [
+        "https://news.google.com/rss/articles/CBMi3gFBVV95cUxPUV9uX2ZXekJmMWw1dlVXRm5Del8yaUEzMTdNYjR0dlBoRW9KRDJZeVJMbks1UTU3YllJUzhRQmYyN3JFMWlaOFB4bjlmNHpCbWNtSU5Xc1FRVVFGWWZnTmplVkNVaktPMDRRUmQzV1FQRmV2Rktab0pVVS1zaVlaQmpvU3hKSlRfcXJsS2hnaFpORE0tem40a0xDRkVRVENrYVpVMFo5NnRaaEJIemd3WXZnbUVyU080RXlrWHRHcVFlTi1XMjhPMy1qeml4UmN1dWNvLVlCbGdwTlpNbVHSAeYBQVVfeXFMTjM2bnZVUEwxdXFTQjJEWVpsR0UxMlFLTXdHOUE5SGU0djdQV3pGdmxtOVQ1WG10WE9vZzlmcjdpNEMtMHJMTUI4aTE3Ny1xSHJyQ1h1VkJzMDJSbUJUalJPREl2TFNSVFdBR0FpWFhSS0tNMVFZLUtsTWphZF9MZ0h3MktHRlJWRnY3R01Wb1VJNDVOWDl0aU1odU1nWnMzeWpmNzk0WDV5OS1LSF9rTUUtNzhCcFd5T1hoaC1xZUpXdWVjNnpjM1hMNkc1RDhvYlJJZnhmeDBFckZzMjZ2UklJX1lfaHc?oc=5",
+        "https://ca.marketscreener.com/news/china-accuses-us-of-ai-hegemonism-threatens-countermeasures-over-potential-probes-ce7f51dcdc8ff12d"
+      ]
+    },
+    {
+      "storyKey": "cadence-ai-chip-design-outlook",
+      "publishedDate": "2026-07-27",
+      "publishedAt": "2026-07-27T20:36:00Z",
+      "importance": 8.1,
+      "selected": true,
+      "eventKey": "cadence-2026-guidance",
+      "eventStage": "earnings-guidance",
+      "dedupeDecision": "new",
+      "section": "main",
+      "verification": "confirmed",
+      "whyWorth": "Cadence 的财务结果提供了 AI 投资向芯片设计和验证环节外溢的可量化信号。",
+      "aiTake": "业绩说明 AI 投资已外溢到芯片设计和验证，但不代表所有项目最终都能量产。",
+      "sourceUrls": [
+        "https://news.google.com/rss/articles/CBMivAFBVV95cUxPZEw5TFphTEV5OHVidlJkNzRwS1c3WDgzMmU2Ql93X3plWmc4dVl6ZEJwSy1kMnBqc1NuRm5Ib0RqcFp5OVctX2VHcV8xWjdvWU5YVnB6THJlRnRMS3l5TnhUUzFRLVVpT2JUUGdHa2dhWDVlelhkSVpjdTh4ck1TUXBXeGxwN3RMd19pZVV1YWNTZm9CamMyUFRwaEdFcjNIRXZkWnVRUTNacU0zcUp3THducUpTWk1vZmNrdQ?oc=5",
+        "https://www.cadence.com/en_US/home/company/newsroom/press-releases/pr-ir/2026/cadence-reports-second-quarter-2026-financial-results.html"
+      ]
+    },
+    {
+      "storyKey": "amd-korea-sovereign-ai-partnership",
+      "publishedDate": "2026-07-27",
+      "publishedAt": "2026-07-27T09:33:15Z",
+      "importance": 8,
+      "selected": true,
+      "eventKey": "amd-korea-sovereign-ai",
+      "eventStage": "partnership-announcement",
+      "dedupeDecision": "new",
+      "section": "main",
+      "verification": "confirmed",
+      "whyWorth": "AMD 与韩国政府的合作同时涉及国家 AI 基础设施、国产 NPU、开放模型和供应链多元化。",
+      "aiTake": "目标是降低对单一供应商的依赖；目前仍是合作框架，尚无采购规模和落地时间。",
+      "sourceUrls": [
+        "https://news.google.com/rss/articles/CBMiaEFVX3lxTE9xMFBUdGJQMWJ3TTZIeFZ3T01oTnZudlVwSjNscHRqUU54WDZ1VzAwS1hVR3hmSkRUcnoybGl0R0lGWU5nY0xIeVkyN05yOEhIb20yNERFelFvTW1fRkJ5SXF6Z0tfVzRh0gFsQVVfeXFMUFlRbWY3bUwtdTVRUjFKYUREYWpLb0hhMmxHN2owcjRyeTF1T3BvVnVFZFJHbHVmYUNxbkFkX3ZiRndCRUlObmNobDYzbFNsZ1lpUGY5RFJNdm1XSGNkc0hhSXp5by04bVpHNjFa?oc=5",
+        "https://newsroom.amd.com/news/amd-and-korea-s-ministry-of-science-and-ict-partner-to-advance-a-sovereign-ai-ecosystem/"
+      ]
+    },
+    {
+      "storyKey": "ai-labs-washington-lobbying",
+      "publishedDate": "2026-07-27",
+      "publishedAt": "2026-07-27T04:00:14Z",
+      "importance": 7.8,
+      "selected": true,
+      "eventKey": "ai-labs-us-lobbying-2026-h1",
+      "eventStage": "lobbying-disclosure",
+      "dedupeDecision": "new",
+      "section": "main",
+      "verification": "confirmed",
+      "whyWorth": "OpenAI 与 Anthropic 的游说支出增长反映前沿模型公司正加大对美国 AI 规则制定过程的投入。",
+      "aiTake": "游说支出不等于已经改变政策，但会增强大公司参与规则制定的能力。",
+      "sourceUrls": [
+        "https://news.google.com/rss/articles/CBMihAFBVV95cUxOYlgyaF9mZU5LRkVuNnJab1VqdnpLYkdWRDUtQXhfTEhpYmwwUU9tWFo3bUpFTXlJSTFRVEI0SkQ0Z01TempDNFdWR2E3N2JvUEliY1h4Qi1iN3pxUTRhdWRpSlpfVWZlR1BubHlKYlBYcEhhUFg5QmRUM3c1Z213S2ZQVEo?oc=5",
+        "https://www.ft.com/content/d8a5f95e-3b6d-463a-a848-c9ef8e2394db",
+        "https://issueone.org/press/big-tech-spends-millions-to-buy-influence-in-washington-in-first-half-of-2026/"
+      ]
+    },
+    {
+      "storyKey": "china-immersion-duv-production",
+      "publishedDate": "2026-07-27",
+      "publishedAt": "2026-07-27T15:15:06Z",
+      "importance": 8.8,
+      "selected": true,
+      "eventKey": "china-domestic-immersion-duv",
+      "eventStage": "production-report",
+      "dedupeDecision": "new",
+      "section": "rumor",
+      "verification": "unverified",
+      "whyUnverified": "报道依据匿名知情人士，制造商未具名，交付数量、性能和可靠性尚无公开的一手材料。",
+      "whyWorth": "国产浸没式 DUV 若进入客户测试和小批量制造，将直接影响中国成熟与先进制程设备供应链。",
+      "aiTake": "真正的突破标准不是造出样机，而是客户能否长期稳定使用并维持良率。",
+      "sourceUrls": [
+        "https://news.google.com/rss/articles/CBMiugFBVV95cUxNczNKaVBKQlBhakFSU2NWSktCWHViODV0YmUzSnU5VWVVQkg2OWd2QUZteVB6RmZGLWdwV092R29aVElFX09naHB5TzQ3c2xhUXNBZllCcm9aWnhGRGhhRVc3UEt4NWxhYTRTZW1hdFVEM1RIajQxWl82b3JNMTF1eEo4X25BSGRoVFFuWElhSk9QSzJxZC1lZTlnc196YW9UY2NCaG9DaTExUUo5RnVjUDB1NVBVZzFvZlE?oc=5",
+        "https://live.euronext.com/en/financial-news/china-begins-making-homegrown-duv-chipmaking-tools-information-reports"
+      ]
+    },
+    {
+      "storyKey": "openai-open-secure-alliance-absence",
+      "publishedDate": "2026-07-27",
+      "publishedAt": "2026-07-27T21:37:12Z",
+      "importance": 7.6,
+      "selected": true,
+      "eventKey": "open-secure-ai-alliance",
+      "eventStage": "membership-decision",
+      "dedupeDecision": "material-update",
+      "priorStoryKey": "open-secure-ai-alliance",
+      "materialDifference": "27 日稿只报道联盟成立；本次新增事实是公开成员名单没有 OpenAI，以及管理层拒绝加入和内部反弹的社区说法。",
+      "section": "rumor",
+      "verification": "unverified",
+      "whyUnverified": "OpenAI 缺席首批公开名单可以确认，但管理层决定和员工反弹目前主要来自社区转述。",
+      "whyWorth": "OpenAI 是否参与开放安全工具联盟关系到代理安全标准和行业协作，其缺席及内部争议具有新增信息价值。",
+      "aiTake": "缺席首发阵容不等于公开反对，后续是否加入或推出另一套标准更能说明立场。",
+      "sourceUrls": [
+        "https://x.com/mark_k/status/2081750003719029084",
+        "https://blogs.nvidia.com/blog/open-secure-ai-alliance/",
+        "https://www.csoonline.com/article/4201761/openai-not-part-of-the-new-open-secure-ai-alliance.html"
+      ]
+    }
+  ],
+  "delivery": {
+    "idempotencyKey": "daily-ai-news:2026-07-28:coverage-revision-v2",
+    "slug": "daily-ai-news-2026-07-28",
+    "source": "Horizon + Codex editorial review",
+    "tags": [
+      "每日AI新闻",
+      "AI",
+      "开放权重",
+      "网络安全",
+      "芯片",
+      "科技金融"
+    ],
+    "translations": {
+      "zh": {
+        "title": "每日 AI 新闻｜Anthropic 明确开放权重模型立场",
+        "summary": "Anthropic 明确开放权重立场，微软公布专用网络安全模型；中美 AI 争议、芯片设计、主权 AI、政策游说和国产光刻机消息同步升温。",
+        "content_markdown": "# 每日 AI 新闻｜Anthropic 明确开放权重模型立场\n\n## 今日要闻\n\n### Anthropic 明确开放权重模型立场\n\nAnthropic CEO Dario Amodei 表示，公司不主张全面禁止开放权重模型，但支持限制向威权国家提供高性能芯片、打击工业规模的模型蒸馏，并要求所有达到一定能力的开放和封闭模型接受强制安全测试。\n\n**AI 解读：** 开放权重通常只代表模型参数可以下载，并不等于完整开源。Anthropic 主张按能力测试并限制高端算力，而不是全面封禁。\n\n## 主要新闻\n\n### 微软公布 MAI-Cyber-1-Flash 网络安全模型\n\n微软公布首个专用网络安全模型 MAI-Cyber-1-Flash，并将其用于发现、验证和修复软件漏洞的 MDASH 系统。微软称，该模型可处理最多 90% 的任务，与 GPT-5.4 配合后在 CyberGym 测试中达到 95.95%，成本比此前最佳方案降低约一半。\n\n**AI 解读：** 专用小模型处理日常任务、大模型处理难题，有望降低自动化安全检查的成本。\n\n### 中国商务部回应美方对中国 AI 企业的调查与制裁威胁\n\n在美方官员称中国 AI 企业可能因涉嫌获取美国技术而面临调查、制裁和贸易限制后，中国商务部指责美方推行“AI 霸权”，并表示将采取必要反制措施。争议集中在月之暗面 Kimi K3 的模型蒸馏指控，月之暗面已否认相关说法。\n\n**AI 解读：** 若措施落地，影响可能从模型公司扩大到芯片、云服务和海外业务。\n\n### Cadence 上调全年业绩预期\n\n芯片设计软件公司 Cadence 将 2026 年营收预期从 61.3 亿至 62.3 亿美元上调至 62.6 亿至 63.4 亿美元，第二季度营收同比增长 24.2% 至 15.84 亿美元。公司表示，AI 芯片和复杂系统设计正在推高其软件需求。\n\n**AI 解读：** 业绩说明 AI 投资已外溢到芯片设计和验证，但不代表所有项目最终都能量产。\n\n### AMD 与韩国公布主权 AI 合作计划\n\nAMD 与韩国科学技术信息通信部于 7 月 27 日公布一项在 7 月 23 日签署的合作备忘录。双方将探索把 AMD 的 CPU、GPU 与韩国企业的 NPU 结合，并在国家 AI 基础设施、开放模型、研究和人才培养方面合作。\n\n**AI 解读：** 目标是降低对单一供应商的依赖；目前仍是合作框架，尚无采购规模和落地时间。\n\n### OpenAI 与 Anthropic 加大华盛顿游说投入\n\n美国联邦披露数据显示，OpenAI 今年上半年的联邦游说支出接近翻倍，达到创纪录的 222 万美元；Anthropic 的支出接近去年的三倍，达到 353 万美元。两家公司都在扩大对 AI 政策制定过程的投入。\n\n**AI 解读：** 游说支出不等于已经改变政策，但会增强大公司参与规则制定的能力。\n\n## 传闻\n\n### 国产浸没式 DUV 光刻机据报开始小批量制造\n\n消息称，一家未具名的国资背景厂商已开始制造国产浸没式 DUV 光刻机，并计划向中芯国际、华虹半导体和长鑫存储交付，今年约生产 5 台、2027 年约生产 20 台。设备在性能和可靠性上仍落后于 ASML，并需要继续测试。\n\n**AI 解读：** 真正的突破标准不是造出样机，而是客户能否长期稳定使用并维持良率。\n\n### OpenAI 未加入开放安全 AI 联盟，内部决定据称引发反弹\n\n英伟达于 7 月 27 日发起开放安全 AI 联盟，首批成员包括微软、IBM、思科、Hugging Face 等三十多家机构，但名单中没有 OpenAI。据报道，OpenAI 管理层决定不加入后在公司内部引发反弹；OpenAI 尚未公开解释缺席原因。\n\n**AI 解读：** 缺席首发阵容不等于公开反对，后续是否加入或推出另一套标准更能说明立场。"
+      },
+      "en": {
+        "title": "Daily AI News | Anthropic sets out its position on open-weight models",
+        "summary": "Anthropic clarified its open-weight position and Microsoft unveiled a dedicated cyber model, alongside developments in US-China AI policy, chip design, sovereign AI, lobbying and domestic lithography.",
+        "content_markdown": "# Daily AI News | Anthropic sets out its position on open-weight models\n\n## Lead Story\n\n### Anthropic sets out its position on open-weight models\n\nAnthropic CEO Dario Amodei said the company does not support a blanket ban on open-weight models. It instead backs restricting powerful chips from authoritarian states, stopping industrial-scale model distillation and requiring mandatory safety testing for sufficiently capable open and closed models.\n\n**AI take:** Open-weight usually means the parameters can be downloaded, not that the whole system is open source. Anthropic favors capability testing and compute controls rather than a blanket ban.\n\n## More News\n\n### Microsoft unveils the MAI-Cyber-1-Flash security model\n\nMicrosoft unveiled MAI-Cyber-1-Flash, its first specialized cybersecurity model, for use inside MDASH to find, validate and repair software vulnerabilities. Microsoft says it can handle up to 90% of tasks and, when paired with GPT-5.4, scored 95.95% on CyberGym at roughly half the cost of its previous best configuration.\n\n**AI take:** A specialist can handle routine work while a larger model takes hard cases, potentially lowering automated security-testing costs.\n\n### China responds to US threats of AI investigations and sanctions\n\nChina’s Commerce Ministry accused the United States of “AI hegemonism” and said it would take necessary countermeasures after US officials warned that Chinese AI companies could face investigations, sanctions and trade restrictions over alleged technology theft. The dispute centers on distillation allegations involving Moonshot AI’s Kimi K3, which Moonshot has rejected.\n\n**AI take:** If measures follow, the effects could spread from model companies to chips, cloud services and overseas operations.\n\n### Cadence raises its full-year outlook\n\nCadence raised its 2026 revenue forecast from 6.13–6.23 billion dollars to 6.26–6.34 billion dollars, while second-quarter revenue rose 24.2% to 1.584 billion dollars. The company said demand is growing as customers develop AI chips and increasingly complex electronic systems.\n\n**AI take:** The results show AI spending reaching chip design and verification, but not every project will reach production.\n\n### AMD and South Korea announce a sovereign AI partnership\n\nAMD and South Korea’s Ministry of Science and ICT announced on July 27 a partnership agreement signed on July 23. They will explore combining AMD CPUs and GPUs with Korean NPUs and cooperate on national AI infrastructure, open models, research and talent development.\n\n**AI take:** The aim is less dependence on one supplier; this is still a framework with no procurement scale or rollout date.\n\n### OpenAI and Anthropic increase Washington lobbying\n\nUS federal disclosures show OpenAI nearly doubled its first-half lobbying expenditure to a record 2.22 million dollars, while Anthropic nearly tripled its spending to 3.53 million dollars. Both companies are expanding their participation in the AI policymaking process.\n\n**AI take:** Spending does not prove a policy outcome, but it gives large companies more access to rulemaking.\n\n## Rumors\n\n### Domestic immersion DUV tools reportedly enter limited production in China\n\nA state-backed but unnamed Chinese manufacturer has reportedly begun producing domestic immersion DUV lithography tools, with deliveries planned for SMIC, Hua Hong Semiconductor and ChangXin Memory Technologies. Production could reach about five machines in 2026 and 20 in 2027, although the systems still trail ASML in performance and reliability and need further testing.\n\n**AI take:** The real milestone is stable customer operation and acceptable yields, not merely building a machine.\n\n### OpenAI reportedly declined the new open security alliance amid internal backlash\n\nNvidia launched the Open Secure AI Alliance on July 27 with more than 30 initial partners, including Microsoft, IBM, Cisco and Hugging Face, but OpenAI was absent. Management reportedly decided not to join and faced internal backlash; OpenAI has not publicly explained its absence.\n\n**AI take:** Missing the launch group is not public opposition; later participation or a competing standard will reveal more."
+      },
+      "ja": {
+        "title": "毎日AIニュース｜Anthropicがオープンウェイトモデルへの立場を明確化",
+        "summary": "Anthropicがオープンウェイトへの立場を明確化し、Microsoftがサイバーセキュリティ専用モデルを発表。米中AI政策、半導体設計、主権AI、ロビー活動、国産露光装置にも動きがあった。",
+        "content_markdown": "# 毎日AIニュース｜Anthropicがオープンウェイトモデルへの立場を明確化\n\n## 今日のトップニュース\n\n### Anthropicがオープンウェイトモデルへの立場を明確化\n\nAnthropicのDario Amodei CEOは、オープンウェイトモデルを一律に禁止する考えはないと表明した。一方で、威権主義国への高性能チップ供給の制限、産業規模のモデル蒸留への対処、一定以上の能力を持つオープン・クローズド両モデルへの安全性試験の義務化を支持した。\n\n**AI解説：** オープンウェイトは重みを取得できるという意味で、完全なオープンソースとは限らない。Anthropicは全面禁止ではなく、能力試験と計算資源の制限を求めている。\n\n## 主なニュース\n\n### MicrosoftがMAI-Cyber-1-Flashを発表\n\nMicrosoftは、初のサイバーセキュリティ専用モデルMAI-Cyber-1-Flashを発表し、脆弱性の発見・検証・修復を行うMDASHに組み込んだ。同社によると、最大90%の作業を担当でき、GPT-5.4との組み合わせでCyberGymの95.95%を記録し、従来の最良構成よりコストを約半分に抑えた。\n\n**AI解説：** 専用モデルが日常作業を担い、難問だけを大型モデルへ回すことで安全検査の費用を下げられる。\n\n### 中国商務部が米国のAI調査・制裁方針に反発\n\n米政府高官が、中国のAI企業は米国技術の不正取得を理由に調査、制裁、貿易制限の対象になり得ると述べたことを受け、中国商務部は米国を「AI覇権主義」と批判し、必要な対抗措置を取ると表明した。争点はMoonshot AIのKimi K3を巡るモデル蒸留疑惑で、同社はこれを否定している。\n\n**AI解説：** 措置が実施されれば、影響はモデル企業から半導体、クラウド、海外事業へ広がり得る。\n\n### Cadenceが通期見通しを引き上げ\n\nCadenceは2026年の売上高見通しを61.3億～62.3億ドルから62.6億～63.4億ドルへ引き上げ、第2四半期の売上高は前年同期比24.2%増の15.84億ドルとなった。AI半導体や複雑な電子システムの開発が、同社の設計ソフト需要を押し上げている。\n\n**AI解説：** AI投資が設計・検証工程にも広がっているが、すべての計画が量産される保証ではない。\n\n### AMDと韓国が主権AI分野の協力を発表\n\nAMDと韓国科学技術情報通信部は7月27日、7月23日に締結した協力覚書を発表した。AMDのCPU・GPUと韓国製NPUを組み合わせ、国家AI基盤、オープンモデル、研究、人材育成での協力を検討する。\n\n**AI解説：** 単一供給元への依存低減が狙いだが、現段階は枠組みで、調達規模と導入時期は未定だ。\n\n### OpenAIとAnthropicがワシントンでのロビー活動を拡大\n\n米国の連邦開示資料によると、OpenAIの2026年上半期のロビー活動費はほぼ倍増して過去最高の222万ドルとなり、Anthropicは前年の約3倍となる353万ドルを支出した。両社はAI政策の策定過程への関与を強めている。\n\n**AI解説：** 支出額だけで政策成果は証明できないが、大企業がルール形成へ関与する機会は増える。\n\n## 噂\n\n### 中国製の液浸DUV露光装置が小規模生産に入ったとの報道\n\n国有系とされる匿名の中国メーカーが国産の液浸DUV露光装置の製造を始め、中芯国際、華虹半導体、長鑫存儲への納入を計画しているという。生産台数は2026年に約5台、2027年に約20台とされるが、性能と信頼性は依然としてASMLに及ばず、追加試験が必要とされている。\n\n**AI解説：** 本当の基準は試作機の完成ではなく、顧客工場で安定稼働し歩留まりを維持できるかだ。\n\n### OpenAIが新たなオープン安全連合への参加を見送ったとの情報\n\nNvidiaは7月27日、Microsoft、IBM、Cisco、Hugging Faceなど30社以上を初期パートナーとするOpen Secure AI Allianceを発足させたが、OpenAIは名簿に含まれなかった。コミュニティ発の情報では、経営陣が参加を見送り、社内で反発が起きたと報じられているが、OpenAIは欠席理由を公表していない。\n\n**AI解説：** 発足時の不参加は公然の反対を意味せず、後の参加や別基準の提示が立場を示す。"
+      }
+    }
+  }
+}
