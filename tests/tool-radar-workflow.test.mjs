@@ -602,10 +602,131 @@ test("生产投递前要求所有登记图片已按同一字节上线", async ()
     verifyPublishedToolAssets({
       endpoint: "https://lusu575.com/api/automation/tool-radar",
       run: fixture.run,
-      fetchImpl: async () => new Response(Buffer.from("different"), { status: 200 })
+      fetchImpl: async () => new Response(Buffer.from("different"), {
+        status: 200,
+        headers: { "content-type": "image/png" }
+      })
     }),
     /线上图片字节与运行记录不一致/
   );
+});
+
+test("线上图片瞬时失败会有界重试，持续失败仍然关闭投递", async () => {
+  const fixture = await createFixture();
+  await addToolImages(fixture, { count: 1, useSingleObject: true });
+  const [image] = registeredToolRadarImages(fixture.run);
+  const imageBytes = await readFile(resolve(fixture.siteRoot, ...image.assetPath.split("/")));
+  const retryWaits = [];
+  let transientCalls = 0;
+  assert.equal(await verifyPublishedToolAssets({
+    endpoint: "https://lusu575.com/api/automation/tool-radar",
+    run: fixture.run,
+    retryDelaysMs: [1, 2],
+    sleepImpl: async (milliseconds) => retryWaits.push(milliseconds),
+    fetchImpl: async () => {
+      transientCalls += 1;
+      if (transientCalls === 1) {
+        throw new TypeError("fetch failed");
+      }
+      return new Response(imageBytes, {
+        status: 200,
+        headers: { "content-type": "image/png" }
+      });
+    }
+  }), 1);
+  assert.equal(transientCalls, 2);
+  assert.deepEqual(retryWaits, [1]);
+
+  let persistentCalls = 0;
+  await assert.rejects(
+    verifyPublishedToolAssets({
+      endpoint: "https://lusu575.com/api/automation/tool-radar",
+      run: fixture.run,
+      retryDelaysMs: [0, 0],
+      sleepImpl: async () => {},
+      fetchImpl: async () => {
+        persistentCalls += 1;
+        throw new TypeError("fetch failed");
+      }
+    }),
+    /连续 3 次读取失败/
+  );
+  assert.equal(persistentCalls, 3);
+});
+
+test("多张线上图片按登记顺序逐张预检，不再同时发起全部请求", async () => {
+  const fixture = await createFixture();
+  await addToolImages(fixture, { count: 2 });
+  const images = registeredToolRadarImages(fixture.run);
+  const bytesByUrl = new Map(await Promise.all(images.map(async (image) => [
+    `https://lusu575.com/${image.assetPath}`,
+    await readFile(resolve(fixture.siteRoot, ...image.assetPath.split("/")))
+  ])));
+  const requestedUrls = [];
+  let activeRequests = 0;
+  let maximumActiveRequests = 0;
+  assert.equal(await verifyPublishedToolAssets({
+    endpoint: "https://lusu575.com/api/automation/tool-radar",
+    run: fixture.run,
+    fetchImpl: async (url) => {
+      requestedUrls.push(url);
+      activeRequests += 1;
+      maximumActiveRequests = Math.max(maximumActiveRequests, activeRequests);
+      await new Promise((resolveTurn) => queueMicrotask(resolveTurn));
+      const bytes = bytesByUrl.get(url);
+      activeRequests -= 1;
+      return new Response(bytes, {
+        status: 200,
+        headers: { "content-type": "image/png" }
+      });
+    }
+  }), 2);
+  assert.equal(maximumActiveRequests, 1);
+  assert.deepEqual(requestedUrls, images.map(
+    (image) => `https://lusu575.com/${image.assetPath}`
+  ));
+});
+
+test("线上图片预检严格拒绝持续 HTTP 错误和错误 MIME", async () => {
+  const fixture = await createFixture();
+  await addToolImages(fixture, { count: 1, useSingleObject: true });
+  const [image] = registeredToolRadarImages(fixture.run);
+  const imageBytes = await readFile(resolve(fixture.siteRoot, ...image.assetPath.split("/")));
+
+  let unavailableCalls = 0;
+  await assert.rejects(
+    verifyPublishedToolAssets({
+      endpoint: "https://lusu575.com/api/automation/tool-radar",
+      run: fixture.run,
+      retryDelaysMs: [0, 0],
+      sleepImpl: async () => {},
+      fetchImpl: async () => {
+        unavailableCalls += 1;
+        return new Response("unavailable", { status: 503 });
+      }
+    }),
+    /返回 503/
+  );
+  assert.equal(unavailableCalls, 3);
+
+  let mimeCalls = 0;
+  await assert.rejects(
+    verifyPublishedToolAssets({
+      endpoint: "https://lusu575.com/api/automation/tool-radar",
+      run: fixture.run,
+      retryDelaysMs: [0, 0],
+      sleepImpl: async () => {},
+      fetchImpl: async () => {
+        mimeCalls += 1;
+        return new Response(imageBytes, {
+          status: 200,
+          headers: { "content-type": "text/html; charset=utf-8" }
+        });
+      }
+    }),
+    /MIME 不合法/
+  );
+  assert.equal(mimeCalls, 1);
 });
 
 test("工具雷达生产通道配置只开启独立通道且令牌摘要不泄露明文", () => {

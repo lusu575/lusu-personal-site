@@ -18,6 +18,8 @@ const DEFAULT_CATALOG_ENDPOINT = "https://lusu575.com/api/automation/tool-radar/
 const REQUEST_TIMEOUT_MS = 30_000;
 const MAX_RESPONSE_BYTES = 128 * 1024;
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+const IMAGE_FETCH_RETRY_DELAYS_MS = Object.freeze([250, 750]);
+const TRANSIENT_IMAGE_HTTP_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);
 const LANGUAGES = ["zh", "en", "ja"];
 
 export function parseProductionArgs(argv = process.argv.slice(2)) {
@@ -240,28 +242,34 @@ export async function verifyPublishedToolAssets({
   endpoint,
   run,
   fetchImpl = fetch,
-  timeoutMs = REQUEST_TIMEOUT_MS
+  timeoutMs = REQUEST_TIMEOUT_MS,
+  retryDelaysMs = IMAGE_FETCH_RETRY_DELAYS_MS,
+  sleepImpl = sleep
 }) {
   const images = registeredToolRadarImages(run);
-  await Promise.all(images.map(async (image) => {
+  const retryDelays = validateImageRetryDelays(retryDelaysMs);
+  for (const image of images) {
     const assetUrl = publicAssetUrl(endpoint, image.assetPath);
-    let response;
-    try {
-      response = await fetchImpl(assetUrl, {
-        method: "GET",
-        headers: {
-          "Accept": "image/avif,image/webp,image/png,image/jpeg",
-          "Cache-Control": "no-cache"
-        },
-        signal: AbortSignal.timeout(timeoutMs)
-      });
-    } catch (error) {
-      throw new Error(
-        `工具雷达图片尚未稳定上线：${assetUrl}（${String(error?.message || error)}）`
-      );
-    }
+    const response = await fetchPublishedToolAssetWithRetry({
+      assetUrl,
+      fetchImpl,
+      timeoutMs,
+      retryDelays,
+      sleepImpl
+    });
     if (!response.ok) {
       throw new Error(`工具雷达图片尚未上线：${assetUrl} 返回 ${response.status}。`);
+    }
+    const expectedMime = expectedImageMime(image.assetPath);
+    const actualMime = String(response.headers?.get?.("content-type") || "")
+      .split(";", 1)[0]
+      .trim()
+      .toLowerCase();
+    if (actualMime !== expectedMime) {
+      throw new Error(
+        `工具雷达线上图片 MIME 不合法：${assetUrl} 应为 ${expectedMime}，实际为 `
+        + `${actualMime || "缺失"}。`
+      );
     }
     const contentLength = Number(response.headers?.get?.("content-length") || 0);
     if (contentLength > MAX_IMAGE_BYTES) {
@@ -274,8 +282,80 @@ export async function verifyPublishedToolAssets({
     if (sha256Bytes(bytes) !== image.sha256) {
       throw new Error(`工具雷达线上图片字节与运行记录不一致：${assetUrl}。`);
     }
-  }));
+  }
   return images.length;
+}
+
+async function fetchPublishedToolAssetWithRetry({
+  assetUrl,
+  fetchImpl,
+  timeoutMs,
+  retryDelays,
+  sleepImpl
+}) {
+  const attempts = retryDelays.length + 1;
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    let response;
+    try {
+      response = await fetchImpl(assetUrl, {
+        method: "GET",
+        headers: {
+          "Accept": "image/avif,image/webp,image/png,image/jpeg",
+          "Cache-Control": "no-cache"
+        },
+        signal: AbortSignal.timeout(timeoutMs)
+      });
+    } catch (error) {
+      if (attempt === attempts) {
+        throw new Error(
+          `工具雷达图片连续 ${attempts} 次读取失败：${assetUrl}`
+          + `（${String(error?.message || error)}）`
+        );
+      }
+      await sleepImpl(retryDelays[attempt - 1]);
+      continue;
+    }
+    if (response.ok || !TRANSIENT_IMAGE_HTTP_STATUSES.has(response.status)) {
+      return response;
+    }
+    if (attempt === attempts) {
+      return response;
+    }
+    try {
+      await response.body?.cancel?.();
+    } catch {
+      // The next bounded attempt is still authoritative if a transient response cannot be cancelled.
+    }
+    await sleepImpl(retryDelays[attempt - 1]);
+  }
+  throw new Error(`工具雷达图片预检出现不可达状态：${assetUrl}。`);
+}
+
+function validateImageRetryDelays(value) {
+  if (!Array.isArray(value)
+    || value.length > 2
+    || value.some((delay) => !Number.isInteger(delay) || delay < 0 || delay > 5_000)) {
+    throw new Error("工具雷达图片重试配置不合法。");
+  }
+  return [...value];
+}
+
+function expectedImageMime(assetPath) {
+  const extension = String(assetPath || "").toLowerCase().match(/\.(png|jpe?g|webp)$/)?.[1];
+  if (extension === "png") {
+    return "image/png";
+  }
+  if (extension === "jpg" || extension === "jpeg") {
+    return "image/jpeg";
+  }
+  if (extension === "webp") {
+    return "image/webp";
+  }
+  throw new Error("工具雷达线上图片扩展名不受支持。");
+}
+
+function sleep(milliseconds) {
+  return new Promise((resolveSleep) => setTimeout(resolveSleep, milliseconds));
 }
 
 async function readJsonResponse(response, label) {

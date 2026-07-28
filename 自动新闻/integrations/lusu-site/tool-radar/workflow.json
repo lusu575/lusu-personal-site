@@ -146,7 +146,7 @@
     "requireLocalFile": true,
     "requireSha256": true,
     "requireProductionDeploymentBeforeArticleDelivery": true,
-    "productionAssetVerification": "Before POST, every registered image must return 200 from the production origin and its exact response bytes must match the registered SHA-256.",
+    "productionAssetVerification": "Before POST, verify registered images sequentially. Retry transient network errors and explicit transient HTTP statuses at most three total attempts; every image must still return 200, use the MIME matching its extension, and have response bytes matching the registered SHA-256.",
     "requireLocalizedAlt": true,
     "requireLocalizedCaption": true,
     "captionMarkdownPlacement": "The next non-empty line after each image must be its registered single-line italicized caption; blank lines and CRLF are tolerated, but no other content may intervene."
@@ -183,7 +183,7 @@
       "draft",
       "published"
     ],
-    "registeredImagePreflight": "fail closed unless every registered image is already available on the production origin with the exact reviewed SHA-256 bytes",
+    "registeredImagePreflight": "sequential bounded retry for transient fetch/HTTP failures; fail closed unless every registered image returns 200 with the expected MIME and exact reviewed SHA-256 bytes",
     "autoPublishRequired": false,
     "draftBehavior": "A successful draft is a valid generated-and-delivered outcome; public readback is skipped.",
     "publishedBehavior": "A successful published response requires zh/en/ja public readback.",
