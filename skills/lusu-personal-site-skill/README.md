@@ -132,6 +132,7 @@ skills/lusu-personal-site-skill/SKILL.md
 - 每次合并代码、上线功能或做可见更新时，必须在知识库 `site-updates`（网站更新记录）分类发布一篇 zh / en / ja 三语真实文章，包含主标题、简短简介和正文。
 - `site-updates` 只按发布时间展示，永远不置顶；后台、seed、schema、fallback 和知识库排序都必须把该分类保持为 `is_pinned = 0`，旧缓存中的错误置顶值也不能显示标记。
 - Knowledge 的“全部”Tab 列表和数量都排除 `site-updates`；网站更新只允许出现在 `site-updates` 专属“更新记录”Tab，筛选与计数复用同一分类函数。
+- Knowledge 首屏 12 条和“加载更多”只是前端渲染分段；公共列表 API 与前端必须共享 `PUBLIC_ARTICLE_ARCHIVE_LIMIT = 500` 并先取得完整摘要归档，使搜索、分类和计数覆盖未置顶旧文章。不得把 API 硬截断回 50 条，否则旧文章及其唯一分类会同时从列表消失。
 - 这条是合并前验收门槛；如果不能通过后台发布，也要在同一次变更中补齐 seed 与 fallback，确认知识库、欢迎弹窗最近更新和右上角最新日期能读到本次更新。
 - 通过 seed 维护网站更新记录时，必须同步 `functions/api/[[route]].js`、`cloudflare/schema.sql`、`js/data/content.mjs` 的完整 fallback，以及 `js/data/home-content.mjs` 的最近五条无正文 Home 摘要投影。
 - 首页欢迎弹窗右侧“最近更新”自动读取 `site-updates` 分类文章，“查看更多更新”跳转到该分类。

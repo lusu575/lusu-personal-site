@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 import {
+  PUBLIC_ARTICLE_ARCHIVE_LIMIT,
   articleDetailShowsSummary,
   articleLanguageTag,
   articleImageDimensions,
@@ -16,6 +17,44 @@ import {
   normalizeKnowledgeSearchText,
   sortKnowledgeArticles
 } from "../js/routes/knowledge.mjs";
+
+test("the public knowledge archive keeps older unpinned articles and their categories beyond 50 records", async () => {
+  assert.equal(PUBLIC_ARTICLE_ARCHIVE_LIMIT, 500);
+
+  const olderArticle = {
+    slug: "ai-agent-workflow-guide",
+    category: "ai",
+    is_pinned: 0,
+    published_at: "2026-06-14T15:00:00.000Z"
+  };
+  const archive = [
+    ...Array.from({ length: 50 }, (_, index) => ({
+      slug: `newer-${index + 1}`,
+      category: "note",
+      is_pinned: 0,
+      published_at: `2026-07-${String(28 - Math.floor(index / 2)).padStart(2, "0")}T${String(index % 24).padStart(2, "0")}:00:00.000Z`
+    })),
+    olderArticle
+  ];
+  const categories = knowledgeCategoryValues(archive, {
+    firstCategory: "daily-ai-news",
+    lastCategory: "site-updates"
+  });
+
+  assert.ok(categories.includes("ai"));
+  assert.deepEqual(
+    knowledgeArticlesForCategory(archive, "ai").map(({ slug }) => slug),
+    ["ai-agent-workflow-guide"]
+  );
+
+  const [routeSource, apiSource] = await Promise.all([
+    readFile(new URL("../js/routes/knowledge.mjs", import.meta.url), "utf8"),
+    readFile(new URL("../functions/api/[[route]].js", import.meta.url), "utf8")
+  ]);
+  assert.match(routeSource, /\/api\/articles\?lang=\$\{encodeURIComponent\(requestedLang\)\}&limit=\$\{PUBLIC_ARTICLE_ARCHIVE_LIMIT\}/);
+  assert.match(apiSource, /export const PUBLIC_ARTICLE_ARCHIVE_LIMIT = 500/);
+  assert.match(apiSource, /clampLimit\(url\.searchParams\.get\("limit"\), PUBLIC_ARTICLE_ARCHIVE_LIMIT\)/);
+});
 
 test("Daily AI News reader hides the repeated summary and indexes story headlines", () => {
   assert.equal(articleDetailShowsSummary("daily-ai-news"), false);

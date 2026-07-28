@@ -5,6 +5,8 @@ const articleImageDimensionMap = Object.freeze({
   "assets/images/articles/ai-agent-gpt-project-context.png": Object.freeze({ width: 1539, height: 1349 })
 });
 
+export const PUBLIC_ARTICLE_ARCHIVE_LIMIT = 500;
+
 export function normalizeArticleHeadingAnchor(text) {
   const normalized = String(text || "")
     .normalize("NFKC")
@@ -605,7 +607,7 @@ export function createKnowledgeRoute({
       if (background && document.body.dataset.route === "knowledge") renderKnowledge();
     };
     try {
-      const result = await articleApi(`/api/articles?lang=${encodeURIComponent(requestedLang)}`, {
+      const result = await articleApi(`/api/articles?lang=${encodeURIComponent(requestedLang)}&limit=${PUBLIC_ARTICLE_ARCHIVE_LIMIT}`, {
         signal: options.signal,
         force: options.force === true,
         onRevalidated: (revalidated) => applyResult(revalidated, { background: true })

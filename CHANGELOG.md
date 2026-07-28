@@ -4,6 +4,10 @@
 
 ## 2026-07-28
 
+- 修复“从提问到上线：普通人如何用 AI Agent 放大执行力”取消置顶后从知识库列表和分类栏消失：文章详情始终处于 `published`，实际原因是公共列表接口只返回最新 50 条摘要，取消置顶后该文按 6 月 14 日原发布日期落到截断边界之外，唯一的 `ai` 分类也因前端只看到截断列表而消失。
+- 公共文章摘要归档上限提升为 500，Knowledge 前端显式请求同一容量；首屏仍只渲染 12 条并通过“加载更多”分批展开，搜索、分类和计数则覆盖完整归档。新增超过 50 条受控文章的回归，固定验证未置顶旧文章和 `ai` 分类仍可发现。
+- 新增三语公开更新记录 `seed-update-2026-07-28-knowledge-archive-visibility`，同步完整 fallback、Home 最新五条、Functions 与 schema seed；公共／API 表示版本更新为 `20260728-knowledge-archive-r1`。
+- 本批完整发布门禁通过：公共模块图 20 / 20、全量测试 327 / 327、发布级 Headless 192 / 192、A Dark Room 浏览器回归、静态构建以及连续两次一致的生产构建均成功。
 - 修复普通 seed 文章的后台置顶状态被冷启动覆盖：`seed-ai-agent-workflow-guide-2026-06-14` 改为仅在缺失时插入元数据，并通过 `site_runtime_state.article_ai_agent_workflow_pin_repair_v1` 一次性把“从提问到上线：普通人如何用 AI Agent 放大执行力”恢复为未置顶；后续后台置顶／取消置顶及 row revision 均不会被种子重写。
 - 将“返回文章列表”移入 `.article-reader-sidebar` 并置于目录上方，桌面与横屏由整个侧栏统一 sticky，不再用两个独立吸顶偏移造成重叠；目录点击改为正文容器内的精确即时定位，使目标标题、URL hash、焦点与 `aria-current` 同步到同一章节。
 - 新增三语公开更新记录 `seed-update-2026-07-28-article-pin-sidebar-navigation`，同步完整 fallback、Home 最新五条、Functions 与 schema seed；公共／API 版本更新为 `20260728-article-pin-sidebar-r2`，后台主脚本更新为 `20260728-admin-article-pin-persistence-r1`。

@@ -10,6 +10,7 @@ const VALID_ANALYTICS_SECRET = "article-seed-analytics-secret-000000001";
 
 function createRecordingD1() {
   const batches = [];
+  const executions = [];
 
   function statement(sql, params = null) {
     return {
@@ -22,6 +23,7 @@ function createRecordingD1() {
         return null;
       },
       async all() {
+        executions.push({ method: "all", sql: String(sql), params });
         return { results: [] };
       },
       async run() {
@@ -32,6 +34,7 @@ function createRecordingD1() {
 
   return {
     batches,
+    executions,
     prepare(sql) {
       assert.equal(typeof sql, "string", "D1 prepare requires a SQL string");
       return statement(sql);
@@ -64,6 +67,14 @@ test("every article seed D1 binding is defined", async () => {
   });
 
   assert.equal(response.status, 200, "the article route should finish after constructing its seed batches");
+
+  const publicListQuery = DB.executions.find(({ method, sql }) => (
+    method === "all"
+    && /\bfrom articles\b/i.test(normalizedSql(sql))
+    && /\border by articles\.is_pinned desc\b/i.test(normalizedSql(sql))
+  ));
+  assert.ok(publicListQuery, "expected the public article archive query to run");
+  assert.deepEqual(publicListQuery.params, ["zh", 500], "the public archive should not truncate older articles at 50");
 
   const seedBatch = DB.batches.find((batch) => (
     batch.some(({ sql }) => sql.includes(`'${FRAME_PIPELINE_SEED_ID}'`))

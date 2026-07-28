@@ -1,5 +1,13 @@
 # PROJECT_CONTEXT.md
 
+## 2026-07-28 知识库完整归档可见性
+
+- Knowledge 的首屏 12 条与“加载更多”只是 DOM 渲染分段，不是 API 数据分页。公共列表和前端必须使用同一个 `PUBLIC_ARTICLE_ARCHIVE_LIMIT = 500`，让搜索、分类、计数和分段渲染建立在完整摘要归档上；不能把接口恢复为 50 条后让未置顶旧文章静默消失。
+- 分类按钮由已加载文章动态生成。若列表接口截断唯一使用某分类的旧文章，该分类也会一起消失；回归数据必须超过 50 条，并固定包含未置顶的 `ai-agent-workflow-guide` 与 `ai` 分类。
+- “从提问到上线：普通人如何用 AI Agent 放大执行力”仍为 `published` 且 `is_pinned = 0`。取消置顶只改变排序，不改变公开状态和分类可见性。
+- 本批公开记录为 `seed-update-2026-07-28-knowledge-archive-visibility`，公共／API 表示版本为 `20260728-knowledge-archive-r1`。
+- 本批本地证据为公共模块图 20 / 20、全量测试 327 / 327、发布级 Headless 192 / 192、A Dark Room 浏览器回归、静态构建和连续两次一致的生产构建。
+
 ## 2026-07-28 文章置顶持久化与固定阅读侧栏
 
 - `seed-ai-agent-workflow-guide-2026-06-14` 是后台可维护的普通文章。其元数据 seed 只在记录缺失时插入，不能在 Functions 冷启动或重复执行 `cloudflare/schema.sql` 时 upsert 覆盖 `is_pinned`、`updated_at` 等管理员状态。

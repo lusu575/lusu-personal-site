@@ -4,7 +4,7 @@ import {
   normalizeLanguage,
   translationFor
 } from "./core/i18n.mjs?v=20260728-daily-ai-news-coverage-r1";
-import { homeContent } from "./data/home-content.mjs?v=20260728-article-pin-sidebar-r2";
+import { homeContent } from "./data/home-content.mjs?v=20260728-knowledge-archive-r1";
 import { blogManifest } from "./data/blog-manifest.mjs?v=20260718-resource-icons-layout-r1";
 import { createRouteLifecycle, isAbortError } from "./core/route-lifecycle.mjs?v=20260718-resource-icons-layout-r1";
 import { createRouter } from "./core/router.mjs?v=20260718-resource-icons-layout-r1";
@@ -377,7 +377,7 @@ function safeStorageSet(key, value) {
   }
 }
 
-const routeStyleVersion = "20260728-article-pin-sidebar-r2";
+const routeStyleVersion = "20260728-knowledge-archive-r1";
 const routeStyleHrefs = Object.freeze({
   knowledge: `/css/routes/knowledge.css?v=${routeStyleVersion}`,
   videos: `/css/routes/videos.css?v=${routeStyleVersion}`,
@@ -441,7 +441,7 @@ function loadStyledRoute(route, moduleLoader, instantiate) {
 
 const routeModuleRegistry = createRouteModuleRegistry({
   loaders: {
-    knowledge: () => loadStyledRoute("knowledge", () => import("./routes/knowledge.mjs?v=20260728-article-pin-sidebar-r2"),
+    knowledge: () => loadStyledRoute("knowledge", () => import("./routes/knowledge.mjs?v=20260728-knowledge-archive-r1"),
       ({ createKnowledgeRoute }) => instantiateKnowledgeRoute(createKnowledgeRoute)),
     videos: () => loadStyledRoute("videos", () => Promise.all([
       import("./routes/videos.mjs?v=20260726-security-reliability-r1"),

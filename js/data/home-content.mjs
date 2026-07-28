@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-07-28-knowledge-archive-visibility",
+      "slug": "2026-07-28-knowledge-archive-visibility",
+      "category": "site-updates",
+      "tags": ["网站更新", "知识库", "文章列表", "分类", "QA"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-28T05:30:00.000Z",
+      "updated_at": "2026-07-28T05:30:00.000Z",
+      "published_at": "2026-07-28T05:30:00.000Z",
+      "fallbackOnly": true,
+      "icon": "knowledge",
+      "date": "2026.07.28",
+      "title": {
+        "zh": "知识库完整归档恢复",
+        "en": "Knowledge Archive Visibility Restored",
+        "ja": "知識庫の全記事表示を復元"
+      },
+      "summary": {
+        "zh": "公共文章列表不再被 50 条上限截断；取消置顶的旧文章及其分类会继续出现在知识库，并可通过搜索与加载更多访问。",
+        "en": "The public article list no longer stops at 50 items. Older unpinned articles and their categories remain available through search and Load more.",
+        "ja": "公開記事一覧の50件制限を解消し、固定解除した過去記事と分類を検索や「さらに表示」から引き続き参照できるようにしました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-07-28-article-pin-sidebar-navigation",
       "slug": "2026-07-28-article-pin-sidebar-navigation",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "每日 AI 新闻详情不再重复摘要和采集窗口，正文直接进入要闻；目录改为列出每条新闻标题，测试占位文章已删除。",
         "en": "Daily AI News now opens directly with the stories, without a repeated summary or collection-window paragraph. Its contents list every headline, and the test placeholder is removed.",
         "ja": "毎日AIニュースは概要や収集時間を繰り返さず記事へ直接入り、目次には全ニュース見出しを表示します。テスト用記事も削除しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-07-27-daily-ai-news-inbox",
-      "slug": "2026-07-27-daily-ai-news-inbox",
-      "category": "site-updates",
-      "tags": ["网站更新", "知识库", "AI新闻", "Admin"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-07-27T13:06:00.000Z",
-      "updated_at": "2026-07-27T16:05:00.000Z",
-      "published_at": "2026-07-27T16:05:00.000Z",
-      "fallbackOnly": true,
-      "icon": "knowledge",
-      "date": "2026.07.27",
-      "title": {
-        "zh": "每日 AI 新闻正式上线",
-        "en": "Daily AI News Goes Live",
-        "ja": "毎日AIニュース正式稼働"
-      },
-      "summary": {
-        "zh": "知识库“每日 AI 新闻”正式接入 Horizon 与 Codex：每天北京时间 7 点开始整理前 24 小时内容，三语稿通过检查后在 8 点前自动公开。",
-        "en": "Daily AI News now runs through Horizon and Codex: each Beijing-time day starts at 07:00, covers the prior 24 hours, and publishes the validated Chinese, English, and Japanese edition by 08:00.",
-        "ja": "「毎日AIニュース」は Horizon と Codex に正式接続され、北京時間の毎朝7時に直前24時間分の処理を始め、検証済みの中・英・日3言語版を8時までに自動公開します。"
       }
     }
   ]

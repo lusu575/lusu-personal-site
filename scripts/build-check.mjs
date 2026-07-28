@@ -793,7 +793,7 @@ const redirectsConfig = readRequired("_redirects");
 const routeLazyVersion = "20260726-security-reliability-r1";
 const trustSafetyStatusVersion = "20260726-security-reliability-r1";
 const dailyAiNewsVersion = "20260728-daily-ai-news-coverage-r1";
-const knowledgeReaderVersion = "20260728-article-pin-sidebar-r2";
+const knowledgeReaderVersion = "20260728-knowledge-archive-r1";
 const routeStyleVersion = knowledgeReaderVersion;
 const publicRouteVersion = (route) => route === "knowledge"
   ? knowledgeReaderVersion
@@ -4193,13 +4193,13 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-07-28-article-pin-sidebar-navigation";
-const finalUpdateSlug = "2026-07-28-article-pin-sidebar-navigation";
+const finalUpdateId = "seed-update-2026-07-28-knowledge-archive-visibility";
+const finalUpdateSlug = "2026-07-28-knowledge-archive-visibility";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Article Pinning and Contents Navigation Fixes";
-const finalPublishedAt = "2026-07-28T05:20:00.000Z";
+const finalTitleEn = "Knowledge Archive Visibility Restored";
+const finalPublishedAt = "2026-07-28T05:30:00.000Z";
 const finalTranslationMinimums = {
   title: 8,
   summary: 24,

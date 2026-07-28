@@ -613,6 +613,125 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-07-28-knowledge-archive-visibility',
+  '2026-07-28-knowledge-archive-visibility',
+  'site-updates',
+  '["网站更新","知识库","文章列表","分类","QA"]',
+  '', 'published', 0, 0,
+  '2026-07-28T05:30:00.000Z',
+  '2026-07-28T05:30:00.000Z',
+  '2026-07-28T05:30:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  (
+    'seed-update-2026-07-28-knowledge-archive-visibility-zh',
+    'seed-update-2026-07-28-knowledge-archive-visibility',
+    'zh',
+    '知识库完整归档恢复',
+    '公共文章列表不再被 50 条上限截断；取消置顶的旧文章及其分类会继续出现在知识库，并可通过搜索与加载更多访问。',
+    '# 知识库完整归档恢复
+
+本次修复取消置顶后旧文章在知识库列表中消失的问题。
+
+## 问题原因
+
+- 文章详情仍然是已发布状态，也没有被删除。
+- 公共列表接口只返回最新 50 条摘要；文章取消置顶后按原发布日期排序，刚好落在第 50 条之外。
+- 分类按钮由当前列表动态生成，因此唯一使用“AI”分类的文章被截断时，分类也会一起消失。
+
+## 修复内容
+
+- 公共文章摘要归档容量提升到 500 条，并由知识库前端明确请求同一容量。
+- 首屏仍只显示 12 条，继续通过“加载更多”逐批展开；搜索和分类则可以覆盖完整归档。
+- 取消置顶现在只改变排序，不会改变发布状态，也不会让旧文章或其分类从知识库消失。
+
+## 回归检查
+
+- 使用超过 50 条文章的受控数据验证旧文章和“AI”分类仍可发现。
+- 保留网站更新只出现在专属 Tab、置顶排序优先和三语文章回退等既有规则。',
+    '2026-07-28T05:30:00.000Z',
+    '2026-07-28T05:30:00.000Z'
+  ),
+  (
+    'seed-update-2026-07-28-knowledge-archive-visibility-en',
+    'seed-update-2026-07-28-knowledge-archive-visibility',
+    'en',
+    'Knowledge Archive Visibility Restored',
+    'The public article list no longer stops at 50 items. Older unpinned articles and their categories remain available through search and Load more.',
+    '# Knowledge Archive Visibility Restored
+
+This update fixes older articles disappearing from the Knowledge list after they are unpinned.
+
+## Cause
+
+- The article detail remained published and was never deleted.
+- The public list API returned only the newest 50 summaries. Once unpinned, the article returned to its original publication date and fell just beyond that boundary.
+- Category buttons are derived from the returned list, so the AI category disappeared with its only truncated article.
+
+## Fix
+
+- The public article-summary archive now supports 500 records, and the Knowledge client explicitly requests that same capacity.
+- The first screen still renders only 12 cards and expands in batches through Load more, while search and category discovery cover the complete archive.
+- Unpinning now changes ordering only; it does not change publication state or remove an older article or its category from Knowledge.
+
+## Regression coverage
+
+- Controlled data with more than 50 articles verifies that the older article and AI category remain discoverable.
+- Existing rules for the dedicated Site Updates tab, pinned ordering, and trilingual fallbacks remain intact.',
+    '2026-07-28T05:30:00.000Z',
+    '2026-07-28T05:30:00.000Z'
+  ),
+  (
+    'seed-update-2026-07-28-knowledge-archive-visibility-ja',
+    'seed-update-2026-07-28-knowledge-archive-visibility',
+    'ja',
+    '知識庫の全記事表示を復元',
+    '公開記事一覧の50件制限を解消し、固定解除した過去記事と分類を検索や「さらに表示」から引き続き参照できるようにしました。',
+    '# 知識庫の全記事表示を復元
+
+固定表示を解除した過去記事が知識庫一覧から消える問題を修正しました。
+
+## 原因
+
+- 記事詳細は公開状態のままで、削除されていませんでした。
+- 公開一覧 API が最新 50 件の概要だけを返していたため、固定解除後に元の公開日順へ戻った記事が 50 件の境界外へ移動しました。
+- 分類ボタンは取得した一覧から生成するため、唯一の対象記事とともに「AI」分類も消えていました。
+
+## 修正内容
+
+- 公開記事概要の取得上限を 500 件へ広げ、知識庫側も同じ件数を明示して取得します。
+- 初期表示はこれまでどおり 12 件だけで、「さらに表示」により段階的に展開します。検索と分類は全取得範囲を対象にします。
+- 固定解除は並び順だけを変更し、公開状態や過去記事、分類の表示可否には影響しません。
+
+## 回帰確認
+
+- 50 件を超える制御データで、過去記事と「AI」分類を引き続き見つけられることを確認します。
+- 更新履歴の専用タブ、固定記事の優先表示、3 言語フォールバックの既存ルールも維持します。',
+    '2026-07-28T05:30:00.000Z',
+    '2026-07-28T05:30:00.000Z'
+  )
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-07-28-article-pin-sidebar-navigation',
   '2026-07-28-article-pin-sidebar-navigation',
   'site-updates',
