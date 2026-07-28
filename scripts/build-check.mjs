@@ -793,8 +793,10 @@ const redirectsConfig = readRequired("_redirects");
 const routeLazyVersion = "20260726-security-reliability-r1";
 const trustSafetyStatusVersion = "20260726-security-reliability-r1";
 const dailyAiNewsVersion = "20260728-daily-ai-news-coverage-r1";
+const knowledgeReaderVersion = "20260728-knowledge-reader-welcome-r1";
+const routeStyleVersion = knowledgeReaderVersion;
 const publicRouteVersion = (route) => route === "knowledge"
-  ? dailyAiNewsVersion
+  ? knowledgeReaderVersion
   : (route === "resources" ? trustSafetyStatusVersion : routeLazyVersion);
 const transferAtlasVersion = "20260718-resource-icons-layout-r1";
 const chatroomIconVersion = "20260726-chatroom-icon-redraw-r2";
@@ -844,7 +846,7 @@ for (const route of lazyPublicRoutes) {
 
 for (const [modulePath, expectedVersion] of [
   ["./core/i18n.mjs", dailyAiNewsVersion],
-  ["./data/home-content.mjs", dailyAiNewsVersion],
+  ["./data/home-content.mjs", knowledgeReaderVersion],
   ["./features/connection-status.mjs", trustSafetyStatusVersion],
   ["./data/resources-content.mjs", trustSafetyStatusVersion]
 ]) {
@@ -854,7 +856,7 @@ for (const [modulePath, expectedVersion] of [
   }
 }
 
-if (!mainEntryJs.includes(`const routeStyleVersion = "${routeLazyVersion}";`)
+if (!mainEntryJs.includes(`const routeStyleVersion = "${routeStyleVersion}";`)
   || !hasPattern(indexHtml, /<link\b(?=[^>]*\brel=["']stylesheet["'])(?=[^>]*\bdata-mobile-shell-style\b)[^>]*\bhref=["']\/css\/mobile-ios-shell\.css\?v=[^"']+["']/i)
   || !hasPattern(mainEntryJs, /function\s+ensureRouteStylesheet\(route\)[\s\S]*?document\.createElement\(["']link["']\)[\s\S]*?link\.rel\s*=\s*["']stylesheet["'][\s\S]*?querySelector\(["']link\[data-mobile-shell-style\]["']\)[\s\S]*?document\.head\.insertBefore\(link,\s*mobileShellStyle\)[\s\S]*?document\.head\.appendChild\(link\)/)
   || !hasPattern(mainEntryJs, /function\s+loadStyledRoute\(route,\s*moduleLoader,\s*instantiate\)[\s\S]*?Promise\.all\(\[ensureRouteStylesheet\(route\),\s*moduleLoader\(\)\]\)/)) {
@@ -2838,7 +2840,7 @@ const mobileViewportKeyboardCssVersion = routeLazyVersion;
 const publicModulesVersion = "20260726-security-reliability-r1";
 const transferLazyVersion = trustSafetyStatusVersion;
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
-const currentMainVersion = dailyAiNewsVersion;
+const currentMainVersion = knowledgeReaderVersion;
 const currentCssVersion = trustSafetyStatusVersion;
 const currentPreFinalTelemetryVersion = "20260623-analytics-privacy-r1";
 const currentGameShellVersion = "20260726-game-network-resilience-r1";
@@ -2866,8 +2868,8 @@ if (styleVersions.length !== 1 || styleVersions[0] !== currentCssVersion) {
 }
 
 const mobileShellStyleVersions = assetQueryVersions(indexHtml, "/css/mobile-ios-shell.css");
-if (mobileShellStyleVersions.length !== 1 || mobileShellStyleVersions[0] !== routeLazyVersion) {
-  fail(`index.html /css/mobile-ios-shell.css query should appear once as ${routeLazyVersion}`);
+if (mobileShellStyleVersions.length !== 1 || mobileShellStyleVersions[0] !== knowledgeReaderVersion) {
+  fail(`index.html /css/mobile-ios-shell.css query should appear once as ${knowledgeReaderVersion}`);
 }
 
 const motionCssVersions = assetQueryVersions(indexHtml, "/css/motion-system.css");
@@ -3943,7 +3945,13 @@ if (progressMarkupStart < knowledgeTitlebarEnd || progressMarkupStart > knowledg
 
 if (!hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-read-progress\s*\{[^}]*position:\s*relative[^}]*grid-template-columns:\s*auto\s+minmax\(64px,\s*1fr\)\s+auto[^}]*width:\s*100%[^}]*min-height:\s*26px/)
   || !hasPattern(knowledgeRouteCss, /body\.is-article-reading\s+\.article-top-link\s*\{[^}]*min-height:\s*44px/)
-  || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-top-link\s*\{[\s\S]*top:\s*calc\(var\(--mobile-safe-top\)\s*\+\s*var\(--mobile-status-height\)\s*\+\s*2px\)[\s\S]*bottom:\s*auto[\s\S]*width:\s*44px/)
+  || !hasPattern(knowledgeRouteCss, /\.article-top-link\s*\{[^}]*right:\s*var\(--article-top-control-right[^}]*bottom:\s*var\(--article-top-control-bottom/)
+  || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-top-link\s*\{[^}]*top:\s*auto[^}]*right:\s*var\(--article-top-control-right[^}]*bottom:\s*var\([^}]*--article-top-control-bottom[\s\S]*?width:\s*44px/)
+  || !hasPattern(knowledgeRouteCss, /\.article-back-button\s*\{[^}]*position:\s*sticky[^}]*top:\s*18px/)
+  || !hasPattern(knowledgeRouteCss, /#article-detail-toc-list\s*\{[^}]*grid-auto-rows:\s*max-content[^}]*padding:\s*10px\s+20px\s+34px\s+10px[^}]*overflow:\s*auto/)
+  || !hasPattern(knowledgeRouteCss, /\.article-toc-link\s*\{[^}]*height:\s*auto[^}]*min-height:\s*0[^}]*line-height:\s*1\.45/)
+  || !hasPattern(knowledgeModuleJs, /const\s+cardRect\s*=\s*document\.querySelector\(\s*["']\.article-detail-card["']\s*\)\?\.getBoundingClientRect\(\)/)
+  || !hasPattern(knowledgeModuleJs, /--article-top-control-right[\s\S]*--article-top-control-bottom/)
   || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-read-progress-label span\s*\{[^}]*position:\s*static[^}]*font-size:\s*11px/)
   || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-read-progress-label strong\s*\{[^}]*display:\s*block[^}]*grid-column:\s*3/)
   || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-read-progress-track\s*\{[^}]*grid-column:\s*2[^}]*height:\s*4px/)
@@ -3954,8 +3962,9 @@ if (!hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-read-pr
   || !hasPattern(knowledgeModuleJs, /topButton\?\.toggleAttribute\(\s*["']hidden["']\s*,\s*atArticleTop\s*\)/)
   || !hasPattern(knowledgeModuleJs, /document\.getElementById\(\s*["']article-detail-title["']\s*\)\?\.focus\(\s*\{\s*preventScroll:\s*true\s*\}\s*\)/)
   || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.xp-topbar\s*\{\s*pointer-events:\s*none[\s\S]*body\.is-article-reading\s+\.xp-topbar\s+:is\(button,\s*a,\s*input,\s*select,\s*textarea,\s*\.account-popover\)\s*\{\s*pointer-events:\s*auto/)
-  || !hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*body\.is-article-reading\s+\.article-read-progress\s*\{[^}]*grid-template-columns:\s*auto\s+minmax\(52px,\s*1fr\)\s+auto[^}]*width:\s*100%[\s\S]*body\.is-article-reading\s+\.article-top-link\s*\{[\s\S]*right:\s*104px[\s\S]*bottom:\s*auto/)) {
-  fail("css/mobile-ios-shell.css should expose a labeled 4px article progress status and keep the 44px top control clear of copy controls or body text");
+  || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.mobile-appbar\s*\{[^}]*padding-right:\s*0/)
+  || !hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*body\.is-article-reading\s+\.article-read-progress\s*\{[^}]*grid-template-columns:\s*auto\s+minmax\(52px,\s*1fr\)\s+auto[^}]*width:\s*100%[\s\S]*body\.is-article-reading\s+\.article-top-link\s*\{[^}]*right:\s*var\(--article-top-control-right[^}]*bottom:\s*var\([^}]*--article-top-control-bottom/)) {
+  fail("article readers should keep multiline TOC rows complete, pin Back inside the reader, and place the 44px top control at the measured reading-area corner");
 }
 
 if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s*\{[\s\S]*--mobile-status-height:\s*0px/)
@@ -4385,9 +4394,9 @@ if (finalUpdateStarted) {
   }
 
   for (const token of [
-    '<time id="top-updated" datetime="2026-07-27">2026.07.27</time>',
+    '<time id="top-updated" datetime="2026-07-28">2026.07.28</time>',
     `/css/style.css?v=${finalCssVersion}`,
-    `/css/mobile-ios-shell.css?v=${routeLazyVersion}`,
+    `/css/mobile-ios-shell.css?v=${knowledgeReaderVersion}`,
     `/js/main.js?v=${finalMainVersion}`
   ]) {
     if (!indexHtml.includes(token)) {

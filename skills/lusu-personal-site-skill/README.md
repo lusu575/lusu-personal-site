@@ -26,7 +26,7 @@ skills/lusu-personal-site-skill/SKILL.md
 - 账号状态检查使用有界超时并在稳定 popover 内原位重试；Chat 只有消息刷新成功后才能标记 online，失败保留 reconnecting 和可聚焦手动重试。密码房切换必须单飞，历史读取失败不能显示 ready。
 - 账号及公开写接口先校验同源、JSON 类型和流式正文上限；登录／注册按网络与账号标识持久限流，注册失败响应不能枚举账号。PBKDF2-HMAC-SHA256 新哈希为 600,000 次，旧 25k／100k 记录按存储迭代数验证并在成功登录后条件升级。
 - 分析写入使用来源限流与重复抑制，文章 PV 只随真实去重事件增加；session、登录履历、分析事件和限流桶按明确保留期与单批上限异步清理。
-- 文章阅读只允许正文详情纵向滚动，4px 左右进度轨道与正文零交叠并有三语/ARIA 百分比；Chat 发送不得清空在途新草稿，359×500 保护普通约 177px、私聊至少约 119px及可折叠安全说明。
+- 文章阅读只允许 `#article-detail` 纵向滚动，4px 左右进度轨道与正文零交叠并有三语/ARIA 百分比；目录多行标题必须自然撑高且末尾保留滚动安全区，返回列表固定左上，回顶按正文卡片与任务栏／Dock 实际几何固定右下并只滚动文章容器。Chat 发送不得清空在途新草稿，359×500 保护普通约 177px、私聊至少约 119px及可折叠安全说明。
 - Chat 还必须通过 1280×720 短桌面回归：标题、身份／房间两行控制、日志、输入区和页脚都在任务栏上方，只有日志可收缩；字数计数放入输入状态行，媒体几何只写在 `mobile-ios-shell.css`。
 - Chat 重试复用稳定 `clientRequestId`，服务端在限流前重放首次成功消息，并用 `(visitor_id, room_key, client_request_id)` 唯一索引防并发重复；私聊随机 IV 不得破坏幂等。旧 D1 必须先补 `client_request_id` 列再建索引。
 - 公共 Chat 不返回服务端隐藏 visitor id；密码、私聊、草稿、Secret、完整标识不进入 DOM 泄漏、持久存储、History、日志或 telemetry，外链/iframe/fragment 白名单不得放宽。
@@ -130,9 +130,11 @@ skills/lusu-personal-site-skill/SKILL.md
 - 从知识库文章详情关闭窗口或返回桌面后，再次打开知识库应回到知识库首页。
 - 每次合并代码、上线功能或做可见更新时，必须在知识库 `site-updates`（网站更新记录）分类发布一篇 zh / en / ja 三语真实文章，包含主标题、简短简介和正文。
 - `site-updates` 只按发布时间展示，永远不置顶；后台、seed、schema、fallback 和知识库排序都必须把该分类保持为 `is_pinned = 0`，旧缓存中的错误置顶值也不能显示标记。
+- Knowledge 的“全部”Tab 列表和数量都排除 `site-updates`；网站更新只允许出现在 `site-updates` 专属“更新记录”Tab，筛选与计数复用同一分类函数。
 - 这条是合并前验收门槛；如果不能通过后台发布，也要在同一次变更中补齐 seed 与 fallback，确认知识库、欢迎弹窗最近更新和右上角最新日期能读到本次更新。
 - 通过 seed 维护网站更新记录时，必须同步 `functions/api/[[route]].js`、`cloudflare/schema.sql`、`js/data/content.mjs` 的完整 fallback，以及 `js/data/home-content.mjs` 的最近五条无正文 Home 摘要投影。
 - 首页欢迎弹窗右侧“最近更新”自动读取 `site-updates` 分类文章，“查看更多更新”跳转到该分类。
+- 首页欢迎弹窗使用 `lusu-welcome-day` 保存访问设备的本地自然日；每天首次打开任意公开路由显示一次，并在实际打开时立即记录，不能用长期内容版本号永久抑制后续日期。
 - 当前主站不提供公开聚合入口；不要恢复相关按钮、发现链接或公开输出接口，除非用户重新明确要求，并同步补齐三语文案、种子、构建守卫和部署说明。
 - Cloudflare 部署检查命令和期望状态保留在 `SKILL.md`。
 - 线上验证要注意 Cloudflare 缓存和 `lusu575.com` / `www.lusu575.com` 双域名缓存差异。

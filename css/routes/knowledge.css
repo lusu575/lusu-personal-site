@@ -310,21 +310,25 @@ body.is-article-reading .folder-layout.is-reading .article-detail {
   justify-self: start;
   min-height: 38px;
   margin: 0;
+  position: sticky;
+  top: 18px;
+  z-index: 4;
 }
 
 .article-reader-sidebar {
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
   gap: 16px;
   align-self: start;
   min-width: 0;
-  min-height: min(640px, calc(100dvh - 280px));
+  min-height: 0;
+  height: clamp(300px, calc(100dvh - 300px), 640px);
   position: sticky;
-  top: 0;
+  top: 72px;
 }
 
 body.is-article-reading .article-reader-sidebar {
-  min-height: min(640px, calc(100dvh - 280px));
+  min-height: 0;
 }
 
 .article-detail-card {
@@ -332,7 +336,7 @@ body.is-article-reading .article-reader-sidebar {
   width: min(100%, 86ch);
   justify-self: center;
   margin: 0;
-  padding: 24px 26px 28px;
+  padding: 24px 26px 76px;
   border: 1px solid #8db7ff;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.95);
@@ -469,7 +473,9 @@ body.is-article-reading #knowledge .article-read-progress {
 
 .article-toc {
   display: grid;
-  align-self: start;
+  grid-template-rows: auto minmax(0, 1fr);
+  align-self: stretch;
+  min-height: 0;
   overflow: hidden;
   border: 1px solid #a8c8ff;
   border-radius: 8px;
@@ -498,17 +504,28 @@ body.is-article-reading #knowledge .article-read-progress {
 }
 
 #article-detail-toc-list {
-  max-height: min(52dvh, 430px);
+  box-sizing: border-box;
+  display: grid;
+  grid-auto-rows: max-content;
+  align-content: start;
+  gap: 2px;
+  min-height: 0;
+  max-height: none;
+  padding: 10px 20px 34px 10px;
   overflow: auto;
   overscroll-behavior: contain;
+  scroll-padding-block: 10px 34px;
   scrollbar-gutter: stable;
 }
 
 .article-toc-link {
+  display: block;
+  box-sizing: border-box;
   width: 100%;
   max-width: 100%;
-  min-height: 36px;
-  padding: 6px 10px;
+  height: auto;
+  min-height: 0;
+  padding: 8px 10px;
   border: 1px solid transparent;
   border-radius: 5px;
   color: #143570;
@@ -516,7 +533,7 @@ body.is-article-reading #knowledge .article-read-progress {
   font: inherit;
   font-size: 13px;
   font-weight: 800;
-  line-height: 1.35;
+  line-height: 1.45;
   text-align: left;
   cursor: pointer;
   overflow-wrap: anywhere;
@@ -592,8 +609,8 @@ body.is-article-reading #knowledge .article-read-progress {
 
 .article-top-link {
   position: fixed;
-  right: clamp(20px, 4vw, 64px);
-  bottom: calc(var(--chrome-taskbar-height) + 14px);
+  right: var(--article-top-control-right, clamp(20px, 4vw, 64px));
+  bottom: var(--article-top-control-bottom, calc(var(--chrome-taskbar-height) + 14px));
   z-index: 45;
   color: #184d0d;
   background: linear-gradient(180deg, #ffffff, #dff7c8);
@@ -629,8 +646,6 @@ body.is-article-reading .article-read-progress-track {
 }
 
 body.is-article-reading .article-top-link {
-  right: max(57px, calc((100vw - 1560px) / 2 + 57px));
-  bottom: calc(var(--chrome-taskbar-height) + 17px);
   min-width: 116px;
   min-height: 44px;
   justify-content: center;

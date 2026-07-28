@@ -5,12 +5,14 @@ import test from "node:test";
 const root = new URL("../", import.meta.url);
 const read = (path) => readFile(new URL(path, root), "utf8");
 
-test("welcome is version-triggered and records completion only when closed", async () => {
+test("welcome opens once per local day and records the day as soon as it opens", async () => {
   const source = await read("js/main.js");
-  assert.match(source, /const welcomeStorageKey = "lusu-welcome-version"/);
-  assert.match(source, /safeSessionGet\(welcomeStorageKey\) === welcomeContentVersion/);
-  assert.match(source, /if \(wasOpen\) \{\s*markWelcomeSeen\(\)/);
-  assert.doesNotMatch(source, /lusu-welcome-seen-\$\{today\}/);
+  assert.match(source, /const welcomeStorageKey = "lusu-welcome-day"/);
+  assert.match(source, /function localWelcomeDayStamp\(date = new Date\(\)\)/);
+  assert.match(source, /safeSessionGet\(welcomeStorageKey\) === today/);
+  assert.match(source, /modal\.hidden = false;\s*markWelcomeSeen\(today\)/);
+  assert.doesNotMatch(source, /welcomeContentVersion|lusu-welcome-version/);
+  assert.doesNotMatch(source, /route\.route !== "home"/);
   assert.match(source, /const forceWelcome = welcomeMode === "1"/);
 });
 

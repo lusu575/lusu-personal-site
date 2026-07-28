@@ -106,7 +106,7 @@ const article = Object.freeze({
     "",
     "![文章阅读器受控图片](assets/images/articles/ai-agent-codex-project-brief.png)",
     "",
-    "## 第四节",
+    "## 这是一个用于验证目录多行标题能够自然撑高且高亮边框不会覆盖文字的超长章节标题",
     "",
     "目录中的末尾章节用于验证当前项能够在目录自己的滚动区域内保持可见。",
     "",
@@ -131,14 +131,23 @@ const articleTranslations = Object.freeze({
 const fallbackAuditArticleSlug = "audit-layout-fallback";
 const auditArticles = Object.freeze([
   article,
-  ...Array.from({ length: 14 }, (_, index) => ({
+  ...Array.from({ length: 15 }, (_, index) => ({
     ...article,
+    category: "note",
     slug: `audit-layout-${index + 1}`,
     title: `状态恢复审计 ${String(index + 1).padStart(2, "0")}`,
     summary: `用于制造可滚动筛选列表并验证 Unicode 搜索、History 状态与滚动恢复的受控条目 ${index + 1}。`,
     is_pinned: index === 13 ? 1 : 0,
     published_at: `2026-07-${String(17 - Math.min(index, 14)).padStart(2, "0")}T00:00:00.000Z`,
     created_at: `2026-07-${String(17 - Math.min(index, 14)).padStart(2, "0")}T00:00:00.000Z`
+  })),
+  ...Array.from({ length: 14 }, (_, index) => ({
+    ...article,
+    slug: `audit-update-${index + 1}`,
+    title: `更新记录筛选审计 ${String(index + 1).padStart(2, "0")}`,
+    summary: `用于验证网站更新只出现在更新记录专属 Tab，并维持可滚动列表的受控条目 ${index + 1}。`,
+    published_at: `2026-06-${String(30 - index).padStart(2, "0")}T00:00:00.000Z`,
+    created_at: `2026-06-${String(30 - index).padStart(2, "0")}T00:00:00.000Z`
   }))
 ]);
 const auditVideo = Object.freeze({
@@ -241,6 +250,7 @@ function apiFixture(url, response) {
       localizedArticles[1] = {
         ...article,
         ...articleTranslations.zh,
+        category: localizedArticles[1].category,
         slug: fallbackAuditArticleSlug,
         lang: "zh"
       };
@@ -1398,7 +1408,7 @@ async function auditArticleFocusHistory(client, origin, viewport) {
   await evaluate(client, `document.querySelector('#knowledge-list [data-article-load-more]')?.click(); true`);
   await waitFor(client, `document.querySelectorAll('#knowledge-list [data-article-slug]').length>=15&&!document.querySelector('#knowledge-list [data-article-load-more]')`, "continued controlled article list");
   await waitFrames(client, 3);
-  const progressive = await evaluate(client, `(() => { const list=document.getElementById('knowledge-list'); const first=list?.querySelector('[data-article-slug]'); const published=first?.querySelector('time'); return { count:list?.querySelectorAll('[data-article-slug]').length||0, focusPosition:document.activeElement?.dataset?.articleListPosition||'', filter:document.querySelector('.category-button.active')?.dataset.filter||'', search:document.getElementById('knowledge-search-input')?.value||'', firstSlug:first?.dataset.articleSlug||'', pinned:first?.querySelector('.article-pinned-badge')?.textContent?.trim()||'', publishedText:published?.textContent?.trim()||'', publishedTitle:published?.title||'' }; })()`);
+  const progressive = await evaluate(client, `(() => { const list=document.getElementById('knowledge-list'); const cards=[...list.querySelectorAll('[data-article-slug]')]; const first=cards[0]; const published=first?.querySelector('time'); const allButton=document.querySelector('.category-button[data-filter="all"]'); return { count:cards.length, focusPosition:document.activeElement?.dataset?.articleListPosition||'', filter:document.querySelector('.category-button.active')?.dataset.filter||'', search:document.getElementById('knowledge-search-input')?.value||'', firstSlug:first?.dataset.articleSlug||'', pinned:first?.querySelector('.article-pinned-badge')?.textContent?.trim()||'', publishedText:published?.textContent?.trim()||'', publishedTitle:published?.title||'', updateLeak:cards.some((card)=>card.dataset.articleSlug==='${article.slug}'||card.dataset.articleSlug.startsWith('audit-update-')), allCount:Number(allButton?.querySelector('.filter-count')?.textContent||-1) }; })()`);
   const source = await evaluate(client, `(async () => {
     document.querySelector('.category-button[data-filter="site-updates"]')?.click();
     const input=document.getElementById('knowledge-search-input');
@@ -1417,7 +1427,8 @@ async function auditArticleFocusHistory(client, origin, viewport) {
     list.dispatchEvent(new Event('scroll'));
     await new Promise(ok=>requestAnimationFrame(()=>requestAnimationFrame(ok)));
     const nav=history.state?.lusuPublicState;
-    return { filter:document.querySelector('.category-button.active')?.dataset.filter||'', search:input.value, scrollTop:list.scrollTop, maxScroll, focusId:document.activeElement?.id||'', state:nav, debounceHeld:beforeSearchCard===immediateCard&&beforeSearchCard===earlyCard, debounceApplied:beforeSearchCard!==appliedCard };
+    const cards=[...list.querySelectorAll('[data-article-slug]')];
+    return { filter:document.querySelector('.category-button.active')?.dataset.filter||'', search:input.value, scrollTop:list.scrollTop, maxScroll, focusId:document.activeElement?.id||'', state:nav, debounceHeld:beforeSearchCard===immediateCard&&beforeSearchCard===earlyCard, debounceApplied:beforeSearchCard!==appliedCard, cardCount:cards.length, updatesOnly:cards.every((card)=>card.dataset.articleSlug==='${article.slug}'||card.dataset.articleSlug.startsWith('audit-update-')) };
   })()`);
   await evaluate(client, `(() => { window.__auditFocusEvents=[]; document.querySelector('#knowledge-list [data-article-slug=${article.slug}]')?.click(); return true; })()`);
   try {
@@ -1454,7 +1465,9 @@ async function auditArticleFocusHistory(client, origin, viewport) {
 
   const failures = [];
   if (progressive.count !== 15 || progressive.focusPosition !== "12" || progressive.filter !== "all" || progressive.search) failures.push(`segmented load lost list context or focus: ${JSON.stringify(progressive)}`);
-  if (progressive.firstSlug !== article.slug || progressive.pinned || /:\d{2}:\d{2}$/.test(progressive.publishedText) || !/:\d{2}:\d{2}$/.test(progressive.publishedTitle)) failures.push(`site-update/date presentation is wrong: ${JSON.stringify(progressive)}`);
+  if (progressive.updateLeak || progressive.allCount !== 15) failures.push(`All exposed Site Updates or counted them: ${JSON.stringify(progressive)}`);
+  if (progressive.firstSlug !== "audit-layout-14" || !progressive.pinned || /:\d{2}:\d{2}$/.test(progressive.publishedText) || !/:\d{2}:\d{2}$/.test(progressive.publishedTitle)) failures.push(`article ordering/date presentation is wrong: ${JSON.stringify(progressive)}`);
+  if (source.filter !== "site-updates" || !source.updatesOnly || source.cardCount < 1) failures.push(`Site Updates dedicated tab filtering is wrong: ${JSON.stringify(source)}`);
   if (!source.debounceHeld || !source.debounceApplied) failures.push(`Knowledge search did not apply one delayed render: ${JSON.stringify(source)}`);
   for (const [name, state, focusId] of [["open", opened, "article-detail-title"], ["in-app-back", list, "knowledge-title"], ["history-forward-cache", forward, "article-detail-title"], ["history-back", back, "knowledge-title"]]) {
     if (state.focusId !== focusId) failures.push(`${name} focus ${state.focusId || "<empty>"} !== ${focusId}`);
@@ -3776,6 +3789,7 @@ async function auditArticleTocAndReadingDetails(client, origin, viewport, output
     const rect=(element)=>{const value=element?.getBoundingClientRect();return value?{top:value.top,right:value.right,bottom:value.bottom,left:value.left,width:value.width,height:value.height}:null;};
     const visibleHeight=(elementRect,ownerRect)=>!elementRect||!ownerRect?0:Math.max(0,Math.min(elementRect.bottom,ownerRect.bottom)-Math.max(elementRect.top,ownerRect.top));
     const detail=document.getElementById('article-detail');
+    const backButton=document.querySelector('[data-article-back]');
     const sidebar=document.querySelector('.article-reader-sidebar');
     const tocList=document.getElementById('article-detail-toc-list');
     const card=document.querySelector('.article-detail-card');
@@ -3787,6 +3801,18 @@ async function auditArticleTocAndReadingDetails(client, origin, viewport, output
     const image=body?.querySelector('.article-figure img');
     const topButton=document.querySelector('[data-article-scroll-top]');
     const links=[...document.querySelectorAll('[data-article-heading-target]')];
+    const tocRows=links.map((link)=>{
+      const style=getComputedStyle(link);
+      return {
+        text:link.textContent.trim(),
+        rect:rect(link),
+        clientHeight:link.clientHeight,
+        scrollHeight:link.scrollHeight,
+        lineHeight:parseFloat(style.lineHeight)||0,
+        paddingTop:parseFloat(style.paddingTop)||0,
+        paddingBottom:parseFloat(style.paddingBottom)||0
+      };
+    });
     const ids=links.map((link)=>link.dataset.articleHeadingTarget);
     const detailRect=rect(detail);
     const sidebarRect=rect(sidebar);
@@ -3800,6 +3826,9 @@ async function auditArticleTocAndReadingDetails(client, origin, viewport, output
       uniqueIds:new Set(ids).size,
       duplicateIds:ids.filter((id)=>id.startsWith('article-第二节')),
       currentCount:links.filter((link)=>link.getAttribute('aria-current')==='location').length,
+      backControl:{position:getComputedStyle(backButton).position,rect:rect(backButton)},
+      tocRows,
+      tocLayout:getComputedStyle(tocList).display,
       summary:{hidden:toggle?.hidden,expanded:toggle?.getAttribute('aria-expanded'),height:rect(summary)?.height||0,toggleHeight:rect(toggle)?.height||0},
       meta:{flexWrap:getComputedStyle(meta).flexWrap,scrollWidth:meta.scrollWidth,clientWidth:meta.clientWidth,children:[...meta.children].map((child)=>rect(child)),rect:metaRect},
       body:{fontSize:parseFloat(getComputedStyle(body).fontSize),lineHeight:getComputedStyle(body).lineHeight,userSelect:getComputedStyle(body).userSelect,width:bodyRect?.width||0},
@@ -3850,6 +3879,9 @@ async function auditArticleTocAndReadingDetails(client, origin, viewport, output
     const active=document.querySelector('[data-article-heading-target][aria-current="location"]');
     const list=document.getElementById('article-detail-toc-list');
     const topButton=document.querySelector('[data-article-scroll-top]');
+    const backButton=document.querySelector('[data-article-back]');
+    const card=document.querySelector('.article-detail-card');
+    const taskbar=document.querySelector('.xp-taskbar');
     return {
       targetId:target?.dataset.articleHeadingTarget||'',
       focusId:document.activeElement?.id||'',
@@ -3861,8 +3893,33 @@ async function auditArticleTocAndReadingDetails(client, origin, viewport, output
       activeId:active?.dataset.articleHeadingTarget||'',
       active:rect(active),
       list:rect(list),
-      topControl:{hidden:Boolean(topButton?.hidden),tabIndex:topButton?.tabIndex??null,rect:rect(topButton)},
+      backControl:{position:getComputedStyle(backButton).position,rect:rect(backButton)},
+      card:rect(card),
+      taskbar:rect(taskbar),
+      topControl:{hidden:Boolean(topButton?.hidden),tabIndex:topButton?.tabIndex??null,position:getComputedStyle(topButton).position,rect:rect(topButton)},
       summary:{expanded:toggle?.getAttribute('aria-expanded'),height:rect(summary)?.height||0,toggleHeight:rect(toggle)?.height||0}
+    };
+  })()`);
+  const tocEnd = await evaluate(client, `(async()=>{
+    const list=document.getElementById('article-detail-toc-list');
+    const links=[...list.querySelectorAll('[data-article-heading-target]')];
+    const last=links.at(-1);
+    list.scrollTop=list.scrollHeight;
+    list.scrollLeft=list.scrollWidth;
+    await new Promise((ok)=>requestAnimationFrame(()=>requestAnimationFrame(ok)));
+    const rect=(element)=>{const value=element?.getBoundingClientRect();return value?{top:value.top,right:value.right,bottom:value.bottom,left:value.left,width:value.width,height:value.height}:null;};
+    const style=getComputedStyle(list);
+    return {
+      list:rect(list),
+      last:rect(last),
+      vertical:list.scrollHeight>list.clientHeight+1,
+      horizontal:list.scrollWidth>list.clientWidth+1,
+      scrollTop:list.scrollTop,
+      scrollLeft:list.scrollLeft,
+      maxTop:Math.max(0,list.scrollHeight-list.clientHeight),
+      maxLeft:Math.max(0,list.scrollWidth-list.clientWidth),
+      paddingBottom:parseFloat(style.paddingBottom)||0,
+      paddingRight:parseFloat(style.paddingRight)||0
     };
   })()`);
   const topReturn = await evaluate(client, `(async()=>{
@@ -3872,6 +3929,7 @@ async function auditArticleTocAndReadingDetails(client, origin, viewport, output
     await new Promise((ok)=>requestAnimationFrame(()=>requestAnimationFrame(()=>requestAnimationFrame(ok))));
     return {
       scrollTop:detail?.scrollTop??null,
+      windowScrollY:window.scrollY,
       focusId:document.activeElement?.id||'',
       hidden:Boolean(button?.hidden)
     };
@@ -3897,6 +3955,10 @@ async function auditArticleTocAndReadingDetails(client, origin, viewport, output
   const failures = [];
   if (before.ids.length < 6 || before.uniqueIds !== before.ids.length || JSON.stringify(before.duplicateIds) !== JSON.stringify(["article-第二节", "article-第二节-2"])) failures.push(`semantic duplicate-safe anchors are wrong: ${JSON.stringify(before.ids)}`);
   if (before.currentCount !== 1) failures.push(`TOC should expose exactly one current chapter before interaction: ${before.currentCount}`);
+  const clippedTocRows = before.tocRows.filter((row)=>!row.rect || row.scrollHeight > row.clientHeight + 1);
+  const longTocRow = before.tocRows.find((row)=>row.text.includes("超长章节标题"));
+  if (clippedTocRows.length || !longTocRow || longTocRow.rect.height <= longTocRow.lineHeight + longTocRow.paddingTop + longTocRow.paddingBottom + 1) failures.push(`multiline TOC rows did not grow naturally: ${JSON.stringify({ clippedTocRows, longTocRow })}`);
+  if (before.tocLayout === "grid" && before.tocRows.some((row,index,rows)=>index>0&&row.rect&&rows[index-1].rect&&row.rect.top<rows[index-1].rect.bottom-1)) failures.push(`vertical TOC rows overlap: ${JSON.stringify(before.tocRows)}`);
   if (viewport.mobile) {
     if (before.summary.hidden !== false || before.summary.toggleHeight < 44) failures.push(`mobile summary disclosure is unavailable: ${JSON.stringify(before.summary)}`);
     if (interaction.summary.expanded !== "true" || interaction.summary.height <= before.summary.height + 1) failures.push(`mobile summary did not expand: ${JSON.stringify({ before:before.summary, after:interaction.summary })}`);
@@ -3910,9 +3972,13 @@ async function auditArticleTocAndReadingDetails(client, origin, viewport, output
   if (!interaction.targetId || interaction.focusId !== interaction.targetId || interaction.hash !== interaction.targetId || interaction.activeId !== interaction.targetId || interaction.currentCount !== 1) failures.push(`TOC click focus/hash/current state is wrong: ${JSON.stringify(interaction)}`);
   if (!interaction.heading || !interaction.detail || interaction.heading.top < interaction.detail.top - 1 || interaction.heading.bottom > interaction.detail.bottom + 1) failures.push(`TOC target is obscured outside the article viewport: ${JSON.stringify({ heading:interaction.heading, detail:interaction.detail })}`);
   if (!interaction.active || !interaction.list || interaction.active.top < interaction.list.top - 1 || interaction.active.bottom > interaction.list.bottom + 1 || interaction.active.left < interaction.list.left - 1 || interaction.active.right > interaction.list.right + 1) failures.push(`active TOC item is outside its own scroll viewport: ${JSON.stringify({ active:interaction.active, list:interaction.list })}`);
+  if (!tocEnd.last || !tocEnd.list || tocEnd.last.top < tocEnd.list.top - 1 || tocEnd.last.bottom > tocEnd.list.bottom - (tocEnd.vertical ? 8 : -1) || tocEnd.last.left < tocEnd.list.left - 1 || tocEnd.last.right > tocEnd.list.right - (tocEnd.horizontal ? 2 : -1) || (tocEnd.vertical && Math.abs(tocEnd.scrollTop-tocEnd.maxTop)>1) || (tocEnd.horizontal && Math.abs(tocEnd.scrollLeft-tocEnd.maxLeft)>1)) failures.push(`final TOC item is clipped or overlaps the scrollbar edge: ${JSON.stringify(tocEnd)}`);
+  if (before.backControl.position !== "sticky" || interaction.backControl.position !== "sticky" || !before.backControl.rect || !interaction.backControl.rect || Math.abs(before.backControl.rect.top-interaction.backControl.rect.top)>1 || Math.abs(before.backControl.rect.left-interaction.backControl.rect.left)>1) failures.push(`Back to Article List did not remain anchored: ${JSON.stringify({ before:before.backControl, after:interaction.backControl })}`);
   if (!before.topControl.hidden || (before.topControl.rect && (before.topControl.rect.width > 0 || before.topControl.rect.height > 0))) failures.push(`article top control remains exposed at 0%: ${JSON.stringify(before.topControl)}`);
   if (interaction.topControl.hidden || !interaction.topControl.rect || interaction.topControl.rect.width < 44 || interaction.topControl.rect.height < 44) failures.push(`article top control is unavailable after scrolling: ${JSON.stringify(interaction.topControl)}`);
-  if (topReturn.scrollTop !== 0 || topReturn.focusId !== "article-detail-title" || !topReturn.hidden) failures.push(`article top activation did not restore the reading title focus: ${JSON.stringify(topReturn)}`);
+  const topControlBottomLimit = Math.min(interaction.detail?.bottom ?? viewport.height, interaction.taskbar?.top ?? viewport.height);
+  if (interaction.topControl.position !== "fixed" || !interaction.card || interaction.topControl.rect.left < interaction.card.left - 1 || interaction.topControl.rect.right > interaction.card.right - 6 || interaction.topControl.rect.bottom > topControlBottomLimit - 6) failures.push(`article top control is outside the reading-area lower-right corner: ${JSON.stringify({ control:interaction.topControl, card:interaction.card, detail:interaction.detail, taskbar:interaction.taskbar })}`);
+  if (topReturn.scrollTop !== 0 || topReturn.windowScrollY !== 0 || topReturn.focusId !== "article-detail-title" || !topReturn.hidden) failures.push(`article top activation did not scroll only the reader and restore title focus: ${JSON.stringify(topReturn)}`);
   if (direct.focusId !== directTarget || direct.hash !== directTarget || direct.scrollTop <= 0 || direct.targetOffset === null || direct.targetOffset < -1 || direct.targetOffset > 34 || JSON.stringify(direct.currentIds) !== JSON.stringify([directTarget])) failures.push(`direct shared heading restoration is wrong: ${JSON.stringify(direct)}`);
   if (before.runtimeErrors.length || direct.runtimeErrors.length) failures.push(`runtime errors: ${[...before.runtimeErrors,...direct.runtimeErrors].join(" | ")}`);
   if (viewport.mobile) {
@@ -3927,7 +3993,7 @@ async function auditArticleTocAndReadingDetails(client, origin, viewport, output
     if (!firstScreen.firstBody || firstScreen.firstBodyVisibleHeight < Math.min(firstScreen.firstBody.height, 20) || firstScreen.bodyVisibleHeight < minimumBodyVisible) failures.push(`mobile article first screen exposes only ${firstScreen.bodyVisibleHeight}px of body copy`);
     if (firstScreen.detailScrollTop !== 0) failures.push(`mobile article did not start at scrollTop 0: ${firstScreen.detailScrollTop}`);
   }
-  return { kind:"article-toc-reading-details", name:`article-toc-reading-details-${viewport.width}x${viewport.height}`, route:"knowledge", shell:viewport.mobile ? "mobile" : "desktop", viewport, screenshotFile, before, interaction, topReturn, direct, failures, status:failures.length ? "FAIL" : "PASS" };
+  return { kind:"article-toc-reading-details", name:`article-toc-reading-details-${viewport.width}x${viewport.height}`, route:"knowledge", shell:viewport.mobile ? "mobile" : "desktop", viewport, screenshotFile, before, interaction, tocEnd, topReturn, direct, failures, status:failures.length ? "FAIL" : "PASS" };
 }
 
 async function auditControlledVideoFlow(client, origin, viewport, output) {
@@ -4350,17 +4416,21 @@ async function auditHomeThemeAndInteractionContracts(client, origin, output) {
 
   const desktop = viewports.find((item) => item.width === 1280);
   await emulate(client, desktop);
-  await client.send("Page.navigate", { url:`${origin}/?lang=zh&wallpaper=day&welcome=1&audit-welcome=1` });
+  await client.send("Page.navigate", { url:`${origin}/?lang=zh&wallpaper=day&welcome=0&audit-welcome-setup=1` });
   await stable(client, "home");
-  await waitFor(client, `document.getElementById('welcome-modal')?.hidden===false`, "forced welcome dialog");
-  const welcome = await evaluate(client, `(() => {const rows=[...document.querySelectorAll('#recent-updates li')];return {count:rows.length,rows:rows.map((row)=>({title:row.querySelector('strong')?.textContent.trim()||'',date:row.querySelector('small')?.textContent.trim()||'',label:row.querySelector('a')?.getAttribute('aria-label')||''})),closeHeight:document.querySelector('[data-close-welcome]')?.getBoundingClientRect().height||0};})()`);
+  await evaluate(client, `(() => { localStorage.setItem('lusu-welcome-day','2000-01-01'); sessionStorage.removeItem('lusu-welcome-day'); return true; })()`);
+  await client.send("Page.navigate", { url:`${origin}/?lang=zh&wallpaper=day&audit-welcome-daily=1` });
+  await stable(client, "home");
+  await waitFor(client, `document.getElementById('welcome-modal')?.hidden===false`, "first daily welcome dialog");
+  const welcome = await evaluate(client, `(() => {const rows=[...document.querySelectorAll('#recent-updates li')];const now=new Date();const localDay=[now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),String(now.getDate()).padStart(2,'0')].join('-');return {count:rows.length,rows:rows.map((row)=>({title:row.querySelector('strong')?.textContent.trim()||'',date:row.querySelector('small')?.textContent.trim()||'',label:row.querySelector('a')?.getAttribute('aria-label')||''})),closeHeight:document.querySelector('[data-close-welcome]')?.getBoundingClientRect().height||0,localDay,storedDay:localStorage.getItem('lusu-welcome-day'),sessionDay:sessionStorage.getItem('lusu-welcome-day')};})()`);
   if (welcome.count !== 3 || welcome.rows.some((row) => !row.title || !/^\d{4}[./-]\d{2}[./-]\d{2}/.test(row.date) || !row.label.includes(row.title))) failures.push(`welcome must expose three complete title/date rows: ${JSON.stringify(welcome)}`);
+  if (welcome.storedDay !== welcome.localDay || welcome.sessionDay !== welcome.localDay) failures.push(`welcome did not record the local day when first opened: ${JSON.stringify(welcome)}`);
   await evaluate(client, `document.querySelector('#welcome-modal [data-close-welcome]')?.click(); true`);
   await waitFor(client, `document.getElementById('welcome-modal')?.hidden===true`, "welcome close persistence");
   await client.send("Page.navigate", { url:`${origin}/?lang=zh&wallpaper=day&audit-welcome-return=1` });
   await stable(client, "home");
   const persisted = await evaluate(client, `document.getElementById('welcome-modal')?.hidden===true`);
-  if (!persisted) failures.push("welcome version did not persist after close");
+  if (!persisted) failures.push("daily welcome appeared more than once on the same local day");
   const roving = await evaluate(client, `(() => {const icons=[...document.querySelectorAll('.desktop-icons .desktop-icon')].filter((item)=>!item.hidden&&item.getClientRects().length);const first=icons.find((item)=>item.tabIndex===0);first?.focus();first?.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}));const right=document.activeElement?.dataset.route||'';document.activeElement?.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowDown',bubbles:true}));return {zero:icons.filter((item)=>item.tabIndex===0).length,first:first?.dataset.route||'',right,down:document.activeElement?.dataset.route||''};})()`);
   if (roving.zero !== 1 || !roving.first || !roving.right || roving.right === roving.first || !roving.down || roving.down === roving.right) failures.push(`Home two-dimensional roving keyboard failed: ${JSON.stringify(roving)}`);
   const screenshot = await client.send("Page.captureScreenshot", { format:"png", fromSurface:true, captureBeyondViewport:false });
@@ -4532,8 +4602,11 @@ async function main() {
       const articleResults = [];
       for (const viewport of [
         viewports.find((item) => item.width === 359 && item.height === 500),
+        viewports.find((item) => item.width === 375 && item.height === 667),
         viewports.find((item) => item.width === 390 && item.height === 844),
-        viewports.find((item) => item.width === 844 && item.height === 390)
+        viewports.find((item) => item.width === 844 && item.height === 390),
+        viewports.find((item) => item.width === 1280 && item.height === 720),
+        viewports.find((item) => item.width === 1440 && item.height === 900)
       ]) {
         articleResults.push(
           await auditArticleScrollAndProgress(client, server.origin, viewport),

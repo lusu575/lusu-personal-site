@@ -34,8 +34,8 @@ test("public modal fixes preserve readable depth and compact failed-video geomet
   );
 });
 
-test("the Daily AI News coverage update is the newest five-item trilingual projection everywhere", async () => {
-  const updateId = "seed-update-2026-07-28-daily-ai-news-coverage-review";
+test("the knowledge reader and daily welcome update is the newest five-item trilingual projection everywhere", async () => {
+  const updateId = "seed-update-2026-07-28-knowledge-reader-welcome-fixes";
   const [{ content }, { homeContent }] = await Promise.all([
     import("../js/data/content.mjs"),
     import("../js/data/home-content.mjs")
@@ -61,9 +61,10 @@ test("the Daily AI News coverage update is the newest five-item trilingual proje
   }
 });
 
-test("Daily AI News modules use a fresh cache version without invalidating unrelated public assets", () => {
+test("knowledge reader and welcome assets use a fresh cache version without invalidating unrelated public assets", () => {
   const stableVersion = "20260726-security-reliability-r1";
   const dailyAiNewsVersion = "20260728-daily-ai-news-coverage-r1";
+  const knowledgeReaderVersion = "20260728-knowledge-reader-welcome-r1";
   const index = read("index.html");
   const main = read("js/main.js");
   const transferLoader = read("js/features/quick-transfer-loader.mjs");
@@ -72,16 +73,16 @@ test("Daily AI News modules use a fresh cache version without invalidating unrel
   for (const asset of [
     "/js/mobile-shell.js",
     "/css/style.css",
-    "/css/mobile-ios-shell.css",
     "/css/motion-system.css",
     "/js/ui-motion.js"
   ]) {
     assert.ok(index.includes(`${asset}?v=${stableVersion}`), `${asset} should use ${stableVersion}`);
   }
-  assert.ok(index.includes(`/js/main.js?v=${dailyAiNewsVersion}`));
-  assert.ok(main.includes(`const routeStyleVersion = "${stableVersion}"`));
+  assert.ok(index.includes(`/css/mobile-ios-shell.css?v=${knowledgeReaderVersion}`));
+  assert.ok(index.includes(`/js/main.js?v=${knowledgeReaderVersion}`));
+  assert.ok(main.includes(`const routeStyleVersion = "${knowledgeReaderVersion}"`));
   assert.ok(main.includes(`./core/i18n.mjs?v=${dailyAiNewsVersion}`));
-  assert.ok(main.includes(`./data/home-content.mjs?v=${dailyAiNewsVersion}`));
-  assert.ok(main.includes(`./routes/knowledge.mjs?v=${dailyAiNewsVersion}`));
+  assert.ok(main.includes(`./data/home-content.mjs?v=${knowledgeReaderVersion}`));
+  assert.ok(main.includes(`./routes/knowledge.mjs?v=${knowledgeReaderVersion}`));
   assert.doesNotMatch([index, main, transferLoader, resources].join("\n"), /20260726-tools-rename-r1/);
 });

@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-07-28-knowledge-reader-welcome-fixes",
+      "slug": "2026-07-28-knowledge-reader-welcome-fixes",
+      "category": "site-updates",
+      "tags": ["网站更新", "知识库", "阅读体验", "筛选", "欢迎弹窗", "QA"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-28T03:15:00.000Z",
+      "updated_at": "2026-07-28T03:15:00.000Z",
+      "published_at": "2026-07-28T03:15:00.000Z",
+      "fallbackOnly": true,
+      "icon": "knowledge",
+      "date": "2026.07.28",
+      "title": {
+        "zh": "知识库阅读与每日欢迎修复",
+        "en": "Knowledge Reading and Daily Welcome Fixes",
+        "ja": "知識庫の閲覧と毎日のウェルカム表示を修正"
+      },
+      "summary": {
+        "zh": "修复文章目录多行高亮与底部裁切，固定返回和回顶控件，更新日志仅留在专属 Tab，并恢复每天首次打开时的欢迎弹窗。",
+        "en": "Fixed multiline contents highlighting and bottom clipping, anchored article navigation, limited Site Updates to its dedicated tab, and restored the welcome window on the first open of each day.",
+        "ja": "複数行目次の強調表示と末尾の切れを直し、記事ナビゲーションを固定し、更新履歴を専用タブだけに限定して、毎日の初回表示でウェルカム画面が開くようにしました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-07-28-daily-ai-news-coverage-review",
       "slug": "2026-07-28-daily-ai-news-coverage-review",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "一次性加固账号入口、统计写入、D1 迁移、后台并发编辑与互传治理，并为文章分享、游戏和日语工具补齐超时、降级与离线回退。",
         "en": "Hardened account entry, analytics writes, D1 migrations, concurrent admin editing, and Transfer governance while adding timeouts, degradation paths, and offline fallbacks for articles, games, and the Japanese tool.",
         "ja": "アカウント入口、分析書き込み、D1 移行、管理画面の同時編集、転送管理を強化し、記事・ゲーム・日本語ツールへタイムアウト、縮退、オフライン復帰を追加しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-07-26-chatroom-icon-redraw",
-      "slug": "2026-07-26-chatroom-icon-redraw",
-      "category": "site-updates",
-      "tags": ["UI", "Chat", "icon", "Pixel Art", "QA"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-07-26T10:58:00.000Z",
-      "updated_at": "2026-07-26T10:58:00.000Z",
-      "published_at": "2026-07-26T10:58:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.07.26",
-      "title": {
-        "zh": "匿名聊天室图标重绘",
-        "en": "Anonymous Chat Icon Redrawn",
-        "ja": "匿名チャットアイコンを再描画"
-      },
-      "summary": {
-        "zh": "重新绘制匿名聊天室图标，缩小可见主体并增加均衡透明留白；Home、窗口、任务栏、欢迎入口与聊天头像现统一使用新图，旧图资源已移除。",
-        "en": "Redrew the Anonymous Chat icon with a smaller silhouette and balanced transparent padding. Home, windows, the taskbar, welcome shortcuts, and chat avatars now share the new asset, and the legacy artwork is removed.",
-        "ja": "匿名チャットアイコンを描き直し、見える輪郭を小さくして透明余白を均等化しました。Home、ウィンドウ、タスクバー、ウェルカム入口、チャットのアバターを新しい素材へ統一し、旧素材は削除しました。"
       }
     }
   ]

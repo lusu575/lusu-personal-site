@@ -10,6 +10,7 @@ import {
   articleTocHeadingSelector,
   deduplicateArticleHeadingAnchors,
   knowledgeCategoryValues,
+  knowledgeArticlesForCategory,
   knowledgeSearchTokens,
   normalizeArticleHeadingAnchor,
   normalizeKnowledgeSearchText,
@@ -56,6 +57,23 @@ test("knowledge search normalization and article ordering are deterministic", ()
     { slug: "stale-pinned-update", category: "site-updates", published_at: "2024-01-01T00:00:00Z", is_pinned: 1 }
   ]);
   assert.deepEqual(ordered.map(({ slug }) => slug), ["pinned-old", "new", "older", "stale-pinned-update"]);
+});
+
+test("Site Updates stay out of All and remain available in their dedicated category", () => {
+  const articles = [
+    { slug: "note", category: "note" },
+    { slug: "update-one", category: "site-updates" },
+    { slug: "news", category: "daily-ai-news" },
+    { slug: "update-two", category: "site-updates" }
+  ];
+  assert.deepEqual(
+    knowledgeArticlesForCategory(articles, "all").map(({ slug }) => slug),
+    ["note", "news"]
+  );
+  assert.deepEqual(
+    knowledgeArticlesForCategory(articles, "site-updates").map(({ slug }) => slug),
+    ["update-one", "update-two"]
+  );
 });
 
 test("Daily AI News remains a stable first category and Site Updates remains last", () => {
@@ -137,22 +155,36 @@ test("latest update time text keeps its machine-readable date in sync", async ()
   assert.match(source, /renderLatestUpdateDate\(\)/);
 });
 
-test("mobile article first screen overrides the late-loaded reader minimum height and keeps a geometry gate", async () => {
+test("article navigation and multiline TOC geometry stay scroll-safe across desktop and mobile", async () => {
   const [routeCss, mobileCss, auditSource] = await Promise.all([
     readFile(new URL("../css/routes/knowledge.css", import.meta.url), "utf8"),
     readFile(new URL("../css/mobile-ios-shell.css", import.meta.url), "utf8"),
     readFile(new URL("../scripts/public-ui-audit.mjs", import.meta.url), "utf8")
   ]);
 
-  assert.match(routeCss, /body\.is-article-reading\s+\.article-reader-sidebar\s*\{[^}]*min-height:\s*min\(640px,\s*calc\(100dvh - 280px\)\)/);
+  assert.match(routeCss, /\.article-back-button\s*\{[^}]*position:\s*sticky[^}]*top:\s*18px/);
+  assert.match(routeCss, /\.article-reader-sidebar\s*\{[^}]*grid-template-rows:\s*minmax\(0,\s*1fr\)\s+auto[^}]*height:\s*clamp\(300px,\s*calc\(100dvh - 300px\),\s*640px\)[^}]*top:\s*72px/);
+  assert.match(routeCss, /\.article-toc\s*\{[^}]*grid-template-rows:\s*auto\s+minmax\(0,\s*1fr\)[^}]*min-height:\s*0/);
+  assert.match(routeCss, /#article-detail-toc-list\s*\{[^}]*grid-auto-rows:\s*max-content[^}]*max-height:\s*none[^}]*padding:\s*10px\s+20px\s+34px\s+10px[^}]*overflow:\s*auto/);
+  assert.match(routeCss, /\.article-toc-link\s*\{[^}]*height:\s*auto[^}]*min-height:\s*0[^}]*padding:\s*8px\s+10px[^}]*line-height:\s*1\.45/);
+  assert.match(routeCss, /\.article-top-link\s*\{[^}]*right:\s*var\(--article-top-control-right[^}]*bottom:\s*var\(--article-top-control-bottom/);
   assert.match(mobileCss, /html\[data-ui-shell="mobile"\]\s+body\.is-article-reading\s+\.folder-layout\.is-reading\s+\.article-reader-sidebar\s*\{[^}]*min-height:\s*0/);
+  assert.match(mobileCss, /html\[data-ui-shell="mobile"\]\s+\.article-reader-sidebar\s*\{[^}]*min-height:\s*0[^}]*height:\s*auto/);
+  assert.match(mobileCss, /@media \(orientation:\s*portrait\) and \(max-height:\s*560px\)[\s\S]*?\.article-toc\s*\{[^}]*height:\s*auto[^}]*max-height:\s*86px/);
+  assert.match(mobileCss, /@media \(orientation:\s*portrait\) and \(max-height:\s*560px\)[\s\S]*?\.article-toc-link\s*\{[^}]*height:\s*auto[^}]*white-space:\s*normal/);
   assert.match(auditSource, /article-first-screen-\$\{viewport\.width\}x\$\{viewport\.height\}\.png/);
   assert.match(auditSource, /mobile article sidebar reserves/);
   assert.match(auditSource, /firstBodyVisibleHeight\s*<\s*Math\.min\(firstScreen\.firstBody\.height,\s*20\)/);
   assert.match(auditSource, /bodyVisibleHeight\s*<\s*minimumBodyVisible/);
   assert.match(auditSource, /shortPortrait\s*\?\s*90\s*:\s*shortLandscape\s*\?\s*24\s*:\s*portraitReference\s*\?\s*180/);
   assert.match(auditSource, /const minimumBodyVisible = portraitReference \? 200 : 44/);
-  for (const viewport of ["359 && item.height === 500", "390 && item.height === 844", "844 && item.height === 390"]) {
+  for (const viewport of [
+    "359 && item.height === 500",
+    "375 && item.height === 667",
+    "390 && item.height === 844",
+    "844 && item.height === 390",
+    "1280 && item.height === 720"
+  ]) {
     assert.ok(auditSource.includes(viewport), `article-only audit should cover ${viewport}`);
   }
 });

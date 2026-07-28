@@ -26,7 +26,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 新密码固定使用 PBKDF2-HMAC-SHA256 600,000 次并把迭代数随哈希保存；登录必须按记录中的历史迭代数验证，成功后用条件更新升级旧 25,000 / 100,000 次哈希。不得以加大 KDF 代替登录限流，也不得在错误、日志或统计中泄露密码或哈希。
 - page view、click、article view 等匿名写入必须有来源限流与重复抑制；文章 PV 只在去重事件实际落库后增加。过期 session、登录履历、分析事件和限流桶必须按明确保留期分批清理，每次有行数上限并通过 `waitUntil` 脱离健康响应关键路径。
 - Quick Transfer 未登录态只呈现一个上下文任务卡、一个主登录 CTA 和明确返回；登录完成要回到 Transfer，不得用红色 X 承担含糊返回语义。
-- 文章阅读时 document 不滚动，正文详情是唯一纵向 owner；进度轨道约 4px、与正文零交叠，移动端保留可见含义与准确 ARIA 百分比。100% 必须按 `.markdown-body` 正文末尾计算，不能把 Dock 安全尾距计入正文；回顶按钮在顶部用原生 `hidden` 退出焦点顺序，激活后把焦点交给 `tabindex="-1"` 的文章标题。
+- 文章阅读时 document 不滚动，`#article-detail` 是唯一纵向 owner；进度轨道约 4px、与正文零交叠，移动端保留可见含义与准确 ARIA 百分比。100% 必须按 `.markdown-body` 正文末尾计算，不能把 Dock 安全尾距计入正文。目录项不得固定高度或单行裁切，多行标题以统一行高／上下 padding 自然撑高，目录末尾保留滚动安全区；返回列表固定在阅读区左上，回顶通过帧管线测量正文卡片与任务栏／Dock 后固定在右下。回顶在顶部用原生 `hidden` 退出焦点顺序，激活后只滚动文章容器并把焦点交给 `tabindex="-1"` 的文章标题。
 - Chat 发送只锁提交动作，用户可继续输入且旧请求不得清空新草稿。359×500 自动回归以普通房约 177px、私聊至少约 119px为目标；安全说明通过 44px 折叠入口提供，关闭时不占日志也不覆盖控件。
 - Chat 同时以 1280×720 为短桌面硬门槛：标题、两行身份／房间控制、日志、composer 与 footer 必须完整落在窗口和任务栏上方，只有日志可弹性收缩；字数计数归入输入状态行。短屏／横屏几何只放 `css/mobile-ios-shell.css`，route CSS 不得新增 `@media`。
 - Chat 发送失败重试必须复用同一 `clientRequestId`，新草稿或上一次已成功后才生成新 ID。服务端要在限流前重放首次成功结果，依靠 `(visitor_id, room_key, client_request_id)` 唯一索引防止并发重复；私聊不得因随机 IV 密文改变而产生第二条消息。旧 D1 先补 `client_request_id` 列、后建依赖索引。
@@ -65,6 +65,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 首页四时段壁纸基础图放在 `assets/images/wallpapers/`，按用户本地时间切换 `morning` / `day` / `dusk` / `night`。
 - 首页壁纸必须保留 `wallpaper-root` / `wallpaper-stage` 舞台坐标结构；静态底图和后续动画图层要共享同一套 cover 裁切尺寸，不要直接用视口百分比硬贴小图层。
 - 首页壁纸和欢迎弹窗问候语必须使用同一套时间段：05:00-10:59 morning，11:00-16:59 day，17:00-19:59 dusk，20:00-04:59 night。
+- 首页欢迎弹窗按访问设备本地自然日记录到 `lusu-welcome-day`；每天首次打开任意公开路由时必须显示一次，并在实际打开时立刻记录当天，不能继续使用长期版本号让后续日期永不再弹。`welcome=0`／`welcome=1` 只作为明确审计或预览覆盖。
 - 顶部栏和底部任务栏也跟随同一套 `body[data-time-theme]` 四时段主题变量；维护 `.xp-topbar`、`.xp-taskbar`、Start、任务栏按钮、账号入口、语言切换或状态托盘时，必须同时检查 morning / day / dusk / night 四套外观，保持无竖线的现代玻璃像素 HUD 方向，并保留现有图标资源。
 - PC 端活动任务按钮使用蓝色按下态与内凹层级，不使用黄色底边、黄色外描边或常亮光晕；仅键盘 `:focus-visible` 保留清楚焦点环。该规则不得改写移动 Dock 的选中底板。
 - 维护右上角账号入口、语言切换或其他顶栏浮层时，必须同时检查 `.xp-topbar` 的裁剪行为和 `.site-shell > header` / `.site-shell > main` 的 stacking context。账号弹窗需要能从顶栏按钮下方溢出显示，且顶栏所在 `header` 必须高于主内容 `main`；否则会出现首页点击像没反应、其他栏目被窗口遮挡的问题。
@@ -242,6 +243,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 每次合并代码、上线功能或做可见更新时，必须在知识库 `site-updates`（网站更新记录）分类发布一篇真实文章。
 - 网站更新记录文章必须同时写入 zh / en / ja，包含主标题、简短简介和正文；正文要概括本次更新内容。
 - `site-updates` 只是按时间排列的更新日志，已有和新增记录都不得置顶；后台写入、seed / schema、Home / Knowledge fallback 与前端排序必须把该分类保持为 `is_pinned = 0`，不能让旧缓存的错误值重新显示置顶标记。
+- Knowledge 的“全部”Tab 列表与数量必须排除 `site-updates`；所有网站更新只在 `site-updates` 专属“更新记录”Tab 中显示。不要用仅隐藏按钮或仅改计数的两套逻辑，筛选与计数必须复用同一分类函数。
 - 后台文章、视频、视频分类、社交链接及任何会覆盖既有内容的刷新／删除必须携带读取时的 `expectedUpdatedAt`。服务端只允许版本匹配的条件写入，关系表与翻译等附属写入必须和主记录 CAS 原子收口；陈旧页返回统一 `409 + CONTENT_CONFLICT`，前端保留草稿并提示手动合并。
 - 这是合并前验收门槛，不是事后可选补记；如果本轮无法走后台发布，也必须在同一次变更中补齐 seed 与 fallback，确认知识库、欢迎弹窗“最近更新”和右上角最新日期都能读到这次更新。
 - 如果网站更新记录通过 seed 维护，必须同时更新 `functions/api/[[route]].js` 的 `articleSeedStatements`、`cloudflare/schema.sql`、`js/data/content.mjs` 的完整 fallback `content.updates`，以及 `js/data/home-content.mjs` 的最近五条无正文摘要投影，避免线上 D1、手动 migration、Home 首屏和 D1 不可用兜底显示不一致。

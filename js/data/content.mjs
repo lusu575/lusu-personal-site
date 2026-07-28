@@ -1,6 +1,36 @@
 export const content = {
   updates: [
     {
+      "article_id": "seed-update-2026-07-28-knowledge-reader-welcome-fixes",
+      "slug": "2026-07-28-knowledge-reader-welcome-fixes",
+      "category": "site-updates",
+      "tags": ["网站更新", "知识库", "阅读体验", "筛选", "欢迎弹窗", "QA"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-28T03:15:00.000Z",
+      "updated_at": "2026-07-28T03:15:00.000Z",
+      "published_at": "2026-07-28T03:15:00.000Z",
+      "fallbackOnly": true,
+      "icon": "knowledge",
+      "date": "2026.07.28",
+      "title": {
+        "zh": "知识库阅读与每日欢迎修复",
+        "en": "Knowledge Reading and Daily Welcome Fixes",
+        "ja": "知識庫の閲覧と毎日のウェルカム表示を修正"
+      },
+      "summary": {
+        "zh": "修复文章目录多行高亮与底部裁切，固定返回和回顶控件，更新日志仅留在专属 Tab，并恢复每天首次打开时的欢迎弹窗。",
+        "en": "Fixed multiline contents highlighting and bottom clipping, anchored article navigation, limited Site Updates to its dedicated tab, and restored the welcome window on the first open of each day.",
+        "ja": "複数行目次の強調表示と末尾の切れを直し、記事ナビゲーションを固定し、更新履歴を専用タブだけに限定して、毎日の初回表示でウェルカム画面が開くようにしました。"
+      },
+      "content_markdown": {
+        "zh": "# 知识库阅读与每日欢迎修复\n\n本次修复知识库长目录、文章内导航、更新记录筛选和欢迎窗口的日常触发。\n\n## 阅读区布局\n\n- 目录项取消固定高度，以统一行高和上下内边距随多行标题自然撑高；选中高亮不再压住文字。\n- 目录滚动区按可用高度布局，并在右侧和底部预留滚动安全空间，最后几条标题可以完整滚入视野。\n- “返回文章列表”固定在阅读区左上角，正文或目录滚动时保持原位。\n- “回到顶部”固定在正文阅读卡片右下角、任务栏或移动 Dock 上方；点击后只滚动文章正文容器。\n\n## 更新记录筛选\n\n- 网站更新日志不再出现在“全部”Tab 的列表与计数中。\n- 全部更新仍保留在“更新记录”专属 Tab，搜索和文章直链继续可用。\n\n## 每日欢迎与回归检查\n\n- 欢迎窗口按访问设备的本地自然日记录；每天首次打开任意公开页面时显示一次，打开后立即记录当天，避免同一天重复打扰。\n- 已覆盖桌面、窄屏竖向、短屏竖向和横向手机尺寸，检查标题换行、目录末尾、固定控件、正文回顶及 Tab 筛选。",
+        "en": "# Knowledge Reading and Daily Welcome Fixes\n\nThis update fixes long contents lists, in-article navigation, Site Updates filtering, and the daily welcome trigger.\n\n## Reader layout\n\n- Contents items no longer use a fixed height. Consistent line height and vertical padding let multiline titles grow naturally without the active highlight covering text.\n- The contents scroller uses its available height and keeps right and bottom safety space, so the final titles can scroll fully into view.\n- Back to Article List stays anchored at the upper-left of the reader while the article or contents list moves.\n- Back to Top stays at the lower-right of the reading card above the taskbar or mobile Dock, and it scrolls only the article detail container.\n\n## Site Updates filtering\n\n- Site Updates no longer appear in the All tab list or count.\n- Every update remains available in the dedicated Site Updates tab, while search and direct article links continue to work.\n\n## Daily welcome and regression coverage\n\n- The welcome window records the visitor device local calendar day. It opens once on the first public-page visit of each day and records that day immediately to avoid repeated prompts.\n- Desktop, narrow portrait, short portrait, and landscape phone sizes are covered for title wrapping, contents endings, anchored controls, article return-to-top behavior, and tab filtering.",
+        "ja": "# 知識庫の閲覧と毎日のウェルカム表示を修正\n\n長い目次、記事内ナビゲーション、更新履歴の絞り込み、ウェルカム画面の日次表示を修正しました。\n\n## 閲覧レイアウト\n\n- 目次項目の固定高さをなくし、統一した行間と上下余白で複数行タイトルが自然に伸びるようにしました。選択中の強調枠も文字に重なりません。\n- 目次のスクロール領域は利用可能な高さを使い、右側と末尾に安全余白を確保するため、最後の見出しまで完全に表示できます。\n- 「記事一覧へ戻る」は閲覧領域の左上に固定し、本文や目次を動かしても位置を保ちます。\n- 「トップへ戻る」は本文カード右下のタスクバーまたはモバイル Dock の上に固定し、記事詳細コンテナだけを先頭へ戻します。\n\n## 更新履歴の絞り込み\n\n- サイト更新履歴は「すべて」タブの一覧と件数に含めません。\n- すべての更新履歴は専用の「更新履歴」タブで引き続き表示し、検索と記事への直接リンクも利用できます。\n\n## 毎日のウェルカム表示と回帰確認\n\n- ウェルカム画面は閲覧端末のローカル日付を記録します。毎日の最初の公開ページ表示で一度だけ開き、その場で当日を記録して同日の再表示を防ぎます。\n- デスクトップ、狭い縦画面、短い縦画面、横向きスマートフォンで、タイトル折り返し、目次末尾、固定操作、本文の先頭復帰、タブ絞り込みを確認します。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-07-28-daily-ai-news-coverage-review",
       "slug": "2026-07-28-daily-ai-news-coverage-review",
       "category": "site-updates",

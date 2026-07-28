@@ -4,7 +4,7 @@ import {
   normalizeLanguage,
   translationFor
 } from "./core/i18n.mjs?v=20260728-daily-ai-news-coverage-r1";
-import { homeContent } from "./data/home-content.mjs?v=20260728-daily-ai-news-coverage-r1";
+import { homeContent } from "./data/home-content.mjs?v=20260728-knowledge-reader-welcome-r1";
 import { blogManifest } from "./data/blog-manifest.mjs?v=20260718-resource-icons-layout-r1";
 import { createRouteLifecycle, isAbortError } from "./core/route-lifecycle.mjs?v=20260718-resource-icons-layout-r1";
 import { createRouter } from "./core/router.mjs?v=20260718-resource-icons-layout-r1";
@@ -97,9 +97,8 @@ const publicJsonCache = createJsonResourceCache({ maxEntries: 32 });
 window.__lusuContentCacheAudit = publicJsonCache.snapshot;
 
 const languageStorageKey = "lusu-site-language";
-const welcomeStorageKey = "lusu-welcome-version";
-const welcomeContentVersion = "2026-07-18-public-ui-100";
-let welcomeSeenInMemory = false;
+const welcomeStorageKey = "lusu-welcome-day";
+let welcomeSeenDayInMemory = "";
 const siteUpdateCategory = "site-updates";
 const dailyAiNewsCategory = "daily-ai-news";
 const publicLoopNightlyUpdateSlug = "2026-06-18-main-visual-polish-cycle";
@@ -378,7 +377,7 @@ function safeStorageSet(key, value) {
   }
 }
 
-const routeStyleVersion = "20260726-security-reliability-r1";
+const routeStyleVersion = "20260728-knowledge-reader-welcome-r1";
 const routeStyleHrefs = Object.freeze({
   knowledge: `/css/routes/knowledge.css?v=${routeStyleVersion}`,
   videos: `/css/routes/videos.css?v=${routeStyleVersion}`,
@@ -442,7 +441,7 @@ function loadStyledRoute(route, moduleLoader, instantiate) {
 
 const routeModuleRegistry = createRouteModuleRegistry({
   loaders: {
-    knowledge: () => loadStyledRoute("knowledge", () => import("./routes/knowledge.mjs?v=20260728-daily-ai-news-coverage-r1"),
+    knowledge: () => loadStyledRoute("knowledge", () => import("./routes/knowledge.mjs?v=20260728-knowledge-reader-welcome-r1"),
       ({ createKnowledgeRoute }) => instantiateKnowledgeRoute(createKnowledgeRoute)),
     videos: () => loadStyledRoute("videos", () => Promise.all([
       import("./routes/videos.mjs?v=20260726-security-reliability-r1"),
@@ -2261,18 +2260,22 @@ function runSurfaceClose(surface, options, commit) {
   }, commitOnce).catch(commitOnce);
 }
 
-function markWelcomeSeen() {
-  welcomeSeenInMemory = true;
-  safeStorageSet(welcomeStorageKey, welcomeContentVersion);
-  safeSessionSet(welcomeStorageKey, welcomeContentVersion);
+function localWelcomeDayStamp(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function markWelcomeSeen(dayStamp = localWelcomeDayStamp()) {
+  welcomeSeenDayInMemory = dayStamp;
+  safeStorageSet(welcomeStorageKey, dayStamp);
+  safeSessionSet(welcomeStorageKey, dayStamp);
 }
 
 function closeWelcome(options = {}) {
   const modal = document.getElementById("welcome-modal");
   const wasOpen = modal && !modal.hidden;
-  if (wasOpen) {
-    markWelcomeSeen();
-  }
   const finalizeClose = () => {
     if (modal) {
       modal.hidden = true;
@@ -2533,14 +2536,11 @@ function maybeShowWelcome() {
   if (welcomeMode === "0") {
     return;
   }
-  const route = parseRouteLocation();
-  if (!forceWelcome && (route.route !== "home" || route.articleSlug)) {
-    return;
-  }
-  const hasSeenCurrentVersion = welcomeSeenInMemory
-    || safeStorageGet(welcomeStorageKey) === welcomeContentVersion
-    || safeSessionGet(welcomeStorageKey) === welcomeContentVersion;
-  if (!forceWelcome && hasSeenCurrentVersion) {
+  const today = localWelcomeDayStamp();
+  const hasSeenToday = welcomeSeenDayInMemory === today
+    || safeStorageGet(welcomeStorageKey) === today
+    || safeSessionGet(welcomeStorageKey) === today;
+  if (!forceWelcome && hasSeenToday) {
     return;
   }
   updateWelcomeGreeting();
@@ -2549,6 +2549,7 @@ function maybeShowWelcome() {
   if (modal) {
     cancelSurfaceClose(modal);
     modal.hidden = false;
+    markWelcomeSeen(today);
     syncModalIsolation();
     modal.querySelector("button[data-close-welcome]")?.focus({ preventScroll: true });
   }

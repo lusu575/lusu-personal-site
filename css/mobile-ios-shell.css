@@ -2637,6 +2637,7 @@ html[data-ui-shell="mobile"] .article-reader-sidebar {
   display: block;
   position: static;
   min-height: 0;
+  height: auto;
   width: 100%;
 }
 
@@ -2648,6 +2649,9 @@ html[data-ui-shell="mobile"] body.is-article-reading
 html[data-ui-shell="mobile"] .article-back-button {
   align-self: flex-start;
   width: auto;
+  position: sticky;
+  top: 10px;
+  z-index: 4;
 }
 
 html[data-ui-shell="mobile"] .article-toc > p,
@@ -2659,7 +2663,7 @@ html[data-ui-shell="mobile"] #article-detail-toc-list {
   display: flex;
   gap: 6px;
   max-height: none;
-  padding: 4px;
+  padding: 4px 18px 10px 4px;
   overflow-x: auto;
   overflow-y: hidden;
   scrollbar-width: thin;
@@ -2671,13 +2675,14 @@ html[data-ui-shell="mobile"] .article-toc-link {
   max-width: 78vw;
   min-height: 44px;
   padding: 7px 10px;
+  line-height: 1.4;
   overflow-wrap: anywhere;
   text-overflow: clip;
   white-space: normal;
 }
 
 html[data-ui-shell="mobile"] .article-detail-card {
-  padding: 16px 14px 22px;
+  padding: 16px 14px 72px;
   border-radius: 18px;
 }
 
@@ -2821,9 +2826,12 @@ html[data-ui-shell="mobile"] body.is-article-reading .article-read-progress-trac
 }
 
 html[data-ui-shell="mobile"] body.is-article-reading .article-top-link {
-  top: calc(var(--mobile-safe-top) + var(--mobile-status-height) + 2px);
-  right: 106px;
-  bottom: auto;
+  top: auto;
+  right: var(--article-top-control-right, max(10px, var(--mobile-safe-right)));
+  bottom: var(
+    --article-top-control-bottom,
+    calc(var(--mobile-dock-space) + 10px)
+  );
   z-index: 95;
   justify-content: center;
   width: 44px;
@@ -4123,17 +4131,24 @@ html[data-ui-shell="mobile"] .online-dot {
     grid-column: 1;
     grid-row: 2;
     min-height: 0;
+    height: 212px;
     max-height: 212px;
-    overflow: auto;
+    overflow: hidden;
+  }
+
+  html[data-ui-shell="mobile"] .folder-layout.is-reading .article-toc {
+    height: 100%;
+    min-height: 0;
   }
 
   html[data-ui-shell="mobile"] .folder-layout.is-reading #article-detail-toc-list {
     display: grid;
     gap: 4px;
     max-height: none;
-    padding: 4px;
+    padding: 4px 18px 30px 4px;
     overflow-x: hidden;
     overflow-y: auto;
+    scroll-padding-block-end: 30px;
   }
 
   html[data-ui-shell="mobile"] .folder-layout.is-reading .article-toc-link {
@@ -4146,7 +4161,7 @@ html[data-ui-shell="mobile"] .online-dot {
   html[data-ui-shell="mobile"] .folder-layout.is-reading .article-detail-card {
     grid-column: 2;
     grid-row: 1 / 3;
-    padding: 12px 14px 18px;
+    padding: 12px 14px 72px;
     border-radius: 14px;
   }
 
@@ -4188,8 +4203,11 @@ html[data-ui-shell="mobile"] .online-dot {
   }
 
   html[data-ui-shell="mobile"] body.is-article-reading .article-top-link {
-    right: 104px;
-    bottom: auto;
+    right: var(--article-top-control-right, max(10px, var(--mobile-safe-right)));
+    bottom: var(
+      --article-top-control-bottom,
+      calc(var(--mobile-dock-space) + 10px)
+    );
     min-width: 44px;
     min-height: 44px;
   }
@@ -4698,7 +4716,7 @@ html[data-ui-shell="mobile"] .mobile-route-copy span {
 
 html[data-ui-shell="mobile"] body.is-article-reading .mobile-appbar {
   box-sizing: border-box;
-  padding-right: 52px;
+  padding-right: 0;
 }
 
 html[data-ui-shell="mobile"] body.is-article-reading .mobile-route-copy {
@@ -4710,8 +4728,12 @@ html[data-ui-shell="mobile"] body.is-article-reading .mobile-route-copy strong {
 }
 
 html[data-ui-shell="mobile"] body.is-article-reading .article-top-link {
-  top: calc(var(--mobile-safe-top) + var(--mobile-status-height) + 2px);
-  right: max(6px, var(--mobile-safe-right));
+  top: auto;
+  right: var(--article-top-control-right, max(10px, var(--mobile-safe-right)));
+  bottom: var(
+    --article-top-control-bottom,
+    calc(var(--mobile-dock-space) + 10px)
+  );
 }
 
 /* A semantic thumbnail button keeps the same 16:9 artwork, but now exposes a
@@ -5358,11 +5380,12 @@ html[data-ui-shell="mobile"] body[data-motion="off"] :is(
   html[data-ui-shell="mobile"] .folder-layout.is-reading .article-back-button {
     grid-column: 1;
     grid-row: 1;
-    align-self: stretch;
+    align-self: start;
     width: 100%;
     min-height: 44px;
     padding-inline: 8px;
     font-size: 12px;
+    top: 6px;
   }
 
   html[data-ui-shell="mobile"] .folder-layout.is-reading .article-reader-sidebar {
@@ -5375,26 +5398,32 @@ html[data-ui-shell="mobile"] body[data-motion="off"] :is(
   }
 
   html[data-ui-shell="mobile"] .folder-layout.is-reading .article-toc {
-    height: 46px;
+    height: auto;
+    min-height: 44px;
+    max-height: 86px;
     overflow: hidden;
   }
 
   html[data-ui-shell="mobile"] .folder-layout.is-reading #article-detail-toc-list {
-    height: 44px;
-    padding: 0;
+    height: auto;
+    min-height: 44px;
+    max-height: 84px;
+    padding: 0 18px 6px 0;
   }
 
   html[data-ui-shell="mobile"] .folder-layout.is-reading .article-toc-link {
-    max-width: none;
+    max-width: min(72vw, 260px);
+    height: auto;
     min-height: 44px;
-    padding-block: 5px;
-    white-space: nowrap;
+    padding-block: 7px;
+    line-height: 1.4;
+    white-space: normal;
   }
 
   html[data-ui-shell="mobile"] .folder-layout.is-reading .article-detail-card {
     grid-column: 1 / -1;
     grid-row: 2;
-    padding: 12px 12px 18px;
+    padding: 12px 12px 72px;
   }
 
   html[data-ui-shell="mobile"] .folder-layout.is-reading .article-detail-head {

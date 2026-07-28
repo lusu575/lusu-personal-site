@@ -76,6 +76,20 @@ export function articleReadProgressPercent({
   return Math.min(100, Math.max(0, (Number(scrollTop || 0) / readableDistance) * 100));
 }
 
+export function knowledgeArticlesForCategory(
+  items,
+  activeCategory,
+  siteUpdateCategory = "site-updates"
+) {
+  const category = String(activeCategory || "all");
+  const updatesCategory = String(siteUpdateCategory || "site-updates");
+  const articles = Array.isArray(items) ? items : [];
+  if (category === "all") {
+    return articles.filter((item) => String(item?.category || "") !== updatesCategory);
+  }
+  return articles.filter((item) => String(item?.category || "") === category);
+}
+
 export function sortKnowledgeArticles(items) {
   return [...items].sort((left, right) => {
     const isPinned = (item) => item?.category !== "site-updates" && Boolean(item?.is_pinned);
@@ -267,7 +281,11 @@ export function createKnowledgeRoute({
       return;
     }
 
-    const categoryItems = articleState.articles.filter((item) => activeFilters.knowledge === "all" || item.category === activeFilters.knowledge);
+    const categoryItems = knowledgeArticlesForCategory(
+      articleState.articles,
+      activeFilters.knowledge,
+      siteUpdateCategory
+    );
     const items = categoryItems.filter(articleMatchesSearch);
     renderKnowledgeSearchControls(items.length, categoryItems.length);
     if (!articleState.articles.length) {
@@ -522,7 +540,9 @@ export function createKnowledgeRoute({
     const buttons = ["all", ...categories].map((category) => {
       const value = String(category);
       const active = activeFilters.knowledge === value;
-      const countValue = value === "all" ? articleState.articles.length : counts.get(value) || 0;
+      const countValue = value === "all"
+        ? knowledgeArticlesForCategory(articleState.articles, value, siteUpdateCategory).length
+        : counts.get(value) || 0;
       const button = document.createElement("button");
       button.type = "button";
       button.className = `${active ? "active " : ""}category-button`;
@@ -1047,12 +1067,35 @@ export function createKnowledgeRoute({
       contentEnd
     });
     const links = list ? [...list.querySelectorAll("[data-article-heading-target]")] : [];
+    const cardRect = document.querySelector(".article-detail-card")?.getBoundingClientRect();
+    const taskbar = document.querySelector(".xp-taskbar");
+    const taskbarRect = taskbar?.getBoundingClientRect();
+    const taskbarOccludesDetail = Boolean(
+      taskbarRect
+      && taskbarRect.height > 0
+      && taskbarRect.top > detailRect.top
+      && taskbarRect.top < window.innerHeight
+    );
+    const readingRight = Math.min(
+      window.innerWidth,
+      detailRect.right,
+      cardRect?.right ?? detailRect.right
+    );
+    const readingBottom = Math.min(
+      window.innerHeight,
+      detailRect.bottom,
+      taskbarOccludesDetail ? taskbarRect.top : window.innerHeight
+    );
+    const topControl = {
+      right: Math.max(8, Math.round(window.innerWidth - readingRight + 12)),
+      bottom: Math.max(8, Math.round(window.innerHeight - readingBottom + 12))
+    };
     if (!links.length || articleState.tocObserver) {
-      return { percent, activeId: "", links };
+      return { percent, activeId: "", links, topControl };
     }
     const headings = body ? [...body.querySelectorAll("[data-article-toc-heading][id]")] : [];
     if (!headings.length) {
-      return { percent, activeId: "", links };
+      return { percent, activeId: "", links, topControl };
     }
     const detailTop = detail.getBoundingClientRect().top;
     let activeId = headings[0].id;
@@ -1061,12 +1104,23 @@ export function createKnowledgeRoute({
         activeId = heading.id;
       }
     });
-    return { percent, activeId, links };
+    return { percent, activeId, links, topControl };
   }
 
   function applyArticleReadState(measurement) {
     if (!measurement) {
       return;
+    }
+    const topButton = document.querySelector("[data-article-scroll-top]");
+    if (topButton && measurement.topControl) {
+      topButton.style.setProperty(
+        "--article-top-control-right",
+        `${measurement.topControl.right}px`
+      );
+      topButton.style.setProperty(
+        "--article-top-control-bottom",
+        `${measurement.topControl.bottom}px`
+      );
     }
     setArticleReadProgress(measurement.percent);
     if (measurement.activeId) {
