@@ -40,11 +40,15 @@
     "queryConcurrency": 2,
     "candidateIndexRequired": true,
     "coverageManifestRequired": true,
+    "coverageManifestSchemaVersion": 2,
     "requiredQueryFailurePolicy": "fail-closed",
+    "requiredQueryResultLimitProbe": "request-maxResults-plus-one",
     "coverageReview": {
       "reviewEveryRequiredQuery": true,
       "reviewEveryRequiredGroup": true,
       "priorityGroupsFirst": true,
+      "mustReviewCandidateSource": "coverage_manifest.json.mustReviewCandidateIds",
+      "mustReviewScope": "focused-query-and-designated-source-candidates",
       "lowVolumeTrigger": 5,
       "lowVolumeMeaning": "selected-story-count",
       "lowVolumeAction": "mandatory-second-pass-without-filler"
@@ -93,13 +97,92 @@
         "lowVolumeTrigger",
         "signedOffQueryIds",
         "signedOffGroupIds",
+        "priorityReview",
         "secondPass"
       ],
+      "priorityReviewWhen": "coverage-manifest-declares-mustReviewCandidateIds",
+      "priorityReviewScope": "exactly-every-mustReviewCandidateId-once",
       "signoffSource": "coverage_manifest.json",
       "signedOffQueryIds": "exactly-all-requiredQueryIds",
       "signedOffGroupIds": "exactly-all-requiredGroupIds",
       "secondPassWhen": "selected-story-count-below-5",
       "secondPassRepeatsAllRequiredSignoffs": true
+    },
+    "priorityReviewContract": {
+      "decisions": [
+        "selected",
+        "merged",
+        "rejected"
+      ],
+      "requiredDecisionFields": [
+        "candidateId",
+        "decision",
+        "editorialClass",
+        "substantiveChange",
+        "score"
+      ],
+      "score": {
+        "reach": [
+          0,
+          2
+        ],
+        "magnitude": [
+          0,
+          3
+        ],
+        "practicalValue": [
+          0,
+          3
+        ],
+        "evidence": [
+          0,
+          2
+        ],
+        "total": [
+          0,
+          10
+        ],
+        "totalMustEqualComponentSum": true
+      },
+      "editorialClasses": [
+        "major-model-product",
+        "capability-availability",
+        "usage-policy",
+        "developer-tool",
+        "material-price-quota",
+        "other"
+      ],
+      "protectedEditorialClasses": [
+        "major-model-product",
+        "capability-availability",
+        "usage-policy",
+        "developer-tool",
+        "material-price-quota"
+      ],
+      "protectedSelectionThreshold": 7,
+      "protectedAtOrAboveThreshold": "must-be-selected-or-merged",
+      "protectedSelectedOrMergedRequiresSubstantiveChange": true,
+      "selectedRequires": [
+        "storyKey",
+        "sourceCandidateIds"
+      ],
+      "mergedRequires": [
+        "representativeCandidateId",
+        "representative-decision-selected",
+        "representative-sourceCandidateIds-includes-merged-candidate"
+      ],
+      "rejectedRequires": [
+        "rejectionReason",
+        "note"
+      ],
+      "allowedRejectionReasons": [
+        "insufficient-evidence",
+        "below-importance-threshold",
+        "routine-or-promotional",
+        "outside-editorial-scope",
+        "no-material-change"
+      ],
+      "protectedCandidatesMayBeRejected": false
     },
     "lowVolumeTrigger": 5,
     "lowVolumeRule": "Fewer than five selected stories requires a complete second coverage pass, but never lowers the importance threshold or forces filler.",
@@ -108,7 +191,8 @@
       "requiredFields": [
         "section",
         "verification",
-        "aiTake"
+        "aiTake",
+        "sourceCandidateIds"
       ],
       "aiTakeStyle": "brief-specific-useful",
       "aiTakeMinCharacters": 12,

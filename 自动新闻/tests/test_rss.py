@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 from datetime import datetime, timezone
 from unittest.mock import AsyncMock
 from unittest.mock import MagicMock
@@ -90,3 +91,30 @@ def test_unknown_extractor_name_ignored() -> None:
 
     assert len(items) == 1
     assert items[0].content == "Short summary from feed."
+
+
+def test_non_feed_html_is_reported_as_parse_failure(caplog) -> None:
+    client = _make_feed_client("<html><body>not a feed</body></html>")
+    source = RSSSourceConfig(name="Broken", url="https://example.com/feed.xml")
+    scraper = RSSScraper([source], client)
+
+    with caplog.at_level(logging.WARNING, logger="src.scrapers.rss"):
+        items = asyncio.run(scraper.fetch(_SINCE))
+
+    assert items == []
+    assert "Error parsing RSS feed Broken" in caplog.text
+
+
+def test_valid_empty_feed_is_not_reported_as_failure(caplog) -> None:
+    client = _make_feed_client(
+        '<?xml version="1.0"?><rss version="2.0"><channel>'
+        "<title>Empty</title></channel></rss>"
+    )
+    source = RSSSourceConfig(name="Empty", url="https://example.com/feed.xml")
+    scraper = RSSScraper([source], client)
+
+    with caplog.at_level(logging.WARNING, logger="src.scrapers.rss"):
+        items = asyncio.run(scraper.fetch(_SINCE))
+
+    assert items == []
+    assert "Error parsing RSS feed Empty" not in caplog.text

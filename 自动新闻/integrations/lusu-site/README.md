@@ -3,8 +3,8 @@
 这套适配层把 Horizon、Codex 和个人站串成一条正式的每日生产链路：
 
 1. Horizon 是必经数据入口，负责多来源抓取、网址规范化和跨来源去重；不可用时当期停止。
-2. Horizon 对可靠来源不设语言限制，并以英文、简体中文、日文、韩文作为常用检索种子，通过多语言主题查询、重点实体查询和可靠 RSS 入口形成真实候选，同时输出紧凑标题索引和覆盖清单；Codex 必须完整签收这些覆盖证据。
-3. Codex 完成人工编辑标准的一手复核、重要性判断、近 30 天事件阶段去重和三语完整文章生成。少于 5 条时必须做第二轮覆盖审阅，但仍不降低门槛或凑数。
+2. Horizon 对可靠来源不设语言限制，并以英文、简体中文、日文、韩文作为常用检索种子，通过多语言主题查询、重点人物／产品／厂商独立查询、官方 RSS、中文与海外 AI 媒体 RSS 和社区早期发现源形成真实候选，同时输出紧凑标题索引和 coverage manifest v2；must-review 清单同时来自聚焦查询和指定 RSS／社区源，Codex 必须完整签收并逐条处置。
+3. Codex 完成人工编辑标准的一手复核、重要性判断、重点候选逐条处置、近 30 天事件阶段去重和三语完整文章生成。少于 5 条时必须做第二轮覆盖审阅，但仍不降低门槛或凑数。
 4. 本地校验全部通过后，生产投递脚本在受控通道中公开文章，并且只把接口明确返回 `published` 当作成功。
 
 `ARTICLE_STYLE.md` 是每一期必须遵守的固定格式与文风标准；`AUTOMATION_PROMPT.md` 是交给每日 Codex 任务的完整执行说明。
@@ -21,6 +21,8 @@
 ## 固定编辑规则
 
 - 重要性低于 7 分的不写；同一事件阶段只写一次，近 30 天无实质进展的不重复。预告、正式发布、权重上线、许可证、技术报告等阶段只有出现实质新事实时才可作为 material update 再写。
+- 重大模型或产品发布、能力／可用范围变化、用量规则变化、实用开发者工具更新，以及可信且显著的价格或额度变化，都按读者实际可用性使用同一 7 分门槛；达到门槛后必须入选或并入同一事件，不能仅以“产品型”或“受众较窄”为由排除。临时促销、纯娱乐和小型维护通常不收录。
+- TechCrunch AI、VentureBeat AI、Ars Technica AI、雷峰网、36氪和无需账号的 Tibo 公开检索源属于可选补充。任一补充源单独失败不阻断正式运行；一旦抓到候选就进入 must-review，最终事实仍回到可靠或一手来源核验。Tibo 当前是公开网页检索，不是直接 X 接入；X 直连以后仍需用户授权。
 - 正文固定为“今日要闻 / 主要新闻 / 传闻”三段；要闻恰好一条且已经核实，传闻单独放置并使用条件语气。
 - 每条新闻是一段事实正文，末尾是一至两句、明显更短的 AI 解读。
 - 中文、英文、日文使用同一组事实、栏目和核实状态。
@@ -28,15 +30,15 @@
 
 ## 文件说明
 
-- `horizon.config.json`：本站 AI 新闻源配置，不含密钥。
-- `discovery-queries.json`：使用 `any-reliable-language` 语言政策，至少提供英文、简体中文、日文、韩文检索种子，并维护重点实体／人物别名和 required coverage group；种子语言不是封闭白名单，文件不含密钥。
-- `fetch-with-horizon.py`：调用 Horizon 原生服务，以两路受控并发执行发现查询；失败查询最多重试两次，仍失败则与真实空结果分开记录并关闭正式运行。候选索引直接写入确定性 UTF-8 字节并据此计算 SHA-256，再按精确 24 小时窗口输出候选。
+- `horizon.config.json`：本站 AI 新闻源配置，不含密钥。TechCrunch AI、VentureBeat AI、Ars Technica AI、雷峰网、36氪和无需账号的 Tibo 公开检索 feed 属于可选补充；单源失败不阻断。社区源只用于早期发现，不抓取评论串；任何抓到的指定来源候选都必须审阅，正式新闻仍须回到可靠或一手来源核验。这里没有直接连接 Tibo 的 X 账号或时间线。
+- `discovery-queries.json`：使用 `any-reliable-language` 语言政策，至少提供英文、简体中文、日文、韩文检索种子；宽泛查询只作补充，重点人物、产品运营变化和各家中国模型厂商使用独立 required 查询，并为必须逐条处置的候选声明 review lane。文件不含密钥。
+- `fetch-with-horizon.py`：调用 Horizon 原生服务，以两路受控并发执行发现查询；失败查询最多重试两次，仍失败则与真实空结果分开记录。Google News 查询最多保留 99 条并请求第 100 条作为探针，实际返回第 100 条时判定截断并关闭 required 覆盖；只有 99 条不误报。候选索引直接写入确定性 UTF-8 字节并据此计算 SHA-256，再按精确 24 小时窗口输出候选。
 - `candidate_index.json`：本次 Horizon 运行生成的紧凑候选索引，只含审阅所需的标题、时间、来源和覆盖归属，不含大段正文。
-- `coverage_manifest.json`：本次 required query、required group、语言、命中数和候选编号的机器可校验清单。
+- `coverage_manifest.json`：schemaVersion 2 的机器可校验清单，记录本次 required query、required group、语言、命中数、结果上限状态、指定 review source、重点 review lane，以及由聚焦查询和指定 RSS／社区源共同汇总的 `mustReviewCandidateIds`。
 - `workflow.json`：schemaVersion 4 的 07:00—08:00 生产时间、完整覆盖审阅、事件阶段去重、成文和 fail-closed 约定。
 - `ARTICLE_STYLE.md`：固定标题、栏目、事实段、AI 解读和传闻标准。
 - `AUTOMATION_PROMPT.md`：每日 Codex 任务的完整说明。
-- `validate-draft.mjs`：校验窗口、Horizon 来源、去重、重要性、三语结构和正文无外链。
+- `validate-draft.mjs`：校验窗口、Horizon 来源、重点候选处置、重要性、三语结构和正文无外链；时间与事件阶段去重规则保持原契约。
 - `deliver-production.mjs`：读取环境或被忽略的根目录 `.dev.vars` 中的令牌；只在安全时窗投递，要求接口确认 `published`，再只读核验 zh / en / ja 三个公开文章接口。
 - `configure-production-channel.mjs`：一次性生成并安全保存令牌，再通过 Wrangler 远端开启 `enabled + auto_publish`。它不会显示令牌明文。
 - `deliver-local.mjs`：一次性本地草稿试投；强制关闭本地 auto-publish，结束后暂停通道并清除临时令牌。
@@ -57,6 +59,25 @@ schemaVersion 4 的运行记录必须从同一次 `coverage_manifest.json` 原�
     "lowVolumeTrigger": 5,
     "signedOffQueryIds": ["<全部 requiredQueryIds>"],
     "signedOffGroupIds": ["<全部 requiredGroupIds>"],
+    "priorityReview": {
+      "decisions": [
+        {
+          "candidateId": "<mustReviewCandidateId>",
+          "decision": "selected",
+          "editorialClass": "major-model-product",
+          "substantiveChange": true,
+          "score": {
+            "reach": 2,
+            "magnitude": 2,
+            "practicalValue": 2,
+            "evidence": 1,
+            "total": 7
+          },
+          "storyKey": "<入选 storyKey>",
+          "sourceCandidateIds": ["<支持该故事的 candidate id>"]
+        }
+      ]
+    },
     "secondPass": {
       "required": true,
       "completed": true,
@@ -67,6 +88,8 @@ schemaVersion 4 的运行记录必须从同一次 `coverage_manifest.json` 原�
   }
 }
 ```
+
+`priorityReview.decisions` 必须与 manifest 的 `mustReviewCandidateIds` 一一对应；同一事件的重复来源用 `merged + representativeCandidateId`，不收录时用允许的 `rejectionReason + note`。重大模型／产品、能力／可用性、用量规则、开发工具或显著价格额度变化达到 7 分后不能拒绝。旧 manifest 没有 `mustReviewCandidateIds` 时只用于历史兼容。
 
 当入选不少于 5 条时，`secondPass.required` 和 `secondPass.completed` 都写 `false`；少于 5 条时必须按示例再次签收。这里的 5 只控制复查，不控制最终刊发数量。
 
@@ -92,7 +115,7 @@ npm.cmd run ai-news:validate -- --run 自动新闻/integrations/lusu-site/runs/2
 npm.cmd run ai-news:deliver:production -- --run 自动新闻/integrations/lusu-site/runs/2026-07-29.json
 ```
 
-生产投递必须显式提供本期运行记录，拒绝使用默认旧稿。三语标题必须分别采用固定栏目名前缀加各自第一条要闻标题，不能只写日期；日期继续由发布时间和 slug 表达。校验器会核对 required query 与 required group 是否全部签收；入选少于 5 条时，还会要求 `coverageAudit.secondPass` 完成。它会再次校验日期、07:00 窗口和当前时间；距离 08:00 不足安全余量时不再发起请求。接口确认公开后，它还会在截止前分别读取中文、英文、日文公开文章，核对 slug、分区、语言、标题和正文。投递和公开核验都没有自动重试，避免一次不明确的响应造成重复公开。
+生产投递必须显式提供本期运行记录，拒绝使用默认旧稿。三语标题必须分别采用固定栏目名前缀加各自第一条要闻标题，不能只写日期；日期继续由发布时间和 slug 表达。校验器会要求 coverage manifest 使用 schemaVersion 2，核对 required query 与 required group 是否全部签收、required 查询是否由多取一条探针确认真实截断，以及聚焦查询和指定来源汇总出的重点候选是否逐条完成 `priorityReview`；入选少于 5 条时，还会要求 `coverageAudit.secondPass` 完成。它会再次校验日期、07:00 窗口和当前时间；距离 08:00 不足安全余量时不再发起请求。接口确认公开后，它还会在截止前分别读取中文、英文、日文公开文章，核对 slug、分区、语言、标题和正文。投递和公开核验都没有自动重试，避免一次不明确的响应造成重复公开。
 
 ## 历史样稿与本地试投
 

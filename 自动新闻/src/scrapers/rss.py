@@ -86,6 +86,11 @@ class RSSScraper(BaseScraper):
 
             # Parse feed
             feed = feedparser.parse(response.text)
+            if not getattr(feed, "version", ""):
+                raise ValueError("response is not a recognized RSS or Atom feed")
+            if getattr(feed, "bozo", False) and not feed.entries:
+                detail = getattr(feed, "bozo_exception", "malformed feed")
+                raise ValueError(f"malformed RSS or Atom feed: {detail}")
 
             for entry in feed.entries:
                 # Parse published date

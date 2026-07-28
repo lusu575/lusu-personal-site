@@ -10,3 +10,8 @@ Daily AI News workflow.
 Site-specific workflow files live in `integrations/lusu-site/`. The local
 `.horizon-git/`, `.venv/`, generated `data/mcp-runs/`, caches, logs, and secrets
 are intentionally excluded from the parent repository.
+
+The vendored source also carries two small site-required reliability patches:
+cross-source URL merging preserves every contributing RSS feed and subreddit
+identity, and HTTP 200 responses that are not recognizable RSS/Atom feeds are
+reported as parser failures instead of silent empty feeds.

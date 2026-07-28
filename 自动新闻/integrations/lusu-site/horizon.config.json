@@ -55,6 +55,48 @@
         "category": "ai-primary"
       },
       {
+        "name": "TechCrunch AI",
+        "url": "https://techcrunch.com/category/artificial-intelligence/feed/",
+        "enabled": true,
+        "category": "ai-news"
+      },
+      {
+        "name": "VentureBeat AI",
+        "url": "https://venturebeat.com/category/ai/feed/",
+        "enabled": true,
+        "category": "ai-news"
+      },
+      {
+        "name": "Ars Technica AI",
+        "url": "https://feeds.arstechnica.com/arstechnica/technology-lab",
+        "enabled": true,
+        "category": "ai-news"
+      },
+      {
+        "name": "雷峰网",
+        "url": "https://www.leiphone.com/feed",
+        "enabled": true,
+        "category": "ai-news"
+      },
+      {
+        "name": "36氪",
+        "url": "https://36kr.com/feed",
+        "enabled": true,
+        "category": "ai-news"
+      },
+      {
+        "name": "OpenRouter Blog",
+        "url": "https://openrouter.ai/blog/feed.xml",
+        "enabled": true,
+        "category": "ai-primary"
+      },
+      {
+        "name": "Qoder Announcements",
+        "url": "https://forum.qoder.com/c/announcements/7.rss",
+        "enabled": true,
+        "category": "ai-primary"
+      },
+      {
         "name": "Hugging Face",
         "url": "https://huggingface.co/blog/feed.xml",
         "enabled": true,
@@ -73,10 +115,22 @@
         "category": "ai-news"
       },
       {
+        "name": "量子位官网",
+        "url": "https://www.qbitai.com/feed",
+        "enabled": true,
+        "category": "ai-news"
+      },
+      {
         "name": "新智元",
         "url": "https://wechat2rss.xlab.app/feed/ede30346413ea70dbef5d485ea5cbb95cca446e7.xml",
         "enabled": true,
         "category": "ai-news"
+      },
+      {
+        "name": "Bing Web - Tibo Codex",
+        "url": "https://www.bing.com/search?format=rss&setlang=en-US&q=%28%22thsottiaux%22%20OR%20%22Tibo%20Codex%22%20OR%20%22Thibault%20Sottiaux%22%29%20%28Codex%20OR%20%22ChatGPT%20Work%22%20OR%20reset%20OR%20%22usage%20limit%22%29",
+        "enabled": true,
+        "category": "ai-community-lead"
       }
     ],
     "reddit": {
@@ -99,10 +153,28 @@
           "fetch_limit": 25,
           "min_score": 20,
           "category": "ai-community"
+        },
+        {
+          "subreddit": "codex",
+          "enabled": true,
+          "sort": "new",
+          "time_filter": "day",
+          "fetch_limit": 35,
+          "min_score": 0,
+          "category": "ai-community-lead"
+        },
+        {
+          "subreddit": "OpenAI",
+          "enabled": true,
+          "sort": "new",
+          "time_filter": "day",
+          "fetch_limit": 35,
+          "min_score": 0,
+          "category": "ai-community-lead"
         }
       ],
       "users": [],
-      "fetch_comments": 5
+      "fetch_comments": 0
     },
     "telegram": {
       "enabled": false,

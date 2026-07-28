@@ -108,6 +108,38 @@ def test_merge_preserves_richest_content_and_combines_metadata() -> None:
     }
 
 
+def test_merge_preserves_all_feed_and_subreddit_provenance_names() -> None:
+    items = [
+        item(
+            "rich",
+            "https://example.com/story",
+            content="the richest content",
+            metadata={"feed_name": "General Feed"},
+        ),
+        item(
+            "review-feed",
+            "https://example.com/story?utm_source=review",
+            content="short",
+            metadata={"feed_name": "OpenRouter Blog"},
+        ),
+        item(
+            "community",
+            "https://example.com/story",
+            source_type=SourceType.REDDIT,
+            metadata={"subreddit": "codex"},
+        ),
+    ]
+
+    result = merge(items)
+
+    assert len(result) == 1
+    assert result[0].metadata["feed_names"] == [
+        "General Feed",
+        "OpenRouter Blog",
+    ]
+    assert result[0].metadata["subreddits"] == ["codex"]
+
+
 def test_returns_deep_copies_without_mutation_and_is_idempotent() -> None:
     singleton = item("single", "https://single.example/item", metadata={"nested": {"value": 1}})
     duplicate = item(

@@ -524,7 +524,38 @@ class HorizonOrchestrator:
         merged = []
         for group in url_groups.values():
             group_copies = [item.model_copy(deep=True) for item in group]
+            feed_names: list[str] = []
+            subreddits: list[str] = []
+            for item in group_copies:
+                existing_feed_names = item.metadata.get("feed_names")
+                existing_feed_names = (
+                    existing_feed_names
+                    if isinstance(existing_feed_names, list)
+                    else []
+                )
+                existing_subreddits = item.metadata.get("subreddits")
+                existing_subreddits = (
+                    existing_subreddits
+                    if isinstance(existing_subreddits, list)
+                    else []
+                )
+                for value in [
+                    item.metadata.get("feed_name"),
+                    *existing_feed_names,
+                ]:
+                    if value and str(value) not in feed_names:
+                        feed_names.append(str(value))
+                for value in [
+                    item.metadata.get("subreddit"),
+                    *existing_subreddits,
+                ]:
+                    if value and str(value) not in subreddits:
+                        subreddits.append(str(value))
             if len(group) == 1:
+                if feed_names:
+                    group_copies[0].metadata["feed_names"] = feed_names
+                if subreddits:
+                    group_copies[0].metadata["subreddits"] = subreddits
                 merged.append(group_copies[0])
                 continue
 
@@ -547,6 +578,10 @@ class HorizonOrchestrator:
                         primary.content = (primary.content or "") + f"\n\n--- From {item.source_type.value} ---\n" + item.content
 
             primary.metadata["merged_sources"] = all_sources
+            if feed_names:
+                primary.metadata["feed_names"] = feed_names
+            if subreddits:
+                primary.metadata["subreddits"] = subreddits
             merged.append(primary)
 
         return merged

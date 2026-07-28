@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 
 import {
   isHistoricalOneShotWindow,
+  isRegisteredLegacyCoverageManifest,
   readAndValidateRun,
   validateRun
 } from "../自动新闻/integrations/lusu-site/validate-draft.mjs";
@@ -237,7 +238,12 @@ function clone(value) {
   return structuredClone(value);
 }
 
-async function writeFormalCoverageFixture(t) {
+async function writeFormalCoverageFixture(t, {
+  withPriorityReview = false,
+  withReviewSource = withPriorityReview,
+  manifestSchemaVersion = 2,
+  runId = "run-20260727T010203Z-feed1234"
+} = {}) {
   const horizonRoot = fileURLToPath(
     new URL("../自动新闻/", import.meta.url)
   );
@@ -249,11 +255,12 @@ async function writeFormalCoverageFixture(t) {
   t.after(() => rm(runDirectory, { recursive: true, force: true }));
 
   const run = validRun();
-  run.horizonRun.runId = "run-20260727T010203Z-feed1234";
+  run.horizonRun.runId = runId;
   const relativeDirectory = relative(horizonRoot, runDirectory).replaceAll("\\", "/");
   run.horizonRun.candidatesPath = `${relativeDirectory}/daily_candidates.json`;
   run.horizonRun.candidateIndexPath = `${relativeDirectory}/candidate_index.json`;
   run.horizonRun.coverageManifestPath = `${relativeDirectory}/coverage_manifest.json`;
+  const focusQueryId = run.coverageAudit.signedOffQueryIds[0];
 
   const items = run.candidates.map((item) => ({
     id: `candidate-${item.storyKey}`,
@@ -269,6 +276,27 @@ async function writeFormalCoverageFixture(t) {
       coverage_priority: "priority"
     }
   }));
+  if (withPriorityReview) {
+    items.push({
+      ...structuredClone(items[0]),
+      id: "candidate-confirmed-lead-secondary",
+      url: "https://example.test/confirmed-lead-secondary"
+    });
+    run.candidates[0].sourceUrls.push(items.at(-1).url);
+  }
+  const mustReviewCandidateIds = withPriorityReview
+    ? [
+      "candidate-confirmed-lead",
+      "candidate-confirmed-lead-secondary",
+      "candidate-confirmed-main"
+    ]
+    : [];
+  if (withPriorityReview) {
+    const rumorItem = items.find((item) => item.id === "candidate-unverified-rumor");
+    rumorItem.metadata.discovery_query_ids = rumorItem.metadata.discovery_query_ids
+      .filter((queryId) => queryId !== focusQueryId);
+  }
+
   const identity = {
     engine: "Horizon",
     horizonRunId: run.horizonRun.runId,
@@ -280,6 +308,29 @@ async function writeFormalCoverageFixture(t) {
     languagePolicy: "any-reliable-language",
     seedLanguages: ["en", "zh-CN", "ja", "ko"]
   };
+  const reviewSources = withReviewSource
+    ? [{
+      id: "official-ai-feed",
+      sourceType: "rss",
+      sourceName: "Official AI Feed",
+      reviewLane: "official-product-feed",
+      candidateIds: ["candidate-confirmed-lead-secondary"]
+    }]
+    : [];
+  const reviewLanes = [
+    ...(withPriorityReview ? [{
+      id: "major-model-product",
+      queryIds: [focusQueryId],
+      sourceIds: [],
+      candidateIds: [...mustReviewCandidateIds]
+    }] : []),
+    ...(withReviewSource ? [{
+      id: "official-product-feed",
+      queryIds: [],
+      sourceIds: ["official-ai-feed"],
+      candidateIds: ["candidate-confirmed-lead-secondary"]
+    }] : [])
+  ];
   const candidateIndex = {
     schemaVersion: 1,
     ...identity,
@@ -294,7 +345,26 @@ async function writeFormalCoverageFixture(t) {
       category: item.metadata.category,
       queryIds: item.metadata.discovery_query_ids,
       coverageGroups: item.metadata.coverage_groups,
-      priority: item.metadata.coverage_priority
+      priority: item.metadata.coverage_priority,
+      ...(manifestSchemaVersion === 2 ? {
+        mustReview: mustReviewCandidateIds.includes(item.id),
+        mustReviewQueryIds: mustReviewCandidateIds.includes(item.id)
+          ? [focusQueryId]
+          : [],
+        mustReviewSourceIds: withReviewSource
+            && item.id === "candidate-confirmed-lead-secondary"
+          ? ["official-ai-feed"]
+          : [],
+        reviewLanes: [
+          ...(mustReviewCandidateIds.includes(item.id)
+            ? ["major-model-product"]
+            : []),
+          ...(withReviewSource
+              && item.id === "candidate-confirmed-lead-secondary"
+            ? ["official-product-feed"]
+            : [])
+        ]
+      } : {})
     }))
   };
   const candidateIndexText = `${JSON.stringify(candidateIndex, null, 2)}\n`;
@@ -302,6 +372,68 @@ async function writeFormalCoverageFixture(t) {
     .update(candidateIndexText)
     .digest("hex");
   run.coverageAudit.candidateIndexSha256 = candidateIndexSha256;
+  if (manifestSchemaVersion === 2) {
+    for (const item of run.candidates) {
+      item.sourceCandidateIds = [`candidate-${item.storyKey}`];
+    }
+    run.coverageAudit.priorityReview = { decisions: [] };
+  }
+  if (manifestSchemaVersion === 2 && withPriorityReview) {
+    run.candidates[0].sourceCandidateIds = [
+      "candidate-confirmed-lead",
+      "candidate-confirmed-lead-secondary"
+    ];
+    run.candidates[1].sourceCandidateIds = ["candidate-confirmed-main"];
+    run.coverageAudit.priorityReview.decisions = [
+        {
+          candidateId: "candidate-confirmed-lead",
+          decision: "selected",
+          editorialClass: "major-model-product",
+          substantiveChange: true,
+          score: {
+            reach: 2,
+            magnitude: 2,
+            practicalValue: 2,
+            evidence: 2,
+            total: 8
+          },
+          storyKey: "confirmed-lead",
+          sourceCandidateIds: [
+            "candidate-confirmed-lead",
+            "candidate-confirmed-lead-secondary"
+          ]
+        },
+        {
+          candidateId: "candidate-confirmed-lead-secondary",
+          decision: "merged",
+          editorialClass: "major-model-product",
+          substantiveChange: true,
+          score: {
+            reach: 2,
+            magnitude: 2,
+            practicalValue: 2,
+            evidence: 2,
+            total: 8
+          },
+          representativeCandidateId: "candidate-confirmed-lead"
+        },
+        {
+          candidateId: "candidate-confirmed-main",
+          decision: "selected",
+          editorialClass: "developer-tool",
+          substantiveChange: true,
+          score: {
+            reach: 1,
+            magnitude: 2,
+            practicalValue: 3,
+            evidence: 1,
+            total: 7
+          },
+          storyKey: "confirmed-main",
+          sourceCandidateIds: ["candidate-confirmed-main"]
+        }
+      ];
+  }
 
   const candidates = {
     schemaVersion: 2,
@@ -315,7 +447,7 @@ async function writeFormalCoverageFixture(t) {
     items
   };
   const coverageManifest = {
-    schemaVersion: 1,
+    schemaVersion: manifestSchemaVersion,
     ...identity,
     fetchStatus: "success",
     lowVolumeTrigger: 5,
@@ -324,20 +456,32 @@ async function writeFormalCoverageFixture(t) {
     candidateCount: items.length,
     requiredQueryIds: [...run.coverageAudit.signedOffQueryIds],
     requiredGroupIds: [...run.coverageAudit.signedOffGroupIds],
-    queries: run.coverageAudit.signedOffQueryIds.map((id, index) => ({
-      id,
-      coverageGroup: run.coverageAudit.signedOffGroupIds[
-        index % run.coverageAudit.signedOffGroupIds.length
-      ],
-      required: true,
-      priority: "priority",
-      language: ["en", "zh-CN", "ja", "ko"][index],
-      country: ["US", "CN", "JP", "KR"][index],
-      status: "success",
-      fetched: items.length,
-      windowFetched: items.length,
-      candidateIds: items.map((item) => item.id)
-    })),
+    queries: run.coverageAudit.signedOffQueryIds.map((id, index) => {
+      const queryCandidateIds = items
+        .filter((item) => item.metadata.discovery_query_ids.includes(id))
+        .map((item) => item.id);
+      return {
+        id,
+        coverageGroup: run.coverageAudit.signedOffGroupIds[
+          index % run.coverageAudit.signedOffGroupIds.length
+        ],
+        required: true,
+        priority: "priority",
+        language: ["en", "zh-CN", "ja", "ko"][index],
+        country: ["US", "CN", "JP", "KR"][index],
+        status: "success",
+        fetched: queryCandidateIds.length,
+        windowFetched: queryCandidateIds.length,
+        candidateIds: queryCandidateIds,
+        ...(manifestSchemaVersion === 2 ? {
+          mustReview: withPriorityReview && id === focusQueryId,
+          reviewLane: withPriorityReview && id === focusQueryId
+            ? "major-model-product"
+            : null,
+          resultLimitReached: false
+        } : {})
+      };
+    }),
     groups: run.coverageAudit.signedOffGroupIds.map((id, index) => ({
       id,
       required: true,
@@ -348,7 +492,12 @@ async function writeFormalCoverageFixture(t) {
         ) === index
       ),
       candidateIds: items.map((item) => item.id)
-    }))
+    })),
+    ...(manifestSchemaVersion === 2 ? {
+      mustReviewCandidateIds,
+      reviewSources,
+      reviewLanes
+    } : {})
   };
 
   const runPath = join(runDirectory, "daily_run.json");
@@ -361,7 +510,16 @@ async function writeFormalCoverageFixture(t) {
     writeFile(indexPath, candidateIndexText),
     writeFile(manifestPath, `${JSON.stringify(coverageManifest, null, 2)}\n`)
   ]);
-  return { runPath, manifestPath, coverageManifest };
+  return {
+    run,
+    runPath,
+    candidates,
+    candidatesPath,
+    candidateIndex,
+    indexPath,
+    coverageManifest,
+    manifestPath
+  };
 }
 
 test("Daily AI News workflow declares the permanent three-section contract", async () => {
@@ -381,9 +539,22 @@ test("Daily AI News workflow declares the permanent three-section contract", asy
   assert.equal(workflow.calendar.historicalOneShot.requiresExplicitFlag, "--one-shot-history");
   assert.equal(workflow.collection.candidateIndexRequired, true);
   assert.equal(workflow.collection.coverageManifestRequired, true);
+  assert.equal(workflow.collection.coverageManifestSchemaVersion, 2);
+  assert.equal(
+    workflow.collection.requiredQueryResultLimitProbe,
+    "request-maxResults-plus-one"
+  );
   assert.equal(workflow.collection.languagePolicy, "any-reliable-language");
   assert.deepEqual(workflow.collection.seedLanguages, ["en", "zh-CN", "ja", "ko"]);
   assert.equal(workflow.collection.coverageReview.lowVolumeTrigger, 5);
+  assert.equal(
+    workflow.collection.coverageReview.mustReviewCandidateSource,
+    "coverage_manifest.json.mustReviewCandidateIds"
+  );
+  assert.equal(
+    workflow.collection.coverageReview.mustReviewScope,
+    "focused-query-and-designated-source-candidates"
+  );
   assert.equal(
     workflow.collection.coverageReview.lowVolumeAction,
     "mandatory-second-pass-without-filler"
@@ -412,10 +583,42 @@ test("Daily AI News workflow declares the permanent three-section contract", asy
   assert.equal(workflow.selection.sections.rumor.verification, "unverified");
   assert.equal(workflow.selection.sections.rumor.requiresWhyUnverified, true);
   assert.equal(workflow.selection.coverageAuditRequired, true);
+  assert.ok(
+    workflow.selection.selectedItemContract.requiredFields.includes(
+      "sourceCandidateIds"
+    )
+  );
   assert.equal(workflow.selection.lowVolumeTrigger, 5);
   assert.equal(
     workflow.selection.coverageAuditContract.secondPassRepeatsAllRequiredSignoffs,
     true
+  );
+  assert.equal(
+    workflow.selection.coverageAuditContract.priorityReviewScope,
+    "exactly-every-mustReviewCandidateId-once"
+  );
+  assert.deepEqual(
+    workflow.selection.priorityReviewContract.decisions,
+    ["selected", "merged", "rejected"]
+  );
+  assert.equal(
+    workflow.selection.priorityReviewContract.protectedSelectionThreshold,
+    7
+  );
+  assert.equal(
+    workflow.selection.priorityReviewContract.protectedSelectedOrMergedRequiresSubstantiveChange,
+    true
+  );
+  assert.deepEqual(
+    workflow.selection.priorityReviewContract.score,
+    {
+      reach: [0, 2],
+      magnitude: [0, 3],
+      practicalValue: [0, 3],
+      evidence: [0, 2],
+      total: [0, 10],
+      totalMustEqualComponentSum: true
+    }
   );
   assert.equal(workflow.selection.eventDedupe.identity, "eventKey-plus-eventStage");
   assert.equal(workflow.selection.eventDedupe.selectedDuplicateAllowed, false);
@@ -648,6 +851,436 @@ test("schema 4 provenance requires complete multilingual coverage artifacts", as
   await assert.rejects(
     () => readAndValidateRun(fixture.runPath),
     /required query .*抓取失败/
+  );
+});
+
+test("coverage manifest v2 is required except for the registered 28 July legacy run", async (t) => {
+  const unregisteredV1 = await writeFormalCoverageFixture(t, {
+    manifestSchemaVersion: 1
+  });
+  await assert.rejects(
+    () => readAndValidateRun(unregisteredV1.runPath),
+    /schemaVersion 1 仅兼容已登记的 run-20260728T014353Z-c4ddc43d/
+  );
+
+  await assert.doesNotReject(() => readAndValidateRun(
+    fileURLToPath(new URL(
+      "../自动新闻/integrations/lusu-site/runs/2026-07-28-coverage-revision.json",
+      import.meta.url
+    ))
+  ));
+});
+
+test("the legacy v1 allowlist is bound to the exact registered artifact fingerprint", () => {
+  const manifest = { schemaVersion: 1 };
+  const exactRun = {
+    reportDate: "2026-07-28",
+    horizonRun: {
+      runId: "run-20260728T014353Z-c4ddc43d",
+      candidateIndexPath:
+        "data/mcp-runs/run-20260728T014353Z-c4ddc43d/candidate_index.json",
+      coverageManifestPath:
+        "data/mcp-runs/run-20260728T014353Z-c4ddc43d/coverage_manifest.json"
+    },
+    coverageAudit: {
+      candidateIndexSha256:
+        "4753e8e6e8f81f82fda305e33adfd3ab9ea5e9bb9f16c60c621e6764747283cd"
+    }
+  };
+  assert.equal(isRegisteredLegacyCoverageManifest(exactRun, manifest), true);
+
+  const mutations = [
+    (run) => {
+      run.horizonRun.runId = "run-20260728T014353Z-different";
+    },
+    (run) => {
+      run.reportDate = "2026-07-29";
+    },
+    (run) => {
+      run.horizonRun.candidateIndexPath =
+        "data/mcp-runs/run-20260728T014353Z-c4ddc43d/other-index.json";
+    },
+    (run) => {
+      run.horizonRun.coverageManifestPath =
+        "data/mcp-runs/run-20260728T014353Z-c4ddc43d/other-manifest.json";
+    },
+    (run) => {
+      run.coverageAudit.candidateIndexSha256 = "0".repeat(64);
+    }
+  ];
+  for (const mutate of mutations) {
+    const changed = structuredClone(exactRun);
+    mutate(changed);
+    assert.equal(isRegisteredLegacyCoverageManifest(changed, manifest), false);
+  }
+});
+
+test("coverage manifest v2 requires candidates, sources, and review lanes", async (t) => {
+  const missingCandidates = await writeFormalCoverageFixture(t);
+  delete missingCandidates.coverageManifest.mustReviewCandidateIds;
+  await writeFile(
+    missingCandidates.manifestPath,
+    `${JSON.stringify(missingCandidates.coverageManifest, null, 2)}\n`
+  );
+  await assert.rejects(
+    () => readAndValidateRun(missingCandidates.runPath),
+    /schemaVersion 2 必须提供 mustReviewCandidateIds/
+  );
+
+  const missingSources = await writeFormalCoverageFixture(t);
+  delete missingSources.coverageManifest.reviewSources;
+  await writeFile(
+    missingSources.manifestPath,
+    `${JSON.stringify(missingSources.coverageManifest, null, 2)}\n`
+  );
+  await assert.rejects(
+    () => readAndValidateRun(missingSources.runPath),
+    /schemaVersion 2 必须提供 reviewSources/
+  );
+
+  const missingLanes = await writeFormalCoverageFixture(t);
+  delete missingLanes.coverageManifest.reviewLanes;
+  await writeFile(
+    missingLanes.manifestPath,
+    `${JSON.stringify(missingLanes.coverageManifest, null, 2)}\n`
+  );
+  await assert.rejects(
+    () => readAndValidateRun(missingLanes.runPath),
+    /schemaVersion 2 必须提供 reviewLanes/
+  );
+});
+
+test("required queries fail closed when a successful result set reaches its limit", async (t) => {
+  const fixture = await writeFormalCoverageFixture(t);
+  fixture.coverageManifest.queries[0].resultLimitReached = true;
+  await writeFile(
+    fixture.manifestPath,
+    `${JSON.stringify(fixture.coverageManifest, null, 2)}\n`
+  );
+  await assert.rejects(
+    () => readAndValidateRun(fixture.runPath),
+    /达到结果上限，覆盖可能被截断/
+  );
+});
+
+test("must-review query ids and lanes close against manifest candidate membership", async (t) => {
+  const queryMismatch = await writeFormalCoverageFixture(t, {
+    withPriorityReview: true
+  });
+  queryMismatch.coverageManifest.queries[0].mustReview = false;
+  queryMismatch.coverageManifest.queries[0].reviewLane = null;
+  queryMismatch.coverageManifest.reviewLanes =
+    queryMismatch.coverageManifest.reviewLanes.filter(
+      (lane) => lane.id !== "major-model-product"
+    );
+  await writeFile(
+    queryMismatch.manifestPath,
+    `${JSON.stringify(queryMismatch.coverageManifest, null, 2)}\n`
+  );
+  await assert.rejects(
+    () => readAndValidateRun(queryMismatch.runPath),
+    /mustReviewQueryIds .*manifest query 候选归属不一致/
+  );
+
+  const laneMismatch = await writeFormalCoverageFixture(t, {
+    withPriorityReview: true
+  });
+  laneMismatch.coverageManifest.queries[0].reviewLane = "different-review-lane";
+  laneMismatch.coverageManifest.reviewLanes[0] = {
+    id: "different-review-lane",
+    queryIds: [laneMismatch.coverageManifest.queries[0].id],
+    sourceIds: [],
+    candidateIds: []
+  };
+  await writeFile(
+    laneMismatch.manifestPath,
+    `${JSON.stringify(laneMismatch.coverageManifest, null, 2)}\n`
+  );
+  await assert.rejects(
+    () => readAndValidateRun(laneMismatch.runPath),
+    /reviewLanes .*must-review query／source 归属不一致/
+  );
+});
+
+test("must-review source ids and lanes close against reviewSources membership", async (t) => {
+  const sourceMismatch = await writeFormalCoverageFixture(t, {
+    withPriorityReview: true
+  });
+  sourceMismatch.coverageManifest.reviewSources[0].candidateIds = [];
+  await writeFile(
+    sourceMismatch.manifestPath,
+    `${JSON.stringify(sourceMismatch.coverageManifest, null, 2)}\n`
+  );
+  await assert.rejects(
+    () => readAndValidateRun(sourceMismatch.runPath),
+    /mustReviewSourceIds .*manifest reviewSources 候选归属不一致/
+  );
+
+  const laneMismatch = await writeFormalCoverageFixture(t, {
+    withPriorityReview: true
+  });
+  laneMismatch.coverageManifest.reviewSources[0].reviewLane =
+    "different-source-review-lane";
+  laneMismatch.coverageManifest.reviewLanes[1] = {
+    id: "different-source-review-lane",
+    queryIds: [],
+    sourceIds: [laneMismatch.coverageManifest.reviewSources[0].id],
+    candidateIds: []
+  };
+  await writeFile(
+    laneMismatch.manifestPath,
+    `${JSON.stringify(laneMismatch.coverageManifest, null, 2)}\n`
+  );
+  await assert.rejects(
+    () => readAndValidateRun(laneMismatch.runPath),
+    /reviewLanes .*must-review query／source 归属不一致/
+  );
+});
+
+test("reviewLanes close query, source, and candidate membership exactly", async (t) => {
+  const queryMismatch = await writeFormalCoverageFixture(t, {
+    withPriorityReview: true
+  });
+  queryMismatch.coverageManifest.reviewLanes[0].queryIds = [];
+  await writeFile(
+    queryMismatch.manifestPath,
+    `${JSON.stringify(queryMismatch.coverageManifest, null, 2)}\n`
+  );
+  await assert.rejects(
+    () => readAndValidateRun(queryMismatch.runPath),
+    /review lane major-model-product\.queryIds 与 query 归属不一致/
+  );
+
+  const sourceMismatch = await writeFormalCoverageFixture(t, {
+    withPriorityReview: true
+  });
+  sourceMismatch.coverageManifest.reviewLanes[1].sourceIds = [];
+  await writeFile(
+    sourceMismatch.manifestPath,
+    `${JSON.stringify(sourceMismatch.coverageManifest, null, 2)}\n`
+  );
+  await assert.rejects(
+    () => readAndValidateRun(sourceMismatch.runPath),
+    /review lane official-product-feed\.sourceIds 与 reviewSources 归属不一致/
+  );
+
+  const candidateMismatch = await writeFormalCoverageFixture(t, {
+    withPriorityReview: true
+  });
+  candidateMismatch.coverageManifest.reviewLanes[0].candidateIds.pop();
+  await writeFile(
+    candidateMismatch.manifestPath,
+    `${JSON.stringify(candidateMismatch.coverageManifest, null, 2)}\n`
+  );
+  await assert.rejects(
+    () => readAndValidateRun(candidateMismatch.runPath),
+    /review lane major-model-product\.candidateIds 与候选索引归属不一致/
+  );
+});
+
+test("reviewLanes require unique valid lane ids", async (t) => {
+  const invalid = await writeFormalCoverageFixture(t, {
+    withPriorityReview: true
+  });
+  invalid.coverageManifest.reviewLanes[0].id = "Invalid Lane";
+  await writeFile(
+    invalid.manifestPath,
+    `${JSON.stringify(invalid.coverageManifest, null, 2)}\n`
+  );
+  await assert.rejects(
+    () => readAndValidateRun(invalid.runPath),
+    /reviewLanes 编号无效或重复/
+  );
+
+  const duplicate = await writeFormalCoverageFixture(t, {
+    withPriorityReview: true
+  });
+  duplicate.coverageManifest.reviewLanes.push(
+    structuredClone(duplicate.coverageManifest.reviewLanes[0])
+  );
+  await writeFile(
+    duplicate.manifestPath,
+    `${JSON.stringify(duplicate.coverageManifest, null, 2)}\n`
+  );
+  await assert.rejects(
+    () => readAndValidateRun(duplicate.runPath),
+    /reviewLanes 编号无效或重复/
+  );
+});
+
+test("manifest v2 selected stories require indexed source ids and exact indexed URLs", async (t) => {
+  const missingIds = await writeFormalCoverageFixture(t);
+  delete missingIds.run.candidates[0].sourceCandidateIds;
+  await writeFile(missingIds.runPath, `${JSON.stringify(missingIds.run, null, 2)}\n`);
+  await assert.rejects(
+    () => readAndValidateRun(missingIds.runPath),
+    /入选新闻 confirmed-lead 缺少 sourceCandidateIds/
+  );
+
+  const unknownId = await writeFormalCoverageFixture(t);
+  unknownId.run.candidates[0].sourceCandidateIds = ["candidate-not-in-index"];
+  await writeFile(unknownId.runPath, `${JSON.stringify(unknownId.run, null, 2)}\n`);
+  await assert.rejects(
+    () => readAndValidateRun(unknownId.runPath),
+    /sourceCandidateIds 必须非空、不重复且全部存在于候选索引/
+  );
+
+  const missingIndexedUrl = await writeFormalCoverageFixture(t, {
+    withPriorityReview: true
+  });
+  missingIndexedUrl.run.candidates[0].sourceUrls =
+    ["https://example.test/confirmed-lead"];
+  await writeFile(
+    missingIndexedUrl.runPath,
+    `${JSON.stringify(missingIndexedUrl.run, null, 2)}\n`
+  );
+  await assert.rejects(
+    () => readAndValidateRun(missingIndexedUrl.runPath),
+    /sourceUrls 缺少索引候选 candidate-confirmed-lead-secondary 的 URL/
+  );
+});
+
+test("priority review accepts exact selected and merged dispositions for focused candidates", async (t) => {
+  const fixture = await writeFormalCoverageFixture(t, {
+    withPriorityReview: true
+  });
+  await assert.doesNotReject(() => readAndValidateRun(fixture.runPath));
+});
+
+test("new manifests require priorityReview even when the must-review set is empty", async (t) => {
+  const fixture = await writeFormalCoverageFixture(t);
+  delete fixture.run.coverageAudit.priorityReview;
+  await writeFile(fixture.runPath, `${JSON.stringify(fixture.run, null, 2)}\n`);
+  await assert.rejects(
+    () => readAndValidateRun(fixture.runPath),
+    /缺少重点候选 priorityReview/
+  );
+
+  fixture.run.coverageAudit.priorityReview = { decisions: [] };
+  await writeFile(fixture.runPath, `${JSON.stringify(fixture.run, null, 2)}\n`);
+  await assert.doesNotReject(() => readAndValidateRun(fixture.runPath));
+});
+
+test("priorityReview must dispose every focused candidate exactly once", async (t) => {
+  const missing = await writeFormalCoverageFixture(t, {
+    withPriorityReview: true
+  });
+  missing.run.coverageAudit.priorityReview.decisions.pop();
+  await writeFile(missing.runPath, `${JSON.stringify(missing.run, null, 2)}\n`);
+  await assert.rejects(
+    () => readAndValidateRun(missing.runPath),
+    /每个 must-review 重点候选恰好处置一次/
+  );
+
+  const duplicate = await writeFormalCoverageFixture(t, {
+    withPriorityReview: true
+  });
+  duplicate.run.coverageAudit.priorityReview.decisions.push(
+    structuredClone(duplicate.run.coverageAudit.priorityReview.decisions[0])
+  );
+  await writeFile(duplicate.runPath, `${JSON.stringify(duplicate.run, null, 2)}\n`);
+  await assert.rejects(
+    () => readAndValidateRun(duplicate.runPath),
+    /被重复处置/
+  );
+});
+
+test("priorityReview locks score math and selected source-candidate mapping", async (t) => {
+  const badTotal = await writeFormalCoverageFixture(t, {
+    withPriorityReview: true
+  });
+  badTotal.run.coverageAudit.priorityReview.decisions[2].score.total = 8;
+  await writeFile(badTotal.runPath, `${JSON.stringify(badTotal.run, null, 2)}\n`);
+  await assert.rejects(
+    () => readAndValidateRun(badTotal.runPath),
+    /score\.total 必须等于四项分数之和/
+  );
+
+  const badMapping = await writeFormalCoverageFixture(t, {
+    withPriorityReview: true
+  });
+  badMapping.run.candidates[0].sourceCandidateIds = ["candidate-confirmed-lead"];
+  await writeFile(badMapping.runPath, `${JSON.stringify(badMapping.run, null, 2)}\n`);
+  await assert.rejects(
+    () => readAndValidateRun(badMapping.runPath),
+    /sourceCandidateIds 必须与入选新闻 confirmed-lead/
+  );
+});
+
+test("protected priority classes cannot be rejected at seven and require substantive selection", async (t) => {
+  const highValueRejected = await writeFormalCoverageFixture(t, {
+    withPriorityReview: true
+  });
+  const rejected = highValueRejected.run.coverageAudit.priorityReview.decisions[1];
+  rejected.decision = "rejected";
+  rejected.substantiveChange = false;
+  rejected.rejectionReason = "below-importance-threshold";
+  rejected.note = "编辑审阅认为影响不足。";
+  delete rejected.representativeCandidateId;
+  highValueRejected.run.coverageAudit.priorityReview.decisions[0].sourceCandidateIds =
+    ["candidate-confirmed-lead"];
+  highValueRejected.run.candidates[0].sourceCandidateIds = ["candidate-confirmed-lead"];
+  await writeFile(
+    highValueRejected.runPath,
+    `${JSON.stringify(highValueRejected.run, null, 2)}\n`
+  );
+  await assert.rejects(
+    () => readAndValidateRun(highValueRejected.runPath),
+    /评分达到 7 分后不得拒绝/
+  );
+
+  const nonSubstantiveSelected = await writeFormalCoverageFixture(t, {
+    withPriorityReview: true
+  });
+  nonSubstantiveSelected.run.coverageAudit.priorityReview.decisions[2]
+    .substantiveChange = false;
+  await writeFile(
+    nonSubstantiveSelected.runPath,
+    `${JSON.stringify(nonSubstantiveSelected.run, null, 2)}\n`
+  );
+  await assert.rejects(
+    () => readAndValidateRun(nonSubstantiveSelected.runPath),
+    /substantiveChange 必须为 true/
+  );
+});
+
+test("protected priority candidates may be rejected below seven with an enumerated reason and note", async (t) => {
+  const fixture = await writeFormalCoverageFixture(t, {
+    withPriorityReview: true
+  });
+  const rejected = fixture.run.coverageAudit.priorityReview.decisions[1];
+  rejected.decision = "rejected";
+  rejected.substantiveChange = false;
+  rejected.score = {
+    reach: 1,
+    magnitude: 1,
+    practicalValue: 2,
+    evidence: 2,
+    total: 6
+  };
+  rejected.rejectionReason = "below-importance-threshold";
+  rejected.note = "有可靠消息，但影响范围和实际变化均未达到刊发门槛。";
+  delete rejected.representativeCandidateId;
+  fixture.run.coverageAudit.priorityReview.decisions[0].sourceCandidateIds =
+    ["candidate-confirmed-lead"];
+  fixture.run.candidates[0].sourceCandidateIds = ["candidate-confirmed-lead"];
+  await writeFile(fixture.runPath, `${JSON.stringify(fixture.run, null, 2)}\n`);
+
+  await assert.doesNotReject(() => readAndValidateRun(fixture.runPath));
+
+  rejected.rejectionReason = "free-form-reason";
+  await writeFile(fixture.runPath, `${JSON.stringify(fixture.run, null, 2)}\n`);
+  await assert.rejects(
+    () => readAndValidateRun(fixture.runPath),
+    /rejectionReason 不在允许的拒绝理由/
+  );
+
+  rejected.rejectionReason = "below-importance-threshold";
+  rejected.note = "";
+  await writeFile(fixture.runPath, `${JSON.stringify(fixture.run, null, 2)}\n`);
+  await assert.rejects(
+    () => readAndValidateRun(fixture.runPath),
+    /note 必须具体说明拒绝依据/
   );
 });
 

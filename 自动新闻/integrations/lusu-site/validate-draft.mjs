@@ -6,7 +6,18 @@ import { fileURLToPath } from "node:url";
 const DEFAULT_RUN = resolve(import.meta.dirname, "runs", "2026-07-27-2300.json");
 const FORMAL_SCHEMA_VERSION = 4;
 const HISTORICAL_SCHEMA_VERSION = 3;
-const COVERAGE_MANIFEST_SCHEMA_VERSION = 1;
+const COVERAGE_MANIFEST_SCHEMA_VERSION = 2;
+const LEGACY_COVERAGE_MANIFEST_SCHEMA_VERSION = 1;
+const LEGACY_COVERAGE_MANIFEST = Object.freeze({
+  runId: "run-20260728T014353Z-c4ddc43d",
+  reportDate: "2026-07-28",
+  candidateIndexPath:
+    "data/mcp-runs/run-20260728T014353Z-c4ddc43d/candidate_index.json",
+  coverageManifestPath:
+    "data/mcp-runs/run-20260728T014353Z-c4ddc43d/coverage_manifest.json",
+  candidateIndexSha256:
+    "4753e8e6e8f81f82fda305e33adfd3ab9ea5e9bb9f16c60c621e6764747283cd"
+});
 const CANDIDATE_ARTIFACT_SCHEMA_VERSION = 2;
 const CANDIDATE_INDEX_SCHEMA_VERSION = 1;
 const LOW_VOLUME_TRIGGER = 5;
@@ -24,6 +35,29 @@ const REFERENCE_HEADING_PATTERN = /^#{1,6}\s*(?:参考|来源|相关阅读|参�
 const SECTION_ORDER = ["lead", "main", "rumor"];
 const VERIFICATION_VALUES = new Set(["confirmed", "unverified"]);
 const DEDUPE_DECISIONS = new Set(["new", "material-update", "duplicate"]);
+const PRIORITY_REVIEW_DECISIONS = new Set(["selected", "merged", "rejected"]);
+const PRIORITY_EDITORIAL_CLASSES = new Set([
+  "major-model-product",
+  "capability-availability",
+  "usage-policy",
+  "developer-tool",
+  "material-price-quota",
+  "other"
+]);
+const PROTECTED_PRIORITY_EDITORIAL_CLASSES = new Set([
+  "major-model-product",
+  "capability-availability",
+  "usage-policy",
+  "developer-tool",
+  "material-price-quota"
+]);
+const PRIORITY_REJECTION_REASONS = new Set([
+  "insufficient-evidence",
+  "below-importance-threshold",
+  "routine-or-promotional",
+  "outside-editorial-scope",
+  "no-material-change"
+]);
 const INTERNAL_ID_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const SHA256_PATTERN = /^[a-f0-9]{64}$/;
 const AI_TAKE_MIN_LENGTH = 12;
@@ -456,8 +490,17 @@ async function validateCoverageProvenance({
   if (candidateIndex.schemaVersion !== CANDIDATE_INDEX_SCHEMA_VERSION) {
     throw new Error("candidate_index.json schemaVersion 不正确。");
   }
-  if (manifest.schemaVersion !== COVERAGE_MANIFEST_SCHEMA_VERSION) {
-    throw new Error("coverage_manifest.json schemaVersion 不正确。");
+  const isRegisteredLegacyManifest = isRegisteredLegacyCoverageManifest(
+    run,
+    manifest
+  );
+  if (manifest.schemaVersion !== COVERAGE_MANIFEST_SCHEMA_VERSION
+    && !isRegisteredLegacyManifest) {
+    throw new Error(
+      `coverage_manifest.json 必须使用 schemaVersion ${COVERAGE_MANIFEST_SCHEMA_VERSION}；`
+      + `schemaVersion ${LEGACY_COVERAGE_MANIFEST_SCHEMA_VERSION} 仅兼容已登记的 `
+      + `${LEGACY_COVERAGE_MANIFEST.runId} 历史产物。`
+    );
   }
   if (manifest.fetchStatus !== "success") {
     throw new Error("coverage_manifest.json 未确认完整抓取。");
@@ -491,6 +534,15 @@ async function validateCoverageProvenance({
     throw new Error("候选索引、覆盖清单与 daily_candidates.json 的候选集合不一致。");
   }
   validateManifestCandidateMembership(manifest, indexItems);
+  if (!isRegisteredLegacyManifest) {
+    validateV2ReviewProvenance(manifest, indexItems);
+    validatePriorityReviewProvenance({
+      run,
+      manifest,
+      indexItems
+    });
+    validateSelectedSourceCandidateProvenance(run, indexItems);
+  }
 
   const requiredQueryIds = validatedManifestSignoffs(
     manifest.requiredQueryIds,
@@ -567,6 +619,500 @@ function validateManifestCandidateMembership(manifest, indexItems) {
   }
 }
 
+function validateV2ReviewProvenance(manifest, indexItems) {
+  if (!Object.hasOwn(manifest, "mustReviewCandidateIds")
+    || !Array.isArray(manifest.mustReviewCandidateIds)) {
+    throw new Error(
+      "coverage_manifest.json schemaVersion 2 必须提供 mustReviewCandidateIds 数组。"
+    );
+  }
+  if (!Object.hasOwn(manifest, "reviewSources")
+    || !Array.isArray(manifest.reviewSources)) {
+    throw new Error(
+      "coverage_manifest.json schemaVersion 2 必须提供 reviewSources 数组。"
+    );
+  }
+  if (!Object.hasOwn(manifest, "reviewLanes")
+    || !Array.isArray(manifest.reviewLanes)) {
+    throw new Error(
+      "coverage_manifest.json schemaVersion 2 必须提供 reviewLanes 数组。"
+    );
+  }
+
+  const indexIds = new Set(indexItems.map((item) => String(item?.id || "")));
+  const queryEntries = Array.isArray(manifest.queries) ? manifest.queries : [];
+  const queryById = new Map(
+    queryEntries.map((entry) => [String(entry?.id || ""), entry])
+  );
+  for (const entry of queryEntries) {
+    const queryId = String(entry?.id || "");
+    if (typeof entry?.mustReview !== "boolean") {
+      throw new Error(`coverage_manifest.json query ${queryId} 缺少 mustReview 布尔值。`);
+    }
+    if (typeof entry?.resultLimitReached !== "boolean") {
+      throw new Error(
+        `coverage_manifest.json query ${queryId} 缺少 resultLimitReached 布尔值。`
+      );
+    }
+    const reviewLane = entry?.reviewLane;
+    if (entry.mustReview === true) {
+      if (entry.required !== true || !INTERNAL_ID_PATTERN.test(String(reviewLane || ""))) {
+        throw new Error(
+          `coverage_manifest.json must-review query ${queryId} 必须为 required 并提供有效 reviewLane。`
+        );
+      }
+    } else if (reviewLane !== null && reviewLane !== undefined) {
+      throw new Error(
+        `coverage_manifest.json 非 must-review query ${queryId} 不得声明 reviewLane。`
+      );
+    }
+  }
+
+  const reviewSourceById = new Map();
+  for (const entry of manifest.reviewSources) {
+    const sourceId = String(entry?.id || "");
+    if (!INTERNAL_ID_PATTERN.test(sourceId) || reviewSourceById.has(sourceId)) {
+      throw new Error("coverage_manifest.json reviewSources 编号无效或重复。");
+    }
+    if (!String(entry?.sourceType || "").trim()
+      || !String(entry?.sourceName || "").trim()
+      || !INTERNAL_ID_PATTERN.test(String(entry?.reviewLane || ""))) {
+      throw new Error(
+        `coverage_manifest.json review source ${sourceId} 缺少来源类型、名称或有效 reviewLane。`
+      );
+    }
+    if (!Array.isArray(entry?.candidateIds)) {
+      throw new Error(
+        `coverage_manifest.json review source ${sourceId}.candidateIds 必须是数组。`
+      );
+    }
+    const candidateIds = entry.candidateIds.map(String);
+    if (candidateIds.some((candidateId) => !indexIds.has(candidateId))
+      || new Set(candidateIds).size !== candidateIds.length) {
+      throw new Error(
+        `coverage_manifest.json review source ${sourceId} 候选编号无效或重复。`
+      );
+    }
+    reviewSourceById.set(sourceId, entry);
+  }
+
+  const reviewLaneById = new Map();
+  for (const entry of manifest.reviewLanes) {
+    const laneId = String(entry?.id || "");
+    if (!INTERNAL_ID_PATTERN.test(laneId) || reviewLaneById.has(laneId)) {
+      throw new Error("coverage_manifest.json reviewLanes 编号无效或重复。");
+    }
+    for (const field of ["queryIds", "sourceIds", "candidateIds"]) {
+      if (!Array.isArray(entry?.[field])) {
+        throw new Error(
+          `coverage_manifest.json review lane ${laneId}.${field} 必须是数组。`
+        );
+      }
+    }
+    reviewLaneById.set(laneId, entry);
+  }
+  const expectedReviewLaneIds = new Set([
+    ...queryEntries
+      .filter((entry) => entry?.mustReview === true)
+      .map((entry) => String(entry.reviewLane)),
+    ...manifest.reviewSources.map((entry) => String(entry.reviewLane))
+  ]);
+  if (!sameStringSet(
+    [...reviewLaneById.keys()],
+    [...expectedReviewLaneIds]
+  )) {
+    throw new Error(
+      "coverage_manifest.json reviewLanes 必须完整覆盖 must-review query 与 review source。"
+    );
+  }
+  for (const [laneId, entry] of reviewLaneById) {
+    const expectedQueryIds = queryEntries
+      .filter((query) => (
+        query?.mustReview === true
+        && String(query.reviewLane) === laneId
+      ))
+      .map((query) => String(query.id));
+    const expectedSourceIds = [...reviewSourceById]
+      .filter(([, source]) => String(source.reviewLane) === laneId)
+      .map(([sourceId]) => sourceId);
+    const expectedCandidateIds = indexItems
+      .filter((item) => stringArray(item?.reviewLanes).includes(laneId))
+      .map((item) => String(item?.id || ""));
+    if (!sameStringSet(stringArray(entry.queryIds), expectedQueryIds)) {
+      throw new Error(
+        `coverage_manifest.json review lane ${laneId}.queryIds 与 query 归属不一致。`
+      );
+    }
+    if (!sameStringSet(stringArray(entry.sourceIds), expectedSourceIds)) {
+      throw new Error(
+        `coverage_manifest.json review lane ${laneId}.sourceIds 与 reviewSources 归属不一致。`
+      );
+    }
+    if (!sameStringSet(stringArray(entry.candidateIds), expectedCandidateIds)) {
+      throw new Error(
+        `coverage_manifest.json review lane ${laneId}.candidateIds 与候选索引归属不一致。`
+      );
+    }
+  }
+
+  const expectedMustReviewCandidateIds = [];
+  for (const item of indexItems) {
+    const candidateId = String(item?.id || "");
+    for (const field of [
+      "mustReviewQueryIds",
+      "reviewLanes",
+      "mustReviewSourceIds"
+    ]) {
+      if (!Array.isArray(item?.[field])) {
+        throw new Error(`candidate_index.json 候选 ${candidateId} 缺少 ${field} 数组。`);
+      }
+      const values = item[field].map(String);
+      if (new Set(values).size !== values.length) {
+        throw new Error(`candidate_index.json 候选 ${candidateId} 的 ${field} 不得重复。`);
+      }
+    }
+    if (typeof item?.mustReview !== "boolean") {
+      throw new Error(`candidate_index.json 候选 ${candidateId} 缺少 mustReview 布尔值。`);
+    }
+
+    const itemQueryIds = stringArray(item.queryIds);
+    if (itemQueryIds.some((queryId) => !queryById.has(queryId))) {
+      throw new Error(`candidate_index.json 候选 ${candidateId} 引用了未知 query。`);
+    }
+    const expectedQueryIds = itemQueryIds.filter(
+      (queryId) => queryById.get(queryId)?.mustReview === true
+    );
+    const declaredQueryIds = stringArray(item.mustReviewQueryIds);
+    if (!sameStringSet(declaredQueryIds, expectedQueryIds)) {
+      throw new Error(
+        `candidate_index.json 候选 ${candidateId} 的 mustReviewQueryIds `
+        + "与 manifest query 候选归属不一致。"
+      );
+    }
+
+    const expectedSourceIds = [...reviewSourceById]
+      .filter(([, source]) => stringArray(source.candidateIds).includes(candidateId))
+      .map(([sourceId]) => sourceId);
+    const declaredSourceIds = stringArray(item.mustReviewSourceIds);
+    if (declaredSourceIds.some((sourceId) => !reviewSourceById.has(sourceId))
+      || !sameStringSet(declaredSourceIds, expectedSourceIds)) {
+      throw new Error(
+        `candidate_index.json 候选 ${candidateId} 的 mustReviewSourceIds `
+        + "与 manifest reviewSources 候选归属不一致。"
+      );
+    }
+
+    const expectedReviewLanes = [
+      ...expectedQueryIds.map((queryId) => String(queryById.get(queryId).reviewLane)),
+      ...expectedSourceIds.map(
+        (sourceId) => String(reviewSourceById.get(sourceId).reviewLane)
+      )
+    ];
+    const uniqueExpectedReviewLanes = [...new Set(expectedReviewLanes)];
+    if (!sameStringSet(stringArray(item.reviewLanes), uniqueExpectedReviewLanes)) {
+      throw new Error(
+        `candidate_index.json 候选 ${candidateId} 的 reviewLanes `
+        + "与 must-review query／source 归属不一致。"
+      );
+    }
+
+    const expectedMustReview = expectedQueryIds.length > 0 || expectedSourceIds.length > 0;
+    if (item.mustReview !== expectedMustReview) {
+      throw new Error(
+        `candidate_index.json 候选 ${candidateId} 的 mustReview 与重点归属不一致。`
+      );
+    }
+    if (expectedMustReview) {
+      expectedMustReviewCandidateIds.push(candidateId);
+    }
+  }
+
+  const declaredMustReviewCandidateIds = manifest.mustReviewCandidateIds.map(String);
+  if (new Set(declaredMustReviewCandidateIds).size
+      !== declaredMustReviewCandidateIds.length
+    || !sameStringSet(
+      declaredMustReviewCandidateIds,
+      expectedMustReviewCandidateIds
+    )) {
+    throw new Error(
+      "coverage_manifest.json mustReviewCandidateIds 与 query／source 重点候选归属不一致。"
+    );
+  }
+}
+
+function validateSelectedSourceCandidateProvenance(run, indexItems) {
+  const indexById = new Map(
+    indexItems.map((item) => [String(item?.id || ""), item])
+  );
+  for (const item of (Array.isArray(run.candidates) ? run.candidates : [])) {
+    if (item?.selected !== true) {
+      continue;
+    }
+    const storyKey = String(item?.storyKey || "");
+    if (!Array.isArray(item?.sourceCandidateIds)) {
+      throw new Error(`入选新闻 ${storyKey} 缺少 sourceCandidateIds 数组。`);
+    }
+    const sourceCandidateIds = item.sourceCandidateIds.map(String);
+    if (!sourceCandidateIds.length
+      || new Set(sourceCandidateIds).size !== sourceCandidateIds.length
+      || sourceCandidateIds.some((candidateId) => !indexById.has(candidateId))) {
+      throw new Error(
+        `入选新闻 ${storyKey} 的 sourceCandidateIds 必须非空、不重复且全部存在于候选索引。`
+      );
+    }
+    const sourceUrls = new Set(stringArray(item.sourceUrls));
+    for (const candidateId of sourceCandidateIds) {
+      const indexUrl = String(indexById.get(candidateId)?.url || "");
+      if (!indexUrl || !sourceUrls.has(indexUrl)) {
+        throw new Error(
+          `入选新闻 ${storyKey} 的 sourceUrls 缺少索引候选 ${candidateId} 的 URL。`
+        );
+      }
+    }
+  }
+}
+
+function validatePriorityReviewProvenance({ run, manifest, indexItems }) {
+  if (!Object.hasOwn(manifest, "mustReviewCandidateIds")) {
+    return;
+  }
+
+  if (!Array.isArray(manifest.mustReviewCandidateIds)) {
+    throw new Error("coverage_manifest.json mustReviewCandidateIds 必须是数组。");
+  }
+  const mustReviewCandidateIds = manifest.mustReviewCandidateIds.map(String);
+  if (new Set(mustReviewCandidateIds).size !== mustReviewCandidateIds.length) {
+    throw new Error("coverage_manifest.json mustReviewCandidateIds 不得重复。");
+  }
+
+  const indexById = new Map(
+    indexItems.map((item) => [String(item?.id || ""), item])
+  );
+  if (mustReviewCandidateIds.some((candidateId) => !indexById.has(candidateId))) {
+    throw new Error("coverage_manifest.json mustReviewCandidateIds 含有索引中不存在的候选。");
+  }
+
+  const expectedMustReviewCandidateIds = indexItems
+    .filter((item) => (
+      stringArray(item?.mustReviewQueryIds).length > 0
+      || stringArray(item?.mustReviewSourceIds).length > 0
+    ))
+    .map((item) => String(item?.id || ""));
+  if (!sameStringSet(mustReviewCandidateIds, expectedMustReviewCandidateIds)) {
+    throw new Error(
+      "coverage_manifest.json mustReviewCandidateIds 与 candidate_index.json 的重点候选标记不一致。"
+    );
+  }
+
+  const queryIds = new Set(
+    (Array.isArray(manifest.queries) ? manifest.queries : [])
+      .map((entry) => String(entry?.id || ""))
+  );
+  for (const candidateId of mustReviewCandidateIds) {
+    const item = indexById.get(candidateId);
+    const mustReviewQueryIds = stringArray(item?.mustReviewQueryIds);
+    const reviewLanes = stringArray(item?.reviewLanes);
+    if (mustReviewQueryIds.some((queryId) => !queryIds.has(queryId))
+      || new Set(mustReviewQueryIds).size !== mustReviewQueryIds.length) {
+      throw new Error(
+        `candidate_index.json 重点候选 ${candidateId} 的 mustReviewQueryIds 无效或重复。`
+      );
+    }
+    if (!reviewLanes.length
+      || reviewLanes.some((lane) => !INTERNAL_ID_PATTERN.test(lane))
+      || new Set(reviewLanes).size !== reviewLanes.length) {
+      throw new Error(
+        `candidate_index.json 重点候选 ${candidateId} 的 reviewLanes 必须是非空且不重复的有效编号。`
+      );
+    }
+  }
+
+  const priorityReview = run.coverageAudit?.priorityReview;
+  if (!priorityReview || typeof priorityReview !== "object" || Array.isArray(priorityReview)) {
+    throw new Error("coverageAudit 缺少重点候选 priorityReview。");
+  }
+  if (!Array.isArray(priorityReview.decisions)) {
+    throw new Error("coverageAudit.priorityReview.decisions 必须是数组。");
+  }
+
+  const selectedRunCandidates = new Map(
+    (Array.isArray(run.candidates) ? run.candidates : [])
+      .filter((item) => item?.selected === true)
+      .map((item) => [String(item?.storyKey || ""), item])
+  );
+  const decisionsByCandidateId = new Map();
+  const selectedStoryKeys = new Set();
+  const allIndexIds = new Set(indexById.keys());
+
+  for (const [index, entry] of priorityReview.decisions.entries()) {
+    const label = `coverageAudit.priorityReview.decisions[${index}]`;
+    if (!entry || typeof entry !== "object" || Array.isArray(entry)) {
+      throw new Error(`${label} 必须是对象。`);
+    }
+    const candidateId = String(entry.candidateId || "");
+    if (!mustReviewCandidateIds.includes(candidateId)) {
+      throw new Error(`${label}.candidateId 不是 mustReviewCandidateIds 中的重点候选。`);
+    }
+    if (decisionsByCandidateId.has(candidateId)) {
+      throw new Error(`重点候选 ${candidateId} 在 priorityReview 中被重复处置。`);
+    }
+
+    const decision = String(entry.decision || "");
+    const editorialClass = String(entry.editorialClass || "");
+    const score = entry.score;
+    if (!PRIORITY_REVIEW_DECISIONS.has(decision)) {
+      throw new Error(`${label}.decision 必须是 selected、merged 或 rejected。`);
+    }
+    if (!PRIORITY_EDITORIAL_CLASSES.has(editorialClass)) {
+      throw new Error(`${label}.editorialClass 不在允许的重点新闻类型中。`);
+    }
+    if (typeof entry.substantiveChange !== "boolean") {
+      throw new Error(`${label}.substantiveChange 必须是布尔值。`);
+    }
+    const scoreTotal = validatePriorityReviewScore(score, label);
+    const protectedEditorialClass = PROTECTED_PRIORITY_EDITORIAL_CLASSES.has(
+      editorialClass
+    );
+    if (protectedEditorialClass
+      && decision !== "rejected"
+      && entry.substantiveChange !== true) {
+      throw new Error(
+        `${label} 属于重点模型／产品类并已入选或合并，substantiveChange 必须为 true。`
+      );
+    }
+
+    if (decision === "selected") {
+      const storyKey = String(entry.storyKey || "");
+      const sourceCandidateIds = stringArray(entry.sourceCandidateIds);
+      const selectedRunCandidate = selectedRunCandidates.get(storyKey);
+      if (!selectedRunCandidate) {
+        throw new Error(`${label}.storyKey 必须映射到实际入选新闻。`);
+      }
+      if (selectedStoryKeys.has(storyKey)) {
+        throw new Error(`priorityReview 中的入选 storyKey ${storyKey} 被重复映射。`);
+      }
+      if (!sourceCandidateIds.length
+        || sourceCandidateIds.some((sourceId) => !allIndexIds.has(sourceId))
+        || new Set(sourceCandidateIds).size !== sourceCandidateIds.length) {
+        throw new Error(`${label}.sourceCandidateIds 必须是非空且不重复的候选索引编号。`);
+      }
+      if (!sourceCandidateIds.includes(candidateId)) {
+        throw new Error(`${label}.sourceCandidateIds 必须包含自身 candidateId。`);
+      }
+      if (!sameStringSet(
+        sourceCandidateIds,
+        stringArray(selectedRunCandidate.sourceCandidateIds)
+      )) {
+        throw new Error(
+          `${label}.sourceCandidateIds 必须与入选新闻 ${storyKey} 的 sourceCandidateIds 一致。`
+        );
+      }
+      selectedStoryKeys.add(storyKey);
+    } else if (decision === "merged") {
+      const representativeCandidateId = String(entry.representativeCandidateId || "");
+      if (representativeCandidateId === candidateId
+        || !mustReviewCandidateIds.includes(representativeCandidateId)) {
+        throw new Error(
+          `${label}.representativeCandidateId 必须指向另一条 must-review 重点候选。`
+        );
+      }
+    } else {
+      const rejectionReason = String(entry.rejectionReason || "");
+      const note = String(entry.note || "").trim();
+      if (!PRIORITY_REJECTION_REASONS.has(rejectionReason)) {
+        throw new Error(`${label}.rejectionReason 不在允许的拒绝理由中。`);
+      }
+      if (!note) {
+        throw new Error(`${label}.note 必须具体说明拒绝依据。`);
+      }
+      if (protectedEditorialClass && scoreTotal >= 7) {
+        throw new Error(
+          `重点候选 ${candidateId} 属于重大模型／产品、能力／可用性、用量规则、`
+          + "开发工具或显著价格额度变化，评分达到 7 分后不得拒绝。"
+        );
+      }
+    }
+
+    decisionsByCandidateId.set(candidateId, entry);
+  }
+
+  if (!sameStringSet(
+    mustReviewCandidateIds,
+    [...decisionsByCandidateId.keys()]
+  )) {
+    throw new Error("coverageAudit.priorityReview 必须对每个 must-review 重点候选恰好处置一次。");
+  }
+
+  for (const [candidateId, entry] of decisionsByCandidateId) {
+    if (entry.decision === "selected") {
+      for (const sourceCandidateId of stringArray(entry.sourceCandidateIds)) {
+        if (sourceCandidateId === candidateId
+          || !decisionsByCandidateId.has(sourceCandidateId)) {
+          continue;
+        }
+        const sourceDecision = decisionsByCandidateId.get(sourceCandidateId);
+        if (sourceDecision?.decision !== "merged"
+          || String(sourceDecision.representativeCandidateId) !== candidateId) {
+          throw new Error(
+            `入选重点候选 ${candidateId} 的 sourceCandidateIds 含有未正确并入的重点候选 `
+            + `${sourceCandidateId}。`
+          );
+        }
+      }
+      continue;
+    }
+    if (entry.decision !== "merged") {
+      const referencedBySelected = [...decisionsByCandidateId.values()]
+        .filter((decision) => decision?.decision === "selected")
+        .some((decision) => stringArray(decision.sourceCandidateIds).includes(candidateId));
+      if (referencedBySelected) {
+        throw new Error(`已拒绝的重点候选 ${candidateId} 不得出现在入选新闻的 sourceCandidateIds 中。`);
+      }
+      continue;
+    }
+    const representativeCandidateId = String(entry.representativeCandidateId);
+    const representative = decisionsByCandidateId.get(representativeCandidateId);
+    if (representative?.decision !== "selected") {
+      throw new Error(
+        `重点候选 ${candidateId} 的代表候选 ${representativeCandidateId} 最终必须是 selected。`
+      );
+    }
+    if (!stringArray(representative.sourceCandidateIds).includes(candidateId)) {
+      throw new Error(
+        `代表候选 ${representativeCandidateId} 的 sourceCandidateIds 必须包含并入候选 ${candidateId}。`
+      );
+    }
+  }
+}
+
+function validatePriorityReviewScore(score, label) {
+  if (!score || typeof score !== "object" || Array.isArray(score)) {
+    throw new Error(`${label}.score 必须是包含四项分数和 total 的对象。`);
+  }
+  const fields = [
+    ["reach", 2],
+    ["magnitude", 3],
+    ["practicalValue", 3],
+    ["evidence", 2]
+  ];
+  let expectedTotal = 0;
+  for (const [field, maximum] of fields) {
+    const value = Number(score[field]);
+    if (!Number.isFinite(value) || value < 0 || value > maximum) {
+      throw new Error(`${label}.score.${field} 必须是 0 至 ${maximum} 的数字。`);
+    }
+    expectedTotal += value;
+  }
+  const total = Number(score.total);
+  if (!Number.isFinite(total) || total < 0 || total > 10) {
+    throw new Error(`${label}.score.total 必须是 0 至 10 的数字。`);
+  }
+  if (Math.abs(total - expectedTotal) > Number.EPSILON * 10) {
+    throw new Error(`${label}.score.total 必须等于四项分数之和。`);
+  }
+  return total;
+}
+
 function validateLanguagePolicyArtifact(artifact, label) {
   if (artifact.languagePolicy !== "any-reliable-language") {
     throw new Error(`${label} 必须声明 any-reliable-language。`);
@@ -593,6 +1139,11 @@ function validatedManifestSignoffs(requiredValues, entries, kind) {
     }
     if (kind === "query" && !["success", "empty"].includes(entry.status)) {
       throw new Error(`required query ${id} 抓取失败，正式运行必须停止。`);
+    }
+    if (kind === "query" && entry.resultLimitReached === true) {
+      throw new Error(
+        `required query ${id} 已达到结果上限，覆盖可能被截断，正式运行必须停止。`
+      );
     }
   }
   return requiredIds;
@@ -1024,4 +1575,16 @@ export function isHistoricalOneShotWindow(run) {
   return run?.reportDate === HISTORICAL_ONE_SHOT_WINDOW.reportDate
     && run?.windowStart === HISTORICAL_ONE_SHOT_WINDOW.windowStart
     && run?.windowEnd === HISTORICAL_ONE_SHOT_WINDOW.windowEnd;
+}
+
+export function isRegisteredLegacyCoverageManifest(run, manifest) {
+  return manifest?.schemaVersion === LEGACY_COVERAGE_MANIFEST_SCHEMA_VERSION
+    && run?.horizonRun?.runId === LEGACY_COVERAGE_MANIFEST.runId
+    && run?.reportDate === LEGACY_COVERAGE_MANIFEST.reportDate
+    && run?.horizonRun?.candidateIndexPath
+      === LEGACY_COVERAGE_MANIFEST.candidateIndexPath
+    && run?.horizonRun?.coverageManifestPath
+      === LEGACY_COVERAGE_MANIFEST.coverageManifestPath
+    && run?.coverageAudit?.candidateIndexSha256
+      === LEGACY_COVERAGE_MANIFEST.candidateIndexSha256;
 }

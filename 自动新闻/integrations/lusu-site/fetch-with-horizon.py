@@ -22,11 +22,58 @@ DEFAULT_DISCOVERY_QUERIES = INTEGRATION_ROOT / "discovery-queries.json"
 SHANGHAI = timezone(timedelta(hours=8), name="Asia/Shanghai")
 MAX_LOOKBACK_HOURS = 168
 QUERY_ID_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+REVIEW_LANE_RE = QUERY_ID_RE
 DISCOVERY_SCHEMA_VERSION = 2
 MAX_QUERY_CONCURRENCY = 8
+GOOGLE_NEWS_SAFE_RESULT_LIMIT = 99
 EXPECTED_LOW_VOLUME_TRIGGER = 5
 GOOGLE_NEWS_MAX_RETRIES = 2
 GOOGLE_NEWS_RETRY_DELAY_SECONDS = 0.25
+GOOGLE_NEWS_REQUEST_TIMEOUT_SECONDS = 10.0
+DISCOVERY_QUERY_BUDGET_SECONDS = 15 * 60
+RSS_RETRY_REQUEST_TIMEOUT_SECONDS = 15.0
+REQUIRED_RSS_RETRY_ATTEMPTS = 2
+OPTIONAL_RSS_RETRY_ATTEMPTS = 1
+OPTIONAL_RSS_FEED_NAMES = {
+    "Ars Technica AI",
+    "Bing Web - Tibo Codex",
+    "OpenRouter Blog",
+    "Qoder Announcements",
+    "TechCrunch AI",
+    "VentureBeat AI",
+    "36氪",
+    "量子位官网",
+    "雷峰网",
+}
+DIRECT_REVIEW_FEEDS = {
+    "OpenAI News": ("rss-openai-news", "openai-product-operations"),
+    "Google DeepMind": ("rss-google-deepmind", "google-ai-products"),
+    "NVIDIA Newsroom": ("rss-nvidia-newsroom", "chips-storage-releases"),
+    "TechCrunch AI": ("rss-techcrunch-ai", "global-ai-media"),
+    "VentureBeat AI": ("rss-venturebeat-ai", "global-ai-media"),
+    "Ars Technica AI": ("rss-ars-technica-ai", "global-ai-media"),
+    "雷峰网": ("rss-leiphone", "china-ai-media"),
+    "36氪": ("rss-36kr", "china-ai-media"),
+    "OpenRouter Blog": (
+        "rss-openrouter-blog",
+        "developer-product-releases",
+    ),
+    "Qoder Announcements": (
+        "rss-qoder-announcements",
+        "developer-product-releases",
+    ),
+    "量子位": ("rss-qbitai", "china-ai-media"),
+    "量子位官网": ("rss-qbitai-website", "china-ai-media"),
+    "新智元": ("rss-ainews", "china-ai-media"),
+    "Bing Web - Tibo Codex": (
+        "rss-bing-tibo-codex",
+        "developer-product-operations",
+    ),
+}
+DIRECT_REVIEW_SUBREDDITS = {
+    "codex": ("reddit-codex", "developer-product-operations"),
+    "OpenAI": ("reddit-openai", "openai-product-operations"),
+}
 CURRENT_DISCOVERY_QUERY_ID: ContextVar[str | None] = ContextVar(
     "current_discovery_query_id",
     default=None,
@@ -49,6 +96,7 @@ from src.mcp.horizon_adapter import (  # noqa: E402
     make_storage,
 )
 from src.models import GoogleNewsConfig  # noqa: E402
+from src.orchestrator import _deduplication_url_key  # noqa: E402
 from src.scrapers.google_news import GoogleNewsScraper  # noqa: E402
 from src.scrapers.rss import RSSScraper  # noqa: E402
 
@@ -253,16 +301,18 @@ def content_item_in_window(
 def apply_query_provenance(merged_items: list, topic_items: list) -> None:
     """Preserve all discovery-query and coverage-group matches after URL merge."""
 
-    provenance_by_url: dict[str, dict[str, set[str] | bool]] = {}
+    provenance_by_url: dict[Any, dict[str, set[str] | bool]] = {}
     for item in topic_items:
         metadata = item.metadata
-        url = str(item.url)
+        url = _deduplication_url_key(str(item.url))
         provenance = provenance_by_url.setdefault(
             url,
             {
                 "queryIds": set(),
                 "coverageGroups": set(),
                 "priorities": set(),
+                "mustReviewQueryIds": set(),
+                "reviewLanes": set(),
                 "required": False,
             },
         )
@@ -275,12 +325,19 @@ def apply_query_provenance(merged_items: list, topic_items: list) -> None:
             provenance["coverageGroups"].add(str(coverage_group))
         if priority:
             provenance["priorities"].add(str(priority))
+        if metadata.get("must_review_query") and query_id:
+            provenance["mustReviewQueryIds"].add(str(query_id))
+        review_lane = metadata.get("review_lane")
+        if metadata.get("must_review_query") and review_lane:
+            provenance["reviewLanes"].add(str(review_lane))
         provenance["required"] = bool(
             provenance["required"] or metadata.get("required_query")
         )
 
     for item in merged_items:
-        provenance = provenance_by_url.get(str(item.url))
+        provenance = provenance_by_url.get(
+            _deduplication_url_key(str(item.url))
+        )
         if not provenance:
             continue
         item.metadata["discovery_query_ids"] = sorted(provenance["queryIds"])
@@ -290,7 +347,82 @@ def apply_query_provenance(merged_items: list, topic_items: list) -> None:
             if "priority" in provenance["priorities"]
             else "standard"
         )
+        item.metadata["must_review"] = bool(provenance["mustReviewQueryIds"])
+        item.metadata["must_review_query_ids"] = sorted(
+            provenance["mustReviewQueryIds"]
+        )
+        item.metadata["review_lanes"] = sorted(provenance["reviewLanes"])
         item.metadata["required_query"] = bool(provenance["required"])
+
+
+def apply_direct_source_review_provenance(
+    merged_items: list,
+    source_items: list | None = None,
+) -> None:
+    """Mark trusted direct/source-monitor candidates for mandatory review."""
+
+    review_by_url: dict[Any, dict[str, set[str]]] = {}
+    for item in source_items or merged_items:
+        metadata = item.metadata
+        source_ids: set[str] = set()
+        review_lanes: set[str] = set()
+
+        feed_names = metadata_string_list(
+            metadata,
+            "feed_names",
+            "feed_name",
+        )
+        for feed_name in feed_names:
+            feed_review = DIRECT_REVIEW_FEEDS.get(feed_name)
+            if feed_review:
+                source_id, review_lane = feed_review
+                source_ids.add(source_id)
+                review_lanes.add(review_lane)
+
+        subreddits = metadata_string_list(
+            metadata,
+            "subreddits",
+            "subreddit",
+        )
+        for subreddit in subreddits:
+            subreddit_review = DIRECT_REVIEW_SUBREDDITS.get(subreddit)
+            if subreddit_review:
+                source_id, review_lane = subreddit_review
+                source_ids.add(source_id)
+                review_lanes.add(review_lane)
+
+        if not source_ids:
+            continue
+        provenance = review_by_url.setdefault(
+            _deduplication_url_key(str(item.url)),
+            {"sourceIds": set(), "reviewLanes": set()},
+        )
+        provenance["sourceIds"].update(source_ids)
+        provenance["reviewLanes"].update(review_lanes)
+
+    for item in merged_items:
+        metadata = item.metadata
+        source_ids = set(
+            metadata_string_list(
+                metadata,
+                "must_review_source_ids",
+                "must_review_source_id",
+            )
+        )
+        review_lanes = set(
+            metadata_string_list(metadata, "review_lanes", "review_lane")
+        )
+        provenance = review_by_url.get(
+            _deduplication_url_key(str(item.url))
+        )
+        if provenance:
+            source_ids.update(provenance["sourceIds"])
+            review_lanes.update(provenance["reviewLanes"])
+
+        if source_ids:
+            metadata["must_review_source_ids"] = sorted(source_ids)
+            metadata["review_lanes"] = sorted(review_lanes)
+            metadata["must_review"] = True
 
 
 def metadata_string_list(metadata: dict[str, Any], plural: str, singular: str) -> list[str]:
@@ -308,6 +440,15 @@ def compact_candidate(item: dict[str, Any]) -> dict[str, Any]:
 
     metadata = item.get("metadata")
     metadata = metadata if isinstance(metadata, dict) else {}
+    must_review_query_ids = metadata_string_list(
+        metadata, "must_review_query_ids", "must_review_query_id"
+    )
+    must_review_source_ids = metadata_string_list(
+        metadata, "must_review_source_ids", "must_review_source_id"
+    )
+    review_lanes = metadata_string_list(
+        metadata, "review_lanes", "review_lane"
+    )
     return {
         "id": str(item.get("id") or ""),
         "title": str(item.get("title") or ""),
@@ -328,6 +469,14 @@ def compact_candidate(item: dict[str, Any]) -> dict[str, Any]:
             metadata, "coverage_groups", "coverage_group"
         ),
         "priority": str(metadata.get("coverage_priority") or "standard"),
+        "mustReview": bool(
+            metadata.get("must_review")
+            or must_review_query_ids
+            or must_review_source_ids
+        ),
+        "mustReviewQueryIds": must_review_query_ids,
+        "mustReviewSourceIds": must_review_source_ids,
+        "reviewLanes": review_lanes,
     }
 
 
@@ -367,12 +516,28 @@ def build_coverage_manifest(
     group_candidate_ids: dict[str, set[str]] = {
         entry["id"]: set() for entry in catalog["coverageGroups"]
     }
+    review_source_candidate_ids: dict[str, set[str]] = {
+        source_id: set()
+        for source_id, _ in [
+            *DIRECT_REVIEW_FEEDS.values(),
+            *DIRECT_REVIEW_SUBREDDITS.values(),
+        ]
+    }
+    review_lane_candidate_ids: dict[str, set[str]] = {}
     for row in candidate_rows:
         candidate_id = row["id"]
         for query_id in row["queryIds"]:
             query_candidate_ids.setdefault(query_id, set()).add(candidate_id)
         for group_id in row["coverageGroups"]:
             group_candidate_ids.setdefault(group_id, set()).add(candidate_id)
+        for source_id in row["mustReviewSourceIds"]:
+            review_source_candidate_ids.setdefault(source_id, set()).add(
+                candidate_id
+            )
+        for review_lane in row["reviewLanes"]:
+            review_lane_candidate_ids.setdefault(review_lane, set()).add(
+                candidate_id
+            )
 
     report_by_id = {entry["id"]: entry for entry in query_report}
     queries = []
@@ -383,12 +548,18 @@ def build_coverage_manifest(
             "coverageGroup": entry["coverageGroup"],
             "required": entry["required"],
             "priority": entry["priority"],
+            "mustReview": entry["mustReview"],
+            "reviewLane": entry["reviewLane"],
             "language": entry["language"],
             "country": entry["country"],
+            "maxResults": entry["maxResults"],
             "status": report.get("status", "failure"),
             "fetched": int(report.get("fetched", 0)),
             "windowFetched": int(report.get("windowFetched", 0)),
             "attempts": int(report.get("attempts", 0)),
+            "resultLimitReached": bool(
+                report.get("resultLimitReached", False)
+            ),
             "candidateIds": sorted(query_candidate_ids.get(entry["id"], set())),
         }
         if report.get("errorType"):
@@ -412,8 +583,69 @@ def build_coverage_manifest(
             }
         )
 
+    review_sources = [
+        {
+            "id": source_id,
+            "sourceType": "rss",
+            "sourceName": source_name,
+            "reviewLane": review_lane,
+            "candidateIds": sorted(
+                review_source_candidate_ids.get(source_id, set())
+            ),
+        }
+        for source_name, (source_id, review_lane) in sorted(
+            DIRECT_REVIEW_FEEDS.items()
+        )
+    ] + [
+        {
+            "id": source_id,
+            "sourceType": "reddit",
+            "sourceName": subreddit,
+            "reviewLane": review_lane,
+            "candidateIds": sorted(
+                review_source_candidate_ids.get(source_id, set())
+            ),
+        }
+        for subreddit, (source_id, review_lane) in sorted(
+            DIRECT_REVIEW_SUBREDDITS.items()
+        )
+    ]
+
+    review_lanes = []
+    catalog_review_lanes = {
+        entry["reviewLane"]
+        for entry in catalog["queries"]
+        if entry["reviewLane"]
+    }
+    source_review_lanes = {
+        review_lane
+        for _, review_lane in [
+            *DIRECT_REVIEW_FEEDS.values(),
+            *DIRECT_REVIEW_SUBREDDITS.values(),
+        ]
+    }
+    for review_lane in sorted(catalog_review_lanes | source_review_lanes):
+        review_lanes.append(
+            {
+                "id": review_lane,
+                "queryIds": [
+                    entry["id"]
+                    for entry in catalog["queries"]
+                    if entry["reviewLane"] == review_lane
+                ],
+                "sourceIds": [
+                    entry["id"]
+                    for entry in review_sources
+                    if entry["reviewLane"] == review_lane
+                ],
+                "candidateIds": sorted(
+                    review_lane_candidate_ids.get(review_lane, set())
+                ),
+            }
+        )
+
     return {
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "engine": "Horizon",
         "horizonRunId": run_id,
         "reportDate": target_date.isoformat(),
@@ -428,6 +660,13 @@ def build_coverage_manifest(
         "candidateIndexPath": relative_artifact_path(candidate_index_path),
         "candidateIndexSha256": candidate_index_sha256,
         "candidateCount": len(candidate_rows),
+        "mustReviewCandidateIds": sorted(
+            {
+                row["id"]
+                for row in candidate_rows
+                if row["mustReview"]
+            }
+        ),
         "requiredQueryIds": [
             entry["id"] for entry in queries if entry["required"]
         ],
@@ -436,6 +675,8 @@ def build_coverage_manifest(
         ],
         "queries": queries,
         "groups": groups,
+        "reviewSources": review_sources,
+        "reviewLanes": review_lanes,
     }
 
 
@@ -539,16 +780,23 @@ def load_discovery_catalog(path: Path) -> dict[str, Any]:
         if not isinstance(query, str) or not query.strip():
             raise ValueError(f"discovery query {query_id} has an empty query")
 
-        max_results = entry.get("maxResults", 100)
+        configured_max_results = entry.get(
+            "maxResults",
+            GOOGLE_NEWS_SAFE_RESULT_LIMIT,
+        )
         if (
-            isinstance(max_results, bool)
-            or not isinstance(max_results, int)
-            or max_results < 1
-            or max_results > 100
+            isinstance(configured_max_results, bool)
+            or not isinstance(configured_max_results, int)
+            or configured_max_results < 1
+            or configured_max_results > 100
         ):
             raise ValueError(
                 f"discovery query {query_id} maxResults must be between 1 and 100"
             )
+        max_results = min(
+            configured_max_results,
+            GOOGLE_NEWS_SAFE_RESULT_LIMIT,
+        )
 
         language = entry.get("language", "en")
         country = entry.get("country", "US")
@@ -574,6 +822,28 @@ def load_discovery_catalog(path: Path) -> dict[str, Any]:
             raise ValueError(
                 f"discovery query {query_id} priority must be priority or standard"
             )
+        must_review = entry.get("mustReview", False)
+        if not isinstance(must_review, bool):
+            raise ValueError(
+                f"discovery query {query_id} mustReview must be boolean"
+            )
+        review_lane = entry.get("reviewLane")
+        if must_review:
+            if not required:
+                raise ValueError(
+                    f"discovery query {query_id} mustReview requires required"
+                )
+            if (
+                not isinstance(review_lane, str)
+                or not REVIEW_LANE_RE.fullmatch(review_lane)
+            ):
+                raise ValueError(
+                    f"discovery query {query_id} must have a hyphen-id reviewLane"
+                )
+        elif review_lane is not None:
+            raise ValueError(
+                f"discovery query {query_id} reviewLane requires mustReview"
+            )
 
         seen_ids.add(query_id)
         validated.append(
@@ -588,6 +858,8 @@ def load_discovery_catalog(path: Path) -> dict[str, Any]:
                 "coverageGroup": coverage_group,
                 "required": required,
                 "priority": priority,
+                "mustReview": must_review,
+                "reviewLane": review_lane,
             }
         )
 
@@ -639,13 +911,14 @@ async def fetch_topic_queries(
 
     async def fetch_one(entry: dict[str, Any]) -> tuple[list, dict[str, Any]]:
         async with semaphore:
+            requested_max_results = entry["maxResults"]
             config = GoogleNewsConfig(
                 enabled=True,
                 query=entry["query"],
                 language=entry["language"],
                 country=entry["country"],
                 ceid=entry["ceid"],
-                max_results=entry["maxResults"],
+                max_results=requested_max_results + 1,
                 category=entry["category"],
             )
             report_entry = dict(entry)
@@ -654,9 +927,12 @@ async def fetch_topic_queries(
                 error_type = None
                 query_token = CURRENT_DISCOVERY_QUERY_ID.set(entry["id"])
                 try:
-                    items = await GoogleNewsScraper(config, client).fetch(since)
+                    fetched_items = await GoogleNewsScraper(
+                        config,
+                        client,
+                    ).fetch(since)
                 except Exception as exc:
-                    items = []
+                    fetched_items = []
                     error_type = type(exc).__name__
                 finally:
                     CURRENT_DISCOVERY_QUERY_ID.reset(query_token)
@@ -682,31 +958,59 @@ async def fetch_topic_queries(
                     )
                     return [], report_entry
 
+                result_limit_reached = (
+                    len(fetched_items) > requested_max_results
+                )
+                items = fetched_items[:requested_max_results]
                 for item in items:
                     item.metadata["discovery_query_id"] = entry["id"]
                     item.metadata["coverage_group"] = entry["coverageGroup"]
                     item.metadata["coverage_priority"] = entry["priority"]
                     item.metadata["required_query"] = entry["required"]
+                    item.metadata["must_review_query"] = entry["mustReview"]
+                    if entry["reviewLane"]:
+                        item.metadata["review_lane"] = entry["reviewLane"]
                 window_count = sum(
                     content_item_in_window(item, window_start, window_end)
                     for item in items
                 )
+                if result_limit_reached and entry["required"]:
+                    status = "failure"
+                    error_type = "GoogleNewsResultLimitReached"
+                elif result_limit_reached:
+                    status = "truncated"
+                    error_type = None
+                else:
+                    status = "success" if items else "empty"
+                    error_type = None
                 report_entry.update(
                     {
-                        "status": "success" if items else "empty",
+                        "status": status,
                         "fetched": len(items),
                         "windowFetched": window_count,
                         "attempts": attempt,
+                        "resultLimitReached": result_limit_reached,
                     }
                 )
+                if error_type:
+                    report_entry["errorType"] = error_type
                 return items, report_entry
 
     google_news_logger.addHandler(failure_recorder)
     try:
-        async with httpx.AsyncClient(timeout=45.0) as client:
-            results = await asyncio.gather(
-                *(fetch_one(entry) for entry in topic_queries)
+        async with httpx.AsyncClient(
+            timeout=GOOGLE_NEWS_REQUEST_TIMEOUT_SECONDS
+        ) as client:
+            results = await asyncio.wait_for(
+                asyncio.gather(
+                    *(fetch_one(entry) for entry in topic_queries)
+                ),
+                timeout=DISCOVERY_QUERY_BUDGET_SECONDS,
             )
+    except asyncio.TimeoutError as exc:
+        raise RuntimeError(
+            "discovery query time budget exceeded; formal run must stop"
+        ) from exc
     finally:
         google_news_logger.removeHandler(failure_recorder)
 
@@ -741,12 +1045,19 @@ async def retry_failed_rss(
             continue
 
         feed_recovered = False
-        for _ in range(2):
+        retry_attempts = (
+            OPTIONAL_RSS_RETRY_ATTEMPTS
+            if feed_name in OPTIONAL_RSS_FEED_NAMES
+            else REQUIRED_RSS_RETRY_ATTEMPTS
+        )
+        for _ in range(retry_attempts):
             recorder = RssFailureRecorder()
             logger = logging.getLogger("src.scrapers.rss")
             logger.addHandler(recorder)
             try:
-                async with httpx.AsyncClient(timeout=45.0) as client:
+                async with httpx.AsyncClient(
+                    timeout=RSS_RETRY_REQUEST_TIMEOUT_SECONDS
+                ) as client:
                     items = await RSSScraper([source], client).fetch(since)
             finally:
                 logger.removeHandler(recorder)
@@ -764,6 +1075,37 @@ async def retry_failed_rss(
         "recovered": recovered,
         "unresolved": unresolved,
     }
+
+
+def required_query_failure_ids(
+    query_report: list[dict[str, Any]],
+) -> list[str]:
+    """Return failed required queries, including required result-cap hits."""
+
+    return [
+        str(entry["id"])
+        for entry in query_report
+        if entry.get("required") is True and entry.get("status") == "failure"
+    ]
+
+
+def finalized_fetch_status(
+    base_status: str | None,
+    unresolved_rss: list[str],
+    query_report: list[dict[str, Any]],
+) -> str | None:
+    """Fail closed when a required discovery query is incomplete."""
+
+    if base_status != "success":
+        return base_status
+    required_unresolved_rss = [
+        feed_name
+        for feed_name in unresolved_rss
+        if feed_name not in OPTIONAL_RSS_FEED_NAMES
+    ]
+    if required_unresolved_rss or required_query_failure_ids(query_report):
+        return "partial"
+    return base_status
 
 
 async def run() -> dict:
@@ -820,6 +1162,7 @@ async def run() -> dict:
     )
     merged_items = orchestrator.merge_cross_source_duplicates(combined_items)
     apply_query_provenance(merged_items, topic_items)
+    apply_direct_source_review_provenance(merged_items, combined_items)
     raw_items = items_to_dicts(merged_items)
     service.run_store.save_items(run_id, "raw", raw_items)
 
@@ -837,9 +1180,22 @@ async def run() -> dict:
         for entry in topic_query_report
         if entry["status"] == "failure"
     ]
-    fetch_status = fetch_result.get("fetch_status")
-    if rss_retry["unresolved"] or topic_failures:
-        fetch_status = "partial"
+    required_topic_failures = required_query_failure_ids(topic_query_report)
+    optional_rss_failures = sorted(
+        feed_name
+        for feed_name in rss_retry["unresolved"]
+        if feed_name in OPTIONAL_RSS_FEED_NAMES
+    )
+    required_rss_failures = sorted(
+        feed_name
+        for feed_name in rss_retry["unresolved"]
+        if feed_name not in OPTIONAL_RSS_FEED_NAMES
+    )
+    fetch_status = finalized_fetch_status(
+        fetch_result.get("fetch_status"),
+        rss_retry["unresolved"],
+        topic_query_report,
+    )
     service.run_store.update_meta(
         run_id,
         {
@@ -847,8 +1203,11 @@ async def run() -> dict:
             "raw_count": fetch_result["fetched"],
             "source_counts": fetch_result["source_counts"],
             "rss_retry": rss_retry,
+            "optional_rss_failures": optional_rss_failures,
+            "required_rss_failures": required_rss_failures,
             "topic_queries": topic_query_report,
             "topic_query_failures": topic_failures,
+            "required_topic_query_failures": required_topic_failures,
             "window_start": window_start.isoformat(),
             "window_end": window_end.isoformat(),
             "window_semantics": "left-closed-right-open",
