@@ -7,6 +7,7 @@
 - 修复每日 AI 新闻“抓到了却仍被静默漏选”和重点消息源不足：宽泛的大型 OR 查询降为补充，OpenAI／Codex 关键人物与产品运营变化、Anthropic、开放权重、Qoder、OpenRouter、GPT-Live、主要中国模型厂商、微信 WeLM、美团 CatPaw、中国光刻与存储改为独立 required 查询；新增 OpenRouter Blog、Qoder Announcements、量子位官网 RSS 及低门槛 r/codex、r/OpenAI 早期发现源。社区源不再逐帖抓评论，避免 Reddit 限流拖慢早晨链路，线索仍须回到一手来源核验。
 - Horizon coverage manifest 升级为 v2，新增 result-limit、review source 与 must-review 证明。Google News 查询最多保留 99 条并请求第 100 条作为探针，只有实际返回第 100 条才判定截断，恰好只有 99 条不再误报；`mustReviewCandidateIds` 同时汇总聚焦查询和指定 RSS／社区发现源命中。schema v4 编辑记录必须逐条选入、合并或具体拒绝这些候选，并用 `sourceCandidateIds` 关联索引。
 - Horizon 的跨来源 URL 合并会保留完整 `feed_names`／`subreddits` 来源集合，指定必审来源即使不是内容最丰富的主项，也不会在首次合并后丢失身份。
+- GitHub 的 v1 历史兼容回归改为核对仓库内登记身份与固定指纹，不再尝试读取 Git 忽略的本地完整 Horizon 运行目录；本地历史数据仍由同一严格指纹约束，CI 不会因缺少个人机器产物而误报失败。
 - 新增 TechCrunch AI、VentureBeat AI、Ars Technica AI、雷峰网、36氪及无需账号的 Tibo 公开检索源作为可选补充。单个补充源失败不阻断整期，但已抓到的候选必须进入审阅，最终事实仍回到可靠或一手来源核验；当前没有直接接入 Tibo 的 X，未来 X 直连仍需用户明确授权。
 - 补充源健康检查不再把“HTTP 成功但返回网页或损坏订阅”误记成真正空结果：无法识别的 RSS／Atom 会进入有界重试和失败记录；必需源最多重试两次，可选源只重试一次并缩短单次等待，避免失效源悄悄漏新闻或拖过 08:00。自动审阅同时把外部标题、摘要和正文统一视为不可信新闻数据，忽略其中试图改流程、执行命令或索取凭证的文字。
 - 固化读者价值选题口径：重大模型／产品、能力／可用性、用量规则、实用开发者工具和可信且显著的价格／额度变化使用同一 7 分门槛，达到门槛后不得因“只是产品新闻”或受众较窄而排除；临时促销、纯娱乐与小型维护仍可低于门槛。时间窗口与事件阶段去重规则未改。

@@ -854,7 +854,7 @@ test("schema 4 provenance requires complete multilingual coverage artifacts", as
   );
 });
 
-test("coverage manifest v2 is required except for the registered 28 July legacy run", async (t) => {
+test("coverage manifest v2 is required except for the exact registered 28 July legacy identity", async (t) => {
   const unregisteredV1 = await writeFormalCoverageFixture(t, {
     manifestSchemaVersion: 1
   });
@@ -863,12 +863,17 @@ test("coverage manifest v2 is required except for the registered 28 July legacy 
     /schemaVersion 1 仅兼容已登记的 run-20260728T014353Z-c4ddc43d/
   );
 
-  await assert.doesNotReject(() => readAndValidateRun(
+  const registeredRun = JSON.parse(await readFile(
     fileURLToPath(new URL(
       "../自动新闻/integrations/lusu-site/runs/2026-07-28-coverage-revision.json",
       import.meta.url
-    ))
+    )),
+    "utf8"
   ));
+  assert.equal(
+    isRegisteredLegacyCoverageManifest(registeredRun, { schemaVersion: 1 }),
+    true
+  );
 });
 
 test("the legacy v1 allowlist is bound to the exact registered artifact fingerprint", () => {
