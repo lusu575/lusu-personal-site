@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-07-29-knowledge-markdown-links",
+      "slug": "2026-07-29-knowledge-markdown-links",
+      "category": "site-updates",
+      "tags": ["网站更新", "知识库", "Markdown", "链接", "图片"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-29T02:14:00.000Z",
+      "updated_at": "2026-07-29T02:14:00.000Z",
+      "published_at": "2026-07-29T02:14:00.000Z",
+      "fallbackOnly": true,
+      "icon": "knowledge",
+      "date": "2026.07.29",
+      "title": {
+        "zh": "知识库正文与图注链接恢复",
+        "en": "Knowledge Article and Caption Links Restored",
+        "ja": "知識庫の本文と画像キャプションのリンクを復元"
+      },
+      "summary": {
+        "zh": "Tool Radar 正文与显式图片图注中的绝对 HTTPS Markdown 链接已恢复为安全可点击链接；七张真实配图同时登记实际尺寸并完善截图等待。",
+        "en": "Absolute HTTPS Markdown links in Tool Radar body copy and explicit image captions are safely clickable again, while all seven real visuals now carry real dimensions and more reliable capture waits.",
+        "ja": "Tool Radar の本文と明示的な画像キャプションにある絶対 HTTPS Markdown リンクを安全にクリックできるよう復元し、7枚の実画像に実寸と安定した取得待機を追加しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-07-29-tool-radar-real-visuals",
       "slug": "2026-07-29-tool-radar-real-visuals",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "后台取消置顶不再被种子还原；返回按钮与目录合并为同一固定侧栏，目录点击会把目标标题对齐并同步高亮。",
         "en": "Admin pin choices now survive seed refreshes. The back control and contents share one anchored sidebar, and contents clicks align and highlight the requested heading.",
         "ja": "管理画面の固定表示設定を seed が戻さないようにし、戻る操作と目次を同じ固定サイドバーへまとめ、目次移動時の見出し位置と選択表示を同期しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-07-28-knowledge-reader-welcome-fixes",
-      "slug": "2026-07-28-knowledge-reader-welcome-fixes",
-      "category": "site-updates",
-      "tags": ["网站更新", "知识库", "阅读体验", "筛选", "欢迎弹窗", "QA"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-07-28T03:15:00.000Z",
-      "updated_at": "2026-07-28T03:15:00.000Z",
-      "published_at": "2026-07-28T03:15:00.000Z",
-      "fallbackOnly": true,
-      "icon": "knowledge",
-      "date": "2026.07.28",
-      "title": {
-        "zh": "知识库阅读与每日欢迎修复",
-        "en": "Knowledge Reading and Daily Welcome Fixes",
-        "ja": "知識庫の閲覧と毎日のウェルカム表示を修正"
-      },
-      "summary": {
-        "zh": "修复文章目录多行高亮与底部裁切，固定返回和回顶控件，更新日志仅留在专属 Tab，并恢复每天首次打开时的欢迎弹窗。",
-        "en": "Fixed multiline contents highlighting and bottom clipping, anchored article navigation, limited Site Updates to its dedicated tab, and restored the welcome window on the first open of each day.",
-        "ja": "複数行目次の強調表示と末尾の切れを直し、記事ナビゲーションを固定し、更新履歴を専用タブだけに限定して、毎日の初回表示でウェルカム画面が開くようにしました。"
       }
     }
   ]

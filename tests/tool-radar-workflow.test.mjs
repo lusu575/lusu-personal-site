@@ -30,6 +30,7 @@ import {
 } from "../自动新闻/integrations/lusu-site/tool-radar/fetch-catalog.mjs";
 import {
   deriveToolKey,
+  publishedToolRadarImagePath,
   sha256Bytes,
   validateRunObject
 } from "../自动新闻/integrations/lusu-site/tool-radar/validate-run.mjs";
@@ -414,11 +415,12 @@ test("图片必须先登记完整 capture brief、三语 caption，并把 captio
   const interveningLineFixture = await createFixture();
   await addToolImages(interveningLineFixture, { count: 1, useSingleObject: true });
   const interveningImage = interveningLineFixture.run.tools[0].image;
+  const interveningPublishedPath = publishedToolRadarImagePath(interveningImage);
   interveningLineFixture.run.delivery.translations.zh.content_markdown =
     interveningLineFixture.run.delivery.translations.zh.content_markdown.replace(
-      `![${interveningImage.alt.zh}](${interveningImage.assetPath})\n`
+      `![${interveningImage.alt.zh}](${interveningPublishedPath})\n`
         + `*${interveningImage.caption.zh}*`,
-      `![${interveningImage.alt.zh}](${interveningImage.assetPath})\n`
+      `![${interveningImage.alt.zh}](${interveningPublishedPath})\n`
         + "这行内容插在图片与 caption 之间。\n"
         + `*${interveningImage.caption.zh}*`
     );
@@ -432,10 +434,11 @@ test("caption 邻接校验兼容 CRLF 和空白行，并保持双图登记顺序
   const fixture = await createFixture();
   await addToolImages(fixture);
   const [firstImage] = fixture.run.tools[0].image;
+  const firstPublishedPath = publishedToolRadarImagePath(firstImage);
   fixture.run.delivery.translations.en.content_markdown =
     fixture.run.delivery.translations.en.content_markdown.replace(
-      `![${firstImage.alt.en}](${firstImage.assetPath})\n*${firstImage.caption.en}*`,
-      `![${firstImage.alt.en}](${firstImage.assetPath})\r\n\r\n*${firstImage.caption.en}*`
+      `![${firstImage.alt.en}](${firstPublishedPath})\n*${firstImage.caption.en}*`,
+      `![${firstImage.alt.en}](${firstPublishedPath})\r\n\r\n*${firstImage.caption.en}*`
     );
   assert.equal(
     (await validateRunObject(fixture.run, { siteRoot: fixture.siteRoot })).selectedToolCount,
@@ -727,11 +730,14 @@ test("生产投递前要求所有登记图片已按同一字节上线", async ()
     }
   }), 1);
   assert.deepEqual(requestedUrls, [
-    `https://lusu575.com/${image.assetPath}`
+    `https://lusu575.com/${publishedToolRadarImagePath(image)}`
   ]);
   assert.equal(
-    publicAssetUrl("https://lusu575.com/api/automation/tool-radar", image.assetPath),
-    `https://lusu575.com/${image.assetPath}`
+    publicAssetUrl(
+      "https://lusu575.com/api/automation/tool-radar",
+      publishedToolRadarImagePath(image)
+    ),
+    `https://lusu575.com/${publishedToolRadarImagePath(image)}`
   );
 
   await assert.rejects(
@@ -795,7 +801,7 @@ test("多张线上图片按登记顺序逐张预检，不再同时发起全部�
   await addToolImages(fixture, { count: 2 });
   const images = registeredToolRadarImages(fixture.run);
   const bytesByUrl = new Map(await Promise.all(images.map(async (image) => [
-    `https://lusu575.com/${image.assetPath}`,
+    `https://lusu575.com/${publishedToolRadarImagePath(image)}`,
     await readFile(resolve(fixture.siteRoot, ...image.assetPath.split("/")))
   ])));
   const requestedUrls = [];
@@ -819,7 +825,7 @@ test("多张线上图片按登记顺序逐张预检，不再同时发起全部�
   }), 2);
   assert.equal(maximumActiveRequests, 1);
   assert.deepEqual(requestedUrls, images.map(
-    (image) => `https://lusu575.com/${image.assetPath}`
+    (image) => `https://lusu575.com/${publishedToolRadarImagePath(image)}`
   ));
 });
 
@@ -1293,7 +1299,7 @@ async function addToolImages(fixture, {
   for (const lang of ["zh", "en", "ja"]) {
     const imageMarkdown = selectedImages
       .map((image) =>
-        `![${image.alt[lang]}](${image.assetPath})\n*${image.caption[lang]}*`)
+        `![${image.alt[lang]}](${publishedToolRadarImagePath(image)})\n*${image.caption[lang]}*`)
       .join("\n\n");
     fixture.run.delivery.translations[lang].content_markdown = fixture.run.delivery
       .translations[lang].content_markdown.replace(

@@ -4,6 +4,8 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 
+import { publishedToolRadarImagePath } from "./validate-run.mjs";
+
 const LANGUAGES = ["zh", "en", "ja"];
 
 function parseArgs(argv) {
@@ -46,7 +48,7 @@ function replaceImageBlock(markdown, image, language) {
   const alt = image.alt?.[language];
   const caption = image.caption?.[language];
   if (!alt || !caption) throw new Error(`${language}/${image.toolKey}: missing alt or caption.`);
-  const replacement = `![${alt}](${image.assetPath})\n\n*${caption}*`;
+  const replacement = `![${alt}](${publishedToolRadarImagePath(image)})\n\n*${caption}*`;
   return markdown.replace(pattern, replacement);
 }
 
@@ -81,7 +83,7 @@ async function main() {
       if (contentMarkdown.includes(image.oldAssetPath)) {
         throw new Error(`${language}/${image.toolKey}: old asset path remains.`);
       }
-      const newCount = contentMarkdown.split(image.assetPath).length - 1;
+      const newCount = contentMarkdown.split(publishedToolRadarImagePath(image)).length - 1;
       if (newCount !== 1) {
         throw new Error(`${language}/${image.toolKey}: expected one new asset reference, found ${newCount}.`);
       }

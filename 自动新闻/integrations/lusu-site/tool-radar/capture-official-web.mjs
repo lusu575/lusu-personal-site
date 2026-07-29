@@ -15,6 +15,7 @@ function parseArgs(argv) {
     width: 1440,
     height: 900,
     waitMs: 3_000,
+    postScrollWaitMs: 5_000,
     targetText: "",
     selector: "",
     offsetY: 72,
@@ -29,6 +30,7 @@ function parseArgs(argv) {
     else if (argument === "--width") options.width = Number(value);
     else if (argument === "--height") options.height = Number(value);
     else if (argument === "--wait-ms") options.waitMs = Number(value);
+    else if (argument === "--post-scroll-wait-ms") options.postScrollWaitMs = Number(value);
     else if (argument === "--target-text") options.targetText = value;
     else if (argument === "--selector") options.selector = value;
     else if (argument === "--offset-y") options.offsetY = Number(value);
@@ -38,7 +40,7 @@ function parseArgs(argv) {
   }
 
   if (!options.url || !options.output) {
-    throw new Error("Usage: capture-official-web.mjs --url <public URL> --output <png> [--target-text <text> | --selector <selector>]");
+    throw new Error("Usage: capture-official-web.mjs --url <public URL> --output <png> [--target-text <text> | --selector <selector>] [--post-scroll-wait-ms <0-5000>]");
   }
   const parsedUrl = new URL(options.url);
   if (parsedUrl.protocol !== "https:") {
@@ -52,6 +54,11 @@ function parseArgs(argv) {
   }
   if (!Number.isInteger(options.waitMs) || options.waitMs < 0 || options.waitMs > 15_000) {
     throw new Error("--wait-ms must be an integer between 0 and 15000.");
+  }
+  if (!Number.isInteger(options.postScrollWaitMs)
+    || options.postScrollWaitMs < 0
+    || options.postScrollWaitMs > 5_000) {
+    throw new Error("--post-scroll-wait-ms must be an integer between 0 and 5000.");
   }
   if (!Number.isFinite(options.offsetY) || options.offsetY < 0 || options.offsetY > options.height / 2) {
     throw new Error("--offset-y must be between 0 and half the viewport height.");
@@ -319,8 +326,74 @@ async function main() {
       throw new Error(`Capture target was not found: ${options.selector || options.targetText}`);
     }
 
-    await evaluate(client, `new Promise((resolvePromise) => requestAnimationFrame(() => requestAnimationFrame(resolvePromise)))`);
-    await new Promise((resolvePromise) => setTimeout(resolvePromise, 100));
+    const visibleImages = await evaluate(client, `(async () => {
+      const intersectsViewport = (image) => {
+        const rect = image.getBoundingClientRect();
+        return rect.width > 16
+          && rect.height > 16
+          && rect.right > 0
+          && rect.bottom > 0
+          && rect.left < innerWidth
+          && rect.top < innerHeight;
+      };
+      const images = [...document.images].filter(intersectsViewport);
+      for (const image of images) image.loading = "eager";
+      const waitForImage = (image) => {
+        if (image.complete) return Promise.resolve();
+        return new Promise((resolvePromise) => {
+          image.addEventListener("load", resolvePromise, { once:true });
+          image.addEventListener("error", resolvePromise, { once:true });
+        });
+      };
+      if (images.length && ${JSON.stringify(options.postScrollWaitMs)} > 0) {
+        await Promise.race([
+          Promise.all(images.map(waitForImage)),
+          new Promise((resolvePromise) => setTimeout(resolvePromise, ${JSON.stringify(options.postScrollWaitMs)}))
+        ]);
+      }
+      const failed = images.filter((image) =>
+        !image.complete || image.naturalWidth < 1 || image.naturalHeight < 1);
+      if (failed.length) {
+        return {
+          ok:false,
+          total:images.length,
+          failed:failed.map((image) => ({
+            src:image.currentSrc || image.src || "",
+            complete:image.complete,
+            naturalWidth:image.naturalWidth,
+            naturalHeight:image.naturalHeight
+          }))
+        };
+      }
+      const decodeResults = await Promise.all(images.map(async (image) => {
+        try {
+          await image.decode();
+          return null;
+        } catch (error) {
+          return { src:image.currentSrc || image.src || "", error:String(error?.message || error) };
+        }
+      }));
+      const decodeFailures = decodeResults.filter(Boolean);
+      if (decodeFailures.length) {
+        return { ok:false, total:images.length, failed:decodeFailures };
+      }
+      if (document.fonts?.ready) await document.fonts.ready;
+      await new Promise((resolvePromise) => requestAnimationFrame(() => requestAnimationFrame(resolvePromise)));
+      return {
+        ok:true,
+        total:images.length,
+        decoded:images.map((image) => ({
+          src:image.currentSrc || image.src || "",
+          naturalWidth:image.naturalWidth,
+          naturalHeight:image.naturalHeight
+        }))
+      };
+    })()`);
+    if (!visibleImages.ok) {
+      throw new Error(
+        `Visible image did not load and decode: ${JSON.stringify(visibleImages.failed)}`
+      );
+    }
     const screenshot = await client.send("Page.captureScreenshot", {
       format: "png",
       fromSurface: true,
@@ -345,9 +418,11 @@ async function main() {
         text: options.targetText || null,
         matchedTag: target.targetTag,
         matchedText: target.targetText || null,
-        offsetY: options.offsetY
+        offsetY: options.offsetY,
+        postScrollWaitMs: options.postScrollWaitMs
       },
       removedSelectors: options.removeSelectors,
+      visibleImages,
       file: options.output,
       bytes: (await readFile(options.output)).byteLength,
       sha256

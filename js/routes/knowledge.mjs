@@ -3,13 +3,13 @@ const articleImageDimensionMap = Object.freeze({
   "assets/images/articles/ai-agent-codex-update-thread.png": Object.freeze({ width: 1910, height: 1226 }),
   "assets/images/articles/ai-agent-gpt-chatroom-prompt.png": Object.freeze({ width: 1745, height: 1465 }),
   "assets/images/articles/ai-agent-gpt-project-context.png": Object.freeze({ width: 1539, height: 1349 }),
-  "assets/images/articles/tool-radar/2026-07-28/60fps-explainer.png": Object.freeze({ width: 1200, height: 675 }),
-  "assets/images/articles/tool-radar/2026-07-28/mobbin-explainer.png": Object.freeze({ width: 1200, height: 675 }),
-  "assets/images/articles/tool-radar/2026-07-28/chatcut-explainer.png": Object.freeze({ width: 1200, height: 675 }),
-  "assets/images/articles/tool-radar/2026-07-28/remotion-explainer.png": Object.freeze({ width: 1200, height: 675 }),
-  "assets/images/articles/tool-radar/2026-07-28/repomix-explainer.png": Object.freeze({ width: 1200, height: 675 }),
-  "assets/images/articles/tool-radar/2026-07-28/context7-explainer.png": Object.freeze({ width: 1200, height: 675 }),
-  "assets/images/articles/tool-radar/2026-07-28/pinokio-explainer.png": Object.freeze({ width: 1200, height: 675 })
+  "assets/images/articles/tool-radar/2026-07-28/60fps-official-gallery.webp": Object.freeze({ width: 1280, height: 800 }),
+  "assets/images/articles/tool-radar/2026-07-28/mobbin-official-patterns.webp": Object.freeze({ width: 1440, height: 900 }),
+  "assets/images/articles/tool-radar/2026-07-28/chatcut-official-ai-timeline.webp": Object.freeze({ width: 1440, height: 900 }),
+  "assets/images/articles/tool-radar/2026-07-28/remotion-official-studio.webp": Object.freeze({ width: 1440, height: 810 }),
+  "assets/images/articles/tool-radar/2026-07-28/repomix-official-browser-pack.webp": Object.freeze({ width: 1280, height: 800 }),
+  "assets/images/articles/tool-radar/2026-07-28/context7-official-doc-chat.webp": Object.freeze({ width: 1020, height: 1554 }),
+  "assets/images/articles/tool-radar/2026-07-28/pinokio-official-install-check.webp": Object.freeze({ width: 1440, height: 825 })
 });
 
 export const PUBLIC_ARTICLE_ARCHIVE_LIMIT = 500;
@@ -38,6 +38,22 @@ export function deduplicateArticleHeadingAnchors(texts) {
 export function articleImageDimensions(src) {
   const key = String(src || "").split("?", 1)[0];
   return articleImageDimensionMap[key] || null;
+}
+
+export function safeArticleLinkHref(value) {
+  const raw = String(value || "").trim();
+  if (!/^https:\/\//i.test(raw)) {
+    return "";
+  }
+  try {
+    const url = new URL(raw);
+    if (url.protocol !== "https:" || !url.hostname || url.username || url.password) {
+      return "";
+    }
+    return url.href;
+  } catch {
+    return "";
+  }
 }
 
 export function normalizeKnowledgeSearchText(value) {
@@ -1568,7 +1584,11 @@ export function createKnowledgeRoute({
     const visibleCaption = explicitCaption || alt;
     if (visibleCaption) {
       const caption = document.createElement("figcaption");
-      caption.textContent = visibleCaption;
+      if (explicitCaption) {
+        appendInlineMarkdown(caption, explicitCaption);
+      } else {
+        caption.textContent = alt;
+      }
       figure.appendChild(caption);
     }
     return figure;
@@ -1589,7 +1609,9 @@ export function createKnowledgeRoute({
   }
 
   function appendInlineMarkdown(parent, text) {
-    const parts = String(text).split(/(`[^`]+`|\*\*[^*]+\*\*)/g).filter(Boolean);
+    const parts = String(text)
+      .split(/(`[^`\r\n]+`|\*\*[^*\r\n]+\*\*|(?<!!)\[[^\]\r\n]+\]\([^\s)\r\n]+\))/g)
+      .filter(Boolean);
     parts.forEach((part) => {
       if (part.startsWith("`") && part.endsWith("`")) {
         const code = document.createElement("code");
@@ -1602,6 +1624,19 @@ export function createKnowledgeRoute({
         strong.textContent = part.slice(2, -2);
         parent.appendChild(strong);
         return;
+      }
+      const link = part.match(/^\[([^\]\r\n]+)\]\(([^\s)\r\n]+)\)$/);
+      if (link) {
+        const href = safeArticleLinkHref(link[2]);
+        if (href) {
+          const anchor = document.createElement("a");
+          anchor.href = href;
+          anchor.textContent = link[1];
+          anchor.target = "_blank";
+          anchor.rel = "noreferrer noopener";
+          parent.appendChild(anchor);
+          return;
+        }
       }
       parent.appendChild(document.createTextNode(part));
     });

@@ -1,6 +1,36 @@
 export const content = {
   updates: [
     {
+      "article_id": "seed-update-2026-07-29-knowledge-markdown-links",
+      "slug": "2026-07-29-knowledge-markdown-links",
+      "category": "site-updates",
+      "tags": ["网站更新", "知识库", "Markdown", "链接", "图片"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-29T02:14:00.000Z",
+      "updated_at": "2026-07-29T02:14:00.000Z",
+      "published_at": "2026-07-29T02:14:00.000Z",
+      "fallbackOnly": true,
+      "icon": "knowledge",
+      "date": "2026.07.29",
+      "title": {
+        "zh": "知识库正文与图注链接恢复",
+        "en": "Knowledge Article and Caption Links Restored",
+        "ja": "知識庫の本文と画像キャプションのリンクを復元"
+      },
+      "summary": {
+        "zh": "Tool Radar 正文与显式图片图注中的绝对 HTTPS Markdown 链接已恢复为安全可点击链接；七张真实配图同时登记实际尺寸并完善截图等待。",
+        "en": "Absolute HTTPS Markdown links in Tool Radar body copy and explicit image captions are safely clickable again, while all seven real visuals now carry real dimensions and more reliable capture waits.",
+        "ja": "Tool Radar の本文と明示的な画像キャプションにある絶対 HTTPS Markdown リンクを安全にクリックできるよう復元し、7枚の実画像に実寸と安定した取得待機を追加しました。"
+      },
+      "content_markdown": {
+        "zh": "# 知识库正文与图注链接恢复\n\nTool Radar 文章保留了已经核实的官网 Markdown 链接，但旧的行内渲染只处理粗体与代码，正文和显式图片图注中的链接会原样显示成标记。本次收尾恢复安全链接，并把七张真实配图的尺寸与截图稳定性一并补齐。\n\n## 链接恢复但不放宽安全边界\n\n- 正文与显式图注只把绝对 HTTPS Markdown 地址渲染为可点击链接。\n- `javascript:`、`data:` 等不安全协议、相对地址，以及带账号或密码的 URL 会被拒绝，不会变成可点击入口。\n- 链接继续使用 DOM 与 `textContent` 构造，不插入未处理 HTML；外部页面在新窗口打开并使用 `noreferrer noopener` 隔离。\n\n## 七张真实图片按真实比例预留空间\n\n- Tool Radar 首期七张官网、官方文档或官方仓库真实图片都登记了实际 `width` 与 `height`。\n- 浏览器会在懒加载开始前预留正确宽高比，减少长文阅读时图片出现造成的布局跳动。\n- 截图工具滚动到目标区域后，会在有限时间内等待可视图片完成加载，再保存最终截图；超时仍会明确失败，不会无限等待。\n\n## 保持原有文章与来源\n\n本次只修复安全 Markdown 呈现、图片尺寸和截图等待，不改变 Tool Radar 文章链接、正文顺序、官方图片来源或每周自动发布规则。",
+        "en": "# Knowledge Article and Caption Links Restored\n\nThe Tool Radar article kept its verified official Markdown links, but the previous inline renderer handled only bold text and code. Links in body copy and explicit image captions therefore appeared as raw markup. This update restores safe links and completes the sizing and capture behavior for all seven real visuals.\n\n## Links return without weakening the safety boundary\n\n- Body copy and explicit captions turn only absolute HTTPS Markdown addresses into clickable links.\n- Unsafe schemes such as `javascript:` and `data:`, relative addresses, and URLs containing a username or password are rejected and never become clickable entries.\n- Links are still built with DOM nodes and `textContent`, never unprocessed HTML. External pages open in a new window with `noreferrer noopener` isolation.\n\n## Seven real visuals reserve their real aspect ratios\n\n- All seven real Tool Radar images from official sites, documentation, or repositories now register their actual `width` and `height`.\n- The browser reserves the correct aspect ratio before lazy loading begins, reducing layout movement while reading a long article.\n- After the capture tool scrolls to its target, it waits for visible images for a bounded period before saving the final screenshot. A timeout still fails explicitly instead of waiting forever.\n\n## Existing content and sources stay intact\n\nThis update changes only safe Markdown presentation, image dimensions, and capture waiting. The Tool Radar article URL, narrative order, official image sources, and weekly publishing rules remain unchanged.",
+        "ja": "# 知識庫の本文と画像キャプションのリンクを復元\n\nTool Radar 記事には確認済みの公式 Markdown リンクが残っていましたが、従来のインライン描画は太字とコードだけを処理していたため、本文と明示的な画像キャプションのリンクが記号のまま表示されていました。今回、安全なリンクを復元し、7枚の実画像の寸法と取得時の安定性も整えました。\n\n## 安全境界を緩めずにリンクを復元\n\n- 本文と明示的なキャプションでは、絶対 HTTPS の Markdown アドレスだけをクリック可能なリンクにします。\n- `javascript:` や `data:` などの危険なスキーム、相対アドレス、ユーザー名やパスワードを含む URL は拒否し、クリック可能にしません。\n- リンクは引き続き DOM と `textContent` で構築し、未処理 HTML は挿入しません。外部ページは新しいウィンドウで開き、`noreferrer noopener` で分離します。\n\n## 7枚の実画像で実際の縦横比を予約\n\n- 公式サイト、公式文書、公式リポジトリから採用した Tool Radar の実画像7枚に、実際の `width` と `height` を登録しました。\n- 遅延読み込みの開始前に正しい縦横比を予約し、長文閲覧中に画像が現れたときのレイアウト移動を減らします。\n- 取得ツールは対象位置までスクロールしたあと、表示中の画像が読み込まれるまで上限付きで待ってから最終スクリーンショットを保存します。時間切れは無限待機せず明示的に失敗します。\n\n## 既存の記事と出典は維持\n\n今回変更するのは安全な Markdown 表示、画像寸法、取得待機だけです。Tool Radar の記事 URL、本文順、公式画像の出典、週次公開ルールは変更しません。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-07-29-tool-radar-real-visuals",
       "slug": "2026-07-29-tool-radar-real-visuals",
       "category": "site-updates",

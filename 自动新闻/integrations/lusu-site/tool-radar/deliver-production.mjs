@@ -7,6 +7,7 @@ import {
   validateCatalogEndpoint
 } from "./fetch-catalog.mjs";
 import {
+  publishedToolRadarImagePath,
   readAndValidateRun,
   sha256Bytes
 } from "./validate-run.mjs";
@@ -230,7 +231,7 @@ export function registeredToolRadarImages(run) {
 export function publicAssetUrl(endpoint, assetPath) {
   const origin = new URL(validateProductionEndpoint(endpoint)).origin;
   const normalizedPath = String(assetPath || "").replaceAll("\\", "/");
-  if (!/^assets\/images\/articles\/tool-radar\/[a-z0-9._/-]+\.(png|jpe?g|webp)$/i
+  if (!/^assets\/images\/articles\/tool-radar\/[a-z0-9._/-]+\.(png|jpe?g|webp)(\?v=[a-f0-9]{12})?$/i
     .test(normalizedPath)
     || /(^|\/)\.\.(\/|$)/.test(normalizedPath)) {
     throw new Error("工具雷达线上图片路径不合法。");
@@ -249,7 +250,7 @@ export async function verifyPublishedToolAssets({
   const images = registeredToolRadarImages(run);
   const retryDelays = validateImageRetryDelays(retryDelaysMs);
   for (const image of images) {
-    const assetUrl = publicAssetUrl(endpoint, image.assetPath);
+    const assetUrl = publicAssetUrl(endpoint, publishedToolRadarImagePath(image));
     const response = await fetchPublishedToolAssetWithRetry({
       assetUrl,
       fetchImpl,
@@ -341,7 +342,7 @@ function validateImageRetryDelays(value) {
 }
 
 function expectedImageMime(assetPath) {
-  const extension = String(assetPath || "").toLowerCase().match(/\.(png|jpe?g|webp)$/)?.[1];
+  const extension = String(assetPath || "").toLowerCase().match(/\.(png|jpe?g|webp)(?:\?|$)/)?.[1];
   if (extension === "png") {
     return "image/png";
   }

@@ -338,6 +338,18 @@ export function sha256Bytes(bytes) {
   return createHash("sha256").update(bytes).digest("hex");
 }
 
+export function publishedToolRadarImagePath(image) {
+  const assetPath = String(image?.assetPath || "").replaceAll("\\", "/");
+  const hash = String(image?.sha256 || "").toLowerCase();
+  expect(
+    /^assets\/images\/articles\/tool-radar\/[a-z0-9._/-]+\.(png|jpe?g|webp)$/i.test(assetPath)
+      && !/(^|\/)\.\.(\/|$)/.test(assetPath),
+    "工具雷达发布图片路径不合法。"
+  );
+  expect(/^[a-f0-9]{64}$/.test(hash), "工具雷达发布图片 SHA-256 不合法。");
+  return `${assetPath}?v=${hash.slice(0, 12)}`;
+}
+
 export function deriveToolKey(canonicalUrl, productSlug) {
   const url = validateHttpsUrl(canonicalUrl, "canonicalUrl", { canonical: true });
   const slug = String(productSlug || "").trim();
@@ -1202,7 +1214,7 @@ function validateArticleTranslation(translation, { lang, run }) {
       expect(images.length === expectedImages.length,
         `${lang} 的 ${expectedNames[index]} 必须按登记数量引用 1–2 张图片。`);
       for (const [imageIndex, expectedImage] of expectedImages.entries()) {
-        expect(images[imageIndex][2] === expectedImage.assetPath,
+        expect(images[imageIndex][2] === publishedToolRadarImagePath(expectedImage),
           `${lang} 的 ${expectedNames[index]} 第 ${imageIndex + 1} 张图片路径或顺序与登记不一致。`);
         expect(images[imageIndex][1] === expectedImage.alt[lang],
           `${lang} 的 ${expectedNames[index]} 第 ${imageIndex + 1} 张图片 alt 与登记不一致。`);
@@ -1222,7 +1234,7 @@ function validateArticleTranslation(translation, { lang, run }) {
   expect(globalImages.length === allImagePaths.length,
     `${lang} 正文含工具区之外的图片或图片数量不一致。`);
   for (const image of globalImages) {
-    expect(/^assets\/images\/articles\/tool-radar\/[a-z0-9._/-]+\.(png|jpe?g|webp)$/i
+    expect(/^assets\/images\/articles\/tool-radar\/[a-z0-9._/-]+\.(png|jpe?g|webp)\?v=[a-f0-9]{12}$/i
       .test(image[2]), `${lang} 正文图片必须是站内 tool-radar 文章资产，禁止热链。`);
   }
 }

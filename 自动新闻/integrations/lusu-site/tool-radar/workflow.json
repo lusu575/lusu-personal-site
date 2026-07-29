@@ -157,7 +157,7 @@
     "requireLocalFile": true,
     "requireSha256": true,
     "requireProductionDeploymentBeforeArticleDelivery": true,
-    "productionAssetVerification": "Before POST, verify registered images sequentially. Retry transient network errors and explicit transient HTTP statuses at most three total attempts; every image must still return 200, use the MIME matching its extension, and have response bytes matching the registered SHA-256.",
+    "productionAssetVerification": "The article must reference <assetPath>?v=<first 12 SHA-256 characters>. Before POST, verify registered images sequentially through that exact cache key. Retry transient network errors and explicit transient HTTP statuses at most three total attempts; every image must still return 200, use the MIME matching its extension, and have response bytes matching the full registered SHA-256.",
     "requireLocalizedAlt": true,
     "requireLocalizedCaption": true,
     "captionMarkdownPlacement": "The next non-empty line after each image must be its registered single-line italicized caption; blank lines and CRLF are tolerated, but no other content may intervene."

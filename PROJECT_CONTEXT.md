@@ -1,5 +1,12 @@
 # PROJECT_CONTEXT.md
 
+## 2026-07-29 知识库安全 Markdown 链接与图片占位
+
+- 知识库正文的标题、段落、列表、引用、说明框与显式图片图注共用安全行内 Markdown 渲染；`[名称](https://...)` 只在目标是无账号凭证的绝对 HTTPS URL 时创建可点击链接。相对地址、协议相对地址、HTTP、`javascript:`、`data:`、`blob:`、`file:`、`mailto:`、`tel:` 及包含用户名或密码的 URL 都保持为不可执行文字。
+- 文章链接继续通过 `document.createElement("a")`、`textContent` 与净化后的 `href` 构建，不使用 `innerHTML`；外部链接固定 `target="_blank"` 与 `rel="noreferrer noopener"`。不支持的复杂 Markdown 保留原文，不能为了“渲染成功”而放宽协议或 HTML 边界。
+- 工具雷达首期七张官方实图在 `articleImageDimensionMap` 登记真实宽高，让原生懒加载和异步解码前就预留正确比例；旧自绘说明图不再保留尺寸登记。文章正文必须使用 `<assetPath>?v=<SHA-256 前 12 位>` 的内容哈希图片地址，生产预检必须请求完全相同的 URL，再校验 MIME、大小与完整 SHA-256，避免 Cloudflare 边缘把资源上线前的 HTML fallback 当成图片缓存。官方页面复核截图在滚动到目标后还要有界等待可视懒加载媒体并确认自然尺寸和解码成功，不能把尚未请求或已经损坏的图片保存进验收截图。
+- 本批公开记录为 `seed-update-2026-07-29-knowledge-markdown-links`，公共／API 表示版本为 `20260729-knowledge-markdown-links-r1`。
+
 ## 2026-07-29 工具雷达正式上线、周更与永久去重
 
 - Knowledge 新增稳定分类 `tool-radar`，公开名称固定为中文“工具雷达”、English “Tool Radar”、日本語“ツールレーダー”。它即使无文章也保留入口，固定排在 `daily-ai-news` 之后、普通分类与 `site-updates` 之前；文章沿用普通知识库摘要与 `h2`／`h3` 目录规则，不继承每日新闻阅读特例。
@@ -518,7 +525,7 @@ Cloudflare Pages 项目状态：
 - 通过 seed 维护 `site-updates` 时，必须同时更新 `functions/api/[[route]].js` 的 `articleSeedStatements`、`cloudflare/schema.sql` 和 `js/data/content.mjs` 的本地 fallback `content.updates`，避免线上 D1、手动 migration 和 D1 不可用兜底显示不一致。
 - 2026-06-11 已清理三篇文章系统测试内容：`xp-site-notes`、`local-ai-workflow`、`fallback-check`；当前保留真实 `site-updates` 更新文章。
 - 文章详情前端使用 slug + 请求语言缓存和请求状态保护，避免语言切换或重渲染时重复拉取同一详情并卡在“读取中”。
-- 文章正文渲染器支持基础 Markdown、有序/无序列表、blockquote、`text` 代码块蓝色说明框，以及白名单路径 `assets/images/articles/` 下的文章图片；仍必须用 DOM/textContent 构建，不能直接插入未处理 HTML。
+- 文章正文渲染器支持基础 Markdown、有序/无序列表、blockquote、`text` 代码块蓝色说明框、白名单路径 `assets/images/articles/` 下的文章图片，以及无账号凭证的绝对 HTTPS Markdown 链接；正文与显式图注都必须用 DOM/textContent 构建，不能直接插入未处理 HTML。外链使用 `target="_blank"` 与 `rel="noreferrer noopener"`，危险协议、相对地址和含用户名或密码的 URL 保持不可执行文字。
 
 公开接口：
 

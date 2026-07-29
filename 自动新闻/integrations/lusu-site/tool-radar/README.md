@@ -43,7 +43,7 @@
 4. 围绕完整语义区块裁切，确保关键标题、输入／动作、输出／结果不被遮挡或截断，并写表达同一结论的三语 alt 与图注。
 5. 脱离正文执行三秒测试，再检查版权、隐私、清晰度、稳定性和项目本地路径。
 6. 不合格就重截、继续寻找同一工具的官方实图或省略。图片可选，但一旦进入运行记录或正文，任何视觉闸门失败都必须停止校验和投递。
-7. 有图的正式期先把本期资产随 `main` 通过 GitHub → Cloudflare Pages 正常路径部署；生产投递器会按登记顺序逐张读取，网络错误及 408／425／429／指定 5xx 最多进行三次有界重试，再严格核对 HTTP 200、与扩展名一致的 MIME 和精确 SHA-256。持续失败、图片未上线、类型错误或字节不一致都不会创建文章。
+7. 有图的正式期先把本期资产随 `main` 通过 GitHub → Cloudflare Pages 正常路径部署；三语正文使用 `<assetPath>?v=<sha256 前 12 位>`，生产投递器会按登记顺序逐张读取同一精确缓存键，网络错误及 408／425／429／指定 5xx 最多进行三次有界重试，再严格核对 HTTP 200、与扩展名一致的 MIME 和完整 SHA-256。持续失败、图片未上线、类型错误或字节不一致都不会创建文章。
 
 官网公开可访问不等于获得一般转载授权。采用有限编辑性截图时必须使用最少画面、显著注明来源，并在运行记录写明权利边界，不能把它描述为“官方授权素材”。
 
@@ -57,7 +57,7 @@
 - `run.schema.json`：运行记录 JSON Schema
 - `fetch-catalog.mjs`：安全获取并保存已发布工具目录快照
 - `configure-production-channel.mjs`：一次性生成并安全保存专用令牌，通过远端 D1 显式开启工具雷达投递与自动公开
-- `capture-official-web.mjs`：使用无痕 Headless Chrome 从公开官方页面按 selector／文字锚点取得可复核界面图，并在退出时关闭浏览器
+- `capture-official-web.mjs`：使用无痕 Headless Chrome 从公开官方页面按 selector／文字锚点取得可复核界面图；滚动到目标后有界等待可视懒加载媒体，再截图并在退出时关闭浏览器
 - `prepare-official-image.mjs`：只做裁切、缩放、压缩和 SHA-256 记录，不生成或绘制视觉内容
 - `prepare-published-visual-revision.mjs`：对首期已发布文章的七个旧图片块做受限、可审计替换，保证标题、摘要和图片块之外的正文不变
 - `evidence/2026-07-28-real-visual-revision.json`：首期七张真实官方图片的来源、权利判断、哈希、三语 alt 与图注
@@ -99,6 +99,6 @@ node "自动新闻/integrations/lusu-site/tool-radar/validate-run.mjs" --run "<�
 
 该模式只证明研究、证据和三语文章通过校验。生产投递器会硬拒绝它；不能原地把试稿改成 production。正式运行必须重新获取带 Bearer 的生产目录快照，使用 `catalogAudit.mode = "authenticated-production"`、`delivery.mode = "production"`、`delivery.status = "pending"` 和新的幂等键。
 
-令牌只从进程环境或被 Git 忽略的根 `.dev.vars` 读取，变量名为 `TOOL_RADAR_TOKEN`。目录快照放在已被 Horizon 子项目忽略的 `自动新闻/data/mcp-runs/`，不得提交令牌、抓取缓存或临时素材。有图的期次还必须先完成正常站点部署；投递器会顺序预检线上图片，对瞬时网络／HTTP 故障做有界重试，并在 POST 前把 HTTP 状态、MIME 与运行记录 SHA-256 全部对齐，避免公开文章引用 404、HTML 错误页或旧缓存图片。
+令牌只从进程环境或被 Git 忽略的根 `.dev.vars` 读取，变量名为 `TOOL_RADAR_TOKEN`。目录快照放在已被 Horizon 子项目忽略的 `自动新闻/data/mcp-runs/`，不得提交令牌、抓取缓存或临时素材。有图的期次还必须先完成正常站点部署；投递器会顺序预检正文使用的内容哈希版本 URL，对瞬时网络／HTTP 故障做有界重试，并在 POST 前把 HTTP 状态、MIME 与运行记录 SHA-256 全部对齐，避免公开文章引用 404、HTML 错误页或旧缓存图片。
 
 后端分类、机器入口、D1 唯一目录、后台控制和根 `package.json` scripts 由主站接线；在这些接线完成前，本目录的生产投递器会安全失败，不能当成已经上线。投递通道启用但 auto-publish 关闭时，成功结果是三语草稿；只有服务端明确返回 `published` 时才进行三语公开回读。

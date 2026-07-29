@@ -16,6 +16,7 @@ import {
   knowledgeSearchTokens,
   normalizeArticleHeadingAnchor,
   normalizeKnowledgeSearchText,
+  safeArticleLinkHref,
   sortKnowledgeArticles
 } from "../js/routes/knowledge.mjs";
 
@@ -86,10 +87,40 @@ test("known article images reserve their intrinsic aspect ratio", () => {
     height: 1465
   });
   assert.deepEqual(
+    articleImageDimensions("assets/images/articles/tool-radar/2026-07-28/context7-official-doc-chat.webp"),
+    { width: 1020, height: 1554 }
+  );
+  assert.deepEqual(
+    articleImageDimensions("assets/images/articles/tool-radar/2026-07-28/60fps-official-gallery.webp?v=1"),
+    { width: 1280, height: 800 }
+  );
+  assert.equal(
     articleImageDimensions("assets/images/articles/tool-radar/2026-07-28/context7-explainer.png"),
-    { width: 1200, height: 675 }
+    null
   );
   assert.equal(articleImageDimensions("assets/images/articles/unknown.png"), null);
+});
+
+test("article Markdown links accept only credential-free absolute HTTPS URLs", () => {
+  assert.equal(safeArticleLinkHref("https://example.com/docs?q=1#start"), "https://example.com/docs?q=1#start");
+  assert.equal(safeArticleLinkHref(" HTTPS://例子.测试/文档 "), "https://xn--fsqu00a.xn--0zwm56d/%E6%96%87%E6%A1%A3");
+  for (const value of [
+    "http://example.com",
+    "javascript:alert(1)",
+    "data:text/html,<script>alert(1)</script>",
+    "blob:https://example.com/id",
+    "file:///tmp/a",
+    "mailto:test@example.com",
+    "tel:+123",
+    "//example.com/path",
+    "/relative/path",
+    "#section",
+    "https://user@example.com/private",
+    "https://user:password@example.com/private",
+    "not a url"
+  ]) {
+    assert.equal(safeArticleLinkHref(value), "", value);
+  }
 });
 
 test("knowledge search normalization and article ordering are deterministic", () => {
@@ -301,7 +332,14 @@ test("article reader uses an observer, in-window scrolling, shareable hashes, an
   assert.match(routeSource, /index = explicitCaption \? captionIndex \+ 1 : index \+ 1/);
   assert.match(routeSource, /image\.alt = explicitCaption \? String\(alt \|\| ""\) : ""/);
   assert.match(routeSource, /const visibleCaption = explicitCaption \|\| alt/);
-  assert.match(routeSource, /caption\.textContent = visibleCaption/);
+  assert.match(routeSource, /if \(explicitCaption\) \{\s*appendInlineMarkdown\(caption, explicitCaption\)/);
+  assert.match(routeSource, /caption\.textContent = alt/);
+  assert.match(routeSource, /const href = safeArticleLinkHref\(link\[2\]\)/);
+  assert.match(routeSource, /const anchor = document\.createElement\("a"\)/);
+  assert.match(routeSource, /anchor\.textContent = link\[1\]/);
+  assert.match(routeSource, /anchor\.target = "_blank"/);
+  assert.match(routeSource, /anchor\.rel = "noreferrer noopener"/);
+  assert.doesNotMatch(routeSource, /caption\.innerHTML|parent\.innerHTML/);
 
   const controls = indexSource.slice(indexSource.indexOf('<div class="knowledge-window-controls"'), indexSource.indexOf('<div class="window-toolbar">'));
   assert.match(controls, /class="close-button"/);
