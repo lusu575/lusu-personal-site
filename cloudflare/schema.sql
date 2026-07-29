@@ -633,6 +633,119 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-07-29-tool-radar-real-visuals',
+  '2026-07-29-tool-radar-real-visuals',
+  'site-updates',
+  '["网站更新","工具雷达","真实界面","图片来源","自动化"]',
+  '', 'published', 0, 0,
+  '2026-07-29T01:10:00.000Z',
+  '2026-07-29T01:10:00.000Z',
+  '2026-07-29T01:10:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  (
+    'seed-update-2026-07-29-tool-radar-real-visuals-zh',
+    'seed-update-2026-07-29-tool-radar-real-visuals',
+    'zh',
+    '工具雷达改用真实官方界面图',
+    '首期 7 张自绘概念图已换成官网、官方文档或官方仓库里的真实界面、案例与成果；每周工作流同步禁止自绘、生成和统一模板图。',
+    '# 工具雷达改用真实官方界面图
+
+工具雷达首期文章保留原链接、标题、正文顺序和发布时间，只把七张难以看懂的自绘概念图换成与对应工具直接相关的真实图片。
+
+## 现在每张图都说明一件具体的事
+
+- 60fps 与 Mobbin 展示真实图库和产品流程分类，不再用抽象方框代替设计参考。
+- ChatCut 与 Remotion 展示实际编辑器、成片预览、AI 操作记录、参数和时间线。
+- Repomix、Context7 与 Pinokio 分别展示仓库打包结果、文档问答界面和安装前的脚本来源确认。
+- 每张图都增加了三语 alt 与图注，明确告诉读者应该看哪里，并链接对应的官方来源页。
+
+## 以后每周都按同一规则取图
+
+图片必须先从网上发现，再回到工具官网、官方功能页、官方文档、官方仓库或官方媒体核实。只接受真实产品界面、官方案例或真实成果；本站自绘说明图、AI 生成图、统一模板卡、仿界面图、搜索缩略图和第三方转载图都会被校验器拒绝。找不到合格实图时，文章保留文字，不再画一张替代图凑版面。
+
+## 来源与发布检查
+
+采用的图片保存官方来源、直接素材或精确截图位置、权利说明、核对时间和 SHA-256，并复制为本站资源而不是外链热链。新图片先随 GitHub 主分支部署，线上字节核对一致后再切换文章引用。',
+    '2026-07-29T01:10:00.000Z',
+    '2026-07-29T01:10:00.000Z'
+  ),
+  (
+    'seed-update-2026-07-29-tool-radar-real-visuals-en',
+    'seed-update-2026-07-29-tool-radar-real-visuals',
+    'en',
+    'Tool Radar Now Uses Real Official Product Visuals',
+    'Seven site-drawn concept diagrams have been replaced with real interfaces, examples, and outputs from official sites, docs, or repositories, while the weekly workflow now rejects drawn, generated, and template visuals.',
+    '# Tool Radar Now Uses Real Official Product Visuals
+
+The first Tool Radar article keeps its original link, title, narrative order, and publication time. Only the seven hard-to-read site-drawn concept diagrams have been replaced with real visuals directly tied to each tool.
+
+## Every image now has one concrete job
+
+- 60fps and Mobbin show real galleries and product-flow categories instead of abstract boxes standing in for design references.
+- ChatCut and Remotion show actual editors, output previews, AI action history, props, and timelines.
+- Repomix, Context7, and Pinokio show packed repository output, a documentation-question interface, and the source check before installation.
+- Every image has trilingual alt text and a caption that tells the reader what to inspect and links to the corresponding official source page.
+
+## The same rule applies every week
+
+Images must first be discovered online and then verified against the tool''s official site, feature page, documentation, repository, or official media. Only real product interfaces, official examples, or real outputs are accepted. Site-drawn diagrams, AI-generated pictures, uniform template cards, simulated interfaces, search thumbnails, and third-party reposts fail validation. If no qualified real visual exists, the article keeps the text and uses no substitute image.
+
+## Source and release checks
+
+Each adopted image records its official source, direct asset or exact capture target, rights note, review time, and SHA-256. It is stored with the site rather than hotlinked. New bytes deploy from the GitHub main branch and the article switches only after the production file matches the reviewed hash.',
+    '2026-07-29T01:10:00.000Z',
+    '2026-07-29T01:10:00.000Z'
+  ),
+  (
+    'seed-update-2026-07-29-tool-radar-real-visuals-ja',
+    'seed-update-2026-07-29-tool-radar-real-visuals',
+    'ja',
+    'ツールレーダーを実際の公式画面へ更新',
+    '初回の自作概念図7枚を、公式サイト・文書・リポジトリの実画面、事例、成果へ置き換え、週次フローでも自作・生成・共通テンプレート画像を禁止しました。',
+    '# ツールレーダーを実際の公式画面へ更新
+
+初回ツールレーダー記事は、元のリンク、タイトル、本文順、公開時刻を維持し、分かりにくかった自作概念図7枚だけを各ツールに直接関係する実画像へ置き換えました。
+
+## 各画像が一つの具体的な役割を持つ
+
+- 60fps と Mobbin は、抽象的な箱ではなく、実際のギャラリーと製品フローの分類を示します。
+- ChatCut と Remotion は、実際のエディター、完成プレビュー、AI の操作記録、Props、タイムラインを示します。
+- Repomix、Context7、Pinokio は、リポジトリのパック結果、文書質問画面、インストール前のスクリプト出所確認をそれぞれ示します。
+- すべての画像に3言語の alt とキャプションを付け、注目する場所と対応する公式情報源を明確にしました。
+
+## 毎週同じ規則で画像を選ぶ
+
+画像はまずオンラインで見つけ、ツールの公式サイト、機能ページ、文書、公式リポジトリ、公式メディアへ戻って確認します。実際の製品画面、公式事例、実際の成果だけを採用し、サイト自作図、AI 生成画像、共通テンプレートカード、模擬画面、検索サムネイル、第三者転載は検証で拒否します。合格する実画像がなければ、文章だけを残し、代替図は作りません。
+
+## 出典と公開確認
+
+採用画像には、公式出典、直接素材または正確な取得位置、権利上の説明、確認時刻、SHA-256 を保存し、外部ホットリンクではなくサイト資産として保持します。新しい画像を GitHub の main から先に配備し、本番上のバイト列が確認済みハッシュと一致してから記事を切り替えます。',
+    '2026-07-29T01:10:00.000Z',
+    '2026-07-29T01:10:00.000Z'
+  )
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-07-29-tool-radar-live',
   '2026-07-29-tool-radar-live',
   'site-updates',

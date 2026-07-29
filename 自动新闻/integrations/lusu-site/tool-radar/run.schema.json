@@ -545,8 +545,13 @@
       "additionalProperties": false,
       "required": [
         "assetPath",
-        "sourceUrl",
+        "sourcePageUrl",
+        "sourceAssetUrl",
+        "captureTarget",
         "rightsBasis",
+        "rightsUrl",
+        "rightsNote",
+        "visualSourceType",
         "sha256",
         "alt",
         "caption",
@@ -555,23 +560,91 @@
         "sequence",
         "visualQa"
       ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "sourceAssetUrl": {
+                "type": "null"
+              }
+            },
+            "required": [
+              "sourceAssetUrl"
+            ]
+          },
+          "then": {
+            "properties": {
+              "captureTarget": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 500
+              }
+            }
+          }
+        }
+      ],
       "properties": {
         "assetPath": {
           "type": "string",
           "pattern": "^assets/images/articles/tool-radar/[a-z0-9._/-]+\\.(?:png|jpe?g|webp)$"
         },
-        "sourceUrl": {
-          "type": [
-            "string",
-            "null"
+        "sourcePageUrl": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://[^\\s]+$",
+          "minLength": 9,
+          "maxLength": 2000
+        },
+        "sourceAssetUrl": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "format": "uri",
+              "pattern": "^https://[^\\s]+$",
+              "minLength": 9,
+              "maxLength": 2000
+            }
+          ]
+        },
+        "captureTarget": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 500
+            }
           ]
         },
         "rightsBasis": {
           "enum": [
-            "official-press-kit",
             "official-permitted-download",
-            "original-capture-with-permission",
-            "original-generated"
+            "official-repository-license",
+            "official-public-editorial-capture"
+          ]
+        },
+        "rightsUrl": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://[^\\s]+$",
+          "minLength": 9,
+          "maxLength": 2000
+        },
+        "rightsNote": {
+          "type": "string",
+          "minLength": 20,
+          "maxLength": 800
+        },
+        "visualSourceType": {
+          "enum": [
+            "official-interface",
+            "official-case-study",
+            "official-output"
           ]
         },
         "sha256": {

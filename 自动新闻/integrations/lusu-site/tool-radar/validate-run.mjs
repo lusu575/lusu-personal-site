@@ -78,6 +78,20 @@ const IMAGE_FRAMINGS = new Set([
   "sequence-start",
   "sequence-end"
 ]);
+const IMAGE_RIGHTS_BASES = new Set([
+  "official-permitted-download",
+  "official-repository-license",
+  "official-public-editorial-capture"
+]);
+const IMAGE_VISUAL_SOURCE_TYPES = new Set([
+  "official-interface",
+  "official-case-study",
+  "official-output"
+]);
+const FORBIDDEN_SYNTHETIC_VISUAL_LANGUAGE =
+  /(?:original[-\s]+generated|self[-\s]+drawn|(?:original )?explanatory (?:visual|diagram|graphic)|generic explanatory template|concept (?:diagram|visual|image|graphic)|自绘|自己画|原创(?:生成|说明)(?:图|视觉)|说明图|示意图|统一(?:说明)?模板|概念(?:说明)?图|自作(?:の)?(?:説明図|概念図)|説明図|概念図|オリジナル生成図)/iu;
+const FORBIDDEN_SYNTHETIC_ASSET_PATH =
+  /(?:^|\/)[^/]*(?:explainer|concept-diagram|self-drawn|original-generated)[^/]*\.(?:png|jpe?g|webp)$/iu;
 const ARTICLE_RULES = {
   zh: {
     titlePrefix: "工具雷达｜",
@@ -528,7 +542,9 @@ async function validateTool(tool, context) {
     label,
     siteRoot: context.siteRoot,
     scheduledDate: context.edition.scheduledDate,
-    edition: context.edition
+    edition: context.edition,
+    canonicalUrl,
+    sources
   });
 }
 
@@ -668,7 +684,14 @@ function validateEvidenceReferences(evidenceIds, key, label, sources) {
   }
 }
 
-async function validateToolImages(value, { label, siteRoot, scheduledDate, edition }) {
+async function validateToolImages(value, {
+  label,
+  siteRoot,
+  scheduledDate,
+  edition,
+  canonicalUrl,
+  sources
+}) {
   const images = normalizeToolImages(value);
   expect(images.length <= 2, `${label}.image 每个工具最多登记 2 张图片。`);
   if (Array.isArray(value)) {
@@ -682,7 +705,9 @@ async function validateToolImages(value, { label, siteRoot, scheduledDate, editi
       label: imageLabel,
       siteRoot,
       scheduledDate,
-      edition
+      edition,
+      canonicalUrl,
+      sources
     });
     const assetPath = String(image.assetPath || "").replaceAll("\\", "/");
     expect(!assetPaths.has(assetPath),
@@ -728,12 +753,24 @@ function normalizeToolImages(value) {
   return Array.isArray(value) ? value : [value];
 }
 
-async function validateImageRecord(image, { label, siteRoot, scheduledDate, edition }) {
+async function validateImageRecord(image, {
+  label,
+  siteRoot,
+  scheduledDate,
+  edition,
+  canonicalUrl,
+  sources
+}) {
   assertObject(image, label);
   assertExactKeys(image, [
     "assetPath",
-    "sourceUrl",
+    "sourcePageUrl",
+    "sourceAssetUrl",
+    "captureTarget",
     "rightsBasis",
+    "rightsUrl",
+    "rightsNote",
+    "visualSourceType",
     "sha256",
     "alt",
     "caption",
@@ -749,17 +786,38 @@ async function validateImageRecord(image, { label, siteRoot, scheduledDate, edit
     `${label}.assetPath 必须位于本期 tool-radar 文章资产目录。`
   );
   expect(!/(^|\/)\.\.(\/|$)/.test(assetPath), `${label}.assetPath 禁止路径穿越。`);
-  expect([
-    "official-press-kit",
-    "official-permitted-download",
-    "original-capture-with-permission",
-    "original-generated"
-  ].includes(image.rightsBasis), `${label}.rightsBasis 不合法。`);
-  if (image.rightsBasis === "original-generated") {
-    expect(image.sourceUrl === null, `${label} 原创生成图的 sourceUrl 必须为 null。`);
+  const sourcePageUrl = validateImageHttpsUrl(
+    image.sourcePageUrl,
+    `${label}.sourcePageUrl`
+  );
+  expect(
+    isOfficialImageSourcePage(sourcePageUrl, canonicalUrl, sources),
+    `${label}.sourcePageUrl 必须来自该工具已登记的官方公开网页、官方文档或官方仓库。`
+  );
+  if (image.sourceAssetUrl === null) {
+    expect(
+      typeof image.captureTarget === "string"
+        && image.captureTarget.trim() === image.captureTarget
+        && image.captureTarget.length >= 3
+        && image.captureTarget.length <= 500,
+      `${label}.sourceAssetUrl 为 null 的页面截图必须记录非空 captureTarget 选择器或语义目标。`
+    );
   } else {
-    validateHttpsUrl(image.sourceUrl, `${label}.sourceUrl`);
+    validateImageHttpsUrl(image.sourceAssetUrl, `${label}.sourceAssetUrl`);
+    expect(
+      image.captureTarget === null
+        || (typeof image.captureTarget === "string"
+          && image.captureTarget.trim() === image.captureTarget
+          && image.captureTarget.length >= 3
+          && image.captureTarget.length <= 500),
+      `${label}.captureTarget 必须为 null 或 3–500 字符的选择器/语义目标。`
+    );
   }
+  expect(IMAGE_RIGHTS_BASES.has(image.rightsBasis), `${label}.rightsBasis 不合法。`);
+  validateImageHttpsUrl(image.rightsUrl, `${label}.rightsUrl`);
+  validateImageRightsNote(image.rightsNote, image.rightsBasis, `${label}.rightsNote`);
+  expect(IMAGE_VISUAL_SOURCE_TYPES.has(image.visualSourceType),
+    `${label}.visualSourceType 只允许真实的官方界面、官方案例或官方成果。`);
   expect(/^[a-f0-9]{64}$/.test(String(image.sha256 || "")),
     `${label}.sha256 不合法。`);
   validateLocalizedText(image.alt, `${label}.alt`, { min: 4, max: 300 });
@@ -772,6 +830,7 @@ async function validateImageRecord(image, { label, siteRoot, scheduledDate, edit
     );
   }
   validateImageCaptureBrief(image.captureBrief, `${label}.captureBrief`);
+  validateNoSyntheticVisualLanguage(image, label);
   expect(IMAGE_FRAMINGS.has(image.framing), `${label}.framing 不合法。`);
   if (image.framing === "standalone") {
     expect(image.sequence === null, `${label} standalone 图片的 sequence 必须为 null。`);
@@ -792,6 +851,87 @@ async function validateImageRecord(image, { label, siteRoot, scheduledDate, edit
   validateImageSignature(bytes, extname(assetPath).toLowerCase(), label);
   expect(sha256Bytes(bytes) === image.sha256,
     `${label}.sha256 与精确文件字节不一致。`);
+}
+
+function validateImageHttpsUrl(value, label) {
+  expect(
+    typeof value === "string"
+      && value.trim() === value
+      && value.length >= 9
+      && value.length <= 2000,
+    `${label} 必须是非空 HTTPS URL，且不能带首尾空白。`
+  );
+  return validateHttpsUrl(value, label);
+}
+
+function isOfficialImageSourcePage(candidateUrl, canonicalUrl, sources) {
+  const officialUrls = [canonicalUrl];
+  for (const source of sources.values()) {
+    if (source.kind.startsWith("official-")) {
+      officialUrls.push(new URL(source.url));
+    }
+  }
+  return officialUrls.some((officialUrl) =>
+    isSameOrDescendantOfficialUrl(candidateUrl, officialUrl));
+}
+
+function isSameOrDescendantOfficialUrl(candidateUrl, officialUrl) {
+  if (normalizeOfficialHost(candidateUrl.hostname)
+    !== normalizeOfficialHost(officialUrl.hostname)) {
+    return false;
+  }
+  const officialPath = officialUrl.pathname.replace(/\/+$/, "") || "/";
+  const candidatePath = candidateUrl.pathname.replace(/\/+$/, "") || "/";
+  return officialPath === "/"
+    || candidatePath === officialPath
+    || candidatePath.startsWith(`${officialPath}/`);
+}
+
+function validateImageRightsNote(note, rightsBasis, label) {
+  expect(
+    typeof note === "string"
+      && note.trim() === note
+      && note.length >= 20
+      && note.length <= 800,
+    `${label} 必须用 20–800 字符说明许可或编辑性引用边界。`
+  );
+  if (rightsBasis === "official-permitted-download") {
+    expect(
+      /(?:permit|permission|authori[sz]ed|download|licen[cs]e|许可|授权|允许|下载|許可|認可|ダウンロード|ライセンス)/iu
+        .test(note),
+      `${label} 必须说明官方下载或许可依据。`
+    );
+  } else if (rightsBasis === "official-repository-license") {
+    expect(
+      /(?:repository|repo|仓库|リポジトリ)/iu.test(note)
+        && /(?:licen[cs]e|MIT|Apache|GPL|BSD|MPL|许可|许可证|ライセンス)/iu.test(note),
+      `${label} 必须同时说明官方仓库和适用许可证。`
+    );
+  } else if (rightsBasis === "official-public-editorial-capture") {
+    expect(
+      /(?:editorial|public (?:page|website)|screenshot|page capture|编辑性|公开(?:网页|页面)|截图|エディトリアル|公開(?:ページ|サイト)|スクリーンショット)/iu
+        .test(note)
+        && /(?:copyright|trademark|rights holder|no endorsement|limited|context|版权|著作权|商标|权利人|不构成背书|仅用于|限定|著作権|商標|権利者|推奨を意味しない)/iu
+          .test(note),
+      `${label} 必须说明公开页面截图的编辑性用途及版权、商标或背书边界。`
+    );
+  }
+}
+
+function validateNoSyntheticVisualLanguage(image, label) {
+  const text = [
+    image.rightsNote,
+    image.captureTarget || "",
+    image.captureBrief.readerQuestion,
+    image.captureBrief.visualClaim,
+    ...image.captureBrief.mustShow,
+    ...LANGUAGES.flatMap((lang) => [image.alt[lang], image.caption[lang]])
+  ].join("\n");
+  expect(
+    !FORBIDDEN_SYNTHETIC_VISUAL_LANGUAGE.test(text)
+      && !FORBIDDEN_SYNTHETIC_ASSET_PATH.test(image.assetPath),
+    `${label} 禁止 original-generated、自绘说明图、概念图或统一说明模板；无合格官方真实图时必须使用 image=null。`
+  );
 }
 
 function validateImageCaptureBrief(brief, label) {

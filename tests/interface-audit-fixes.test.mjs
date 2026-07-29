@@ -35,7 +35,7 @@ test("public modal fixes preserve readable depth and compact failed-video geomet
 });
 
 test("Tool Radar is the newest five-item trilingual projection everywhere", async () => {
-  const updateId = "seed-update-2026-07-29-tool-radar-live";
+  const updateId = "seed-update-2026-07-29-tool-radar-real-visuals";
   const [{ content }, { homeContent }] = await Promise.all([
     import("../js/data/content.mjs"),
     import("../js/data/home-content.mjs")
@@ -64,7 +64,7 @@ test("Tool Radar is the newest five-item trilingual projection everywhere", asyn
 test("Tool Radar public modules use a fresh cache version without invalidating unrelated public assets", () => {
   const stableVersion = "20260726-security-reliability-r1";
   const knowledgeReaderVersion = "20260728-knowledge-archive-r1";
-  const toolRadarVersion = "20260729-tool-radar-live-r1";
+  const toolRadarVersion = "20260729-tool-radar-real-visuals-r1";
   const index = read("index.html");
   const main = read("js/main.js");
   const transferLoader = read("js/features/quick-transfer-loader.mjs");

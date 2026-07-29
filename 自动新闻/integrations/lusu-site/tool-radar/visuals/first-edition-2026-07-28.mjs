@@ -5,6 +5,10 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
+throw new Error(
+  "This site-drawn visual renderer is retired. Do not generate replacement diagrams for Tool Radar; use verified real official visuals or no image."
+);
+
 // First-edition-only renderer for the 2026-07-28 Tool Radar review.
 // It intentionally hardcodes this edition's seven selected tools and must not be
 // treated as the reusable weekly visual workflow. Future editions need a new

@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-07-29-tool-radar-real-visuals",
+      "slug": "2026-07-29-tool-radar-real-visuals",
+      "category": "site-updates",
+      "tags": ["网站更新", "工具雷达", "真实界面", "图片来源", "自动化"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-29T01:10:00.000Z",
+      "updated_at": "2026-07-29T01:10:00.000Z",
+      "published_at": "2026-07-29T01:10:00.000Z",
+      "fallbackOnly": true,
+      "icon": "knowledge",
+      "date": "2026.07.29",
+      "title": {
+        "zh": "工具雷达改用真实官方界面图",
+        "en": "Tool Radar Now Uses Real Official Product Visuals",
+        "ja": "ツールレーダーを実際の公式画面へ更新"
+      },
+      "summary": {
+        "zh": "首期 7 张自绘概念图已换成官网、官方文档或官方仓库里的真实界面、案例与成果；每周工作流同步禁止自绘、生成和统一模板图。",
+        "en": "Seven site-drawn concept diagrams have been replaced with real interfaces, examples, and outputs from official sites, docs, or repositories, while the weekly workflow now rejects drawn, generated, and template visuals.",
+        "ja": "初回の自作概念図7枚を、公式サイト・文書・リポジトリの実画面、事例、成果へ置き換え、週次フローでも自作・生成・共通テンプレート画像を禁止しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-07-29-tool-radar-live",
       "slug": "2026-07-29-tool-radar-live",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "修复文章目录多行高亮与底部裁切，固定返回和回顶控件，更新日志仅留在专属 Tab，并恢复每天首次打开时的欢迎弹窗。",
         "en": "Fixed multiline contents highlighting and bottom clipping, anchored article navigation, limited Site Updates to its dedicated tab, and restored the welcome window on the first open of each day.",
         "ja": "複数行目次の強調表示と末尾の切れを直し、記事ナビゲーションを固定し、更新履歴を専用タブだけに限定して、毎日の初回表示でウェルカム画面が開くようにしました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-07-28-daily-ai-news-coverage-review",
-      "slug": "2026-07-28-daily-ai-news-coverage-review",
-      "category": "site-updates",
-      "tags": ["网站更新", "每日AI新闻", "新闻覆盖", "多语言", "质量复核"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-07-28T01:03:00.000Z",
-      "updated_at": "2026-07-28T01:03:00.000Z",
-      "published_at": "2026-07-28T01:03:00.000Z",
-      "fallbackOnly": true,
-      "icon": "knowledge",
-      "date": "2026.07.28",
-      "title": {
-        "zh": "每日 AI 新闻覆盖与复核升级",
-        "en": "Daily AI News Coverage and Review Expanded",
-        "ja": "毎日AIニュースの収集・再確認を強化"
-      },
-      "summary": {
-        "zh": "每日 AI 新闻新增重点厂商与产业主题覆盖审阅、低产出二次检查及多语言可靠来源，并让标题直接显示当天头条。",
-        "en": "Daily AI News now reviews priority companies and industry topics, performs a second pass for thin editions, accepts reliable multilingual sources, and surfaces the lead story in each title.",
-        "ja": "毎日AIニュースに重点企業・産業テーマの網羅確認、件数が少ない場合の再確認、多言語の信頼できる情報源を追加し、タイトルには当日のトップニュースを表示します。"
       }
     }
   ]

@@ -220,6 +220,142 @@ test("每个工具可按登记顺序引用一到两张不同的站内图片", as
   );
 });
 
+test("采用图片只接受官方真实界面、官方案例或真实成果，并完整记录来源与权利边界", async () => {
+  const editorialFixture = await createFixture();
+  await addToolImages(editorialFixture, { count: 1, useSingleObject: true });
+  Object.assign(editorialFixture.run.tools[0].image, {
+    sourcePageUrl: "https://alpha.example/product/editor",
+    sourceAssetUrl: null,
+    captureTarget: "#product-editor showing the complete input and result panels",
+    rightsBasis: "official-public-editorial-capture",
+    rightsUrl: "https://alpha.example/product/editor",
+    rightsNote: "Public-page screenshot used only for limited editorial identification; copyright and trademarks remain with their rights holders and no endorsement is implied.",
+    visualSourceType: "official-interface"
+  });
+  assert.equal(
+    (await validateRunObject(editorialFixture.run, { siteRoot: editorialFixture.siteRoot }))
+      .selectedToolCount,
+    3
+  );
+
+  const repositoryFixture = await createFixture();
+  await addToolImages(repositoryFixture, { count: 1, useSingleObject: true });
+  repositoryFixture.run.tools[0].evidence.sources.push({
+    id: "official-repository",
+    url: "https://github.com/example/alpha",
+    kind: "official-repository",
+    accessedAt: "2026-07-28T22:10:00+08:00",
+    supports: ["purpose", "capabilities"]
+  });
+  Object.assign(repositoryFixture.run.tools[0].image, {
+    sourcePageUrl: "https://github.com/example/alpha/blob/main/docs/interface.png",
+    sourceAssetUrl: "https://raw.githubusercontent.com/example/alpha/main/docs/interface.png",
+    captureTarget: null,
+    rightsBasis: "official-repository-license",
+    rightsUrl: "https://github.com/example/alpha/blob/main/LICENSE",
+    rightsNote: "The asset is published in the official repository and reused under that repository's MIT license.",
+    visualSourceType: "official-output"
+  });
+  assert.equal(
+    (await validateRunObject(repositoryFixture.run, { siteRoot: repositoryFixture.siteRoot }))
+      .selectedToolCount,
+    3
+  );
+});
+
+test("图片来源必须是已登记官方页面，页面截图缺少 captureTarget 时失败关闭", async () => {
+  const nonOfficialFixture = await createFixture();
+  await addToolImages(nonOfficialFixture, { count: 1, useSingleObject: true });
+  nonOfficialFixture.run.tools[0].image.sourcePageUrl =
+    "https://image-aggregator.example/alpha-screenshot";
+  await assert.rejects(
+    validateRunObject(nonOfficialFixture.run, { siteRoot: nonOfficialFixture.siteRoot }),
+    /必须来自该工具已登记的官方公开网页、官方文档或官方仓库/
+  );
+
+  const missingPageFixture = await createFixture();
+  await addToolImages(missingPageFixture, { count: 1, useSingleObject: true });
+  missingPageFixture.run.tools[0].image.sourcePageUrl = null;
+  await assert.rejects(
+    validateRunObject(missingPageFixture.run, { siteRoot: missingPageFixture.siteRoot }),
+    /sourcePageUrl 必须是非空 HTTPS URL/
+  );
+
+  const missingTargetFixture = await createFixture();
+  await addToolImages(missingTargetFixture, { count: 1, useSingleObject: true });
+  Object.assign(missingTargetFixture.run.tools[0].image, {
+    sourceAssetUrl: null,
+    captureTarget: null,
+    rightsBasis: "official-public-editorial-capture",
+    rightsUrl: "https://alpha.example/showcase/example-1",
+    rightsNote: "Public-page screenshot used only for limited editorial identification; copyright and trademarks remain with their rights holders."
+  });
+  await assert.rejects(
+    validateRunObject(missingTargetFixture.run, { siteRoot: missingTargetFixture.siteRoot }),
+    /页面截图必须记录非空 captureTarget/
+  );
+});
+
+test("图片契约拒绝生成图、自绘说明图、概念模板和非真实 visualSourceType", async () => {
+  const generatedBasisFixture = await createFixture();
+  await addToolImages(generatedBasisFixture, { count: 1, useSingleObject: true });
+  generatedBasisFixture.run.tools[0].image.rightsBasis = "original-generated";
+  await assert.rejects(
+    validateRunObject(generatedBasisFixture.run, { siteRoot: generatedBasisFixture.siteRoot }),
+    /rightsBasis 不合法/
+  );
+
+  const selfDrawnFixture = await createFixture();
+  await addToolImages(selfDrawnFixture, { count: 1, useSingleObject: true });
+  selfDrawnFixture.run.tools[0].image.captureBrief.visualClaim =
+    "This self-drawn explanatory visual summarizes Alpha without showing the real product.";
+  await assert.rejects(
+    validateRunObject(selfDrawnFixture.run, { siteRoot: selfDrawnFixture.siteRoot }),
+    /禁止 original-generated、自绘说明图、概念图或统一说明模板/
+  );
+
+  const conceptFixture = await createFixture();
+  await addToolImages(conceptFixture, { count: 1, useSingleObject: true });
+  conceptFixture.run.tools[0].image.assetPath =
+    "assets/images/articles/tool-radar/2026-07-28/alpha-concept-diagram.png";
+  await assert.rejects(
+    validateRunObject(conceptFixture.run, { siteRoot: conceptFixture.siteRoot }),
+    /禁止 original-generated、自绘说明图、概念图或统一说明模板/
+  );
+
+  const invalidTypeFixture = await createFixture();
+  await addToolImages(invalidTypeFixture, { count: 1, useSingleObject: true });
+  invalidTypeFixture.run.tools[0].image.visualSourceType = "original-explainer";
+  await assert.rejects(
+    validateRunObject(invalidTypeFixture.run, { siteRoot: invalidTypeFixture.siteRoot }),
+    /visualSourceType 只允许真实的官方界面、官方案例或官方成果/
+  );
+});
+
+test("图片 rightsUrl 必须是 HTTPS，rightsNote 必须说明许可或编辑性引用边界", async () => {
+  const rightsUrlFixture = await createFixture();
+  await addToolImages(rightsUrlFixture, { count: 1, useSingleObject: true });
+  rightsUrlFixture.run.tools[0].image.rightsUrl = "";
+  await assert.rejects(
+    validateRunObject(rightsUrlFixture.run, { siteRoot: rightsUrlFixture.siteRoot }),
+    /rightsUrl 必须是非空 HTTPS URL/
+  );
+
+  const vagueEditorialFixture = await createFixture();
+  await addToolImages(vagueEditorialFixture, { count: 1, useSingleObject: true });
+  Object.assign(vagueEditorialFixture.run.tools[0].image, {
+    sourceAssetUrl: null,
+    captureTarget: "#complete-product-interface",
+    rightsBasis: "official-public-editorial-capture",
+    rightsUrl: "https://alpha.example/showcase/example-1",
+    rightsNote: "This is a screenshot from the public page."
+  });
+  await assert.rejects(
+    validateRunObject(vagueEditorialFixture.run, { siteRoot: vagueEditorialFixture.siteRoot }),
+    /必须说明公开页面截图的编辑性用途及版权、商标或背书边界/
+  );
+});
+
 test("图片必须先登记完整 capture brief、三语 caption，并把 caption 放在图片正下方", async () => {
   const emptyBriefFixture = await createFixture();
   await addToolImages(emptyBriefFixture, { count: 1, useSingleObject: true });
@@ -885,6 +1021,35 @@ test("run.schema.json 是独立 schema v1，并声明 3–10 工具与每工具�
     schema.$defs.toolImage.properties.framing.enum,
     ["standalone", "sequence-start", "sequence-end"]
   );
+  assert.deepEqual(schema.$defs.toolImage.required, [
+    "assetPath",
+    "sourcePageUrl",
+    "sourceAssetUrl",
+    "captureTarget",
+    "rightsBasis",
+    "rightsUrl",
+    "rightsNote",
+    "visualSourceType",
+    "sha256",
+    "alt",
+    "caption",
+    "captureBrief",
+    "framing",
+    "sequence",
+    "visualQa"
+  ]);
+  assert.deepEqual(schema.$defs.toolImage.properties.rightsBasis.enum, [
+    "official-permitted-download",
+    "official-repository-license",
+    "official-public-editorial-capture"
+  ]);
+  assert.deepEqual(schema.$defs.toolImage.properties.visualSourceType.enum, [
+    "official-interface",
+    "official-case-study",
+    "official-output"
+  ]);
+  assert.equal(schema.$defs.toolImage.properties.sourcePageUrl.pattern, "^https://[^\\s]+$");
+  assert.equal(schema.$defs.toolImage.properties.rightsUrl.pattern, "^https://[^\\s]+$");
 
   const workflow = JSON.parse(await readFile(resolve(
     "自动新闻/integrations/lusu-site/tool-radar/workflow.json"
@@ -903,7 +1068,23 @@ test("run.schema.json 是独立 schema v1，并声明 3–10 工具与每工具�
     ["sequence-start", "sequence-end"]
   );
   assert.equal(workflow.images.twoImageSequence.differentInformationRolesRequired, true);
+  assert.deepEqual(workflow.images.allowedVisualSourceTypes, [
+    "official-interface",
+    "official-case-study",
+    "official-output"
+  ]);
+  assert.deepEqual(workflow.images.allowedRightsBasis, [
+    "official-permitted-download",
+    "official-repository-license",
+    "official-public-editorial-capture"
+  ]);
+  assert.equal(workflow.images.sourcePageUrlRequired, true);
+  assert.equal(workflow.images.captureTargetRequiredWhenSourceAssetUrlNull, true);
+  assert.equal(workflow.images.rightsEvidenceRequired, true);
   assert.match(workflow.images.selectionRule, /interface.*workflow.*output\/result/i);
+  assert.match(workflow.images.realSourceOnlyRule, /Never create, draw, generate, or template/i);
+  assert.match(workflow.images.realSourceOnlyRule, /image to null/i);
+  assert.doesNotMatch(workflow.images.visualQaPassPolicy, /generate an original/i);
   assert.match(workflow.images.semanticCompletenessRule, /mustShow.*must not be clipped/i);
   assert.match(workflow.images.genericHomepageHeroPolicy, /homepage hero.*only when/i);
 });
@@ -1060,8 +1241,13 @@ async function addToolImages(fixture, {
   }
   const images = paths.map((assetPath, index) => ({
     assetPath,
-    sourceUrl: `https://alpha.example/media/example-${index + 1}.png`,
+    sourcePageUrl: `https://alpha.example/showcase/example-${index + 1}`,
+    sourceAssetUrl: `https://alpha.example/media/example-${index + 1}.png`,
+    captureTarget: null,
     rightsBasis: "official-permitted-download",
+    rightsUrl: "https://alpha.example/media-usage",
+    rightsNote: "The official media page explicitly permits downloading and reusing this asset under its stated terms.",
+    visualSourceType: index === 0 ? "official-interface" : "official-output",
     sha256: sha256Bytes(imageBytes[index]),
     alt: alt[index],
     caption: captions[index],

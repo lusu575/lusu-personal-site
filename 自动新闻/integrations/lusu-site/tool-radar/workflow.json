@@ -100,7 +100,17 @@
       "minimum": 2,
       "maximum": 5
     },
-    "selectionRule": "Each image must explain a concrete product interface, workflow step, or output/result that supports the surrounding tool introduction.",
+    "selectionRule": "Each adopted image must be a real product interface, official case study, or real product output obtained from the tool's official public website, official documentation, official repository, or official media page. It must explain a concrete interface, workflow step, or output/result that supports the surrounding introduction.",
+    "realSourceOnlyRule": "Never create, draw, generate, or template an article image. Original-generated visuals, self-drawn explainers, concept diagrams, look-alike mockups, and repeated generic templates are forbidden. If no qualifying official real visual exists, set image to null.",
+    "allowedVisualSourceTypes": [
+      "official-interface",
+      "official-case-study",
+      "official-output"
+    ],
+    "sourcePageUrlRequired": true,
+    "sourcePageOfficialEvidenceRule": "sourcePageUrl must be a non-empty HTTPS URL within the product's registered official-product, official-docs, official-repository, official-release, or other official evidence page hierarchy.",
+    "sourceAssetUrlPolicy": "Record the direct HTTPS asset URL when adopting an official downloadable asset. For an editorial screenshot of an official public page, sourceAssetUrl may be null only when captureTarget records the exact CSS selector or a precise semantic capture target.",
+    "captureTargetRequiredWhenSourceAssetUrlNull": true,
     "semanticCompletenessRule": "The image and its localized caption must answer the reader question and prove the visual claim without relying on a random viewport crop. Tool identity and every mustShow element must remain legible and materially complete; key headings, actions, inputs, outputs, or results must not be clipped.",
     "threeSecondReviewRule": "A reviewer looking only at the image and caption for three seconds must be able to identify the tool, the action or context, and the result or benefit being demonstrated.",
     "visualQaRequiredForEachIncludedImage": true,
@@ -111,7 +121,7 @@
       "privacyClean",
       "articleWidthReadable"
     ],
-    "visualQaPassPolicy": "Every visual QA check must be true and reviewedAt must fall within the edition execution window. If any check fails, recapture, replace, generate an original explanatory visual, or omit the image.",
+    "visualQaPassPolicy": "Every visual QA check must be true and reviewedAt must fall within the edition execution window. If any check fails, recapture or replace it with another qualifying official real visual; otherwise omit the image.",
     "genericHomepageHeroPolicy": "A generic homepage hero is allowed only when the captured visual itself explains a verified product function; decorative or context-free homepage captures are not useful article images.",
     "singleImageFraming": "standalone",
     "twoImageSequence": {
@@ -138,11 +148,12 @@
       "webp"
     ],
     "allowedRightsBasis": [
-      "official-press-kit",
       "official-permitted-download",
-      "original-capture-with-permission",
-      "original-generated"
+      "official-repository-license",
+      "official-public-editorial-capture"
     ],
+    "rightsEvidenceRequired": true,
+    "rightsEvidenceRule": "Every adopted image must include a non-empty HTTPS rightsUrl plus a rightsNote that explains the permission or repository license, or clearly limits a public-page screenshot to editorial identification while preserving copyright, trademark, and non-endorsement boundaries.",
     "requireLocalFile": true,
     "requireSha256": true,
     "requireProductionDeploymentBeforeArticleDelivery": true,

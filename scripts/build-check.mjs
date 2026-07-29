@@ -793,7 +793,7 @@ const redirectsConfig = readRequired("_redirects");
 const routeLazyVersion = "20260726-security-reliability-r1";
 const trustSafetyStatusVersion = "20260726-security-reliability-r1";
 const knowledgeReaderVersion = "20260728-knowledge-archive-r1";
-const toolRadarVersion = "20260729-tool-radar-live-r1";
+const toolRadarVersion = "20260729-tool-radar-real-visuals-r1";
 const routeStyleVersion = knowledgeReaderVersion;
 const publicRouteVersion = (route) => route === "knowledge"
   ? toolRadarVersion
@@ -4193,13 +4193,13 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-07-29-tool-radar-live";
-const finalUpdateSlug = "2026-07-29-tool-radar-live";
+const finalUpdateId = "seed-update-2026-07-29-tool-radar-real-visuals";
+const finalUpdateSlug = "2026-07-29-tool-radar-real-visuals";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Tool Radar Is Live with Weekly Publishing";
-const finalPublishedAt = "2026-07-28T16:45:00.000Z";
+const finalTitleEn = "Tool Radar Now Uses Real Official Product Visuals";
+const finalPublishedAt = "2026-07-29T01:10:00.000Z";
 const finalTranslationMinimums = {
   title: 8,
   summary: 24,

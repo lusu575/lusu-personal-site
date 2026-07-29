@@ -17,7 +17,6 @@
     "tool-radar:validate": "node \"自动新闻/integrations/lusu-site/tool-radar/validate-run.mjs\"",
     "tool-radar:deliver:production": "node \"自动新闻/integrations/lusu-site/tool-radar/deliver-production.mjs\"",
     "tool-radar:configure:production": "node \"自动新闻/integrations/lusu-site/tool-radar/configure-production-channel.mjs\"",
-    "tool-radar:prepare:first-edition": "node \"自动新闻/integrations/lusu-site/tool-radar/prepare-first-edition-2026-07-28.mjs\"",
     "qa:local": "npm run verify:public-site-release",
     "qa:public-release": "npm run verify:public-site-release",
     "verify:public-site-release": "npm run test && npm run check:public-modules && npm run build && npm run build:production:verify && npm run audit:public-ui:release && npm run audit:a-dark-room && git diff --check && git status --short",

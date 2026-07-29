@@ -1,0 +1,183 @@
+{
+  "schemaVersion": 1,
+  "editionId": "tool-radar-2026-07-28",
+  "revisionReason": "Replace seven site-drawn concept diagrams with directly related official product interfaces, official examples, or official outputs.",
+  "reviewedAt": "2026-07-29T01:00:00.000Z",
+  "images": [
+    {
+      "toolKey": "60fps.design/60fps",
+      "oldAssetPath": "assets/images/articles/tool-radar/2026-07-28/60fps-explainer.png",
+      "assetPath": "assets/images/articles/tool-radar/2026-07-28/60fps-official-gallery.webp",
+      "width": 1280,
+      "height": 800,
+      "sha256": "aba9d47345c33cf8c4aad7523318b586a83ddf7bf243e25ae8da80403ee2021a",
+      "visualSourceType": "official-interface",
+      "sourcePageUrl": "https://60fps.design/",
+      "sourceAssetUrl": null,
+      "captureTarget": "Anonymous fresh-profile capture at 1280x800, anchored to the text “Endless collection of delightful details”, 96px top offset.",
+      "rightsBasis": "official-public-editorial-capture",
+      "rightsUrl": "https://60fps.design/",
+      "rightsNote": "No public reuse grant was found. This is a limited, attributed editorial capture of the public official gallery, used to discuss the product; it is not described as licensed promotional media.",
+      "alt": {
+        "zh": "60fps 官网图库界面，顶部按 3D、AI、Apple、Assistant、Badge 等动效类型筛选，下方展示 Pico Cam 和 Avec 的真实动效卡片",
+        "en": "The official 60fps gallery with motion filters such as 3D, AI, Apple, Assistant, and Badge above real Pico Cam and Avec motion cards",
+        "ja": "60fps 公式ギャラリーで、3D、AI、Apple、Assistant、Badge などの分類と Pico Cam、Avec の実例カードが並ぶ画面"
+      },
+      "caption": {
+        "zh": "来源：[60fps 官方图库](https://60fps.design/)。先看上方的动效术语筛选，再看下方带产品名的真实案例；它能把“这种感觉”变成可检索、可交给 AI 的具体参考。",
+        "en": "Source: the [official 60fps gallery](https://60fps.design/). The motion vocabulary sits above named, real examples, turning “this kind of feeling” into a reference that can be searched and handed to an AI.",
+        "ja": "出典：[60fps 公式ギャラリー](https://60fps.design/)。上の動きの分類語と、製品名付きの実例を一緒に見ることで、「こんな感じ」を検索でき、AI に渡せる具体的な参考へ変えられます。"
+      }
+    },
+    {
+      "toolKey": "mobbin.com/mobbin",
+      "oldAssetPath": "assets/images/articles/tool-radar/2026-07-28/mobbin-explainer.png",
+      "assetPath": "assets/images/articles/tool-radar/2026-07-28/mobbin-official-patterns.webp",
+      "width": 1440,
+      "height": 900,
+      "sha256": "497de96d6d61aea2ee3d40424b9faf7ba2ad1cb3fcf00ac0315e97053f089aea",
+      "visualSourceType": "official-case-study",
+      "sourcePageUrl": "https://mobbin.com/",
+      "sourceAssetUrl": null,
+      "captureTarget": "Anonymous fresh-profile capture at 1440x900, anchored to the text “Find design patterns”, 72px top offset.",
+      "rightsBasis": "official-public-editorial-capture",
+      "rightsUrl": "https://mobbin.com/terms",
+      "rightsNote": "Mobbin states that its service contains third-party interface media and preserves fair-use boundaries. This single, attributed official-page capture is used only for product commentary and does not claim ownership of the interfaces shown.",
+      "alt": {
+        "zh": "Mobbin 官网的设计模式检索区，横向列出 Collections、Checkout、Settings、Login、Subscription & Paywall 五类真实移动界面",
+        "en": "Mobbin's official pattern finder comparing real mobile screens for Collections, Checkout, Settings, Login, and Subscription and Paywall",
+        "ja": "Mobbin 公式のパターン検索画面で、Collections、Checkout、Settings、Login、Subscription & Paywall の実在するモバイル画面を比較している"
+      },
+      "caption": {
+        "zh": "来源：[Mobbin 官方页面](https://mobbin.com/)。画面把五类常见流程并排展示，重点不是照抄某一屏，而是比较同类产品怎样组织收藏、结账、设置、登录和付费墙。",
+        "en": "Source: the [official Mobbin page](https://mobbin.com/). Five common patterns appear side by side; the useful move is comparing how products structure collections, checkout, settings, login, and paywalls rather than copying one screen.",
+        "ja": "出典：[Mobbin 公式ページ](https://mobbin.com/)。五つの代表的なパターンを横に並べ、特定の一画面を写すのではなく、コレクション、決済、設定、ログイン、課金導線の組み立て方を比較できます。"
+      }
+    },
+    {
+      "toolKey": "chatcut.io/chatcut",
+      "oldAssetPath": "assets/images/articles/tool-radar/2026-07-28/chatcut-explainer.png",
+      "assetPath": "assets/images/articles/tool-radar/2026-07-28/chatcut-official-ai-timeline.webp",
+      "width": 1440,
+      "height": 900,
+      "sha256": "2bdad566d227572cd55d8adee874d7c8ceec933f5ce40162be95e34466ae7361",
+      "visualSourceType": "official-output",
+      "sourcePageUrl": "https://chatcut.io/features/ai-motion-graphics",
+      "sourceAssetUrl": null,
+      "captureTarget": "Anonymous fresh-profile capture at 1440x900 of selector .mge-shell, 80px top offset.",
+      "rightsBasis": "official-public-editorial-capture",
+      "rightsUrl": "https://chatcut.io/terms/",
+      "rightsNote": "ChatCut reserves rights in its site media and provides no public republication license. This is one limited, attributed capture of a public product demonstration for commentary, not a copied marketing asset pack.",
+      "alt": {
+        "zh": "ChatCut 官方编辑器，左侧是素材，中间是叠加清单、数字和标题卡的成片预览，右侧显示 AI 指令与执行记录，底部保留图形、视频和音频时间线",
+        "en": "The official ChatCut editor with assets at left, a motion-graphics result in the center, the AI request and action log at right, and editable graphics, video, and audio tracks below",
+        "ja": "ChatCut 公式エディターで、左に素材、中央に動き付きの完成プレビュー、右に AI 指示と実行記録、下にグラフィック・映像・音声のタイムラインがある"
+      },
+      "caption": {
+        "zh": "来源：[ChatCut 官方 AI Motion Graphics 功能页](https://chatcut.io/features/ai-motion-graphics)。右侧一句话要求 AI 加动效，中间立即看到叠加后的成片，底部仍保留图形、视频和音频时间线供继续修改。",
+        "en": "Source: ChatCut's [official AI Motion Graphics page](https://chatcut.io/features/ai-motion-graphics). A plain-language request appears at right, the composited result is visible in the center, and the graphics, video, and audio tracks remain editable below.",
+        "ja": "出典：ChatCut の[公式 AI Motion Graphics 機能ページ](https://chatcut.io/features/ai-motion-graphics)。右側の自然文指示から中央の合成結果へ進み、下にはグラフィック・映像・音声の編集可能なタイムラインが残ります。"
+      }
+    },
+    {
+      "toolKey": "remotion.dev/remotion",
+      "oldAssetPath": "assets/images/articles/tool-radar/2026-07-28/remotion-explainer.png",
+      "assetPath": "assets/images/articles/tool-radar/2026-07-28/remotion-official-studio.webp",
+      "width": 1440,
+      "height": 810,
+      "sha256": "1dd69efe6324c5734440dac4140f7fbea45ffde1a44729caf07e21d19e5a8fce",
+      "visualSourceType": "official-interface",
+      "sourcePageUrl": "https://www.remotion.dev/docs/studio",
+      "sourceAssetUrl": "https://raw.githubusercontent.com/remotion-dev/remotion/c1f26f03e1f982b4fcfad12aad4f9700abeabade/packages/docs/static/img/timeline.png",
+      "captureTarget": null,
+      "rightsBasis": "official-public-editorial-capture",
+      "rightsUrl": "https://www.remotion.dev/docs/license/terms#intellectual-property-rights",
+      "rightsNote": "The Remotion repository license does not grant a general media republication right. This cropped official documentation screenshot is used as a limited, attributed editorial reference to the Studio interface.",
+      "alt": {
+        "zh": "Remotion Studio 官方界面，左侧是 Composition 列表，中间预览车辆动画，右侧调整 Props，底部按帧显示播放控制和时间线",
+        "en": "The official Remotion Studio with compositions on the left, an animated vehicle preview in the center, editable props on the right, and frame controls and a timeline below",
+        "ja": "Remotion Studio 公式画面で、左に Composition、中央に車両アニメーションのプレビュー、右に Props、下にフレーム操作とタイムラインがある"
+      },
+      "caption": {
+        "zh": "来源：[Remotion Studio 官方文档](https://www.remotion.dev/docs/studio)。同一屏同时保留成片预览、参数、Composition 和时间线，说明 Agent 写出的代码仍能逐帧检查和调参。",
+        "en": "Source: the [official Remotion Studio documentation](https://www.remotion.dev/docs/studio). Preview, props, compositions, and timeline stay visible together, so agent-written video code can still be inspected and tuned frame by frame.",
+        "ja": "出典：[Remotion Studio 公式ドキュメント](https://www.remotion.dev/docs/studio)。プレビュー、Props、Composition、タイムラインを同時に確認でき、Agent が書いた動画コードもフレーム単位で点検・調整できます。"
+      }
+    },
+    {
+      "toolKey": "repomix.com/repomix",
+      "oldAssetPath": "assets/images/articles/tool-radar/2026-07-28/repomix-explainer.png",
+      "assetPath": "assets/images/articles/tool-radar/2026-07-28/repomix-official-browser-pack.webp",
+      "width": 1280,
+      "height": 800,
+      "sha256": "c3ed6644c87854daeff0a84e5c049d5c6b9820fc31ae3d5aa80899319cc93fea",
+      "visualSourceType": "official-interface",
+      "sourcePageUrl": "https://github.com/yamadashy/repomix/blob/b921db74351fd9185897a641a8f39c0b82de7fcb/browser/promo/Screenshot_1280x800.png",
+      "sourceAssetUrl": "https://raw.githubusercontent.com/yamadashy/repomix/b921db74351fd9185897a641a8f39c0b82de7fcb/browser/promo/Screenshot_1280x800.png",
+      "captureTarget": null,
+      "rightsBasis": "official-repository-license",
+      "rightsUrl": "https://github.com/yamadashy/repomix/blob/b921db74351fd9185897a641a8f39c0b82de7fcb/LICENSE",
+      "rightsNote": "Official repository documentation asset under the repository MIT license, Copyright 2024 Kazuki Yamada. GitHub interface and marks remain third-party context and are not described as relicensed.",
+      "alt": {
+        "zh": "Repomix 官方浏览器扩展界面，从 GitHub 仓库打开打包器，右侧选择 XML、Markdown 或纯文本和文件范围，底部显示 Pack Summary 与实际输出",
+        "en": "The official Repomix browser-extension flow opening a GitHub repository in the packer, with output formats and file scope above a Pack Summary and the generated content",
+        "ja": "Repomix 公式ブラウザー拡張の画面で、GitHub リポジトリからパッカーを開き、形式と対象範囲を選び、下で Pack Summary と実際の出力を確認している"
+      },
+      "caption": {
+        "zh": "来源：[Repomix 官方仓库素材](https://github.com/yamadashy/repomix/blob/b921db74351fd9185897a641a8f39c0b82de7fcb/browser/promo/Screenshot_1280x800.png)。右侧先选输出格式和文件范围，打包后再从底部摘要与实际内容检查 AI 将收到什么。",
+        "en": "Source: an [official Repomix repository asset](https://github.com/yamadashy/repomix/blob/b921db74351fd9185897a641a8f39c0b82de7fcb/browser/promo/Screenshot_1280x800.png). Choose the format and file scope first, then inspect the summary and actual packed content before giving it to an AI.",
+        "ja": "出典：[Repomix 公式リポジトリ素材](https://github.com/yamadashy/repomix/blob/b921db74351fd9185897a641a8f39c0b82de7fcb/browser/promo/Screenshot_1280x800.png)。形式と対象範囲を選び、Pack Summary と実際の内容を確認してから AI へ渡す流れが分かります。"
+      }
+    },
+    {
+      "toolKey": "context7.com/context7",
+      "oldAssetPath": "assets/images/articles/tool-radar/2026-07-28/context7-explainer.png",
+      "assetPath": "assets/images/articles/tool-radar/2026-07-28/context7-official-doc-chat.webp",
+      "width": 1020,
+      "height": 1554,
+      "sha256": "960ccba578d4ff55e8d8839a07d889492ad9ce2fb48864c8daa34dcbf9ac0e5f",
+      "visualSourceType": "official-interface",
+      "sourcePageUrl": "https://context7.com/docs/howto/chat-widget",
+      "sourceAssetUrl": "https://raw.githubusercontent.com/upstash/context7/b250c2515694eee4b6df4db82fa056df9ed3e306/docs/images/dashboard/chat-widget.png",
+      "captureTarget": null,
+      "rightsBasis": "official-repository-license",
+      "rightsUrl": "https://github.com/upstash/context7/blob/b250c2515694eee4b6df4db82fa056df9ed3e306/LICENSE",
+      "rightsNote": "Official Context7 documentation asset from the MIT-licensed repository, Copyright 2021 Upstash, Inc.; the corresponding official documentation page identifies the same interface and behavior.",
+      "alt": {
+        "zh": "Context7 官方 Chat with Documentation 面板，锁定当前资料库，列出功能、代码示例、配置和 API 等可提问内容，底部有文档提问输入框",
+        "en": "The official Context7 Chat with Documentation panel tied to one library, listing features, code examples, setup, and API details above a documentation question box",
+        "ja": "Context7 公式の Chat with Documentation パネルで、対象ライブラリを固定し、機能、コード例、設定、API を尋ねる入力欄がある"
+      },
+      "caption": {
+        "zh": "来源：[Context7 官方文档](https://context7.com/docs/howto/chat-widget)。面板先锁定当前资料库，再让读者围绕功能、代码示例、配置和 API 细节提问，避免把不同版本的文档混在一起。",
+        "en": "Source: the [official Context7 documentation](https://context7.com/docs/howto/chat-widget). The panel fixes the current library before inviting questions about features, examples, setup, and API details, reducing cross-version mixing.",
+        "ja": "出典：[Context7 公式ドキュメント](https://context7.com/docs/howto/chat-widget)。対象ライブラリを先に固定し、機能、コード例、設定、API の詳細を尋ねるため、異なる版の文書を混ぜにくくなります。"
+      }
+    },
+    {
+      "toolKey": "pinokio.co/pinokio",
+      "oldAssetPath": "assets/images/articles/tool-radar/2026-07-28/pinokio-explainer.png",
+      "assetPath": "assets/images/articles/tool-radar/2026-07-28/pinokio-official-install-check.webp",
+      "width": 1440,
+      "height": 825,
+      "sha256": "02deb8c7ca54348e5fe6e2b296925e88a2ed4c420963b6faef69f618a372c5ba",
+      "visualSourceType": "official-interface",
+      "sourcePageUrl": "https://github.com/pinokiocomputer/pinokio/blob/10fe35dd1a1452ca7e41e0e0c91962fc4e960fd9/README.md",
+      "sourceAssetUrl": "https://raw.githubusercontent.com/pinokiocomputer/pinokio/10fe35dd1a1452ca7e41e0e0c91962fc4e960fd9/install.png",
+      "captureTarget": null,
+      "rightsBasis": "official-repository-license",
+      "rightsUrl": "https://github.com/pinokiocomputer/pinokio/blob/10fe35dd1a1452ca7e41e0e0c91962fc4e960fd9/LICENSE",
+      "rightsNote": "Official README example from the MIT-licensed Pinokio repository, Copyright 2023 Pinokio. The FaceFusion name and mark remain third-party context and are not described as relicensed.",
+      "alt": {
+        "zh": "Pinokio 官方安装确认界面，显示 FaceFusion 项目名、原始 GitHub 脚本地址，以及 Home、Customize 和 Install 三个动作",
+        "en": "The official Pinokio install confirmation showing the FaceFusion project, its original GitHub script URL, and Home, Customize, and Install actions",
+        "ja": "Pinokio 公式のインストール確認画面で、FaceFusion の名前、元の GitHub スクリプト URL、Home、Customize、Install が表示されている"
+      },
+      "caption": {
+        "zh": "来源：[Pinokio 官方 README](https://github.com/pinokiocomputer/pinokio/blob/10fe35dd1a1452ca7e41e0e0c91962fc4e960fd9/README.md)。真正点击安装前，画面会先亮出项目名和原始 GitHub 地址，并保留 Customize 与 Install 两条路径。",
+        "en": "Source: the [official Pinokio README](https://github.com/pinokiocomputer/pinokio/blob/10fe35dd1a1452ca7e41e0e0c91962fc4e960fd9/README.md). Before installation, the screen exposes the project and original GitHub source, then offers separate Customize and Install paths.",
+        "ja": "出典：[Pinokio 公式 README](https://github.com/pinokiocomputer/pinokio/blob/10fe35dd1a1452ca7e41e0e0c91962fc4e960fd9/README.md)。実行前にプロジェクト名と元の GitHub URLを示し、Customize と Install の二つの経路を残します。"
+      }
+    }
+  ]
+}
