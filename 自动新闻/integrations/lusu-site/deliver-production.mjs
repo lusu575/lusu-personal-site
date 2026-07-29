@@ -85,8 +85,7 @@ export function validateProductionEndpoint(value) {
 export function assertProductionSchedule(run, {
   now = new Date(),
   oneShotHistory = false,
-  oneShotRecovery = false,
-  runFingerprint = ""
+  oneShotRecovery = false
 } = {}) {
   if (oneShotHistory && oneShotRecovery) {
     throw new Error("历史样稿与故障恢复模式不能同时启用。");
@@ -98,7 +97,7 @@ export function assertProductionSchedule(run, {
     return { deadlineAt: null, remainingMs: null };
   }
   if (oneShotRecovery) {
-    if (!isAuthorizedOneShotRecovery(run, { now, runFingerprint })) {
+    if (!isAuthorizedOneShotRecovery(run, { now })) {
       throw new Error(
         "--one-shot-recovery 只允许在登记时段投递已锁定指纹的 2026-07-29 故障恢复稿。"
       );
@@ -136,8 +135,7 @@ export function canonicalRunSha256(run) {
 }
 
 export function isAuthorizedOneShotRecovery(run, {
-  now = new Date(),
-  runFingerprint = ""
+  now = new Date()
 } = {}) {
   const nowMs = now.getTime();
   return Number.isFinite(nowMs)
@@ -154,7 +152,7 @@ export function isAuthorizedOneShotRecovery(run, {
     && run?.delivery?.slug === ONE_SHOT_RECOVERY.slug
     && run?.delivery?.idempotencyKey === ONE_SHOT_RECOVERY.idempotencyKey
     && run?.delivery?.source === ONE_SHOT_RECOVERY.source
-    && runFingerprint === ONE_SHOT_RECOVERY.canonicalRunSha256;
+    && canonicalRunSha256(run) === ONE_SHOT_RECOVERY.canonicalRunSha256;
 }
 
 export function validateDeliveryResponse({
@@ -251,10 +249,7 @@ async function main() {
   const { run } = await readAndValidateRun(args.runPath, {
     allowHistoricalOneShot: args.oneShotHistory
   });
-  const schedule = assertProductionSchedule(run, {
-    ...args,
-    runFingerprint: canonicalRunSha256(run)
-  });
+  const schedule = assertProductionSchedule(run, args);
   const endpoint = validateProductionEndpoint(
     process.env.DAILY_AI_NEWS_ENDPOINT || DEFAULT_ENDPOINT
   );

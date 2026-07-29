@@ -1435,7 +1435,7 @@ test("Daily AI News production delivery requires an explicit run and a published
   }), /未确认文章已.*公开/);
 });
 
-test("Daily AI News one-shot recovery is date, run, provenance and fingerprint bound", () => {
+test("Daily AI News one-shot recovery cannot trust caller-supplied metadata alone", () => {
   const recovery = validRun();
   recovery.reportDate = "2026-07-29";
   recovery.windowStart = "2026-07-28T07:00:00+08:00";
@@ -1448,37 +1448,49 @@ test("Daily AI News one-shot recovery is date, run, provenance and fingerprint b
     "daily-ai-news-2026-07-29-query-overflow-recovery-v1";
   recovery.delivery.source = "Codex manual recovery 2026-07-29 query-overflow";
 
-  const authorizedFingerprint =
-    "f8d387ade09d2cada0837d73b5499d8702fb6efeafe59f012624c5ea158dc763";
   const authorizedAt = new Date("2026-07-29T08:30:00+08:00");
-  assert.equal(isAuthorizedOneShotRecovery(recovery, {
+  assert.match(canonicalRunSha256(recovery), /^[a-f0-9]{64}$/);
+  assert.equal(isAuthorizedOneShotRecovery(recovery, { now: authorizedAt }), false);
+  assert.throws(() => assertProductionSchedule(recovery, {
     now: authorizedAt,
-    runFingerprint: authorizedFingerprint
-  }), true);
-  assert.doesNotThrow(() => assertProductionSchedule(recovery, {
-    now: authorizedAt,
-    oneShotRecovery: true,
-    runFingerprint: authorizedFingerprint
-  }));
-
+    oneShotRecovery: true
+  }), /已锁定指纹/);
   assert.throws(() => assertProductionSchedule(recovery, {
     now: authorizedAt
   }), /08:00 硬截止/);
-  assert.equal(isAuthorizedOneShotRecovery(recovery, {
-    now: authorizedAt,
-    runFingerprint: canonicalRunSha256(recovery)
-  }), false);
+});
 
-  const tampered = clone(recovery);
-  tampered.delivery.slug = "daily-ai-news-2026-07-29-tampered";
-  assert.equal(isAuthorizedOneShotRecovery(tampered, {
+test("Daily AI News local recovery artifact matches only the registered immutable run", async (t) => {
+  const recoveryPath = fileURLToPath(new URL(
+    "../自动新闻/data/mcp-runs/run-20260729T003352Z-8fda0f4c/daily_run.json",
+    import.meta.url
+  ));
+  let recovery;
+  try {
+    recovery = JSON.parse(await readFile(recoveryPath, "utf8"));
+  } catch (error) {
+    if (error?.code === "ENOENT") {
+      t.skip("local recovery artifact is intentionally git-ignored");
+      return;
+    }
+    throw error;
+  }
+
+  const authorizedAt = new Date("2026-07-29T08:30:00+08:00");
+  assert.equal(isAuthorizedOneShotRecovery(recovery, { now: authorizedAt }), true);
+  assert.doesNotThrow(() => assertProductionSchedule(recovery, {
     now: authorizedAt,
-    runFingerprint: authorizedFingerprint
-  }), false);
-  assert.equal(isAuthorizedOneShotRecovery(recovery, {
-    now: new Date("2026-07-30T00:00:00+08:00"),
-    runFingerprint: authorizedFingerprint
-  }), false);
+    oneShotRecovery: true
+  }));
+  const tampered = clone(recovery);
+  tampered.delivery.translations.zh.summary += "篡改";
+  assert.equal(isAuthorizedOneShotRecovery(tampered, { now: authorizedAt }), false);
+  assert.equal(
+    isAuthorizedOneShotRecovery(recovery, {
+      now: new Date("2026-07-30T00:00:00+08:00")
+    }),
+    false
+  );
 });
 
 test("Daily AI News production delivery verifies all three public article representations", async () => {
