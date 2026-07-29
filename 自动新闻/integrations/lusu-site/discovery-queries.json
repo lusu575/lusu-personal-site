@@ -239,8 +239,8 @@
       "priority": "priority"
     },
     {
-      "id": "frontier-product-operations-ja",
-      "query": "(OpenAI OR ChatGPT OR Anthropic OR Claude OR Gemini) (発表 OR 公開 OR 提供 OR 料金 OR 制限)",
+      "id": "openai-product-operations-ja",
+      "query": "(OpenAI OR ChatGPT OR Codex) (発表 OR 公開 OR 提供 OR 料金 OR 制限)",
       "language": "ja",
       "country": "JP",
       "maxResults": 100,
@@ -249,7 +249,33 @@
       "required": true,
       "priority": "priority",
       "mustReview": true,
-      "reviewLane": "frontier-product-operations"
+      "reviewLane": "openai-product-operations"
+    },
+    {
+      "id": "anthropic-product-operations-ja",
+      "query": "(Anthropic OR Claude) (発表 OR 公開 OR 提供 OR 料金 OR 制限)",
+      "language": "ja",
+      "country": "JP",
+      "maxResults": 100,
+      "category": "ai-product-operations-watch",
+      "coverageGroup": "global-frontier",
+      "required": true,
+      "priority": "priority",
+      "mustReview": true,
+      "reviewLane": "anthropic-products-policy"
+    },
+    {
+      "id": "gemini-product-operations-ja",
+      "query": "(Gemini OR DeepMind) (発表 OR 公開 OR 提供 OR 料金 OR 制限)",
+      "language": "ja",
+      "country": "JP",
+      "maxResults": 100,
+      "category": "ai-product-operations-watch",
+      "coverageGroup": "global-frontier",
+      "required": true,
+      "priority": "priority",
+      "mustReview": true,
+      "reviewLane": "google-ai-products"
     },
     {
       "id": "frontier-product-operations-ko",

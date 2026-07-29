@@ -166,7 +166,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--hours",
         type=int,
-        default=48,
+        default=24,
         help="Minimum Horizon lookback window before the exact-window filter.",
     )
     parser.add_argument(

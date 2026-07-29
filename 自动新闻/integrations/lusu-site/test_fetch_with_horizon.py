@@ -92,6 +92,11 @@ class FetchWindowTests(unittest.TestCase):
             48,
         )
 
+    def test_default_lookback_only_expands_as_needed_for_exact_window(
+        self,
+    ) -> None:
+        self.assertEqual(MODULE.parse_args([]).hours, 24)
+
     def test_date_mode_remains_available(self) -> None:
         report_date, window_start, window_end = MODULE.resolve_window(
             "2026-07-27",
@@ -115,9 +120,12 @@ class DiscoveryQueryTests(unittest.TestCase):
         self.assertTrue({
             "openai-people-products-en",
             "openai-product-operations-en",
+            "openai-product-operations-ja",
             "anthropic-claude-en",
             "anthropic-product-operations-en",
+            "anthropic-product-operations-ja",
             "frontier-product-operations-en",
+            "gemini-product-operations-ja",
             "frontier-labs-people-en",
             "ai-policy-lobbying-en",
             "ai-lobbying-en",
@@ -193,6 +201,25 @@ class DiscoveryQueryTests(unittest.TestCase):
             self.assertIn(alias, alibaba_ecosystem["query"])
         for action in ["发布", "上线", "开源", "更新", "模型", "产品", "API"]:
             self.assertIn(action, alibaba_ecosystem["query"])
+
+        focused_japanese_product_queries = {
+            "openai-product-operations-ja": "openai-product-operations",
+            "anthropic-product-operations-ja": "anthropic-products-policy",
+            "gemini-product-operations-ja": "google-ai-products",
+        }
+        self.assertNotIn("frontier-product-operations-ja", by_id)
+        for query_id, review_lane in focused_japanese_product_queries.items():
+            entry = by_id[query_id]
+            self.assertEqual(entry["language"], "ja")
+            self.assertEqual(entry["country"], "JP")
+            self.assertEqual(entry["coverageGroup"], "global-frontier")
+            self.assertEqual(
+                entry["maxResults"],
+                MODULE.GOOGLE_NEWS_SAFE_RESULT_LIMIT,
+            )
+            self.assertTrue(entry["required"])
+            self.assertTrue(entry["mustReview"])
+            self.assertEqual(entry["reviewLane"], review_lane)
 
         for supplemental_id in [
             "ai-general-en",

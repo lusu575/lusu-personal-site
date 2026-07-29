@@ -48,7 +48,7 @@
 - 正式工作流使用 schema v4，coverage manifest 使用 schemaVersion 2。Horizon 运行除完整 `daily_candidates.json` 外还提供紧凑 candidate index 与 coverage manifest；编辑记录必须完成 required query 和 entity group 的覆盖审阅签收。`mustReviewCandidateIds` 同时来自聚焦查询和指定 RSS／社区发现源，所有命中都必须逐条处置。初选少于 5 条时强制执行低产量第二轮审阅和定向补查，但 5 条不是最低配额，复核后仍可少于 5 条或无稿，绝不能用窗口外、重复或低价值消息凑数。
 - `自动新闻/integrations/lusu-site/runs/2026-07-28-coverage-revision.json` 在 coverage manifest v2 落地前生成，校验器只按已登记的 run、路径与 SHA-256 指纹允许这一份 schema v4 + manifest v1 历史兼容记录。该例外不得复制、改写或作为新运行模板；所有后续正式运行都必须生成 coverage manifest v2 和完整 `priorityReview`。
 - 发现层不限制来源语言；可靠的中文、英文、日文、韩文及其他语言来源都可以进入候选，并以重点实体的英中日韩常用别名帮助发现。长期重点包括 Anthropic、OpenAI／GPT／Sam Altman／Codex、Kimi／月之暗面、智谱／GLM、千问／Qwen、MiniMax、混元、美团龙猫、字节跳动／豆包／Seed 等模型厂商，以及芯片／光刻／存储、机器人、智能设备、数据中心能源／散热／网络和科技金融。
-- 聚焦查询最多保留 99 条并请求第 100 条作为截断探针：只有实际返回第 100 条才标记 result-limit，恰好只有 99 条不视为截断。TechCrunch AI、VentureBeat AI、Ars Technica AI、雷峰网、36氪和无需账号的 Tibo 公开检索源属于可选补充；单个补充源失败不阻断整期，但成功抓到的候选必须审阅，最终成稿事实仍回到可靠或一手来源核验。Tibo 当前只通过公开网页检索发现线索，没有直接接入 X；X 直连以后仍需用户明确授权。
+- 聚焦查询最多保留 99 条并请求第 100 条作为截断探针：只有实际返回第 100 条才标记 result-limit，恰好只有 99 条不视为截断。高流量的跨厂商查询只能作补充发现；required 产品动态查询按厂商和语言拆分，当前日文 OpenAI／ChatGPT／Codex、Anthropic／Claude、Gemini／DeepMind 使用三条独立必查入口，避免窗口外旧消息先占满单条结果上限。正式入口的默认回看只取 24 小时，并按实际启动时刻向上扩到足以覆盖精确窗口的整小时数，不再固定多取 48 小时。TechCrunch AI、VentureBeat AI、Ars Technica AI、雷峰网、36氪和无需账号的 Tibo 公开检索源属于可选补充；单个补充源失败不阻断整期，但成功抓到的候选必须审阅，最终成稿事实仍回到可靠或一手来源核验。Tibo 当前只通过公开网页检索发现线索，没有直接接入 X；X 直连以后仍需用户明确授权。
 - 跨日去重按 `eventKey + eventStage` 判断，不再把同一主体的全部后续永久视为重复。同一事件同一阶段继续排除；正式发布、正式开源／开放权重等实质新阶段可以作为 material update 入选，但内部记录必须指出前序故事和实质变化。
 
 ## 2026-07-28 每日 AI 新闻阅读格式
