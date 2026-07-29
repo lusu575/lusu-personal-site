@@ -13,6 +13,8 @@ import {
 } from "../自动新闻/integrations/lusu-site/validate-draft.mjs";
 import {
   assertProductionSchedule,
+  canonicalRunSha256,
+  isAuthorizedOneShotRecovery,
   parseProductionArgs,
   publicArticleUrls,
   validateDeliveryResponse,
@@ -1368,10 +1370,31 @@ test("Daily AI News production delivery enforces Beijing 07:00-08:00 and current
 test("Daily AI News production delivery requires an explicit run and a published response", () => {
   assert.deepEqual(
     parseProductionArgs(["--run", "runs/today.json"]),
-    { runPath: "runs/today.json", oneShotHistory: false }
+    {
+      runPath: "runs/today.json",
+      oneShotHistory: false,
+      oneShotRecovery: false
+    }
+  );
+  assert.deepEqual(
+    parseProductionArgs(["--run", "runs/recovery.json", "--one-shot-recovery"]),
+    {
+      runPath: "runs/recovery.json",
+      oneShotHistory: false,
+      oneShotRecovery: true
+    }
   );
   assert.throws(() => parseProductionArgs([]), /必须显式提供 --run/);
   assert.throws(() => parseProductionArgs(["--run", "run.json", "--unexpected"]), /未知参数/);
+  assert.throws(
+    () => parseProductionArgs([
+      "--run",
+      "run.json",
+      "--one-shot-history",
+      "--one-shot-recovery"
+    ]),
+    /不能同时使用/
+  );
   assert.equal(
     validateProductionEndpoint("https://lusu575.com/api/automation/daily-ai-news"),
     "https://lusu575.com/api/automation/daily-ai-news"
@@ -1410,6 +1433,52 @@ test("Daily AI News production delivery requires an explicit run and a published
     },
     run
   }), /未确认文章已.*公开/);
+});
+
+test("Daily AI News one-shot recovery is date, run, provenance and fingerprint bound", () => {
+  const recovery = validRun();
+  recovery.reportDate = "2026-07-29";
+  recovery.windowStart = "2026-07-28T07:00:00+08:00";
+  recovery.windowEnd = "2026-07-29T07:00:00+08:00";
+  recovery.horizonRun.runId = "run-20260729T003352Z-8fda0f4c";
+  recovery.coverageAudit.candidateIndexSha256 =
+    "dfd9665165f7de0beb550eb14bfff13c95e38f77f3b0128f403c238e68a48ec9";
+  recovery.delivery.slug = "daily-ai-news-2026-07-29";
+  recovery.delivery.idempotencyKey =
+    "daily-ai-news-2026-07-29-query-overflow-recovery-v1";
+  recovery.delivery.source = "Codex manual recovery 2026-07-29 query-overflow";
+
+  const authorizedFingerprint =
+    "f8d387ade09d2cada0837d73b5499d8702fb6efeafe59f012624c5ea158dc763";
+  const authorizedAt = new Date("2026-07-29T08:30:00+08:00");
+  assert.equal(isAuthorizedOneShotRecovery(recovery, {
+    now: authorizedAt,
+    runFingerprint: authorizedFingerprint
+  }), true);
+  assert.doesNotThrow(() => assertProductionSchedule(recovery, {
+    now: authorizedAt,
+    oneShotRecovery: true,
+    runFingerprint: authorizedFingerprint
+  }));
+
+  assert.throws(() => assertProductionSchedule(recovery, {
+    now: authorizedAt
+  }), /08:00 硬截止/);
+  assert.equal(isAuthorizedOneShotRecovery(recovery, {
+    now: authorizedAt,
+    runFingerprint: canonicalRunSha256(recovery)
+  }), false);
+
+  const tampered = clone(recovery);
+  tampered.delivery.slug = "daily-ai-news-2026-07-29-tampered";
+  assert.equal(isAuthorizedOneShotRecovery(tampered, {
+    now: authorizedAt,
+    runFingerprint: authorizedFingerprint
+  }), false);
+  assert.equal(isAuthorizedOneShotRecovery(recovery, {
+    now: new Date("2026-07-30T00:00:00+08:00"),
+    runFingerprint: authorizedFingerprint
+  }), false);
 });
 
 test("Daily AI News production delivery verifies all three public article representations", async () => {

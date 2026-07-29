@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -15,6 +16,20 @@ const MINIMUM_REMAINING_WINDOW_MS = 45_000;
 const DEADLINE_SAFETY_MARGIN_MS = 5_000;
 const MAX_RESPONSE_BYTES = 64 * 1024;
 const LANGUAGES = ["zh", "en", "ja"];
+const ONE_SHOT_RECOVERY = Object.freeze({
+  reportDate: "2026-07-29",
+  timezone: "Asia/Shanghai",
+  windowStart: "2026-07-28T07:00:00+08:00",
+  windowEnd: "2026-07-29T07:00:00+08:00",
+  allowedFrom: "2026-07-29T08:00:00+08:00",
+  expiresAt: "2026-07-30T00:00:00+08:00",
+  horizonRunId: "run-20260729T003352Z-8fda0f4c",
+  candidateIndexSha256: "dfd9665165f7de0beb550eb14bfff13c95e38f77f3b0128f403c238e68a48ec9",
+  slug: "daily-ai-news-2026-07-29",
+  idempotencyKey: "daily-ai-news-2026-07-29-query-overflow-recovery-v1",
+  source: "Codex manual recovery 2026-07-29 query-overflow",
+  canonicalRunSha256: "f8d387ade09d2cada0837d73b5499d8702fb6efeafe59f012624c5ea158dc763"
+});
 
 export function parseProductionArgs(argv = process.argv.slice(2)) {
   const runIndex = argv.indexOf("--run");
@@ -22,7 +37,7 @@ export function parseProductionArgs(argv = process.argv.slice(2)) {
   if (!runPath || runPath.startsWith("--")) {
     throw new Error("生产投递必须显式提供 --run <运行记录路径>，拒绝使用可能过期的默认样稿。");
   }
-  const allowed = new Set(["--run", "--one-shot-history"]);
+  const allowed = new Set(["--run", "--one-shot-history", "--one-shot-recovery"]);
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index];
     if (argument === "--run") {
@@ -33,9 +48,15 @@ export function parseProductionArgs(argv = process.argv.slice(2)) {
       throw new Error(`未知参数：${argument}`);
     }
   }
+  const oneShotHistory = argv.includes("--one-shot-history");
+  const oneShotRecovery = argv.includes("--one-shot-recovery");
+  if (oneShotHistory && oneShotRecovery) {
+    throw new Error("--one-shot-history 与 --one-shot-recovery 不能同时使用。");
+  }
   return {
     runPath,
-    oneShotHistory: argv.includes("--one-shot-history")
+    oneShotHistory,
+    oneShotRecovery
   };
 }
 
@@ -63,11 +84,24 @@ export function validateProductionEndpoint(value) {
 
 export function assertProductionSchedule(run, {
   now = new Date(),
-  oneShotHistory = false
+  oneShotHistory = false,
+  oneShotRecovery = false,
+  runFingerprint = ""
 } = {}) {
+  if (oneShotHistory && oneShotRecovery) {
+    throw new Error("历史样稿与故障恢复模式不能同时启用。");
+  }
   if (oneShotHistory) {
     if (!isHistoricalOneShotWindow(run)) {
       throw new Error("--one-shot-history 只允许 2026-07-27 23:00 历史样稿。");
+    }
+    return { deadlineAt: null, remainingMs: null };
+  }
+  if (oneShotRecovery) {
+    if (!isAuthorizedOneShotRecovery(run, { now, runFingerprint })) {
+      throw new Error(
+        "--one-shot-recovery 只允许在登记时段投递已锁定指纹的 2026-07-29 故障恢复稿。"
+      );
     }
     return { deadlineAt: null, remainingMs: null };
   }
@@ -93,6 +127,34 @@ export function assertProductionSchedule(run, {
     throw new Error("距离北京时间 08:00 不足 45 秒，拒绝发起可能越过截止线的请求。");
   }
   return { deadlineAt, remainingMs };
+}
+
+export function canonicalRunSha256(run) {
+  return createHash("sha256")
+    .update(JSON.stringify(run), "utf8")
+    .digest("hex");
+}
+
+export function isAuthorizedOneShotRecovery(run, {
+  now = new Date(),
+  runFingerprint = ""
+} = {}) {
+  const nowMs = now.getTime();
+  return Number.isFinite(nowMs)
+    && nowMs >= Date.parse(ONE_SHOT_RECOVERY.allowedFrom)
+    && nowMs < Date.parse(ONE_SHOT_RECOVERY.expiresAt)
+    && run?.schemaVersion === 4
+    && run?.reportDate === ONE_SHOT_RECOVERY.reportDate
+    && run?.timezone === ONE_SHOT_RECOVERY.timezone
+    && run?.windowStart === ONE_SHOT_RECOVERY.windowStart
+    && run?.windowEnd === ONE_SHOT_RECOVERY.windowEnd
+    && run?.horizonRun?.runId === ONE_SHOT_RECOVERY.horizonRunId
+    && run?.coverageAudit?.candidateIndexSha256
+      === ONE_SHOT_RECOVERY.candidateIndexSha256
+    && run?.delivery?.slug === ONE_SHOT_RECOVERY.slug
+    && run?.delivery?.idempotencyKey === ONE_SHOT_RECOVERY.idempotencyKey
+    && run?.delivery?.source === ONE_SHOT_RECOVERY.source
+    && runFingerprint === ONE_SHOT_RECOVERY.canonicalRunSha256;
 }
 
 export function validateDeliveryResponse({
@@ -189,7 +251,10 @@ async function main() {
   const { run } = await readAndValidateRun(args.runPath, {
     allowHistoricalOneShot: args.oneShotHistory
   });
-  const schedule = assertProductionSchedule(run, args);
+  const schedule = assertProductionSchedule(run, {
+    ...args,
+    runFingerprint: canonicalRunSha256(run)
+  });
   const endpoint = validateProductionEndpoint(
     process.env.DAILY_AI_NEWS_ENDPOINT || DEFAULT_ENDPOINT
   );
