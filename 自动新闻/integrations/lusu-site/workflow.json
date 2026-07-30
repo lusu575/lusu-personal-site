@@ -16,6 +16,20 @@
       "windowStart": "2026-07-26T23:00:00+08:00",
       "windowEnd": "2026-07-27T23:00:00+08:00",
       "requiresExplicitFlag": "--one-shot-history"
+    },
+    "manualRecovery": {
+      "authorizationSource": "explicit-site-owner-request-in-interactive-codex-task",
+      "automaticSchedulerAllowed": false,
+      "allowedFromLocalTime": "08:00",
+      "expiresAtLocalTime": "next-day-00:00",
+      "sameShanghaiCalendarDayOnly": true,
+      "requiresExplicitFlag": "--manual-recovery",
+      "requiresConfirmations": [
+        "--confirm-report-date",
+        "--confirm-run-sha256"
+      ],
+      "runFingerprint": "canonical-json-sha256",
+      "preserveFormalValidation": true
     }
   },
   "collection": {
@@ -329,7 +343,8 @@
     "autoPublish": true,
     "schedulerEnabled": true,
     "failurePolicy": "fail-closed",
-    "forbidLatePublish": true
+    "automaticLatePublishForbidden": true,
+    "manualRecoveryReference": "MANUAL_RECOVERY.md"
   },
   "compatibility": {
     "formalRunSchemaVersion": 4,

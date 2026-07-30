@@ -14,7 +14,7 @@ import {
 import {
   assertProductionSchedule,
   canonicalRunSha256,
-  isAuthorizedOneShotRecovery,
+  isAuthorizedManualRecovery,
   parseProductionArgs,
   publicArticleUrls,
   validateDeliveryResponse,
@@ -539,6 +539,18 @@ test("Daily AI News workflow declares the permanent three-section contract", asy
   assert.equal(workflow.calendar.publishDeadlineLocalTime, "08:00");
   assert.equal(workflow.calendar.deadlinePolicy, "fail-closed");
   assert.equal(workflow.calendar.historicalOneShot.requiresExplicitFlag, "--one-shot-history");
+  assert.equal(
+    workflow.calendar.manualRecovery.authorizationSource,
+    "explicit-site-owner-request-in-interactive-codex-task"
+  );
+  assert.equal(workflow.calendar.manualRecovery.automaticSchedulerAllowed, false);
+  assert.equal(workflow.calendar.manualRecovery.allowedFromLocalTime, "08:00");
+  assert.equal(workflow.calendar.manualRecovery.expiresAtLocalTime, "next-day-00:00");
+  assert.deepEqual(workflow.calendar.manualRecovery.requiresConfirmations, [
+    "--confirm-report-date",
+    "--confirm-run-sha256"
+  ]);
+  assert.equal(workflow.calendar.manualRecovery.preserveFormalValidation, true);
   assert.equal(workflow.collection.candidateIndexRequired, true);
   assert.equal(workflow.collection.coverageManifestRequired, true);
   assert.equal(workflow.collection.coverageManifestSchemaVersion, 2);
@@ -633,6 +645,8 @@ test("Daily AI News workflow declares the permanent three-section contract", asy
   assert.equal(workflow.delivery.autoPublish, true);
   assert.equal(workflow.delivery.schedulerEnabled, true);
   assert.equal(workflow.delivery.failurePolicy, "fail-closed");
+  assert.equal(workflow.delivery.automaticLatePublishForbidden, true);
+  assert.equal(workflow.delivery.manualRecoveryReference, "MANUAL_RECOVERY.md");
   assert.equal(workflow.compatibility.formalRunSchemaVersion, 4);
   assert.equal(workflow.compatibility.historicalOneShotSchemaVersion, 3);
 });
@@ -1373,15 +1387,40 @@ test("Daily AI News production delivery requires an explicit run and a published
     {
       runPath: "runs/today.json",
       oneShotHistory: false,
-      oneShotRecovery: false
+      manualRecovery: false,
+      confirmReportDate: "",
+      confirmRunSha256: "",
+      printRunSha256: false
     }
   );
   assert.deepEqual(
-    parseProductionArgs(["--run", "runs/recovery.json", "--one-shot-recovery"]),
+    parseProductionArgs([
+      "--run",
+      "runs/recovery.json",
+      "--manual-recovery",
+      "--confirm-report-date",
+      "2026-07-27",
+      "--confirm-run-sha256",
+      "a".repeat(64)
+    ]),
     {
       runPath: "runs/recovery.json",
       oneShotHistory: false,
-      oneShotRecovery: true
+      manualRecovery: true,
+      confirmReportDate: "2026-07-27",
+      confirmRunSha256: "a".repeat(64),
+      printRunSha256: false
+    }
+  );
+  assert.deepEqual(
+    parseProductionArgs(["--run", "runs/today.json", "--print-run-sha256"]),
+    {
+      runPath: "runs/today.json",
+      oneShotHistory: false,
+      manualRecovery: false,
+      confirmReportDate: "",
+      confirmRunSha256: "",
+      printRunSha256: true
     }
   );
   assert.throws(() => parseProductionArgs([]), /必须显式提供 --run/);
@@ -1391,9 +1430,67 @@ test("Daily AI News production delivery requires an explicit run and a published
       "--run",
       "run.json",
       "--one-shot-history",
-      "--one-shot-recovery"
+      "--manual-recovery",
+      "--confirm-report-date",
+      "2026-07-27",
+      "--confirm-run-sha256",
+      "a".repeat(64)
     ]),
     /不能同时使用/
+  );
+  assert.throws(
+    () => parseProductionArgs(["--run", "run.json", "--manual-recovery"]),
+    /必须同时提供/
+  );
+  assert.throws(
+    () => parseProductionArgs([
+      "--run",
+      "run.json",
+      "--confirm-report-date",
+      "2026-07-27"
+    ]),
+    /只能与 --manual-recovery/
+  );
+  assert.throws(
+    () => parseProductionArgs([
+      "--run",
+      "run.json",
+      "--manual-recovery",
+      "--confirm-report-date",
+      "2026-02-30",
+      "--confirm-run-sha256",
+      "a".repeat(64)
+    ]),
+    /有效的 YYYY-MM-DD/
+  );
+  assert.throws(
+    () => parseProductionArgs([
+      "--run",
+      "run.json",
+      "--manual-recovery",
+      "--confirm-report-date",
+      "2026-07-27",
+      "--confirm-run-sha256",
+      "ABC"
+    ]),
+    /64 位小写/
+  );
+  assert.throws(
+    () => parseProductionArgs([
+      "--run",
+      "run.json",
+      "--print-run-sha256",
+      "--manual-recovery",
+      "--confirm-report-date",
+      "2026-07-27",
+      "--confirm-run-sha256",
+      "a".repeat(64)
+    ]),
+    /不能同时使用/
+  );
+  assert.throws(
+    () => parseProductionArgs(["--run", "run.json", "--run", "other.json"]),
+    /参数不能重复/
   );
   assert.equal(
     validateProductionEndpoint("https://lusu575.com/api/automation/daily-ai-news"),
@@ -1435,62 +1532,117 @@ test("Daily AI News production delivery requires an explicit run and a published
   }), /未确认文章已.*公开/);
 });
 
-test("Daily AI News one-shot recovery cannot trust caller-supplied metadata alone", () => {
+test("Daily AI News manual recovery requires same-day double confirmation", () => {
   const recovery = validRun();
-  recovery.reportDate = "2026-07-29";
-  recovery.windowStart = "2026-07-28T07:00:00+08:00";
-  recovery.windowEnd = "2026-07-29T07:00:00+08:00";
-  recovery.horizonRun.runId = "run-20260729T003352Z-8fda0f4c";
-  recovery.coverageAudit.candidateIndexSha256 =
-    "dfd9665165f7de0beb550eb14bfff13c95e38f77f3b0128f403c238e68a48ec9";
-  recovery.delivery.slug = "daily-ai-news-2026-07-29";
-  recovery.delivery.idempotencyKey =
-    "daily-ai-news-2026-07-29-query-overflow-recovery-v1";
-  recovery.delivery.source = "Codex manual recovery 2026-07-29 query-overflow";
+  const confirmedSha256 = canonicalRunSha256(recovery);
+  const confirmation = {
+    confirmReportDate: "2026-07-27",
+    confirmRunSha256: confirmedSha256
+  };
+  const authorizedAt = new Date("2026-07-27T08:30:00+08:00");
 
-  const authorizedAt = new Date("2026-07-29T08:30:00+08:00");
-  assert.match(canonicalRunSha256(recovery), /^[a-f0-9]{64}$/);
-  assert.equal(isAuthorizedOneShotRecovery(recovery, { now: authorizedAt }), false);
-  assert.throws(() => assertProductionSchedule(recovery, {
+  assert.match(confirmedSha256, /^[a-f0-9]{64}$/);
+  assert.equal(isAuthorizedManualRecovery(recovery, {
     now: authorizedAt,
-    oneShotRecovery: true
-  }), /已锁定指纹/);
+    ...confirmation
+  }), true);
+  const schedule = assertProductionSchedule(recovery, {
+    now: authorizedAt,
+    manualRecovery: true,
+    ...confirmation
+  });
+  assert.equal(schedule.deadlineAt, Date.parse("2026-07-28T00:00:00+08:00"));
+  assert.equal(schedule.remainingMs, 15.5 * 60 * 60 * 1000);
+  assert.doesNotThrow(() => assertProductionSchedule(recovery, {
+    now: new Date("2026-07-27T08:00:00+08:00"),
+    manualRecovery: true,
+    ...confirmation
+  }));
+
   assert.throws(() => assertProductionSchedule(recovery, {
     now: authorizedAt
   }), /08:00 硬截止/);
-});
-
-test("Daily AI News local recovery artifact matches only the registered immutable run", async (t) => {
-  const recoveryPath = fileURLToPath(new URL(
-    "../自动新闻/data/mcp-runs/run-20260729T003352Z-8fda0f4c/daily_run.json",
-    import.meta.url
-  ));
-  let recovery;
-  try {
-    recovery = JSON.parse(await readFile(recoveryPath, "utf8"));
-  } catch (error) {
-    if (error?.code === "ENOENT") {
-      t.skip("local recovery artifact is intentionally git-ignored");
-      return;
-    }
-    throw error;
-  }
-
-  const authorizedAt = new Date("2026-07-29T08:30:00+08:00");
-  assert.equal(isAuthorizedOneShotRecovery(recovery, { now: authorizedAt }), true);
-  assert.doesNotThrow(() => assertProductionSchedule(recovery, {
+  assert.throws(() => assertProductionSchedule(recovery, {
     now: authorizedAt,
-    oneShotRecovery: true
+    confirmReportDate: confirmation.confirmReportDate,
+    confirmRunSha256: confirmation.confirmRunSha256
+  }), /只能与 --manual-recovery/);
+  assert.throws(() => assertProductionSchedule(recovery, {
+    now: new Date("2026-07-27T07:59:59+08:00"),
+    manualRecovery: true,
+    ...confirmation
+  }), /当天 08:00 至次日 00:00/);
+  assert.doesNotThrow(() => assertProductionSchedule(recovery, {
+    now: new Date("2026-07-27T23:59:15+08:00"),
+    manualRecovery: true,
+    ...confirmation
   }));
+  assert.throws(() => assertProductionSchedule(recovery, {
+    now: new Date("2026-07-27T23:59:16+08:00"),
+    manualRecovery: true,
+    ...confirmation
+  }), /不足 45 秒/);
+  assert.throws(() => assertProductionSchedule(recovery, {
+    now: new Date("2026-07-28T00:00:00+08:00"),
+    manualRecovery: true,
+    ...confirmation
+  }), /当天 08:00 至次日 00:00/);
+
+  assert.equal(isAuthorizedManualRecovery(recovery, {
+    now: authorizedAt,
+    confirmReportDate: "2026-07-26",
+    confirmRunSha256: confirmedSha256
+  }), false);
+  assert.equal(isAuthorizedManualRecovery(recovery, {
+    now: authorizedAt,
+    confirmReportDate: "2026-07-28",
+    confirmRunSha256: confirmedSha256
+  }), false);
+  assert.equal(isAuthorizedManualRecovery(recovery, {
+    now: authorizedAt,
+    confirmReportDate: "2026-07-27",
+    confirmRunSha256: "b".repeat(64)
+  }), false);
+
   const tampered = clone(recovery);
   tampered.delivery.translations.zh.summary += "篡改";
-  assert.equal(isAuthorizedOneShotRecovery(tampered, { now: authorizedAt }), false);
-  assert.equal(
-    isAuthorizedOneShotRecovery(recovery, {
-      now: new Date("2026-07-30T00:00:00+08:00")
-    }),
-    false
-  );
+  assert.equal(isAuthorizedManualRecovery(tampered, {
+    now: authorizedAt,
+    ...confirmation
+  }), false);
+
+  for (const mutate of [
+    (run) => {
+      run.schemaVersion = 3;
+    },
+    (run) => {
+      run.timezone = "UTC";
+    },
+    (run) => {
+      run.windowStart = "2026-07-26T07:00:01+08:00";
+    },
+    (run) => {
+      run.windowEnd = "2026-07-27T07:00:01+08:00";
+    },
+    (run) => {
+      run.delivery.slug = "daily-ai-news-other";
+    }
+  ]) {
+    const invalid = clone(recovery);
+    mutate(invalid);
+    assert.equal(isAuthorizedManualRecovery(invalid, {
+      now: authorizedAt,
+      confirmReportDate: "2026-07-27",
+      confirmRunSha256: canonicalRunSha256(invalid)
+    }), false);
+  }
+
+  assert.throws(() => assertProductionSchedule(recovery, {
+    now: authorizedAt,
+    oneShotHistory: true,
+    manualRecovery: true,
+    ...confirmation
+  }), /不能同时启用/);
 });
 
 test("Daily AI News production delivery verifies all three public article representations", async () => {

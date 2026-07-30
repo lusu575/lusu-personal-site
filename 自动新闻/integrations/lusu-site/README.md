@@ -14,7 +14,8 @@
 - 时区固定为 `Asia/Shanghai`。
 - 每天 07:00 开始，采集和文章窗口固定为 `[前一日 07:00, 当日 07:00)`。
 - 抓取、复核、生成、校验、投递和公开必须在 08:00 前完成。
-- 08:00 是硬截止。任何验证失败、通道异常或超时都会停止本期；不迟到补发、不降级成草稿、不自动跨截止重试。
+- 对自动任务，08:00 是硬截止。任何验证失败、通道异常或超时都会停止本期；不迟到补发、不降级成草稿、不自动跨截止重试。
+- 当天自动任务失败后，只有站长在交互任务中明确要求补发时，才可按 `MANUAL_RECOVERY.md` 在当天 08:00 至次日 00:00 使用双确认人工入口；它不是自动任务的降级或重试分支。
 - 新闻条数不写死；没有 confirmed 候选可以承担要闻时，结果为“今日无稿”。
 - 第一轮少于 5 条不是最低刊发数量，而是强制二次覆盖审阅触发器；复查后仍只有少量高价值消息时可以少发。
 
@@ -35,11 +36,12 @@
 - `fetch-with-horizon.py`：调用 Horizon 原生服务，以两路受控并发执行发现查询；失败查询最多重试两次，仍失败则与真实空结果分开记录。Google News 查询最多保留 99 条并请求第 100 条作为探针，实际返回第 100 条时判定截断并关闭 required 覆盖；只有 99 条不误报。候选索引直接写入确定性 UTF-8 字节并据此计算 SHA-256，再按精确 24 小时窗口输出候选。
 - `candidate_index.json`：本次 Horizon 运行生成的紧凑候选索引，只含审阅所需的标题、时间、来源和覆盖归属，不含大段正文。
 - `coverage_manifest.json`：schemaVersion 2 的机器可校验清单，记录本次 required query、required group、语言、命中数、结果上限状态、指定 review source、重点 review lane，以及由聚焦查询和指定 RSS／社区源共同汇总的 `mustReviewCandidateIds`。
-- `workflow.json`：schemaVersion 4 的 07:00—08:00 生产时间、完整覆盖审阅、事件阶段去重、成文和 fail-closed 约定。
+- `workflow.json`：schemaVersion 4 的 07:00—08:00 自动生产时间、完整覆盖审阅、事件阶段去重、成文、fail-closed 与当天人工恢复边界。
 - `ARTICLE_STYLE.md`：固定标题、栏目、事实段、AI 解读和传闻标准。
 - `AUTOMATION_PROMPT.md`：每日 Codex 任务的完整说明。
+- `MANUAL_RECOVERY.md`：仅供站长在交互任务中明确授权的当天 08:00 后人工补发说明；自动任务不得使用。
 - `validate-draft.mjs`：校验窗口、Horizon 来源、重点候选处置、重要性、三语结构和正文无外链；时间与事件阶段去重规则保持原契约。
-- `deliver-production.mjs`：读取环境或被忽略的根目录 `.dev.vars` 中的令牌；只在安全时窗投递，要求接口确认 `published`，再只读核验 zh / en / ja 三个公开文章接口。
+- `deliver-production.mjs`：读取环境或被忽略的根目录 `.dev.vars` 中的令牌；普通模式只在 07:00—08:00 投递，人工模式还需当天日期与 canonical 稿件 SHA-256 双确认；两者都要求接口确认 `published`，再只读核验 zh / en / ja 三个公开文章接口。
 - `configure-production-channel.mjs`：一次性生成并安全保存令牌，再通过 Wrangler 远端开启 `enabled + auto_publish`。它不会显示令牌明文。
 - `deliver-local.mjs`：一次性本地草稿试投；强制关闭本地 auto-publish，结束后暂停通道并清除临时令牌。
 - `runs/`：每次运行的内部核验记录和三语稿件。
@@ -105,7 +107,7 @@ npm.cmd run ai-news:configure:production -- --confirm-production
 
 ## 每日正式任务
 
-本机 Codex 已启用任务“每日 AI 新闻：7点生成，8点前发布”（ID `ai-7-8`），按电脑当前的北京时间每天 07:00 启动。它是本地任务，不是云端常驻服务；电脑、Codex 和网络必须在 07:00–08:00 保持可用，休眠、关机或断网会让当期按失败关闭规则停止，不在 08:00 后补发。
+本机 Codex 已启用任务“每日 AI 新闻：7点生成，8点前发布”（ID `ai-7-8`），按电脑当前的北京时间每天 07:00 启动。它是本地任务，不是云端常驻服务；电脑、Codex 和网络必须在 07:00–08:00 保持可用，休眠、关机或断网会让当期按失败关闭规则停止。自动任务自身不在 08:00 后补发，也不得携带人工恢复参数。
 
 示例中的日期每天由任务按北京时间换算。正式运行记录使用 schemaVersion 4，并引用同一次 Horizon 运行的 `daily_candidates.json`、`candidate_index.json` 与 `coverage_manifest.json`：
 
@@ -116,6 +118,24 @@ npm.cmd run ai-news:deliver:production -- --run 自动新闻/integrations/lusu-s
 ```
 
 生产投递必须显式提供本期运行记录，拒绝使用默认旧稿。三语标题必须分别采用固定栏目名前缀加各自第一条要闻标题，不能只写日期；日期继续由发布时间和 slug 表达。校验器会要求 coverage manifest 使用 schemaVersion 2，核对 required query 与 required group 是否全部签收、required 查询是否由多取一条探针确认真实截断，以及聚焦查询和指定来源汇总出的重点候选是否逐条完成 `priorityReview`；入选少于 5 条时，还会要求 `coverageAudit.secondPass` 完成。它会再次校验日期、07:00 窗口和当前时间；距离 08:00 不足安全余量时不再发起请求。接口确认公开后，它还会在截止前分别读取中文、英文、日文公开文章，核对 slug、分区、语言、标题和正文。投递和公开核验都没有自动重试，避免一次不明确的响应造成重复公开。
+
+## 当天人工故障补发
+
+如果自动任务失败，不能仅凭失败状态自行补发。只有站长在当前 Codex 交互任务中明确要求重新生成并公开当天日报后，才读取并严格执行 `MANUAL_RECOVERY.md`。
+
+人工流程继续使用同一天的固定 `[前一日 07:00, 当日 07:00)` 新闻窗口，并先完成正式 schemaVersion 4 校验。随后先用只读模式输出已经验证的完整稿件指纹：
+
+```powershell
+npm.cmd run ai-news:deliver:production -- --run <本期运行记录> --print-run-sha256
+```
+
+再同时确认日期和该 64 位小写指纹：
+
+```powershell
+npm.cmd run ai-news:deliver:production -- --run <本期运行记录> --manual-recovery --confirm-report-date <YYYY-MM-DD> --confirm-run-sha256 <64位小写SHA-256>
+```
+
+人工入口仅在该 `reportDate` 对应的北京时间当天 08:00（含）至次日 00:00（不含）开放，并在午夜前保留同样的请求和公开回读安全余量。它仍先完整执行 `readAndValidateRun`，不会绕过 Horizon 成功态、candidate index、coverage manifest v2、must-review 处置、三语、专用通道、auto-publish、幂等、slug 冲突或公开回读。指纹确认后不得再改稿；状态不明时不得自动再次 POST。
 
 ## 历史样稿与本地试投
 

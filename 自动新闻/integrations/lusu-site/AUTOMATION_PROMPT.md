@@ -21,9 +21,9 @@
 15. 对外文章禁止出现网址、Markdown 链接、来源列表、参考资料、相关阅读、跳转提示、内部评分、抓取过程或采集窗口说明。证据网址与时间窗口只保留在内部运行记录。文章在“传闻”段结束后结束。
 16. 中文、英文、日文必须基于同一组事实、同一栏目归属和同一核实状态生成，不得分别添加新信息。
 17. 正式运行记录必须使用 schemaVersion 4，写入精确窗口、`horizonRunId`、`candidatesPath`、`candidateIndexPath`、`coverageManifestPath` 和 `coverageAudit`；所引用的 coverage manifest 必须是 schemaVersion 2。`coverageAudit` 必须记录 candidate index 的阅读时间和 manifest 给出的 SHA-256，把 manifest 的全部 `requiredQueryIds`、`requiredGroupIds` 原样写入 `signedOffQueryIds`、`signedOffGroupIds`。manifest 的 `mustReviewCandidateIds` 可能来自聚焦查询，也可能来自指定 RSS／社区发现源；必须写入 `priorityReview.decisions`，让每个重点候选恰好得到一次 `selected`、`merged` 或带具体理由的 `rejected` 处置，并记录固定四项评分；达到 7 分的重大模型／产品、能力／可用性、用量规则、开发工具或显著价格额度变化不能被拒绝。若入选少于 5 条，`secondPass` 还必须记录完成时间并再次原样签收 required query 与 group。生成后先执行 `npm.cmd run ai-news:validate -- --run <本期运行记录>`。验证失败时本期立即停止，绝不绕过。
-18. 只有验证通过且当前仍在北京时间 07:00 至 08:00 的安全窗口内，才执行 `npm.cmd run ai-news:deliver:production -- --run <本期运行记录>`。成功条件不是“已接收”或“草稿”，而是接口明确返回 `daily-ai-news + published`，随后 zh / en / ja 三个公开文章接口的 slug、分区、语言、标题和正文都与本期稿件一致。
-19. 08:00 是硬截止。投递前遇到 Horizon 不可用、无合格要闻、抓取／覆盖审阅／复核／三语／格式／去重／令牌／通道／幂等／slug 任一校验失败，或任一步骤超时，都必须 fail closed：本期不公开、不降级成草稿、不在 08:00 后补发，也不自动重试。只允许在 08:00 前且剩余时间充足时进行受控重试。若生产接口已经返回 `published`，但随后的三语公开核验失败，状态必须记为不明并立即停止自动重试，交由人工核对，不能声称文章未公开。
+18. 只有验证通过且当前仍在北京时间 07:00 至 08:00 的自动安全窗口内，才执行 `npm.cmd run ai-news:deliver:production -- --run <本期运行记录>`。成功条件不是“已接收”或“草稿”，而是接口明确返回 `daily-ai-news + published`，随后 zh / en / ja 三个公开文章接口的 slug、分区、语言、标题和正文都与本期稿件一致。
+19. 对本定时任务，08:00 是硬截止。投递前遇到 Horizon 不可用、无合格要闻、抓取／覆盖审阅／复核／三语／格式／去重／令牌／通道／幂等／slug 任一校验失败，或任一步骤超时，都必须 fail closed：本期不公开、不降级成草稿、不由自动任务在 08:00 后补发，也不自动重试。只允许在 08:00 前且剩余时间充足时进行受控重试。若生产接口已经返回 `published`，但随后的三语公开核验失败，状态必须记为不明并立即停止自动重试，交由人工核对，不能声称文章未公开。
 20. `runs/2026-07-27-2300.json` 仅是 schemaVersion 3 的历史链路样稿。验证或投递它时必须显式添加 `--one-shot-history`；正式定时任务永远不得使用该参数。
-21. `--one-shot-recovery` 仅供站长明确授权后的人工故障恢复使用，并且必须同时匹配代码中登记的日期、时段、Horizon 运行、候选索引、稿件指纹、slug 与幂等键；正式定时任务永远不得使用该参数。
+21. `--manual-recovery` 是独立人工故障恢复入口，本定时任务永远不得自行使用、预填或建议绕过。只有站长在当前交互任务中明确要求补发当天日报后，才可先完整阅读 `MANUAL_RECOVERY.md`，继续使用同一个北京时间日期和 `[前一日 07:00, 当日 07:00)` 窗口完成 schemaVersion 4 全流程，再同时提供 `--confirm-report-date` 与完整稿件的 `--confirm-run-sha256`。该入口只在当天 08:00 至次日 00:00 开放，不会放宽 Horizon、覆盖审阅、三语、通道、auto-publish、幂等或公开回读门禁。
 
 最终只报告三种结果之一：“已公开”“今日无稿”“失败并已停止”。失败时说明阶段和原因，不输出令牌、环境变量值或其他秘密。
