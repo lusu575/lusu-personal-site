@@ -6,6 +6,10 @@ import test from "node:test";
 
 const CHAT_SECRET = "api-security-chat-secret-00000000000000001";
 const ANALYTICS_SECRET = "api-security-analytics-secret-00000000001";
+const WHITEBOARD_ROOM_SECRET = "api-security-whiteboard-room-secret-0000000001";
+const WHITEBOARD_TICKET_SECRET = "api-security-whiteboard-ticket-secret-00000002";
+const WHITEBOARD_INTERNAL_SECRET = "api-security-whiteboard-internal-secret-000003";
+const WHITEBOARD_IP_SECRET = "api-security-whiteboard-ip-secret-00000000004";
 const ORIGIN = "https://example.test";
 const source = await readFile(new URL("../functions/api/[[route]].js", import.meta.url), "utf8");
 
@@ -93,7 +97,35 @@ function envFor(DB) {
   return {
     DB,
     CHAT_IP_HASH_SALT: CHAT_SECRET,
-    ANALYTICS_IP_HASH_SALT: ANALYTICS_SECRET
+    ANALYTICS_IP_HASH_SALT: ANALYTICS_SECRET,
+    WHITEBOARD_ROOM_HMAC_SECRET: WHITEBOARD_ROOM_SECRET,
+    WHITEBOARD_TICKET_SECRET,
+    WHITEBOARD_INTERNAL_SECRET,
+    WHITEBOARD_IP_HASH_SALT: WHITEBOARD_IP_SECRET,
+    WHITEBOARD_ROOMS: {
+      getByName() {
+        return {
+          async fetch(request) {
+            if (
+              request.method === "POST"
+              && new URL(request.url).pathname === "/assets"
+            ) {
+              return Response.json({
+                ok: true,
+                asset: {
+                  assetId: "asset_root_route000000001",
+                  contentType: "image/png",
+                  byteLength: Number(request.headers.get("content-length") || 0),
+                  width: 2,
+                  height: 2
+                }
+              }, { status: 201 });
+            }
+            return Response.json({ ok: false }, { status: 404 });
+          }
+        };
+      }
+    }
   };
 }
 
@@ -157,6 +189,61 @@ test("main API mutation gate rejects cross-origin and non-JSON requests before b
       0,
       "content-type rejection must happen before runtime schema writes"
     );
+  } finally {
+    DB.close();
+  }
+});
+
+test("main API mutation gate permits only safe raster uploads for the whiteboard", async () => {
+  const { onRequest } = await freshApi("whiteboard-raster-gate");
+  const DB = new D1Database();
+  try {
+    const identityResponse = await invoke(
+      onRequest,
+      DB,
+      apiRequest("anonymous-identity")
+    );
+    assert.equal(identityResponse.status, 200);
+    const cookie = String(identityResponse.headers.get("set-cookie") || "")
+      .split(";", 1)[0];
+
+    const join = await invoke(onRequest, DB, apiRequest("whiteboard/rooms/join", {
+      method: "POST",
+      headers: {
+        Cookie: cookie,
+        "CF-Connecting-IP": "203.0.113.80"
+      },
+      body: { type: "public" }
+    }));
+    assert.equal(join.status, 200, await join.clone().text());
+    const { accessToken } = await join.json();
+
+    const upload = new Request(`${ORIGIN}/api/whiteboard/assets`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        Cookie: cookie,
+        "CF-Connecting-IP": "203.0.113.80",
+        "Content-Type": "image/png",
+        Origin: ORIGIN,
+        "Sec-Fetch-Site": "same-origin"
+      },
+      body: new Uint8Array([0x89, 0x50, 0x4e, 0x47])
+    });
+    const response = await invoke(onRequest, DB, upload);
+    assert.equal(response.status, 201, await response.clone().text());
+
+    const unsafe = await invoke(onRequest, DB, apiRequest("whiteboard/assets", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        Cookie: cookie,
+        "CF-Connecting-IP": "203.0.113.80",
+        "Content-Type": "image/svg+xml"
+      },
+      body: "<svg></svg>"
+    }));
+    assert.equal(unsafe.status, 415);
   } finally {
     DB.close();
   }

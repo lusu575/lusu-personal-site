@@ -6,6 +6,8 @@ import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import {
+  assertExcalidrawOptionalConverterDisabled,
+  assertWhiteboardRuntimeNotices,
   assertCssUrlsStayStable,
   classifyCache,
   replaceDirectoryAtomically,
@@ -17,6 +19,55 @@ import {
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const policy = JSON.parse(await readFile(path.join(root, "config", "public-production-build.json"), "utf8"));
+
+test("whiteboard build requires the local disabled converter and rejects optional diagram packages", () => {
+  const disabledInput = "lusu-disabled-excalidraw-converter:disabled";
+  assert.doesNotThrow(() => assertExcalidrawOptionalConverterDisabled({
+    inputs: {
+      "tools/whiteboard/src/main.jsx": { bytes: 1 },
+      [disabledInput]: { bytes: 1 }
+    }
+  }));
+  assert.throws(
+    () => assertExcalidrawOptionalConverterDisabled({ inputs: { "tools/whiteboard/src/main.jsx": { bytes: 1 } } }),
+    /did not resolve the local disabled/
+  );
+  for (const forbidden of [
+    "node_modules/@excalidraw/mermaid-to-excalidraw/dist/index.js",
+    "node_modules/mermaid/dist/mermaid.js",
+    "node_modules/dompurify/dist/purify.js",
+    "node_modules/@mermaid-js/parser/dist/mermaid-parser.core.mjs",
+    "node_modules/langium/lib/index.js",
+    "node_modules/chevrotain/lib/src/api.js"
+  ]) {
+    assert.throws(
+      () => assertExcalidrawOptionalConverterDisabled({
+        inputs: {
+          [disabledInput]: { bytes: 1 },
+          [forbidden]: { bytes: 1 }
+        }
+      }),
+      /included disabled diagram-converter code/
+    );
+  }
+});
+
+test("whiteboard build requires versioned notices for every runtime package", async () => {
+  const metafile = {
+    inputs: {
+      "node_modules/react/index.js": { bytes: 1 },
+      "node_modules/yjs/dist/yjs.mjs": { bytes: 1 },
+      "tools/whiteboard/src/main.jsx": { bytes: 1 }
+    }
+  };
+  await assert.doesNotReject(assertWhiteboardRuntimeNotices(metafile));
+  await assert.rejects(
+    assertWhiteboardRuntimeNotices(metafile, {
+      noticesText: "| `react` | 18.3.1 | MIT | fixture |"
+    }),
+    /notices are incomplete/
+  );
+});
 
 test("production policy is an explicit static allowlist with source and secret exclusions", () => {
   assert.equal(policy.outputDirectory, "dist");
@@ -34,6 +85,9 @@ test("production policy is an explicit static allowlist with source and secret e
   assert.ok(games.excludePrefixes.includes("kittens-game/source/tools/"));
   assert.deepEqual(games.excludeExtensions, [".po", ".pot"]);
   assert.ok(toolContent.excludeFiles.includes("blueprint.json"));
+  assert.ok(policy.standaloneFiles.includes("tools/whiteboard/index.html"));
+  assert.ok(policy.standaloneFiles.includes("tools/whiteboard/THIRD_PARTY_NOTICES.md"));
+  assert.ok(policy.htmlEntrypoints.includes("tools/whiteboard/index.html"));
   assert.throws(() => validateOutputPath(".dev.vars", policy), /Forbidden .*deploy/);
   assert.throws(() => validateOutputPath("docs/private.html", policy), /Forbidden deploy segment/);
   assert.throws(() => validateOutputPath("assets/key.pem", policy), /Forbidden deploy extension/);
@@ -171,10 +225,39 @@ test("manifest verification rejects every unlisted payload", async () => {
 
 test("package and headers expose the production and cache contracts", async () => {
   const packageJson = JSON.parse(await readFile(path.join(root, "package.json"), "utf8"));
+  const packageLock = JSON.parse(await readFile(path.join(root, "package-lock.json"), "utf8"));
+  const wrangler = JSON.parse(await readFile(path.join(root, "wrangler.jsonc"), "utf8"));
+  const whiteboardWrangler = JSON.parse(await readFile(path.join(root, "workers", "whiteboard", "wrangler.jsonc"), "utf8"));
   const headers = await readFile(path.join(root, "_headers"), "utf8");
   assert.equal(packageJson.devDependencies.esbuild, "0.28.1");
+  assert.equal(packageJson.scripts.build, "node scripts/build-check.mjs && node scripts/build-production.mjs");
   assert.equal(packageJson.scripts["build:production"], "node scripts/build-production.mjs");
   assert.equal(packageJson.scripts["build:production:verify"], "node scripts/build-production.mjs --verify-reproducible");
+  assert.equal(wrangler.pages_build_output_dir, policy.outputDirectory);
+  assert.deepEqual(wrangler.env.preview.d1_databases, []);
+  assert.deepEqual(wrangler.env.preview.r2_buckets, []);
+  assert.equal(wrangler.env.preview.vars.PREVIEW_API_DISABLED, "true");
+  assert.equal(
+    wrangler.env.preview.durable_objects.bindings.find(({ name }) => name === "WHITEBOARD_ROOMS")?.script_name,
+    "lusu-whiteboard-do-preview"
+  );
+  assert.equal(
+    whiteboardWrangler.vars.ALLOWED_ORIGINS,
+    "https://lusu575.com,https://www.lusu575.com"
+  );
+  assert.doesNotMatch(whiteboardWrangler.vars.ALLOWED_ORIGINS, /localhost|127\.0\.0\.1/i);
+  assert.equal(packageJson.scripts.typecheck, "tsc -p workers/whiteboard/tsconfig.json --noEmit");
+  assert.match(packageJson.scripts["whiteboard:test"], /workers\/whiteboard\/vitest\.config\.mts/);
+  assert.equal(packageJson.dependencies["@excalidraw/excalidraw"], "0.18.1");
+  assert.equal(packageJson.overrides["@excalidraw/excalidraw"].nanoid, "3.3.16");
+  assert.equal(packageJson.overrides["@excalidraw/mermaid-to-excalidraw"].nanoid, "5.0.9");
+  assert.equal(packageJson.overrides["lodash-es"], "4.18.1");
+  assert.equal(packageLock.packages[""].dependencies["@excalidraw/excalidraw"], "0.18.1");
+  assert.equal(packageLock.packages["node_modules/@excalidraw/excalidraw"].version, "0.18.1");
+  assert.equal(packageLock.packages["node_modules/nanoid"].version, "3.3.16");
+  assert.equal(packageLock.packages["node_modules/@excalidraw/mermaid-to-excalidraw/node_modules/nanoid"].version, "5.0.9");
+  assert.equal(packageLock.packages["node_modules/lodash-es"].version, "4.18.1");
+  assert.equal(packageJson.dependencies.yjs, "13.6.27");
   assert.match(headers, /\/_assets\/\*[\s\S]*max-age=31536000, immutable/);
   assert.doesNotMatch(headers, /^\/\*\r?\n\s+Cache-Control:/m);
   assert.match(headers, /\/index\.html[\s\S]*no-cache, max-age=0, must-revalidate/);

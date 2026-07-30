@@ -171,7 +171,7 @@ test("sprite and entry icons use decode-sized production atlases", async () => {
     .map((pixel) => chatroomIconPixels.data[pixel * 4 + 3]);
   assert.ok(chatroomCornerAlpha.every((alpha) => alpha === 0), "canonical chatroom icon must have transparent corners");
 
-  for (const name of ["quick-transfer", "kittens-game", "a-dark-room", "2048", "hextris", "life-restart"]) {
+  for (const name of ["quick-transfer", "whiteboard", "kittens-game", "a-dark-room", "2048", "hextris", "life-restart"]) {
     const path = `assets/images/generated-icons/${name}.png`;
     const icon = await asset(path);
     assert.deepEqual([icon.metadata.width, icon.metadata.height], [192, 192]);
@@ -269,7 +269,7 @@ test("JSON resource cache still coalesces callers that share the same scope", as
 });
 
 test("cacheable API JSON emits a stable ETag and honors If-None-Match", async () => {
-  assert.equal(PUBLIC_API_REPRESENTATION_VERSION, "20260729-knowledge-markdown-links-r1");
+  assert.equal(PUBLIC_API_REPRESENTATION_VERSION, "20260730-multiplayer-whiteboard-r1");
   const first = await cacheableJson(new Request("https://example.test/api/articles"), { articles: [] });
   const etag = first.headers.get("ETag");
   assert.match(etag, /^"sha256-[a-f0-9]{64}"$/);

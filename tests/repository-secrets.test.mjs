@@ -67,7 +67,15 @@ test("repository source does not contain recognizable credential values", () => 
   assert.deepEqual(ownerConfigurationFindings, [], "owner admin emails must come from runtime environment configuration");
 
   const envExample = readFileSync(resolve(root, ".env.example"), "utf8");
-  for (const name of ["CHAT_IP_HASH_SALT", "ANALYTICS_IP_HASH_SALT", "OWNER_ADMIN_EMAILS"]) {
+  for (const name of [
+    "CHAT_IP_HASH_SALT",
+    "ANALYTICS_IP_HASH_SALT",
+    "OWNER_ADMIN_EMAILS",
+    "WHITEBOARD_ROOM_HMAC_SECRET",
+    "WHITEBOARD_TICKET_SECRET",
+    "WHITEBOARD_INTERNAL_SECRET",
+    "WHITEBOARD_IP_HASH_SALT"
+  ]) {
     assert.match(envExample, new RegExp(`^${name}=\\s*$`, "m"));
   }
 });

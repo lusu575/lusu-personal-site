@@ -2,6 +2,15 @@
 
 > 管理后台专用说明：本文档只描述 `/admin/` 管理后台。它不等同于主站根目录 `PROJECT_CONTEXT.md`，也不能替代主站项目上下文。新的 AI / Codex 对话如果只维护后台，应先读本文档和 `admin/docs/ADMIN_SKILL.md`；如果维护主站整体，仍以根目录 `PROJECT_CONTEXT.md` 和 `skills/lusu-personal-site-skill/SKILL.md` 为准。
 
+## 2026-07-30 在线画板治理面板
+
+- `/admin/` 已在仓库中接入“在线画板治理”面板，继续复用现有 `lusu_session`、D1 `sessions` 和 `users.role = admin` 服务端鉴权，不新增画板专用管理员身份或公开管理入口。
+- 概览展示房间总数、公共／密码房数量、当前连接、对象和资源容量；房间列表可查看房型、锁定状态、在线数、最后活动、空房删除时间及资源占用，并按需读取单房的连接与容量状态。
+- 公共画板支持清空和只读／可编辑切换；房间治理支持移除单个异常连接或某匿名身份的连接，并按匿名 ID 或 IP 哈希设置有期限的临时封禁。空且异常的密码房可由管理员显式删除；公共房不能通过密码房删除入口移除。
+- 后台只显示治理所需元数据和截断标识，不展示画布图形／文本正文、房间密码、完整匿名凭证、完整 IP 或可直接复用的完整 IP 哈希。确认框须说明对象和影响，清空、封禁、移除连接及删除房间均写管理审计。
+- 对应接口为 `GET /api/admin/whiteboards/overview`、`GET /api/admin/whiteboards/rooms`、`GET /api/admin/whiteboards/rooms/:roomId/status`、`POST /api/admin/whiteboards/public/clear`、`PUT /api/admin/whiteboards/public/lock`、`DELETE /api/admin/whiteboards/rooms/:roomId`、`POST /api/admin/whiteboards/rooms/:roomId/kick` 和 `POST /api/admin/whiteboards/rooms/:roomId/ban`；每条路由都必须继续调用 `requireAdmin`。
+- 当前记录只说明仓库代码与文档已经实现，不代表 Cloudflare external Durable Object binding、远端 D1 migration、独立 Worker、Pages 生产部署或正式域名已经验证。
+
 ## 2026-07-29 工具雷达正式周更与独立投递通道
 
 - “自动投递”仍是一个后台 panel，但现在可在 `daily-ai-news` 与 `tool-radar` 两条通道间切换。两者的启用状态、auto-publish、凭证、地址和投递历史完全独立；切换通道时清除页面内只显示一次的令牌，不能把一条通道的明文或状态带到另一条。
@@ -107,7 +116,7 @@
 - 前端逻辑：`admin/admin.js`
 - 后台访问拦截：`functions/admin/_middleware.js`
 - 后台 API：`functions/api/[[route]].js` 中的 `/api/admin/*`
-- 主要用途：站长维护个人站内容、视频、关于我社交链接、访问统计、点击埋点和聊天室治理。
+- 主要用途：站长维护个人站内容、视频、关于我社交链接、访问统计、点击埋点、聊天室和在线画板治理。
 - 文案范围：后台只使用中文文案，不进入主站中文 / English / 日本語 三语窗口体系。
 - 更新范围：后台项目介绍和后台更新记录属于后台私有内容，不写入主站知识库 `site-updates`，也不公开展示到首页最近更新。
 
@@ -137,6 +146,7 @@
 - 视频管理：维护 YouTube / Bilibili / b23.tv 视频，服务端识别链接、抓取标题、简介、作者、发布时间、封面和规范化 `embed_url`，支持草稿、发布、隐藏、排序、置顶、置顶排序、删除和刷新元数据。元数据只在后台预览、首次保存、URL 变化保存或刷新时抓取，已有视频 URL 未变化的普通保存不重新抓取外部元数据。封面可使用平台图片 URL，或在后台选择 JPG、PNG、WEBP、AVIF 本地图片后压缩写入 `thumbnail_url`；也可从本地视频文件读取第一帧生成封面，但这只生成封面，不上传或托管本地视频。置顶视频进入独立置顶队列并一定排在未置顶视频前面；多个置顶视频按 `pinned_sort_order` 从大到小显示，未置顶视频按 `sort_order` 从大到小显示，新建视频默认普通排序最大值 +10、置顶排序最大值 +10；后台编辑区只展示检查用小播放器，避免 iframe 预览占满页面。
 - 视频分类管理：维护视频区分类标签，支持 slug、中文名、English、日本語、排序和启用状态；分类排序同样是数值越大越靠前，新建默认 +10；默认分类 seed 只在全新视频分类表首次创建时初始化，已有表会通过 `site_runtime_state.video_categories_default_seeded` 标记为已处理，不覆盖或补回后台维护过的 slug、分类名、排序、启用状态和已删除分类；“全部”分类只由前台生成，不写入数据库。
 - 聊天室管理：查看聊天记录，编辑普通大厅明文消息，隐藏/恢复、删除消息，并按隐藏 visitor id 或 IP hash 禁言；密码房加密消息只显示“密码房加密消息（后台无法解密）”，不能编辑内容，但仍可隐藏、删除和禁言来源。网络来源 hash 带非敏感密钥代次，只有当前代次消息可新建网络来源禁言；旧代次消息仅供审计，旧禁言显示为“密钥已轮换”。禁言是否生效、是否过期由后台 API 按实际拦截条件计算。
+- 在线画板治理：查看房间、连接、对象和资源容量概览；读取单房状态；清空或锁定公共画板；移除异常连接；按匿名 ID 或 IP 哈希设置有期限的临时封禁；删除异常且已为空的密码房。面板不读取或显示画布正文、密码、完整 IP、匿名凭证或完整 IP 哈希。
 - 互传文件管理：通过主后台侧栏进入独立受保护页，分页查看当前 R2 / D1 文件和内容记录、发送账号、保存 / 过期时间及占用；可搜索、永久删除单项、清空 / 关闭房间、中止分片任务和执行过期清理。
 - 社交链接管理：维护主站关于我窗口的 X、GitHub、Bilibili、Instagram、Discord 五个图标跳转；保存到 `site_runtime_state.about_social_links`，只允许 http(s) 链接，主站只显示小图标不显示平台文字。
 - 后台更新记录：展示后台私有更新说明，每次后台更新后必须同步维护页面内 `adminUpdates` 和 `admin/docs/ADMIN_CHANGELOG.md`。
@@ -171,6 +181,14 @@
 - `GET /api/admin/chat/bans`
 - `POST /api/admin/chat/bans`
 - `DELETE /api/admin/chat/bans/:banId`
+- `GET /api/admin/whiteboards/overview`
+- `GET /api/admin/whiteboards/rooms`
+- `GET /api/admin/whiteboards/rooms/:roomId/status`
+- `POST /api/admin/whiteboards/public/clear`
+- `PUT /api/admin/whiteboards/public/lock`
+- `DELETE /api/admin/whiteboards/rooms/:roomId`
+- `POST /api/admin/whiteboards/rooms/:roomId/kick`
+- `POST /api/admin/whiteboards/rooms/:roomId/ban`
 - `GET /api/admin/social-links`
 - `PUT /api/admin/social-links`
 - `GET /api/admin/transfer/overview`
@@ -220,6 +238,11 @@
 - `analytics_click_events`
 - `anonymous_chat_messages`
 - `chat_bans`
+- `anonymous_identities`
+- `whiteboard_rooms`
+- `whiteboard_assets`
+- `whiteboard_bans`
+- `whiteboard_admin_audit`
 
 ## 隐私和安全事实
 
@@ -230,6 +253,7 @@
 - 埋点不得记录输入框内容、密码、文章草稿、后台表单内容或未发送聊天内容；点击目标文本、页面路径、来源、链接、元素标识和点击聚合键中的邮箱样式文本（含 URL 编码和双重编码形态）写入前必须脱敏。
 - 自动投递令牌的完整明文只允许在生成／轮换响应中显示一次；D1、后台更新记录、事件日志、浏览器持久化和普通错误信息都不得保存或输出完整令牌。机器入口只拥有新建固定分类文章的最小权限，不能读取后台数据或自行指定发布状态；默认创建草稿，受控公开只能由已启用 auto-publish 的专用通道执行。
 - 聊天室内容和昵称必须纯文本渲染；后台展示也要避免把用户内容当 HTML 执行。
+- 在线画板后台只处理房间、连接、容量、锁定、封禁和审计元数据，不返回画布图形／文本正文或密码。界面只显示操作所需的截断匿名标识和 IP 哈希提示，不显示完整匿名凭证、完整 IP 或可复制的完整 IP 哈希。
 - 后台视频 iframe 只能使用服务端规范化生成的 `embed_url`，不得直接信任管理员输入的任意 URL。
 - 社交链接保存时只接受 http(s) URL；前台关于我窗口只显示图标按钮，不能把后台填写的链接文字作为 HTML 或可见文案注入页面。
 
@@ -239,6 +263,7 @@
 - 后台静态资源随主站一起部署，不单独部署。
 - 修改 `admin/admin.js` 或 `admin/admin.css` 后，必须同步更新 `admin/index.html` 中对应 CSS / JS query 版本，减少线上缓存继续加载旧后台资源。
 - 修改后台 API、D1 schema 或权限逻辑时，需要同步检查 `functions/api/[[route]].js`、`functions/admin/_middleware.js` 和 `cloudflare/schema.sql`。
+- 在线画板治理还依赖 Pages 到独立 `WhiteboardRoom` Worker 的 external binding；仓库声明不等于 Dashboard 已配置。发布前必须在获授权环境中先完成 D1 migration 和 Worker 部署，再核对 binding，最后由 `main` 触发 Pages Git 部署。
 - 自动投递通道默认暂停；只有站长明确生成令牌、启用通道并显式配置 auto-publish 后，才允许每日生产任务在 07:00–08:00 内自动公开合格文章。部署网站不会自动创建其他计划任务，也不会替站长配置任何模型、搜索或第三方密钥。
 - 后台文档更新只改 `admin/docs/`、根目录 `CHANGELOG.md` 以及必要的 README 索引，不需要发布主站 `site-updates` 文章。
 

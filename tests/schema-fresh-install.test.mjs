@@ -17,6 +17,7 @@ const schemaIndexes = readFileSync(new URL("../cloudflare/schema-indexes.sql", i
 const mobileOsArticleId = "seed-update-2026-07-10-premium-interaction-mobile-os";
 const aiAgentWorkflowArticleId = "seed-ai-agent-workflow-guide-2026-06-14";
 const aiAgentWorkflowPinRepairKey = "article_ai_agent_workflow_pin_repair_v1";
+const multiplayerWhiteboardArticleId = "seed-update-2026-07-30-multiplayer-whiteboard";
 
 test("D1 schema initializes an empty database and remains idempotent", () => {
   const db = new DatabaseSync(":memory:");
@@ -33,6 +34,46 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
     assert.equal(
       db.prepare("select count(*) as count from article_translations where article_id = ?").get(mobileOsArticleId).count,
       3
+    );
+    assert.equal(
+      db.prepare("select count(*) as count from articles where article_id = ?").get(multiplayerWhiteboardArticleId).count,
+      1
+    );
+    assert.equal(
+      db.prepare("select count(*) as count from article_translations where article_id = ?").get(multiplayerWhiteboardArticleId).count,
+      3
+    );
+    assert.deepEqual(
+      db.prepare("pragma table_info(whiteboard_rooms)").all().map((column) => column.name),
+      [
+        "room_id", "room_type", "created_at", "last_active_at", "empty_since",
+        "delete_at", "online_count", "document_version", "snapshot_version",
+        "is_locked", "resource_usage", "resource_bytes", "resource_count",
+        "object_count", "status", "epoch", "updated_at", "last_error"
+      ]
+    );
+    assert.deepEqual(
+      db.prepare("pragma table_info(anonymous_identities)").all().map((column) => column.name),
+      [
+        "anonymous_id", "credential_hash", "legacy_visitor_id", "display_name",
+        "color", "identity_version", "created_at", "updated_at",
+        "name_changed_at", "name_window_start", "name_change_count", "revoked_at"
+      ]
+    );
+    assert.equal(
+      db.prepare("select count(*) as count from sqlite_master where type = 'index' and name = ?")
+        .get("whiteboard_rooms_live_overview_idx").count,
+      1
+    );
+    assert.equal(
+      db.prepare("select count(*) as count from sqlite_master where type = 'index' and name = ?")
+        .get("whiteboard_bans_scope_subject_idx").count,
+      1
+    );
+    assert.equal(
+      db.prepare("select count(*) as count from sqlite_master where type = 'index' and name = ?")
+        .get("whiteboard_bans_active_scope_subject_idx").count,
+      0
     );
     assert.equal(
       db.prepare("select is_pinned from articles where article_id = ?").get(aiAgentWorkflowArticleId).is_pinned,
@@ -137,6 +178,10 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
     assert.deepEqual(db.prepare("PRAGMA foreign_key_check").all(), []);
     assert.equal(
       db.prepare("select count(*) as count from article_translations where article_id = ?").get(mobileOsArticleId).count,
+      3
+    );
+    assert.equal(
+      db.prepare("select count(*) as count from article_translations where article_id = ?").get(multiplayerWhiteboardArticleId).count,
       3
     );
     assert.equal(
@@ -292,6 +337,80 @@ test("D1 transfer migration adds cursor generation and idempotency before depend
     db.exec(schema);
     db.exec(schemaIndexes);
     assert.equal(db.prepare("select count(*) as count from transfer_items where id = 'legacy-item'").get().count, 1);
+  } finally {
+    db.close();
+  }
+});
+
+test("D1 whiteboard ban migration replaces the legacy partial index and deduplicates safely", () => {
+  const db = new DatabaseSync(":memory:");
+  try {
+    db.exec(schema);
+    db.exec(`
+      create unique index whiteboard_bans_active_scope_subject_idx
+        on whiteboard_bans(room_id, subject_type, subject_value)
+        where active = 1;
+
+      insert into whiteboard_bans (
+        ban_id, room_id, subject_type, subject_value, reason, expires_at,
+        active, created_by, created_at, updated_at
+      ) values
+        (
+          'legacy-inactive-old', 'public-v1', 'anonymous_id',
+          'anonymous_target_identifier_legacy', 'old', '2000-01-01T00:00:00.000Z',
+          0, 'admin', '2025-01-01T00:00:00.000Z', '2025-01-01T00:00:00.000Z'
+        ),
+        (
+          'legacy-inactive-new', 'public-v1', 'anonymous_id',
+          'anonymous_target_identifier_legacy', 'new', '2099-01-01T00:00:00.000Z',
+          0, 'admin', '2026-01-01T00:00:00.000Z', '2026-01-01T00:00:00.000Z'
+        );
+    `);
+
+    db.exec(schemaIndexes);
+    db.exec(schemaIndexes);
+
+    assert.equal(
+      db.prepare(`
+        select count(*) as count
+        from sqlite_master
+        where type = 'index' and name = 'whiteboard_bans_active_scope_subject_idx'
+      `).get().count,
+      0
+    );
+    assert.equal(
+      db.prepare(`
+        select count(*) as count
+        from sqlite_master
+        where type = 'index' and name = 'whiteboard_bans_scope_subject_idx'
+      `).get().count,
+      1
+    );
+    assert.deepEqual(
+      {
+        ...db.prepare(`
+          select ban_id, reason
+          from whiteboard_bans
+          where room_id = 'public-v1'
+            and subject_type = 'anonymous_id'
+            and subject_value = 'anonymous_target_identifier_legacy'
+        `).get()
+      },
+      { ban_id: "legacy-inactive-new", reason: "new" }
+    );
+    assert.throws(
+      () => db.prepare(`
+        insert into whiteboard_bans (
+          ban_id, room_id, subject_type, subject_value, expires_at,
+          active, created_by, created_at, updated_at
+        ) values (
+          'duplicate-blocked', 'public-v1', 'anonymous_id',
+          'anonymous_target_identifier_legacy', '2099-01-01T00:00:00.000Z',
+          0, 'admin', '2026-02-01T00:00:00.000Z', '2026-02-01T00:00:00.000Z'
+        )
+      `).run(),
+      /UNIQUE constraint failed/
+    );
   } finally {
     db.close();
   }

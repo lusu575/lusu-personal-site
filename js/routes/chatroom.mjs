@@ -1,6 +1,13 @@
+import {
+  anonymousClientPresenceId,
+  anonymousIdentityChangeEvent,
+  getAnonymousIdentity,
+  rotateAnonymousIdentityName,
+  subscribeAnonymousIdentityChanges
+} from "../features/anonymous-identity.mjs?v=20260730-unified-anonymous-identity-r2";
+
 export function createChatroomRoute({
   t,
-  getCurrentLang,
   safeStorageGet,
   safeStorageSet,
   requestMobileFocusReveal,
@@ -11,8 +18,6 @@ export function createChatroomRoute({
   isAbortError
 }) {
   const chatStorageKeys = Object.freeze({
-    visitorId: "lusu-chat-visitor-id",
-    nickname: "lusu-chat-nickname",
     lastSentAt: "lusu-chat-last-sent-at"
   });
   const chatInitialMessageLimit = 100;
@@ -33,6 +38,8 @@ export function createChatroomRoute({
     idlePolls: 0,
     visitorId: "",
     nickname: "",
+    identityColor: "",
+    identityVersion: 0,
     lastMessageId: "",
     seenMessageIds: new Set(),
     pollTimer: null,
@@ -87,54 +94,23 @@ export function createChatroomRoute({
     return timestamp;
   }
 
+  function identityFetch(path, options = {}) {
+    return routeFetch("chatroom", path, options);
+  }
+
   async function ensureChatIdentity(options = {}) {
-    let visitorId = safeStorageGet(chatStorageKeys.visitorId);
-    if (!visitorId) {
-      visitorId = crypto.randomUUID ? crypto.randomUUID() : `visitor-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-      safeStorageSet(chatStorageKeys.visitorId, visitorId);
+    const identity = await getAnonymousIdentity({
+      ...options,
+      fetcher: identityFetch
+    });
+    if (options.signal?.aborted) {
+      throw new DOMException("The route was left", "AbortError");
     }
-
-    let nickname = safeStorageGet(chatStorageKeys.nickname);
-    if (!isValidChatNickname(nickname)) {
-      nickname = await fetchAvailableChatNickname(options);
-      if (options.signal?.aborted) {
-        throw new DOMException("The route was left", "AbortError");
-      }
-      safeStorageSet(chatStorageKeys.nickname, nickname);
-    }
-
-    chatState.visitorId = visitorId;
-    chatState.nickname = nickname.trim();
+    chatState.visitorId = anonymousClientPresenceId();
+    chatState.nickname = identity.displayName;
+    chatState.identityColor = identity.color;
+    chatState.identityVersion = identity.version;
     updateChatNicknameDisplay();
-  }
-
-  async function fetchAvailableChatNickname(options = {}) {
-    try {
-      const params = new URLSearchParams({ lang: getCurrentLang() });
-      appendChatRoomParam(params);
-      const payload = await chatApi(`/api/chat/nickname?${params.toString()}`, {
-        signal: options.signal
-      });
-      if (isValidChatNickname(payload.nickname)) {
-        return payload.nickname.trim();
-      }
-    } catch (error) {
-      if (isAbortError(error)) throw error;
-      // Local fallback keeps the chat usable if the nickname endpoint is unavailable.
-    }
-    return randomChatNickname();
-  }
-
-  function randomChatNickname() {
-    const pools = {
-      zh: ["蓝屏像素", "像素幽灵", "草地路人A", "CRT访客", "电视小粉", "泡泡旅人"],
-      en: ["BluePixel", "PixelGhost", "CRTGuest", "GrassWalk", "BubbleTrip", "TVHead"],
-      ja: ["青いピクセル", "ピクセル幽霊", "CRT旅人", "草原の人", "テレビ旅人", "泡の旅人"]
-    };
-    const names = pools[getCurrentLang()] || pools.zh;
-    const suffixes = ["9527", "1024", "2333", "404", "88", "7"];
-    const name = names[Math.floor(Math.random() * names.length)];
-    return `${name}${suffixes[Math.floor(Math.random() * suffixes.length)]}`;
   }
 
   function isValidChatNickname(value) {
@@ -510,23 +486,6 @@ export function createChatroomRoute({
     error.classList.toggle("is-error", Boolean(chatState.nicknameErrorKey));
   }
 
-  async function showChatNicknameForm() {
-    await ensureChatIdentity({ signal: activeRouteScope("chatroom")?.signal });
-    hideChatPrivateRoomForm({ restoreFocus: false });
-    const form = document.getElementById("chat-nickname-form");
-    const input = document.getElementById("chat-nickname-input");
-    const trigger = document.getElementById("chat-edit-nickname");
-    if (!form || !input) return;
-    chatState.nicknameErrorKey = "";
-    renderChatNicknameError();
-    input.value = chatState.nickname;
-    input.setAttribute("aria-invalid", "false");
-    form.hidden = false;
-    trigger?.setAttribute("aria-expanded", "true");
-    input.focus({ preventScroll: true });
-    requestMobileFocusReveal("chat-nickname-input");
-  }
-
   function hideChatNicknameForm(options = {}) {
     const form = document.getElementById("chat-nickname-form");
     const input = document.getElementById("chat-nickname-input");
@@ -541,31 +500,6 @@ export function createChatroomRoute({
     renderChatNicknameError();
     trigger?.setAttribute("aria-expanded", "false");
     if (wasOpen && options.restoreFocus !== false) trigger?.focus({ preventScroll: true });
-  }
-
-  function submitChatNickname(event) {
-    event?.preventDefault();
-    const input = document.getElementById("chat-nickname-input");
-    const normalized = String(input?.value || "").trim();
-    if (!isValidChatNickname(normalized)) {
-      chatState.nicknameErrorKey = "chatNicknameInvalid";
-      renderChatNicknameError();
-      input?.setAttribute("aria-invalid", "true");
-      input?.focus({ preventScroll: true });
-      return;
-    }
-    input?.setAttribute("aria-invalid", "false");
-    chatState.nickname = normalized;
-    safeStorageSet(chatStorageKeys.nickname, normalized);
-    updateChatNicknameDisplay();
-    hideChatNicknameForm();
-    setChatFeedbackKey("chatNicknameSaved", false, { source: "validation", force: true });
-  }
-
-  function handleChatNicknameKeydown(event) {
-    if (event.key !== "Escape") return;
-    event.preventDefault();
-    hideChatNicknameForm();
   }
 
   function renderChatFeedback() {
@@ -1092,10 +1026,11 @@ export function createChatroomRoute({
       }
       if (error.code === "nickname_taken") {
         setChatFeedbackKey("chatNicknameTaken", true, { source: "send", force: true });
-        const nickname = await fetchAvailableChatNickname();
-        chatState.nickname = nickname;
-        safeStorageSet(chatStorageKeys.nickname, nickname);
-        updateChatNicknameDisplay();
+        const identity = await rotateAnonymousIdentityName({
+          fetcher: identityFetch,
+          safeStorageSet
+        });
+        applyChatIdentity(identity);
         return;
       }
       setChatFeedback(error.message || t("chatLoadFailed"), true, { source: "send", force: true });
@@ -1105,9 +1040,37 @@ export function createChatroomRoute({
   }
 
   async function editChatNickname() {
-    return showChatNicknameForm();
+    const trigger = document.getElementById("chat-edit-nickname");
+    if (trigger?.disabled) return;
+    if (trigger) trigger.disabled = true;
+    try {
+      const identity = await rotateAnonymousIdentityName({
+        signal: activeRouteScope("chatroom")?.signal,
+        fetcher: identityFetch,
+        safeStorageSet
+      });
+      applyChatIdentity(identity);
+      setChatFeedbackKey("chatNicknameSaved", false, { source: "validation", force: true });
+    } catch (error) {
+      if (!isAbortError(error)) {
+        setChatFeedback(error.message || t("chatLoadFailed"), true, { source: "validation", force: true });
+      }
+    } finally {
+      if (trigger) trigger.disabled = false;
+    }
   }
 
+  function applyChatIdentity(identity) {
+    if (!identity || !isValidChatNickname(identity.displayName)) return;
+    chatState.nickname = identity.displayName;
+    chatState.identityColor = identity.color || chatState.identityColor;
+    chatState.identityVersion = Number(identity.version || chatState.identityVersion);
+    updateChatNicknameDisplay();
+  }
+
+  function handleAnonymousIdentityChange(event) {
+    applyChatIdentity(event.detail?.identity);
+  }
   async function chatApi(path, options = {}) {
     const response = await routeFetch("chatroom", path, {
       headers: { "Content-Type": "application/json", ...(options.headers || {}) },
@@ -1213,9 +1176,6 @@ export function createChatroomRoute({
     scope.listen(document.getElementById("chat-form"), "submit", submitChatMessage);
     scope.listen(document.getElementById("chat-message-input"), "input", handleChatDraftInput);
     scope.listen(document.getElementById("chat-edit-nickname"), "click", editChatNickname);
-    scope.listen(document.getElementById("chat-nickname-form"), "submit", submitChatNickname);
-    scope.listen(document.getElementById("chat-nickname-form"), "keydown", handleChatNicknameKeydown);
-    scope.listen(document.getElementById("chat-nickname-cancel"), "click", hideChatNicknameForm);
     scope.listen(document.getElementById("chat-room-toggle"), "click", handleChatRoomToggleClick);
     scope.listen(document.getElementById("chat-private-room-form"), "submit", enterChatPrivateRoom);
     scope.listen(document.getElementById("chat-private-room-cancel"), "click", hideChatPrivateRoomForm);
@@ -1227,6 +1187,10 @@ export function createChatroomRoute({
     scope.listen(document, "visibilitychange", handleChatVisibilityChange);
     scope.listen(window, "offline", handleChatOffline);
     scope.listen(window, "online", handleChatOnline);
+    scope.listen(window, anonymousIdentityChangeEvent, handleAnonymousIdentityChange);
+    scope.addCleanup(subscribeAnonymousIdentityChanges(applyChatIdentity, {
+      fetcher: identityFetch
+    }));
     return initChatroom(scope);
   }
 

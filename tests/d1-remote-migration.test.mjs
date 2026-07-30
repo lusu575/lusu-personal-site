@@ -196,6 +196,67 @@ test("remote D1 runner is idempotent on a fresh schema and does not issue ALTER 
   }
 });
 
+test("remote D1 runner replaces the legacy whiteboard partial ban index idempotently", async () => {
+  const db = new DatabaseSync(":memory:");
+  const events = [];
+  try {
+    db.exec(schema);
+    db.exec(`
+      create unique index whiteboard_bans_active_scope_subject_idx
+        on whiteboard_bans(room_id, subject_type, subject_value)
+        where active = 1;
+      insert into whiteboard_bans (
+        ban_id, room_id, subject_type, subject_value, reason, expires_at,
+        active, created_by, created_at, updated_at
+      ) values
+        (
+          'legacy-ban-old', 'public-v1', 'anonymous_id',
+          'anonymous_target_identifier_remote', 'old', '2000-01-01T00:00:00.000Z',
+          0, 'admin', '2025-01-01T00:00:00.000Z', '2025-01-01T00:00:00.000Z'
+        ),
+        (
+          'legacy-ban-new', 'public-v1', 'anonymous_id',
+          'anonymous_target_identifier_remote', 'new', '2099-01-01T00:00:00.000Z',
+          0, 'admin', '2026-01-01T00:00:00.000Z', '2026-01-01T00:00:00.000Z'
+        );
+    `);
+
+    await migrateRemoteD1(createAdapter(db, events));
+    await migrateRemoteD1(createAdapter(db, events));
+
+    assert.equal(
+      db.prepare(`
+        select count(*) as count
+        from sqlite_master
+        where type = 'index' and name = 'whiteboard_bans_active_scope_subject_idx'
+      `).get().count,
+      0
+    );
+    assert.equal(
+      db.prepare(`
+        select count(*) as count
+        from sqlite_master
+        where type = 'index' and name = 'whiteboard_bans_scope_subject_idx'
+      `).get().count,
+      1
+    );
+    assert.deepEqual(
+      {
+        ...db.prepare(`
+          select ban_id, reason
+          from whiteboard_bans
+          where room_id = 'public-v1'
+            and subject_type = 'anonymous_id'
+            and subject_value = 'anonymous_target_identifier_remote'
+        `).get()
+      },
+      { ban_id: "legacy-ban-new", reason: "new" }
+    );
+  } finally {
+    db.close();
+  }
+});
+
 test("remote D1 runner fails closed when grouped verification is incomplete", async () => {
   const files = [];
   await assert.rejects(

@@ -41,6 +41,16 @@ const state = {
   banListBusy: false,
   banListBusyMode: "",
   banBusyId: "",
+  whiteboardOverview: null,
+  whiteboardRooms: [],
+  whiteboardRoomsPagination: null,
+  whiteboardRoomFilter: "",
+  whiteboardPublicStatus: null,
+  selectedWhiteboardRoomId: "",
+  selectedWhiteboardStatus: null,
+  whiteboardStatusLoading: false,
+  whiteboardActionBusy: false,
+  whiteboardActionMode: "",
   accounts: [],
   selectedAccountId: "",
   accountFilter: "",
@@ -167,6 +177,7 @@ const panelMeta = {
   videos: ["视频管理", "输入视频链接后由服务端识别并缓存标题、简介、发布时间和封面，也可上传本地封面。"],
   videoCategories: ["视频分类管理", "维护视频区顶部标签，支持新增、编辑、停用、排序和安全删除。"],
   chat: ["聊天室管理", "编辑、隐藏、删除聊天记录，按隐藏用户标识或网络来源禁言。"],
+  whiteboards: ["在线画板管理", "查看公共画板和密码房连接、容量与生命周期，并执行锁定、清空、移除、封禁和异常房间删除。"],
   accounts: ["账号管理", "查看注册账号、重置密码、确认登录履历和近期活跃。"],
   socialLinks: ["社交链接", "维护主站关于我窗口里的社交入口跳转。"],
   updates: ["后台更新记录", "后台自己的私有更新说明，每次后台更新后同步记录。"],
@@ -178,6 +189,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-07-30",
+    title: "多人在线画板治理面板",
+    body: "社区治理新增“在线画板管理”：可查看跨房数量、连接、对象与图片容量，读取公共画板实时状态并切换只读或清空画布；密码房支持按截短标识查看生命周期和实时状态，并通过精确输入连接 ID、匿名 ID 或 IP 哈希执行移除、临时封禁和异常空房删除。完整匿名标识和网络哈希不在列表中大面积展示，所有危险操作继续使用上下文确认。后台资源版本在上一版基础上追加 20260730-whiteboard-admin-r1。"
+  },
   {
     date: "2026-07-29",
     title: "工具雷达正式周更已启用",
@@ -1873,6 +1889,13 @@ async function loadPanelData(panel, options = {}) {
         }
         if (chatErrors.length) {
           throw new Error(chatErrors.join("；"));
+        }
+      } else if (panel === "whiteboards") {
+        try {
+          await loadWhiteboards();
+        } catch (error) {
+          renderWhiteboardFailure(`读取在线画板失败：${error.message}`);
+          throw new Error(`在线画板：${error.message}`);
         }
       } else if (panel === "accounts") {
         try {
@@ -3905,9 +3928,10 @@ function updateSidebarLoadedSummary() {
     state.articles.length ? `文章 ${formatNumber(state.articles.length)}` : "",
     state.videos.length ? `视频 ${formatNumber(state.videos.length)}` : "",
     state.chatMessages.length ? `消息 ${formatNumber(state.chatMessages.length)}` : "",
+    state.whiteboardRooms.length ? `画板房 ${formatNumber(state.whiteboardRooms.length)}` : "",
     state.accounts.length ? `账号 ${formatNumber(state.accounts.length)}` : ""
   ].filter(Boolean);
-  setElementText(target, parts.length ? `已加载：${parts.slice(0, 4).join(" · ")}` : "内容数据按需加载");
+  setElementText(target, parts.length ? `已加载：${parts.slice(0, 5).join(" · ")}` : "内容数据按需加载");
 }
 
 function adminUpdateRoundNumber(item) {
@@ -6459,6 +6483,773 @@ async function disableBan(banId) {
   }
 }
 
+function formatWhiteboardBytes(value) {
+  const bytes = Math.max(0, Number(value || 0));
+  if (bytes < 1024) {
+    return `${formatNumber(bytes)} B`;
+  }
+  const units = ["KB", "MB", "GB"];
+  let amount = bytes;
+  let unit = "B";
+  for (const candidate of units) {
+    amount /= 1024;
+    unit = candidate;
+    if (amount < 1024 || candidate === units.at(-1)) {
+      break;
+    }
+  }
+  return `${amount >= 10 ? amount.toFixed(0) : amount.toFixed(1)} ${unit}`;
+}
+
+function shortWhiteboardRoomId(roomId) {
+  if (roomId === "public-v1") {
+    return "公共画板";
+  }
+  const value = String(roomId || "");
+  return value ? `密码房 …${value.slice(-6)}` : "未知房间";
+}
+
+function maskWhiteboardTarget(value) {
+  const text = String(value || "").trim();
+  if (text.length <= 10) {
+    return text || "未填写";
+  }
+  return `${text.slice(0, 5)}…${text.slice(-4)}`;
+}
+
+function whiteboardRoomStatusLabel(value) {
+  const labels = {
+    active: "运行中",
+    empty: "等待清理",
+    deleting: "清理中",
+    error: "异常"
+  };
+  return labels[String(value || "")] || String(value || "未知");
+}
+
+function whiteboardRoomStatusTone(room) {
+  if (room?.status === "error" || room?.hasError) return "hidden";
+  if (room?.status === "deleting" || room?.status === "empty") return "warning";
+  if (Number(room?.onlineCount || 0) > 0) return "visible";
+  return "neutral";
+}
+
+function createWhiteboardDefinition(label, value) {
+  const item = document.createElement("div");
+  const term = document.createElement("dt");
+  const detail = document.createElement("dd");
+  setElementText(term, label);
+  setElementText(detail, value);
+  item.append(term, detail);
+  return item;
+}
+
+function createWhiteboardMetric(label, value) {
+  const item = document.createElement("span");
+  const text = document.createElement("span");
+  const number = document.createElement("strong");
+  item.className = "list-overview-item";
+  setElementText(text, label);
+  setElementText(
+    number,
+    typeof value === "number" ? formatNumber(value) : String(value ?? "--")
+  );
+  item.append(text, number);
+  return item;
+}
+
+function whiteboardResourceUsage(room) {
+  const usage = room?.resourceUsage || {};
+  return {
+    bytes: Math.max(0, Number(usage.bytes ?? room?.resourceBytes ?? 0)),
+    images: Math.max(0, Number(usage.images ?? room?.resourceCount ?? 0))
+  };
+}
+
+function selectedWhiteboardRoom() {
+  if (!state.selectedWhiteboardRoomId) {
+    return null;
+  }
+  return state.whiteboardRooms.find((
+    room
+  ) => room.roomId === state.selectedWhiteboardRoomId) || null;
+}
+
+function mergeWhiteboardRoomData(indexed, realtime) {
+  if (!indexed) return realtime || null;
+  if (!realtime) return indexed;
+  return {
+    ...indexed,
+    ...realtime,
+    resourceUsage: {
+      ...(indexed.resourceUsage || {}),
+      ...(realtime.resourceUsage || {})
+    }
+  };
+}
+
+function publicWhiteboardData() {
+  const indexed = state.whiteboardOverview?.publicRoom
+    || state.whiteboardRooms.find((room) => room.roomId === "public-v1")
+    || null;
+  return mergeWhiteboardRoomData(indexed, state.whiteboardPublicStatus);
+}
+
+function submitWhiteboardConnectionAction(action, connection) {
+  if (state.whiteboardActionBusy || !connection) return;
+  if (action === "kick") {
+    const form = $("#whiteboard-kick-form");
+    form.elements.target_type.value = "connectionId";
+    form.elements.target_value.value = String(connection.connectionId || "");
+    form.requestSubmit();
+    return;
+  }
+  const form = $("#whiteboard-ban-form");
+  form.elements.kind.value = action === "ban-ip" ? "ipHash" : "anonymousId";
+  form.elements.key.value = String(
+    action === "ban-ip" ? connection.ipHash || "" : connection.anonymousId || ""
+  );
+  form.requestSubmit();
+}
+
+function createWhiteboardConnectionList(room) {
+  const section = document.createElement("section");
+  const heading = document.createElement("h3");
+  const connections = Array.isArray(room?.connections) ? room.connections : [];
+  section.className = "whiteboard-connection-list";
+  setElementText(heading, `当前连接（${formatNumber(connections.length)}）`);
+  section.append(heading);
+  if (!connections.length) {
+    section.append(createEmptyStateElement("当前没有可治理的实时连接。"));
+    return section;
+  }
+
+  const list = document.createElement("ul");
+  connections.forEach((connection) => {
+    const item = document.createElement("li");
+    const identity = document.createElement("div");
+    const actions = document.createElement("div");
+    const name = document.createElement("strong");
+    const details = document.createElement("span");
+    setElementText(name, String(connection.displayName || "匿名成员"));
+    setElementText(
+      details,
+      `连接 ${maskWhiteboardTarget(connection.connectionId)} · 匿名 ${maskWhiteboardTarget(connection.anonymousId)}${connection.ipHash ? ` · IP ${maskWhiteboardTarget(connection.ipHash)}` : ""}`
+    );
+    identity.append(name, details);
+    identity.className = "whiteboard-connection-identity";
+    actions.className = "whiteboard-connection-actions";
+    for (const [action, text, tone] of [
+      ["kick", "移除此连接", "warning"],
+      ["ban-anonymous", "封禁匿名身份", "warning"],
+      ...(connection.ipHash ? [["ban-ip", "封禁 IP 哈希", "danger"]] : [])
+    ]) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = `xp-button ${tone}`;
+      button.dataset.whiteboardConnectionAction = action;
+      setElementText(button, text);
+      button.addEventListener("click", () => {
+        submitWhiteboardConnectionAction(action, connection);
+      });
+      actions.append(button);
+    }
+    item.append(identity, actions);
+    list.append(item);
+  });
+  section.append(list);
+  return section;
+}
+
+function renderWhiteboardOverview() {
+  const box = $("#whiteboard-overview-strip");
+  const summary = state.whiteboardOverview?.summary || {};
+  const items = [
+    ["全部房间", summary.roomCount || 0],
+    ["密码房", summary.privateRoomCount || 0],
+    ["运行中", summary.activeRoomCount || 0],
+    ["实时连接", summary.connectionCount || 0],
+    ["画布对象", summary.objectCount || 0],
+    ["图片资源", summary.resourceCount || 0],
+    ["图片容量", formatWhiteboardBytes(summary.resourceBytes || 0)],
+    ["有效封禁", summary.activeBanCount || 0],
+    ["异常房间", summary.errorRoomCount || 0],
+    ["错误记录", summary.errorCount || 0],
+    ["自动清理", summary.cleanedRoomCount || 0]
+  ];
+  box.replaceChildren(...items.map(([label, value]) => (
+    createWhiteboardMetric(label, value)
+  )));
+  syncBoxLabel(box, "在线画板跨房运行概览");
+}
+
+function renderPublicWhiteboard() {
+  const room = publicWhiteboardData();
+  const usage = whiteboardResourceUsage(room);
+  const status = $("#whiteboard-public-status");
+  status.replaceChildren(
+    createWhiteboardDefinition("在线成员", room ? formatNumber(room.onlineCount) : "--"),
+    createWhiteboardDefinition(
+      "实时连接",
+      room && room.connectionCount !== undefined
+        ? formatNumber(room.connectionCount)
+        : room
+          ? `${formatNumber(room.onlineCount)}（索引）`
+          : "--"
+    ),
+    createWhiteboardDefinition("画布对象", room ? formatNumber(room.objectCount) : "--"),
+    createWhiteboardDefinition(
+      "图片容量",
+      room ? `${formatWhiteboardBytes(usage.bytes)} · ${formatNumber(usage.images)} 张` : "--"
+    )
+  );
+
+  const badge = $("#whiteboard-public-lock-state");
+  badge.className = `status-badge ${room?.isLocked ? "warning" : "visible"}`;
+  setElementText(
+    badge,
+    room ? (room.isLocked ? "只读锁定" : "允许编辑") : "状态未建立"
+  );
+  const note = room
+    ? `文档版本 ${formatNumber(room.documentVersion)} · 快照版本 ${formatNumber(room.snapshotVersion)} · 最近活动 ${formatTime(room.lastActiveAt) || "未记录"}`
+    : "公共画板尚未建立实时状态；首次使用后会出现在这里。";
+  setElementText($("#whiteboard-public-note"), note);
+  syncWhiteboardActionState();
+}
+
+function whiteboardRoomMatchesFilter(room, filter) {
+  if (!filter) return true;
+  const search = [
+    shortWhiteboardRoomId(room.roomId),
+    room.roomType === "public" ? "公共房" : "密码房",
+    room.status,
+    whiteboardRoomStatusLabel(room.status),
+    String(room.roomId || "").slice(-6),
+    room.isLocked ? "锁定 只读" : "可编辑"
+  ].join(" ").toLowerCase();
+  return search.includes(filter);
+}
+
+function renderWhiteboardRoomList() {
+  const list = $("#whiteboard-room-list");
+  const filter = normalizeFilterText(state.whiteboardRoomFilter);
+  const rooms = state.whiteboardRooms.filter((room) => (
+    whiteboardRoomMatchesFilter(room, filter)
+  ));
+  const hasMore = Boolean(state.whiteboardRoomsPagination?.hasMore);
+  setElementText(
+    $("#whiteboard-room-list-count"),
+    `${formatNumber(rooms.length)} 个房间${hasMore ? " · 仅当前 100 条" : ""}`
+  );
+  syncBoxLabel(list, `在线画板房间列表：${formatNumber(rooms.length)} 个`);
+  if (!rooms.length) {
+    list.replaceChildren(createEmptyStateElement(
+      filter ? "没有匹配的房间，尝试缩短筛选条件。" : "当前没有可管理的画板房间。"
+    ));
+    return;
+  }
+
+  list.replaceChildren(...rooms.map((room) => {
+    const item = document.createElement("button");
+    const heading = document.createElement("span");
+    const badges = document.createElement("span");
+    const detail = document.createElement("span");
+    const usage = whiteboardResourceUsage(room);
+    item.type = "button";
+    item.className = "whiteboard-room-item";
+    item.dataset.whiteboardRoomId = room.roomId;
+    item.disabled = state.whiteboardActionBusy || state.whiteboardStatusLoading;
+    item.classList.toggle("active", room.roomId === state.selectedWhiteboardRoomId);
+    item.setAttribute(
+      "aria-pressed",
+      room.roomId === state.selectedWhiteboardRoomId ? "true" : "false"
+    );
+    item.setAttribute(
+      "aria-label",
+      `${shortWhiteboardRoomId(room.roomId)}，${whiteboardRoomStatusLabel(room.status)}，在线 ${formatNumber(room.onlineCount)}`
+    );
+
+    heading.className = "whiteboard-room-item-title";
+    setElementText(heading, shortWhiteboardRoomId(room.roomId));
+    badges.className = "whiteboard-room-item-badges";
+    badges.append(
+      createStatusBadgeElement(
+        whiteboardRoomStatusLabel(room.status),
+        whiteboardRoomStatusTone(room)
+      ),
+      createStatusBadgeElement(
+        room.isLocked ? "只读" : "可编辑",
+        room.isLocked ? "warning" : "neutral"
+      ),
+      createStatusBadgeElement(`在线 ${formatNumber(room.onlineCount)}`, "neutral")
+    );
+    if (room.hasError) {
+      badges.append(createStatusBadgeElement("有错误记录", "hidden"));
+    }
+    detail.className = "list-subtle";
+    setElementText(
+      detail,
+      `对象 ${formatNumber(room.objectCount)} · 图片 ${formatNumber(usage.images)} / ${formatWhiteboardBytes(usage.bytes)} · 最近活动 ${formatTime(room.lastActiveAt) || "未记录"}`
+    );
+    item.append(heading, badges, detail);
+    return item;
+  }));
+}
+
+function renderSelectedWhiteboard() {
+  const indexed = selectedWhiteboardRoom();
+  const room = mergeWhiteboardRoomData(indexed, state.selectedWhiteboardStatus);
+  const summary = $("#whiteboard-room-detail-summary");
+  const label = $("#whiteboard-selected-room-label");
+  if (!state.selectedWhiteboardRoomId) {
+    setElementText(label, "先从房间列表选择一个房间。");
+    summary.replaceChildren(createEmptyStateElement(
+      "选择房间后可查看连接、容量、版本和清理状态。"
+    ));
+    syncWhiteboardActionState();
+    return;
+  }
+
+  setElementText(
+    label,
+    `${shortWhiteboardRoomId(state.selectedWhiteboardRoomId)} · 完整标识默认隐藏`
+  );
+  if (!room) {
+    summary.replaceChildren(createEmptyStateElement(
+      state.whiteboardStatusLoading
+        ? "正在读取房间实时状态..."
+        : "无法读取房间状态，可稍后重试。"
+    ));
+    syncWhiteboardActionState();
+    return;
+  }
+
+  const usage = whiteboardResourceUsage(room);
+  const strip = document.createElement("div");
+  const lifecycle = document.createElement("div");
+  strip.className = "list-overview-strip whiteboard-detail-strip";
+  strip.append(
+    createWhiteboardMetric("在线成员", room.onlineCount || 0),
+    createWhiteboardMetric(
+      "连接数",
+      room.connectionCount === undefined ? room.onlineCount || 0 : room.connectionCount
+    ),
+    createWhiteboardMetric("对象", room.objectCount || 0),
+    createWhiteboardMetric("图片", usage.images),
+    createWhiteboardMetric("容量", formatWhiteboardBytes(usage.bytes)),
+    createWhiteboardMetric("有效封禁", room.activeBanCount || 0)
+  );
+  lifecycle.className = "whiteboard-lifecycle-note";
+  setElementText(
+    lifecycle,
+    room.roomType === "public"
+      ? `公共房不执行 24 小时清理 · 文档 ${formatNumber(room.documentVersion)} / 快照 ${formatNumber(room.snapshotVersion)}`
+      : room.deleteAt
+        ? `无人时间 ${formatTime(room.emptySince) || "未记录"} · 计划清理 ${formatTime(room.deleteAt)}`
+        : `当前未开始清理倒计时 · 文档 ${formatNumber(room.documentVersion)} / 快照 ${formatNumber(room.snapshotVersion)}`
+  );
+  if (room.hasError && room.lastError) {
+    lifecycle.textContent += ` · 最近错误 ${String(room.lastError).slice(0, 80)}`;
+  }
+  summary.replaceChildren(strip, lifecycle, createWhiteboardConnectionList(room));
+  syncWhiteboardActionState();
+}
+
+function renderWhiteboardFailure(message) {
+  const overview = $("#whiteboard-overview-strip");
+  const list = $("#whiteboard-room-list");
+  overview.replaceChildren(createEmptyStateElement(message));
+  list.replaceChildren(createEmptyStateElement(message));
+  setElementText($("#whiteboard-room-list-count"), "房间列表读取失败");
+  setElementText($("#whiteboard-public-note"), message);
+  setElementText($("#whiteboard-action-status"), message);
+  syncWhiteboardActionState();
+}
+
+function syncWhiteboardActionState() {
+  const selected = selectedWhiteboardRoom();
+  const publicRoom = publicWhiteboardData();
+  const busy = state.whiteboardActionBusy || state.whiteboardStatusLoading;
+  const selectedReady = Boolean(state.selectedWhiteboardRoomId);
+  const selectedPrivate = selected?.roomType === "private";
+  const selectedOnline = Number(
+    (state.selectedWhiteboardStatus || selected)?.onlineCount || 0
+  );
+
+  $("#refresh-whiteboards").disabled = busy;
+  $("#refresh-public-whiteboard").disabled = busy;
+  $("#toggle-public-whiteboard-lock").disabled = busy || !publicRoom;
+  $("#clear-public-whiteboard").disabled = busy || !publicRoom;
+  $("#refresh-selected-whiteboard").disabled = busy || !selectedReady;
+  $("#whiteboard-kick-form").querySelector("button[type='submit']").disabled = (
+    busy || !selectedReady
+  );
+  $("#whiteboard-ban-form").querySelector("button[type='submit']").disabled = (
+    busy || !selectedReady
+  );
+  $("#delete-selected-whiteboard").disabled = (
+    busy || !selectedPrivate || selectedOnline > 0
+  );
+
+  const lockButton = $("#toggle-public-whiteboard-lock");
+  setElementText(
+    lockButton,
+    publicRoom?.isLocked ? "恢复公共画板编辑" : "锁定为只读"
+  );
+  syncButtonHint(
+    lockButton,
+    publicRoom?.isLocked ? "解除公共画板只读锁定" : "把公共画板切换为只读"
+  );
+  $$("#whiteboard-room-list .whiteboard-room-item").forEach((button) => {
+    button.disabled = busy;
+  });
+  $$("[data-whiteboard-connection-action]").forEach((button) => {
+    button.disabled = busy;
+  });
+}
+
+function setWhiteboardActionBusy(mode = "") {
+  state.whiteboardActionBusy = Boolean(mode);
+  state.whiteboardActionMode = mode;
+  syncWhiteboardActionState();
+}
+
+async function loadPublicWhiteboardStatus({ quiet = false } = {}) {
+  let failureMessage = "";
+  if (!quiet) {
+    setElementText($("#whiteboard-public-note"), "正在读取公共画板实时状态...");
+  }
+  try {
+    const payload = await api("/api/admin/whiteboards/rooms/public-v1/status");
+    state.whiteboardPublicStatus = payload.room || null;
+  } catch (error) {
+    state.whiteboardPublicStatus = null;
+    failureMessage = `实时状态暂不可用：${error.message}`;
+  }
+  renderPublicWhiteboard();
+  if (failureMessage && !quiet) {
+    setElementText($("#whiteboard-public-note"), failureMessage);
+  }
+}
+
+async function loadWhiteboards() {
+  const [overview, roomsPayload] = await Promise.all([
+    api("/api/admin/whiteboards/overview"),
+    api("/api/admin/whiteboards/rooms?limit=100&offset=0")
+  ]);
+  state.whiteboardOverview = overview || null;
+  state.whiteboardRooms = Array.isArray(roomsPayload.rooms)
+    ? roomsPayload.rooms
+    : [];
+  state.whiteboardRoomsPagination = roomsPayload.pagination || null;
+  if (
+    state.selectedWhiteboardRoomId
+    && !state.whiteboardRooms.some((
+      room
+    ) => room.roomId === state.selectedWhiteboardRoomId)
+  ) {
+    state.selectedWhiteboardRoomId = "";
+    state.selectedWhiteboardStatus = null;
+  }
+  renderWhiteboardOverview();
+  renderWhiteboardRoomList();
+  renderPublicWhiteboard();
+  renderSelectedWhiteboard();
+  await loadPublicWhiteboardStatus({ quiet: true });
+  updateSidebarLoadedSummary();
+}
+
+async function selectWhiteboardRoom(
+  roomId,
+  { successMessage = "房间实时状态已更新。" } = {}
+) {
+  const room = state.whiteboardRooms.find((item) => item.roomId === roomId);
+  if (!room || state.whiteboardActionBusy || state.whiteboardStatusLoading) {
+    return;
+  }
+  state.selectedWhiteboardRoomId = room.roomId;
+  state.selectedWhiteboardStatus = null;
+  state.whiteboardStatusLoading = true;
+  renderWhiteboardRoomList();
+  renderSelectedWhiteboard();
+  setElementText(
+    $("#whiteboard-action-status"),
+    `正在读取${shortWhiteboardRoomId(room.roomId)}实时状态...`
+  );
+  try {
+    const payload = await api(
+      `/api/admin/whiteboards/rooms/${encodeURIComponent(room.roomId)}/status`
+    );
+    state.selectedWhiteboardStatus = payload.room || null;
+    if (room.roomId === "public-v1") {
+      state.whiteboardPublicStatus = payload.room || null;
+      renderPublicWhiteboard();
+    }
+    setElementText($("#whiteboard-action-status"), successMessage);
+  } catch (error) {
+    setElementText(
+      $("#whiteboard-action-status"),
+      `读取房间实时状态失败：${error.message}`
+    );
+  } finally {
+    state.whiteboardStatusLoading = false;
+    renderWhiteboardRoomList();
+    renderSelectedWhiteboard();
+  }
+}
+
+async function refreshSelectedWhiteboard() {
+  if (!state.selectedWhiteboardRoomId) {
+    return;
+  }
+  await selectWhiteboardRoom(state.selectedWhiteboardRoomId);
+}
+
+async function clearPublicWhiteboard() {
+  if (state.whiteboardActionBusy || !publicWhiteboardData()) {
+    return;
+  }
+  const confirmed = await openConfirmDialog({
+    title: "清空公共画板",
+    object: "公共画板的全部图形、文字与图片",
+    state: `在线 ${formatNumber(publicWhiteboardData()?.onlineCount)} · ${publicWhiteboardData()?.isLocked ? "当前只读" : "当前可编辑"}`,
+    impact: "所有在线用户会立即看到空画布，公共画板独占图片也会被清理。",
+    recovery: `不可恢复；操作人：${state.user?.email || "当前管理员"}。`,
+    expectedText: "清空公共画板",
+    confirmLabel: "确认清空"
+  });
+  if (!confirmed) return;
+
+  setWhiteboardActionBusy("clear");
+  setElementText($("#whiteboard-action-status"), "正在清空公共画板...");
+  try {
+    await api("/api/admin/whiteboards/public/clear", {
+      method: "POST",
+      body: "{}"
+    });
+    setElementText($("#whiteboard-action-status"), "公共画板已清空。");
+    await loadWhiteboards();
+  } catch (error) {
+    setElementText(
+      $("#whiteboard-action-status"),
+      `清空公共画板失败：${error.message}`
+    );
+  } finally {
+    setWhiteboardActionBusy("");
+  }
+}
+
+async function togglePublicWhiteboardLock() {
+  const room = publicWhiteboardData();
+  if (state.whiteboardActionBusy || !room) {
+    return;
+  }
+  const nextLocked = !Boolean(room.isLocked);
+  const confirmed = await openConfirmDialog({
+    title: nextLocked ? "锁定公共画板" : "解除公共画板锁定",
+    object: "公共画板编辑状态",
+    state: room.isLocked ? "当前只读" : "当前允许编辑",
+    impact: nextLocked
+      ? "现有连接会保留，但普通用户不能继续修改画布。"
+      : "普通用户将重新获得画布编辑能力。",
+    recovery: "可随时在本页切换回来。",
+    confirmLabel: nextLocked ? "确认锁定" : "确认恢复编辑"
+  });
+  if (!confirmed) return;
+
+  setWhiteboardActionBusy("lock");
+  setElementText(
+    $("#whiteboard-action-status"),
+    nextLocked ? "正在锁定公共画板..." : "正在恢复公共画板编辑..."
+  );
+  try {
+    await api("/api/admin/whiteboards/public/lock", {
+      method: "PUT",
+      body: JSON.stringify({ locked: nextLocked })
+    });
+    setElementText(
+      $("#whiteboard-action-status"),
+      nextLocked ? "公共画板已切换为只读。" : "公共画板已恢复编辑。"
+    );
+    await loadWhiteboards();
+  } catch (error) {
+    setElementText(
+      $("#whiteboard-action-status"),
+      `切换公共画板锁定失败：${error.message}`
+    );
+  } finally {
+    setWhiteboardActionBusy("");
+  }
+}
+
+async function kickWhiteboardTarget(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const room = selectedWhiteboardRoom();
+  if (state.whiteboardActionBusy || !room) {
+    return;
+  }
+  const targetType = form.elements.target_type.value;
+  const targetValue = String(form.elements.target_value.value || "").trim();
+  const valid = targetType === "anonymousId"
+    ? /^[A-Za-z0-9_-]{20,160}$/.test(targetValue)
+    : /^[A-Za-z0-9_-]{8,128}$/.test(targetValue);
+  if (!valid) {
+    setElementText(
+      $("#whiteboard-action-status"),
+      targetType === "anonymousId"
+        ? "请输入有效的完整匿名 ID。"
+        : "请输入有效的完整连接 ID。"
+    );
+    form.elements.target_value.focus();
+    return;
+  }
+  const confirmed = await openConfirmDialog({
+    title: "移除画板连接",
+    object: `${targetType === "anonymousId" ? "匿名身份" : "连接"} ${maskWhiteboardTarget(targetValue)}`,
+    state: shortWhiteboardRoomId(room.roomId),
+    impact: targetType === "anonymousId"
+      ? "该匿名身份在此房间的当前连接会被全部断开。"
+      : "指定的单个连接会被断开。",
+    recovery: "未封禁的用户仍可重新连接；如需阻止重连，请使用临时封禁。",
+    confirmLabel: "确认移除"
+  });
+  if (!confirmed) return;
+
+  setWhiteboardActionBusy("kick");
+  setElementText($("#whiteboard-action-status"), "正在移除异常连接...");
+  try {
+    const payload = await api(
+      `/api/admin/whiteboards/rooms/${encodeURIComponent(room.roomId)}/kick`,
+      {
+        method: "POST",
+        body: JSON.stringify({ [targetType]: targetValue })
+      }
+    );
+    form.reset();
+    const successMessage = `已处理移除请求，断开 ${formatNumber(payload.kicked || 0)} 个连接。`;
+    setWhiteboardActionBusy("");
+    await selectWhiteboardRoom(room.roomId, { successMessage });
+  } catch (error) {
+    setElementText(
+      $("#whiteboard-action-status"),
+      `移除连接失败：${error.message}`
+    );
+  } finally {
+    setWhiteboardActionBusy("");
+  }
+}
+
+async function banWhiteboardTarget(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const room = selectedWhiteboardRoom();
+  if (state.whiteboardActionBusy || !room) {
+    return;
+  }
+  const kind = form.elements.kind.value;
+  const key = String(form.elements.key.value || "").trim();
+  const reason = String(form.elements.reason.value || "").trim();
+  const durationSeconds = Number(form.elements.duration_seconds.value);
+  const validKey = kind === "ipHash"
+    ? /^[a-f0-9]{64}$/.test(key)
+    : /^[A-Za-z0-9_-]{20,160}$/.test(key);
+  if (!validKey) {
+    setElementText(
+      $("#whiteboard-action-status"),
+      kind === "ipHash"
+        ? "请输入当前代次的 64 位小写 IP 哈希。"
+        : "请输入有效的完整匿名 ID。"
+    );
+    form.elements.key.focus();
+    return;
+  }
+  if (
+    !Number.isInteger(durationSeconds)
+    || durationSeconds < 60
+    || durationSeconds > 7 * 24 * 60 * 60
+  ) {
+    setElementText($("#whiteboard-action-status"), "封禁期限无效。");
+    return;
+  }
+  const confirmed = await openConfirmDialog({
+    title: "临时封禁画板用户",
+    object: `${kind === "ipHash" ? "IP 哈希" : "匿名身份"} ${maskWhiteboardTarget(key)}`,
+    state: `${shortWhiteboardRoomId(room.roomId)} · ${formatNumber(durationSeconds / 3600)} 小时`,
+    impact: "匹配目标的当前连接会被断开，并在期限内阻止重新进入这个房间。",
+    recovery: "到期后自动失效；第一版后台暂不提供提前解除入口。",
+    confirmLabel: "确认封禁"
+  });
+  if (!confirmed) return;
+
+  setWhiteboardActionBusy("ban");
+  setElementText($("#whiteboard-action-status"), "正在建立临时封禁...");
+  try {
+    const payload = await api(
+      `/api/admin/whiteboards/rooms/${encodeURIComponent(room.roomId)}/ban`,
+      {
+        method: "POST",
+        body: JSON.stringify({ kind, key, durationSeconds, reason })
+      }
+    );
+    form.reset();
+    const successMessage = `临时封禁已建立，并断开 ${formatNumber(payload.kicked || 0)} 个连接。`;
+    setWhiteboardActionBusy("");
+    await selectWhiteboardRoom(room.roomId, { successMessage });
+  } catch (error) {
+    setElementText(
+      $("#whiteboard-action-status"),
+      `建立临时封禁失败：${error.message}`
+    );
+  } finally {
+    setWhiteboardActionBusy("");
+  }
+}
+
+async function deleteSelectedWhiteboard() {
+  const room = selectedWhiteboardRoom();
+  const current = state.selectedWhiteboardStatus || room;
+  if (
+    state.whiteboardActionBusy
+    || !room
+    || room.roomType !== "private"
+    || Number(current?.onlineCount || 0) > 0
+  ) {
+    return;
+  }
+  const label = shortWhiteboardRoomId(room.roomId);
+  const confirmed = await openConfirmDialog({
+    title: "删除异常密码房",
+    object: label,
+    state: `在线 ${formatNumber(current?.onlineCount)} · ${whiteboardRoomStatusLabel(room.status)}`,
+    impact: "协作文档、增量记录、快照、房间元数据与该房独占图片会被清理。",
+    recovery: `不可恢复；操作人：${state.user?.email || "当前管理员"}。`,
+    expectedText: "删除密码房",
+    confirmLabel: "确认删除"
+  });
+  if (!confirmed) return;
+
+  setWhiteboardActionBusy("delete");
+  setElementText($("#whiteboard-action-status"), `正在删除${label}...`);
+  try {
+    await api(
+      `/api/admin/whiteboards/rooms/${encodeURIComponent(room.roomId)}`,
+      { method: "DELETE" }
+    );
+    state.selectedWhiteboardRoomId = "";
+    state.selectedWhiteboardStatus = null;
+    setElementText($("#whiteboard-action-status"), "密码房删除请求已完成。");
+    await loadWhiteboards();
+  } catch (error) {
+    setElementText(
+      $("#whiteboard-action-status"),
+      `删除密码房失败：${error.message}`
+    );
+  } finally {
+    setWhiteboardActionBusy("");
+  }
+}
+
 async function loadAccounts() {
   const payload = await api("/api/admin/accounts");
   state.accounts = payload.accounts || [];
@@ -7787,6 +8578,36 @@ function bindEvents() {
       setChatGovernanceTab(tabs[nextIndex].dataset.chatGovernanceTab, { focus: true });
     });
   });
+  $("#refresh-whiteboards").addEventListener("click", () => {
+    loadPanelData("whiteboards", { force: true });
+  });
+  $("#refresh-public-whiteboard").addEventListener("click", async () => {
+    if (state.whiteboardActionBusy) {
+      return;
+    }
+    setWhiteboardActionBusy("public-status");
+    try {
+      await loadPublicWhiteboardStatus();
+    } finally {
+      setWhiteboardActionBusy("");
+    }
+  });
+  $("#toggle-public-whiteboard-lock").addEventListener("click", togglePublicWhiteboardLock);
+  $("#clear-public-whiteboard").addEventListener("click", clearPublicWhiteboard);
+  $("#refresh-selected-whiteboard").addEventListener("click", refreshSelectedWhiteboard);
+  $("#delete-selected-whiteboard").addEventListener("click", deleteSelectedWhiteboard);
+  $("#whiteboard-room-filter").addEventListener("input", (event) => {
+    state.whiteboardRoomFilter = event.currentTarget.value;
+    renderWhiteboardRoomList();
+  });
+  $("#whiteboard-room-list").addEventListener("click", (event) => {
+    const item = event.target.closest("[data-whiteboard-room-id]");
+    if (item) {
+      selectWhiteboardRoom(item.dataset.whiteboardRoomId);
+    }
+  });
+  $("#whiteboard-kick-form").addEventListener("submit", kickWhiteboardTarget);
+  $("#whiteboard-ban-form").addEventListener("submit", banWhiteboardTarget);
   $("#account-list").addEventListener("click", async (event) => {
     const item = event.target.closest("[data-account-id]");
     if (item && !isAccountWriteBusy()) {
@@ -7817,6 +8638,10 @@ async function init() {
   resetVideoForm();
   resetVideoCategoryForm();
   resetChatForm();
+  renderWhiteboardOverview();
+  renderWhiteboardRoomList();
+  renderPublicWhiteboard();
+  renderSelectedWhiteboard();
   resetAccountForm();
   renderAutomationPanel();
   setChatGovernanceTab("message", { focus: false });

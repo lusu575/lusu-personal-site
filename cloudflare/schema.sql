@@ -298,6 +298,109 @@ insert into transfer_settings (setting_key, setting_value, updated_at, updated_b
   ('__settings_revision', '2026-07-16T00:00:00.000Z', '2026-07-16T00:00:00.000Z', 'system')
 on conflict(setting_key) do nothing;
 
+create table if not exists anonymous_identities (
+  anonymous_id text primary key,
+  credential_hash text not null unique,
+  legacy_visitor_id text unique,
+  display_name text not null,
+  color text not null,
+  identity_version integer not null default 1,
+  created_at text not null,
+  updated_at text not null,
+  name_changed_at text,
+  name_window_start text,
+  name_change_count integer not null default 0,
+  revoked_at text
+);
+
+create index if not exists anonymous_identities_updated_idx
+  on anonymous_identities(updated_at);
+create index if not exists anonymous_identities_name_idx
+  on anonymous_identities(display_name);
+
+create table if not exists whiteboard_rooms (
+  room_id text primary key,
+  room_type text not null check(room_type in ('public', 'private')),
+  created_at text not null,
+  last_active_at text not null,
+  empty_since text,
+  delete_at text,
+  online_count integer not null default 0,
+  document_version integer not null default 0,
+  snapshot_version integer not null default 0,
+  is_locked integer not null default 0 check(is_locked in (0, 1)),
+  resource_usage text not null default '{"bytes":0,"images":0}',
+  resource_bytes integer not null default 0,
+  resource_count integer not null default 0,
+  object_count integer not null default 0,
+  status text not null default 'active',
+  epoch integer not null default 1,
+  updated_at text not null,
+  last_error text not null default ''
+);
+
+create table if not exists whiteboard_assets (
+  asset_id text primary key,
+  room_id text not null references whiteboard_rooms(room_id) on delete cascade,
+  object_key text not null unique,
+  content_type text not null,
+  byte_size integer not null,
+  width integer not null,
+  height integer not null,
+  sha256 text not null,
+  ref_count integer not null default 0,
+  status text not null default 'active',
+  created_at text not null,
+  updated_at text not null,
+  unreferenced_at text,
+  delete_attempts integer not null default 0,
+  last_error text not null default ''
+);
+
+create table if not exists whiteboard_bans (
+  ban_id text primary key,
+  room_id text not null,
+  subject_type text not null check(subject_type in ('anonymous_id', 'ip_hash')),
+  subject_value text not null,
+  ip_hash_key_id text not null default '',
+  reason text not null default '',
+  expires_at text not null,
+  active integer not null default 1 check(active in (0, 1)),
+  created_by text not null,
+  created_at text not null,
+  updated_at text not null
+);
+
+create table if not exists whiteboard_admin_audit (
+  audit_id text primary key,
+  admin_user_id text not null,
+  action text not null,
+  room_id text not null default '',
+  target_type text not null default '',
+  target_key text not null default '',
+  details text not null default '{}',
+  created_at text not null
+);
+
+create table if not exists whiteboard_metrics (
+  metric_key text primary key,
+  metric_value integer not null default 0,
+  updated_at text not null
+);
+
+create index if not exists whiteboard_rooms_status_activity_idx
+  on whiteboard_rooms(status, last_active_at);
+create index if not exists whiteboard_rooms_delete_idx
+  on whiteboard_rooms(room_type, status, delete_at);
+create index if not exists whiteboard_assets_room_status_idx
+  on whiteboard_assets(room_id, status, created_at);
+create index if not exists whiteboard_assets_unref_idx
+  on whiteboard_assets(status, unreferenced_at);
+create index if not exists whiteboard_bans_active_subject_idx
+  on whiteboard_bans(active, subject_type, subject_value, expires_at);
+create index if not exists whiteboard_admin_audit_created_idx
+  on whiteboard_admin_audit(created_at, action);
+
 create table if not exists anonymous_chat_messages (
   message_id text primary key,
   visitor_id text not null,
@@ -628,6 +731,128 @@ create index if not exists article_view_events_slug_idx
   on article_view_events(slug, created_at);
 create index if not exists article_view_events_visitor_idx
   on article_view_events(visitor_id, created_at);
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-07-30-multiplayer-whiteboard',
+  '2026-07-30-multiplayer-whiteboard',
+  'site-updates',
+  '["网站更新","工具区","在线画板","实时协作","匿名身份"]',
+  '', 'published', 0, 0,
+  '2026-07-30T08:30:00.000Z',
+  '2026-07-30T08:30:00.000Z',
+  '2026-07-30T08:30:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  (
+    'seed-update-2026-07-30-multiplayer-whiteboard-zh',
+    'seed-update-2026-07-30-multiplayer-whiteboard',
+    'zh',
+    '工具区多人在线画板上线',
+    '工具区新增免登录多人在线画板，支持公共与密码房、实时鼠标和临时名字、统一匿名身份、图片、PNG/SVG 导出，以及密码房无人后24小时保留。',
+    '# 工具区多人在线画板上线
+
+工具区新增可直接使用的多人实时在线画板。它不是静态演示：进入房间会恢复已有内容，多个浏览器可以同时绘制并看到彼此的彩色鼠标和临时名字，暂不显示头像。
+
+## 公共画板与密码房
+
+- 公共画板供所有访客共同使用；管理员可以锁定、解锁和清空，但不会按24小时规则删除。
+- 双方输入相同密码会进入同一隔离房间，不同密码互不可见。密码经规范化后只在服务端参与 HMAC-SHA256 映射，不写入网址、本地长期存储、数据库主键或普通日志。
+- 密码房最后一人离开后保留24小时；期间重新进入会取消清理，再次为空后从新的离开时间重新计时。
+
+## 实时协作与统一匿名身份
+
+- 画板以 Excalidraw 提供绘图功能，以 Yjs 增量更新和 Durable Objects WebSocket 维护每个房间的权威状态；刷新、断线和网络切换后会自动恢复。
+- 匿名聊天室与画板共用同一个服务端验证的匿名ID、临时名字和颜色。安全词根可组合出超过一万种名字，同一房间由服务端原子查重，换名有冷却和频率限制。
+- 鼠标、选区和在线状态只实时广播而不写入 D1；画布更新会合并并定期生成快照。
+
+## 电脑、手机、图片与导出
+
+- 电脑、平板和手机均支持绘制、文本、选择、撤销重做、缩放和平移；移动端处理安全区域、键盘、横竖屏与双指手势。
+- 图片会校验真实类型、尺寸和像素数量后保存到房间隔离的 R2 对象，画布只保留资源引用，不长期保存大段 Base64。
+- 支持导出 PNG 和 SVG，并设置连接、消息、对象、图片和房间容量上限；管理员后台可查看公共画板状态、连接与容量，处理锁定、清空、异常连接和临时封禁。',
+    '2026-07-30T08:30:00.000Z',
+    '2026-07-30T08:30:00.000Z'
+  ),
+  (
+    'seed-update-2026-07-30-multiplayer-whiteboard-en',
+    'seed-update-2026-07-30-multiplayer-whiteboard',
+    'en',
+    'Multiplayer Whiteboard Is Live in Tools',
+    'Tools now includes a sign-in-free multiplayer whiteboard with public and password rooms, live cursors and temporary names, one shared anonymous identity, images, PNG/SVG export, and 24-hour retention for empty password rooms.',
+    '# Multiplayer Whiteboard Is Live in Tools
+
+Tools now includes a real-time multiplayer whiteboard that works without signing in. It restores existing room content, lets independent browsers draw together, and shows each remote participant''s colored cursor and temporary name without an avatar.
+
+## Public and password rooms
+
+- The public whiteboard is shared by all visitors. Administrators can lock, unlock, or clear it, and the 24-hour deletion rule never applies to it.
+- People entering the same password reach the same isolated room, while different passwords cannot see one another. After normalization, a password is used only by the server for an HMAC-SHA256 mapping; it never enters the URL, long-term local storage, a database key, or ordinary logs.
+- A password room remains for 24 hours after its last participant leaves. Returning cancels cleanup; when it becomes empty again, a new 24-hour window begins.
+
+## Real-time collaboration and one anonymous identity
+
+- Excalidraw supplies the drawing tools, while Yjs incremental updates and Durable Objects WebSockets maintain authoritative state per room. Refreshes, disconnects, and network changes reconnect and restore safely.
+- Anonymous Chat and Whiteboard share one server-verified anonymous ID, temporary name, and color. Safe roots produce more than ten thousand name combinations, names are atomically unique within each room, and rotation has cooldown and rate limits.
+- Cursors, selections, and online state are broadcast only and never written to D1; document updates are compacted into periodic snapshots.
+
+## Desktop, mobile, images, and export
+
+- Desktop, tablet, and mobile support drawing, text, selection, undo and redo, zoom, and pan. Mobile behavior accounts for safe areas, the keyboard, orientation changes, and two-finger gestures.
+- Images are verified by real type, byte size, and pixel dimensions, then stored as room-isolated R2 objects. The canvas stores references instead of retaining large Base64 payloads.
+- PNG and SVG export are included. Connections, messages, objects, images, and room storage have bounded limits, while the admin panel exposes public-room state, connections, capacity, locking, clearing, abnormal-connection removal, and temporary bans.',
+    '2026-07-30T08:30:00.000Z',
+    '2026-07-30T08:30:00.000Z'
+  ),
+  (
+    'seed-update-2026-07-30-multiplayer-whiteboard-ja',
+    'seed-update-2026-07-30-multiplayer-whiteboard',
+    'ja',
+    'ツールに共同オンラインホワイトボードを追加',
+    'ツールにログイン不要の共同ホワイトボードを追加しました。公開・パスワードルーム、リアルタイムカーソルと一時名、共通匿名ID、画像、PNG/SVG出力、空室後24時間の保持に対応します。',
+    '# ツールに共同オンラインホワイトボードを追加
+
+ツールに、ログインせず使えるリアルタイム共同ホワイトボードを追加しました。既存のルーム内容を復元し、別々のブラウザから同時に描画でき、相手の色付きカーソルと一時名を表示します。アバターは表示しません。
+
+## 公開ルームとパスワードルーム
+
+- 公開ホワイトボードは全訪問者で共有します。管理者はロック、解除、消去ができ、24時間削除の対象にはなりません。
+- 同じパスワードを入力した人は同じ隔離ルームへ入り、異なるパスワードの内容は参照できません。正規化したパスワードはサーバー側の HMAC-SHA256 マッピングだけに使い、URL、長期ローカル保存、データベースキー、通常ログには残しません。
+- パスワードルームは最後の参加者が退出してから24時間保持します。再入室すると削除予定を取り消し、再び空になった時点から新しく24時間を数えます。
+
+## リアルタイム共同編集と共通匿名ID
+
+- 描画機能は Excalidraw、増分共同編集は Yjs、ルームごとの正本状態は Durable Objects WebSocket で管理します。更新、切断、ネットワーク切替後も再接続して復元します。
+- 匿名チャットとホワイトボードは、サーバー検証済みの同じ匿名ID、一時名、色を共有します。安全な語根から1万通り以上を生成し、同室内の重複はサーバーで原子的に防ぎ、名前変更には待機時間と回数制限があります。
+- カーソル、選択、オンライン状態はリアルタイム配信だけを行い D1 へ保存せず、文書更新は定期スナップショットへ統合します。
+
+## PC・モバイル・画像・出力
+
+- PC、タブレット、スマートフォンで描画、テキスト、選択、元に戻す／やり直し、拡大縮小、移動に対応します。モバイルでは安全領域、キーボード、画面回転、二本指操作を調整します。
+- 画像は実際の形式、容量、画素数を検証してルーム単位で隔離した R2 に保存し、キャンバスには大きな Base64 ではなく参照だけを保持します。
+- PNG と SVG に出力できます。接続、メッセージ、オブジェクト、画像、ルーム容量には上限があり、管理画面から公開ルーム状態、接続数、容量、ロック、消去、異常接続の切断、一時禁止を扱えます。',
+    '2026-07-30T08:30:00.000Z',
+    '2026-07-30T08:30:00.000Z'
+  )
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
 
 insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,

@@ -97,7 +97,9 @@
   ],
   "standaloneFiles": [
     "tools/japanese-subtext/index.html",
-    "tools/japanese-subtext/manifest.json"
+    "tools/japanese-subtext/manifest.json",
+    "tools/whiteboard/index.html",
+    "tools/whiteboard/THIRD_PARTY_NOTICES.md"
   ],
   "htmlEntrypoints": [
     "index.html",
@@ -108,7 +110,8 @@
     "games/hextris/index.html",
     "games/kittens-game/index.html",
     "games/life-restart/index.html",
-    "tools/japanese-subtext/index.html"
+    "tools/japanese-subtext/index.html",
+    "tools/whiteboard/index.html"
   ],
   "forbiddenOutputSegments": [
     ".git",

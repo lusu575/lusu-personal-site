@@ -12,7 +12,7 @@ skills/lusu-personal-site-skill/SKILL.md
 
 ## 当前规则清单
 
-- 正式发布仍由 GitHub `main` 触发根目录 Cloudflare Pages；`dist/` 仅用于被忽略的内容哈希生产构建验证，不提交、不替换部署根。缓存必须区分 HTML、哈希资产、未哈希源码与 API/JSON。
+- 正式发布仍由 GitHub `main` 触发 Cloudflare Pages；Dashboard 使用 `npm run build` 与输出目录 `dist`。标准构建先跑仓库守卫，再生成被 Git 忽略且不提交的内容哈希 `dist/` 部署产物；根 `wrangler.jsonc` 的 `pages_build_output_dir` 同步为 `dist`。缓存必须区分 HTML、哈希资产、未哈希源码与 API/JSON。
 - 根 `wrangler.jsonc` 只使用 Pages Git 部署支持的字段，不加入 Worker-only `observability` 或非标准 `secrets` 元数据；Secret 名称由 `.env.example` 空声明与运行时校验维护，独立 Worker 的 observability 放在自己的配置中。
 - GitHub 共享 runner 的首页首屏 TBT 固定采样三次并按原预算检查中位数，其他场景仍只测一次；网络体积、load、CLS、内存、运行时错误等结构性门槛逐样本检查，任一次失败都阻断。
 - 大图/图集按真实槽位提供 AVIF/WebP 与 fallback，首屏只预加载当前主题和壳；动态主题只挂载当前图层，同路径位图变化仍要更新 query。
@@ -41,6 +41,12 @@ skills/lusu-personal-site-skill/SKILL.md
 - 桌面端保持 Windows XP + Pixel Art + Y2K，并沿 Neo-XP / Pixel Glass OS 演进；移动端使用原创、受 iOS 交互启发的虚拟手机 OS，不能只压缩桌面 XP 布局。
 - 可见文案必须维护中文 / English / 日本語。
 - 临时互传固定放在工具区（内部 `resources` route）并复用现有登录；手机非 Home 的 Tools App 必须能直接到达登录，短屏、横屏和软键盘状态下消息、任务与输入区都要可达。手机房间只保留一个滚动容器，composer 必须处于正常文档流，不能以 sticky / fixed 层覆盖已发送卡片；仅改成 static 不足以避免 Grid 轨道视觉溢出，竖屏房间使用纵向 Flex 且直接子项必须不可收缩，短横屏再显式恢复双栏 Grid，并验证 composer 与图片/文件卡的二维交集为零。普通账号受 95 MiB、个人/房间/频率和全站免费池限制，只有 D1 admin 可用 R2 Multipart 大文件。24 小时过期、私有 R2、清理 Worker 和 Dashboard 人工绑定规则见 `docs/transfer/README.md`。
+- 多人实时在线画板固定为工具区独立页面 `/tools/whiteboard/`，不得新增或恢复“资源区”。前端懒加载 Excalidraw + Yjs；每个房间由 external `WHITEBOARD_ROOMS` binding 路由至 SQLite-backed `WhiteboardRoom` Durable Object，并使用 WebSocket Hibernation、对象级 CRDT、快照和有界增量。鼠标、选区、绘制、焦点和在线状态只广播，不持久化。
+- 在线画板入口图标、插画和装饰素材只使用 image2 生成的项目内图片；素材 manifest 必须锁定 image2、尺寸、最终 SHA-256 和仅机械 resize，并由守卫核对真实文件。禁止用 CSS、Canvas、SVG 路径或代码几何拼凑素材。
+- 聊天室与画板必须共用 `anonymous_identities` 和 HttpOnly `lusu_anonymous` 身份。临时名字由超过一万种安全词根组合生成，约 30 秒改名冷却；画板 DO 原子处理房内不重名。不得退回可编辑 LocalStorage ID、自由昵称或登录账号展示。
+- 画板密码必须 NFKC + trim 后由服务端 HMAC-SHA256 映射，明文不进入 URL、房间 ID、持久存储、埋点或日志。Pages 使用四个用途独立且至少 32 bytes 的 `WHITEBOARD_ROOM_HMAC_SECRET`、`WHITEBOARD_TICKET_SECRET`、`WHITEBOARD_INTERNAL_SECRET`、`WHITEBOARD_IP_HASH_SALT`；Worker 只使用与对应 Pages 环境相同的 internal secret。
+- 公共画板不执行空房 TTL；密码房最后一名有效用户离开后通过 Alarm 保留 24 小时，重入取消、再次为空重计。清理前重查连接与代次，并幂等删除 `whiteboard/v1/<roomId>/` R2 前缀、D1 索引和 DO 状态。`v1` migration 与 namespace 上线后不得删除或重写。
+- 画板部署顺序固定为本地迁移／Lint／类型／测试／构建，获授权后远端 D1 migration、先部署 DO Worker、核对 Pages external binding、最后合并 `main` 触发 Pages。根配置提交态的 Preview 使用 `PREVIEW_API_DISABLED=true` 和空 D1/R2 bindings；独立 Preview 资源全部迁移、配置和验收前不得开启。回滚先回 Pages 入口/binding、再部署兼容 Worker，并保留 namespace、migration 与数据；远端未核实时不得声称已上线。完整规则见 `docs/whiteboard/README.md`、`workers/whiteboard/README.md` 和 `cloudflare/README.md`。
 - Transfer 设置以 revision / `expectedUpdatedAt` 条件保存；房间清空、清理和上传 ready 转换检查真实 D1 changes。部分失败必须返回非 2xx 与可重试对象，并清理并发竞态产生的孤立 R2 对象，不能伪报完成。
 - Quick Transfer 只能称文字为浏览器 AES-GCM 加密；图片、视频和文件不使用房间口令加密，只由 HTTPS、私有 R2 与服务端鉴权保护，且不做病毒／恶意软件扫描。明文口令不发服务器，配额按滚动 24 小时描述，公开卡片、房间提示和历史 seed 不得扩大安全承诺。
 - 工具区同列表工具卡必须共享网格宽度和卡片高度节奏；zh/en/ja 的标题、元信息、说明与 CTA 不得相交或被 `nowrap`、隐藏滚动条、裁剪吞掉。
@@ -92,10 +98,10 @@ skills/lusu-personal-site-skill/SKILL.md
 - 用户要求只改文档时，只修改文档文件，不改网站代码、样式、功能或资源。
 - Cloudflare Pages Git 自动部署是正式部署链路，不要把 `npx wrangler deploy` 或 `npx wrangler pages deploy .` 写成 Git 自动部署命令。
 - GPTWork / 全新克隆开发固定使用 Node.js 22.13+、`npm ci`、仓库 lockfile 和本地 D1；纯本地环境使用 `.env.example` -> `.dev.vars`，GPTWork 使用 process Secrets 且不创建 `.dev.vars`。不得依赖固定盘符、父目录依赖、本机全局工具或生产数据库。
-- Cloudflare Preview 与 Production 都必须检查 D1 binding `DB`，并分别配置独立、随机、至少 32 字节且不能相同的 `CHAT_IP_HASH_SALT` 和 `ANALYTICS_IP_HASH_SALT`；不得提交真实值、固定 fallback 或跨用途复用。
+- Cloudflare Production 必须检查 D1 binding `DB`，并配置独立、随机、至少 32 字节的 `CHAT_IP_HASH_SALT`、`ANALYTICS_IP_HASH_SALT` 与四个画板 Secret；Pages 读取四个画板值，Worker 只读取匹配的 `WHITEBOARD_INTERNAL_SECRET`。根配置提交态的 Preview 保持 API 关闭且不绑定 D1/R2；只有独立 Preview 数据资源、DO、Origin 与 Secret 全部完成后才可启用，且不得提交真实值、固定 fallback 或跨环境／跨用途复用。
 - IP hash 使用按 `chat` / `analytics` 隔离的 HMAC-SHA256。聊天消息和网络来源禁言带非敏感密钥代次；Secret 轮换后旧消息只供审计、旧网络禁言标记失效，服务端拒绝从旧代次新建禁言。
 - 普通 CI / GPTWork 不需要 Cloudflare API Token、生产 D1 权限、本机 TTS 配置、模型权重或参考声线；`output/`、Wrangler 状态、依赖和本地 TTS 配置均不得提交。
-- 项目没有真实 lint / typecheck 工具链时应明确标为“未配置”，不能增加空的成功占位；迁移清单见 `docs/GPTWORK_MIGRATION_READINESS.md`。
+- 项目已配置真实 `npm run lint`、`npm run typecheck` 和 `npm run whiteboard:test`；CI／release 验证必须实际运行，不能替换为空成功占位。迁移清单见 `docs/GPTWORK_MIGRATION_READINESS.md`。
 - 后续新增游戏时，必须在游戏标签或信息里标明中文、English、日本語是否支持。
 - 游戏云存档 PUT 必须携带精确 `expectedUpdatedAt`，服务端以原子 insert-only／条件 update 实施 CAS 并在未命中时返回 `409 + SAVE_CONFLICT`。云版本基线必须保存在标签页级 `sessionStorage`，不得与游戏存档共用跨标签页 `localStorage`。发现较新云存档后，客户端先锁住计时、隐藏页、退出、导入和手动同步等全部上传路径；三语冲突窗应允许先下载本地备份，任何显式覆盖仍受 CAS 保护，“恢复云端”也要先重新 GET 并拒绝过时快照。
 - 网站切换语言时，游戏区优先展示对应语言。

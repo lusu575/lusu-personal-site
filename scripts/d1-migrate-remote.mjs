@@ -47,6 +47,30 @@ export const REMOTE_MIGRATION_VERIFICATION_QUERIES = Object.freeze([
     union all
     select 'article-delivery-payload-hash-column', count(*)
     from pragma_table_info('article_delivery_events') where name = 'payload_hash'
+  `,
+  `
+    select 'anonymous-identities-table' as item, count(*) as present
+    from sqlite_master where type = 'table' and name = 'anonymous_identities'
+    union all
+    select 'whiteboard-rooms-table', count(*)
+    from sqlite_master where type = 'table' and name = 'whiteboard_rooms'
+    union all
+    select 'whiteboard-assets-table', count(*)
+    from sqlite_master where type = 'table' and name = 'whiteboard_assets'
+    union all
+    select 'whiteboard-bans-table', count(*)
+    from sqlite_master where type = 'table' and name = 'whiteboard_bans'
+    union all
+    select 'whiteboard-overview-index', count(*)
+    from sqlite_master where type = 'index' and name = 'whiteboard_rooms_live_overview_idx'
+    union all
+    select 'whiteboard-ban-scope-index', count(*)
+    from sqlite_master where type = 'index' and name = 'whiteboard_bans_scope_subject_idx'
+    union all
+    select 'whiteboard-ban-legacy-index-removed',
+      case when count(*) = 0 then 1 else 0 end
+    from sqlite_master
+    where type = 'index' and name = 'whiteboard_bans_active_scope_subject_idx'
   `
 ]);
 

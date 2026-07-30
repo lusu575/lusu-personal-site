@@ -12,6 +12,7 @@ __pycache__/
 .codex-screenshots/
 .codex-wrangler-preview*.log
 .diagnostics/
+.test-tmp/
 output/
 dist/
 .production-build-*/

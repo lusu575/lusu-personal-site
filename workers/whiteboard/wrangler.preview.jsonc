@@ -1,0 +1,33 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "lusu-whiteboard-do-preview",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-07-17",
+  "compatibility_flags": ["nodejs_compat"],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "WHITEBOARD_ROOMS",
+        "class_name": "WhiteboardRoom"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["WhiteboardRoom"]
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "WHITEBOARD_BUCKET",
+      "bucket_name": "lusu-temp-transfer-preview"
+    }
+  ],
+  "vars": {
+    "ALLOWED_ORIGINS": "http://localhost:8788,http://127.0.0.1:8788"
+  },
+  "observability": {
+    "enabled": true
+  }
+}

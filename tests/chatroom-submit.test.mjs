@@ -1,9 +1,45 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import test from "node:test";
+import test, { afterEach } from "node:test";
 
 import { translations } from "../js/core/i18n.mjs";
 import { createChatroomRoute } from "../js/routes/chatroom.mjs";
+
+class FakeBroadcastChannel {
+  static instances = new Set();
+
+  constructor(name) {
+    this.name = name;
+    this.listeners = new Set();
+    this.closed = false;
+    FakeBroadcastChannel.instances.add(this);
+  }
+
+  addEventListener(type, listener) {
+    if (type === "message") this.listeners.add(listener);
+  }
+
+  postMessage(data) {
+    for (const instance of FakeBroadcastChannel.instances) {
+      if (instance !== this && instance.name === this.name && !instance.closed) {
+        for (const listener of instance.listeners) listener({ data });
+      }
+    }
+  }
+
+  close() {
+    this.closed = true;
+    this.listeners.clear();
+    FakeBroadcastChannel.instances.delete(this);
+  }
+
+  static reset() {
+    for (const instance of [...FakeBroadcastChannel.instances]) instance.close();
+  }
+}
+
+globalThis.BroadcastChannel = FakeBroadcastChannel;
+afterEach(() => FakeBroadcastChannel.reset());
 
 function deferred() {
   let resolve;
@@ -94,6 +130,8 @@ class FakeDocument {
     this.elements = new Map();
     this.activeElement = null;
     this.hidden = false;
+    this.visibilityState = "visible";
+    this.listeners = new Map();
   }
 
   add(tag, id, className = "") {
@@ -105,6 +143,17 @@ class FakeDocument {
 
   getElementById(id) { return this.elements.get(id) || null; }
   createElement(tag) { return new FakeElement(this, tag); }
+  addEventListener(type, listener) {
+    const listeners = this.listeners.get(type) || new Set();
+    listeners.add(listener);
+    this.listeners.set(type, listeners);
+  }
+  removeEventListener(type, listener) {
+    this.listeners.get(type)?.delete(listener);
+  }
+  dispatchEvent(type, event = {}) {
+    for (const listener of this.listeners.get(type) || []) listener(event);
+  }
 
   querySelector(selector) {
     if (selector === ".chatroom-window") return this.getElementById("chatroom-window");
@@ -163,25 +212,78 @@ function makeHarness(options = {}) {
   windowElement.append(nickname, editNickname, roomLabel, roomToggle, syncStatus, nicknameForm, privateForm, log, unreadButton, retryButton, liveSummary, form, feedback, autoscroll);
 
   const listeners = new Map();
+  const windowListeners = new Map();
+  const browserStorageWrites = [];
+  const addWindowListener = (type, listener) => {
+    const handlers = windowListeners.get(type) || new Set();
+    handlers.add(listener);
+    windowListeners.set(type, handlers);
+  };
+  const removeWindowListener = (type, listener) => {
+    windowListeners.get(type)?.delete(listener);
+  };
+  const windowNode = {
+    crypto: globalThis.crypto,
+    TextEncoder,
+    TextDecoder,
+    addEventListener: addWindowListener,
+    removeEventListener: removeWindowListener,
+    setTimeout,
+    clearTimeout,
+    localStorage: {
+      setItem(key, value) {
+        browserStorageWrites.push({ key, value });
+      },
+      removeItem() {}
+    },
+    dispatchEvent(type, event = {}) {
+      for (const listener of windowListeners.get(type) || []) listener(event);
+    }
+  };
   const abortController = new AbortController();
+  const cleanupCallbacks = new Set();
   const scope = {
     signal: abortController.signal,
     isActive: () => true,
     listen(element, type, handler) { listeners.set(`${element?.id || "document"}:${type}`, handler); },
     setTimeout() { return Symbol("timer"); },
-    clearTimeout() {}
+    clearTimeout() {},
+    addCleanup(cleanup) {
+      if (typeof cleanup === "function") cleanupCallbacks.add(cleanup);
+    }
   };
   const post = deferred();
   const postBodies = [];
   let postCount = 0;
   let getCount = 0;
+  let identityGetCount = 0;
   let currentLang = "zh";
+  let serverIdentity = {
+    displayName: "像素海豹",
+    color: "#2563eb",
+    createdAt: "2026-07-30T00:00:00.000Z",
+    version: 1
+  };
   const storage = new Map([
     ["lusu-chat-visitor-id", "visitor-audit"],
     ["lusu-chat-nickname", "AuditGuest"],
     ["lusu-chat-last-sent-at", "0"]
   ]);
   const routeFetch = async (_route, path, requestOptions = {}) => {
+    if (path === "/api/anonymous-identity") {
+      identityGetCount += 1;
+      return response({ identity: serverIdentity });
+    }
+    if (path === "/api/anonymous-identity/name/rotate") {
+      return response({
+        identity: {
+          displayName: "月球旅人",
+          color: "#2563eb",
+          createdAt: "2026-07-30T00:00:00.000Z",
+          version: 2
+        }
+      });
+    }
     if (path === "/api/chat/messages" && requestOptions.method === "POST") {
       postCount += 1;
       postBodies.push(JSON.parse(requestOptions.body));
@@ -209,6 +311,7 @@ function makeHarness(options = {}) {
   });
   return {
     documentNode,
+    windowNode,
     route,
     scope,
     listeners,
@@ -216,7 +319,18 @@ function makeHarness(options = {}) {
     postBodies,
     get postCount() { return postCount; },
     get getCount() { return getCount; },
+    get identityGetCount() { return identityGetCount; },
     storage,
+    browserStorageWrites,
+    dispatchStorageSignal(signal) {
+      windowNode.dispatchEvent("storage", {
+        key: "lusu-anonymous-identity-sync-v1",
+        newValue: JSON.stringify(signal)
+      });
+    },
+    setServerIdentity(identity) {
+      serverIdentity = { ...serverIdentity, ...identity };
+    },
     setLang(lang) { currentLang = lang; },
     elements: {
       input, sendButton, form, counter, feedback, privateForm, privateInput, privateSubmit, privateCancel, privateError, privateHint,
@@ -239,7 +353,7 @@ test("Chat locks only the submit action and preserves focus plus a newer draft",
   const originalDocument = globalThis.document;
   const originalWindow = globalThis.window;
   globalThis.document = harness.documentNode;
-  globalThis.window = { crypto: globalThis.crypto, TextEncoder, TextDecoder };
+  globalThis.window = harness.windowNode;
   try {
     await harness.route.enter(harness.scope);
     const submit = harness.listeners.get("chat-form:submit");
@@ -279,7 +393,7 @@ test("Chat clears only an unchanged submitted draft", async () => {
   const originalDocument = globalThis.document;
   const originalWindow = globalThis.window;
   globalThis.document = harness.documentNode;
-  globalThis.window = { crypto: globalThis.crypto, TextEncoder, TextDecoder };
+  globalThis.window = harness.windowNode;
   try {
     await harness.route.enter(harness.scope);
     harness.elements.input.value = "sent as-is";
@@ -300,7 +414,7 @@ test("Chat never clears a user-edited draft even when its final text matches the
   const originalDocument = globalThis.document;
   const originalWindow = globalThis.window;
   globalThis.document = harness.documentNode;
-  globalThis.window = { crypto: globalThis.crypto, TextEncoder, TextDecoder };
+  globalThis.window = harness.windowNode;
   try {
     await harness.route.enter(harness.scope);
     const submit = harness.listeners.get("chat-form:submit");
@@ -326,7 +440,7 @@ test("private-room safety disclosure remains reachable in zh, en, and ja", async
   const originalDocument = globalThis.document;
   const originalWindow = globalThis.window;
   globalThis.document = harness.documentNode;
-  globalThis.window = { crypto: globalThis.crypto, TextEncoder, TextDecoder };
+  globalThis.window = harness.windowNode;
   try {
     await harness.route.enter(harness.scope);
     for (const lang of ["zh", "en", "ja"]) {
@@ -350,39 +464,60 @@ test("private-room safety disclosure remains reachable in zh, en, and ja", async
   }
 });
 
-test("nickname editing uses a cancellable in-site form with trilingual validation and focus return", async () => {
+test("nickname editing uses the server-issued random identity without an arbitrary-name form", async () => {
   const harness = makeHarness();
   const originalDocument = globalThis.document;
   const originalWindow = globalThis.window;
   globalThis.document = harness.documentNode;
-  globalThis.window = { crypto: globalThis.crypto, TextEncoder, TextDecoder };
+  globalThis.window = harness.windowNode;
   try {
     await harness.route.enter(harness.scope);
+    assert.equal(harness.elements.nickname.textContent, "像素海豹");
+    assert.equal(harness.listeners.has("chat-nickname-form:submit"), false);
     await harness.listeners.get("chat-edit-nickname:click")();
-    assert.equal(harness.elements.nicknameForm.hidden, false);
-    assert.equal(harness.elements.nicknameInput.value, "AuditGuest");
-    assert.equal(harness.documentNode.activeElement, harness.elements.nicknameInput);
-
-    harness.elements.nicknameInput.value = " ";
-    harness.listeners.get("chat-nickname-form:submit")({ preventDefault() {} });
-    assert.equal(harness.elements.nicknameError.textContent, translations.zh.chatNicknameInvalid);
-    assert.equal(harness.elements.nicknameInput.getAttribute("aria-invalid"), "true");
-
-    harness.setLang("ja");
-    harness.route.syncLanguage();
-    assert.equal(harness.elements.nicknameError.textContent, translations.ja.chatNicknameInvalid);
-
-    harness.elements.nicknameInput.value = "新しい旅人";
-    harness.listeners.get("chat-nickname-form:submit")({ preventDefault() {} });
+    assert.equal(harness.elements.nickname.textContent, "月球旅人");
     assert.equal(harness.elements.nicknameForm.hidden, true);
-    assert.equal(harness.elements.nickname.textContent, "新しい旅人");
-    assert.equal(harness.storage.get("lusu-chat-nickname"), "新しい旅人");
-    assert.equal(harness.documentNode.activeElement, harness.elements.editNickname);
+    assert.equal(harness.storage.has("lusu-chat-nickname"), true, "legacy data is ignored, not rewritten");
+  } finally {
+    globalThis.document = originalDocument;
+    globalThis.window = originalWindow;
+  }
+});
 
-    await harness.listeners.get("chat-edit-nickname:click")();
-    harness.listeners.get("chat-nickname-cancel:click")();
-    assert.equal(harness.elements.nicknameForm.hidden, true);
-    assert.equal(harness.documentNode.activeElement, harness.elements.editNickname);
+test("cross-tab identity version signals refresh the server identity without trusting storage identity fields", async () => {
+  const harness = makeHarness();
+  const originalDocument = globalThis.document;
+  const originalWindow = globalThis.window;
+  globalThis.document = harness.documentNode;
+  globalThis.window = harness.windowNode;
+  try {
+    await harness.route.enter(harness.scope);
+    const identityRequestsBeforeSignal = harness.identityGetCount;
+    harness.setServerIdentity({
+      displayName: "电波狐狸",
+      color: "#7c3aed",
+      version: 77
+    });
+
+    harness.dispatchStorageSignal({
+      type: "identity-changed",
+      source: "another_browser_tab",
+      version: 77,
+      at: Date.now(),
+      displayName: "系统管理员",
+      color: "#000000",
+      anonymousId: "forged_local_identity"
+    });
+
+    await waitFor(
+      () => (
+        harness.identityGetCount === identityRequestsBeforeSignal + 1
+        && harness.elements.nickname.textContent === "电波狐狸"
+      ),
+      "server-verified cross-tab identity refresh"
+    );
+    assert.notEqual(harness.elements.nickname.textContent, "系统管理员");
+    assert.equal(harness.elements.nickname.style?.color || "", "");
   } finally {
     globalThis.document = originalDocument;
     globalThis.window = originalWindow;
@@ -403,7 +538,7 @@ test("history and new message batches announce once while distant readers get an
   const originalDocument = globalThis.document;
   const originalWindow = globalThis.window;
   globalThis.document = harness.documentNode;
-  globalThis.window = { crypto: globalThis.crypto, TextEncoder, TextDecoder };
+  globalThis.window = harness.windowNode;
   try {
     harness.elements.log.scrollHeight = 500;
     await harness.route.enter(harness.scope);
@@ -443,7 +578,7 @@ test("successful refresh clears stale sync errors without overwriting send resul
   const originalDocument = globalThis.document;
   const originalWindow = globalThis.window;
   globalThis.document = recoveryHarness.documentNode;
-  globalThis.window = { crypto: globalThis.crypto, TextEncoder, TextDecoder };
+  globalThis.window = recoveryHarness.windowNode;
   try {
     await recoveryHarness.route.enter(recoveryHarness.scope);
     assert.equal(recoveryHarness.elements.feedback.textContent, translations.zh.chatLoadFailed);
@@ -464,7 +599,7 @@ test("successful refresh clears stale sync errors without overwriting send resul
     postMessage() { return response({ message: null }); }
   });
   globalThis.document = sendHarness.documentNode;
-  globalThis.window = { crypto: globalThis.crypto, TextEncoder, TextDecoder };
+  globalThis.window = sendHarness.windowNode;
   try {
     await sendHarness.route.enter(sendHarness.scope);
     sendHarness.elements.input.value = "accepted";
@@ -482,7 +617,7 @@ test("public and password rooms restore separate in-memory drafts and scroll pos
   const originalDocument = globalThis.document;
   const originalWindow = globalThis.window;
   globalThis.document = harness.documentNode;
-  globalThis.window = { crypto: globalThis.crypto, TextEncoder, TextDecoder };
+  globalThis.window = harness.windowNode;
   try {
     harness.elements.log.scrollHeight = 500;
     await harness.route.enter(harness.scope);
@@ -524,7 +659,7 @@ test("a failed send keeps the exact draft and an explicit retry starts only one 
   const originalDocument = globalThis.document;
   const originalWindow = globalThis.window;
   globalThis.document = harness.documentNode;
-  globalThis.window = { crypto: globalThis.crypto, TextEncoder, TextDecoder };
+  globalThis.window = harness.windowNode;
   try {
     await harness.route.enter(harness.scope);
     harness.elements.input.value = "retry this exact draft";
@@ -553,7 +688,7 @@ test("private-room retry reuses the attempt id even though AES-GCM creates a new
   const originalDocument = globalThis.document;
   const originalWindow = globalThis.window;
   globalThis.document = harness.documentNode;
-  globalThis.window = { crypto: globalThis.crypto, TextEncoder, TextDecoder };
+  globalThis.window = harness.windowNode;
   try {
     await harness.route.enter(harness.scope);
     harness.elements.privateInput.value = "secret-room";
@@ -578,7 +713,7 @@ test("offline recovery refreshes but never replays a failed or pending POST", as
   const originalDocument = globalThis.document;
   const originalWindow = globalThis.window;
   globalThis.document = harness.documentNode;
-  globalThis.window = { crypto: globalThis.crypto, TextEncoder, TextDecoder };
+  globalThis.window = harness.windowNode;
   try {
     await harness.route.enter(harness.scope);
     harness.elements.input.value = "pending";
@@ -606,7 +741,7 @@ test("online plus a failed refresh stays reconnecting until manual retry succeed
   const originalDocument = globalThis.document;
   const originalWindow = globalThis.window;
   globalThis.document = harness.documentNode;
-  globalThis.window = { crypto: globalThis.crypto, TextEncoder, TextDecoder };
+  globalThis.window = harness.windowNode;
   try {
     await harness.route.enter(harness.scope);
     await harness.listeners.get("document:online")();
@@ -637,7 +772,7 @@ test("private-room switching is single-flight and exposes a real busy state", as
   const originalDocument = globalThis.document;
   const originalWindow = globalThis.window;
   globalThis.document = harness.documentNode;
-  globalThis.window = { crypto: globalThis.crypto, TextEncoder, TextDecoder };
+  globalThis.window = harness.windowNode;
   try {
     await harness.route.enter(harness.scope);
     harness.elements.privateInput.value = "secret-room";
@@ -676,7 +811,7 @@ test("private-room validation is field-linked and history failure is never annou
   const originalDocument = globalThis.document;
   const originalWindow = globalThis.window;
   globalThis.document = harness.documentNode;
-  globalThis.window = { crypto: globalThis.crypto, TextEncoder, TextDecoder };
+  globalThis.window = harness.windowNode;
   try {
     await harness.route.enter(harness.scope);
     const submit = harness.listeners.get("chat-private-room-form:submit");
