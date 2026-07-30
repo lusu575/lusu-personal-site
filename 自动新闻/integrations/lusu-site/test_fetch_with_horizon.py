@@ -255,6 +255,14 @@ class DiscoveryQueryTests(unittest.TestCase):
             re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", entry["reviewLane"])
             for entry in must_review_queries
         ))
+        tibo_query = by_id["codex-operations-en"]
+        self.assertTrue(tibo_query["required"])
+        self.assertTrue(tibo_query["mustReview"])
+        self.assertEqual(
+            tibo_query["reviewLane"],
+            "developer-product-operations",
+        )
+        self.assertIn("thsottiaux", tibo_query["query"])
         self.assertEqual(
             {
                 entry["language"]
@@ -340,12 +348,10 @@ class DiscoveryQueryTests(unittest.TestCase):
             "https://36kr.com/feed",
         ]:
             self.assertIn(rss_url, rss_urls)
-        self.assertTrue(any(
-            entry["name"] == "Bing Web - Tibo Codex"
-            and "thsottiaux" in entry["url"]
+        self.assertFalse(any(
+            "Tibo" in entry["name"]
             for entry in config["sources"]["rss"]
         ))
-
         subreddits = {
             entry["subreddit"]: entry
             for entry in config["sources"]["reddit"]["subreddits"]
@@ -751,6 +757,72 @@ class DiscoveryFetchTests(unittest.IsolatedAsyncioTestCase):
 
 
 class MustReviewProvenanceTests(unittest.TestCase):
+    def test_multilingual_must_review_usage_policy_change_is_marked(
+        self,
+    ) -> None:
+        item = SimpleNamespace(
+            url="https://example.test/codex-limit",
+            title=(
+                "ChatGPT WorkとCodexの5時間制限「明日から再開」 "
+                "GPT-5.6 Solのトークン消費問題を改善"
+            ),
+            content="",
+            metadata={"must_review": True},
+        )
+
+        MODULE.apply_editorial_signals([item])
+
+        self.assertEqual(
+            item.metadata["editorial_signals"],
+            ["usage-policy-change"],
+        )
+
+    def test_usage_signal_never_creates_orphan_must_review_provenance(
+        self,
+    ) -> None:
+        item = SimpleNamespace(
+            url="https://example.test/unfocused-limit-story",
+            title="OpenAI restores the five-hour Codex usage limit",
+            content="",
+            metadata={},
+        )
+
+        MODULE.apply_editorial_signals([item])
+
+        self.assertNotIn("editorial_signals", item.metadata)
+        self.assertNotIn("must_review", item.metadata)
+
+    def test_generic_token_or_model_efficiency_news_is_not_usage_policy(
+        self,
+    ) -> None:
+        items = [
+            SimpleNamespace(
+                url="https://example.test/gemma-engine",
+                title=(
+                    "OpenAI-compatible engine runs Gemma 4 26B "
+                    "in 2 GB RAM on a Mac"
+                ),
+                content="reduces token memory and improves performance",
+                metadata={"must_review": True},
+            ),
+            SimpleNamespace(
+                url="https://example.test/model-router",
+                title=(
+                    "Tokenless automatically switches OpenAI models "
+                    "to save money"
+                ),
+                content="",
+                metadata={"must_review": True},
+            ),
+        ]
+
+        MODULE.apply_editorial_signals(items)
+
+        self.assertTrue(all(
+            "editorial_signals" not in item.metadata
+            for item in items
+        ))
+
     def test_focus_query_metadata_survives_url_merge_and_compaction(self) -> None:
         url = "https://example.test/focus-story"
         topic_items = [

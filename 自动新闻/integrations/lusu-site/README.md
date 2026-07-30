@@ -23,7 +23,7 @@
 
 - 重要性低于 7 分的不写；同一事件阶段只写一次，近 30 天无实质进展的不重复。预告、正式发布、权重上线、许可证、技术报告等阶段只有出现实质新事实时才可作为 material update 再写。
 - 重大模型或产品发布、能力／可用范围变化、用量规则变化、实用开发者工具更新，以及可信且显著的价格或额度变化，都按读者实际可用性使用同一 7 分门槛；达到门槛后必须入选或并入同一事件，不能仅以“产品型”或“受众较窄”为由排除。临时促销、纯娱乐和小型维护通常不收录。
-- TechCrunch AI、VentureBeat AI、Ars Technica AI、雷峰网、36氪和无需账号的 Tibo 公开检索源属于可选补充。任一补充源单独失败不阻断正式运行；一旦抓到候选就进入 must-review，最终事实仍回到可靠或一手来源核验。Tibo 当前是公开网页检索，不是直接 X 接入；X 直连以后仍需用户授权。
+- TechCrunch AI、VentureBeat AI、Ars Technica AI、雷峰网和 36氪属于可选补充。站长已授权把 Tibo `@thsottiaux` 的 X 帖子纳入选题；链路不再使用会返回同名医疗噪声的 Bing RSS，而是用 required 的 `codex-operations-en` 聚焦查询同时检索 Tibo 姓名、账号及 Codex／ChatGPT Work 运营变化。公开索引返回的 X、媒体和社区候选全部进入 must-review，最终事实仍回到规范原帖、可靠媒体或其他一手来源核验；这不是完整登录时间线或 X API。
 - 正文固定为“今日要闻 / 主要新闻 / 传闻”三段；要闻恰好一条且已经核实，传闻单独放置并使用条件语气。
 - 每条新闻是一段事实正文，末尾是一至两句、明显更短的 AI 解读。
 - 中文、英文、日文使用同一组事实、栏目和核实状态。
@@ -31,7 +31,7 @@
 
 ## 文件说明
 
-- `horizon.config.json`：本站 AI 新闻源配置，不含密钥。TechCrunch AI、VentureBeat AI、Ars Technica AI、雷峰网、36氪和无需账号的 Tibo 公开检索 feed 属于可选补充；单源失败不阻断。社区源只用于早期发现，不抓取评论串；任何抓到的指定来源候选都必须审阅，正式新闻仍须回到可靠或一手来源核验。这里没有直接连接 Tibo 的 X 账号或时间线。
+- `horizon.config.json`：本站 AI 新闻源配置，不含密钥。TechCrunch AI、VentureBeat AI、Ars Technica AI、雷峰网和 36氪属于可选补充；单源失败不阻断。社区源只用于早期发现，不抓取评论串；任何抓到的指定来源候选都必须审阅，正式新闻仍须回到规范原帖、可靠媒体或其他一手来源核验。Tibo 由 `discovery-queries.json` 中的 required 聚焦查询覆盖。
 - `discovery-queries.json`：使用 `any-reliable-language` 语言政策，至少提供英文、简体中文、日文、韩文检索种子；宽泛查询只作补充，重点人物、产品运营变化和各家中国模型厂商使用独立 required 查询，并为必须逐条处置的候选声明 review lane。文件不含密钥。
 - `fetch-with-horizon.py`：调用 Horizon 原生服务，以两路受控并发执行发现查询；失败查询最多重试两次，仍失败则与真实空结果分开记录。Google News 查询最多保留 99 条并请求第 100 条作为探针，实际返回第 100 条时判定截断并关闭 required 覆盖；只有 99 条不误报。候选索引直接写入确定性 UTF-8 字节并据此计算 SHA-256，再按精确 24 小时窗口输出候选。
 - `candidate_index.json`：本次 Horizon 运行生成的紧凑候选索引，只含审阅所需的标题、时间、来源和覆盖归属，不含大段正文。
@@ -91,7 +91,7 @@ schemaVersion 4 的运行记录必须从同一次 `coverage_manifest.json` 原�
 }
 ```
 
-`priorityReview.decisions` 必须与 manifest 的 `mustReviewCandidateIds` 一一对应；同一事件的重复来源用 `merged + representativeCandidateId`，不收录时用允许的 `rejectionReason + note`。重大模型／产品、能力／可用性、用量规则、开发工具或显著价格额度变化达到 7 分后不能拒绝。旧 manifest 没有 `mustReviewCandidateIds` 时只用于历史兼容。
+`priorityReview.decisions` 必须与 manifest 的 `mustReviewCandidateIds` 一一对应；同一事件的重复来源用 `merged + representativeCandidateId`，不收录时用允许的 `rejectionReason + note`。重大模型／产品、能力／可用性、用量规则、开发工具或显著价格额度变化达到 7 分后不能拒绝。候选索引的 `editorialSignals` 会把 must-review 中明确的额度／时间窗口变化锁定为 `usage-policy` 或 `material-price-quota`，避免再次用统一 4 分模板淘汰；普通 token、推理内存、模型路由或性能优化不会被误标。旧 manifest 没有 `mustReviewCandidateIds` 时只用于历史兼容。
 
 当入选不少于 5 条时，`secondPass.required` 和 `secondPass.completed` 都写 `false`；少于 5 条时必须按示例再次签收。这里的 5 只控制复查，不控制最终刊发数量。
 

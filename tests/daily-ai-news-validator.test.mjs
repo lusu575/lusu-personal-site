@@ -243,6 +243,7 @@ function clone(value) {
 async function writeFormalCoverageFixture(t, {
   withPriorityReview = false,
   withReviewSource = withPriorityReview,
+  usagePolicySignals = [],
   manifestSchemaVersion = 2,
   runId = "run-20260727T010203Z-feed1234"
 } = {}) {
@@ -365,7 +366,11 @@ async function writeFormalCoverageFixture(t, {
               && item.id === "candidate-confirmed-lead-secondary"
             ? ["official-product-feed"]
             : [])
-        ]
+        ],
+        editorialSignals: usagePolicySignals.length
+            && item.id === "candidate-confirmed-main"
+          ? [...usagePolicySignals]
+          : []
       } : {})
     }))
   };
@@ -622,6 +627,12 @@ test("Daily AI News workflow declares the permanent three-section contract", asy
   assert.equal(
     workflow.selection.priorityReviewContract.protectedSelectedOrMergedRequiresSubstantiveChange,
     true
+  );
+  assert.deepEqual(
+    workflow.selection.priorityReviewContract.candidateEditorialSignals[
+      "usage-policy-change"
+    ].requiredEditorialClass,
+    ["usage-policy", "material-price-quota"]
   );
   assert.deepEqual(
     workflow.selection.priorityReviewContract.score,
@@ -1302,6 +1313,42 @@ test("protected priority candidates may be rejected below seven with an enumerat
   await assert.rejects(
     () => readAndValidateRun(fixture.runPath),
     /note 必须具体说明拒绝依据/
+  );
+});
+
+test("usage-policy signals cannot be downgraded to developer-tool or rejected as unimportant", async (t) => {
+  const wrongClass = await writeFormalCoverageFixture(t, {
+    withPriorityReview: true,
+    usagePolicySignals: ["usage-policy-change"]
+  });
+  await assert.rejects(
+    () => readAndValidateRun(wrongClass.runPath),
+    /editorialClass 必须是 usage-policy 或 material-price-quota/
+  );
+
+  const lowScore = await writeFormalCoverageFixture(t, {
+    withPriorityReview: true,
+    usagePolicySignals: ["usage-policy-change"]
+  });
+  const decision = lowScore.run.coverageAudit.priorityReview.decisions[2];
+  decision.decision = "rejected";
+  decision.editorialClass = "usage-policy";
+  decision.substantiveChange = false;
+  decision.score = {
+    reach: 1,
+    magnitude: 1,
+    practicalValue: 1,
+    evidence: 1,
+    total: 4
+  };
+  decision.rejectionReason = "below-importance-threshold";
+  decision.note = "错误地把明确的五小时限额恢复视为低价值消息。";
+  delete decision.storyKey;
+  delete decision.sourceCandidateIds;
+  await writeFile(lowScore.runPath, `${JSON.stringify(lowScore.run, null, 2)}\n`);
+  await assert.rejects(
+    () => readAndValidateRun(lowScore.runPath),
+    /不得以重要性不足、例行消息或超出范围为由拒绝/
   );
 });
 

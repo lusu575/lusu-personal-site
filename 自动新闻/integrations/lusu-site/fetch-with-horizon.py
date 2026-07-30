@@ -36,7 +36,6 @@ REQUIRED_RSS_RETRY_ATTEMPTS = 2
 OPTIONAL_RSS_RETRY_ATTEMPTS = 1
 OPTIONAL_RSS_FEED_NAMES = {
     "Ars Technica AI",
-    "Bing Web - Tibo Codex",
     "OpenRouter Blog",
     "Qoder Announcements",
     "TechCrunch AI",
@@ -65,10 +64,6 @@ DIRECT_REVIEW_FEEDS = {
     "量子位": ("rss-qbitai", "china-ai-media"),
     "量子位官网": ("rss-qbitai-website", "china-ai-media"),
     "新智元": ("rss-ainews", "china-ai-media"),
-    "Bing Web - Tibo Codex": (
-        "rss-bing-tibo-codex",
-        "developer-product-operations",
-    ),
 }
 DIRECT_REVIEW_SUBREDDITS = {
     "codex": ("reddit-codex", "developer-product-operations"),
@@ -77,6 +72,36 @@ DIRECT_REVIEW_SUBREDDITS = {
 CURRENT_DISCOVERY_QUERY_ID: ContextVar[str | None] = ContextVar(
     "current_discovery_query_id",
     default=None,
+)
+AI_PRODUCT_TERM_RE = re.compile(
+    r"(?:\bCodex\b|\bChatGPT\s+Work\b|\bOpenAI\b|\bGPT(?:-\d+(?:\.\d+)?)?\b)",
+    re.IGNORECASE,
+)
+USAGE_POLICY_SUBJECT_RE = re.compile(
+    r"(?:"
+    r"\busage\b|\bquota\b|\brate[\s-]?limit\b|\busage[\s-]?limit\b|"
+    r"\b(?:5|five)[\s-]?hour\b|\btoken[\s-]?(?:limit|quota|budget|usage)\b|"
+    r"利用枠|使用量|レート制限|クォータ|5時間|五時間|"
+    r"用量|配额|額度|额度|限额|限額|速率限制|五小时|5小时|"
+    r"사용량|할당량|한도|5시간"
+    r")",
+    re.IGNORECASE,
+)
+USAGE_POLICY_CHANGE_RE = re.compile(
+    r"(?:"
+    r"\breset(?:s|ting)?\b|\brestore(?:s|d|ing)?\b|"
+    r"\breturn(?:s|ed|ing)?\b|\bresume(?:s|d|ing)?\b|"
+    r"\bpause(?:s|d|ing)?\b|\bsuspend(?:s|ed|ing)?\b|"
+    r"\bremove(?:s|d|ing)?\b|\blift(?:s|ed|ing)?\b|"
+    r"\bincrease(?:s|d|ing)?\b|\bdecrease(?:s|d|ing)?\b|"
+    r"\breduc(?:e|es|ed|ing|tion)\b|\bimprov(?:e|es|ed|ing|ement)\b|"
+    r"\bchang(?:e|es|ed|ing)\b|"
+    r"リセット|復活|再開|解除|停止|一時停止|改善|変更|増加|減少|"
+    r"重置|恢复|恢復|重啟|重启|重新启用|重新啟用|解除|暂停|暫停|"
+    r"调整|調整|提高|降低|增加|减少|減少|改善|变化|變化|"
+    r"초기화|복원|재개|중단|해제|개선|변경|상향|하향"
+    r")",
+    re.IGNORECASE,
 )
 
 sys.path.insert(0, str(REPO_ROOT))
@@ -435,6 +460,49 @@ def metadata_string_list(metadata: dict[str, Any], plural: str, singular: str) -
     return [str(value)] if value else []
 
 
+def item_search_text(item: Any) -> str:
+    """Return bounded discovery text used only for relevance and editorial signals."""
+
+    return " ".join(
+        str(value or "")
+        for value in (
+            getattr(item, "title", ""),
+            getattr(item, "content", ""),
+            getattr(item, "summary", ""),
+        )
+    )
+
+
+def is_material_usage_policy_change(text: str) -> bool:
+    """Identify an explicit AI-product usage or quota change in multiple languages."""
+
+    return bool(
+        AI_PRODUCT_TERM_RE.search(text)
+        and USAGE_POLICY_SUBJECT_RE.search(text)
+        and USAGE_POLICY_CHANGE_RE.search(text)
+    )
+
+
+def apply_editorial_signals(items: list) -> None:
+    """Mark must-review usage-policy changes before editorial scoring."""
+
+    for item in items:
+        metadata = item.metadata
+        signals = set(
+            metadata_string_list(
+                metadata,
+                "editorial_signals",
+                "editorial_signal",
+            )
+        )
+        if metadata.get("must_review") and is_material_usage_policy_change(
+            item_search_text(item)
+        ):
+            signals.add("usage-policy-change")
+        if signals:
+            metadata["editorial_signals"] = sorted(signals)
+
+
 def compact_candidate(item: dict[str, Any]) -> dict[str, Any]:
     """Build the bounded review index row without article bodies or comments."""
 
@@ -448,6 +516,9 @@ def compact_candidate(item: dict[str, Any]) -> dict[str, Any]:
     )
     review_lanes = metadata_string_list(
         metadata, "review_lanes", "review_lane"
+    )
+    editorial_signals = metadata_string_list(
+        metadata, "editorial_signals", "editorial_signal"
     )
     return {
         "id": str(item.get("id") or ""),
@@ -477,6 +548,7 @@ def compact_candidate(item: dict[str, Any]) -> dict[str, Any]:
         "mustReviewQueryIds": must_review_query_ids,
         "mustReviewSourceIds": must_review_source_ids,
         "reviewLanes": review_lanes,
+        "editorialSignals": editorial_signals,
     }
 
 
@@ -1163,6 +1235,7 @@ async def run() -> dict:
     merged_items = orchestrator.merge_cross_source_duplicates(combined_items)
     apply_query_provenance(merged_items, topic_items)
     apply_direct_source_review_provenance(merged_items, combined_items)
+    apply_editorial_signals(merged_items)
     raw_items = items_to_dicts(merged_items)
     service.run_store.save_items(run_id, "raw", raw_items)
 

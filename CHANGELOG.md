@@ -4,6 +4,7 @@
 
 ## 2026-07-30
 
+- 修复每日 AI 新闻遗漏 Codex 五小时限制恢复消息的两层原因：原 Tibo 补充源只是宽泛 Bing 搜索，抓回的结果是同名慢阻肺噪声；真正进入 must-review 的 X／媒体／Reddit 限额候选又被编辑层统一误归为 `developer-tool`、`substantiveChange:false` 和 4 分后全部拒绝。站长现已授权把 Tibo `@thsottiaux` 的 X 帖子纳入选题；移除无效 Bing RSS，新增 required 的 Tibo／Codex 独立必查查询，同时覆盖姓名、账号及 Codex／ChatGPT Work 运营关键词，本次真实重跑命中 X、英文媒体和日文媒体的五小时限制候选。candidate index 新增 `editorialSignals`：must-review 中明确的额度／五小时窗口变化必须归类为 `usage-policy` 或 `material-price-quota`，不得用重要性不足、例行消息或超出范围拒绝，同一事件的其他 must-review 来源全部合并；识别规则同时排除普通 token、推理内存、模型路由和性能优化，避免误标及校验误停。同步工作流、自动任务提示、项目上下文、AGENTS 与维护 Skill，并新增日英中韩用量变更识别、误标防护和低分淘汰回归。
 - 将每日 AI 新闻的过时单日硬编码恢复入口改为长期可复用的当天人工补发模式：自动任务仍以北京时间 08:00 为硬截止并且绝不自行迟发；只有站长在当前 Codex 交互任务中明确授权后，才可在该 `reportDate` 当天 08:00 至次日 00:00 同时确认日期与完整 schemaVersion 4 运行记录的 canonical SHA-256。人工模式继续使用 `[前一日 07:00, 当日 07:00)` 固定窗口，并完整保留 Horizon 成功态、candidate index 原始字节摘要、coverage manifest v2、required／must-review、三语、专用通道、auto-publish、限流、幂等、slug 冲突和三语公开回读门禁；午夜前不足 45 秒或任一确认不匹配时拒绝投递。新增只读 `--print-run-sha256` 与 `MANUAL_RECOVERY.md`，同步 workflow、自动任务提示、项目上下文和维护 Skill。
 
 ## 2026-07-29

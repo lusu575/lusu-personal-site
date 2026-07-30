@@ -325,7 +325,7 @@
     },
     {
       "id": "codex-operations-en",
-      "query": "(\"Thibault Sottiaux\" OR \"Tibo Codex\" OR \"Codex usage limit\" OR \"Codex rate limit\" OR \"Codex reset\")",
+      "query": "(\"Thibault Sottiaux\" OR \"Tibo Codex\" OR thsottiaux) (Codex OR \"ChatGPT Work\") (launch OR release OR availability OR usage OR limit OR quota OR reset OR context OR model OR feature)",
       "language": "en",
       "country": "US",
       "maxResults": 100,

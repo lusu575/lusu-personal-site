@@ -51,6 +51,11 @@ const PROTECTED_PRIORITY_EDITORIAL_CLASSES = new Set([
   "developer-tool",
   "material-price-quota"
 ]);
+const USAGE_POLICY_EDITORIAL_CLASSES = new Set([
+  "usage-policy",
+  "material-price-quota"
+]);
+const USAGE_POLICY_CHANGE_SIGNAL = "usage-policy-change";
 const PRIORITY_REJECTION_REASONS = new Set([
   "insufficient-evidence",
   "below-importance-threshold",
@@ -771,6 +776,18 @@ function validateV2ReviewProvenance(manifest, indexItems) {
         throw new Error(`candidate_index.json 候选 ${candidateId} 的 ${field} 不得重复。`);
       }
     }
+    if (Object.hasOwn(item, "editorialSignals")) {
+      if (!Array.isArray(item.editorialSignals)
+        || item.editorialSignals.some(
+          (signal) => !INTERNAL_ID_PATTERN.test(String(signal))
+        )
+        || new Set(item.editorialSignals.map(String)).size
+          !== item.editorialSignals.length) {
+        throw new Error(
+          `candidate_index.json 候选 ${candidateId} 的 editorialSignals 必须是有效且不重复的编号数组。`
+        );
+      }
+    }
     if (typeof item?.mustReview !== "boolean") {
       throw new Error(`candidate_index.json 候选 ${candidateId} 缺少 mustReview 布尔值。`);
     }
@@ -970,6 +987,18 @@ function validatePriorityReviewProvenance({ run, manifest, indexItems }) {
       throw new Error(`${label}.substantiveChange 必须是布尔值。`);
     }
     const scoreTotal = validatePriorityReviewScore(score, label);
+    const candidateEditorialSignals = stringArray(
+      indexById.get(candidateId)?.editorialSignals
+    );
+    const usagePolicyChange = candidateEditorialSignals.includes(
+      USAGE_POLICY_CHANGE_SIGNAL
+    );
+    if (usagePolicyChange
+      && !USAGE_POLICY_EDITORIAL_CLASSES.has(editorialClass)) {
+      throw new Error(
+        `${label} 已被候选索引标记为用量／限额规则变化，editorialClass 必须是 usage-policy 或 material-price-quota。`
+      );
+    }
     const protectedEditorialClass = PROTECTED_PRIORITY_EDITORIAL_CLASSES.has(
       editorialClass
     );
@@ -1024,6 +1053,16 @@ function validatePriorityReviewProvenance({ run, manifest, indexItems }) {
       }
       if (!note) {
         throw new Error(`${label}.note 必须具体说明拒绝依据。`);
+      }
+      if (usagePolicyChange
+        && [
+          "below-importance-threshold",
+          "routine-or-promotional",
+          "outside-editorial-scope"
+        ].includes(rejectionReason)) {
+        throw new Error(
+          `${label} 是明确的用量／限额规则变化，不得以重要性不足、例行消息或超出范围为由拒绝；应核验一手来源，重复事件则 merged。`
+        );
       }
       if (protectedEditorialClass && scoreTotal >= 7) {
         throw new Error(

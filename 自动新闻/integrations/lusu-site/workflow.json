@@ -176,6 +176,19 @@
       "protectedSelectionThreshold": 7,
       "protectedAtOrAboveThreshold": "must-be-selected-or-merged",
       "protectedSelectedOrMergedRequiresSubstantiveChange": true,
+      "candidateEditorialSignals": {
+        "usage-policy-change": {
+          "requiredEditorialClass": [
+            "usage-policy",
+            "material-price-quota"
+          ],
+          "forbiddenRejectionReasons": [
+            "below-importance-threshold",
+            "routine-or-promotional",
+            "outside-editorial-scope"
+          ]
+        }
+      },
       "selectedRequires": [
         "storyKey",
         "sourceCandidateIds"
