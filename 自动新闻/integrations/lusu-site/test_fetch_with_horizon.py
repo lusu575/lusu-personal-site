@@ -19,6 +19,8 @@ if SPEC is None or SPEC.loader is None:
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
 
+from src.models import SourceType
+
 
 class ArtifactWriteTests(unittest.TestCase):
     def test_utf8_artifact_hash_matches_written_bytes_on_windows(self) -> None:
@@ -156,6 +158,22 @@ class DiscoveryQueryTests(unittest.TestCase):
             "xiaomi-mimo-zh",
             "china-models-zh",
             "china-models-en",
+            "bytedance-creative-models-zh",
+            "bytedance-seedance-en",
+            "bytedance-seedream-en",
+            "bytedance-dreamina-en",
+            "bytedance-creative-models-ja",
+            "bytedance-creative-models-ko",
+            "china-video-models-zh",
+            "china-video-models-en",
+            "global-video-models-en-primary",
+            "global-video-models-en-creative",
+            "global-video-models-ja",
+            "global-video-models-ko",
+            "image-models-zh",
+            "image-models-en",
+            "voice-models-zh",
+            "voice-models-en",
             "china-lithography-zh",
             "china-memory-chips-zh",
             "china-semiconductor-zh",
@@ -178,6 +196,75 @@ class DiscoveryQueryTests(unittest.TestCase):
         )
         self.assertTrue(all(entry["coverageGroup"] for entry in queries))
         by_id = {entry["id"]: entry for entry in queries}
+        groups_by_id = {
+            entry["id"]: entry for entry in catalog["coverageGroups"]
+        }
+        self.assertTrue(groups_by_id["multimodal-models"]["required"])
+        self.assertEqual(
+            groups_by_id["multimodal-models"]["priority"],
+            "priority",
+        )
+        multimodal_query_ids = {
+            "bytedance-creative-models-zh",
+            "bytedance-seedance-en",
+            "bytedance-seedream-en",
+            "bytedance-dreamina-en",
+            "bytedance-creative-models-ja",
+            "bytedance-creative-models-ko",
+            "china-video-models-zh",
+            "china-video-models-en",
+            "global-video-models-en-primary",
+            "global-video-models-en-creative",
+            "global-video-models-ja",
+            "global-video-models-ko",
+            "image-models-zh",
+            "image-models-en",
+            "voice-models-zh",
+            "voice-models-en",
+        }
+        for query_id in multimodal_query_ids:
+            entry = by_id[query_id]
+            self.assertEqual(entry["coverageGroup"], "multimodal-models")
+            self.assertEqual(entry["priority"], "priority")
+            self.assertTrue(entry["required"])
+            self.assertTrue(entry["mustReview"])
+            self.assertEqual(
+                entry["maxResults"],
+                MODULE.GOOGLE_NEWS_SAFE_RESULT_LIMIT,
+            )
+        self.assertEqual(
+            {
+                by_id[query_id]["language"]
+                for query_id in multimodal_query_ids
+            },
+            {"en", "zh-CN", "ja", "ko"},
+        )
+        multimodal_query_text = "\n".join(
+            by_id[query_id]["query"] for query_id in multimodal_query_ids
+        )
+        for alias in [
+            "Seedance",
+            "Seedream",
+            "Dreamina AI",
+            "可灵AI",
+            "Kling AI",
+            "海螺AI",
+            "Hailuo AI",
+            "Vidu AI",
+            "Google Veo",
+            "OpenAI Sora",
+            "Runway AI",
+            "Luma AI",
+            "PixVerse",
+            "Grok Voice",
+        ]:
+            self.assertIn(alias, multimodal_query_text)
+        for query_id, product_query in {
+            "bytedance-seedance-en": "Seedance",
+            "bytedance-seedream-en": "Seedream",
+            "bytedance-dreamina-en": "\"Dreamina AI\"",
+        }.items():
+            self.assertEqual(by_id[query_id]["query"], product_query)
         alibaba_ecosystem = by_id["alibaba-ai-ecosystem-zh"]
         self.assertTrue(alibaba_ecosystem["required"])
         self.assertEqual(alibaba_ecosystem["priority"], "priority")
@@ -873,7 +960,71 @@ class MustReviewProvenanceTests(unittest.TestCase):
         )
         self.assertEqual(
             compact["reviewLanes"],
-            ["china-product-releases"],
+            [
+                "china-product-releases",
+                "complete-discovery-review",
+            ],
+        )
+
+    def test_priority_supplemental_candidate_is_mandatory_review(self) -> None:
+        url = "https://example.test/priority-story"
+        topic_item = SimpleNamespace(
+            url=url,
+            metadata={
+                "discovery_query_id": "china-models-en",
+                "coverage_group": "china-models",
+                "coverage_priority": "priority",
+                "required_query": False,
+                "must_review_query": False,
+            },
+        )
+        merged_item = SimpleNamespace(url=url, metadata={})
+
+        MODULE.apply_query_provenance([merged_item], [topic_item])
+        compact = MODULE.compact_candidate(
+            {
+                "id": "candidate-priority",
+                "title": "Seedance 2.5 availability update",
+                "url": url,
+                "source_type": "google_news",
+                "published_at": "2026-07-30T08:47:46Z",
+                "metadata": merged_item.metadata,
+            }
+        )
+
+        self.assertTrue(compact["mustReview"])
+        self.assertEqual(compact["mustReviewQueryIds"], [])
+        self.assertEqual(
+            compact["reviewLanes"],
+            ["complete-discovery-review"],
+        )
+
+    def test_complete_candidate_review_policy_marks_every_candidate(self) -> None:
+        standard_item = SimpleNamespace(
+            url="https://example.test/standard",
+            metadata={},
+        )
+        focused_item = SimpleNamespace(
+            url="https://example.test/focused",
+            metadata={
+                "must_review": True,
+                "review_lanes": ["china-product-releases"],
+            },
+        )
+
+        MODULE.apply_complete_candidate_review_policy(
+            [standard_item, focused_item]
+        )
+
+        self.assertTrue(standard_item.metadata["must_review"])
+        self.assertEqual(
+            standard_item.metadata["review_lanes"],
+            ["complete-discovery-review"],
+        )
+        self.assertTrue(focused_item.metadata["must_review"])
+        self.assertEqual(
+            focused_item.metadata["review_lanes"],
+            ["china-product-releases", "complete-discovery-review"],
         )
 
     def test_focus_query_provenance_survives_tracking_url_normalization(
@@ -903,17 +1054,28 @@ class MustReviewProvenanceTests(unittest.TestCase):
         )
         self.assertTrue(merged_item.metadata["must_review"])
 
-    def test_direct_rss_and_reddit_candidates_are_mandatory_review(self) -> None:
+    def test_direct_rss_reddit_and_hackernews_candidates_are_mandatory_review(
+        self,
+    ) -> None:
         rss_item = SimpleNamespace(
             url="https://openrouter.ai/blog/example",
+            source_type="rss",
             metadata={"feed_name": "OpenRouter Blog"},
         )
         reddit_item = SimpleNamespace(
-            url="https://www.reddit.com/r/codex/comments/example",
-            metadata={"subreddit": "codex"},
+            url="https://huggingface.co/example/model",
+            source_type="reddit",
+            metadata={"subreddit": "LocalLLaMA"},
+        )
+        hackernews_item = SimpleNamespace(
+            url="https://github.blog/changelog/example",
+            source_type=SourceType.HACKERNEWS,
+            metadata={},
         )
 
-        MODULE.apply_direct_source_review_provenance([rss_item, reddit_item])
+        MODULE.apply_direct_source_review_provenance(
+            [rss_item, reddit_item, hackernews_item]
+        )
 
         self.assertEqual(
             rss_item.metadata["must_review_source_ids"],
@@ -926,13 +1088,29 @@ class MustReviewProvenanceTests(unittest.TestCase):
         self.assertTrue(rss_item.metadata["must_review"])
         self.assertEqual(
             reddit_item.metadata["must_review_source_ids"],
-            ["reddit-codex"],
+            ["reddit-local-llama"],
         )
         self.assertEqual(
             reddit_item.metadata["review_lanes"],
-            ["developer-product-operations"],
+            ["ai-community-discovery"],
         )
         self.assertTrue(reddit_item.metadata["must_review"])
+        self.assertEqual(
+            hackernews_item.metadata["must_review_source_ids"],
+            ["hackernews-top-stories"],
+        )
+        self.assertEqual(
+            hackernews_item.metadata["review_lanes"],
+            ["developer-community-discovery"],
+        )
+        self.assertTrue(hackernews_item.metadata["must_review"])
+        self.assertEqual(
+            MODULE.DIRECT_REVIEW_SUBREDDITS["Seedance_AI"],
+            (
+                "reddit-seedance-ai",
+                "multimodal-community-discovery",
+            ),
+        )
 
     def test_review_source_survives_premerged_feed_name_conflict(self) -> None:
         merged_item = SimpleNamespace(
@@ -1001,7 +1179,10 @@ class MustReviewProvenanceTests(unittest.TestCase):
                     "coverage_priority": "priority",
                     "must_review": True,
                     "must_review_query_ids": ["qwen-products-zh"],
-                    "review_lanes": ["china-product-releases"],
+                    "review_lanes": [
+                        "china-product-releases",
+                        "complete-discovery-review",
+                    ],
                 },
             },
             {
@@ -1014,7 +1195,10 @@ class MustReviewProvenanceTests(unittest.TestCase):
                     "feed_name": "OpenRouter Blog",
                     "must_review": True,
                     "must_review_source_ids": ["rss-openrouter-blog"],
-                    "review_lanes": ["developer-product-releases"],
+                    "review_lanes": [
+                        "complete-discovery-review",
+                        "developer-product-releases",
+                    ],
                 },
             },
         ]
@@ -1051,6 +1235,10 @@ class MustReviewProvenanceTests(unittest.TestCase):
             ["candidate-focus", "candidate-general"],
         )
         self.assertEqual(manifest["schemaVersion"], 2)
+        self.assertEqual(
+            manifest["priorityReviewPolicy"],
+            "all-discovered-candidates",
+        )
         review_lanes = {
             entry["id"]: entry
             for entry in manifest["reviewLanes"]
@@ -1062,6 +1250,15 @@ class MustReviewProvenanceTests(unittest.TestCase):
                 "queryIds": ["qwen-products-zh"],
                 "sourceIds": [],
                 "candidateIds": ["candidate-focus"],
+            },
+        )
+        self.assertEqual(
+            review_lanes["complete-discovery-review"],
+            {
+                "id": "complete-discovery-review",
+                "queryIds": [],
+                "sourceIds": [],
+                "candidateIds": ["candidate-focus", "candidate-general"],
             },
         )
         self.assertIn("reviewSources", manifest)

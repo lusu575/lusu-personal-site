@@ -27,6 +27,8 @@ DISCOVERY_SCHEMA_VERSION = 2
 MAX_QUERY_CONCURRENCY = 8
 GOOGLE_NEWS_SAFE_RESULT_LIMIT = 99
 EXPECTED_LOW_VOLUME_TRIGGER = 5
+PRIORITY_REVIEW_POLICY = "all-discovered-candidates"
+PRIORITY_DISCOVERY_REVIEW_LANE = "complete-discovery-review"
 GOOGLE_NEWS_MAX_RETRIES = 2
 GOOGLE_NEWS_RETRY_DELAY_SECONDS = 0.25
 GOOGLE_NEWS_REQUEST_TIMEOUT_SECONDS = 10.0
@@ -66,8 +68,17 @@ DIRECT_REVIEW_FEEDS = {
     "新智元": ("rss-ainews", "china-ai-media"),
 }
 DIRECT_REVIEW_SUBREDDITS = {
+    "MachineLearning": ("reddit-machine-learning", "ai-community-discovery"),
+    "LocalLLaMA": ("reddit-local-llama", "ai-community-discovery"),
+    "Seedance_AI": (
+        "reddit-seedance-ai",
+        "multimodal-community-discovery",
+    ),
     "codex": ("reddit-codex", "developer-product-operations"),
     "OpenAI": ("reddit-openai", "openai-product-operations"),
+}
+DIRECT_REVIEW_SOURCE_TYPES = {
+    "hackernews": ("hackernews-top-stories", "developer-community-discovery"),
 }
 CURRENT_DISCOVERY_QUERY_ID: ContextVar[str | None] = ContextVar(
     "current_discovery_query_id",
@@ -367,16 +378,17 @@ def apply_query_provenance(merged_items: list, topic_items: list) -> None:
             continue
         item.metadata["discovery_query_ids"] = sorted(provenance["queryIds"])
         item.metadata["coverage_groups"] = sorted(provenance["coverageGroups"])
+        is_priority = "priority" in provenance["priorities"]
+        review_lanes = set(provenance["reviewLanes"])
+        review_lanes.add(PRIORITY_DISCOVERY_REVIEW_LANE)
         item.metadata["coverage_priority"] = (
-            "priority"
-            if "priority" in provenance["priorities"]
-            else "standard"
+            "priority" if is_priority else "standard"
         )
-        item.metadata["must_review"] = bool(provenance["mustReviewQueryIds"])
+        item.metadata["must_review"] = True
         item.metadata["must_review_query_ids"] = sorted(
             provenance["mustReviewQueryIds"]
         )
-        item.metadata["review_lanes"] = sorted(provenance["reviewLanes"])
+        item.metadata["review_lanes"] = sorted(review_lanes)
         item.metadata["required_query"] = bool(provenance["required"])
 
 
@@ -391,6 +403,14 @@ def apply_direct_source_review_provenance(
         metadata = item.metadata
         source_ids: set[str] = set()
         review_lanes: set[str] = set()
+
+        source_type = getattr(item, "source_type", "")
+        source_type_value = getattr(source_type, "value", source_type)
+        source_review = DIRECT_REVIEW_SOURCE_TYPES.get(str(source_type_value))
+        if source_review:
+            source_id, review_lane = source_review
+            source_ids.add(source_id)
+            review_lanes.add(review_lane)
 
         feed_names = metadata_string_list(
             metadata,
@@ -448,6 +468,19 @@ def apply_direct_source_review_provenance(
             metadata["must_review_source_ids"] = sorted(source_ids)
             metadata["review_lanes"] = sorted(review_lanes)
             metadata["must_review"] = True
+
+
+def apply_complete_candidate_review_policy(merged_items: list) -> None:
+    """Require one editorial disposition for every discovered candidate."""
+
+    for item in merged_items:
+        metadata = item.metadata
+        review_lanes = set(
+            metadata_string_list(metadata, "review_lanes", "review_lane")
+        )
+        review_lanes.add(PRIORITY_DISCOVERY_REVIEW_LANE)
+        metadata["review_lanes"] = sorted(review_lanes)
+        metadata["must_review"] = True
 
 
 def metadata_string_list(metadata: dict[str, Any], plural: str, singular: str) -> list[str]:
@@ -681,6 +714,19 @@ def build_coverage_manifest(
         for subreddit, (source_id, review_lane) in sorted(
             DIRECT_REVIEW_SUBREDDITS.items()
         )
+    ] + [
+        {
+            "id": source_id,
+            "sourceType": source_type,
+            "sourceName": source_type,
+            "reviewLane": review_lane,
+            "candidateIds": sorted(
+                review_source_candidate_ids.get(source_id, set())
+            ),
+        }
+        for source_type, (source_id, review_lane) in sorted(
+            DIRECT_REVIEW_SOURCE_TYPES.items()
+        )
     ]
 
     review_lanes = []
@@ -694,9 +740,16 @@ def build_coverage_manifest(
         for _, review_lane in [
             *DIRECT_REVIEW_FEEDS.values(),
             *DIRECT_REVIEW_SUBREDDITS.values(),
+            *DIRECT_REVIEW_SOURCE_TYPES.values(),
         ]
     }
-    for review_lane in sorted(catalog_review_lanes | source_review_lanes):
+    indexed_review_lanes = set(review_lane_candidate_ids)
+    for review_lane in sorted(
+        catalog_review_lanes
+        | source_review_lanes
+        | indexed_review_lanes
+        | {PRIORITY_DISCOVERY_REVIEW_LANE}
+    ):
         review_lanes.append(
             {
                 "id": review_lane,
@@ -729,6 +782,7 @@ def build_coverage_manifest(
         "languagePolicy": catalog["languagePolicy"],
         "seedLanguages": catalog["seedLanguages"],
         "lowVolumeTrigger": catalog["lowVolumeTrigger"],
+        "priorityReviewPolicy": PRIORITY_REVIEW_POLICY,
         "candidateIndexPath": relative_artifact_path(candidate_index_path),
         "candidateIndexSha256": candidate_index_sha256,
         "candidateCount": len(candidate_rows),
@@ -1235,6 +1289,7 @@ async def run() -> dict:
     merged_items = orchestrator.merge_cross_source_duplicates(combined_items)
     apply_query_provenance(merged_items, topic_items)
     apply_direct_source_review_provenance(merged_items, combined_items)
+    apply_complete_candidate_review_policy(merged_items)
     apply_editorial_signals(merged_items)
     raw_items = items_to_dicts(merged_items)
     service.run_store.save_items(run_id, "raw", raw_items)
