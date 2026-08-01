@@ -1,5 +1,9 @@
 # 临时互传维护与部署
 
+**当前子项目版本：1.0.1**
+
+本目录是临时互传的治理根：`VERSION` / `project.json` 保存独立版本，`CHANGELOG.md` 保存子项目更新，`AGENTS.md` 约束分布在主站、Pages Functions、后台和清理 Worker 中的实现，`AGENT.md` 仅作兼容入口。任何互传更改都必须把该版本精确增加 `0.0.1`，并同步本目录全部受影响文档和根项目记录。
+
 ## 当前边界
 
 - 入口位于主站“工具区 / Tools / ツール”（内部 route 仍为 `resources`），不是新的顶层 route 或 Dock App。

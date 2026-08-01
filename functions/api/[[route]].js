@@ -13,7 +13,7 @@ import {
   updateTrafficControlSettings
 } from "./traffic-control.mjs";
 
-export const PUBLIC_API_REPRESENTATION_VERSION = "20260801-service-reliability-r1";
+export const PUBLIC_API_REPRESENTATION_VERSION = "20260801-whiteboard-reliable-sketch-r1";
 export const PUBLIC_ARTICLE_ARCHIVE_LIMIT = 500;
 const SESSION_COOKIE = "lusu_session";
 const SESSION_DAYS = 30;
@@ -44,7 +44,7 @@ const DATA_CLEANUP_STATE_KEY = "api_periodic_data_cleanup";
 const DATA_CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const DATA_CLEANUP_DELETE_LIMIT = 5000;
 const ARTICLE_SEED_STATE_KEY = "article_seed_version";
-const ARTICLE_SEED_VERSION = "20260801-service-reliability-r1";
+const ARTICLE_SEED_VERSION = "20260801-whiteboard-reliable-sketch-r1";
 const LOGIN_EVENT_RETENTION_DAYS = 365;
 const ANALYTICS_EVENT_RETENTION_DAYS = 180;
 const AUTH_RATE_LIMITS = Object.freeze({
@@ -6176,6 +6176,47 @@ const DAILY_AI_NEWS_2026_07_27_READER_PATCH = Object.freeze({
 function articleSeedStatements(env) {
   // Seed timestamps must be UTC ISO strings; the UI converts them to each visitor's local time.
   return [
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-08-01-whiteboard-reliable-sketch',
+        '2026-08-01-whiteboard-reliable-sketch',
+        'site-updates',
+        '["网站更新","在线画板","可靠保存","铅笔草图","版本治理"]',
+        '', 'published', 0, 0,
+        '2026-08-01T09:55:00.000Z',
+        '2026-08-01T09:55:00.000Z',
+        '2026-08-01T09:55:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-08-01-whiteboard-reliable-sketch", {
+      zh: {
+        title: "在线画板可靠保存与铅笔草图风",
+        summary: "快速绘制现在会合并发送、等待服务端持久化确认并在断线后重传；公共画布持续保留，密码房空置24小时后整房清理，同时加入铅笔草图默认风格和画板、临时互传的独立版本记录。",
+        content_markdown: "# 在线画板可靠保存与铅笔草图风\n\n快速画线时出现的通用错误和重进后内容消失，来自同一个未确认更新问题。本次把画板升级到 v1.0.1。\n\n## 画线只有落盘后才算完成\n\n- 连续绘制产生的 Yjs 更新会合并并按服务端建议间隔发送，避免短时间触发更新限流。\n- Worker 在 Durable Object 已保存增量和文档版本后才返回确认。确认前断线、限流或超时会保留数据，重连后安全重传。\n- 退出房间会短暂等待待确认更新排空；真实权限或协议错误仍会明确停止，而可恢复故障会自动重连。\n\n## 公共与私人房间的保存边界\n\n- 公共画板不按空房时间删除，画出的线条会在退出、重进和 Worker 重启后继续保留，只有管理员可以显式清空。\n- 密码房在最后一名真实连接离开后开始24小时倒计时；期间重新进入会取消，之后再次为空会重新计时，到期后整房画布、图片和索引一起清理。\n- 鼠标、选区和在线状态仍只实时广播，不写入长期存储。\n\n## 草图风格和独立版本\n\n- 新元素默认使用暖白纸张、石墨线条、手绘粗糙度和排线填充，仍可自由改颜色与工具。\n- 在线画板与临时互传现在分别维护版本、更新日志和 AI 维护文档；每次更新必须精确增加0.0.1并同步相关文档。"
+      },
+      en: {
+        title: "Reliable Whiteboard Saving and Pencil Sketch Style",
+        summary: "Rapid drawing is now batched, acknowledged only after durable storage, and retried after disconnects; the public canvas persists, empty password rooms are deleted after 24 hours, and Whiteboard plus Quick Transfer now have independent versions.",
+        content_markdown: "# Reliable Whiteboard Saving and Pencil Sketch Style\n\nThe generic error during rapid drawing and missing content after re-entering came from the same unacknowledged-update problem. This release upgrades Whiteboard to v1.0.1.\n\n## A stroke is complete only after durable storage\n\n- Yjs updates from continuous drawing are merged and sent at the interval recommended by the service, avoiding short update-rate bursts.\n- The Worker acknowledges an update only after Durable Object storage contains both the increment and document version. Disconnects, rate limits, or timeouts before that acknowledgement keep the data for safe retransmission after reconnecting.\n- Leaving briefly waits for pending acknowledgements to drain. Real access or protocol violations still stop explicitly, while recoverable failures reconnect automatically.\n\n## Retention boundaries for public and private rooms\n\n- The public whiteboard is not deleted for being empty. Strokes persist across leaving, re-entry, and Worker restarts, and only an administrator can explicitly clear it.\n- A password room starts a 24-hour countdown after its last real connection leaves. Re-entry cancels it, becoming empty again restarts it, and expiry removes the room canvas, images, and indexes together.\n- Cursors, selections, and online status remain transient broadcasts and are not written to long-term storage.\n\n## Sketch defaults and independent versions\n\n- New elements default to warm paper, graphite strokes, hand-drawn roughness, and hachure fill, while colors and tools remain fully editable.\n- Whiteboard and Quick Transfer now maintain separate versions, changelogs, and AI maintenance guides. Every update must increase its version by exactly 0.0.1 and keep the related documents synchronized."
+      },
+      ja: {
+        title: "ホワイトボードの確実な保存と鉛筆スケッチ風",
+        summary: "高速描画をまとめて送信し、永続化後の確認と切断時の再送に対応しました。公開キャンバスは保持し、パスワードルームは空室24時間後に全削除します。鉛筆風の既定値と独立版管理も追加しました。",
+        content_markdown: "# ホワイトボードの確実な保存と鉛筆スケッチ風\n\n高速描画中の一般エラーと再入室後の内容消失は、同じ未確認更新の問題が原因でした。今回ホワイトボードを v1.0.1 へ更新しました。\n\n## 永続保存後にだけ描画完了\n\n- 連続描画の Yjs 更新を統合し、サービスが推奨する間隔で送信して、短時間の制限超過を防ぎます。\n- Worker は Durable Object に増分と文書版が保存されてから確認を返します。それ以前の切断、速度制限、タイムアウトではデータを保持し、再接続後に安全に再送します。\n- 退室時は未確認更新の排出を短時間待ちます。実際のアクセスやプロトコル違反は明確に停止し、回復可能な障害は自動再接続します。\n\n## 公開と非公開ルームの保持境界\n\n- 公開ホワイトボードは空室時間で削除しません。退室、再入室、Worker 再起動後も線を保持し、管理者だけが明示的に消去できます。\n- パスワードルームは最後の実接続が離れてから24時間を計時します。再入室で取り消し、再度空室になれば再計時し、期限後はキャンバス、画像、索引をルームごと削除します。\n- カーソル、選択、オンライン状態は引き続き一時配信だけで、長期保存しません。\n\n## スケッチ既定値と独立版\n\n- 新規要素は暖かい紙、黒鉛の線、手描きの粗さ、ハッチング填りを既定とし、色とツールは自由に変更できます。\n- ホワイトボードと一時転送は、別々の版、更新履歴、AI 保守文書を管理します。更新ごとに版を正確に 0.0.1 上げ、関連文書を同期します。"
+      }
+    }, "2026-08-01T09:55:00.000Z"),
     env.DB.prepare(`
       insert into articles (
         article_id, slug, category, tags, cover_image, status, is_pinned,

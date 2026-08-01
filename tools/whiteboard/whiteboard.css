@@ -157,11 +157,37 @@ input:disabled {
 }
 
 .section-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin: 0 0 6px;
   color: var(--wb-blue-dark);
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.08em;
+}
+
+.subproject-version {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 20px;
+  padding: 2px 6px;
+  color: #514a40;
+  background: #f4ead5;
+  border: 1px dashed #756c60;
+  border-radius: 3px;
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+.board-room-copy .subproject-version {
+  color: #fff7dc;
+  background: rgba(13, 42, 105, 0.42);
+  border-color: rgba(255, 255, 255, 0.72);
 }
 
 .lobby-intro h1 {
@@ -440,6 +466,7 @@ input:disabled {
   overflow: hidden;
   overscroll-behavior: none;
   touch-action: none;
+  background: #f7f1e5;
 }
 
 .canvas-region > .excalidraw {

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "online-whiteboard",
+  "name": "LuSu Online Whiteboard",
+  "version": "1.0.1",
+  "versionStep": "0.0.1",
+  "governanceRoot": "docs/whiteboard",
+  "documents": [
+    "README.md",
+    "AGENT.md",
+    "AGENTS.md",
+    "CHANGELOG.md",
+    "VERSION"
+  ],
+  "trackedPaths": [
+    "docs/whiteboard/",
+    "tools/whiteboard/",
+    "workers/whiteboard/",
+    "functions/api/whiteboard-service.mjs",
+    "assets/images/generated-icons/whiteboard.png",
+    "assets/images/generated-icons/whiteboard.source.json",
+    "tests/whiteboard-service-api.test.mjs",
+    "tests/whiteboard-integration-contract.test.mjs"
+  ],
+  "visibleVersionFiles": [
+    "tools/whiteboard/src/main.jsx",
+    "js/data/resources-content.mjs"
+  ]
+}

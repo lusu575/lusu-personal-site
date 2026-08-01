@@ -5,6 +5,7 @@ import {
   ASSET_REFERENCE_RECHECK_MS,
   ASSET_SWEEP_NEXT_KEY,
   CONSUMED_TICKET_TTL_MS,
+  DEFAULT_CLIENT_UPDATE_INTERVAL_MS,
   DISPLAY_NAME_B64_HEADER,
   IDENTITY_COLOR_HEADER,
   IDENTITY_VERSION_HEADER,
@@ -29,6 +30,7 @@ import {
   MAX_VERY_LARGE_DOCUMENT_UPDATES_PER_WINDOW,
   MAX_AWARENESS_PER_WINDOW,
   LARGE_DOCUMENT_UPDATE_THRESHOLD_BYTES,
+  LARGE_DOCUMENT_CLIENT_UPDATE_INTERVAL_MS,
   MESSAGE_RATE_WINDOW_MS,
   PUBLIC_ROOM_ID,
   RATE_STATE_RETENTION_MS,
@@ -45,6 +47,7 @@ import {
   UPLOAD_RATE_PREFIX,
   UPLOAD_RATE_WINDOW_MS,
   VERY_LARGE_DOCUMENT_UPDATE_THRESHOLD_BYTES,
+  VERY_LARGE_DOCUMENT_CLIENT_UPDATE_INTERVAL_MS,
   WEBSOCKET_PROTOCOL,
   WS_YJS_STATE_VECTOR,
   WS_YJS_UPDATE
@@ -622,7 +625,8 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       participant: this.publicParticipant(attachment, sameIdentity.length + 1),
       participants,
       locked: this.meta.isLocked,
-      documentVersion: this.meta.documentVersion
+      documentVersion: this.meta.documentVersion,
+      updateIntervalMs: this.recommendedClientUpdateIntervalMs()
     });
     this.broadcastText(
       {
@@ -789,8 +793,24 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       lastActiveAt: Date.now()
     };
     await this.persistMeta();
+    this.sendText(socket, {
+      type: "update-accepted",
+      documentVersion: this.meta.documentVersion,
+      updateIntervalMs: this.recommendedClientUpdateIntervalMs()
+    });
     await this.scheduleAssetReferenceRecheck(Date.now());
     this.broadcastBinary(WS_YJS_UPDATE, payload, socket);
+  }
+
+  private recommendedClientUpdateIntervalMs(): number {
+    const documentBytes = this.documentStore.encodedStateByteLength();
+    if (documentBytes > VERY_LARGE_DOCUMENT_UPDATE_THRESHOLD_BYTES) {
+      return VERY_LARGE_DOCUMENT_CLIENT_UPDATE_INTERVAL_MS;
+    }
+    if (documentBytes > LARGE_DOCUMENT_UPDATE_THRESHOLD_BYTES) {
+      return LARGE_DOCUMENT_CLIENT_UPDATE_INTERVAL_MS;
+    }
+    return DEFAULT_CLIENT_UPDATE_INTERVAL_MS;
   }
 
   private async sendRateLimitedSync(

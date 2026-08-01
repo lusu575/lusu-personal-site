@@ -37,6 +37,7 @@ import {
 } from "./assets.js";
 
 const RECENT_ROOM_KEY = "lusu-whiteboard-recent-room-v1";
+const WHITEBOARD_VERSION = "1.0.1";
 const NAME_COOLDOWN_MS = 30_000;
 const PASSWORD_MIN_LENGTH = 4;
 const PASSWORD_MAX_LENGTH = 128;
@@ -134,8 +135,11 @@ function safeIdentity(source, fallback) {
   };
 }
 
-function errorCopyKey(error, fallback = "genericError") {
-  const code = String(error?.code || error?.message || "").toLowerCase();
+function errorCopyKey(error, fallback = "genericError", kind = "") {
+  const code = [kind, error?.code, error?.reason, error?.message]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
   if (error?.status === 429 || code.includes("rate")) return "rateLimited";
   if (error?.status === 403 || error?.status === 401 || code.includes("access")) return "accessDenied";
   if (error?.status === 503) return "serverBusy";
@@ -244,7 +248,10 @@ function Lobby({
   return (
     <main className="lobby-main">
       <section className="lobby-intro" aria-labelledby="whiteboard-heading">
-        <p className="section-label">LUSU LIVE CANVAS</p>
+        <p className="section-label">
+          LUSU LIVE CANVAS
+          <span className="subproject-version">v{WHITEBOARD_VERSION}</span>
+        </p>
         <h1 id="whiteboard-heading">{t("title")}</h1>
         <p>{t("subtitle")}</p>
       </section>
@@ -386,6 +393,7 @@ function WhiteboardRoom({
   const [notice, setNotice] = useState("");
   const [exporting, setExporting] = useState("");
   const [membersOpen, setMembersOpen] = useState(false);
+  const [leaving, setLeaving] = useState(false);
   const roomType = initialSession.roomType;
 
   useEffect(() => {
@@ -423,7 +431,7 @@ function WhiteboardRoom({
             setNotice(t("reconnectFailed"));
             return;
           }
-          setNotice(t(errorCopyKey(error || { code: kind })));
+          setNotice(t(errorCopyKey(error, "genericError", kind)));
         },
       },
     });
@@ -499,6 +507,13 @@ function WhiteboardRoom({
     identityVersionRef.current = Number(nextIdentity.version || identityVersionRef.current);
     setIdentity((current) => safeIdentity(nextIdentity, current));
     collaborationRef.current?.forceIdentityReconnect();
+  };
+
+  const handleLeave = async () => {
+    if (leaving) return;
+    setLeaving(true);
+    await collaborationRef.current?.waitForPendingUpdates(3_000);
+    onLeave();
   };
 
   useEffect(() => {
@@ -595,6 +610,7 @@ function WhiteboardRoom({
           </a>
           <div className="board-room-copy">
             <strong>{roomType === "private" ? t("roomPrivate") : t("roomPublic")}</strong>
+            <span className="subproject-version">v{WHITEBOARD_VERSION}</span>
             <span className={`connection-state is-${connectionStatus}`}>
               {t(`connection${connectionStatus[0].toUpperCase()}${connectionStatus.slice(1)}`)}
             </span>
@@ -638,8 +654,13 @@ function WhiteboardRoom({
               <button onClick={shareEntry} type="button">{t("shareEntry")}</button>
             </div>
           </details>
-          <button className="whiteboard-button is-danger" onClick={onLeave} type="button">
-            {t("leaveRoom")}
+          <button
+            className="whiteboard-button is-danger"
+            disabled={leaving}
+            onClick={handleLeave}
+            type="button"
+          >
+            {leaving ? t("leavingRoom") : t("leaveRoom")}
           </button>
         </div>
       </header>
@@ -678,8 +699,14 @@ function WhiteboardRoom({
           )}
           initialData={{
             appState: {
-              viewBackgroundColor: "#fbfaf7",
+              viewBackgroundColor: "#f7f1e5",
               currentItemFontFamily: 1,
+              currentItemStrokeColor: "#4a4640",
+              currentItemBackgroundColor: "transparent",
+              currentItemFillStyle: "hachure",
+              currentItemStrokeWidth: 1,
+              currentItemRoughness: 2,
+              currentItemOpacity: 92,
             },
           }}
           isCollaborating
@@ -699,7 +726,7 @@ function WhiteboardRoom({
               image: true,
             },
           }}
-          viewModeEnabled={locked}
+          viewModeEnabled={locked || leaving}
         />
       </section>
 

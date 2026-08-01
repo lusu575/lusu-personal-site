@@ -22,6 +22,8 @@ For game work, also inspect:
 2. `games/game-shell.js`
 3. `games/game-shell.css`
 
+For online whiteboard work, read `docs/whiteboard/AGENTS.md` and the files it routes before editing. For Quick Transfer work, read `docs/transfer/AGENTS.md`; if the change touches `/admin/transfer.html`, also read the three admin documents above.
+
 For article / update-log work, also inspect:
 
 1. `js/data/content.mjs` `content.updates`
@@ -42,6 +44,7 @@ For Tool Radar work, first read `自动新闻/integrations/lusu-site/tool-radar/
 - Database: Cloudflare D1, schema in `cloudflare/schema.sql`
 - Admin site: `admin/`
 - Games: `games/`
+- Governed tool subprojects: online whiteboard in `docs/whiteboard/`; Quick Transfer in `docs/transfer/`
 - Deployment: GitHub `main` triggers Cloudflare Pages auto-deploy. Do not treat Wrangler manual deploy as the normal release path.
 
 ## Local Runtime And Secrets
@@ -53,6 +56,7 @@ For Tool Radar work, first read `自动新闻/integrations/lusu-site/tool-radar/
 ## Mandatory Change Rules
 
 - Every project change must update `CHANGELOG.md`.
+- Whiteboard or Quick Transfer changes must also increase that subproject's independent version by exactly `0.0.1` and synchronize its `VERSION`, `project.json`, `CHANGELOG.md`, `README.md`, visible version, and affected maintenance documents. `npm run check:subprojects` enforces the contract.
 - If project facts, rules, deployment flow, public behavior, or long-term maintenance notes change, update `PROJECT_CONTEXT.md`.
 - If a long-term rule or repeated pitfall is discovered, update `skills/lusu-personal-site-skill/SKILL.md` and `skills/lusu-personal-site-skill/README.md`.
 - If `AGENTS.md` guidance changes, keep it concise and actionable.

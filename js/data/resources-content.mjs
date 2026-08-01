@@ -4,8 +4,8 @@ export const resourcesContent = Object.freeze({
     {
       "category": 0,
       "iconSrc": "assets/images/generated-icons/whiteboard.png?v=20260730-online-whiteboard-r1",
-      "version": "v1.0.0",
-      "updated": "2026.07.30",
+      "version": "v1.0.1",
+      "updated": "2026.08.01",
       "external": false,
       "showReadyStatus": false,
       "url": "/tools/whiteboard/",
@@ -46,13 +46,13 @@ export const resourcesContent = Object.freeze({
       "category": 0,
       "action": "quick-transfer",
       "iconSrc": "assets/images/generated-icons/quick-transfer.png?v=20260719-content-experience-fixes-r1",
-      "version": "v1.0.0",
+      "version": "v1.0.1",
       "retention": {
         "zh": "24 小时",
         "en": "24 hours",
         "ja": "24時間"
       },
-      "updated": "2026.07.16",
+      "updated": "2026.08.01",
       "external": false,
       "title": {
         "zh": "临时互传",

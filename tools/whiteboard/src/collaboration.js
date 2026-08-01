@@ -16,6 +16,10 @@ const MAX_OUTGOING_BINARY_BYTES = 256 * 1024;
 const MAX_INCOMING_BINARY_BYTES = 16 * 1024 * 1024;
 const MAX_QUEUED_UPDATE_BYTES = 1024 * 1024;
 const MAX_QUEUED_UPDATES = 128;
+const DEFAULT_UPDATE_INTERVAL_MS = 60;
+const MIN_UPDATE_INTERVAL_MS = 50;
+const MAX_UPDATE_INTERVAL_MS = 2_000;
+const UPDATE_ACK_TIMEOUT_MS = 10_000;
 const PRESENCE_ID_PATTERN = /^[A-Za-z0-9_-]{1,160}$/;
 const ELEMENT_ID_PATTERN = /^[A-Za-z0-9_-]{1,128}$/;
 const COLOR_PATTERN = /^#[0-9a-f]{6}$/i;
@@ -107,8 +111,24 @@ function normalizedParticipant(source) {
   };
 }
 
-function closeReasonIsFatal(event) {
-  return event.code === 1008 || [4001, 4003, 4004, 4008, 4401, 4403].includes(event.code);
+function normalizedCloseReason(event) {
+  return String(event?.reason || "").trim().toLowerCase();
+}
+
+function closeErrorKind(event) {
+  const reason = normalizedCloseReason(event);
+  if (reason.includes("rate") || reason === "sync_budget_exceeded") return "rate-limited";
+  if (
+    reason.includes("access")
+    || reason.includes("banned")
+    || reason.includes("ticket")
+    || reason === "invalid_session"
+    || [4001, 4003, 4004, 4008, 4401, 4403].includes(event.code)
+  ) {
+    return "access";
+  }
+  if (event.code === 1008) return "protocol";
+  return "";
 }
 
 function pageIsFocused() {
@@ -133,6 +153,8 @@ export class WhiteboardCollaboration {
     this.reconnectTimer = 0;
     this.heartbeatTimer = 0;
     this.syncFallbackTimer = 0;
+    this.updateFlushTimer = 0;
+    this.updateAckTimer = 0;
     this.cursorFadeTimer = 0;
     this.pointerTimer = 0;
     this.pendingPointer = null;
@@ -140,6 +162,9 @@ export class WhiteboardCollaboration {
     this.lastPointerType = window.matchMedia("(pointer: coarse)").matches ? "touch" : "mouse";
     this.queue = [];
     this.queuedBytes = 0;
+    this.inFlightUpdate = null;
+    this.lastUpdateSentAt = 0;
+    this.updateIntervalMs = DEFAULT_UPDATE_INTERVAL_MS;
     this.members = new Map();
     this.collaborators = new Map();
     this.ownPresenceId = "";
@@ -228,7 +253,6 @@ export class WhiteboardCollaboration {
     this.connectedOnce = true;
     this.ready = false;
     this.synced = false;
-    this.reconnectAttempt = 0;
     this.callbacks.onStatus?.("connected");
     this.heartbeatTimer = window.setInterval(() => {
       this.sendJson({ type: "heartbeat", focused: pageIsFocused() });
@@ -270,6 +294,7 @@ export class WhiteboardCollaboration {
     switch (message.type) {
       case "ready": {
         this.ready = true;
+        this.setUpdateInterval(message.updateIntervalMs);
         this.ownPresenceId = safePresenceId(
           message.participant || { presenceId: message.connectionId },
         );
@@ -286,6 +311,9 @@ export class WhiteboardCollaboration {
         );
         break;
       }
+      case "update-accepted":
+        this.acknowledgeUpdate(message);
+        break;
       case "participant-join":
       case "participant-update":
         if (message.type === "participant-update" && message.presenceId) {
@@ -331,14 +359,16 @@ export class WhiteboardCollaboration {
   markSynced() {
     if (this.synced || this.destroyed) return;
     this.synced = true;
+    this.reconnectAttempt = 0;
     if (this.syncFallbackTimer) window.clearTimeout(this.syncFallbackTimer);
     this.syncFallbackTimer = 0;
-    this.flushUpdateQueue();
+    this.scheduleUpdateFlush(0);
     this.callbacks.onSynced?.();
   }
 
   handleClose(socket, event) {
     if (socket !== this.socket) return;
+    this.requeueInFlightUpdate();
     this.clearSocketTimers();
     this.socket = null;
     this.ready = false;
@@ -348,10 +378,21 @@ export class WhiteboardCollaboration {
       this.callbacks.onStatus?.("offline");
       return;
     }
-    if (closeReasonIsFatal(event)) {
+    const errorKind = closeErrorKind(event);
+    if (errorKind === "access" || errorKind === "protocol") {
       this.callbacks.onStatus?.("error");
-      this.callbacks.onError?.("access", event);
+      this.callbacks.onError?.(errorKind, {
+        code: normalizedCloseReason(event) || event.code,
+        reason: normalizedCloseReason(event),
+      });
       return;
+    }
+    if (errorKind === "rate-limited") {
+      this.callbacks.onError?.("rate-limited", {
+        code: normalizedCloseReason(event) || "rate_limited",
+        reason: normalizedCloseReason(event),
+        status: 429,
+      });
     }
     this.callbacks.onStatus?.(navigator.onLine ? "reconnecting" : "offline");
     this.scheduleReconnect();
@@ -386,6 +427,7 @@ export class WhiteboardCollaboration {
     this.reconnectAttempt = 0;
     if (this.socket) {
       const socket = this.socket;
+      this.requeueInFlightUpdate();
       this.socket = null;
       this.clearSocketTimers();
       socket.close(1000, "identity-refresh");
@@ -402,31 +444,125 @@ export class WhiteboardCollaboration {
       this.callbacks.onError?.("scene-limit", new Error("oversized-local-update"));
       return;
     }
-    if (this.socket?.readyState === WebSocket.OPEN && this.synced) {
-      this.sendBinary(WS_YJS_UPDATE, update);
-      return;
-    }
+    const bufferedUpdateCount = this.queue.length + (this.inFlightUpdate ? 1 : 0);
+    const bufferedUpdateBytes = this.queuedBytes + (this.inFlightUpdate?.byteLength || 0);
     if (
-      this.queue.length >= MAX_QUEUED_UPDATES
-      || this.queuedBytes + update.byteLength > MAX_QUEUED_UPDATE_BYTES
+      bufferedUpdateCount >= MAX_QUEUED_UPDATES
+      || bufferedUpdateBytes + update.byteLength > MAX_QUEUED_UPDATE_BYTES
     ) {
       this.callbacks.onError?.("scene-limit", new Error("offline-queue-limit"));
       return;
     }
     this.queue.push(update.slice());
     this.queuedBytes += update.byteLength;
+    this.scheduleUpdateFlush();
   }
 
   flushUpdateQueue() {
-    while (
-      this.queue.length > 0
-      && this.socket?.readyState === WebSocket.OPEN
-      && this.synced
-    ) {
-      const update = this.queue.shift();
-      this.queuedBytes -= update.byteLength;
-      this.sendBinary(WS_YJS_UPDATE, update);
+    if (
+      this.destroyed
+      || this.inFlightUpdate
+      || this.queue.length === 0
+      || this.socket?.readyState !== WebSocket.OPEN
+      || !this.synced
+    ) return;
+    const elapsed = Date.now() - this.lastUpdateSentAt;
+    if (elapsed < this.updateIntervalMs) {
+      this.scheduleUpdateFlush(this.updateIntervalMs - elapsed);
+      return;
     }
+    const update = this.takeNextUpdateBatch();
+    if (!update) return;
+    this.inFlightUpdate = update;
+    if (!this.sendBinary(WS_YJS_UPDATE, update)) {
+      this.requeueInFlightUpdate();
+      return;
+    }
+    this.lastUpdateSentAt = Date.now();
+    this.updateAckTimer = window.setTimeout(() => {
+      this.updateAckTimer = 0;
+      if (this.socket?.readyState === WebSocket.OPEN && this.inFlightUpdate) {
+        this.socket.close(1012, "update_ack_timeout");
+      }
+    }, UPDATE_ACK_TIMEOUT_MS);
+  }
+
+  scheduleUpdateFlush(delay) {
+    if (this.destroyed || this.updateFlushTimer || this.inFlightUpdate || this.queue.length === 0) {
+      return;
+    }
+    const elapsed = Date.now() - this.lastUpdateSentAt;
+    const wait = Math.max(0, delay ?? (this.updateIntervalMs - elapsed));
+    this.updateFlushTimer = window.setTimeout(() => {
+      this.updateFlushTimer = 0;
+      this.flushUpdateQueue();
+    }, wait);
+  }
+
+  takeNextUpdateBatch() {
+    const first = this.queue.shift();
+    if (!first) return null;
+    this.queuedBytes -= first.byteLength;
+    let batch = first;
+    while (this.queue.length > 0) {
+      let merged;
+      try {
+        merged = Y.mergeUpdates([batch, this.queue[0]]);
+      } catch {
+        break;
+      }
+      if (merged.byteLength + 1 > MAX_OUTGOING_BINARY_BYTES) break;
+      const next = this.queue.shift();
+      this.queuedBytes -= next.byteLength;
+      batch = merged;
+    }
+    return batch;
+  }
+
+  requeueInFlightUpdate() {
+    if (!this.inFlightUpdate) return;
+    if (this.updateAckTimer) window.clearTimeout(this.updateAckTimer);
+    this.updateAckTimer = 0;
+    this.queue.unshift(this.inFlightUpdate);
+    this.queuedBytes += this.inFlightUpdate.byteLength;
+    this.inFlightUpdate = null;
+  }
+
+  acknowledgeUpdate(message) {
+    if (!this.inFlightUpdate) return;
+    if (this.updateAckTimer) window.clearTimeout(this.updateAckTimer);
+    this.updateAckTimer = 0;
+    this.inFlightUpdate = null;
+    this.setUpdateInterval(message?.updateIntervalMs);
+    this.scheduleUpdateFlush();
+  }
+
+  setUpdateInterval(value) {
+    const interval = Math.trunc(Number(value));
+    if (!Number.isFinite(interval)) return;
+    this.updateIntervalMs = Math.max(
+      MIN_UPDATE_INTERVAL_MS,
+      Math.min(MAX_UPDATE_INTERVAL_MS, interval),
+    );
+  }
+
+  waitForPendingUpdates(timeoutMs = 3_000) {
+    const deadline = Date.now() + Math.max(0, Number(timeoutMs) || 0);
+    return new Promise((resolve) => {
+      const check = () => {
+        if (!this.inFlightUpdate && this.queue.length === 0) {
+          resolve(true);
+          return;
+        }
+        if (this.destroyed || Date.now() >= deadline) {
+          resolve(false);
+          return;
+        }
+        this.scheduleUpdateFlush(0);
+        window.setTimeout(check, 40);
+      };
+      check();
+    });
   }
 
   sendBinary(kind, payload) {
@@ -572,6 +708,11 @@ export class WhiteboardCollaboration {
     this.doc.on("update", this.handleDocumentUpdate);
     this.queue = [];
     this.queuedBytes = 0;
+    this.inFlightUpdate = null;
+    if (this.updateFlushTimer) window.clearTimeout(this.updateFlushTimer);
+    if (this.updateAckTimer) window.clearTimeout(this.updateAckTimer);
+    this.updateFlushTimer = 0;
+    this.updateAckTimer = 0;
     this.synced = false;
     this.callbacks.onSyncReset?.();
     if (this.socket?.readyState === WebSocket.OPEN) {
@@ -615,8 +756,12 @@ export class WhiteboardCollaboration {
   clearSocketTimers() {
     if (this.heartbeatTimer) window.clearInterval(this.heartbeatTimer);
     if (this.syncFallbackTimer) window.clearTimeout(this.syncFallbackTimer);
+    if (this.updateFlushTimer) window.clearTimeout(this.updateFlushTimer);
+    if (this.updateAckTimer) window.clearTimeout(this.updateAckTimer);
     this.heartbeatTimer = 0;
     this.syncFallbackTimer = 0;
+    this.updateFlushTimer = 0;
+    this.updateAckTimer = 0;
   }
 
   destroy() {
