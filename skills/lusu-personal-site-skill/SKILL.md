@@ -15,7 +15,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - CI 中第三方 GitHub Actions 必须固定到已核对 release 的不可变 commit；`qa:local` 与 CI 应复用完整 `verify:public-site-release`，不能只跑轻量 build。安全响应头、Wrangler compatibility date、Pages 配置字段或 release gate 改动都必须进入构建守卫。根 `wrangler.jsonc` 不得声明 Pages Git 部署不支持的 Worker-only `observability` 或非标准 `secrets` 元数据；独立 Worker 的 observability 留在其自身配置。共享 runner 的首页首屏 TBT 固定采样三次并以中位数对原预算判定，其他性能场景仍单次采样；请求数、字节、load、CLS、内存、运行时错误等结构性门槛必须逐样本检查，不得借中位数隐藏。
 - `/articles/<slug>` 的独立边缘入口必须只读取已发布文章，输出文章级 title、description、Open Graph、Twitter、canonical 与 Article JSON-LD，并转义 `noscript` 可读正文；不存在的 slug 返回 404 / noindex，D1 暂时失败时不得把可由前端 fallback 恢复的主壳直接变成 5xx。
 - 游戏目录、题库音频清单等可选远端 manifest 必须有有界超时、Abort、版本缓存和仓库内本地回退；可选网络失败不能阻塞内置内容、现有本地存档或已经加载成功的数据。日语工具的生产路径转换必须保留 manifest query 并坚持严格一次匹配，缺失或重复引用都要让构建失败。预加载的壁纸候选必须与实际 CSS 渲染使用完全相同的格式、尺寸和版本，且在首个资源请求前同步确定 reduced/off 动效状态。
-- `wrangler.jsonc` 的 compatibility date 不得超过仓库锁定 Wrangler 所带 workerd 的支持上限；当前 Wrangler `4.111.0` 使用 `2026-07-17`。日期或 Wrangler 版本变化后必须真实启动一次 `wrangler pages dev` 并请求健康、文章、404 与后台入口，静态 schema/build 通过不能替代运行时启动验证。
+- `wrangler.jsonc` 的 compatibility date 不得超过仓库锁定 Wrangler 所带 workerd 的支持上限；当前 Wrangler `4.118.0` 使用 `2026-07-17`。日期或 Wrangler 版本变化后必须真实启动一次 `wrangler pages dev` 并请求健康、文章、404 与后台入口，静态 schema/build 通过不能替代运行时启动验证。
 - Headless 中每个独立审计场景必须用唯一 query 强制新文档，并确认 CDP 返回 `loaderId`；不要依赖 Hash-only `Page.navigate` 清空 route 模块或 30 秒内存缓存。刻意测试 SPA History、重试链或连续动效时才保留同文档。DOM 数量和交叠断言必须限定到真实场景容器；移动 App 外框可处于半透明 Dock 后方，但 composer、反馈、页脚和最后操作必须位于 Dock 上方。
 - `.codex-worktrees/` 保存其他 Codex 任务的独立 checkout，不是当前发布源码。Git 忽略、递归构建守卫和仓库密钥扫描都必须跳过该目录；发现其中旧文件导致当前构建失败时应修正扫描边界，不得删除或改写其他任务工作树来换取通过。
 - Production D1 的单条复合 `SELECT` 最多 5 项。远程迁移分组校验必须在任何写入前锁定该上限，超过时拆成多条查询；本地 SQLite 能执行更长的 `UNION ALL` 不能替代真实 D1 校验。
@@ -25,8 +25,10 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 账号表单必须保持稳定 DOM：语言/模式/身份状态/错误同步不得重建编辑字段；登录和注册各一个主提交，注册含确认密码，错误关联字段并聚焦首错，退出失败不得伪报成功。popover 必须归还实际触发源焦点，移动关闭不小于 44px。
 - 账号初始状态检查必须使用有界超时；失败或超时在同一个稳定 popover 内提供原位重试，保留输入与现有编辑焦点。Chat 的 online 也只能在消息刷新成功后建立；失败继续显示 reconnecting 和可聚焦手动重试，不得仅凭浏览器 `online` 事件宣称恢复。
 - 账号和其他公开写接口必须在业务读取前校验同源、允许的 JSON `Content-Type` 与流式正文上限。登录和注册按网络来源及规范化账号标识做持久化限流；注册的重复邮箱、站长保留邮箱和并发冲突必须返回相同状态、错误码与正文，公开文案不得暴露账号是否存在。
-- 新密码固定使用 PBKDF2-HMAC-SHA256 600,000 次并把迭代数随哈希保存；登录必须按记录中的历史迭代数验证，成功后用条件更新升级旧 25,000 / 100,000 次哈希。不得以加大 KDF 代替登录限流，也不得在错误、日志或统计中泄露密码或哈希。
+- 新密码固定使用 PBKDF2-HMAC-SHA256 100,000 次并把迭代数随哈希保存；这是 Cloudflare Pages Functions 生产平台的兼容上限，本地 Node／Miniflare 接受更高数值不能替代生产结论。登录按记录中的历史迭代数验证，旧 25,000 次哈希成功后条件升级，现有 100,000 次保持不变；超过生产上限的记录必须失败关闭并走受控密码重置，不能在请求里尝试高迭代派生。不得以加大 KDF 代替登录限流，也不得在错误、日志或统计中泄露密码或哈希。
 - page view、click、article view 等匿名写入必须有来源限流与重复抑制；文章 PV 只在去重事件实际落库后增加。过期 session、登录履历、分析事件和限流桶必须按明确保留期分批清理，每次有行数上限并通过 `waitUntil` 脱离健康响应关键路径。
+- 文章 schema guard 只负责表、列和索引，不能夹带整套文章／翻译 seed。完整 seed 必须通过 `site_runtime_state.article_seed_version` 做跨隔离实例的持久发布标记：版本匹配时零 seed 写入，版本变化时在一个 batch 中先执行全部 seed、最后写标记；测试必须同时证明 schema batch 不含 seed、当前标记会跳过 seed、fresh schema 在全部 seed 后写入同一版本。
+- 后台流量保护只允许控制非必要 identify、page view、click 和 article view 遥测，不得自动关闭登录、云存档、Chat、Transfer 或 Whiteboard。配置写入 `site_runtime_state` 时使用 revision/CAS；自动刷新不得覆盖 dirty 表单。站内事件系数只能标为估算，Cloudflare 官方 D1 `rowsWritten` 只有在只读 Analytics Token 实际连通时才显示，未配置／读取失败不能伪装为零或成功，Token 永不返回客户端或进入 Git。
 - Quick Transfer 未登录态只呈现一个上下文任务卡、一个主登录 CTA 和明确返回；登录完成要回到 Transfer，不得用红色 X 承担含糊返回语义。
 - 文章阅读时 document 不滚动，`#article-detail` 是唯一纵向 owner；进度轨道约 4px、与正文零交叠，移动端保留可见含义与准确 ARIA 百分比。100% 必须按 `.markdown-body` 正文末尾计算，不能把 Dock 安全尾距计入正文。目录项不得固定高度或单行裁切，多行标题以统一行高／上下 padding 自然撑高，目录末尾保留滚动安全区；返回列表必须是 `.article-reader-sidebar` 的第一个子项，由桌面／横屏的整个 sticky 侧栏与目录一起固定，按钮本身不得再独立 sticky。目录点击要精确滚动 `#article-detail` 并让目标标题、hash、焦点和唯一 `aria-current` 同步。回顶通过帧管线测量正文卡片与任务栏／Dock 后固定在右下；顶部用原生 `hidden` 退出焦点顺序，激活后只滚动文章容器并把焦点交给 `tabindex="-1"` 的文章标题。
 - Chat 发送只锁提交动作，用户可继续输入且旧请求不得清空新草稿。359×500 自动回归以普通房约 177px、私聊至少约 119px为目标；安全说明通过 44px 折叠入口提供，关闭时不占日志也不覆盖控件。

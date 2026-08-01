@@ -64,7 +64,11 @@ test("account request failures map to a real field and recoverable localized sta
     field: "password"
   });
   assert.deepEqual(accountRequestFailure({ status: 0 }, "login", "email"), {
-    key: "accountErrorRequest",
+    key: "accountErrorNetwork",
+    field: "email"
+  });
+  assert.deepEqual(accountRequestFailure({ status: 500 }, "login", "email"), {
+    key: "accountErrorServiceUnavailable",
     field: "email"
   });
 });
@@ -136,6 +140,8 @@ test("all account copy keys exist in Chinese, English, and Japanese", () => {
     "accountErrorRegistrationFailed",
     "accountErrorRateLimited",
     "accountErrorRequest",
+    "accountErrorNetwork",
+    "accountErrorServiceUnavailable",
     "accountLogoutFailed"
   ];
 

@@ -1,6 +1,36 @@
 export const content = {
   updates: [
     {
+      "article_id": "seed-update-2026-08-01-service-reliability",
+      "slug": "2026-08-01-service-reliability",
+      "category": "site-updates",
+      "tags": ["网站更新", "账号", "登录", "D1", "稳定性"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-01T07:10:00.000Z",
+      "updated_at": "2026-08-01T07:10:00.000Z",
+      "published_at": "2026-08-01T07:10:00.000Z",
+      "fallbackOnly": true,
+      "icon": "games",
+      "date": "2026.08.01",
+      "title": {
+        "zh": "账号与实时工具稳定性修复",
+        "en": "Account and Real-Time Tool Reliability Fixes",
+        "ja": "アカウントとリアルタイムツールの安定性を修正"
+      },
+      "summary": {
+        "zh": "修复 Cloudflare 密码派生兼容性导致的登录失败，并停止文章种子在冷启动时重复写入 D1，降低账号、匿名身份和在线画板共用数据库时的写入压力。",
+        "en": "Fixes sign-in failures caused by a Cloudflare password-derivation incompatibility and stops article seeds from rewriting D1 on cold starts, reducing shared write pressure for accounts, anonymous identity, and Whiteboard.",
+        "ja": "Cloudflare のパスワード導出互換性によるログイン失敗を修正し、コールドスタート時の記事 seed による D1 の反復書き込みを止め、アカウント・匿名ID・ホワイトボード共通DBの負荷を下げました。"
+      },
+      "content_markdown": {
+        "zh": "# 账号与实时工具稳定性修复\n\n本次修复的是服务端兼容性和数据库写入放大，不需要访客更换电脑或网络。\n\n## 登录恢复\n\n- 新密码和旧密码升级现在使用 Cloudflare Workers 实际支持的 PBKDF2-HMAC-SHA256 100,000 次上限。\n- 旧 25,000 次记录成功登录后按条件升级；现有 100,000 次记录不再被重复改写。\n- 账号服务端故障与本地网络故障使用不同提示，避免把服务器问题误报为访客网络问题。\n\n## D1 写入降压\n\n- 文章初始化内容按发布版本写入持久标记；同一版本的后续冷启动只读标记，不再把整批文章和三语正文重复 upsert。\n- 这会减少与登录、匿名身份和画板加入共用 D1 时的无意义竞争，让实时工具更稳定。\n\n## 数据边界\n\n没有删除账号、文章、画板房间或历史内容；密码仍只保存派生哈希，画板实时文档仍由 Durable Object 管理。",
+        "en": "# Account and Real-Time Tool Reliability Fixes\n\nThis release fixes server compatibility and amplified database writes. Visitors do not need to change their computer or network.\n\n## Sign-in recovery\n\n- New password hashes and legacy upgrades now use the 100,000-iteration PBKDF2-HMAC-SHA256 ceiling actually supported by the Cloudflare Workers runtime.\n- Legacy 25,000-iteration records upgrade conditionally after a successful sign-in, while existing 100,000-iteration records are left unchanged.\n- Server-side account failures and local connection failures now use different messages instead of blaming the visitor's network for a backend problem.\n\n## Lower D1 write pressure\n\n- Article initialization now persists a release-version marker. Later cold starts for the same release read that marker instead of upserting the full article and trilingual-content set again.\n- Removing those unnecessary writes reduces contention in the D1 database shared by sign-in, anonymous identity, and Whiteboard entry.\n\n## Data boundary\n\nNo account, article, whiteboard room, or historical content is deleted. Passwords remain stored only as derived hashes, and live whiteboard documents remain managed by Durable Objects.",
+        "ja": "# アカウントとリアルタイムツールの安定性を修正\n\n今回はサーバー互換性とデータベースの書き込み増幅を修正しました。利用者がPCや回線を変更する必要はありません。\n\n## ログインの復旧\n\n- 新しいパスワードハッシュと旧記録の更新は、Cloudflare Workers ランタイムが実際に対応する上限である PBKDF2-HMAC-SHA256 100,000 回を使用します。\n- 旧 25,000 回の記録はログイン成功後に条件付きで更新し、既存の 100,000 回記録は再書き込みしません。\n- アカウントサーバー側の障害と端末の通信障害を別の案内にし、バックエンド問題を利用者の回線問題として表示しないようにしました。\n\n## D1 書き込み負荷の低減\n\n- 記事の初期化はリリース版マーカーを永続保存します。同じ版の後続コールドスタートではマーカーだけを読み、全記事と3言語本文を再度 upsert しません。\n- 不要な書き込みをなくすことで、ログイン、匿名ID、ホワイトボード入室が共有する D1 の競合を減らします。\n\n## データ境界\n\nアカウント、記事、ホワイトボードルーム、履歴データは削除しません。パスワードは引き続き導出ハッシュだけを保存し、ホワイトボードのリアルタイム文書は Durable Objects が管理します。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-07-30-multiplayer-whiteboard",
       "slug": "2026-07-30-multiplayer-whiteboard",
       "category": "site-updates",

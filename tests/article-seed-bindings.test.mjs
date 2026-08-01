@@ -5,10 +5,11 @@ const FRAME_PIPELINE_SEED_ID = "seed-update-2026-07-18-frame-pipeline-low-perfor
 const FRAME_PIPELINE_SEED_TIME = "2026-07-17T21:12:00.000Z";
 const AI_AGENT_WORKFLOW_ARTICLE_ID = "seed-ai-agent-workflow-guide-2026-06-14";
 const AI_AGENT_WORKFLOW_PIN_REPAIR_KEY = "article_ai_agent_workflow_pin_repair_v1";
+const ARTICLE_SEED_VERSION = "20260801-service-reliability-r1";
 const VALID_CHAT_SECRET = "article-seed-chat-secret-0000000000000001";
 const VALID_ANALYTICS_SECRET = "article-seed-analytics-secret-000000001";
 
-function createRecordingD1() {
+function createRecordingD1({ articleSeedVersion = "" } = {}) {
   const batches = [];
   const executions = [];
 
@@ -20,6 +21,14 @@ function createRecordingD1() {
         return statement(sql, values);
       },
       async first() {
+        executions.push({ method: "first", sql: String(sql), params });
+        if (
+          /select value from site_runtime_state where key = \?/i.test(normalizedSql(sql))
+          && params?.[0] === "article_seed_version"
+          && articleSeedVersion
+        ) {
+          return { value: articleSeedVersion };
+        }
         return null;
       },
       async all() {
@@ -81,6 +90,23 @@ test("every article seed D1 binding is defined", async () => {
     && !batch.some(({ sql }) => /^create\s+table\b/i.test(normalizedSql(sql)))
   ));
   assert.ok(seedBatch, "expected the standalone articleSeedStatements batch to be constructed");
+  const schemaBatch = DB.batches.find((batch) => (
+    batch.some(({ sql }) => /^create\s+table\b/i.test(normalizedSql(sql)))
+    && batch.some(({ sql }) => /create table if not exists articles/i.test(normalizedSql(sql)))
+  ));
+  assert.ok(schemaBatch, "expected the article schema batch to be constructed");
+  assert.equal(
+    schemaBatch.some(({ sql }) => sql.includes(`'${FRAME_PIPELINE_SEED_ID}'`)),
+    false,
+    "runtime schema checks must not replay the article seed payload"
+  );
+  const releaseMarker = seedBatch.at(-1);
+  assert.match(normalizedSql(releaseMarker?.sql), /^insert into site_runtime_state/i);
+  assert.deepEqual(
+    releaseMarker?.params?.slice(0, 2),
+    ["article_seed_version", ARTICLE_SEED_VERSION],
+    "the seed release marker must be committed after every seed statement"
+  );
 
   const boundStatements = seedBatch.filter(({ params }) => Array.isArray(params));
   assert.ok(boundStatements.length > 0, "expected articleSeedStatements to construct bound D1 statements");
@@ -127,4 +153,28 @@ test("every article seed D1 binding is defined", async () => {
     && params?.includes(AI_AGENT_WORKFLOW_PIN_REPAIR_KEY)
   ));
   assert.ok(pinRepairMarker, "the one-time pin repair must persist its runtime-state marker");
+});
+
+test("current persistent article seed marker skips every article upsert", async () => {
+  const moduleUrl = new URL("../functions/api/[[route]].js", import.meta.url);
+  moduleUrl.searchParams.set("article-seed-marker", `${Date.now()}-${Math.random()}`);
+  const { onRequest } = await import(moduleUrl.href);
+  const DB = createRecordingD1({ articleSeedVersion: ARTICLE_SEED_VERSION });
+
+  const response = await onRequest({
+    request: new Request("https://example.test/api/articles?lang=zh"),
+    env: {
+      DB,
+      CHAT_IP_HASH_SALT: VALID_CHAT_SECRET,
+      ANALYTICS_IP_HASH_SALT: VALID_ANALYTICS_SECRET
+    },
+    waitUntil() {}
+  });
+
+  assert.equal(response.status, 200);
+  assert.equal(
+    DB.batches.some((batch) => batch.some(({ sql }) => sql.includes(`'${FRAME_PIPELINE_SEED_ID}'`))),
+    false,
+    "a warm database with the current release marker must not construct or run seed writes"
+  );
 });

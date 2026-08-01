@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex,nofollow">
   <title>鲁肃个人站管理后台</title>
-  <link rel="stylesheet" href="/admin/admin.css?v=20260729-tool-radar-live-r1-20260730-whiteboard-admin-r1">
+  <link rel="stylesheet" href="/admin/admin.css?v=20260801-service-reliability-r1">
 </head>
 <body>
   <div class="admin-shell">
@@ -37,6 +37,7 @@
             <button class="nav-button active" type="button" data-panel="dashboard" aria-current="page" aria-controls="dashboard-panel">实时大屏</button>
             <button class="nav-button" type="button" data-panel="visits" aria-controls="visits-panel">访问来源</button>
             <button class="nav-button" type="button" data-panel="clicks" aria-controls="clicks-panel">点击埋点</button>
+            <button class="nav-button" type="button" data-panel="traffic" aria-controls="traffic-panel">流量与写入</button>
           </div>
           <div class="nav-group" role="group" aria-labelledby="nav-group-content">
             <span class="nav-group-title" id="nav-group-content">内容管理</span>
@@ -506,6 +507,132 @@
         </div>
       </section>
 
+      <section class="panel" id="traffic-panel" hidden aria-hidden="true">
+        <div class="traffic-control-stack">
+          <section class="xp-panel traffic-status-panel" aria-labelledby="traffic-status-title">
+            <div class="panel-head">
+              <div>
+                <h2 id="traffic-status-title">流量与 D1 写入压力</h2>
+                <p class="panel-head-note">打开此页时每 30 秒刷新。站内估算用于自动保护；Cloudflare 官方 rowsWritten 仅在配置只读 Analytics Token 后显示。</p>
+              </div>
+              <span class="traffic-mode-badge" id="traffic-protection-mode">正在读取</span>
+            </div>
+            <div class="traffic-metric-grid" id="traffic-metric-grid" aria-label="流量与写入指标">
+              <article class="traffic-metric-card">
+                <span>今日站内估算</span>
+                <strong id="traffic-estimated-rows">0</strong>
+                <small id="traffic-estimated-caption">可识别遥测写入压力</small>
+              </article>
+              <article class="traffic-metric-card">
+                <span>Cloudflare 官方</span>
+                <strong id="traffic-official-rows">未连接</strong>
+                <small id="traffic-official-caption">等待只读指标配置</small>
+              </article>
+              <article class="traffic-metric-card">
+                <span>预警 / 硬保护</span>
+                <strong id="traffic-thresholds">60,000 / 80,000</strong>
+                <small>按 UTC 自然日判断</small>
+              </article>
+              <article class="traffic-metric-card">
+                <span>下次日额度重置</span>
+                <strong id="traffic-reset-countdown">--</strong>
+                <small id="traffic-reset-at">UTC 00:00</small>
+              </article>
+            </div>
+            <div class="traffic-pressure" aria-label="站内估算写入压力">
+              <div class="traffic-pressure-track"><span id="traffic-pressure-fill"></span></div>
+              <p id="traffic-pressure-note">正在计算站内遥测写入压力...</p>
+            </div>
+          </section>
+
+          <div class="traffic-control-grid">
+            <section class="xp-panel traffic-breakdown-panel">
+              <div class="panel-head">
+                <div>
+                  <h2>估算构成</h2>
+                  <p class="panel-head-note">系数包含现有 D1 限频桶、访客资料、原始事件与文章累计写入；它不是 Cloudflare 账单。</p>
+                </div>
+                <span id="traffic-generated-at">尚未刷新</span>
+              </div>
+              <div class="table-wrap" tabindex="0" aria-label="站内写入估算明细，窄屏可横向滑动">
+                <table>
+                  <thead><tr><th>来源</th><th>事件</th><th>估算系数</th><th>估算写入</th></tr></thead>
+                  <tbody id="traffic-breakdown-body"></tbody>
+                </table>
+              </div>
+              <div class="traffic-official-status" id="traffic-official-status" role="status" aria-live="polite"></div>
+            </section>
+
+            <section class="xp-panel traffic-policy-panel">
+              <div class="panel-head">
+                <div>
+                  <h2>保护策略</h2>
+                  <p class="panel-head-note">这些开关只控制非必要遥测；登录、云存档、聊天室、互传和在线画板业务功能不会被自动关闭。</p>
+                </div>
+                <span id="traffic-policy-revision">等待版本</span>
+              </div>
+              <form id="traffic-control-form" class="editor-form traffic-control-form" novalidate>
+                <fieldset class="traffic-switch-fieldset">
+                  <legend>采集开关</legend>
+                  <label class="checkbox-line"><input name="analyticsEnabled" type="checkbox"> 启用站内遥测总开关</label>
+                  <label class="checkbox-line"><input name="identifyEnabled" type="checkbox"> 记录匿名访客识别</label>
+                  <label class="checkbox-line"><input name="pageViewsEnabled" type="checkbox"> 记录页面浏览</label>
+                  <label class="checkbox-line"><input name="clicksEnabled" type="checkbox"> 记录点击埋点</label>
+                  <label class="checkbox-line"><input name="articleViewsEnabled" type="checkbox"> 记录文章阅读</label>
+                  <label class="checkbox-line"><input name="adaptiveProtectionEnabled" type="checkbox"> 达到阈值后自动降低采样</label>
+                </fieldset>
+
+                <fieldset class="traffic-threshold-fieldset">
+                  <legend>每日阈值（估算行）</legend>
+                  <div class="form-grid two-column-form">
+                    <label>预警阈值<input name="warningRows" type="number" min="1000" max="50000000" step="1000" required></label>
+                    <label>硬保护阈值<input name="hardRows" type="number" min="2000" max="100000000" step="1000" required></label>
+                  </div>
+                  <small>默认 60,000 / 80,000，为 100,000 行/日边界预留安全余量；付费计划可按实际额度调整。</small>
+                </fieldset>
+
+                <fieldset class="traffic-sampling-fieldset">
+                  <legend>分级采样率（%）</legend>
+                  <div class="table-wrap" tabindex="0" aria-label="分级遥测采样率，窄屏可横向滑动">
+                    <table class="traffic-sampling-table">
+                      <thead><tr><th>状态</th><th>页面 / 识别</th><th>点击</th><th>文章阅读</th></tr></thead>
+                      <tbody>
+                        <tr>
+                          <th scope="row">正常</th>
+                          <td><input name="sampling_normal_pageViews" type="number" min="0" max="100" step="1" required aria-label="正常状态页面采样率"></td>
+                          <td><input name="sampling_normal_clicks" type="number" min="0" max="100" step="1" required aria-label="正常状态点击采样率"></td>
+                          <td><input name="sampling_normal_articleViews" type="number" min="0" max="100" step="1" required aria-label="正常状态文章阅读采样率"></td>
+                        </tr>
+                        <tr>
+                          <th scope="row">预警</th>
+                          <td><input name="sampling_warning_pageViews" type="number" min="0" max="100" step="1" required aria-label="预警状态页面采样率"></td>
+                          <td><input name="sampling_warning_clicks" type="number" min="0" max="100" step="1" required aria-label="预警状态点击采样率"></td>
+                          <td><input name="sampling_warning_articleViews" type="number" min="0" max="100" step="1" required aria-label="预警状态文章阅读采样率"></td>
+                        </tr>
+                        <tr>
+                          <th scope="row">硬保护</th>
+                          <td><input name="sampling_hard_pageViews" type="number" min="0" max="100" step="1" required aria-label="硬保护状态页面采样率"></td>
+                          <td><input name="sampling_hard_clicks" type="number" min="0" max="100" step="1" required aria-label="硬保护状态点击采样率"></td>
+                          <td><input name="sampling_hard_articleViews" type="number" min="0" max="100" step="1" required aria-label="硬保护状态文章阅读采样率"></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </fieldset>
+
+                <div class="form-actions sticky-actions">
+                  <button class="xp-button primary" type="submit" id="save-traffic-control">保存策略</button>
+                  <button class="xp-button warning" type="button" id="traffic-low-write-preset">填入低写入预案</button>
+                  <button class="xp-button" type="button" id="traffic-default-preset">恢复默认输入</button>
+                  <span class="edit-state" id="traffic-dirty-indicator" aria-live="polite">已保存</span>
+                  <span class="form-status" id="traffic-control-status" role="status" aria-live="polite" aria-atomic="true"></span>
+                </div>
+              </form>
+            </section>
+          </div>
+        </div>
+      </section>
+
       <section class="panel" id="chat-panel" hidden aria-hidden="true">
         <div class="split-layout chat-layout master-detail-layout" data-master-detail="chat">
           <section class="xp-panel list-panel master-pane">
@@ -804,7 +931,7 @@
           </div>
           <p>这个后台只服务站长维护个人站，不对外展示，也不复用知识库的网站更新记录。</p>
           <p>后台复用主站账号系统，只有管理员角色可以访问页面和后台接口。</p>
-          <p>后台包含实时大屏、访问来源、点击埋点、三语文章编辑、每日 AI 新闻与工具雷达自动投递管理、视频管理、视频分类管理、聊天室编辑/删除/禁言、在线画板治理、临时互传文件管理、账号管理、社交链接管理和后台私有更新记录。</p>
+          <p>后台包含实时大屏、访问来源、点击埋点、流量与 D1 写入保护、三语文章编辑、每日 AI 新闻与工具雷达自动投递管理、视频管理、视频分类管理、聊天室编辑/删除/禁言、在线画板治理、临时互传文件管理、账号管理、社交链接管理和后台私有更新记录。</p>
         </section>
       </section>
 
@@ -854,6 +981,6 @@
     </div>
   </dialog>
 
-  <script src="/admin/admin.js?v=20260729-tool-radar-live-r1-20260730-whiteboard-admin-r1"></script>
+  <script src="/admin/admin.js?v=20260801-service-reliability-r1"></script>
 </body>
 </html>

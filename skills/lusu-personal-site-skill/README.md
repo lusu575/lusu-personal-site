@@ -20,19 +20,20 @@ skills/lusu-personal-site-skill/SKILL.md
 - 收口时运行统一 release 验证、生产构建复现性和本地 D1 迁移；Headless 不代表真机/完整读屏/线上部署，无外部授权时只报告本地完成。
 - CI 第三方 Actions 固定到已核对 release 的不可变 commit，并与本地 `qa:local` 一起运行完整发布门禁。`/articles/<slug>` 边缘入口输出已发布文章的专属分享／结构化元数据与转义 `noscript` 正文；不存在返回 404 / noindex，D1 暂时失败保留可恢复主壳。
 - 游戏目录、音频清单等可选 manifest 使用有界超时、Abort、版本缓存和仓库内 fallback，不得因可选网络失败阻塞本地内容或存档；日语工具的生产路径转换必须保留版本 query 并严格一次匹配。壁纸预载必须与 CSS 实际候选完全一致，并在首个资源请求前同步判定 reduced/off。
-- Wrangler compatibility date 不能超过仓库锁定 workerd 的支持上限；当前 `4.111.0` 使用 `2026-07-17`。改日期或 Wrangler 后必须真实启动 Pages dev 并冒烟请求健康、文章、404 与后台入口。
+- Wrangler compatibility date 不能超过仓库锁定 workerd 的支持上限；当前 `4.118.0` 使用 `2026-07-17`。改日期或 Wrangler 后必须真实启动 Pages dev 并冒烟请求健康、文章、404 与后台入口。
 - 独立 Headless 场景必须以唯一 query 创建新文档并验证 `loaderId`，避免 Hash-only 导航沿用 route 模块和内存缓存；刻意的 SPA History/重试/连续动效流程除外。DOM 断言限定到场景容器，移动窗口背景可延伸到 Dock 后方，真实内容与操作不可被遮挡。
 - `.codex-worktrees/` 属于其他 Codex 任务的独立 checkout，Git、递归构建守卫和仓库密钥扫描都必须忽略；不能删除或修改其他任务工作树来掩盖当前构建扫描边界错误。
 - Production D1 的单条复合 `SELECT` 最多 5 项；远程迁移校验必须在写入前检查并拆分超限的 `UNION ALL`，不能以本地 SQLite 通过代替生产验证。
 - 账号表单必须保持稳定 DOM；登录/注册、字段错误、忙碌/退出失败、实际触发源焦点归还和移动 44px 关闭必须一起回归。Transfer 未登录态只保留一个上下文登录任务。
 - 账号状态检查使用有界超时并在稳定 popover 内原位重试；Chat 只有消息刷新成功后才能标记 online，失败保留 reconnecting 和可聚焦手动重试。密码房切换必须单飞，历史读取失败不能显示 ready。
-- 账号及公开写接口先校验同源、JSON 类型和流式正文上限；登录／注册按网络与账号标识持久限流，注册失败响应不能枚举账号。PBKDF2-HMAC-SHA256 新哈希为 600,000 次，旧 25k／100k 记录按存储迭代数验证并在成功登录后条件升级。
+- 账号及公开写接口先校验同源、JSON 类型和流式正文上限；登录／注册按网络与账号标识持久限流，注册失败响应不能枚举账号。PBKDF2-HMAC-SHA256 新哈希固定为 Cloudflare Pages 生产兼容的 100,000 次；旧 25k 成功后条件升级，100k 不重复写回，本地模拟器能运行更高值不能作为提高生产策略的依据。
 - 分析写入使用来源限流与重复抑制，文章 PV 只随真实去重事件增加；session、登录履历、分析事件和限流桶按明确保留期与单批上限异步清理。
 - 文章阅读只允许 `#article-detail` 纵向滚动，4px 左右进度轨道与正文零交叠并有三语/ARIA 百分比；目录多行标题必须自然撑高且末尾保留滚动安全区，返回列表固定左上，回顶按正文卡片与任务栏／Dock 实际几何固定右下并只滚动文章容器。Chat 发送不得清空在途新草稿，359×500 保护普通约 177px、私聊至少约 119px及可折叠安全说明。
 - Chat 还必须通过 1280×720 短桌面回归：标题、身份／房间两行控制、日志、输入区和页脚都在任务栏上方，只有日志可收缩；字数计数放入输入状态行，媒体几何只写在 `mobile-ios-shell.css`。
 - Chat 重试复用稳定 `clientRequestId`，服务端在限流前重放首次成功消息，并用 `(visitor_id, room_key, client_request_id)` 唯一索引防并发重复；私聊随机 IV 不得破坏幂等。旧 D1 必须先补 `client_request_id` 列再建索引。
 - 公共 Chat 不返回服务端隐藏 visitor id；密码、私聊、草稿、Secret、完整标识不进入 DOM 泄漏、持久存储、History、日志或 telemetry，外链/iframe/fragment 白名单不得放宽。
-- 文章 translation seed 每次都要显式传 UTC ISO 时间；全量 bind 测试必须拒绝 `undefined`。Quick Transfer fragment 只允许同源 `/fragments/quick-transfer.html` 与 Cloudflare clean URL `/fragments/quick-transfer` 两个精确路径。
+- 文章 translation seed 每次都要显式传 UTC ISO 时间；全量 bind 测试必须拒绝 `undefined`。schema guard 不得夹带全量 seed；跨隔离实例使用 `site_runtime_state.article_seed_version`，版本匹配时零 seed 写入，变更时全部 seed 成功后才写新标记。Quick Transfer fragment 只允许同源 `/fragments/quick-transfer.html` 与 Cloudflare clean URL `/fragments/quick-transfer` 两个精确路径。
+- 后台流量保护只采样或关闭非必要 identify／page view／click／article view 遥测，不能影响登录、存档、Chat、Transfer 或 Whiteboard；设置使用 revision/CAS，dirty 输入不被自动刷新覆盖。站内写入系数必须明确是估算，只有实际连接只读 Cloudflare Analytics 后才能展示官方 `rowsWritten`，Token 不得下发或提交。
 - 交付本地 Wrangler 预览前先检查 `/api/health`；`.dev.vars` 中两个独立、至少 32 bytes 的本地隐私盐缺失时会让全部 API 返回 503，真实值不得输出或提交。
 - PC 任务栏不得用静态 `ONLINE` 冒充服务状态；只有 `/api/health` 的严格健康响应可进入在线态，检查中／异常／离线要有三语文字、独立静态状态灯、键盘重试和隐藏页中止。健康接口只返回 `{ ok, db }`，不公开用户计数。
 - 每次修改项目后，必须更新 `CHANGELOG.md`。

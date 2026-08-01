@@ -2,6 +2,9 @@ const state = {
   user: null,
   activePanel: "dashboard",
   overview: null,
+  trafficSnapshot: null,
+  trafficControlUpdatedAt: "",
+  trafficControlSaving: false,
   regionFilter: "",
   clickFilter: "",
   articles: [],
@@ -172,6 +175,7 @@ const panelMeta = {
   dashboard: ["鲁肃个人站管理后台", "实时访问工作台"],
   visits: ["访问来源", "按国家、省份、城市和掩码网络前缀查看每日访问。"],
   clicks: ["点击埋点", "查看站内各位置点击、浏览访客和最近事件。"],
+  traffic: ["流量与写入", "持续查看站内写入压力、Cloudflare 官方 D1 指标连接状态，并分级控制非必要遥测。"],
   articles: ["知识库文章", "一次编辑中文、英文、日文三种版本，按当前选择语言显示编辑区。"],
   automation: ["自动投递", "分别管理“每日 AI 新闻”和“工具雷达”的投递状态、连接凭证、自动公开与最近记录。"],
   videos: ["视频管理", "输入视频链接后由服务端识别并缓存标题、简介、发布时间和封面，也可上传本地封面。"],
@@ -185,10 +189,16 @@ const panelMeta = {
 };
 
 const overviewPanels = new Set(["dashboard", "visits", "clicks"]);
+const autoRefreshPanels = new Set([...overviewPanels, "traffic"]);
 const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-08-01",
+    title: "流量与 D1 写入保护面板",
+    body: "数据分析新增“流量与写入”面板：每 30 秒刷新站内遥测写入压力、分项估算、UTC 重置时间和保护状态；可保存总开关、访客识别／页面／点击／文章采集开关、预警与硬保护阈值，以及正常／预警／硬保护三档采样率。默认采用 60,000 / 80,000 估算行阈值，只降低非必要遥测，不会自动关闭登录、云存档、聊天室、互传或在线画板。Cloudflare 官方 rowsWritten 需要单独的只读 Analytics Token，未配置时明确显示“未连接”，不会把估算冒充账单。"
+  },
   {
     date: "2026-07-30",
     title: "多人在线画板治理面板",
@@ -669,7 +679,8 @@ const editorConfigs = {
   videoCategories: { form: "#video-category-form", indicator: "", label: "视频分类" },
   chat: { form: "#chat-form-admin", indicator: "#chat-dirty-indicator", label: "聊天记录" },
   accounts: { form: "#account-form", indicator: "#account-dirty-indicator", label: "账号" },
-  socialLinks: { form: "#social-links-form", indicator: "", label: "社交链接" }
+  socialLinks: { form: "#social-links-form", indicator: "", label: "社交链接" },
+  traffic: { form: "#traffic-control-form", indicator: "#traffic-dirty-indicator", label: "流量策略" }
 };
 
 const masterDetailConfigs = {
@@ -919,6 +930,9 @@ function isEditorBusy(panel) {
   if (panel === "socialLinks") {
     return state.socialLinksSaving;
   }
+  if (panel === "traffic") {
+    return state.trafficControlSaving;
+  }
   return false;
 }
 
@@ -1104,6 +1118,9 @@ async function saveEditorForPanel(panel) {
   }
   if (panel === "socialLinks") {
     return saveSocialLinks();
+  }
+  if (panel === "traffic") {
+    return saveTrafficControl();
   }
   return true;
 }
@@ -1897,6 +1914,13 @@ async function loadPanelData(panel, options = {}) {
           renderWhiteboardFailure(`读取在线画板失败：${error.message}`);
           throw new Error(`在线画板：${error.message}`);
         }
+      } else if (panel === "traffic") {
+        try {
+          await loadTrafficControl();
+        } catch (error) {
+          renderTrafficControlFailure(`读取流量与写入状态失败：${error.message}`);
+          throw new Error(`流量与写入：${error.message}`);
+        }
       } else if (panel === "accounts") {
         try {
           const accountResult = await loadAccounts();
@@ -2034,7 +2058,7 @@ async function handleNavKeydown(event, index, buttons) {
 }
 
 function autoRefreshActivePanel() {
-  if (document.hidden || !overviewPanels.has(state.activePanel)) {
+  if (document.hidden || !autoRefreshPanels.has(state.activePanel)) {
     return false;
   }
   loadPanelData(state.activePanel, { force: true });
@@ -2053,6 +2077,314 @@ async function loadOverview() {
   state.overview = payload;
   renderOverview();
   setStatus(`已刷新 ${formatTime(payload.generatedAt)}`);
+}
+
+const TRAFFIC_CONTROL_FALLBACK_DEFAULTS = Object.freeze({
+  schemaVersion: 1,
+  analyticsEnabled: true,
+  identifyEnabled: true,
+  pageViewsEnabled: true,
+  clicksEnabled: true,
+  articleViewsEnabled: true,
+  adaptiveProtectionEnabled: true,
+  warningRows: 60000,
+  hardRows: 80000,
+  sampling: Object.freeze({
+    normal: Object.freeze({ pageViews: 100, clicks: 100, articleViews: 100 }),
+    warning: Object.freeze({ pageViews: 50, clicks: 25, articleViews: 75 }),
+    hard: Object.freeze({ pageViews: 10, clicks: 0, articleViews: 25 })
+  })
+});
+
+const TRAFFIC_CONTROL_LOW_WRITE_PRESET = Object.freeze({
+  ...TRAFFIC_CONTROL_FALLBACK_DEFAULTS,
+  warningRows: 40000,
+  hardRows: 60000,
+  sampling: Object.freeze({
+    normal: Object.freeze({ pageViews: 75, clicks: 50, articleViews: 75 }),
+    warning: Object.freeze({ pageViews: 25, clicks: 10, articleViews: 50 }),
+    hard: Object.freeze({ pageViews: 5, clicks: 0, articleViews: 10 })
+  })
+});
+
+async function loadTrafficControl() {
+  const payload = await api("/api/admin/traffic-control");
+  state.trafficSnapshot = payload;
+  renderTrafficControlSnapshot();
+  if (!isEditorDirty("traffic")) {
+    state.trafficControlUpdatedAt = String(payload.updatedAt || "");
+    fillTrafficControlForm(payload.settings || payload.defaults || TRAFFIC_CONTROL_FALLBACK_DEFAULTS);
+    captureEditorBaseline("traffic");
+  } else {
+    setElementText(
+      $("#traffic-policy-revision"),
+      `输入基于 ${formatTime(state.trafficControlUpdatedAt) || "旧版本"}，自动刷新未覆盖`
+    );
+  }
+  return payload;
+}
+
+function renderTrafficControlSnapshot() {
+  const snapshot = state.trafficSnapshot;
+  if (!snapshot) {
+    return;
+  }
+  const settings = snapshot.settings || TRAFFIC_CONTROL_FALLBACK_DEFAULTS;
+  const usage = snapshot.usage || {};
+  const official = snapshot.official || { status: "not-configured" };
+  const rawMode = String(usage.protectionMode || "normal");
+  const displayMode = !settings.analyticsEnabled
+    ? "disabled"
+    : settings.adaptiveProtectionEnabled
+      ? rawMode
+      : "disabled";
+  const modeLabels = {
+    normal: "正常采样",
+    warning: "预警保护",
+    hard: "硬保护",
+    disabled: settings.analyticsEnabled ? "固定采样" : "遥测已停用"
+  };
+  const modeBadge = $("#traffic-protection-mode");
+  modeBadge.dataset.mode = displayMode;
+  setElementText(modeBadge, modeLabels[displayMode] || "状态未知");
+
+  const estimatedRows = Number(usage.estimatedRows || 0);
+  const warningRows = Number(settings.warningRows || usage.warningRows || 0);
+  const hardRows = Number(settings.hardRows || usage.hardRows || 1);
+  setElementText($("#traffic-estimated-rows"), formatNumber(estimatedRows));
+  setElementText(
+    $("#traffic-estimated-caption"),
+    settings.analyticsEnabled ? "站内可识别遥测写入压力" : "遥测总开关已关闭"
+  );
+  setElementText($("#traffic-thresholds"), `${formatNumber(warningRows)} / ${formatNumber(hardRows)}`);
+  renderTrafficResetCountdown(usage.quotaResetAt);
+
+  const pressurePercent = hardRows > 0 ? Math.min(100, Math.max(0, estimatedRows / hardRows * 100)) : 0;
+  const pressureFill = $("#traffic-pressure-fill");
+  pressureFill.style.width = `${pressurePercent.toFixed(1)}%`;
+  pressureFill.dataset.mode = rawMode;
+  setElementText(
+    $("#traffic-pressure-note"),
+    `${usage.note || "这是站内估算，不是 Cloudflare 账单。"} 当前约为硬保护阈值的 ${Math.round(pressurePercent)}%。`
+  );
+  setElementText($("#traffic-generated-at"), `刷新于 ${formatTime(usage.generatedAt || new Date().toISOString())}`);
+  renderTrafficBreakdown(usage.breakdown || []);
+  renderOfficialTrafficStatus(official);
+
+  if (!isEditorDirty("traffic")) {
+    setElementText(
+      $("#traffic-policy-revision"),
+      snapshot.updatedAt ? `版本 ${formatTime(snapshot.updatedAt)}` : "等待版本"
+    );
+  }
+}
+
+function renderTrafficBreakdown(items) {
+  const body = $("#traffic-breakdown-body");
+  const rows = Array.isArray(items) ? items : [];
+  if (!rows.length) {
+    body.replaceChildren(createEmptyTableRow(4, "今日尚无可识别的站内遥测写入。"));
+    return;
+  }
+  body.replaceChildren(...rows.map((item) => {
+    const row = document.createElement("tr");
+    row.append(
+      createTableCell(String(item.label || item.key || "未知来源")),
+      createMetricTableCell(item.events),
+      createTableCell(`${formatNumber(item.rowsPerEvent)} 行 / 次`, "table-metric"),
+      createMetricTableCell(item.estimatedRows)
+    );
+    return row;
+  }));
+  syncTableWrapLabel(body, "站内写入估算明细");
+}
+
+function renderOfficialTrafficStatus(official) {
+  const status = String(official?.status || "not-configured");
+  const box = $("#traffic-official-status");
+  box.dataset.status = status;
+  if (status === "connected") {
+    if (!official.today) {
+      setElementText($("#traffic-official-rows"), "等待数据");
+      setElementText($("#traffic-official-caption"), "官方连接成功，今日分组尚未返回");
+      setElementText(box, official.message || "Cloudflare 官方 D1 Analytics 已连接，正在等待今日指标分组。");
+      return;
+    }
+    const rowsWritten = Number(official.today?.rowsWritten || 0);
+    setElementText($("#traffic-official-rows"), formatNumber(rowsWritten));
+    setElementText($("#traffic-official-caption"), `Cloudflare 今日 rowsWritten · ${official.today?.date || "UTC"}`);
+    setElementText(box, official.message || "Cloudflare 官方 D1 Analytics 已连接。");
+    return;
+  }
+  if (status === "error") {
+    setElementText($("#traffic-official-rows"), "读取失败");
+    setElementText($("#traffic-official-caption"), "站内保护仍正常工作");
+    setElementText(box, official.message || "Cloudflare 官方指标暂时不可用。");
+    return;
+  }
+  setElementText($("#traffic-official-rows"), "未连接");
+  setElementText($("#traffic-official-caption"), "需要只读 Analytics Token");
+  setElementText(box, official?.message || "未连接 Cloudflare 官方 D1 Analytics；站内估算和保护策略仍正常工作。");
+}
+
+function renderTrafficResetCountdown(value) {
+  const target = new Date(value || "");
+  if (Number.isNaN(target.getTime())) {
+    setElementText($("#traffic-reset-countdown"), "--");
+    setElementText($("#traffic-reset-at"), "UTC 00:00");
+    return;
+  }
+  const remainingMs = Math.max(0, target.getTime() - Date.now());
+  const totalMinutes = Math.ceil(remainingMs / 60000);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  setElementText($("#traffic-reset-countdown"), remainingMs > 0 ? `${hours} 小时 ${minutes} 分` : "即将重置");
+  setElementText($("#traffic-reset-at"), `UTC ${target.toISOString().slice(11, 16)} · ${target.toISOString().slice(0, 10)}`);
+}
+
+function trafficControlFormField(name) {
+  return $("#traffic-control-form")?.elements?.namedItem(name) || null;
+}
+
+function fillTrafficControlForm(settings) {
+  const source = settings || TRAFFIC_CONTROL_FALLBACK_DEFAULTS;
+  for (const name of [
+    "analyticsEnabled",
+    "identifyEnabled",
+    "pageViewsEnabled",
+    "clicksEnabled",
+    "articleViewsEnabled",
+    "adaptiveProtectionEnabled"
+  ]) {
+    const field = trafficControlFormField(name);
+    if (field) {
+      field.checked = Boolean(source[name]);
+    }
+  }
+  for (const name of ["warningRows", "hardRows"]) {
+    const field = trafficControlFormField(name);
+    if (field) {
+      field.value = String(Number(source[name] || 0));
+    }
+  }
+  for (const mode of ["normal", "warning", "hard"]) {
+    for (const kind of ["pageViews", "clicks", "articleViews"]) {
+      const field = trafficControlFormField(`sampling_${mode}_${kind}`);
+      if (field) {
+        field.value = String(Number(source.sampling?.[mode]?.[kind] ?? 0));
+      }
+    }
+  }
+}
+
+function trafficControlPayloadFromForm() {
+  const form = $("#traffic-control-form");
+  if (!form.reportValidity()) {
+    throw new Error("请先修正流量策略表单中标出的数值。");
+  }
+  const integerValue = (name) => Number.parseInt(trafficControlFormField(name)?.value || "", 10);
+  const settings = {
+    schemaVersion: 1,
+    analyticsEnabled: Boolean(trafficControlFormField("analyticsEnabled")?.checked),
+    identifyEnabled: Boolean(trafficControlFormField("identifyEnabled")?.checked),
+    pageViewsEnabled: Boolean(trafficControlFormField("pageViewsEnabled")?.checked),
+    clicksEnabled: Boolean(trafficControlFormField("clicksEnabled")?.checked),
+    articleViewsEnabled: Boolean(trafficControlFormField("articleViewsEnabled")?.checked),
+    adaptiveProtectionEnabled: Boolean(trafficControlFormField("adaptiveProtectionEnabled")?.checked),
+    warningRows: integerValue("warningRows"),
+    hardRows: integerValue("hardRows"),
+    sampling: {}
+  };
+  if (settings.hardRows <= settings.warningRows) {
+    throw new Error("硬保护阈值必须大于预警阈值。");
+  }
+  for (const mode of ["normal", "warning", "hard"]) {
+    settings.sampling[mode] = {};
+    for (const kind of ["pageViews", "clicks", "articleViews"]) {
+      settings.sampling[mode][kind] = integerValue(`sampling_${mode}_${kind}`);
+    }
+  }
+  return { expectedUpdatedAt: state.trafficControlUpdatedAt, settings };
+}
+
+function syncTrafficControlBusyState() {
+  const locked = state.trafficControlSaving;
+  $$("#traffic-control-form input, #traffic-control-form button").forEach((field) => {
+    field.disabled = locked;
+    field.setAttribute("aria-busy", locked ? "true" : "false");
+  });
+  const button = $("#save-traffic-control");
+  setElementText(button, locked ? "保存中..." : "保存策略");
+}
+
+function trafficControlWriteErrorMessage(error) {
+  if (error?.status === 409 && error?.code === "TRAFFIC_CONTROL_CONFLICT") {
+    return "策略已被另一个后台页面更新。当前输入已保留，请复制需要保留的值后手动刷新并合并。";
+  }
+  if (error?.status === 428 && error?.code === "TRAFFIC_CONTROL_VERSION_REQUIRED") {
+    return "缺少策略版本。当前输入已保留，请手动刷新后再保存。";
+  }
+  return error?.message || "保存流量策略失败，请稍后重试。";
+}
+
+async function saveTrafficControl(event) {
+  event?.preventDefault?.();
+  if (state.trafficControlSaving) {
+    return false;
+  }
+  let body;
+  try {
+    body = trafficControlPayloadFromForm();
+  } catch (error) {
+    setElementText($("#traffic-control-status"), error.message);
+    return false;
+  }
+  state.trafficControlSaving = true;
+  setElementText($("#traffic-control-status"), "正在保存流量保护策略...");
+  syncTrafficControlBusyState();
+  try {
+    const payload = await api("/api/admin/traffic-control", {
+      method: "PUT",
+      body: JSON.stringify(body)
+    });
+    state.trafficSnapshot = payload;
+    state.trafficControlUpdatedAt = String(payload.updatedAt || "");
+    fillTrafficControlForm(payload.settings || body.settings);
+    renderTrafficControlSnapshot();
+    captureEditorBaseline("traffic", { saved: true });
+    setElementText(
+      $("#traffic-policy-revision"),
+      payload.updatedAt ? `版本 ${formatTime(payload.updatedAt)}` : "等待版本"
+    );
+    setElementText($("#traffic-control-status"), "策略已保存，新的遥测请求将按当前开关与分级采样执行。");
+    state.loadedPanels[panelDataKey("traffic")] = Date.now();
+    return true;
+  } catch (error) {
+    setElementText($("#traffic-control-status"), trafficControlWriteErrorMessage(error));
+    refreshEditorDirtyState("traffic");
+    return false;
+  } finally {
+    state.trafficControlSaving = false;
+    syncTrafficControlBusyState();
+  }
+}
+
+function applyTrafficControlPreset(settings, message) {
+  if (state.trafficControlSaving) {
+    return;
+  }
+  fillTrafficControlForm(settings);
+  refreshEditorDirtyState("traffic");
+  setElementText($("#traffic-control-status"), `${message}；尚未保存。`);
+}
+
+function renderTrafficControlFailure(message) {
+  const modeBadge = $("#traffic-protection-mode");
+  modeBadge.dataset.mode = "hard";
+  setElementText(modeBadge, "读取失败");
+  setElementText($("#traffic-pressure-note"), message);
+  setElementText($("#traffic-official-status"), "无法读取面板数据；没有把未知状态显示为正常。");
+  $("#traffic-breakdown-body").replaceChildren(createEmptyTableRow(4, message));
 }
 
 function renderOverview() {
@@ -8380,7 +8712,8 @@ function bindEvents() {
     ["chat", "#chat-form-admin"],
     ["accounts", "#account-form"],
     ["accounts", "#account-password-form"],
-    ["socialLinks", "#social-links-form"]
+    ["socialLinks", "#social-links-form"],
+    ["traffic", "#traffic-control-form"]
   ];
   dirtyForms.forEach(([panel, selector]) => {
     const form = $(selector);
@@ -8627,6 +8960,16 @@ function bindEvents() {
   $("#account-password-form").addEventListener("submit", resetAccountPassword);
   $("#social-links-form").addEventListener("submit", saveSocialLinks);
   $("#reset-social-links-defaults").addEventListener("click", resetSocialLinksFormToDefaults);
+  $("#traffic-control-form").addEventListener("submit", saveTrafficControl);
+  $("#traffic-low-write-preset").addEventListener("click", () => {
+    applyTrafficControlPreset(TRAFFIC_CONTROL_LOW_WRITE_PRESET, "已填入低写入预案");
+  });
+  $("#traffic-default-preset").addEventListener("click", () => {
+    applyTrafficControlPreset(
+      state.trafficSnapshot?.defaults || TRAFFIC_CONTROL_FALLBACK_DEFAULTS,
+      "已恢复默认输入"
+    );
+  });
 }
 
 async function init() {
@@ -8649,6 +8992,8 @@ async function init() {
   fillSocialLinksForm(state.socialLinks);
   renderSocialLinkPreview();
   captureEditorBaseline("socialLinks");
+  fillTrafficControlForm(TRAFFIC_CONTROL_FALLBACK_DEFAULTS);
+  captureEditorBaseline("traffic");
   syncMobileNavMode();
   try {
     applyActivePanel(getStoredActivePanel());

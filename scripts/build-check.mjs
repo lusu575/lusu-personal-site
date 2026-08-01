@@ -812,7 +812,7 @@ const redirectsConfig = readRequired("_redirects");
 const routeLazyVersion = "20260726-security-reliability-r1";
 const trustSafetyStatusVersion = "20260726-security-reliability-r1";
 const knowledgeReaderVersion = "20260728-knowledge-archive-r1";
-const whiteboardReleaseVersion = "20260730-multiplayer-whiteboard-r1";
+const whiteboardReleaseVersion = "20260801-service-reliability-r1";
 const routeStyleVersion = knowledgeReaderVersion;
 const publicRouteVersion = (route) => route === "knowledge"
   ? whiteboardReleaseVersion
@@ -1860,6 +1860,7 @@ for (const id of [
   "dashboard-panel",
   "visits-panel",
   "clicks-panel",
+  "traffic-panel",
   "articles-panel",
   "videos-panel",
   "videoCategories-panel",
@@ -1879,6 +1880,7 @@ for (const panel of [
   "dashboard",
   "visits",
   "clicks",
+  "traffic",
   "articles",
   "automation",
   "videos",
@@ -1916,6 +1918,7 @@ if (!adminHtml.includes('id="dashboard-panel" aria-hidden="false"')) {
 for (const panel of [
   "visits",
   "clicks",
+  "traffic",
   "articles",
   "automation",
   "videos",
@@ -1937,8 +1940,8 @@ for (const asset of ["admin.css", "admin.js"]) {
   }
 }
 
-const adminSafetyCacheVersion = "20260729-tool-radar-live-r1";
-const adminPublicContentVersion = "20260729-tool-radar-live-r1";
+const adminSafetyCacheVersion = "20260801-service-reliability-r1";
+const adminPublicContentVersion = "20260801-service-reliability-r1";
 if (!adminHtml.includes(`/admin/admin.css?v=${adminSafetyCacheVersion}`)
   || !adminHtml.includes(`/admin/admin.js?v=${adminPublicContentVersion}`)) {
   fail("admin CSS and JS must use their current cache versions");
@@ -1959,6 +1962,9 @@ for (const id of [
   "visitor-map-announcement",
   "visitor-map-list",
   "article-error-summary",
+  "traffic-control-form",
+  "traffic-breakdown-body",
+  "traffic-official-status",
   "account-password-form",
   "admin-confirm-dialog",
   "admin-unsaved-dialog"
@@ -4212,13 +4218,13 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-07-30-multiplayer-whiteboard";
-const finalUpdateSlug = "2026-07-30-multiplayer-whiteboard";
+const finalUpdateId = "seed-update-2026-08-01-service-reliability";
+const finalUpdateSlug = "2026-08-01-service-reliability";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Multiplayer Whiteboard Is Live in Tools";
-const finalPublishedAt = "2026-07-30T08:30:00.000Z";
+const finalTitleEn = "Account and Real-Time Tool Reliability Fixes";
+const finalPublishedAt = "2026-08-01T07:10:00.000Z";
 const finalTranslationMinimums = {
   title: 8,
   summary: 24,
@@ -4244,7 +4250,7 @@ const changelog20260726Section = markdownSection(changelog, "## 2026-07-26");
 const changelog20260727Section = markdownSection(changelog, "## 2026-07-27");
 const changelog20260728Section = markdownSection(changelog, "## 2026-07-28");
 const changelog20260729Section = markdownSection(changelog, "## 2026-07-29");
-const changelog20260730Section = markdownSection(changelog, "## 2026-07-30");
+const changelog20260801Section = markdownSection(changelog, "## 2026-08-01");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -4418,7 +4424,7 @@ if (finalUpdateStarted) {
   }
 
   for (const token of [
-    '<time id="top-updated" datetime="2026-07-30">2026.07.30</time>',
+    '<time id="top-updated" datetime="2026-08-01">2026.08.01</time>',
     `/css/style.css?v=${finalCssVersion}`,
     `/css/mobile-ios-shell.css?v=${knowledgeReaderVersion}`,
     `/js/main.js?v=${finalMainVersion}`
@@ -4436,7 +4442,7 @@ if (finalUpdateStarted) {
     "Functions seed",
     "schema seed"
   ]) {
-    if (!changelog20260730Section.includes(token)) {
+    if (!changelog20260801Section.includes(token)) {
       fail(`CHANGELOG.md final public update sync missing ${token}`);
     }
   }
@@ -4460,11 +4466,14 @@ const whiteboardIconSourceData = parseJsonSource("assets/images/generated-icons/
 if (nodeVersion.trim() !== "22" || migrationPackageData.engines?.node !== ">=22.13.0") {
   fail("Node.js runtime must stay documented as version 22.13+ in .nvmrc and package.json");
 }
-if (migrationPackageData.devDependencies?.wrangler !== "4.111.0") {
-  fail("package.json must pin Wrangler 4.111.0 for reproducible GPTWork setup");
+if (migrationPackageData.devDependencies?.wrangler !== "4.118.0") {
+  fail("package.json must pin Wrangler 4.118.0 for reproducible GPTWork setup");
+}
+if (migrationPackageData.devDependencies?.sharp !== "0.35.3") {
+  fail("package.json must pin sharp 0.35.3 for the audited image-processing baseline");
 }
 if (migrationWranglerData.compatibility_date !== "2026-07-17") {
-  fail("wrangler.jsonc compatibility_date must stay within Wrangler 4.111.0 workerd support (2026-07-17)");
+  fail("wrangler.jsonc compatibility_date must stay within Wrangler 4.118.0 workerd support (2026-07-17)");
 }
 if (migrationPackageData.scripts?.build !== "node scripts/build-check.mjs && node scripts/build-production.mjs") {
   fail("package.json build must run the repository guard before generating the production dist artifact");

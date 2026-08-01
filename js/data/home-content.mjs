@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-08-01-service-reliability",
+      "slug": "2026-08-01-service-reliability",
+      "category": "site-updates",
+      "tags": ["网站更新", "账号", "登录", "D1", "稳定性"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-01T07:10:00.000Z",
+      "updated_at": "2026-08-01T07:10:00.000Z",
+      "published_at": "2026-08-01T07:10:00.000Z",
+      "fallbackOnly": true,
+      "icon": "games",
+      "date": "2026.08.01",
+      "title": {
+        "zh": "账号与实时工具稳定性修复",
+        "en": "Account and Real-Time Tool Reliability Fixes",
+        "ja": "アカウントとリアルタイムツールの安定性を修正"
+      },
+      "summary": {
+        "zh": "修复 Cloudflare 密码派生兼容性导致的登录失败，并停止文章种子在冷启动时重复写入 D1，降低账号、匿名身份和在线画板共用数据库时的写入压力。",
+        "en": "Fixes sign-in failures caused by a Cloudflare password-derivation incompatibility and stops article seeds from rewriting D1 on cold starts, reducing shared write pressure for accounts, anonymous identity, and Whiteboard.",
+        "ja": "Cloudflare のパスワード導出互換性によるログイン失敗を修正し、コールドスタート時の記事 seed による D1 の反復書き込みを止め、アカウント・匿名ID・ホワイトボード共通DBの負荷を下げました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-07-30-multiplayer-whiteboard",
       "slug": "2026-07-30-multiplayer-whiteboard",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "知识库“工具雷达”正式上线，首期 7 工具三语文章已发布；独立去重、原创说明图与每周二 22:00 自动任务同步启用。",
         "en": "Tool Radar is live in Knowledge with a trilingual first edition covering seven tools; independent deduplication, original explanatory visuals, and the Tuesday 22:00 automation are active.",
         "ja": "知識庫の「ツールレーダー」を正式公開し、7ツールの初回3言語記事を掲載しました。独立重複防止、オリジナル説明図、毎週火曜22時の自動タスクも有効です。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-07-28-knowledge-archive-visibility",
-      "slug": "2026-07-28-knowledge-archive-visibility",
-      "category": "site-updates",
-      "tags": ["网站更新", "知识库", "文章列表", "分类", "QA"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-07-28T05:30:00.000Z",
-      "updated_at": "2026-07-28T05:30:00.000Z",
-      "published_at": "2026-07-28T05:30:00.000Z",
-      "fallbackOnly": true,
-      "icon": "knowledge",
-      "date": "2026.07.28",
-      "title": {
-        "zh": "知识库完整归档恢复",
-        "en": "Knowledge Archive Visibility Restored",
-        "ja": "知識庫の全記事表示を復元"
-      },
-      "summary": {
-        "zh": "公共文章列表不再被 50 条上限截断；取消置顶的旧文章及其分类会继续出现在知识库，并可通过搜索与加载更多访问。",
-        "en": "The public article list no longer stops at 50 items. Older unpinned articles and their categories remain available through search and Load more.",
-        "ja": "公開記事一覧の50件制限を解消し、固定解除した過去記事と分類を検索や「さらに表示」から引き続き参照できるようにしました。"
       }
     }
   ]

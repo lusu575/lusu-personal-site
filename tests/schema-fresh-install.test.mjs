@@ -18,6 +18,7 @@ const mobileOsArticleId = "seed-update-2026-07-10-premium-interaction-mobile-os"
 const aiAgentWorkflowArticleId = "seed-ai-agent-workflow-guide-2026-06-14";
 const aiAgentWorkflowPinRepairKey = "article_ai_agent_workflow_pin_repair_v1";
 const multiplayerWhiteboardArticleId = "seed-update-2026-07-30-multiplayer-whiteboard";
+const serviceReliabilityArticleId = "seed-update-2026-08-01-service-reliability";
 
 test("D1 schema initializes an empty database and remains idempotent", () => {
   const db = new DatabaseSync(":memory:");
@@ -42,6 +43,25 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
     assert.equal(
       db.prepare("select count(*) as count from article_translations where article_id = ?").get(multiplayerWhiteboardArticleId).count,
       3
+    );
+    assert.equal(
+      db.prepare("select count(*) as count from articles where article_id = ?").get(serviceReliabilityArticleId).count,
+      1
+    );
+    assert.equal(
+      db.prepare("select count(*) as count from article_translations where article_id = ?").get(serviceReliabilityArticleId).count,
+      3
+    );
+    const trafficSettings = JSON.parse(
+      db.prepare("select value from site_runtime_state where key = 'traffic_control_settings_v1'").get().value
+    );
+    assert.equal(trafficSettings.warningRows, 60000);
+    assert.equal(trafficSettings.hardRows, 80000);
+    assert.equal(trafficSettings.adaptiveProtectionEnabled, true);
+    assert.equal(trafficSettings.sampling.hard.clicks, 0);
+    assert.equal(
+      db.prepare("select value from site_runtime_state where key = 'article_seed_version'").get().value,
+      "20260801-service-reliability-r1"
     );
     assert.deepEqual(
       db.prepare("pragma table_info(whiteboard_rooms)").all().map((column) => column.name),
@@ -182,6 +202,10 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
     );
     assert.equal(
       db.prepare("select count(*) as count from article_translations where article_id = ?").get(multiplayerWhiteboardArticleId).count,
+      3
+    );
+    assert.equal(
+      db.prepare("select count(*) as count from article_translations where article_id = ?").get(serviceReliabilityArticleId).count,
       3
     );
     assert.equal(

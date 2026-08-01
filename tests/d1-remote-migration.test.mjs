@@ -281,6 +281,9 @@ test("remote D1 verification groups stay within the production compound SELECT l
   const verificationSql = REMOTE_MIGRATION_VERIFICATION_QUERIES.join("\n");
   assert.match(verificationSql, /whiteboard_admin_audit/);
   assert.match(verificationSql, /whiteboard_metrics/);
+  assert.match(verificationSql, /traffic_control_settings_v1/);
+  assert.match(verificationSql, /article_seed_version/);
+  assert.match(verificationSql, /seed-update-2026-08-01-service-reliability/);
 });
 
 test("the remote migration package command uses the compatibility runner without a local fallback", () => {

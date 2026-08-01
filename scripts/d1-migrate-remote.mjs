@@ -79,6 +79,17 @@ export const REMOTE_MIGRATION_VERIFICATION_QUERIES = Object.freeze([
       case when count(*) = 0 then 1 else 0 end
     from sqlite_master
     where type = 'index' and name = 'whiteboard_bans_active_scope_subject_idx'
+  `,
+  `
+    select 'traffic-control-default-state' as item, count(*) as present
+    from site_runtime_state where key = 'traffic_control_settings_v1'
+    union all
+    select 'article-seed-release-marker', count(*)
+    from site_runtime_state
+    where key = 'article_seed_version' and value = '20260801-service-reliability-r1'
+    union all
+    select 'service-reliability-update-article', count(*)
+    from articles where article_id = 'seed-update-2026-08-01-service-reliability'
   `
 ]);
 

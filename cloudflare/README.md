@@ -50,8 +50,13 @@ Pages Functions 运行时配置包含：
 - `WHITEBOARD_TICKET_SECRET`：加密并签发短期房间票据。
 - `WHITEBOARD_INTERNAL_SECRET`：Pages 与独立画板 Worker 之间的内部请求鉴权。
 - `WHITEBOARD_IP_HASH_SALT`：画板限频和临时封禁所用的 IP HMAC key。
+- `CLOUDFLARE_ANALYTICS_API_TOKEN`（可选）：后台读取官方 D1 Analytics 的只读 Account Analytics Token；未配置不影响站内保护。
+- `CLOUDFLARE_ANALYTICS_ACCOUNT_ID`（可选）：上述只读查询对应的 Cloudflare Account ID。
+- `CLOUDFLARE_ANALYTICS_D1_DATABASE_ID`（可选）：上述只读查询对应的 Production D1 Database ID。
 
 两个现有 salt 与四个画板 Secret 都必须按用途独立生成、随机且至少 32 UTF-8 bytes；不得跨用途或跨 Production／Preview 复用，也不得写进代码、README、`.env.example` 的值、命令历史或 Git。缺少、过短或不安全复用时，相关 API 会关闭并只记录变量名称，不记录值。
+
+三项 `CLOUDFLARE_ANALYTICS_*` 只用于后台官方指标区。Token 必须限制为读取 Account Analytics 所需权限并作为 Pages Production Secret 保存；不得使用可修改 Workers、D1 或账户设置的宽权限 Token。Account ID 与 D1 Database ID 可作为环境变量保存，但不要把 Token 值粘贴到聊天、命令参数、日志、文档或 Git。三项任一缺失时，后台明确显示“未连接”，并继续使用站内保守估算执行非必要遥测保护；该估算不是 Cloudflare 账单。
 
 `OWNER_ADMIN_EMAILS` 只从请求运行时 `env` 读取并规范化，用于把匹配账号保持为 `users.role = admin` 以及阻止后台降级，不是登录或鉴权 bypass。缺失或为空时不会回退公开源码、不会自动提升账号，也不会触发上述 503；数据库现有角色、当前登录管理员不可自降级和最后管理员原子保护仍然有效。
 
@@ -68,6 +73,7 @@ Pages Functions 运行时配置包含：
 5. 以加密 Secret 方式配置四个 `WHITEBOARD_*` 画板值。
 6. 核对 external Durable Object binding `WHITEBOARD_ROOMS` 指向 `WhiteboardRoom@lusu-whiteboard-do`。
 7. 在部署使用这些变量的提交之前完成配置。
+8. 如需后台显示官方 D1 `rowsWritten`，另配只读 `CLOUDFLARE_ANALYTICS_*` 三项；不需要时保持未配置，不影响主站与画板。
 
 仓库提交态的根 `wrangler.jsonc` 对 Preview 明确 fail closed：
 
