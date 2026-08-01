@@ -4,7 +4,7 @@ export const resourcesContent = Object.freeze({
     {
       "category": 0,
       "iconSrc": "assets/images/generated-icons/whiteboard.png?v=20260730-online-whiteboard-r1",
-      "version": "v1.0.1",
+      "version": "v1.0.2",
       "updated": "2026.08.01",
       "external": false,
       "showReadyStatus": false,

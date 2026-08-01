@@ -181,13 +181,15 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 临时名字必须由安全词根组合生成并提供至少一万种结果，禁止权限冒充词与不安全内容。换名保持约 30 秒冷却和短窗次数限制；每个画板 DO 原子查重，多标签共享同一房内名字，不得显示完整匿名 ID 后缀。
 - 密码必须先 NFKC 和 trim，再由 `WHITEBOARD_ROOM_HMAC_SECRET` 做 HMAC-SHA256 稳定映射。不得把明文密码写入 URL、房间 ID、D1、LocalStorage、History、埋点、客户端日志或普通服务端日志；错误信息不得泄露房间是否已存在。
 - 画板基础绘图复用 Excalidraw，并保留其 MIT notice；协同使用 Yjs 对象级 CRDT、快照和有界增量，禁止由客户端反复上传完整画布覆盖权威状态。鼠标、选区、绘制中、焦点、暂离与在线状态只能通过 awareness 等效消息广播，不持久化。
+- 公共画板与所有密码房当前共用唯一的暖纸、石墨、hachure、高 roughness 铅笔草图默认值；不得按房型分流或只给公共房启用。用户仍可编辑颜色、线宽和工具，未来新增主题必须由站长明确提出。
 - 画板 Yjs update 必须在客户端合并和排队，不得把 Excalidraw 每次 `onChange` 直接当作一帧。一次只保留一个 in-flight update，Worker 必须在文档增量与元数据已持久化后才回 `update-accepted`；回执前断线、`rate_limited`、`sync_budget_exceeded` 或回执超时必须重连并幂等重传，不得清空未确认队列或统一报为不可恢复权限错误。
-- 每个房间由 external binding `WHITEBOARD_ROOMS` 路由到独立 `WhiteboardRoom` Durable Object；保持 WebSocket Hibernation、SQLite-backed storage、票据 `jti` 原子消费、房间隔离、断线宽限、心跳与重连。`workers/whiteboard/wrangler.jsonc` 的 `v1` migration 和 namespace 上线后不得删除、改名或重写。
+- 没有 Yjs 文档变化就不得产生文档写入。可见连接的普通保活必须优先使用 `setWebSocketAutoResponse()` 静态应答，不能周期唤醒休眠 DO；标签页长期隐藏时先排空未确认更新再停放连接。空公共房不得周期轮询，空密码房只保留真实待办与 24 小时删除 Alarm；连续绘制的 D1 房间摘要必须低频于 DO 权威事务。短暂连接波动保持无感，持续波动只显示延迟且不遮挡画布的小状态，不得弹通用大横幅。
+- 每个房间由 external binding `WHITEBOARD_ROOMS` 路由到独立 `WhiteboardRoom` Durable Object；保持 WebSocket Hibernation、SQLite-backed storage、票据 `jti` 原子消费、房间隔离、断线宽限、auto-response 活性判断与重连。`workers/whiteboard/wrangler.jsonc` 的 `v1` migration 和 namespace 上线后不得删除、改名或重写。
 - Pages Functions 必须配置用途独立、随机且至少 32 UTF-8 bytes 的 `WHITEBOARD_ROOM_HMAC_SECRET`、`WHITEBOARD_TICKET_SECRET`、`WHITEBOARD_INTERNAL_SECRET`、`WHITEBOARD_IP_HASH_SALT`；Worker 只读取与对应 Pages 环境相同的 `WHITEBOARD_INTERNAL_SECRET`。Preview 和 Production 均隔离真实值，任何真实值不得提交。
 - 图片只接受真实字节、尺寸、像素和容量校验后的 PNG/JPEG/WebP，保存到私有 R2 `whiteboard/v1/<roomId>/<assetId>`；画布只保存资源 ID，不长期保存大 Base64，不允许危险 SVG、HTML 或跨房读取。
 - 在线画板的入口图标、插画与装饰素材只允许使用 image2 生成并保存为项目内图片；每项素材 manifest 必须锁定 generator=image2、生成/发布尺寸、最终 SHA-256，并列出仅允许的机械 resize，守卫同时校验真实图片。不得用 CSS、Canvas、SVG 路径或代码几何拼凑素材；CSS 只承担布局、状态和响应式交互。
 - 公共房 `public-v1` 永不按空房 TTL 删除。密码房最后一条有效连接关闭或心跳超时后写 `emptySince` 与 `deleteAt = +24h`；重入取消旧 Alarm，再次为空重新计时。Alarm 必须再次检查连接、截止时间和代次，幂等清理房间 R2 前缀、D1 索引与 DO 状态，失败时重试。
-- 在线画板和 Quick Transfer 是根项目下的独立子项目，治理根分别为 `docs/whiteboard/` 和 `docs/transfer/`。修改各自 `project.json` 定义的 tracked paths 时，必须把该子项目 `VERSION` 和显示版本相对基线精确增加 `0.0.1`，在独立 `CHANGELOG.md` 写本次版本，并同步 `README.md`、`AGENTS.md`、其他受影响文档与根 `CHANGELOG.md`。`AGENT.md` 仅可指向唯一权威 `AGENTS.md`，不得复制出第二份漂移规则；提交前必须运行 `npm run check:subprojects`。
+- 在线画板和 Quick Transfer 是根项目下的独立子项目，治理根分别为 `docs/whiteboard/` 和 `docs/transfer/`。修改各自 `project.json` 定义的 tracked paths 时，必须把该子项目 `VERSION` 和显示版本相对基线精确增加 `0.0.1`，在独立 `CHANGELOG.md` 写本次版本，并同步 `README.md`、`AGENTS.md`、其他受影响文档与根 `CHANGELOG.md`。主站或另一子项目发版不得仅为统一发布字符串而滚动未改变子项目的内部 asset cache key；真实修改受治理 loader 时仍必须正常升版。`AGENT.md` 仅可指向唯一权威 `AGENTS.md`，不得复制出第二份漂移规则；提交前必须在当前分支相对 `origin/main` 运行 `npm run check:subprojects`。
 - 保留服务端人数、连接、消息、对象、文档、图片与频率上限；Origin、匿名凭证、房间票据、IP 哈希限流、跨房资源访问和异常连接都必须 fail closed。日志不得记录明文密码、完整画布、完整 IP 或公开完整匿名 ID。
 - 管理后台必须复用 `users.role = admin` 鉴权，提供概览、房间状态、容量、短错误码与去重错误／自动清理聚合计数、公共房清空／锁定、连接移除、匿名 ID／IP 哈希临时封禁及空密码房删除；默认只显示截断标识，危险操作保持确认与审计。错误指标不得保存请求载荷或画布内容。
 - 发布前执行本地 D1 migration、Lint、类型检查、全量测试、`whiteboard:test`、生产构建和跨会话／移动视口验证。获授权后先远端 D1 migration、再部署 DO Worker、核对 external binding，最后合并 `main` 触发 Pages；未完成远端检查时不得声称已经上线。

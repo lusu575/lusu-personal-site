@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-08-01-whiteboard-calm-efficient-sync",
+      "slug": "2026-08-01-whiteboard-calm-efficient-sync",
+      "category": "site-updates",
+      "tags": ["网站更新", "在线画板", "节省资源", "连接体验", "铅笔草图"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-01T12:50:00.000Z",
+      "updated_at": "2026-08-01T12:50:00.000Z",
+      "published_at": "2026-08-01T12:50:00.000Z",
+      "fallbackOnly": true,
+      "icon": "resources",
+      "date": "2026.08.01",
+      "title": {
+        "zh": "在线画板安静同步与空房休眠",
+        "en": "Calmer Whiteboard Sync and Idle-Room Hibernation",
+        "ja": "ホワイトボードの静かな同期と空室休止"
+      },
+      "summary": {
+        "zh": "画板 v1.0.2 统一所有房间的铅笔草图默认值，并用边缘自动心跳、后台停放、按变化批处理和空房无周期轮询降低 Cloudflare 用量；短暂重连不再弹大错误。",
+        "en": "Whiteboard v1.0.2 gives every room the same pencil-sketch defaults and lowers Cloudflare usage through edge auto-responses, hidden-tab parking, change-only batching, and no recurring empty-room polling; brief reconnects no longer show large errors.",
+        "ja": "ホワイトボード v1.0.2 は全ルームで鉛筆スケッチの既定値を統一し、エッジ自動応答、非表示タブの休止、変更時だけの一括同期、空室の定期巡回停止で Cloudflare 使用量を抑えます。短い再接続では大きなエラーを表示しません。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-01-whiteboard-reliable-sketch",
       "slug": "2026-08-01-whiteboard-reliable-sketch",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "Tool Radar 正文与显式图片图注中的绝对 HTTPS Markdown 链接已恢复为安全可点击链接；七张真实配图同时登记实际尺寸并完善截图等待。",
         "en": "Absolute HTTPS Markdown links in Tool Radar body copy and explicit image captions are safely clickable again, while all seven real visuals now carry real dimensions and more reliable capture waits.",
         "ja": "Tool Radar の本文と明示的な画像キャプションにある絶対 HTTPS Markdown リンクを安全にクリックできるよう復元し、7枚の実画像に実寸と安定した取得待機を追加しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-07-29-tool-radar-real-visuals",
-      "slug": "2026-07-29-tool-radar-real-visuals",
-      "category": "site-updates",
-      "tags": ["网站更新", "工具雷达", "真实界面", "图片来源", "自动化"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-07-29T01:10:00.000Z",
-      "updated_at": "2026-07-29T01:10:00.000Z",
-      "published_at": "2026-07-29T01:10:00.000Z",
-      "fallbackOnly": true,
-      "icon": "knowledge",
-      "date": "2026.07.29",
-      "title": {
-        "zh": "工具雷达改用真实官方界面图",
-        "en": "Tool Radar Now Uses Real Official Product Visuals",
-        "ja": "ツールレーダーを実際の公式画面へ更新"
-      },
-      "summary": {
-        "zh": "首期 7 张自绘概念图已换成官网、官方文档或官方仓库里的真实界面、案例与成果；每周工作流同步禁止自绘、生成和统一模板图。",
-        "en": "Seven site-drawn concept diagrams have been replaced with real interfaces, examples, and outputs from official sites, docs, or repositories, while the weekly workflow now rejects drawn, generated, and template visuals.",
-        "ja": "初回の自作概念図7枚を、公式サイト・文書・リポジトリの実画面、事例、成果へ置き換え、週次フローでも自作・生成・共通テンプレート画像を禁止しました。"
       }
     }
   ]

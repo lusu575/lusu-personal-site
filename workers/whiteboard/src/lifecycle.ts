@@ -1,8 +1,8 @@
 import {
   CLEANUP_RETRY_BASE_MS,
   CLEANUP_RETRY_MAX_MS,
+  CONNECTION_SWEEP_INTERVAL_MS,
   CONNECTION_STALE_MS,
-  HEARTBEAT_INTERVAL_MS,
   ROOM_RETENTION_MS
 } from "./constants";
 import type { RoomMeta } from "./types";
@@ -69,7 +69,7 @@ export function nextAlarmAt(
   now: number
 ): number | null {
   if (actualConnectionCount > 0) {
-    return now + HEARTBEAT_INTERVAL_MS;
+    return now + CONNECTION_SWEEP_INTERVAL_MS;
   }
   if (meta.roomType === "private" && meta.deleteAt !== null) {
     return Math.max(now + 1_000, meta.deleteAt);

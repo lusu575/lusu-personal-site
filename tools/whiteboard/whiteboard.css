@@ -346,7 +346,6 @@ input:disabled {
 .inline-error,
 .page-error,
 .notice-banner,
-.connection-banner,
 .locked-banner {
   padding: 10px 12px;
   border: 2px solid var(--wb-danger);
@@ -500,7 +499,6 @@ input:disabled {
 }
 
 .locked-banner,
-.connection-banner,
 .notice-banner {
   position: relative;
   text-align: center;
@@ -513,17 +511,49 @@ input:disabled {
   border-color: #b68a14;
 }
 
-.connection-banner {
-  color: #123c78;
-  background: #eef6ff;
-  border-color: var(--wb-blue);
-}
-
 .notice-banner {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+}
+
+.connection-corner {
+  position: fixed;
+  top: max(72px, calc(env(safe-area-inset-top) + 64px));
+  right: max(10px, env(safe-area-inset-right));
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: min(260px, calc(100% - 20px));
+  padding: 6px 8px;
+  color: #34506f;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px dashed #7e94ad;
+  box-shadow: 2px 2px 0 rgba(25, 56, 94, 0.12);
+  font-size: 11px;
+  line-height: 1.35;
+  pointer-events: none;
+}
+
+.connection-corner-dot {
+  flex: 0 0 auto;
+  width: 7px;
+  height: 7px;
+  background: #b7791f;
+  border: 1px solid #6f4910;
+  border-radius: 50%;
+}
+
+.connection-corner.is-error {
+  color: #6b1018;
+  border-color: #b52d3a;
+}
+
+.connection-corner.is-error .connection-corner-dot {
+  background: #d94754;
+  border-color: #8d1722;
 }
 
 .members-panel {
@@ -652,6 +682,10 @@ noscript {
   }
 
   .board-status-stack {
+    top: max(122px, calc(env(safe-area-inset-top) + 112px));
+  }
+
+  .connection-corner {
     top: max(122px, calc(env(safe-area-inset-top) + 112px));
   }
 

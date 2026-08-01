@@ -5,6 +5,7 @@ import {
   ASSET_REFERENCE_RECHECK_MS,
   ASSET_SWEEP_NEXT_KEY,
   CONSUMED_TICKET_TTL_MS,
+  D1_METADATA_SYNC_INTERVAL_MS,
   DEFAULT_CLIENT_UPDATE_INTERVAL_MS,
   DISPLAY_NAME_B64_HEADER,
   IDENTITY_COLOR_HEADER,
@@ -298,9 +299,13 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
   private readonly ready: Promise<void>;
   private meta: RoomMeta | null = null;
   private mutationChain: Promise<unknown> = Promise.resolve();
+  private lastD1MetadataSyncAt = 0;
 
   constructor(ctx: DurableObjectState, env: WhiteboardEnv) {
     super(ctx, env);
+    ctx.setWebSocketAutoResponse(
+      new WebSocketRequestResponsePair("ping", "pong")
+    );
     this.documentStore = new YjsDocumentStore(ctx.storage);
     this.ready = ctx.blockConcurrencyWhile(async () => {
       this.meta = (await ctx.storage.get<RoomMeta>(ROOM_META_KEY)) || null;
@@ -308,9 +313,16 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       if (this.meta) {
         const now = Date.now();
         const count = uniqueParticipants(ctx.getWebSockets()).length;
-        if (count > 0) {
+        let metadataChanged = false;
+        if (
+          count > 0 &&
+          (this.meta.onlineCount !== count ||
+            this.meta.emptySince !== null ||
+            this.meta.deleteAt !== null)
+        ) {
           this.meta = markRoomJoined(this.meta, now, count);
           await this.persistMeta();
+          metadataChanged = true;
         } else if (
           this.meta.onlineCount > 0 ||
           (this.meta.roomType === "private" &&
@@ -318,8 +330,11 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
         ) {
           this.meta = markRoomEmpty(this.meta, now);
           await this.persistMeta();
+          metadataChanged = true;
         }
-        await this.scheduleAlarm();
+        if (metadataChanged || (await ctx.storage.getAlarm()) === null) {
+          await this.scheduleAlarm();
+        }
       }
     });
   }
@@ -426,7 +441,13 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       const stale = new Set<WebSocket>();
       for (const socket of this.ctx.getWebSockets()) {
         const attachment = readAttachment(socket);
-        if (!attachment || isConnectionStale(attachment.lastSeenAt, now)) {
+        const autoResponseAt =
+          this.ctx.getWebSocketAutoResponseTimestamp(socket)?.getTime() || 0;
+        const lastSeenAt = Math.max(
+          Number(attachment?.lastSeenAt || 0),
+          autoResponseAt
+        );
+        if (!attachment || isConnectionStale(lastSeenAt, now)) {
           stale.add(socket);
           try {
             socket.close(CLOSE_POLICY_VIOLATION, "heartbeat_timeout");
@@ -441,8 +462,14 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       const onlineCount = uniqueParticipants(remaining).length;
 
       if (onlineCount > 0) {
-        this.meta = markRoomJoined(this.meta, now, onlineCount);
-        await this.persistMeta();
+        if (
+          this.meta.onlineCount !== onlineCount ||
+          this.meta.emptySince !== null ||
+          this.meta.deleteAt !== null
+        ) {
+          this.meta = markRoomJoined(this.meta, now, onlineCount);
+          await this.persistMeta();
+        }
         await this.scheduleAlarm();
         return;
       }
@@ -777,9 +804,13 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       return;
     }
     if (!this.meta) return;
+    const now = Date.now();
     const result = await this.documentStore.applyIncrementalUpdate(
       payload,
-      this.meta
+      {
+        ...this.meta,
+        lastActiveAt: now
+      }
     );
     if (!result.accepted) {
       this.sendText(socket, {
@@ -788,18 +819,15 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       });
       return;
     }
-    this.meta = {
-      ...result.meta,
-      lastActiveAt: Date.now()
-    };
-    await this.persistMeta();
+    this.meta = result.meta;
     this.sendText(socket, {
       type: "update-accepted",
       documentVersion: this.meta.documentVersion,
       updateIntervalMs: this.recommendedClientUpdateIntervalMs()
     });
-    await this.scheduleAssetReferenceRecheck(Date.now());
     this.broadcastBinary(WS_YJS_UPDATE, payload, socket);
+    await this.scheduleAssetReferenceRecheck(now);
+    await this.persistD1MetadataIfDue(this.meta, now);
   }
 
   private recommendedClientUpdateIntervalMs(): number {
@@ -1707,7 +1735,22 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
   private async persistMeta(): Promise<void> {
     if (!this.meta) return;
     await this.ctx.storage.put(ROOM_META_KEY, this.meta);
-    this.ctx.waitUntil(this.persistD1Metadata(this.meta));
+    await this.persistD1MetadataIfDue(this.meta, Date.now(), true);
+  }
+
+  private async persistD1MetadataIfDue(
+    meta: RoomMeta,
+    now: number,
+    force = false
+  ): Promise<void> {
+    if (
+      !force &&
+      now - this.lastD1MetadataSyncAt < D1_METADATA_SYNC_INTERVAL_MS
+    ) {
+      return;
+    }
+    this.lastD1MetadataSyncAt = now;
+    await this.persistD1Metadata(meta);
   }
 
   private async persistD1Metadata(meta: RoomMeta): Promise<void> {
@@ -1920,9 +1963,14 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       rateSweepAlarm
     ].filter((value): value is number => value !== null);
     const next = candidates.length > 0 ? Math.min(...candidates) : null;
+    const existing = await this.ctx.storage.getAlarm();
     if (next === null) {
-      await this.ctx.storage.deleteAlarm();
-    } else {
+      if (existing !== null) await this.ctx.storage.deleteAlarm();
+    } else if (
+      existing === null ||
+      existing <= now ||
+      next < existing - 1_000
+    ) {
       await this.ctx.storage.setAlarm(next);
     }
   }

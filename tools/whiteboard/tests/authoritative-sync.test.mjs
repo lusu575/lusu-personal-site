@@ -44,7 +44,9 @@ const { WhiteboardCollaboration } = await import("../src/collaboration.js");
 function createSocket() {
   return {
     readyState: WebSocket.OPEN,
-    close() {
+    close(code, reason) {
+      this.closeCode = code;
+      this.closeReason = reason;
       this.readyState = WebSocket.CLOSED;
     },
     send(message) {
@@ -90,6 +92,9 @@ test("rejected and readonly updates replace the local Y.Doc before authoritative
   const socket = createSocket();
   collaboration.socket = socket;
   collaboration.synced = true;
+
+  await collaboration.handleMessage(socket, { data: "pong" });
+  assert.deepEqual(callbackState.errors, []);
 
   original.getMap("elements").set("rejected-client-only", {
     id: "rejected-client-only",
@@ -220,6 +225,7 @@ test("rapid local edits are merged, acknowledged, and retained across a rate-lim
   assert.equal(collaboration.queue.length, 1);
   assert.deepEqual(callbackState.errors, ["rate-limited"]);
   assert.equal(callbackState.statuses.at(-1), "reconnecting");
+  assert.equal(collaboration.updateIntervalMs, 500);
   assert.ok(collaboration.reconnectTimer);
 
   const recoveredSocket = createSocket();
@@ -232,7 +238,7 @@ test("rapid local edits are merged, acknowledged, and retained across a rate-lim
     data: JSON.stringify({
       type: "update-accepted",
       documentVersion: 1,
-      updateIntervalMs: 60,
+      updateIntervalMs: 250,
     }),
   });
   assert.equal(collaboration.inFlightUpdate, null);
@@ -242,4 +248,35 @@ test("rapid local edits are merged, acknowledged, and retained across a rate-lim
   collaboration.destroy();
   mergedDocument.destroy();
   document.destroy();
+});
+
+test("a hidden idle tab flushes pending work and parks its WebSocket", async () => {
+  const documentModel = new Y.Doc();
+  const statuses = [];
+  const collaboration = new WhiteboardCollaboration({
+    roomSession: { accessToken: "access" },
+    scene: {
+      applyRemoteUpdate() {},
+      getDocument: () => documentModel,
+      resetFromServer: () => documentModel,
+    },
+    getApi: () => null,
+    callbacks: { onStatus: (status) => statuses.push(status) },
+  });
+  const socket = createSocket();
+  collaboration.socket = socket;
+  collaboration.synced = true;
+  globalThis.document.hidden = true;
+
+  await collaboration.parkForBackground();
+
+  assert.equal(collaboration.visibilityParked, true);
+  assert.equal(collaboration.socket, null);
+  assert.equal(socket.closeCode, 1000);
+  assert.equal(socket.closeReason, "page-hidden");
+  assert.equal(statuses.at(-1), "offline");
+
+  globalThis.document.hidden = false;
+  collaboration.destroy();
+  documentModel.destroy();
 });

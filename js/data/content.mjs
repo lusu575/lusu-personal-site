@@ -1,6 +1,36 @@
 export const content = {
   updates: [
     {
+      "article_id": "seed-update-2026-08-01-whiteboard-calm-efficient-sync",
+      "slug": "2026-08-01-whiteboard-calm-efficient-sync",
+      "category": "site-updates",
+      "tags": ["网站更新", "在线画板", "节省资源", "连接体验", "铅笔草图"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-01T12:50:00.000Z",
+      "updated_at": "2026-08-01T12:50:00.000Z",
+      "published_at": "2026-08-01T12:50:00.000Z",
+      "fallbackOnly": true,
+      "icon": "resources",
+      "date": "2026.08.01",
+      "title": {
+        "zh": "在线画板安静同步与空房休眠",
+        "en": "Calmer Whiteboard Sync and Idle-Room Hibernation",
+        "ja": "ホワイトボードの静かな同期と空室休止"
+      },
+      "summary": {
+        "zh": "画板 v1.0.2 统一所有房间的铅笔草图默认值，并用边缘自动心跳、后台停放、按变化批处理和空房无周期轮询降低 Cloudflare 用量；短暂重连不再弹大错误。",
+        "en": "Whiteboard v1.0.2 gives every room the same pencil-sketch defaults and lowers Cloudflare usage through edge auto-responses, hidden-tab parking, change-only batching, and no recurring empty-room polling; brief reconnects no longer show large errors.",
+        "ja": "ホワイトボード v1.0.2 は全ルームで鉛筆スケッチの既定値を統一し、エッジ自動応答、非表示タブの休止、変更時だけの一括同期、空室の定期巡回停止で Cloudflare 使用量を抑えます。短い再接続では大きなエラーを表示しません。"
+      },
+      "content_markdown": {
+        "zh": "# 在线画板安静同步与空房休眠\n\n画板升级到 v1.0.2。本次不改变公共画板永久保留、密码房空置24小时清理的边界，重点是让同步只在有意义时工作。\n\n## 所有房间统一草图风\n\n- 公共画板和全部密码房使用同一套暖白纸张、石墨线条、hachure 填充和手绘粗糙度默认值。\n- 当前不提供按房型切换的第二主题；颜色、线宽和绘图工具仍可自由修改。\n\n## 有变化才同步\n\n- 画布真实变化才会生成 Yjs 持久化更新，并按文档大小以250、500或1000毫秒合并发送；鼠标位置继续只作临时广播。\n- 可见页面每60秒发送一次轻量 ping，由 Cloudflare 边缘自动回复，不唤醒已经休眠的房间。\n- 标签页隐藏60秒后先等待未确认画线落盘，再主动停放连接；重新打开时会自动重连并同步差异。\n- 持续绘制期间，跨房管理用的 D1 摘要最多约每分钟更新一次，画布权威数据仍保存在 Durable Object。\n\n## 空房不做无效轮询\n\n- 空公共房不再运行周期生命周期闹钟，已画内容仍永久保留；只有票据、资源或限频状态确有到期任务时才安排一次性清理。\n- 密码房最后一人离开后仍只保留24小时删除计划，期间重入会取消并在再次为空时重计。\n- 有真实连接的房间以5分钟低频巡检兜底异常断线，正常离开会立即处理。\n\n## 更安静的连接提示\n\n不足3秒的连接波动不新增提示；持续重连只在画布角落显示小状态，不再用中央横幅或通用错误打断绘画。权限、协议、容量和文件错误仍会明确显示。",
+        "en": "# Calmer Whiteboard Sync and Idle-Room Hibernation\n\nWhiteboard is now v1.0.2. Public-board permanence and the 24-hour cleanup boundary for empty password rooms are unchanged; this release makes synchronization work only when it has useful work to do.\n\n## One sketch style for every room\n\n- The public board and every password room share warm paper, graphite strokes, hachure fill, and hand-drawn roughness as their defaults.\n- There is currently no second theme selected by room type. Colors, stroke widths, and drawing tools remain editable.\n\n## Synchronize only after change\n\n- Only real canvas changes create durable Yjs updates. They are merged at 250, 500, or 1000 milliseconds according to document size, while pointer positions remain transient broadcasts.\n- A visible page sends one lightweight ping every 60 seconds. Cloudflare answers it at the edge without waking a hibernating room.\n- After a tab stays hidden for 60 seconds, it first drains unacknowledged strokes and then parks the connection. Returning reconnects and synchronizes the difference automatically.\n- During continuous drawing, the cross-room D1 summary is refreshed at most about once per minute; Durable Object storage remains authoritative for the canvas.\n\n## No useless polling in empty rooms\n\n- An empty public room has no recurring lifecycle alarm, while its drawing still persists. One-off cleanup is scheduled only when tickets, assets, or rate state actually expire.\n- A password room still keeps only its 24-hour deletion plan after the last participant leaves. Re-entry cancels it and a later departure restarts it.\n- Rooms with real connections use a five-minute low-frequency sweep only as a fallback for abnormal disconnects; normal departures are handled immediately.\n\n## Quieter connection feedback\n\nConnection changes shorter than three seconds add no notice. A longer reconnect shows only a small canvas-corner status instead of a central banner or generic error. Access, protocol, capacity, and file errors remain explicit.",
+        "ja": "# ホワイトボードの静かな同期と空室休止\n\nホワイトボードを v1.0.2 に更新しました。公開ボードの永続保持と、空になったパスワードルームを24時間後に削除する境界は変えず、必要なときだけ同期が動くようにしました。\n\n## 全ルームで一つのスケッチ風\n\n- 公開ボードとすべてのパスワードルームは、暖かい紙、黒鉛の線、ハッチング塗り、手描きの粗さを共通の既定値にします。\n- 現在はルーム種別ごとの第二テーマを用意しません。色、線幅、描画ツールは引き続き変更できます。\n\n## 変更時だけ同期\n\n- 実際にキャンバスが変わったときだけ永続 Yjs 更新を生成し、文書サイズに応じて250、500、1000ミリ秒でまとめます。ポインター位置は一時配信のままです。\n- 表示中のページは60秒ごとに軽量 ping を送り、Cloudflare がエッジで自動応答するため、休止中のルームを起こしません。\n- タブが60秒非表示になると、未確認の線を先に保存してから接続を休止します。再表示時は自動再接続して差分を同期します。\n- 連続描画中も、ルーム横断管理用の D1 要約は最大で約1分に1回だけ更新し、キャンバスの正本は Durable Object に残します。\n\n## 空室では無駄に巡回しない\n\n- 空の公開ルームには周期的なライフサイクル Alarm を置かず、描画内容はそのまま保持します。チケット、画像、制限状態に実際の期限がある場合だけ一回限りの清掃を予定します。\n- パスワードルームは最後の参加者が離れた後も24時間削除予定だけを保持し、再入室で取り消し、再び空になれば再計時します。\n- 実接続があるルームは異常切断の予備手段として5分間隔で低頻度確認し、通常の退出は即時処理します。\n\n## 静かな接続表示\n\n3秒未満の接続変動では追加表示を出しません。長引く再接続だけをキャンバス隅の小さな状態で示し、中央バナーや一般エラーで描画を遮りません。アクセス、プロトコル、容量、ファイルのエラーは明確に表示します。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-01-whiteboard-reliable-sketch",
       "slug": "2026-08-01-whiteboard-reliable-sketch",
       "category": "site-updates",
