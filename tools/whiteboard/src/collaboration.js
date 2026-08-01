@@ -7,8 +7,9 @@ import { REMOTE_ORIGIN } from "./origins.js";
 
 const WS_YJS_UPDATE = 0;
 const WS_YJS_STATE_VECTOR = 1;
-const HEARTBEAT_MS = 25_000;
-const CURSOR_INTERVAL_MS = 40;
+const LIVENESS_PING_MS = 60_000;
+const BACKGROUND_PARK_MS = 60_000;
+const CURSOR_INTERVAL_MS = 100;
 const CURSOR_MOVE_THRESHOLD = 2;
 const CURSOR_LABEL_FADE_MS = 2_500;
 const MAX_TEXT_MESSAGE_CHARACTERS = 16 * 1024;
@@ -16,8 +17,8 @@ const MAX_OUTGOING_BINARY_BYTES = 256 * 1024;
 const MAX_INCOMING_BINARY_BYTES = 16 * 1024 * 1024;
 const MAX_QUEUED_UPDATE_BYTES = 1024 * 1024;
 const MAX_QUEUED_UPDATES = 128;
-const DEFAULT_UPDATE_INTERVAL_MS = 60;
-const MIN_UPDATE_INTERVAL_MS = 50;
+const DEFAULT_UPDATE_INTERVAL_MS = 250;
+const MIN_UPDATE_INTERVAL_MS = 200;
 const MAX_UPDATE_INTERVAL_MS = 2_000;
 const UPDATE_ACK_TIMEOUT_MS = 10_000;
 const PRESENCE_ID_PATTERN = /^[A-Za-z0-9_-]{1,160}$/;
@@ -152,6 +153,8 @@ export class WhiteboardCollaboration {
     this.reconnectAttempt = 0;
     this.reconnectTimer = 0;
     this.heartbeatTimer = 0;
+    this.visibilityParkTimer = 0;
+    this.visibilityParked = false;
     this.syncFallbackTimer = 0;
     this.updateFlushTimer = 0;
     this.updateAckTimer = 0;
@@ -175,7 +178,13 @@ export class WhiteboardCollaboration {
       this.sendOrQueueUpdate(update);
     };
     this.handleOnline = () => {
-      if (!this.socket || this.socket.readyState > WebSocket.OPEN) this.scheduleReconnect(0);
+      if (
+        !document.hidden
+        && !this.visibilityParked
+        && (!this.socket || this.socket.readyState > WebSocket.OPEN)
+      ) {
+        this.scheduleReconnect(0);
+      }
     };
     this.handleOffline = () => this.callbacks.onStatus?.("offline");
     this.sendFocusAwareness = () => {
@@ -187,7 +196,25 @@ export class WhiteboardCollaboration {
         drawing: false,
       });
     };
-    this.handleVisibility = () => this.sendFocusAwareness();
+    this.handleVisibility = () => {
+      if (document.hidden) {
+        this.sendFocusAwareness();
+        this.scheduleVisibilityPark();
+        return;
+      }
+      this.cancelVisibilityPark();
+      if (this.visibilityParked) {
+        this.visibilityParked = false;
+        this.reconnectAttempt = 0;
+        this.callbacks.onStatus?.("reconnecting");
+        this.scheduleReconnect(0);
+        return;
+      }
+      this.sendFocusAwareness();
+      if (!this.socket || this.socket.readyState > WebSocket.OPEN) {
+        this.scheduleReconnect(0);
+      }
+    };
     this.handleFocus = () => this.sendFocusAwareness();
     this.handleBlur = () => this.sendFocusAwareness();
     this.doc.on("update", this.handleDocumentUpdate);
@@ -200,6 +227,11 @@ export class WhiteboardCollaboration {
   }
 
   start() {
+    if (document.hidden) {
+      this.visibilityParked = true;
+      this.callbacks.onStatus?.("offline");
+      return;
+    }
     this.openSocket(this.roomSession);
   }
 
@@ -214,7 +246,7 @@ export class WhiteboardCollaboration {
   }
 
   openSocket(session) {
-    if (this.destroyed || this.manualClose) return;
+    if (this.destroyed || this.manualClose || this.visibilityParked) return;
     this.clearSocketTimers();
     let config;
     try {
@@ -255,8 +287,14 @@ export class WhiteboardCollaboration {
     this.synced = false;
     this.callbacks.onStatus?.("connected");
     this.heartbeatTimer = window.setInterval(() => {
-      this.sendJson({ type: "heartbeat", focused: pageIsFocused() });
-    }, HEARTBEAT_MS);
+      if (!document.hidden && this.socket?.readyState === WebSocket.OPEN) {
+        try {
+          this.socket.send("ping");
+        } catch {
+          // The close/error event owns recovery.
+        }
+      }
+    }, LIVENESS_PING_MS);
     this.syncFallbackTimer = window.setTimeout(() => this.markSynced(), 4_000);
   }
 
@@ -283,6 +321,7 @@ export class WhiteboardCollaboration {
       socket.close(1008, "message_too_large");
       return;
     }
+    if (event.data === "pong") return;
     let message;
     try {
       message = JSON.parse(event.data);
@@ -374,7 +413,7 @@ export class WhiteboardCollaboration {
     this.ready = false;
     this.synced = false;
     this.removeAllCollaborators();
-    if (this.destroyed || this.manualClose) {
+    if (this.destroyed || this.manualClose || this.visibilityParked) {
       this.callbacks.onStatus?.("offline");
       return;
     }
@@ -388,6 +427,10 @@ export class WhiteboardCollaboration {
       return;
     }
     if (errorKind === "rate-limited") {
+      this.updateIntervalMs = Math.min(
+        MAX_UPDATE_INTERVAL_MS,
+        Math.max(DEFAULT_UPDATE_INTERVAL_MS, this.updateIntervalMs * 2),
+      );
       this.callbacks.onError?.("rate-limited", {
         code: normalizedCloseReason(event) || "rate_limited",
         reason: normalizedCloseReason(event),
@@ -399,14 +442,26 @@ export class WhiteboardCollaboration {
   }
 
   scheduleReconnect(delay) {
-    if (this.destroyed || this.manualClose || this.reconnectTimer) return;
+    if (
+      this.destroyed
+      || this.manualClose
+      || this.visibilityParked
+      || document.hidden
+      || this.reconnectTimer
+    ) return;
     const attempt = this.reconnectAttempt;
-    const baseDelay = delay ?? Math.min(15_000, 750 * (2 ** Math.min(attempt, 5)));
+    const baseDelay = delay ?? Math.min(30_000, 1_000 * (2 ** Math.min(attempt, 5)));
     const jitter = delay === 0 ? 0 : Math.round(Math.random() * 400);
     this.reconnectAttempt += 1;
     this.reconnectTimer = window.setTimeout(async () => {
       this.reconnectTimer = 0;
-      if (this.destroyed || this.manualClose || !navigator.onLine) {
+      if (
+        this.destroyed
+        || this.manualClose
+        || this.visibilityParked
+        || document.hidden
+        || !navigator.onLine
+      ) {
         if (!navigator.onLine) this.scheduleReconnect(2_000);
         return;
       }
@@ -563,6 +618,46 @@ export class WhiteboardCollaboration {
       };
       check();
     });
+  }
+
+  scheduleVisibilityPark() {
+    if (
+      this.destroyed
+      || this.manualClose
+      || this.visibilityParked
+      || this.visibilityParkTimer
+    ) return;
+    this.visibilityParkTimer = window.setTimeout(() => {
+      this.visibilityParkTimer = 0;
+      this.parkForBackground().catch(() => {
+        // Visibility recovery will reconnect when the page becomes active.
+      });
+    }, BACKGROUND_PARK_MS);
+  }
+
+  cancelVisibilityPark() {
+    if (this.visibilityParkTimer) window.clearTimeout(this.visibilityParkTimer);
+    this.visibilityParkTimer = 0;
+  }
+
+  async parkForBackground() {
+    if (this.destroyed || this.manualClose || !document.hidden) return;
+    await this.waitForPendingUpdates(3_000);
+    if (this.destroyed || this.manualClose || !document.hidden) return;
+    this.visibilityParked = true;
+    this.requeueInFlightUpdate();
+    if (this.reconnectTimer) window.clearTimeout(this.reconnectTimer);
+    this.reconnectTimer = 0;
+    this.clearSocketTimers();
+    const socket = this.socket;
+    this.socket = null;
+    this.ready = false;
+    this.synced = false;
+    if (socket && socket.readyState < WebSocket.CLOSING) {
+      socket.close(1000, "page-hidden");
+    }
+    this.removeAllCollaborators();
+    this.callbacks.onStatus?.("offline");
   }
 
   sendBinary(kind, payload) {
@@ -771,6 +866,7 @@ export class WhiteboardCollaboration {
     if (this.reconnectTimer) window.clearTimeout(this.reconnectTimer);
     if (this.cursorFadeTimer) window.clearInterval(this.cursorFadeTimer);
     if (this.pointerTimer) window.clearTimeout(this.pointerTimer);
+    this.cancelVisibilityPark();
     this.reconnectTimer = 0;
     this.cursorFadeTimer = 0;
     this.pointerTimer = 0;

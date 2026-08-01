@@ -37,10 +37,25 @@ import {
 } from "./assets.js";
 
 const RECENT_ROOM_KEY = "lusu-whiteboard-recent-room-v1";
-const WHITEBOARD_VERSION = "1.0.1";
+const WHITEBOARD_VERSION = "1.0.2";
 const NAME_COOLDOWN_MS = 30_000;
 const PASSWORD_MIN_LENGTH = 4;
 const PASSWORD_MAX_LENGTH = 128;
+const CONNECTION_NOTICE_DELAY_MS = 3_000;
+const ALL_ROOM_SKETCH_APP_STATE = Object.freeze({
+  viewBackgroundColor: "#f7f1e5",
+  currentItemFontFamily: 1,
+  currentItemStrokeColor: "#4a4640",
+  currentItemBackgroundColor: "transparent",
+  currentItemFillStyle: "hachure",
+  currentItemStrokeWidth: 1,
+  currentItemRoughness: 2,
+  currentItemOpacity: 92,
+});
+
+function createAllRoomSketchInitialData() {
+  return { appState: { ...ALL_ROOM_SKETCH_APP_STATE } };
+}
 
 function durationBucket(milliseconds) {
   const minutes = Math.max(0, milliseconds) / 60_000;
@@ -376,6 +391,7 @@ function WhiteboardRoom({
   t,
 }) {
   const scene = useMemo(() => new YSceneController(), []);
+  const sketchInitialData = useMemo(createAllRoomSketchInitialData, []);
   const apiRef = useRef(null);
   const canvasRegionRef = useRef(null);
   const collaborationRef = useRef(null);
@@ -387,6 +403,7 @@ function WhiteboardRoom({
     safeIdentity(initialSession.identity, initialIdentity),
   );
   const [connectionStatus, setConnectionStatus] = useState("connecting");
+  const [showConnectionNotice, setShowConnectionNotice] = useState(false);
   const [members, setMembers] = useState([]);
   const [locked, setLocked] = useState(false);
   const [synced, setSynced] = useState(false);
@@ -395,6 +412,23 @@ function WhiteboardRoom({
   const [membersOpen, setMembersOpen] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const roomType = initialSession.roomType;
+
+  useEffect(() => {
+    if (connectionStatus === "connected") {
+      setShowConnectionNotice(false);
+      return undefined;
+    }
+    if (connectionStatus === "error") {
+      setShowConnectionNotice(true);
+      return undefined;
+    }
+    setShowConnectionNotice(false);
+    const timer = window.setTimeout(
+      () => setShowConnectionNotice(true),
+      CONNECTION_NOTICE_DELAY_MS,
+    );
+    return () => window.clearTimeout(timer);
+  }, [connectionStatus]);
 
   useEffect(() => {
     const collaboration = new WhiteboardCollaboration({
@@ -426,9 +460,10 @@ function WhiteboardRoom({
           });
         },
         onError: (kind, error) => {
-          if (kind === "reconnect") {
-            trackWhiteboardEvent("whiteboard_reconnect_failed");
-            setNotice(t("reconnectFailed"));
+          if (["connection", "rate-limited", "reconnect"].includes(kind)) {
+            if (kind === "reconnect") {
+              trackWhiteboardEvent("whiteboard_reconnect_failed");
+            }
             return;
           }
           setNotice(t(errorCopyKey(error, "genericError", kind)));
@@ -667,9 +702,6 @@ function WhiteboardRoom({
 
       <div className="board-status-stack">
         {locked && <div className="locked-banner" role="status">{t("readOnly")}</div>}
-        {["reconnecting", "offline"].includes(connectionStatus) && (
-          <div className="connection-banner" role="status">{t("reconnectingNotice")}</div>
-        )}
         {notice && (
           <div className="notice-banner" role="alert">
             <span>{notice}</span>
@@ -677,6 +709,17 @@ function WhiteboardRoom({
           </div>
         )}
       </div>
+
+      {showConnectionNotice && connectionStatus !== "connected" && (
+        <div className={`connection-corner is-${connectionStatus}`} role="status">
+          <span className="connection-corner-dot" aria-hidden="true" />
+          <span>
+            {["reconnecting", "offline"].includes(connectionStatus)
+              ? t("reconnectingNotice")
+              : t(`connection${connectionStatus[0].toUpperCase()}${connectionStatus.slice(1)}`)}
+          </span>
+        </div>
+      )}
 
       <section
         className="canvas-region"
@@ -697,18 +740,7 @@ function WhiteboardRoom({
           generateIdForFile={async () => (
             `file_${crypto.randomUUID().replaceAll("-", "")}`
           )}
-          initialData={{
-            appState: {
-              viewBackgroundColor: "#f7f1e5",
-              currentItemFontFamily: 1,
-              currentItemStrokeColor: "#4a4640",
-              currentItemBackgroundColor: "transparent",
-              currentItemFillStyle: "hachure",
-              currentItemStrokeWidth: 1,
-              currentItemRoughness: 2,
-              currentItemOpacity: 92,
-            },
-          }}
+          initialData={sketchInitialData}
           isCollaborating
           langCode={getExcalidrawLanguage(lang)}
           onChange={handleSceneChange}

@@ -98,6 +98,7 @@ async function connect(
   socket: WebSocket;
   stub: DurableObjectStub;
   messages: Array<Record<string, unknown>>;
+  textMessages: string[];
 }> {
   const stub = testEnv.WHITEBOARD_ROOMS.getByName(roomId);
   const response = await stub.fetch(
@@ -119,8 +120,10 @@ async function connect(
   expect(response.webSocket).not.toBeNull();
   const socket = response.webSocket!;
   const messages: Array<Record<string, unknown>> = [];
+  const textMessages: string[] = [];
   socket.addEventListener("message", (event) => {
     if (typeof event.data !== "string") return;
+    textMessages.push(event.data);
     try {
       messages.push(JSON.parse(event.data) as Record<string, unknown>);
     } catch {
@@ -128,7 +131,7 @@ async function connect(
     }
   });
   socket.accept();
-  return { socket, stub, messages };
+  return { socket, stub, messages, textMessages };
 }
 
 async function readMeta(stub: DurableObjectStub): Promise<RoomMeta | undefined> {
@@ -395,6 +398,27 @@ afterEach(async () => {
 });
 
 describe("WhiteboardRoom Durable Object", () => {
+  it("answers liveness pings through the hibernation auto-response path", async () => {
+    const roomId = `wb_${"0".repeat(43)}`;
+    const connection = await connect(roomId, "private", 1, "静默旅人", 1);
+    const sentAt = Date.now();
+
+    connection.socket.send("ping");
+    await waitFor(async () => connection.textMessages.includes("pong"));
+
+    const autoResponseAt = await runInDurableObject(
+      connection.stub,
+      async (_instance, state) => {
+        const [socket] = state.getWebSockets();
+        return socket
+          ? state.getWebSocketAutoResponseTimestamp(socket)?.getTime() || 0
+          : 0;
+      }
+    );
+    expect(autoResponseAt).toBeGreaterThanOrEqual(sentAt);
+    await closeAndWait(connection.socket, connection.stub);
+  });
+
   it("keeps private-room Yjs updates isolated by room id", async () => {
     const roomA = `wb_${"a".repeat(43)}`;
     const roomB = `wb_${"b".repeat(43)}`;

@@ -42,7 +42,11 @@ test("passwords are ephemeral while collaboration uses incremental Yjs frames", 
   assert.doesNotMatch(api, /localStorage\.setItem\([^\\n]*(?:displayName|anonymousId|color|credential)/);
   assert.match(collaboration, /WS_YJS_UPDATE = 0/);
   assert.match(collaboration, /Y\.encodeStateVector/);
-  assert.match(collaboration, /CURSOR_INTERVAL_MS = 40/);
+  assert.match(collaboration, /LIVENESS_PING_MS = 60_000/);
+  assert.match(collaboration, /BACKGROUND_PARK_MS = 60_000/);
+  assert.match(collaboration, /CURSOR_INTERVAL_MS = 100/);
+  assert.match(collaboration, /this\.socket\.send\("ping"\)/);
+  assert.match(collaboration, /parkForBackground/);
   assert.match(collaboration, /CURSOR_LABEL_FADE_MS = 2_500/);
   assert.match(collaboration, /window\.addEventListener\("focus", this\.handleFocus\)/);
   assert.match(collaboration, /window\.addEventListener\("blur", this\.handleBlur\)/);
@@ -57,15 +61,30 @@ test("whiteboard custom UI does not embed code-drawn image material", async () =
   assert.doesNotMatch(css, /url\(/i);
 });
 
-test("whiteboard exposes v1.0.1 and defaults new elements to an editable pencil sketch style", async () => {
+test("whiteboard exposes v1.0.2 and gives every room the same editable pencil sketch style", async () => {
   const main = await read("tools/whiteboard/src/main.jsx");
-  assert.match(main, /const WHITEBOARD_VERSION = "1\.0\.1"/);
+  assert.match(main, /const WHITEBOARD_VERSION = "1\.0\.2"/);
+  assert.match(main, /const ALL_ROOM_SKETCH_APP_STATE = Object\.freeze/);
+  assert.match(main, /function createAllRoomSketchInitialData\(\)/);
+  assert.match(main, /initialData=\{sketchInitialData\}/);
   assert.match(main, /viewBackgroundColor: "#f7f1e5"/);
   assert.match(main, /currentItemStrokeColor: "#4a4640"/);
   assert.match(main, /currentItemBackgroundColor: "transparent"/);
   assert.match(main, /currentItemFillStyle: "hachure"/);
   assert.match(main, /currentItemRoughness: 2/);
   assert.match(main, /currentItemOpacity: 92/);
+});
+
+test("transient reconnects stay delayed and compact instead of opening a large canvas banner", async () => {
+  const [main, css] = await Promise.all([
+    read("tools/whiteboard/src/main.jsx"),
+    read("tools/whiteboard/whiteboard.css"),
+  ]);
+  assert.match(main, /CONNECTION_NOTICE_DELAY_MS = 3_000/);
+  assert.match(main, /className=\{`connection-corner is-\$\{connectionStatus\}`\}/);
+  assert.doesNotMatch(main, /className="connection-banner"/);
+  assert.match(css, /\.connection-corner\s*\{/);
+  assert.doesNotMatch(css, /\.connection-banner/);
 });
 
 test("mobile whiteboard controls stay reachable and reject unsupported image inputs early", async () => {

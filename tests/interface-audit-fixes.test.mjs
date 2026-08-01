@@ -34,8 +34,9 @@ test("public modal fixes preserve readable depth and compact failed-video geomet
   );
 });
 
-test("the whiteboard reliability release leads the five-item trilingual projection without dropping service recovery or Knowledge", async () => {
-  const updateId = "seed-update-2026-08-01-whiteboard-reliable-sketch";
+test("the calm whiteboard sync release leads the five-item trilingual projection without dropping prior whiteboard, service, or Knowledge updates", async () => {
+  const updateId = "seed-update-2026-08-01-whiteboard-calm-efficient-sync";
+  const reliableWhiteboardUpdateId = "seed-update-2026-08-01-whiteboard-reliable-sketch";
   const serviceReliabilityUpdateId = "seed-update-2026-08-01-service-reliability";
   const whiteboardUpdateId = "seed-update-2026-07-30-multiplayer-whiteboard";
   const knowledgeUpdateId = "seed-update-2026-07-29-knowledge-markdown-links";
@@ -46,12 +47,14 @@ test("the whiteboard reliability release leads the five-item trilingual projecti
 
   assert.equal(content.updates[0].article_id, updateId);
   assert.equal(homeContent.updates[0].article_id, updateId);
-  assert.equal(content.updates[1].article_id, serviceReliabilityUpdateId);
-  assert.equal(homeContent.updates[1].article_id, serviceReliabilityUpdateId);
-  assert.equal(content.updates[2].article_id, whiteboardUpdateId);
-  assert.equal(homeContent.updates[2].article_id, whiteboardUpdateId);
-  assert.equal(content.updates[3].article_id, knowledgeUpdateId);
-  assert.equal(homeContent.updates[3].article_id, knowledgeUpdateId);
+  assert.equal(content.updates[1].article_id, reliableWhiteboardUpdateId);
+  assert.equal(homeContent.updates[1].article_id, reliableWhiteboardUpdateId);
+  assert.equal(content.updates[2].article_id, serviceReliabilityUpdateId);
+  assert.equal(homeContent.updates[2].article_id, serviceReliabilityUpdateId);
+  assert.equal(content.updates[3].article_id, whiteboardUpdateId);
+  assert.equal(homeContent.updates[3].article_id, whiteboardUpdateId);
+  assert.equal(content.updates[4].article_id, knowledgeUpdateId);
+  assert.equal(homeContent.updates[4].article_id, knowledgeUpdateId);
   assert.equal(homeContent.updates.length, 5);
   for (const lang of ["zh", "en", "ja"]) {
     assert.ok(content.updates[0].title[lang]);
@@ -73,7 +76,7 @@ test("the whiteboard reliability release leads the five-item trilingual projecti
 test("Knowledge Markdown links use a fresh cache version without invalidating unrelated public assets", () => {
   const stableVersion = "20260726-security-reliability-r1";
   const knowledgeReaderVersion = "20260728-knowledge-archive-r1";
-  const toolRadarVersion = "20260801-whiteboard-reliable-sketch-r1";
+  const toolRadarVersion = "20260801-whiteboard-calm-sync-r1";
   const index = read("index.html");
   const main = read("js/main.js");
   const transferLoader = read("js/features/quick-transfer-loader.mjs");

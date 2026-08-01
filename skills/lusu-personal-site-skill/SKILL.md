@@ -181,8 +181,10 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 临时名字必须由安全词根组合生成并提供至少一万种结果，禁止权限冒充词与不安全内容。换名保持约 30 秒冷却和短窗次数限制；每个画板 DO 原子查重，多标签共享同一房内名字，不得显示完整匿名 ID 后缀。
 - 密码必须先 NFKC 和 trim，再由 `WHITEBOARD_ROOM_HMAC_SECRET` 做 HMAC-SHA256 稳定映射。不得把明文密码写入 URL、房间 ID、D1、LocalStorage、History、埋点、客户端日志或普通服务端日志；错误信息不得泄露房间是否已存在。
 - 画板基础绘图复用 Excalidraw，并保留其 MIT notice；协同使用 Yjs 对象级 CRDT、快照和有界增量，禁止由客户端反复上传完整画布覆盖权威状态。鼠标、选区、绘制中、焦点、暂离与在线状态只能通过 awareness 等效消息广播，不持久化。
+- 公共画板与所有密码房当前共用唯一的暖纸、石墨、hachure、高 roughness 铅笔草图默认值；不得按房型分流或只给公共房启用。用户仍可编辑颜色、线宽和工具，未来新增主题必须由站长明确提出。
 - 画板 Yjs update 必须在客户端合并和排队，不得把 Excalidraw 每次 `onChange` 直接当作一帧。一次只保留一个 in-flight update，Worker 必须在文档增量与元数据已持久化后才回 `update-accepted`；回执前断线、`rate_limited`、`sync_budget_exceeded` 或回执超时必须重连并幂等重传，不得清空未确认队列或统一报为不可恢复权限错误。
-- 每个房间由 external binding `WHITEBOARD_ROOMS` 路由到独立 `WhiteboardRoom` Durable Object；保持 WebSocket Hibernation、SQLite-backed storage、票据 `jti` 原子消费、房间隔离、断线宽限、心跳与重连。`workers/whiteboard/wrangler.jsonc` 的 `v1` migration 和 namespace 上线后不得删除、改名或重写。
+- 没有 Yjs 文档变化就不得产生文档写入。可见连接的普通保活必须优先使用 `setWebSocketAutoResponse()` 静态应答，不能周期唤醒休眠 DO；标签页长期隐藏时先排空未确认更新再停放连接。空公共房不得周期轮询，空密码房只保留真实待办与 24 小时删除 Alarm；连续绘制的 D1 房间摘要必须低频于 DO 权威事务。短暂连接波动保持无感，持续波动只显示延迟且不遮挡画布的小状态，不得弹通用大横幅。
+- 每个房间由 external binding `WHITEBOARD_ROOMS` 路由到独立 `WhiteboardRoom` Durable Object；保持 WebSocket Hibernation、SQLite-backed storage、票据 `jti` 原子消费、房间隔离、断线宽限、auto-response 活性判断与重连。`workers/whiteboard/wrangler.jsonc` 的 `v1` migration 和 namespace 上线后不得删除、改名或重写。
 - Pages Functions 必须配置用途独立、随机且至少 32 UTF-8 bytes 的 `WHITEBOARD_ROOM_HMAC_SECRET`、`WHITEBOARD_TICKET_SECRET`、`WHITEBOARD_INTERNAL_SECRET`、`WHITEBOARD_IP_HASH_SALT`；Worker 只读取与对应 Pages 环境相同的 `WHITEBOARD_INTERNAL_SECRET`。Preview 和 Production 均隔离真实值，任何真实值不得提交。
 - 图片只接受真实字节、尺寸、像素和容量校验后的 PNG/JPEG/WebP，保存到私有 R2 `whiteboard/v1/<roomId>/<assetId>`；画布只保存资源 ID，不长期保存大 Base64，不允许危险 SVG、HTML 或跨房读取。
 - 在线画板的入口图标、插画与装饰素材只允许使用 image2 生成并保存为项目内图片；每项素材 manifest 必须锁定 generator=image2、生成/发布尺寸、最终 SHA-256，并列出仅允许的机械 resize，守卫同时校验真实图片。不得用 CSS、Canvas、SVG 路径或代码几何拼凑素材；CSS 只承担布局、状态和响应式交互。

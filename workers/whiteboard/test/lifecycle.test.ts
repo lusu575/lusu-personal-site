@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  CONNECTION_SWEEP_INTERVAL_MS,
   PUBLIC_ROOM_ID,
   ROOM_RETENTION_MS
 } from "../src/constants";
@@ -60,5 +61,11 @@ describe("private room lifecycle", () => {
     expect(empty.deleteAt).toBeNull();
     expect(shouldDeleteRoom(empty, 0, Number.MAX_SAFE_INTEGER)).toBe(false);
     expect(nextAlarmAt(empty, 0, 20_000)).toBeNull();
+  });
+
+  it("uses one low-frequency stale-connection sweep only while a room has sockets", () => {
+    expect(nextAlarmAt(meta("public"), 1, 20_000)).toBe(
+      20_000 + CONNECTION_SWEEP_INTERVAL_MS
+    );
   });
 });

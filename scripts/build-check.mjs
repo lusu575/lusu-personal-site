@@ -812,7 +812,7 @@ const redirectsConfig = readRequired("_redirects");
 const routeLazyVersion = "20260726-security-reliability-r1";
 const trustSafetyStatusVersion = "20260726-security-reliability-r1";
 const knowledgeReaderVersion = "20260728-knowledge-archive-r1";
-const whiteboardReleaseVersion = "20260801-whiteboard-reliable-sketch-r1";
+const whiteboardReleaseVersion = "20260801-whiteboard-calm-sync-r1";
 const routeStyleVersion = knowledgeReaderVersion;
 const publicRouteVersion = (route) => route === "knowledge"
   ? whiteboardReleaseVersion

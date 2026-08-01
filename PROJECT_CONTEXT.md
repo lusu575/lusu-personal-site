@@ -1,5 +1,14 @@
 # PROJECT_CONTEXT.md
 
+## 2026-08-01 画板 v1.0.2 安静同步与空房休眠
+
+- 公共画板和所有密码房显式共用同一个 `ALL_ROOM_SKETCH_APP_STATE`：暖白纸、石墨线、hachure、roughness 2、92% 不透明度。当前没有按房型分支的第二主题；用户仍可修改颜色、线宽和工具。
+- 可见客户端每 60 秒发送纯文本 `ping`，`WhiteboardRoom` 用 `WebSocketRequestResponsePair("ping", "pong")` 在边缘自动响应；普通保活不进入 WebSocket message handler，也不唤醒已休眠 DO。标签页连续隐藏 60 秒后先有界排空未确认 Yjs 更新，再以 `page-hidden` 正常关闭；回到前台重新取票、连接并差异同步。
+- Yjs 文档更新只在真实变化时按 250／500／1000ms 批处理；游标降为 100ms 临时广播。每次 ACK 仍以 DO SQLite transaction 中的 update + `room:meta` 为准，不先确认；删除了 update 成功后第二次重复 `room:meta` 写入，持续绘制期间 D1 `whiteboard_rooms` 摘要最多约每 60 秒同步一次。没有画布变化就没有文档帧或持久化写入。
+- 有真实 socket 的房间从每 15 秒闹钟改为每 5 分钟失联兜底，使用业务消息与 auto-response 的最近时间判断 7 分钟超时；稳定成员数不再每轮重复更新 `lastActiveAt`、DO 元数据和 D1。设置 Alarm 前比较现有计划，避免每次唤醒重写相同或更晚时间。
+- 空公共房不再安排周期生命周期 Alarm，画布仍永久保留；ticket JTI、未引用资源或限频状态只按真实到期时间生成一次性任务。空密码房仍以最后离开为起点安排 24 小时整房删除，重入取消、再空重计。
+- 连接提示延迟 3 秒：短暂抖动完全不新增提示，持续重连只在画布角落显示小状态，不再用中央横幅或“发生了错误”打断绘画；权限、协议、容量和文件错误仍显示明确可处理信息。公开记录为 `seed-update-2026-08-01-whiteboard-calm-efficient-sync`，表示与 article seed 版本为 `20260801-whiteboard-calm-sync-r1`；协议变化继续要求先部署验证 Worker，再合并 `main` 发布 Pages。
+
 ## 2026-08-01 画板可靠保存、铅笔草图风与子项目版本治理
 
 - 画板的“发生了错误”和重进后线条消失具有同一根因：Excalidraw 每次变化都立即发一个 Yjs update，快速绘制会超过小文档每连接 24 update/s 限制；Worker 以 `1008/rate_limited` 关闭后，旧客户端将所有 1008 当作不可恢复权限错误，且在没有持久化回执的情况下已丢弃发送队列。这是服务端同步协议问题，与访客电脑或所在网络无关。
@@ -13,7 +22,7 @@
 
 - 生产登录失败的直接原因不是访客网络：Cloudflare Pages Functions 的生产运行时会拒绝 PBKDF2 迭代数超过 100,000，而 2026-07-26 的 600,000 次策略会在旧 25,000 次哈希验证成功后的升级阶段抛出 5xx。账号新哈希、管理员密码重置和旧记录升级现统一为 PBKDF2-HMAC-SHA256 100,000 次；25,000 次记录成功登录后条件升级，100,000 次记录不重复写回。不能因为本地 Node／Miniflare 能执行更高迭代数就再次提高，生产平台行为是兼容边界。
 - 公开账号提示现区分 `status = 0` 的本机／链路网络错误与 `5xx` 服务端暂不可用，不再把后端故障统一写成“检查网络”。密码、哈希、session 和账号标识仍不进入前端、日志或遥测。
-- `ensureArticleSchema()` 只创建表和索引，不再在每个新隔离实例中执行完整文章 seed。`seedArticleTestData()` 先读取 `site_runtime_state.article_seed_version`；只有版本不是当前 `20260801-whiteboard-reliable-sketch-r1` 才在一个 D1 batch 中执行文章／三语 seed，并把当前版本标记作为最后一条写入。全新 `schema.sql` 也在全部 seed 完成后写同一标记，避免运行时再次重放。
+- `ensureArticleSchema()` 只创建表和索引，不再在每个新隔离实例中执行完整文章 seed。`seedArticleTestData()` 先读取 `site_runtime_state.article_seed_version`；只有版本不是当前 `20260801-whiteboard-calm-sync-r1` 才在一个 D1 batch 中执行文章／三语 seed，并把当前版本标记作为最后一条写入。全新 `schema.sql` 也在全部 seed 完成后写同一标记，避免运行时再次重放。
 - 管理后台新增“流量与写入”面板和 `/api/admin/traffic-control`。默认站内保护阈值为 UTC 自然日估算 60,000／80,000 行；正常采样为 100/100/100，预警为页面 50%、点击 25%、文章 75%，硬保护为页面 10%、点击 0%、文章 25%。总开关和分项开关只控制非必要遥测；登录、云存档、聊天室、互传与画板业务写入不受自动关闭。配置保存在 `site_runtime_state.traffic_control_settings_v1`，使用 `expectedUpdatedAt` 条件保存，陈旧页面返回 409 并保留输入。
 - 面板的站内估算只覆盖可识别的页面／身份、点击、文章阅读和登录成功事件，并显式标为非账单数据。精确 `rowsWritten` 可选通过 Cloudflare GraphQL Analytics 只读连接获取；需要运行时配置 `CLOUDFLARE_ANALYTICS_API_TOKEN`、`CLOUDFLARE_ANALYTICS_ACCOUNT_ID`、`CLOUDFLARE_ANALYTICS_D1_DATABASE_ID`。Token 只放 Pages Production Secret，不写代码、文档值、聊天、日志或 Git；未配置时面板必须明确显示“未连接”，站内保护仍可运行。
 - 本批公开记录为 `seed-update-2026-08-01-service-reliability`，公开／API／后台资源版本为 `20260801-service-reliability-r1`。远端 D1、GitHub `main`、Cloudflare Pages 与正式域名状态仍须以本次实际发布核验为准，不能从本地文件推断成功。

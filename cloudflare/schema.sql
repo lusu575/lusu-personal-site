@@ -743,6 +743,140 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-08-01-whiteboard-calm-efficient-sync',
+  '2026-08-01-whiteboard-calm-efficient-sync',
+  'site-updates',
+  '["网站更新","在线画板","节省资源","连接体验","铅笔草图"]',
+  '', 'published', 0, 0,
+  '2026-08-01T12:50:00.000Z',
+  '2026-08-01T12:50:00.000Z',
+  '2026-08-01T12:50:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  (
+    'seed-update-2026-08-01-whiteboard-calm-efficient-sync-zh',
+    'seed-update-2026-08-01-whiteboard-calm-efficient-sync',
+    'zh',
+    '在线画板安静同步与空房休眠',
+    '画板 v1.0.2 统一所有房间的铅笔草图默认值，并用边缘自动心跳、后台停放、按变化批处理和空房无周期轮询降低 Cloudflare 用量；短暂重连不再弹大错误。',
+    '# 在线画板安静同步与空房休眠
+
+画板升级到 v1.0.2。本次不改变公共画板永久保留、密码房空置24小时清理的边界，重点是让同步只在有意义时工作。
+
+## 所有房间统一草图风
+
+- 公共画板和全部密码房使用同一套暖白纸张、石墨线条、hachure 填充和手绘粗糙度默认值。
+- 当前不提供按房型切换的第二主题；颜色、线宽和绘图工具仍可自由修改。
+
+## 有变化才同步
+
+- 画布真实变化才会生成 Yjs 持久化更新，并按文档大小以250、500或1000毫秒合并发送；鼠标位置继续只作临时广播。
+- 可见页面每60秒发送一次轻量 ping，由 Cloudflare 边缘自动回复，不唤醒已经休眠的房间。
+- 标签页隐藏60秒后先等待未确认画线落盘，再主动停放连接；重新打开时会自动重连并同步差异。
+- 持续绘制期间，跨房管理用的 D1 摘要最多约每分钟更新一次，画布权威数据仍保存在 Durable Object。
+
+## 空房不做无效轮询
+
+- 空公共房不再运行周期生命周期闹钟，已画内容仍永久保留；只有票据、资源或限频状态确有到期任务时才安排一次性清理。
+- 密码房最后一人离开后仍只保留24小时删除计划，期间重入会取消并在再次为空时重计。
+- 有真实连接的房间以5分钟低频巡检兜底异常断线，正常离开会立即处理。
+
+## 更安静的连接提示
+
+不足3秒的连接波动不新增提示；持续重连只在画布角落显示小状态，不再用中央横幅或通用错误打断绘画。权限、协议、容量和文件错误仍会明确显示。',
+    '2026-08-01T12:50:00.000Z',
+    '2026-08-01T12:50:00.000Z'
+  ),
+  (
+    'seed-update-2026-08-01-whiteboard-calm-efficient-sync-en',
+    'seed-update-2026-08-01-whiteboard-calm-efficient-sync',
+    'en',
+    'Calmer Whiteboard Sync and Idle-Room Hibernation',
+    'Whiteboard v1.0.2 gives every room the same pencil-sketch defaults and lowers Cloudflare usage through edge auto-responses, hidden-tab parking, change-only batching, and no recurring empty-room polling; brief reconnects no longer show large errors.',
+    '# Calmer Whiteboard Sync and Idle-Room Hibernation
+
+Whiteboard is now v1.0.2. Public-board permanence and the 24-hour cleanup boundary for empty password rooms are unchanged; this release makes synchronization work only when it has useful work to do.
+
+## One sketch style for every room
+
+- The public board and every password room share warm paper, graphite strokes, hachure fill, and hand-drawn roughness as their defaults.
+- There is currently no second theme selected by room type. Colors, stroke widths, and drawing tools remain editable.
+
+## Synchronize only after change
+
+- Only real canvas changes create durable Yjs updates. They are merged at 250, 500, or 1000 milliseconds according to document size, while pointer positions remain transient broadcasts.
+- A visible page sends one lightweight ping every 60 seconds. Cloudflare answers it at the edge without waking a hibernating room.
+- After a tab stays hidden for 60 seconds, it first drains unacknowledged strokes and then parks the connection. Returning reconnects and synchronizes the difference automatically.
+- During continuous drawing, the cross-room D1 summary is refreshed at most about once per minute; Durable Object storage remains authoritative for the canvas.
+
+## No useless polling in empty rooms
+
+- An empty public room has no recurring lifecycle alarm, while its drawing still persists. One-off cleanup is scheduled only when tickets, assets, or rate state actually expire.
+- A password room still keeps only its 24-hour deletion plan after the last participant leaves. Re-entry cancels it and a later departure restarts it.
+- Rooms with real connections use a five-minute low-frequency sweep only as a fallback for abnormal disconnects; normal departures are handled immediately.
+
+## Quieter connection feedback
+
+Connection changes shorter than three seconds add no notice. A longer reconnect shows only a small canvas-corner status instead of a central banner or generic error. Access, protocol, capacity, and file errors remain explicit.',
+    '2026-08-01T12:50:00.000Z',
+    '2026-08-01T12:50:00.000Z'
+  ),
+  (
+    'seed-update-2026-08-01-whiteboard-calm-efficient-sync-ja',
+    'seed-update-2026-08-01-whiteboard-calm-efficient-sync',
+    'ja',
+    'ホワイトボードの静かな同期と空室休止',
+    'ホワイトボード v1.0.2 は全ルームで鉛筆スケッチの既定値を統一し、エッジ自動応答、非表示タブの休止、変更時だけの一括同期、空室の定期巡回停止で Cloudflare 使用量を抑えます。短い再接続では大きなエラーを表示しません。',
+    '# ホワイトボードの静かな同期と空室休止
+
+ホワイトボードを v1.0.2 に更新しました。公開ボードの永続保持と、空になったパスワードルームを24時間後に削除する境界は変えず、必要なときだけ同期が動くようにしました。
+
+## 全ルームで一つのスケッチ風
+
+- 公開ボードとすべてのパスワードルームは、暖かい紙、黒鉛の線、ハッチング塗り、手描きの粗さを共通の既定値にします。
+- 現在はルーム種別ごとの第二テーマを用意しません。色、線幅、描画ツールは引き続き変更できます。
+
+## 変更時だけ同期
+
+- 実際にキャンバスが変わったときだけ永続 Yjs 更新を生成し、文書サイズに応じて250、500、1000ミリ秒でまとめます。ポインター位置は一時配信のままです。
+- 表示中のページは60秒ごとに軽量 ping を送り、Cloudflare がエッジで自動応答するため、休止中のルームを起こしません。
+- タブが60秒非表示になると、未確認の線を先に保存してから接続を休止します。再表示時は自動再接続して差分を同期します。
+- 連続描画中も、ルーム横断管理用の D1 要約は最大で約1分に1回だけ更新し、キャンバスの正本は Durable Object に残します。
+
+## 空室では無駄に巡回しない
+
+- 空の公開ルームには周期的なライフサイクル Alarm を置かず、描画内容はそのまま保持します。チケット、画像、制限状態に実際の期限がある場合だけ一回限りの清掃を予定します。
+- パスワードルームは最後の参加者が離れた後も24時間削除予定だけを保持し、再入室で取り消し、再び空になれば再計時します。
+- 実接続があるルームは異常切断の予備手段として5分間隔で低頻度確認し、通常の退出は即時処理します。
+
+## 静かな接続表示
+
+3秒未満の接続変動では追加表示を出しません。長引く再接続だけをキャンバス隅の小さな状態で示し、中央バナーや一般エラーで描画を遮りません。アクセス、プロトコル、容量、ファイルのエラーは明確に表示します。',
+    '2026-08-01T12:50:00.000Z',
+    '2026-08-01T12:50:00.000Z'
+  )
+on conflict(translation_id) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-08-01-whiteboard-reliable-sketch',
   '2026-08-01-whiteboard-reliable-sketch',
   'site-updates',
@@ -11004,7 +11138,7 @@ on conflict(article_id) do update set
   published_at = excluded.published_at;
 
 insert into site_runtime_state (key, value, updated_at)
-values ('article_seed_version', '20260801-whiteboard-reliable-sketch-r1', '2026-08-01T09:55:00.000Z')
+values ('article_seed_version', '20260801-whiteboard-calm-sync-r1', '2026-08-01T12:50:00.000Z')
 on conflict(key) do update set
   value = excluded.value,
   updated_at = excluded.updated_at

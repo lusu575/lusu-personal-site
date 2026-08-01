@@ -84,7 +84,7 @@ WebSocket ticket 的 `jti` 在 DO storage 中以 5 分钟过期时间原子消�
 
 客户端文本消息：
 
-- `heartbeat`、`focus`
+- `ping`：当前客户端的 60 秒可见页保活，使用 `WebSocketRequestResponsePair("ping", "pong")` 在边缘自动应答，不进入 DO message handler；旧版 `heartbeat` 与 `focus` 在滚动发布期间继续兼容。
 - `sync-request`
 - `awareness`：世界坐标 cursor、短 selection 列表、drawing/focused/away。此类状态只广播，不写 DO storage 或 D1。
 
@@ -92,7 +92,7 @@ WebSocket ticket 的 `jti` 在 DO storage 中以 5 分钟过期时间原子消�
 
 - `ready`：包含当前文档版本和客户端建议的 `updateIntervalMs`
 - `participant-join`、`participant-update`、`participant-leave`
-- `heartbeat-ack`
+- `heartbeat-ack`：仅供滚动发布期间的旧版 JSON heartbeat 兼容。
 - `readonly`、`lock-state`
 - `update-accepted`：对已在 DO storage transaction 中持久化的 Yjs update 回执，包含 `documentVersion` 和新的 `updateIntervalMs`
 - `update-rejected`
@@ -106,23 +106,23 @@ WebSocket ticket 的 `jti` 在 DO storage 中以 5 分钟过期时间原子消�
 - Yjs `elements` map 是对象级 CRDT；客户端不能以整张旧画布覆盖服务端。
 - 每个 update 先在候选 Y.Doc 上校验对象数和完整文档大小，再写 `document:update:*`。
 - update 与对应 `room:meta` 版本在同一个 storage transaction 提交；持久化失败时不会留下“有增量、无版本”或覆盖下一版本的半提交状态。
-- Worker 只在上述 transaction 和 `room:meta` 持久化全部成功后发送 `update-accepted`。客户端一次只保留一个未确认增量，将快速画线合并后按 `updateIntervalMs` 发送；确认前断线会把原增量放回队列并在重连后重传。Yjs update 幂等，因此回执丢失后的重复投递不会重复画线。
+- Worker 只在上述 transaction 和 `room:meta` 持久化全部成功后发送 `update-accepted`。客户端一次只保留一个未确认增量，将快速画线合并后按 250／500／1000ms 的 `updateIntervalMs` 发送；没有 Yjs 变化就没有文档帧或持久化写入。确认前断线会把原增量放回队列并在重连后重传。Yjs update 幂等，因此回执丢失后的重复投递不会重复画线。
 - 达到 64 个增量或 2 MiB 增量后写快照并删除已合并增量。Cloudflare SQLite-backed DO 的单个 key + value 上限是 2 MB，因此小快照继续保存在 `document:snapshot`，超过 1 MiB 时由该 key 保存 manifest、正文按 `document:snapshot:chunk:*` 分片；manifest、全部分片、元数据和旧增量删除在同一个 transaction 中提交。加载逻辑兼容上线前的单值快照。
 - `YjsDocumentStore` 缓存当前完整编码大小。每个连接通常每秒最多 24 个 update；文档超过 5 MiB 时降为 6 个，超过 10 MiB 时降为 2 个，限制候选文档复制与重编码的 CPU 放大。
 - 文档、房间元数据、禁用列表、图片元数据和 Alarm 存 DO storage。
 - 鼠标、选区、绘制中、焦点和暂离状态仅在 WebSocket 广播。
-- D1 `whiteboard_rooms` 与 `whiteboard_assets` 是 best-effort fleet index；DO 与 R2 是权威数据。索引失败不阻断房间写入，后台对账可清除孤立索引行。可治理故障只以短错误码写入房间 `last_error`，并用 `whiteboard_metrics` 累计去重错误和成功自动清理次数；不记录请求体或画布内容。
+- D1 `whiteboard_rooms` 与 `whiteboard_assets` 是 best-effort fleet index；DO 与 R2 是权威数据。连续绘制期间 `whiteboard_rooms` 摘要最多约每 60 秒同步一次，加入、离开和管理动作仍立即同步；索引失败不阻断房间写入，后台对账可清除孤立索引行。可治理故障只以短错误码写入房间 `last_error`，并用 `whiteboard_metrics` 累计去重错误和成功自动清理次数；不记录请求体或画布内容。
 - 上传后给前端一小时把 asset ID 写入 Yjs `assets` map；Alarm 会删除超过该安全宽限期仍未被引用的 R2 对象、DO image metadata 和 D1 asset index。引用变化会安排 15 分钟内的有界复查，公共房不会因无 TTL 而永久保留孤立上传。
 
 限制包括：每房 64 条连接、每身份 4 条连接、每 IP hash 8 条连接、单帧 256 KiB、每秒 24/6/2 个自适应 Yjs update、每秒 30 个 awareness、每 IP hash 每分钟 4 次完整/差异同步请求与 32 MiB 同步响应预算、5,000 个活动对象、15 MiB 文档、5 MiB 单图、100 张/100 MiB 单房图片。图片只接受经过真实字节结构检查的 PNG、JPEG、WebP；SVG、HTML、脚本、伪造类型、超尺寸或截断内容会被拒绝。
 
-心跳扫描、密码房 TTL、ticket JTI 清理、未引用资源检查和上传/同步限频状态清理共用 DO 唯一 Alarm。任何限频状态写入都会立即重算并设置最早 Alarm，即使公共房没有 WebSocket、图片校验失败或请求已触发限频，也不会留下永久 rate key；到期处理后会删除状态并再次按剩余任务重排 Alarm。
+失联兜底巡检、密码房 TTL、ticket JTI 清理、未引用资源检查和上传/同步限频状态清理共用 DO 唯一 Alarm。有连接房间每 5 分钟巡检一次，最近 7 分钟内收到业务消息或 auto-response ping 的连接保持有效；设置 Alarm 前会比较现有时间，避免每次唤醒都重复改写。空公共房没有周期生命周期 Alarm，只有 ticket、资源或限频状态等真实待办才安排一次性 Alarm；到期处理后删除状态并按剩余任务重排。
 
 ## 24 小时生命周期
 
 公共房的画布、已引用图片和快照永不进入空房 TTL 删除，只能由管理员显式清空。密码房规则：
 
-1. 最后一条有效连接关闭或被 55 秒心跳超时清除时，写 `emptySince` 和 `deleteAt = emptySince + 24h`。
+1. 最后一条有效连接关闭或被 7 分钟失联兜底巡检清除时，写 `emptySince` 和 `deleteAt = emptySince + 24h`。正常后台标签页会在隐藏 60 秒后主动离开，不等待巡检。
    DO 恢复时若 storage 仍声称有人在线、但 `getWebSockets()` 没有恢复连接，也会从恢复时刻重新进入这套空房流程；不能由残留 `onlineCount` 阻止清理。DO 内首次创建的密码房在 WebSocket 真正接纳前同样先处于 24 小时待清理状态。
 2. 24 小时内任意连接加入会原子清空两个字段，并把 Alarm 改为心跳扫描。
 3. 房间再次为空会从新的离开时间重新计算。
