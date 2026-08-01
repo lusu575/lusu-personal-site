@@ -9,6 +9,7 @@
 
 - `agent/multiplayer-whiteboard` 已在 Node.js 22.23.2 下同步 lockfile，并以普通 merge 合入截至 `c8abc571` 的最新 `main`（含每日 AI 新闻完整候选复核与韩国模型查询分片）；后续验证以合并后的支线为准，不能只引用原始 `a7f1f80c` 的旧测试结果。
 - `.codex-worktrees/` 是其他 Codex 任务的独立 checkout，不属于当前仓库源码。Git、构建守卫和仓库密钥扫描必须忽略该目录，避免旧工作树内容污染当前构建或产生虚假安全结果；不得通过删除其他任务工作树来让构建通过。
+- Cloudflare Production D1 对复合 `SELECT` 的上限是 5 项；远程迁移的分组校验必须在写入前检查每条查询的 `UNION ALL` 项数，并把更多校验拆成多条查询。不能因 schema／索引导入成功就忽略随后校验器的非零退出，也不能用本地 SQLite 接受更长复合查询来推断生产 D1 会接受。
 - Cloudflare 生产 D1、Durable Object Worker、Pages external binding、Secret、PR 合并和正式域名仍须按画板发布顺序逐项实际核验，本地通过不能替代远端状态。
 
 ## 2026-07-31 每日 AI 新闻完整发现审阅

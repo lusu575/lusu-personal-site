@@ -6,6 +6,7 @@
 
 - 修复每日 AI 新闻韩文开放模型 required 查询的稳定截断：原 `korean-model-releases-ko` 把 LG AI Research／EXAONE、NAVER／HyperCLOVA 与 Upstage／Solar 及多类动作塞进同一大型 OR，99+1 探针持续命中第 100 条并按规则关闭整期。正式目录改为 5 个互补的 required + must-review 查询，分别覆盖 EXAONE 开放／权重动作、EXAONE 普通发布、LG AI Research 其他模型、NAVER／HyperCLOVA、Upstage／Solar；EXAONE 两条以动作排除词分流，LG 其他查询显式排除 EXAONE，保留相同 `open-models` 覆盖组和 `open-weight-releases` 审阅通道。该拆分已在 2026-08-01 固定窗口真实运行中全部通过 99+1 上限门禁；新增目录回归，禁止旧宽查询回归，并锁定 5 条查询的韩文／韩国、required、must-review、厂商别名、动作词与去重排除条件。本次仅调整内部发现目录、测试和维护文档，不改变公开 UI，也不新增 `site-updates`。
 - 接管并整合 `agent/multiplayer-whiteboard`：使用 Node.js 22.23.2 补齐 `package-lock.json` 中 Vitest/Vite 可选 Sass watcher 依赖，使严格 `npm ci` 可重现；把截至 `c8abc571` 的最新 `main`（含每日 AI 新闻完整候选复核与韩国模型查询分片）通过普通 merge 合入支线并同时保留画板上下文。构建守卫和仓库密钥扫描现在明确忽略本机 `.codex-worktrees/`，避免把其他 Codex 任务的独立 checkout 当作当前仓库源码，同时新增锁定该隔离规则的生产构建回归。该记录不代表远端 D1、Durable Object Worker、Pages binding、PR 合并或生产域名已经完成验证。
+- 修复生产 D1 迁移器在 schema 与索引已成功写入后误报失败的问题：Cloudflare Production D1 的复合 `SELECT` 最多接受 5 项，原最后一组 7 项 `UNION ALL` 校验会收到 `too many terms in compound SELECT`。画板表校验现拆成 5 项与 4 项两组，并补查 `whiteboard_admin_audit`、`whiteboard_metrics`；迁移器在任何远端写入前先锁定每组不超过 5 项，新增对应回归。
 
 ## 2026-07-31
 

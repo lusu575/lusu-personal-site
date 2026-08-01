@@ -273,6 +273,16 @@ test("remote D1 runner fails closed when grouped verification is incomplete", as
   assert.deepEqual(files, ["cloudflare/schema.sql", "cloudflare/schema-indexes.sql"]);
 });
 
+test("remote D1 verification groups stay within the production compound SELECT limit", () => {
+  for (const sql of REMOTE_MIGRATION_VERIFICATION_QUERIES) {
+    const terms = 1 + (sql.match(/\bunion\s+all\b/gi)?.length || 0);
+    assert.ok(terms <= 5, `verification query has ${terms} compound SELECT terms`);
+  }
+  const verificationSql = REMOTE_MIGRATION_VERIFICATION_QUERIES.join("\n");
+  assert.match(verificationSql, /whiteboard_admin_audit/);
+  assert.match(verificationSql, /whiteboard_metrics/);
+});
+
 test("the remote migration package command uses the compatibility runner without a local fallback", () => {
   assert.equal(packageData.scripts["d1:migrate:remote"], "node scripts/d1-migrate-remote.mjs");
   assert.match(remoteRunnerSource, /from "\.\/d1-migrate-local\.mjs"/);

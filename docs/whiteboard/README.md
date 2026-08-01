@@ -137,6 +137,7 @@ Preview 必须使用独立的 `workers/whiteboard/wrangler.preview.jsonc`：脚�
 8. `npm run build:production:verify`
 9. Preview 默认保持 `PREVIEW_API_DISABLED=true` 且 D1/R2 空绑定；如本次获准启用 Preview，先创建并迁移独立 Preview D1，再部署 `lusu-whiteboard-do-preview`，并核对独立 Secret、R2／DO namespace 与精确 Preview Origin。
 10. 执行并核验获授权的 Production `npm run d1:migrate:remote`；这一步必须先于读取新表的 Production Worker 与 Pages 部署。
+    - Production D1 单条复合 `SELECT` 最多 5 项；迁移器会在远端写入前检查分组校验项数。新增校验时必须拆分超限的 `UNION ALL`，并以真实 D1 回读为准。
 11. 部署 `lusu-whiteboard-do` Worker 及 SQLite Durable Object migration。
 12. 在 Pages Production 核对 external DO binding；Preview 只有完成第 9 步全部隔离条件后才可开启并核对 binding。
 13. 合并 PR，由 `main` 触发 Pages Git 部署。
