@@ -123,7 +123,7 @@ Pages Production：
 
 三个房间／票据／IP Secret 只由 Pages Functions 使用；独立 Worker 不接收密码，也不需要这些值。`WHITEBOARD_INTERNAL_SECRET` 是唯一在 Pages 与 Worker 两侧配置且值必须一致的画板 Secret。四个值均至少 32 UTF-8 bytes、用途独立，并在 Preview 与 Production 分别配置。仓库只提交名称和用途。
 
-Preview 必须使用独立的 `workers/whiteboard/wrangler.preview.jsonc`：脚本／DO namespace 为 `lusu-whiteboard-do-preview`，R2 为 `lusu-temp-transfer-preview`，不得绑定 Production R2。根 `wrangler.jsonc` 的提交态 `env.preview` 固定为 `PREVIEW_API_DISABLED=true`、`d1_databases: []`、`r2_buckets: []`，并指向 Preview Worker；不得出现 Production D1 ID／名称或 Production R2 桶名。只有独立 Preview D1 已创建并迁移、精确 Preview Origin、独立 Secret 与所需独立 R2 全部配置和验收后，才可在经审查的 Preview 配置中绑定独立资源并开启 API。Worker 的 `DB` 为可选跨房管理索引，因此仓库中的 Preview Worker 配置有意不绑定 Production D1。
+Preview Worker 必须使用独立的 `workers/whiteboard/wrangler.preview.jsonc`：脚本／DO namespace 为 `lusu-whiteboard-do-preview`，R2 为 `lusu-temp-transfer-preview`，不得绑定 Production R2。该文件是部署独立 Preview Worker 的配置，不表示 Pages Preview 已经可以引用它。根 `wrangler.jsonc` 的提交态 `env.preview` 固定为 `PREVIEW_API_DISABLED=true`、`d1_databases: []`、`r2_buckets: []`、`durable_objects.bindings: []`；不得出现 Production D1 ID／名称、Production R2 桶名，或引用尚未部署的 Preview Worker。只有独立 Preview D1 已创建并迁移、精确 Preview Origin、独立 Secret 与所需独立 R2 全部配置和验收，并先成功部署 Preview Worker 后，才可在经审查的 Pages Preview 配置中绑定独立资源并开启 API。Worker 的 `DB` 为可选跨房管理索引，因此仓库中的 Preview Worker 配置有意不绑定 Production D1。
 
 ## 部署与迁移顺序
 
@@ -135,7 +135,7 @@ Preview 必须使用独立的 `workers/whiteboard/wrangler.preview.jsonc`：脚�
 6. `npm run whiteboard:test`
 7. `npm run build`
 8. `npm run build:production:verify`
-9. Preview 默认保持 `PREVIEW_API_DISABLED=true` 且 D1/R2 空绑定；如本次获准启用 Preview，先创建并迁移独立 Preview D1，再部署 `lusu-whiteboard-do-preview`，并核对独立 Secret、R2／DO namespace 与精确 Preview Origin。
+9. Preview 默认保持 `PREVIEW_API_DISABLED=true` 且 D1/R2/DO 空绑定；如本次获准启用 Preview，先创建并迁移独立 Preview D1，再部署 `lusu-whiteboard-do-preview`，核对独立 Secret、R2／DO namespace 与精确 Preview Origin，最后才把 Pages Preview binding 接入该 Worker。
 10. 执行并核验获授权的 Production `npm run d1:migrate:remote`；这一步必须先于读取新表的 Production Worker 与 Pages 部署。
     - Production D1 单条复合 `SELECT` 最多 5 项；迁移器会在远端写入前检查分组校验项数。新增校验时必须拆分超限的 `UNION ALL`，并以真实 D1 回读为准。
 11. 部署 `lusu-whiteboard-do` Worker 及 SQLite Durable Object migration。

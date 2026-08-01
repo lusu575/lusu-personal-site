@@ -161,6 +161,11 @@ function visitorCookie(response) {
   return match ? `lusu_visitor=${match[1]}` : "";
 }
 
+async function sha256HexValue(value) {
+  const digest = await webcrypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+  return Buffer.from(digest).toString("hex");
+}
+
 test("main API mutation gate rejects cross-origin and non-JSON requests before business writes", async () => {
   const { onRequest } = await freshApi("mutation-gate");
   const DB = new D1Database();
@@ -261,13 +266,14 @@ test("auth requests are bounded, rate limited, enumeration-safe, and upgrade leg
       insert into users (id, email, password_hash, role, created_at, updated_at)
       values (?, ?, ?, 'user', ?, ?)
     `).run("legacy-user", "legacy@example.test", await legacyPasswordHash(password), now, now);
+    const compatibleHash = await legacyPasswordHash(password, 100000);
     DB.sqlite.prepare(`
       insert into users (id, email, password_hash, role, created_at, updated_at)
       values (?, ?, ?, 'user', ?, ?)
     `).run(
       "legacy-100k-user",
       "legacy-100k@example.test",
-      await legacyPasswordHash(password, 100000),
+      compatibleHash,
       now,
       now
     );
@@ -279,7 +285,7 @@ test("auth requests are bounded, rate limited, enumeration-safe, and upgrade leg
     }));
     assert.equal(login.status, 200, await login.clone().text());
     const stored = DB.sqlite.prepare("select password_hash from users where id = ?").get("legacy-user").password_hash;
-    assert.match(stored, /^pbkdf2_sha256\$600000\$/);
+    assert.match(stored, /^pbkdf2_sha256\$100000\$/);
 
     const login100k = await invoke(onRequest, DB, apiRequest("auth/login", {
       method: "POST",
@@ -290,7 +296,7 @@ test("auth requests are bounded, rate limited, enumeration-safe, and upgrade leg
     const stored100k = DB.sqlite.prepare(
       "select password_hash from users where id = ?"
     ).get("legacy-100k-user").password_hash;
-    assert.match(stored100k, /^pbkdf2_sha256\$600000\$/);
+    assert.equal(stored100k, compatibleHash, "a runtime-compatible hash must not be rewritten on login");
 
     const registered = await invoke(onRequest, DB, apiRequest("auth/register", {
       method: "POST",
@@ -301,7 +307,7 @@ test("auth requests are bounded, rate limited, enumeration-safe, and upgrade leg
     const registeredHash = DB.sqlite.prepare(
       "select password_hash from users where email = ?"
     ).get("new-account@example.test").password_hash;
-    assert.match(registeredHash, /^pbkdf2_sha256\$600000\$/);
+    assert.match(registeredHash, /^pbkdf2_sha256\$100000\$/);
 
     const duplicate = await invoke(onRequest, DB, apiRequest("auth/register", {
       method: "POST",
@@ -377,6 +383,82 @@ test("analytics writes are source checked and duplicate page views are collapsed
       DB.sqlite.prepare("select count(*) as count from analytics_click_events").get().count,
       0
     );
+  } finally {
+    DB.close();
+  }
+});
+
+test("admin traffic controls expose honest write pressure, use CAS, and can shed telemetry writes", async () => {
+  const { onRequest } = await freshApi("traffic-control");
+  const DB = new D1Database();
+  const sessionToken = "traffic-control-admin-session-token";
+  try {
+    const initialize = await invoke(onRequest, DB, apiRequest("auth/me"));
+    assert.equal(initialize.status, 200);
+    const now = "2026-08-01T00:00:00.000Z";
+    DB.sqlite.prepare(`
+      insert into users (id, email, password_hash, role, created_at, updated_at)
+      values (?, ?, ?, 'admin', ?, ?)
+    `).run("traffic-admin", "traffic-admin@example.test", "not-used", now, now);
+    DB.sqlite.prepare(`
+      insert into sessions (token_hash, user_id, created_at, expires_at)
+      values (?, ?, ?, ?)
+    `).run(
+      await sha256HexValue(sessionToken),
+      "traffic-admin",
+      now,
+      "2099-01-01T00:00:00.000Z"
+    );
+    const adminHeaders = { Cookie: `lusu_session=${sessionToken}` };
+
+    const snapshotResponse = await invoke(onRequest, DB, apiRequest("admin/traffic-control", {
+      headers: adminHeaders
+    }));
+    assert.equal(snapshotResponse.status, 200, await snapshotResponse.clone().text());
+    const snapshot = await snapshotResponse.json();
+    assert.equal(snapshot.settings.warningRows, 60000);
+    assert.equal(snapshot.settings.hardRows, 80000);
+    assert.equal(snapshot.usage.scope, "site-telemetry-estimate");
+    assert.match(snapshot.usage.note, /估算/);
+    assert.equal(snapshot.official.status, "not-configured");
+    assert.equal("token" in snapshot.official, false);
+
+    const missingVersion = await invoke(onRequest, DB, apiRequest("admin/traffic-control", {
+      method: "PUT",
+      headers: adminHeaders,
+      body: { settings: snapshot.settings }
+    }));
+    assert.equal(missingVersion.status, 428);
+    assert.equal((await missingVersion.json()).code, "TRAFFIC_CONTROL_VERSION_REQUIRED");
+
+    const nextSettings = structuredClone(snapshot.settings);
+    nextSettings.pageViewsEnabled = false;
+    const update = await invoke(onRequest, DB, apiRequest("admin/traffic-control", {
+      method: "PUT",
+      headers: adminHeaders,
+      body: { expectedUpdatedAt: snapshot.updatedAt, settings: nextSettings }
+    }));
+    assert.equal(update.status, 200, await update.clone().text());
+    const updated = await update.json();
+    assert.equal(updated.settings.pageViewsEnabled, false);
+    assert.notEqual(updated.updatedAt, snapshot.updatedAt);
+
+    const staleUpdate = await invoke(onRequest, DB, apiRequest("admin/traffic-control", {
+      method: "PUT",
+      headers: adminHeaders,
+      body: { expectedUpdatedAt: snapshot.updatedAt, settings: snapshot.settings }
+    }));
+    assert.equal(staleUpdate.status, 409);
+    assert.equal((await staleUpdate.json()).code, "TRAFFIC_CONTROL_CONFLICT");
+
+    const pageView = await invoke(onRequest, DB, apiRequest("analytics/page-view", {
+      method: "POST",
+      headers: { "CF-Connecting-IP": "203.0.113.90" },
+      body: { path: "/#knowledge", route: "knowledge", lang: "zh" }
+    }));
+    assert.equal(pageView.status, 200, await pageView.clone().text());
+    assert.equal((await pageView.json()).recorded, false);
+    assert.equal(DB.sqlite.prepare("select count(*) as count from analytics_page_views").get().count, 0);
   } finally {
     DB.close();
   }

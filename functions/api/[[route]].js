@@ -6,8 +6,14 @@ import {
   withAnonymousIdentityCookie
 } from "./anonymous-identity.mjs";
 import { handleWhiteboardApi } from "./whiteboard-service.mjs";
+import {
+  TrafficControlError,
+  getTrafficControlAdminSnapshot,
+  telemetryWriteDecision,
+  updateTrafficControlSettings
+} from "./traffic-control.mjs";
 
-export const PUBLIC_API_REPRESENTATION_VERSION = "20260730-multiplayer-whiteboard-r1";
+export const PUBLIC_API_REPRESENTATION_VERSION = "20260801-service-reliability-r1";
 export const PUBLIC_ARTICLE_ARCHIVE_LIMIT = 500;
 const SESSION_COOKIE = "lusu_session";
 const SESSION_DAYS = 30;
@@ -25,7 +31,8 @@ const JAPANESE_SUBTEXT_DISPLAY_MODES = new Set(["listening", "japanese", "biling
 const JAPANESE_SUBTEXT_PLAYBACK_RATES = new Set([0.75, 1, 1.15]);
 const JAPANESE_SUBTEXT_MEDAL_RANK = Object.freeze({ none: 0, bronze: 1, silver: 2, gold: 3 });
 const JAPANESE_SUBTEXT_MEDAL_NAME = Object.freeze(["none", "bronze", "silver", "gold"]);
-const PASSWORD_HASH_ITERATIONS = 600000;
+const PASSWORD_HASH_ITERATIONS = 100000;
+const PASSWORD_HASH_MAX_RUNTIME_ITERATIONS = 100000;
 const MAX_AUTH_JSON_BYTES = 8 * 1024;
 const MAX_ANALYTICS_JSON_BYTES = 16 * 1024;
 const MAX_CHAT_JSON_BYTES = 16 * 1024;
@@ -36,6 +43,8 @@ const API_RATE_LIMIT_RETENTION_MS = 2 * 24 * 60 * 60 * 1000;
 const DATA_CLEANUP_STATE_KEY = "api_periodic_data_cleanup";
 const DATA_CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const DATA_CLEANUP_DELETE_LIMIT = 5000;
+const ARTICLE_SEED_STATE_KEY = "article_seed_version";
+const ARTICLE_SEED_VERSION = "20260801-service-reliability-r1";
 const LOGIN_EVENT_RETENTION_DAYS = 365;
 const ANALYTICS_EVENT_RETENTION_DAYS = 180;
 const AUTH_RATE_LIMITS = Object.freeze({
@@ -360,6 +369,15 @@ export async function onRequest(context) {
         return await updateAdminAccount(request, env, parts[2]);
       }
     }
+    if (parts[0] === "admin" && parts[1] === "traffic-control" && !parts[2]) {
+      await ensureAnalyticsSchema(env);
+      if (request.method === "GET") {
+        return await getAdminTrafficControl(request, env);
+      }
+      if (request.method === "PUT") {
+        return await updateAdminTrafficControl(request, env);
+      }
+    }
     if (parts[0] === "admin" && parts[1] === "analytics") {
       await ensureAnalyticsSchema(env);
       await ensureChatSchema(env);
@@ -479,7 +497,9 @@ export async function onRequest(context) {
 
     return json({ error: "Not found." }, 404);
   } catch (error) {
-    const expectedError = error instanceof HttpError || error instanceof AnonymousIdentityError;
+    const expectedError = error instanceof HttpError
+      || error instanceof AnonymousIdentityError
+      || error instanceof TrafficControlError;
     const status = expectedError ? error.status : 500;
     if (status >= 500) {
       console.error(JSON.stringify({
@@ -494,7 +514,8 @@ export async function onRequest(context) {
       error: expectedError
         ? error.message
         : "服务暂时不可用，请稍后重试。",
-      ...(expectedError && error.code ? { code: error.code } : {})
+      ...(expectedError && error.code ? { code: error.code } : {}),
+      ...(expectedError && error.details ? { details: error.details } : {})
     }, status);
     if (expectedError && Number(error.retryAfter || 0) > 0) {
       response.headers.set("Retry-After", String(Math.ceil(error.retryAfter)));
@@ -3363,9 +3384,29 @@ async function updateAdminAccount(request, env, userId) {
   return await getAdminAccount(request, env, existing.id);
 }
 
+async function getAdminTrafficControl(request, env) {
+  await requireAdmin(request, env);
+  return json(await getTrafficControlAdminSnapshot(env));
+}
+
+async function updateAdminTrafficControl(request, env) {
+  const adminSession = await requireAdmin(request, env);
+  const body = await readJson(request, MAX_ADMIN_JSON_BYTES, "流量策略内容过大。");
+  await updateTrafficControlSettings(env, body, adminSession.user.id);
+  return json(await getTrafficControlAdminSnapshot(env));
+}
+
 async function identifyVisitor(request, env) {
   const body = await readOptionalJson(request, MAX_ANALYTICS_JSON_BYTES, "统计请求内容过大。");
   const identity = await analyticsIdentityForRequest(request, env);
+  const decision = await telemetryWriteDecision(env, {
+    kind: "identify",
+    identity: identity.visitorId,
+    fingerprint: normalizeAnalyticsText(body?.language, 160)
+  });
+  if (!decision.record) {
+    return withVisitorCookie(json({ ok: true, recorded: false }), request, identity.cookieIdentity);
+  }
   const geo = await requestIpInfo(request, env, "analytics");
   const limited = await consumeFirstExceededRateLimit(env, [
     [await rateLimitBucketKey("analytics:identify:ip", geo.ipHash), ANALYTICS_RATE_LIMITS.identifyIp],
@@ -3381,8 +3422,16 @@ async function recordPageView(request, env) {
   const body = await readOptionalJson(request, MAX_ANALYTICS_JSON_BYTES, "统计请求内容过大。");
   const identity = await analyticsIdentityForRequest(request, env);
   const now = nowIso();
-  const geo = await requestIpInfo(request, env, "analytics");
   const path = normalizeAnalyticsPath(body?.path);
+  const decision = await telemetryWriteDecision(env, {
+    kind: "pageViews",
+    identity: identity.visitorId,
+    fingerprint: path
+  });
+  if (!decision.record) {
+    return withVisitorCookie(json({ ok: true, recorded: false }), request, identity.cookieIdentity);
+  }
+  const geo = await requestIpInfo(request, env, "analytics");
   const limited = await consumeFirstExceededRateLimit(env, [
     [await rateLimitBucketKey("analytics:page-view:ip", geo.ipHash), ANALYTICS_RATE_LIMITS.pageViewIp],
     [await rateLimitBucketKey("analytics:page-view:visitor", identity.visitorId), ANALYTICS_RATE_LIMITS.pageViewVisitor],
@@ -3426,7 +3475,6 @@ async function recordClickEvent(request, env) {
   const body = await readOptionalJson(request, MAX_ANALYTICS_JSON_BYTES, "统计请求内容过大。");
   const identity = await analyticsIdentityForRequest(request, env);
   const now = nowIso();
-  const geo = await requestIpInfo(request, env, "analytics");
   const path = normalizeAnalyticsPath(body?.path);
   const targetKey = normalizeAnalyticsText(body?.targetKey, 160);
   const clickFingerprint = [
@@ -3437,6 +3485,15 @@ async function recordClickEvent(request, env) {
     normalizeInteger(body?.x, -100000, 100000),
     normalizeInteger(body?.y, -100000, 100000)
   ].join(":");
+  const decision = await telemetryWriteDecision(env, {
+    kind: "clicks",
+    identity: identity.visitorId,
+    fingerprint: clickFingerprint
+  });
+  if (!decision.record) {
+    return withVisitorCookie(json({ ok: true, recorded: false }), request, identity.cookieIdentity);
+  }
+  const geo = await requestIpInfo(request, env, "analytics");
   const limited = await consumeFirstExceededRateLimit(env, [
     [await rateLimitBucketKey("analytics:click:ip", geo.ipHash), ANALYTICS_RATE_LIMITS.clickIp],
     [await rateLimitBucketKey("analytics:click:visitor", identity.visitorId), ANALYTICS_RATE_LIMITS.clickVisitor],
@@ -3484,6 +3541,14 @@ async function recordArticleView(request, env, article, lang) {
   await ensureAnalyticsSchema(env);
   const identity = await analyticsIdentityForRequest(request, env);
   if (!analyticsReadSourceIsTrusted(request)) {
+    return { ...identity, recorded: false };
+  }
+  const decision = await telemetryWriteDecision(env, {
+    kind: "articleViews",
+    identity: identity.visitorId,
+    fingerprint: `${article.article_id}:${normalizeArticleLang(lang)}`
+  });
+  if (!decision.record) {
     return { ...identity, recorded: false };
   }
   const now = nowIso();
@@ -4091,8 +4156,7 @@ async function ensureArticleSchema(env) {
     `),
     env.DB.prepare("create index if not exists articles_status_published_idx on articles(status, published_at, article_id)"),
     env.DB.prepare("create index if not exists articles_category_idx on articles(category)"),
-    env.DB.prepare("create index if not exists article_translations_article_lang_idx on article_translations(article_id, lang)"),
-    ...articleSeedStatements(env)
+    env.DB.prepare("create index if not exists article_translations_article_lang_idx on article_translations(article_id, lang)")
   ]);
   articleSchemaReady = true;
 }
@@ -6112,6 +6176,47 @@ const DAILY_AI_NEWS_2026_07_27_READER_PATCH = Object.freeze({
 function articleSeedStatements(env) {
   // Seed timestamps must be UTC ISO strings; the UI converts them to each visitor's local time.
   return [
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-08-01-service-reliability',
+        '2026-08-01-service-reliability',
+        'site-updates',
+        '["网站更新","账号","登录","D1","稳定性"]',
+        '', 'published', 0, 0,
+        '2026-08-01T07:10:00.000Z',
+        '2026-08-01T07:10:00.000Z',
+        '2026-08-01T07:10:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-08-01-service-reliability", {
+      zh: {
+        title: "账号与实时工具稳定性修复",
+        summary: "修复 Cloudflare 密码派生兼容性导致的登录失败，并停止文章种子在冷启动时重复写入 D1，降低账号、匿名身份和在线画板共用数据库时的写入压力。",
+        content_markdown: "# 账号与实时工具稳定性修复\n\n本次修复的是服务端兼容性和数据库写入放大，不需要访客更换电脑或网络。\n\n## 登录恢复\n\n- 新密码和旧密码升级现在使用 Cloudflare Workers 实际支持的 PBKDF2-HMAC-SHA256 100,000 次上限。\n- 旧 25,000 次记录成功登录后按条件升级；现有 100,000 次记录不再被重复改写。\n- 账号服务端故障与本地网络故障使用不同提示，避免把服务器问题误报为访客网络问题。\n\n## D1 写入降压\n\n- 文章初始化内容按发布版本写入持久标记；同一版本的后续冷启动只读标记，不再把整批文章和三语正文重复 upsert。\n- 这会减少与登录、匿名身份和画板加入共用 D1 时的无意义竞争，让实时工具更稳定。\n\n## 数据边界\n\n没有删除账号、文章、画板房间或历史内容；密码仍只保存派生哈希，画板实时文档仍由 Durable Object 管理。"
+      },
+      en: {
+        title: "Account and Real-Time Tool Reliability Fixes",
+        summary: "Fixes sign-in failures caused by a Cloudflare password-derivation incompatibility and stops article seeds from rewriting D1 on cold starts, reducing shared write pressure for accounts, anonymous identity, and Whiteboard.",
+        content_markdown: "# Account and Real-Time Tool Reliability Fixes\n\nThis release fixes server compatibility and amplified database writes. Visitors do not need to change their computer or network.\n\n## Sign-in recovery\n\n- New password hashes and legacy upgrades now use the 100,000-iteration PBKDF2-HMAC-SHA256 ceiling actually supported by the Cloudflare Workers runtime.\n- Legacy 25,000-iteration records upgrade conditionally after a successful sign-in, while existing 100,000-iteration records are left unchanged.\n- Server-side account failures and local connection failures now use different messages instead of blaming the visitor's network for a backend problem.\n\n## Lower D1 write pressure\n\n- Article initialization now persists a release-version marker. Later cold starts for the same release read that marker instead of upserting the full article and trilingual-content set again.\n- Removing those unnecessary writes reduces contention in the D1 database shared by sign-in, anonymous identity, and Whiteboard entry.\n\n## Data boundary\n\nNo account, article, whiteboard room, or historical content is deleted. Passwords remain stored only as derived hashes, and live whiteboard documents remain managed by Durable Objects."
+      },
+      ja: {
+        title: "アカウントとリアルタイムツールの安定性を修正",
+        summary: "Cloudflare のパスワード導出互換性によるログイン失敗を修正し、コールドスタート時の記事 seed による D1 の反復書き込みを止め、アカウント・匿名ID・ホワイトボード共通DBの負荷を下げました。",
+        content_markdown: "# アカウントとリアルタイムツールの安定性を修正\n\n今回はサーバー互換性とデータベースの書き込み増幅を修正しました。利用者がPCや回線を変更する必要はありません。\n\n## ログインの復旧\n\n- 新しいパスワードハッシュと旧記録の更新は、Cloudflare Workers ランタイムが実際に対応する上限である PBKDF2-HMAC-SHA256 100,000 回を使用します。\n- 旧 25,000 回の記録はログイン成功後に条件付きで更新し、既存の 100,000 回記録は再書き込みしません。\n- アカウントサーバー側の障害と端末の通信障害を別の案内にし、バックエンド問題を利用者の回線問題として表示しないようにしました。\n\n## D1 書き込み負荷の低減\n\n- 記事の初期化はリリース版マーカーを永続保存します。同じ版の後続コールドスタートではマーカーだけを読み、全記事と3言語本文を再度 upsert しません。\n- 不要な書き込みをなくすことで、ログイン、匿名ID、ホワイトボード入室が共有する D1 の競合を減らします。\n\n## データ境界\n\nアカウント、記事、ホワイトボードルーム、履歴データは削除しません。パスワードは引き続き導出ハッシュだけを保存し、ホワイトボードのリアルタイム文書は Durable Objects が管理します。"
+      }
+    }, "2026-08-01T07:10:00.000Z"),
     env.DB.prepare(`
       insert into articles (
         article_id, slug, category, tags, cover_image, status, is_pinned,
@@ -11733,7 +11838,24 @@ async function seedArticleTestData(env) {
   if (articleSeedReady) {
     return;
   }
-  await env.DB.batch(articleSeedStatements(env));
+  const state = await env.DB.prepare(
+    "select value from site_runtime_state where key = ?"
+  ).bind(ARTICLE_SEED_STATE_KEY).first();
+  if (String(state?.value || "") === ARTICLE_SEED_VERSION) {
+    articleSeedReady = true;
+    return;
+  }
+  await env.DB.batch([
+    ...articleSeedStatements(env),
+    env.DB.prepare(`
+      insert into site_runtime_state (key, value, updated_at)
+      values (?, ?, ?)
+      on conflict(key) do update set
+        value = excluded.value,
+        updated_at = excluded.updated_at
+      where site_runtime_state.value <> excluded.value
+    `).bind(ARTICLE_SEED_STATE_KEY, ARTICLE_SEED_VERSION, nowIso())
+  ]);
   articleSeedReady = true;
 }
 
@@ -12622,9 +12744,9 @@ function fillDailySeries(rows, since, days) {
 
 async function hashPassword(password, iterations = PASSWORD_HASH_ITERATIONS) {
   const salt = randomToken(16);
-  const normalizedIterations = Math.max(
-    PASSWORD_HASH_ITERATIONS,
-    Math.min(1500000, Math.floor(Number(iterations) || PASSWORD_HASH_ITERATIONS))
+  const normalizedIterations = Math.min(
+    PASSWORD_HASH_MAX_RUNTIME_ITERATIONS,
+    Math.max(PASSWORD_HASH_ITERATIONS, Math.floor(Number(iterations) || PASSWORD_HASH_ITERATIONS))
   );
   const key = await crypto.subtle.importKey("raw", textBytes(password), "PBKDF2", false, ["deriveBits"]);
   const bits = await crypto.subtle.deriveBits(
@@ -12641,7 +12763,11 @@ async function verifyPassword(password, stored) {
     return false;
   }
   const iterations = Number(iterationText);
-  if (!Number.isInteger(iterations) || iterations < 10000 || iterations > 1500000) {
+  if (
+    !Number.isInteger(iterations)
+    || iterations < 10000
+    || iterations > PASSWORD_HASH_MAX_RUNTIME_ITERATIONS
+  ) {
     return false;
   }
   try {
@@ -12664,7 +12790,7 @@ async function verifyPassword(password, stored) {
 
 function passwordHashNeedsUpgrade(stored) {
   const [scheme, iterationText] = String(stored || "").split("$");
-  return scheme !== "pbkdf2_sha256" || Number(iterationText) < PASSWORD_HASH_ITERATIONS;
+  return scheme !== "pbkdf2_sha256" || Number(iterationText) !== PASSWORD_HASH_ITERATIONS;
 }
 
 async function sha256Hex(value) {

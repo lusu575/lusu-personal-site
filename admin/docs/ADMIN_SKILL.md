@@ -1,6 +1,6 @@
 ---
 name: 鲁肃个人站管理后台专用 Skill
-description: 维护鲁肃个人站 `/admin/` 管理后台时使用。只适用于后台页面、后台样式、后台脚本、后台权限、后台 API、后台统计、后台视频管理、后台聊天室与在线画板治理和后台专用文档；不要把它误当成主站总 Skill。
+description: 维护鲁肃个人站 `/admin/` 管理后台时使用。只适用于后台页面、后台样式、后台脚本、后台权限、后台 API、后台统计与流量保护、后台视频管理、后台聊天室与在线画板治理和后台专用文档；不要把它误当成主站总 Skill。
 ---
 
 # 鲁肃个人站管理后台专用 Skill
@@ -11,7 +11,7 @@ description: 维护鲁肃个人站 `/admin/` 管理后台时使用。只适用�
 
 - 修改 `admin/index.html`、`admin/admin.css`、`admin/admin.js`。
 - 修改 `functions/admin/_middleware.js`。
-- 修改 `/api/admin/*` 后台接口、后台权限、后台统计、后台文章管理、后台视频管理、后台视频分类管理、后台社交链接管理、后台聊天室或在线画板治理。
+- 修改 `/api/admin/*` 后台接口、后台权限、后台统计与流量保护、后台文章管理、后台视频管理、后台视频分类管理、后台社交链接管理、后台聊天室或在线画板治理。
 - 修改后台专用文档：`admin/docs/ADMIN_PROJECT_CONTEXT.md`、`admin/docs/ADMIN_SKILL.md`、`admin/docs/ADMIN_CHANGELOG.md`。
 - 修改后台页面内“后台项目介绍”或后台私有更新记录。
 
@@ -28,6 +28,15 @@ description: 维护鲁肃个人站 `/admin/` 管理后台时使用。只适用�
 - 本地 API 建议 Node.js 22.13+；同名变量放入被 Git 忽略的 `.dev.vars`，本地值独立生成。不得提交 `.dev.vars`、`.env`、真实邮箱、令牌、Webhook 或其他密钥。
 - 独立管理页与公开工具区（内部 `resources` route）/ Quick Transfer 共用生产图集 `assets/transfer/quick-transfer-icons.png`。图集内容或版本变化时，必须使用同一发布 token 同步更新公开引用、`admin/transfer.css` 的图集 query 与 `admin/transfer.html` 的样式 query；不能只更新主站而让后台继续缓存旧图集。
 - 修改独立管理页或主后台入口时同步更新页面内 `adminUpdates`、根 `CHANGELOG.md`、`admin/docs/ADMIN_PROJECT_CONTEXT.md`、本 Skill 和 `admin/docs/ADMIN_CHANGELOG.md`。
+
+## 流量与 D1 写入保护规则
+
+- “流量与写入”保持为主后台普通 panel，位于访问统计的点击埋点之后；不得把控制项放到公开主站，所有 `GET/PUT /api/admin/traffic-control` 都必须调用 `requireAdmin`。
+- 站内估算必须说明覆盖范围、系数与局限，不能称为 Cloudflare 账单或官方额度。官方 `rowsWritten` 只有在只读 Cloudflare Analytics 连接实际成功时显示；未配置显示“未连接”，查询失败显示失败，不能用 0 冒充成功。
+- Cloudflare Analytics Token 只能作为 Pages Production Secret 注入服务端；不得返回浏览器、拼入 DOM、日志、错误详情、测试快照、文档值或 Git。Account ID 与 Database ID 也从运行时环境读取，Preview 不得复用 Production Token。
+- 设置保存使用 `site_runtime_state.traffic_control_settings_v1` 与 `expectedUpdatedAt` 条件更新；缺版本拒绝，陈旧版本返回 409。自动刷新可以更新指标，但 dirty 表单、revision 基线与冲突提示必须保留，不能静默覆盖管理员输入。
+- 自适应采样和开关只允许作用于匿名访客识别、页面浏览、点击和文章阅读等非必要遥测。登录／注册、账号会话、游戏云存档、Chat、Transfer、Whiteboard、管理员操作和内容写入不得被自动关停；要减少这些业务写入必须另做明确评审和授权。
+- 默认阈值与采样要在 schema、API 默认值、后台输入和测试中保持一致。修改默认值、估算系数或保护范围时同步更新项目上下文、后台上下文、页面内私有更新、根与后台 changelog，并重新验证关闭某分项后对应原始事件确实不落库。
 
 ## 在线画板后台治理规则
 
@@ -88,7 +97,7 @@ description: 维护鲁肃个人站 `/admin/` 管理后台时使用。只适用�
 - 长表单的主保存操作需要持续可见。文章、视频、聊天和账号等可编辑表单必须由真实输入 / change 或明确表单操作维护 dirty 状态，并在切换模块、条目、新建、移动返回或刷新前提供保存、放弃、留下选择；异步加载、默认排序、分类选项重建或纯点击不得触发未保存提示，保存失败不能清除 dirty 或输入内容。
 - 会覆盖既有内容的后台写入、元数据刷新和删除必须携带读取时的 `expectedUpdatedAt`。服务端使用条件更新／删除并让文章翻译、视频分类关系等附属写入与主记录原子受保护；陈旧页面返回统一 `409 + CONTENT_CONFLICT`。前端不得自动重载丢掉草稿，应保留输入并提示复制或手动合并。
 - 删除、封禁、停用禁言和账号敏感修改使用共享上下文确认框，说明对象、影响和可恢复性；取消为安全默认，危险操作不能成为回车默认动作。
-- 后台导航默认从上到下为：实时大屏、访问来源、点击埋点、知识库文章、自动投递、视频管理、视频分类管理、聊天室管理、在线画板治理、互传文件管理、账号管理、社交链接、后台更新记录、后台说明；互传入口打开独立受保护页面，不伪装为本页 panel。
+- 后台导航默认从上到下为：实时大屏、访问来源、点击埋点、流量与写入、知识库文章、自动投递、视频管理、视频分类管理、聊天室管理、在线画板治理、互传文件管理、账号管理、社交链接、后台更新记录、后台说明；互传入口打开独立受保护页面，不伪装为本页 panel。
 
 ## 权限和安全
 

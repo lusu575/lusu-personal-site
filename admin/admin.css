@@ -4510,6 +4510,224 @@ textarea::placeholder {
   }
 }
 
+/* 2026-08-01: traffic and D1 write-pressure control panel. */
+.traffic-control-stack {
+  display: grid;
+  gap: 16px;
+}
+
+.traffic-control-grid {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.9fr) minmax(480px, 1.35fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.traffic-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.traffic-metric-card {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  padding: 12px;
+  color: #20324e;
+  background: linear-gradient(180deg, #f8fbff 0%, #e7effc 100%);
+  border: 1px solid #9eafd0;
+  border-radius: 7px;
+  box-shadow: inset 1px 1px 0 #fff;
+}
+
+.traffic-metric-card span,
+.traffic-metric-card small {
+  color: #52627a;
+  line-height: 1.45;
+}
+
+.traffic-metric-card strong {
+  overflow-wrap: anywhere;
+  font-size: clamp(18px, 2vw, 27px);
+  line-height: 1.15;
+}
+
+.traffic-mode-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  padding: 4px 10px;
+  color: #174c2c;
+  background: #d9f3df;
+  border: 1px solid #72a982;
+  border-radius: 999px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.traffic-mode-badge[data-mode="warning"] {
+  color: #694100;
+  background: #fff0bd;
+  border-color: #d19b2d;
+}
+
+.traffic-mode-badge[data-mode="hard"] {
+  color: #7d1717;
+  background: #ffe0df;
+  border-color: #cf6d68;
+}
+
+.traffic-mode-badge[data-mode="disabled"] {
+  color: #50576a;
+  background: #e9ebef;
+  border-color: #a6aab3;
+}
+
+.traffic-pressure {
+  display: grid;
+  gap: 7px;
+  margin-top: 14px;
+}
+
+.traffic-pressure-track {
+  height: 16px;
+  overflow: hidden;
+  background: #d7deeb;
+  border: 1px inset #fff;
+  border-radius: 4px;
+}
+
+.traffic-pressure-track span {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #4b9f65, #82c85d);
+  transition: width 180ms ease, background 180ms ease;
+}
+
+.traffic-pressure-track span[data-mode="warning"] {
+  background: linear-gradient(90deg, #d49a25, #f0ca51);
+}
+
+.traffic-pressure-track span[data-mode="hard"] {
+  background: linear-gradient(90deg, #c64d46, #ee7b65);
+}
+
+.traffic-pressure p,
+.traffic-official-status {
+  margin: 0;
+  color: #52627a;
+  line-height: 1.55;
+}
+
+.traffic-official-status {
+  margin-top: 12px;
+  padding: 10px;
+  background: #f4f7fb;
+  border: 1px solid #bcc8dc;
+  border-radius: 6px;
+}
+
+.traffic-official-status[data-status="connected"] {
+  color: #174c2c;
+  background: #e5f7e9;
+  border-color: #83b58f;
+}
+
+.traffic-official-status[data-status="error"] {
+  color: #7d1717;
+  background: #fff0ef;
+  border-color: #d89691;
+}
+
+.traffic-control-form {
+  display: grid;
+  gap: 14px;
+}
+
+.traffic-control-form fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 12px;
+  background: #f8f9fd;
+  border: 1px solid #b4bfd3;
+  border-radius: 7px;
+}
+
+.traffic-control-form legend {
+  padding: 0 6px;
+  color: #243a64;
+  font-weight: 700;
+}
+
+.traffic-switch-fieldset {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 12px;
+}
+
+.traffic-switch-fieldset legend {
+  grid-column: 1 / -1;
+}
+
+.traffic-threshold-fieldset small {
+  display: block;
+  margin-top: 8px;
+  color: #5c6677;
+  line-height: 1.55;
+}
+
+.traffic-sampling-table {
+  min-width: 520px;
+}
+
+.traffic-sampling-table input {
+  width: 100%;
+  min-width: 74px;
+  min-height: 40px;
+  box-sizing: border-box;
+  text-align: right;
+}
+
+.traffic-breakdown-panel .table-wrap,
+.traffic-sampling-fieldset .table-wrap {
+  max-width: 100%;
+}
+
+@media (max-width: 1180px) {
+  .traffic-control-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .traffic-metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .traffic-metric-grid,
+  .traffic-switch-fieldset {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .traffic-switch-fieldset legend {
+    grid-column: auto;
+  }
+
+  .traffic-control-form .checkbox-line,
+  .traffic-control-form input,
+  .traffic-control-form .xp-button {
+    min-height: 44px;
+  }
+
+  .traffic-control-form .form-actions .xp-button {
+    width: 100%;
+  }
+}
+
 /* 2026-07-16: interactive city analytics map. */
 .map-interaction-bar {
   display: flex;

@@ -67,7 +67,7 @@
 已具备：
 
 - 根 `README.md`、`AGENTS.md`、`PROJECT_CONTEXT.md`、项目专用 Skill 和本报告。
-- `package-lock.json` lockfile v3；Wrangler 固定为 `4.111.0`，兼容 Node 22，并已替换 npm 10 审计发现的旧版高风险传递依赖。
+- `package-lock.json` lockfile v3；Wrangler 固定为 `4.118.0`，兼容 Node 22，并已替换 npm 审计发现的旧版高风险传递依赖；直接图像依赖固定为 `sharp 0.35.3`。
 - `.nvmrc` 锁定 Node 22 主版本，`package.json#engines` 要求 Node.js 22.13+。
 - `.env.example` 列出全部普通运行时 Secret 名称。
 - 明确的安装、测试、构建、本地 D1 初始化和开发命令。
@@ -101,7 +101,7 @@ npm run dev
 | 本地 D1 | 基础 Wrangler 路径已执行 196 条 schema 命令；旧库缺列的 `ALTER TABLE` 分支已用带历史消息和禁言记录的内存 SQLite 回归覆盖，验证 `legacy` 默认值、数据保留、复合索引与重复执行；完整 Wrangler 兼容脚本由 Node 22 CI 在 fresh local D1 上端到端确认 |
 | 依赖安装 | 已通过：隔离 worktree 无本地 `node_modules` 后执行 `npm ci` 成功；这不等同于真实网络 clone 验证 |
 | HTTP smoke | 已通过：首页 200；`/api/health` 200，`ok=true`、`db=true`；本地服务随后已关闭 |
-| npm audit | npm 10.9.8 与 npm 11.13.0 的完整依赖审计，以及 `--omit=dev` 审计，均为 0 个已知漏洞；旧 Wrangler 4.99.0 曾触发 1 低 / 4 高，已升级到 4.111.0 修复 |
+| npm audit | 发布前使用仓库锁定依赖执行完整审计与 `--omit=dev` 审计，必须为 0 个已知漏洞；Wrangler 当前为 4.118.0，sharp 当前为 0.35.3 |
 | 本机验证运行时 | Node `26.1.0`；目标最低版本 Node 22.13+ 由 `.nvmrc` 的 Node 22 CI 验证，本报告不声称已在本机 Node 22 执行 |
 
 test / build 会出现 Node 的 `MODULE_TYPELESS_PACKAGE_JSON` 性能提示，但不影响结果。当前不直接增加 `"type": "module"`，避免改变仓库内第三方或 CommonJS 脚本的加载语义；如需处理，应作为独立兼容性改造。

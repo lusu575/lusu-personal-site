@@ -2,6 +2,15 @@
 
 > 管理后台专用说明：本文档只描述 `/admin/` 管理后台。它不等同于主站根目录 `PROJECT_CONTEXT.md`，也不能替代主站项目上下文。新的 AI / Codex 对话如果只维护后台，应先读本文档和 `admin/docs/ADMIN_SKILL.md`；如果维护主站整体，仍以根目录 `PROJECT_CONTEXT.md` 和 `skills/lusu-personal-site-skill/SKILL.md` 为准。
 
+## 2026-08-01 流量与 D1 写入保护面板
+
+- 主后台在“点击埋点”之后新增“流量与写入”panel，打开时每 30 秒刷新。它展示 UTC 当日站内可识别写入估算、页面／点击／文章／登录事件构成、保护阈值、下一次 UTC 重置和当前正常／预警／硬保护状态。
+- 默认阈值为 60,000／80,000 估算行；正常档页面／点击／文章均 100%，预警档为 50%／25%／75%，硬保护档为 10%／0%／25%。另提供总开关、访客识别、页面、点击、文章和自适应保护开关，以及只填入不自动保存的低写入预案与默认值恢复。
+- 配置使用 `GET/PUT /api/admin/traffic-control`，继续要求 `lusu_session + users.role = admin`。D1 key 为 `site_runtime_state.traffic_control_settings_v1`；PUT 必须携带读取时的 `expectedUpdatedAt`，缺少返回 428，陈旧版本返回 409，前端保留当前输入。30 秒自动刷新只更新指标，不覆盖 dirty 表单。
+- 自适应保护只作用于非必要 identify、page view、click 与 article view。登录、注册、云存档、Chat、Transfer 和 Whiteboard 业务路径不会被面板自动关闭；页面也不得提供会误导管理员删除生产数据或关停核心功能的一键动作。
+- “站内估算”按现有 D1 限频桶、访客资料、原始事件和文章累计写入给出保守系数，但不是 Cloudflare 账单。可选官方区只有在 Pages Production 配置只读 Analytics Token、Account ID 和 D1 Database ID 后才显示 GraphQL `rowsWritten`；缺失显示“未连接”，失败显示真实错误。Token 不返回浏览器、不写日志／更新记录／文档值／Git。
+- 当前后台 CSS／JS query 为 `20260801-service-reliability-r1`。
+
 ## 2026-07-30 在线画板治理面板
 
 - `/admin/` 已在仓库中接入“在线画板治理”面板，继续复用现有 `lusu_session`、D1 `sessions` 和 `users.role = admin` 服务端鉴权，不新增画板专用管理员身份或公开管理入口。

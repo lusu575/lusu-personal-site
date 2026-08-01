@@ -2,6 +2,10 @@
 
 > 管理后台专用说明：本文档只记录 `/admin/` 管理后台的私有维护记录，不等同于主站根目录 `CHANGELOG.md`。后台私有更新不写入主站知识库 `site-updates`，也不展示到首页最近更新。
 
+## 2026-08-01
+
+- 新增“流量与写入”后台面板及受管理员会话保护的 `/api/admin/traffic-control`：显示 UTC 当日站内遥测写入估算、分项构成、保护压力、额度重置时间和可选 Cloudflare 官方 D1 `rowsWritten` 连接状态；提供遥测总开关、识别／页面／点击／文章分项开关、60,000／80,000 默认阈值、三档采样率、低写入预案和默认输入。策略写入 `site_runtime_state`，使用 revision/CAS 防并发覆盖，30 秒自动刷新不覆盖未保存表单。自适应保护只降低非必要遥测，不自动关闭登录、存档、Chat、Transfer 或 Whiteboard；站内估算明确不冒充官方账单，Analytics Token 永不下发或写入仓库。后台 CSS／JS query 更新为 `20260801-service-reliability-r1`。
+
 ## 2026-07-30
 
 - 主后台新增在线画板治理面板及受现有管理员会话保护的 `/api/admin/whiteboards/*` 接口：可查看房间、连接、对象和资源容量概览及单房状态，清空或锁定公共画板，移除异常连接，按匿名 ID／IP 哈希设置有期限的临时封禁，并删除异常且已为空的密码房；危险操作保留上下文确认与管理审计。面板只展示治理元数据和截断标识，不展示画布图形／文本正文、房间密码、完整匿名凭证、完整 IP 或完整 IP 哈希。本条仅记录仓库实现，不代表远端 D1 migration、Cloudflare external Durable Object binding、独立 Worker、Pages 生产部署或正式域名已经验证。

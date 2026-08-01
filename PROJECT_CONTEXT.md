@@ -1,5 +1,14 @@
 # PROJECT_CONTEXT.md
 
+## 2026-08-01 账号恢复、D1 写入降压与后台流量保护
+
+- 生产登录失败的直接原因不是访客网络：Cloudflare Pages Functions 的生产运行时会拒绝 PBKDF2 迭代数超过 100,000，而 2026-07-26 的 600,000 次策略会在旧 25,000 次哈希验证成功后的升级阶段抛出 5xx。账号新哈希、管理员密码重置和旧记录升级现统一为 PBKDF2-HMAC-SHA256 100,000 次；25,000 次记录成功登录后条件升级，100,000 次记录不重复写回。不能因为本地 Node／Miniflare 能执行更高迭代数就再次提高，生产平台行为是兼容边界。
+- 公开账号提示现区分 `status = 0` 的本机／链路网络错误与 `5xx` 服务端暂不可用，不再把后端故障统一写成“检查网络”。密码、哈希、session 和账号标识仍不进入前端、日志或遥测。
+- `ensureArticleSchema()` 只创建表和索引，不再在每个新隔离实例中执行完整文章 seed。`seedArticleTestData()` 先读取 `site_runtime_state.article_seed_version`；只有版本不是 `20260801-service-reliability-r1` 才在一个 D1 batch 中执行文章／三语 seed，并把当前版本标记作为最后一条写入。全新 `schema.sql` 也在全部 seed 完成后写同一标记，避免运行时再次重放。
+- 管理后台新增“流量与写入”面板和 `/api/admin/traffic-control`。默认站内保护阈值为 UTC 自然日估算 60,000／80,000 行；正常采样为 100/100/100，预警为页面 50%、点击 25%、文章 75%，硬保护为页面 10%、点击 0%、文章 25%。总开关和分项开关只控制非必要遥测；登录、云存档、聊天室、互传与画板业务写入不受自动关闭。配置保存在 `site_runtime_state.traffic_control_settings_v1`，使用 `expectedUpdatedAt` 条件保存，陈旧页面返回 409 并保留输入。
+- 面板的站内估算只覆盖可识别的页面／身份、点击、文章阅读和登录成功事件，并显式标为非账单数据。精确 `rowsWritten` 可选通过 Cloudflare GraphQL Analytics 只读连接获取；需要运行时配置 `CLOUDFLARE_ANALYTICS_API_TOKEN`、`CLOUDFLARE_ANALYTICS_ACCOUNT_ID`、`CLOUDFLARE_ANALYTICS_D1_DATABASE_ID`。Token 只放 Pages Production Secret，不写代码、文档值、聊天、日志或 Git；未配置时面板必须明确显示“未连接”，站内保护仍可运行。
+- 本批公开记录为 `seed-update-2026-08-01-service-reliability`，公开／API／后台资源版本为 `20260801-service-reliability-r1`。远端 D1、GitHub `main`、Cloudflare Pages 与正式域名状态仍须以本次实际发布核验为准，不能从本地文件推断成功。
+
 ## 2026-08-01 每日 AI 新闻韩国模型查询分片
 
 - 韩国开放模型发现不再使用跨厂商的 `korean-model-releases-ko` 大型 OR。该查询在 2026-08-01 固定窗口连续触发 99+1 真实截断；正式目录现固定为 `lg-exaone-open-ko`、`lg-exaone-release-ko`、`lg-ai-research-other-ko`、`naver-hyperclova-model-releases-ko`、`upstage-solar-model-releases-ko` 五条互补查询，并已在同一窗口真实运行中分别以 26、6、10、46、13 条返回通过上限门禁。
@@ -27,7 +36,7 @@
 - 每个房间的 Yjs 文档、快照、增量、票据消费记录和资源清单由对应 DO 保存；D1 的 `whiteboard_rooms`、`whiteboard_assets`、`whiteboard_bans`、`whiteboard_admin_audit` 只作跨房管理索引、封禁和审计。图片只接受经过真实字节类型、尺寸、像素、频率和容量校验的 PNG/JPEG/WebP，写入私有 R2 前缀 `whiteboard/v1/<roomId>/<assetId>`，画布只保留资源 ID，不长期保存大 Base64。
 - 在线画板入口使用 `assets/images/generated-icons/whiteboard.png` 的 192×192 RGBA 独立素材；该素材由 image2 生成后仅做确定性尺寸适配，`assets/images/generated-icons/whiteboard.source.json` 锁定生成/发布尺寸、最终 SHA-256 和仅机械 resize 的处理声明。在线画板后续新增或替换图标、插画、装饰等素材只能使用 image2 生成，不得用 CSS、Canvas、SVG 路径或代码几何拼凑替代；CSS 只负责布局、状态和响应式交互。
 - 公共画板固定为 `public-v1`，不执行空房 TTL；管理员可以查看状态、连接和容量，清空、切换只读、移除异常连接，并按匿名 ID 或 IP 哈希临时封禁。密码房最后一条真实连接关闭或心跳超时后写入 `emptySince` 和 `deleteAt = emptySince + 24h`；24 小时内重入会取消旧计划，再次为空从新离开时间重新计算。Alarm 清理前重新检查房型、真实连接、截止时间和代次，先幂等清理房间 R2 前缀及索引，再删除文档状态；失败时退避重试。
-- Pages 需要四个用途独立且至少 32 UTF-8 bytes 的 Secret：`WHITEBOARD_ROOM_HMAC_SECRET`、`WHITEBOARD_TICKET_SECRET`、`WHITEBOARD_INTERNAL_SECRET`、`WHITEBOARD_IP_HASH_SALT`。独立 Worker 只读取与 Pages 相同的 `WHITEBOARD_INTERNAL_SECRET`；真实值只在各环境的 Secret 配置中维护。Production external binding 指向 `WhiteboardRoom@lusu-whiteboard-do`；根配置提交态的 Preview 使用 `PREVIEW_API_DISABLED=true`、空 D1/R2 bindings，并通过独立 `workers/whiteboard/wrangler.preview.jsonc` 指向隔离的 `lusu-whiteboard-do-preview`，不得回退 Production 数据。Worker 的 `v1` migration 创建 SQLite-backed DO namespace，migration tag 和 namespace 均不得删除或改写。
+- Pages 需要四个用途独立且至少 32 UTF-8 bytes 的 Secret：`WHITEBOARD_ROOM_HMAC_SECRET`、`WHITEBOARD_TICKET_SECRET`、`WHITEBOARD_INTERNAL_SECRET`、`WHITEBOARD_IP_HASH_SALT`。独立 Worker 只读取与 Pages 相同的 `WHITEBOARD_INTERNAL_SECRET`；真实值只在各环境的 Secret 配置中维护。Production external binding 指向 `WhiteboardRoom@lusu-whiteboard-do`；根配置提交态的 Preview 使用 `PREVIEW_API_DISABLED=true` 以及空 D1、R2、Durable Object bindings，不得引用未部署的 Worker 或回退 Production 数据。`workers/whiteboard/wrangler.preview.jsonc` 只作为隔离 `lusu-whiteboard-do-preview` 的部署配置；只有 Preview D1/R2、DO namespace、精确 Origin 与独立 Secret 全部创建、迁移和验收后，才可先部署该 Worker，再经审查接入 Pages Preview binding 并开启 API。Worker 的 `v1` migration 创建 SQLite-backed DO namespace，migration tag 和 namespace 均不得删除或改写。
 - 正确发布顺序是本地 D1/类型/Lint/测试/构建验证，获授权后远端 D1 migration，随后先部署带 `v1` migration 的 DO Worker，再核对 Pages external binding，最后合并 `main` 触发 Pages Git 部署。Pages Dashboard 固定使用框架 `None`、Build command `npm run build`、Build output directory `dist`、Root directory `/`；标准构建先跑仓库守卫，再原子生成内容哈希 `dist/`。回滚时先阻止新连接并回滚 Pages 入口／binding，再部署兼容的上一版 Worker；保留 DO namespace、`v1` migration、D1 新表和既有数据。当前文档只记录仓库实现与本地发布准备，不代表 Cloudflare Dashboard、远端迁移、生产部署或正式域名已经验证。
 - 详细协议、限制、部署和回滚步骤见 `docs/whiteboard/README.md` 与 `workers/whiteboard/README.md`；开源依赖及 MIT 许可证归属见 `tools/whiteboard/THIRD_PARTY_NOTICES.md`。
 
@@ -137,13 +146,13 @@
 
 ## 2026-07-26 全站安全与可靠性加固
 
-- 账号与公开写接口在进入业务逻辑前校验同源、JSON `Content-Type` 和流式请求体上限。登录、注册按网络来源与规范化账号标识使用持久化 D1 限流；重复邮箱、站长保留邮箱和并发注册统一返回 `400 + REGISTRATION_FAILED`，公开界面不再枚举账号是否存在。新密码固定使用 PBKDF2-HMAC-SHA256 600,000 次，旧 25,000 / 100,000 次哈希仍可登录并在成功后条件升级。
+- 账号与公开写接口在进入业务逻辑前校验同源、JSON `Content-Type` 和流式请求体上限。登录、注册按网络来源与规范化账号标识使用持久化 D1 限流；重复邮箱、站长保留邮箱和并发注册统一返回 `400 + REGISTRATION_FAILED`，公开界面不再枚举账号是否存在。本节当时采用的 600,000 次 PBKDF2 后经生产运行时证据确认不兼容；当前策略已按本文顶部 2026-08-01 规则修正为 100,000 次，不能恢复旧值。
 - `api_rate_limits` 保存短期限流桶。页面、点击与文章阅读写入同时做速率上限和重复抑制；每日健康检查用 `waitUntil` 分批清理过期 session、365 天前登录记录、180 天前分析记录和 2 天前限流桶，每表单次最多 5,000 行。意外 5xx 只向客户端返回稳定通用错误，不暴露内部异常。
 - 旧 D1 迁移必须先补齐聊天、禁言和 Transfer 历史表的缺失列，再执行依赖索引与完整 schema；`scripts/d1-migrate-local.mjs` 和 `scripts/d1-migrate-remote.mjs` 都覆盖真正 legacy fixture。全新 schema 同时创建 `api_rate_limits` 和 Transfer 设置 revision。
 - 后台文章、视频、视频分类、社交链接、视频元数据刷新与删除均使用读取时的 `expectedUpdatedAt` 条件写入；陈旧标签页返回 `409 + CONTENT_CONFLICT` 并保留输入。文章翻译与视频分类关系和主记录在同一 D1 batch 内受版本条件保护。Transfer 设置同样使用 revision；清空房间或清理 R2 仅部分成功时返回非 2xx 和可重试失败列表，不能伪报全部完成。
 - `/articles/<slug>` 由 `functions/articles/[slug].js` 在边缘读取已发布文章，并为直接访问输出文章专属 title、description、Open Graph、Twitter、canonical、Article JSON-LD 与安全 `noscript` 正文；不存在的文章返回 404 / noindex，D1 暂时失败时保留可运行主壳。
 - 游戏目录与日语工具可选 manifest 都有 7 秒超时、Abort、版本缓存和本地回退；网络失败不能阻塞内置游戏、本地题目或已有存档。生产构建必须把日语音频 manifest 改写到同源绝对路径并保留版本 query，转换保持严格一次匹配。首页壁纸预载与实际 CSS 选择同一格式、宽度和版本，减少动态模式在首屏同步判定，避免重复或瞬时动态请求。
-- 全局响应头补齐 CSP、Permissions Policy、HSTS、nosniff、referrer policy 与同源 framing；Pages Functions 的 JSON/XML 也显式携带相同安全边界，`/admin/` 额外拒绝任何 framing。锁定 Wrangler `4.111.0` 时 compatibility date 使用其本地 workerd 可启动的 `2026-07-17`，调整日期后必须真实启动 `wrangler pages dev`，不能只通过静态配置校验。根 `wrangler.jsonc` 只能使用 Cloudflare Pages Git 构建支持的字段，不声明会导致 Pages 拒绝部署的 Worker-only `observability` 或非标准 `secrets` 元数据；独立清理 Worker 可在自己的配置中保留 observability。GitHub Actions 固定第三方 action 的不可变 commit，并运行本地 D1、全量测试、模块图、静态构建、可重复生产构建及两套 Headless 发布审计；共享 runner 的首页首屏 TBT 固定采样三次并以中位数对原 350ms 预算判定，其他场景仍采样一次，网络体积、load、CLS、内存、运行时错误等结构性门槛逐样本检查且任一失败都会阻断。每个样本完成计时采集后先回收旧导航文档再读取全局 DOM 计数，避免把前一页面的可回收对象误算为当前页面节点。
+- 全局响应头补齐 CSP、Permissions Policy、HSTS、nosniff、referrer policy 与同源 framing；Pages Functions 的 JSON/XML 也显式携带相同安全边界，`/admin/` 额外拒绝任何 framing。锁定 Wrangler `4.118.0` 时 compatibility date 使用其本地 workerd 可启动的 `2026-07-17`，调整日期后必须真实启动 `wrangler pages dev`，不能只通过静态配置校验。根 `wrangler.jsonc` 只能使用 Cloudflare Pages Git 构建支持的字段，不声明会导致 Pages 拒绝部署的 Worker-only `observability` 或非标准 `secrets` 元数据；独立清理 Worker 可在自己的配置中保留 observability。GitHub Actions 固定第三方 action 的不可变 commit，并运行本地 D1、全量测试、模块图、静态构建、可重复生产构建及两套 Headless 发布审计；共享 runner 的首页首屏 TBT 固定采样三次并以中位数对原 350ms 预算判定，其他场景仍采样一次，网络体积、load、CLS、内存、运行时错误等结构性门槛逐样本检查且任一失败都会阻断。每个样本完成计时采集后先回收旧导航文档再读取全局 DOM 计数，避免把前一页面的可回收对象误算为当前页面节点。
 - 本批公开缓存版本为 `20260726-security-reliability-r1`，公开更新记录为 `seed-update-2026-07-26-security-reliability-hardening`；后台脚本为 `20260726-admin-concurrency-safety-r1`，Transfer 管理资源为 `20260726-admin-transfer-safety-r1`。正式发布路径仍是 GitHub `main` 触发 Cloudflare Pages，本地修复不等于已推送或部署。
 - 2026-07-26 最终本地证据：D1 legacy 迁移通过；297 / 297 测试、20 个公共模块、静态构建、双次一致生产构建（manifest SHA-256 `fbc56fe9f178f2d00fb050f80d872b558985d47b6117f0325b620f64c74797bd`）、192 / 192 发布矩阵和 A Dark Room 同文档旋转审计通过；Pages dev 健康、文章、404 与未登录后台路由冒烟通过。没有执行远端 D1、push 或部署。
 
@@ -357,7 +366,7 @@
 
 ## 2026-07-15 GPTWork 可复现开发基线
 
-- 普通站点开发的可复现运行时固定为 Node.js 22.13+、npm lockfile v3 和 Wrangler `4.111.0`；全新克隆使用 `npm ci`。纯本地环境从 `.env.example` 创建被忽略的 `.dev.vars`，GPTWork 使用平台注入的 process Secrets，不能再创建会遮蔽云端值的空 `.dev.vars`。
+- 普通站点开发的可复现运行时固定为 Node.js 22.13+、npm lockfile v3 和 Wrangler `4.118.0`；全新克隆使用 `npm ci`。纯本地环境从 `.env.example` 创建被忽略的 `.dev.vars`，GPTWork 使用平台注入的 process Secrets，不能再创建会遮蔽云端值的空 `.dev.vars`。
 - 本地 Pages Functions 使用 `wrangler pages dev`，D1 binding 固定为 `DB`，`preview_database_id` 只用于本地模拟数据库；普通开发、CI 和 GPTWork 不需要 Cloudflare 登录、API Token、生产 D1 权限或本机 TTS 模型。
 - API router 必须同时获得独立的 `CHAT_IP_HASH_SALT` 与 `ANALYTICS_IP_HASH_SALT`，两者至少 32 字节且不能相同。IP 标识使用 `HMAC-SHA256(secret, purpose + ":" + ip)` 做聊天 / 分析用途隔离；配置不合格时必须在任何 API 业务 D1 访问前返回通用 503，且日志不得输出 Secret 值或请求 IP。
 - 聊天消息和网络来源禁言保存由聊天 Secret 自动派生的非敏感密钥代次。Secret 轮换后旧消息只供审计、不能新建网络来源禁言，旧禁言明确显示失效；服务端必须按消息编号读取当前代次目标，不能信任前端提交的 hash，也不得恢复公开 fallback。

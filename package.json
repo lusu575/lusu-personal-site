@@ -20,7 +20,7 @@
     "qa:local": "npm run verify:public-site-release",
     "qa:public-release": "npm run verify:public-site-release",
     "verify:public-site-release": "npm run test && npm run check:public-modules && npm run build && npm run build:production:verify && npm run audit:public-ui:release && npm run audit:a-dark-room && git diff --check && git status --short",
-    "lint": "eslint functions/api/anonymous-identity.mjs functions/api/whiteboard-service.mjs js/features/anonymous-identity.mjs js/routes/chatroom.mjs tools/whiteboard/src tools/whiteboard/tests tests/anonymous-identity-api.test.mjs tests/whiteboard-service-api.test.mjs workers/whiteboard",
+    "lint": "eslint functions/api/anonymous-identity.mjs functions/api/traffic-control.mjs functions/api/whiteboard-service.mjs js/features/anonymous-identity.mjs js/routes/chatroom.mjs tools/whiteboard/src tools/whiteboard/tests tests/anonymous-identity-api.test.mjs tests/whiteboard-service-api.test.mjs workers/whiteboard",
     "typecheck": "tsc -p workers/whiteboard/tsconfig.json --noEmit",
     "whiteboard:test": "node --test tools/whiteboard/tests/*.test.mjs && vitest run --config workers/whiteboard/vitest.config.mts",
     "whiteboard:dev": "wrangler dev --config workers/whiteboard/wrangler.jsonc",
@@ -59,10 +59,10 @@
     "esbuild": "0.28.1",
     "eslint": "9.39.1",
     "eslint-plugin-react": "7.37.5",
-    "sharp": "0.34.5",
+    "sharp": "0.35.3",
     "typescript": "5.9.2",
     "vitest": "4.1.10",
-    "wrangler": "4.111.0"
+    "wrangler": "4.118.0"
   },
   "dependencies": {
     "@excalidraw/excalidraw": "0.18.1",

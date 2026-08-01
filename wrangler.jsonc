@@ -34,13 +34,7 @@
       "d1_databases": [],
       "r2_buckets": [],
       "durable_objects": {
-        "bindings": [
-          {
-            "name": "WHITEBOARD_ROOMS",
-            "class_name": "WhiteboardRoom",
-            "script_name": "lusu-whiteboard-do-preview"
-          }
-        ]
+        "bindings": []
       }
     }
   }

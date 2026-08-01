@@ -51,8 +51,8 @@ test("admin safely switches independent Daily AI News and Tool Radar delivery co
   assert.match(html, /自动公开默认关闭/);
   assert.match(html, /本机定时任务 ai-7-8 已启用，每日 07:00 开始/);
   assert.match(html, /时区：Asia\/Shanghai；每个栏目的开关、自动公开和凭证彼此独立/);
-  assert.match(html, /admin\.css\?v=20260729-tool-radar-live-r1/);
-  assert.match(html, /admin\.js\?v=20260729-tool-radar-live-r1/);
+  assert.match(html, /admin\.css\?v=20260801-service-reliability-r1/);
+  assert.match(html, /admin\.js\?v=20260801-service-reliability-r1/);
   assert.doesNotMatch(html, /本轮只准备入口，不创建定时任务/);
   for (const id of [
     "automation-channel-select",
@@ -90,4 +90,47 @@ test("admin safely switches independent Daily AI News and Tool Radar delivery co
   assert.match(styles, /\.automation-secret\[hidden\]\s*\{[^}]*display:\s*none !important/);
   assert.match(styles, /@media \(max-width:\s*560px\)[\s\S]*\.automation-channel-picker > select[\s\S]*min-height:\s*44px/);
   assert.match(styles, /@media \(max-width:\s*560px\)[\s\S]*\.automation-actions \.xp-button[\s\S]*min-height:\s*44px/);
+});
+
+test("admin traffic panel monitors D1 pressure and saves telemetry controls with conflict protection", () => {
+  const html = read("admin/index.html");
+  const source = read("admin/admin.js");
+  const styles = read("admin/admin.css");
+
+  assert.match(html, /data-panel="traffic"[^>]*aria-controls="traffic-panel"[^>]*>流量与写入</);
+  assert.match(html, /id="traffic-panel" hidden aria-hidden="true"/);
+  for (const id of [
+    "traffic-estimated-rows",
+    "traffic-official-rows",
+    "traffic-breakdown-body",
+    "traffic-control-form",
+    "traffic-low-write-preset",
+    "traffic-default-preset"
+  ]) {
+    assert.ok(html.includes(`id="${id}"`), `missing #${id}`);
+  }
+  for (const name of [
+    "analyticsEnabled",
+    "identifyEnabled",
+    "pageViewsEnabled",
+    "clicksEnabled",
+    "articleViewsEnabled",
+    "adaptiveProtectionEnabled",
+    "warningRows",
+    "hardRows",
+    "sampling_hard_clicks"
+  ]) {
+    assert.ok(html.includes(`name="${name}"`), `missing traffic field ${name}`);
+  }
+
+  assert.match(source, /const autoRefreshPanels = new Set\(\[\.\.\.overviewPanels, "traffic"\]\)/);
+  assert.match(source, /api\("\/api\/admin\/traffic-control"\)/);
+  assert.match(source, /expectedUpdatedAt:\s*state\.trafficControlUpdatedAt/);
+  assert.match(source, /TRAFFIC_CONTROL_CONFLICT/);
+  assert.match(source, /if \(!isEditorDirty\("traffic"\)\)/);
+  assert.match(source, /站内估算，不是 Cloudflare 账单/);
+  assert.doesNotMatch(source, /traffic[\s\S]{0,200}innerHTML/);
+  assert.match(styles, /\.traffic-control-grid\s*\{/);
+  assert.match(styles, /\.traffic-mode-badge\[data-mode="hard"\]/);
+  assert.match(styles, /@media \(max-width:\s*680px\)[\s\S]*\.traffic-control-form \.xp-button[\s\S]*min-height:\s*44px/);
 });

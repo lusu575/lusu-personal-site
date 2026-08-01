@@ -36,9 +36,18 @@ export function accountRequestFailure(error, mode, lastField = "password") {
   if (normalizedMode === "register" && (error?.code === "REGISTRATION_FAILED" || error?.status === 409)) {
     return { key: "accountErrorRegistrationFailed", field: "email" };
   }
+  const recoverField = ["email", "password", "confirmPassword"].includes(lastField)
+    ? lastField
+    : "password";
+  if (Number(error?.status || 0) >= 500) {
+    return { key: "accountErrorServiceUnavailable", field: recoverField };
+  }
+  if (Number(error?.status || 0) === 0) {
+    return { key: "accountErrorNetwork", field: recoverField };
+  }
   return {
     key: "accountErrorRequest",
-    field: ["email", "password", "confirmPassword"].includes(lastField) ? lastField : "password"
+    field: recoverField
   };
 }
 

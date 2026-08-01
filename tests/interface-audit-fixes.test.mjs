@@ -34,9 +34,10 @@ test("public modal fixes preserve readable depth and compact failed-video geomet
   );
 });
 
-test("the whiteboard release leads the five-item trilingual projection without dropping the Knowledge fix", async () => {
-  const updateId = "seed-update-2026-07-30-multiplayer-whiteboard";
-  const previousUpdateId = "seed-update-2026-07-29-knowledge-markdown-links";
+test("the reliability release leads the five-item trilingual projection without dropping whiteboard or Knowledge", async () => {
+  const updateId = "seed-update-2026-08-01-service-reliability";
+  const whiteboardUpdateId = "seed-update-2026-07-30-multiplayer-whiteboard";
+  const knowledgeUpdateId = "seed-update-2026-07-29-knowledge-markdown-links";
   const [{ content }, { homeContent }] = await Promise.all([
     import("../js/data/content.mjs"),
     import("../js/data/home-content.mjs")
@@ -44,8 +45,10 @@ test("the whiteboard release leads the five-item trilingual projection without d
 
   assert.equal(content.updates[0].article_id, updateId);
   assert.equal(homeContent.updates[0].article_id, updateId);
-  assert.equal(content.updates[1].article_id, previousUpdateId);
-  assert.equal(homeContent.updates[1].article_id, previousUpdateId);
+  assert.equal(content.updates[1].article_id, whiteboardUpdateId);
+  assert.equal(homeContent.updates[1].article_id, whiteboardUpdateId);
+  assert.equal(content.updates[2].article_id, knowledgeUpdateId);
+  assert.equal(homeContent.updates[2].article_id, knowledgeUpdateId);
   assert.equal(homeContent.updates.length, 5);
   for (const lang of ["zh", "en", "ja"]) {
     assert.ok(content.updates[0].title[lang]);
@@ -67,7 +70,7 @@ test("the whiteboard release leads the five-item trilingual projection without d
 test("Knowledge Markdown links use a fresh cache version without invalidating unrelated public assets", () => {
   const stableVersion = "20260726-security-reliability-r1";
   const knowledgeReaderVersion = "20260728-knowledge-archive-r1";
-  const toolRadarVersion = "20260730-multiplayer-whiteboard-r1";
+  const toolRadarVersion = "20260801-service-reliability-r1";
   const index = read("index.html");
   const main = read("js/main.js");
   const transferLoader = read("js/features/quick-transfer-loader.mjs");

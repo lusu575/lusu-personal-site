@@ -123,6 +123,13 @@ create table if not exists site_runtime_state (
   updated_at text not null
 );
 
+insert or ignore into site_runtime_state (key, value, updated_at)
+values (
+  'traffic_control_settings_v1',
+  '{"schemaVersion":1,"analyticsEnabled":true,"identifyEnabled":true,"pageViewsEnabled":true,"clicksEnabled":true,"articleViewsEnabled":true,"adaptiveProtectionEnabled":true,"warningRows":60000,"hardRows":80000,"sampling":{"normal":{"pageViews":100,"clicks":100,"articleViews":100},"warning":{"pageViews":50,"clicks":25,"articleViews":75},"hard":{"pageViews":10,"clicks":0,"articleViews":25}}}',
+  '2026-08-01T00:00:00.000Z'
+);
+
 create table if not exists transfer_rooms (
   id text primary key,
   room_key text not null unique,
@@ -731,6 +738,119 @@ create index if not exists article_view_events_slug_idx
   on article_view_events(slug, created_at);
 create index if not exists article_view_events_visitor_idx
   on article_view_events(visitor_id, created_at);
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-08-01-service-reliability',
+  '2026-08-01-service-reliability',
+  'site-updates',
+  '["网站更新","账号","登录","D1","稳定性"]',
+  '', 'published', 0, 0,
+  '2026-08-01T07:10:00.000Z',
+  '2026-08-01T07:10:00.000Z',
+  '2026-08-01T07:10:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  (
+    'seed-update-2026-08-01-service-reliability-zh',
+    'seed-update-2026-08-01-service-reliability',
+    'zh',
+    '账号与实时工具稳定性修复',
+    '修复 Cloudflare 密码派生兼容性导致的登录失败，并停止文章种子在冷启动时重复写入 D1，降低账号、匿名身份和在线画板共用数据库时的写入压力。',
+    '# 账号与实时工具稳定性修复
+
+本次修复的是服务端兼容性和数据库写入放大，不需要访客更换电脑或网络。
+
+## 登录恢复
+
+- 新密码和旧密码升级现在使用 Cloudflare Workers 实际支持的 PBKDF2-HMAC-SHA256 100,000 次上限。
+- 旧 25,000 次记录成功登录后按条件升级；现有 100,000 次记录不再被重复改写。
+- 账号服务端故障与本地网络故障使用不同提示，避免把服务器问题误报为访客网络问题。
+
+## D1 写入降压
+
+- 文章初始化内容按发布版本写入持久标记；同一版本的后续冷启动只读标记，不再把整批文章和三语正文重复 upsert。
+- 这会减少与登录、匿名身份和画板加入共用 D1 时的无意义竞争，让实时工具更稳定。
+
+## 数据边界
+
+没有删除账号、文章、画板房间或历史内容；密码仍只保存派生哈希，画板实时文档仍由 Durable Object 管理。',
+    '2026-08-01T07:10:00.000Z',
+    '2026-08-01T07:10:00.000Z'
+  ),
+  (
+    'seed-update-2026-08-01-service-reliability-en',
+    'seed-update-2026-08-01-service-reliability',
+    'en',
+    'Account and Real-Time Tool Reliability Fixes',
+    'Fixes sign-in failures caused by a Cloudflare password-derivation incompatibility and stops article seeds from rewriting D1 on cold starts, reducing shared write pressure for accounts, anonymous identity, and Whiteboard.',
+    '# Account and Real-Time Tool Reliability Fixes
+
+This release fixes server compatibility and amplified database writes. Visitors do not need to change their computer or network.
+
+## Sign-in recovery
+
+- New password hashes and legacy upgrades now use the 100,000-iteration PBKDF2-HMAC-SHA256 ceiling actually supported by the Cloudflare Workers runtime.
+- Legacy 25,000-iteration records upgrade conditionally after a successful sign-in, while existing 100,000-iteration records are left unchanged.
+- Server-side account failures and local connection failures now use different messages instead of blaming the visitor''s network for a backend problem.
+
+## Lower D1 write pressure
+
+- Article initialization now persists a release-version marker. Later cold starts for the same release read that marker instead of upserting the full article and trilingual-content set again.
+- Removing those unnecessary writes reduces contention in the D1 database shared by sign-in, anonymous identity, and Whiteboard entry.
+
+## Data boundary
+
+No account, article, whiteboard room, or historical content is deleted. Passwords remain stored only as derived hashes, and live whiteboard documents remain managed by Durable Objects.',
+    '2026-08-01T07:10:00.000Z',
+    '2026-08-01T07:10:00.000Z'
+  ),
+  (
+    'seed-update-2026-08-01-service-reliability-ja',
+    'seed-update-2026-08-01-service-reliability',
+    'ja',
+    'アカウントとリアルタイムツールの安定性を修正',
+    'Cloudflare のパスワード導出互換性によるログイン失敗を修正し、コールドスタート時の記事 seed による D1 の反復書き込みを止め、アカウント・匿名ID・ホワイトボード共通DBの負荷を下げました。',
+    '# アカウントとリアルタイムツールの安定性を修正
+
+今回はサーバー互換性とデータベースの書き込み増幅を修正しました。利用者がPCや回線を変更する必要はありません。
+
+## ログインの復旧
+
+- 新しいパスワードハッシュと旧記録の更新は、Cloudflare Workers ランタイムが実際に対応する上限である PBKDF2-HMAC-SHA256 100,000 回を使用します。
+- 旧 25,000 回の記録はログイン成功後に条件付きで更新し、既存の 100,000 回記録は再書き込みしません。
+- アカウントサーバー側の障害と端末の通信障害を別の案内にし、バックエンド問題を利用者の回線問題として表示しないようにしました。
+
+## D1 書き込み負荷の低減
+
+- 記事の初期化はリリース版マーカーを永続保存します。同じ版の後続コールドスタートではマーカーだけを読み、全記事と3言語本文を再度 upsert しません。
+- 不要な書き込みをなくすことで、ログイン、匿名ID、ホワイトボード入室が共有する D1 の競合を減らします。
+
+## データ境界
+
+アカウント、記事、ホワイトボードルーム、履歴データは削除しません。パスワードは引き続き導出ハッシュだけを保存し、ホワイトボードのリアルタイム文書は Durable Objects が管理します。',
+    '2026-08-01T07:10:00.000Z',
+    '2026-08-01T07:10:00.000Z'
+  )
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
 
 insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
@@ -10763,3 +10883,10 @@ on conflict(article_id) do update set
   is_pinned = excluded.is_pinned,
   updated_at = excluded.updated_at,
   published_at = excluded.published_at;
+
+insert into site_runtime_state (key, value, updated_at)
+values ('article_seed_version', '20260801-service-reliability-r1', '2026-08-01T00:00:00.000Z')
+on conflict(key) do update set
+  value = excluded.value,
+  updated_at = excluded.updated_at
+where site_runtime_state.value <> excluded.value;
