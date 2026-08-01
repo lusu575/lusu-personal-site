@@ -77,6 +77,7 @@ test("Knowledge Markdown links use a fresh cache version without invalidating un
   const stableVersion = "20260726-security-reliability-r1";
   const knowledgeReaderVersion = "20260728-knowledge-archive-r1";
   const toolRadarVersion = "20260801-whiteboard-calm-sync-r1";
+  const transferVersion = "20260801-whiteboard-reliable-sketch-r1";
   const index = read("index.html");
   const main = read("js/main.js");
   const transferLoader = read("js/features/quick-transfer-loader.mjs");
@@ -96,5 +97,7 @@ test("Knowledge Markdown links use a fresh cache version without invalidating un
   assert.ok(main.includes(`./core/i18n.mjs?v=${toolRadarVersion}`));
   assert.ok(main.includes(`./data/home-content.mjs?v=${toolRadarVersion}`));
   assert.ok(main.includes(`./routes/knowledge.mjs?v=${toolRadarVersion}`));
+  assert.ok(transferLoader.includes(`const TRANSFER_VERSION = "${transferVersion}"`));
+  assert.ok(resources.includes(`../features/quick-transfer-loader.mjs?v=${transferVersion}`));
   assert.doesNotMatch([index, main, transferLoader, resources].join("\n"), /20260726-tools-rename-r1/);
 });

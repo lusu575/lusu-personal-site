@@ -189,7 +189,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 图片只接受真实字节、尺寸、像素和容量校验后的 PNG/JPEG/WebP，保存到私有 R2 `whiteboard/v1/<roomId>/<assetId>`；画布只保存资源 ID，不长期保存大 Base64，不允许危险 SVG、HTML 或跨房读取。
 - 在线画板的入口图标、插画与装饰素材只允许使用 image2 生成并保存为项目内图片；每项素材 manifest 必须锁定 generator=image2、生成/发布尺寸、最终 SHA-256，并列出仅允许的机械 resize，守卫同时校验真实图片。不得用 CSS、Canvas、SVG 路径或代码几何拼凑素材；CSS 只承担布局、状态和响应式交互。
 - 公共房 `public-v1` 永不按空房 TTL 删除。密码房最后一条有效连接关闭或心跳超时后写 `emptySince` 与 `deleteAt = +24h`；重入取消旧 Alarm，再次为空重新计时。Alarm 必须再次检查连接、截止时间和代次，幂等清理房间 R2 前缀、D1 索引与 DO 状态，失败时重试。
-- 在线画板和 Quick Transfer 是根项目下的独立子项目，治理根分别为 `docs/whiteboard/` 和 `docs/transfer/`。修改各自 `project.json` 定义的 tracked paths 时，必须把该子项目 `VERSION` 和显示版本相对基线精确增加 `0.0.1`，在独立 `CHANGELOG.md` 写本次版本，并同步 `README.md`、`AGENTS.md`、其他受影响文档与根 `CHANGELOG.md`。`AGENT.md` 仅可指向唯一权威 `AGENTS.md`，不得复制出第二份漂移规则；提交前必须运行 `npm run check:subprojects`。
+- 在线画板和 Quick Transfer 是根项目下的独立子项目，治理根分别为 `docs/whiteboard/` 和 `docs/transfer/`。修改各自 `project.json` 定义的 tracked paths 时，必须把该子项目 `VERSION` 和显示版本相对基线精确增加 `0.0.1`，在独立 `CHANGELOG.md` 写本次版本，并同步 `README.md`、`AGENTS.md`、其他受影响文档与根 `CHANGELOG.md`。主站或另一子项目发版不得仅为统一发布字符串而滚动未改变子项目的内部 asset cache key；真实修改受治理 loader 时仍必须正常升版。`AGENT.md` 仅可指向唯一权威 `AGENTS.md`，不得复制出第二份漂移规则；提交前必须在当前分支相对 `origin/main` 运行 `npm run check:subprojects`。
 - 保留服务端人数、连接、消息、对象、文档、图片与频率上限；Origin、匿名凭证、房间票据、IP 哈希限流、跨房资源访问和异常连接都必须 fail closed。日志不得记录明文密码、完整画布、完整 IP 或公开完整匿名 ID。
 - 管理后台必须复用 `users.role = admin` 鉴权，提供概览、房间状态、容量、短错误码与去重错误／自动清理聚合计数、公共房清空／锁定、连接移除、匿名 ID／IP 哈希临时封禁及空密码房删除；默认只显示截断标识，危险操作保持确认与审计。错误指标不得保存请求载荷或画布内容。
 - 发布前执行本地 D1 migration、Lint、类型检查、全量测试、`whiteboard:test`、生产构建和跨会话／移动视口验证。获授权后先远端 D1 migration、再部署 DO Worker、核对 external binding，最后合并 `main` 触发 Pages；未完成远端检查时不得声称已经上线。
