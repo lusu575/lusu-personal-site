@@ -21,14 +21,14 @@ npx wrangler deploy --config workers/whiteboard/wrangler.jsonc
 
 Pages 项目必须把 `WHITEBOARD_ROOMS` 绑定到脚本 `lusu-whiteboard-do` 的 `WhiteboardRoom`。Pages 与 Worker 的 `WHITEBOARD_INTERNAL_SECRET` 必须相同。该 Worker 的 `v1` migration 使用 SQLite-backed Durable Object；已创建 namespace 后不要删除或改写 migration tag。
 
-隔离 Preview 使用独立的 `wrangler.preview.jsonc`，只绑定 `lusu-whiteboard-do-preview` 与 `lusu-temp-transfer-preview`，不回退 Production D1/R2：
+隔离 Preview Worker 使用独立的 `wrangler.preview.jsonc`，只绑定 `lusu-whiteboard-do-preview` 与 `lusu-temp-transfer-preview`，不回退 Production D1/R2：
 
 ```bash
 npx wrangler secret put WHITEBOARD_INTERNAL_SECRET --config workers/whiteboard/wrangler.preview.jsonc
 npx wrangler deploy --config workers/whiteboard/wrangler.preview.jsonc
 ```
 
-Preview 的精确站点 Origin 和 Pages 独立 D1 仍需在部署前配置；未配置完成时保持 Preview API 关闭。
+Preview 的精确站点 Origin 和 Pages 独立 D1 仍需在部署前配置；未配置完成时保持 Preview API 关闭，并让根 `wrangler.jsonc` 的 Pages Preview Durable Object bindings 为空。只有先成功部署本节的 Preview Worker 并完成全部隔离资源验收后，Pages Preview 才能引用它。
 
 本地开发把 `.dev.vars.example` 复制为未追踪的 `.dev.vars`，再分别启动 Worker 与 Pages。Pages 本地 binding 指向 `WhiteboardRoom@lusu-whiteboard-do`。
 

@@ -4530,9 +4530,9 @@ if (!Array.isArray(previewWranglerData?.r2_buckets) || previewWranglerData.r2_bu
 if (previewWranglerData?.vars?.PREVIEW_API_DISABLED !== "true") {
   fail("wrangler.jsonc env.preview must fail closed with PREVIEW_API_DISABLED=true while Preview D1/R2 bindings are absent");
 }
-const previewWhiteboardBinding = previewWranglerData?.durable_objects?.bindings?.find((binding) => binding.name === "WHITEBOARD_ROOMS");
-if (previewWhiteboardBinding?.script_name !== "lusu-whiteboard-do-preview") {
-  fail("wrangler.jsonc env.preview must use the isolated Preview whiteboard Worker");
+if (!Array.isArray(previewWranglerData?.durable_objects?.bindings)
+  || previewWranglerData.durable_objects.bindings.length !== 0) {
+  fail("wrangler.jsonc env.preview must not bind a whiteboard Worker until the isolated Preview Worker and data resources are provisioned");
 }
 const productionWhiteboardOrigins = String(whiteboardWorkerWranglerData.vars?.ALLOWED_ORIGINS || "")
   .split(",")

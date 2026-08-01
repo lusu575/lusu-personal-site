@@ -73,7 +73,7 @@ GPTWork 先在云端 Secrets 中配置下列运行时值，再执行 `npm ci`、
 
 四个画板 Secret 必须用途独立、随机且至少 32 UTF-8 bytes。Pages Functions 读取全部四个；独立画板 Worker 只读取与对应 Pages 环境相同的 `WHITEBOARD_INTERNAL_SECRET`。Preview 与 Production 使用隔离值，真实值不得写入仓库、文档或日志。
 
-根 `wrangler.jsonc` 提交态的 `env.preview` 固定为 `PREVIEW_API_DISABLED=true` 且 `d1_databases: []`、`r2_buckets: []`；Cloudflare Pages 预览子域名也会在任何 D1 调用前关闭 `/api/*`。因此未完成隔离配置的 Preview 会 fail closed，不会读写 Production D1/R2。只有创建并迁移独立 Preview D1、独立 R2（如需文件能力）、Preview Worker/DO namespace、精确 Origin 与独立 Secret 后，才可在经审查的 Preview 配置中绑定这些独立资源并关闭该开关。
+根 `wrangler.jsonc` 提交态的 `env.preview` 固定为 `PREVIEW_API_DISABLED=true` 且 `d1_databases: []`、`r2_buckets: []`、`durable_objects.bindings: []`；Cloudflare Pages 预览子域名也会在任何 D1 调用前关闭 `/api/*`。因此未完成隔离配置的 Preview 会 fail closed，不会读写 Production D1/R2/DO，也不会因引用尚未部署的 Preview Worker 而令整次预览发布失败。只有创建并迁移独立 Preview D1、独立 R2（如需文件能力）、Preview Worker/DO namespace、精确 Origin 与独立 Secret，并先成功部署 Preview Worker 后，才可在经审查的 Preview 配置中绑定这些独立资源并关闭该开关。
 
 常用校验命令：`npm run lint`、`npm run typecheck`、`npm test`、`npm run whiteboard:test`、`npm run build`、`npm run build:production:verify`。标准 `npm run build` 会先执行 `scripts/build-check.mjs` 仓库守卫，全部通过后再由 `scripts/build-production.mjs` 原子生成被 Git 忽略的 `dist/`；`build:production:verify` 额外执行两次候选构建并比对清单，验证可复现性。
 

@@ -49,7 +49,7 @@ skills/lusu-personal-site-skill/SKILL.md
 - 聊天室与画板必须共用 `anonymous_identities` 和 HttpOnly `lusu_anonymous` 身份。临时名字由超过一万种安全词根组合生成，约 30 秒改名冷却；画板 DO 原子处理房内不重名。不得退回可编辑 LocalStorage ID、自由昵称或登录账号展示。
 - 画板密码必须 NFKC + trim 后由服务端 HMAC-SHA256 映射，明文不进入 URL、房间 ID、持久存储、埋点或日志。Pages 使用四个用途独立且至少 32 bytes 的 `WHITEBOARD_ROOM_HMAC_SECRET`、`WHITEBOARD_TICKET_SECRET`、`WHITEBOARD_INTERNAL_SECRET`、`WHITEBOARD_IP_HASH_SALT`；Worker 只使用与对应 Pages 环境相同的 internal secret。
 - 公共画板不执行空房 TTL；密码房最后一名有效用户离开后通过 Alarm 保留 24 小时，重入取消、再次为空重计。清理前重查连接与代次，并幂等删除 `whiteboard/v1/<roomId>/` R2 前缀、D1 索引和 DO 状态。`v1` migration 与 namespace 上线后不得删除或重写。
-- 画板部署顺序固定为本地迁移／Lint／类型／测试／构建，获授权后远端 D1 migration、先部署 DO Worker、核对 Pages external binding、最后合并 `main` 触发 Pages。根配置提交态的 Preview 使用 `PREVIEW_API_DISABLED=true` 和空 D1/R2 bindings；独立 Preview 资源全部迁移、配置和验收前不得开启。回滚先回 Pages 入口/binding、再部署兼容 Worker，并保留 namespace、migration 与数据；远端未核实时不得声称已上线。完整规则见 `docs/whiteboard/README.md`、`workers/whiteboard/README.md` 和 `cloudflare/README.md`。
+- 画板部署顺序固定为本地迁移／Lint／类型／测试／构建，获授权后远端 D1 migration、先部署 DO Worker、核对 Pages external binding、最后合并 `main` 触发 Pages。根配置提交态的 Preview 使用 `PREVIEW_API_DISABLED=true` 和空 D1/R2/DO bindings，不得引用尚未部署的 Preview Worker；独立 Preview 资源全部迁移、配置和验收且 Worker 已先部署前不得接入 Pages 或开启 API。回滚先回 Pages 入口/binding、再部署兼容 Worker，并保留 namespace、migration 与数据；远端未核实时不得声称已上线。完整规则见 `docs/whiteboard/README.md`、`workers/whiteboard/README.md` 和 `cloudflare/README.md`。
 - Transfer 设置以 revision / `expectedUpdatedAt` 条件保存；房间清空、清理和上传 ready 转换检查真实 D1 changes。部分失败必须返回非 2xx 与可重试对象，并清理并发竞态产生的孤立 R2 对象，不能伪报完成。
 - Quick Transfer 只能称文字为浏览器 AES-GCM 加密；图片、视频和文件不使用房间口令加密，只由 HTTPS、私有 R2 与服务端鉴权保护，且不做病毒／恶意软件扫描。明文口令不发服务器，配额按滚动 24 小时描述，公开卡片、房间提示和历史 seed 不得扩大安全承诺。
 - 工具区同列表工具卡必须共享网格宽度和卡片高度节奏；zh/en/ja 的标题、元信息、说明与 CTA 不得相交或被 `nowrap`、隐藏滚动条、裁剪吞掉。
@@ -101,7 +101,7 @@ skills/lusu-personal-site-skill/SKILL.md
 - 用户要求只改文档时，只修改文档文件，不改网站代码、样式、功能或资源。
 - Cloudflare Pages Git 自动部署是正式部署链路，不要把 `npx wrangler deploy` 或 `npx wrangler pages deploy .` 写成 Git 自动部署命令。
 - GPTWork / 全新克隆开发固定使用 Node.js 22.13+、`npm ci`、仓库 lockfile 和本地 D1；纯本地环境使用 `.env.example` -> `.dev.vars`，GPTWork 使用 process Secrets 且不创建 `.dev.vars`。不得依赖固定盘符、父目录依赖、本机全局工具或生产数据库。
-- Cloudflare Production 必须检查 D1 binding `DB`，并配置独立、随机、至少 32 字节的 `CHAT_IP_HASH_SALT`、`ANALYTICS_IP_HASH_SALT` 与四个画板 Secret；Pages 读取四个画板值，Worker 只读取匹配的 `WHITEBOARD_INTERNAL_SECRET`。根配置提交态的 Preview 保持 API 关闭且不绑定 D1/R2；只有独立 Preview 数据资源、DO、Origin 与 Secret 全部完成后才可启用，且不得提交真实值、固定 fallback 或跨环境／跨用途复用。
+- Cloudflare Production 必须检查 D1 binding `DB`，并配置独立、随机、至少 32 字节的 `CHAT_IP_HASH_SALT`、`ANALYTICS_IP_HASH_SALT` 与四个画板 Secret；Pages 读取四个画板值，Worker 只读取匹配的 `WHITEBOARD_INTERNAL_SECRET`。根配置提交态的 Preview 保持 API 关闭且不绑定 D1/R2/DO；只有独立 Preview 数据资源、DO、Origin 与 Secret 全部完成且 Worker 已先部署后才可接入并启用，且不得提交真实值、固定 fallback 或跨环境／跨用途复用。
 - IP hash 使用按 `chat` / `analytics` 隔离的 HMAC-SHA256。聊天消息和网络来源禁言带非敏感密钥代次；Secret 轮换后旧消息只供审计、旧网络禁言标记失效，服务端拒绝从旧代次新建禁言。
 - 普通 CI / GPTWork 不需要 Cloudflare API Token、生产 D1 权限、本机 TTS 配置、模型权重或参考声线；`output/`、Wrangler 状态、依赖和本地 TTS 配置均不得提交。
 - 项目已配置真实 `npm run lint`、`npm run typecheck` 和 `npm run whiteboard:test`；CI／release 验证必须实际运行，不能替换为空成功占位。迁移清单见 `docs/GPTWORK_MIGRATION_READINESS.md`。

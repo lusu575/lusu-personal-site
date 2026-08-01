@@ -4,6 +4,7 @@
 
 ## 2026-08-01
 
+- 修复 Cloudflare Pages PR Preview 在全部构建与资产上传成功后仍因 `Script lusu-whiteboard-do-preview not found` 失败的问题：根 `wrangler.jsonc` 的提交态 Preview 既然已使用 `PREVIEW_API_DISABLED=true` 和空 D1/R2，就同步显式使用空 Durable Object bindings，不再引用尚未部署的 Preview Worker。Production 的 `WhiteboardRoom@lusu-whiteboard-do` binding、独立 Preview Worker 配置模板和隔离要求保持不变；只有 Preview D1/R2、DO namespace、精确 Origin 与独立 Secret 全部创建、迁移和验收后，才允许先部署 Preview Worker、再经审查把 Pages Preview binding 接入。
 - 发布门禁把 `sharp` 从 `0.34.5` 升级到 `0.35.3`、Wrangler 从 `4.111.0` 升级到 `4.118.0`，消除图片处理与 Wrangler/Miniflare 依赖链的高危安全告警；两项继续精确锁定并要求在 Node.js 22 下执行严格 `npm ci`、完整依赖审计和真实 `wrangler pages dev` 冒烟，不能用 `audit fix --force` 或跳过 CI 放行。
 - 修复生产账号登录把服务端故障误报为“请检查网络”的根因：Cloudflare Pages Functions 的生产运行时拒绝超过 100,000 次的 PBKDF2，而旧实现会在 25,000 次旧哈希验证成功后尝试升级到 600,000 次并直接触发 5xx。新密码、管理员重置和旧记录条件升级统一使用 PBKDF2-HMAC-SHA256 100,000 次；25,000 次记录登录后升级，既有 100,000 次记录保持不变。账号前端现在区分本地网络失败与服务端暂不可用，并新增 API 与 workerd 兼容性回归。
 - 降低 D1 写入放大并新增后台“流量与写入”保护面板：运行时 schema 检查不再夹带整套文章 seed；完整文章与三语翻译只在 `site_runtime_state.article_seed_version` 未达到当前发布版本时执行，成功后持久标记，后续隔离实例只读标记。后台新增站内可识别写入压力、分项估算、UTC 重置时间、可选 Cloudflare 官方 `rowsWritten` 状态，以及遥测总开关、识别／浏览／点击／文章开关、60,000／80,000 默认阈值和正常／预警／硬保护三档采样；保存使用 revision/CAS，自动刷新不覆盖未保存输入。保护策略只降低非必要遥测，不自动关闭登录、云存档、聊天、互传或在线画板，站内估算也不会冒充 Cloudflare 账单。三语 `site-updates` 记录 `seed-update-2026-08-01-service-reliability` 已同步 fallback、Functions seed 与 schema seed，公共表示版本为 `20260801-service-reliability-r1`。

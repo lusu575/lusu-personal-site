@@ -241,10 +241,7 @@ test("package and headers expose the production and cache contracts", async () =
   assert.deepEqual(wrangler.env.preview.d1_databases, []);
   assert.deepEqual(wrangler.env.preview.r2_buckets, []);
   assert.equal(wrangler.env.preview.vars.PREVIEW_API_DISABLED, "true");
-  assert.equal(
-    wrangler.env.preview.durable_objects.bindings.find(({ name }) => name === "WHITEBOARD_ROOMS")?.script_name,
-    "lusu-whiteboard-do-preview"
-  );
+  assert.deepEqual(wrangler.env.preview.durable_objects.bindings, []);
   assert.equal(
     whiteboardWrangler.vars.ALLOWED_ORIGINS,
     "https://lusu575.com,https://www.lusu575.com"
