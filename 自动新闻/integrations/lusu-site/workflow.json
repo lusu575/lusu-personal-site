@@ -62,7 +62,9 @@
       "reviewEveryRequiredGroup": true,
       "priorityGroupsFirst": true,
       "mustReviewCandidateSource": "coverage_manifest.json.mustReviewCandidateIds",
-      "mustReviewScope": "focused-query-and-designated-source-candidates",
+      "mustReviewScope": "all-discovered-candidates",
+      "priorityReviewPolicy": "all-discovered-candidates",
+      "priorityCandidateReviewRequired": true,
       "lowVolumeTrigger": 5,
       "lowVolumeMeaning": "selected-story-count",
       "lowVolumeAction": "mandatory-second-pass-without-filler"

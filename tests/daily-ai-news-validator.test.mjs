@@ -572,7 +572,15 @@ test("Daily AI News workflow declares the permanent three-section contract", asy
   );
   assert.equal(
     workflow.collection.coverageReview.mustReviewScope,
-    "focused-query-and-designated-source-candidates"
+    "all-discovered-candidates"
+  );
+  assert.equal(
+    workflow.collection.coverageReview.priorityReviewPolicy,
+    "all-discovered-candidates"
+  );
+  assert.equal(
+    workflow.collection.coverageReview.priorityCandidateReviewRequired,
+    true
   );
   assert.equal(
     workflow.collection.coverageReview.lowVolumeAction,
@@ -1214,6 +1222,33 @@ test("priorityReview must dispose every focused candidate exactly once", async (
   await assert.rejects(
     () => readAndValidateRun(duplicate.runPath),
     /被重复处置/
+  );
+});
+
+test("priorityReview must map every selected article candidate to a selected disposition", async (t) => {
+  const fixture = await writeFormalCoverageFixture(t, {
+    withPriorityReview: true
+  });
+  const selected = fixture.run.coverageAudit.priorityReview.decisions
+    .find((decision) => decision.decision === "selected");
+  selected.decision = "rejected";
+  selected.substantiveChange = false;
+  selected.score = {
+    reach: 1,
+    magnitude: 1,
+    practicalValue: 1,
+    evidence: 1,
+    total: 4
+  };
+  selected.rejectionReason = "insufficient-evidence";
+  selected.note = "负向回归：不能把实际入选稿件对应的来源标成拒绝。";
+  delete selected.storyKey;
+  delete selected.sourceCandidateIds;
+  await writeFile(fixture.runPath, `${JSON.stringify(fixture.run, null, 2)}\n`);
+
+  await assert.rejects(
+    () => readAndValidateRun(fixture.runPath),
+    /每篇实际入选新闻提供且只提供一个 selected 处置/
   );
 });
 

@@ -56,6 +56,8 @@ const USAGE_POLICY_EDITORIAL_CLASSES = new Set([
   "material-price-quota"
 ]);
 const USAGE_POLICY_CHANGE_SIGNAL = "usage-policy-change";
+const PRIORITY_REVIEW_POLICY = "all-discovered-candidates";
+const PRIORITY_DISCOVERY_REVIEW_LANE = "complete-discovery-review";
 const PRIORITY_REJECTION_REASONS = new Set([
   "insufficient-evidence",
   "below-importance-threshold",
@@ -643,6 +645,15 @@ function validateV2ReviewProvenance(manifest, indexItems) {
       "coverage_manifest.json schemaVersion 2 必须提供 reviewLanes 数组。"
     );
   }
+  if (manifest.priorityReviewPolicy !== undefined
+    && manifest.priorityReviewPolicy !== PRIORITY_REVIEW_POLICY) {
+    throw new Error(
+      `coverage_manifest.json priorityReviewPolicy 必须为 ${PRIORITY_REVIEW_POLICY}。`
+    );
+  }
+  const reviewsAllDiscoveredCandidates = (
+    manifest.priorityReviewPolicy === PRIORITY_REVIEW_POLICY
+  );
 
   const indexIds = new Set(indexItems.map((item) => String(item?.id || "")));
   const queryEntries = Array.isArray(manifest.queries) ? manifest.queries : [];
@@ -720,7 +731,10 @@ function validateV2ReviewProvenance(manifest, indexItems) {
     ...queryEntries
       .filter((entry) => entry?.mustReview === true)
       .map((entry) => String(entry.reviewLane)),
-    ...manifest.reviewSources.map((entry) => String(entry.reviewLane))
+    ...manifest.reviewSources.map((entry) => String(entry.reviewLane)),
+    ...(reviewsAllDiscoveredCandidates
+      ? [PRIORITY_DISCOVERY_REVIEW_LANE]
+      : [])
   ]);
   if (!sameStringSet(
     [...reviewLaneById.keys()],
@@ -823,17 +837,24 @@ function validateV2ReviewProvenance(manifest, indexItems) {
       ...expectedQueryIds.map((queryId) => String(queryById.get(queryId).reviewLane)),
       ...expectedSourceIds.map(
         (sourceId) => String(reviewSourceById.get(sourceId).reviewLane)
-      )
+      ),
+      ...(reviewsAllDiscoveredCandidates
+        ? [PRIORITY_DISCOVERY_REVIEW_LANE]
+        : [])
     ];
     const uniqueExpectedReviewLanes = [...new Set(expectedReviewLanes)];
     if (!sameStringSet(stringArray(item.reviewLanes), uniqueExpectedReviewLanes)) {
       throw new Error(
         `candidate_index.json 候选 ${candidateId} 的 reviewLanes `
-        + "与 must-review query／source 归属不一致。"
+        + "与 must-review query／source 归属不一致（含 priority 策略）。"
       );
     }
 
-    const expectedMustReview = expectedQueryIds.length > 0 || expectedSourceIds.length > 0;
+    const expectedMustReview = (
+      expectedQueryIds.length > 0
+      || expectedSourceIds.length > 0
+      || reviewsAllDiscoveredCandidates
+    );
     if (item.mustReview !== expectedMustReview) {
       throw new Error(
         `candidate_index.json 候选 ${candidateId} 的 mustReview 与重点归属不一致。`
@@ -852,7 +873,7 @@ function validateV2ReviewProvenance(manifest, indexItems) {
       expectedMustReviewCandidateIds
     )) {
     throw new Error(
-      "coverage_manifest.json mustReviewCandidateIds 与 query／source 重点候选归属不一致。"
+      "coverage_manifest.json mustReviewCandidateIds 与 query／source／priority 重点候选归属不一致。"
     );
   }
 }
@@ -913,6 +934,7 @@ function validatePriorityReviewProvenance({ run, manifest, indexItems }) {
     .filter((item) => (
       stringArray(item?.mustReviewQueryIds).length > 0
       || stringArray(item?.mustReviewSourceIds).length > 0
+      || manifest.priorityReviewPolicy === PRIORITY_REVIEW_POLICY
     ))
     .map((item) => String(item?.id || ""));
   if (!sameStringSet(mustReviewCandidateIds, expectedMustReviewCandidateIds)) {
@@ -1080,6 +1102,23 @@ function validatePriorityReviewProvenance({ run, manifest, indexItems }) {
     [...decisionsByCandidateId.keys()]
   )) {
     throw new Error("coverageAudit.priorityReview 必须对每个 must-review 重点候选恰好处置一次。");
+  }
+  const mustReviewCandidateIdSet = new Set(mustReviewCandidateIds);
+  const selectedStoriesRequiringPriorityDisposition = [
+    ...selectedRunCandidates.entries()
+  ]
+    .filter(([, candidate]) => (
+      stringArray(candidate?.sourceCandidateIds)
+        .some((candidateId) => mustReviewCandidateIdSet.has(candidateId))
+    ))
+    .map(([storyKey]) => storyKey);
+  if (!sameStringSet(
+    selectedStoriesRequiringPriorityDisposition,
+    [...selectedStoryKeys]
+  )) {
+    throw new Error(
+      "coverageAudit.priorityReview 必须为每篇实际入选新闻提供且只提供一个 selected 处置。"
+    );
   }
 
   for (const [candidateId, entry] of decisionsByCandidateId) {

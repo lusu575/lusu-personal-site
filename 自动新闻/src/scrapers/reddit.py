@@ -7,6 +7,7 @@ import re
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from typing import Any, List, Optional, cast
+from urllib.parse import urljoin, urlsplit
 
 import feedparser
 import httpx
@@ -20,11 +21,13 @@ from ..models import (
     RedditUserConfig,
     SourceType,
 )
+from ..url_security import UnsafeURLError, validate_http_url
 
 logger = logging.getLogger(__name__)
 
 REDDIT_BASE = "https://www.reddit.com"
 OLD_REDDIT_BASE = "https://old.reddit.com"
+REDDIT_HOSTS = frozenset({"reddit.com", "www.reddit.com", "old.reddit.com"})
 USER_AGENT = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
     "AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -138,7 +141,12 @@ class RedditScraper(BaseScraper):
                 entry.get("id") or entry.get("link") or entry.get("title", "")
             )
             title = str(entry.get("title") or "Untitled")
-            link = str(entry.get("link") or f"{REDDIT_BASE}/r/{cfg.subreddit}/")
+            fallback_link = f"{REDDIT_BASE}/r/{cfg.subreddit}/"
+            link = self._normalize_reddit_url(
+                entry.get("link"),
+                fallback_link,
+                allow_external=False,
+            )
             content = self._strip_html(str(entry.get("summary") or ""))
 
             items.append(
@@ -374,6 +382,44 @@ class RedditScraper(BaseScraper):
         text = re.sub(r"<[^>]+>", " ", value)
         return re.sub(r"\s+", " ", text).strip()
 
+    @staticmethod
+    def _normalize_reddit_url(
+        value: Any,
+        fallback: str,
+        *,
+        allow_external: bool,
+    ) -> str:
+        """Return a validated absolute HTTP URL for Reddit post metadata."""
+
+        candidate = str(value or "").strip()
+        if not candidate:
+            return fallback
+
+        # Scheme-relative links and backslashes can switch hosts when interpreted
+        # by a browser, so never treat them as ordinary Reddit-relative paths.
+        if candidate.startswith("//") or "\\" in candidate:
+            return fallback
+
+        parsed = urlsplit(candidate)
+        if parsed.scheme or parsed.netloc:
+            try:
+                validate_http_url(candidate)
+            except UnsafeURLError:
+                return fallback
+            hostname = (parsed.hostname or "").rstrip(".").lower()
+            if not allow_external and hostname not in REDDIT_HOSTS:
+                return fallback
+            return candidate
+
+        absolute = urljoin(f"{REDDIT_BASE}/", candidate)
+        parsed_absolute = urlsplit(absolute)
+        if (parsed_absolute.hostname or "").rstrip(".").lower() != "www.reddit.com":
+            return fallback
+        try:
+            return validate_http_url(absolute)
+        except UnsafeURLError:
+            return fallback
+
     async def _fetch_comments(self, subreddit: str, post_id: str) -> List[dict]:
         fetch_limit = self.reddit_config.fetch_comments
         html_comments = await self._fetch_comments_html(subreddit, post_id, fetch_limit)
@@ -450,10 +496,22 @@ class RedditScraper(BaseScraper):
         title = post.get("title", "")
         is_self = post.get("is_self", False)
         subreddit = post.get("subreddit", "")
-        discussion_url = f"https://www.reddit.com{post.get('permalink', '')}"
+        discussion_url = self._normalize_reddit_url(
+            post.get("permalink"),
+            f"{REDDIT_BASE}/r/{subreddit}/comments/{post_id}/",
+            allow_external=False,
+        )
 
         # For link posts, use the external URL; for self posts, use the discussion URL
-        url = discussion_url if is_self else post.get("url", discussion_url)
+        url = (
+            discussion_url
+            if is_self
+            else self._normalize_reddit_url(
+                post.get("url"),
+                discussion_url,
+                allow_external=True,
+            )
+        )
 
         author = post.get("author", "unknown")
         created = datetime.fromtimestamp(post.get("created_utc", 0), tz=timezone.utc)

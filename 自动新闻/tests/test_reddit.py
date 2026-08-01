@@ -104,6 +104,23 @@ def _old_listing_html_for(subreddit: str, post_id: str) -> str:
     """
 
 
+def _old_relative_link_listing_html() -> str:
+    timestamp_ms = int(datetime.now(timezone.utc).timestamp() * 1000)
+    return f"""
+    <!doctype html>
+    <div class="thing link" data-fullname="t3_relative123"
+         data-subreddit="Seedance_AI" data-author="seedance_author"
+         data-score="42" data-timestamp="{timestamp_ms}"
+         data-permalink="/r/Seedance_AI/comments/relative123/test_post/"
+         data-url="/r/Seedance_AI/comments/relative123/test_post/">
+      <a class="title" href="/r/Seedance_AI/comments/relative123/test_post/">
+        Relative Seedance link
+      </a>
+      <a class="comments">4 comments</a>
+    </div>
+    """
+
+
 def _old_comments_html() -> str:
     return """
     <!doctype html>
@@ -182,6 +199,65 @@ def test_reddit_listing_uses_old_reddit_first():
     assert items[0].author == "old_author"
     assert items[0].metadata["score"] == 42
     assert items[0].metadata["num_comments"] == 7
+
+
+def test_reddit_relative_link_post_is_normalized_to_absolute_reddit_url():
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.url.host == "old.reddit.com"
+        return httpx.Response(200, text=_old_relative_link_listing_html())
+
+    transport = httpx.MockTransport(handler)
+    client = httpx.AsyncClient(transport=transport)
+    config = RedditConfig(
+        enabled=True,
+        subreddits=[
+            RedditSubredditConfig(
+                subreddit="Seedance_AI",
+                enabled=True,
+                sort="hot",
+                fetch_limit=1,
+                min_score=1,
+            )
+        ],
+        users=[],
+        fetch_comments=0,
+    )
+    scraper = RedditScraper(config, client)
+
+    items = asyncio.run(scraper.fetch(datetime.now(timezone.utc) - timedelta(hours=1)))
+    asyncio.run(client.aclose())
+
+    assert len(items) == 1
+    expected = (
+        "https://www.reddit.com/"
+        "r/Seedance_AI/comments/relative123/test_post/"
+    )
+    assert str(items[0].url) == expected
+    assert items[0].metadata["discussion_url"] == expected
+
+
+def test_reddit_scheme_relative_link_cannot_switch_to_external_host():
+    client = httpx.AsyncClient(transport=httpx.MockTransport(lambda _: None))
+    scraper = RedditScraper(_make_config(fetch_comments=0), client)
+    post = _listing_payload()["data"]["children"][0]["data"]
+    post = {
+        **post,
+        "is_self": False,
+        "url": "//evil.example/reddit-lookalike",
+    }
+
+    item = scraper._parse_post(post, [], "subreddit", "ai-model-watch")
+    asyncio.run(client.aclose())
+
+    assert item is not None
+    assert str(item.url) == (
+        "https://www.reddit.com/"
+        "r/LocalLLaMA/comments/abc123/test_post/"
+    )
+    assert item.metadata["discussion_url"] == (
+        "https://www.reddit.com/"
+        "r/LocalLLaMA/comments/abc123/test_post/"
+    )
 
 
 def test_reddit_listing_old_failure_falls_back_to_json_then_rss():

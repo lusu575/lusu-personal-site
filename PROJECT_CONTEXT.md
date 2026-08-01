@@ -1,5 +1,11 @@
 # PROJECT_CONTEXT.md
 
+## 2026-07-31 每日 AI 新闻完整发现审阅
+
+- 正式日报不再以 priority、聚焦查询或指定来源决定审阅边界。精确窗口内写入 `candidate_index.json` 的每个候选都必须进入 `complete-discovery-review`，并在兼容字段 `coverageAudit.priorityReview.decisions` 中恰好得到一次 `selected`、`merged` 或具体 `rejected` 处置；`priority` 只决定审阅顺序。新 manifest 使用 `priorityReviewPolicy: all-discovered-candidates`，其 `mustReviewCandidateIds` 必须等于全部 candidate index 编号。
+- 时间资格以事件当前阶段第一次由可靠来源公开的可核对时间为准；Google News、RSS 等聚合器的收录／刷新时间和 Reddit、Hacker News 等社区发帖时间都不能替代它。社区源只用于发现，候选事实与时间必须回到官网、规范原帖、可靠媒体、论文或其他一手来源核实。
+- 多模态覆盖必须独立检查 Seedance 等视频、图像和语音产品的发布、延期、开放范围、API、权重与可用性变化。每一条发现候选都要处置，不能因综合查询未标 priority、文章已有五条或来源只是可选补充而静默跳过。
+
 ## 2026-07-30 工具区多人实时在线画板
 
 - 仓库已实现独立页面 `/tools/whiteboard/`，入口只属于现有**工具区**（内部兼容 route 仍为 `resources`）；返回操作回工具区，不新增或恢复“资源区”页面、入口、路由、分类或旧结构。页面无需登录，提供公共画板与自行输入相同密码进入的隔离密码房。
@@ -17,7 +23,7 @@
 
 - 每日定时任务继续固定在 `Asia/Shanghai` 07:00 启动，并把 08:00 作为自动发布硬截止；自动任务失败、超时或被普通重跑时只能关闭本期，永远不得自行转入人工补发。
 - 当天自动任务失败后，只有站长在当前 Codex 交互任务中明确要求重新生成并公开该日新闻，才可读取 `自动新闻/integrations/lusu-site/MANUAL_RECOVERY.md` 并使用独立 `--manual-recovery` 入口。人工入口仅在该 `reportDate` 对应的北京时间当天 08:00（含）至次日 00:00（不含）开放，同时要求 `--confirm-report-date` 和已完整验证运行记录的 canonical SHA-256；午夜前不足 45 秒时同样拒绝发起请求。
-- 人工补发仍使用原日期的精确 `[前一日 07:00, 当日 07:00)` 窗口，不能改成补发前 24 小时。生产脚本仍先执行完整 `readAndValidateRun`，因此 schemaVersion 4、Horizon 成功态、candidate index 原始 UTF-8 摘要、coverage manifest v2、required query／group 签收、全部 must-review 处置、低产量复审、事件阶段去重和中英日三语格式都不能绕过。
+- 人工补发仍使用原日期的精确 `[前一日 07:00, 当日 07:00)` 窗口，不能改成补发前 24 小时。生产脚本仍先执行完整 `readAndValidateRun`，因此 schemaVersion 4、Horizon 成功态、candidate index 原始 UTF-8 摘要、coverage manifest v2、required query／group 签收、全部候选处置、低产量复审、事件阶段去重和中英日三语格式都不能绕过。
 - 人工与自动模式共用同一正式 `daily-ai-news` 接口、Bearer 凭证、enabled、显式 auto-publish、限流、slug 冲突、服务端 payload hash、幂等和三语公开回读门禁。请求状态不明或公开回读失败时仍禁止自动再次 POST；只有站长再次明确指示，并复用同一稿件和幂等键时，才可重新核对。
 - `--print-run-sha256` 只读加载并完整验证指定运行记录后输出 canonical SHA-256，供站长授权范围内的人工双确认使用；确认后任何稿件字段变化都会使指纹失效。该操作门禁用于防误投、错稿和确认后篡改，不替代站长的明确交互授权。
 
@@ -73,10 +79,10 @@
 - 修复后的 7 月 28 日正式复跑以 27 个英／中／日／韩检索种子覆盖全部 required group，得到 863 条精确窗口候选并选出 8 条；同 slug 三语线上文章已原位修订，原 `created_at`／`published_at` 保持不变，公开 zh／en／ja 接口均与 schema v4 校验稿一致。
 - 发现查询必须区分“请求成功但无结果”和“请求／解析失败”。Google News 查询使用两路受控并发，失败最多重试两次，仍失败则 `fetchStatus` 不能为 success，正式运行必须关闭；不得把内部错误后返回的空数组当作没有新闻。候选索引与 SHA-256 必须基于实际写盘的确定性 UTF-8 字节，不能让 Windows 换行转换造成清单与文件指纹不一致。
 - 2026-07-28 的短稿复盘确认：严格 24 小时窗口内 Horizon 实际产出 383 条候选，最终只有两条并非抓取总量不足，而是编辑记录只处理了两条入选和少量排除项，没有逐个签收重点实体／主题查询，也没有在低产量时启动第二轮补查；光刻机与部分中文厂商等明确主题还缺少专门检索。
-- 正式工作流使用 schema v4，coverage manifest 使用 schemaVersion 2。Horizon 运行除完整 `daily_candidates.json` 外还提供紧凑 candidate index 与 coverage manifest；编辑记录必须完成 required query 和 entity group 的覆盖审阅签收。`mustReviewCandidateIds` 同时来自聚焦查询和指定 RSS／社区发现源，所有命中都必须逐条处置。初选少于 5 条时强制执行低产量第二轮审阅和定向补查，但 5 条不是最低配额，复核后仍可少于 5 条或无稿，绝不能用窗口外、重复或低价值消息凑数。
-- `自动新闻/integrations/lusu-site/runs/2026-07-28-coverage-revision.json` 在 coverage manifest v2 落地前生成，校验器只按已登记的 run、路径与 SHA-256 指纹允许这一份 schema v4 + manifest v1 历史兼容记录。该例外不得复制、改写或作为新运行模板；所有后续正式运行都必须生成 coverage manifest v2 和完整 `priorityReview`。
-- 发现层不限制来源语言；可靠的中文、英文、日文、韩文及其他语言来源都可以进入候选，并以重点实体的英中日韩常用别名帮助发现。长期重点包括 Anthropic、OpenAI／GPT／Sam Altman／Codex、Kimi／月之暗面、智谱／GLM、千问／Qwen、MiniMax、混元、美团龙猫、字节跳动／豆包／Seed 等模型厂商，以及芯片／光刻／存储、机器人、智能设备、数据中心能源／散热／网络和科技金融。
-- 聚焦查询最多保留 99 条并请求第 100 条作为截断探针：只有实际返回第 100 条才标记 result-limit，恰好只有 99 条不视为截断。高流量的跨厂商查询只能作补充发现；required 产品动态查询按厂商和语言拆分，当前日文 OpenAI／ChatGPT／Codex、Anthropic／Claude、Gemini／DeepMind 使用三条独立必查入口，避免窗口外旧消息先占满单条结果上限。正式入口的默认回看只取 24 小时，并按实际启动时刻向上扩到足以覆盖精确窗口的整小时数，不再固定多取 48 小时。TechCrunch AI、VentureBeat AI、Ars Technica AI、雷峰网和 36氪属于可选补充。站长已授权把 Tibo `@thsottiaux` 的 X 帖子纳入选题；已移除会返回同名医疗噪声且无法提取规范原帖的 Bing RSS，改由 required 的 `codex-operations-en` 聚焦查询同时检查 Tibo 姓名、账号及 Codex／ChatGPT Work 运营变化。该查询返回的 X、媒体和社区候选全部进入 must-review，事实仍回到规范原帖、可靠媒体或其他一手来源核验；当前不是完整登录时间线或 X API。
+- 正式工作流使用 schema v4，coverage manifest 使用 schemaVersion 2。Horizon 运行除完整 `daily_candidates.json` 外还提供紧凑 candidate index 与 coverage manifest；编辑记录必须完成 required query 和 entity group 的覆盖审阅签收，并对 candidate index 全部候选逐条处置。初选少于 5 条时强制执行低产量第二轮审阅和定向补查，但 5 条不是最低配额，复核后仍可少于 5 条或无稿，绝不能用窗口外、重复或低价值消息凑数。
+- `自动新闻/integrations/lusu-site/runs/2026-07-28-coverage-revision.json` 在 coverage manifest v2 落地前生成，校验器只按已登记的 run、路径与 SHA-256 指纹允许这一份 schema v4 + manifest v1 历史兼容记录。该例外不得复制、改写或作为新运行模板；所有后续正式运行都必须生成 coverage manifest v2，并在兼容字段 `priorityReview` 中完成全部候选处置。
+- 发现层不限制来源语言；可靠的中文、英文、日文、韩文及其他语言来源都可以进入候选，并以重点实体的英中日韩常用别名帮助发现。长期重点包括 Anthropic、OpenAI／GPT／Sam Altman／Codex、Thinking Machines／Inkling、LG AI Research／K-EXAONE 等开放模型与韩国模型实验室、Kimi／月之暗面、智谱／GLM、千问／Qwen、MiniMax、混元、美团龙猫、字节跳动／豆包／Seed，以及 Seedance 等视频、图像和语音多模态产品；芯片／光刻／存储、机器人、智能设备、数据中心能源／散热／网络和科技金融也在范围内。
+- 聚焦查询最多保留 99 条并请求第 100 条作为截断探针：只有实际返回第 100 条才标记 result-limit，恰好只有 99 条不视为截断。高流量的跨厂商查询只能作补充发现；required 产品动态查询按厂商和语言拆分，当前日文 OpenAI／ChatGPT／Codex、Anthropic／Claude、Gemini／DeepMind 使用三条独立必查入口，避免窗口外旧消息先占满单条结果上限。正式入口的默认回看只取 24 小时，并按实际启动时刻向上扩到足以覆盖精确窗口的整小时数，不再固定多取 48 小时。聚合时间不能代替事件当前阶段的首次可靠发布时间。TechCrunch AI、VentureBeat AI、Ars Technica AI、雷峰网和 36氪属于可选补充；Reddit 与 Hacker News 只作发现，所有返回候选仍须处置并回到可靠来源核验。站长已授权把 Tibo `@thsottiaux` 的 X 帖子纳入选题；已移除会返回同名医疗噪声且无法提取规范原帖的 Bing RSS，改由 required 的 `codex-operations-en` 聚焦查询同时检查 Tibo 姓名、账号及 Codex／ChatGPT Work 运营变化。当前不是完整登录时间线或 X API。
 - 跨日去重按 `eventKey + eventStage` 判断，不再把同一主体的全部后续永久视为重复。同一事件同一阶段继续排除；正式发布、正式开源／开放权重等实质新阶段可以作为 material update 入选，但内部记录必须指出前序故事和实质变化。
 
 ## 2026-07-28 每日 AI 新闻阅读格式
@@ -97,12 +103,12 @@
 
 ## 2026-07-27 每日 AI 新闻本地生成工作流
 
-- Horizon 是每日 AI 新闻不可绕过的数据入口。本站配置和适配层位于 `自动新闻/integrations/lusu-site/`；`npm.cmd run ai-news:horizon:fetch -- --date <日期> --start <开始> --end <结束>` 真实调用 Horizon 原生多来源抓取、网址规范化和跨来源去重，再按 `Asia/Shanghai` 固定成稿时刻之前的精确 24 小时输出 `data/mcp-runs/<run_id>/daily_candidates.json`、紧凑候选索引和 coverage manifest v2。窗口采用左闭右开边界，入选项必须有准确时间且不能越界。发现不设语言限制；宽泛查询只作补充，OpenAI／Codex 关键人物与产品运营变化、Anthropic、开放权重、主要中国模型厂商、中国光刻／存储等使用独立 required 查询，并由指定 RSS 与低门槛社区源补充早期线索。Google News 查询最多保留 99 条并请求第 100 条判断真实截断；单个可选补充源失败不阻断整期。RSS 瞬时失败由 Horizon 自带 RSS 抓取器定向重试；Horizon 不可用时本期停止，禁止静默改成手工浏览冒充自动采集。
+- Horizon 是每日 AI 新闻不可绕过的数据入口。本站配置和适配层位于 `自动新闻/integrations/lusu-site/`；`npm.cmd run ai-news:horizon:fetch -- --date <日期> --start <开始> --end <结束>` 真实调用 Horizon 原生多来源抓取、网址规范化和跨来源去重，再按 `Asia/Shanghai` 固定成稿时刻之前的精确 24 小时输出 `data/mcp-runs/<run_id>/daily_candidates.json`、紧凑候选索引和 coverage manifest v2。窗口采用左闭右开边界，入选项必须以事件当前阶段首次可靠发布时间核定且不能越界，聚合收录时间和社区发帖时间不能代替。发现不设语言限制；宽泛查询只作补充，OpenAI／Codex 关键人物与产品运营变化、Anthropic、开放权重、Thinking Machines／LG AI Research 等开放及韩国模型实验室、主要中国模型厂商、中国光刻／存储和 Seedance 等多模态产品使用独立 required 查询，并由指定 RSS、Reddit 与 Hacker News 等社区源补充早期线索。Google News 查询最多保留 99 条并请求第 100 条判断真实截断；单个可选补充源失败不阻断整期。RSS 瞬时失败由 Horizon 自带 RSS 抓取器定向重试；Horizon 不可用时本期停止，禁止静默改成手工浏览冒充自动采集。
 - Codex 只从当次 Horizon 候选中做重要性判断、一手来源复核、近 30 天按 `eventKey + eventStage` 去重、无外链完整文章合成、日文补齐和受控投递。同一事件的新阶段只有在记录前序故事和 material difference 后才可再次入选。`horizon.config.json` 当前已指向本地 Ollama `qwen3.6:27b`，但正式适配入口只调用 Horizon 的 `fetch_items`、来源重试和跨源去重，不调用 `score_items` 或 AI 富化；因此本地模型目前不是每日采集的硬依赖，也没有保存云端模型密钥。以后若启用原生评分／富化，只能增强 Horizon 阶段，不能绕过候选来源证明。
 - 每日新闻数量不设固定值，只使用 0–10 重要性评分中的 7 分门槛。初选少于 5 条必须完成低产量第二轮审阅和定向补查，但不得把 5 条当成最低配额；没有达到门槛的内容时报告“今日无稿”，不得拿窗口外消息、重复公告或低价值更新凑数。同一合作由多家公司分别公告时仍按一个故事处理。正文固定按“今日要闻 / 主要新闻 / 传闻”排列：要闻恰好一条且已经核实，传闻单独放置并使用条件语气，不在每条下重复“未证实”提示。
 - 一手来源 URL、筛选理由和评分只保存在内部运行记录；公开文章是一篇独立完整的 zh / en / ja 三语正文，不包含网址、Markdown 链接、来源／参考资料章节、相关阅读跳转或内部评分。新闻正文以准确陈述事实为主；每条末尾的 AI 解读必须明显短于正文，通常一至两句，只挑最关键的影响、现实门槛、隐含限制或下一步观察点，不复述新闻，也不要求每条都刻意找问题。
 - `自动新闻/integrations/lusu-site/ARTICLE_STYLE.md` 是所有后续日报的唯一固定格式与文风标准，未来代理必须先读。正式工作流 schema v4 和校验器会硬性检查三语标题均为固定栏目名前缀加各自第一条要闻标题、标题后直接进入首个栏目、三段栏目顺序、每条使用唯一三级标题、一段事实正文、恰好一条一至两句且短于事实段的 AI 解读、以解读结束，以及不得逐条重复传闻核实状态；语义层继续按该文件禁止纯日期标题、标题党、新闻复述、空泛套话、强行挑错和无依据扩写。schema v3 只保留给已登记的一次性历史样稿兼容，不得作为新的正式日报。
-- `npm.cmd run ai-news:validate` 除检查入选故事、重要性、重复键、三段结构、逐条 AI 解读、三语完整性和正文无链接外，还会读取对应 Horizon 候选文件，核对 `runId`、精确 24 小时窗口、candidate index、coverage manifest v2、required query／entity group 签收、真实结果上限状态、低产量第二轮审阅，以及聚焦查询和指定来源共同产生的每个重点候选的 `selected / merged / rejected` 处置和入选来源映射。must-review 中明确的用量／额度规则变化会标记 `usage-policy-change`，必须归类为用量或额度规则，不能用“重要性不足／例行消息／超出范围”拒绝；普通 token、推理内存、模型路由和性能优化不会被误标。同一额度事件的原帖、媒体和社区候选必须选一个代表项，其余合并。`npm.cmd run ai-news:deliver:local` 临时启用本地投递通道并启动一次 Pages 预览，走正式 `POST /api/automation/daily-ai-news` 契约后立即关闭服务、暂停通道并清除临时令牌。
+- `npm.cmd run ai-news:validate` 除检查入选故事、重要性、重复键、三段结构、逐条 AI 解读、三语完整性和正文无链接外，还会读取对应 Horizon 候选文件，核对 `runId`、精确 24 小时窗口、candidate index、coverage manifest v2、required query／entity group 签收、真实结果上限状态、低产量第二轮审阅，以及每个发现候选的 `selected / merged / rejected` 处置和入选来源映射。明确的用量／额度规则变化会标记 `usage-policy-change`，必须归类为用量或额度规则，不能用“重要性不足／例行消息／超出范围”拒绝；普通 token、推理内存、模型路由和性能优化不会被误标。同一额度事件的原帖、媒体和社区候选必须选一个代表项，其余合并。`npm.cmd run ai-news:deliver:local` 临时启用本地投递通道并启动一次 Pages 预览，走正式 `POST /api/automation/daily-ai-news` 契约后立即关闭服务、暂停通道并清除临时令牌。
 - 当前最新审阅记录为 `自动新闻/integrations/lusu-site/runs/2026-07-28-coverage-revision.json`：精确窗口候选索引 863 条，最终保留 8 条并通过 schema v4 三语校验；其 manifest v1 只适用上文所述的固定指纹历史例外。`runs/2026-07-27-2300.json` 继续作为仅允许 `--one-shot-history` 的生产链路历史样稿，`runs/2026-07-27.json` 仅保留为更早的本地记录。
 - 正式每日运行已获明确授权，按本文件顶部的 07:00–08:00 生产运行规则执行；不因该授权新增或保存模型／搜索／第三方密钥。自动公开仅限显式启用 auto-publish 的专用通道，其他通道和未配置通道继续草稿优先。本机 Codex 已创建并启用本地任务 `ai-7-8`（“每日 AI 新闻：7点生成，8点前发布”），按当前电脑的北京时间每天 07:00 运行；它不是云端托管任务，因此电脑、Codex 与网络需要在 07:00–08:00 保持可用。
 

@@ -149,6 +149,15 @@
           "category": "ai-community"
         },
         {
+          "subreddit": "Seedance_AI",
+          "enabled": true,
+          "sort": "new",
+          "time_filter": "day",
+          "fetch_limit": 25,
+          "min_score": 0,
+          "category": "ai-community-lead"
+        },
+        {
           "subreddit": "codex",
           "enabled": true,
           "sort": "new",
