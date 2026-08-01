@@ -432,6 +432,7 @@ const repositoryScanIgnoredDirectories = new Set([
   ".wrangler",
   ".wrangler-config",
   ".codex-remote-attachments",
+  ".codex-worktrees",
   "dist",
   "node_modules",
   "output"

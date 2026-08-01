@@ -20,7 +20,7 @@ const secretPatterns = [
 
 const ignoredDirectories = new Set([
   ".git", ".wrangler", ".wrangler-config", ".codex-remote-attachments", ".codex-screenshots",
-  ".playwright-cli", "node_modules", "output"
+  ".codex-worktrees", ".playwright-cli", "node_modules", "output"
 ]);
 const ignoredLocalFiles = /^(?:\.env(?:\..*)?|\.dev\.vars(?:\..*)?|tts\.local\.json)$/i;
 

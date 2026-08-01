@@ -17,6 +17,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 游戏目录、题库音频清单等可选远端 manifest 必须有有界超时、Abort、版本缓存和仓库内本地回退；可选网络失败不能阻塞内置内容、现有本地存档或已经加载成功的数据。日语工具的生产路径转换必须保留 manifest query 并坚持严格一次匹配，缺失或重复引用都要让构建失败。预加载的壁纸候选必须与实际 CSS 渲染使用完全相同的格式、尺寸和版本，且在首个资源请求前同步确定 reduced/off 动效状态。
 - `wrangler.jsonc` 的 compatibility date 不得超过仓库锁定 Wrangler 所带 workerd 的支持上限；当前 Wrangler `4.111.0` 使用 `2026-07-17`。日期或 Wrangler 版本变化后必须真实启动一次 `wrangler pages dev` 并请求健康、文章、404 与后台入口，静态 schema/build 通过不能替代运行时启动验证。
 - Headless 中每个独立审计场景必须用唯一 query 强制新文档，并确认 CDP 返回 `loaderId`；不要依赖 Hash-only `Page.navigate` 清空 route 模块或 30 秒内存缓存。刻意测试 SPA History、重试链或连续动效时才保留同文档。DOM 数量和交叠断言必须限定到真实场景容器；移动 App 外框可处于半透明 Dock 后方，但 composer、反馈、页脚和最后操作必须位于 Dock 上方。
+- `.codex-worktrees/` 保存其他 Codex 任务的独立 checkout，不是当前发布源码。Git 忽略、递归构建守卫和仓库密钥扫描都必须跳过该目录；发现其中旧文件导致当前构建失败时应修正扫描边界，不得删除或改写其他任务工作树来换取通过。
 
 ## 账号、文章与 Chat 稳定性规则
 

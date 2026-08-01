@@ -1,5 +1,11 @@
 # PROJECT_CONTEXT.md
 
+## 2026-08-01 画板支线接管与本地构建隔离
+
+- `agent/multiplayer-whiteboard` 已在 Node.js 22.23.2 下同步 lockfile 并合入最新 `main` 的每日 AI 新闻完整候选复核提交；后续验证以合并后的支线为准，不能只引用原始 `a7f1f80c` 的旧测试结果。
+- `.codex-worktrees/` 是其他 Codex 任务的独立 checkout，不属于当前仓库源码。Git、构建守卫和仓库密钥扫描必须忽略该目录，避免旧工作树内容污染当前构建或产生虚假安全结果；不得通过删除其他任务工作树来让构建通过。
+- Cloudflare 生产 D1、Durable Object Worker、Pages external binding、Secret、PR 合并和正式域名仍须按画板发布顺序逐项实际核验，本地通过不能替代远端状态。
+
 ## 2026-07-31 每日 AI 新闻完整发现审阅
 
 - 正式日报不再以 priority、聚焦查询或指定来源决定审阅边界。精确窗口内写入 `candidate_index.json` 的每个候选都必须进入 `complete-discovery-review`，并在兼容字段 `coverageAudit.priorityReview.decisions` 中恰好得到一次 `selected`、`merged` 或具体 `rejected` 处置；`priority` 只决定审阅顺序。新 manifest 使用 `priorityReviewPolicy: all-discovered-candidates`，其 `mustReviewCandidateIds` 必须等于全部 candidate index 编号。

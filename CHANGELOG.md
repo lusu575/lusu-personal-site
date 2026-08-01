@@ -2,6 +2,10 @@
 
 本文件记录鲁肃个人站的功能、界面、后端、部署与项目约定变更。每次修改项目后都应同步更新这里，方便后续 AI / Codex 对话快速了解最近改动。
 
+## 2026-08-01
+
+- 接管并整合 `agent/multiplayer-whiteboard`：使用 Node.js 22.23.2 补齐 `package-lock.json` 中 Vitest/Vite 可选 Sass watcher 依赖，使严格 `npm ci` 可重现；把最新 `main` 的每日 AI 新闻完整候选复核提交通过普通 merge 合入支线并同时保留画板上下文。构建守卫和仓库密钥扫描现在明确忽略本机 `.codex-worktrees/`，避免把其他 Codex 任务的独立 checkout 当作当前仓库源码，同时新增锁定该隔离规则的生产构建回归。该记录不代表远端 D1、Durable Object Worker、Pages binding、PR 合并或生产域名已经完成验证。
+
 ## 2026-07-31
 
 - 修复每日 AI 新闻“抓到候选但未进入编辑审阅”的根因：此前 7 月 31 日运行共抓到 1,899 条候选，却只把 849 条标为 must-review，剩余 1,050 条在成稿前没有逐条处置，导致 Seedance 2.5、Inkling-Small、K-EXAONE 2.0、GitHub 堆叠拉取请求及重要企业／金融动态等被静默漏掉。正式 Horizon 运行现使用 `all-discovered-candidates + complete-discovery-review`，候选索引中的每条消息都必须得到 selected、merged 或带具体理由的 rejected 处置；优先级只调整审阅顺序，不再缩小审阅范围。新增必查的中英日韩多模态模型、Thinking Machines／LG AI Research 等开放模型实验室与韩国模型厂商查询，并把 r/Seedance_AI、r/MachineLearning、r/LocalLLaMA、r/codex、r/OpenAI 与 Hacker News 作为补充发现入口；社区与聚合时间不能代替事件首发时间，线索仍须回到官方或可靠来源核实。同步修复 Reddit 相对链接被误当本地路径、Hacker News 枚举类型未命中来源归属，以及校验器未反向约束每篇入选稿件都必须拥有 selected 处置的问题，新增来源规范化、全候选处置和多模态覆盖回归。

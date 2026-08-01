@@ -229,10 +229,14 @@ test("package and headers expose the production and cache contracts", async () =
   const wrangler = JSON.parse(await readFile(path.join(root, "wrangler.jsonc"), "utf8"));
   const whiteboardWrangler = JSON.parse(await readFile(path.join(root, "workers", "whiteboard", "wrangler.jsonc"), "utf8"));
   const headers = await readFile(path.join(root, "_headers"), "utf8");
+  const buildCheck = await readFile(path.join(root, "scripts", "build-check.mjs"), "utf8");
+  const gitignore = await readFile(path.join(root, ".gitignore"), "utf8");
   assert.equal(packageJson.devDependencies.esbuild, "0.28.1");
   assert.equal(packageJson.scripts.build, "node scripts/build-check.mjs && node scripts/build-production.mjs");
   assert.equal(packageJson.scripts["build:production"], "node scripts/build-production.mjs");
   assert.equal(packageJson.scripts["build:production:verify"], "node scripts/build-production.mjs --verify-reproducible");
+  assert.match(buildCheck, /"\.codex-worktrees"/);
+  assert.match(gitignore, /^\.codex-worktrees\/$/m);
   assert.equal(wrangler.pages_build_output_dir, policy.outputDirectory);
   assert.deepEqual(wrangler.env.preview.d1_databases, []);
   assert.deepEqual(wrangler.env.preview.r2_buckets, []);
