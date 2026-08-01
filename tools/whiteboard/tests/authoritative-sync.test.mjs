@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import * as Y from "yjs";
+import { REMOTE_ORIGIN } from "../src/origins.js";
 
 const sent = [];
 const listeners = new Map();
@@ -60,7 +61,7 @@ test("rejected and readonly updates replace the local Y.Doc before authoritative
   let resets = 0;
   const scene = {
     applyRemoteUpdate(update) {
-      Y.applyUpdate(current, update);
+      Y.applyUpdate(current, update, REMOTE_ORIGIN);
     },
     getDocument: () => current,
     resetFromServer() {
@@ -95,7 +96,7 @@ test("rejected and readonly updates replace the local Y.Doc before authoritative
   });
   collaboration.synced = false;
   collaboration.sendOrQueueUpdate(new Uint8Array([7, 8, 9]));
-  assert.equal(collaboration.queue.length, 1);
+  assert.equal(collaboration.queue.length, 2);
 
   await collaboration.handleMessage(socket, {
     data: JSON.stringify({
@@ -169,4 +170,76 @@ test("rejected and readonly updates replace the local Y.Doc before authoritative
   authoritative.destroy();
   original.destroy();
   current.destroy();
+});
+
+test("rapid local edits are merged, acknowledged, and retained across a rate-limit reconnect", async () => {
+  sent.length = 0;
+  const document = new Y.Doc();
+  const callbackState = { errors: [], statuses: [] };
+  const scene = {
+    applyRemoteUpdate(update) {
+      Y.applyUpdate(document, update, "remote");
+    },
+    getDocument: () => document,
+    resetFromServer: () => document,
+  };
+  const collaboration = new WhiteboardCollaboration({
+    roomSession: { accessToken: "access" },
+    scene,
+    getApi: () => null,
+    callbacks: {
+      onError: (kind) => callbackState.errors.push(kind),
+      onStatus: (status) => callbackState.statuses.push(status),
+    },
+  });
+  const socket = createSocket();
+  collaboration.socket = socket;
+  collaboration.synced = true;
+
+  for (let index = 0; index < 30; index += 1) {
+    document.getMap("elements").set(`rapid-${index}`, {
+      id: `rapid-${index}`,
+      version: 1,
+    });
+  }
+  assert.equal(collaboration.queue.length, 30);
+  collaboration.flushUpdateQueue();
+  assert.equal(collaboration.queue.length, 0);
+  assert.ok(collaboration.inFlightUpdate instanceof Uint8Array);
+  assert.equal(sent.length, 1);
+
+  const mergedFrame = sent[0];
+  assert.ok(mergedFrame instanceof Uint8Array);
+  assert.equal(mergedFrame[0], 0);
+  const mergedDocument = new Y.Doc();
+  Y.applyUpdate(mergedDocument, mergedFrame.subarray(1));
+  assert.equal(mergedDocument.getMap("elements").size, 30);
+
+  collaboration.handleClose(socket, { code: 1008, reason: "rate_limited" });
+  assert.equal(collaboration.inFlightUpdate, null);
+  assert.equal(collaboration.queue.length, 1);
+  assert.deepEqual(callbackState.errors, ["rate-limited"]);
+  assert.equal(callbackState.statuses.at(-1), "reconnecting");
+  assert.ok(collaboration.reconnectTimer);
+
+  const recoveredSocket = createSocket();
+  collaboration.socket = recoveredSocket;
+  collaboration.synced = true;
+  collaboration.lastUpdateSentAt = 0;
+  collaboration.flushUpdateQueue();
+  assert.ok(collaboration.inFlightUpdate instanceof Uint8Array);
+  await collaboration.handleMessage(recoveredSocket, {
+    data: JSON.stringify({
+      type: "update-accepted",
+      documentVersion: 1,
+      updateIntervalMs: 60,
+    }),
+  });
+  assert.equal(collaboration.inFlightUpdate, null);
+  assert.equal(collaboration.queue.length, 0);
+  assert.equal(await collaboration.waitForPendingUpdates(10), true);
+
+  collaboration.destroy();
+  mergedDocument.destroy();
+  document.destroy();
 });

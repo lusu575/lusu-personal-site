@@ -26,6 +26,7 @@
     "whiteboard:dev": "wrangler dev --config workers/whiteboard/wrangler.jsonc",
     "whiteboard:deploy": "wrangler deploy --config workers/whiteboard/wrangler.jsonc",
     "check:public-modules": "node scripts/check-public-module-graph.mjs",
+    "check:subprojects": "node scripts/check-subproject-governance.mjs",
     "dev": "wrangler pages dev",
     "transfer:dev": "wrangler pages dev --r2 TRANSFER_BUCKET",
     "test": "node scripts/run-tests.mjs tests/*.test.mjs tests/transfer/*.test.mjs tools/japanese-subtext/tests/*.test.mjs tools/japanese-subtext/scripts/tts/tests/*.mjs && npm run lint && npm run typecheck && npm run whiteboard:test",

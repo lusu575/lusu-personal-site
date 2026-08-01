@@ -90,10 +90,11 @@ WebSocket ticket 的 `jti` 在 DO storage 中以 5 分钟过期时间原子消�
 
 服务端文本消息：
 
-- `ready`
+- `ready`：包含当前文档版本和客户端建议的 `updateIntervalMs`
 - `participant-join`、`participant-update`、`participant-leave`
 - `heartbeat-ack`
 - `readonly`、`lock-state`
+- `update-accepted`：对已在 DO storage transaction 中持久化的 Yjs update 回执，包含 `documentVersion` 和新的 `updateIntervalMs`
 - `update-rejected`
 - `document-cleared`
 - 广播后的 `awareness`，只公开房间级 `presenceId`、显示名与颜色，不公开永久 `anonymousId` 或 IP hash。
@@ -105,6 +106,7 @@ WebSocket ticket 的 `jti` 在 DO storage 中以 5 分钟过期时间原子消�
 - Yjs `elements` map 是对象级 CRDT；客户端不能以整张旧画布覆盖服务端。
 - 每个 update 先在候选 Y.Doc 上校验对象数和完整文档大小，再写 `document:update:*`。
 - update 与对应 `room:meta` 版本在同一个 storage transaction 提交；持久化失败时不会留下“有增量、无版本”或覆盖下一版本的半提交状态。
+- Worker 只在上述 transaction 和 `room:meta` 持久化全部成功后发送 `update-accepted`。客户端一次只保留一个未确认增量，将快速画线合并后按 `updateIntervalMs` 发送；确认前断线会把原增量放回队列并在重连后重传。Yjs update 幂等，因此回执丢失后的重复投递不会重复画线。
 - 达到 64 个增量或 2 MiB 增量后写快照并删除已合并增量。Cloudflare SQLite-backed DO 的单个 key + value 上限是 2 MB，因此小快照继续保存在 `document:snapshot`，超过 1 MiB 时由该 key 保存 manifest、正文按 `document:snapshot:chunk:*` 分片；manifest、全部分片、元数据和旧增量删除在同一个 transaction 中提交。加载逻辑兼容上线前的单值快照。
 - `YjsDocumentStore` 缓存当前完整编码大小。每个连接通常每秒最多 24 个 update；文档超过 5 MiB 时降为 6 个，超过 10 MiB 时降为 2 个，限制候选文档复制与重编码的 CPU 放大。
 - 文档、房间元数据、禁用列表、图片元数据和 Alarm 存 DO storage。
@@ -118,7 +120,7 @@ WebSocket ticket 的 `jti` 在 DO storage 中以 5 分钟过期时间原子消�
 
 ## 24 小时生命周期
 
-公共房永不进入 TTL 删除。密码房规则：
+公共房的画布、已引用图片和快照永不进入空房 TTL 删除，只能由管理员显式清空。密码房规则：
 
 1. 最后一条有效连接关闭或被 55 秒心跳超时清除时，写 `emptySince` 和 `deleteAt = emptySince + 24h`。
    DO 恢复时若 storage 仍声称有人在线、但 `getWebSockets()` 没有恢复连接，也会从恢复时刻重新进入这套空房流程；不能由残留 `onlineCount` 阻止清理。DO 内首次创建的密码房在 WebSocket 真正接纳前同样先处于 24 小时待清理状态。
@@ -138,7 +140,7 @@ npx vitest run --config workers/whiteboard/vitest.config.mts
 npx wrangler deploy --dry-run --config workers/whiteboard/wrangler.jsonc
 ```
 
-Vitest Workers pool 覆盖密码房到期、24 小时内重连取消、重复 Alarm 幂等及 D1 ban 清理、公共房不删除、跨房间 Yjs 隔离、ticket 重放、多标签身份版本与房内名字查重、每 IP 连接上限、同步请求/响应预算、无连接失败上传的 rate Alarm 与到期 prune、5/10 MiB 真实分片快照和自适应 update 限频、公共房清空资源、未引用图片回收、内部 Secret、图片 magic bytes/尺寸和 UTF-8 名称 header。
+Vitest Workers pool 覆盖密码房到期、24 小时内重连取消、重复 Alarm 幂等及 D1 ban 清理、公共房不删除且重启后恢复画线、持久化后回执、跨房间 Yjs 隔离、ticket 重放、多标签身份版本与房内名字查重、每 IP 连接上限、同步请求/响应预算、无连接失败上传的 rate Alarm 与到期 prune、5/10 MiB 真实分片快照和自适应 update 限频、公共房清空资源、未引用图片回收、内部 Secret、图片 magic bytes/尺寸和 UTF-8 名称 header。
 
 ## 回滚
 

@@ -1,5 +1,9 @@
 # 在线画板架构与运维
 
+**当前子项目版本：1.0.1**
+
+本目录是在线画板的治理根：`VERSION` / `project.json` 保存独立版本，`CHANGELOG.md` 保存子项目更新，`AGENTS.md` 约束维护流程，`AGENT.md` 仅作兼容入口。任何画板更改都必须把该版本精确增加 `0.0.1`，并同步本目录全部受影响文档和根项目记录。
+
 在线画板是鲁肃个人站**工具区**中的独立工具页：`/tools/whiteboard/`。它不新增或恢复“资源区”页面、入口、路由或分类；主站内部继续保留 `resources` 兼容键，用户可见文字统一为“工具区 / Tools / ツール”。
 
 ## 架构
@@ -7,6 +11,7 @@
 浏览器中的 Excalidraw 与 Yjs 只和同源 Pages Functions 建立房间会话。Pages Functions 负责统一匿名身份、密码 HMAC、短期票据、Origin 校验与入口限频，再把已验证的 WebSocket 转交对应的 `WhiteboardRoom` Durable Object。Durable Object 是单房间权威状态，使用自身 SQLite 保存快照与增量，使用私有 R2 保存该房间图片，并把低频房间摘要、封禁与审计写入 D1。
 
 - Excalidraw 提供选择、自由画笔、直线、箭头、矩形、椭圆、文本、颜色、线宽、多选、复制粘贴、缩放平移、撤销重做、图片和导出基础能力。
+- 新建元素默认使用暖白纸张背景、石墨色线条、高 roughness、hachure 填充和轻微透明度，作为可继续调整的铅笔草图默认风格。
 - Yjs 文档把画布元素按 element ID 保存为独立 CRDT 记录，保留 `isDeleted`、`version`、`versionNonce` 和层级顺序。客户端只发送 Yjs 增量，不上传完整画布覆盖服务端。
 - 每个房间对应一个 `WhiteboardRoom` Durable Object。房间之间没有共享文档、票据、连接或 R2 路径。
 - 鼠标、名字标签、选区、绘制、焦点和暂离状态只通过 WebSocket 广播，不写 D1、DO SQLite 或 R2。
@@ -56,13 +61,15 @@ Durable Object SQLite 保存：
 
 达到更新数量或字节阈值时合并为新快照并删除已合并增量。D1 只保存跨房间管理所需的低频摘要，不保存每个鼠标事件或完整画布。
 
+客户端会合并快速连续绘制产生的 Yjs update，并按 Worker 随文档大小下发的间隔逐个发送。Worker 只在增量与文档版本已持久化后返回 `update-accepted`；客户端在收到回执前保留原更新，限流、断线或回执丢失时重连重传，不再把未落盘线条当作已完成。显式退出会给未确认更新一个有界的排空时间。
+
 图片上传支持文件选择、手机相册、拖拽和剪贴板。浏览器在 Excalidraw 读取前只放行 PNG、JPEG 和 WebP；HEIC/HEIF、SVG、GIF、AVIF、BMP、空 MIME 及其他未支持格式直接拒绝。服务端再校验 magic bytes、文件大小、尺寸、像素数、频率和房间容量。R2 key 使用 `whiteboard/v1/<opaque-room>/<asset-id>`，画布只保存资源 ID。读取必须携带当前房间访问票据，不能跨房间获取资源。
 
 工具区入口图标 `assets/images/generated-icons/whiteboard.png` 由 image2 生成并保存为项目内 192×192 RGBA PNG。`assets/images/generated-icons/whiteboard.source.json` 记录 image2、256×256 生成输出、192×192 发布输出、最终 SHA-256，以及唯一的 nearest-neighbor 机械 resize；守卫测试会同时核对 manifest、真实图片元数据与字节哈希。在线画板新增或替换图标、插画、装饰等素材时只能使用 image2；不得用 CSS、Canvas、SVG 路径或代码几何拼凑素材。布局、交互状态和响应式适配仍由 CSS 完成。
 
 ## 24 小时生命周期
 
-公共画板永不按空房 TTL 删除。密码房采用以下规则：
+公共画板的线条、已引用图片和快照永不按空房 TTL 删除，只有管理员显式清空才会删除。密码房采用以下规则：
 
 1. 有真实连接时清空 `emptySince` 和 `deleteAt`。
 2. 最后一个连接关闭或被心跳超时回收时，记录 `emptySince`，并设置 `deleteAt = emptySince + 24h`。

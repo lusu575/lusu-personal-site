@@ -27,9 +27,9 @@ const semanticLanguages = Object.freeze({
   ja: { htmlLang: "ja", locale: "ja_JP", skip: "本文へスキップ", headings: { home: "魯粛サイト", knowledge: "知識庫", videos: "動画", resources: "ツール", games: "ゲーム", blog: "雑談", chatroom: "匿名チャット", about: "プロフィール" } }
 });
 const resourceDisplayLabels = Object.freeze({
-  zh: Object.freeze({ title: "工具区", dock: "工具", transferBack: "返回工具区", transferLoginBack: "返回工具列表" }),
-  en: Object.freeze({ title: "Tools", dock: "Tools", transferBack: "Back to Tools", transferLoginBack: "Back to tool list" }),
-  ja: Object.freeze({ title: "ツール", dock: "ツール", transferBack: "ツールへ戻る", transferLoginBack: "ツール一覧へ戻る" })
+  zh: Object.freeze({ title: "工具区", dock: "工具", transferBack: "返回工具区", transferLoginBack: "返回工具列表", cards: Object.freeze(["在线画板", "临时互传", "日语的言外之意"]) }),
+  en: Object.freeze({ title: "Tools", dock: "Tools", transferBack: "Back to Tools", transferLoginBack: "Back to tool list", cards: Object.freeze(["Online Whiteboard", "Quick Transfer", "Behind the Japanese"]) }),
+  ja: Object.freeze({ title: "ツール", dock: "ツール", transferBack: "ツールへ戻る", transferLoginBack: "ツール一覧へ戻る", cards: Object.freeze(["オンラインホワイトボード", "一時転送", "日本語の裏側"]) })
 });
 const resourceVisualLanguages = Object.freeze(["zh", "en", "ja"]);
 const resourceVisualViewportKeys = Object.freeze(["359x500", "375x667", "390x844", "760x900", "844x390", "1280x720"]);
@@ -3380,7 +3380,13 @@ function checkResourceVisualState(viewport, state, { transferOpen = false, lang 
     if (state.sectionLabels?.[key] !== value) failures.push(`Tools ${lang} ${key} label ${JSON.stringify(state.sectionLabels?.[key] || '')} !== ${JSON.stringify(value || '')}`);
   }
   failures.push(...checkResourceChromeState(viewport, state, transferOpen ? 'Quick Transfer' : 'Resources'));
-  if (!transferOpen && state.cards.length !== 2) failures.push(`visible Resource card count ${state.cards.length} !== 2`);
+  if (!transferOpen && state.cards.length !== expectedLabels.cards.length) failures.push(`visible Resource card count ${state.cards.length} !== ${expectedLabels.cards.length}`);
+  if (!transferOpen) {
+    const visibleTitles = state.cards.map((card) => card.title);
+    for (const title of expectedLabels.cards) {
+      if (!visibleTitles.includes(title)) failures.push(`Resource card ${JSON.stringify(title)} is missing from ${JSON.stringify(visibleTitles)}`);
+    }
+  }
   if (!transferOpen && state.list.scrollWidth > state.list.clientWidth + 1) failures.push(`Resource list overflows horizontally ${state.list.scrollWidth}/${state.list.clientWidth}`);
   for (const card of state.cards) {
     if (!card.contained) failures.push(`Resource card ${card.index} children escape: ${JSON.stringify(card.boxes)}`);

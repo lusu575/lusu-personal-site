@@ -1,10 +1,19 @@
 # PROJECT_CONTEXT.md
 
+## 2026-08-01 画板可靠保存、铅笔草图风与子项目版本治理
+
+- 画板的“发生了错误”和重进后线条消失具有同一根因：Excalidraw 每次变化都立即发一个 Yjs update，快速绘制会超过小文档每连接 24 update/s 限制；Worker 以 `1008/rate_limited` 关闭后，旧客户端将所有 1008 当作不可恢复权限错误，且在没有持久化回执的情况下已丢弃发送队列。这是服务端同步协议问题，与访客电脑或所在网络无关。
+- `1.0.1` 客户端将连续更新用 `Y.mergeUpdates` 合并，一次仅保留一个 in-flight update，并按 Worker 下发的 60/200/600 ms 间隔发送。Worker 仅在增量和 `room:meta` 版本已持久化后回复 `update-accepted`；未回执时断线会重新入队并在重连后幂等重传。`rate_limited`、`sync_budget_exceeded` 和回执超时属于可恢复故障；真实访问、禁用和协议错误才终止重连。
+- 公共房 `public-v1` 的线条、已引用图片和快照不参与空房 TTL，在 DO 重启、用户退出和重进后继续保留，只有管理员显式清空才删除。密码房仍在最后一条真实连接离开后计时 24 小时，重入取消，再次为空重计，到期整房清理 DO/R2/D1 索引。
+- 画板的默认画布为暖白纸张，新元素默认使用石墨色、hachure 填充、roughness 2 和轻微透明度；这仅是可编辑的铅笔草图默认值，不禁止用户调色或选择其他工具。
+- 在线画板和 Quick Transfer 现作为总站下的独立子项目治理，治理根分别为 `docs/whiteboard/` 和 `docs/transfer/`。两者均以 `VERSION` + `project.json` 保存独立版本，并维护 `README.md`、`CHANGELOG.md`、`AGENTS.md`与兼容入口 `AGENT.md`。任何命中各自 tracked paths 的更改都必须把该子项目版本精确增加 `0.0.1`，写子项目更新日志，同步所有受影响文档和根 `CHANGELOG.md`；CI 通过 `npm run check:subprojects` 核对。
+- 本批公开记录为 `seed-update-2026-08-01-whiteboard-reliable-sketch`，公开/API 表示版本与文章 seed 标记为 `20260801-whiteboard-reliable-sketch-r1`。协议有新 Worker 回执依赖，因此发布必须先部署并验证 `lusu-whiteboard-do`，再合并 `main` 触发 Pages；未实际认证 Cloudflare 时不得宣称远端成功。
+
 ## 2026-08-01 账号恢复、D1 写入降压与后台流量保护
 
 - 生产登录失败的直接原因不是访客网络：Cloudflare Pages Functions 的生产运行时会拒绝 PBKDF2 迭代数超过 100,000，而 2026-07-26 的 600,000 次策略会在旧 25,000 次哈希验证成功后的升级阶段抛出 5xx。账号新哈希、管理员密码重置和旧记录升级现统一为 PBKDF2-HMAC-SHA256 100,000 次；25,000 次记录成功登录后条件升级，100,000 次记录不重复写回。不能因为本地 Node／Miniflare 能执行更高迭代数就再次提高，生产平台行为是兼容边界。
 - 公开账号提示现区分 `status = 0` 的本机／链路网络错误与 `5xx` 服务端暂不可用，不再把后端故障统一写成“检查网络”。密码、哈希、session 和账号标识仍不进入前端、日志或遥测。
-- `ensureArticleSchema()` 只创建表和索引，不再在每个新隔离实例中执行完整文章 seed。`seedArticleTestData()` 先读取 `site_runtime_state.article_seed_version`；只有版本不是 `20260801-service-reliability-r1` 才在一个 D1 batch 中执行文章／三语 seed，并把当前版本标记作为最后一条写入。全新 `schema.sql` 也在全部 seed 完成后写同一标记，避免运行时再次重放。
+- `ensureArticleSchema()` 只创建表和索引，不再在每个新隔离实例中执行完整文章 seed。`seedArticleTestData()` 先读取 `site_runtime_state.article_seed_version`；只有版本不是当前 `20260801-whiteboard-reliable-sketch-r1` 才在一个 D1 batch 中执行文章／三语 seed，并把当前版本标记作为最后一条写入。全新 `schema.sql` 也在全部 seed 完成后写同一标记，避免运行时再次重放。
 - 管理后台新增“流量与写入”面板和 `/api/admin/traffic-control`。默认站内保护阈值为 UTC 自然日估算 60,000／80,000 行；正常采样为 100/100/100，预警为页面 50%、点击 25%、文章 75%，硬保护为页面 10%、点击 0%、文章 25%。总开关和分项开关只控制非必要遥测；登录、云存档、聊天室、互传与画板业务写入不受自动关闭。配置保存在 `site_runtime_state.traffic_control_settings_v1`，使用 `expectedUpdatedAt` 条件保存，陈旧页面返回 409 并保留输入。
 - 面板的站内估算只覆盖可识别的页面／身份、点击、文章阅读和登录成功事件，并显式标为非账单数据。精确 `rowsWritten` 可选通过 Cloudflare GraphQL Analytics 只读连接获取；需要运行时配置 `CLOUDFLARE_ANALYTICS_API_TOKEN`、`CLOUDFLARE_ANALYTICS_ACCOUNT_ID`、`CLOUDFLARE_ANALYTICS_D1_DATABASE_ID`。Token 只放 Pages Production Secret，不写代码、文档值、聊天、日志或 Git；未配置时面板必须明确显示“未连接”，站内保护仍可运行。
 - 本批公开记录为 `seed-update-2026-08-01-service-reliability`，公开／API／后台资源版本为 `20260801-service-reliability-r1`。远端 D1、GitHub `main`、Cloudflare Pages 与正式域名状态仍须以本次实际发布核验为准，不能从本地文件推断成功。

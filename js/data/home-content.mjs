@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-08-01-whiteboard-reliable-sketch",
+      "slug": "2026-08-01-whiteboard-reliable-sketch",
+      "category": "site-updates",
+      "tags": ["网站更新", "在线画板", "可靠保存", "铅笔草图", "版本治理"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-01T09:55:00.000Z",
+      "updated_at": "2026-08-01T09:55:00.000Z",
+      "published_at": "2026-08-01T09:55:00.000Z",
+      "fallbackOnly": true,
+      "icon": "resources",
+      "date": "2026.08.01",
+      "title": {
+        "zh": "在线画板可靠保存与铅笔草图风",
+        "en": "Reliable Whiteboard Saving and Pencil Sketch Style",
+        "ja": "ホワイトボードの確実な保存と鉛筆スケッチ風"
+      },
+      "summary": {
+        "zh": "快速绘制现在会合并发送、等待服务端持久化确认并在断线后重传；公共画布持续保留，密码房空置24小时后整房清理，同时加入铅笔草图默认风格和画板、临时互传的独立版本记录。",
+        "en": "Rapid drawing is now batched, acknowledged only after durable storage, and retried after disconnects; the public canvas persists, empty password rooms are deleted after 24 hours, and Whiteboard plus Quick Transfer now have independent versions.",
+        "ja": "高速描画をまとめて送信し、永続化後の確認と切断時の再送に対応しました。公開キャンバスは保持し、パスワードルームは空室24時間後に全削除します。鉛筆風の既定値と独立版管理も追加しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-01-service-reliability",
       "slug": "2026-08-01-service-reliability",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "首期 7 张自绘概念图已换成官网、官方文档或官方仓库里的真实界面、案例与成果；每周工作流同步禁止自绘、生成和统一模板图。",
         "en": "Seven site-drawn concept diagrams have been replaced with real interfaces, examples, and outputs from official sites, docs, or repositories, while the weekly workflow now rejects drawn, generated, and template visuals.",
         "ja": "初回の自作概念図7枚を、公式サイト・文書・リポジトリの実画面、事例、成果へ置き換え、週次フローでも自作・生成・共通テンプレート画像を禁止しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-07-29-tool-radar-live",
-      "slug": "2026-07-29-tool-radar-live",
-      "category": "site-updates",
-      "tags": ["网站更新", "工具雷达", "知识库", "自动化", "多语言"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-07-28T16:45:00.000Z",
-      "updated_at": "2026-07-28T16:45:00.000Z",
-      "published_at": "2026-07-28T16:45:00.000Z",
-      "fallbackOnly": true,
-      "icon": "knowledge",
-      "date": "2026.07.29",
-      "title": {
-        "zh": "工具雷达正式上线并开启周更",
-        "en": "Tool Radar Is Live with Weekly Publishing",
-        "ja": "ツールレーダーを公開し、週次更新を開始"
-      },
-      "summary": {
-        "zh": "知识库“工具雷达”正式上线，首期 7 工具三语文章已发布；独立去重、原创说明图与每周二 22:00 自动任务同步启用。",
-        "en": "Tool Radar is live in Knowledge with a trilingual first edition covering seven tools; independent deduplication, original explanatory visuals, and the Tuesday 22:00 automation are active.",
-        "ja": "知識庫の「ツールレーダー」を正式公開し、7ツールの初回3言語記事を掲載しました。独立重複防止、オリジナル説明図、毎週火曜22時の自動タスクも有効です。"
       }
     }
   ]

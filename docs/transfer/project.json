@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "quick-transfer",
+  "name": "LuSu Quick Transfer",
+  "version": "1.0.1",
+  "versionStep": "0.0.1",
+  "governanceRoot": "docs/transfer",
+  "documents": [
+    "README.md",
+    "AGENT.md",
+    "AGENTS.md",
+    "CHANGELOG.md",
+    "VERSION"
+  ],
+  "trackedPaths": [
+    "docs/transfer/",
+    "fragments/quick-transfer.html",
+    "css/transfer.css",
+    "js/transfer.js",
+    "js/features/quick-transfer-loader.mjs",
+    "functions/api/transfer-service.mjs",
+    "workers/transfer-cleanup/",
+    "admin/transfer.html",
+    "admin/transfer.css",
+    "admin/transfer.js",
+    "assets/transfer/",
+    "assets/images/generated-icons/quick-transfer.png",
+    "scripts/build-transfer-icon-atlas.mjs",
+    "tests/transfer/"
+  ],
+  "visibleVersionFiles": [
+    "fragments/quick-transfer.html",
+    "js/data/resources-content.mjs"
+  ]
+}

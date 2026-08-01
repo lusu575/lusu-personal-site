@@ -5,7 +5,7 @@ const FRAME_PIPELINE_SEED_ID = "seed-update-2026-07-18-frame-pipeline-low-perfor
 const FRAME_PIPELINE_SEED_TIME = "2026-07-17T21:12:00.000Z";
 const AI_AGENT_WORKFLOW_ARTICLE_ID = "seed-ai-agent-workflow-guide-2026-06-14";
 const AI_AGENT_WORKFLOW_PIN_REPAIR_KEY = "article_ai_agent_workflow_pin_repair_v1";
-const ARTICLE_SEED_VERSION = "20260801-service-reliability-r1";
+const ARTICLE_SEED_VERSION = "20260801-whiteboard-reliable-sketch-r1";
 const VALID_CHAT_SECRET = "article-seed-chat-secret-0000000000000001";
 const VALID_ANALYTICS_SECRET = "article-seed-analytics-secret-000000001";
 

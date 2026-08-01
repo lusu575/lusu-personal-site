@@ -812,7 +812,7 @@ const redirectsConfig = readRequired("_redirects");
 const routeLazyVersion = "20260726-security-reliability-r1";
 const trustSafetyStatusVersion = "20260726-security-reliability-r1";
 const knowledgeReaderVersion = "20260728-knowledge-archive-r1";
-const whiteboardReleaseVersion = "20260801-service-reliability-r1";
+const whiteboardReleaseVersion = "20260801-whiteboard-reliable-sketch-r1";
 const routeStyleVersion = knowledgeReaderVersion;
 const publicRouteVersion = (route) => route === "knowledge"
   ? whiteboardReleaseVersion
@@ -1059,7 +1059,7 @@ if (indexHtml.includes('id="transfer-app"')
   fail("index.html must not preload Quick Transfer DOM, CSS, or JavaScript before its resource action is clicked");
 }
 
-if (!hasPattern(quickTransferLoaderJs, new RegExp(`const\\s+TRANSFER_VERSION\\s*=\\s*["']${trustSafetyStatusVersion}["']`))
+if (!hasPattern(quickTransferLoaderJs, new RegExp(`const\\s+TRANSFER_VERSION\\s*=\\s*["']${whiteboardReleaseVersion}["']`))
   || !hasPattern(quickTransferLoaderJs, /Promise\.all\(\[ensureStylesheet\(\),\s*ensureFragment\(\),\s*ensureScript\(\)\]\)/)
   || !hasPattern(quickTransferLoaderJs, /root\.querySelector\(["']script, style, link, meta, base, iframe, object, embed, svg, math["']\)/)
   || !hasPattern(quickTransferLoaderJs, /routeActive[\s\S]*await\s+ensureLoaded\(\)[\s\S]*if\s*\(!routeActive\)/)
@@ -2863,7 +2863,7 @@ const mobileScrollRecoveryCssVersion = "20260718-mobile-scroll-recovery-css-r1";
 const mobileViewportKeyboardVersion = "20260718-mobile-viewport-keyboard-r1";
 const mobileViewportKeyboardCssVersion = routeLazyVersion;
 const publicModulesVersion = "20260726-security-reliability-r1";
-const transferLazyVersion = trustSafetyStatusVersion;
+const transferLazyVersion = whiteboardReleaseVersion;
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
 const currentMainVersion = whiteboardReleaseVersion;
 const currentCssVersion = trustSafetyStatusVersion;
@@ -3192,8 +3192,8 @@ const knowledgeModuleJs = publicModuleSources["js/routes/knowledge.mjs"];
 const videosModuleJs = publicModuleSources["js/routes/videos.mjs"];
 const resourcesModuleJs = publicModuleSources["js/routes/resources.mjs"];
 const quickTransferModuleVersions = assetQueryVersions(resourcesModuleJs, "../features/quick-transfer-loader.mjs");
-if (quickTransferModuleVersions.length !== 1 || quickTransferModuleVersions[0] !== trustSafetyStatusVersion) {
-  fail(`js/routes/resources.mjs Quick Transfer loader query should appear once as ${trustSafetyStatusVersion}`);
+if (quickTransferModuleVersions.length !== 1 || quickTransferModuleVersions[0] !== transferLazyVersion) {
+  fail(`js/routes/resources.mjs Quick Transfer loader query should appear once as ${transferLazyVersion}`);
 }
 for (const [file, source, token] of [
   ["js/routes/chatroom.mjs", chatroomModuleJs, 'name.textContent = String(message.nickname || "")'],
@@ -4218,13 +4218,13 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-08-01-service-reliability";
-const finalUpdateSlug = "2026-08-01-service-reliability";
+const finalUpdateId = "seed-update-2026-08-01-whiteboard-reliable-sketch";
+const finalUpdateSlug = "2026-08-01-whiteboard-reliable-sketch";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Account and Real-Time Tool Reliability Fixes";
-const finalPublishedAt = "2026-08-01T07:10:00.000Z";
+const finalTitleEn = "Reliable Whiteboard Saving and Pencil Sketch Style";
+const finalPublishedAt = "2026-08-01T09:55:00.000Z";
 const finalTranslationMinimums = {
   title: 8,
   summary: 24,

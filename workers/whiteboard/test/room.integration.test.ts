@@ -611,8 +611,26 @@ describe("WhiteboardRoom Durable Object", () => {
       "银河店长",
       1
     );
+    connection.socket.send(yjsElementUpdate("public-retained-stroke"));
+    const accepted = await waitForMessage(connection, "update-accepted");
+    expect(accepted.documentVersion).toBe(1);
+    expect(Number(accepted.updateIntervalMs)).toBeGreaterThanOrEqual(50);
     connection.socket.close(1000, "offline");
     await waitFor(async () => (await readMeta(connection.stub))?.onlineCount === 0);
+    await evictDurableObject(connection.stub);
+    const retainedElements = await runInDurableObject(
+      connection.stub,
+      async (_instance, state) => {
+        const store = new YjsDocumentStore(state.storage);
+        await store.load();
+        const document = new Y.Doc();
+        Y.applyUpdate(document, store.encodeState());
+        const ids = [...document.getMap("elements").keys()];
+        document.destroy();
+        return ids;
+      }
+    );
+    expect(retainedElements).toContain("public-retained-stroke");
     const publicMeta = await readMeta(connection.stub);
     expect(publicMeta?.emptySince).toBeNull();
     expect(publicMeta?.deleteAt).toBeNull();

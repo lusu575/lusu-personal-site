@@ -57,6 +57,17 @@ test("whiteboard custom UI does not embed code-drawn image material", async () =
   assert.doesNotMatch(css, /url\(/i);
 });
 
+test("whiteboard exposes v1.0.1 and defaults new elements to an editable pencil sketch style", async () => {
+  const main = await read("tools/whiteboard/src/main.jsx");
+  assert.match(main, /const WHITEBOARD_VERSION = "1\.0\.1"/);
+  assert.match(main, /viewBackgroundColor: "#f7f1e5"/);
+  assert.match(main, /currentItemStrokeColor: "#4a4640"/);
+  assert.match(main, /currentItemBackgroundColor: "transparent"/);
+  assert.match(main, /currentItemFillStyle: "hachure"/);
+  assert.match(main, /currentItemRoughness: 2/);
+  assert.match(main, /currentItemOpacity: 92/);
+});
+
 test("mobile whiteboard controls stay reachable and reject unsupported image inputs early", async () => {
   const [css, main, assets] = await Promise.all([
     read("tools/whiteboard/whiteboard.css"),
