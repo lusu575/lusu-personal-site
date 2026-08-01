@@ -414,6 +414,94 @@ class DiscoveryQueryTests(unittest.TestCase):
             for entry in queries
         ))
 
+    def test_korean_open_model_queries_are_required_non_overlapping_shards(
+        self,
+    ) -> None:
+        catalog = MODULE.load_discovery_catalog(
+            Path(__file__).with_name("discovery-queries.json")
+        )
+        by_id = {entry["id"]: entry for entry in catalog["queries"]}
+        shard_ids = {
+            "lg-exaone-open-ko",
+            "lg-exaone-release-ko",
+            "lg-ai-research-other-ko",
+            "naver-hyperclova-model-releases-ko",
+            "upstage-solar-model-releases-ko",
+        }
+
+        self.assertNotIn("korean-model-releases-ko", by_id)
+        self.assertTrue(shard_ids.issubset(by_id))
+        for query_id in shard_ids:
+            with self.subTest(query_id=query_id):
+                entry = by_id[query_id]
+                self.assertEqual(entry["language"], "ko")
+                self.assertEqual(entry["country"], "KR")
+                self.assertEqual(
+                    entry["maxResults"],
+                    MODULE.GOOGLE_NEWS_SAFE_RESULT_LIMIT,
+                )
+                self.assertEqual(entry["category"], "open-model-watch")
+                self.assertEqual(entry["coverageGroup"], "open-models")
+                self.assertTrue(entry["required"])
+                self.assertEqual(entry["priority"], "priority")
+                self.assertTrue(entry["mustReview"])
+                self.assertEqual(
+                    entry["reviewLane"],
+                    "open-weight-releases",
+                )
+
+        shard_text = "\n".join(by_id[query_id]["query"] for query_id in shard_ids)
+        for alias in [
+            "K-EXAONE",
+            "EXAONE",
+            "엑사원",
+            "LG AI연구원",
+            "HyperCLOVA",
+            "하이퍼클로바",
+            "네이버",
+            "Solar",
+            "업스테이지",
+            "Upstage",
+        ]:
+            self.assertIn(alias, shard_text)
+        for action in [
+            "신규",
+            "출시",
+            "발표",
+            "공개",
+            "오픈소스",
+            "오픈 소스",
+            "가중치",
+            "라이선스",
+            "라이센스",
+            "API",
+        ]:
+            self.assertIn(action, shard_text)
+
+        exaone_open_query = by_id["lg-exaone-open-ko"]["query"]
+        exaone_release_query = by_id["lg-exaone-release-ko"]["query"]
+        lg_other_query = by_id["lg-ai-research-other-ko"]["query"]
+        self.assertNotIn("출시", exaone_open_query)
+        self.assertNotIn("발표", exaone_open_query)
+        for exclusion in [
+            "-오픈소스",
+            '-"오픈 소스"',
+            "-가중치",
+            "-라이선스",
+            "-라이센스",
+            "-API",
+        ]:
+            self.assertIn(exclusion, exaone_release_query)
+        for exclusion in ["-K-EXAONE", "-EXAONE", "-엑사원"]:
+            self.assertIn(exclusion, lg_other_query)
+
+        naver_query = by_id["naver-hyperclova-model-releases-ko"]["query"]
+        upstage_query = by_id["upstage-solar-model-releases-ko"]["query"]
+        self.assertNotIn("업스테이지", naver_query)
+        self.assertNotIn("Solar", naver_query)
+        self.assertNotIn("네이버", upstage_query)
+        self.assertNotIn("HyperCLOVA", upstage_query)
+
     def test_source_config_adds_official_feeds_and_discovery_reddit(self) -> None:
         config = json.loads(
             Path(__file__).with_name("horizon.config.json").read_text(

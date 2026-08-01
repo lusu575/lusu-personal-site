@@ -1,8 +1,13 @@
 # PROJECT_CONTEXT.md
 
+## 2026-08-01 每日 AI 新闻韩国模型查询分片
+
+- 韩国开放模型发现不再使用跨厂商的 `korean-model-releases-ko` 大型 OR。该查询在 2026-08-01 固定窗口连续触发 99+1 真实截断；正式目录现固定为 `lg-exaone-open-ko`、`lg-exaone-release-ko`、`lg-ai-research-other-ko`、`naver-hyperclova-model-releases-ko`、`upstage-solar-model-releases-ko` 五条互补查询，并已在同一窗口真实运行中分别以 26、6、10、46、13 条返回通过上限门禁。
+- 五条分片都保持韩文／韩国、`required: true`、`mustReview: true`、`coverageGroup: open-models` 和 `reviewLane: open-weight-releases`。EXAONE 的开放／权重与普通发布动作通过排除词分流，LG AI Research 其他查询显式排除 EXAONE，NAVER／HyperCLOVA 与 Upstage／Solar 各自独立。以后单条 required 查询再次真实截断时，应继续按厂商或事件动作缩窄并保留完整签收，不能把截断签成成功、跳过韩文或恢复跨厂商宽查询。
+
 ## 2026-08-01 画板支线接管与本地构建隔离
 
-- `agent/multiplayer-whiteboard` 已在 Node.js 22.23.2 下同步 lockfile 并合入最新 `main` 的每日 AI 新闻完整候选复核提交；后续验证以合并后的支线为准，不能只引用原始 `a7f1f80c` 的旧测试结果。
+- `agent/multiplayer-whiteboard` 已在 Node.js 22.23.2 下同步 lockfile，并以普通 merge 合入截至 `c8abc571` 的最新 `main`（含每日 AI 新闻完整候选复核与韩国模型查询分片）；后续验证以合并后的支线为准，不能只引用原始 `a7f1f80c` 的旧测试结果。
 - `.codex-worktrees/` 是其他 Codex 任务的独立 checkout，不属于当前仓库源码。Git、构建守卫和仓库密钥扫描必须忽略该目录，避免旧工作树内容污染当前构建或产生虚假安全结果；不得通过删除其他任务工作树来让构建通过。
 - Cloudflare 生产 D1、Durable Object Worker、Pages external binding、Secret、PR 合并和正式域名仍须按画板发布顺序逐项实际核验，本地通过不能替代远端状态。
 
