@@ -1,5 +1,10 @@
 # PROJECT_CONTEXT.md
 
+## 2026-08-01 每日 AI 新闻韩国模型查询分片
+
+- 韩国开放模型发现不再使用跨厂商的 `korean-model-releases-ko` 大型 OR。该查询在 2026-08-01 固定窗口连续触发 99+1 真实截断；正式目录现固定为 `lg-exaone-open-ko`、`lg-exaone-release-ko`、`lg-ai-research-other-ko`、`naver-hyperclova-model-releases-ko`、`upstage-solar-model-releases-ko` 五条互补查询，并已在同一窗口真实运行中分别以 26、6、10、46、13 条返回通过上限门禁。
+- 五条分片都保持韩文／韩国、`required: true`、`mustReview: true`、`coverageGroup: open-models` 和 `reviewLane: open-weight-releases`。EXAONE 的开放／权重与普通发布动作通过排除词分流，LG AI Research 其他查询显式排除 EXAONE，NAVER／HyperCLOVA 与 Upstage／Solar 各自独立。以后单条 required 查询再次真实截断时，应继续按厂商或事件动作缩窄并保留完整签收，不能把截断签成成功、跳过韩文或恢复跨厂商宽查询。
+
 ## 2026-07-31 每日 AI 新闻完整发现审阅
 
 - 正式日报不再以 priority、聚焦查询或指定来源决定审阅边界。精确窗口内写入 `candidate_index.json` 的每个候选都必须进入 `complete-discovery-review`，并在兼容字段 `coverageAudit.priorityReview.decisions` 中恰好得到一次 `selected`、`merged` 或具体 `rejected` 处置；`priority` 只决定审阅顺序。新 manifest 使用 `priorityReviewPolicy: all-discovered-candidates`，其 `mustReviewCandidateIds` 必须等于全部 candidate index 编号。

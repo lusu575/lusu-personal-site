@@ -34,7 +34,7 @@
 ## 文件说明
 
 - `horizon.config.json`：本站 AI 新闻源配置，不含密钥。TechCrunch AI、VentureBeat AI、Ars Technica AI、雷峰网和 36氪属于可选补充；单源失败不阻断。Reddit、Hacker News 等社区源只用于早期发现，不抓取评论串；它们返回的候选仍须处置，正式新闻和时间资格必须回到规范原帖、可靠媒体或其他一手来源核验。Tibo 由 `discovery-queries.json` 中的 required 聚焦查询覆盖。
-  - `discovery-queries.json`：使用 `any-reliable-language` 语言政策，至少提供英文、简体中文、日文、韩文检索种子；宽泛查询只作补充，重点人物、产品运营变化、Thinking Machines／LG AI Research 等开放模型实验室、韩国模型厂商、各家中国模型厂商和主要视频／图像／语音产品使用拆分后的独立 required 查询。Seedance 等多模态产品必须覆盖发布、延期、API、权重和可用范围等不同事件阶段。文件不含密钥。
+  - `discovery-queries.json`：使用 `any-reliable-language` 语言政策，至少提供英文、简体中文、日文、韩文检索种子；宽泛查询只作补充，重点人物、产品运营变化、Thinking Machines／LG AI Research 等开放模型实验室、韩国模型厂商、各家中国模型厂商和主要视频／图像／语音产品使用拆分后的独立 required 查询。韩国开放模型固定拆为 EXAONE 开放、EXAONE 发布、LG 其他、NAVER／HyperCLOVA、Upstage／Solar 五条互补韩文查询，避免跨厂商大查询触发 99+1 截断；Seedance 等多模态产品必须覆盖发布、延期、API、权重和可用范围等不同事件阶段。文件不含密钥。
 - `fetch-with-horizon.py`：调用 Horizon 原生服务，以受控并发执行发现查询；失败查询最多重试两次，仍失败则与真实空结果分开记录。Google News 查询最多保留 99 条并请求第 100 条作为探针，实际返回第 100 条时判定截断并关闭 required 覆盖；只有 99 条不误报。精确窗口内全部候选都会加入 `complete-discovery-review` 必审通道；`priority` 仅控制顺序。候选索引直接写入确定性 UTF-8 字节并据此计算 SHA-256。
 - `candidate_index.json`：本次 Horizon 运行生成的紧凑候选索引，只含审阅所需的标题、时间、来源和覆盖归属，不含大段正文。
 - `coverage_manifest.json`：schemaVersion 2 的机器可校验清单，记录本次 required query、required group、语言、命中数、结果上限状态、指定 review source 和 review lane。新运行声明 `priorityReviewPolicy: all-discovered-candidates`，包含 `complete-discovery-review` 通道，并让兼容字段 `mustReviewCandidateIds` 覆盖 candidate index 的全部候选编号。
