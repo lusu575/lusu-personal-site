@@ -5,6 +5,8 @@
 ## 2026-08-01
 
 - 修复每日 AI 新闻韩文开放模型 required 查询的稳定截断：原 `korean-model-releases-ko` 把 LG AI Research／EXAONE、NAVER／HyperCLOVA 与 Upstage／Solar 及多类动作塞进同一大型 OR，99+1 探针持续命中第 100 条并按规则关闭整期。正式目录改为 5 个互补的 required + must-review 查询，分别覆盖 EXAONE 开放／权重动作、EXAONE 普通发布、LG AI Research 其他模型、NAVER／HyperCLOVA、Upstage／Solar；EXAONE 两条以动作排除词分流，LG 其他查询显式排除 EXAONE，保留相同 `open-models` 覆盖组和 `open-weight-releases` 审阅通道。该拆分已在 2026-08-01 固定窗口真实运行中全部通过 99+1 上限门禁；新增目录回归，禁止旧宽查询回归，并锁定 5 条查询的韩文／韩国、required、must-review、厂商别名、动作词与去重排除条件。本次仅调整内部发现目录、测试和维护文档，不改变公开 UI，也不新增 `site-updates`。
+- 接管并整合 `agent/multiplayer-whiteboard`：使用 Node.js 22.23.2 补齐 `package-lock.json` 中 Vitest/Vite 可选 Sass watcher 依赖，使严格 `npm ci` 可重现；把截至 `c8abc571` 的最新 `main`（含每日 AI 新闻完整候选复核与韩国模型查询分片）通过普通 merge 合入支线并同时保留画板上下文。构建守卫和仓库密钥扫描现在明确忽略本机 `.codex-worktrees/`，避免把其他 Codex 任务的独立 checkout 当作当前仓库源码，同时新增锁定该隔离规则的生产构建回归。该记录不代表远端 D1、Durable Object Worker、Pages binding、PR 合并或生产域名已经完成验证。
+- 修复生产 D1 迁移器在 schema 与索引已成功写入后误报失败的问题：Cloudflare Production D1 的复合 `SELECT` 最多接受 5 项，原最后一组 7 项 `UNION ALL` 校验会收到 `too many terms in compound SELECT`。画板表校验现拆成 5 项与 4 项两组，并补查 `whiteboard_admin_audit`、`whiteboard_metrics`；迁移器在任何远端写入前先锁定每组不超过 5 项，新增对应回归。
 
 ## 2026-07-31
 
@@ -12,6 +14,7 @@
 
 ## 2026-07-30
 
+- 工具区新增完整的多人实时在线画板：独立 `/tools/whiteboard/` 页面按路由懒加载 Excalidraw、Yjs 与 React，提供公共房和服务端 HMAC 映射的隔离密码房、对象级 CRDT、WebSocket Hibernation、实时彩色鼠标与临时名字、成员／连接状态、图片上传、PNG／SVG 导出、只读和自动重连，并完成手机触控与三语入口；聊天室和画板统一到服务端验证的 `lusu_anonymous` 匿名身份，安全词根组合超过一万种且由房间 DO 原子查重。新增 `WhiteboardRoom` Durable Object、D1 管理索引、私有 R2 房间前缀、公共房管理操作、连接／对象／消息／容量／Origin／票据／IP 哈希限制，以及密码房最后一人离开后 24 小时 Alarm 保留、重入取消和幂等清理。同步四个只提交名称与用途的画板 Secret、external binding、SQLite DO `v1` migration、部署顺序、R2 清理与保数据回滚说明；Production Worker Origin 仅保留正式 HTTPS 域名，Pages Preview 默认关闭 API 且不绑定 Production D1/R2，image2 入口素材新增尺寸、SHA-256 与仅机械 resize 的来源 manifest 和守卫测试。三语 `site-updates` 记录 `seed-update-2026-07-30-multiplayer-whiteboard` 已同步完整 fallback、Home 投影、Functions seed 与 schema seed，公共／API 表示版本为 `20260730-multiplayer-whiteboard-r1`。本条记录的是仓库实现与本地发布准备；Cloudflare Dashboard 配置、远端 D1 migration、PR 合并、生产部署和正式域名验证仍须按运维清单实际完成，不得据此视为已上线。
 - 修复每日 AI 新闻遗漏 Codex 五小时限制恢复消息的两层原因：原 Tibo 补充源只是宽泛 Bing 搜索，抓回的结果是同名慢阻肺噪声；真正进入 must-review 的 X／媒体／Reddit 限额候选又被编辑层统一误归为 `developer-tool`、`substantiveChange:false` 和 4 分后全部拒绝。站长现已授权把 Tibo `@thsottiaux` 的 X 帖子纳入选题；移除无效 Bing RSS，新增 required 的 Tibo／Codex 独立必查查询，同时覆盖姓名、账号及 Codex／ChatGPT Work 运营关键词，本次真实重跑命中 X、英文媒体和日文媒体的五小时限制候选。candidate index 新增 `editorialSignals`：must-review 中明确的额度／五小时窗口变化必须归类为 `usage-policy` 或 `material-price-quota`，不得用重要性不足、例行消息或超出范围拒绝，同一事件的其他 must-review 来源全部合并；识别规则同时排除普通 token、推理内存、模型路由和性能优化，避免误标及校验误停。同步工作流、自动任务提示、项目上下文、AGENTS 与维护 Skill，并新增日英中韩用量变更识别、误标防护和低分淘汰回归。
 - 将每日 AI 新闻的过时单日硬编码恢复入口改为长期可复用的当天人工补发模式：自动任务仍以北京时间 08:00 为硬截止并且绝不自行迟发；只有站长在当前 Codex 交互任务中明确授权后，才可在该 `reportDate` 当天 08:00 至次日 00:00 同时确认日期与完整 schemaVersion 4 运行记录的 canonical SHA-256。人工模式继续使用 `[前一日 07:00, 当日 07:00)` 固定窗口，并完整保留 Horizon 成功态、candidate index 原始字节摘要、coverage manifest v2、required／must-review、三语、专用通道、auto-publish、限流、幂等、slug 冲突和三语公开回读门禁；午夜前不足 45 秒或任一确认不匹配时拒绝投递。新增只读 `--print-run-sha256` 与 `MANUAL_RECOVERY.md`，同步 workflow、自动任务提示、项目上下文和维护 Skill。
 

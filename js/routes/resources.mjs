@@ -75,6 +75,12 @@ export function createResourcesRoute({
     const localPath = value.replace(/^\/+/, "").replace(/^\.\//, "");
     if (/(^|\/)\.\.(\/|$)/.test(localPath)) return "";
     if (/^tools\/japanese-subtext\/?$/i.test(localPath)) return sitePath("tools/japanese-subtext/");
+    if (/^tools\/whiteboard\/?$/i.test(localPath)) {
+      const language = ["zh", "en", "ja"].includes(document.documentElement.lang)
+        ? document.documentElement.lang
+        : "zh";
+      return `${sitePath("tools/whiteboard/")}?lang=${encodeURIComponent(language)}`;
+    }
     if (/^(assets|downloads)\/[a-z0-9][a-z0-9._/-]*(\?[a-z0-9=&._-]+)?$/i.test(localPath)) return sitePath(localPath);
     return "";
   }
@@ -108,6 +114,9 @@ export function createResourcesRoute({
     link.href = url;
     link.textContent = text;
     link.setAttribute("aria-label", `${text}: ${resourceTitle}`);
+    if (/\/tools\/whiteboard\/$/i.test(new URL(url, location.origin).pathname)) {
+      link.dataset.analyticsLabel = "tools:whiteboard:open";
+    }
     if (item.external || /^https?:\/\//i.test(url)) {
       link.target = "_blank";
       link.rel = "noreferrer noopener";

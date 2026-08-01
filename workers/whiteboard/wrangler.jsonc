@@ -1,0 +1,41 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "lusu-whiteboard-do",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-07-17",
+  "compatibility_flags": ["nodejs_compat"],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "WHITEBOARD_ROOMS",
+        "class_name": "WhiteboardRoom"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["WhiteboardRoom"]
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "lusu_personal_site",
+      "database_id": "55087326-4cf0-4002-8229-f202af774da4"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "WHITEBOARD_BUCKET",
+      "bucket_name": "lusu-temp-transfer",
+      "preview_bucket_name": "lusu-temp-transfer-preview"
+    }
+  ],
+  "vars": {
+    "ALLOWED_ORIGINS": "https://lusu575.com,https://www.lusu575.com"
+  },
+  "observability": {
+    "enabled": true
+  }
+}

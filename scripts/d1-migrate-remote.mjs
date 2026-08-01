@@ -9,6 +9,7 @@ import {
 const root = resolve(import.meta.dirname, "..");
 const database = "lusu_personal_site";
 const wranglerCli = resolve(root, "node_modules", "wrangler", "bin", "wrangler.js");
+const D1_MAX_COMPOUND_SELECT_TERMS = 5;
 
 export const REMOTE_MIGRATION_VERIFICATION_QUERIES = Object.freeze([
   `
@@ -47,6 +48,37 @@ export const REMOTE_MIGRATION_VERIFICATION_QUERIES = Object.freeze([
     union all
     select 'article-delivery-payload-hash-column', count(*)
     from pragma_table_info('article_delivery_events') where name = 'payload_hash'
+  `,
+  `
+    select 'anonymous-identities-table' as item, count(*) as present
+    from sqlite_master where type = 'table' and name = 'anonymous_identities'
+    union all
+    select 'whiteboard-rooms-table', count(*)
+    from sqlite_master where type = 'table' and name = 'whiteboard_rooms'
+    union all
+    select 'whiteboard-assets-table', count(*)
+    from sqlite_master where type = 'table' and name = 'whiteboard_assets'
+    union all
+    select 'whiteboard-bans-table', count(*)
+    from sqlite_master where type = 'table' and name = 'whiteboard_bans'
+    union all
+    select 'whiteboard-admin-audit-table', count(*)
+    from sqlite_master where type = 'table' and name = 'whiteboard_admin_audit'
+  `,
+  `
+    select 'whiteboard-metrics-table' as item, count(*) as present
+    from sqlite_master where type = 'table' and name = 'whiteboard_metrics'
+    union all
+    select 'whiteboard-overview-index', count(*)
+    from sqlite_master where type = 'index' and name = 'whiteboard_rooms_live_overview_idx'
+    union all
+    select 'whiteboard-ban-scope-index', count(*)
+    from sqlite_master where type = 'index' and name = 'whiteboard_bans_scope_subject_idx'
+    union all
+    select 'whiteboard-ban-legacy-index-removed',
+      case when count(*) = 0 then 1 else 0 end
+    from sqlite_master
+    where type = 'index' and name = 'whiteboard_bans_active_scope_subject_idx'
   `
 ]);
 
@@ -86,6 +118,7 @@ export async function migrateRemoteD1({
   queryRows = queryRemoteRows,
   log = console.log
 } = {}) {
+  assertVerificationQueryLimits();
   log("remote-d1-migrate: inspecting legacy compatibility columns");
   const missingMigrations = await inspectMissingColumns(queryRows);
   for (const migration of missingMigrations) {
@@ -112,6 +145,17 @@ export async function migrateRemoteD1({
 
   log("remote-d1-migrate: ok");
   return { alteredColumns: missingMigrations.map(({ table, column }) => ({ table, column })) };
+}
+
+function assertVerificationQueryLimits() {
+  for (const sql of REMOTE_MIGRATION_VERIFICATION_QUERIES) {
+    const terms = 1 + (sql.match(/\bunion\s+all\b/gi)?.length || 0);
+    if (terms > D1_MAX_COMPOUND_SELECT_TERMS) {
+      throw new Error(
+        `Remote D1 verification query has ${terms} compound SELECT terms; maximum is ${D1_MAX_COMPOUND_SELECT_TERMS}.`
+      );
+    }
+  }
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

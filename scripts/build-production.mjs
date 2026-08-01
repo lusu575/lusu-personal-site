@@ -21,7 +21,13 @@ const POLICY_PATH = path.join(PROJECT_ROOT, "config", "public-production-build.j
 const HASHED_ASSET_DIR = "_assets";
 const MANIFEST_FILE = "asset-manifest.json";
 const TEXT_EXTENSIONS = new Set([".css", ".html", ".js", ".json", ".map", ".mjs", ".svg", ".txt", ".webmanifest"]);
-const CRITICAL_SOURCE_TREES = ["css", "fragments", "js", "tools/japanese-subtext/lib"];
+const CRITICAL_SOURCE_TREES = [
+  "css",
+  "fragments",
+  "js",
+  "tools/japanese-subtext/lib",
+  "tools/whiteboard/src"
+];
 const CRITICAL_SOURCE_FILES = [
   "_headers",
   "_redirects",
@@ -40,7 +46,10 @@ const CRITICAL_SOURCE_FILES = [
   "tools/japanese-subtext/app.mjs",
   "tools/japanese-subtext/index.html",
   "tools/japanese-subtext/manifest.json",
-  "tools/japanese-subtext/style.css"
+  "tools/japanese-subtext/style.css",
+  "tools/whiteboard/index.html",
+  "tools/whiteboard/THIRD_PARTY_NOTICES.md",
+  "tools/whiteboard/whiteboard.css"
 ];
 
 function toPosix(value) {
@@ -402,6 +411,7 @@ function resolveMetafileOutput(projectRoot, outputKey) {
 
 async function registerEsbuildOutputs({ projectRoot, outputRoot, metafile, provenance, sourceLabel, expectedEntryPoint }) {
   let entryUrl = "";
+  let cssUrl = "";
   let inputBytes = 0;
   let outputBytes = 0;
   for (const input of Object.values(metafile.inputs)) inputBytes += Number(input.bytes || 0);
@@ -412,14 +422,23 @@ async function registerEsbuildOutputs({ projectRoot, outputRoot, metafile, prove
     provenance.set(relative, details.entryPoint ? toPosix(details.entryPoint) : sourceLabel);
     if (!relative.endsWith(".map")) outputBytes += Number(details.bytes || 0);
     const entryPoint = toPosix(details.entryPoint || "").split("?")[0];
-    if (entryPoint === expectedEntryPoint) entryUrl = publicUrl(relative);
+    if (entryPoint === expectedEntryPoint) {
+      entryUrl = publicUrl(relative);
+      if (details.cssBundle) {
+        const cssAbsolute = resolveMetafileOutput(projectRoot, details.cssBundle);
+        if (!isPathInside(outputRoot, cssAbsolute)) {
+          throw new Error(`esbuild CSS output escaped the production directory: ${details.cssBundle}`);
+        }
+        cssUrl = publicUrl(toPosix(path.relative(outputRoot, cssAbsolute)));
+      }
+    }
   }
   for (const relative of await walkFiles(path.join(outputRoot, HASHED_ASSET_DIR))) {
     const outputRelative = `${HASHED_ASSET_DIR}/${relative}`;
     if (!provenance.has(outputRelative)) provenance.set(outputRelative, sourceLabel);
   }
   if (!entryUrl) throw new Error(`esbuild did not emit an entry for ${sourceLabel}`);
-  return { entryUrl, inputBytes, outputBytes };
+  return { entryUrl, cssUrl, inputBytes, outputBytes };
 }
 
 async function buildPublicModules({ outputRoot, routeStyles, transferAssets, provenance, metrics }) {
@@ -487,6 +506,155 @@ async function buildJapaneseTool({ outputRoot, provenance, metrics }) {
   });
   metrics.push({ source: "tools/japanese-subtext/app.mjs", sourceBytes: summary.inputBytes, output: stripUrlVersion(summary.entryUrl), outputBytes: summary.outputBytes, kind: "js-bundle" });
   return summary.entryUrl;
+}
+
+function disableExcalidrawMermaidPlugin() {
+  const namespace = "lusu-disabled-excalidraw-converter";
+  return {
+    name: namespace,
+    setup(build) {
+      build.onResolve(
+        { filter: /^@excalidraw\/mermaid-to-excalidraw$/ },
+        () => ({ path: "disabled", namespace })
+      );
+      build.onLoad(
+        { filter: /.*/, namespace },
+        () => ({
+          contents: [
+            "export async function parseMermaidToExcalidraw() {",
+            "  throw new Error('Mermaid conversion is disabled in this whiteboard.');",
+            "}"
+          ].join("\n"),
+          loader: "js"
+        })
+      );
+    }
+  };
+}
+
+export function assertExcalidrawOptionalConverterDisabled(metafile) {
+  const inputs = Object.keys(metafile?.inputs || {}).map(toPosix);
+  const disabledInput = "lusu-disabled-excalidraw-converter:disabled";
+  if (!inputs.includes(disabledInput)) {
+    throw new Error("Whiteboard build did not resolve the local disabled Excalidraw converter module");
+  }
+  const forbiddenInput = inputs.find((input) => (
+    /(?:^|\/)node_modules\/@excalidraw\/mermaid-to-excalidraw(?:\/|$)/.test(input)
+    || /(?:^|\/)node_modules\/mermaid(?:\/|$)/.test(input)
+    || /(?:^|\/)node_modules\/dompurify(?:\/|$)/.test(input)
+    || /(?:^|\/)node_modules\/@mermaid-js\/parser(?:\/|$)/.test(input)
+    || /(?:^|\/)node_modules\/(?:langium|chevrotain)(?:\/|$)/.test(input)
+  ));
+  if (forbiddenInput) {
+    throw new Error(`Whiteboard build included disabled diagram-converter code: ${forbiddenInput}`);
+  }
+}
+
+export async function assertWhiteboardRuntimeNotices(
+  metafile,
+  {
+    projectRoot = PROJECT_ROOT,
+    noticesText
+  } = {}
+) {
+  const notices = noticesText ?? await readFile(
+    path.join(projectRoot, "tools", "whiteboard", "THIRD_PARTY_NOTICES.md"),
+    "utf8"
+  );
+  const packages = new Map();
+  for (const input of Object.keys(metafile?.inputs || {}).map(toPosix)) {
+    const marker = "node_modules/";
+    const markerIndex = input.lastIndexOf(marker);
+    if (markerIndex < 0) continue;
+    const remainder = input.slice(markerIndex + marker.length);
+    const segments = remainder.split("/");
+    const packageName = segments[0]?.startsWith("@")
+      ? segments.slice(0, 2).join("/")
+      : segments[0];
+    if (!packageName || packages.has(packageName)) continue;
+    const packageRoot = input.slice(
+      0,
+      markerIndex + marker.length + packageName.length
+    );
+    const packageJsonPath = path.isAbsolute(packageRoot)
+      ? path.join(packageRoot, "package.json")
+      : path.join(projectRoot, ...packageRoot.split("/"), "package.json");
+    const packageJson = JSON.parse(await readFile(packageJsonPath, "utf8"));
+    const license = String(
+      packageJson.license
+      || packageJson.licenses?.map((entry) => entry.type).join(" AND ")
+      || ""
+    ).replace(/[()]/g, "");
+    packages.set(packageName, {
+      version: String(packageJson.version || ""),
+      license
+    });
+  }
+
+  const missing = [];
+  for (const [packageName, metadata] of packages) {
+    if (!notices.includes(`\`${packageName}\``)) {
+      missing.push(`${packageName} (package)`);
+    }
+    if (!metadata.version || !notices.includes(metadata.version)) {
+      missing.push(`${packageName}@${metadata.version || "unknown"} (version)`);
+    }
+    if (!metadata.license || !notices.includes(metadata.license)) {
+      missing.push(`${packageName} (${metadata.license || "unknown license"})`);
+    }
+  }
+  if (missing.length > 0) {
+    throw new Error(
+      `Whiteboard third-party notices are incomplete: ${missing.join(", ")}`
+    );
+  }
+}
+
+async function buildWhiteboardTool({ outputRoot, provenance, metrics }) {
+  const result = await esbuildBuild({
+    absWorkingDir: PROJECT_ROOT,
+    assetNames: "whiteboard-assets/[name].[hash]",
+    bundle: true,
+    charset: "utf8",
+    chunkNames: "whiteboard-chunks/[name].[hash]",
+    conditions: ["production"],
+    define: { "process.env.NODE_ENV": JSON.stringify("production") },
+    entryNames: "whiteboard.[hash]",
+    entryPoints: ["tools/whiteboard/src/main.jsx"],
+    format: "esm",
+    legalComments: "external",
+    loader: { ".woff2": "file" },
+    metafile: true,
+    minify: true,
+    outdir: path.join(outputRoot, HASHED_ASSET_DIR),
+    platform: "browser",
+    plugins: [disableExcalidrawMermaidPlugin()],
+    sourceRoot: "/__source__/",
+    sourcemap: "linked",
+    sourcesContent: true,
+    splitting: true,
+    target: "es2022",
+    write: true
+  });
+  assertExcalidrawOptionalConverterDisabled(result.metafile);
+  await assertWhiteboardRuntimeNotices(result.metafile);
+  const summary = await registerEsbuildOutputs({
+    projectRoot: PROJECT_ROOT,
+    outputRoot,
+    metafile: result.metafile,
+    provenance,
+    sourceLabel: "esbuild:whiteboard",
+    expectedEntryPoint: "tools/whiteboard/src/main.jsx"
+  });
+  if (!summary.cssUrl) throw new Error("esbuild did not emit the online whiteboard stylesheet");
+  metrics.push({
+    source: "tools/whiteboard/src/main.jsx",
+    sourceBytes: summary.inputBytes,
+    output: stripUrlVersion(summary.entryUrl),
+    outputBytes: summary.outputBytes,
+    kind: "js-bundle"
+  });
+  return { script: summary.entryUrl, css: summary.cssUrl };
 }
 
 async function writeHashedFragment(outputRoot, provenance) {
@@ -702,6 +870,13 @@ async function buildCandidate(outputRoot) {
   if (!/^\/_assets\/main\.[A-Z0-9]+\.js$/i.test(main)) throw new Error(`Unexpected public entry output: ${main}`);
   const japaneseTool = await buildJapaneseTool({ outputRoot, provenance, metrics });
   if (!/^\/_assets\/japanese-subtext\.[A-Z0-9]+\.js$/i.test(japaneseTool)) throw new Error(`Unexpected Japanese tool entry output: ${japaneseTool}`);
+  const whiteboardTool = await buildWhiteboardTool({ outputRoot, provenance, metrics });
+  if (!/^\/_assets\/whiteboard\.[A-Z0-9]+\.js$/i.test(whiteboardTool.script)) {
+    throw new Error(`Unexpected whiteboard entry output: ${whiteboardTool.script}`);
+  }
+  if (!/^\/_assets\/whiteboard\.[A-Z0-9]+\.css$/i.test(whiteboardTool.css)) {
+    throw new Error(`Unexpected whiteboard stylesheet output: ${whiteboardTool.css}`);
+  }
 
   const replacements = new Map([
     ["/css/style.css", styleAssets.style],
@@ -719,7 +894,9 @@ async function buildCandidate(outputRoot) {
     ["/games/game-shell.js", scriptAssets.gameShell],
     ["/tools/japanese-subtext/style.css", styleAssets.japaneseTool],
     ["/tools/japanese-subtext/app.mjs", japaneseTool],
-    ["/tools/japanese-subtext/scripts/tts/licenses/NOTICE-japanese-voices.md", "/tools/japanese-subtext/licenses/NOTICE-japanese-voices.md"]
+    ["/tools/japanese-subtext/scripts/tts/licenses/NOTICE-japanese-voices.md", "/tools/japanese-subtext/licenses/NOTICE-japanese-voices.md"],
+    ["/tools/whiteboard/dist/main.css", whiteboardTool.css],
+    ["/tools/whiteboard/dist/main.js", whiteboardTool.script]
   ]);
   await rewriteEntrypointHtml({ outputRoot, policy, replacements, provenance });
   await rewriteJapaneseAudioManifest(outputRoot, provenance);
@@ -744,6 +921,7 @@ async function buildCandidate(outputRoot) {
     transferAdmin: { html: "/admin/transfer.html", css: styleAssets.adminTransfer, script: scriptAssets.adminTransfer },
     gameShell: { css: styleAssets.gameShell, script: scriptAssets.gameShell },
     japaneseSubtext: { html: "/tools/japanese-subtext/index.html", css: styleAssets.japaneseTool, script: japaneseTool },
+    whiteboard: { html: "/tools/whiteboard/index.html", css: whiteboardTool.css, script: whiteboardTool.script },
     quickTransfer: { fragment, css: styleAssets.transfer, script: scriptAssets.transfer }
   };
   const { manifest, text } = await createManifest({ outputRoot, policy, policyText, provenance, metrics, entries });

@@ -3,6 +3,47 @@ export const resourcesContent = Object.freeze({
   "resources": [
     {
       "category": 0,
+      "iconSrc": "assets/images/generated-icons/whiteboard.png?v=20260730-online-whiteboard-r1",
+      "version": "v1.0.0",
+      "updated": "2026.07.30",
+      "external": false,
+      "showReadyStatus": false,
+      "url": "/tools/whiteboard/",
+      "title": {
+        "zh": "在线画板",
+        "en": "Online Whiteboard",
+        "ja": "オンラインホワイトボード"
+      },
+      "desc": {
+        "zh": "无需登录即可进入公共画板或密码房，与其他访客实时绘画、查看临时名字和远端鼠标，并在手机或电脑上上传图片与导出作品。",
+        "en": "Join a public board or password room without signing in. Draw together in real time, see temporary names and remote pointers, upload images, and export from mobile or desktop.",
+        "ja": "ログインせずに公開ボードや合言葉の部屋へ参加し、一時名とリモートポインターを見ながらリアルタイムで共同描画できます。画像追加と書き出しにも対応します。"
+      },
+      "actionLabel": {
+        "zh": "打开",
+        "en": "Open",
+        "ja": "開く"
+      },
+      "tags": [
+        {
+          "zh": "无需登录",
+          "en": "No sign-in",
+          "ja": "ログイン不要"
+        },
+        {
+          "zh": "实时协作",
+          "en": "Real-time",
+          "ja": "リアルタイム"
+        },
+        {
+          "zh": "手机与电脑",
+          "en": "Mobile + desktop",
+          "ja": "スマホ・PC"
+        }
+      ]
+    },
+    {
+      "category": 0,
       "action": "quick-transfer",
       "iconSrc": "assets/images/generated-icons/quick-transfer.png?v=20260719-content-experience-fixes-r1",
       "version": "v1.0.0",

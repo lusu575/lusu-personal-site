@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-07-30-multiplayer-whiteboard",
+      "slug": "2026-07-30-multiplayer-whiteboard",
+      "category": "site-updates",
+      "tags": ["网站更新", "工具区", "在线画板", "实时协作", "匿名身份"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-30T08:30:00.000Z",
+      "updated_at": "2026-07-30T08:30:00.000Z",
+      "published_at": "2026-07-30T08:30:00.000Z",
+      "fallbackOnly": true,
+      "icon": "resources",
+      "date": "2026.07.30",
+      "title": {
+        "zh": "工具区多人在线画板上线",
+        "en": "Multiplayer Whiteboard Is Live in Tools",
+        "ja": "ツールに共同オンラインホワイトボードを追加"
+      },
+      "summary": {
+        "zh": "工具区新增免登录多人在线画板，支持公共与密码房、实时鼠标和临时名字、统一匿名身份、图片、PNG/SVG 导出，以及密码房无人后24小时保留。",
+        "en": "Tools now includes a sign-in-free multiplayer whiteboard with public and password rooms, live cursors and temporary names, one shared anonymous identity, images, PNG/SVG export, and 24-hour retention for empty password rooms.",
+        "ja": "ツールにログイン不要の共同ホワイトボードを追加しました。公開・パスワードルーム、リアルタイムカーソルと一時名、共通匿名ID、画像、PNG/SVG出力、空室後24時間の保持に対応します。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-07-29-knowledge-markdown-links",
       "slug": "2026-07-29-knowledge-markdown-links",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "公共文章列表不再被 50 条上限截断；取消置顶的旧文章及其分类会继续出现在知识库，并可通过搜索与加载更多访问。",
         "en": "The public article list no longer stops at 50 items. Older unpinned articles and their categories remain available through search and Load more.",
         "ja": "公開記事一覧の50件制限を解消し、固定解除した過去記事と分類を検索や「さらに表示」から引き続き参照できるようにしました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-07-28-article-pin-sidebar-navigation",
-      "slug": "2026-07-28-article-pin-sidebar-navigation",
-      "category": "site-updates",
-      "tags": ["网站更新", "知识库", "文章管理", "阅读体验", "QA"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-07-28T05:20:00.000Z",
-      "updated_at": "2026-07-28T05:20:00.000Z",
-      "published_at": "2026-07-28T05:20:00.000Z",
-      "fallbackOnly": true,
-      "icon": "knowledge",
-      "date": "2026.07.28",
-      "title": {
-        "zh": "文章置顶与目录定位修复",
-        "en": "Article Pinning and Contents Navigation Fixes",
-        "ja": "記事の固定表示と目次移動を修正"
-      },
-      "summary": {
-        "zh": "后台取消置顶不再被种子还原；返回按钮与目录合并为同一固定侧栏，目录点击会把目标标题对齐并同步高亮。",
-        "en": "Admin pin choices now survive seed refreshes. The back control and contents share one anchored sidebar, and contents clicks align and highlight the requested heading.",
-        "ja": "管理画面の固定表示設定を seed が戻さないようにし、戻る操作と目次を同じ固定サイドバーへまとめ、目次移動時の見出し位置と選択表示を同期しました。"
       }
     }
   ]

@@ -1,0 +1,71 @@
+export const ROOM_META_KEY = "room:meta";
+export const ROOM_BANS_KEY = "room:bans";
+export const DOCUMENT_SNAPSHOT_KEY = "document:snapshot";
+export const DOCUMENT_SNAPSHOT_CHUNK_PREFIX = "document:snapshot:chunk:";
+export const DOCUMENT_SNAPSHOT_CHUNK_BYTES = 1 * 1_024 * 1_024;
+export const DOCUMENT_UPDATE_PREFIX = "document:update:";
+export const IMAGE_META_PREFIX = "image:";
+export const ASSET_SWEEP_NEXT_KEY = "asset-sweep:next";
+export const RATE_SWEEP_NEXT_KEY = "rate-sweep:next";
+export const UPLOAD_RATE_PREFIX = "upload-rate:";
+export const SYNC_RATE_PREFIX = "sync-rate:";
+export const TICKET_JTI_PREFIX = "ticket-jti:";
+
+export const PUBLIC_ROOM_ID = "public-v1";
+export const ROOM_RETENTION_MS = 24 * 60 * 60 * 1_000;
+export const HEARTBEAT_INTERVAL_MS = 15_000;
+export const CONNECTION_STALE_MS = 55_000;
+export const CLEANUP_RETRY_BASE_MS = 60_000;
+export const CLEANUP_RETRY_MAX_MS = 60 * 60 * 1_000;
+
+export const MAX_CONNECTIONS_PER_ROOM = 64;
+export const MAX_CONNECTIONS_PER_IDENTITY = 4;
+export const MAX_CONNECTIONS_PER_IP = 8;
+export const MAX_MESSAGE_BYTES = 256 * 1_024;
+export const MAX_AWARENESS_BYTES = 4 * 1_024;
+export const MAX_DOCUMENT_BYTES = 15 * 1_024 * 1_024;
+export const MAX_OBJECTS = 5_000;
+export const MAX_UPDATES_BEFORE_COMPACTION = 64;
+export const MAX_UPDATE_BYTES_BEFORE_COMPACTION = 2 * 1_024 * 1_024;
+
+export const MESSAGE_RATE_WINDOW_MS = 1_000;
+export const MAX_MESSAGES_PER_WINDOW = 60;
+export const MAX_UPDATES_PER_WINDOW = 24;
+export const LARGE_DOCUMENT_UPDATE_THRESHOLD_BYTES = 5 * 1_024 * 1_024;
+export const VERY_LARGE_DOCUMENT_UPDATE_THRESHOLD_BYTES = 10 * 1_024 * 1_024;
+export const MAX_LARGE_DOCUMENT_UPDATES_PER_WINDOW = 6;
+export const MAX_VERY_LARGE_DOCUMENT_UPDATES_PER_WINDOW = 2;
+export const MAX_AWARENESS_PER_WINDOW = 30;
+export const MAX_BYTES_PER_WINDOW = 1_024 * 1_024;
+
+export const MAX_IMAGE_BYTES = 5 * 1_024 * 1_024;
+export const MAX_IMAGE_DIMENSION = 8_192;
+export const MAX_IMAGE_PIXELS = 32_000_000;
+export const MAX_IMAGES_PER_ROOM = 100;
+export const MAX_IMAGE_BYTES_PER_ROOM = 100 * 1_024 * 1_024;
+export const UPLOAD_RATE_WINDOW_MS = 60_000;
+export const MAX_UPLOADS_PER_WINDOW = 10;
+export const MAX_UPLOADS_PER_IP_WINDOW = 20;
+export const SYNC_RATE_WINDOW_MS = 60_000;
+export const MAX_SYNC_REQUESTS_PER_WINDOW = 4;
+export const MAX_SYNC_RESPONSE_BYTES_PER_WINDOW = 32 * 1_024 * 1_024;
+export const RATE_STATE_RETENTION_MS = 2 * 60_000;
+export const CONSUMED_TICKET_TTL_MS = 5 * 60 * 1_000;
+export const UNREFERENCED_ASSET_GRACE_MS = 60 * 60 * 1_000;
+export const ASSET_REFERENCE_RECHECK_MS = 15 * 60 * 1_000;
+
+export const WS_YJS_UPDATE = 0;
+export const WS_YJS_STATE_VECTOR = 1;
+
+export const INTERNAL_SECRET_HEADER = "x-whiteboard-internal-secret";
+export const ROOM_ID_HEADER = "x-whiteboard-room-id";
+export const ROOM_TYPE_HEADER = "x-whiteboard-room-type";
+export const ANONYMOUS_ID_HEADER = "x-whiteboard-anonymous-id";
+export const DISPLAY_NAME_B64_HEADER = "x-whiteboard-display-name-b64";
+export const IDENTITY_COLOR_HEADER = "x-whiteboard-identity-color";
+export const IP_HASH_HEADER = "x-whiteboard-ip-hash";
+export const CLIENT_ORIGIN_HEADER = "x-whiteboard-client-origin";
+export const ADMIN_AUTHORIZED_HEADER = "x-whiteboard-admin-authorized";
+export const IDENTITY_VERSION_HEADER = "x-whiteboard-identity-version";
+export const TICKET_JTI_HEADER = "x-whiteboard-ticket-jti";
+export const WEBSOCKET_PROTOCOL = "whiteboard.v1";

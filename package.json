@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "build": "node scripts/build-check.mjs",
+    "build": "node scripts/build-check.mjs && node scripts/build-production.mjs",
     "build:transfer-icons": "node scripts/build-transfer-icon-atlas.mjs",
     "build:production": "node scripts/build-production.mjs",
     "build:production:verify": "node scripts/build-production.mjs --verify-reproducible",
@@ -20,10 +20,15 @@
     "qa:local": "npm run verify:public-site-release",
     "qa:public-release": "npm run verify:public-site-release",
     "verify:public-site-release": "npm run test && npm run check:public-modules && npm run build && npm run build:production:verify && npm run audit:public-ui:release && npm run audit:a-dark-room && git diff --check && git status --short",
+    "lint": "eslint functions/api/anonymous-identity.mjs functions/api/whiteboard-service.mjs js/features/anonymous-identity.mjs js/routes/chatroom.mjs tools/whiteboard/src tools/whiteboard/tests tests/anonymous-identity-api.test.mjs tests/whiteboard-service-api.test.mjs workers/whiteboard",
+    "typecheck": "tsc -p workers/whiteboard/tsconfig.json --noEmit",
+    "whiteboard:test": "node --test tools/whiteboard/tests/*.test.mjs && vitest run --config workers/whiteboard/vitest.config.mts",
+    "whiteboard:dev": "wrangler dev --config workers/whiteboard/wrangler.jsonc",
+    "whiteboard:deploy": "wrangler deploy --config workers/whiteboard/wrangler.jsonc",
     "check:public-modules": "node scripts/check-public-module-graph.mjs",
     "dev": "wrangler pages dev",
     "transfer:dev": "wrangler pages dev --r2 TRANSFER_BUCKET",
-    "test": "node scripts/run-tests.mjs tests/*.test.mjs tests/transfer/*.test.mjs tools/japanese-subtext/tests/*.test.mjs tools/japanese-subtext/scripts/tts/tests/*.mjs",
+    "test": "node scripts/run-tests.mjs tests/*.test.mjs tests/transfer/*.test.mjs tools/japanese-subtext/tests/*.test.mjs tools/japanese-subtext/scripts/tts/tests/*.mjs && npm run lint && npm run typecheck && npm run whiteboard:test",
     "d1:create": "wrangler d1 create lusu_personal_site",
     "d1:migrate:local": "node scripts/d1-migrate-local.mjs",
     "d1:migrate:remote": "node scripts/d1-migrate-remote.mjs",
@@ -47,8 +52,33 @@
     "node": ">=22.13.0"
   },
   "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "0.19.0",
+    "@cloudflare/workers-types": "5.20260730.1",
+    "@typescript-eslint/eslint-plugin": "8.65.0",
+    "@typescript-eslint/parser": "8.65.0",
     "esbuild": "0.28.1",
+    "eslint": "9.39.1",
+    "eslint-plugin-react": "7.37.5",
     "sharp": "0.34.5",
+    "typescript": "5.9.2",
+    "vitest": "4.1.10",
     "wrangler": "4.111.0"
+  },
+  "dependencies": {
+    "@excalidraw/excalidraw": "0.18.1",
+    "lib0": "0.2.114",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "y-protocols": "1.0.6",
+    "yjs": "13.6.27"
+  },
+  "overrides": {
+    "@excalidraw/excalidraw": {
+      "nanoid": "3.3.16"
+    },
+    "@excalidraw/mermaid-to-excalidraw": {
+      "nanoid": "5.0.9"
+    },
+    "lodash-es": "4.18.1"
   }
 }

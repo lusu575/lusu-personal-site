@@ -1,6 +1,13 @@
 import { handleTransferApi } from "./transfer-service.mjs";
+import {
+  AnonymousIdentityError,
+  ensureAnonymousIdentity,
+  handleAnonymousIdentityApi,
+  withAnonymousIdentityCookie
+} from "./anonymous-identity.mjs";
+import { handleWhiteboardApi } from "./whiteboard-service.mjs";
 
-export const PUBLIC_API_REPRESENTATION_VERSION = "20260729-knowledge-markdown-links-r1";
+export const PUBLIC_API_REPRESENTATION_VERSION = "20260730-multiplayer-whiteboard-r1";
 export const PUBLIC_ARTICLE_ARCHIVE_LIMIT = 500;
 const SESSION_COOKIE = "lusu_session";
 const SESSION_DAYS = 30;
@@ -195,7 +202,7 @@ export async function onRequest(context) {
   try {
     const transferRoute = isTransferApiPath(parts);
     if (!transferRoute) {
-      assertMainApiMutationRequest(request);
+      assertMainApiMutationRequest(request, parts);
     }
 
     await ensureCoreSchema(env);
@@ -205,8 +212,21 @@ export async function onRequest(context) {
       return transferResponse;
     }
 
-    if (parts[0] === "admin") {
-      await requireAdmin(request, env);
+    const adminSession = parts[0] === "admin"
+      ? await requireAdmin(request, env)
+      : null;
+
+    const anonymousIdentityResponse = await handleAnonymousIdentityApi(context, parts);
+    if (anonymousIdentityResponse) {
+      return anonymousIdentityResponse;
+    }
+
+    const whiteboardResponse = await handleWhiteboardApi(context, parts, {
+      isAdmin: Boolean(adminSession),
+      adminUser: adminSession?.user || null
+    });
+    if (whiteboardResponse) {
+      return whiteboardResponse;
     }
 
     if (request.method === "GET" && parts[0] === "health") {
@@ -459,7 +479,7 @@ export async function onRequest(context) {
 
     return json({ error: "Not found." }, 404);
   } catch (error) {
-    const expectedError = error instanceof HttpError;
+    const expectedError = error instanceof HttpError || error instanceof AnonymousIdentityError;
     const status = expectedError ? error.status : 500;
     if (status >= 500) {
       console.error(JSON.stringify({
@@ -470,11 +490,16 @@ export async function onRequest(context) {
         error: error instanceof Error ? error.message : String(error)
       }));
     }
-    return json({
+    const response = json({
       error: expectedError
         ? error.message
-        : "服务暂时不可用，请稍后重试。"
+        : "服务暂时不可用，请稍后重试。",
+      ...(expectedError && error.code ? { code: error.code } : {})
     }, status);
+    if (expectedError && Number(error.retryAfter || 0) > 0) {
+      response.headers.set("Retry-After", String(Math.ceil(error.retryAfter)));
+    }
+    return response;
   }
 }
 
@@ -1392,8 +1417,8 @@ async function postChatMessage(request, env) {
   await ensureAnalyticsSchema(env);
   const body = await readJson(request, MAX_CHAT_JSON_BYTES, "聊天请求内容过大。");
   const clientId = normalizeVisitorId(body.visitorId);
-  const identity = getOrCreateVisitorIdentity(request);
-  const nickname = normalizeChatNickname(body.nickname);
+  const identity = await ensureAnonymousIdentity(request, env);
+  const nickname = normalizeChatNickname(identity.displayName);
   const roomKey = normalizeChatRoomKey(body.room);
   const clientRequestId = normalizeChatRequestId(body.clientRequestId);
   const encrypted = isPrivateChatRoom(roomKey);
@@ -1408,17 +1433,17 @@ async function postChatMessage(request, env) {
   const visitorSince = new Date(now.getTime() - CHAT_COOLDOWN_MS).toISOString();
   const ipSince = new Date(now.getTime() - CHAT_IP_WINDOW_MS).toISOString();
 
-  const replay = await findChatRequestReplay(env, identity.visitorId, roomKey, clientRequestId);
+  const replay = await findChatRequestReplay(env, identity.anonymousId, roomKey, clientRequestId);
   if (replay) {
-    return withVisitorCookie(json({ message: publicChatMessage(replay), idempotentReplay: true }), request, identity);
+    return withAnonymousIdentityCookie(json({ message: publicChatMessage(replay), idempotentReplay: true }), request, identity);
   }
 
   await cleanupExpiredPrivateChatRooms(env);
-  await ensureVisitorProfile(env, request, identity.visitorId, {}, false);
-  const ban = await activeChatBan(env, identity.visitorId, ipHash, ipHashKeyId);
+  await ensureVisitorProfile(env, request, identity.anonymousId, {}, false);
+  const ban = await activeChatBan(env, identity.anonymousId, ipHash, ipHashKeyId);
   if (ban) {
     const expires = ban.expires_at ? `，到 ${ban.expires_at} 结束` : "";
-    return withVisitorCookie(json({ error: `当前访客已被禁言${expires}。` }, 403), request, identity);
+    return withAnonymousIdentityCookie(json({ error: `当前访客已被禁言${expires}。` }, 403), request, identity);
   }
 
   const recentVisitor = await env.DB.prepare(`
@@ -1427,9 +1452,9 @@ async function postChatMessage(request, env) {
     where visitor_id = ? and room_key = ? and created_at > ?
     order by created_at desc
     limit 1
-  `).bind(identity.visitorId, roomKey, visitorSince).first();
+  `).bind(identity.anonymousId, roomKey, visitorSince).first();
   if (recentVisitor) {
-    return withVisitorCookie(json({ error: "发送太快啦，请等 3 秒。" }, 429), request, identity);
+    return withAnonymousIdentityCookie(json({ error: "发送太快啦，请等 3 秒。" }, 429), request, identity);
   }
 
   const ipRow = await env.DB.prepare(`
@@ -1438,7 +1463,7 @@ async function postChatMessage(request, env) {
     where ip_hash = ? and ip_hash_key_id = ? and room_key = ? and created_at > ?
   `).bind(ipHash, ipHashKeyId, roomKey, ipSince).first();
   if (Number(ipRow?.count || 0) >= CHAT_IP_WINDOW_LIMIT) {
-    return withVisitorCookie(json({ error: "当前网络发送过于频繁，请稍后再试。" }, 429), request, identity);
+    return withAnonymousIdentityCookie(json({ error: "当前网络发送过于频繁，请稍后再试。" }, 429), request, identity);
   }
 
   const nicknameOwner = await env.DB.prepare(`
@@ -1447,9 +1472,9 @@ async function postChatMessage(request, env) {
     where hidden = 0 and room_key = ? and nickname = ? and visitor_id <> ?
     order by created_at desc
     limit 1
-  `).bind(roomKey, nickname, identity.visitorId).first();
+  `).bind(roomKey, nickname, identity.anonymousId).first();
   if (nicknameOwner) {
-    return withVisitorCookie(json({ error: "这个随机昵称已经被使用，请刷新聊天室获取新昵称。", code: "nickname_taken" }, 409), request, identity);
+    return withAnonymousIdentityCookie(json({ error: "这个随机昵称已经被使用，请换一个名字后重试。", code: "nickname_taken" }, 409), request, identity);
   }
 
   const messageId = chatMessageId(now);
@@ -1462,7 +1487,7 @@ async function postChatMessage(request, env) {
       values (?, ?, ?, ?, ?, ?, 0, ?, ?, ?, ?, ?, ?)
     `).bind(
       messageId,
-      identity.visitorId,
+      identity.anonymousId,
       clientId,
       nickname,
       content,
@@ -1475,12 +1500,12 @@ async function postChatMessage(request, env) {
       clientRequestId
     ).run();
   } catch (error) {
-    const concurrentReplay = await findChatRequestReplay(env, identity.visitorId, roomKey, clientRequestId);
+    const concurrentReplay = await findChatRequestReplay(env, identity.anonymousId, roomKey, clientRequestId);
     if (!concurrentReplay) throw error;
-    return withVisitorCookie(json({ message: publicChatMessage(concurrentReplay), idempotentReplay: true }), request, identity);
+    return withAnonymousIdentityCookie(json({ message: publicChatMessage(concurrentReplay), idempotentReplay: true }), request, identity);
   }
 
-  return withVisitorCookie(json({
+  return withAnonymousIdentityCookie(json({
     message: {
       message_id: messageId,
       visitor_id: clientId,
@@ -1515,13 +1540,12 @@ function publicChatMessage(row) {
 }
 
 async function getChatNickname(request, env) {
-  await ensureChatSchema(env);
-  const url = new URL(request.url);
-  const lang = normalizeArticleLang(url.searchParams.get("lang"));
-  const roomKey = normalizeChatRoomKey(url.searchParams.get("room"));
-  await cleanupExpiredPrivateChatRooms(env);
-  const used = await recentChatNicknames(env, roomKey);
-  return json({ nickname: randomAvailableChatNickname(used, lang) });
+  const identity = await ensureAnonymousIdentity(request, env);
+  return withAnonymousIdentityCookie(json({
+    nickname: identity.displayName,
+    color: identity.color,
+    version: identity.version
+  }), request, identity);
 }
 
 async function getArticles(request, env) {
@@ -6088,6 +6112,47 @@ const DAILY_AI_NEWS_2026_07_27_READER_PATCH = Object.freeze({
 function articleSeedStatements(env) {
   // Seed timestamps must be UTC ISO strings; the UI converts them to each visitor's local time.
   return [
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-30-multiplayer-whiteboard',
+        '2026-07-30-multiplayer-whiteboard',
+        'site-updates',
+        '["网站更新","工具区","在线画板","实时协作","匿名身份"]',
+        '', 'published', 0, 0,
+        '2026-07-30T08:30:00.000Z',
+        '2026-07-30T08:30:00.000Z',
+        '2026-07-30T08:30:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-07-30-multiplayer-whiteboard", {
+      zh: {
+        title: "工具区多人在线画板上线",
+        summary: "工具区新增免登录多人在线画板，支持公共与密码房、实时鼠标和临时名字、统一匿名身份、图片、PNG/SVG 导出，以及密码房无人后24小时保留。",
+        content_markdown: "# 工具区多人在线画板上线\n\n工具区新增可直接使用的多人实时在线画板。它不是静态演示：进入房间会恢复已有内容，多个浏览器可以同时绘制并看到彼此的彩色鼠标和临时名字，暂不显示头像。\n\n## 公共画板与密码房\n\n- 公共画板供所有访客共同使用；管理员可以锁定、解锁和清空，但不会按24小时规则删除。\n- 双方输入相同密码会进入同一隔离房间，不同密码互不可见。密码经规范化后只在服务端参与 HMAC-SHA256 映射，不写入网址、本地长期存储、数据库主键或普通日志。\n- 密码房最后一人离开后保留24小时；期间重新进入会取消清理，再次为空后从新的离开时间重新计时。\n\n## 实时协作与统一匿名身份\n\n- 画板以 Excalidraw 提供绘图功能，以 Yjs 增量更新和 Durable Objects WebSocket 维护每个房间的权威状态；刷新、断线和网络切换后会自动恢复。\n- 匿名聊天室与画板共用同一个服务端验证的匿名ID、临时名字和颜色。安全词根可组合出超过一万种名字，同一房间由服务端原子查重，换名有冷却和频率限制。\n- 鼠标、选区和在线状态只实时广播而不写入 D1；画布更新会合并并定期生成快照。\n\n## 电脑、手机、图片与导出\n\n- 电脑、平板和手机均支持绘制、文本、选择、撤销重做、缩放和平移；移动端处理安全区域、键盘、横竖屏与双指手势。\n- 图片会校验真实类型、尺寸和像素数量后保存到房间隔离的 R2 对象，画布只保留资源引用，不长期保存大段 Base64。\n- 支持导出 PNG 和 SVG，并设置连接、消息、对象、图片和房间容量上限；管理员后台可查看公共画板状态、连接与容量，处理锁定、清空、异常连接和临时封禁。"
+      },
+      en: {
+        title: "Multiplayer Whiteboard Is Live in Tools",
+        summary: "Tools now includes a sign-in-free multiplayer whiteboard with public and password rooms, live cursors and temporary names, one shared anonymous identity, images, PNG/SVG export, and 24-hour retention for empty password rooms.",
+        content_markdown: "# Multiplayer Whiteboard Is Live in Tools\n\nTools now includes a real-time multiplayer whiteboard that works without signing in. It restores existing room content, lets independent browsers draw together, and shows each remote participant's colored cursor and temporary name without an avatar.\n\n## Public and password rooms\n\n- The public whiteboard is shared by all visitors. Administrators can lock, unlock, or clear it, and the 24-hour deletion rule never applies to it.\n- People entering the same password reach the same isolated room, while different passwords cannot see one another. After normalization, a password is used only by the server for an HMAC-SHA256 mapping; it never enters the URL, long-term local storage, a database key, or ordinary logs.\n- A password room remains for 24 hours after its last participant leaves. Returning cancels cleanup; when it becomes empty again, a new 24-hour window begins.\n\n## Real-time collaboration and one anonymous identity\n\n- Excalidraw supplies the drawing tools, while Yjs incremental updates and Durable Objects WebSockets maintain authoritative state per room. Refreshes, disconnects, and network changes reconnect and restore safely.\n- Anonymous Chat and Whiteboard share one server-verified anonymous ID, temporary name, and color. Safe roots produce more than ten thousand name combinations, names are atomically unique within each room, and rotation has cooldown and rate limits.\n- Cursors, selections, and online state are broadcast only and never written to D1; document updates are compacted into periodic snapshots.\n\n## Desktop, mobile, images, and export\n\n- Desktop, tablet, and mobile support drawing, text, selection, undo and redo, zoom, and pan. Mobile behavior accounts for safe areas, the keyboard, orientation changes, and two-finger gestures.\n- Images are verified by real type, byte size, and pixel dimensions, then stored as room-isolated R2 objects. The canvas stores references instead of retaining large Base64 payloads.\n- PNG and SVG export are included. Connections, messages, objects, images, and room storage have bounded limits, while the admin panel exposes public-room state, connections, capacity, locking, clearing, abnormal-connection removal, and temporary bans."
+      },
+      ja: {
+        title: "ツールに共同オンラインホワイトボードを追加",
+        summary: "ツールにログイン不要の共同ホワイトボードを追加しました。公開・パスワードルーム、リアルタイムカーソルと一時名、共通匿名ID、画像、PNG/SVG出力、空室後24時間の保持に対応します。",
+        content_markdown: "# ツールに共同オンラインホワイトボードを追加\n\nツールに、ログインせず使えるリアルタイム共同ホワイトボードを追加しました。既存のルーム内容を復元し、別々のブラウザから同時に描画でき、相手の色付きカーソルと一時名を表示します。アバターは表示しません。\n\n## 公開ルームとパスワードルーム\n\n- 公開ホワイトボードは全訪問者で共有します。管理者はロック、解除、消去ができ、24時間削除の対象にはなりません。\n- 同じパスワードを入力した人は同じ隔離ルームへ入り、異なるパスワードの内容は参照できません。正規化したパスワードはサーバー側の HMAC-SHA256 マッピングだけに使い、URL、長期ローカル保存、データベースキー、通常ログには残しません。\n- パスワードルームは最後の参加者が退出してから24時間保持します。再入室すると削除予定を取り消し、再び空になった時点から新しく24時間を数えます。\n\n## リアルタイム共同編集と共通匿名ID\n\n- 描画機能は Excalidraw、増分共同編集は Yjs、ルームごとの正本状態は Durable Objects WebSocket で管理します。更新、切断、ネットワーク切替後も再接続して復元します。\n- 匿名チャットとホワイトボードは、サーバー検証済みの同じ匿名ID、一時名、色を共有します。安全な語根から1万通り以上を生成し、同室内の重複はサーバーで原子的に防ぎ、名前変更には待機時間と回数制限があります。\n- カーソル、選択、オンライン状態はリアルタイム配信だけを行い D1 へ保存せず、文書更新は定期スナップショットへ統合します。\n\n## PC・モバイル・画像・出力\n\n- PC、タブレット、スマートフォンで描画、テキスト、選択、元に戻す／やり直し、拡大縮小、移動に対応します。モバイルでは安全領域、キーボード、画面回転、二本指操作を調整します。\n- 画像は実際の形式、容量、画素数を検証してルーム単位で隔離した R2 に保存し、キャンバスには大きな Base64 ではなく参照だけを保持します。\n- PNG と SVG に出力できます。接続、メッセージ、オブジェクト、画像、ルーム容量には上限があり、管理画面から公開ルーム状態、接続数、容量、ロック、消去、異常接続の切断、一時禁止を扱えます。"
+      }
+    }, "2026-07-30T08:30:00.000Z"),
     env.DB.prepare(`
       insert into articles (
         article_id, slug, category, tags, cover_image, status, is_pinned,
@@ -11842,14 +11907,33 @@ function isTransferApiPath(parts) {
   return parts[0] === "transfer" || (parts[0] === "admin" && parts[1] === "transfer");
 }
 
-function assertMainApiMutationRequest(request) {
+function assertMainApiMutationRequest(request, parts = []) {
   if (request.method === "GET" || request.method === "HEAD" || request.method === "OPTIONS") {
     return;
   }
   assertSameOriginRequest(request);
-  if (request.method !== "DELETE") {
+  if (
+    request.method !== "DELETE"
+    && !isWhiteboardRasterUploadRequest(request, parts)
+  ) {
     assertApplicationJsonRequest(request);
   }
+}
+
+function isWhiteboardRasterUploadRequest(request, parts) {
+  if (
+    request.method !== "POST"
+    || parts.length !== 2
+    || parts[0] !== "whiteboard"
+    || parts[1] !== "assets"
+  ) {
+    return false;
+  }
+  const contentType = String(request.headers.get("Content-Type") || "")
+    .split(";", 1)[0]
+    .trim()
+    .toLowerCase();
+  return ["image/png", "image/jpeg", "image/webp"].includes(contentType);
 }
 
 function assertSameOriginRequest(request) {

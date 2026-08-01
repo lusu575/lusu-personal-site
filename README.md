@@ -1,5 +1,15 @@
 # lusu-personal-site
 
+## 多人实时在线画板
+
+- 现有**工具区**新增 `/tools/whiteboard/` 独立页面，无需登录即可进入公共画板，或由参与者自行输入相同密码进入完全隔离的密码房；分享链接不携带密码，返回按钮回到工具区，不新增或恢复“资源区”。
+- 前端按路由懒加载 React、Excalidraw、Yjs 和 awareness 等效状态；`WhiteboardRoom` Durable Object 通过 WebSocket Hibernation 维护对象级 CRDT、快照和增量，鼠标、选区、绘制状态与在线状态只实时广播、不写入 D1。
+- 匿名聊天室与画板共用服务端验证的 `lusu_anonymous` 身份、临时名字和稳定颜色。名字组合超过一万种，房内由后端原子查重；跨标签页只广播无身份数据的“版本已变化”信号，再由各页面向服务端刷新。改名有约 30 秒冷却和短期次数限制，不开放任意昵称，也不向其他用户暴露登录名、IP 或设备信息。
+- 密码经 NFKC、trim 后以服务端 HMAC-SHA256 映射为不可逆房间 ID；明文不进入 URL、存储、埋点或普通日志。公共房不执行 TTL；密码房最后一名真实用户离开后保留 24 小时，重入取消旧 Alarm，再次为空重新计时，清理前会再次核对连接和截止时间。
+- 图片只接受校验后的 PNG/JPEG/WebP，保存到私有 R2 的房间前缀，画布仅保存资源 ID；清空画布和删除房间会幂等清理无引用资源。管理员可查看容量、连接、错误与自动清理计数，清空或锁定公共画板、移除异常连接、临时封禁以及删除空密码房。
+- 画板工具卡图标是 image2 生成的项目内 PNG；`assets/images/generated-icons/whiteboard.source.json` 锁定生成器、生成/发布尺寸、最终 SHA-256，并声明发布前仅做机械 resize。在线画板后续所有图标、插画和装饰素材也只能由 image2 生成，不使用 CSS、Canvas、SVG 路径或代码几何拼凑素材。
+- 详细架构、限制、绑定、测试、部署和回滚见 `docs/whiteboard/README.md` 与 `workers/whiteboard/README.md`。仓库中的配置和代码不代表 Cloudflare 远端迁移、生产部署或正式域名已经验证。
+
 ## 临时互传
 
 - 工具区（English `Tools` / 日本語 `ツール`，内部 route 仍为 `resources`）提供登录限定的“临时互传 / Quick Transfer / 一時転送”，支持 24 小时房间、加密文字、私有 R2 文件和 Range 视频播放。
@@ -22,28 +32,52 @@
 ```powershell
 npm.cmd ci
 Copy-Item .env.example .dev.vars
-# 填写两个独立、随机且至少 32 字节的盐，并用测试邮箱填写站长配置；不要提交 .dev.vars
+# 填写现有三个运行时配置和四个画板 Secret 的本地测试值；不要提交 .dev.vars
 npm.cmd run d1:migrate:local
+npm.cmd run lint
+npm.cmd run typecheck
 npm.cmd test
+npm.cmd run whiteboard:test
 npm.cmd run build
 npm.cmd run dev
 ```
 
-GPTWork 先在云端 Secrets 中配置下列三个变量，再执行 `npm ci`、`npm run d1:migrate:local`、`npm test`、`npm run build`、`npm run dev`。GPTWork 已注入 process environment 时不要创建 `.dev.vars`，空的本地文件会遮蔽云端值；Linux 纯本地开发才使用 `cp .env.example .dev.vars` 并填写本地测试值。
+Linux / macOS 对应命令为：
+
+```bash
+npm ci
+npm run d1:migrate:local
+npm run lint
+npm run typecheck
+npm test
+npm run whiteboard:test
+npm run build
+npm run dev
+```
+
+GPTWork 先在云端 Secrets 中配置下列运行时值，再执行 `npm ci`、本地迁移、Lint、类型检查、测试、生产构建和开发命令。GPTWork 已注入 process environment 时不要创建 `.dev.vars`，空的本地文件会遮蔽云端值；Linux 纯本地开发才使用 `cp .env.example .dev.vars` 并填写本地测试值。
 
 本地站点默认位于 `http://127.0.0.1:8788/`，健康检查为 `http://127.0.0.1:8788/api/health`；本地 D1 数据位于被 Git 忽略的 `.wrangler/`，与生产数据库完全分离。
 
-云端运行需要在 Cloudflare Pages 的 Preview 和 Production 环境分别配置 D1 binding `DB`，并在部署使用它们的提交前分别配置以下加密 Secret（只配置名称，不写入仓库）：
+云端 Production 需要配置 D1 binding `DB`，并在部署使用它的提交前配置以下加密 Secret（只配置名称，不写入仓库）：
 
 - `CHAT_IP_HASH_SALT`
 - `ANALYTICS_IP_HASH_SALT`
 - `OWNER_ADMIN_EMAILS`
+- `WHITEBOARD_ROOM_HMAC_SECRET`
+- `WHITEBOARD_TICKET_SECRET`
+- `WHITEBOARD_INTERNAL_SECRET`
+- `WHITEBOARD_IP_HASH_SALT`
 
 `OWNER_ADMIN_EMAILS` 接受逗号、分号或空白分隔的邮箱列表。Functions 只从运行时环境读取它，用于保护已经在 D1 中具有 `admin` 角色的站长账号：阻止公开抢注、后台改邮箱和降级；它不会授予管理员权限，也不是权限绕过。站长账号必须先通过受控方式在 D1 中建立并授予 `admin`。缺失时不会使用源码 fallback、不会自动提升任何账号，也不会令全站返回 503；既有 D1 角色和最后管理员原子保护仍然工作。
 
-Cloudflare Pages 预览子域名会在任何 D1 调用前关闭 `/api/*`；自定义预览域名也可设置 `PREVIEW_API_DISABLED=true`。在独立 Preview D1 配置完成前，Preview API 会 fail closed，不会读写 Production D1。
+四个画板 Secret 必须用途独立、随机且至少 32 UTF-8 bytes。Pages Functions 读取全部四个；独立画板 Worker 只读取与对应 Pages 环境相同的 `WHITEBOARD_INTERNAL_SECRET`。Preview 与 Production 使用隔离值，真实值不得写入仓库、文档或日志。
 
-常用校验命令：`npm test`、`npm run build`。项目目前未配置独立的 lint 和 typecheck 命令，不应以空命令伪装通过。正式部署仍由 GitHub `main` 触发 Cloudflare Pages 自动部署；GPTWork 不需要生产 D1 权限或 Cloudflare API Token，除非站长另行授权远程运维。
+根 `wrangler.jsonc` 提交态的 `env.preview` 固定为 `PREVIEW_API_DISABLED=true` 且 `d1_databases: []`、`r2_buckets: []`；Cloudflare Pages 预览子域名也会在任何 D1 调用前关闭 `/api/*`。因此未完成隔离配置的 Preview 会 fail closed，不会读写 Production D1/R2。只有创建并迁移独立 Preview D1、独立 R2（如需文件能力）、Preview Worker/DO namespace、精确 Origin 与独立 Secret 后，才可在经审查的 Preview 配置中绑定这些独立资源并关闭该开关。
+
+常用校验命令：`npm run lint`、`npm run typecheck`、`npm test`、`npm run whiteboard:test`、`npm run build`、`npm run build:production:verify`。标准 `npm run build` 会先执行 `scripts/build-check.mjs` 仓库守卫，全部通过后再由 `scripts/build-production.mjs` 原子生成被 Git 忽略的 `dist/`；`build:production:verify` 额外执行两次候选构建并比对清单，验证可复现性。
+
+Cloudflare Pages Git 部署必须与仓库契约保持一致：框架预设 `None`，Build command 为 `npm run build`，Build output directory 为 `dist`，Root directory 为 `/`。根 `wrangler.jsonc` 的 `pages_build_output_dir` 同样固定为 `dist`。正式部署仍由 GitHub `main` 触发 Cloudflare Pages 自动部署，不能把仓库根目录或未构建的 `tools/whiteboard/dist/*` 占位引用直接发布；画板 Durable Object Worker 必须在 Pages 使用 external binding 前单独部署。GPTWork 不需要生产 D1 权限或 Cloudflare API Token，除非站长另行授权远程运维。
 
 只有获得生产数据变更授权后，才可人工执行 `npm.cmd run d1:migrate:remote`。该命令会先应用基础 schema，再用 PRAGMA 只补旧 Chat / Transfer 表缺失的兼容列，随后创建依赖索引并分组核验；普通本地开发、测试和 CI 不得调用，也不得用删除远端 D1 的方式迁移。
 
@@ -52,15 +86,16 @@ Cloudflare Pages 预览子域名会在任何 D1 调用前关闭 `/api/*`；自�
 ## 当前状态
 
 - 首页使用 morning / day / dusk / night 四时段像素壁纸，并已接入无云底图 + 单朵独立云层的动态云层效果。
-- 公开主站使用“同一业务状态、两套呈现壳”：桌面端是 Neo-XP / Pixel Glass OS，移动端是带 App Home 和 safe-area 适配的虚拟手机系统；手机壳已移除重复的时间与 `LUSU OS` 状态行。真实毛玻璃 Dock 在 Home 与栏目 App 内持续悬浮，保留 Home、知识库、视频、资源、游戏、聊天室六个高频入口；杂谈与关于仍从 Home 图标进入。Dock 可横向滑动、切换并收起，账号和语言操作仍只在 Home。
+- 公开主站使用“同一业务状态、两套呈现壳”：桌面端是 Neo-XP / Pixel Glass OS，移动端是带 App Home 和 safe-area 适配的虚拟手机系统；手机壳已移除重复的时间与 `LUSU OS` 状态行。真实毛玻璃 Dock 在 Home 与栏目 App 内持续悬浮，保留 Home、知识库、视频、工具、游戏、聊天室六个高频入口；杂谈与关于仍从 Home 图标进入。Dock 可横向滑动、切换并收起，账号和语言操作仍只在 Home。
 - 手机知识库文章的回顶控制与固定 Appbar 已完成触控层隔离；非控件区域不会拦截回顶点击，返回、复制等真实 Appbar 控件保持可用，阅读进度只保留进度条而不重复显示栏目文字与百分比。
 - 桌面图标打开只淡入目标窗口，任务栏返回 Home 只轻滑入图标区；壁纸、顶栏和任务栏不进入这两条转场。模块间 route 只让新页面低位移淡入，旧窗口快照隐藏，不使用 3D 书页翻动、双边框叠影、整屏闪白或点击原点巨幅缩放；移动 Home 使用紧凑固定行高图标网格，真实 Dock 以共享选中底板连续滑动。
 - 知识库文章内容保存在 Cloudflare D1，正式文章需要同时维护中文 / English / 日本語 三语内容。
 - 关于我窗口提供 X、GitHub、Bilibili、Instagram、Discord 小图标入口，链接从 `GET /api/social-links` 公开只读读取。
-- `/admin/` 是独立中文管理后台，只有 `users.role = admin` 的站长账号可以访问，用于文章管理、视频管理、社交链接、访问监控、点击埋点和聊天室管理；`OWNER_ADMIN_EMAILS` 只负责保持配置账号的 D1 角色，不替代这项服务端鉴权。
+- `/admin/` 是独立中文管理后台，只有 `users.role = admin` 的站长账号可以访问，用于文章、视频、社交链接、访问监控、点击埋点、聊天室和在线画板治理；`OWNER_ADMIN_EMAILS` 只负责保持配置账号的 D1 角色，不替代这项服务端鉴权。
 - 主站访问与点击数据通过 `js/telemetry.js` 上报；不记录输入框内容、密码、未发送聊天内容或文章草稿。
 - 匿名聊天室公开侧保持纯文本渲染，后台可隐藏、恢复、删除消息，并按隐藏访客 ID 或 IP hash 禁言。
 - 游戏区只保留可在本站本地打开的静态游戏入口，不做外部跳转入口。
+- 工具区提供多人实时在线画板，支持公共房、密码房、实时鼠标与临时名字、成员列表、图片、PNG/SVG 导出、自动重连、只读状态和手机触控。
 - 工具区提供独立工具“日语的言外之意 / Behind the Japanese / 日本語の裏側”：当前应用版本 `1.0.3`、内容兼容版本 `1.0.2`，包含 5 个难度、250 个 N3–N1 潜台词训练关卡，支持纯听/日语/双语模式、逐句与词块离线语音、月历打卡、本地进度和账号云同步；每关配有响应式黑白四格场景图，维护规则见 `tools/japanese-subtext/MAINTENANCE.md`。
 
 ## 维护备注
@@ -87,6 +122,10 @@ Cloudflare Pages 预览子域名会在任何 D1 调用前关闭 `/api/*`；自�
 - 后台页面：`admin/index.html`、`admin/admin.css`、`admin/admin.js`
 - 后台访问拦截：`functions/admin/_middleware.js`
 - 后端 API：`functions/api/[[route]].js`
+- 统一匿名身份：`functions/api/anonymous-identity.mjs`、`js/features/anonymous-identity.mjs`
+- 在线画板：`tools/whiteboard/`
+- 画板房间 Worker：`workers/whiteboard/`
+- 画板架构与运维：`docs/whiteboard/README.md`
 - D1 schema：`cloudflare/schema.sql`
 - 日语潜台词训练器：`tools/japanese-subtext/`（维护与离线语音说明见其 `README.md`）
 - 项目上下文：`PROJECT_CONTEXT.md`

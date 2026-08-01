@@ -4214,6 +4214,302 @@ textarea::placeholder {
   }
 }
 
+/* 2026-07-30: multiplayer whiteboard governance panel. */
+.whiteboard-admin-stack {
+  display: grid;
+  gap: 14px;
+}
+
+.panel-head-note {
+  max-width: 760px;
+  margin: 4px 0 0;
+  color: #5f6876;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.whiteboard-overview-strip {
+  grid-template-columns: repeat(8, minmax(88px, 1fr));
+  margin-top: 12px;
+}
+
+.whiteboard-admin-grid {
+  display: grid;
+  grid-template-columns: minmax(300px, .85fr) minmax(420px, 1.3fr);
+  align-items: stretch;
+  gap: 14px;
+}
+
+.whiteboard-public-card,
+.whiteboard-room-list-card,
+.whiteboard-room-governance {
+  min-width: 0;
+}
+
+.whiteboard-status-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.whiteboard-status-grid > div {
+  min-width: 0;
+  padding: 11px 12px;
+  background: #f7f9fc;
+  border: 1px solid #dfe5ef;
+  border-radius: 8px;
+}
+
+.whiteboard-status-grid dt {
+  color: #667080;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.whiteboard-status-grid dd {
+  margin: 5px 0 0;
+  color: #202124;
+  font-size: 16px;
+  font-weight: 900;
+  overflow-wrap: anywhere;
+}
+
+.whiteboard-public-actions {
+  margin-top: 12px;
+}
+
+.whiteboard-room-list {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  max-height: 430px;
+  padding: 2px;
+  overflow: auto;
+}
+
+.whiteboard-room-item {
+  display: grid;
+  gap: 7px;
+  width: 100%;
+  min-width: 0;
+  padding: 11px 12px;
+  color: #2b3442;
+  background: #fff;
+  border: 1px solid #dfe5ef;
+  border-radius: 8px;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.whiteboard-room-item:hover {
+  background: #f7faff;
+  border-color: #b9cae5;
+}
+
+.whiteboard-room-item.active,
+.whiteboard-room-item[aria-pressed="true"] {
+  background: #eef5ff;
+  border-color: #6f9bd7;
+  box-shadow: inset 3px 0 0 #386fba;
+}
+
+.whiteboard-room-item:disabled {
+  cursor: wait;
+  opacity: .68;
+}
+
+.whiteboard-room-item-title {
+  color: #202124;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.whiteboard-room-item-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.whiteboard-detail-summary {
+  display: grid;
+  gap: 10px;
+  margin: 12px 0 14px;
+}
+
+.whiteboard-detail-strip {
+  grid-template-columns: repeat(6, minmax(92px, 1fr));
+}
+
+.whiteboard-lifecycle-note {
+  padding: 10px 12px;
+  color: #4f5968;
+  background: #f7f9fc;
+  border: 1px solid #dfe5ef;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.55;
+}
+
+.whiteboard-connection-list {
+  display: grid;
+  gap: 8px;
+}
+
+.whiteboard-connection-list h3,
+.whiteboard-connection-list ul {
+  margin: 0;
+}
+
+.whiteboard-connection-list h3 {
+  color: #293446;
+  font-size: 14px;
+}
+
+.whiteboard-connection-list ul {
+  display: grid;
+  gap: 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.whiteboard-connection-list li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  background: #f7f9fc;
+  border: 1px solid #dfe5ef;
+  border-radius: 8px;
+}
+
+.whiteboard-connection-identity {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.whiteboard-connection-identity strong,
+.whiteboard-connection-identity span {
+  overflow-wrap: anywhere;
+}
+
+.whiteboard-connection-identity span {
+  color: #5f6876;
+  font-size: 12px;
+}
+
+.whiteboard-connection-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.whiteboard-governance-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 12px;
+}
+
+.whiteboard-governance-form {
+  align-content: start;
+  min-width: 0;
+  padding: 14px;
+  background: #f9fbff;
+  border: 1px solid #dfe5ef;
+  border-radius: 9px;
+}
+
+.whiteboard-governance-form > div:first-child {
+  display: grid;
+  gap: 5px;
+}
+
+.whiteboard-governance-form h3,
+.whiteboard-governance-form p {
+  margin: 0;
+}
+
+.whiteboard-governance-form h3 {
+  color: #293446;
+  font-size: 15px;
+}
+
+.whiteboard-governance-form p {
+  color: #5f6876;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.whiteboard-governance-form button[type="submit"] {
+  justify-self: start;
+}
+
+.whiteboard-delete-menu {
+  margin-top: 14px;
+}
+
+.whiteboard-delete-menu .danger-actions-body {
+  justify-items: start;
+}
+
+#whiteboard-action-status {
+  display: block;
+  min-height: 22px;
+  margin-top: 10px;
+}
+
+@media (max-width: 1180px) {
+  .whiteboard-overview-strip {
+    grid-template-columns: repeat(4, minmax(100px, 1fr));
+  }
+
+  .whiteboard-detail-strip {
+    grid-template-columns: repeat(3, minmax(100px, 1fr));
+  }
+}
+
+@media (max-width: 920px) {
+  .whiteboard-admin-grid,
+  .whiteboard-governance-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .whiteboard-room-list {
+    max-height: none;
+  }
+
+  .whiteboard-governance-form button[type="submit"] {
+    width: 100%;
+    min-height: var(--admin-touch-target);
+  }
+
+  .whiteboard-connection-list li {
+    grid-template-columns: 1fr;
+  }
+
+  .whiteboard-connection-actions {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 560px) {
+  .whiteboard-overview-strip,
+  .whiteboard-detail-strip,
+  .whiteboard-status-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .whiteboard-public-actions .xp-button {
+    width: 100%;
+  }
+}
+
 /* 2026-07-16: interactive city analytics map. */
 .map-interaction-bar {
   display: flex;

@@ -1,13 +1,13 @@
 ---
-name: 鲁肃个人网站专用Skill
-description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用于修改项目文档、前端界面、三语文案、聊天室、游戏区、账号云存档、Cloudflare Pages Functions、D1、部署说明或长期维护规则。使用本 Skill 保持 XP Pixel Art Y2K 风格、更新 CHANGELOG 和 PROJECT_CONTEXT，并遵守项目安全与部署约束。
+name: lusu-personal-site-skill
+description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用于修改项目文档、前端界面、三语文案、聊天室、在线画板、游戏区、账号云存档、Cloudflare Pages Functions、D1、Durable Objects、R2、部署说明或长期维护规则。使用本 Skill 保持 XP Pixel Art Y2K 风格、更新 CHANGELOG 和 PROJECT_CONTEXT，并遵守项目安全与部署约束。
 ---
 
 # 鲁肃个人网站专用Skill
 
 ## 公开主站发布收口规则
 
-- 正式链路仍是仓库根目录由 GitHub `main` 触发 Cloudflare Pages；本地 `dist/` 生产构建必须保持可复现、内容哈希、白名单和 sourcemap 可定位，但不得提交产物或把它静默改成部署根。HTML、哈希资产、未哈希 CSS/JS、API/JSON 必须使用各自缓存策略，禁止用一个全局 `/*` immutable 规则覆盖。
+- 正式链路仍是仓库根目录由 GitHub `main` 触发 Cloudflare Pages；Dashboard 固定执行 `npm run build` 并发布 `dist`。标准构建必须先运行 `scripts/build-check.mjs` 守卫，再由 `scripts/build-production.mjs` 原子生成可复现、内容哈希、白名单和 sourcemap 可定位的 `dist/`；该目录是 Pages 构建输出但不得提交 Git。HTML、哈希资产、未哈希 CSS/JS、API/JSON 必须使用各自缓存策略，禁止用一个全局 `/*` immutable 规则覆盖。
 - 壁纸、窗口背景、图标或图集优化必须先匹配真实槽位与像素风轮廓，再提供 AVIF/WebP 和可靠 fallback；首屏只预加载当前主题/壳，主题切换要卸载旧动态层。同路径二进制变化也必须更新公开 query。
 - 文章、视频、游戏、社交等公开列表复用统一的有界 ETag / SWR / last-known-good 请求层；304 不重建列表，离线/短暂错误不清空成功内容，用户强制重试可绕过新鲜缓存且仍受单飞与生命周期 Abort 约束。ETag 必须覆盖完整公开响应，不能只取数据库行时间等不足以描述代码转换和关联数据的局部种子。视频封面禁止恢复无上限 base64 列表负载；同源封面代理 URL 必须带内容或行更新时间版本，后台换图与纯代码兼容修复都要能击穿旧浏览器缓存。
 - Transfer 增量同步必须使用稳定复合游标与服务端 generation，客户端键控保留节点、媒体状态、焦点和滚动；上传/发送使用幂等键、队列背压、取消/重试与 URL 清理。D1 迁移一律先 `ALTER` 补列再建依赖索引，并同时验证旧库保留数据与 fresh install。
@@ -17,6 +17,8 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 游戏目录、题库音频清单等可选远端 manifest 必须有有界超时、Abort、版本缓存和仓库内本地回退；可选网络失败不能阻塞内置内容、现有本地存档或已经加载成功的数据。日语工具的生产路径转换必须保留 manifest query 并坚持严格一次匹配，缺失或重复引用都要让构建失败。预加载的壁纸候选必须与实际 CSS 渲染使用完全相同的格式、尺寸和版本，且在首个资源请求前同步确定 reduced/off 动效状态。
 - `wrangler.jsonc` 的 compatibility date 不得超过仓库锁定 Wrangler 所带 workerd 的支持上限；当前 Wrangler `4.111.0` 使用 `2026-07-17`。日期或 Wrangler 版本变化后必须真实启动一次 `wrangler pages dev` 并请求健康、文章、404 与后台入口，静态 schema/build 通过不能替代运行时启动验证。
 - Headless 中每个独立审计场景必须用唯一 query 强制新文档，并确认 CDP 返回 `loaderId`；不要依赖 Hash-only `Page.navigate` 清空 route 模块或 30 秒内存缓存。刻意测试 SPA History、重试链或连续动效时才保留同文档。DOM 数量和交叠断言必须限定到真实场景容器；移动 App 外框可处于半透明 Dock 后方，但 composer、反馈、页脚和最后操作必须位于 Dock 上方。
+- `.codex-worktrees/` 保存其他 Codex 任务的独立 checkout，不是当前发布源码。Git 忽略、递归构建守卫和仓库密钥扫描都必须跳过该目录；发现其中旧文件导致当前构建失败时应修正扫描边界，不得删除或改写其他任务工作树来换取通过。
+- Production D1 的单条复合 `SELECT` 最多 5 项。远程迁移分组校验必须在任何写入前锁定该上限，超过时拆成多条查询；本地 SQLite 能执行更长的 `UNION ALL` 不能替代真实 D1 校验。
 
 ## 账号、文章与 Chat 稳定性规则
 
@@ -157,7 +159,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 聊天室用户内容必须纯文本渲染。
 - 不得用 `innerHTML` 插入访客昵称或消息内容。
 - 昵称和消息应使用 `textContent` 或等价安全 DOM API。
-- 前后端都要保留校验：昵称 2-16 字符，消息 1-300 字符，空消息不可发送，visitor_id 至少 3 秒 1 条。
+- 聊天室必须读取全站统一、服务端验证的匿名身份；不得继续把可编辑的 LocalStorage `visitor_id` 或自由昵称当作身份凭证。消息保持 1-300 字符，空消息不可发送，匿名身份至少 3 秒 1 条。
 - 接口单次最多返回 100 条消息。
 - 前端聊天室应保持 `after/message_id` 增量拉取：首次进入加载最近消息，有新消息时维持较快刷新，无新消息时逐步降频，窗口不在前台时暂停或降频，用户发送后立即刷新一次；不要每次重复拉最近 100 条。
 - 聊天室有两种房间：普通大厅固定 `room_key='public'`，继续用浅色 XP UI 和明文 `content`；密码房用暗色 UI，前端通过 Web Crypto 从用户密码派生 `room_key` 和 AES-GCM 密钥，只提交 `encryptedContent`，后端必须拒收密码房明文 `content`。
@@ -168,6 +170,24 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 后台聊天室治理遇到 `encrypted=1` 的消息时，只显示“密码房加密消息”占位，不提供密文内容编辑或后台解密；隐藏、删除、按隐藏用户标识 / 网络来源禁言仍可用。
 - 密码房只能称为“前端加密”或“浏览器端加密”，不要承诺绝对安全的完整 E2EE；需要说明弱密码可能被猜中，且网页端加密仍信任当前加载的站点 JS。
 - 聊天室接口涉及 D1 表 `anonymous_chat_messages`，远端上线前仍建议执行正式 D1 migration。
+
+## 在线画板与统一匿名身份规则
+
+- 在线画板只放在现有工具区，公开入口固定为 `/tools/whiteboard/`，返回工具区；不得新增、恢复或伪装“资源区”页面、入口、route 或分类。
+- 聊天室、画板及后续匿名互动必须共用 `anonymous_identities`、HttpOnly `lusu_anonymous` 凭证、永久 `anonymous_id`、临时名字与稳定颜色。服务端只保存凭证哈希；登录用户也默认使用匿名展示身份，不向其他访客泄露账号名、IP、设备或城市。
+- 跨标签改名同步只能广播不含名字、颜色、匿名 ID 或凭证的版本变化信号；聊天室和画板收到 BroadcastChannel／storage 信号或重新可见时，必须使用 HttpOnly Cookie 向服务端重新读取身份，并让已入房画板重连完成房内原子查重。不得把身份正文写入 LocalStorage。
+- 临时名字必须由安全词根组合生成并提供至少一万种结果，禁止权限冒充词与不安全内容。换名保持约 30 秒冷却和短窗次数限制；每个画板 DO 原子查重，多标签共享同一房内名字，不得显示完整匿名 ID 后缀。
+- 密码必须先 NFKC 和 trim，再由 `WHITEBOARD_ROOM_HMAC_SECRET` 做 HMAC-SHA256 稳定映射。不得把明文密码写入 URL、房间 ID、D1、LocalStorage、History、埋点、客户端日志或普通服务端日志；错误信息不得泄露房间是否已存在。
+- 画板基础绘图复用 Excalidraw，并保留其 MIT notice；协同使用 Yjs 对象级 CRDT、快照和有界增量，禁止由客户端反复上传完整画布覆盖权威状态。鼠标、选区、绘制中、焦点、暂离与在线状态只能通过 awareness 等效消息广播，不持久化。
+- 每个房间由 external binding `WHITEBOARD_ROOMS` 路由到独立 `WhiteboardRoom` Durable Object；保持 WebSocket Hibernation、SQLite-backed storage、票据 `jti` 原子消费、房间隔离、断线宽限、心跳与重连。`workers/whiteboard/wrangler.jsonc` 的 `v1` migration 和 namespace 上线后不得删除、改名或重写。
+- Pages Functions 必须配置用途独立、随机且至少 32 UTF-8 bytes 的 `WHITEBOARD_ROOM_HMAC_SECRET`、`WHITEBOARD_TICKET_SECRET`、`WHITEBOARD_INTERNAL_SECRET`、`WHITEBOARD_IP_HASH_SALT`；Worker 只读取与对应 Pages 环境相同的 `WHITEBOARD_INTERNAL_SECRET`。Preview 和 Production 均隔离真实值，任何真实值不得提交。
+- 图片只接受真实字节、尺寸、像素和容量校验后的 PNG/JPEG/WebP，保存到私有 R2 `whiteboard/v1/<roomId>/<assetId>`；画布只保存资源 ID，不长期保存大 Base64，不允许危险 SVG、HTML 或跨房读取。
+- 在线画板的入口图标、插画与装饰素材只允许使用 image2 生成并保存为项目内图片；每项素材 manifest 必须锁定 generator=image2、生成/发布尺寸、最终 SHA-256，并列出仅允许的机械 resize，守卫同时校验真实图片。不得用 CSS、Canvas、SVG 路径或代码几何拼凑素材；CSS 只承担布局、状态和响应式交互。
+- 公共房 `public-v1` 永不按空房 TTL 删除。密码房最后一条有效连接关闭或心跳超时后写 `emptySince` 与 `deleteAt = +24h`；重入取消旧 Alarm，再次为空重新计时。Alarm 必须再次检查连接、截止时间和代次，幂等清理房间 R2 前缀、D1 索引与 DO 状态，失败时重试。
+- 保留服务端人数、连接、消息、对象、文档、图片与频率上限；Origin、匿名凭证、房间票据、IP 哈希限流、跨房资源访问和异常连接都必须 fail closed。日志不得记录明文密码、完整画布、完整 IP 或公开完整匿名 ID。
+- 管理后台必须复用 `users.role = admin` 鉴权，提供概览、房间状态、容量、短错误码与去重错误／自动清理聚合计数、公共房清空／锁定、连接移除、匿名 ID／IP 哈希临时封禁及空密码房删除；默认只显示截断标识，危险操作保持确认与审计。错误指标不得保存请求载荷或画布内容。
+- 发布前执行本地 D1 migration、Lint、类型检查、全量测试、`whiteboard:test`、生产构建和跨会话／移动视口验证。获授权后先远端 D1 migration、再部署 DO Worker、核对 external binding，最后合并 `main` 触发 Pages；未完成远端检查时不得声称已经上线。
+- 回滚时先阻止新连接并回滚 Pages 入口或 binding，再部署兼容的上一版 Worker；保留 DO namespace、`v1` migration、D1 表、快照、Alarm 与 R2 数据。完整协议、限制和操作顺序以 `docs/whiteboard/README.md`、`workers/whiteboard/README.md` 和 `cloudflare/README.md` 为准。
 
 ## 游戏区规则
 
@@ -288,7 +308,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - Vercel 不再是正式部署入口。
 - Cloudflare Pages Git 自动部署不是 Wrangler 手动部署。
 - 不要把 `npx wrangler deploy` 或 `npx wrangler pages deploy .` 写成 Git 自动部署命令。
-- 如果 Cloudflare 后台要求构建设置，推荐静态站配置：框架预设 `None`，构建命令留空，构建输出目录 `/`，根目录 `/`。
+- Cloudflare Pages Dashboard 构建设置固定为：框架预设 `None`，构建命令 `npm run build`，构建输出目录 `dist`，根目录 `/`；根 `wrangler.jsonc` 的 `pages_build_output_dir` 必须同步为 `dist`。
 - `wrangler pages deploy .` 只用于本地手动应急部署。
 
 常用检查命令：
@@ -312,11 +332,11 @@ $env:XDG_CONFIG_HOME=(Join-Path (Get-Location) '.wrangler-config'); npx.cmd wran
 
 - 可复现开发基线是 Node.js 22.13+、`npm ci`、固定 Wrangler 版本和仓库中的 lockfile；不得依赖父目录 `node_modules`、本机全局包或未记录的安装步骤。
 - 本地 Pages 启动使用 `wrangler pages dev`。纯本地环境先从 `.env.example` 创建被 Git 忽略的 `.dev.vars`；GPTWork 使用平台注入的 process Secrets，不能创建会遮蔽云端值的空 `.dev.vars`。两者再执行 `npm run d1:migrate:local`，且普通开发、CI 和 GPTWork 不得连接生产 D1。
-- `DB` 是 D1 binding，不是写入 `.env.example` 的字符串变量。Cloudflare Preview 与 Production 都必须检查 `DB`，并分别配置 `CHAT_IP_HASH_SALT` 和 `ANALYTICS_IP_HASH_SALT`。
-- 两个 Secret 必须独立、随机、至少 32 字节且不能相同，不得互相 fallback、使用仓库固定值或写进代码 / 文档 / Git。运行时配置不合格时必须在任何 API 业务 D1 访问前 fail-fast，日志只记录变量名。
+- `DB` 是 D1 binding，不是写入 `.env.example` 的字符串变量。Production 必须检查 `DB` 并配置 `CHAT_IP_HASH_SALT`、`ANALYTICS_IP_HASH_SALT`、`OWNER_ADMIN_EMAILS` 和四个 `WHITEBOARD_*` 画板值；画板还要核对 external `WHITEBOARD_ROOMS` binding。根配置提交态的 Preview 必须使用 `PREVIEW_API_DISABLED=true` 和空 D1/R2 bindings；只有独立 Preview D1/R2、DO namespace、Origin 与 Secret 全部配置并迁移后才可开启，绝不复用 Production 资源。
+- 两个现有 salt 和四个画板 Secret 必须用途独立、随机、至少 32 UTF-8 bytes，不得互相 fallback、使用仓库固定值或写进代码 / 文档 / Git。Pages 读取全部四个画板 Secret，独立 Worker 只读取与对应 Pages 环境相同的 `WHITEBOARD_INTERNAL_SECRET`。运行时配置不合格时必须 fail closed，日志只记录变量名。
 - IP hash 固定使用带 `chat` / `analytics` 用途隔离的 HMAC-SHA256。聊天消息与网络来源禁言必须保存非敏感密钥代次；Secret 轮换后旧消息只供审计，服务端必须按消息编号读取当前代次目标并拒绝旧代次禁言，不能只依赖后台按钮状态，也不得恢复旧公开盐。全新库由 `cloudflare/schema.sql` 建列，代次索引放在 `cloudflare/schema-indexes.sql`；`scripts/d1-migrate-local.mjs` 和已有库的 `ensureChatSchema()` 都必须先补列再建索引。
 - 普通 GPTWork 开发不需要 `CLOUDFLARE_API_TOKEN`、生产 D1 权限、本机 TTS 配置、模型权重或参考声线。`output/`、`.wrangler/`、`.wrangler-config/`、`node_modules/` 和本地 TTS 配置不得提交。
-- CI 只执行无生产权限的 `npm ci`、本地 D1 空库初始化、`npm test`、`npm run build`。项目未真正配置 lint / typecheck 时应明确记录“未配置”，不能添加永远成功的占位命令。
+- CI 和本地 release 验证使用无生产权限的 `npm ci`、本地 D1 空库初始化、真实 `npm run lint`、`npm run typecheck`、`npm test`、`npm run whiteboard:test`、`npm run build` 与生产构建验证；不得用永远成功的占位命令替代。
 - 迁移事实和交接步骤以 `docs/GPTWORK_MIGRATION_READINESS.md`、根 `README.md` 和 `cloudflare/README.md` 为准。
 
 ## 本地开发和验证注意事项
@@ -324,6 +344,7 @@ $env:XDG_CONFIG_HOME=(Join-Path (Get-Location) '.wrangler-config'); npx.cmd wran
 - 建议使用 Node.js 22.13+；本地 Pages Functions / API 的同名变量只放在 Git 忽略的根目录 `.dev.vars`，并独立于 Production 生成。
 - `.dev.vars`、`.env`、`.env.*`、真实邮箱、Webhook URL、R2 Access Key 和其他真实密钥绝不能提交 GitHub。
 - 临时互传固定放在工具区（内部 `resources` route），不新增顶层 route、任务栏或移动 Dock。所有 API 复用 HttpOnly 会话，管理员只能由 D1 `users.role = admin` 判断。
+- 在线画板固定放在工具区并按路由懒加载；本地除 Pages 服务外还要运行 `npm run whiteboard:dev`，根 `.dev.vars` 与 Worker `.dev.vars` 的 internal secret 必须一致且只使用本地测试值。
 - 未登录用户从手机 Tools App（内部 `resources` route）打开临时互传时必须能直接到达登录操作；不能只代理点击在非 Home 路由被隐藏的 `.topbar-actions`，账号弹窗也不能留在 `display: none` 的祖先内。
 - 互传房间的消息流、上传任务和输入区必须在 359x500、375x667、390x844、430x932、844x390 及软键盘 `visualViewport` 缩小时保持可到达。手机房间保持单一 `.transfer-room` 滚动路径，composer 必须留在正常文档流，不能用 sticky / fixed 层覆盖已发送卡片；仅把 composer 改成 `position: static` 不够，竖屏房间必须使用纵向 Flex，toolbar/feed/composer/tasks 直接子项不可收缩，让消息按真实内容高度撑开，短横屏再显式恢复双栏 Grid。验收必须测量 composer 与图片、文件卡的二维交集为零，不得用嵌套滚动、过度 overscroll containment 或固定高度把登录、发送或上传操作锁在视口外。
 - 普通互传默认 95 MiB/文件并受个人、房间、频率和全站免费池的服务端限制；管理员大文件必须使用 R2 Multipart。“不限频次”不等于无限并发或突破 R2 平台/账单边界。
@@ -387,6 +408,13 @@ $env:XDG_CONFIG_HOME=(Join-Path (Get-Location) '.wrangler-config'); npx.cmd wran
   - `functions/api/[[route]].js`
   - `js/telemetry.js`
   - `cloudflare/schema.sql`
+- 在线画板关键文件：
+  - `tools/whiteboard/`
+  - `functions/api/anonymous-identity.mjs`
+  - `functions/api/whiteboard-service.mjs`
+  - `js/features/anonymous-identity.mjs`
+  - `workers/whiteboard/`
+  - `docs/whiteboard/README.md`
 
 替换这些资源后，要检查桌面端和手机端显示效果。
 ## 视频系统维护规则（2026-06-15）

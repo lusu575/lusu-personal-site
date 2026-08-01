@@ -10,8 +10,10 @@ __pycache__/
 !.env.example
 .codex-remote-attachments/
 .codex-screenshots/
+.codex-worktrees/
 .codex-wrangler-preview*.log
 .diagnostics/
+.test-tmp/
 output/
 dist/
 .production-build-*/

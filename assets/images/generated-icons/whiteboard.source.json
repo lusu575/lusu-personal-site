@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "asset": "assets/images/generated-icons/whiteboard.png",
+  "generator": "image2",
+  "generatedOutput": {
+    "width": 256,
+    "height": 256,
+    "format": "png"
+  },
+  "publishedOutput": {
+    "width": 192,
+    "height": 192,
+    "format": "png",
+    "channels": 4,
+    "hasAlpha": true,
+    "sha256": "2e6326c314578c72a8272307fa0e08ba5afb255e38487fb970f5a631b0f15da7"
+  },
+  "postProcessing": {
+    "mechanicalResizeOnly": true,
+    "codeDrawnOrComposited": false,
+    "operations": [
+      {
+        "operation": "resize",
+        "from": {
+          "width": 256,
+          "height": 256
+        },
+        "to": {
+          "width": 192,
+          "height": 192
+        },
+        "kernel": "nearest"
+      }
+    ]
+  }
+}

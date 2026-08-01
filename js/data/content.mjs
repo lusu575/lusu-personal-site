@@ -1,6 +1,36 @@
 export const content = {
   updates: [
     {
+      "article_id": "seed-update-2026-07-30-multiplayer-whiteboard",
+      "slug": "2026-07-30-multiplayer-whiteboard",
+      "category": "site-updates",
+      "tags": ["网站更新", "工具区", "在线画板", "实时协作", "匿名身份"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-07-30T08:30:00.000Z",
+      "updated_at": "2026-07-30T08:30:00.000Z",
+      "published_at": "2026-07-30T08:30:00.000Z",
+      "fallbackOnly": true,
+      "icon": "resources",
+      "date": "2026.07.30",
+      "title": {
+        "zh": "工具区多人在线画板上线",
+        "en": "Multiplayer Whiteboard Is Live in Tools",
+        "ja": "ツールに共同オンラインホワイトボードを追加"
+      },
+      "summary": {
+        "zh": "工具区新增免登录多人在线画板，支持公共与密码房、实时鼠标和临时名字、统一匿名身份、图片、PNG/SVG 导出，以及密码房无人后24小时保留。",
+        "en": "Tools now includes a sign-in-free multiplayer whiteboard with public and password rooms, live cursors and temporary names, one shared anonymous identity, images, PNG/SVG export, and 24-hour retention for empty password rooms.",
+        "ja": "ツールにログイン不要の共同ホワイトボードを追加しました。公開・パスワードルーム、リアルタイムカーソルと一時名、共通匿名ID、画像、PNG/SVG出力、空室後24時間の保持に対応します。"
+      },
+      "content_markdown": {
+        "zh": "# 工具区多人在线画板上线\n\n工具区新增可直接使用的多人实时在线画板。它不是静态演示：进入房间会恢复已有内容，多个浏览器可以同时绘制并看到彼此的彩色鼠标和临时名字，暂不显示头像。\n\n## 公共画板与密码房\n\n- 公共画板供所有访客共同使用；管理员可以锁定、解锁和清空，但不会按24小时规则删除。\n- 双方输入相同密码会进入同一隔离房间，不同密码互不可见。密码经规范化后只在服务端参与 HMAC-SHA256 映射，不写入网址、本地长期存储、数据库主键或普通日志。\n- 密码房最后一人离开后保留24小时；期间重新进入会取消清理，再次为空后从新的离开时间重新计时。\n\n## 实时协作与统一匿名身份\n\n- 画板以 Excalidraw 提供绘图功能，以 Yjs 增量更新和 Durable Objects WebSocket 维护每个房间的权威状态；刷新、断线和网络切换后会自动恢复。\n- 匿名聊天室与画板共用同一个服务端验证的匿名ID、临时名字和颜色。安全词根可组合出超过一万种名字，同一房间由服务端原子查重，换名有冷却和频率限制。\n- 鼠标、选区和在线状态只实时广播而不写入 D1；画布更新会合并并定期生成快照。\n\n## 电脑、手机、图片与导出\n\n- 电脑、平板和手机均支持绘制、文本、选择、撤销重做、缩放和平移；移动端处理安全区域、键盘、横竖屏与双指手势。\n- 图片会校验真实类型、尺寸和像素数量后保存到房间隔离的 R2 对象，画布只保留资源引用，不长期保存大段 Base64。\n- 支持导出 PNG 和 SVG，并设置连接、消息、对象、图片和房间容量上限；管理员后台可查看公共画板状态、连接与容量，处理锁定、清空、异常连接和临时封禁。",
+        "en": "# Multiplayer Whiteboard Is Live in Tools\n\nTools now includes a real-time multiplayer whiteboard that works without signing in. It restores existing room content, lets independent browsers draw together, and shows each remote participant's colored cursor and temporary name without an avatar.\n\n## Public and password rooms\n\n- The public whiteboard is shared by all visitors. Administrators can lock, unlock, or clear it, and the 24-hour deletion rule never applies to it.\n- People entering the same password reach the same isolated room, while different passwords cannot see one another. After normalization, a password is used only by the server for an HMAC-SHA256 mapping; it never enters the URL, long-term local storage, a database key, or ordinary logs.\n- A password room remains for 24 hours after its last participant leaves. Returning cancels cleanup; when it becomes empty again, a new 24-hour window begins.\n\n## Real-time collaboration and one anonymous identity\n\n- Excalidraw supplies the drawing tools, while Yjs incremental updates and Durable Objects WebSockets maintain authoritative state per room. Refreshes, disconnects, and network changes reconnect and restore safely.\n- Anonymous Chat and Whiteboard share one server-verified anonymous ID, temporary name, and color. Safe roots produce more than ten thousand name combinations, names are atomically unique within each room, and rotation has cooldown and rate limits.\n- Cursors, selections, and online state are broadcast only and never written to D1; document updates are compacted into periodic snapshots.\n\n## Desktop, mobile, images, and export\n\n- Desktop, tablet, and mobile support drawing, text, selection, undo and redo, zoom, and pan. Mobile behavior accounts for safe areas, the keyboard, orientation changes, and two-finger gestures.\n- Images are verified by real type, byte size, and pixel dimensions, then stored as room-isolated R2 objects. The canvas stores references instead of retaining large Base64 payloads.\n- PNG and SVG export are included. Connections, messages, objects, images, and room storage have bounded limits, while the admin panel exposes public-room state, connections, capacity, locking, clearing, abnormal-connection removal, and temporary bans.",
+        "ja": "# ツールに共同オンラインホワイトボードを追加\n\nツールに、ログインせず使えるリアルタイム共同ホワイトボードを追加しました。既存のルーム内容を復元し、別々のブラウザから同時に描画でき、相手の色付きカーソルと一時名を表示します。アバターは表示しません。\n\n## 公開ルームとパスワードルーム\n\n- 公開ホワイトボードは全訪問者で共有します。管理者はロック、解除、消去ができ、24時間削除の対象にはなりません。\n- 同じパスワードを入力した人は同じ隔離ルームへ入り、異なるパスワードの内容は参照できません。正規化したパスワードはサーバー側の HMAC-SHA256 マッピングだけに使い、URL、長期ローカル保存、データベースキー、通常ログには残しません。\n- パスワードルームは最後の参加者が退出してから24時間保持します。再入室すると削除予定を取り消し、再び空になった時点から新しく24時間を数えます。\n\n## リアルタイム共同編集と共通匿名ID\n\n- 描画機能は Excalidraw、増分共同編集は Yjs、ルームごとの正本状態は Durable Objects WebSocket で管理します。更新、切断、ネットワーク切替後も再接続して復元します。\n- 匿名チャットとホワイトボードは、サーバー検証済みの同じ匿名ID、一時名、色を共有します。安全な語根から1万通り以上を生成し、同室内の重複はサーバーで原子的に防ぎ、名前変更には待機時間と回数制限があります。\n- カーソル、選択、オンライン状態はリアルタイム配信だけを行い D1 へ保存せず、文書更新は定期スナップショットへ統合します。\n\n## PC・モバイル・画像・出力\n\n- PC、タブレット、スマートフォンで描画、テキスト、選択、元に戻す／やり直し、拡大縮小、移動に対応します。モバイルでは安全領域、キーボード、画面回転、二本指操作を調整します。\n- 画像は実際の形式、容量、画素数を検証してルーム単位で隔離した R2 に保存し、キャンバスには大きな Base64 ではなく参照だけを保持します。\n- PNG と SVG に出力できます。接続、メッセージ、オブジェクト、画像、ルーム容量には上限があり、管理画面から公開ルーム状態、接続数、容量、ロック、消去、異常接続の切断、一時禁止を扱えます。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-07-29-knowledge-markdown-links",
       "slug": "2026-07-29-knowledge-markdown-links",
       "category": "site-updates",

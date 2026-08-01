@@ -196,6 +196,67 @@ test("remote D1 runner is idempotent on a fresh schema and does not issue ALTER 
   }
 });
 
+test("remote D1 runner replaces the legacy whiteboard partial ban index idempotently", async () => {
+  const db = new DatabaseSync(":memory:");
+  const events = [];
+  try {
+    db.exec(schema);
+    db.exec(`
+      create unique index whiteboard_bans_active_scope_subject_idx
+        on whiteboard_bans(room_id, subject_type, subject_value)
+        where active = 1;
+      insert into whiteboard_bans (
+        ban_id, room_id, subject_type, subject_value, reason, expires_at,
+        active, created_by, created_at, updated_at
+      ) values
+        (
+          'legacy-ban-old', 'public-v1', 'anonymous_id',
+          'anonymous_target_identifier_remote', 'old', '2000-01-01T00:00:00.000Z',
+          0, 'admin', '2025-01-01T00:00:00.000Z', '2025-01-01T00:00:00.000Z'
+        ),
+        (
+          'legacy-ban-new', 'public-v1', 'anonymous_id',
+          'anonymous_target_identifier_remote', 'new', '2099-01-01T00:00:00.000Z',
+          0, 'admin', '2026-01-01T00:00:00.000Z', '2026-01-01T00:00:00.000Z'
+        );
+    `);
+
+    await migrateRemoteD1(createAdapter(db, events));
+    await migrateRemoteD1(createAdapter(db, events));
+
+    assert.equal(
+      db.prepare(`
+        select count(*) as count
+        from sqlite_master
+        where type = 'index' and name = 'whiteboard_bans_active_scope_subject_idx'
+      `).get().count,
+      0
+    );
+    assert.equal(
+      db.prepare(`
+        select count(*) as count
+        from sqlite_master
+        where type = 'index' and name = 'whiteboard_bans_scope_subject_idx'
+      `).get().count,
+      1
+    );
+    assert.deepEqual(
+      {
+        ...db.prepare(`
+          select ban_id, reason
+          from whiteboard_bans
+          where room_id = 'public-v1'
+            and subject_type = 'anonymous_id'
+            and subject_value = 'anonymous_target_identifier_remote'
+        `).get()
+      },
+      { ban_id: "legacy-ban-new", reason: "new" }
+    );
+  } finally {
+    db.close();
+  }
+});
+
 test("remote D1 runner fails closed when grouped verification is incomplete", async () => {
   const files = [];
   await assert.rejects(
@@ -210,6 +271,16 @@ test("remote D1 runner fails closed when grouped verification is incomplete", as
     /Remote D1 migration verification failed: missing-index/
   );
   assert.deepEqual(files, ["cloudflare/schema.sql", "cloudflare/schema-indexes.sql"]);
+});
+
+test("remote D1 verification groups stay within the production compound SELECT limit", () => {
+  for (const sql of REMOTE_MIGRATION_VERIFICATION_QUERIES) {
+    const terms = 1 + (sql.match(/\bunion\s+all\b/gi)?.length || 0);
+    assert.ok(terms <= 5, `verification query has ${terms} compound SELECT terms`);
+  }
+  const verificationSql = REMOTE_MIGRATION_VERIFICATION_QUERIES.join("\n");
+  assert.match(verificationSql, /whiteboard_admin_audit/);
+  assert.match(verificationSql, /whiteboard_metrics/);
 });
 
 test("the remote migration package command uses the compatibility runner without a local fallback", () => {

@@ -5,11 +5,31 @@
 - 韩国开放模型发现不再使用跨厂商的 `korean-model-releases-ko` 大型 OR。该查询在 2026-08-01 固定窗口连续触发 99+1 真实截断；正式目录现固定为 `lg-exaone-open-ko`、`lg-exaone-release-ko`、`lg-ai-research-other-ko`、`naver-hyperclova-model-releases-ko`、`upstage-solar-model-releases-ko` 五条互补查询，并已在同一窗口真实运行中分别以 26、6、10、46、13 条返回通过上限门禁。
 - 五条分片都保持韩文／韩国、`required: true`、`mustReview: true`、`coverageGroup: open-models` 和 `reviewLane: open-weight-releases`。EXAONE 的开放／权重与普通发布动作通过排除词分流，LG AI Research 其他查询显式排除 EXAONE，NAVER／HyperCLOVA 与 Upstage／Solar 各自独立。以后单条 required 查询再次真实截断时，应继续按厂商或事件动作缩窄并保留完整签收，不能把截断签成成功、跳过韩文或恢复跨厂商宽查询。
 
+## 2026-08-01 画板支线接管与本地构建隔离
+
+- `agent/multiplayer-whiteboard` 已在 Node.js 22.23.2 下同步 lockfile，并以普通 merge 合入截至 `c8abc571` 的最新 `main`（含每日 AI 新闻完整候选复核与韩国模型查询分片）；后续验证以合并后的支线为准，不能只引用原始 `a7f1f80c` 的旧测试结果。
+- `.codex-worktrees/` 是其他 Codex 任务的独立 checkout，不属于当前仓库源码。Git、构建守卫和仓库密钥扫描必须忽略该目录，避免旧工作树内容污染当前构建或产生虚假安全结果；不得通过删除其他任务工作树来让构建通过。
+- Cloudflare Production D1 对复合 `SELECT` 的上限是 5 项；远程迁移的分组校验必须在写入前检查每条查询的 `UNION ALL` 项数，并把更多校验拆成多条查询。不能因 schema／索引导入成功就忽略随后校验器的非零退出，也不能用本地 SQLite 接受更长复合查询来推断生产 D1 会接受。
+- Cloudflare 生产 D1、Durable Object Worker、Pages external binding、Secret、PR 合并和正式域名仍须按画板发布顺序逐项实际核验，本地通过不能替代远端状态。
+
 ## 2026-07-31 每日 AI 新闻完整发现审阅
 
 - 正式日报不再以 priority、聚焦查询或指定来源决定审阅边界。精确窗口内写入 `candidate_index.json` 的每个候选都必须进入 `complete-discovery-review`，并在兼容字段 `coverageAudit.priorityReview.decisions` 中恰好得到一次 `selected`、`merged` 或具体 `rejected` 处置；`priority` 只决定审阅顺序。新 manifest 使用 `priorityReviewPolicy: all-discovered-candidates`，其 `mustReviewCandidateIds` 必须等于全部 candidate index 编号。
 - 时间资格以事件当前阶段第一次由可靠来源公开的可核对时间为准；Google News、RSS 等聚合器的收录／刷新时间和 Reddit、Hacker News 等社区发帖时间都不能替代它。社区源只用于发现，候选事实与时间必须回到官网、规范原帖、可靠媒体、论文或其他一手来源核实。
 - 多模态覆盖必须独立检查 Seedance 等视频、图像和语音产品的发布、延期、开放范围、API、权重与可用性变化。每一条发现候选都要处置，不能因综合查询未标 priority、文章已有五条或来源只是可选补充而静默跳过。
+
+## 2026-07-30 工具区多人实时在线画板
+
+- 仓库已实现独立页面 `/tools/whiteboard/`，入口只属于现有**工具区**（内部兼容 route 仍为 `resources`）；返回操作回工具区，不新增或恢复“资源区”页面、入口、路由、分类或旧结构。页面无需登录，提供公共画板与自行输入相同密码进入的隔离密码房。
+- 画板前端采用 React + Excalidraw，协同层采用 Yjs 对象级 CRDT 与 awareness 等效临时状态。Pages Functions 负责统一匿名身份、密码 HMAC、Origin、短期票据、限频与管理员鉴权，再通过 external binding `WHITEBOARD_ROOMS` 把请求交给独立脚本 `lusu-whiteboard-do` 的 SQLite-backed `WhiteboardRoom` Durable Object。DO 使用 WebSocket Hibernation、压缩快照和有界增量；鼠标、选区、绘制中、焦点和暂离状态只广播，不写 D1、DO storage 或 R2。
+- 全站匿名互动统一使用 `anonymous_identities` 和 HttpOnly `lusu_anonymous` 凭证。服务端只保存凭证 SHA-256，并维护永久 `anonymous_id`、临时名字、稳定颜色、创建时间和身份版本；聊天室与画板读取同一名字和颜色，登录用户也不暴露账号名称。改名跨标签同步只广播无名字、颜色、匿名 ID 或凭证的版本变化信号，接收方必须重新请求服务端权威身份。词根笛卡尔积超过一万种，改名约 30 秒冷却并有短窗次数限制；画板房内由 DO 原子查重，多标签共享同一房内展示身份。
+- 密码先做 NFKC 与首尾空格规范化，再由 `WHITEBOARD_ROOM_HMAC_SECRET` 进行 HMAC-SHA256 映射；明文密码不进入 URL、房间 ID、D1 主键、LocalStorage、History、埋点或普通日志。WebSocket 票据通过 `Sec-WebSocket-Protocol` 传递，DO 会原子消费短期 `jti`，避免断开或休眠唤醒后的票据重放。
+- 每个房间的 Yjs 文档、快照、增量、票据消费记录和资源清单由对应 DO 保存；D1 的 `whiteboard_rooms`、`whiteboard_assets`、`whiteboard_bans`、`whiteboard_admin_audit` 只作跨房管理索引、封禁和审计。图片只接受经过真实字节类型、尺寸、像素、频率和容量校验的 PNG/JPEG/WebP，写入私有 R2 前缀 `whiteboard/v1/<roomId>/<assetId>`，画布只保留资源 ID，不长期保存大 Base64。
+- 在线画板入口使用 `assets/images/generated-icons/whiteboard.png` 的 192×192 RGBA 独立素材；该素材由 image2 生成后仅做确定性尺寸适配，`assets/images/generated-icons/whiteboard.source.json` 锁定生成/发布尺寸、最终 SHA-256 和仅机械 resize 的处理声明。在线画板后续新增或替换图标、插画、装饰等素材只能使用 image2 生成，不得用 CSS、Canvas、SVG 路径或代码几何拼凑替代；CSS 只负责布局、状态和响应式交互。
+- 公共画板固定为 `public-v1`，不执行空房 TTL；管理员可以查看状态、连接和容量，清空、切换只读、移除异常连接，并按匿名 ID 或 IP 哈希临时封禁。密码房最后一条真实连接关闭或心跳超时后写入 `emptySince` 和 `deleteAt = emptySince + 24h`；24 小时内重入会取消旧计划，再次为空从新离开时间重新计算。Alarm 清理前重新检查房型、真实连接、截止时间和代次，先幂等清理房间 R2 前缀及索引，再删除文档状态；失败时退避重试。
+- Pages 需要四个用途独立且至少 32 UTF-8 bytes 的 Secret：`WHITEBOARD_ROOM_HMAC_SECRET`、`WHITEBOARD_TICKET_SECRET`、`WHITEBOARD_INTERNAL_SECRET`、`WHITEBOARD_IP_HASH_SALT`。独立 Worker 只读取与 Pages 相同的 `WHITEBOARD_INTERNAL_SECRET`；真实值只在各环境的 Secret 配置中维护。Production external binding 指向 `WhiteboardRoom@lusu-whiteboard-do`；根配置提交态的 Preview 使用 `PREVIEW_API_DISABLED=true`、空 D1/R2 bindings，并通过独立 `workers/whiteboard/wrangler.preview.jsonc` 指向隔离的 `lusu-whiteboard-do-preview`，不得回退 Production 数据。Worker 的 `v1` migration 创建 SQLite-backed DO namespace，migration tag 和 namespace 均不得删除或改写。
+- 正确发布顺序是本地 D1/类型/Lint/测试/构建验证，获授权后远端 D1 migration，随后先部署带 `v1` migration 的 DO Worker，再核对 Pages external binding，最后合并 `main` 触发 Pages Git 部署。Pages Dashboard 固定使用框架 `None`、Build command `npm run build`、Build output directory `dist`、Root directory `/`；标准构建先跑仓库守卫，再原子生成内容哈希 `dist/`。回滚时先阻止新连接并回滚 Pages 入口／binding，再部署兼容的上一版 Worker；保留 DO namespace、`v1` migration、D1 新表和既有数据。当前文档只记录仓库实现与本地发布准备，不代表 Cloudflare Dashboard、远端迁移、生产部署或正式域名已经验证。
+- 详细协议、限制、部署和回滚步骤见 `docs/whiteboard/README.md` 与 `workers/whiteboard/README.md`；开源依赖及 MIT 许可证归属见 `tools/whiteboard/THIRD_PARTY_NOTICES.md`。
 
 ## 2026-07-30 每日 AI 新闻当天人工补发
 
@@ -218,7 +238,7 @@
 
 ## 2026-07-18 公开主站 100 项优化收口
 
-- 公开主站保留根目录 Git → Cloudflare Pages 自动部署链；`npm.cmd run build:production` 只在本地生成被 Git 忽略的 `dist/`，产物使用内容哈希文件名、可定位 sourcemap、白名单 manifest 与分层 `_headers`，不得把 `dist/` 或手动 Wrangler 发布当成新的正式部署源。
+- 公开主站保留根目录 Git → Cloudflare Pages 自动部署链；Pages Git 集成执行标准 `npm.cmd run build`，先通过 `scripts/build-check.mjs` 守卫，再由 `scripts/build-production.mjs` 原子生成被 Git 忽略的 `dist/` 部署产物。产物使用内容哈希文件名、可定位 sourcemap、白名单 manifest 与分层 `_headers`；`dist/` 是 Pages 构建输出但不提交 Git，手动 Wrangler 发布仍不是正式部署源。
 - Home 四时段桌面壁纸、动态主题层和非 Home 窗口背景提供 AVIF / WebP 响应式档位与 PNG fallback；首屏只预加载当前时段和当前壳的主图，动态图层只挂载当前主题所需节点。任何同路径位图重压缩仍需同步公开 query，不能依赖浏览器猜测内容已变化。
 - Home、顶栏、任务栏或移动 Dock 在进入业务路由之前已可见的图标，其样式必须由始终加载的主壳 CSS 所有，不得依赖 `css/routes/` 懒加载样式。Chat 的 Home 入口、标题栏、短屏头像和 Dock 必须使用同一真实资产并通过解码检查。
 - 公开列表请求统一经有界 ETag / SWR / last-known-good 缓存：304 复用缓存，短暂失败保留最后成功内容并提供可控重试，强制重试必须能绕过新鲜缓存。视频列表只返回受控封面 URL/尺寸，禁止重新内联不受限 base64 大图。
@@ -298,7 +318,7 @@
 
 ## 2026-07-16 临时互传上传、全窗拖放与视口高度修复
 
-- Pages Functions 的文件路由依赖根 `wrangler.jsonc` 中 `TRANSFER_BUCKET` R2 binding；顶层 Production 使用 `lusu-temp-transfer`。`env.preview` 必须同时重述 D1 与显式空 `r2_buckets` 等 Pages 非继承 binding，在独立 Preview 桶尚未创建时让预览文件上传安全关闭，绝不回退到正式桶。Secret 的实际值继续在 Cloudflare 的 Production / Preview 环境分别管理；所需变量名由 `.env.example` 的空声明和运行时校验维护，不写入 Pages 不支持的顶层 `secrets` 元数据。构建必须校验这套映射，避免正式环境文字房间可用但文件路由持续返回 `TRANSFER_R2_NOT_BOUND`，也避免预览部署误用正式数据。
+- Pages Functions 的文件路由依赖根 `wrangler.jsonc` 中 `TRANSFER_BUCKET` R2 binding；顶层 Production 使用 `lusu-temp-transfer`。`env.preview` 必须显式使用空 `d1_databases`、空 `r2_buckets` 与 `PREVIEW_API_DISABLED=true`，在独立 Preview 数据资源尚未创建、迁移和验收时关闭全部预览 API，绝不回退正式 D1/R2。Secret 的实际值继续在 Cloudflare 的 Production / Preview 环境分别管理；所需变量名由 `.env.example` 的空声明和运行时校验维护，不写入 Pages 不支持的顶层 `secrets` 元数据。构建必须校验这套映射，避免正式环境文字房间可用但文件路由持续返回 `TRANSFER_R2_NOT_BOUND`，也避免预览部署误用正式数据。
 - 文件拖放热区覆盖整个互传窗口，只拦截 `DataTransfer.types` 包含 `Files` 的拖放；文字或链接拖放不得被阻断。全窗提示层不接收指针事件，drop、close、blur 与 dragend 都必须清理拖放状态。
 - `r2Ready: false` 时客户端必须禁用文件选择并在排队前返回，不得生成上传进度到 100% 后才失败的任务；服务端稳定错误码继续用于诊断，公开 5xx 文案不暴露内部细节。
 - 桌面互传窗口按 `100dvh` 的可用区域伸展，消息流吃满新增空间；移动端仍由 `--mobile-viewport-height`、单一 `.transfer-room` 滚动路径和 `visualViewport` 补偿控制。此处原有 sticky composer 已由 2026-07-17 的不可收缩正常流方案取代。
@@ -461,9 +481,9 @@
 
 ## 技术栈
 
-- 前端：HTML + CSS + JavaScript
-- 后端：Cloudflare Pages Functions
-- 数据库：Cloudflare D1
+- 前端：HTML + CSS + JavaScript；在线画板独立使用 React、Excalidraw、Yjs
+- 后端：Cloudflare Pages Functions；在线画板房间权威服务使用独立 Cloudflare Durable Object Worker
+- 数据：Cloudflare D1；在线画板另使用 Durable Object SQLite 和私有 R2
 - 部署：Cloudflare Pages Git 自动部署
 - 依赖管理：npm / package-lock
 - Cloudflare CLI：Wrangler
@@ -491,7 +511,7 @@ Cloudflare Pages 项目状态：
 - 网站代码以 GitHub `main` 为源头。
 - 修改 GitHub `main` 后，Cloudflare Pages 自动同步并部署到 `lusu575.com`。
 - Vercel 不再是这个站点的正式部署入口。
-- Cloudflare Pages 构建设置建议保持静态站配置：框架预设 `None`，构建命令留空，构建输出目录 `/`，根目录 `/`。
+- Cloudflare Pages 构建设置固定为：框架预设 `None`，构建命令 `npm run build`，构建输出目录 `dist`，根目录 `/`。根 `wrangler.jsonc` 的 `pages_build_output_dir` 也必须为 `dist`。
 - `wrangler pages deploy .` 只用于本地手动应急部署，不是 GitHub 自动部署链路。
 - 每次提交 main 后，必须核对 `origin/main` 最新 commit、Cloudflare Pages 最新成功生产部署 commit、线上 `index.html` 中 CSS/JS query 版本三者一致；如果线上页面与本地不一致，优先检查资源 query、Cloudflare/浏览器缓存和最新部署状态。
 
@@ -502,6 +522,7 @@ Cloudflare Pages 项目状态：
 - 首页使用四时段像素壁纸：基础静态底图位于 `assets/images/wallpapers/`，按用户本地时间切换 morning / day / dusk / night。四个时段均已接入动态云层，分别使用 `assets/images/wallpaper-dynamic/<time>/base-clean.png` 作为无云底图，并叠加从对应原始壁纸抠出的独立透明云层；云层沿用 `wallpaper-root` / `wallpaper-stage` 舞台坐标结构，只用 CSS `transform` / `opacity` 做同一主风向下的慢速错相漂移，并支持减少动态、小屏和页面隐藏暂停降级。本地调试可用 `?wallpaper=morning` / `?wallpaper=day` / `?wallpaper=dusk` / `?wallpaper=night` 强制预览指定动态壁纸，预览模式会临时加快云层位移以便肉眼确认动画。树冠、电视雪花、小女孩、星星、水面光效等层仍作为后续动画接口保留。
 - 顶部栏和底部任务栏：保留 XP 桌面结构与原有图标，并跟随 morning / day / dusk / night 四时段切换无竖线的现代玻璃像素 HUD 色温与高光
 - 知识库、视频区、工具区、游戏区、杂谈区、匿名聊天室、关于我
+- 工具区中的多人实时在线画板：`/tools/whiteboard/`，支持公共房、密码房、实时鼠标与名字、图片、PNG/SVG 导出和移动端绘制
 - 关于我窗口含 X、GitHub、Bilibili、Instagram、Discord 五个可点击小图标入口，链接从 D1 `site_runtime_state.about_social_links` 读取，后台可维护
 - 中文 / English / 日本語 三语切换
 - 主站右上角账号入口
@@ -682,8 +703,8 @@ functions/api/[[route]].js
 当前聊天室是 XP 像素风匿名聊天室 MVP：
 
 - 未登录访客可直接发言。
-- 首次进入会按近期/已有聊天室昵称分配不重复随机昵称，随机昵称和 visitor_id 保存在 `localStorage`。
-- 支持修改昵称，历史消息保留原昵称。
+- 聊天室与在线画板共用服务端验证的全站匿名身份；高熵凭证只保存在 HttpOnly `lusu_anonymous` Cookie，D1 只保存凭证 SHA-256，浏览器不能任意修改永久 `anonymous_id`。
+- 服务端安全词根会生成超过一万种临时名字和稳定颜色；用户只能请求随机换名，约 30 秒冷却并限制短期次数，不开放自由昵称。历史消息保留发送时的名字。
 - 前端首次进入加载最近消息，后续保持 `after/message_id` 增量拉取。
 - 有新消息时继续 5 秒刷新；无新消息时逐步降到 15 秒和 30 秒；窗口不在前台时降低轮询频率；用户发送消息后立即刷新一次。
 - 聊天内容必须纯文本渲染。
@@ -770,8 +791,13 @@ D1 表：`anonymous_chat_messages`
 - `sessions`
 - `user_login_events`
 - `game_saves`
+- `anonymous_identities`
 - `anonymous_chat_messages`
 - `chat_bans`
+- `whiteboard_rooms`
+- `whiteboard_assets`
+- `whiteboard_bans`
+- `whiteboard_admin_audit`
 - `articles`
 - `article_translations`
 - `videos`
@@ -817,7 +843,9 @@ D1 表：`anonymous_chat_messages`
 │   ├── admin/
 │   │   └── _middleware.js
 │   └── api/
-│       └── [[route]].js
+│       ├── [[route]].js
+│       ├── anonymous-identity.mjs
+│       └── whiteboard-service.mjs
 ├── games/
 │   ├── catalog.json
 │   ├── game-shell.css
@@ -828,6 +856,15 @@ D1 表：`anonymous_chat_messages`
 │   ├── a-dark-room/
 │   └── life-restart/
 │       （新增游戏必须优先本地静态部署，不要只做外部跳转入口）
+├── tools/
+│   └── whiteboard/
+│       ├── index.html
+│       ├── src/
+│       └── THIRD_PARTY_NOTICES.md
+├── workers/
+│   └── whiteboard/
+│       ├── src/
+│       └── wrangler.jsonc
 ├── js/
 │   ├── main.js
 │   ├── mobile-shell.js
@@ -844,7 +881,7 @@ D1 表：`anonymous_chat_messages`
 安装依赖：
 
 ```powershell
-npm.cmd install
+npm.cmd ci
 ```
 
 本地初始化 D1：
@@ -870,6 +907,23 @@ npx.cmd wrangler d1 execute lusu_personal_site --remote --command "update users 
 
 ```powershell
 npm.cmd run dev
+```
+
+在线画板还需在另一终端启动本地 Durable Object Worker，并让根 `.dev.vars` 的四个画板 Secret 与 `workers/whiteboard/.dev.vars` 的共享 internal secret 使用独立本地测试值：
+
+```powershell
+npm.cmd run whiteboard:dev
+```
+
+提交前至少执行：
+
+```powershell
+npm.cmd run lint
+npm.cmd run typecheck
+npm.cmd test
+npm.cmd run whiteboard:test
+npm.cmd run build
+npm.cmd run build:production:verify
 ```
 
 本地访问：

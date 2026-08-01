@@ -2,7 +2,7 @@
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "lusu-personal-site",
   "compatibility_date": "2026-07-17",
-  "pages_build_output_dir": ".",
+  "pages_build_output_dir": "dist",
   "d1_databases": [
     {
       "binding": "DB",
@@ -17,17 +17,31 @@
       "bucket_name": "lusu-temp-transfer"
     }
   ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "WHITEBOARD_ROOMS",
+        "class_name": "WhiteboardRoom",
+        "script_name": "lusu-whiteboard-do"
+      }
+    ]
+  },
   "env": {
     "preview": {
-      "d1_databases": [
-        {
-          "binding": "DB",
-          "database_name": "lusu_personal_site",
-          "database_id": "55087326-4cf0-4002-8229-f202af774da4",
-          "preview_database_id": "DB"
-        }
-      ],
-      "r2_buckets": []
+      "vars": {
+        "PREVIEW_API_DISABLED": "true"
+      },
+      "d1_databases": [],
+      "r2_buckets": [],
+      "durable_objects": {
+        "bindings": [
+          {
+            "name": "WHITEBOARD_ROOMS",
+            "class_name": "WhiteboardRoom",
+            "script_name": "lusu-whiteboard-do-preview"
+          }
+        ]
+      }
     }
   }
 }

@@ -49,7 +49,9 @@ const requiredFiles = [
   "cloudflare/schema-indexes.sql",
   "functions/admin/_middleware.js",
   "functions/api/[[route]].js",
+  "functions/api/anonymous-identity.mjs",
   "functions/api/transfer-service.mjs",
+  "functions/api/whiteboard-service.mjs",
   "functions/articles/[slug].js",
   "functions/sitemap.xml.js",
   "assets/images/ui/pixel-ui-glyph-atlas.png",
@@ -57,6 +59,8 @@ const requiredFiles = [
   "assets/images/mobile-wallpapers/day.webp",
   "assets/images/mobile-wallpapers/dusk.webp",
   "assets/images/mobile-wallpapers/night.webp",
+  "assets/images/generated-icons/whiteboard.png",
+  "assets/images/generated-icons/whiteboard.source.json",
   "css/mobile-ios-shell.css",
   "css/motion-system.css",
   "css/routes/chatroom.css",
@@ -94,6 +98,7 @@ const requiredFiles = [
   "js/data/videos-content.mjs",
   "js/data/resources-content.mjs",
   "js/data/blog-content.mjs",
+  "js/features/anonymous-identity.mjs",
   "js/features/connection-status.mjs",
   "js/features/quick-transfer-loader.mjs",
   "js/transfer.js",
@@ -105,6 +110,7 @@ const requiredFiles = [
   "docs/transfer/README.md",
   "docs/transfer/ASSET_MANIFEST.md",
   "docs/transfer/dev-vars.example",
+  "docs/whiteboard/README.md",
   "docs/PUBLIC_SITE_RELEASE_QA.md",
   "workers/transfer-cleanup/index.mjs",
   "workers/transfer-cleanup/wrangler.jsonc",
@@ -116,9 +122,19 @@ const requiredFiles = [
   "scripts/public-ui-audit.mjs",
   "scripts/run-tests.mjs",
   "tests/api-failure-recovery-gate.test.mjs",
+  "tests/anonymous-identity-api.test.mjs",
   "tests/article-prerender.test.mjs",
   "tests/qa-release-contract.test.mjs",
   "tests/public-security-boundaries.test.mjs",
+  "tests/whiteboard-integration-contract.test.mjs",
+  "tests/whiteboard-service-api.test.mjs",
+  "tools/whiteboard/index.html",
+  "tools/whiteboard/whiteboard.css",
+  "tools/whiteboard/src/main.jsx",
+  "tools/whiteboard/THIRD_PARTY_NOTICES.md",
+  "workers/whiteboard/wrangler.jsonc",
+  "workers/whiteboard/src/index.ts",
+  "workers/whiteboard/THIRD_PARTY_LICENSES.md",
   "robots.txt",
   "CHANGELOG.md",
   "wrangler.jsonc"
@@ -416,6 +432,7 @@ const repositoryScanIgnoredDirectories = new Set([
   ".wrangler",
   ".wrangler-config",
   ".codex-remote-attachments",
+  ".codex-worktrees",
   "dist",
   "node_modules",
   "output"
@@ -783,6 +800,8 @@ const nodeVersion = readRequired(".nvmrc");
 const rootReadme = readRequired("README.md");
 const verifyWorkflow = readRequired(".github/workflows/verify.yml");
 const wranglerConfig = readRequired("wrangler.jsonc");
+const whiteboardWorkerWranglerConfig = readRequired("workers/whiteboard/wrangler.jsonc");
+const whiteboardIconSource = readRequired("assets/images/generated-icons/whiteboard.source.json");
 const packageJson = readRequired("package.json");
 const publicUiAuditJs = readRequired("scripts/public-ui-audit.mjs");
 const robots = readRequired("robots.txt");
@@ -793,10 +812,10 @@ const redirectsConfig = readRequired("_redirects");
 const routeLazyVersion = "20260726-security-reliability-r1";
 const trustSafetyStatusVersion = "20260726-security-reliability-r1";
 const knowledgeReaderVersion = "20260728-knowledge-archive-r1";
-const toolRadarVersion = "20260729-knowledge-markdown-links-r1";
+const whiteboardReleaseVersion = "20260730-multiplayer-whiteboard-r1";
 const routeStyleVersion = knowledgeReaderVersion;
 const publicRouteVersion = (route) => route === "knowledge"
-  ? toolRadarVersion
+  ? whiteboardReleaseVersion
   : (route === "resources" ? trustSafetyStatusVersion : routeLazyVersion);
 const transferAtlasVersion = "20260718-resource-icons-layout-r1";
 const chatroomIconVersion = "20260726-chatroom-icon-redraw-r2";
@@ -845,10 +864,10 @@ for (const route of lazyPublicRoutes) {
 }
 
 for (const [modulePath, expectedVersion] of [
-  ["./core/i18n.mjs", toolRadarVersion],
-  ["./data/home-content.mjs", toolRadarVersion],
+  ["./core/i18n.mjs", whiteboardReleaseVersion],
+  ["./data/home-content.mjs", whiteboardReleaseVersion],
   ["./features/connection-status.mjs", trustSafetyStatusVersion],
-  ["./data/resources-content.mjs", trustSafetyStatusVersion]
+  ["./data/resources-content.mjs", whiteboardReleaseVersion]
 ]) {
   const versions = assetQueryVersions(mainEntryJs, modulePath);
   if (versions.length !== 1 || versions[0] !== expectedVersion) {
@@ -2840,7 +2859,7 @@ const mobileViewportKeyboardCssVersion = routeLazyVersion;
 const publicModulesVersion = "20260726-security-reliability-r1";
 const transferLazyVersion = trustSafetyStatusVersion;
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
-const currentMainVersion = toolRadarVersion;
+const currentMainVersion = whiteboardReleaseVersion;
 const currentCssVersion = trustSafetyStatusVersion;
 const currentPreFinalTelemetryVersion = "20260623-analytics-privacy-r1";
 const currentGameShellVersion = "20260726-game-network-resilience-r1";
@@ -3547,8 +3566,8 @@ for (const [marker, pattern, message] of [
   ],
   [
     "async function ensureChatIdentity",
-    /safeStorageGet\(chatStorageKeys\.visitorId\)[\s\S]*safeStorageSet\(chatStorageKeys\.visitorId,\s*visitorId\)[\s\S]*safeStorageGet\(chatStorageKeys\.nickname\)[\s\S]*safeStorageSet\(chatStorageKeys\.nickname,\s*nickname\)/,
-    "js/main.js chat identity should use safe storage access"
+    /getAnonymousIdentity\(\{[\s\S]*fetcher:\s*identityFetch[\s\S]*chatState\.visitorId\s*=\s*anonymousClientPresenceId\(\)[\s\S]*chatState\.nickname\s*=\s*identity\.displayName[\s\S]*chatState\.identityColor\s*=\s*identity\.color/,
+    "js/routes/chatroom.mjs should use the shared server-verified anonymous identity"
   ],
   [
     "function initialLanguage",
@@ -4193,13 +4212,13 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-07-29-knowledge-markdown-links";
-const finalUpdateSlug = "2026-07-29-knowledge-markdown-links";
+const finalUpdateId = "seed-update-2026-07-30-multiplayer-whiteboard";
+const finalUpdateSlug = "2026-07-30-multiplayer-whiteboard";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Knowledge Article and Caption Links Restored";
-const finalPublishedAt = "2026-07-29T02:14:00.000Z";
+const finalTitleEn = "Multiplayer Whiteboard Is Live in Tools";
+const finalPublishedAt = "2026-07-30T08:30:00.000Z";
 const finalTranslationMinimums = {
   title: 8,
   summary: 24,
@@ -4225,6 +4244,7 @@ const changelog20260726Section = markdownSection(changelog, "## 2026-07-26");
 const changelog20260727Section = markdownSection(changelog, "## 2026-07-27");
 const changelog20260728Section = markdownSection(changelog, "## 2026-07-28");
 const changelog20260729Section = markdownSection(changelog, "## 2026-07-29");
+const changelog20260730Section = markdownSection(changelog, "## 2026-07-30");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -4398,7 +4418,7 @@ if (finalUpdateStarted) {
   }
 
   for (const token of [
-    '<time id="top-updated" datetime="2026-07-29">2026.07.29</time>',
+    '<time id="top-updated" datetime="2026-07-30">2026.07.30</time>',
     `/css/style.css?v=${finalCssVersion}`,
     `/css/mobile-ios-shell.css?v=${knowledgeReaderVersion}`,
     `/js/main.js?v=${finalMainVersion}`
@@ -4416,7 +4436,7 @@ if (finalUpdateStarted) {
     "Functions seed",
     "schema seed"
   ]) {
-    if (!changelog20260729Section.includes(token)) {
+    if (!changelog20260730Section.includes(token)) {
       fail(`CHANGELOG.md final public update sync missing ${token}`);
     }
   }
@@ -4435,6 +4455,8 @@ for (const [name, source] of [
 
 const migrationPackageData = parseJsonSource("package.json", packageJson);
 const migrationWranglerData = parseJsonSource("wrangler.jsonc", wranglerConfig);
+const whiteboardWorkerWranglerData = parseJsonSource("workers/whiteboard/wrangler.jsonc", whiteboardWorkerWranglerConfig);
+const whiteboardIconSourceData = parseJsonSource("assets/images/generated-icons/whiteboard.source.json", whiteboardIconSource);
 if (nodeVersion.trim() !== "22" || migrationPackageData.engines?.node !== ">=22.13.0") {
   fail("Node.js runtime must stay documented as version 22.13+ in .nvmrc and package.json");
 }
@@ -4443,6 +4465,12 @@ if (migrationPackageData.devDependencies?.wrangler !== "4.111.0") {
 }
 if (migrationWranglerData.compatibility_date !== "2026-07-17") {
   fail("wrangler.jsonc compatibility_date must stay within Wrangler 4.111.0 workerd support (2026-07-17)");
+}
+if (migrationPackageData.scripts?.build !== "node scripts/build-check.mjs && node scripts/build-production.mjs") {
+  fail("package.json build must run the repository guard before generating the production dist artifact");
+}
+if (migrationWranglerData.pages_build_output_dir !== "dist") {
+  fail("wrangler.jsonc pages_build_output_dir must match the generated production dist artifact");
 }
 if (migrationPackageData.scripts?.dev !== "wrangler pages dev") {
   fail("package.json dev must use wrangler pages dev and wrangler.jsonc");
@@ -4484,12 +4512,37 @@ if (transferBucketBinding?.bucket_name !== "lusu-temp-transfer" || transferBucke
   fail("wrangler.jsonc must bind the production TRANSFER_BUCKET without a local-only preview_bucket_name override");
 }
 const previewWranglerData = migrationWranglerData.env?.preview;
-const previewDatabaseBinding = previewWranglerData?.d1_databases?.find((binding) => binding.binding === "DB");
-if (previewDatabaseBinding?.database_id !== migrationWranglerData.d1_databases?.[0]?.database_id) {
-  fail("wrangler.jsonc env.preview must preserve the DB binding when overriding non-inheritable bindings");
+if (!Array.isArray(previewWranglerData?.d1_databases) || previewWranglerData.d1_databases.length !== 0) {
+  fail("wrangler.jsonc env.preview must not bind Production D1; provision an independent Preview D1 before enabling Preview API");
 }
 if (!Array.isArray(previewWranglerData?.r2_buckets) || previewWranglerData.r2_buckets.length !== 0) {
   fail("wrangler.jsonc env.preview must explicitly disable Quick Transfer R2 until a separate preview bucket is provisioned");
+}
+if (previewWranglerData?.vars?.PREVIEW_API_DISABLED !== "true") {
+  fail("wrangler.jsonc env.preview must fail closed with PREVIEW_API_DISABLED=true while Preview D1/R2 bindings are absent");
+}
+const previewWhiteboardBinding = previewWranglerData?.durable_objects?.bindings?.find((binding) => binding.name === "WHITEBOARD_ROOMS");
+if (previewWhiteboardBinding?.script_name !== "lusu-whiteboard-do-preview") {
+  fail("wrangler.jsonc env.preview must use the isolated Preview whiteboard Worker");
+}
+const productionWhiteboardOrigins = String(whiteboardWorkerWranglerData.vars?.ALLOWED_ORIGINS || "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+if (canonicalJson(productionWhiteboardOrigins) !== canonicalJson(["https://lusu575.com", "https://www.lusu575.com"])) {
+  fail("workers/whiteboard/wrangler.jsonc Production ALLOWED_ORIGINS must contain only the two production HTTPS origins");
+}
+const whiteboardIconBytes = readFileSync(resolve(root, "assets/images/generated-icons/whiteboard.png"));
+const whiteboardIconHash = createHash("sha256").update(whiteboardIconBytes).digest("hex");
+if (whiteboardIconSourceData.generator !== "image2"
+  || whiteboardIconSourceData.publishedOutput?.width !== 192
+  || whiteboardIconSourceData.publishedOutput?.height !== 192
+  || whiteboardIconSourceData.publishedOutput?.sha256 !== whiteboardIconHash
+  || whiteboardIconSourceData.postProcessing?.mechanicalResizeOnly !== true
+  || whiteboardIconSourceData.postProcessing?.codeDrawnOrComposited !== false
+  || whiteboardIconSourceData.postProcessing?.operations?.length !== 1
+  || whiteboardIconSourceData.postProcessing?.operations?.[0]?.operation !== "resize") {
+  fail("whiteboard icon source manifest must prove image2 generation, published dimensions/hash, and resize-only post-processing");
 }
 for (const unsupportedPagesField of ["observability", "secrets"]) {
   if (Object.hasOwn(migrationWranglerData, unsupportedPagesField)) {
@@ -4527,7 +4580,8 @@ for (const token of ["npm ci", ".env.example", "npm run d1:migrate:local", "npm 
   }
 }
 
-if (/wrangler\s+(?:pages\s+)?deploy/i.test(packageJson) || !packageJson.includes("Merge to GitHub main")) {
+const rootDeployScript = String(parseJsonSource("package.json", packageJson).scripts?.deploy || "");
+if (/wrangler\s+(?:pages\s+)?deploy/i.test(rootDeployScript) || !rootDeployScript.includes("Merge to GitHub main")) {
   fail("package.json deploy script should point to merge-to-main Cloudflare Pages deployment, not Wrangler manual deploy");
 }
 
