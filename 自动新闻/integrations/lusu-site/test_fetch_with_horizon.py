@@ -932,6 +932,244 @@ class DiscoveryFetchTests(unittest.IsolatedAsyncioTestCase):
 
 
 class MustReviewProvenanceTests(unittest.TestCase):
+    def test_focused_multilingual_material_changes_receive_editorial_signals(
+        self,
+    ) -> None:
+        items = [
+            SimpleNamespace(
+                title="Kimi K3 完整权重正式发布并开源",
+                summary="",
+                content="",
+                metadata={
+                    "must_review": True,
+                    "review_lanes": ["china-model-releases"],
+                },
+            ),
+            SimpleNamespace(
+                title="Claude Code update adds wider team availability",
+                summary="",
+                content="",
+                metadata={
+                    "must_review": True,
+                    "review_lanes": ["developer-product-releases"],
+                },
+            ),
+            SimpleNamespace(
+                title="OpenAI lowers ChatGPT plan price",
+                summary="",
+                content="",
+                metadata={
+                    "must_review": True,
+                    "review_lanes": ["openai-product-operations"],
+                },
+            ),
+            SimpleNamespace(
+                title="Seedance 2.5の公開を延期",
+                summary="",
+                content="",
+                metadata={
+                    "must_review": True,
+                    "review_lanes": ["bytedance-creative-models"],
+                },
+            ),
+            SimpleNamespace(
+                title="EXAONE 모델 가중치 공개",
+                summary="",
+                content="",
+                metadata={
+                    "must_review": True,
+                    "review_lanes": ["open-weight-releases"],
+                },
+            ),
+            SimpleNamespace(
+                title="Microsoft previews MAI-Realtime bidirectional voice model",
+                summary="",
+                content="",
+                metadata={
+                    "must_review": True,
+                    "review_lanes": ["voice-model-releases"],
+                },
+            ),
+        ]
+
+        MODULE.apply_editorial_signals(items)
+
+        self.assertEqual(
+            items[0].metadata["editorial_signals"],
+            [
+                "capability-availability-change",
+                "major-model-product-change",
+            ],
+        )
+        self.assertEqual(
+            items[1].metadata["editorial_signals"],
+            ["capability-availability-change", "developer-tool-change"],
+        )
+        self.assertEqual(
+            items[2].metadata["editorial_signals"],
+            ["material-price-quota-change"],
+        )
+        self.assertEqual(
+            items[3].metadata["editorial_signals"],
+            [
+                "capability-availability-change",
+                "major-model-product-change",
+            ],
+        )
+        self.assertEqual(
+            items[4].metadata["editorial_signals"],
+            [
+                "capability-availability-change",
+                "major-model-product-change",
+            ],
+        )
+        self.assertEqual(
+            items[5].metadata["editorial_signals"],
+            [
+                "capability-availability-change",
+                "major-model-product-change",
+            ],
+        )
+
+    def test_priority_topics_beyond_models_receive_deep_review_signals(
+        self,
+    ) -> None:
+        cases = [
+            (
+                "长鑫存储LPDDR6接近研发验证尾声",
+                ["china-semiconductor-breakthroughs"],
+                ["china-semiconductor"],
+                "strategic-hardware-infrastructure-change",
+            ),
+            (
+                "BYD confirms plan to unveil humanoid robot in August",
+                ["robotics-device-releases"],
+                ["robotics-devices"],
+                "strategic-hardware-infrastructure-change",
+            ),
+            (
+                "Galaxy Digital buys Texas site for AI data center campus",
+                ["data-center-infrastructure"],
+                ["data-centers"],
+                "strategic-hardware-infrastructure-change",
+            ),
+            (
+                "AI robotics startup raises $300 million Series C",
+                ["major-tech-finance"],
+                ["tech-finance"],
+                "major-tech-finance-change",
+            ),
+            (
+                "Anthropic says Claude breached companies during safety test",
+                ["complete-discovery-review"],
+                ["global-frontier"],
+                "ai-policy-safety-change",
+            ),
+            (
+                "Minnesota AI ban takes effect after judge rejects xAI bid",
+                ["complete-discovery-review"],
+                ["global-frontier"],
+                "ai-policy-safety-change",
+            ),
+        ]
+        for title, review_lanes, coverage_groups, expected_signal in cases:
+            item = SimpleNamespace(
+                title=title,
+                summary="",
+                content="",
+                metadata={
+                    "must_review": True,
+                    "review_lanes": review_lanes,
+                    "coverage_groups": coverage_groups,
+                },
+            )
+            MODULE.apply_editorial_signals([item])
+            self.assertIn(
+                expected_signal,
+                item.metadata["editorial_signals"],
+                title,
+            )
+
+    def test_media_rss_model_and_tool_releases_receive_product_signals(
+        self,
+    ) -> None:
+        items = [
+            SimpleNamespace(
+                title="阿里22B实时数字人模型开源",
+                summary="",
+                content="",
+                metadata={
+                    "must_review": True,
+                    "review_lanes": ["china-ai-media"],
+                },
+            ),
+            SimpleNamespace(
+                title="华为诺亚开源MindMemOS让Agent记忆持续进化",
+                summary="",
+                content="",
+                metadata={
+                    "must_review": True,
+                    "review_lanes": ["china-ai-media"],
+                },
+            ),
+        ]
+        MODULE.apply_editorial_signals(items)
+        self.assertIn(
+            "major-model-product-change",
+            items[0].metadata["editorial_signals"],
+        )
+        self.assertIn(
+            "capability-availability-change",
+            items[1].metadata["editorial_signals"],
+        )
+
+    def test_context_window_and_free_model_do_not_become_price_signals(
+        self,
+    ) -> None:
+        items = [
+            SimpleNamespace(
+                title="Claude increases context window availability",
+                summary="",
+                content="",
+                metadata={
+                    "must_review": True,
+                    "review_lanes": ["anthropic-products-policy"],
+                },
+            ),
+            SimpleNamespace(
+                title="Company releases free open-weight model",
+                summary="",
+                content="",
+                metadata={
+                    "must_review": True,
+                    "review_lanes": ["open-weight-releases"],
+                },
+            ),
+        ]
+        MODULE.apply_editorial_signals(items)
+        for item in items:
+            self.assertNotIn(
+                "material-price-quota-change",
+                item.metadata["editorial_signals"],
+            )
+
+    def test_generic_complete_review_lane_does_not_create_material_signal(
+        self,
+    ) -> None:
+        item = SimpleNamespace(
+            title="Company releases quarterly earnings",
+            summary="",
+            content="",
+            metadata={
+                "must_review": True,
+                "review_lanes": ["complete-discovery-review"],
+            },
+        )
+
+        MODULE.apply_editorial_signals([item])
+
+        self.assertNotIn("editorial_signals", item.metadata)
+
     def test_multilingual_must_review_usage_policy_change_is_marked(
         self,
     ) -> None:
@@ -1026,6 +1264,9 @@ class MustReviewProvenanceTests(unittest.TestCase):
         merged_item = SimpleNamespace(url=url, metadata={})
 
         MODULE.apply_query_provenance([merged_item], topic_items)
+        merged_item.metadata["editorial_signals"] = [
+            "major-model-product-change"
+        ]
         compact = MODULE.compact_candidate(
             {
                 "id": "candidate-focus",
@@ -1052,6 +1293,10 @@ class MustReviewProvenanceTests(unittest.TestCase):
                 "china-product-releases",
                 "complete-discovery-review",
             ],
+        )
+        self.assertEqual(
+            compact["editorialSignals"],
+            ["major-model-product-change"],
         )
 
     def test_priority_supplemental_candidate_is_mandatory_review(self) -> None:

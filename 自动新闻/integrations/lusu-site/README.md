@@ -23,7 +23,8 @@
 ## 固定编辑规则
 
 - 重要性低于 7 分的不写；同一事件阶段只写一次，近 30 天无实质进展的不重复。预告、正式发布、权重上线、许可证、技术报告等阶段只有出现实质新事实时才可作为 material update 再写。
-- 重大模型或产品发布、能力／可用范围变化、用量规则变化、实用开发者工具更新，以及可信且显著的价格或额度变化，都按读者实际可用性使用同一 7 分门槛；达到门槛后必须入选或并入同一事件，不能仅以“产品型”或“受众较窄”为由排除。临时促销、纯娱乐和小型维护通常不收录。
+- 重大模型或产品发布、能力／可用范围变化、用量规则变化、实用开发者工具更新、可信且显著的价格或额度变化，以及重大芯片／存储／机器人／智能设备／自动驾驶／数据中心基础设施、科技金融和 AI 监管／安全事件，都使用同一 7 分门槛；达到门槛后必须入选或并入同一事件。临时促销、纯娱乐和小型维护通常不收录。
+- Horizon 会在对应聚焦通道中为上述八类变化标注受保护的 `editorialSignals`。信号不代表必须刊发，但必须进入匹配类别深审，不能统一归成 `other + 4 分`。专用信号按用量规则、价格／额度、重大科技金融、监管／安全、芯片／基础设施的顺序优先；模型、能力和开发工具多信号候选可使用任一实际匹配的受保护类别。`below-importance-threshold` 表示确有实质变化但未达门槛，`no-material-change` 则表示没有实质变化，两者不得混用。
 - 每一条写入 candidate index 的候选都必须留下入选、合并或具体拒绝结论；`priority` 只决定审阅先后，不能缩小完整处置范围。这条规则不因来源可选、查询发生截断或本期已经选出 5 条以上而取消。视频、图像和语音模型的重大版本、上线／延期、开放范围、API 与权重变化使用独立多语言聚焦查询，不能只依赖综合模型厂商搜索。
 - TechCrunch AI、VentureBeat AI、Ars Technica AI、雷峰网和 36氪属于可选补充。Reddit 与 Hacker News 只用于早期发现；其标题、评论和发帖时间不能单独支撑正式事实或时间资格，候选必须回到官方、可靠媒体或其他一手来源核验。站长已授权把 Tibo `@thsottiaux` 的 X 帖子纳入选题；链路不再使用会返回同名医疗噪声的 Bing RSS，而是用 required 的 `codex-operations-en` 聚焦查询同时检索 Tibo 姓名、账号及 Codex／ChatGPT Work 运营变化。公开索引返回的 X、媒体和社区候选都进入完整处置范围；这不是完整登录时间线或 X API。
 - 正文固定为“今日要闻 / 主要新闻 / 传闻”三段；要闻恰好一条且已经核实，传闻单独放置并使用条件语气。
@@ -42,8 +43,9 @@
 - `ARTICLE_STYLE.md`：固定标题、栏目、事实段、AI 解读和传闻标准。
 - `AUTOMATION_PROMPT.md`：每日 Codex 任务的完整说明。
 - `MANUAL_RECOVERY.md`：仅供站长在交互任务中明确授权的当天 08:00 后人工补发说明；自动任务不得使用。
-- `validate-draft.mjs`：校验窗口、Horizon 来源、重点候选处置、重要性、三语结构和正文无外链；时间与事件阶段去重规则保持原契约。
-- `deliver-production.mjs`：读取环境或被忽略的根目录 `.dev.vars` 中的令牌；普通模式只在 07:00—08:00 投递，人工模式还需当天日期与 canonical 稿件 SHA-256 双确认；两者都要求接口确认 `published`，再只读核验 zh / en / ja 三个公开文章接口。
+- `validate-draft.mjs`：校验窗口、Horizon 来源、重点候选处置、重要性、三语结构和正文无外链；还会拒绝整批候选被归为 `other`、大量拒稿复制同一编辑类别与四项评分模板、拒稿理由与 `substantiveChange` 矛盾，或低条数二审没有列出必需复查对象的运行。
+- `network-fetch.mjs`：正式 Node 外联的统一代理感知客户端；从环境读取 `HTTP_PROXY`／`HTTPS_PROXY`／`NO_PROXY`，兼容 Clash Fake-IP 与无代理直连，且不记录代理值、凭证或投递 Token。
+- `deliver-production.mjs`：读取环境或被忽略的根目录 `.dev.vars` 中的令牌；普通模式只在 07:00—08:00 投递，人工模式还需当天日期与 canonical 稿件 SHA-256 双确认；两者都要求接口确认 `published`，再只读核验 zh / en / ja 三个公开文章接口。单次执行只发送一次 POST；公开 GET 对网络错误和指定瞬时 HTTP 最多尝试三次，正文不匹配、非瞬时状态或预算耗尽立即停止，绝不重发 POST。
 - `configure-production-channel.mjs`：一次性生成并安全保存令牌，再通过 Wrangler 远端开启 `enabled + auto_publish`。它不会显示令牌明文。
 - `deliver-local.mjs`：一次性本地草稿试投；强制关闭本地 auto-publish，结束后暂停通道并清除临时令牌。
 - `runs/`：每次运行的内部核验记录和三语稿件。
@@ -86,6 +88,7 @@ schemaVersion 4 的运行记录必须从同一次 `coverage_manifest.json` 原�
       "required": true,
       "completed": true,
       "completedAt": "<带时区时间>",
+      "reconsideredCandidateIds": ["<全部带编辑信号、RSS 或受保护 5/6 分拒稿的候选>"],
       "signedOffQueryIds": ["<再次签收全部 requiredQueryIds>"],
       "signedOffGroupIds": ["<再次签收全部 requiredGroupIds>"]
     }
@@ -93,9 +96,9 @@ schemaVersion 4 的运行记录必须从同一次 `coverage_manifest.json` 原�
 }
 ```
 
-新运行的 `priorityReview.decisions` 必须与 manifest 的 `mustReviewCandidateIds` 一一对应，也就是覆盖 candidate index 的每个候选；`priorityReview` 只是保留的 schema 字段名，不代表只审 priority。同一事件的重复来源用 `merged + representativeCandidateId`，不收录时用允许的 `rejectionReason + note`。重大模型／产品、能力／可用性、用量规则、开发工具或显著价格额度变化达到 7 分后不能拒绝。候选索引的 `editorialSignals` 会把明确的额度／时间窗口变化锁定为 `usage-policy` 或 `material-price-quota`，避免再次用统一 4 分模板淘汰；普通 token、推理内存、模型路由或性能优化不会被误标。未声明 `priorityReviewPolicy: all-discovered-candidates` 的旧 schema-v2 manifest 只作历史兼容，仍按其显式 `mustReviewCandidateIds` 范围校验；新的正式运行必须声明该政策并覆盖全部候选。
+新运行的 `priorityReview.decisions` 必须与 manifest 的 `mustReviewCandidateIds` 一一对应，也就是覆盖 candidate index 的每个候选；`priorityReview` 只是保留的 schema 字段名，不代表只审 priority。同一事件的重复来源用 `merged + representativeCandidateId`，不收录时用允许的 `rejectionReason + note`。任一受保护编辑类别的实质变化达到 7 分后不能拒绝。候选索引的 `editorialSignals` 会用独立标记覆盖上述八类变化，并把明确的额度／时间窗口变化锁定为 `usage-policy` 或 `material-price-quota`，避免再次用统一 4 分模板淘汰；普通 token、推理内存、模型路由或性能优化不会被误标。未声明 `priorityReviewPolicy: all-discovered-candidates` 的旧 schema-v2 manifest 只作历史兼容，仍按其显式 `mustReviewCandidateIds` 范围校验；新的正式运行必须声明该政策并覆盖全部候选。
 
-当入选不少于 5 条时，`secondPass.required` 和 `secondPass.completed` 都写 `false`；少于 5 条时必须按示例再次签收。这里的 5 只控制复查，不控制最终刊发数量。
+当入选不少于 5 条时，`secondPass.required` 和 `secondPass.completed` 都写 `false`；少于 5 条时必须按示例再次签收，二审时间必须晚于初审，且 `reconsideredCandidateIds` 必须至少覆盖所有带编辑信号的候选、RSS 候选和受保护类别的 5/6 分拒稿，同时允许加入任意其他索引候选。这里的 5 只控制复查，不控制最终刊发数量。
 
 ## 一次性生产通道准备
 

@@ -82,6 +82,12 @@ export function buildArticleMetadata(article, slug) {
   const title = normalizeMetaText(article.title, 180) || slug;
   const summary = normalizeMetaText(article.summary, 320) || title;
   const canonical = `${SITE_ORIGIN}/articles/${encodeURIComponent(slug)}?lang=${lang}`;
+  const alternateUrls = Object.freeze({
+    zh: `${SITE_ORIGIN}/articles/${encodeURIComponent(slug)}?lang=zh`,
+    en: `${SITE_ORIGIN}/articles/${encodeURIComponent(slug)}?lang=en`,
+    ja: `${SITE_ORIGIN}/articles/${encodeURIComponent(slug)}?lang=ja`,
+    "x-default": `${SITE_ORIGIN}/articles/${encodeURIComponent(slug)}?lang=zh`
+  });
   return {
     lang,
     htmlLang: LANGUAGE_TAGS[lang],
@@ -90,6 +96,7 @@ export function buildArticleMetadata(article, slug) {
     documentTitle: `${title} | LuSu Site`,
     summary,
     canonical,
+    alternateUrls,
     image: safeArticleImageUrl(article.cover_image),
     publishedAt: normalizeIsoDate(article.published_at || article.created_at),
     modifiedAt: normalizeIsoDate(article.updated_at || article.published_at || article.created_at)
@@ -223,6 +230,9 @@ class ArticleHeadHandler {
     const fields = [
       meta.publishedAt ? `<meta property="article:published_time" content="${escapeHtml(meta.publishedAt)}">` : "",
       meta.modifiedAt ? `<meta property="article:modified_time" content="${escapeHtml(meta.modifiedAt)}">` : "",
+      ...Object.entries(meta.alternateUrls).map(([lang, href]) => (
+        `<link rel="alternate" hreflang="${escapeHtml(lang)}" href="${escapeHtml(href)}">`
+      )),
       `<script type="application/ld+json">${jsonForHtml({
         "@context": "https://schema.org",
         "@type": "Article",
@@ -230,7 +240,18 @@ class ArticleHeadHandler {
         description: meta.summary,
         inLanguage: meta.htmlLang,
         mainEntityOfPage: meta.canonical,
+        url: meta.canonical,
         image: meta.image,
+        author: {
+          "@type": "Person",
+          name: "LuSu",
+          url: SITE_ORIGIN
+        },
+        publisher: {
+          "@type": "Organization",
+          name: "LuSu Site",
+          url: SITE_ORIGIN
+        },
         datePublished: meta.publishedAt || undefined,
         dateModified: meta.modifiedAt || undefined
       })}</script>`

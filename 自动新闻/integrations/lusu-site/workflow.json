@@ -122,7 +122,9 @@
       "signedOffQueryIds": "exactly-all-requiredQueryIds",
       "signedOffGroupIds": "exactly-all-requiredGroupIds",
       "secondPassWhen": "selected-story-count-below-5",
-      "secondPassRepeatsAllRequiredSignoffs": true
+      "secondPassRepeatsAllRequiredSignoffs": true,
+      "secondPassCompletedAt": "strictly-after-candidateIndexReviewedAt",
+      "secondPassReconsideredCandidateIds": "must-include-all-editorial-signal-candidates-plus-all-rss-candidates-plus-protected-class-score-5-or-6-rejections; additional-index-candidates-allowed"
     },
     "priorityReviewContract": {
       "decisions": [
@@ -166,6 +168,9 @@
         "usage-policy",
         "developer-tool",
         "material-price-quota",
+        "strategic-hardware-infrastructure",
+        "major-tech-finance",
+        "ai-policy-safety",
         "other"
       ],
       "protectedEditorialClasses": [
@@ -173,12 +178,50 @@
         "capability-availability",
         "usage-policy",
         "developer-tool",
-        "material-price-quota"
+        "material-price-quota",
+        "strategic-hardware-infrastructure",
+        "major-tech-finance",
+        "ai-policy-safety"
       ],
       "protectedSelectionThreshold": 7,
       "protectedAtOrAboveThreshold": "must-be-selected-or-merged",
       "protectedSelectedOrMergedRequiresSubstantiveChange": true,
       "candidateEditorialSignals": {
+        "major-model-product-change": {
+          "requiredEditorialClass": [
+            "major-model-product"
+          ]
+        },
+        "capability-availability-change": {
+          "requiredEditorialClass": [
+            "capability-availability"
+          ]
+        },
+        "developer-tool-change": {
+          "requiredEditorialClass": [
+            "developer-tool"
+          ]
+        },
+        "material-price-quota-change": {
+          "requiredEditorialClass": [
+            "material-price-quota"
+          ]
+        },
+        "strategic-hardware-infrastructure-change": {
+          "requiredEditorialClass": [
+            "strategic-hardware-infrastructure"
+          ]
+        },
+        "major-tech-finance-change": {
+          "requiredEditorialClass": [
+            "major-tech-finance"
+          ]
+        },
+        "ai-policy-safety-change": {
+          "requiredEditorialClass": [
+            "ai-policy-safety"
+          ]
+        },
         "usage-policy-change": {
           "requiredEditorialClass": [
             "usage-policy",
@@ -190,6 +233,21 @@
             "outside-editorial-scope"
           ]
         }
+      },
+      "signalCombinationPolicy": {
+        "specializedPrecedence": [
+          "usage-policy-change",
+          "material-price-quota-change",
+          "major-tech-finance-change",
+          "ai-policy-safety-change",
+          "strategic-hardware-infrastructure-change"
+        ],
+        "compatibleProductSignalClasses": [
+          "major-model-product",
+          "capability-availability",
+          "developer-tool"
+        ],
+        "rule": "highest-precedence-specialized-signal-wins; otherwise-any-present-compatible-product-class-is-allowed"
       },
       "selectedRequires": [
         "storyKey",
@@ -211,6 +269,15 @@
         "outside-editorial-scope",
         "no-material-change"
       ],
+      "rejectionSemanticRules": {
+        "below-importance-threshold": "substantiveChange-must-be-true",
+        "no-material-change": "substantiveChange-must-be-false"
+      },
+      "reviewIntegrity": {
+        "minimumCandidateCount": 50,
+        "rejectAllOtherClassification": true,
+        "rejectDominantIdenticalRejectedEditorialClassAndScoreSignatureRatio": 0.9
+      },
       "protectedCandidatesMayBeRejected": false
     },
     "lowVolumeTrigger": 5,
@@ -353,7 +420,22 @@
         "content_markdown"
       ],
       "mustFinishBeforeDeadline": true,
-      "retry": false
+      "retry": {
+        "method": "GET-only",
+        "maxAttemptsPerLanguage": 3,
+        "transientFailures": [
+          "network-error",
+          408,
+          425,
+          429,
+          500,
+          502,
+          503,
+          504
+        ],
+        "payloadMismatchRetry": false,
+        "productionPostRetry": false
+      }
     },
     "autoPublish": true,
     "schedulerEnabled": true,

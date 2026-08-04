@@ -6,6 +6,7 @@ import {
   isHistoricalOneShotWindow,
   readAndValidateRun
 } from "./validate-draft.mjs";
+import { createProxyAwareFetch } from "./network-fetch.mjs";
 import { readDeliveryToken } from "./production-secrets.mjs";
 
 const SITE_ROOT = resolve(import.meta.dirname, "..", "..", "..");
@@ -17,6 +18,9 @@ const DEADLINE_SAFETY_MARGIN_MS = 5_000;
 const MAX_RESPONSE_BYTES = 64 * 1024;
 const LANGUAGES = ["zh", "en", "ja"];
 const SHA256_PATTERN = /^[a-f0-9]{64}$/;
+const PUBLIC_READBACK_RETRY_DELAYS_MS = Object.freeze([250, 750]);
+const PUBLIC_READBACK_ATTEMPT_TIMEOUT_MS = 10_000;
+const TRANSIENT_READBACK_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);
 
 export function parseProductionArgs(argv = process.argv.slice(2)) {
   let runPath = "";
@@ -275,29 +279,85 @@ export async function verifyPublicArticleTranslations({
   endpoint,
   run,
   fetchImpl = fetch,
-  timeoutMs = REQUEST_TIMEOUT_MS
+  timeoutMs = REQUEST_TIMEOUT_MS,
+  retryDelaysMs = PUBLIC_READBACK_RETRY_DELAYS_MS,
+  perAttemptTimeoutMs = PUBLIC_READBACK_ATTEMPT_TIMEOUT_MS,
+  sleep = (delayMs) => new Promise((resolveSleep) => setTimeout(resolveSleep, delayMs))
 }) {
   const urls = publicArticleUrls(endpoint, run.delivery.slug);
-  await Promise.all(LANGUAGES.map(async (lang) => {
+  const deadlineAt = Date.now() + timeoutMs;
+  await Promise.all(LANGUAGES.map((lang) => fetchPublicArticleWithRetry({
+    url: urls[lang],
+    lang,
+    run,
+    fetchImpl,
+    deadlineAt,
+    retryDelaysMs,
+    perAttemptTimeoutMs,
+    sleep
+  })));
+}
+
+export async function fetchPublicArticleWithRetry({
+  url,
+  lang,
+  run,
+  fetchImpl,
+  deadlineAt,
+  retryDelaysMs = PUBLIC_READBACK_RETRY_DELAYS_MS,
+  perAttemptTimeoutMs = PUBLIC_READBACK_ATTEMPT_TIMEOUT_MS,
+  sleep = (delayMs) => new Promise((resolveSleep) => setTimeout(resolveSleep, delayMs))
+}) {
+  const attempts = retryDelaysMs.length + 1;
+  let lastNetworkError = "";
+
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    const remainingMs = deadlineAt - Date.now();
+    if (remainingMs <= 0) {
+      break;
+    }
+
     let response;
     try {
-      response = await fetchImpl(urls[lang], {
+      response = await fetchImpl(url, {
         method: "GET",
         headers: {
           "Accept": "application/json",
           "Cache-Control": "no-cache"
         },
-        signal: AbortSignal.timeout(timeoutMs)
+        signal: AbortSignal.timeout(Math.max(1, Math.min(perAttemptTimeoutMs, remainingMs)))
       });
     } catch (error) {
-      throw new Error(`${lang} 公开文章读取失败：${String(error?.message || error)}；不得自动重试。`);
+      lastNetworkError = String(error?.message || error);
+      if (attempt >= retryDelaysMs.length) {
+        break;
+      }
+      await sleepWithinDeadline(retryDelaysMs[attempt], deadlineAt, sleep);
+      continue;
     }
+
+    if (!response.ok
+      && TRANSIENT_READBACK_STATUSES.has(response.status)
+      && attempt < retryDelaysMs.length) {
+      await response.body?.cancel?.().catch(() => {});
+      await sleepWithinDeadline(retryDelaysMs[attempt], deadlineAt, sleep);
+      continue;
+    }
+
     const payload = await readJsonResponse(response, `${lang} 公开文章`);
     if (!response.ok) {
-      throw new Error(`${lang} 公开文章接口返回 ${response.status}；不得自动重试。`);
+      throw new Error(
+        `${lang} 公开文章接口返回 ${response.status}；生产 POST 不得自动重发。`
+      );
     }
-    validatePublicArticlePayload({ payload, lang, run });
-  }));
+    return validatePublicArticlePayload({ payload, lang, run });
+  }
+
+  const detail = lastNetworkError || "公开读取重试预算耗尽";
+  throw new Error(
+    `${lang} 公开文章读取失败：${detail}；`
+    + `已完成最多 ${attempts} 次只读 GET 尝试，生产 POST 不得自动重发。`
+  );
 }
 
 export function shanghaiDate(date = new Date()) {
@@ -335,44 +395,58 @@ async function main() {
       schedule.remainingMs - DEADLINE_SAFETY_MARGIN_MS
     );
 
-  let response;
+  const network = createProxyAwareFetch();
   try {
-    response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json",
-        "Idempotency-Key": run.delivery.idempotencyKey
-      },
-      body: JSON.stringify(run.delivery),
-      signal: AbortSignal.timeout(timeoutMs)
+    let response;
+    try {
+      response = await network.fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+          "Idempotency-Key": run.delivery.idempotencyKey
+        },
+        body: JSON.stringify(run.delivery),
+        signal: AbortSignal.timeout(timeoutMs)
+      });
+    } catch (error) {
+      throw new Error(`生产投递请求未完成：${redact(String(error?.message || error), token)}`);
+    }
+
+    const payload = await readJsonResponse(response, "生产接口");
+    validateDeliveryResponse({
+      httpStatus: response.status,
+      responseOk: response.ok,
+      payload,
+      run
     });
-  } catch (error) {
-    throw new Error(`生产投递请求未完成：${redact(String(error?.message || error), token)}`);
-  }
 
-  const payload = await readJsonResponse(response, "生产接口");
-  validateDeliveryResponse({
-    httpStatus: response.status,
-    responseOk: response.ok,
-    payload,
-    run
-  });
-
-  const verificationTimeoutMs = remainingTimeoutBeforeDeadline(schedule);
-  await verifyPublicArticleTranslations({
-    endpoint,
-    run,
-    timeoutMs: verificationTimeoutMs
-  });
-  if (schedule.deadlineAt !== null && Date.now() >= schedule.deadlineAt) {
-    throw new Error("公开核验在本次投递截止时间后才完成；不得自动重试，请人工核对文章状态。");
+    const verificationTimeoutMs = remainingTimeoutBeforeDeadline(schedule);
+    await verifyPublicArticleTranslations({
+      endpoint,
+      run,
+      fetchImpl: network.fetch,
+      timeoutMs: verificationTimeoutMs
+    });
+    if (schedule.deadlineAt !== null && Date.now() >= schedule.deadlineAt) {
+      throw new Error("公开核验在本次投递截止时间后才完成；不得自动重试，请人工核对文章状态。");
+    }
+    console.log(
+      `daily-ai-news-production-delivery: published`
+      + ` (${run.reportDate}, duplicate=${Boolean(payload.duplicate)})`
+    );
+    console.log(payload.slug);
+  } finally {
+    await network.close();
   }
-  console.log(
-    `daily-ai-news-production-delivery: published`
-    + ` (${run.reportDate}, duplicate=${Boolean(payload.duplicate)})`
-  );
-  console.log(payload.slug);
+}
+
+async function sleepWithinDeadline(delayMs, deadlineAt, sleep) {
+  const remainingMs = deadlineAt - Date.now();
+  if (remainingMs <= 1) {
+    return;
+  }
+  await sleep(Math.min(delayMs, remainingMs - 1));
 }
 
 function redact(value, secret) {

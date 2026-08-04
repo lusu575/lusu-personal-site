@@ -199,6 +199,9 @@
     "draftBehavior": "A successful draft is a valid generated-and-delivered outcome; public readback is skipped.",
     "publishedBehavior": "A successful published response requires zh/en/ja public readback.",
     "idempotencyRequired": true,
+    "networkClient": "../network-fetch.mjs",
+    "proxyEnvironmentPolicy": "Honor HTTP_PROXY, HTTPS_PROXY and NO_PROXY without logging their values or credentials.",
+    "productionPostMaxAttemptsPerExecution": 1,
     "postPublishVerificationLanguages": [
       "zh",
       "en",

@@ -1,8 +1,25 @@
 const TRAFFIC_CONTROL_STATE_KEY = "traffic_control_settings_v1";
 const TRAFFIC_CONTROL_SCHEMA_VERSION = 1;
 const TRAFFIC_CONTROL_CACHE_MS = 30 * 1000;
+const TRAFFIC_USAGE_CACHE_MS = 5 * 60 * 1000;
 const OFFICIAL_ANALYTICS_TIMEOUT_MS = 4000;
 const CLOUDFLARE_GRAPHQL_URL = "https://api.cloudflare.com/client/v4/graphql";
+const LEGACY_TRAFFIC_CONTROL_DEFAULT_JSON = JSON.stringify({
+  schemaVersion: 1,
+  analyticsEnabled: true,
+  identifyEnabled: true,
+  pageViewsEnabled: true,
+  clicksEnabled: true,
+  articleViewsEnabled: true,
+  adaptiveProtectionEnabled: true,
+  warningRows: 60000,
+  hardRows: 80000,
+  sampling: {
+    normal: { pageViews: 100, clicks: 100, articleViews: 100 },
+    warning: { pageViews: 50, clicks: 25, articleViews: 75 },
+    hard: { pageViews: 10, clicks: 0, articleViews: 25 }
+  }
+});
 
 export const DEFAULT_TRAFFIC_CONTROL_SETTINGS = Object.freeze({
   schemaVersion: TRAFFIC_CONTROL_SCHEMA_VERSION,
@@ -12,12 +29,12 @@ export const DEFAULT_TRAFFIC_CONTROL_SETTINGS = Object.freeze({
   clicksEnabled: true,
   articleViewsEnabled: true,
   adaptiveProtectionEnabled: true,
-  warningRows: 60000,
-  hardRows: 80000,
+  warningRows: 30000,
+  hardRows: 50000,
   sampling: Object.freeze({
     normal: Object.freeze({ pageViews: 100, clicks: 100, articleViews: 100 }),
-    warning: Object.freeze({ pageViews: 50, clicks: 25, articleViews: 75 }),
-    hard: Object.freeze({ pageViews: 10, clicks: 0, articleViews: 25 })
+    warning: Object.freeze({ pageViews: 25, clicks: 10, articleViews: 50 }),
+    hard: Object.freeze({ pageViews: 0, clicks: 0, articleViews: 10 })
   })
 });
 
@@ -58,6 +75,7 @@ export async function ensureTrafficControlSettings(env) {
       "select value, updated_at from site_runtime_state where key = ?"
     ).bind(TRAFFIC_CONTROL_STATE_KEY).first();
   }
+  row = await migrateLegacyTrafficControlDefaults(env, row);
 
   const value = Object.freeze({
     settings: normalizeStoredSettings(row?.value),
@@ -67,6 +85,30 @@ export async function ensureTrafficControlSettings(env) {
     settingsCache.set(cacheKey, { value, expiresAt: Date.now() + TRAFFIC_CONTROL_CACHE_MS });
   }
   return value;
+}
+
+async function migrateLegacyTrafficControlDefaults(env, row) {
+  if (String(row?.value || "") !== LEGACY_TRAFFIC_CONTROL_DEFAULT_JSON) {
+    return row;
+  }
+  const updatedAt = nextTrafficControlRevision(row?.updated_at);
+  const result = await env.DB.prepare(`
+    update site_runtime_state
+    set value = ?, updated_at = ?
+    where key = ? and value = ? and updated_at = ?
+  `).bind(
+    trafficControlDefaultJson(),
+    updatedAt,
+    TRAFFIC_CONTROL_STATE_KEY,
+    LEGACY_TRAFFIC_CONTROL_DEFAULT_JSON,
+    String(row?.updated_at || "")
+  ).run();
+  if (Number(result?.meta?.changes || 0) === 1) {
+    return { value: trafficControlDefaultJson(), updated_at: updatedAt };
+  }
+  return env.DB.prepare(
+    "select value, updated_at from site_runtime_state where key = ?"
+  ).bind(TRAFFIC_CONTROL_STATE_KEY).first();
 }
 
 export async function getTrafficControlAdminSnapshot(env) {
@@ -196,9 +238,10 @@ export async function getTrafficUsageSnapshot(env, { useCache = true } = {}) {
     loginEvents: Number(row?.login_events || 0)
   };
 
-  // One recorded page view normally follows one identify call. The coefficients
-  // include the existing D1-backed rate-limit buckets, visitor-profile upserts,
-  // raw events, and the article aggregate update. They are intentionally a
+  // The public client no longer sends a separate identify request before its
+  // first page view. These coefficients intentionally keep legacy headroom for
+  // direct identify callers, D1-backed rate-limit buckets, visitor-profile
+  // upserts, raw events, and the article aggregate update. This remains a
   // conservative site-level estimate, not a Cloudflare billing statement.
   const breakdown = [
     { key: "pageViews", label: "页面浏览与访客识别", events: counts.pageViews, rowsPerEvent: 8 },
@@ -231,7 +274,7 @@ export async function getTrafficUsageSnapshot(env, { useCache = true } = {}) {
     note: "估算只覆盖站内可识别的遥测与账号成功事件；Cloudflare 官方 rowsWritten 以官方指标区为准。"
   });
   if (cacheKey) {
-    usageCache.set(cacheKey, { value, expiresAt: Date.now() + TRAFFIC_CONTROL_CACHE_MS });
+    usageCache.set(cacheKey, { value, expiresAt: Date.now() + TRAFFIC_USAGE_CACHE_MS });
   }
   return value;
 }

@@ -1,5 +1,28 @@
 # PROJECT_CONTEXT.md
 
+## 2026-08-04 Daily AI News 代理感知投递与只读回读恢复
+
+- 8 月 4 日自动任务不是生成或落库失败：Horizon 运行 `run-20260803T230334Z-73cc08cf` 在精确窗口内取得 2,064 条候选，8 条入选、101 条 merged、1,955 条具体 rejected，正式 validator 通过；生产 POST 已收到 `daily-ai-news + published`，随后只有日文公开 GET 抛出 `fetch failed`。再次以冻结 `daily_run.json` 只读核对后，中英日三版 slug、分类、语言、标题和正文全部逐字一致，所以本期不得再走 manual recovery 或重复 POST。
+- 本机 Clash／Mihomo 使用 Fake-IP DNS，`lusu575.com` 可解析到 `198.18.0.0/15`；系统 curl／PowerShell 会通过系统代理成功，而 Node 原生 `fetch` 默认不会自动继承这条代理链。自动新闻所有正式 Node 外联必须使用 `自动新闻/integrations/lusu-site/network-fetch.mjs`：它以 Undici `EnvHttpProxyAgent` 读取大小写兼容的 `HTTP_PROXY`、`HTTPS_PROXY`、`NO_PROXY`，无值时直连。不得打印代理 URL、代理凭证或投递 Token，也不得通过修改 Clash 订阅来维持生产可用性。
+- 每日 AI 新闻生产 POST 在单次执行中严格发送一次。POST 明确返回 published 后，zh／en／ja 公开回读可分别对网络失败及 408／425／429／500／502／503／504 做最多 3 次只读 GET 尝试，且总预算不能越过自动 08:00 或人工恢复午夜截止；正文不一致、非瞬时 HTTP 或重试耗尽仍停止并标记需人工核对，绝不能再发 POST。工具雷达的生产目录、线上图片、POST 和三语回读也复用同一代理客户端，避免周更重复遭遇相同 Fake-IP 问题。
+- Undici `7.28.0` 是直接、精确锁定的生产依赖，不再依靠 Wrangler 的传递依赖。Node.js 22 验证使用官方 SHA-256 校验的 v22.23.1 便携运行时；默认系统 Node 版本不能替代发布记录中的实际运行时证据。
+
+## 2026-08-03 每日 AI 新闻编辑退化防护
+
+- 8 月 3 日短稿的直接原因不是消息源不足：Horizon 在精确窗口内输出 1,399 条候选，67 个 required query 和 11 个 required group 均签收，但编辑记录将全部候选归为 `other`，其中 1,393 条机械落在 3／4 分。线上文章与运行稿一致，因此这是分类、评分和二审退化，不是前端漏显示。
+- 新候选索引会在已知聚焦通道中，用中文、英文、日文和韩文的明确变化词标记模型／产品、能力／可用性、开发者工具、价格／额度、芯片／存储／机器人／智能设备／自动驾驶／数据中心基础设施、重大科技金融和 AI 监管／安全变化。这些信号不强制刊发，但强制候选进入与信号相符的受保护类别深审，不能用 `other + 4 分` 批量掉过。非中英日韩来源仍在全候选审阅中，这四种语言只是常用信号种子，不是来源白名单。
+- 拒稿语义现在有硬性一致性：`below-importance-threshold` 表示候选确有实质变化但读者价值低于 7 分，因此 `substantiveChange` 必须为 true；`no-material-change` 则必须为 false。对 50 条以上候选全部归为 `other`，或 90% 以上拒稿共用同一编辑类别与完整四项评分模板的运行，校验器必须关闭投递。
+- 入选少于 5 条时，二审 `completedAt` 必须严格晚于 `candidateIndexReviewedAt`；`reconsideredCandidateIds` 必须至少覆盖全部编辑信号候选、全部 RSS 候选与受保护类别的 5／6 分拒稿，也可以加入其他仍需复查的索引候选。这是防止空签收的最低复查清单，不改变“5 条仅触发复审、不强制凑数”的长期规则。本次修复只改工作流与本地校验，没有自动改写线上历史日报。
+
+## 2026-08-02 免费额度余量、搜索发现与生产监控
+
+- 当前流量策略优先保护必要业务：默认站内 D1 估算在 30,000 行进入预警、50,000 行进入硬保护；正常档页面／点击／文章采样均为 100%，预警档为 25%／10%／50%，硬保护档为 0%／0%／10%。这组阈值为当前 100,000 rows-written／UTC 日免费额度预留至少一半余量；实际官方用量只在只读 Cloudflare Analytics 连接成功后展示，站内估算不得冒充账单。仅精确等于 2026-08-01 旧默认 JSON 的存量配置自动迁移，任何管理员自定义值保持不变。
+- 公开 telemetry 的 page view 已经建立匿名 cookie、身份行和访客资料，因此首访不得再串行调用单独 identify；同一目标一秒内的重复 click 由浏览器抑制，服务端原有采样、限频与去重继续作为可信边界。公共遥测保护判定复用最多 5 分钟的站内用量快照，减少反复读取当天事件；后台人工面板继续每 30 秒强制获取新快照。180 天有界后台清理必须独立覆盖 page view、click 和 article view，单表异常不能阻止其他表尝试清理。
+- `sitemap.xml` 是固定 canonical 资产：origin 为 `https://lusu575.com`，首页 `lastmod` 来自最新已发布内容，首页／日语工具／公开文章均输出 zh、en、ja 和 x-default alternate。`/articles/<slug>` 的边缘 HTML 同步输出这组 alternate，并在 Article JSON-LD 中给出文章 URL、Person 作者和 Organization 发布者。
+- 仓库包含低流量生产冒烟脚本与 GitHub workflow：在主线 `Verify` 成功后及每 12 小时检查 `/api/health`、Home、sitemap、一个文章直达页和一个哈希静态资产；使用超时、有界重试和并发取消，不通过高频探测消耗免费额度。该 workflow 只有提交到 GitHub 后才会运行；未实测生产不得声称监控已生效。
+- `www` 到 apex 的永久跳转不能由 Pages Functions 之前的 `_redirects` 可靠替代，仍列为 Cloudflare Dashboard 配置与验收项；Cloudflare Web Analytics／RUM 也必须在 Dashboard 实际启用并取得真实数据后才能声称完成。当前环境没有可用 Chrome DevTools 性能 MCP，因此本次只完成代码、合同测试和低频线上探针，不把静态审计冒充真实 Core Web Vitals trace。
+- 本批公开记录为 `seed-update-2026-08-02-traffic-discovery-monitoring`，公开／API 表示版本与文章 seed 标记为 `20260802-traffic-discovery-monitoring-r1`；Home 继续只投影最新五条且不带正文，顶部最近更新日期为 2026-08-02。后台 JS query 独立为 `20260802-traffic-budget-r1`，未变化的后台 CSS 保持原 query。
+
 ## 2026-08-01 画板 v1.0.2 安静同步与空房休眠
 
 - 公共画板和所有密码房显式共用同一个 `ALL_ROOM_SKETCH_APP_STATE`：暖白纸、石墨线、hachure、roughness 2、92% 不透明度。当前没有按房型分支的第二主题；用户仍可修改颜色、线宽和工具。

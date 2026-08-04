@@ -42,6 +42,9 @@ const PRIORITY_EDITORIAL_CLASSES = new Set([
   "usage-policy",
   "developer-tool",
   "material-price-quota",
+  "strategic-hardware-infrastructure",
+  "major-tech-finance",
+  "ai-policy-safety",
   "other"
 ]);
 const PROTECTED_PRIORITY_EDITORIAL_CLASSES = new Set([
@@ -49,15 +52,27 @@ const PROTECTED_PRIORITY_EDITORIAL_CLASSES = new Set([
   "capability-availability",
   "usage-policy",
   "developer-tool",
-  "material-price-quota"
+  "material-price-quota",
+  "strategic-hardware-infrastructure",
+  "major-tech-finance",
+  "ai-policy-safety"
 ]);
 const USAGE_POLICY_EDITORIAL_CLASSES = new Set([
   "usage-policy",
   "material-price-quota"
 ]);
 const USAGE_POLICY_CHANGE_SIGNAL = "usage-policy-change";
+const MAJOR_MODEL_CHANGE_SIGNAL = "major-model-product-change";
+const CAPABILITY_AVAILABILITY_CHANGE_SIGNAL = "capability-availability-change";
+const DEVELOPER_TOOL_CHANGE_SIGNAL = "developer-tool-change";
+const MATERIAL_PRICE_QUOTA_CHANGE_SIGNAL = "material-price-quota-change";
+const STRATEGIC_TECH_CHANGE_SIGNAL = "strategic-hardware-infrastructure-change";
+const MAJOR_TECH_FINANCE_CHANGE_SIGNAL = "major-tech-finance-change";
+const AI_POLICY_SAFETY_CHANGE_SIGNAL = "ai-policy-safety-change";
 const PRIORITY_REVIEW_POLICY = "all-discovered-candidates";
 const PRIORITY_DISCOVERY_REVIEW_LANE = "complete-discovery-review";
+const DEGENERATE_REVIEW_MIN_CANDIDATES = 50;
+const DEGENERATE_SCORE_TEMPLATE_RATIO = 0.9;
 const PRIORITY_REJECTION_REASONS = new Set([
   "insufficient-evidence",
   "below-importance-threshold",
@@ -322,7 +337,8 @@ function validateCoverageAudit(audit, selectedCount, errors) {
     errors.push("schemaVersion 4 正式运行必须提供 coverageAudit。");
     return;
   }
-  if (parseTimestamp(audit.candidateIndexReviewedAt) === null) {
+  const candidateIndexReviewedAt = parseTimestamp(audit.candidateIndexReviewedAt);
+  if (candidateIndexReviewedAt === null) {
     errors.push("coverageAudit 缺少有效的 candidateIndexReviewedAt。");
   }
   if (!SHA256_PATTERN.test(String(audit.candidateIndexSha256 || ""))) {
@@ -358,8 +374,12 @@ function validateCoverageAudit(audit, selectedCount, errors) {
     if (secondPass.completed !== true) {
       errors.push(`入选少于 ${LOW_VOLUME_TRIGGER} 条时必须完成 coverageAudit.secondPass。`);
     }
-    if (parseTimestamp(secondPass.completedAt) === null) {
+    const secondPassCompletedAt = parseTimestamp(secondPass.completedAt);
+    if (secondPassCompletedAt === null) {
       errors.push("二次覆盖审阅缺少有效的 completedAt。");
+    } else if (candidateIndexReviewedAt !== null
+      && secondPassCompletedAt <= candidateIndexReviewedAt) {
+      errors.push("二次覆盖审阅 completedAt 必须严格晚于初审 candidateIndexReviewedAt。");
     }
     validateSignoffIds(
       secondPass.signedOffQueryIds,
@@ -1021,6 +1041,16 @@ function validatePriorityReviewProvenance({ run, manifest, indexItems }) {
         `${label} 已被候选索引标记为用量／限额规则变化，editorialClass 必须是 usage-policy 或 material-price-quota。`
       );
     }
+    const signalEditorialClasses = editorialClassesForSignals(
+      candidateEditorialSignals
+    );
+    if (signalEditorialClasses
+      && !signalEditorialClasses.has(editorialClass)) {
+      throw new Error(
+        `${label} 的 editorialSignals 要求映射到 ${[...signalEditorialClasses].join(" 或 ")}，`
+        + `不得统一归为 ${editorialClass || "空类型"}。`
+      );
+    }
     const protectedEditorialClass = PROTECTED_PRIORITY_EDITORIAL_CLASSES.has(
       editorialClass
     );
@@ -1076,6 +1106,19 @@ function validatePriorityReviewProvenance({ run, manifest, indexItems }) {
       if (!note) {
         throw new Error(`${label}.note 必须具体说明拒绝依据。`);
       }
+      if (rejectionReason === "below-importance-threshold"
+        && entry.substantiveChange !== true) {
+        throw new Error(
+          `${label} 使用 below-importance-threshold 时 substantiveChange 必须为 true；`
+          + "它表示确有实质变化，但重要性评分未过门槛。"
+        );
+      }
+      if (rejectionReason === "no-material-change"
+        && entry.substantiveChange !== false) {
+        throw new Error(
+          `${label} 使用 no-material-change 时 substantiveChange 必须为 false。`
+        );
+      }
       if (usagePolicyChange
         && [
           "below-importance-threshold",
@@ -1088,8 +1131,8 @@ function validatePriorityReviewProvenance({ run, manifest, indexItems }) {
       }
       if (protectedEditorialClass && scoreTotal >= 7) {
         throw new Error(
-          `重点候选 ${candidateId} 属于重大模型／产品、能力／可用性、用量规则、`
-          + "开发工具或显著价格额度变化，评分达到 7 分后不得拒绝。"
+          `重点候选 ${candidateId} 属于受保护的重要变化类别，`
+          + "评分达到 7 分后不得拒绝。"
         );
       }
     }
@@ -1097,11 +1140,24 @@ function validatePriorityReviewProvenance({ run, manifest, indexItems }) {
     decisionsByCandidateId.set(candidateId, entry);
   }
 
+  if (manifest.priorityReviewPolicy === PRIORITY_REVIEW_POLICY) {
+    validateNonDegeneratePriorityReview(priorityReview.decisions);
+  }
+
   if (!sameStringSet(
     mustReviewCandidateIds,
     [...decisionsByCandidateId.keys()]
   )) {
     throw new Error("coverageAudit.priorityReview 必须对每个 must-review 重点候选恰好处置一次。");
+  }
+
+  if (manifest.priorityReviewPolicy === PRIORITY_REVIEW_POLICY
+    && run.selection.selectedStoryKeys.length < LOW_VOLUME_TRIGGER) {
+    validateSecondPassReconsideredCandidates({
+      run,
+      indexItems,
+      decisionsByCandidateId
+    });
   }
   const mustReviewCandidateIdSet = new Set(mustReviewCandidateIds);
   const selectedStoriesRequiringPriorityDisposition = [
@@ -1160,6 +1216,115 @@ function validatePriorityReviewProvenance({ run, manifest, indexItems }) {
         `代表候选 ${representativeCandidateId} 的 sourceCandidateIds 必须包含并入候选 ${candidateId}。`
       );
     }
+  }
+}
+
+function editorialClassesForSignals(signals) {
+  const values = new Set(signals);
+  if (values.has(USAGE_POLICY_CHANGE_SIGNAL)) {
+    return new Set(USAGE_POLICY_EDITORIAL_CLASSES);
+  }
+  if (values.has(MATERIAL_PRICE_QUOTA_CHANGE_SIGNAL)) {
+    return new Set(["material-price-quota"]);
+  }
+  if (values.has(MAJOR_TECH_FINANCE_CHANGE_SIGNAL)) {
+    return new Set(["major-tech-finance"]);
+  }
+  if (values.has(AI_POLICY_SAFETY_CHANGE_SIGNAL)) {
+    return new Set(["ai-policy-safety"]);
+  }
+  if (values.has(STRATEGIC_TECH_CHANGE_SIGNAL)) {
+    return new Set(["strategic-hardware-infrastructure"]);
+  }
+  const compatibleProductClasses = new Set();
+  if (values.has(DEVELOPER_TOOL_CHANGE_SIGNAL)) {
+    compatibleProductClasses.add("developer-tool");
+  }
+  if (values.has(MAJOR_MODEL_CHANGE_SIGNAL)) {
+    compatibleProductClasses.add("major-model-product");
+  }
+  if (values.has(CAPABILITY_AVAILABILITY_CHANGE_SIGNAL)) {
+    compatibleProductClasses.add("capability-availability");
+  }
+  return compatibleProductClasses.size ? compatibleProductClasses : null;
+}
+
+export function validateNonDegeneratePriorityReview(decisions) {
+  if (decisions.length < DEGENERATE_REVIEW_MIN_CANDIDATES) {
+    return;
+  }
+  if (decisions.every((entry) => String(entry?.editorialClass) === "other")) {
+    throw new Error(
+      "priorityReview 审稿退化：候选量充足但全部被统一标为 other，必须重新分类审阅。"
+    );
+  }
+
+  const rejected = decisions.filter((entry) => entry?.decision === "rejected");
+  if (rejected.length < DEGENERATE_REVIEW_MIN_CANDIDATES) {
+    return;
+  }
+  const scoreTemplates = new Map();
+  for (const entry of rejected) {
+    const score = entry.score;
+    const key = [
+      entry.editorialClass,
+      score?.reach,
+      score?.magnitude,
+      score?.practicalValue,
+      score?.evidence,
+      score?.total
+    ].join("/");
+    scoreTemplates.set(key, (scoreTemplates.get(key) || 0) + 1);
+  }
+  const largestTemplateCount = Math.max(...scoreTemplates.values());
+  if (largestTemplateCount / rejected.length >= DEGENERATE_SCORE_TEMPLATE_RATIO) {
+    throw new Error(
+      "priorityReview 审稿退化：至少 90% 的拒稿使用完全相同的编辑类别与四项评分模板，必须逐条重审。"
+    );
+  }
+}
+
+function validateSecondPassReconsideredCandidates({
+  run,
+  indexItems,
+  decisionsByCandidateId
+}) {
+  const reconsidered = run.coverageAudit?.secondPass?.reconsideredCandidateIds;
+  if (!Array.isArray(reconsidered)) {
+    throw new Error(
+      "少于 5 条时 secondPass.reconsideredCandidateIds 必须是数组。"
+    );
+  }
+  const reconsideredIds = reconsidered.map(String);
+  const indexIds = new Set(indexItems.map((item) => String(item?.id || "")));
+  if (new Set(reconsideredIds).size !== reconsideredIds.length
+    || reconsideredIds.some((candidateId) => !indexIds.has(candidateId))) {
+    throw new Error(
+      "secondPass.reconsideredCandidateIds 含有重复或不在候选索引中的编号。"
+    );
+  }
+
+  const expected = new Set();
+  for (const item of indexItems) {
+    const candidateId = String(item?.id || "");
+    if (stringArray(item?.editorialSignals).length > 0
+      || String(item?.sourceType || "").toLowerCase() === "rss") {
+      expected.add(candidateId);
+    }
+  }
+  for (const [candidateId, decision] of decisionsByCandidateId) {
+    const total = Number(decision?.score?.total);
+    if (decision?.decision === "rejected"
+      && PROTECTED_PRIORITY_EDITORIAL_CLASSES.has(
+      String(decision?.editorialClass || "")
+    ) && (total === 5 || total === 6)) {
+      expected.add(candidateId);
+    }
+  }
+  if ([...expected].some((candidateId) => !reconsideredIds.includes(candidateId))) {
+    throw new Error(
+      "secondPass.reconsideredCandidateIds 必须至少覆盖全部 editorialSignals 候选、RSS 候选和 protected 5/6 分拒稿。"
+    );
   }
 }
 

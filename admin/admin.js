@@ -195,6 +195,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
   {
+    date: "2026-08-02",
+    title: "免费额度安全余量加固",
+    body: "流量保护默认阈值收紧为 30,000 / 50,000 估算行：达到预警后页面、点击、文章采样降为 25% / 10% / 50%，硬保护后降为 0% / 0% / 10%，为登录、云存档、聊天室、互传和在线画板等必要业务保留至少一半 D1 免费写入余量。只有仍等于旧默认值的策略会自动迁移，管理员自定义设置保持不变；公开页同时取消重复的访客识别请求并在浏览器侧抑制一秒内的同目标重复点击。后台脚本版本更新为 20260802-traffic-budget-r1。"
+  },
+  {
     date: "2026-08-01",
     title: "流量与 D1 写入保护面板",
     body: "数据分析新增“流量与写入”面板：每 30 秒刷新站内遥测写入压力、分项估算、UTC 重置时间和保护状态；可保存总开关、访客识别／页面／点击／文章采集开关、预警与硬保护阈值，以及正常／预警／硬保护三档采样率。默认采用 60,000 / 80,000 估算行阈值，只降低非必要遥测，不会自动关闭登录、云存档、聊天室、互传或在线画板。Cloudflare 官方 rowsWritten 需要单独的只读 Analytics Token，未配置时明确显示“未连接”，不会把估算冒充账单。"
@@ -2087,23 +2092,23 @@ const TRAFFIC_CONTROL_FALLBACK_DEFAULTS = Object.freeze({
   clicksEnabled: true,
   articleViewsEnabled: true,
   adaptiveProtectionEnabled: true,
-  warningRows: 60000,
-  hardRows: 80000,
+  warningRows: 30000,
+  hardRows: 50000,
   sampling: Object.freeze({
     normal: Object.freeze({ pageViews: 100, clicks: 100, articleViews: 100 }),
-    warning: Object.freeze({ pageViews: 50, clicks: 25, articleViews: 75 }),
-    hard: Object.freeze({ pageViews: 10, clicks: 0, articleViews: 25 })
+    warning: Object.freeze({ pageViews: 25, clicks: 10, articleViews: 50 }),
+    hard: Object.freeze({ pageViews: 0, clicks: 0, articleViews: 10 })
   })
 });
 
 const TRAFFIC_CONTROL_LOW_WRITE_PRESET = Object.freeze({
   ...TRAFFIC_CONTROL_FALLBACK_DEFAULTS,
-  warningRows: 40000,
-  hardRows: 60000,
+  warningRows: 20000,
+  hardRows: 35000,
   sampling: Object.freeze({
-    normal: Object.freeze({ pageViews: 75, clicks: 50, articleViews: 75 }),
-    warning: Object.freeze({ pageViews: 25, clicks: 10, articleViews: 50 }),
-    hard: Object.freeze({ pageViews: 5, clicks: 0, articleViews: 10 })
+    normal: Object.freeze({ pageViews: 50, clicks: 25, articleViews: 75 }),
+    warning: Object.freeze({ pageViews: 10, clicks: 0, articleViews: 25 }),
+    hard: Object.freeze({ pageViews: 0, clicks: 0, articleViews: 0 })
   })
 });
 

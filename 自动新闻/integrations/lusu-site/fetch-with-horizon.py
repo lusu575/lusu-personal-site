@@ -115,6 +115,171 @@ USAGE_POLICY_CHANGE_RE = re.compile(
     re.IGNORECASE,
 )
 
+EDITORIAL_SIGNAL_MAJOR_MODEL = "major-model-product-change"
+EDITORIAL_SIGNAL_CAPABILITY = "capability-availability-change"
+EDITORIAL_SIGNAL_DEVELOPER_TOOL = "developer-tool-change"
+EDITORIAL_SIGNAL_PRICE_QUOTA = "material-price-quota-change"
+EDITORIAL_SIGNAL_STRATEGIC_TECH = "strategic-hardware-infrastructure-change"
+EDITORIAL_SIGNAL_TECH_FINANCE = "major-tech-finance-change"
+EDITORIAL_SIGNAL_POLICY_SAFETY = "ai-policy-safety-change"
+
+# The generic complete-discovery-review lane is deliberately excluded.  A
+# lexical action match is only a conservative signal when Horizon also traced
+# the item to one of the focused product/release lanes below.
+MAJOR_MODEL_REVIEW_LANES = {
+    "alibaba-ai-ecosystem",
+    "bytedance-creative-models",
+    "china-model-releases",
+    "china-product-releases",
+    "china-video-model-releases",
+    "china-ai-media",
+    "frontier-product-operations",
+    "global-ai-media",
+    "global-video-model-releases",
+    "google-ai-products",
+    "image-model-releases",
+    "open-weight-releases",
+    "openai-product-operations",
+    "anthropic-products-policy",
+    "voice-model-releases",
+}
+MODEL_RELEASE_ONLY_REVIEW_LANES = {
+    "bytedance-creative-models",
+    "china-model-releases",
+    "china-video-model-releases",
+    "global-video-model-releases",
+    "image-model-releases",
+    "open-weight-releases",
+    "voice-model-releases",
+}
+CAPABILITY_REVIEW_LANES = MAJOR_MODEL_REVIEW_LANES | {
+    "developer-product-operations",
+    "developer-product-releases",
+}
+DEVELOPER_TOOL_REVIEW_LANES = {
+    "developer-product-operations",
+    "developer-product-releases",
+}
+PRICE_QUOTA_REVIEW_LANES = CAPABILITY_REVIEW_LANES
+STRATEGIC_TECH_REVIEW_LANES = {
+    "autonomous-driving-releases",
+    "china-semiconductor-breakthroughs",
+    "chips-storage-releases",
+    "data-center-infrastructure",
+    "robotics-device-releases",
+}
+STRATEGIC_TECH_COVERAGE_GROUPS = {
+    "autonomous-driving",
+    "china-semiconductor",
+    "chips-storage",
+    "data-centers",
+    "robotics-devices",
+}
+TECH_FINANCE_REVIEW_LANES = {"major-tech-finance"}
+TECH_FINANCE_COVERAGE_GROUPS = {"tech-finance"}
+POLICY_SAFETY_REVIEW_LANES = {
+    "anthropic-products-policy",
+    "open-model-policy",
+}
+POLICY_SAFETY_COVERAGE_GROUPS = {"global-frontier"}
+
+MODEL_RELEASE_ACTION_RE = re.compile(
+    r"(?:"
+    r"\b(?:announc(?:e|es|ed|ing)|introduc(?:e|es|ed|ing)|debut(?:s|ed|ing)?|"
+    r"preview(?:s|ed|ing)?|launch(?:es|ed|ing)?|release(?:s|d|ing)?|"
+    r"unveil(?:s|ed|ing)?|publish(?:es|ed|ing)?|roll(?:s|ed|ing)?[\s-]?out|open[\s-]?sources?|"
+    r"open[\s-]?weights?)\b|"
+    r"发布|推出|上线|公开|预览|亮相|首发|开源|开放权重|发布权重|"
+    r"発表|公開|プレビュー|デビュー|リリース|発売|提供開始|配信開始|オープンソース|重み公開|"
+    r"출시|발표|공개|프리뷰|데뷔|배포|오픈[\s-]?소스|가중치[\s-]?공개"
+    r")",
+    re.IGNORECASE,
+)
+MODEL_PRODUCT_SUBJECT_RE = re.compile(
+    r"(?:"
+    r"\b(?:model|weights?|checkpoint|GPT[\s-]?\d|Claude[\s-]?\d|"
+    r"Gemini[\s-]?\d|Kimi[\s-]?K\d|GLM[\s-]?\d|Qwen[\s-]?\d|"
+    r"Seedance|Seedream|Sora|Veo|EXAONE|HyperCLOVA|Solar)\b|"
+    r"模型|大模型|权重|モデル|重み|모델|가중치"
+    r")",
+    re.IGNORECASE,
+)
+CAPABILITY_AVAILABILITY_ACTION_RE = re.compile(
+    r"(?:"
+    r"\b(?:update(?:s|d|ing)?|upgrade(?:s|d|ing)?|add(?:s|ed|ing)?|"
+    r"enable(?:s|d|ing)?|available|availability|access|roll(?:s|ed|ing)?[\s-]?out|"
+    r"delay(?:s|ed|ing)?|postpone(?:s|d|ing)?|pause(?:s|d|ing)?|"
+    r"resume(?:s|d|ing)?|retire(?:s|d|ing)?|discontinue(?:s|d|ing)?)\b|"
+    r"更新|升级|新增|开放|可用|接入|公测|内测|下线|停止|暂停|恢复|延期|推迟|未上线|"
+    r"更新|アップデート|提供|利用可能|アクセス|延期|中止|停止|再開|"
+    r"업데이트|업그레이드|추가|사용[\s-]?가능|제공|접근|지연|연기|중단|종료|재개"
+    r")",
+    re.IGNORECASE,
+)
+DEVELOPER_TOOL_ACTION_RE = re.compile(
+    rf"(?:{MODEL_RELEASE_ACTION_RE.pattern}|{CAPABILITY_AVAILABILITY_ACTION_RE.pattern})",
+    re.IGNORECASE,
+)
+PRICE_QUOTA_SUBJECT_RE = re.compile(
+    r"(?:"
+    r"\b(?:pric(?:e|es|ing)|cost|subscription|plan|tier|quota|"
+    r"rate[\s-]?limit|usage[\s-]?(?:limit|cap))\b|"
+    r"价格|定价|收费|订阅|套餐|额度|配额|限额|用量限制|速率限制|"
+    r"価格|料金|課金|プラン|上限|利用制限|割当|"
+    r"가격|요금|과금|구독|플랜|할당량|사용량[\s-]?제한|한도"
+    r")",
+    re.IGNORECASE,
+)
+PRICE_QUOTA_CHANGE_RE = re.compile(
+    r"(?:"
+    r"\b(?:introduc(?:e|es|ed|ing)|chang(?:e|es|ed|ing)|increase(?:s|d|ing)?|"
+    r"decrease(?:s|d|ing)?|rais(?:e|es|ed|ing)|lower(?:s|ed|ing)?|cut(?:s|ting)?|"
+    r"reduc(?:e|es|ed|ing|tion)|expand(?:s|ed|ing)?|restore(?:s|d|ing)?|"
+    r"remove(?:s|d|ing)?|reset(?:s|ting)?)\b|"
+    r"调整|变更|新增|提高|降低|涨价|降价|增加|减少|扩大|恢复|取消|重置|"
+    r"変更|導入|値上げ|値下げ|増加|削減|拡大|復元|撤廃|リセット|"
+    r"변경|도입|인상|인하|증가|감소|확대|복원|폐지|재설정"
+    r")",
+    re.IGNORECASE,
+)
+
+STRATEGIC_TECH_ACTION_RE = re.compile(
+    rf"(?:{MODEL_RELEASE_ACTION_RE.pattern}|"
+    r"\b(?:approv(?:e|es|ed|al)|permit(?:s|ted|ting)?|deploy(?:s|ed|ing)?|"
+    r"build(?:s|ing)?|built|expand(?:s|ed|ing)?|invest(?:s|ed|ing|ment)?|"
+    r"buy(?:s|ing)?|bought|acquir(?:e|es|ed|ing)|produc(?:e|es|ed|ing|tion)|"
+    r"mass[\s-]?produc(?:e|es|ed|ing|tion)|validat(?:e|es|ed|ing|ion)|"
+    r"tape[\s-]?out|prototype|breakthrough|deliver(?:s|ed|ing)?|contract)\b|"
+    r"突破|量产|投产|扩产|交付|研发|验证|流片|样片|建成|建设|部署|批准|许可|投资|收购|买入|合同|"
+    r"突破|量産|投産|増産|納入|開発|検証|テープアウト|試作|建設|導入|承認|許可|投資|買収|契約|"
+    r"돌파구|양산|투산|증산|납품|개발|검증|테이프아웃|시제품|건설|배치|승인|허가|투자|인수|매입|계약)",
+    re.IGNORECASE,
+)
+TECH_FINANCE_ACTION_RE = re.compile(
+    r"(?:"
+    r"\b(?:rais(?:e|es|ed|ing)|fund(?:s|ed|ing|raise|raising)?|financ(?:e|es|ed|ing)|"
+    r"invest(?:s|ed|ing|ment)?|acquir(?:e|es|ed|ing|isition)|buy(?:s|ing)?|bought|"
+    r"merg(?:e|es|ed|ing|er)|IPO|initial public offering|valuation|valued|"
+    r"series[\s-]?[A-F]|sell(?:s|ing)?|sold)\b|"
+    r"融资|募资|投资|并购|收购|合并|上市|估值|回购|出售|"
+    r"資金調達|融資|投資|買収|合併|上場|企業価値|売却|"
+    r"투자 유치|자금 조달|투자|인수|합병|상장|기업가치|매각"
+    r")",
+    re.IGNORECASE,
+)
+POLICY_SAFETY_ACTION_RE = re.compile(
+    r"(?:"
+    r"\b(?:law|act|rule|regulat(?:e|es|ed|ing|ion|ory)|ban(?:s|ned|ning)?|"
+    r"court|judge|lawsuit|sue(?:s|d|ing)?|investigat(?:e|es|ed|ing|ion)|"
+    r"fine(?:s|d)?|penalt(?:y|ies)|safety[\s-]?(?:test|report|evaluation)|"
+    r"breach(?:es|ed|ing)?|hack(?:s|ed|ing)?|incident|vulnerabilit(?:y|ies))\b|"
+    r"法律|法规|法案|规则|监管|禁令|法院|法官|诉讼|起诉|调查|罚款|处罚|安全测试|安全报告|攻入|入侵|漏洞|事故|"
+    r"法律|法規|法案|規制|禁止|裁判所|判事|訴訟|調査|罰金|制裁|安全性試験|安全報告|侵入|脆弱性|事故|"
+    r"법률|법규|법안|규제|금지|법원|판사|소송|조사|벌금|제재|안전성 테스트|안전 보고서|침해|취약점|사고"
+    r")",
+    re.IGNORECASE,
+)
+
 sys.path.insert(0, str(REPO_ROOT))
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -516,8 +681,90 @@ def is_material_usage_policy_change(text: str) -> bool:
     )
 
 
+def item_editorial_signal_text(item: Any) -> str:
+    """Return headline-level text for conservative change classification."""
+
+    return " ".join(
+        str(value or "")
+        for value in (
+            getattr(item, "title", ""),
+            getattr(item, "summary", ""),
+        )
+    )
+
+
+def focused_editorial_signals(item: Any) -> set[str]:
+    """Infer bounded signals only inside known product and release lanes."""
+
+    metadata = item.metadata
+    lanes = set(
+        metadata_string_list(metadata, "review_lanes", "review_lane")
+    )
+    coverage_groups = set(
+        metadata_string_list(metadata, "coverage_groups", "coverage_group")
+    )
+    text = item_editorial_signal_text(item)
+    signals: set[str] = set()
+    if (
+        lanes & MAJOR_MODEL_REVIEW_LANES
+        and MODEL_RELEASE_ACTION_RE.search(text)
+        and (
+            lanes & MODEL_RELEASE_ONLY_REVIEW_LANES
+            or MODEL_PRODUCT_SUBJECT_RE.search(text)
+        )
+    ):
+        signals.add(EDITORIAL_SIGNAL_MAJOR_MODEL)
+    if (
+        lanes & CAPABILITY_REVIEW_LANES
+        and (
+            MODEL_RELEASE_ACTION_RE.search(text)
+            or CAPABILITY_AVAILABILITY_ACTION_RE.search(text)
+        )
+    ):
+        signals.add(EDITORIAL_SIGNAL_CAPABILITY)
+    if (
+        lanes & DEVELOPER_TOOL_REVIEW_LANES
+        and DEVELOPER_TOOL_ACTION_RE.search(text)
+    ):
+        signals.add(EDITORIAL_SIGNAL_DEVELOPER_TOOL)
+    if (
+        lanes & PRICE_QUOTA_REVIEW_LANES
+        and PRICE_QUOTA_SUBJECT_RE.search(text)
+        and (
+            PRICE_QUOTA_CHANGE_RE.search(text)
+            or MODEL_RELEASE_ACTION_RE.search(text)
+        )
+    ):
+        signals.add(EDITORIAL_SIGNAL_PRICE_QUOTA)
+    if (
+        (
+            lanes & STRATEGIC_TECH_REVIEW_LANES
+            or coverage_groups & STRATEGIC_TECH_COVERAGE_GROUPS
+        )
+        and STRATEGIC_TECH_ACTION_RE.search(text)
+    ):
+        signals.add(EDITORIAL_SIGNAL_STRATEGIC_TECH)
+    if (
+        (
+            lanes & TECH_FINANCE_REVIEW_LANES
+            or coverage_groups & TECH_FINANCE_COVERAGE_GROUPS
+        )
+        and TECH_FINANCE_ACTION_RE.search(text)
+    ):
+        signals.add(EDITORIAL_SIGNAL_TECH_FINANCE)
+    if (
+        (
+            lanes & POLICY_SAFETY_REVIEW_LANES
+            or coverage_groups & POLICY_SAFETY_COVERAGE_GROUPS
+        )
+        and POLICY_SAFETY_ACTION_RE.search(text)
+    ):
+        signals.add(EDITORIAL_SIGNAL_POLICY_SAFETY)
+    return signals
+
+
 def apply_editorial_signals(items: list) -> None:
-    """Mark must-review usage-policy changes before editorial scoring."""
+    """Mark focused material-change candidates before editorial scoring."""
 
     for item in items:
         metadata = item.metadata
@@ -528,6 +775,8 @@ def apply_editorial_signals(items: list) -> None:
                 "editorial_signal",
             )
         )
+        if metadata.get("must_review"):
+            signals.update(focused_editorial_signals(item))
         if metadata.get("must_review") and is_material_usage_policy_change(
             item_search_text(item)
         ):

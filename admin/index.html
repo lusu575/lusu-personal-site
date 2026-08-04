@@ -530,7 +530,7 @@
               </article>
               <article class="traffic-metric-card">
                 <span>预警 / 硬保护</span>
-                <strong id="traffic-thresholds">60,000 / 80,000</strong>
+                <strong id="traffic-thresholds">30,000 / 50,000</strong>
                 <small>按 UTC 自然日判断</small>
               </article>
               <article class="traffic-metric-card">
@@ -588,7 +588,7 @@
                     <label>预警阈值<input name="warningRows" type="number" min="1000" max="50000000" step="1000" required></label>
                     <label>硬保护阈值<input name="hardRows" type="number" min="2000" max="100000000" step="1000" required></label>
                   </div>
-                  <small>默认 60,000 / 80,000，为 100,000 行/日边界预留安全余量；付费计划可按实际额度调整。</small>
+                  <small>默认 30,000 / 50,000，为 D1 免费层 100,000 行/日边界及登录、聊天、互传、画板等必要业务预留至少一半余量；付费计划可按实际额度调整。</small>
                 </fieldset>
 
                 <fieldset class="traffic-sampling-fieldset">
@@ -981,6 +981,6 @@
     </div>
   </dialog>
 
-  <script src="/admin/admin.js?v=20260801-service-reliability-r1"></script>
+  <script src="/admin/admin.js?v=20260802-traffic-budget-r1"></script>
 </body>
 </html>

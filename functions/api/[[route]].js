@@ -13,8 +13,10 @@ import {
   updateTrafficControlSettings
 } from "./traffic-control.mjs";
 
-export const PUBLIC_API_REPRESENTATION_VERSION = "20260801-whiteboard-calm-sync-r1";
+export const PUBLIC_API_REPRESENTATION_VERSION = "20260802-traffic-discovery-monitoring-r1";
 export const PUBLIC_ARTICLE_ARCHIVE_LIMIT = 500;
+const PUBLIC_SITE_ORIGIN = "https://lusu575.com";
+const PUBLIC_RELEASE_DATE = "2026-08-02";
 const SESSION_COOKIE = "lusu_session";
 const SESSION_DAYS = 30;
 const MAX_SAVE_BYTES = 1024 * 1024;
@@ -44,7 +46,7 @@ const DATA_CLEANUP_STATE_KEY = "api_periodic_data_cleanup";
 const DATA_CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const DATA_CLEANUP_DELETE_LIMIT = 5000;
 const ARTICLE_SEED_STATE_KEY = "article_seed_version";
-const ARTICLE_SEED_VERSION = "20260801-whiteboard-calm-sync-r1";
+const ARTICLE_SEED_VERSION = "20260802-traffic-discovery-monitoring-r1";
 const LOGIN_EVENT_RETENTION_DAYS = 365;
 const ANALYTICS_EVENT_RETENTION_DAYS = 180;
 const AUTH_RATE_LIMITS = Object.freeze({
@@ -1626,8 +1628,7 @@ async function getArticles(request, env) {
   });
 }
 
-async function getSitemap(request, env) {
-  const url = new URL(request.url);
+async function getSitemap(_request, env) {
   const langs = ["zh", "en", "ja"];
   const rows = (await env.DB.prepare(`
     select slug, created_at, updated_at, published_at
@@ -1638,28 +1639,52 @@ async function getSitemap(request, env) {
     limit 500
   `).all()).results || [];
 
+  const rootLastmod = latestSitemapLastmod(rows, PUBLIC_RELEASE_DATE);
+  const rootAlternates = sitemapLanguageAlternates(
+    langs,
+    (lang) => new URL(`/?lang=${encodeURIComponent(lang)}`, PUBLIC_SITE_ORIGIN).toString()
+  );
   const rootEntries = langs.map((lang) => sitemapUrlEntry(
-    new URL(`/?lang=${encodeURIComponent(lang)}`, url.origin).toString(),
-    new Date().toISOString(),
+    new URL(`/?lang=${encodeURIComponent(lang)}`, PUBLIC_SITE_ORIGIN).toString(),
+    rootLastmod,
     "daily",
-    "1.0"
+    "1.0",
+    rootAlternates
   ));
+  const japaneseSubtextAlternates = sitemapLanguageAlternates(
+    langs,
+    (lang) => new URL(`/tools/japanese-subtext/?lang=${encodeURIComponent(lang)}`, PUBLIC_SITE_ORIGIN).toString()
+  );
   const japaneseSubtextEntries = langs.map((lang) => sitemapUrlEntry(
-    new URL(`/tools/japanese-subtext/?lang=${encodeURIComponent(lang)}`, url.origin).toString(),
+    new URL(`/tools/japanese-subtext/?lang=${encodeURIComponent(lang)}`, PUBLIC_SITE_ORIGIN).toString(),
     "2026-07-11",
     "monthly",
-    "0.9"
+    "0.9",
+    japaneseSubtextAlternates
   ));
-  const articleEntries = rows.flatMap((article) => langs.map((lang) => sitemapUrlEntry(
-    new URL(`/articles/${encodeURIComponent(article.slug)}?lang=${encodeURIComponent(lang)}`, url.origin).toString(),
-    article.updated_at || article.published_at || article.created_at,
-    "weekly",
-    "0.8"
-  )));
+  const articleEntries = rows.flatMap((article) => {
+    const alternates = sitemapLanguageAlternates(
+      langs,
+      (lang) => new URL(
+        `/articles/${encodeURIComponent(article.slug)}?lang=${encodeURIComponent(lang)}`,
+        PUBLIC_SITE_ORIGIN
+      ).toString()
+    );
+    return langs.map((lang) => sitemapUrlEntry(
+      new URL(
+        `/articles/${encodeURIComponent(article.slug)}?lang=${encodeURIComponent(lang)}`,
+        PUBLIC_SITE_ORIGIN
+      ).toString(),
+      article.updated_at || article.published_at || article.created_at,
+      "weekly",
+      "0.8",
+      alternates
+    ));
+  });
 
   const xml = [
     '<?xml version="1.0" encoding="UTF-8"?>',
-    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">',
     ...rootEntries,
     ...japaneseSubtextEntries,
     ...articleEntries,
@@ -1674,23 +1699,45 @@ async function getSitemap(request, env) {
   });
 }
 
-function sitemapUrlEntry(location, lastmod, changefreq, priority) {
+function sitemapLanguageAlternates(langs, locationForLanguage) {
+  const localized = langs.map((lang) => ({
+    lang,
+    location: locationForLanguage(lang)
+  }));
+  return [
+    ...localized,
+    { lang: "x-default", location: locationForLanguage("zh") }
+  ];
+}
+
+function sitemapUrlEntry(location, lastmod, changefreq, priority, alternates = []) {
+  const normalizedLastmod = sitemapDate(lastmod);
   return [
     "  <url>",
     `    <loc>${xmlEscape(location)}</loc>`,
-    `    <lastmod>${xmlEscape(sitemapDate(lastmod))}</lastmod>`,
+    normalizedLastmod ? `    <lastmod>${xmlEscape(normalizedLastmod)}</lastmod>` : "",
+    ...alternates.map(({ lang, location: alternateLocation }) => (
+      `    <xhtml:link rel="alternate" hreflang="${xmlEscape(lang)}" href="${xmlEscape(alternateLocation)}"/>`
+    )),
     `    <changefreq>${xmlEscape(changefreq)}</changefreq>`,
     `    <priority>${xmlEscape(priority)}</priority>`,
     "  </url>"
-  ].join("\n");
+  ].filter(Boolean).join("\n");
 }
 
 function sitemapDate(value) {
-  const date = new Date(value || Date.now());
+  const date = new Date(value || "");
   if (Number.isNaN(date.getTime())) {
-    return new Date().toISOString().slice(0, 10);
+    return "";
   }
   return date.toISOString().slice(0, 10);
+}
+
+function latestSitemapLastmod(rows, fallback) {
+  const timestamps = rows.flatMap((row) => [row.updated_at, row.published_at, row.created_at])
+    .map((value) => Date.parse(value || ""))
+    .filter(Number.isFinite);
+  return timestamps.length ? new Date(Math.max(...timestamps)).toISOString() : fallback;
 }
 
 function xmlEscape(value) {
@@ -4773,10 +4820,10 @@ async function runPeriodicDataCleanup(env) {
       DATA_CLEANUP_DELETE_LIMIT
     )
   ];
+  const analyticsCutoff = new Date(
+    now.getTime() - ANALYTICS_EVENT_RETENTION_DAYS * 24 * 60 * 60 * 1000
+  ).toISOString();
   if (await tableExists(env, "analytics_page_views")) {
-    const analyticsCutoff = new Date(
-      now.getTime() - ANALYTICS_EVENT_RETENTION_DAYS * 24 * 60 * 60 * 1000
-    ).toISOString();
     statements.push(
       env.DB.prepare(`
         delete from analytics_page_views
@@ -4786,11 +4833,28 @@ async function runPeriodicDataCleanup(env) {
           order by created_at asc
           limit ?
         )
-      `).bind(analyticsCutoff, DATA_CLEANUP_DELETE_LIMIT),
+      `).bind(analyticsCutoff, DATA_CLEANUP_DELETE_LIMIT)
+    );
+  }
+  if (await tableExists(env, "analytics_click_events")) {
+    statements.push(
       env.DB.prepare(`
         delete from analytics_click_events
         where event_id in (
           select event_id from analytics_click_events
+          where created_at < ?
+          order by created_at asc
+          limit ?
+        )
+      `).bind(analyticsCutoff, DATA_CLEANUP_DELETE_LIMIT)
+    );
+  }
+  if (await tableExists(env, "article_view_events")) {
+    statements.push(
+      env.DB.prepare(`
+        delete from article_view_events
+        where event_id in (
+          select event_id from article_view_events
           where created_at < ?
           order by created_at asc
           limit ?
@@ -6176,6 +6240,47 @@ const DAILY_AI_NEWS_2026_07_27_READER_PATCH = Object.freeze({
 function articleSeedStatements(env) {
   // Seed timestamps must be UTC ISO strings; the UI converts them to each visitor's local time.
   return [
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-08-02-traffic-discovery-monitoring',
+        '2026-08-02-traffic-discovery-monitoring',
+        'site-updates',
+        '["网站更新","流量保护","SEO","线上监控","D1"]',
+        '', 'published', 0, 0,
+        '2026-08-02T08:20:00.000Z',
+        '2026-08-02T08:20:00.000Z',
+        '2026-08-02T08:20:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-08-02-traffic-discovery-monitoring", {
+      zh: {
+        title: "流量发现与线上监控优化",
+        summary: "减少重复遥测请求并提前收紧 D1 免费额度保护，补齐文章访问留存、三语 sitemap 与文章结构化数据，同时加入低频生产冒烟检查。",
+        content_markdown: "# 流量发现与线上监控优化\n\n这次把访客统计、搜索引擎理解和生产故障发现串成一条更可靠的链路，不改变站点视觉与正常浏览方式。\n\n## 更准确的搜索入口\n\n- sitemap 固定输出正式主域名，不再因请求来自别名域名而生成重复 URL。\n- 首页更新时间来自最近一次已发布内容，而不是每次抓取都伪装成当天更新。\n- 首页、日语学习工具和每篇公开文章都声明中、英、日及默认语言对应关系。\n- 文章直达页补充作者、发布者和三语替代链接。\n\n## 有余量的免费额度保护\n\n- 首次访问不再先后发送访客识别和页面浏览两次请求；页面浏览本身会完成匿名身份与访客资料登记。\n- 浏览器会拦截一秒内同目标重复点击，减少无意义的 Pages Functions 请求和 D1 限频写入。\n- D1 预警／硬保护默认阈值从 60,000／80,000 收紧到 30,000／50,000 估算行；硬保护时停止页面与点击遥测，只保留 10% 文章阅读采样，为登录、存档、聊天、互传和画板等必要业务保留至少一半免费写入余量。只有仍等于旧默认值的配置会自动迁移，管理员自定义配置不被覆盖。\n- 180 天清理现同时覆盖页面、点击和文章访问事件，并继续在健康检查的后台任务中分批执行。\n\n## 线上故障更早暴露\n\nGitHub 在正式验证完成后以及每 12 小时运行一次低请求量冒烟检查，核对健康接口、首页、sitemap、文章直达页和内容哈希静态资源。短暂部署波动会有界重试，持续失败会让任务明确报错。www 到主域的永久跳转与真实用户性能监控仍需在 Cloudflare 控制台配置后单独验收，本次仓库更新不虚报已启用。"
+      },
+      en: {
+        title: "Traffic Discovery and Production Monitoring",
+        summary: "Reduces duplicate telemetry requests, reserves more of the D1 free tier, completes article-view retention and multilingual SEO signals, and adds a low-frequency production smoke check.",
+        content_markdown: "# Traffic Discovery and Production Monitoring\n\nThis update connects visitor measurement, search-engine understanding, and production failure detection into a more reliable path without changing the site's visual design or normal browsing flow.\n\n## More accurate search entry points\n\n- The sitemap always emits the canonical production origin instead of copying whichever alias host requested it.\n- Home uses the latest published-content date rather than pretending it changed on every crawl.\n- Home, the Japanese learning tool, and every public article declare Chinese, English, Japanese, and default-language counterparts.\n- Direct article pages now include author, publisher, and language-alternate metadata.\n\n## Free-tier protection with real headroom\n\n- A first visit no longer sends separate identify and page-view requests; the page view already establishes the anonymous identity and visitor profile.\n- The browser suppresses repeat clicks on the same target within one second, avoiding needless Pages Functions requests and D1 rate-limit writes.\n- Default D1 warning and hard thresholds move from 60,000 / 80,000 to 30,000 / 50,000 estimated rows. Hard mode stops page and click telemetry and keeps only a 10% article-view sample, reserving at least half of the free write allowance for sign-in, saves, Chat, Transfer, and Whiteboard. Only untouched legacy defaults migrate; administrator custom settings remain unchanged.\n- The 180-day cleanup now covers page, click, and article-view events and continues in bounded background batches from the health check.\n\n## Earlier production failure detection\n\nA low-request GitHub smoke check runs after successful release verification and every 12 hours. It checks API and D1 health, Home, the sitemap, one direct article page, and an immutable hashed asset. Temporary deployment propagation is retried within a bound; sustained failures fail the task clearly. The permanent www redirect and real-user performance monitoring still require separate Cloudflare Dashboard configuration and verification, so this repository change does not claim they are enabled."
+      },
+      ja: {
+        title: "流入発見性と本番監視の改善",
+        summary: "重複テレメトリ要求を減らして D1 無料枠の余裕を広げ、記事閲覧の保存期限、多言語 SEO、本番の低頻度スモーク監視を追加しました。",
+        content_markdown: "# 流入発見性と本番監視の改善\n\n今回の更新では、訪問計測、検索エンジン向け情報、本番障害の検知を一つの信頼できる流れにつなげました。サイトの見た目や通常の閲覧方法は変わりません。\n\n## より正確な検索入口\n\n- sitemap は要求に使われた別名ホストをコピーせず、常に正式な本番ドメインを出力します。\n- Home の更新日はクロール時刻ではなく、最後に公開された内容の日付を使います。\n- Home、日本語学習ツール、すべての公開記事で中国語・英語・日本語・既定言語の対応関係を宣言します。\n- 記事直達ページに著者、発行者、言語別 URL のメタデータを追加しました。\n\n## 無料枠に余裕を残す保護\n\n- 初回訪問で識別とページ表示を別々に送らず、ページ表示一回で匿名 ID と訪問者プロフィールを登録します。\n- 同じ対象への一秒以内の重複クリックをブラウザー側で抑え、不要な Pages Functions 要求と D1 制限記録を減らします。\n- D1 の既定の警告／強制保護しきい値を 60,000／80,000 から 30,000／50,000 推定行へ引き下げました。強制保護ではページとクリックの計測を止め、記事閲覧だけ 10% を残し、ログイン、保存、Chat、Transfer、Whiteboard など必要な処理に無料書き込み枠の半分以上を確保します。旧既定値のままの設定だけを移行し、管理者の独自設定は上書きしません。\n- 180 日の削除対象をページ、クリック、記事閲覧の全イベントへ広げ、ヘルスチェックのバックグラウンドで上限付きバッチとして実行します。\n\n## 本番障害を早めに検知\n\nGitHub の低リクエストなスモークチェックを、公開検証の成功後と 12 時間ごとに実行します。API／D1 の正常性、Home、sitemap、記事直達ページ、内容ハッシュ付き静的資産を確認します。一時的な反映遅延は上限付きで再試行し、継続障害は明確に失敗として表示します。www から正式ドメインへの恒久リダイレクトと実ユーザー性能監視は Cloudflare Dashboard での別設定と検証が必要であり、今回のリポジトリ更新では有効化済みと主張しません。"
+      }
+    }, "2026-08-02T08:20:00.000Z"),
     env.DB.prepare(`
       insert into articles (
         article_id, slug, category, tags, cover_image, status, is_pinned,

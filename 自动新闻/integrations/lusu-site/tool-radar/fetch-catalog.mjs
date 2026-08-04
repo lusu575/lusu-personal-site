@@ -2,6 +2,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { createProxyAwareFetch } from "../network-fetch.mjs";
 import { readToolRadarToken } from "./delivery-secrets.mjs";
 import {
   sha256Bytes,
@@ -192,10 +193,16 @@ async function fetchProductionCatalog() {
     env: process.env,
     devVarsPath: DEV_VARS_PATH
   });
-  return fetchPublishedToolCatalog({
-    endpoint: process.env.TOOL_RADAR_CATALOG_ENDPOINT || DEFAULT_CATALOG_ENDPOINT,
-    token
-  });
+  const network = createProxyAwareFetch();
+  try {
+    return await fetchPublishedToolCatalog({
+      endpoint: process.env.TOOL_RADAR_CATALOG_ENDPOINT || DEFAULT_CATALOG_ENDPOINT,
+      token,
+      fetchImpl: network.fetch
+    });
+  } finally {
+    await network.close();
+  }
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

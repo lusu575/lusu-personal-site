@@ -16,8 +16,8 @@
 12. 公开稿禁止十字段验收表、连续十项产品清单、醒目的“缺点”框、过度 emoji、夸张营销词和点击诱饵。价格、登录、中文、本地与 AI 接入只收进每个工具末尾的一行紧凑信息，字段名固定为：中文 `**上手信息：** 收费：…；登录：…；中文支持：…；本地部署：…；AI 接入：…`；English `**Practical details:** Pricing: …; Sign-in: …; Chinese support: …; Local deployment: …; AI setup: …`；日本語 `**利用メモ：** 料金：…；ログイン：…；中国語対応：…；ローカル導入：…；AI 導入：…`。三语使用同一工具顺序、事实、判断与限制，只链接规范化官网。
 13. 先运行 `node "自动新闻/integrations/lusu-site/tool-radar/validate-run.mjs" --run <运行记录>`。校验失败立即停止。
 14. 本期只要采用了图片，文章投递前必须先让这些精确字节上线：确认当前位于 `main` 且除本期工作外没有其他未提交改动，只把本期 `assets/images/articles/tool-radar/<edition-date>/` 资产与本次 CHANGELOG 记录加入提交，运行项目发布门禁后提交并推送 `main`，等待 GitHub 触发的 Cloudflare Pages 生产部署。不得用 Wrangler 手工部署替代正常 GitHub 发布路径，不得顺手提交其他人的改动。工作树不干净、分支不对、测试失败、推送失败或部署状态不明时立即停止，不投递文章。
-15. 验证通过且本期图片已部署后，运行 `node "自动新闻/integrations/lusu-site/tool-radar/deliver-production.mjs" --run <运行记录>`。投递器会再次拉取最新目录，并按登记顺序从 `https://lusu575.com/` 逐张读取正文使用的 `?v=<sha256 前 12 位>` 精确图片 URL；瞬时网络错误及明确可重试的 HTTP 状态会做最多三次有界重试，随后仍必须同时通过 200、与扩展名一致的 MIME 和完整 SHA-256。持续失败、图片尚未上线、返回 HTML／错误类型、被缓存为旧字节或任何 `toolKey` 已在目录中出现，都立即停止，不用换幂等键绕过。无图运行不会创建空资产提交。
-16. 服务端保留两道安全闸门：通道启用但 auto-publish 关闭时，成功响应是 `tool-radar + draft`，应报告“已生成草稿”，不要进行公开回读；只有响应为 `tool-radar + published` 时，才回读 zh / en / ja 三个公开文章接口并核对 slug、标题和正文。接口可能已经公开但回读失败时，状态记为不明并停止自动重试。
+15. 验证通过且本期图片已部署后，运行 `node "自动新闻/integrations/lusu-site/tool-radar/deliver-production.mjs" --run <运行记录>`。生产 Node 网络请求必须通过上级目录的 `network-fetch.mjs` 共享客户端，显式遵循 `HTTP_PROXY`／`HTTPS_PROXY`／`NO_PROXY`，但不得记录代理地址、凭据或令牌。投递器会再次拉取最新目录，并按登记顺序从 `https://lusu575.com/` 逐张读取正文使用的 `?v=<sha256 前 12 位>` 精确图片 URL；瞬时网络错误及明确可重试的 HTTP 状态会做最多三次有界重试，随后仍必须同时通过 200、与扩展名一致的 MIME 和完整 SHA-256。持续失败、图片尚未上线、返回 HTML／错误类型、被缓存为旧字节或任何 `toolKey` 已在目录中出现，都立即停止，不用换幂等键绕过。无图运行不会创建空资产提交。
+16. 服务端保留两道安全闸门：通道启用但 auto-publish 关闭时，成功响应是 `tool-radar + draft`，应报告“已生成草稿”，不要进行公开回读；只有响应为 `tool-radar + published` 时，才回读 zh / en / ja 三个公开文章接口并核对 slug、标题和正文。每次执行的生产 POST 只允许发送一次；接口可能已经公开但回读失败时，状态记为不明并停止，禁止通过重跑投递器、换幂等键或重复 POST 猜测恢复。
 
 最终只报告：“已生成草稿”“已公开”“本期无稿”或“失败并已停止”。不得输出令牌、环境变量值或完整秘密。
 
