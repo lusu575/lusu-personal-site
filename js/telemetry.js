@@ -4,6 +4,8 @@
   const emailLikePattern = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi;
   const knownRoutes = new Set(["home", "knowledge", "videos", "resources", "games", "blog", "chatroom", "about"]);
   const allowedLangs = new Set(["zh", "en", "ja"]);
+  const recentClickBuckets = new Map();
+  const clickDedupeMs = 1000;
 
   if (window.location.pathname.startsWith("/admin")) {
     return;
@@ -210,6 +212,21 @@
     };
   }
 
+  function shouldSendClick(descriptor) {
+    const now = Date.now();
+    const key = `${descriptor.path}:${descriptor.targetKey}:${descriptor.dataRoute}`;
+    const previous = recentClickBuckets.get(key) || 0;
+    recentClickBuckets.set(key, now);
+    if (recentClickBuckets.size > 100) {
+      for (const [bucketKey, timestamp] of recentClickBuckets) {
+        if (now - timestamp > clickDedupeMs) {
+          recentClickBuckets.delete(bucketKey);
+        }
+      }
+    }
+    return now - previous >= clickDedupeMs;
+  }
+
   let lastPath = "";
   function recordPageView() {
     const payload = pagePayload();
@@ -240,6 +257,9 @@
     if (!descriptor) {
       return;
     }
+    if (!shouldSendClick(descriptor)) {
+      return;
+    }
     descriptor.x = Math.round(event.clientX || 0);
     descriptor.y = Math.round(event.clientY || 0);
     send("/click", descriptor);
@@ -253,5 +273,7 @@
     }
   });
 
-  send("/identify", { language: navigator.language || "" }).then(recordPageView);
+  // page-view already establishes the anonymous identity and visitor profile;
+  // a separate identify request would duplicate one Pages Function invocation.
+  recordPageView();
 })();

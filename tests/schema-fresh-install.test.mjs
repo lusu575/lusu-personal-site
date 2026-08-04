@@ -55,13 +55,13 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
     const trafficSettings = JSON.parse(
       db.prepare("select value from site_runtime_state where key = 'traffic_control_settings_v1'").get().value
     );
-    assert.equal(trafficSettings.warningRows, 60000);
-    assert.equal(trafficSettings.hardRows, 80000);
+    assert.equal(trafficSettings.warningRows, 30000);
+    assert.equal(trafficSettings.hardRows, 50000);
     assert.equal(trafficSettings.adaptiveProtectionEnabled, true);
     assert.equal(trafficSettings.sampling.hard.clicks, 0);
     assert.equal(
       db.prepare("select value from site_runtime_state where key = 'article_seed_version'").get().value,
-      "20260801-whiteboard-calm-sync-r1"
+      "20260802-traffic-discovery-monitoring-r1"
     );
     assert.deepEqual(
       db.prepare("pragma table_info(whiteboard_rooms)").all().map((column) => column.name),

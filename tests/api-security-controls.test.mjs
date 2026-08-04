@@ -137,6 +137,19 @@ async function invoke(onRequest, DB, request) {
   });
 }
 
+async function invokeAndWait(onRequest, DB, request) {
+  const pending = [];
+  const response = await onRequest({
+    request,
+    env: envFor(DB),
+    waitUntil(promise) {
+      pending.push(Promise.resolve(promise));
+    }
+  });
+  await Promise.all(pending);
+  return response;
+}
+
 async function legacyPasswordHash(password, iterations = 25000) {
   const salt = webcrypto.getRandomValues(new Uint8Array(16));
   const key = await webcrypto.subtle.importKey(
@@ -416,8 +429,18 @@ test("admin traffic controls expose honest write pressure, use CAS, and can shed
     }));
     assert.equal(snapshotResponse.status, 200, await snapshotResponse.clone().text());
     const snapshot = await snapshotResponse.json();
-    assert.equal(snapshot.settings.warningRows, 60000);
-    assert.equal(snapshot.settings.hardRows, 80000);
+    assert.equal(snapshot.settings.warningRows, 30000);
+    assert.equal(snapshot.settings.hardRows, 50000);
+    assert.deepEqual(snapshot.settings.sampling.warning, {
+      pageViews: 25,
+      clicks: 10,
+      articleViews: 50
+    });
+    assert.deepEqual(snapshot.settings.sampling.hard, {
+      pageViews: 0,
+      clicks: 0,
+      articleViews: 10
+    });
     assert.equal(snapshot.usage.scope, "site-telemetry-estimate");
     assert.match(snapshot.usage.note, /估算/);
     assert.equal(snapshot.official.status, "not-configured");
@@ -459,6 +482,119 @@ test("admin traffic controls expose honest write pressure, use CAS, and can shed
     assert.equal(pageView.status, 200, await pageView.clone().text());
     assert.equal((await pageView.json()).recorded, false);
     assert.equal(DB.sqlite.prepare("select count(*) as count from analytics_page_views").get().count, 0);
+  } finally {
+    DB.close();
+  }
+});
+
+test("traffic defaults migrate only an untouched legacy policy", async () => {
+  const { ensureTrafficControlSettings } = await import("../functions/api/traffic-control.mjs");
+  const legacy = {
+    schemaVersion: 1,
+    analyticsEnabled: true,
+    identifyEnabled: true,
+    pageViewsEnabled: true,
+    clicksEnabled: true,
+    articleViewsEnabled: true,
+    adaptiveProtectionEnabled: true,
+    warningRows: 60000,
+    hardRows: 80000,
+    sampling: {
+      normal: { pageViews: 100, clicks: 100, articleViews: 100 },
+      warning: { pageViews: 50, clicks: 25, articleViews: 75 },
+      hard: { pageViews: 10, clicks: 0, articleViews: 25 }
+    }
+  };
+
+  const untouchedDb = new D1Database();
+  const customDb = new D1Database();
+  try {
+    for (const DB of [untouchedDb, customDb]) {
+      DB.sqlite.exec(`
+        create table site_runtime_state (
+          key text primary key,
+          value text not null,
+          updated_at text not null
+        )
+      `);
+    }
+    const oldUpdatedAt = "2026-08-01T07:10:00.000Z";
+    untouchedDb.sqlite.prepare(`
+      insert into site_runtime_state (key, value, updated_at) values (?, ?, ?)
+    `).run("traffic_control_settings_v1", JSON.stringify(legacy), oldUpdatedAt);
+    const migrated = await ensureTrafficControlSettings({ DB: untouchedDb });
+    assert.equal(migrated.settings.warningRows, 30000);
+    assert.equal(migrated.settings.hardRows, 50000);
+    assert.notEqual(migrated.updatedAt, oldUpdatedAt);
+
+    const custom = { ...legacy, clicksEnabled: false };
+    customDb.sqlite.prepare(`
+      insert into site_runtime_state (key, value, updated_at) values (?, ?, ?)
+    `).run("traffic_control_settings_v1", JSON.stringify(custom), oldUpdatedAt);
+    const preserved = await ensureTrafficControlSettings({ DB: customDb });
+    assert.equal(preserved.settings.warningRows, 60000);
+    assert.equal(preserved.settings.hardRows, 80000);
+    assert.equal(preserved.settings.clicksEnabled, false);
+    assert.equal(preserved.updatedAt, oldUpdatedAt);
+  } finally {
+    untouchedDb.close();
+    customDb.close();
+  }
+});
+
+test("periodic cleanup applies the 180-day boundary to every raw analytics table", async () => {
+  const { onRequest } = await freshApi("analytics-retention");
+  const DB = new D1Database();
+  try {
+    const initialized = await invoke(onRequest, DB, apiRequest("analytics/page-view", {
+      method: "POST",
+      headers: { "CF-Connecting-IP": "203.0.113.91" },
+      body: { path: "/", route: "home", lang: "zh" }
+    }));
+    assert.equal(initialized.status, 200, await initialized.clone().text());
+
+    for (const [eventId, createdAt] of [
+      ["article-view-expired", "2000-01-01T00:00:00.000Z"],
+      ["article-view-current", "2099-01-01T00:00:00.000Z"]
+    ]) {
+      DB.sqlite.prepare(`
+        insert into article_view_events (event_id, article_id, slug, lang, visitor_id, created_at)
+        values (?, 'retention-article', 'retention-article', 'zh', 'retention-visitor', ?)
+      `).run(eventId, createdAt);
+    }
+
+    const health = await invokeAndWait(onRequest, DB, apiRequest("health"));
+    assert.equal(health.status, 200, await health.clone().text());
+    assert.equal(
+      DB.sqlite.prepare("select count(*) as count from article_view_events where event_id = ?")
+        .get("article-view-expired").count,
+      0
+    );
+    assert.equal(
+      DB.sqlite.prepare("select count(*) as count from article_view_events where event_id = ?")
+        .get("article-view-current").count,
+      1
+    );
+  } finally {
+    DB.close();
+  }
+});
+
+test("sitemap output stays on the canonical origin with stable multilingual alternates", async () => {
+  const { onRequest } = await freshApi("canonical-sitemap");
+  const DB = new D1Database();
+  try {
+    const response = await invoke(onRequest, DB, apiRequest("sitemap.xml"));
+    assert.equal(response.status, 200);
+    assert.match(response.headers.get("content-type") || "", /application\/xml/);
+    const xml = await response.text();
+    assert.match(xml, /xmlns:xhtml="http:\/\/www\.w3\.org\/1999\/xhtml"/);
+    assert.doesNotMatch(xml, /https:\/\/example\.test/);
+    assert.match(xml, /<loc>https:\/\/lusu575\.com\/\?lang=zh<\/loc>/);
+    assert.match(xml, /<lastmod>2026-08-02<\/lastmod>/);
+    for (const lang of ["zh", "en", "ja", "x-default"]) {
+      assert.match(xml, new RegExp(`hreflang="${lang}"`));
+    }
   } finally {
     DB.close();
   }

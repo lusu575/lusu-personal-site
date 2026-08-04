@@ -1,6 +1,7 @@
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { createProxyAwareFetch } from "../network-fetch.mjs";
 import { readToolRadarToken } from "./delivery-secrets.mjs";
 import {
   fetchPublishedToolCatalog,
@@ -391,46 +392,52 @@ async function main() {
     devVarsPath: DEV_VARS_PATH
   });
 
-  const latestCatalog = await fetchPublishedToolCatalog({
-    endpoint: catalogEndpoint,
-    token
-  });
-  assertNoPublishedToolDuplicates(run, latestCatalog);
-  await verifyPublishedToolAssets({ endpoint, run });
-
-  let response;
+  const network = createProxyAwareFetch();
   try {
-    response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json",
-        "Idempotency-Key": run.delivery.idempotencyKey
-      },
-      body: JSON.stringify(productionDeliveryPayload(run.delivery)),
-      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
+    const latestCatalog = await fetchPublishedToolCatalog({
+      endpoint: catalogEndpoint,
+      token,
+      fetchImpl: network.fetch
     });
-  } catch (error) {
-    throw new Error(
-      `工具雷达生产投递请求未完成：${redact(String(error?.message || error), token)}`
-    );
-  }
+    assertNoPublishedToolDuplicates(run, latestCatalog);
+    await verifyPublishedToolAssets({ endpoint, run, fetchImpl: network.fetch });
 
-  const payload = await readJsonResponse(response, "工具雷达生产接口");
-  validateDeliveryResponse({
-    httpStatus: response.status,
-    responseOk: response.ok,
-    payload,
-    run
-  });
-  if (payload.status === "published") {
-    await verifyPublicArticleTranslations({ endpoint, run });
+    let response;
+    try {
+      response = await network.fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+          "Idempotency-Key": run.delivery.idempotencyKey
+        },
+        body: JSON.stringify(productionDeliveryPayload(run.delivery)),
+        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
+      });
+    } catch (error) {
+      throw new Error(
+        `工具雷达生产投递请求未完成：${redact(String(error?.message || error), token)}`
+      );
+    }
+
+    const payload = await readJsonResponse(response, "工具雷达生产接口");
+    validateDeliveryResponse({
+      httpStatus: response.status,
+      responseOk: response.ok,
+      payload,
+      run
+    });
+    if (payload.status === "published") {
+      await verifyPublicArticleTranslations({ endpoint, run, fetchImpl: network.fetch });
+    }
+    console.log(
+      `tool-radar-production-delivery: ${payload.status}`
+        + ` (${run.edition.id}, tools=${run.tools.length}, duplicate=${Boolean(payload.duplicate)})`
+    );
+    console.log(payload.slug);
+  } finally {
+    await network.close();
   }
-  console.log(
-    `tool-radar-production-delivery: ${payload.status}`
-      + ` (${run.edition.id}, tools=${run.tools.length}, duplicate=${Boolean(payload.duplicate)})`
-  );
-  console.log(payload.slug);
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-08-02-traffic-discovery-monitoring",
+      "slug": "2026-08-02-traffic-discovery-monitoring",
+      "category": "site-updates",
+      "tags": ["网站更新", "流量保护", "SEO", "线上监控", "D1"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-02T08:20:00.000Z",
+      "updated_at": "2026-08-02T08:20:00.000Z",
+      "published_at": "2026-08-02T08:20:00.000Z",
+      "fallbackOnly": true,
+      "icon": "knowledge",
+      "date": "2026.08.02",
+      "title": {
+        "zh": "流量发现与线上监控优化",
+        "en": "Traffic Discovery and Production Monitoring",
+        "ja": "流入発見性と本番監視の改善"
+      },
+      "summary": {
+        "zh": "减少重复遥测请求并提前收紧 D1 免费额度保护，补齐文章访问留存、三语 sitemap 与文章结构化数据，同时加入低频生产冒烟检查。",
+        "en": "Reduces duplicate telemetry requests, reserves more of the D1 free tier, completes article-view retention and multilingual SEO signals, and adds a low-frequency production smoke check.",
+        "ja": "重複テレメトリ要求を減らして D1 無料枠の余裕を広げ、記事閲覧の保存期限、多言語 SEO、本番の低頻度スモーク監視を追加しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-01-whiteboard-calm-efficient-sync",
       "slug": "2026-08-01-whiteboard-calm-efficient-sync",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "工具区新增免登录多人在线画板，支持公共与密码房、实时鼠标和临时名字、统一匿名身份、图片、PNG/SVG 导出，以及密码房无人后24小时保留。",
         "en": "Tools now includes a sign-in-free multiplayer whiteboard with public and password rooms, live cursors and temporary names, one shared anonymous identity, images, PNG/SVG export, and 24-hour retention for empty password rooms.",
         "ja": "ツールにログイン不要の共同ホワイトボードを追加しました。公開・パスワードルーム、リアルタイムカーソルと一時名、共通匿名ID、画像、PNG/SVG出力、空室後24時間の保持に対応します。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-07-29-knowledge-markdown-links",
-      "slug": "2026-07-29-knowledge-markdown-links",
-      "category": "site-updates",
-      "tags": ["网站更新", "知识库", "Markdown", "链接", "图片"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-07-29T02:14:00.000Z",
-      "updated_at": "2026-07-29T02:14:00.000Z",
-      "published_at": "2026-07-29T02:14:00.000Z",
-      "fallbackOnly": true,
-      "icon": "knowledge",
-      "date": "2026.07.29",
-      "title": {
-        "zh": "知识库正文与图注链接恢复",
-        "en": "Knowledge Article and Caption Links Restored",
-        "ja": "知識庫の本文と画像キャプションのリンクを復元"
-      },
-      "summary": {
-        "zh": "Tool Radar 正文与显式图片图注中的绝对 HTTPS Markdown 链接已恢复为安全可点击链接；七张真实配图同时登记实际尺寸并完善截图等待。",
-        "en": "Absolute HTTPS Markdown links in Tool Radar body copy and explicit image captions are safely clickable again, while all seven real visuals now carry real dimensions and more reliable capture waits.",
-        "ja": "Tool Radar の本文と明示的な画像キャプションにある絶対 HTTPS Markdown リンクを安全にクリックできるよう復元し、7枚の実画像に実寸と安定した取得待機を追加しました。"
       }
     }
   ]

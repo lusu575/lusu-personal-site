@@ -2,6 +2,25 @@
 
 本文件记录鲁肃个人站的功能、界面、后端、部署与项目约定变更。每次修改项目后都应同步更新这里，方便后续 AI / Codex 对话快速了解最近改动。
 
+## 2026-08-04
+
+- 核对当天 Daily AI News 生产状态：Horizon 对固定窗口 `[2026-08-03 07:00, 2026-08-04 07:00)` 取得 2,064 条候选，完整处置为 8 条入选、101 条合并、1,955 条有依据拒绝，schema v4 正式校验通过。生产接口已经确认 `published`，任务只是在随后日文公开回读中报 `fetch failed`；通过显式代理再次只读核验后，zh／en／ja 三版均与冻结运行记录逐字一致，因此没有重复 POST 或人工补发。
+- 修复本机 Clash Fake-IP 环境下 Node 原生 `fetch` 不读取系统代理、把成功发布误报成回读失败的根因：新增共用 `network-fetch.mjs`，以直接依赖的 Undici `EnvHttpProxyAgent` 安全读取 `HTTP_PROXY`／`HTTPS_PROXY`／`NO_PROXY`，无代理环境保持直连，且不记录代理地址、凭证或 Token；每日 AI 新闻和工具雷达的生产目录、资产、POST 与公开回读统一复用该客户端。
+- 公开文章回读对网络异常和 408／425／429／指定 5xx 最多执行 3 次有界只读 GET，始终受原 08:00／同日恢复截止预算约束；正文不匹配、非瞬时状态或预算耗尽仍立即 fail closed，生产 POST 在一次执行中仍只允许发送一次，绝不会因回读失败自动重发。新增代理选择、资源关闭、瞬时 GET 恢复与持续失败回归，并使用官方 SHA-256 校验的 Node.js 22.23.1 完成严格 `npm ci` 和线上三语只读集成验证。
+
+## 2026-08-03
+
+- 复盘最近三期每日 AI 新闻的编辑产物：8 月 1‑3 日候选数分别为 1,978、1,484 和 1,399，而入选数由 17 降到 4 和 1。8 月 3 日将全部 1,399 条候选都归为 `other`，并将 1,393 条机械评为 3／4 分；94 组发现查询、67 个 required query 和 11 个 required group 均完成，确认短稿主因是整批分类／评分退化，不是 Horizon 没抓到消息或网站漏显示。
+- 增加编辑召回硬门禁：Horizon 在聚焦通道中用中英日韩变化词标记模型／产品、能力／可用性、开发工具、价格／额度、芯片／存储／机器人／智能设备／自动驾驶／数据中心基础设施、重大科技金融和 AI 监管／安全变化，校验器强制对应受保护类别，并检查拒稿理由与 `substantiveChange` 语义一致。对 50 条以上候选全部归为 `other`、或 90% 以上拒稿复制同一编辑类别与完整四项评分模板的运行直接 fail closed。
+- 低于 5 条的二次审阅不再只允许布尔签收：完成时间必须严格晚于初审，`reconsideredCandidateIds` 至少列出所有带编辑信号的候选、RSS 候选和受保护类别的 5／6 分拒稿，同时允许主动加入其他索引候选。5 条仍只是复审触发器，不是刊发配额；本次未覆盖或重新投递线上 8 月 3 日文章。
+
+## 2026-08-02
+
+- 完成以免费额度余量为优先的流量保护优化：公开页首次访问不再先发 `/api/analytics/identify` 再发 page view，页面浏览自身负责匿名身份和访客资料登记；同一目标一秒内的重复点击在浏览器侧直接抑制。默认 D1 保护阈值由 60,000／80,000 收紧到 30,000／50,000 站内估算行，预警采样改为页面 25%／点击 10%／文章 50%，硬保护为 0%／0%／10%，为账号、云存档、Chat、Transfer 与 Whiteboard 等必要业务保留至少一半当前免费写入余量。公共遥测判定复用 5 分钟用量快照以减少当天聚合读取，后台面板仍按 30 秒获取新快照；仅仍精确等于旧默认 JSON 的设置自动迁移，管理员自定义策略不覆盖，低写入预案同步进一步收紧。
+- 完整补齐分析数据留存：健康检查的有界 `waitUntil` 清理现分别覆盖 `analytics_page_views`、`analytics_click_events` 与此前遗漏的 `article_view_events`，统一保留 180 天且每表独立检查、限量删除。后台阈值说明、默认输入、页面内更新记录、专用上下文与维护规则已同步，后台 JS cache query 更新为 `20260802-traffic-budget-r1`。
+- 改善搜索发现与文章分享元数据：`sitemap.xml` 固定使用 `https://lusu575.com`，首页 `lastmod` 来自最新已发布内容而非请求当天，并为首页、日语学习工具和所有公开文章加入 zh／en／ja／x-default `hreflang`；文章边缘直达页补充 alternate links、Article URL、Person 作者与 Organization 发布者 JSON-LD。公开主脚本／API 表示版本更新为 `20260802-traffic-discovery-monitoring-r1`，三语 `site-updates` 记录 `seed-update-2026-08-02-traffic-discovery-monitoring` 已同步 fallback、Home 最新五条投影、Functions seed 与 schema seed，顶部日期更新到 2026-08-02。
+- 新增低流量生产冒烟监控：`scripts/production-smoke.mjs` 用有界超时与最多五次重试检查健康接口、首页 canonical 与入口模块、稳定 sitemap／hreflang、一个文章直达页的结构化元数据和一个内容哈希资产的 immutable 缓存；GitHub workflow 在 `Verify` 的 `main` 成功后及每 12 小时运行，默认每轮约三次 Functions／D1 路径读取，持续失败明确让任务失败。`www` 永久跳转与 Cloudflare Web Analytics／RUM 仍需在 Dashboard 单独配置和线上验收，本次未声称已启用，也未执行推送或部署。
+
 ## 2026-08-01
 
 - 在线画板升级到 `v1.0.2`：公共画板和所有密码房显式共用唯一铅笔草图默认值；Yjs 文档更新改为仅在真实变化时按 250／500／1000ms 合并发送，游标为 100ms 临时广播，持续绘制期间 D1 房间摘要最多约每分钟同步一次，并去掉每次增量后的重复元数据写入。可见页每 60 秒的 `ping/pong` 改由 Durable Object WebSocket auto-response 在边缘完成，不唤醒休眠房间；隐藏页 60 秒后先排空未确认画线再停放连接。有 socket 的失联巡检由 15 秒降为 5 分钟，稳定成员不重复写活跃状态，空公共房不再周期轮询，密码房继续最后离开 24 小时删除。短暂连接波动保持无提示，持续重连只显示延迟 3 秒的角落小状态，权限／协议／容量错误仍明确显示。三语 `site-updates` 记录 `seed-update-2026-08-01-whiteboard-calm-efficient-sync` 同步 fallback、Home、Functions 与 schema seed，公开表示版本为 `20260801-whiteboard-calm-sync-r1`。未改动的 Quick Transfer 继续保留自身 `v1.0.1` 与既有内部 asset cache key，主站／画板发版不得连带滚动其他子项目版本或内部资源键。

@@ -31,6 +31,7 @@ function apiEnv(DB) {
 const requiredFiles = [
   ".env.example",
   ".github/workflows/verify.yml",
+  ".github/workflows/production-smoke.yml",
   ".gitignore",
   ".nvmrc",
   "AGENTS.md",
@@ -120,12 +121,14 @@ const requiredFiles = [
   "scripts/build-transfer-icon-atlas.mjs",
   "scripts/check-public-module-graph.mjs",
   "scripts/public-ui-audit.mjs",
+  "scripts/production-smoke.mjs",
   "scripts/run-tests.mjs",
   "tests/api-failure-recovery-gate.test.mjs",
   "tests/anonymous-identity-api.test.mjs",
   "tests/article-prerender.test.mjs",
   "tests/qa-release-contract.test.mjs",
   "tests/public-security-boundaries.test.mjs",
+  "tests/production-smoke.test.mjs",
   "tests/whiteboard-integration-contract.test.mjs",
   "tests/whiteboard-service-api.test.mjs",
   "tools/whiteboard/index.html",
@@ -799,6 +802,8 @@ const gitignore = readRequired(".gitignore");
 const nodeVersion = readRequired(".nvmrc");
 const rootReadme = readRequired("README.md");
 const verifyWorkflow = readRequired(".github/workflows/verify.yml");
+const productionSmokeWorkflow = readRequired(".github/workflows/production-smoke.yml");
+const productionSmokeJs = readRequired("scripts/production-smoke.mjs");
 const wranglerConfig = readRequired("wrangler.jsonc");
 const whiteboardWorkerWranglerConfig = readRequired("workers/whiteboard/wrangler.jsonc");
 const whiteboardIconSource = readRequired("assets/images/generated-icons/whiteboard.source.json");
@@ -812,7 +817,7 @@ const redirectsConfig = readRequired("_redirects");
 const routeLazyVersion = "20260726-security-reliability-r1";
 const trustSafetyStatusVersion = "20260726-security-reliability-r1";
 const knowledgeReaderVersion = "20260728-knowledge-archive-r1";
-const whiteboardReleaseVersion = "20260801-whiteboard-calm-sync-r1";
+const whiteboardReleaseVersion = "20260802-traffic-discovery-monitoring-r1";
 const transferReleaseVersion = "20260801-whiteboard-reliable-sketch-r1";
 const routeStyleVersion = knowledgeReaderVersion;
 const publicRouteVersion = (route) => route === "knowledge"
@@ -1942,7 +1947,7 @@ for (const asset of ["admin.css", "admin.js"]) {
 }
 
 const adminSafetyCacheVersion = "20260801-service-reliability-r1";
-const adminPublicContentVersion = "20260801-service-reliability-r1";
+const adminPublicContentVersion = "20260802-traffic-budget-r1";
 if (!adminHtml.includes(`/admin/admin.css?v=${adminSafetyCacheVersion}`)
   || !adminHtml.includes(`/admin/admin.js?v=${adminPublicContentVersion}`)) {
   fail("admin CSS and JS must use their current cache versions");
@@ -2868,7 +2873,7 @@ const transferLazyVersion = transferReleaseVersion;
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
 const currentMainVersion = whiteboardReleaseVersion;
 const currentCssVersion = trustSafetyStatusVersion;
-const currentPreFinalTelemetryVersion = "20260623-analytics-privacy-r1";
+const currentPreFinalTelemetryVersion = "20260802-traffic-budget-r1";
 const currentGameShellVersion = "20260726-game-network-resilience-r1";
 const currentADarkRoomMobileVersion = "20260726-a-dark-room-mobile-r2";
 const currentLifeRestartMobileTouchVersion = "20260726-life-mobile-touch-r1";
@@ -4219,13 +4224,13 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-08-01-whiteboard-reliable-sketch";
-const finalUpdateSlug = "2026-08-01-whiteboard-reliable-sketch";
+const finalUpdateId = "seed-update-2026-08-02-traffic-discovery-monitoring";
+const finalUpdateSlug = "2026-08-02-traffic-discovery-monitoring";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Reliable Whiteboard Saving and Pencil Sketch Style";
-const finalPublishedAt = "2026-08-01T09:55:00.000Z";
+const finalTitleEn = "Traffic Discovery and Production Monitoring";
+const finalPublishedAt = "2026-08-02T08:20:00.000Z";
 const finalTranslationMinimums = {
   title: 8,
   summary: 24,
@@ -4252,6 +4257,7 @@ const changelog20260727Section = markdownSection(changelog, "## 2026-07-27");
 const changelog20260728Section = markdownSection(changelog, "## 2026-07-28");
 const changelog20260729Section = markdownSection(changelog, "## 2026-07-29");
 const changelog20260801Section = markdownSection(changelog, "## 2026-08-01");
+const changelog20260802Section = markdownSection(changelog, "## 2026-08-02");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -4425,7 +4431,7 @@ if (finalUpdateStarted) {
   }
 
   for (const token of [
-    '<time id="top-updated" datetime="2026-08-01">2026.08.01</time>',
+    '<time id="top-updated" datetime="2026-08-02">2026.08.02</time>',
     `/css/style.css?v=${finalCssVersion}`,
     `/css/mobile-ios-shell.css?v=${knowledgeReaderVersion}`,
     `/js/main.js?v=${finalMainVersion}`
@@ -4443,7 +4449,7 @@ if (finalUpdateStarted) {
     "Functions seed",
     "schema seed"
   ]) {
-    if (!changelog20260801Section.includes(token)) {
+    if (!changelog20260802Section.includes(token)) {
       fail(`CHANGELOG.md final public update sync missing ${token}`);
     }
   }
@@ -4583,6 +4589,33 @@ for (const token of [
 }
 if (/uses:\s+actions\/(?:checkout|setup-node)@v\d+/i.test(verifyWorkflow)) {
   fail(".github/workflows/verify.yml must pin third-party actions to immutable commit SHAs");
+}
+for (const token of [
+  'cron: "37 */12 * * *"',
+  "workflow_run:",
+  "node scripts/production-smoke.mjs",
+  "REQUIRE_WWW_REDIRECT: \"0\"",
+  "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+  "actions/setup-node@820762786026740c76f36085b0efc47a31fe5020"
+]) {
+  if (!productionSmokeWorkflow.includes(token)) {
+    fail(`.github/workflows/production-smoke.yml missing ${token}`);
+  }
+}
+if (/uses:\s+actions\/(?:checkout|setup-node)@v\d+/i.test(productionSmokeWorkflow)) {
+  fail(".github/workflows/production-smoke.yml must pin third-party actions to immutable commit SHAs");
+}
+for (const token of [
+  "/api/health",
+  "/sitemap.xml",
+  "extractArticleSlugFromSitemap",
+  "validateArticleHtml",
+  "max-age=31536000",
+  "SMOKE_ATTEMPTS"
+]) {
+  if (!productionSmokeJs.includes(token)) {
+    fail(`scripts/production-smoke.mjs missing ${token}`);
+  }
 }
 for (const token of ["npm ci", ".env.example", "npm run d1:migrate:local", "npm test", "npm run build", "npm run dev"]) {
   if (!rootReadme.includes(token)) {

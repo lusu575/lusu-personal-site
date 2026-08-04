@@ -14,6 +14,7 @@ import {
 import {
   assertProductionSchedule,
   canonicalRunSha256,
+  fetchPublicArticleWithRetry,
   isAuthorizedManualRecovery,
   parseProductionArgs,
   publicArticleUrls,
@@ -22,6 +23,10 @@ import {
   verifyPublicArticleTranslations,
   validateProductionEndpoint
 } from "../自动新闻/integrations/lusu-site/deliver-production.mjs";
+import {
+  createProxyAwareFetch,
+  proxyOptionsFromEnvironment
+} from "../自动新闻/integrations/lusu-site/network-fetch.mjs";
 import {
   buildProductionChannelSql,
   redactedTokenSummary
@@ -244,6 +249,8 @@ async function writeFormalCoverageFixture(t, {
   withPriorityReview = false,
   withReviewSource = withPriorityReview,
   usagePolicySignals = [],
+  completeReviewPolicy = false,
+  extraRejectedCandidates = 0,
   manifestSchemaVersion = 2,
   runId = "run-20260727T010203Z-feed1234"
 } = {}) {
@@ -286,19 +293,30 @@ async function writeFormalCoverageFixture(t, {
       url: "https://example.test/confirmed-lead-secondary"
     });
     run.candidates[0].sourceUrls.push(items.at(-1).url);
-  }
-  const mustReviewCandidateIds = withPriorityReview
-    ? [
-      "candidate-confirmed-lead",
-      "candidate-confirmed-lead-secondary",
-      "candidate-confirmed-main"
-    ]
-    : [];
-  if (withPriorityReview) {
     const rumorItem = items.find((item) => item.id === "candidate-unverified-rumor");
     rumorItem.metadata.discovery_query_ids = rumorItem.metadata.discovery_query_ids
       .filter((queryId) => queryId !== focusQueryId);
+    if (completeReviewPolicy) {
+      rumorItem.source_type = "google_news";
+    }
   }
+  for (let index = 0; index < extraRejectedCandidates; index += 1) {
+    const source = structuredClone(
+      items.find((item) => item.id === "candidate-unverified-rumor")
+    );
+    source.id = `candidate-regression-${index}`;
+    source.title = `Regression candidate ${index}`;
+    source.url = `https://example.test/regression-${index}`;
+    items.push(source);
+  }
+  const focusedCandidateIds = withPriorityReview
+    ? items
+      .filter((item) => item.metadata.discovery_query_ids.includes(focusQueryId))
+      .map((item) => item.id)
+    : [];
+  const mustReviewCandidateIds = completeReviewPolicy
+    ? items.map((item) => item.id)
+    : focusedCandidateIds;
 
   const identity = {
     engine: "Horizon",
@@ -325,7 +343,7 @@ async function writeFormalCoverageFixture(t, {
       id: "major-model-product",
       queryIds: [focusQueryId],
       sourceIds: [],
-      candidateIds: [...mustReviewCandidateIds]
+      candidateIds: [...focusedCandidateIds]
     }] : []),
     ...(withReviewSource ? [{
       id: "official-product-feed",
@@ -351,7 +369,8 @@ async function writeFormalCoverageFixture(t, {
       priority: item.metadata.coverage_priority,
       ...(manifestSchemaVersion === 2 ? {
         mustReview: mustReviewCandidateIds.includes(item.id),
-        mustReviewQueryIds: mustReviewCandidateIds.includes(item.id)
+        mustReviewQueryIds: withPriorityReview
+            && item.metadata.discovery_query_ids.includes(focusQueryId)
           ? [focusQueryId]
           : [],
         mustReviewSourceIds: withReviewSource
@@ -359,12 +378,16 @@ async function writeFormalCoverageFixture(t, {
           ? ["official-ai-feed"]
           : [],
         reviewLanes: [
-          ...(mustReviewCandidateIds.includes(item.id)
+          ...(withPriorityReview
+              && item.metadata.discovery_query_ids.includes(focusQueryId)
             ? ["major-model-product"]
             : []),
           ...(withReviewSource
               && item.id === "candidate-confirmed-lead-secondary"
             ? ["official-product-feed"]
+            : []),
+          ...(completeReviewPolicy
+            ? ["complete-discovery-review"]
             : [])
         ],
         editorialSignals: usagePolicySignals.length
@@ -441,6 +464,43 @@ async function writeFormalCoverageFixture(t, {
         }
       ];
   }
+  if (manifestSchemaVersion === 2 && completeReviewPolicy) {
+    run.coverageAudit.priorityReview.decisions.push({
+      candidateId: "candidate-unverified-rumor",
+      decision: "selected",
+      editorialClass: "other",
+      substantiveChange: false,
+      score: {
+        reach: 1,
+        magnitude: 2,
+        practicalValue: 2,
+        evidence: 2,
+        total: 7
+      },
+      storyKey: "unverified-rumor",
+      sourceCandidateIds: ["candidate-unverified-rumor"]
+    });
+    for (let index = 0; index < extraRejectedCandidates; index += 1) {
+      run.coverageAudit.priorityReview.decisions.push({
+        candidateId: `candidate-regression-${index}`,
+        decision: "rejected",
+        editorialClass: index % 2 === 0 ? "other" : "capability-availability",
+        substantiveChange: false,
+        score: {
+          reach: 1,
+          magnitude: 1,
+          practicalValue: 1,
+          evidence: 1,
+          total: 4
+        },
+        rejectionReason: "insufficient-evidence",
+        note: `Regression fixture ${index} lacks primary evidence.`
+      });
+    }
+    run.coverageAudit.secondPass.reconsideredCandidateIds = items
+      .filter((item) => item.source_type === "rss")
+      .map((item) => item.id);
+  }
 
   const candidates = {
     schemaVersion: 2,
@@ -503,7 +563,18 @@ async function writeFormalCoverageFixture(t, {
     ...(manifestSchemaVersion === 2 ? {
       mustReviewCandidateIds,
       reviewSources,
-      reviewLanes
+      reviewLanes: [
+        ...reviewLanes,
+        ...(completeReviewPolicy ? [{
+          id: "complete-discovery-review",
+          queryIds: [],
+          sourceIds: [],
+          candidateIds: items.map((item) => item.id)
+        }] : [])
+      ],
+      ...(completeReviewPolicy ? {
+        priorityReviewPolicy: "all-discovered-candidates"
+      } : {})
     } : {})
   };
 
@@ -660,7 +731,10 @@ test("Daily AI News workflow declares the permanent three-section contract", asy
   assert.equal(workflow.delivery.expectedResponseStatus, "published");
   assert.deepEqual(workflow.delivery.postPublishVerification.languages, ["zh", "en", "ja"]);
   assert.equal(workflow.delivery.postPublishVerification.mustFinishBeforeDeadline, true);
-  assert.equal(workflow.delivery.postPublishVerification.retry, false);
+  assert.equal(workflow.delivery.postPublishVerification.retry.method, "GET-only");
+  assert.equal(workflow.delivery.postPublishVerification.retry.maxAttemptsPerLanguage, 3);
+  assert.equal(workflow.delivery.postPublishVerification.retry.payloadMismatchRetry, false);
+  assert.equal(workflow.delivery.postPublishVerification.retry.productionPostRetry, false);
   assert.equal(workflow.delivery.autoPublish, true);
   assert.equal(workflow.delivery.schedulerEnabled, true);
   assert.equal(workflow.delivery.failurePolicy, "fail-closed");
@@ -1280,7 +1354,7 @@ test("protected priority classes cannot be rejected at seven and require substan
   });
   const rejected = highValueRejected.run.coverageAudit.priorityReview.decisions[1];
   rejected.decision = "rejected";
-  rejected.substantiveChange = false;
+  rejected.substantiveChange = true;
   rejected.rejectionReason = "below-importance-threshold";
   rejected.note = "编辑审阅认为影响不足。";
   delete rejected.representativeCandidateId;
@@ -1333,6 +1407,14 @@ test("protected priority candidates may be rejected below seven with an enumerat
   fixture.run.candidates[0].sourceCandidateIds = ["candidate-confirmed-lead"];
   await writeFile(fixture.runPath, `${JSON.stringify(fixture.run, null, 2)}\n`);
 
+  await assert.rejects(
+    () => readAndValidateRun(fixture.runPath),
+    /below-importance-threshold 时 substantiveChange 必须为 true/
+  );
+
+  rejected.substantiveChange = true;
+  await writeFile(fixture.runPath, `${JSON.stringify(fixture.run, null, 2)}\n`);
+
   await assert.doesNotReject(() => readAndValidateRun(fixture.runPath));
 
   rejected.rejectionReason = "free-form-reason";
@@ -1349,6 +1431,19 @@ test("protected priority candidates may be rejected below seven with an enumerat
     () => readAndValidateRun(fixture.runPath),
     /note 必须具体说明拒绝依据/
   );
+
+  rejected.note = "没有发现相对于既有事件阶段的实质变化。";
+  rejected.rejectionReason = "no-material-change";
+  rejected.substantiveChange = true;
+  await writeFile(fixture.runPath, `${JSON.stringify(fixture.run, null, 2)}\n`);
+  await assert.rejects(
+    () => readAndValidateRun(fixture.runPath),
+    /no-material-change 时 substantiveChange 必须为 false/
+  );
+
+  rejected.substantiveChange = false;
+  await writeFile(fixture.runPath, `${JSON.stringify(fixture.run, null, 2)}\n`);
+  await assert.doesNotReject(() => readAndValidateRun(fixture.runPath));
 });
 
 test("usage-policy signals cannot be downgraded to developer-tool or rejected as unimportant", async (t) => {
@@ -1368,7 +1463,7 @@ test("usage-policy signals cannot be downgraded to developer-tool or rejected as
   const decision = lowScore.run.coverageAudit.priorityReview.decisions[2];
   decision.decision = "rejected";
   decision.editorialClass = "usage-policy";
-  decision.substantiveChange = false;
+  decision.substantiveChange = true;
   decision.score = {
     reach: 1,
     magnitude: 1,
@@ -1384,6 +1479,146 @@ test("usage-policy signals cannot be downgraded to developer-tool or rejected as
   await assert.rejects(
     () => readAndValidateRun(lowScore.runPath),
     /不得以重要性不足、例行消息或超出范围为由拒绝/
+  );
+});
+
+test("focused editorial signals cannot be flattened into the other class", async (t) => {
+  const cases = [
+    ["major-model-product-change", "major-model-product"],
+    ["capability-availability-change", "capability-availability"],
+    ["developer-tool-change", "developer-tool"],
+    ["material-price-quota-change", "material-price-quota"],
+    ["strategic-hardware-infrastructure-change", "strategic-hardware-infrastructure"],
+    ["major-tech-finance-change", "major-tech-finance"],
+    ["ai-policy-safety-change", "ai-policy-safety"]
+  ];
+  for (const [signal, expectedClass] of cases) {
+    const fixture = await writeFormalCoverageFixture(t, {
+      withPriorityReview: true,
+      usagePolicySignals: [signal]
+    });
+    const decision = fixture.run.coverageAudit.priorityReview.decisions[2];
+    decision.editorialClass = expectedClass;
+    await writeFile(fixture.runPath, `${JSON.stringify(fixture.run, null, 2)}\n`);
+    await assert.doesNotReject(() => readAndValidateRun(fixture.runPath));
+
+    decision.editorialClass = "other";
+    await writeFile(fixture.runPath, `${JSON.stringify(fixture.run, null, 2)}\n`);
+    await assert.rejects(
+      () => readAndValidateRun(fixture.runPath),
+      /editorialSignals 要求映射到/
+    );
+    if (signal === "material-price-quota-change") {
+      decision.editorialClass = "usage-policy";
+      await writeFile(fixture.runPath, `${JSON.stringify(fixture.run, null, 2)}\n`);
+      await assert.rejects(
+        () => readAndValidateRun(fixture.runPath),
+        /editorialSignals 要求映射到 material-price-quota/
+      );
+    }
+  }
+});
+
+test("compatible product signals allow either matching class while specialized signals win", async (t) => {
+  for (const editorialClass of ["major-model-product", "capability-availability"]) {
+    const fixture = await writeFormalCoverageFixture(t, {
+      withPriorityReview: true,
+      usagePolicySignals: [
+        "major-model-product-change",
+        "capability-availability-change"
+      ]
+    });
+    const decision = fixture.run.coverageAudit.priorityReview.decisions[2];
+    decision.editorialClass = editorialClass;
+    await writeFile(fixture.runPath, `${JSON.stringify(fixture.run, null, 2)}\n`);
+    await assert.doesNotReject(() => readAndValidateRun(fixture.runPath));
+  }
+
+  const specialized = await writeFormalCoverageFixture(t, {
+    withPriorityReview: true,
+    usagePolicySignals: [
+      "major-model-product-change",
+      "material-price-quota-change"
+    ]
+  });
+  const specializedDecision = specialized.run.coverageAudit.priorityReview.decisions[2];
+  specializedDecision.editorialClass = "major-model-product";
+  await writeFile(
+    specialized.runPath,
+    `${JSON.stringify(specialized.run, null, 2)}\n`
+  );
+  await assert.rejects(
+    () => readAndValidateRun(specialized.runPath),
+    /editorialSignals 要求映射到 material-price-quota/
+  );
+});
+
+test("low-volume second pass is later and includes signals, RSS, and protected borderline scores", async (t) => {
+  const fixture = await writeFormalCoverageFixture(t, {
+    withPriorityReview: true,
+    completeReviewPolicy: true
+  });
+  await assert.doesNotReject(() => readAndValidateRun(fixture.runPath));
+
+  fixture.run.coverageAudit.secondPass.reconsideredCandidateIds.pop();
+  await writeFile(fixture.runPath, `${JSON.stringify(fixture.run, null, 2)}\n`);
+  await assert.rejects(
+    () => readAndValidateRun(fixture.runPath),
+    /必须至少覆盖全部 editorialSignals 候选、RSS 候选和 protected 5\/6 分拒稿/
+  );
+
+  fixture.run.coverageAudit.secondPass.reconsideredCandidateIds =
+    fixture.candidateIndex.items
+      .filter((item) => item.sourceType === "rss")
+      .map((item) => item.id);
+  fixture.run.coverageAudit.secondPass.reconsideredCandidateIds.push(
+    "candidate-unverified-rumor"
+  );
+  await writeFile(fixture.runPath, `${JSON.stringify(fixture.run, null, 2)}\n`);
+  await assert.doesNotReject(() => readAndValidateRun(fixture.runPath));
+
+  fixture.run.coverageAudit.secondPass.completedAt =
+    fixture.run.coverageAudit.candidateIndexReviewedAt;
+  await writeFile(fixture.runPath, `${JSON.stringify(fixture.run, null, 2)}\n`);
+  await assert.rejects(
+    () => readAndValidateRun(fixture.runPath),
+    /completedAt 必须严格晚于初审 candidateIndexReviewedAt/
+  );
+});
+
+test("all-discovered review fails closed on August 3 style classification and score collapse", async (t) => {
+  const allOther = await writeFormalCoverageFixture(t, {
+    withPriorityReview: true,
+    completeReviewPolicy: true,
+    extraRejectedCandidates: 60
+  });
+  for (const decision of allOther.run.coverageAudit.priorityReview.decisions) {
+    decision.editorialClass = "other";
+  }
+  await writeFile(allOther.runPath, `${JSON.stringify(allOther.run, null, 2)}\n`);
+  await assert.rejects(
+    () => readAndValidateRun(allOther.runPath),
+    /候选量充足但全部被统一标为 other/
+  );
+
+  const scoreCollapse = await writeFormalCoverageFixture(t, {
+    withPriorityReview: true,
+    completeReviewPolicy: true,
+    extraRejectedCandidates: 60
+  });
+  await assert.doesNotReject(() => readAndValidateRun(scoreCollapse.runPath));
+  for (const decision of scoreCollapse.run.coverageAudit.priorityReview.decisions) {
+    if (decision.decision === "rejected") {
+      decision.editorialClass = "other";
+    }
+  }
+  await writeFile(
+    scoreCollapse.runPath,
+    `${JSON.stringify(scoreCollapse.run, null, 2)}\n`
+  );
+  await assert.rejects(
+    () => readAndValidateRun(scoreCollapse.runPath),
+    /至少 90% 的拒稿使用完全相同的编辑类别与四项评分模板/
   );
 });
 
@@ -1778,6 +2013,92 @@ test("Daily AI News production delivery verifies all three public article repres
     lang: "ja",
     run
   }), /ja 公开文章核验失败/);
+});
+
+test("Daily AI News network client uses explicit HTTP proxy environment without exposing it", async () => {
+  assert.deepEqual(proxyOptionsFromEnvironment({
+    HTTP_PROXY: "http://127.0.0.1:6789",
+    HTTPS_PROXY: "http://127.0.0.1:6789",
+    ALL_PROXY: "http://127.0.0.1:9",
+    NO_PROXY: "127.0.0.1,localhost"
+  }), {
+    httpProxy: "http://127.0.0.1:6789",
+    httpsProxy: "http://127.0.0.1:6789",
+    noProxy: "127.0.0.1,localhost"
+  });
+
+  const dispatcher = {
+    closed: false,
+    async close() {
+      this.closed = true;
+    }
+  };
+  let receivedDispatcher = null;
+  const network = createProxyAwareFetch({
+    environment: {},
+    dispatcherFactory: () => dispatcher,
+    fetchImpl: async (_url, options) => {
+      receivedDispatcher = options.dispatcher;
+      return new Response("ok");
+    }
+  });
+  const response = await network.fetch("https://example.com/");
+  assert.equal(await response.text(), "ok");
+  assert.equal(receivedDispatcher, dispatcher);
+  await network.close();
+  assert.equal(dispatcher.closed, true);
+  assert.throws(() => network.fetch("https://example.com/"), /已经关闭/);
+});
+
+test("Daily AI News public readback retries only transient GET failures", async () => {
+  const run = validRun();
+  let attempts = 0;
+  const article = {
+    slug: run.delivery.slug,
+    category: "daily-ai-news",
+    status: "published",
+    lang: "zh",
+    requested_lang: "zh",
+    title: run.delivery.translations.zh.title,
+    content_markdown: run.delivery.translations.zh.content_markdown
+  };
+
+  const result = await fetchPublicArticleWithRetry({
+    url: `https://lusu575.com/api/articles/${run.delivery.slug}?lang=zh`,
+    lang: "zh",
+    run,
+    deadlineAt: Date.now() + 1_000,
+    retryDelaysMs: [0],
+    sleep: async () => {},
+    fetchImpl: async (_url, options) => {
+      attempts += 1;
+      assert.equal(options.method, "GET");
+      if (attempts === 1) {
+        return new Response("temporary", { status: 503 });
+      }
+      return new Response(JSON.stringify({ article }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" }
+      });
+    }
+  });
+  assert.equal(result.slug, run.delivery.slug);
+  assert.equal(attempts, 2);
+
+  attempts = 0;
+  await assert.rejects(fetchPublicArticleWithRetry({
+    url: `https://lusu575.com/api/articles/${run.delivery.slug}?lang=zh`,
+    lang: "zh",
+    run,
+    deadlineAt: Date.now() + 1_000,
+    retryDelaysMs: [0, 0],
+    sleep: async () => {},
+    fetchImpl: async () => {
+      attempts += 1;
+      throw new TypeError("fetch failed");
+    }
+  }), /最多 3 次只读 GET.*生产 POST 不得自动重发/);
+  assert.equal(attempts, 3);
 });
 
 test("Daily AI News production secret helpers preserve unrelated values and never expose the token", () => {

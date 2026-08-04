@@ -50,6 +50,7 @@
 ## 文件
 
 - `workflow.json`：日历、数量、身份、证据、图片和投递总契约
+- `../network-fetch.mjs`：Daily AI News 与工具雷达共用的代理感知 Node 网络客户端；只读取标准代理环境变量，不输出代理值或凭据
 - `discovery-catalog.json`：每周必须覆盖的八条发现方向
 - `ARTICLE_STYLE.md`：三语文章固定格式
 - `VISUAL_METHOD.md`：每周复用的视觉任务、取景、权利与失败关闭方法
@@ -101,4 +102,4 @@ node "自动新闻/integrations/lusu-site/tool-radar/validate-run.mjs" --run "<�
 
 令牌只从进程环境或被 Git 忽略的根 `.dev.vars` 读取，变量名为 `TOOL_RADAR_TOKEN`。目录快照放在已被 Horizon 子项目忽略的 `自动新闻/data/mcp-runs/`，不得提交令牌、抓取缓存或临时素材。有图的期次还必须先完成正常站点部署；投递器会顺序预检正文使用的内容哈希版本 URL，对瞬时网络／HTTP 故障做有界重试，并在 POST 前把 HTTP 状态、MIME 与运行记录 SHA-256 全部对齐，避免公开文章引用 404、HTML 错误页或旧缓存图片。
 
-后端分类、机器入口、D1 唯一目录、后台控制和根 `package.json` scripts 由主站接线；在这些接线完成前，本目录的生产投递器会安全失败，不能当成已经上线。投递通道启用但 auto-publish 关闭时，成功结果是三语草稿；只有服务端明确返回 `published` 时才进行三语公开回读。
+后端分类、机器入口、D1 唯一目录、后台控制和根 `package.json` scripts 由主站接线；在这些接线完成前，本目录的生产投递器会安全失败，不能当成已经上线。生产目录读取、图片预检、文章 POST 与公开回读统一通过 `../network-fetch.mjs` 遵循 `HTTP_PROXY`／`HTTPS_PROXY`／`NO_PROXY`，用于兼容本机代理 fake-IP 网络；日志不得输出代理地址、凭据或令牌。投递通道启用但 auto-publish 关闭时，成功结果是三语草稿；只有服务端明确返回 `published` 时才进行三语公开回读。每次执行的文章 POST 只发送一次；POST 成功后若公开回读状态不明，不得重跑投递器或重复 POST。

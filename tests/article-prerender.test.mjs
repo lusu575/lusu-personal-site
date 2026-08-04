@@ -44,6 +44,12 @@ test("article metadata uses the actual translation and canonical article URL", (
   assert.equal(metadata.locale, "ja_JP");
   assert.equal(metadata.documentTitle, "安全な記事 | LuSu Site");
   assert.equal(metadata.canonical, "https://lusu575.com/articles/safe-article?lang=ja");
+  assert.deepEqual(metadata.alternateUrls, {
+    zh: "https://lusu575.com/articles/safe-article?lang=zh",
+    en: "https://lusu575.com/articles/safe-article?lang=en",
+    ja: "https://lusu575.com/articles/safe-article?lang=ja",
+    "x-default": "https://lusu575.com/articles/safe-article?lang=zh"
+  });
   assert.equal(metadata.image, "https://lusu575.com/assets/images/cover.png");
   assert.equal(metadata.publishedAt, "2026-07-26T00:00:00.000Z");
 });
