@@ -86,7 +86,7 @@ export const REMOTE_MIGRATION_VERIFICATION_QUERIES = Object.freeze([
     union all
     select 'article-seed-release-marker', count(*)
     from site_runtime_state
-    where key = 'article_seed_version' and value = '20260802-traffic-discovery-monitoring-r1'
+    where key = 'article_seed_version' and value = '20260806-site-guides-password-rooms-r1'
     union all
     select 'whiteboard-reliable-sketch-update-article', count(*)
     from articles where article_id = 'seed-update-2026-08-01-whiteboard-reliable-sketch'

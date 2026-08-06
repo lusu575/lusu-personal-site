@@ -19,6 +19,7 @@ const aiAgentWorkflowArticleId = "seed-ai-agent-workflow-guide-2026-06-14";
 const aiAgentWorkflowPinRepairKey = "article_ai_agent_workflow_pin_repair_v1";
 const multiplayerWhiteboardArticleId = "seed-update-2026-07-30-multiplayer-whiteboard";
 const serviceReliabilityArticleId = "seed-update-2026-08-01-service-reliability";
+const passwordRoomGuideArticleId = "seed-site-guide-whiteboard-chat-password-rooms-2026-08-06";
 
 test("D1 schema initializes an empty database and remains idempotent", () => {
   const db = new DatabaseSync(":memory:");
@@ -52,6 +53,14 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
       db.prepare("select count(*) as count from article_translations where article_id = ?").get(serviceReliabilityArticleId).count,
       3
     );
+    assert.equal(
+      db.prepare("select count(*) as count from articles where article_id = ? and category = 'site-guides'").get(passwordRoomGuideArticleId).count,
+      1
+    );
+    assert.equal(
+      db.prepare("select count(*) as count from article_translations where article_id = ?").get(passwordRoomGuideArticleId).count,
+      3
+    );
     const trafficSettings = JSON.parse(
       db.prepare("select value from site_runtime_state where key = 'traffic_control_settings_v1'").get().value
     );
@@ -61,7 +70,7 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
     assert.equal(trafficSettings.sampling.hard.clicks, 0);
     assert.equal(
       db.prepare("select value from site_runtime_state where key = 'article_seed_version'").get().value,
-      "20260802-traffic-discovery-monitoring-r1"
+      "20260806-site-guides-password-rooms-r1"
     );
     assert.deepEqual(
       db.prepare("pragma table_info(whiteboard_rooms)").all().map((column) => column.name),

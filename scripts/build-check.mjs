@@ -817,7 +817,7 @@ const redirectsConfig = readRequired("_redirects");
 const routeLazyVersion = "20260726-security-reliability-r1";
 const trustSafetyStatusVersion = "20260726-security-reliability-r1";
 const knowledgeReaderVersion = "20260728-knowledge-archive-r1";
-const whiteboardReleaseVersion = "20260802-traffic-discovery-monitoring-r1";
+const whiteboardReleaseVersion = "20260806-site-guides-password-rooms-r1";
 const transferReleaseVersion = "20260801-whiteboard-reliable-sketch-r1";
 const routeStyleVersion = knowledgeReaderVersion;
 const publicRouteVersion = (route) => route === "knowledge"
@@ -4224,13 +4224,13 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-08-02-traffic-discovery-monitoring";
-const finalUpdateSlug = "2026-08-02-traffic-discovery-monitoring";
+const finalUpdateId = "seed-update-2026-08-06-site-guides-password-rooms";
+const finalUpdateSlug = "2026-08-06-site-guides-password-rooms";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Traffic Discovery and Production Monitoring";
-const finalPublishedAt = "2026-08-02T08:20:00.000Z";
+const finalTitleEn = "Website Guides and Password Room Guide";
+const finalPublishedAt = "2026-08-06T00:55:00.000Z";
 const finalTranslationMinimums = {
   title: 8,
   summary: 24,
@@ -4257,7 +4257,7 @@ const changelog20260727Section = markdownSection(changelog, "## 2026-07-27");
 const changelog20260728Section = markdownSection(changelog, "## 2026-07-28");
 const changelog20260729Section = markdownSection(changelog, "## 2026-07-29");
 const changelog20260801Section = markdownSection(changelog, "## 2026-08-01");
-const changelog20260802Section = markdownSection(changelog, "## 2026-08-02");
+const changelog20260806Section = markdownSection(changelog, "## 2026-08-06");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -4431,7 +4431,7 @@ if (finalUpdateStarted) {
   }
 
   for (const token of [
-    '<time id="top-updated" datetime="2026-08-02">2026.08.02</time>',
+    '<time id="top-updated" datetime="2026-08-06">2026.08.06</time>',
     `/css/style.css?v=${finalCssVersion}`,
     `/css/mobile-ios-shell.css?v=${knowledgeReaderVersion}`,
     `/js/main.js?v=${finalMainVersion}`
@@ -4449,7 +4449,7 @@ if (finalUpdateStarted) {
     "Functions seed",
     "schema seed"
   ]) {
-    if (!changelog20260802Section.includes(token)) {
+    if (!changelog20260806Section.includes(token)) {
       fail(`CHANGELOG.md final public update sync missing ${token}`);
     }
   }

@@ -1,6 +1,36 @@
 export const content = {
   updates: [
     {
+      "article_id": "seed-update-2026-08-06-site-guides-password-rooms",
+      "slug": "2026-08-06-site-guides-password-rooms",
+      "category": "site-updates",
+      "tags": ["网站更新", "知识库", "网站使用指南", "密码房"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-06T00:55:00.000Z",
+      "updated_at": "2026-08-06T00:55:00.000Z",
+      "published_at": "2026-08-06T00:55:00.000Z",
+      "fallbackOnly": true,
+      "icon": "knowledge",
+      "date": "2026.08.06",
+      "title": {
+        "zh": "新增“网站使用指南”和密码房攻略",
+        "en": "Website Guides and Password Room Guide",
+        "ja": "「サイト利用ガイド」とパスワードルーム案内を追加"
+      },
+      "summary": {
+        "zh": "知识库新增固定“网站使用指南”专区，并用一篇轻松攻略讲清匿名聊天室和在线画板的密码房，配有电脑端、手机端实拍图。",
+        "en": "Knowledge now has a permanent Website Guides section and one relaxed password-room walkthrough for Anonymous Chat and Online Whiteboard, with real desktop and mobile screenshots.",
+        "ja": "知識庫に固定の「サイト利用ガイド」を追加し、匿名チャットとオンラインホワイトボードのパスワードルームを実際のPC・スマホ画像でやさしく案内します。"
+      },
+      "content_markdown": {
+        "zh": "# 新增“网站使用指南”和密码房攻略\n\n知识库现在多了一个固定的“网站使用指南”专区，先从大家比较容易问到的密码房开始。\n\n## 这次加了什么\n\n- 新增“网站使用指南”固定分类，后面的网站功能攻略会继续放在这里。\n- 发布《密码房怎么用：匿名聊天室 + 在线画板轻松上手》。\n- 同一篇文章分别说明聊天室和画板的用法，不会把两个功能混成一个房间。\n- 加入电脑端、手机端共四张线上实拍图，密码框保持安全，截图不包含真实密码。\n- 中文、English、日本語三种版本一起上线。",
+        "en": "# Website Guides and Password Room Guide\n\nKnowledge now has a permanent Website Guides section, starting with one of the most common questions: how password rooms work.\n\n## What is new\n\n- Added a permanent Website Guides category for future site walkthroughs.\n- Published “How to Use Password Rooms: Anonymous Chat + Online Whiteboard.”\n- One article explains both tools separately, without suggesting that their rooms are connected.\n- Added four real production screenshots covering desktop and mobile, with no real password visible.\n- Published Chinese, English, and Japanese versions together.",
+        "ja": "# 「サイト利用ガイド」とパスワードルーム案内を追加\n\n知識庫に固定の「サイト利用ガイド」を追加しました。最初の記事では、よく質問されるパスワードルームの使い方を案内します。\n\n## 今回の追加内容\n\n- 今後のサイト機能案内をまとめる固定カテゴリ「サイト利用ガイド」を追加しました。\n- 「パスワードルームの使い方：匿名チャット＋オンラインホワイトボード」を公開しました。\n- 一つの記事で二つのツールを別々に説明し、同じルームだと誤解しない構成にしました。\n- PC・スマホ合計4枚の本番画面を追加し、実際のパスワードは画像に残していません。\n- 中国語、English、日本語の3言語版を同時に追加しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-02-traffic-discovery-monitoring",
       "slug": "2026-08-02-traffic-discovery-monitoring",
       "category": "site-updates",

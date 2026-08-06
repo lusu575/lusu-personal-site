@@ -797,6 +797,356 @@ insert into article_translations (
 
 GitHub 在正式验证完成后以及每 12 小时运行一次低请求量冒烟检查，核对健康接口、首页、sitemap、文章直达页和内容哈希静态资源。短暂部署波动会有界重试，持续失败会让任务明确报错。www 到主域的永久跳转与真实用户性能监控仍需在 Cloudflare 控制台配置后单独验收，本次仓库更新不虚报已启用。',
     '2026-08-02T08:20:00.000Z',
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-08-06-site-guides-password-rooms',
+  '2026-08-06-site-guides-password-rooms',
+  'site-updates',
+  '["网站更新","知识库","网站使用指南","密码房"]',
+  '', 'published', 0, 0,
+  '2026-08-06T00:55:00.000Z',
+  '2026-08-06T00:55:00.000Z',
+  '2026-08-06T00:55:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  (
+    'seed-update-2026-08-06-site-guides-password-rooms-zh',
+    'seed-update-2026-08-06-site-guides-password-rooms',
+    'zh',
+    '新增“网站使用指南”和密码房攻略',
+    '知识库新增固定“网站使用指南”专区，并用一篇轻松攻略讲清匿名聊天室和在线画板的密码房，配有电脑端、手机端实拍图。',
+    '# 新增“网站使用指南”和密码房攻略
+
+知识库现在多了一个固定的“网站使用指南”专区，先从大家比较容易问到的密码房开始。
+
+## 这次加了什么
+
+- 新增“网站使用指南”固定分类，后面的网站功能攻略会继续放在这里。
+- 发布《密码房怎么用：匿名聊天室 + 在线画板轻松上手》。
+- 同一篇文章分别说明聊天室和画板的用法，不会把两个功能混成一个房间。
+- 加入电脑端、手机端共四张线上实拍图，密码框保持安全，截图不包含真实密码。
+- 中文、English、日本語三种版本一起上线。',
+    '2026-08-06T00:55:00.000Z',
+    '2026-08-06T00:55:00.000Z'
+  ),
+  (
+    'seed-update-2026-08-06-site-guides-password-rooms-en',
+    'seed-update-2026-08-06-site-guides-password-rooms',
+    'en',
+    'Website Guides and Password Room Guide',
+    'Knowledge now has a permanent Website Guides section and one relaxed password-room walkthrough for Anonymous Chat and Online Whiteboard, with real desktop and mobile screenshots.',
+    '# Website Guides and Password Room Guide
+
+Knowledge now has a permanent Website Guides section, starting with one of the most common questions: how password rooms work.
+
+## What is new
+
+- Added a permanent Website Guides category for future site walkthroughs.
+- Published “How to Use Password Rooms: Anonymous Chat + Online Whiteboard.”
+- One article explains both tools separately, without suggesting that their rooms are connected.
+- Added four real production screenshots covering desktop and mobile, with no real password visible.
+- Published Chinese, English, and Japanese versions together.',
+    '2026-08-06T00:55:00.000Z',
+    '2026-08-06T00:55:00.000Z'
+  ),
+  (
+    'seed-update-2026-08-06-site-guides-password-rooms-ja',
+    'seed-update-2026-08-06-site-guides-password-rooms',
+    'ja',
+    '「サイト利用ガイド」とパスワードルーム案内を追加',
+    '知識庫に固定の「サイト利用ガイド」を追加し、匿名チャットとオンラインホワイトボードのパスワードルームを実際のPC・スマホ画像でやさしく案内します。',
+    '# 「サイト利用ガイド」とパスワードルーム案内を追加
+
+知識庫に固定の「サイト利用ガイド」を追加しました。最初の記事では、よく質問されるパスワードルームの使い方を案内します。
+
+## 今回の追加内容
+
+- 今後のサイト機能案内をまとめる固定カテゴリ「サイト利用ガイド」を追加しました。
+- 「パスワードルームの使い方：匿名チャット＋オンラインホワイトボード」を公開しました。
+- 一つの記事で二つのツールを別々に説明し、同じルームだと誤解しない構成にしました。
+- PC・スマホ合計4枚の本番画面を追加し、実際のパスワードは画像に残していません。
+- 中国語、English、日本語の3言語版を同時に追加しました。',
+    '2026-08-06T00:55:00.000Z',
+    '2026-08-06T00:55:00.000Z'
+  )
+on conflict(translation_id) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-site-guide-whiteboard-chat-password-rooms-2026-08-06',
+  'whiteboard-chat-password-room-guide',
+  'site-guides',
+  '["网站使用指南","密码房","匿名聊天室","在线画板"]',
+  '', 'published', 0, 0,
+  '2026-08-06T00:54:00.000Z',
+  '2026-08-06T00:54:00.000Z',
+  '2026-08-06T00:54:00.000Z'
+)
+on conflict(article_id) do nothing;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  (
+    'seed-site-guide-whiteboard-chat-password-rooms-2026-08-06-zh',
+    'seed-site-guide-whiteboard-chat-password-rooms-2026-08-06',
+    'zh',
+    '密码房怎么用：匿名聊天室 + 在线画板轻松上手',
+    '一篇讲清匿名聊天室和在线画板的密码房：怎么进、怎么邀请朋友、手机上怎么用，以及两种房间各自的24小时清理规则。',
+    '# 密码房怎么用：匿名聊天室 + 在线画板轻松上手
+
+想和朋友单独聊几句，或者开一块只有你们知道的画板？用“密码房”就行。
+
+先说清楚：这篇把匿名聊天室和在线画板放在一起讲，只是为了方便看。它们还是两个完全独立的工具。同一个密码填进两边，也不会把聊天和画板合成一个房间。
+
+## 开始前，先记住三件事
+
+1. 在同一个工具里，大家输入完全相同的密码，就会进入同一个密码房。
+2. 密码不会自动放进分享链接，也不会替你保存在浏览器里。把入口和密码分开发给朋友，会更稳妥。
+3. 用一串够长、别人不容易猜到的新密码。别拿邮箱、银行卡或其他重要账号密码来复用。
+
+## 匿名聊天室：怎么进密码房
+
+电脑上打开“匿名聊天室”，右上角点“密码房”，就会出现密码输入框。
+
+![电脑端匿名聊天室的密码房入口](assets/images/articles/site-guides/password-room-chat-desktop.png?v=1375ed179bd8)
+
+操作很简单：
+
+1. 输入至少 6 个字符的密码。
+2. 点“进入”。
+3. 界面变成暗色，顶部显示“密码房”，就算进去了。
+4. 让朋友也打开匿名聊天室，输入同一串密码，就能来到同一个聊天房。
+
+手机上步骤一样，只是按钮排得更紧凑。进入后会看到暗色聊天界面，右上角的“普通房间”可以随时带你回大厅。
+
+![手机端已经进入匿名聊天室密码房](assets/images/articles/site-guides/password-room-chat-mobile.png?v=15fa03aaa16b)
+
+每条消息最多 300 个字，3 秒可以发一条。刷新页面后会回到普通房间，想继续聊就要重新输入密码。
+
+聊天室消息会在浏览器里加密后再发送，不过它不是“随便设个弱密码也绝对安全”的保险箱。密码太简单仍可能被猜到，当前网页代码也需要可信，所以特别敏感的内容还是别往里放。
+
+## 在线画板：怎么进密码房
+
+从首页进“工具”，打开“在线画板”。电脑端入口页里有一张很明显的“密码房”卡片。
+
+![电脑端在线画板的密码房入口](assets/images/articles/site-guides/password-room-whiteboard-desktop.png?v=bc9e88c78701)
+
+接着这样做：
+
+1. 在“房间密码”里输入 4–128 个字符。
+2. 点“进入密码房”。
+3. 顶部看到“密码房”和“已连接”后，再开始画。
+4. 朋友从同一个画板入口输入相同密码，就会进到同一块隔离画板。
+
+手机上也是同一套流程。单指画画，双指缩放和平移；顶部的“导出”和“退出画板”都还在。
+
+![手机端已经连接在线画板密码房](assets/images/articles/site-guides/password-room-whiteboard-mobile.png?v=44578f131f03)
+
+要邀请别人时，打开“导出”菜单，复制或分享画板入口，再把密码单独告诉对方。链接本身不带密码。画完重要内容，建议先导出 PNG 或 SVG，等保存完成后再退出。
+
+画板密码房是“用密码隔开房间”，画布内容仍会同步到服务器，不要把它理解成密码端到端加密的保险箱。
+
+## 24 小时规则，怎么记最省事
+
+- 聊天室看“最后一条新消息”：超过 24 小时没有新消息，密码房里的聊天记录会被清理。只是进入或看看，不会续期。
+- 画板看“最后一个人离开”：最后一位真实连接者离开后开始算 24 小时。期间有人回来会取消倒计时；再次空房就重新计算。到期后整块画板和里面的图片一起清理。
+
+一句话记住：聊天室看最后一条消息，画板看最后一个人离开。
+
+## 卡住了，先检查这里
+
+- 两个人有没有进同一个工具？聊天室密码和画板密码不会互通。
+- 密码有没有完全一致？字母大小写、数字和符号都要对上。
+- 刷新过页面吗？两边刷新后都要重新输入密码。
+- 画板顶部还没显示“已连接”？先等一下再画。
+
+就这些。密码房本身不复杂：选对工具、大家填同一个密码、用完记得导出或退出，就可以了。',
+    '2026-08-06T00:54:00.000Z',
+    '2026-08-06T00:54:00.000Z'
+  ),
+  (
+    'seed-site-guide-whiteboard-chat-password-rooms-2026-08-06-en',
+    'seed-site-guide-whiteboard-chat-password-rooms-2026-08-06',
+    'en',
+    'How to Use Password Rooms: Anonymous Chat + Online Whiteboard',
+    'A simple guide to entering password rooms in Anonymous Chat and Online Whiteboard, inviting friends, using them on mobile, and understanding each 24-hour cleanup rule.',
+    '# How to Use Password Rooms: Anonymous Chat + Online Whiteboard
+
+Want a separate place to chat with friends, or a whiteboard only your group knows about? Use a password room.
+
+One important note first: this guide puts Anonymous Chat and Online Whiteboard in one article only for convenience. They are still two completely separate tools. Using the same password in both does not connect the chat room to the whiteboard.
+
+## Three things to remember
+
+1. Inside the same tool, people who enter the exact same password reach the same password room.
+2. The password is not added to a share link or saved for you in the browser. Send the entry link and password separately.
+3. Use a new, long password that is hard to guess. Do not reuse an email, banking, or other important account password.
+
+## Anonymous Chat: entering a password room
+
+On desktop, open Anonymous Chat and select “Password room” in the upper-right area. The password form appears below the room controls.
+
+![Anonymous Chat password-room entry on desktop](assets/images/articles/site-guides/password-room-chat-desktop.png?v=1375ed179bd8)
+
+Then:
+
+1. Enter a password with at least 6 characters.
+2. Select “Enter.”
+3. When the interface turns dark and the header says “Password room,” you are in.
+4. Ask your friend to open Anonymous Chat and enter the same password.
+
+The mobile flow is the same, with a tighter layout. Once inside, the dark room and the “Public room” button make the current state clear.
+
+![Anonymous Chat password room on mobile](assets/images/articles/site-guides/password-room-chat-mobile.png?v=15fa03aaa16b)
+
+Each message can contain up to 300 characters, and one message can be sent every 3 seconds. Refreshing returns you to the public room, so you need to enter the password again.
+
+Chat messages are encrypted in the browser before they are sent, but this is not a magic vault that makes a weak password safe. A guessable password can still be attacked, and the current site code must be trusted. Avoid putting highly sensitive information here.
+
+## Online Whiteboard: entering a password room
+
+From Home, open Tools and then Online Whiteboard. On desktop, the lobby has a clear Password room card.
+
+![Online Whiteboard password-room entry on desktop](assets/images/articles/site-guides/password-room-whiteboard-desktop.png?v=bc9e88c78701)
+
+Next:
+
+1. Enter 4–128 characters in the room-password field.
+2. Select “Enter password room.”
+3. Wait until the header shows “Password room” and “Connected” before drawing.
+4. Anyone who opens the same whiteboard entry and uses the same password joins that isolated board.
+
+The mobile controls work the same way. Draw with one finger, and use two fingers to zoom and pan. Export and Leave board remain in the top bar.
+
+![Connected Online Whiteboard password room on mobile](assets/images/articles/site-guides/password-room-whiteboard-mobile.png?v=44578f131f03)
+
+To invite someone, open Export and copy or share the whiteboard entry, then tell them the password separately. The link does not contain the password. For anything important, export a PNG or SVG and wait for saving to finish before leaving.
+
+A whiteboard password room isolates access by password, but the canvas still synchronizes with the server. It is not password-based end-to-end encryption.
+
+## The easy way to remember the 24-hour rules
+
+- Chat follows the last new message. After 24 hours without a new message, that password room history is cleaned up. Entering or reading alone does not extend it.
+- Whiteboard follows the last person leaving. Its 24-hour timer starts after the final real connection leaves. Re-entry cancels the timer; the next empty period starts it again. Expiry removes the whole board and its images.
+
+In one line: Chat watches the last message; Whiteboard watches the last person leaving.
+
+## If something does not work
+
+- Are both people using the same tool? Chat and Whiteboard passwords do not cross over.
+- Does the password match exactly, including case, numbers, and symbols?
+- Did the page refresh? Both tools require the password again after a refresh.
+- Does Whiteboard still say “Connecting”? Wait for “Connected” before drawing.
+
+That is it: choose the right tool, enter the same password, and export or leave when you are done.',
+    '2026-08-06T00:54:00.000Z',
+    '2026-08-06T00:54:00.000Z'
+  ),
+  (
+    'seed-site-guide-whiteboard-chat-password-rooms-2026-08-06-ja',
+    'seed-site-guide-whiteboard-chat-password-rooms-2026-08-06',
+    'ja',
+    'パスワードルームの使い方：匿名チャット＋オンラインホワイトボード',
+    '匿名チャットとオンラインホワイトボードのパスワードルームについて、入室、招待、スマホ操作、それぞれの24時間削除ルールをやさしく説明します。',
+    '# パスワードルームの使い方：匿名チャット＋オンラインホワイトボード
+
+友だちだけで少し話したい、または仲間だけが知っているホワイトボードを使いたい。そんなときは「パスワードルーム」を使います。
+
+最初に一つだけ大事な点です。この案内は見やすいように匿名チャットとオンラインホワイトボードを一つの記事にまとめていますが、機能は完全に別です。両方に同じパスワードを入れても、チャットと画板が一つのルームになることはありません。
+
+## 最初に覚える三つのこと
+
+1. 同じツール内で、全員がまったく同じパスワードを入力すると同じパスワードルームに入れます。
+2. パスワードは共有リンクに入らず、ブラウザーにも保存されません。入口とパスワードは分けて相手に伝えると安心です。
+3. 長くて推測されにくい新しいパスワードを使いましょう。メール、銀行、重要なアカウントのパスワードは使い回さないでください。
+
+## 匿名チャット：パスワードルームへの入り方
+
+PCでは「匿名チャット」を開き、右上の「パスワードルーム」を押すと入力欄が表示されます。
+
+![PC版匿名チャットのパスワードルーム入口](assets/images/articles/site-guides/password-room-chat-desktop.png?v=1375ed179bd8)
+
+手順は簡単です。
+
+1. 6文字以上のパスワードを入力します。
+2. 「入る」を押します。
+3. 画面が暗くなり、上部に「パスワードルーム」と表示されたら入室完了です。
+4. 相手にも匿名チャットを開いて同じパスワードを入力してもらいます。
+
+スマホも同じ流れです。入室後は暗いチャット画面になり、右上の「通常ルーム」からいつでも公開ルームへ戻れます。
+
+![スマホ版匿名チャットのパスワードルーム](assets/images/articles/site-guides/password-room-chat-mobile.png?v=15fa03aaa16b)
+
+一通は最大300文字で、3秒ごとに一通送れます。ページを更新すると通常ルームへ戻るため、続けるときはもう一度パスワードを入力します。
+
+メッセージはブラウザーで暗号化してから送信されますが、弱いパスワードまで絶対安全にする金庫ではありません。推測されやすいパスワードには危険があり、現在のサイトコードも信頼する必要があります。特に機密性の高い内容は入れないでください。
+
+## オンラインホワイトボード：パスワードルームへの入り方
+
+Homeから「ツール」を開き、「オンラインホワイトボード」へ進みます。PCの入口画面には「パスワードルーム」のカードがあります。
+
+![PC版オンラインホワイトボードのパスワードルーム入口](assets/images/articles/site-guides/password-room-whiteboard-desktop.png?v=bc9e88c78701)
+
+次の手順です。
+
+1. ルームパスワード欄に4〜128文字を入力します。
+2. 「パスワードルームへ」を押します。
+3. 上部に「パスワードルーム」と「接続済み」が表示されてから描き始めます。
+4. 相手も同じ画板入口で同じパスワードを入力すると、同じ隔離画板に入れます。
+
+スマホも流れは同じです。1本指で描画し、2本指で拡大縮小と移動ができます。「出力」と「画板を退出」は上部にあります。
+
+![接続済みのスマホ版オンラインホワイトボード](assets/images/articles/site-guides/password-room-whiteboard-mobile.png?v=44578f131f03)
+
+招待するときは「出力」を開いて画板入口をコピーまたは共有し、パスワードは別に伝えます。リンクにはパスワードが入りません。大切な内容はPNGまたはSVGで出力し、保存完了を待ってから退出するのがおすすめです。
+
+画板のパスワードルームはパスワードでアクセスを分ける仕組みですが、キャンバスはサーバーと同期します。パスワードによるエンドツーエンド暗号化ではありません。
+
+## 24時間ルールの簡単な覚え方
+
+- チャットは「最後の新しいメッセージ」を見ます。新しいメッセージがないまま24時間たつと、そのルームの履歴を削除します。入室や閲覧だけでは延長されません。
+- 画板は「最後の人が退出した時」を見ます。最後の実接続が離れると24時間の計時が始まり、再入室で取り消され、再び空になると計り直します。期限になると画板全体と画像を削除します。
+
+一言で覚えるなら、チャットは最後のメッセージ、画板は最後の人の退出です。
+
+## うまくいかないとき
+
+- 二人とも同じツールを開いていますか。チャットと画板のパスワードはつながりません。
+- 大文字・小文字、数字、記号まで完全に同じですか。
+- ページを更新しましたか。どちらも更新後はパスワードを入れ直します。
+- 画板がまだ「接続中」ですか。「接続済み」になってから描いてください。
+
+以上です。正しいツールを選び、全員が同じパスワードを入れ、終わったら出力または退出すれば大丈夫です。',
+    '2026-08-06T00:54:00.000Z',
+    '2026-08-06T00:54:00.000Z'
+  )
+on conflict(translation_id) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
     '2026-08-02T08:20:00.000Z'
   ),
   (
@@ -11264,7 +11614,7 @@ on conflict(article_id) do update set
   published_at = excluded.published_at;
 
 insert into site_runtime_state (key, value, updated_at)
-values ('article_seed_version', '20260802-traffic-discovery-monitoring-r1', '2026-08-02T08:20:00.000Z')
+values ('article_seed_version', '20260806-site-guides-password-rooms-r1', '2026-08-06T00:55:00.000Z')
 on conflict(key) do update set
   value = excluded.value,
   updated_at = excluded.updated_at

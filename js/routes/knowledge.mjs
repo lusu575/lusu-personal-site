@@ -9,7 +9,11 @@ const articleImageDimensionMap = Object.freeze({
   "assets/images/articles/tool-radar/2026-07-28/remotion-official-studio.webp": Object.freeze({ width: 1440, height: 810 }),
   "assets/images/articles/tool-radar/2026-07-28/repomix-official-browser-pack.webp": Object.freeze({ width: 1280, height: 800 }),
   "assets/images/articles/tool-radar/2026-07-28/context7-official-doc-chat.webp": Object.freeze({ width: 1020, height: 1554 }),
-  "assets/images/articles/tool-radar/2026-07-28/pinokio-official-install-check.webp": Object.freeze({ width: 1440, height: 825 })
+  "assets/images/articles/tool-radar/2026-07-28/pinokio-official-install-check.webp": Object.freeze({ width: 1440, height: 825 }),
+  "assets/images/articles/site-guides/password-room-chat-desktop.png": Object.freeze({ width: 1440, height: 900 }),
+  "assets/images/articles/site-guides/password-room-chat-mobile.png": Object.freeze({ width: 390, height: 844 }),
+  "assets/images/articles/site-guides/password-room-whiteboard-desktop.png": Object.freeze({ width: 1440, height: 900 }),
+  "assets/images/articles/site-guides/password-room-whiteboard-mobile.png": Object.freeze({ width: 390, height: 844 })
 });
 
 export const PUBLIC_ARTICLE_ARCHIVE_LIMIT = 500;
@@ -167,6 +171,7 @@ export function createKnowledgeRoute({
   siteUpdateCategory,
   dailyAiNewsCategory,
   toolRadarCategory,
+  siteGuidesCategory,
   getCurrentLang,
   t,
   boundedHistoryScrollTop,
@@ -265,7 +270,7 @@ export function createKnowledgeRoute({
     const layout = document.querySelector("#knowledge .folder-layout");
     const searchBar = document.getElementById("knowledge-searchbar");
     const categories = knowledgeCategoryValues(articleState.articles, {
-      fixedCategories: [dailyAiNewsCategory, toolRadarCategory],
+      fixedCategories: [dailyAiNewsCategory, toolRadarCategory, siteGuidesCategory],
       firstCategory: dailyAiNewsCategory,
       lastCategory: siteUpdateCategory,
       labelFor: articleCategoryName
@@ -337,6 +342,13 @@ export function createKnowledgeRoute({
         && !hasSearchTerm
       ) {
         renderListMessage(list, t("toolRadarEmpty"));
+        return;
+      }
+      if (
+        activeFilters.knowledge === siteGuidesCategory
+        && !hasSearchTerm
+      ) {
+        renderListMessage(list, t("siteGuidesEmpty"));
         return;
       }
       if (!articleState.articles.length) {

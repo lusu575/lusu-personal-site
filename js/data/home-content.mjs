@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-08-06-site-guides-password-rooms",
+      "slug": "2026-08-06-site-guides-password-rooms",
+      "category": "site-updates",
+      "tags": ["网站更新", "知识库", "网站使用指南", "密码房"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-06T00:55:00.000Z",
+      "updated_at": "2026-08-06T00:55:00.000Z",
+      "published_at": "2026-08-06T00:55:00.000Z",
+      "fallbackOnly": true,
+      "icon": "knowledge",
+      "date": "2026.08.06",
+      "title": {
+        "zh": "新增“网站使用指南”和密码房攻略",
+        "en": "Website Guides and Password Room Guide",
+        "ja": "「サイト利用ガイド」とパスワードルーム案内を追加"
+      },
+      "summary": {
+        "zh": "知识库新增固定“网站使用指南”专区，并用一篇轻松攻略讲清匿名聊天室和在线画板的密码房，配有电脑端、手机端实拍图。",
+        "en": "Knowledge now has a permanent Website Guides section and one relaxed password-room walkthrough for Anonymous Chat and Online Whiteboard, with real desktop and mobile screenshots.",
+        "ja": "知識庫に固定の「サイト利用ガイド」を追加し、匿名チャットとオンラインホワイトボードのパスワードルームを実際のPC・スマホ画像でやさしく案内します。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-02-traffic-discovery-monitoring",
       "slug": "2026-08-02-traffic-discovery-monitoring",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "修复 Cloudflare 密码派生兼容性导致的登录失败，并停止文章种子在冷启动时重复写入 D1，降低账号、匿名身份和在线画板共用数据库时的写入压力。",
         "en": "Fixes sign-in failures caused by a Cloudflare password-derivation incompatibility and stops article seeds from rewriting D1 on cold starts, reducing shared write pressure for accounts, anonymous identity, and Whiteboard.",
         "ja": "Cloudflare のパスワード導出互換性によるログイン失敗を修正し、コールドスタート時の記事 seed による D1 の反復書き込みを止め、アカウント・匿名ID・ホワイトボード共通DBの負荷を下げました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-07-30-multiplayer-whiteboard",
-      "slug": "2026-07-30-multiplayer-whiteboard",
-      "category": "site-updates",
-      "tags": ["网站更新", "工具区", "在线画板", "实时协作", "匿名身份"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-07-30T08:30:00.000Z",
-      "updated_at": "2026-07-30T08:30:00.000Z",
-      "published_at": "2026-07-30T08:30:00.000Z",
-      "fallbackOnly": true,
-      "icon": "resources",
-      "date": "2026.07.30",
-      "title": {
-        "zh": "工具区多人在线画板上线",
-        "en": "Multiplayer Whiteboard Is Live in Tools",
-        "ja": "ツールに共同オンラインホワイトボードを追加"
-      },
-      "summary": {
-        "zh": "工具区新增免登录多人在线画板，支持公共与密码房、实时鼠标和临时名字、统一匿名身份、图片、PNG/SVG 导出，以及密码房无人后24小时保留。",
-        "en": "Tools now includes a sign-in-free multiplayer whiteboard with public and password rooms, live cursors and temporary names, one shared anonymous identity, images, PNG/SVG export, and 24-hour retention for empty password rooms.",
-        "ja": "ツールにログイン不要の共同ホワイトボードを追加しました。公開・パスワードルーム、リアルタイムカーソルと一時名、共通匿名ID、画像、PNG/SVG出力、空室後24時間の保持に対応します。"
       }
     }
   ]

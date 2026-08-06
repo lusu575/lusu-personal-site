@@ -94,6 +94,14 @@ test("known article images reserve their intrinsic aspect ratio", () => {
     articleImageDimensions("assets/images/articles/tool-radar/2026-07-28/60fps-official-gallery.webp?v=1"),
     { width: 1280, height: 800 }
   );
+  assert.deepEqual(
+    articleImageDimensions("assets/images/articles/site-guides/password-room-chat-desktop.png?v=1375ed179bd8"),
+    { width: 1440, height: 900 }
+  );
+  assert.deepEqual(
+    articleImageDimensions("assets/images/articles/site-guides/password-room-whiteboard-mobile.png?v=44578f131f03"),
+    { width: 390, height: 844 }
+  );
   assert.equal(
     articleImageDimensions("assets/images/articles/tool-radar/2026-07-28/context7-explainer.png"),
     null
@@ -153,28 +161,30 @@ test("Site Updates stay out of All and remain available in their dedicated categ
   );
 });
 
-test("Daily AI News and Tool Radar remain stable leading categories while Site Updates remains last", async () => {
+test("Daily AI News, Tool Radar, and Website Guides remain stable leading categories while Site Updates remains last", async () => {
   const categories = knowledgeCategoryValues([
     { category: "note" },
     { category: "site-updates" },
     { category: "daily-ai-news" },
     { category: "tool-radar" },
+    { category: "site-guides" },
     { category: "note" }
   ], {
-    fixedCategories: ["daily-ai-news", "tool-radar"],
+    fixedCategories: ["daily-ai-news", "tool-radar", "site-guides"],
     firstCategory: "daily-ai-news",
     lastCategory: "site-updates",
     labelFor: (value) => ({ note: "Notes" }[value] || value)
   });
-  assert.deepEqual(categories, ["daily-ai-news", "tool-radar", "note", "site-updates"]);
+  assert.deepEqual(categories, ["daily-ai-news", "tool-radar", "site-guides", "note", "site-updates"]);
   assert.deepEqual(knowledgeCategoryValues([], {
-    fixedCategories: ["daily-ai-news", "tool-radar"],
+    fixedCategories: ["daily-ai-news", "tool-radar", "site-guides"],
     firstCategory: "daily-ai-news",
     lastCategory: "site-updates"
-  }), ["daily-ai-news", "tool-radar"]);
+  }), ["daily-ai-news", "tool-radar", "site-guides"]);
 
   for (const language of ["zh", "en", "ja"]) {
     assert.ok(translations[language].toolRadarEmpty.trim());
+    assert.ok(translations[language].siteGuidesEmpty.trim());
   }
 
   const [mainSource, routeSource] = await Promise.all([
@@ -182,9 +192,12 @@ test("Daily AI News and Tool Radar remain stable leading categories while Site U
     readFile(new URL("../js/routes/knowledge.mjs", import.meta.url), "utf8")
   ]);
   assert.match(mainSource, /const toolRadarCategory = "tool-radar"/);
+  assert.match(mainSource, /const siteGuidesCategory = "site-guides"/);
   assert.match(mainSource, /"tool-radar":\s*\{[\s\S]*?zh:\s*"工具雷达"[\s\S]*?en:\s*"Tool Radar"[\s\S]*?ja:\s*"ツールレーダー"/);
-  assert.match(routeSource, /fixedCategories:\s*\[dailyAiNewsCategory,\s*toolRadarCategory\]/);
+  assert.match(mainSource, /"site-guides":\s*\{[\s\S]*?zh:\s*"网站使用指南"[\s\S]*?en:\s*"Website Guides"[\s\S]*?ja:\s*"サイト利用ガイド"/);
+  assert.match(routeSource, /fixedCategories:\s*\[dailyAiNewsCategory,\s*toolRadarCategory,\s*siteGuidesCategory\]/);
   assert.match(routeSource, /activeFilters\.knowledge === toolRadarCategory[\s\S]*?t\("toolRadarEmpty"\)/);
+  assert.match(routeSource, /activeFilters\.knowledge === siteGuidesCategory[\s\S]*?t\("siteGuidesEmpty"\)/);
 });
 
 test("API article languages map to valid document language tags", () => {

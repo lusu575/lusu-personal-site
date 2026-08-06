@@ -3,8 +3,8 @@ import {
   isI18nNodeInScope,
   normalizeLanguage,
   translationFor
-} from "./core/i18n.mjs?v=20260802-traffic-discovery-monitoring-r1";
-import { homeContent } from "./data/home-content.mjs?v=20260802-traffic-discovery-monitoring-r1";
+} from "./core/i18n.mjs?v=20260806-site-guides-password-rooms-r1";
+import { homeContent } from "./data/home-content.mjs?v=20260806-site-guides-password-rooms-r1";
 import { blogManifest } from "./data/blog-manifest.mjs?v=20260718-resource-icons-layout-r1";
 import { createRouteLifecycle, isAbortError } from "./core/route-lifecycle.mjs?v=20260718-resource-icons-layout-r1";
 import { createRouter } from "./core/router.mjs?v=20260718-resource-icons-layout-r1";
@@ -102,6 +102,7 @@ let welcomeSeenDayInMemory = "";
 const siteUpdateCategory = "site-updates";
 const dailyAiNewsCategory = "daily-ai-news";
 const toolRadarCategory = "tool-radar";
+const siteGuidesCategory = "site-guides";
 const publicLoopNightlyUpdateSlug = "2026-06-18-main-visual-polish-cycle";
 const publicLoopNightlyUpdateTitleEn = "Main Site Visual Polish Cycle";
 const publicLoopNightlyCollapsedSlugs = new Set([
@@ -126,6 +127,11 @@ const articleCategoryLabels = {
     zh: "工具雷达",
     en: "Tool Radar",
     ja: "ツールレーダー"
+  },
+  "site-guides": {
+    zh: "网站使用指南",
+    en: "Website Guides",
+    ja: "サイト利用ガイド"
   },
   "site-updates": {
     zh: "网站更新记录",
@@ -161,6 +167,10 @@ const tagLabels = {
   "经验": { zh: "经验", en: "Experience", ja: "経験" },
   "文章": { zh: "文章", en: "Article", ja: "記事" },
   "知识库": { zh: "知识库", en: "Knowledge", ja: "知識庫" },
+  "网站使用指南": { zh: "网站使用指南", en: "Website guide", ja: "サイト利用ガイド" },
+  "密码房": { zh: "密码房", en: "Password room", ja: "パスワードルーム" },
+  "匿名聊天室": { zh: "匿名聊天室", en: "Anonymous chat", ja: "匿名チャット" },
+  "在线画板": { zh: "在线画板", en: "Online whiteboard", ja: "オンラインホワイトボード" },
   "标签": { zh: "标签", en: "Tag", ja: "タグ" },
   "搜索": { zh: "搜索", en: "Search", ja: "検索" },
   "文章详情": { zh: "文章详情", en: "Article detail", ja: "記事詳細" },
@@ -447,7 +457,7 @@ function loadStyledRoute(route, moduleLoader, instantiate) {
 
 const routeModuleRegistry = createRouteModuleRegistry({
   loaders: {
-    knowledge: () => loadStyledRoute("knowledge", () => import("./routes/knowledge.mjs?v=20260802-traffic-discovery-monitoring-r1"),
+    knowledge: () => loadStyledRoute("knowledge", () => import("./routes/knowledge.mjs?v=20260806-site-guides-password-rooms-r1"),
       ({ createKnowledgeRoute }) => instantiateKnowledgeRoute(createKnowledgeRoute)),
     videos: () => loadStyledRoute("videos", () => Promise.all([
       import("./routes/videos.mjs?v=20260726-security-reliability-r1"),
@@ -455,7 +465,7 @@ const routeModuleRegistry = createRouteModuleRegistry({
     ]), ([{ createVideosRoute }, { videosContent }]) => instantiateVideosRoute(createVideosRoute, videosContent)),
     resources: () => Promise.all([
       import("./routes/resources.mjs?v=20260726-security-reliability-r1"),
-      import("./data/resources-content.mjs?v=20260802-traffic-discovery-monitoring-r1")
+      import("./data/resources-content.mjs?v=20260806-site-guides-password-rooms-r1")
     ]).then(([{ createResourcesRoute }, { resourcesContent }]) => instantiateResourcesRoute(createResourcesRoute, resourcesContent)),
     games: () => loadStyledRoute("games", () => import("./routes/games.mjs?v=20260726-security-reliability-r1"),
       ({ createGamesRoute }) => instantiateGamesRoute(createGamesRoute)),
@@ -1528,6 +1538,7 @@ function instantiateKnowledgeRoute(createKnowledgeRoute) {
     siteUpdateCategory,
     dailyAiNewsCategory,
     toolRadarCategory,
+    siteGuidesCategory,
     getCurrentLang: () => currentLang,
     t,
     boundedHistoryScrollTop,

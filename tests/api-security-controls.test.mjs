@@ -591,7 +591,7 @@ test("sitemap output stays on the canonical origin with stable multilingual alte
     assert.match(xml, /xmlns:xhtml="http:\/\/www\.w3\.org\/1999\/xhtml"/);
     assert.doesNotMatch(xml, /https:\/\/example\.test/);
     assert.match(xml, /<loc>https:\/\/lusu575\.com\/\?lang=zh<\/loc>/);
-    assert.match(xml, /<lastmod>2026-08-02<\/lastmod>/);
+    assert.match(xml, /<lastmod>2026-08-06<\/lastmod>/);
     for (const lang of ["zh", "en", "ja", "x-default"]) {
       assert.match(xml, new RegExp(`hreflang="${lang}"`));
     }

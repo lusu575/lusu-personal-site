@@ -4,6 +4,7 @@
 
 ## 2026-08-06
 
+- 知识库新增固定 `site-guides` 专区，三语显示为“网站使用指南 / Website Guides / サイト利用ガイド”，固定排在每日 AI 新闻、工具雷达之后和普通分类、网站更新之前；发布三语《密码房怎么用：匿名聊天室 + 在线画板轻松上手》，用四张来自正式站点的 1440×900 电脑端与 390×844 手机端实拍图分别说明两项独立功能。正文明确聊天室与画板不会因同一密码互通，分别说明 6 字符／4–128 字符入口、浏览器端加密边界、分享方式及两种不同的 24 小时清理规则。三语 `site-updates` 记录 `seed-update-2026-08-06-site-guides-password-rooms` 已同步 `content` fallback、Home 最新五条投影、Functions seed 与 schema seed；公开/API/文章 seed 和 main.js cache query 更新为 `20260806-site-guides-password-rooms-r1`，顶部日期更新到 2026-08-06。本次只新增文章、知识库接线和文章图片，没有命中在线画板子项目 tracked paths，因此画板仍为 v1.0.2。
 - 根治 Daily AI News “抓到却漏审”的最新绕过方式：复盘 8 月 6 日正式运行发现，1,997 条候选中的豆包／SeedRealtime 等受保护线索已经进入索引，但临时编辑脚本按候选 ID 轮换套用 4 组评分和少量拒稿模板；旧校验只拦截单一模板占 90%，因此结构完整的批量伪审阅仍能通过。校验器新增少量评分／结论轮换检测，已用同一份正式运行记录验证其会准确 fail closed，并新增 hash／下标轮换回归。
 - coverage manifest 新增 `protectedEventReviewPolicy: evidence-backed-protected-events-v1`，并从 2026-08-07 起强制存在、不可通过删除字段降级。后续正式运行无论已选多少条，都必须在 `coverageAudit.protectedEventReview` 中把全部编辑信号、RSS、受保护类别和 selected／merged 候选按事件阶段恰好覆盖一次，记录直达可靠 HTTPS 来源、当前阶段首次可靠发布时间、证据摘要及四项具体评分理由；聚合页不能冒充证据，无来源不得伪填时间，至少一半事件复用同一证据／理由也会关闭投递。`secondPass` 仍只由少于 5 条触发，两道门禁互不替代。
 - 拆分字节跳动发现入口：豆包中文／英文产品动态、Seed 通用模型、SeedRealtime／Seed-ASR／Seed-TTS／全双工语音改为独立 required + must-review 查询，原综合 `bytedance-models-zh` 降为补充，Seedance／Seedream／Dreamina 专项保持不变。同步工作流、自动任务提示、写作规范、项目上下文、AGENTS、维护 Skill／README 与 Python／Node 回归；本次未自动改写或重发已经发布的 8 月 6 日日报。

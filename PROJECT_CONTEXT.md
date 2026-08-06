@@ -1,5 +1,12 @@
 # PROJECT_CONTEXT.md
 
+## 2026-08-06 网站使用指南与密码房攻略
+
+- Knowledge 新增固定分类 `site-guides`，公开名称固定为“网站使用指南 / Website Guides / サイト利用ガイド”。筛选顺序为 `daily-ai-news`、`tool-radar`、`site-guides`、其他动态分类，`site-updates` 始终最后；即使暂时没有文章，三个固定内容专区也必须保留入口和各自三语空状态。
+- 首篇指南 article id 为 `seed-site-guide-whiteboard-chat-password-rooms-2026-08-06`，公开 slug 为 `whiteboard-chat-password-room-guide`。Functions 与 `cloudflare/schema.sql` 都提供 zh／en／ja seed，metadata 采用 insert-only，避免后续管理员编辑被启动 seed 覆盖；正文图片固定使用 `assets/images/articles/site-guides/` 下的四张内容哈希 URL，并在 Knowledge 图片尺寸表登记 1440×900 与 390×844 原始尺寸。
+- 这篇文章只是把匿名聊天室与在线画板放在同一篇攻略里，不代表功能合并：同一密码不会让两项工具共享房间或状态。聊天室要求至少 6 字符，消息在浏览器端加密但不能宣传为绝对端到端安全；其私房按最后一条新消息计算 24 小时。画板密码为 4–128 字符，链接与本地存储不包含密码，画布仍同步服务端；其私房从最后一条真实连接离开后计算 24 小时，重入取消、再次空房重计，到期清理整房与图片。
+- 本批公开更新记录为 `seed-update-2026-08-06-site-guides-password-rooms`，公开/API/文章 seed 版本为 `20260806-site-guides-password-rooms-r1`，Home 与顶栏日期为 2026-08-06。此次没有修改 `tools/whiteboard/`、`workers/whiteboard/` 或 `docs/whiteboard/` tracked paths，因此不得连带提升画板 v1.0.2。
+
 ## 2026-08-06 每日 AI 新闻防漏审与证据事件复核
 
 - 8 月 6 日漏新闻的根因不是抓取量不足：正式运行 `run-20260805T230214Z-c0ddb215` 已取得 1,997 条候选、403 条编辑信号候选和 29 条 RSS 候选，并发布 9 条；但临时编辑脚本把绝大多数拒稿按候选 ID 轮换套入 4 组固定分数与少量结论模板。豆包／SeedRealtime 等线索实际已进入候选索引，却没有得到逐事件、逐来源判断。此前只拦截“90% 完全相同类别与分数”的校验无法识别这种轮换模板。

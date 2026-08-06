@@ -34,8 +34,9 @@ test("public modal fixes preserve readable depth and compact failed-video geomet
   );
 });
 
-test("the traffic monitoring release leads the five-item trilingual projection while older Knowledge updates remain archived", async () => {
-  const updateId = "seed-update-2026-08-02-traffic-discovery-monitoring";
+test("the website-guide release leads the five-item trilingual projection while older Knowledge updates remain archived", async () => {
+  const updateId = "seed-update-2026-08-06-site-guides-password-rooms";
+  const trafficUpdateId = "seed-update-2026-08-02-traffic-discovery-monitoring";
   const calmWhiteboardUpdateId = "seed-update-2026-08-01-whiteboard-calm-efficient-sync";
   const reliableWhiteboardUpdateId = "seed-update-2026-08-01-whiteboard-reliable-sketch";
   const serviceReliabilityUpdateId = "seed-update-2026-08-01-service-reliability";
@@ -48,14 +49,15 @@ test("the traffic monitoring release leads the five-item trilingual projection w
 
   assert.equal(content.updates[0].article_id, updateId);
   assert.equal(homeContent.updates[0].article_id, updateId);
-  assert.equal(content.updates[1].article_id, calmWhiteboardUpdateId);
-  assert.equal(homeContent.updates[1].article_id, calmWhiteboardUpdateId);
-  assert.equal(content.updates[2].article_id, reliableWhiteboardUpdateId);
-  assert.equal(homeContent.updates[2].article_id, reliableWhiteboardUpdateId);
-  assert.equal(content.updates[3].article_id, serviceReliabilityUpdateId);
-  assert.equal(homeContent.updates[3].article_id, serviceReliabilityUpdateId);
-  assert.equal(content.updates[4].article_id, whiteboardUpdateId);
-  assert.equal(homeContent.updates[4].article_id, whiteboardUpdateId);
+  assert.equal(content.updates[1].article_id, trafficUpdateId);
+  assert.equal(homeContent.updates[1].article_id, trafficUpdateId);
+  assert.equal(content.updates[2].article_id, calmWhiteboardUpdateId);
+  assert.equal(homeContent.updates[2].article_id, calmWhiteboardUpdateId);
+  assert.equal(content.updates[3].article_id, reliableWhiteboardUpdateId);
+  assert.equal(homeContent.updates[3].article_id, reliableWhiteboardUpdateId);
+  assert.equal(content.updates[4].article_id, serviceReliabilityUpdateId);
+  assert.equal(homeContent.updates[4].article_id, serviceReliabilityUpdateId);
+  assert.ok(content.updates.some((update) => update.article_id === whiteboardUpdateId));
   assert.ok(content.updates.some((update) => update.article_id === knowledgeUpdateId));
   assert.equal(homeContent.updates.length, 5);
   for (const lang of ["zh", "en", "ja"]) {
@@ -78,7 +80,7 @@ test("the traffic monitoring release leads the five-item trilingual projection w
 test("Knowledge Markdown links use a fresh cache version without invalidating unrelated public assets", () => {
   const stableVersion = "20260726-security-reliability-r1";
   const knowledgeReaderVersion = "20260728-knowledge-archive-r1";
-  const toolRadarVersion = "20260802-traffic-discovery-monitoring-r1";
+  const toolRadarVersion = "20260806-site-guides-password-rooms-r1";
   const transferVersion = "20260801-whiteboard-reliable-sketch-r1";
   const index = read("index.html");
   const main = read("js/main.js");
