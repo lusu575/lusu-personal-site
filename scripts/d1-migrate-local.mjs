@@ -40,7 +40,8 @@ const COMPATIBILITY_TABLES = new Set([
   "transfer_rooms",
   "transfer_items",
   "article_delivery_channels",
-  "article_delivery_events"
+  "article_delivery_events",
+  "japanese_subtext_profiles"
 ]);
 
 export const COMPATIBILITY_COLUMN_MIGRATIONS = Object.freeze([
@@ -56,7 +57,9 @@ export const COMPATIBILITY_COLUMN_MIGRATIONS = Object.freeze([
   ["transfer", "transfer_rooms", "sync_generation", "integer not null default 0"],
   ["transfer", "transfer_items", "idempotency_key", "text not null default ''"],
   ["article-delivery", "article_delivery_channels", "auto_publish", "integer not null default 0"],
-  ["article-delivery", "article_delivery_events", "payload_hash", "text not null default ''"]
+  ["article-delivery", "article_delivery_events", "payload_hash", "text not null default ''"],
+  ["japanese-subtext-agent", "japanese_subtext_profiles", "last_agent_operation_id", "text not null default ''"],
+  ["japanese-subtext-agent", "japanese_subtext_profiles", "last_agent_payload_hash", "text not null default ''"]
 ].map(([group, table, column, definition]) => Object.freeze({
   group,
   table,
@@ -204,12 +207,32 @@ export async function migrateLocalD1() {
     where type = 'index' and name = 'whiteboard_bans_active_scope_subject_idx'
     `),
     ...await queryRows(`
+    select 'japanese-agent-operation-column' as item, count(*) as present
+    from pragma_table_info('japanese_subtext_profiles') where name = 'last_agent_operation_id'
+    union all
+    select 'japanese-agent-payload-column', count(*)
+    from pragma_table_info('japanese_subtext_profiles') where name = 'last_agent_payload_hash'
+    union all
+    select 'japanese-agent-attempts-table', count(*)
+    from sqlite_master where type = 'table' and name = 'japanese_subtext_agent_attempts'
+    union all
+    select 'japanese-agent-receipts-table', count(*)
+    from sqlite_master where type = 'table' and name = 'japanese_subtext_agent_receipts'
+    `),
+    ...await queryRows(`
+    select 'japanese-agent-attempts-index' as item, count(*) as present
+    from sqlite_master where type = 'index' and name = 'japanese_subtext_agent_attempts_created_idx'
+    union all
+    select 'japanese-agent-receipts-index', count(*)
+    from sqlite_master where type = 'index' and name = 'japanese_subtext_agent_receipts_created_idx'
+    `),
+    ...await queryRows(`
     select 'traffic-control-default-state' as item, count(*) as present
     from site_runtime_state where key = 'traffic_control_settings_v1'
     union all
     select 'article-seed-release-marker', count(*)
     from site_runtime_state
-    where key = 'article_seed_version' and value = '20260806-agent-read-breadth-r1'
+    where key = 'article_seed_version' and value = '20260806-japanese-agent-progress-r1'
     union all
     select 'whiteboard-reliable-sketch-update-article', count(*)
     from articles where article_id = 'seed-update-2026-08-01-whiteboard-reliable-sketch'

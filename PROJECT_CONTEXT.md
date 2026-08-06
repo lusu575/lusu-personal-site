@@ -1,5 +1,14 @@
 # PROJECT_CONTEXT.md
 
+## 2026-08-06 AI 能力层第四阶段：日语账号进度闭环
+
+- “日语的言外之意”新增面向本地 CLI／stdio MCP 的账号能力：`japanese-subtext:progress:read` 读取当前关卡、已解锁关卡、通关／奖牌汇总、可选单关进度与最多 90 天的有界活动；`japanese-subtext:progress:write` 提交语义答题。两项 scope 都不是设备登录默认权限，Agent Bearer 只映射自己的普通用户记录，不能继承 admin 或读取他人进度。
+- Agent 写入不复用浏览器完整进度快照 PUT。调用方只能提交已解锁关卡 ID、关卡 revision、64 位 contentHash、完整逐题选项、进度 expectedRevision 与 operationId；服务端重新读取锁定题库并计算分数、通关、奖牌、尝试次数、活动和下一关解锁，拒绝客户端派生字段、旧题库、旧 revision、漏题／重题／未知选项和同 ID 异载荷。
+- Agent 辅助答题固定按 `bilingual` 记录，`usedTranslation`／`usedKana` 为 true、`usedListeningMode` 为 false，通关奖牌最高为 bronze，不能冒充纯听训练金牌。Agent 活动按固定站点时区 `Asia/Shanghai` 归日，进度响应显式返回该时区。幂等收据绑定用户、operationId 与 canonical payload SHA-256；相同载荷在 180 天保留窗口内重放不重复计次，换载荷复用返回 409；客户端必须永久生成新 operationId，不能把过期清理后的旧 ID 当成可复用 ID。浏览器 Cookie GET／PUT 的多设备合并语义保持不变。
+- 设备码授权轮询在一次网络失败、请求中止或 408／425／500／502／503／504 等明确瞬态故障后，会在设备码剩余有效期内有界退避继续；不会输出访问令牌、代理值或底层网络细节。批准和一次性令牌签发仍由站点用户在浏览器明确完成。
+- 本次不改日语公开界面、250 关题库、音频或存档兼容边界，因此工具 `appVersion` 保持 1.0.3、`contentVersion` 保持 1.0.2。因 `agent-auth.mjs`、registry、`SiteClient`、CLI、stdio MCP 与相关测试属于 Quick Transfer 共享受管路径，Quick Transfer 从 1.0.3 精确升至 1.0.4，但互传房间、口令、加密、R2、Multipart、配额、鉴权与 24 小时生命周期均未改变；在线画板未命中受管路径，仍为 1.0.4。
+- 独立 `workers/site-mcp/` 继续未部署，且没有接入日语账号读写或其他远程写能力。公开更新记录为 `seed-update-2026-08-06-japanese-agent-progress`，公开/API/文章 seed 与主模块缓存版本为 `20260806-japanese-agent-progress-r1`；正式上线仍必须完成本地门禁、Production D1 migration／回读、GitHub `main` 合并、Pages 部署与正式域名点检后再记录为已发布。
+
 ## 2026-08-06 AI 能力层第三阶段：公开只读能力扩展
 
 - 本地 CLI 与 stdio MCP 在既有文章列表／搜索／详情和视频列表之外，补齐单个视频详情、真实工具目录、游戏目录，以及“日语的言外之意”等级／关卡列表／单关详情。工具目录只公开在线画板、Quick Transfer 和日语工具三项真实入口；占位卡片没有稳定 `toolId`，不得进入机器能力面。
@@ -9,8 +18,8 @@
 - 本地 credential 现在与设备登录时的规范化 HTTP(S) origin 绑定；`--base-url`、`LUSU_BASE_URL` 或 MCP `baseUrl` 切到 Preview／其他 origin 时不会复用、发送或删除生产 Bearer。只有操作者显式提供的 stdin／环境 token 才绑定当前覆盖 origin，CLI 普通命令、auth status/logout 与 stdio MCP 共用同一匹配规则。
 - 因 registry、`SiteClient`、CLI 与本地 MCP 位于 Quick Transfer 的共享受管路径，Quick Transfer 按治理规则从 1.0.2 精确升至 1.0.3；房间、口令、文字加密、文件存储、配额、Multipart、鉴权和 24 小时生命周期均未改变。
 - 因固定工具目录同时新增 `whiteboard` 能力域和 `/tools/whiteboard/` 入口契约，在线画板按治理规则从 1.0.3 精确升至 1.0.4；三项工具契约按工具拆分，白板与 Quick Transfer 只追踪各自专属模块。共享目录的可见版本再以项目 `toolId` 锚点、有界窗口和精确模板校验，既避免机器入口或卡片版本变化绕过升版，也不让无关工具变化误触。画板房间协议、Agent scope、Yjs／DO／R2 与生命周期均未改变。
-- 本批公开记录为 `seed-update-2026-08-06-agent-read-breadth`，公开/API/文章 seed 与主模块缓存版本为 `20260806-agent-read-breadth-r1`。正式发布仍只允许 GitHub `main` 触发 Pages；第三阶段分支完成全部门禁前不得合并或把本地实现描述为已上线。
-- 本地最终验证：根测试 522 / 522，白板前端 8 / 8、Worker 44 / 44，Quick Transfer 50 / 50，2048 14 / 14，未部署远程 MCP 工程 4 / 4；Lint、TypeScript、21 模块公共依赖图、子项目治理、正式构建和连续双构建复现均通过。Headless 公开界面 release 审计通过 192 项（147 个路由／语言／视口组合），A Dark Room 旋转专项通过；产物清单 SHA-256 为 `044bb4a3ea16f1685854b6148d54ba4cd595af9d8dece78321b9d15a2fecae0c`。这些本地结果不代替分支合并后的 Production D1／Pages／正式域名验收。
+- 本批公开记录为 `seed-update-2026-08-06-agent-read-breadth`，公开/API/文章 seed 与主模块缓存版本为 `20260806-agent-read-breadth-r1`。Phase 3 已通过 PR #8 合并到 `main`，提交为 `48bf92c9ce1dd2423eea902fcee2ee287075efb9`，GitHub 触发的 Cloudflare Pages Production 部署和正式域名只读点检均通过；独立远程 MCP Worker 仍按范围明确未部署。
+- 本地最终验证：根测试 522 / 522，白板前端 8 / 8、Worker 44 / 44，Quick Transfer 50 / 50，2048 14 / 14，未部署远程 MCP 工程 4 / 4；Lint、TypeScript、21 模块公共依赖图、子项目治理、正式构建和连续双构建复现均通过。Headless 公开界面 release 审计通过 192 项（147 个路由／语言／视口组合），A Dark Room 旋转专项通过；产物清单 SHA-256 为 `044bb4a3ea16f1685854b6148d54ba4cd595af9d8dece78321b9d15a2fecae0c`。Production D1 迁移／回读、Pages deployment 与公开线上点检也已完成；Quick Transfer 的真实文件全链路仍需一次用户设备授权后再验。
 
 ## 2026-08-06 AI 能力层第二阶段：在线画板与 2048
 

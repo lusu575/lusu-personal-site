@@ -5,7 +5,8 @@ import test from "node:test";
 import {
   REMOTE_MIGRATION_VERIFICATION_QUERIES,
   compatibilityColumnMigrations,
-  migrateRemoteD1
+  migrateRemoteD1,
+  retryRemoteD1Read
 } from "../scripts/d1-migrate-remote.mjs";
 
 const schema = readFileSync(new URL("../cloudflare/schema.sql", import.meta.url), "utf8");
@@ -93,6 +94,19 @@ function createLegacyDatabase() {
       created_at text not null,
       unique(channel_key, idempotency_key)
     );
+    create table japanese_subtext_profiles (
+      user_id text primary key,
+      schema_version integer not null default 1,
+      content_version text not null,
+      revision integer not null default 1,
+      current_level integer not null default 1,
+      current_stage integer not null default 1,
+      settings_json text not null default '{}',
+      progress_updated_at text not null,
+      settings_updated_at text not null,
+      created_at text not null,
+      updated_at text not null
+    );
     insert into anonymous_chat_messages (
       message_id, visitor_id, nickname, content, created_at, ip_hash
     ) values (
@@ -133,7 +147,7 @@ test("remote D1 runner upgrades only missing compatibility columns before depend
     assert.equal(alterPositions.length, expectedColumns.length);
     assert.ok(alterPositions.every((position) => position > 0 && position < schemaFilePosition));
     assert.ok(schemaFilePosition < indexFilePosition);
-    assert.equal(events.filter((event) => event.startsWith("query:pragma table_info")).length, 6);
+    assert.equal(events.filter((event) => event.startsWith("query:pragma table_info")).length, 7);
     assert.equal(
       events.filter((event) => event.startsWith("query:select ")).length,
       REMOTE_MIGRATION_VERIFICATION_QUERIES.length
@@ -292,6 +306,39 @@ test("remote D1 verification groups stay within the production compound SELECT l
   assert.match(verificationSql, /traffic_control_settings_v1/);
   assert.match(verificationSql, /article_seed_version/);
   assert.match(verificationSql, /seed-update-2026-08-01-whiteboard-reliable-sketch/);
+});
+
+test("remote D1 read retries are bounded and never retry write operations", async () => {
+  let attempts = 0;
+  const waits = [];
+  const result = await retryRemoteD1Read(async () => {
+    attempts += 1;
+    if (attempts < 3) throw new Error("transient read failure");
+    return "ok";
+  }, {
+    delays: [10, 20],
+    wait: async (delayMs) => waits.push(delayMs)
+  });
+
+  assert.equal(result, "ok");
+  assert.equal(attempts, 3);
+  assert.deepEqual(waits, [10, 20]);
+
+  attempts = 0;
+  await assert.rejects(
+    retryRemoteD1Read(async () => {
+      attempts += 1;
+      throw new Error("persistent read failure");
+    }, { delays: [1], wait: async () => {} }),
+    /persistent read failure/
+  );
+  assert.equal(attempts, 2);
+  assert.match(remoteRunnerSource, /retryRemoteD1Read\(\(\) => runWrangler/);
+  const writeRunnerSource = remoteRunnerSource.slice(
+    remoteRunnerSource.indexOf("async function executeRemoteFile"),
+    remoteRunnerSource.indexOf("async function queryRemoteRows")
+  );
+  assert.doesNotMatch(writeRunnerSource, /retryRemoteD1Read/);
 });
 
 test("the remote migration package command uses the compatibility runner without a local fallback", () => {

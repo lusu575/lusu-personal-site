@@ -96,8 +96,22 @@ test("phase-three public reads declare only transports with implemented adapters
     [
       "japanese-subtext.levels.list",
       "japanese-subtext.stages.list",
-      "japanese-subtext.stages.get"
+      "japanese-subtext.stages.get",
+      "japanese-subtext.progress.get",
+      "japanese-subtext.attempts.submit"
     ]
+  );
+  assert.deepEqual(
+    getCapability("japanese-subtext.progress.get")?.availableTransports,
+    ["site-api", "local-mcp", "cli"]
+  );
+  assert.deepEqual(
+    getCapability("japanese-subtext.attempts.submit")?.availableTransports,
+    ["site-api", "local-mcp", "cli"]
+  );
+  assert.deepEqual(
+    getCapability("japanese-subtext.progress.update")?.availableTransports,
+    ["site-api"]
   );
   assert.deepEqual(
     ["games.catalog.list", "games.catalog.get"].map((id) => getCapability(id)?.availableTransports),

@@ -23,6 +23,7 @@ const passwordRoomGuideArticleId = "seed-site-guide-whiteboard-chat-password-roo
 const agentCapabilitiesUpdateId = "seed-update-2026-08-06-agent-capabilities";
 const whiteboard2048AgentUpdateId = "seed-update-2026-08-06-whiteboard-2048-agent";
 const agentReadBreadthUpdateId = "seed-update-2026-08-06-agent-read-breadth";
+const japaneseAgentProgressUpdateId = "seed-update-2026-08-06-japanese-agent-progress";
 
 test("D1 schema initializes an empty database and remains idempotent", () => {
   const db = new DatabaseSync(":memory:");
@@ -88,6 +89,14 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
       db.prepare("select count(*) as count from article_translations where article_id = ?").get(agentReadBreadthUpdateId).count,
       3
     );
+    assert.equal(
+      db.prepare("select count(*) as count from articles where article_id = ? and category = 'site-updates'").get(japaneseAgentProgressUpdateId).count,
+      1
+    );
+    assert.equal(
+      db.prepare("select count(*) as count from article_translations where article_id = ?").get(japaneseAgentProgressUpdateId).count,
+      3
+    );
     const trafficSettings = JSON.parse(
       db.prepare("select value from site_runtime_state where key = 'traffic_control_settings_v1'").get().value
     );
@@ -97,7 +106,7 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
     assert.equal(trafficSettings.sampling.hard.clicks, 0);
     assert.equal(
       db.prepare("select value from site_runtime_state where key = 'article_seed_version'").get().value,
-      "20260806-agent-read-breadth-r1"
+      "20260806-japanese-agent-progress-r1"
     );
     assert.deepEqual(
       db.prepare("pragma table_info(whiteboard_rooms)").all().map((column) => column.name),
@@ -153,6 +162,41 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
       5
     );
     assert.equal(db.prepare("select count(*) as count from agent_access_tokens").get().count, 0);
+    assert.deepEqual(
+      db.prepare("pragma table_info(japanese_subtext_profiles)").all().map((column) => column.name),
+      [
+        "user_id", "schema_version", "content_version", "revision", "current_level",
+        "current_stage", "settings_json", "last_agent_operation_id",
+        "last_agent_payload_hash", "progress_updated_at", "settings_updated_at",
+        "created_at", "updated_at"
+      ]
+    );
+    assert.deepEqual(
+      db.prepare("pragma table_info(japanese_subtext_agent_attempts)").all().map((column) => column.name),
+      [
+        "attempt_id", "user_id", "token_id", "operation_id", "payload_hash",
+        "stage_id", "stage_revision", "content_hash", "expected_revision",
+        "resulting_revision", "answers_json", "score", "cleared", "medal",
+        "attempt_mode", "used_translation", "used_kana", "used_listening_mode",
+        "replay_count", "hint_count", "created_at"
+      ]
+    );
+    assert.deepEqual(
+      db.prepare("pragma table_info(japanese_subtext_agent_receipts)").all().map((column) => column.name),
+      ["user_id", "operation_id", "payload_hash", "attempt_id", "response_json", "created_at"]
+    );
+    assert.equal(
+      db.prepare(`
+        select count(*) as count from sqlite_master
+        where type = 'index' and name in (
+          'japanese_subtext_agent_attempts_created_idx',
+          'japanese_subtext_agent_receipts_created_idx'
+        )
+      `).get().count,
+      2
+    );
+    assert.equal(db.prepare("select count(*) as count from japanese_subtext_agent_attempts").get().count, 0);
+    assert.equal(db.prepare("select count(*) as count from japanese_subtext_agent_receipts").get().count, 0);
     assert.equal(
       db.prepare("select count(*) as count from sqlite_master where type = 'index' and name = ?")
         .get("whiteboard_rooms_live_overview_idx").count,

@@ -1,6 +1,6 @@
 # AI 能力层：架构与运行手册
 
-本目录记录个人站“同一份业务能力，同时服务网站 API、CLI 与 MCP”的当前边界。前三阶段已经搭好统一能力清单、本地 CLI、本地 stdio MCP、设备码授权、Quick Transfer、受限的在线画板 Agent 通道、首个 2048 游戏适配器，以及视频／工具／游戏／日语题库的公开只读目录，并保留一个独立的 Cloudflare 远程 MCP Worker 工程；它不是“全站所有功能已经接入”或“远程写入已经上线”的声明。
+本目录记录个人站“同一份业务能力，同时服务网站 API、CLI 与 MCP”的当前边界。前四阶段已经搭好统一能力清单、本地 CLI、本地 stdio MCP、设备码授权、Quick Transfer、受限的在线画板 Agent 通道、首个 2048 游戏适配器、视频／工具／游戏／日语题库的公开只读目录，以及日语账号进度读取与受控答题，并保留一个独立的 Cloudflare 远程 MCP Worker 工程；它不是“全站所有功能已经接入”或“远程写入已经上线”的声明。
 
 ## 1. 先看能力注册表，不要靠猜
 
@@ -50,7 +50,7 @@ node .\cli\lusu.mjs help
 - `videos list|get`：读取并筛选公开视频，或按稳定 ID 获取单个视频详情。
 - `tools list|get`：读取三项真实可用工具的本地安全目录；占位卡片不会进入结果。
 - `games list|get`：读取五个站内游戏的安全目录，可用 `--agent-only` 只看已实现 Agent adapter 的游戏。
-- `japanese-subtext levels|stages|get`：读取 5 个难度、250 个锁定关卡的目录和单关公开内容，不读取或修改用户进度。
+- `japanese-subtext levels|stages|get|progress|attempt`：读取 5 个难度、250 个锁定关卡和账号有界进度，或提交由服务端判分的语义答题；进度与答题需要独立、非默认 scope。
 - `auth login|status|logout`：设备码登录、检查身份和撤销当前令牌。
 - `transfer join|ls|send|put|get|rm`：加入密码房、列出或传输内容；删除必须显式加 `--yes`。
 - `whiteboard join|scene|draw|export`：加入公共／密码房、读取场景摘要、追加高层元素并在本地导出；不支持修改／删除既有元素或注入任意 Yjs 字节。
@@ -64,6 +64,9 @@ node .\cli\lusu.mjs videos get VIDEO_ID
 node .\cli\lusu.mjs games list --agent-only --lang en
 node .\cli\lusu.mjs japanese-subtext stages --level 2 --limit 10 --lang ja
 node .\cli\lusu.mjs auth login
+node .\cli\lusu.mjs auth login --scopes japanese-subtext:progress:read,japanese-subtext:progress:write
+node .\cli\lusu.mjs japanese-subtext progress --stage-id L1-001 --days 30
+node .\cli\lusu.mjs japanese-subtext attempt --input .\attempt.json
 $env:LUSU_ROOM_SECRET | node .\cli\lusu.mjs transfer join --password-stdin
 node .\cli\lusu.mjs whiteboard join --public
 node .\cli\lusu.mjs game create 2048
@@ -100,12 +103,12 @@ node .\mcp\local\server.mjs
 - 发现：`capabilities_list`
 - 公开内容：`content_list`、`content_search`、`content_get`、`daily_news_get`、`videos_list`、`video_get`
 - 公开目录：`tools_list`、`tools_get`、`games_list`、`game_get`
-- 日语题库：`japanese_subtext_levels`、`japanese_subtext_stages`、`japanese_subtext_stage_get`
+- 日语题库与进度：`japanese_subtext_levels`、`japanese_subtext_stages`、`japanese_subtext_stage_get`、`japanese_subtext_progress_get`、`japanese_subtext_attempt_submit`
 - Quick Transfer：`transfer_join`、`transfer_list`、`transfer_send_text`、`transfer_upload`、`transfer_download`、`transfer_delete`
 - 在线画板：`whiteboard_join`、`whiteboard_scene`、`whiteboard_draw`、`whiteboard_export`
 - 2048：`game_create`、`game_observe`、`game_actions`、`game_act`、`game_reset`、`game_close`
 
-本地 MCP 的公开内容、视频、游戏目录、日语题库、Quick Transfer 与在线画板使用网站 API 或站点静态 JSON，因此依赖网络；工具目录来自受审查的本地公开数据模块。Quick Transfer 与在线画板还需要有效的 Agent Bearer 令牌及对应 scope。2048 隔离会话完全在本机运行，不发送站点请求。CLI 与 stdio MCP 会向 `SiteClient` 注入项目共享的代理感知 `fetch`，按 `HTTP_PROXY` / `HTTPS_PROXY` / `NO_PROXY` 工作；代理值、凭据和原始令牌不得写入日志或 MCP 输出。
+本地 MCP 的公开内容、视频、游戏目录、日语题库／进度、Quick Transfer 与在线画板使用网站 API 或站点静态 JSON，因此依赖网络；工具目录来自受审查的本地公开数据模块。Quick Transfer、在线画板和日语账号进度还需要有效的 Agent Bearer 令牌及对应 scope。2048 隔离会话完全在本机运行，不发送站点请求。CLI 与 stdio MCP 会向 `SiteClient` 注入项目共享的代理感知 `fetch`，按 `HTTP_PROXY` / `HTTPS_PROXY` / `NO_PROXY` 工作；代理值、凭据和原始令牌不得写入日志或 MCP 输出。
 
 ## 4. 设备码授权、scope 与令牌管理
 
@@ -116,7 +119,7 @@ node .\mcp\local\server.mjs
 3. 用户在浏览器中允许或拒绝，CLI 以服务器指定间隔轮询 `POST /api/agent-auth/device/token`。
 4. 允许后，原始访问令牌只返回一次；服务器只保存其哈希。CLI 将令牌写入本机私有状态。
 
-设备码有效期为 10 分钟，建议轮询间隔为 5 秒；访问令牌有效期为 30 天。服务器会限制设备码申请、查询频率以及单个账户的有效令牌数量。
+设备码有效期为 10 分钟，建议轮询间隔为 5 秒；访问令牌有效期为 30 天。服务器会限制设备码申请、查询频率以及单个账户的有效令牌数量。CLI 遇到网络失败、请求中止或 408／425／500／502／503／504 等明确瞬态故障时，只会在设备码剩余有效期内有界退避继续；不会把访问令牌、代理值或底层网络细节写到输出。
 
 当前可申请 scopes：
 
@@ -128,6 +131,8 @@ node .\mcp\local\server.mjs
 | `transfer:delete` | 删除房间项目或中止分片上传；默认登录不授予。 |
 | `whiteboard:read` | 加入画板并读取场景；默认登录不授予。 |
 | `whiteboard:write` | 追加受支持的画板元素，并隐含读取；默认登录不授予。 |
+| `japanese-subtext:progress:read` | 读取令牌所属账号的有界日语学习进度；默认登录不授予。 |
+| `japanese-subtext:progress:write` | 提交令牌所属账号的受控日语答题；默认登录不授予。 |
 
 默认请求 `content:read,transfer:read,transfer:write`。确实需要删除时，应在登录时单独请求最小增量权限，例如：
 
@@ -202,9 +207,20 @@ CLI 和 MCP 下载都不覆盖已有文件。目标文件以独占创建方式�
 - 日语能力只访问固定 catalog、五个 level index 和由合法 `L1-001` 至 `L5-050` ID 推导出的固定 batch。适配器限制 JSON 字节、条目和搜索结果，验证 schema、`contentVersion: 1.0.2`、250 关计数、唯一 ID、64 位 SHA-256、`textLocked: true` 与关卡哈希；输出省略 batch 路径、内部音频文本和构建字段。
 - 所有公开目录参数只接受 zh／en／ja、白名单 ID、1–5 等级和有界 limit／query。URL 必须是固定站内路径或安全 GitHub HTTPS 地址，调用方不能借参数读取任意文件或 URL。
 
-这些目录是只读发现面，不代表新增账号 scope、日语进度读写、游戏存档修改或浏览器接管。工具目录来自本地模块，因此只在 CLI／本地 MCP 可用；游戏和日语数据虽由正式站点提供，独立远程 MCP Worker 本阶段仍未接线或部署。
+这些目录本身仍是只读发现面；账号日语进度由下节独立 scope 和专用 API 承担，不把浏览器原始存档混入目录响应。工具目录来自本地模块，因此只在 CLI／本地 MCP 可用；游戏和日语数据虽由正式站点提供，独立远程 MCP Worker 本阶段仍未接线或部署。
 
-## 9. 远程 Cloudflare MCP：当前只是未部署的公开只读面
+## 9. 日语账号进度与受控答题
+
+日语进度能力只服务本地 CLI／stdio MCP 使用的站点 Agent Bearer，不属于独立远程 MCP Worker：
+
+- `GET /api/tools/japanese-subtext/agent-progress` 需要 read scope，只返回 revision、当前与已解锁关卡、通关／奖牌／尝试汇总、可选单关进度和默认 30 天、最多 90 天的近期活动。它不返回邮箱、userId、D1 行、完整 5,000 行活动并集，也不会因为读取而创建 profile、增加 revision 或刷新活动。
+- `POST /api/tools/japanese-subtext/attempts` 需要 write scope，只接受 `stageId`、`stageRevision`、`contentHash`、完整的逐题 `answers`、`expectedRevision` 和 `operationId`。额外字段、未解锁关、旧题库、漏题、重题、未知选项与过大正文都会失败关闭。
+- 服务端从固定同源题库重新加载锁定关卡并权威判分。调用方不能提交 score、medal、cleared、attempts、unlockedStageIds、时间戳或 userId；Agent 辅助答题固定按 bilingual 记录，最高只能得到 bronze，不能冒充纯听金牌。
+- revision CAS 防止覆盖并发浏览器／Agent 进度；operationId 与 canonical payload SHA-256 形成幂等收据。相同载荷在 180 天收据保留窗口内重试会返回原结果且不重复计次，不同载荷复用同一 ID 返回 409；客户端必须永久生成新的 operationId，不得在收据过期清理后复用旧 ID。
+- Agent 活动日固定按站点 `Asia/Shanghai` 日界线计算，GET 投影的 `activity.timeZone` 会明确返回这一口径；浏览器应用仍按设备本地日记录其原生会话，两者的计分、奖牌、解锁与合并规则相同。
+- 浏览器现有 Cookie `GET/PUT /api/tools/japanese-subtext/progress` 继续负责原应用的完整快照合并，没有改成 Agent 接口。此次未修改公开应用、题库和存档兼容边界，所以 appVersion 仍为 1.0.3、contentVersion 仍为 1.0.2。
+
+## 10. 远程 Cloudflare MCP：当前只是未部署的公开只读面
 
 独立工程位于 `workers/site-mcp/`。它当前没有部署，也没有 OAuth；不要把仓库中的 Worker 配置理解为线上端点已经存在。
 
@@ -232,16 +248,16 @@ npm.cmd run dev
 
 本地开发不要加 `--remote`，不要连接生产 D1，也不要执行 `wrangler deploy`。远程写操作必须等第一方 OAuth 2.1、用户映射、最小 scope 与审计边界完成后再单独设计；不能把网站 `lusu_session` cookie 转交给 MCP。
 
-## 10. 仍是 inventory / planned 的能力
+## 11. 仍是 inventory / planned 的能力
 
 - 白板读取、追加和本地导出，以及隔离的 2048 会话已经在本地 CLI／stdio MCP 可用；它们不表示远程 MCP 写入、白板任意编辑／删除／图片写入，或浏览器游戏接管已经完成。
 - 五个游戏的安全目录已经可读，但除隔离 2048 外，其他游戏的语义动作 adapter、已打开浏览器游戏的配对／观看／控制，以及游戏云存档通用写入仍需单独适配与授权。
-- 日语等级／关卡公开内容已经可读；聊天写入、日语字幕进度、游戏存档写入等条目仍只是既有 API 的 inventory，没有通用 CLI/MCP 写适配器。
+- 日语等级／关卡公开内容和账号进度闭环已经可用；聊天写入、任意完整进度快照写入、游戏存档写入等条目仍只是既有 API 的 inventory 或受限入口，没有通用 CLI/MCP 写适配器。
 - Daily AI News、Tool Radar 的生产发布能力是 `restricted`，不会出现在公开远程 MCP 或通用本地 MCP 中。
 
 后续接入必须先补可验证的业务适配层、输入/输出 schema、身份与 scope、幂等/确认机制和审计，再将对应传输加入 `availableTransports`。不能只改 `transport` 或工具描述来宣称完成。
 
-## 11. 验证、部署与回滚边界
+## 12. 验证、部署与回滚边界
 
 合并前至少执行：
 
@@ -266,6 +282,7 @@ npm.cmd test
 - 注册表筛选只把 `availableTransports` 中确实存在的适配器显示为可用。
 - CLI 拒绝 argv 中的房间口令，MCP schema 拒绝 `password` 字段，只接受环境 `secretRef`。
 - 缺 scope 的令牌得到拒绝；Agent Bearer 不能访问管理员端点。
+- 日语进度 GET 不改变 revision／活动；答题拒绝未解锁关、旧题库／进度、额外派生字段、漏题／重题／未知选项，并覆盖同 operationId 同载荷重放与异载荷冲突。除上文已声明的 Agent 固定站点日界线与浏览器设备本地日口径外，服务端结果必须与浏览器 `recordAttempt()` 的计分、bronze bilingual 奖牌、活动合并和解锁语义一致。
 - 白板 Agent Bearer 与房间访问令牌保持分离，追加验证拒绝修改／删除／图片／未知根，operation ID 重试与冲突均有覆盖。
 - 2048 CAS、action ID 重放、状态篡改、会话上限、TTL，以及重置／关闭确认均有覆盖；测试不声称连接已打开的浏览器。
 - 公开工具／游戏／日语适配器拒绝 traversal、恶意 ID、任意 URL、超限 JSON、重复 ID、版本／计数／hash／`textLocked` 不匹配，并确认输出不含源文件路径、存储键、题库 batch 路径或内部音频文本。

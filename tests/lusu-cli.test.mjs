@@ -36,6 +36,22 @@ test("CLI capabilities is machine-readable and reuses the governed registry", as
   assert.equal(stderr.text(), "");
 });
 
+test("CLI capability discovery distinguishes target transports from callable adapters", async () => {
+  const result = await runCli([
+    "capabilities", "--domain", "japanese-subtext", "--transport", "cli"
+  ], {
+    stdout: captureStream().stream,
+    stderr: captureStream().stream,
+    env: { LUSU_CONFIG_DIR: path.join(os.tmpdir(), `missing-${crypto.randomUUID()}`) }
+  });
+  const rawUpdate = result.capabilities.find(({ id }) => id === "japanese-subtext.progress.update");
+  assert.equal(rawUpdate.status, "existing-api");
+  assert.equal(rawUpdate.transport.includes("cli"), true);
+  assert.equal(rawUpdate.availableTransports.includes("cli"), false);
+  assert.equal(rawUpdate.availableTransports.includes("local-mcp"), false);
+  assert.deepEqual(rawUpdate.availableTransports, ["site-api"]);
+});
+
 test("CLI rejects plaintext password arguments before making a request", async () => {
   await assert.rejects(
     runCli(["transfer", "join", "--password", "do-not-accept"], {
@@ -185,6 +201,96 @@ test("CLI rejects malformed phase-three public read arguments before adapter cal
   await rejectsWith(["japanese-subtext", "get", "L1-051"], "JAPANESE_SUBTEXT_STAGE_ID_INVALID");
 });
 
+test("CLI exposes authenticated Japanese progress and semantic attempt commands without raw updates", async () => {
+  const calls = [];
+  const attemptInput = {
+    stageId: "L1-001",
+    stageRevision: 3,
+    contentHash: "a".repeat(64),
+    answers: [{ questionId: "q1", optionIds: ["a"] }],
+    expectedRevision: 4,
+    operationId: "cli_attempt_0001"
+  };
+  const client = {
+    async getJapaneseSubtextProgress(options) {
+      calls.push(["progress", options]);
+      return { revision: 4, stages: [{ stageId: options.stageId }] };
+    },
+    async submitJapaneseSubtextAttempt(input) {
+      calls.push(["attempt", input]);
+      return { status: "applied", revision: 5, score: 100 };
+    }
+  };
+  const env = {
+    LUSU_ACCESS_TOKEN: "japanese-progress-token",
+    LUSU_CONFIG_DIR: path.join(os.tmpdir(), `missing-${crypto.randomUUID()}`)
+  };
+  const progress = await runCli([
+    "japanese-subtext", "progress", "--stage-id", "L1-001", "--days", "30"
+  ], {
+    client,
+    fetch: async () => { throw new Error("injected client must handle Japanese progress"); },
+    stdout: captureStream().stream,
+    stderr: captureStream().stream,
+    env
+  });
+  assert.equal(progress.revision, 4);
+  const attemptOutput = captureStream();
+  const attempt = await runCli([
+    "japanese-subtext", "attempt", "--input", "-"
+  ], {
+    client,
+    fetch: async () => { throw new Error("injected client must handle Japanese attempts"); },
+    readStdin: async () => JSON.stringify(attemptInput),
+    stdout: attemptOutput.stream,
+    stderr: captureStream().stream,
+    env
+  });
+  assert.equal(attempt.status, "applied");
+  assert.equal(attemptOutput.text().includes(env.LUSU_ACCESS_TOKEN), false);
+  assert.deepEqual(calls, [
+    ["progress", { stageId: "L1-001", days: 30 }],
+    ["attempt", attemptInput]
+  ]);
+
+  await assert.rejects(
+    runCli(["japanese-subtext", "update", "--input", "-"], {
+      client,
+      fetch: async () => { throw new Error("raw progress update must not make a request"); },
+      readStdin: async () => "{}",
+      stdout: captureStream().stream,
+      stderr: captureStream().stream,
+      env
+    }),
+    (error) => error.code === "JAPANESE_SUBTEXT_COMMAND_UNKNOWN"
+  );
+  await assert.rejects(
+    runCli(["japanese-subtext", "attempt", "--input", "-"], {
+      client,
+      fetch: async () => { throw new Error("invalid attempt must not make a request"); },
+      readStdin: async () => JSON.stringify({ ...attemptInput, rawProgress: {} }),
+      stdout: captureStream().stream,
+      stderr: captureStream().stream,
+      env
+    }),
+    (error) => error.code === "JAPANESE_SUBTEXT_ATTEMPT_INVALID"
+  );
+  assert.equal(calls.length, 2);
+});
+
+test("CLI Japanese progress commands require an access token", async () => {
+  await assert.rejects(
+    runCli(["japanese-subtext", "progress"], {
+      client: { async getJapaneseSubtextProgress() { throw new Error("must not be called"); } },
+      fetch: async () => { throw new Error("must not make a request"); },
+      stdout: captureStream().stream,
+      stderr: captureStream().stream,
+      env: { LUSU_CONFIG_DIR: path.join(os.tmpdir(), `missing-${crypto.randomUUID()}`) }
+    }),
+    (error) => error.code === "AUTH_REQUIRED"
+  );
+});
+
 test("CLI device login stores a private credential without printing the token", async (t) => {
   const configDir = await fs.mkdtemp(path.join(os.tmpdir(), "lusu-cli-auth-"));
   t.after(() => fs.rm(configDir, { recursive: true, force: true }));
@@ -227,6 +333,174 @@ test("CLI device login stores a private credential without printing the token", 
   assert.deepEqual(opened, ["https://example.test/activate?code=ABCD-EFGH"]);
   const stored = JSON.parse(await fs.readFile(path.join(configDir, "credentials.json"), "utf8"));
   assert.equal(stored.accessToken, "stored-agent-token");
+});
+
+test("CLI device login retries an initial network failure with bounded backoff", async (t) => {
+  const configDir = await fs.mkdtemp(path.join(os.tmpdir(), "lusu-cli-auth-retry-"));
+  t.after(() => fs.rm(configDir, { recursive: true, force: true }));
+  const stdout = captureStream();
+  const stderr = captureStream();
+  const sleeps = [];
+  let pollCount = 0;
+  const fetch = async (url) => {
+    if (url.pathname.endsWith("/device/start")) {
+      return response({
+        deviceCode: "device-retry-secret",
+        userCode: "RETRY-001",
+        verificationUriComplete: "https://example.test/activate?code=RETRY-001",
+        expiresIn: 60,
+        interval: 1
+      });
+    }
+    if (url.pathname.endsWith("/device/token")) {
+      pollCount += 1;
+      if (pollCount === 1) throw new Error("private network detail must not be printed");
+      return response({
+        accessToken: "retry-stored-agent-token",
+        tokenType: "Bearer",
+        scopes: ["japanese-subtext:progress:read"],
+        user: { id: "user-retry", role: "user" }
+      });
+    }
+    throw new Error(`Unexpected URL: ${url}`);
+  };
+  const result = await runCli([
+    "--base-url", "https://example.test", "auth", "login", "--no-browser"
+  ], {
+    fetch,
+    stdout: stdout.stream,
+    stderr: stderr.stream,
+    env: { LUSU_CONFIG_DIR: configDir },
+    sleep: async (milliseconds) => { sleeps.push(milliseconds); },
+    now: () => 0
+  });
+  assert.equal(result.authenticated, true);
+  assert.equal(pollCount, 2);
+  assert.deepEqual(sleeps, [1000, 2000]);
+  const visibleOutput = `${stdout.text()}\n${stderr.text()}`;
+  assert.equal(visibleOutput.includes("private network detail"), false);
+  assert.equal(visibleOutput.includes("retry-stored-agent-token"), false);
+  const stored = JSON.parse(await fs.readFile(path.join(configDir, "credentials.json"), "utf8"));
+  assert.equal(stored.accessToken, "retry-stored-agent-token");
+});
+
+test("CLI anchors device expiry before a delayed browser opener", async (t) => {
+  const configDir = await fs.mkdtemp(path.join(os.tmpdir(), "lusu-cli-auth-opener-deadline-"));
+  t.after(() => fs.rm(configDir, { recursive: true, force: true }));
+  let currentTime = 0;
+  let pollCount = 0;
+  let sleepCount = 0;
+  const fetch = async (url) => {
+    if (url.pathname.endsWith("/device/start")) {
+      return response({
+        deviceCode: "device-opener-secret",
+        userCode: "OPEN-0001",
+        verificationUriComplete: "https://example.test/activate?code=OPEN-0001",
+        expiresIn: 1,
+        interval: 1
+      });
+    }
+    pollCount += 1;
+    return response({ accessToken: "must-not-be-issued" });
+  };
+  await assert.rejects(
+    runCli(["--base-url", "https://example.test", "auth", "login"], {
+      fetch,
+      stdout: captureStream().stream,
+      stderr: captureStream().stream,
+      env: { LUSU_CONFIG_DIR: configDir },
+      now: () => currentTime,
+      sleep: async () => { sleepCount += 1; },
+      openBrowser: async () => { currentTime = 1500; }
+    }),
+    (error) => error.code === "AUTHORIZATION_EXPIRED"
+  );
+  assert.equal(pollCount, 0);
+  assert.equal(sleepCount, 0);
+  await assert.rejects(fs.readFile(path.join(configDir, "credentials.json")), { code: "ENOENT" });
+});
+
+test("CLI aborts a hanging device poll at the remaining device lifetime", async (t) => {
+  const configDir = await fs.mkdtemp(path.join(os.tmpdir(), "lusu-cli-auth-poll-timeout-"));
+  t.after(() => fs.rm(configDir, { recursive: true, force: true }));
+  let pollCount = 0;
+  let observedAbort = false;
+  const fetch = async (url, options) => {
+    if (url.pathname.endsWith("/device/start")) {
+      return response({
+        deviceCode: "device-timeout-secret",
+        userCode: "TIME-0001",
+        verificationUriComplete: "https://example.test/activate?code=TIME-0001",
+        expiresIn: 0.03,
+        interval: 1
+      });
+    }
+    pollCount += 1;
+    return new Promise((resolve, reject) => {
+      const abort = () => {
+        observedAbort = true;
+        reject(options.signal.reason || new DOMException("Aborted", "AbortError"));
+      };
+      if (options.signal.aborted) abort();
+      else options.signal.addEventListener("abort", abort, { once: true });
+    });
+  };
+  const startedAt = Date.now();
+  await assert.rejects(
+    runCli(["--base-url", "https://example.test", "auth", "login", "--no-browser"], {
+      fetch,
+      stdout: captureStream().stream,
+      stderr: captureStream().stream,
+      env: { LUSU_CONFIG_DIR: configDir },
+      sleep: async () => {}
+    }),
+    (error) => error.code === "AUTHORIZATION_EXPIRED"
+  );
+  assert.equal(pollCount, 1);
+  assert.equal(observedAbort, true);
+  assert.ok(Date.now() - startedAt < 1000);
+  await assert.rejects(fs.readFile(path.join(configDir, "credentials.json")), { code: "ENOENT" });
+});
+
+test("CLI rejects a device token returned after the anchored deadline", async (t) => {
+  const configDir = await fs.mkdtemp(path.join(os.tmpdir(), "lusu-cli-auth-late-token-"));
+  t.after(() => fs.rm(configDir, { recursive: true, force: true }));
+  const stdout = captureStream();
+  const stderr = captureStream();
+  let currentTime = 0;
+  let pollCount = 0;
+  const fetch = async (url) => {
+    if (url.pathname.endsWith("/device/start")) {
+      return response({
+        deviceCode: "device-late-secret",
+        userCode: "LATE-0001",
+        verificationUriComplete: "https://example.test/activate?code=LATE-0001",
+        expiresIn: 60,
+        interval: 1
+      });
+    }
+    pollCount += 1;
+    currentTime = 60_001;
+    return response({
+      accessToken: "late-agent-token-must-not-be-stored",
+      tokenType: "Bearer",
+      scopes: ["content:read"]
+    });
+  };
+  await assert.rejects(
+    runCli(["--base-url", "https://example.test", "auth", "login", "--no-browser"], {
+      fetch,
+      stdout: stdout.stream,
+      stderr: stderr.stream,
+      env: { LUSU_CONFIG_DIR: configDir },
+      now: () => currentTime,
+      sleep: async () => {}
+    }),
+    (error) => error.code === "AUTHORIZATION_EXPIRED"
+  );
+  assert.equal(pollCount, 1);
+  assert.equal(`${stdout.text()}${stderr.text()}`.includes("late-agent-token-must-not-be-stored"), false);
+  await assert.rejects(fs.readFile(path.join(configDir, "credentials.json")), { code: "ENOENT" });
 });
 
 test("CLI binds stored credentials to their normalized HTTP origin", async (t) => {

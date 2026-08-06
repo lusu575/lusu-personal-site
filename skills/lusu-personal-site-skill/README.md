@@ -16,7 +16,7 @@ skills/lusu-personal-site-skill/SKILL.md
 - 根 `wrangler.jsonc` 只使用 Pages Git 部署支持的字段，不加入 Worker-only `observability` 或非标准 `secrets` 元数据；Secret 名称由 `.env.example` 空声明与运行时校验维护，独立 Worker 的 observability 放在自己的配置中。
 - 独立 `package-lock.json` 不会继承根 `overrides`；根依赖安全版本变化时必须逐个检查独立 npm 子项目，在各自清单补齐必要 override，并分别执行严格安装、测试与完整 `npm audit`。Windows 重建根 lockfile 时要在没有既有 `node_modules` 的干净目录中包含 optional／peer 依赖，并以严格 `npm ci` 验证跨平台条目，不能只凭 Windows 本机安装成功。
 - AI 能力层以 `lib/capabilities/registry.mjs` 为唯一声明源：`transport` 是目标面，只有 `availableTransports` 是已实现且可对外承诺的真实面。CLI、本地 MCP 和远程 MCP 共享适配服务，不复制业务规则；本地已提供受限画板追加／导出和隔离 2048，会话浏览器接管、其他游戏与其余能力仍以 registry 为准。
-- 本地 CLI / stdio MCP 使用账号持有者确认的设备码和最小 scope；`content:read`、Transfer scopes 可按需授予，`transfer:delete` 与 `whiteboard:read`／`whiteboard:write` 默认不授予。Agent Bearer 永远是普通机器角色，不能访问管理接口；Transfer／Whiteboard 口令只从隐藏 stdin 或明确的本地环境变量引用取得，不进命令行、URL、日志、telemetry、MCP 输出或持久明文。
+- 本地 CLI / stdio MCP 使用账号持有者确认的设备码和最小 scope；`content:read`、Transfer scopes 可按需授予，`transfer:delete`、`whiteboard:read`／`whiteboard:write` 与日语进度 read/write 默认不授予。设备码轮询只对明确瞬态故障在有效期内有界退避，不输出底层网络或凭据。Agent Bearer 永远是普通机器角色，不能访问管理接口；Transfer／Whiteboard 口令只从隐藏 stdin 或明确的本地环境变量引用取得，不进命令行、URL、日志、telemetry、MCP 输出或持久明文。
 - 白板 Agent Bearer 与绑定当前 tokenId 的房间令牌必须分离；只允许基于最新完整 Yjs scene 追加受支持的高层元素，并用 operation ID + payload hash 原子幂等。服务端拒绝改删、图片、嵌入、链接、绑定、未知根及任意 Yjs 注入；简化本地 SVG／PNG 导出忽略图片时必须显式告警。
 - 2048 CLI／MCP 是有 CAS、action ID 去重、状态／TTL 上限和破坏性确认的隔离本地会话；页面虽有冻结语义 bridge，在建立受审计的配对通道前不得宣传为接管已打开的浏览器游戏。
 - 本地敏感 JSON 的 read-modify-write 必须用 owner-token 锁与同目录私有临时文件原子替换；游戏锁还需进程／心跳与释放前所有权校验。声明 readOnly 的观察／动作发现不得写文件、续 TTL 或顺带清理过期会话。
@@ -24,6 +24,7 @@ skills/lusu-personal-site-skill/SKILL.md
 - 本机 credential 只允许发送到签发时相同的规范化 HTTP(S) origin；覆盖 CLI/MCP base URL 时不得把旧 origin 的 Bearer 带到 Preview 或其他站点，也不得在跨 origin logout 中删除旧凭据。当前 origin 的显式 stdin／环境 token 仍由操作者自行授权。
 - `workers/site-mcp/` 是独立且尚未部署的公开只读 remote MCP Worker，不得宣称已有正式地址。远程写能力必须先完成标准 OAuth、最小 scope、撤销与审计，不得把本地设备令牌直接暴露给公网 MCP。详细边界见 `docs/agent-capabilities/README.md`。
 - 工具、游戏和题库的机器只读目录必须使用有界安全投影，不原样暴露前端 manifest。固定同源路径／版本并校验 ID、数量、大小、URL、hash 与锁定状态；占位工具不进入目录，内部源路径、存储键、语言映射、题库批次路径与音频构建字段不对 CLI／MCP 输出，游戏可控状态只按真实适配器声明。
+- 日语账号进度只返回专用有界投影；Agent 写入只能提交已解锁关卡的锁定版本／哈希、完整逐题选项、进度 revision 与 operationId，由服务端判分、计次、授予最高 bronze 的 bilingual 辅助奖牌并解锁下一关。不得暴露浏览器完整进度快照 PUT 或接受调用方伪造的分数、奖牌、解锁和时间戳；相同 operationId 只可重放完全相同载荷。若不改公开应用／题库／存档兼容，`appVersion` 与 `contentVersion` 不随 Agent 接口变化。
 - GitHub 共享 runner 的首页首屏 TBT 固定采样三次并按原预算检查中位数，其他场景仍只测一次；网络体积、load、CLS、内存、运行时错误等结构性门槛逐样本检查，任一次失败都阻断。
 - 大图/图集按真实槽位提供 AVIF/WebP 与 fallback，首屏只预加载当前主题和壳；动态主题只挂载当前图层，同路径位图变化仍要更新 query。
 - 公共列表请求采用有界 ETag/SWR/LKG，失败保留成功内容且强制重试可绕过新鲜缓存；ETag 覆盖完整公开响应，不能只取数据库行时间等局部种子，同源媒体代理 URL 以内容或行更新时间版本击穿旧缓存。Transfer 使用稳定复合游标、generation、键控 DOM、幂等和背压。旧 D1 必须先补列再建依赖索引。

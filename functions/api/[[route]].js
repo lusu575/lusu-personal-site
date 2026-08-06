@@ -1,8 +1,16 @@
 import { handleTransferApi } from "./transfer-service.mjs";
 import {
+  authenticateAgentBearer,
   handleAgentAuthApi,
   isAgentAuthApiPath
 } from "./agent-auth.mjs";
+import {
+  JapaneseSubtextAgentEvaluationError,
+  canonicalJapaneseSubtextAgentPayload,
+  evaluateJapaneseSubtextAgentAttempt,
+  normalizeJapaneseSubtextAgentOperationId,
+  parseJapaneseSubtextAgentAttempt
+} from "./japanese-subtext-agent-evaluator.mjs";
 import {
   AnonymousIdentityError,
   ensureAnonymousIdentity,
@@ -23,7 +31,7 @@ import {
   toPublicArticle
 } from "./public-content-service.mjs";
 
-export const PUBLIC_API_REPRESENTATION_VERSION = "20260806-agent-read-breadth-r1";
+export const PUBLIC_API_REPRESENTATION_VERSION = "20260806-japanese-agent-progress-r1";
 export const PUBLIC_ARTICLE_ARCHIVE_LIMIT = 500;
 const PUBLIC_SITE_ORIGIN = "https://lusu575.com";
 const PUBLIC_RELEASE_DATE = "2026-08-06";
@@ -31,6 +39,13 @@ const SESSION_COOKIE = "lusu_session";
 const SESSION_DAYS = 30;
 const MAX_SAVE_BYTES = 1024 * 1024;
 const MAX_JAPANESE_SUBTEXT_PROGRESS_BYTES = 1024 * 1024;
+const MAX_JAPANESE_SUBTEXT_AGENT_ATTEMPT_BYTES = 64 * 1024;
+const MAX_JAPANESE_SUBTEXT_AGENT_ASSET_BYTES = 640 * 1024;
+const JAPANESE_SUBTEXT_AGENT_ASSET_TIMEOUT_MS = 5000;
+const JAPANESE_SUBTEXT_AGENT_ACTIVITY_DEFAULT_DAYS = 30;
+const JAPANESE_SUBTEXT_AGENT_ACTIVITY_MAX_DAYS = 90;
+const JAPANESE_SUBTEXT_AGENT_ACTIVITY_TIME_ZONE = "Asia/Shanghai";
+const JAPANESE_SUBTEXT_AGENT_ACTIVITY_UTC_OFFSET_MS = 8 * 60 * 60 * 1000;
 const JAPANESE_SUBTEXT_SCHEMA_VERSION = 1;
 const JAPANESE_SUBTEXT_CONTENT_VERSION = "1.0.2";
 const JAPANESE_SUBTEXT_EMPTY_TIMESTAMP = "1970-01-01T00:00:00.000Z";
@@ -43,6 +58,17 @@ const JAPANESE_SUBTEXT_DISPLAY_MODES = new Set(["listening", "japanese", "biling
 const JAPANESE_SUBTEXT_PLAYBACK_RATES = new Set([0.75, 1, 1.15]);
 const JAPANESE_SUBTEXT_MEDAL_RANK = Object.freeze({ none: 0, bronze: 1, silver: 2, gold: 3 });
 const JAPANESE_SUBTEXT_MEDAL_NAME = Object.freeze(["none", "bronze", "silver", "gold"]);
+
+export function japaneseSubtextActivityDate(isoTimestamp) {
+  const timestamp = Date.parse(isoTimestamp);
+  if (!Number.isFinite(timestamp)) {
+    throw new TypeError("Japanese Subtext activity timestamp must be a valid ISO date.");
+  }
+  return new Date(timestamp + JAPANESE_SUBTEXT_AGENT_ACTIVITY_UTC_OFFSET_MS)
+    .toISOString()
+    .slice(0, 10);
+}
+
 const PASSWORD_HASH_ITERATIONS = 100000;
 const PASSWORD_HASH_MAX_RUNTIME_ITERATIONS = 100000;
 const MAX_AUTH_JSON_BYTES = 8 * 1024;
@@ -56,10 +82,21 @@ const DATA_CLEANUP_STATE_KEY = "api_periodic_data_cleanup";
 const DATA_CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const DATA_CLEANUP_DELETE_LIMIT = 5000;
 const ARTICLE_SEED_STATE_KEY = "article_seed_version";
-const ARTICLE_SEED_VERSION = "20260806-agent-read-breadth-r1";
+const ARTICLE_SEED_VERSION = "20260806-japanese-agent-progress-r1";
 const LOGIN_EVENT_RETENTION_DAYS = 365;
 const ANALYTICS_EVENT_RETENTION_DAYS = 180;
 const AGENT_AUDIT_RETENTION_DAYS = 180;
+const JAPANESE_SUBTEXT_AGENT_RETENTION_DAYS = 180;
+const JAPANESE_SUBTEXT_AGENT_ATTEMPT_RATE_LIMITS = Object.freeze({
+  token: Object.freeze({ limit: 120, windowMs: 60 * 1000, backoffMs: 60 * 1000, maxBackoffMs: 15 * 60 * 1000 }),
+  user: Object.freeze({ limit: 240, windowMs: 60 * 1000, backoffMs: 60 * 1000, maxBackoffMs: 15 * 60 * 1000 }),
+  ip: Object.freeze({ limit: 360, windowMs: 60 * 1000, backoffMs: 60 * 1000, maxBackoffMs: 15 * 60 * 1000 })
+});
+const JAPANESE_SUBTEXT_AGENT_READ_RATE_LIMITS = Object.freeze({
+  token: Object.freeze({ limit: 300, windowMs: 60 * 1000, backoffMs: 30 * 1000, maxBackoffMs: 5 * 60 * 1000 }),
+  user: Object.freeze({ limit: 600, windowMs: 60 * 1000, backoffMs: 30 * 1000, maxBackoffMs: 5 * 60 * 1000 }),
+  ip: Object.freeze({ limit: 900, windowMs: 60 * 1000, backoffMs: 30 * 1000, maxBackoffMs: 5 * 60 * 1000 })
+});
 const AUTH_RATE_LIMITS = Object.freeze({
   loginIp: Object.freeze({ limit: 30, windowMs: 10 * 60 * 1000, backoffMs: 30 * 1000, maxBackoffMs: 15 * 60 * 1000 }),
   loginEmail: Object.freeze({ limit: 8, windowMs: 15 * 60 * 1000, backoffMs: 60 * 1000, maxBackoffMs: 30 * 60 * 1000 }),
@@ -341,6 +378,24 @@ export async function onRequest(context) {
     if (
       parts[0] === "tools"
       && parts[1] === "japanese-subtext"
+      && parts[2] === "agent-progress"
+      && !parts[3]
+      && request.method === "GET"
+    ) {
+      return await getJapaneseSubtextAgentProgress(request, env);
+    }
+    if (
+      parts[0] === "tools"
+      && parts[1] === "japanese-subtext"
+      && parts[2] === "attempts"
+      && !parts[3]
+      && request.method === "POST"
+    ) {
+      return await createJapaneseSubtextAgentAttempt(request, env);
+    }
+    if (
+      parts[0] === "tools"
+      && parts[1] === "japanese-subtext"
       && parts[2] === "progress"
       && !parts[3]
     ) {
@@ -503,6 +558,7 @@ export async function onRequest(context) {
     return json({ error: "Not found." }, 404);
   } catch (error) {
     const expectedError = error instanceof HttpError
+      || error instanceof JapaneseSubtextAgentEvaluationError
       || error instanceof AnonymousIdentityError
       || error instanceof TrafficControlError;
     const status = expectedError ? error.status : 500;
@@ -524,6 +580,9 @@ export async function onRequest(context) {
     }, status);
     if (expectedError && Number(error.retryAfter || 0) > 0) {
       response.headers.set("Retry-After", String(Math.ceil(error.retryAfter)));
+    }
+    if (status === 401 && String(error?.code || "").startsWith("AGENT_TOKEN_")) {
+      response.headers.set("WWW-Authenticate", "Bearer realm=\"lusu-agent\"");
     }
     return response;
   }
@@ -716,6 +775,877 @@ async function validateSaveAccess(request, env, gameId) {
     return json({ error: "请先登录。" }, 401);
   }
   return null;
+}
+
+async function getJapaneseSubtextAgentProgress(request, env) {
+  const principal = await requireJapaneseSubtextAgentScope(
+    request,
+    env,
+    "japanese-subtext:progress:read"
+  );
+  const limited = await consumeJapaneseSubtextAgentRateLimit(
+    request,
+    env,
+    principal,
+    "read",
+    JAPANESE_SUBTEXT_AGENT_READ_RATE_LIMITS
+  );
+  if (limited) return rateLimitedResponse(limited.retryAfterSeconds);
+  const options = japaneseSubtextAgentProgressOptions(request);
+  const [profileRow, stageResult, activityResult] = await Promise.all([
+    env.DB.prepare(`
+      select revision, current_level, current_stage, progress_updated_at, updated_at
+      from japanese_subtext_profiles
+      where user_id = ?
+      limit 1
+    `).bind(principal.user.id).first(),
+    env.DB.prepare(`
+      select stage_id, level, stage, cleared, best_score, best_medal, attempts,
+        first_accuracy, first_clear_mode, used_translation, used_kana,
+        used_listening_mode, replay_count, hint_count, progress_updated_at, updated_at
+      from japanese_subtext_stage_progress
+      where user_id = ?
+      order by level asc, stage asc
+      limit ?
+    `).bind(principal.user.id, JAPANESE_SUBTEXT_STAGE_LIMIT + 1).all(),
+    env.DB.prepare(`
+      select local_date,
+        count(*) as stage_count,
+        sum(cleared) as cleared_count,
+        max(best_medal) as best_medal,
+        max(activity_updated_at) as activity_updated_at,
+        max(updated_at) as updated_at
+      from japanese_subtext_daily_activity
+      where user_id = ?
+      group by local_date
+      order by local_date desc
+      limit ?
+    `).bind(principal.user.id, options.days).all()
+  ]);
+  const stageRows = stageResult?.results || [];
+  if (stageRows.length > JAPANESE_SUBTEXT_STAGE_LIMIT) {
+    throw new HttpError(
+      "Stored Japanese Subtext progress exceeds the supported stage limit.",
+      500,
+      "JAPANESE_SUBTEXT_AGENT_PROGRESS_INVALID"
+    );
+  }
+  const stages = stageRows.map(japaneseSubtextStageFromRow).filter(Boolean);
+  const unlockedStageIds = japaneseSubtextUnlockedStageIds(stages);
+  const requestedCurrentStageId = profileRow
+    ? japaneseSubtextStageId(profileRow.current_level, profileRow.current_stage)
+    : "L1-001";
+  const currentStageId = unlockedStageIds.includes(requestedCurrentStageId)
+    ? requestedCurrentStageId
+    : unlockedStageIds.at(-1) || "L1-001";
+  const stageById = new Map(stages.map((stage) => [stage.stageId, stage]));
+  const selectedStage = options.stageId
+    ? japaneseSubtextAgentStageProjection(
+      stageById.get(options.stageId),
+      options.stageId,
+      unlockedStageIds.includes(options.stageId)
+    )
+    : null;
+  const activityRows = activityResult?.results || [];
+  const activity = activityRows
+    .filter((row) => isJapaneseSubtextLocalDate(row.local_date))
+    .map((row) => {
+      const medalRank = boundedStoredInteger(row.best_medal, 0, 3, 0);
+      return {
+        localDate: row.local_date,
+        stageCount: boundedStoredInteger(row.stage_count, 0, JAPANESE_SUBTEXT_STAGE_LIMIT, 0),
+        clearedStages: boundedStoredInteger(row.cleared_count, 0, JAPANESE_SUBTEXT_STAGE_LIMIT, 0),
+        bestMedal: JAPANESE_SUBTEXT_MEDAL_NAME[medalRank] || "none",
+        updatedAt: normalizedStoredIso(
+          row.activity_updated_at,
+          JAPANESE_SUBTEXT_EMPTY_TIMESTAMP
+        )
+      };
+    });
+  const medalCounts = { bronze: 0, silver: 0, gold: 0 };
+  stages.forEach((stage) => {
+    if (Object.hasOwn(medalCounts, stage.medal)) medalCounts[stage.medal] += 1;
+  });
+  const updatedAt = [
+    normalizedStoredIso(profileRow?.updated_at, JAPANESE_SUBTEXT_EMPTY_TIMESTAMP),
+    normalizedStoredIso(profileRow?.progress_updated_at, JAPANESE_SUBTEXT_EMPTY_TIMESTAMP),
+    ...stageRows.map((row) => normalizedStoredIso(row.updated_at, JAPANESE_SUBTEXT_EMPTY_TIMESTAMP)),
+    ...activityRows.map((row) => normalizedStoredIso(row.updated_at, JAPANESE_SUBTEXT_EMPTY_TIMESTAMP))
+  ].sort().at(-1) || JAPANESE_SUBTEXT_EMPTY_TIMESTAMP;
+
+  return json({
+    schemaVersion: JAPANESE_SUBTEXT_SCHEMA_VERSION,
+    contentVersion: JAPANESE_SUBTEXT_CONTENT_VERSION,
+    revision: boundedStoredInteger(
+      profileRow?.revision,
+      1,
+      JAPANESE_SUBTEXT_COUNTER_LIMIT,
+      1
+    ),
+    currentStageId,
+    unlockedStageIds,
+    summary: {
+      trackedStages: stages.length,
+      clearedStages: stages.filter((stage) => stage.cleared).length,
+      totalAttempts: Math.min(
+        JAPANESE_SUBTEXT_STAGE_LIMIT * JAPANESE_SUBTEXT_COUNTER_LIMIT,
+        stages.reduce((sum, stage) => sum + stage.attempts, 0)
+      ),
+      bestScore: stages.reduce((best, stage) => Math.max(best, stage.bestScore), 0),
+      medals: medalCounts
+    },
+    ...(selectedStage ? { stage: selectedStage } : {}),
+    activity: {
+      days: options.days,
+      timeZone: JAPANESE_SUBTEXT_AGENT_ACTIVITY_TIME_ZONE,
+      entries: activity
+    },
+    updatedAt
+  });
+}
+
+async function requireJapaneseSubtextAgentScope(request, env, scope) {
+  try {
+    return await authenticateAgentBearer(request, env, [scope]);
+  } catch (error) {
+    if (
+      [401, 403].includes(Number(error?.status))
+      && /^AGENT_[A-Z0-9_]+$/.test(String(error.code || ""))
+    ) {
+      throw new HttpError(error.message, error.status, error.code, error.details || null);
+    }
+    throw error;
+  }
+}
+
+async function consumeJapaneseSubtextAgentRateLimit(request, env, principal, action, policies) {
+  const ipInfo = await requestIpInfo(request, env, "analytics");
+  return consumeFirstExceededRateLimit(env, [
+    [
+      await rateLimitBucketKey(`japanese-subtext:agent-${action}:token`, principal.tokenId),
+      policies.token
+    ],
+    [
+      await rateLimitBucketKey(`japanese-subtext:agent-${action}:user`, principal.user.id),
+      policies.user
+    ],
+    [
+      await rateLimitBucketKey(`japanese-subtext:agent-${action}:ip`, ipInfo.ipHash),
+      policies.ip
+    ]
+  ]);
+}
+
+function japaneseSubtextAgentProgressOptions(request) {
+  const params = new URL(request.url).searchParams;
+  for (const key of params.keys()) {
+    if (key !== "stageId" && key !== "days") {
+      throw new HttpError(
+        `Unsupported Japanese Subtext Agent progress query parameter: ${key}.`,
+        400,
+        "JAPANESE_SUBTEXT_AGENT_QUERY_INVALID"
+      );
+    }
+  }
+  if (params.getAll("stageId").length > 1 || params.getAll("days").length > 1) {
+    throw new HttpError(
+      "Japanese Subtext Agent progress query parameters cannot be repeated.",
+      400,
+      "JAPANESE_SUBTEXT_AGENT_QUERY_INVALID"
+    );
+  }
+  const stageIdValue = params.get("stageId");
+  const stageId = stageIdValue === null ? "" : stageIdValue;
+  if (stageIdValue !== null && !parseJapaneseSubtextStageId(stageId)) {
+    throw new HttpError(
+      "stageId must be a canonical Japanese Subtext stage ID.",
+      400,
+      "JAPANESE_SUBTEXT_AGENT_QUERY_INVALID",
+      { field: "stageId" }
+    );
+  }
+  const daysValue = params.get("days");
+  let days = JAPANESE_SUBTEXT_AGENT_ACTIVITY_DEFAULT_DAYS;
+  if (daysValue !== null) {
+    if (!/^[0-9]{1,2}$/.test(daysValue)) {
+      throw new HttpError(
+        `days must be an integer from 1 through ${JAPANESE_SUBTEXT_AGENT_ACTIVITY_MAX_DAYS}.`,
+        400,
+        "JAPANESE_SUBTEXT_AGENT_QUERY_INVALID",
+        { field: "days" }
+      );
+    }
+    days = Number(daysValue);
+    if (days < 1 || days > JAPANESE_SUBTEXT_AGENT_ACTIVITY_MAX_DAYS) {
+      throw new HttpError(
+        `days must be an integer from 1 through ${JAPANESE_SUBTEXT_AGENT_ACTIVITY_MAX_DAYS}.`,
+        400,
+        "JAPANESE_SUBTEXT_AGENT_QUERY_INVALID",
+        { field: "days" }
+      );
+    }
+  }
+  return { stageId, days };
+}
+
+function japaneseSubtextAgentStageProjection(stage, stageId, unlocked) {
+  const parsed = parseJapaneseSubtextStageId(stageId) || { level: 1, stage: 1 };
+  return {
+    stageId,
+    level: parsed.level,
+    stage: parsed.stage,
+    unlocked,
+    cleared: Boolean(stage?.cleared),
+    bestScore: boundedStoredInteger(stage?.bestScore, 0, 100, 0),
+    medal: JAPANESE_SUBTEXT_MEDAL_RANK[stage?.medal] === undefined ? "none" : stage.medal,
+    attempts: boundedStoredInteger(stage?.attempts, 0, JAPANESE_SUBTEXT_COUNTER_LIMIT, 0),
+    firstAccuracy: boundedStoredInteger(stage?.firstAccuracy, 0, 100, 0),
+    firstClearMode: JAPANESE_SUBTEXT_DISPLAY_MODES.has(stage?.firstClearMode)
+      ? stage.firstClearMode
+      : "",
+    usedTranslation: Boolean(stage?.usedTranslation),
+    usedKana: Boolean(stage?.usedKana),
+    usedListeningMode: Boolean(stage?.usedListeningMode),
+    replayCount: boundedStoredInteger(stage?.replayCount, 0, JAPANESE_SUBTEXT_COUNTER_LIMIT, 0),
+    hintCount: boundedStoredInteger(stage?.hintCount, 0, JAPANESE_SUBTEXT_COUNTER_LIMIT, 0),
+    updatedAt: normalizedStoredIso(stage?.updatedAt, JAPANESE_SUBTEXT_EMPTY_TIMESTAMP)
+  };
+}
+
+async function readJapaneseSubtextAgentState(env, userId) {
+  const [profile, stageResult] = await Promise.all([
+    env.DB.prepare(`
+      select revision, current_level, current_stage
+      from japanese_subtext_profiles
+      where user_id = ?
+      limit 1
+    `).bind(userId).first(),
+    env.DB.prepare(`
+      select stage_id, level, stage, cleared, best_score, best_medal, attempts,
+        first_accuracy, first_clear_mode, used_translation, used_kana,
+        used_listening_mode, replay_count, hint_count, progress_updated_at, updated_at
+      from japanese_subtext_stage_progress
+      where user_id = ?
+      order by level asc, stage asc
+      limit ?
+    `).bind(userId, JAPANESE_SUBTEXT_STAGE_LIMIT + 1).all()
+  ]);
+  const rows = stageResult?.results || [];
+  if (rows.length > JAPANESE_SUBTEXT_STAGE_LIMIT) {
+    throw new HttpError(
+      "Stored Japanese Subtext progress exceeds the supported stage limit.",
+      500,
+      "JAPANESE_SUBTEXT_AGENT_PROGRESS_INVALID"
+    );
+  }
+  return {
+    profile,
+    revision: boundedStoredInteger(profile?.revision, 1, JAPANESE_SUBTEXT_COUNTER_LIMIT, 1),
+    stages: rows.map(japaneseSubtextStageFromRow).filter(Boolean)
+  };
+}
+
+function japaneseSubtextAgentCurrentStageId(profile, unlockedStageIds, attemptedStageId, cleared) {
+  const requestedCurrent = profile
+    ? japaneseSubtextStageId(profile.current_level, profile.current_stage)
+    : "L1-001";
+  let currentStageId = unlockedStageIds.includes(requestedCurrent)
+    ? requestedCurrent
+    : unlockedStageIds.at(-1) || "L1-001";
+  if (cleared) {
+    const nextStageId = nextJapaneseSubtextStageId(attemptedStageId);
+    if (nextStageId && japaneseSubtextStageIdSort(nextStageId, currentStageId) > 0) {
+      currentStageId = nextStageId;
+    }
+  }
+  return currentStageId;
+}
+
+async function createJapaneseSubtextAgentAttempt(request, env) {
+  const principal = await requireJapaneseSubtextAgentScope(
+    request,
+    env,
+    "japanese-subtext:progress:write"
+  );
+  const limited = await consumeJapaneseSubtextAgentRateLimit(
+    request,
+    env,
+    principal,
+    "attempt",
+    JAPANESE_SUBTEXT_AGENT_ATTEMPT_RATE_LIMITS
+  );
+  if (limited) return rateLimitedResponse(limited.retryAfterSeconds);
+  const body = await readJson(
+    request,
+    MAX_JAPANESE_SUBTEXT_AGENT_ATTEMPT_BYTES,
+    "Japanese Subtext Agent attempt payload is too large."
+  );
+  const operationId = normalizeJapaneseSubtextAgentOperationId(body?.operationId);
+  const preflightCanonicalPayload = canonicalJapaneseSubtextAgentPayload(body);
+  const payloadHash = await sha256Hex(JSON.stringify(preflightCanonicalPayload));
+
+  await ensureJapaneseSubtextSchema(env);
+  const existingReceipt = await readJapaneseSubtextAgentReceipt(
+    env,
+    principal.user.id,
+    operationId
+  );
+  if (existingReceipt) {
+    return japaneseSubtextAgentReceiptResponse(existingReceipt, payloadHash);
+  }
+
+  const stage = await loadJapaneseSubtextAgentStage(request, env, body.stageId);
+  const parsed = parseJapaneseSubtextAgentAttempt(body, stage);
+  const canonicalPayload = canonicalJapaneseSubtextAgentPayload(parsed);
+  const validatedPayloadHash = await sha256Hex(JSON.stringify(canonicalPayload));
+  if (validatedPayloadHash !== payloadHash) {
+    throw new HttpError(
+      "Japanese Subtext Agent attempt normalization is inconsistent.",
+      500,
+      "JAPANESE_SUBTEXT_AGENT_CANONICALIZATION_FAILED"
+    );
+  }
+
+  const state = await readJapaneseSubtextAgentState(env, principal.user.id);
+  if (parsed.expectedRevision !== state.revision) {
+    const racedReceipt = await readJapaneseSubtextAgentReceipt(
+      env,
+      principal.user.id,
+      operationId
+    );
+    if (racedReceipt) {
+      return japaneseSubtextAgentReceiptResponse(racedReceipt, payloadHash);
+    }
+    throw japaneseSubtextAgentRevisionConflict(state.revision);
+  }
+  if (state.revision >= JAPANESE_SUBTEXT_COUNTER_LIMIT) {
+    throw new HttpError(
+      "Japanese Subtext progress revision has reached its supported limit.",
+      409,
+      "JAPANESE_SUBTEXT_AGENT_PROGRESS_LIMIT",
+      { currentRevision: state.revision }
+    );
+  }
+  const unlockedStageIds = japaneseSubtextUnlockedStageIds(state.stages);
+  if (!unlockedStageIds.includes(parsed.stageId)) {
+    throw new HttpError(
+      "The requested Japanese Subtext stage is still locked.",
+      409,
+      "JAPANESE_SUBTEXT_AGENT_STAGE_LOCKED",
+      { stageId: parsed.stageId, currentRevision: state.revision }
+    );
+  }
+  const existingStage = state.stages.find((item) => item.stageId === parsed.stageId);
+  if (existingStage?.attempts >= JAPANESE_SUBTEXT_COUNTER_LIMIT) {
+    throw new HttpError(
+      "Japanese Subtext stage attempts have reached the supported limit.",
+      409,
+      "JAPANESE_SUBTEXT_AGENT_PROGRESS_LIMIT",
+      { stageId: parsed.stageId, currentRevision: state.revision }
+    );
+  }
+
+  const evaluation = evaluateJapaneseSubtextAgentAttempt(parsed, stage);
+  const resultingRevision = state.revision + 1;
+  const currentStageId = japaneseSubtextAgentCurrentStageId(
+    state.profile,
+    unlockedStageIds,
+    parsed.stageId,
+    evaluation.cleared
+  );
+  const currentStage = parseJapaneseSubtextStageId(currentStageId) || { level: 1, stage: 1 };
+  const attemptId = `jst_attempt_${crypto.randomUUID()}`;
+  const createdAt = nowIso();
+  const localDate = japaneseSubtextActivityDate(createdAt);
+  const medalRank = JAPANESE_SUBTEXT_MEDAL_RANK[evaluation.medal] || 0;
+  const responsePayload = {
+    schemaVersion: JAPANESE_SUBTEXT_SCHEMA_VERSION,
+    contentVersion: JAPANESE_SUBTEXT_CONTENT_VERSION,
+    revision: resultingRevision,
+    attempt: {
+      attemptId,
+      operationId,
+      stageId: parsed.stageId,
+      stageRevision: parsed.stageRevision,
+      contentHash: parsed.contentHash,
+      score: evaluation.score,
+      cleared: evaluation.cleared,
+      medal: evaluation.medal,
+      attemptMode: evaluation.attemptMode,
+      usedTranslation: evaluation.usedTranslation,
+      usedKana: evaluation.usedKana,
+      usedListeningMode: evaluation.usedListeningMode,
+      replayCount: evaluation.replayCount,
+      hintCount: evaluation.hintCount,
+      createdAt
+    }
+  };
+  const responseText = JSON.stringify(responsePayload);
+  const commitGuardSql = `
+    select 1
+    from japanese_subtext_profiles
+    where user_id = ?
+      and revision = ?
+      and last_agent_operation_id = ?
+      and last_agent_payload_hash = ?
+      and not exists (
+        select 1
+        from japanese_subtext_agent_receipts
+        where user_id = ? and operation_id = ?
+      )
+  `;
+  const guardBindings = [
+    principal.user.id,
+    resultingRevision,
+    operationId,
+    payloadHash,
+    principal.user.id,
+    operationId
+  ];
+  const statements = [
+    japaneseSubtextAgentProfileCasStatement(env, {
+      userId: principal.user.id,
+      resultingRevision,
+      currentStage,
+      operationId,
+      payloadHash,
+      createdAt,
+      stageId: parsed.stageId,
+      expectedRevision: parsed.expectedRevision
+    }),
+    env.DB.prepare(`
+      insert into japanese_subtext_stage_progress (
+        user_id, stage_id, level, stage, cleared, best_score, best_medal, attempts,
+        first_accuracy, first_clear_mode, used_translation, used_kana,
+        used_listening_mode, replay_count, hint_count, progress_updated_at, updated_at
+      )
+      select ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?
+      where exists (${commitGuardSql})
+      on conflict(user_id, stage_id) do update set
+        cleared = max(japanese_subtext_stage_progress.cleared, excluded.cleared),
+        best_score = max(japanese_subtext_stage_progress.best_score, excluded.best_score),
+        best_medal = max(japanese_subtext_stage_progress.best_medal, excluded.best_medal),
+        attempts = japanese_subtext_stage_progress.attempts + 1,
+        first_accuracy = case
+          when japanese_subtext_stage_progress.attempts = 0 then excluded.first_accuracy
+          else japanese_subtext_stage_progress.first_accuracy
+        end,
+        first_clear_mode = case
+          when japanese_subtext_stage_progress.first_clear_mode = '' and excluded.cleared = 1
+            then excluded.first_clear_mode
+          else japanese_subtext_stage_progress.first_clear_mode
+        end,
+        used_translation = max(japanese_subtext_stage_progress.used_translation, excluded.used_translation),
+        used_kana = max(japanese_subtext_stage_progress.used_kana, excluded.used_kana),
+        used_listening_mode = max(japanese_subtext_stage_progress.used_listening_mode, excluded.used_listening_mode),
+        replay_count = japanese_subtext_stage_progress.replay_count + excluded.replay_count,
+        hint_count = japanese_subtext_stage_progress.hint_count + excluded.hint_count,
+        progress_updated_at = excluded.progress_updated_at,
+        updated_at = excluded.updated_at
+    `).bind(
+      principal.user.id,
+      parsed.stageId,
+      stage.level,
+      stage.stage,
+      evaluation.cleared ? 1 : 0,
+      evaluation.score,
+      medalRank,
+      evaluation.score,
+      evaluation.cleared ? evaluation.attemptMode : "",
+      evaluation.usedTranslation ? 1 : 0,
+      evaluation.usedKana ? 1 : 0,
+      evaluation.usedListeningMode ? 1 : 0,
+      evaluation.replayCount,
+      evaluation.hintCount,
+      createdAt,
+      createdAt,
+      ...guardBindings
+    ),
+    env.DB.prepare(`
+      insert into japanese_subtext_agent_attempts (
+        attempt_id, user_id, token_id, operation_id, payload_hash, stage_id,
+        stage_revision, content_hash, expected_revision, resulting_revision,
+        answers_json, score, cleared, medal, attempt_mode, used_translation,
+        used_kana, used_listening_mode, replay_count, hint_count, created_at
+      )
+      select ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+      where exists (${commitGuardSql})
+    `).bind(
+      attemptId,
+      principal.user.id,
+      principal.tokenId,
+      operationId,
+      payloadHash,
+      parsed.stageId,
+      parsed.stageRevision,
+      parsed.contentHash,
+      parsed.expectedRevision,
+      resultingRevision,
+      JSON.stringify(parsed.answers),
+      evaluation.score,
+      evaluation.cleared ? 1 : 0,
+      medalRank,
+      evaluation.attemptMode,
+      evaluation.usedTranslation ? 1 : 0,
+      evaluation.usedKana ? 1 : 0,
+      evaluation.usedListeningMode ? 1 : 0,
+      evaluation.replayCount,
+      evaluation.hintCount,
+      createdAt,
+      ...guardBindings
+    ),
+    env.DB.prepare(`
+      insert into japanese_subtext_daily_activity (
+        user_id, local_date, stage_id, cleared, best_medal, activity_updated_at, updated_at
+      )
+      select ?, ?, ?, ?, ?, ?, ?
+      where exists (${commitGuardSql})
+      on conflict(user_id, local_date, stage_id) do update set
+        cleared = max(japanese_subtext_daily_activity.cleared, excluded.cleared),
+        best_medal = max(japanese_subtext_daily_activity.best_medal, excluded.best_medal),
+        activity_updated_at = excluded.activity_updated_at,
+        updated_at = excluded.updated_at
+    `).bind(
+      principal.user.id,
+      localDate,
+      parsed.stageId,
+      evaluation.cleared ? 1 : 0,
+      medalRank,
+      createdAt,
+      createdAt,
+      ...guardBindings
+    ),
+    env.DB.prepare(`
+      insert into agent_audit_log (
+        event_id, actor_user_id, token_id, action, target_type, target_id,
+        scopes, result, created_at
+      )
+      select ?, ?, ?, ?, ?, ?, ?, ?, ?
+      where exists (${commitGuardSql})
+    `).bind(
+      crypto.randomUUID(),
+      principal.user.id,
+      principal.tokenId,
+      "japanese-subtext-agent-attempt",
+      "japanese-subtext-stage",
+      parsed.stageId,
+      JSON.stringify(principal.scopes),
+      evaluation.cleared ? "cleared" : "attempted",
+      createdAt,
+      ...guardBindings
+    ),
+    env.DB.prepare(`
+      insert into japanese_subtext_agent_receipts (
+        user_id, operation_id, payload_hash, attempt_id, response_json, created_at
+      )
+      select ?, ?, ?, ?, ?, ?
+      where exists (${commitGuardSql})
+    `).bind(
+      principal.user.id,
+      operationId,
+      payloadHash,
+      attemptId,
+      responseText,
+      createdAt,
+      ...guardBindings
+    )
+  ];
+
+  let batchResults;
+  try {
+    batchResults = await env.DB.batch(statements);
+  } catch (error) {
+    const racedReceipt = await readJapaneseSubtextAgentReceipt(
+      env,
+      principal.user.id,
+      operationId
+    );
+    if (racedReceipt) {
+      return japaneseSubtextAgentReceiptResponse(racedReceipt, payloadHash);
+    }
+    throw error;
+  }
+
+  const casChanges = Number(batchResults?.[0]?.meta?.changes || 0);
+  if (casChanges !== 1) {
+    const racedReceipt = await readJapaneseSubtextAgentReceipt(
+      env,
+      principal.user.id,
+      operationId
+    );
+    if (racedReceipt) {
+      return japaneseSubtextAgentReceiptResponse(racedReceipt, payloadHash);
+    }
+    const current = await env.DB.prepare(`
+      select revision
+      from japanese_subtext_profiles
+      where user_id = ?
+      limit 1
+    `).bind(principal.user.id).first();
+    throw japaneseSubtextAgentRevisionConflict(
+      boundedStoredInteger(current?.revision, 1, JAPANESE_SUBTEXT_COUNTER_LIMIT, 1)
+    );
+  }
+
+  return japaneseSubtextStoredJsonResponse(responseText);
+}
+
+function japaneseSubtextAgentProfileCasStatement(env, options) {
+  return env.DB.prepare(`
+    insert into japanese_subtext_profiles (
+      user_id, schema_version, content_version, revision, current_level, current_stage,
+      settings_json, last_agent_operation_id, last_agent_payload_hash,
+      progress_updated_at, settings_updated_at, created_at, updated_at
+    )
+    select ?, ?, ?, ?, ?, ?, '{}', ?, ?, ?, ?, ?, ?
+    where not exists (
+      select 1
+      from japanese_subtext_stage_progress
+      where user_id = ? and stage_id = ? and attempts >= ?
+    )
+    on conflict(user_id) do update set
+      schema_version = excluded.schema_version,
+      content_version = excluded.content_version,
+      revision = excluded.revision,
+      current_level = case
+        when excluded.current_level * 100 + excluded.current_stage
+          >= japanese_subtext_profiles.current_level * 100 + japanese_subtext_profiles.current_stage
+          then excluded.current_level
+        else japanese_subtext_profiles.current_level
+      end,
+      current_stage = case
+        when excluded.current_level * 100 + excluded.current_stage
+          >= japanese_subtext_profiles.current_level * 100 + japanese_subtext_profiles.current_stage
+          then excluded.current_stage
+        else japanese_subtext_profiles.current_stage
+      end,
+      last_agent_operation_id = excluded.last_agent_operation_id,
+      last_agent_payload_hash = excluded.last_agent_payload_hash,
+      progress_updated_at = excluded.progress_updated_at,
+      updated_at = excluded.updated_at
+    where japanese_subtext_profiles.revision = ?
+      and not exists (
+        select 1
+        from japanese_subtext_stage_progress
+        where user_id = ? and stage_id = ? and attempts >= ?
+      )
+  `).bind(
+    options.userId,
+    JAPANESE_SUBTEXT_SCHEMA_VERSION,
+    JAPANESE_SUBTEXT_CONTENT_VERSION,
+    options.resultingRevision,
+    options.currentStage.level,
+    options.currentStage.stage,
+    options.operationId,
+    options.payloadHash,
+    options.createdAt,
+    JAPANESE_SUBTEXT_EMPTY_TIMESTAMP,
+    options.createdAt,
+    options.createdAt,
+    options.userId,
+    options.stageId,
+    JAPANESE_SUBTEXT_COUNTER_LIMIT,
+    options.expectedRevision,
+    options.userId,
+    options.stageId,
+    JAPANESE_SUBTEXT_COUNTER_LIMIT
+  );
+}
+
+async function readJapaneseSubtextAgentReceipt(env, userId, operationId) {
+  return env.DB.prepare(`
+    select payload_hash, response_json
+    from japanese_subtext_agent_receipts
+    where user_id = ? and operation_id = ?
+    limit 1
+  `).bind(userId, operationId).first();
+}
+
+function japaneseSubtextAgentReceiptResponse(receipt, payloadHash) {
+  if (receipt.payload_hash !== payloadHash) {
+    throw new HttpError(
+      "operationId was already used with a different Japanese Subtext attempt payload.",
+      409,
+      "JAPANESE_SUBTEXT_AGENT_OPERATION_CONFLICT"
+    );
+  }
+  return japaneseSubtextStoredJsonResponse(receipt.response_json);
+}
+
+function japaneseSubtextStoredJsonResponse(value) {
+  const responseText = String(value || "");
+  if (textBytes(responseText).byteLength > MAX_JAPANESE_SUBTEXT_AGENT_ATTEMPT_BYTES) {
+    throw new HttpError(
+      "Stored Japanese Subtext Agent receipt is invalid.",
+      500,
+      "JAPANESE_SUBTEXT_AGENT_RECEIPT_INVALID"
+    );
+  }
+  try {
+    const payload = JSON.parse(responseText);
+    if (!payload || typeof payload !== "object" || Array.isArray(payload)) throw new Error("invalid");
+  } catch {
+    throw new HttpError(
+      "Stored Japanese Subtext Agent receipt is invalid.",
+      500,
+      "JAPANESE_SUBTEXT_AGENT_RECEIPT_INVALID"
+    );
+  }
+  return new Response(responseText, {
+    status: 200,
+    headers: apiSecurityHeaders({
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "no-store"
+    })
+  });
+}
+
+function japaneseSubtextAgentRevisionConflict(currentRevision) {
+  return new HttpError(
+    "Japanese Subtext progress revision is stale.",
+    409,
+    "JAPANESE_SUBTEXT_AGENT_REVISION_CONFLICT",
+    { currentRevision }
+  );
+}
+
+async function loadJapaneseSubtextAgentStage(request, env, stageId) {
+  const parsed = parseJapaneseSubtextStageId(stageId);
+  if (!parsed || stageId !== japaneseSubtextStageId(parsed.level, parsed.stage)) {
+    throw new JapaneseSubtextAgentEvaluationError(
+      "stageId must be a canonical Japanese Subtext stage ID.",
+      { details: { field: "stageId" } }
+    );
+  }
+  const start = Math.floor((parsed.stage - 1) / 10) * 10 + 1;
+  const end = start + 9;
+  const range = `${String(start).padStart(3, "0")}-${String(end).padStart(3, "0")}`;
+  const batchFilename = `batch-${range}.json`;
+  const basePath = `/tools/japanese-subtext/content/level-${parsed.level}`;
+  const [index, batch] = await Promise.all([
+    fetchJapaneseSubtextAgentAssetJson(request, env, `${basePath}/index.json`),
+    fetchJapaneseSubtextAgentAssetJson(request, env, `${basePath}/${batchFilename}`)
+  ]);
+  if (
+    !isPlainJsonRecord(index)
+    || index.schemaVersion !== JAPANESE_SUBTEXT_SCHEMA_VERSION
+    || index.contentVersion !== JAPANESE_SUBTEXT_CONTENT_VERSION
+    || index.level !== parsed.level
+    || !Array.isArray(index.stages)
+    || index.stages.length !== 50
+  ) {
+    throw japaneseSubtextAgentLockedStageError("The deployed level index is invalid.");
+  }
+  const indexMatches = index.stages.filter((entry) => entry?.id === stageId);
+  const indexEntry = indexMatches.length === 1 ? indexMatches[0] : null;
+  if (
+    !isPlainJsonRecord(indexEntry)
+    || indexEntry.stage !== parsed.stage
+    || indexEntry.batch !== batchFilename
+    || !/^[a-f0-9]{64}$/.test(String(indexEntry.contentHash || ""))
+  ) {
+    throw japaneseSubtextAgentLockedStageError("The deployed level index stage entry is invalid.");
+  }
+  if (
+    !isPlainJsonRecord(batch)
+    || batch.schemaVersion !== JAPANESE_SUBTEXT_SCHEMA_VERSION
+    || batch.contentVersion !== JAPANESE_SUBTEXT_CONTENT_VERSION
+    || batch.level !== parsed.level
+    || batch.batch !== range
+    || !Array.isArray(batch.stages)
+    || batch.stages.length !== 10
+  ) {
+    throw japaneseSubtextAgentLockedStageError("The deployed stage batch is invalid.");
+  }
+  const stageMatches = batch.stages.filter((entry) => entry?.id === stageId);
+  const stage = stageMatches.length === 1 ? stageMatches[0] : null;
+  if (
+    !isPlainJsonRecord(stage)
+    || stage.schemaVersion !== JAPANESE_SUBTEXT_SCHEMA_VERSION
+    || stage.contentVersion !== JAPANESE_SUBTEXT_CONTENT_VERSION
+    || stage.level !== parsed.level
+    || stage.stage !== parsed.stage
+    || stage.textLocked !== true
+    || stage.contentHash !== indexEntry.contentHash
+  ) {
+    throw japaneseSubtextAgentLockedStageError("The deployed locked stage is invalid.");
+  }
+  const hashInput = { ...stage };
+  delete hashInput.contentHash;
+  const actualHash = await sha256Hex(japaneseSubtextStableStringify(hashInput));
+  if (actualHash !== stage.contentHash) {
+    throw japaneseSubtextAgentLockedStageError("The deployed locked stage content hash is invalid.");
+  }
+  return stage;
+}
+
+async function fetchJapaneseSubtextAgentAssetJson(request, env, pathname) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), JAPANESE_SUBTEXT_AGENT_ASSET_TIMEOUT_MS);
+  const assetRequest = new Request(new URL(pathname, request.url), {
+    method: "GET",
+    headers: { Accept: "application/json" },
+    redirect: "error",
+    signal: controller.signal
+  });
+  let response;
+  try {
+    response = env.ASSETS && typeof env.ASSETS.fetch === "function"
+      ? await env.ASSETS.fetch(assetRequest)
+      : await fetch(assetRequest);
+  } catch {
+    clearTimeout(timeout);
+    throw new HttpError(
+      "Japanese Subtext locked content is temporarily unavailable.",
+      503,
+      "JAPANESE_SUBTEXT_AGENT_CONTENT_UNAVAILABLE"
+    );
+  }
+  if (!response?.ok) {
+    clearTimeout(timeout);
+    throw new HttpError(
+      "Japanese Subtext locked content is temporarily unavailable.",
+      503,
+      "JAPANESE_SUBTEXT_AGENT_CONTENT_UNAVAILABLE"
+    );
+  }
+  let raw;
+  try {
+    raw = await readBoundedRequestText(
+      response,
+      MAX_JAPANESE_SUBTEXT_AGENT_ASSET_BYTES,
+      "Japanese Subtext locked content exceeds the supported size."
+    );
+  } finally {
+    clearTimeout(timeout);
+  }
+  try {
+    return JSON.parse(raw);
+  } catch {
+    throw japaneseSubtextAgentLockedStageError("The deployed Japanese Subtext content is not valid JSON.");
+  }
+}
+
+function japaneseSubtextStableStringify(value) {
+  if (Array.isArray(value)) {
+    return `[${value.map(japaneseSubtextStableStringify).join(",")}]`;
+  }
+  if (isPlainJsonRecord(value)) {
+    return `{${Object.keys(value).sort().map((key) => (
+      `${JSON.stringify(key)}:${japaneseSubtextStableStringify(value[key])}`
+    )).join(",")}}`;
+  }
+  return JSON.stringify(value);
+}
+
+function isPlainJsonRecord(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const prototype = Object.getPrototypeOf(value);
+  return prototype === Object.prototype || prototype === null;
+}
+
+function japaneseSubtextAgentLockedStageError(message) {
+  return new HttpError(message, 500, "JAPANESE_SUBTEXT_AGENT_STAGE_INVALID");
 }
 
 async function getJapaneseSubtextProgress(request, env) {
@@ -4427,10 +5357,49 @@ async function ensureJapaneseSubtextSchema(env) {
         current_level integer not null default 1 check(current_level between 1 and 5),
         current_stage integer not null default 1 check(current_stage between 1 and 50),
         settings_json text not null default '{}',
+        last_agent_operation_id text not null default '',
+        last_agent_payload_hash text not null default '',
         progress_updated_at text not null,
         settings_updated_at text not null,
         created_at text not null,
         updated_at text not null
+      )
+    `),
+    env.DB.prepare(`
+      create table if not exists japanese_subtext_agent_attempts (
+        attempt_id text primary key,
+        user_id text not null references users(id) on delete cascade,
+        token_id text not null,
+        operation_id text not null,
+        payload_hash text not null,
+        stage_id text not null,
+        stage_revision integer not null check(stage_revision between 1 and 1000000),
+        content_hash text not null,
+        expected_revision integer not null check(expected_revision between 1 and 1000000),
+        resulting_revision integer not null check(resulting_revision between 1 and 1000000),
+        answers_json text not null,
+        score integer not null check(score between 0 and 100),
+        cleared integer not null check(cleared in (0, 1)),
+        medal integer not null check(medal between 0 and 1),
+        attempt_mode text not null check(attempt_mode = 'bilingual'),
+        used_translation integer not null check(used_translation = 1),
+        used_kana integer not null check(used_kana = 1),
+        used_listening_mode integer not null check(used_listening_mode = 0),
+        replay_count integer not null check(replay_count = 0),
+        hint_count integer not null check(hint_count = 0),
+        created_at text not null,
+        unique (user_id, operation_id)
+      )
+    `),
+    env.DB.prepare(`
+      create table if not exists japanese_subtext_agent_receipts (
+        user_id text not null references users(id) on delete cascade,
+        operation_id text not null,
+        payload_hash text not null,
+        attempt_id text not null references japanese_subtext_agent_attempts(attempt_id) on delete cascade,
+        response_json text not null,
+        created_at text not null,
+        primary key (user_id, operation_id)
       )
     `),
     env.DB.prepare(`
@@ -4482,7 +5451,19 @@ async function ensureJapaneseSubtextSchema(env) {
     env.DB.prepare(`
       create index if not exists japanese_subtext_daily_activity_user_date_idx
         on japanese_subtext_daily_activity(user_id, local_date)
+    `),
+    env.DB.prepare(`
+      create index if not exists japanese_subtext_agent_attempts_created_idx
+        on japanese_subtext_agent_attempts(created_at)
+    `),
+    env.DB.prepare(`
+      create index if not exists japanese_subtext_agent_receipts_created_idx
+        on japanese_subtext_agent_receipts(created_at)
     `)
+  ]);
+  await ensureTableColumns(env, "japanese_subtext_profiles", [
+    ["last_agent_operation_id", "text not null default ''"],
+    ["last_agent_payload_hash", "text not null default ''"]
   ]);
   japaneseSubtextSchemaReady = true;
 }
@@ -4832,6 +5813,34 @@ async function runPeriodicDataCleanup(env) {
       DATA_CLEANUP_DELETE_LIMIT
     )
   ];
+  const japaneseSubtextAgentCutoff = new Date(
+    now.getTime() - JAPANESE_SUBTEXT_AGENT_RETENTION_DAYS * 24 * 60 * 60 * 1000
+  ).toISOString();
+  if (
+    await tableExists(env, "japanese_subtext_agent_receipts")
+    && await tableExists(env, "japanese_subtext_agent_attempts")
+  ) {
+    statements.push(
+      env.DB.prepare(`
+        delete from japanese_subtext_agent_receipts
+        where rowid in (
+          select rowid from japanese_subtext_agent_receipts
+          where created_at < ?
+          order by created_at asc
+          limit ?
+        )
+      `).bind(japaneseSubtextAgentCutoff, DATA_CLEANUP_DELETE_LIMIT),
+      env.DB.prepare(`
+        delete from japanese_subtext_agent_attempts
+        where attempt_id in (
+          select attempt_id from japanese_subtext_agent_attempts
+          where created_at < ?
+          order by created_at asc
+          limit ?
+        )
+      `).bind(japaneseSubtextAgentCutoff, DATA_CLEANUP_DELETE_LIMIT)
+    );
+  }
   const analyticsCutoff = new Date(
     now.getTime() - ANALYTICS_EVENT_RETENTION_DAYS * 24 * 60 * 60 * 1000
   ).toISOString();
@@ -6229,6 +7238,89 @@ const DAILY_AI_NEWS_2026_07_27_READER_PATCH = Object.freeze({
 function articleSeedStatements(env) {
   // Seed timestamps must be UTC ISO strings; the UI converts them to each visitor's local time.
   return [
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-08-06-japanese-agent-progress',
+        '2026-08-06-japanese-agent-progress',
+        'site-updates',
+        '["网站更新","AI 能力","MCP","CLI","日语","账号进度"]',
+        '', 'published', 0, 0,
+        '2026-08-06T08:30:00.000Z',
+        '2026-08-06T08:30:00.000Z',
+        '2026-08-06T08:30:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-08-06-japanese-agent-progress", {
+      zh: {
+        title: "AI 已可读取日语进度并受控提交答题",
+        summary: "第四阶段为本地 CLI／stdio MCP 加入账号日语进度读取和服务端判分的答题提交；新增权限、版本冲突与幂等保护，远程 MCP 仍未部署。",
+        content_markdown: `# AI 已可读取日语进度并受控提交答题
+
+AI 能力层第四阶段为“日语的言外之意”补上账号进度闭环，同时保留浏览器原有云同步行为。
+
+## 新增能力
+
+- 本地 CLI 与 stdio MCP 可读取当前关卡、已解锁关卡、通关与奖牌汇总、单关进度和有界的近期活动。
+- AI 可提交关卡 ID、题库版本、内容哈希和逐题选项；分数、通关、奖牌、尝试次数和下一关解锁全部由服务端计算，调用方不能自行填写。
+- Agent 辅助答题固定记录为双语辅助模式，奖牌最高为铜牌，不能冒充纯听训练成绩。
+
+## 权限与一致性
+
+进度读取和答题写入使用两个独立且非默认的最小权限 scope。写入同时检查账号、关卡解锁状态、题库哈希、进度 revision 和 operation ID；相同请求可安全重试，不同载荷复用同一 ID 会被拒绝。设备码轮询也会从短暂网络失败中有界恢复。
+
+独立远程 MCP Worker 仍未部署，也没有获得这些账号能力。`
+      },
+      en: {
+        title: "AI Can Read Japanese Progress and Submit Checked Attempts",
+        summary: "Phase four adds account-bound Japanese progress reads and server-scored attempt submission to the local CLI/stdio MCP, with dedicated scopes, revision checks, and idempotency. The remote MCP remains undeployed.",
+        content_markdown: `# AI Can Read Japanese Progress and Submit Checked Attempts
+
+Phase four closes the account progress loop for Behind the Japanese while preserving the browser application's existing cloud-sync behavior.
+
+## New capabilities
+
+- The local CLI and stdio MCP can read the current stage, unlocked stages, clear and medal totals, optional per-stage progress, and a bounded recent-activity view.
+- An AI client can submit a stage ID, content revision and hash, plus selected options for every question. Score, clear status, medal, attempt count, and the next unlock are computed by the server; callers cannot supply them.
+- Agent-assisted attempts are recorded as bilingual assisted mode and can earn at most bronze, so they cannot be presented as verified listening-only results.
+
+## Authorization and consistency
+
+Progress reads and attempt writes use separate, non-default least-privilege scopes. Writes verify the account, unlock state, content hash, progress revision, and operation ID. An identical request can be retried safely, while reusing an ID for different input is rejected. Device authorization polling now also recovers from bounded transient network failures.
+
+The separate remote MCP Worker remains undeployed and has not received these account capabilities.`
+      },
+      ja: {
+        title: "AI が日本語学習進捗の取得と検証済み解答送信に対応",
+        summary: "第4段階ではローカル CLI／stdio MCP にアカウント連携の学習進捗取得とサーバー採点の解答送信を追加しました。専用権限、リビジョン検査、冪等性を備え、リモート MCP は未展開のままです。",
+        content_markdown: `# AI が日本語学習進捗の取得と検証済み解答送信に対応
+
+第4段階では「日本語の裏側」にアカウント進捗の閉ループを追加し、ブラウザー版の既存クラウド同期動作は維持しました。
+
+## 新しい機能
+
+- ローカル CLI と stdio MCP で、現在の問題、解放済み問題、クリア数・メダル集計、任意の問題別進捗、上限付きの最近の活動を取得できます。
+- AI は問題 ID、題庫リビジョン、内容ハッシュ、各設問の選択肢だけを送信します。得点、クリア、メダル、挑戦回数、次の問題の解放はすべてサーバーが計算し、呼び出し側は指定できません。
+- Agent 補助による解答はバイリンガル補助モードとして記録し、獲得できるメダルは銅までです。純粋なリスニング成績として扱うことはできません。
+
+## 権限と整合性
+
+進捗取得と解答書き込みには、既定では付与されない個別の最小権限 scope を使います。書き込み時はアカウント、解放状態、内容ハッシュ、進捗 revision、operation ID を検査します。同一要求は安全に再試行できますが、異なる内容で同じ ID を再利用すると拒否されます。デバイス認証のポーリングも、一時的なネットワーク障害から上限付きで復旧します。
+
+独立リモート MCP Worker は引き続き未展開で、これらのアカウント機能も追加されていません。`
+      }
+    }, "2026-08-06T08:30:00.000Z"),
     env.DB.prepare(`
       insert into articles (
         article_id, slug, category, tags, cover_image, status, is_pinned,
@@ -13652,8 +14744,10 @@ function nowIso() {
 }
 
 class HttpError extends Error {
-  constructor(message, status) {
+  constructor(message, status, code = "", details = null) {
     super(message);
     this.status = status;
+    this.code = code;
+    this.details = details;
   }
 }

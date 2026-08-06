@@ -1,6 +1,36 @@
 export const content = {
   updates: [
     {
+      "article_id": "seed-update-2026-08-06-japanese-agent-progress",
+      "slug": "2026-08-06-japanese-agent-progress",
+      "category": "site-updates",
+      "tags": ["网站更新", "AI 能力", "MCP", "CLI", "日语", "账号进度"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-06T08:30:00.000Z",
+      "updated_at": "2026-08-06T08:30:00.000Z",
+      "published_at": "2026-08-06T08:30:00.000Z",
+      "fallbackOnly": true,
+      "icon": "resources",
+      "date": "2026.08.06",
+      "title": {
+        "zh": "AI 已可读取日语进度并受控提交答题",
+        "en": "AI Can Read Japanese Progress and Submit Checked Attempts",
+        "ja": "AI が日本語学習進捗の取得と検証済み解答送信に対応"
+      },
+      "summary": {
+        "zh": "第四阶段为本地 CLI／stdio MCP 加入账号日语进度读取和服务端判分的答题提交；新增权限、版本冲突与幂等保护，远程 MCP 仍未部署。",
+        "en": "Phase four adds account-bound Japanese progress reads and server-scored attempt submission to the local CLI/stdio MCP, with dedicated scopes, revision checks, and idempotency. The remote MCP remains undeployed.",
+        "ja": "第4段階ではローカル CLI／stdio MCP にアカウント連携の学習進捗取得とサーバー採点の解答送信を追加しました。専用権限、リビジョン検査、冪等性を備え、リモート MCP は未展開のままです。"
+      },
+      "content_markdown": {
+        "zh": "# AI 已可读取日语进度并受控提交答题\n\nAI 能力层第四阶段为“日语的言外之意”补上账号进度闭环，同时保留浏览器原有云同步行为。\n\n## 新增能力\n\n- 本地 CLI 与 stdio MCP 可读取当前关卡、已解锁关卡、通关与奖牌汇总、单关进度和有界的近期活动。\n- AI 可提交关卡 ID、题库版本、内容哈希和逐题选项；分数、通关、奖牌、尝试次数和下一关解锁全部由服务端计算，调用方不能自行填写。\n- Agent 辅助答题固定记录为双语辅助模式，奖牌最高为铜牌，不能冒充纯听训练成绩。\n\n## 权限与一致性\n\n进度读取和答题写入使用两个独立且非默认的最小权限 scope。写入同时检查账号、关卡解锁状态、题库哈希、进度 revision 和 operation ID；相同请求可安全重试，不同载荷复用同一 ID 会被拒绝。设备码轮询也会从短暂网络失败中有界恢复。\n\n独立远程 MCP Worker 仍未部署，也没有获得这些账号能力。",
+        "en": "# AI Can Read Japanese Progress and Submit Checked Attempts\n\nPhase four closes the account progress loop for Behind the Japanese while preserving the browser application's existing cloud-sync behavior.\n\n## New capabilities\n\n- The local CLI and stdio MCP can read the current stage, unlocked stages, clear and medal totals, optional per-stage progress, and a bounded recent-activity view.\n- An AI client can submit a stage ID, content revision and hash, plus selected options for every question. Score, clear status, medal, attempt count, and the next unlock are computed by the server; callers cannot supply them.\n- Agent-assisted attempts are recorded as bilingual assisted mode and can earn at most bronze, so they cannot be presented as verified listening-only results.\n\n## Authorization and consistency\n\nProgress reads and attempt writes use separate, non-default least-privilege scopes. Writes verify the account, unlock state, content hash, progress revision, and operation ID. An identical request can be retried safely, while reusing an ID for different input is rejected. Device authorization polling now also recovers from bounded transient network failures.\n\nThe separate remote MCP Worker remains undeployed and has not received these account capabilities.",
+        "ja": "# AI が日本語学習進捗の取得と検証済み解答送信に対応\n\n第4段階では「日本語の裏側」にアカウント進捗の閉ループを追加し、ブラウザー版の既存クラウド同期動作は維持しました。\n\n## 新しい機能\n\n- ローカル CLI と stdio MCP で、現在の問題、解放済み問題、クリア数・メダル集計、任意の問題別進捗、上限付きの最近の活動を取得できます。\n- AI は問題 ID、題庫リビジョン、内容ハッシュ、各設問の選択肢だけを送信します。得点、クリア、メダル、挑戦回数、次の問題の解放はすべてサーバーが計算し、呼び出し側は指定できません。\n- Agent 補助による解答はバイリンガル補助モードとして記録し、獲得できるメダルは銅までです。純粋なリスニング成績として扱うことはできません。\n\n## 権限と整合性\n\n進捗取得と解答書き込みには、既定では付与されない個別の最小権限 scope を使います。書き込み時はアカウント、解放状態、内容ハッシュ、進捗 revision、operation ID を検査します。同一要求は安全に再試行できますが、異なる内容で同じ ID を再利用すると拒否されます。デバイス認証のポーリングも、一時的なネットワーク障害から上限付きで復旧します。\n\n独立リモート MCP Worker は引き続き未展開で、これらのアカウント機能も追加されていません。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-06-agent-read-breadth",
       "slug": "2026-08-06-agent-read-breadth",
       "category": "site-updates",
