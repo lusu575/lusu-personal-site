@@ -9,6 +9,12 @@ import { z } from "zod";
 import { createProxyAwareFetch } from "../../自动新闻/integrations/lusu-site/network-fetch.mjs";
 import { SiteClient, SiteClientError } from "../../lib/capabilities/site-client.mjs";
 import {
+  PublicCatalogError,
+  getPublicTool,
+  listPublicTools
+} from "../../lib/capabilities/public-catalog-adapter.mjs";
+import { JapaneseSubtextCapabilityError } from "../../lib/capabilities/japanese-subtext-adapter.mjs";
+import {
   GameSessionStoreError,
   createGameSessionStore
 } from "../../lib/capabilities/game-session-store.mjs";
@@ -29,11 +35,17 @@ import {
   resolveAllowRoots,
   resolveReadableFileRef,
   resolveSecretRef,
+  resolveSiteAuthContext,
   resolveWritableFileRef,
   storeRoomHandle
 } from "../../lib/capabilities/local-state.mjs";
 
 const languageSchema = z.enum(["zh", "en", "ja"]).default("zh");
+const videoIdSchema = z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,179}$/);
+const publicToolIdSchema = z.string().regex(/^[a-z0-9][a-z0-9-]{0,63}$/);
+const catalogGameIdSchema = z.string().regex(/^[a-z0-9][a-z0-9-]{0,63}$/);
+const japaneseStageIdSchema = z.string().regex(/^L[1-5]-(?:00[1-9]|0[1-4][0-9]|050)$/);
+const japaneseQuerySchema = z.string().max(200).trim().min(1).regex(/^[^\u0000-\u001F\u007F]+$/u);
 const roomHandleSchema = z.string().regex(/^room_[a-zA-Z0-9_-]{12,80}$/);
 const boardHandleSchema = z.string().regex(/^board_[a-zA-Z0-9_-]{12,80}$/);
 const itemIdSchema = z.string().min(16).max(80);
@@ -92,10 +104,19 @@ export async function createLocalMcpServer(options = {}) {
   const credential = options.credential === undefined
     ? await readStoredCredential(stateOptions)
     : options.credential;
+  const explicitAccessTokenProvided = Object.prototype.hasOwnProperty.call(options, "accessToken");
+  const siteAuth = resolveSiteAuthContext({
+    baseUrl: options.baseUrl,
+    env,
+    credential,
+    defaultBaseUrl: "https://lusu575.com",
+    explicitAccessToken: options.accessToken,
+    explicitAccessTokenProvided
+  });
   const client = options.client || new SiteClient({
     fetch: options.fetch,
-    baseUrl: options.baseUrl || env.LUSU_BASE_URL || credential?.baseUrl || "https://lusu575.com",
-    accessToken: env.LUSU_ACCESS_TOKEN || credential?.accessToken || ""
+    baseUrl: siteAuth.baseUrl,
+    accessToken: siteAuth.accessToken
   });
   const allowRoots = options.allowRoots || await resolveAllowRoots({
     env,
@@ -104,7 +125,7 @@ export async function createLocalMcpServer(options = {}) {
   });
   const gameStore = options.gameStore || createGameSessionStore(stateOptions);
   const server = new McpServer(
-    { name: "lusu-personal-site-local", version: "0.3.0" },
+    { name: "lusu-personal-site-local", version: "0.4.0" },
     { capabilities: { tools: {} } }
   );
 
@@ -172,6 +193,70 @@ export async function createLocalMcpServer(options = {}) {
     }),
     annotations: readOnlyAnnotations({ openWorldHint: true })
   }, (input) => client.listVideos(input));
+
+  registerTool(server, "video_get", {
+    title: "Read one public video",
+    description: "Reads one published video record by its stable site video id.",
+    inputSchema: z.object({ videoId: videoIdSchema }).strict(),
+    annotations: readOnlyAnnotations({ openWorldHint: true })
+  }, ({ videoId }) => client.getVideo(videoId));
+
+  registerTool(server, "tools_list", {
+    title: "List AI-ready site tools",
+    description: "Lists the bounded local catalog of real site tools that currently have an AI capability surface.",
+    inputSchema: z.object({ lang: languageSchema }).strict(),
+    annotations: readOnlyAnnotations()
+  }, ({ lang }) => listPublicTools({ lang }));
+
+  registerTool(server, "tools_get", {
+    title: "Read one AI-ready site tool",
+    description: "Reads one safe public tool-catalog projection by stable tool id.",
+    inputSchema: z.object({ toolId: publicToolIdSchema, lang: languageSchema }).strict(),
+    annotations: readOnlyAnnotations()
+  }, ({ toolId, lang }) => getPublicTool(toolId, { lang }));
+
+  registerTool(server, "games_list", {
+    title: "List public site games",
+    description: "Lists safe public game metadata and optionally keeps only games with an available Agent adapter.",
+    inputSchema: z.object({
+      lang: languageSchema,
+      agentOnly: z.boolean().default(false)
+    }).strict(),
+    annotations: readOnlyAnnotations({ openWorldHint: true })
+  }, ({ lang, agentOnly }) => client.listGames({ lang, agentOnly }));
+
+  registerTool(server, "game_get", {
+    title: "Read one public site game",
+    description: "Reads one safe public game-catalog projection by stable game id.",
+    inputSchema: z.object({ gameId: catalogGameIdSchema, lang: languageSchema }).strict(),
+    annotations: readOnlyAnnotations({ openWorldHint: true })
+  }, ({ gameId, lang }) => client.getGame(gameId, { lang }));
+
+  registerTool(server, "japanese_subtext_levels", {
+    title: "List Japanese Subtext course levels",
+    description: "Lists the five validated public course levels without exposing internal content paths.",
+    inputSchema: z.object({ lang: languageSchema }).strict(),
+    annotations: readOnlyAnnotations({ openWorldHint: true })
+  }, ({ lang }) => client.listJapaneseSubtextLevels({ lang }));
+
+  registerTool(server, "japanese_subtext_stages", {
+    title: "List Japanese Subtext stages",
+    description: "Lists a bounded set of validated stage summaries for one course level.",
+    inputSchema: z.object({
+      level: z.number().int().min(1).max(5),
+      query: japaneseQuerySchema.optional(),
+      limit: z.number().int().min(1).max(50).default(50),
+      lang: languageSchema
+    }).strict(),
+    annotations: readOnlyAnnotations({ openWorldHint: true })
+  }, ({ level, query, limit, lang }) => client.listJapaneseSubtextStages({ level, query, limit, lang }));
+
+  registerTool(server, "japanese_subtext_stage_get", {
+    title: "Read one Japanese Subtext stage",
+    description: "Reads one validated, text-locked public learning stage by stable stage id.",
+    inputSchema: z.object({ stageId: japaneseStageIdSchema, lang: languageSchema }).strict(),
+    annotations: readOnlyAnnotations({ openWorldHint: true })
+  }, ({ stageId, lang }) => client.getJapaneseSubtextStage(stageId, { lang }));
 
   registerTool(server, "transfer_join", {
     title: "Join a Quick Transfer room",
@@ -467,6 +552,12 @@ function registerTool(server, name, config, handler) {
 
 function safeToolError(error) {
   if (error instanceof SiteClientError) return error.toJSON();
+  if (error instanceof PublicCatalogError) {
+    return { error: error.message, code: error.code, status: Number(error.status || 0) };
+  }
+  if (error instanceof JapaneseSubtextCapabilityError) {
+    return { error: error.message, code: error.code, status: Number(error.status || 0) };
+  }
   if (error instanceof LocalStateError || error instanceof WhiteboardSceneError) {
     return { error: error.message, code: error.code, status: 0 };
   }

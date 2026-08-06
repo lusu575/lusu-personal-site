@@ -7,6 +7,7 @@ import { PassThrough } from "node:stream";
 import { StdioServerTransport } from "@modelcontextprotocol/server/stdio";
 import * as Y from "yjs";
 import { createLocalMcpServer, startLocalMcpServer } from "../mcp/local/server.mjs";
+import { JapaneseSubtextCapabilityError } from "../lib/capabilities/japanese-subtext-adapter.mjs";
 
 function tool(server, name) {
   const registered = server._registeredTools[name];
@@ -23,12 +24,18 @@ test("local MCP registers the first capability surface with safe annotations", a
   const names = Object.keys(server._registeredTools);
   assert.deepEqual(names, [
     "capabilities_list", "content_list", "content_search", "content_get", "daily_news_get", "videos_list",
+    "video_get", "tools_list", "tools_get", "games_list", "game_get",
+    "japanese_subtext_levels", "japanese_subtext_stages", "japanese_subtext_stage_get",
     "transfer_join", "transfer_list", "transfer_send_text", "transfer_upload",
     "transfer_download", "transfer_delete", "whiteboard_join", "whiteboard_scene",
     "whiteboard_draw", "whiteboard_export", "game_create", "game_observe",
     "game_actions", "game_act", "game_reset", "game_close"
   ]);
   assert.equal(tool(server, "content_get").annotations.readOnlyHint, true);
+  assert.equal(tool(server, "video_get").annotations.readOnlyHint, true);
+  assert.equal(tool(server, "tools_list").annotations.openWorldHint, false);
+  assert.equal(tool(server, "games_list").annotations.openWorldHint, true);
+  assert.equal(tool(server, "japanese_subtext_stage_get").annotations.readOnlyHint, true);
   assert.equal(tool(server, "transfer_delete").annotations.destructiveHint, true);
   assert.equal(tool(server, "transfer_upload").annotations.idempotentHint, false);
   assert.equal(tool(server, "transfer_join").annotations.idempotentHint, false);
@@ -48,6 +55,167 @@ test("local MCP registers the first capability surface with safe annotations", a
   assert.equal(tool(server, "game_close").inputSchema.safeParse({
     sessionId: "game_2048_1234567890abcdef12345678"
   }).success, false);
+  assert.equal(tool(server, "video_get").inputSchema.safeParse({ videoId: "video/../secret" }).success, false);
+  assert.equal(tool(server, "tools_get").inputSchema.safeParse({ toolId: "whiteboard", lang: "en", extra: true }).success, false);
+  assert.equal(tool(server, "games_list").inputSchema.safeParse({ lang: "de" }).success, false);
+  assert.equal(tool(server, "japanese_subtext_stages").inputSchema.safeParse({
+    level: 1,
+    query: "x".repeat(201),
+    limit: 50,
+    lang: "zh"
+  }).success, false);
+  assert.equal(tool(server, "japanese_subtext_stages").inputSchema.safeParse({
+    level: 1,
+    query: "   ",
+    limit: 50,
+    lang: "zh"
+  }).success, false);
+  assert.equal(tool(server, "japanese_subtext_stage_get").inputSchema.safeParse({
+    stageId: "L1-051",
+    lang: "ja"
+  }).success, false);
+});
+
+test("local MCP sends stored credentials only to their matching normalized origin", async () => {
+  const requests = [];
+  const invoke = async ({ baseUrl, credential, env = {}, accessToken }) => {
+    const options = {
+      baseUrl,
+      credential,
+      env,
+      allowRoots: [process.cwd()],
+      fetch: async (url, request) => {
+        requests.push({
+          origin: url.origin,
+          authorization: request.headers.get("Authorization") || ""
+        });
+        return new Response(JSON.stringify({ articles: [], lang: "zh" }), {
+          headers: { "Content-Type": "application/json" }
+        });
+      }
+    };
+    if (accessToken !== undefined) options.accessToken = accessToken;
+    const server = await createLocalMcpServer(options);
+    return tool(server, "content_list").handler({ lang: "zh", limit: 1 });
+  };
+  const credential = {
+    accessToken: "prod-mcp-credential",
+    baseUrl: "https://prod.example/account"
+  };
+
+  await invoke({ baseUrl: "https://preview.example/path", credential });
+  await invoke({ baseUrl: "https://PROD.example/other", credential });
+  await invoke({
+    baseUrl: "https://preview.example",
+    credential,
+    env: { LUSU_ACCESS_TOKEN: "preview-mcp-explicit" }
+  });
+  await invoke({
+    baseUrl: "https://preview.example",
+    credential: { accessToken: "invalid-url-token", baseUrl: "not a valid URL" }
+  });
+  await invoke({
+    baseUrl: "https://preview.example",
+    credential,
+    accessToken: "preview-option-token"
+  });
+
+  assert.deepEqual(requests, [
+    { origin: "https://preview.example", authorization: "" },
+    { origin: "https://prod.example", authorization: "Bearer prod-mcp-credential" },
+    { origin: "https://preview.example", authorization: "Bearer preview-mcp-explicit" },
+    { origin: "https://preview.example", authorization: "" },
+    { origin: "https://preview.example", authorization: "Bearer preview-option-token" }
+  ]);
+  assert.equal(JSON.stringify(requests).includes("invalid-url-token"), false);
+});
+
+test("local MCP serves the Phase 3 public read breadth through bounded adapters", async () => {
+  const calls = [];
+  const client = {
+    capabilities: () => [],
+    async getVideo(videoId) {
+      calls.push(["video", videoId]);
+      return { video: { video_id: videoId, title: "Video" } };
+    },
+    async listGames(options) {
+      calls.push(["games", options]);
+      return { lang: options.lang, games: [{ id: "2048" }] };
+    },
+    async getGame(gameId, options) {
+      calls.push(["game", gameId, options]);
+      return { id: gameId, lang: options.lang };
+    },
+    async listJapaneseSubtextLevels(options) {
+      calls.push(["levels", options]);
+      return { lang: options.lang, levels: [{ level: 1 }] };
+    },
+    async listJapaneseSubtextStages(options) {
+      calls.push(["stages", options]);
+      return { lang: options.lang, stages: [{ stageId: "L1-001" }] };
+    },
+    async getJapaneseSubtextStage(stageId, options) {
+      calls.push(["stage", stageId, options]);
+      if (stageId === "L1-050") {
+        throw new JapaneseSubtextCapabilityError(`Japanese subtext stage not found: ${stageId}`, {
+          code: "JAPANESE_SUBTEXT_NOT_FOUND",
+          status: 404
+        });
+      }
+      return { stageId, lang: options.lang, textLocked: true };
+    }
+  };
+  const server = await createLocalMcpServer({ client, credential: null, allowRoots: [process.cwd()] });
+
+  const video = await tool(server, "video_get").handler({ videoId: "video-123" });
+  assert.equal(video.structuredContent.result.video.video_id, "video-123");
+
+  const tools = await tool(server, "tools_list").handler({ lang: "en" });
+  assert.equal(tools.isError, undefined);
+  assert.equal(tools.structuredContent.result.lang, "en");
+  assert.equal(tools.structuredContent.result.tools.length, 3);
+  const firstToolId = tools.structuredContent.result.tools[0].id;
+  const oneTool = await tool(server, "tools_get").handler({ toolId: firstToolId, lang: "ja" });
+  assert.equal(oneTool.isError, undefined);
+  assert.equal(oneTool.structuredContent.result.id, firstToolId);
+  const missingTool = await tool(server, "tools_get").handler({ toolId: "missing-tool", lang: "zh" });
+  assert.equal(missingTool.isError, true);
+  assert.equal(missingTool.structuredContent.result.code, "not_found");
+  assert.equal(missingTool.structuredContent.result.status, 404);
+
+  const games = await tool(server, "games_list").handler({ lang: "ja", agentOnly: true });
+  assert.equal(games.structuredContent.result.games[0].id, "2048");
+  const game = await tool(server, "game_get").handler({ gameId: "2048", lang: "en" });
+  assert.deepEqual(game.structuredContent.result, { id: "2048", lang: "en" });
+
+  const levels = await tool(server, "japanese_subtext_levels").handler({ lang: "zh" });
+  assert.equal(levels.structuredContent.result.levels[0].level, 1);
+  const stages = await tool(server, "japanese_subtext_stages").handler({
+    level: 1,
+    query: "context",
+    limit: 12,
+    lang: "en"
+  });
+  assert.equal(stages.structuredContent.result.stages[0].stageId, "L1-001");
+  const stage = await tool(server, "japanese_subtext_stage_get").handler({ stageId: "L1-001", lang: "ja" });
+  assert.equal(stage.structuredContent.result.textLocked, true);
+  const missingStage = await tool(server, "japanese_subtext_stage_get").handler({ stageId: "L1-050", lang: "zh" });
+  assert.equal(missingStage.isError, true);
+  assert.deepEqual(missingStage.structuredContent.result, {
+    error: "Japanese subtext stage not found: L1-050",
+    code: "JAPANESE_SUBTEXT_NOT_FOUND",
+    status: 404
+  });
+
+  assert.deepEqual(calls, [
+    ["video", "video-123"],
+    ["games", { lang: "ja", agentOnly: true }],
+    ["game", "2048", { lang: "en" }],
+    ["levels", { lang: "zh" }],
+    ["stages", { level: 1, query: "context", limit: 12, lang: "en" }],
+    ["stage", "L1-001", { lang: "ja" }],
+    ["stage", "L1-050", { lang: "zh" }]
+  ]);
 });
 
 test("local MCP joins through secretRef and never returns passphrase or roomKey", async (t) => {
@@ -292,12 +460,23 @@ test("local MCP serves a clean stdio initialize and tools/list exchange", async 
   })}\n`);
   const initialized = await waitForMessage(messages, (message) => message.id === 1);
   assert.equal(initialized.result.serverInfo.name, "lusu-personal-site-local");
+  assert.equal(initialized.result.serverInfo.version, "0.4.0");
   input.write(`${JSON.stringify({ jsonrpc: "2.0", method: "notifications/initialized", params: {} })}\n`);
   input.write(`${JSON.stringify({ jsonrpc: "2.0", id: 2, method: "tools/list", params: {} })}\n`);
   const listed = await waitForMessage(messages, (message) => message.id === 2);
   assert.ok(listed.result.tools.some((entry) => entry.name === "transfer_upload"));
   assert.ok(listed.result.tools.some((entry) => entry.name === "whiteboard_draw"));
   assert.ok(listed.result.tools.some((entry) => entry.name === "game_act"));
+  assert.ok(listed.result.tools.some((entry) => entry.name === "video_get"));
+  assert.ok(listed.result.tools.some((entry) => entry.name === "tools_list"));
+  assert.ok(listed.result.tools.some((entry) => entry.name === "games_list"));
+  assert.ok(listed.result.tools.some((entry) => entry.name === "japanese_subtext_stage_get"));
+  for (const name of [
+    "video_get", "tools_list", "tools_get", "games_list", "game_get",
+    "japanese_subtext_levels", "japanese_subtext_stages", "japanese_subtext_stage_get"
+  ]) {
+    assert.equal(listed.result.tools.find((entry) => entry.name === name).inputSchema.additionalProperties, false);
+  }
   assert.ok(messages.every((message) => message.jsonrpc === "2.0"));
   await handle.close();
 });

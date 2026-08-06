@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "quick-transfer",
   "name": "LuSu Quick Transfer",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "versionStep": "0.0.1",
   "governanceRoot": "docs/transfer",
   "documents": [
@@ -21,6 +21,7 @@
     "functions/api/transfer-service.mjs",
     "functions/api/agent-auth.mjs",
     "lib/capabilities/registry.mjs",
+    "lib/capabilities/tool-contracts/quick-transfer.mjs",
     "lib/capabilities/site-client.mjs",
     "lib/capabilities/transfer-crypto.mjs",
     "lib/capabilities/local-state.mjs",
@@ -44,5 +45,13 @@
   "visibleVersionFiles": [
     "fragments/quick-transfer.html",
     "js/data/resources-content.mjs"
+  ],
+  "visibleVersionChecks": [
+    {
+      "path": "js/data/resources-content.mjs",
+      "anchor": "\"toolId\": \"quick-transfer\"",
+      "template": "\"version\": \"v{{version}}\"",
+      "maxChars": 256
+    }
   ]
 }

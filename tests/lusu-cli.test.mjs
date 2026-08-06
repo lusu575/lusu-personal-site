@@ -5,6 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import * as Y from "yjs";
 import { runCli } from "../cli/lusu.mjs";
+import { writeStoredCredential } from "../lib/capabilities/local-state.mjs";
 
 function captureStream() {
   let value = "";
@@ -64,6 +65,126 @@ test("CLI exposes the governed article-list capability", async () => {
   assert.equal(result.articles[0].slug, "one");
 });
 
+test("CLI reads one published video by a validated stable id", async () => {
+  const stdout = captureStream();
+  let requested;
+  const result = await runCli(["--base-url", "https://example.test", "videos", "get", "video-123"], {
+    fetch: async (url) => {
+      requested = url;
+      return response({ video: { video_id: "video-123", title: "Demo" } });
+    },
+    stdout: stdout.stream,
+    stderr: captureStream().stream,
+    env: { LUSU_CONFIG_DIR: path.join(os.tmpdir(), `missing-${crypto.randomUUID()}`) }
+  });
+  assert.equal(requested.pathname, "/api/videos/video-123");
+  assert.equal(result.video.video_id, "video-123");
+  assert.deepEqual(JSON.parse(stdout.text()), result);
+});
+
+test("CLI wires phase-three public read commands to their governed adapters", async () => {
+  const calls = [];
+  const client = {
+    async getVideo(videoId) {
+      calls.push(["video-get", videoId]);
+      return { video: { video_id: videoId } };
+    },
+    async listGames(options) {
+      calls.push(["games-list", options]);
+      return { games: [{ id: "2048" }], lang: options.lang };
+    },
+    async getGame(gameId, options) {
+      calls.push(["game-get", gameId, options]);
+      return { game: { id: gameId }, lang: options.lang };
+    },
+    async listJapaneseSubtextLevels(options) {
+      calls.push(["japanese-levels", options]);
+      return { levels: [{ level: 1 }], lang: options.lang };
+    },
+    async listJapaneseSubtextStages(options) {
+      calls.push(["japanese-stages", options]);
+      return { stages: [{ stageId: "L3-001" }], lang: options.lang };
+    },
+    async getJapaneseSubtextStage(stageId, options) {
+      calls.push(["japanese-stage-get", stageId, options]);
+      return { stage: { stageId }, lang: options.lang };
+    }
+  };
+  const publicCatalog = {
+    listPublicTools(options) {
+      calls.push(["tools-list", options]);
+      return { tools: [{ toolId: "whiteboard" }], lang: options.lang };
+    },
+    getPublicTool(toolId, options) {
+      calls.push(["tool-get", toolId, options]);
+      return { id: toolId, lang: options.lang };
+    }
+  };
+  const env = { LUSU_CONFIG_DIR: path.join(os.tmpdir(), `missing-${crypto.randomUUID()}`) };
+  const invoke = async (args) => {
+    const stdout = captureStream();
+    const result = await runCli(args, {
+      client,
+      publicCatalog,
+      fetch: async () => { throw new Error("injected public reads must not use this fetch"); },
+      stdout: stdout.stream,
+      stderr: captureStream().stream,
+      env
+    });
+    assert.deepEqual(JSON.parse(stdout.text()), result);
+    return result;
+  };
+
+  assert.equal((await invoke(["videos", "get", "video_ID:1"])).video.video_id, "video_ID:1");
+  assert.equal((await invoke(["tools", "list", "--lang", "JA"])).lang, "ja");
+  assert.equal((await invoke(["tools", "get", "quick-transfer", "--lang", "zh"])).id, "quick-transfer");
+  assert.equal((await invoke(["games", "list", "--lang", "en", "--agent-only"])).games[0].id, "2048");
+  assert.equal((await invoke(["games", "get", "2048", "--lang", "ja"])).game.id, "2048");
+  assert.equal((await invoke(["japanese-subtext", "levels", "--lang", "en"])).levels[0].level, 1);
+  assert.equal((await invoke([
+    "japanese-subtext", "stages", "--level", "3", "--query", "ＡＩ", "--limit", "7", "--lang", "zh"
+  ])).stages[0].stageId, "L3-001");
+  assert.equal((await invoke(["japanese-subtext", "get", "L5-050", "--lang", "ja"])).stage.stageId, "L5-050");
+
+  assert.deepEqual(calls, [
+    ["video-get", "video_ID:1"],
+    ["tools-list", { lang: "ja" }],
+    ["tool-get", "quick-transfer", { lang: "zh" }],
+    ["games-list", { lang: "en", agentOnly: true }],
+    ["game-get", "2048", { lang: "ja" }],
+    ["japanese-levels", { lang: "en" }],
+    ["japanese-stages", { level: 3, query: "AI", limit: 7, lang: "zh" }],
+    ["japanese-stage-get", "L5-050", { lang: "ja" }]
+  ]);
+});
+
+test("CLI rejects malformed phase-three public read arguments before adapter calls", async () => {
+  const dependencies = {
+    client: {},
+    publicCatalog: {},
+    fetch: async () => { throw new Error("invalid input must not make a request"); },
+    stdout: captureStream().stream,
+    stderr: captureStream().stream,
+    env: { LUSU_CONFIG_DIR: path.join(os.tmpdir(), `missing-${crypto.randomUUID()}`) }
+  };
+  const rejectsWith = (args, code) => assert.rejects(
+    runCli(args, { ...dependencies, stdout: captureStream().stream }),
+    (error) => error.code === code
+  );
+
+  await rejectsWith(["videos", "get", "../private"], "VIDEO_ID_INVALID");
+  await rejectsWith(["tools", "get", "Quick Transfer"], "TOOL_ID_INVALID");
+  await rejectsWith(["games", "list", "--agent-only=true"], "OPTION_VALUE_UNEXPECTED");
+  await rejectsWith(["games", "get", "2048", "--lang", "fr"], "LANGUAGE_INVALID");
+  await rejectsWith(["japanese-subtext", "stages"], "JAPANESE_SUBTEXT_LEVEL_REQUIRED");
+  await rejectsWith(["japanese-subtext", "stages", "--level", "0"], "JAPANESE_SUBTEXT_LEVEL_INVALID");
+  await rejectsWith(
+    ["japanese-subtext", "stages", "--level", "1", "--limit", "51"],
+    "OPTION_INTEGER_INVALID"
+  );
+  await rejectsWith(["japanese-subtext", "get", "L1-051"], "JAPANESE_SUBTEXT_STAGE_ID_INVALID");
+});
+
 test("CLI device login stores a private credential without printing the token", async (t) => {
   const configDir = await fs.mkdtemp(path.join(os.tmpdir(), "lusu-cli-auth-"));
   t.after(() => fs.rm(configDir, { recursive: true, force: true }));
@@ -106,6 +227,156 @@ test("CLI device login stores a private credential without printing the token", 
   assert.deepEqual(opened, ["https://example.test/activate?code=ABCD-EFGH"]);
   const stored = JSON.parse(await fs.readFile(path.join(configDir, "credentials.json"), "utf8"));
   assert.equal(stored.accessToken, "stored-agent-token");
+});
+
+test("CLI binds stored credentials to their normalized HTTP origin", async (t) => {
+  const configDir = await fs.mkdtemp(path.join(os.tmpdir(), "lusu-cli-origin-"));
+  t.after(() => fs.rm(configDir, { recursive: true, force: true }));
+  const credentialToken = "prod-credential-token";
+  const explicitToken = "preview-explicit-token";
+  const baseEnv = { LUSU_CONFIG_DIR: configDir };
+  await writeStoredCredential({
+    accessToken: credentialToken,
+    baseUrl: "https://prod.example/account"
+  }, { env: baseEnv });
+
+  const requests = [];
+  const fetch = async (url, options) => {
+    requests.push({
+      origin: url.origin,
+      authorization: options.headers.get("Authorization") || ""
+    });
+    return response({ articles: [], lang: "zh" });
+  };
+  const invoke = (baseUrl, env = baseEnv) => runCli([
+    "--base-url", baseUrl, "content", "list"
+  ], {
+    fetch,
+    stdout: captureStream().stream,
+    stderr: captureStream().stream,
+    env
+  });
+
+  await invoke("https://preview.example/path");
+  await invoke("https://PROD.example/another-path");
+  await invoke("https://preview.example", { ...baseEnv, LUSU_ACCESS_TOKEN: explicitToken });
+
+  assert.deepEqual(requests, [
+    { origin: "https://preview.example", authorization: "" },
+    { origin: "https://prod.example", authorization: `Bearer ${credentialToken}` },
+    { origin: "https://preview.example", authorization: `Bearer ${explicitToken}` }
+  ]);
+});
+
+test("CLI auth status and logout preserve credentials owned by another origin", async (t) => {
+  const configDir = await fs.mkdtemp(path.join(os.tmpdir(), "lusu-cli-origin-logout-"));
+  t.after(() => fs.rm(configDir, { recursive: true, force: true }));
+  const env = { LUSU_CONFIG_DIR: configDir };
+  const credentialsFile = path.join(configDir, "credentials.json");
+  const credentialToken = "prod-credential-token";
+  await writeStoredCredential({
+    accessToken: credentialToken,
+    baseUrl: "https://prod.example"
+  }, { env });
+  let requestCount = 0;
+  const noRequest = async () => {
+    requestCount += 1;
+    throw new Error("a mismatched stored credential must not make an authenticated request");
+  };
+
+  const status = await runCli([
+    "--base-url", "https://preview.example", "auth", "status"
+  ], {
+    fetch: noRequest,
+    stdout: captureStream().stream,
+    stderr: captureStream().stream,
+    env
+  });
+  assert.deepEqual(status, { authenticated: false, user: null, scopes: [] });
+
+  const logout = await runCli([
+    "--base-url", "https://preview.example", "auth", "logout"
+  ], {
+    fetch: noRequest,
+    stdout: captureStream().stream,
+    stderr: captureStream().stream,
+    env
+  });
+  assert.deepEqual(logout, {
+    authenticated: false,
+    revoked: false,
+    localCredentialsRemoved: false
+  });
+  assert.equal(requestCount, 0);
+  let stored = JSON.parse(await fs.readFile(credentialsFile, "utf8"));
+  assert.equal(stored.accessToken, credentialToken);
+  assert.equal(JSON.stringify({ status, logout }).includes(credentialToken), false);
+
+  const explicitCalls = [];
+  const explicitLogout = await runCli([
+    "--base-url", "https://preview.example", "auth", "logout"
+  ], {
+    fetch: async (url, options) => {
+      explicitCalls.push({
+        origin: url.origin,
+        authorization: options.headers.get("Authorization") || ""
+      });
+      return response({ ok: true });
+    },
+    stdout: captureStream().stream,
+    stderr: captureStream().stream,
+    env: { ...env, LUSU_ACCESS_TOKEN: "preview-explicit-token" }
+  });
+  assert.deepEqual(explicitCalls, [{
+    origin: "https://preview.example",
+    authorization: "Bearer preview-explicit-token"
+  }]);
+  assert.deepEqual(explicitLogout, {
+    authenticated: false,
+    revoked: true,
+    localCredentialsRemoved: false
+  });
+  stored = JSON.parse(await fs.readFile(credentialsFile, "utf8"));
+  assert.equal(stored.accessToken, credentialToken);
+  assert.equal(JSON.stringify(explicitLogout).includes("preview-explicit-token"), false);
+});
+
+test("CLI auth logout revokes and removes a credential only on its matching origin", async (t) => {
+  const configDir = await fs.mkdtemp(path.join(os.tmpdir(), "lusu-cli-origin-match-"));
+  t.after(() => fs.rm(configDir, { recursive: true, force: true }));
+  const env = { LUSU_CONFIG_DIR: configDir };
+  const credentialToken = "matching-origin-token";
+  await writeStoredCredential({
+    accessToken: credentialToken,
+    baseUrl: "https://prod.example/path"
+  }, { env });
+  const calls = [];
+  const result = await runCli([
+    "--base-url", "https://prod.example", "auth", "logout"
+  ], {
+    fetch: async (url, options) => {
+      calls.push({
+        origin: url.origin,
+        method: options.method,
+        authorization: options.headers.get("Authorization") || ""
+      });
+      return response({ ok: true });
+    },
+    stdout: captureStream().stream,
+    stderr: captureStream().stream,
+    env
+  });
+  assert.deepEqual(calls, [{
+    origin: "https://prod.example",
+    method: "DELETE",
+    authorization: `Bearer ${credentialToken}`
+  }]);
+  assert.deepEqual(result, {
+    authenticated: false,
+    revoked: true,
+    localCredentialsRemoved: true
+  });
+  await assert.rejects(fs.readFile(path.join(configDir, "credentials.json")), { code: "ENOENT" });
 });
 
 test("CLI transfer join outputs only a room handle and stores no passphrase", async (t) => {

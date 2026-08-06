@@ -23,7 +23,7 @@ import {
   toPublicArticle
 } from "./public-content-service.mjs";
 
-export const PUBLIC_API_REPRESENTATION_VERSION = "20260806-whiteboard-2048-agent-r1";
+export const PUBLIC_API_REPRESENTATION_VERSION = "20260806-agent-read-breadth-r1";
 export const PUBLIC_ARTICLE_ARCHIVE_LIMIT = 500;
 const PUBLIC_SITE_ORIGIN = "https://lusu575.com";
 const PUBLIC_RELEASE_DATE = "2026-08-06";
@@ -56,7 +56,7 @@ const DATA_CLEANUP_STATE_KEY = "api_periodic_data_cleanup";
 const DATA_CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const DATA_CLEANUP_DELETE_LIMIT = 5000;
 const ARTICLE_SEED_STATE_KEY = "article_seed_version";
-const ARTICLE_SEED_VERSION = "20260806-whiteboard-2048-agent-r1";
+const ARTICLE_SEED_VERSION = "20260806-agent-read-breadth-r1";
 const LOGIN_EVENT_RETENTION_DAYS = 365;
 const ANALYTICS_EVENT_RETENTION_DAYS = 180;
 const AGENT_AUDIT_RETENTION_DAYS = 180;
@@ -6229,6 +6229,98 @@ const DAILY_AI_NEWS_2026_07_27_READER_PATCH = Object.freeze({
 function articleSeedStatements(env) {
   // Seed timestamps must be UTC ISO strings; the UI converts them to each visitor's local time.
   return [
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-08-06-agent-read-breadth',
+        '2026-08-06-agent-read-breadth',
+        'site-updates',
+        '["网站更新","AI 能力","MCP","CLI","工具","游戏","日语"]',
+        '', 'published', 0, 0,
+        '2026-08-06T05:30:00.000Z',
+        '2026-08-06T05:30:00.000Z',
+        '2026-08-06T05:30:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-08-06-agent-read-breadth", {
+      zh: {
+        title: "AI 只读能力扩展到工具、游戏与日语关卡",
+        summary: "第三阶段为本地 CLI／stdio MCP 补齐视频详情、三项真实工具、五个游戏的安全目录和 250 个日语潜台词关卡；远程 MCP 仍未部署，也没有新增远程写入。",
+        content_markdown: `# AI 只读能力扩展到工具、游戏与日语关卡
+
+AI 能力层第三阶段先扩展公开只读范围，让 AI 能先准确发现网站有什么，再决定是否需要更高风险的操作能力。
+
+## 新增查询
+
+- 视频列表现在可继续读取单个视频详情。
+- 工具目录只返回在线画板、临时互传和日语的言外之意三项真实入口，不把示例占位卡片当成可用工具。
+- 游戏目录可安全读取五个站内游戏的三语信息、语言支持、入口和许可证；只有 2048 标记为已有隔离 Agent 会话。
+- 日语工具可读取 5 个等级、250 个锁定关卡的目录和单关公开内容，不读取或修改学习进度。
+
+## 安全边界
+
+所有目录都限制语言、ID、查询长度、条目数、响应大小和允许路径。游戏不会暴露存储键或源文件入口；日语关卡会校验版本、数量、内容哈希和锁定状态，也不会输出内部批次路径或音频构建文本。
+
+## 当前仍未开放
+
+这些能力只加入本地 CLI 与 stdio MCP。独立远程 MCP Worker 仍未部署且保持原来的公开文章只读范围；其他游戏控制、浏览器配对、日语进度写入和聊天写入仍未开放。`
+      },
+      en: {
+        title: "AI Read Access Expands to Tools, Games, and Japanese Stages",
+        summary: "Phase three adds video details, three real tools, a safe catalog of five games, and 250 Japanese subtext stages to the local CLI/stdio MCP. The remote MCP remains undeployed with no new remote writes.",
+        content_markdown: `# AI Read Access Expands to Tools, Games, and Japanese Stages
+
+Phase three expands the public read-only surface first, so AI clients can accurately discover what the site offers before any higher-risk operation is considered.
+
+## New queries
+
+- A video list result can now be followed by a single-video detail read.
+- The tools catalog returns only Online Whiteboard, Quick Transfer, and Behind the Japanese, without presenting sample placeholder cards as usable tools.
+- The games catalog safely exposes localized details, language support, launch paths, and licenses for five local games. Only 2048 is marked as having an isolated Agent session.
+- The Japanese tool exposes five levels and 250 locked stage summaries and details without reading or changing learning progress.
+
+## Safety boundary
+
+Every catalog limits languages, IDs, query length, item counts, response bytes, and allowed paths. Game storage keys and source entries stay private. Japanese content is checked for version, count, hash, and lock state, while internal batch paths and audio build text are omitted.
+
+## Still unavailable
+
+These capabilities are available only in the local CLI and stdio MCP. The separate remote MCP Worker remains undeployed with its original public-article-only scope. Other game control, browser pairing, Japanese progress writes, and chat writes remain unavailable.`
+      },
+      ja: {
+        title: "AI の読み取り機能をツール・ゲーム・日本語問題へ拡張",
+        summary: "第3段階ではローカル CLI／stdio MCP に動画詳細、3つの実用ツール、5ゲームの安全な一覧、250問の日本語含意問題を追加しました。リモート MCP は未展開で、遠隔書き込みも追加していません。",
+        content_markdown: `# AI の読み取り機能をツール・ゲーム・日本語問題へ拡張
+
+第3段階では、より危険度の高い操作を検討する前に、AI がサイトの内容を正確に把握できるよう、公開読み取り範囲を先に広げました。
+
+## 新しい照会
+
+- 動画一覧から、個別の動画詳細を取得できるようになりました。
+- ツール一覧はオンラインホワイトボード、一時転送、日本語の裏側だけを返し、サンプルのプレースホルダーを利用可能なツールとして扱いません。
+- ゲーム一覧では、5つのローカルゲームの多言語情報、対応言語、起動パス、ライセンスを安全に取得できます。分離 Agent セッション対応を示すのは 2048 だけです。
+- 日本語ツールでは、5レベル・250問のロック済み問題一覧と詳細を、学習進捗の読み書きなしで取得できます。
+
+## 安全境界
+
+すべての一覧で言語、ID、検索長、件数、応答サイズ、許可パスを制限します。ゲームの保存キーやソース入口は公開しません。日本語問題はバージョン、件数、ハッシュ、ロック状態を検証し、内部 batch パスや音声生成用テキストを省きます。
+
+## まだ利用できないもの
+
+これらはローカル CLI と stdio MCP だけの機能です。独立リモート MCP Worker は未展開で、従来の公開記事読み取り範囲のままです。他ゲームの操作、ブラウザー接続、日本語進捗の書き込み、チャット書き込みはまだ利用できません。`
+      }
+    }, "2026-08-06T05:30:00.000Z"),
     env.DB.prepare(`
       insert into articles (
         article_id, slug, category, tags, cover_image, status, is_pinned,

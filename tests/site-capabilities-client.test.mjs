@@ -130,3 +130,77 @@ test("SiteClient revokes the current agent token through the server contract", a
   assert.equal(request.url.pathname, "/api/agent-auth/tokens/current");
   assert.equal(request.options.method, "DELETE");
 });
+
+test("SiteClient supports per-request JSON limits without raising the client-wide ceiling", async () => {
+  const client = new SiteClient({
+    baseUrl: "https://example.test",
+    maxJsonBytes: 1024,
+    fetch: async () => jsonResponse({ value: "x".repeat(100) })
+  });
+  await assert.rejects(
+    client.requestJson("/api/tightly-bounded", { maxResponseBytes: 32 }),
+    (error) => error instanceof SiteClientError && error.code === "SITE_RESPONSE_TOO_LARGE"
+  );
+  assert.deepEqual(await client.requestJson("/api/client-bounded"), { value: "x".repeat(100) });
+});
+
+test("SiteClient reads the fixed game catalog path and returns the safe game projection", async () => {
+  const calls = [];
+  const payload = {
+    updated: "2026.08.06",
+    games: [
+      {
+        id: "2048",
+        title: "2048",
+        titles: { zh: "2048", en: "2048", ja: "2048" },
+        summaries: { zh: "数字游戏", en: "Number game", ja: "数字ゲーム" },
+        entry: "2048/",
+        languageSupport: { zh: true, en: true, ja: true },
+        license: { name: "MIT", url: "https://github.com/gabrielecirulli/2048" },
+        repo: "https://github.com/gabrielecirulli/2048",
+        storage: { scoreOnly: true, keys: ["private-storage-key"] },
+        sourceEntry: "source/index.html",
+        languageMap: { zh: "zh", en: "en", ja: "ja" }
+      }
+    ]
+  };
+  const client = new SiteClient({
+    baseUrl: "https://example.test",
+    fetch: async (url) => {
+      calls.push(url.pathname);
+      return jsonResponse(payload);
+    }
+  });
+  const catalog = await client.listGames({ lang: "en", agentOnly: true });
+  assert.deepEqual(calls, ["/games/catalog.json"]);
+  assert.deepEqual(catalog.games.map((game) => game.id), ["2048"]);
+  assert.equal(catalog.games[0].summary, "Number game");
+  assert.equal(catalog.games[0].agent.browserBridge, true);
+  assert.equal(JSON.stringify(catalog).includes("private-storage-key"), false);
+
+  const game = await client.getGame("2048", { lang: "ja" });
+  assert.equal(game.title, "2048");
+  assert.equal(game.launchPath, "/games/2048/?lang=ja");
+  assert.deepEqual(calls, ["/games/catalog.json", "/games/catalog.json"]);
+});
+
+test("SiteClient validates stable video ids before constructing the request path", async () => {
+  const calls = [];
+  const client = new SiteClient({
+    baseUrl: "https://example.test",
+    fetch: async (url) => {
+      calls.push(url.pathname);
+      return jsonResponse({ video: { video_id: "video_ID:1" } });
+    }
+  });
+  assert.equal((await client.getVideo("video_ID:1")).video.video_id, "video_ID:1");
+  assert.deepEqual(calls, ["/api/videos/video_ID%3A1"]);
+
+  for (const videoId of [".", "..", "video/../secret", "x".repeat(181), "video id", ""]) {
+    await assert.rejects(
+      client.getVideo(videoId),
+      (error) => error instanceof SiteClientError && error.code === "VIDEO_ID_INVALID" && error.status === 400
+    );
+  }
+  assert.deepEqual(calls, ["/api/videos/video_ID%3A1"]);
+});

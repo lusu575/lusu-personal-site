@@ -1,6 +1,6 @@
 # 临时互传维护与部署
 
-**当前子项目版本：1.0.2**
+**当前子项目版本：1.0.3**
 
 本目录是临时互传的治理根：`VERSION` / `project.json` 保存独立版本，`CHANGELOG.md` 保存子项目更新，`AGENTS.md` 约束分布在主站、Pages Functions、后台和清理 Worker 中的实现，`AGENT.md` 仅作兼容入口。任何互传更改都必须把该版本精确增加 `0.0.1`，并同步本目录全部受影响文档和根项目记录。
 
@@ -18,6 +18,8 @@
 
 - `npm.cmd run lusu -- auth login` 启动设备码授权：CLI 只展示一次性用户码并打开站内确认页，登录用户明确批准请求的 scope 后才签发 Bearer。`auth status` 查看当前授权，`auth logout` 撤销当前令牌；浏览器也可在 `/api/agent-auth/tokens/manage` 查看和撤销本人令牌。
 - CLI 已提供 `transfer join / ls / send / put / get / rm`；本地 stdio MCP 已提供对应的加入、列表、文字发送、上传、下载与删除工具。它们复用同一互传 API、24 小时过期、配额、幂等与对象清理语义，不创建第二套房间或存储协议。
+- 共享 CLI／stdio MCP 能力面同时提供公开视频详情、工具目录、游戏目录与日语潜台词关卡的公开只读查询。它们不需要也不会复用 Transfer 房间口令；Quick Transfer 因共享受管入口发生变化升至 1.0.3，但业务协议、安全边界与生命周期保持不变。
+- 设备登录保存的 Agent credential 只绑定签发时的 HTTP(S) origin；通过 `--base-url`、`LUSU_BASE_URL` 或 MCP 配置切到 Preview／其他 origin 时不会把原 Bearer 发过去，也不会在跨 origin logout 中删除它。当前覆盖 origin 只能使用操作者显式提供的 stdin／环境 token 或重新完成设备登录。
 - 房间口令只从 CLI 的隐藏输入或 `--password-stdin` 读取，禁止作为命令行参数；stdio MCP 只接受 `env:NAME` 形式的 `secretRef`。授权服务既不会接收房间口令，也不会接收派生后的 `roomKey`。互传业务 API 仍按原协议接收派生 `roomKey`，本地房间状态只保存 `roomKey` 与可选环境变量引用，不保存明文口令或文字密钥。
 - `transfer:read` 用于配置、列表、上传状态和下载等 GET/HEAD；`transfer:write` 用于 `room/join`、发送文字、普通上传以及 Multipart 初始化、分片与完成；`transfer:delete` 用于删除条目和中止 Multipart。默认设备授权的互传权限只包含 read/write（另含公开内容所需的 `content:read`），删除能力必须明确追加。
 - CLI 与 stdio MCP 下载都默认拒绝覆盖已有文件；stdio MCP 的上传和下载还必须位于显式允许的目录根内。访问令牌、本地房间状态和环境变量都属于敏感本机数据，不得提交、打印到日志或传入 MCP 工具输出。当前远程 MCP 只开放公开只读内容能力，未开放远程互传，也未执行生产部署。

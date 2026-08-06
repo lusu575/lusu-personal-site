@@ -1,6 +1,6 @@
 # AI 能力层：架构与运行手册
 
-本目录记录个人站“同一份业务能力，同时服务网站 API、CLI 与 MCP”的当前边界。前两阶段已经搭好统一能力清单、本地 CLI、本地 stdio MCP、设备码授权、Quick Transfer、受限的在线画板 Agent 通道与首个 2048 游戏适配器，并保留一个独立的 Cloudflare 远程 MCP Worker 工程；它不是“全站所有功能已经接入”或“远程写入已经上线”的声明。
+本目录记录个人站“同一份业务能力，同时服务网站 API、CLI 与 MCP”的当前边界。前三阶段已经搭好统一能力清单、本地 CLI、本地 stdio MCP、设备码授权、Quick Transfer、受限的在线画板 Agent 通道、首个 2048 游戏适配器，以及视频／工具／游戏／日语题库的公开只读目录，并保留一个独立的 Cloudflare 远程 MCP Worker 工程；它不是“全站所有功能已经接入”或“远程写入已经上线”的声明。
 
 ## 1. 先看能力注册表，不要靠猜
 
@@ -47,7 +47,10 @@ node .\cli\lusu.mjs help
 
 - `capabilities`：查看统一能力清单。
 - `content list|search|get|daily`：读取公开文章和 Daily AI News。
-- `videos list`：读取并筛选公开视频。
+- `videos list|get`：读取并筛选公开视频，或按稳定 ID 获取单个视频详情。
+- `tools list|get`：读取三项真实可用工具的本地安全目录；占位卡片不会进入结果。
+- `games list|get`：读取五个站内游戏的安全目录，可用 `--agent-only` 只看已实现 Agent adapter 的游戏。
+- `japanese-subtext levels|stages|get`：读取 5 个难度、250 个锁定关卡的目录和单关公开内容，不读取或修改用户进度。
 - `auth login|status|logout`：设备码登录、检查身份和撤销当前令牌。
 - `transfer join|ls|send|put|get|rm`：加入密码房、列出或传输内容；删除必须显式加 `--yes`。
 - `whiteboard join|scene|draw|export`：加入公共／密码房、读取场景摘要、追加高层元素并在本地导出；不支持修改／删除既有元素或注入任意 Yjs 字节。
@@ -57,13 +60,16 @@ node .\cli\lusu.mjs help
 
 ```powershell
 node .\cli\lusu.mjs content search MCP --lang zh
+node .\cli\lusu.mjs videos get VIDEO_ID
+node .\cli\lusu.mjs games list --agent-only --lang en
+node .\cli\lusu.mjs japanese-subtext stages --level 2 --limit 10 --lang ja
 node .\cli\lusu.mjs auth login
 $env:LUSU_ROOM_SECRET | node .\cli\lusu.mjs transfer join --password-stdin
 node .\cli\lusu.mjs whiteboard join --public
 node .\cli\lusu.mjs game create 2048
 ```
 
-默认站点地址是 `https://lusu575.com`。本地联调可使用全局参数 `--base-url <URL>` 或 `LUSU_BASE_URL` 指向实际预览地址。不要把生产令牌写进命令历史；临时令牌只能经 `--token-stdin` 输入，或由受控进程提供 `LUSU_ACCESS_TOKEN`。常规使用优先采用 `auth login` 创建的本机凭据文件。
+默认站点地址是 `https://lusu575.com`。本地联调可使用全局参数 `--base-url <URL>` 或 `LUSU_BASE_URL` 指向实际预览地址。存储凭据严格绑定登录时的规范化 HTTP(S) origin；切到 Preview 或其他 origin 后不会复用、发送或删除原 origin 的 Bearer。确需给当前覆盖 origin 提供令牌时，只能由操作者显式通过 `--token-stdin` 或受控进程的 `LUSU_ACCESS_TOKEN` 注入。不要把生产令牌写进命令历史；常规使用优先采用 `auth login` 为目标 origin 创建的本机凭据文件。
 
 本地状态目录按以下顺序解析：`LUSU_CONFIG_DIR`、Windows 的 `%APPDATA%\lusu-cli`、其他系统的 `~/.config/lusu-cli`。其中的 `credentials.json`、`rooms.json`、`whiteboards.json` 与 `game-sessions/` 是本机私有状态，不得提交、上传或复制进日志。白板句柄和游戏会话 ID 都是不透明本地引用，不是服务器房间 ID 或授权凭证。白板句柄更新使用跨进程 owner-token 锁和同目录临时文件原子替换；游戏会话使用带 owner／进程／心跳校验的独立锁，不能退回无锁 read-modify-write 或先截断目标文件。
 
@@ -92,12 +98,14 @@ node .\mcp\local\server.mjs
 当前本地 MCP 工具：
 
 - 发现：`capabilities_list`
-- 公开内容：`content_list`、`content_search`、`content_get`、`daily_news_get`、`videos_list`
+- 公开内容：`content_list`、`content_search`、`content_get`、`daily_news_get`、`videos_list`、`video_get`
+- 公开目录：`tools_list`、`tools_get`、`games_list`、`game_get`
+- 日语题库：`japanese_subtext_levels`、`japanese_subtext_stages`、`japanese_subtext_stage_get`
 - Quick Transfer：`transfer_join`、`transfer_list`、`transfer_send_text`、`transfer_upload`、`transfer_download`、`transfer_delete`
 - 在线画板：`whiteboard_join`、`whiteboard_scene`、`whiteboard_draw`、`whiteboard_export`
 - 2048：`game_create`、`game_observe`、`game_actions`、`game_act`、`game_reset`、`game_close`
 
-本地 MCP 的公开内容、Quick Transfer 与在线画板使用网站 API，因此依赖网络；Quick Transfer 与在线画板还需要有效的 Agent Bearer 令牌及对应 scope。2048 会话完全在本机隔离状态中运行，不发送站点请求。CLI 与 stdio MCP 会向 `SiteClient` 注入项目共享的代理感知 `fetch`，按 `HTTP_PROXY` / `HTTPS_PROXY` / `NO_PROXY` 工作；代理值、凭据和原始令牌不得写入日志或 MCP 输出。
+本地 MCP 的公开内容、视频、游戏目录、日语题库、Quick Transfer 与在线画板使用网站 API 或站点静态 JSON，因此依赖网络；工具目录来自受审查的本地公开数据模块。Quick Transfer 与在线画板还需要有效的 Agent Bearer 令牌及对应 scope。2048 隔离会话完全在本机运行，不发送站点请求。CLI 与 stdio MCP 会向 `SiteClient` 注入项目共享的代理感知 `fetch`，按 `HTTP_PROXY` / `HTTPS_PROXY` / `NO_PROXY` 工作；代理值、凭据和原始令牌不得写入日志或 MCP 输出。
 
 ## 4. 设备码授权、scope 与令牌管理
 
@@ -185,7 +193,18 @@ CLI 和 MCP 下载都不覆盖已有文件。目标文件以独占创建方式�
 - 会话数量、序列化状态大小和闲置 TTL 都有上限，并使用本地锁和原子替换持久化。`game_observe`／`game_actions` 是真实只读操作，不写文件、不延长 TTL；只有动作更新会续期。`game_reset`、CLI `--reset` 与 `game_close` 是破坏性操作，必须显式确认。
 - 2048 页面加载同一份纯引擎，并公开冻结的 `window.gamePage.agent` 语义桥，保留既有 `window.gamePage.save` 兼容性。当前 CLI／MCP 不与已经打开的浏览器页面配对，所以这是隔离模拟会话，不是远程接管或观看现有玩家会话。
 
-## 8. 远程 Cloudflare MCP：当前只是未部署的公开只读面
+## 8. 公开目录与日语题库的安全投影
+
+第三阶段的目录工具读取的是公开内容，但仍不把面向浏览器的原始 manifest 直接交给 AI：
+
+- 工具目录只返回带稳定 `toolId` 的在线画板、Quick Transfer 和日语工具。示例占位卡、未完成资源和任意外链不进入机器能力面。
+- 游戏目录只返回稳定 ID、三语标题／摘要、语言支持、固定同源启动路径、许可证／仓库和真实 Agent 支持状态；不返回 `sourceEntry`、存储键／默认值、内部语言映射或任意启动查询。只有 2048 标记本地隔离会话与页面语义 bridge，其他游戏仍只是可发现、不可接管。
+- 日语能力只访问固定 catalog、五个 level index 和由合法 `L1-001` 至 `L5-050` ID 推导出的固定 batch。适配器限制 JSON 字节、条目和搜索结果，验证 schema、`contentVersion: 1.0.2`、250 关计数、唯一 ID、64 位 SHA-256、`textLocked: true` 与关卡哈希；输出省略 batch 路径、内部音频文本和构建字段。
+- 所有公开目录参数只接受 zh／en／ja、白名单 ID、1–5 等级和有界 limit／query。URL 必须是固定站内路径或安全 GitHub HTTPS 地址，调用方不能借参数读取任意文件或 URL。
+
+这些目录是只读发现面，不代表新增账号 scope、日语进度读写、游戏存档修改或浏览器接管。工具目录来自本地模块，因此只在 CLI／本地 MCP 可用；游戏和日语数据虽由正式站点提供，独立远程 MCP Worker 本阶段仍未接线或部署。
+
+## 9. 远程 Cloudflare MCP：当前只是未部署的公开只读面
 
 独立工程位于 `workers/site-mcp/`。它当前没有部署，也没有 OAuth；不要把仓库中的 Worker 配置理解为线上端点已经存在。
 
@@ -213,16 +232,16 @@ npm.cmd run dev
 
 本地开发不要加 `--remote`，不要连接生产 D1，也不要执行 `wrangler deploy`。远程写操作必须等第一方 OAuth 2.1、用户映射、最小 scope 与审计边界完成后再单独设计；不能把网站 `lusu_session` cookie 转交给 MCP。
 
-## 9. 仍是 inventory / planned 的能力
+## 10. 仍是 inventory / planned 的能力
 
 - 白板读取、追加和本地导出，以及隔离的 2048 会话已经在本地 CLI／stdio MCP 可用；它们不表示远程 MCP 写入、白板任意编辑／删除／图片写入，或浏览器游戏接管已经完成。
-- 其他游戏、已打开浏览器游戏的配对／观看／控制，以及游戏云存档通用写入仍需单独适配与授权。
-- 聊天写入、日语字幕进度、游戏存档写入等条目只是既有 API 的 inventory，没有通用 CLI/MCP 适配器。
+- 五个游戏的安全目录已经可读，但除隔离 2048 外，其他游戏的语义动作 adapter、已打开浏览器游戏的配对／观看／控制，以及游戏云存档通用写入仍需单独适配与授权。
+- 日语等级／关卡公开内容已经可读；聊天写入、日语字幕进度、游戏存档写入等条目仍只是既有 API 的 inventory，没有通用 CLI/MCP 写适配器。
 - Daily AI News、Tool Radar 的生产发布能力是 `restricted`，不会出现在公开远程 MCP 或通用本地 MCP 中。
 
 后续接入必须先补可验证的业务适配层、输入/输出 schema、身份与 scope、幂等/确认机制和审计，再将对应传输加入 `availableTransports`。不能只改 `transport` 或工具描述来宣称完成。
 
-## 10. 验证、部署与回滚边界
+## 11. 验证、部署与回滚边界
 
 合并前至少执行：
 
@@ -249,6 +268,7 @@ npm.cmd test
 - 缺 scope 的令牌得到拒绝；Agent Bearer 不能访问管理员端点。
 - 白板 Agent Bearer 与房间访问令牌保持分离，追加验证拒绝修改／删除／图片／未知根，operation ID 重试与冲突均有覆盖。
 - 2048 CAS、action ID 重放、状态篡改、会话上限、TTL，以及重置／关闭确认均有覆盖；测试不声称连接已打开的浏览器。
+- 公开工具／游戏／日语适配器拒绝 traversal、恶意 ID、任意 URL、超限 JSON、重复 ID、版本／计数／hash／`textLocked` 不匹配，并确认输出不含源文件路径、存储键、题库 batch 路径或内部音频文本。
 - allow-root 的相对路径、绝对路径、`..`、链接逃逸及不存在父目录均有覆盖。
 - 下载已有文件时失败且原文件字节不变；失败下载不留下半成品。
 - 远程 MCP 只能读取已发布文章，返回内容和结果大小有界，错误输出不泄露 SQL 或凭据。
