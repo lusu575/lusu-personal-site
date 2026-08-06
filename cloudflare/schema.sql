@@ -747,60 +747,6 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
-  'seed-update-2026-08-02-traffic-discovery-monitoring',
-  '2026-08-02-traffic-discovery-monitoring',
-  'site-updates',
-  '["网站更新","流量保护","SEO","线上监控","D1"]',
-  '', 'published', 0, 0,
-  '2026-08-02T08:20:00.000Z',
-  '2026-08-02T08:20:00.000Z',
-  '2026-08-02T08:20:00.000Z'
-)
-on conflict(article_id) do update set
-  slug = excluded.slug,
-  category = excluded.category,
-  tags = excluded.tags,
-  cover_image = excluded.cover_image,
-  status = excluded.status,
-  is_pinned = excluded.is_pinned,
-  updated_at = excluded.updated_at,
-  published_at = excluded.published_at;
-
-insert into article_translations (
-  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
-) values
-  (
-    'seed-update-2026-08-02-traffic-discovery-monitoring-zh',
-    'seed-update-2026-08-02-traffic-discovery-monitoring',
-    'zh',
-    '流量发现与线上监控优化',
-    '减少重复遥测请求并提前收紧 D1 免费额度保护，补齐文章访问留存、三语 sitemap 与文章结构化数据，同时加入低频生产冒烟检查。',
-    '# 流量发现与线上监控优化
-
-这次把访客统计、搜索引擎理解和生产故障发现串成一条更可靠的链路，不改变站点视觉与正常浏览方式。
-
-## 更准确的搜索入口
-
-- sitemap 固定输出正式主域名，不再因请求来自别名域名而生成重复 URL。
-- 首页更新时间来自最近一次已发布内容，而不是每次抓取都伪装成当天更新。
-- 首页、日语学习工具和每篇公开文章都声明中、英、日及默认语言对应关系。
-- 文章直达页补充作者、发布者和三语替代链接。
-
-## 有余量的免费额度保护
-
-- 首次访问不再先后发送访客识别和页面浏览两次请求；页面浏览本身会完成匿名身份与访客资料登记。
-- 浏览器会拦截一秒内同目标重复点击，减少无意义的 Pages Functions 请求和 D1 限频写入。
-- D1 预警／硬保护默认阈值从 60,000／80,000 收紧到 30,000／50,000 估算行；硬保护时停止页面与点击遥测，只保留 10% 文章阅读采样，为登录、存档、聊天、互传和画板等必要业务保留至少一半免费写入余量。只有仍等于旧默认值的配置会自动迁移，管理员自定义配置不被覆盖。
-- 180 天清理现同时覆盖页面、点击和文章访问事件，并继续在健康检查的后台任务中分批执行。
-
-## 线上故障更早暴露
-
-GitHub 在正式验证完成后以及每 12 小时运行一次低请求量冒烟检查，核对健康接口、首页、sitemap、文章直达页和内容哈希静态资源。短暂部署波动会有界重试，持续失败会让任务明确报错。www 到主域的永久跳转与真实用户性能监控仍需在 Cloudflare 控制台配置后单独验收，本次仓库更新不虚报已启用。',
-    '2026-08-02T08:20:00.000Z',
-insert into articles (
-  article_id, slug, category, tags, cover_image, status, is_pinned,
-  view_count, created_at, updated_at, published_at
-) values (
   'seed-update-2026-08-06-site-guides-password-rooms',
   '2026-08-06-site-guides-password-rooms',
   'site-updates',
@@ -1147,6 +1093,60 @@ on conflict(translation_id) do update set
   content_markdown = excluded.content_markdown,
   updated_at = excluded.updated_at;
 
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-08-02-traffic-discovery-monitoring',
+  '2026-08-02-traffic-discovery-monitoring',
+  'site-updates',
+  '["网站更新","流量保护","SEO","线上监控","D1"]',
+  '', 'published', 0, 0,
+  '2026-08-02T08:20:00.000Z',
+  '2026-08-02T08:20:00.000Z',
+  '2026-08-02T08:20:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  (
+    'seed-update-2026-08-02-traffic-discovery-monitoring-zh',
+    'seed-update-2026-08-02-traffic-discovery-monitoring',
+    'zh',
+    '流量发现与线上监控优化',
+    '减少重复遥测请求并提前收紧 D1 免费额度保护，补齐文章访问留存、三语 sitemap 与文章结构化数据，同时加入低频生产冒烟检查。',
+    '# 流量发现与线上监控优化
+
+这次把访客统计、搜索引擎理解和生产故障发现串成一条更可靠的链路，不改变站点视觉与正常浏览方式。
+
+## 更准确的搜索入口
+
+- sitemap 固定输出正式主域名，不再因请求来自别名域名而生成重复 URL。
+- 首页更新时间来自最近一次已发布内容，而不是每次抓取都伪装成当天更新。
+- 首页、日语学习工具和每篇公开文章都声明中、英、日及默认语言对应关系。
+- 文章直达页补充作者、发布者和三语替代链接。
+
+## 有余量的免费额度保护
+
+- 首次访问不再先后发送访客识别和页面浏览两次请求；页面浏览本身会完成匿名身份与访客资料登记。
+- 浏览器会拦截一秒内同目标重复点击，减少无意义的 Pages Functions 请求和 D1 限频写入。
+- D1 预警／硬保护默认阈值从 60,000／80,000 收紧到 30,000／50,000 估算行；硬保护时停止页面与点击遥测，只保留 10% 文章阅读采样，为登录、存档、聊天、互传和画板等必要业务保留至少一半免费写入余量。只有仍等于旧默认值的配置会自动迁移，管理员自定义配置不被覆盖。
+- 180 天清理现同时覆盖页面、点击和文章访问事件，并继续在健康检查的后台任务中分批执行。
+
+## 线上故障更早暴露
+
+GitHub 在正式验证完成后以及每 12 小时运行一次低请求量冒烟检查，核对健康接口、首页、sitemap、文章直达页和内容哈希静态资源。短暂部署波动会有界重试，持续失败会让任务明确报错。www 到主域的永久跳转与真实用户性能监控仍需在 Cloudflare 控制台配置后单独验收，本次仓库更新不虚报已启用。',
+    '2026-08-02T08:20:00.000Z',
     '2026-08-02T08:20:00.000Z'
   ),
   (

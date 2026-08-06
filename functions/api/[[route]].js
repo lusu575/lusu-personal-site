@@ -6226,6 +6226,20 @@ function aiAgentWorkflowArticleHeadingMediaStatements(env, now) {
       and instr(content_markdown, ?) = 0
   `).bind(heading, `${image}\n\n${heading}`, now, articleId, lang, heading, filename)));
 }
+
+const DAILY_AI_NEWS_2026_07_27_READER_PATCH = Object.freeze({
+  slug: "daily-ai-news-2026-07-27",
+  updatedAt: "2026-07-27T20:30:00.000Z",
+  intros: Object.freeze({
+    zh: "采集范围为北京时间 7 月 26 日 23:00 至 7 月 27 日 23:00。只保留在这一窗口内发布、且达到重要性门槛的消息。",
+    en: "The collection window runs from 11:00 p.m. Beijing time on July 26 to 11:00 p.m. on July 27. Only material published inside that window and clearing the importance threshold is included.",
+    ja: "収集期間は北京時間7月26日23時から7月27日23時までです。この24時間内に公開され、重要度の基準を満たした情報だけを掲載します。"
+  })
+});
+
+function articleSeedStatements(env) {
+  // Seed timestamps must be UTC ISO strings; the UI converts them to each visitor's local time.
+  return [
     env.DB.prepare(`
       insert into articles (
         article_id, slug, category, tags, cover_image, status, is_pinned,
@@ -6534,20 +6548,6 @@ Homeから「ツール」を開き、「オンラインホワイトボード」�
 以上です。正しいツールを選び、全員が同じパスワードを入れ、終わったら出力または退出すれば大丈夫です。`
       }
     }, "2026-08-06T00:54:00.000Z"),
-
-const DAILY_AI_NEWS_2026_07_27_READER_PATCH = Object.freeze({
-  slug: "daily-ai-news-2026-07-27",
-  updatedAt: "2026-07-27T20:30:00.000Z",
-  intros: Object.freeze({
-    zh: "采集范围为北京时间 7 月 26 日 23:00 至 7 月 27 日 23:00。只保留在这一窗口内发布、且达到重要性门槛的消息。",
-    en: "The collection window runs from 11:00 p.m. Beijing time on July 26 to 11:00 p.m. on July 27. Only material published inside that window and clearing the importance threshold is included.",
-    ja: "収集期間は北京時間7月26日23時から7月27日23時までです。この24時間内に公開され、重要度の基準を満たした情報だけを掲載します。"
-  })
-});
-
-function articleSeedStatements(env) {
-  // Seed timestamps must be UTC ISO strings; the UI converts them to each visitor's local time.
-  return [
     env.DB.prepare(`
       insert into articles (
         article_id, slug, category, tags, cover_image, status, is_pinned,
