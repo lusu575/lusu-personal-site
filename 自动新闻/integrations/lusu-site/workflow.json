@@ -65,6 +65,10 @@
       "mustReviewScope": "all-discovered-candidates",
       "priorityReviewPolicy": "all-discovered-candidates",
       "priorityCandidateReviewRequired": true,
+      "protectedEventReviewPolicy": "evidence-backed-protected-events-v1",
+      "protectedEventReviewEffectiveReportDate": "2026-08-07",
+      "protectedEventReviewScope": "all-editorial-signal-rss-protected-class-selected-and-merged-candidates",
+      "protectedEventReviewRequiredRegardlessOfSelectedCount": true,
       "lowVolumeTrigger": 5,
       "lowVolumeMeaning": "selected-story-count",
       "lowVolumeAction": "mandatory-second-pass-without-filler"
@@ -114,10 +118,14 @@
         "signedOffQueryIds",
         "signedOffGroupIds",
         "priorityReview",
+        "protectedEventReview",
         "secondPass"
       ],
       "priorityReviewWhen": "coverage-manifest-declares-mustReviewCandidateIds",
       "priorityReviewScope": "exactly-every-mustReviewCandidateId-once",
+      "protectedEventReviewWhen": "coverage-manifest-declares-evidence-backed-protected-events-v1",
+      "protectedEventReviewScope": "exactly-all-editorial-signal-rss-protected-class-selected-and-merged-candidates-once",
+      "protectedEventReviewIndependentOfLowVolumeSecondPass": true,
       "signoffSource": "coverage_manifest.json",
       "signedOffQueryIds": "exactly-all-requiredQueryIds",
       "signedOffGroupIds": "exactly-all-requiredGroupIds",
@@ -267,6 +275,7 @@
         "below-importance-threshold",
         "routine-or-promotional",
         "outside-editorial-scope",
+        "outside-publication-window",
         "no-material-change"
       ],
       "rejectionSemanticRules": {
@@ -276,9 +285,48 @@
       "reviewIntegrity": {
         "minimumCandidateCount": 50,
         "rejectAllOtherClassification": true,
-        "rejectDominantIdenticalRejectedEditorialClassAndScoreSignatureRatio": 0.9
+        "rejectDominantIdenticalRejectedEditorialClassAndScoreSignatureRatio": 0.9,
+        "rejectRotatingScorePaletteMaximum": 8,
+        "rejectRotatingNarrativePaletteMaximum": 32
       },
       "protectedCandidatesMayBeRejected": false
+    },
+    "protectedEventReviewContract": {
+      "policy": "evidence-backed-protected-events-v1",
+      "effectiveReportDate": "2026-08-07",
+      "requiredCandidateScope": [
+        "editorialSignals",
+        "rss-source",
+        "protected-editorial-class",
+        "selected",
+        "merged"
+      ],
+      "eventIdentity": "eventKey-plus-eventStage",
+      "candidateCoverage": "exactly-once",
+      "dispositions": [
+        "selected",
+        "rejected"
+      ],
+      "verificationStatuses": [
+        "verified-in-window",
+        "verified-outside-window",
+        "insufficient-evidence"
+      ],
+      "verifiedRequires": [
+        "firstReliablePublishedAt",
+        "directReliableHttpsSourceUrls",
+        "evidenceSummary",
+        "fourComponentScoreRationale"
+      ],
+      "discoveryOnlyEvidenceHostsForbidden": [
+        "news.google.com",
+        "reddit.com",
+        "news.ycombinator.com",
+        "bing.com"
+      ],
+      "selectedRequiresVerifiedInWindow": true,
+      "insufficientEvidenceMustNotInventFirstPublicationTime": true,
+      "completedAt": "strictly-after-candidateIndexReviewedAt"
     },
     "lowVolumeTrigger": 5,
     "lowVolumeRule": "Fewer than five selected stories requires a complete second coverage pass, but never lowers the importance threshold or forces filler.",

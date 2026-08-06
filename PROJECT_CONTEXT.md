@@ -1,11 +1,18 @@
 # PROJECT_CONTEXT.md
 
+## 2026-08-06 每日 AI 新闻防漏审与证据事件复核
+
+- 8 月 6 日漏新闻的根因不是抓取量不足：正式运行 `run-20260805T230214Z-c0ddb215` 已取得 1,997 条候选、403 条编辑信号候选和 29 条 RSS 候选，并发布 9 条；但临时编辑脚本把绝大多数拒稿按候选 ID 轮换套入 4 组固定分数与少量结论模板。豆包／SeedRealtime 等线索实际已进入候选索引，却没有得到逐事件、逐来源判断。此前只拦截“90% 完全相同类别与分数”的校验无法识别这种轮换模板。
+- 2026-08-07 起的新 coverage manifest 除 `priorityReviewPolicy: all-discovered-candidates` 外，必须声明 `protectedEventReviewPolicy: evidence-backed-protected-events-v1`，删除该字段也会 fail closed。对应的 `coverageAudit.protectedEventReview` 独立于少于 5 条才触发的 `secondPass`：无论已入选多少条，都必须把全部 `editorialSignals`、RSS、实际受保护类别和 selected／merged 候选按 `eventKey + eventStage` 恰好聚类一次，并记录直达可靠 HTTPS 来源、事件当前阶段首次可靠发布时间、事实边界与四项具体评分理由。入选事件必须是 `verified-in-window`；无可靠证据时使用 `insufficient-evidence` 且不得伪造时间，窗口外事件使用有证据的 `outside-publication-window`。
+- Google News、Reddit、Hacker News 与 Bing 聚合页不能作为受保护事件的最终证据 URL。校验器还会拒绝候选量充足时只轮换不超过 8 组评分和不超过 32 种结论开头的批量拒稿，并拒绝至少一半事件复用相同证据摘要或评分理由。自动任务不得按候选 ID、hash、数组下标或标题模板生成编辑判断；脚本只能序列化已经完成的逐事件复核。
+- 字节跳动发现不再依靠一个综合大 OR 查询：豆包中文／英文产品动态、Seed 通用模型、SeedRealtime／Seed-ASR／Seed-TTS／全双工语音分别成为 required 查询；原 `bytedance-models-zh` 降为小规模补充，Seedance／Seedream／Dreamina 继续保留独立创意模型通道。本次只修复后续生产链路和校验，没有自动重发或改写 8 月 6 日已发布日报。
+
 ## 2026-08-04 Daily AI News 代理感知投递与只读回读恢复
 
 - 8 月 4 日自动任务不是生成或落库失败：Horizon 运行 `run-20260803T230334Z-73cc08cf` 在精确窗口内取得 2,064 条候选，8 条入选、101 条 merged、1,955 条具体 rejected，正式 validator 通过；生产 POST 已收到 `daily-ai-news + published`，随后只有日文公开 GET 抛出 `fetch failed`。再次以冻结 `daily_run.json` 只读核对后，中英日三版 slug、分类、语言、标题和正文全部逐字一致，所以本期不得再走 manual recovery 或重复 POST。
 - 本机 Clash／Mihomo 使用 Fake-IP DNS，`lusu575.com` 可解析到 `198.18.0.0/15`；系统 curl／PowerShell 会通过系统代理成功，而 Node 原生 `fetch` 默认不会自动继承这条代理链。自动新闻所有正式 Node 外联必须使用 `自动新闻/integrations/lusu-site/network-fetch.mjs`：它以 Undici `EnvHttpProxyAgent` 读取大小写兼容的 `HTTP_PROXY`、`HTTPS_PROXY`、`NO_PROXY`，无值时直连。不得打印代理 URL、代理凭证或投递 Token，也不得通过修改 Clash 订阅来维持生产可用性。
 - 每日 AI 新闻生产 POST 在单次执行中严格发送一次。POST 明确返回 published 后，zh／en／ja 公开回读可分别对网络失败及 408／425／429／500／502／503／504 做最多 3 次只读 GET 尝试，且总预算不能越过自动 08:00 或人工恢复午夜截止；正文不一致、非瞬时 HTTP 或重试耗尽仍停止并标记需人工核对，绝不能再发 POST。工具雷达的生产目录、线上图片、POST 和三语回读也复用同一代理客户端，避免周更重复遭遇相同 Fake-IP 问题。
-- Undici `7.28.0` 是直接、精确锁定的生产依赖，不再依靠 Wrangler 的传递依赖。Node.js 22 验证使用官方 SHA-256 校验的 v22.23.1 便携运行时；默认系统 Node 版本不能替代发布记录中的实际运行时证据。
+- Undici `7.29.0` 是直接、精确锁定的生产依赖，不再依靠 Wrangler 的传递依赖；根级 override 同步约束所有传递链使用该版本，并将受影响的 `brace-expansion` 依赖分别固定到 `1.1.18`／`5.0.9`。Node.js 22 验证使用官方 SHA-256 校验的 v22.23.1 便携运行时；默认系统 Node 版本不能替代发布记录中的实际运行时证据。依赖更新后必须以严格 `npm ci` 重建并确认生产与完整 `npm audit` 均为 0 漏洞。
 
 ## 2026-08-03 每日 AI 新闻编辑退化防护
 

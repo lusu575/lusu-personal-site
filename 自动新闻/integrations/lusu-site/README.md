@@ -3,8 +3,8 @@
 这套适配层把 Horizon、Codex 和个人站串成一条正式的每日生产链路：
 
 1. Horizon 是必经数据入口，负责多来源抓取、网址规范化和跨来源去重；不可用时当期停止。
-2. Horizon 对可靠来源不设语言限制，并以英文、简体中文、日文、韩文作为常用检索种子，通过多语言主题查询、重点人物／产品／厂商独立查询、Seedance 等视频／图像／语音模型专项查询、官方 RSS、中文与海外 AI 媒体 RSS，以及 Reddit、Hacker News 等社区早期发现源形成真实候选，同时输出紧凑标题索引和 coverage manifest v2。
-3. Codex 对精确窗口内 candidate index 的每个候选完成一次 `selected`、`merged` 或具体 `rejected` 处置，再做可靠来源复核、重要性判断、近 30 天事件阶段去重和三语完整文章生成。少于 5 条时必须做第二轮覆盖审阅，但仍不降低门槛或凑数。
+2. Horizon 对可靠来源不设语言限制，并以英文、简体中文、日文、韩文作为常用检索种子，通过多语言主题查询、重点人物／产品／厂商独立查询、豆包中英产品查询、Seed 通用模型与 SeedRealtime／语音专项查询、Seedance 等视频／图像模型专项查询、官方 RSS、中文与海外 AI 媒体 RSS，以及 Reddit、Hacker News 等社区早期发现源形成真实候选，同时输出紧凑标题索引和 coverage manifest v2。
+3. Codex 对精确窗口内 candidate index 的每个候选完成一次 `selected`、`merged` 或具体 `rejected` 处置；同时把全部编辑信号、RSS、受保护类别和 selected／merged 候选按事件聚类，完成带可靠直达来源、首次可靠发布时间、事实边界及四项评分理由的证据复核，再做近 30 天事件阶段去重和三语完整文章生成。这项证据复核不受已选条数影响；少于 5 条时还要再做第二轮覆盖审阅，但仍不降低门槛或凑数。
 4. 本地校验全部通过后，生产投递脚本在受控通道中公开文章，并且只把接口明确返回 `published` 当作成功。
 
 `ARTICLE_STYLE.md` 是每一期必须遵守的固定格式与文风标准；`AUTOMATION_PROMPT.md` 是交给每日 Codex 任务的完整执行说明。
@@ -26,6 +26,8 @@
 - 重大模型或产品发布、能力／可用范围变化、用量规则变化、实用开发者工具更新、可信且显著的价格或额度变化，以及重大芯片／存储／机器人／智能设备／自动驾驶／数据中心基础设施、科技金融和 AI 监管／安全事件，都使用同一 7 分门槛；达到门槛后必须入选或并入同一事件。临时促销、纯娱乐和小型维护通常不收录。
 - Horizon 会在对应聚焦通道中为上述八类变化标注受保护的 `editorialSignals`。信号不代表必须刊发，但必须进入匹配类别深审，不能统一归成 `other + 4 分`。专用信号按用量规则、价格／额度、重大科技金融、监管／安全、芯片／基础设施的顺序优先；模型、能力和开发工具多信号候选可使用任一实际匹配的受保护类别。`below-importance-threshold` 表示确有实质变化但未达门槛，`no-material-change` 则表示没有实质变化，两者不得混用。
 - 每一条写入 candidate index 的候选都必须留下入选、合并或具体拒绝结论；`priority` 只决定审阅先后，不能缩小完整处置范围。这条规则不因来源可选、查询发生截断或本期已经选出 5 条以上而取消。视频、图像和语音模型的重大版本、上线／延期、开放范围、API 与权重变化使用独立多语言聚焦查询，不能只依赖综合模型厂商搜索。
+- coverage manifest 新增 `protectedEventReviewPolicy: evidence-backed-protected-events-v1`。每期必须在 `coverageAudit.protectedEventReview` 中恰好覆盖全部编辑信号、RSS、受保护类别和 selected／merged 候选；按 `eventKey + eventStage` 聚类，逐事件保留官方／可靠直达 HTTPS 来源、当前阶段首次可靠发布时间、证据摘要和四项具体评分理由。入选事件必须在窗口内完成可靠核验；找不到证据时如实使用 `insufficient-evidence` 且不得伪填时间。
+- 禁止按候选 ID、hash、数组下标或固定轮换模板生成分类、分数、拒绝理由或证据记录。大量拒稿只轮换不超过 8 组评分和不超过 32 种结论模板也会 fail closed；结构字段齐全不能替代逐事件判断。
 - TechCrunch AI、VentureBeat AI、Ars Technica AI、雷峰网和 36氪属于可选补充。Reddit 与 Hacker News 只用于早期发现；其标题、评论和发帖时间不能单独支撑正式事实或时间资格，候选必须回到官方、可靠媒体或其他一手来源核验。站长已授权把 Tibo `@thsottiaux` 的 X 帖子纳入选题；链路不再使用会返回同名医疗噪声的 Bing RSS，而是用 required 的 `codex-operations-en` 聚焦查询同时检索 Tibo 姓名、账号及 Codex／ChatGPT Work 运营变化。公开索引返回的 X、媒体和社区候选都进入完整处置范围；这不是完整登录时间线或 X API。
 - 正文固定为“今日要闻 / 主要新闻 / 传闻”三段；要闻恰好一条且已经核实，传闻单独放置并使用条件语气。
 - 每条新闻是一段事实正文，末尾是一至两句、明显更短的 AI 解读。
@@ -35,15 +37,15 @@
 ## 文件说明
 
 - `horizon.config.json`：本站 AI 新闻源配置，不含密钥。TechCrunch AI、VentureBeat AI、Ars Technica AI、雷峰网和 36氪属于可选补充；单源失败不阻断。Reddit、Hacker News 等社区源只用于早期发现，不抓取评论串；它们返回的候选仍须处置，正式新闻和时间资格必须回到规范原帖、可靠媒体或其他一手来源核验。Tibo 由 `discovery-queries.json` 中的 required 聚焦查询覆盖。
-  - `discovery-queries.json`：使用 `any-reliable-language` 语言政策，至少提供英文、简体中文、日文、韩文检索种子；宽泛查询只作补充，重点人物、产品运营变化、Thinking Machines／LG AI Research 等开放模型实验室、韩国模型厂商、各家中国模型厂商和主要视频／图像／语音产品使用拆分后的独立 required 查询。韩国开放模型固定拆为 EXAONE 开放、EXAONE 发布、LG 其他、NAVER／HyperCLOVA、Upstage／Solar 五条互补韩文查询，避免跨厂商大查询触发 99+1 截断；Seedance 等多模态产品必须覆盖发布、延期、API、权重和可用范围等不同事件阶段。文件不含密钥。
+  - `discovery-queries.json`：使用 `any-reliable-language` 语言政策，至少提供英文、简体中文、日文、韩文检索种子；宽泛查询只作补充，重点人物、产品运营变化、Thinking Machines／LG AI Research 等开放模型实验室、韩国模型厂商、各家中国模型厂商和主要视频／图像／语音产品使用拆分后的独立 required 查询。韩国开放模型固定拆为 EXAONE 开放、EXAONE 发布、LG 其他、NAVER／HyperCLOVA、Upstage／Solar 五条互补韩文查询，避免跨厂商大查询触发 99+1 截断；字节跳动固定拆为豆包中英产品、Seed 通用模型、SeedRealtime／Seed-ASR／Seed-TTS／全双工语音以及 Seedance／Seedream／Dreamina 创意模型查询。文件不含密钥。
 - `fetch-with-horizon.py`：调用 Horizon 原生服务，以受控并发执行发现查询；失败查询最多重试两次，仍失败则与真实空结果分开记录。Google News 查询最多保留 99 条并请求第 100 条作为探针，实际返回第 100 条时判定截断并关闭 required 覆盖；只有 99 条不误报。精确窗口内全部候选都会加入 `complete-discovery-review` 必审通道；`priority` 仅控制顺序。候选索引直接写入确定性 UTF-8 字节并据此计算 SHA-256。
 - `candidate_index.json`：本次 Horizon 运行生成的紧凑候选索引，只含审阅所需的标题、时间、来源和覆盖归属，不含大段正文。
-- `coverage_manifest.json`：schemaVersion 2 的机器可校验清单，记录本次 required query、required group、语言、命中数、结果上限状态、指定 review source 和 review lane。新运行声明 `priorityReviewPolicy: all-discovered-candidates`，包含 `complete-discovery-review` 通道，并让兼容字段 `mustReviewCandidateIds` 覆盖 candidate index 的全部候选编号。
+- `coverage_manifest.json`：schemaVersion 2 的机器可校验清单，记录本次 required query、required group、语言、命中数、结果上限状态、指定 review source 和 review lane。新运行声明 `priorityReviewPolicy: all-discovered-candidates` 与 `protectedEventReviewPolicy: evidence-backed-protected-events-v1`，包含 `complete-discovery-review` 通道，并让兼容字段 `mustReviewCandidateIds` 覆盖 candidate index 的全部候选编号。
 - `workflow.json`：schemaVersion 4 的 07:00—08:00 自动生产时间、完整覆盖审阅、事件阶段去重、成文、fail-closed 与当天人工恢复边界。
 - `ARTICLE_STYLE.md`：固定标题、栏目、事实段、AI 解读和传闻标准。
 - `AUTOMATION_PROMPT.md`：每日 Codex 任务的完整说明。
 - `MANUAL_RECOVERY.md`：仅供站长在交互任务中明确授权的当天 08:00 后人工补发说明；自动任务不得使用。
-- `validate-draft.mjs`：校验窗口、Horizon 来源、重点候选处置、重要性、三语结构和正文无外链；还会拒绝整批候选被归为 `other`、大量拒稿复制同一编辑类别与四项评分模板、拒稿理由与 `substantiveChange` 矛盾，或低条数二审没有列出必需复查对象的运行。
+- `validate-draft.mjs`：校验窗口、Horizon 来源、全候选处置、受保护事件证据复核、重要性、三语结构和正文无外链；还会拒绝整批候选被归为 `other`、大量拒稿复制或轮换少量评分／结论模板、聚合页冒充可靠证据、拒稿理由与 `substantiveChange` 矛盾，或低条数二审没有列出必需复查对象的运行。
 - `network-fetch.mjs`：正式 Node 外联的统一代理感知客户端；从环境读取 `HTTP_PROXY`／`HTTPS_PROXY`／`NO_PROXY`，兼容 Clash Fake-IP 与无代理直连，且不记录代理值、凭证或投递 Token。
 - `deliver-production.mjs`：读取环境或被忽略的根目录 `.dev.vars` 中的令牌；普通模式只在 07:00—08:00 投递，人工模式还需当天日期与 canonical 稿件 SHA-256 双确认；两者都要求接口确认 `published`，再只读核验 zh / en / ja 三个公开文章接口。单次执行只发送一次 POST；公开 GET 对网络错误和指定瞬时 HTTP 最多尝试三次，正文不匹配、非瞬时状态或预算耗尽立即停止，绝不重发 POST。
 - `configure-production-channel.mjs`：一次性生成并安全保存令牌，再通过 Wrangler 远端开启 `enabled + auto_publish`。它不会显示令牌明文。
@@ -84,6 +86,39 @@ schemaVersion 4 的运行记录必须从同一次 `coverage_manifest.json` 原�
         }
       ]
     },
+    "protectedEventReview": {
+      "policy": "evidence-backed-protected-events-v1",
+      "completedAt": "<严格晚于 candidateIndexReviewedAt 的带时区时间>",
+      "requiredCandidateIds": ["<全部编辑信号、RSS、受保护类别、selected／merged 候选>"],
+      "events": [
+        {
+          "eventKey": "<规范化事件编号>",
+          "eventStage": "release",
+          "representativeCandidateId": "<代表候选编号>",
+          "candidateIds": ["<同一事件阶段的候选编号>"],
+          "disposition": "selected",
+          "editorialClass": "major-model-product",
+          "substantiveChange": true,
+          "score": {
+            "reach": 2,
+            "magnitude": 2,
+            "practicalValue": 2,
+            "evidence": 1,
+            "total": 7
+          },
+          "verificationStatus": "verified-in-window",
+          "firstReliablePublishedAt": "<事件当前阶段首次可靠发布时间>",
+          "reliableSourceUrls": ["<HTTPS 官方或可靠媒体直达页>"],
+          "evidenceSummary": "<本事件核验到的事实、阶段与仍有限的边界>",
+          "scoreRationale": {
+            "reach": "<本事件影响范围的具体理由>",
+            "magnitude": "<本事件变化幅度的具体理由>",
+            "practicalValue": "<本事件读者价值的具体理由>",
+            "evidence": "<本事件证据强度的具体理由>"
+          }
+        }
+      ]
+    },
     "secondPass": {
       "required": true,
       "completed": true,
@@ -97,6 +132,8 @@ schemaVersion 4 的运行记录必须从同一次 `coverage_manifest.json` 原�
 ```
 
 新运行的 `priorityReview.decisions` 必须与 manifest 的 `mustReviewCandidateIds` 一一对应，也就是覆盖 candidate index 的每个候选；`priorityReview` 只是保留的 schema 字段名，不代表只审 priority。同一事件的重复来源用 `merged + representativeCandidateId`，不收录时用允许的 `rejectionReason + note`。任一受保护编辑类别的实质变化达到 7 分后不能拒绝。候选索引的 `editorialSignals` 会用独立标记覆盖上述八类变化，并把明确的额度／时间窗口变化锁定为 `usage-policy` 或 `material-price-quota`，避免再次用统一 4 分模板淘汰；普通 token、推理内存、模型路由或性能优化不会被误标。未声明 `priorityReviewPolicy: all-discovered-candidates` 的旧 schema-v2 manifest 只作历史兼容，仍按其显式 `mustReviewCandidateIds` 范围校验；新的正式运行必须声明该政策并覆盖全部候选。
+
+2026-08-07 起的新 manifest 必须声明 `protectedEventReviewPolicy: evidence-backed-protected-events-v1`，删除该字段也会直接失败。`protectedEventReview` 是与低条数二审独立的永久门禁：即使已选出 5 条以上，也必须按事件完整覆盖 requiredCandidateIds。`verified-in-window` 与 `verified-outside-window` 必须使用直达 HTTPS 可靠来源和真实首发时间；Google News、Reddit、Hacker News、Bing 只可发现，不能充当证据。无可靠时间时只能用 `insufficient-evidence` 且不填写 `firstReliablePublishedAt`。脚本不得用候选 ID、hash、下标或固定轮换模板代替事件判断。
 
 当入选不少于 5 条时，`secondPass.required` 和 `secondPass.completed` 都写 `false`；少于 5 条时必须按示例再次签收，二审时间必须晚于初审，且 `reconsideredCandidateIds` 必须至少覆盖所有带编辑信号的候选、RSS 候选和受保护类别的 5/6 分拒稿，同时允许加入任意其他索引候选。这里的 5 只控制复查，不控制最终刊发数量。
 
@@ -122,7 +159,7 @@ npm.cmd run ai-news:validate -- --run 自动新闻/integrations/lusu-site/runs/2
 npm.cmd run ai-news:deliver:production -- --run 自动新闻/integrations/lusu-site/runs/2026-07-29.json
 ```
 
-生产投递必须显式提供本期运行记录，拒绝使用默认旧稿。三语标题必须分别采用固定栏目名前缀加各自第一条要闻标题，不能只写日期；日期继续由发布时间和 slug 表达。校验器会要求 coverage manifest 使用 schemaVersion 2，核对 required query 与 required group 是否全部签收、required 查询是否由多取一条探针确认真实截断，以及 candidate index 全部候选是否逐条完成 `priorityReview` 兼容字段中的处置；入选少于 5 条时，还会要求 `coverageAudit.secondPass` 完成。它会再次校验事件当前阶段的首次可靠发布时间、07:00 窗口和当前时间；距离 08:00 不足安全余量时不再发起请求。接口确认公开后，它还会在截止前分别读取中文、英文、日文公开文章，核对 slug、分区、语言、标题和正文。投递和公开核验都没有自动重试，避免一次不明确的响应造成重复公开。
+生产投递必须显式提供本期运行记录，拒绝使用默认旧稿。三语标题必须分别采用固定栏目名前缀加各自第一条要闻标题，不能只写日期；日期继续由发布时间和 slug 表达。校验器会要求 coverage manifest 使用 schemaVersion 2，核对 required query 与 required group 是否全部签收、required 查询是否由多取一条探针确认真实截断、candidate index 全部候选是否逐条完成 `priorityReview` 兼容字段中的处置，以及受保护事件证据复核是否完整；入选少于 5 条时，还会额外要求 `coverageAudit.secondPass` 完成。它会再次校验事件当前阶段的首次可靠发布时间、07:00 窗口和当前时间；距离 08:00 不足安全余量时不再发起请求。生产 POST 始终只发送一次；接口确认公开后，它会在截止前分别读取中文、英文、日文公开文章，核对 slug、分区、语言、标题和正文，并只对网络错误或明确瞬时 HTTP 状态做每语言最多三次的幂等 GET 重试。
 
 ## 当天人工故障补发
 

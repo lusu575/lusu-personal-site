@@ -245,13 +245,26 @@ function clone(value) {
   return structuredClone(value);
 }
 
+function alphabeticToken(index) {
+  let value = index + 1;
+  let token = "";
+  while (value > 0) {
+    value -= 1;
+    token = String.fromCharCode(97 + (value % 26)) + token;
+    value = Math.floor(value / 26);
+  }
+  return token;
+}
+
 async function writeFormalCoverageFixture(t, {
   withPriorityReview = false,
   withReviewSource = withPriorityReview,
   usagePolicySignals = [],
   completeReviewPolicy = false,
+  protectedEventReviewPolicy = false,
   extraRejectedCandidates = 0,
   manifestSchemaVersion = 2,
+  reportDate = "2026-07-27",
   runId = "run-20260727T010203Z-feed1234"
 } = {}) {
   const horizonRoot = fileURLToPath(
@@ -265,6 +278,20 @@ async function writeFormalCoverageFixture(t, {
   t.after(() => rm(runDirectory, { recursive: true, force: true }));
 
   const run = validRun();
+  const priorDate = new Date(`${reportDate}T00:00:00Z`);
+  priorDate.setUTCDate(priorDate.getUTCDate() - 1);
+  const windowStartDate = priorDate.toISOString().slice(0, 10);
+  run.reportDate = reportDate;
+  run.windowStart = `${windowStartDate}T07:00:00+08:00`;
+  run.windowEnd = `${reportDate}T07:00:00+08:00`;
+  run.coverageAudit.candidateIndexReviewedAt = `${reportDate}T06:30:00+08:00`;
+  run.coverageAudit.secondPass.completedAt = `${reportDate}T06:40:00+08:00`;
+  run.delivery.slug = `daily-ai-news-${reportDate}`;
+  run.delivery.idempotencyKey = `daily-ai-news:${reportDate}:validator-test`;
+  for (const runCandidate of run.candidates) {
+    runCandidate.publishedDate = reportDate;
+    runCandidate.publishedAt = `${reportDate}T06:00:00+08:00`;
+  }
   run.horizonRun.runId = runId;
   const relativeDirectory = relative(horizonRoot, runDirectory).replaceAll("\\", "/");
   run.horizonRun.candidatesPath = `${relativeDirectory}/daily_candidates.json`;
@@ -481,25 +508,154 @@ async function writeFormalCoverageFixture(t, {
       sourceCandidateIds: ["candidate-unverified-rumor"]
     });
     for (let index = 0; index < extraRejectedCandidates; index += 1) {
+      const scorePattern = [
+        [0, 0, 0, 0],
+        [0, 1, 1, 0],
+        [1, 0, 1, 1],
+        [1, 1, 1, 1],
+        [2, 1, 1, 1],
+        [1, 2, 1, 1],
+        [1, 1, 2, 1],
+        [2, 2, 1, 1],
+        [1, 2, 2, 1]
+      ][index % 9];
       run.coverageAudit.priorityReview.decisions.push({
         candidateId: `candidate-regression-${index}`,
         decision: "rejected",
         editorialClass: index % 2 === 0 ? "other" : "capability-availability",
         substantiveChange: false,
         score: {
-          reach: 1,
-          magnitude: 1,
-          practicalValue: 1,
-          evidence: 1,
-          total: 4
+          reach: scorePattern[0],
+          magnitude: scorePattern[1],
+          practicalValue: scorePattern[2],
+          evidence: scorePattern[3],
+          total: scorePattern.reduce((total, value) => total + value, 0)
         },
         rejectionReason: "insufficient-evidence",
         note: `Regression fixture ${index} lacks primary evidence.`
       });
     }
-    run.coverageAudit.secondPass.reconsideredCandidateIds = items
-      .filter((item) => item.source_type === "rss")
+    const protectedSecondPassClasses = new Set([
+      "major-model-product",
+      "capability-availability",
+      "usage-policy",
+      "developer-tool",
+      "material-price-quota",
+      "strategic-hardware-infrastructure",
+      "major-tech-finance",
+      "ai-policy-safety"
+    ]);
+    const reconsideredCandidateIds = new Set(
+      candidateIndex.items
+        .filter((item) => item.sourceType === "rss"
+          || item.editorialSignals.length > 0)
+        .map((item) => item.id)
+    );
+    for (const decision of run.coverageAudit.priorityReview.decisions) {
+      if (decision.decision === "rejected"
+        && protectedSecondPassClasses.has(decision.editorialClass)
+        && [5, 6].includes(decision.score.total)) {
+        reconsideredCandidateIds.add(decision.candidateId);
+      }
+    }
+    run.coverageAudit.secondPass.reconsideredCandidateIds = [
+      ...reconsideredCandidateIds
+    ];
+  }
+  if (manifestSchemaVersion === 2 && protectedEventReviewPolicy) {
+    const protectedEditorialClasses = new Set([
+      "major-model-product",
+      "capability-availability",
+      "usage-policy",
+      "developer-tool",
+      "material-price-quota",
+      "strategic-hardware-infrastructure",
+      "major-tech-finance",
+      "ai-policy-safety"
+    ]);
+    const decisions = run.coverageAudit.priorityReview.decisions;
+    const decisionsById = new Map(
+      decisions.map((decision) => [decision.candidateId, decision])
+    );
+    const requiredCandidateIds = candidateIndex.items
+      .filter((item) => {
+        const decision = decisionsById.get(item.id);
+        return item.editorialSignals.length > 0
+          || item.sourceType === "rss"
+          || protectedEditorialClasses.has(decision?.editorialClass)
+          || decision?.decision === "selected"
+          || decision?.decision === "merged";
+      })
       .map((item) => item.id);
+    const events = [];
+    for (const decision of decisions.filter((entry) => entry.decision === "selected")) {
+      if (!requiredCandidateIds.includes(decision.candidateId)) {
+        continue;
+      }
+      const selectedCandidate = run.candidates.find(
+        (candidateEntry) => candidateEntry.storyKey === decision.storyKey
+      );
+      const eventCandidateIds = [
+        decision.candidateId,
+        ...decisions
+          .filter((entry) => entry.decision === "merged"
+            && entry.representativeCandidateId === decision.candidateId)
+          .map((entry) => entry.candidateId)
+      ].filter((candidateId) => requiredCandidateIds.includes(candidateId));
+      events.push({
+        eventKey: selectedCandidate.eventKey,
+        eventStage: selectedCandidate.eventStage,
+        representativeCandidateId: decision.candidateId,
+        candidateIds: eventCandidateIds,
+        disposition: "selected",
+        editorialClass: decision.editorialClass,
+        substantiveChange: decision.substantiveChange,
+        score: structuredClone(decision.score),
+        verificationStatus: "verified-in-window",
+        firstReliablePublishedAt: selectedCandidate.publishedAt,
+        reliableSourceUrls: [...selectedCandidate.sourceUrls],
+        evidenceSummary: `Primary fixture evidence confirms ${decision.candidateId} as a distinct in-window event stage.`,
+        scoreRationale: {
+          reach: `Reach is assessed from the specific audience for ${decision.candidateId}.`,
+          magnitude: `Magnitude reflects the concrete stage change in ${decision.candidateId}.`,
+          practicalValue: `Practical value follows the documented use of ${decision.candidateId}.`,
+          evidence: `Evidence is tied to direct fixture sources for ${decision.candidateId}.`
+        }
+      });
+    }
+    for (const decision of decisions.filter((entry) => entry.decision === "rejected")) {
+      if (!requiredCandidateIds.includes(decision.candidateId)) {
+        continue;
+      }
+      const numericSuffix = Number(decision.candidateId.match(/(\d+)$/)?.[1] || 0);
+      const reviewToken = alphabeticToken(numericSuffix);
+      events.push({
+        eventKey: `fixture-review-${reviewToken}`,
+        eventStage: "release",
+        representativeCandidateId: decision.candidateId,
+        candidateIds: [decision.candidateId],
+        disposition: "rejected",
+        editorialClass: decision.editorialClass,
+        substantiveChange: decision.substantiveChange,
+        score: structuredClone(decision.score),
+        rejectionReason: decision.rejectionReason,
+        verificationStatus: "insufficient-evidence",
+        reliableSourceUrls: [],
+        evidenceSummary: `Review ${reviewToken} found no direct source that verifies this event stage or its first reliable publication time.`,
+        scoreRationale: {
+          reach: `Review ${reviewToken} found no supported audience reach beyond the discovery lead.`,
+          magnitude: `Review ${reviewToken} found no supported material stage change.`,
+          practicalValue: `Review ${reviewToken} found no verified practical availability for readers.`,
+          evidence: `Review ${reviewToken} found no direct reliable publication evidence.`
+        }
+      });
+    }
+    run.coverageAudit.protectedEventReview = {
+      policy: "evidence-backed-protected-events-v1",
+      completedAt: `${reportDate}T06:35:00+08:00`,
+      requiredCandidateIds,
+      events
+    };
   }
 
   const candidates = {
@@ -574,6 +730,9 @@ async function writeFormalCoverageFixture(t, {
       ],
       ...(completeReviewPolicy ? {
         priorityReviewPolicy: "all-discovered-candidates"
+      } : {}),
+      ...(protectedEventReviewPolicy ? {
+        protectedEventReviewPolicy: "evidence-backed-protected-events-v1"
       } : {})
     } : {})
   };
@@ -605,6 +764,13 @@ test("Daily AI News workflow declares the permanent three-section contract", asy
     new URL("../自动新闻/integrations/lusu-site/workflow.json", import.meta.url),
     "utf8"
   ));
+  const automationPrompt = await readFile(
+    new URL(
+      "../自动新闻/integrations/lusu-site/AUTOMATION_PROMPT.md",
+      import.meta.url
+    ),
+    "utf8"
+  );
 
   assert.equal(workflow.schemaVersion, 4);
   assert.equal(workflow.calendar.mode, "fixed-24-hour-window");
@@ -654,6 +820,19 @@ test("Daily AI News workflow declares the permanent three-section contract", asy
     true
   );
   assert.equal(
+    workflow.collection.coverageReview.protectedEventReviewPolicy,
+    "evidence-backed-protected-events-v1"
+  );
+  assert.equal(
+    workflow.collection.coverageReview.protectedEventReviewEffectiveReportDate,
+    "2026-08-07"
+  );
+  assert.equal(
+    workflow.collection.coverageReview
+      .protectedEventReviewRequiredRegardlessOfSelectedCount,
+    true
+  );
+  assert.equal(
     workflow.collection.coverageReview.lowVolumeAction,
     "mandatory-second-pass-without-filler"
   );
@@ -695,6 +874,11 @@ test("Daily AI News workflow declares the permanent three-section contract", asy
     workflow.selection.coverageAuditContract.priorityReviewScope,
     "exactly-every-mustReviewCandidateId-once"
   );
+  assert.equal(
+    workflow.selection.coverageAuditContract
+      .protectedEventReviewIndependentOfLowVolumeSecondPass,
+    true
+  );
   assert.deepEqual(
     workflow.selection.priorityReviewContract.decisions,
     ["selected", "merged", "rejected"]
@@ -724,6 +908,34 @@ test("Daily AI News workflow declares the permanent three-section contract", asy
       totalMustEqualComponentSum: true
     }
   );
+  assert.equal(
+    workflow.selection.priorityReviewContract.reviewIntegrity
+      .rejectRotatingScorePaletteMaximum,
+    8
+  );
+  assert.equal(
+    workflow.selection.protectedEventReviewContract.policy,
+    "evidence-backed-protected-events-v1"
+  );
+  assert.equal(
+    workflow.selection.protectedEventReviewContract.effectiveReportDate,
+    "2026-08-07"
+  );
+  assert.equal(
+    workflow.selection.protectedEventReviewContract
+      .selectedRequiresVerifiedInWindow,
+    true
+  );
+  assert.deepEqual(
+    workflow.selection.protectedEventReviewContract.requiredCandidateScope,
+    [
+      "editorialSignals",
+      "rss-source",
+      "protected-editorial-class",
+      "selected",
+      "merged"
+    ]
+  );
   assert.equal(workflow.selection.eventDedupe.identity, "eventKey-plus-eventStage");
   assert.equal(workflow.selection.eventDedupe.selectedDuplicateAllowed, false);
   assert.equal(workflow.article.requirePerItemAiTake, true);
@@ -742,6 +954,12 @@ test("Daily AI News workflow declares the permanent three-section contract", asy
   assert.equal(workflow.delivery.manualRecoveryReference, "MANUAL_RECOVERY.md");
   assert.equal(workflow.compatibility.formalRunSchemaVersion, 4);
   assert.equal(workflow.compatibility.historicalOneShotSchemaVersion, 3);
+  assert.match(
+    automationPrompt,
+    /protectedEventReviewPolicy: evidence-backed-protected-events-v1/
+  );
+  assert.match(automationPrompt, /禁止按候选 ID 的 hash、数组下标/);
+  assert.match(automationPrompt, /豆包中英产品动态/);
 });
 
 test("Daily AI News validator accepts the three-section contract", () => {
@@ -1610,6 +1828,13 @@ test("all-discovered review fails closed on August 3 style classification and sc
   for (const decision of scoreCollapse.run.coverageAudit.priorityReview.decisions) {
     if (decision.decision === "rejected") {
       decision.editorialClass = "other";
+      decision.score = {
+        reach: 1,
+        magnitude: 1,
+        practicalValue: 1,
+        evidence: 1,
+        total: 4
+      };
     }
   }
   await writeFile(
@@ -1620,6 +1845,128 @@ test("all-discovered review fails closed on August 3 style classification and sc
     () => readAndValidateRun(scoreCollapse.runPath),
     /至少 90% 的拒稿使用完全相同的编辑类别与四项评分模板/
   );
+});
+
+test("all-discovered review rejects rotating hash score and note palettes", async (t) => {
+  const fixture = await writeFormalCoverageFixture(t, {
+    withPriorityReview: true,
+    completeReviewPolicy: true,
+    extraRejectedCandidates: 60
+  });
+  const scorePatterns = [
+    [1, 1, 1, 1],
+    [2, 1, 1, 1],
+    [1, 2, 1, 1],
+    [1, 1, 2, 1]
+  ];
+  const notePatterns = [
+    "No reliable publication time was independently verified.",
+    "The candidate lacks a material current event stage.",
+    "The candidate is outside the editorial focus after review.",
+    "The discovery lead did not provide enough direct evidence."
+  ];
+  let rejectedIndex = 0;
+  for (const decision of fixture.run.coverageAudit.priorityReview.decisions) {
+    if (decision.decision !== "rejected") {
+      continue;
+    }
+    const score = scorePatterns[rejectedIndex % scorePatterns.length];
+    decision.score = {
+      reach: score[0],
+      magnitude: score[1],
+      practicalValue: score[2],
+      evidence: score[3],
+      total: score.reduce((total, value) => total + value, 0)
+    };
+    decision.note = `${notePatterns[rejectedIndex % notePatterns.length]} Candidate ${rejectedIndex}.`;
+    rejectedIndex += 1;
+  }
+  await writeFile(fixture.runPath, `${JSON.stringify(fixture.run, null, 2)}\n`);
+  await assert.rejects(
+    () => readAndValidateRun(fixture.runPath),
+    /只轮换少量评分组合与结论模板/
+  );
+});
+
+test("new manifests require evidence-backed protected event review", async (t) => {
+  const fixture = await writeFormalCoverageFixture(t, {
+    withPriorityReview: true,
+    completeReviewPolicy: true,
+    protectedEventReviewPolicy: true,
+    extraRejectedCandidates: 60
+  });
+  await assert.doesNotReject(() => readAndValidateRun(fixture.runPath));
+
+  delete fixture.run.coverageAudit.protectedEventReview;
+  await writeFile(fixture.runPath, `${JSON.stringify(fixture.run, null, 2)}\n`);
+  await assert.rejects(
+    () => readAndValidateRun(fixture.runPath),
+    /缺少 protectedEventReview/
+  );
+});
+
+test("protected event policy cannot be removed from effective-date manifests", async (t) => {
+  const fixture = await writeFormalCoverageFixture(t, {
+    withPriorityReview: true,
+    completeReviewPolicy: true,
+    reportDate: "2026-08-07",
+    runId: "run-20260807T010203Z-policy123"
+  });
+  await assert.rejects(
+    () => readAndValidateRun(fixture.runPath),
+    /2026-08-07 起的新运行必须声明 protectedEventReviewPolicy/
+  );
+});
+
+test("protected event review covers every required candidate exactly once", async (t) => {
+  const fixture = await writeFormalCoverageFixture(t, {
+    withPriorityReview: true,
+    completeReviewPolicy: true,
+    protectedEventReviewPolicy: true,
+    extraRejectedCandidates: 12
+  });
+  fixture.run.coverageAudit.protectedEventReview.events.pop();
+  await writeFile(fixture.runPath, `${JSON.stringify(fixture.run, null, 2)}\n`);
+  await assert.rejects(
+    () => readAndValidateRun(fixture.runPath),
+    /每个候选恰好审阅一次/
+  );
+});
+
+test("protected event review requires direct reliable timing evidence", async (t) => {
+  const fixture = await writeFormalCoverageFixture(t, {
+    withPriorityReview: true,
+    completeReviewPolicy: true,
+    protectedEventReviewPolicy: true
+  });
+  const selectedEvent = fixture.run.coverageAudit.protectedEventReview.events
+    .find((event) => event.disposition === "selected");
+  selectedEvent.reliableSourceUrls = ["https://news.google.com/articles/fixture"];
+  await writeFile(fixture.runPath, `${JSON.stringify(fixture.run, null, 2)}\n`);
+  await assert.rejects(
+    () => readAndValidateRun(fixture.runPath),
+    /官方／可靠直达来源/
+  );
+});
+
+test("protected event review accepts evidence-backed outside-window rejections", async (t) => {
+  const fixture = await writeFormalCoverageFixture(t, {
+    withPriorityReview: true,
+    completeReviewPolicy: true,
+    protectedEventReviewPolicy: true,
+    extraRejectedCandidates: 2
+  });
+  const outsideEvent = fixture.run.coverageAudit.protectedEventReview.events
+    .find((event) => event.disposition === "rejected");
+  const outsideDecision = fixture.run.coverageAudit.priorityReview.decisions
+    .find((decision) => decision.candidateId === outsideEvent.representativeCandidateId);
+  outsideEvent.rejectionReason = "outside-publication-window";
+  outsideEvent.verificationStatus = "verified-outside-window";
+  outsideEvent.reliableSourceUrls = ["https://example.test/official-outside-window"];
+  outsideEvent.firstReliablePublishedAt = "2026-07-25T06:00:00+08:00";
+  outsideDecision.rejectionReason = "outside-publication-window";
+  await writeFile(fixture.runPath, `${JSON.stringify(fixture.run, null, 2)}\n`);
+  await assert.doesNotReject(() => readAndValidateRun(fixture.runPath));
 });
 
 test("Daily AI News validator enforces the exact 24-hour publication window", () => {

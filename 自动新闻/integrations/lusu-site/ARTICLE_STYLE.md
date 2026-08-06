@@ -63,6 +63,8 @@
 - 额度重置、五小时／周度窗口恢复或暂停、价格和可用额度调整都属于用量规则，不是普通“开发工具小更新”。Tibo／Codex 与各产品运营聚焦查询产生的这类 must-review 候选会标记 `usage-policy-change`，审核时归类为 `usage-policy` 或 `material-price-quota`；搜索摘要或公开索引线索绝不能冒充官方确认。
 - 聚焦查询中出现模型／产品发布、能力／可用性变化、开发者工具、价格／额度、芯片／存储／机器人／智能设备／自动驾驶／数据中心基础设施、重大科技金融或 AI 监管／安全变化时，候选会携带对应编辑信号。信号只要求正确归类、追查可靠来源和独立评分，不代表必须刊发；但不得把这些候选整批套成 `other + 4 分`。`below-importance-threshold` 必须表示“确有实质变化但价值未达门槛”，“没有实质变化”只能使用 `no-material-change`。
 - 同一用量事件如果同时出现 Tibo 原帖、媒体报道和社区讨论，只保留一个代表新闻，其他 must-review 候选使用 `merged` 指向它；不得把每个来源分别机械打成低分后全部淘汰。
+- 新运行必须独立完成 `protectedEventReview`：全部编辑信号、RSS、受保护类别和 selected／merged 候选按 `eventKey + eventStage` 聚类，每个事件都记录官方或可靠直达来源、当前阶段首次可靠发布时间、事实边界以及四项具体评分理由。是否已经选出 5 条新闻不影响这项复核。
+- 不得按候选 ID、hash、数组下标或固定模板轮换生成类别、分数、拒绝理由、证据摘要和评分理由。Google News、Reddit、Hacker News 与 Bing 聚合页只能用于发现，不能充当事件证据或首次可靠时间；找不到直达证据时必须如实记为 `insufficient-evidence`，不得猜测时间。
 - 临时促销、纯娱乐功能、外观调整和小型维护更新通常不收录，除非它们带来更广泛、可核实的实际影响。
 - 内部 coverage manifest v2 的 must-review 清单同时来自聚焦查询与指定 RSS／社区发现源；每个命中都必须审阅，但“必须审阅”不等于“必须刊发”，仍以重要性和事实核验为准。
 - TechCrunch AI、VentureBeat AI、Ars Technica AI、雷峰网和 36氪只用于补充发现。Tibo `@thsottiaux` 已作为 required 聚焦查询中的独立必查对象，查询会同时检索姓名、账号和 Codex／ChatGPT Work 运营关键词；公开索引若返回 X 线索也必须进入 must-review。任一发现线索都必须回到规范原帖、可靠媒体或其他一手来源核验；当前不是完整登录时间线或 X API。

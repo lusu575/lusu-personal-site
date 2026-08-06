@@ -71,14 +71,33 @@ const MAJOR_TECH_FINANCE_CHANGE_SIGNAL = "major-tech-finance-change";
 const AI_POLICY_SAFETY_CHANGE_SIGNAL = "ai-policy-safety-change";
 const PRIORITY_REVIEW_POLICY = "all-discovered-candidates";
 const PRIORITY_DISCOVERY_REVIEW_LANE = "complete-discovery-review";
+const PROTECTED_EVENT_REVIEW_POLICY = "evidence-backed-protected-events-v1";
+const PROTECTED_EVENT_REVIEW_EFFECTIVE_DATE = "2026-08-07";
+const PROTECTED_EVENT_VERIFICATION_STATUSES = new Set([
+  "verified-in-window",
+  "verified-outside-window",
+  "insufficient-evidence"
+]);
+const PROTECTED_EVENT_DISPOSITIONS = new Set(["selected", "rejected"]);
 const DEGENERATE_REVIEW_MIN_CANDIDATES = 50;
 const DEGENERATE_SCORE_TEMPLATE_RATIO = 0.9;
+const DEGENERATE_SCORE_PALETTE_MAX = 8;
+const DEGENERATE_NARRATIVE_PALETTE_MAX = 32;
+const PROTECTED_EVENT_MIN_SUMMARY_LENGTH = 24;
+const PROTECTED_EVENT_MIN_RATIONALE_LENGTH = 12;
 const PRIORITY_REJECTION_REASONS = new Set([
   "insufficient-evidence",
   "below-importance-threshold",
   "routine-or-promotional",
   "outside-editorial-scope",
+  "outside-publication-window",
   "no-material-change"
+]);
+const DISCOVERY_ONLY_EVIDENCE_HOSTS = new Set([
+  "news.google.com",
+  "news.ycombinator.com",
+  "reddit.com",
+  "bing.com"
 ]);
 const INTERNAL_ID_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const SHA256_PATTERN = /^[a-f0-9]{64}$/;
@@ -671,6 +690,20 @@ function validateV2ReviewProvenance(manifest, indexItems) {
       `coverage_manifest.json priorityReviewPolicy 必须为 ${PRIORITY_REVIEW_POLICY}。`
     );
   }
+  if (manifest.protectedEventReviewPolicy !== undefined
+    && manifest.protectedEventReviewPolicy !== PROTECTED_EVENT_REVIEW_POLICY) {
+    throw new Error(
+      "coverage_manifest.json protectedEventReviewPolicy 必须为 "
+      + `${PROTECTED_EVENT_REVIEW_POLICY}。`
+    );
+  }
+  if (String(manifest.reportDate || "") >= PROTECTED_EVENT_REVIEW_EFFECTIVE_DATE
+    && manifest.protectedEventReviewPolicy !== PROTECTED_EVENT_REVIEW_POLICY) {
+    throw new Error(
+      `${PROTECTED_EVENT_REVIEW_EFFECTIVE_DATE} 起的新运行必须声明 `
+      + `protectedEventReviewPolicy: ${PROTECTED_EVENT_REVIEW_POLICY}。`
+    );
+  }
   const reviewsAllDiscoveredCandidates = (
     manifest.priorityReviewPolicy === PRIORITY_REVIEW_POLICY
   );
@@ -1129,7 +1162,8 @@ function validatePriorityReviewProvenance({ run, manifest, indexItems }) {
           `${label} 是明确的用量／限额规则变化，不得以重要性不足、例行消息或超出范围为由拒绝；应核验一手来源，重复事件则 merged。`
         );
       }
-      if (protectedEditorialClass && scoreTotal >= 7) {
+      if (protectedEditorialClass && scoreTotal >= 7
+        && rejectionReason !== "outside-publication-window") {
         throw new Error(
           `重点候选 ${candidateId} 属于受保护的重要变化类别，`
           + "评分达到 7 分后不得拒绝。"
@@ -1149,6 +1183,17 @@ function validatePriorityReviewProvenance({ run, manifest, indexItems }) {
     [...decisionsByCandidateId.keys()]
   )) {
     throw new Error("coverageAudit.priorityReview 必须对每个 must-review 重点候选恰好处置一次。");
+  }
+
+  if (manifest.protectedEventReviewPolicy === PROTECTED_EVENT_REVIEW_POLICY) {
+    validateProtectedEventReview({
+      run,
+      manifest,
+      indexItems,
+      indexById,
+      decisionsByCandidateId,
+      selectedRunCandidates
+    });
   }
 
   if (manifest.priorityReviewPolicy === PRIORITY_REVIEW_POLICY
@@ -1264,6 +1309,8 @@ export function validateNonDegeneratePriorityReview(decisions) {
     return;
   }
   const scoreTemplates = new Map();
+  const scoreOnlyTemplates = new Set();
+  const narrativePrefixes = new Set();
   for (const entry of rejected) {
     const score = entry.score;
     const key = [
@@ -1275,6 +1322,9 @@ export function validateNonDegeneratePriorityReview(decisions) {
       score?.total
     ].join("/");
     scoreTemplates.set(key, (scoreTemplates.get(key) || 0) + 1);
+    scoreOnlyTemplates.add(priorityScoreSignature(score));
+    const firstSentence = String(entry.note || "").split(/[。.!?！？]/, 1)[0];
+    narrativePrefixes.add(normalizeReviewNarrative(firstSentence));
   }
   const largestTemplateCount = Math.max(...scoreTemplates.values());
   if (largestTemplateCount / rejected.length >= DEGENERATE_SCORE_TEMPLATE_RATIO) {
@@ -1282,6 +1332,309 @@ export function validateNonDegeneratePriorityReview(decisions) {
       "priorityReview 审稿退化：至少 90% 的拒稿使用完全相同的编辑类别与四项评分模板，必须逐条重审。"
     );
   }
+  if (scoreOnlyTemplates.size <= DEGENERATE_SCORE_PALETTE_MAX
+    && narrativePrefixes.size <= DEGENERATE_NARRATIVE_PALETTE_MAX) {
+    throw new Error(
+      "priorityReview 审稿退化：大量拒稿只轮换少量评分组合与结论模板，"
+      + "不能按候选编号或标题替换批量生成审阅。"
+    );
+  }
+}
+
+function validateProtectedEventReview({
+  run,
+  manifest,
+  indexItems,
+  indexById,
+  decisionsByCandidateId,
+  selectedRunCandidates
+}) {
+  const review = run.coverageAudit?.protectedEventReview;
+  if (!review || typeof review !== "object" || Array.isArray(review)) {
+    throw new Error(
+      "coverageAudit 缺少 protectedEventReview；新运行必须完成受保护事件的证据复核。"
+    );
+  }
+  if (review.policy !== PROTECTED_EVENT_REVIEW_POLICY) {
+    throw new Error(
+      "coverageAudit.protectedEventReview.policy 必须为 "
+      + `${PROTECTED_EVENT_REVIEW_POLICY}。`
+    );
+  }
+  const completedAt = parseTimestamp(review.completedAt);
+  const candidateIndexReviewedAt = parseTimestamp(
+    run.coverageAudit?.candidateIndexReviewedAt
+  );
+  if (completedAt === null) {
+    throw new Error("coverageAudit.protectedEventReview 缺少有效的 completedAt。");
+  }
+  if (candidateIndexReviewedAt !== null && completedAt <= candidateIndexReviewedAt) {
+    throw new Error(
+      "protectedEventReview.completedAt 必须严格晚于 candidateIndexReviewedAt。"
+    );
+  }
+
+  const expectedCandidateIds = indexItems
+    .filter((item) => {
+      const candidateId = String(item?.id || "");
+      const decision = decisionsByCandidateId.get(candidateId);
+      return stringArray(item?.editorialSignals).length > 0
+        || String(item?.sourceType || "").toLowerCase() === "rss"
+        || PROTECTED_PRIORITY_EDITORIAL_CLASSES.has(
+          String(decision?.editorialClass || "")
+        )
+        || decision?.decision === "selected"
+        || decision?.decision === "merged";
+    })
+    .map((item) => String(item?.id || ""));
+  const declaredCandidateIds = stringArray(review.requiredCandidateIds);
+  if (new Set(declaredCandidateIds).size !== declaredCandidateIds.length
+    || declaredCandidateIds.some((candidateId) => !indexById.has(candidateId))) {
+    throw new Error(
+      "protectedEventReview.requiredCandidateIds 含有重复或不在候选索引中的编号。"
+    );
+  }
+  if (!sameStringSet(expectedCandidateIds, declaredCandidateIds)) {
+    throw new Error(
+      "protectedEventReview.requiredCandidateIds 必须准确覆盖全部 editorialSignals、RSS、"
+      + "受保护类别及 selected／merged 候选。"
+    );
+  }
+
+  if (!Array.isArray(review.events)) {
+    throw new Error("coverageAudit.protectedEventReview.events 必须是数组。");
+  }
+  const reviewedCandidateIds = new Set();
+  const eventIdentities = new Set();
+  const runWindowStart = parseTimestamp(run.windowStart);
+  const runWindowEnd = parseTimestamp(run.windowEnd);
+
+  for (const [index, event] of review.events.entries()) {
+    const label = `coverageAudit.protectedEventReview.events[${index}]`;
+    if (!event || typeof event !== "object" || Array.isArray(event)) {
+      throw new Error(`${label} 必须是对象。`);
+    }
+    const eventKey = String(event.eventKey || "");
+    const eventStage = String(event.eventStage || "");
+    if (!INTERNAL_ID_PATTERN.test(eventKey)
+      || !INTERNAL_ID_PATTERN.test(eventStage)) {
+      throw new Error(`${label} 缺少有效的 eventKey 或 eventStage。`);
+    }
+    const eventIdentity = `${eventKey}/${eventStage}`;
+    if (eventIdentities.has(eventIdentity)) {
+      throw new Error(`protectedEventReview 重复登记事件 ${eventIdentity}。`);
+    }
+    eventIdentities.add(eventIdentity);
+
+    const candidateIds = stringArray(event.candidateIds);
+    if (!candidateIds.length
+      || new Set(candidateIds).size !== candidateIds.length
+      || candidateIds.some((candidateId) => !declaredCandidateIds.includes(candidateId))) {
+      throw new Error(
+        `${label}.candidateIds 必须是 requiredCandidateIds 的非空、不重复子集。`
+      );
+    }
+    for (const candidateId of candidateIds) {
+      if (reviewedCandidateIds.has(candidateId)) {
+        throw new Error(`protectedEventReview 重复审阅候选 ${candidateId}。`);
+      }
+      reviewedCandidateIds.add(candidateId);
+    }
+
+    const representativeCandidateId = String(
+      event.representativeCandidateId || ""
+    );
+    if (!candidateIds.includes(representativeCandidateId)) {
+      throw new Error(`${label}.representativeCandidateId 必须属于本事件 candidateIds。`);
+    }
+    const disposition = String(event.disposition || "");
+    if (!PROTECTED_EVENT_DISPOSITIONS.has(disposition)) {
+      throw new Error(`${label}.disposition 必须是 selected 或 rejected。`);
+    }
+    const editorialClass = String(event.editorialClass || "");
+    if (!PRIORITY_EDITORIAL_CLASSES.has(editorialClass)) {
+      throw new Error(`${label}.editorialClass 不在允许的重点新闻类型中。`);
+    }
+    if (typeof event.substantiveChange !== "boolean") {
+      throw new Error(`${label}.substantiveChange 必须是布尔值。`);
+    }
+    validatePriorityReviewScore(event.score, label);
+    const eventScoreSignature = priorityScoreSignature(event.score);
+    const representativeDecision = decisionsByCandidateId.get(
+      representativeCandidateId
+    );
+
+    for (const candidateId of candidateIds) {
+      const decision = decisionsByCandidateId.get(candidateId);
+      if (!decision) {
+        throw new Error(`${label} 的候选 ${candidateId} 缺少 priorityReview 处置。`);
+      }
+      if (String(decision.editorialClass || "") !== editorialClass
+        || decision.substantiveChange !== event.substantiveChange
+        || priorityScoreSignature(decision.score) !== eventScoreSignature) {
+        throw new Error(
+          `${label} 的候选 ${candidateId} 分类、实质变化或评分与事件复核不一致。`
+        );
+      }
+    }
+
+    const rejectionReason = String(event.rejectionReason || "");
+    if (disposition === "selected") {
+      if (representativeDecision?.decision !== "selected") {
+        throw new Error(`${label} 的代表候选必须在 priorityReview 中标为 selected。`);
+      }
+      for (const candidateId of candidateIds) {
+        if (candidateId === representativeCandidateId) {
+          continue;
+        }
+        const decision = decisionsByCandidateId.get(candidateId);
+        if (decision?.decision !== "merged"
+          || String(decision.representativeCandidateId || "")
+            !== representativeCandidateId) {
+          throw new Error(
+            `${label} 的非代表候选 ${candidateId} 必须 merged 到代表候选。`
+          );
+        }
+      }
+      const selectedCandidate = selectedRunCandidates.get(
+        String(representativeDecision.storyKey || "")
+      );
+      if (String(selectedCandidate?.eventKey || "") !== eventKey
+        || String(selectedCandidate?.eventStage || "") !== eventStage) {
+        throw new Error(
+          `${label} 的 eventKey/eventStage 必须与实际入选新闻一致。`
+        );
+      }
+    } else {
+      if (!PRIORITY_REJECTION_REASONS.has(rejectionReason)) {
+        throw new Error(`${label}.rejectionReason 不在允许的拒绝理由中。`);
+      }
+      if (rejectionReason === "outside-publication-window"
+        && manifest.protectedEventReviewPolicy !== PROTECTED_EVENT_REVIEW_POLICY) {
+        throw new Error(
+          `${label} 只有完成证据事件复核后才能使用 outside-publication-window。`
+        );
+      }
+      for (const candidateId of candidateIds) {
+        const decision = decisionsByCandidateId.get(candidateId);
+        if (decision?.decision !== "rejected"
+          || String(decision.rejectionReason || "") !== rejectionReason) {
+          throw new Error(
+            `${label} 的候选 ${candidateId} 必须使用与事件一致的 rejected 处置。`
+          );
+        }
+      }
+    }
+
+    const verificationStatus = String(event.verificationStatus || "");
+    if (!PROTECTED_EVENT_VERIFICATION_STATUSES.has(verificationStatus)) {
+      throw new Error(`${label}.verificationStatus 不在允许值中。`);
+    }
+    const reliableSourceUrls = stringArray(event.reliableSourceUrls);
+    if (new Set(reliableSourceUrls).size !== reliableSourceUrls.length
+      || reliableSourceUrls.some((url) => !isDirectReliableEvidenceUrl(url))) {
+      throw new Error(
+        `${label}.reliableSourceUrls 只能包含不重复的 HTTPS 官方／可靠直达来源，`
+        + "不得使用 Google News、Reddit、Hacker News 或 Bing 聚合页。"
+      );
+    }
+    const firstReliablePublishedAt = parseTimestamp(
+      event.firstReliablePublishedAt
+    );
+    if (verificationStatus === "verified-in-window") {
+      if (!reliableSourceUrls.length || firstReliablePublishedAt === null
+        || runWindowStart === null || runWindowEnd === null
+        || firstReliablePublishedAt < runWindowStart
+        || firstReliablePublishedAt >= runWindowEnd) {
+        throw new Error(
+          `${label} 标为 verified-in-window 时必须提供窗口内首次可靠发布时间和直达来源。`
+        );
+      }
+    } else if (verificationStatus === "verified-outside-window") {
+      if (disposition !== "rejected"
+        || rejectionReason !== "outside-publication-window"
+        || !reliableSourceUrls.length
+        || firstReliablePublishedAt === null
+        || (runWindowStart !== null && runWindowEnd !== null
+          && firstReliablePublishedAt >= runWindowStart
+          && firstReliablePublishedAt < runWindowEnd)) {
+        throw new Error(
+          `${label} 标为 verified-outside-window 时必须有窗口外可靠首发时间，`
+          + "并以 outside-publication-window 拒绝。"
+        );
+      }
+    } else {
+      if (disposition !== "rejected"
+        || rejectionReason !== "insufficient-evidence"
+        || firstReliablePublishedAt !== null) {
+        throw new Error(
+          `${label} 标为 insufficient-evidence 时必须拒绝、使用同名理由且不伪填首发时间。`
+        );
+      }
+    }
+    if (disposition === "selected" && verificationStatus !== "verified-in-window") {
+      throw new Error(`${label} 的 selected 事件必须通过窗口内可靠来源核验。`);
+    }
+
+    const evidenceSummary = String(event.evidenceSummary || "").trim();
+    if (visibleLength(evidenceSummary) < PROTECTED_EVENT_MIN_SUMMARY_LENGTH) {
+      throw new Error(`${label}.evidenceSummary 必须具体记录本事件的核验事实与边界。`);
+    }
+    validateProtectedEventScoreRationale(event.scoreRationale, label);
+  }
+
+  if (!sameStringSet(declaredCandidateIds, [...reviewedCandidateIds])) {
+    throw new Error(
+      "protectedEventReview.events 必须把 requiredCandidateIds 中每个候选恰好审阅一次。"
+    );
+  }
+  validateNonDegenerateProtectedEventReview(review.events);
+}
+
+function validateProtectedEventScoreRationale(scoreRationale, label) {
+  if (!scoreRationale || typeof scoreRationale !== "object"
+    || Array.isArray(scoreRationale)) {
+    throw new Error(`${label}.scoreRationale 必须逐项解释四项评分。`);
+  }
+  for (const field of ["reach", "magnitude", "practicalValue", "evidence"]) {
+    if (visibleLength(scoreRationale[field]) < PROTECTED_EVENT_MIN_RATIONALE_LENGTH) {
+      throw new Error(`${label}.scoreRationale.${field} 必须是本事件的具体理由。`);
+    }
+  }
+}
+
+function validateNonDegenerateProtectedEventReview(events) {
+  if (events.length < 20) {
+    return;
+  }
+  const summaryCounts = new Map();
+  const rationaleCounts = new Map();
+  for (const event of events) {
+    const summary = normalizeReviewNarrative(event?.evidenceSummary);
+    summaryCounts.set(summary, (summaryCounts.get(summary) || 0) + 1);
+    const rationale = ["reach", "magnitude", "practicalValue", "evidence"]
+      .map((field) => normalizeReviewNarrative(event?.scoreRationale?.[field]))
+      .join("/");
+    rationaleCounts.set(rationale, (rationaleCounts.get(rationale) || 0) + 1);
+  }
+  const largestSummaryCount = Math.max(...summaryCounts.values());
+  const largestRationaleCount = Math.max(...rationaleCounts.values());
+  if (largestSummaryCount / events.length >= 0.5
+    || largestRationaleCount / events.length >= 0.5) {
+    throw new Error(
+      "protectedEventReview 审稿退化：至少一半事件复用了相同证据摘要或四项评分理由。"
+    );
+  }
+}
+
+function priorityScoreSignature(score) {
+  return [
+    score?.reach,
+    score?.magnitude,
+    score?.practicalValue,
+    score?.evidence,
+    score?.total
+  ].join("/");
 }
 
 function validateSecondPassReconsideredCandidates({
@@ -1725,6 +2078,31 @@ function isHttpsUrl(value) {
   } catch {
     return false;
   }
+}
+
+function isDirectReliableEvidenceUrl(value) {
+  try {
+    const url = new URL(String(value));
+    if (url.protocol !== "https:") {
+      return false;
+    }
+    const hostname = url.hostname.toLowerCase().replace(/^www\./, "");
+    return ![...DISCOVERY_ONLY_EVIDENCE_HOSTS].some((blockedHost) => (
+      hostname === blockedHost || hostname.endsWith(`.${blockedHost}`)
+    ));
+  } catch {
+    return false;
+  }
+}
+
+function normalizeReviewNarrative(value) {
+  return String(value || "")
+    .normalize("NFKC")
+    .toLowerCase()
+    .replace(/https?:\/\/\S+/g, "<url>")
+    .replace(/\d+(?:[.,]\d+)?/g, "<number>")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function expectedTitlePrefix(lang) {

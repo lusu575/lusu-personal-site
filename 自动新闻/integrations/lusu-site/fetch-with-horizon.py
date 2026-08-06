@@ -29,6 +29,7 @@ GOOGLE_NEWS_SAFE_RESULT_LIMIT = 99
 EXPECTED_LOW_VOLUME_TRIGGER = 5
 PRIORITY_REVIEW_POLICY = "all-discovered-candidates"
 PRIORITY_DISCOVERY_REVIEW_LANE = "complete-discovery-review"
+PROTECTED_EVENT_REVIEW_POLICY = "evidence-backed-protected-events-v1"
 GOOGLE_NEWS_MAX_RETRIES = 2
 GOOGLE_NEWS_RETRY_DELAY_SECONDS = 0.25
 GOOGLE_NEWS_REQUEST_TIMEOUT_SECONDS = 10.0
@@ -1032,6 +1033,7 @@ def build_coverage_manifest(
         "seedLanguages": catalog["seedLanguages"],
         "lowVolumeTrigger": catalog["lowVolumeTrigger"],
         "priorityReviewPolicy": PRIORITY_REVIEW_POLICY,
+        "protectedEventReviewPolicy": PROTECTED_EVENT_REVIEW_POLICY,
         "candidateIndexPath": relative_artifact_path(candidate_index_path),
         "candidateIndexSha256": candidate_index_sha256,
         "candidateCount": len(candidate_rows),

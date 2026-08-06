@@ -2,6 +2,13 @@
 
 本文件记录鲁肃个人站的功能、界面、后端、部署与项目约定变更。每次修改项目后都应同步更新这里，方便后续 AI / Codex 对话快速了解最近改动。
 
+## 2026-08-06
+
+- 根治 Daily AI News “抓到却漏审”的最新绕过方式：复盘 8 月 6 日正式运行发现，1,997 条候选中的豆包／SeedRealtime 等受保护线索已经进入索引，但临时编辑脚本按候选 ID 轮换套用 4 组评分和少量拒稿模板；旧校验只拦截单一模板占 90%，因此结构完整的批量伪审阅仍能通过。校验器新增少量评分／结论轮换检测，已用同一份正式运行记录验证其会准确 fail closed，并新增 hash／下标轮换回归。
+- coverage manifest 新增 `protectedEventReviewPolicy: evidence-backed-protected-events-v1`，并从 2026-08-07 起强制存在、不可通过删除字段降级。后续正式运行无论已选多少条，都必须在 `coverageAudit.protectedEventReview` 中把全部编辑信号、RSS、受保护类别和 selected／merged 候选按事件阶段恰好覆盖一次，记录直达可靠 HTTPS 来源、当前阶段首次可靠发布时间、证据摘要及四项具体评分理由；聚合页不能冒充证据，无来源不得伪填时间，至少一半事件复用同一证据／理由也会关闭投递。`secondPass` 仍只由少于 5 条触发，两道门禁互不替代。
+- 拆分字节跳动发现入口：豆包中文／英文产品动态、Seed 通用模型、SeedRealtime／Seed-ASR／Seed-TTS／全双工语音改为独立 required + must-review 查询，原综合 `bytedance-models-zh` 降为补充，Seedance／Seedream／Dreamina 专项保持不变。同步工作流、自动任务提示、写作规范、项目上下文、AGENTS、维护 Skill／README 与 Python／Node 回归；本次未自动改写或重发已经发布的 8 月 6 日日报。
+- 修复依赖审计门禁发现的安全版本：直接依赖 Undici 从 `7.28.0` 精确升级到 `7.29.0`，并通过最小 override 将传递链中的 `brace-expansion` 固定到已修复的 `1.1.18`／`5.0.9`；严格 `npm ci` 后要求生产与完整 `npm audit` 均为 0 漏洞，不能用跳过安装或审计的方式放行。
+
 ## 2026-08-04
 
 - 核对当天 Daily AI News 生产状态：Horizon 对固定窗口 `[2026-08-03 07:00, 2026-08-04 07:00)` 取得 2,064 条候选，完整处置为 8 条入选、101 条合并、1,955 条有依据拒绝，schema v4 正式校验通过。生产接口已经确认 `published`，任务只是在随后日文公开回读中报 `fetch failed`；通过显式代理再次只读核验后，zh／en／ja 三版均与冻结运行记录逐字一致，因此没有重复 POST 或人工补发。

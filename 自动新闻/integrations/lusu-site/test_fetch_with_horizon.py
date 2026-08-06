@@ -149,6 +149,11 @@ class DiscoveryQueryTests(unittest.TestCase):
             "hunyuan-products-zh",
             "ernie-products-zh",
             "bytedance-models-zh",
+            "bytedance-doubao-zh",
+            "bytedance-doubao-en",
+            "bytedance-seed-models-zh",
+            "bytedance-seed-speech-zh",
+            "bytedance-seed-speech-en",
             "meituan-models-zh",
             "wechat-welm-zh",
             "sensetime-models-zh",
@@ -205,6 +210,8 @@ class DiscoveryQueryTests(unittest.TestCase):
             "priority",
         )
         multimodal_query_ids = {
+            "bytedance-seed-speech-zh",
+            "bytedance-seed-speech-en",
             "bytedance-creative-models-zh",
             "bytedance-seedance-en",
             "bytedance-seedream-en",
@@ -257,6 +264,8 @@ class DiscoveryQueryTests(unittest.TestCase):
             "Luma AI",
             "PixVerse",
             "Grok Voice",
+            "SeedRealtime",
+            "full duplex speech",
         ]:
             self.assertIn(alias, multimodal_query_text)
         for query_id, product_query in {
@@ -288,6 +297,43 @@ class DiscoveryQueryTests(unittest.TestCase):
             self.assertIn(alias, alibaba_ecosystem["query"])
         for action in ["发布", "上线", "开源", "更新", "模型", "产品", "API"]:
             self.assertIn(action, alibaba_ecosystem["query"])
+
+        bytedance_required_queries = {
+            "bytedance-doubao-zh": (
+                "bytedance-doubao-products",
+                ["豆包", "发布", "上线", "API", "价格", "额度"],
+            ),
+            "bytedance-doubao-en": (
+                "bytedance-doubao-products",
+                ["Doubao", "launch", "availability", "API", "quota"],
+            ),
+            "bytedance-seed-models-zh": (
+                "bytedance-seed-models",
+                ["字节跳动 Seed", "Seed-Prover", "发布", "权重", "API"],
+            ),
+            "bytedance-seed-speech-zh": (
+                "bytedance-seed-speech",
+                ["SeedRealtime", "全双工", "原生音视频", "发布", "API"],
+            ),
+            "bytedance-seed-speech-en": (
+                "bytedance-seed-speech",
+                ["SeedRealtime", "full duplex speech", "release", "API"],
+            ),
+        }
+        for query_id, (review_lane, required_terms) in (
+            bytedance_required_queries.items()
+        ):
+            entry = by_id[query_id]
+            self.assertTrue(entry["required"])
+            self.assertTrue(entry["mustReview"])
+            self.assertEqual(entry["priority"], "priority")
+            self.assertEqual(entry["reviewLane"], review_lane)
+            self.assertEqual(
+                entry["maxResults"],
+                MODULE.GOOGLE_NEWS_SAFE_RESULT_LIMIT,
+            )
+            for term in required_terms:
+                self.assertIn(term, entry["query"])
 
         focused_japanese_product_queries = {
             "openai-product-operations-ja": "openai-product-operations",
@@ -325,6 +371,7 @@ class DiscoveryQueryTests(unittest.TestCase):
             "china-models-ja",
             "china-models-ko",
             "other-china-models-zh",
+            "bytedance-models-zh",
             "china-semiconductor-zh",
             "china-semiconductor-en",
             "china-semiconductor-ja",
@@ -1571,6 +1618,10 @@ class MustReviewProvenanceTests(unittest.TestCase):
         self.assertEqual(
             manifest["priorityReviewPolicy"],
             "all-discovered-candidates",
+        )
+        self.assertEqual(
+            manifest["protectedEventReviewPolicy"],
+            "evidence-backed-protected-events-v1",
         )
         review_lanes = {
             entry["id"]: entry
