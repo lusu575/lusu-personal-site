@@ -70,7 +70,7 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
     assert.equal(trafficSettings.sampling.hard.clicks, 0);
     assert.equal(
       db.prepare("select value from site_runtime_state where key = 'article_seed_version'").get().value,
-      "20260806-site-guides-password-rooms-r1"
+      "20260806-site-guides-password-rooms-r2"
     );
     assert.deepEqual(
       db.prepare("pragma table_info(whiteboard_rooms)").all().map((column) => column.name),

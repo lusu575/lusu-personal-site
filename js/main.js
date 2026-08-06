@@ -3,8 +3,8 @@ import {
   isI18nNodeInScope,
   normalizeLanguage,
   translationFor
-} from "./core/i18n.mjs?v=20260806-site-guides-password-rooms-r1";
-import { homeContent } from "./data/home-content.mjs?v=20260806-site-guides-password-rooms-r1";
+} from "./core/i18n.mjs?v=20260806-site-guides-password-rooms-r2";
+import { homeContent } from "./data/home-content.mjs?v=20260806-site-guides-password-rooms-r2";
 import { blogManifest } from "./data/blog-manifest.mjs?v=20260718-resource-icons-layout-r1";
 import { createRouteLifecycle, isAbortError } from "./core/route-lifecycle.mjs?v=20260718-resource-icons-layout-r1";
 import { createRouter } from "./core/router.mjs?v=20260718-resource-icons-layout-r1";
@@ -457,7 +457,7 @@ function loadStyledRoute(route, moduleLoader, instantiate) {
 
 const routeModuleRegistry = createRouteModuleRegistry({
   loaders: {
-    knowledge: () => loadStyledRoute("knowledge", () => import("./routes/knowledge.mjs?v=20260806-site-guides-password-rooms-r1"),
+    knowledge: () => loadStyledRoute("knowledge", () => import("./routes/knowledge.mjs?v=20260806-site-guides-password-rooms-r2"),
       ({ createKnowledgeRoute }) => instantiateKnowledgeRoute(createKnowledgeRoute)),
     videos: () => loadStyledRoute("videos", () => Promise.all([
       import("./routes/videos.mjs?v=20260726-security-reliability-r1"),
@@ -465,7 +465,7 @@ const routeModuleRegistry = createRouteModuleRegistry({
     ]), ([{ createVideosRoute }, { videosContent }]) => instantiateVideosRoute(createVideosRoute, videosContent)),
     resources: () => Promise.all([
       import("./routes/resources.mjs?v=20260726-security-reliability-r1"),
-      import("./data/resources-content.mjs?v=20260806-site-guides-password-rooms-r1")
+      import("./data/resources-content.mjs?v=20260806-site-guides-password-rooms-r2")
     ]).then(([{ createResourcesRoute }, { resourcesContent }]) => instantiateResourcesRoute(createResourcesRoute, resourcesContent)),
     games: () => loadStyledRoute("games", () => import("./routes/games.mjs?v=20260726-security-reliability-r1"),
       ({ createGamesRoute }) => instantiateGamesRoute(createGamesRoute)),

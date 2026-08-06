@@ -95,11 +95,11 @@ test("known article images reserve their intrinsic aspect ratio", () => {
     { width: 1280, height: 800 }
   );
   assert.deepEqual(
-    articleImageDimensions("assets/images/articles/site-guides/password-room-chat-desktop.png?v=1375ed179bd8"),
+    articleImageDimensions("assets/images/articles/site-guides/password-room-chat-desktop.png?v=1375ed179bd8672af824c272f806f71d350d0485ab57067d9b4baaaca8a57440"),
     { width: 1440, height: 900 }
   );
   assert.deepEqual(
-    articleImageDimensions("assets/images/articles/site-guides/password-room-whiteboard-mobile.png?v=44578f131f03"),
+    articleImageDimensions("assets/images/articles/site-guides/password-room-whiteboard-mobile.png?v=44578f131f03ef3044dd87e69a53e2bcb1d9865fb761d9920cdd3bc96293894d"),
     { width: 390, height: 844 }
   );
   assert.equal(

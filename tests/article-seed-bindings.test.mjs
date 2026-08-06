@@ -6,7 +6,7 @@ const FRAME_PIPELINE_SEED_TIME = "2026-07-17T21:12:00.000Z";
 const AI_AGENT_WORKFLOW_ARTICLE_ID = "seed-ai-agent-workflow-guide-2026-06-14";
 const AI_AGENT_WORKFLOW_PIN_REPAIR_KEY = "article_ai_agent_workflow_pin_repair_v1";
 const PASSWORD_ROOM_GUIDE_ARTICLE_ID = "seed-site-guide-whiteboard-chat-password-rooms-2026-08-06";
-const ARTICLE_SEED_VERSION = "20260806-site-guides-password-rooms-r1";
+const ARTICLE_SEED_VERSION = "20260806-site-guides-password-rooms-r2";
 const VALID_CHAT_SECRET = "article-seed-chat-secret-0000000000000001";
 const VALID_ANALYTICS_SECRET = "article-seed-analytics-secret-000000001";
 
@@ -153,8 +153,8 @@ test("every article seed D1 binding is defined", async () => {
   ));
   assert.equal(passwordRoomGuideTranslations.length, 3, "the password-room guide must include three translations");
   for (const { params } of passwordRoomGuideTranslations) {
-    assert.match(params[5], /password-room-chat-desktop\.png\?v=1375ed179bd8/);
-    assert.match(params[5], /password-room-whiteboard-mobile\.png\?v=44578f131f03/);
+    assert.match(params[5], /password-room-chat-desktop\.png\?v=1375ed179bd8672af824c272f806f71d350d0485ab57067d9b4baaaca8a57440/);
+    assert.match(params[5], /password-room-whiteboard-mobile\.png\?v=44578f131f03ef3044dd87e69a53e2bcb1d9865fb761d9920cdd3bc96293894d/);
   }
 
   const pinRepair = seedBatch.find(({ sql, params }) => (

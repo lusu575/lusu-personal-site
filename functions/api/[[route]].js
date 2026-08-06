@@ -13,7 +13,7 @@ import {
   updateTrafficControlSettings
 } from "./traffic-control.mjs";
 
-export const PUBLIC_API_REPRESENTATION_VERSION = "20260806-site-guides-password-rooms-r1";
+export const PUBLIC_API_REPRESENTATION_VERSION = "20260806-site-guides-password-rooms-r2";
 export const PUBLIC_ARTICLE_ARCHIVE_LIMIT = 500;
 const PUBLIC_SITE_ORIGIN = "https://lusu575.com";
 const PUBLIC_RELEASE_DATE = "2026-08-06";
@@ -46,7 +46,7 @@ const DATA_CLEANUP_STATE_KEY = "api_periodic_data_cleanup";
 const DATA_CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const DATA_CLEANUP_DELETE_LIMIT = 5000;
 const ARTICLE_SEED_STATE_KEY = "article_seed_version";
-const ARTICLE_SEED_VERSION = "20260806-site-guides-password-rooms-r1";
+const ARTICLE_SEED_VERSION = "20260806-site-guides-password-rooms-r2";
 const LOGIN_EVENT_RETENTION_DAYS = 365;
 const ANALYTICS_EVENT_RETENTION_DAYS = 180;
 const AUTH_RATE_LIMITS = Object.freeze({
@@ -6347,7 +6347,7 @@ Knowledge now has a permanent Website Guides section, starting with one of the m
 
 电脑上打开“匿名聊天室”，右上角点“密码房”，就会出现密码输入框。
 
-![电脑端匿名聊天室的密码房入口](assets/images/articles/site-guides/password-room-chat-desktop.png?v=1375ed179bd8)
+![电脑端匿名聊天室的密码房入口](assets/images/articles/site-guides/password-room-chat-desktop.png?v=1375ed179bd8672af824c272f806f71d350d0485ab57067d9b4baaaca8a57440)
 
 操作很简单：
 
@@ -6358,7 +6358,7 @@ Knowledge now has a permanent Website Guides section, starting with one of the m
 
 手机上步骤一样，只是按钮排得更紧凑。进入后会看到暗色聊天界面，右上角的“普通房间”可以随时带你回大厅。
 
-![手机端已经进入匿名聊天室密码房](assets/images/articles/site-guides/password-room-chat-mobile.png?v=15fa03aaa16b)
+![手机端已经进入匿名聊天室密码房](assets/images/articles/site-guides/password-room-chat-mobile.png?v=15fa03aaa16b5f8670a14e15994c8d095d1f255af2a42c275e16cfd720c215ae)
 
 每条消息最多 300 个字，3 秒可以发一条。刷新页面后会回到普通房间，想继续聊就要重新输入密码。
 
@@ -6368,7 +6368,7 @@ Knowledge now has a permanent Website Guides section, starting with one of the m
 
 从首页进“工具”，打开“在线画板”。电脑端入口页里有一张很明显的“密码房”卡片。
 
-![电脑端在线画板的密码房入口](assets/images/articles/site-guides/password-room-whiteboard-desktop.png?v=bc9e88c78701)
+![电脑端在线画板的密码房入口](assets/images/articles/site-guides/password-room-whiteboard-desktop.png?v=bc9e88c78701827241054ac9045a7b66874c7d2ac95c03cd3c1ae4b53a0a1ecd)
 
 接着这样做：
 
@@ -6379,7 +6379,7 @@ Knowledge now has a permanent Website Guides section, starting with one of the m
 
 手机上也是同一套流程。单指画画，双指缩放和平移；顶部的“导出”和“退出画板”都还在。
 
-![手机端已经连接在线画板密码房](assets/images/articles/site-guides/password-room-whiteboard-mobile.png?v=44578f131f03)
+![手机端已经连接在线画板密码房](assets/images/articles/site-guides/password-room-whiteboard-mobile.png?v=44578f131f03ef3044dd87e69a53e2bcb1d9865fb761d9920cdd3bc96293894d)
 
 要邀请别人时，打开“导出”菜单，复制或分享画板入口，再把密码单独告诉对方。链接本身不带密码。画完重要内容，建议先导出 PNG 或 SVG，等保存完成后再退出。
 
@@ -6420,7 +6420,7 @@ One important note first: this guide puts Anonymous Chat and Online Whiteboard i
 
 On desktop, open Anonymous Chat and select “Password room” in the upper-right area. The password form appears below the room controls.
 
-![Anonymous Chat password-room entry on desktop](assets/images/articles/site-guides/password-room-chat-desktop.png?v=1375ed179bd8)
+![Anonymous Chat password-room entry on desktop](assets/images/articles/site-guides/password-room-chat-desktop.png?v=1375ed179bd8672af824c272f806f71d350d0485ab57067d9b4baaaca8a57440)
 
 Then:
 
@@ -6431,7 +6431,7 @@ Then:
 
 The mobile flow is the same, with a tighter layout. Once inside, the dark room and the “Public room” button make the current state clear.
 
-![Anonymous Chat password room on mobile](assets/images/articles/site-guides/password-room-chat-mobile.png?v=15fa03aaa16b)
+![Anonymous Chat password room on mobile](assets/images/articles/site-guides/password-room-chat-mobile.png?v=15fa03aaa16b5f8670a14e15994c8d095d1f255af2a42c275e16cfd720c215ae)
 
 Each message can contain up to 300 characters, and one message can be sent every 3 seconds. Refreshing returns you to the public room, so you need to enter the password again.
 
@@ -6441,7 +6441,7 @@ Chat messages are encrypted in the browser before they are sent, but this is not
 
 From Home, open Tools and then Online Whiteboard. On desktop, the lobby has a clear Password room card.
 
-![Online Whiteboard password-room entry on desktop](assets/images/articles/site-guides/password-room-whiteboard-desktop.png?v=bc9e88c78701)
+![Online Whiteboard password-room entry on desktop](assets/images/articles/site-guides/password-room-whiteboard-desktop.png?v=bc9e88c78701827241054ac9045a7b66874c7d2ac95c03cd3c1ae4b53a0a1ecd)
 
 Next:
 
@@ -6452,7 +6452,7 @@ Next:
 
 The mobile controls work the same way. Draw with one finger, and use two fingers to zoom and pan. Export and Leave board remain in the top bar.
 
-![Connected Online Whiteboard password room on mobile](assets/images/articles/site-guides/password-room-whiteboard-mobile.png?v=44578f131f03)
+![Connected Online Whiteboard password room on mobile](assets/images/articles/site-guides/password-room-whiteboard-mobile.png?v=44578f131f03ef3044dd87e69a53e2bcb1d9865fb761d9920cdd3bc96293894d)
 
 To invite someone, open Export and copy or share the whiteboard entry, then tell them the password separately. The link does not contain the password. For anything important, export a PNG or SVG and wait for saving to finish before leaving.
 
@@ -6493,7 +6493,7 @@ That is it: choose the right tool, enter the same password, and export or leave 
 
 PCでは「匿名チャット」を開き、右上の「パスワードルーム」を押すと入力欄が表示されます。
 
-![PC版匿名チャットのパスワードルーム入口](assets/images/articles/site-guides/password-room-chat-desktop.png?v=1375ed179bd8)
+![PC版匿名チャットのパスワードルーム入口](assets/images/articles/site-guides/password-room-chat-desktop.png?v=1375ed179bd8672af824c272f806f71d350d0485ab57067d9b4baaaca8a57440)
 
 手順は簡単です。
 
@@ -6504,7 +6504,7 @@ PCでは「匿名チャット」を開き、右上の「パスワードルーム
 
 スマホも同じ流れです。入室後は暗いチャット画面になり、右上の「通常ルーム」からいつでも公開ルームへ戻れます。
 
-![スマホ版匿名チャットのパスワードルーム](assets/images/articles/site-guides/password-room-chat-mobile.png?v=15fa03aaa16b)
+![スマホ版匿名チャットのパスワードルーム](assets/images/articles/site-guides/password-room-chat-mobile.png?v=15fa03aaa16b5f8670a14e15994c8d095d1f255af2a42c275e16cfd720c215ae)
 
 一通は最大300文字で、3秒ごとに一通送れます。ページを更新すると通常ルームへ戻るため、続けるときはもう一度パスワードを入力します。
 
@@ -6514,7 +6514,7 @@ PCでは「匿名チャット」を開き、右上の「パスワードルーム
 
 Homeから「ツール」を開き、「オンラインホワイトボード」へ進みます。PCの入口画面には「パスワードルーム」のカードがあります。
 
-![PC版オンラインホワイトボードのパスワードルーム入口](assets/images/articles/site-guides/password-room-whiteboard-desktop.png?v=bc9e88c78701)
+![PC版オンラインホワイトボードのパスワードルーム入口](assets/images/articles/site-guides/password-room-whiteboard-desktop.png?v=bc9e88c78701827241054ac9045a7b66874c7d2ac95c03cd3c1ae4b53a0a1ecd)
 
 次の手順です。
 
@@ -6525,7 +6525,7 @@ Homeから「ツール」を開き、「オンラインホワイトボード」�
 
 スマホも流れは同じです。1本指で描画し、2本指で拡大縮小と移動ができます。「出力」と「画板を退出」は上部にあります。
 
-![接続済みのスマホ版オンラインホワイトボード](assets/images/articles/site-guides/password-room-whiteboard-mobile.png?v=44578f131f03)
+![接続済みのスマホ版オンラインホワイトボード](assets/images/articles/site-guides/password-room-whiteboard-mobile.png?v=44578f131f03ef3044dd87e69a53e2bcb1d9865fb761d9920cdd3bc96293894d)
 
 招待するときは「出力」を開いて画板入口をコピーまたは共有し、パスワードは別に伝えます。リンクにはパスワードが入りません。大切な内容はPNGまたはSVGで出力し、保存完了を待ってから退出するのがおすすめです。
 
