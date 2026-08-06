@@ -1,5 +1,17 @@
 # PROJECT_CONTEXT.md
 
+## 2026-08-06 AI 能力层第三阶段：公开只读能力扩展
+
+- 本地 CLI 与 stdio MCP 在既有文章列表／搜索／详情和视频列表之外，补齐单个视频详情、真实工具目录、游戏目录，以及“日语的言外之意”等级／关卡列表／单关详情。工具目录只公开在线画板、Quick Transfer 和日语工具三项真实入口；占位卡片没有稳定 `toolId`，不得进入机器能力面。
+- 游戏能力把 `games/catalog.json` 投影为有界安全字段：稳定 ID、三语标题与摘要、语言支持、同源启动路径、许可证／仓库和真实 Agent 支持状态。`sourceEntry`、存储键、默认值、内部语言映射与任意启动参数不对机器客户端开放；当前只有 2048 声明隔离本地会话与页面语义 bridge，其他游戏不得误报为可接管。
+- 日语题库能力只访问固定 catalog、五个固定 level index 和由关卡 ID 推导的固定 batch，验证 schema/contentVersion、250 关计数、唯一 ID、64 位 SHA-256、`textLocked: true` 与路径边界；输出省略批次路径、内部音频文本和构建字段。它只读取公开题库，不读写用户进度，应用版本仍为 1.0.3、内容兼容版本仍为 1.0.2。
+- 新适配器统一限制 zh／en／ja、ID、查询长度、列表上限、响应字节与同源／GitHub URL；CLI、MCP 和测试复用 `SiteClient`／目录适配器，不复制业务规则。`workers/site-mcp/` 继续未部署且只保留原来的公开文章只读实现，本阶段没有新增公网 MCP 地址或远程写能力。
+- 本地 credential 现在与设备登录时的规范化 HTTP(S) origin 绑定；`--base-url`、`LUSU_BASE_URL` 或 MCP `baseUrl` 切到 Preview／其他 origin 时不会复用、发送或删除生产 Bearer。只有操作者显式提供的 stdin／环境 token 才绑定当前覆盖 origin，CLI 普通命令、auth status/logout 与 stdio MCP 共用同一匹配规则。
+- 因 registry、`SiteClient`、CLI 与本地 MCP 位于 Quick Transfer 的共享受管路径，Quick Transfer 按治理规则从 1.0.2 精确升至 1.0.3；房间、口令、文字加密、文件存储、配额、Multipart、鉴权和 24 小时生命周期均未改变。
+- 因固定工具目录同时新增 `whiteboard` 能力域和 `/tools/whiteboard/` 入口契约，在线画板按治理规则从 1.0.3 精确升至 1.0.4；三项工具契约按工具拆分，白板与 Quick Transfer 只追踪各自专属模块。共享目录的可见版本再以项目 `toolId` 锚点、有界窗口和精确模板校验，既避免机器入口或卡片版本变化绕过升版，也不让无关工具变化误触。画板房间协议、Agent scope、Yjs／DO／R2 与生命周期均未改变。
+- 本批公开记录为 `seed-update-2026-08-06-agent-read-breadth`，公开/API/文章 seed 与主模块缓存版本为 `20260806-agent-read-breadth-r1`。正式发布仍只允许 GitHub `main` 触发 Pages；第三阶段分支完成全部门禁前不得合并或把本地实现描述为已上线。
+- 本地最终验证：根测试 522 / 522，白板前端 8 / 8、Worker 44 / 44，Quick Transfer 50 / 50，2048 14 / 14，未部署远程 MCP 工程 4 / 4；Lint、TypeScript、21 模块公共依赖图、子项目治理、正式构建和连续双构建复现均通过。Headless 公开界面 release 审计通过 192 项（147 个路由／语言／视口组合），A Dark Room 旋转专项通过；产物清单 SHA-256 为 `044bb4a3ea16f1685854b6148d54ba4cd595af9d8dece78321b9d15a2fecae0c`。这些本地结果不代替分支合并后的 Production D1／Pages／正式域名验收。
+
 ## 2026-08-06 AI 能力层第二阶段：在线画板与 2048
 
 - 在线画板子项目升级到 `v1.0.3`。站点 Agent Auth 新增非默认 `whiteboard:read`／`whiteboard:write` scope；Pages 提供 Agent 加入与 scene GET/POST，并将 Agent Bearer、绑定当前 tokenId 的房间访问令牌和 DO 内部授权分层。密码仍只通过同源 HTTPS 请求体交给服务端 HMAC 映射，不进入 argv、URL、日志、遥测、MCP 输出或本地明文状态。

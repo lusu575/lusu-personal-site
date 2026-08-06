@@ -67,8 +67,54 @@ test("registry list, get, and filter APIs expose only matching capabilities", ()
     filterCapabilities({ domain: "games", availableTransports: "local-mcp" })
       .filter(({ status }) => status === "available")
       .map(({ id }) => id),
-    ["games.session.create", "games.session.observe", "games.session.actions", "games.session.act", "games.session.close"]
+    [
+      "games.catalog.list",
+      "games.catalog.get",
+      "games.session.create",
+      "games.session.observe",
+      "games.session.actions",
+      "games.session.act",
+      "games.session.close"
+    ]
   );
   assert.ok(filterCapabilities({ risk: ["high", "critical"] }).length > 0);
   assert.throws(() => filterCapabilities({ unknown: true }), /Unsupported capability filter/);
+});
+
+test("phase-three public reads declare only transports with implemented adapters", () => {
+  const videoGet = getCapability("content.videos.get");
+  assert.equal(videoGet?.status, "available");
+  assert.deepEqual(videoGet?.availableTransports, ["site-api", "local-mcp", "cli"]);
+
+  const toolsCatalog = getCapability("content.tools.catalog");
+  assert.equal(toolsCatalog?.status, "available");
+  assert.deepEqual(toolsCatalog?.transport, ["local-mcp", "cli"]);
+  assert.deepEqual(toolsCatalog?.availableTransports, ["local-mcp", "cli"]);
+
+  assert.deepEqual(
+    filterCapabilities({ domain: "japanese-subtext", status: "available" }).map(({ id }) => id),
+    [
+      "japanese-subtext.levels.list",
+      "japanese-subtext.stages.list",
+      "japanese-subtext.stages.get"
+    ]
+  );
+  assert.deepEqual(
+    ["games.catalog.list", "games.catalog.get"].map((id) => getCapability(id)?.availableTransports),
+    [
+      ["site-api", "local-mcp", "cli"],
+      ["site-api", "local-mcp", "cli"]
+    ]
+  );
+
+  const remotePhaseThree = [
+    "content.videos.get",
+    "content.tools.catalog",
+    "games.catalog.list",
+    "games.catalog.get",
+    "japanese-subtext.levels.list",
+    "japanese-subtext.stages.list",
+    "japanese-subtext.stages.get"
+  ].filter((id) => getCapability(id)?.availableTransports.includes("remote-mcp"));
+  assert.deepEqual(remotePhaseThree, []);
 });

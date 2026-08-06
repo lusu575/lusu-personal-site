@@ -7,6 +7,12 @@ import { pathToFileURL } from "node:url";
 import { createProxyAwareFetch } from "../自动新闻/integrations/lusu-site/network-fetch.mjs";
 import { SiteClient, SiteClientError } from "../lib/capabilities/site-client.mjs";
 import {
+  PublicCatalogError,
+  getPublicTool,
+  listPublicTools
+} from "../lib/capabilities/public-catalog-adapter.mjs";
+import { JapaneseSubtextCapabilityError } from "../lib/capabilities/japanese-subtext-adapter.mjs";
+import {
   GameSessionStoreError,
   createGameSessionStore
 } from "../lib/capabilities/game-session-store.mjs";
@@ -28,6 +34,7 @@ import {
   readStoredCredential,
   resolveConfigDirectory,
   resolveSecretRef,
+  resolveSiteAuthContext,
   storeRoomHandle,
   writeStoredCredential
 } from "../lib/capabilities/local-state.mjs";
@@ -62,7 +69,14 @@ async function runCliWithDependencies(argv, dependencies) {
     crypto: dependencies.crypto
   };
   const credential = await readStoredCredential(stateOptions);
-  const baseUrl = global.baseUrl || env.LUSU_BASE_URL || credential?.baseUrl || DEFAULT_BASE_URL;
+  const siteAuth = resolveSiteAuthContext({
+    baseUrl: global.baseUrl,
+    env,
+    credential,
+    defaultBaseUrl: DEFAULT_BASE_URL,
+    resolveAccessToken: false
+  });
+  const baseUrl = siteAuth.baseUrl;
   let stdinValue;
   const readStdin = async () => {
     if (stdinValue === undefined) {
@@ -97,10 +111,16 @@ async function runCliWithDependencies(argv, dependencies) {
   if (global.tokenStdin && ["transfer", "whiteboard"].includes(command) && commandArgs.includes("--password-stdin")) {
     throw new CliInputError("--token-stdin and --password-stdin cannot share the same input stream.", "STDIN_SECRET_CONFLICT");
   }
-  const accessToken = global.tokenStdin
-    ? firstNonEmptyLine(await readStdin())
-    : env.LUSU_ACCESS_TOKEN || credential?.accessToken || "";
-  const client = new SiteClient({
+  const explicitAccessToken = global.tokenStdin ? firstNonEmptyLine(await readStdin()) : undefined;
+  const accessToken = resolveSiteAuthContext({
+    baseUrl,
+    env,
+    credential,
+    defaultBaseUrl: DEFAULT_BASE_URL,
+    explicitAccessToken,
+    explicitAccessTokenProvided: global.tokenStdin
+  }).accessToken;
+  const client = dependencies.client || new SiteClient({
     fetch: dependencies.fetch,
     baseUrl,
     accessToken
@@ -129,6 +149,16 @@ async function runCliWithDependencies(argv, dependencies) {
     result = await runContentCommand(client, subcommand, commandArgs);
   } else if (command === "videos") {
     result = await runVideosCommand(client, subcommand, commandArgs);
+  } else if (command === "tools") {
+    result = await runToolsCommand(
+      subcommand,
+      commandArgs,
+      dependencies.publicCatalog || { listPublicTools, getPublicTool }
+    );
+  } else if (command === "games") {
+    result = await runGamesCatalogCommand(client, subcommand, commandArgs);
+  } else if (command === "japanese-subtext") {
+    result = await runJapaneseSubtextCommand(client, subcommand, commandArgs);
   } else if (command === "game") {
     if (global.tokenStdin) {
       throw new CliInputError("--token-stdin is not used by isolated local game sessions.", "TOKEN_INPUT_UNUSED");
@@ -210,22 +240,109 @@ async function runContentCommand(client, command, args) {
 }
 
 async function runVideosCommand(client, command, args) {
-  if (command !== "list") {
-    throw new CliInputError(`Unknown videos command: ${command || "<missing>"}`, "VIDEOS_COMMAND_UNKNOWN");
+  if (command === "get") {
+    const parsed = parseOptions(args, {});
+    if (parsed.positionals.length !== 1) {
+      throw new CliInputError("videos get requires one video id.", "VIDEO_ID_REQUIRED");
+    }
+    return client.getVideo(validateVideoId(parsed.positionals[0]));
   }
-  const parsed = parseOptions(args, {
-    "--lang": "value",
-    "--query": "value",
-    "--categories": "value",
-    "--limit": "value"
-  });
-  assertNoPositionals(parsed);
-  return client.listVideos({
-    lang: parsed.options.lang,
-    query: parsed.options.query,
-    categories: parsed.options.categories,
-    limit: parsed.options.limit
-  });
+  if (command === "list") {
+    const parsed = parseOptions(args, {
+      "--lang": "value",
+      "--query": "value",
+      "--categories": "value",
+      "--limit": "value"
+    });
+    assertNoPositionals(parsed);
+    return client.listVideos({
+      lang: parsed.options.lang,
+      query: parsed.options.query,
+      categories: parsed.options.categories,
+      limit: parsed.options.limit
+    });
+  }
+  throw new CliInputError(`Unknown videos command: ${command || "<missing>"}`, "VIDEOS_COMMAND_UNKNOWN");
+}
+
+async function runToolsCommand(command, args, catalog) {
+  if (command === "list") {
+    const parsed = parseOptions(args, { "--lang": "value" });
+    assertNoPositionals(parsed);
+    return catalog.listPublicTools({ lang: validateOptionalLanguage(parsed.options.lang) });
+  }
+  if (command === "get") {
+    const parsed = parseOptions(args, { "--lang": "value" });
+    if (parsed.positionals.length !== 1) {
+      throw new CliInputError("tools get requires one tool id.", "TOOL_ID_REQUIRED");
+    }
+    return catalog.getPublicTool(validateCatalogId(parsed.positionals[0], "tool"), {
+      lang: validateOptionalLanguage(parsed.options.lang)
+    });
+  }
+  throw new CliInputError(`Unknown tools command: ${command || "<missing>"}`, "TOOLS_COMMAND_UNKNOWN");
+}
+
+async function runGamesCatalogCommand(client, command, args) {
+  if (command === "list") {
+    const parsed = parseOptions(args, {
+      "--lang": "value",
+      "--agent-only": "boolean"
+    });
+    assertNoPositionals(parsed);
+    return client.listGames({
+      lang: validateOptionalLanguage(parsed.options.lang),
+      agentOnly: Boolean(parsed.options.agentOnly)
+    });
+  }
+  if (command === "get") {
+    const parsed = parseOptions(args, { "--lang": "value" });
+    if (parsed.positionals.length !== 1) {
+      throw new CliInputError("games get requires one game id.", "GAME_ID_REQUIRED");
+    }
+    return client.getGame(validateCatalogId(parsed.positionals[0], "game"), {
+      lang: validateOptionalLanguage(parsed.options.lang)
+    });
+  }
+  throw new CliInputError(`Unknown games command: ${command || "<missing>"}`, "GAMES_COMMAND_UNKNOWN");
+}
+
+async function runJapaneseSubtextCommand(client, command, args) {
+  if (command === "levels") {
+    const parsed = parseOptions(args, { "--lang": "value" });
+    assertNoPositionals(parsed);
+    return client.listJapaneseSubtextLevels({
+      lang: validateOptionalLanguage(parsed.options.lang)
+    });
+  }
+  if (command === "stages") {
+    const parsed = parseOptions(args, {
+      "--level": "value",
+      "--query": "value",
+      "--limit": "value",
+      "--lang": "value"
+    });
+    assertNoPositionals(parsed);
+    return client.listJapaneseSubtextStages({
+      level: validateJapaneseLevel(parsed.options.level),
+      query: normalizeOptionalQuery(parsed.options.query),
+      limit: validateOptionalInteger(parsed.options.limit, 1, 50, "--limit"),
+      lang: validateOptionalLanguage(parsed.options.lang)
+    });
+  }
+  if (command === "get") {
+    const parsed = parseOptions(args, { "--lang": "value" });
+    if (parsed.positionals.length !== 1) {
+      throw new CliInputError("japanese-subtext get requires one stage id.", "JAPANESE_SUBTEXT_STAGE_ID_REQUIRED");
+    }
+    return client.getJapaneseSubtextStage(validateJapaneseStageId(parsed.positionals[0]), {
+      lang: validateOptionalLanguage(parsed.options.lang)
+    });
+  }
+  throw new CliInputError(
+    `Unknown japanese-subtext command: ${command || "<missing>"}`,
+    "JAPANESE_SUBTEXT_COMMAND_UNKNOWN"
+  );
 }
 
 async function runAuthCommand(command, args, context) {
@@ -288,21 +405,35 @@ async function runAuthCommand(command, args, context) {
   if (command === "status") {
     const parsed = parseOptions(args, {});
     assertNoPositionals(parsed);
-    const stdinToken = global.tokenStdin ? firstNonEmptyLine(await readStdin()) : "";
-    const accessToken = stdinToken || env.LUSU_ACCESS_TOKEN || credential?.accessToken || "";
-    if (!accessToken) return { authenticated: false, user: null, scopes: [] };
-    const client = new SiteClient({ fetch: context.fetch, baseUrl, accessToken });
+    const explicitAccessToken = global.tokenStdin ? firstNonEmptyLine(await readStdin()) : undefined;
+    const auth = resolveSiteAuthContext({
+      baseUrl,
+      env,
+      credential,
+      defaultBaseUrl: DEFAULT_BASE_URL,
+      explicitAccessToken,
+      explicitAccessTokenProvided: global.tokenStdin
+    });
+    if (!auth.accessToken) return { authenticated: false, user: null, scopes: [] };
+    const client = new SiteClient({ fetch: context.fetch, baseUrl, accessToken: auth.accessToken });
     const identity = await client.getAgentIdentity();
     return { authenticated: true, user: identity.user || null, scopes: identity.scopes || [] };
   }
   if (command === "logout") {
     const parsed = parseOptions(args, {});
     assertNoPositionals(parsed);
-    const stdinToken = global.tokenStdin ? firstNonEmptyLine(await readStdin()) : "";
-    const accessToken = stdinToken || env.LUSU_ACCESS_TOKEN || credential?.accessToken || "";
+    const explicitAccessToken = global.tokenStdin ? firstNonEmptyLine(await readStdin()) : undefined;
+    const auth = resolveSiteAuthContext({
+      baseUrl,
+      env,
+      credential,
+      defaultBaseUrl: DEFAULT_BASE_URL,
+      explicitAccessToken,
+      explicitAccessTokenProvided: global.tokenStdin
+    });
     let revoked = false;
-    if (accessToken) {
-      const client = new SiteClient({ fetch: context.fetch, baseUrl, accessToken });
+    if (auth.accessToken) {
+      const client = new SiteClient({ fetch: context.fetch, baseUrl, accessToken: auth.accessToken });
       try {
         await client.revokeAgentToken();
         revoked = true;
@@ -310,7 +441,9 @@ async function runAuthCommand(command, args, context) {
         if (!(error instanceof SiteClientError && [404, 405].includes(error.status))) throw error;
       }
     }
-    const removed = await deleteStoredCredential(stateOptions);
+    const removed = auth.credentialMatchesOrigin
+      ? await deleteStoredCredential(stateOptions)
+      : false;
     return { authenticated: false, revoked, localCredentialsRemoved: removed };
   }
   throw new CliInputError(`Unknown auth command: ${command || "<missing>"}`, "AUTH_COMMAND_UNKNOWN");
@@ -674,6 +807,77 @@ function requireOptionValue(value, name) {
   return String(value);
 }
 
+function validateOptionalLanguage(value) {
+  if (value === undefined) return undefined;
+  const language = String(value).trim().toLowerCase();
+  if (!["zh", "en", "ja"].includes(language)) {
+    throw new CliInputError("--lang must be zh, en, or ja.", "LANGUAGE_INVALID");
+  }
+  return language;
+}
+
+function validateVideoId(value) {
+  const videoId = String(value || "").trim();
+  if (!/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,179}$/.test(videoId)) {
+    throw new CliInputError("A valid video id is required.", "VIDEO_ID_INVALID");
+  }
+  return videoId;
+}
+
+function validateCatalogId(value, kind) {
+  const id = String(value || "").trim();
+  const code = kind === "tool" ? "TOOL_ID_INVALID" : "GAME_ID_INVALID";
+  if (!/^[a-z0-9][a-z0-9-]{0,63}$/.test(id)) {
+    throw new CliInputError(`A valid ${kind} id is required.`, code);
+  }
+  return id;
+}
+
+function validateJapaneseLevel(value) {
+  if (value === undefined) {
+    throw new CliInputError("japanese-subtext stages requires --level 1-5.", "JAPANESE_SUBTEXT_LEVEL_REQUIRED");
+  }
+  if (!/^[1-5]$/.test(String(value))) {
+    throw new CliInputError("--level must be an integer from 1 to 5.", "JAPANESE_SUBTEXT_LEVEL_INVALID");
+  }
+  return Number(value);
+}
+
+function validateJapaneseStageId(value) {
+  const stageId = String(value || "").trim();
+  const match = /^L([1-5])-(\d{3})$/.exec(stageId);
+  const position = Number(match?.[2] || 0);
+  if (!match || position < 1 || position > 50) {
+    throw new CliInputError(
+      "A stage id from L1-001 through L5-050 is required.",
+      "JAPANESE_SUBTEXT_STAGE_ID_INVALID"
+    );
+  }
+  return stageId;
+}
+
+function validateOptionalInteger(value, min, max, optionName) {
+  if (value === undefined) return undefined;
+  const text = String(value);
+  if (!/^[1-9]\d*$/.test(text)) {
+    throw new CliInputError(`${optionName} must be an integer from ${min} to ${max}.`, "OPTION_INTEGER_INVALID");
+  }
+  const number = Number(text);
+  if (!Number.isSafeInteger(number) || number < min || number > max) {
+    throw new CliInputError(`${optionName} must be an integer from ${min} to ${max}.`, "OPTION_INTEGER_INVALID");
+  }
+  return number;
+}
+
+function normalizeOptionalQuery(value) {
+  if (value === undefined) return undefined;
+  const query = String(value).normalize("NFKC").trim();
+  if (!query || query.length > 200) {
+    throw new CliInputError("--query must contain 1-200 characters.", "QUERY_INVALID");
+  }
+  return query;
+}
+
 function rejectPlaintextPasswordOption(args) {
   const forbidden = args.find((value) => value === "--password" || value.startsWith("--password="));
   if (forbidden) {
@@ -844,6 +1048,14 @@ function helpText() {
     "  lusu content get SLUG [--lang zh|en|ja]",
     "  lusu content daily [--date YYYY-MM-DD] [--lang zh|en|ja]",
     "  lusu videos list [--query TEXT] [--lang zh|en|ja]",
+    "  lusu videos get VIDEO_ID",
+    "  lusu tools list [--lang zh|en|ja]",
+    "  lusu tools get TOOL_ID [--lang zh|en|ja]",
+    "  lusu games list [--lang zh|en|ja] [--agent-only]",
+    "  lusu games get GAME_ID [--lang zh|en|ja]",
+    "  lusu japanese-subtext levels [--lang zh|en|ja]",
+    "  lusu japanese-subtext stages --level 1|2|3|4|5 [--query TEXT] [--limit 1..50] [--lang zh|en|ja]",
+    "  lusu japanese-subtext get L1-001 [--lang zh|en|ja]",
     "  lusu auth login [--scopes scope,scope] [--no-browser]",
     "  lusu auth status | logout",
     "  lusu transfer join [--password-stdin]",
@@ -870,6 +1082,9 @@ function helpText() {
 
 function serializeCliError(error) {
   if (error instanceof SiteClientError) return error.toJSON();
+  if (error instanceof PublicCatalogError || error instanceof JapaneseSubtextCapabilityError) {
+    return { error: error.message, code: error.code, status: error.status };
+  }
   if (
     error instanceof LocalStateError
     || error instanceof CliInputError

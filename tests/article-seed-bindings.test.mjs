@@ -8,7 +8,8 @@ const AI_AGENT_WORKFLOW_PIN_REPAIR_KEY = "article_ai_agent_workflow_pin_repair_v
 const PASSWORD_ROOM_GUIDE_ARTICLE_ID = "seed-site-guide-whiteboard-chat-password-rooms-2026-08-06";
 const AGENT_CAPABILITIES_UPDATE_ID = "seed-update-2026-08-06-agent-capabilities";
 const WHITEBOARD_2048_AGENT_UPDATE_ID = "seed-update-2026-08-06-whiteboard-2048-agent";
-const ARTICLE_SEED_VERSION = "20260806-whiteboard-2048-agent-r1";
+const AGENT_READ_BREADTH_UPDATE_ID = "seed-update-2026-08-06-agent-read-breadth";
+const ARTICLE_SEED_VERSION = "20260806-agent-read-breadth-r1";
 const VALID_CHAT_SECRET = "article-seed-chat-secret-0000000000000001";
 const VALID_ANALYTICS_SECRET = "article-seed-analytics-secret-000000001";
 
@@ -191,6 +192,23 @@ test("every article seed D1 binding is defined", async () => {
     assert.match(params[5], /append-only|只追加|追記専用/);
     assert.match(params[5], /browser|浏览器|ブラウザー/);
     assert.match(params[5], /undeployed and read-only|未部署且保持只读|未展開の読み取り専用/);
+  }
+
+  const agentReadBreadthSeed = seedBatch.find(({ sql }) => (
+    sql.includes(`'${AGENT_READ_BREADTH_UPDATE_ID}'`)
+    && /on conflict\(article_id\) do update/i.test(normalizedSql(sql))
+  ));
+  assert.ok(agentReadBreadthSeed, "the Phase 3 read breadth update metadata must be seeded");
+  const agentReadBreadthTranslations = boundStatements.filter(({ params }) => (
+    params[1] === AGENT_READ_BREADTH_UPDATE_ID
+    && ["zh", "en", "ja"].includes(params[2])
+  ));
+  assert.equal(agentReadBreadthTranslations.length, 3, "the Phase 3 read breadth update must include three translations");
+  for (const { params } of agentReadBreadthTranslations) {
+    assert.match(params[5], /stdio MCP/);
+    assert.match(params[5], /250/);
+    assert.match(params[5], /2048/);
+    assert.match(params[5], /undeployed|未部署|未展開/);
   }
 
   const pinRepair = seedBatch.find(({ sql, params }) => (

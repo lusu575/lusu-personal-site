@@ -21,7 +21,9 @@ skills/lusu-personal-site-skill/SKILL.md
 - 2048 CLI／MCP 是有 CAS、action ID 去重、状态／TTL 上限和破坏性确认的隔离本地会话；页面虽有冻结语义 bridge，在建立受审计的配对通道前不得宣传为接管已打开的浏览器游戏。
 - 本地敏感 JSON 的 read-modify-write 必须用 owner-token 锁与同目录私有临时文件原子替换；游戏锁还需进程／心跳与释放前所有权校验。声明 readOnly 的观察／动作发现不得写文件、续 TTL 或顺带清理过期会话。
 - CLI / stdio MCP 复用 `自动新闻/integrations/lusu-site/network-fetch.mjs` 的共享代理感知 fetch 并注入 `SiteClient`，兼容代理与直连环境；`SiteClient` 本身只接受注入的 fetch。代理值、代理凭据和 Agent Token 不得输出或写入日志。
+- 本机 credential 只允许发送到签发时相同的规范化 HTTP(S) origin；覆盖 CLI/MCP base URL 时不得把旧 origin 的 Bearer 带到 Preview 或其他站点，也不得在跨 origin logout 中删除旧凭据。当前 origin 的显式 stdin／环境 token 仍由操作者自行授权。
 - `workers/site-mcp/` 是独立且尚未部署的公开只读 remote MCP Worker，不得宣称已有正式地址。远程写能力必须先完成标准 OAuth、最小 scope、撤销与审计，不得把本地设备令牌直接暴露给公网 MCP。详细边界见 `docs/agent-capabilities/README.md`。
+- 工具、游戏和题库的机器只读目录必须使用有界安全投影，不原样暴露前端 manifest。固定同源路径／版本并校验 ID、数量、大小、URL、hash 与锁定状态；占位工具不进入目录，内部源路径、存储键、语言映射、题库批次路径与音频构建字段不对 CLI／MCP 输出，游戏可控状态只按真实适配器声明。
 - GitHub 共享 runner 的首页首屏 TBT 固定采样三次并按原预算检查中位数，其他场景仍只测一次；网络体积、load、CLS、内存、运行时错误等结构性门槛逐样本检查，任一次失败都阻断。
 - 大图/图集按真实槽位提供 AVIF/WebP 与 fallback，首屏只预加载当前主题和壳；动态主题只挂载当前图层，同路径位图变化仍要更新 query。
 - 公共列表请求采用有界 ETag/SWR/LKG，失败保留成功内容且强制重试可绕过新鲜缓存；ETag 覆盖完整公开响应，不能只取数据库行时间等局部种子，同源媒体代理 URL 以内容或行更新时间版本击穿旧缓存。Transfer 使用稳定复合游标、generation、键控 DOM、幂等和背压。旧 D1 必须先补列再建依赖索引。
@@ -60,7 +62,7 @@ skills/lusu-personal-site-skill/SKILL.md
 - 公共画板不执行空房 TTL；密码房最后一名有效用户离开后通过 Alarm 保留 24 小时，重入取消、再次为空重计。清理前重查连接与代次，并幂等删除 `whiteboard/v1/<roomId>/` R2 前缀、D1 索引和 DO 状态。`v1` migration 与 namespace 上线后不得删除或重写。
 - 画板快速更新必须先合并再按 Worker 建议间隔发送；只有持久化后的 `update-accepted` 才能清除本地 in-flight update。限流、断线和回执超时必须保留未确认数据、重连并幂等重传，不得把所有 1008 关闭统一解释为不可恢复的访问错误。
 - 公共与密码画板当前必须共用同一套暖纸、石墨、hachure、高 roughness 铅笔草图默认值。画布无变化时不得写入；可见页保活使用不唤醒休眠 DO 的 WebSocket auto-response，隐藏页有界排空后停放连接，空公共房不周期轮询，密码房只保留真实待办与 24 小时删除 Alarm。普通短暂波动不弹大横幅，持续重连只显示延迟的小状态。
-- 画板与 Quick Transfer 必须分别维护 `docs/whiteboard/` 和 `docs/transfer/` 下的 `VERSION`、`project.json`、`README.md`、`CHANGELOG.md`、`AGENTS.md` 及指向它的 `AGENT.md`。任何子项目 tracked path 变化都必须相对基线精确增加 `0.0.1`、写独立更新日志、同步受影响文档和根 `CHANGELOG.md`，并通过 `npm run check:subprojects`。未改变的子项目保持自己的版本与内部 asset cache key，不随主站或另一子项目的发布字符串连带滚动。
+- 画板与 Quick Transfer 必须分别维护 `docs/whiteboard/` 和 `docs/transfer/` 下的 `VERSION`、`project.json`、`README.md`、`CHANGELOG.md`、`AGENTS.md` 及指向它的 `AGENT.md`。任何子项目 tracked path 变化都必须相对基线精确增加 `0.0.1`、写独立更新日志、同步受影响文档和根 `CHANGELOG.md`，并通过 `npm run check:subprojects`。共享能力适配器或目录元数据若改变受管工具的能力域、固定入口或协议语义，先把专属契约放入该子项目可追踪路径再升版；不要用通用实现位置绕过治理，也不要用宽泛路径让无关视频／游戏变化误升版。多个子项目共享可见目录时，用 `visibleVersionChecks` 的项目锚点、有界窗口和精确 `{{version}}` 模板校验本项目条目，不能让其他卡片的同版本号掩盖漏改。未改变的子项目保持自己的版本与内部 asset cache key，不随主站或另一子项目的发布字符串连带滚动。
 - 画板部署顺序固定为本地迁移／Lint／类型／测试／构建，获授权后远端 D1 migration、先部署 DO Worker、核对 Pages external binding、最后合并 `main` 触发 Pages。根配置提交态的 Preview 使用 `PREVIEW_API_DISABLED=true` 和空 D1/R2/DO bindings，不得引用尚未部署的 Preview Worker；独立 Preview 资源全部迁移、配置和验收且 Worker 已先部署前不得接入 Pages 或开启 API。回滚先回 Pages 入口/binding、再部署兼容 Worker，并保留 namespace、migration 与数据；远端未核实时不得声称已上线。完整规则见 `docs/whiteboard/README.md`、`workers/whiteboard/README.md` 和 `cloudflare/README.md`。
 - Transfer 设置以 revision / `expectedUpdatedAt` 条件保存；房间清空、清理和上传 ready 转换检查真实 D1 changes。部分失败必须返回非 2xx 与可重试对象，并清理并发竞态产生的孤立 R2 对象，不能伪报完成。
 - Quick Transfer 只能称文字为浏览器 AES-GCM 加密；图片、视频和文件不使用房间口令加密，只由 HTTPS、私有 R2 与服务端鉴权保护，且不做病毒／恶意软件扫描。明文口令不发服务器，配额按滚动 24 小时描述，公开卡片、房间提示和历史 seed 不得扩大安全承诺。

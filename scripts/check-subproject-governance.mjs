@@ -58,6 +58,24 @@ function pathIsTracked(path, trackedPaths) {
   ));
 }
 
+export function hasAnchoredVisibleVersion(source, check, version) {
+  if (typeof source !== "string"
+    || !check
+    || typeof check.anchor !== "string"
+    || !check.anchor
+    || typeof check.template !== "string"
+    || !check.template.includes("{{version}}")
+    || !Number.isSafeInteger(check.maxChars)
+    || check.maxChars < 64
+    || check.maxChars > 4096) {
+    return false;
+  }
+  const anchorIndex = source.indexOf(check.anchor);
+  if (anchorIndex < 0) return false;
+  const expected = check.template.replaceAll("{{version}}", version);
+  return source.slice(anchorIndex, anchorIndex + check.maxChars).includes(expected);
+}
+
 export function checkSubprojectGovernance() {
   const errors = [];
   const projects = governanceRoots.map((governanceRoot) => {
@@ -91,6 +109,16 @@ export function checkSubprojectGovernance() {
     for (const visibleFile of project.visibleVersionFiles || []) {
       if (!read(visibleFile).includes(version)) {
         errors.push(`${project.id} visible version ${version} is missing from ${visibleFile}`);
+      }
+    }
+    for (const [index, check] of (project.visibleVersionChecks || []).entries()) {
+      const label = `${project.id} visibleVersionChecks[${index}]`;
+      if (!check || typeof check.path !== "string" || !check.path) {
+        errors.push(`${label} must declare a path`);
+        continue;
+      }
+      if (!hasAnchoredVisibleVersion(read(check.path), check, version)) {
+        errors.push(`${project.id} visible version ${version} is missing from the anchored ${check.path} entry`);
       }
     }
     return { governanceRoot, project, version };
