@@ -14,7 +14,7 @@ skills/lusu-personal-site-skill/SKILL.md
 
 - 正式发布仍由 GitHub `main` 触发 Cloudflare Pages；Dashboard 使用 `npm run build` 与输出目录 `dist`。标准构建先跑仓库守卫，再生成被 Git 忽略且不提交的内容哈希 `dist/` 部署产物；根 `wrangler.jsonc` 的 `pages_build_output_dir` 同步为 `dist`。缓存必须区分 HTML、哈希资产、未哈希源码与 API/JSON。
 - 根 `wrangler.jsonc` 只使用 Pages Git 部署支持的字段，不加入 Worker-only `observability` 或非标准 `secrets` 元数据；Secret 名称由 `.env.example` 空声明与运行时校验维护，独立 Worker 的 observability 放在自己的配置中。
-- 独立 `package-lock.json` 不会继承根 `overrides`；根依赖安全版本变化时必须逐个检查独立 npm 子项目，在各自清单补齐必要 override，并分别执行严格安装、测试与完整 `npm audit`。
+- 独立 `package-lock.json` 不会继承根 `overrides`；根依赖安全版本变化时必须逐个检查独立 npm 子项目，在各自清单补齐必要 override，并分别执行严格安装、测试与完整 `npm audit`。Windows 重建根 lockfile 时要在没有既有 `node_modules` 的干净目录中包含 optional／peer 依赖，并以严格 `npm ci` 验证跨平台条目，不能只凭 Windows 本机安装成功。
 - AI 能力层以 `lib/capabilities/registry.mjs` 为唯一声明源：`transport` 是目标面，只有 `availableTransports` 是已实现且可对外承诺的真实面。CLI、本地 MCP 和远程 MCP 共享适配服务，不复制业务规则；本地已提供受限画板追加／导出和隔离 2048，会话浏览器接管、其他游戏与其余能力仍以 registry 为准。
 - 本地 CLI / stdio MCP 使用账号持有者确认的设备码和最小 scope；`content:read`、Transfer scopes 可按需授予，`transfer:delete` 与 `whiteboard:read`／`whiteboard:write` 默认不授予。Agent Bearer 永远是普通机器角色，不能访问管理接口；Transfer／Whiteboard 口令只从隐藏 stdin 或明确的本地环境变量引用取得，不进命令行、URL、日志、telemetry、MCP 输出或持久明文。
 - 白板 Agent Bearer 与绑定当前 tokenId 的房间令牌必须分离；只允许基于最新完整 Yjs scene 追加受支持的高层元素，并用 operation ID + payload hash 原子幂等。服务端拒绝改删、图片、嵌入、链接、绑定、未知根及任意 Yjs 注入；简化本地 SVG／PNG 导出忽略图片时必须显式告警。

@@ -27,7 +27,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - Headless 中每个独立审计场景必须用唯一 query 强制新文档，并确认 CDP 返回 `loaderId`；不要依赖 Hash-only `Page.navigate` 清空 route 模块或 30 秒内存缓存。刻意测试 SPA History、重试链或连续动效时才保留同文档。DOM 数量和交叠断言必须限定到真实场景容器；移动 App 外框可处于半透明 Dock 后方，但 composer、反馈、页脚和最后操作必须位于 Dock 上方。
 - `.codex-worktrees/` 保存其他 Codex 任务的独立 checkout，不是当前发布源码。Git 忽略、递归构建守卫和仓库密钥扫描都必须跳过该目录；发现其中旧文件导致当前构建失败时应修正扫描边界，不得删除或改写其他任务工作树来换取通过。
 - Production D1 的单条复合 `SELECT` 最多 5 项。远程迁移分组校验必须在任何写入前锁定该上限，超过时拆成多条查询；本地 SQLite 能执行更长的 `UNION ALL` 不能替代真实 D1 校验。
-- 独立 `package-lock.json` 不继承根 `package.json` 的 `overrides`。新增或更新根依赖时，必须盘点所有独立 npm 子项目，在各自清单重复必需的安全 override，并分别执行严格安装、测试与完整 `npm audit`；不能用根审计为子项目背书。
+- 独立 `package-lock.json` 不继承根 `package.json` 的 `overrides`。新增或更新根依赖时，必须盘点所有独立 npm 子项目，在各自清单重复必需的安全 override，并分别执行严格安装、测试与完整 `npm audit`；不能用根审计为子项目背书。Windows 重建根 lockfile 时必须使用不含现有 `node_modules` 的干净目录，并包含 optional 与 peer 依赖，再用严格 `npm ci` 验证；否则 Linux CI／Cloudflare 所需的平台 watcher 等条目可能被静默删掉。
 
 ## 账号、文章与 Chat 稳定性规则
 
