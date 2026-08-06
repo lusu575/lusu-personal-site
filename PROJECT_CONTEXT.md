@@ -1,5 +1,12 @@
 # PROJECT_CONTEXT.md
 
+## 2026-08-06 Agent 设备授权浏览器确认修复
+
+- 生产设备授权页点击 Allow 曾稳定返回 `AGENT_ORIGIN_REJECTED`。根因不是账号、主域登录态或跨站 GET：授权／令牌管理 HTML 的 `Referrer-Policy: no-referrer` 会让浏览器非 CORS 表单 POST 发送字面值 `Origin: null`，随后被服务端精确同源检查正确拒绝；同一问题也影响 `/api/agent-auth/tokens/manage` 的逐个撤销和全部撤销。
+- 修复只把授权与令牌管理 HTML 改为 `Referrer-Policy: strict-origin`，使 POST 保留当前授权页的精确来源且不携带路径或 `user_code` 查询；JSON 响应继续使用 `no-referrer`。精确 Origin、HttpOnly 登录态和双提交／D1 绑定 CSRF 都没有放宽，缺失／`null`／当前页面异源／攻击者 Origin 仍失败关闭。
+- 授权 GET 允许从 CLI、Codex 或外部网页打开的顶层 `navigate + document`，不再因 `Sec-Fetch-Site: cross-site` 单独拒绝；iframe、图片、XHR/fetch 等非顶层上下文继续拒绝。GET 只轮换短期 CSRF 绑定，不批准、拒绝或签发令牌；授权决定仍只发生在通过同源与 CSRF 的 POST。
+- 因修改命中共享 `functions/api/agent-auth.mjs`，Quick Transfer 按治理规则从 1.0.4 精确升至 1.0.5；互传房间、口令、AES-GCM 文字、私有 R2、Multipart、配额、鉴权和发布完成后 24 小时生命周期均未改变。公开更新为 `seed-update-2026-08-06-agent-auth-form-origin`，表示／文章 seed／主模块缓存版本为 `20260806-agent-auth-form-origin-r1`；独立远程 MCP Worker 仍未部署。
+
 ## 2026-08-06 AI 能力层第四阶段：日语账号进度闭环
 
 - “日语的言外之意”新增面向本地 CLI／stdio MCP 的账号能力：`japanese-subtext:progress:read` 读取当前关卡、已解锁关卡、通关／奖牌汇总、可选单关进度与最多 90 天的有界活动；`japanese-subtext:progress:write` 提交语义答题。两项 scope 都不是设备登录默认权限，Agent Bearer 只映射自己的普通用户记录，不能继承 admin 或读取他人进度。

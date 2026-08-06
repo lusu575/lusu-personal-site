@@ -1,6 +1,36 @@
 export const content = {
   updates: [
     {
+      "article_id": "seed-update-2026-08-06-agent-auth-form-origin",
+      "slug": "2026-08-06-agent-auth-form-origin",
+      "category": "site-updates",
+      "tags": ["网站更新", "AI 能力", "设备授权", "安全", "CLI", "MCP", "临时互传"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-06T12:00:00.000Z",
+      "updated_at": "2026-08-06T12:00:00.000Z",
+      "published_at": "2026-08-06T12:00:00.000Z",
+      "fallbackOnly": true,
+      "icon": "resources",
+      "date": "2026.08.06",
+      "title": {
+        "zh": "AI／CLI 授权确认页恢复正常",
+        "en": "AI and CLI Authorization Forms Restored",
+        "ja": "AI／CLI 認証フォームを復旧"
+      },
+      "summary": {
+        "zh": "修复浏览器点击 Allow 时被 no-referrer 变成 Origin:null 而误拒绝的问题；授权与令牌管理表单恢复，精确同源、登录态和 CSRF 边界不变。",
+        "en": "Fixes browser Allow submissions that no-referrer turned into Origin:null; authorization and token-management forms work again while exact-origin, session, and CSRF checks remain unchanged.",
+        "ja": "no-referrer により Allow 送信の Origin が null となり拒否される問題を修正しました。認証・トークン管理フォームを復旧し、厳密な同一オリジン、セッション、CSRF 検査は維持します。"
+      },
+      "content_markdown": {
+        "zh": "# AI／CLI 授权确认页恢复正常\n\n浏览器中的设备授权确认已恢复。此前点击 Allow 时，授权 HTML 继承的 `no-referrer` 策略会让表单 POST 带上 `Origin: null`，因而被服务端的精确同源检查正确地拒绝。\n\n## 修复方式\n\n- 仅设备授权与令牌管理 HTML 改用 `strict-origin`，让表单提交保留精确站点来源。\n- 浏览器只会发送 `https://lusu575.com` 这样的来源，不会泄露包含 `user_code` 的路径或查询字符串。\n- JSON 接口继续使用 `no-referrer`，没有放宽数据接口的隐私策略。\n- `/tokens/manage` 的撤销表单同步修复。\n\n## 安全边界不变\n\nPOST 仍必须通过精确 `Origin`、账号登录态和 CSRF 检查。缺失来源、`Origin: null`、与当前授权页 origin 不同的来源或攻击者来源仍会被拒绝。从 CLI、Codex 或外部链接打开的顶层授权 GET 现在可正常进入，而 iframe 和其他子资源加载仍被拒绝。\n\nQuick Transfer 版本更新为 1.0.5，互传协议未改变。独立远程 MCP Worker 仍未部署。",
+        "en": "# AI and CLI Authorization Forms Restored\n\nBrowser device authorization works again. Previously, the authorization HTML inherited a `no-referrer` policy that caused the Allow form POST to carry `Origin: null`, so the server's exact same-origin check correctly rejected it.\n\n## What changed\n\n- Only the device-authorization and token-management HTML pages now use `strict-origin`, preserving the exact site origin required by their form submissions.\n- The browser sends only an origin such as `https://lusu575.com`; it does not expose the path or query string containing `user_code`.\n- JSON endpoints remain on `no-referrer`, so their privacy policy has not been relaxed.\n- The revoke forms under `/tokens/manage` receive the same fix.\n\n## Security boundary unchanged\n\nPOST requests must still pass exact `Origin`, signed-in session, and CSRF checks. Missing origins, `Origin: null`, any origin different from the authorization page, and attacker origins remain rejected. Top-level authorization GET navigations opened from a CLI, Codex, or another external link are now accepted, while iframe and other subresource loads remain blocked.\n\nQuick Transfer is now version 1.0.5 with no change to its transfer protocol. The separate remote MCP Worker remains undeployed.",
+        "ja": "# AI／CLI 認証フォームを復旧\n\nブラウザーのデバイス認証を復旧しました。これまでは認証 HTML が継承した `no-referrer` により、Allow フォームの POST が `Origin: null` となっていました。そのため、サーバーの厳密な同一オリジン検査によって正しく拒否されていました。\n\n## 変更内容\n\n- デバイス認証とトークン管理の HTML だけを `strict-origin` に変更し、フォーム送信に必要な正確なサイトオリジンを保持します。\n- ブラウザーが送るのは `https://lusu575.com` のようなオリジンのみで、`user_code` を含むパスやクエリーは漏れません。\n- JSON エンドポイントは引き続き `no-referrer` を使用します。\n- `/tokens/manage` の取り消しフォームも同時に復旧しました。\n\n## 安全境界は維持\n\nPOST には、厳密な `Origin`、ログインセッション、CSRF 検査が引き続き必要です。Origin の欠落、`Origin: null`、認証ページと異なるオリジン、攻撃者のオリジンは今後も拒否されます。CLI、Codex、外部リンクから開くトップレベルの認証 GET は許可し、iframe やその他のサブリソース読み込みは引き続き拒否します。\n\nQuick Transfer はバージョン 1.0.5 となり、転送プロトコルに変更はありません。独立リモート MCP Worker は引き続き未展開です。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-06-japanese-agent-progress",
       "slug": "2026-08-06-japanese-agent-progress",
       "category": "site-updates",

@@ -4,6 +4,9 @@
 
 ## 2026-08-06
 
+- 修复生产 Agent 设备授权和令牌管理表单：HTML 的 `Referrer-Policy` 从会令非 CORS 表单 POST 发送 `Origin: null` 的 `no-referrer` 改为仅发送来源站点的 `strict-origin`，因此浏览器点击 Allow／Deny 和撤销令牌可恢复工作，同时不会泄露包含 `user_code` 的路径或查询；JSON 响应继续使用 `no-referrer`。
+- 安全边界保持严格：授权、拒绝与撤销 POST 仍同时要求精确匹配当前授权页的 Origin、有效 HttpOnly 登录态和双提交／D1 CSRF，缺失／`null`／当前页面异源／攻击者 Origin 都拒绝；授权 GET 可从 CLI、Codex 或外部网页作为顶层文档打开，但 iframe 和非文档子资源继续拦截。回归覆盖各类 Fetch Metadata、状态不变性、授权成功和令牌管理页响应头。
+- 共享受管入口变化使 Quick Transfer 从 v1.0.4 精确升至 v1.0.5，业务协议、口令、加密、R2、Multipart、配额、鉴权与 24 小时生命周期不变。新增三语更新 `seed-update-2026-08-06-agent-auth-form-origin`，公开/API/文章 seed 与主模块缓存版本为 `20260806-agent-auth-form-origin-r1`；独立远程 MCP Worker 仍未部署。
 - 实现 AI 能力层第四阶段日语账号进度闭环：新增非默认 `japanese-subtext:progress:read`／`japanese-subtext:progress:write` scope，本地 CLI／stdio MCP 可读取账号绑定的有界学习投影并提交语义答题。Agent Bearer 永远按普通用户访问自己的记录；管理员身份不会继承，原浏览器 Cookie 云同步 GET／PUT 保持不变。
 - 日语 Agent 写入只接受已解锁关卡 ID、题库 revision／contentHash、完整逐题选项、进度 expectedRevision 与 operationId；服务端权威判分、计次、记录活动并解锁下一关，拒绝调用方提供分数、奖牌、通关、解锁或时间戳。辅助答题固定按 bilingual 记录且奖牌最高 bronze；幂等收据以 canonical payload hash 阻止重复计次和同 ID 异载荷。
 - 修复设备码 CLI 轮询被单次网络抖动直接终止：网络／中止与明确瞬态 HTTP 故障会在设备码有效期内有界退避恢复，凭据、代理与底层错误细节仍不输出。因这些改动命中 Quick Transfer 的共享受管入口，子项目从 v1.0.3 精确升至 v1.0.4；互传协议、安全边界和 24 小时生命周期不变，日语公开应用 1.0.3／内容兼容 1.0.2 与在线画板 1.0.4 也保持不变。

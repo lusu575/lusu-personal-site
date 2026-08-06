@@ -10,7 +10,8 @@ const AGENT_CAPABILITIES_UPDATE_ID = "seed-update-2026-08-06-agent-capabilities"
 const WHITEBOARD_2048_AGENT_UPDATE_ID = "seed-update-2026-08-06-whiteboard-2048-agent";
 const AGENT_READ_BREADTH_UPDATE_ID = "seed-update-2026-08-06-agent-read-breadth";
 const JAPANESE_AGENT_PROGRESS_UPDATE_ID = "seed-update-2026-08-06-japanese-agent-progress";
-const ARTICLE_SEED_VERSION = "20260806-japanese-agent-progress-r1";
+const AGENT_AUTH_FORM_ORIGIN_UPDATE_ID = "seed-update-2026-08-06-agent-auth-form-origin";
+const ARTICLE_SEED_VERSION = "20260806-agent-auth-form-origin-r1";
 const VALID_CHAT_SECRET = "article-seed-chat-secret-0000000000000001";
 const VALID_ANALYTICS_SECRET = "article-seed-analytics-secret-000000001";
 
@@ -227,6 +228,23 @@ test("every article seed D1 binding is defined", async () => {
     assert.match(params[5], /revision/);
     assert.match(params[5], /operation ID|operationId/);
     assert.match(params[5], /bronze|铜牌|銅/);
+    assert.match(params[5], /undeployed|未部署|未展開/);
+  }
+
+  const agentAuthFormOriginSeed = seedBatch.find(({ sql }) => (
+    sql.includes(`'${AGENT_AUTH_FORM_ORIGIN_UPDATE_ID}'`)
+    && /on conflict\(article_id\) do update/i.test(normalizedSql(sql))
+  ));
+  assert.ok(agentAuthFormOriginSeed, "the Agent authorization form fix metadata must be seeded");
+  const agentAuthFormOriginTranslations = boundStatements.filter(({ params }) => (
+    params[1] === AGENT_AUTH_FORM_ORIGIN_UPDATE_ID
+    && ["zh", "en", "ja"].includes(params[2])
+  ));
+  assert.equal(agentAuthFormOriginTranslations.length, 3, "the Agent authorization form fix must include three translations");
+  for (const { params } of agentAuthFormOriginTranslations) {
+    assert.match(params[5], /strict-origin/);
+    assert.match(params[5], /Origin: null/);
+    assert.match(params[5], /no-referrer/);
     assert.match(params[5], /undeployed|未部署|未展開/);
   }
 

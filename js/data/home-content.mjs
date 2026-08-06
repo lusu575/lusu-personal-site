@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-08-06-agent-auth-form-origin",
+      "slug": "2026-08-06-agent-auth-form-origin",
+      "category": "site-updates",
+      "tags": ["网站更新", "AI 能力", "设备授权", "安全", "CLI", "MCP", "临时互传"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-06T12:00:00.000Z",
+      "updated_at": "2026-08-06T12:00:00.000Z",
+      "published_at": "2026-08-06T12:00:00.000Z",
+      "fallbackOnly": true,
+      "icon": "resources",
+      "date": "2026.08.06",
+      "title": {
+        "zh": "AI／CLI 授权确认页恢复正常",
+        "en": "AI and CLI Authorization Forms Restored",
+        "ja": "AI／CLI 認証フォームを復旧"
+      },
+      "summary": {
+        "zh": "修复浏览器点击 Allow 时被 no-referrer 变成 Origin:null 而误拒绝的问题；授权与令牌管理表单恢复，精确同源、登录态和 CSRF 边界不变。",
+        "en": "Fixes browser Allow submissions that no-referrer turned into Origin:null; authorization and token-management forms work again while exact-origin, session, and CSRF checks remain unchanged.",
+        "ja": "no-referrer により Allow 送信の Origin が null となり拒否される問題を修正しました。認証・トークン管理フォームを復旧し、厳密な同一オリジン、セッション、CSRF 検査は維持します。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-06-japanese-agent-progress",
       "slug": "2026-08-06-japanese-agent-progress",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "建立统一能力注册表、设备码和最小权限令牌，新增本地 CLI／stdio MCP 与尚未部署的只读远程 MCP；AI 现在可安全收发临时互传的文字和文件，白板与游戏控制仍在后续计划中。",
         "en": "Adds a governed capability registry, device authorization and scoped tokens, a local CLI/stdio MCP, and an undeployed read-only remote MCP; AI clients can now exchange Quick Transfer text and files, while Whiteboard and game control remain planned.",
         "ja": "統一機能レジストリ、デバイス認証、最小権限トークン、ローカル CLI／stdio MCP、未展開の読み取り専用リモート MCP を追加しました。AI は一時転送のテキストとファイルを扱えますが、ホワイトボードとゲーム操作はまだ計画段階です。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-08-06-site-guides-password-rooms",
-      "slug": "2026-08-06-site-guides-password-rooms",
-      "category": "site-updates",
-      "tags": ["网站更新", "知识库", "网站使用指南", "密码房"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-08-06T00:55:00.000Z",
-      "updated_at": "2026-08-06T00:55:00.000Z",
-      "published_at": "2026-08-06T00:55:00.000Z",
-      "fallbackOnly": true,
-      "icon": "knowledge",
-      "date": "2026.08.06",
-      "title": {
-        "zh": "新增“网站使用指南”和密码房攻略",
-        "en": "Website Guides and Password Room Guide",
-        "ja": "「サイト利用ガイド」とパスワードルーム案内を追加"
-      },
-      "summary": {
-        "zh": "知识库新增固定“网站使用指南”专区，并用一篇轻松攻略讲清匿名聊天室和在线画板的密码房，配有电脑端、手机端实拍图。",
-        "en": "Knowledge now has a permanent Website Guides section and one relaxed password-room walkthrough for Anonymous Chat and Online Whiteboard, with real desktop and mobile screenshots.",
-        "ja": "知識庫に固定の「サイト利用ガイド」を追加し、匿名チャットとオンラインホワイトボードのパスワードルームを実際のPC・スマホ画像でやさしく案内します。"
       }
     }
   ]
