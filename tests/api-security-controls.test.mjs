@@ -316,6 +316,90 @@ test("main API mutation gate permits only safe raster uploads for the whiteboard
   }
 });
 
+test("main API mutation gate permits only exact Agent Yjs scene updates", async () => {
+  const { onRequest } = await freshApi("whiteboard-agent-scene-gate");
+  const DB = new D1Database();
+  try {
+    const crossOriginRequest = new Request(`${ORIGIN}/api/whiteboard/agent/scene`, {
+      method: "POST",
+      headers: {
+        "CF-Connecting-IP": "203.0.113.81",
+        "Content-Type": "application/vnd.yjs-update",
+        Origin: "https://evil.example",
+        "Sec-Fetch-Site": "cross-site",
+        "X-Whiteboard-Operation-Id": "agent-scene-gate-cross-origin"
+      },
+      body: new Uint8Array([0x00, 0x01])
+    });
+    const crossOriginResponse = await invoke(onRequest, DB, crossOriginRequest);
+    assert.equal(crossOriginResponse.status, 403);
+    assert.equal(
+      DB.sqlite.prepare("select count(*) as count from sqlite_master where type = 'table'").get().count,
+      0,
+      "cross-origin Agent scene rejection must happen before runtime schema writes"
+    );
+
+    const exactRequest = new Request(`${ORIGIN}/api/whiteboard/agent/scene`, {
+      method: "POST",
+      headers: {
+        "CF-Connecting-IP": "203.0.113.81",
+        "Content-Type": "application/vnd.yjs-update",
+        Origin: ORIGIN,
+        "Sec-Fetch-Site": "same-origin",
+        "X-Whiteboard-Operation-Id": "agent-scene-gate-smoke"
+      },
+      body: new Uint8Array([0x00, 0x01])
+    });
+    const exactResponse = await invoke(onRequest, DB, exactRequest);
+    assert.equal(exactResponse.status, 401, await exactResponse.clone().text());
+    assert.equal((await exactResponse.json()).code, "AGENT_TOKEN_REQUIRED");
+
+    const adjacentPathRequest = new Request(`${ORIGIN}/api/whiteboard/agent/scene/extra`, {
+      method: "POST",
+      headers: {
+        "CF-Connecting-IP": "203.0.113.81",
+        "Content-Type": "application/vnd.yjs-update",
+        Origin: ORIGIN,
+        "Sec-Fetch-Site": "same-origin",
+        "X-Whiteboard-Operation-Id": "agent-scene-gate-adjacent"
+      },
+      body: new Uint8Array([0x00, 0x01])
+    });
+    const adjacentPathResponse = await invoke(onRequest, DB, adjacentPathRequest);
+    assert.equal(adjacentPathResponse.status, 415);
+
+    const wrongMimeRequest = new Request(`${ORIGIN}/api/whiteboard/agent/scene`, {
+      method: "POST",
+      headers: {
+        "CF-Connecting-IP": "203.0.113.81",
+        "Content-Type": "application/octet-stream",
+        Origin: ORIGIN,
+        "Sec-Fetch-Site": "same-origin",
+        "X-Whiteboard-Operation-Id": "agent-scene-gate-wrong-mime"
+      },
+      body: new Uint8Array([0x00, 0x01])
+    });
+    const wrongMimeResponse = await invoke(onRequest, DB, wrongMimeRequest);
+    assert.equal(wrongMimeResponse.status, 415);
+
+    const wrongMethodRequest = new Request(`${ORIGIN}/api/whiteboard/agent/scene`, {
+      method: "PUT",
+      headers: {
+        "CF-Connecting-IP": "203.0.113.81",
+        "Content-Type": "application/vnd.yjs-update",
+        Origin: ORIGIN,
+        "Sec-Fetch-Site": "same-origin",
+        "X-Whiteboard-Operation-Id": "agent-scene-gate-wrong-method"
+      },
+      body: new Uint8Array([0x00, 0x01])
+    });
+    const wrongMethodResponse = await invoke(onRequest, DB, wrongMethodRequest);
+    assert.equal(wrongMethodResponse.status, 415);
+  } finally {
+    DB.close();
+  }
+});
+
 test("auth requests are bounded, rate limited, enumeration-safe, and upgrade legacy PBKDF2 hashes", async () => {
   const { onRequest } = await freshApi("auth");
   const DB = new D1Database();

@@ -6,7 +6,7 @@ export const resourcesContent = Object.freeze({
       "toolId": "whiteboard",
       "capabilityDomain": "whiteboard",
       "iconSrc": "assets/images/generated-icons/whiteboard.png?v=20260730-online-whiteboard-r1",
-      "version": "v1.0.6",
+      "version": "v1.0.7",
       "updated": "2026.08.06",
       "external": false,
       "showReadyStatus": false,

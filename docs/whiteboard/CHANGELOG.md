@@ -2,6 +2,12 @@
 
 本日志只记录在线画板子项目。根项目发布历史仍写入仓库根 `CHANGELOG.md`。
 
+## 1.0.7 - 2026-08-06
+
+- 修复授权生产闭环发现的第二个 Pages 主 mutation gate 漏项：精确的 `POST /api/whiteboard/agent/scene` 且 `Content-Type: application/vnd.yjs-update` 的请求现在可跳过 JSON 内容类型门禁，继续进入既有 Agent Bearer、`whiteboard:write`、tokenId 绑定房间令牌、operation ID、正文上限与 Durable Object 只追加场景校验。
+- 同源检查仍在媒体类型例外之前执行；跨源请求、相邻路径、非 POST 与其他 MIME 继续分别失败关闭。1.0.6 的 PNG／JPEG／WebP 精确上传例外保持不变，没有改成前缀、通配路径或宽泛媒体类型。
+- 本次只修复在线画板的受管 Pages 入口；Quick Transfer 业务与受管路径均未改变，因此继续保持 1.0.6。
+
 ## 1.0.6 - 2026-08-06
 
 - 修复生产点检发现的 Pages 主 mutation gate 漏项：`POST /api/whiteboard/agent/assets` 的 PNG／JPEG／WebP 现在和浏览器图片入口一样，在通过全局同源边界后继续进入 Agent Bearer、`whiteboard:write + whiteboard:assets` 与 tokenId 绑定房间令牌鉴权。
