@@ -12,7 +12,7 @@ const AGENT_READ_BREADTH_UPDATE_ID = "seed-update-2026-08-06-agent-read-breadth"
 const JAPANESE_AGENT_PROGRESS_UPDATE_ID = "seed-update-2026-08-06-japanese-agent-progress";
 const AGENT_AUTH_FORM_ORIGIN_UPDATE_ID = "seed-update-2026-08-06-agent-auth-form-origin";
 const WHITEBOARD_AGENT_IMAGES_UPDATE_ID = "seed-update-2026-08-06-whiteboard-agent-images";
-const ARTICLE_SEED_VERSION = "20260806-whiteboard-agent-images-r2";
+const ARTICLE_SEED_VERSION = "20260806-whiteboard-agent-images-r3";
 const VALID_CHAT_SECRET = "article-seed-chat-secret-0000000000000001";
 const VALID_ANALYTICS_SECRET = "article-seed-analytics-secret-000000001";
 
@@ -264,6 +264,8 @@ test("every article seed D1 binding is defined", async () => {
     assert.match(params[5], /whiteboard:assets/);
     assert.match(params[5], /PNG/);
     assert.match(params[5], /append-only|只追加|追記専用/);
+    assert.match(params[5], /application\/vnd\.yjs-update/);
+    assert.match(params[5], /1\.0\.7/);
     assert.match(params[5], /undeployed|未部署|未展開/);
   }
 

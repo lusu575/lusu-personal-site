@@ -4,6 +4,7 @@
 
 ## 2026-08-06
 
+- 修复授权生产闭环发现的第二个 Phase 5 Pages mutation gate 漏项：精确 `POST /api/whiteboard/agent/scene` 且 `application/vnd.yjs-update` 的请求现在可越过 JSON 门禁并进入既有 Agent Bearer、write scope、tokenId 房间令牌、operation ID、正文上限与只追加场景验证；同源检查仍最先执行，跨源、相邻路径、非 POST 与错误 MIME 继续失败关闭。在线画板按受管规则从 v1.0.6 精确升至 v1.0.7；Quick Transfer 未命中受管路径，保持 v1.0.6。公开记录沿用 `seed-update-2026-08-06-whiteboard-agent-images`，表示／文章 seed／白板公开模块缓存修订为 `20260806-whiteboard-agent-images-r3`，Quick Transfer 模块缓存仍为 r1。
 - 修复 Phase 5 生产点检发现的 Pages 主 mutation gate 漏项：精确的 `POST /api/whiteboard/agent/assets` PNG／JPEG／WebP 请求现在可进入既有 Agent 鉴权链；跨源、相邻路径、非 POST 与其他 MIME 继续失败关闭，Bearer、`whiteboard:write + whiteboard:assets`、tokenId 绑定房间令牌、5 MiB 限制及严格图片校验均未放宽。在线画板按受管规则从 v1.0.5 精确升至 v1.0.6；Quick Transfer 未命中受管路径，保持 v1.0.6。公开记录沿用 `seed-update-2026-08-06-whiteboard-agent-images`，表示／文章 seed／白板公开模块缓存修订为 `20260806-whiteboard-agent-images-r2`，Quick Transfer 模块缓存仍为 r1。
 - 完成 AI 能力层第五阶段在线画板图片闭环：新增非默认 `whiteboard:assets` scope，图片上传同时要求 write+assets，原图读取要求 assets 加 read（write 可满足 read）；Agent Bearer、绑定当前 tokenId 的房间令牌与 Pages→DO 内部授权继续分层，普通 write-only 调用不能绕过 CLI 注入图片。
 - 本地 CLI／stdio MCP 新增画板图片上传、下载和高层 `image` 放置。只接受最大 5 MiB、严格容器边界、关键块段、声明宽高与像素数通过校验的 PNG／JPEG／WebP；该边界不宣称完整像素解码。MCP 使用 allow-root、realpath、常规文件与 no-clobber 边界，URL／Base64／SVG／HTML、跨房引用、本机路径泄露和任意 Yjs 注入均拒绝。简化 SVG／PNG Agent 导出仍不嵌入图片并明确告警。

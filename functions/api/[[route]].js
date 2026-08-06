@@ -31,7 +31,7 @@ import {
   toPublicArticle
 } from "./public-content-service.mjs";
 
-export const PUBLIC_API_REPRESENTATION_VERSION = "20260806-whiteboard-agent-images-r2";
+export const PUBLIC_API_REPRESENTATION_VERSION = "20260806-whiteboard-agent-images-r3";
 export const PUBLIC_ARTICLE_ARCHIVE_LIMIT = 500;
 const PUBLIC_SITE_ORIGIN = "https://lusu575.com";
 const PUBLIC_RELEASE_DATE = "2026-08-06";
@@ -82,7 +82,7 @@ const DATA_CLEANUP_STATE_KEY = "api_periodic_data_cleanup";
 const DATA_CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const DATA_CLEANUP_DELETE_LIMIT = 5000;
 const ARTICLE_SEED_STATE_KEY = "article_seed_version";
-const ARTICLE_SEED_VERSION = "20260806-whiteboard-agent-images-r2";
+const ARTICLE_SEED_VERSION = "20260806-whiteboard-agent-images-r3";
 const LOGIN_EVENT_RETENTION_DAYS = 365;
 const ANALYTICS_EVENT_RETENTION_DAYS = 180;
 const AGENT_AUDIT_RETENTION_DAYS = 180;
@@ -7249,7 +7249,7 @@ function articleSeedStatements(env) {
         '["网站更新","AI 能力","在线画板","图片","CLI","MCP","安全"]',
         '', 'published', 0, 0,
         '2026-08-06T13:20:00.000Z',
-        '2026-08-06T15:05:00.000Z',
+        '2026-08-06T15:53:00.000Z',
         '2026-08-06T13:20:00.000Z'
       )
       on conflict(article_id) do update set
@@ -7265,7 +7265,7 @@ function articleSeedStatements(env) {
     ...articleTranslationsStatements(env, "seed-update-2026-08-06-whiteboard-agent-images", {
       zh: {
         title: "AI 现在可以给在线画板添加图片",
-        summary: "本地 CLI／stdio MCP 可上传、下载并在当前房追加真实图片；生产入口热修已让精确 raster 请求进入完整 Agent 鉴权，其他来源、路径与 MIME 继续拒绝，远程 MCP 仍未部署。",
+        summary: "本地 CLI／stdio MCP 可上传、下载并在当前房追加真实图片；生产热修已让精确图片上传与 Yjs 场景更新进入完整 Agent 鉴权，其他来源、路径、方法与 MIME 继续拒绝，远程 MCP 仍未部署。",
         content_markdown: `# AI 现在可以给在线画板添加图片
 
 AI 能力层第五阶段补齐了在线画板的真实图片闭环。本地 CLI 与 stdio MCP 现在可以上传、下载当前房图片，并用高层 \`image\` 元素把已验证资源追加到画布。
@@ -7286,13 +7286,15 @@ AI 能力层第五阶段补齐了在线画板的真实图片闭环。本地 CLI 
 
 ## 生产入口点检修复
 
-生产点检发现 Pages 全局 mutation gate 漏列 Agent 图片上传路径，使安全 raster 请求在 Bearer 鉴权前返回 415。1.0.6 仅把精确 \`POST /api/whiteboard/agent/assets\` 的 PNG／JPEG／WebP 交给完整 Agent 鉴权；跨源、相邻路径、非 POST 与其他 MIME 仍拒绝，既有权限、房间隔离、容量和图片校验不变。
+首次生产点检发现 Pages 全局 mutation gate 漏列 Agent 图片上传路径，使安全 raster 请求在 Bearer 鉴权前返回 415。1.0.6 仅把精确 \`POST /api/whiteboard/agent/assets\` 的 PNG／JPEG／WebP 交给完整 Agent 鉴权。
 
-在线画板版本更新为 1.0.6。Quick Transfer 保持 1.0.6，互传协议没有变化。独立远程 MCP Worker 仍未部署。`
+随后授权线上闭环发现同一门禁还漏列 Agent 场景更新使用的 Yjs 媒体类型。1.0.7 只让精确 \`POST /api/whiteboard/agent/scene\` 且 \`Content-Type: application/vnd.yjs-update\` 的请求跳过 JSON 门禁；同源检查仍先执行，之后继续进入既有 Agent Bearer、write scope、tokenId 绑定房间令牌、operation ID、正文上限和只追加场景校验。与 raster 特例相同，跨源、相邻路径、非 POST 与其他 MIME 继续失败关闭。
+
+在线画板版本更新为 1.0.7。Quick Transfer 保持 1.0.6，互传协议没有变化。独立远程 MCP Worker 仍未部署。`
       },
       en: {
         title: "AI Can Now Add Images to the Online Whiteboard",
-        summary: "The local CLI and stdio MCP can upload, download, and append real images in the current room. A production gate fix now passes exact raster uploads into full Agent authorization while rejecting other origins, paths, and MIME types; remote MCP remains undeployed.",
+        summary: "The local CLI and stdio MCP can upload, download, and append real images in the current room. Production fixes now pass only exact image uploads and Yjs scene updates into full Agent authorization; other origins, paths, methods, and MIME types remain rejected, and remote MCP remains undeployed.",
         content_markdown: `# AI Can Now Add Images to the Online Whiteboard
 
 Phase five of the AI capability layer completes a real-image loop for Online Whiteboard. The local CLI and stdio MCP can upload and download current-room images, then append a verified asset through a high-level \`image\` element.
@@ -7313,13 +7315,15 @@ The server accepts only current-room images whose storage commit is complete and
 
 ## Production entry-point fix
 
-Production checks found that the Pages mutation gate omitted the Agent image-upload path, causing safe raster requests to return 415 before Bearer authorization. Version 1.0.6 passes only exact \`POST /api/whiteboard/agent/assets\` PNG, JPEG, and WebP requests into full Agent authorization. Cross-origin requests, adjacent paths, non-POST methods, and other MIME types remain rejected; existing permissions, room isolation, capacity, and image validation are unchanged.
+Initial production checks found that the Pages mutation gate omitted the Agent image-upload path, causing safe raster requests to return 415 before Bearer authorization. Version 1.0.6 passes only exact \`POST /api/whiteboard/agent/assets\` PNG, JPEG, and WebP requests into full Agent authorization.
 
-Online Whiteboard is now version 1.0.6. Quick Transfer remains 1.0.6 with no transfer-protocol change. The separate remote MCP Worker remains undeployed.`
+The subsequent authorized production loop found that the same gate also omitted the Yjs media type used by Agent scene updates. Version 1.0.7 skips the JSON gate only for exact \`POST /api/whiteboard/agent/scene\` requests with \`Content-Type: application/vnd.yjs-update\`. Same-origin validation still runs first, followed by the existing Agent Bearer, write scope, token-bound room credential, operation ID, body limit, and append-only scene checks. As with the raster exception, cross-origin requests, adjacent paths, non-POST methods, and other MIME types remain fail-closed.
+
+Online Whiteboard is now version 1.0.7. Quick Transfer remains 1.0.6 with no transfer-protocol change. The separate remote MCP Worker remains undeployed.`
       },
       ja: {
         title: "AI がオンラインホワイトボードに画像を追加可能に",
-        summary: "ローカル CLI／stdio MCP から現在のルームへ実画像をアップロード・取得・追記できます。本番入口の修正により正確な raster 要求だけが完全な Agent 認可へ進み、他の送信元・パス・MIME は拒否されます。リモート MCP は未展開です。",
+        summary: "ローカル CLI／stdio MCP から現在のルームへ実画像をアップロード・取得・追記できます。本番修正により正確な画像アップロードと Yjs シーン更新だけが完全な Agent 認可へ進み、他の送信元・パス・メソッド・MIME は拒否されます。リモート MCP は未展開です。",
         content_markdown: `# AI がオンラインホワイトボードに画像を追加可能に
 
 AI 機能レイヤー第5段階として、オンラインホワイトボードの実画像フローを完成させました。ローカル CLI と stdio MCP から現在のルームの画像をアップロード・取得し、高レベルの \`image\` 要素として検証済み素材を追記できます。
@@ -7340,11 +7344,13 @@ AI 機能レイヤー第5段階として、オンラインホワイトボード�
 
 ## 本番入口の点検修正
 
-本番点検で Pages の mutation gate に Agent 画像アップロードパスが含まれず、安全な raster 要求が Bearer 認可前に 415 となることを確認しました。1.0.6 では正確な \`POST /api/whiteboard/agent/assets\` の PNG／JPEG／WebP だけを完全な Agent 認可へ渡します。クロスオリジン、隣接パス、POST 以外、他の MIME は引き続き拒否し、既存の権限、ルーム分離、容量、画像検証は変更していません。
+最初の本番点検で Pages の mutation gate に Agent 画像アップロードパスが含まれず、安全な raster 要求が Bearer 認可前に 415 となることを確認しました。1.0.6 では正確な \`POST /api/whiteboard/agent/assets\` の PNG／JPEG／WebP だけを完全な Agent 認可へ渡します。
 
-オンラインホワイトボードは 1.0.6 になりました。Quick Transfer は 1.0.6 のままで、転送プロトコルに変更はありません。独立リモート MCP Worker は引き続き未展開です。`
+その後の認可済み本番ループで、同じ gate が Agent シーン更新に使う Yjs メディアタイプも除外していたことが分かりました。1.0.7 では、正確な \`POST /api/whiteboard/agent/scene\` かつ \`Content-Type: application/vnd.yjs-update\` の要求だけが JSON gate を通過します。同一オリジン検証は先に実行され、その後も既存の Agent Bearer、write scope、tokenId に結び付くルーム資格情報、operation ID、本文上限、追記専用シーン検証をすべて行います。raster 例外と同様、クロスオリジン、隣接パス、POST 以外、他の MIME は fail-closed のままです。
+
+オンラインホワイトボードは 1.0.7 になりました。Quick Transfer は 1.0.6 のままで、転送プロトコルに変更はありません。独立リモート MCP Worker は引き続き未展開です。`
       }
-    }, "2026-08-06T15:05:00.000Z"),
+    }, "2026-08-06T15:53:00.000Z"),
     env.DB.prepare(`
       insert into articles (
         article_id, slug, category, tags, cover_image, status, is_pinned,
@@ -14082,6 +14088,7 @@ function assertMainApiMutationRequest(request, parts = []) {
   if (
     request.method !== "DELETE"
     && !isWhiteboardRasterUploadRequest(request, parts)
+    && !isWhiteboardAgentSceneUpdateRequest(request, parts)
   ) {
     assertApplicationJsonRequest(request);
   }
@@ -14110,6 +14117,23 @@ function isWhiteboardRasterUploadRequest(request, parts) {
     .trim()
     .toLowerCase();
   return ["image/png", "image/jpeg", "image/webp"].includes(contentType);
+}
+
+function isWhiteboardAgentSceneUpdateRequest(request, parts) {
+  if (
+    request.method !== "POST"
+    || parts.length !== 3
+    || parts[0] !== "whiteboard"
+    || parts[1] !== "agent"
+    || parts[2] !== "scene"
+  ) {
+    return false;
+  }
+  const contentType = String(request.headers.get("Content-Type") || "")
+    .split(";", 1)[0]
+    .trim()
+    .toLowerCase();
+  return contentType === "application/vnd.yjs-update";
 }
 
 function assertSameOriginRequest(request) {

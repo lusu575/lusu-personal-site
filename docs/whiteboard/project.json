@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "online-whiteboard",
   "name": "LuSu Online Whiteboard",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "versionStep": "0.0.1",
   "governanceRoot": "docs/whiteboard",
   "documents": [

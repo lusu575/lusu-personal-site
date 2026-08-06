@@ -10,7 +10,7 @@ export const homeContent = Object.freeze({
       "status": "published",
       "is_pinned": 0,
       "created_at": "2026-08-06T13:20:00.000Z",
-      "updated_at": "2026-08-06T15:05:00.000Z",
+      "updated_at": "2026-08-06T15:53:00.000Z",
       "published_at": "2026-08-06T13:20:00.000Z",
       "fallbackOnly": true,
       "icon": "resources",
@@ -21,9 +21,9 @@ export const homeContent = Object.freeze({
         "ja": "AI がオンラインホワイトボードに画像を追加可能に"
       },
       "summary": {
-        "zh": "本地 CLI／stdio MCP 可上传、下载并在当前房追加真实图片；生产入口热修已让精确 raster 请求进入完整 Agent 鉴权，其他来源、路径与 MIME 继续拒绝，远程 MCP 仍未部署。",
-        "en": "The local CLI and stdio MCP can upload, download, and append real images in the current room. A production gate fix now passes exact raster uploads into full Agent authorization while rejecting other origins, paths, and MIME types; remote MCP remains undeployed.",
-        "ja": "ローカル CLI／stdio MCP から現在のルームへ実画像をアップロード・取得・追記できます。本番入口の修正により正確な raster 要求だけが完全な Agent 認可へ進み、他の送信元・パス・MIME は拒否されます。リモート MCP は未展開です。"
+        "zh": "本地 CLI／stdio MCP 可上传、下载并在当前房追加真实图片；生产热修已让精确图片上传与 Yjs 场景更新进入完整 Agent 鉴权，其他来源、路径、方法与 MIME 继续拒绝，远程 MCP 仍未部署。",
+        "en": "The local CLI and stdio MCP can upload, download, and append real images in the current room. Production fixes now pass only exact image uploads and Yjs scene updates into full Agent authorization; other origins, paths, methods, and MIME types remain rejected, and remote MCP remains undeployed.",
+        "ja": "ローカル CLI／stdio MCP から現在のルームへ実画像をアップロード・取得・追記できます。本番修正により正確な画像アップロードと Yjs シーン更新だけが完全な Agent 認可へ進み、他の送信元・パス・メソッド・MIME は拒否されます。リモート MCP は未展開です。"
       }
     },
     {
