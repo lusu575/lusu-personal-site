@@ -1,0 +1,74 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+
+import {
+  CAPABILITY_REGISTRY,
+  filterCapabilities,
+  getCapability,
+  listCapabilities
+} from "../lib/capabilities/registry.mjs";
+
+test("capability registry has unique stable ids and complete machine-readable safety metadata", () => {
+  assert.ok(CAPABILITY_REGISTRY.length >= 25);
+  assert.equal(new Set(CAPABILITY_REGISTRY.map(({ id }) => id)).size, CAPABILITY_REGISTRY.length);
+  assert.equal(Object.isFrozen(CAPABILITY_REGISTRY), true);
+
+  for (const capability of CAPABILITY_REGISTRY) {
+    assert.match(capability.id, /^[a-z0-9]+(?:[.-][a-z0-9]+)*$/);
+    assert.equal(typeof capability.scope, "string");
+    assert.ok(capability.scope.includes(":"));
+    assert.ok(capability.transport.length > 0);
+    assert.ok(Array.isArray(capability.availableTransports));
+    assert.ok(capability.availableTransports.every((transport) => capability.transport.includes(transport)));
+    assert.equal(Object.isFrozen(capability), true);
+    assert.equal(Object.isFrozen(capability.transport), true);
+    assert.equal(Object.isFrozen(capability.availableTransports), true);
+    assert.equal(typeof capability.readOnly, "boolean");
+    assert.equal(typeof capability.destructive, "boolean");
+    assert.equal(typeof capability.idempotent, "boolean");
+    assert.doesNotThrow(() => JSON.stringify(capability));
+  }
+});
+
+test("registry list, get, and filter APIs expose only matching capabilities", () => {
+  const listed = listCapabilities();
+  assert.notEqual(listed, CAPABILITY_REGISTRY);
+  assert.deepEqual(listed, CAPABILITY_REGISTRY);
+
+  const articleGet = getCapability("content.articles.get");
+  assert.equal(articleGet?.scope, "content:read");
+  assert.equal(articleGet?.status, "available");
+  assert.equal(getCapability("missing.capability"), null);
+
+  const remoteReads = listCapabilities({
+    availableTransports: "remote-mcp",
+    readOnly: true,
+    status: "available"
+  });
+  assert.ok(remoteReads.some(({ id }) => id === "content.articles.list"));
+  assert.ok(remoteReads.some(({ id }) => id === "content.articles.get"));
+  assert.ok(remoteReads.every(({ availableTransports }) => availableTransports.includes("remote-mcp")));
+  assert.ok(remoteReads.every(({ readOnly, status }) => readOnly && status === "available"));
+  assert.equal(remoteReads.some(({ id }) => id === "content.videos.list"), false);
+
+  assert.deepEqual(
+    filterCapabilities({ domain: "transfer", destructive: true }).map(({ id }) => id),
+    ["transfer.items.delete"]
+  );
+  assert.deepEqual(
+    filterCapabilities({ domain: "whiteboard", status: "available" }).map(({ id }) => id),
+    ["whiteboard.rooms.join", "whiteboard.scene.read", "whiteboard.scene.apply", "whiteboard.scene.export"]
+  );
+  assert.deepEqual(
+    filterCapabilities({ domain: "whiteboard", availableTransports: "browser-adapter" }),
+    []
+  );
+  assert.deepEqual(
+    filterCapabilities({ domain: "games", availableTransports: "local-mcp" })
+      .filter(({ status }) => status === "available")
+      .map(({ id }) => id),
+    ["games.session.create", "games.session.observe", "games.session.actions", "games.session.act", "games.session.close"]
+  );
+  assert.ok(filterCapabilities({ risk: ["high", "critical"] }).length > 0);
+  assert.throws(() => filterCapabilities({ unknown: true }), /Unsupported capability filter/);
+});

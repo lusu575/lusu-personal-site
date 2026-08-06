@@ -14,6 +14,14 @@ skills/lusu-personal-site-skill/SKILL.md
 
 - 正式发布仍由 GitHub `main` 触发 Cloudflare Pages；Dashboard 使用 `npm run build` 与输出目录 `dist`。标准构建先跑仓库守卫，再生成被 Git 忽略且不提交的内容哈希 `dist/` 部署产物；根 `wrangler.jsonc` 的 `pages_build_output_dir` 同步为 `dist`。缓存必须区分 HTML、哈希资产、未哈希源码与 API/JSON。
 - 根 `wrangler.jsonc` 只使用 Pages Git 部署支持的字段，不加入 Worker-only `observability` 或非标准 `secrets` 元数据；Secret 名称由 `.env.example` 空声明与运行时校验维护，独立 Worker 的 observability 放在自己的配置中。
+- 独立 `package-lock.json` 不会继承根 `overrides`；根依赖安全版本变化时必须逐个检查独立 npm 子项目，在各自清单补齐必要 override，并分别执行严格安装、测试与完整 `npm audit`。Windows 重建根 lockfile 时要在没有既有 `node_modules` 的干净目录中包含 optional／peer 依赖，并以严格 `npm ci` 验证跨平台条目，不能只凭 Windows 本机安装成功。
+- AI 能力层以 `lib/capabilities/registry.mjs` 为唯一声明源：`transport` 是目标面，只有 `availableTransports` 是已实现且可对外承诺的真实面。CLI、本地 MCP 和远程 MCP 共享适配服务，不复制业务规则；本地已提供受限画板追加／导出和隔离 2048，会话浏览器接管、其他游戏与其余能力仍以 registry 为准。
+- 本地 CLI / stdio MCP 使用账号持有者确认的设备码和最小 scope；`content:read`、Transfer scopes 可按需授予，`transfer:delete` 与 `whiteboard:read`／`whiteboard:write` 默认不授予。Agent Bearer 永远是普通机器角色，不能访问管理接口；Transfer／Whiteboard 口令只从隐藏 stdin 或明确的本地环境变量引用取得，不进命令行、URL、日志、telemetry、MCP 输出或持久明文。
+- 白板 Agent Bearer 与绑定当前 tokenId 的房间令牌必须分离；只允许基于最新完整 Yjs scene 追加受支持的高层元素，并用 operation ID + payload hash 原子幂等。服务端拒绝改删、图片、嵌入、链接、绑定、未知根及任意 Yjs 注入；简化本地 SVG／PNG 导出忽略图片时必须显式告警。
+- 2048 CLI／MCP 是有 CAS、action ID 去重、状态／TTL 上限和破坏性确认的隔离本地会话；页面虽有冻结语义 bridge，在建立受审计的配对通道前不得宣传为接管已打开的浏览器游戏。
+- 本地敏感 JSON 的 read-modify-write 必须用 owner-token 锁与同目录私有临时文件原子替换；游戏锁还需进程／心跳与释放前所有权校验。声明 readOnly 的观察／动作发现不得写文件、续 TTL 或顺带清理过期会话。
+- CLI / stdio MCP 复用 `自动新闻/integrations/lusu-site/network-fetch.mjs` 的共享代理感知 fetch 并注入 `SiteClient`，兼容代理与直连环境；`SiteClient` 本身只接受注入的 fetch。代理值、代理凭据和 Agent Token 不得输出或写入日志。
+- `workers/site-mcp/` 是独立且尚未部署的公开只读 remote MCP Worker，不得宣称已有正式地址。远程写能力必须先完成标准 OAuth、最小 scope、撤销与审计，不得把本地设备令牌直接暴露给公网 MCP。详细边界见 `docs/agent-capabilities/README.md`。
 - GitHub 共享 runner 的首页首屏 TBT 固定采样三次并按原预算检查中位数，其他场景仍只测一次；网络体积、load、CLS、内存、运行时错误等结构性门槛逐样本检查，任一次失败都阻断。
 - 大图/图集按真实槽位提供 AVIF/WebP 与 fallback，首屏只预加载当前主题和壳；动态主题只挂载当前图层，同路径位图变化仍要更新 query。
 - 公共列表请求采用有界 ETag/SWR/LKG，失败保留成功内容且强制重试可绕过新鲜缓存；ETag 覆盖完整公开响应，不能只取数据库行时间等局部种子，同源媒体代理 URL 以内容或行更新时间版本击穿旧缓存。Transfer 使用稳定复合游标、generation、键控 DOM、幂等和背压。旧 D1 必须先补列再建依赖索引。
@@ -44,7 +52,7 @@ skills/lusu-personal-site-skill/SKILL.md
 - 如果改动涉及 `/admin/` 管理后台、后台权限、后台 API、后台统计、后台视频管理、后台社交链接管理、后台聊天室治理或后台专用文档，必须额外先读取 `admin/docs/ADMIN_PROJECT_CONTEXT.md`、`admin/docs/ADMIN_SKILL.md` 和必要时的 `admin/docs/ADMIN_CHANGELOG.md`。
 - 桌面端保持 Windows XP + Pixel Art + Y2K，并沿 Neo-XP / Pixel Glass OS 演进；移动端使用原创、受 iOS 交互启发的虚拟手机 OS，不能只压缩桌面 XP 布局。
 - 可见文案必须维护中文 / English / 日本語。
-- 临时互传固定放在工具区（内部 `resources` route）并复用现有登录；手机非 Home 的 Tools App 必须能直接到达登录，短屏、横屏和软键盘状态下消息、任务与输入区都要可达。手机房间只保留一个滚动容器，composer 必须处于正常文档流，不能以 sticky / fixed 层覆盖已发送卡片；仅改成 static 不足以避免 Grid 轨道视觉溢出，竖屏房间使用纵向 Flex 且直接子项必须不可收缩，短横屏再显式恢复双栏 Grid，并验证 composer 与图片/文件卡的二维交集为零。普通账号受 95 MiB、个人/房间/频率和全站免费池限制，只有 D1 admin 可用 R2 Multipart 大文件。24 小时过期、私有 R2、清理 Worker 和 Dashboard 人工绑定规则见 `docs/transfer/README.md`。
+- 临时互传固定放在工具区（内部 `resources` route）；网站 UI 复用 HttpOnly 登录，本地 CLI / MCP 只使用设备码授予的 scoped Agent Bearer，admin 管理功能仍只接受浏览器会话。手机非 Home 的 Tools App 必须能直接到达登录，短屏、横屏和软键盘状态下消息、任务与输入区都要可达。手机房间只保留一个滚动容器，composer 必须处于正常文档流，不能以 sticky / fixed 层覆盖已发送卡片；仅改成 static 不足以避免 Grid 轨道视觉溢出，竖屏房间使用纵向 Flex 且直接子项必须不可收缩，短横屏再显式恢复双栏 Grid，并验证 composer 与图片/文件卡的二维交集为零。普通账号受 95 MiB、个人/房间/频率和全站免费池限制，只有 D1 admin 可用 R2 Multipart 大文件。24 小时过期、私有 R2、清理 Worker 和 Dashboard 人工绑定规则见 `docs/transfer/README.md`。
 - 多人实时在线画板固定为工具区独立页面 `/tools/whiteboard/`，不得新增或恢复“资源区”。前端懒加载 Excalidraw + Yjs；每个房间由 external `WHITEBOARD_ROOMS` binding 路由至 SQLite-backed `WhiteboardRoom` Durable Object，并使用 WebSocket Hibernation、对象级 CRDT、快照和有界增量。鼠标、选区、绘制、焦点和在线状态只广播，不持久化。
 - 在线画板入口图标、插画和装饰素材只使用 image2 生成的项目内图片；素材 manifest 必须锁定 image2、尺寸、最终 SHA-256 和仅机械 resize，并由守卫核对真实文件。禁止用 CSS、Canvas、SVG 路径或代码几何拼凑素材。
 - 聊天室与画板必须共用 `anonymous_identities` 和 HttpOnly `lusu_anonymous` 身份。临时名字由超过一万种安全词根组合生成，约 30 秒改名冷却；画板 DO 原子处理房内不重名。不得退回可编辑 LocalStorage ID、自由昵称或登录账号展示。

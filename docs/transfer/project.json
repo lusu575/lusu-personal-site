@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "quick-transfer",
   "name": "LuSu Quick Transfer",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "versionStep": "0.0.1",
   "governanceRoot": "docs/transfer",
   "documents": [
@@ -19,6 +19,13 @@
     "js/transfer.js",
     "js/features/quick-transfer-loader.mjs",
     "functions/api/transfer-service.mjs",
+    "functions/api/agent-auth.mjs",
+    "lib/capabilities/registry.mjs",
+    "lib/capabilities/site-client.mjs",
+    "lib/capabilities/transfer-crypto.mjs",
+    "lib/capabilities/local-state.mjs",
+    "cli/lusu.mjs",
+    "mcp/local/server.mjs",
     "workers/transfer-cleanup/",
     "admin/transfer.html",
     "admin/transfer.css",
@@ -26,7 +33,13 @@
     "assets/transfer/",
     "assets/images/generated-icons/quick-transfer.png",
     "scripts/build-transfer-icon-atlas.mjs",
-    "tests/transfer/"
+    "tests/transfer/",
+    "tests/agent-auth.test.mjs",
+    "tests/capability-registry.test.mjs",
+    "tests/site-capabilities-client.test.mjs",
+    "tests/transfer-capability-crypto.test.mjs",
+    "tests/lusu-cli.test.mjs",
+    "tests/local-mcp-server.test.mjs"
   ],
   "visibleVersionFiles": [
     "fragments/quick-transfer.html",

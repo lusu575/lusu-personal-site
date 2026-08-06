@@ -4,7 +4,7 @@ import { checkSubprojectGovernance } from "../scripts/check-subproject-governanc
 
 test("whiteboard and Quick Transfer keep independent patch versions and synchronized project docs", () => {
   assert.deepEqual(checkSubprojectGovernance(), [
-    "online-whiteboard@1.0.2",
-    "quick-transfer@1.0.1",
+    "online-whiteboard@1.0.3",
+    "quick-transfer@1.0.2",
   ]);
 });

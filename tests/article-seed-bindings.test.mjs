@@ -6,7 +6,9 @@ const FRAME_PIPELINE_SEED_TIME = "2026-07-17T21:12:00.000Z";
 const AI_AGENT_WORKFLOW_ARTICLE_ID = "seed-ai-agent-workflow-guide-2026-06-14";
 const AI_AGENT_WORKFLOW_PIN_REPAIR_KEY = "article_ai_agent_workflow_pin_repair_v1";
 const PASSWORD_ROOM_GUIDE_ARTICLE_ID = "seed-site-guide-whiteboard-chat-password-rooms-2026-08-06";
-const ARTICLE_SEED_VERSION = "20260806-site-guides-password-rooms-r2";
+const AGENT_CAPABILITIES_UPDATE_ID = "seed-update-2026-08-06-agent-capabilities";
+const WHITEBOARD_2048_AGENT_UPDATE_ID = "seed-update-2026-08-06-whiteboard-2048-agent";
+const ARTICLE_SEED_VERSION = "20260806-whiteboard-2048-agent-r1";
 const VALID_CHAT_SECRET = "article-seed-chat-secret-0000000000000001";
 const VALID_ANALYTICS_SECRET = "article-seed-analytics-secret-000000001";
 
@@ -155,6 +157,40 @@ test("every article seed D1 binding is defined", async () => {
   for (const { params } of passwordRoomGuideTranslations) {
     assert.match(params[5], /password-room-chat-desktop\.png\?v=1375ed179bd8672af824c272f806f71d350d0485ab57067d9b4baaaca8a57440/);
     assert.match(params[5], /password-room-whiteboard-mobile\.png\?v=44578f131f03ef3044dd87e69a53e2bcb1d9865fb761d9920cdd3bc96293894d/);
+  }
+
+  const agentCapabilitiesSeed = seedBatch.find(({ sql }) => (
+    sql.includes(`'${AGENT_CAPABILITIES_UPDATE_ID}'`)
+    && /on conflict\(article_id\) do update/i.test(normalizedSql(sql))
+  ));
+  assert.ok(agentCapabilitiesSeed, "the newest AI capability update metadata must be seeded");
+  const agentCapabilitiesTranslations = boundStatements.filter(({ params }) => (
+    params[1] === AGENT_CAPABILITIES_UPDATE_ID
+    && ["zh", "en", "ja"].includes(params[2])
+  ));
+  assert.equal(agentCapabilitiesTranslations.length, 3, "the AI capability update must include three translations");
+  for (const { params } of agentCapabilitiesTranslations) {
+    assert.match(params[5], /stdio MCP/);
+    assert.match(params[5], /remote MCP|远程 MCP|リモート MCP/);
+  }
+
+  const whiteboard2048AgentSeed = seedBatch.find(({ sql }) => (
+    sql.includes(`'${WHITEBOARD_2048_AGENT_UPDATE_ID}'`)
+    && /on conflict\(article_id\) do update/i.test(normalizedSql(sql))
+  ));
+  assert.ok(whiteboard2048AgentSeed, "the Whiteboard and 2048 Agent update metadata must be seeded");
+  const whiteboard2048AgentTranslations = boundStatements.filter(({ params }) => (
+    params[1] === WHITEBOARD_2048_AGENT_UPDATE_ID
+    && ["zh", "en", "ja"].includes(params[2])
+  ));
+  assert.equal(whiteboard2048AgentTranslations.length, 3, "the Whiteboard and 2048 Agent update must include three translations");
+  for (const { params } of whiteboard2048AgentTranslations) {
+    assert.match(params[5], /stdio MCP/);
+    assert.match(params[5], /2048/);
+    assert.match(params[5], /JSON/);
+    assert.match(params[5], /append-only|只追加|追記専用/);
+    assert.match(params[5], /browser|浏览器|ブラウザー/);
+    assert.match(params[5], /undeployed and read-only|未部署且保持只读|未展開の読み取り専用/);
   }
 
   const pinRepair = seedBatch.find(({ sql, params }) => (

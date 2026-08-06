@@ -1,11 +1,13 @@
 import { describe, expect, it } from "vitest";
 import * as Y from "yjs";
 import {
+  AGENT_RECEIPT_PREFIX,
   DOCUMENT_UPDATE_PREFIX,
   ROOM_META_KEY
 } from "../src/constants";
 import { YjsDocumentStore } from "../src/document-store";
 import type { RoomMeta } from "../src/types";
+import type { AgentUpdateReceipt } from "../src/types";
 
 class AtomicMemoryStorage {
   private data = new Map<string, unknown>();
@@ -93,6 +95,21 @@ function elementUpdate(id: string): Uint8Array {
   return update;
 }
 
+function agentElementUpdate(id: string): Uint8Array {
+  const document = new Y.Doc();
+  const element = new Y.Map<unknown>();
+  element.set("type", "rectangle");
+  element.set("x", 10);
+  element.set("y", 20);
+  element.set("width", 100);
+  element.set("height", 80);
+  element.set("isDeleted", false);
+  document.getMap<unknown>("elements").set(id, element);
+  const update = Y.encodeStateAsUpdate(document);
+  document.destroy();
+  return update;
+}
+
 describe("YjsDocumentStore atomic persistence", () => {
   it("never commits an update without its matching room metadata", async () => {
     const storage = new AtomicMemoryStorage();
@@ -157,5 +174,91 @@ describe("YjsDocumentStore atomic persistence", () => {
     await store.clear(applied.meta);
     expect(store.encodedStateByteLength()).toBe(store.encodeState().byteLength);
     expect(store.encodedStateByteLength()).toBeLessThan(populatedBytes);
+  });
+
+  it("commits an agent receipt atomically with its accepted document update", async () => {
+    const storage = new AtomicMemoryStorage();
+    const initialMeta = roomMeta();
+    await storage.put(ROOM_META_KEY, initialMeta);
+    const store = new YjsDocumentStore(
+      storage as unknown as DurableObjectStorage
+    );
+    await store.load();
+    const receiptKey = `${AGENT_RECEIPT_PREFIX}${"c".repeat(64)}`;
+    const receipt = {
+      key: receiptKey,
+      payloadSha256: "d".repeat(64),
+      createdAt: 10,
+      expiresAt: 20,
+      deleteKeys: []
+    };
+
+    storage.failNextTransaction = true;
+    await expect(
+      store.applyAgentIncrementalUpdate(
+        agentElementUpdate("agent-before-crash"),
+        initialMeta,
+        receipt
+      )
+    ).rejects.toThrow("simulated atomic commit failure");
+    expect(await storage.get<AgentUpdateReceipt>(receiptKey)).toBeUndefined();
+    expect(await storage.get<RoomMeta>(ROOM_META_KEY)).toEqual(initialMeta);
+    expect(storage.keys(DOCUMENT_UPDATE_PREFIX)).toEqual([]);
+
+    const applied = await store.applyAgentIncrementalUpdate(
+      agentElementUpdate("agent-after-retry"),
+      initialMeta,
+      receipt
+    );
+    expect(applied.accepted).toBe(true);
+    expect(await storage.get<AgentUpdateReceipt>(receiptKey)).toMatchObject({
+      version: 1,
+      documentVersion: 1,
+      payloadSha256: receipt.payloadSha256
+    });
+    expect((await storage.get<RoomMeta>(ROOM_META_KEY))?.documentVersion).toBe(1);
+  });
+
+  it("clears agent receipts in the same transaction as the authoritative document", async () => {
+    const storage = new AtomicMemoryStorage();
+    const initialMeta = roomMeta();
+    await storage.put(ROOM_META_KEY, initialMeta);
+    const store = new YjsDocumentStore(
+      storage as unknown as DurableObjectStorage
+    );
+    await store.load();
+    const receiptKey = `${AGENT_RECEIPT_PREFIX}${"e".repeat(64)}`;
+    const applied = await store.applyAgentIncrementalUpdate(
+      agentElementUpdate("agent-before-clear"),
+      initialMeta,
+      {
+        key: receiptKey,
+        payloadSha256: "f".repeat(64),
+        createdAt: 10,
+        expiresAt: 20,
+        deleteKeys: []
+      }
+    );
+    expect(applied.accepted).toBe(true);
+    expect(await storage.get<AgentUpdateReceipt>(receiptKey)).toBeDefined();
+
+    storage.failNextTransaction = true;
+    await expect(store.clear(applied.meta)).rejects.toThrow(
+      "simulated atomic commit failure"
+    );
+    expect(await storage.get<AgentUpdateReceipt>(receiptKey)).toBeDefined();
+    expect((await storage.get<RoomMeta>(ROOM_META_KEY))?.documentVersion).toBe(1);
+    const retained = new Y.Doc();
+    Y.applyUpdate(retained, store.encodeState());
+    expect(retained.getMap("elements").has("agent-before-clear")).toBe(true);
+    retained.destroy();
+
+    const cleared = await store.clear(applied.meta);
+    expect(cleared.documentVersion).toBe(2);
+    expect(await storage.get<AgentUpdateReceipt>(receiptKey)).toBeUndefined();
+    const empty = new Y.Doc();
+    Y.applyUpdate(empty, store.encodeState());
+    expect(empty.getMap("elements").size).toBe(0);
+    empty.destroy();
   });
 });

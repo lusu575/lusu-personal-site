@@ -4,8 +4,8 @@ export const resourcesContent = Object.freeze({
     {
       "category": 0,
       "iconSrc": "assets/images/generated-icons/whiteboard.png?v=20260730-online-whiteboard-r1",
-      "version": "v1.0.2",
-      "updated": "2026.08.01",
+      "version": "v1.0.3",
+      "updated": "2026.08.06",
       "external": false,
       "showReadyStatus": false,
       "url": "/tools/whiteboard/",
@@ -15,9 +15,9 @@ export const resourcesContent = Object.freeze({
         "ja": "オンラインホワイトボード"
       },
       "desc": {
-        "zh": "无需登录即可进入公共画板或密码房，与其他访客实时绘画、查看临时名字和远端鼠标，并在手机或电脑上上传图片与导出作品。",
-        "en": "Join a public board or password room without signing in. Draw together in real time, see temporary names and remote pointers, upload images, and export from mobile or desktop.",
-        "ja": "ログインせずに公開ボードや合言葉の部屋へ参加し、一時名とリモートポインターを見ながらリアルタイムで共同描画できます。画像追加と書き出しにも対応します。"
+        "zh": "无需登录即可进入公共画板或密码房，与其他访客实时绘画；授权后的本地 CLI／MCP Agent 也可安全读取场景、追加图形并导出作品。",
+        "en": "Join public or password rooms without signing in and draw together in real time. Authorized local CLI/MCP agents can also read scenes, append shapes, and export work safely.",
+        "ja": "ログインせずに公開ボードや合言葉の部屋で共同描画できます。認可済みのローカル CLI／MCP Agent は、場面の読取・図形追加・安全な書き出しにも対応します。"
       },
       "actionLabel": {
         "zh": "打开",
@@ -46,13 +46,13 @@ export const resourcesContent = Object.freeze({
       "category": 0,
       "action": "quick-transfer",
       "iconSrc": "assets/images/generated-icons/quick-transfer.png?v=20260719-content-experience-fixes-r1",
-      "version": "v1.0.1",
+      "version": "v1.0.2",
       "retention": {
         "zh": "24 小时",
         "en": "24 hours",
         "ja": "24時間"
       },
-      "updated": "2026.08.01",
+      "updated": "2026.08.06",
       "external": false,
       "title": {
         "zh": "临时互传",

@@ -10,6 +10,7 @@ export const RATE_SWEEP_NEXT_KEY = "rate-sweep:next";
 export const UPLOAD_RATE_PREFIX = "upload-rate:";
 export const SYNC_RATE_PREFIX = "sync-rate:";
 export const TICKET_JTI_PREFIX = "ticket-jti:";
+export const AGENT_RECEIPT_PREFIX = "agent-receipt:";
 
 export const PUBLIC_ROOM_ID = "public-v1";
 export const ROOM_RETENTION_MS = 24 * 60 * 60 * 1_000;
@@ -55,6 +56,9 @@ export const MAX_SYNC_REQUESTS_PER_WINDOW = 4;
 export const MAX_SYNC_RESPONSE_BYTES_PER_WINDOW = 32 * 1_024 * 1_024;
 export const RATE_STATE_RETENTION_MS = 2 * 60_000;
 export const CONSUMED_TICKET_TTL_MS = 5 * 60 * 1_000;
+export const AGENT_RECEIPT_TTL_MS = 24 * 60 * 60 * 1_000;
+export const MAX_AGENT_RECEIPTS = 128;
+export const MAX_AGENT_ELEMENTS_PER_UPDATE = 50;
 export const UNREFERENCED_ASSET_GRACE_MS = 60 * 60 * 1_000;
 export const ASSET_REFERENCE_RECHECK_MS = 15 * 60 * 1_000;
 
@@ -70,6 +74,9 @@ export const IDENTITY_COLOR_HEADER = "x-whiteboard-identity-color";
 export const IP_HASH_HEADER = "x-whiteboard-ip-hash";
 export const CLIENT_ORIGIN_HEADER = "x-whiteboard-client-origin";
 export const ADMIN_AUTHORIZED_HEADER = "x-whiteboard-admin-authorized";
+export const AGENT_AUTHORIZED_HEADER = "x-whiteboard-agent-authorized";
+export const AGENT_SUBJECT_HEADER = "x-whiteboard-agent-subject";
+export const AGENT_OPERATION_ID_HEADER = "x-whiteboard-agent-operation-id";
 export const IDENTITY_VERSION_HEADER = "x-whiteboard-identity-version";
 export const TICKET_JTI_HEADER = "x-whiteboard-ticket-jti";
 export const WEBSOCKET_PROTOCOL = "whiteboard.v1";

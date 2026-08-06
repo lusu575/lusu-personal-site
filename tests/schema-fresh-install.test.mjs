@@ -20,6 +20,8 @@ const aiAgentWorkflowPinRepairKey = "article_ai_agent_workflow_pin_repair_v1";
 const multiplayerWhiteboardArticleId = "seed-update-2026-07-30-multiplayer-whiteboard";
 const serviceReliabilityArticleId = "seed-update-2026-08-01-service-reliability";
 const passwordRoomGuideArticleId = "seed-site-guide-whiteboard-chat-password-rooms-2026-08-06";
+const agentCapabilitiesUpdateId = "seed-update-2026-08-06-agent-capabilities";
+const whiteboard2048AgentUpdateId = "seed-update-2026-08-06-whiteboard-2048-agent";
 
 test("D1 schema initializes an empty database and remains idempotent", () => {
   const db = new DatabaseSync(":memory:");
@@ -61,6 +63,22 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
       db.prepare("select count(*) as count from article_translations where article_id = ?").get(passwordRoomGuideArticleId).count,
       3
     );
+    assert.equal(
+      db.prepare("select count(*) as count from articles where article_id = ? and category = 'site-updates'").get(agentCapabilitiesUpdateId).count,
+      1
+    );
+    assert.equal(
+      db.prepare("select count(*) as count from article_translations where article_id = ?").get(agentCapabilitiesUpdateId).count,
+      3
+    );
+    assert.equal(
+      db.prepare("select count(*) as count from articles where article_id = ? and category = 'site-updates'").get(whiteboard2048AgentUpdateId).count,
+      1
+    );
+    assert.equal(
+      db.prepare("select count(*) as count from article_translations where article_id = ?").get(whiteboard2048AgentUpdateId).count,
+      3
+    );
     const trafficSettings = JSON.parse(
       db.prepare("select value from site_runtime_state where key = 'traffic_control_settings_v1'").get().value
     );
@@ -70,7 +88,7 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
     assert.equal(trafficSettings.sampling.hard.clicks, 0);
     assert.equal(
       db.prepare("select value from site_runtime_state where key = 'article_seed_version'").get().value,
-      "20260806-site-guides-password-rooms-r2"
+      "20260806-whiteboard-2048-agent-r1"
     );
     assert.deepEqual(
       db.prepare("pragma table_info(whiteboard_rooms)").all().map((column) => column.name),
@@ -89,6 +107,43 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
         "name_changed_at", "name_window_start", "name_change_count", "revoked_at"
       ]
     );
+    assert.deepEqual(
+      db.prepare("pragma table_info(agent_device_authorizations)").all().map((column) => column.name),
+      [
+        "device_id", "device_code_hash", "user_code_hash", "client_name",
+        "requested_scopes", "granted_scopes", "user_id", "status", "csrf_hash",
+        "ip_hash", "created_at", "expires_at", "approved_at", "consumed_at",
+        "poll_count", "last_polled_at", "decision_event_id"
+      ]
+    );
+    assert.deepEqual(
+      db.prepare("pragma table_info(agent_access_tokens)").all().map((column) => column.name),
+      [
+        "token_id", "token_hash", "token_hint", "user_id", "client_name", "scopes",
+        "created_at", "expires_at", "last_used_at", "revoked_at", "revoked_event_id"
+      ]
+    );
+    assert.deepEqual(
+      db.prepare("pragma table_info(agent_audit_log)").all().map((column) => column.name),
+      [
+        "event_id", "actor_user_id", "token_id", "action", "target_type",
+        "target_id", "scopes", "result", "created_at"
+      ]
+    );
+    assert.equal(
+      db.prepare(`
+        select count(*) as count from sqlite_master
+        where type = 'index' and name in (
+          'agent_device_status_expires_idx',
+          'agent_device_ip_created_idx',
+          'agent_access_tokens_user_idx',
+          'agent_access_tokens_expires_idx',
+          'agent_audit_created_idx'
+        )
+      `).get().count,
+      5
+    );
+    assert.equal(db.prepare("select count(*) as count from agent_access_tokens").get().count, 0);
     assert.equal(
       db.prepare("select count(*) as count from sqlite_master where type = 'index' and name = ?")
         .get("whiteboard_rooms_live_overview_idx").count,

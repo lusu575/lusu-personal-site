@@ -1,6 +1,6 @@
 # 在线画板架构与运维
 
-**当前子项目版本：1.0.2**
+**当前子项目版本：1.0.3**
 
 本目录是在线画板的治理根：`VERSION` / `project.json` 保存独立版本，`CHANGELOG.md` 保存子项目更新，`AGENTS.md` 约束维护流程，`AGENT.md` 仅作兼容入口。任何画板更改都必须把该版本精确增加 `0.0.1`，并同步本目录全部受影响文档和根项目记录。
 
@@ -48,6 +48,18 @@
 密码、房间 HMAC 输入和画布内容不进入 URL、LocalStorage、History、埋点或日志。最近房间只在本地保存“公共/密码房”和最近使用时间，重新进入密码房仍需输入密码。
 
 WebSocket 票据通过 `Sec-WebSocket-Protocol` 发送，不放入查询参数。Pages Functions 验证票据、精确 Origin、身份和 IP 哈希后，通过 external Durable Object binding 转发；公开响应只协商固定协议 `whiteboard.v1`。
+
+## Agent 场景通道
+
+本地 `lusu` CLI 与 stdio MCP 通过站点专用 Agent HTTP 通道操作画板。它使用带 scope 的站点 Agent Bearer，不是公网远程 MCP 的标准 OAuth 写入口；`workers/site-mcp/` 继续保持未部署、只读且不包含画板写工具。`whiteboard:read` 与 `whiteboard:write` 都是非默认 scope，写权限只隐含读取。
+
+- `POST /api/whiteboard/agent/rooms/join` 使用 Agent Bearer 加入公共房或密码房，并只返回房型、独立房间访问令牌和过期时间；不返回内部 `roomId`、WebSocket 票据或匿名身份。密码房密码仍只通过同源 HTTPS 请求体交给服务端完成 HMAC 房间映射，不进入 argv、MCP 输出、URL、日志或本地明文状态。
+- `GET /api/whiteboard/agent/scene` 同时要求 Agent Bearer 与 `X-Whiteboard-Access-Token`，返回完整 `application/vnd.yjs` 状态、文档版本和锁定状态。读取尚未创建的空房返回版本 0 的空状态，不创建元数据或延长生命周期。
+- `POST /api/whiteboard/agent/scene` 还要求 `X-Whiteboard-Operation-Id`，仅接受不超过 256 KiB 的 Yjs update。客户端必须先读取最新完整状态，并从该状态追加 1–50 个文字、矩形、椭圆、菱形、线条或箭头；不得修改／删除既有元素，也不得新增图片、嵌入、链接、绑定、资源或未知根数据。
+- Durable Object 在持久化前对合并后的 Yjs 文档执行严格验证，并将文档更新、版本和 `operationId + payload SHA-256` 幂等收据放在同一事务中。完全相同的重试返回 `replayed: true`；同一 ID 搭配不同载荷返回冲突；只读锁定返回 423。每房只保留最近 128 条收据。
+- Agent 访问不计入在线人数。公共房仍不执行空房 TTL；密码房 Agent 写入会让空房重新从该次持久化活动计算 24 小时清理期限，但不会伪造一个在线连接。
+
+本地能力层只暴露高层绘制指令和不透明 `board_...` 句柄。密码只能从标准输入或 `env:NAME` secret reference 读取；本地私有状态只保存房间访问令牌、房型、到期时间和可选 secret reference。`whiteboards.json` 的整次 read-modify-write 由跨进程 owner-token 锁保护，写入采用同目录 0600 临时文件、fsync 和原子 rename；并发加入／刷新不会互相覆盖，失败也不先截断旧文件。JSON 导出保留 Excalidraw 元素；SVG／PNG 是安全的简化本地渲染，当前不嵌入房间图片并会返回警告。编辑、删除、图片写入和任意 Yjs 字节注入都不属于此能力面。
 
 ## 保存、增量与资源
 
@@ -169,7 +181,7 @@ Pages 项目不能创建 Durable Object，独立 Worker 必须先部署。不要
 
 ## 验收测试
 
-本地单元和 Workers Vitest 覆盖：房间 HMAC、票据、Origin、跨房隔离、Yjs 增量、持久化恢复、名字查重、限频、图片校验、公共锁定/清空、最后离开、重入取消、重复 Alarm，以及 D1 清理故障后的状态保留与恢复重试。
+本地单元和 Workers Vitest 覆盖：房间 HMAC、票据、Origin、跨房隔离、Yjs 增量、持久化恢复、名字查重、限频、图片校验、公共锁定/清空、最后离开、重入取消、重复 Alarm、Agent scope 与双令牌分离、追加式场景验证、操作幂等收据，以及 D1 清理故障后的状态保留与恢复重试。
 
 启用并完成隔离配置后的 Preview 与正式环境还必须使用至少两个独立浏览器上下文，覆盖公共房、同/异密码房、并发修改、断线重连、多标签、PNG/SVG 导出、图片四种输入路径、iPhone/Android 竖横屏、软键盘、后台恢复和 Wi-Fi/移动网络切换。测试账号名称、密码和画布内容不得写入日志或截图元数据。
 

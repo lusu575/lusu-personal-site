@@ -34,8 +34,10 @@ test("public modal fixes preserve readable depth and compact failed-video geomet
   );
 });
 
-test("the website-guide release leads the five-item trilingual projection while older Knowledge updates remain archived", async () => {
-  const updateId = "seed-update-2026-08-06-site-guides-password-rooms";
+test("the whiteboard and 2048 Agent release leads the five-item trilingual projection while older updates remain archived", async () => {
+  const updateId = "seed-update-2026-08-06-whiteboard-2048-agent";
+  const firstPhaseUpdateId = "seed-update-2026-08-06-agent-capabilities";
+  const websiteGuideUpdateId = "seed-update-2026-08-06-site-guides-password-rooms";
   const trafficUpdateId = "seed-update-2026-08-02-traffic-discovery-monitoring";
   const calmWhiteboardUpdateId = "seed-update-2026-08-01-whiteboard-calm-efficient-sync";
   const reliableWhiteboardUpdateId = "seed-update-2026-08-01-whiteboard-reliable-sketch";
@@ -49,14 +51,16 @@ test("the website-guide release leads the five-item trilingual projection while 
 
   assert.equal(content.updates[0].article_id, updateId);
   assert.equal(homeContent.updates[0].article_id, updateId);
-  assert.equal(content.updates[1].article_id, trafficUpdateId);
-  assert.equal(homeContent.updates[1].article_id, trafficUpdateId);
-  assert.equal(content.updates[2].article_id, calmWhiteboardUpdateId);
-  assert.equal(homeContent.updates[2].article_id, calmWhiteboardUpdateId);
-  assert.equal(content.updates[3].article_id, reliableWhiteboardUpdateId);
-  assert.equal(homeContent.updates[3].article_id, reliableWhiteboardUpdateId);
-  assert.equal(content.updates[4].article_id, serviceReliabilityUpdateId);
-  assert.equal(homeContent.updates[4].article_id, serviceReliabilityUpdateId);
+  assert.equal(content.updates[1].article_id, firstPhaseUpdateId);
+  assert.equal(homeContent.updates[1].article_id, firstPhaseUpdateId);
+  assert.equal(content.updates[2].article_id, websiteGuideUpdateId);
+  assert.equal(homeContent.updates[2].article_id, websiteGuideUpdateId);
+  assert.equal(content.updates[3].article_id, trafficUpdateId);
+  assert.equal(homeContent.updates[3].article_id, trafficUpdateId);
+  assert.equal(content.updates[4].article_id, calmWhiteboardUpdateId);
+  assert.equal(homeContent.updates[4].article_id, calmWhiteboardUpdateId);
+  assert.ok(content.updates.some((update) => update.article_id === reliableWhiteboardUpdateId));
+  assert.ok(content.updates.some((update) => update.article_id === serviceReliabilityUpdateId));
   assert.ok(content.updates.some((update) => update.article_id === whiteboardUpdateId));
   assert.ok(content.updates.some((update) => update.article_id === knowledgeUpdateId));
   assert.equal(homeContent.updates.length, 5);
@@ -80,7 +84,8 @@ test("the website-guide release leads the five-item trilingual projection while 
 test("Knowledge Markdown links use a fresh cache version without invalidating unrelated public assets", () => {
   const stableVersion = "20260726-security-reliability-r1";
   const knowledgeReaderVersion = "20260728-knowledge-archive-r1";
-  const toolRadarVersion = "20260806-site-guides-password-rooms-r2";
+  const agentCapabilitiesVersion = "20260806-agent-capabilities-quick-transfer-r1";
+  const whiteboard2048AgentVersion = "20260806-whiteboard-2048-agent-r1";
   const transferVersion = "20260801-whiteboard-reliable-sketch-r1";
   const index = read("index.html");
   const main = read("js/main.js");
@@ -96,11 +101,12 @@ test("Knowledge Markdown links use a fresh cache version without invalidating un
     assert.ok(index.includes(`${asset}?v=${stableVersion}`), `${asset} should use ${stableVersion}`);
   }
   assert.ok(index.includes(`/css/mobile-ios-shell.css?v=${knowledgeReaderVersion}`));
-  assert.ok(index.includes(`/js/main.js?v=${toolRadarVersion}`));
+  assert.ok(index.includes(`/js/main.js?v=${whiteboard2048AgentVersion}`));
   assert.ok(main.includes(`const routeStyleVersion = "${knowledgeReaderVersion}"`));
-  assert.ok(main.includes(`./core/i18n.mjs?v=${toolRadarVersion}`));
-  assert.ok(main.includes(`./data/home-content.mjs?v=${toolRadarVersion}`));
-  assert.ok(main.includes(`./routes/knowledge.mjs?v=${toolRadarVersion}`));
+  assert.ok(main.includes(`./core/i18n.mjs?v=${agentCapabilitiesVersion}`));
+  assert.ok(main.includes(`./data/home-content.mjs?v=${whiteboard2048AgentVersion}`));
+  assert.ok(main.includes(`./routes/knowledge.mjs?v=${agentCapabilitiesVersion}`));
+  assert.ok(main.includes(`./data/resources-content.mjs?v=${whiteboard2048AgentVersion}`));
   assert.ok(transferLoader.includes(`const TRANSFER_VERSION = "${transferVersion}"`));
   assert.ok(resources.includes(`../features/quick-transfer-loader.mjs?v=${transferVersion}`));
   assert.doesNotMatch([index, main, transferLoader, resources].join("\n"), /20260726-tools-rename-r1/);

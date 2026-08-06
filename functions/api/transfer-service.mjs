@@ -1,3 +1,8 @@
+import {
+  authenticateAgentBearer,
+  isAgentBearerRequest
+} from "./agent-auth.mjs";
+
 const SESSION_COOKIE = "lusu_session";
 const MIB = 1024 * 1024;
 const GIB = 1024 * MIB;
@@ -86,7 +91,7 @@ export async function handleTransferApi(context, parts) {
     assertBindings(context.env, { requireBucket: routeNeedsBucket(context.request, parts) });
     await ensureTransferSchema(context.env);
     if (context.request.method !== "GET" && context.request.method !== "HEAD") {
-      assertSameOrigin(context.request);
+      assertTransferMutationSource(context.request);
     }
     return isAdminTransfer
       ? await handleAdminTransferApi(context, parts.slice(2))
@@ -111,7 +116,7 @@ export async function handleTransferApi(context, parts) {
 
 async function handleUserTransferApi(context, parts) {
   const { request, env } = context;
-  const session = await requireTransferSession(request, env);
+  const session = await requireTransferSession(request, env, requiredTransferScope(request.method, parts));
   const url = new URL(request.url);
 
   if (request.method === "GET" && parts[0] === "config" && !parts[1]) {
@@ -1844,7 +1849,40 @@ function transferSchemaStatements(env) {
   return statements;
 }
 
-async function requireTransferSession(request, env) {
+async function requireTransferSession(request, env, requiredScope = "transfer:read") {
+  if (hasAuthorizationCredential(request)) {
+    if (!isAgentBearerRequest(request)) {
+      throw new TransferHttpError(
+        "Agent Authorization header is invalid.",
+        401,
+        "TRANSFER_AGENT_AUTHORIZATION_INVALID"
+      );
+    }
+    try {
+      const principal = await authenticateAgentBearer(request, env, [requiredScope]);
+      return {
+        authType: "agent-token",
+        tokenId: principal.tokenId,
+        scopes: principal.scopes,
+        user: {
+          id: principal.user.id,
+          email: principal.user.email,
+          // Machine tokens never inherit browser administrator privileges.
+          role: "user"
+        }
+      };
+    } catch (error) {
+      throw new TransferHttpError(
+        error instanceof Error ? error.message : "Agent access token is invalid.",
+        Number(error?.status || 401),
+        String(error?.code || "TRANSFER_AGENT_TOKEN_INVALID")
+      );
+    }
+  }
+  return requireTransferBrowserSession(request, env);
+}
+
+async function requireTransferBrowserSession(request, env) {
   const token = readCookie(request, SESSION_COOKIE);
   if (!token) {
     throw new TransferHttpError("请先登录后再使用临时互传。", 401, "TRANSFER_LOGIN_REQUIRED");
@@ -1861,7 +1899,14 @@ async function requireTransferSession(request, env) {
 }
 
 async function requireTransferAdmin(request, env) {
-  const session = await requireTransferSession(request, env);
+  if (hasAuthorizationCredential(request)) {
+    throw new TransferHttpError(
+      "Transfer administration requires a browser session without an Agent Authorization header.",
+      401,
+      "TRANSFER_ADMIN_BROWSER_SESSION_REQUIRED"
+    );
+  }
+  const session = await requireTransferBrowserSession(request, env);
   if (session.user.role !== "admin") {
     throw new TransferHttpError("只有管理员可以访问互传管理功能。", 403, "TRANSFER_ADMIN_REQUIRED");
   }
@@ -1890,12 +1935,32 @@ function routeNeedsBucket(request, parts) {
   return true;
 }
 
-function assertSameOrigin(request) {
+function assertTransferMutationSource(request) {
   const origin = request.headers.get("Origin");
   const expected = new URL(request.url).origin;
-  if (!origin || origin !== expected) {
+  if (origin && origin !== expected) {
     throw new TransferHttpError("请求来源校验失败。", 403, "TRANSFER_ORIGIN_REJECTED");
   }
+  if (!origin && !isAgentBearerRequest(request)) {
+    throw new TransferHttpError("请求来源校验失败。", 403, "TRANSFER_ORIGIN_REJECTED");
+  }
+}
+
+function hasAuthorizationCredential(request) {
+  return Boolean(String(request.headers.get("Authorization") || "").trim());
+}
+
+function requiredTransferScope(method, parts) {
+  if (method === "GET" || method === "HEAD") {
+    return "transfer:read";
+  }
+  if (method === "DELETE") {
+    return "transfer:delete";
+  }
+  if (method === "POST" && parts[0] === "upload" && parts[1] === "abort") {
+    return "transfer:delete";
+  }
+  return "transfer:write";
 }
 
 async function readBoundedJson(request) {

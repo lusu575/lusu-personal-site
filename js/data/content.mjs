@@ -1,6 +1,66 @@
 export const content = {
   updates: [
     {
+      "article_id": "seed-update-2026-08-06-whiteboard-2048-agent",
+      "slug": "2026-08-06-whiteboard-2048-agent",
+      "category": "site-updates",
+      "tags": ["网站更新", "AI 能力", "在线画板", "2048", "MCP", "CLI"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-06T03:50:00.000Z",
+      "updated_at": "2026-08-06T03:50:00.000Z",
+      "published_at": "2026-08-06T03:50:00.000Z",
+      "fallbackOnly": true,
+      "icon": "resources",
+      "date": "2026.08.06",
+      "title": {
+        "zh": "AI 已可操作在线画板与 2048",
+        "en": "AI Can Now Draw on Whiteboards and Play 2048",
+        "ja": "AI がホワイトボード描画と 2048 操作に対応"
+      },
+      "summary": {
+        "zh": "第二阶段把在线画板与 2048 接入本地 CLI／stdio MCP：画板可安全追加高层元素并在本地导出 JSON、SVG、PNG；2048 运行在隔离的本地会话中。远程 MCP 仍未部署且保持只读。",
+        "en": "Phase two connects Online Whiteboard and 2048 to the local CLI/stdio MCP: the board safely appends high-level elements and exports JSON, SVG, or PNG locally, while 2048 runs in an isolated local session. The remote MCP remains undeployed and read-only.",
+        "ja": "第2段階としてオンラインホワイトボードと 2048 をローカル CLI／stdio MCP に接続しました。ホワイトボードは安全な高レベル要素の追記とローカル JSON／SVG／PNG 書き出し、2048 は分離されたローカルセッションに対応します。リモート MCP は未展開の読み取り専用のままです。"
+      },
+      "content_markdown": {
+        "zh": "# AI 已可操作在线画板与 2048\n\nAI 能力层进入第二阶段，先接入在线画板和第一个可操作游戏。当前入口严格限定在本地 CLI 与 stdio MCP，能力边界会与实际实现保持一致。\n\n## 在线画板\n\n- AI 可加入公共或密码房，读取场景摘要，并安全追加文字、矩形、椭圆、菱形、直线和箭头等高层元素。\n- 写入采用只追加规则；现有元素的编辑和删除、图片嵌入目前都不支持。\n- 场景可在本地导出为 JSON、SVG 或 PNG；SVG 与 PNG 是简化的可视化导出。\n\n## 2048\n\n- AI 可创建隔离的本地 2048 会话，观察棋盘和可用动作，并通过带版本检查的操作完成移动、重置和关闭。\n- 这不是对已经在浏览器中打开的游戏页面进行连接或接管，也不会混用访客的浏览器存档。\n\n## 接口边界\n\n这些新能力只通过本地 CLI／stdio MCP 提供。远程 MCP Worker 仍未部署且保持只读，没有公开连接地址，也没有远程写入能力。网站其余工具和游戏会继续按权限与数据边界分批接入。",
+        "en": "# AI Can Now Draw on Whiteboards and Play 2048\n\nThe AI capability layer has entered its second phase with Online Whiteboard and the first controllable game. Access is deliberately limited to the local CLI and stdio MCP, and the published capability boundary matches what is implemented.\n\n## Online Whiteboard\n\n- AI clients can join a public or password room, read a scene summary, and safely append high-level elements such as text, rectangles, ellipses, diamonds, lines, and arrows.\n- Writes are append-only. Editing or deleting existing elements and embedding images are not supported.\n- A scene can be exported locally as JSON, SVG, or PNG. The SVG and PNG outputs are simplified visual exports.\n\n## 2048\n\n- AI clients can create an isolated local 2048 session, observe the board and available actions, and use revision-checked operations to move, reset, or close it.\n- This does not connect to or take over a game page that is already open in a browser, and it does not reuse a visitor browser save.\n\n## Interface boundary\n\nThese capabilities are available only through the local CLI and stdio MCP. The remote MCP Worker remains undeployed and read-only, with no public connection URL and no remote write operations. Other site tools and games will be connected in stages according to their permission and data boundaries.",
+        "ja": "# AI がホワイトボード描画と 2048 操作に対応\n\nAI 機能レイヤーの第2段階として、オンラインホワイトボードと最初の操作可能なゲームを接続しました。入口はローカル CLI と stdio MCP に限定し、公開する機能範囲を実装済みの内容と一致させています。\n\n## オンラインホワイトボード\n\n- AI は公開ルームまたはパスワードルームに参加し、シーンの概要を読み取り、テキスト、長方形、楕円、ひし形、線、矢印などの高レベル要素を安全に追記できます。\n- 書き込みは追記専用です。既存要素の編集や削除、画像の埋め込みには対応していません。\n- シーンはローカルで JSON、SVG、PNG に書き出せます。SVG と PNG は簡略化した表示用の書き出しです。\n\n## 2048\n\n- AI は分離されたローカル 2048 セッションを作成し、盤面と利用可能な操作を確認して、リビジョン検査付きの操作で移動、リセット、終了を実行できます。\n- すでにブラウザーで開いているゲーム画面への接続や乗っ取りではなく、訪問者のブラウザー保存データも再利用しません。\n\n## インターフェースの境界\n\nこれらの新機能はローカル CLI と stdio MCP だけで利用できます。リモート MCP Worker は未展開の読み取り専用のままで、公開接続 URL もリモート書き込み機能もありません。ほかのサイトツールとゲームは、権限とデータ境界に応じて段階的に接続します。"
+      }
+    },
+    {
+      "article_id": "seed-update-2026-08-06-agent-capabilities",
+      "slug": "2026-08-06-agent-capabilities",
+      "category": "site-updates",
+      "tags": ["网站更新", "AI 能力", "MCP", "CLI", "临时互传"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-06T02:20:00.000Z",
+      "updated_at": "2026-08-06T02:20:00.000Z",
+      "published_at": "2026-08-06T02:20:00.000Z",
+      "fallbackOnly": true,
+      "icon": "resources",
+      "date": "2026.08.06",
+      "title": {
+        "zh": "AI 能力层第一阶段：MCP、CLI 与临时互传",
+        "en": "AI Capability Layer: MCP, CLI, and Quick Transfer",
+        "ja": "AI 機能レイヤー第1段階：MCP・CLI・一時転送"
+      },
+      "summary": {
+        "zh": "建立统一能力注册表、设备码和最小权限令牌，新增本地 CLI／stdio MCP 与尚未部署的只读远程 MCP；AI 现在可安全收发临时互传的文字和文件，白板与游戏控制仍在后续计划中。",
+        "en": "Adds a governed capability registry, device authorization and scoped tokens, a local CLI/stdio MCP, and an undeployed read-only remote MCP; AI clients can now exchange Quick Transfer text and files, while Whiteboard and game control remain planned.",
+        "ja": "統一機能レジストリ、デバイス認証、最小権限トークン、ローカル CLI／stdio MCP、未展開の読み取り専用リモート MCP を追加しました。AI は一時転送のテキストとファイルを扱えますが、ホワイトボードとゲーム操作はまだ計画段階です。"
+      },
+      "content_markdown": {
+        "zh": "# AI 能力层第一阶段：MCP、CLI 与临时互传\n\n网站开始补上一层面向 AI 的统一能力入口。第一阶段先把能力清单、授权边界和可复用客户端搭稳，再逐步接入更多工具。\n\n## 已经完成\n\n- 统一能力注册表会同时记录未来希望支持的入口和当前真正可用的入口，CLI、MCP 与文档都从同一份清单读取，避免把计划能力误报成已上线。\n- 本地 CLI 和 stdio MCP 已可读取文章、搜索公开内容、查看每日 AI 新闻与视频列表。\n- 临时互传已接入加入房间、列出内容、收发文字、上传下载文件和删除项目；密码只在本机输入或从明确指定的环境变量读取，不进入命令参数、能力清单或远程服务。\n- 设备码登录与最小权限令牌把公开内容、互传读取、写入和删除分开授权，管理接口仍只接受管理员浏览器会话。\n\n## 远程 MCP 的当前状态\n\n只读远程 MCP Worker 的代码和测试已经完成，可提供能力清单、公开文章列表、搜索与文章读取。它目前没有部署到生产环境，也没有开放远程写操作，因此本次更新不提供可连接的线上 MCP 地址。\n\n## 下一步\n\n在线画板、游戏控制以及其余工具已经登记为后续适配目标，但现在还不能由 AI 直接接管。后续会按权限风险和数据边界分批实现，并只在真实可用后标记为已支持。",
+        "en": "# AI Capability Layer: MCP, CLI, and Quick Transfer\n\nThe site now has a shared capability layer for AI clients. This first phase establishes one inventory, authorization boundaries, and reusable clients before more tools are connected.\n\n## Available now\n\n- The capability registry records both intended transports and transports that are actually available. The CLI, MCP servers, and documentation read the same inventory so planned features are not presented as live.\n- The local CLI and stdio MCP can list and search public content, read articles and Daily AI News, and list videos.\n- Quick Transfer supports joining a room, listing items, sending and receiving text, uploading and downloading files, and deleting items. Passwords are entered locally or read from an explicitly named environment variable; they are not placed in command arguments, the registry, or the remote service.\n- Device authorization and least-privilege tokens separate public-content access from Transfer read, write, and delete scopes. Administrator routes still require an administrator browser session.\n\n## Remote MCP status\n\nThe read-only remote MCP Worker is implemented and tested for capability discovery, public article lists, search, and article reads. It has not been deployed to production and exposes no remote write operation, so this release does not provide a live remote MCP URL.\n\n## Next\n\nOnline Whiteboard, game control, and the remaining tools are registered as adapter targets, but AI clients cannot control them yet. They will be added in stages according to permission risk and data boundaries, and will be marked available only after they actually work.",
+        "ja": "# AI 機能レイヤー第1段階：MCP・CLI・一時転送\n\nAI クライアント向けの共通機能レイヤーをサイトに追加しました。第1段階では、より多くのツールを接続する前に、機能一覧、認可境界、再利用できるクライアントを整えています。\n\n## 現在利用できるもの\n\n- 機能レジストリは、将来対応したい入口と、現在実際に利用できる入口を分けて記録します。CLI、MCP、文書が同じ一覧を参照し、計画中の機能を公開済みとして表示しません。\n- ローカル CLI と stdio MCP では、公開コンテンツの一覧・検索、記事と Daily AI News の取得、動画一覧の取得ができます。\n- 一時転送では、ルーム参加、項目一覧、テキスト送受信、ファイルのアップロード・ダウンロード、項目削除に対応しました。パスワードはローカル入力または明示した環境変数からだけ読み取り、コマンド引数、レジストリ、リモートサービスには保存しません。\n- デバイス認証と最小権限トークンで、公開コンテンツと一時転送の読み取り・書き込み・削除を分離しました。管理機能は引き続き管理者のブラウザーセッションだけを受け付けます。\n\n## リモート MCP の状態\n\n読み取り専用リモート MCP Worker は実装とテストを完了し、機能一覧、公開記事一覧、検索、記事取得を提供できます。ただし本番環境にはまだ展開しておらず、リモート書き込みもありません。そのため、今回の更新では接続可能な公開 MCP URL を案内しません。\n\n## 次の段階\n\nオンラインホワイトボード、ゲーム操作、そのほかのツールは今後のアダプター対象として登録済みですが、現時点で AI が直接操作することはできません。権限リスクとデータ境界に合わせて段階的に実装し、実際に動作した機能だけを利用可能として表示します。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-06-site-guides-password-rooms",
       "slug": "2026-08-06-site-guides-password-rooms",
       "category": "site-updates",

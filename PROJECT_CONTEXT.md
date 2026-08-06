@@ -1,5 +1,23 @@
 # PROJECT_CONTEXT.md
 
+## 2026-08-06 AI 能力层第二阶段：在线画板与 2048
+
+- 在线画板子项目升级到 `v1.0.3`。站点 Agent Auth 新增非默认 `whiteboard:read`／`whiteboard:write` scope；Pages 提供 Agent 加入与 scene GET/POST，并将 Agent Bearer、绑定当前 tokenId 的房间访问令牌和 DO 内部授权分层。密码仍只通过同源 HTTPS 请求体交给服务端 HMAC 映射，不进入 argv、URL、日志、遥测、MCP 输出或本地明文状态。
+- Durable Object 的 Agent 更新是严格追加式：调用方必须先读取最新完整 Yjs scene，单次只新增 1–50 个文字、矩形、椭圆、菱形、线条或箭头。服务端在候选文档上拒绝既有元素修改／删除、图片／嵌入、资源、链接、绑定、customData 与未知根数据，并对文字、坐标、点数、更新字节和完整文档大小设限。`operationId + payload SHA-256` 幂等收据、文档增量与版本在同一 DO transaction 落盘；同载荷重试不重复绘制，换载荷复用 ID 返回冲突，锁定房拒绝写入。
+- `cli/lusu.mjs` 与本地 stdio MCP 已实现白板加入、scene 摘要、追加高层元素和本地 JSON／SVG／PNG 导出。私房只允许隐藏 stdin 或 `env:NAME` secret reference；本地 `whiteboards.json` 保存不透明 `board_...` 句柄、房型、到期时间、访问令牌与可选引用，不保存密码。句柄 read-modify-write 使用跨进程 owner-token 锁，同目录 0600 临时文件 fsync 后原子替换目标，避免并发加入／401 刷新丢写和崩溃截断。简化 SVG／PNG 当前忽略图片并返回警告；编辑、删除、图片写入与任意 Yjs 注入不属于能力面。
+- 2048 成为首个游戏 Agent adapter。浏览器游戏与本地会话共用纯确定性引擎，页面保留 `window.gamePage.save` 并新增冻结的语义 `window.gamePage.agent` bridge；本地 CLI／MCP 通过 `create -> observe -> actions -> act` 运行隔离会话，使用 revision CAS、clientActionId 最近 128 条去重、状态／会话数／闲置 TTL 上限和原子文件锁。锁包含唯一 owner、进程实例／PID 与心跳，释放前复核所有权；observe／actions 不落盘、不刷新过期时间，只有真实动作续期。重置与关闭需要显式确认。当前没有页面配对传输，因此不是接管已打开浏览器里的游戏。
+- `workers/site-mcp/` 仍是未部署的公开只读工程，不含白板或游戏工具。白板专用 Agent HTTP 通道使用站点设备令牌而非标准 OAuth，只服务当前本地 CLI／stdio MCP 边界；任何真正公网远程写入仍必须另行实现第一方 OAuth 2.1、最小 scope、撤销、审计与独立审核。
+- 本批公开更新为 `seed-update-2026-08-06-whiteboard-2048-agent`，公开/API/文章 seed 与主模块／2048 缓存版本为 `20260806-whiteboard-2048-agent-r1`。生产发布固定先迁移并回读 Production D1，再部署和验证兼容 `lusu-whiteboard-do` Worker，最后合并 GitHub `main` 触发 Pages；独立远程 MCP 不在本批部署范围内。上线结论必须以 D1、Worker、Pages 和正式域名的实际回读为准。
+- 本地验证结果：根测试 498 / 498、2048 14 / 14、白板前端 8 项与 Worker 44 / 44、远程只读 MCP 4 / 4；Lint、TypeScript、子项目治理、生产构建、双构建复现与 192 项 Headless public UI release 审计全部通过。产物清单 SHA-256 为 `111eb9274dc2e91398c0d8da974a2ed33852301cc67149886ab0c16e2d160df9`；这些结果不代替线上 D1／Worker／Pages 验收。
+
+## 2026-08-06 AI 能力层第一阶段（历史基线）
+
+- 站点新增统一能力注册表 `lib/capabilities/registry.mjs`，用一份可机读目录管理内容、工具、游戏与后续适配状态。`transport` 只是该能力长期希望接入的目标面，`availableTransports` 才是当前已经实现、可向 AI 客户端承诺的真实面；查询、文档和工具列表均不得把目标面当成已上线能力。
+- 该阶段真实可用的本地接入面是 `cli/lusu.mjs` 与 `mcp/local/server.mjs` 的 stdio MCP：支持能力查询、公开文章列表／搜索／详情、每日 AI 新闻、视频列表，以及授权后的 Quick Transfer 进房、列表、发送文字、上传、下载和删除。这两个入口都从 `自动新闻/integrations/lusu-site/network-fetch.mjs` 取得共享代理感知 fetch 并注入 `SiteClient`；`SiteClient` 本身只依赖注入的 fetch，不自行读取或输出代理值与凭据。Quick Transfer 因适配层升级到 v1.0.2，未扩大它对文件加密、容量或 24 小时生命周期的原有承诺。
+- 机器授权由 `functions/api/agent-auth.mjs` 提供设备码确认和可撤销、有期限的最小权限令牌，范围固定为 `content:read`、`transfer:read`、`transfer:write`、`transfer:delete`。Agent Bearer 始终作为普通机器身份，不能进入管理接口或继承账号的 admin 角色；Quick Transfer 房间口令不发往服务端，不进命令行、URL、持久明文、日志或遥测，文字密钥在本地派生。
+- `workers/site-mcp/` 是与 Pages 分离的无状态远程 MCP Worker 工程，目前只直接读取公开文章能力。该 Worker 仅完成仓库实现与本地验证，未部署、未配置正式域名，也没有远程写能力。当时在线画板、游戏 AI 接管及其余站内能力仅纳入 `planned`；后续本地能力状态以上方第二阶段记录和 registry 的 `availableTransports` 为准，任何对外远程写操作仍须先完成标准 OAuth 授权、逐能力权限与独立安全审核。
+- 长期设计、本地使用和远程运维边界集中在 `docs/agent-capabilities/README.md`。本批公开更新为 `seed-update-2026-08-06-agent-capabilities`，表示版本为 `20260806-agent-capabilities-quick-transfer-r1`；记录的是本地仓库能力和未部署远程工程，不表示生产 D1 迁移、Worker 发布或正式 MCP 地址已完成。
+
 ## 2026-08-06 网站使用指南与密码房攻略
 
 - Knowledge 新增固定分类 `site-guides`，公开名称固定为“网站使用指南 / Website Guides / サイト利用ガイド”。筛选顺序为 `daily-ai-news`、`tool-radar`、`site-guides`、其他动态分类，`site-updates` 始终最后；即使暂时没有文章，三个固定内容专区也必须保留入口和各自三语空状态。
@@ -19,7 +37,7 @@
 - 8 月 4 日自动任务不是生成或落库失败：Horizon 运行 `run-20260803T230334Z-73cc08cf` 在精确窗口内取得 2,064 条候选，8 条入选、101 条 merged、1,955 条具体 rejected，正式 validator 通过；生产 POST 已收到 `daily-ai-news + published`，随后只有日文公开 GET 抛出 `fetch failed`。再次以冻结 `daily_run.json` 只读核对后，中英日三版 slug、分类、语言、标题和正文全部逐字一致，所以本期不得再走 manual recovery 或重复 POST。
 - 本机 Clash／Mihomo 使用 Fake-IP DNS，`lusu575.com` 可解析到 `198.18.0.0/15`；系统 curl／PowerShell 会通过系统代理成功，而 Node 原生 `fetch` 默认不会自动继承这条代理链。自动新闻所有正式 Node 外联必须使用 `自动新闻/integrations/lusu-site/network-fetch.mjs`：它以 Undici `EnvHttpProxyAgent` 读取大小写兼容的 `HTTP_PROXY`、`HTTPS_PROXY`、`NO_PROXY`，无值时直连。不得打印代理 URL、代理凭证或投递 Token，也不得通过修改 Clash 订阅来维持生产可用性。
 - 每日 AI 新闻生产 POST 在单次执行中严格发送一次。POST 明确返回 published 后，zh／en／ja 公开回读可分别对网络失败及 408／425／429／500／502／503／504 做最多 3 次只读 GET 尝试，且总预算不能越过自动 08:00 或人工恢复午夜截止；正文不一致、非瞬时 HTTP 或重试耗尽仍停止并标记需人工核对，绝不能再发 POST。工具雷达的生产目录、线上图片、POST 和三语回读也复用同一代理客户端，避免周更重复遭遇相同 Fake-IP 问题。
-- Undici `7.29.0` 是直接、精确锁定的生产依赖，不再依靠 Wrangler 的传递依赖；根级 override 同步约束所有传递链使用该版本，并将受影响的 `brace-expansion` 依赖分别固定到 `1.1.18`／`5.0.9`。Node.js 22 验证使用官方 SHA-256 校验的 v22.23.1 便携运行时；默认系统 Node 版本不能替代发布记录中的实际运行时证据。依赖更新后必须以严格 `npm ci` 重建并确认生产与完整 `npm audit` 均为 0 漏洞。
+- Undici `7.29.0` 是直接、精确锁定的生产依赖，不再依靠 Wrangler 的传递依赖；根级 override 同步约束根依赖树使用该版本，并将受影响的 `brace-expansion` 依赖分别固定到 `1.1.18`／`5.0.9`。拥有独立 `package-lock.json` 的子项目不会继承根 override，必须在自己的 `package.json` 中重复所需安全 override 并单独执行完整 `npm audit`；`workers/site-mcp` 因此也固定 `undici 7.29.0`。Node.js 22 验证使用官方 SHA-256 校验的 v22.23.1 便携运行时；默认系统 Node 版本不能替代发布记录中的实际运行时证据。依赖更新后必须以严格 `npm ci` 重建并确认生产与每个独立锁文件的完整 `npm audit` 均为 0 漏洞。Windows 上不能用已有平台限定 `node_modules` 直接重写根 lockfile；应在不含 `node_modules` 的干净目录中用 Node.js 22 和 `--include=optional --include=peer` 生成，再以严格 `npm ci` 或 dry-run 验证 Linux／Cloudflare 所需的 optional peer 条目仍在。
 
 ## 2026-08-03 每日 AI 新闻编辑退化防护
 
@@ -549,6 +567,7 @@
 - 前端：HTML + CSS + JavaScript；在线画板独立使用 React、Excalidraw、Yjs
 - 后端：Cloudflare Pages Functions；在线画板房间权威服务使用独立 Cloudflare Durable Object Worker
 - 数据：Cloudflare D1；在线画板另使用 Durable Object SQLite 和私有 R2
+- AI 接入：共享能力注册表 + 本地 Node.js CLI / stdio MCP；远程只读 MCP 为独立 Cloudflare Worker 工程，尚未部署
 - 部署：Cloudflare Pages Git 自动部署
 - 依赖管理：npm / package-lock
 - Cloudflare CLI：Wrangler
@@ -594,6 +613,7 @@ Cloudflare Pages 项目状态：
 - 游戏页统一外壳和云存档能力
 - 数据库化三语文章系统：文章内容保存在 Cloudflare D1，网站按当前语言读取 zh / en / ja 内容
 - Cloudflare Pages Functions 后端接口
+- 本地 CLI / stdio MCP 能力层：公开内容读取与经设备码授权的 Quick Transfer 操作
 - Cloudflare D1 持久化账号、会话、游戏存档、聊天室消息和文章内容
 - 独立中文管理后台：`/admin/` 仅允许 `users.role = admin` 的站长账号访问，复用主站账号系统，但后台页面、项目介绍和后台更新记录单独维护，不公开到主站知识库。
 - 访问与点击埋点：主站通过独立 `js/telemetry.js` 记录 PV、UV、访问来源、地理位置聚合和点击事件；访客使用 HttpOnly 隐藏 ID 识别，前台不显示该 ID；点击目标文本、页面路径、来源、链接、元素标识和点击聚合键中的邮箱样式文本（含 URL 编码和双重编码形态）会在前端与服务端写入前脱敏。
@@ -909,8 +929,17 @@ D1 表：`anonymous_chat_messages`
 │   │   └── _middleware.js
 │   └── api/
 │       ├── [[route]].js
+│       ├── agent-auth.mjs
 │       ├── anonymous-identity.mjs
+│       ├── public-content-service.mjs
 │       └── whiteboard-service.mjs
+├── lib/
+│   └── capabilities/
+├── cli/
+│   └── lusu.mjs
+├── mcp/
+│   └── local/
+│       └── server.mjs
 ├── games/
 │   ├── catalog.json
 │   ├── game-shell.css
@@ -927,9 +956,12 @@ D1 表：`anonymous_chat_messages`
 │       ├── src/
 │       └── THIRD_PARTY_NOTICES.md
 ├── workers/
+│   ├── site-mcp/  (未部署的公开只读 remote MCP)
 │   └── whiteboard/
 │       ├── src/
 │       └── wrangler.jsonc
+├── docs/
+│   └── agent-capabilities/
 ├── js/
 │   ├── main.js
 │   ├── mobile-shell.js

@@ -24,6 +24,8 @@ For game work, also inspect:
 
 For online whiteboard work, read `docs/whiteboard/AGENTS.md` and the files it routes before editing. For Quick Transfer work, read `docs/transfer/AGENTS.md`; if the change touches `/admin/transfer.html`, also read the three admin documents above.
 
+For AI capability, MCP, or CLI work, read `docs/agent-capabilities/README.md` and inspect `lib/capabilities/registry.mjs`; if an adapter touches a governed tool, also follow that tool's subproject guide.
+
 For article / update-log work, also inspect:
 
 1. `js/data/content.mjs` `content.updates`
@@ -49,6 +51,7 @@ For Tool Radar work, first read `自动新闻/integrations/lusu-site/tool-radar/
 - Admin site: `admin/`
 - Games: `games/`
 - Governed tool subprojects: online whiteboard in `docs/whiteboard/`; Quick Transfer in `docs/transfer/`
+- AI capability layer: registry/client modules in `lib/capabilities/`, local CLI/stdio MCP in `cli/` and `mcp/local/`, and an independent undeployed read-only remote Worker in `workers/site-mcp/`
 - Deployment: GitHub `main` triggers Cloudflare Pages auto-deploy. Do not treat Wrangler manual deploy as the normal release path.
 
 ## Local Runtime And Secrets

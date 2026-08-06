@@ -74,6 +74,14 @@ export interface UploadRateState {
   expiresAt?: number;
 }
 
+export interface AgentUpdateReceipt {
+  version: 1;
+  payloadSha256: string;
+  documentVersion: number;
+  createdAt: number;
+  expiresAt: number;
+}
+
 export interface WhiteboardEnv {
   WHITEBOARD_ROOMS: DurableObjectNamespace<WhiteboardRoom>;
   WHITEBOARD_BUCKET?: R2Bucket;

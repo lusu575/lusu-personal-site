@@ -48,9 +48,13 @@ const requiredFiles = [
   "admin/docs/ADMIN_SKILL.md",
   "cloudflare/schema.sql",
   "cloudflare/schema-indexes.sql",
+  "cli/lusu.mjs",
+  "docs/agent-capabilities/README.md",
   "functions/admin/_middleware.js",
   "functions/api/[[route]].js",
+  "functions/api/agent-auth.mjs",
   "functions/api/anonymous-identity.mjs",
+  "functions/api/public-content-service.mjs",
   "functions/api/transfer-service.mjs",
   "functions/api/whiteboard-service.mjs",
   "functions/articles/[slug].js",
@@ -105,7 +109,12 @@ const requiredFiles = [
   "js/transfer.js",
   "js/telemetry.js",
   "js/ui-motion.js",
+  "lib/capabilities/local-state.mjs",
+  "lib/capabilities/registry.mjs",
+  "lib/capabilities/site-client.mjs",
+  "lib/capabilities/transfer-crypto.mjs",
   "manifest.webmanifest",
+  "mcp/local/server.mjs",
   "assets/transfer/quick-transfer-icons.png",
   "assets/transfer/quick-transfer-icons-source.png",
   "docs/transfer/README.md",
@@ -115,6 +124,10 @@ const requiredFiles = [
   "docs/PUBLIC_SITE_RELEASE_QA.md",
   "workers/transfer-cleanup/index.mjs",
   "workers/transfer-cleanup/wrangler.jsonc",
+  "workers/site-mcp/package-lock.json",
+  "workers/site-mcp/package.json",
+  "workers/site-mcp/src/index.ts",
+  "workers/site-mcp/wrangler.jsonc",
   "package-lock.json",
   "package.json",
   "scripts/d1-migrate-local.mjs",
@@ -817,7 +830,8 @@ const redirectsConfig = readRequired("_redirects");
 const routeLazyVersion = "20260726-security-reliability-r1";
 const trustSafetyStatusVersion = "20260726-security-reliability-r1";
 const knowledgeReaderVersion = "20260728-knowledge-archive-r1";
-const whiteboardReleaseVersion = "20260806-site-guides-password-rooms-r2";
+const whiteboardReleaseVersion = "20260806-agent-capabilities-quick-transfer-r1";
+const whiteboard2048AgentReleaseVersion = "20260806-whiteboard-2048-agent-r1";
 const transferReleaseVersion = "20260801-whiteboard-reliable-sketch-r1";
 const routeStyleVersion = knowledgeReaderVersion;
 const publicRouteVersion = (route) => route === "knowledge"
@@ -871,9 +885,9 @@ for (const route of lazyPublicRoutes) {
 
 for (const [modulePath, expectedVersion] of [
   ["./core/i18n.mjs", whiteboardReleaseVersion],
-  ["./data/home-content.mjs", whiteboardReleaseVersion],
+  ["./data/home-content.mjs", whiteboard2048AgentReleaseVersion],
   ["./features/connection-status.mjs", trustSafetyStatusVersion],
-  ["./data/resources-content.mjs", whiteboardReleaseVersion]
+  ["./data/resources-content.mjs", whiteboard2048AgentReleaseVersion]
 ]) {
   const versions = assetQueryVersions(mainEntryJs, modulePath);
   if (versions.length !== 1 || versions[0] !== expectedVersion) {
@@ -2871,7 +2885,7 @@ const mobileViewportKeyboardCssVersion = routeLazyVersion;
 const publicModulesVersion = "20260726-security-reliability-r1";
 const transferLazyVersion = transferReleaseVersion;
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
-const currentMainVersion = whiteboardReleaseVersion;
+const currentMainVersion = whiteboard2048AgentReleaseVersion;
 const currentCssVersion = trustSafetyStatusVersion;
 const currentPreFinalTelemetryVersion = "20260802-traffic-budget-r1";
 const currentGameShellVersion = "20260726-game-network-resilience-r1";
@@ -4224,13 +4238,13 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-08-06-site-guides-password-rooms";
-const finalUpdateSlug = "2026-08-06-site-guides-password-rooms";
+const finalUpdateId = "seed-update-2026-08-06-whiteboard-2048-agent";
+const finalUpdateSlug = "2026-08-06-whiteboard-2048-agent";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Website Guides and Password Room Guide";
-const finalPublishedAt = "2026-08-06T00:55:00.000Z";
+const finalTitleEn = "AI Can Now Draw on Whiteboards and Play 2048";
+const finalPublishedAt = "2026-08-06T03:50:00.000Z";
 const finalTranslationMinimums = {
   title: 8,
   summary: 24,

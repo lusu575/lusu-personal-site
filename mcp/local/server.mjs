@@ -1,0 +1,545 @@
+#!/usr/bin/env node
+
+import { createReadStream } from "node:fs";
+import path from "node:path";
+import { pathToFileURL } from "node:url";
+import { McpServer } from "@modelcontextprotocol/server";
+import { serveStdio } from "@modelcontextprotocol/server/stdio";
+import { z } from "zod";
+import { createProxyAwareFetch } from "../../自动新闻/integrations/lusu-site/network-fetch.mjs";
+import { SiteClient, SiteClientError } from "../../lib/capabilities/site-client.mjs";
+import {
+  GameSessionStoreError,
+  createGameSessionStore
+} from "../../lib/capabilities/game-session-store.mjs";
+import { GameProtocolError } from "../../lib/capabilities/game-protocol.mjs";
+import { deriveTransferRoomSecret } from "../../lib/capabilities/transfer-crypto.mjs";
+import {
+  drawWhiteboardHandle,
+  exportWhiteboardHandle,
+  joinWhiteboardHandle,
+  readWhiteboardHandle
+} from "../../lib/capabilities/whiteboard-adapter.mjs";
+import { WhiteboardSceneError } from "../../lib/capabilities/whiteboard-scene.mjs";
+import {
+  LocalStateError,
+  loadRoomSecret,
+  openNoClobberSink,
+  readStoredCredential,
+  resolveAllowRoots,
+  resolveReadableFileRef,
+  resolveSecretRef,
+  resolveWritableFileRef,
+  storeRoomHandle
+} from "../../lib/capabilities/local-state.mjs";
+
+const languageSchema = z.enum(["zh", "en", "ja"]).default("zh");
+const roomHandleSchema = z.string().regex(/^room_[a-zA-Z0-9_-]{12,80}$/);
+const boardHandleSchema = z.string().regex(/^board_[a-zA-Z0-9_-]{12,80}$/);
+const itemIdSchema = z.string().min(16).max(80);
+const fileRefSchema = z.string().min(1).max(1024);
+const gameSessionIdSchema = z.string().regex(/^game_[a-z0-9][a-z0-9_-]{0,63}_[a-f0-9]{24,64}$/);
+const clientActionIdSchema = z.string().regex(/^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$/);
+const operationIdSchema = z.string().regex(/^[A-Za-z0-9][A-Za-z0-9._:-]{7,79}$/);
+const whiteboardStyleShape = {
+  strokeColor: z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
+  backgroundColor: z.union([z.literal("transparent"), z.string().regex(/^#[0-9a-fA-F]{6}$/)]).optional(),
+  fillStyle: z.enum(["solid", "hachure", "cross-hatch"]).optional(),
+  strokeWidth: z.number().min(1).max(8).optional(),
+  strokeStyle: z.enum(["solid", "dashed", "dotted"]).optional(),
+  roughness: z.number().int().min(0).max(2).optional(),
+  opacity: z.number().int().min(1).max(100).optional()
+};
+const whiteboardElementSchema = z.discriminatedUnion("type", [
+  z.object({
+    type: z.enum(["rectangle", "ellipse", "diamond"]),
+    x: z.number().min(-100_000).max(100_000),
+    y: z.number().min(-100_000).max(100_000),
+    width: z.number().min(1).max(10_000),
+    height: z.number().min(1).max(10_000),
+    ...whiteboardStyleShape
+  }).strict(),
+  z.object({
+    type: z.literal("text"),
+    x: z.number().min(-100_000).max(100_000),
+    y: z.number().min(-100_000).max(100_000),
+    text: z.string().min(1).max(2_000),
+    fontSize: z.number().min(8).max(96).optional(),
+    width: z.number().min(1).max(10_000).optional(),
+    height: z.number().min(1).max(10_000).optional(),
+    ...whiteboardStyleShape
+  }).strict(),
+  z.object({
+    type: z.enum(["line", "arrow"]),
+    points: z.array(z.object({
+      x: z.number().min(-100_000).max(100_000),
+      y: z.number().min(-100_000).max(100_000)
+    }).strict()).min(2).max(50),
+    startArrowhead: z.enum(["arrow", "bar", "dot", "triangle"]).nullable().optional(),
+    endArrowhead: z.enum(["arrow", "bar", "dot", "triangle"]).nullable().optional(),
+    ...whiteboardStyleShape
+  }).strict()
+]);
+
+export async function createLocalMcpServer(options = {}) {
+  const env = options.env || process.env;
+  const stateOptions = {
+    env,
+    homeDir: options.homeDir,
+    crypto: options.crypto,
+    secretResolver: options.resolveSecretRef || resolveSecretRef
+  };
+  const credential = options.credential === undefined
+    ? await readStoredCredential(stateOptions)
+    : options.credential;
+  const client = options.client || new SiteClient({
+    fetch: options.fetch,
+    baseUrl: options.baseUrl || env.LUSU_BASE_URL || credential?.baseUrl || "https://lusu575.com",
+    accessToken: env.LUSU_ACCESS_TOKEN || credential?.accessToken || ""
+  });
+  const allowRoots = options.allowRoots || await resolveAllowRoots({
+    env,
+    allowRoots: options.allowRoots,
+    defaultRoot: options.defaultRoot || process.cwd()
+  });
+  const gameStore = options.gameStore || createGameSessionStore(stateOptions);
+  const server = new McpServer(
+    { name: "lusu-personal-site-local", version: "0.3.0" },
+    { capabilities: { tools: {} } }
+  );
+
+  registerTool(server, "capabilities_list", {
+    title: "List LuSu site capabilities",
+    description: "Lists the governed capability registry for local CLI and MCP planning.",
+    inputSchema: z.object({
+      domain: z.string().max(80).optional(),
+      scope: z.string().max(120).optional(),
+      transport: z.enum(["site-api", "remote-mcp", "local-mcp", "cli", "browser-adapter"]).optional(),
+      status: z.enum(["available", "existing-api", "adapter-planned", "restricted"]).optional(),
+      risk: z.enum(["low", "medium", "high", "critical"]).optional()
+    }),
+    annotations: readOnlyAnnotations()
+  }, async (input) => ({ capabilities: client.capabilities(compactObject(input)) }));
+
+  registerTool(server, "content_list", {
+    title: "List public site articles",
+    description: "Lists published article metadata by language and optional category.",
+    inputSchema: z.object({
+      lang: languageSchema,
+      category: z.string().max(80).optional(),
+      limit: z.number().int().min(1).max(500).default(100)
+    }),
+    annotations: readOnlyAnnotations({ openWorldHint: true })
+  }, (input) => client.listArticles(input));
+
+  registerTool(server, "content_search", {
+    title: "Search public site articles",
+    description: "Searches public trilingual article metadata. This is read-only.",
+    inputSchema: z.object({
+      query: z.string().min(1).max(300),
+      lang: languageSchema,
+      category: z.string().max(80).optional(),
+      limit: z.number().int().min(1).max(100).default(20)
+    }),
+    annotations: readOnlyAnnotations({ openWorldHint: true })
+  }, (input) => client.searchArticles(input));
+
+  registerTool(server, "content_get", {
+    title: "Read a public site article",
+    description: "Reads one public article by slug and language.",
+    inputSchema: z.object({ slug: z.string().min(1).max(180), lang: languageSchema }),
+    annotations: readOnlyAnnotations({ openWorldHint: true })
+  }, ({ slug, lang }) => client.getArticle(slug, { lang }));
+
+  registerTool(server, "daily_news_get", {
+    title: "Read Daily AI News",
+    description: "Reads the latest or date-matched published Daily AI News issue.",
+    inputSchema: z.object({
+      date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+      lang: languageSchema
+    }),
+    annotations: readOnlyAnnotations({ openWorldHint: true })
+  }, (input) => client.getDailyNews(input));
+
+  registerTool(server, "videos_list", {
+    title: "List public videos",
+    description: "Lists and filters videos published on the LuSu site.",
+    inputSchema: z.object({
+      lang: languageSchema,
+      query: z.string().max(300).optional(),
+      categories: z.array(z.string().max(80)).max(20).optional(),
+      limit: z.number().int().min(1).max(80).default(80)
+    }),
+    annotations: readOnlyAnnotations({ openWorldHint: true })
+  }, (input) => client.listVideos(input));
+
+  registerTool(server, "transfer_join", {
+    title: "Join a Quick Transfer room",
+    description: "Derives a room locally from an environment-backed secretRef and returns only an opaque roomHandle. The passphrase never enters MCP arguments or output.",
+    inputSchema: z.object({ secretRef: z.string().regex(/^env:[A-Z][A-Z0-9_]{2,80}$/) }),
+    annotations: writeAnnotations({ idempotentHint: false })
+  }, async ({ secretRef }) => {
+    const passphrase = await stateOptions.secretResolver(secretRef, stateOptions);
+    const secret = await deriveTransferRoomSecret(passphrase, stateOptions);
+    const joined = await client.joinTransferRoom(secret);
+    const roomHandle = await storeRoomHandle(secret, { ...stateOptions, secretRef });
+    return { roomHandle, room: joined.room };
+  });
+
+  registerTool(server, "transfer_list", {
+    title: "List Quick Transfer room items",
+    description: "Lists a room through an opaque local roomHandle and decrypts text locally when possible.",
+    inputSchema: z.object({
+      roomHandle: roomHandleSchema,
+      cursor: z.string().max(2048).optional(),
+      limit: z.number().int().min(1).max(100).default(100)
+    }),
+    annotations: readOnlyAnnotations({ openWorldHint: true })
+  }, async ({ roomHandle, cursor, limit }) => {
+    const secret = await loadRoomSecret(roomHandle, stateOptions);
+    return sanitizeTransferListing(await client.listTransferItems(secret, { cursor, limit }));
+  });
+
+  registerTool(server, "transfer_send_text", {
+    title: "Send encrypted Quick Transfer text",
+    description: "Encrypts text locally with the stored room secret before sending it.",
+    inputSchema: z.object({ roomHandle: roomHandleSchema, text: z.string().min(1).max(40_000) }),
+    annotations: writeAnnotations({ idempotentHint: false })
+  }, async ({ roomHandle, text }) => {
+    const secret = await loadRoomSecret(roomHandle, stateOptions);
+    const payload = await client.sendTransferText(secret, text);
+    return { item: sanitizeTransferItem(payload.item) };
+  });
+
+  registerTool(server, "transfer_upload", {
+    title: "Upload an allow-root file",
+    description: "Uploads one non-empty file identified by fileRef. The path must resolve inside LUSU_MCP_ALLOW_ROOT.",
+    inputSchema: z.object({
+      roomHandle: roomHandleSchema,
+      fileRef: fileRefSchema,
+      mimeType: z.string().max(160).optional()
+    }),
+    annotations: writeAnnotations({ idempotentHint: false })
+  }, async ({ roomHandle, fileRef, mimeType }) => {
+    const secret = await loadRoomSecret(roomHandle, stateOptions);
+    const file = await resolveReadableFileRef(fileRef, allowRoots);
+    if (file.sizeBytes <= 0) throw new LocalStateError("The upload file is empty.", "TRANSFER_UPLOAD_FILE_EMPTY");
+    const payload = await client.uploadTransferFile(secret, {
+      filename: path.basename(file.path),
+      mimeType: mimeType || inferMimeType(file.path),
+      sizeBytes: file.sizeBytes,
+      body: createReadStream(file.path)
+    });
+    return { fileRef, item: sanitizeTransferItem(payload.item) };
+  });
+
+  registerTool(server, "transfer_download", {
+    title: "Download into an allow-root file",
+    description: "Streams a room item into fileRef. The destination must be inside LUSU_MCP_ALLOW_ROOT and must not already exist.",
+    inputSchema: z.object({
+      roomHandle: roomHandleSchema,
+      itemId: itemIdSchema,
+      fileRef: fileRefSchema
+    }),
+    annotations: writeAnnotations({ idempotentHint: false })
+  }, async ({ roomHandle, itemId, fileRef }) => {
+    const secret = await loadRoomSecret(roomHandle, stateOptions);
+    const destination = await resolveWritableFileRef(fileRef, allowRoots);
+    const opened = await openNoClobberSink(destination);
+    try {
+      const download = await client.downloadTransferFile(secret, itemId, opened.sink);
+      return { fileRef, ...download };
+    } catch (error) {
+      await opened.cleanup();
+      throw error;
+    }
+  });
+
+  registerTool(server, "transfer_delete", {
+    title: "Delete a Quick Transfer item",
+    description: "Deletes an item through a stored roomHandle. This operation is destructive and cannot be undone.",
+    inputSchema: z.object({ roomHandle: roomHandleSchema, itemId: itemIdSchema }),
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: true
+    }
+  }, async ({ roomHandle, itemId }) => {
+    const secret = await loadRoomSecret(roomHandle, stateOptions);
+    return client.deleteTransferItem(secret, itemId);
+  });
+
+  registerTool(server, "whiteboard_join", {
+    title: "Join an online whiteboard",
+    description: "Joins the public whiteboard or a private room via an environment-backed secretRef. Returns only an opaque local boardHandle; passwords and room tokens never enter tool output.",
+    inputSchema: z.discriminatedUnion("roomType", [
+      z.object({ roomType: z.literal("public") }).strict(),
+      z.object({
+        roomType: z.literal("private"),
+        secretRef: z.string().regex(/^env:[A-Z][A-Z0-9_]{2,80}$/)
+      }).strict()
+    ]),
+    annotations: writeAnnotations({ idempotentHint: false })
+  }, async ({ roomType, secretRef }) => {
+    const password = roomType === "private"
+      ? await stateOptions.secretResolver(secretRef, stateOptions)
+      : undefined;
+    return joinWhiteboardHandle(client, {
+      type: roomType,
+      ...(roomType === "private" ? { password, secretRef } : {})
+    }, stateOptions);
+  });
+
+  registerTool(server, "whiteboard_scene", {
+    title: "Read an online whiteboard scene",
+    description: "Returns a bounded, structured summary of the current whiteboard elements. Room credentials stay behind the opaque boardHandle.",
+    inputSchema: z.object({ boardHandle: boardHandleSchema }).strict(),
+    annotations: readOnlyAnnotations({ openWorldHint: true })
+  }, ({ boardHandle }) => readWhiteboardHandle(client, boardHandle, stateOptions));
+
+  registerTool(server, "whiteboard_draw", {
+    title: "Add shapes and text to an online whiteboard",
+    description: "Adds up to 50 safe high-level rectangle, ellipse, diamond, text, line, or arrow elements. Existing elements cannot be changed or deleted. Reuse operationId only for an exact retry.",
+    inputSchema: z.object({
+      boardHandle: boardHandleSchema,
+      operationId: operationIdSchema,
+      elements: z.array(whiteboardElementSchema).min(1).max(50)
+    }).strict(),
+    annotations: writeAnnotations({ idempotentHint: true })
+  }, ({ boardHandle, operationId, elements }) => drawWhiteboardHandle(
+    client,
+    boardHandle,
+    { operationId, elements },
+    stateOptions
+  ));
+
+  registerTool(server, "whiteboard_export", {
+    title: "Export an online whiteboard",
+    description: "Exports the current scene as Excalidraw JSON, simplified SVG, or PNG into a new allow-root file. Existing destinations are never overwritten; image assets are reported but not embedded.",
+    inputSchema: z.object({
+      boardHandle: boardHandleSchema,
+      fileRef: fileRefSchema,
+      format: z.enum(["json", "svg", "png"])
+    }).strict(),
+    annotations: writeAnnotations({ idempotentHint: false })
+  }, async ({ boardHandle, fileRef, format }) => {
+    const destination = await resolveWritableFileRef(fileRef, allowRoots);
+    const exported = await exportWhiteboardHandle(client, boardHandle, format, stateOptions);
+    const opened = await openNoClobberSink(destination);
+    try {
+      await opened.sink.write(exported.bytes);
+      await opened.close();
+    } catch (error) {
+      await opened.cleanup();
+      throw error;
+    }
+    return {
+      fileRef,
+      format,
+      mediaType: exported.mediaType,
+      bytesWritten: exported.bytes.byteLength,
+      warnings: exported.warnings,
+      documentVersion: exported.documentVersion,
+      elementCount: exported.elementCount
+    };
+  });
+
+  registerTool(server, "game_create", {
+    title: "Create an isolated AI game session",
+    description: "Creates a bounded local 2048 session for an AI agent. This does not take over an already-open browser game.",
+    inputSchema: z.object({ gameId: z.literal("2048") }).strict(),
+    annotations: writeAnnotations({ idempotentHint: false, openWorldHint: false })
+  }, ({ gameId }) => gameStore.createSession(gameId));
+
+  registerTool(server, "game_observe", {
+    title: "Observe an isolated game session",
+    description: "Returns the structured board, score, phase, terminal state, revision, and available moves for a local AI game session.",
+    inputSchema: z.object({ sessionId: gameSessionIdSchema }).strict(),
+    annotations: readOnlyAnnotations()
+  }, ({ sessionId }) => gameStore.observeSession(sessionId));
+
+  registerTool(server, "game_actions", {
+    title: "List legal semantic game actions",
+    description: "Lists bounded semantic actions for a local AI game session. It never returns selectors, scripts, URLs, or raw key events.",
+    inputSchema: z.object({ sessionId: gameSessionIdSchema }).strict(),
+    annotations: readOnlyAnnotations()
+  }, ({ sessionId }) => gameStore.actionsForSession(sessionId));
+
+  registerTool(server, "game_act", {
+    title: "Apply one semantic game action",
+    description: "Applies one CAS-guarded 2048 move. clientActionId makes exact retries idempotent; selectors, scripts, URLs, and raw keys are rejected.",
+    inputSchema: z.object({
+      sessionId: gameSessionIdSchema,
+      expectedRevision: z.number().int().min(0).max(1_000_000_000),
+      clientActionId: clientActionIdSchema,
+      action: z.object({
+        type: z.literal("move"),
+        direction: z.enum(["up", "down", "left", "right"])
+      }).strict()
+    }).strict(),
+    annotations: writeAnnotations({ idempotentHint: true, openWorldHint: false })
+  }, ({ sessionId, expectedRevision, clientActionId, action }) => gameStore.actSession(sessionId, {
+    expectedRevision,
+    clientActionId,
+    action
+  }));
+
+  registerTool(server, "game_reset", {
+    title: "Reset an isolated game session",
+    description: "Discards the current 2048 run and starts a new board. This destructive action requires confirm=true and remains CAS-guarded and retry-safe.",
+    inputSchema: z.object({
+      sessionId: gameSessionIdSchema,
+      expectedRevision: z.number().int().min(0).max(1_000_000_000),
+      clientActionId: clientActionIdSchema,
+      confirm: z.literal(true)
+    }).strict(),
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false
+    }
+  }, ({ sessionId, expectedRevision, clientActionId, confirm }) => gameStore.actSession(sessionId, {
+    expectedRevision,
+    clientActionId,
+    action: { type: "reset", confirm }
+  }));
+
+  registerTool(server, "game_close", {
+    title: "Close an isolated game session",
+    description: "Permanently removes one local AI game session. Explicit confirmation is required.",
+    inputSchema: z.object({ sessionId: gameSessionIdSchema, confirm: z.literal(true) }).strict(),
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false
+    }
+  }, ({ sessionId, confirm }) => gameStore.closeSession(sessionId, { confirm }));
+
+  return server;
+}
+
+export function startLocalMcpServer(options = {}) {
+  const network = options.client || options.fetch
+    ? null
+    : createProxyAwareFetch({ environment: options.env || process.env });
+  const handle = serveStdio(
+    () => createLocalMcpServer({ ...options, fetch: options.fetch || network?.fetch }),
+    {
+      legacy: "serve",
+      transport: options.transport,
+      onerror: () => {
+        process.stderr.write(`${JSON.stringify({ error: "Local MCP transport error", code: "MCP_TRANSPORT_ERROR" })}\n`);
+      }
+    }
+  );
+  let closed = false;
+  const close = async () => {
+    if (closed) return;
+    closed = true;
+    await handle.close();
+    await network?.close();
+  };
+  if (network) process.once("beforeExit", () => { void close(); });
+  return { close };
+}
+
+function registerTool(server, name, config, handler) {
+  server.registerTool(name, config, async (input) => {
+    try {
+      const result = await handler(input);
+      return {
+        content: [{ type: "text", text: JSON.stringify(result) }],
+        structuredContent: { result }
+      };
+    } catch (error) {
+      const payload = safeToolError(error);
+      return {
+        isError: true,
+        content: [{ type: "text", text: JSON.stringify(payload) }],
+        structuredContent: { result: payload }
+      };
+    }
+  });
+}
+
+function safeToolError(error) {
+  if (error instanceof SiteClientError) return error.toJSON();
+  if (error instanceof LocalStateError || error instanceof WhiteboardSceneError) {
+    return { error: error.message, code: error.code, status: 0 };
+  }
+  if (error instanceof GameProtocolError || error instanceof GameSessionStoreError) {
+    return { error: error.message, code: error.code, status: 0 };
+  }
+  return { error: "The local MCP operation failed.", code: "LOCAL_MCP_OPERATION_FAILED", status: 0 };
+}
+
+function sanitizeTransferListing(payload) {
+  return {
+    room: payload.room,
+    items: (payload.items || []).map(sanitizeTransferItem),
+    nextCursor: payload.nextCursor || "",
+    hasMore: Boolean(payload.hasMore),
+    resetRequired: Boolean(payload.resetRequired),
+    syncMode: payload.syncMode || ""
+  };
+}
+
+function sanitizeTransferItem(item) {
+  if (!item) return null;
+  return compactObject({
+    id: item.id,
+    type: item.type,
+    text: item.text,
+    decryptionError: item.decryptionError,
+    filename: item.filename,
+    mimeType: item.mimeType,
+    sizeBytes: item.sizeBytes,
+    uploader: item.uploader,
+    canDelete: item.canDelete,
+    createdAt: item.createdAt,
+    completedAt: item.completedAt,
+    expiresAt: item.expiresAt
+  });
+}
+
+function compactObject(value) {
+  return Object.fromEntries(Object.entries(value).filter(([, item]) => item !== undefined && item !== ""));
+}
+
+function readOnlyAnnotations(overrides = {}) {
+  return {
+    readOnlyHint: true,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+    ...overrides
+  };
+}
+
+function writeAnnotations(overrides = {}) {
+  return {
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: false,
+    openWorldHint: true,
+    ...overrides
+  };
+}
+
+function inferMimeType(filePath) {
+  const extension = path.extname(filePath).toLowerCase();
+  return ({
+    ".txt": "text/plain", ".md": "text/markdown", ".json": "application/json",
+    ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png", ".webp": "image/webp",
+    ".gif": "image/gif", ".svg": "image/svg+xml", ".pdf": "application/pdf",
+    ".mp3": "audio/mpeg", ".wav": "audio/wav", ".mp4": "video/mp4", ".webm": "video/webm",
+    ".zip": "application/zip"
+  })[extension] || "application/octet-stream";
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  startLocalMcpServer();
+}
