@@ -831,12 +831,13 @@ const routeLazyVersion = "20260726-security-reliability-r1";
 const trustSafetyStatusVersion = "20260726-security-reliability-r1";
 const knowledgeReaderVersion = "20260728-knowledge-archive-r1";
 const whiteboardReleaseVersion = "20260806-agent-capabilities-quick-transfer-r1";
-const whiteboardAgentImagesReleaseVersion = "20260806-whiteboard-agent-images-r1";
-const transferReleaseVersion = whiteboardAgentImagesReleaseVersion;
+const whiteboardAgentImagesReleaseVersion = "20260806-whiteboard-agent-images-r2";
+const transferReleaseVersion = "20260806-whiteboard-agent-images-r1";
+const resourcesRouteVersion = transferReleaseVersion;
 const routeStyleVersion = knowledgeReaderVersion;
 const publicRouteVersion = (route) => route === "knowledge"
   ? whiteboardReleaseVersion
-  : (route === "resources" ? whiteboardAgentImagesReleaseVersion : routeLazyVersion);
+  : (route === "resources" ? resourcesRouteVersion : routeLazyVersion);
 const transferAtlasVersion = "20260718-resource-icons-layout-r1";
 const chatroomIconVersion = "20260726-chatroom-icon-redraw-r2";
 const transferAtlasReferences = [];

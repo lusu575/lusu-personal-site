@@ -2,6 +2,12 @@
 
 本日志只记录在线画板子项目。根项目发布历史仍写入仓库根 `CHANGELOG.md`。
 
+## 1.0.6 - 2026-08-06
+
+- 修复生产点检发现的 Pages 主 mutation gate 漏项：`POST /api/whiteboard/agent/assets` 的 PNG／JPEG／WebP 现在和浏览器图片入口一样，在通过全局同源边界后继续进入 Agent Bearer、`whiteboard:write + whiteboard:assets` 与 tokenId 绑定房间令牌鉴权。
+- 豁免仍按方法、完整路径与 MIME 精确匹配；跨源请求、相邻路径、非 POST、SVG／HTML／JSON 和其他内容类型继续失败关闭。Pages 与 Durable Object 的 5 MiB 限制、严格图片容器校验、私有 R2、幂等收据和只追加场景协议均未改变。
+- 本次只修复在线画板的受管 Pages 入口；Quick Transfer 业务与受管路径均未改变，因此继续保持 1.0.6。
+
 ## 1.0.5 - 2026-08-06
 
 - 新增受管 Agent 图片通道：上传同时要求非默认 `whiteboard:write` 与 `whiteboard:assets`，原图下载要求 `whiteboard:assets` 加场景读取权限；Agent Bearer、绑定当前 tokenId 的房间令牌和 Pages→DO 内部授权继续分层。

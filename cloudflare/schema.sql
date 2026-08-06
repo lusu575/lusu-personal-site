@@ -851,7 +851,7 @@ insert into articles (
   '["网站更新","AI 能力","在线画板","图片","CLI","MCP","安全"]',
   '', 'published', 0, 0,
   '2026-08-06T13:20:00.000Z',
-  '2026-08-06T13:20:00.000Z',
+  '2026-08-06T15:05:00.000Z',
   '2026-08-06T13:20:00.000Z'
 )
 on conflict(article_id) do update set
@@ -872,7 +872,7 @@ insert into article_translations (
     'seed-update-2026-08-06-whiteboard-agent-images',
     'zh',
     'AI 现在可以给在线画板添加图片',
-    '本地 CLI／stdio MCP 现在可上传、下载并在当前房追加真实图片；独立图片权限、房间隔离、幂等收据和只追加验证共同保护边界，远程 MCP 仍未部署。',
+    '本地 CLI／stdio MCP 可上传、下载并在当前房追加真实图片；生产入口热修已让精确 raster 请求进入完整 Agent 鉴权，其他来源、路径与 MIME 继续拒绝，远程 MCP 仍未部署。',
     '# AI 现在可以给在线画板添加图片
 
 AI 能力层第五阶段补齐了在线画板的真实图片闭环。本地 CLI 与 stdio MCP 现在可以上传、下载当前房图片，并用高层 `image` 元素把已验证资源追加到画布。
@@ -891,16 +891,20 @@ AI 能力层第五阶段补齐了在线画板的真实图片闭环。本地 CLI 
 
 服务端只接受已经完成存储、元数据逐字段一致的当前房图片。普通 write-only 调用、pending 资源、URL、Base64、SVG、HTML、伪造元数据、孤立资源、既有元素或资源的改删、链接、绑定和任意 Yjs 注入都会被拒绝。同一规范资源可以被多次放置；简化 SVG／PNG Agent 导出仍不嵌入图片并会明确告警。
 
-在线画板版本更新为 1.0.5。Quick Transfer 因共享受管基础设施更新为 1.0.6，但互传协议没有变化。独立远程 MCP Worker 仍未部署。',
+## 生产入口点检修复
+
+生产点检发现 Pages 全局 mutation gate 漏列 Agent 图片上传路径，使安全 raster 请求在 Bearer 鉴权前返回 415。1.0.6 仅把精确 `POST /api/whiteboard/agent/assets` 的 PNG／JPEG／WebP 交给完整 Agent 鉴权；跨源、相邻路径、非 POST 与其他 MIME 仍拒绝，既有权限、房间隔离、容量和图片校验不变。
+
+在线画板版本更新为 1.0.6。Quick Transfer 保持 1.0.6，互传协议没有变化。独立远程 MCP Worker 仍未部署。',
     '2026-08-06T13:20:00.000Z',
-    '2026-08-06T13:20:00.000Z'
+    '2026-08-06T15:05:00.000Z'
   ),
   (
     'seed-update-2026-08-06-whiteboard-agent-images-en',
     'seed-update-2026-08-06-whiteboard-agent-images',
     'en',
     'AI Can Now Add Images to the Online Whiteboard',
-    'The local CLI and stdio MCP can now upload, download, and append real images in the current room, protected by a separate asset scope, room isolation, idempotent receipts, and append-only validation. The remote MCP remains undeployed.',
+    'The local CLI and stdio MCP can upload, download, and append real images in the current room. A production gate fix now passes exact raster uploads into full Agent authorization while rejecting other origins, paths, and MIME types; remote MCP remains undeployed.',
     '# AI Can Now Add Images to the Online Whiteboard
 
 Phase five of the AI capability layer completes a real-image loop for Online Whiteboard. The local CLI and stdio MCP can upload and download current-room images, then append a verified asset through a high-level `image` element.
@@ -919,16 +923,20 @@ Phase five of the AI capability layer completes a real-image loop for Online Whi
 
 The server accepts only current-room images whose storage commit is complete and whose metadata matches field by field. A write-only caller, pending asset, URL, Base64 data, SVG, HTML, forged metadata, orphan asset record, modification or deletion of existing data, link, binding, or arbitrary Yjs input is rejected. One canonical asset may be placed more than once. Simplified Agent SVG and PNG exports still omit image bytes and report a warning.
 
-Online Whiteboard is now version 1.0.5. Quick Transfer moves to 1.0.6 because its governed shared infrastructure changed, but its transfer protocol did not. The separate remote MCP Worker remains undeployed.',
+## Production entry-point fix
+
+Production checks found that the Pages mutation gate omitted the Agent image-upload path, causing safe raster requests to return 415 before Bearer authorization. Version 1.0.6 passes only exact `POST /api/whiteboard/agent/assets` PNG, JPEG, and WebP requests into full Agent authorization. Cross-origin requests, adjacent paths, non-POST methods, and other MIME types remain rejected; existing permissions, room isolation, capacity, and image validation are unchanged.
+
+Online Whiteboard is now version 1.0.6. Quick Transfer remains 1.0.6 with no transfer-protocol change. The separate remote MCP Worker remains undeployed.',
     '2026-08-06T13:20:00.000Z',
-    '2026-08-06T13:20:00.000Z'
+    '2026-08-06T15:05:00.000Z'
   ),
   (
     'seed-update-2026-08-06-whiteboard-agent-images-ja',
     'seed-update-2026-08-06-whiteboard-agent-images',
     'ja',
     'AI がオンラインホワイトボードに画像を追加可能に',
-    'ローカル CLI／stdio MCP から現在のルームへ実画像をアップロード・取得・追記できるようになりました。専用画像権限、ルーム分離、冪等レシート、追記専用検証を維持し、リモート MCP は未展開です。',
+    'ローカル CLI／stdio MCP から現在のルームへ実画像をアップロード・取得・追記できます。本番入口の修正により正確な raster 要求だけが完全な Agent 認可へ進み、他の送信元・パス・MIME は拒否されます。リモート MCP は未展開です。',
     '# AI がオンラインホワイトボードに画像を追加可能に
 
 AI 機能レイヤー第5段階として、オンラインホワイトボードの実画像フローを完成させました。ローカル CLI と stdio MCP から現在のルームの画像をアップロード・取得し、高レベルの `image` 要素として検証済み素材を追記できます。
@@ -947,9 +955,13 @@ AI 機能レイヤー第5段階として、オンラインホワイトボード�
 
 サーバーは保存完了済みで、全メタデータが一致する現在ルームの画像だけを受け付けます。通常の write-only 呼び出し、pending 素材、URL、Base64、SVG、HTML、偽造メタデータ、孤立した素材記録、既存要素や素材の変更・削除、リンク、バインディング、任意 Yjs 入力は拒否します。同じ正規素材は複数回配置できます。簡易 Agent SVG／PNG 書き出しは引き続き画像バイトを埋め込まず、警告を返します。
 
-オンラインホワイトボードは 1.0.5 になりました。Quick Transfer は共有の管理対象基盤変更により 1.0.6 になりますが、転送プロトコルは変更していません。独立リモート MCP Worker は引き続き未展開です。',
+## 本番入口の点検修正
+
+本番点検で Pages の mutation gate に Agent 画像アップロードパスが含まれず、安全な raster 要求が Bearer 認可前に 415 となることを確認しました。1.0.6 では正確な `POST /api/whiteboard/agent/assets` の PNG／JPEG／WebP だけを完全な Agent 認可へ渡します。クロスオリジン、隣接パス、POST 以外、他の MIME は引き続き拒否し、既存の権限、ルーム分離、容量、画像検証は変更していません。
+
+オンラインホワイトボードは 1.0.6 になりました。Quick Transfer は 1.0.6 のままで、転送プロトコルに変更はありません。独立リモート MCP Worker は引き続き未展開です。',
     '2026-08-06T13:20:00.000Z',
-    '2026-08-06T13:20:00.000Z'
+    '2026-08-06T15:05:00.000Z'
   )
 on conflict(translation_id) do update set
   title = excluded.title,
@@ -12378,7 +12390,7 @@ on conflict(article_id) do update set
   published_at = excluded.published_at;
 
 insert into site_runtime_state (key, value, updated_at)
-values ('article_seed_version', '20260806-whiteboard-agent-images-r1', '2026-08-06T13:20:00.000Z')
+values ('article_seed_version', '20260806-whiteboard-agent-images-r2', '2026-08-06T15:05:00.000Z')
 on conflict(key) do update set
   value = excluded.value,
   updated_at = excluded.updated_at

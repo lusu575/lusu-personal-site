@@ -10,7 +10,7 @@ export const homeContent = Object.freeze({
       "status": "published",
       "is_pinned": 0,
       "created_at": "2026-08-06T13:20:00.000Z",
-      "updated_at": "2026-08-06T13:20:00.000Z",
+      "updated_at": "2026-08-06T15:05:00.000Z",
       "published_at": "2026-08-06T13:20:00.000Z",
       "fallbackOnly": true,
       "icon": "resources",
@@ -21,9 +21,9 @@ export const homeContent = Object.freeze({
         "ja": "AI がオンラインホワイトボードに画像を追加可能に"
       },
       "summary": {
-        "zh": "本地 CLI／stdio MCP 现在可上传、下载并在当前房追加真实图片；独立图片权限、房间隔离、幂等收据和只追加验证共同保护边界，远程 MCP 仍未部署。",
-        "en": "The local CLI and stdio MCP can now upload, download, and append real images in the current room, protected by a separate asset scope, room isolation, idempotent receipts, and append-only validation. The remote MCP remains undeployed.",
-        "ja": "ローカル CLI／stdio MCP から現在のルームへ実画像をアップロード・取得・追記できるようになりました。専用画像権限、ルーム分離、冪等レシート、追記専用検証を維持し、リモート MCP は未展開です。"
+        "zh": "本地 CLI／stdio MCP 可上传、下载并在当前房追加真实图片；生产入口热修已让精确 raster 请求进入完整 Agent 鉴权，其他来源、路径与 MIME 继续拒绝，远程 MCP 仍未部署。",
+        "en": "The local CLI and stdio MCP can upload, download, and append real images in the current room. A production gate fix now passes exact raster uploads into full Agent authorization while rejecting other origins, paths, and MIME types; remote MCP remains undeployed.",
+        "ja": "ローカル CLI／stdio MCP から現在のルームへ実画像をアップロード・取得・追記できます。本番入口の修正により正確な raster 要求だけが完全な Agent 認可へ進み、他の送信元・パス・MIME は拒否されます。リモート MCP は未展開です。"
       }
     },
     {

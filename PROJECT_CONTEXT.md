@@ -2,6 +2,7 @@
 
 ## 2026-08-06 AI 能力层第五阶段：在线画板图片闭环
 
+- 生产点检确认首个 Phase 5 Pages 版本的全局 mutation gate 只识别浏览器图片入口，导致精确 Agent 图片上传在进入 Bearer 鉴权前被 415 拒绝。1.0.6 将 raster 特例严格扩展到 `POST /api/whiteboard/agent/assets`：PNG／JPEG／WebP 可继续进入原有 Agent Bearer、write+assets scope、tokenId 绑定房间令牌与 Worker 校验；同源检查仍先执行，跨源、相邻路径、非 POST 和其他 MIME 仍失败关闭。该修复未命中 Quick Transfer 受管路径，因此 Quick Transfer 保持 1.0.6；公开记录沿用原文章，表示／文章 seed／白板公开模块缓存修订为 `20260806-whiteboard-agent-images-r2`，Quick Transfer 模块缓存继续使用 r1。
 - 在线画板 Agent 通道新增真实图片上传、当前房资源下载与高层图片放置。`whiteboard:assets` 是独立、非默认 scope：上传要求 `whiteboard:write + whiteboard:assets`，原图读取要求 assets 加场景 read（现有 write 可满足 read）；场景中的图片分支也必须由 Pages 通过 internal secret 保护的内部 header 显式授权，只有普通 write 的客户端仍被 DO 拒绝。
 - 图片只接受最大 5 MiB、严格容器边界、关键块段、声明宽高和像素数均通过检查的 PNG／JPEG／WebP；该边界不宣称完整像素解码。Agent Bearer 与绑定当前 tokenId 的房间访问令牌保持分离；资源只存当前房私有 R2，Pages／DO 都不接受 URL、Base64、SVG、HTML 或跨房 asset。CLI 使用真实常规文件，stdio MCP 进一步执行 allow-root／realpath／链接逃逸防护；下载默认独占创建、不覆盖已有文件，结果不回显本机绝对路径、令牌、口令或内部房间 ID。
 - Durable Object 的 scene validator 保持只追加：新增图片只能引用当前房已经完成 R2 提交且逐字段匹配的权威 `ImageMeta`，规范 `assets` 记录必须被本次新增图片引用；允许未修改地复用既有规范记录和多次放置同图。既有元素／资源的修改或删除、孤立资源、伪造元数据、链接、绑定、`customData`、未知根和任意 Yjs 字节注入继续失败关闭。
